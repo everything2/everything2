@@ -1483,13 +1483,39 @@ sub confirmUser {
 #############################################################################
 sub parseLinks {
        my ($text, $NODE) = @_;
-       $text =~ s/\[\s*(https?:\/\/[^\]\|\[<>]+)\|([^\]\|\[]+)?\]/"<a href=\"$1\" rel=\"nofollow\" class=\"externalLink\">".($2||"&#91;link&#93;")."<\/a>";/ge;
-       #$text =~ s/\[\s*(https?:\/\/[^\]\|\[<>]+)\|([^\]\|\[<>]+)\]/<a href="$1" rel="nofollow" class="externalLink">$2<\/a>/g;
-       $text =~ s/\[\s*(https?:\/\/[^\]\|\[<>]+)]/<a href="$1" rel="nofollow" class="externalLink">$1<\/a>/g;
-       #$text =~ s/\[(.*?) \(user\)\]/linkNode (getNode($1,'user'), $NODE)/egs;
-       $text =~ s/\[(.*?)\]/linkNodeTitle ($1, $NODE)/egs;
+
+       #Using ! for the s operator so that we don't have to escape all
+       #those damn forward slashes. --[Swap]
+
+       #Pipelinked external links, if no anchor text in the pipelink,
+       #fill the anchor text with the "[link]" text.
+
+       $text =~ s!\[                         #Open bracket
+                  \s*(https?://[^\]\|\[<>]+) #The URL to match
+                  \|                         #The pipe
+                  ([^\]\|\[]+)?              #The possible anchor text
+                  \]                         #Close bracket
+
+                 !"<a href=\"$1\" rel=\"nofollow\" class=\"externalLink\">"
+
+                   .($2||"&#91;link&#93;")   #If no anchor text, use "[link]"
+                     ."</a>";
+                 !gesx;
+
+       #External links without piping, show the link itself as the
+       #anchor text.
+       $text =~ s!
+                \[
+                 \s*(https?://[^\]\|\[<>]+)
+                 \]
+                 !<a href="$1" rel="nofollow" class="externalLink">$1</a>!gsx;
+
+       #Ordinary internal e2 links.
+       $text =~ s!\[(.*?)\]!linkNodeTitle ($1, $NODE)!egs;
        unMSify($text);
+       return $text;
 }
+
 
 
 #############################################################################
