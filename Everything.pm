@@ -851,6 +851,9 @@ sub getCredentials{
   else {
     die "Credentials file not found!\n";
   }
+
+  close(DBPASS);
+
   return ($user,$pass);
 }
 
