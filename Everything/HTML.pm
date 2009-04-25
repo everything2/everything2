@@ -869,7 +869,7 @@ sub linkNode {
 sub linkNodeTitle {
 	my ($nodename, $lastnode, $title) = @_;
 	($nodename, $title) = split /\|/, $nodename;
-	$title ||= $nodename;
+	$title = $nodename if $title eq "";
 	$nodename =~ s/\s+/ /gs;
 	my $tip = $nodename;
 	$tip =~ s/"/''/g;
@@ -1498,7 +1498,7 @@ sub parseLinks {
 
                  !"<a href=\"$1\" rel=\"nofollow\" class=\"externalLink\">"
 
-                   .($2||"&#91;link&#93;")   #If no anchor text, use "[link]"
+                   .(defined $2 ? $2 : "&#91;link&#93;")   #If no anchor text, use "[link]"
                      ."</a>";
                  !gesx;
 
