@@ -23,6 +23,7 @@ sub BEGIN {
 	use vars qw($DB $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
+		%HEADER_PARAMS
 		$DB
 		%HTMLVARS
 		$query
@@ -65,6 +66,7 @@ use vars qw($VARS);
 use vars qw($THEME);
 use vars qw($NODELET);
 use vars qw($CACHESTORE);
+use vars qw(%HEADER_PARAMS);
 my $PAGELOAD = 0;
 my $NUMPAGELOADS = 10;
      
@@ -1289,6 +1291,7 @@ sub displayPage
 	getRef $NODE, $USER;
 	die "NO NODE!" unless $NODE;
 	$GNODE = $NODE;
+	%HEADER_PARAMS = ();
 	my $isGuest = 0;
 	my $page = "";
 	$isGuest = 1 if ($user_id == $HTMLVARS{guest_user});
@@ -1697,9 +1700,13 @@ sub printHeader
 	if($ENV{SCRIPT_NAME}) {
 		if (@cookies) {
 			$query->header(-type=> $datatype, 
-		 		-cookie=>\@cookies, -content_length => $len);
+				       -cookie=> \@cookies,
+				       -content_length => $len,
+				       %HEADER_PARAMS);
 		} else {
-			$query->header(-type=> $datatype, -content_length => $len);
+			$query->header(-type=> $datatype,
+				       -content_length => $len,
+				       %HEADER_PARAMS);
 		}
 	}
 }
