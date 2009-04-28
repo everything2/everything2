@@ -883,6 +883,8 @@ sub linkNodeTitle {
 
     #If title wasn't set, it has to be checked again.
     $title = $scratch_title if $title eq $nodename;
+    $title =~ s/>/\&gt\;/g;
+    $title =~ s/</\&lt\;/g;
 
     $noder = getNode($noder,"user");
 
@@ -899,6 +901,8 @@ sub linkNodeTitle {
 
       $csr -> execute($scratch_title);
       my $scratch_id = $csr -> fetchrow;
+      $scratch_title =~ s/>/\&gt\;/g;
+      $scratch_title =~ s/</\&lt\;/g;
 
       if($scratch_id){
         $str .= "<a title=\"$scratch_title\" onmouseup=\"document.cookie='path=/'; 1;\" href=\"$ENV{SCRIPT_NAME}?node=scratch%20pads&scratch_id=$scratch_id\">$title</a>";
@@ -918,6 +922,8 @@ sub linkNodeTitle {
 
 	my $tip = $nodename;
 	$tip =~ s/"/''/g;
+  $tip =~ s/>/\&gt\;/g;
+  $tip =~ s/</\&lt\;/g;
 
   #my $isNode = getNodeWhere({ title => $nodename});
   my $isNode = 1;
