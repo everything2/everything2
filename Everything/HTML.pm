@@ -920,10 +920,10 @@ sub linkNodeTitle {
 
   my $anchor;
 
+  $nodename =~ s/>/\&gt\;/g;
+  $nodename =~ s/</\&lt\;/g;
 	my $tip = $nodename;
 	$tip =~ s/"/''/g;
-  $tip =~ s/>/\&gt\;/g;
-  $tip =~ s/</\&lt\;/g;
 
   #my $isNode = getNodeWhere({ title => $nodename});
   my $isNode = 1;
