@@ -922,6 +922,8 @@ sub linkNodeTitle {
 
   $nodename =~ s/>/\&gt\;/g;
   $nodename =~ s/</\&lt\;/g;
+  $title =~ s/>/\&gt\;/g;
+  $title =~ s/</\&lt\;/g;
 	my $tip = $nodename;
 	$tip =~ s/"/''/g;
 
