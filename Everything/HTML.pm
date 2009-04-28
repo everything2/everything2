@@ -871,7 +871,8 @@ sub linkNode {
 #############################################################################
 
 sub linkNodeTitle {
-	my ($nodename, $lastnode, $title) = @_;
+	my ($nodename, $lastnode, $escapeTags) = @_;
+  my $title;
 	($nodename, $title) = split /\|/, $nodename;
 	$title = $nodename if $title eq "";
 	$nodename =~ s/\s+/ /gs;
@@ -883,8 +884,10 @@ sub linkNodeTitle {
 
     #If title wasn't set, it has to be checked again.
     $title = $scratch_title if $title eq $nodename;
-    $title =~ s/>/\&gt\;/g;
-    $title =~ s/</\&lt\;/g;
+    if($escapeTags){
+      $title =~ s/>/\&gt\;/g;
+      $title =~ s/</\&lt\;/g;
+    }
 
     $noder = getNode($noder,"user");
 
@@ -910,8 +913,10 @@ sub linkNodeTitle {
         $scratch_id = $csr -> fetchrow;
       }
 
-      $scratch_title =~ s/>/\&gt\;/g;
-      $scratch_title =~ s/</\&lt\;/g;
+      if($escapeTags){
+        $scratch_title =~ s/>/\&gt\;/g;
+        $scratch_title =~ s/</\&lt\;/g;
+      }
 
       if($scratch_id){
         $str .= "<a title=\"$scratch_title\" onmouseup=\"document.cookie='path=/'; 1;\" href=\"$ENV{SCRIPT_NAME}?node=scratch%20pads&scratch_id=$scratch_id&other_user=$$noder{title}\">$title</a>";
@@ -929,10 +934,12 @@ sub linkNodeTitle {
 
   my $anchor;
 
-  $nodename =~ s/>/\&gt\;/g;
-  $nodename =~ s/</\&lt\;/g;
-  $title =~ s/>/\&gt\;/g;
-  $title =~ s/</\&lt\;/g;
+  if ($escapeTags) {
+    $nodename =~ s/>/\&gt\;/g;
+    $nodename =~ s/</\&lt\;/g;
+    $title =~ s/>/\&gt\;/g;
+    $title =~ s/</\&lt\;/g;
+  }
 	my $tip = $nodename;
 	$tip =~ s/"/''/g;
 
@@ -1546,7 +1553,7 @@ sub confirmUser {
 
 #############################################################################
 sub parseLinks {
-       my ($text, $NODE) = @_;
+       my ($text, $NODE, $escapeTags) = @_;
 
        #Using ! for the s operator so that we don't have to escape all
        #those damn forward slashes. --[Swap]
@@ -1575,7 +1582,7 @@ sub parseLinks {
                  !<a href="$1" rel="nofollow" class="externalLink">$1</a>!gsx;
 
        #Ordinary internal e2 links.
-       $text =~ s!\[(.*?)\]!linkNodeTitle ($1, $NODE)!egs;
+       $text =~ s!\[(.*?)\]!linkNodeTitle ($1, $NODE,$escapeTags)!egs;
        unMSify($text);
        return $text;
 }
