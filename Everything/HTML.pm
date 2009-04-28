@@ -879,14 +879,16 @@ sub linkNodeTitle {
   #Scratch pad linking
   if($nodename =~ />>/){
     my ($scratch_title, $noder) = split ">>", $nodename;
-    $noder = getNode("$noder","user");
 
+    $noder = getNode($noder,"user");
+
+    #If no noder by this name, getNode returns undef, evaluates to false.
     if($noder){
       my $dbh = $DB->getDatabaseHandle();
 
       #With this DB call, our code is now forever bound to e2.
       #--[Swap]
-      my $csr = $dbh -> prepare("SELECT scratch_title
+      my $csr = $dbh -> prepare("SELECT scratch_id
                                  FROM scratch2
                                  WHERE scratch_title=?
                                  AND scratch_user = $$noder{user_id}");
@@ -898,8 +900,10 @@ sub linkNodeTitle {
 
         return $str;
       }
+      else{
+        $nodename = $scratch_title;
+      }
     }
-
     else{
       $nodename = $scratch_title;
     }
