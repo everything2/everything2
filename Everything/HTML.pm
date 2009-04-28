@@ -868,23 +868,58 @@ sub linkNode {
 
 
 #############################################################################
+
 sub linkNodeTitle {
 	my ($nodename, $lastnode, $title) = @_;
 	($nodename, $title) = split /\|/, $nodename;
 	$title = $nodename if $title eq "";
 	$nodename =~ s/\s+/ /gs;
+
+  my $str = "";
+  #Scratch pad linking
+  if($nodename =~ />>/){
+    my ($scratch_title, $noder) = split ">>", $nodename;
+    $noder = getNode("$noder","user");
+
+    if($noder){
+      my $dbh = $DB->getDatabaseHandle();
+
+      #With this DB call, our code is now forever bound to e2.
+      #--[Swap]
+      my $csr = $dbh -> prepare("SELECT scratch_title
+                                 FROM scratch2
+                                 WHERE scratch_title=?
+                                 AND scratch_user = $$noder{user_id}");
+
+      my $scratch_id = $dbh -> execute($scratch_title);
+
+      if($scratch_id){
+        $str .= "<a title=\"$scratch_title\" onmouseup=\"document.cookie='path=/'; 1;\" href=\"$ENV{SCRIPT_NAME}?node=scratch%20pads&scratch_id=$scratch_id\">$scratch_title</a>";
+
+        return $str;
+      }
+    }
+
+    else{
+      $nodename = $scratch_title;
+    }
+  }
+
+  my $anchor;
+
 	my $tip = $nodename;
 	$tip =~ s/"/''/g;
-	
-#my $isNode = getNodeWhere({ title => $nodename});
-my $isNode = 1;
+
+  #my $isNode = getNodeWhere({ title => $nodename});
+  my $isNode = 1;
 	my $urlnode = CGI::escape($nodename);
-	my $str = "";
+
 	#$str .= "<a title=\"$tip\" href=\"$ENV{SCRIPT_NAME}?node=$urlnode";
 	#if ($lastnode) { $str .= "&amp;lastnode_id=" . getId($lastnode);}
 	if (!$lastnode) {
 		$str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ; path=/'; 1;\" title=\"$tip\" href=\"/title/".rewriteCleanEscape($nodename);
-	} else {	
+	}
+  else {	
 		$str .= "<a onmouseup=\"document.cookie='lastnode_id=$lastnode; ; path=/'; 1;\"  title=\"$tip\" href=\"/title/".rewriteCleanEscape($nodename);
 	}
 	$str .= "\" ".( $isNode ? "class='populated'" : "class='unpopulated'")." >$title</a>";
