@@ -880,6 +880,9 @@ sub linkNodeTitle {
   if($nodename =~ />>/){
     my ($scratch_title, $noder) = split ">>", $nodename;
 
+    #If title wasn't set, it has to be checked again.
+    $title = $scratch_title if $title eq $nodename;
+
     $noder = getNode($noder,"user");
 
     #If no noder by this name, getNode returns undef, evaluates to false.
@@ -897,7 +900,7 @@ sub linkNodeTitle {
       my $scratch_id = $csr -> fetchrow;
 
       if($scratch_id){
-        $str .= "<a title=\"$scratch_title\" onmouseup=\"document.cookie='path=/'; 1;\" href=\"$ENV{SCRIPT_NAME}?node=scratch%20pads&scratch_id=$scratch_id\">$scratch_title</a>";
+        $str .= "<a title=\"$scratch_title\" onmouseup=\"document.cookie='path=/'; 1;\" href=\"$ENV{SCRIPT_NAME}?node=scratch%20pads&scratch_id=$scratch_id\">$title</a>";
 
         return $str;
       }
