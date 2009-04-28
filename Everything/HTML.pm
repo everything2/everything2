@@ -53,6 +53,7 @@ sub BEGIN {
 		urlDecode
 		encodeHTML
 		decodeHTML
+    escapeAngleBrackets
 		unMSify
 		mod_perlInit
                 mod_perlpsuedoInit);
@@ -2205,7 +2206,33 @@ sub mod_perlpsuedoInit
 	#handleUserRequest();
 }
 
+#############################################################################
+# Sub
+#   escapeAngleBrackets
+#
+# Purpose
+#   Escapes angle brackets but *only* if they're not inside square
+#   brackets. This is intended for bits of user input that is not
+#   allowed to have any HTML but is allowed bracket [linking].
+#
+# Parameters
+#   $text - the text  to escape
+#
+# Returns
+#   The escaped text
+sub escapeAngleBrackets{
+  my ($text) = @_;
 
+  #These two lines do regexp magic (man perlre, grep down to
+  #assertions) to escape < and > but only if they're not inside
+  #brackets. They're a bit inefficient, but since they text they're
+  #working on is usually small, it's all good. --[Swap]
+
+  $text =~ s/((?:\[(.*?)\])|>)/$1 eq ">" ? "&gt;" : "$1"/egs;
+  $text =~ s/((?:\[(.*?)\])|<)/$1 eq "<" ? "&lt;" : "$1"/egs;
+
+  return $text;
+}
 
 #############################################################################
 # End of package
