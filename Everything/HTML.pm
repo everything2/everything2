@@ -890,22 +890,31 @@ sub linkNodeTitle {
 
     #If no noder by this name, getNode returns undef, evaluates to false.
     if($noder){
-      my $dbh = $DB->getDatabaseHandle();
+      my $scratch_id;
 
-      #With this DB call, our code is now forever bound to e2.
-      #--[Swap]
-      my $csr = $dbh -> prepare("SELECT scratch_id
+      if ($scratch_title eq 'Default Scratch Pad') {
+        $scratch_id = $DB->sqlSelect("scratch_id",
+                                     "scratch",
+                                     "scratch_user=$$noder{user_id}");
+      }
+      else {
+        my $dbh = $DB->getDatabaseHandle();
+        #With this DB call, our code is now forever bound to e2.
+        #--[Swap]
+        my $csr = $dbh -> prepare("SELECT scratch_id
                                  FROM scratch2
                                  WHERE scratch_title=?
                                  AND scratch_user = $$noder{user_id}");
 
-      $csr -> execute($scratch_title);
-      my $scratch_id = $csr -> fetchrow;
+        $csr -> execute($scratch_title);
+        $scratch_id = $csr -> fetchrow;
+      }
+
       $scratch_title =~ s/>/\&gt\;/g;
       $scratch_title =~ s/</\&lt\;/g;
 
       if($scratch_id){
-        $str .= "<a title=\"$scratch_title\" onmouseup=\"document.cookie='path=/'; 1;\" href=\"$ENV{SCRIPT_NAME}?node=scratch%20pads&scratch_id=$scratch_id\">$title</a>";
+        $str .= "<a title=\"$scratch_title\" onmouseup=\"document.cookie='path=/'; 1;\" href=\"$ENV{SCRIPT_NAME}?node=scratch%20pads&scratch_id=$scratch_id&other_user=$$noder{title}\">$title</a>";
 
         return $str;
       }
