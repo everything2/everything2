@@ -893,7 +893,8 @@ sub linkNodeTitle {
                                  WHERE scratch_title=?
                                  AND scratch_user = $$noder{user_id}");
 
-      my $scratch_id = $dbh -> execute($scratch_title);
+      $csr -> execute($scratch_title);
+      my $scratch_id = $csr -> fetchrow;
 
       if($scratch_id){
         $str .= "<a title=\"$scratch_title\" onmouseup=\"document.cookie='path=/'; 1;\" href=\"$ENV{SCRIPT_NAME}?node=scratch%20pads&scratch_id=$scratch_id\">$scratch_title</a>";
