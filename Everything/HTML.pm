@@ -942,11 +942,11 @@ sub linkNodeTitle {
     $oldnodename = $nodename;
     ($nodename, $anchor) = split ">",$nodename;
 
-    $title = $nodename if $title eq $oldnodename
-      if ($escapeTags) {
-        $title =~ s/>/\&gt\;/g;
-        $title =~ s/</\&lt\;/g;
-      }
+    $title = $nodename if $title eq $oldnodename;
+    if ($escapeTags) {
+      $title =~ s/>/\&gt\;/g;
+      $title =~ s/</\&lt\;/g;
+    }
 
     my $node = getNode($nodename,"e2node");
     my $user = getNode($anchor, "user");
@@ -958,10 +958,10 @@ sub linkNodeTitle {
       foreach my $wu (@wus) {
         $wu = getNodeById($wu);
 
-        if ($$wu{author_user} = $$user{node_id}) {
+        if ($$wu{author_user} == $$user{node_id}) {
           $str .= "<a onmouseup=\"document.cookie='path=/'; 1;\" href='"
-            .urlGenNoParams($node,1)
-              ."#node_id_$$wu{writeup_id}'>$title</a>";
+                  .urlGenNoParams($node,1)
+                  ."#node_id_$$wu{writeup_id}'>$title</a>";
           return $str;
         }
       }
@@ -969,18 +969,15 @@ sub linkNodeTitle {
       #linking below, even if the user got the username wrong.
     }
 
-    #No point in doing special linking to debate nodetypes, since
-    #those are anchored at the top, just worry about debatecomment
-    $node = getNode($nodename, "debatecomment");
+    $node = getNode($nodename, "debate");
 
     #Don't check if the anchor is correct, just that it's a number. If
     #users mess it up, that's their business; their anchor won't lead
-    #anywhere.
+    #anywhere, but at least they get the discussion node.
     if ($node && $anchor =~ /^\d+$/) {
-      my $root_node_id = $$node{root_debatecomment};
       $str .= "<a onmouseup=\"document.cookie='path=/'; 1;\" href='"
-        .urlGenNoParams($root_node_id,1)
-          ."#debatecomment_$anchor'>$title</a>";
+              .urlGenNoParams($node,1)
+              ."#debatecomment_$anchor'>$title</a>";
       return $str;
     }
   }
