@@ -998,6 +998,28 @@ sub linkNodeTitle {
     }
   }
 
+  #Linking to specific nodetypes
+  if ($nodename =~ /</) {
+    my $type;
+    my $oldnodename = $nodename;
+    ($nodename,$type) = split "<",$nodename;
+
+    $title = $nodename if $title eq $oldnodename;
+
+    #The reason why we call getNode twice here is that this isn't
+    #meant to be fed non-sanitised input, fails with DB errors when
+    #fed an invalid nodetype, so have to check that first.
+    $type = getNode($type,"nodetype");
+    if ($type) {
+      my $node = getNode($nodename,$type);
+      if ($node) {
+        $str .= linkNode($node, $lastnode);
+        return $str;
+      }
+    }
+    #Else, $nodename has the right nodename, and will degrade gracefully.
+  }
+
 
 
   if ($escapeTags) {
