@@ -872,7 +872,9 @@ sub linkNode {
 
 sub linkNodeTitle {
 	my ($nodename, $lastnode, $escapeTags) = @_;
-  my $title;
+  my $title; #anchor text to display
+  my $tip; #tooltip
+
 	($nodename, $title) = split /\|/, $nodename;
   #No whitespace around metacharacters
   $nodename =~ s,\s*(<|>)\s*,$1,g;
@@ -922,7 +924,9 @@ sub linkNodeTitle {
       }
 
       if ($scratch_id) {
-        $str .= "<a title=\"$scratch_title\" onmouseup=\"document.cookie='path=/'; 1;\" href=\"$ENV{SCRIPT_NAME}?node=scratch%20pads&scratch_id=$scratch_id&other_user=$$noder{title}\">$title</a>";
+        $tip = $scratch_title;
+        $tip =~ s/"/''/g;
+        $str .= "<a title=\"$tip\" onmouseup=\"document.cookie='path=/'; 1;\" href=\"$ENV{SCRIPT_NAME}?node=scratch%20pads&scratch_id=$scratch_id&other_user=$$noder{title}\">$title</a>";
 
         return $str;
       }
@@ -959,9 +963,18 @@ sub linkNodeTitle {
         $wu = getNodeById($wu);
 
         if ($$wu{author_user} == $$user{node_id}) {
-          $str .= "<a onmouseup=\"document.cookie='path=/'; 1;\" href='"
-                  .urlGenNoParams($node,1)
-                  ."#node_id_$$wu{writeup_id}'>$title</a>";
+          $tip = $$wu{title};
+          $tip =~ s/"/''/g;
+          if($lastnode){
+            $str .= "<a onmouseup=\"document.cookie='lastnode_id=$lastnode; "
+                    ."path=/'; 1;\" href='"
+          }
+          else{
+            $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; "
+                    ."path=/'; 1;\" href='"
+          }
+          $str .=  urlGenNoParams($node,1)
+                  ."#node_id_$$wu{writeup_id}' title=\"$tip\">$title</a>";
           return $str;
         }
       }
@@ -975,7 +988,10 @@ sub linkNodeTitle {
     #users mess it up, that's their business; their anchor won't lead
     #anywhere, but at least they get the discussion node.
     if ($node && $anchor =~ /^\d+$/) {
-      $str .= "<a onmouseup=\"document.cookie='path=/'; 1;\" href='"
+      $tip = $$node{title};
+      $tip =~ s/"/''/g;
+      $str .= "<a onmouseup=\"document.cookie='"
+              ." ; path=/'; 1;\" title=\"$tip\" href='"
               .urlGenNoParams($node,1)
               ."#debatecomment_$anchor'>$title</a>";
       return $str;
@@ -990,7 +1006,7 @@ sub linkNodeTitle {
     $title =~ s/>/\&gt\;/g;
     $title =~ s/</\&lt\;/g;
   }
-	my $tip = $nodename;
+	$tip = $nodename;
 	$tip =~ s/"/''/g;
 
   #my $isNode = getNodeWhere({ title => $nodename});
