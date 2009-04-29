@@ -874,17 +874,19 @@ sub linkNodeTitle {
 	my ($nodename, $lastnode, $escapeTags) = @_;
   my $title;
 	($nodename, $title) = split /\|/, $nodename;
-	$title = $nodename if $title eq "";
+  #No whitespace around metacharacters
+  $nodename =~ s,\s*(<|>)\s*,$1,g;
 	$nodename =~ s/\s+/ /gs;
+	$title = $nodename if $title eq "";
 
   my $str = "";
   #Scratch pad linking
-  if($nodename =~ />>/){
+  if ($nodename =~ />>/) {
     my ($scratch_title, $noder) = split ">>", $nodename;
 
     #If title wasn't set, it has to be checked again.
     $title = $scratch_title if $title eq $nodename;
-    if($escapeTags){
+    if ($escapeTags) {
       $title =~ s/>/\&gt\;/g;
       $title =~ s/</\&lt\;/g;
     }
@@ -892,7 +894,7 @@ sub linkNodeTitle {
     $noder = getNode($noder,"user");
 
     #If no noder by this name, getNode returns undef, evaluates to false.
-    if($noder){
+    if ($noder) {
       my $scratch_id;
 
       if ($scratch_title eq 'Default Scratch Pad') {
@@ -908,31 +910,82 @@ sub linkNodeTitle {
                                  FROM scratch2
                                  WHERE scratch_title=?
                                  AND scratch_user = $$noder{user_id}");
-
+        $scratch_title =~ s/^\s+//;
+        $scratch_title =~ s/\s+$//;
         $csr -> execute($scratch_title);
         $scratch_id = $csr -> fetchrow;
       }
 
-      if($escapeTags){
+      if ($escapeTags) {
         $scratch_title =~ s/>/\&gt\;/g;
         $scratch_title =~ s/</\&lt\;/g;
       }
 
-      if($scratch_id){
+      if ($scratch_id) {
         $str .= "<a title=\"$scratch_title\" onmouseup=\"document.cookie='path=/'; 1;\" href=\"$ENV{SCRIPT_NAME}?node=scratch%20pads&scratch_id=$scratch_id&other_user=$$noder{title}\">$title</a>";
 
         return $str;
       }
-      else{
+      else {
         $nodename = $scratch_title;
       }
     }
-    else{
+    else {
       $nodename = $scratch_title;
     }
   }
 
-  my $anchor;
+  #Direct linking to writeups, discussion posts
+  if ($nodename =~ />/) {
+
+    my ($anchor, $oldnodename);
+    $oldnodename = $nodename;
+    ($nodename, $anchor) = split ">",$nodename;
+
+    $title = $nodename if $title eq $oldnodename
+      if ($escapeTags) {
+        $title =~ s/>/\&gt\;/g;
+        $title =~ s/</\&lt\;/g;
+      }
+
+    my $node = getNode($nodename,"e2node");
+    my $user = getNode($anchor, "user");
+
+    if ($node && $user) {
+      #Got ourselves a node possibly a nodeshell. Let's investigate.
+      my @wus = @{$$node{group} };
+
+      foreach my $wu (@wus) {
+        $wu = getNodeById($wu);
+
+        if ($$wu{author_user} = $$user{node_id}) {
+          $str .= "<a onmouseup=\"document.cookie='path=/'; 1;\" href='"
+            .urlGenNoParams($node,1)
+              ."#node_id_$$wu{writeup_id}'>$title</a>";
+          return $str;
+        }
+      }
+      #Else, $nodename has the right value, and it will default to the
+      #linking below, even if the user got the username wrong.
+    }
+
+    #No point in doing special linking to debate nodetypes, since
+    #those are anchored at the top, just worry about debatecomment
+    $node = getNode($nodename, "debatecomment");
+
+    #Don't check if the anchor is correct, just that it's a number. If
+    #users mess it up, that's their business; their anchor won't lead
+    #anywhere.
+    if ($node && $anchor =~ /^\d+$/) {
+      my $root_node_id = $$node{root_debatecomment};
+      $str .= "<a onmouseup=\"document.cookie='path=/'; 1;\" href='"
+        .urlGenNoParams($root_node_id,1)
+          ."#debatecomment_$anchor'>$title</a>";
+      return $str;
+    }
+  }
+
+
 
   if ($escapeTags) {
     $nodename =~ s/>/\&gt\;/g;
