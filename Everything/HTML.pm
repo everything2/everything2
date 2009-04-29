@@ -1005,6 +1005,10 @@ sub linkNodeTitle {
     ($nodename,$type) = split "<",$nodename;
 
     $title = $nodename if $title eq $oldnodename;
+    if ($escapeTags) {
+      $title =~ s/>/\&gt\;/g;
+      $title =~ s/</\&lt\;/g;
+    }
 
     #The reason why we call getNode twice here is that this isn't
     #meant to be fed non-sanitised input, fails with DB errors when
@@ -1013,7 +1017,7 @@ sub linkNodeTitle {
     if ($type) {
       my $node = getNode($nodename,$type);
       if ($node) {
-        $str .= linkNode($node, $lastnode);
+        $str .= linkNode($node, $title);
         return $str;
       }
     }
