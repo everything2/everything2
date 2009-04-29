@@ -1005,18 +1005,16 @@ sub linkNodeTitle {
     ($nodename,$type) = split "<",$nodename;
 
     $title = $nodename if $title eq $oldnodename;
-    if ($escapeTags) {
-      $title =~ s/>/\&gt\;/g;
-      $title =~ s/</\&lt\;/g;
-    }
 
     #The reason why we call getNode twice here is that this isn't
     #meant to be fed non-sanitised input, fails with DB errors when
     #fed an invalid nodetype, so have to check that first.
     $type = getNode($type,"nodetype");
     if ($type) {
-      my $node = getNode($nodename,$type);
+      my $node = getNode($nodename,$$type{title});
       if ($node) {
+        #FIXME: linkNode always escapes HTML tags, sometimes we don't
+        #want that.
         $str .= linkNode($node, $title);
         return $str;
       }
