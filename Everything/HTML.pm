@@ -1579,7 +1579,7 @@ sub confirmUser {
 
 #############################################################################
 sub parseLinks {
-       my ($text, $NODE) = @_;
+       my ($text, $NODE, $escapeTags) = @_;
 
        #Using ! for the s operator so that we don't have to escape all
        #those damn forward slashes. --[Swap]
