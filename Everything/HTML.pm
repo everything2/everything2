@@ -888,7 +888,7 @@ sub linkNodeTitle {
 	$nodename =~ s/\s+/ /gs;
 
 	my $str = "";
-  my $tip;
+  my ($tip, $isNode);
 
   #A direct link draws near! Command?
   if($nodename =~ /^([^<>]+)<(.+)>$/){
@@ -919,18 +919,19 @@ sub linkNodeTitle {
     if($nodetype =~ /^\d+$/){
       $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ; "
               ."path=/'; 1;\" title=\"$tip\" href=\""
-              .urlGenNoParams($nodename,1)."#debate_$id";
+              ."/node/debate/$nodename#debatecomment_$nodetype";
     }
 
     #Perhaps direct link to a writeup instead?
-    elsif(grep $nodetype, ("","e2node","node","writeup") ){
+    elsif(grep /^$nodetype$/, ("","e2node","node","writeup") ){
       #Anchors are case-sensitive, need to get the exact username.
-      $user = getNode($user,"user") -> {title} || "";
+      $user = getNode($user,"user");
+      $user = ($user? $$user{title} : "");
 
       $str .= "<a onmouseup=\"document.cookie='lastnode_id="
                .($lastnode? $lastnode : 0)."; ; "
                ."path=/'; 1;\" title=\"$tip\" href=\""
-               .urlGenNoParams($nodename,1)."#$user";
+               ."/title/$nodename#$user";
     }
 
     #Or maybe a scratch pad?
@@ -962,7 +963,7 @@ sub linkNodeTitle {
     $tip =~ s/"/''/g;
 
     #my $isNode = getNodeWhere({ title => $nodename});
-    my $isNode = 1;
+    $isNode = 1;
     my $urlnode = CGI::escape($nodename);
     #$str .= "<a title=\"$tip\" href=\"$ENV{SCRIPT_NAME}?node=$urlnode";
     #if ($lastnode) { $str .= "&amp;lastnode_id=" . getId($lastnode);}
