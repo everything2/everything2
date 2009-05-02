@@ -803,24 +803,35 @@ sub rewriteCleanEscape {
 sub urlGenNoParams {
 	my ($NODE, $noquotes) = @_;
 	if (not ref $NODE) {
-                if ($noquotes) {
-                        return "/node/$NODE";
-                } else {
-                        return "\"/node/$NODE\"";                
+    if ($noquotes) {
+      return "/node/$NODE";
+    }
+    else {
+      return "\"/node/$NODE\"";
 		}
 	}
 
 	my $retval = "";
-        if ($$NODE{type}{title} eq 'e2node') {
-                $retval = "/title/".rewriteCleanEscape($$NODE{title});
-        } elsif ($$NODE{type}{title} eq 'user') {
-                $retval = "/".$$NODE{type}{title}."/".rewriteCleanEscape($$NODE{title});
-	} elsif ($$NODE{type}{restrictdupes} && $$NODE{title}) {
-		$retval = "/node/".$$NODE{type}{title}."/".rewriteCleanEscape($$NODE{title});
-	} else {
+  if ($$NODE{type}{title} eq 'e2node') {
+    $retval = "/title/".rewriteCleanEscape($$NODE{title});
+  }
+  elsif ($$NODE{type}{title} eq 'user') {
+    $retval = "/".$$NODE{type}{title}."/".rewriteCleanEscape($$NODE{title});
+	}
+  elsif ($$NODE{type}{restrictdupes} && $$NODE{title}) {
+		$retval = "/node/".$$NODE{type}{title}."/"
+              .rewriteCleanEscape($$NODE{title});
+	}
+  else {
 		$retval = "/node/".getId($NODE);
 	}
-	if ($noquotes) { return $retval; } else { return '"'.$retval.'"'; }
+
+	if ($noquotes) {
+    return $retval;
+  }
+  else {
+    return '"'.$retval.'"';
+  }
 }
 
 
@@ -870,25 +881,106 @@ sub linkNode {
 
 #############################################################################
 sub linkNodeTitle {
-	my ($nodename, $lastnode, $title) = @_;
+	my ($nodename, $lastnode, $escapeTags) = @_;
+  my $title;
 	($nodename, $title) = split /\|/, $nodename;
 	$title = $nodename if $title eq "";
 	$nodename =~ s/\s+/ /gs;
-	my $tip = $nodename;
-	$tip =~ s/"/''/g;
-	
-#my $isNode = getNodeWhere({ title => $nodename});
-my $isNode = 1;
-	my $urlnode = CGI::escape($nodename);
+
 	my $str = "";
-	#$str .= "<a title=\"$tip\" href=\"$ENV{SCRIPT_NAME}?node=$urlnode";
-	#if ($lastnode) { $str .= "&amp;lastnode_id=" . getId($lastnode);}
-	if (!$lastnode) {
-		$str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ; path=/'; 1;\" title=\"$tip\" href=\"/title/".rewriteCleanEscape($nodename);
-	} else {	
-		$str .= "<a onmouseup=\"document.cookie='lastnode_id=$lastnode; ; path=/'; 1;\"  title=\"$tip\" href=\"/title/".rewriteCleanEscape($nodename);
-	}
-	$str .= "\" ".( $isNode ? "class='populated'" : "class='unpopulated'")." >$title</a>";
+  my $tip;
+
+  #A direct link draws near! Command?
+  if($nodename =~ /^([^<>]+)<(.+)>$/){
+    my ($anchor,$originalnodename);
+    $originalnodename = $nodename;
+    $nodename = $1;
+    $anchor = $2;
+
+    $tip = $nodename;
+    $tip =~ s/"/''/g;
+
+    $title = $nodename if $title eq $originalnodename;
+
+    if($escapeTags){
+      $title =~ s/</\&lt\;/g;
+      $title =~ s/>/\&gt\;/g;
+      $tip =~ s/</\&lt\;/g;
+      $tip =~ s/>/\&gt\;/g;
+    }
+
+    my ($nodetype,$user) = split "by", $anchor;
+    $nodetype =~ s/^\s*//;
+    $nodetype =~ s/\s*$//;
+    $user =~ s/^\s*//;
+    $user =~ s/\s*$//;
+
+    #Aha, trying to link to a discussion post
+    if($nodetype =~ /^\d+$/){
+      $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ; "
+              ."path=/'; 1;\" title=\"$tip\" href=\""
+              .urlGenNoParams($nodename,1)."#debate_$id";
+    }
+
+    #Perhaps direct link to a writeup instead?
+    elsif(grep $nodetype, ("","e2node","node","writeup") ){
+      #Anchors are case-sensitive, need to get the exact username.
+      $user = getNode($user,"user") -> {title} || "";
+
+      $str .= "<a onmouseup=\"document.cookie='lastnode_id="
+               .($lastnode? $lastnode : 0)."; ; "
+               ."path=/'; 1;\" title=\"$tip\" href=\""
+               .urlGenNoParams($nodename,1)."#$user";
+    }
+
+    #Or maybe a scratch pad?
+    elsif($nodetype =~ /^scratch/){
+      $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ;"
+               ."path=/'; 1;\" title=\"$tip\" href=\""
+               ."/scratch/$user/$nodename";
+    }
+
+    #Else, direct link to nodetype. Let's hope the users know what
+    #they're doing.
+    else{
+      $str .= "<a onmouseup=\"document.cookie='lastnode_id="
+              .($lastnode? $lastnode : 0)."; ;"
+              ."path=/'; 1;\" title=\"$tip\" href=\""
+              ."/node/$nodetype/$nodename";
+    }
+  }
+
+  #Plain ol' link, no direct linking.
+  else {
+    if($escapeTags){
+      $title =~ s/</\&lt\;/g;
+      $title =~ s/>/\&gt\;/g;
+      $nodename =~ s/</\&lt\;/g;
+      $nodename =~ s/>/\&gt\;/g;
+    }
+    $tip = $nodename;
+    $tip =~ s/"/''/g;
+
+    #my $isNode = getNodeWhere({ title => $nodename});
+    my $isNode = 1;
+    my $urlnode = CGI::escape($nodename);
+    #$str .= "<a title=\"$tip\" href=\"$ENV{SCRIPT_NAME}?node=$urlnode";
+    #if ($lastnode) { $str .= "&amp;lastnode_id=" . getId($lastnode);}
+    if (!$lastnode) {
+      $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ; "
+        ."path=/'; 1;\" title=\"$tip\" href=\"/title/"
+          .rewriteCleanEscape($nodename);
+    }
+    else {
+      $str .= "<a onmouseup=\"document.cookie='lastnode_id=$lastnode; ; "
+        ."path=/'; 1;\"  title=\"$tip\" href=\"/title/"
+          .rewriteCleanEscape($nodename);
+    }
+  }
+  $str .= "\" "
+          .( $isNode ? "class='populated'" : "class='unpopulated'")
+         ." >$title</a>";
+
 
 	$str;
 }
@@ -1515,8 +1607,8 @@ sub parseLinks {
                  !<a href="$1" rel="nofollow" class="externalLink">$1</a>!gsx;
 
        #Ordinary internal e2 links.
-       $text =~ s!\[(.*?)\]!linkNodeTitle ($1, $NODE)!egs;
-       unMSify($text);
+       $text =~ s!\[(.*?)\]!linkNodeTitle ($1, $NODE,$escapeTags)!egs;
+       $text = unMSify($text);
        return $text;
 }
 
