@@ -909,7 +909,7 @@ sub linkNodeTitle {
       $tip =~ s/>/\&gt\;/g;
     }
 
-    my ($nodetype,$user) = split " by ", $anchor;
+    my ($nodetype,$user) = split /\bby\b/, $anchor;
     $nodetype =~ s/^\s*//;
     $nodetype =~ s/\s*$//;
     $user =~ s/^\s*//;
