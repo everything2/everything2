@@ -154,13 +154,14 @@ sub htmlScreen {
              if($bracket =~ /\[([^<>]*<.*>)\s*\|(.*)\]/s){
 
                             #However, screen the title text
-               ($2 ? "[$1|".htmlScreen($2)."]" : "[$1]");
+               ($2 ? "[$1|".htmlScreen($2,$APPROVED)."]" : "[$1]");
              }
 
              #Pipelink, but wrong anchor format, screen both parts
              elsif($bracket =~ /\[(.*)\|(.*)\]/s){
-               ($2 ? "[".htmlScreen($1)."|".htmlScreen($2)."]"
-                   : "[".htmlScreen($1)."]");
+               ($2 ? "[".htmlScreen($1,$APPROVED)."|"
+                        .htmlScreen($2,$APPROVED)."]"
+                   : "[".htmlScreen($1,$APPROVED)."]");
              }
 
              #Matched a hardlink with the right anchor format
@@ -171,12 +172,12 @@ sub htmlScreen {
              #Matched a hardlink, but not the right format, so screen
              #all of it.
              elsif($bracket =~ /\[(.*)\]/s){
-               "[".htmlScreen($1)."]";
+               "[".htmlScreen($1,$APPROVED)."]";
              }
 
              #Match an HTML tag. Screen it.
              else{
-               tagApprove($slash,$tag,$attrib);
+               tagApprove($slash,$tag,$attrib,$APPROVED);
              }
             !gsex;
 
