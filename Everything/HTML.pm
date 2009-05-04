@@ -993,7 +993,8 @@ sub linkNodeTitle {
       $str .= "<a onmouseup=\"document.cookie='lastnode_id="
               .($lastnode? $lastnode : 0)."; ;"
               ."path=/'; 1;\" title=\"$tip\" href=\""
-              ."/node/$nodetype/$nodename";
+              .($nodetype eq "user" ? "/" : "/node/")
+              ."$nodetype/$nodename";
     }
   }
 
