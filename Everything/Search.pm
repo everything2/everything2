@@ -275,7 +275,8 @@ sub searchNodeName {
 
 	if (not @words)
 	{
-		$rankingstr='1';
+    #No words should mean no search results
+    return ();
 	}
 	else
 	{
