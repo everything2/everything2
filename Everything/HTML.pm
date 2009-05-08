@@ -961,6 +961,8 @@ sub linkNodeTitle {
     $user =~ s/^\s*//;
     $user =~ s/\s*$//;
 
+    $nodename = escape($nodename);
+
     #Aha, trying to link to a discussion post
     if($nodetype =~ /^\d+$/){
       $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ; "
