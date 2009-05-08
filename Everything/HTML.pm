@@ -961,7 +961,7 @@ sub linkNodeTitle {
     $user =~ s/^\s*//;
     $user =~ s/\s*$//;
 
-    $nodename = escape($nodename);
+    $nodename = rewriteCleanEscape($nodename);
 
     #Aha, trying to link to a discussion post
     if($nodetype =~ /^\d+$/){
