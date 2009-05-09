@@ -1385,8 +1385,8 @@ sub genContainer {
 		 $CONTAINER->{_context_suffix})
 		    = split('CONTAINED_STUFF', $CONTAINER->{context});
 	}
-	my $prefix = parseCode ('_context_prefix', $CONTAINER);
-	my $suffix = parseCode ('_context_suffix', $CONTAINER);
+	my $prefix = parseCode ($CONTAINER->{_context_prefix}, $CONTAINER);
+	my $suffix = parseCode ($CONTAINER->{_context_suffix}, $CONTAINER);
 
 	if ($$CONTAINER{parent_container}) {
 		my ($parentprefix, $parentsuffix)
