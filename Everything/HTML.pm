@@ -1302,23 +1302,21 @@ sub insertNodelet
 {
 	($NODELET) = @_;
 	getRef $NODELET;
+	my ($pre, $post) = ('', '');
 
         #my $html = genContainer($$NODELET{parent_container})
         #       if $$NODELET{parent_container};
 
         my $container = $$THEME{generalNodelet_container};
         $container ||= getId(getNode('nodelet container','container'));
-
-        my $html = genContainer($container) if $container;
+	($pre, $post) = genContainer($container) if $container;
 	
 	# Make sure the nltext is up to date
 	updateNodelet($NODELET);
 	return unless ($$NODELET{nltext} =~ /\S/);
 	
 	# now that we are guaranteed that nltext is up to date, sub it in.
-	if ($html) { $html =~ s/CONTAINED_STUFF/$$NODELET{nltext}/s; }
-	else { $html = $$NODELET{nltext}; }
-	$html;
+	return $pre.$NODELET->{nltext}.$post;
 }
 
 
@@ -1381,16 +1379,22 @@ sub genContainer {
 	my ($CONTAINER) = @_;
 	getRef $CONTAINER;
 	my $replacetext;
-
-	$replacetext = parseCode ($$CONTAINER{context}, $CONTAINER);
+	# Create prefix and suffix code fields
+	if (! exists $CONTAINER->{_context_prefix}) {
+		($CONTAINER->{_context_prefix},
+		 $CONTAINER->{_context_suffix})
+		    = split('CONTAINED_STUFF', $CONTAINER->{context});
+	}
+	my $prefix = parseCode ('_context_prefix', $CONTAINER);
+	my $suffix = parseCode ('_context_suffix', $CONTAINER);
 
 	if ($$CONTAINER{parent_container}) {
-		my $parenttext = genContainer($$CONTAINER{parent_container});	
-		$parenttext =~ s/CONTAINED_STUFF/$replacetext/s;
-		$replacetext = $parenttext;
+		my ($parentprefix, $parentsuffix)
+		    = genContainer($$CONTAINER{parent_container});
+		return ($parentprefix.$prefix, $suffix.$parentsuffix);
 	} 
 	
-	$replacetext;	
+	return ($prefix, $suffix);
 }
 
 
@@ -1408,10 +1412,8 @@ sub genContainer {
 sub containHtml {
 	my ($container, $html) =@_;
 	my ($TAINER) = getNode($container, getType("container"));
-	my $str = genContainer($TAINER);
-
-	$str =~ s/CONTAINED_STUFF/$html/g;
-	$str;
+	my ($pre, $post) = genContainer($TAINER);
+	return $pre.$html.$post;
 }
 
 
@@ -1473,10 +1475,9 @@ sub displayPage
 
 	$page = parseCode($page, $NODE);
 	if ($$PAGE{parent_container}) {
-		my $container = genContainer($$PAGE{parent_container}); 
-		$container =~ s/CONTAINED_STUFF/$page/s;
-		$page = $container;
-	}	
+		my ($pre, $post) = genContainer($$PAGE{parent_container});
+		$page = $pre.$page.$post;
+	}
    
   #  my $XP = $$USER{experience};
 #	delete $$USER{experience};  #hopefully this will clear up XP corruption
