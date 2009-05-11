@@ -140,15 +140,13 @@ sub htmlScreen {
   #[link <anchor>|text], so that direct links in linkNodeTitle can
   #work. This is ugly, and I eagerly await a better solution. --[Swap]
 	$text =~ s!(
-
-               (?:\[(.*?)\])             #Either match a square bracket...
+               <\s*(/?)([^\>|\s]+)(.*?)> #Either match a tag ...
              |
-               <\s*(/?)([^\>|\s]+)(.*?)> #Or match a tag
-
+               (\[.*\])                  #Or match a square bracket
              )
             !
-             my $bracket = $1;
-             my ($slash,$tag,$attrib) = ($3,$4,$5); 
+             my ($slash,$tag,$attrib) = ($2,$3,$4);
+             my $bracket = $5;
 
              #Matched a pipelink with the right anchor format
              if($bracket =~ /\[([^<>]*<.*>)\s*\|(.*)\]/s){
