@@ -52,6 +52,19 @@ sub setAttribute {
 
 #######################################################################
 #
+#       getAttribute
+#               Get a user attribute
+#
+sub getAttribute {
+  my ($attribute) = @_;
+  my $uid = int($USER->{node_id});
+  my $res = $DB->sqlSelect($attribute, 'user_attributes',
+                           'user_id = '.$uid);
+  return $res || 0;
+}
+
+#######################################################################
+#
 #       decrementAttribute
 #               Atomically conditionally decrement a user attribute if
 #               it is possible to do so.
