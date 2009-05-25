@@ -18,6 +18,10 @@ sub BEGIN
 	use vars       qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
+    setAttribute
+    getAttribute
+    decrementAttribute
+    adjustAttribute
 		castVote
 		adjustExp
 		adjustRep
