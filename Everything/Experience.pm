@@ -41,7 +41,7 @@ sub BEGIN
 #               Atomically set a user attribute
 #
 sub setAttribute {
-  my ($attribute, $value) = @_;
+  my ($USER, $attribute, $value) = @_;
   my $uid = int($USER->{node_id});
   my $up = $DB->sqlUpdate('user_attributes',
                           { $attribute => $value},
@@ -60,7 +60,7 @@ sub setAttribute {
 #               Get a user attribute
 #
 sub getAttribute {
-  my ($attribute) = @_;
+  my ($USER, $attribute) = @_;
   my $uid = int($USER->{node_id});
   my $res = $DB->sqlSelect($attribute, 'user_attributes',
                            'user_id = '.$uid);
@@ -74,7 +74,7 @@ sub getAttribute {
 #               it is possible to do so.
 #
 sub decrementAttribute {
-  my ($attribute, $value) = @_;
+  my ($USER, $attribute, $value) = @_;
   my $up = $DB->sqlUpdate('user_attributes',
                           { "-$attribute" => "$attribute - $value" },
                           ('user_id = ' . int($USER->{node_id})
@@ -88,7 +88,7 @@ sub decrementAttribute {
 #               Atomically (unconditionally) adjust a user attribute.
 #
 sub adjustAttribute {
-  my ($attribute, $value) = @_;
+  my ($USER, $attribute, $value) = @_;
   my $uid = int($USER->{node_id});
   my $up = $DB->sqlUpdate('user_attributes',
                           { "-$attribute" => "$attribute + ($value)" },
