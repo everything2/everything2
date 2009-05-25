@@ -33,6 +33,63 @@ sub BEGIN
 
 #######################################################################
 #
+#       setAttribute
+#               Atomically set a user attribute
+#
+sub setAttribute {
+  my ($attribute, $value) = @_;
+  my $uid = int($USER->{node_id});
+  my $up = $DB->sqlUpdate('user_attributes',
+                          { $attribute => $value},
+                          'user_id = '.$uid);
+  if ($up && int($up) == 0) {
+    # No row updated, so insert the row.
+    $DB->sqlInsert('user_attributes',
+                   { $attribute => $value,
+                     user_id => $uid});
+  }
+}
+
+#######################################################################
+#
+#       decrementAttribute
+#               Atomically conditionally decrement a user attribute if
+#               it is possible to do so.
+#
+sub decrementAttribute {
+  my ($attribute, $value) = @_;
+  my $up = $DB->sqlUpdate('user_attributes',
+                          { "-$attribute" => "$attribute - $value" },
+                          ('user_id = ' . int($USER->{node_id})
+                           . " and $attribute >= $value"));
+  return int($up) != 0;
+}
+
+#######################################################################
+#
+#       adjustAttribute
+#               Atomically (unconditionally) adjust a user attribute.
+#
+sub adjustAttribute {
+  my ($attribute, $value) = @_;
+  my $uid = int($USER->{node_id});
+  my $up = $DB->sqlUpdate('user_attributes',
+                          { "-$attribute" => "$attribute + ($value)" },
+                          'user_id = ' . $uid);
+  if ($up && int($up) == 0) {
+    # No row updated, so insert the row (acquiring the default value
+    # from the database) and then update it.
+    $DB->sqlInsert('user_attributes',
+                   { user_id => $uid});
+    $DB->sqlUpdate('user_attributes',
+		   { "-$attribute" => "$attribute + ($value)" },
+		   'user_id = ' . $uid);
+  }
+  return int($up) != 0;
+}
+
+#######################################################################
+#
 #	getLevel
 #
 #	given a user, return his level.  This info is stored in the
