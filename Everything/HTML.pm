@@ -2189,7 +2189,7 @@ sub mod_perlInit
     return if $query->user_agent and $query->user_agent =~ /WebStripper/;
 	$USER = loginUser();
     #init the cache
-	$CACHESTORE ||= new Everything::CacheStore "cache_store:web2";
+	$CACHESTORE ||= new Everything::CacheStore "cache_store:web4";
 
 
 
@@ -2288,7 +2288,7 @@ sub mod_perlpsuedoInit
     return if $query->user_agent =~ /WebStripper/;
 	$USER = loginUser();
     #init the cache
-	$CACHESTORE ||= new Everything::CacheStore "cache_store:db1";
+	$CACHESTORE ||= new Everything::CacheStore "cache_store:web4";
 
        #only for Everything2.com
        if ($query->param("op") eq "randomnode") {
