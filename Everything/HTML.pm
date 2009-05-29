@@ -937,7 +937,7 @@ sub linkNodeTitle {
   my ($tip, $isNode);
 
   #A direct link draws near! Command?
-  if($nodename =~ /^([^<>]+)<(.+)>$/){
+  if($nodename =~ /^([^\[\]]+)\[(.+)\]?$/){
     my ($anchor,$originalnodename);
     $originalnodename = $nodename;
     $nodename = $1;
@@ -1658,7 +1658,11 @@ sub parseLinks {
                  !<a href="$1" rel="nofollow" class="externalLink">$1</a>!gsx;
 
        #Ordinary internal e2 links.
-       $text =~ s!\[(.*?)\]!linkNodeTitle ($1, $NODE,$escapeTags)!egs;
+       $text =~ s!\[([^\[\]]*(\[.*\]?|.*)?)\]!linkNodeTitle ($1, $NODE,$escapeTags)!egs;
+	   # [^\[\]]* any text in square brackets
+	   # (\[.* '[' then nodetype/author also in square brackets
+	   # \]? tolerate forgetting closing ']',
+	   # |.*)? but all that only if it is a pipelink
        $text = unMSify($text);
        return $text;
 }
