@@ -929,7 +929,7 @@ sub linkNode {
 sub linkNodeTitle {
 	my ($nodename, $lastnode, $escapeTags) = @_;
   my $title;
-	($nodename, $title) = split /\|/, $nodename;
+	($nodename, $title) = split /\s*[|\]]+/, $nodename;
 	$title = $nodename if $title eq "";
 	$nodename =~ s/\s+/ /gs;
 
@@ -937,16 +937,13 @@ sub linkNodeTitle {
   my ($tip, $isNode);
 
   #A direct link draws near! Command?
-  if($nodename =~ /^([^\[\]]+)\[([^\]]+)\]?$/){
-    my ($anchor,$originalnodename);
-    $originalnodename = $nodename;
-    $nodename = $1;
-    $anchor = $2;
+  if($nodename =~ /\[/){ # usually no anchor: check *if* before seeing *what* for performance
+    my $anchor ;
+    ($tip,$anchor) = split /\s*[[\]]/, $nodename;
+    $title = $tip if $title eq $nodename ;
 
-    $tip = $nodename;
+    $nodename = $tip;
     $tip =~ s/"/''/g;
-
-    $title = $nodename if $title eq $originalnodename;
 
     if($escapeTags){
       $title =~ s/</\&lt\;/g;
@@ -1658,11 +1655,11 @@ sub parseLinks {
                  !<a href="$1" rel="nofollow" class="externalLink">$1</a>!gsx;
 
        #Ordinary internal e2 links.
-       $text =~ s!\[([^\[\]]+(\[[^\[\]]*\]?\|[^\]]+)?)\]!linkNodeTitle ($1, $NODE,$escapeTags)!egs;
+       $text =~ s!\[([^[\]]*(?:\[[^\]|]*[\]|][^[\]]*)?)]!linkNodeTitle ($1, $NODE,$escapeTags)!egs;
 	   # [^\[\]]+ any text in square brackets
-	   # (\[[^\[\]]* '[' then nodetype/author also in square brackets
-	   # \]? tolerate forgetting closing ']',
-	   # \|[^\]]+)? but all that only if it is a pipelink
+	   # ((?:\[[^\]|]* '[' then optionally: nodetype/author also in square brackets
+	   # [\]|] tolerate forgetting either closing ']' or pipe
+	   # [^[\]]*) then any more text in the brackets
        $text = unMSify($text);
        return $text;
 }
