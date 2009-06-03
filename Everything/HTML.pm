@@ -1594,12 +1594,6 @@ sub gotoNode
 	displayPage($NODE, $user_id);
 }
 
-#############################################################################
-sub hashUserPass {
-	my ($nick, $pass) = @_;
-	my $magic = 'ASDFIJXCV';  # change this to invalidate all login cookies
-	return crypt($pass.$magic, $nick);
-}
 
 #############################################################################
 sub confirmUser {
@@ -1610,7 +1604,7 @@ sub confirmUser {
         #jb says: added this line
         return 0 unless($$USER{acctlock} == 0);
 
-	if (hashUserPass($$USER{title}, $$USER{passwd}) eq $crpasswd) {
+	if (crypt ($$USER{passwd}, $$USER{title}) eq $crpasswd) {
 		my $rows = $DB->getDatabaseHandle()->do("
 			UPDATE user SET lasttime=now() WHERE
 			user_id=$$USER{node_id}
@@ -1707,8 +1701,8 @@ sub loginUser
 	
         #jb 5-19-02: To support wap phones and maybe other clients/configs without cookies:
 
-        my $oldcookie = $query->cookie("userpass");
-        $oldcookie ||= $query->param("userpass");
+        my $oldcookie = $query->cookie("devpass");
+        $oldcookie ||= $query->param("devpass");
 
         if($oldcookie)                     
 	{
@@ -1988,14 +1982,12 @@ sub opLogin
 	my $U = getNode($user,'user');
     $user = $$U{title} if $U;
 
-	my $cryptjunk = hashUserPass($user, $passwd);
-
-	$user_id = confirmUser ($user, $cryptjunk);
-
+	$user_id = confirmUser ($user, crypt ($passwd, $user));
+	
 	# If the user/passwd was correct, set a cookie on the users
 	# browser.
-	$cookie = $query->cookie(-name => "userpass", 
-		-value => $query->escape($user . '|' . $cryptjunk), 
+	$cookie = $query->cookie(-name => "devpass", 
+		-value => $query->escape($user . '|' . crypt ($passwd, $user)), 
 		-expires => $query->param("expires")) if $user_id;
 
 	$user_id ||= $HTMLVARS{guest_user};
@@ -2011,7 +2003,7 @@ sub opLogin
 sub opLogout
 {
 	# The user is logging out.  Nuke their cookie.
-	my $cookie = $query->cookie(-name => 'userpass', -value => "");
+	my $cookie = $query->cookie(-name => 'devpass', -value => "");
 	my $user_id = $HTMLVARS{guest_user};	
 
 	$USER = getNodeById($user_id);
