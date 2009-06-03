@@ -1701,8 +1701,8 @@ sub loginUser
 	
         #jb 5-19-02: To support wap phones and maybe other clients/configs without cookies:
 
-        my $oldcookie = $query->cookie("userpass");
-        $oldcookie ||= $query->param("userpass");
+        my $oldcookie = $query->cookie("devpass");
+        $oldcookie ||= $query->param("devpass");
 
         if($oldcookie)                     
 	{
@@ -1986,7 +1986,7 @@ sub opLogin
 	
 	# If the user/passwd was correct, set a cookie on the users
 	# browser.
-	$cookie = $query->cookie(-name => "userpass", 
+	$cookie = $query->cookie(-name => "devpass", 
 		-value => $query->escape($user . '|' . crypt ($passwd, $user)), 
 		-expires => $query->param("expires")) if $user_id;
 
@@ -2003,7 +2003,7 @@ sub opLogin
 sub opLogout
 {
 	# The user is logging out.  Nuke their cookie.
-	my $cookie = $query->cookie(-name => 'userpass', -value => "");
+	my $cookie = $query->cookie(-name => 'devpass', -value => "");
 	my $user_id = $HTMLVARS{guest_user};	
 
 	$USER = getNodeById($user_id);
