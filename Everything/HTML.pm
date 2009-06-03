@@ -1594,6 +1594,12 @@ sub gotoNode
 	displayPage($NODE, $user_id);
 }
 
+#############################################################################
+sub hashUserPass {
+	my ($nick, $pass) = @_;
+	my $magic = 'ASDFIJXCV';  # change this to invalidate all login cookies
+	return crypt($pass.$magic, $nick);
+}
 
 #############################################################################
 sub confirmUser {
@@ -1604,7 +1610,7 @@ sub confirmUser {
         #jb says: added this line
         return 0 unless($$USER{acctlock} == 0);
 
-	if (crypt ($$USER{passwd}, $$USER{title}) eq $crpasswd) {
+	if (hashUserPass($$USER{title}, $$USER{passwd}) eq $crpasswd) {
 		my $rows = $DB->getDatabaseHandle()->do("
 			UPDATE user SET lasttime=now() WHERE
 			user_id=$$USER{node_id}
@@ -1982,12 +1988,14 @@ sub opLogin
 	my $U = getNode($user,'user');
     $user = $$U{title} if $U;
 
-	$user_id = confirmUser ($user, crypt ($passwd, $user));
-	
+	my $cryptjunk = hashUserPass($user, $passwd);
+
+	$user_id = confirmUser ($user, $cryptjunk);
+
 	# If the user/passwd was correct, set a cookie on the users
 	# browser.
 	$cookie = $query->cookie(-name => "userpass", 
-		-value => $query->escape($user . '|' . crypt ($passwd, $user)), 
+		-value => $query->escape($user . '|' . $cryptjunk), 
 		-expires => $query->param("expires")) if $user_id;
 
 	$user_id ||= $HTMLVARS{guest_user};
