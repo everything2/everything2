@@ -123,7 +123,8 @@ sub tagApprove {
 #
 #	purpose
 #		screen out html tags from a chunk of text
-#		returns the text, sans any tags that aren't "APPROVED"		
+#		returns the text, sans any tags that aren't "APPROVED"
+#   Now defers all the work to cleanupHTML
 #
 #	params
 #		text -- the text to filter
@@ -134,9 +135,7 @@ sub htmlScreen {
 	my ($text, $APPROVED) = @_;
 	$APPROVED ||= {};
 
-	if ($text =~ /\<[^>]+$/) { $text .= ">"; }
-	$text =~ s/\<\s*(\/?)([^\>|\s]+)(.*?)\>/tagApprove($1,$2,$3, $APPROVED)/gse;
-  $text = cleanupHTML($text);
+  $text = cleanupHTML($text, $APPROVED);
 	$text;
 }
 
