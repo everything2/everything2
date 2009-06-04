@@ -23,40 +23,41 @@ sub BEGIN {
 	use vars qw($DB $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
-		%HEADER_PARAMS
-		$DB
-		%HTMLVARS
-		$query
-		jsWindow
-		createNodeLinks
-		parseLinks
-		htmlScreen
-		screenTable
-		breakTags
-		htmlFormatErr
-		quote
-		urlGen
-		urlGenNoParams
-		getCode
-		getPage
-		getPages
-		getPageForType
-		linkNode
-		linkNodeTitle
-		nodeName
-		evalCode
-		htmlcode
-		embedCode
-		displayPage
-		gotoNode
-		confirmUser
-		urlDecode
-		encodeHTML
-		decodeHTML
-    escapeAngleBrackets
-		unMSify
-		mod_perlInit
-                mod_perlpsuedoInit);
+              %HEADER_PARAMS
+              $DB
+              %HTMLVARS
+              $query
+              jsWindow
+              createNodeLinks
+              parseLinks
+              htmlScreen
+              screenTable
+              cleanupHTML
+              breakTags
+              htmlFormatErr
+              quote
+              urlGen
+              urlGenNoParams
+              getCode
+              getPage
+              getPages
+              getPageForType
+              linkNode
+              linkNodeTitle
+              nodeName
+              evalCode
+              htmlcode
+              embedCode
+              displayPage
+              gotoNode
+              confirmUser
+              urlDecode
+              encodeHTML
+              decodeHTML
+              escapeAngleBrackets
+              unMSify
+              mod_perlInit
+              mod_perlpsuedoInit);
 }
 
 use vars qw($query);
@@ -134,53 +135,8 @@ sub htmlScreen {
 	$APPROVED ||= {};
 
 	if ($text =~ /\<[^>]+$/) { $text .= ">"; }
-
-  #The simple-minded approach won't serve us here... The code below is
-  #intended to escape tags *except* in the cases of [link <anchor>] or
-  #[link <anchor>|text], so that direct links in linkNodeTitle can
-  #work. This is ugly, and I eagerly await a better solution. --[Swap]
-	$text =~ s!
-
-              ((?:\[(.*?)\]))             #Either match a square bracket...
-             |
-               <\s*(/?)([^\>|\s]+)(.*?)>  #Or match a tag
-
-            !
-             my $bracket = $1;
-             my ($slash,$tag,$attrib) = ($3,$4,$5);
-             if ($bracket) {
-               #Matched a pipelink with the right anchor format
-               if ($bracket =~ /\[([^<>]*<.*>)\s*\|(.*)\]/s) {
-
-                              #However, screen the title text
-                 ($2 ? "[$1|".htmlScreen($2,$APPROVED)."]" : "[$1]");
-               }
-
-               #Pipelink, but wrong anchor format, screen both parts
-               elsif ($bracket =~ /\[(.*)\|(.*)\]/s) {
-                 ($2 ? "[".htmlScreen($1,$APPROVED)."|"
-                  .htmlScreen($2,$APPROVED)."]"
-                  : "[".htmlScreen($1,$APPROVED)."]");
-               }
-
-               #Matched a hardlink with the right anchor format
-               elsif ($bracket =~ /\[([^<>]*<.*>)\s*\]/s) {
-                 "[$1]";
-               }
-
-               #Matched a hardlink, but not the right format, so screen
-               #all of it.
-               elsif ($bracket =~ /\[(.*)\]/s) {
-                 "[".htmlScreen($1,$APPROVED)."]";
-               }
-             }
-
-             #Match an HTML tag. Screen it.
-             else{
-               tagApprove($slash,$tag,$attrib,$APPROVED);
-             }
-            !gsex;
-
+	$text =~ s/\<\s*(\/?)([^\>|\s]+)(.*?)\>/tagApprove($1,$2,$3, $APPROVED)/gse;
+  $text = cleanupHTML($text);
 	$text;
 }
 
