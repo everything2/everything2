@@ -2354,23 +2354,6 @@ sub mod_perlInit
          close GODSLOG;
 	     }
 
-#	my $darkwatch = {"Gritcka" => 1, "wrinkly" => 1, "Frankie" => 1};
-
-#	if($darkwatch->{$USER->{title}} or $GNODE->{title} eq "SQL Prompt" or $query->param("sentmessage") =~ /frankie/i)
-#	{
-#		my $log = localtime()."\t$$USER{title}\t($$GNODE{title})" if ref $USER and ref $GNODE;
-
-#		foreach(qw/sqlquery displaytype sentmessage/)
-#		{
-#			$log.="\t$_: ".$query->param($_) if $query->param($_);
-#		}
-#
-#		$log.="\n";
-#		open DARKLOG, ">> /home/jaybonci/logs/darklog";
-#		print DARKLOG $log;
-#		close DARKLOG;
-#	}
-
 	#$Everything::PERLTIME->stop();
 	$PAGELOAD++;
 	
