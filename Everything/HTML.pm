@@ -205,7 +205,7 @@ sub cleanupHTML {
     # Map of nested tags to mandatory direct parents.
     my %nest = ('tr' => 'table',
 		'td' => 'tr',
-		'td' => 'tr');
+		'th' => 'tr');
     my $nest_in;
     # Optional-close tag names. Mapping with a hash seems to be
     # something like twice as quick as using a single regexp.
@@ -233,9 +233,15 @@ sub cleanupHTML {
 		$preapproved_ref->{$key} = $approved_tag;
 	    }
 	    # Check correct nesting, and disapprove if not!
-	    if (   $nest_in = $nest{$tag}
+	    if (   ($nest_in = $nest{$tag})
 		&& $nest_in ne $stack[$#stack]) {
-		$approved_tag = undef;
+		my @extra;
+		do {
+		    unshift @extra, $nest_in;
+		    $result .= '<'.$nest_in.'>';
+		} while (   ($nest_in = $nest{$nest_in})
+			 && $nest_in ne $stack[$#stack]);
+		push @stack, @extra;
 	    }
 	    if ($approved_tag) {
 		push @stack, $tag;
@@ -288,6 +294,8 @@ sub cleanupHTML {
 			# and restore the stack.
 			s/^[^>]*>?//;
 			@stack = reverse @popped;
+			$approved_tag = '';
+			$closing = '';
 			last;
 		    }
 		}
