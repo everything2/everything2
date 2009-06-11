@@ -156,6 +156,7 @@ sub htmlScreen {
 #                   Null means all HTML will be taken out.
 #		preapproved_ref -- ref to hash/cache of 'pre-approved'
 #		    tags.
+#               debug -- a function to render a debug message into HTML.
 #
 #       Returns
 #               The text stripped of any HTML tags that are not
@@ -189,7 +190,7 @@ sub htmlScreen {
 # 		    match.
 # 
 sub cleanupHTML {
-    my ($text, $approved, $preapproved_ref) = @_;
+    my ($text, $approved, $preapproved_ref, $debug) = @_;
     my @stack;
     my ($result, $tag, $ctag);
     # Compile frequently-used regular exprs
@@ -236,15 +237,23 @@ sub cleanupHTML {
 	    if (   ($nest_in = $nest{$tag})
 		&& $nest_in ne $stack[$#stack]) {
 		my @extra;
+		my $opening;
 		do {
 		    unshift @extra, $nest_in;
-		    $result .= '<'.$nest_in.'>';
+		    $opening = '<'.$nest_in.'>'.$opening;
+		    if ($debug) {
+			$opening = ($debug->("Missing <$nest_in> before <$tag>")
+				    . $opening);
+		    }
 		} while (   ($nest_in = $nest{$nest_in})
 			 && $nest_in ne $stack[$#stack]);
 		push @stack, @extra;
+		$result .= $opening;
 	    }
 	    if ($approved_tag) {
 		push @stack, $tag;
+	    } elsif ($debug) {
+		$result .= $debug->("Disallowed tag <$tag>");
 	    }
 	    $result .= $approved_tag.$outer_text;
 	} elsif (/$close_tag/ || /$incomplete_close_tag/) {
@@ -286,6 +295,9 @@ sub cleanupHTML {
 			# Insert an extra closing tag.
 			$closing .= "</$ctag>"
 			    unless $no_close{$ctag};
+			if ($debug) {
+			    $result .= $debug->("Unclosed <$ctag>");
+			}
 		    } else {
 			# Closed something
 			# which was never
@@ -296,9 +308,15 @@ sub cleanupHTML {
 			@stack = reverse @popped;
 			$approved_tag = '';
 			$closing = '';
+			if ($debug) {
+			    $result .= $debug->("No matching open tag "
+						. "for closing </$tag>");
+			}
 			last;
 		    }
 		}
+	    } elsif ($debug) {
+		$result .= $debug->("Disallowed tag </$tag>");
 	    }
 	    $result .= $closing.$approved_tag.$outer_text;
 	} else {
@@ -308,7 +326,12 @@ sub cleanupHTML {
     }
     # Close any remaining unclosed tags
     while (defined($ctag = pop @stack)) {
-	$result .= "</$ctag>" unless $no_close{$ctag};
+	unless ($no_close{$ctag}) {
+	    $result .= "</$ctag>";
+	    if ($debug) {
+		$result .= $debug->("Unclosed <$ctag>");
+	    }
+	}
     }
     # Clear the prepapproved cache if it's too large.
     if (int(keys(%$preapproved_ref)) > 200) {
