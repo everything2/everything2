@@ -51,6 +51,7 @@ sub BEGIN
 use vars qw($dbases);
 use vars qw($EDS);
 use vars qw($PERM);
+use vars qw(%CONFIG);
 
 $PERM = {
 	usergroup => 1,
