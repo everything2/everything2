@@ -14,7 +14,7 @@ use DBI;
 use Everything;
 use Everything::NodeCache;
 
-
+our %CONFIG;
 
 sub BEGIN
 {
@@ -22,6 +22,7 @@ sub BEGIN
 	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
+		%CONFIG
 		getCache
 		getDatabaseHandle
 		getAllTypes
@@ -51,7 +52,6 @@ sub BEGIN
 use vars qw($dbases);
 use vars qw($EDS);
 use vars qw($PERM);
-use vars qw(%CONFIG);
 
 $PERM = {
 	usergroup => 1,

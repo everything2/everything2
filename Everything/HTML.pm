@@ -17,7 +17,6 @@ use Everything::CacheStore;
 require CGI;
 use CGI::Carp qw(fatalsToBrowser);
 
-
 sub BEGIN {
 	use Exporter ();
 	use vars qw($DB $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
@@ -69,7 +68,6 @@ use vars qw($THEME);
 use vars qw($NODELET);
 use vars qw($CACHESTORE);
 use vars qw(%HEADER_PARAMS);
-use vars qw(%CONFIG);
 
 my $PAGELOAD = 0;
 my $NUMPAGELOADS = 10;

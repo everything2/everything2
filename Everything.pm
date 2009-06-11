@@ -68,7 +68,6 @@ sub BEGIN
             );
  }
 
-use vars qw(%CONFIG);
 use vars qw($DB);
 use vars qw($PERLTIME);
 use vars qw($SQLTIME);
