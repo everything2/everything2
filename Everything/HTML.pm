@@ -69,6 +69,8 @@ use vars qw($THEME);
 use vars qw($NODELET);
 use vars qw($CACHESTORE);
 use vars qw(%HEADER_PARAMS);
+use vars qw(%CONFIG);
+
 my $PAGELOAD = 0;
 my $NUMPAGELOADS = 10;
      
@@ -1857,8 +1859,8 @@ sub loginUser
 	
         #jb 5-19-02: To support wap phones and maybe other clients/configs without cookies:
 
-        my $oldcookie = $query->cookie("devpass");
-        $oldcookie ||= $query->param("devpass");
+        my $oldcookie = $query->cookie($CONFIG{cookiepass});
+        $oldcookie ||= $query->param($CONFIG{cookiepass});
 
         if($oldcookie)                     
 	{
@@ -2142,7 +2144,7 @@ sub opLogin
 	
 	# If the user/passwd was correct, set a cookie on the users
 	# browser.
-	$cookie = $query->cookie(-name => "devpass", 
+	$cookie = $query->cookie(-name => $CONFIG{cookiepass}, 
 		-value => $query->escape($user . '|' . crypt ($passwd, $user)), 
 		-expires => $query->param("expires")) if $user_id;
 
@@ -2159,7 +2161,7 @@ sub opLogin
 sub opLogout
 {
 	# The user is logging out.  Nuke their cookie.
-	my $cookie = $query->cookie(-name => 'devpass', -value => "");
+	my $cookie = $query->cookie(-name => $CONFIG{cookiepass}, -value => "");
 	my $user_id = $HTMLVARS{guest_user};	
 
 	$USER = getNodeById($user_id);
@@ -2346,7 +2348,7 @@ sub mod_perlInit
     return if $query->user_agent and $query->user_agent =~ /WebStripper/;
 	$USER = loginUser();
     #init the cache
-	$CACHESTORE ||= new Everything::CacheStore "cache_store:web4";
+	$CACHESTORE ||= new Everything::CacheStore "cache_store:$CONFIG{cachestore_dbserv}";
 
 
 

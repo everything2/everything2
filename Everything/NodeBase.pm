@@ -101,8 +101,10 @@ sub new
 		my $db = {};
 		
 		# A connection to this database does not exist.  Create one.
-    my ($user,$pass) = Everything::getCredentials("/etc/everyuser.pwd");
-		$db->{dbh} = DBI->connect("DBI:mysql:$dbname:web4", $user, $pass);
+    my ($user,$pass) = ($CONFIG{'everyuser'}, $CONFIG{'everypass'});
+		$db->{dbh} = DBI ->
+      connect("DBI:mysql:$dbname:$CONFIG{everything_dbserv}", $user, $pass);
+
 		$this->{dbh} = $db->{dbh};
 		
 		$db->{cache} = new Everything::NodeCache($this, 600, $memcache);
