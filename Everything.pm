@@ -683,12 +683,12 @@ sub initEverything
 {
 	my ($db, $staticNodetypes, $memcache) = @_;
 
-	$DB = new Everything::NodeBase($db, $staticNodetypes, $memcache);
-
   #Move some config settings to an external file instead of hardcoding
   #it into ecore. --[Swap]
   use Config::Simple;
   Config::Simple -> import_from('/etc/everything/everything.conf',\%CONFIG);
+
+	$DB = new Everything::NodeBase($db, $staticNodetypes, $memcache);
 
 	# This is for legacy code.  You should not use $dbh!  Use
 	# $DB->getDatabaseHandle() going forward.
