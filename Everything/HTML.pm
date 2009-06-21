@@ -2497,7 +2497,7 @@ sub showPartialDiff{
 
   use Algorithm::Diff qw(diff);
 
-  my $diffs = diff($codeOrig, $codeNew);
+  my $diffs = diff([split("\n", $codeOrig)], [split("\n", $codeNew)]);
   return 'Nothing changed!' unless @$diffs;
 
   my $str = '';
