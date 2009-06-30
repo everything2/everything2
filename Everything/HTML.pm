@@ -780,7 +780,8 @@ sub jsWindow
 #       urlGen
 #
 #   Purpose
-#       Generates URLs.
+#       Generates URLs. Old code calls this directly, but this should
+#       not be necessary anymore. Prefer linkNode instead.
 #
 #   Parameters
 #
@@ -796,9 +797,27 @@ sub urlGen {
   my $str;
   $str .= '"' unless $noquotes;
 
-  $str .= urlGenNoParams($NODE,1);
+  if($NODE){
+    $str .= urlGenNoParams($NODE,1);
+  }
+  #Preserve backwards-compatibility
+  else{
+    if($$REF{node}){
+      if($$REF{nodetype}){
+        $str .= "/$$REF{nodetype}/".rewriteCleanEscape($$REF{node});
+      }
+      else{
+        $str .= "/title/".rewriteCleanEscape($$REF{node});
+      }
+    }
+    elsif($$REF{node_id} && $$REF{node_id} =~ /^\d+$/){
+      $str .= "/node/$$REF{node_id}";
+    }
+  }
 
   delete $$REF{node_id};
+  delete $$REF{node};
+  delete $$REF{node_type};
 
   #Our mod_rewrite rules can now handle this properly
   $str .= "?" if keys %$REF;
@@ -1123,6 +1142,10 @@ sub linkNodeTitle {
 	my $str = "";
   my ($tip, $isNode);
 
+  #If we figure out a clever way to find the nodeshells, we should fix
+  #this variable.
+  $isNode = 1;
+
   #A direct link draws near! Command?
   if($nodename =~ /\[/){ # usually no anchor: check *if* before seeing *what* for performance
     my $anchor ;
@@ -1196,7 +1219,6 @@ sub linkNodeTitle {
     $tip =~ s/"/''/g;
 
     #my $isNode = getNodeWhere({ title => $nodename});
-    $isNode = 1;
     my $urlnode = CGI::escape($nodename);
     #$str .= "<a title=\"$tip\" href=\"$ENV{SCRIPT_NAME}?node=$urlnode";
     #if ($lastnode) { $str .= "&amp;lastnode_id=" . getId($lastnode);}
