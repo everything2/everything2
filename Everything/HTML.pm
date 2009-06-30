@@ -780,26 +780,37 @@ sub jsWindow
 #       urlGen
 #
 #   Purpose
-#       Generates URLs. Still uses the old-style non-semantic URLs; please see urlGenNoParams
+#       Generates URLs.
 #
 #   Parameters
-#       hashref of node_id and any other parameters for the URL like viewcode, etc.
+#
+#       $REF - hashref parameters for the URL like viewcode, etc.
+#
 #       noquotes - in case you don't want quotes around the URL.
+#
+#       $NODE - hashref of the node linking to.
 
 sub urlGen {
-	my ($REF, $noquotes) = @_;
+  my ($REF, $noquotes, $NODE) = @_;
 
-	my $str;
-	$str .= '"' unless $noquotes;
-	$str .= "$ENV{SCRIPT_NAME}?"; # Usually index.pl
+  my $str;
+  $str .= '"' unless $noquotes;
 
-	# Cycle through all the keys of the hashref for node_id, etc.
-	foreach my $key (keys %$REF) {
-		$str .= CGI::escape($key) .'='. CGI::escape($$REF{$key}) .'&amp;';
-	}
-	$str = substr($str,0,-5);
-	$str .= '"' unless $noquotes;
-	$str;
+  $str .= urlGenNoParams($NODE,1);
+
+  delete $$REF{node_id};
+
+  #Our mod_rewrite rules can now handle this properly
+  $str .= "?" if keys %$REF;
+
+  # Cycle through all the keys of the hashref for node_id, etc.
+  foreach my $key (keys %$REF) {
+    $str .= CGI::escape($key) .'='. CGI::escape($$REF{$key}) .'&amp;';
+  }
+
+  $str = substr($str,0,-5);
+  $str .= '"' unless $noquotes;
+  $str;
 }
 
 
@@ -1005,32 +1016,32 @@ sub rewriteCleanEscape {
 }
 
 sub urlGenNoParams {
-	my ($NODE, $noquotes) = @_;
-	if (not ref $NODE) {
+  my ($NODE, $noquotes) = @_;
+  if (not ref $NODE) {
     if ($noquotes) {
       return "/node/$NODE";
     }
     else {
       return "\"/node/$NODE\"";
-		}
-	}
+    }
+  }
 
-	my $retval = "";
+  my $retval = "";
   if ($$NODE{type}{title} eq 'e2node') {
     $retval = "/title/".rewriteCleanEscape($$NODE{title});
   }
   elsif ($$NODE{type}{title} eq 'user') {
     $retval = "/".$$NODE{type}{title}."/".rewriteCleanEscape($$NODE{title});
-	}
+  }
   elsif ($$NODE{type}{restrictdupes} && $$NODE{title}) {
-		$retval = "/node/".$$NODE{type}{title}."/"
+    $retval = "/node/".$$NODE{type}{title}."/"
               .rewriteCleanEscape($$NODE{title});
-	}
+  }
   else {
-		$retval = "/node/".getId($NODE);
-	}
+    $retval = "/node/".getId($NODE);
+  }
 
-	if ($noquotes) {
+  if ($noquotes) {
     return $retval;
   }
   else {
@@ -1039,47 +1050,65 @@ sub urlGenNoParams {
 }
 
 
-
-
 #############################################################################
+# Sub
+#  linkNode
+#
+# Purpose
+#  Generates an HTML hyperlink.
+#
+# Parameters
+#  $NODE   - A node hashref or id of the node that we want to link to.
+#  $title  - A string with the text to display in the anchor text.
+#  $PARAMS - A hashref with any optional CGI params.
+#
+# Returns
+#  The HTML for linking to the node, with CGI params.
+#
 sub linkNode {
-	my ($NODE, $title, $PARAMS) = @_;
-	#getRef $NODE;	
+  my ($NODE, $title, $PARAMS) = @_;
 
-	return if not ref $NODE and $NODE == -1;
-	return unless $NODE;
-	unless ($title) {
-		$NODE = getNodeById($NODE, 'light') unless ref $NODE;
-		$title = encodeHTML($$NODE{title});
-	}
-#	return unless ref $NODE;	
+  return if not ref $NODE and $NODE == -1;
+  return if not ref $NODE and $NODE =~ /\D/;
+  return unless $NODE;
+  unless ($title) {
+    $NODE = getNodeById($NODE, 'light') unless ref $NODE;
+    $title = encodeHTML($$NODE{title});
+  }
 
-	
+  if ($NODE == -1) {
+    return "<a>$title</a>";
+  }
 
-	if ($NODE == -1) {return "<a>$title</a>";}
-	$title ||= encodeHTML($$NODE{title});
-	$$PARAMS{node_id} = getId $NODE;
-	my $tags = "";
+  $title ||= encodeHTML($$NODE{title});
+  my $tags = "";
 
-	$$PARAMS{lastnode_id} = getId ($GNODE) unless exists $$PARAMS{lastnode_id};
-	#any params that have a "-" preceding 
-	#get added to the anchor tag rather than the URL
-	foreach my $key (keys %$PARAMS) {
+  $$PARAMS{lastnode_id} = getId ($GNODE) unless exists $$PARAMS{lastnode_id};
 
-		next unless ($key =~ /^-/); 
-		my $pr = substr $key, 1;
-		$tags .= " $pr=\"$$PARAMS{$key}\""; 
-		delete $$PARAMS{$key};
-	}
-	if ((keys(%$PARAMS) == 2 && exists $$PARAMS{lastnode_id}) or (keys(%$PARAMS) == 1)) {
-		if ($$PARAMS{lastnode_id} == 0) {
-			"<a onmouseup=\"document.cookie='lastnode_id=0; ; path=/'; 1;\" href=" . urlGenNoParams($NODE) . $tags . ">$title</a>";
-		} else {
-			"<a onmouseup=\"document.cookie='lastnode_id=".$$PARAMS{lastnode_id}."; ; path=/'; 1;\" href=" . urlGenNoParams($NODE) . $tags . ">$title</a>";
-		}
-	} else {
-		"<a href=" . urlGen ($PARAMS) . $tags . ">$title</a>";
-	}
+  #any params that have a "-" preceding 
+  #get added to the anchor tag rather than the URL
+  foreach my $key (keys %$PARAMS) {
+
+    next unless ($key =~ /^-/);
+    my $pr = substr $key, 1;
+    $tags .= " $pr=\"$$PARAMS{$key}\"";
+    delete $$PARAMS{$key};
+  }
+  if ((keys(%$PARAMS) == 2 && exists $$PARAMS{lastnode_id})
+      or (keys(%$PARAMS) == 1)) {
+    if ($$PARAMS{lastnode_id} == 0) {
+      "<a onmouseup=\"document.cookie='lastnode_id=0; ; path=/'; 1;\" href="
+      . urlGenNoParams($NODE) . $tags . ">$title</a>";
+    }
+    else {
+      "<a onmouseup=\"document.cookie='lastnode_id=".$$PARAMS{lastnode_id}
+     ."; ; path=/'; 1;\" href=" . urlGenNoParams($NODE) . $tags
+     .">$title</a>";
+    }
+  }
+  else {
+    "<a href=" . urlGen ($PARAMS,0,$NODE) . $tags . ">$title</a>";
+  }
 }
 
 
