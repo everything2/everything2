@@ -1094,8 +1094,8 @@ sub linkNode {
     $tags .= " $pr=\"$$PARAMS{$key}\"";
     delete $$PARAMS{$key};
   }
-  if ((keys(%$PARAMS) == 2 && exists $$PARAMS{lastnode_id})
-      or (keys(%$PARAMS) == 1)) {
+  if ((keys(%$PARAMS) == 1 && exists $$PARAMS{lastnode_id})
+      or (keys(%$PARAMS) == 0)) {
     if ($$PARAMS{lastnode_id} == 0) {
       "<a onmouseup=\"document.cookie='lastnode_id=0; ; path=/'; 1;\" href="
       . urlGenNoParams($NODE) . $tags . ">$title</a>";
