@@ -1029,9 +1029,11 @@ sub getPage
 }
 
 sub rewriteCleanEscape {
-	my ($string) = @_;
-	$string = CGI::escape(CGI::escape($string));
-	return $string;
+  my ($string) = @_;
+  $string = CGI::escape(CGI::escape($string));
+  #Make spaces more readable
+  $string =~ s/\%2520/\+/gs;
+  return $string;
 }
 
 sub urlGenNoParams {
