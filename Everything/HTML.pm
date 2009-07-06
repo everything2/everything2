@@ -804,7 +804,7 @@ sub urlGen {
   else{
     if($$REF{node}){
       if($$REF{nodetype}){
-        $str .= "/$$REF{nodetype}/".rewriteCleanEscape($$REF{node});
+        $str .= "/node/$$REF{nodetype}/".rewriteCleanEscape($$REF{node});
       }
       else{
         $str .= "/title/".rewriteCleanEscape($$REF{node});
@@ -1053,6 +1053,10 @@ sub urlGenNoParams {
   }
   elsif ($$NODE{type}{title} eq 'user') {
     $retval = "/".$$NODE{type}{title}."/".rewriteCleanEscape($$NODE{title});
+  }
+  elsif ($$NODE{type}{title} eq 'writeup'){
+    my $author = getNodeById($NODE -> {author_user}, "light") -> {title};
+    $retval = "/user/$author/writeups/".rewriteCleanEscape($$NODE{title});
   }
   elsif ($$NODE{type}{restrictdupes} && $$NODE{title}) {
     $retval = "/node/".$$NODE{type}{title}."/"
@@ -2079,49 +2083,52 @@ sub printHeader
 #	Parameters
 #		None.  Uses the global package variables.
 #
-sub handleUserRequest
-{
-	my $user_id = $$USER{node_id};
-	my $node_id;
-	my $nodename;
-	my $code;
-	my $handled = 0;
+sub handleUserRequest{
+  my $user_id = $$USER{node_id};
+  my $node_id;
+  my $nodename;
+  my $author;
+  my $code;
+  my $handled = 0;
 
-	if ($query->param('node'))
-	{
-		# Searching for a node my string title
-		my $type  = $query->param('type');
-		my $TYPE = getType($type);
-		
-		$nodename = cleanNodeName($query->param('node'));
+  if ($query->param('node')) {
+    # Searching for a node my string title
+    my $type  = $query->param('type');
+    my $TYPE = getType($type);
 
-		if($nodename eq "")
-		{
-			gotoNode($HTMLVARS{default_node}, $user_id);
-			return;
-		}
+    $nodename = cleanNodeName($query->param('node'));
 
-		$query->param("node", $nodename);
-		
-		if ($query->param('op') ne 'new')
-		{
-			nodeName ($nodename, $user_id, $type); 
-		}
-		else
-		{
-			gotoNode($HTMLVARS{permission_denied}, $user_id);
-		}
-	}
-	elsif ($node_id = $query->param('node_id'))
-	{
-		#searching by ID
-		gotoNode($node_id, $user_id);
-	}
-	else
-	{
-		#no node was specified -> default
-		gotoNode($HTMLVARS{default_node}, $user_id);
-	}
+    $author = $query -> param("author");
+    $author = getNode($author,"user");
+
+    if ($nodename eq "") {
+      gotoNode($HTMLVARS{default_node}, $user_id);
+      return;
+    }
+
+    if($author){
+      my @nodes = getNodeWhere({author_user=$author->{user_id}},
+                               $TYPE, "node_id");
+      gotoNode($nodes[0],$user_id) if @nodes;
+    }
+
+    $query->param("node", $nodename);
+
+    if ($query->param('op') ne 'new') {
+      nodeName ($nodename, $user_id, $type);
+    }
+    else {
+      gotoNode($HTMLVARS{permission_denied}, $user_id);
+    }
+  }
+  elsif ($node_id = $query->param('node_id')) {
+    #searching by ID
+    gotoNode($node_id, $user_id);
+  }
+  else {
+    #no node was specified -> default
+    gotoNode($HTMLVARS{default_node}, $user_id);
+  }
 }
 
 
