@@ -2107,7 +2107,7 @@ sub handleUserRequest{
     }
 
     if($author){
-      my @nodes = getNodeWhere({author_user=$author->{user_id}},
+      my @nodes = getNodeWhere({author_user=>$author->{user_id}},
                                $TYPE, "node_id");
       gotoNode($nodes[0],$user_id) if @nodes;
     }
