@@ -1093,17 +1093,8 @@ sub urlGenNoParams {
 sub linkNode {
   my ($NODE, $title, $PARAMS) = @_;
 
-  return if not ref $NODE and $NODE == -1;
   return if not ref $NODE and $NODE =~ /\D/;
-  return unless $NODE;
-  unless ($title) {
-    $NODE = getNodeById($NODE, 'light') unless ref $NODE;
-    $title = encodeHTML($$NODE{title});
-  }
-
-  if ($NODE == -1) {
-    return "<a>$title</a>";
-  }
+  $NODE = getNodeById($NODE, 'light') unless ref $NODE;
 
   $title ||= encodeHTML($$NODE{title});
   my $tags = "";
