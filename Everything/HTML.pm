@@ -2102,7 +2102,7 @@ sub handleUserRequest{
     }
 
     if($author and $TYPE->{title} eq 'writeup'){
-      if(my $e2node = getNode($nodename,"e2node"){
+      if(my $e2node = getNode($nodename,"e2node")){
         foreach my $wu_id(@{$e2node -> {group}} ){
           my $wu_author = getNodeById(getNode($wu_id,"writeup","light") -> {writeup_id}, "light");
           gotoNode($wu_id,$user_id) if $wu_author->{title} eq $author;
