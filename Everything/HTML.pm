@@ -1056,6 +1056,10 @@ sub urlGenNoParams {
   }
   elsif ($$NODE{type}{title} eq 'writeup'){
     my $author = getNodeById($NODE -> {author_user}, "light") -> {title};
+    my $title = $NODE -> {title};
+
+    $title =~ s/\(.*\)$//; #Remove the useless writeuptype
+
     $retval = "/user/$author/writeups/".rewriteCleanEscape($$NODE{title});
   }
   elsif ($$NODE{type}{restrictdupes} && $$NODE{title}) {
@@ -2097,10 +2101,13 @@ sub handleUserRequest{
       return;
     }
 
-    if($author){
-      my @nodes = getNodeWhere({author_user=>$author->{user_id}},
-                               $TYPE, "node_id");
-      gotoNode($nodes[0],$user_id) if @nodes;
+    if($author and $TYPE->{title} eq 'writeup'){
+      if(my $e2node = getNode($nodename,"e2node"){
+        foreach my $wu_id(@{$e2node -> {group}} ){
+          my $wu_author = getNodeById(getNode($wu_id,"writeup","light") -> {writeup_id}, "light");
+          gotoNode($wu_id,$user_id) if $wu_author->{title} eq $author;
+        }
+      }
     }
 
     $query->param("node", $nodename);
