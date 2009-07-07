@@ -2110,7 +2110,9 @@ sub handleUserRequest{
                                       -> {author_user},
                                       "light");
 
-          gotoNode($wu_id,$user_id) if $wu_author->{title} eq $author;
+          if ($wu_author->{title} eq $author -> {title}){
+            gotoNode($wu_id,$user_id);
+          }
         }
       }
     }
