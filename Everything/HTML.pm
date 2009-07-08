@@ -95,8 +95,8 @@ sub getRandomNode {
 #		tagApprove
 #
 #	purpose
-#		determines whether or not a tag (and it's specified attributes)
-#		are approved or not.  Returns the cleaned tag.  Used by htmlScreen
+#		determines whether or not a tag (and its specified attributes)
+#		are approved or not.  Returns the cleaned tag.  Used by cleanupHTML
 #
 sub tagApprove {
     my ($close, $tag, $attr, $APPROVED) = @_;
@@ -115,7 +115,10 @@ sub tagApprove {
             }
         }
         "<".$close.$tag.$cleanattr.">";
-    } else { ""; }
+    } else {
+		return "" unless $$APPROVED{ noscreening } ;
+		"<".$close.$tag.$attr.">" ;
+	}
 }
 
 
@@ -156,6 +159,7 @@ sub htmlScreen {
 #               text -- the text/html to filter
 #               APPROVED -- ref to hash where approved tags are keys.
 #                   Null means all HTML will be taken out.
+#                   { noscreening => 1 } means no HTML will be taken out.
 #		preapproved_ref -- ref to hash/cache of 'pre-approved'
 #		    tags.
 #               debug -- a function to render a debug message into HTML.
