@@ -2112,6 +2112,7 @@ sub handleUserRequest{
 
           if ($wu_author->{title} eq $author -> {title}){
             gotoNode($wu_id,$user_id);
+            return;
           }
         }
       }
