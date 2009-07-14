@@ -828,6 +828,7 @@ sub urlGen {
 
   # Cycle through all the keys of the hashref for node_id, etc.
   foreach my $key (keys %$REF) {
+    next if $key eq "lastnode_id" and $REF -> {$key} == "0";
     $str .= CGI::escape($key) .'='. CGI::escape($$REF{$key}) .'&amp;';
   }
 
