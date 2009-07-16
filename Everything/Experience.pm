@@ -316,8 +316,7 @@ sub castVote {
                                   'voter_user='.$$USER{node_id}
                                   .' AND vote_id='.$$NODE{node_id});
 
-    if ($prevweight != $weight
-        && $prevweight < 0){ #Only allow revoting up
+    if ($prevweight != $weight){
 
       $DB->sqlUpdate("vote",
                      { -weight => $weight,
@@ -340,11 +339,9 @@ sub castVote {
     adjustExp($$NODE{author_user}, $weight);
   }
   #Revoting down, note the subtle difference with above condition
-  #elsif($weight < 0 and $prevweight > 0){
-  #   adjustExp($$NODE{author_user}, $weight);
-  #}
-  #^^^
-  #Commented out, no revoting down allowed
+  elsif($weight < 0 and $prevweight > 0){
+     adjustExp($$NODE{author_user}, $weight);
+  }
 
 
   #the voter has a chance of receiving a GP
