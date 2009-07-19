@@ -817,6 +817,7 @@ sub urlGen {
     elsif($$REF{node_id} && $$REF{node_id} =~ /^\d+$/){
       $str .= "/node/$$REF{node_id}";
     }
+    else{ $str .= "/"; }
   }
 
   delete $$REF{node_id};
