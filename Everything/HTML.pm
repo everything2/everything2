@@ -2317,41 +2317,45 @@ sub getOpCode
 #
 sub execOpCode
 {
-	my $op = $query->param('op');
-	my $code;
-	my $handled = 0;
-	
-	return 0 unless(defined $op && $op ne "");
-	
-	$code = getOpCode($op);
-	if (defined $code) {
-		$handled = eval($code);
-		Everything::printLog($@) if $@;
-#		Everything::printLog("executed opcode $op \n$code");
-	}	
+  my $op = $query->param('op');
+  my $code;
+  my $handled = 0;
+  
+  return 0 unless(defined $op && $op ne "");
+  
+  $code = getOpCode($op);
+  if (defined $code) {
+    $handled = eval($code);
+    if ($@){
+      Everything::printLog("Problem when executing $op opcode:\n");
+      Everything::printLog($@);
+      Everything::printLog("\n\n");
+    }
 
-	unless($handled)
-	{
-		# These are built in defaults.  If no 'opcode' nodes exist for
-		# the specified op, we have some default handlers.
+  } 
 
-		if($op eq 'login')
-		{
-			opLogin()
-		}
-		elsif($op eq 'logout')
-		{
-			opLogout();
-		}
-		elsif($op eq 'nuke')
-		{
-			opNuke();
-		}
-		elsif($op eq 'new')
-		{
-			opNew();
-		}
-	}
+  unless($handled)
+  {
+    # These are built in defaults.  If no 'opcode' nodes exist for
+    # the specified op, we have some default handlers.
+
+    if($op eq 'login')
+    {
+      opLogin()
+    }
+    elsif($op eq 'logout')
+    {
+      opLogout();
+    }
+    elsif($op eq 'nuke')
+    {
+      opNuke();
+    }
+    elsif($op eq 'new')
+    {
+      opNew();
+    }
+  }
 }
 
 #############################################################################
