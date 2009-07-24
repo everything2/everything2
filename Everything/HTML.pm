@@ -1064,7 +1064,7 @@ sub urlGenNoParams {
     my $author = getNodeById($NODE -> {author_user}, "light") -> {title};
     my $title = $NODE -> {title};
 
-    $title =~ s/ \(.*\)$//; #Remove the useless writeuptype
+    $title =~ s/ \([^\)]*\)$//; #Remove the useless writeuptype
 
     $retval = "/user/$author/writeups/".rewriteCleanEscape($title);
   }
