@@ -693,9 +693,11 @@ sub htmlErrorUsers
 	# Print the error to the log instead of the browser.  That way users
 	# do not see all the messy perl code.
 	my $error = "Server Error (#" . $errorId . ")\n";
-        $error .= "Node: $$GNODE{title}\n";
+	if ($GNODE) { $error .= "Node: $$GNODE{title}\n"; }
+	else { $error .= "Node: null\n"; }
 
-	$error .= "User: $$USER{title}\n";
+	if ($USER) { $error .= "User: $$USER{title}\n"; }
+	else { $error .= "User: null\n"; }
 	$error .= "User agent: " . $query->user_agent() . "\n" if defined $query;
 	$error .= "Code:\n$code\n";
 	$error .= "Error:\n$err\n";
