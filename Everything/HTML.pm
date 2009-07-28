@@ -1127,13 +1127,13 @@ sub linkNode {
 
   if ($lastnode_id == 0) {
     "<a onmouseup=\"document.cookie='lastnode_id=0; ; path=/'; 1;\" href="
-      . ($exist_params ? urlGen($PARAMS,0,$NODE) :urlGenNoParams($NODE) );
+      . ($exist_params ? urlGen($PARAMS,0,$NODE) :urlGenNoParams($NODE) )
       . $tags . ">$title</a>";
   }
   else {
     "<a onmouseup=\"document.cookie='lastnode_id=".$lastnode_id
       ."; ; path=/'; 1;\" href=" 
-      . ($exist_params ? urlGen($PARAMS,0,$NODE) :urlGenNoParams($NODE) );
+      . ($exist_params ? urlGen($PARAMS,0,$NODE) :urlGenNoParams($NODE) )
       . $tags .">$title</a>";
   }
 }
