@@ -1109,7 +1109,9 @@ sub linkNode {
   $title ||= encodeHTML($$NODE{title});
   my $tags = "";
 
-  $$PARAMS{lastnode_id} = getId ($GNODE) unless exists $$PARAMS{lastnode_id};
+  my $lastnode_id = $PARAMS -> {lastnode_id};
+  $lastnode_id = getId($GNODE) unless defined $lastnode_id;
+  delete $PARAMS -> {lastnode_id};
 
   #any params that have a "-" preceding 
   #get added to the anchor tag rather than the URL
@@ -1121,20 +1123,18 @@ sub linkNode {
     delete $$PARAMS{$key};
   }
 
-  if ((keys(%$PARAMS) == 1 && exists $$PARAMS{lastnode_id})
-      or (keys(%$PARAMS) == 0)) {
-    if ($$PARAMS{lastnode_id} == 0) {
-      "<a onmouseup=\"document.cookie='lastnode_id=0; ; path=/'; 1;\" href="
-      . urlGenNoParams($NODE) . $tags . ">$title</a>";
-    }
-    else {
-      "<a onmouseup=\"document.cookie='lastnode_id=".$$PARAMS{lastnode_id}
-     ."; ; path=/'; 1;\" href=" . urlGenNoParams($NODE) . $tags
-     .">$title</a>";
-    }
+  my $exist_params = (keys(%$PARAMS) > 0);
+
+  if ($lastnode_id == 0) {
+    "<a onmouseup=\"document.cookie='lastnode_id=0; ; path=/'; 1;\" href="
+      . ($exist_params ? urlGen($PARAMS,0,$NODE) :urlGenNoParams($NODE) );
+      . $tags . ">$title</a>";
   }
   else {
-    "<a href=" . urlGen ($PARAMS,0,$NODE) . $tags . ">$title</a>";
+    "<a onmouseup=\"document.cookie='lastnode_id=".$lastnode_id
+      ."; ; path=/'; 1;\" href=" 
+      . ($exist_params ? urlGen($PARAMS,0,$NODE) :urlGenNoParams($NODE) );
+      . $tags .">$title</a>";
   }
 }
 
