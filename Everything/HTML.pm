@@ -1201,7 +1201,7 @@ sub linkNodeTitle {
     elsif($nodetype =~ /^scratch/){
       $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ;"
                ."path=/'; 1;\" title=\"$tip\" href=\""
-               ."/scratch/$user/$nodename";
+               ."/user/$user/scratchpads/$nodename";
     }
 
     #Else, direct link to nodetype. Let's hope the users know what
