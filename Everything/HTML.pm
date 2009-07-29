@@ -835,7 +835,7 @@ sub urlGen {
     $str .= CGI::escape($key) .'='. CGI::escape($$REF{$key}) .'&amp;';
   }
 
-  $str = substr($str,0,-5);
+  $str = substr($str,0,-5) if keys %$REF;
   $str .= '"' unless $noquotes;
   $str;
 }
@@ -1068,6 +1068,8 @@ sub urlGenNoParams {
 
     $title =~ s/ \([^\)]*\)$//; #Remove the useless writeuptype
 
+    $author = rewriteCleanEscape($author);
+
     $retval = "/user/$author/writeups/".rewriteCleanEscape($title);
   }
   elsif ($$NODE{type}{restrictdupes} && $$NODE{title}) {
@@ -1201,6 +1203,7 @@ sub linkNodeTitle {
 
     #Or maybe a scratch pad?
     elsif($nodetype =~ /^scratch/){
+      $user = rewriteCleanEscape($user);
       $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ;"
                ."path=/'; 1;\" title=\"$tip\" href=\""
                ."/user/$user/scratchpads/$nodename";
