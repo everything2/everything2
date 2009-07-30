@@ -1063,14 +1063,23 @@ sub urlGenNoParams {
     $retval = "/".$$NODE{type}{title}."/".rewriteCleanEscape($$NODE{title});
   }
   elsif ($$NODE{type}{title} eq 'writeup'){
-    my $author = getNodeById($NODE -> {author_user}, "light") -> {title};
-    my $title = $NODE -> {title};
+    my $author = getNodeById($NODE -> {author_user}, "light");
 
-    $title =~ s/ \([^\)]*\)$//; #Remove the useless writeuptype
+    #Some older writeups are buggy and point to an author who doesn't
+    #exist anymore. --[Swap]
+    if (ref $author) {
+      $author = $author -> {title};
+      my $title = $NODE -> {title};
 
-    $author = rewriteCleanEscape($author);
+      $title =~ s/ \([^\)]*\)$//; #Remove the useless writeuptype
 
-    $retval = "/user/$author/writeups/".rewriteCleanEscape($title);
+      $author = rewriteCleanEscape($author);
+
+      $retval = "/user/$author/writeups/".rewriteCleanEscape($title);
+    }
+    else{
+      $retval = "/node/".getId($NODE);
+    }
   }
   elsif ($$NODE{type}{restrictdupes} && $$NODE{title}) {
     $retval = "/node/".$$NODE{type}{title}."/"
