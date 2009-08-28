@@ -850,23 +850,13 @@ sub urlGen {
 #
 #   Parameters
 #       funcname - The name of the function to rerieve
-#       args - optional arguments to the function.
-#           arguments must be in a comma delimited list, as with
-#           embedded htmlcode calls
 #
 sub getCode
 {
-	my ($funcname, $args) = @_;
-#	$args = "" if not defined $args;	
+	my ($funcname) = @_;
 	my $CODE = getNode($funcname, getType("htmlcode"));
-	
-	return '"";' unless (defined $CODE);
-
-	my $str;
-	$str = "\@\_ = split (/\\s\*,\\s\*/, '$args');\n" if defined $args;
-	$str .= $$CODE{code};
-
-	return $str;
+	return $CODE{code} if defined( $CODE );
+	return '"";' ;
 }
 
 
@@ -1388,7 +1378,7 @@ sub evalCode {
 	my $NODE = $GNODE;
 	my $warnbuf = "";
 
-	local $SIG{__WARN__} = sub { 
+	local $SIG{__WARN__} = sub {
 		$warnbuf .= $_[0] 
 		 unless $_[0] =~ /^Use of uninitialized value/;
 	};
@@ -1410,14 +1400,15 @@ sub evalCode {
 #		htmlcode('textfield', 'title,80');
 #
 #	args
-#		func -- the function name
-#		args -- the arguments in a comma delimited list
+#		[0] the function name
+#		[1] the arguments in a comma delimited list (must be string), or
+#			more than one argument: can be anything
 #
 #
 sub htmlcode {
-	my ($func, $args) = @_;
-	my $code = getCode($func, $args);
-	evalCode($code) if($code);
+	my $function = evalCode( 'sub {' . getCode(shift) . '}' );
+	$_[0] = split (/\\s\*,\\s\*/, $_[0]) if scalar( @_ ) == 1 ;
+	&$function ;
 }
 
 #############################################################################
@@ -1434,17 +1425,11 @@ sub embedCode {
 		$block = evalCode ($block . ';', @_);	
 	} elsif ($char eq '{') {
 		#take the arguments out
-		
-		$block =~ s/^\{(.*)\}$/$1/s;
-		my ($func, $args) = split /\s*:\s*/, $block;
-		$args ||= "";
-		my $pre_code = "\@\_ = split (/\\s*,\\s*/, \"$args\"); ";
-		#this line puts the args in the default array
-		
-		$block = embedCode ('%'. $pre_code . getCode ($func) . '%', @_);
+		$block =~ /^\{([^:]*):(.*)\}$/s;
+		$block = htmlcode($1, $2);
 	} elsif ($char eq '%') {
 		$block =~ s/^\%(.*)\%$/$1/s;
-		$block = evalCode ($block, @_);	
+		$block = evalCode ($block, @_);
 	}
 	
 	# Block needs to be defined, otherwise the search/replace regex
