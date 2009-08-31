@@ -99,25 +99,26 @@ sub getRandomNode {
 #		are approved or not.  Returns the cleaned tag.  Used by cleanupHTML
 #
 sub tagApprove {
-    my ($close, $tag, $attr, $APPROVED) = @_;
+	my ($close, $tag, $attr, $APPROVED) = @_;
 
-    $tag = uc($tag) if (exists $$APPROVED{uc($tag)});
-    $tag = lc($tag) if (exists $$APPROVED{lc($tag)});
-
-    if (exists $$APPROVED{$tag}) {
-        my @aprattr = split ",", $$APPROVED{$tag};
-        my $cleanattr;
-        foreach (@aprattr) {
-            if (($attr =~ /\b$_\b\='(\w+?%?)'/i) or
-                ($attr =~ /\b$_\b\="(\w+?%?)"/i) or
-                ($attr =~ /\b$_\b\="?'?(\w*\b%?)/i)) {
-                $cleanattr.=" ".$_.'="'.$1.'"';
-            }
-        }
-        "<".$close.$tag.$cleanattr.">";
-    } else {
-		return "" unless $$APPROVED{ noscreening } ;
-		"<".$close.$tag.$attr.">" ;
+	$tag = uc($tag) if (exists $$APPROVED{uc($tag)});
+	$tag = lc($tag) if (exists $$APPROVED{lc($tag)});
+	
+	if (exists $$APPROVED{$tag}) {
+		unless ( $close ) {
+			if ( $attr ) {
+				if ( $attr =~ qr/\b(\w+)\b\=['"]?(\w+\b%?)"/i ) {
+					my ( $name , $value ) = ( $1 , $2 ) ;
+					return '<'.$close.$tag.' '.$name.'="'.$value.'">' if ( $$APPROVED{$tag} =~ /\b$name\b/i ) ;
+					return '<'.$close.$tag.' '.$name.'="'.$value.'">' if $$APPROVED{ noscreening } ;
+				}
+			}
+		}
+		'<'.$close.$tag.'>' ;
+	} else {
+		return '' unless $$APPROVED{ noscreening } ;
+		$$APPROVED{$tag} .= '' ;
+		return &tagApprove ;
 	}
 }
 
