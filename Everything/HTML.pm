@@ -1408,7 +1408,7 @@ sub evalCode {
 sub htmlcode {
 	my $function = evalCode( 'sub {' . getCode(shift) . '}' );
 	$_[0] = split (/\\s\*,\\s\*/, $_[0]) if scalar( @_ ) == 1 ;
-	&$function ;
+	&$function( @_ ) ;
 }
 
 #############################################################################
