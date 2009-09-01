@@ -1408,8 +1408,8 @@ sub evalCode {
 #
 sub htmlcode {
 	my $function = evalCode( 'sub {' . getCode(shift) . '}' );
-	$_[0] = split (/\\s\*,\\s\*/, $_[0]) if scalar( @_ ) == 1 ;
-	&$function( @_ ) ;
+	@_ = split (/\s*,\s*/, $_[0]) if scalar( @_ ) == 1 ;
+	&$function ;
 }
 
 #############################################################################
@@ -1426,7 +1426,7 @@ sub embedCode {
 		$block = evalCode ($block . ';', @_);	
 	} elsif ($char eq '{') {
 		#take the arguments out
-		$block =~ /^\{([^:]*):(.*)\}$/s;
+		$block =~ /^\{([^:]*)(?::(.*))?\}$/s;
 		$block = htmlcode($1, $2);
 	} elsif ($char eq '%') {
 		$block =~ s/^\%(.*)\%$/$1/s;
