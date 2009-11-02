@@ -1426,7 +1426,7 @@ sub embedCode {
 		$block = evalCode ($block . ';', @_);	
 	} elsif ($char eq '{') {
 		#take the arguments out
-		$block =~ /^\{([^:]*)(?::(.*))?\}$/s;
+		$block =~ /^\{([^:\s]*)\s*(?::\s*(.*))?\}$/s;
 		$block = htmlcode($1, $2);
 	} elsif ($char eq '%') {
 		$block =~ s/^\%(.*)\%$/$1/s;
