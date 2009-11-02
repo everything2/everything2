@@ -856,7 +856,7 @@ sub getCode
 {
 	my ($funcname) = @_;
 	my $CODE = getNode($funcname, getType("htmlcode"));
-	return $CODE{code} if defined( $CODE );
+	return $$CODE{code} if defined( $CODE );
 	return '"";' ;
 }
 
