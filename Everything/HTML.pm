@@ -1418,7 +1418,7 @@ sub embedCode {
 	my $block = shift @_;
 
 	my $NODE = $GNODE;
-	
+
 	$block =~ /^(\W)/;
 	my $char = $1;
 	
@@ -1427,7 +1427,7 @@ sub embedCode {
 	} elsif ($char eq '{') {
 		#take the arguments out
 		$block =~ /^\{([^:\s]*)\s*(?::\s*(.*))?\}$/s;
-		my ($functionName, $args) = ($1, $2);
+		my ($functionName, $args) = ($1, evalCode('"'.$2.'"') ); #evalCode to dereference variable names
 		$block = htmlcode($functionName, $args);
 	} elsif ($char eq '%') {
 		$block =~ s/^\%(.*)\%$/$1/s;
