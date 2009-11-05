@@ -1408,7 +1408,7 @@ sub evalCode {
 #
 sub htmlcode {
 	my $function = evalCode("sub {\n" . getCode(shift) . "\n}" );
-	@_ = split (/\s*,\s*/, $_[0]) if scalar( @_ ) == 1 ;
+	@_ = split (/\s*,\s*/, evalCode('"'.$_[0].'"') ) if scalar( @_ ) == 1 ; #evalCode to dereference variable names
 	&$function ;
 }
 
@@ -1427,7 +1427,7 @@ sub embedCode {
 	} elsif ($char eq '{') {
 		#take the arguments out
 		$block =~ /^\{([^:\s]*)\s*(?::\s*(.*))?\}$/s;
-		my ($functionName, $args) = ($1, evalCode('"'.$2.'"') ); #evalCode to dereference variable names
+		my ($functionName, $args) = ($1, $2);
 		$block = htmlcode($functionName, $args);
 	} elsif ($char eq '%') {
 		$block =~ s/^\%(.*)\%$/$1/s;
