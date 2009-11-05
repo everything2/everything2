@@ -825,7 +825,7 @@ sub urlGen {
 
   delete $$REF{node_id};
   delete $$REF{node};
-  delete $$REF{node_type};
+  delete $$REF{nodetype};
 
   #Our mod_rewrite rules can now handle this properly
   my $quamp = '?';
