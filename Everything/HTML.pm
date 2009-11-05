@@ -828,15 +828,15 @@ sub urlGen {
   delete $$REF{node_type};
 
   #Our mod_rewrite rules can now handle this properly
-  $str .= "?" if keys %$REF;
+  my $quamp = '?';
 
   # Cycle through all the keys of the hashref for node_id, etc.
   foreach my $key (keys %$REF) {
     next if $key eq "lastnode_id" and $REF -> {$key} == "0";
-    $str .= CGI::escape($key) .'='. CGI::escape($$REF{$key}) .'&amp;';
+    $str .= $quamp . CGI::escape($key) .'='. CGI::escape($$REF{$key});
+    $quamp = '&amp;' ;
   }
 
-  $str = substr($str,0,-5) if keys %$REF;
   $str .= '"' unless $noquotes;
   $str;
 }
