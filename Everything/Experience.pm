@@ -24,7 +24,7 @@ sub BEGIN
     adjustAttribute
 		castVote
 		adjustExp
-		adjustRep
+		adjustRepAndVoteCount
 		adjustGP
 		allocateVotes
 		hasVoted
@@ -175,15 +175,18 @@ sub allocateVotes {
 
 #########################################################################
 #
-#	adjustRep
+#	adjustRepAndVoteCount
 #
-#	adjust reputation points for a node
+#	adjust reputation points for a node as well as vote count, potentially
 #
-sub adjustRep {
-	my ($NODE, $pts) = @_;
+sub adjustRepAndVoteCount {
+	my ($NODE, $pts, $voteChange) = @_;
 	getRef($NODE);
 
 	$$NODE{reputation} += $pts;
+	# Rely on updateNode to discard invalid hash entries since
+	#  not all voteable nodes may have a totalvotes column
+	$$NODE{totalvotes} += $voteChange;
 	updateNode($NODE, -1);
 }
 
@@ -310,6 +313,8 @@ sub castVote {
   #Else, already voted, update the table manually, check that the vote is
   #actually different.
   my $prevweight = 0;
+  my $voteCountChange = 0;
+
   if($alreadyvoted){
     $prevweight  = $DB->sqlSelect('weight',
                                   'vote',
@@ -324,9 +329,14 @@ sub castVote {
                      "voter_user=$$USER{node_id}
                       AND vote_id=$$NODE{node_id}");
     }
+
+  } else {
+  
+    $voteCountChange = 1;
+
   }
 
-  adjustRep($NODE, $weight-$prevweight);
+  adjustRepAndVoteCount($NODE, $weight-$prevweight, $voteCountChange);
 
   #the nodes author has a chance of recieving or losing a GP
   #if (rand(1.0) < $$VSETTINGS{voteeExpChance}) {
