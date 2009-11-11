@@ -1467,7 +1467,7 @@ sub parseCode {
 		  |%.*?%
 		  )
 		  \]
-		   /embedCode($1,$CURRENTNODE)/egsx;
+		   /embedCode("$1",$CURRENTNODE)/egsx;
 		           $text;
 
 
