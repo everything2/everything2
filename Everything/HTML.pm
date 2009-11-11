@@ -1408,7 +1408,7 @@ sub evalCode {
 #
 sub htmlcode {
 	my $function = evalCode("sub {\n" . getCode(shift) . "\n}" );
-	@_ = evalCode( "split (/\s*,\s*/, '$_[0]')" ) if scalar( @_ ) == 1 ; #evalCode/quotes to dereference variable names
+	@_ = evalCode( "split (/\\s*,\\s*/, '$_[0]')" ) if scalar( @_ ) == 1 ; #evalCode/quotes to dereference variable names
 	&$function ;
 }
 
