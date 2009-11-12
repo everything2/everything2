@@ -14,7 +14,7 @@ use DBI;
 use Everything;
 use Everything::NodeCache;
 
-
+our %CONFIG;
 
 sub BEGIN
 {
@@ -22,6 +22,7 @@ sub BEGIN
 	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
+		%CONFIG
 		getCache
 		getDatabaseHandle
 		getAllTypes
@@ -101,8 +102,10 @@ sub new
 		my $db = {};
 		
 		# A connection to this database does not exist.  Create one.
-    my ($user,$pass) = Everything::getCredentials("/etc/everyuser.pwd");
-		$db->{dbh} = DBI->connect("DBI:mysql:$dbname:db2", $user, $pass);
+    my ($user,$pass) = ($CONFIG{'everyuser'}, $CONFIG{'everypass'});
+		$db->{dbh} = DBI ->
+      connect("DBI:mysql:$dbname:$CONFIG{everything_dbserv}", $user, $pass);
+
 		$this->{dbh} = $db->{dbh};
 		
 		$db->{cache} = new Everything::NodeCache($this, 600, $memcache);

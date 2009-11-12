@@ -37,7 +37,7 @@ sub new {
 
     my $this = {};
     bless $this; #meal
-    my ($user,$pass) = Everything::getCredentials("/etc/everyroot.pwd");
+    my ($user,$pass) = ($CONFIG{'rootuser'}, $CONFIG{'rootpass'});
     $this->{dbh} = DBI->connect("DBI:mysql:$dbname", $user, $pass); 	
 	if (not $this->{dbh}) {
 		printErr "could not connect to cache_store";

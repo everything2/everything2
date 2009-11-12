@@ -17,46 +17,48 @@ use Everything::CacheStore;
 require CGI;
 use CGI::Carp qw(fatalsToBrowser);
 
-
 sub BEGIN {
 	use Exporter ();
 	use vars qw($DB $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
-		%HEADER_PARAMS
-		$DB
-		%HTMLVARS
-		$query
-		jsWindow
-		createNodeLinks
-		parseLinks
-		htmlScreen
-		screenTable
-		breakTags
-		htmlFormatErr
-		quote
-		urlGen
-		urlGenNoParams
-		getCode
-		getPage
-		getPages
-		getPageForType
-		linkNode
-		linkNodeTitle
-		nodeName
-		evalCode
-		htmlcode
-		embedCode
-		displayPage
-		gotoNode
-		confirmUser
-		urlDecode
-		encodeHTML
-		decodeHTML
-    escapeAngleBrackets
-		unMSify
-		mod_perlInit
-                mod_perlpsuedoInit);
+              %HEADER_PARAMS
+              $DB
+              %HTMLVARS
+              $query
+              jsWindow
+              createNodeLinks
+              parseLinks
+              htmlScreen
+              screenTable
+              cleanupHTML
+              breakTags
+              htmlFormatErr
+              quote
+              urlGen
+              urlGenNoParams
+              getCode
+              getPage
+              getPages
+              getPageForType
+              linkNode
+              linkNodeTitle
+              nodeName
+              evalCode
+              htmlcode
+              embedCode
+              displayPage
+              gotoNode
+              confirmUser
+              urlDecode
+              encodeHTML
+              decodeHTML
+              escapeAngleBrackets
+              showPartialDiff
+              showCompleteDiff
+              unMSify
+              mod_perlInit
+              mod_perlpsuedoInit);
 }
 
 use vars qw($query);
@@ -68,6 +70,7 @@ use vars qw($THEME);
 use vars qw($NODELET);
 use vars qw($CACHESTORE);
 use vars qw(%HEADER_PARAMS);
+
 my $PAGELOAD = 0;
 my $NUMPAGELOADS = 10;
      
@@ -92,27 +95,31 @@ sub getRandomNode {
 #		tagApprove
 #
 #	purpose
-#		determines whether or not a tag (and it's specified attributes)
-#		are approved or not.  Returns the cleaned tag.  Used by htmlScreen
+#		determines whether or not a tag (and its specified attributes)
+#		are approved or not.  Returns the cleaned tag.  Used by cleanupHTML
 #
 sub tagApprove {
-    my ($close, $tag, $attr, $APPROVED) = @_;
+	my ($close, $tag, $attr, $APPROVED) = @_;
 
-    $tag = uc($tag) if (exists $$APPROVED{uc($tag)});
-    $tag = lc($tag) if (exists $$APPROVED{lc($tag)});
-
-    if (exists $$APPROVED{$tag}) {
-        my @aprattr = split ",", $$APPROVED{$tag};
-        my $cleanattr;
-        foreach (@aprattr) {
-            if (($attr =~ /\b$_\b\='(\w+?%?)'/i) or
-                ($attr =~ /\b$_\b\="(\w+?%?)"/i) or
-                ($attr =~ /\b$_\b\="?'?(\w*\b%?)/i)) {
-                $cleanattr.=" ".$_.'="'.$1.'"';
-            }
-        }
-        "<".$close.$tag.$cleanattr.">";
-    } else { ""; }
+	$tag = uc($tag) if (exists $$APPROVED{uc($tag)});
+	$tag = lc($tag) if (exists $$APPROVED{lc($tag)});
+	
+	if (exists $$APPROVED{$tag}) {
+		unless ( $close ) {
+			if ( $attr ) {
+				if ( $attr =~ qr/\b(\w+)\b\=['"]?(\w+\b%?)"/i ) {
+					my ( $name , $value ) = ( $1 , $2 ) ;
+					return '<'.$close.$tag.' '.$name.'="'.$value.'">' if ( $$APPROVED{$tag} =~ /\b$name\b/i ) ;
+					return '<'.$close.$tag.' '.$name.'="'.$value.'">' if $$APPROVED{ noscreening } ;
+				}
+			}
+		}
+		'<'.$close.$tag.'>' ;
+	} else {
+		return '' unless $$APPROVED{ noscreening } ;
+		$$APPROVED{$tag} .= '' ;
+		return &tagApprove ;
+	}
 }
 
 
@@ -122,7 +129,8 @@ sub tagApprove {
 #
 #	purpose
 #		screen out html tags from a chunk of text
-#		returns the text, sans any tags that aren't "APPROVED"		
+#		returns the text, sans any tags that aren't "APPROVED"
+#   Now defers all the work to cleanupHTML
 #
 #	params
 #		text -- the text to filter
@@ -133,10 +141,211 @@ sub htmlScreen {
 	my ($text, $APPROVED) = @_;
 	$APPROVED ||= {};
 
-	if ($text =~ /\<[^>]+$/) { $text .= ">"; }
-	$text =~ s/\<\s*(\/?)([^\>|\s]+)(.*?)\>/tagApprove($1,$2,$3, $APPROVED)/gse;
+  $text = cleanupHTML($text, $APPROVED);
 	$text;
 }
+
+######################################################################
+#	Sub
+#		cleanupHTML
+#	Purpose
+#		This function cleans up ragged HTML (such as may be
+#		encountered in a writeup), performing three main
+#		functions:
+#		  * Tag screening, a la htmlScreen
+#		  * Tag balancing, ensuring that all tags are closed
+#		  * Table sanitisation, ensuring table elements are
+#		    correctly nested. 
+#       Params
+#               text -- the text/html to filter
+#               APPROVED -- ref to hash where approved tags are keys.
+#                   Null means all HTML will be taken out.
+#                   { noscreening => 1 } means no HTML will be taken out.
+#		preapproved_ref -- ref to hash/cache of 'pre-approved'
+#		    tags.
+#               debug -- a function to render a debug message into HTML.
+#
+#       Returns
+#               The text stripped of any HTML tags that are not
+#               approved, balanced and cleaned up.
+#		
+#	Limitations:
+#		  * Input is assumed to be HTML 4.0, not XHTML.
+#		  * Tags with optional closing elements are not
+#		    explicitly closed.
+#		  * HTML does not recognise the XML empty element
+#		   format, so we do not look for it explicitly.
+#
+#	Benchmarking on a Pentium M indicates that this process is
+#	approximately 3% faster than the existing htmlScreen.  
+#
+#	Algorithm features:
+# 		  * Scans tags with m//g construct
+#		  * Stacks and unstacks nested tags on finding opening
+#		    and closing
+#		    tags.
+#		  * Validates tags using a (persistent) memoisation
+#		    cache mapping source tags to 'approved' tags with
+#		    invalid tags or attributes stripped. Since most
+#		    tags appearing in writeups will be repeated many
+#		    times (eg. the '<p>' tags) the majority of tags
+#		    should be  found in this cache.
+#		  * Enforces correct table element nesting using a map
+#		    of tag -> valid parent tag
+# 		    For any element which has such a tag, the
+# 		    immediate superior (ie. top of the stack) must
+# 		    match.
+# 
+sub cleanupHTML {
+    my ($text, $approved, $preapproved_ref, $debug) = @_;
+    my @stack;
+    my ($result, $tag, $ctag);
+    # Compile frequently-used regular exprs
+    my $open_tag = qr'^<(\w+)(.*?)>(.*)'ms;
+    my $close_tag = qr'^</(\w+)(.*?)>(.*)'ms;
+    # Separate regexps to handle the (unlikely) case we encounter an
+    # incomplete tag. The positional matches are the same as above.
+    my $incomplete_open_tag = qr'^<(\w+)(.*)(.*)'ms;
+    my $incomplete_close_tag = qr'^</(\w+)(.*)(.*)'ms;
+    my $key;                      # Cache key
+    my $approved_tag;
+    my $outer_text;
+    # Map of nested tags to mandatory direct parents.
+    my %nest = ('tr' => 'table',
+		'td' => 'tr',
+		'th' => 'tr');
+    my $nest_in;
+    # Optional-close tag names. Mapping with a hash seems to be
+    # something like twice as quick as using a single regexp.
+    my %no_close = ('p' => 1, 'br' => 1, 'hr' => 1,
+		    'img' => 1, 'input' => 1, 'link' => 1);
+    
+    # Delete any incomplete tags. These may be the result of truncating
+    # source HTML, eg. for Cream of the Cool.
+    $text =~ s/<[^>]*$//;
+    
+    # Scan tags by recognising text starting with '<'. Experiments with
+    # Firefox show that malformed opening tags (missing the closing '>')
+    # still count as opened tags, so we follow this behaviour.
+    for ($text =~ m{(^[^<]+|<[^<]+)}mig) {
+	if (/$open_tag/ || /$incomplete_open_tag/) {
+	    # Opening tag.
+	    $key = $1.$2;
+	    $tag = lc $1;
+	    $outer_text = $3;
+	    $approved_tag = $preapproved_ref->{$key};
+	    # Handle miss in the pre-approved tag map
+	    unless (defined($approved_tag)) {
+		$approved_tag = tagApprove('', $1, $2,
+					   $approved) || '';
+		$preapproved_ref->{$key} = $approved_tag;
+	    }
+	    # Check correct nesting, and disapprove if not!
+	    if (   ($nest_in = $nest{$tag})
+		&& $nest_in ne $stack[$#stack]) {
+		my @extra;
+		my $opening;
+		do {
+		    unshift @extra, $nest_in;
+		    $opening = '<'.$nest_in.'>'.$opening;
+		    if ($debug) {
+			$opening = ($debug->("Missing <$nest_in> before <$tag>")
+				    . $opening);
+		    }
+		} while (   ($nest_in = $nest{$nest_in})
+			 && $nest_in ne $stack[$#stack]);
+		push @stack, @extra;
+		$result .= $opening;
+	    }
+	    if ($approved_tag) {
+		push @stack, $tag;
+	    } elsif ($debug) {
+		$result .= $debug->("Disallowed tag <$tag>");
+	    }
+	    $result .= $approved_tag.$outer_text;
+	} elsif (/$close_tag/ || /$incomplete_close_tag/) {
+	    # Closing tag
+	    my $closing;
+	    my @popped;
+	    $tag = lc $1;
+	    $key = '/'.$1.$2;
+	    $outer_text = $3;
+	    $approved_tag = $preapproved_ref->{$key};
+	    unless (defined($approved_tag)) {
+		$approved_tag = tagApprove('/', $1,
+					   $2,
+					   $approved) || '';
+		$preapproved_ref->{$key} = $approved_tag;
+	    }
+	    if ($approved_tag) {
+		# Before closing this element, close any unclosed
+		# elements which have been opened since then. We find
+		# the matching closing element by digging through the
+		# stack to find the matching opening tag. On
+		# encountering a close tag for an unopened tag, we dig
+		# through the entire stack, and restore it on reaching
+		# the bottom without finding the tag. This sounds
+		# fairly expensive, but we make the following
+		# assumptions:
+		#   1. Unopened close tags will be infrequent in the
+		#      source HTML, and 
+		#   2. The stack will be short as structures are
+		#      typically not deeply nested, hence searching
+		#      and restoring it will be inexpensive.
+		for (;;) {
+		    $ctag = pop @stack;
+		    push @popped, $ctag;
+		    if ($ctag eq $tag) {
+			# Found the tag.
+			last;
+		    } elsif (defined($ctag)) {
+			# Insert an extra closing tag.
+			$closing .= "</$ctag>"
+			    unless $no_close{$ctag};
+			if ($debug) {
+			    $result .= $debug->("Unclosed <$ctag>");
+			}
+		    } else {
+			# Closed something
+			# which was never
+			# opened. Just ignore
+			# it. Remove the tag
+			# and restore the stack.
+			s/^[^>]*>?//;
+			@stack = reverse @popped;
+			$approved_tag = '';
+			$closing = '';
+			if ($debug) {
+			    $result .= $debug->("No matching open tag "
+						. "for closing </$tag>");
+			}
+			last;
+		    }
+		}
+	    } elsif ($debug) {
+		$result .= $debug->("Disallowed tag </$tag>");
+	    }
+	    $result .= $closing.$approved_tag.$outer_text;
+	} else {
+	    # Plain text at the beginning of the text.
+	    $result .= $_;
+	}
+    }
+    # Close any remaining unclosed tags
+    while (defined($ctag = pop @stack)) {
+	unless ($no_close{$ctag}) {
+	    $result .= "</$ctag>";
+	    if ($debug) {
+		$result .= $debug->("Unclosed <$ctag>");
+	    }
+	}
+    }
+    # Clear the prepapproved cache if it's too large.
+    if (int(keys(%$preapproved_ref)) > 200) {
+	%$preapproved_ref = ();
+    }
+    return $result;
+};
 
 
 #############################################################################
@@ -233,42 +442,42 @@ sub screenTable {
 
 sub breakTags {
 
-        my ($text) = @_;
-        # Format if necessary - adapted from [call]'s code from his own ecore
-        unless ($text =~ /<\/?p[ >]/i || $text =~ /<br/i) {
+  my ($text) = @_;
+  # Format if necessary - adapted from [call]'s code from his own ecore
+  unless ($text =~ /<\/?p[ >]/i || $text =~ /<br/i) {
 
-                # Replace all newlines in inappropriate elementswith placeholders
-                my @ignorenewlines = ("pre", "ol", "ul", "dl", "table");
-                foreach my $currenttag (@ignorenewlines) {
-                        # match attributes in HTML tags by seeing everything up to the closing >
+    # Replace all newlines in inappropriate elementswith placeholders
+    my @ignorenewlines = ("pre", "ol", "ul", "dl", "table");
+    foreach my $currenttag (@ignorenewlines) {
+      # match attributes in HTML tags by seeing everything up to the closing >
 
-                        while ($text =~ /<$currenttag((.*?)\n(.*?))<\/$currenttag/si) {
-                                my $temp = $1;
-                                $temp =~ s%\n%<e2 newline placeholder>%g;
-                                $text =~ s%<$currenttag((.*?)\n(.*?))</$currenttag%<$currenttag$temp</$currenttag%si;
-                        }
+      while ($text =~ /<$currenttag((.*?)\n(.*?))<\/$currenttag/si) {
+        my $temp = $1;
+        $temp =~ s%\n%<e2 newline placeholder>%g;
+        $text =~ s%<$currenttag((.*?)\n(.*?))</$currenttag%<$currenttag$temp</$currenttag%si;
+      }
 
-                }
+    }
 
 
-# Replace all leftover \ns with BRs, and BRBR with P
+    # Replace all leftover \ns with BRs, and BRBR with P
 
-          $text =~ s%^\s*%%g;
-          $text =~ s%\s*$%%g;
-          $text =~ s%\n%<br>%g;
-          $text =~ s%\s*<br>\s*<br>%</p>\n\n<p>%g;
-          $text =~ s%\n\s*\n%</p>\n\n<p>%g;
-          $text = '<p>' . $text . '</p>';
-          my ($blocks) = "pre|center|li|ol|ul|h1|h2|h3|h4|h5|h6|blockquote|dd|dt|dl|p|table|td|tr|th";
-          $text =~ s"<p><($blocks)"<$1"g;
-          $text =~ s"</($blocks)></p>"</$1>"g;
-# Clean up by replacing newlines placeholders with proper \ns again.
-#
-        $text =~ s"<e2 newline placeholder>"\n"g;
+    $text =~ s%^\s*%%g;
+    $text =~ s%\s*$%%g;
+    $text =~ s%\n%<br>%g;
+    $text =~ s%\s*<br>\s*<br>%</p>\n\n<p>%g;
+    $text =~ s%\n\s*\n%</p>\n\n<p>%g;
+    $text = '<p>' . $text . '</p>';
+    my ($blocks) = "pre|center|li|ol|ul|h1|h2|h3|h4|h5|h6|blockquote|dd|dt|dl|p|table|td|tr|th";
+    $text =~ s"<p><($blocks)"<$1"g;
+    $text =~ s"</($blocks)></p>"</$1>"g;
+    # Clean up by replacing newlines placeholders with proper \ns again.
+    #
+    $text =~ s"<e2 newline placeholder>"\n"g;
 
-        }
+  }
 
-        $text;
+  $text;
 }
 
 ########################################################################
@@ -485,9 +694,11 @@ sub htmlErrorUsers
 	# Print the error to the log instead of the browser.  That way users
 	# do not see all the messy perl code.
 	my $error = "Server Error (#" . $errorId . ")\n";
-        $error .= "Node: $$GNODE{title}\n";
+	if ($GNODE) { $error .= "Node: $$GNODE{title}\n"; }
+	else { $error .= "Node: null\n"; }
 
-	$error .= "User: $$USER{title}\n";
+	if ($USER) { $error .= "User: $$USER{title}\n"; }
+	else { $error .= "User: null\n"; }
 	$error .= "User agent: " . $query->user_agent() . "\n" if defined $query;
 	$error .= "Code:\n$code\n";
 	$error .= "Error:\n$err\n";
@@ -576,26 +787,58 @@ sub jsWindow
 #       urlGen
 #
 #   Purpose
-#       Generates URLs. Still uses the old-style non-semantic URLs; please see urlGenNoParams
+#       Generates URLs. Old code calls this directly, but this should
+#       not be necessary anymore. Prefer linkNode instead.
 #
 #   Parameters
-#       hashref of node_id and any other parameters for the URL like viewcode, etc.
+#
+#       $REF - hashref parameters for the URL like viewcode, etc.
+#
 #       noquotes - in case you don't want quotes around the URL.
+#
+#       $NODE - hashref of the node linking to.
 
 sub urlGen {
-	my ($REF, $noquotes) = @_;
+  my ($REF, $noquotes, $NODE) = @_;
 
-	my $str;
-	$str .= '"' unless $noquotes;
-	$str .= "$ENV{SCRIPT_NAME}?"; # Usually index.pl
+  my $str;
+  $str .= '"' unless $noquotes;
 
-	# Cycle through all the keys of the hashref for node_id, etc.
-	foreach my $key (keys %$REF) {
-		$str .= CGI::escape($key) .'='. CGI::escape($$REF{$key}) .'&amp;';
-	}
-	$str = substr($str,0,-5);
-	$str .= '"' unless $noquotes;
-	$str;
+  if($NODE){
+    $str .= urlGenNoParams($NODE,1);
+  }
+  #Preserve backwards-compatibility
+  else{
+    if($$REF{node}){
+      if($$REF{nodetype}){
+        $str .= "/node/$$REF{nodetype}/".rewriteCleanEscape($$REF{node});
+      }
+      else{
+        $str .= "/title/".rewriteCleanEscape($$REF{node});
+      }
+    }
+    elsif($$REF{node_id} && $$REF{node_id} =~ /^\d+$/){
+      $str .= "/node/$$REF{node_id}";
+    }
+    else{ $str .= "/"; }
+  }
+
+  delete $$REF{node_id};
+  delete $$REF{node};
+  delete $$REF{nodetype};
+
+  #Our mod_rewrite rules can now handle this properly
+  my $quamp = '?';
+
+  # Cycle through all the keys of the hashref for node_id, etc.
+  foreach my $key (keys %$REF) {
+    next if $key eq "lastnode_id" and $REF -> {$key} == "0";
+    $str .= $quamp . CGI::escape($key) .'='. CGI::escape($$REF{$key});
+    $quamp = '&amp;' ;
+  }
+
+  $str .= '"' unless $noquotes;
+  $str;
 }
 
 
@@ -608,23 +851,13 @@ sub urlGen {
 #
 #   Parameters
 #       funcname - The name of the function to rerieve
-#       args - optional arguments to the function.
-#           arguments must be in a comma delimited list, as with
-#           embedded htmlcode calls
 #
 sub getCode
 {
-	my ($funcname, $args) = @_;
-#	$args = "" if not defined $args;	
+	my ($funcname) = @_;
 	my $CODE = getNode($funcname, getType("htmlcode"));
-	
-	return '"";' unless (defined $CODE);
-
-	my $str;
-	$str = "\@\_ = split (/\\s\*,\\s\*/, '$args');\n" if defined $args;
-	$str .= $$CODE{code};
-
-	return $str;
+	return $$CODE{code} if defined( $CODE );
+	return '"";' ;
 }
 
 
@@ -795,257 +1028,228 @@ sub getPage
 }
 
 sub rewriteCleanEscape {
-	my ($string) = @_;
-	$string = CGI::escape(CGI::escape($string));
-	return $string;
+  my ($string) = @_;
+  $string = CGI::escape(CGI::escape($string));
+  #Make spaces more readable
+  $string =~ s/\%2520/\+/gs;
+  return $string;
 }
 
 sub urlGenNoParams {
-	my ($NODE, $noquotes) = @_;
-	if (not ref $NODE) {
-                if ($noquotes) {
-                        return "/node/$NODE";
-                } else {
-                        return "\"/node/$NODE\"";                
-		}
-	}
-
-	my $retval = "";
-        if ($$NODE{type}{title} eq 'e2node') {
-                $retval = "/title/".rewriteCleanEscape($$NODE{title});
-        } elsif ($$NODE{type}{title} eq 'user') {
-                $retval = "/".$$NODE{type}{title}."/".rewriteCleanEscape($$NODE{title});
-	} elsif ($$NODE{type}{restrictdupes} && $$NODE{title}) {
-		$retval = "/node/".$$NODE{type}{title}."/".rewriteCleanEscape($$NODE{title});
-	} else {
-		$retval = "/node/".getId($NODE);
-	}
-	if ($noquotes) { return $retval; } else { return '"'.$retval.'"'; }
-}
-
-
-
-
-#############################################################################
-sub linkNode {
-	my ($NODE, $title, $PARAMS) = @_;
-	#getRef $NODE;	
-
-	return if not ref $NODE and $NODE == -1;
-	return unless $NODE;
-	unless ($title) {
-		$NODE = getNodeById($NODE, 'light') unless ref $NODE;
-		$title = encodeHTML($$NODE{title});
-	}
-#	return unless ref $NODE;	
-
-	
-
-	if ($NODE == -1) {return "<a>$title</a>";}
-	$title ||= encodeHTML($$NODE{title});
-	$$PARAMS{node_id} = getId $NODE;
-	my $tags = "";
-
-	$$PARAMS{lastnode_id} = getId ($GNODE) unless exists $$PARAMS{lastnode_id};
-	#any params that have a "-" preceding 
-	#get added to the anchor tag rather than the URL
-	foreach my $key (keys %$PARAMS) {
-
-		next unless ($key =~ /^-/); 
-		my $pr = substr $key, 1;
-		$tags .= " $pr=\"$$PARAMS{$key}\""; 
-		delete $$PARAMS{$key};
-	}
-	if ((keys(%$PARAMS) == 2 && exists $$PARAMS{lastnode_id}) or (keys(%$PARAMS) == 1)) {
-		if ($$PARAMS{lastnode_id} == 0) {
-			"<a onmouseup=\"document.cookie='lastnode_id=0; ; path=/'; 1;\" href=" . urlGenNoParams($NODE) . $tags . ">$title</a>";
-		} else {
-			"<a onmouseup=\"document.cookie='lastnode_id=".$$PARAMS{lastnode_id}."; ; path=/'; 1;\" href=" . urlGenNoParams($NODE) . $tags . ">$title</a>";
-		}
-	} else {
-		"<a href=" . urlGen ($PARAMS) . $tags . ">$title</a>";
-	}
-}
-
-
-#############################################################################
-
-sub linkNodeTitle {
-	my ($nodename, $lastnode, $escapeTags) = @_;
-  my $title; #anchor text to display
-  my $tip; #tooltip
-
-	($nodename, $title) = split /\|/, $nodename;
-  #No whitespace around metacharacters
-  $nodename =~ s,\s*(<|>)\s*,$1,g;
-	$nodename =~ s/\s+/ /gs;
-	$title = $nodename if $title eq "";
-
-  my $str = "";
-  #Scratch pad linking
-  if ($nodename =~ />>/) {
-    my ($scratch_title, $noder) = split ">>", $nodename;
-
-    #If title wasn't set, it has to be checked again.
-    $title = $scratch_title if $title eq $nodename;
-    if ($escapeTags) {
-      $title =~ s/>/\&gt\;/g;
-      $title =~ s/</\&lt\;/g;
-    }
-
-    $noder = getNode($noder,"user");
-
-    #If no noder by this name, getNode returns undef, evaluates to false.
-    if ($noder) {
-      my $scratch_id;
-
-      if ($scratch_title eq 'Default Scratch Pad') {
-        $scratch_id = $DB->sqlSelect("scratch_id",
-                                     "scratch",
-                                     "scratch_user=$$noder{user_id}");
-      }
-      else {
-        my $dbh = $DB->getDatabaseHandle();
-        #With this DB call, our code is now forever bound to e2.
-        #--[Swap]
-        my $csr = $dbh -> prepare("SELECT scratch_id
-                                 FROM scratch2
-                                 WHERE scratch_title=?
-                                 AND scratch_user = $$noder{user_id}");
-        $scratch_title =~ s/^\s+//;
-        $scratch_title =~ s/\s+$//;
-        $csr -> execute($scratch_title);
-        $scratch_id = $csr -> fetchrow;
-      }
-
-      if ($escapeTags) {
-        $scratch_title =~ s/>/\&gt\;/g;
-        $scratch_title =~ s/</\&lt\;/g;
-      }
-
-      if ($scratch_id) {
-        $tip = $scratch_title;
-        $tip =~ s/"/''/g;
-        $str .= "<a title=\"$tip\" onmouseup=\"document.cookie='path=/'; 1;\" href=\"$ENV{SCRIPT_NAME}?node=scratch%20pads&scratch_id=$scratch_id&other_user=$$noder{title}\">$title</a>";
-
-        return $str;
-      }
-      else {
-        $nodename = $scratch_title;
-      }
+  my ($NODE, $noquotes) = @_;
+  if (not ref $NODE) {
+    if ($noquotes) {
+      return "/node/$NODE";
     }
     else {
-      $nodename = $scratch_title;
+      return "\"/node/$NODE\"";
     }
   }
 
-  #Direct linking to writeups, discussion posts
-  if ($nodename =~ />/) {
+  my $retval = "";
+  if ($$NODE{type}{title} eq 'e2node') {
+    $retval = "/title/".rewriteCleanEscape($$NODE{title});
+  }
+  elsif ($$NODE{type}{title} eq 'user') {
+    $retval = "/".$$NODE{type}{title}."/".rewriteCleanEscape($$NODE{title});
+  }
+  elsif ($$NODE{type}{title} eq 'writeup'){
+    my $author = getNodeById($NODE -> {author_user}, "light");
 
-    my ($anchor, $oldnodename);
-    $oldnodename = $nodename;
-    ($nodename, $anchor) = split ">",$nodename;
+    #Some older writeups are buggy and point to an author who doesn't
+    #exist anymore. --[Swap]
+    if (ref $author) {
+      $author = $author -> {title};
+      my $title = $NODE -> {title};
 
-    $title = $nodename if $title eq $oldnodename;
-    if ($escapeTags) {
-      $title =~ s/>/\&gt\;/g;
+      $title =~ s/ \([^\)]*\)$//; #Remove the useless writeuptype
+
+      $author = rewriteCleanEscape($author);
+
+      $retval = "/user/$author/writeups/".rewriteCleanEscape($title);
+    }
+    else{
+      $retval = "/node/".getId($NODE);
+    }
+  }
+  elsif ($$NODE{type}{restrictdupes} && $$NODE{title}) {
+    $retval = "/node/".$$NODE{type}{title}."/"
+              .rewriteCleanEscape($$NODE{title});
+  }
+  else {
+    $retval = "/node/".getId($NODE);
+  }
+
+  if ($noquotes) {
+    return $retval;
+  }
+  else {
+    return '"'.$retval.'"';
+  }
+}
+
+
+#############################################################################
+# Sub
+#  linkNode
+#
+# Purpose
+#  Generates an HTML hyperlink.
+#
+# Parameters
+#  $NODE   - A node hashref or id of the node that we want to link to.
+#  $title  - A string with the text to display in the anchor text.
+#  $PARAMS - A hashref with any optional CGI params.
+#
+# Returns
+#  The HTML for linking to the node, with CGI params.
+#
+sub linkNode {
+  my ($NODE, $title, $PARAMS) = @_;
+
+  return if not ref $NODE and $NODE =~ /\D/;
+  $NODE = getNodeById($NODE, 'light') unless ref $NODE;
+
+  $title ||= encodeHTML($$NODE{title});
+  my $tags = "";
+
+  my $lastnode_id = $PARAMS -> {lastnode_id};
+  $lastnode_id = getId($GNODE) unless defined $lastnode_id;
+  delete $PARAMS -> {lastnode_id};
+
+  #any params that have a "-" preceding 
+  #get added to the anchor tag rather than the URL
+  foreach my $key (keys %$PARAMS) {
+
+    next unless ($key =~ /^-/);
+    my $pr = substr $key, 1;
+    $tags .= " $pr=\"$$PARAMS{$key}\"";
+    delete $$PARAMS{$key};
+  }
+
+  my $exist_params = (keys(%$PARAMS) > 0);
+
+  if ($lastnode_id == 0) {
+    "<a onmouseup=\"document.cookie='lastnode_id=0; ; path=/'; 1;\" href="
+      . ($exist_params ? urlGen($PARAMS,0,$NODE) :urlGenNoParams($NODE) )
+      . $tags . ">$title</a>";
+  }
+  else {
+    "<a onmouseup=\"document.cookie='lastnode_id=".$lastnode_id
+      ."; ; path=/'; 1;\" href=" 
+      . ($exist_params ? urlGen($PARAMS,0,$NODE) :urlGenNoParams($NODE) )
+      . $tags .">$title</a>";
+  }
+}
+
+
+#############################################################################
+sub linkNodeTitle {
+	my ($nodename, $lastnode, $escapeTags) = @_;
+  my $title;
+	($nodename, $title) = split /\s*[|\]]+/, $nodename;
+	$title = $nodename if $title eq "";
+	$nodename =~ s/\s+/ /gs;
+
+	my $str = "";
+  my ($tip, $isNode);
+
+  #If we figure out a clever way to find the nodeshells, we should fix
+  #this variable.
+  $isNode = 1;
+
+  #A direct link draws near! Command?
+  if($nodename =~ /\[/){ # usually no anchor: check *if* before seeing *what* for performance
+    my $anchor ;
+    ($tip,$anchor) = split /\s*[[\]]/, $nodename;
+    $title = $tip if $title eq $nodename ;
+
+    $nodename = $tip;
+    $tip =~ s/"/''/g;
+
+    if($escapeTags){
       $title =~ s/</\&lt\;/g;
+      $title =~ s/>/\&gt\;/g;
+      $tip =~ s/</\&lt\;/g;
+      $tip =~ s/>/\&gt\;/g;
     }
 
-    my $node = getNode($nodename,"e2node");
-    my $user = getNode($anchor, "user");
+    my ($nodetype,$user) = split /\bby\b/, $anchor;
+    $nodetype =~ s/^\s*//;
+    $nodetype =~ s/\s*$//;
+    $user =~ s/^\s*//;
+    $user =~ s/\s*$//;
 
-    if ($node && $user) {
-      #Got ourselves a node possibly a nodeshell. Let's investigate.
-      my @wus = @{$$node{group} };
+    $nodename = rewriteCleanEscape($nodename);
 
-      foreach my $wu (@wus) {
-        $wu = getNodeById($wu);
-
-        if ($$wu{author_user} == $$user{node_id}) {
-          $tip = $$wu{title};
-          $tip =~ s/"/''/g;
-          if($lastnode){
-            $str .= "<a onmouseup=\"document.cookie='lastnode_id=$lastnode; "
-                    ."path=/'; 1;\" href='"
-          }
-          else{
-            $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; "
-                    ."path=/'; 1;\" href='"
-          }
-          $str .=  urlGenNoParams($node,1)
-                  ."#node_id_$$wu{writeup_id}' title=\"$tip\">$title</a>";
-          return $str;
-        }
-      }
-      #Else, $nodename has the right value, and it will default to the
-      #linking below, even if the user got the username wrong.
+    #Aha, trying to link to a discussion post
+    if($nodetype =~ /^\d+$/){
+      $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ; "
+              ."path=/'; 1;\" title=\"$tip\" href=\""
+              ."/node/debate/$nodename#debatecomment_$nodetype";
     }
 
-    $node = getNode($nodename, "debate");
+    #Perhaps direct link to a writeup instead?
+    elsif(grep /^$nodetype$/, ("","e2node","node","writeup") ){
+      #Anchors are case-sensitive, need to get the exact username.
+      $user = getNode($user,"user");
+      $user = ($user? $$user{title} : "");
 
-    #Don't check if the anchor is correct, just that it's a number. If
-    #users mess it up, that's their business; their anchor won't lead
-    #anywhere, but at least they get the discussion node.
-    if ($node && $anchor =~ /^\d+$/) {
-      $tip = $$node{title};
-      $tip =~ s/"/''/g;
-      $str .= "<a onmouseup=\"document.cookie='"
-              ." ; path=/'; 1;\" title=\"$tip\" href='"
-              .urlGenNoParams($node,1)
-              ."#debatecomment_$anchor'>$title</a>";
-      return $str;
+      $str .= "<a onmouseup=\"document.cookie='lastnode_id="
+               .($lastnode? $lastnode : 0)."; ; "
+               ."path=/'; 1;\" title=\"$tip\" href=\""
+               ."/title/$nodename#$user";
+    }
+
+    #Or maybe a scratch pad?
+    elsif($nodetype =~ /^scratch/){
+      $user = rewriteCleanEscape($user);
+      $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ;"
+               ."path=/'; 1;\" title=\"$tip\" href=\""
+               ."/user/$user/scratchpads/$nodename";
+    }
+
+    #Else, direct link to nodetype. Let's hope the users know what
+    #they're doing.
+    else{
+      $str .= "<a onmouseup=\"document.cookie='lastnode_id="
+              .($lastnode? $lastnode : 0)."; ;"
+              ."path=/'; 1;\" title=\"$tip\" href=\""
+              .($nodetype eq "user" ? "/" : "/node/")
+              ."$nodetype/$nodename";
     }
   }
 
-  #Linking to specific nodetypes
-  if ($nodename =~ /</) {
-    my $type;
-    my $oldnodename = $nodename;
-    ($nodename,$type) = split "<",$nodename;
-
-    $title = $nodename if $title eq $oldnodename;
-
-    #The reason why we call getNode twice here is that this isn't
-    #meant to be fed non-sanitised input, fails with DB errors when
-    #fed an invalid nodetype, so have to check that first.
-    $type = getNode($type,"nodetype");
-    if ($type) {
-      my $node = getNode($nodename,$$type{title});
-      if ($node) {
-        #FIXME: linkNode always escapes HTML tags, sometimes we don't
-        #want that.
-        $str .= linkNode($node, $title);
-        return $str;
-      }
+  #Plain ol' link, no direct linking.
+  else {
+    if($escapeTags){
+      $title =~ s/</\&lt\;/g;
+      $title =~ s/>/\&gt\;/g;
+      $nodename =~ s/</\&lt\;/g;
+      $nodename =~ s/>/\&gt\;/g;
     }
-    #Else, $nodename has the right nodename, and will degrade gracefully.
+    $tip = $nodename;
+    $tip =~ s/"/''/g;
+
+    #my $isNode = getNodeWhere({ title => $nodename});
+    my $urlnode = CGI::escape($nodename);
+    #$str .= "<a title=\"$tip\" href=\"$ENV{SCRIPT_NAME}?node=$urlnode";
+    #if ($lastnode) { $str .= "&amp;lastnode_id=" . getId($lastnode);}
+    if (!$lastnode) {
+      $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ; "
+        ."path=/'; 1;\" title=\"$tip\" href=\"/title/"
+          .rewriteCleanEscape($nodename);
+    }
+    else {
+      $str .= "<a onmouseup=\"document.cookie='lastnode_id=$lastnode; ; "
+        ."path=/'; 1;\"  title=\"$tip\" href=\"/title/"
+          .rewriteCleanEscape($nodename);
+    }
   }
+  $str .= "\" "
+          .( $isNode ? "class='populated'" : "class='unpopulated'")
+         ." >$title</a>";
 
-
-
-  if ($escapeTags) {
-    $nodename =~ s/>/\&gt\;/g;
-    $nodename =~ s/</\&lt\;/g;
-    $title =~ s/>/\&gt\;/g;
-    $title =~ s/</\&lt\;/g;
-  }
-	$tip = $nodename;
-	$tip =~ s/"/''/g;
-
-  #my $isNode = getNodeWhere({ title => $nodename});
-  my $isNode = 1;
-	my $urlnode = CGI::escape($nodename);
-
-	#$str .= "<a title=\"$tip\" href=\"$ENV{SCRIPT_NAME}?node=$urlnode";
-	#if ($lastnode) { $str .= "&amp;lastnode_id=" . getId($lastnode);}
-	if (!$lastnode) {
-		$str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ; path=/'; 1;\" title=\"$tip\" href=\"/title/".rewriteCleanEscape($nodename);
-	}
-  else {	
-		$str .= "<a onmouseup=\"document.cookie='lastnode_id=$lastnode; ; path=/'; 1;\"  title=\"$tip\" href=\"/title/".rewriteCleanEscape($nodename);
-	}
-	$str .= "\" ".( $isNode ? "class='populated'" : "class='unpopulated'")." >$title</a>";
 
 	$str;
 }
@@ -1175,7 +1379,7 @@ sub evalCode {
 	my $NODE = $GNODE;
 	my $warnbuf = "";
 
-	local $SIG{__WARN__} = sub { 
+	local $SIG{__WARN__} = sub {
 		$warnbuf .= $_[0] 
 		 unless $_[0] =~ /^Use of uninitialized value/;
 	};
@@ -1197,14 +1401,15 @@ sub evalCode {
 #		htmlcode('textfield', 'title,80');
 #
 #	args
-#		func -- the function name
-#		args -- the arguments in a comma delimited list
+#		[0] the function name
+#		[1] the arguments in a comma delimited list (must be string), or
+#			more than one argument: can be anything
 #
 #
 sub htmlcode {
-	my ($func, $args) = @_;
-	my $code = getCode($func, $args);
-	evalCode($code) if($code);
+	my $function = evalCode("sub {\n" . getCode(shift) . "\n}" );
+	@_ = eval( "split (/\\s*,\\s*/, '$_[0]');" ) if scalar( @_ ) == 1 ; #eval/quotes to dereference variable names
+	&$function ;
 }
 
 #############################################################################
@@ -1213,7 +1418,7 @@ sub embedCode {
 	my $block = shift @_;
 
 	my $NODE = $GNODE;
-	
+
 	$block =~ /^(\W)/;
 	my $char = $1;
 	
@@ -1221,17 +1426,13 @@ sub embedCode {
 		$block = evalCode ($block . ';', @_);	
 	} elsif ($char eq '{') {
 		#take the arguments out
-		
-		$block =~ s/^\{(.*)\}$/$1/s;
-		my ($func, $args) = split /\s*:\s*/, $block;
-		$args ||= "";
-		my $pre_code = "\@\_ = split (/\\s*,\\s*/, \"$args\"); ";
-		#this line puts the args in the default array
-		
-		$block = embedCode ('%'. $pre_code . getCode ($func) . '%', @_);
+		$block =~ /^\{([^:]*)\s*(?::\s*(.*))?\}$/s;
+		my ($functionName, $args) = ($1, $2);
+		$functionName =~ s/\s+^//;
+		$block = htmlcode($functionName, $args);
 	} elsif ($char eq '%') {
 		$block =~ s/^\%(.*)\%$/$1/s;
-		$block = evalCode ($block, @_);	
+		$block = evalCode ($block, @_);
 	}
 	
 	# Block needs to be defined, otherwise the search/replace regex
@@ -1317,23 +1518,21 @@ sub insertNodelet
 {
 	($NODELET) = @_;
 	getRef $NODELET;
+	my ($pre, $post) = ('', '');
 
         #my $html = genContainer($$NODELET{parent_container})
         #       if $$NODELET{parent_container};
 
         my $container = $$THEME{generalNodelet_container};
         $container ||= getId(getNode('nodelet container','container'));
-
-        my $html = genContainer($container) if $container;
+	($pre, $post) = genContainer($container) if $container;
 	
 	# Make sure the nltext is up to date
 	updateNodelet($NODELET);
 	return unless ($$NODELET{nltext} =~ /\S/);
 	
 	# now that we are guaranteed that nltext is up to date, sub it in.
-	if ($html) { $html =~ s/CONTAINED_STUFF/$$NODELET{nltext}/s; }
-	else { $html = $$NODELET{nltext}; }
-	$html;
+	return $pre.$NODELET->{nltext}.$post;
 }
 
 
@@ -1396,16 +1595,22 @@ sub genContainer {
 	my ($CONTAINER) = @_;
 	getRef $CONTAINER;
 	my $replacetext;
-
-	$replacetext = parseCode ($$CONTAINER{context}, $CONTAINER);
+	# Create prefix and suffix code fields
+	if (! exists $CONTAINER->{_context_prefix}) {
+		($CONTAINER->{_context_prefix},
+		 $CONTAINER->{_context_suffix})
+		    = split('CONTAINED_STUFF', $CONTAINER->{context});
+	}
+	my $prefix = parseCode ($CONTAINER->{_context_prefix}, $CONTAINER);
+	my $suffix = parseCode ($CONTAINER->{_context_suffix}, $CONTAINER);
 
 	if ($$CONTAINER{parent_container}) {
-		my $parenttext = genContainer($$CONTAINER{parent_container});	
-		$parenttext =~ s/CONTAINED_STUFF/$replacetext/s;
-		$replacetext = $parenttext;
+		my ($parentprefix, $parentsuffix)
+		    = genContainer($$CONTAINER{parent_container});
+		return ($parentprefix.$prefix, $suffix.$parentsuffix);
 	} 
 	
-	$replacetext;	
+	return ($prefix, $suffix);
 }
 
 
@@ -1423,10 +1628,8 @@ sub genContainer {
 sub containHtml {
 	my ($container, $html) =@_;
 	my ($TAINER) = getNode($container, getType("container"));
-	my $str = genContainer($TAINER);
-
-	$str =~ s/CONTAINED_STUFF/$html/g;
-	$str;
+	my ($pre, $post) = genContainer($TAINER);
+	return $pre.$html.$post;
 }
 
 
@@ -1488,10 +1691,9 @@ sub displayPage
 
 	$page = parseCode($page, $NODE);
 	if ($$PAGE{parent_container}) {
-		my $container = genContainer($$PAGE{parent_container}); 
-		$container =~ s/CONTAINED_STUFF/$page/s;
-		$page = $container;
-	}	
+		my ($pre, $post) = genContainer($$PAGE{parent_container});
+		$page = $pre.$page.$post;
+	}
    
   #  my $XP = $$USER{experience};
 #	delete $$USER{experience};  #hopefully this will clear up XP corruption
@@ -1672,8 +1874,12 @@ sub parseLinks {
                  !<a href="$1" rel="nofollow" class="externalLink">$1</a>!gsx;
 
        #Ordinary internal e2 links.
-       $text =~ s!\[(.*?)\]!linkNodeTitle ($1, $NODE,$escapeTags)!egs;
-       unMSify($text);
+       $text =~ s!\[([^[\]]*(?:\[[^\]|]*[\]|][^[\]]*)?)]!linkNodeTitle ($1, $NODE,$escapeTags)!egs;
+	   # [^\[\]]+ any text in square brackets
+	   # ((?:\[[^\]|]* '[' then optionally: nodetype/author also in square brackets
+	   # [\]|] tolerate forgetting either closing ']' or pipe
+	   # [^[\]]*) then any more text in the brackets
+       $text = unMSify($text);
        return $text;
 }
 
@@ -1714,8 +1920,8 @@ sub loginUser
 	
         #jb 5-19-02: To support wap phones and maybe other clients/configs without cookies:
 
-        my $oldcookie = $query->cookie("userpass");
-        $oldcookie ||= $query->param("userpass");
+        my $oldcookie = $query->cookie($CONFIG{cookiepass});
+        $oldcookie ||= $query->param($CONFIG{cookiepass});
 
         if($oldcookie)                     
 	{
@@ -1881,49 +2087,63 @@ sub printHeader
 #	Parameters
 #		None.  Uses the global package variables.
 #
-sub handleUserRequest
-{
-	my $user_id = $$USER{node_id};
-	my $node_id;
-	my $nodename;
-	my $code;
-	my $handled = 0;
+sub handleUserRequest{
+  my $user_id = $$USER{node_id};
+  my $node_id;
+  my $nodename;
+  my $author;
+  my $code;
+  my $handled = 0;
 
-	if ($query->param('node'))
-	{
-		# Searching for a node my string title
-		my $type  = $query->param('type');
-		my $TYPE = getType($type);
-		
-		$nodename = cleanNodeName($query->param('node'));
+  if ($query->param('node')) {
+    # Searching for a node my string title
+    my $type  = $query->param('type');
+    my $TYPE = getType($type);
 
-		if($nodename eq "")
-		{
-			gotoNode($HTMLVARS{default_node}, $user_id);
-			return;
-		}
+    $nodename = cleanNodeName($query->param('node'));
 
-		$query->param("node", $nodename);
-		
-		if ($query->param('op') ne 'new')
-		{
-			nodeName ($nodename, $user_id, $type); 
-		}
-		else
-		{
-			gotoNode($HTMLVARS{permission_denied}, $user_id);
-		}
-	}
-	elsif ($node_id = $query->param('node_id'))
-	{
-		#searching by ID
-		gotoNode($node_id, $user_id);
-	}
-	else
-	{
-		#no node was specified -> default
-		gotoNode($HTMLVARS{default_node}, $user_id);
-	}
+    $author = $query -> param("author");
+    $author = getNode($author,"user");
+
+    if ($nodename eq "") {
+      gotoNode($HTMLVARS{default_node}, $user_id);
+      return;
+    }
+
+    if($author and $TYPE->{title} eq 'writeup'){
+      my $e2node = getNode($nodename,"e2node");
+      if($e2node){
+        foreach my $wu_id(@{$e2node -> {group}} ){
+
+          my $wu_author = getNodeById(getNodeById($wu_id, "light")
+                                      -> {author_user},
+                                      "light");
+
+          if ($wu_author->{title} eq $author -> {title}){
+            gotoNode($wu_id,$user_id);
+            return;
+          }
+        }
+      }
+    }
+
+    $query->param("node", $nodename);
+
+    if ($query->param('op') ne 'new') {
+      nodeName ($nodename, $user_id, $type);
+    }
+    else {
+      gotoNode($HTMLVARS{permission_denied}, $user_id);
+    }
+  }
+  elsif ($node_id = $query->param('node_id')) {
+    #searching by ID
+    gotoNode($node_id, $user_id);
+  }
+  else {
+    #no node was specified -> default
+    gotoNode($HTMLVARS{default_node}, $user_id);
+  }
 }
 
 
@@ -1999,7 +2219,7 @@ sub opLogin
 	
 	# If the user/passwd was correct, set a cookie on the users
 	# browser.
-	$cookie = $query->cookie(-name => "userpass", 
+	$cookie = $query->cookie(-name => $CONFIG{cookiepass}, 
 		-value => $query->escape($user . '|' . crypt ($passwd, $user)), 
 		-expires => $query->param("expires")) if $user_id;
 
@@ -2016,7 +2236,7 @@ sub opLogin
 sub opLogout
 {
 	# The user is logging out.  Nuke their cookie.
-	my $cookie = $query->cookie(-name => 'userpass', -value => "");
+	my $cookie = $query->cookie(-name => $CONFIG{cookiepass}, -value => "");
 	my $user_id = $HTMLVARS{guest_user};	
 
 	$USER = getNodeById($user_id);
@@ -2099,41 +2319,45 @@ sub getOpCode
 #
 sub execOpCode
 {
-	my $op = $query->param('op');
-	my $code;
-	my $handled = 0;
-	
-	return 0 unless(defined $op && $op ne "");
-	
-	$code = getOpCode($op);
-	if (defined $code) {
-		$handled = eval($code);
-		Everything::printLog($@) if $@;
-#		Everything::printLog("executed opcode $op \n$code");
-	}	
+  my $op = $query->param('op');
+  my $code;
+  my $handled = 0;
+  
+  return 0 unless(defined $op && $op ne "");
+  
+  $code = getOpCode($op);
+  if (defined $code) {
+    $handled = eval($code);
+    if ($@){
+      Everything::printLog("Problem when executing $op opcode:\n");
+      Everything::printLog($@);
+      Everything::printLog("\n\n");
+    }
 
-	unless($handled)
-	{
-		# These are built in defaults.  If no 'opcode' nodes exist for
-		# the specified op, we have some default handlers.
+  } 
 
-		if($op eq 'login')
-		{
-			opLogin()
-		}
-		elsif($op eq 'logout')
-		{
-			opLogout();
-		}
-		elsif($op eq 'nuke')
-		{
-			opNuke();
-		}
-		elsif($op eq 'new')
-		{
-			opNew();
-		}
-	}
+  unless($handled)
+  {
+    # These are built in defaults.  If no 'opcode' nodes exist for
+    # the specified op, we have some default handlers.
+
+    if($op eq 'login')
+    {
+      opLogin()
+    }
+    elsif($op eq 'logout')
+    {
+      opLogout();
+    }
+    elsif($op eq 'nuke')
+    {
+      opNuke();
+    }
+    elsif($op eq 'new')
+    {
+      opNew();
+    }
+  }
 }
 
 #############################################################################
@@ -2203,7 +2427,7 @@ sub mod_perlInit
     return if $query->user_agent and $query->user_agent =~ /WebStripper/;
 	$USER = loginUser();
     #init the cache
-	$CACHESTORE ||= new Everything::CacheStore "cache_store:web2";
+	$CACHESTORE ||= new Everything::CacheStore "cache_store:$CONFIG{cachestore_dbserv}";
 
 
 
@@ -2241,23 +2465,6 @@ sub mod_perlInit
          print GODSLOG $log;
          close GODSLOG;
 	     }
-
-#	my $darkwatch = {"Gritcka" => 1, "wrinkly" => 1, "Frankie" => 1};
-
-#	if($darkwatch->{$USER->{title}} or $GNODE->{title} eq "SQL Prompt" or $query->param("sentmessage") =~ /frankie/i)
-#	{
-#		my $log = localtime()."\t$$USER{title}\t($$GNODE{title})" if ref $USER and ref $GNODE;
-
-#		foreach(qw/sqlquery displaytype sentmessage/)
-#		{
-#			$log.="\t$_: ".$query->param($_) if $query->param($_);
-#		}
-#
-#		$log.="\n";
-#		open DARKLOG, ">> /home/jaybonci/logs/darklog";
-#		print DARKLOG $log;
-#		close DARKLOG;
-#	}
 
 	#$Everything::PERLTIME->stop();
 	$PAGELOAD++;
@@ -2302,7 +2509,7 @@ sub mod_perlpsuedoInit
     return if $query->user_agent =~ /WebStripper/;
 	$USER = loginUser();
     #init the cache
-	$CACHESTORE ||= new Everything::CacheStore "cache_store:db1";
+	$CACHESTORE ||= new Everything::CacheStore "cache_store:$CONFIG{cachestore_dbserv}";
 
        #only for Everything2.com
        if ($query->param("op") eq "randomnode") {
@@ -2347,6 +2554,163 @@ sub escapeAngleBrackets{
 
   return $text;
 }
+
+#############################################################################
+# Sub
+#   showPartialDiff
+#
+# Purpose
+#   Given two pieces of code, shows a brief diff between them that
+#   only includes the lines that have been affected by the change.
+#   This was originally in the [patch display page] htmlpage.
+#
+# Parameters
+#   $codeOrig  - old code to diff
+#   $codeNew   - new code to diff
+#
+# Returns
+#   The HTML-ready diff.
+
+sub showPartialDiff{
+  my ($codeOrig,$codeNew) = @_;
+
+  use Algorithm::Diff qw(diff);
+
+  my $diffs = diff([split("\n", $codeOrig)], [split("\n", $codeNew)]);
+  return 'Nothing changed!' unless @$diffs;
+
+  my $str = '';
+
+  my $chunk;
+  my $line;
+
+  my $s;
+
+  foreach $chunk (@$diffs) {
+    foreach $line (@$chunk) {
+      my ($sign, $lineno, $text) = @$line;
+      $s = sprintf("%4d$sign %s\n", $lineno+1, encodeHTML($text));
+      if ($sign eq '+') {
+        $s = '<font color="#008800">'.$s.'</font>';
+      }
+      elsif ($sign eq '-') {
+        $s = '<font color="#880000">'.$s.'</font>';
+      }
+      $str .= $s;
+    }
+    $str .= "\n";  #blank line between chunks
+  }
+
+  return $str;
+}
+
+#############################################################################
+# Sub
+#   showCompleteDiff
+#
+# Purpose
+#   Same as showPartialDiff, but showing all of the code and the
+#   differing lines in context.
+#
+# Parameters
+#   $codeOrig  - old code to diff
+#   $codeNew   - new code to diff
+#
+# Returns
+#   The HTML-ready diff.
+
+sub showCompleteDiff{
+  my ($codeOrig,$codeNew) = @_;
+  use Algorithm::Diff qw(sdiff);
+
+
+  my @diff = sdiff([split("\n", $codeOrig)], [split("\n", $codeNew)]);
+  my @minusBuffer = ();
+  my @plusBuffer = ();
+  my $html = '';
+
+  sub renderDiffLine {
+    my ($sign, $line) = @_;
+
+    # [ ] replace colors with CSS classes
+
+    my $color = '';
+    if ($sign eq '+') {
+      $color = '#008800';
+    }
+    elsif ($sign eq '-') {
+      $color = '#880000';
+    }
+
+    my $html = '';
+    if ($color) {
+      $html .= "<span style=\"color: $color\">";
+    }
+    $html .= $sign . ' ' . encodeHTML($line);
+    if ($color) {
+      $html .= "</span>";
+    }
+    return $html;
+  }
+
+  sub flushDiffBuffers {
+    my $html = '';
+
+    foreach (@minusBuffer) {
+      $html .= renderDiffLine(@$_);
+    }
+    @minusBuffer = ();
+
+    foreach (@plusBuffer) {
+      $html .= renderDiffLine(@$_);
+    }
+    @plusBuffer = ();
+
+    return $html;
+  }
+
+  while (@diff) {
+    my ($sign, $left, $right) = @{shift @diff};
+
+    if ($sign eq '-') {
+      push @minusBuffer, ['-', $left];
+
+    }
+    elsif ($sign eq '+') {
+      push @plusBuffer, ['+', $right];
+
+    }
+    elsif ($sign eq 'c') {
+      push @minusBuffer, ['-', $left];
+      push @plusBuffer, ['+', $right];
+
+    }
+    elsif ((@minusBuffer || @plusBuffer)
+           && $right =~ /^\s*$/
+           && @diff
+           && ${$diff[0]}[0] ne 'u') {
+
+      # whitespace lines surrounded by changes should be included in
+      # the changes
+      # [ ] doesn't take into account multiple unchanged whitespace
+      # lines in a row
+      push @minusBuffer, ['-', $left];
+      push @plusBuffer, ['+', $right];
+
+    }
+    else {
+      $html .= flushDiffBuffers();
+      $html .= renderDiffLine(' ', $right);
+    }
+
+    if (!@diff) {
+      $html .= flushDiffBuffers();
+    }
+  }
+
+  return $html;
+}
+
 
 #############################################################################
 # End of package

@@ -23,50 +23,49 @@ sub BEGIN
 	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
-		$DB
-		$dbh
-		getRef 
-		getId 
-		getTables
+              %CONFIG
+              $DB
+              $dbh
+              getRef
+              getId
+              getTables
 
-		getNode
-		getNodeById
-		getType
-		getNodeWhere
-		selectNodeWhere
-		selectNode
+              getNode
+              getNodeById
+              getType
+              getNodeWhere
+              selectNodeWhere
+              selectNode
 
-		nukeNode
-		insertNode
-		updateNode
-		replaceNode
+              nukeNode
+              insertNode
+              updateNode
+              replaceNode
 
-		initEverything
-		removeFromNodegroup 
-		replaceNodegroup
-		insertIntoNodegroup 
-		canCreateNode 
-		canDeleteNode 
-		canUpdateNode 
-		canReadNode 
-		updateLinks 
-		updateHits 
-		getVars 
-		setVars 
-		selectLinks 
-		isGroup
-		isNodetype
-		isGod
-		lockNode
-		unlockNode
+              initEverything
+              removeFromNodegroup
+              replaceNodegroup
+              insertIntoNodegroup
+              canCreateNode
+              canDeleteNode
+              canUpdateNode
+              canReadNode
+              updateLinks
+              updateHits
+              getVars
+              setVars
+              selectLinks
+              isGroup
+              isNodetype
+              isGod
+              lockNode
+              unlockNode
 
-		dumpCallStack
-		getCallStack
-		printErr
-		printLog
-
-    getCredentials
-        );
+              dumpCallStack
+              getCallStack
+              printErr
+              printLog
+            );
  }
 
 use vars qw($DB);
@@ -683,6 +682,11 @@ sub initEverything
 {
 	my ($db, $staticNodetypes, $memcache) = @_;
 
+  #Move some config settings to an external file instead of hardcoding
+  #it into ecore. --[Swap]
+  use Config::Simple;
+  Config::Simple -> import_from('/etc/everything/everything.conf',\%CONFIG);
+
 	$DB = new Everything::NodeBase($db, $staticNodetypes, $memcache);
 
 	# This is for legacy code.  You should not use $dbh!  Use
@@ -833,28 +837,6 @@ sub getCallStack
 	pop @callStack;
 
 	return @callStack;
-}
-
-#############################################################################
-#
-sub getCredentials{
-  my ($user,$pass);
-
-  my $DBpassfile = shift;
-
-  if (open(DBPASS, $DBpassfile)) {
-    $user = <DBPASS>;
-    chomp $user;
-    $pass = <DBPASS>;
-    chomp $pass;
-  }
-  else {
-    die "Credentials file not found!\n";
-  }
-
-  close(DBPASS);
-
-  return ($user,$pass);
 }
 
 

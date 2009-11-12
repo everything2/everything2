@@ -18,9 +18,13 @@ sub BEGIN
 	use vars       qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
+    setAttribute
+    getAttribute
+    decrementAttribute
+    adjustAttribute
 		castVote
 		adjustExp
-		adjustRep
+		adjustRepAndVoteCount
 		adjustGP
 		allocateVotes
 		hasVoted
@@ -29,6 +33,76 @@ sub BEGIN
 		getHRLF
 		calculateBonus
 	);
+}
+
+#######################################################################
+#
+#       setAttribute
+#               Atomically set a user attribute
+#
+sub setAttribute {
+  my ($USER, $attribute, $value) = @_;
+  my $uid = int($USER->{node_id});
+  my $up = $DB->sqlUpdate('user_attributes',
+                          { $attribute => $value},
+                          'user_id = '.$uid);
+  if ($up && int($up) == 0) {
+    # No row updated, so insert the row.
+    $DB->sqlInsert('user_attributes',
+                   { $attribute => $value,
+                     user_id => $uid});
+  }
+}
+
+#######################################################################
+#
+#       getAttribute
+#               Get a user attribute
+#
+sub getAttribute {
+  my ($USER, $attribute) = @_;
+  my $uid = int($USER->{node_id});
+  my $res = $DB->sqlSelect($attribute, 'user_attributes',
+                           'user_id = '.$uid);
+  return $res || 0;
+}
+
+#######################################################################
+#
+#       decrementAttribute
+#               Atomically conditionally decrement a user attribute if
+#               it is possible to do so.
+#
+sub decrementAttribute {
+  my ($USER, $attribute, $value) = @_;
+  my $up = $DB->sqlUpdate('user_attributes',
+                          { "-$attribute" => "$attribute - $value" },
+                          ('user_id = ' . int($USER->{node_id})
+                           . " and $attribute >= $value"));
+  return int($up) != 0;
+}
+
+#######################################################################
+#
+#       adjustAttribute
+#               Atomically (unconditionally) adjust a user attribute.
+#
+sub adjustAttribute {
+  my ($USER, $attribute, $value) = @_;
+  my $uid = int($USER->{node_id});
+  my $up = $DB->sqlUpdate('user_attributes',
+                          { "-$attribute" => "$attribute + ($value)" },
+                          'user_id = ' . $uid);
+  if ($up && int($up) == 0) {
+    # No row updated, so insert the row (acquiring the default value
+    # from the database) and then update it.
+    $DB->sqlInsert('user_attributes',
+                   { user_id => $uid});
+    $DB->sqlUpdate('user_attributes',
+		   { "-$attribute" => "$attribute + ($value)" },
+		   'user_id = ' . $uid);
+  }
+  return int($up) != 0;
 }
 
 #######################################################################
@@ -101,15 +175,18 @@ sub allocateVotes {
 
 #########################################################################
 #
-#	adjustRep
+#	adjustRepAndVoteCount
 #
-#	adjust reputation points for a node
+#	adjust reputation points for a node as well as vote count, potentially
 #
-sub adjustRep {
-	my ($NODE, $pts) = @_;
+sub adjustRepAndVoteCount {
+	my ($NODE, $pts, $voteChange) = @_;
 	getRef($NODE);
 
 	$$NODE{reputation} += $pts;
+	# Rely on updateNode to discard invalid hash entries since
+	#  not all voteable nodes may have a totalvotes column
+	$$NODE{totalvotes} += $voteChange;
 	updateNode($NODE, -1);
 }
 
@@ -213,51 +290,81 @@ sub insertVote {
 #	allowed to vote, inserts the vote, and allocates exp/rep points
 #
 sub castVote {
-	my ($NODE, $USER, $weight, $noxp, $VSETTINGS) = @_;
-	getRef($NODE, $USER);
+  my ($NODE, $USER, $weight, $noxp, $VSETTINGS) = @_;
+  getRef($NODE, $USER);
 
-	return unless $$USER{votesleft};
-	#return if they don't have any votes left today
-	
-        #jb says: Allow for $VSETTINGS to be specified. This will save
-        # us a few cycles in castVote
+  return unless $$USER{votesleft};
+  #return if they don't have any votes left today
 
-	$VSETTINGS ||= getVars(getNode('vote settings', 'setting'));
-	my @votetypes = split /\s*\,\s*/, $$VSETTINGS{validTypes};
-	
-	return if (@votetypes and not grep(/^$$NODE{type}{title}$/, @votetypes));
-	#if no types are specified, the user can vote on anything
-	#otherwise, they can only vote on "validTypes"
+  #jb says: Allow for $VSETTINGS to be specified. This will save
+  # us a few cycles in castVote
 
-	return unless (insertVote($NODE, $USER, $weight));
-	#at this point the vote has been inserted and approved. 
-	#now we assign points
+  $VSETTINGS ||= getVars(getNode('vote settings', 'setting'));
+  my @votetypes = split /\s*\,\s*/, $$VSETTINGS{validTypes};
 
-	adjustRep($NODE, $weight);
-	
-	#the nodes author has a chance of recieving or losing a GP
-	#if (rand(1.0) < $$VSETTINGS{voteeExpChance}) {
-	#	adjustExp($$NODE{author_user}, $weight); 
-	#}
+  return if (@votetypes and not grep(/^$$NODE{type}{title}$/, @votetypes));
+  #if no types are specified, the user can vote on anything
+  #otherwise, they can only vote on "validTypes"
 
-        #the node's author gains 1 XP for an upvote
-        if ($weight>0) {
-                adjustExp($$NODE{author_user}, $weight);
-        }
+  my $alreadyvoted = !(insertVote($NODE, $USER, $weight));
+  #if insertVote succeeded, the vote has been inserted and approved.
+  #now we assign points
+
+  #Else, already voted, update the table manually, check that the vote is
+  #actually different.
+  my $prevweight = 0;
+  my $voteCountChange = 0;
+
+  if($alreadyvoted){
+    $prevweight  = $DB->sqlSelect('weight',
+                                  'vote',
+                                  'voter_user='.$$USER{node_id}
+                                  .' AND vote_id='.$$NODE{node_id});
+
+    if ($prevweight != $weight){
+
+      $DB->sqlUpdate("vote",
+                     { -weight => $weight,
+                       -revotetime => "NOW()"},
+                     "voter_user=$$USER{node_id}
+                      AND vote_id=$$NODE{node_id}");
+    }
+
+  } else {
+  
+    $voteCountChange = 1;
+
+  }
+
+  adjustRepAndVoteCount($NODE, $weight-$prevweight, $voteCountChange);
+
+  #the nodes author has a chance of recieving or losing a GP
+  #if (rand(1.0) < $$VSETTINGS{voteeExpChance}) {
+  #	adjustExp($$NODE{author_user}, $weight);
+  #}
+
+  #the node's author gains 1 XP for an upvote or a flipped up
+  #downvote.
+  if ($weight>0 and $prevweight <= 0) {
+    adjustExp($$NODE{author_user}, $weight);
+  }
+  #Revoting down, note the subtle difference with above condition
+  elsif($weight < 0 and $prevweight > 0){
+     adjustExp($$NODE{author_user}, $weight);
+  }
 
 
+  #the voter has a chance of receiving a GP
+  if (rand(1.0) < $$VSETTINGS{voterExpChance} &&  !$alreadyvoted) {
+    adjustGP($USER, 1) unless($noxp);
+    #jb says this is for decline vote XP option
+    #we pass this $noxp if we want to skip the XP option
+  }
 
-	#the voter has a chance of receiving a GP
-	if (rand(1.0) < $$VSETTINGS{voterExpChance}) {
-		adjustGP($USER, 1) unless($noxp); 
-                  #jb says this is for decline vote XP option
-                  #we pass this $noxp if we want to skip the XP option
-	}
+  $$USER{votesleft}-- unless ($alreadyvoted and $weight==$prevweight);
+  updateNode($USER, -1);
 
-	$$USER{votesleft}--;
-	updateNode($USER, -1);
-
-	1;
+  1;
 }
 
 sub getHRLF
