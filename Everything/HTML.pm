@@ -1423,13 +1423,17 @@ sub embedCode {
 	my $char = $1;
 	
 	if ($char eq '"') {
-		$block = evalCode ($block . ';', @_);	
+		$block = evalCode ($block . ';', @_);
 	} elsif ($char eq '{') {
 		#take the arguments out
-		$block =~ /^\{([^:]*)\s*(?::\s*(.*))?\}$/s;
-		my ($functionName, $args) = ($1, $2);
-		$functionName =~ s/\s+^//;
-		$block = htmlcode($functionName, $args);
+		
+		$block =~ s/^\{(.*)\}$/$1/s;
+		my ($func, $args) = split /\s*:\s*/, $block;
+		$args ||= "";
+		my $pre_code = "\@\_ = split (/\\s*,\\s*/, \"$args\"); ";
+		#this line puts the args in the default array
+		
+		$block = embedCode ('%'. $pre_code . getCode ($func) . '%', @_);
 	} elsif ($char eq '%') {
 		$block =~ s/^\%(.*)\%$/$1/s;
 		$block = evalCode ($block, @_);
