@@ -107,7 +107,7 @@ sub tagApprove {
 	if (exists $$APPROVED{$tag}) {
 		unless ( $close ) {
 			if ( $attr ) {
-				if ( $attr =~ qr/\b(\w+)\b\=['"]?(\w+\b%?)"/i ) {
+				if ( $attr =~ qr/\b(\w+)\b\=['"]?(\w+\b%?)["']?/i ) {
 					my ( $name , $value ) = ( $1 , $2 ) ;
 					return '<'.$close.$tag.' '.$name.'="'.$value.'">' if ( $$APPROVED{$tag} =~ /\b$name\b/i ) ;
 					return '<'.$close.$tag.' '.$name.'="'.$value.'">' if $$APPROVED{ noscreening } ;
