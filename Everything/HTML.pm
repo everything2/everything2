@@ -482,7 +482,7 @@ sub buildTable
 	my $str='<table border="0" cellspacing="0" cellpadding="2" '.$width.
 		 'style="border: 1px solid '.$borderColor.';"'.$tablealignment.'>';
 	
-	$str.='<tr>'.join('',map({'<th class="title" '.$border.'>'.$_.'</th>'} @$labels))
+	$str.='<tr>'.join('',map({'<th '.$border.'>'.$_.'</th>'} @$labels))
 		.'</tr>' unless $options =~/nolabels/;
 	
 	foreach my $row (@$data){
