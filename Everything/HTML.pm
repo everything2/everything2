@@ -493,9 +493,9 @@ sub buildTable
 				$$row{$label} = '&nbsp;';
 			}
 			if (($options =~ /nolabels/)&&($label eq $$labels[0])) {
-				$str.='<th class="title"'.$border.$datavalignment.'>'.$$row{$label}.'</th>';
+				$str.='<th'.$border.$datavalignment.'>'.$$row{$label}.'</th>';
 			} else {
-				$str.='<td class="data"'.$border.$datavalignment.'>'.$$row{$label}.'</td>';
+				$str.='<td'.$border.$datavalignment.'>'.$$row{$label}.'</td>';
 			}
 		}
 		$str.='</tr>';
