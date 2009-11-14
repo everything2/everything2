@@ -1481,8 +1481,9 @@ sub evalCode {
 #
 #
 sub htmlcode {
-	my $function = evalCode("sub {\n" . getCode(shift) . "\n}" );
-	@_ = eval( "split (/\\s*,\\s*/, '$_[0]');" ) if scalar( @_ ) == 1 ; #eval/quotes to dereference variable names
+	my $splitter = '' ;
+	$splitter = '@_ = split(/\s*,\s*/, shift);' if scalar @_ == 2 and !ref $_[1] ;
+	my $function = evalCode("sub {" . $splitter . getCode(shift) . "\n}" );
 	&$function ;
 }
 
@@ -1500,19 +1501,20 @@ sub embedCode {
 		$block = evalCode ($block . ';', @_);
 	} elsif ($char eq '{') {
 		#take the arguments out
-		
+
 		$block =~ s/^\{(.*)\}$/$1/s;
 		my ($func, $args) = split /\s*:\s*/, $block;
-		$args ||= "";
-		my $pre_code = "\@\_ = split (/\\s*,\\s*/, \"$args\"); ";
-		#this line puts the args in the default array
-		
-		$block = embedCode ('%'. $pre_code . getCode ($func) . '%', @_);
+		if ( $args ) {
+			$args =~ s/\\/\\\\/g ;
+			$args =~ s/"/\\"/g ; #prohibit exploits/avoid errors
+			$args =  evalCode( '"'.$args.'"' ) ; #resolve variables
+  		}
+		$block = htmlcode( $func , $args );
 	} elsif ($char eq '%') {
 		$block =~ s/^\%(.*)\%$/$1/s;
 		$block = evalCode ($block, @_);
 	}
-	
+
 	# Block needs to be defined, otherwise the search/replace regex
 	# stuff will break when it gets an undefined return from this.
 	$block ||= "";
