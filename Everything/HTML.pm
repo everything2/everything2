@@ -1481,10 +1481,37 @@ sub evalCode {
 #
 #
 sub htmlcode {
-	my $splitter = '' ;
-	$splitter = '@_ = split(/\s*,\s*/, shift);' if scalar @_ == 2 and !ref $_[1] ;
-	my $function = evalCode("sub {" . $splitter . getCode(shift) . "\n}" );
-	&$function ;
+	my ($splitter, $returnVal) = ('');
+	my $encodedArgs = "(no arguments)";
+	my $htmlcodeName = shift;
+	my $htmlcodeCode = getCode($htmlcodeName);
+
+	if (scalar @_ == 1 and !ref $_[0]) {
+
+		$splitter = '@_ = split(/\s*,\s*/, shift);';
+		$encodedArgs = $_[0];
+
+	} elsif (scalar @_ > 0) {
+
+		$encodedArgs = join(",", @_);
+
+	}	
+
+	# localize @_ to insure encodeHTML doesn't mess with our args
+	my @savedArgs = @_;
+	$encodedArgs = encodeHTML($encodedArgs);
+
+	my $warnStr = "<p>Calling htmlcode $htmlcodeName with arguments: "
+				. $encodedArgs
+				. "</p>"
+				;
+	my $function = evalCode("sub {" . $splitter . $htmlcodeCode . "\n}" );
+	eval { $returnVal = &$function(@savedArgs); };
+	if ($@) {
+		$returnVal = htmlFormatErr ($htmlcodeCode, $@, $warnStr);
+	}
+
+	return $returnVal;
 }
 
 #############################################################################
