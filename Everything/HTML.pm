@@ -1506,6 +1506,8 @@ sub htmlcode {
 				. "</p>"
 				;
 	my $function = evalCode("sub {" . $splitter . $htmlcodeCode . "\n}" );
+	return "<p>htmlcode '$funname' raised compile-time error:</p>\n $function"
+		unless ref \$function eq 'REF' ;
 	eval { $returnVal = &$function(@savedArgs); };
 	if ($@) {
 		$returnVal = htmlFormatErr ($htmlcodeCode, $@, $warnStr);
