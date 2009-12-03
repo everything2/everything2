@@ -21,7 +21,7 @@ while (my $NL = $csr->fetchrow()) {
 
 	if (!defined $$NL{updateinterval})
 	{
-		print "$$NL{title} is updated in real time, skipping";
+		print "Skipping real-time nodelet $$NL{title} ($$NL{nodelet_id}).\n";
 		next;
 	}
 
@@ -30,10 +30,10 @@ while (my $NL = $csr->fetchrow()) {
 	my $timeToUpdateStr = strftime("%a %b %e %H:%M:%S %Y", localtime($timeToUpdate));
 	my $currentTime = time;
 
-	print "updating $$NL{title}";
 
 	if ($timeToUpdate <= $currentTime) {
 
+		print "updating $$NL{title} ($$NL{nodelet_id})";
 		$$NL{nltext} = Everything::HTML::parseCode($$NL{nlcode}, $NL);
 		$$NL{lastupdate} = $currentTime; 
 		updateNode($NL,-1);
@@ -41,7 +41,7 @@ while (my $NL = $csr->fetchrow()) {
 
 	} else {
 
-		print "...not updating until " . $timeToUpdateStr . "\n";
+		print "...not updating $$NL{title} ($$NL{nodelet_id}) until " . $timeToUpdateStr . "\n";
 
 	}
 }
