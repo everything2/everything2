@@ -27,7 +27,7 @@ while (my $NL = $csr->fetchrow()) {
 
 	# The following logic implies an interval of -1 will always update
 	my $timeToUpdate = $$NL{lastupdate} + $$NL{updateinterval};
-	my $timeToUpdateStr = strftime "%a %b %e %H:%M:%S %Y", $timeToUpdate;
+	my $timeToUpdateStr = strftime("%a %b %e %H:%M:%S %Y", localtime($timeToUpdate));
 	my $currentTime = time;
 
 	print "updating $$NL{title}";
