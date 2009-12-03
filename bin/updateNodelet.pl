@@ -19,7 +19,7 @@ $Everything::HTML::GNODE = $USER;
 while (my $NL = $csr->fetchrow()) {
 	$NL = getNodeById($NL);
 
-	if (!defined $$NNL{updateinterval})
+	if (!defined $$NL{updateinterval})
 	{
 		print "$$NL{title} is updated in real time, skipping";
 		next;
