@@ -1784,7 +1784,8 @@ sub displayPage
         $dsp ||= "display";
 
 	if($dsp eq "display"){
-		if ($isGuest and $CACHESTORE and $page = $CACHESTORE->retrievePage($$NODE{node_id})) {
+		if ($isGuest and !defined $query->param('op')
+		    and $CACHESTORE and $page = $CACHESTORE->retrievePage($$NODE{node_id})) {
 			printHeader($$NODE{datatype}, $$page, $lastnode);
 			$query->print($$page);
 			return "";
