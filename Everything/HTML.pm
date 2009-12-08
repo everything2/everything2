@@ -1222,7 +1222,7 @@ sub linkNodeTitle {
 	my ($nodename, $lastnode, $escapeTags) = @_;
   my $title;
 	($nodename, $title) = split /\s*[|\]]+/, $nodename;
-	$title = $nodename if $title eq "";
+	$title = $nodename if $title =~ m/^\s*$/;
 	$nodename =~ s/\s+/ /gs;
 
 	my $str = "";
@@ -1964,7 +1964,7 @@ sub parseLinks {
 
        $text =~ s!\[                         #Open bracket
                   \s*(https?://[^\]\|\[<>]+) #The URL to match
-                  \|                         #The pipe
+                  \|\s*                      #The pipe
                   ([^\]\|\[]+)?              #The possible anchor text
                   \]                         #Close bracket
 
