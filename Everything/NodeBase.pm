@@ -1602,7 +1602,12 @@ sub genWhereString
 		}
 		
 		# If $key starts with a '-', it means its a single value.
-		if ($key =~ /^\-/)
+		if ($key =~ /^\-LIKE\-/)
+		{
+			$key =~ s/^\-LIKE\-//;
+			$tempstr .= $key . ' LIKE ' . $$WHERE{'-LIKE-' . $key}; 
+		}
+		elsif ($key =~ /^\-/)
 		{ 
 			$key =~ s/^\-//;
 			$tempstr .= $key . '=' . $$WHERE{'-' . $key}; 

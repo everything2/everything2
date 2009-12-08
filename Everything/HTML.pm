@@ -2219,20 +2219,20 @@ sub handleUserRequest{
       return;
     }
 
-    if($author and $TYPE->{title} eq 'writeup'){
-      my $e2node = getNode($nodename,"e2node");
-      if($e2node){
-        foreach my $wu_id(@{$e2node -> {group}} ){
-
-          my $wu_author = getNodeById(getNodeById($wu_id, "light")
-                                      -> {author_user},
-                                      "light");
-
-          if ($wu_author->{title} eq $author -> {title}){
-            gotoNode($wu_id,$user_id);
-            return;
+    if ($author and $TYPE->{title} eq 'writeup') {
+      # Grab first (hopefully only) writeup by author under a given title
+      my ($writeup) =
+        getNodeWhere(
+          {
+            "-LIKE-title" => $DB->quote($nodename . '%')
+            , "-author_user" => $$author{user_id}
           }
-        }
+          , getType('writeup')
+        );
+
+      if ($writeup) {
+        gotoNode($writeup, $user_id);
+        return;
       }
     }
 
