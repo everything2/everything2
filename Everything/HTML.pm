@@ -220,9 +220,9 @@ sub cleanupHTML {
     my %no_close = ('p' => 1, 'br' => 1, 'hr' => 1,
 		    'img' => 1, 'input' => 1, 'link' => 1);
     
-    # Delete any incomplete tags. These may be the result of truncating
+    # Delete any incomplete tags, including comments. These may be the result of truncating
     # source HTML, eg. for Cream of the Cool.
-    $text =~ s/<[^>]*$//;
+    $text =~ s/<(?:[^>]*|!--(?:[^-]*|-[^-]|--[^>])*)$//;
     
     # Scan tags by recognising text starting with '<'. Experiments with
     # Firefox show that malformed opening tags (missing the closing '>')
