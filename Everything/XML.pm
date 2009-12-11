@@ -592,7 +592,7 @@ sub node2xml
 		'tableArray',
 		'resolvedInheritance', 'passwd', 'nltext', 'sqltablelist');
 
-   push @NOFIELDS, @$EXCEPT if @$EXCEPT;
+   push @NOFIELDS, @$EXCEPT if $EXCEPT;
 
 	foreach (@NOFIELDS) {
 		delete $$N{$_} if exists $$N{$_};
