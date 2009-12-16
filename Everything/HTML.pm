@@ -65,6 +65,8 @@ use vars qw($query);
 use vars qw(%HTMLVARS);
 use vars qw($GNODE);
 use vars qw($USER);
+use vars qw($TEST);
+use vars qw($TEST_CONDITION);
 use vars qw($VARS);
 use vars qw($THEME);
 use vars qw($NODELET);
@@ -2158,6 +2160,9 @@ sub printHeader
 	# default to plain html
 	$datatype ||= "text/html";
 	my @cookies = ();
+
+        push @cookies, generate_test_cookie();
+
 	if ($lastnode && $lastnode > 0) {
 	#	push @cookies, $query->cookie( -name=>'lastnode_id', -value=>$lastnode);
 		push @cookies, $query->cookie( -name=>'lastnode_id', -value=>'');
@@ -2821,6 +2826,110 @@ sub showCompleteDiff{
   return $html;
 }
 
+
+#####################
+# sub 
+#   generate_test_cookie 
+#
+# purpose
+#   quick and dirty factory for creating a cookie from $TEST
+#
+# params
+#   none, but checks $TEST and $TEST_CONDITION
+#
+# returns
+#   condition cookie
+sub generate_test_cookie {
+   return if $TEST_CONDITION eq 'optout';
+   return $query->cookie("condition", "") unless $TEST and $TEST_CONDITION; 
+
+   return $query->cookie("condition", join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION)));
+}
+
+#####################
+# sub 
+#   assign_test_condition
+#
+# purpose
+#   check to see if tests are running, if so stamp 'em
+#   if the user has a condition, load $TEST
+#
+# params 
+#   none, but checks $USER globals, cookies, and $query params
+# 
+# returns
+#   none
+#
+sub assign_test_condition {
+  $TEST_CONDITION = '';
+  my ($T) = getNodeWhere({ enabled => 1 }, 'mvtest'); 
+  return unless $T;
+  return if isGod($USER);
+
+  $TEST = $T;
+
+  my $current_condition = $query->cookie('condition');
+  if ($current_condition eq 'optout') {
+    $TEST_CONDITION = 'optout';
+    return;
+  }
+
+  #need to check user vars here
+  if (getId($USER) != $HTMLVARS{guest_user} and exists $$VARS{mvtest_condition} and $$VARS{mvtest_condition} != $current_condition) {
+     if ($$VARS{mvtest_condition} eq 'optout') {
+        $TEST_CONDITION = 'optout';
+        return;
+     }
+     $current_condition = $$VARS{mvtest_condition};        
+  }
+
+  my ($id, $starttime, $condition);
+  if ($current_condition) {
+     ($id, $starttime, $condition) = split "\|", $current_condition;
+  }
+
+  if ($current_condition and $id == getId($TEST) and $starttime eq $$TEST{starttime}) {
+     $TEST_CONDITION  = $condition;
+  } else {
+     my @potential_conditions = split ",", $$TEST{conditions};
+     if (@potential_conditions) {
+        $TEST_CONDITION = @potential_conditions[int(rand(@potential_conditions))];      
+     } 
+  }
+
+  if (getId($USER) != $HTMLVARS{guest_user}) {
+    $$VARS{mvtest_condition} = join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION))) 
+  } 
+
+}
+
+######################
+# sub
+#   check_test_substitutions
+#
+# purpose
+#   determine from $TEST whether we have substitutions for a given htmlcode
+#   this is called by getCode to "filter" what users see
+#
+# params
+#   htmlcode name
+#
+# returns
+#   new htmlcode name, or original
+#
+sub check_test_substitutions {
+  my ($htmlcode) = @_;
+
+  return $htmlcode if not $TEST or $TEST_CONDITION eq 'optout' or not $TEST_CONDITION;
+  
+  my $key = $TEST_CONDITION. "|". $htmlcode;   
+  my $V = getVars($TEST);
+  if (exists $$V{$key} and getNode($$V{key}, 'htmlcode')) {
+    return $$V{$key};
+  }
+
+  return $htmlcode;
+}
 
 #############################################################################
 # End of package
