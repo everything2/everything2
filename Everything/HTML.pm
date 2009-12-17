@@ -931,6 +931,8 @@ sub urlGen {
 sub getCode
 {
 	my ($funcname) = @_;
+
+	if ($TEST) { $funcname = check_test_substitutions($funcname); }
 	my $CODE = getNode($funcname, getType("htmlcode"));
 	return $$CODE{code} if defined( $CODE );
 	return '"";' ;
@@ -2861,10 +2863,10 @@ sub generate_test_cookie {
 #   none
 #
 sub assign_test_condition {
+  return if isGod($USER);
   $TEST_CONDITION = '';
   my ($T) = getNodeWhere({ enabled => 1 }, 'mvtest'); 
   return unless $T;
-  return if isGod($USER);
 
   $TEST = $T;
 
@@ -2874,7 +2876,8 @@ sub assign_test_condition {
     return;
   }
 
-  #need to check user vars here
+  #if a user has logged in and been assigned a test, the users own vars
+  #trump anything the cookie says (except for optout)
   if (getId($USER) != $HTMLVARS{guest_user} and exists $$VARS{mvtest_condition} and $$VARS{mvtest_condition} != $current_condition) {
      if ($$VARS{mvtest_condition} eq 'optout') {
         $TEST_CONDITION = 'optout';
@@ -2883,6 +2886,8 @@ sub assign_test_condition {
      $current_condition = $$VARS{mvtest_condition};        
   }
 
+  #we use the test_id/starttime as a dual key to confirm the test we have a
+  #cookie for is a valid test
   my ($id, $starttime, $condition);
   if ($current_condition) {
      ($id, $starttime, $condition) = split "\|", $current_condition;
@@ -2891,16 +2896,21 @@ sub assign_test_condition {
   if ($current_condition and $id == getId($TEST) and $starttime eq $$TEST{starttime}) {
      $TEST_CONDITION  = $condition;
   } else {
+     #if no assigned condition, or the cookie is no longer valid, assign 
      my @potential_conditions = split ",", $$TEST{conditions};
      if (@potential_conditions) {
         $TEST_CONDITION = @potential_conditions[int(rand(@potential_conditions))];      
      } 
   }
 
+  #if a user is logged in, make sure that the condition info is written to their
+  #user vars
   if (getId($USER) != $HTMLVARS{guest_user}) {
     $$VARS{mvtest_condition} = join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION))) 
   } 
 
+  #the cookie for the test is stamped in the printHeader() function
+  #which calls the generate_test_cookie function
 }
 
 ######################
