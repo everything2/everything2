@@ -2543,18 +2543,19 @@ sub mod_perlInit
 	$query = getCGI();
     return if $query->user_agent and $query->user_agent =~ /WebStripper/;
 	$USER = loginUser();
-    #init the cache
+
+	assign_test_condition();
+        if (not $TEST_CONDITION) {
+        #init the cache
 	$CACHESTORE ||= new Everything::CacheStore "cache_store:$CONFIG{cachestore_dbserv}";
-
-
-
-
+	} else {
+	   $CACHESTORE = '';
+	}
 
        #only for Everything2.com
        if ($query->param("op") eq "randomnode") {
                $query->param("node_id", getRandomNode());
        }
-
 
 	# Execute any operations that we may have
 	execOpCode();
