@@ -2906,7 +2906,7 @@ sub assign_test_condition {
   #if a user is logged in, make sure that the condition info is written to their
   #user vars
   if (getId($USER) != $HTMLVARS{guest_user}) {
-    $$VARS{mvtest_condition} = join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION))) 
+    $$VARS{mvtest_condition} = join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION));
   } 
 
   #the cookie for the test is stamped in the printHeader() function
