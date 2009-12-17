@@ -2938,7 +2938,7 @@ sub check_test_substitutions {
   
   my $key = $TEST_CONDITION. "|". $htmlcode;   
   my $V = getVars($TEST);
-  if (exists $$V{$key} and getNode($$V{key}, 'htmlcode')) {
+  if (exists $$V{$key} and getNode($$V{$key}, 'htmlcode')) {
     return $$V{$key};
   }
 
