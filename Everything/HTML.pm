@@ -2902,7 +2902,7 @@ sub assign_test_condition {
      #if no assigned condition, or the cookie is no longer valid, assign 
      my @potential_conditions = split ",", $$TEST{conditions};
      if (@potential_conditions) {
-        $TEST_CONDITION = @potential_conditions[int(rand(@potential_conditions))];      
+        $TEST_CONDITION = $potential_conditions[int(rand(@potential_conditions))];      
      } 
   }
 
