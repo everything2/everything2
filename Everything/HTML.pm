@@ -2303,6 +2303,8 @@ sub clearGlobals
 	$VARS = "";
 	$NODELET = "";
 	$THEME = "";
+        $TEST = "";
+	$TEST_CONDITION = "";
 
 	$query = "";
 }
