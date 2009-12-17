@@ -2848,7 +2848,10 @@ sub generate_test_cookie {
    return if $TEST_CONDITION eq 'optout';
    return $query->cookie("condition", "") unless $TEST and $TEST_CONDITION; 
 
-   return $query->cookie("condition", join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION)));
+   return $query->cookie(-name=>'condition',
+                         -value=> join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION)),
+                         -expires=>'+1y',
+			 -path=>'/'); 
 }
 
 #####################
