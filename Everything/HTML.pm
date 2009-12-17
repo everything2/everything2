@@ -2872,6 +2872,7 @@ sub assign_test_condition {
   return unless $T;
 
   $TEST = $T;
+  getRef $TEST;
 
   my $current_condition = $query->cookie('condition');
   if ($current_condition eq 'optout') {
@@ -2893,7 +2894,7 @@ sub assign_test_condition {
   #cookie for is a valid test
   my ($id, $starttime, $condition);
   if ($current_condition) {
-     ($id, $starttime, $condition) = split "\|", $current_condition;
+     ($id, $starttime, $condition) = split "\\|", $current_condition;
   }
 
   if ($current_condition and $id == getId($TEST) and $starttime eq $$TEST{starttime}) {
