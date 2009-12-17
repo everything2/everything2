@@ -932,7 +932,7 @@ sub getCode
 {
 	my ($funcname) = @_;
 
-	if ($TEST) { $funcname = check_test_substitutions($funcname); }
+	if (getId($TEST)) { $funcname = check_test_substitutions($funcname); }
 	my $CODE = getNode($funcname, getType("htmlcode"));
 	return $$CODE{code} if defined( $CODE );
 	return '"";' ;
