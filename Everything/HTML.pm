@@ -2934,7 +2934,7 @@ sub assign_test_condition {
 sub check_test_substitutions {
   my ($htmlcode) = @_;
 
-  return $htmlcode if not $TEST or $TEST_CONDITION eq 'optout' or not $TEST_CONDITION;
+  return $htmlcode if not getId($TEST) or $TEST_CONDITION eq 'optout' or not $TEST_CONDITION;
   
   my $key = $TEST_CONDITION. "|". $htmlcode;   
   my $V = getVars($TEST);
