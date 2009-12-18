@@ -67,6 +67,7 @@ use vars qw($GNODE);
 use vars qw($USER);
 use vars qw($TEST);
 use vars qw($TEST_CONDITION);
+use vars qw($TEST_SESSION_ID);
 use vars qw($VARS);
 use vars qw($THEME);
 use vars qw($NODELET);
@@ -2305,6 +2306,7 @@ sub clearGlobals
 	$THEME = "";
         $TEST = "";
 	$TEST_CONDITION = "";
+        $TEST_SESSION_ID = "";
 
 	$query = "";
 }
@@ -2849,7 +2851,7 @@ sub generate_test_cookie {
    return $query->cookie("condition", "") unless $TEST and $TEST_CONDITION; 
 
    return $query->cookie(-name=>'condition',
-                         -value=> join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION)),
+                         -value=> join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION, $TEST_SESSION_ID)),
                          -expires=>'+1y',
 			 -path=>'/'); 
 }
@@ -2897,23 +2899,25 @@ sub assign_test_condition {
   #cookie for is a valid test
   my ($id, $starttime, $condition);
   if ($current_condition) {
-     ($id, $starttime, $condition) = split "\\|", $current_condition;
+     ($id, $starttime, $condition, $session_id) = split "\\|", $current_condition;
   }
 
-  if ($current_condition and $id == getId($TEST) and $starttime eq $$TEST{starttime}) {
+  if ($current_condition and $id == getId($TEST) and $starttime eq $$TEST{starttime} and $session_id) {
      $TEST_CONDITION  = $condition;
+     $TEST_SESSION_ID = $session_id;
   } else {
      #if no assigned condition, or the cookie is no longer valid, assign 
      my @potential_conditions = split ",", $$TEST{conditions};
      if (@potential_conditions) {
         $TEST_CONDITION = $potential_conditions[int(rand(@potential_conditions))];      
+        $TEST_SESSION_ID = int(rand(1000000000));
      } 
   }
 
   #if a user is logged in, make sure that the condition info is written to their
   #user vars
   if (getId($USER) != $HTMLVARS{guest_user}) {
-    $$VARS{mvtest_condition} = join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION)); 
+    $$VARS{mvtest_condition} = join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION, $TEST_SESSION_ID)); 
   } 
 
   #the cookie for the test is stamped in the printHeader() function
