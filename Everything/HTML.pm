@@ -2897,7 +2897,7 @@ sub assign_test_condition {
 
   #we use the test_id/starttime as a dual key to confirm the test we have a
   #cookie for is a valid test
-  my ($id, $starttime, $condition);
+  my ($id, $starttime, $condition, $session_id);
   if ($current_condition) {
      ($id, $starttime, $condition, $session_id) = split "\\|", $current_condition;
   }
