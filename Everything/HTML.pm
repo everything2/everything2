@@ -2910,7 +2910,7 @@ sub assign_test_condition {
      my @potential_conditions = split ",", $$TEST{conditions};
      if (@potential_conditions) {
         $TEST_CONDITION = $potential_conditions[int(rand(@potential_conditions))];      
-        $TEST_SESSION_ID = int(rand(1000000000));
+        $TEST_SESSION_ID = int(rand(100000000000));
      } 
   }
 
