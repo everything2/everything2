@@ -520,6 +520,7 @@ sub getNodeById
 	$selectop ||= '';
     return -1 if $N == -1;
 	$N = $this->getId($N);
+	$N = int($N);
 	return undef unless $N;
 	
 	# See if we have this node cached already
