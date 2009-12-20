@@ -838,42 +838,65 @@ sub updateNode
 	my ($this, $NODE, $USER, $light) = @_;
 	my %VALUES;
 	my $tableArray;
-	my $table;
-	my @fields;
-	my $field;
 
 	$this->getRef($NODE);
 	return 0 unless ($this->canUpdateNode($USER, $NODE)); 
 
 	$tableArray = $$NODE{type}{tableArray};
 
-
 	# The node table is assumed, so its not in the "joined" table array.
 	# However, for this update, we need to add it.
 	push @$tableArray, "node";
 
+	my $fieldHash = $this->getFieldsHash($tableArray);
+	my %tableList = (); # So we only update tables as required
+
 	# We extract the values from the node for each table that it joins
 	# on and update each table individually.
-	foreach $table (@$tableArray)
+	foreach my $table (keys %$fieldHash)
 	{
-		undef %VALUES; # clear the values hash.
 		next if $light and $table eq 'document';
 
-		@fields = $this->getFields($table);
-		foreach $field (@fields)
+		foreach my $ordinal (keys %{$fieldHash->{$table}})
 		{
+
+			my $field = $fieldHash->{$table}->{$ordinal}->{column_name};
+
+			# we don't want to chance mucking with the primary key
+			next if $field eq $table . '_id';
+
 			if (exists $$NODE{$field})
 			{ 
-				$VALUES{$field} = $$NODE{$field};
+				my $qualified_column =
+				  $this->{dbh}->quote_identifier(undef, undef, $table, $field);
+				$VALUES{$qualified_column} = $$NODE{$field};
+				$tableList{$table} = 1;
 			}
+
 		}
 
-		# we don't want to chance mucking with the primary key
-		# So, remove this from the hash
-		delete $VALUES{$table . "_id"}; 
-
-		$this->sqlUpdate($table, \%VALUES, $table . "_id=$$NODE{node_id}");
 	}
+
+	my $tableListStr = join(', ', keys %tableList);
+	my $updateList =
+		join(
+			"\n\t\t,"
+			, map {$_ . " = " . $this->{dbh}->quote($VALUES{$_}) } keys %VALUES
+		);
+	my $whereStr =
+		join("\n\t\tAND "
+			, map {$_ . "_id = " . $$NODE{node_id} } keys %tableList
+		); 
+	my $sqlString = <<SQLEND;
+UPDATE
+	$tableListStr
+	SET
+		$updateList
+	WHERE
+		$whereStr
+SQLEND
+
+	$this->{dbh}->do($sqlString);
 
 	# We are done with tableArray.  Remove the "node" table that we put on
 	pop @$tableArray;
@@ -1309,18 +1332,40 @@ sub getFieldsHash
 	$getHash = 1 if(not defined $getHash);
 	$table ||= "node";
 
-	my $cursor = $this->{dbh}->prepare_cached("show columns from $table");
+	if (ref $table eq 'ARRAY') {
 
-	$cursor->execute;
-	while ($field = $cursor->fetchrow_hashref)
-	{
-		$value = ( ($getHash == 1) ? $field : $$field{Field});
-		push @fields, $value;
+			my $paramList = ' (?' . (', ?' x (-1 + scalar @$table)) . ') ';
+			my $sqlQuery = <<SQLEND;
+
+SELECT table_name, ordinal_position, column_name
+	FROM INFORMATION_SCHEMA.COLUMNS
+	WHERE table_name IN
+		$paramList
+		AND table_schema = ?
+SQLEND
+
+			return $this->{dbh}->selectall_hashref(
+			  $sqlQuery
+			  , [ 'table_name', 'ordinal_position' ]
+			  , {}, (@$table, $this->{dbname})
+			  );
+
+	} else {
+
+			my $cursor = $this->{dbh}->prepare_cached("show columns from $table");
+
+			$cursor->execute;
+			while ($field = $cursor->fetchrow_hashref)
+			{
+				$value = ( ($getHash == 1) ? $field : $$field{Field});
+				push @fields, $value;
+			}
+
+			$cursor->finish();
+
+			return @fields;
+
 	}
-
-	$cursor->finish();
-
-	@fields;
 }
 
 
@@ -1427,7 +1472,7 @@ sub dropNodeTable
 	{
 		if($_ eq $table)
 		{
-			printLog("WARNING! Attempted to drop core table $table!");
+			Everything::printLog("WARNING! Attempted to drop core table $table!");
 			return 0;
 		}
 	}
