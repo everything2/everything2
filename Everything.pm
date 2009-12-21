@@ -330,7 +330,7 @@ sub setVars
 		$$varsref{$_} = " " unless $$varsref{$_};
 	}
 	
-	$str = join("&", map( $_."=".escape($$varsref{$_}), keys %$varsref) );
+	$str = join("&", map( $_."=".escape($$varsref{$_}), sort keys %$varsref) );
 
 	return unless ($str ne $$NODE{vars}); #we don't need to update...
 
