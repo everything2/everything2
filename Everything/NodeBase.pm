@@ -974,14 +974,18 @@ SQLEND
 
 		$this->{dbh}->do($sqlString);
 
-		# Cache this node since it has been updated.  This way the cached
-		# version will be the same as the node in the db.
-		$this->copyOriginalValues($NODE);
-		$this->{cache}->incrementGlobalVersion($NODE);
-		$this->{cache}->cacheNode($NODE) if(defined $this->{cache});
-		$this->{cache}->memcacheNode($NODE);
-
 	}
+
+	# If this node had compiled code in it, and the source changed,
+	#  we need to remove the cached compile
+	delete $$NODE{compiledCode} if !$this->isOriginalValue($NODE, 'code');
+
+	# Cache this node since it has been updated.  This way the cached
+	# version will be the same as the node in the db.
+	$this->copyOriginalValues($NODE);
+	$this->{cache}->incrementGlobalVersion($NODE);
+	$this->{cache}->cacheNode($NODE) if(defined $this->{cache});
+	$this->{cache}->memcacheNode($NODE);
 
 	# This node has just been updated.  Do any maintenance if needed.
 	$this->nodeMaintenance($NODE, 'update');

@@ -935,8 +935,13 @@ sub getCode
 
 	if (getId($TEST)) { $funcname = check_test_substitutions($funcname); }
 	my $CODE = getNode($funcname, getType("htmlcode"));
-	return $$CODE{code} if defined( $CODE );
-	return '"";' ;
+	if (wantarray) {
+		return ($$CODE{code}, $CODE) if defined( $CODE );
+		return ('"";', undef);
+	} else {
+		return $$CODE{code} if defined( $CODE );
+		return '"";';
+	}
 }
 
 
@@ -1489,7 +1494,7 @@ sub htmlcode {
 	my ($splitter, $returnVal) = ('');
 	my $encodedArgs = "(no arguments)";
 	my $htmlcodeName = shift;
-	my $htmlcodeCode = getCode($htmlcodeName);
+	my ($htmlcodeCode, $codeNode) = getCode($htmlcodeName);
 
 	if (scalar @_ == 1 and !ref $_[0]) {
 
@@ -1510,9 +1515,25 @@ sub htmlcode {
 				. $encodedArgs
 				. "</p>"
 				;
-	my $function = evalCode("sub {" . $splitter . $htmlcodeCode . "\n}" );
+	my $function;
+
+	# If we are doing a new-style htmlcode call (or have no arguments)
+	#  we can use the cached compilation of this function
+	if ($splitter eq "" && ref $$codeNode{compiledCode} eq "CODE") {
+		$function = $$codeNode{compiledCode};
+	} else {
+		$function  = evalCode("sub {" . $splitter . $htmlcodeCode . "\n}" );
+	}
 	return "<p>htmlcode '$htmlcodeName ' raised compile-time error:</p>\n $function"
 		if ref \$function eq 'SCALAR' ;
+
+	# Save pointer to compiled code if new-style htmlcode is used
+	#  so we can avoid constantly recompiling commonly-used htmlcodes
+	if ($splitter eq "" && ref $$codeNode{compiledCode} ne "CODE") {
+		$$codeNode{compiledCode} = $function;
+		updateNode($codeNode, -1);
+	}
+
 	eval { $returnVal = &$function(@savedArgs); };
 	if ($@) {
 		$returnVal = htmlFormatErr ($htmlcodeCode, $@, $warnStr);
