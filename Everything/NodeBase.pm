@@ -285,6 +285,7 @@ sub sqlSelectMany
 	$sql .= "FROM $from " if $from;
 	$sql .= "WHERE $where " if $where;
 	$sql .= "$other" if $other;
+	$sql .= " FOR UPDATE" if $this->{dbh}->{AutoCommit} == 0;
 
 	#$Everything::SQLTIME->start();
 	my $cursor = $this->{dbh}->prepare($sql);
@@ -882,6 +883,107 @@ sub isOriginalValue
 	return eq_deeply($$NODE{_ORIGINAL_VALUES}->{$keyName}, $$NODE{$keyName})
 		if ref $$NODE{_ORIGINAL_VALUES} eq 'HASH';
 	return 0;
+}
+
+#############################################################################
+#	Sub
+#		updateLockedNode
+#
+#	Purpose
+#		Get a fresh copy of a node from the database, locking it
+#		from updates, change some values, then update the node.
+#
+#	Parameters
+#		$NODE - the node to update
+#		$USER - the user attempting to update this node (used for
+#			authorization)
+#		$CODE - a coderef to the actions to perform on the $NODE
+#			where the node as read from the databsae is passed in
+#			as an argument
+#
+#	Returns
+#		True if successful, false otherwise.
+#
+sub updateLockedNode
+{
+	my ($this, $NODE, $USER, $CODE) = @_;
+	my %VALUES;
+	my $tableArray;
+
+	my $node_id;
+
+	if (ref $NODE eq 'HASH') {
+		$node_id = int($$NODE{node_id});
+	} else {
+		$node_id = int($NODE);
+	}
+
+	my $updateSub = sub {
+		my $loadedNode = $this->getNodeById($node_id, "force");
+		return 0 unless ($this->canUpdateNode($USER, $NODE));
+		&$CODE($loadedNode);
+		$this->updateNode($loadedNode, $USER);
+		$NODE = $loadedNode;
+	};
+
+	my $success = $this->transactionWrap($updateSub);
+	return 1 if $success;
+	Everything::printErr(
+		"Attempt to do a locked update on $$NODE{title} ($$NODE{node_id}) failed!"
+	);
+	return 0;
+
+}
+
+#############################################################################
+#	Sub
+#		transactionWrap
+#
+#	Purpose
+#		Executes some code wrapped in a SQL transaction, automatically
+#		retrying on failures.
+#
+#	Parameters
+#		$CODE - coderef to the code to run
+#		$commitTries (optional) - number of times to try to run the code
+#			before giving up
+#
+#	Returns
+#		True if successful, false otherwise ($@ will contain the error)
+#
+sub transactionWrap
+{
+	my ($this, $CODE, $commitTries) = @_;
+	my ($committed, $commitTriesLeft) = (0, 5);
+	# By saving AutoCommit, calls to this funciton can be nested, although
+	#  that could mean a long-lived transaction.  Abuse with caution.
+	my $savedAutoCommit = $this->{dbh}->{AutoCommit};
+	my $savedRaiseError = $this->{dbh}->{RaiseError};
+
+	$this->{dbh}->{AutoCommit} = 0;
+	$this->{dbh}->{RaiseError} = 1;
+	$commitTriesLeft = $commitTries if ($commitTries && $commitTries > 0);
+
+	while (!$committed && $commitTriesLeft) {
+
+		$commitTriesLeft -= 1;
+
+		eval {
+			&$CODE;
+			$this->{dbh}->commit;
+		};
+
+		if (!$@) {
+			$committed = 1;
+		} else {
+			$this->{dbh}->rollback();
+		}
+
+	}
+
+	$this->{dbh}->{RaiseError} = $savedRaiseError;
+	$this->{dbh}->{AutoCommit} = $savedAutoCommit;
+	return $committed;
 }
 
 #############################################################################

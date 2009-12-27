@@ -40,6 +40,7 @@ sub BEGIN
               nukeNode
               insertNode
               updateNode
+              updateLockedNode
               replaceNode
 
               initEverything
@@ -98,6 +99,7 @@ sub selectNode		{ $DB->getNodeById(@_); }
 sub nukeNode		{ $DB->nukeNode(@_);}
 sub insertNode		{ $DB->insertNode(@_); }
 sub updateNode		{ $DB->updateNode(@_); }
+sub updateLockedNode	{ $DB->updateLockedNode(@_); }
 sub replaceNode		{ $DB->replaceNode(@_); }
 
 sub isNodetype		{ $DB->isNodetype(@_); }
