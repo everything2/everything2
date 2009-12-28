@@ -1136,6 +1136,7 @@ sub getCompiledCode {
 sub clearCompiledCode {
 	my ($this, $NODE) = @_;
 	delete $$NODE{compiledCode} if !$this->isOriginalValue($NODE, 'code');
+	delete $$NODE{compiledCode};
 }
 
 
