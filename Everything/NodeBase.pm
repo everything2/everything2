@@ -1076,23 +1076,66 @@ SQLEND
 
 		$this->{dbh}->do($sqlString);
 
+		# If this node had compiled code in it, and the source changed,
+		#  we need to remove the cached compile
+		$this->clearCompiledCode($NODE);
+
+		# Cache this node since it has been updated.  This way the cached
+		# version will be the same as the node in the db.
+		$this->copyOriginalValues($NODE);
+		$this->{cache}->incrementGlobalVersion($NODE);
+		$this->{cache}->cacheNode($NODE) if(defined $this->{cache});
+		$this->{cache}->memcacheNode($NODE);
+
 	}
-
-	# If this node had compiled code in it, and the source changed,
-	#  we need to remove the cached compile
-	delete $$NODE{compiledCode} if !$this->isOriginalValue($NODE, 'code');
-
-	# Cache this node since it has been updated.  This way the cached
-	# version will be the same as the node in the db.
-	$this->copyOriginalValues($NODE);
-	$this->{cache}->incrementGlobalVersion($NODE);
-	$this->{cache}->cacheNode($NODE) if(defined $this->{cache});
-	$this->{cache}->memcacheNode($NODE);
 
 	# This node has just been updated.  Do any maintenance if needed.
 	$this->nodeMaintenance($NODE, 'update');
 
 	return 1;
+}
+
+############################################################################
+#	sub
+#		getCompiledCode
+#
+#	purpose
+#		Returns the compiled code for a node, potentially compiling if necessary
+#
+sub getCompiledCode {
+	my ($this, $NODE, $evalFunc) = @_;
+
+	$this->clearCompiledCode($NODE);
+
+	if ($NODE && ref $$NODE{compiledCode} ne "CODE") {
+
+		my ($rawCode, $compileResult);
+
+		$rawCode = "sub { " . $$NODE{code} . "\n}";
+
+		if ($evalFunc) {
+			$compileResult = &$evalFunc($rawCode);
+		} else {
+			$compileResult = eval $rawCode;
+		}
+
+		$$NODE{compiledCode} = $compileResult;
+	}
+
+	return $$NODE{compiledCode};
+}
+
+############################################################################
+#	sub
+#		clearCompiledCode
+#
+#	purpose
+#		Clears the compiled code in a node if the code that was compiled has
+#			changed
+#
+sub clearCompiledCode {
+	my ($this, $NODE) = @_;
+	delete $$NODE{compiledCode} if !$this->isOriginalValue($NODE, 'code');
 }
 
 

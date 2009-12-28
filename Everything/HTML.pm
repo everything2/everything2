@@ -1519,20 +1519,13 @@ sub htmlcode {
 
 	# If we are doing a new-style htmlcode call (or have no arguments)
 	#  we can use the cached compilation of this function
-	if ($splitter eq "" && ref $$codeNode{compiledCode} eq "CODE") {
-		$function = $$codeNode{compiledCode};
+	if ($splitter eq "") {
+		$function = getCompiledCode($codeNode, \&evalCode);
 	} else {
 		$function  = evalCode("sub {" . $splitter . $htmlcodeCode . "\n}" );
 	}
 	return "<p>htmlcode '$htmlcodeName ' raised compile-time error:</p>\n $function"
 		if ref \$function eq 'SCALAR' ;
-
-	# Save pointer to compiled code if new-style htmlcode is used
-	#  so we can avoid constantly recompiling commonly-used htmlcodes
-	if ($splitter eq "" && ref $$codeNode{compiledCode} ne "CODE") {
-		$$codeNode{compiledCode} = $function;
-		updateNode($codeNode, -1);
-	}
 
 	eval { $returnVal = &$function(@savedArgs); };
 	if ($@) {
@@ -2430,11 +2423,7 @@ sub getOpCode
 {
 	my ($opname) = @_;
 	my $OPNODE = getNode($opname, "opcode");
-	my $code = '"";';
-	
-	$code = $$OPNODE{code} if(defined $OPNODE);
-
-	return $code;
+	return $OPNODE;
 }
 
 
@@ -2462,21 +2451,34 @@ sub getOpCode
 sub execOpCode
 {
   my $op = $query->param('op');
-  my $code;
+  my ($OPCODE, $opCodeCode);
   my $handled = 0;
   
   return 0 unless(defined $op && $op ne "");
   
-  $code = getOpCode($op);
-  if (defined $code) {
-    $handled = eval($code);
+  my $logError = sub {
+    my $condition = shift;
     if ($@){
-      Everything::printLog("Problem when executing $op opcode:\n");
+      Everything::printLog("Problem when $condition $op opcode:\n");
       Everything::printLog($@);
       Everything::printLog("\n\n");
     }
+  };
 
-  } 
+  my $opCodeTest = sub {
+    my $code = shift;
+    my $compiled = eval $code;
+    &$logError("compiling");
+    return $compiled;
+  };
+
+  $OPCODE = getOpCode($op);
+  $opCodeCode = getCompiledCode($OPCODE, $opCodeTest);
+  unless ($@)
+  {
+    $handled = eval { &$opCodeCode(); };
+    &$logError("running");
+  }
 
   unless($handled)
   {
