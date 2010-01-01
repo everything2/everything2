@@ -1249,7 +1249,9 @@ sub linkNodeTitle {
     $title = $tip if $title eq $nodename ;
 
     $nodename = $tip;
-    $tip =~ s/"/''/g;
+    $tip =~ s/"/&quot;/g;
+    $nodename = rewriteCleanEscape($nodename);
+    $anchor = rewriteCleanEscape($anchor);
 
     if($escapeTags){
       $title =~ s/</\&lt\;/g;
@@ -1261,10 +1263,8 @@ sub linkNodeTitle {
     my ($nodetype,$user) = split /\bby\b/, $anchor;
     $nodetype =~ s/^\s*//;
     $nodetype =~ s/\s*$//;
-    $user =~ s/^\s*//;
-    $user =~ s/\s*$//;
+    $user =~ s/^\s*|\s*$//;
 
-    $nodename = rewriteCleanEscape($nodename);
 
     #Aha, trying to link to a discussion post
     if($nodetype =~ /^\d+$/){
