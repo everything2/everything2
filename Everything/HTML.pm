@@ -887,8 +887,9 @@ sub urlGen {
   #Preserve backwards-compatibility
   else{
     if($$REF{node}){
-      if($$REF{nodetype}){
-        $str .= "/node/$$REF{nodetype}/".rewriteCleanEscape($$REF{node});
+      my $nodetype = $$REF{type} || $$REF{nodetype};
+      if($nodetype){
+        $str .= "/node/$nodetype/".rewriteCleanEscape($$REF{node});
       }
       else{
         $str .= "/title/".rewriteCleanEscape($$REF{node});
@@ -903,6 +904,7 @@ sub urlGen {
   delete $$REF{node_id};
   delete $$REF{node};
   delete $$REF{nodetype};
+  delete $$REF{type};
 
   #Our mod_rewrite rules can now handle this properly
   my $quamp = '?';
