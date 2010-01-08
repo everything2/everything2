@@ -2460,8 +2460,11 @@ sub execOpCode
     my $condition = shift;
     if ($@){
       Everything::printLog("Problem when $condition $op opcode:\n");
+      my $params = $query->Vars();
+      for (keys %$params) {
+        Everything::printLog("- param: " . $_ . " = " . $query->param($_));
+      }
       Everything::printLog($@);
-      Everything::printLog("\n\n");
     }
   };
 
@@ -2473,11 +2476,17 @@ sub execOpCode
   };
 
   $OPCODE = getOpCode($op);
-  $opCodeCode = getCompiledCode($OPCODE, $opCodeTest);
-  unless ($@)
-  {
-    $handled = eval { &$opCodeCode(); };
-    &$logError("running");
+
+  # For built-in opcodes, like new, there will normally be no $OPCODE
+  if ($OPCODE) {
+
+    $opCodeCode = getCompiledCode($OPCODE, $opCodeTest);
+    unless ($@)
+    {
+      $handled = eval { &$opCodeCode(); };
+      &$logError("running");
+    }
+
   }
 
   unless($handled)
