@@ -1985,7 +1985,7 @@ sub parseLinks {
        #fill the anchor text with the "[link]" text.
 
        $text =~ s!\[                         #Open bracket
-                  \s*(https?://[^\]\|\[<>]+) #The URL to match
+                  \s*(https?://[^\]\|\[<>"]+) #The URL to match
                   \|\s*                      #The pipe
                   ([^\]\|\[]+)?              #The possible anchor text
                   \]                         #Close bracket
@@ -2000,7 +2000,7 @@ sub parseLinks {
        #anchor text.
        $text =~ s!
                 \[
-                 \s*(https?://[^\]\|\[<>]+)
+                 \s*(https?://[^\]\|\[<>"]+)
                  \]
                  !<a href="$1" rel="nofollow" class="externalLink">$1</a>!gsx;
 
