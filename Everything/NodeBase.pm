@@ -906,30 +906,34 @@ sub isOriginalValue
 #
 sub updateLockedNode
 {
-	my ($this, $NODE, $USER, $CODE) = @_;
-	my %VALUES;
-	my $tableArray;
+	my ($this, $NODELIST, $USER, $CODE) = @_;
+	my @freshNodes;
 
-	my $node_id;
-
-	if (ref $NODE eq 'HASH') {
-		$node_id = int($$NODE{node_id});
-	} else {
-		$node_id = int($NODE);
+	if (ref $NODELIST ne 'ARRAY') {
+		$NODELIST = [ $NODELIST ];
 	}
 
+	# We don't use getId() here because getId() won't do lists
+	my @node_id_list =
+		map { ref $_ eq 'HASH' ? int($_{node_id}) : int $_ } @$NODELIST;
+
 	my $updateSub = sub {
-		my $loadedNode = $this->getNodeById($node_id, "force");
-		return 0 unless ($this->canUpdateNode($USER, $NODE));
-		&$CODE($loadedNode);
-		$this->updateNode($loadedNode, $USER);
-		$NODE = $loadedNode;
+		# Grab a fresh copy of each node, locking the nodes' DB rows.
+		@freshNodes = map { $this->getNodeById($_, "force") } @node_id_list;
+		# Only proceed if we can update all locked nodes
+		return if grep { !$this->canUpdateNode($USER, $_) } @freshNodes;
+
+		&$CODE(@freshNodes);
+		map { $this->updateNode($_, $USER) } @freshNodes;
+		return 1;
 	};
 
 	my $success = $this->transactionWrap($updateSub);
 	return 1 if $success;
+	my $errorNodes =
+			join(", ", map { "$_{title} ($_{node_id})" } @freshNodes);
 	Everything::printErr(
-		"Attempt to do a locked update on $$NODE{title} ($$NODE{node_id}) failed!"
+		"Attempt to do a locked update on $errorNodes failed!"
 	);
 	return 0;
 
