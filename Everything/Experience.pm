@@ -205,7 +205,8 @@ sub adjustExp {
 
 	$$USER{experience} += $points;
 
-	updateNode($USER,-1);
+	# Only update user immediately if we're not in a transaction
+	updateNode($USER, -1) if $DB->{dbh}->{AutoCommit};
 	1;
 }
 
@@ -293,76 +294,80 @@ sub castVote {
   my ($NODE, $USER, $weight, $noxp, $VSETTINGS) = @_;
   getRef($NODE, $USER);
 
-  return unless $$USER{votesleft};
-  #return if they don't have any votes left today
+  my $voteWrap = sub {
 
-  #jb says: Allow for $VSETTINGS to be specified. This will save
-  # us a few cycles in castVote
+    my ($NODE, $USER, $AUTHOR) = @_;
 
-  $VSETTINGS ||= getVars(getNode('vote settings', 'setting'));
-  my @votetypes = split /\s*\,\s*/, $$VSETTINGS{validTypes};
+    #return if they don't have any votes left today
+    return unless $$USER{votesleft};
 
-  return if (@votetypes and not grep(/^$$NODE{type}{title}$/, @votetypes));
-  #if no types are specified, the user can vote on anything
-  #otherwise, they can only vote on "validTypes"
+    #jb says: Allow for $VSETTINGS to be specified. This will save
+    # us a few cycles in castVote
+    $VSETTINGS ||= getVars(getNode('vote settings', 'setting'));
+    my @votetypes = split /\s*\,\s*/, $$VSETTINGS{validTypes};
 
-  my $alreadyvoted = !(insertVote($NODE, $USER, $weight));
-  #if insertVote succeeded, the vote has been inserted and approved.
-  #now we assign points
+    #if no types are specified, the user can vote on anything
+    #otherwise, they can only vote on "validTypes"
+    return if (@votetypes and not grep(/^$$NODE{type}{title}$/, @votetypes));
 
-  #Else, already voted, update the table manually, check that the vote is
-  #actually different.
-  my $prevweight = 0;
-  my $voteCountChange = 0;
-
-  if($alreadyvoted){
+    my $prevweight;
     $prevweight  = $DB->sqlSelect('weight',
                                   'vote',
                                   'voter_user='.$$USER{node_id}
-                                  .' AND vote_id='.$$NODE{node_id});
+                                  .' AND vote_id='.$$NODE{node_id}
+                                  );
 
-    if ($prevweight != $weight){
+    # If user had already voted, update the table manually, check that the vote is
+    # actually different.
+    my $alreadyvoted = (defined $prevweight);
+    my $voteCountChange = 0;
 
-      $DB->sqlUpdate("vote",
-                     { -weight => $weight,
-                       -revotetime => "NOW()"},
-                     "voter_user=$$USER{node_id}
-                      AND vote_id=$$NODE{node_id}");
+    if (!$alreadyvoted) {
+
+      insertVote($NODE, $USER, $weight);
+      $voteCountChange = 1;
+
+    } else {
+
+        $DB->sqlUpdate("vote"
+                       , { -weight => $weight, -revotetime => "NOW()" }
+                       , "voter_user=$$USER{node_id}
+                          AND vote_id=$$NODE{node_id}"
+                       )
+          unless $prevweight == $weight;
+
     }
 
-  } else {
-  
-    $voteCountChange = 1;
+    adjustRepAndVoteCount($NODE, $weight-$prevweight, $voteCountChange);
 
-  }
-
-  adjustRepAndVoteCount($NODE, $weight-$prevweight, $voteCountChange);
-
-  #the nodes author has a chance of recieving or losing a GP
-  #if (rand(1.0) < $$VSETTINGS{voteeExpChance}) {
-  #	adjustExp($$NODE{author_user}, $weight);
-  #}
-
-  #the node's author gains 1 XP for an upvote or a flipped up
-  #downvote.
-  if ($weight>0 and $prevweight <= 0) {
-    adjustExp($$NODE{author_user}, $weight);
-  }
-  #Revoting down, note the subtle difference with above condition
-  elsif($weight < 0 and $prevweight > 0){
-     adjustExp($$NODE{author_user}, $weight);
-  }
+    #the node's author gains 1 XP for an upvote or a flipped up
+    #downvote.
+    if ($weight>0 and $prevweight <= 0) {
+      adjustExp($AUTHOR, $weight);
+    }
+    #Revoting down, note the subtle difference with above condition
+    elsif($weight < 0 and $prevweight > 0){
+       adjustExp($AUTHOR, $weight);
+    }
 
 
-  #the voter has a chance of receiving a GP
-  if (rand(1.0) < $$VSETTINGS{voterExpChance} &&  !$alreadyvoted) {
-    adjustGP($USER, 1) unless($noxp);
-    #jb says this is for decline vote XP option
-    #we pass this $noxp if we want to skip the XP option
-  }
+    #the voter has a chance of receiving a GP
+    if (rand(1.0) < $$VSETTINGS{voterExpChance} &&  !$alreadyvoted) {
+      adjustGP($USER, 1) unless($noxp);
+      #jb says this is for decline vote XP option
+      #we pass this $noxp if we want to skip the XP option
+    }
 
-  $$USER{votesleft}-- unless ($alreadyvoted and $weight==$prevweight);
-  updateNode($USER, -1);
+    $$USER{votesleft}-- unless ($alreadyvoted and $weight==$prevweight);
+
+  };
+
+  my $superUser = -1;
+  updateLockedNode(
+    [ $$USER{user_id}, $$NODE{node_id}, $$NODE{author_user} ]
+    , $superUser
+    , $voteWrap
+  );
 
   1;
 }
