@@ -2785,7 +2785,7 @@ sub showCompleteDiff{
   my @plusBuffer = ();
   my $html = '';
 
-  sub renderDiffLine {
+  my $renderDiffLine  = sub {
     my ($sign, $line) = @_;
 
     # [ ] replace colors with CSS classes
@@ -2807,23 +2807,23 @@ sub showCompleteDiff{
       $html .= "</span>";
     }
     return $html;
-  }
+  };
 
-  sub flushDiffBuffers {
+  my $flushDiffBuffers = sub {
     my $html = '';
 
     foreach (@minusBuffer) {
-      $html .= renderDiffLine(@$_);
+      $html .= &$renderDiffLine(@$_);
     }
     @minusBuffer = ();
 
     foreach (@plusBuffer) {
-      $html .= renderDiffLine(@$_);
+      $html .= &$renderDiffLine(@$_);
     }
     @plusBuffer = ();
 
     return $html;
-  }
+  };
 
   while (@diff) {
     my ($sign, $left, $right) = @{shift @diff};
@@ -2855,12 +2855,12 @@ sub showCompleteDiff{
 
     }
     else {
-      $html .= flushDiffBuffers();
-      $html .= renderDiffLine(' ', $right);
+      $html .= &$flushDiffBuffers();
+      $html .= &$renderDiffLine(' ', $right);
     }
 
     if (!@diff) {
-      $html .= flushDiffBuffers();
+      $html .= &$flushDiffBuffers();
     }
   }
 
