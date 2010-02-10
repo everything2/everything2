@@ -276,7 +276,7 @@ sub insertVote {
 		voter_user => getId($USER),
 		weight => $weight,
 		-votetime => 'now()'
-	 	});
+		});
 	return 0 unless $ret;
 	#the vote was unsucessful
 
@@ -296,7 +296,7 @@ sub castVote {
 
   my $voteWrap = sub {
 
-    my ($NODE, $USER, $AUTHOR) = @_;
+    my ($USER, $NODE, $AUTHOR) = @_;
 
     #return if they don't have any votes left today
     return unless $$USER{votesleft};
@@ -319,7 +319,7 @@ sub castVote {
 
     # If user had already voted, update the table manually, check that the vote is
     # actually different.
-    my $alreadyvoted = (defined $prevweight);
+    my $alreadyvoted = (defined $prevweight && $prevweight != 0);
     my $voteCountChange = 0;
 
     if (!$alreadyvoted) {
