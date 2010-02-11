@@ -56,6 +56,7 @@ sub BEGIN {
               escapeAngleBrackets
               showPartialDiff
               showCompleteDiff
+              recordUserAction
               unMSify
               mod_perlInit
               mod_perlpsuedoInit);
@@ -2944,7 +2945,7 @@ sub assign_test_condition {
      my @potential_conditions = split ",", $$TEST{conditions};
      if (@potential_conditions) {
         $TEST_CONDITION = $potential_conditions[int(rand(@potential_conditions))];      
-        $TEST_SESSION_ID = int(rand(100000000000));
+        $TEST_SESSION_ID = int(rand(2147483647));
      } 
   }
 
@@ -2984,6 +2985,57 @@ sub check_test_substitutions {
   }
 
   return $htmlcode;
+}
+
+######################
+# sub
+#   record_useraction
+#
+# purpose
+#   Log a user action with the current user's session id and condition
+#
+# params
+#   action (node or node_id), source_node_id, target_node_id
+#
+# returns
+#   nothing
+#
+sub recordUserAction {
+  my ($action, $source_node_id, $target_node_id) = @_;
+
+  # Stop logging immediately if somebody's opted out
+  return if ($TEST_CONDITION eq 'optout');
+  # Logging won't work for gods because they aren't asssigned a SESSION_ID
+  return if isGod($USER);
+
+  $action = getNode($action, 'useraction') if !ref $action;
+  my $action_id = int($$action{node_id}) if $action;
+
+  my %setValues =
+    (
+      -useraction_id => $action_id
+      , -useraction_session_id => $TEST_SESSION_ID
+      , useraction_condition => $TEST_CONDITION
+    );
+
+  getId($source_node_id);
+  getId($target_node_id);
+
+  $setValues{'-useraction_source_node_id'} = $source_node_id if $source_node_id;
+  $setValues{'-useraction_target_node_id'} = $target_node_id if $target_node_id;
+
+  if (!$action_id) {
+
+    Everything::printLog("Unable to log user action because '$action' isn't a valid action.");
+    return;
+
+  } else {
+
+    Everything::printLog("About to log user action '$action'.");
+    $DB->sqlInsert('useractionlog', \%setValues);
+
+  }
+
 }
 
 #############################################################################

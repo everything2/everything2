@@ -321,10 +321,20 @@ sub castVote {
     # actually different.
     my $alreadyvoted = (defined $prevweight && $prevweight != 0);
     my $voteCountChange = 0;
+    my $action;
 
     if (!$alreadyvoted) {
 
       insertVote($NODE, $USER, $weight);
+
+      if ($$NODE{type}{title} eq 'poll') {
+         $action = 'votepoll';
+      } elsif ($weight > 0) {
+         $action = 'voteup';
+      } else {
+         $action = 'votedown';
+      }
+
       $voteCountChange = 1;
 
     } else {
@@ -336,8 +346,16 @@ sub castVote {
                        )
           unless $prevweight == $weight;
 
+        if ($weight > 0) {
+           $action = 'voteflipup';
+        } else {
+           $action = 'voteflipdown';
+        }
+
     }
 
+    Everything::printLog("About to log user action '$action'.");
+    Everything::HTML::recordUserAction($action, $$NODE{node_id});
     adjustRepAndVoteCount($NODE, $weight-$prevweight, $voteCountChange);
 
     #the node's author gains 1 XP for an upvote or a flipped up

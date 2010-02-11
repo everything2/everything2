@@ -931,9 +931,9 @@ sub updateLockedNode
 	my $success = $this->transactionWrap($updateSub);
 	return 1 if $success;
 	my $errorNodes =
-			join(", ", map { "$_{title} ($_{node_id})" } @freshNodes);
-	Everything::printErr(
-		"Attempt to do a locked update on $errorNodes failed!"
+			join(", ", map { $_->{title} . "(" . $_->{node_id} . ")" } @freshNodes);
+	Everything::printLog(
+		"Attempt to do a locked update on $errorNodes failed!\n$@"
 	);
 	return 0;
 
@@ -963,6 +963,7 @@ sub transactionWrap
 	#  that could mean a long-lived transaction.  Abuse with caution.
 	my $savedAutoCommit = $this->{dbh}->{AutoCommit};
 	my $savedRaiseError = $this->{dbh}->{RaiseError};
+	my $accumulatedErrors = '';
 
 	$this->{dbh}->{AutoCommit} = 0;
 	$this->{dbh}->{RaiseError} = 1;
@@ -981,12 +982,14 @@ sub transactionWrap
 			$committed = 1;
 		} else {
 			$this->{dbh}->rollback();
+			$accumulatedErrors .= "Error $commitTriesLeft: " . $@ . "\n";
 		}
 
 	}
 
 	$this->{dbh}->{RaiseError} = $savedRaiseError;
 	$this->{dbh}->{AutoCommit} = $savedAutoCommit;
+	$@ = $accumulatedErrors;
 	return $committed;
 }
 
