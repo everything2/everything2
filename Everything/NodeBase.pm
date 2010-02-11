@@ -1697,7 +1697,8 @@ sub dropNodeTable
 		"nodetype",
 		"note",
 		"rating",
-		"user" );
+		"user",
+		"useractionlog" );
 
 	foreach (@nodrop)
 	{

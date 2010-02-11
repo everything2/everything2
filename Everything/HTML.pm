@@ -3031,7 +3031,6 @@ sub recordUserAction {
 
   } else {
 
-    Everything::printLog("About to log user action '$action'.");
     $DB->sqlInsert('useractionlog', \%setValues);
 
   }
