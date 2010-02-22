@@ -1660,7 +1660,7 @@ sub insertNodelet
 	
 	# Make sure the nltext is up to date
 	updateNodelet($NODELET);
-	return unless ($$NODELET{nltext} =~ /\S/);
+	return "" unless ($$NODELET{nltext} =~ /\S/);
 	
 	# now that we are guaranteed that nltext is up to date, sub it in.
 	return $pre.$NODELET->{nltext}.$post;
