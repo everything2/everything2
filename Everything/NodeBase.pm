@@ -769,7 +769,7 @@ sub getNodeCursor
 		
 		foreach $table (@$tableArray)
 		{
-			$select .= " LEFT JOIN $table ON node_id=" . $table . "_id";
+			$select .= " LEFT OUTER JOIN $table ON node_id=" . $table . "_id";
 		}
 	}
 
