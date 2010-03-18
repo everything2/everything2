@@ -717,11 +717,8 @@ sub htmlFormatErr
 	{
 		$str = htmlErrorGods($code, $err, $warn);
 	}
-	else
-	{
-		$str = htmlErrorUsers($code, $err, $warn);
-	}
 
+	$str = htmlErrorUsers($code, $err, $warn);
 	$str;
 }
 
