@@ -1419,28 +1419,27 @@ sub nodeName
 	else
 	{
 		my @canread;
-                #4/14/2002: Work begins here
-                my $e2node;	
+		my $e2node;
+		my $node_forward;
 		foreach (@{ $select_group}) {
-		   next unless canReadNode($user_id, $_);
-                   getRef($_);
-                   $e2node = $_ if($$_{type_nodetype} == getId($DB->getType('e2node')));	
-		   push @canread, $_;
+			next unless canReadNode($user_id, $_);
+			getRef($_);
+			$e2node = $_ if($$_{type_nodetype} == getId($DB->getType('e2node')));
+			$node_forward = $_ if($$_{type_nodetype} == getId($DB->getType('node_forward')));
+			push @canread, $_;
 		}
 
 		#jb says: 4/14/2002 - Enhancement made here to default to an e2node
-                #instead of going to the findings page.  If there are more than one item, and
-                #none of them is an e2node, then all you'll get "Findings:"
+		#instead of going to the findings page.  If there are more than one item, and
+		#none of them is an e2node, then all you'll get "Findings:"
 
-                #jb says: 5/02/2002 - Fixes here to use gotoNode instead of displayPage
-                #see [root log: May 2002] for the long reason
+		#jb says: 5/02/2002 - Fixes here to use gotoNode instead of displayPage
+		#see [root log: May 2002] for the long reason
 
-		#return displayPage($HTMLVARS{not_found}, $user_id) unless @canread;
 		return gotoNode($HTMLVARS{not_found}, $user_id, 1) unless @canread;
-		#return displayPage($canread[0], $user_id) if @canread == 1;
 		return gotoNode($canread[0], $user_id, 1) if @canread == 1;
-                #return displayPage($e2node, $user_id) if $e2node;
-                return gotoNode($e2node, $user_id, 1) if $e2node;
+		return gotoNode($e2node, $user_id, 1) if $e2node;
+		return gotoNode($node_forward, $user_id, 1) if $node_forward;
 
 		#we found multiple nodes with that name.  ick
 		my $NODE = getNodeById($HTMLVARS{duplicate_group});
