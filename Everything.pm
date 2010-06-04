@@ -697,6 +697,8 @@ sub initEverything
 
 	$DB = new Everything::NodeBase($db, $staticNodetypes, $memcache);
 
+	$DB->closeTransaction();
+
 	# This is for legacy code.  You should not use $dbh!  Use
 	# $DB->getDatabaseHandle() going forward.
 	$dbh = $DB->getDatabaseHandle();

@@ -52,6 +52,8 @@ sub BEGIN
 		copyOriginalValues
 		removeOriginalValues
 		isOriginalValue
+
+		closeTransaction
 		);
 }
 
@@ -991,6 +993,29 @@ sub transactionWrap
 	$this->{dbh}->{AutoCommit} = $savedAutoCommit;
 	$@ = $accumulatedErrors;
 	return $committed;
+}
+
+
+#############################################################################
+#	Sub
+#		closeTransaction
+#
+#	Purpose
+#		Should generally be a nop, but is called to insure transactions are
+#		closed so they don't propogate past a pageload
+#
+#	Returns
+#		Nothing
+#
+sub closeTransaction
+{
+	my ($this) = @_;
+
+	# Prevent AutoCommit mistakes from propgating, creating weird superlong transactions
+	if (!$this->{dbh}->{AutoCommit}) {
+		Everything::printLog("AutoCommit was left off after the last page served.");
+		$this->{dbh}->{AutoCommit} = 1;
+	}
 }
 
 #############################################################################

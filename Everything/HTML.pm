@@ -2621,6 +2621,7 @@ sub mod_perlInit
 	     }
 
 	#$Everything::PERLTIME->stop();
+	$DB->closeTransaction();
 	$PAGELOAD++;
 	
 ##	if($PAGELOAD > $NUMPAGELOADS)
