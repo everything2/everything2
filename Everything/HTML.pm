@@ -875,6 +875,7 @@ sub jsWindow
 
 sub urlGen {
   my ($REF, $noquotes, $NODE) = @_;
+  my $nosemantic = $query->param('nosemantic');
 
   my $str;
   $str .= '"' unless $noquotes;
@@ -884,7 +885,7 @@ sub urlGen {
   }
   #Preserve backwards-compatibility
   else{
-    if($$REF{node}){
+    if($$REF{node} && !$nosemantic){
       my $nodetype = $$REF{type} || $$REF{nodetype};
       if($nodetype){
         $str .= "/node/$nodetype/".rewriteCleanEscape($$REF{node});
@@ -1121,6 +1122,7 @@ sub rewriteCleanEscape {
 
 sub urlGenNoParams {
   my ($NODE, $noquotes) = @_;
+  my $nosemantic = $query->param('nosemantic');
   if (not ref $NODE) {
     if ($noquotes) {
       return "/node/$NODE";
@@ -1128,6 +1130,8 @@ sub urlGenNoParams {
     else {
       return "\"/node/$NODE\"";
     }
+  } elsif ($nosemantic) {
+    return "/node/".getId($NODE);
   }
 
   my $retval = "";
