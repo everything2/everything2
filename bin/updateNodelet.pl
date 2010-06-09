@@ -11,10 +11,12 @@ $Everything::HTML::CACHESTORE =  new Everything::CacheStore("cache_store:" . $CO
 
 my $csr = $DB->sqlSelectMany('nodelet_id', 'nodelet', "updateinterval != 0");
 my $USER = getNode 'guest user', 'user';
+
 $Everything::HTML::USER = $USER;
 #Everything::HTML::getTheme; 
 $Everything::HTML::GNODE = $USER;
 
+my $forceUpdate = grep { /--force/ } @ARGV;
 
 while (my $NL = $csr->fetchrow()) {
 	$NL = getNodeById($NL);
@@ -31,7 +33,7 @@ while (my $NL = $csr->fetchrow()) {
 	my $currentTime = time;
 
 
-	if ($timeToUpdate <= $currentTime) {
+	if ($timeToUpdate <= $currentTime || $forceUpdate) {
 
 		print "updating $$NL{title} ($$NL{nodelet_id})";
 		$$NL{nltext} = Everything::HTML::parseCode($$NL{nlcode}, $NL);

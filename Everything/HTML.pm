@@ -710,15 +710,15 @@ sub htmlFormatErr
 	my ($code, $err, $warn) = @_;
 	my $str;
 
-        my $dbg = getNode("debuggers", "usergroup");
+	my $dbg = getNode("debuggers", "usergroup");
 
-        #if(isGod($USER))
-        if($DB->isApproved($USER, $dbg))
+	$str = htmlErrorUsers($code, $err, $warn);
+
+	if($DB->isApproved($USER, $dbg))
 	{
 		$str = htmlErrorGods($code, $err, $warn);
 	}
 
-	$str = htmlErrorUsers($code, $err, $warn);
 	$str;
 }
 
@@ -875,7 +875,7 @@ sub jsWindow
 
 sub urlGen {
   my ($REF, $noquotes, $NODE) = @_;
-  my $nosemantic = $query->param('nosemantic');
+  my $nosemantic = $query ? $query->param('nosemantic') : 0;
 
   my $str;
   $str .= '"' unless $noquotes;
@@ -1122,7 +1122,7 @@ sub rewriteCleanEscape {
 
 sub urlGenNoParams {
   my ($NODE, $noquotes) = @_;
-  my $nosemantic = $query->param('nosemantic');
+  my $nosemantic = $query ? $query->param('nosemantic') : 0;
   if (not ref $NODE) {
     if ($noquotes) {
       return "/node/$NODE";
