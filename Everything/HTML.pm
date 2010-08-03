@@ -2307,8 +2307,6 @@ sub cleanNodeName
 	$nodename =~ tr/[]|<>//d;
 	$nodename =~ s/^\s*|\s*$//g;
 	$nodename =~ s/\s+/ /g;
-	$nodename ="" if $nodename=~/^\W$/;
-	#$nodename = substr ($nodename, 0, 80);
 
 	return $nodename;
 }
