@@ -2304,7 +2304,7 @@ sub cleanNodeName
 {
 	my ($nodename, $removeSpaces) = @_;
 
-	$removeSpaces = 0 if !defined $removeSpaces;
+	$removeSpaces = 1 if !defined $removeSpaces;
 
 	# For some reason, searching for ? hoses the search engine.
 	$nodename = "" if($nodename eq "?");
