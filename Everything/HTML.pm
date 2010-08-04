@@ -54,6 +54,7 @@ sub BEGIN {
               encodeHTML
               decodeHTML
               escapeAngleBrackets
+              rewriteCleanEscape
               showPartialDiff
               showCompleteDiff
               recordUserAction
@@ -1115,8 +1116,9 @@ sub getPage
 sub rewriteCleanEscape {
   my ($string) = @_;
   $string = CGI::escape(CGI::escape($string));
-  #Make spaces more readable
-  $string =~ s/\%2520/\+/gs;
+  # Make spaces more readable
+  # But not for spaces at the start/end or next to other spaces
+  $string =~ s/(?<!^)(?<!\%2520)\%2520(?!$)(?!\%2520)/\+/gs;
   return $string;
 }
 
@@ -2229,13 +2231,14 @@ sub handleUserRequest{
   my $author;
   my $code;
   my $handled = 0;
+  my $noRemoveSpaces = 0;
 
   if ($query->param('node')) {
     # Searching for a node my string title
     my $type  = $query->param('type');
     my $TYPE = getType($type);
 
-    $nodename = cleanNodeName($query->param('node'));
+    $nodename = cleanNodeName($query->param('node'), $noRemoveSpaces);
 
     $author = $query -> param("author");
     $author = getNode($author,"user");
@@ -2299,14 +2302,16 @@ sub handleUserRequest{
 #
 sub cleanNodeName
 {
-	my ($nodename) = @_;
+	my ($nodename, $removeSpaces) = @_;
+
+	$removeSpaces = 0 if !defined $removeSpaces;
 
 	# For some reason, searching for ? hoses the search engine.
 	$nodename = "" if($nodename eq "?");
 
 	$nodename =~ tr/[]|<>//d;
-	$nodename =~ s/^\s*|\s*$//g;
-	$nodename =~ s/\s+/ /g;
+	$nodename =~ s/^\s*|\s*$//g if $removeSpaces;
+	$nodename =~ s/\s+/ /g if $removeSpaces;
 
 	return $nodename;
 }
