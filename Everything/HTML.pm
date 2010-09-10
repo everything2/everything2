@@ -2993,7 +2993,7 @@ sub check_test_substitutions {
 
 ######################
 # sub
-#   record_useraction
+#   recordUserAction
 #
 # purpose
 #   Log a user action with the current user's session id and condition
