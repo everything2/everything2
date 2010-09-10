@@ -905,6 +905,8 @@ sub urlGen {
   delete $$REF{node};
   delete $$REF{nodetype};
   delete $$REF{type};
+  $str .= '#'.$$REF{'#'} if $$REF{'#'} ;
+  delete $$REF{'#'};
 
   #Our mod_rewrite rules can now handle this properly
   my $quamp = '?';
