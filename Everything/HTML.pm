@@ -477,17 +477,17 @@ sub buildTable
 	
 	my $borderColor = $$THEME{color_border} || $$THEME{table_border_color}
 										|| $$THEME{dataTitleBackground};
-	my $border = ' style="border: 1px solid '.$borderColor.'; padding: 3px;"'; 
 	my $width = ($options=~/fullwidth/) ? 'width="100%"' : '';
 	my $tablealignment = ($tablealign eq 'left' || $tablealign eq 'center' || $tablealign eq 'right')
 		? ' align="'.$tablealign.'"' : '';
 	my $datavalignment = ($datavalign eq 'top' || $datavalign eq 'middle' || $datavalign eq 'bottom')
 		? ' valign="'.$datavalign.'"' : '';
+	$options=~/class=['"]?(\w+)['"]?/
+	my $class = $1;
 	
-	my $str='<table border="0" cellspacing="0" cellpadding="2" '.$width.
-		 'style="border: 1px solid '.$borderColor.';"'.$tablealignment.'>';
+	my $str='<table '.$width.' class='.$class.'>';
 	
-	$str.='<tr>'.join('',map({'<th '.$border.'>'.$_.'</th>'} @$labels))
+	$str.='<tr>'.join('',map({'<th>'.$_.'</th>'} @$labels))
 		.'</tr>' unless $options =~/nolabels/;
 	
 	foreach my $row (@$data){
@@ -498,9 +498,9 @@ sub buildTable
 				$$row{$label} = '&nbsp;';
 			}
 			if (($options =~ /nolabels/)&&($label eq $$labels[0])) {
-				$str.='<th'.$border.$datavalignment.'>'.$$row{$label}.'</th>';
+				$str.='<th'.$datavalignment.'>'.$$row{$label}.'</th>';
 			} else {
-				$str.='<td'.$border.$datavalignment.'>'.$$row{$label}.'</td>';
+				$str.='<td'.$datavalignment.'>'.$$row{$label}.'</td>';
 			}
 		}
 		$str.='</tr>';
