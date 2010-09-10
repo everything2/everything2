@@ -216,9 +216,11 @@ sub cleanupHTML {
     my $approved_tag;
     my $outer_text;
     # Map of nested tags to mandatory direct parents.
-    my %nest = ('tr' => 'table',
-		'td' => 'tr',
-		'th' => 'tr');
+    my %nest = ('tr' => { 'table' => 1, 'tbody' => 1, 'thead' => 1 },
+		'tbody' => { 'table' => 1 },
+		'thead' => { 'table' => 1 },
+		'td' => { 'tr' => 1 },
+		'th' => { 'tr' => 1 });
     my $nest_in;
     # Optional-close tag names. Mapping with a hash seems to be
     # something like twice as quick as using a single regexp.
@@ -247,7 +249,7 @@ sub cleanupHTML {
 	    }
 	    # Check correct nesting, and disapprove if not!
 	    if (   ($nest_in = $nest{$tag})
-		&& $nest_in ne $stack[$#stack]) {
+		&& $nest_in->{$stack[$#stack]}) {
 		my @extra;
 		my $opening;
 		do {
@@ -258,7 +260,7 @@ sub cleanupHTML {
 				    . $opening);
 		    }
 		} while (   ($nest_in = $nest{$nest_in})
-			 && $nest_in ne $stack[$#stack]);
+			 && $nest_in->{$stack[$#stack]});
 		push @stack, @extra;
 		$result .= $opening;
 	    }
@@ -388,7 +390,7 @@ sub cleanupHTML {
 # a bunch of ifs or whatever)
 sub tableWellFormed ($) {
     my (@stack);
-    for ($_[0] =~ m{<(/?table|/?tr|/?th|/?td)[\s>]}ig) {
+    for ($_[0] =~ m{<(/?table|/?tr|/?th|/?td/?tbody/?thead)[\s>]}ig) {
         my $tag = lc $_;
         my $top = $stack[$#stack];
 
@@ -400,7 +402,7 @@ sub tableWellFormed ($) {
             # Opening tag. Push, and check context is valid.
             push @stack, $tag;
             return (0, "$tag inside $top") 
-                if (($top.$tag) !~ /^(table(tr)?|tr(td|th)|(td|th)(table))$/);
+                if (($top.$tag) !~ /^(table(tr|tbody)?|(tbody|thead)tr|tr(td|th)|(td|th)(table))$/);
         }
     }
     return (0, "Unclosed table elements: " . join ", ", @stack)
@@ -424,7 +426,7 @@ sub debugTag ($) {
 
 sub debugTable ($$) {
     my ($error, $html) = @_;
-    $html =~ s{<((/?)(table|tr|td|th)((\s[^>]*)|))>}{debugTag $1}ige;
+    $html =~ s{<((/?)(table|tr|td|th|thead|tbody)((\s[^>]*)|))>}{debugTag $1}ige;
     return "<p><strong>Table formatting error: $error</strong></p>".$html;
 }
 
@@ -482,7 +484,7 @@ sub buildTable
 		? ' align="'.$tablealign.'"' : '';
 	my $datavalignment = ($datavalign eq 'top' || $datavalign eq 'middle' || $datavalign eq 'bottom')
 		? ' valign="'.$datavalign.'"' : '';
-	$options=~/class=['"]?(\w+)['"]?/
+	$options=~/class=['"]?(\w+)['"]?/;
 	my $class = $1;
 	
 	my $str='<table '.$width.' class='.$class.'>';
@@ -547,7 +549,7 @@ sub breakTags {
     $text =~ s%\s*<br>\s*<br>%</p>\n\n<p>%g;
     $text =~ s%\n\s*\n%</p>\n\n<p>%g;
     $text = '<p>' . $text . '</p>';
-    my ($blocks) = "pre|center|li|ol|ul|h1|h2|h3|h4|h5|h6|blockquote|dd|dt|dl|p|table|td|tr|th";
+    my ($blocks) = "pre|center|li|ol|ul|h1|h2|h3|h4|h5|h6|blockquote|dd|dt|dl|p|table|td|tr|th|tbody|thead";
     $text =~ s"<p><($blocks)"<$1"g;
     $text =~ s"</($blocks)></p>"</$1>"g;
     # Clean up by replacing newlines placeholders with proper \ns again.
