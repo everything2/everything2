@@ -211,9 +211,11 @@ sub cleanupHTML {
     my $approved_tag;
     my $outer_text;
     # Map of nested tags to mandatory direct parents.
-    my %nest = ('tr' => 'table',
-		'td' => 'tr',
-		'th' => 'tr');
+    my %nest = ('tr' => { 'table' => 1, 'tbody' => 1, 'thead' => 1 },
+		'tbody' => { 'table' => 1 },
+		'thead' => { 'table' => 1 },
+		'td' => { 'tr' => 1 },
+		'th' => { 'tr' => 1 });
     my $nest_in;
     # Optional-close tag names. Mapping with a hash seems to be
     # something like twice as quick as using a single regexp.
@@ -242,7 +244,7 @@ sub cleanupHTML {
 	    }
 	    # Check correct nesting, and disapprove if not!
 	    if (   ($nest_in = $nest{$tag})
-		&& $nest_in ne $stack[$#stack]) {
+		&& !$nest_in->{$stack[$#stack]}) {
 		my @extra;
 		my $opening;
 		do {
@@ -253,7 +255,7 @@ sub cleanupHTML {
 				    . $opening);
 		    }
 		} while (   ($nest_in = $nest{$nest_in})
-			 && $nest_in ne $stack[$#stack]);
+			 && !$nest_in->{$stack[$#stack]});
 		push @stack, @extra;
 		$result .= $opening;
 	    }
@@ -383,7 +385,7 @@ sub cleanupHTML {
 # a bunch of ifs or whatever)
 sub tableWellFormed ($) {
     my (@stack);
-    for ($_[0] =~ m{<(/?table|/?tr|/?th|/?td)[\s>]}ig) {
+    for ($_[0] =~ m{<(/?table|/?tr|/?th|/?td/?tbody/?thead)[\s>]}ig) {
         my $tag = lc $_;
         my $top = $stack[$#stack];
 
@@ -395,7 +397,7 @@ sub tableWellFormed ($) {
             # Opening tag. Push, and check context is valid.
             push @stack, $tag;
             return (0, "$tag inside $top") 
-                if (($top.$tag) !~ /^(table(tr)?|tr(td|th)|(td|th)(table))$/);
+                if (($top.$tag) !~ /^(table(tr|tbody)?|(tbody|thead)tr|tr(td|th)|(td|th)(table))$/);
         }
     }
     return (0, "Unclosed table elements: " . join ", ", @stack)
@@ -419,7 +421,7 @@ sub debugTag ($) {
 
 sub debugTable ($$) {
     my ($error, $html) = @_;
-    $html =~ s{<((/?)(table|tr|td|th)((\s[^>]*)|))>}{debugTag $1}ige;
+    $html =~ s{<((/?)(table|tr|td|th|thead|tbody)((\s[^>]*)|))>}{debugTag $1}ige;
     return "<p><strong>Table formatting error: $error</strong></p>".$html;
 }
 
@@ -542,7 +544,7 @@ sub breakTags {
     $text =~ s%\s*<br>\s*<br>%</p>\n\n<p>%g;
     $text =~ s%\n\s*\n%</p>\n\n<p>%g;
     $text = '<p>' . $text . '</p>';
-    my ($blocks) = "pre|center|li|ol|ul|h1|h2|h3|h4|h5|h6|blockquote|dd|dt|dl|p|table|td|tr|th";
+    my ($blocks) = "pre|center|li|ol|ul|h1|h2|h3|h4|h5|h6|blockquote|dd|dt|dl|p|table|td|tr|th|tbody|thead";
     $text =~ s"<p><($blocks)"<$1"g;
     $text =~ s"</($blocks)></p>"</$1>"g;
     # Clean up by replacing newlines placeholders with proper \ns again.
@@ -874,6 +876,7 @@ sub jsWindow
 
 sub urlGen {
   my ($REF, $noquotes, $NODE) = @_;
+  my $nosemantic = $query->param('nosemantic');
 
   my $str;
   $str .= '"' unless $noquotes;
@@ -883,7 +886,7 @@ sub urlGen {
   }
   #Preserve backwards-compatibility
   else{
-    if($$REF{node}){
+    if($$REF{node} && !$nosemantic){
       if($$REF{nodetype}){
         $str .= "/node/$$REF{nodetype}/".rewriteCleanEscape($$REF{node});
       }
@@ -1111,6 +1114,7 @@ sub rewriteCleanEscape {
 
 sub urlGenNoParams {
   my ($NODE, $noquotes) = @_;
+  my $nosemantic = $query->param('nosemantic');
   if (not ref $NODE) {
     if ($noquotes) {
       return "/node/$NODE";
@@ -1118,6 +1122,8 @@ sub urlGenNoParams {
     else {
       return "\"/node/$NODE\"";
     }
+  } elsif ($nosemantic) {
+    return "/node/".getId($NODE);
   }
 
   my $retval = "";
@@ -1255,6 +1261,7 @@ sub linkNodeTitle {
     $user =~ s/\s*$//;
 
     $nodename = rewriteCleanEscape($nodename);
+    $nodetype = rewriteCleanEscape($nodetype);
 
     #Aha, trying to link to a discussion post
     if($nodetype =~ /^\d+$/){
@@ -1306,7 +1313,7 @@ sub linkNodeTitle {
     $tip =~ s/"/''/g;
 
     #my $isNode = getNodeWhere({ title => $nodename});
-    my $urlnode = CGI::escape($nodename);
+    #my $urlnode = CGI::escape($nodename);
     #$str .= "<a title=\"$tip\" href=\"$ENV{SCRIPT_NAME}?node=$urlnode";
     #if ($lastnode) { $str .= "&amp;lastnode_id=" . getId($lastnode);}
     if (!$lastnode) {
@@ -1410,11 +1417,13 @@ sub nodeName
 	{
 		my @canread;
                 #4/14/2002: Work begins here
-                my $e2node;	
+                my $e2node;
+		my $node_forward;
 		foreach (@{ $select_group}) {
 		   next unless canReadNode($user_id, $_);
                    getRef($_);
                    $e2node = $_ if($$_{type_nodetype} == getId($DB->getType('e2node')));	
+                   $node_forward = $_ if($$_{type_nodetype} == getId($DB->getType('node_forward')));	
 		   push @canread, $_;
 		}
 
@@ -1431,6 +1440,7 @@ sub nodeName
 		return gotoNode($canread[0], $user_id, 1) if @canread == 1;
                 #return displayPage($e2node, $user_id) if $e2node;
                 return gotoNode($e2node, $user_id, 1) if $e2node;
+                return gotoNode($node_forward, $user_id, 1) if $node_forward;
 
 		#we found multiple nodes with that name.  ick
 		my $NODE = getNodeById($HTMLVARS{duplicate_group});
@@ -2252,8 +2262,6 @@ sub cleanNodeName
 	$nodename =~ tr/[]|<>//d;
 	$nodename =~ s/^\s*|\s*$//g;
 	$nodename =~ s/\s+/ /g;
-	$nodename ="" if $nodename=~/^\W$/;
-	#$nodename = substr ($nodename, 0, 80);
 
 	return $nodename;
 }
