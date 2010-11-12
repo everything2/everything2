@@ -86,7 +86,10 @@ sub getRandomNode {
         
 	$rnd+= $min;
 
-        my $e2node = $DB->sqlSelect("e2node_id", "e2node", "e2node_id=$rnd");
+        my $e2node = $DB->sqlSelect("e2node_id", "e2node"
+            , "e2node_id=$rnd "
+              . "AND EXISTS(SELECT 1 FROM nodegroup WHERE nodegroup_id = e2node_id)"
+            );
 
         $e2node||=getRandomNode();
 
