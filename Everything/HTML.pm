@@ -54,10 +54,8 @@ sub BEGIN {
               encodeHTML
               decodeHTML
               escapeAngleBrackets
-              rewriteCleanEscape
               showPartialDiff
               showCompleteDiff
-              recordUserAction
               unMSify
               mod_perlInit
               mod_perlpsuedoInit);
@@ -67,9 +65,6 @@ use vars qw($query);
 use vars qw(%HTMLVARS);
 use vars qw($GNODE);
 use vars qw($USER);
-use vars qw($TEST);
-use vars qw($TEST_CONDITION);
-use vars qw($TEST_SESSION_ID);
 use vars qw($VARS);
 use vars qw($THEME);
 use vars qw($NODELET);
@@ -230,9 +225,9 @@ sub cleanupHTML {
     my %no_close = ('p' => 1, 'br' => 1, 'hr' => 1,
 		    'img' => 1, 'input' => 1, 'link' => 1);
     
-    # Delete any incomplete tags, including comments. These may be the result of truncating
+    # Delete any incomplete tags. These may be the result of truncating
     # source HTML, eg. for Cream of the Cool.
-    $text =~ s/<(?:[^>]*|!--(?:[^-]*|-[^-]|--[^>])*)$//;
+    $text =~ s/<[^>]*$//;
     
     # Scan tags by recognising text starting with '<'. Experiments with
     # Firefox show that malformed opening tags (missing the closing '>')
@@ -252,7 +247,7 @@ sub cleanupHTML {
 	    }
 	    # Check correct nesting, and disapprove if not!
 	    if (   ($nest_in = $nest{$tag})
-		&& $nest_in->{$stack[$#stack]}) {
+		&& !$nest_in->{$stack[$#stack]}) {
 		my @extra;
 		my $opening;
 		do {
@@ -263,7 +258,7 @@ sub cleanupHTML {
 				    . $opening);
 		    }
 		} while (   ($nest_in = $nest{$nest_in})
-			 && $nest_in->{$stack[$#stack]});
+			 && !$nest_in->{$stack[$#stack]});
 		push @stack, @extra;
 		$result .= $opening;
 	    }
@@ -482,17 +477,17 @@ sub buildTable
 	
 	my $borderColor = $$THEME{color_border} || $$THEME{table_border_color}
 										|| $$THEME{dataTitleBackground};
+	my $border = ' style="border: 1px solid '.$borderColor.'; padding: 3px;"'; 
 	my $width = ($options=~/fullwidth/) ? 'width="100%"' : '';
 	my $tablealignment = ($tablealign eq 'left' || $tablealign eq 'center' || $tablealign eq 'right')
 		? ' align="'.$tablealign.'"' : '';
 	my $datavalignment = ($datavalign eq 'top' || $datavalign eq 'middle' || $datavalign eq 'bottom')
 		? ' valign="'.$datavalign.'"' : '';
-	$options=~/class=['"]?(\w+)['"]?/;
-	my $class = $1;
 	
-	my $str='<table '.$width.' class='.$class.'>';
+	my $str='<table border="0" cellspacing="0" cellpadding="2" '.$width.
+		 'style="border: 1px solid '.$borderColor.';"'.$tablealignment.'>';
 	
-	$str.='<tr>'.join('',map({'<th>'.$_.'</th>'} @$labels))
+	$str.='<tr>'.join('',map({'<th '.$border.'>'.$_.'</th>'} @$labels))
 		.'</tr>' unless $options =~/nolabels/;
 	
 	foreach my $row (@$data){
@@ -503,9 +498,9 @@ sub buildTable
 				$$row{$label} = '&nbsp;';
 			}
 			if (($options =~ /nolabels/)&&($label eq $$labels[0])) {
-				$str.='<th'.$datavalignment.'>'.$$row{$label}.'</th>';
+				$str.='<th'.$border.$datavalignment.'>'.$$row{$label}.'</th>';
 			} else {
-				$str.='<td'.$datavalignment.'>'.$$row{$label}.'</td>';
+				$str.='<td'.$border.$datavalignment.'>'.$$row{$label}.'</td>';
 			}
 		}
 		$str.='</tr>';
@@ -716,13 +711,16 @@ sub htmlFormatErr
 	my ($code, $err, $warn) = @_;
 	my $str;
 
-	my $dbg = getNode("debuggers", "usergroup");
+        my $dbg = getNode("debuggers", "usergroup");
 
-	$str = htmlErrorUsers($code, $err, $warn);
-
-	if($DB->isApproved($USER, $dbg))
+        #if(isGod($USER))
+        if($DB->isApproved($USER, $dbg))
 	{
 		$str = htmlErrorGods($code, $err, $warn);
+	}
+	else
+	{
+		$str = htmlErrorUsers($code, $err, $warn);
 	}
 
 	$str;
@@ -881,7 +879,7 @@ sub jsWindow
 
 sub urlGen {
   my ($REF, $noquotes, $NODE) = @_;
-  my $nosemantic = $query ? $query->param('nosemantic') : 0;
+  my $nosemantic = $query->param('nosemantic');
 
   my $str;
   $str .= '"' unless $noquotes;
@@ -892,9 +890,8 @@ sub urlGen {
   #Preserve backwards-compatibility
   else{
     if($$REF{node} && !$nosemantic){
-      my $nodetype = $$REF{type} || $$REF{nodetype};
-      if($nodetype){
-        $str .= "/node/$nodetype/".rewriteCleanEscape($$REF{node});
+      if($$REF{nodetype}){
+        $str .= "/node/$$REF{nodetype}/".rewriteCleanEscape($$REF{node});
       }
       else{
         $str .= "/title/".rewriteCleanEscape($$REF{node});
@@ -909,9 +906,6 @@ sub urlGen {
   delete $$REF{node_id};
   delete $$REF{node};
   delete $$REF{nodetype};
-  delete $$REF{type};
-  $str .= '#'.$$REF{'#'} if $$REF{'#'} ;
-  delete $$REF{'#'};
 
   #Our mod_rewrite rules can now handle this properly
   my $quamp = '?';
@@ -941,16 +935,9 @@ sub urlGen {
 sub getCode
 {
 	my ($funcname) = @_;
-
-	if (getId($TEST)) { $funcname = check_test_substitutions($funcname); }
 	my $CODE = getNode($funcname, getType("htmlcode"));
-	if (wantarray) {
-		return ($$CODE{code}, $CODE) if defined( $CODE );
-		return ('"";', undef);
-	} else {
-		return $$CODE{code} if defined( $CODE );
-		return '"";';
-	}
+	return $$CODE{code} if defined( $CODE );
+	return '"";' ;
 }
 
 
@@ -1123,15 +1110,14 @@ sub getPage
 sub rewriteCleanEscape {
   my ($string) = @_;
   $string = CGI::escape(CGI::escape($string));
-  # Make spaces more readable
-  # But not for spaces at the start/end or next to other spaces
-  $string =~ s/(?<!^)(?<!\%2520)\%2520(?!$)(?!\%2520)/\+/gs;
+  #Make spaces more readable
+  $string =~ s/\%2520/\+/gs;
   return $string;
 }
 
 sub urlGenNoParams {
   my ($NODE, $noquotes) = @_;
-  my $nosemantic = $query ? $query->param('nosemantic') : 0;
+  my $nosemantic = $query->param('nosemantic');
   if (not ref $NODE) {
     if ($noquotes) {
       return "/node/$NODE";
@@ -1245,7 +1231,7 @@ sub linkNodeTitle {
 	my ($nodename, $lastnode, $escapeTags) = @_;
   my $title;
 	($nodename, $title) = split /\s*[|\]]+/, $nodename;
-	$title = $nodename if $title =~ m/^\s*$/;
+	$title = $nodename if $title eq "";
 	$nodename =~ s/\s+/ /gs;
 
 	my $str = "";
@@ -1262,9 +1248,7 @@ sub linkNodeTitle {
     $title = $tip if $title eq $nodename ;
 
     $nodename = $tip;
-    $tip =~ s/"/&quot;/g;
-    $nodename = rewriteCleanEscape($nodename);
-    $anchor = rewriteCleanEscape($anchor);
+    $tip =~ s/"/''/g;
 
     if($escapeTags){
       $title =~ s/</\&lt\;/g;
@@ -1276,8 +1260,11 @@ sub linkNodeTitle {
     my ($nodetype,$user) = split /\bby\b/, $anchor;
     $nodetype =~ s/^\s*//;
     $nodetype =~ s/\s*$//;
-    $user =~ s/^\s*|\s*$//;
+    $user =~ s/^\s*//;
+    $user =~ s/\s*$//;
 
+    $nodename = rewriteCleanEscape($nodename);
+    $nodetype = rewriteCleanEscape($nodetype);
 
     #Aha, trying to link to a discussion post
     if($nodetype =~ /^\d+$/){
@@ -1329,7 +1316,7 @@ sub linkNodeTitle {
     $tip =~ s/"/''/g;
 
     #my $isNode = getNodeWhere({ title => $nodename});
-    my $urlnode = CGI::escape($nodename);
+    #my $urlnode = CGI::escape($nodename);
     #$str .= "<a title=\"$tip\" href=\"$ENV{SCRIPT_NAME}?node=$urlnode";
     #if ($lastnode) { $str .= "&amp;lastnode_id=" . getId($lastnode);}
     if (!$lastnode) {
@@ -1432,27 +1419,31 @@ sub nodeName
 	else
 	{
 		my @canread;
-		my $e2node;
+                #4/14/2002: Work begins here
+                my $e2node;
 		my $node_forward;
 		foreach (@{ $select_group}) {
-			next unless canReadNode($user_id, $_);
-			getRef($_);
-			$e2node = $_ if($$_{type_nodetype} == getId($DB->getType('e2node')));
-			$node_forward = $_ if($$_{type_nodetype} == getId($DB->getType('node_forward')));
-			push @canread, $_;
+		   next unless canReadNode($user_id, $_);
+                   getRef($_);
+                   $e2node = $_ if($$_{type_nodetype} == getId($DB->getType('e2node')));	
+                   $node_forward = $_ if($$_{type_nodetype} == getId($DB->getType('node_forward')));	
+		   push @canread, $_;
 		}
 
 		#jb says: 4/14/2002 - Enhancement made here to default to an e2node
-		#instead of going to the findings page.  If there are more than one item, and
-		#none of them is an e2node, then all you'll get "Findings:"
+                #instead of going to the findings page.  If there are more than one item, and
+                #none of them is an e2node, then all you'll get "Findings:"
 
-		#jb says: 5/02/2002 - Fixes here to use gotoNode instead of displayPage
-		#see [root log: May 2002] for the long reason
+                #jb says: 5/02/2002 - Fixes here to use gotoNode instead of displayPage
+                #see [root log: May 2002] for the long reason
 
+		#return displayPage($HTMLVARS{not_found}, $user_id) unless @canread;
 		return gotoNode($HTMLVARS{not_found}, $user_id, 1) unless @canread;
+		#return displayPage($canread[0], $user_id) if @canread == 1;
 		return gotoNode($canread[0], $user_id, 1) if @canread == 1;
-		return gotoNode($e2node, $user_id, 1) if $e2node;
-		return gotoNode($node_forward, $user_id, 1) if $node_forward;
+                #return displayPage($e2node, $user_id) if $e2node;
+                return gotoNode($e2node, $user_id, 1) if $e2node;
+                return gotoNode($node_forward, $user_id, 1) if $node_forward;
 
 		#we found multiple nodes with that name.  ick
 		my $NODE = getNodeById($HTMLVARS{duplicate_group});
@@ -1503,48 +1494,10 @@ sub evalCode {
 #
 #
 sub htmlcode {
-	my ($splitter, $returnVal) = ('');
-	my $encodedArgs = "(no arguments)";
-	my $htmlcodeName = shift;
-	my ($htmlcodeCode, $codeNode) = getCode($htmlcodeName);
-
-	if (scalar @_ == 1 and !ref $_[0]) {
-
-		$splitter = '@_ = split(/\s*,\s*/, shift);';
-		$encodedArgs = $_[0];
-
-	} elsif (scalar @_ > 0) {
-
-		$encodedArgs = join(",", @_);
-
-	}	
-
-	# localize @_ to insure encodeHTML doesn't mess with our args
-	my @savedArgs = @_;
-	$encodedArgs = encodeHTML($encodedArgs);
-
-	my $warnStr = "<p>Calling htmlcode $htmlcodeName with arguments: "
-				. $encodedArgs
-				. "</p>"
-				;
-	my $function;
-
-	# If we are doing a new-style htmlcode call (or have no arguments)
-	#  we can use the cached compilation of this function
-	if ($splitter eq "") {
-		$function = getCompiledCode($codeNode, \&evalCode);
-	} else {
-		$function  = evalCode("sub {" . $splitter . $htmlcodeCode . "\n}" );
-	}
-	return "<p>htmlcode '$htmlcodeName ' raised compile-time error:</p>\n $function"
-		if ref \$function eq 'SCALAR' ;
-
-	eval { $returnVal = &$function(@savedArgs); };
-	if ($@) {
-		$returnVal = htmlFormatErr ($htmlcodeCode, $@, $warnStr);
-	}
-
-	return $returnVal;
+	my $splitter = '' ;
+	$splitter = '@_ = split(/\s*,\s*/, shift);' if scalar @_ == 2 and !ref $_[1] ;
+	my $function = evalCode("sub {" . $splitter . getCode(shift) . "\n}" );
+	&$function ;
 }
 
 #############################################################################
@@ -1669,7 +1622,7 @@ sub insertNodelet
 	
 	# Make sure the nltext is up to date
 	updateNodelet($NODELET);
-	return "" unless ($$NODELET{nltext} =~ /\S/);
+	return unless ($$NODELET{nltext} =~ /\S/);
 	
 	# now that we are guaranteed that nltext is up to date, sub it in.
 	return $pre.$NODELET->{nltext}.$post;
@@ -1815,8 +1768,7 @@ sub displayPage
         $dsp ||= "display";
 
 	if($dsp eq "display"){
-		if ($isGuest and !defined $query->param('op')
-		    and $CACHESTORE and $page = $CACHESTORE->retrievePage($$NODE{node_id})) {
+		if ($isGuest and $CACHESTORE and $page = $CACHESTORE->retrievePage($$NODE{node_id})) {
 			printHeader($$NODE{datatype}, $$page, $lastnode);
 			$query->print($$page);
 			return "";
@@ -1995,8 +1947,8 @@ sub parseLinks {
        #fill the anchor text with the "[link]" text.
 
        $text =~ s!\[                         #Open bracket
-                  \s*(https?://[^\]\|\[<>"]+) #The URL to match
-                  \|\s*                      #The pipe
+                  \s*(https?://[^\]\|\[<>]+) #The URL to match
+                  \|                         #The pipe
                   ([^\]\|\[]+)?              #The possible anchor text
                   \]                         #Close bracket
 
@@ -2010,7 +1962,7 @@ sub parseLinks {
        #anchor text.
        $text =~ s!
                 \[
-                 \s*(https?://[^\]\|\[<>"]+)
+                 \s*(https?://[^\]\|\[<>]+)
                  \]
                  !<a href="$1" rel="nofollow" class="externalLink">$1</a>!gsx;
 
@@ -2189,9 +2141,6 @@ sub printHeader
 	# default to plain html
 	$datatype ||= "text/html";
 	my @cookies = ();
-
-        push @cookies, generate_test_cookie();
-
 	if ($lastnode && $lastnode > 0) {
 	#	push @cookies, $query->cookie( -name=>'lastnode_id', -value=>$lastnode);
 		push @cookies, $query->cookie( -name=>'lastnode_id', -value=>'');
@@ -2238,14 +2187,13 @@ sub handleUserRequest{
   my $author;
   my $code;
   my $handled = 0;
-  my $noRemoveSpaces = 0;
 
   if ($query->param('node')) {
     # Searching for a node my string title
     my $type  = $query->param('type');
     my $TYPE = getType($type);
 
-    $nodename = cleanNodeName($query->param('node'), $noRemoveSpaces);
+    $nodename = cleanNodeName($query->param('node'));
 
     $author = $query -> param("author");
     $author = getNode($author,"user");
@@ -2260,20 +2208,20 @@ sub handleUserRequest{
       return;
     }
 
-    if ($author and $TYPE->{title} eq 'writeup') {
-      # Grab first (hopefully only) writeup by author under a given title
-      my ($writeup) =
-        getNodeWhere(
-          {
-            "-LIKE-title" => $DB->quote($nodename . '%')
-            , "-author_user" => $$author{user_id}
-          }
-          , getType('writeup')
-        );
+    if($author and $TYPE->{title} eq 'writeup'){
+      my $e2node = getNode($nodename,"e2node");
+      if($e2node){
+        foreach my $wu_id(@{$e2node -> {group}} ){
 
-      if ($writeup) {
-        gotoNode($writeup, $user_id);
-        return;
+          my $wu_author = getNodeById(getNodeById($wu_id, "light")
+                                      -> {author_user},
+                                      "light");
+
+          if ($wu_author->{title} eq $author -> {title}){
+            gotoNode($wu_id,$user_id);
+            return;
+          }
+        }
       }
     }
 
@@ -2314,16 +2262,14 @@ sub handleUserRequest{
 #
 sub cleanNodeName
 {
-	my ($nodename, $removeSpaces) = @_;
-
-	$removeSpaces = 1 if !defined $removeSpaces;
+	my ($nodename) = @_;
 
 	# For some reason, searching for ? hoses the search engine.
 	$nodename = "" if($nodename eq "?");
 
 	$nodename =~ tr/[]|<>//d;
-	$nodename =~ s/^\s*|\s*$//g if $removeSpaces;
-	$nodename =~ s/\s+/ /g if $removeSpaces;
+	$nodename =~ s/^\s*|\s*$//g;
+	$nodename =~ s/\s+/ /g;
 
 	return $nodename;
 }
@@ -2336,9 +2282,6 @@ sub clearGlobals
 	$VARS = "";
 	$NODELET = "";
 	$THEME = "";
-        $TEST = "";
-	$TEST_CONDITION = "";
-        $TEST_SESSION_ID = "";
 
 	$query = "";
 }
@@ -2441,7 +2384,11 @@ sub getOpCode
 {
 	my ($opname) = @_;
 	my $OPNODE = getNode($opname, "opcode");
-	return $OPNODE;
+	my $code = '"";';
+	
+	$code = $$OPNODE{code} if(defined $OPNODE);
+
+	return $code;
 }
 
 
@@ -2469,43 +2416,21 @@ sub getOpCode
 sub execOpCode
 {
   my $op = $query->param('op');
-  my ($OPCODE, $opCodeCode);
+  my $code;
   my $handled = 0;
   
   return 0 unless(defined $op && $op ne "");
   
-  my $logError = sub {
-    my $condition = shift;
+  $code = getOpCode($op);
+  if (defined $code) {
+    $handled = eval($code);
     if ($@){
-      Everything::printLog("Problem when $condition $op opcode:\n");
-      my $params = $query->Vars();
-      for (keys %$params) {
-        Everything::printLog("- param: " . $_ . " = " . $query->param($_));
-      }
+      Everything::printLog("Problem when executing $op opcode:\n");
       Everything::printLog($@);
-    }
-  };
-
-  my $opCodeTest = sub {
-    my $code = shift;
-    my $compiled = eval $code;
-    &$logError("compiling");
-    return $compiled;
-  };
-
-  $OPCODE = getOpCode($op);
-
-  # For built-in opcodes, like new, there will normally be no $OPCODE
-  if ($OPCODE) {
-
-    $opCodeCode = getCompiledCode($OPCODE, $opCodeTest);
-    unless ($@)
-    {
-      $handled = eval { &$opCodeCode(); };
-      &$logError("running");
+      Everything::printLog("\n\n");
     }
 
-  }
+  } 
 
   unless($handled)
   {
@@ -2597,19 +2522,18 @@ sub mod_perlInit
 	$query = getCGI();
     return if $query->user_agent and $query->user_agent =~ /WebStripper/;
 	$USER = loginUser();
-
-	assign_test_condition();
-        if (not $TEST_CONDITION) {
-        #init the cache
+    #init the cache
 	$CACHESTORE ||= new Everything::CacheStore "cache_store:$CONFIG{cachestore_dbserv}";
-	} else {
-	   $CACHESTORE = '';
-	}
+
+
+
+
 
        #only for Everything2.com
        if ($query->param("op") eq "randomnode") {
                $query->param("node_id", getRandomNode());
        }
+
 
 	# Execute any operations that we may have
 	execOpCode();
@@ -2639,7 +2563,6 @@ sub mod_perlInit
 	     }
 
 	#$Everything::PERLTIME->stop();
-	$DB->closeTransaction();
 	$PAGELOAD++;
 	
 ##	if($PAGELOAD > $NUMPAGELOADS)
@@ -2802,7 +2725,7 @@ sub showCompleteDiff{
   my @plusBuffer = ();
   my $html = '';
 
-  my $renderDiffLine  = sub {
+  sub renderDiffLine {
     my ($sign, $line) = @_;
 
     # [ ] replace colors with CSS classes
@@ -2824,23 +2747,23 @@ sub showCompleteDiff{
       $html .= "</span>";
     }
     return $html;
-  };
+  }
 
-  my $flushDiffBuffers = sub {
+  sub flushDiffBuffers {
     my $html = '';
 
     foreach (@minusBuffer) {
-      $html .= &$renderDiffLine(@$_);
+      $html .= renderDiffLine(@$_);
     }
     @minusBuffer = ();
 
     foreach (@plusBuffer) {
-      $html .= &$renderDiffLine(@$_);
+      $html .= renderDiffLine(@$_);
     }
     @plusBuffer = ();
 
     return $html;
-  };
+  }
 
   while (@diff) {
     my ($sign, $left, $right) = @{shift @diff};
@@ -2872,186 +2795,18 @@ sub showCompleteDiff{
 
     }
     else {
-      $html .= &$flushDiffBuffers();
-      $html .= &$renderDiffLine(' ', $right);
+      $html .= flushDiffBuffers();
+      $html .= renderDiffLine(' ', $right);
     }
 
     if (!@diff) {
-      $html .= &$flushDiffBuffers();
+      $html .= flushDiffBuffers();
     }
   }
 
   return $html;
 }
 
-
-#####################
-# sub 
-#   generate_test_cookie 
-#
-# purpose
-#   quick and dirty factory for creating a cookie from $TEST
-#
-# params
-#   none, but checks $TEST and $TEST_CONDITION
-#
-# returns
-#   condition cookie
-sub generate_test_cookie {
-   return if $TEST_CONDITION eq 'optout';
-   return $query->cookie("condition", "") unless $TEST and $TEST_CONDITION; 
-
-   return $query->cookie(-name=>'condition',
-                         -value=> join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION, $TEST_SESSION_ID)),
-                         -expires=>'+1y',
-			 -path=>'/'); 
-}
-
-#####################
-# sub 
-#   assign_test_condition
-#
-# purpose
-#   check to see if tests are running, if so stamp 'em
-#   if the user has a condition, load $TEST
-#
-# params 
-#   none, but checks $USER globals, cookies, and $query params
-# 
-# returns
-#   none
-#
-sub assign_test_condition {
-  return if isGod($USER);
-  $TEST_CONDITION = '';
-  my ($T) = getNodeWhere({ enabled => 1 }, 'mvtest'); 
-  return unless $T;
-
-  $TEST = $T;
-  getRef $TEST;
-
-  my $current_condition = $query->cookie('condition');
-  if ($current_condition eq 'optout') {
-    $TEST_CONDITION = 'optout';
-    return;
-  }
-
-  #if a user has logged in and been assigned a test, the users own vars
-  #trump anything the cookie says (except for optout)
-  if (getId($USER) != $HTMLVARS{guest_user} and exists $$VARS{mvtest_condition} and $$VARS{mvtest_condition} != $current_condition) {
-     if ($$VARS{mvtest_condition} eq 'optout') {
-        $TEST_CONDITION = 'optout';
-        return;
-     }
-     $current_condition = $$VARS{mvtest_condition};        
-  }
-
-  #we use the test_id/starttime as a dual key to confirm the test we have a
-  #cookie for is a valid test
-  my ($id, $starttime, $condition, $session_id);
-  if ($current_condition) {
-     ($id, $starttime, $condition, $session_id) = split "\\|", $current_condition;
-  }
-
-  if ($current_condition and $id == getId($TEST) and $starttime eq $$TEST{starttime} and $session_id) {
-     $TEST_CONDITION  = $condition;
-     $TEST_SESSION_ID = $session_id;
-  } else {
-     #if no assigned condition, or the cookie is no longer valid, assign 
-     my @potential_conditions = split ",", $$TEST{conditions};
-     if (@potential_conditions) {
-        $TEST_CONDITION = $potential_conditions[int(rand(@potential_conditions))];      
-        $TEST_SESSION_ID = int(rand(2147483647));
-     } 
-  }
-
-  #if a user is logged in, make sure that the condition info is written to their
-  #user vars
-  if (getId($USER) != $HTMLVARS{guest_user}) {
-    $$VARS{mvtest_condition} = join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION, $TEST_SESSION_ID)); 
-  } 
-
-  #the cookie for the test is stamped in the printHeader() function
-  #which calls the generate_test_cookie function
-}
-
-######################
-# sub
-#   check_test_substitutions
-#
-# purpose
-#   determine from $TEST whether we have substitutions for a given htmlcode
-#   this is called by getCode to "filter" what users see
-#
-# params
-#   htmlcode name
-#
-# returns
-#   new htmlcode name, or original
-#
-sub check_test_substitutions {
-  my ($htmlcode) = @_;
-
-  return $htmlcode if not getId($TEST) or $TEST_CONDITION eq 'optout' or not $TEST_CONDITION;
-  
-  my $key = $TEST_CONDITION. "|". $htmlcode;   
-  my $V = getVars($TEST);
-  if (exists $$V{$key} and getNode($$V{$key}, 'htmlcode')) {
-    return $$V{$key};
-  }
-
-  return $htmlcode;
-}
-
-######################
-# sub
-#   recordUserAction
-#
-# purpose
-#   Log a user action with the current user's session id and condition
-#
-# params
-#   action (node or node_id), source_node_id, target_node_id
-#
-# returns
-#   nothing
-#
-sub recordUserAction {
-  my ($action, $source_node_id, $target_node_id) = @_;
-
-  # Stop logging immediately if somebody's opted out
-  return if ($TEST_CONDITION eq 'optout');
-  # Logging won't work for gods because they aren't asssigned a SESSION_ID
-  return if isGod($USER);
-
-  $action = getNode($action, 'useraction') if !ref $action;
-  my $action_id = int($$action{node_id}) if $action;
-
-  my %setValues =
-    (
-      -useraction_id => $action_id
-      , -useraction_session_id => $TEST_SESSION_ID
-      , useraction_condition => $TEST_CONDITION
-    );
-
-  getId($source_node_id);
-  getId($target_node_id);
-
-  $setValues{'-useraction_source_node_id'} = $source_node_id if $source_node_id;
-  $setValues{'-useraction_target_node_id'} = $target_node_id if $target_node_id;
-
-  if (!$action_id) {
-
-    Everything::printLog("Unable to log user action because '$action' isn't a valid action.");
-    return;
-
-  } else {
-
-    $DB->sqlInsert('useractionlog', \%setValues);
-
-  }
-
-}
 
 #############################################################################
 # End of package

@@ -36,7 +36,7 @@ while (<MEMINFO>) {
 
 my $swap = $info{'SwapTotal:'} - $info{'SwapFree:'};
 
-if ($swap > 150000) { #150 megs into swap
+if ($swap > 1500000) { #150 megs into swap
 	`/etc/init.d/apache2 stop`;
 	sleep 5;
 	`killall -9 apache2`;
