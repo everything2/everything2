@@ -3023,6 +3023,8 @@ sub recordUserAction {
   return if ($TEST_CONDITION eq 'optout');
   # Logging won't work for gods because they aren't asssigned a SESSION_ID
   return if isGod($USER);
+  # Don't log if there's no active session
+  return if !$TEST_SESSION_ID;
 
   $action = getNode($action, 'useraction') if !ref $action;
   my $action_id = int($$action{node_id}) if $action;
