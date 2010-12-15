@@ -151,7 +151,7 @@ sub canCache {
        next if $query->param('displaytype') eq 'display' or not $query->param('displaytype');
 	}
 	
-	next if /^(node|node_id|lastnode_id)$/;
+	next if /^(node|node_id|lastnode_id|author|type|guest)$/;
 	#print "BLAM $_<BR>";
 	return;
   }
