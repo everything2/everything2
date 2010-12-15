@@ -2240,6 +2240,12 @@ sub handleUserRequest{
   my $handled = 0;
   my $noRemoveSpaces = 0;
 
+  my $defaultNode = $HTMLVARS{default_node};
+
+  if ($$USER{title} eq 'Guest User'){
+    $defaultNode = $HTMLVARS{default_guest_node};
+  }
+
   if ($query->param('node')) {
     # Searching for a node my string title
     my $type  = $query->param('type');
@@ -2251,12 +2257,7 @@ sub handleUserRequest{
     $author = getNode($author,"user");
 
     if ($nodename eq "") {
-      if ($$USER{title} eq 'Guest User'){
-        gotoNode($HTMLVARS{default_guest_node}, $user_id);
-      }
-      else {
-        gotoNode($HTMLVARS{default_node}, $user_id);
-      }
+      gotoNode($defaultNode, $user_id);
       return;
     }
 
@@ -2292,7 +2293,7 @@ sub handleUserRequest{
   }
   else {
     #no node was specified -> default
-    gotoNode($HTMLVARS{default_node}, $user_id);
+    gotoNode($defaultNode, $user_id);
   }
 }
 
