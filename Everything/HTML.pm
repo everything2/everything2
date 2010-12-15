@@ -2199,7 +2199,12 @@ sub handleUserRequest{
     $author = getNode($author,"user");
 
     if ($nodename eq "") {
-      gotoNode($HTMLVARS{default_node}, $user_id);
+      if ($$USER{title} eq 'Guest User'){
+        gotoNode($HTMLVARS{default_guest_node}, $user_id);
+      }
+      else {
+        gotoNode($HTMLVARS{default_node}, $user_id);
+      }
       return;
     }
 
