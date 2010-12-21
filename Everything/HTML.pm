@@ -1276,7 +1276,7 @@ sub linkNodeTitle {
     my ($nodetype,$user) = split /\bby\b/, $anchor;
     $nodetype =~ s/^\s*//;
     $nodetype =~ s/\s*$//;
-    $user =~ s/^\s*|\s*$//;
+    $user =~ s/^\s*|\s*$//g;
 
 
     #Aha, trying to link to a discussion post
