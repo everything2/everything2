@@ -482,7 +482,13 @@ sub getNode
 
 	
 	
-	($NODE) = $this->getNodeWhere({ "title" => $title }, $TYPE);
+	# If it looks like there's a double encoded character, try looking up both this title and the title
+	#  with an additional decode
+	if ($title !~ /%/) {
+		($NODE) = $this->getNodeWhere({ "title" => $title }, $TYPE);
+	} else {
+		($NODE) = $this->getNodeWhere({ "title" => [ $title, CGI::unescape($title) ] }, $TYPE);
+	}
 
 	if(defined $NODE)
 	{
