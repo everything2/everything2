@@ -1274,10 +1274,8 @@ sub linkNodeTitle {
     }
 
     my ($nodetype,$user) = split /\bby\b/, $anchor;
-    $nodetype =~ s/^\s*//;
-    $nodetype =~ s/\s*$//;
-    $user =~ s/^\s*|\s*$//g;
-
+    $nodetype =~ s/^\s*|^\+|\s*$|\+$//g;
+    $user =~ s/^\s*|^\+|\s*$|\+$//g;
 
     #Aha, trying to link to a discussion post
     if($nodetype =~ /^\d+$/){
@@ -1288,6 +1286,7 @@ sub linkNodeTitle {
 
     #Perhaps direct link to a writeup instead?
     elsif(grep /^$nodetype$/, ("","e2node","node","writeup") ){
+
       #Anchors are case-sensitive, need to get the exact username.
       $user = getNode($user,"user");
       $user = ($user? $$user{title} : "");
