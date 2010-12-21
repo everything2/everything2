@@ -354,7 +354,6 @@ sub castVote {
 
     }
 
-    Everything::printLog("About to log user action '$action'.");
     Everything::HTML::recordUserAction($action, $$NODE{node_id});
     adjustRepAndVoteCount($NODE, $weight-$prevweight, $voteCountChange);
 
