@@ -783,6 +783,7 @@ sub getNodeCursor
 
 	$select .= " WHERE " . $wherestr if($wherestr);
 #	$Everything::SQLTIME->start();
+	Everything::printLog("Running SQL query:\n$select\n");
 	$cursor = $this->{dbh}->prepare($select);
 	my $result = $cursor->execute();
 #	$Everything::SQLTIME->stop();
@@ -1911,10 +1912,16 @@ sub genWhereString
 		}
 		
 		# If $key starts with a '-', it means its a single value.
-		if ($key =~ /^\-LIKE\-/)
+		if ($key =~ /^(\-?)LIKE\-/)
 		{
-			$key =~ s/^\-LIKE\-//;
-			$tempstr .= $key . ' LIKE ' . $$WHERE{'-LIKE-' . $key}; 
+			my $value = $$WHERE{$key};
+
+			if ($1 ne '-') {
+				$value = $this->quote($value);
+			}
+
+			$key =~ s/^\-?LIKE\-//;
+			$tempstr .= "$key LIKE $value";
 		}
 		elsif ($key =~ /^\-/)
 		{ 

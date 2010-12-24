@@ -2261,14 +2261,20 @@ sub handleUserRequest{
     }
 
     if ($author and $TYPE->{title} eq 'writeup') {
+      my $parent_e2node = getNode($nodename, 'e2node', 'light');
+      $parent_e2node = getId($parent_e2node);
+      $parent_e2node ||= 0;
+
       # Grab first (hopefully only) writeup by author under a given title
+      #  Prefer the writeup whose parent matches the title exactly, if any
       my ($writeup) =
         getNodeWhere(
           {
-            "-LIKE-title" => $DB->quote($nodename . '%')
-            , "-author_user" => $$author{user_id}
+            "-author_user" => $$author{user_id},
+            "-LIKE-title" => $DB->quote($nodename . '%'),
           }
           , getType('writeup')
+          , " parent_e2node = $parent_e2node DESC"
         );
 
       if ($writeup) {
