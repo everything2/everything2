@@ -1243,7 +1243,7 @@ sub linkNode {
 #############################################################################
 sub linkNodeTitle {
 	my ($nodename, $lastnode, $escapeTags) = @_;
-  my $title;
+	my $title;
 	($nodename, $title) = split /\s*[|\]]+/, $nodename;
 	$title = $nodename if $title =~ m/^\s*$/;
 	$nodename =~ s/\s+/ /gs;
@@ -1275,6 +1275,7 @@ sub linkNodeTitle {
 
     my ($nodetype,$user) = split /\bby\b/, $anchor;
     $nodetype =~ s/^\s*|^\+|\s*$|\+$//g;
+    $user =~ s/\+/ /g;
     $user =~ s/^\s*|^\+|\s*$|\+$//g;
 
     #Aha, trying to link to a discussion post
@@ -1288,6 +1289,7 @@ sub linkNodeTitle {
     elsif(grep /^$nodetype$/, ("","e2node","node","writeup") ){
 
       #Anchors are case-sensitive, need to get the exact username.
+      Everything::printLog("User I'm searching for is <<$user>> from a title of $title and a nodename of $nodename");
       $user = getNode($user,"user");
       $user = ($user? $$user{title} : "");
 
