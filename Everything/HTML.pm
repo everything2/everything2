@@ -1289,7 +1289,6 @@ sub linkNodeTitle {
     elsif(grep /^$nodetype$/, ("","e2node","node","writeup") ){
 
       #Anchors are case-sensitive, need to get the exact username.
-      Everything::printLog("User I'm searching for is <<$user>> from a title of $title and a nodename of $nodename");
       $user = getNode($user,"user");
       $user = ($user? $$user{title} : "");
 
