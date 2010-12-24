@@ -783,7 +783,6 @@ sub getNodeCursor
 
 	$select .= " WHERE " . $wherestr if($wherestr);
 #	$Everything::SQLTIME->start();
-	Everything::printLog("Running SQL query:\n$select\n");
 	$cursor = $this->{dbh}->prepare($select);
 	my $result = $cursor->execute();
 #	$Everything::SQLTIME->stop();
