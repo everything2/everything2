@@ -1792,7 +1792,6 @@ sub displayPage
 	getRef $NODE, $USER;
 	die "NO NODE!" unless $NODE;
 	$GNODE = $NODE;
-	%HEADER_PARAMS = ();
 	my $isGuest = 0;
 	my $page = "";
 	$isGuest = 1 if ($user_id == $HTMLVARS{guest_user});
@@ -2600,6 +2599,7 @@ sub mod_perlInit
 	# user is not allowed to view/edit a node, etc.  These are stored
 	# in the dbase to make changing these values easy.	
 	%HTMLVARS = %{ eval (getCode('set_htmlvars')) };
+	%HEADER_PARAMS = ( );
 
 	$query = getCGI();
     return if $query->user_agent and $query->user_agent =~ /WebStripper/;
