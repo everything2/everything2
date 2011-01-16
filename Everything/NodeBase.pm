@@ -783,6 +783,13 @@ sub getNodeCursor
 
 	$select .= " WHERE " . $wherestr if($wherestr);
 #	$Everything::SQLTIME->start();
+
+	if ($select eq "SELECT * FROM node")
+	{
+		Everything::HTML::htmlFormatErr($select, 'getNodeCursor() tried to evaluate a stupid query', '');
+		return undef;
+	}
+
 	$cursor = $this->{dbh}->prepare($select);
 	my $result = $cursor->execute();
 #	$Everything::SQLTIME->stop();

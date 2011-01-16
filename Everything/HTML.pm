@@ -784,6 +784,11 @@ sub htmlErrorUsers
 	$error .= "Code:\n$code\n";
 	$error .= "Error:\n$err\n";
 	$error .= "Warning:\n$warn";
+	$error .= "Params:\n";
+	my $params = $query->Vars();
+	for (keys %$params) {
+		$error .= "\t- param: " . $_ . " = " . $query->param($_);
+	}
 	Everything::printLog($error);
 
 	$str;
