@@ -1891,9 +1891,14 @@ sub gotoNode
 	}
 	#these are contingencies various things that could go wrong
 
-        unless($no_update){
+	my $updateAllowed = !$no_update && canUpdateNode($user_id, $NODE);
 
-	if (canUpdateNode($user_id, $NODE)) {
+	if ($updateAllowed && $$NODE{type}{verify_edits}) {
+		my $type = $$NODE{type}{title};
+		$updateAllowed = 0 unless htmlcode('verifyRequest', "edit_$type");
+	}
+
+	if ($updateAllowed) {
 		if (my $groupadd = $query->param('add')) {
 			insertIntoNodegroup($NODE, $user_id, $groupadd,
 				$query->param('orderby'));
@@ -1928,7 +1933,6 @@ sub gotoNode
 		}
 	}
 	
-        } #unless $no_update
 
 	updateHits ($NODE);
 	if ($query->cookie('lastnode_id')) {
