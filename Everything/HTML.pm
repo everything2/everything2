@@ -1895,7 +1895,10 @@ sub gotoNode
 
 	if ($updateAllowed && $$NODE{type}{verify_edits}) {
 		my $type = $$NODE{type}{title};
-		$updateAllowed = 0 unless htmlcode('verifyRequest', "edit_$type");
+		if (!htmlcode('verifyRequest', "edit_$type")) {
+			$updateAllowed = 0;
+			$query->delete_all();
+		}
 	}
 
 	if ($updateAllowed) {
