@@ -1891,13 +1891,21 @@ sub gotoNode
 	}
 	#these are contingencies various things that could go wrong
 
+	my $displaytype = $query->param("displaytype");
+
 	my $updateAllowed = !$no_update && canUpdateNode($user_id, $NODE);
 
 	if ($updateAllowed && $$NODE{type}{verify_edits}) {
 		my $type = $$NODE{type}{title};
 		if (!htmlcode('verifyRequest', "edit_$type")) {
+
 			$updateAllowed = 0;
-			$query->delete_all();
+
+			# Blank the passed values if this looks like an XSRF
+			if ($query->param('add') || $query->param('group')
+				|| grep(/^${type}_/, $query->Vars)) {
+				$query->delete_all();
+			}
 		}
 	}
 
@@ -1942,8 +1950,6 @@ sub gotoNode
 		$query->param('lastnode_id', $query->cookie('lastnode_id'));
 	}
 	updateLinks ($NODE, $query->param('lastnode_id')) if $query->param('lastnode_id') and getId($USER) != $HTMLVARS{guest_user};
-
-	my $displaytype = $query->param("displaytype");
 
 	#if we are accessing an edit page, we want to make sure user
 	#has rights -- also, lock the page
