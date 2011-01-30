@@ -1288,37 +1288,41 @@ sub linkNodeTitle {
       $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ; "
               ."path=/'; 1;\" title=\"$tip\" href=\""
               ."/node/debate/$nodename#debatecomment_$nodetype";
-    }
+    } else {
 
-    #Perhaps direct link to a writeup instead?
-    elsif(grep /^$nodetype$/, ("","e2node","node","writeup") ){
+      $nodetype = "node" unless getType($nodetype);
 
-      #Anchors are case-sensitive, need to get the exact username.
-      $user = getNode($user,"user");
-      $user = ($user? $$user{title} : "");
+      #Perhaps direct link to a writeup instead?
+      if (grep /^$nodetype$/, ("","e2node","node","writeup") ){
 
-      $str .= "<a onmouseup=\"document.cookie='lastnode_id="
-               .($lastnode? $lastnode : 0)."; ; "
-               ."path=/'; 1;\" title=\"$tip\" href=\""
-               ."/title/$nodename#$user";
-    }
+        #Anchors are case-sensitive, need to get the exact username.
+        $user = getNode($user,"user");
+        $user = ($user? $$user{title} : "");
 
-    #Or maybe a scratch pad?
-    elsif($nodetype =~ /^scratch/){
-      $user = rewriteCleanEscape($user);
-      $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ;"
-               ."path=/'; 1;\" title=\"$tip\" href=\""
-               ."/user/$user/scratchpads/$nodename";
-    }
+        $str .= "<a onmouseup=\"document.cookie='lastnode_id="
+                 .($lastnode? $lastnode : 0)."; ; "
+                 ."path=/'; 1;\" title=\"$tip\" href=\""
+                 ."/title/$nodename#$user";
+      }
 
-    #Else, direct link to nodetype. Let's hope the users know what
-    #they're doing.
-    else{
-      $str .= "<a onmouseup=\"document.cookie='lastnode_id="
-              .($lastnode? $lastnode : 0)."; ;"
-              ."path=/'; 1;\" title=\"$tip\" href=\""
-              .($nodetype eq "user" ? "/" : "/node/")
-              ."$nodetype/$nodename";
+      #Or maybe a scratch pad?
+      elsif($nodetype =~ /^scratch/){
+        $user = rewriteCleanEscape($user);
+        $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ;"
+                 ."path=/'; 1;\" title=\"$tip\" href=\""
+                 ."/user/$user/scratchpads/$nodename";
+      }
+
+      #Else, direct link to nodetype. Let's hope the users know what
+      #they're doing.
+      else {
+        $str .= "<a onmouseup=\"document.cookie='lastnode_id="
+                .($lastnode? $lastnode : 0)."; ;"
+                ."path=/'; 1;\" title=\"$tip\" href=\""
+                .($nodetype eq "user" ? "/" : "/node/")
+                ."$nodetype/$nodename";
+      }
+
     }
   }
 
