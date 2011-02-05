@@ -1117,7 +1117,7 @@ sub getPage
 	  if exists $$VARS{'displaypref_'.$$TYPE{title}};
 	$displaytype ||= $$THEME{'displaypref_'.$$TYPE{title}}
 	  if exists $$THEME{'displaypref_'.$$TYPE{title}};
-	$displaytype ||= 'display';
+	$displaytype 'display' unless $displaytype;
 
 
 	my $PAGE = getPageForType $TYPE, $displaytype;
@@ -1413,7 +1413,7 @@ sub nodeName
 	}
 
 	my $type = $types[0];
-	$type ||= "";
+	$type = "" unless $type;
 
 	if (not $select_group or @$select_group == 0)
 	{ 
@@ -1589,7 +1589,7 @@ sub embedCode {
 
 	# Block needs to be defined, otherwise the search/replace regex
 	# stuff will break when it gets an undefined return from this.
-	$block ||= "";
+	$block = "" unless defined $block;
 
 	return $block;
 }
@@ -1823,7 +1823,7 @@ sub displayPage
         #4-17-2002
 
         my $dsp = $query->param('displaytype');
-        $dsp ||= "display";
+        $dsp = "display" unless $dsp;
 
 	if($dsp eq "display"){
 		if ($isGuest and !defined $query->param('op')
@@ -2199,7 +2199,7 @@ sub printHeader
 
  	my $len = length $page;
 	# default to plain html
-	$datatype ||= "text/html";
+	$datatype = "text/html" unless $datatype;
 	my @cookies = ();
 
         push @cookies, generate_test_cookie();
