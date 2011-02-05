@@ -1117,7 +1117,7 @@ sub getPage
 	  if exists $$VARS{'displaypref_'.$$TYPE{title}};
 	$displaytype ||= $$THEME{'displaypref_'.$$TYPE{title}}
 	  if exists $$THEME{'displaypref_'.$$TYPE{title}};
-	$displaytype 'display' unless $displaytype;
+	$displaytype = 'display' unless $displaytype;
 
 
 	my $PAGE = getPageForType $TYPE, $displaytype;
