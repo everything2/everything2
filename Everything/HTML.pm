@@ -25,6 +25,8 @@ sub BEGIN {
               %HEADER_PARAMS
               $DB
               %HTMLVARS
+              $NODE
+              $VARS
               $query
               jsWindow
               createNodeLinks
@@ -55,6 +57,7 @@ sub BEGIN {
               decodeHTML
               escapeAngleBrackets
               rewriteCleanEscape
+              processVarsSet
               showPartialDiff
               showCompleteDiff
               recordUserAction
@@ -65,12 +68,12 @@ sub BEGIN {
 
 use vars qw($query);
 use vars qw(%HTMLVARS);
+use vars qw($VARS);
 use vars qw($GNODE);
 use vars qw($USER);
 use vars qw($TEST);
 use vars qw($TEST_CONDITION);
 use vars qw($TEST_SESSION_ID);
-use vars qw($VARS);
 use vars qw($THEME);
 use vars qw($NODELET);
 use vars qw($CACHESTORE);
@@ -1829,12 +1832,11 @@ sub displayPage
 			$query->print($$page);
 			return "";
 		}
-        }
+	}
 
 	my $PAGE = getPage($NODE, $query->param('displaytype'));
-        #jb says: minor hack here 
 	$$NODE{datatype} = $$PAGE{mimetype};
-        $page = $$PAGE{page};
+	$page = $$PAGE{page};
 
 	die "NO PAGE!" unless $page;
 
@@ -1843,24 +1845,13 @@ sub displayPage
 		my ($pre, $post) = genContainer($$PAGE{parent_container});
 		$page = $pre.$page.$post;
 	}
-   
-  #  my $XP = $$USER{experience};
-#	delete $$USER{experience};  #hopefully this will clear up XP corruption
+
 	setVars $USER, $VARS unless getId($USER) == $HTMLVARS{guest_user};
- #   $$USER{experience} = $XP;	
 	printHeader($$NODE{datatype}, $page, $lastnode);
 
-#	TOTAL HACK for SSL
-    #$page =~ s|http\:(//thepope\.org/img)|https:$1|gs if $query->url =~ /^https/;
-	#($ENV{SCRIPT_NAME} =~ /^https/);
-	
-	# We are done.  Print the page to the browser.
-#	$page =~ s|http://thepope\.org/img/|http://216.200.201.213/~thepope/img/|gs;
-#	$page =~ s|http://adfu\.blockstackers\.com/|http://216.200.201.212/~adfu/|gs;
 	if ($isGuest and $CACHESTORE and $CACHESTORE->canCache($NODE, $query)) { 
        $CACHESTORE->cachePage($$NODE{node_id}, $page);	
 	}
-	#jb - AWESOME
 	$query->print($page);
 	$page = "";
 }
@@ -3083,6 +3074,27 @@ sub recordUserAction {
   }
 
 }
+
+#####################
+# sub 
+#   process_vars_set
+#
+# purpose
+#   Update package variables if a node was updated which affects them
+#
+# params
+#   $updated_node -- the updated node
+#
+# returns
+#   nothing
+sub processVarsSet {
+	my $updated_node = shift;
+
+	if ($$updated_node{node_id} == $$USER{node_id}) {
+		$VARS = getVars($updated_node);
+	}
+}
+
 
 #############################################################################
 # End of package

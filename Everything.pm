@@ -42,6 +42,7 @@ sub BEGIN
               updateNode
               updateLockedNode
               replaceNode
+              transactionWrap
 
               initEverything
               removeFromNodegroup
@@ -104,6 +105,7 @@ sub insertNode		{ $DB->insertNode(@_); }
 sub updateNode		{ $DB->updateNode(@_); }
 sub updateLockedNode	{ $DB->updateLockedNode(@_); }
 sub replaceNode		{ $DB->replaceNode(@_); }
+sub transactionWrap	{ $DB->transactionWrap(@_); }
 sub getCompiledCode	{ $DB->getCompiledCode(@_); }
 sub clearCompiledCode	{ $DB->clearCompiledCode(@_); }
 
@@ -269,6 +271,37 @@ sub unescape
 
 
 #############################################################################
+sub getVarHashFromString
+{
+	my $varString = shift;
+	my %vars = map { split /=/ } split (/&/, $varString);
+	foreach (keys %vars) {
+		unescape $vars{$_};
+		if ($vars{$_} eq ' ') { $vars{$_} = ""; }
+	}
+	return %vars;
+}
+
+sub getVarStringFromHash
+{
+	my $varHash = shift;
+
+	# Clean out the keys that have do not have a value.
+	foreach (keys %$varHash) {
+		# Remove deleted value so they aren't saved
+		if (!defined $$varHash{$_}) {
+			delete $$varHash{$_};
+		}
+		# But set blank strings to a single space so
+		#  they aren't list.
+		$$varHash{$_} = " " unless $$varHash{$_};
+	}
+	
+	my $varStr =
+		join("&", map( $_."=".escape($$varHash{$_}), sort keys %$varHash) );
+	return $varStr
+}
+
 sub getVars 
 {
 	my ($NODE) = @_;
@@ -290,15 +323,8 @@ sub getVars
 	my %vars;
 	return \%vars unless ($$NODE{vars});
 
-	%vars = map { split /=/ } split (/&/, $$NODE{vars});
-	foreach (keys %vars) {
-		unescape $vars{$_};
-		if ($vars{$_} eq ' ') { $vars{$_} = ""; }
-	}
-
-	#delete $vars{themesetting_id};
+	%vars = getVarHashFromString($$NODE{vars});
 	my %varscopy = %vars;
-
 	$DB->{cache}->{hashCache}->{$$NODE{node_id}} = \%varscopy;
 	\%vars;
 }
@@ -324,7 +350,6 @@ sub getVars
 sub setVars
 {
 	my ($NODE, $varsref) = @_;
-	my $str;
 
 	getRef($NODE);
 
@@ -333,21 +358,35 @@ sub setVars
 		perhaps it doesn't join on the settings table?\n");
 	}
 
-	# Clean out the keys that have do not have a value.
-	foreach (keys %$varsref) {
-		$$varsref{$_} = " " unless $$varsref{$_};
+	my $newVarsStr = getVarStringFromHash($varsref);
+	return unless ($newVarsStr ne $$NODE{vars}); #we don't need to update...
+
+	# Create a list of the vars-as-loaded
+	my %originalVars = getVarHashFromString($$NODE{vars});
+
+	# Record just the modified vars
+	my %modifiedVars = ();
+	foreach my $newVar (keys %$varsref) {
+		$modifiedVars{$newVar} = $$varsref{$newVar}
+			if $$varsref{$newVar} ne $originalVars{$newVar};
 	}
-	
-	$str = join("&", map( $_."=".escape($$varsref{$_}), sort keys %$varsref) );
 
-	return unless ($str ne $$NODE{vars}); #we don't need to update...
+	# Now lock the node's row in the DB, read its vars as they are now,
+	#  poke in the modified vars, and then finally write it down
+	# This way we avoid race conditions with vars being updated in multiple
+	#  ways at once.  (No more infinite C!s.  q.q)
+	my $updateSub = sub {
+		my $currentVarString =
+			$DB->sqlSelect('vars', 'setting', "setting_id = $$NODE{node_id}");
+		my %currentVars = getVarHashFromString($currentVarString);
+		map { $currentVars{$_} = $modifiedVars{$_}; } keys %modifiedVars;
+		$$NODE{vars} = getVarStringFromHash(\%currentVars);
+		my $superuser = -1;
+		$DB->updateNode($NODE, $superuser, 1);
+	};
 
-	# The new vars are different from what this user node contains, force
-	# an update on the user info.
-	$$NODE{vars} = $str;
-	#undef $DB->{cache}->{hashCache}->{$$NODE{node_id}};
-	my $superuser = -1;
-	$DB->updateNode($NODE, $superuser, 1);
+	transactionWrap($updateSub);
+	Everything::HTML::processVarsSet($NODE);
 }
 
 
