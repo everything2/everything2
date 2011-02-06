@@ -1293,7 +1293,7 @@ sub linkNodeTitle {
               ."/node/debate/$nodename#debatecomment_$nodetype";
     } else {
 
-      $nodetype = "node" unless getType($nodetype);
+      $nodetype = "node" unless $nodetype eq 'scratch' || getType($nodetype);
 
       #Perhaps direct link to a writeup instead?
       if (grep /^$nodetype$/, ("","e2node","node","writeup") ){
