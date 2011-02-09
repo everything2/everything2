@@ -918,6 +918,7 @@ sub urlGen {
   delete $$REF{node};
   delete $$REF{nodetype};
   delete $$REF{type};
+  delete $$REF{lastnode_id} if $$REF{lastnode_id} == 0;
   $str .= '#'.$$REF{'#'} if $$REF{'#'} ;
   delete $$REF{'#'};
 
@@ -926,7 +927,6 @@ sub urlGen {
 
   # Cycle through all the keys of the hashref for node_id, etc.
   foreach my $key (keys %$REF) {
-    next if $key eq "lastnode_id" and $REF -> {$key} == "0";
     $str .= $quamp . CGI::escape($key) .'='. CGI::escape($$REF{$key});
     $quamp = '&amp;' ;
   }
@@ -1218,10 +1218,6 @@ sub linkNode {
   $title ||= encodeHTML($$NODE{title});
   my $tags = "";
 
-  my $lastnode_id = $PARAMS -> {lastnode_id};
-  $lastnode_id = getId($GNODE) unless defined $lastnode_id;
-  delete $PARAMS -> {lastnode_id};
-
   #any params that have a "-" preceding 
   #get added to the anchor tag rather than the URL
   foreach my $key (keys %$PARAMS) {
@@ -1230,33 +1226,27 @@ sub linkNode {
     my $pr = substr $key, 1;
     $tags .= " $pr=\"$$PARAMS{$key}\"";
     delete $$PARAMS{$key};
+
   }
 
   my $exist_params = (keys(%$PARAMS) > 0);
 
-  if ($lastnode_id == 0) {
-    "<a onmouseup=\"document.cookie='lastnode_id=0; ; path=/'; 1;\" href="
-      . ($exist_params ? urlGen($PARAMS,0,$NODE) :urlGenNoParams($NODE) )
+  return
+       "<a href="
+      . ($exist_params ? urlGen($PARAMS,0,$NODE) : urlGenNoParams($NODE) )
       . $tags . ">$title</a>";
-  }
-  else {
-    "<a onmouseup=\"document.cookie='lastnode_id=".$lastnode_id
-      ."; ; path=/'; 1;\" href=" 
-      . ($exist_params ? urlGen($PARAMS,0,$NODE) :urlGenNoParams($NODE) )
-      . $tags .">$title</a>";
-  }
 }
 
 
 #############################################################################
 sub linkNodeTitle {
-	my ($nodename, $lastnode, $escapeTags) = @_;
-	my $title;
-	($nodename, $title) = split /\s*[|\]]+/, $nodename;
-	$title = $nodename if $title =~ m/^\s*$/;
-	$nodename =~ s/\s+/ /gs;
+  my ($nodename, $lastnode, $escapeTags) = @_;
+  my ($title, $linktitle, $href) = ('', '', '/');
+  ($nodename, $title) = split /\s*[|\]]+/, $nodename;
+  $title = $nodename if $title =~ m/^\s*$/;
+  $nodename =~ s/\s+/ /gs;
 
-	my $str = "";
+  my $str = "";
   my ($tip, $isNode);
 
   #If we figure out a clever way to find the nodeshells, we should fix
@@ -1285,12 +1275,13 @@ sub linkNodeTitle {
     $nodetype =~ s/^\s*|^\+|\s*$|\+$//g;
     $user =~ s/\+/ /g;
     $user =~ s/^\s*|^\+|\s*$|\+$//g;
+    $linktitle = $tip;
 
     #Aha, trying to link to a discussion post
     if($nodetype =~ /^\d+$/){
-      $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ; "
-              ."path=/'; 1;\" title=\"$tip\" href=\""
-              ."/node/debate/$nodename#debatecomment_$nodetype";
+
+      $href = "/node/debate/$nodename#debatecomment_$nodetype";
+
     } else {
 
       $nodetype = "node" unless $nodetype eq 'scratch' || getType($nodetype);
@@ -1302,28 +1293,20 @@ sub linkNodeTitle {
         $user = getNode($user,"user");
         $user = ($user? $$user{title} : "");
 
-        $str .= "<a onmouseup=\"document.cookie='lastnode_id="
-                 .($lastnode? $lastnode : 0)."; ; "
-                 ."path=/'; 1;\" title=\"$tip\" href=\""
-                 ."/title/$nodename#$user";
+        $href = "/title/$nodename#$user";
+
       }
 
       #Or maybe a scratch pad?
       elsif($nodetype =~ /^scratch/){
         $user = rewriteCleanEscape($user);
-        $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ;"
-                 ."path=/'; 1;\" title=\"$tip\" href=\""
-                 ."/user/$user/scratchpads/$nodename";
+        $href = "/user/$user/scratchpads/$nodename";
       }
 
       #Else, direct link to nodetype. Let's hope the users know what
       #they're doing.
       else {
-        $str .= "<a onmouseup=\"document.cookie='lastnode_id="
-                .($lastnode? $lastnode : 0)."; ;"
-                ."path=/'; 1;\" title=\"$tip\" href=\""
-                .($nodetype eq "user" ? "/" : "/node/")
-                ."$nodetype/$nodename";
+        $href = ($nodetype eq "user" ? "/" : "/node/") ."$nodetype/$nodename";
       }
 
     }
@@ -1340,27 +1323,18 @@ sub linkNodeTitle {
     $tip = $nodename;
     $tip =~ s/"/''/g;
 
-    #my $isNode = getNodeWhere({ title => $nodename});
-    my $urlnode = CGI::escape($nodename);
-    #$str .= "<a title=\"$tip\" href=\"$ENV{SCRIPT_NAME}?node=$urlnode";
-    #if ($lastnode) { $str .= "&amp;lastnode_id=" . getId($lastnode);}
-    if (!$lastnode) {
-      $str .= "<a onmouseup=\"document.cookie='lastnode_id=0; ; "
-        ."path=/'; 1;\" title=\"$tip\" href=\"/title/"
-          .rewriteCleanEscape($nodename);
-    }
-    else {
-      $str .= "<a onmouseup=\"document.cookie='lastnode_id=$lastnode; ; "
-        ."path=/'; 1;\"  title=\"$tip\" href=\"/title/"
-          .rewriteCleanEscape($nodename);
-    }
+    $linktitle = $tip;
+    $href = "/title/" .rewriteCleanEscape($nodename);
   }
-  $str .= "\" "
+
+  getRef $lastnode;
+  my $lastnodeQuery = "?lastnode_id=$$lastnode{node_id}" if $lastnode && ref $lastnode eq 'HASH';
+  $str .= "<a href=\"$href$lastnodeQuery\" title=\"$linktitle\" "
           .( $isNode ? "class='populated'" : "class='unpopulated'")
          ." >$title</a>";
 
 
-	$str;
+  $str;
 }
 
 
@@ -2203,10 +2177,9 @@ sub printHeader
 	$datatype = "text/html" unless $datatype;
 	my @cookies = ();
 
-        push @cookies, generate_test_cookie();
+	push @cookies, generate_test_cookie();
 
 	if ($lastnode && $lastnode > 0) {
-	#	push @cookies, $query->cookie( -name=>'lastnode_id', -value=>$lastnode);
 		push @cookies, $query->cookie( -name=>'lastnode_id', -value=>'');
 
 	} elsif ($lastnode == -1) {
