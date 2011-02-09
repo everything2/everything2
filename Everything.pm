@@ -366,7 +366,7 @@ sub setVars
 
 	# Record just the modified vars
 	my %modifiedVars = ();
-	foreach my $newVar (keys %$varsref) {
+	foreach my $newVar (keys %originalVars) {
 		$modifiedVars{$newVar} = $$varsref{$newVar}
 			if $$varsref{$newVar} ne $originalVars{$newVar};
 	}
