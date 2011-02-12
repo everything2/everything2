@@ -532,15 +532,15 @@ sub updateLinks
 	getRef $TONODE;
 	getRef $FROMNODE;
 	
-	#return if getId($USER) == $HTMLVARS{guest_user};
 	return unless $TONODE and $FROMNODE;
-	return unless ($$TONODE{type}{title} eq 'e2node' and $$FROMNODE{type}{title} eq 'e2node') or $type;
-
+	return unless ($$TONODE{type}{title} eq 'e2node' and $$FROMNODE{type}{title} eq 'e2node');
 
 	$type ||= 0;
 	$type = getId $type;
 	my $to_id = getId $TONODE;
 	my $from_id = getId $FROMNODE;
+
+	return if $to_id == $from_id;
 
 	my $rows = $DB->sqlUpdate('links',
 			{ -hits => 'hits+1' ,  -food => 'food+1'}, 
