@@ -1919,7 +1919,17 @@ sub gotoNode
 	if ($query->cookie('lastnode_id')) {
 		$query->param('lastnode_id', $query->cookie('lastnode_id'));
 	}
-	updateLinks ($NODE, $query->param('lastnode_id')) if $query->param('lastnode_id') and getId($USER) != $HTMLVARS{guest_user};
+
+	# Create softlinks -- a linktype of 0 is the default
+	my $linktype = 0;
+	$linktype = $HTMLVARS{guest_link} if getId($USER) == $HTMLVARS{guest_user};
+	updateLinks ($NODE, $query->param('lastnode_id'), $linktype);
+
+	# So we can cache even linked pages, remove lastnod_id
+	# unless it's a superdoc (so Findings: still gets the param)
+	if (getId($USER) == $HTMLVARS{guest_user} && $$NODE{type}{title} ne 'superdoc') {
+		$query->delete('lastnode_id');
+	}
 
 	#if we are accessing an edit page, we want to make sure user
 	#has rights -- also, lock the page
