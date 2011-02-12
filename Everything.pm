@@ -535,6 +535,7 @@ sub updateLinks
 	getRef $TONODE;
 	getRef $FROMNODE;
 	
+	return unless $TONODE && $FROMNODE;
 	return unless ($$TONODE{type}{title} eq 'e2node' and $$FROMNODE{type}{title} eq 'e2node') or !$isSoftlink;
 	return if Everything::HTML::htmlcode('isSpider');
 
