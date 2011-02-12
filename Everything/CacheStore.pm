@@ -152,7 +152,7 @@ sub canCache {
 	}
 	
 	next if /^(node|node_id|lastnode_id|author|type|guest)$/;
-	#print "BLAM $_<BR>";
+	# Everything::printLog("Unable to serve cached on $$N{title} ($$N{node_id}) because of param $_=" . $query->param($_));
 	return;
   }
   return if not exists $this->{types}{$$N{type_nodetype}}

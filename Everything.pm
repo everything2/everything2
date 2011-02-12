@@ -533,6 +533,7 @@ sub updateLinks
 	getRef $FROMNODE;
 	
 	#return if getId($USER) == $HTMLVARS{guest_user};
+	return unless $TONODE and $FROMNODE;
 	return unless ($$TONODE{type}{title} eq 'e2node' and $$FROMNODE{type}{title} eq 'e2node') or $type;
 
 
