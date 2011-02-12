@@ -528,12 +528,15 @@ sub replaceNodegroup
 sub updateLinks
 {
 	my ($TONODE, $FROMNODE, $type) = @_;
-	return if getId($TONODE) == getId($FROMNODE) and not $type;
+	my $isSoftlink = 1
+		if $type == 0 || (ref $type eq 'HASH' && $$type{title} eq 'guest user link');
+
+	return if getId($TONODE) == getId($FROMNODE) and $isSoftlink;
 	getRef $TONODE;
 	getRef $FROMNODE;
 	
-	return unless $TONODE and $FROMNODE;
-	return unless ($$TONODE{type}{title} eq 'e2node' and $$FROMNODE{type}{title} eq 'e2node');
+	return unless ($$TONODE{type}{title} eq 'e2node' and $$FROMNODE{type}{title} eq 'e2node') or !$isSoftlink;
+	return if Everything::HTML::htmlcode('isSpider');
 
 	$type ||= 0;
 	$type = getId $type;
