@@ -2264,20 +2264,22 @@ sub handleUserRequest{
 
       # Grab first (hopefully only) writeup by author under a given title
       #  Prefer the writeup whose parent matches the title exactly, if any
-      my ($writeup) =
-        getNodeWhere(
-          {
-            "-author_user" => $$author{user_id},
-            "-LIKE-title" => $DB->quote($nodename . '%'),
-          }
-          , getType('writeup')
-          , " parent_e2node = $parent_e2node DESC"
-        );
+       foreach ('writeup','draft'){
+	      my ($writeup) =
+	        getNodeWhere(
+	          {
+	            "-author_user" => $$author{user_id},
+	            "-LIKE-title" => $DB->quote($nodename . '%'),
+	          }
+	          , getType($_)
+	          , " parent_e2node = $parent_e2node DESC"
+	        );
 
-      if ($writeup) {
-        gotoNode($writeup, $user_id);
-        return;
-      }
+	      if ($writeup) {
+	        gotoNode($writeup, $user_id);
+	        return;
+	      }
+       }
     }
 
     $query->param("node", $nodename);
@@ -2928,7 +2930,7 @@ sub generate_test_cookie {
 sub assign_test_condition {
   return if isGod($USER);
   $TEST_CONDITION = '';
-  my ($T) = getNodeWhere({ enabled => 1 }, 'mvtest'); 
+  my ($T) = getNodeWhere({ enabled => 1 }, 'mvtest');
   return unless $T;
 
   $TEST = $T;
