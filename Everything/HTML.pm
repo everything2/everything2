@@ -1241,7 +1241,7 @@ sub linkNode {
 #############################################################################
 sub linkNodeTitle {
   my ($nodename, $lastnode, $escapeTags) = @_;
-  my ($title, $linktitle, $href) = ('', '', '/');
+  my ($title, $linktitle, $linkAnchor, $href) = ('', '', '', '/');
   ($nodename, $title) = split /\s*[|\]]+/, $nodename;
   $title = $nodename if $title =~ m/^\s*$/;
   $nodename =~ s/\s+/ /gs;
@@ -1280,7 +1280,8 @@ sub linkNodeTitle {
     #Aha, trying to link to a discussion post
     if($nodetype =~ /^\d+$/){
 
-      $href = "/node/debate/$nodename#debatecomment_$nodetype";
+      $href = "/node/debate/$nodename";
+      $linkAnchor = "#debatecomment_$nodetype";
 
     } else {
 
@@ -1293,7 +1294,8 @@ sub linkNodeTitle {
         $user = getNode($user,"user");
         $user = ($user? $$user{title} : "");
 
-        $href = "/title/$nodename#$user";
+        $href = "/title/$nodename";
+        $linkAnchor = "#$user";
 
       }
 
@@ -1329,7 +1331,7 @@ sub linkNodeTitle {
 
   getRef $lastnode;
   my $lastnodeQuery = "?lastnode_id=$$lastnode{node_id}" if $lastnode && ref $lastnode eq 'HASH';
-  $str .= "<a href=\"$href$lastnodeQuery\" title=\"$linktitle\" "
+  $str .= "<a href=\"$href$lastnodeQuery$linkAnchor\" title=\"$linktitle\" "
           .( $isNode ? "class='populated'" : "class='unpopulated'")
          ." >$title</a>";
 
