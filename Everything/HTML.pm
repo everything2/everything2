@@ -2266,7 +2266,7 @@ sub handleUserRequest{
 
       # Grab first (hopefully only) writeup by author under a given title
       #  Prefer the writeup whose parent matches the title exactly, if any
-       foreach ('writeup','draft'){
+       foreach ('writeup'){
 	      my ($writeup) =
 	        getNodeWhere(
 	          {
