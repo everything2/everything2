@@ -78,9 +78,22 @@ use vars qw($THEME);
 use vars qw($NODELET);
 use vars qw($CACHESTORE);
 use vars qw(%HEADER_PARAMS);
+use vars qw($SITE_UNAVAILABLE);
 
 my $PAGELOAD = 0;
 my $NUMPAGELOADS = 10;
+my $SITE_UNAVAILABLE = <<ENDPAGE;
+<html>
+<head><title>Site Temporarily Unavailable</title>
+</head>
+<body>
+<h1>Hamster Ball Jam in Cubicle Z</h1>
+<p>
+There is a temporary problem with Everything2.  Please hold while we contact the rodent experts.
+</p>
+</body>
+</html>
+ENDPAGE
      
 sub getRandomNode {
         my $limit = $DB->sqlSelect("max(e2node_id)", "e2node");
@@ -2593,6 +2606,12 @@ sub mod_perlInit
 
 	# Initialize our connection to the database
 	Everything::initEverything($db, 0, $memcache);
+
+	if (!defined $DB->getDatabaseHandle()) {
+		$query->print($SITE_UNAVAILABLE);
+		return;
+	}
+
 	#print STDERR localtime(time)."\t".$DB->{cache}->getCacheSize() ."\n";
 
 	# Get the HTML variables for the system.  These include what
