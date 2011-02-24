@@ -1,6 +1,11 @@
 #!/usr/bin/perl -w
 
 use strict;
+use Everything;
+initEverything 'everything';
+
+my $swaplimit = 1500 * 1000; # default to 1.5k * 1k kB => 1.5GB
+$swaplimit = $CONFIG{'swap_limit'} if $CONFIG{'swap_limit'};
 
 my $max_semaphores = 35;
 my @semaphores = `ipcs -s|grep 'www-data\\|apache'`;
@@ -36,7 +41,8 @@ while (<MEMINFO>) {
 
 my $swap = $info{'SwapTotal:'} - $info{'SwapFree:'};
 
-if ($swap > 1500000) { #150 megs into swap
+if ($swap > $swaplimit) {
+	Everything::printLog("checkApache.pl: Killing Apache due to swap $swap kB being over limit of $swaplimit kB.");
 	`/etc/init.d/apache2 stop`;
 	sleep 5;
 	`killall -9 apache2`;

@@ -2020,7 +2020,7 @@ sub deriveType
 			
 			# If a field in a nodetype is '-1', this field is derived from
 			# its parent.
-			if($$NODETYPE{$field} eq "-1")
+			if(defined $$NODETYPE{field} and $$NODETYPE{$field} eq "-1")
 			{
 				$$NODETYPE{$field} = $$PARENT{$field};
 			}
