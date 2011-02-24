@@ -547,12 +547,12 @@ sub getNodeById
 	return undef if(not defined $NODE);
 	
 	$NODETYPE = $this->getType($$NODE{type_nodetype});
-	if (not defined $NODETYPE) {
+	if (not defined $NODETYPE or $NODETYPE == -1) {
 		Everything::printLog(
 			"Node $$NODE{title} (#$$NODE{node_id}) has a bad nodetype #$$NODE{type_nodetype}."
 			. "  This can't end well."
 		);
-		return undef;
+		return undef if not defined $NODETYPE;
 	}
 
 	# Wire up the node's nodetype
