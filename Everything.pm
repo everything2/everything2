@@ -293,7 +293,7 @@ sub getVarStringFromHash
 			delete $$varHash{$_};
 		}
 		# But set blank strings to a single space so
-		#  they aren't list.
+		#  they aren't lost.
 		$$varHash{$_} = " " unless $$varHash{$_};
 	}
 	
@@ -381,6 +381,7 @@ sub setVars
 			$DB->sqlSelect('vars', 'setting', "setting_id = $$NODE{node_id}");
 		my %currentVars = getVarHashFromString($currentVarString);
 		map { $currentVars{$_} = $modifiedVars{$_}; } keys %modifiedVars;
+		map { delete $currentVars{$_} if !defined $$varsref{$_}; } keys %currentVars;
 		$$NODE{vars} = getVarStringFromHash(\%currentVars);
 		my $superuser = -1;
 		$DB->updateNode($NODE, $superuser, 1);
