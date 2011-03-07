@@ -1979,10 +1979,14 @@ sub confirmUser {
         return 0 unless($$USER{acctlock} == 0);
 
 	if (crypt ($$USER{passwd}, $$USER{title}) eq $crpasswd) {
-		my $rows = $DB->getDatabaseHandle()->do("
-			UPDATE user SET lasttime=now() WHERE
-			user_id=$$USER{node_id}
-			") or die;
+		my $updateTime = 1;
+		$updateTime = 0 if $query and $query->param('ajaxIdle');
+		if ($updateTime) {
+			$DB->getDatabaseHandle()->do("
+				UPDATE user SET lasttime=now() WHERE
+				user_id=$$USER{node_id}
+				") or die;
+		}
 
 		#jb says: perf speedup here. One less node commit
 		#per user per page
