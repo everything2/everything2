@@ -36,6 +36,7 @@ sub BEGIN {
               cleanupHTML
               breakTags
               htmlFormatErr
+              isSpider
               quote
               urlGen
               urlGenNoParams
@@ -71,6 +72,7 @@ use vars qw(%HTMLVARS);
 use vars qw($VARS);
 use vars qw($GNODE);
 use vars qw($USER);
+use vars qw($IS_SPIDER);
 use vars qw($TEST);
 use vars qw($TEST_CONDITION);
 use vars qw($TEST_SESSION_ID);
@@ -1930,7 +1932,7 @@ sub gotoNode
 	}
 	
 
-	updateHits ($NODE);
+	updateHits ($NODE, $USER) unless $query->param('op') ne "" or $query->param("displaytype") eq "ajaxupdate";
 	if ($query->cookie('lastnode_id')) {
 		$query->param('lastnode_id', $query->cookie('lastnode_id'));
 	}
@@ -2643,6 +2645,7 @@ sub mod_perlInit
 	
 	# Fill out the THEME hash
 	getTheme();
+	findIsSpider();
 
 	# Do the work.
 	handleUserRequest();
@@ -2754,6 +2757,31 @@ sub escapeAngleBrackets{
 
   return $text;
 }
+
+#############################################################################
+# Sub
+#   isSpider
+#
+# Purpose
+#   Determines if the request is likely from an automatic spider
+#   rather than a human.
+#
+# Parameters
+#   None
+#
+# Returns
+#   1 if is a spider, 0 otherwise
+
+sub isSpider()
+{
+	return $IS_SPIDER;
+}
+
+sub findIsSpider()
+{
+	$IS_SPIDER = htmlcode('isSpider');
+}
+
 
 #############################################################################
 # Sub

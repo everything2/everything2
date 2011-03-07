@@ -538,7 +538,7 @@ sub updateLinks
 	
 	return unless $TONODE && $FROMNODE;
 	return unless ($$TONODE{type}{title} eq 'e2node' and $$FROMNODE{type}{title} eq 'e2node') or !$isSoftlink;
-	return if Everything::HTML::htmlcode('isSpider');
+	return if Everything::HTML::isSpider();
 
 	$type ||= 0;
 	$type = getId $type;
@@ -576,13 +576,21 @@ sub updateLinks
 #
 sub updateHits
 {
-	my ($NODE) = @_;
+	my ($NODE, $USER) = @_;
 	my $id = $$NODE{node_id};
 
+	return if Everything::HTML::isSpider();
+	my $author_restrict = "AND author_user != $$USER{node_id}";
 	$DB->sqlUpdate('hits', { -hits => 'hits+1' }, "node_id=$id");
+	$DB->sqlUpdate('node', { -hits => 'hits+1' }, "node_id=$id $author_restrict");
 
-	# We will just do this, instead of doing a complete refresh of the node.
-#	++$$NODE{hits};
+	if ($$NODE{type}{title} eq 'e2node' && $$NODE{group}) {
+		my $groupList = '(';
+		$groupList .= join ', ', @{$$NODE{group}};
+		$groupList .= ')';
+		$DB->sqlUpdate('node', { -hits => 'hits+1' },
+			"node_id IN $groupList $author_restrict");
+	}
 }
 
 
