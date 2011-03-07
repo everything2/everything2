@@ -2348,6 +2348,7 @@ sub cleanNodeName
 	$nodename = "" if($nodename eq "?");
 
 	$nodename =~ tr/[]|<>//d;
+	$nodename =~ s/&quot;/"/g;
 	$nodename =~ s/^\s*|\s*$//g if $removeSpaces;
 	$nodename =~ s/\s+/ /g if $removeSpaces;
 
@@ -2432,7 +2433,8 @@ sub opNew
 	my $user_id = $$USER{node_id};
 	my $type = $query->param('type');
 	my $TYPE = getType($type);
-	my $nodename = cleanNodeName($query->param('node'));
+	my $removeSpaces = 1;
+	my $nodename = cleanNodeName($query->param('node'), $removeSpaces);
 	
 	if (canCreateNode($user_id, $DB->getType($type)) and $user_id != $HTMLVARS{guest_user})
 	{
