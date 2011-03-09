@@ -96,6 +96,17 @@ There is a temporary problem with Everything2.  Please hold while we contact the
 </body>
 </html>
 ENDPAGE
+
+my %NO_SIDE_EFFECT_PARAMS = (
+	'node' => 1
+	, 'author' => 1
+	, 'a' => 1
+	, 'node_id' => 1
+	, 'type' => 1
+	, 'guest' => 1
+	, 'lastnode_id' => 'delete'
+	, 'searchy' => 1
+);
      
 sub getRandomNode {
         my $limit = $DB->sqlSelect("max(e2node_id)", "e2node");
@@ -1941,6 +1952,35 @@ sub gotoNode
 	my $linktype = 0;
 	$linktype = $HTMLVARS{guest_link} if getId($USER) == $HTMLVARS{guest_user};
 	updateLinks ($NODE, $query->param('lastnode_id'), $linktype);
+
+	# Redirect to URL without lastnode_id if this is a GET request and we only
+	#  have params that we know to have no side-effects
+	if (defined $query->param('lastnode_id') && $query->request_method() eq 'GET') {
+		my $redirQuery = new CGI($query);
+		my $safeToRedirect = 1;
+		$redirQuery->delete('op') if $redirQuery->param('op') eq "";
+		foreach ($redirQuery->param) {
+			$safeToRedirect = 0 unless defined $NO_SIDE_EFFECT_PARAMS{$_};
+			$redirQuery->delete($_) if $NO_SIDE_EFFECT_PARAMS{$_} eq 'delete';
+		}
+
+		if ($safeToRedirect) {
+			my $url = $redirQuery->url(-base => 1, -rewrite => 1);
+			my $noQuotes = 1;
+
+			# For port redirection that might happen without Apache's knowledge before we
+			#  got here, remove the por from the URL. (Yes, this is lame.)
+			$url =~ s!(://[^/]+):\d+!\1!;
+			$url .= urlGen({%{$redirQuery->Vars}}, $noQuotes, $NODE);
+
+			$redirQuery->redirect(
+				-uri => $url
+				, -nph => 0
+				, -status => 303
+			);
+			return;
+		}
+	}
 
 	# So we can cache even linked pages, remove lastnod_id
 	# unless it's a superdoc (so Findings: still gets the param)
