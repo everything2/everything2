@@ -1184,7 +1184,8 @@ sub urlGenNoParams {
   elsif ($$NODE{type}{title} eq 'user') {
     $retval = "/".$$NODE{type}{title}."/".rewriteCleanEscape($$NODE{title});
   }
-  elsif ($$NODE{type}{title} eq 'writeup'){
+  elsif ($$NODE{type}{title} eq 'writeup' || $$NODE{type}{title} eq 'draft'){
+  	# drafts and writeups have the same link for less breakage
     my $author = getNodeById($NODE -> {author_user}, "light");
 
     #Some older writeups are buggy and point to an author who doesn't
@@ -2325,15 +2326,16 @@ sub handleUserRequest{
 
       # Grab first (hopefully only) writeup by author under a given title
       #  Prefer the writeup whose parent matches the title exactly, if any
-       foreach ('writeup'){
+      # If no writeup, look for a draft
+       foreach (['writeup', '%', 'parent_e2node = $parent_e2node DESC LIMIT 1'], ['draft', '', '']){
 	      my ($writeup) =
 	        getNodeWhere(
 	          {
 	            "-author_user" => $$author{user_id},
-	            "-LIKE-title" => $DB->quote($nodename . '%'),
+	            "-LIKE-title" => $DB->quote($nodename . $_->[1]),
 	          }
-	          , getType($_)
-	          , " parent_e2node = $parent_e2node DESC"
+	          , $_->[0]
+	          , $_->[2]
 	        );
 
 	      if ($writeup) {
