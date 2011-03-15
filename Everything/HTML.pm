@@ -2327,7 +2327,7 @@ sub handleUserRequest{
       # Grab first (hopefully only) writeup by author under a given title
       #  Prefer the writeup whose parent matches the title exactly, if any
       # If no writeup, look for a draft
-       foreach (['writeup', '%', 'parent_e2node = $parent_e2node DESC LIMIT 1'], ['draft', '', '']){
+       foreach (['writeup', '%', "parent_e2node = $parent_e2node DESC LIMIT 1"], ['draft', '', '']){
 	      my ($writeup) =
 	        getNodeWhere(
 	          {
