@@ -1194,7 +1194,7 @@ sub urlGenNoParams {
       $author = $author -> {title};
       my $title = $NODE -> {title};
 
-      $title =~ s/ \([^\)]*\)$//; #Remove the useless writeuptype
+      $title =~ s/ \([^\)]*\)$// if $$NODE{type}{title} eq 'writeup'; #Remove the useless writeuptype
 
       $author = rewriteCleanEscape($author);
 
