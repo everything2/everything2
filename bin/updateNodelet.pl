@@ -9,7 +9,20 @@ initEverything "everything", 0, { servers => ["127.0.0.1:11211"] };
 
 $Everything::HTML::CACHESTORE =  new Everything::CacheStore("cache_store:" . $CONFIG{'cachestore_dbserv'});
 
-my $csr = $DB->sqlSelectMany('nodelet_id', 'nodelet', "updateinterval != 0");
+my $csr;
+
+if (@ARGV) {
+	my $titles = "title IN ("
+		. join ', ',
+			map { "'$_'" }
+				grep { $_ !~ /^-/; } @ARGV;
+	$titles .= ')';
+	print $titles;
+	$csr = $DB->sqlSelectMany('nodelet_id', 'nodelet JOIN node ON nodelet_id = node_id', $titles);
+} else {
+	$csr = $DB->sqlSelectMany('nodelet_id', 'nodelet', "updateinterval != 0");
+}
+
 my $USER = getNode 'guest user', 'user';
 
 $Everything::HTML::USER = $USER;
@@ -21,7 +34,7 @@ my $forceUpdate = grep { /--force/ } @ARGV;
 while (my $NL = $csr->fetchrow()) {
 	$NL = getNodeById($NL);
 
-	if (!defined $$NL{updateinterval})
+	if (!defined $$NL{updateinterval} && !$forceUpdate)
 	{
 		print "Skipping real-time nodelet $$NL{title} ($$NL{nodelet_id}).\n";
 		next;
