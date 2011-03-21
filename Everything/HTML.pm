@@ -1317,7 +1317,7 @@ sub linkNodeTitle {
       $nodetype = "node" unless $nodetype eq 'scratch' || getType($nodetype);
 
       #Perhaps direct link to a writeup instead?
-      if (grep /^$nodetype$/, ("","e2node","node","writeup") ){
+      if (grep /^$nodetype$/, ("","e2node","node","writeup","draft") ){
 
         #Anchors are case-sensitive, need to get the exact username.
         $user = getNode($user,"user");
