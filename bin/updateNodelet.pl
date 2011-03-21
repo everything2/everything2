@@ -17,7 +17,6 @@ if (@ARGV) {
 			map { "'$_'" }
 				grep { $_ !~ /^-/; } @ARGV;
 	$titles .= ')';
-	print $titles;
 	$csr = $DB->sqlSelectMany('nodelet_id', 'nodelet JOIN node ON nodelet_id = node_id', $titles);
 } else {
 	$csr = $DB->sqlSelectMany('nodelet_id', 'nodelet', "updateinterval != 0");
