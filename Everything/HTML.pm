@@ -814,9 +814,11 @@ sub htmlErrorUsers
 	$error .= "Error:\n$err\n";
 	$error .= "Warning:\n$warn";
 	$error .= "Params:\n";
-	my $params = $query->Vars();
-	for (keys %$params) {
-		$error .= "\t- param: " . $_ . " = " . $query->param($_) . "\n";
+	if (defined $query && defined $query->Vars()) {
+		my $params = $query->Vars();
+		for (keys %$params) {
+			$error .= "\t- param: " . $_ . " = " . $query->param($_) . "\n";
+		}
 	}
 	Everything::printLog($error);
 
@@ -1315,7 +1317,7 @@ sub linkNodeTitle {
       $nodetype = "node" unless $nodetype eq 'scratch' || getType($nodetype);
 
       #Perhaps direct link to a writeup instead?
-      if (grep /^$nodetype$/, ("","e2node","node","writeup") ){
+      if (grep /^$nodetype$/, ("","e2node","node","writeup","draft") ){
 
         #Anchors are case-sensitive, need to get the exact username.
         $user = getNode($user,"user");
