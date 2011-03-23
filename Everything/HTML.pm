@@ -945,7 +945,7 @@ sub urlGen {
   delete $$REF{nodetype};
   delete $$REF{type};
   delete $$REF{lastnode_id} if $$REF{lastnode_id} == 0;
-  $str .= '#'.$$REF{'#'} if $$REF{'#'} ;
+  my $anchor = '#'.$$REF{'#'} if $$REF{'#'};
   delete $$REF{'#'};
 
   #Our mod_rewrite rules can now handle this properly
@@ -957,6 +957,7 @@ sub urlGen {
     $quamp = '&amp;' ;
   }
 
+  $str .= $anchor if $anchor;
   $str .= '"' unless $noquotes;
   $str;
 }
