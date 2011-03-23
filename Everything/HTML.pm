@@ -1049,7 +1049,7 @@ sub getPages
 #
 sub getPageForType
 {
-	my ($TYPE, $displaytype) = @_; 
+	my ($TYPE, $displaytype) = @_;
 	my %WHEREHASH;
 	my $PAGE;
 my $ORIGTYPE = $$TYPE{node_id};
@@ -1066,7 +1066,7 @@ my $ORIGTYPE = $$TYPE{node_id};
 		# Clear the hash for a new search
 		undef %WHEREHASH;
 		
-		%WHEREHASH = (pagetype_nodetype => $$TYPE{node_id}, 
+		%WHEREHASH = (pagetype_nodetype => $$TYPE{node_id},
 				displaytype => $displaytype);
 		
 		if ($THEME) {
@@ -1319,9 +1319,10 @@ sub linkNodeTitle {
 
         #Anchors are case-sensitive, need to get the exact username.
         $user = getNode($user,"user");
+        my $authorid = ($user? "?author_id=$$user{node_id}" : "");
         $user = ($user? $$user{title} : "");
 
-        $href = "/title/$nodename";
+        $href = "/title/$nodename$authorid";
         $linkAnchor = "#$user";
 
       }
@@ -2307,7 +2308,6 @@ sub handleUserRequest{
   if ($query->param('node')) {
     # Searching for a node my string title
     my $type  = $query->param('type');
-    my $TYPE = getType($type);
 
     $nodename = cleanNodeName($query->param('node'), $noRemoveSpaces);
 
@@ -2319,7 +2319,7 @@ sub handleUserRequest{
       return;
     }
 
-    if ($author and $TYPE->{title} eq 'writeup') {
+    if ($author and $type eq 'writeup') {
       my $parent_e2node = getNode($nodename, 'e2node', 'light');
       $parent_e2node = getId($parent_e2node);
       $parent_e2node ||= 0;
