@@ -2323,12 +2323,18 @@ sub handleUserRequest{
     if ($author and $type eq 'writeup') {
       my $parent_e2node = getNode($nodename, 'e2node', 'light');
       $parent_e2node = getId($parent_e2node);
-      $parent_e2node ||= 0;
 
       # Grab first (hopefully only) writeup by author under a given title
       #  Prefer the writeup whose parent matches the title exactly, if any
-      # If no writeup, look for a draft
-       foreach (['writeup', '%', "parent_e2node = $parent_e2node DESC LIMIT 1"], ['draft', '', '']){
+      # if not, prefer draft with exact title, if any
+      my @choices = (['draft', '', '']);
+      if ($parent_e2node){
+	  	unshift @choices, ['writeup', '%', "parent_e2node = $parent_e2node DESC LIMIT 1"];
+      }else{
+	  	push @choices , ['writeup', '%', ''];
+      }
+
+      foreach (@choices){
 	      my ($writeup) =
 	        getNodeWhere(
 	          {
@@ -2478,7 +2484,7 @@ sub opNew
 	my $TYPE = getType($type);
 	my $removeSpaces = 1;
 	my $nodename = cleanNodeName($query->param('node'), $removeSpaces);
-	
+
 	if (canCreateNode($user_id, $DB->getType($type)) and $user_id != $HTMLVARS{guest_user})
 	{
 		$node_id = insertNode($nodename,$TYPE, $user_id);
