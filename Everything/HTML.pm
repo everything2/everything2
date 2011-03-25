@@ -2330,7 +2330,7 @@ sub handleUserRequest{
       # if not, prefer draft with exact title, if any
       my @choices = ();
       push @choices , ['writeup', '%', {parent_e2node => $parent_e2node}] if $parent_e2node;
-      push @choices , ['draft'], ['writeup', '%', '', "parent_e2node = $parent_e2node DESC LIMIT 1"];
+      push @choices , ['draft', '', {}], ['writeup', '%', {}, "parent_e2node = $parent_e2node DESC LIMIT 1"];
 
       foreach (@choices){
 	      my ($writeup) =
