@@ -2338,7 +2338,7 @@ sub handleUserRequest{
 	          {
 	            "-author_user" => $$author{user_id},
 	            "-LIKE-title" => $DB->quote($nodename . $_->[1]),
-	            %{$_[2]}
+	            %{$_->[2]}
 	          }
 	          , $_->[0]
 	          , $_->[3]
