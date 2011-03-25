@@ -2330,7 +2330,7 @@ sub handleUserRequest{
       my @choices = ();
       push @choices , ['writeup', {parent_e2node => $parent_e2node}] if $parent_e2node;
       push @choices , ['draft', {title => $nodename}],
-	  	['writeup', {"-LIKE-title" => $DB->quote($nodename . '%'})];
+	  	['writeup', {"-LIKE-title" => $DB->quote($nodename . '%'}];
 
       foreach (@choices){
 	      my ($writeup) =
