@@ -2323,25 +2323,23 @@ sub handleUserRequest{
     if ($author and $type eq 'writeup') {
       my $parent_e2node = getNode($nodename, 'e2node', 'light');
       $parent_e2node = getId($parent_e2node);
-      $parent_e2node ||= 0;
 
-      # Grab first (hopefully only) writeup by author under a given title
-      #  Prefer the writeup whose parent matches the title exactly, if any
-      # if not, prefer draft with exact title, if any
+      # Prefer a writeup whose parent matches the title exactly, if any
+      # if not, prefer a draft with exact title, if any
+      # otherwise, a writeup starting with the given title
       my @choices = ();
-      push @choices , ['writeup', '%', {parent_e2node => $parent_e2node}] if $parent_e2node;
-      push @choices , ['draft', '', {}], ['writeup', '%', {}, "parent_e2node = $parent_e2node DESC LIMIT 1"];
+      push @choices , ['writeup', {parent_e2node => $parent_e2node}] if $parent_e2node;
+      push @choices , ['draft', {title => $nodename}],
+	  	['writeup', {"-LIKE-title" => $DB->quote($nodename . '%'})];
 
       foreach (@choices){
 	      my ($writeup) =
 	        getNodeWhere(
 	          {
 	            "-author_user" => $$author{user_id},
-	            "-LIKE-title" => $DB->quote($nodename . $_->[1]),
-	            %{$_->[2]}
+	            %{$_->[1]}
 	          }
 	          , $_->[0]
-	          , $_->[3]
 	        );
 
 	      if ($writeup) {
