@@ -39,15 +39,25 @@ sub insertIntoRoom {
   my $borgd = 0;
   $borgd = 1 if $$V{borged};
 
+  $DB->sqlInsert("room"
+    , {
+            room_id => $room_id,
+            member_user => $user_id,
+            nick => $$U{title},
+            borgd => $borgd,
+            experience => $$U{experience},
+            visible => $vis,
+            op => isGod($U)
+    }
+    , {
+            nick => $$U{title},
+            borgd => $borgd,
+            experience => $$U{experience},
+            visible => $vis,
+            op => isGod($U)
+    }
+  );
 
-  $DB->sqlInsert("room", { room_id => $room_id,
-    member_user => $user_id,
-    nick => $$U{title},
-   borgd => $borgd,
-    experience => $$U{experience},
-    visible => $vis,
-    op => isGod($U) });
-	
 }
 
 

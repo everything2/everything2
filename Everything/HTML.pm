@@ -12,6 +12,7 @@ use strict;
 use Everything;
 use Everything::MAIL;
 use Everything::Search;
+use Everything::Room;
 use Everything::CacheStore;
 #use StopWatch;
 require CGI;
@@ -2019,21 +2020,20 @@ sub confirmUser {
         return 0 unless($$USER{acctlock} == 0);
 
 	if (crypt ($$USER{passwd}, $$USER{title}) eq $crpasswd) {
+		my $TIMEOUT_SECONDS = 4 * 60;
 		my $updateTime = 1;
 		$updateTime = 0 if $query and $query->param('ajaxIdle');
 		if ($updateTime) {
-			$DB->getDatabaseHandle()->do("
-				UPDATE user SET lasttime=now() WHERE
-				user_id=$$USER{node_id}
-				") or die;
+			my $seconds_since_last;
+			my $sth = $DB->getDatabaseHandle()->prepare("
+				CALL update_time($$USER{node_id});
+				");
+			$sth->execute();
+			($seconds_since_last) = $sth->fetchrow_array();
+			Everything::printLog("$$USER{title} logged in who was last seen $seconds_since_last seconds ago.");
+			Everything::Room::insertIntoRoom($$USER{in_room}, $USER, $VARS)
+				if $seconds_since_last > $TIMEOUT_SECONDS;
 		}
-
-		#jb says: perf speedup here. One less node commit
-		#per user per page
-		#further note: only works in 1.0
-
-		#$$USER{lasttime} = $DB->sqlSelect("NOW()");
-		#return $USER;
 
 		 #'Force' it to make sure we don't get a cached version
 	 	 return getNodeById($USER, 'force');

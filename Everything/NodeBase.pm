@@ -408,8 +408,8 @@ sub sqlUpdate
 #
 sub sqlInsert
 {
-	my ($this, $table, $data) = @_;
-	my ($names, $values);
+	my ($this, $table, $data, $updateData) = @_;
+	my ($names, $values, $updateSql);
 
 	foreach (keys %$data)
 	{
@@ -428,7 +428,25 @@ sub sqlInsert
 	chop($names);
 	chop($values);
 
-	my $sql = "INSERT INTO $table ($names) VALUES($values)\n";
+	if ($updateData) {
+		$updateSql = "\nON DUPLICATE KEY UPDATE";
+		foreach my $updateName (keys %$updateData)
+		{
+			my $updateValue = $$updateData{$updateName};
+			if ($updateName =~ m/^-/)
+			{
+				$updateName =~ s/^-//;
+			}
+			else
+			{
+				$updateValue = $this->{dbh}->quote($updateValue);
+			}
+			$updateSql .= "\n  $updateName = $updateValue,";
+		}
+		chop $updateSql;
+	}
+
+	my $sql = "INSERT INTO $table ($names) VALUES($values)$updateSql\n";
 
 #	$Everything::SQLTIME->start();
 	my $result = $this->{dbh}->do($sql);

@@ -29,7 +29,7 @@ $csr=$DB->getDatabaseHandle()->prepare("
       ORDER BY lasttime DESC
       LIMIT $limit
     ) recent_users
-  WHERE TIMESTAMPDIFF(SECOND, lasttime, now()) < $time
+  WHERE lasttime > TIMESTAMPADD(SECOND, -$time, NOW())
   ORDER BY experience DESC");
 $csr->execute or die "errr... the query";
 while (my ($U) = $csr->fetchrow) {
