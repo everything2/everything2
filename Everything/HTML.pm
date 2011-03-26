@@ -1947,9 +1947,6 @@ sub gotoNode
 	
 
 	updateHits ($NODE, $USER) unless $query->param('op') ne "" or $query->param("displaytype") eq "ajaxupdate";
-	if ($query->cookie('lastnode_id')) {
-		$query->param('lastnode_id', $query->cookie('lastnode_id'));
-	}
 
 	# Create softlinks -- a linktype of 0 is the default
 	my $linktype = 0;
