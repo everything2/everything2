@@ -2051,7 +2051,6 @@ sub confirmUser {
 				");
 			$sth->execute();
 			($seconds_since_last) = $sth->fetchrow_array();
-			Everything::printLog("$$USER{title} logged in who was last seen $seconds_since_last seconds ago.");
 			Everything::Room::insertIntoRoom($$USER{in_room}, $USER, $VARS)
 				if $seconds_since_last > $TIMEOUT_SECONDS;
 		}
