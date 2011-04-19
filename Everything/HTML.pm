@@ -12,6 +12,7 @@ use strict;
 use Everything;
 use Everything::MAIL;
 use Everything::Search;
+use Everything::Room;
 use Everything::CacheStore;
 #use StopWatch;
 require CGI;
@@ -947,7 +948,7 @@ sub urlGen {
   delete $$REF{nodetype};
   delete $$REF{type};
   delete $$REF{lastnode_id} if $$REF{lastnode_id} == 0;
-  $str .= '#'.$$REF{'#'} if $$REF{'#'} ;
+  my $anchor = '#'.$$REF{'#'} if $$REF{'#'};
   delete $$REF{'#'};
 
   #Our mod_rewrite rules can now handle this properly
@@ -959,6 +960,7 @@ sub urlGen {
     $quamp = '&amp;' ;
   }
 
+  $str .= $anchor if $anchor;
   $str .= '"' unless $noquotes;
   $str;
 }
@@ -1051,7 +1053,7 @@ sub getPages
 #
 sub getPageForType
 {
-	my ($TYPE, $displaytype) = @_; 
+	my ($TYPE, $displaytype) = @_;
 	my %WHEREHASH;
 	my $PAGE;
 my $ORIGTYPE = $$TYPE{node_id};
@@ -1068,7 +1070,7 @@ my $ORIGTYPE = $$TYPE{node_id};
 		# Clear the hash for a new search
 		undef %WHEREHASH;
 		
-		%WHEREHASH = (pagetype_nodetype => $$TYPE{node_id}, 
+		%WHEREHASH = (pagetype_nodetype => $$TYPE{node_id},
 				displaytype => $displaytype);
 		
 		if ($THEME) {
@@ -1321,9 +1323,10 @@ sub linkNodeTitle {
 
         #Anchors are case-sensitive, need to get the exact username.
         $user = getNode($user,"user");
+        my $authorid = ($user? "?author_id=$$user{node_id}" : "");
         $user = ($user? $$user{title} : "");
 
-        $href = "/title/$nodename";
+        $href = "/title/$nodename$authorid";
         $linkAnchor = "#$user";
 
       }
@@ -1947,9 +1950,6 @@ sub gotoNode
 	
 
 	updateHits ($NODE, $USER) unless $query->param('op') ne "" or $query->param("displaytype") eq "ajaxupdate";
-	if ($query->cookie('lastnode_id')) {
-		$query->param('lastnode_id', $query->cookie('lastnode_id'));
-	}
 
 	# Create softlinks -- a linktype of 0 is the default
 	my $linktype = 0;
@@ -2022,21 +2022,20 @@ sub confirmUser {
         return 0 unless($$USER{acctlock} == 0);
 
 	if (crypt ($$USER{passwd}, $$USER{title}) eq $crpasswd) {
+		my $TIMEOUT_SECONDS = 4 * 60;
 		my $updateTime = 1;
 		$updateTime = 0 if $query and $query->param('ajaxIdle');
 		if ($updateTime) {
-			$DB->getDatabaseHandle()->do("
-				UPDATE user SET lasttime=now() WHERE
-				user_id=$$USER{node_id}
-				") or die;
+			my $seconds_since_last;
+			my $sth = $DB->getDatabaseHandle()->prepare("
+				CALL update_time($$USER{node_id});
+				");
+			$sth->execute();
+			($seconds_since_last) = $sth->fetchrow_array();
+			Everything::printLog("$$USER{title} logged in who was last seen $seconds_since_last seconds ago.");
+			Everything::Room::insertIntoRoom($$USER{in_room}, $USER, $VARS)
+				if $seconds_since_last > $TIMEOUT_SECONDS;
 		}
-
-		#jb says: perf speedup here. One less node commit
-		#per user per page
-		#further note: only works in 1.0
-
-		#$$USER{lasttime} = $DB->sqlSelect("NOW()");
-		#return $USER;
 
 		 #'Force' it to make sure we don't get a cached version
 	 	 return getNodeById($USER, 'force');
@@ -2309,7 +2308,6 @@ sub handleUserRequest{
   if ($query->param('node')) {
     # Searching for a node my string title
     my $type  = $query->param('type');
-    my $TYPE = getType($type);
 
     $nodename = cleanNodeName($query->param('node'), $noRemoveSpaces);
 
@@ -2321,23 +2319,26 @@ sub handleUserRequest{
       return;
     }
 
-    if ($author and $TYPE->{title} eq 'writeup') {
+    if ($author and $type eq 'writeup') {
       my $parent_e2node = getNode($nodename, 'e2node', 'light');
       $parent_e2node = getId($parent_e2node);
-      $parent_e2node ||= 0;
 
-      # Grab first (hopefully only) writeup by author under a given title
-      #  Prefer the writeup whose parent matches the title exactly, if any
-      # If no writeup, look for a draft
-       foreach (['writeup', '%', "parent_e2node = $parent_e2node DESC LIMIT 1"], ['draft', '', '']){
+      # Prefer a writeup whose parent matches the title exactly, if any
+      # if not, prefer a draft with exact title, if any
+      # otherwise, a writeup starting with the given title
+      my @choices = ();
+      push @choices , ['writeup', {parent_e2node => $parent_e2node}] if $parent_e2node;
+      push @choices , ['draft', {title => $nodename}],
+	  	['writeup', {"-LIKE-title" => $DB->quote($nodename . '%')}];
+
+      foreach (@choices){
 	      my ($writeup) =
 	        getNodeWhere(
 	          {
 	            "-author_user" => $$author{user_id},
-	            "-LIKE-title" => $DB->quote($nodename . $_->[1]),
+	            %{$_->[1]}
 	          }
 	          , $_->[0]
-	          , $_->[2]
 	        );
 
 	      if ($writeup) {
@@ -2479,7 +2480,7 @@ sub opNew
 	my $TYPE = getType($type);
 	my $removeSpaces = 1;
 	my $nodename = cleanNodeName($query->param('node'), $removeSpaces);
-	
+
 	if (canCreateNode($user_id, $DB->getType($type)) and $user_id != $HTMLVARS{guest_user})
 	{
 		$node_id = insertNode($nodename,$TYPE, $user_id);
