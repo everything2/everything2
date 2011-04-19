@@ -32,6 +32,7 @@ sub BEGIN {
               jsWindow
               createNodeLinks
               parseLinks
+              stripCode
               htmlScreen
               screenTable
               cleanupHTML
@@ -1633,6 +1634,24 @@ sub parseCode {
 
 }
 
+#############################################################################
+#	Sub
+#		stripCode
+#
+#	Purpose
+#		A companion to parseCode so that E2 code that might have been once
+#		evaluated can be treated like comments and stripped out.  Used
+#		to deal elegantly when users lose codehome.
+#
+#	Parameters
+#		text -- the string containing code to strip
+#
+sub stripCode {
+	my ($text) = @_;
+	$text =~ s/\[(?:\{.*?\}|\".*?\"|\%.*?\%)\]//gs;
+	return $text;
+}
+
 ###################################################################
 #	Sub
 #		listCode
@@ -1973,7 +1992,7 @@ sub gotoNode
 
 			# For port redirection that might happen without Apache's knowledge before we
 			#  got here, remove the por from the URL. (Yes, this is lame.)
-			$url =~ s!(://[^/]+):\d+!\1!;
+			$url =~ s!(://[^/]+):\d+!$1!;
 			$url .= urlGen({%{$redirQuery->Vars}}, $noQuotes, $NODE);
 
 			$redirQuery->redirect(
