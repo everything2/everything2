@@ -1,6 +1,6 @@
 #!/usr/bin/perl 
 
-use lib "/usr/local/everything/lib";
+use lib "/var/everything/ecore/";
 
 use strict;
 use Everything;
