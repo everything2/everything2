@@ -1,4 +1,6 @@
-#!/usr/local/bin/perl 
+#!/usr/bin/perl 
+
+use lib "/usr/local/everything/lib";
 
 use strict;
 use Everything;
