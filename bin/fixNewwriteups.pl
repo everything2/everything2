@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl -w
+#!/usr/bin/perl -w -I /var/everything/ecore
 
 use Everything;
 use Everything::HTML;

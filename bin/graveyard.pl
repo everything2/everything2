@@ -1,5 +1,4 @@
-#!/usr/bin/perl -w
-
+#!/usr/bin/perl -w -I /var/everything/ecore
 #a short script to keep the tomb table clean
 
 use strict;

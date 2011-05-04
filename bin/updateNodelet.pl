@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!/usr/bin/perl -w -I /var/everything/ecore
 
 use lib "/var/everything/ecore/";
 
