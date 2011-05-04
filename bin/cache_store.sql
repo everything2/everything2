@@ -1,13 +1,6 @@
 drop table cache_store;
 drop table stats;
 
-
--- MySQL dump 8.22
---
--- Host: localhost    Database: cache_store
----------------------------------------------------------
--- Server version	3.23.54-log
-
 --
 -- Table structure for table 'cache_store'
 --
