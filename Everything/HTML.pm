@@ -948,7 +948,7 @@ sub urlGen {
   delete $$REF{node};
   delete $$REF{nodetype};
   delete $$REF{type};
-  delete $$REF{lastnode_id} if $$REF{lastnode_id} == 0;
+  delete $$REF{lastnode_id} if defined $$REF{lastnode_id} && $$REF{lastnode_id} == 0;
   my $anchor = '#'.$$REF{'#'} if $$REF{'#'};
   delete $$REF{'#'};
 
@@ -957,7 +957,9 @@ sub urlGen {
 
   # Cycle through all the keys of the hashref for node_id, etc.
   foreach my $key (keys %$REF) {
-    $str .= $quamp . CGI::escape($key) .'='. CGI::escape($$REF{$key});
+    my $value = "";
+    $value = CGI::escape($$REF{$key}) if defined $$REF{$key};
+    $str .= $quamp . CGI::escape($key) .'='. $value;
     $quamp = '&amp;' ;
   }
 
@@ -1171,6 +1173,7 @@ sub rewriteCleanEscape {
 sub urlGenNoParams {
   my ($NODE, $noquotes) = @_;
   my $nosemantic = $query ? $query->param('nosemantic') : 0;
+  $NODE ||= "";
   if (not ref $NODE) {
     if ($noquotes) {
       return "/node/$NODE";
@@ -1183,13 +1186,14 @@ sub urlGenNoParams {
   }
 
   my $retval = "";
-  if ($$NODE{type}{title} eq 'e2node') {
+  my $typeTitle = $$NODE{type}{title} || "";
+  if ($typeTitle eq 'e2node') {
     $retval = "/title/".rewriteCleanEscape($$NODE{title});
   }
-  elsif ($$NODE{type}{title} eq 'user') {
-    $retval = "/".$$NODE{type}{title}."/".rewriteCleanEscape($$NODE{title});
+  elsif ($typeTitle eq 'user') {
+    $retval = "/$typeTitle/".rewriteCleanEscape($$NODE{title});
   }
-  elsif ($$NODE{type}{title} eq 'writeup' || $$NODE{type}{title} eq 'draft'){
+  elsif ($typeTitle eq 'writeup' || $typeTitle eq 'draft'){
   	# drafts and writeups have the same link for less breakage
     my $author = getNodeById($NODE -> {author_user}, "light");
 
@@ -1199,7 +1203,7 @@ sub urlGenNoParams {
       $author = $author -> {title};
       my $title = $NODE -> {title};
 
-      $title =~ s/ \([^\)]*\)$// if $$NODE{type}{title} eq 'writeup'; #Remove the useless writeuptype
+      $title =~ s/ \([^\)]*\)$// if $typeTitle eq 'writeup'; #Remove the useless writeuptype
 
       $author = rewriteCleanEscape($author);
 
@@ -1209,8 +1213,8 @@ sub urlGenNoParams {
       $retval = "/node/".getId($NODE);
     }
   }
-  elsif ($$NODE{type}{restrictdupes} && $$NODE{title}) {
-    $retval = "/node/".$$NODE{type}{title}."/"
+  elsif ($$NODE{type}{restrictdupes} && $typeTitle && $$NODE{title}) {
+    $retval = "/node/$typeTitle/"
               .rewriteCleanEscape($$NODE{title});
   }
   else {
@@ -1274,6 +1278,7 @@ sub linkNode {
 sub linkNodeTitle {
   my ($nodename, $lastnode, $escapeTags) = @_;
   my ($title, $linktitle, $linkAnchor, $href) = ('', '', '', '/');
+  $nodename ||= "";
   ($nodename, $title) = split /\s*[|\]]+/, $nodename;
   $title = $nodename if $title =~ m/^\s*$/;
   $nodename =~ s/\s+/ /gs;
@@ -1363,7 +1368,8 @@ sub linkNodeTitle {
   }
 
   getRef $lastnode;
-  my $lastnodeQuery = "?lastnode_id=$$lastnode{node_id}" if $lastnode && ref $lastnode eq 'HASH';
+  my $lastnodeQuery = "";
+  $lastnodeQuery = "?lastnode_id=$$lastnode{node_id}" if $lastnode && ref $lastnode eq 'HASH';
   $str .= "<a href=\"$href$lastnodeQuery$linkAnchor\" title=\"$linktitle\" "
           .( $isNode ? "class='populated'" : "class='unpopulated'")
          ." >$title</a>";
