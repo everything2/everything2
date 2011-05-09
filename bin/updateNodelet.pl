@@ -13,11 +13,13 @@ $Everything::HTML::CACHESTORE =  new Everything::CacheStore("cache_store:" . $CO
 
 my $csr;
 
-if (@ARGV) {
+my @title_list = grep { $_ !~ /^-/; } @ARGV;
+
+if (@title_list) {
 	my $titles = "title IN ("
 		. join ', ',
 			map { "'$_'" }
-				grep { $_ !~ /^-/; } @ARGV;
+				@title_list;
 	$titles .= ')';
 	$csr = $DB->sqlSelectMany('nodelet_id', 'nodelet JOIN node ON nodelet_id = node_id', $titles);
 } else {
@@ -37,7 +39,9 @@ while (my $NL = $csr->fetchrow()) {
 
 	if (!defined $$NL{updateinterval} && !$forceUpdate)
 	{
-		print "Skipping real-time nodelet $$NL{title} ($$NL{nodelet_id}).\n";
+		my $title = $$NL{title} || "";
+		my $nid = $$NL{nodelet_id} || "NO NODELET ID";
+		print "Skipping real-time nodelet $title ($nid}).\n";
 		next;
 	}
 
