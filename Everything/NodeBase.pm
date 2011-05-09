@@ -409,7 +409,7 @@ sub sqlUpdate
 sub sqlInsert
 {
 	my ($this, $table, $data, $updateData) = @_;
-	my ($names, $values, $updateSql);
+	my ($names, $values, $updateSql) = ("", "", "");
 
 	foreach (keys %$data)
 	{
