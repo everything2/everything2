@@ -9,7 +9,7 @@ my $ROW = getNode 'node row','superdoc';
 
 my $csr = $DB->sqlSelectMany("*",'weblog', "weblog_id=".getId($ROW) . " and removedby_user=0");
 
-open MYLOG, ">> /usr/local/everything/log/noderowlog" or die "CRAP!  Can't open me logfile!";
+open MYLOG, ">> /var/everything/log/noderowlog" or die "CRAP!  Can't open me logfile!";
 
 while (my $LOG = $csr->fetchrow_hashref) {
 	my $U = getNode $$LOG{linkedby_user};

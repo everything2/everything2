@@ -1,10 +1,11 @@
-#!/usr/bin/perl -w -I /var/everything/ecore
+#!/usr/bin/perl -w
 
+use lib "/var/everything/ecore";
 use Everything;
 use Everything::Room;
 initEverything 'everything';
 
-open (WATCHMAN, ">> /usr/local/everything/log/watchman");
+open (WATCHMAN, ">> /var/everything/log/watchman");
 my $time = 4 * 60;
 my $limit = 160;
 

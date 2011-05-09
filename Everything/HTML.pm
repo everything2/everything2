@@ -673,8 +673,8 @@ sub encodeHTML
 	# the '&' of the other encodings. However, it is now designed not to encode &s that are part of entities.
         #$html =~ s/&(?!\#(?>x[0-9a-fA-F]+|[0-9]+);)/&amp;/g;
 
-        $html =~ s/\&/\&amp\;/g;
-        #$html =~ s/&(?!\#(?>x[0-9a-fA-F]+|[0-9]+);|[a-zA-Z])/&amp;/g;
+	$html ||= "";
+	$html =~ s/\&/\&amp\;/g;
 	$html =~ s/\</\&lt\;/g;
 	$html =~ s/\>/\&gt\;/g;
 	$html =~ s/\"/\&quot\;/g;

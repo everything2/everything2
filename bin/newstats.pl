@@ -1,6 +1,7 @@
-#!/usr/bin/perl -w -I /var/everything/ecore
+#!/usr/bin/perl -w
 
 use strict;
+use lib "/var/everything/ecore";
 use Everything;
 use Everything::HTML;
 initEverything 'everything';
@@ -90,4 +91,4 @@ foreach(keys %$reps)
   #print $$uid{title}." $IQM - count: $ncount\n";
 }
 
-`/usr/local/everything/bin/lfcalc.pl`;
+`/var/everything/ecore/bin/lfcalc.pl`;

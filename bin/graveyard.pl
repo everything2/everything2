@@ -1,7 +1,8 @@
-#!/usr/bin/perl -w -I /var/everything/ecore
+#!/usr/bin/perl -w
 #a short script to keep the tomb table clean
 
 use strict;
+use lib "/var/everything/ecore";
 use Everything;
 initEverything 'everything';
 
@@ -10,7 +11,7 @@ my $dbserv = $CONFIG{'everything_dbserv'};
 my @date = localtime(time);
 my $datestr = ($date[4]+1)."-".sprintf("%02d",$date[3])."-".(1900+$date[5]);
 
-$datestr = "/usr/local/everything/graveyard/".$datestr.".gz";
+$datestr = "/var/everything/graveyard/".$datestr.".gz";
 
 `/usr/bin/mysqldump -t -h $dbserv -u $user -p$pass everything tomb | gzip > $datestr`;
 $dbh->do("delete from tomb");

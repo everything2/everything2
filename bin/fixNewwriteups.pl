@@ -4,7 +4,7 @@ use Everything;
 use Everything::HTML;
 initEverything 'everything';
 
-open MYLOG, ">>/usr/local/everything/log/nwlog";
+open MYLOG, ">>/var/everything/log/nwlog";
 
 my $csr = $DB->sqlSelectMany("node_id", "node", "type_nodetype=117 and title='new writeup'");
 print MYLOG "new killing session ". localtime(time) ."\n";
