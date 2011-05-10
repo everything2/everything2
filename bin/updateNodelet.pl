@@ -9,8 +9,6 @@ use Everything::CacheStore;
 use POSIX qw(strftime);
 initEverything "everything", 0, { servers => ["127.0.0.1:11211"] };
 
-$Everything::HTML::CACHESTORE =  new Everything::CacheStore("cache_store:" . $CONFIG{'cachestore_dbserv'});
-
 my $csr;
 
 my @title_list = grep { $_ !~ /^-/; } @ARGV;

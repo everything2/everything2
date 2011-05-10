@@ -2703,12 +2703,7 @@ sub mod_perlInit
 	$USER = loginUser();
 
 	assign_test_condition();
-        if (not $TEST_CONDITION) {
-        #init the cache
-	$CACHESTORE ||= new Everything::CacheStore "cache_store:$CONFIG{cachestore_dbserv}";
-	} else {
-	   $CACHESTORE = '';
-	}
+	$CACHESTORE = undef;
 
        #only for Everything2.com
        if ($query->param("op") eq "randomnode") {
@@ -2786,8 +2781,8 @@ sub mod_perlpsuedoInit
 	$query = getCGI();
     return if $query->user_agent =~ /WebStripper/;
 	$USER = loginUser();
-    #init the cache
-	$CACHESTORE ||= new Everything::CacheStore "cache_store:$CONFIG{cachestore_dbserv}";
+	#init the cache
+	$CACHESTORE = undef;
 
        #only for Everything2.com
        if ($query->param("op") eq "randomnode") {
