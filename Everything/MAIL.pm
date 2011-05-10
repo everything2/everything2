@@ -32,7 +32,7 @@ sub node2mail {
 
 	my $SETTING = getNode('mail settings', 'setting');
 	my ($mailserver, $from);
-	my $client = "localhost";
+	my $client = undef;
 	if ($SETTING) {
 		my $MAILSTUFF = getVars $SETTING;
 		$mailserver = $$MAILSTUFF{mailServer};
@@ -43,9 +43,8 @@ sub node2mail {
 	$mailserver ||= "localhost";
 	$from ||= "root\@localhost";
 
-
 	my $sender = new Mail::Sender({smtp => $mailserver, from => $from});
-	$sender->{client} = $client;
+	$sender->{client} = $client if defined $client;
 	my $headers = "MIME-Version: 1.0\r\nContent-type: text/html\r\nContent-Transfer-Encoding: 7bit" if $html;
 
 	$sender->MailMsg({to=>$addr,
