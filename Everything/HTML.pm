@@ -1531,6 +1531,7 @@ sub evalCode {
 #
 sub htmlcode {
 	my ($splitter, $returnVal) = ('');
+	my @returnArray;
 	my $encodedArgs = "(no arguments)";
 	my $htmlcodeName = shift;
 	my ($htmlcodeCode, $codeNode) = getCode($htmlcodeName);
@@ -1566,12 +1567,22 @@ sub htmlcode {
 	return "<p>htmlcode '$htmlcodeName ' raised compile-time error:</p>\n $function"
 		if ref \$function eq 'SCALAR' ;
 
-	eval { $returnVal = &$function(@savedArgs); };
+	if (wantarray) {
+		eval { @returnArray = &$function(@savedArgs); };
+	} else {
+		eval { $returnVal = &$function(@savedArgs); };
+	}
+
 	if ($@) {
 		$returnVal = htmlFormatErr ($htmlcodeCode, $@, $warnStr);
 	}
 
-	return $returnVal;
+	if (wantarray && !$@) {
+		return @returnArray;
+	} else {
+		return $returnVal;
+	}
+
 }
 
 #############################################################################
