@@ -16,7 +16,7 @@ use Everything::Room;
 use Everything::CacheStore;
 #use StopWatch;
 require CGI;
-use CGI::Carp qw(fatalsToBrowser);
+use CGI::Carp qw(set_die_handler);
 
 sub BEGIN {
 	use Exporter ();
@@ -67,9 +67,10 @@ sub BEGIN {
               unMSify
               mod_perlInit
               mod_perlpsuedoInit);
+
 }
 
-use vars qw($query);
+use vars qw($HTTP_ERROR_CODE $ERROR_HTML $SITE_UNAVAILABLE $query);
 use vars qw(%HTMLVARS);
 use vars qw($VARS);
 use vars qw($GNODE);
@@ -82,10 +83,11 @@ use vars qw($THEME);
 use vars qw($NODELET);
 use vars qw($CACHESTORE);
 use vars qw(%HEADER_PARAMS);
-use vars qw($SITE_UNAVAILABLE);
 
 my $PAGELOAD = 0;
 my $NUMPAGELOADS = 10;
+
+my $HTTP_ERROR_CODE = 400;
 my $SITE_UNAVAILABLE = <<ENDPAGE;
 <html>
 <head><title>Site Temporarily Unavailable</title>
@@ -94,6 +96,26 @@ my $SITE_UNAVAILABLE = <<ENDPAGE;
 <h1>Hamster Ball Jam in Cubicle Z</h1>
 <p>
 There is a temporary problem with Everything2.  Please hold while we contact the rodent experts.
+</p>
+</body>
+</html>
+ENDPAGE
+
+    my $ERROR_HTML = <<ENDPAGE;
+<html>
+<head><title>Site Temporarily Unavailable</title>
+</head>
+<body>
+<h1>Hamster Twinkie Overdose</h1>
+<p>
+The server hamsters have lost it.  They sent out a list of demands,
+but nobody could understand their note.  It read:
+</p>
+<pre>
+ERROR
+</pre>
+<p>
+We're getting the best in rodent nutrition and negotiation on it.
 </p>
 </body>
 </html>
@@ -127,6 +149,38 @@ sub getRandomNode {
         $e2node;
 }
 
+sub handle_errors {
+
+    CORE::die(@_) if CGI::Carp::ineval();
+
+    Everything::printLog("Trying to handle error.");
+
+    my $errorFromPerl = shift;
+    $errorFromPerl .=
+      "Call stack:\n"
+      . (join "\n" => reverse getCallStack())
+      ;
+    Everything::printLog($errorFromPerl);
+
+    if (defined $query) {
+
+        $errorFromPerl = encodeHTML($errorFromPerl);
+        my $errorHeader = <<ENDHEADER;
+Status: $HTTP_ERROR_CODE Internal Hamster Error
+Content-type: text/html
+
+ENDHEADER
+        my $errorText = $ERROR_HTML;
+        $errorText =~ s/\bERROR\b/$errorFromPerl/;
+        $query->print($errorHeader . $errorText);
+        exit;
+
+    } else {
+
+        print $errorFromPerl;
+
+    }
+}
 
  
 ######################################################################
@@ -871,7 +925,7 @@ sub htmlErrorGods
 	my $str = "<B>$@ $warn</B><BR>";
 
 	my $count = 1;
-	$str.= "<PRE>";
+	$str.= "<pre>";
 	foreach my $line (@mycode)
 	{
 		$str .= sprintf("%4d: $line\n", $count++, $str);
@@ -879,15 +933,12 @@ sub htmlErrorGods
 
 	# Print the callstack to the browser too, so we can see where this
 	# is coming from.
+	my $ignoreMe = 3;
 	$str .= "\n\n<b>Call Stack</b>:\n";
-	my @callStack = getCallStack();
-	while(my $func = pop @callStack)
-	{
-		$str .= "$func\n";
-	}
-	$str .= "<b>End Call Stack</b>\n";
+	$str .= (join "\n", reverse getCallStack($ignoreMe));
+	$str .= "\n<b>End Call Stack</b>\n";
 	
-	$str.= "</PRE>";
+	$str.= "</pre>";
 	$str;
 }
 
@@ -1696,7 +1747,7 @@ sub listCode {
 		}
 	}
 
-	"<PRE>" . join ("\n", @lines) . "</PRE>";
+	"<pre>" . join ("\n", @lines) . "</pre>";
 }
 
 
@@ -2636,6 +2687,10 @@ sub execOpCode
     {
       opNew();
     }
+    elsif($op eq 'throwerror' && isGod($USER))
+    {
+      Everything::throwError();
+    }
   }
 }
 
@@ -2710,7 +2765,8 @@ sub mod_perlInit
 	%HEADER_PARAMS = ( );
 
 	$query = getCGI();
-    return if $query->user_agent and $query->user_agent =~ /WebStripper/;
+	set_die_handler(\&handle_errors);
+	return if $query->user_agent and $query->user_agent =~ /WebStripper/;
 	$USER = loginUser();
 
 	assign_test_condition();

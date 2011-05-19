@@ -16,6 +16,7 @@ package Everything;
 use strict;
 use DBI;
 use Everything::NodeBase;
+use Devel::Caller qw(caller_args);
 
 sub BEGIN
 {
@@ -865,7 +866,7 @@ sub dumpCallStack
 {
 	my @callStack;
 	my $func;
-	
+
 	@callStack = getCallStack();
 	
 	# Pop this function off the stack.  We don't need to see "dumpCallStack"
@@ -885,24 +886,47 @@ sub dumpCallStack
 #	
 sub getCallStack
 {
-	my ($package, $file, $line, $subname, $hashargs);
 	my @callStack;
+	my $neglect = shift;
+	$neglect = 2 if not defined $neglect;
+
+	my ($package, $file, $line, $subname, $hashargs);
 	my $i = 0;
-	
+
 	while(($package, $file, $line, $subname, $hashargs) = caller($i++))
 	{
+		my $codeText = "";
+
+		if ($subname eq "Everything::HTML::htmlcode"
+				|| $subname eq "Everything::HTML::evalCode"
+				) {
+			my @calledArgs = caller_args($i - 1);
+			$codeText = ":" . $calledArgs[0] if (scalar @calledArgs);
+		}
 		# We unshift it so that we can use "pop" to get them in the
 		# desired order.
-		unshift @callStack, "$file:$line:$subname";
+		unshift @callStack, "$file:$line:$subname$codeText";
 	}
 
-	# Get rid of this function.  We don't need to see "getCallStack" in
-	# the stack.
-	pop @callStack;
+	# Get rid of this function and other callers that are part of the reporting.
+	# We don't need to see "getCallStack" in the stack.
+	while ($neglect--) { pop @callStack; }
 
 	return @callStack;
 }
 
+#############################################################################
+#	Sub
+#		throwError
+#
+#	Purpose
+#		Throws an ecore error for the purposes of testing error catching
+#############################################################################
+sub throwError
+{
+	my $notValidRef = undef;
+	$notValidRef->badMethod();
+}
 
 #############################################################################
 # end of package
