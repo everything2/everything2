@@ -3,12 +3,14 @@
 use Everything;
 initEverything 'everything';
 
+my $expireInSeconds = 500;
+
 my $messageSaveSQL = <<ENDSQL;
 INSERT INTO publicmessages
   (message_id, msgtext, tstamp, author_user)
   SELECT message_id, msgtext, tstamp, author_user
     FROM message
-    WHERE (NOW() - 500) > tstamp
+    WHERE TIMESTAMPADD(SECOND, -$expireInSeconds, NOW()) > tstamp
       AND for_user = 0
     ORDER BY tstamp ASC
   ON DUPLICATE KEY UPDATE
@@ -17,7 +19,7 @@ ENDSQL
 my $dbh = $DB->getDatabaseHandle();
 $dbh->do($messageSaveSQL);
 
-$DB->sqlDelete("message", "for_user=0 AND (NOW() - 500) > tstamp");
+$DB->sqlDelete("message", "for_user=0 AND TIMESTAMPADD(SECOND, -$expireInSeconds, NOW()) > tstamp");
 #clean up the chatterbox table
 
 
