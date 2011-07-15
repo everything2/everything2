@@ -2041,7 +2041,9 @@ sub gotoNode
 	# Create softlinks -- a linktype of 0 is the default
 	my $linktype = 0;
 	$linktype = $HTMLVARS{guest_link} if getId($USER) == $HTMLVARS{guest_user};
-	updateLinks ($NODE, $query->param('lastnode_id'), $linktype);
+	my ($fromNodeLinked, $toNodeLinked) =
+		updateLinks($NODE, $query->param('lastnode_id'), $linktype);
+	$query->param('softlinkedFrom', $fromNodeLinked);
 
 	# Redirect to URL without lastnode_id if this is a GET request and we only
 	#  have params that we know to have no side-effects
@@ -2687,7 +2689,8 @@ sub execOpCode
     {
       opNew();
     }
-    elsif($op eq 'throwerror' && isGod($USER))
+    # elsif($op eq 'throwerror' && isGod($USER))
+    elsif($op eq 'throwerror')
     {
       Everything::throwError();
     }

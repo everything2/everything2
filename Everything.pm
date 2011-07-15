@@ -525,7 +525,8 @@ sub replaceNodegroup
 #			no one uses this parameter)
 #
 #	Returns
-#		nothing of use
+#		if no link was made, undef
+#               if link was made or reinforced; array of source node ID and target node ID
 #
 sub updateLinks
 {
@@ -533,20 +534,20 @@ sub updateLinks
 	my $isSoftlink = 1
 		if $type == 0 || (ref $type eq 'HASH' && $$type{title} eq 'guest user link');
 
-	return if getId($TONODE) == getId($FROMNODE) and $isSoftlink;
+	return undef if getId($TONODE) == getId($FROMNODE) and $isSoftlink;
 	getRef $TONODE;
 	getRef $FROMNODE;
 	
-	return unless $TONODE && $FROMNODE;
-	return unless ($$TONODE{type}{title} eq 'e2node' and $$FROMNODE{type}{title} eq 'e2node') or !$isSoftlink;
-	return if Everything::HTML::isSpider();
+	return undef unless $TONODE && $FROMNODE;
+	return undef unless ($$TONODE{type}{title} eq 'e2node' and $$FROMNODE{type}{title} eq 'e2node') or !$isSoftlink;
+	return undef if Everything::HTML::isSpider();
 
 	$type ||= 0;
 	$type = getId $type;
 	my $to_id = getId $TONODE;
 	my $from_id = getId $FROMNODE;
 
-	return if $to_id == $from_id;
+	return undef if $to_id == $from_id;
 
 	my $rows = $DB->sqlUpdate('links',
 			{ -hits => 'hits+1' ,  -food => 'food+1'}, 
@@ -559,6 +560,8 @@ sub updateLinks
 		$DB->sqlInsert("links", {'from_node' => $to_id, 'to_node' => $from_id, 
 				'linktype' => $type, 'hits' => 1, 'food' => '500' }); 
 	}
+
+	return ($from_id, $to_id);
 }
 
 
