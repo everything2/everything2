@@ -2043,7 +2043,6 @@ sub gotoNode
 	$linktype = $HTMLVARS{guest_link} if getId($USER) == $HTMLVARS{guest_user};
 	my ($fromNodeLinked, $toNodeLinked) =
 		updateLinks($NODE, $query->param('lastnode_id'), $linktype);
-	$query->param('softlinkedFrom', $fromNodeLinked);
 
 	# Redirect to URL without lastnode_id if this is a GET request and we only
 	#  have params that we know to have no side-effects
@@ -2079,6 +2078,8 @@ sub gotoNode
 	if (getId($USER) == $HTMLVARS{guest_user} && $$NODE{type}{title} ne 'superdoc') {
 		$query->delete('lastnode_id');
 	}
+
+	$query->param('softlinkedFrom', $fromNodeLinked);
 
 	#if we are accessing an edit page, we want to make sure user
 	#has rights -- also, lock the page
