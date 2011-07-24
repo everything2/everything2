@@ -1124,7 +1124,7 @@ sub getPageForType
 		# Clear the hash for a new search
 		undef %WHEREHASH;
 		
-		%WHEREHASH = ( -pagetype_nodetype => int $$TYPE{node_id},
+		%WHEREHASH = ( -pagetype_nodetype => $$TYPE{node_id},
 				displaytype => $displaytype);
 		
 		if ($THEME) {

@@ -817,7 +817,7 @@ sub getNodeCursor
 	
 	Everything::printLog(
 		"About to do select:\n\t$select"
-	) if 0;
+	);
         
 	$cursor = $this->{dbh}->prepare($select);
 	my $result = $cursor->execute();
@@ -851,7 +851,7 @@ sub constructNode
 	
 	return 0 unless((defined $TYPE) && (ref $$TYPE{tableArray}));
 
-	$cursor = $this->getNodeCursor({-node_id => int $$NODE{node_id}}, $TYPE);
+	$cursor = $this->getNodeCursor({-node_id => $$NODE{node_id}}, $TYPE);
 
 	return 0 if(not defined $cursor);
 
@@ -2209,6 +2209,7 @@ sub getMaintenanceCode
 	return 0 if(not defined $this->getType("maintenance")); 
 
 	$this->getRef($NODE);
+	$op = int $op;
 	$TYPE = $this->getType($$NODE{type_nodetype});
 	
 	# Maintenance code is inherited by derived nodetypes.  This will
@@ -2218,7 +2219,7 @@ sub getMaintenanceCode
 		undef %WHEREHASH;
 
 		%WHEREHASH = (
-			-maintain_nodetype => int $$TYPE{node_id}, -maintaintype => int $op);
+			-maintain_nodetype => $$TYPE{node_id}, -maintaintype => $op);
 		
 		$maintain = $this->selectNodeWhere(\%WHEREHASH, 
 			$this->getType("maintenance"));
