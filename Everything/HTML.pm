@@ -137,7 +137,7 @@ sub getRandomNode {
         my $min = $DB->sqlSelect("min(e2node_id)", "e2node");
         my $rnd = int(rand($limit-$min));
         
-	$rnd+= $min;
+        $rnd+= $min;
 
         my $e2node = $DB->sqlSelect("e2node_id", "e2node"
             , "e2node_id=$rnd "
@@ -1110,7 +1110,7 @@ sub getPageForType
 	my ($TYPE, $displaytype) = @_;
 	my %WHEREHASH;
 	my $PAGE;
-my $ORIGTYPE = $$TYPE{node_id};
+	my $ORIGTYPE = int $$TYPE{node_id};
 	my $PAGETYPE;
 	
 	$PAGETYPE = getType("htmlpage");
@@ -1124,7 +1124,7 @@ my $ORIGTYPE = $$TYPE{node_id};
 		# Clear the hash for a new search
 		undef %WHEREHASH;
 		
-		%WHEREHASH = (pagetype_nodetype => $$TYPE{node_id},
+		%WHEREHASH = ( -pagetype_nodetype => int $$TYPE{node_id},
 				displaytype => $displaytype);
 		
 		if ($THEME) {
@@ -1150,14 +1150,14 @@ my $ORIGTYPE = $$TYPE{node_id};
 			# No pages for the specified nodetype were found.
 				# Use the default node display.
 				($PAGE) = getNodeWhere (
-						{pagetype_nodetype => getId(getType("node")),
+						{ -pagetype_nodetype => getId(getType("node")),
 						displaytype => $displaytype}, 
 						$PAGETYPE);
 
 
 
 				$PAGE or ($PAGE) =  getNodeWhere(
-						{pagetype_nodetype => $ORIGTYPE,
+						{ -pagetype_nodetype => $ORIGTYPE,
 						displaytype => "display" },
 						$PAGETYPE );
 
@@ -2416,7 +2416,7 @@ sub handleUserRequest{
       # if not, prefer a draft with exact title, if any
       # otherwise, a writeup starting with the given title
       my @choices = ();
-      push @choices , ['writeup', {parent_e2node => $parent_e2node}] if $parent_e2node;
+      push @choices , ['writeup', { -parent_e2node => $parent_e2node}] if $parent_e2node;
       push @choices , ['draft', {title => $nodename}],
 	  	['writeup', {"-LIKE-title" => $DB->quote($nodename . '%')}];
 
