@@ -7,6 +7,8 @@ use Everything;
 use Everything::HTML;
 use Everything::CacheStore;
 use POSIX qw(strftime);
+use Time::HiRes qw(gettimeofday tv_interval);
+
 initEverything "everything", 0, { servers => ["127.0.0.1:11211"] };
 
 my $csr;
@@ -51,11 +53,17 @@ while (my $NL = $csr->fetchrow()) {
 
 	if ($timeToUpdate <= $currentTime || $forceUpdate) {
 
-		print "updating $$NL{title} ($$NL{nodelet_id})";
+		my $startTime = [ gettimeofday() ];
+		my $startMsg = "updating $$NL{title} ($$NL{nodelet_id})";
+		print $startMsg;
+		Everything::printLog($startMsg);
 		$$NL{nltext} = Everything::HTML::parseCode($$NL{nlcode}, $NL);
 		$$NL{lastupdate} = $currentTime; 
 		updateNode($NL,-1);
-		print "...done\n";
+		my $nodeletTime = tv_interval($startTime);
+		my $endMsg = "...done ($nodeletTime seconds elapsed)";
+		print "$endMsg\n";
+		Everything::printLog($endMsg);
 
 	} else {
 

@@ -130,6 +130,7 @@ my %NO_SIDE_EFFECT_PARAMS = (
 	, 'guest' => 1
 	, 'lastnode_id' => 'delete'
 	, 'searchy' => 1
+	, 'should_redirect' => 'delete'
 );
      
 sub getRandomNode {
@@ -2044,9 +2045,13 @@ sub gotoNode
 	my ($fromNodeLinked, $toNodeLinked) =
 		updateLinks($NODE, $query->param('lastnode_id'), $linktype);
 
+	my $shouldRedirect = $query->param("should_redirect");
 	# Redirect to URL without lastnode_id if this is a GET request and we only
 	#  have params that we know to have no side-effects
-	if (defined $query->param('lastnode_id') && $query->request_method() eq 'GET') {
+	$shouldRedirect = 1
+		if defined $query->param('lastnode_id') && $query->request_method() eq 'GET';
+
+	if ($shouldRedirect) {
 		my $redirQuery = new CGI($query);
 		my $safeToRedirect = 1;
 		$redirQuery->delete('op') if $redirQuery->param('op') eq "";
@@ -2418,29 +2423,37 @@ sub handleUserRequest{
       my @choices = ();
       push @choices , ['writeup', { -parent_e2node => $parent_e2node}] if $parent_e2node;
       push @choices , ['draft', {title => $nodename}],
-	  	['writeup', {"-LIKE-title" => $DB->quote($nodename . '%')}];
+        ['writeup', {"-LIKE-title" => $DB->quote($nodename . '%')}];
 
       foreach (@choices){
-	      my ($writeup) =
-	        getNodeWhere(
-	          {
-	            "-author_user" => $$author{user_id},
-	            %{$_->[1]}
-	          }
-	          , $_->[0]
-	        );
+          my ($writeup) =
+            getNodeWhere(
+              {
+                "-author_user" => $$author{user_id},
+                %{$_->[1]}
+              }
+              , $_->[0]
+            );
 
-	      if ($writeup) {
-	        gotoNode($writeup, $user_id);
-	        return;
-	      }
-       }
+          if ($writeup) {
+            gotoNode($writeup, $user_id);
+            return;
+          }
+      }
+
     }
 
+    if ($query->param("author") && $type eq 'writeup') {
+      # Since an author specific search didn't work, throw out the
+      #  author and search for e2nodes instead
+      $query->delete("author");
+      $query->param("type", 'e2node');
+      $query->param("should_redirect", 1);
+    }
     $query->param("node", $nodename);
 
     if ($query->param('op') ne 'new') {
-      nodeName ($nodename, $user_id, $type);
+      nodeName($nodename, $user_id);
     }
     else {
       gotoNode($HTMLVARS{permission_denied}, $user_id);
