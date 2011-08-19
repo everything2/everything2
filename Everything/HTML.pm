@@ -2041,7 +2041,9 @@ sub gotoNode
 
 	# Create softlinks -- a linktype of 0 is the default
 	my $linktype = 0;
-	$linktype = $HTMLVARS{guest_link} if getId($USER) == $HTMLVARS{guest_user};
+	$linktype = getNodeById($HTMLVARS{guest_link})
+		if getId($USER) == $HTMLVARS{guest_user};
+
 	my ($fromNodeLinked, $toNodeLinked) =
 		updateLinks($NODE, $query->param('lastnode_id'), $linktype, $$USER{user_id});
 
