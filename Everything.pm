@@ -531,6 +531,7 @@ sub replaceNodegroup
 sub updateLinks
 {
 	my ($TONODE, $FROMNODE, $type, $user_id) = @_;
+	getRef $type;
 	my $isSoftlink = 1
 		if $type == 0 || (ref $type eq 'HASH' && $$type{title} eq 'guest user link');
 

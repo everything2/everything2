@@ -2044,8 +2044,9 @@ sub gotoNode
 	$linktype = getNodeById($HTMLVARS{guest_link})
 		if getId($USER) == $HTMLVARS{guest_user};
 
+	my $lastnode = $query->param('lastnode_id');
 	my ($fromNodeLinked, $toNodeLinked) =
-		updateLinks($NODE, $query->param('lastnode_id'), $linktype, $$USER{user_id});
+		updateLinks($NODE, $lastnode, $linktype, $$USER{user_id});
 
 	my $shouldRedirect = $query->param("should_redirect");
 	# Redirect to URL without lastnode_id if this is a GET request and we only
