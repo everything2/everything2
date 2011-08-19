@@ -530,7 +530,7 @@ sub replaceNodegroup
 #
 sub updateLinks
 {
-	my ($TONODE, $FROMNODE, $type) = @_;
+	my ($TONODE, $FROMNODE, $type, $user_id) = @_;
 	my $isSoftlink = 1
 		if $type == 0 || (ref $type eq 'HASH' && $$type{title} eq 'guest user link');
 
@@ -559,6 +559,16 @@ sub updateLinks
 				'linktype' => $type, 'hits' => 1, 'food' => '500' }); 
 		$DB->sqlInsert("links", {'from_node' => $to_id, 'to_node' => $from_id, 
 				'linktype' => $type, 'hits' => 1, 'food' => '500' }); 
+	}
+
+	if ($user_id) {
+		$DB->sqlInsert("softlink_creation"
+			, {
+				'from_node' => $from_id
+				, 'to_node' => $to_id
+				, 'creater_user_id' => $user_id
+			}
+		);
 	}
 
 	return ($from_id, $to_id);

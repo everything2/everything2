@@ -2043,7 +2043,7 @@ sub gotoNode
 	my $linktype = 0;
 	$linktype = $HTMLVARS{guest_link} if getId($USER) == $HTMLVARS{guest_user};
 	my ($fromNodeLinked, $toNodeLinked) =
-		updateLinks($NODE, $query->param('lastnode_id'), $linktype);
+		updateLinks($NODE, $query->param('lastnode_id'), $linktype, $$USER{user_id});
 
 	my $shouldRedirect = $query->param("should_redirect");
 	# Redirect to URL without lastnode_id if this is a GET request and we only
@@ -2078,10 +2078,20 @@ sub gotoNode
 		}
 	}
 
-	# So we can cache even linked pages, remove lastnod_id
+	# So we can cache even linked pages, remove lastnode_id
 	# unless it's a superdoc (so Findings: still gets the param)
 	if (getId($USER) == $HTMLVARS{guest_user} && $$NODE{type}{title} ne 'superdoc') {
 		$query->delete('lastnode_id');
+	}
+
+	# Check if we were just silently redirected from a softlink creation,
+	#  and pass that node_id through
+	if (!$fromNodeLinked) {
+		my $sth = $DB->getDatabaseHandle()->prepare("
+			CALL get_recent_softlink($$USER{node_id}, $$NODE{node_id});
+		");
+		$sth->execute();
+		($fromNodeLinked) = $sth->fetchrow_array();
 	}
 
 	$query->param('softlinkedFrom', $fromNodeLinked);
