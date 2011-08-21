@@ -923,7 +923,15 @@ sub htmlErrorGods
 		}
 	}
 
-	my $str = "<B>$@ $warn</B><BR>";
+	my $str = "<dl>\n"
+		. "<dt>Error:</dt><dd>"
+		. encodeHTML($err)
+		. "</dd>\n"
+		. "<dt>Warning:</dt><dd>"
+		. encodeHTML($warn)
+		. "</dd>\n"
+		. "</dl>\n"
+		;
 
 	my $count = 1;
 	$str.= "<pre>";
