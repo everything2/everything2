@@ -29,14 +29,17 @@ sub BEGIN
 		getDatabaseHandle
 		getAllTypes
 		getNodetypeTables
-		
+
+		getSqlLog
+		clearSqlLog
+
 		sqlDelete
 		sqlInsert
 		sqlUpdate
 		sqlSelect
 		sqlSelectMany
 		sqlSelectHashref
-		
+
 		getFields
 		getFieldsHash
 
@@ -127,6 +130,7 @@ sub new
 	$this->{cache} = $dbases->{$dbname}->{cache};
 	$this->{dbname} = $dbname;
 	$this->{staticNodetypes} = $staticNodetypes;
+	$this->{sqlLog} = [ ];
 
 	if($setCacheSize && $this->getType("setting"))
 	{
@@ -196,6 +200,87 @@ sub getCache
 
 #############################################################################
 #	Sub
+#		executeQuery
+#
+#	Purpose
+#		Runs the given query string doing automatic logging as desired
+#
+#	Returns
+#		The return value of the "do" function.
+#
+sub executeQuery
+{
+	my ($this, $query) = @_;
+
+	$this->writeSqlLog($query);
+	my $result = $this->{dbh}->do($query);
+	return $result;
+}
+
+#############################################################################
+#	Sub
+#		writeSqlLog
+#
+#	Purpose
+#		Adds the given string to the log of SQL queries executed for this
+#		handle.
+#
+#	Returns
+#		Nothing
+#
+sub writeSqlLog
+{
+	my ($this, $query) = @_;
+
+	push @{$this->{sqlLog}}, $query;
+	return undef;
+}
+
+#############################################################################
+#	Sub
+#		getSqlLog
+#
+#	Purpose
+#		Returns a list of the SQL queries run for this database handle
+#		since its log was last cleared.
+#
+#	Returns
+#		List of strings of the SQL queries attempted (including failed queries)
+#
+sub getSqlLog
+{
+	my ($this, $logLevel) = @_;
+
+	my @logCopy = @{$this->{sqlLog}};
+	if ($logLevel ne 'verbose') {
+		@logCopy = grep {!/^SELECT \* FROM node/} @logCopy;
+		@logCopy = grep {!/^SELECT version FROM version WHERE version_id=/} @logCopy;
+		@logCopy = grep {!/^SELECT node_id FROM nodegroup WHERE nodegroup_id=/} @logCopy;
+	}
+	return @logCopy;
+}
+
+#############################################################################
+#	Sub
+#		clearSqlLog
+#
+#	Purpose
+#		Clears the SQL log for this database handle
+#
+#	Returns
+#		Nothing
+#
+sub clearSqlLog
+{
+	my ($this) = @_;
+
+	$this->{sqlLog} = [];
+	return undef;
+}
+
+
+#############################################################################
+#	Sub
 #		sqlDelete
 #
 #	Purpose
@@ -215,12 +300,7 @@ sub sqlDelete
 	$where or return;
 
 	my $sql = "DELETE LOW_PRIORITY FROM $from WHERE $where";
-
-#	$Everything::SQLTIME->start();
-	my $result = $this->{dbh}->do($sql);
-#	$Everything::SQLTIME->stop();
-
-	return $result;
+	return $this->executeQuery($sql);
 }
 
 
@@ -289,10 +369,9 @@ sub sqlSelectMany
 	$sql .= "$other" if $other;
 	$sql .= " FOR UPDATE" if $this->{dbh}->{AutoCommit} == 0;
 
-	#$Everything::SQLTIME->start();
+	$this->writeSqlLog($sql);
 	my $cursor = $this->{dbh}->prepare($sql);
 	my $result = $cursor->execute();
-	#$Everything::SQLTIME->stop();
 	
 	return $cursor if($result);
 	return undef;
@@ -381,10 +460,7 @@ sub sqlUpdate
 
 	$sql .= "\nWHERE $where\n" if $where;
 
-#	$Everything::SQLTIME->start();
-	my $result = $this->{dbh}->do($sql);
-#	$Everything::SQLTIME->stop();
-		
+	my $result = $this->executeQuery($sql);
 	return $result if($result);
 	(Everything::printErr("sqlUpdate failed:\n $sql\n") and return 0);
 }
@@ -447,11 +523,7 @@ sub sqlInsert
 	}
 
 	my $sql = "INSERT INTO $table ($names) VALUES($values)$updateSql\n";
-
-#	$Everything::SQLTIME->start();
-	my $result = $this->{dbh}->do($sql);
-#	$Everything::SQLTIME->stop();
-	
+	my $result = $this->executeQuery($sql);
 	return $result if($result);
 	(Everything::printErr("sqlInsert failed:\n $sql") and return 0);
 }
@@ -514,7 +586,7 @@ sub getNode
 		$perm = 1 if exists $$PERM{$$NODE{type}{title}};
 		$this->copyOriginalValues($NODE);
 		$this->{cache}->cacheNode($NODE, $perm);
-		$this->{cache}->memcacheNode($NODE);	
+		$this->{cache}->memcacheNode($NODE);
 	}
 
 	return $NODE;
@@ -819,6 +891,7 @@ sub getNodeCursor
 		"About to do select:\n\t$select"
 	) if 0;
         
+	$this->writeSqlLog($select);
 	$cursor = $this->{dbh}->prepare($select);
 	my $result = $cursor->execute();
 #	$Everything::SQLTIME->stop();
@@ -1148,7 +1221,7 @@ sub updateNode
 					$whereStr
 SQLEND
 
-		$this->{dbh}->do($sqlString);
+		$this->executeQuery($sqlString);
 
 		# If this node had compiled code in it, and the source changed,
 		#  we need to remove the cached compile
@@ -1404,38 +1477,29 @@ sub nukeNode
 
 	foreach $table (@$tableArray)
 	{
-#		$Everything::SQLTIME->start();
-		$result += $this->{dbh}->do("DELETE FROM $table WHERE " . $table . 
-			"_id=$$NODE{node_id}");
-#		$Everything::SQLTIME->stop();
+		my $sql = "DELETE FROM $table WHERE " . $table . "_id=$$NODE{node_id}";
+		$result += $this->executeQuery($sql);
 	}
 
 	pop @$tableArray; # remove the implied "node" that we put on
 	
 	# Remove all links that go from or to this node that we are deleting
-#	$Everything::SQLTIME->start();
-	$this->{dbh}->do("DELETE LOW_PRIORITY FROM links 
+	$this->executeQuery("DELETE LOW_PRIORITY FROM links 
 		WHERE to_node=$$NODE{node_id}");
 
-	$this->{dbh}->do("DELETE LOW_PRIORITY FROM links 
+	$this->executeQuery("DELETE LOW_PRIORITY FROM links 
 		WHERE from_node=$$NODE{node_id}");
-#	$Everything::SQLTIME->stop();
 
 	# If this node is a group node, we will remove all of its members
 	# from the group table.
 	if($groupTable = $this->isGroup($$NODE{type}))
 	{
 		# Remove all group entries for this group node
-#		$Everything::SQLTIME->start();
-		$this->{dbh}->do("DELETE FROM $groupTable WHERE " . $groupTable . 
+		$this->executeQuery("DELETE FROM $groupTable WHERE " . $groupTable . 
 			"_id=$$NODE{node_id}");
-#		$Everything::SQLTIME->stop();
 	}
 
-#	$Everything::SQLTIME->start();
-	$this->{dbh}->do("DELETE FROM nodegroup WHERE node_id=$$NODE{node_id}");
-#	$Everything::SQLTIME->stop();
-
+	$this->executeQuery("DELETE FROM nodegroup WHERE node_id=$$NODE{node_id}");
 	Everything::Search::removeSearchWord($NODE);
 	
 	# This will be zero if nothing was deleted from the tables.
@@ -1566,7 +1630,8 @@ sub getAllTypes
 	my $node_id;
 	my $TYPE = $this->getType("nodetype");
 	
-	$sql = "select node_id from node where type_nodetype=" . $$TYPE{node_id};
+	$sql = "SELECT node_id FROM node WHERE type_nodetype = " . $$TYPE{node_id};
+	$this->writeSqlLog($sql);
 	$cursor = $this->{dbh}->prepare($sql);
 	if($cursor && $cursor->execute())
 	{
@@ -1642,6 +1707,7 @@ SELECT table_name, ordinal_position, column_name
 		AND table_schema = ?
 SQLEND
 
+			$this->writeSqlLog($sqlQuery);
 			return $this->{dbh}->selectall_hashref(
 			  $sqlQuery
 			  , [ 'table_name', 'ordinal_position' ]
@@ -1650,7 +1716,7 @@ SQLEND
 
 	} else {
 
-			my $cursor = $this->{dbh}->prepare_cached("show columns from $table");
+			my $cursor = $this->{dbh}->prepare_cached("SHOW COLUMNS FROM $table");
 
 			$cursor->execute;
 			while ($field = $cursor->fetchrow_hashref)
@@ -1683,7 +1749,7 @@ SQLEND
 sub tableExists
 {
 	my ($this, $tableName) = @_;
-	my $cursor = $this->{dbh}->prepare("show tables");
+	my $cursor = $this->{dbh}->prepare("SHOW TABLES");
 	my $table;
 	my $exists = 0;
 
@@ -1722,7 +1788,7 @@ sub createNodeTable
 	
 	return -1 if($this->tableExists($table));
 
-	$result = $this->{dbh}->do("create table $table ($tableid int(11)" .
+	$result = $this->executeQuery("CREATE TABLE $table ($tableid int(11)" .
 		" DEFAULT '0' NOT NULL, PRIMARY KEY($tableid))");
 
 	return $result;
@@ -1779,7 +1845,7 @@ sub dropNodeTable
 	return 0 unless($this->tableExists($table));
 
 	Everything::printLog("Dropping table $table");
-	return $this->{dbh}->do("drop table $table");
+	return $this->executeQuery("DROP TABLE $table");
 }
 
 
@@ -1824,10 +1890,10 @@ sub addFieldToTable
 		$default = "";
 	}
 	
-	$sql = "alter table $table add $fieldname $type";
-	$sql .= " default \"$default\" not null";
+	$sql = "ALTER TABLE $table ADD $fieldname $type";
+	$sql .= " DEFAULT \"$default\" NOT NULL";
 
-	$this->{dbh}->do($sql);
+	$this->executeQuery($sql);
 
 	if($primary)
 	{
@@ -1844,11 +1910,11 @@ sub addFieldToTable
 			push @prikeys, $$field{Field} if($$field{Key} eq "PRI");
 		}
 
-		$this->{dbh}->do("alter table $table drop primary key") if(@prikeys > 0);
+		$this->executeQuery("ALTER TABLE $table DROP PRIMARY KEY") if(@prikeys > 0);
 
 		push @prikeys, $fieldname; # add the new field to the primaries
 		$primaries = join ',', @prikeys;
-		$this->{dbh}->do("alter table $table add primary key($primaries)");
+		$this->executeQuery("ALTER TABLE $table ADD PRIMARY KEY($primaries)");
 	}
 
 	return 1;
@@ -1874,9 +1940,11 @@ sub dropFieldFromTable
 	my ($this, $table, $field) = @_;
 	my $sql;
 
-	$sql = "alter table $table drop $field";
+	$table = $this->quote($table);
+	$field = $this->quote($field);
+	$sql = "ALTER TABLE $table DROP $field";
 
-	return $this->{dbh}->do($sql);
+	return $this->executeQuery($sql);
 }
 
 

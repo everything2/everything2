@@ -923,6 +923,11 @@ sub htmlErrorGods
 		}
 	}
 
+	my $sqlLog = '<pre>'
+		. encodeHTML(join("\n\n",$DB->getSqlLog('normal')))
+		. '</pre>'
+		;
+
 	my $str = "<dl>\n"
 		. "<dt>Error:</dt><dd>"
 		. encodeHTML($err)
@@ -930,11 +935,13 @@ sub htmlErrorGods
 		. "<dt>Warning:</dt><dd>"
 		. encodeHTML($warn)
 		. "</dd>\n"
-		. "</dl>\n"
+		. "<dt>SQL Queries Run:</dt><dd>"
+		. $sqlLog
+		. "</dd>\n"
 		;
 
 	my $count = 1;
-	$str.= "<pre>";
+	$str.= "<dt>Code</dt><dd><pre>";
 	foreach my $line (@mycode)
 	{
 		$str .= sprintf("%4d: $line\n", $count++, $str);
@@ -947,7 +954,8 @@ sub htmlErrorGods
 	$str .= (join "\n", reverse getCallStack($ignoreMe));
 	$str .= "\n<b>End Call Stack</b>\n";
 	
-	$str.= "</pre>";
+	$str.= "</pre></dd>";
+	$str.="</dl>\n";
 	$str;
 }
 
@@ -2792,7 +2800,8 @@ sub mod_perlInit
 		return;
 	}
 
-	#print STDERR localtime(time)."\t".$DB->{cache}->getCacheSize() ."\n";
+	# Refresh SQL log on each pageload so error messages are as relevant as possible
+	$DB->clearSqlLog();
 
 	# Get the HTML variables for the system.  These include what
 	# pages to show when a node is not found (404-ish), when the
