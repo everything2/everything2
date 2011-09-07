@@ -12,6 +12,7 @@ use strict;
 use Everything;
 use Everything::MAIL;
 use Everything::Search;
+use Everything::Experience;
 use Everything::Room;
 use Everything::CacheStore;
 #use StopWatch;
