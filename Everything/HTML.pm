@@ -131,6 +131,7 @@ my %NO_SIDE_EFFECT_PARAMS = (
 	, 'guest' => 1
 	, 'lastnode_id' => 'delete'
 	, 'searchy' => 1
+	, 'originalTitle' => 1
 	, 'should_redirect' => 'delete'
 );
      
@@ -1029,7 +1030,7 @@ sub urlGen {
     my $value = "";
     $value = CGI::escape($$REF{$key}) if defined $$REF{$key};
     $str .= $quamp . CGI::escape($key) .'='. $value;
-    $quamp = '&amp;' ;
+    $quamp = $noquotes eq 'no escape' ? '&' : '&amp;' ;
   }
 
   $str .= $anchor if $anchor;
@@ -1547,6 +1548,12 @@ sub nodeName
 
 		return gotoNode($HTMLVARS{not_found}, $user_id, 1) unless @canread;
 		return gotoNode($canread[0], $user_id, 1) if @canread == 1;
+
+		# Allow a node_forward to bypass an e2node if we're clicking through from
+		#  one node to another
+		return gotoNode($node_forward, $user_id, 1)
+			if $node_forward && $e2node && defined $query->param('lastnode_id');
+
 		return gotoNode($e2node, $user_id, 1) if $e2node;
 		return gotoNode($node_forward, $user_id, 1) if $node_forward;
 
@@ -2069,7 +2076,9 @@ sub gotoNode
 	# Redirect to URL without lastnode_id if this is a GET request and we only
 	#  have params that we know to have no side-effects
 	$shouldRedirect = 1
-		if defined $query->param('lastnode_id') && $query->request_method() eq 'GET';
+		if defined $query->param('lastnode_id') && $query->request_method() eq 'GET'
+			&& $$NODE{type}{title} eq 'e2node'
+			;
 
 	if ($shouldRedirect) {
 		my $redirQuery = new CGI($query);
@@ -2497,6 +2506,7 @@ sub handleUserRequest{
     #no node was specified -> default
     gotoNode($defaultNode, $user_id);
   }
+
 }
 
 
