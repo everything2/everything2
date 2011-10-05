@@ -1321,7 +1321,7 @@ sub linkNode {
   return if not ref $NODE and $NODE =~ /\D/;
   $NODE = getNodeById($NODE, 'light') unless ref $NODE;
 
-  $title ||= encodeHTML($$NODE{title});
+  $title ||= $$NODE{title};
   my $tags = "";
 
   #any params that have a "-" preceding 
