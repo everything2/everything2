@@ -10,6 +10,7 @@ use POSIX qw(strftime);
 use Time::HiRes qw(gettimeofday tv_interval);
 
 initEverything "everything", 0, { servers => ["127.0.0.1:11211"] };
+%Everything::HTML::HTMLVARS = %{ eval (getCode('set_htmlvars')) };
 
 my $csr;
 
