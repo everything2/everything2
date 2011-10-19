@@ -886,11 +886,13 @@ sub getNodeCursor
 		return undef;
 	}
 
+	$select .= " FOR UPDATE" if $this->{dbh}->{AutoCommit} == 0;
+
 	
 	Everything::printLog(
 		"About to do select:\n\t$select"
 	) if 0;
-        
+
 	$this->writeSqlLog($select);
 	$cursor = $this->{dbh}->prepare($select);
 	my $result = $cursor->execute();
