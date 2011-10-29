@@ -943,10 +943,11 @@ sub htmlErrorGods
 		;
 
 	my $count = 1;
-	$str.= "<dt>Code</dt><dd><pre>";
+	$str .= "<dt>Code</dt><dd><pre>";
 	foreach my $line (@mycode)
 	{
-		$str .= sprintf("%4d: $line\n", $count++, $str);
+		$str .= sprintf("%4d: ", $count) . "$line\n";
+		$count++;
 	}
 
 	# Print the callstack to the browser too, so we can see where this
@@ -1588,6 +1589,7 @@ sub evalCode {
 
  	local $SIG{__WARN__} = sub {};
 	$str .= htmlFormatErr ($code, $@, $warnbuf) if ($@ or $warnbuf); 
+	$@ = undef;
 	$str;
 }
 
