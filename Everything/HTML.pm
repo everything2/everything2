@@ -1530,13 +1530,13 @@ sub nodeName
 	else
 	{
 		my @canread;
-		my $e2node;
-		my $node_forward;
+		my ($e2node, $node_forward, $draftCount) = (undef, undef, 0);
 		foreach (@{ $select_group}) {
 			next unless canReadNode($user_id, $_);
 			getRef($_);
-			$e2node = $_ if($$_{type_nodetype} == getId($DB->getType('e2node')));
-			$node_forward = $_ if($$_{type_nodetype} == getId($DB->getType('node_forward')));
+			$e2node = $_ if $$_{type}{title} eq 'e2node';
+			$node_forward = $_ if $$_{type}{title} eq 'node_forward';
+			$draftCount++ if $$_{type}{title} eq 'draft';
 			push @canread, $_;
 		}
 
@@ -1557,6 +1557,13 @@ sub nodeName
 
 		return gotoNode($e2node, $user_id, 1) if $e2node;
 		return gotoNode($node_forward, $user_id, 1) if $node_forward;
+
+		if (scalar @canread - $draftCount == 1) {
+			for my $notDraft (@canread) {
+				return gotoNode($notDraft, $user_id, 1)
+					if $$notDraft{type}{title} ne 'draft';
+			}
+		}
 
 		#we found multiple nodes with that name.  ick
 		my $NODE = getNodeById($HTMLVARS{duplicate_group});
