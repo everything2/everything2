@@ -354,18 +354,20 @@ sub cleanupHTML {
 	    }
 	    # Check correct nesting, and disapprove if not!
 	    if (   ($nest_in = $nest{$tag})
-		&& $nest_in->{$stack[$#stack]}) {
+		&& !$nest_in->{$stack[$#stack]}) {
 		my @extra;
 		my $opening;
+		# Choose one of the parent tags, effectively at random
+		my $missing = (keys %$nest_in)[0];
 		do {
-		    unshift @extra, $nest_in;
-		    $opening = '<'.$nest_in.'>'.$opening;
+		    unshift @extra, $missing;
+		    $opening = '<'.$missing.'>'.$opening;
 		    if ($debug) {
-			$opening = ($debug->("Missing <$nest_in> before <$tag>")
+			$opening = ($debug->("Missing <$missing> before <$tag>")
 				    . $opening);
 		    }
-		} while (   ($nest_in = $nest{$nest_in})
-			 && $nest_in->{$stack[$#stack]});
+		} while (   ($nest_in = $nest{$missing})
+			 && !$nest_in->{$stack[$#stack]});
 		push @stack, @extra;
 		$result .= $opening;
 	    }
