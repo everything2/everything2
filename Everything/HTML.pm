@@ -164,7 +164,7 @@ sub handle_errors {
       . (join "\n" => reverse getCallStack())
       ;
     Everything::printLog($errorFromPerl);
-
+    Everything::printLog(query_vars_string());
     if (defined $query) {
 
         $errorFromPerl = encodeHTML($errorFromPerl);
@@ -185,7 +185,21 @@ ENDHEADER
     }
 }
 
- 
+sub query_vars_string {
+	my $error = '';
+
+	if (defined $query && defined $query->Vars()) {
+		my $params = $query->Vars();
+		for (keys %$params) {
+			$error .= "\t- param: " . $_ . " = " . $query->param($_) . "\n";
+		}
+	}
+
+	return $error;
+}
+
+
+
 ######################################################################
 #	sub
 #		tagApprove
@@ -873,12 +887,7 @@ sub htmlErrorUsers
 	$error .= "Error:\n$err\n";
 	$error .= "Warning:\n$warn";
 	$error .= "Params:\n";
-	if (defined $query && defined $query->Vars()) {
-		my $params = $query->Vars();
-		for (keys %$params) {
-			$error .= "\t- param: " . $_ . " = " . $query->param($_) . "\n";
-		}
-	}
+	$error .= query_vars_string();
 	Everything::printLog($error);
 
 	$str;
