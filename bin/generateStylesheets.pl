@@ -14,6 +14,8 @@ my $STYLESHEET_PATH = '/var/everything/www/stylesheet/';
 initEverything "everything", 0, { servers => ["127.0.0.1:11211"] };
 %Everything::HTML::HTMLVARS = %{ eval (getCode('set_htmlvars')) };
 
+mkdir $STYLESHEET_PATH unless -e $STYLESHEET_PATH;
+
 my $forceUpdate = grep { /--force/ } @ARGV;
 my @title_list = grep { $_ !~ /^-/; } @ARGV;
 my $titleRestrict = '';
@@ -28,6 +30,7 @@ if (@title_list) {
 
 my @stylesheets = $DB->getNodeWhere($titleRestrict, 'stylesheet');
 
+
 foreach my $stylesheetNode (@stylesheets) {
 
 	my $version = $DB->{cache}->getGlobalVersion($stylesheetNode);
@@ -40,7 +43,7 @@ foreach my $stylesheetNode (@stylesheets) {
 
 	my $fh = FileHandle->new($stylesheetFilepath, "w");
 	if (!$fh) {
-		print "Failed to create $stylesheetFilepath when generating stylesheet. : $@";
+		print "Failed to create $stylesheetFilepath when generating stylesheet. : $@\n";
 	} else {
 		$fh->print($$stylesheetNode{doctext});
 		undef $fh;
