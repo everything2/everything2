@@ -52,6 +52,7 @@ sub BEGIN {
               nodeName
               evalCode
               htmlcode
+              parseCode
               embedCode
               displayPage
               gotoNode

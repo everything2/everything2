@@ -47,6 +47,7 @@ foreach my $stylesheetNode (@stylesheets) {
 	} else {
 		$fh->print($$stylesheetNode{doctext});
 		undef $fh;
+		unlink $stylesheetFilepathbase if -l $stylesheetFilepathbase;
 		symlink($stylesheetFilepath, $stylesheetFilepathbase);
 	}
 }
