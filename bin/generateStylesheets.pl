@@ -53,12 +53,12 @@ foreach my $stylesheetNode (@stylesheets) {
 			
 			my $outputter = getPage($stylesheetNode, $displaytype);
 			$Everything::HTML::GNODE = $stylesheetNode;
-			my $out = parseCode($$outputter{page}, $stylesheetNode);
 			if ($autofix) {
 				$query->param('autofix', 1);
 			} else {
 				$query->delete('autofix');
 			}
+			my $out = parseCode($$outputter{page}, $stylesheetNode);
 			my $fh = FileHandle->new($stylesheetFilepath, "w");
 			if (!$fh) {
 				print "Failed to create $stylesheetFilepath when generating stylesheet. : $@\n";
