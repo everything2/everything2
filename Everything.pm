@@ -15,6 +15,7 @@ package Everything;
 
 use strict;
 use DBI;
+use DateTime;
 use Everything::NodeBase;
 use Devel::Caller qw(caller_args);
 
@@ -131,9 +132,8 @@ sub printErr {
 #
 sub getTime
 {
-	my $time = `/bin/date +"%a %b %d %R%p"`;
-	chomp $time;
-	return $time;
+	my $dt = DateTime->now();
+	return $dt->strftime("%a %b %d %R%p");
 }
 
 
