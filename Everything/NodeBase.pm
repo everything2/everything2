@@ -1254,13 +1254,22 @@ SQLEND
 sub getCompiledCode {
 	my ($this, $NODE, $evalFunc) = @_;
 
-	$this->clearCompiledCode($NODE);
-
 	if ($NODE && ref $$NODE{compiledCode} ne "CODE") {
 
 		my ($rawCode, $compileResult);
 
-		$rawCode = "sub { " . $$NODE{code} . "\n}";
+		# This is a hack.  All dynamically code runs in Everything::HTML, which
+		#  exposes $NODE in evalCode.  However, since $NODE is local, recompiling
+		#  is necessary without referencing a package-level variable.
+		# So we're using $Everything::HTML::GNODE.
+		# This means this code will only work if GNODE is visible inside evalFunc.
+		# Further, since $GNODE isn't visible here, calls without evalFunc will fail.
+		# This hack is sort of necessitated by the current lag-tastic, CPU-bound
+		#  behavior on E2.
+		$rawCode = 'sub { my $NODE = $GNODE;'
+			. $$NODE{code}
+			. "\n}"
+			;
 
 		if ($evalFunc) {
 			$compileResult = &$evalFunc($rawCode);
