@@ -310,7 +310,7 @@ sub htmlScreen {
 sub cleanupHTML {
     my ($text, $approved, $preapproved_ref, $debug) = @_;
     my @stack;
-    my ($result, $tag, $ctag);
+    my ($result, $tag, $ctag) = ('', '', '');
     # Compile frequently-used regular exprs
     my $open_tag = qr'^<(\w+)(.*?)>(.*)'ms;
     my $close_tag = qr'^</(\w+)(.*?)>(.*)'ms;
@@ -1599,7 +1599,7 @@ sub evalCode {
 	my $warnbuf = "";
 
 	local $SIG{__WARN__} = sub {
-		$warnbuf .= $_[0] 
+		$warnbuf .= $_[0]
 		 unless $_[0] =~ /^Use of uninitialized value/;
 	};
 

@@ -2877,46 +2877,48 @@ sub replaceNodegroup
 #############################################################################
 
 sub hasGroupCache {
-        my ($this, $NODE) = @_;
-	
-        return 1 if exists($this->{cache}->{groupCache}->{$$NODE{node_id}});
-        return 0;
+	my ($this, $NODE) = @_;
+
+	return 0 if !defined $$NODE{node_id};
+	return 1 if exists($this->{cache}->{groupCache}->{$$NODE{node_id}});
+	return 0;
 }
 
 sub getGroupCache {
-  my ($this, $NODE) = @_;
-  return $this->{cache}->{groupCache}->{$$NODE{node_id}};
-
+	my ($this, $NODE) = @_;
+	return undef if !defined $$NODE{node_id};
+	return $this->{cache}->{groupCache}->{$$NODE{node_id}};
 }
 
 sub groupCache {
 
-        my ($this, $NODE, $group, $type) = @_;
-        $group ||= $$NODE{group};
+	my ($this, $NODE, $group, $type) = @_;
+	$group ||= $$NODE{group};
 	#$group ||= [1];
 
 
-        return 1 if $this->hasGroupCache($NODE);
+	return 1 if !defined $$NODE{node_id};
+	return 1 if $this->hasGroupCache($NODE);
 	if($type && $type eq "plain")
 	{
-        	%{$this->{cache}->{groupCache}->{$$NODE{node_id}}} = map {$_ => 1} @{$group};
+		%{$this->{cache}->{groupCache}->{$$NODE{node_id}}} = map {$_ => 1} @{$group};
 	}else{
 		%{$this->{cache}->{groupCache}->{$$NODE{node_id}}} = map {$$_{node_id} => 1} @{$group};
 	}
-        return 1;
+	return 1;
 }
 
 sub groupUncache {
 
-        my ($this, $NODE) = @_;
-        delete $this->{cache}->{groupCache}->{$$NODE{node_id}};
-        return 1;
+	my ($this, $NODE) = @_;
+	delete $this->{cache}->{groupCache}->{$$NODE{node_id}};
+	return 1;
 }
 
 sub existsInGroupCache {
 
-        my ($this, $NODE, $nid) = @_;
-        return exists($this->{cache}->{groupCache}->{$$NODE{node_id}}->{$nid});
+	my ($this, $NODE, $nid) = @_;
+	return exists($this->{cache}->{groupCache}->{$$NODE{node_id}}->{$nid});
 }
 
 
