@@ -2507,7 +2507,7 @@ sub canUpdateNode {
 	$EDS ||= $this->getNode('content editors', 'usergroup');
 	my $type = $$NODE{type}{title};
 	return 1 if      grep /^$UID$/, @{ $$EDS{group} }
-              and  grep /^$type$/, ('writeup','document','oppressor_document');
+              and  grep /^$type$/, ('writeup','document','oppressor_document','category');
 	return $this->isApproved ($USER, $$NODE{author_user});
 }
 
