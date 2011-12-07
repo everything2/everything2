@@ -1185,6 +1185,14 @@ sub updateNode
 			# don't write a value if we haven't changed it since we read the node
 			next if $this->isOriginalValue($NODE, $field);
 
+			# don't allow prohibited duplicate titles
+			if ($field eq 'title' && $$NODE{type}{restrictdupes}
+				&& $this->sqlSelect('node_id', "node",
+						"title=$field AND type_nodetype=$$NODE{type_nodetype}")){
+				$$NODE{title} = $NODE->{_ORIGINAL_VALUES}->{title};
+				next;
+			}
+
 			if (exists $$NODE{$field})
 			{ 
 				my $qualified_column =
