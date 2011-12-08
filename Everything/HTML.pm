@@ -2864,24 +2864,6 @@ sub mod_perlInit
 
 	# Do the work.
 	handleUserRequest();
-	if ($$USER{title} eq 'dem bones') {
-         open (BONESLOG, "|/usr/sbin/cronolog --symlink=/var/log/everything/bones_log /var/log/everything/%Y/%m/%d/bones_log");
-         my $log = localtime(time)
-          ."\t$$USER{title}\t$$GNODE{title} ($$GNODE{type}{title})\n" if ref $USER and ref $GNODE;
-         print BONESLOG $log;
-         close BONESLOG;
-	     }
-
-	if (isGod($USER) or $$USER{title} eq 'cureobsession') {
-         open (GODSLOG, "|/usr/sbin/cronolog --symlink=/var/log/everything/gods_log /var/log/everything/%Y/%m/%d/gods_log");
-         my $log = localtime(time);
-	$log.= "\t$$USER{title}\t$$GNODE{title} ($$GNODE{type}{title})" if ref $USER and ref $GNODE;
-	$log .= " op=".$query->param("op") if $query->param("op");
- 	$log .= " displaytype=".$query->param("displaytype") if $query->param("displaytype");
-	$log .="\n";
-         print GODSLOG $log;
-         close GODSLOG;
-	     }
 
 	#$Everything::PERLTIME->stop();
 	$DB->closeTransaction();
