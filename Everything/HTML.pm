@@ -18,6 +18,9 @@ use Everything::CacheStore;
 #use StopWatch;
 require CGI;
 use CGI::Carp qw(set_die_handler);
+use Carp qw(longmess);
+
+use Data::Dumper;
 
 sub BEGIN {
 	use Exporter ();
@@ -70,6 +73,17 @@ sub BEGIN {
               mod_perlInit
               mod_perlpsuedoInit);
 
+
+	use Everything::Compiled::htmlcode;
+	my $vars = {%Everything::Compiled::htmlcode::};
+
+	foreach my $key (keys %$vars)
+	{
+		if($key =~ /^__htmlcode_/)
+		{
+			eval("\$Everything::HTML::{$key} = *Everything::Compiled::htmlcode::$key;");
+		}
+	}
 }
 
 use vars qw($HTTP_ERROR_CODE $ERROR_HTML $SITE_UNAVAILABLE $query);
@@ -177,7 +191,7 @@ ENDHEADER
         my $errorText = $ERROR_HTML;
         $errorText =~ s/\bERROR\b/$errorFromPerl/;
         $query->print($errorHeader . $errorText);
-        exit;
+	exit;
 
     } else {
 
@@ -891,6 +905,7 @@ sub htmlErrorUsers
 	$error .= "Warning:\n$warn";
 	$error .= "Params:\n";
 	$error .= query_vars_string();
+	$error .= longmess();
 	Everything::printLog($error);
 
 	$str;
@@ -1631,6 +1646,26 @@ sub htmlcode {
 	my @returnArray;
 	my $encodedArgs = "(no arguments)";
 	my $htmlcodeName = shift;
+
+	my $htmlcodelocalname = $htmlcodeName;
+	$htmlcodelocalname =~ s/[\s-]/_/g;
+	$htmlcodelocalname = "__htmlcode_$htmlcodelocalname";
+
+	if(Everything::HTML->can($htmlcodelocalname))
+	{
+		my $passedargs;
+		if(scalar @_ == 1 and !ref $_[0])
+		{
+			$passedargs = [split(/\s*,\s*/, shift)];
+		}elsif(scalar @_ > 0){
+			$passedargs = [@_];
+		}
+
+		no strict 'refs';
+		$htmlcodelocalname = "Everything::HTML::$htmlcodelocalname";
+		return &$htmlcodelocalname(@$passedargs);
+	}
+
 	my ($htmlcodeCode, $codeNode) = getCode($htmlcodeName);
 
 	if (scalar @_ == 1 and !ref $_[0]) {
@@ -1948,6 +1983,9 @@ sub displayPage
 	my $isGuest = 0;
 	my $page = "";
 	$isGuest = 1 if ($user_id == $HTMLVARS{guest_user});
+
+	# JAYBONCI
+	#Everything::printLog("In displayPage: ".Data::Dumper->Dump([$NODE,$user_id]));
 
 	my $lastnode;
 	if ($$NODE{type}{title} eq 'e2node') {
