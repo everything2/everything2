@@ -20,6 +20,9 @@ require CGI;
 use CGI::Carp qw(set_die_handler);
 use Carp qw(longmess);
 
+use Everything::Compiled::htmlcode;
+use Everything::Compiled::container;
+
 use Data::Dumper;
 
 sub BEGIN {
@@ -72,18 +75,6 @@ sub BEGIN {
               unMSify
               mod_perlInit
               mod_perlpsuedoInit);
-
-
-	use Everything::Compiled::htmlcode;
-	my $vars = {%Everything::Compiled::htmlcode::};
-
-	foreach my $key (keys %$vars)
-	{
-		if($key =~ /^__htmlcode_/)
-		{
-			eval("\$Everything::HTML::{$key} = *Everything::Compiled::htmlcode::$key;");
-		}
-	}
 }
 
 use vars qw($HTTP_ERROR_CODE $ERROR_HTML $SITE_UNAVAILABLE $query);
@@ -1651,7 +1642,7 @@ sub htmlcode {
 	$htmlcodelocalname =~ s/[\s-]/_/g;
 	$htmlcodelocalname = "__htmlcode_$htmlcodelocalname";
 
-	if(Everything::HTML->can($htmlcodelocalname))
+	if(Everything::Compiled::htmlcode->can($htmlcodelocalname))
 	{
 		my $passedargs;
 		if(scalar @_ == 1 and !ref $_[0])
@@ -1662,7 +1653,7 @@ sub htmlcode {
 		}
 
 		no strict 'refs';
-		$htmlcodelocalname = "Everything::HTML::$htmlcodelocalname";
+		$htmlcodelocalname = "Everything::Compiled::htmlcode::$htmlcodelocalname";
 		return &$htmlcodelocalname(@$passedargs);
 	}
 
@@ -1984,9 +1975,6 @@ sub displayPage
 	my $page = "";
 	$isGuest = 1 if ($user_id == $HTMLVARS{guest_user});
 
-	# JAYBONCI
-	#Everything::printLog("In displayPage: ".Data::Dumper->Dump([$NODE,$user_id]));
-
 	my $lastnode;
 	if ($$NODE{type}{title} eq 'e2node') {
 		$lastnode = getId($NODE);
@@ -2022,8 +2010,15 @@ sub displayPage
 
 	$page = parseCode($page, $NODE);
 	if ($$PAGE{parent_container}) {
-		my ($pre, $post) = genContainer($$PAGE{parent_container});
-		$page = $pre.$page.$post;
+		if(Everything::Compiled::container->can("__container_id_$$PAGE{parent_container}"))
+		{
+			no strict 'refs';
+			my $containersub = "Everything::Compiled::container::__container_id_$$PAGE{parent_container}";
+			$page = &$containersub($page);
+		}else{
+			my ($pre, $post) = genContainer($$PAGE{parent_container});
+			$page = $pre.$page.$post;
+		}
 	}
 
 	setVars $USER, $VARS unless getId($USER) == $HTMLVARS{guest_user};
