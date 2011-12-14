@@ -22,6 +22,9 @@ use Carp qw(longmess);
 
 use Everything::Compiled::htmlcode;
 use Everything::Compiled::container;
+#use Everything::Compiled::htmlpage;
+use Everything::Compiled::superdoc;
+
 
 use Data::Dumper;
 
@@ -1129,6 +1132,60 @@ sub getPages
 
 #############################################################################
 #	Sub
+#		getCompiledPage
+#
+
+sub getCompiledPage
+{
+	my ($NODE, $displaytype) = @_; 
+	my $TYPE;
+
+	# Stolen from getPage	
+	getRef $NODE;
+
+	$TYPE = getType($$NODE{type_nodetype});
+	$displaytype ||= $$VARS{'displaypref_'.$$TYPE{title}}
+	  if exists $$VARS{'displaypref_'.$$TYPE{title}};
+	$displaytype ||= $$THEME{'displaypref_'.$$TYPE{title}}
+	  if exists $$THEME{'displaypref_'.$$TYPE{title}};
+	$displaytype = 'display' unless $displaytype;
+	
+	my $prefix = "__htmlpage";
+	my $typeid = $$NODE{type_nodetype};
+
+	my $themechoices;
+	push @$themechoices, $THEME->{theme_id} if($THEME);
+	push @$themechoices, 0;
+
+
+	# Don't check display twice - JAYBONCI
+	foreach my $thisdisplay ($displaytype, "display")
+	{
+		my $thistypeid = $typeid;
+		while($thistypeid)
+		{
+			foreach my $themer (@$themechoices)
+			{
+				if(Everything::Compiled::htmlpage->can(join("_",$prefix,$themer,$typeid,$thisdisplay)))
+				{
+					no strict 'refs';
+					my $subname = "Everything::Compiled::htmlpage::".join("_",$prefix,$themer,$typeid,$thisdisplay);
+					my $mimetype = "$subname"."_mimetype";
+					return [$subname,&$mimetype()];
+				}
+			}
+			
+			# Will work in most, if not all real-world cases:
+			my $quicktype = getNodeById($thistypeid);
+			$thistypeid = $quicktype->{extends_nodetype};
+		}
+	}
+
+	return;
+}
+
+#############################################################################
+#	Sub
 #		getPageForType
 #
 #	Purpose
@@ -2002,25 +2059,35 @@ sub displayPage
 		}
 	}
 
-	my $PAGE = getPage($NODE, $query->param('displaytype'));
-	$$NODE{datatype} = $$PAGE{mimetype};
-	$page = $$PAGE{page};
+	
 
-	die "NO PAGE!" unless $page;
+	if(my $compiledpage = getCompiledPage($NODE, $query->param('displaytype')))
+	{
+		no strict 'refs';
+		my $compiledpagesub = $compiledpage->[0];
+		$page = &$compiledpagesub();
+		$$NODE{datatype} = $compiledpage->[1];
+	}else{
+		my $PAGE = getPage($NODE, $query->param('displaytype'));
+		$$NODE{datatype} = $$PAGE{mimetype};
+		$page = $$PAGE{page};
 
-	$page = parseCode($page, $NODE);
-	if ($$PAGE{parent_container}) {
-		if(Everything::Compiled::container->can("__container_id_$$PAGE{parent_container}"))
-		{
-			no strict 'refs';
-			my $containersub = "Everything::Compiled::container::__container_id_$$PAGE{parent_container}";
-			$page = &$containersub($page);
-		}else{
-			my ($pre, $post) = genContainer($$PAGE{parent_container});
-			$page = $pre.$page.$post;
+		die "NO PAGE!" unless $page;
+
+		$page = parseCode($page, $NODE);
+	
+		if ($$PAGE{parent_container}) {
+			if(Everything::Compiled::container->can("__container_id_$$PAGE{parent_container}"))
+			{
+				no strict 'refs';
+				my $containersub = "Everything::Compiled::container::__container_id_$$PAGE{parent_container}";
+				$page = &$containersub($page);
+			}else{
+				my ($pre, $post) = genContainer($$PAGE{parent_container});
+				$page = $pre.$page.$post;
+			}
 		}
 	}
-
 	setVars $USER, $VARS unless getId($USER) == $HTMLVARS{guest_user};
 	printHeader($$NODE{datatype}, $page, $lastnode);
 
