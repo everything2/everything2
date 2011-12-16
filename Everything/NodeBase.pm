@@ -1185,10 +1185,11 @@ sub updateNode
 			# don't write a value if we haven't changed it since we read the node
 			next if $this->isOriginalValue($NODE, $field);
 
-			# don't allow prohibited duplicate titles
+			# don't allow prohibited duplicate titles, but do allow case changes
 			if ($field eq 'title' && $$NODE{type}{restrictdupes}
 				&& $this->sqlSelect('node_id', 'node',
-					'title='.$this->quote($$NODE{$field})." AND type_nodetype=$$NODE{type_nodetype}"))
+					'title='.$this->quote($$NODE{$field})
+					." AND type_nodetype=$$NODE{type_nodetype} AND node_id!=$$NODE{node_id}"))
 			{
 				$$NODE{title} = $NODE->{_ORIGINAL_VALUES}->{title};
 				next;
