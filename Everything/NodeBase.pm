@@ -1188,7 +1188,7 @@ sub updateNode
 			# don't allow prohibited duplicate titles
 			if ($field eq 'title' && $$NODE{type}{restrictdupes}
 				&& $this->sqlSelect('node_id', 'node',
-					'title='.$this->quote($$NODE{$field})." AND type_nodetype=$$NODE{type_nodetype}"))
+					'title='.this->quote($$NODE{$field})." AND type_nodetype=$$NODE{type_nodetype}"))
 			{
 				$$NODE{title} = $NODE->{_ORIGINAL_VALUES}->{title};
 				next;

@@ -316,17 +316,10 @@ sub getVars
 		perhaps it doesn't join on the settings table?\n");
 	}
 
-	#if($DB->{cache}->{hashCache}->{$$NODE{node_id}} and $$NODE{type}{title} ne "theme")
-	#{
-	#	return $DB->{cache}->{hashCache}->{$$NODE{node_id}};
-	#}
-
 	my %vars;
 	return \%vars unless ($$NODE{vars});
 
 	%vars = getVarHashFromString($$NODE{vars});
-	my %varscopy = %vars;
-	$DB->{cache}->{hashCache}->{$$NODE{node_id}} = \%varscopy;
 	\%vars;
 }
 
