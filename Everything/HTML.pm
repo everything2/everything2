@@ -20,10 +20,10 @@ require CGI;
 use CGI::Carp qw(set_die_handler);
 use Carp qw(longmess);
 
-use Everything::Compiled::htmlcode;
-use Everything::Compiled::container;
+#use Everything::Compiled::htmlcode;
+#use Everything::Compiled::container;
 #use Everything::Compiled::htmlpage;
-use Everything::Compiled::superdoc;
+#use Everything::Compiled::superdoc;
 
 
 use Data::Dumper;
