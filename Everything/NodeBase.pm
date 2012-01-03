@@ -1612,13 +1612,11 @@ sub getType
 	
 	if(not exists $$TYPE{resolvedInheritance})
 	{
-
+		$TYPE = $this->deriveType($TYPE);
 		# If this didn't come from the cache, we need to cache it
 		$this->{cache}->cacheNode($TYPE, 1) if((not $fromCache) && 
 			(not $this->{staticNodetypes}));
 		
-		$TYPE = $this->deriveType($TYPE);
-
 		# If we have static nodetypes, we can do a performance enhancement
 		# by caching the completed nodes.
 		$this->{cache}->cacheNode($TYPE, 1) if($this->{staticNodetypes});
