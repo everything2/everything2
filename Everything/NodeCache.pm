@@ -105,7 +105,6 @@ sub new
 	$this->{methodCache}= {};
 
 	$this->{groupCache} = {};
-	$this->{hashCache} = {};
 	if ($memcache) { 
         	$this->{memcache} = new Everything::Memcache $memcache, $nodeBase;
     	}
@@ -396,14 +395,12 @@ sub flushCache
 	undef $this->{idCache};
 	undef $this->{version};
 	undef $this->{groupCache};
-	undef $this->{hashCache};
 
 	$this->{nodeQueue} = new Everything::CacheQueue();
 	$this->{typeCache} = {};
 	$this->{idCache} = {};
 	$this->{version} = {};
 	$this->{groupCache} = {};
-	$this->{hashCache} = {};
 }
 
 
@@ -526,7 +523,6 @@ sub removeNodeFromHash
 		delete ($this->{idCache}{$$NODE{node_id}});
 		delete ($this->{version}{$$NODE{node_id}});
 		delete ($this->{groupCache}{$$NODE{node_id}});
-		delete ($this->{hashCache}{$$NODE{node_id}});
 		return $data;
 	}
 
