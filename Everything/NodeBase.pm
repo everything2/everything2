@@ -134,7 +134,7 @@ sub new
 
 	if($setCacheSize && $this->getType("setting"))
 	{
-		my $CACHE = $this->getNode("cache settings", "setting");
+		#my $CACHE = $this->getNode("cache settings", "setting");
 		my $cacheSize = 600;
 
 		# Get the settings from the system
