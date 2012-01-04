@@ -1544,17 +1544,6 @@ sub nodeName
 {
 	my ($node, $user_id) = @_;
 
-	if (my $KW = getNode ('keyword settings', 'setting')) {
-		my $WORDS = getVars $KW;	
-		my $title = lc($node) ."_node";
-		#please note -- this means that keywords must be in lower case...
-
-		if (exists $$WORDS{$title}) {
-			gotoNode($$WORDS{$title}, $user_id);
-			return;
-		}
-	}
-
 	my $matchall = $query->param("match_all");
 	my $soundex = $query->param("soundex");
 
