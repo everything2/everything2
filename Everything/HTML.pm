@@ -368,7 +368,9 @@ sub cleanupHTML {
 		my $opening;
 		# Choose one of the parent tags, effectively at random
 		my $missing = (keys %$nest_in)[0];
+		my $iterations = 0;
 		do {
+		    $iterations++;
 		    unshift @extra, $missing;
 		    $opening = '<'.$missing.'>'.$opening;
 		    if ($debug) {
@@ -376,7 +378,7 @@ sub cleanupHTML {
 				    . $opening);
 		    }
 		} while (   ($nest_in = $nest{$missing})
-			 && !$nest_in->{$stack[$#stack]});
+			 && !$nest_in->{$stack[$#stack]} && $iterations < 50);
 		push @stack, @extra;
 		$result .= $opening;
 	    }
