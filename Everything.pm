@@ -18,6 +18,8 @@ use DBI;
 use DateTime;
 use Everything::NodeBase;
 use Devel::Caller qw(caller_args);
+use Config::Simple;
+
 
 sub BEGIN
 {
@@ -73,7 +75,8 @@ sub BEGIN
               printErr
               printLog
             );
- }
+ 	Config::Simple -> import_from('/etc/everything/everything.conf',\%CONFIG);
+}
 
 use vars qw($DB);
 use vars qw($PERLTIME);
@@ -752,13 +755,7 @@ sub initEverything
 {
 	my ($db, $staticNodetypes, $memcache) = @_;
 
-  #Move some config settings to an external file instead of hardcoding
-  #it into ecore. --[Swap]
-  use Config::Simple;
-  Config::Simple -> import_from('/etc/everything/everything.conf',\%CONFIG);
-
 	$DB = new Everything::NodeBase($db, $staticNodetypes, $memcache);
-
 	$DB->closeTransaction();
 
 	# This is for legacy code.  You should not use $dbh!  Use
