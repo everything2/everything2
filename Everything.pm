@@ -286,6 +286,21 @@ sub getVarHashFromString
 	return %vars;
 }
 
+# This is an inlined, slightly sped up version of above. About a 2x perf improvement
+# The above is only kept until we are sure that it is no longer needed
+
+sub getVarHashFromStringFast
+{
+	my $varString = shift;
+	my %vars = (split(/[=&]/, $varString));
+	foreach (keys %vars) {
+		$vars{$_} =~ tr/+/ /;
+		$vars{$_} =~ s/\%(..)/chr(hex($1))/ge;
+		if ($vars{$_} eq ' ') { $vars{$_} = ""; }
+	}
+	return %vars;
+}
+
 sub getVarStringFromHash
 {
 	my $varHash = shift;
@@ -322,7 +337,7 @@ sub getVars
 	my %vars;
 	return \%vars unless ($$NODE{vars});
 
-	%vars = getVarHashFromString($$NODE{vars});
+	%vars = getVarHashFromStringFast($$NODE{vars});
 	\%vars;
 }
 
@@ -359,7 +374,7 @@ sub setVars
 	return unless ($newVarsStr ne $$NODE{vars}); #we don't need to update...
 
 	# Create a list of the vars-as-loaded
-	my %originalVars = getVarHashFromString($$NODE{vars});
+	my %originalVars = getVarHashFromStringFast($$NODE{vars});
 
 	# Record just the modified vars
 	my %modifiedVars = ();
@@ -376,7 +391,7 @@ sub setVars
 	my $updateSub = sub {
 		my $currentVarString =
 			$DB->sqlSelect('vars', 'setting', "setting_id = $$NODE{node_id}");
-		my %currentVars = getVarHashFromString($currentVarString);
+		my %currentVars = getVarHashFromStringFast($currentVarString);
 		map { $currentVars{$_} = $modifiedVars{$_}; } keys %modifiedVars;
 		map { delete $currentVars{$_} if !defined $$varsref{$_}; } keys %currentVars;
 		$$NODE{vars} = getVarStringFromHash(\%currentVars);
