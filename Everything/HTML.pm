@@ -16,7 +16,7 @@ use Everything::Experience;
 use Everything::Room;
 use Everything::CacheStore;
 #use StopWatch;
-require CGI;
+use CGI;
 use CGI::Carp qw(set_die_handler);
 use Carp qw(longmess);
 
