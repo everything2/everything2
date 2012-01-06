@@ -1137,6 +1137,7 @@ sub getPages
 sub getCompiledPage
 {
 	my ($NODE, $displaytype) = @_; 
+	return unless $CONFIG{use_compiled};
 	my $TYPE;
 
 	# Stolen from getPage	
