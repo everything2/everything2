@@ -25,9 +25,6 @@ use Carp qw(longmess);
 #use Everything::Compiled::htmlpage;
 #use Everything::Compiled::superdoc;
 
-
-use Data::Dumper;
-
 sub BEGIN {
 	use Exporter ();
 	use vars qw($DB $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
