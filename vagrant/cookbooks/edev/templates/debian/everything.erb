@@ -1,0 +1,46 @@
+PerlSwitches -I/var/everything/ecore
+#PerlPassEnv NYTPROF
+#PerlModule Devel::NYTProf::Apache
+MaxClients 1
+<VirtualHost *:80>
+	
+	DocumentRoot /var/everything/www
+
+	<IfDefine PERLDB>
+		<Perl>
+			use Apache::DB ();
+			Apache::DB->init;
+		</Perl>
+  
+		<Location />
+			PerlFixupHandler Apache::DB
+		</Location>
+	</IfDefine>
+
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride None
+	</Directory>
+	PerlModule Apache2::compat
+	PerlModule Apache::DBI CGI Everything Everything::HTML
+	PerlResponseHandler ModPerl::Registry
+	PerlOptions +ParseHeaders
+
+	<Directory /var/everything/www/>
+		DirectoryIndex index.pl
+		AddHandler perl-script .pl
+		Options +ExecCGI +FollowSymLinks
+		AllowOverride None
+		Order allow,deny
+		allow from all
+		Include /var/everything/ecore/mod_rewrite.conf
+		AddOutputFilterByType DEFLATE text/javascript text/html text/xml text/css application/x-javascript
+
+	</Directory>
+
+	<Location /perly-status>
+		SetHandler perl-script
+		PerlResponseHandler Apache2::Status
+		PerlSetVar StatusOptionsAll On
+	</Location>
+</VirtualHost>
