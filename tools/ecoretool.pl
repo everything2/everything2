@@ -3,7 +3,7 @@
 use strict;
 use Getopt::Long;
 use Clone;
-use lib qw(/var/everything/ecore);
+use lib qw(lib /var/everything/ecore);
 
 #TODO: Wrap this in BEGIN and just search for available modules
 #Also generate allowed_directives
