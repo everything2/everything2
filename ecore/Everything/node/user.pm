@@ -2,7 +2,6 @@
 
 use strict;
 use lib qw(lib);
-use XML::Simple;
 use Clone qw(clone);
 package Everything::node::user;
 use base qw(Everything::node::node);
