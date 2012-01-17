@@ -1,0 +1,192 @@
+<node>
+  <doctext>Click the +/- button by the nodelet name to
+collapse/uncollapse it. Then &lt;a href=&quot;http://www.everything2.com/index.pl?node_id=1450923&amp;displaytype=display&quot;&gt;refresh&lt;/a&gt;
+the page, and notice the collapse/uncollapse
+state remains (unless you've disabled cookies).
+&lt;br&gt;&lt;br&gt;
+-- [rdude]
+&lt;br&gt;&lt;br&gt;
+Other documentation may be found [edev: Collapsible Nodelets|here].
+&lt;br&gt;&lt;br&gt;
+
+&lt;!-- BEGIN common collapse script --&gt;
+&lt;script language=&quot;javascript&quot;&gt;
+&lt;!--
+	// Save a cookie
+	function SetNodeletCookie (name,value,path,domain,secure) {
+		var todays_date = new Date();
+		var expires = new Date(todays_date.getTime() +
+		  (14 * 86400000)); // 2 weeks from now
+
+	    document.cookie = name + &quot;=&quot; +escape(value) +
+	        ( (expires) ? &quot;;expires=&quot; + expires.toGMTString() : &quot;&quot;) +
+	        ( (path) ? &quot;;path=&quot; + path : &quot;&quot;) + 
+	        ( (domain) ? &quot;;domain=&quot; + domain : &quot;&quot;) +
+	        ( (secure) ? &quot;;secure&quot; : &quot;&quot;);
+	}
+	
+	// Eat that cookie
+	function GetNodeletCookie (name) {
+	    var start = document.cookie.indexOf(name+&quot;=&quot;);
+	    var len = start+name.length+1;
+	    if ((!start) &amp;&amp; (name != document.cookie.substring(0,name.length))) return null;
+	    if (start == -1) return null;
+	    var end = document.cookie.indexOf(&quot;;&quot;,len);
+	    if (end == -1) end = document.cookie.length;
+	    return unescape(document.cookie.substring(len,end));
+	}
+	
+	// Switch nodelet from hidden &lt;-&gt; displayed
+	function ToggleNodeletState (NodeletName) {
+		var Nodelet = document.getElementById(NodeletName);
+		var NodeletButton = document.getElementById(NodeletName + 'Button');
+		
+		if (Nodelet.style.display == '') {
+			Nodelet.style.display = 'none';
+			
+			if (NodeletButton.tagName == 'SPAN') {
+				NodeletButton.innerText = '+';
+				NodeletButton.innerHTML = '+';
+			}
+			
+			SetNodeletCookie(NodeletName, 'none');
+		}
+		else
+		{
+			Nodelet.style.display = '';
+			
+			if (NodeletButton.tagName == 'SPAN') {
+				NodeletButton.innerText = '-';
+				NodeletButton.innerHTML = '-';
+			}
+			
+			SetNodeletCookie(NodeletName, '');
+		}
+	}
+	
+	// Hide nodelets as dictated by cookies
+	function CheckNodeletState (NodeletName) {
+		if (GetNodeletCookie(NodeletName) == 'none') {
+			ToggleNodeletState(NodeletName);
+		}
+	}
+//--&gt;
+&lt;/script&gt;
+&lt;!-- END common collapse script --&gt;
+
+&lt;!-- BEGIN ekw nodelet container --&gt;
+&lt;table width=&quot;170&quot; align=&quot;center&quot;&gt;
+&lt;tr&gt;
+  &lt;td bgcolor=&quot;#cc6633&quot; onclick=&quot;javascript:ToggleNodeletState('PersonalLinks')&quot; style=&quot;cursor:pointer&quot;&gt;
+    &lt;b&gt;&lt;font color=&quot;#FFFFFF&quot;&gt;&amp;nbsp;&lt;span id=&quot;PersonalLinksButton&quot;&gt;-&lt;/span&gt;&amp;nbsp;&amp;nbsp;Personal Links
+    &lt;/font&gt;&lt;/b&gt;
+  &lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr id=&quot;PersonalLinks&quot;&gt;
+  &lt;td colspan=&quot;2&quot; bgcolor=&quot;#ffe4c4&quot;&gt;
+   &lt;font size=2&gt;
+    &lt;a title=&quot;Everything User Search&quot; href=&quot;/index.pl?node=Everything%20User%20Search&quot;&gt;Everything User Search&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;E2 Scratch Pad&quot; href=&quot;/index.pl?node=E2%20Scratch%20Pad&quot;&gt;E2 Scratch Pad&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;Java Chatterbox&quot; href=&quot;/index.pl?node=Java%20Chatterbox&quot;&gt;Java Chatterbox&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;Message Inbox&quot; href=&quot;/index.pl?node=Message%20Inbox&quot;&gt;Message Inbox&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;edev&quot; href=&quot;/index.pl?node=edev&quot;&gt;edev&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;The Content Rescue Team : Nodes&quot; href=&quot;/index.pl?node=The%20Content%20Rescue%20Team%20%3A%20Nodes&quot;&gt;The Content Rescue Team : Nodes&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;clientdev&quot; href=&quot;/index.pl?node=clientdev&quot;&gt;clientdev&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;E2science&quot; href=&quot;/index.pl?node=E2science&quot;&gt;E2science&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;Science Index&quot; href=&quot;/index.pl?node=Science%20Index&quot;&gt;Science Index&lt;/a&gt;&lt;br /&gt;
+
+
+
+   &lt;/font&gt;
+  &lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;script language=&quot;javascript&quot;&gt;
+&lt;!--
+	CheckNodeletState('PersonalLinks');
+//--&gt;
+&lt;/script&gt;
+&lt;!-- END ekw nodelet container --&gt;
+
+&lt;br&gt;&lt;br&gt;
+
+&lt;table width=&quot;170&quot; align=&quot;center&quot;&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;img id=&quot;PersonalLinks2Button&quot; onclick=&quot;javascript:ToggleNodeletState('PersonalLinks2')&quot; src=&quot;http://images.everything2.com/img/personal_nodes.gif&quot; height=&quot;24&quot; width=&quot;170&quot; border=&quot;0&quot; alt=&quot;Personal Links&quot; style=&quot;cursor:pointer&quot;&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr id=&quot;PersonalLinks2&quot;&gt;&lt;td&gt;&lt;span&gt;&lt;a title=&quot;Everything User Search&quot; href=&quot;/index.pl?node=Everything%20User%20Search&quot;&gt;Everything User Search&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;E2 Scratch Pad&quot; href=&quot;/index.pl?node=E2%20Scratch%20Pad&quot;&gt;E2 Scratch Pad&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;Java Chatterbox&quot; href=&quot;/index.pl?node=Java%20Chatterbox&quot;&gt;Java Chatterbox&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;Message Inbox&quot; href=&quot;/index.pl?node=Message%20Inbox&quot;&gt;Message Inbox&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;edev&quot; href=&quot;/index.pl?node=edev&quot;&gt;edev&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;The Content Rescue Team : Nodes&quot; href=&quot;/index.pl?node=The%20Content%20Rescue%20Team%20%3A%20Nodes&quot;&gt;The Content Rescue Team : Nodes&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;clientdev&quot; href=&quot;/index.pl?node=clientdev&quot;&gt;clientdev&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;E2science&quot; href=&quot;/index.pl?node=E2science&quot;&gt;E2science&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;Science Index&quot; href=&quot;/index.pl?node=Science%20Index&quot;&gt;Science Index&lt;/a&gt;&lt;br /&gt;
+
+&lt;p align=right&gt;&lt;A HREF=&quot;/index.pl?lastnode_id=1022032&amp;node_id=1022032&amp;addpersonalnodelet=1022032&quot;&gt;add &quot;user settings 2&quot;&lt;/a&gt;
+
+&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;script language=&quot;javascript&quot;&gt;
+&lt;!--
+	CheckNodeletState('PersonalLinks2');
+//--&gt;
+&lt;/script&gt;
+&lt;/table&gt;
+
+&lt;br&gt;&lt;br&gt;
+
+&lt;table width=&quot;170&quot; align=&quot;center&quot;&gt;
+&lt;tr&gt;&lt;td&gt;&lt;table width=100% cellspacing=0 cellpadding=0 border=0&gt;
+&lt;tr&gt;
+ &lt;td width=150&gt;
+  &lt;table width=100% cellspacing=0 cellpadding=2 border=0&gt;
+   &lt;tr background=&quot;&quot;&quot;&quot;&gt;
+&lt;td bgcolor=&quot;#CC99FF&quot; onclick=&quot;javascript:ToggleNodeletState('PersonalLinks3')&quot; style=&quot;cursor:pointer&quot;&gt;&lt;strong&gt;&lt;font color=white&gt;&lt;span id=&quot;PersonalLinks3Button&quot;&gt;-&lt;/span&gt;&amp;nbsp;&amp;nbsp;Personal Links&lt;/font&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr id=&quot;PersonalLinks3&quot;&gt;&lt;td bgcolor=&quot;#FFFFFF&quot;&gt;&lt;font size=2&gt;&lt;a title=&quot;Everything User Search&quot; href=&quot;/index.pl?node=Everything%20User%20Search&quot;&gt;Everything User Search&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;E2 Scratch Pad&quot; href=&quot;/index.pl?node=E2%20Scratch%20Pad&quot;&gt;E2 Scratch Pad&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;Java Chatterbox&quot; href=&quot;/index.pl?node=Java%20Chatterbox&quot;&gt;Java Chatterbox&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;Message Inbox&quot; href=&quot;/index.pl?node=Message%20Inbox&quot;&gt;Message Inbox&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;edev&quot; href=&quot;/index.pl?node=edev&quot;&gt;edev&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;The Content Rescue Team : Nodes&quot; href=&quot;/index.pl?node=The%20Content%20Rescue%20Team%20%3A%20Nodes&quot;&gt;The Content Rescue Team : Nodes&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;clientdev&quot; href=&quot;/index.pl?node=clientdev&quot;&gt;clientdev&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;E2science&quot; href=&quot;/index.pl?node=E2science&quot;&gt;E2science&lt;/a&gt;&lt;br /&gt;
+&lt;a title=&quot;Science Index&quot; href=&quot;/index.pl?node=Science%20Index&quot;&gt;Science Index&lt;/a&gt;&lt;br /&gt;
+
+&lt;p align=right&gt;&lt;A HREF=&quot;/index.pl?lastnode_id=108&amp;node_id=108&amp;addpersonalnodelet=108&quot;&gt;add &quot;User settings&quot;&lt;/a&gt;
+
+
+&lt;/font&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+  &lt;/table&gt; 
+ &lt;/td&gt;
+ &lt;td bgcolor=#333333 width=2&gt;&lt;img width=1 height=2&gt;&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr height=5&gt;
+  &lt;td bgcolor=#333333 width=150&gt;&lt;img width=1 height=2&gt;&lt;/td&gt;
+  &lt;td bgcolor=#333333 width=2&gt;&lt;img width=1 height=2&gt;&lt;/td&gt;
+ &lt;/tr&gt;
+&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;script language=&quot;javascript&quot;&gt;
+&lt;!--
+	CheckNodeletState('PersonalLinks3');
+//--&gt;
+&lt;/script&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2003-04-08 01:18:14</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1450923</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>854232</type_nodetype>
+  <document_id>1450923</document_id>
+  <author_user>1018254</author_user>
+  <package>0</package>
+  <title>Collapsible Nodelets</title>
+</node>

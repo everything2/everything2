@@ -1,0 +1,839 @@
+<node>
+  <doctext>&lt;br /&gt;&lt;br /&gt;&lt;hr /&gt;&lt;br /&gt;&lt;br /&gt;
+
+&lt;h3&gt;&lt;i&gt;Notice:&lt;/i&gt;&lt;/h3&gt;  &lt;!-- Added by [katherine] 19-AUG-2007 --&gt;
+
+&lt;p&gt;&lt;b&gt;This page of is currently inactive, and is retained here for historical interest only.&lt;/b&gt;  It is no longer maintained, and the data it contains is no longer relevant to the current structure and operation of Everything2.  If you have any questions about this page, contact [The Power Structure of Everything2|a member of staff].&lt;/p&gt;
+
+
+&lt;p&gt;For many years, we relied on a stream of donations to keep the lights on here.  The use of these donations has been discussed [Clearing Up Some Misconceptions: Donation Box|here] and [Why I still pay (part of) E2's bills|here].  In short, donations went to pay for hardware upgrades to our server farm in Mighican.&lt;/p&gt;
+
+
+&lt;p&gt;Nowadays, we have a hosting contract with [Michigan State University], which provides for our site maintenance.  Because of this, we've made the choice to avoid any possible perception of conflict of interest by closing down the donation box.  [The Power Structure of Everything2|we] offer our sincerest thanks for the financial support you've given us over the past years.  It helped keep the servers online and ticking.&lt;/p&gt;
+
+&lt;br /&gt;&lt;br /&gt;&lt;hr /&gt;&lt;br /&gt;&lt;br /&gt;
+
+
+&lt;br&gt;&lt;br&gt;&lt;p&gt;If you would like to show your appreciation by helping to guarantee 
+there will be money to keep this site running for years and generations of 
+little noders to come, click below. 
+&lt;/P&gt;&lt;p&gt;
+The paypal account is for  Blockstackers Intergalactic (our parent company) 
+and any contributions will be earmarked to offset the cost of waistcoats, monacles, and apples used to bribe starving children in exchange for their theft of ancient hardware from impoverished inner city libraries.  Any extra cash is typically used for money bathing and/or jaguar repair bills.
+&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;If you would like your username posted with your donation below, as well
+as a comment, &lt;/b&gt; please remember to include your username when using the Paypal system - it should allow you a comment when you donate.  If you forgot to do this please email &lt;b&gt;donations@everything2.com&lt;/b&gt; from the email address you used for Paypal and tell him your username and comment.  &lt;i&gt;Thank you! Thank you! Thank you!&lt;/i&gt;&lt;/p&gt;
+&lt;!-- 
+
+    Removed by [katherine], 19-AUG-2007
+
+&lt;CENTER&gt;[%
+return '';
+&quot;&lt;!-- Begin PayPal Logo --&gt;
+&lt;FORM ACTION=\&quot;https://secure.paypal.com/cgi-bin/webscr\&quot; METHOD=\&quot;POST\&quot;&gt;
+&lt;INPUT TYPE=\&quot;hidden\&quot; NAME=\&quot;cmd\&quot; VALUE=\&quot;_xclick\&quot;&gt;
+&lt;INPUT TYPE=\&quot;hidden\&quot; NAME=\&quot;business\&quot; VALUE=\&quot;donations\@everything2.com\&quot;&gt;
+&lt;INPUT TYPE=\&quot;hidden\&quot; NAME=\&quot;return\&quot; VALUE=\&quot;http://Everydevel.com\&quot;&gt;
+&lt;INPUT TYPE=\&quot;hidden\&quot; NAME=\&quot;item_name\&quot; VALUE=\&quot;Everything2 User Donation\&quot;&gt;
+&lt;INPUT TYPE=\&quot;hidden\&quot; NAME=\&quot;amount\&quot; VALUE=\&quot;\&quot;}&gt;
+&lt;INPUT TYPE=\&quot;image\&quot;
+SRC=\&quot;http://perlmonks.org/images/offeringplate.jpg\&quot; border=\&quot;0\&quot; NAME=\&quot;submit\&quot;
+ALT=\&quot;Make payments with PayPal - it's fast, free and secure!\&quot;&gt;
+&lt;/FORM&gt;
+&lt;!-- End PayPal Logo --&gt;&quot;
+%]
+&lt;/CENTER&gt;
+&lt;p&gt;
+If you wish to set up a recurring payment: 
+&lt;form action=&quot;https://www.paypal.com/cgi-bin/webscr&quot; method=&quot;post&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;cmd&quot; value=&quot;_xclick-subscriptions&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;business&quot; value=&quot;donations@everything2.com&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;item_name&quot; value=&quot;Everything2 Donations&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;no_note&quot; value=&quot;1&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;currency_code&quot; value=&quot;USD&quot;&gt;
+Amount &lt;input name=&quot;a3&quot; value=&quot;&quot;&gt;&lt;br&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;p3&quot; value=&quot;1&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;t3&quot; value=&quot;M&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;src&quot; value=&quot;1&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;sra&quot; value=&quot;1&quot;&gt;
+Number of Months: &lt;input name=&quot;srt&quot; value=&quot;6&quot;&gt;&lt;br&gt;
+&lt;input type=&quot;image&quot; src=&quot;https://www.paypal.com/en_US/i/btn/x-click-but20.gif&quot; border=&quot;0&quot; name=&quot;submit&quot; alt=&quot;Make payments with PayPal - it's fast, free and secure!&quot;&gt; 
+&lt;/form&gt;	
+
+
+
+
+&lt;p&gt;
+Can't get &lt;a href=&quot;http://paypal.com&quot;&gt;paypal&lt;/a&gt; to work? Check out our &lt;a href=&quot;http://everydevel.com/index.pl?node=paypal FAQ&quot;&gt;Paypal FAQ&lt;/a&gt;, or pay by &lt;a href=&quot;http://everydevel.com/index.pl?node=Check%20Payments&quot;&gt;check&lt;/a&gt;
+&lt;h3&gt;How much have we raised!?&lt;/h3&gt;
+&lt;p&gt;&lt;i&gt;In Dollars&lt;/i&gt;:
+&lt;p&gt;
+
+--&gt;
+
+
+
+
+
+
+
+
+
+$150.00 - 01/11/06 Everything2 is proof of everything the internet could be and helping it to stay in existance is the least I can do&lt;br&gt;
+$15.00 - 01/26/06&lt;br&gt;
+$15.00 - 01/26/06 TenMinJoe thanks E2 for its continuing existence.&lt;br&gt;
+$15.00 - 02/01/06 This be for NinjaGirl Valentines Fun.  --SciPhi&lt;br&gt;
+$10.00 - 02/01/06 Everything Love Letters: A ninjagirl fundraiser for Valentine's Day&lt;br&gt;
+$80.00 - 02/02/06 Focus: Happy Valentine's to E2 and the Ninja girls...I'd like one custom-made breast, please!&lt;br&gt;
+$50.00 - 02/04/06 Message: For La Petit Mort and StrawberryFrog - Thank you!&lt;br&gt;
+$21.00 - 02/07/06&lt;br&gt;
+$10.00 - 02/09/06 Message: [Inconnu] - for [Cupid]&lt;br&gt;
+$10.00 - 02/12/06 This is for two of them Ninjagirl Valentines!&lt;br&gt;
+$20.00 - 03/08/06 princess loulou] says: thanks guys. this is how the internet should be. and then some.&lt;br&gt;
+$10.00 - 04/17/06&lt;br&gt;
+$15.00 - 04/17/06 E2 rulz this hizouch.  Long live E2!!!!&lt;br&gt;
+&lt;p&gt;&lt;h4&gt;$421.00!&lt;/h4&gt;
+$29.99 - 07/22/06 [typhen]: Thanks for screwing up 3 years of my university grades, assholes!&lt;br&gt;
+$50.00 - 08/14/06 It's my birthday, so I'm giving a present to e2, one of my favorite sites on the net!&lt;br&gt;
+$25.00 - 08/23/06&lt;br&gt;
+$19.00 - 08/24/06 E2 is good, but pls buy a UPS, KTHX&lt;br&gt;
+$20.00 - 08/25/06&lt;br&gt;
+$15.00 - 08/25/06&lt;br&gt;
+$10.00 - 09/15/06 I could SWEAR I bought an afghan raffle ticket before.  Looks like I'm wrong, so I gotta buy TWO now. :-)&lt;br&gt;
+$20.00 - 09/15/06 4 raffle tickets please - per ou&lt;br&gt;
+$50.00 - 09/17/06 10 tickets for the Afghan please. - [Andrew Aguecheek]&lt;br&gt;
+$10.00 - 09/19/06 Yo.  Litlebertha here, looking to put my name in the hat for the Noder Love Afghan.  Thanks!! ::huggs everywhere::&lt;br&gt;
+$50.00 - 09/19/06  [dannye]'s w/u about writing.com reminded me that I hadn't donated in a while. I want E2 to stick around...
+-[dutchess]&lt;br&gt;
+$5.00 - 09/21/06 Donation for Raffleticket. I want that Afghan! Heisenberg.&lt;br&gt;
+$20.00 - 09/21/06 Four tickets for the raffle, please --- Junkill
+$10.00 - 09/22/06 A little something to keep you warm (servers) for something to keep me warm (afghan). Love, soy and lesbians, from [Kalon].&lt;br&gt;
+$10.00 - 09/25/06 User name- cannibalgourmet I'll take 2 raffle tickets please.&lt;br&gt;
+$10.00 - 10/15/06&lt;br&gt;
+$20.00 - 10/25/06 From [No Springs] as a very, very, very late attempt at (maybe?) grabbing last-minute raffle tickets (x4) for the &quot;Wrap Up Noder Afgan/Blanket&quot; do-lally.  The node doesn't list a winner yet, so I'm hoping it's not too late to buy a ticket!  ...of course, if I missed the boat, then just consider this a regular-ole' donation to the good folks at Blockstackers/E2. :)  -[No Springs]&lt;br&gt;
+$30.00 - 11/30/06 From ReiToei - It's about time, really. Sorry it can't be more. Lick my balls.&lt;br&gt;
+$50.00 - 01/09/07  Fabble the glarbers! More wrood, more wrood!&lt;br&gt;
+$1.57 - 01/10/07  this is a college student's donation - enough to pay for some admin's coffee break! enjoy-&lt;br&gt;
+$50.00 - 02/12/07 I was about to donate 10 USD when I spotted Rancid_Pickle's donation lower down on the page, and couldn't help but donate more.  I'm just so impressed that people were impressed at my writings 7 months before I joined.  Sorry I didn't do this sooner.&lt;br&gt;
+$30.00 - 02/25/07 2007 already - time to saddle up?&lt;br&gt;
+$55.00 - 04/20/07&lt;br&gt;
+$10.00 - 05/18/07 Thanks for some fantastic reading material!&lt;br&gt;
+$15.00 - 7/20/07 Proceeds from the sale of the Everything2 Remembers 9/11 book.&lt;br&gt;
+&lt;p&gt;
+
+
+
+
+
+$50.00 - 01/03/05&lt;br&gt;
+$50.00 - 01/03/05&lt;br&gt;
+$25.00 - 01/05/05 5 stupendous raffle tickets, please - cbustapeck&lt;br&gt;
+$15.00 - 01/07/05 I, Diabolic, hereby proclaim that I am the owner of three Raffle tickets
+for [Wrap Up In Noder Love: An E2 Craft Project and Fundraiser|Noder Love],
+as I am aware that money is the only way I will ever get it.&lt;br&gt;
+$5.00 - 01/08/05&lt;br&gt;
+$5.00 - 01/09/05 one (1) raffle-ticket, bitte. --bpt&lt;br&gt;
+$30.00 - 01/12/05 That'll be 6 RAFFLE TIX please for The Custodian who WANTS THAT AFGHAN baby.&lt;br&gt;
+$15.00 - 01/12/05 3 tickets for [Wrap Up In Noder Love: An E2 Craft Project and
+Fundraiser|the raffle], please! - [Wntrmute]&lt;br&gt;
+$50.00 - 01/13/05 ten raffle tickets for Yonder -- come on baby, let's do it again!&lt;br&gt;
+$25.00 - 01/14/05 5 raffle tickets, please :)  Thanks, gwenllian&lt;br&gt;
+$50.00 - 02/03/05&lt;br&gt;
+$50.00 - 03/06/05&lt;br&gt;
+$15.00 - 03/12/05 For all that I've learned here.&lt;br&gt;
+$5.00 - 03/17/05 Keep up the discussions, the debates, and the correct info flowing!&lt;br&gt;
+$50.00 - 03/17/05&lt;br&gt;
+$50.00 - 03/30/05 All my best wishes --- Junkill&lt;br&gt;
+$50.00 - 04/27/05 JessicaRabbit &amp; EleanorRigy love this site. It makes us all a quiver.&lt;br&gt;
+$36.36 - 05/13/05 [Support the Amazons: A Dual-Function Ninjagirls Bakesale for Boobies]
+(Canadian branch)&lt;br&gt;
+$50.00 - 05/13/05&lt;br&gt;
+$20.00 - 05/24/05 Keep rocking that E2.  A few pennies from an impoverished student -- Osmosis&lt;br&gt;
+$196.00 - 06/09/05 Funds raised by the generous noders for the [Support the Amazons: A
+Dual-Function Ninjagirls Bakesale for Boobies] !&lt;br&gt;
+$52.89 - 06/14/05 Support the Amazons: A Dual-Function Ninjagirls Bakesale for Boobies (UK
+Division)&lt;br&gt;
+$20.00 - 07/13/05 Have some money. -Excalibre&lt;br&gt;
+$50.00 - 07/14/05&lt;br&gt;
+$35.00 - 07/16/05&lt;br&gt;
+$7.63 - 07/18/05 E2's section of my latest CafePress check. --Segnbora-t&lt;br&gt;
+$12.50 - 07/20/05 MORE from the ninjagirl bakesale!&lt;br&gt;
+$20.00 - 08/02/05 [Take This, Brother, May It Serve You Well]&lt;br&gt;
+$365.24 - 11/03/05 Happy anniversary to [rootbeer277|me]!
+$50.00 - 11/14/05&lt;br&gt;
+$40.00 - 12/31/05&lt;br&gt;
+&lt;p&gt;
+&lt;h4&gt;$2061.19!&lt;/h4&gt;
+&lt;p&gt;
+
+
+
+
+
+
+$50.00 - 07/20/04 Giving back a bit of what I have gotten.  Habakkuk&lt;br&gt;
+$50.00 - 07/24/04 Thanks!&lt;br&gt;
+$25.00 - 08/09/04 Pls sign me up for 8 raffle tickets. VOTE GIANT SQUID!&lt;br&gt;
+$25.00 - 08/09/04 5 tickets for the scarf thing, for I am spiregrain.&lt;br&gt;
+$12.00 - 08/10/04 I want FOUR raffle tickets for one of those sexy Giant Sqiud scarves!!
+Yes....[Scribe] will be styling at UMCP this fall...I just know it!&lt;br&gt;
+$50.00 - 08/11/04 Don't spend it all at once!  -archiewood&lt;br&gt;
+$25.00 - 08/13/04&lt;br&gt;
+$30.00 - 08/17/04 TEN raffle tickets for [fondue|me]. SCARF++&lt;br&gt;
+$30.00 - 08/18/04 10 tickets for Damodred. SQUIDSCARFYCLEPT ENTITY ++++!&lt;br&gt;
+$60.00 - 08/19/04 Please sign [perhapsadingo8yrbaby|me] up for 20 raffle tickets for the
+scarf.  Squid-Monkey '04!&lt;br&gt;
+$21.00 - 08/26/04 i are rossbot and i would like 7 of thee squidtix raffle please. thankyou,
+and you are welcome.&lt;br&gt;
+$5.00 - 08/26/04 Thanks for many hours of reading. Keep it up.&lt;br&gt;
+$12.00 - 08/31/04 Yay raffle tickets. Plus I shoulda donated a *long* time ago. - Palpz&lt;br&gt;
+$30.00 - 08/31/04 Vote GIANT SQUID 2004! 10 raffle tickets for [Andromache01|me]. Please.
+Please?&lt;br&gt;
+$50.00 - 08/31/04 In my whole life [knifegirl|I] haven't lived in one place more than 5
+years, besides Everything. Will you please fix the screen door now?&lt;br&gt;
+$10.00 - 09/13/04 Thank you so much for all you do to provide a place where writers can meet,
+learn and grow professionally. E2 and the administrator have an overall
+enormously positive impact upon people&#146;s lives and I salute you all!&lt;br&gt;
+$8.00 - 09/24/04 Thanks for the hours of infotainment. amri&lt;br&gt;
+$20.50 - 09/29/04&lt;br&gt;
+$30.00 - 10/14/ It's that time again - [Damodred]&lt;br&gt;
+$365.24 - 10/27/04 Happy 1 year anniversary to [rootbeer277|me]!&lt;br&gt;
+$50.00 - 11/03/04&lt;br&gt;
+$30.00 - 11/12/04 Once more into the donation box... - [Damodred]&lt;br&gt;
+$50.00 - 11/15/04&lt;br&gt;
+$100.00 11/16/04 I'm waaay behind on this, but then I wouldn't be me (Wiccanpiper) if I
+didn't fergit things.  Happy Holidays E2!&lt;br&gt;
+$10.00 11/22/04 From [smileloki].&lt;br&gt;
+$20.00 11/23/04 username: bender&lt;br&gt;
+$20.00 11/23/04 Happy Thanksgiving! -tokki&lt;br&gt;
+$10.00 11/28/04 For the bake sale, from exceptinsects!&lt;br&gt;
+$15.00 12/03/04 Bakesale donation from maxClimb - I want yclept's pannetone to go with my
+morning espresso while the LA Times knits my brow.&lt;br&gt;
+$50.00 12/03/04&lt;br&gt;
+$20.00 12/06/04 I have enjoyed E2 ever since joining back in 2000. Thanks so much for
+keeping it going. It is wonderful!&lt;br&gt;
+$22.00 12/14/04 I have dedicated myself to tithing to e2.&lt;br&gt;
+$30.00 12/16/04&lt;br&gt;
+$50.00 12/17/04&lt;br&gt;
+$15.00 12/19/04 Servo5678 here.  3 tickets for the raffle, please.  Believe it or not,
+sometimes it does get cold here in Florida.&lt;br&gt;
+$10.00 12/22/04 's all I can afford. Merry Christmas E2.&lt;br&gt;
+$40.00 12/27/04 from [No Springs] for [lots|8], count 'em, [caps lock|EIGHT] raffle tix for
+the stupdendous [Wrap Up In Noder Love: An E2 Craft Project and Fundraiser]
+project.  Happy holidays, e2!  (And the same to all you wacky noders, as
+well...) -Adam&lt;br&gt;
+$40.00 12/27/04 [Wrap Up In Noder Love: An E2 Craft Project and Fundraiser|Eight (8)
+tickets please].  Spiregrain.&lt;br&gt;
+$25.00 12/27/04 eventualdave - 5 raffle tickets, please!  That's one fine-lookin' quilt,
+and e2's been a source of Slack for me many times.&lt;br&gt;
+$50.00 12/29/04 I, TenMinJoe, hereby purchase ten raffle tickets for the blanket thingy.&lt;br&gt;
+$50.00 12/30/04 10 tickets. Cheers[Catchpole|.]&lt;br&gt;
+$200.00 12/31/04 To: All-  Merry Christmas and a Happy New Year!  From: Santa [Chase]&lt;br&gt;
+&lt;h4&gt;$1815.74!&lt;/h4&gt;
+
+&lt;p&gt;
+
+
+$25.00 - 05/01/04 Donation for the dannye postcard.  Shipping information is where I would
+like the postcard delivered.  --rootbeer277&lt;br&gt;
+$3.00 - 05/02/04 As I have no credit card, I must rely on donations made into my paypal
+account. I've received $3 so far, and I'm giving it ALL to E2. :)&lt;br&gt;
+$50.00 - 05/03/04 Please have [dannye] write me a postcard about all my nodes that suck.
+Thanks, [NotFabio]&lt;br&gt;
+$275.00 - 05/04/04 $250 is my end of the deal.  $25 is for dannye to send a postcard to Oz.&lt;br&gt;
+$25.00 - 05/05/04 Its my normal donation, 2 months late, not this Dannye stalker thing...
+Domin (No I don't exist)&lt;br&gt;
+$24.99 - 05/06/04 Postcards?  We don' need no steenking postcards!&lt;br&gt;
+$25.00 - 05/07/04 For Dannye to crush my hopes and ambitions with - Brontosaurus&lt;br&gt;
+$40.00 - 05/24/04
+&lt;p&gt;
+&lt;p&gt;
+&lt;h4&gt;$467.99&lt;/h4&gt;
+&lt;p&gt;
+
+
+
+
+$5.00 - 04/10/04 JoeBaldwin says: I hope this small donation, a pisspoor amount which is all
+I can afford, helps E2 stave off having to sell EDB into slavery for
+another week. Thanks for the site :)&lt;br&gt;
+$10.00 - 04/20/04 mcd
+
+what... you surprised?&lt;br&gt;
+$20.00 - 04/24/04&lt;br&gt;
+$50.00 - 04/25/04 For my duck postcard.  -Chase&lt;br&gt;
+$25.00 - 04/25/04 I was going to donate something when I make the one year mark as a kind of
+subscription, but how can I pass on a postcard from uncle dannye? Ahhh.
+
+Everything2 is a wonderful thing. Damn frustrating at times but wonderful
+nonetheless. So here's my thank-you.
+&lt;br&gt;
+$50.00 - 04/25/04 dannye can write me anything he wants. love, [dutchess]&lt;br&gt;
+$25.00 - 04/25/04 Sign me up for the dannye postcard offer.&lt;br&gt;
+$25.00 - 04/26/04 I've been slacking.  Here's to a dannye postcard which I can affix to my
+Aeron.&lt;br&gt;
+$20.00 - 04/26/04 My wife'll go ballistic when she sees I've given this, but this act of
+oblation is the least I can do for all E2's given me.&lt;br&gt;
+$25.00 - 04/27/04 Ooh, cards from Dannye? Fantastic. -Andrew Aguecheek&lt;br&gt;
+
+
+&lt;p&gt;
+&lt;h4&gt;$255.00&lt;/h4&gt;
+&lt;p&gt;
+
+
+
+$20.00 - 03/01/04&lt;br&gt;
+$2.00 - 03/01/04 caknuck sends his love&lt;br&gt;
+$2.46 - 03/05/04 Without E2 I'd die of boredom. Seriously, I would.
+-Electrode&lt;br&gt;
+$30.00 - 03/07/04&lt;br&gt;
+$64.41 - 03/12/04 Receipt from seven books taken from [Wheel...Of...Books: an E2 fundraiser!]
+Too bad it's going so slow.&lt;br&gt;
+$10.00 - 03/23/04&lt;br&gt;
+
+
+
+&lt;p&gt;
+&lt;p&gt;
+&lt;h4&gt;$128.87&lt;/h4&gt;
+&lt;p&gt;
+
+
+
+
+
+
+
+
+
+
+
+&lt;p&gt;
+$20.00 - 02/01/04&lt;br&gt;
+$8.00 - 02/02/04 [Saidai]!&lt;br&gt;
+$1.00 - 02/03/04 Ching Ching - pacer&lt;br&gt;
+$25.00 - 02/04/04&lt;br&gt;
+$10.00 - 02/09/04 Because content is good, and e2 is good content.&lt;br&gt;
+$99.00 - 02/10/04&lt;br&gt;
+$25.00 - 02/11/04 Ohhh, more monies to be gifted to the great social life destroyer E2...
+Give GIVE : Domin&lt;br&gt;
+$30.00 - 02/19/04 Please fix [Other Users], [New Writeups], etc. etc.  Thanks.&lt;br&gt;
+
+&lt;p&gt;
+&lt;h4&gt;$218.00&lt;/h4&gt;
+&lt;p&gt;
+
+
+&lt;p&gt;
+$20.00 - 01/01/04&lt;br&gt;
+$1.00 - 01/04/04 Here ya go you bums...&lt;br&gt;
+$15.00 - 01/07/04 Oh look, a spare 15 bucks in my PayPal account. What  a happy coincidence!  Off to E2 you go. - Damodred&lt;br&gt;
+$23.00 - 1/22/04&lt;br&gt;
+$20.00 - 1/22/04 with love from exceptinsects&lt;br&gt;
+$5.00 - 1/23/04[Pferdina]&lt;br&gt;
+
+
+&lt;p&gt;
+&lt;h4&gt;$84.00&lt;/h4&gt;
+&lt;p&gt;
+
+
+
+
+
+&lt;p&gt;
+$20.00 - 12/13/03&lt;br&gt;
+$5.00 - 12/15/03 Please don't post my username. This is for a quilt raffle
+donation. E2 r0x.&lt;br&gt;
+$15.00 - 12/15/03 3 tickets for the blanket thing, please.&lt;br&gt;
+$5.00 - 12/16/03 An afghan raffle ticket for iceowl!&lt;br&gt;
+$5.00 - 12/18/03 Put me down fer one of them thar afghan raffle tickets. -Altusmens&lt;br&gt;
+$2.00 - 12/18/03&lt;br&gt;
+$10.00 - 12/18/03 Happy Christmas E2! love franki xx&lt;br&gt;
+$20.00 - 12/21/03 Toss me in for four raffle tickets. Mmm... E2 Goodness.&lt;br&gt;
+$32.00 - 12/21/03 CafePress takings and 6 shots at the RAFFLE! -The Custodian&lt;br&gt;
+$10.00 - 12/25/03 Merry Christmas from Unperson, E2&lt;br&gt;
+$100.00 - 12/26/03 Afghan tickets -- come on #2!&lt;br&gt;
+$25.00 - 12/30/03 CafePress  profits from my little Soymonkeys shop.&lt;br&gt;
+
+$25.00 - 12/31/03 Domin says: Ohhh!  Coins!  ShhhiiIIINNnnyyy...&lt;br&gt;
+$20.00 - 12/31/03 four raffle tickets please! - oakling&lt;br&gt;
+$10.00 - 12/31/03 Two Raffle tickets thanks.  Taliesin's Muse&lt;br&gt;
+
+
+&lt;p&gt;
+&lt;h4&gt;$304.00!&lt;/h4&gt;
+&lt;p&gt;
+
+
+
+
+&lt;b&gt;In the month of May 2001, Everything2 raised $921.42!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of June, Everything2 raised $890.86!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of July, Everything2 raised $246.38!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of August, Everything2 raised $154.19!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of September, Everything2 raised $673.17!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of October, Everything2 raised $700.87!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of November, Everything2 raised $588.00!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of December, Everything2 raised $220.10!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of January 2002, Everything2 raised $331.10!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of February, Everything2 raised $181.18!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of March, Everything2 raised $632.00!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of April, Everything2 raised $1369.11!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of May, Everything2 raised $550.92!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of June, Everything2 raised $455.00!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of July, Everything2 raised $406.25!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of August, Everything2 raised $335.00!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of September, Everything2 raised $442.00!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of October, Everything2 raised $434.00!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of November, Everything2 raised $200.00!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of December, Everything2 raised $512.02!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of January 2003, Everything2 raised $465.46!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of February, Everything2 raised $530.00!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of March, Everything2 raised $369.09!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of April, Everything2 raised $510.00!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of May, Everything2 raised $268.00!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of June, Everything2 raised $315.00!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of July, Everything2 raised $190.00!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of August, Everything2 raised $404.00!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of September, Everything2 raised $219.00!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of October, Everything2 raised $628.00!&lt;/b&gt;&lt;br&gt;
+&lt;b&gt;In the month of November, Everything2 raised $35.00!&lt;/b&gt;&lt;br&gt;
+&lt;p&gt;
+
+Thanks Everybody!&lt;br&gt;
+[The Everything Development Company]
+&lt;br&gt;&lt;br&gt;
+&lt;p&gt;
+&lt;b&gt;Previous Months Donations and Comments:&lt;/b&gt;
+&lt;br&gt;
+20.00 - 11/01/01 Comment: In memory of Adam Purcell (aka Hermetic)&lt;br&gt;
+100.00 - 11/01/01 From: WonkoTheSane. Comment: A little payment from my eBay selling items on Diablo 2. Thank everyone at E2 for a great site, and I hope this little chunk o' cash helps!&lt;br&gt;
+50.00 - 11/02/01 From: spiregrain. Comment: Long time user, first time payer. Yay! I actually got a credit card so that I could donate to e2.  Keep up the good service.&lt;br&gt;
+20.00 - 11/04/01&lt;br&gt;
+30.00 - 11/05/01&lt;br&gt;
+10.00 - 11/05/01&lt;br&gt;
+20.00 - 11/06/01 From: wuukiee. Comment: here's to the great times we've all, in some way or another as a community, shared... and to the times to come as well. Love y'all.&lt;br&gt;
+20.00 - 11/09/01 From: amnesiac. Comment: is this how I become a god?&lt;br&gt;
+10.00 - 11/09/01 In memory of Hermetic.&lt;br&gt;
+25.00 - 11/11/01 From: hoboken-kk. Comment: for the perpetuation of 
+slacking off!&lt;br&gt;
+25.00 - 11/12/01 blondino: this is not a bribe. this is penance money for spending too much time enjoying myself on Everything instead of concentrating on my work or socialising. So now, I have to better myself a bit, or I'll be forced to pay again... And, I'll have whatever he's having...
+&lt;br&gt;
+5.21 - 11/12/01 Aye, a small shot in the arm for a good cause&lt;br&gt;
+15.00 - 11/13/01 happy birthday e2! here's to many more.
+love, uncleozzy.&lt;br&gt;
+30.00 - 11/14/01 Randofu - Happy Birthday, E2.  :)  It's not much, but it's the best I can do right now.  :)&lt;br&gt;
+5.00 - 11/16/01 &lt;br&gt;
+100.00 - 11/19/01 Supporting the Everything community. &lt;br&gt; 
+20.00 - 11/20/01 Illumina: here's my drop in the bucket.&lt;br&gt;
+42.79 - 11/24/01 WHERE ARE THE PR0N ON THIS CITE?  I KEEP REEDING ABOUT LIVE NUDE LESBIANS BUT CANT SEE ANY PICTURES!!&lt;br&gt;
+10.00 - 11/28/01 &lt;br&gt;
+50.00 - 11/30/01 Thank you for creating this wonderful place.  I hope that this helps! :) Zari
+
+
+&lt;br&gt;
+15.00 - 12/02/01 My thanks to all the time and effort spent to create a living eworld.  Drownzsurf&lt;br&gt;
+100.00 - 12/02/01 ascorbic. Everyone should support their [Everything is a family|family]. &lt;br&gt;
+20.00 - 12/09/01 ajr3 E2 probably saved my sanity during a boring stint as a sysadmin out in Aruba!&lt;br&gt;
+20.00 - 12/10/01 In memory of Hermetic.&lt;br&gt;
+20.00 - 12/11/01 Thanks guys. Colorless Green Idea&lt;br&gt;
+0.09 - 12/14/01 Moo Like a Duck! (this is the last of the paypal funds =)&lt;br&gt;
+0.01 - 12/14/01 whoops, this is my last penny ;-)&lt;br&gt;
+30.00 - 12/19/01 Small Christmas present from ryano.&lt;br&gt;
+15.00 - 12/31/01 &lt;br&gt;
+
+20.00 - 01/03/02 &lt;br&gt;
+20.00 - 01/10/02 In memory of Hermetic.  Now gone for four months, it seems like an instant and an eternity. &lt;br&gt;
+50.00 - 01/10/02 &lt;br&gt;
+75.00 - 01/11/02 [ascorbic]: It's a little less, but I'm trying to give something each month. I spend most of my life here so I should really help pay the rent.&lt;br&gt;
+1.00 - 01/11/02 i have put my money where [slide]'s mouth was.  funny how that works.&lt;br&gt;
+5.00 - 01/12/02 The Nate is Dead!  Long live the Nate!&lt;br&gt;
+20.00 - 01/12/02&lt;br&gt;
+20.00 - 01/13/02&lt;br&gt;
+20.00 - 01/13/02&lt;br&gt;
+50.00 - 01/15/02&lt;br&gt;
+20.00 - 01/15/02 gn0sis sez: what better way to test out a spanking new International PayPal account?&lt;br&gt;
+5.00 - 01/17/02 Thanks for the great site!&lt;br&gt;
+25.00 - 01/22/02&lt;br&gt;
+20.00 - 01/29/02 Illumina: ya'll are amazing
+20.00 - 02/01/02 I very much appreciated the letter your organisation sent me from the orphan child Dem Bones. I'm glad he has enough money to leave the Nike sweatshop and return to school. This contribution should allow him to buy a new slate and some chalk - from amnesiac&lt;br&gt;
+20.00 - 02/03/02&lt;br&gt;
+20.00 - 02/04/02 [Klaproth|Yes] [says|I] [kill|would] [all|like] [your|fries] [favorite|with] [people|that].&lt;br&gt;
+25.23 - 02/05/02 My Unofficial Membership Fee To a Nonexistant Club- by stilroc: No, this isn't a poem, it's just me filling up bits.  Thanks for the site etc.&lt;br&gt;
+20.00 - 02/07/02 Happy belated birthday to [Segnbora-t]!&lt;br&gt;
+20.00 - 02/08/02&lt;br&gt;
+20.00 - 02/11/02 Do I get free stuff?&lt;br&gt;
+10.00 - 02/18/02&lt;br&gt;
+20.00 - 02/21/02 Sorry for the delay [The Oolong Man], hope you enjoy your [e2 secret santa] present!&lt;br&gt;
+4.00 - 02/24/02 If I could spare more, I would send more. But it's a start, isn't it? [Derfel]&lt;br&gt;
+1.95 - 02/27/02 If I could afford more, I'd send it. Now to stop reading e2, and get a real (paying) job. teos&lt;br&gt;
+20.00 03/01/02&lt;br&gt;
+20.00 03/05/02 user: erias  message: hmm..if slashdot's gone to ads, I'd better give to E2 again. Wish I had more. love ya'll.&lt;br&gt;
+20.00 3/6/02 Yes, please rush me (1) limited edition [Franklin Mint] &quot;Genius Pig&quot; Commemorative Plate(s). amnesiac.&lt;br&gt;
+20.00 3/12/02 Da [Sweet Trade] o' eryting2 'as got dis landlubber ta way ancher and set sail on da nodegel seas. [Talking like a pirate is fun but annoys people|Arrrr!]&lt;br&gt;
+80.00 3/12/02&lt;br&gt;
+20.00 3/13/02 [mr100percent]: Go E2! The best reason to procrastinate on that research paper. Hours- and I mean hours of laughter from [bingo parlors].&lt;br&gt;
+5.00 3/17/02 Just because I'm so impressed with &lt;strong&gt;[% linkNode($USER,0,{lastnode_id=&gt;0}); %]&lt;/strong&gt;'s writings. [Rancid_Pickle]&lt;br&gt;
+50.00 3/18/02 much love, y'all. thank you for everything2.   - jethro bodine&lt;br&gt;
+5.00 3/21/02&lt;br&gt;
+15.00 3/22/02&lt;br&gt;
+50.00 3/22/02 In gratitude for a great site, and to all who work so hard here.  SEF&lt;br&gt;
+25.00 3/22/02 Because I think E2 is a flower; and I want to contribute as much as I can. Pferdina&lt;br&gt;
+20.00 3/22/02&lt;br&gt;
+50.00 3/23/02 From [eeyore14]: Here's $50, make sure Klaproth and EDB don't blow it all on booze and cigarettes.&lt;br&gt;
+2.00 3/25/02 Nuke that Butterfinger McFlurry writeup!  Woo!  (this be Sabby)&lt;br&gt;
+50.00 3/25/02 Finally, a donation. Primarily to save [Butterfinger McFlurry] from ignominious deletion, but also to mark my one-year E2 anniversary. Thanks for everything.&lt;br&gt;
+10.00 3/25/02 This is Cletus's contribution to the &quot;SAVE THE BUTTERFINGER MCFLURRY&quot; fund. Nuke whales, not nodes!&lt;br&gt;
+10.00 3/24/02 Towards the &quot;Call to Alms&quot; to kill Butterfinger McFlurry, of course. Nothing personal. - Derfel&lt;br&gt;
+20.00 3/27/02 [The Oolong Man] says YES to nuking McFlurry.&lt;br&gt;
+20.00 3/28/02 [Chris-O] says Thanks for having E2 around! and please also keep Butterfinger Mcflurry around.&lt;br&gt;
+50.00 3/29/02 [iceowl]: panhandling unemployed geeks like me for their last pennies, damn you guys are clever. Now my kids have to eat oatmeal for dinner.&lt;br&gt;
+25.00 3/29/02 NO-one had better TOUCH [Butterfinger McFlurry], or I'm gonna PELT 'em with BALLISTIC HEFFALUMPS with POWERPUFF HENTAI TATTOOs. I swear. Really.&lt;br&gt;
+25.00 3/30/02 In that McFlurry is what the E2 community wants as the public manifestation of its art--my vote is it stays. - [iceowl]&lt;br&gt;
+20.00 3/30/02&lt;br&gt;
+20.00 04/01/02&lt;br&gt;
+10.00 04/01/02 This is my second of what I hope will be a monthly pledge to e2. Also, you better keep [Butterfinger McFlurry] or you'll be hearing from my [crowbar|representatives].&lt;br&gt;
+10.00 04/01/02  I, unperson, say no more of the tyrrany that is Butterfinger McFlurry.  CURSED NODE, FROM HELL'S HEART I STAB AT THEE!!!&lt;br&gt;
+.11 04/02/02 czeano sez: interest from paypal... LONG LIVE TH' MCFLURRY!  KILL MOJOE'S TOILET SEAT WU!&lt;br&gt;
+10.00 04/03/02 I pledge another $100 if *I* get to kill McFlurry. -Apatrix&lt;br&gt;
+70.00 4/5/02 [ascorbic] - this month's alimony is dedicated to the fiery death of BMcF&lt;br&gt;
+50.00 4/5/02 from Catchpole - lets get rid of mcflurry&lt;br&gt;
+10.00 4/5/02 this is from cbustapeck - message: Kill (the first writeup in) [Butterfinger McFlurry]! Please?&lt;br&gt;
+15.00 4/6/02 this $15 is for the power structure TO DO WHATEVER THEY WANT with the McFlurry and to nuke [I will REMOVE the fucking toilet seat if you don't shut up!] luv, mkb&lt;br&gt;
+50.00 4/7/02 this is where i donate to preserve the wetlands for orphan whales in the third-world ozone layer, right? -[uncleozzy]&lt;br&gt;
+3.00 4/8/02 Please nuke that there [Butterfinger McFlurry] node.  Oh you know you want to.  (This should make the number an even multiple of 5.)&lt;br&gt;
+10.00 4/10/02&lt;br&gt;
+25.00 4/11/02 Just cos of what [RP] said when contributing on 17th March - [Fern]&lt;br&gt;
+10.00 4/12/02 E2 saved me from a lifetime of boredom *and* gave me clearer skin.&lt;br&gt;
+15.00 4/12/02 From eeyore14, for the [automaus] memorial fund.&lt;br&gt;
+10.00 4/15/02 In gratitude for the new hardware&lt;br&gt;
+21.00 4/15/02&lt;br&gt;
+500.00 4/15/02&lt;br&gt;
+25.00 4/16/02 [czeano|CZ][butterfinger mcflurry| say HO!]&lt;br&gt;
+50.00 4/16/02 My bribe to keep those [jessicapierce, dannye, and dem bones|meddling kids] from interfering with my FUN.&lt;br&gt;
+30.00 4/18/02 [ryano] says: This anonymous donation should not influence you in taking the inevitable decision to allow the toilet seat node to be nuked.&lt;br&gt;
+20.00 4/23/02 wish i could be writin' more...least i can do is help with the upkeep. you's all my heroes. ~legbagede&lt;br&gt;
+50.00 4/24/02 Long live writers.&lt;br&gt;
+25.00 4/24/02 &lt;br&gt;
+20.00 4/25/02 [wuukiee]: TAX REBATE!! A thank you to E2 for more great times, to [natchlucid] for being such a swell hostess for my first-ever nodermeet, and oh, yeah, chalk this up to killing that bloody Butterfinger bullshit.&lt;br&gt;
+150.00 4/26/02 Please mark this down as a vote in favor of [Butterfinger McFlurry]&lt;br&gt;
+60.00 4/29/02 [Walter] says: Save the McFlurry! This is my yearly donation. See my homenode for related long-term profit plan.&lt;br&gt;
+20.00 5/1/02&lt;br&gt;
+25.00 5/1/02&lt;br&gt;
+15.00 5/1/02 Down with Butterfinger McFlurry!  -R'fu&lt;br&gt;
+20.00 5/2/02&lt;br&gt;
+20.00 5/2/02 hey yo, this is chancel, and i would just like to say that i am strangely ambivalent on the mcflurry issue.  thank you and good night.&lt;br&gt;
+25.00 5/2/02 To help E2 continue to grow. Pferdina &lt;br&gt;
+5.00 5/4/02 E2, the (in)sanity drug...   [ephealy]&lt;br&gt;
+5.00 5/6/02 &quot;I wish I could give more... so I'll node&quot;  (This is drinkypoo)&lt;br&gt;
+20.00 5/6/02 from Illumina. Love the recent speed increase.&lt;br&gt;
+10.00 5/10/02 Fresh from the [Cletus the Foetus|Foetus Fund], here's some money I really can't spare, for some people I really couldn't do without.&lt;br&gt;
+25.00 5/11/02&lt;br&gt;
+5.00 5/11/02  Just another fix to get me through. [ephealy]&lt;br&gt;
+50.00 5/12/02 Ca$h for McFlurry's death! -- [dwyn]&lt;br&gt;
+15.00 5/13/02 Another small token of thanks to the E2 community. [eeyore14]&lt;br&gt;
+100.00 5/17/02 just because I love you.&lt;br&gt;
+20.00 5/19/02 Who can be master in any place and meet the source in everything?&lt;br&gt;
+17.00 5/19/02 Here's my vote of general apathy towards [Butterfinger McFlurry]. -- [avalyn]&lt;br&gt;
+5.00 5/20/02 e2 User: screechco2000 Comment: Long live Butterfinger McFlurry!&lt;br&gt;
+10.00 5/20/02 [e-hadj] risks blasphemy in thinking there ought to be a way to embed external links in an E2 WU.  Perhaps this feature becomes available after a certain level or something.&lt;br&gt;
+5.00 5/21/02 [Dis] just gave me a c! shower, so I'm feeling all warm and fuzzy!  -[ephealy]&lt;br&gt;
+20.00 5/22/02 Thanks all.  RACECAR&lt;br&gt;
+10.00 5/22/02&lt;br&gt;
+25.00 5/22/02&lt;br&gt;
+100.00 5/23/02 love, [dutchess]&lt;br&gt;
+25.00 5/25/02 my tax refund came in so i figured i'd pay off some debt.&lt;br&gt;
+1.00 5/29/02 PayPal seems to have credited my account with a &quot;[dollar]&quot;. You guys might as well have it.- [spiregrain]&lt;br&gt;
+20.00 6/01/02&lt;br&gt;
+5.00 6/02/02 It's June.  Time for another donation. [ephealy]&lt;br&gt;
+20.00 6/04/02 Just because I'm so impressed with [Rancid_Pickle]'s donation on 3/17/02. [wamckee]&lt;br&gt;
+50.00 6/04/02 Say cheese!&lt;br&gt;
+3.00 6/04/02 Not much, but I know how it is, this stuff ain't cheap.&lt;br&gt;
+50.00 6/7/02&lt;br&gt;
+50.00 6/7/02&lt;br&gt;
+25.00 6/7/02 Go, Baby, Go! Pferdina&lt;br&gt;
+20.00 6/10/02 [Butterfinger McFlurry] ... and don't forget to [Son of Nature Trail to Hell: Another Appalachian E2 Gathering|GO TO SPARTA!]&lt;br&gt;
+1.00 6/12/02&lt;br&gt;
+10.00 6/12/02&lt;br&gt;
+30.00 6/13/02&lt;br&gt;
+15.00 6/14/02 Here's a little something so I can have [everything].--eeyore14&lt;br&gt;
+30.00 6/14/02&lt;br&gt; 
+50.00 6/14/02 monthly rent
+20.00 6/14/02 Don't ever go away! You're the best thing to read on a rainy day, or when i need homework done. Cheaper than an Encyclopedia.  -mr100percent&lt;br&gt;
+15.00 6/14/02 [ephealy] is no longer with us, but since he'd set up this account for the sole purpose of donating to E2, we thought it only fitting to send you the balance.&lt;br&gt;
+25.00 6/21/02 everything is everything, and everything matters.&lt;br&gt;
+1.00 6/21/02&lt;br&gt;
+15.00 6/28/02&lt;br&gt;
+
+20.00 - 7/01/02&lt;br&gt;
+20.00 - 7/01/02 got my first postcard from [Segnbora-t] - [wamckee]&lt;br&gt;
+15.00 - 7/01/02 Professor Pi - In memory of [ephealy|Evan Perry Healy].&lt;br&gt;
+20.00 - 7/02/02 &lt;i&gt;[Cletus the Foetus|Cletus] says&lt;/i&gt; I pledged $10 a month to e2 a few months back, but last month I missed my payment because I was busy with work. So here's two months, for June and July. Thanks for everything, everybody. &lt;br&gt;
+20.00 - 7/09/02 ...sure how the auditors at Blockstackers Intergalactic, LLC got the books in...um, order&lt;br&gt;
+10.00 - 7/09/02 Focus - To thank E2 for giving me something to keep me sane at work..I'm completely addicted.&lt;br&gt;
+1.00 - 7/09/02 Thanks for [everything|everything2] - [l00dD00d]&lt;br&gt;
+1.00 - 7/12/02 &lt;br&gt;
+10.00 - 7/12/02 from [ocelotbob] consider this to be just the first of what'll be many donations to this wonderful site&lt;br&gt;
+10.00 - 7/13/02 Thanks, e2!&lt;br&gt;
+10.00 - 7/13/02 from [pylon] - Just because.  :o)&lt;br&gt;
+15.00 - 7/14/02 Another month, another donation. Thanks again to all the people who make this site worth visiting every day.  --eeyore14&lt;br&gt;
+20.00 - 7/19/02 o/~...as we dance...the Masochism Tango!...o/~ -The Custodian&lt;br&gt;
+5.00 7/20/02 From wonko with love. Now here's hoping I get a job soon so I don't need this money for food.&lt;br&gt;
+10.00 7/22/02 thank you - cbustapeck&lt;br&gt;
+50.00 7/23/02 almost forgot this month's rent. Whew.  Hope there's no late fee.&lt;br&gt;
+40.00 7/23/02 From [sighmoan] in honor of birthday [cbustapeck]'s birthday, for E2.&lt;br&gt; 
+10.00 7/24/02 live long and prosper&lt;br&gt;
+10.00 7/25/02&lt;br&gt;
+10.00 7/25/02 I'm skint, but it says to give till it hurts. Here you go... ouchie, ouchie, ow, ow.&lt;br&gt;
+80.00 7/25/02 ([Footprints] here) - this is for [Kidas] - congrats on passing the test, and thanks for the strings :)&lt;br&gt;
+9.25 7/25/02 Because [Rancid_Pickle] said they were impressed by my writings. -[funky49]&lt;br&gt;
+10.00 7/31/02 *sigh* -legbagede&lt;br&gt;
+10.00 - 8/01/02 pp&lt;br&gt;
+20.00 - 8/01/02 &lt;br&gt;
+20.00 - 8/02/02 beer's on me - [wamckee]&lt;br&gt;
+10.00 - 8/7/02 Insanity Aid - Thanks! - Focus&lt;br&gt;
+15.00 - 8/11/02 wamckee bought the beer, I guess I'll pick up the pretzels and chips. eeyore14&lt;br&gt;
+10.00 - 8/20/02 [Cletus the Foetus|My] wallet (complete with credit card, c. $80 in cash, and a $250 cheque) was stolen when I was on my way home from Alabama, so my monthly contribution is a little tardy. I probably shouldn't be spending this money right now, but I wanted my new credit card's inaugural payment to be to [e2].&lt;br&gt;
+20.00 - 8/21/02&lt;br&gt;
+50.00 - 8/21/02&lt;br&gt;
+70.00 - 8/28/02 This is for the gratuitous nodevertising of [Vusi Mahlasela], with a wee bit added for [wertperch|wertperch's] teletubbification =)&lt;br&gt;
+50.00 - 8/28/02 aww hell.  you know. money.  keep the machines going so I can put stuff in um.&lt;br&gt;
+10.00 - 8/28/02 thanx for everything!  -- Kh9&lt;br&gt;
+50.00 - 8/29/02 From [herbman] and [hamster bong]. thanks!&lt;br&gt;
+20.00 - 09/01/02&lt;br&gt;
+75.00 - 09/01/02 I've been a bit busy this summer, moving halfway across the US, starting a new job, and so on.  Here's a chunk of change to make up for my failure to donate lately. Pferdina&lt;br&gt;
+10.00 - 09/02/02 pp&lt;br&gt;
+20.00 - 09/03/02 e2 rocks oh and thanks fuzzie - [wamckee]&lt;br&gt;
+42.00 - 09/03/02 42 answers Everything. -SharQ&lt;br&gt;
+50.00 - 09/04/02 [Gounthar] sez : Thank you for the wonderful job you're doing. Keep on rollin'&lt;br&gt;
+30.00 - 09/04/02 From Berek: Thanks for the great site, everyone!&lt;br&gt;
+10.00 - 09/10/02 My monthly payment.&lt;br&gt;
+80.00 - 09/12/02 two-year anniversay and other reasons&lt;br&gt;
+10.00 - 09/12/02 This is my seventh monthly $10 donation. Keeping a tradition alive! -- [Cletus the Foetus|ctf]&lt;br&gt;
+50.00 - 09/12/02 well done e2, another great year.&lt;br&gt;
+15.00 - 09/14/02 [eeyore14|.]&lt;br&gt;
+20.00 - 09/15/02 'My favorite things are wild hills, a sweet friend, licorice, dog leaf.  Music is prayer.  Everything is interesting in an infinite sort of way.'-Robin Williamson&lt;br&gt;
+10.00 - 09/17/02&lt;br&gt;
+10.00 - 09/28/02 I finally got around to sorting out paypal so this is the first thing I had to do. I know it'll go to good use even though it's only a little. [pjd]&lt;br&gt;
+20.00 - 10/01/02 &lt;br&gt;
+7.00 - 10/01/02 Giving so little for so much. -Derfel&lt;br&gt;
+5.00 - 10/2/02 Thanks for keeping up Everything2! It has brought joy to my life, for more than a week, so far! Great work. Don't ever let this site die.  I am attempting to show my appreciation with a small donation--keep in mind, I'm on a student budget. :)&lt;br&gt;
+50.00 - 10/05/02 sharing the love&lt;br&gt;
+10.00 - 10/05/02 This is Monthly Donation #8. Love, [Cletus the Foetus|Cletus].&lt;br&gt;
+10.00 - 10/06/02 pp (for Madelon)&lt;br&gt;
+25.00 - 10/07/02 With love from The CustodianView&lt;br&gt;
+5.00 - 10/7/02&lt;br&gt;
+100.00 - 10/8/02 Cheers from [dabcanboulet].&lt;br&gt; 
+15.00 - 10/13/02 Because [automaus] says &quot;ping&quot;--eeyore14&lt;br&gt;
+20.00 - 10/15/02 Thank you.  -Eos&lt;br&gt;
+40.00 - 10/15/02 from [haze], to honor the honor roll&lt;br&gt;
+5.00 - 10/19/02 &lt;br&gt;
+25.00 - 10/19/02 from Pferdina, for the usual reasons.&lt;br&gt;
+25.00 - 10/23/02 In honor of the Honor Roll, JayBonci, ProfessorPi, and the edev folks who worked to bring it to all the happy noders!&lt;br&gt;
+25.00 - 10/24/02 Let the Love flow.&lt;br&gt;
+10.00 - 10/25/02 This may be the money my kids were expecting. Young fools.&lt;br&gt;
+10.00 - 10/25/02 [cbustapeck] - another month of fun, thanks.&lt;br&gt;
+25.00 - 10/30/02 Happy Thanksgiving from [novasoy].  I hope this keeps the lights on for 10 or 15 minutes.  :)&lt;br&gt;
+5.00 - 10/30/02 Don't spend it all in one place. ;)&lt;br&gt;
+20.00 - 11/02/02&lt;br&gt;
+20.00 - 11/02/02 Username: Bitriot Here's twenty dollars, to a place that has become a bigger part of my life than I could possibly have imagined.  Thank you.&lt;br&gt;
+10.00 - 11/05/02 monthly donation #9. i wish i could give a dollar for every upvote to &quot;lamb.&quot; still working on [BIG RIDICULOUS TITLE FOR THE DEFINITIVE E2 GATHERING TO USHER IN THE NEW YEAR!&#174;|'03] funds. this is a priority. &amp;#8212; [Cletus the Foetus|ctf]&lt;br&gt;
+10.00 - 11/06/02 pp&lt;br&gt;
+1.00 - 11/07/02 it's not much, but it's pretty much everything I have.&lt;br&gt;
+40.00 - 11/20/02 a thanksgiving offering&lt;br&gt;
+5.00 - 11/22/02 Just a small donation. Not enough to pay for the amount of enjoyment I get from it, but never mind.&lt;br&gt;
+20.00 - 11/22/02 :)&lt;br&gt;
+50.00 - 11/22/02 Anml4ixoye - To E2, forever my Secret Santa&lt;br&gt;
+20.00 - 11/26/02 Payback time. Thanks for E2.&lt;br&gt;
+4.00 - 11/30/02 Well, the total for the month was at $196.00...
+$20.00 - 12/01/02 &lt;br&gt;
+$10.00 - 12/02/02 Another month's dues - [cbustapeck]&lt;br&gt;
+$10.00 - 12/03/02 My crippled orphan niece will go without Christmas presents from me this year, because [Cletus the Foetus|I] have my priorities straight: I give to [everything2].&lt;br&gt;
+$20.00 - 12/05/02 Happy Holidays -pp&lt;br&gt;
+$40.00 - 12/07/02 Another month's rent - The Custodian&lt;br&gt;
+$50.00 - 12/07/02 [JayBonci]: Thank you for the business advice.  Everyone else: Thank you for a wonderful system.  I know this money is supposed to defray bandwidth costs and what have you, but it would make me happy if you spent at least some of it on beer.  Again, thank you. -[wick]&lt;br&gt;
+$32.02 - 12/08/02 A Christmas gift to a friend&lt;br&gt;
+$5.00 - 12/12/02&lt;br&gt;
+$20.00 - 12/12/02&lt;br&gt;
+$5.00 - 12/12/02&lt;br&gt;
+$10.00 - 12/13/02 hugs&lt;br&gt;
+$30.00 - 12/14/02&lt;br&gt;
+$20.00 - 12/16/02&lt;br&gt;
+$100.00 - 12/16/02 Thank you.&lt;br&gt;
+$10.00 - 12/17/02 thanks&lt;br&gt;
+$10.00 - 12/18/02&lt;br&gt;
+$40.00 - 12/19/02 Editorial policy has no effect on my donations. So there. :-p&lt;bR&gt;
+$50.00 - 12/20/02 merii kurisumasu &amp;&amp; akemashite omedetou gozaimasu&lt;br&gt;
+$30.00 - 12/29/02 For all the time I spend on here (and so I can get 
+one of [SharQ]'s pretty kitty prints!) -- Segnbora-t&lt;br&gt;
+
+100.00 - 01/02/03 
+This is for 20 raffle tickets for Segnbora-t's afghan as described in [Wrap Up In Noder Love: An E2 Craft Project and Fundraiser].  My E2 userID is Yonder.&lt;br&gt;
+45.00 - 01/03/03 username: Bink To feed the nodeshells.&lt;br&gt;
+30.00 - 01/06/03 (E2name: No Springs)  6 tix for Segnbora-t's quilt raffle.  See ya at the Florida noder's meet!  ([Nothing says softcore like Florida in January: A surrealistic Florida adventure])&lt;br&gt;
+15.46 - 01/07/03 from [RainMirage] because it's about time (and this is what I had left) and because [Rancid_Pickle] said he was impressed&lt;br&gt;
+50.00 - 01/09/03 Hashbrownie says: Because *everybody* donates on Thursdays!&lt;br&gt;
+5.00 - 01/10/03
+5.00 - 01/13/03&lt;br&gt;
+120.00 - 01/16/03 [will] - Here's my backpayment for the past 12 months. Thank you - for a wonderful site, for a wonderful community, and for wonderful memories.&lt;br&gt;
+21.00 - 01/21/03&lt;br&gt;
+60.00 - 01/22/03 isogolem : Good community paying my ahead.&lt;br&gt;
+75.00 - 01/27/03&lt;br&gt;
+20.00 - 01/31/03&lt;br&gt;
+20.00 - 02/01/03 &lt;br&gt;
+200.00 - 02/02/03 a thank you from [jaredk]
+Your site has never failed to answer an important question of mine, someday i may be able to add to the enlightenment, but as for now i am happy to bask in the gathering of minds which you have created, may all this never die.&lt;br&gt;
+50.00 - 02/02/03 &lt;br&gt;
+20.00 - 02/05/03  In honor of lesbians everywhere. - wonko&lt;br&gt;
+25.00 - 02/07/03 Another node older and deeper in debt...&lt;br&gt;
+25.00 - 02/12/03 E2? you sunk my battleship!&lt;BR&gt;
+50.00 - 02/17/03 Thanks, [teos]&lt;br&gt;
+5.00 - 02/23/03&lt;br&gt;
+75.00 - 02/24/03&lt;br&gt;
+10.00 - 02/24/03&lt;br&gt;
+50.00 - 02/26/03 In support of E2 from me and my CafePress sales (you know who you are ;)  Thanks to all of you.  - O. Halo&lt;br&gt;
+
+20.00 - 03/01/03&lt;br&gt;
+1.00  - 03/02/03&lt;br&gt;
+100.00- 03/11/03 celebrating the birthday month of [dutchess], [RalphyK], and [JodieK]&lt;br&gt;
+100.00- 03/13/03&lt;br&gt;
+90.09 - 03/13/03 this money should be ear-marked for war orphans, or, failing that, chocolate microscopes.&lt;br&gt;
+5.00 - 03/31/03 From [Pylon]. As arranged, meet me at Pier 57 with the &quot;materials&quot;...&lt;br&gt;
+20.00 - 03/31/03 I will add my $0.02 while I still have 'em, so that I have less guilt while adding my 2 cents. - yclept&lt;br&gt;
+40.00 - 03/31/03 In honor of the genius who coded the new link-ads.&lt;br&gt;
+10.00 - 03/31/03&lt;br&gt;
+10.00 - 03/31/03&lt;br&gt;
+10.00 - 03/31/03 Blue_Bellied_Lizard&lt;br&gt;
+20.00 - 04/01/03&lt;br&gt;
+100.00 - 04/01/03&lt;br&gt;
+150.00 - 04/01/03 Hey guys, I earn enough, so I recognised e2 was my good cause... you guys rock, and e2 is home.&lt;br&gt;
+25.00 - 04/01/03&lt;br&gt;
+10.00 - 04/03/03&lt;br&gt;
+4.00 - 04/03/03 I've got mad spare change ever since I quit smoking.&lt;br&gt;
+20.00 - 04/05/03 to go directly to the 'Stop the Lag' fund&lt;br&gt;
+5.00 - 04/07/03&lt;br&gt;
+20.00 - 04/08/03  What would I do without E2?  This is to help ensure I never need find out! Thanks for hours of fun and enlightenment.&lt;br&gt;
+100.00 - 04/12/03 Why not, after all...&lt;br&gt;
+30.00 - 04/12/03 Thank you. (This month in [Hermetic|memory] [stand/alone/bitch|of] [sensei|those] [moJoe|who] have [(prayer for the departed)|left] us, but who will not be [No one ever truly dies as long as there is one person who remembers them|forgotten].) teos&lt;br&gt;
+16.00 - 04/14/03 
+10.00 - 04/21/03
+05/01/03 - $20.00&lt;br&gt;
+05/06/03 - $20.00&lt;br&gt;
+05/06/03 - $150.00&lt;br&gt;
+05/07/03 - $40.00 I GOTS RENT MONEY FOR ONE NIGHT! -The Custodian&lt;br&gt;
+05/12/03 - $8.00&lt;br&gt;
+05/16/03 - $20.00&lt;br&gt;
+05/19/03 - $15.00&lt;br&gt;
+05/26/03 - $5.00&lt;br&gt;
+05/30/03 - $10.00 From ymelup&lt;br&gt;
+06/01/03 - $20.00&lt;br&gt;
+06/02/03 - $100.00 [Empiric]:  Did the cost/benefit comparison with ShootEmAll XXVII... e2 won handily.&lt;br&gt;
+06/02/03 - $5.00&lt;br&gt;
+06/06/03 - $5.00 The site rocks. :)&lt;br&gt;
+06/10/03 - $50.00 From Marty McKolskey, from the homepages.org fiasco.  Doesn't make up for it, but it's more than I made off the whole thing, and hopefully it'll pay for a few minutes of bandwidth or something.&lt;br&gt;
+06/13/03 - $20.00 to be directly issued to the 'kill the lag' campaign ;)&lt;br&gt;
+06/17/03 - $40.00 How about we try 'raising the bar' on donations month-by-month?  Nice low number in May to start out with...-The Custodian
+06/18/03 - $10.00&lt;br&gt;
+06/18/03 - $30.00 PLS FIX SPECTRE'S PSU, KTHX&lt;br&gt;
+06/21/03 - $10.00&lt;br&gt;
+06/22/03 - $25.00&lt;br&gt;
+$20.00 - 7/01/03&lt;br&gt;
+$30.00 - 7/03/03 Keep on rocking! Berek.&lt;br&gt;
+$10.00 - 7/05/03&lt;br&gt;
+$30.00 - 7/09/03&lt;br&gt;
+$10.00 - 7/09/03 About time I got off my butt and donated.  The first of more regular donations.  Orpheum&lt;br&gt;
+$50.00 - 7/09/03 hey! ha hey! baby you got my money...&lt;br&gt;
+$20.00 - 7/10/03 yay =P~ ~Nekochan&lt;br&gt;
+$20.00 - 7/10/03 Note:Thanks for much enjoyable browsing. Zarniwoop&lt;br&gt;
+$20.00 - 8/01/03&lt;br&gt;
+$25.00 - 8/01/03&lt;br&gt;
+$100.00 - 8/08/03&lt;br&gt;
+$10.00 - 8/10/03 For two raffle tickets on Segnbora's afghan thingy from [me|Pylon]...&lt;br&gt;
+$10.00 - 8/10/03&lt;br&gt;
+$25.00 - 8/12/03 I should have done this a while ago.&lt;br&gt;
+$80.00 - 8/13/03 I sold the Volvo for this, you bastards!&lt;br&gt;
+$34.00 - 8/17/03 Here is some money, which I understand can be exchanged for goods and services - [TenMinJoe]&lt;br&gt;
+$30.00 - 8/20/03 Six afghan raffles! Woo!  -The Custodian&lt;br&gt;
+$50.00 - 8/26/03&lt;br&gt;
+$20.00 - 8/30/03&lt;br&gt;
+$20.00 - 9/01/03&lt;br&gt;
+$3.00 - 9/05/03&lt;br&gt;
+$10.00 - 9/12/03 So when do we get notified of the winners? ashes x&lt;br&gt;
+$15.00 - 9/25/03 Mmmmmmm.....cookies[eeyore14|.]&lt;br&gt;
+$10.00 - 9/26/03 From Altusmens - I left in a shipping address since this is going towards
+the good and excellent ninjagirls bake sale. I firmly believe that food
+should be used more often to part noders from their money.&lt;br&gt;
+$35.00 - 9/27/03&lt;br&gt;
+$20.00 - 9/27/03 How could I pass up a batch o'them Wuukiee chocolate-chocolate-chocolate
+cookies??  DEATH BY CHOCOLATE!!&lt;br&gt;
+$25.00 - 9/28/03 cooooooookieeeeessssssss....for a good cause?  FUCK the diet!&lt;br&gt;
+$30.00 - 9/28/03 What an jaw-droppingly good idea! Ninjagirls rockz0r my sockz0rs.&lt;br&gt;
+$20.00 - 9/28/03&lt;br&gt;
+$20.00 - 9/29/03&lt;br&gt;
+$11.00 - 9/30/03 Rock on E2! Shouts to [rk2001] and [j2]!&lt;br&gt;
+$20.00 - 10/01/03&lt;br&gt;
+$15.00 - 10/01/03 NotFabio says: Where's the &quot;YES! I want an Estonian Mail Order Bride&quot;
+selection checkbox? Oh well, I'll settle for baked goods and a serenade.
+It'll almost be like having a living, breathing, warm female about. Well,
+not really.&lt;br&gt;
+$10.00 - 10/01/03 e2 donation for bake sale from B1llymo&lt;br&gt;
+$20.00 - 10/01/03 COOKIE!&lt;br&gt;
+$80.00 - 10/01/03 [No Springs]' long-overdue 2nd donation to the grand folks at Blockstackers
+for all the stuff they do (yes, you guys are MUCH appeciated!!)--though I
+admit the [Ninjagirls Bake Sale] did have some influence... :)&lt;br&gt;
+$10.00 - 10/01/03 Servo5678 says &quot;So I donate the $10 and you all send me a ninjagirl, right?
+Is that how this works?&quot;&lt;br&gt;
+$10.00 - 10/02/03 I've got to try some of Miss ac's Quite Good Cookies for myself!
+Yumma-yumma.&lt;br&gt;
+$10.00 - 10/02/03&lt;br&gt;
+$10.00 - 10/02/03 Focus - No cookies required..Thanks anyway!&lt;br&gt;
+$25.00 - 10/02/03 &lt;br&gt;
+$10.00 - 10/03/03 &lt;br&gt;
+$10.00 - 10/03/03 trainman, quoting Homer Simpson's brain:  &quot;Money can be exchanged for goods
+and services.&quot;&lt;br&gt;
+$20.00 - 10/03/03 &lt;br&gt;
+$50.00 - 10/04/03  you got me.  anything for cookies and pie.&lt;br&gt;
+$10.00 - 10/06/03 Mm.  Arcanamundi feed Imprecation Monster Cookies!&lt;br&gt;
+$3.00 - 10/07/03&lt;br&gt;
+$10.00 - 10/08/03 Mmm. Cookies.&lt;br&gt;
+$30.00 - 10/09/03 [Your Ending Here]&lt;br&gt;
+$10.00 - 10/11/03 Mm, mm...somethin' from the coven...&lt;br&gt;
+$20.00 - 10/12/03 C is for cookie, that's good enough for me...&lt;br&gt;
+$10.00 - 10/12/03 Wuukiee's Chocolate-chocolate cookie-cookies sound excellent.&lt;br&gt;
+$30.00 - 10/12/03 [Wairau Affair]&lt;br&gt;
+$30.00 - 10/13/03 NINJAGIRLS AND COOKIES RULE OK&lt;br&gt;
+$20.00 - 10/13/03 [No Springs]: Two more just-in-time orders from the [Got milk? A ninjagirls
+bake sale!|Ninjagirl Bakery] (not to mention another donation to [dem
+bones' emergency beer fund|my favorite charitable organization])!  Hope my
+[E2 Secret Santa|E2SS] likes oatmeal..[and if not, I hope s/he can fake
+it!|.]&lt;br&gt;
+$20.00 - 10/14/03 &lt;br&gt;
+$25.00 - 10/14/03 &lt;br&gt;
+$20.00 - 10/15/03 &lt;br&gt;
+$20.00 - 10/17/03 Unfortunately, I'm unable to claim any of momomom's Snickerdoodles...we
+need some Aussie Ninjagirls!  Regardless, another long overdue donation.&lt;br&gt;
+$10.00 - 10/21/03 [Saidai]!&lt;br&gt;
+$30.00 - 10/23/03 [For my last trick, I made her disappear].&lt;br&gt;
+$10.00 - 10/23/03 Saidai raises its first Jackson!  Thanks, everybody!&lt;br&gt;
+$20.00 - 10/24/03 Orpheum&lt;br&gt;
+$20.00 - 11/01/03
+$10.00 - 11/02/03 [Saidai]'s third tenner goes into the Blockstackers bank.&lt;br&gt;
+$5.00 - 11/04/03 Raffle me up! It's cold over here in the UK - I need that afghan!&lt;br&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-05-17 17:35:09</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1051765</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1051765</document_id>
+  <author_user>167240</author_user>
+  <package>0</package>
+  <title>Donation Box</title>
+</node>

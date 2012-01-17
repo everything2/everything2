@@ -1,0 +1,173 @@
+<node>
+  <doctext>[%
+
+return &quot;Roll Call of the Valiant coming soon ...&quot;;
+
+use JSON;
+
+my $entryFee = 10;
+my $initialHealth = 200;
+
+my $villainsGroup = getNode(&quot;villains&quot;,&quot;usergroup&quot;);
+my $heroesGroup = getNode(&quot;heroes&quot;,&quot;usergroup&quot;);
+ 
+my $str;
+
+if (!$$VARS{thewar}) {
+$$VARS{thewar} = '{}';
+}
+
+my $warVars = from_json($$VARS{thewar});
+if ($warVars-&gt;{fallen}) {
+removeFromNodegroup($villainsGroup,$USER,-1);
+removeFromNodegroup($heroesGroup,$USER,-1);
+	updateNode($villainsGroup, -1);
+	updateNode($heroesGroup, -1);
+
+}
+
+if ($query-&gt;param(&quot;switch&quot;)) {
+
+
+if ($query-&gt;param(&quot;switch&quot;) eq 'heroes')  {
+	removeFromNodegroup($villainsGroup,$USER,-1);
+	insertIntoNodegroup($heroesGroup, -1, $USER);
+	updateNode($villainsGroup, -1);
+	updateNode($heroesGroup, -1);
+	adjustExp($USER,-1*$entryFee);
+	return &quot;Thou hast regained thy light!&quot;;
+}
+
+if ($query-&gt;param(&quot;switch&quot;) eq 'villains')  {
+	removeFromNodegroup($heroesGroup,,$USER,-1);
+	insertIntoNodegroup($villainsGroup, -1, $USER);
+	updateNode($heroesGroup, -1);
+	updateNode($villainsGroup, -1);
+	adjustExp($USER,-1*$entryFee);
+	return &quot;Thou hast plunged into darkness!&quot;;
+}
+
+$str .= &quot;Fool! Thou are tempting the fates ...&quot;;
+
+
+}
+
+if (htmlcode('isInUsergroup',$$USER{user_id}.',heroes')) {
+my $warVars = from_json($$VARS{thewar});
+my $inventoryStr = '&lt;p&gt;&lt;b&gt;Inventory&lt;/b&gt;&lt;/p&gt;';
+for my $key ( keys %{$warVars-&gt;{inventory} } ) {
+   		$inventoryStr .= &quot;&lt;p&gt;$key&lt;br /&gt;&quot;.$warVars-&gt;{inventory}-&gt;{$key}-&gt;{description}.&quot;&lt;/p&gt;&quot;;
+}
+return &quot;Thou hast chosen light. For a [&quot;.$entryFee.&quot; XP|small fee], you may cast aside your honor and switch. Is this what you wish?&quot;.&quot;&lt;h2&gt;&quot;.linkNode($NODE,&quot;SWITCH&quot;,{switch =&gt; &quot;villains&quot;}).&quot;&lt;/h2&gt;&quot;.$inventoryStr;
+}
+
+if (htmlcode('isInUsergroup',$$USER{user_id}.',villains')) {
+my $warVars = from_json($$VARS{thewar});
+my $inventoryStr = '&lt;p&gt;&lt;b&gt;Inventory&lt;/b&gt;&lt;/p&gt;';
+for my $key ( keys %{$warVars-&gt;{inventory} } ) {
+   		$inventoryStr .= &quot;&lt;p&gt;$key&lt;br /&gt;&quot;.$warVars-&gt;{inventory}-&gt;{$key}-&gt;{description}.&quot;&lt;/p&gt;&quot;;
+}
+return &quot;Thou hast chosen darkness.  For a [&quot;.$entryFee.&quot; XP|small fee], you may cast aside your honor and switch. Is this what you wish?&quot;.&quot;&lt;h2&gt;&quot;.linkNode($NODE,&quot;SWITCH&quot;,{switch =&gt; &quot;heroes&quot;}).&quot;&lt;/h2&gt;&quot;.$inventoryStr;
+}
+
+my @artifacts = (
+{ &quot;jessicapierce&quot; =&gt;
+	{
+	&quot;damageBonus&quot; =&gt; 3 ,
+	&quot;description&quot; =&gt; &quot;A piercing barb&quot;
+	}
+},
+
+{ &quot;asamoth&quot; =&gt;
+	{
+	&quot;shieldBonus&quot; =&gt; 9 ,
+	&quot;description&quot; =&gt; &quot;A blank and impenetrable shield&quot;
+	}
+},
+
+{ &quot;jet-poop&quot; =&gt;
+	{
+	&quot;damageBonus&quot; =&gt; 12 ,
+	&quot;description&quot; =&gt; &quot;A knapsack of destruction&quot;
+	}
+},
+
+{ &quot;mcflurry&quot; =&gt;
+	{
+	&quot;shieldBonus&quot; =&gt; 7 ,
+	&quot;description&quot; =&gt; &quot;A McDonald's food-like product&quot;
+	}
+},
+
+);
+
+
+
+if ($query-&gt;param(&quot;chooseside&quot;)) {
+
+my $artifactCount = @artifacts - 1;
+my $randArtifact = $artifacts[int(rand($artifactCount))];
+
+
+
+if ($query-&gt;param(&quot;chooseside&quot;) eq 'heroes')  {
+my $usergroup = getNode(&quot;heroes&quot;,&quot;usergroup&quot;);
+insertIntoNodegroup($usergroup, -1, $USER);
+updateNode($usergroup, -1);
+adjustExp($USER,-1*$entryFee);
+my $scalar = from_json($$VARS{thewar});
+$scalar-&gt;{health} = $initialHealth;
+$scalar-&gt;{fallen} = 0;
+for my $key ( keys %{$randArtifact} ) {
+   		$scalar-&gt;{inventory}-&gt;{$key} = $randArtifact-&gt;{$key};
+}
+$$VARS{thewar} = to_json($scalar);
+updateVars($USER,$VARS);
+return &quot;Thou hast chosen light and paid [&quot;.$entryFee.&quot;|thy penance]. Prepare yourself for [Ragnarok!|glorious battle!]&quot;;
+}
+
+if ($query-&gt;param(&quot;chooseside&quot;) eq 'villains')  {
+my $usergroup = getNode(&quot;villains&quot;,&quot;usergroup&quot;);
+insertIntoNodegroup($usergroup, -1, $USER);
+updateNode($usergroup, -1);
+adjustExp($USER,-1*$entryFee);
+my $scalar = from_json($$VARS{thewar});
+$scalar-&gt;{health} = $initialHealth;
+$scalar-&gt;{fallen} = 0;
+for my $key ( keys %{$randArtifact} ) {
+   		$scalar-&gt;{inventory}-&gt;{$key} = $randArtifact-&gt;{$key};
+}
+$$VARS{thewar} = to_json($scalar);
+setVars($USER,$VARS);
+return &quot;Thou hast chosen darkness and [&quot;.$entryFee.&quot; XP|sold thy soul]. [Ragnarok!|Go forth] and do thy master's bidding!&quot;;
+}
+
+$str .= &quot;Fool! Thou hast chosen poorly.&quot;;
+
+}
+
+$str.=&quot;&lt;h1&gt;CHOOSE WISELY&lt;/h1&gt;&quot;;
+
+$str .= &quot;&lt;h2&gt;&quot;.linkNode($NODE,&quot;HERO&quot;,{chooseside =&gt; &quot;heroes&quot;}).&quot;&lt;/h2&gt;&quot;;
+$str .= &quot;&lt;h2&gt;&quot;.linkNode($NODE,&quot;VILLAIN&quot;,{chooseside =&gt; &quot;villains&quot;}).&quot;&lt;/h2&gt;&quot;;
+
+
+return $str;
+
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-04-01 01:56:57</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1936026</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1936026</document_id>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>Halls of Valhalla</title>
+</node>

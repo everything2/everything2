@@ -1,0 +1,112 @@
+<node>
+  <nltext></nltext>
+  <parent_container>175986</parent_container>
+  <icon>http://images.everything2.com/img/personal_nodes.gif</icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>1999-12-15 19:33:38</createtime>
+  <lastupdate>1284998766</lastupdate>
+  <hits>54</hits>
+  <node_id>174581</node_id>
+  <iconHeight>24</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>170</iconWidth>
+  <author_user>315</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>174581</nodelet_id>
+  <nlcode>[%
+return 'You must log in first.' if getId($USER) == $HTMLVARS{guest_user};
+
+# do this here to update settings before showing nodelet:
+my $settingslink = htmlcode('nodeletsettingswidget','Personal Links', 'Edit link list');
+
+my $limit=50;
+
+my $UID = getId($USER) || 0;
+if(exists $HTMLVARS{group_gods}{$UID}) {
+	$limit += 11;
+} elsif(exists $HTMLVARS{'group_content editors'}{$UID}) {
+	$limit += 5;
+}
+my @nodes = split('&lt;br&gt;',$$VARS{personal_nodelet});
+if (my $n = $query-&gt;param('addpersonalnodelet')) {
+	return &quot;&lt;b&gt;Security Error&lt;/b&gt;&quot; unless htmlcode('verifyRequest', 'personalnodelet');
+	$n = getNodeById $n;
+if ($$VARS{personal_nodelet} !~ /$$n{title}/) {
+	$$VARS{personal_nodelet} .= '&lt;br&gt;'.$$n{title} if @nodes &lt; $limit;
+	push @nodes, $$n{title};
+}
+}
+
+my $str = '&lt;ul class=&quot;linklist&quot;&gt;' ;
+my $i=0;
+foreach(@nodes) {
+	next unless $_;
+	$str.= &quot;\n&lt;li&gt;&quot;.linkNodeTitle($_).&quot;&lt;/li&gt;&quot;;
+	last if $i++ &gt;= $limit;
+}
+$str .= &quot;\n&lt;/ul&gt;\n&quot; ;
+
+my $t = $$NODE{title};
+$t =~ s/(\S{16})/$1 /g;
+
+$str .= '&lt;div class=&quot;nodeletfoot&quot;&gt;' ;
+$str .= linkNode($NODE, &quot;add \&quot;$t\&quot;&quot;, {-class =&gt; 'action',
+	-title =&gt; 'Add this node to your personal nodelet list. This list can be edited in Nodelet Settings',
+	addpersonalnodelet =&gt; $$NODE{node_id}, %{htmlcode('verifyRequestHash', 'personalnodelet')}} ).'&lt;br&gt;'
+	if @nodes &lt; $limit ;
+
+return $str . $settingslink . '&lt;/div&gt;';
+%]
+
+[%
+return '' unless exists $HTMLVARS{group_gods}{getId($USER)};
+my $str = '&lt;hr width=&quot;100&quot; /&gt;&lt;small&gt;&lt;strong&gt;node bucket&lt;/strong&gt;&lt;/small&gt;&lt;br&gt;';
+
+my $PARAMS = { op =&gt; 'addBucket', 'bnode_' . $$NODE{node_id} =&gt; 1, -class=&gt;'action' };
+my $t = $$NODE{title};
+$t =~ s/(\S{16})/$1 /g;
+$str .= linkNode($NODE, &quot;Add '$t'&quot;, $PARAMS);
+
+
+my @bnodes;
+@bnodes = split ',', $$VARS{nodebucket} if (defined($$VARS{nodebucket}));
+my $isGroup = 0;
+$isGroup = 1 if $$NODE{type}{grouptable};
+
+return $str.&quot;&lt;p&gt;Empty&lt;br&gt;\n&quot; unless(@bnodes);
+
+$str.= htmlcode('openform');
+$str.=$query-&gt;hidden(-name =&gt; &quot;op&quot;, -value =&gt; 'bucketop', force=&gt;1);
+
+my $ajax = '&amp;op=/';
+foreach my $id (@bnodes) {
+  my $node=getNodeById($id);
+
+  # Can't use CGI::checkbox here because it insists on having a label...
+  $str .= qq'&lt;input type=&quot;checkbox&quot; name=&quot;bnode_$$node{node_id}&quot; value=&quot;1&quot;&gt;'.
+  	linkNode($node, undef, {lastnode_id =&gt; undef}) . &quot;&lt;br&gt;\n&quot;;
+  $ajax .= &quot;&amp;bnode_$$node{node_id}=/&quot;;
+}
+
+$str .= &quot;&lt;input type='checkbox' name='dropexec' value='1' checked='checked'&gt;&quot; .
+  &quot;Execute and drop&lt;br&gt;\n&quot; if($isGroup);
+
+if($isGroup) {
+	$str .= $query-&gt;submit( -name =&gt; &quot;bgroupadd&quot;, -value =&gt; &quot;Add to Group&quot;,
+		-class =&gt; &quot;ajax personallinks:updateNodelet?bgroupadd=1$ajax:Personal+Links&quot;) .&quot;\n&quot;;
+}
+
+$str .= $query-&gt;submit( -name =&gt; 'bdrop', -value =&gt; 'Drop',
+		-class =&gt; &quot;ajax personallinks:updateNodelet?bdrop=1$ajax:Personal+Links&quot;) . &quot;\n&quot;;
+
+$str.'&lt;/form&gt;';
+%]
+</nlcode>
+  <title>Personal Links</title>
+</node>

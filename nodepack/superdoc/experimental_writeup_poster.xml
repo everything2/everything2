@@ -1,0 +1,149 @@
+<node>
+  <doctext>[%
+return '';
+
+return '&lt;script type=&quot;text/javascript&quot;&gt;
+tinyMCE.init({
+theme: &quot;simple&quot;,
+mode: &quot;exact&quot;,
+elements: &quot;writeup_doctext&quot;,
+invalid_elements: &quot;a,img,table,tr,td,th,div,span&quot;,
+extended_valid_elements: &quot;big,small&quot;
+});
+&lt;/script&gt;';
+
+%]
+
+[%
+return '';
+
+$NODE = getNodeById(559630);
+
+my ($nostartform) = 0;
+
+my $str;
+my $uid = getId($USER);
+my $daylog = 0;
+
+my @group = @{ $$NODE{group} } if $$NODE{group};
+my $MYWRITEUP;
+foreach(@group) {
+	getRef($_);
+	if($$_{author_user} == $uid) {
+		$MYWRITEUP = $_;
+		last;
+	}
+}
+
+
+$MYWRITEUP ||= {doctext =&gt; '', title =&gt; '', node_id =&gt; 0};
+#so we can use them as default values if the writeup was not found
+
+my $NODELOCK = htmlcode('nodelockreason', $$MYWRITEUP{node_id});
+return '&lt;big&gt;'.$NODELOCK.'&lt;/big&gt;' unless($NODELOCK eq '');
+
+if($uid == $HTMLVARS{guest_user}) {
+	my $LOGIN = getNode 'login', 'superdoc';
+	my $CREATEUSER = getNode 'create a new user', 'superdoc';  
+
+	my $str = 'Y\'know, if you '.linkNode($LOGIN).', you can write something here. You can also '.linkNode($CREATEUSER).' if you don\'t already have an account.';
+
+	return $str if exists $$THEME{noThinOutline};
+	return containHtml('thin outline container', $str);
+}
+
+$str.=$query-&gt;start_form unless $nostartform;
+my $node_id;
+if($node_id=getId($MYWRITEUP)) {
+	#the user is editing their old writeup
+
+	#user doesn't want to see their text
+	return '&lt;br /&gt;'.linkNode($MYWRITEUP, $$MYWRITEUP{title}).' has your contribution to this node. You can edit it there.'.$str.=$query-&gt;end_form if($$VARS{HideWriteupOnE2node}); 
+
+	$str.= '&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;'.$node_id.'&quot;&gt;';
+	$str.=htmlcode('setwriteuptype', $$MYWRITEUP{wrtype_writeuptype});
+	$str.='&lt;br /&gt;&lt;strong&gt;Edit your writeup&lt;/strong &gt;&lt;br /&gt;';
+} else {
+	#offer the user the chance to make a new one.
+	$str.='&lt;input type=&quot;hidden&quot; name=&quot;node&quot; value=&quot;new writeup&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;new&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;type&quot; value=&quot;writeup&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;node&quot; value=&quot;'.getId($NODE).'&quot;&gt;';
+
+	my $curTitle = $$NODE{title};
+	my $checkIt = 0;
+
+	if( $$VARS{HideNewWriteups} || ($curTitle=~/^(?:dream|editor|root) Log: /i) ) {
+#	if( $$VARS{HideNewWriteups} || ($curTitle=~/^(dream|editor|root) Log: /i) ) {
+		$daylog = 1; # for the purposes of determining whether the 'personal' writeuptype is enabled
+		$checkIt=1;
+	} elsif($curTitle =~ /^(?:January|February|March|April|May|June|July|August|September|October|November|December) [1-9]\d?, \d+/i) {
+#	} elsif($curTitle =~ /^(January|February|March|April|May|June|July|August|September|October|November|December) [1-9]\d*, \d+/i) {
+		$daylog = 1;
+		$checkIt=1;
+	} else {
+		my $unVotable = getVars(getNode('boring heaven nodes', 'setting'));
+		my $t = $curTitle;
+		$t =~ s/\s/_/g;
+		$checkIt=1 if $$unVotable{lc($t)};
+	}
+
+	$str.='&lt;input type=&quot;checkbox&quot; name=&quot;writeup_notnew&quot; value=&quot;1&quot;';
+	$str.=' checked=&quot;1&quot;' if $checkIt;
+	$str.='&gt;(Don\'t display in &quot;New Writeups&quot;)&lt;p&gt;';
+	$str.='&lt;strong&gt;Enter your writeup&lt;/strong&gt;:&lt;br /&gt;';
+}
+
+#$str.=$query-&gt;textarea('writeup_doctext', $$MYWRITEUP{doctext}, 12, 60, '', 'wrap=virtual').'&lt;br /&gt;';
+
+$str.='&lt;textarea name=&quot;writeup_doctext&quot; '.htmlcode('customtextarea', '1').' wrap=&quot;virtual&quot;&gt;'.encodeHTML($$MYWRITEUP{doctext}).'&lt;/textarea&gt;';
+$str.=&quot;&lt;br /&gt;&quot;.htmlcode('formatButton','writeup_doctext');
+$str.='&lt;input type=&quot;hidden&quot; name=&quot;writeup_parent_e2node&quot; value=&quot;'.getId($NODE).&quot;\&quot;&gt;&lt;br /&gt;\n&quot;;
+
+if ($node_id) {
+	$str.=$query-&gt;submit('sexisgood', 'sumbit');
+} else {
+	#we let them define the type
+  
+	my (@WRTYPES) = getNodeWhere({type_nodetype =&gt; getId(getType('writeuptype'))});
+	my @WRTYPE;
+	foreach(@WRTYPES) {
+		push @WRTYPE, $_ unless ( (lc($$_{title}) eq 'definition') || (lc($$_{title}) eq 'lede'));
+	}
+
+	my $chwriteup = &quot;
+&lt;p&gt;&lt;strong&gt;Some Helpful Links:&lt;/strong&gt; [E2 HTML Tags] &amp;middot; [HTML Symbol Reference] &amp;middot; [Using Unicode on E2] &amp;middot; [Reference Desk]&lt;/p&gt;
+&lt;strong&gt;Create it as a:&lt;/strong&gt; &quot;;  
+	my $count=0;
+	my $t;
+$chwriteup.=&quot;&lt;select name='writeuptype'&gt;&quot;;
+	foreach(@WRTYPE) {
+		$t = $$_{title};
+$chwriteup.=&quot;&lt;option value='$t'&gt;$t&lt;/option&gt;&quot;;
+			#$chwriteup.=$query-&gt;submit('writeuptype', $t);
+			#$chwriteup.='&lt;/td&gt;&lt;td align=&quot;center&quot;&gt;' if ++$count &lt; @WRTYPE;
+	}
+$chwriteup.=&quot;&lt;/select&gt; &quot;.$query-&gt;submit('submit').&quot;&lt;/td&gt;&quot;;
+
+	if(exists $$THEME{noThinOutline}) {
+		$str.='&lt;table width=&quot;100%&quot; border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;10&quot;&gt;&lt;tr&gt;&lt;td&gt;'.$chwriteup.'&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';
+	} else {
+		$str.=containHtml('thin outline container', parseLinks($chwriteup));
+	}
+}
+
+$str.=$query-&gt;end_form;
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-03-27 22:26:13</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>3</hits>
+  <node_id>1874525</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1874525</document_id>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>Experimental Writeup Poster</title>
+</node>

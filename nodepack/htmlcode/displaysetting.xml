@@ -1,0 +1,30 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-04 00:14:10</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>174</node_id>
+  <htmlcode_id>174</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># This displays the value of a setting given the key
+# $setting - the name of the setting node
+# $key - the key to display
+my ($setting, $key) = @_;
+my $SETTING = $DB-&gt;selectNodeWhere({title =&gt; $setting},
+ $DB-&gt;getType('setting'));
+my $vars;
+my $str = &quot;&quot;;
+
+$SETTING = $$SETTING[0];  # there should only be one in the array
+$vars = getVars($SETTING);
+$str .= $$vars{$key};
+$str;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>113</author_user>
+  <package>0</package>
+  <title>displaySetting</title>
+</node>

@@ -1,0 +1,117 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-12-13 08:30:29</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>15</hits>
+  <node_id>1868932</node_id>
+  <htmlcode_id>1868932</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($isLogs) = @_;
+
+my $UID = $$USER{user_id} || $HTMLVARS{guest_user} ;
+my $limit = $$VARS{ num_newwus } || ($UID != $HTMLVARS{guest_user} ? 15 : 12);
+my $cansee = ( exists($HTMLVARS{'group_gods'}{$UID} )
+	|| exists($HTMLVARS{'group_content editors'}{$UID}) ) ;
+
+use JSON;
+
+my @newwus = @{from_json( getNode(&quot;New Writeups Feeder&quot;, 'nodelet') -&gt; {nltext} )};
+
+my $noHidden = !$isLogs;
+$noHidden = $noHidden &amp;&amp; $$VARS{nw_nojunk} if $cansee;
+
+my ($repthreshold, %abominations) = ('none');
+if (!$cansee or $$VARS{nw_nojunk} or $isLogs){
+	if (exists $$VARS{repThreshold}) {
+		$repthreshold = $$VARS{repThreshold} || 0; # ecore stores 0 as ''
+	} elsif (exists $HTMLVARS{writeuplowrepthreshold}) {
+		$repthreshold = $HTMLVARS{writeuplowrepthreshold} || 0;
+	}
+	
+	\@abominations{ split(',', $$VARS{unfavoriteusers}) }
+		if $$VARS{unfavoriteusers};
+}
+
+my ($count, @wus);
+foreach (@newwus){
+	next if $noHidden &amp;&amp; $$_{notnew} or
+		$repthreshold ne 'none' &amp;&amp; $$_{reputation} &lt; $repthreshold or
+		exists $abominations{$$_{author_user}} or
+		$isLogs &amp;&amp; !$$_{islog};
+	push @wus, $_;
+	last if !$$_{notnew} || $isLogs and ++$count &gt;= $limit;
+}
+
+my $instructions = '&lt;li' ;
+my %newwuspecials = () ;
+
+unless($$USER{'title'} eq 'Guest User'){
+
+	my $sql = &quot;SELECT vote_id
+		FROM vote
+		WHERE voter_user=$UID
+		AND vote_id in (&quot;
+		.join(',', map($_-&gt;{writeup_id}, @wus))
+		.')';
+
+	#Put the votes into a ref, uses autovivication to populate the hash
+	#(man perlglossary) --[Swap]
+	my %votes;
+	\@votes{ @{$dbh -&gt; selectcol_arrayref($sql)} };
+
+	$instructions .= ' class=&quot;&amp;extraclasses&quot;' ;
+	$newwuspecials{extraclasses} = sub{
+		my $N = shift ;
+		my $str = ''; # it remembers if you don't do this
+		$str .= ' hasvoted' if exists $votes{$$N{writeup_id}} ;
+		$str .= ' mine' if $$N{author_user} == $UID ;
+		$str .= ' wu_hide' if $$N{notnew} ;
+		$str ;
+	};
+}
+
+$instructions .= '&gt;parenttitle, type, byline' ;
+
+if ($cansee &amp;&amp; !$isLogs){
+	$instructions .= ', editorstuff';
+
+	my $ajax = &quot;ajax newwriteups:updateNodelet:New+Writeups&quot; ;
+
+	$newwuspecials{editorstuff} = sub {
+		my $N = shift ;
+		# reputation warning
+		my ( $rep ) = $$N{ reputation } ;
+		my $str = ( $rep &lt; 0 ? &quot;R:$rep &quot; : '' ).'&lt;span class=&quot;hide&quot;&gt;(' ;
+		# flag if hiddden from New Writeups and control to hide/unhide
+		$str .= $$N{ notnew } &gt; 0 ?
+			'H: '
+			.linkNode($NODE, 'un-h!', {
+				op =&gt; 'unhidewriteup' ,
+            	hidewriteup =&gt; $N -&gt; {writeup_id},
+				-title =&gt; 'unhide this writeup',
+				-class =&gt; $ajax})
+			:
+			linkNode($NODE, 'h?', {
+				op =&gt; 'hidewriteup' ,
+            	hidewriteup =&gt; $N -&gt; {writeup_id},
+				-title =&gt; 'hide this writeup',
+				-class =&gt; $ajax});
+		$str .= ')&lt;/span&gt;' ;
+	    $str .= ' (X)' if $$N{nuked} &amp;&amp; !$$N{restored};
+	    $str .= ' (R)' if $$N{restored};
+ 		qq'&lt;span class=&quot;admin&quot;&gt;$str&lt;/span&gt;' ;
+	} ;
+}
+
+'&lt;ul class=&quot;infolist&quot;&gt;' .
+	htmlcode('show content' , \@wus , $instructions , %newwuspecials) .
+'&lt;/ul&gt;' ;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>zenwriteups</title>
+</node>

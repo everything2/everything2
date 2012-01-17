@@ -1,0 +1,78 @@
+<node>
+  <nltext></nltext>
+  <parent_container>0</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto></nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2010-10-21 00:08:37</createtime>
+  <lastupdate>0</lastupdate>
+  <hits>1</hits>
+  <node_id>1990486</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>1017738</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1990486</nodelet_id>
+  <nlcode>[%
+# Start with C!s from [rtnsection_cwu]
+my $str='';
+
+$str.='&lt;h4&gt;'.linkNode(getNode('Cool Archive','superdoc'), 'User Picks').'&lt;/h4&gt;';
+$str.='&lt;ul&gt;';
+my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;, &quot;coolwriteups&quot;, &quot;&quot;, &quot;order by tstamp desc limit 6&quot;);
+
+while(my $row = $csr-&gt;fetchrow_hashref()){
+	my $cw = getNodeById($$row{coolwriteups_id});
+	next unless($cw);
+	my $np = getNodeById($$cw{parent_e2node});
+	$str .= '&lt;li&gt;'.linkNode($cw, $$np{title}, {lastnode_id =&gt; 0});
+	$str .= ' &lt;small&gt;('.linkNode($np,'full',{lastnode_id =&gt;0}).&quot;)&lt;/small&gt;&lt;/li&gt;\n&quot;;
+}
+
+$csr-&gt;finish();
+$str.='&lt;/ul&gt;';
+
+# From [rtnsection_edc]
+$str.= '&lt;h4&gt;'.linkNode(getNode('Page of Cool','superdoc'), 'Editor Picks').'&lt;/h4&gt;';
+
+$str.= '&lt;ul&gt;';
+my $poclink = getId(getNode('coollink', 'linktype'));
+my $pocgrp = getNode('coolnodes', 'nodegroup')-&gt;{group};
+my $count = 0;
+
+foreach(reverse @$pocgrp)
+{
+	last if($count &gt;= 6);
+	$count++;
+
+	next unless($_);
+
+	my $csr = $dbh-&gt;prepare('SELECT * FROM links WHERE from_node=\''.getId($_).'\' and linktype=\''.$poclink.'\' limit 1');
+
+	$csr-&gt;execute;
+
+	my $coolref = $csr-&gt;fetchrow_hashref;
+
+	next unless($coolref);
+	$coolref = getNodeById($$coolref{from_node});
+	next unless($coolref); 
+	$str .= '&lt;li&gt;'.linkNode($coolref,$$coolref{title}, {lastnode_id =&gt; 0}).'&lt;/li&gt;';
+
+	$csr-&gt;finish();
+
+}
+
+$str.='&lt;/ul&gt;';
+
+
+return $str;
+
+%]</nlcode>
+  <title>Read This</title>
+</node>

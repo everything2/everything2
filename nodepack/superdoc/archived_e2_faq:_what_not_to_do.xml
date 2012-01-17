@@ -1,0 +1,259 @@
+<node>
+  <doctext>&lt;p&gt;
+This document is not current, and is kept only for archival purposes. Please refer to [Everything2 Help] for all up-do-date help documents.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;h1&gt;Tradition &lt;em&gt;is&lt;/em&gt; a tradition.&lt;/h1&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;
+The following guidelines may help you avoid signing on to [E2] one day, to find that one or more of your [writeup|writeups] disappeared in the night. Please read through this entire page before adding any writeups to the database.  
+&lt;/p&gt;
+&lt;p&gt;
+When browsing E2 take note that any writeups dated Nov. 13 or Nov. 14, 1999 were actually &lt;em&gt;[imported]&lt;/em&gt; from the previous version, [E1], and are often very poor examples of a modern writeup.  E2 has come a long way, evolving standards and protocols to help organize all of the information that is posted daily -- [Everything 1] was almost completely unedited and as a result was mostly a mess.  What we've got today is a little further down the road. A brilliant library. Both have their place.
+&lt;/p&gt;
+&lt;p&gt;
+The following wisdoms result from watching a million writeups get submitted over three years and seeing what works -- and what does not work.  We appreciate your taking the time to go over it.
+&lt;/p&gt;
+&lt;p&gt;
+&lt;em&gt;See also:&lt;/em&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;b&gt;[E2 Clueless (Newbie) Mistakes To Avoid]&lt;/b&gt;&lt;/li&gt;
+&lt;li&gt;&lt;b&gt;[E2 FAQ: When is it okay to node about noding?]&lt;/b&gt;&lt;/li&gt;
+&lt;/ul&gt;
+ 
+&lt;p&gt;
+
+&lt;h2&gt;ASCII art? &lt;em&gt;No, thanks.&lt;/em&gt;&lt;/h2&gt;
+
+&lt;p&gt;
+ASCII art is not a writeup.  ASCII art &lt;em&gt;may&lt;/em&gt; be used to illustrate a writeup. As a guideline, use a similar approach to that we use for quoting copyright material. ASCII art may be included in writeups only as a supporting element, where the non-ASCII-art material must be at least double the size of the ASCII art element (by both line and character count).&lt;/p&gt;
+
+&lt;h2&gt;Do not create -- or add to -- blatant [GTKY] nodes&lt;/h2&gt;
+
+&lt;p&gt;
+A 'getting to know you' node is not always easy to define or spot ... at first.  If the title is a question inquiring as to your personal tastes on any given subject then I suggest you avoid it like the plague -- most people won't.  What happens is an innocent user creates a node like &lt;em&gt;&quot;Why do people like/dislike/do/don't do/ X?&quot;&lt;/em&gt; This 'question node' begs Robin User to add his/her two cents.
+&lt;/p&gt;
+&lt;p&gt;
+ &lt;em&gt;This way lies madness.&lt;/em&gt;
+&lt;/p&gt;
+&lt;p&gt;
+The result, over a period of weeks and months, is a node with anywhere from twenty to fifty short and vapid writeups that usually begin to repeat themselves after the first ten.  [the power structure of everything 2|Editors] 
+are keeping a close eye on [ENN] and helping users to [pick titles carefully|pick wiser titles] or, better yet, keep personal information in the [Everything Daylogs|day logs] or their home nodes.
+&lt;/p&gt;
+&lt;p&gt;
+&lt;strong&gt;Related nodes:&lt;/strong&gt;
+&lt;/p&gt;
+&lt;ul&gt;
+ &lt;li&gt;[Pick Titles Carefully]&lt;/li&gt;
+ &lt;li&gt;[Choose Short Titles]&lt;/li&gt;
+&lt;!-- --&gt;
+[%
+# Code based on the 'daylog' htmlcode
+my @months = qw(January February March April May June July August September October November December);
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time);
+$year+= 1900;
+my $daydate = &quot;$months[$mon] $mday, $year&quot;;
+
+&quot;&lt;li&gt;Today's Daylog: [$daydate]&lt;/li&gt;&quot;;
+%]
+&lt;!-- --&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Do not create or add to subjective 'list' nodes&lt;/h2&gt;
+&lt;p&gt;
+These are similar to [GTKY] nodes in that often a user decides, for some reason, to post a list of items belonging in a certain category.  Examples that have found themselves deleted are &quot;Books that will blow your mind&quot; or &quot;Cover songs that are really cool&quot;.  Again, consider the long term results of such nodes -- over months and months more and more users show up and decide to add 'one or two' more to this list ... quickly the [subjectivity] and length
+of the node render it completely useless (if it wasn't already useless when it began) and it's deleted.  When you consider an infinite number of people and a 'list' with a subjective idea the number of items on that list becomes infinite.
+&lt;/p&gt;
+&lt;p&gt; 
+Some people thought that [Orgy]'s cover of &quot;[Blue Monday]&quot; was 'really cool'.  Others thought that [Herman Melville|Melville's] &quot;[Moby Dick]&quot; was a 'mindblower'. If these songs, books or &lt;em&gt;whatever&lt;/em&gt; moved you, please honor them with a [quality] writeup in their given nodes.
+&lt;/p&gt;
+&lt;p&gt;
+&lt;strong&gt;Related nodes:&lt;/strong&gt;
+&lt;ul&gt;
+ &lt;li&gt;[Avoid Highly Subjective Writeups]&lt;/li&gt;
+&lt;!-- --&gt;
+[%
+# Code based on the 'daylog' htmlcode
+my @months = qw(January February March April May June July August September October November December);
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time);
+$year+= 1900;
+my $daydate = &quot;$months[$mon] $mday, $year&quot;;
+
+&quot;&lt;li&gt;Today's Daylog: [$daydate]&lt;/li&gt;&quot;;
+
+%]
+&lt;!-- --&gt;
+&lt;/ul&gt;
+ 
+&lt;h2&gt;Do not make &quot;daily personal&quot; nodes which belong in the Day Logs&lt;/h2&gt;
+&lt;p&gt;
+The [Everything Daylogs] are generated each and every noding day. The reason the Day Logs and the Dream Logs exist is so there won't be a [plethora] of nodes about day-to-day noders' lives and dreams. Some users use the Day Logs as personal diaries. That's fine. Day Logs are almost completely unedited and you may use them for any number of personal reasons.
+&lt;/p&gt;
+&lt;p&gt;
+Yet and still, some users still want to make nodes about their car breaking down and how much it pissed them off, or how their girlfriend just had sex with the football team (still wearing their [cleats], no less) and how they want to kill themselves.  We understand that these things have impacted your life &lt;em&gt;today&lt;/em&gt; ... but when you post something to E2 you need to be thinking about &lt;i&gt;tomorrow&lt;/i&gt;. A funny snippet in the chatterbox or esoteric gag is not
+quality writeup material when you consider the reader won't see it for a few years.  Your writeups must stand the test of time and be useful for longer than it takes to stream down [ENN].
+&lt;/p&gt;
+&lt;p&gt;
+Unless the writeup leads to some sort of [universal] experience from which we can all derive insight and enjoyment, please put it in the Day Log. Editors who 
+have to remove these sorts of writeups will tell you that it really is a [bummer|negative experience] for both the writer and the nuker.  Think ahead.
+&lt;/p&gt;
+&lt;p&gt;
+&lt;strong&gt;Related nodes:&lt;/strong&gt;
+&lt;ul&gt;
+ &lt;li&gt;[Avoid Highly Subjective Writeups]&lt;/li&gt;
+ &lt;li&gt;[Node for the Ages]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Do not create nodes which ask questions asking for replies&lt;/h2&gt;
+&lt;p&gt;
+If you've read the above you can probably already see why it's best to avoid 'question nodes' on a system with an infinite number of potential answers.  If you'd like some information on any given subject and it's not yet noded on E2 try asking around in the chatterbox from time to time for an expert who may be willing to add a relevant writeup.
+&lt;/p&gt;&lt;p&gt;
+If you cannot find an expert consider using this fancy new website called the &quot;Internet&quot; and becoming an expert yourself. Node what you don't know ... do some research. There's no better way to teach yourself about something than trying to explain it to others.
+&lt;/p&gt;
+&lt;p&gt;
+Bottom line is this:  if your 'question node' does indeed get an answer we quickly see that the information has now been noded in the &lt;i&gt;wrong place&lt;/i&gt;.  One past example I remember is &quot;What's the deal with Stalingrad?&quot;  A user wanted to know about the history of Stalingrad.  A few other users jumped
+in to explain the rich and varied culture that was Stalingrad ... and we had some really beautiful writeups there.  Meanwhile, the node &quot;[Stalingrad]&quot; sat with a one-liner mumbling something about &quot;Prussia&quot;.
+&lt;/p&gt;
+&lt;p&gt;
+No shit. &lt;em&gt;[Prussia]&lt;/em&gt;.
+&lt;/p&gt;
+&lt;p&gt;
+&lt;strong&gt;Related nodes:&lt;/strong&gt;
+&lt;ul&gt;
+ &lt;li&gt;[Pick Titles Carefully]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Do not node about noding or E2.&lt;/h2&gt;
+&lt;p&gt;
+If you begin to node about noding when you don't know anything &lt;strong&gt;about&lt;/strong&gt; noding, this place becomes like a [snake] eating its tail. It's full of questions about questions, and it gets [nowhere] fast.
+&lt;/p&gt;
+&lt;p&gt;
+Imagine reading a really good book, and every other chapter was about the book itself. You know what I mean? The plot is getting thick and the good guy is about to fight the evil bastards who have kidnapped his best girl, or something like that. And you turn the page and get this:
+&lt;blockquote&gt;
+This book is&lt;i&gt; soooo cool&lt;/i&gt;, man. You won't &lt;i&gt;believe&lt;/i&gt; how cool this next chapter is, man. My friend, Josh; he says that his &lt;i&gt;bestest most favorite&lt;/i&gt; part is what comes next. . .  Just wait, man! . . .  Signed: [dumbass|Dim:)Wit]&lt;/blockquote&gt;
+&lt;p&gt;
+Then, two chapters later, just as the hero is about to get some well-deserved hot lovin', you get this:
+&lt;blockquote&gt;
+While writing this book, my main concern was for the reader. As you can clearly tell, the chapter headings have been done in a style not unlike early Berber. And those of you who think this was a bad idea can tongue my sphincter . . .  Signed: &lt;i&gt;The Author&lt;/i&gt;.
+&lt;/blockquote&gt;
+&lt;p&gt;
+You just don't want this, do you? &lt;strong&gt;You want the book.&lt;/strong&gt; You don't want to read about the book &lt;strong&gt;in the book.&lt;/strong&gt;
+&lt;/p&gt;
+&lt;p&gt;
+I know it seems cute and inviting to use the word [node] in your nodes, and we did the same thing when we started here. But now most of us have realized that was a particularly bad idea. There's virtually nothing you can say about [node]s, voting, [XP], [soft link]s, [hard link]s, etc. that has not been said a thousand times already. [everything's best users|Those who have been here a while] don't want to hear it, again. And, like it or not, the long-time users are the ones who will have a lot to say about how well you enjoy your stay on E2.
+&lt;/p&gt;
+&lt;p&gt;
+Now, when you've been here a while, it may well be that you have something to say about noding that would be helpful. If so, it should be added to the FAQ. Anything helpful, truly helpful, about E2 policy or style should be found in the [Everything FAQ].  So, if you think you have something to add please [the power structure of everything2|msg an administrator].
+&lt;/p&gt;
+
+&lt;h2&gt;Do not use the word &quot;[metanode]&quot; if at all possible&lt;/h2&gt;
+&lt;p&gt;
+For some reason, 'meta nodes' have been fairly popular on E2. A 'meta node' is a collection of links to other nodes on E2 about a subject -- see [Mythos] or [Drugs] for examples.
+&lt;/p&gt;&lt;p&gt;
+Sometimes users will title their 'metanodes' with the word 'metanode' in the title.  This is almost always bad form. When compiling a metanode it's best to put the information where a user is most likely to find it.  Hence, a 'metanode'
+about the [C++] programming language would exist as a &lt;em&gt;writeup&lt;/em&gt; in the [C++] node.  If someone wants to find out what E2 can tell them about C++ that's where they're going to go first.  To put it another way, E2 doesn't really need 'metanodes' at all -- a quality writeup should include related hard links in its text to begin with.  Don't further separate information from its proper title by adding the gratuitous word '[metanode]'.
+&lt;strong&gt;&lt;em&gt;Note -- &lt;/em&gt;&lt;/strong&gt;
+This applies mainly to person/place/thing subjects.  If your metanode is an &lt;em&gt;idea&lt;/em&gt; then often there won't be a 'parent node' for the subject.
+&lt;/p&gt;
+
+&lt;p&gt;
+A final reason to steer clear of metanoding is that they are hard work to keep up and quickly become useless if they're not kept up.  New nodes are created daily and older nodes are nuked daily and a metanode needs to change to reflect
+that.  This is a fundamental idea behind both the [search] box and the [soft link]s.  They change daily as well.  If your metanode doesn't amount to much more than a list of links with your subject in the title don't bother -- that's what the search box is for.  Just click '[ignore exact]' and you'll get a new list every time.
+&lt;/p&gt;
+
+&lt;p&gt;
+The time to use 'metanode' in your title is when the related nodes you are gathering together don't all fall under one clear heading or subject.  For instance, [Speeches and Debates Metanode] has the 'metanode' namespaced in because a node titled &quot;Speeches and Debates&quot; wouldn't clearly be a repository for all related nodes.
+&lt;/p&gt;
+
+&lt;p&gt;It's rare that this is necessary.&lt;/p&gt;
+
+&lt;strong&gt;Related nodes:&lt;/strong&gt;
+&lt;ul&gt;
+ &lt;li&gt;[The Metanode Destruction Team]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Do not [namespace] your node titles&lt;/h2&gt;
+&lt;p&gt;
+When you create a new node, you want to give it a logical title, keeping in mind that someone looking for information on its subject needs to be able to find it easily.  The simplest way to do this is just to call a thing what it is.  A [node] containing information about the thing that is a red ball should simply be called &quot;red ball,&quot; not &quot;toys: red ball&quot; and not &quot;ball: red.&quot; Not only does this allow people to find information easily, it helps eliminate the possibility of information being duplicated in the database.  If you title that node &quot;toy: red ball,&quot; someone later is guaranteed to come along and look for &quot;red ball,&quot; and seeing it does not exist, create a node that probably closely duplicates your [namespace]d node.  Furthermore, if there is a song title &quot;Red Ball&quot; or a mixed drink called the Red Ball, we want to be able to find your [definition] of a red ball right there with those other write-ups. Three separate nodes titled &quot;Lyrics: Red Ball&quot; (or &quot;The Red Ball Band: Red Ball&quot;), &quot;toys: red ball,&quot; and &quot;Mixed Drinks: Red Ball&quot; needlessly clutter the [database].
+&lt;/p&gt;
+
+&lt;p&gt;
+&lt;strong&gt;Related nodes:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;[Pick Titles Carefully]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Do not respond to idiocy&lt;/h2&gt;
+&lt;p&gt;
+If a new user makes a question node or somewhat dubious statement please don't feel you have to add a writeup to correct or argue a point with them. You can send the user a message about it, or just vote the weak stuff down. What often happens is the original writeup gets removed because it's so pathetic and we're left with ten &quot;response&quot; writeups that don't make any sense without an original writeup to tear apart.  Vote it down ... and let the system &lt;em&gt;remove&lt;/em&gt; the trash. &lt;em&gt;Don't justify the trash by calling it out as being trash.&lt;/em&gt;
+&lt;/p&gt;
+&lt;p&gt;
+&lt;strong&gt;ANY flamewar node&lt;/strong&gt; may as well be considered &quot;trash&quot;. These are the pure opinion things where everybody piles on and says, &quot;Well, &lt;em&gt;I think&lt;/em&gt;...&quot; ...without thinking. We've still got some old gang wars about abortion, religion vs. atheism and other matters that nobody will ever agree with anybody else about. We've removed a lot of those and we aim to remove a lot more. If you find one, please don't add to it. Look at the dates on the writeups: Very old stuff, mostly. Just report it quietly to the proper authorities, and we'll put clothespins on our noses and give it a decent burial with all of our other past mistakes.
+&lt;/p&gt;
+
+&lt;p&gt;
+&lt;strong&gt;Related nodes:&lt;/strong&gt;
+&lt;ul&gt;
+ &lt;li&gt;[Words of Advice for Young Noders]&lt;/li&gt;
+ &lt;li&gt;[Node for the Ages]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Do not complain about [voting/experience system|downvotes and/or XP] or [soft link]s in the chatterbox&lt;/h2&gt;
+&lt;p&gt;
+A system of total anonymity for voting breeds a lot of abusive behavior with
+both downvotes and insulting soft links.  It happens ... there's nothing to say on the subject that hasn't been said.  95% of the time a user complains about getting downvoted in the chatterbox users go and downvote him/her some more to
+shut 'em up.  At any given time there's likely to be a voter or two out there who are going to vote down any given node ... neither [Some Kind of Stranger|rhyme nor reason] need be present.  Them's the grits.
+&lt;/p&gt;
+&lt;p&gt;
+[Don't complain]...if your writeup drops to below -4 and you really don't understand why simply [E2 FAQ: Chatterbox|msg an editor] and ask what they think could be wrong with it. Complaining publicly will usually be perceived as simply whining and will only serve to worsen your situation. &lt;strong&gt;Any questions about xp, voting, rep etc should be privately msg'd to an [the power structure of everything 2|editor/admin] or to your [E2 Mentoring Sign-Up|mentor].&lt;/strong&gt;
+&lt;/p&gt;
+&lt;p&gt;
+One note for dealing with insulting [link and link|softlinks]: if you get a lot of bad ones, they will be a lot less noticeable if you softlink a little yourself. The more relevant links there are, the less obvious the bad ones will be. All the more reason to softlink [excessively] and [appropriately].
+&lt;/p&gt;
+&lt;p&gt;
+&lt;strong&gt;Related nodes:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;[XP Stoicism]&lt;/li&gt;
+&lt;li&gt;[The Perfect Node]&lt;/li&gt;
+&lt;li&gt;[E2 FAQ: Klaproth]&lt;/li&gt;
+&lt;li&gt;[E2 FAQ: Chatterbox]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Do not plagiarize. Don't.&lt;/h2&gt;
+&lt;p&gt;
+If you choose to post copyrighted material that may be removed on demand of the author you &lt;i&gt;must&lt;/i&gt; cite your source(s). Not citing sources is good cause for deletion. It's just plain wrong.
+&lt;p&gt;
+&lt;strong&gt;Related nodes:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;[E2 Copyright Changes]&lt;/li&gt;
+&lt;li&gt;[E2 FAQ: Copyrighted Material]&lt;/li&gt;
+&lt;li&gt;[Fair Use]&lt;/li&gt;
+&lt;li&gt;[E2 Copyright Violations]&lt;/li&gt;
+&lt;li&gt;[Please Attribute Anything You Quote]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;
+Has all this left you bereft of any idea what you &lt;em&gt;can&lt;/em&gt; write? See [E2 FAQ: What should I node?]
+&lt;/p&gt;
+
+&lt;p align=&quot;center&quot;&gt;
+&lt;em&gt;back to&lt;/em&gt;&lt;br&gt;
+&lt;strong&gt;[Everything FAQ]&lt;/strong&gt;
+&lt;/p&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-01-31 16:57:32</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>933015</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>933015</document_id>
+  <author_user>282</author_user>
+  <package>0</package>
+  <title>Archived E2 FAQ: What NOT To Do</title>
+</node>

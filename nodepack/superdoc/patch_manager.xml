@@ -1,0 +1,228 @@
+<node>
+  <doctext>&lt;p&gt;
+Below you can see which patches [edev] and [e2coders] have been up to.
+The patchee column is the piece of code that has been patched, patcher
+is the person doing the patch. Hopefully the next column has an
+explanation of what the path is supposed to do, and the last column says
+which coder-admin (usually a member of [e2coders] or [% linkNode(1175790); %]) is
+ultimately responsible for the patch.
+&lt;/p&gt;
+&lt;p&gt;See also [Patch Importer].&lt;/p&gt;
+
+&lt;p&gt;
+The status of each patch can be
+&lt;/p&gt;
+
+&lt;dl&gt;
+&lt;dt&gt;&lt;em&gt;pending review&lt;/em&gt;
+&lt;dd&gt;The patch has been submitted but no coder admin has yet looked it
+  over.
+&lt;dt&gt;&lt;em&gt;invalid&lt;/em&gt;
+&lt;dd&gt;The patch has a mistake and will not be applied, or was
+  temporarily applied for whatever reason but is not going to be
+  reapplied again.
+&lt;dt&gt;&lt;em&gt;assigned&lt;/em&gt;
+&lt;dd&gt;A coder admin has claimed dibs on the patch or someone else has
+  decided that the assigned person is responsible for it.
+&lt;dt&gt;&lt;em&gt;later&lt;/em&gt;
+&lt;dd&gt;The patch looks like a good idea but cannot be applied right now
+  for whatever reason (e.g. another patch elsewhere has to be applied
+  jointly with this one and the other patch hasn't been written yet).
+&lt;dt&gt;&lt;em&gt;undone&lt;/em&gt;
+&lt;dd&gt;The patch has been temporarily undone because a coder is currently
+  working on it. Its status should eventually be moved to one of the
+  other statuses.
+&lt;dt&gt;&lt;em&gt;implemented&lt;/em&gt;
+&lt;dd&gt;The patch is now running code and a part of the database.
+&lt;/dl&gt;
+
+&lt;p&gt;
+Notice that these are only the patches for code that is housed in the
+database itself. For patches to the running [ecore], we have
+[http://devel.everything2.com/hg|a Mercurial repository] that you can
+also check up on. Lastly, if you are a member of [edev] and don't know
+what this is all about, [Swap|I] recommend reading [edev: Quickstart]
+or the [Coding for E2] series.
+&lt;/p&gt; &lt;!-- / --&gt;
+
+[%
+#originally ripped from [edev] (usergroup)
+
+my $str;
+
+#Let's hope that there are never two nodes with the same name that can
+#be patched. --[Swap]
+my $for_node_name = $query -&gt; param(&quot;for_node&quot;);
+my $for_node = getId(getNodeWhere({'title'=&gt;$for_node_name})) if $for_node_name;
+
+my $author_name = $query-&gt;param(&quot;author_user&quot;);
+my $author_user =  getId(getNode($author_name,&quot;user&quot;)) if $author_name;
+
+my $cur_status = $query -&gt; param(&quot;cur_status&quot;) || 1;
+
+my $assigned_to_name = $query -&gt; param(&quot;assigned_to&quot;);
+my $assigned_to = getId(getNode($assigned_to_name,&quot;user&quot;)) if $assigned_to_name;
+
+$str .= &quot;&lt;p&gt;Select your filters: &lt;/p&gt;&quot;;
+
+$str .= htmlcode('openform');
+
+$str .= &quot;&lt;table&gt;
+          &lt;tr&gt;
+          &lt;td&gt; Patchee &lt;/td&gt;
+          &lt;td&gt; Patcher &lt;/td&gt;
+          &lt;td&gt; Pstatus &lt;/td&gt;
+          &lt;td&gt; Passigned&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr&gt;&quot;;
+
+$str .= &quot;&lt;td&gt;&quot;.$query -&gt; textfield({-name =&gt; &quot;for_node&quot;,
+                                    -id   =&gt; &quot;for_node&quot;}).&quot;&lt;/td&gt;&quot;;
+$str .= &quot;&lt;td&gt;&quot;.$query -&gt; textfield({-name =&gt; &quot;author_user&quot;,
+                                    -id   =&gt; &quot;author_user&quot;}).&quot;&lt;/td&gt;&quot;;
+
+my @statuses = getNodeWhere({},'status');
+
+my %statusnames;
+my @statusids;
+push @statusids, 1;
+$statusnames{1} = &quot;Select status&quot;;
+foreach my $status(@statuses){
+  push @statusids, $$status{node_id};
+  $statusnames{$$status{node_id}} = $$status{title};
+}
+
+
+$str .= &quot;&lt;td&gt;&quot;.$query -&gt; popup_menu(&quot;cur_status&quot;,
+                                    \@statusids,
+                                    $cur_status,
+                                    \%statusnames).&quot;&lt;/td&gt;&quot;;
+
+$str .= &quot;&lt;td&gt;&quot;.$query -&gt; textfield({-name =&gt; &quot;assigned_to&quot;,
+                                    -id   =&gt; &quot;assigned_to&quot;}).&quot;&lt;/td&gt;&quot;;
+$str .= &quot;&lt;/tr&gt;&lt;/table&gt;&quot;;
+
+$str .= htmlcode('closeform');
+
+$cur_status = &quot;&quot; if $cur_status == 0;
+
+my %filters;
+$filters {'for_node'}  = $for_node if $for_node;
+$filters {'author_user'}  = $author_user if $author_user;
+$filters {'cur_status'}  = $cur_status if $cur_status != 1;
+$filters {'assigned_to'}  = $assigned_to if $assigned_to;
+
+# Number of patches to show.
+# Ask for one extra patch to see if there is a &quot;next page&quot; of patches
+my $limit = 100 + 1;
+my $offset = int $query-&gt;param(&quot;offset&quot;) || 0;
+
+my @patches = getNodeWhere(
+  \%filters
+  , 'patch'
+  , 'createtime DESC '
+    . &quot;LIMIT $limit &quot;
+    . &quot;OFFSET $offset&quot;
+);
+
+# Reduce &quot;limit&quot; to the maximum number of patches to display
+$limit--;
+my $totalpatches = scalar(@patches);
+# thispage are how many patches we are displaying on the current page
+my $thispage = ($totalpatches &gt; $limit ? $limit : $totalpatches);
+my $isnextpage = ($totalpatches &gt; $limit);
+
+return $str.'No patches?!?!?!' unless @patches;
+
+if ($offset &gt; 0 or $thispage == $limit) {
+  $str .= '&lt;p align=&quot;right&quot;&gt;';
+  my %basecgiparams = (
+      for_node =&gt; $for_node_name
+      , author_user =&gt; $author_name
+      , cur_status =&gt; $cur_status
+      , assigned_to =&gt; $assigned_to_name
+      );
+  if ($offset &gt; 0) {
+    my ($start,$end); $end = $offset; $start=$offset-$limit+1;
+    my %cgiparams = (offset =&gt; $offset - $limit);
+    %cgiparams = (%cgiparams,%basecgiparams);
+    $str .= linkNode($NODE,&quot;prev $start &amp;ndash; $end&quot;,
+                     \%cgiparams);
+    $str .= &quot;&lt;br /&gt;&quot;;
+  }
+
+  my $bot = $offset+1;
+  my $top = $offset+$thispage;
+  $str .= &quot;Now: $bot &amp;ndash; $top &lt;br/&gt;&quot;;
+
+  if ($isnextpage) {
+    my ($start,$end); $start = $offset+$limit+1; $end=$offset+2*$limit;
+    my %cgiparams = (offset =&gt; $offset + $limit);
+    %cgiparams = (%cgiparams,%basecgiparams);
+    $str .= linkNode($NODE,&quot;next $start &amp;ndash; $end&quot;,
+                     \%cgiparams);
+    $str .= &quot;&lt;br /&gt;&quot;;
+  }
+  $str .= &quot;&lt;/p&gt;\n&quot;;
+}
+
+$str .= '
+&lt;table border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;2&quot; cols=&quot;5&quot;&gt;
+&lt;tr&gt;&lt;th&gt;Patchee&lt;/th&gt;&lt;th&gt;Patcher&lt;/th&gt;&lt;th&gt;Purpose&lt;/th&gt;&lt;th width=&quot;110&quot;&gt;Pstatus&lt;/th&gt;&lt;th&gt;Passigned&lt;/th&gt;&lt;/tr&gt;';
+
+
+my $t;
+my $s;
+my $sclass;
+my $oddeven = 0; # tracks odd or even for oddrow/evenrow class
+foreach(@patches[0 .. $thispage-1]) {
+
+	$t = $$_{title};
+	if($t =~ /^(.*) \(patch\)$/) {
+    $t=$1;
+  }
+	$s = ($$_{cur_status}?
+                   getNodeById($$_{cur_status}) -&gt; {title} :
+                   (&quot;&lt;em&gt;pending review&lt;/em&gt;&quot;) );
+    $sclass = ($$_{cur_status}?
+                   ($s):
+                   (&quot;&quot;) );
+    $sclass =~ s/ /_/;
+    my $assignedText = &quot;&lt;em&gt;Unassigned&lt;/em&gt;&quot;;
+    my $assignedUser = getNodeById($$_{assigned_to});
+    $assignedText = linkNode($assignedUser, 0, {lastnode_id=&gt;0})
+        if $assignedUser;
+	
+	$str .= '&lt;tr class=&quot;oddrow&quot;&gt;'  if ($oddeven%2 == 0);
+	$str .= '&lt;tr class=&quot;evenrow&quot;&gt;' if ($oddeven%2 != 0);
+	$str .= '&lt;td valign=&quot;top&quot;&gt;'.linkNode($_,$t,{lastnode_id=&gt;0}).'&lt;/td&gt;&lt;td valign=&quot;top&quot;&gt;'.linkNode($$_{author_user}).'&lt;/td&gt;&lt;td valign=&quot;top&quot;&gt;';
+	$str .= $$_{purpose} ? '&lt;small&gt;'.htmlScreen($$_{purpose},0).'&lt;/small&gt;' : '&lt;em&gt;unknown&lt;/em&gt;';
+	$str .= '&lt;/td&gt;&lt;td valign=&quot;top&quot;';
+	$str .= &quot; class='patch_$sclass'&gt;$s&quot;;
+	$str .= '&lt;/td&gt;&lt;td align=&quot;top&quot;&gt;';
+	$str .= $assignedText;
+	$str .= &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+	$oddeven++;
+}
+
+$str .= &quot;&lt;/table&gt;&lt;/p&gt;\n&quot;;
+
+return $str;
+%]
+
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-05-03 08:04:35</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>324</hits>
+  <node_id>1295688</node_id>
+  <edittime>2011-09-15 16:35:09</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1295688</document_id>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>Patch Manager</title>
+</node>

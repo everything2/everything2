@@ -1,0 +1,47 @@
+<node>
+  <nltext></nltext>
+  <parent_container>1854181</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2008-02-19 20:58:37</createtime>
+  <lastupdate>1292362100</lastupdate>
+  <hits>30</hits>
+  <node_id>1930708</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>1312198</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1930708</nodelet_id>
+  <nlcode>&lt;ul id='notifications_list'&gt;
+[%
+# show settings dialog if no notifications active
+$query -&gt; param('showwidget', 'notificationssettings') unless $$VARS{settings} ||
+	($$NODE{title} eq 'Nodelet Settings' &amp;&amp; $$NODE{type}{title} eq 'superdoc');
+# do this here to update settings before showing nodelet:
+my $settingslink = htmlcode('nodeletsettingswidget','Notifications', 'Notification settings');
+
+my $str = &quot;&quot;;
+
+my $notification_list = htmlcode('notificationsJSON', 'wrap'); # 'wrap' to get markup for list
+my $notify_count = 1;
+
+while (defined $$notification_list{$notify_count}) {
+
+  my $notify = $$notification_list{$notify_count};
+
+  $str .= &quot;$$notify{value}\n&quot;;
+  $notify_count++;
+}
+
+$str.qq'\n&lt;/ul&gt;\n&lt;div class=&quot;nodeletfoot&quot;&gt;\n$settingslink\n&lt;/div&gt;';
+%]
+</nlcode>
+  <title>Notifications</title>
+</node>

@@ -1,0 +1,119 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>15</pagetype_nodetype>
+  <core>0</core>
+  <page>[%
+$HTMLVARS{pageheader} = '&lt;!-- put at end --&gt;'.htmlcode('settingsDocs');
+$query-&gt;start_multipart_form(-method=&gt;'POST', action=&gt;$ENV{script_name}.'?usereditpage=1', id=&gt;'pagebody') .
+$query-&gt;hidden('displaytype') .
+$query-&gt;hidden('node_id', getId $NODE).
+htmlcode('verifyRequestForm', 'edit_user')
+;
+
+%]
+&lt;p align=&quot;right&quot;&gt;[%linkNode $NODE, 'display', {displaytype=&gt;'display', lastnode_id =&gt; undef};%]
+[%
+#TODO make this an htmlcode
+#TODO allow to chose from already uploaded images
+use Everything::Experience;
+return unless Everything::isApproved($NODE, getNode('users with image', 'nodegroup')) or getLevel($NODE) &gt;= 1;
+my $isMe = getId($NODE)==getId($USER);
+my $str =  '&lt;p&gt;Your coveted user image&lt;br /&gt;';
+
+$str .= htmlcode('uploaduserimage', 'imgsrc') . '&lt;br /&gt;';
+
+my $k = 'remove_user_imgsrc';
+if( (defined $query-&gt;param('sexisgood')) &amp;&amp; (defined $query-&gt;param($k)) &amp;&amp; ($query-&gt;param($k) eq '1') ) {
+	$str .= 'image &lt;a href=&quot;/'.$$NODE{imgsrc}.'&quot;&gt;'.$$NODE{imgsrc}.'&lt;/a&gt; will no longer be displayed on '.($isMe?'your':$$NODE{title}.'\'s').' homenode';
+	my $olduserimage= &quot;/var/everything/www/&quot;.$$NODE{imgsrc};
+	# Strip fake timestamp/cache-fixing directory from filepath
+	$olduserimage =~ s&quot;/[^/]+?(/[^/]+)$&quot;$1&quot;;
+	unlink($olduserimage);
+	$$NODE{imgsrc} = '';
+	updateNode $NODE, $USER;
+	$query-&gt;param($k,'');
+}
+
+$str .= htmlcode('showuserimage','1');
+$str .= '&lt;br /&gt;' . $query-&gt;checkbox($k, '', '1', 'remove image') if (exists $$NODE{imgsrc}) &amp;&amp; length($$NODE{imgsrc});
+
+$str;
+%]
+
+&lt;p&gt;
+&lt;b&gt;Real Name&lt;/b&gt;: 
+[% 
+my $realname = $$NODE{realname};
+$realname =~ s/\&lt;/\&amp;lt\;/g;
+$realname =~ s/\&gt;/\&amp;gt\;/g;
+return $realname;
+%]&lt;br /&gt;
+[{textfield:realname}]&lt;/p&gt;
+&lt;p&gt;Change password:&lt;br /&gt;[{password_field:passwd}]&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;Email Address&lt;/b&gt;: 
+[% 
+my $email = $$NODE{email};
+$email =~ s/\&lt;/\&amp;lt\;/g;
+$email =~ s/\&gt;/\&amp;gt\;/g;
+return $email;
+%]
+&lt;br&gt;[{textfield:email,40}]&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;User's Bio&lt;/B&gt;:&lt;/p&gt;
+
+&lt;p&gt;[%
+&quot;&lt;textarea id='user_doctext' name='user_doctext'&quot;
+. htmlcode('customtextarea', '1')
+. &quot; class='formattable' &gt;&quot;
+.  encodeHTML($$NODE{doctext})
+. '&lt;/textarea&gt;';
+%] &lt;/p&gt;
+
+&lt;p&gt;[{editSingleVar:mission,mission drive within everything}]&lt;/p&gt;
+&lt;p&gt;[{editSingleVar:specialties}]&lt;/p&gt;
+&lt;p&gt;[{editSingleVar:employment,school/company}]&lt;/p&gt;
+&lt;p&gt;[{editSingleVar:motto}]&lt;/p&gt;
+[%
+
+if ($DB-&gt;isApproved($NODE,getNode('users with youtube','nodegroup'))) {
+return &quot;&lt;p&gt;&quot;.htmlcode('editSingleVar','youtube_link').&quot;&lt;/p&gt;&quot;;
+}
+
+'';
+%]
+&lt;p&gt;You can remove your bookmarks:&lt;/p&gt;
+&lt;input type=&quot;button&quot; value=&quot;Check All&quot; id=&quot;checkall&quot; style=&quot;display:none&quot;&gt;
+[{showbookmarks:edit}]
+&lt;script&gt;&lt;!--
+if (jQuery('#bookmarklist li').length &gt; 1) {
+   jQuery('#checkall').show(
+   	).click(function(){jQuery('#bookmarklist input').attr('checked','true');});
+}
+// --&gt;&lt;/script&gt;
+
+
+&lt;p align=&quot;center&quot;&gt;Your current homenode bio is shown below:&lt;/p&gt;
+&lt;hr class=&quot;clear&quot;&gt;
+&lt;table width=&quot;100%&quot; id='homenodetext'&gt;&lt;tr&gt;&lt;td&gt;
+&lt;div class='content'&gt;
+[{displayUserText}]
+&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+[{closeform}]
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-12-17 04:59:03</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>176001</htmlpage_id>
+  <hits>55</hits>
+  <node_id>176001</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>classic user edit page</title>
+  <mimetype></mimetype>
+</node>

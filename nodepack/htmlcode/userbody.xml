@@ -1,0 +1,29 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>19</hits>
+  <node_id>55</node_id>
+  <htmlcode_id>55</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $bgcolor ||= $$THEME{bodyBgcolor};
+$bgcolor ||= &quot;#FFFFFF&quot;;
+
+my $textcolor = $$THEME{bodyTextcolor};
+$textcolor ||= &quot;#000000&quot;;
+
+my $linkcolor = $$THEME{bodyLinkcolor};
+$linkcolor ||= &quot;#993333&quot;;
+
+my $vlinkcolor = $$THEME{bodyVlinkcolor};
+$vlinkcolor ||= &quot;#333399&quot;;
+
+&quot;&lt;body\ntext=\&quot;$textcolor\&quot; bgcolor=\&quot;$bgcolor\&quot; link=\&quot;$linkcolor\&quot; vlink=\&quot;$vlinkcolor\&quot;\nleftmargin=\&quot;2\&quot; marginleft=\&quot;2\&quot; rightmargin=\&quot;2\&quot; marginright=\&quot;2\&quot;\n&gt;&quot;;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>userbody</title>
+</node>

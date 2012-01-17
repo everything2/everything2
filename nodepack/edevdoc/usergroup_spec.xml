@@ -1,0 +1,166 @@
+<node>
+  <doctext>&lt;blockquote&gt;
+&lt;P&gt;(r) (5 min) [kthejoker] says Basically, we are in simplification mode right now, not really feature addition. The code behind a lot of the site is stagnant, once we have it more streamlined and easier to maintain and invoke, we can move on to things like registries, imagenodes, etc.&lt;/p&gt;
+
+&lt;P&gt;(r) (5 min) [kthejoker] says Well, I've got a lot of projects ahead, but I am trying to tackle things as a single concept and refine them. For example, my project right now is &quot;JavaScript&quot;, and I am trying not just to get it working and write some but also to document it, organize it, and offer site staff, JS coders, and end users a kind of one-stop manual for JavaScript on the site.&lt;/p&gt;
+
+&lt;P&gt;(r) (5 min) [kthejoker] says It's a little like FAQ documentation, but since it involves a lot of actual codework, it's also a way to say, &quot;We're doing it this way, we don't need this redundant code&quot; and things like that.&lt;/p&gt;
+
+&lt;P&gt;(r) (5 min) [kthejoker] says TO THAT END, one project I have been mulling over is the concept of the &quot;usergroup&quot; and what that means here at the site. So here's how you could help me: pull out a sheet of paper and write down the ideal E2 usergroup functionality.&lt;/p&gt;
+
+&lt;P&gt;(r) (5 min) [kthejoker] says Try to cover every detail - try to describe e2 pages that would help with the functionality - try to do it in terms of &quot;what sorts of variables might a usergroup node contain, what sorts of functions would be useful to a usergroup, what sorts of functions would be useful to a usergroup owner, how would it fit with other things on e2, like homenodes, writeups, superdocs, messages, etc.&quot;&lt;/p&gt;
+
+&lt;P&gt;(r) (5 min) [kthejoker] says And then what I do from there is try to match up what we already have with what we want. See where we fall short completely (no code at all), where we fall short a ltitle bit (limited functionality), see where we do things that aren't useful, etc.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr width=250&gt;
+
+&lt;br /&gt;
+&lt;br /&gt;
+
+&lt;blockquote&gt;&lt;blockquote&gt;&lt;i&gt;
+&lt;P&gt;&lt;b&gt;&quot;A [CORPORATION]&lt;/b&gt;&lt;P&gt;
+
+&lt;P align=center&gt;&lt;small&gt;...corpus=body&lt;/small&gt;&lt;/p&gt;
+
+&lt;P align=right&gt;a body... made up of individual units who are more or less like you...&lt;br /&gt;
+maybe in the same way cells come together to form a [multi-cellular organism]&lt;/p&gt;
+
+&lt;P&gt;so you [hope college|join]...&lt;br /&gt;
+...and [mutants|join]...&lt;br /&gt;
+...and [PTA|join]...&lt;/p&gt;
+
+&lt;P align=right&gt;each join... you're allowed to do and make bigger and better things...&lt;/p&gt;
+
+&lt;P&gt;&lt;b&gt;a [GLOBAL ECONOMY]&lt;br /&gt;
+[the Internet]&lt;/b&gt;&lt;/p&gt;
+
+&lt;P&gt;so there's always one level left to join &quot;up&quot; to... until you realize that you are part of this package...&lt;/p&gt;
+
+&lt;p align=center&gt;called life...&lt;/p&gt;
+
+&lt;p align=right&gt;...on [planet earth]...&quot; &lt;/p&gt;
+
+&lt;p align=center&gt;&lt;/i&gt; -- [nate], on &lt;b&gt;[Realize your connection with the Infinite]&lt;/b&gt;&lt;/p&gt;
+&lt;/blockquote&gt;&lt;/blockquote&gt;
+
+&lt;br /&gt;
+&lt;br /&gt;
+
+&lt;hr width=250&gt;
+
+&lt;P&gt;&lt;b&gt;The Usergroup nodetype&lt;/b&gt;&lt;/p&gt;
+
+&lt;P&gt;Primary purpose:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;P&gt;&lt;i&gt;Group messaging&lt;/i&gt; - A usergroup allows a noder to send private messages to a group of people through the Chatterbox system just as easily as if they were messaging only one person.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;P&gt;Secondary purposes:&lt;/p&gt;
+
+&lt;blockquote&gt;&lt;P&gt;&lt;i&gt;Permission assignment&lt;/i&gt; - Various documents and functions on E2 can be restricted only to members of a certain usergroup. By using group names, coders can prevent hard-coding individual usernames into the system.&lt;/p&gt;
+
+&lt;P&gt;&lt;i&gt;Recommending nodes&lt;/i&gt; - Members of a usergroup have the ability to recommend the node they're currently viewing to a usergroup, via a special link in the Epicenter nodelet. {note: we currently call this feature &quot;weblogging&quot;, which is sorta dumb. I think &quot;recommending&quot; (or even &quot;recommendifying&quot;, to use the typical style of the link) would be a more descriptive term - RP}&lt;/p&gt;
+
+&lt;P&gt;&lt;i&gt;Show affiliation&lt;/i&gt; - Since a homenode lists a noder's usergroup membership, joining usergroups allows a noder to display their real-world interests and affiliations. A few groups ([e2gods], [Content Editors], [edev]) also have special symbols that appear next to their names in the Other Users nodelet.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;P&gt;That's the basics. Where I think our current implementation falls down is on the subject of joining &amp; moderation.&lt;/p&gt;
+
+&lt;P&gt;&lt;i&gt;Joining a usergroup&lt;/i&gt; - Ideally, we should have 3 options here (initially set by the group creator, changeable later by the group moderators): opt-in, allow-only, and restricted.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;P&gt;Opt-in: There's a simple link on the usergroup node which says &quot;This group is open to everyone: [Join this group!]&quot;. Clicking the link immediately adds you to the usergroup.&lt;/p&gt;
+
+&lt;P&gt;Allow-only: A slightly different link which says &quot;New members to this group must be let in by a group moderator. To request permission to join this group, click here: [Join this group!]&quot;. Clicking adds the user's name to a queue, and sends an automatic message (via [Cool Man Eddie]?) to the group moderator(s), and on the user's end the text changes to: &quot;The gods are carefully weighing your request&quot; (or some such foolishness). When a moderator accepts (or rejects) the new member, E2 sends the user a [Cool Man Eddie|CME] message telling him so.&lt;/p&gt;
+
+&lt;P&gt;Restricted: Basically what we have now. New members can only be added to the group directly by the group moderators. The text reads &quot;Membership to this group is private or restricted. To join this group, send a message to the group moderator(s):&quot; and a blab box.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;P&gt;&lt;i&gt;Leaving a group&lt;/i&gt; - Every usergroup, no matter which join type, should have a &quot;Leave this group&quot; button on the group page. Clicking the button immediately removes you from the group. {an &quot;Are you sure?&quot; confirmation page might be useful here, but not strictly necessary - RP}&lt;/p&gt;
+
+&lt;P&gt;&lt;i&gt;Moderation&lt;/i&gt; - This should come in 2 flavors (initially set by the group creator, changeable later by the group moderators): Single-moderator and multi-moderator. {We could get &lt;em&gt;a lot&lt;/em&gt; more complicated than this, but I say K.I.S. - RP}&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;P&gt;Single Moderator - The group has one and only one moderator, otherwise known as the group leader. Initially, this is the group's founder. The current leader can choose to pass the moderator's hat to another member later on. {This is basically what we have now}&lt;/p&gt;
+
+&lt;P&gt;Multi-Moderator - The group begins with one moderator (the group's founder), but can have any number of moderators. Moderators can grant moderator status to others.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;P&gt;What can moderators do?
+&lt;ul&gt;
+&lt;li&gt;Add users to the group&lt;/li&gt;
+&lt;li&gt;Kick users out of the group&lt;/li&gt;
+&lt;li&gt;Grant moderator status to users (if Multi-Mod) or pass moderator status to another user (if Single-Mod)&lt;/li&gt;
+&lt;li&gt;Revoke moderator status (if Multi-mod)&lt;/li&gt;
+&lt;li&gt;Change the group description, group type, and other group options (archiving, recommendation list style, etc)&lt;/li&gt;
+&lt;li&gt;Delete entries from the group's recommendation list&lt;/li&gt;
+&lt;li&gt;Approve/reject new member requests (if Allow-only)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/p&gt;
+
+&lt;P&gt;What moderators CAN'T do:
+&lt;ul&gt;
+&lt;li&gt;Revoke their own moderator privileges (This could lead to situations where a group has no moderator, which would very likely break stuff)&lt;/li&gt;
+&lt;li&gt;Delete the group itself (A usergroup is a node. Only gods &amp; eds can delete nodes.)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/p&gt;
+
+&lt;P&gt;Nuts &amp; Bolts:&lt;/p&gt;
+
+&lt;P&gt;In OO terms, a usergroup has these parts:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;a node_id (unique)&lt;/li&gt;
+&lt;li&gt;a name (unique)&lt;/li&gt;
+&lt;li&gt;a list of members&lt;/li&gt;
+&lt;li&gt;a list of moderators&lt;/li&gt;
+&lt;li&gt;a short description {as on [usergroup lineup]}&lt;/li&gt;
+&lt;li&gt;a long description {appears on the usergroup node itself, and may include fancy code}&lt;/li&gt;
+&lt;li&gt;a join type (optin, allowonly, restricted)&lt;/li&gt;
+&lt;li&gt;a queue of users requesting membership&lt;/li&gt;
+&lt;li&gt;a mod type (singlemod, multimod)&lt;/li&gt;
+&lt;li&gt;an archiving option (on/off)&lt;/li&gt;
+&lt;li&gt;a list of recommended nodes&lt;/li&gt;
+&lt;li&gt;a recommendation link text {text that appears on the recommend button itself, eg &quot;edevify&quot;}&lt;/li&gt;
+&lt;li&gt;a recommendation list style (fulltext, blurb, link,...)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;P&gt;... and these functions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;add(user)&lt;/li&gt;
+&lt;li&gt;remove(user) {invokes unmod(user), if necessary}&lt;/li&gt;
+&lt;li&gt;optout(user) {requests confirm, then invokes remove(user)}&lt;/li&gt;
+&lt;li&gt;makemod(user)&lt;/li&gt;
+&lt;li&gt;unmod(user)&lt;/li&gt;
+&lt;li&gt;recommend(node_id)&lt;/li&gt;
+&lt;li&gt;unrecommend(node_id)&lt;/li&gt;
+&lt;li&gt;requestmembership(user)&lt;/li&gt;
+&lt;li&gt;allowmembership(user) {invokes add(user), sends /msg}&lt;/li&gt;
+&lt;li&gt;denymembership(user) {sends /msg, delete from queue}&lt;/li&gt;
+&lt;li&gt;set functions for the other options&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;{note: all of the code for sending group messages should be handled by the message system - RP}&lt;/p&gt;
+
+&lt;P&gt;Stuff you'll need to make it work:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;i&gt;a usergroup page&lt;/i&gt; - equivalent to the homenode page of an individual user. Like a homenode, it has two &quot;sides&quot;: a display side (with an &quot;edit&quot; link) and an edit side (with a &quot;display&quot; link). Only moderators can access the &quot;edit&quot; side. The display side can be seen by everyone including non-members, though it offers slightly different options at the bottom depending on the group type and user.&lt;/li&gt;
+&lt;li&gt;&lt;i&gt;an are-you-sure-you-want-to-leave?&lt;/i&gt; page, maybe&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;&lt;i&gt;the [usergroup lineup] node&lt;/i&gt; to act as a comprehensive directory&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;&lt;i&gt;a [Create a usergroup] page&lt;/i&gt;? {Right now, creating groups is monkeys-only. Should this be a level power? - RP}&lt;/li&gt;
+&lt;/ul&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-05-01 19:33:19</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1883477</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>854232</type_nodetype>
+  <document_id>1883477</document_id>
+  <author_user>1133650</author_user>
+  <package>0</package>
+  <title>usergroup spec</title>
+</node>

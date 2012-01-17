@@ -1,0 +1,965 @@
+<node>
+  <doctext>&lt;p&gt;TEXT TEXT TEXT&lt;/p&gt;
+
+&lt;h3&gt;Bookmark testing&lt;/h3&gt;
+[%
+my $getMaxMessage = sub {
+  my $maxMsg = 
+    $DB-&gt;sqlSelect(
+      'MAX(message_id)'
+      , 'message'
+     );
+  return $maxMsg;
+};
+
+my $listEddieMessagesSince = sub {
+  my ($messageIdSince) = @_;
+  my $eddieUserId = getId(getNode('Cool Man Eddie', 'user'));
+  my $messages = 
+    $DB-&gt;sqlSelectMany(
+       &quot;message_id, msgtext, for_user&quot;
+       , 'message'
+       , &quot;author_user = $eddieUserId
+          AND message_id &gt; $messageIdSince
+          ORDER BY message_id DESC
+          LIMIT 15&quot;
+       );
+  my $messagesHash = $messages-&gt;fetchall_hashref('message_id');
+  my $str = &quot;&quot;;
+
+  for my $messageId (sort keys %$messagesHash) {
+    $str .= $query-&gt;li(
+        &quot;to &quot; . linkNode($$messagesHash{$messageId}-&gt;{for_user})
+        . &quot; '&quot; . $$messagesHash{$messageId}-&gt;{msgtext} . &quot;'&quot;
+        );
+  }
+
+  if ($str ne '') {
+     return ''
+      . $query-&gt;h3(&quot;Cool Man Eddies says:&quot;)
+      . $query-&gt;ol($str)
+      ;
+  } else {
+     return $query-&gt;p('No Eddie messages.');
+  }
+
+};
+my $listBookmarks = sub {
+
+  my $userId = getId(shift);
+  my $bookmarkId = getId(getNode('bookmark', 'linktype'));
+  my $bookmarks =
+    $DB-&gt;sqlSelectMany(
+       &quot;to_node&quot;
+       , 'links'
+       , &quot;from_node = $userId
+          AND linktype = $bookmarkId
+          ORDER BY addtime DESC
+          LIMIT 5&quot;
+       );
+  my $bookmarkArrayref = $bookmarks-&gt;fetchall_arrayref();
+  my $bookmarkStr = '';
+
+  my $bookmarkCount = scalar @$bookmarkArrayref;
+
+  $bookmarkStr .= 
+     $query-&gt;p(&quot;Total bookmark count is $bookmarkCount.&quot;);
+
+  if ($bookmarkCount) {
+
+    my $bookmarkList =
+      join &quot;\n&quot;,
+        map { $query-&gt;li(linkNode($$_[0])); } reverse @$bookmarkArrayref;
+    $bookmarkStr .= $query-&gt;ol($bookmarkList);
+
+  }
+
+  return $bookmarkStr;
+};
+
+my $str = &quot;&quot;;
+my $bookmarkNode = getNode('April 18, 2008', 'e2node');
+
+$str .= &amp;$listBookmarks($USER);
+
+my $bookmarkResult = htmlcode('bookmarker', $$bookmarkNode{node_id}, 'bookmark');
+$str .=
+  $query-&gt;p(&quot;Bookmarking &quot; . linkNode($bookmarkNode) . &quot;:&quot;)
+  . $bookmarkResult
+  ;
+$str .= &amp;$listBookmarks($USER);
+
+$str .= &amp;$listEddieMessagesSince(0);
+
+return $str;
+%]
+
+&lt;hr&gt;
+&lt;h3&gt;Date Testing&lt;/h3&gt;
+[%
+return &quot;&lt;p&gt;isSpecialDate('aprilfools') = &quot;
+ . htmlcode('isSpecialDate', 'aprilfools')
+ . &quot;&lt;/p&gt;&quot;
+ ;
+%]
+&lt;hr&gt;
+&lt;h3&gt;Notification testing&lt;/h3&gt;
+[%
+my $checkUser = $query-&gt;param('check_user') || 'rootbeer277';
+my $rb = getNode($checkUser, 'user');
+
+my $checker = sub {
+   my $notify = shift;
+   my $isReceiving = htmlcode('getWantsNotification', $rb, $notify);
+   my $rcv = $isReceiving == 1 ? &quot;is &quot; : &quot;is not ($isReceiving)&quot;;
+   return &quot;$$rb{title} $rcv reciving $notify notifications.&quot;;
+};
+
+my $str = &quot;&quot;;
+
+$str .= ''
+   . &amp;$checker('experience') . '&lt;br&gt;'
+   . &amp;$checker('newbiewriteup') . '&lt;br&gt;'
+   . &amp;$checker('mostwanted') . '&lt;br&gt;'
+   . &amp;$checker('fake') . '&lt;br&gt;'
+  ;
+
+%]
+
+&lt;hr&gt;
+
+&lt;h3&gt;Scratchpad stuff testing&lt;/h3&gt;
+[%
+my $checkUser = $query-&gt;param('check_user') || 'rootbeer277';
+my $rb = getNode($checkUser, 'user');
+
+my $spCount = htmlcode('count scratchpads', $rb);
+
+return &quot;&lt;p&gt;$$rb{title} has $spCount scratchpads.&lt;/p&gt;&quot;;
+%]
+&lt;hr class=&quot;clear&quot;&gt;
+&lt;h3&gt;ekw testing&lt;/h3&gt;
+&lt;p&gt;
+[% return &quot;Is Ekw&quot; if htmlcode('isEkw');
+return &quot;Is Zen&quot; if htmlcode('isZen');
+&quot;Is something else&quot;
+ %]
+&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3&gt;urlToNode test&lt;/h3&gt;
+&lt;pre&gt;
+[%
+my $N = getNodeById(1991051);
+
+return htmlcode('urlToNode', $N);
+%]
+&lt;/pre&gt;
+&lt;hr&gt;
+
+&lt;h3&gt;Auto-reconnect test&lt;/h3&gt;
+&lt;dl&gt;
+&lt;dt&gt;Do we auto-reconnect?
+&lt;/dt&gt;
+&lt;dd&gt;
+[%
+my $dbh = $DB-&gt;getDatabaseHandle();
+$dbh-&gt;{mysql_auto_reconnect} ? &quot;yes&quot; : &quot;no&quot;;
+%]
+&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;hr&gt;
+&lt;h3&gt;NotificationsJSON craziness&lt;/h3&gt;
+[%
+my $limit = 10;
+
+use JSON;
+my $str;
+
+# hide node notes from non-editors
+my $isEditor = htmlcode('isEditor');
+my %editorOnlyNotifications = ( 1930989 =&gt; 1, );
+my %excludeNotifications = ();
+
+if (!$isEditor) {
+   %excludeNotifications = %editorOnlyNotifications;
+}
+
+my $otherNotifications = &quot;0&quot;;
+
+if ($$VARS{settings}) {
+
+   my $notificationList = %{from_json($$VARS{settings})}-&gt;{notifications};
+   my @notify;
+
+   for (keys %{$notificationList}) {
+      next if $excludeNotifications{$_};
+      push @notify, $_;
+   }
+
+   $otherNotifications = join(&quot;,&quot;,@notify);
+
+}
+
+my $currentTime = time;
+my $sqlString = &lt;&lt;ENDSQL;
+
+SELECT notified.notification_id, notified.args, notified.notified_id
+  , UNIX_TIMESTAMP(notified.notified_time) 'notified_time'
+  , (hourLimit * 3600 - $currentTime + UNIX_TIMESTAMP(notified.notified_time)) AS timeLimit
+  FROM notified
+  INNER JOIN notification
+    ON notification.notification_id = notified.notification_id
+  LEFT OUTER JOIN notified AS reference
+    ON reference.user_id = $$USER{user_id} 
+    AND reference.reference_notified_id = notified.notified_id
+    AND reference.is_seen = 1
+  WHERE
+    (
+     notified.user_id = $$USER{user_id}
+     AND notified.is_seen = 0
+    )
+    OR 
+    (
+     notified.user_id IN ($otherNotifications)
+     AND reference.is_seen IS NULL
+    )
+  HAVING (timeLimit &gt; 0)
+  ORDER BY notified_id DESC
+  LIMIT $limit
+
+ENDSQL
+
+return $sqlString;
+
+my $dbh = $DB-&gt;getDatabaseHandle();
+my $db_notifieds = $dbh-&gt;selectall_arrayref($sqlString, {Slice =&gt; {}} );
+my $notification_list = { };
+my $notify_count = 1;
+
+foreach my $notify (@$db_notifieds) {
+
+	my $argJSON = $$notify{args};
+	$argJSON =~ s/'/\'/g;
+	my $codeStr = '
+	use JSON;
+	my $argSet = \''.$argJSON.'\';
+	my $args = JSON::from_json($argSet);
+	'.getNodeById($$notify{notification_id})-&gt;{code};
+
+	$$notification_list{$notify_count}
+		= {
+				id =&gt; $$notify{notified_id},
+				value =&gt; parseLinks(evalCode($codeStr)),
+				timestamp =&gt; $$notify{notified_time},
+		}
+		;
+	$$notification_list{$$notify{notified_id}} = 1;
+	$notify_count++;
+}
+
+return $notification_list;
+
+
+%]
+&lt;h3&gt;Twitterish Testing&lt;/h3&gt;
+[%
+return unless $query &amp;&amp; $query-&gt;param('short_string');
+
+my $shortString = $query-&gt;param('short_string');
+
+my $redirectNode = htmlcode('decode short string', $shortString);
+if (!defined $redirectNode) {
+
+   return
+      '&lt;h3&gt;Short URL Error&lt;/h3&gt;'
+      . &quot;&lt;p&gt;&quot;
+      . &quot;The string &lt;strong&gt;$shortString&lt;/strong&gt; doesn't appear to go anywhere.  Why not &quot;
+      . htmlcode('randomnode', 'try a random node')
+      . &quot; instead?&quot;
+      . &quot;&lt;/p&gt;&quot;
+      ;
+
+}
+
+my $urlParams = { };
+my $bNoQuoteUrl = 1;
+
+$HTMLVARS{redirect_url} = urlGen($urlParams, $bNoQuoteUrl, $redirectNode);
+$HEADER_PARAMS{-status} = 303;
+$HEADER_PARAMS{-location} =
+  'http://' . $ENV{HTTP_HOST} . $HTMLVARS{redirect_url}
+  ;
+%]
+[%
+my $shortifyNode;
+my $shortifyTitle = $query-&gt;param('shortifyTitle');
+$shortifyNode = getNode($shortifyTitle, 'user') if defined $shortifyTitle;
+$shortifyNode = $NODE unless defined $shortifyNode;
+my $shortUrlForHere = htmlcode('create short url', $shortifyNode);
+my $reversedNode = htmlcode('decode short string', &quot;EW43&quot;);
+my $nodeLink =
+  defined $reversedNode ?
+  linkNode($reversedNode) . &quot;.&quot;
+  : &quot;an invalid node!&quot;
+  ;
+
+my $str = ''
+  . htmlcode('openform', 'shortifyForm', 'GET')
+  . $query-&gt;textfield('shortifyTitle')
+  . $query-&gt;submit(&quot;Shortify&quot;)
+  . $query-&gt;end_form()
+  . '&lt;p&gt;' 
+  . &quot;Short URL for here ($$shortifyNode{node_id}) is $shortUrlForHere&quot;
+  . &quot;.  Looking up the fixed string EW43 goes to &quot; . $nodeLink
+  . '&lt;/p&gt;'
+
+  . '&lt;p&gt;'
+  . &quot;Directly looking up myself by node_id $$NODE{node_id} links as:&quot;
+  . linkNode(getNodeById($$NODE{node_id}))
+  . &quot;.&quot;
+  . '&lt;/p&gt;'
+  ;
+
+return $str;
+%]
+&lt;hr&gt;
+&lt;h3&gt;Test bookmarking&lt;/h3&gt;
+&lt;p&gt;A simple attempt to make [socialBookmarks] load fewer images.&lt;/p&gt;
+&lt;style type=&quot;text/css&quot;&gt;
+.socialbutton_container {
+   clear: both;
+   min-height: 20px;
+}
+&lt;/style&gt;
+
+[%
+return &quot;&lt;p&gt;&quot;
+  . &quot;\$ENV{HTTP_HOST} : $ENV{HTTP_HOST}&lt;br&gt;&quot;
+  . &quot;\$CONFIG{canonical_web_server} : $CONFIG{canonical_web_server}&quot;
+  . &quot;&lt;/p&gt;&quot;
+  ;
+%]
+&lt;div class=&quot;socialbutton_container&quot;&gt;
+[%
+
+my $bDontQuoteUrl = 1;
+my $targetNode = 1928483;
+getRef $targetNode;
+return '' unless $targetNode;
+my $parentNode = getNode($$targetNode{parent_e2node}) if $$targetNode{parent_e2node};
+$targetNode = $parentNode if $parentNode;
+
+my $url = 'http://' . $1 if $ENV{HTTP_HOST} =~ /(?:.+?\.)($CONFIG{canonical_web_server})(?::\d+)/ ;
+$url = 'http://' . $CONFIG{canonical_web_server};
+$url .= urlGen({ }, $bDontQuoteUrl, $targetNode);
+my $title = $$targetNode{title};
+my $includeTitles = 0;
+my $asList = 0;
+my @defaultNetworks = (
+  'twitter', 'facebook', 'delicious', 'digg', 'stumbleupon', 'reddit'
+  );
+my @allNetworks = (
+  'twitter', 'facebook', 'delicious', 'yahoomyweb', 'googlebookmarks'
+  , 'blinklist', 'magnolia', 'windowslive', 'digg', 'netscape'
+  , 'stumbleupon', 'technorati', 'newsvine', 'reddit', 'tailrank'
+  );
+
+my $socialSites = {
+  'delicious'
+    =&gt; {
+      posturl =&gt; 'http://del.icio.us/post'
+      , params =&gt; { 'title' =&gt; $title, 'url' =&gt; $url }
+      , classname =&gt; 'social_delicious'
+      , listname =&gt; 'del.icio.us'
+    }
+    ,
+  'facebook'
+    =&gt; {
+      posturl =&gt; 'http://www.facebook.com/share.php'
+      , params =&gt; { 't' =&gt; $title, 'u' =&gt; $url }
+      , classname =&gt; 'social_facebook'
+      , listname =&gt; 'Facebook'
+    }
+    ,
+  'yahoomyweb'
+    =&gt; {
+      posturl =&gt; 'http://myweb2.search.yahoo.com/myresults/bookmarklet'
+      , params =&gt; { 't' =&gt; $title, 'u' =&gt; $url }
+      , classname =&gt; 'social_yahoo'
+      , listname =&gt; 'Yahoo! MyWeb'
+    }
+    ,
+  'googlebookmarks'
+    =&gt; {
+      posturl =&gt; 'http://www.google.com/bookmarks/mark'
+      , params =&gt; { 'op' =&gt; 'edit', 'title' =&gt; $title, 'bkmk' =&gt; $url }
+      , classname =&gt; 'social_googlebookmarks'
+      , listname =&gt; 'Google Bookmarks'
+    }
+    ,
+  'blinklist'
+    =&gt; {
+      posturl =&gt; 'http://blinklist.com/index.php'
+      , params =&gt; { 'Action' =&gt; 'Blink/addblink.php', 'Title' =&gt; $title, 'Url' =&gt; $url }
+      , classname =&gt; 'social_blinklist'
+      , listname =&gt; 'BlinkList'
+    }
+    ,
+  'magnolia'
+    =&gt; {
+      posturl =&gt; 'http://ma.gnolia.com/bookmarklet/add'
+      , params =&gt; { 'title' =&gt; $title, 'url' =&gt; $url }
+      , classname =&gt; 'social_magnolia'
+      , listname =&gt; 'ma.gnol.ia'
+    }
+    ,
+  'windowslive'
+    =&gt; {
+      posturl =&gt; 'https://favorites.live.com/quickadd.aspx'
+      , params =&gt; { 'marklet' =&gt; 1, 'mkt' =&gt; 'en-us', 'title' =&gt; $title, 'url' =&gt; $url, &quot;top&quot; =&gt; 1 }
+      , classname =&gt; 'social_windowslive'
+      , listname =&gt; 'Windows Live'
+    }
+    ,
+  'digg'
+    =&gt; {
+      posturl =&gt; 'http://digg.com/submit'
+      , params =&gt; { 'phase' =&gt; 2, 'title' =&gt; $title, 'url' =&gt; $url }
+      , classname =&gt; 'social_digg'
+      , listname =&gt; 'Digg'
+    }
+    ,
+  'netscape'
+    =&gt; {
+      posturl =&gt; 'http://www.netscape.com/submit/'
+      , params =&gt; { 'T' =&gt; $title, 'U' =&gt; $url }
+      , classname =&gt; 'social_netscape'
+      , listname =&gt; 'Netscape'
+    }
+    ,
+  'stumbleupon'
+    =&gt; {
+      posturl =&gt; 'http://www.stumbleupon.com/submit'
+      , params =&gt; { 'title' =&gt; $title, 'url' =&gt; $url }
+      , classname =&gt; 'social_stumbleupon'
+      , listname =&gt; 'StumbleUpon'
+    }
+    ,
+  'technorati'
+    =&gt; {
+      posturl =&gt; 'http://www.technorati.com/faves'
+      , params =&gt; { 'add' =&gt; $url }
+      , classname =&gt; 'social_technorati'
+      , listname =&gt; 'Technorati'
+    }
+    ,
+  'newsvine'
+    =&gt; {
+      posturl =&gt; 'http://www.newsvine.com/_wine/save'
+      , params =&gt; { 'h' =&gt; $title, 'u' =&gt; $url }
+      , classname =&gt; 'social_newsvine'
+      , listname =&gt; 'Newsvine'
+    }
+    ,
+  'reddit'
+    =&gt; {
+      posturl =&gt; 'http://www.reddit.com/submit'
+      , params =&gt; { 'title' =&gt; $title, 'url' =&gt; $url }
+      , classname =&gt; 'social_reddit'
+      , listname =&gt; 'Reddit'
+    }
+    ,
+  'tailrank'
+    =&gt; {
+      posturl =&gt; 'http://tailrank.com/share/'
+      , params =&gt; { 'title' =&gt; $title, 'link_href' =&gt; $url }
+      , classname =&gt; 'social_tailrank'
+      , listname =&gt; 'TailRank'
+    }
+    ,
+  'twitter'
+    =&gt; {
+      posturl =&gt; 'http://twitter.com/home'
+      , params =&gt; { 'status' =&gt; &quot;$title - $url&quot; }
+      , classname =&gt; 'social_twitter'
+      , listname =&gt; 'Twitter'
+      , imagename =&gt; 'twitter-a.gif'
+    }
+};
+
+my $makeSocialLink = sub {
+
+  my ($networkName, $url, $title, $includeTitles, $asList) = @_;
+  my ($link, $str) = ('', '');
+  my $site = $$socialSites{$networkName};
+
+  my $postUrl = 
+    $$site{posturl}
+    . '?'
+    . (join '&amp;', map{ $_ . '=' . CGI::escape($$site{params}-&gt;{$_}) } keys %{$$site{params}})
+    ;
+
+  $link =
+    &quot;&lt;a href=\&quot;$postUrl\&quot; target=\&quot;_new\&quot; onClick=\&quot;window.location='&quot;
+      . urlGen(
+        {
+          'node_id'         =&gt; $$NODE{node_id}
+          , 'op'            =&gt; 'socialBookmark'
+          , 'bookmark_site' =&gt; $networkName
+        }
+        , $bDontQuoteUrl
+      )
+    . &quot;'\&quot;&gt;&quot;
+    ;
+
+  my $bookmarkCode = &quot;&lt;div class=\&quot;social_button social_$networkName\&quot;&gt;&quot; . $link . &quot;&lt;/a&gt;&lt;/div&gt;\n&quot;;
+  $bookmarkCode .= $link . &quot;$$site{listname}&lt;/a&gt;\n&quot; if $includeTitles;
+  $bookmarkCode = &quot;&lt;li&gt;\n\t$bookmarkCode&lt;/li&gt;\n&quot; if $asList;
+  return $bookmarkCode;
+
+};
+
+my $str = '';
+$str .= join '', map { &amp;$makeSocialLink($_, $url, $title, $includeTitles, $asList); } @defaultNetworks;
+$str = &quot;&lt;ul class=\&quot;bookmarkList\&quot;&gt;\n$str&lt;/ul&gt;\n&quot; if $asList;
+$str .= &quot;&lt;/div&gt;&quot;;
+
+my $list = '';
+$asList = 1;
+$includeTitles = 1;
+$list .= join '', map { &amp;$makeSocialLink($_, $url, $title, $includeTitles, $asList); } @allNetworks;
+$list = &quot;&lt;ul class=\&quot;bookmarkList\&quot;&gt;\n$list&lt;/ul&gt;\n&quot; if $asList;
+
+$str .= $list;
+
+return $str;
+%]
+
+&lt;br /&gt;
+
+&lt;hr&gt;
+&lt;h3&gt;Music!&lt;/h3&gt;
+[%
+my $str = '';
+$str .= htmlcode('openform', 'viewForm', 'GET')
+     . '&lt;button title=&quot;Add additional World Cup content&quot;'
+     . ' onClick=&quot;flatify(this);return false;&quot;&gt;'
+     . '&lt;img src=&quot;/images/futbol.png&quot;&gt;'
+     . '&lt;/button&gt;'
+     . $query-&gt;end_form();
+return $str;
+%]
+&lt;hr&gt;
+&lt;h3&gt;Cache Header Modifiction&lt;/h3&gt;
+[%
+my $str = '';
+
+use DateTime;
+use DateTime::Format::Strptime;
+my $modifiedTimeFormat = '%a, %d %b %Y %T %Z';
+my $dtNow = DateTime-&gt;now();
+my $dateParser = new DateTime::Format::Strptime(
+  pattern     =&gt; $modifiedTimeFormat
+  , locale      =&gt; 'en_US'
+);
+$str .= &quot;Formatted date: &quot;
+  . $dateParser-&gt;format_datetime($dtNow)
+  ;
+
+$HEADER_PARAMS{'-Last-Modified'} = 'Wed, 15 Nov 1995 04:58:08 GMT';
+# $HEADER_PARAMS{'-X-Foobar'} = 'Wed, 15 Nov 1995 04:58:08 GMT';
+$str;
+%]
+&lt;h3&gt;User Age Testing&lt;/h3&gt;
+[%
+use DateTime;
+use DateTime::Format::Strptime;
+
+# Determine if this is a user created in the last two weeks
+my $dateParser = new DateTime::Format::Strptime(
+  pattern     =&gt; '%F %T',
+  locale      =&gt; 'en_US',
+);
+my $createTime = $dateParser-&gt;parse_datetime($$USER{createtime});
+my $userAge = DateTime-&gt;now()-&gt;subtract_datetime($createTime);
+my %userAgeDeltas = $userAge-&gt;deltas();
+my $youngAge = DateTime::Duration-&gt;new(days =&gt; 14);
+my %youngAgeDeltas = $youngAge-&gt;deltas();
+
+my $str =
+  &quot;&lt;p&gt;&quot;
+  . &quot;Current age: &quot;
+  . (join ', ', map { &quot;$userAgeDeltas{$_} ${_}&quot; } keys %userAgeDeltas)
+  . &quot;&lt;br&gt;&quot;
+  . &quot;Young age: &quot;
+  . (join ', ', map { &quot;$youngAgeDeltas{$_} ${_}&quot; } keys %youngAgeDeltas)
+  . &quot;&lt;br&gt;&quot;
+  . &quot;Current age is young? &quot;
+  . (DateTime::Duration-&gt;compare($userAge, $youngAge) &lt; 0 ? &quot;yes&quot; : &quot;no&quot;)
+  . &quot;&lt;/p&gt;&quot;
+  ;
+
+return $str;
+%]
+&lt;hr&gt;
+&lt;h3&gt;Explain SQL Testing&lt;/h3&gt;
+[%
+
+return htmlcode('explainsql', 'SELECT title FROM node WHERE LENGTH(node.title) &lt; 3 ORDER BY node_id DESC LIMIT 50');
+
+%]
+[%
+return &quot;&quot;;
+# short circuit since this doesn't work
+return &quot;&quot;
+  . &quot;&lt;p&gt;&quot;
+  . &quot;Injection attempt&quot;
+  . &quot;&lt;/p&gt;&quot;
+  . htmlcode('explainsql', &quot;; UPDATE node SET title = 'OLDMINER' WHERE title = 'OldMiner' --&quot;);
+  ;
+
+%]
+[%
+my $json_result = to_json( [&quot;SOME SQL STRING&quot;] );
+my $json_reverse = join(',', @{from_json($json_result)});
+
+return &quot;&quot;
+  . &quot;&lt;p&gt;&quot;
+  . &quot;Result: $json_result &lt;br&gt;&quot;
+  . &quot;Transform back: $json_reverse &lt;br&gt;&quot;
+  . &quot;&lt;/p&gt;&quot;
+  ;
+%]
+
+&lt;h3&gt;New!  With added Sanity!&lt;/h3&gt;
+[%
+
+my $test_node_id = 1988581; # ktj's [test tube]
+my $refBeforeDaylog = ref $test_node_id;
+my $isDaylog = htmlcode('isdaylog', $test_node_id);
+my $refAfterDaylog = ref $test_node_id;
+getRef($test_node_id);
+my $refAfterGetRef = ref $test_node_id;
+my $sane_it_ized = htmlcode('make node sane', $test_node_id);
+my $str = &quot;&quot;;
+
+$str .=
+  &quot;&lt;p&gt;&quot;
+  . &quot;PreDaylog test ref: $refBeforeDaylog&quot;
+  . &quot;&lt;br&gt;&quot;
+  . &quot;Daylog test: $isDaylog&quot;
+  . &quot;&lt;br&gt;&quot;
+  . &quot;PostDaylog test ref: $refAfterDaylog&quot;
+  . &quot;&lt;br&gt;&quot;
+  . &quot;PostgetRef ref: $refAfterGetRef&quot;
+  . &quot;&lt;/p&gt;&quot;
+  ;
+
+$str .=
+  &quot;&lt;p&gt;&quot;
+  . &quot;Adding sanity to &quot; . linkNode(getNodeById($test_node_id))
+  . &quot;&lt;/p&gt;&quot;
+  ;
+
+
+$str .=
+  &quot;&lt;p&gt;&quot;
+  ;
+
+if (defined $sane_it_ized) {
+
+  $str .=
+    linkNode($sane_it_ized)
+    . &quot; ($sane_it_ized) &quot;
+    . &quot; is of type &quot; . ref $sane_it_ized
+    ;
+
+} else {
+
+  $str .=
+    &quot;Result from htmlcode was undef.&quot;
+    ;
+
+}
+
+$str .=
+  &quot;&lt;/p&gt;&quot;
+  ;
+
+return $str;
+%]
+&lt;hr&gt;
+&lt;h3&gt;Infection Testing&lt;/h3&gt;
+[%
+
+my $infected = htmlcode('checkInfected');
+
+my $str = &quot;&lt;p&gt;&quot;;
+
+if ($infected == 1) {
+  $str .= &quot;Keep away filthy vermin!&quot;;
+
+} else {
+  $str .= &quot;sup? ($infected)&quot;;
+
+}
+
+$str .= &quot;&lt;/p&gt;&quot;;
+
+$str;
+%]
+&lt;hr&gt;
+&lt;h3&gt;Vars encoding testing&lt;/h3&gt;
+[%
+use URI::Escape(qw/uri_escape_utf8/);
+my $v =
+  join '&amp;',
+    map {
+      uri_escape_utf8($$_[0])
+      . '='
+      . uri_escape_utf8($$_[1])
+    }
+    map { [ $_, $$VARS{$_} ] } keys %$VARS
+    ;
+$v =~ s/\n//g;
+
+my $w = $$USER{vars};
+utf8::encode($w);
+$w =~ s/\n//g;
+
+my $str = '';
+$str .= '&lt;script type=&quot;text/javascript&quot;&gt;';
+$str .= &quot;var URIuserVars = \&quot;$v\&quot;
+&quot;;
+$str .= &quot;var UTFuserVars = \&quot;$w\&quot;
+&quot;;
+$str .= '&lt;/script&gt;';
+
+$str;
+%]
+
+&lt;h3&gt;isinUsergroup Testing&lt;/h3&gt;
+
+[%
+my @groups = qw/metacoders edev e2coders/;
+
+my $str = &quot;&quot;;
+
+$str .= &quot;&lt;p&gt;You are a $$USER{type}-&gt;{title}&lt;/p&gt;\n&quot;;
+$str .= &quot;&lt;dl&gt;\n&quot;;
+
+for my $group (@groups) {
+
+   my $ug = getNode($group, 'usergroup');
+   $str .= &quot;&lt;dt&gt;$group ($$ug{type}{title})&lt;/dt&gt;\n&quot;;
+   
+   $str .= &quot;&lt;dd&gt;&quot;;
+   $str .=
+      htmlcode('isinUsergroup', $$USER{user_id}, $group, 1) ?
+         &quot;member&quot;
+         : &quot;not a member&quot;
+         ;
+   $str .= &quot;&lt;/dd&gt;\n&quot;;
+   my $ugid = $$ug{node_id};
+   my $g = $$ug{group};
+   if ($g) {
+      $str .= &quot;&lt;dd&gt;&quot;;
+      $str .= &quot;members: &quot; .
+         join &quot;, &quot;, map { linkNode(getNodeById($_)) } @$g
+         ;
+      $str .= &quot;&lt;/dd&gt;\n&quot;;
+   }
+
+}
+
+$str .= &quot;&lt;/dl&gt;\n&quot;;
+$str;
+%]
+&lt;hr&gt;
+
+&lt;h3&gt;DBI transaction testing&lt;/h3&gt;
+
+[%
+
+my $dbh = $DB-&gt;getDatabaseHandle();
+my $str = &quot;&quot;;
+
+$str .= &quot;&lt;p&gt;AutoCommit at start: $$dbh{AutoCommit}&lt;/p&gt;&quot;;
+
+$str .= &quot;&lt;p&gt;Disabling AutoCommit and then committing.&lt;/p&gt;&quot;;
+
+
+$dbh-&gt;{AutoCommit} = 0;
+$dbh-&gt;commit();
+
+$str .= &quot;&lt;p&gt;AutoCommit at end: $$dbh{AutoCommit}&lt;/p&gt;&quot;;
+
+$dbh-&gt;{AutoCommit} = 1;
+
+return $str;
+
+%]
+&lt;hr&gt;
+
+&lt;h3&gt;Star rating testing&lt;/h3&gt;
+
+[%
+my $defaultTargetNode = 'tea bag';
+my $targetNodeName = $query-&gt;param('targetNode') || $defaultTargetNode;
+my $targetNode = getNode($targetNodeName, 'e2node');
+my $targetNodeId = $$targetNode{node_id};
+
+my $sessionId = htmlcode('getStarRatingSessionId');
+my $condition = htmlcode('getStarRatingCondition');
+
+my $rating = htmlcode('getStarRating', $targetNode);
+my $ratingStr = (defined $rating ? $rating : &quot;(not yet set)&quot;);
+my $avgRating = htmlcode('getAverageStarRating', $targetNode);
+my $avgRatingStr = (defined $avgRating ? $avgRating : &quot;(not yet set)&quot;);
+
+my $ratingDefault = (defined $rating ? $rating : 5);
+
+my $str;
+
+$str .= &quot;&lt;p&gt;Opcode debug: $HTMLVARS{'opcodedebug'}&lt;/p&gt;&quot;;
+
+# Because of screwiness in ecore, you have to delete the op param
+#  if you want to set it without manually typing out an input field
+$query-&gt;delete_all();
+
+$str .= htmlcode('openform', 'viewForm', 'GET');
+$str .= &quot;&lt;p&gt;View node: &quot; 
+  . $query-&gt;textfield('targetNode', $targetNodeName) . &quot;\n&quot;
+  ;
+
+$str .= $query-&gt;submit(&quot;view rating&quot;)
+  . $query-&gt;end_form();
+
+$str .= &quot;&lt;p&gt;Your session id is $sessionId.  Your condition is $condition.&lt;/p&gt;&quot;;
+
+$str .= &quot;&lt;p id=\&quot;ratingStatus\&quot;&gt;&quot;;
+$str .= &quot;Looking at node &quot; . linkNode($targetNode)
+  . &quot; ($targetNodeId).  &quot;
+  . &quot;Has star rating of ${ratingStr} with an average rating of ${avgRatingStr}.&quot;
+  . &quot;&lt;/p&gt;&quot;
+  ;
+
+$str .= htmlcode('openform', 'rateForm', 'PUT');
+
+$str .= &quot;Rate Node: &quot;
+  . $query-&gt;hidden('targetNode', $targetNodeName) . &quot;\n&quot;
+  . $query-&gt;hidden(-name =&gt; 'rating_node', -value =&gt; $targetNodeId) . &quot;\n&quot;
+  . $query-&gt;hidden(-name =&gt; &quot;op&quot;, -value =&gt; &quot;starRate&quot;) . &quot;\n&quot;
+  . htmlcode('verifyRequestForm', 'starrating') . &quot;\n&quot;
+  . $query-&gt;popup_menu(
+      -name =&gt; 'rating'
+      , -values =&gt; [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      , -default =&gt; $ratingDefault
+      )
+  . &quot;\n&quot;
+  ;
+
+
+$str .= $query-&gt;submit(&quot;set rating&quot;)
+  . $query-&gt;end_form();
+
+$str;
+%]
+
+&lt;hr&gt;
+
+&lt;h3&gt;Recent Activity Dump&lt;/h3&gt;
+[%
+my $sqlString = &lt;&lt;SQLEND;
+
+SELECT node.title, type.title as type, node.node_id, author.title as author, node.createtime
+  FROM node, node as type, node as author
+  WHERE
+     type.node_id = node.type_nodetype
+     AND author.node_id = node.author_user
+  ORDER BY node_id DESC
+  LIMIT 40
+
+SQLEND
+
+my $cursor = $DB-&gt;getDatabaseHandle()-&gt;prepare($sqlString);
+$cursor-&gt;execute();
+
+my ($str, $hdr) = ('', '');
+my $rowNum = 1;
+
+# Display routine copie from SQL Prompt
+while(my $ROW = $cursor-&gt;fetchrow_hashref()) {
+
+}
+
+$cursor-&gt;finish();
+
+return $str;
+
+%]
+&lt;h3&gt;Logging test&lt;/h3&gt;
+&lt;p&gt;Disabled this to avoid putting spurious items in the logs for now.  Code commented out for future use.  (See [Ajax Update] which now uses this manual error calling to make more useful (and more terse) error messages.)&lt;/p&gt;
+[%
+# htmlErrorUsers('from_json($args)', 'Some error happened.  It was bad.', &quot;Warn the children!&quot;);
+&quot;&quot;;
+%]
+&lt;hr&gt;
+&lt;h3&gt;DB quote testing&lt;/h3&gt;
+[%
+my @quotables = ( 'foo', 'node-', 'foo\'', 'node-%' );
+
+my $str = &quot;&quot;;
+$str .= &quot;&lt;dl&gt;&quot;;
+
+for my $quoteMe (@quotables) {
+
+   $str .= &quot;&lt;dt&gt;$quoteMe&lt;/dt&gt;&quot;;
+   $str .= &quot;&lt;dd&gt;&quot; . $DB-&gt;quote($quoteMe) . &quot;&lt;/dt&gt;&quot;;
+ 
+}
+
+$str .= &quot;&lt;/dl&gt;&quot;;
+
+return $str;
+
+%]
+
+&lt;h3&gt;Perl Version&lt;/h3&gt;
+[%
+
+my $str = &quot;&lt;p&gt;Perl version: $] &lt;/p&gt;&quot;;
+
+return $str;
+
+%]
+
+&lt;hr&gt;
+
+&lt;h3&gt;%CONFIG testing&lt;/h3&gt;
+
+[%
+
+my $str = '$CONFIG{canonical_web_server} = '
+          . $CONFIG{canonical_web_server}
+          ;
+
+return $str;
+
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-08-29 16:57:01</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>1988456</node_id>
+  <edittime>2011-11-04 22:13:29</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1988456</document_id>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>OldMinerian Autonomous Poking Machine</title>
+</node>

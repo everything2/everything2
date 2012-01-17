@@ -1,0 +1,40 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-12-22 01:10:29</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>18</hits>
+  <node_id>279553</node_id>
+  <htmlcode_id>279553</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># This constructs an HTML popup menu using the FormMenu
+# package of Everything.  Values of the menu come from
+# the specified &quot;setting&quot; node.
+
+use Everything::FormMenu;
+
+# $name - the name for the form item drop down
+# $selected - which item should be selected by default.
+#    undef if nothing specific.
+# The remaining items passed are the names of the types.
+my $name = shift @_;
+my $selected = shift @_;
+
+my $menu = new Everything::FormMenu;
+my $typename;
+
+while(@_ &gt; 0)
+{
+  $typename = shift @_;
+  $menu-&gt;addType($typename);
+}
+
+$menu-&gt;writePopupHTML($query,$name,$selected);
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>typeMenu</title>
+</node>

@@ -1,0 +1,84 @@
+<node>
+  <doctext>[%
+# linkNode(1017738,0,{lastnode_id=&gt;undef});
+
+my $nodeGot=$DB-&gt;sqlSelect(&quot;node_id&quot;,&quot;node LEFT JOIN writeup ON node.node_id = writeup.writeup_id&quot;, &quot;writeup.parent_e2node='1902463' AND node.author_user = '1017738'&quot;);
+if ($nodeGot) {
+  return linkNode($nodeGot);
+}
+else {
+  return &quot;BUT NO&quot;;
+}
+
+%]
+&lt;pre&gt;
+  64:       my $csr = $dbh-&gt;prepare(  'SELECT * FROM node LEFT JOIN writeup '
+  65:                               . 'ON node.node_id = writeup.writeup_id '
+  66:                               . 'where writeup.parent_e2node='
+  67:                               . $$pnode{ node_id } . ' AND node.author_user='
+  68:                               . $$userfrom{ node_id } . ' ' );
+&lt;/pre&gt;
+
+[%
+
+my $str=&quot;&quot;;
+my $wu;
+my $param;
+my @params = $query-&gt;param;
+my $wu_author;
+my $wu_title;
+my $author_id;
+
+my $size = 80;
+
+foreach $param (@params)
+{
+  if ($param =~ /^update_(\w*)$/)
+  {
+    $str.=&quot;Would update $1: $$NODE{$1}.&lt;br&gt;&quot;;
+  }
+  if ($param =~ 'update_wu_author'){
+    $wu_author=$query-&gt;param($param);    
+    $str.=&quot;&lt;p&gt;Author: $wu_author&lt;/p&gt;&quot;;
+
+    $author_id=getNode($wu_author, &quot;user&quot;)-&gt;{node_id};
+    $str.=&quot; id=$author_id&quot;;
+  }
+  if ($param =~ 'update_wu_title'){
+    $wu_title=$query-&gt;param($param);    
+    $str.=&quot;&lt;p&gt;Title: $wu_title&lt;/p&gt;&quot;;
+  }
+}
+
+
+$str .= htmlcode( 'openform' );
+
+$str .= &quot;&lt;table&gt;&lt;tr&gt;&lt;td&gt;recording of: &lt;/td&gt;&lt;td&gt;&quot;;
+$str .= $query-&gt;textfield( -name =&gt; &quot;update_wu_title&quot;,
+      -default =&gt; $$wu{'title'}, -size =&gt; $size,
+      -maxlength =&gt; $1 ).&quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+
+$str .= &quot;&lt;tr&gt;&lt;td&gt;written by: &lt;/td&gt;&lt;td&gt;&quot;;
+$str .= $query-&gt;textfield( -name =&gt; &quot;update_wu_author&quot;,
+        -default =&gt; $$USER{title}, -size =&gt; $size, 
+        -maxlength =&gt; $1);
+$str .= &quot;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;\n&quot;;
+ $str .= htmlcode( 'closeform' );
+
+return $str;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-06-29 23:58:04</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1947629</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1947629</document_id>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <title>Oolong's temp code</title>
+</node>

@@ -1,0 +1,47 @@
+<node>
+  <doctext>[%
+my @wit = (
+  &quot;The most neglected writeups on Everything:&quot;,
+  &quot;Adopt a writeup today:&quot;,
+  &quot;Won't you help a vote deprived writeup?&quot;,
+  &quot;Straight from no-man's land:&quot;);
+
+return $wit[int(rand(@wit))];
+%]&lt;br&gt;
+&lt;ol&gt;
+[%
+return &quot;disabled for performance reasons...&quot;
+  unless(isGod($USER));
+
+my $nodes = selectNodeWhere({reputation =&gt; 0}, getType(&quot;writeup&quot;),
+  &quot;hits limit 50&quot;, 1);
+my $str;
+
+return &quot;No nodes!&quot; unless($nodes);
+
+foreach my $node (@$nodes)
+{
+  # A bit faster than doing a getnode
+  my $n = getNodeById($node, &quot;light&quot;);
+
+  $str .= &quot;&lt;li&gt;&quot; . linkNode($n, undef, {lastnode_id =&gt; 0});
+}
+
+return $str;
+%]
+&lt;/ol&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-06-19 21:58:28</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>129</hits>
+  <node_id>613004</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>613004</document_id>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>Everything's Obscure Writeups</title>
+</node>

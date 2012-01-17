@@ -1,0 +1,209 @@
+<node>
+  <doctext>[%
+return 'You\'ve got other things to snoop on, don\'t ya.' unless(isGod($USER));
+
+my $str = '&lt;h3&gt;&amp;ldquo;Off the stage with \'em!&amp;rdquo;&lt;/h3&gt;
+   A mass user deletion tool which provides basic checks for deletion.
+  &lt;br&gt;&lt;br&gt;Copy and paste list of names of users to destroy.
+  &lt;p&gt;
+  This does the following things:
+  &lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Checks to see if the user has every logged in
+    &lt;li&gt;Checks if the user has any live writeups
+    &lt;li&gt;Checks if the user has any live e2nodes
+    &lt;li&gt;Deletes the user if it is safe
+    &lt;li&gt;Locks a user if deletion isn\'t safe
+  &lt;/ul&gt;
+  ';
+
+my @savedUsers = ( );
+my $usersToNail = { };
+
+if (defined $query-&gt;param('usernames')) {
+
+  my $typeIdUser = getType('user')-&gt;{node_id};
+  my $typeIdWriteup = getType('writeup')-&gt;{node_id};
+  my $usernameString = $query-&gt;param('usernames');
+  $usernameString =~ s/[\[\]]//g;
+  my @usernames = split('\s*[\n\r]\s*', $usernameString);
+
+  my $ordinal = 1;
+  my $inputTable =
+    join &quot;\n    UNION ALL\n&quot;
+      , map { &quot;    SELECT &quot; . $DB-&gt;quote($_) . &quot; AS title&quot;
+              . &quot;, &quot; . ($ordinal++) . &quot; AS ordinal&quot; } @usernames;
+
+  my $userQuery = &lt;&lt;SQLEND;
+
+SELECT input.title 'input', node.title, node.node_id, user.lasttime
+  , user.acctlock
+  , (SELECT COUNT(writeups.node_id)
+      FROM node writeups
+      WHERE node.node_id = writeups.author_user
+      AND writeups.type_nodetype = $typeIdWriteup)
+     'writeup count'
+  , (SELECT COUNT(nodeshells.e2node_id)
+      FROM e2node AS nodeshells
+      WHERE node.node_id = nodeshells.createdby_user)
+     'nodeshell count'
+  , input.ordinal
+  FROM (
+$inputTable
+  ) input
+  LEFT JOIN node
+    ON node.title = input.title
+    AND node.type_nodetype = $typeIdUser
+  LEFT JOIN user
+    ON node.node_id = user.user_id
+  GROUP BY input.title
+  ORDER BY input.ordinal
+SQLEND
+
+  $str .= &quot;&lt;h3&gt;Query&lt;/h3&gt;&lt;pre&gt;$userQuery&lt;/pre&gt;&quot; if ($query-&gt;param(&quot;showquery&quot;));
+
+  my $dbh = $DB-&gt;getDatabaseHandle();
+  $usersToNail = $dbh-&gt;selectall_hashref($userQuery, 'ordinal');
+}
+
+if (keys %$usersToNail) {
+
+  $str .= '&lt;h3&gt;The Doomed Performers&lt;/h3&gt;';
+  $str .= '&lt;ul&gt;';
+
+  foreach my $targetOrdinal (sort keys %$usersToNail) { 
+    
+    my $safeToWhack = 1;
+    my $safeToLock = 1;
+    my @unsafeReasons = ();
+    my $targetUserData = $$usersToNail{$targetOrdinal};
+    my $targetName  = $$targetUserData{'input'};
+    $targetName = encodeHTML($targetName);
+
+    $str .= &quot;&lt;li&gt;&quot;;
+
+    if ($$targetUserData{node_id} == 0) {
+
+      push @unsafeReasons,  &quot;$targetName isn't a valid user&quot;;
+      $safeToWhack = 0;
+      $safeToLock = 0;
+
+    } else {
+
+      $targetName = linkNode($$targetUserData{node_id}, $targetName);
+
+    }
+
+    if ($$targetUserData{lasttime} != 0) {
+
+      push @unsafeReasons,  &quot;$targetName logged in at $$targetUserData{lasttime}!&quot;;
+      $safeToWhack = 0;
+      
+    }
+
+    if ($$targetUserData{'nodeshell count'} != 0) {
+
+      push @unsafeReasons,  &quot;$targetName has $$targetUserData{'nodeshell count'} nodeshells!&quot;;
+      $safeToWhack = 0;
+      
+    }
+
+    if ($$targetUserData{'writeup count'} != 0) {
+
+      push @unsafeReasons,  &quot;$targetName has $$targetUserData{'writeup count'} writeups!&quot;;
+      $safeToWhack = 0;
+      
+    }
+
+    if (!htmlcode('verifyRequestHash', 'polehash')) {
+      push @unsafeReasons,  &quot;$targetName not being whacked because security hash verification failed.&quot;;
+      $safeToWhack = 0;
+      $safeToLock = 0;
+
+    }
+
+    if ($safeToWhack) {
+
+      $str .= &quot;Deleted $targetName ($$targetUserData{node_id}).&quot;;
+      nukeNode($$targetUserData{node_id}, $USER);
+
+    } else {
+
+      if ($safeToLock) {
+
+        if ($$targetUserData{acctlock} == 0) {
+
+          htmlcode('lock user account', $$targetUserData{node_id});
+          push @unsafeReasons,  &quot;&lt;strong&gt;Locked account.&lt;/strong&gt;&quot;;
+
+        } else {
+
+          push @unsafeReasons,  &quot;&lt;strong&gt;Account already locked.&lt;/strong&gt;&quot;;
+
+        }
+
+      }
+
+      $str .= '&lt;ul&gt;&lt;li&gt;' . (join '&lt;li&gt;', @unsafeReasons) . '&lt;/ul&gt;';
+      push @savedUsers, $$targetUserData{'input'};
+
+    }
+
+  }
+  
+  $str .= '&lt;/ul&gt;';
+
+}
+
+
+$str .= htmlcode('openform', 'username_whacker', 'POST')
+  . $query-&gt;hidden(-name =&gt; &quot;showquery&quot;)
+  . htmlcode('verifyRequestForm', 'polehash')
+  ;
+
+if (scalar @savedUsers) {
+  my $savedList = &quot;&quot;;
+  $savedList .= join &quot;\n&quot;, @savedUsers;
+  $str .= '&lt;fieldset&gt;&lt;legend&gt;The users who were spared&lt;/legend&gt;';
+  $query-&gt;delete(&quot;ignored-saved&quot;);
+  $str .= $query-&gt;textarea(
+     -name =&gt; &quot;ignored-saved&quot;
+     , -value =&gt; $savedList
+     , -class =&gt; &quot;expandable&quot;
+  );
+  $str .= '&lt;/fieldset&gt;';
+  $str .= &quot;&lt;br&gt;&lt;br&gt;&quot;;
+}
+
+$str .= ''
+  . '&lt;fieldset&gt;&lt;legend&gt;Inadequate Performers&lt;/legend&gt;'
+  . $query-&gt;textarea(-name =&gt; &quot;usernames&quot;
+    , -rows =&gt; &quot;2&quot;
+    , -cols =&gt; &quot;15&quot;
+    , -class =&gt; &quot;expandable&quot;
+  )
+  . &quot;&lt;br&gt;&lt;br&gt;&quot;
+  . $query-&gt;submit(-name =&gt; &quot;Get The Hook!&quot;)
+  . '&lt;/fieldset&gt;'
+  . $query-&gt;end_form()
+  ;
+
+return $str;
+%]
+
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-05-07 14:07:54</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>14</hits>
+  <node_id>1989723</node_id>
+  <edittime>2011-07-14 02:41:32</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1989723</document_id>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>The Old Hooked Pole</title>
+</node>

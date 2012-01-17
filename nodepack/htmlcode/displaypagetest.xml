@@ -1,0 +1,104 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-04-17 12:34:24</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1982632</node_id>
+  <htmlcode_id>1982632</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#############################################################################
+#	Sub
+#		displayPage
+#
+#	Purpose
+#		This is the meat of displaying a node to the user.  This gets
+#		the display page for the node, inserts it into the appropriate
+#		container, prints the HTML header and then prints the page to
+#		the users browser.
+#
+#	Parameters
+#		$NODE - the node to display
+#		$user_id - the user that is trying to 
+sub displayPage
+{
+	my ($NODE, $user_id) = @_;
+	getRef $NODE, $USER;
+	die &quot;NO NODE!&quot; unless $NODE;
+	$GNODE = $NODE;
+	my $isGuest = 0;
+	my $page = &quot;&quot;;
+	$isGuest = 1 if ($user_id == $HTMLVARS{guest_user});
+
+	my $lastnode;
+	if ($$NODE{type}{title} eq 'e2node') {
+		$lastnode = getId($NODE);
+	}elsif ($$NODE{type}{title} eq 'writeup') {
+		$lastnode = $$NODE{parent_e2node};
+	} elsif ($$NODE{type}{title} eq 'jscript' or $$NODE{type}{title} eq 'stylesheet') {
+		$lastnode = -1;
+	}
+	
+
+        #jb says fix here. We need to check for displaytype, because on xmltrue and future data
+        #outputs, guest user loads on e2nodes would be broken
+        #4-17-2002
+
+        my $dsp = $query-&gt;param('displaytype');
+        $dsp ||= &quot;display&quot;;
+
+	if($dsp eq &quot;display&quot;){
+		if ($$NODE{type}{title} eq 'node_forward') {
+			print $query-&gt;redirect(
+			-location=&gt;urlGenNoParams (getNode($NODE{doctext}),1),
+			-nph=&gt;1, -status=&gt;303);
+		}
+		if ($isGuest and $CACHESTORE and $page = $CACHESTORE-&gt;retrievePage($$NODE{node_id})) {
+			printHeader($$NODE{datatype}, $$page, $lastnode);
+			$query-&gt;print($$page);
+			return &quot;&quot;;
+		}
+
+        }
+
+	my $PAGE = getPage($NODE, $query-&gt;param('displaytype'));
+        #jb says: minor hack here 
+	$$NODE{datatype} = $$PAGE{mimetype};
+        $page = $$PAGE{page};
+
+	die &quot;NO PAGE!&quot; unless $page;
+
+	$page = parseCode($page, $NODE);
+	if ($$PAGE{parent_container}) {
+		my $container = genContainer($$PAGE{parent_container}); 
+		$container =~ s/CONTAINED_STUFF/$page/s;
+		$page = $container;
+	}	
+   
+  #  my $XP = $$USER{experience};
+#	delete $$USER{experience};  #hopefully this will clear up XP corruption
+	setVars $USER, $VARS unless getId($USER) == $HTMLVARS{guest_user};
+ #   $$USER{experience} = $XP;	
+	printHeader($$NODE{datatype}, $page, $lastnode);
+
+#	TOTAL HACK for SSL
+    #$page =~ s|http\:(//thepope\.org/img)|https:$1|gs if $query-&gt;url =~ /^https/;
+	#($ENV{SCRIPT_NAME} =~ /^https/);
+	
+	# We are done.  Print the page to the browser.
+#	$page =~ s|http://thepope\.org/img/|http://216.200.201.213/~thepope/img/|gs;
+#	$page =~ s|http://adfu\.blockstackers\.com/|http://216.200.201.212/~adfu/|gs;
+	if ($isGuest and $CACHESTORE and $CACHESTORE-&gt;canCache($NODE, $query)) { 
+       $CACHESTORE-&gt;cachePage($$NODE{node_id}, $page);	
+	}
+	#jb - AWESOME
+	$query-&gt;print($page);
+	$page = &quot;&quot;;
+}</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <title>displayPageTest</title>
+</node>

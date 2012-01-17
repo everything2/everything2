@@ -1,0 +1,60 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-11-18 17:47:42</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1917862</node_id>
+  <htmlcode_id>1917862</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($achievement, $user_id) = @_;
+
+$user_id ||= $$USER{user_id};
+return unless getNodeById($user_id)-&gt;{type_nodetype} = 15;
+
+my $ACH = 0;
+$ACH = getNode($achievement,&quot;achievement&quot;);
+$ACH ||= getNodeById($achievement);
+
+return 0 unless $ACH;
+
+my $achieved = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;achieved&quot;,&quot;achieved_user=$user_id and achieved_achievement=&quot;.$$ACH{node_id}.&quot; limit 1&quot;);
+return 1 if $achieved;
+
+my $codeStr = &quot;
+[%
+my \$user_id = &quot;. $user_id.&quot;;
+
+&quot;.$$ACH{code}.&quot;
+
+%]&quot;;
+
+my $result = parseCode($codeStr);
+
+if ($result == 1) {
+	$DB-&gt;sqlInsert(&quot;achieved&quot;,{achieved_user =&gt; $user_id, achieved_achievement =&gt; $$ACH{node_id}});
+
+	use JSON;
+	my $notification = getNode(&quot;achievement&quot;,&quot;notification&quot;)-&gt;{node_id};
+	if ($$VARS{settings}) {
+		if (%{ from_json($$VARS{settings})-&gt;{notifications} }-&gt;{$notification}) {
+			my $argSet = { achievement_id =&gt; $$ACH{node_id} };
+			my $argStr = to_json($argSet);
+			my $addNotifier = htmlcode('addNotification', $notification,$user_id,$argStr);
+		}
+	}
+}
+
+return $result;
+
+
+
+
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>hasAchieved</title>
+</node>

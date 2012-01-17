@@ -1,0 +1,156 @@
+<node>
+  <doctext>// by Bruno Bornsztein - www.feedmarker.com or blog.feedmarker.com
+// You're free to use this however you want. You can even take this
+// attribution out if you like.
+
+// Make sure the list you want to sort has a unique id Then create a
+// link to sort the list in the following format: &lt;a
+// href=&quot;javascript:void(0);&quot; onclick=&quot;sort(this)&quot; list_id=&quot;the id of
+// the list you want to sort&quot; order=&quot;asc or desc&quot;&gt;Sort&lt;/a&gt; that will
+// just just the list by it list item values
+
+// if you want to sort by an attribute you've included within each
+// list item (i.e. &lt;LI size=&quot;10&quot;&gt;), just do this: // &lt;a
+// href=&quot;javascript:void(0);&quot; onclick=&quot;sort(this)&quot; list_id=&quot;the id of
+// the list you want to sort&quot; order=&quot;asc or desc&quot; sortby=&quot;your
+// attribute&quot;&gt;Sort&lt;/a&gt;
+
+function ts_getInnerText(el) {
+  //Thanks to http://www.kryogenix.org/code/browser/sorttable/ for this function
+	if (typeof el == &quot;string&quot;) return el;
+	if (typeof el == &quot;undefined&quot;) { return el; };
+	if (el.innerText) return el.innerText;	//Not needed but it is faster
+	var str = &quot;&quot;;
+
+	var cs = el.childNodes;
+	var l = cs.length;
+	for (var i = 0; i &lt; l; i++) {
+		switch (cs[i].nodeType) {
+		case 1: //ELEMENT_NODE
+			str += ts_getInnerText(cs[i]);
+			break;
+		case 3:	//TEXT_NODE
+			str += cs[i].nodeValue;
+			break;
+		}
+	}
+	return str;
+}
+
+
+function ts_getInnerText(el) {
+	if (typeof el == &quot;string&quot;) return el;
+	if (typeof el == &quot;undefined&quot;) { return el; };
+	if (el.innerText) return el.innerText;	//Not needed but it is faster
+	var str = &quot;&quot;;
+
+	var cs = el.childNodes;
+	var l = cs.length;
+	for (var i = 0; i &lt; l; i++) {
+		switch (cs[i].nodeType) {
+		case 1: //ELEMENT_NODE
+			str += ts_getInnerText(cs[i]);
+			break;
+		case 3:	//TEXT_NODE
+			str += cs[i].nodeValue;
+			break;
+		}
+	}
+	return str;
+}
+
+function parse_list_to_array(list_id, attribute){
+	var list = document.getElementById(list_id);
+	var cs = list.childNodes;
+	var list_array = new Array();
+
+	var l = cs.length;
+	for (var i = 0; i &lt; l; i++) {
+    node = cs[i];
+    if (node.nodeName == &quot;LI&quot;){
+      if(!attribute){
+        var value = ts_getInnerText(node);
+        list_array.push([node, value]);
+      } else{
+        list_array.push([node, node.getAttribute(attribute)]);
+      }
+	  }
+  }
+
+  //returns an array with the node in [0] and the attribute in [1]
+  return list_array;
+}
+
+
+function sort(link){
+
+  var list_id = link.getAttribute('list_id');
+  var order = link.getAttribute('order');
+  var sortby = link.getAttribute('sortby');
+
+  if (order == 'desc'){
+    order = 'asc';
+    link.setAttribute('order','asc');
+  } else {
+    order = 'desc';
+    link.setAttribute('order','desc');
+  }
+
+  var array = parse_list_to_array(list_id, sortby);
+
+  // Work out a type to sort by
+  var itm = array[1][1];
+  var sortfn = mysortfn_by_attribute;
+  if (itm.match(/^[\d\.]+$/)) sortfn = ts_sort_numeric;
+
+
+  array.sort(sortfn);
+
+  switch (order){
+  case &quot;desc&quot;:
+    array.reverse();
+    break;
+  }
+
+  var list = document.getElementById(list_id);
+
+  for (var k = 0; k &lt; array.length; k++){
+    list.appendChild(array[k][0]);
+  }
+
+  return;
+}
+
+function mysortfn_by_attribute(a,b) {
+
+  // Note that each thing we are passed is an array, so we don't
+  // compare the things we're passed; instead, we compare their second
+  // column
+
+  if (a[1]&lt;b[1]) return -1;
+  if (a[1]&gt;b[1]) return 1;
+  return 0;
+}
+
+function ts_sort_numeric(a,b) {
+  var aa = a[1];
+  if (isNaN(aa)) aa = 0;
+  var bb = b[1];
+  if (isNaN(bb)) bb = 0;
+  return bb-aa;
+}</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-05-10 03:17:15</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>379</hits>
+  <node_id>1985920</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1786405</type_nodetype>
+  <document_id>1985920</document_id>
+  <author_user>829913</author_user>
+  <package>0</package>
+  <title>sortlist</title>
+</node>

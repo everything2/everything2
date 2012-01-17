@@ -1,0 +1,262 @@
+<node>
+  <doctext>[%
+
+# I can't get a damn switch statement to work, so I went with if-elsif. What version of perl are we running?
+sub GetMonthAsString
+{
+   my $m = shift;
+   if ($m == 1){return &quot;January&quot;;}
+   elsif ($m == 2){return &quot;February&quot;;}
+   elsif ($m == 3){return &quot;March&quot;;}
+   elsif ($m == 4){return &quot;April&quot;;}
+   elsif ($m == 5){return &quot;May&quot;;}
+   elsif ($m == 6){return &quot;June&quot;;}
+   elsif ($m == 7){return &quot;July&quot;;}
+   elsif ($m == 8){return &quot;August&quot;;}
+   elsif ($m == 9){return &quot;September&quot;;}
+   elsif ($m == 10){return &quot;October&quot;;}
+   elsif ($m == 11){return &quot;November&quot;;}
+   elsif ($m == 12){return &quot;December&quot;;}
+   else {return &quot;ERROR!&quot;;}
+}
+
+my $nodeId = getId($NODE);
+my @curDate = localtime;
+my $minYear = 1997;
+my $maxYear = $curDate[5]+1900;
+
+####################################################################
+# get all the URL parameters
+#
+
+my $month = int($query-&gt;param(&quot;m&quot;));
+if ($month &lt; 1 || $month &gt; 12)
+{
+   $month = @curDate[4]+1;
+}
+
+my $year = int($query-&gt;param(&quot;y&quot;));
+if ($year &lt; $minYear || $year &gt; $maxYear)
+{
+   $year = @curDate[5]+1900;
+}
+
+my $prevYear = $year;
+my $prevMonth = $month - 1;
+if ($prevMonth &lt; 1)
+{
+   $prevMonth = 12;
+   $prevYear = $prevYear - 1;
+}
+my $nextYear = $year;
+my $nextMonth = $month + 1;
+if ($nextMonth &gt; 12)
+{
+   $nextMonth = 1;
+   $nextYear = $nextYear + 1;
+}
+
+my $queryText = 'SELECT 
+writeupNode.node_id, 
+writeupNode.title, 
+writeupNode.author_user, 
+writeupNode.reputation, 
+authorNode.title AS authorTitle, 
+writeup.writeup_id, 
+writeup.wrtype_writeuptype, 
+notnew, 
+nodeTypeNode.title AS writeupTypeTitle, 
+writeup.parent_e2node, 
+e2node.title AS parentTitle,
+writeupNode.createtime
+FROM node writeupNode,node authorNode,writeup,node nodeTypeNode,node e2node
+WHERE writeupNode.node_id=writeup.writeup_id 
+AND writeupNode.author_user=authorNode.node_id 
+AND nodeTypeNode.node_id=writeup.wrtype_writeuptype
+AND e2node.node_id=writeup.parent_e2node
+AND (e2node.title LIKE \''.GetMonthAsString($month).' %, '.$year.'\'
+ OR e2node.title LIKE \'Dream Log: '.GetMonthAsString($month).' %, '.$year.'\'
+ OR e2node.title = \'Editor Log: '.GetMonthAsString($month).' '.$year.'\'
+ OR e2node.title = \'root log: '.GetMonthAsString($month).' '.$year.'\')
+ORDER BY writeupNode.createtime';
+
+my $str;
+$str .= '&lt;form method=&quot;get&quot; action=&quot;/index.pl&quot;&gt;
+&lt;div style=&quot;text-align:center&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;'.$nodeId.'&quot;&gt;
+&lt;b&gt;Select Month and Year:&lt;/b&gt;
+&lt;select name=&quot;m&quot;&gt;';
+for (my $i = 1; $i &lt;= 12; $i++) 
+{
+   $str .= '&lt;option value=&quot;'.$i.'&quot;';
+   if ($i == $month)
+   {
+      $str .= ' selected=&quot;selected&quot;';
+   }
+   $str .= '&gt;'.GetMonthAsString($i).'&lt;/option&gt;';
+}
+$str .= '&lt;/select&gt;
+&lt;select name=&quot;y&quot;&gt;';
+for(my $i = @curDate[5]+1900; $i &gt;= $minYear; $i--)
+{
+   $str .= '&lt;option value=&quot;'.$i.'&quot;';
+   if ($i == $year)
+   {
+      $str .= ' selected=&quot;selected&quot;';
+   }
+   $str .= '&gt;'.$i.'&lt;/option&gt;';
+}
+$str .= '&lt;/select&gt;
+&lt;input type=&quot;submit&quot; value=&quot;Get Logs&quot;&gt;&lt;br /&gt;';
+if ($prevYear &gt;= $minYear)
+{
+   $str .= '&lt;a href=&quot;/index.pl?node_id='.$nodeId.'&amp;m='.$prevMonth.'&amp;y='.$prevYear.'&quot;&gt;&amp;lt;&amp;lt; '.GetMonthAsString($prevMonth).' '.$prevYear.'&lt;/a&gt; -';
+}
+if ($nextYear &lt;= $year)
+{
+   $str .= '- &lt;a href=&quot;/index.pl?node_id='.$nodeId.'&amp;m='.$nextMonth.'&amp;y='.$nextYear.'&quot;&gt;'.GetMonthAsString($nextMonth).' '.$nextYear.' &amp;gt;&amp;gt;&lt;/a&gt;';
+}
+$str .= '&lt;/div&gt;
+&lt;/form&gt;
+&lt;p&gt;&lt;small&gt;Writeups are displayed based on their titles, and are sorted by &amp;quot;Create Time&amp;quot;.&lt;br /&gt;
+Titles and create times do not always match up (i.e., someone can post a daylog for &amp;quot;February 28, '.(@curDate[5]+1890).'&amp;quot; today, and that daylog will be displayed in the February '.(@curDate[5]+1890).' archive).&lt;/small&gt;&lt;/p&gt;';
+
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+my $dbrow;
+my $rowCtr = 0;
+my $logs = $dbh-&gt;prepare($queryText);
+$logs-&gt;execute()
+   or return $logs-&gt;errstr;
+
+my $daylogs = '';
+my $dreamlogs = '';
+my $editorlogs = '';
+my $rootlogs = '';
+my $curRow;
+
+my $daylogCtr = 0;
+my $dreamlogCtr = 0;
+my $editorlogCtr = 0;
+my $rootlogCtr = 0;
+
+while($dbrow = $logs-&gt;fetchrow_arrayref)
+{
+   $curRow = '';
+   $curRow .= '&lt;td&gt;&lt;a href=&quot;/index.pl?node_id='.$$dbrow[9].'&quot;&gt;'.$$dbrow[10].'&lt;/a&gt; ';
+   $curRow .= ' (&lt;a href=&quot;/index.pl?node_id='.$$dbrow[5].'&quot;&gt;'.$$dbrow[8].'&lt;/a&gt;)&lt;/td&gt;';
+   $curRow .= '&lt;td&gt;&lt;a href=&quot;/index.pl?node_id='.$$dbrow[2].'&quot;&gt;'.$$dbrow[4].'&lt;/a&gt;&lt;/td&gt;';
+   $curRow .= '&lt;td style=&quot;text-align:right;white-space:nowrap&quot;&gt;'.$$dbrow[11].'&lt;/td&gt;';
+   $curRow .= '&lt;/tr&gt;';
+
+   # day logs
+   if ($$dbrow[10] =~ m/^(January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{1,2}, [0-9]{4}$/)
+   { 
+      $daylogCtr++;
+      if ($daylogCtr% 2 == 0)
+      {
+         $daylogs .= '&lt;tr class=&quot;evenrow&quot;&gt;'.$curRow;
+      }
+      else
+      {
+         $daylogs .= '&lt;tr class=&quot;oddrow&quot;&gt;'.$curRow;
+      }
+   }
+   # dream logs
+   elsif ($$dbrow[10] =~ m/^Dream Log: (January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{1,2}, [0-9]{4}$/)
+   { 
+      $dreamlogCtr++;
+      if ($dreamlogCtr% 2 == 0)
+      {
+         $dreamlogs .= '&lt;tr class=&quot;evenrow&quot;&gt;'.$curRow;
+      }
+      else
+      {
+         $dreamlogs .= '&lt;tr class=&quot;oddrow&quot;&gt;'.$curRow;
+      }
+   }
+   # editor logs
+   elsif ($$dbrow[10] =~ m/^Editor Log: (January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{4}$/)
+   { 
+      $editorlogCtr++;
+      if ($editorlogCtr% 2 == 0)
+      {
+         $editorlogs .= '&lt;tr class=&quot;evenrow&quot;&gt;'.$curRow;
+      }
+      else
+      {
+         $editorlogs .= '&lt;tr class=&quot;oddrow&quot;&gt;'.$curRow;
+      }
+   }
+   # root logs
+   elsif ($$dbrow[10] =~ m/^root log: (January|February|March|April|May|June|July|August|September|October|November|December) [0-9]{4}$/)
+   { 
+      $rootlogCtr++;
+      if ($rootlogCtr% 2 == 0)
+      {
+         $rootlogs .= '&lt;tr class=&quot;evenrow&quot;&gt;'.$curRow;
+      }
+      else
+      {
+         $rootlogs .= '&lt;tr class=&quot;oddrow&quot;&gt;'.$curRow;
+      }
+   }
+}
+
+$str .= '&lt;table width=&quot;100%&quot;&gt;
+&lt;tr&gt;&lt;th colspan=&quot;3&quot;&gt;&lt;h3&gt;Day Logs&lt;/h3&gt;&lt;/th&gt;&lt;/tr&gt;';
+if (length($daylogs) &gt; 0)
+{
+   $str .= '&lt;tr&gt;&lt;th&gt;Title&lt;/th&gt;&lt;th&gt;Author&lt;/th&gt;&lt;th&gt;Create Time&lt;/th&gt;&lt;/tr&gt;'.$daylogs;
+}
+else
+{
+   $str .= '&lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&lt;em&gt;No day logs found&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;';
+}
+
+if (length($dreamlogs) &gt; 0)
+{
+   $str .= '&lt;tr&gt;&lt;th colspan=&quot;3&quot;&gt;&lt;h3&gt;Dream Logs&lt;/h3&gt;&lt;/th&gt;&lt;/tr&gt;
+     &lt;tr&gt;&lt;th&gt;Title&lt;/th&gt;&lt;th&gt;Author&lt;/th&gt;&lt;th&gt;Create Time&lt;/th&gt;&lt;/tr&gt;'.$dreamlogs;
+}
+
+$str .= '&lt;tr&gt;&lt;th colspan=&quot;3&quot;&gt;&lt;h3&gt;Editor Logs&lt;/h3&gt;&lt;/th&gt;&lt;/tr&gt;';
+if (length($editorlogs) &gt; 0)
+{
+   $str .= '&lt;tr&gt;&lt;th&gt;Title&lt;/th&gt;&lt;th&gt;Author&lt;/th&gt;&lt;th&gt;Create Time&lt;/th&gt;&lt;/tr&gt;'.$editorlogs;
+}
+else
+{
+   $str .= '&lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&lt;em&gt;No editor logs found&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;';
+}
+
+$str .= '&lt;tr&gt;&lt;th colspan=&quot;3&quot;&gt;&lt;h3&gt;Root Logs&lt;/h3&gt;&lt;/th&gt;&lt;/tr&gt;';
+if (length($rootlogs) &gt; 0)
+{
+   $str .= '&lt;tr&gt;&lt;th&gt;Title&lt;/th&gt;&lt;th&gt;Author&lt;/th&gt;&lt;th&gt;Create Time&lt;/th&gt;&lt;/tr&gt;'.$rootlogs;
+}
+else
+{
+   $str .= '&lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&lt;em&gt;No root logs found&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;';
+}
+$str .= '&lt;/table&gt;';
+
+$str .= '&lt;p style=&quot;text-align:right&quot;&gt;Bugs to [in10se]&lt;/p&gt;';
+
+return $str;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-01-07 15:47:26</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>4</hits>
+  <node_id>1925715</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1925715</document_id>
+  <author_user>1323377</author_user>
+  <package>0</package>
+  <title>Log Archive</title>
+</node>

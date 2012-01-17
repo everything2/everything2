@@ -1,0 +1,78 @@
+<node>
+  <doctext>/* This is MyStyle. */
+
+/* You can put any comment you want between slash-asterisk and asterisk-slash */
+
+
+#header {position: fixed; top: 0; left: 0;  right:0; color: white;
+        background-image: url(http://grin.hq.nasa.gov/IMAGES/SMALL/GPN-2000-000877.jpg); padding: 5px; border: solid medium white;
+}
+
+	#e2logo {position: absolute; top: 10; left: 0.1em; margin: 0; width: 10em;   font-size: 50px; font-variant: small-caps; font-weight: 100; font-family: monospace;}
+
+
+        #e2logo a:link{color: white; text-decoration: none;}
+        #e2logo a:hover{color: gray; text-decoration: none;}
+        #e2logo a:visited {color: white; text-decoration: none;}
+
+	#searchform {border: solid thin red; padding: 4px; float: right;  margin-right: .5em; width: 400px;}
+
+#searchform input {
+	float: left;
+	margin-top: 1px;
+}
+
+#searchform label {
+	
+	font-size: 75%;
+        font-family: sans-serif;
+        font-weight: bolder;
+	float: right;
+	clear: right;
+	text-align: left;
+	width: 130px;
+        color: white;
+        margin-right: 2px;
+}
+
+        #epicenter_zen {position: relative; float: right; font-size: 80%; margin: 4px; line-height: 1.5em;}
+
+	#announcements {display: none;}
+
+#wrapper {margin-top: 5em; padding-right: 206px; }
+
+ 	#mainbody {position: relative; float: left; width: 100%; }
+	#sidebar {position: relative; float: left;width: 200px; margin-right: -206px; 
+       
+}
+
+
+#footer {clear: both;}
+
+       body {background-color: pink; }
+
+.nodelet {
+ background-color: yellow;
+ border: solid 1px #6078BF;
+ padding: 5px;
+ margin-bottom: 8px;
+}
+
+a:link {color: blue;}
+a:visited {color: red}
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-08-10 04:50:36</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1903321</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1854352</type_nodetype>
+  <document_id>1903321</document_id>
+  <author_user>1902965</author_user>
+  <package>0</package>
+  <title>myStyle</title>
+</node>

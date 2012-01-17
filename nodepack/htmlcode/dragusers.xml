@@ -1,0 +1,108 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-04-06 19:26:50</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>6</hits>
+  <node_id>1981236</node_id>
+  <htmlcode_id>1981236</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># This is code mostly by [rootbeer277], originally in the [messsage]
+# opcode. [Swap] just moved it to its own htmlcode and hacked on top 
+# of it a little.
+use Everything::Room;
+
+my ($input) = @_;
+
+#Whitespace separated list of users to drag.
+my @users = split &quot; &quot;,$input;
+
+#Some &quot;globals&quot;
+my $UID = $$USER{node_id};
+my $lockminutes = 30;
+my $lockseconds = $lockminutes * 60;
+my $dragroomname = &quot;Debriefing Room&quot;;
+my $dragroom = getNode( $dragroomname, 'room' );
+my $dragmsg;
+
+# tell dragger if room does not exist
+if (!$dragroom) {
+  $dragmsg = &quot;$dragroomname does not exist, that's odd.&quot;;
+  $HTMLVARS {msgparams} = {
+                           'author_id' =&gt; getId(getNode('Klaproth', 'user')),
+                           'recipient_id' =&gt; $UID,
+                           'message' =&gt; $dragmsg,
+                           };
+  htmlcode('sendPrivateMessage','');
+  return;
+}
+
+local *dragThem = sub{
+  # set up variables
+  my $dragmsg;
+  my $dragusername = $_[0];
+  my $draguserid;      # fill in after we've confirmed the user exists
+  my $draguser = getNode( $dragusername, 'user' );
+
+  # check if the username's spaces are replaced with _ if not found
+  if (!$draguser) {
+    $dragusername =~ s/\_/ /gs;
+    $draguser = getNode( $dragusername, 'user' );
+  }
+  # if still not found, tell dragger user does not exist
+  if (!$draguser) {
+    $dragmsg = &quot;$dragusername does not exist.&quot;;
+    $HTMLVARS {msgparams} = {
+                             'author_id' =&gt; getId(getNode('Klaproth', 'user')),
+                             'recipient_id' =&gt; $UID,
+                             'message' =&gt; $dragmsg,
+                             };
+    htmlcode('sendPrivateMessage','');
+    return;
+  }
+
+
+  # All potential problems averted, we now actually drag the user
+  # kicking and screaming into $dragroomname
+  else {
+    $draguserid = $$draguser{'node_id'};
+    changeRoom( $draguser, $dragroom );
+    changeRoom( $USER, $dragroom );
+#    $dragmsg = &quot;You have been dragged into $dragroomname.&quot;; ## old message
+    $dragmsg = &quot;You are being taken to $dragroomname by &quot;.linkNode($UID).&quot;, who will join you there.&quot;;
+    $HTMLVARS {msgparams} =
+      {
+       'author_id' =&gt; getId(getNode('Klaproth', 'user')),
+       'recipient_id' =&gt; $draguserid,
+       'message' =&gt; $dragmsg,
+       };
+    htmlcode('sendPrivateMessage','');
+
+    htmlcode('addNotification', 'chanop dragged user', 0, {
+      chanop_id =&gt; $USER-&gt;{node_id},
+      user_id =&gt; $draguserid,
+      room_id =&gt; $dragroom-&gt;{node_id}
+    });
+
+    # To lock in:
+    my $V = getVars($draguser);
+    ++$$V{numborged};
+    $$V{lockedin} = time + $lockseconds;
+    setVars($draguser,$V);
+
+    return;
+  }
+};
+
+foreach my $user(@users){
+  dragThem($user);
+}
+
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1394568</author_user>
+  <package>0</package>
+  <title>dragUsers</title>
+</node>

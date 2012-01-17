@@ -1,0 +1,50 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-04 00:14:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>20</hits>
+  <node_id>184</node_id>
+  <htmlcode_id>184</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># [{uploadimage:field}]
+#
+# generates an input file field, and sets the field to the URL 
+
+my ($field) =@_;
+my $str =&quot;&quot;;
+my $name = $field.&quot;_file&quot;;
+my $tmpfile = '/tmp/everythingimage' . rand(10000); 
+my $imagedir = '/var/www/images/incoming';
+my $imageurl = 'images/incoming/';
+
+if ($query-&gt;param($name)) {
+  my ($fname) = $query-&gt;param($name);
+  my $imgname = $fname;
+  $imgname =~ s/.*[\/\\]([\w|\.]*)$/$1/;
+  $str.= &quot;'&quot;. $query-&gt;uploadInfo($fname)-&gt;{&quot;Content-Type&quot;}.&quot;'!&quot;;
+	
+  open OUTFILE, &quot;&gt;$tmpfile&quot;;
+  my ($buf, $size);
+  while (read($fname, $buf, 1024)) { 
+    #$size+=$bytes;
+    print OUTFILE $buf;
+  }
+  close OUTFILE;
+
+  `mv $tmpfile $imagedir/$imgname`;
+  $$NODE{$field} = $imageurl.$imgname;
+  $DB-&gt;updateNode ($NODE, $USER);
+ # $str.=&quot;$size bytes recieved!&quot;;
+} else {
+  $str.=$query-&gt;filefield($name);
+  $str .= &quot;&lt;br&gt;NOTE: Image directory is hard-coded in htmlcode:uploadimage&lt;br&gt;&quot;;
+}
+$str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>uploadimage</title>
+</node>

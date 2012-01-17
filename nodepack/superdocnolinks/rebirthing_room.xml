@@ -1,0 +1,41 @@
+<node>
+  <doctext>[%
+my $angel_id = $query -&gt; param('angel_id');
+return &quot;ACK! No angel id!&quot; unless $angel_id;
+
+my $tomb = $DB-&gt;sqlSelectHashref('*', 'heaven', &quot;node_id=$angel_id&quot;);
+
+return &quot;ACK! No angel with id $angel_id!&quot; unless $tomb;
+
+return &quot;ACK! Angel id $angel_id is not a writeup!&quot;
+	unless $tomb-&gt;{type_nodetype} == getId(getType('writeup'));
+
+return &quot;ACK! Angel id $angel_id is not one of yours!&quot;
+	unless $tomb-&gt;{author_user} == $$USER{node_id};
+
+my $N = htmlcode('angelToDraft', $tomb);
+
+if (ref $N){ # $N is the draft
+	local $GNODE = $N;
+	return &quot;&lt;p&gt;Angel id $angel_id successfully reincarnated:&lt;/p&gt;
+		&lt;h1&gt;$$N{title}&lt;/h1&gt;&quot;.
+		parseCode(getNode('draft display page', 'htmlpage')-&gt;{page});
+}
+
+return &quot;Ack! $N&quot;; # $N is an error message
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-06-22 09:08:16</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>23</hits>
+  <node_id>1992084</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1065266</type_nodetype>
+  <document_id>1992084</document_id>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>Rebirthing room</title>
+</node>

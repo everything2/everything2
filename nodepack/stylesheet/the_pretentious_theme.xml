@@ -1,0 +1,307 @@
+<node>
+  <doctext>/****** COLORS ******/
+
+body,
+th,
+td {
+	background-color: #000000;
+	color: #555555;
+}
+
+/* medium backgrounds/details */
+
+	.oddrow,
+	#homenodeheader dt {
+		background-color: #626663;
+	}
+
+/* dark horizontal rules */
+
+	.nodetitle,
+	writeup_title {
+		border-bottom-color: #333333;
+	}
+
+	.wl_text {
+		border-top-color: #333333;
+	}
+
+
+/* miscellaneous */
+
+	td {
+		background-color: transparent;
+	}
+
+	a:link {
+		color: orange;	
+	}
+	
+	a:visited {
+		color: #a4b6c9;
+	}
+
+	a:active,
+	a:hover,
+	a:focus {
+		color: #3bb5c3;
+	}
+
+
+
+/****** FORMATTING ******/
+
+body {
+	width: 600px;
+	margin: 60px auto;
+	padding: 0;
+	font-family: 'arial unicode ms', sans-serif;
+	font-size: xx-small;
+}
+
+	th,
+	td {
+		margin: 0;
+		padding: 0;
+		font-family: tahoma, 'arial unicode ms', sans-serif;
+		font-size: 12px;
+	}
+
+	a {
+		text-decoration: none;
+	}
+
+
+	big {
+		font-size: 110%;
+	}
+
+	small {
+		font-size: 90%;
+	}
+
+	h1 {
+		font-size: 200%;
+		font-weight: bold;
+	}
+
+	h2 {
+		font-size: 130%;
+		font-weight: bold;
+	}
+
+	h3 {
+		font-size: 120%;
+		font-weight: bold;
+	}
+
+	h4 {
+		font-size: 100%;
+		font-weight: bold;
+	}
+
+	form {
+		margin: 0;
+		padding: 0;
+	}
+
+	div#wrapper {
+	}
+
+		div#mainbody {
+			width: 100%;
+		}
+
+			#mainbody *:first-child {
+				margin-top: 0;
+			}
+
+			h1.nodetitle {
+				text-align: left;
+				margin: 0;
+				color: #777788;
+			}
+
+			/*** FRONT PAGE SPECIFIC ***/
+
+			#cooluserpicks,
+			#welcome_message,
+			#creamofthecool,
+			#frontpage_news {
+				display: none;
+			}
+
+			/*** END FRONT PAGE ***/
+
+			/*** REGULAR NODES ***/
+
+			h2#firmlink,
+			h2#isalso,
+			h2.topic,
+			div.createdby {
+				display: none;
+			}
+
+			.writeup {
+				margin: 60px 0;
+				padding-bottom: 60px;
+				border-bottom: 1px solid #eeeeee;
+			}
+
+				div.writeup_title {
+				}
+
+				.writeuptable {
+					width: 100%;
+					overflow: auto;
+				}
+
+					pre {
+						/* to stop page-widening */
+						display: block;
+						overflow: auto;
+					}
+
+			div#displaytypelinks { /* &quot;printable version&quot; and &quot;chaos&quot; */
+				display: none;
+			}
+
+			input#killbutton,
+			input#votebutton,
+			input#blabbutton {
+				display: none;
+			}
+
+			#softlinks {
+				margin: 60px 0;
+			}
+
+				#softlinks table {
+					border-collapse: collapse;
+				}
+
+					#softlinks td {
+						padding: 2px;
+						text-align: center;
+					}
+
+						#softlinks td a {
+							display: block;
+							padding: 0;
+							height: 100%;
+						}
+						
+			textarea {
+				width: 100%;
+			}
+
+			.writeup_add {
+				margin: 60px 0;
+			}
+
+			/*** END REGULAR NODES ***/
+
+			/*** HOMENODES ***/
+
+			#homenodeheader {
+				margin-top: 20px;
+			}
+
+				#homenodepicbox {
+					width: 50%;
+					overflow: auto;
+					float: left;
+				}
+
+					#userimage {
+					}
+
+				#homenodeheader dl {
+					width: 250px;
+					float: right;
+					display: block;
+				}
+
+					#homenodeheader dt {
+						display: block;
+						padding: 2px;
+						font-size: 90%;
+					}
+
+					#homenodeheader dd {
+						padding: 2px;
+						margin: 0;
+						text-align: right;
+						font-size: 90%;
+					}
+				
+			hr.clear {
+				display: none;
+			}
+
+			#homenodetext {
+				width: 100%;
+				clear: both;
+			}
+
+			#bookmarks {
+			}
+
+				#bookmarks h4 {
+				}
+
+				#bookmarks ul {
+				}
+
+					#bookmarks li {
+					}
+
+			/*** END HOMENODES ***/
+
+			#mainbody *:last-child {
+				margin-bottom: 0;
+			}
+
+		#sidebar {
+			display: none;
+		}
+
+	#header {
+		margin: 60px 0 0 0;
+	}
+
+		div#searchform {
+			text-align: center;
+		}
+
+			#searchform label {
+				display: none;
+			}
+
+		#announcements {
+			display: none;
+		}
+
+		h1#e2logo {
+			display: none;
+		}
+
+	#footer {
+		display: none;
+	}
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-08-20 20:50:38</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1904870</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1854352</type_nodetype>
+  <document_id>1904870</document_id>
+  <author_user>1224172</author_user>
+  <package>0</package>
+  <title>The Pretentious Theme</title>
+</node>

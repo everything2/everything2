@@ -1,0 +1,70 @@
+<node>
+  <nltext></nltext>
+  <parent_container>175986</parent_container>
+  <icon>http://images.everything2.com/img/everything_developer.gif</icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2000-11-14 05:45:36</createtime>
+  <lastupdate>1282714397</lastupdate>
+  <hits>0</hits>
+  <node_id>836984</node_id>
+  <iconHeight>25</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>170</iconWidth>
+  <author_user>220</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>836984</nodelet_id>
+  <nlcode>[%
+
+my $vc = htmlcode('viewcode');
+my @links;
+
+push @links, $vc if $vc;
+push @links, '&lt;font size=&quot;1&quot;&gt;'.linkNode($NODE, 'xmltrue', {displaytype=&gt;'xmltrue'}).'&lt;/font&gt;';
+return join ' / ',@links;
+%]
+
+&lt;br /&gt;
+
+[%
+
+return unless $$VARS{nodelets};
+
+my $str =
+'node_id='.getId($NODE). ' (' . $$NODE{type}{title} . ') &lt;small&gt;' . $$NODE{createtime} . ' ('.htmlcode('timesince',$$NODE{createtime}.',1').&quot; old)&lt;/small&gt;&lt;br /&gt;\n&quot;;
+
+$str .='&lt;font size=&quot;1&quot;&gt;using: '.linkNode(getPage($NODE, $query-&gt;param('displaytype'))).'&lt;/font&gt;&lt;br /&gt;&lt;br /&gt;';
+$str .= '&lt;a href='.urlGen({node=&gt;'edev',type=&gt;'usergroup'}).'&gt;edev usergroup&lt;/a&gt;'.
+'&lt;br /&gt;'.
+htmlcode('nodeletsection','edn,cgiparam').
+htmlcode('nodeletsection','edn,edev').
+
+#commenting out everydevel, it hasn't been updated since ... forever. - ktj
+#htmlcode('nodeletsection','edn,everydevel').  
+
+#htmlcode('nodeletsection','edn,documents').
+htmlcode('nodeletsection','edn,util').
+htmlcode('nodeletsection','edn,globals').
+htmlcode('nodeletsection','edn,patches');
+#;
+
+# commenting this out as a speed test - ktj 4.19.06
+
+#$str.='&lt;small&gt;&lt;br /&gt;Quick! You can /msg nate if you want to join edev&lt;/small&gt;' #unless exists $HTMLVARS{group_edev}{$$USER{node_id}}; #grep # /^$$USER{node_id}$/, @{ $$EDEV{group} };
+#$str.= '&lt;table width=&quot;100%&quot; bgcolor=&quot;#cccc99&quot;&gt;&lt;tr&gt;&lt;td class=&quot;oddrow&quot; align=&quot;right&quot; title=&quot;accrued devpoints&quot;&gt;&lt;small&gt;';
+#$str.= $$USER{title} eq 'nate'
+#	? 'Ya still be chillin\', yo!' :
+#	'Devpoints accrued: &lt;strong&gt;'.int($$VARS{devpoints}).'&lt;/strong&gt;'
+#	'&lt;code&gt;$VARS-&gt;{devpoints} == &lt;/code&gt;&lt;strong&gt;'.int($VARS-&gt;{devpoints}) .'&lt;/strong&gt;'
+#;
+#$str.='&lt;/small&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';
+
+$str;
+%]</nlcode>
+  <title>Everything Developer</title>
+</node>

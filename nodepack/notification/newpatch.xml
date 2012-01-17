@@ -1,0 +1,29 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-02-21 04:19:02</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <notification_id>1930919</notification_id>
+  <hourLimit>2400</hourLimit>
+  <hits>0</hits>
+  <node_id>1930919</node_id>
+  <code>my $str = &quot;&lt;b&gt;&quot;.linkNode($$args{patch_id}).&quot;&lt;/b&gt;&lt;br /&gt;was submitted to [Patch Manager]&lt;br /&gt;&quot;;
+my $patch = getNodeById($$args{patch_id});
+return unless $patch;
+my $status = $patch-&gt;{cur_status};
+if ($status) {
+$str .=&quot;&lt;i&gt;&quot;.getNodeById($status)-&gt;{title}.&quot;&lt;/i&gt;&quot;;
+}
+
+return $str;
+</code>
+  <type_nodetype>1930710</type_nodetype>
+  <author_user>1312198</author_user>
+  <description>a new [patch manager|patch] has been submitted.</description>
+  <package>0</package>
+  <invalid_check>return 1 if !getNodeById($$args{patch_id});
+return 0;</invalid_check>
+  <title>newpatch</title>
+</node>

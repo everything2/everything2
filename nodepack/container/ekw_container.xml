@@ -1,0 +1,91 @@
+<node>
+  <parent_container>1100988</parent_container>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:10</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>19</hits>
+  <node_id>1100949</node_id>
+  <context>&lt;!-- BEGIN ekw container --&gt;
+&lt;table style=&quot;margin-left: 10px;&quot; width=&quot;98%&quot; border=&quot;0&quot; cellpadding=&quot;0&quot;&gt;
+ &lt;tr&gt;
+  &lt;td width=&quot;60%&quot;&gt;
+   [{usersearchform:noendform}]
+&lt;/form&gt;&lt;!-- end of searchform --&gt;
+  &lt;/td&gt;
+  &lt;td align=&quot;right&quot;&gt;
+&lt;!-- Announcement (if any): --&gt;
+&lt;font color=&quot;#808080&quot;&gt;&lt;!-- announcements go here --&gt; &lt;/font&gt;
+  &lt;/td&gt;
+  &lt;td align=&quot;right&quot;&gt;
+
+&lt;!-- BEGIN LOGO --&gt;
+    &lt;!-- outer border table --&gt;
+    &lt;table bgcolor=&quot;[%
+$$VARS{ekw_logoborder} || $$THEME{logoBorder} || &quot;#000000&quot;;
+%]&quot; cellspacing=&quot;0&quot; cellpadding=&quot;1&quot; border=&quot;0&quot;&gt;
+    &lt;tr&gt;&lt;td&gt;
+    &lt;!-- inner background table --&gt;
+    &lt;table bgcolor=&quot;[%
+$$VARS{ekw_logobackground} || $$THEME{logoBackground} || &quot;#305880&quot;;
+%]&quot; cellspacing=&quot;0&quot; cellpadding=&quot;6&quot; border=&quot;0&quot;&gt;
+    &lt;tr&gt;&lt;td&gt;
+    &lt;!-- link to / so it won't matter whether the user's using .com or .org --&gt;
+    &lt;p class=&quot;ekwlogo&quot;&gt;&lt;a href=&quot;/&quot; style=&quot;text-decoration:none&quot;&gt;&lt;font color=&quot;[%
+$$VARS{ekw_logomaintext} || $$THEME{logoMainText} || &quot;#ffffff&quot;;
+%]&quot;&gt;Everything&lt;/font&gt;&lt;font color=&quot;[%
+$$VARS{ekw_logoaccenttext} || $$THEME{logoAccentText} || &quot;#ffff90&quot;;
+%]&quot;&gt;2&lt;/font&gt;&lt;/a&gt;&lt;/p&gt;
+    &lt;/td&gt;&lt;/tr&gt;
+    &lt;/table&gt;
+    &lt;!-- END inner background table --&gt;
+    &lt;/td&gt;&lt;/tr&gt;
+    &lt;/table&gt;
+    &lt;!-- END outer border table --&gt;
+&lt;!-- END LOGO --&gt;
+
+   &lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+  &lt;td colspan=&quot;3&quot; align=&quot;right&quot;&gt;
+    [{ekw titlebar}]
+  &lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;&lt;td&gt;&lt;img height=&quot;4&quot; src=&quot;images/incoming/dot.gif&quot;&gt;&lt;/td&gt;&lt;/tr&gt;
+ &lt;tr&gt;&lt;td bgcolor=&quot;[%
+$$VARS{ekw_logobackground} || $$THEME{logoBackground} || &quot;#305880&quot;;
+%]&quot; colspan=&quot;3&quot; height=&quot;1&quot;&gt;&lt;img height=&quot;2&quot; src=&quot;images/incoming/dot.gif&quot;&gt;&lt;/td&gt;
+ &lt;/tr&gt;
+&lt;/table&gt;
+    &lt;!--tr&gt;&lt;td--&gt;
+
+&lt;!-- Main table --&gt;
+&lt;table width=&quot;99%&quot; border=&quot;0&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot;&gt;
+  &lt;!-- main cell --&gt;
+  &lt;td width=&quot;80%&quot; valign=&quot;top&quot; &gt;
+    &lt;h1 style=&quot;margin-left: 10px;&quot; class=&quot;nodetitle&quot;&gt;[% $$NODE{ 'title' } %]&lt;/h1&gt;
+    &lt;p&gt;&lt;!-- BEGIN contained stuff --&gt;
+    CONTAINED_STUFF
+  &lt;/td&gt;&lt;!-- END contained stuff --&gt;
+[{showNodelets:right}]
+ &lt;/tr&gt;
+ &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
+ &lt;tr&gt;&lt;td bgcolor=&quot;[%
+$$VARS{ekw_logobackground} || $$THEME{logoBackground} || &quot;#305880&quot;;
+%]&quot; colspan=&quot;3&quot; height=&quot;1&quot;&gt;&lt;img height=&quot;2&quot; src=&quot;images/incoming/dot.gif&quot;&gt;&lt;/td&gt;
+ &lt;/tr&gt;
+&lt;/table&gt;
+&lt;!-- End main table --&gt;
+
+[{ekwFooter}]
+
+&lt;!-- END ekw container --&gt;
+</context>
+  <type_nodetype>2</type_nodetype>
+  <container_id>1100949</container_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>ekw container</title>
+</node>

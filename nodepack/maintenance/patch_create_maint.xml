@@ -1,0 +1,43 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2003-01-13 17:06:20</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>3</hits>
+  <node_id>1414809</node_id>
+  <htmlcode_id>1414809</htmlcode_id>
+  <maintenance_id>1414809</maintenance_id>
+  <checks_arguments>0</checks_arguments>
+  <maintaintype>create</maintaintype>
+  <code>my ($PATCH) = @_;
+getRef($PATCH);
+my $pf = getVars(getNode(&quot;patchable fields&quot;, &quot;setting&quot;));
+
+unless($pf and $$pf{$query-&gt;param(&quot;patch_field&quot;)})
+{ 
+  nukeNode($PATCH, -1, 1);
+  return;
+}
+
+my $review_id = getId(getNode(&quot;pending review&quot;,&quot;status&quot;));
+
+$$PATCH{cur_status} = $review_id;
+
+updateNode($PATCH,-1);
+
+use JSON;
+
+my $notification_id = getNode(&quot;newpatch&quot;,&quot;notification&quot;)-&gt;{node_id};
+my $user_id = $notification_id;
+my $argSet = { patch_id =&gt; $$PATCH{node_id}};
+my $argStr = to_json($argSet);
+my $addNotifier = htmlcode('addNotification', $notification_id, $user_id, $argStr);
+</code>
+  <type_nodetype>150</type_nodetype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <maintain_nodetype>1151141</maintain_nodetype>
+  <title>patch create maint</title>
+</node>

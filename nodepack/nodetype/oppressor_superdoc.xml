@@ -1,0 +1,25 @@
+<node>
+  <core>0</core>
+  <nodetype_id>1144104</nodetype_id>
+  <verify_edits>0</verify_edits>
+  <restrictdupes>1</restrictdupes>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <extends_nodetype>14</extends_nodetype>
+  <createtime>2001-08-23 16:07:35</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <sqltable></sqltable>
+  <hits>3</hits>
+  <grouptable></grouptable>
+  <node_id>1144104</node_id>
+  <restrict_nodetype>0</restrict_nodetype>
+  <typeVersioned>0</typeVersioned>
+  <type_nodetype>1</type_nodetype>
+  <writers_user>923653</writers_user>
+  <author_user>113</author_user>
+  <package>0</package>
+  <readers_user>923653</readers_user>
+  <title>oppressor_superdoc</title>
+  <deleters_user>829913</deleters_user>
+</node>

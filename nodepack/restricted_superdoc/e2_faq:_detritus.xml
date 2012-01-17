@@ -1,0 +1,193 @@
+<node>
+  <doctext>&lt;br&gt;&lt;br&gt;
+
+&lt;p&gt;[dem bones|I]'d like to get as much advice &lt;i&gt;out&lt;/i&gt;
+of e2nodes and &lt;i&gt;into&lt;/i&gt; the FAQ as possible - both to 
+stop setting bad examples of 'noding about noding' 
+(especially when the advice is good) and to centralize / 
+make the information easy to access.  This, of course, is 
+quite obviously the reason that FAQs were invented ... 
+but in many ways we've had our FAQ written for us by the 
+userbase (mostly us) and it's time to cull it into a 
+far more useful (and &lt;i&gt;smaller&lt;/i&gt;) document.&lt;/p&gt;
+
+&lt;p&gt;[Rancid Pickle] has volunteered his soul to rework much
+of the current FAQ and I've been trying to simplify it as 
+much as possible.  If any of you would like to tackle
+a topic please sign up here with the nodes you'd like
+to meld into a useful doc.  [Jet-Poop] recently wrote a 
+[E2 FAQ: How to Make an Episode Guide|piece of protocol on 'episode guides']
+ - we could probably use a few more noding protocols in such
+areas as:&lt;ul&gt;
+&lt;li&gt;artist/discography/album/lyrics
+&lt;li&gt;&lt;b&gt;[Everything Request for Comments]???&lt;/b&gt;  (I still
+don't quite understand this title or parts of the writeup 
+but I'm almost sure it should be listed here as something
+to make 'official' or  be deleted)
+&lt;li&gt;&lt;i&gt;?&lt;/i&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;b&gt;e2node&lt;/b&gt;s which need to be assimilated into the 
+[Everything FAQ]:  
+&lt;/p&gt;
+
+
+ [&quot;getting to know you&quot; nodes]&lt;br /&gt;
+ [Adding a useless writeup just so that a writeup exists can only harm Everything]&lt;br /&gt;
+ [A bland writeup is worse than a nodeshell]&lt;br /&gt;
+ [Capitalization in Nodes]&lt;br /&gt;
+ [Choose Short Titles]&lt;br /&gt;
+ [Choosing a node title]&lt;br /&gt;
+ [Cut-and-Paste Writeups Will Die]&lt;br /&gt;
+ [Don't Make Shit Up]&lt;br /&gt;
+ [Don't namespace your lyrics]&lt;br /&gt;
+ [Don't node what you don't know]&lt;br /&gt;
+ [E2 Lyrics Noding Standard]&lt;br /&gt;
+ [E2 Search Tips]&lt;br /&gt;
+ [E2 voting philosophy]&lt;br /&gt;
+ [Earn Your Bullshit]&lt;br /&gt;
+ [Empty nodes frustrate me]&lt;br /&gt;
+ [Everything as a discussion forum]&lt;br /&gt;
+ [Everything as a Knowledge Base]&lt;br /&gt;
+ [Everything IS a TV set!]&lt;br /&gt;
+ [Everything is NOT a BBS]&lt;br /&gt;
+ [Everything is not a TV set!]&lt;br /&gt;
+ [Explicate Your Lyrics]&lt;br /&gt;
+ [Factual noding]&lt;br /&gt;
+ [GTKY]&lt;br /&gt;
+ [GTKYN]&lt;br /&gt;
+ [Highly subjective writeups]&lt;br /&gt;
+ [How to avoid creating irrelevant softlinks]&lt;br /&gt;
+ [How to avoid creating irrelevant softlinks]&lt;br /&gt;
+ [Integrate your write-ups]&lt;br /&gt;
+ [Isn't this what your home node is for?]&lt;br /&gt;
+ [Just because you've earned your bullshit doesn't mean you have to use it]&lt;br /&gt;
+ [Learn how to link]&lt;br /&gt;
+ [Link and Link]&lt;br /&gt;
+ [Make links relevant]&lt;br /&gt;
+ [Nobody cares if it was originally a nodeshell]&lt;br /&gt;
+ [Node for the Ages]&lt;br /&gt;
+ [Nodeshell rescue]&lt;br /&gt;
+ [The Nodeshell Rescue Team]&lt;br /&gt;
+ [Nodeshelling as an art form]&lt;br /&gt;
+ [Noding for Numbers]&lt;br /&gt;
+ [Noding lyrics]&lt;br /&gt;
+ [On the dangers of putting node titles in quotation marks]&lt;br /&gt;
+ [One example of why you should pick titles carefully]&lt;br /&gt;
+ [Pipe linking as commenting]&lt;br /&gt;
+ [Please annotate your Poetry]&lt;br /&gt;
+ [Please Attribute Anything You Quote]&lt;br /&gt;
+ [Please stick to the title of the node]&lt;br /&gt;
+ [Pulling an Asamoth]&lt;br /&gt;
+ [Singular-Plural Node Title Mismatch]&lt;br /&gt;
+ [Soft linking as commenting]&lt;br /&gt;
+ [Soft-linking coward]&lt;br /&gt;
+ [The softlink/nodeshell combo]&lt;br /&gt;
+ [There's already a node about this]&lt;br /&gt;
+ [Use punctuation, damnit!]&lt;br /&gt;
+ [Very Short Writeups]&lt;br /&gt;
+ [What do you do with your nodes with negative reputation?]&lt;br /&gt;
+ [Writeup does NOT mean Reply]&lt;br /&gt;
+ [You Can't Earn Your Bullshit]&lt;br /&gt;
+
+
+&lt;h1&gt;Everything FAQ: Making A Node:&lt;/h1&gt;[Profuse] [linkage] [is] [the] [key] [to] 
+[Everything's] [structure]. Links are created any time a 
+person moves from one node to another, and strengthed if 
+travelled again.  Sometimes links (such as the [hard link]s
+in writeups) are required to define a node.  The links at the 
+bottom, [soft link]s, are more likely to be loosely, if at all 
+associated with a node - but they provide paths to new 
+[trains of thought].
+&lt;p&gt;This structure is useful because it allows the user 
+the 
+most [flexibility in navigation].  They can continue
+ [browsing] into an associated [topic], or change to 
+something new.  Also, there is always the &quot;[search]&quot; box 
+at the top of the screen where users can travel to 
+unlinked nodes or create new nodes of their own.&lt;p&gt;&lt;br&gt;&lt;ol&gt;
+&lt;b&gt;
+NODE PROTOCOL  ([or])  WHAT GETS KILLED AND WHAT STAYS&lt;/b&gt;
+&lt;/ol&gt;
+This is covered in other areas of the FAQ as well - see
+[E2 FAQ: What NOT To Do] and the [Tip of the Day] nodes
+for the best advice.  Here's a brief overview:&lt;ol&gt;
+&lt;b&gt;1.  [Avoid highly subjective writeups]&lt;/b&gt;  
+
+&lt;br&gt;&lt;b&gt;2.  Don't write something you wouldn't want to read 
+again. &lt;/b&gt; Try to avoid 'comments for today' or other
+little smatterings of your personal views that would  best
+belong in the chatterbox or the [everything day log]s.
+&lt;br&gt;&lt;b&gt;3.  Avoid heavy negativity, insults and complaints.    &lt;br&gt;&lt;b&gt;4.  Ridiculously short, non-informative, selfish nodes.   &lt;br&gt;
+&lt;b&gt;5.  Write about what you know.  If you're doing a 
+factual entry, please double-check your facts!&lt;/b&gt; See [Reference Desk] 
+&lt;br&gt;
+&lt;b&gt;6.  Please Please Please double-check your nodes a 
+few times for [reference desk|spelling]...esp spelling 
+in links.&lt;/b&gt; &lt;br&gt;&lt;b&gt;7.  [Node What You Know]&lt;br&gt;8.  
+[Node What You Don't Know]&lt;br&gt;9.  
+Do not define something based solely upon what it is 
+[not]&lt;/b&gt;&lt;/b&gt; &lt;/ol&gt;
+&lt;br&gt;&lt;br&gt;
+&lt;/b&gt;&lt;ol&gt;&lt;b&gt;CREATING NEW NODES:&lt;/B&gt;&lt;/OL&gt;&lt;br&gt;
+To create a new node on everything type what you wish the 
+node to be called into the &quot;search&quot; box located at the top 
+of any given screen.  [Everything] will quickly check if 
+the node has already been created and, if so, take you 
+there.  If the [node] has not yet been created Everything 
+will show you a list of established nodes with similar 
+titles.  Please look carefully at this list as it grows everyday
+and most likely someone in the past has tackled the issue
+you're about to add a writeup on.  [Pick titles carefully]
+and don't create a &lt;i&gt;new&lt;/i&gt; node unless you have to.  
+&lt;p&gt;
+Another option is to simply click &quot;[Create A Node]&quot; 
+located in the [Epicenter] Nodelet.  Either way, at this 
+point an empty text box will be at the bottom of the node 
+(if it already existed) and you may fill in whatever 
+definition you wish, using the appropriate 
+[e2 html tags|HTML] to format your text, and click 
+&quot;person&quot;, &quot;place&quot;, &quot;thing&quot; or &quot;idea&quot;.  At this point your 
+writeup will be added to Everything.  You may edit your [writeup] at any 
+time by altering your text and again clicking 
+&quot;submit&quot; (this may instead appear as either &quot;[stumbit]&quot; 
+or &quot;[sumbit]&quot;...don't feel beaten, to &quot;[submit]&quot; is good!!
+&lt;p&gt;  
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;p align=center&gt;&lt;b&gt;back to&lt;br&gt;
+[Everything FAQ]&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;BR&gt;
+&lt;p&gt;When new users come to [E2], there really is a lot to learn.  Besides the obvious questions regarding how to actually &lt;i&gt;use&lt;/i&gt; E2, there is also an [avalanche] of questions revolving around more [aesthetic] issues, such as what writeups need to be done and what constitutes a good writeup.  Good answers to these questions can be found all over on [E2], but the massive amount of [reading] and [researching] can be intimidating, especially for someone new.&lt;/p&gt;
+
+&lt;p&gt;I should note that these are merely the writeups that helped me to understand how [E2] works, both [literally] and [aesthetically].  Other users may have found different writeups to be more useful in helping them to understand E2 and all of its nuances.  If these still leave you wanting more, try reading the &lt;b&gt;&lt;i&gt;[Everything FAQ]&lt;/i&gt;&lt;/b&gt; and &lt;i&gt;&lt;b&gt;[Everything University]&lt;/b&gt;&lt;/i&gt;.  Besides these, the best place to find out more information if you are [lost] and [confused] is the [Chatterbox]; just type in a message and a [bevy] of friendly and helpful [denizen]s of E2 will help you out.&lt;/p&gt;
+
+&lt;p&gt;If you've just walked in the door, the best place to start out is the &lt;i&gt;&lt;b&gt;[E2 Quick Start]&lt;/b&gt;&lt;/i&gt;.  This single writeup, by esteemed E2 [god] &lt;i&gt;[wharfinger]&lt;/i&gt;, lays down the very basics of making a first writeup and talking to other users in the [Chatterbox] very well.  More importantly, it describes some of the earliest mistakes that a new [E2] user can make.&lt;/p&gt;
+
+&lt;p&gt;The most important writeup a new member of [E2] can read is &lt;b&gt;&lt;i&gt;[E2 FAQ: What NOT To Do]&lt;/i&gt;&lt;/b&gt;.  Even in my relatively short time here, I can't count the number of new users I've seen thrash about on the system simply because they didn't read this incredibly useful writeup.  Until you are familiar with the system here, if the [E2 FAQ: What NOT To Do|What Not To Do] page suggests not doing it, you're far better off avoiding it like the plague, or else incur a great deal of wrath from the people already here.&lt;/p&gt;
+
+&lt;p&gt;Before long, you'll realize that some users have the power to eliminate your writeups, change them around, and do all sorts of wacky things.  You'll probably also receive some messages from  &lt;i&gt;[Klaproth]&lt;/i&gt; informing you of what is going on.  There are two writeups that are invaluable at this point to explain what is going on.  &lt;i&gt;&lt;b&gt;[The Power Structure of Everything2]&lt;/b&gt;&lt;/i&gt;, written by E2 overlord &lt;i&gt;[dem bones]&lt;/i&gt;, explains who the people are that have these powers over your writeups and a general description of their powers.  Another valuable page is &lt;i&gt;&lt;b&gt;[E2 FAQ: Klaproth]&lt;/b&gt;&lt;/i&gt;, which explains why this Klaproth fellow is sending you messages and why you shouldn't bother to write back to him.&lt;/p&gt;
+
+&lt;p&gt;Another excellent writeup concerning how to write well at E2 comes from &lt;i&gt;[wharfinger]&lt;/i&gt;.  The &lt;i&gt;&lt;b&gt;[Everything Style Guide]&lt;/b&gt;&lt;/i&gt; is an excellent summary of many of the elements that make a writeup great, presented in such a way that beginning users can quickly pull out bits to apply to their own writeups.  If you're just starting to write here at [E2], this is a great checklist for your writeup.  Just don't worry about the [Amon Duul II] thing.&lt;/p&gt;
+
+&lt;p&gt;Once you've written a few writeups, have gotten a taste for experience points, and have read about the &lt;i&gt;&lt;b&gt;[Voting/Experience System]&lt;/b&gt;&lt;/i&gt;, a strong overwhelming urge to churn out writeups will come over you.  Before you start dumping out piles of digital writing all over e2, there are two writeups that might help you to see what you're doing and convince you to do otherwise.  The first is simply a description of what you're about to do, &lt;i&gt;&lt;b&gt;[Noding for Numbers]&lt;/b&gt;&lt;/i&gt; (also called [NFN]).  The other is perhaps the best writeup on E2, &lt;i&gt;&lt;b&gt;[Node For The Ages]&lt;/b&gt;&lt;/i&gt;.  &lt;i&gt;[Jet-Poop]&lt;/i&gt; makes a great summary there with a hint of sarcasm, but the point remains: better writeups serve not only you, but everyone else better in the long run.  Good writeups continue to earn positive votes and XP, where bad writeups will only get downvoted or nuked, leading to negative XP.&lt;/p&gt;
+
+&lt;p&gt;If you've been reading the writeups of other users and have found a great number of one-line writeups and are thinking to yourself, &quot;Hmm... that seems like an easy way to add to my writeup total,&quot; then read &lt;i&gt;[dannye]&lt;/i&gt;'s writeup &lt;i&gt;&lt;b&gt;[Raising the bar]&lt;/b&gt;&lt;/i&gt;.  It explains quite clearly the reasons that such writeups can be found here; it also explains why you shouldn't add to the number of one line writeups already floating around.&lt;/p&gt;
+
+&lt;p&gt;As I've written more and more here, I've continually been interacting more and more with the [Everything 2 Editors|editing team] here.  As a result, another excellent writeup by &lt;i&gt;[dannye]&lt;/i&gt;, &lt;i&gt;&lt;b&gt;[pick-up volleyball]&lt;/b&gt;&lt;/i&gt;, has come to explain a lot to me, especially when I inevitably disagree with the decisions of the editing team.  &lt;i&gt;[dannye]&lt;/i&gt; explains far better than I can the philosophical reasons for taking things on the chin and improving yourself here; the editors are merely here to help that process along.&lt;/p&gt;
+
+&lt;p&gt;There are many more excellent writeups to be found on [E2] written solely to help out beginners; these merely scratch the surface.  Great places to look for more help are the &lt;b&gt;&lt;i&gt;[Everything FAQ]&lt;/i&gt;&lt;/b&gt; and &lt;i&gt;&lt;b&gt;[Everything University]&lt;/b&gt;&lt;/i&gt;, as well as in the [Chatterbox].&lt;/p&gt;
+&lt;hr&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-09-06 22:30:21</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1153687</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1153687</document_id>
+  <author_user>282</author_user>
+  <package>0</package>
+  <title>E2 FAQ: detritus</title>
+</node>

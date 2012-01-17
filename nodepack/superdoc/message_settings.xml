@@ -1,0 +1,239 @@
+<node>
+  <doctext>&lt;p align=&quot;center&quot;&gt;[{settingsDocs}]&lt;/p&gt;
+
+[{UnderConstruction:N-Wing}]
+
+&lt;p&gt;You can control your message setting here.&lt;/p&gt;
+
+[{openform}]
+
+&lt;p&gt;TODO: get junk from user settings, and maybe US2.&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[{UnderConstruction:N-Wing,As of November 15, 2002, auto-msg handling needs to undergo much testing.}]
+
+&lt;p&gt;
+This section allows you to automatically handle certain messages you send, based on who you are sending the message to.
+For each user or usergroup to setup, first enter the user(group)'s name, submit the form, then choose how you want your own copy of the message handled.
+&lt;/p&gt;
+&lt;p&gt;
+Sending a message to multiple users and/or usergroups could cause multiple rules to apply.
+Archive-wise, if any rule would cause your message to be archived, then the message will be archived.
+As for getting the message:&lt;br /&gt;
+if any rule is set to send you a CC of the message, then you'll get a copy; otherwise,&lt;br /&gt;
+&lt;!-- um, this is not true (maybe it should be) if any rule is normal, then you'll get a copy if you were going to; otherwise,&lt;br /&gt; --&gt;
+if any rule is set to ignore your own message, then you won't get a copy.
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;(remove setting)&lt;/strong&gt; - deletes your setting for this user or usergroup&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;normal&lt;/strong&gt; - normal handling; use this to temporarily disable special handling for this user or usergroup&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;always CC self&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;never /msg self&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;set archived&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CC but archived&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;
+
+[%
+return if $$USER{node_id}==$HTMLVARS{guest_user};
+return unless $$USER{node_id}==9740;	#N-Wing testing
+
+#updated: Friday, November 15, 2002
+
+my $NL = &quot;&lt;br /&gt;\n&quot;;
+my $MAXPREFS = 5;	#maybe level dependant?
+
+my $str='';
+my $t;
+my $newUG=undef;
+
+local *debugList = sub {
+	$str.=$NL;
+	my @curList;
+	foreach(sort(keys(%$VARS))) {
+		push(@curList, $1.'='.$VARS-&gt;{$_}) if /^automsgsend_(.+)$/;
+	}
+	$str .= $NL.$NL . ($_[0]||'debug') . ': ' . join(', ',@curList) . $NL.$NL;
+};
+
+debugList('before');
+
+
+#special msg handling
+#	key is node_id of recipient node
+#	value is the (light) node
+my %specials;
+
+#add another user or usergroup
+if( (defined $query-&gt;param('newautomsgtarget')) &amp;&amp; length($t=$query-&gt;param('newautomsgtarget')) ) {
+	if(length($t) &gt; 255) { $t=substr($t,0,255); }
+	$newUG = getNode($t,'user','light') || getNode($t,'usergroup','light') || undef;
+	if(defined $newUG) {
+		unless(exists $VARS-&gt;{'automsgsend_'.$t}) {
+			$t = $newUG-&gt;{node_id};
+			my $curDefault = 1;	#default value to use; 1 is normal send
+			#if( (exists $VARS-&gt;{'automsgsend_default'})	#this gets tricky, since if default is updated while adding a new one, we need to move htmlcode to exec before all this stuff
+			$VARS-&gt;{'automsgsend_'.$t} = 1;
+			$specials{$t} = $newUG;
+		} else {
+			undef $newUG;
+			$str .= 'You already have a setting for &quot;&lt;kbd&gt;' . htmlescape($t) . '&lt;/kbd&gt;&quot;.'.$NL;
+		}
+	} else {
+		$str .= 'Unable to find a user or usergroup with the name of &quot;&lt;kbd&gt;' . htmlEscape($t) . '&lt;/kbd&gt;&quot;.';
+		$str .= ' Do not enter the name as you would send a message; that is, do not use an underscore in place of a space.' if index($t, '_')!=-1;
+		$str .= $NL;
+	}
+	$query-&gt;delete('newautomsgtarget');
+}
+
+#load information about recipients
+foreach(keys(%$VARS)) {
+	next unless /^automsgsend_([1-9]\d*)$/;
+	next if exists $specials{$1};
+	$t = getNodeById($1,'light');
+	next unless defined $t;
+	$specials{$t-&gt;{node_id}}=$t;
+}
+
+#see if user tried to add too many
+#	has to be done after we look through all the VARS
+#	this checks to see if we currently have too many; if so, wipe out the one that was just added
+if( (scalar(keys(%specials)) &gt; $MAXPREFS) &amp;&amp; (defined $newUG) ) {
+	$t=$newUG-&gt;{node_id};
+	delete $VARS-&gt;{'automsgsend_'.$t};
+	delete $specials{$t};
+}
+
+#display choices in alphabetical order
+my %lookup;
+foreach(keys(%specials)) {	#make following sort a bit faster
+	$lookup{$_} = $specials{$_}-&gt;{'title'};
+}
+my @orderABC = sort { $lookup{$a} cmp $lookup{$b} } keys(%specials);
+
+$HTMLVARS{choicelist} = [
+	 '0','(remove setting)',
+	 '1','normal send',
+	 '3','always CC self',
+	 '5','never /msg self',
+	 '9','set archived',
+	'11','CC but archive',
+];
+
+#let user change setting for each recipient
+foreach(@orderABC) {
+	$t = htmlcode('varsComboBox', 'automsgsend_'.$_);
+	#$t = htmlcode('varsComboBox', 'changeautomsgtarget_'.$_);	#what was this supposed to be for? maybe when only could change a single thing?
+	next unless exists $VARS-&gt;{'automsgsend_'.$_};
+	$str .= $t . ' ' . linkNode($specials{$_},0,{lastnode_id=&gt;0}) . $NL;	#TODO say if user or group?
+}
+
+#default setting (what to do if recipient is not in above list)
+shift @{$HTMLVARS{choicelist}};	#remove '0;
+shift @{$HTMLVARS{choicelist}};	#remove '(remove setting)'
+shift @{$HTMLVARS{choicelist}};	#remove '1';
+unshift @{$HTMLVARS{choicelist}}, '0';
+$t = htmlcode('varsComboBox', 'automsgsend_default');
+#$t = htmlcode('varsComboBox', 'changeautomsgtarget_default');	#what was this supposed to be for?
+$str .= $t . ' default action' . $NL;
+
+
+#can add another user or usergroup until we hit the max
+if(scalar(@orderABC)&lt;$MAXPREFS) {
+	#$t = htmlcode('varsComboBox', 'changeautomsgtarget_newvalue');
+	$str .= 'You may enter another user or usergroup. Do not convert spaces to underscores. ' . $query-&gt;textfield('newautomsgtarget', '', 24, 255) . $NL;
+} else {
+	$str .= $NL . 'You have reached your limit. To add more, first choose &quot;';
+	$str .= @{$HTMLVARS{choicelist}}[1];	#1='(remove setting)'
+	$str .= '&quot; for one or more recipients, and resubmit the form (press the &quot;submit&quot; button).';
+}
+
+debugList('after');
+
+$str;
+%]
+&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[{closeform}]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-07-18 19:05:20</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1333632</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1333632</document_id>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>Message Settings</title>
+</node>

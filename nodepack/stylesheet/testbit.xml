@@ -1,0 +1,81 @@
+<node>
+  <doctext>	#header {position: absolute;
+		top: 0; 
+                left: 0;
+                right: 0;
+		background-color: rgb(2,2,25);
+	margin: 20px; or margin: 10%;
+padding: 20 px; or padding 1em;}
+
+#epicenter_zen { float: right; font-size: 80%; margin: 4px; line-height: 1.5em;} 
+
+#announcements {display: none;}
+ 
+#epicenter_zen { float: right; font-size: 80%; margin: 4px; line-height: 1.5em;}
+
+#e2logo {
+position: absolute; 
+top: 10;
+left: 12.6em; 
+margin: 0; 
+width: 30px;
+font-size: 200%;
+font-variant: small-caps;
+font-weight: 100; 
+font-family: vivaldi;
+}
+#e2logo a:link {color: blue; text-decoration: none;}
+#e2logo a:visited {color: gray; text-decoration: none;}
+#e2logo a:hover {color: gray; text-decoration: none;}
+
+
+	#wrapper {margin-top: 5em; padding-right: 206px;font-family: vivaldi; } 
+#wrapper a:link {color: gold; text-decoration: none;}
+#wrapper a:visited {color: yellow; text-decoration: none;}
+#wrapper a:hover {color: gold; text-decoration: none;}
+.oddrow {background:black}
+.tr {background:black}
+
+	#footer {clear: both;}		
+
+
+#searchform {width: 400px;
+border: solid thin yellow;
+padding: 4px;
+margin-right: .5em;
+float: right;
+}
+
+#searchform input {float: left;
+margin-top:4px
+}
+#searchform label {width: 130px;
+color: gold; 
+margin-right: 2px;
+font-family: sans-serif:
+font-size: 75%;
+font-weight: bolder;
+text-align: left;
+float: right;
+clear: right;
+}
+	#mainbody {position: relative; float: left; width: 100%;}
+
+	#sidebar {position: relative; float: left;width: 200px; margin-right: -206px;}
+#softlinks td { background-color: rgb(0,0,0)}
+       body {background-color: rgb(122,25,255)}</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-01-13 12:11:52</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1925387</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1854352</type_nodetype>
+  <document_id>1925387</document_id>
+  <author_user>1742901</author_user>
+  <package>0</package>
+  <title>testbit</title>
+</node>

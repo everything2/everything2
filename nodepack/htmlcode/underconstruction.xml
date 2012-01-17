@@ -1,0 +1,39 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-05-11 19:44:28</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1300727</node_id>
+  <htmlcode_id>1300727</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#this just gives an &quot;under construction&quot; notice
+#first parameter is user that is making change, so we know who to blame :)
+#other parameters are additional text to display
+
+my $whoMaking = shift(@_);
+
+my $UID = getId($USER);
+
+my $str = '&lt;p align=&quot;center&quot; style=&quot;border:solid black 1px; margin:5px; padding:5px; font-family:sans-serif;&quot;&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;strong&gt;Under Construction&lt;/strong&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/p&gt;
+&lt;p style=&quot;font-family:sans-serif;&quot;&gt;This feature is currently under construction';
+
+if((defined $whoMaking) &amp;&amp; length($whoMaking) &amp;&amp; (
+($HTMLVARS{group_gods}{$UID}) || ($HTMLVARS{group_edev}{$UID}) || ($HTMLVARS{'group_content editors'}{$UID})
+)) {
+	$str .= ' by ['.$whoMaking.']';
+}
+
+$str .=', so you may experience weirdness, including, but not limited to, &lt;font color=&quot;#dd0000&quot;&gt;Server Error!&lt;/font&gt;s, messed up displays, and long-winded lawyer-sounding-like sentences.';
+$str .= '&lt;br /&gt;'.join(', ',@_) if scalar(@_);
+$str .= '&lt;/p&gt;
+&lt;/span&gt;';
+
+return $str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>UnderConstruction</title>
+</node>

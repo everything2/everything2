@@ -1,0 +1,37 @@
+<node>
+  <doctext>&lt;p&gt;
+Set 'mobile' mode for this client. Sets a cookie. COOKIE!
+&lt;/p&gt;
+
+[{openform}]
+
+[%
+    my $mobile_cookie = $query-&gt;cookie('mobile'); 
+    my $mobile_param = $query-&gt;param('mobile');
+    if ($query-&gt;param('set')) {
+      $USER-&gt;{cookie} = $query-&gt;cookie(
+        -name=&gt; 'mobile', -value=&gt;$mobile_param || 0,
+        -expires=&gt;'+1y');
+    } else {
+      $query-&gt;param('mobile', $mobile_cookie);
+    }
+
+    $query-&gt;checkbox(-name =&gt; 'mobile', -label =&gt; 'mobile')
+    . $query-&gt;submit('set')
+    . $query-&gt;end_form();
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-07-22 15:40:47</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>6</hits>
+  <node_id>1990027</node_id>
+  <edittime>2011-11-01 09:42:21</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1990027</document_id>
+  <author_user>5603</author_user>
+  <package>0</package>
+  <title>set_mobile</title>
+</node>

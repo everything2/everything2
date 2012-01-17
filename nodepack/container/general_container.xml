@@ -1,0 +1,71 @@
+<node>
+  <parent_container>1854175</parent_container>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:10</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>43</hits>
+  <node_id>19</node_id>
+  <context>[% 
+ htmlcode('log ip');
+ #$$VARS{votetime} = &quot;&quot; if not $$VARS{votetest1};
+ my ($time) = split &quot; &quot;,$$USER{lasttime};
+
+ if ($$USER{node_id} != $HTMLVARS{guest_user} 
+  and (not exists $$VARS{votetime} or $$VARS{votetime} ne $time)) {
+   
+   use Everything::Experience;
+   my $VOTES = getVars(getNode('level votes', 'setting'));
+   my $COOLS = getVars(getNode('level cools', 'setting'));
+
+   $$USER{level} = undef;
+   #$$USER{HRLF} = undef;
+   #this is a dummy optimization thing for the honor roll;
+   #$$USER{HRLF} = getHRLF($USER);
+   my $lvl = getLevel $USER;
+   $$USER{level} = $lvl;
+   if (exists $$VOTES{$lvl} and $$VOTES{$lvl} =~ /^\d+$/) {
+     #$$VARS{votetest1} = &quot;hay&quot;;
+     $$USER{votesleft} = $$VOTES{$lvl};
+   }
+   #$$USER{votesleft} = $$VOTES{$lvl};
+   if (exists $$COOLS{$lvl} and $$COOLS{$lvl} =~ /^\d+$/) {
+     #$$VARS{votetest2} = &quot;nay&quot;;
+     $$VARS{cools} = $$COOLS{$lvl};
+   }
+   $$VARS{votesrefreshed} ||= 0;
+   $$VARS{votesrefreshed}++;
+   $$VARS{votetime} = $time;
+ }
+
+ my $key = ($query-&gt;cookie('mobile') || $ENV{HTTP_HOST} =~ m'^m.everything2'i)?
+     'generalMobileParent_container' : 'generalParent_container';
+ if ($query-&gt;param('mobile_fragment'))
+ {
+   $$CURRENTNODE{parent_container}
+     = getNode('mobile fragment stdcontainer', 'container');
+ }
+ elsif(defined $$THEME{$key})
+ {
+   $$CURRENTNODE{parent_container} = $$THEME{$key};
+ } else {
+   if (my $parent = $HTMLVARS{$key}) {
+     $$CURRENTNODE{parent_container} = $parent;
+   }
+ }
+
+ $$USER{votesleft} = 0 if isSuspended($USER, &quot;vote&quot;);
+ $$VARS{cools} = 0 if isSuspended($USER, &quot;cool&quot;);
+
+&quot;&quot;;
+%]
+CONTAINED_STUFF
+</context>
+  <type_nodetype>2</type_nodetype>
+  <container_id>19</container_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>general container</title>
+</node>

@@ -1,0 +1,32 @@
+<node>
+  <doctext>[%
+my $str.=&quot;&lt;vars&gt;&quot;;
+
+unless($HTMLVARS{guest_user} == $$NODE{node_id} ){
+  my $ev = getVars(getNode(&quot;exportable vars&quot;,&quot;setting&quot;));
+
+  foreach(keys %$ev)
+  {
+    next unless $$VARS{$_};
+    $str.=&quot;&lt;key name=\&quot;$_\&quot;&gt;$$VARS{$_}&lt;/key&gt;\n&quot;;
+  }
+}
+
+$str.=&quot;&lt;/vars&gt;&quot;;
+return $str;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-10-13 13:46:23</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1372677</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1252389</type_nodetype>
+  <document_id>1372677</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>Raw VARS XML Ticker</title>
+</node>

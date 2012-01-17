@@ -1,0 +1,48 @@
+<node>
+  <doctext>[%
+
+  return 'Do you really want to see the eldritch horrors that result when I try to write code?' unless $USER-&gt;{title} eq 'mauler';
+
+  my $str = 'Everything\'s Special Writeups (visible only to staff members):';
+
+  my $csr = $dbh-&gt;prepare('SELECT node_id FROM node WHERE type_nodetype=117 ORDER BY reputation DESC LIMIT 300');
+
+  #my $csr = $dbh-&gt;prepare('SELECT writeup_id FROM writeup ORDER BY cooled DESC LIMIT 100');
+
+  $csr-&gt;execute();
+
+  $str .= '&lt;br&gt;&lt;br&gt;&lt;table&gt;&lt;tr bgcolor=&quot;#CCCCCC&quot;&gt;&lt;td width=&quot;200&quot;&gt;Writeup&lt;/td&gt;&lt;td width=&quot;200&quot;&gt;Author&lt;/td&gt;&lt;/tr&gt;';
+
+  while(my $row = $csr-&gt;fetchrow_hashref())
+  {
+
+      my $bestnode = getNodeById($$row{node_id});
+
+      next unless($bestnode);
+
+      my $bestparent = getNodeById($$bestnode{parent_e2node});
+      my $bestuser = getNodeById($$bestnode{author_user});
+
+     $str.='&lt;tr&gt;&lt;td&gt;'.linkNode($bestnode, $$bestnode{title}).' - '.linkNode($bestparent, 'full').' &lt;b&gt;'.$$bestnode{reputation}.'&lt;/b&gt;&lt;/td&gt;&lt;td&gt; by '.linkNode($bestuser, $$bestuser{title}).'&lt;/td&gt;&lt;/tr&gt;';
+
+  }
+
+  $str .= '&lt;/table&gt;';
+
+  return $str;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-01-26 13:51:52</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1927307</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1144104</type_nodetype>
+  <document_id>1927307</document_id>
+  <author_user>1180811</author_user>
+  <package>0</package>
+  <title>mauler's Sandbox II: The Revenge</title>
+</node>

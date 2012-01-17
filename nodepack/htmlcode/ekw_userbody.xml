@@ -1,0 +1,37 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>18</hits>
+  <node_id>1101124</node_id>
+  <htmlcode_id>1101124</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $bgcolor ||= $$VARS{ ekw_bgcolor };
+$bgcolor ||= $$THEME{ bodyBgcolor };
+$bgcolor ||= &quot;#FFFFFF&quot;;
+
+my $textcolor = $$VARS{ ekw_textcolor };
+$textcolor ||= $$THEME{ bodyTextcolor };
+$textcolor ||= &quot;#000000&quot;;
+
+my $linkcolor = $$VARS{ ekw_linkcolor };
+$linkcolor ||= $$THEME{ bodyLinkcolor };
+$linkcolor ||= &quot;#993333&quot;;
+
+my $vlinkcolor = $$VARS{ ekw_vlinkcolor };
+$vlinkcolor ||= $$THEME{ bodyVlinkcolor };
+$vlinkcolor ||= &quot;#333399&quot;;
+
+my $alinkcolor = $$VARS{ ekw_alinkcolor };
+$alinkcolor ||= $$THEME{ bodyAlinkcolor };
+$alinkcolor ||= &quot;#660000&quot;;
+
+&quot;&lt;body\ntext=\&quot;$textcolor\&quot; bgcolor=\&quot;$bgcolor\&quot; link=\&quot;$linkcolor\&quot; alink=\&quot;$alinkcolor\&quot; vlink=\&quot;$vlinkcolor\&quot;\nleftmargin=\&quot;2\&quot; marginleft=\&quot;2\&quot; rightmargin=\&quot;2\&quot; marginright=\&quot;2\&quot;\n&gt;&quot;;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>ekw userbody</title>
+</node>

@@ -1,0 +1,16 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2000-02-12 02:17:58</createtime>
+  <hits>3</hits>
+  <node_id>1854183</node_id>
+  <type_nodetype>175989</type_nodetype>
+  <setting_id>1854183</setting_id>
+  <author_user>113</author_user>
+  <vars>author=kthejoker%20and%20ascorbic&amp;default_style=Kernel%20Blue&amp;description=New%20CSS%2dbased%20theme&amp;generalMobileParent_container=1990031&amp;generalNodelet_container=1854181&amp;generalParent_container=1854175&amp;isZen=1&amp;noTable=1&amp;noThinOutline=1&amp;nodeletParent_container=1101195&amp;version=0%2e99</vars>
+  <package>0</package>
+  <title>zen theme</title>
+</node>

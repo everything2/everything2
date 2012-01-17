@@ -1,0 +1,66 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-11-13 15:26:33</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1988640</node_id>
+  <htmlcode_id>1988640</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($num) = @_;
+
+if ($num == 1) {
+
+
+return &quot;&lt;p&gt;Writeups linked to this one ....&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;[test2]&lt;/li&gt;
+&lt;li&gt;[test2]&lt;/li&gt;
+&lt;li&gt;[test2]&lt;/li&gt;
+&lt;/ul&gt;&quot;;
+
+}
+
+if ($num eq 2) {
+
+return &quot;&lt;p&gt;Other writeups by this user ...&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;[test2]&lt;/li&gt;
+&lt;li&gt;[test2]&lt;/li&gt;
+&lt;li&gt;[test2]&lt;/li&gt;
+&lt;/ul&gt;&quot;;
+
+}
+
+if ($num == 3) {
+
+return &quot;&lt;p&gt;This writeup is in the following categories ...&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;[test2]&lt;/li&gt;
+&lt;li&gt;[test2]&lt;/li&gt;
+&lt;li&gt;[test2]&lt;/li&gt;
+&lt;/ul&gt;&quot;;
+
+}
+
+if ($num == 4) {
+
+return &quot;&lt;p&gt;Random Writeups ...&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;[test2]&lt;/li&gt;
+&lt;li&gt;[test2]&lt;/li&gt;
+&lt;li&gt;[test2]&lt;/li&gt;
+&lt;/ul&gt;&quot;;
+
+}</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>further_reading</title>
+</node>

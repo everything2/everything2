@@ -1,0 +1,78 @@
+<node>
+  <doctext>&lt;h2&gt;
+Yours, bookmarked
+&lt;/h2&gt;
+
+
+&lt;p&gt;
+I wrote this because I think that [seeing your nodes linked in other user bookmarks is really satisfying]. May a god help and it would turn into a real superdoc.
+&lt;/p&gt;
+
+&lt;p&gt;
+&lt;small&gt;2003.03.07 at 06:53&lt;/small&gt; &lt;i&gt;[dann] says&lt;/i&gt; After talking it over with Jay, I think it's probably not the best of ideas to put something like that into effect, to put any sort of weight on what bookmarks represent. If bookmarks were instead called &quot;favorites&quot;, we might have something discrete and meaninful to show users in another way &quot;you're appreciated&quot;. For now, though, the bookmark system just isn't structured that way. too many users boomkark random things to read later, too many editors use it as a 'to be killed' list -- there's no guarantee A of permanence or benevolence when someone bookmarks anything. sorry :/
+&lt;/p&gt;
+
+
+&lt;blockquote&gt;
+&lt;pre&gt;
+&amp;#91;%
+# This superdoc shows to a user about who have bookmarked his nodes.
+
+my $LINKTYPE = getNode('bookmark', 'linktype');
+
+my $csr = $DB-&amp;gt;sqlSelectMany(&quot;links.*&quot;, 
+&quot;links right join node on node.author_user=$$USER{node_id} AND &quot;. 
+&quot;links.to_node=node.node_id&quot;, &quot;links.linktype=$$LINKTYPE{node_id}&quot;);
+
+$csr-&amp;gt;execute;
+
+my $retstr = '';
+my $bookmark;
+
+$bookmark = $csr-&amp;gt;fetchrow_hashref;
+if (!$bookmark) {
+    $retstr .= &quot;&amp;lt;i&amp;gt;No one has bookmarked your nodes.&amp;lt;/i&amp;gt;&quot;;
+} else {
+    my $bookmarked_node = $$bookmark{to_node};
+    $retstr .= &quot;&amp;lt;ul&amp;gt;&quot;;
+    
+    NODES: {
+        do {
+            $retstr .= &quot;&amp;lt;li&amp;gt;&quot;.linkNode($bookmarked_node). &quot;, by: &quot;;
+            my $users = &quot;&quot;;
+            USERS: {
+                do {            
+                    last USERS if ($bookmarked_node != $$bookmark{to_node});           
+                    $users .= ', ' if ($users ne &quot;&quot;);
+                    $users .= linkNode($$bookmark{from_node});
+                } while ($bookmark = $csr-&amp;gt;fetchrow_hashref);
+            }
+            $retstr .= $users;
+            $bookmarked_node = $$bookmark{to_node}  if ($bookmark);
+            $retstr .= &quot;&amp;lt;/li&amp;gt;&quot;;
+        } while ($bookmark);
+    }
+    $retstr .= &quot;&amp;lt;/ul&amp;gt;&quot;;
+}
+
+$csr-&amp;gt;finish;
+
+return $retstr;
+%&amp;#93;
+&lt;/pre&gt;
+&lt;/blockquote&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2003-01-13 18:59:24</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1414866</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>854232</type_nodetype>
+  <document_id>1414866</document_id>
+  <author_user>1318014</author_user>
+  <package>0</package>
+  <title>da-x's playground</title>
+</node>

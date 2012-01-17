@@ -1,0 +1,116 @@
+<node>
+  <nltext></nltext>
+  <parent_container>20</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2008-01-09 12:18:28</createtime>
+  <lastupdate>1244468942</lastupdate>
+  <hits>1</hits>
+  <node_id>1924754</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>1017738</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1924754</nodelet_id>
+  <nlcode>[%
+  my $UID = $$USER{node_id};
+
+  my $isGod = exists $HTMLVARS{'group_gods'}{$UID};
+  my $isEd = $isGod || exists $HTMLVARS{'group_content editors'}{$UID};
+  my $webloggables = getVars(getNode(&quot;webloggables&quot;, &quot;setting&quot;));
+  my $view_weblog =&quot;&quot;;
+  # It might be more efficient to use a node_id for the VARS, but I'm not sure it'd make enough difference to be worth changing.
+  my $ug=getNode(&quot;$$VARS{nodeletusergroup}&quot;||&quot;E2science&quot;,&quot;usergroup&quot;);
+  $view_weblog=getId($ug);
+
+  # Most of the next chunk of code is pulled from [news archives].
+
+  my @labels;
+  my $counter = 0;
+  my $limit = 14;
+
+  my @groups = ();
+
+
+
+  foreach my $node_id (sort {
+        lc($$webloggables{$a}) cmp lc($$webloggables{$b})
+      } keys(%$webloggables)){
+    my $title =  $$webloggables{$node_id};
+    my $wclause = &quot;weblog_id='$node_id' AND removedby_user=''&quot;;
+    my $count = $DB-&gt;sqlSelect('count(*)','weblog',&quot;$wclause&quot;);
+    my $link = linkNode($NODE,$title,{'view_weblog'=&gt;&quot;$node_id&quot;});
+    $link = &quot;&lt;b&gt;$link&lt;/b&gt;&quot; if $node_id == $view_weblog;
+    push @labels, &quot;$link&lt;br&gt;&lt;small&gt;($count node&quot;.
+    ($count==1?'':'s').')&lt;/small&gt;';
+  }
+
+  my $text;
+
+  return $text if (($view_weblog == 114)||($view_weblog==923653))&amp;&amp;(!($isEd));
+
+  $text .= '&lt;p align=&quot;center&quot;&gt;'.
+           linkNode($ug).' writeups&lt;/p&gt;';
+
+  $text .= '&lt;ul class=&quot;linklist&quot;&gt;';
+  my $wclause = &quot;weblog_id='$view_weblog' AND removedby_user=''&quot;;
+  my $csr = $DB-&gt;sqlSelectMany('*','weblog',$wclause,'order by tstamp desc');
+  while(($counter &lt;= $limit) &amp;&amp; (my $ref = $csr-&gt;fetchrow_hashref())){
+    my $N = getNode($$ref{to_node});
+    next unless $N;
+    my $link = linkNode($N);
+    $text .= &quot;&lt;li&gt;$link&lt;/li&gt;\n&quot;;
+    $counter++;
+  }
+  $text .= &quot;&lt;/ul&gt;&quot;;
+
+
+# Pull a list of node_ids for groups the user can weblog to:
+
+my $webloggables=$$VARS{can_weblog};
+my @groupids=split(',', $webloggables);
+
+
+# Put in a menu so the user can choose different groups:
+
+$$VARS{nodeletusergroup} = 'E2science' unless $$VARS{nodeletusergroup};
+
+my $str = htmlcode('openform');
+
+$str.=&quot;\n\t&lt;input type='hidden' name='op' value='changeusergroup'&gt;&quot;;
+$str.=&quot;\n\t&lt;select name='newusergroup' class='ajax usergroupwriteups:updateNodelet?op=/op&amp;newusergroup=/newusergroup:Usergroup Writeups'&gt;&quot;;
+
+# get the titles of all the usergroups we need. I bet there's a more efficient way of doing this.
+for(@groupids) {
+ next if ($_ == 165580); # Exclude 'News for Noders. Stuff that matters.'
+  push (@groups, getNodeById($_,&quot;light&quot;)-&gt;{title});
+}
+
+for(@groups) {
+	$str.=&quot;\n\t\t&lt;option value=\&quot;$_\&quot;&quot;;
+	$str.=' selected=&quot;selected&quot;' if $_ eq $$VARS{nodeletusergroup};
+	$str.=&quot;&gt;$_&lt;/option&gt;&quot;;
+}
+$str.=&quot;\n\t&lt;/select&gt;&quot;;
+$str.=&quot;\n\t&quot;.$query-&gt;submit(&quot;sexisgood&quot;,&quot;show&quot;);
+$str.=&quot;\n&quot;.$query-&gt;end_form;
+$text.=$str;
+
+
+#
+
+#$text.=&quot;Number of groups found:&quot;.$#groupids;
+
+#$text.=join(', ', @groupids);
+
+return $text;
+%]</nlcode>
+  <title>Usergroup Writeups</title>
+</node>

@@ -1,0 +1,29 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-03-08 11:32:25</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1265536</node_id>
+  <htmlcode_id>1265536</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($suppress) = @_; 
+my $noHelp = $suppress ? '' : '&lt;p&gt;&amp;nbsp;&lt;/p&gt;';
+
+#temporary
+return $noHelp unless(exists($HTMLVARS{'group_gods'}{$$USER{user_id}}));
+
+return '&lt;p align=&quot;right&quot;&gt;('.linkNode($NODE, 'help', {'displaytype'=&gt;'help'}).')&lt;/p&gt;' if $DB-&gt;sqlSelect('nodehelp_id','nodehelp', &quot;nodehelp_id=$$NODE{node_id}&quot;);
+
+return $noHelp;
+
+#already done in line 2
+#return $str unless $suppress;
+#return '';</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>helplink</title>
+</node>

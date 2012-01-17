@@ -1,0 +1,196 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>35</node_id>
+  <htmlcode_id>35</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $id = getId $NODE;
+
+my $str = &quot;
+
+&lt;script language=\&quot;JavaScript\&quot;&gt;
+
+function saveForm()
+{
+	var myForm;
+	var myOption;
+	var i;
+
+	for(i=1; i &lt;= document.forms.f$id.group.length; i++) 
+	{
+
+		myForm = eval(\&quot;document.forms.f\&quot; + \&quot;$id\&quot;);
+		myOption = eval(\&quot;document.forms.f\&quot; + \&quot;$id\&quot; + \&quot;.group\&quot;);
+
+		myForm[i].value = myOption.options[i-1].value;
+
+	}
+
+        var groupCountNew = i - 1;
+        var groupCountOld = myForm.groupMemberCountOrig.value;
+
+	myForm.groupMemberCount.value = groupCountNew;
+
+	if (groupCountNew == 0 ||
+            (groupCountOld &gt; 4 &amp;&amp; groupCountNew &lt; (groupCountOld / 2))
+           )
+ 	{
+	    return confirm(\&quot;Reduce group to \&quot; + groupCountOld
+                           + \&quot; members which originally had \&quot;
+			   + groupCountNew + \&quot; members?\&quot;
+                          );
+	}
+	else
+	{
+	   return true;
+	}
+
+}
+
+function swapUp()
+{
+
+with(document.forms.f$id.group){
+	var x=selectedIndex;
+
+	if(x == -1) { return; }
+	if(options.length &gt; 0 &amp;&amp; x &gt; 0) {
+              
+                tmp = new Option(options[x].text, options[x].value);
+
+	
+		options[x].text = options[x-1].text;
+		options[x].value = options[x-1].value;
+		options[x-1].text = tmp.text;
+		options[x-1].value = tmp.value;
+
+		options[x-1].selected = true
+	}
+
+}
+
+}
+
+function swapDn()
+{
+with(document.forms.f$id.group)
+{
+        x=selectedIndex;
+        if(x == -1) { return; }
+        if(x+1 &lt; options.length) {
+		tmp = new Option(options[x].text, options[x].value);
+
+		options[x].text = options[x+1].text
+		options[x].value = options[x+1].value;
+		options[x+1].text = tmp.text;
+		options[x+1].value = tmp.value;		
+
+                options[x+1].selected = true;
+	}
+}
+
+
+}
+
+function deleteOp()
+{
+	with(document.forms.f$id.group)
+{     
+	x=selectedIndex;
+
+	if(x == -1) 
+	{ return; }
+
+
+        for(i=x;i&lt;options.length - 1;i++) {
+		options[i].text = options[i+1].text
+		options[i].value = options[i+1].value;
+        }
+
+
+
+	if(options.length != 0 &amp;&amp; options.length != 1){options[x].selected = 1;}
+
+	if(selectedIndex == -1)
+	{ 
+		//Opera workaround, browser bug
+		options[options.length -1].text = \&quot;\&quot;; 
+		options[options.length -1].value= \&quot;\&quot;;
+	}
+	else
+	{
+		options[options.length - 1] = null;
+	}
+}
+}
+
+function zoomOp()
+{
+
+with(document.forms.f$id.group)
+{
+        if(selectedIndex == -1) { return; }
+        window.open('index.pl?node_id=' + options[selectedIndex].value,
+                'hernandez','');
+}
+
+}
+
+
+&lt;/SCRIPT&gt;&quot;;
+
+$str .= &quot;&lt;form method=\&quot;POST\&quot; name=\&quot;f$id\&quot; onSubmit=\&quot;return saveForm()\&quot;&gt;&quot;;
+
+my $GROUP = $$NODE{group};
+
+$GROUP ||= [];
+
+#generate the select box
+$str .= &quot;\n&lt;br /&gt;&lt;select name=\&quot;group\&quot; size=\&quot;9\&quot;&gt;\n&quot;;
+foreach my $item (@$GROUP) {
+	my $ITEM = $DB-&gt;getNodeById($item, 'light');
+	my $authoruser = $DB-&gt;getNodeById( $$ITEM{ 'author_user' } );
+
+	$str .= ' &lt;option value=&quot;' . getId($ITEM) . &quot;\&quot;&gt;$$ITEM{title} by $$authoruser{title} ($$ITEM{node_id})\n&quot;;
+}
+$str .= '&lt;/select&gt;&lt;br /&gt;';
+
+#generate the hidden elements
+for (my $i = 0; $i &lt; (5 + @$GROUP); $i++) {
+	$str .= &quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;$i\&quot; value=\&quot;\&quot;&gt;\n&quot;;
+}
+
+$str .= &quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;groupMemberCount\&quot; value=\&quot;\&quot;&gt;\n&quot;;
+$str .= &quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;groupMemberCountOrig\&quot; value=\&quot;&quot;
+     . scalar @$GROUP
+     . &quot;\&quot;&gt;\n&quot;
+     ;
+
+$str .= $query-&gt;hidden('node_id', getId $NODE) . $query-&gt;hidden('displaytype');
+
+$str .= '
+
+&lt;a href=&quot;javascript:deleteOp();&quot; title=&quot;remove node from group&quot;&gt;remove&lt;/a&gt;
+&lt;a href=&quot;javascript:swapUp();&quot;&gt;up&lt;/a&gt;
+&lt;a href=&quot;javascript:swapDn();&quot;&gt;down&lt;/a&gt;
+&lt;a href=&quot;javascript:zoomOp();&quot;&gt;view&lt;/a&gt;
+
+&lt;input type=&quot;submit&quot; border=&quot;0&quot; value=&quot;Save&quot;&quot;&gt;';
+
+$str .= '&lt;/form&gt;';
+
+$str.='jb testing:&lt;br /&gt;';
+for(0..50){$str.=&quot;$_: &quot;.$query-&gt;param(&quot;$_&quot;).'&lt;br /&gt;' if $query-&gt;param(&quot;$_&quot;);}
+
+$str;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>groupeditor</title>
+</node>

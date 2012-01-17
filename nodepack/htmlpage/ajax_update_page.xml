@@ -1,0 +1,113 @@
+<node>
+  <parent_container>0</parent_container>
+  <pagetype_nodetype>7</pagetype_nodetype>
+  <core>0</core>
+  <page>[%
+$NODE = $GNODE = getNodeById($HTMLVARS{not_found}) unless $$NODE{type}{title} ne 'draft' or htmlcode('canseedraft',$NODE);
+'';
+%][%
+# This is implemented as an htmlpage/display type so as to go
+# through the usual security checks to access the $NODE
+# htmlcodes called have to be listed here with a definition of
+# valid arguments unless their name begins with ajax or ends with JSON,
+# in which case they are presumed to be written safely
+
+if ($query -&gt; param('originaldisplaytype')){
+	$query -&gt; param('displaytype', $query -&gt; param('originaldisplaytype'));
+}else{
+	$query -&gt; delete('displaytype');
+}
+
+my $title = '\\w[^\'&quot;&lt;&gt;]*' ;
+my $node_id = '\\d*' ;
+my $anything = '.*' ;
+my $something = '.+' ;
+
+my %valid = (
+	updateNodelet =&gt; 	[ $title ], #nodelet name
+	nodeletsection =&gt;	[ $title, $title, $title, &quot;($title)?&quot;, '\\w*', '\\w*' ], # ($nlAbbrev, $nlSection, $altTitle, $linkTo, $styleTitle, $styleContent)
+	ilikeit =&gt;			[ $node_id ],
+	coolit =&gt; 			[],
+	ordernode =&gt; 		[],
+	favorite_noder =&gt;	[],
+	'admin toolset' =&gt;	[],
+	nodenote =&gt;			[ $anything ],
+	bookmarkit =&gt;		[ $node_id , $title , $title ], #node_id, link text, link title
+	weblogform =&gt; 		[ $node_id , $anything ], #writeup_id, flag for in writeup
+	categoryform =&gt; 	[ $node_id , $anything ], #writeup_id, flag for in writeup
+	voteit =&gt; 			[ $node_id , '\\d\\d?' ], #writeup_id, flag for editor stuff/vote/both
+	writeuptools =&gt;		[ $node_id , $anything ], #writeup_id, flag for open widget
+	drafttools =&gt; 		[ $node_id , $anything ], #writeup_id, flag for open widget
+	writeupmessage =&gt; 	[ $anything , $node_id ], #parameter name for message, writeup_id
+	writeupcools =&gt; 	[ $node_id ], #writeup_id
+	changeroom =&gt; 		[ $title ], #nodelet name
+	showmessages =&gt;		[ $node_id , '\\w*' ], #max message number, show options
+	testshowmessages =&gt;		[ $node_id , '\\w*' ], #max message number, show options
+	showchatter =&gt;		[ $anything ], # flag to send JSON
+	displaynltext2 =&gt; 	[ $title ], #nodelet name
+	movenodelet =&gt; 		[ &quot;($node_id|$title)&quot; , $anything ], # bad position is harmless
+	setdraftstatus =&gt; 	[ $node_id ],
+	parentdraft =&gt; 		[ $node_id ],
+	listnodecategories 		=&gt;[ $node_id ],
+	zenDisplayUserInfo		=&gt;[],
+	messageBox				=&gt;[ $node_id, $anything, $title, $node_id ],
+	confirmDeleteMessage	=&gt;[ $node_id, $title ],
+	nodeletsettingswidget	=&gt;[ $title, $title ], #nodelet name, link text
+	homenodeinfectedinfo	=&gt; [],
+	&quot;user searcher&quot;		=&gt; [ $something ],
+);
+
+my (@args,$str,$flagComplete) ;
+@args = split ',', $query-&gt;param('args');
+$flagComplete = '&lt;!-- AJAX OK --&gt;'; # let client distinguish empty/partial/failure
+
+my $htmlcode = $query-&gt;param('htmlcode') ;
+return unless $htmlcode ;
+my $test = $valid{$htmlcode};
+
+unless ($test){
+	$str = 'unauthorised htmlcode' unless $htmlcode =~ /^ajax|JSON$/; # these carry out their own checks if needed
+} else {
+	my $i = 0 ;
+	my @test = @$test ;
+	foreach (@args){
+		$str .= &quot;argument $i invalid&lt;br&gt;&quot; unless $_ =~ /^$test[$i]$/s ;
+		$i++ ;
+	}
+}
+
+unless ( $str ){
+	$str = htmlcode($htmlcode, @args) ;
+} else{
+	if ( Everything::isApproved( $USER , getNode('edev', 'usergroup') ) ){
+		$str = parseLinks(&quot;[ajax update page[htmlpage]]: error running htmlcode
+			[${htmlcode}[htmlcode]]&lt;br&gt;$str&quot;);
+	} elsif ( htmlcode('isEditor') ) {
+		$str = 'ajax htmlcode/argument error' ;
+	} else {
+		$str = 'code error' ;
+	}
+	$str = qq'&lt;span class=&quot;error&quot;&gt;$str&lt;/span&gt;'; # needs to be wrapped in case it replaces something
+}
+
+return $str.$flagComplete unless $query-&gt;http('accept') =~ /\bjson\b/i;
+use JSON;
+$str = [ $str ] if ref $str eq &quot;&quot;;
+return to_json($str);
+%]</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-03-02 07:26:43</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1989647</htmlpage_id>
+  <hits>9</hits>
+  <node_id>1989647</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>ajaxupdate</displaytype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>ajax update page</title>
+  <mimetype>text/plain</mimetype>
+</node>

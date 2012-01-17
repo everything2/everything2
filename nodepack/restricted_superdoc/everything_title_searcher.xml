@@ -1,0 +1,19 @@
+<node>
+  <doctext>select node_id, title from node where title like &quot;%everything%&quot; and type_nodetype=116 order by createtime 
+node_id, title from node where title like &quot;%everything%&quot; and type_nodetype=116 order
+by createtime</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-08-20 22:14:14</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1142259</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1142259</document_id>
+  <author_user>282</author_user>
+  <package>0</package>
+  <title>Everything Title Searcher</title>
+</node>

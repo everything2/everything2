@@ -1,0 +1,65 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>116</pagetype_nodetype>
+  <core>0</core>
+  <page>[{repaire2node}]
+[{page header}]
+[{votehead}]
+[%
+  my @group = @{ $$NODE{group} } if $$NODE{group};
+  
+  my $numwriteups = int(@group);
+  return unless $numwriteups;
+  my $str;
+
+  
+  my $count = 1;
+  while($count &lt; $numwriteups+1) {
+      $str .= '&lt;p style=&quot;padding: 0 10px&quot;&gt; ' . htmlcode('displaywriteuptitle', &quot;$count, timestamp&quot;)
+      .&quot;&lt;/p&gt;&lt;table width=\&quot;100%\&quot;&gt;&lt;tr&gt;&lt;td class=\&quot;writeup_text\&quot; style='padding: 10px'&gt;&quot;
+      .htmlcode('displaywriteuptext', $count)
+
+
+	#next 2 lines added Saturday, April 5, 2008
+	. '&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;'
+	. htmlcode('displayWriteupFooter', $count)
+
+
+      .&quot;\n\t&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&quot;;
+   $count++;
+
+    $str.='&lt;hr style=&quot;color: black; background-color: black; height: 1px; border: 0&quot;&gt;';
+   
+  }
+  $str;
+
+%]
+&lt;p style='text-align: right;  padding: 10px'&gt;
+[% linkNode($NODE, 'printable version', { displaytype =&gt; 'printable', lastnode_id =&gt; '0', -rel =&gt; 'nofollow' } ) %]&lt;br&gt;
+[% linkNode($NODE, 'chaos', { displaytype =&gt; 'chaos', lastnode_id =&gt; '0', -rel =&gt; 'nofollow' } ) %] 
+&lt;/p&gt;
+[{votefoot}]
+
+[{softlink}]
+[{addfirmlink}]
+[{e2nodelock}]
+[{orderlock}]
+&lt;div style='padding: 10px'&gt;
+	[{addwriteup}]
+&lt;/div&gt;</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-02-12 02:19:56</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>415071</htmlpage_id>
+  <hits>34</hits>
+  <node_id>415071</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>displayfull</displaytype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <ownedby_theme>415073</ownedby_theme>
+  <title>jukka e2node displayfull page</title>
+  <mimetype></mimetype>
+</node>

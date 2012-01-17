@@ -1,0 +1,41 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>38</node_id>
+  <htmlcode_id>38</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($field) = @_;
+
+my $G = $$NODE{$field};
+
+if(($G eq '') || ($G == 0)) {
+return 'none';
+} elsif($G == -1) {
+return 'parent';
+}
+
+getRef $G;
+return 'none' unless ref $G;
+
+my $str = linkNode($G) . &quot; ($$G{type}{title})&quot;;
+return $str unless ($$G{group});
+
+$str .= &quot;\n&lt;ol&gt;\n&quot;;
+my $groupref = $$G{group};
+foreach my $item (@$groupref) {
+	my $N = $DB-&gt;getNodeById($item, 'light');
+	$str .= '&lt;li&gt;' . linkNode($N) . &quot; ($$N{type}{title})&lt;/li&gt;\n&quot;;
+}
+$str .= &quot;&lt;/ol&gt;\n&quot;;
+
+$str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>listgroup</title>
+</node>

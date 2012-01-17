@@ -1,0 +1,48 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-04-01 22:08:04</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1991810</node_id>
+  <htmlcode_id>1991810</htmlcode_id>
+  <maintenance_id>1991810</maintenance_id>
+  <checks_arguments>0</checks_arguments>
+  <maintaintype>delete</maintaintype>
+  <code># get rid of any votes and cools left over from a time as a writeup
+# record level-relevant info for old users who have not recalculated their XP
+
+my ($id) = @_;
+
+my $N = getNodeById($id);
+my @cache = $DB -&gt; sqlSelect('upvotes, cools',
+		'xpHistoryCache', # xpHistoryCache for user is deleted once XP has been recalculated
+		&quot;xpHistoryCache_id=$$N{author_user}&quot;)
+	if $$N{author_user} &lt; 1960662; # magic number identifies October 29, 2008
+
+my $totalvotes = int($DB -&gt; sqlDelete('vote', &quot;vote_id=$id&quot;));
+my $cools = int($DB -&gt; sqlDelete('coolwriteups', &quot;coolwriteups_id=$id&quot;));
+
+return unless @cache;
+
+my $upvotes = ($totalvotes + $$N{reputation})/2;
+# ... if the voting history was lost in Node Heaven, improvise:
+$upvotes = $$N{reputation} if $totalvotes &lt; $$N{reputation} || $upvotes != int($upvotes);
+
+return unless $upvotes || $cools;
+
+$upvotes += $cache[0];
+$cools += $cache[1];
+
+$DB -&gt; sqlUpdate('xpHistoryCache',
+	{upvotes =&gt; $upvotes, cools =&gt; $cools},
+	&quot;xpHistoryCache_id=$$N{author_user}&quot;);
+</code>
+  <type_nodetype>150</type_nodetype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <maintain_nodetype>1991079</maintain_nodetype>
+  <title>draft maintenance delete</title>
+</node>

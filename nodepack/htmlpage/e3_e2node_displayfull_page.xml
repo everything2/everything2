@@ -1,0 +1,108 @@
+<node>
+  <parent_container>1988788</parent_container>
+  <pagetype_nodetype>116</pagetype_nodetype>
+  <core>0</core>
+  <page>[{votehead}]
+
+[%
+return unless $$NODE{ group } ;
+# show writeups calls show content which calls htmlcode canseewriteup to decide what to show
+# logged-in users get a chance to reveal some or all of the hidden writeups
+# canseewriteup stores the hidden writeups in $HTMLVARS{ notshown } if the appropriate key exists:
+$HTMLVARS{ notshown } = { lowrep =&gt; [] , unfavorite =&gt; [] } ;
+$HTMLVARS{ notshown } -&gt; { unpublished } = [] if htmlcode( 'isEditor' ) ;
+
+my $threshold = $HTMLVARS{ writeuplowrepthreshold } || 'none' ;
+if ( exists( $$VARS{ repThreshold } ) ) { # ecore stores 0 as ''
+	$$VARS{ repThreshold } = '0' unless $$VARS{ repThreshold } ;
+	$threshold = $$VARS{ repThreshold } ;
+}
+local $$VARS{ repThreshold } = $threshold ;
+
+my $str = htmlcode( 'show writeups' ) ;
+
+return $str unless $$USER{ user_id } and $$USER{ user_id } != $HTMLVARS{ guest_user } ;
+
+my %showhides = (
+	lowrep =&gt; {
+		category =&gt; 'Low reputation writeups' ,
+		reason =&gt; &quot;reputation not above your reputation threshold of $$VARS{ repThreshold }&quot; ,
+		details =&gt; sub {
+			return unless htmlcode( 'isEditor' ) ;
+			qq'&lt;span class=&quot;reputation&quot;&gt;(reputation: $_[0]{ reputation })&lt;/span&gt;' ;
+		} ,
+		notes =&gt; '&lt;p&gt;You can adjust or deactivate your reputation filter at '.
+			linkNodeTitle( 'User Settings' ).'.'
+	} ,
+	unfavorite =&gt; {
+		category =&gt; 'Writeups by an unfavorite author' ,
+		reason =&gt; &quot;because you don't like the author&quot; ,
+		details =&gt; sub {} ,
+		notes =&gt; '&lt;p&gt;'.linkNodeTitle( 'Pit of Abomination|You could relent here' ).'.'
+	} ,
+	unpublished =&gt; {
+		category =&gt; 'Unpublished writeups' ,
+		reason =&gt; 'not published' ,
+		details =&gt; sub { 'publication status: '.$_[0]{ publication_status } ; } ,
+		notes =&gt; '&lt;p&gt;This kind of thing will be useful for the drafts project.'
+	}
+) ;
+
+my $reasoncount = 0 ;
+my $revealednode = getNodeById( $query -&gt; param( 'showhidden' ) ) 
+	if $query -&gt; param( 'showhidden' ) =~ /\d+/ ;
+
+# Preserve showhidden value if it's passed in
+$str .= $query -&gt; hidden( 'showhidden', '' ) ;
+foreach ( 'lowrep' , 'unfavorite' , 'unpublished' ) { #not keys for consistent order
+	next unless $HTMLVARS{ notshown }-&gt;{ $_ } and my $count = scalar @{ $HTMLVARS{ notshown }-&gt;{ $_ } } ;
+	$reasoncount ++ ;
+	$query -&gt; param( 'showhidden' , $_ ) ;
+	my $sh = $showhides{ $_ } ;
+
+	$str .= &quot;&lt;fieldset&gt;&lt;legend&gt;$$sh{ category }&lt;/legend&gt;\n&lt;p&gt;&quot; .
+		( $count &gt; 1 ? 'These' : 'This' ) .
+		' writeup'.( $count &gt; 1 ? 's were' : ' was' ).&quot; not shown ($$sh{ reason }):\n&lt;ul class=\&quot;infolist\&quot;&gt;\n&quot;.
+		htmlcode( 'show content' , $HTMLVARS{ notshown }-&gt;{ $_ } , &quot;&lt;li&gt; type, byline, details , reveal&quot; ,
+			( details =&gt; $$sh{ details } ,
+			reveal =&gt; sub {
+				'&amp;nbsp;[ '.linkNode( $NODE , 'show' , { -class=&gt; 'action' , showhidden =&gt; $_[0]{node_id} } ).' ]' ;
+			} )
+		).&quot;\n&lt;/ul&gt;\n&quot; ;
+	$str .= '&lt;p&gt;'.linkNode( $NODE , 'Show all '.lc( $$sh{ category } ) , { -class=&gt; 'action' , showhidden =&gt; $_ } )
+		if $count &gt; 1 or $revealednode &amp;&amp;
+			htmlcode( 'canseewriteup' , $revealednode , 'forget' ) == 1 ; # it was hidden, but shows with this param: this was the reason it was hidden
+	$str .= &quot;\n$$sh{ notes }\n&lt;/fieldset&gt;\n&quot; ;
+}
+
+delete $HTMLVARS{ notshown } ;
+$query -&gt; param( 'showhidden' , '' ) ;
+return $str unless $reasoncount &gt; 1 ;
+&quot;$str\n&lt;p&gt;&quot; .
+linkNode( $NODE , '&lt;strong&gt;Show all hidden writeups&lt;/strong&gt;' , { -class=&gt; 'action' , showhidden =&gt; 'all' } ) .
+&quot;&lt;/p&gt;\n&quot; ;
+%]
+
+&lt;div id='softlinks'&gt;
+[{softlink}]
+
+&lt;/div&gt;
+
+
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-05-10 19:21:23</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1989782</htmlpage_id>
+  <hits>1</hits>
+  <node_id>1989782</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>displayfull</displaytype>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <ownedby_theme>1988787</ownedby_theme>
+  <title>e3 e2node displayfull page</title>
+  <mimetype></mimetype>
+</node>

@@ -1,0 +1,316 @@
+<node>
+  <doctext>&lt;noscript&gt;
+&lt;h3&gt;JavaScript is not available in your browser.&lt;/h3&gt;
+&lt;p&gt;It may be disabled, or your browser may not support it at all. 
+&lt;strong&gt;Without JavaScript, this page will not work.&lt;/strong&gt; We apologize. &lt;/p&gt;
+&lt;hr&gt;
+&lt;/noscript&gt;
+
+&lt;style type=&quot;text/css&quot;&gt;
+&lt;!--
+.gradcell {
+    position: relative;
+    visibility: show;
+    margin: 0px;
+    padding: 0px;
+}
+//--&gt;
+&lt;/style&gt;
+
+&lt;script language=&quot;JavaScript&quot; src=&quot;/index.pl?node=ColorClass.js&amp;type=rawdata&amp;displaytype=raw&quot;&gt;&lt;/script&gt;
+&lt;script language=&quot;JavaScript&quot;&gt;
+&lt;!--
+//  Named HTML colors
+var IS_NS4      = (     navigator.appName == &quot;Netscape&quot;
+                    &amp;&amp;  navigator.userAgent.indexOf( 'Mozilla/5' ) == -1 );
+var obj_ref     = ( IS_NS4 ) ? ns_obj_ref : ie_obj_ref;
+//  This should, obviously, be a member function. However, IE 5.5 seems to have
+//  some kind of issue with that.
+var setBGColor  = ( IS_NS4 ) ? ns_setBGColor : ie_setBGColor;
+
+//------------------------------------------------------------------------------
+function ie_obj_ref( parent, name ) {
+    //  This works w/ Opera 5+ (dunno 'bout 4), Mozilla, and IE 5+ (dunno 'bout
+    //  IE4; parent[ name ] is known to work with IE 4, but not with Mozilla)
+    return parent.getElementById( name );
+}
+
+function ns_obj_ref( parent, name ) {
+    return parent[ name ];
+}
+
+function ie_setBGColor( obj, clr ) {
+    obj.style.backgroundColor = clr;
+}
+
+function ns_setBGColor( obj, clr ) {
+    obj.bgColor = clr;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+function on_use_HSB( frm ) {
+    frm.hue.value       = HueRange.enforceOn( frm.hue.value );
+    frm.sat.value       = SatBriRange.enforceOn( frm.sat.value );
+    frm.bright.value    = SatBriRange.enforceOn( frm.bright.value );
+
+    var clr = new Color().fromHSB( frm.hue.value, frm.sat.value, frm.bright.value );
+
+    frm.r.value = clr.r;
+    frm.g.value = clr.g;
+    frm.b.value = clr.b;
+
+    frm.hex.value = clr.toString();
+
+    var cell = obj_ref( document, 'dechex' );
+    setBGColor( cell, clr.toString() );
+}
+
+function on_use_RGB( frm ) {
+    frm.r.value = RGBRange.enforceOn( frm.r.value );
+    frm.g.value = RGBRange.enforceOn( frm.g.value );
+    frm.b.value = RGBRange.enforceOn( frm.b.value );
+
+    var clr = new Color( frm.r.value, frm.g.value, frm.b.value );
+    frm.hex.value = clr;
+
+    var hsb = clr.toHSB();
+    frm.hue.value       = hsb.h;
+    frm.sat.value       = hsb.s;
+    frm.bright.value    = hsb.b;
+
+    var cell = obj_ref( document, 'dechex' );
+    setBGColor( cell, clr.toString() );
+}
+
+function on_use_hex( frm ) {
+    var clr = new Color( frm.hex.value );
+
+    if ( frm.nametohex.checked )
+        frm.hex.value = clr;
+
+    frm.r.value = clr.r;
+    frm.g.value = clr.g;
+    frm.b.value = clr.b;
+
+    var hsb = clr.toHSB();
+    frm.hue.value       = hsb.h;
+    frm.sat.value       = hsb.s;
+    frm.bright.value    = hsb.b;
+
+    var cell = obj_ref( document, 'dechex' );
+    setBGColor( cell, clr.toString() );
+}
+
+function use_in_grad( value, which ) {
+    document.forms.grad[ which ].value = value;
+    on_gengrad( document.forms.grad );
+}
+
+function on_gengrad( frm ) {
+    var from    = new Color( frm.from.value );
+    var to      = new Color( frm.to.value );
+    var cell    = null;
+    var inc     = new Object(); //  Signed increments for each color
+
+    if ( frm.nametohex.checked ) {
+        frm.from.value  = from;
+        frm.to.value    = to;
+    }
+
+    inc.r   = ( to.r - from.r ) / 15;
+    inc.g   = ( to.g - from.g ) / 15;
+    inc.b   = ( to.b - from.b ) / 15;
+
+    var clr = new Color( from );
+
+    var hexes = '';
+
+    for ( i = 0; i &lt; 15; ++i ) {
+        cell = obj_ref( document, 'grad' + i );
+        setBGColor( cell, clr.toString() );
+        hexes += clr.toString() + '\n';
+        clr.r += inc.r;
+        clr.g += inc.g;
+        clr.b += inc.b;
+    }
+
+    cell = obj_ref( document, 'grad' + i );
+    setBGColor( cell, to.toString() );
+    hexes += to.toString() + '\n';
+
+    frm.output.value = hexes;
+
+    frm.output.select();
+    frm.output.focus();
+}
+//--&gt;
+&lt;/script&gt;
+
+&lt;form name=&quot;color&quot;&gt;
+&lt;table border=&quot;0&quot;&gt;
+
+&lt;tr valign=&quot;top&quot;&gt;
+&lt;td&gt;
+&lt;input type=&quot;button&quot; value=&quot;Use&quot; onclick=&quot;on_use_HSB( document.forms.color )&quot; /&gt;
+&lt;small&gt;Hue:&lt;/small&gt; &lt;input type=&quot;text&quot; size=&quot;4&quot; name=&quot;hue&quot; value=&quot;0&quot; /&gt;
+&lt;small&gt;Saturation:&lt;/small&gt; &lt;input type=&quot;text&quot; size=&quot;4&quot; name=&quot;sat&quot; value=&quot;0&quot; /&gt;
+&lt;small&gt;Brightness:&lt;/small&gt; &lt;input type=&quot;text&quot; size=&quot;4&quot; name=&quot;bright&quot; value=&quot;0&quot; /&gt;
+&lt;/td&gt;
+&lt;td&gt;&lt;small&gt;&lt;i&gt;Hue must be 0..419; S/B values must be 0..100.&lt;/i&gt;&lt;/small&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr valign=&quot;top&quot;&gt;
+&lt;td&gt;
+&lt;input type=&quot;button&quot; value=&quot;Use&quot; onclick=&quot;on_use_RGB( document.forms.color )&quot; /&gt;
+&lt;small&gt;Red:&lt;/small&gt; &lt;input type=&quot;text&quot; size=&quot;4&quot; name=&quot;r&quot; value=&quot;0&quot; /&gt;
+&lt;small&gt;Green:&lt;/small&gt; &lt;input type=&quot;text&quot; size=&quot;4&quot; name=&quot;g&quot; value=&quot;0&quot; /&gt;
+&lt;small&gt;Blue:&lt;/small&gt; &lt;input type=&quot;text&quot; size=&quot;4&quot; name=&quot;b&quot; value=&quot;0&quot; /&gt;
+&lt;/td&gt;
+&lt;td&gt;&lt;small&gt;&lt;i&gt;R/G/B values must be 0..255.&lt;/i&gt;&lt;/small&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr valign=&quot;top&quot;&gt;
+&lt;td&gt;
+&lt;input type=&quot;button&quot; value=&quot;Use&quot; onclick=&quot;on_use_hex( document.forms.color )&quot; /&gt;
+Hex/&lt;a href=&quot;/index.pl?node=Named%20HTML%20Colors&quot;&gt;named&lt;/a&gt;: 
+&lt;input type=&quot;text&quot; size=&quot;12&quot; name=&quot;hex&quot; value=&quot;#000000&quot; /&gt;
+&lt;br /&gt;
+&lt;input type=&quot;checkbox&quot; name=&quot;nametohex&quot; __checked&gt;Convert named colors to hex&lt;/input&gt;
+&lt;/td&gt;
+&lt;td&gt;&lt;small&gt;&lt;i&gt;Hex fields will also accept &lt;a href=&quot;/index.pl?node=Named%20HTML%20Colors&quot;&gt;HTML color 
+names&lt;/a&gt; like &lt;/i&gt;&lt;tt&gt;dodgerblue&lt;/tt&gt;&lt;i&gt; etc.&lt;/i&gt;&lt;/small&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;/table&gt;
+
+&lt;input type=&quot;button&quot; value=&quot;Use Hex for Gradient From&quot; 
+    onclick=&quot;use_in_grad( document.forms.color.hex.value, 'from' );&quot; /&gt;
+&lt;input type=&quot;button&quot; value=&quot;Use Hex for Gradient To&quot; 
+    onclick=&quot;use_in_grad( document.forms.color.hex.value, 'to' );&quot; /&gt;
+
+&lt;/form&gt;
+
+&lt;div class=&quot;gradcell&quot; id=&quot;dechex&quot; width=&quot;64px&quot; height=&quot;32px&quot;&gt;
+&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;48&quot; height=&quot;24&quot; /&gt;
+&lt;/div&gt;
+
+&lt;hr&gt;
+&lt;form name=&quot;grad&quot;&gt;
+From &lt;input type=&quot;text&quot; size=&quot;12&quot; name=&quot;from&quot; value=&quot;#ffffff&quot; /&gt; to
+&lt;input type=&quot;text&quot; size=&quot;12&quot; name=&quot;to&quot; value=&quot;#000000&quot; /&gt; 
+&lt;input type=&quot;button&quot; value=&quot;Generate Gradient&quot; onclick=&quot;on_gengrad( document.forms.grad )&quot; /&gt;
+&lt;br /&gt;
+&lt;input type=&quot;checkbox&quot; name=&quot;nametohex&quot; __checked&gt;Convert named colors to hex&lt;/input&gt;
+&lt;table cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad0&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad1&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad2&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad3&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad4&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad5&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad6&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad7&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad8&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad9&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad10&quot;&gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad11&quot;&gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad12&quot;&gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad13&quot;&gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad14&quot;&gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad15&quot;&gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr align=&quot;center&quot;&gt;
+&lt;td&gt;1&lt;/td&gt;&lt;td&gt;2&lt;/td&gt;&lt;td&gt;3&lt;/td&gt;&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;5&lt;/td&gt;&lt;td&gt;6&lt;/td&gt;&lt;td&gt;7&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;9&lt;/td&gt;&lt;td&gt;10&lt;/td&gt;&lt;td&gt;11&lt;/td&gt;&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;13&lt;/td&gt;&lt;td&gt;14&lt;/td&gt;&lt;td&gt;15&lt;/td&gt;&lt;td&gt;16&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;textarea name=&quot;output&quot; rows=&quot;17&quot; cols=&quot;16&quot;&gt;&lt;/textarea&gt;
+
+&lt;/form&gt;
+
+&lt;p&gt;Additional &quot;fake&quot; named colors: &lt;tt&gt;wharfkhaki, wharfolive, jukkaback, 
+jukkaodd, jukkabrown&lt;/tt&gt;. &lt;/p&gt;
+
+&lt;hr&gt;
+&lt;script&gt;
+&lt;!--
+function on_bugrep( frm ) {
+    function repl( m0, m1 ) {
+        switch ( m1 ) {
+            case '[':   return '&amp;#91;';
+            case ']':   return '&amp;#93;';
+            case '&lt;':   return '&amp;lt;';
+            case '&gt;':   return '&amp;gt;';
+            default:    return m1;
+        }
+    }
+
+    var uastr = (navigator.userAgent + '').replace( /([\[\]\&lt;\&gt;])/g, repl );
+    frm.message.value =   '/msg wharfinger &amp;#91;' + uastr + '&amp;#93; '
+                        + frm.explain.value;
+
+    return true;
+}
+//--&gt;
+&lt;/script&gt;
+&lt;p&gt;If you're having trouble with this page, explain briefly and click here:&lt;br /&gt;
+[{openform2:bugrep}]
+&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;message&quot; /&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;message&quot; /&gt;
+&lt;input type=&quot;text&quot; size=&quot;40&quot; maxlength=&quot;150&quot; name=&quot;explain&quot; /&gt;
+&lt;input type=&quot;submit&quot; name=&quot;message_send&quot; value=&quot;Bug Report&quot; onclick=&quot;return on_bugrep( document.forms.bugrep );&quot;/&gt;
+&lt;/form&gt;
+&lt;/p&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;p&gt;&lt;i&gt;Comments, complaints, offers one can't refuse, etc. all go
+to &lt;a href=&quot;/index.pl?node_id=470183&quot;&gt;wharfinger&lt;/a&gt;.&lt;/i&gt; &lt;/p&gt;
+
+&lt;p&gt;&lt;i&gt;In Opera 5, the hex and decimal values will be displayed, but 
+not the colors. See 
+&lt;a href=&quot;http://www.opera.com/docs/specs/js/&quot;&gt;Opera's DOM specs&lt;/a&gt;: 
+They claim that as of version 6, they still don't support the&lt;/i&gt; 
+&lt;tt&gt;backgroundColor&lt;/tt&gt; &lt;i&gt;attribute. However, I've gotten reports
+from Win32 Opera 6 users saying that the colors work fine. They're 
+definitely not working for me in Opera 5, though. That's a tough one 
+to work around, but I'll see what I can do. I never advise anybody 
+to &quot;upgrade&quot;; it's your life, use your own judgement. &lt;/i&gt;
+&lt;/p&gt;
+
+&lt;p&gt;&lt;i&gt;Other than that, we seem to work properly with Mozilla 0.9.5 
+(K-Meleon), Netscape 4, and IE 5.5 (Win32 for all three). If you're 
+using IE4, or if you're using anything at all on Linux/UNIX, Mac, 
+BeOS, Amiga, CPM-80, 16-bit Windows, Multics, or the Timex Sinclair, 
+I'd like to hear from you.&lt;/i&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;i&gt;[StarryNight] tells me that OmniWeb 4.0.6 on Mac is a no-go 
+with this. [cbustapeck] is seeing problems with [icab] pre2.6 on 
+MacOS 9.2.2 but not MacOS 10.1.2. A few weeks later: [cbustapeck]
+just let me know that icab pre2.6 has expired, and all is well on 
+[icab] pre2.71, on MacOS 9.2.2 and X. 
+&lt;/i&gt;&lt;/p&gt;
+
+
+
+
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-01-23 20:55:58</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1241839</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1065266</type_nodetype>
+  <document_id>1241839</document_id>
+  <author_user>113</author_user>
+  <package>0</package>
+  <title>E2 Color Toy</title>
+</node>

@@ -1,0 +1,57 @@
+<node>
+  <doctext>[%
+
+use Algorithm::Diff qw(sdiff);
+
+my @linesLeft = split(' ', '0 1 2 4 7 9 11 12 13 15');
+my @linesRight = split(' ', '1 2 3 4 5 9 10 11 12 17 18 19');
+my @diff = sdiff([@linesLeft], [@linesRight]);
+my @changeBuffer = ();
+my $html = '';
+
+$html .= '&lt;table width=&quot;100%&quot;&gt;&lt;tr&gt;&lt;td&gt;' . join('&lt;br&gt;', @linesLeft) . '&lt;/td&gt;&lt;td&gt;';
+
+while (@diff) {
+	if (@changeBuffer &amp;&amp; (${$diff[0]}[0] ne 'c' || @diff == 1)) {
+		unshift @diff, @changeBuffer;
+		@changeBuffer = ();
+	}
+	
+	my ($sign, $left, $right) = @{shift @diff};
+	
+	my $line = $right;
+	my $color = '000000';
+	
+	if ($sign eq 'c') {
+		$sign = '-';
+		push @changeBuffer, ['+', '', $right];
+	}
+	
+	if ($sign eq '+') { $color = '008800'; }
+	elsif ($sign eq '-') { $color = '880000'; $line = $left; }
+	else { $sign = '&amp;nbsp;'; }
+	
+	$html .= &quot;&lt;font color=\&quot;#$color\&quot;&gt;&lt;tt&gt;&quot; . $sign . encodeHTML($line) . '&lt;/tt&gt;&lt;/font&gt;&lt;br&gt;';
+}
+
+$html .= '&lt;/td&gt;&lt;td&gt;' . join('&lt;br&gt;', @linesRight) . '&lt;/td&gt;';
+$html .= '&lt;/tr&gt;&lt;/table&gt;';
+
+return $html;
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-06-06 18:28:46</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1988192</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1065266</type_nodetype>
+  <document_id>1988192</document_id>
+  <author_user>1797883</author_user>
+  <package>0</package>
+  <title>diff test</title>
+</node>

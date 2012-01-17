@@ -1,0 +1,231 @@
+<node>
+  <doctext>&lt;style type=&quot;text/css&quot;&gt;
+.mytable th, .mytable td
+{
+border: 1px solid silver;
+padding: 3px;
+}
+&lt;/style&gt;
+
+[%
+
+#return &quot;&lt;p&gt;This node is currently under construction.&lt;/p&gt;&quot; unless $$USER{title} eq 'mauler';
+
+my $inputname = '';
+my $str = '';
+
+my $str = '&lt;form method=&quot;post&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;1961423&quot; /&gt;';
+
+$str.= 'Look up user:&lt;br /&gt;&lt;input type=&quot;text&quot; name=&quot;ns_user&quot; value=&quot;'.$inputname.'&quot;&gt;&amp;nbsp;&lt;input type=&quot;submit&quot; value=&quot;View XP Info&quot; /&gt;&lt;/form&gt;&lt;br /&gt;';
+
+#return &quot;&lt;p&gt;Our records show that you have already recalculated your XP. You are only allowed to recalculate your XP once.&lt;/p&gt;&quot; if ($$VARS{hasRecalculated} == 1);
+
+
+if($query-&gt;param('ns_user')) {
+
+my $recalc = &quot;Unknown!&quot;;
+
+$inputname = $query-&gt;param('ns_user');
+
+my $U = getNode($inputname, 'user');
+
+my $V = getVars($U);
+
+if ($$V{hasRecalculated} == 1) {
+   $recalc = &quot;Yes&quot;;
+} else {
+   $recalc = &quot;No&quot;;
+}
+
+return $str.'No such user &quot;'.$inputname.'&quot;&lt;br /&gt;' unless $U;
+
+my $nid = getId($NODE);
+my $uid = getId($U);
+
+##################################################
+# set variables for each system
+#
+
+my $wuBonus = 5;
+my $coolBonus = 20;
+my $upvoteReceivedBonus = 1;
+
+#####################################################
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+my $rows;
+my $row;
+my $queryText;
+my $count;
+
+my $writeupCount = 0;
+my $heavenTotalReputation = 0;
+my $coolCount = 0;
+my $xp = 0;
+my $upvotes = 0;
+my $NodeHeavenCoolCount = 0;
+
+#
+# Experience
+#
+$queryText = &quot;SELECT experience FROM user WHERE user_id=$uid&quot;;
+$rows = $dbh-&gt;prepare($queryText);
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+$xp = $rows-&gt;fetchrow_array();
+
+#
+# Writeup Count
+#
+$queryText = &quot;SELECT COUNT(*) FROM node,writeup WHERE node.node_id=writeup.writeup_id AND node.author_user=$uid&quot;;
+$rows = $dbh-&gt;prepare($queryText);
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+$writeupCount = $rows-&gt;fetchrow_array();
+
+#
+# Total Upvotes
+#
+my $queryText2;
+my $rows2;
+my $row2;
+$queryText = &quot;SELECT writeup_id FROM node,writeup WHERE node.node_id=writeup.writeup_id AND node.author_user=$uid&quot;;
+$rows = $dbh-&gt;prepare($queryText);
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+$queryText2 = &quot;SELECT COUNT(vote_id) FROM vote WHERE weight&gt;0 AND vote_id=?&quot;;
+$rows2 = $dbh-&gt;prepare($queryText2);
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   $rows2-&gt;execute($$row[0]);
+   $upvotes += $rows2-&gt;fetchrow_array();
+}
+
+#
+# Heaven Total Reputation
+#
+$queryText = &quot;SELECT SUM(heaven.reputation) AS totalReputation FROM heaven WHERE heaven.type_nodetype=117 AND heaven.author_user=$uid&quot;;
+$rows = $dbh-&gt;prepare($queryText);
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   $heavenTotalReputation = $$row[0];
+}
+
+#
+# Cool Count
+#
+$queryText = &quot;SELECT COUNT(*) FROM node,writeup,coolwriteups WHERE node.node_id=writeup.writeup_id AND writeup.writeup_id=coolwriteups.coolwriteups_id AND node.author_user=$uid&quot;;
+$rows = $dbh-&gt;prepare($queryText);
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+$coolCount = $rows-&gt;fetchrow_array();
+
+#
+# Node Heaven Cool Count
+#
+$queryText = &quot;SELECT COUNT(*) from coolwriteups,heaven where coolwriteups_id=node_id AND author_user=$uid&quot;;
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+$NodeHeavenCoolCount = $rows-&gt;fetchrow_array();
+
+if ($heavenTotalReputation &lt; 0) {
+   $heavenTotalReputation = 0;
+}
+
+my $newXP = (($writeupCount * $wuBonus) + ($upvotes * $upvoteReceivedBonus) + ($heavenTotalReputation * 1) + (($coolCount + $NodeHeavenCoolCount) * $coolBonus));
+
+#my $str=&quot;&lt;p&gt;This superdoc converts your current XP total to the XP total you would have if the new system had been in place since the start of your time as a noder. Any excess XP will be converted into GP.&lt;/p&gt;&lt;p&gt;Conversion is permanent; once you recalculate, you can not go back. Each user can only recalculate their XP one time.&lt;/p&gt;&quot;;
+
+$str.=&quot;&amp;nbsp; &lt;b&gt;User: &quot;.$$U{title}.&quot;&lt;/b&gt;&quot;;
+$str.= '&lt;table class=&quot;mytable&quot;&gt;
+   &lt;tr class=&quot;evenrow&quot;&gt;
+   &lt;td&gt;Has Recalculated?&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.$recalc.'&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr class=&quot;oddrow&quot;&gt;
+   &lt;td&gt;Current XP:&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.$xp.'&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr class=&quot;evenrow&quot;&gt;
+   &lt;td&gt;Writeups:&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.$writeupCount.'&lt;/td&gt;
+   &lt;tr class=&quot;oddrow&quot;&gt;
+   &lt;td&gt;Upvotes Received:&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($upvotes + $heavenTotalReputation).'&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr class=&quot;evenrow&quot;&gt;
+   &lt;td&gt;C!s Received:&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($coolCount + $NodeHeavenCoolCount).'&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr class=&quot;oddrow&quot;&gt;
+   &lt;td&gt;&lt;b&gt;Recalculated XP:&lt;/b&gt;&lt;/td&gt;
+
+   &lt;td style=&quot;text-align:right&quot;&gt;&lt;b&gt;'.$newXP.'&lt;/b&gt;&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;/table&gt;';
+
+#if ($xp &gt; $newXP) {
+#   $str.=&quot;&lt;p&gt;&lt;b&gt;Recalculation Bonus:&lt;/b&gt;&amp;nbsp; User $$U{title}\'s XP is greater than their recalculated XP, so if they are recalculated they will be awarded a one-time recalculation bonus of  &lt;b&gt;&quot;.($xp - $newXP).&quot; GP!&lt;/b&gt;&lt;/p&gt;&quot;;
+#   }
+
+#$str.=&quot;&lt;p&gt;&lt;/p&gt;&quot;;
+
+#$str.=$query-&gt;start_form();
+#$str.=$query-&gt;hidden('node_id', $$NODE{node_id});
+#$str.= $query-&gt;checkbox(-name=&gt;'confirm',
+#-value=&gt;'wakaru',
+#-label=&gt;'I understand that I am forcibly recalculating this user\'s XP and that this should only be done for bots and the like.') . '&lt;/p&gt;';
+#$str.=$query-&gt;submit('recalculate_XP','Recalculate!');
+#$str.=$query-&gt;end_form();
+
+#if ($query-&gt;param('recalculate_XP')) {
+#   my $warnstr;
+#   if ($query-&gt;param('confirm') eq 'wakaru') {
+#      $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' #=&gt; $$NODE{node_id}, 'seclog_details' =&gt; &quot;$$USER{title} recalculated $$U{title}\'s XP&quot;});
+#    use Everything::Experience;
+#      adjustExp($U, (-$xp));
+#      adjustExp($U, $newXP);
+#      $$V{hasRecalculated} = 1;
+#      setVars $U, $V;
+#      $str= &quot;&lt;p&gt;Recalculation complete! $$U{title} now has &lt;b&gt;&quot;.$newXP.&quot; XP&lt;/b&gt;&quot;;
+#      if ($xp &gt; $newXP) {
+#         $$U{GP} += ($xp-$newXP);
+#         $$V{oldexp} = $$U{experience};
+#      $str.=&quot; and &lt;b&gt;&quot;.$$U{GP}.&quot; GP&lt;/b&gt;.&quot;;
+#      } else {
+#          $str.=&quot;.&quot;;
+#      }
+#   } else {
+#      $warnstr = &quot;&lt;p&gt;&lt;b&gt;!! Note !! You must check the box to acknowledge you understand before this user\'s XP can be recalculated.&lt;/b&gt;&lt;/p&gt;&quot;;
+#   }
+
+#   return $warnstr.$str;
+#} else {
+#  return $str;
+#}
+
+}
+
+return $str;
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-11-03 13:47:51</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1961423</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1961423</document_id>
+  <author_user>1180811</author_user>
+  <package>0</package>
+  <title>mauler's Sandbox VIII: Eight is Great</title>
+</node>

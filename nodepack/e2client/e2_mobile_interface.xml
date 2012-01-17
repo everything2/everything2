@@ -1,0 +1,74 @@
+<node>
+  <doctext>&lt;b&gt;[www]:&lt;/b&gt; &lt;u&gt;http://wonko.com/e2/mobile/&lt;/u&gt;
+
+&lt;p&gt;
+The [E2 Mobile Interface] is a simple [web]-based [interface], written in [PHP], for searching and reading [Everything2|E2] [node|nodes] via mobile [device|devices]. I'm writing this primarily so I can look things up from my [Danger hiptop] without having to wade through the clutter of the main site.
+&lt;/p&gt;
+
+&lt;p&gt;
+Currently, the interface implements [search] functionality and allows you to search for nodes by exact [title] or by [keyword|keywords]. Depending on which option you choose, either the node itself will be displayed or a list of search results will be displayed. The interface supports nodes of type &quot;[e2node]&quot; and &quot;[superdoc]&quot;, and parses nodes for [hardlink|hardlinks] which, when clicked, will be loaded via the mobile interface rather than kicking you out to real live E2. If you come across a [nodetype] that the mobile interface doesn't support, it will apologize profusely and give you a handy [link] to that node on the real E2.
+&lt;/p&gt;
+
+&lt;p&gt;
+The goal of the E2 Mobile Interface is to present the content of Everything2 in an easily-searchable, easily-readable format for users of [Internet]-enabled [handheld] devices. In short, the E2mi plus a good web-enabled [wireless] device is probably the closest thing to a real live [Hitchhiker's Guide to the Galaxy] that you can get. Since the focus is on providing an interface for searching and reading, there are no plans at this time to provide tools for posting, chatting, etc.
+&lt;/p&gt;
+
+&lt;p&gt;
+I plan on making the [source code] freely available as soon as it's in a slightly more completed state. Check here for updates on this.
+&lt;/p&gt;
+
+&lt;p&gt;
+&lt;b&gt;Features already implemented:&lt;/b&gt;
+&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;100% [XHTML] 1.0 compliant output, kept very simple and styled via [CSS] for easy reading on small handheld screens.&lt;/li&gt;
+&lt;li&gt;Search for a node by exact title or by keyword.&lt;/li&gt;
+&lt;li&gt;Display and parse nodes of type &quot;e2node&quot;.&lt;/li&gt;
+&lt;li&gt;Display and parse nodes of type &quot;superdoc&quot;.&lt;/li&gt;
+&lt;li&gt;Sort search results alphabetically to make it easier to scan them quickly for what you're looking for.&lt;/li&gt;
+&lt;li&gt;Display [firmlink|firmlinks].&lt;/li&gt;
+&lt;li&gt;Display [softlink|softlinks].&lt;/li&gt;
+&lt;li&gt;Display &quot;same title&quot; links.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;
+&lt;b&gt;Features that would be nice:&lt;/b&gt;
+&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;
+&lt;b&gt;Known issues&lt;/b&gt;
+&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Unterminated HTML entities in writeups can cause formatting problems, since the mobile interface doesn't use tables like E2.&lt;/li&gt;
+&lt;li&gt;Newlines are removed from some writeups. I haven't got the slightest idea why (see [hamster bong]'s writeup under [monkey] for an example).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;
+Suggestions? Questions? Comments? /msg me or send [email] to ryan@wonko.com.
+&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2003-02-16 21:33:27</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <dlurl></dlurl>
+  <homeurl>http://wonko.com/e2/mobile/</homeurl>
+  <hits>0</hits>
+  <node_id>1430823</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <e2client_id>1430823</e2client_id>
+  <type_nodetype>1261857</type_nodetype>
+  <version>1.0</version>
+  <document_id>1430823</document_id>
+  <author_user>5089</author_user>
+  <package>0</package>
+  <clientstr>e2mi</clientstr>
+  <title>E2 Mobile Interface</title>
+</node>

@@ -1,0 +1,103 @@
+<node>
+  <doctext>&lt;p&gt;[rootbeer277's sandbox|clear parameters]
+&lt;p&gt;Display your writeup without links.  
+This tool will eventually allow you to specify words to retain their links.
+Its purpose it to make it easier to post e2 writeups elsewhere on the internet.
+
+[{openform}]
+[% $query-&gt;textfield('searchname') %] Node name &lt;br&gt;
+[{closeform}]
+
+[%
+##########
+##########
+# Creates a clean, mostly unlinked version of one of your writeups
+#  for posting elesewhere on the internet
+#  TODO: You can specify words that will retain their hard / pipe links
+#  For WYSIWYG editors, copy the formatted version on top
+#  TODO: For HTML editors, copy the raw data version on the bottom
+#  TODO: Includes radio button options to add a disclaimer:
+#    &quot;This article also/originally posted to Everything2.com&quot;
+
+my $parent_e2nodeid;
+my $nodehash;
+my $linklessdoctext;
+my $csr;
+my $testexplain = 1;
+my $testexplainoutput = &quot;&lt;ol&gt;&quot;;
+
+unless ($query-&gt;param('searchname'))
+	{ return &quot;&lt;p&gt;Enter an e2node to search.&lt;/p&gt;&quot;; }
+
+if (my $a = getNode($query-&gt;param('searchname'), 'e2node'))
+	{ $parent_e2nodeid = $a-&gt;{node_id}; }
+
+unless ($parent_e2nodeid)
+	{ return &quot;&lt;p&gt;Not a valid e2node.&lt;/p&gt;&quot;; }
+
+if ($testexplain==0)
+{
+# find a writeup by the current user in the specified e2node
+$csr = $DB-&gt;sqlSelectMany
+	(
+	&quot;*&quot;, 
+	&quot;node JOIN writeup ON node.node_id = writeup.writeup_id&quot;,
+	&quot;author_user = $USER-&gt;{node_id} 
+		AND writeup.parent_e2node = $parent_e2nodeid&quot;,
+	&quot;LIMIT 1&quot;
+	);
+
+while (my $s = $csr-&gt;fetchrow_hashref)
+	{ $nodehash = getNodeById($s-&gt;{'node_id'}); }
+
+unless ($nodehash)
+	{ return &quot;&lt;p&gt;Writeup not found.&lt;/p&gt;&quot;; }
+	
+$linklessdoctext = $nodehash-&gt;{'doctext'};
+$linklessdoctext =~ s/\[([^\]]+)\|([^\]]+)\]/$2/g; # remove pipelinks
+$linklessdoctext =~ s/\[([^\]]+)\]/$1/g;           # remove hardlinks
+
+return $linklessdoctext 
+	. &quot;\n\n&lt;p&gt;This article originally posted on &lt;a href=http://everything2.com/?node_id=$nodehash-&gt;{'node_id'}&gt;everything2.com&lt;/a&gt;&lt;/p&gt;&quot;;
+}
+else 
+	{
+
+	# EXPLAIN test
+	# Note: look at &quot;key&quot; and &quot;rows&quot;
+	#   bad: key = NULL or &quot;rows&quot; = really big number or &quot;use tmp tables&quot;
+	# Tips: nate says add &quot;indexes&quot; to fix that?  How?
+
+	my $dbh = $DB-&gt;getDatabaseHandle();
+
+	$csr = $dbh-&gt;prepare
+		(&quot;EXPLAIN SELECT *
+		FROM node JOIN writeup ON node.node_id = writeup.writeup_id
+		WHERE author_user = $USER-&gt;{node_id}
+			AND writeup.parent_e2node = $parent_e2nodeid
+		LIMIT 1&quot;);
+	$csr-&gt;execute();
+	while (my $s = $csr-&gt;fetchrow_hashref)
+		{
+		foreach my $keys (sort(keys(%{$s}))) 
+			{ $testexplainoutput .= &quot;\n\t&lt;li&gt;&quot; . $keys . &quot;: &quot; . $s-&gt;{$keys} . &quot;&lt;/li&gt;&quot;; }
+		}
+	return $testexplainoutput . &quot;&lt;/ol&gt;&quot;;
+	}
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-04-26 00:31:43</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1939258</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1939258</document_id>
+  <author_user>1503725</author_user>
+  <package>0</package>
+  <title>rootbeer277's sandbox</title>
+</node>

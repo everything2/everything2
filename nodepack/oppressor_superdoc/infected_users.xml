@@ -1,0 +1,56 @@
+<node>
+  <doctext>&lt;p&gt;
+Infection is a rare condition which is applied automatically to a user if they are closely tied to an account which has been locked.  The condition exists to discourage the rare problematic user who is locked out but continues to come back to E2.
+&lt;/p&gt;
+
+&lt;p&gt;
+Infected users will always get an error when attempting to verify their email accounts and, even if they are validated manually, anything they say in the public catbox will silently be ignored.
+&lt;/p&gt;
+
+&lt;p style=&quot;float: left;&quot;&gt;
+If a user is infected, Content Editors and gods will see this at the top of the user's homenode:
+&lt;/p&gt;
+&lt;div id=&quot;homenode_infection&quot; class=&quot;warning&quot;&gt;
+    &lt;div&gt;
+       &lt;img src=&quot;/images/openiconlibrary/biohazard.png&quot; alt=&quot;Biohazard Sign&quot; title=&quot;User is infected&quot;&gt;
+       &lt;p&gt;
+       This user is [Infected Users[oppressor_superdoc]|infected].
+       &lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;hr class=&quot;clear&quot;&gt;
+
+&lt;p&gt;
+In addition, gods will have a button below the graphic to remove the infection.  Upon clicking that button, the god will be prompted to confirm that he is sure.  Type in some text like &quot;yes&quot; or &quot;yep&quot; and hit the &lt;strong&gt;Ok&lt;/strong&gt; button to confirm.  The user will instantly be uninfected.
+&lt;/p&gt;
+
+&lt;p&gt;
+Infections can be caught in a few ways:
+&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;A user provides an email address which is associated with an already-locked account.
+&lt;li&gt;A new user is created from a machine which has a valid login cookie for an already-locked account.
+&lt;li&gt;A new user is created from a machine which has a valid login cookie for an already-infected account.
+&lt;li&gt;A user ever comes from an IP associated with a known problem user. (At present, this is a single IP.)
+&lt;/ol&gt;
+
+&lt;p&gt;
+Infections are intentionally constructed to be very hard to catch and to be hard to detect for the user affected by them.  This is a balance between befuddling problem users while not adversely affecting any legit users.
+&lt;/p&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-01-24 03:20:12</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1991097</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1144104</type_nodetype>
+  <document_id>1991097</document_id>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>Infected Users</title>
+</node>

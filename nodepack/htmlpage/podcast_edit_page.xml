@@ -1,0 +1,98 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>1957956</pagetype_nodetype>
+  <core>0</core>
+  <page>[%
+
+#return &quot;&quot; unless ( isGod( $USER ) );
+
+return &quot;You're in the wrong place&quot; unless(canUpdateNode($USER, $NODE));
+
+my $str='&lt;p align=&quot;right&quot;&gt;('.linkNode($NODE, 'display', {'displaytype'=&gt;'display', 'lastnode_id'=&gt;0}).&quot;)&lt;/p&gt;&quot;;
+
+
+# This code does the update, if we have one.
+my $param;
+my @params = $query-&gt;param;
+
+foreach $param (@params)
+{
+  if ($param =~ /^update_(\w*)$/)
+  {
+    $$NODE{$1} = $query-&gt;param($param);
+  }
+}
+
+updateNode($NODE, $USER);
+
+return $str.htmlcode( 'openform' );
+
+%]
+
+[%
+
+return &quot;&quot; unless(canUpdateNode($USER, $NODE));
+
+my $field;
+my %titletype;
+my $str = &quot;&quot;;
+my $size = 80;
+
+
+$field=&quot;title&quot;;
+$str .= &quot;$field: &quot;;
+$str .= $query-&gt;textfield( -name =&gt; &quot;update_$field&quot;,
+      -default =&gt; $$NODE{$field}, -size =&gt; $size,
+      -maxlength =&gt; $1 ) . &quot;&lt;br&gt;\n&quot;;
+
+$field=&quot;link&quot;;
+$str .= &quot;$field: &quot;;
+$str .= $query-&gt;textfield( -name =&gt; &quot;update_$field&quot;,
+      -default =&gt; $$NODE{$field}, -size =&gt; $size,
+      -maxlength =&gt; $1 ) . &quot;&lt;br&gt;\n&quot;;
+
+$field=&quot;description&quot;;
+$str .= &quot;$field: &quot;;
+$str .= $query-&gt;textarea( -name =&gt; &quot;update_$field&quot;,
+      -default =&gt; $$NODE{$field}, -rows =&gt; 20, -columns =&gt; $size,
+      -maxlength =&gt; $1 ) . &quot;&lt;br&gt;\n&quot;;
+
+
+$str .= htmlcode( 'closeform' );
+
+$str .= '
+    &lt;hr /&gt;
+    &lt;b&gt;Add a new recording:&lt;/b&gt;&lt;br /&gt;
+    &lt;form method=&quot;post&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;new&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;type&quot; value=&quot;recording&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;recording_appears_in&quot; value=&quot;'.$$NODE{node_id}.'&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;displaytype&quot; value=&quot;edit&quot;&gt;
+    &lt;input type=&quot;text&quot; size=&quot;50&quot; maxlength=&quot;64&quot; name=&quot;node&quot; value=&quot;&quot;&gt;
+    &lt;input type=&quot;submit&quot; value=&quot;create&quot;&gt;
+    &lt;/form&gt;
+';
+
+
+
+$str;
+%]
+
+
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-10-07 19:16:13</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1958059</htmlpage_id>
+  <hits>0</hits>
+  <node_id>1958059</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>podcast edit page</title>
+  <mimetype></mimetype>
+</node>

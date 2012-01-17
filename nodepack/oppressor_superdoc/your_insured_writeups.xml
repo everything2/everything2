@@ -1,0 +1,41 @@
+<node>
+  <doctext>You have insured the following writeups (shown in something vaguely resembling but not quite matching chronological order):
+
+[%
+return if $$USER{node_id} == $HTMLVARS{guest_user};
+my $str='&lt;p&gt;&lt;ul&gt;';
+
+my $csr = $DB-&gt;sqlSelectMany('publish_id', 'publish', 'publisher='.$$USER{node_id});
+
+my @insured;
+while(my $pubwu = $csr-&gt;fetchrow_hashref) {
+        my $wu = getNodeById($$pubwu{publish_id});
+        push @insured, $$pubwu{publish_id};
+}
+
+foreach(sort {lc($a) cmp lc($b)} @insured) {
+       $str.='&lt;li&gt;'.linkNode($_).'&lt;/li&gt;';
+
+}
+
+$str.='&lt;/ul&gt;';
+
+return $str;
+%]
+
+&lt;p align=&quot;right&quot;&gt;&lt;small&gt;Bugs go to [% linkNode(1009226) %], who may or may not know what to do with them.&lt;/small&gt;&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-07-24 02:36:06</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>14</hits>
+  <node_id>1950299</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1144104</type_nodetype>
+  <document_id>1950299</document_id>
+  <author_user>1009226</author_user>
+  <package>0</package>
+  <title>Your insured writeups</title>
+</node>

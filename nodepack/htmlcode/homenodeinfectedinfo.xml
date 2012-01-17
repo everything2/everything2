@@ -1,0 +1,68 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-01-22 02:06:36</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1991085</node_id>
+  <htmlcode_id>1991085</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>return &quot;&quot; unless htmlcode('isEditor');
+
+my $infectedHTML = &quot;&quot;;
+
+if (htmlcode('isInfected', $NODE)) {
+
+   my $infectionLink = &quot;infected&quot;;
+   my $infectionExplanation = getNode('Infected Users', 'oppressor_superdoc');
+   $infectionLink = linkNode($infectionExplanation, $infectionLink);
+   $infectedHTML .= &lt;&lt;ENDHTML;
+   &lt;div&gt;
+      &lt;img src=&quot;/images/openiconlibrary/biohazard.png&quot; alt=&quot;Biohazard Sign&quot; title=&quot;User is infected&quot;&gt;
+      &lt;p&gt;
+      This user is $infectionLink.
+      &lt;/p&gt;
+   &lt;/div&gt;
+ENDHTML
+
+   if (htmlcode('isAdmin')) {
+
+      my $cureHTML = &quot;
+        &lt;div&gt;\n&quot;
+        . htmlcode('openform', 'cure_infection_form')
+        . htmlcode('verifyRequestForm', 'cure_infection')
+        . $query-&gt;hidden(&quot;confirmop&quot;, 'cure_infection')
+        . $query-&gt;hidden(&quot;cure_user_id&quot;, $$NODE{node_id})
+        . '
+         &lt;button class=&quot;ajax homenode_infection:homenodeinfectedinfo?op=cure_infection&amp;cure_user_id=/&amp;cure_infection_seed=/&amp;cure_infection_nonce=/&amp;confirmmsg=/#Are+you+sure+you+wish+to+cure+this+user&amp;apos;s+infection&quot;&gt;
+           &lt;img src=&quot;/images/openiconlibrary/physician.png&quot; alt=&quot;Physician Sign&quot;&gt;
+           &lt;p&gt;Cure User&lt;/p&gt;
+         &lt;/button&gt;
+        '
+        . '&lt;/form&gt;'
+        . &quot;
+        &lt;/div&gt;\n&quot;
+        ;
+
+     $infectedHTML .= $cureHTML;
+
+   }
+} elsif ($query-&gt;param(&quot;op&quot;) ne &quot;cure_infection&quot;) {
+   return &quot;&quot;;
+} else {
+   $infectedHTML .= &lt;&lt;ENDHTML;
+     &lt;img src=&quot;/images/openiconlibrary/physician.png&quot; alt=&quot;Physician Sign&quot;&gt;
+     &lt;p&gt;Infection cured.&lt;/p&gt;
+ENDHTML
+
+}
+
+return '&lt;div id=&quot;homenode_infection&quot; class=&quot;warning&quot;&gt;' . $infectedHTML . '&lt;/div&gt;';
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>homenodeinfectedinfo</title>
+</node>

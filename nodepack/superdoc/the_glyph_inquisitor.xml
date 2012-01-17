@@ -1,0 +1,216 @@
+<node>
+  <doctext>&lt;h2&gt;A &amp;raquo;Seeking Through Stabbing&amp;laquo; Production&lt;/h2&gt;
+[%
+
+unless (exists $HTMLVARS{group_edev}{getId($USER)}
+        || exists $HTMLVARS{group_gods}{getId($USER)}
+       ) {
+
+   return &quot;I'm afraid you forgot to put on your Inquisition robes, so you are to become the next to be inqisited.&quot;;
+
+}
+              
+
+my $searchTerm = $query-&gt;param('q') || 'glyph';
+
+my ($str) = (&quot;&quot;);
+
+$str .= &quot;&lt;h3&gt;Searching for &amp;raquo;&quot;
+     .  encodeHTML($searchTerm)
+     .  &quot;&amp;laquo;&lt;/h3&gt;&quot;
+     ;
+
+$str .= $query-&gt;start_form('POST', $ENV{script_name});
+$str .= $query-&gt;hidden('node_id', getId($NODE));
+$str .= $query-&gt;textfield(
+                           -name=&gt;       'q'
+                         , -value=&gt;      $searchTerm
+                         , -size=&gt;       100
+                         , -maxlength=&gt;  200
+                         );
+$str .= $query-&gt;submit() . $query-&gt;end_form();
+
+
+my $searchQuery = &lt;&lt;QUERYEND;
+
+SELECT
+  node.node_id, node.title, nodetype.title 'nodetype'
+  FROM node
+  JOIN document
+    ON node.node_id = document.document_id
+  JOIN node AS nodetype
+    ON node.type_nodetype = nodetype.node_id
+  WHERE
+    nodetype.title IN
+      ('edevsuperdoc', 'fullpage', 'oppressor_superdoc'
+       , 'jscript'
+       , 'restricted_superdoc', 'restricted_testdoc'
+       , 'superdoc', 'superdocnolinks'
+       , 'ticker', 'wapdoc'
+       , 'usergroup', 'tutorialstep'
+       )
+    AND document.doctext LIKE ?
+
+UNION
+SELECT
+  node.node_id, node.title, 'user' AS 'nodetype'
+  FROM user
+  JOIN nodegroup
+    ON nodegroup.node_id = user.user_id
+  JOIN node AS nodegroup_title
+    ON nodegroup.nodegroup_id = nodegroup_title.node_id
+  JOIN node
+    ON node.node_id = user.user_id 
+  JOIN document
+    ON user.user_id = document.document_id
+  WHERE
+    nodegroup_title.title = 'users with codehome'
+    AND document.doctext LIKE ?
+
+UNION
+SELECT
+  node.node_id, node.title, nodetype.title  'nodetype'
+  FROM node
+  JOIN htmlpage
+    ON node.node_id = htmlpage.htmlpage_id
+  JOIN node AS nodetype
+    ON node.type_nodetype = nodetype.node_id
+  WHERE
+    nodetype.title = 'htmlpage'
+    AND htmlpage.page LIKE ?
+
+UNION
+SELECT
+  node.node_id, node.title, nodetype.title 'nodetype'
+  FROM node
+  JOIN htmlcode
+    ON node.node_id = htmlcode.htmlcode_id
+  JOIN node AS nodetype
+    ON node.type_nodetype = nodetype.node_id
+  WHERE
+    nodetype.title IN
+      ('htmlcode', 'opcode', 'maintenance', 'codearchive')
+  AND htmlcode.code LIKE ?
+
+UNION
+SELECT
+  node.node_id, node.title, nodetype.title 'nodetype'
+  FROM node
+  JOIN achievement
+    ON node.node_id = achievement.achievement_id
+  JOIN node AS nodetype
+    ON node.type_nodetype = nodetype.node_id
+  WHERE
+    nodetype.title = 'achievement'
+    AND achievement.code LIKE ?
+
+UNION
+SELECT
+  node.node_id, node.title, 'nodelet' AS 'nodetype'
+  FROM node
+  JOIN nodelet
+    ON node.node_id = nodelet.nodelet_id
+  WHERE
+    nodelet.nlcode LIKE ?
+
+UNION
+SELECT
+  node.node_id, node.title, 'container' AS 'nodetype'
+  FROM node
+  JOIN container 
+    ON node.node_id = container.container_id
+  WHERE
+    container.context LIKE ?
+
+UNION
+SELECT
+  node.node_id, node.title, 'notification (display code)' AS 'nodetype'
+  FROM node
+  JOIN notification
+    ON node.node_id = notification.notification_id
+  WHERE
+    notification.code LIKE ?
+
+UNION
+SELECT
+  node.node_id, node.title, 'notification (invalid check)' AS 'nodetype'
+  FROM node
+  JOIN notification
+    ON node.node_id = notification.notification_id
+  WHERE
+    notification.invalid_check LIKE ?
+
+UNION
+SELECT
+  node.node_id, node.title, 'nodetest' AS 'nodetype'
+  FROM node
+  JOIN nodetest
+    ON node.node_id = nodetest.nodetest_id
+  WHERE
+    nodetest.nodetest_code LIKE ?
+
+UNION
+SELECT
+  node.node_id, node.title, 'rawdata' AS 'nodetype'
+  FROM node
+  JOIN rawdata
+    ON node.node_id = rawdata.rawdata_id
+  WHERE
+    rawdata.datacode LIKE ?
+
+QUERYEND
+
+my $searches = $Everything::dbh-&gt;prepare($searchQuery);
+$searchTerm = '%' . $searchTerm . '%';
+$searches-&gt;execute($searchTerm, $searchTerm, $searchTerm
+                   , $searchTerm, $searchTerm, $searchTerm, $searchTerm
+                   , $searchTerm, $searchTerm, $searchTerm, $searchTerm
+                   );
+
+my $nodeList = $searches-&gt;fetchall_hashref('title');
+
+
+$str .= &quot;&lt;ol&gt;&quot;;
+
+for my $title (sort { uc($a) cmp uc($b) } keys %$nodeList) {
+
+  my $node_id = $nodeList-&gt;{$title}-&gt;{node_id};
+  my $nodetype = $nodeList-&gt;{$title}-&gt;{nodetype};
+
+  my $linkTitle =
+         $title . &quot; &quot;
+       . &quot;($nodetype)&quot;
+       ;
+  my $params = {};
+
+  # bi viewcode on opcodes causes a weird bug, and it's superfluous anyway
+  $params-&gt;{displaytype} = 'viewcode' if $nodetype ne 'opcode';
+
+  $str .= &quot;\t&lt;li&gt;&quot;
+       .  linkNode(getNode($node_id), $linkTitle, $params)
+       .  &quot;&lt;/li&gt;&quot;
+       ;
+
+}
+
+$str .= &quot;&lt;/ol&gt;&quot;;
+
+return $str;
+
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-11-06 20:10:43</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>158</hits>
+  <node_id>1988553</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1988553</document_id>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>The Glyph Inquisitor</title>
+</node>

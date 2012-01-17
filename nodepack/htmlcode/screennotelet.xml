@@ -1,0 +1,87 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-04-25 11:49:52</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1291361</node_id>
+  <htmlcode_id>1291361</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#screens notelet text
+#reads &quot;raw&quot; and writes &quot;screened&quot;
+
+my $work = $VARS-&gt;{'noteletRaw'} || $VARS-&gt;{'personalRaw'};
+delete $VARS-&gt;{'personalRaw'};
+
+my $UID = getId($USER) || 0;
+
+#not filtering, since only shown for user that enters the stuff anyway
+
+##only allow certain HTML tags through
+#my $HTMLS = getVars(getNode('approved HTML tags','setting'));
+
+##allow a few other tags and attributes
+##TODO? others?
+#$HTMLS-&gt;{'table'} = 'border,cellpadding,cellspacing';
+#$HTMLS-&gt;{'th'} = $HTMLS-&gt;{'tr'} = $HTMLS-&gt;{'td'} = 1;
+
+#TODO? allow eds to psuedoExec
+#TODO? allow admins to have normal code
+
+#$work =~ s/\&lt;!--.*?--\&gt;//gs;	#htmlScreen messes up comments
+#$work = htmlScreen($work, $HTMLS);	#we may get rid of this later
+
+unless($VARS-&gt;{noteletKeepComments}) {
+	$work =~ s/&lt;!--.*?--&gt;//gs;
+}
+
+#length is limited based on level
+use Everything::Experience;
+my $maxLen = getLevel($USER) || 0;
+$maxLen *= 100;
+if($maxLen&gt;1000) {
+	$maxLen=1000;
+
+} elsif($maxLen&lt;500) {
+	$maxLen=500;
+}
+
+#power has its privileges
+#this is in [Notelet Editor] (superdoc) and [screenNotelet] (htmlcode)
+if(exists $HTMLVARS{'group_gods'}{$UID}) {
+	$maxLen = 32768;
+} elsif(exists $HTMLVARS{'group_content editors'}{$UID}) {
+	$maxLen += 100;
+} elsif(exists $HTMLVARS{'group_edev'}{$UID}) {
+	$maxLen = 16384; #16k ought to be enough for everyone. --[Swap]
+}
+
+if(length($work)&gt;$maxLen) { $work=substr($work,0,$maxLen); }
+
+#N-Wing added 2003.08.20.n3 to deal with an unclosed comment
+#preventing a user from editing the notelet later
+if($work =~ /^(.*)&lt;!--(.+?)$/s) {
+	my $preLastComment = $1;
+	my $postLastComment = $2;
+	if($postLastComment !~ /--&gt;/s) {
+		#oops, unclosed comment; display it instead
+		$work = $preLastComment . '&lt;code&gt;&amp;lt;!--&lt;/code&gt;' . $postLastComment;
+	}
+}
+
+delete $VARS-&gt;{'personalScreened'};	#old way
+if(length($work)) {
+	$VARS-&gt;{'noteletScreened'} = $work;
+} else {
+	delete $VARS-&gt;{'noteletScreened'};
+}
+
+return;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>screenNotelet</title>
+</node>

@@ -1,0 +1,415 @@
+<node>
+  <doctext>[yossarian]'s home away from homenode
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;blockquote&gt;
+Like King Kong had his island, we had the Bronx in the '70s, out of which came the only significant artistic movement of the 20th century produced by born-and-bred New Yorkers, rather than Southwestern transients or Jersey transplants. It's equally significant that hiphop came out of New York at the time it did, because hiphop is Black America's Ellis Island. It's our Delancey Street and our Fulton Fish Market and garment district and Hollywoodian ethnic enclave/empowerment zone that has served as a foothold for the poorest among us to get a grip on the land of the prosperous.&lt;br&gt;
+&lt;br&gt;
+&lt;a href=&quot;http://villagevoice.com/news/0501,tate,59766,2.html&quot;&gt;Hip Hop Turns 30&lt;/a&gt; by Greg Tate
+&lt;/blockquote&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;hr&gt;
+&lt;br&gt;
+&lt;br&gt;
+[%
+my @calatrava = (
+
+'&lt;img src=&quot;http://www.calatrava.com/slides/ciudad_artes_02.jpg&quot; border=&quot;0&quot; alt=&quot;But you will not remember&quot; /&gt;',
+'&lt;img src=&quot;http://www.calatrava.com/slides/lyon_airport_5.jpg&quot; border=&quot;0&quot; alt=&quot;But you will not remember&quot; /&gt;',
+'&lt;img src=&quot;http://www.calatrava.com/slides/bridge_europe_06.jpg&quot; border=&quot;0&quot; alt=&quot;But you will not remember&quot; /&gt;',
+'&lt;img src=&quot;http://www.calatrava.com/slides/montjuic_tower_01.jpg&quot; border=&quot;0&quot; alt=&quot;But you will not remember&quot; /&gt;',
+
+);
+my $pick = int(rand(@calatrava));
+
+$calatrava[$pick];
+%]
+&lt;br /&gt;
+&lt;br /&gt;
+(image copyright &amp;copy; Santiago Calatrava - &lt;a href=&quot;http://www.calatrava.com/&quot; target=&quot;_blank&quot;&gt;http://www.calatrava.com/&lt;/a&gt;)
+&lt;/p&gt;
+
+
+&lt;p&gt;&lt;hr&gt;
+&lt;p&gt; 
+
+It is strange how [a place divide|a place can be divided]. It is strange how a wall can separate a place into future and past. It is strange how a place can become, through no other force than serendipity, a home for both the [irony laden future worship] of [Williamsburg] hipsters and reverential [revival] of a time that never was. It is strange how, on one side, those who talk about the future really [Know-Nothing Party|know nothing] about it and how, on the other side, among the modernized relics of history, you can see visions of the future that talk will never reveal, [a swirling ghost in a smokeless crowd]. 
+
+&lt;p&gt;I made a promise that I would [seek out opportunity] -- not just any, but a [specific heat|specific opportunity] -- and when it was before me again I would reach for it. This is an easy promise. This is [the hardest of the easy promises].
+
+&lt;p&gt;We all know it isn't simple. We know that when you pause you open a doorway to all that is possible. When possibilities are infinite, the potential for success is limitless, it's true, but [selling short|as much can be said for the converse]. We are better off working within the boundaries of limited possibility. 
+
+&lt;p&gt;Because you can never be sure when that next chance will come to you. [Within the confines of the infinite], there is no way to know where you'll be, or who you'll be with. You can never be sure when the quiet crowd will become the noisy one, or when [your ghost will become solid], given name and voice.
+
+&lt;p&gt;But I made a promise that I would seek this opportunity. I made that promise and, further, [the promise to keep all promises]. So what to do? [You Can't Unring A Bell|The world doesn't hold still] while you wander through it. The things that you want have lives of their own. They grow and shift and alter and, every so often, step outside to smoke a cigarette.
+
+&lt;p&gt;It all happens in a moment. A moment is anything but infinite. A moment is the most discrete thing in the world. But I didn't ask her for just a moment, I asked her for a minute, which, for all those seconds trapped inside it, might as well be every moment between now and the end of the world. The power of the moment comes from the lack of plan. There is no time for plan -- all we have is spontaneity. Given time plans take hold. Decisions are made based on history, ideology, hope, fear, dedcisions that move to affect the shape of your future. Within the eternity of a minute plans may become liquid. Speeches memorized in advance give way because her lips are shining in the candle light. Well organized motions of the hand falter because her hair is tied back and you weren't expecting the perfection that is her neck. Outside the confines of the moment, all that is solid melts into air.
+
+&lt;p&gt;But I asked the questions anyway. Because that's what you do. That's how the promise is kept. This isn't about answers or what happened next. This is about recapturing the moment from the endless that is that minute. This is about what a promise means, and how a moment is the only now we will ever have. It is strange, yes, how a place can be divided, how an uncertain future and an unrealized past can sit side by side and never meet, except there, within you, within the moment that is everything simply because it is something.
+
+&lt;p&gt;&lt;hr&gt;
+&lt;p&gt; 
+
+My commission does not expire with the effluxion of time.
+
+&lt;p&gt;&lt;hr&gt;
+&lt;p&gt; 
+
+Did I ever tell you about the story parties? Story parties were the kind we never had. We were not drinkers, but we would drink. We were not smokers, but we would smoke. We were not dancers, but we would dance. We were all story tellers.
+
+&lt;p&gt;That time, for example, we went out on the boat. There was nothing to drink but water, and every cigarette had been left on shore with the beer, and who can dance on small sailboat when there is no music and standing up makes everyone nauseous? We didn't say a word to each other except to compliment the fish we caught -- a joke, because we were not fishing.
+
+&lt;p&gt;I often wondered why we could not say the things out loud that we would say under the cover of email or pen and paper. I don't think that we were cowards, though its true we were at times cowardly. Perhaps its a level of comfort we were never able to reach with each other. Someone wise once said, I'm sure, that the way relationships start is the way they will last. Or end. Distance wants to stay distance. We could not tell each other stories except in the way we were born into.
+
+&lt;p&gt;We were full of stories, and we were not so shy that we would not tell them. And a lot of us liked (eventually, all of us liked) an audience, and a microphone so we could be heard above the noise. We even liked the noise. Who wants to yell into silence? Better to have a wave of pointless chatter to work your way over, or, for the stronger of us, break your way through. No one appreciates an easy victory. 
+
+&lt;p&gt;But we wanted to have story parties. They were simple, really, or supposed to be. Just a small or large group of like-minded people who would tell stories. We were not drinkers: forget the booze and learn to appreciate the simpler liquids. We were not smokers: all fires non-metaphorical would be extinguished on sight. We were not dancers: leave your music at the door, next to the guns and knives. It would be an appreciative audience who would only react to the story teller, not to each other. And reactions would be honest, even brutal. Laugh at the funny jokes, groan at the bad ones, shed tears at the poignant moments or mock the ones that aimed for poignancy but fell too far short to be taken as serious attempts. This wasn't a support group except in the most vicious sense of the word. We wouldn't be looking for unconditional love, just undivided attention. Which was, of course, too much to ask. A story party, by definition, was an easy victory.
+
+&lt;p&gt;Forum matters. We cannot sing songs in showers and call that art, no matter how lovely our voices sound. The setting matters, the audience matters, and the intent matters. Evolutionary biologists reduce all art to mating rituals. Art, they'll say, only exists because of the desire in all of us to spread our seed. Think about that long enough and you'll only be able to see how obviously true that is.
+
+&lt;p&gt;Story parties were not to be used an excuse to get laid. Strike two.
+
+&lt;p&gt;The real question was the same as ever. What was the point? Part of it was certainly a form of self-actualization. This is another word for ego development. Ego is important, if we're being honest, and since honesty was part of the deal it's best to continue in that vein. There are many schools of thought when it comes to talent development, but most of the ones that appealed to us involved suffering. I think this is white-collar guilt, but honestly that's neither here nor there. 
+
+&lt;p&gt;&lt;hr&gt;
+&lt;p&gt;
+It used to be, back when Russia was communist, that visitors to the country were only allowed to travel within a 60 mile radius of the major cities. Step even a little ways into mile 61, and you'd be picked up and sent back home, or possibly thrown in jail. There's nothing particularly interesting about mile 61 - you'll see the same things there (now that you're allowed to travel freely past old internal boundaries) as you will at mile 60.&lt;sup&gt;*&lt;/sup&gt; Things do get interesting at mile 101. Not so much the things you'll see, though, but rather the people you'll meet.
+
+&lt;p&gt;When you think of prisons back in Communist Russia, you'll most likely think of gulags and snowy Siberia. That's the bulk of the story, but it's missing an ending. After they'd done their time, convicted criminals were not allowed into the cities. Instead, they were forced to live more than 100 miles outside of them. This created a circle of prison colonies (or, more accurately, ex-con colonies) around each major metropolis, 101 miles out. Entire towns sprang up populated, for the most part, by the thousands of Russians who were forceably displaced after their prison time had been served. The vast majority of the convicts were, of course, men, so women were imported from the more rural areas, drawn by promises of, well, money. And so of course you started to get families. This is where things get interesting.
+
+
+&lt;p&gt;&lt;hr&gt;
+
+&lt;p&gt;Nothing human is beneath a writer's attention; the basic questions about how to attract a lover and what to do with one once you get one and how to deal with disappointment in marriage are the stuff that fiction is made from, so why not try to speak directly? And so I did. And now it's time to move on. 
+
+&lt;p&gt;- [Mr. Blue]
+
+&lt;P&gt;&lt;hr&gt;
+&lt;P&gt;
+
+
+&lt;P&gt;&lt;hr&gt;
+&lt;p&gt;
+We found a sort of finality in that holding of hands. I can still remember the feel of palm against palm, it's true, if I try or sometimes when I don't try, which is scariest. That's when it feels the most real, when it sneaks up on me in dreams or while I'm driving my car or in the bathtub or the other places. But that day it was an end. We agreed the way only lovers on the verge of friendship can agree that what had gone on had gone on for too long, and that what was coming had been coming for so long it had moved from the realm of possibility into the world that is despite what we once wanted it to be. 
+&lt;/p&gt;
+
+&lt;p&gt;
+
+&lt;/p&gt;
+
+&lt;P&gt;&lt;hr&gt;
+&lt;p&gt;
+It doesn't bother me when people leave E2. In fact, part of me kind of likes it. The truth is, there is only one type of person who leaves E2 and never comes back: the one who doesn't care. The ones who love E2 come back eventually, for obvious reasons, and the ones who hate E2 come back as well, for a lot the same reasons. So when someone leaves and never comes back it doesn't bother me, because I know they never found a way to fit into E2, or a way for E2 to fit within them.
+&lt;/p&gt;
+
+&lt;P&gt;&lt;hr&gt;
+
+&lt;p&gt;
+
+&quot;I'd like to dispel any untrue rumors about me. [I am not edible]. I cannot fly. I cannot use telekinesis. [My brain is not large enough to destroy the world when unfolded]. I did not teach my [long-haired guinea pig] Chronos to eat everything in sight ([that is the nature of the long-haired guinea pig]).&quot;
+
+&lt;P&gt;&lt;br&gt;
+&lt;hr&gt;
+
+Peter and I would waste Saturdays away trading lies. He would tell me about his rich uncle in France, for example, who owned an estate so large he had an amusement park built on it just because he was tired of all that empty space. I, in turn, would tell Peter that I was a karate master, but I couldn't demonstrate my skills because my hands were registered as deadly weapons. The trick was to offer up just enough proof to cast a shadow on doubt - I would snap a pencil in half without breaking a sweat; Peter would pretend to eat a snail.
+
+
+&lt;P&gt;&lt;hr&gt;
+&lt;P&gt;
+&lt;P&gt;1. Lust of body
+
+&lt;P&gt;Starts in the eyes, works its way down to the tips of your fingers, skin against skin, light touches that lead to heavier ones, casual caresses that are really something more. It's in the palm of the hand against the tight muscles of the back, the collective pressure of digits on the arms and shoulders. Lust of body is primative and primal, a pit in the bottom of our stomachs that opens with each each curve of the body, each lick of lips or closing of eye. This is a door that is difficult to close once opened. The ascetics will tell you that lust of body can only be avoided by avoiding the body itself, and they are probably right. It is a matter of distance, in body and in mind. Hide in the forest, live off plants, not animals (flesh leads to flesh leads to...). Distract yourself with prostrations to god or philosophy or science or meditation. The only way to stop lust of body is not to begin.
+
+&lt;P&gt;2. Lust of mind
+
+&lt;P&gt;We will mistake this at first for voice. Voice is the earliest window to the mind, but that won't occur to us. We will instead concentrate on the tone, the inflection, the pauses and breaks, the whispers and yells. Even laughter is a product of the mind, not so much in quality but in timing. A lyrical chuckle, no matter how lovely, can turn a heart away if it is ill-timed, but a true laugh in a proper moment can send shivers down the spine and give rise to butterflies of passion. A sense of humor, no matter the type, is your enemy here. Sarcastic, hyperironic jokes that force thought to rise to the surface with every guffaw lead directly to attraction and thoughts of relationship, drive specifically to lust of mind. But do not think those who find such humor tedious have it easier. If a base, infantile joke appeals, then connections are strong between the mental and the physical, leading us back to lust of body. Base humor serves to excite as well as incite, lead thoughts astray, touch upon lust with careless abandon.
+
+&lt;P&gt;3. Lust of power
+
+&lt;P&gt;4. Lust of spirit 
+
+
+&lt;P&gt;&lt;hr&gt;
+&lt;P&gt;
+
+&lt;P&gt;&lt;hr&gt;
+&lt;P&gt;
+
+&lt;b&gt;In which our hero finds God, only to lose Him again.&lt;/b&gt;
+
+&lt;P&gt;
+
+He's afraid for a moment she's going to take her hand off his shoulder, but she doesn't.
+
+&lt;P&gt;&lt;hr&gt;
+&lt;P&gt;
+
+&lt;P&gt;
+
+&lt;P&gt;&lt;hr&gt;
+&lt;P&gt;
+
+[The patterns we are used to are altered], forced into odd shapes and painted unfamiliar colors. All of the things we held close, all the things we took for granted, are slowly twisted into odd [topology|topologies]. Mathematicians will tell you [there is no difference between a doughnut and a teacup], but you can taste the changes. 
+
+&lt;P&gt;Jim was the first one onto the ferry. He had [a love of sea air and rocking boats], having gone sailing with his father every summer for as long as he could remember. He left his bags [unattended on an empty seat] and went to the prow to watch the dock workers untie us. I'd been frightened once too often by tales of pickpockets and thieves with a sixth sense for tourists, so I stayed with his backpack even though I wanted to stand there with him. My own bag lay heavy against my legs so I could watch his without having to watch mine as well. My camera was around my neck, but [I hadn't taken any pictures].
+
+&lt;P&gt;Gretta, Jim's girlfriend, sat next to me. She was tired and got seasick easily, and wanted to avoid the water as much as possible. [This aversion to the sea] would later kill their relationship, but not that day. On that day she was lying across three seats with her eyes closed, waiting for the [dramamine] to kick in. I didn't say anything to her. I didn't know either of them very well, having only just met them in the [youth hostel] a few days before. I knew the odd pieces of trivia that seperated them from the other random strangers I had met on this trip, but I didn't know them. They had been dating for a year. They liked to talk about math. They were traveling because they could, but, like me, they couldn't give a better reason then that. That's what they told me. That's not who they were.
+
+&lt;P&gt;[Around sunset] Jim came back inside, but only to drag us out to enjoy the view. There were storm clouds in the distance, glowing [orange and fire red]. Gretta, still sick, stayed where she was, but I gave up my bag watch and went with him. I had seen [a dozen sunsets] on that trip, all different, all beautiful. I was almost tired of it. I took a few pictures and promised to send some to Jim, who didn't have a camera of his own. I don't understand how someone can travel without a camera. I'd forget everything.
+
+&lt;P&gt;The problem with the trip was I didn't know why I was on it. The problem with the couple was I didn't know why I was with them. I suppose, in retrospect, the problem was one of ignorance, so it was really my problem and no one else's. On that boat, though, I couldn't see that close to myself. I could see the whites of the broken water, or faint traces of islands in the distance. I could see Jim glancing inside at Gretta, who seemed miserable but content in her misery. I could paint a picture of all of this, but I could not place myself inside of it.
+
+&lt;P&gt;Now I look at [all the photographs I had taken] and wonder about the places I have been. I can remember the buildings or the bridges or the impressive skylines, but I can not remember the couples that passed into the frame just as I released the [shutter]. I can not remember the tiny details, and that bothers me. I wish I'd payed closer attention to all those things, so I wouldn't have to rely so much on those images. 
+
+&lt;P&gt;I don't have any pictures of Gretta.
+
+&lt;P&gt;The sun vanished and the stars appeared in the clear patch of sky above us, and we went inside. Jim went to Gretta, and I kept my distance. I didn't feel comfortable with their intimacy. Later that evening, in our cheap hotel room, they would have sex in the bed above me while I was reading my copy of &lt;i&gt;[The Agony and the Ecstacy]&lt;/i&gt;. I was beyond any semblance of jealousy by that point, but on the boat I couldn't help but pretend I hadn't seen him brush her hair away and [kiss her forehead to check for fever].
+
+&lt;P&gt;We could see the lights of the port, and [the city behind it, through the dirty windows]. Faint dots of yellow and orange off in the distance. They were dull and boring compared to the sunset, but I was happy to see them. Jim sighed and went out to enjoy the last traces of darkness. I stayed with the bags, and Gretta, because it was quiet there. Not that Jim wasn't quiet, but he had a way of talking without talking. Even when we weren't saying anything, after a while I would find myself exhausted, as if we'd just had a heated debate and I had lost. [His silences were filled with noise], and I was tired of noise. But then Gretta began to talk to me.
+
+&lt;P&gt;&quot;We don't know you at all,&quot; she said.
+
+&lt;P&gt;That was obvious, I thought. &quot;I don't know you guys either. So [we're even].&quot;
+
+&lt;P&gt;As I said it, I realized she might take it as an insult, but if she did, she didn't let on. &quot;You're the first stranger we've ever traveled with.&quot;
+
+&lt;P&gt;&quot;Well, we were going to the same place.&quot;
+
+&lt;P&gt;She sat up, knocking my bag over as she twisted her feet off the chair. &quot;No we weren't. We weren't. Jim said we were when you told us where you were going, but we were supposed to be on a train right now. This is completely out of our way.&quot;
+
+&lt;P&gt;I bent over to pick up the bag and tried to remember the conversation we'd had about traveling together. We'd been in the hostel bar, maybe a little drunk, definitely exhausted from too much walking and too little sleep. I was talking about the overnight ferry I'd missed, and how there wasn't another one for four days so I'd have to cancel that part of my trip. Jim told me there was another way: take a train, north, only a four hour trip, and then you take a different ferry across the straight and there you are. It's so close, don't trust the maps they give a false sense of distance. Remember what country you're in, everything is closer than you think, and there's always another way. Jim said, that's how we're getting there. The train leaves tomorrow. Come with us.
+
+&lt;P&gt;Gretta wasn't with us when he said that. She'd gone off to the bathroom, and when she came back he immediately dragged her away. Tell me in the morning, he said, and they were gone.
+
+&lt;P&gt;
+
+&lt;P&gt;------------------
+
+&lt;P&gt;I looked outside to see what Jim was doing, but he had wandered away from the front of the boat. To get away from the light, he later told us, but looking back at it, it seems too convenient. Gretta put her hand on my knee. I looked back to find her leaning towards me. &quot;Jim does things like that sometimes. He'll change plans without telling me, but normally it's to do something he knows I'd enjoy.&quot;
+
+&lt;P&gt;That made me giggle, which immediately made me self-conscious. I straightend up and tried to stare her down. &quot;Are you saying you don't like me? We can split off when we dock, if you want. I...&quot;
+
+&lt;P&gt;&quot;No, no!&quot; and she leaned in closer. &quot;I don't mean that at all! I meant usually when he does something like this it's for something... You know. Romantic.&quot; The word &quot;romantic&quot; trailed off into a breathey whisper, giving it an almost overpowering sensuality. Gretta's hand felt heavy on my leg. I wanted it off. I didn't know this girl. I didn't know her hand. I moved to push it off of me, but she thought I was grabbing on to it.
+
+&lt;P&gt;She told me later, as I was getting on the train that took me away from them, that I was the one who kissed her. She told me she appreciated me making the first move, because she wouldn't have, even though she wanted to. Because of Jim. But I didn't kiss her. I know I didn't. I remember so little of myself on that boat, but I remember that. I know my lips touched hers, I know that, but I didn't kiss her. It was a touch, a heavy pressure, like her hand on my knee, uncomfortable and out of place. It didn't last more than a moment, and I thought about Jim the entire time. I was sure he was outside, watching us. I was sure she knew and I was sure this had been planned and I was sure I had been chosen for this, whatever this was, and that Jim had known and maybe she was lying and she had known too. I could taste the conspiracy on her lips. She moved towards my ear, maybe to kiss me again, maybe to whisper something to me, maybe she was just moving and my ear happened to be in the way, but she moved and so I did too. I stood up, somehow taking her hand with me, and so she stood up too and I said, &quot;We're docking soon. We should find Jim.&quot; She nodded and picked up her bag and I picked up mine and we walked together, hand still in hand, outside, to the prow of the boat. The city lights surrounded us. I knew they would blind me if I stared too long, they would, I knew it, so I watched the water instead. I didn't notice when Gretta let go of me.
+
+&lt;P&gt;Jim didn't mention the kiss. He tried to strike up a conversation about the darkness and the ocean and Neoplatonism, but I didn't want to talk. Gretta didn't talk. I was sure he knew everything, and I was sure he hated me, but I wasn't going to be the one to bring it up. He gave up on the conversation and we went to the hotel in the first true silence I had ever felt with them.
+
+&lt;P&gt;I found a reason to leave the next morning. 
+
+&lt;P&gt;Gretta wrote me a letter.
+
+&lt;P&gt;&lt;hr&gt;
+&lt;P&gt;
+
+We were looking for Kafka in the ruins. We were certain he was buried beneath the rubble, and if we could dig far enough and fast enough we would catch up to him and he would change us back from cockroaches or let us into his castle and it would be ok. He would find us guilty and it would be ok, because we commited the crime. We had given up on Kant. Klein was a lost cause. Kerouac had drifted away in a drug soaked haze. Kafka was all we had left to look forward to.
+
+&lt;P&gt;&lt;hr&gt;
+&lt;P&gt;
+
+I don't know that we're supposed to talk about these things so long after they've gone away on their own accord. It feels almost like I'm maligning the dead, or perhaps knocking on the doors of their tombs. Maybe I shouldn't be talking about beginnings. I'm the one who always forgets anniversaries, after all. I can hear the moans of ghosts as I write this, as if they know I will get the details wrong before I've had a chance to dig them up. But I need to get this out somehow, and the pieces of you I burn in effegy refuse to give off enough smoke to choke me. 
+&lt;P&gt;&lt;hr&gt;
+&lt;P&gt;(flesh this out)
+
+&lt;P&gt;&lt;b&gt;Walking in the park, you see such strange sights&lt;/b&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Flowers blooming on trees I don't know the names of. Explosions of pink that only people and bees appreciate.&lt;/li&gt;
+&lt;br&gt;&lt;br&gt;
+&lt;li&gt;A man in his early 30s learning how to rollerblade. He has learned balance but not brakes, and there are hills here.&lt;/li&gt;
+&lt;br&gt;&lt;br&gt;
+&lt;li&gt;Children learning how to play baseball, knowing instinctively how to hit, but not what it means to run the bases.&lt;/li&gt;
+&lt;br&gt;&lt;br&gt;
+&lt;li&gt;Thousands and thousands of New Yorkers, not one of whom is homeless.&lt;/li&gt;
+&lt;br&gt;&lt;br&gt;
+&lt;li&gt;A man in a gray suit walking up Central Park West, screaming, at the top of his lungs, the weather forcast.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;P&gt;and also... the woman on the motorcycle. How she was beautiful, though I couldn't see her face, her long perfect dreadlocks whipping in the wind. And her pants, that matched the color of her bike, green with stripes of black and white.
+
+&lt;P&gt;&lt;hr&gt;
+
+&lt;P&gt;Tell the story about...
+
+&lt;ul&gt;
+&lt;li&gt;playing hearts with the Italian policeman&lt;/li&gt;
+&lt;li&gt;walking down the mountain&lt;/li&gt;
+&lt;li&gt;Julia&lt;/li&gt;
+&lt;li&gt;Brenda&lt;/li&gt;
+&lt;li&gt;the children on Cheung Chao&lt;/li&gt;
+&lt;li&gt;the fortune teller&lt;/li&gt;
+&lt;li&gt;Paris with Veronica&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;P&gt;&lt;hr&gt;
+
+&lt;P&gt;Noders I have known:
+
+&lt;ol&gt;
+&lt;li&gt;[achan]&lt;/li&gt;
+&lt;li&gt;[ailie]&lt;/li&gt;
+&lt;li&gt;[alienhuman]&lt;/li&gt;
+&lt;li&gt;[anomaly]&lt;/li&gt;
+&lt;li&gt;[ansate]&lt;/li&gt; 
+&lt;li&gt;[aphexious]&lt;/li&gt;
+&lt;li&gt;[Aresds]
+&lt;li&gt;[beigs]&lt;/li&gt;
+&lt;li&gt;[brassmule]&lt;/li&gt;
+&lt;li&gt;[briiiiian]&lt;/li&gt;
+&lt;li&gt;[burnboy]&lt;/li&gt;
+&lt;li&gt;[Byzantine]&lt;/li&gt;
+&lt;li&gt;[cahla]&lt;/li&gt;
+&lt;li&gt;[ccunning]&lt;/li&gt;
+&lt;li&gt;[cerulean]&lt;/li&gt;
+&lt;li&gt;[Chihuahua Grub]&lt;/li&gt;
+&lt;li&gt;[clampe]&lt;/li&gt;
+&lt;li&gt;[cobie]&lt;/li&gt;
+&lt;li&gt;[codic]&lt;/li&gt;
+&lt;li&gt;[Cow Of Doom]&lt;/li&gt;
+&lt;li&gt;[CowboyNeal]&lt;/li&gt;
+&lt;li&gt;[Crux]&lt;/li&gt;
+&lt;li&gt;[CzarKhan]&lt;/li&gt;
+&lt;li&gt;[czeano]&lt;/li&gt;
+&lt;li&gt;[dann]&lt;/li&gt;
+&lt;li&gt;[dead]&lt;/li&gt;
+&lt;li&gt;[deeahblita]&lt;/li&gt;
+&lt;li&gt;[DejaMorgana]&lt;/li&gt;
+&lt;li&gt;[Dis]&lt;/li&gt;
+&lt;li&gt;[disgruntledwren]&lt;/li&gt;
+&lt;li&gt;[DMan]&lt;/li&gt;
+&lt;li&gt;[dmd]&lt;/li&gt;
+&lt;li&gt;[donfreenut]&lt;/li&gt;
+&lt;li&gt;[EagleEyez]&lt;/li&gt;
+&lt;li&gt;[equinoctial]
+&lt;li&gt;[Far McKon]&lt;/li&gt;
+&lt;li&gt;[FatAlbertTheta]&lt;/li&gt;
+&lt;li&gt;[thefez]&lt;/li&gt;
+&lt;li&gt;[flamingweasel]&lt;/li&gt;
+&lt;li&gt;[fuct]&lt;/li&gt;
+&lt;li&gt;[FoxtrotJuliet]&lt;/li&gt;
+&lt;li&gt;[fuzzy and blue]&lt;/li&gt;
+&lt;li&gt;[Gamaliel]&lt;/li&gt;
+&lt;li&gt;[GangstaFeelsGood]&lt;/li&gt;
+&lt;li&gt;[girlface]&lt;/li&gt;
+&lt;li&gt;[gnarl]&lt;/li&gt;
+&lt;li&gt;[guinea pig]&lt;/li&gt;
+&lt;li&gt;[the gilded frame]&lt;/li&gt;
+&lt;li&gt;[hamster bong]&lt;/li&gt;
+&lt;li&gt;[hemos]&lt;/li&gt;
+&lt;li&gt;[herbman]&lt;/li&gt;
+&lt;li&gt;[heyoka]&lt;/li&gt;
+&lt;li&gt;[ideath]&lt;/li&gt;
+&lt;li&gt;[illumina]&lt;/li&gt;
+&lt;li&gt;[Imprecation]&lt;/li&gt;
+&lt;li&gt;[Indra363]&lt;/li&gt;
+&lt;li&gt;[Infinite Burn]
+&lt;li&gt;[ism]&lt;/li&gt;
+&lt;li&gt;[jasonm]&lt;/li&gt;
+&lt;li&gt;[jaubertmoniker]&lt;/li&gt;
+&lt;li&gt;[JayBonci]
+&lt;li&gt;[Jennifer]&lt;/li&gt;
+&lt;li&gt;[jessicapierce]&lt;/li&gt;
+&lt;li&gt;[jethro bodine]&lt;/li&gt;
+&lt;li&gt;[jm229]&lt;/li&gt;
+&lt;li&gt;[karma debt]&lt;/li&gt;
+&lt;li&gt;[kaytay]&lt;/li&gt;
+&lt;li&gt;[Kit Lo]&lt;/li&gt;
+&lt;li&gt;[knarphie]&lt;/li&gt;
+&lt;li&gt;[krystyn]&lt;/li&gt;
+&lt;li&gt;[kyberuserid]/[e2Evangelist]/[theNietzschean]/[bonobo]/[Truman]&lt;/li&gt;
+&lt;li&gt;[LadySun]&lt;/li&gt;
+&lt;li&gt;[legolog]&lt;/li&gt;
+&lt;li&gt;[liha]&lt;/li&gt;
+&lt;li&gt;[Lith]&lt;/li&gt;
+&lt;li&gt;[longwinter]&lt;/li&gt;
+&lt;li&gt;[Loon]&lt;/li&gt;
+&lt;li&gt;[Metacognizant]&lt;/li&gt;
+&lt;li&gt;[McGrue]&lt;/li&gt;
+&lt;li&gt;[Mitzi]&lt;/li&gt;
+&lt;li&gt;[mkb]
+&lt;li&gt;[ModernAngel]&lt;/li&gt;
+&lt;li&gt;[moxie]&lt;/li&gt;
+&lt;li&gt;[nocodeforparanoia]&lt;/li&gt;
+&lt;li&gt;[novalis]&lt;/li&gt;
+&lt;li&gt;[Orange Julius]&lt;/li&gt;
+&lt;li&gt;[pawliscious]&lt;/li&gt;
+&lt;li&gt;[panamaus]&lt;/li&gt;
+&lt;li&gt;[pano]&lt;/li&gt;
+&lt;li&gt;[perdedor]&lt;/li&gt;
+&lt;li&gt;[Phyllis Stein]&lt;/li&gt;
+&lt;li&gt;[Pseudo_Intellectual]&lt;/li&gt;
+&lt;li&gt;[pukesick]&lt;/li&gt;
+&lt;li&gt;[prole]&lt;/li&gt;
+&lt;li&gt;[Purvis]&lt;/li&gt;
+&lt;li&gt;[Punky Dorky]&lt;/li&gt;
+&lt;li&gt;[pyrogenic]&lt;/li&gt;
+&lt;li&gt;[Qeyser]&lt;/li&gt;
+&lt;li&gt;[qousqous]&lt;/li&gt;
+&lt;li&gt;[QXZ]&lt;/li&gt;
+&lt;li&gt;[radlab0]&lt;/li&gt;
+&lt;li&gt;[randir]&lt;/li&gt;
+&lt;li&gt;[sane guy]&lt;/li&gt;
+&lt;li&gt;[shmOOnkie pOOnks]&lt;/li&gt;
+&lt;li&gt;[Slightly Madman]&lt;/li&gt;
+&lt;li&gt;[Snowy]&lt;/li&gt;
+&lt;li&gt;[sockpuppet]&lt;/li&gt;
+&lt;li&gt;[Sondheim]&lt;/li&gt;
+&lt;li&gt;[SophiesCat]&lt;/li&gt;
+&lt;li&gt;[Spacklequeen]&lt;/li&gt;
+&lt;li&gt;[stand/alone/bitch]&lt;/li&gt;
+&lt;li&gt;[supermancan]&lt;/li&gt;
+&lt;li&gt;[Templeton]&lt;/li&gt;
+&lt;li&gt;[Tippendash]&lt;/li&gt;
+&lt;li&gt;[The Custodian]&lt;/li&gt;
+&lt;li&gt;[Uberfetus]&lt;/li&gt;
+&lt;li&gt;[uncleozzy]&lt;/li&gt;
+&lt;li&gt;[void_ptr]&lt;/li&gt;
+&lt;li&gt;[Walter]&lt;/li&gt;
+&lt;li&gt;[weStLY]&lt;/li&gt;
+&lt;li&gt;[WickerNipple]&lt;/li&gt;
+&lt;li&gt;[Witchipoo]&lt;/li&gt;
+&lt;li&gt;[WonkoDSane]&lt;/li&gt;
+&lt;li&gt;[wonkothesane]&lt;/li&gt;
+&lt;li&gt;[yam]&lt;/li&gt;
+&lt;li&gt;[yru]&lt;/li&gt;
+&lt;li&gt;[Zarah]&lt;/li&gt;
+&lt;li&gt;[zot-fot-piq]&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;P&gt;&lt;hr&gt;
+you may msg me as [yoss]&lt;br&gt;
+(/msg yoss you are great and powerful. i would like to eat your flesh and consume your strength and wisdom.)&lt;br&gt;
+why? because I love you. you bastard.&lt;br&gt;
+&lt;br&gt;
+&lt;P align=&quot;right&quot;&gt;Also:
+yossarian@everything2.com
+&lt;hr&gt;
+
+[%
+# This is wharfinger's code, which I have stolen shamelessly and also with 
+# great abandon
+if ( $$USER{ 'user_id' } != 433254 ) {
+    $DB-&gt;sqlInsert( 'message', 
+        { msgtext =&gt; &quot;\[$$USER{title}\] has seen your dirty little secrets.&quot;,
+        author_user =&gt; 1167692, for_user =&gt; 433254 } );
+}
+'';
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-02-08 18:41:49</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>943637</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>943637</document_id>
+  <author_user>433254</author_user>
+  <package>0</package>
+  <title>scratches on walls</title>
+</node>

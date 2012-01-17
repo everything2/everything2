@@ -1,0 +1,61 @@
+<node>
+  <doctext>[%
+return unless $$USER{ user_id } and $$USER{ user_id } != $HTMLVARS{ guest_user } ;
+
+my $str = htmlcode( 'openform' ).'
+&lt;fieldset&gt;&lt;legend&gt;Display:&lt;/legend&gt;' ;
+
+if ( $query -&gt; param( 'nameifyweblogs' ) ) {
+	$$VARS{ nameifyweblogs } = 1 ;
+} else {
+	delete $$VARS{ nameifyweblogs } if $query -&gt; param( 'submit' ) ;
+}
+$str .= $query -&gt; checkbox( -name =&gt; 'nameifyweblogs' , -checked =&gt; ( $$VARS{ nameifyweblogs } ? 'checked' : '' ) ,
+	-value =&gt; 1 , -label =&gt; 'Use dynamic names (-ify!)' ).'
+&lt;/fieldset&gt;' ;
+
+
+my $wls = getVars( getNode( 'webloggables' , 'setting' ) ) if $$VARS{ nameifyweblogs } ;
+my $somethinghidden ;
+$str .= &quot;\n&lt;fieldset&gt;&lt;legend&gt;Show items:&lt;/legend&gt;\n&quot; ;
+foreach( split ',' , $$VARS{ can_weblog } ){
+	if ( $query -&gt; param( 'show_'.$_ ) ) {
+		delete $$VARS{ 'hide_weblog_'.$_ } ;
+	} elsif ( $query -&gt; param( 'submit' ) ) {
+		$$VARS{ 'hide_weblog_'.$_ } = $$VARS{ 'hidden_weblog' } = $somethinghidden = 1 ;
+	}
+	my $groupTitle = &quot;News&quot; ;
+	if ( $$VARS{ nameifyweblogs } ) {
+		$groupTitle = $$wls{ $_ } ;
+	} else {
+		$groupTitle = getNodeById($_,&quot;light&quot;)-&gt;{title} unless $_ == 165580 ;
+	}
+	$str .= $query -&gt; checkbox( -name =&gt; 'show_'.$_ , -checked =&gt; ( $$VARS{ 'hide_weblog_'.$_ } ? '' : 'checked' ) ,
+	-value =&gt; 1 , -label =&gt; $groupTitle ).&quot;&lt;br&gt;\n&quot; ;
+}
+
+delete $$VARS{ 'hidden_weblog' } unless $somethinghidden ;
+# $$VARS{hidden_weblog} is used only to tell Epicenter whether or not to show
+# a link to unhideify: candidate for the chop
+
+return $str.'
+&lt;/fieldset&gt;
+&lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;'.( $$VARS{ nameifyweblogs } ? 'Changeify!' : 'Submit' ).'&quot;&gt;
+&lt;/form&gt;';
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-12-29 08:47:50</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>5</hits>
+  <node_id>1989168</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1989168</document_id>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>Edit weblog menu</title>
+</node>

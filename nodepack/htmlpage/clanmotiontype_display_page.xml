@@ -1,0 +1,25 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>652211</pagetype_nodetype>
+  <core>0</core>
+  <page>&lt;i&gt;This motion's title will appear as:&lt;/i&gt;
+&lt;p&gt;[{listcode:titlestring}]
+&lt;p&gt;
+&lt;i&gt;The code that executes this motion:&lt;/i&gt;
+&lt;p&gt;[{listcode:motioncode}]</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-07-13 19:41:17</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>652215</htmlpage_id>
+  <hits>4</hits>
+  <node_id>652215</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>clanmotiontype display page</title>
+  <mimetype></mimetype>
+</node>

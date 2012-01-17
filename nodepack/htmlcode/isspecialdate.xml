@@ -1,0 +1,61 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-03-31 00:20:46</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>4</hits>
+  <node_id>1002054</node_id>
+  <htmlcode_id>1002054</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#returns if current server time matches the given day
+#parameter: case insensitive string(s) of date(s) - if more than 1, then any matches counts as a success
+#if no date given, or date not found, returns 0
+
+#return undef;
+
+use DateTime;
+
+my ($d) = @_;
+my $dt = DateTime-&gt;now( time_zone =&gt; &quot;America/Los_Angeles&quot; );
+my $year = $dt-&gt;year();
+my $mday = $dt-&gt;mday();
+my $mon = $dt-&gt;month();
+my $hour = $dt-&gt;hour();
+
+my $y;
+$d = &quot;\L$d&quot;; #case insensitive
+$y = ($d =~ /(\d+)$/) ? $1 : 0; #try to get the year
+
+$mon -= 1;
+# Note that $mon = month - 1, January is 0, December is 11
+
+if($d =~ /^afd/) {
+return '1' if ($mon==3 and $mday==1 and ($y?$y==$year:1));
+}
+
+elsif($d =~ /^halloween/) {
+return '1' if ($mon==9 and $mday==31 and ($y?$y==$year:1));
+}
+
+elsif($d =~ /^xmas/) {
+return '1' if ($mon==11 and $mday==25 and ($y?$y==$year:1));
+}
+
+elsif($d =~ /^nye/) {
+return '1' if ($mon==11 and $mday==31 and ($y?$y==$year:1));
+}
+
+elsif($d =~ /^nyd/) {
+return '1' if ($mon==0 and $mday==1 and ($y?$y==$year:1));
+}
+
+# return &quot;mday=$mday  mon=$mon  year=$year hour=$hour&quot;;
+return 0;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>isSpecialDate</title>
+</node>

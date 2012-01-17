@@ -1,0 +1,124 @@
+<node>
+  <doctext>&lt;p align=center&gt;
+&amp;#91;
+&lt;a href=&quot;http://kahani.org/&quot;&gt;kahani.org&lt;/a&gt; |
+&lt;a href=&quot;http://whack.org/~conform/e2info&quot;&gt;nodetracker&lt;/a&gt; |
+&lt;a href=&quot;http://ascorbic.net/catbox&quot;&gt;catbox archive&lt;/a&gt; |
+&lt;a href=&quot;javascript:window.open('/?node=chatterbox&amp;type=nodelet&amp;displaytype=testembed', '_', 'directories=no,location=no,scrollbars=yes,status=yes'); document.location=document.location&quot;&gt;catbox&lt;/a&gt;
+&amp;#93;
+&lt;/p.&gt;
+
+&lt;p&gt;
+Just yet another boring edevdoc where radom bits of javascript get tried out. Nothing much to see here.
+&lt;/p&gt;
+&lt;p align=right&gt;-- &lt;a href=&quot;/?node=call&amp;type=user&quot;&gt;call&lt;/a&gt;&lt;/p&gt;
+
+
+&lt;p&gt;
+The following is an attempt to submit queries in a nice quiet manner, by writing an 'img' whose src is the requested URL. So far it seems to get the request across, but crashes IE...&lt;/p&gt;
+
+&lt;input
+  onClick=&quot;document.write('&lt;img src=/?op=message&amp;message=/msg+call+test alt= width=0 height=0&gt;')&quot;
+  type=submit
+  value=&quot;msg&quot;&gt;
+
+&lt;p&gt;On Netscape it does't work either 'cause, naturally, the layout's all been done, tec by the time this happens, so I guess we'll have to use an iframe or something. However, can still do static ones I guess. Let's try that...&lt;/p&gt;
+
+&lt;p&gt;&lt;del&gt;&lt;!--img src=&quot;/?op=message&amp;message=/msg+call+I+visited+testdoc&quot; alt=&quot;&quot; width=&quot;0&quot; height=&quot;0&quot;--&gt; &amp;larr; that invisible image probably just sent me a message...&lt;/del&gt; removed 'cause it was annoying.&lt;/p&gt;
+
+
+&lt;p&gt;Notes to self: we need:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt; Automatic self-puncher...
+&lt;li&gt; Very large blab box &lt;ul&gt;&lt;li&gt;Need a good way of converting names &amp;rarr; node_ids. &lt;li&gt; If not, store names for a drop-down list. &lt;/ul&gt;
+&lt;li&gt; Bookmark/voter; keep list of writeups to vote on tomorrow when we run out of votes?
+&lt;/ul&gt;
+
+
+&lt;!-------------------------------------------------------------------------&gt;
+
+&lt;p&gt;Let's play with cookies. The following form makes a little scratch-pad type dealie using a cookie to store the text. Hitting 'save' stores the text you type into a field in the cookie named 'text'. Hitting 'load' takes the text (if any) from your cookie and puts it in the textarea.
+&lt;/p&gt;
+
+&lt;p&gt;
+Of course, it'll only hang around as long as your cookie does...! &lt;del&gt;Annoyingly, mozilla doesn't seem to like it so far, but IE does. Grr.&lt;/del&gt;
+&lt;/p&gt;
+
+&lt;form name=&quot;cookieForm&quot; action=&quot;javascript: doccument.location = document.location&quot;&gt;
+&lt;script&gt;
+
+function saveCookie(name, text) {
+  document.cookie = (name+&quot;=&quot;+escape(text)+&quot;;&quot;+document.cookie);
+}
+
+function loadCookie(name) {
+  var text=document.cookie;
+  if (text.indexOf(name+&quot;=&quot;) == -1) text=&quot;&quot;;
+  text=text.substr(text.indexOf(name+&quot;=&quot;)+name.length+1);
+  if (text.indexOf(&quot;;&quot;) != -1)
+    text=text.substr(0, text.indexOf(&quot;;&quot;));
+  return unescape(text);
+}
+
+&lt;/script&gt;
+&lt;table&gt;&lt;tr&gt;&lt;td&gt;
+&lt;textarea rows=20 cols=60 name=text&gt;
+&lt;/textarea&gt;
+
+&lt;/td&gt;&lt;td&gt;
+
+&lt;input type=submit value=&quot;count&quot;
+  onClick=&quot;alert(cookieForm.text.value.length+' chars')&quot;&gt;&lt;br&gt;
+
+&lt;input type=submit value=&quot;save&quot;
+  onClick=&quot;saveCookie('text', cookieForm.text.value)&quot;&gt;&lt;br&gt;
+&lt;input type=submit value=&quot;load&quot;
+  onClick=&quot;cookieForm.text.value=loadCookie('text')&quot;&gt;&lt;br&gt;
+
+&lt;input type=submit value=&quot;show&quot;
+  onClick=&quot;alert(document.cookie)&quot;&gt;
+
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+cookieForm.text.value=loadCookie('text');
+&lt;/script&gt;
+
+
+&lt;p&gt;
+URL escaper:&lt;br&gt;
+&lt;form&gt;
+&lt;textarea name=plain rows=20 cols=60 onBlur=&quot;escaped.value=escape(value)&quot;&gt;&lt;/textarea&gt;
+&lt;textarea name=escaped rows=20 cols=60 onBlur=&quot;plain.value = unescape(value)&quot;&gt;&lt;/textarea&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+function showInnerHTML() {
+  document.formShowCBox.text.value = document.formcbox.innerHTML;
+}
+&lt;/script&gt;
+&lt;form name=&quot;formShowCBox&quot;&gt;
+&lt;p&gt;show catbox innerhtml: &lt;a href=&quot;javascript: showInnerHTML();&quot;&gt;grab innerHTML&lt;/a&gt;&lt;br&gt;
+&lt;textarea rows=25 cols=60 name=&quot;text&quot;&gt;
+&lt;/textarea&gt;
+&lt;/form&gt;
+
+&lt;p&gt;
+Now... why didn't Jay tell me about [[this]] when I asked him...?
+&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-11-05 23:43:41</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1383927</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>854232</type_nodetype>
+  <document_id>1383927</document_id>
+  <author_user>5603</author_user>
+  <package>0</package>
+  <title>call's test doc (edevdoc)</title>
+</node>

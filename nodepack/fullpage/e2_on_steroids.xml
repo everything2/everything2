@@ -1,0 +1,157 @@
+<node>
+  <doctext>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;http://www.w3.org/TR/xhtml/transitional.dtd&quot;&gt;
+&lt;html&gt;
+	&lt;head&gt;
+	&lt;title&gt;[% $$NODE{title}; %]&lt;/title&gt;
+	&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt;
+	&lt;link rel='stylesheet' id='basesheet' type='text/css' href='/node/stylesheet/basesheet?displaytype=view'&gt;
+
+[%
+	if (exists(($$VARS{userstyle})) and defined(($$VARS{userstyle})) ) {
+	return &quot;\t&lt;link rel='stylesheet' id='zensheet' type='text/css' href='/?node_id=&quot; . $$VARS{userstyle}. &quot;&amp;amp;displaytype=view' /&gt;&quot; ;
+}
+else {	#ascorbic's default
+	return &quot;\t&lt;link rel='stylesheet' id='zensheet' type='text/css' href='/?node_id=1854393&amp;amp;displaytype=view' /&gt;&quot;;
+}
+
+%]
+[%
+
+if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle})) and $$VARS{preferred_theme} == 1854183) {
+	return &quot;   \t&lt;style type='text/css'&gt;\n\n\t&quot; . htmlScreen($$VARS{customstyle}) . &quot;\n\n\t&lt;/style&gt;&quot;;
+}
+%]
+
+	&lt;script type='text/javascript'&gt;
+		var isZen = 1;
+	&lt;/script&gt;
+	
+	&lt;script type='text/javascript' src='/index.pl?node_id=1869865'&gt;
+	&lt;/script&gt;
+	&lt;/head&gt;
+&lt;body style='width: 90%'&gt;
+	&lt;div id=&quot;header&quot;&gt;
+		&lt;div id=&quot;links&quot; style='text-align: right'&gt;
+			&lt;p&gt;&lt;a href=''&gt;Logout&lt;/a&gt;&lt;br /&gt;
+			&lt;input type='text' /&gt; Search&lt;/p&gt;
+		&lt;/div&gt;
+		&lt;div&gt;
+			&lt;ul id='nav'&gt;
+				&lt;li class='tab'&gt;&lt;a href='?tab=home'&gt;Home&lt;/a&gt;&lt;/li&gt;
+				&lt;li class='tab selected'&gt;&lt;a href='?tab=chat'&gt;Chat&lt;/a&gt;&lt;/li&gt;
+				&lt;li class='tab'&gt;&lt;a href='?tab=read'&gt;Read&lt;/a&gt;&lt;/li&gt;
+				&lt;li class='tab'&gt;&lt;a href='?tab=write'&gt;Write&lt;/a&gt;&lt;/li&gt;
+				&lt;li class='tab'&gt;&lt;a href='?tab=profile'&gt;Profile&lt;/a&gt;&lt;/li&gt;
+			&lt;/ul&gt;
+		&lt;/div&gt;
+	&lt;/div&gt;
+	&lt;div id='main_section' style='clear: both; width: 100%;'&gt;
+		&lt;div id='main_section_content' style='float: left; width: 75%; margin: .5em;'&gt;
+[%
+
+my $tab = $query-&gt;param(&quot;tab&quot;) || &quot;home&quot;;
+
+if ($tab eq &quot;home&quot;) {
+return &quot;
+			&lt;div id='main_section_content_left' style='width: 35%; margin: .5em; float: left'&gt;&quot;.
+		insertNodelet(getNode('Cool User Picks','nodelet')-&gt;{node_id}).
+		insertNodelet(getNode('Cool User Picks','nodelet')-&gt;{node_id}).&quot;
+			&lt;/div&gt;
+
+			&lt;div id='main_section_content_right' style='width: 60%;  margin: .5em; float: right'&gt;&quot;.
+		insertNodelet(getNode('Cream of the Cool Test','nodelet')-&gt;{node_id}) .
+		getNode('News for Noders','nodelet')-&gt;{nlcode}.&quot;
+			&lt;/div&gt;
+			&lt;div style='clear: both'&gt;&lt;/div&gt;&quot;
+;
+}
+
+if ($tab eq &quot;chat&quot;) {
+return insertNodelet(170070);
+}
+
+if ($tab eq &quot;read&quot;) {
+return getNode(1988643)-&gt;{nlcode};
+}
+
+if ($tab eq &quot;write&quot;) {
+return parseCode(getNode(1797151)-&gt;{doctext});
+}
+
+if ($tab eq &quot;profile&quot;) {
+return &quot;
+			&lt;div id='main_section_content_left' style='width: 35%;  margin: .5em; float: left'&gt;&quot;.
+&quot;
+			&lt;h1&gt;$$USER{title}&lt;/h1&gt;&quot;.
+		&quot;
+			&lt;div&gt;&lt;img src='http://images.everything2.com/&quot;.$$USER{imgsrc}.&quot;' id='userimage' width='100%'&gt;&lt;/div&gt;
+&quot;.&quot;
+&lt;div&gt;
+&lt;a href='?op=favorite'&gt;Add to favorite users&lt;/a&gt;&lt;br /&gt;
+&lt;input type='text'/&gt; &lt;input type='button'&gt;Send Message&lt;/input&gt;&lt;br /&gt;
+Last 3 writeups&lt;br /&gt;
+Last 3 writeups&lt;br /&gt;
+Last 3 writeups&lt;br /&gt;
+&lt;/div&gt;&quot;.
+
+$$USER{doctext}.
+&quot;
+			&lt;/div&gt;&quot;.
+	&quot;
+			&lt;div id='main_section_content_right' style='width: 50%;  margin: .5em; float: right'&gt;&quot;.
+		htmlcode('displayUserFeed').
+	&quot;
+			&lt;/div&gt;
+			&lt;div style='clear: both'&gt;&lt;/div&gt;&quot;
+;
+}
+
+%]
+		&lt;/div&gt;
+		&lt;div id='main_section_nodelets' style='float: right; width: 25%;  margin: .5em;'&gt;
+
+[%
+my $tab = $query-&gt;param(&quot;tab&quot;) || &quot;home&quot;;
+
+if ($tab eq &quot;home&quot;) {
+return insertNodelet(1930708);
+}
+
+if ($tab eq &quot;chat&quot;) {
+return insertNodelet(91);
+}
+
+if ($tab eq &quot;read&quot;) {
+return insertNodelet(1988635);
+}
+
+if ($tab eq &quot;write&quot;) {
+return insertNodelet(1988648);
+}
+
+if ($tab eq &quot;profile&quot;) {
+return insertNodelet(1988667);}
+
+
+%]
+
+		&lt;/div&gt;
+		&lt;div style='clear:both'&gt; &lt;/div&gt;
+	&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-11-13 05:58:48</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1988637</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>451267</type_nodetype>
+  <document_id>1988637</document_id>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>E2 on Steroids</title>
+</node>

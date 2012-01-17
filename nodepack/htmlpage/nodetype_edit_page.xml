@@ -1,0 +1,37 @@
+<node>
+  <parent_container>18</parent_container>
+  <pagetype_nodetype>1</pagetype_nodetype>
+  <core>R</core>
+  <page>&lt;p&gt;readers: [{node_menu:readers_user,user,usergroup,-parent_-1}]
+[{displayInherited:readers_user}]
+&lt;p&gt;creators: [{node_menu:writers_user,user,usergroup,-parent_-1}]
+[{displayInherited:writers_user}]
+&lt;p&gt;deleters: [{node_menu:deleters_user,user,usergroup,-parent_-1}]
+[{displayInherited:deleters_user}]
+&lt;p&gt;sqltable : [{textfield:sqltable}]
+[{displayInherited:sqltable}]
+&lt;p&gt;grouptable: [{textfield:grouptable}]
+[{displayInherited:grouptable}]
+&lt;p&gt;extends: [{node_menu:extends_nodetype}]
+&lt;p&gt;restrict nodetype(groups):[{node_menu:restrict_nodetype,nodetype,nodetypegroup}]
+[{displayInherited:restrict_nodetype}]
+&lt;p&gt;restrict duplicate titles: [{node_menu:restrictdupes,-yes_1,-no_0,-parent_-1}]
+[{displayInherited:restrictdupes}]
+&lt;p&gt;verify edits to maintain security: [{node_menu:verify_edits, -no_0, -yes_1}]
+&lt;/p&gt;</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:12</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>76</htmlpage_id>
+  <hits>1</hits>
+  <node_id>76</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>nodetype edit page</title>
+  <mimetype></mimetype>
+</node>

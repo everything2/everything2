@@ -1,0 +1,88 @@
+<node>
+  <doctext>The old node resurrect code.</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-12-21 10:27:04</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1404860</node_id>
+  <htmlcode_id>1404860</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <code>[%
+return &quot;&quot;;
+
+
+my $node_id=$query-&gt;param('olde2nodeid');
+return 'huh?  it\'s empty' unless $node_id;
+
+
+sub reinsertCorpse {
+    my ($N) = @_;
+
+    my @kids;
+    if ($$N{group}) {
+        foreach (@{ $$N{group} }) {
+            my $KID = resurrectNode($_);
+            push @kids, reinsertCorpse($KID);
+        }
+    }
+
+    my $author = $$N{author_user};
+    delete $$N{author_user};
+    my $title = $$N{title};
+    delete $$N{title};
+    my $type = getNodeById $$N{type_nodetype};
+    delete $$N{type_nodetype};
+    delete $$N{group} if exists $$N{group};
+
+    my $A = getNodeById($author);
+    $A = getNode('nate','user') if not $A or $$A{type}{title} ne 'user';
+
+    my $id = insertNode($title, $type, $A, $N);
+
+    insertIntoNodegroup($id, $author, \@kids) if @kids;
+    #print &quot;sucessfully inserted \&quot;$title\&quot; as node_id $id\n&quot;;
+    $id;
+
+}
+
+
+sub resurrectNode {
+    my ($node_id) = @_;
+
+    my $N = $DB-&gt;sqlSelectHashref(&quot;*&quot;, 'tomb', &quot;node_id=&quot;.$dbh-&gt;quote(&quot;$node_id&quot;));
+    return unless $N;
+
+
+    my $DATA = eval(&quot;my &quot;.$$N{data});
+
+    @$N{keys %$DATA} = values %$DATA;
+
+    delete $$N{data};
+    delete $$N{killa_user};
+    delete $$N{node_id};
+
+    $N;
+}
+
+my $N = resurrectNode($node_id);
+
+return &quot;it has failed.  I am sorry, child&quot; unless $N;
+my $id = reinsertCorpse($N);
+
+return &quot;Reinsertion Failed&quot; unless($id);
+
+return &quot;&lt;h1&gt;&quot;.linkNode($id, &quot;IT LIVES!&quot;).&quot;&lt;/h1&gt;&quot;;
+
+#$query-&gt;param('node_id', $id);
+
+%]</code>
+  <type_nodetype>1382262</type_nodetype>
+  <document_id>1404860</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>old resurrect code</title>
+</node>

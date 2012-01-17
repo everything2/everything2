@@ -1,0 +1,47 @@
+<node>
+  <nltext></nltext>
+  <parent_container>0</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2000-07-26 21:00:18</createtime>
+  <lastupdate>964645562</lastupdate>
+  <hits>13</hits>
+  <node_id>672164</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>315</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>672164</nodelet_id>
+  <nlcode>&lt;hr width=%70&gt;
+
+[%
+use Everything::Experience;
+#return if getLevel($USER) &gt; 2;
+
+
+my @tips = (&quot;[Avoid highly subjective writeups]
+&quot;,&quot;[Earn Your Bullshit]
+&quot;,&quot;[Please use plain text]
+&quot;,&quot;[Link and Link]
+&quot;,&quot;[Integrate Your Write-Ups]
+&quot;,&quot;[Don't Namespace Your Lyrics]
+&quot;,&quot;[Pick Titles Carefully]
+&quot;,&quot;[Please Attribute Anything You Quote]
+&quot;,&quot;[Cut-and-Paste Writeups Will Die]
+&quot;,&quot;(Here's) [How to Format Poems and Simple HTML]
+&quot;,&quot;[Node For The Ages]
+&quot;);
+
+&quot;&lt;p align=center&gt;&quot;.
+$tips[rand(int(@tips))];
+%]
+&lt;hr width=%70&gt;</nlcode>
+  <title>Tips</title>
+</node>

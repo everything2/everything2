@@ -1,0 +1,170 @@
+<node>
+  <doctext>[%
+sub mysort {
+ lc($a) cmp lc($b);
+}
+
+my $queryText;
+my $rows;
+my $dbrow;
+my $str;
+my @list;
+my @sortedList;
+my $key;
+my $n;
+
+my $nodeId = getId($NODE);
+my $uid = getId($USER)||0;
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+
+$queryText = &quot;SELECT user.user_id,user.GP FROM setting,user WHERE setting.setting_id=user.user_id AND setting.vars LIKE '%GPoptout=1%'&quot;;
+
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+
+while($dbrow = $rows-&gt;fetchrow_arrayref)
+{
+   push(@list, linkNode($$dbrow[0]) . ' - Level: ' . getLevel($$dbrow[0]) . '; GP: ' . $$dbrow[1]);
+}
+
+$str .= '&lt;h3&gt;Users who have opted out of the GP system&lt;/h3&gt;';
+$str .= '&lt;ol style=&quot;margin-left:55px&quot;&gt;';
+foreach $key (sort mysort @list)
+{
+  $str .= '&lt;li&gt;'.$key.'&lt;/li&gt;';
+}
+$str .= '&lt;/ol&gt;';
+
+return $str;
+%]
+
+&lt;p&gt;&lt;hr&gt;&lt;/p&gt;
+
+[%
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+my $rows;
+my $str;
+my $dbrow;
+my $queryText;
+my $limit = 300;
+my $limit2 = 10;
+my $row;
+
+$queryText = 'SELECT SUM(GP) FROM user';
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+my $totalGP = $rows-&gt;fetchrow_array();
+
+$queryText = 'SELECT user_id,gp FROM user ORDER BY gp DESC LIMIT '.$limit;
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+
+$str .= '&lt;h3&gt;'.$limit.' Richest Noders&lt;/h3&gt;';
+$str .= '&lt;ol&gt;';
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   $str .= '&lt;li&gt;'.linkNode($$row[0]).' ('.$$row[1].'GP)&lt;/li&gt;';
+}
+$str .= '&lt;/ol&gt;&lt;hr /&gt;';
+
+$queryText = 'SELECT user_id,gp FROM user WHERE gp&lt;&gt;0 ORDER BY gp LIMIT '.$limit2;
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+my $row;
+$str .= '&lt;h3&gt;'.$limit.' Poorest Noders (ignore 0GP)&lt;/h3&gt;';
+$str .= '&lt;ol&gt;';
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   $str .= '&lt;li&gt;'.linkNode($$row[0]).' ('.$$row[1].'GP)&lt;/li&gt;';
+}
+$str .= '&lt;/ol&gt;&lt;hr /&gt;';
+
+$queryText = 'SELECT user_id,gp FROM user ORDER BY gp DESC LIMIT '.$limit2;
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+my $row;
+$str .= '&lt;h3&gt;'.$limit2.' Richest Noders&lt;/h3&gt;';
+$str .= '&lt;ol&gt;';
+my $richestUsersGP = 0;
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   $str .= '&lt;li&gt;'.linkNode($$row[0]).' ('.$$row[1].'GP)&lt;/li&gt;';
+   $richestUsersGP += $$row[1];
+}
+$str .= '&lt;/ol&gt;';
+
+$str .= '&lt;p&gt;&lt;b&gt;Total GP in circulation:&lt;/b&gt; ' . $totalGP . '&lt;/p&gt;';
+
+$str .= '&lt;p&gt;The top ' . $limit2 . ' users hold ' . ($richestUsersGP / $totalGP * 100) . '% of all the GP&lt;/p&gt;';
+
+return $str;
+%]
+
+&lt;p&gt;&lt;hr&gt;&lt;/p&gt;
+
+[%
+return;
+
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+my $rows;
+my $str;
+my $dbrow;
+my $queryText;
+my $limit = 100;
+
+$queryText = 'SELECT user_id,karma FROM user ORDER BY karma DESC LIMIT '.$limit;
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+my $row;
+$str .= '&lt;h3&gt;'.$limit.' Most Blessed Noders&lt;/h3&gt;';
+$str .= '&lt;ol&gt;';
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   $str .= '&lt;li&gt;'.linkNode($$row[0]).' ('.$$row[1].' karma)&lt;/li&gt;';
+}
+$str .= '&lt;/ol&gt;&lt;hr /&gt;';
+
+$queryText = 'SELECT user_id,karma FROM user WHERE karma&lt;&gt;0 ORDER BY karma LIMIT '.$limit;
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+my $row;
+$str .= '&lt;h3&gt;'.$limit.' Least Blessed Noders (ignore 0 karma)&lt;/h3&gt;';
+$str .= '&lt;ol&gt;';
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   $str .= '&lt;li&gt;'.linkNode($$row[0]).' ('.$$row[1].' karma)&lt;/li&gt;';
+}
+$str .= '&lt;/ol&gt;';
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-10-30 15:05:25</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1960820</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1960820</document_id>
+  <author_user>1180811</author_user>
+  <package>0</package>
+  <title>mauler's sandbox VII: Seventh Heaven</title>
+</node>

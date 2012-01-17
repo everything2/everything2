@@ -1,0 +1,203 @@
+<node>
+  <doctext>[%
+my $str = '';
+
+#N-Wing is still working on this, so don't let everybody see it yet...
+#NPB TODO need to do this for both USER and VARS
+my $uid = getId($USER);
+return 'Try logging in.' if !$uid || ($uid==$HTMLVARS{guest_user});
+my $isRoot = isGod($USER);
+my $isEDev = exists $HTMLVARS{'group_edev'}{$uid};
+return ($str . ' Ummmm... no.') unless $isRoot || $isEDev;
+
+my $username = $query-&gt;param('username') if $isRoot;
+my $inspectUser = getNode($username, 'user') if (defined $username);
+$inspectUser = $USER if (!$inspectUser);
+my $inspectVars = getVars($inspectUser);
+
+
+if ($isRoot) {
+	$str .=
+	htmlcode('openform', 'uservarsform', 'GET')
+	. 'Showing user variables for '
+	. $query-&gt;textfield(
+		-value =&gt; $$inspectUser{title}
+		, -name =&gt; &quot;username&quot;
+		, -size =&gt; 30
+		)
+	. $query-&gt;submit('Show user vars')
+	. '&lt;br /&gt;'
+	. $query-&gt;end_form
+	;
+} else {
+		$str .= $$inspectUser{title} . '&lt;br /&gt;';
+}
+
+my $theme = getNodeById($$inspectVars{'preferred_theme'}||$HTMLVARS{default_theme});
+$str .= &quot;&lt;h3&gt;Theme&lt;/h3&gt;&quot;;
+$str .= &quot;&lt;p&gt;&quot; . linkNode($theme) . &quot;&lt;/p&gt;&quot;;
+
+if ($$theme{title} eq 'zen theme') {
+
+	if (defined $$inspectVars{userstyle}) {
+		$str .= &quot;&lt;p&gt;Using stylesheet &quot;
+			. linkNode(getNodeById($$inspectVars{userstyle}))
+			. &quot;&lt;/p&gt;&quot;
+			;
+	} else {
+		$str .= &quot;&lt;p&gt;Using default stylesheet.&lt;/p&gt;&quot;;
+	}
+
+	if (defined $$inspectVars{customstyle}) {
+		$str .= &quot;&lt;p&gt;Style Defacement:&lt;/p&gt;&quot;
+			. &quot;&lt;textarea id='vandalism' rows='15'&gt;&quot;
+			. encodeHTML($$inspectVars{customstyle})
+			. &quot;&lt;/textarea&gt;&quot;
+			;
+	}
+
+}
+
+my @includedJS = split(',', $$inspectVars{'includedJS'});
+@includedJS = grep { /^\d+$/ } @includedJS;
+
+$str .= &quot;&lt;h3&gt;Jscripts&lt;/h3&gt;&quot;;
+
+if (scalar @includedJS) {
+
+	$str .= &quot;&lt;ul&gt;&quot;;
+	$str .= &quot;&lt;li&gt;&quot; .
+		join &quot;&lt;li&gt;&quot;,
+			map { linkNode(getNodeById($_)) } @includedJS;
+	$str .= &quot;&lt;/ul&gt;&quot;;
+
+} else {
+
+	$str .= &quot;&lt;p&gt;&lt;strong&gt;None&lt;/strong&gt;&lt;/p&gt;&quot;;
+
+}
+
+my $tOpen = &quot;&lt;table border=\&quot;1\&quot; cellpadding=\&quot;1\&quot; cellspacing=\&quot;1\&quot;&gt;\n&quot;;
+my $tClose = '&lt;/table&gt;';
+
+my @validKeys;
+my $key;
+my $val;
+
+if($isRoot) {
+ @validKeys = keys(%$inspectVars);
+} else {
+ @validKeys =
+ (
+	'borged',
+	'coolnotification','cools','coolsafety',
+	'displaypref_e2node',
+	'emailSubscribedusers','employment',
+	'ipaddy',
+	'level',
+	'mission','motto',
+	'nick','nodelets','nohints','nowhynovotes',
+	'nullvote','numborged','numwriteups','nwriteups',
+	'personal_nodelet','preferred_theme','punched',
+	'specialties'
+);
+}
+
+# Additional keys for 'edev' memebers. (Brawl 9 Mar '05)
+#		&quot;unless $isRoot;&quot; prevents duplicates (lame but easy)
+if($isEDev) {
+	push(@validKeys, 'can_weblog') unless $isRoot;
+	push(@validKeys, 'hidden_weblog') unless $isRoot;
+	# List of hidden weblog commands (from Unhideify!)
+	foreach (keys %$inspectVars){
+		if(/hide_weblog_(\d*)/){
+			push @validKeys, $_ unless $isRoot;
+		} 
+	}
+}
+
+@validKeys = sort(@validKeys);
+$str .= '&lt;h3&gt;VARS&lt;/h3&gt;' . $tOpen;
+foreach $key (@validKeys) {
+	next if length($key)==0;
+	$val = encodeHTML($$inspectVars{$key});
+	$val =~ s/[\r\n]+/&lt;br&gt;/g if $key =~ /^notelet/;
+	$val='(&lt;em&gt;null&lt;/em&gt;)' unless defined $val;
+	$str.='&lt;tr&gt;&lt;td&gt;' . encodeHTML($key)
+		. '&lt;/td&gt;&lt;td&gt;' . $val . &quot;&lt;/td&gt;\n&quot;;
+}
+$str.=$tClose;
+
+if($isRoot) {
+ @validKeys = keys(%$THEME);
+} else {
+ @validKeys = ('');
+}
+
+@validKeys = sort(@validKeys);
+$str .= '&lt;h3&gt;THEME (always yours, even if you\'re viewing someone else)&lt;/h3&gt;'.$tOpen;
+foreach $key (@validKeys) {
+	if($key ne '') {
+		$val = $$THEME{$key};
+		$val='(&lt;em&gt;null&lt;/em&gt;)' unless defined $val;
+		$str.='&lt;tr&gt;&lt;td&gt;' . encodeHTML($key)
+			. '&lt;/td&gt;&lt;td&gt;' . encodeHTML($val) . &quot;&lt;/td&gt;\n&quot;;
+	}
+}
+$str.=$tClose;
+
+
+if($isRoot) {
+@validKeys = keys(%$inspectUser);
+} else {
+@validKeys =
+(
+);
+}
+@validKeys = sort(@validKeys);
+$str .= '&lt;h3&gt;USER&lt;/h3&gt;'.$tOpen;
+foreach $key (@validKeys) {
+	next if length($key)==0;
+	next if (($key eq 'vars') || ($key eq 'passwd'));
+	if($key ne '' and $key ne 'vars') {
+		$val = $$inspectUser{$key};
+		$val='(&lt;em&gt;null&lt;/em&gt;)' unless defined $val;
+		$str.='&lt;tr&gt;&lt;td&gt;' . encodeHTML($key)
+			. '&lt;/td&gt;&lt;td&gt;' . encodeHTML($val) . &quot;&lt;/td&gt;\n&quot;;
+	}
+}
+$str.=$tClose;
+
+
+@validKeys = keys(%HTMLVARS);
+@validKeys = sort(@validKeys);
+$str .= '&lt;h3&gt;&lt;code&gt;%HTMLVARS&lt;/code&gt;&lt;/h3&gt;'.$tOpen;
+foreach $key (@validKeys) {
+	if($key ne '') {
+		$val = $HTMLVARS{$key};
+		$val='(&lt;em&gt;null&lt;/em&gt;)' unless defined $val;
+		$str.='&lt;tr&gt;&lt;td&gt;' . encodeHTML($key)
+			. '&lt;/td&gt;&lt;td&gt;' . encodeHTML($val) . &quot;&lt;/td&gt;\n&quot;;
+	}
+}
+$str.=$tClose;
+
+
+return $str;
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-02-09 23:55:55</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>945284</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>945284</document_id>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>show user vars</title>
+</node>

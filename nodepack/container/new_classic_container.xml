@@ -1,0 +1,65 @@
+<node>
+  <parent_container>22</parent_container>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-22 04:05:58</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>35</hits>
+  <node_id>166948</node_id>
+  <context>[{adheader}]
+&lt;table width=95% align=center&gt;
+ &lt;tr&gt;
+  &lt;td&gt;
+   [{usersearchform}]&lt;/form&gt;
+  &lt;/td&gt;
+  &lt;td align=right&gt;
+   [{e2 logos}]
+  &lt;/td&gt; 
+ &lt;/tr&gt; 
+ &lt;tr&gt;
+  &lt;td colspan=2&gt;
+   &lt;h3&gt;[&quot;$$NODE{title}&quot;]&lt;/h3&gt;
+  &lt;/td&gt;
+ &lt;/tr&gt;
+&lt;/table&gt;
+
+
+&lt;table cellpadding=1 cellspacing=1 border=0 width=95%&gt;
+ &lt;tr&gt;
+[{showNodelets:left}]
+  &lt;td width=&quot;85%&quot; valign=&quot;top&quot;&gt;
+  [{helplink:1}]
+   CONTAINED_STUFF
+  &lt;/td&gt;
+[{showNodelets:right}]
+[%
+#  &lt;td width=&quot;15%&quot; valign=&quot;top&quot; align=&quot;right&quot;&gt;
+#   [{admin searchform}]
+#   &lt;!-- nodelets start here --&gt;
+#   [{nodelet meta-container}]
+%]
+  &lt;/td&gt;
+ &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;!-- &lt;LAYER src=&quot;http://adfu.blockstackers.com/servfu.pl?l,everything2&quot; top=15 left=10&gt;&lt;/ILAYER&gt; --&gt;
+
+&lt;center&gt;&lt;font size=2&gt;[%
+my @R = (&quot;This affordable entertainment brought to you by&quot;,
+  &quot;E2 is a by-product of the existence of&quot;,
+  &quot;Everything 2 is brought to you by the letter C and&quot;,
+  &quot;This page courtesy of&quot;);
+
+my $str;
+$str.=$R[int(rand(@R))];
+$str.=' &lt;a href=&quot;/node/usergroup/edev&quot;&gt;The Everything Development Company&lt;/a&gt;';
+$str;
+%]&lt;/font&gt;&lt;/center&gt;</context>
+  <type_nodetype>2</type_nodetype>
+  <container_id>166948</container_id>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>new classic container</title>
+</node>

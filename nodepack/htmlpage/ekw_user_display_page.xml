@@ -1,0 +1,56 @@
+<node>
+  <parent_container>1100949</parent_container>
+  <pagetype_nodetype>15</pagetype_nodetype>
+  <core>0</core>
+  <page>[{setupuservars}]
+[{thinoutlineheader:49%}]
+
+&lt;p align=&quot;center&quot;&gt;&amp;nbsp;
+[%
+return unless $DB-&gt;isApproved($NODE, getNode('users with image', 'nodegroup')) or getLevel($NODE) &gt;= 5;
+return unless $$NODE{imgsrc};
+'&lt;img src=&quot;http://images.everything2.com/'.$$NODE{imgsrc}.'&quot;&gt;&lt;br /&gt;';
+%]
+[%
+return if getId($USER) != getId($NODE);
+linkNode($NODE, '(edit user information)', {displaytype=&gt;'edit'});
+%]
+&lt;/p&gt;
+
+&lt;/td&gt;
+&lt;!-- &lt;td valign=&quot;top&quot; width=&quot;2&quot; bgcolor=&quot;#000000&quot;&gt;[{clearimage:1,1}]&lt;/td&gt; --&gt;
+&lt;td valign=&quot;top&quot; width=&quot;50%&quot;&gt;
+
+
+&lt;table width=&quot;100%&quot; cellpadding=&quot;1&quot; cellspacing=&quot;3&quot; border=&quot;0&quot;&gt;
+[{displayUserInfo}]
+&lt;/table&gt;
+
+
+[{thinoutlinefooter}]
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;10&quot; border=&quot;0&quot;&gt;
+&lt;tr&gt;&lt;td bgcolor=&quot;#000000&quot;&gt;[{clearimage:1,2}]&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td valign=&quot;top&quot;&gt;
+
+
+[{displayUserText}]
+
+[{showbookmarks}]
+
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-07-08 16:40:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1101671</htmlpage_id>
+  <hits>1</hits>
+  <node_id>1101671</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>470183</author_user>
+  <package>0</package>
+  <ownedby_theme>1100936</ownedby_theme>
+  <title>ekw user display page</title>
+  <mimetype></mimetype>
+</node>

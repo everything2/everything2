@@ -1,0 +1,44 @@
+<node>
+  <doctext>&lt;p&gt;The chatterbox help topics are a good way for new users to learn some of the basics of E2.  Simply type &quot;/help TOPIC&quot; in the chatterbox to get an automated message from [% return linkNode(getNode('Virgil','user')); %] about that topic.  Best results will be achieved by searching in lowercase and multi-word topics should use underscores rather_than_spaces.  If you notice errors, or think additional topics should be available, contact [rootbeer277].&lt;/p&gt;
+
+&lt;p&gt;Examples:  
+&lt;br&gt;&lt;tt&gt;/help editor&lt;/tt&gt;
+&lt;br&gt;&lt;tt&gt;/help wheel_of_surprise&lt;/tt&gt;&lt;/p&gt;
+
+&lt;h3&gt;Currently available help topics&lt;/h3&gt;
+&lt;p&gt;(not including aliases for topics listed under multiple titles)&lt;/p&gt;
+
+[%
+my $str = &quot;\n\n&lt;ol&gt;&quot;;
+my $helpTopics = getNode('help topics', 'setting');
+my $helpVars = getVars($helpTopics);
+
+##########
+# Display the list of help topics
+# Except for the ones that are aliases to other topics.
+# NOTE:  Please standardize any added help topics by keeping the main topic
+#        all lowercase and as intuitive as possible.
+#        less intuitive and upper-case versions should be an alias.
+
+foreach my $keys (sort(keys(%{$helpVars}))) {
+$str .= &quot;\n\t&lt;li&gt;/help &quot; . $keys . &quot;&lt;/li&gt;&quot; unless ( $$helpVars{$keys} =~ /^\/help .*/ );
+}
+
+return $str . &quot;\n&lt;/ol&gt;\n\n&quot;;
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-05-14 18:49:21</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1941643</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1941643</document_id>
+  <author_user>1503725</author_user>
+  <package>0</package>
+  <title>Chatterbox help topics</title>
+</node>

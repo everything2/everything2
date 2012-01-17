@@ -1,0 +1,139 @@
+<node>
+  <doctext>&lt;!--
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+&lt;big&gt;&lt;big&gt;&lt;big&gt;
+&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;p align=center&gt;SATAN&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;
+&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+--&gt;
+
+
+
+
+&lt;p align=&quot;center&quot;&gt;
+&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;
+&lt;big&gt;&lt;strong&gt;
+[%
+my @wit = (
+&quot;I was only pretending to be your friend,&quot;,
+&quot;I'm a little bit country, you're a little bit&quot;,
+&quot;Everything's coming up&quot;,
+&quot;Have a nice steaming cup of&quot;,
+&quot;I will sex you wild,&quot;,
+&quot;Poop poop poop&quot;,
+&quot;Your mother was right all along,&quot;,
+&quot;Kiss my grits,&quot;,
+&quot;I love you my wittle&quot;,
+&quot;Some girls are bigger than&quot;,
+&quot;I've got a pocket-full of&quot;,
+&quot;Boochy-kookie-sooble-doo, &quot;,
+&quot;I promise not to kill you,&quot;,
+&quot;Gooooooood morning&quot;,
+&quot;Yer a naughty lil'&quot;,
+&quot;Yer-a-sweet-smackin-sexy&quot;,
+&quot;Mama's got a brand new bag o'&quot;,
+);
+&quot;&lt;b&gt;&lt;font size=3&gt;&quot;.$wit[int(rand(@wit))].&quot;&lt;/font&gt;&lt;/b&gt;&quot;;
+%]
+
+
+[%
+#return; #remove this line
+
+my @wit = (
+
+&quot;[I give myself|Nipple]&quot;,
+&quot;[The View From My Room|Croony]&quot;,
+&quot;[Dr. Brightman|Swoon]&quot;,
+&quot;[Because I dig you|Ninny]&quot;,
+&quot;[I break myself down|Pleasant]&quot;,
+&quot;[Tell me a story about trains.|Joy]&quot;,
+&quot;[Tell me why you're an idiot|Pickle]&quot;,
+&quot;[I was once stranded on a desert island|Poodle]&quot;,
+&quot;[nodes i like|Poop]&quot;,
+&quot;[drowning in time|Woogums]&quot;,
+&quot;[deconstructing datagirl|Silly]&quot;,
+&quot;[nodes that may make you feel better|Honey]&quot;,
+&quot;[suicide is painless|Muffin]&quot;,
+&quot;[How do men touch you?|Woogle]&quot;,
+&quot;[things to do to salvage a shitty day|Snargle]&quot;,
+&quot;[yay!|Wiggly]&quot;,
+&quot;[one is the loneliest number|Cuddle]&quot;,
+&quot;[my heart feels filled with warm water when I think of these things|Schnooker]&quot;,
+&quot;[Only Slightly a Geek Girl|Cruller]&quot;,
+&quot;[Why I should be the female voice of slashdot|Mutton]&quot;,
+&quot;[January 24, 2000|Snifter]&quot;,
+&quot;[the funniest thing i've seen today|Goober]&quot;,
+&quot;[I give myself|Snapple]&quot;,
+&quot;[life after god|Bunny]&quot;,
+&quot;[Tierlon|Foggy]&quot;,
+&quot;[Spare Key Savior|Wiggly]&quot;,
+&quot;[Copper Starlight|Mister]&quot;,
+&quot;[Yay for pie!|Sookie]&quot;,
+&quot;[wandering the toronto eaton center|Smackle]&quot;,
+&quot;[my first kiss|Ripply]&quot;,
+&quot;[ownership kiss|Moogie]&quot;,
+);
+
+
+
+&quot;&lt;b&gt;&lt;font size=3&gt;&quot;.$wit[int(rand(@wit))].&quot;&lt;/font&gt;&lt;/b&gt;&quot;;
+%][%
+return; #remove this line
+my @wit = (
+
+&quot;[our new friend, the ten-foot pole|maggot!]&quot;,
+&quot;[I Fell Off The Ferris Wheel and Now I Am Paralyzed And Bitter|lump!]&quot;,
+&quot;[Our Last Conversation|mousey!]&quot;,
+&quot;[Her, eating apples|Oostendork!]&quot;,
+&quot;[Total Depravity|pants!]&quot;,
+&quot;[2:06|pooper!]&quot;,
+&quot;[little anarchy panties|woogums!]&quot;,
+&quot;[the 26 stages of corpse deterioration|facey!]&quot;,
+&quot;[shore leave|headkins!]&quot;,
+&quot;[I would like to make love to jessicapierce|trousers!]&quot;,
+&quot;[nathan, this is unacceptable|mumpus!]&quot;,
+&quot;[everything2 civil war|bottoms!]&quot;,
+&quot;[letters from a savior; offer for a few|mookums!]&quot;,
+&quot;[The sisters of mercy|smacker!]&quot;,
+&quot;[who by fire?|ducky!]&quot;,
+&quot;[An Irony Of Chain|slapper!]&quot;,
+&quot;[Dr. Bernice|head!]&quot;,
+&quot;[pictures of everythingians|chops!]&quot;,
+&quot;[Shopping for groceries|cracker!]&quot;,
+&quot;[kids aren't cute; they just do stupid things|cakienoggin!]&quot;,
+&quot;[winter bath|miggelmopper!]&quot;,
+&quot;[american music|wonderwiggle!]&quot;,
+&quot;[county lines|lambiekins!]&quot;,
+&quot;[song for leaving|tinywiggles!]&quot;,
+&quot;[feed your head|fuzzylickins!]&quot;,
+&quot;[tectonic|whiskers!]&quot;,
+&quot;[friends|cakes!]&quot;,
+&quot;[a murder in memphis|poker!]&quot;,
+&quot;[mythos|smackerbasser!]&quot;,
+&quot;[center park|spoodletipper!]&quot;,
+&quot;[mr. seward|ladderblather!]&quot;,
+&quot;[I Fell Off The Ferris Wheel and Now I Am Paralyzed And Bitter|whoopielicker!]&quot;,
+
+);
+
+$wit[int(rand(@wit))];
+%]
+&lt;/strong&gt;&lt;/big&gt;
+&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;
+&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-04-18 18:33:41</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>12203</hits>
+  <node_id>502167</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>502167</document_id>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>Piercisms Generator</title>
+</node>

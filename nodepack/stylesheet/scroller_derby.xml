@@ -1,0 +1,416 @@
+<node>
+  <doctext>body {
+    background: #404040;
+    padding: 0px;
+    font-family: Georgia, serif;
+}
+
+#mainbody{
+    position: fixed;
+    top: 0px;
+    left: 306px;
+    bottom: 62px;
+    right: 0px;
+    overflow: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 40px;
+    margin: 8px;
+    border: thin solid;
+    background: #f8f8ff;
+    color: #000000;
+}
+
+#chatterlight_mainbody{
+    position: fixed;
+    top: 0px;
+    left: 306px;
+    bottom: 0px;
+    right: 0px;
+    overflow: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    margin: 8px;
+    border: thin solid;
+    background: #f8f8ff;
+    color: #000000;
+}
+
+#sidebar, #chatterlight_NW{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    width: 282px;
+    overflow: auto;
+    padding: 8px;
+    margin: 8px;
+    border: thin solid;
+    background: #fffff0;
+    color: #000000;
+}
+
+#sidebar:before{
+    content: &quot;-nodelets-&quot;;
+    text-transform: uppercase;
+    display: block;
+    text-align: center;
+    size: 200%;
+    color: #fffff0;
+    background: #404040;
+    font-family: &quot;Goudy Sans&quot;, GoudySans, Skia, sans-serif;
+    font-weight: bold;
+    letter-spacing: 1ex;
+}
+
+#chatterlight_hints{
+    display: none;
+}
+
+.nodelet{
+    border: none;
+}
+
+
+h2.nodelet_title{
+    color: #404040;
+    font-weight: normal;
+    font-style: italic;
+    border-top: 2px ridge #404040;
+    border-bottom: 2px ridge #404040;
+    text-align: center;
+    padding: 2px;
+}
+
+#footer{
+    display: none;
+}
+
+#header{
+    position: fixed;
+    bottom: 0px;
+    left: 306px;
+    height: 54px;
+    right: 0px;
+    overflow: auto;
+    padding: 10px;
+    background: #404040;
+    color: #ffffff;
+    margin: 8px;
+}
+
+#e2logo{
+    position: absolute;
+    right: 30px;
+    top: 1px;
+    float: right;
+    font-weight: normal;
+}
+
+
+#e2logo a, #e2logo a:visited{
+    color: #fffff0;
+    text-decoration: none;
+    font-family: &quot;Goudy Sans&quot;, GoudySans, Skia, sans-serif;
+    border: 2px outset #fffff0;
+    padding: 2px;
+    font-weight: normal;
+}
+
+#e2logo a:hover{
+    color: #ffffff;
+}
+
+#e2logo a:active{
+    color: #ffffff;
+    background: #111111;
+    text-decoration: none;
+    font-family: &quot;Goudy Sans&quot;, GoudySans, Skia, sans-serif;
+    border: 2px inset #fffff0;
+    padding: 2px;
+}
+
+#searchform{
+    position: absolute;
+    left: 2px;
+    bottom: 2px;
+    width: 312px;
+    font-size: smaller;
+    text-align: left;
+}
+
+#search_submit:after{
+    content: &quot;\A&quot;;
+}
+
+#searchform span[title] label{
+    cursor: help;
+}
+
+pre, code, tt, kbd{
+    font-family: monospace;
+}
+
+a{
+    color: #000000;
+    text-decoration: none;
+    font-family: &quot;Goudy Sans&quot;, GoudySans, Skia, sans-serif;
+}
+
+tt a, pre a, code a, kbd a{
+    color: #119922;
+    font-family: monospace;
+}
+
+a:visited{
+    color: #000000;
+    text-decoration: none;
+}
+
+tt a:visited, pre a:visited, code a:visited, kbd a:visited{
+    color: #119922;
+    font-family: monospace;
+}
+
+a:hover{
+    color: #119922;
+    text-decoration: underline;
+}
+
+tt a:hover, pre a:hover, code a:hover, kbd a:hover{
+    color: #119922;
+    font-family: monospace;
+    text-decoration: underline;
+}
+
+
+h1.nodetitle{
+    width: 100%;
+    border-bottom: 2px ridge #404040;
+    color: #404040;
+    text-align: left;
+    font-weight: normal;
+    font-style: italic;
+    padding-bottom: 2px;
+}
+
+div.writeup{
+    border: thin solid #404040;
+    margin-bottom: 5px;
+    margin-top: 3px;
+    padding: 4px;
+}
+
+div.writeup_title{
+    border-bottom: thin dotted #404040;
+    padding: 4px;
+}
+
+div.writeup_text{
+    width: 100%;
+    line-height: 132%;
+}
+
+
+#softlinks td{
+    background: #fffff0;
+    width: 25%;
+    vertical-align: baseline;
+}
+
+
+#softlinks{
+    border: thin solid #404040;
+    background: #fffff0;
+}
+
+#softlinks:before{
+    content: &quot;Soft links&quot;;
+    font-style: italic;
+    font-size: larger;
+    display: block;
+    text-align: left;
+    padding: 2px;
+}
+
+.topic{
+    width: 100%;
+    text-align: right;
+    font-weight: normal;
+}
+
+#epicenter_zen{
+    color: #fffff0;
+    background: #404040;
+    border: thin groove #fffff0;
+    padding: 3px;
+    position: absolute;
+    bottom: 2px;
+    left: 333px;
+    text-align: center;
+    font-size: smaller;
+    font-family: &quot;Goudy Sans&quot;, GoudySans, Skia, sans-serif;
+}
+
+#epicenter_zen a, #epicenter_zen a:visited{
+    color: #fffff0;
+    text-decoration: none;
+}
+
+#epicenter_zen a:hover{
+    color: #77ff88;
+    text-decoration: underline;
+}
+
+.writeup_add h2{
+    font-style: italic;
+    font-weight: normal;
+    text-align: left;
+    border-bottom: 2px ridge #404040;
+    padding-bottom: 4px;
+}
+
+#homenodepicbox{
+    float: right;
+    max-width: 75%;
+    overflow: auto;
+}
+
+#nodelet_1689202 img.oddrow{
+    background: #119922;
+    border: thin solid #404040;
+}
+
+#chatterbox_chatter i, #nodelet_91 small{
+    color: #dd0000;
+    font-style: italic;
+}
+
+#chatterbox_chatter i a[title], #chatterbox_chatter i a[title]:active, #chatterbox_chatter i a[title]:hover, #chatterbox_chatter i a[title]:visited{
+    color: #dd0000;
+}
+
+#writeup_list li{
+    display: block;
+    margin-bottom: 4px;
+    margin-left: 12px;
+    text-indent: -12px;
+}
+
+#writeup_list{
+    display: block;
+    margin-left: 2px;
+    padding-left: 2px;
+}
+
+#writeup_list li span.author{
+    display: block;
+}
+
+#writeup_list li span.author:after{
+    content: &quot;:\ &quot;;
+}
+
+#writeup_list li span.title{
+    font-weight: bold;
+}
+
+#writeup_list li span.type{
+    font-size: smaller;
+}
+
+#writeup_list span.hasvoted span.title:before{
+    content: &quot;&#149; &quot;;
+    color: #dd00dd;
+    display: inline;
+    margin-left: -1.2ex;
+}
+
+#nodelet_91 div.nodelet_content {
+    margin-left: 2em;
+    line-height: 150%;
+}
+
+#room_options{
+    font-size: smaller;
+}
+
+.clear{
+    clear: both;
+}
+
+#homenodeheader dt{
+    font-weight: bold;
+    font-variant: small-caps;
+}
+
+#homenodeheader dt:after{
+    content: &quot;: &quot;;
+    display: inline;
+}
+
+#welcome_message{
+    color: #dd0000;
+    background: #fffff0;
+    font-size: larger;
+    border: thin solid #404040;
+    padding: 8px;
+    font-style: italic;
+}
+
+#loglinks table{
+    width: 100%;
+    margin-top: 8px;
+    border: thin solid #404040;
+    background: #fffff0;
+}
+
+#loglinks td{
+    text-align: center;
+}
+
+#staff_picks a{
+    display: list-item;
+}
+
+h1,h2,big{
+    line-height: 150%;
+}
+
+#experience{
+    color: #dd0000;
+    font-style: italic;
+    text-align: center;
+    font-size: 130%;
+}
+
+#votesleft{
+    text-align: center;
+}
+
+abbr[title], acronym[title]{
+    border-bottom: thin dotted;
+    cursor: help;
+}
+
+.nodeshell:after{
+    content: &quot; (nodeshell)&quot;;
+    display: inline;
+    color: #dd0000;
+}</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-07-27 20:39:53</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1950684</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1854352</type_nodetype>
+  <document_id>1950684</document_id>
+  <author_user>1325311</author_user>
+  <package>0</package>
+  <title>Scroller Derby</title>
+</node>

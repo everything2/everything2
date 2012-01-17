@@ -1,0 +1,48 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-09-17 10:02:39</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1990323</node_id>
+  <htmlcode_id>1990323</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># moves a nodelet to a position (top=0)
+# position=x removes nodelet (unless it's Master Control and the user is Godlike)
+# position=after&lt;nodelet number&gt; puts it after nodelet, if nodelet present
+# position=before&lt;nodelet number&gt;n puts it before nodelet, ditto
+# no position/invalid position: put it at the bottom
+
+my ($nodelet, $position) = @_;
+$nodelet = getNode($nodelet, 'nodelet')-&gt;{node_id} if $nodelet =~ /\D/;
+
+my $UID = $USER-&gt;{node_id} || $HTMLVARS{guest_user};
+return unless $nodelet and getNodeById($nodelet)-&gt;{type}-&gt;{title} eq 'nodelet' and
+	$UID != $HTMLVARS{guest_user} and $USER-&gt;{title} ne 'everyone' ;
+
+return if $position eq 'x' and
+	( exists $HTMLVARS{'group_gods'}{$UID} || exists $HTMLVARS{'group_content editors'}{$UID} ) &amp;&amp;
+	$nodelet == getNode('Master Control', 'nodelet')-&gt;{node_id};
+
+$$VARS{nodelets} =~ s/(?:(^|,),+)|(?:\b$nodelet\b,*)|(?:,*$)/$1/g ;
+return if $position eq 'x' ;
+
+if ( $position =~ /^(before|after)(\d*)$/ ){
+	my $find = $2 ;
+	my $replace = ( $1 eq 'before' ? &quot;$nodelet,$find&quot; : &quot;$find,$nodelet&quot; ) ;
+	$$VARS{nodelets} =~ s/\b$find\b/$replace/ ;
+} elsif ( int $position ) {
+	$$VARS{nodelets} =~ s/^((?:(?:^|,)\d+\b){$position})/$1,$nodelet/ ;
+} elsif ( $position eq '0' ){
+	$$VARS{nodelets} = &quot;$nodelet,$$VARS{nodelets}&quot; ;
+}
+
+$$VARS{nodelets} = &quot;$$VARS{nodelets},$nodelet&quot; unless $$VARS{nodelets} =~ /\b$nodelet\b/ ;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>movenodelet</title>
+</node>

@@ -1,0 +1,38 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-09-30 11:19:18</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1992443</node_id>
+  <htmlcode_id>1992443</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $inNodelet = shift;
+
+my @POLL = getNodeWhere({poll_status =&gt; 'current'}, 'e2poll');
+return 'No current poll.' unless @POLL;
+
+my $str = htmlcode('showpoll', $POLL[0]);
+
+$str .= $inNodelet
+	? '&lt;div class=&quot;nodeletfoot&quot;&gt;'
+	: '&lt;p align=&quot;right&quot; class=&quot;morelink&quot;&gt;';
+
+$str .= parseLinks('[Everything Poll Archive[superdoc]|Past polls]
+	| [Everything Poll Directory[superdoc]|Future polls]
+	| [Everything Poll Creator[superdoc]|New poll]
+	&lt;br&gt; [Polls[by Virgil]|About polls]');
+
+$str .= $inNodelet
+	? '&lt;/div&gt;'
+	: '&lt;/p&gt;';
+
+return $str;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>showcurrentpoll</title>
+</node>

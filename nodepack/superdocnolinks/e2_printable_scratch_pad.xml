@@ -1,0 +1,29 @@
+<node>
+  <doctext>[%
+return &quot;This thing is obsolete. Printable layout should be done with CSS.&quot;;
+my $su = $query-&gt;param(&quot;for_user&quot;);
+$su ||= $$USER{node_id};
+
+my $suV = getVars(getNodeById($su));
+
+my $exitlink = &quot;&lt;p align=\&quot;right\&quot;&gt;back to: &quot;.($su == $$USER{node_id})?(linkNode(getNode(&quot;E2 Scratch Pad&quot;, &quot;superdocnolinks&quot;))):(linkNode(getNode(&quot;E2 Scratch Pad Viewer&quot;, &quot;superdocnolinks&quot;))).&quot;&lt;/p&gt;&quot;;
+
+return &quot;Not public&quot; unless($suV-&gt;{skratchShare} or $su == $$USER{node_id});
+
+return parseLinks($DB-&gt;sqlSelect('scratch_text','scratch', &quot;scratch_id = $su&quot;)).&quot;&lt;br&gt;&lt;br&gt;$exitlink&lt;br&gt;&lt;br&gt;&quot;;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2003-02-13 06:22:55</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1429417</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1065266</type_nodetype>
+  <document_id>1429417</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>E2 Printable Scratch Pad</title>
+</node>

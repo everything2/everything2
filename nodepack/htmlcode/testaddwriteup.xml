@@ -1,0 +1,185 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-02-16 13:48:10</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>1930304</node_id>
+  <htmlcode_id>1930304</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $str=&quot;&quot;;
+
+my ($nostartform) = @_;
+
+my $uid = getId($USER);
+my $daylog = 0;
+
+my @group = @{ $$NODE{group} } if $$NODE{group};
+my $MYWRITEUP;
+foreach(@group) {
+	getRef($_);
+	if($$_{author_user} == $uid) {
+		$MYWRITEUP = $_;
+		last;
+	}
+}
+
+
+$MYWRITEUP ||= {doctext =&gt; '', title =&gt; '', node_id =&gt; 0};
+#so we can use them as default values if the writeup was not found
+
+my $NODELOCK = htmlcode('nodelockreason', $$MYWRITEUP{node_id});
+return '&lt;big&gt;'.$NODELOCK.'&lt;/big&gt;' unless($NODELOCK eq '');
+
+if($uid == $HTMLVARS{guest_user}) {
+	my $LOGIN = getNode 'login', 'superdoc';
+	my $CREATEUSER = getNode 'create a new user', 'superdoc';  
+
+	$str = 'Y\'know, if you '.linkNode($LOGIN,&quot;log in&quot;).', you can write something here, or contact authors directly on the site. '.linkNode($CREATEUSER).' if you don\'t already have an account.';
+
+	return $str if exists $$THEME{noThinOutline};
+	return containHtml('thin outline container', $str);
+}
+
+if ($query-&gt;param(&quot;tinyMCE&quot;)) {
+	if ($query-&gt;param(&quot;tinyMCE&quot;) == 1) {$$VARS{settings_useTinyMCE} = 1;}
+	if ($query-&gt;param(&quot;tinyMCE&quot;) == -1) {$$VARS{settings_useTinyMCE} = 0;}
+}
+
+$str.= htmlcode('script_tinyMCE',&quot;writeup_doctext&quot;);
+
+
+#$str.=$query-&gt;start_form unless $nostartform;
+
+
+
+
+
+$str.='&lt;form method=&quot;post&quot; action=&quot;http://everything2.com/index.pl&quot; enctype=&quot;multipart/form-data&quot; name=&quot;wusubform&quot;&gt;' unless $nostartform;
+
+my $node_id;
+if($node_id=getId($MYWRITEUP)) {
+	#the user is editing their old writeup
+
+	#user doesn't want to see their text
+	return '&lt;br /&gt;'.linkNode($MYWRITEUP, $$MYWRITEUP{title}).' has your contribution to this node. You can edit it there.'.$str.=$query-&gt;end_form if($$VARS{HideWriteupOnE2node}); 
+
+	#$str.= '&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;'.$node_id.'&quot;&gt;';
+	$str.=htmlcode('setwriteuptype', $$MYWRITEUP{wrtype_writeuptype});
+	$str.='&lt;h2&gt;Edit your writeup&lt;/h2&gt;';
+} else {
+#	offer the user the chance to make a new one.
+	$str.=&quot;
+\t\t&lt;h2&gt;Enter a goddamn writeup&lt;/h2&gt;
+\t\t&lt;input type='hidden' name='type' value='writeup'&gt;&quot;;
+
+	my $curTitle = $$NODE{title};
+	my $checkIt = 0;
+
+	if( $$VARS{HideNewWriteups} || ($curTitle=~/^(?:dream|editor|root) Log: /i) ) {
+#	if( $$VARS{HideNewWriteups} || ($curTitle=~/^(dream|editor|root) Log: /i) ) {
+		$daylog = 1; # for the purposes of determining whether the 'personal' writeuptype is enabled
+		$checkIt=1;
+	} elsif($curTitle =~ /^(?:January|February|March|April|May|June|July|August|September|October|November|December) [1-9]\d?, \d+/i) {
+#	} elsif($curTitle =~ /^(January|February|March|April|May|June|July|August|September|October|November|December) [1-9]\d*, \d+/i) {
+		$daylog = 1;
+		$checkIt=1;
+	} else {
+		my $unVotable = getVars(getNode('boring heaven nodes', 'setting'));
+		my $t = $curTitle;
+		$t =~ s/\s/_/g;
+		$checkIt=1 if $$unVotable{lc($t)};
+	}
+
+	$str.=&quot;\n\t\t&quot;.'&lt;input type=&quot;checkbox&quot; name=&quot;writeup_notnew&quot; value=&quot;1&quot;';
+	$str.=' checked=&quot;1&quot;' if $checkIt;
+	$str.='&gt;(Don\'t display in &quot;New Writeups&quot;)';
+
+	if (getLevel($USER) == 1) {
+		$str.=&quot;\n\t\t&lt;p&gt;Before entering your writeup, you might want to post it to your &lt;b&gt;&quot; . linkNode(getNode('Scratch Pads','superdocnolinks'), 'Scratch Pad').&quot;&lt;/b&gt; first. By posting it to your Scratch Pad, you can see how it looks and give other noders a chance to read, edit, and critique your writing - without having to suffer any downvotes or backlash because of poor formatting or silly typos.&lt;/p&gt;&quot;;
+		$str.=&quot;\n&lt;p&gt;Writeups should include &quot;.linkNode(getNode('Links on Everything2','e2node'),'links').&quot;, like this: &amp;#91;&quot;.linkNode(getNode('hard link','e2node')).&quot;&amp;#93; &amp;#91;&quot;.linkNode(getNode('pipe link','e2node'),'target|pipe link').&quot;&amp;#93; &amp;#91;http://example.com|external link&amp;#93;&lt;/p&gt;&quot;
+	}
+	if (!($$VARS{settings_useTinyMCE})) {
+		$str.=&quot;\n &lt;p&gt;&quot;.linkNode(getNode('E2 HTML tags','e2node')).&quot;: &amp;lt;&lt;abbr title='bold - you should usually use strong instead'&gt;b&lt;/abbr&gt;&amp;gt; &amp;lt;big&amp;gt; &amp;lt;blockquote&amp;gt; &amp;lt;&lt;abbr title='line break'&gt;br&lt;/abbr&gt; /&amp;gt; &amp;lt;cite&amp;gt; &amp;lt;code&amp;gt; &amp;lt;&lt;abbr title='definition description'&gt;dd&lt;/abbr&gt;&amp;gt; &amp;lt;&lt;abbr title='deleted'&gt;del&lt;/abbr&gt;&amp;gt; &amp;lt;&lt;abbr title='definition list'&gt;dl&lt;/abbr&gt;&amp;gt; &amp;lt;&lt;abbr title='definition title'&gt;dt&lt;/abbr&gt;&amp;gt; &amp;lt;&lt;abbr title='emphasis'&gt;em&lt;/abbr&gt;&amp;gt; &amp;lt;&lt;abbr title='heading 1'&gt;h1&lt;/abbr&gt;&amp;gt; &amp;lt;&lt;abbr title='heading 2'&gt;h2&lt;/abbr&gt;&amp;gt; &amp;lt;h3&amp;gt; &amp;lt;h4&amp;gt; &amp;lt;h5&amp;gt; &amp;lt;h6&amp;gt; &amp;lt;&lt;abbr title='horizontal rule'&gt;hr&lt;/abbr&gt; /&amp;gt; &amp;lt;hr width=\'??px\' /&amp;gt; &amp;lt;&lt;abbr title='italics - in most cases em is better'&gt;i&lt;/abbr&gt;&amp;gt; &amp;lt;&lt;abbr title='list item'&gt;li&lt;/abbr&gt;&amp;gt; &amp;lt;&lt;abbr title='ordered (i.e. numbered) list'&gt;ol&lt;/abbr&gt;&amp;gt; &amp;lt;ol type=\'1/A/a/I/i\'&amp;gt; &amp;lt;&lt;abbr title='paragraph'&gt;p&lt;/abbr&gt;&amp;gt; &amp;lt;p align=\'left/center/right/justify\'&amp;gt; &amp;lt;&lt;abbr title='pre-formatted - monotype font, preserving spacing'&gt;pre&lt;/abbr&gt;&amp;gt; &amp;lt;&lt;abbr title='quote'&gt;q&lt;/abbr&gt;&amp;gt; &amp;lt;small&amp;gt; &amp;lt;strong&amp;gt; &amp;lt;&lt;abbr title='subscript'&gt;sub&lt;/abbr&gt;&amp;gt; &amp;lt;&lt;abbr title='superscript'&gt;sup&lt;/abbr&gt;&amp;gt; &amp;lt;&lt;abbr title='teletype - monospaced'&gt;tt&lt;/abbr&gt;&amp;gt; &amp;lt;&lt;abbr title='unordered list (i.e. one with bullet points)'&gt;ul&lt;/abbr&gt;&amp;gt; &lt;/p&gt;\n&lt;p&gt;&quot; .linkNode($$NODE{node_id},&quot;Turn on WYSIWYG editing&quot;,{tinyMCE =&gt; 1}).&quot; if you prefer to see roughly how the writeup will look as you enter it, rather than entering HTML tags by hand. Note that you will lose the current contents of this text area.&lt;/p&gt;&lt;p&gt;&lt;a href=\&quot;javascript:toggleEditor('writeup_doctext');\&quot;&gt;Add/Remove editor&lt;/a&gt;&lt;/p&gt;&quot;;
+	}
+
+	if (($$VARS{settings_useTinyMCE}) == 1) {
+		$str.=&quot;&lt;p&gt; &quot;.linkNode($$NODE{node_id},&quot;Turn off WYSIWYG editing&quot;,{tinyMCE =&gt; -1}).&quot; if you prefer to edit HTML directly. Note that you will lose the current contents of this text area.&lt;/p&gt;&lt;p&gt;&lt;a href=\&quot;javascript:toggleEditor('writeup_doctext');\&quot;&gt;Add/Remove editor&lt;/a&gt;&lt;/p&gt;&quot;;
+
+	}
+
+}
+
+#$str.=$query-&gt;textarea('writeup_doctext', $$MYWRITEUP{doctext}, 20, 60, '', 'wrap=virtual').'&lt;br /&gt;';
+
+$str.= '&lt;script type=&quot;text/javascript&quot; src=';
+$str.= urlGen({&quot;node&quot;=&gt;&quot;AutoFormat Javascript&quot;, &quot;type&quot;=&gt;&quot;rawdata&quot;, &quot;displaytype&quot;=&gt;&quot;raw&quot; });
+$str.='&gt;\n&lt;/script&gt;';
+
+$str.= '&lt;script  type=&quot;text/javascript&quot; src=';
+$str.= urlGen({&quot;node&quot;=&gt;&quot;HTMLtoolbar&quot;, &quot;type&quot;=&gt;&quot;rawdata&quot;, &quot;displaytype&quot;=&gt;&quot;raw&quot; });
+$str.='&gt;\n&lt;/script&gt;';
+
+
+
+$str.=&quot;\n\n\t\t&quot;.'&lt;script type=&quot;text/javascript&quot;&gt;edToolbar(\'writeup_doctext\');
+if (tinyMCE.getInstanceById(\'writeup_doctext\')) document.getElementById(\'ed_toolbar_writeup_doctext\').style.display = \'none\';&lt;/script&gt;';
+$str.=&quot;\n\n\t\t&quot;.'&lt;textarea name=&quot;writeup_doctext&quot; id=&quot;writeup_doctext&quot; '.htmlcode('customtextarea', '1').' wrap=&quot;virtual&quot;&gt;'.encodeHTML($$MYWRITEUP{doctext}).'&lt;/textarea&gt;&lt;script type=&quot;text/javascript&quot;&gt;var edCanvas = document.getElementById(\'writeup_doctext\');&lt;/script&gt;';
+#$str.=&quot;&lt;br /&gt;&quot;.htmlcode('formatButton','writeup_doctext');
+$str.=&quot;\n\t\t&quot;.'&lt;input type=&quot;hidden&quot; name=&quot;writeup_parent_e2node&quot; value=&quot;'.getId($NODE).&quot;\&quot;&gt;&quot;;
+
+if ($node_id) {
+	$str.=$query-&gt;submit('sexisgood', 'sumbit');
+} else {
+	#we let them define the type
+  
+	my (@WRTYPES) = getNodeWhere({type_nodetype =&gt; getId(getType('writeuptype'))});
+	my @WRTYPE;
+	foreach(@WRTYPES) {
+		push @WRTYPE, $_ unless ( (lc($$_{title}) eq 'definition') || (lc($$_{title}) eq 'lede'));
+	}
+
+	my $chwriteup = &quot;
+		&lt;p&gt;&lt;strong&gt;Some Helpful Links:&lt;/strong&gt;
+		[E2 HTML Tags] &amp;middot; 
+		[HTML Symbol Reference] &amp;middot; 
+		[Using Unicode on E2] &amp;middot;
+		[Reference Desk]
+		&lt;/p&gt;
+
+
+\t\t\t&lt;input type='hidden' name='new_scratch_title' value='&quot;.$$NODE{title}.&quot;'&gt;
+\t\t\t&lt;p&gt;&lt;button type='submit' name='node_id' value='1797151'&gt;Create scratch pad&lt;/button&gt;
+\t\t\t&lt;input type='checkbox' name='new_scratch_private' value='1' /&gt; Make it private
+\t\t\t&lt;/p&gt;
+		&lt;p&gt;&lt;button type='submit' name='op' value='new' id='submitWriteup' title='this should disappear!'&gt;Create writeup as a:&lt;/button&gt; &quot;;
+	my $count=0;
+	my $t;
+	$chwriteup.=&quot;
+		&lt;select name='writeuptype'&gt;&quot;;
+	foreach(@WRTYPE) {
+		$t = $$_{title};
+		$chwriteup.=&quot;\n\t\t\t&lt;option value='$t'&gt;$t&lt;/option&gt;&quot;;
+		#$chwriteup.=$query-&gt;submit('writeuptype', $t);
+		#$chwriteup.='&lt;/td&gt;&lt;td align=&quot;center&quot;&gt;' if ++$count &lt; @WRTYPE;
+	}
+	$chwriteup.=&quot;
+		&lt;/select&gt;\n\t\t&lt;/p&gt;&quot;;
+
+	if(exists $$THEME{noThinOutline}) {
+		$str.='&lt;table width=&quot;100%&quot; border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;10&quot;&gt;&lt;tr&gt;&lt;td&gt;'.$chwriteup.'&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';
+	} else {
+		$str.=&quot;\n\n\t\t&quot;.containHtml('thin outline container', parseLinks($chwriteup));
+
+
+	}
+}
+
+$str.=$query-&gt;end_form;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <title>testAddWriteup</title>
+</node>

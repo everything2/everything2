@@ -1,0 +1,109 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>1991079</pagetype_nodetype>
+  <core>0</core>
+  <page>[%
+my $str;
+
+if ($query -&gt; param('nukedraft') eq 'Delete draft' &amp;&amp; htmlcode('verifyRequest', 'nukedraft')){
+	my @fields = $DB -&gt; getFieldsHash('draft', 0);
+	my $linktype = getId(getNode 'parent_node', 'linktype');
+	my $parent = $DB -&gt; sqlSelect(
+		'to_node', 'links', &quot;from_node=$$NODE{node_id} AND linktype=$linktype&quot;);
+
+	$str = '&lt;p&gt;&lt;strong&gt;Draft permanently deleted&lt;/strong&gt;&lt;/p&gt;'
+
+	.htmlcode('openform')
+		.'&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;new&quot;&gt;'
+		.$query -&gt; hidden('type', 'draft')
+		.$query -&gt; hidden('node', $$NODE{title})
+		.$query -&gt; hidden('draft_doctext', $$NODE{doctext})
+		.$query -&gt; hidden('writeup_parent_e2node', $parent)
+		.join (&quot;\n&quot;, map {$_ ne 'draft_id' &amp;&amp; $query -&gt; hidden(&quot;draft_$_&quot;, $$NODE{$_})} @fields)
+	.htmlcode('closeform', 'Undo')
+	.$query -&gt; small('(create a new draft with the same content and status as the one you just deleted,
+		using information stored in this page on your browser.)')
+
+	.$query -&gt; hr()
+	.$query -&gt; h2('What next?')
+
+	.$query -&gt; h3('Write:')
+	.$query -&gt; ul(
+		$query -&gt; li(linkNodeTitle('Drafts[superdoc]|Your other drafts'))
+		.$query -&gt; li(
+			$query -&gt; h4('Pages thirsting for content')
+			.$query -&gt; ul(
+				$query -&gt; li(linkNodeTitle('Your nodeshells[superdoc]|Created by you'))
+				.$query -&gt; li(linkNodeTitle('Random nodeshells[superdoc]|Created by anyone'))
+			)
+		)
+	)
+	.$query -&gt; h3('Read:')
+	.$query -&gt; ul(
+		$query -&gt; li(
+			$query -&gt; h4('Cool inspiration')
+			.htmlcode('displaynltext', 'Cool User Picks')
+		)
+		.$query -&gt; li(
+			$query -&gt; h4('What Inspired the Editors')
+			.htmlcode('displaynltext', 'Staff Picks')
+		)
+	);
+
+	nukeNode($NODE, -1, 1); # no user check, gone forever
+
+	return $str;
+}
+
+if ($$NODE{author_user} != $$USER{node_id} and
+	$query -&gt; param('draft_title') || $query -&gt; param('draft_doctext') and
+	htmlcode('canseedraft', $NODE, 'edit') == 1
+){
+	my ($tt, $tx);
+	$$NODE{title} = $tt if $tt = $query -&gt; param('draft_title');
+	$$NODE{doctext} = $tx if $tx = $query -&gt; param('draft_doctext');
+	
+	updateNode($NODE, -1);
+}
+
+$str = htmlcode('display draft');
+
+if ($$USER{node_id} == $$NODE{author_user}){
+	$str .= htmlcode('setdraftstatus', $NODE)
+		.htmlcode('openform')
+		.htmlcode('verifyRequestForm', 'nukedraft')
+		.'&lt;br&gt;
+		&lt;input type=&quot;submit&quot; name=&quot;confirmop&quot; value=&quot;Delete draft&quot; title=&quot;delete this draft&quot;&gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;notanop&quot; value=&quot;nukedraft&quot;&gt;
+	&lt;/form&gt;';
+}elsif(
+	($HTMLVARS{'group_content editors'}{$$USER{node_id}}||$HTMLVARS{'group_gods'}{$$USER{node_id}})
+	&amp;&amp; getNodeById($$NODE{publication_status}) -&gt; {title} eq 'review'
+	&amp;&amp; htmlcode('canseedraft', $NODE, 'edit') != 1
+){ # let editors see the HTML
+	$str .= '&lt;form class=&quot;writeup_add&quot;&gt;&lt;fieldset&gt;&lt;legend&gt;HTML source (not editable)&lt;/legend&gt;
+	&lt;textarea id=&quot;writeup_doctext&quot; class=&quot;readonly&quot;'
+		.htmlcode('customtextarea', '1')
+		.'&gt;'
+		.encodeHTML($$NODE{doctext})
+		.'&lt;/textarea&gt;&lt;/fieldset&gt;&lt;/form&gt;';
+}
+
+$str;
+%]</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-02-02 17:02:59</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1991179</htmlpage_id>
+  <hits>6</hits>
+  <node_id>1991179</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>draft display page</title>
+  <mimetype></mimetype>
+</node>

@@ -1,0 +1,290 @@
+<node>
+  <doctext>[%
+
+my $str=&quot;&lt;p&gt;Am I opted out?&lt;/p&gt;&quot;;
+
+unless 	($$VARS{GPoptout}) {
+
+$str.= &quot;&lt;p&gt;No!&lt;/p&gt;&quot;;
+
+} else {
+
+$str.=&quot;&lt;p&gt;Yes!&lt;/p&gt;&quot;;
+
+}
+
+return $str;
+
+%]
+
+&lt;p&gt;
+[%
+return '&lt;em&gt;This is gonna &lt;strong&gt;hurt&lt;/strong&gt; you, '.$$USER{title}.'.&lt;/em&gt; No kidding: You\'ll regret it.&lt;br /&gt;' if $$USER{GP}&lt;100 and $$USER{GP}&gt;9;
+%]
+
+[%
+return '&lt;em&gt;You want &lt;strong&gt;PAIN&lt;/strong&gt;? You can\'t &lt;strong&gt;handle&lt;/strong&gt; the pain, '.$$USER{title}.'!&lt;/em&gt;&lt;br /&gt;&lt;small&gt;(Come back when you actually have GP to burn.)&lt;/small&gt;' if $$USER{GP}&lt;10;
+
+if($query-&gt;param('punch') 
+  and (not defined $$VARS{punched}
+  or time - $$VARS{punched} &gt; 720)) {
+	return if getId($USER) == $HTMLVARS{guest_user};
+
+        $DB-&gt;sqlInsert(&quot;seclog&quot;, {'seclog_node'=&gt;$$NODE{node_id}, 'seclog_user' =&gt; $$USER{node_id}});
+
+	use Everything::Experience;
+        adjustGP($USER, 10);
+	$$VARS{punched} = time;
+	return 'Owwww.....';
+} elsif ($query-&gt;param('punch')) {
+	return 'that\'s enough for now.  Go heal.';
+} 
+linkNode($NODE, 'Go ahead. Hit me in the face.', { punch =&gt; 1 });
+%]
+&lt;/p&gt;  
+
+
+&lt;p align=&quot;center&quot;&gt;[{settingsDocs}]&lt;/p&gt;
+
+[{openform}]
+
+[% $$VARS{displaypref_e2node} = 'displayfull'; return  $$VARS{displaypref_e2node};%]
+
+[%
+return;
+&quot;
+&lt;p&gt;
+&lt;strong&gt;Overall Display&lt;/strong&gt;
+&lt;br /&gt;
+
+Node Display: [{varMenu: displaypref_e2node,displayfull|full, display|classic}] (recommended: full)&quot;;
+%]
+
+&lt;p&gt;
+&lt;b&gt;Theme:&lt;/b&gt; 
+[%
+return if (getId($USER) == $HTMLVARS{guest_user});
+
+$$VARS{preferred_theme} ||= getId(getNode('zen theme','theme'));
+
+if($query-&gt;param('chosentheme')) {
+	$$VARS{preferred_theme} = getId(getNode($query-&gt;param('chosentheme')));
+	getTheme();
+}
+'';
+%]
+[{typeMenu:chosentheme,$$VARS{preferred_theme},theme,themesetting}]
+[%
+if($$VARS{preferred_theme}==1854183) {
+  return &quot;&lt;br&gt;Choose a Zen sub-theme: [Theme Nirvana]&quot;;
+}
+%]
+&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;GP System&lt;/strong&gt;
+&lt;br /&gt;
+[{varcheckbox:GPoptout,Opt me out of the GP System.}] You will no longer be able to receive or spend GP.
+&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Voting&lt;/strong&gt;
+&lt;br /&gt;
+[%
+#return unless $$VARS{cools};
+my $v = 'coolsafety';
+if($query-&gt;param($v)) { $$VARS{$v} = 1; } elsif($query-&gt;param('sexisgood')) { delete $$VARS{$v}; }
+$query-&gt;checkbox($v, $$VARS{$v}, '1', &quot;Engage 'Cool Safety'&quot;);
+%]
+&lt;br /&gt;
+Some browsers need an option button to be selected.
+If you want a &quot;null vote&quot; option, turn this on:&lt;br /&gt;
+[%
+return if (getId($USER) == $HTMLVARS{guest_user});
+
+if(not $$VARS{nullvote}) { $$VARS{nullvote} = 'off'; }
+
+'Null vote: '.
+htmlcode('varMenu', 'nullvote,off,on'); #FIXME just make this a checkbox
+%]
+&lt;br /&gt;[{varcheckbox:useasyncvote,Use quick vote buttons.}] This lets you vote without reloading the page. It's quicker, but you shouldn't use it if you tend to change your mind about votes as they are registered as soon as you click. This is beta: send problems to [ascorbic].
+&lt;/p&gt;
+
+[%
+
+use Everything::Experience;
+use POSIX;
+
+$$VARS{writeupbonus} = calculateBonus($USER);
+
+
+my $str = &quot;&lt;br /&gt;&quot;.htmlcode('varcheckbox', 'settings_useWriteupBonus,Use Writeup Bonus Instead of Honor Roll').&quot;&lt;/p&gt;&quot;;
+
+my $HR = POSIX::ceil(($$USER{numwriteups} / getHRLF($USER)));
+
+my $compareStr = &quot;&lt;p style='font-size: 90%;'&gt;&lt;b&gt;With Honor Roll,&lt;/b&gt; you have the equivalent of: $HR writeups&lt;br /&gt;
+&lt;b&gt;With Writeup Bonus,&lt;/b&gt; you have the equivalent of: &quot;.($$USER{numwriteups} + $$VARS{writeupbonus}).&quot; writeups&lt;/p&gt;&quot;;
+
+$str .= $compareStr;
+
+return $str;
+%]
+
+
+&lt;p&gt;&lt;strong&gt;Display&lt;/strong&gt;
+
+&lt;p&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;strong&gt;&lt;small&gt;Homenodes&lt;/small&gt;&lt;/strong&gt;&lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[{varcheckbox:hidemsgme,I am anti-social.}] (So don't display the user /msg box in users' homenodes.)
+&lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[{varcheckbox:hidemsgyou, No one talks to me either, so on homenodes, hide the \&quot;/msgs from me\&quot; link to [Message Inbox]}]
+&lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[{varcheckbox:hidevotedata, Not only that, but I\'m careless with my votes and C!s (so don't show them on my homenode)}]
+&lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[{varcheckbox:hidehomenodeUG, I'm a loner, Dottie, a rebel. (Don't list my usergroups on my homenode.)}]
+&lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[{varcheckbox:hideNodeshells, It's mine, I tell you! Mine! All mine! (Don't let users search my nodeshells.)}]
+&lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[{varcheckboxinverse:hidelastnoded,Link to user's most recently created writeup on their homenode}]
+&lt;br /&gt;&lt;br /&gt;
+
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;strong&gt;&lt;small&gt;Private Messages&lt;/small&gt;&lt;/strong&gt;&lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[{varcheckbox:showRawPrivateMsg,In the private-message-sent area, show text as you typed it (instead of with links).}]&lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[{varcheckbox:pmsgDate,Show date private messages were sent}]&lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[{varcheckbox:pmsgTime,Show time private messages were sent}]&lt;br /&gt;&lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;strong&gt;&lt;small&gt;Message Inbox&lt;/small&gt;&lt;/strong&gt;&lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[{varcheckbox:sortmyinbox,Sort my messages in message inbox}] &lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[{varcheckbox:mitextarea,Larger text box in Message Inbox}] &lt;br /&gt;&lt;br /&gt;
+
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;b&gt;&lt;small&gt;Usergroup Messages&lt;/small&gt;&lt;/b&gt;&lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[{varcheckbox:getofflinemsgs,Get online-only messages, even while offline.}] (see [online only /msg] for an explanation)
+&lt;br /&gt;&lt;br /&gt;
+
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;b&gt;&lt;small&gt;Just For Fun&lt;/small&gt;&lt;/b&gt;&lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[{varcheckbox:powersChatter,Show user powers in chatterbox}]&lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[{varcheckbox:powersMsg,Show user powers in private messages}]&lt;br /&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[{varcheckbox:showuseractions,Spy on Other Users (this just an amusement)}]
+&lt;br /&gt;&lt;br /&gt;
+
+&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Other Help&lt;/strong&gt;
+&lt;br&gt;
+[{varcheckboxinverse:nowhynovotes,Show out-of-votes}] 
+&lt;p&gt;&lt;strong&gt;Page Corrections&lt;/strong&gt;
+&lt;br&gt;
+[{varcheckbox:noadinheader,No adfu ad in page header}] (Turn this on if adfu problems are affecting your page loads).&lt;br&gt;
+[% if  (exists($HTMLVARS{'group_edev'}{$$USER{node_id}})) {
+ htmlcode('varcheckbox','zenadinheader,Show ads in Zen page header');
+} %]
+
+
+[%
+delete $$VARS{nowhyvotes}; #deprecated (I think only N|I have it, though)
+#NPB TODO have an htmlcode that deletes all deprecated junk
+return '';
+%]
+&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Information&lt;/strong&gt;
+&lt;br /&gt;
+[%
+my $v='no_coolnotification';
+if($query-&gt;param($v)) { delete $$VARS{$v}; } elsif($query-&gt;param('sexisgood')) { $$VARS{$v}=1; }
+$query-&gt;checkbox($v, !$$VARS{$v}, '1', 'Tell me when my writeups get [C!]ed (&quot;cooled&quot;).');
+%]
+&lt;br /&gt;
+[%
+my $v='no_likeitnotification';
+if($query-&gt;param($v)) { delete $$VARS{$v}; } elsif($query-&gt;param('sexisgood')) { $$VARS{$v}=1; }
+$query-&gt;checkbox($v, !$$VARS{$v}, '1', 'Tell me when Guest Users like my writeups.');
+%]
+&lt;br /&gt;
+[%
+my $v='no_bookmarknotification';
+if($query-&gt;param($v)) { delete $$VARS{$v}; } elsif($query-&gt;param('sexisgood')) { $$VARS{$v}=1; }
+$query-&gt;checkbox($v, !$$VARS{$v}, '1', 'Tell me when my writeups get bookmarked');
+%]
+&lt;br /&gt;
+[%
+my $v='no_bookmarkinformer';
+if($query-&gt;param($v)) { delete $$VARS{$v}; } elsif($query-&gt;param('sexisgood')) { $$VARS{$v}=1; }
+$query-&gt;checkbox($v, !$$VARS{$v}, '1', 'Tell others when I bookmark a writeup');
+%]
+[%
+# delete $$VARS{'anonymous_bookmark'}; #deprecated
+my $v='anonymous_bookmark';
+if($query-&gt;param($v)) { delete $$VARS{$v}; } elsif($query-&gt;param('sexisgood')) { $$VARS{$v}=1; }
+$query-&gt;checkbox($v, !$$VARS{$v}, '1', 'but do it anonymously');
+%]
+&lt;br /&gt;
+[{varcheckboxinverse:no_notify_kill,Tell me when my writeups are deleted}]
+[%
+delete $$VARS{'notify_kill'}; #deprecated, but only CEs could have had this set anyway
+#my $v='no_notify_kill';
+#if($query-&gt;param($v)) { delete $$VARS{$v}; } elsif($query-&gt;param('sexisgood')) { $$VARS{$v}=1; }
+#$query-&gt;checkbox($v, !$$VARS{$v}, '1', 'Tell me when my writeups are deleted');
+'';
+%] &lt;br /&gt;
+[{varcheckbox:hideauthore2node,Hide e2node creator}]
+&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Scratch Pad&lt;/strong&gt;
+&lt;br /&gt;
+[{varcheckbox:skratchShare,Share your scratch pad publicly}] ([E2 Options: Sharing your scratch pad])&lt;br /&gt;
+&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Talking&lt;/strong&gt;
+&lt;br /&gt;
+[{varcheckboxinverse:noTypoCheck,Check for typos}] (when enabled, some messages that aren't typos may be flagged as such, although this will protect you against most real typos)&lt;br /&gt;
+&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Private message filter&lt;/strong&gt;&lt;br /&gt;
+When your message is blocked, how do you want to be informed?
+[{varsComboBox:informmsgignore,0, 0,via /msg,1,in chatterbox nodelet,2,both ways,3,do not inform}] &lt;small&gt;(It is not recommended to pick &quot;do not inform&quot;, since it would be very easy to have a one-way conversation with someone, and not know it.)&lt;/small&gt;&lt;br /&gt;
+[%
+return if (getId($USER) == $HTMLVARS{guest_user});
+my $str;
+
+if(my $uname = $query-&gt;param('nomail')) {
+	my $ignoreResult = htmlcode('ignoreUser',&quot;$uname&quot;);
+$str.=$ignoreResult;
+}
+
+foreach ($query-&gt;param) {
+	next unless /restore_(\d+)/;
+	my $restore = $1;
+	$DB-&gt;sqlDelete('messageignore', &quot;messageignore_id=$$USER{node_id} and ignore_node=$restore&quot;);
+}
+
+
+$str.='Decline messages from: '
+   .$query-&gt;textfield('nomail', '')
+   .'&lt;small&gt;(If you enter a user, you will not see private messages from this person or their comments in the Chatterbox. If you enter a group, you will not receive messages to that group.)&lt;/small&gt;&lt;br&gt;';
+my $csr = $DB-&gt;sqlSelectMany('ignore_node', 'messageignore', 'messageignore_id='.$$USER{node_id});
+  
+my @list;
+while (my ($u) = $csr-&gt;fetchrow) {
+	push @list, $query-&gt;checkbox('restore_'.$u, '', '1', '').linkNode($u);
+}
+$csr-&gt;finish;
+$str.= 'You are ignoring:'.join (' | ',@list) if @list;
+$str;
+%]
+&lt;/p&gt;
+
+[{closeform}]
+&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-10-22 14:25:52</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>1959900</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1959900</document_id>
+  <author_user>1180811</author_user>
+  <package>0</package>
+  <title>mauler's sandbox VI</title>
+</node>

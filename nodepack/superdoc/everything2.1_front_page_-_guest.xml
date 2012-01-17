@@ -1,0 +1,135 @@
+<node>
+  <doctext>&lt;style&gt;
+.section_title {font-size:15pt; margin: 5px 5px 5px 0; padding: 3px;}
+.section_content {font-size: 10pt; width: 93%; margin: auto; border: dashed 1px #000000; padding: 6px;}
+.section_content p {font-size: 10pt;}
+
+.subsection_title {background-color: [% return $$VARS{ekw_logobackground} || $$THEME{logoBgColor} || '#888855'; %]; padding: 2px;}
+
+.subsection {border: solid 1px [% return $$VARS{ekw_logobackground} || $$THEME{logoBgColor} || '#888855'; %]; height: 250px;}
+
+.e2week_title {font-weight: bold; padding: 2px;}
+.e2week_content {padding: 3px; margin-top: 4px;}
+&lt;/style&gt;
+
+&lt;div&gt;
+&lt;div class='section_title oddrow'&gt;Welcome to Everything2&lt;/div&gt;
+&lt;div id='welcome_text' class='section_content'&gt;
+&lt;p&gt;Welcome to Everything2! We're a &lt;b&gt;large collaborative writing site&lt;/b&gt;, a public forum for writers to share their thoughts, their ideas, and their art. We have a wide collection of writing on the site, from recipes to biographies, fiction and poetry, essays and histories. (When we say everything, we &lt;em&gt;mean&lt;/em&gt; it!)&lt;/p&gt;
+
+&lt;p&gt;What makes E2 such &lt;b&gt;a unique place&lt;/b&gt; is that we believe that feedback is crucial for a writer's development.
+&lt;ul&gt;
+&lt;li&gt;We have &lt;b&gt;an experienced set of volunteer editors&lt;/b&gt; ready to assist writers on any matter, whether technical, philosophical, or otherwise.&lt;/li&gt;
+&lt;li&gt;All writing submitted to the site can be voted on by the site's other users, and &lt;b&gt;we encourage constructive criticism&lt;/b&gt; through our messaging system.&lt;/li&gt;
+&lt;li&gt;Our &lt;b&gt;[Voting/Experience system|unique user leveling system]&lt;/b&gt; mixes just the right amount of silliness and rewards to help you grow as both a member of the site and as a writer on your own.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;So take a look around, check out the &lt;b&gt;Cool Writeups&lt;/b&gt; section below for a sample of what we have to offer, or use the search box to discover more of E2. (Be sure to check out &lt;b&gt;[Everything University]&lt;/b&gt; for a good rundown on the ins and outs of becoming a successful member at the site.) And, if you like what you see, hit the &quot;Sign Up&quot; link at the top of the page, &lt;small&gt;(Note to self: Add &quot;sign up&quot; link to top of page.)&lt;/small&gt; [Create a New User|create a username for youself], log in, and let's begin! Happy noding!&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+&lt;div class='section_title oddrow'&gt;Cool Writeups&lt;/div&gt;
+
+&lt;div class='section_content'&gt;
+
+&lt;div class='subsection_title'&gt;&lt;b&gt;Butterfinger McFlurry&lt;/b&gt; (idea) by [donfreenut]&lt;/b&gt;&lt;/div&gt;
+&lt;div&gt;OMG WTF BBQ ...[more]&lt;/div&gt;
+
+&lt;div class='subsection_title'&gt;&lt;b&gt;The Incredible Hulk&lt;/b&gt; (person) by [Jet-Poop]&lt;/b&gt;&lt;/div&gt;
+&lt;div&gt;HULK SMASH PURPLE PANTS ...[more]&lt;/div&gt;
+
+&lt;div class='subsection_title'&gt;&lt;b&gt;Existentialist Contrasts between The Fountainhead and &quot;Jem and the Rockers&quot;&lt;/b&gt; (idea) by [Cletus the Foetus]&lt;/b&gt;&lt;/div&gt;
+&lt;div&gt;&quot;Jem is my name!&quot; So profound, ...[more]&lt;/div&gt;
+
+&lt;blockquote&gt;
+&lt;p align='center'&gt;[Harry Potter] - [It takes a village] - [ternary operator] - [Video Killed The Radio Star] - [Fifteen elvish ways to die] - [monkey] - [monkey] - [monkey] - [William Shatner] - [tabula rasa] - [Cool|More ...]&lt;/p&gt;&lt;/blockquote&gt;
+&lt;/div&gt;
+
+&lt;/div&gt;
+&lt;div&gt;
+&lt;div class='section_title oddrow'&gt;E2 This Week&lt;/div&gt;
+&lt;div id='news_text' class='section_content'&gt;
+
+&lt;p align='center'&gt;&lt;b&gt;E2 This Week:&lt;/b&gt;&lt;br /&gt;
+[Linked to This Week's Best Of E2|Best Of E2] | [Everything's Most Wanted] | [Linked to this Week's Letter to the Editor|Letters to the Editor] | [Linked to this week's Noder Beat|Noder Beat] | [This Week's Statistics|Statistics] | [link to today's Daylog|Daylog]&lt;/p&gt;
+
+&lt;div class='subsection' style='float: left; width: 45%; margin: 5px;'&gt;
+&lt;div class='subsection_title e2week_title'&gt;The Best Of E2&lt;/div&gt;
+&lt;div class='e2week_content'&gt;
+&lt;p&gt;This week on the best of E2, check out a beautiful poem by [etouffee], the mysterious and alluring [Stendhal Syndrome] by [Lometa], and the stirring underground classic [Happy Birthday from Planet Motherfucker], plus works on [Charles de Gaulle], [Frankie goes to Hollywood], and a review of the cult classic &lt;i&gt;[Rosemary's Baby]&lt;/i&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class='subsection' style='float: left; width: 45%; margin: 5px; clear: right'&gt;
+&lt;div class='subsection_title e2week_title'&gt;Everything's Most Wanted&lt;/div&gt;
+&lt;div class='e2week_content'&gt;
+&lt;p&gt;This week, our focus is on the final frontier: &lt;b&gt;outer space&lt;/b&gt;. Describe a celestial body, explain a strange phenomenon, or review a good space traveling sci-fi movie, and you can earn up to 50XP courtesy of the [e2science] usergroup!&lt;/p&gt;
+
+&lt;p&gt;And don't forget to check out [Everything's Most Wanted] for more writeup ideas with big rewards behind them ...&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div style='clear: both'&gt;&amp;nbsp;&lt;/div&gt;
+
+&lt;div class='subsection' style='float: left; margin: 5px; width: 31%;'&gt;
+&lt;div class='subsection_title e2week_title'&gt;Letters To The Editor&lt;/div&gt;
+&lt;div class='e2week_content'&gt;This week we decided to answer some brewing questions about nuking: When do we do it? When do we not do it? Are there any written guidelines? Why did writeup X get nuked? And there's also a fun question about &lt;b&gt;whiskey&lt;/b&gt;, courtesy of [TheDeadGuy]. [Link|Check it out.]&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class='subsection' style='float: left; margin: 5px; width: 31%;'&gt;
+&lt;div class='subsection_title e2week_title'&gt;Noder Beat&lt;/div&gt;
+&lt;div class='e2week_content'&gt;Who got totally wasted and started belting out showtunes at the St. Louis nodermeet - at 2 in the afternoon? Who's turning the big 4-0 next Thursday? What Australian noder is making a stateside trip in July? [Noder Beat] has the scoop.&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class='subsection' style='float: left; margin: 5px; width: 31%; clear: right'&gt;
+&lt;div class='subsection_title e2week_title'&gt;Statistics&lt;/div&gt;
+&lt;div class='e2week_content'&gt;The raw data:&lt;br /&gt;
+&lt;b&gt;38&lt;/b&gt; new writeups.&lt;br /&gt;
+&lt;b&gt;21&lt;/b&gt; new users.&lt;br /&gt;
+&lt;b&gt;1,914&lt;/b&gt; hits.&lt;br /&gt;
+Want some heavier stuff? [Yeah this doesn't exist|Check out our Statistics node].&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div style='clear: both'&gt;&amp;nbsp;&lt;/div&gt;
+
+
+&lt;div class='subsection_title e2week_title'&gt;News For Noders&lt;/div&gt;
+
+&lt;p&gt;
+&lt;ul&gt;
+&lt;li&gt;The key here is to emphasize summaries over full explanations, with links to more detailed explanations (ed logs? other documents?), so that readers can quickly get the gist of what has happened.&lt;/li&gt;
+&lt;li&gt;Examples:&lt;/li&gt;
+&lt;li&gt;Hey, now we have polls! Check out [The New poll Doc] for details.&lt;/li&gt;
+&lt;li&gt;The [Ninjagirls] are having another Valentine's Day Bake-Off Fundraiser! [Click here for details].&lt;/li&gt;
+&lt;li&gt;Anybody interested in a nodermeet in Chicago May 21-23? [Someone cool's in town.]&lt;/li&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;div&gt;
+&lt;div class='section_title oddrow'&gt;Testing Grounds&lt;/div&gt;
+&lt;p&gt;This is a section of possible styles, images, and alternate looks for a new e2 frontpage. Obviously this section will not be on the actual frontpage. Please offer any of your own alternatives to me at kthejoker@everything2.com.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src='http://kthejoker.googlepages.com/e2test_image1.png' /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src='http://kthejoker.googlepages.com/e2test_image2.png' /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src='http://kthejoker.googlepages.com/e2test_image3.png' /&gt;&lt;/p&gt;
+&lt;/div&gt;
+
+
+&lt;/div&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2006-03-21 16:12:14</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>1793791</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1793791</document_id>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>Everything2.1 Front Page - Guest</title>
+</node>

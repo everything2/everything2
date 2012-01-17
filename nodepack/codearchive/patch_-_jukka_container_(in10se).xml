@@ -1,0 +1,158 @@
+<node>
+  <doctext>&lt;p&gt;This is my first patch, and since there is no area for comments other than the &quot;patch's purpose&quot; text box, I'm adding them to the patch itself.  This comment area should be removed if/when this patch is applied.  If this is not how I should do it, please correct me.
+
+&lt;p&gt;Whether intentional or not, the everything2.com server no longer has a robots.txt file (finally Google can come in!).  For this reason, we should strive to be as search engine friendly as possible.  Google has started indexing the pages, and the results pages look pretty shi^H^H^Hbad.  This patch intends to address part of this issue.
+
+&lt;p&gt;NOTE: This patch only needs to be applied to the jukka container (not the ekw container) since any search engine will be using the Guest User account.
+
+&lt;p&gt;What I did:
+&lt;ul&gt;
+&lt;li&gt; Added and if statement to see if the current $$NODE{title} was &quot;Nothing Found&quot;, &quot;Permission Denied&quot;, or &quot;Findings:&quot;.  If it is, add a META tag to stop it from being indexed by bots.
+
+&lt;li&gt; Added a META tag (name=&quot;description&quot;) which is commonly used by search engines to display a summary of the contents of the page as well as being used in determining page rankings.  Used $$NODE{title} as the content
+
+&lt;li&gt; Modified the META tag (name=&quot;keywords&quot;) which is used by search engines to determine page ranking.  Again I used the $$NODE{title} for the content.  Though not included in this patch, an optimized solution would be to do a search and replace on the spaces in the node title to insert commas (',') where the spaces are to add additional keywords.  This way there would be one phrase (i.e., the node title), and then additional keywords for each word in the title.  For example a page with the title &quot;jukka container&quot; would have contents=&quot;jukka container, jukka, container&quot;.
+
+&lt;li&gt; Modified the InnerText of the TITLE tag.  I added a space before and after the '@'.  This is because page ranking also relies heavily on the title, and many search engines (including Google) do not use [stemming] in their searches.  For example, if you search for &quot;John&quot; you will NOT find &quot;Johnathan&quot;.  On the same idea, the title of the edev node is &quot;edev@Everything2.com&quot;.  In doing a search for &quot;edev&quot;, many search engines will not even see that &quot;edev&quot; is in the title because there are no spaces.  I also removed the &quot;.com&quot; from Everything2.com in the title.  People will not be using a search engine to search for &quot;Everything2.com&quot;, though they may search for &quot;Everything2&quot;.
+
+&lt;li&gt; Removed the META tags (name=&quot;copyright&quot;) and (name=&quot;author&quot;).  While I think the Jukka theme is great, and Jukka Rajala should certainly be given credit somewhere, these tags are misleading.  META tags are used to describe the properties of the HTML document as a whole.  Jukka does not hold a copyright on and is not the author of the document or /all/ of its contents.
+&lt;/ul&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-12-16 11:24:38</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1402518</node_id>
+  <htmlcode_id>1402518</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <code>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0 Transitional//EN&quot;
+  &quot;http://www.w3.org/TR/REC-html40/loose.dtd&quot;&gt; 
+&lt;html&gt;
+&lt;head&gt;
+  &lt;!--base target=&quot;_top&quot; href=&quot;http://www.everything2.com/&quot;--&gt;  
+&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=[%
+ # urlGen ({node_id=&gt;getId(getNode('jukka styledef', 'rawdata'))});
+%]styledef.css&gt;
+
+[% 
+# don't index the following pages (Note that NOFOLLOW is _not_ used. 
+# We can still let bots follow any of the links on the page)
+if ($$NODE{title} == &quot;Nothing Found&quot; or $$NODE{title} == &quot;Permission Denied&quot; or $$NODE{title} == &quot;Findings:&quot;)
+return &quot;&lt;META NAME=\&quot;ROBOTS\&quot; CONTENT=\&quot;NOINDEX,FOLLOW\&quot;&gt;&quot;;
+%]
+
+&lt;meta name=&quot;generated&quot; content=&quot;by hand with GNU/Emacs&quot;&gt;
+&lt;meta name=&quot;description&quot; content=&quot;[% $$NODE{title}; %]&quot;&gt;
+&lt;meta name=&quot;keywords&quot; lang=&quot;en-us&quot; content=&quot;[% $$NODE{title}; %]&quot;&gt;
+&lt;title&gt;[% $$NODE{title}; %] @ Everything2&lt;/title&gt;
+[{basicoddrowcss}]
+&lt;/head&gt;
+&lt;body
+bgcolor=&quot;[&quot;$$THEME{bodyBgColor}&quot;]&quot;
+text=&quot;#000000&quot; 
+link=&quot;[&quot;$$THEME{link}&quot;]&quot;
+vlink=&quot;[&quot;$$THEME{vlink}&quot;]&quot;
+alink=&quot;#cccc99&quot;
+topmargin=&quot;0&quot;
+marginheight=&quot;0&quot;
+marginwidth=&quot;0&quot;
+marginleft=&quot;2&quot; leftmargin=&quot;2&quot; marginright=&quot;2&quot; rightmargin=&quot;2&quot;
+&gt;
+
+&lt;!-- hey kids!  Time to pay the bills --&gt;
+[{adheader}]
+
+&lt;!-- TABLE #1 Creates the header --&gt;
+
+  &lt;table cellspacing=0 cellpadding=0 border=0 width=&quot;100%&quot;&gt;
+    &lt;tr&gt;
+      &lt;td bgcolor=&quot;#003366&quot; colspan=2&gt;&lt;img src=&quot;[&quot;$HTMLVARS{imageroot}&quot;]/img/clear.gif&quot; width=1 height=5 border=0 alt=&quot; &quot;&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr bgcolor=[&quot;$$THEME{titleColor}&quot;]&gt;
+      &lt;td valign=bottom&gt;[% linkNode($HTMLVARS{default_node}, '&lt;img src=&quot;'.$HTMLVARS{imageroot}.'/img/e2_others_01.gif&quot; width=350 height=42 alt=&quot;Everything2&quot; border=0&gt;', {lastnode_id =&gt; undef}); %]&lt;/td&gt;
+      &lt;td valign=middle&gt;
+        &lt;!-- This font size will make the search box smaller on linux, does
+             not affect win/mac machines --&gt;
+        &lt;font size=2&gt;
+    [{usersearchform:noclose}]       
+        &lt;/font&gt;
+      &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr bgcolor=&quot;[&quot;$$THEME{bodyBgColor}&quot;]&quot;&gt;
+      &lt;td colspan=2&gt;[% linkNode($HTMLVARS{default_node}, '&lt;img src=&quot;'.$HTMLVARS{imageroot}.'/img/e2_others_02.gif&quot; height=8 width=350 border=0 alt=&quot;Everything2&quot;&gt;', {lastnode_id =&gt; undef}); %]&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/table&gt;
+  &lt;/form&gt;
+&lt;!-- TABLE #1 Ends here --&gt;
+
+[{e2tutorial}]
+
+&lt;!-- TABLE #2 Creates the actual body of the page, and yes it is has few
+     nested tables... --&gt;
+&lt;table cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; border=&quot;0&quot; width=&quot;100%&quot;&gt;
+  &lt;tr&gt;
+&lt;!-- used to have {shownodelets} here --&gt;
+    &lt;td valign=&quot;top&quot; width=&quot;99%&quot;&gt;
+      [{helplink}]
+      &lt;!-- Here's the current node and back to prev node --&gt;
+      &lt;h1 class=&quot;topic&quot;&gt;[% $$NODE{title}; %]&lt;/h1&gt;
+CONTAINED_STUFF
+    &lt;/td&gt;
+    &lt;td bgcolor=&quot;#000000&quot; width=&quot;2&quot;&gt;&lt;img src=&quot;/img/clear.gif&quot; height=1 width=2 alt=&quot;&quot;&gt;&lt;/td&gt;
+[{showNodelets:right}]
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;!-- TABLE #2 Ends here --&gt;
+
+&lt;!-- TABLE #3 The footer --&gt;
+[{showFooter}]
+&lt;!--
+  &lt;table cellpadding=&quot;3&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; width=&quot;100%&quot;&gt;
+    &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr bgcolor=&quot;#cccc99&quot;&gt;&lt;td align=&quot;center&quot;&gt;
+--&gt;[%
+return;
+my @R = (&quot;This affordable entertainment brought to you by&quot;,
+  &quot;E2 is a by-product of the existence of&quot;,
+  &quot;Everything 2 is brought to you by the letter C and&quot;,
+  &quot;This page courtesy of&quot;);
+
+my $str;
+$str.=$R[int(rand(@R))];
+$str.=' &lt;a href=&quot;http://everydevel.com&quot;&gt;The Everything Development Company&lt;/a&gt;';
+
+
+#$str.=&quot;&lt;br&gt;Interested in &lt;a href=http://everydevel.com/?node=ad+rates&gt;Advertising&lt;/a&gt;? Contact our &quot;;
+#my @S = (&quot;ad-meister&quot;, &quot;ad-monkey&quot;, &quot;ad-samurai&quot;, &quot;internal ad-genius&quot;);
+#$str.= $S[int(rand(@S))];
+#$str.= &quot;, &lt;a href=mailto:robo\@blockstackers.com&gt;Robo&lt;/a&gt;&quot;;
+
+my $NL = getNode('tagline grab', 'nodelet');
+$str.= &quot;&lt;br&gt;&quot;.$$NL{nltext};
+
+$str;
+%]&lt;!--
+&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td bgcolor=&quot;#003366&quot;&gt;&lt;img src=&quot;[&quot;$HTMLVARS{imageroot}&quot;]/img/clear.gif&quot; width=&quot;1&quot; height=&quot;1&quot; border=&quot;0&quot; alt=&quot; &quot;&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/table&gt;
+--&gt;
+
+
+&lt;link rel=&quot;SHORTCUT ICON&quot; href=&quot;favicon.ico&quot;&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code>
+  <type_nodetype>1382262</type_nodetype>
+  <document_id>1402518</document_id>
+  <author_user>650043</author_user>
+  <package>0</package>
+  <title>patch - Jukka Container (in10se)</title>
+</node>

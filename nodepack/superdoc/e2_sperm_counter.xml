@@ -1,0 +1,66 @@
+<node>
+  <doctext>[%
+   use POSIX;
+   #welcome to the E2 sperm counter.
+   #We're all not breeding, don't be afraid.
+
+   #Get the number of users on the system.
+   my $usrs = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;user&quot;);
+   my $usrsnow = $DB-&gt;sqlSelect(&quot;count(*)&quot;, 'room');
+   #85% of our users are male;
+   $usrs *= .85;
+ 
+   #at any particular point, one could have between 1.2 and 1.4 billion sperm
+   #so lets do some scientific calculations as to why.
+
+   my $rand = rand(200000000);
+   my $rand2 = rand(200000000);
+   $rand += 1200000000;
+   $rand2 += 1200000000;
+
+   $usrs *= $rand;
+   $usrsnow *= $rand2;
+
+   $usrs = ceil($usrs);
+   $usrsnow = ceil($usrsnow);
+
+   $usrs = reverse(&quot;$usrs&quot;);
+   $usrsnow = reverse(&quot;$usrsnow&quot;);
+
+   #return &quot;$usrs, $usrsnow&quot;;
+
+   $usrs =~ s/(\d\d\d)/$&amp;\,/g;
+   $usrsnow =~ s/(\d\d\d)/$&amp;\,/g;
+
+   my $c = chop($usrs);
+   $usrs.=$c unless($c eq &quot;,&quot;);
+
+   $c = chop($usrsnow);
+   $usrsnow.=$c unless($c eq &quot;,&quot;);
+
+   $usrs = reverse($usrs);
+   $usrsnow = reverse($usrsnow);
+
+   return &quot;&lt;p align=\&quot;center\&quot;&gt;E2 Users world wide have&lt;br&gt;&lt;br&gt; &lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;strong&gt;$usrs&lt;/strong&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;br&gt;
+sperm swimming around.&lt;br&gt;&lt;br&gt;
+Currently online there are&lt;br&gt;&lt;br&gt;
+&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;strong&gt;$usrsnow&lt;/strong&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;br&gt;
+being wasted now, as you node.&lt;/p&gt;&quot;;
+%]
+&lt;p align=&quot;right&quot;&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;small&gt;Report any bugs to God&lt;/small&gt;&lt;/p&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-03-27 02:24:49</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1275333</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1275333</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>E2 Sperm Counter</title>
+</node>

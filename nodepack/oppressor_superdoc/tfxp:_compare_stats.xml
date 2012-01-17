@@ -1,0 +1,329 @@
+<node>
+  <doctext>&lt;style type=&quot;text/css&quot;&gt;
+.mytable th, .mytable td
+{
+border: 1px solid silver;
+padding: 3px;
+}
+&lt;/style&gt;
+
+&lt;p&gt;The following page is to provide a general idea on what your XP (or Renown) would be if either:
+&lt;ul&gt;
+&lt;li&gt;the proposed system had been in place since you joined E2&lt;/li&gt;
+&lt;li&gt;your stats were reset and recalculated&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Note the following issues with these calculations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Some systems do not give you a bonus for anything that is in node heaven, but this page still gives you the option to use it in your calculations.&lt;/li&gt;
+&lt;li&gt;C!s received on writeups in node heaven are not (cannot?) be counted even if you check the box below&lt;/li&gt;
+&lt;li&gt;Upvotes and downvotes are not saved for nodes in node heaven (only reputation). Therefore it is impossible to give a true calculation for mauler's system #2.&lt;/li&gt;
+&lt;li&gt;Editor cools are not counted in any way&lt;/li&gt;
+&lt;li&gt;Actual upvotes and downvotes are not counted - this page is using the reputation to determine votes received. Since some systems may not reduce your XP for receiving a downvote, this may or may not make the calculations correct based on the individual proposed system.&lt;/li&gt;
+&lt;li&gt;passport's system specifies that you get 1 Renown point for every 10 in rep for your writeups. The calculations below simply take your total reputation and divide it by 10 which is slightly different. Same goes for the Renown bonus for XP - it is just dividing XP by 1000 which is slightly different than 1 per 1000. Both of these issues also bring a decimal into play which I'm sure passport does not intend.&lt;/li&gt;
+&lt;li&gt;mauler's proposal did not clearly state whether you get 0XP or a 1 in 5 chance of getting 1XP for each vote spent. I chose to give it a 1 in 5 for this page (i.e., multiple votes spent by .2). This may bring a decimal into play which I'm sure mauler does not intend.&lt;/li&gt;
+&lt;li&gt;golFUR's system does not specify any change to bonuses, so I used E2's current values. Why would the number be different then? Because this page cannot guess every possible bonus that was received over the years; the different values for adding writeups or spending/receiving votes over the years; what non-standard karma or quest bonuses you might have received; issues with nuked writeups, and the 25% and 33% possibility for gaining XP for spending/receiving votes is not always consistant.&lt;/li&gt;
+&lt;li&gt;Unless specified in the proposal, I have used a karma bonus of 10 for all systems with the exception of passport's where I used 1 because Renown uses smaller values for everything else.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If I have misunderstood your system, or got any of the numbers wrong, feel free to correct [in10se|me].&lt;/p&gt;
+
+[%
+
+my $nid = getId($NODE);
+my $uid = getId($USER);
+
+##################################################
+# set variables for each system
+#
+my $in10se_wuBonus = 100;
+my $in10se_coolBonus = 25;
+my $in10se_voteReceivedBonus = 5;
+my $in10se_voteSpentBonus = 1;
+my $in10se_xpBonus = 0;
+my $in10se_karmaBonus = 10;
+my $in10se_upvoteReceivedBonus = 0;
+
+my $passport_wuBonus = 3;
+my $passport_coolBonus = 1;
+my $passport_voteReceivedBonus = .1;
+my $passport_voteSpentBonus = 0;
+my $passport_xpBonus = .001;
+my $passport_karmaBonus = 1;
+my $passport_upvoteReceivedBonus = 0;
+
+my $mauler_wuBonus = 1;
+my $mauler_coolBonus = 20;
+my $mauler_voteReceivedBonus = 0;
+my $mauler_voteSpentBonus = 0;
+my $mauler_xpBonus = 0;
+my $mauler_karmaBonus = 0;
+my $mauler_upvoteReceivedBonus = 1;
+
+my $mauler2_wuBonus = 5;
+my $mauler2_coolBonus = 20;
+my $mauler2_voteReceivedBonus = 0;
+my $mauler2_voteSpentBonus = 0;
+my $mauler2_xpBonus = 0;
+my $mauler2_karmaBonus = 0;
+my $mauler2_upvoteReceivedBonus = 1;
+
+my $golfur_wuBonus = 5;
+my $golfur_coolBonus = 10;
+my $golfur_voteReceivedBonus = .33;
+my $golfur_voteSpentBonus = .25;
+my $golfur_xpBonus = 0;
+my $golfur_karmaBonus = 10;
+my $golfur_upvoteReceivedBonus = 0;
+
+# ch = calculate (node) heaven
+my $ch= int($query-&gt;param(&quot;ch&quot;));
+if ($ch &lt;= 0)
+{
+   $ch = 0;
+}
+
+my $str = '&lt;form method=&quot;get&quot;&gt;
+   &lt;div style=&quot;background-color:whitesmoke;border: 1px solid silver;padding:10px&quot;&gt;
+   &lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;'.$nid.'&quot; /&gt;
+   &lt;input type=&quot;checkbox&quot; name=&quot;ch&quot; value=&quot;1&quot; /&gt;Include stats from my writeups in node heaven&lt;br /&gt;
+   &lt;input type=&quot;submit&quot; value=&quot;Submit&quot; /&gt;
+   &lt;/div&gt;
+   &lt;/form&gt;
+   &lt;hr /&gt;';
+
+#####################################################
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+my $rows;
+my $row;
+my $queryText;
+my $count;
+
+my $writeupCount = 0;
+my $heavenWriteupCount = 0;
+my $totalReputation = 0;
+my $heavenTotalReputation = 0;
+my $coolCount = 0;
+my $spentVoteCount = 0;
+my $xp = 0;
+my $karma = 0;
+my $upvotes = 0;
+
+#
+# Experience
+#
+$queryText = &quot;SELECT experience FROM user WHERE user_id=$uid&quot;;
+$rows = $dbh-&gt;prepare($queryText);
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+$xp = $rows-&gt;fetchrow_array();
+
+#
+# Experience
+#
+$queryText = &quot;SELECT karma FROM user WHERE user_id=$uid&quot;;
+$rows = $dbh-&gt;prepare($queryText);
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+$karma = $rows-&gt;fetchrow_array();
+
+#
+# Writeup Count
+#
+$queryText = &quot;SELECT COUNT(*) FROM node,writeup WHERE node.node_id=writeup.writeup_id AND node.author_user=$uid&quot;;
+$rows = $dbh-&gt;prepare($queryText);
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+$writeupCount = $rows-&gt;fetchrow_array();
+
+#
+# Heaven Writeup Count
+#
+if ($ch &gt; 0)
+{
+   $queryText = &quot;SELECT COUNT(*) FROM heaven WHERE heaven.type_nodetype=117 AND heaven.author_user=$uid&quot;;
+   $rows = $dbh-&gt;prepare($queryText);
+   $rows-&gt;execute()
+      or return $rows-&gt;errstr;
+   $heavenWriteupCount = $rows-&gt;fetchrow_array();
+}
+
+#
+# Total Reputation
+#
+$queryText = &quot;SELECT SUM(node.reputation) AS totalReputation FROM node,writeup WHERE node.node_id=writeup.writeup_id AND node.author_user=$uid&quot;;
+$rows = $dbh-&gt;prepare($queryText);
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   $totalReputation = $$row[0];
+}
+
+#
+# Total Upvotes
+#
+my $queryText2;
+my $rows2;
+my $row2;
+$queryText = &quot;SELECT writeup_id FROM node,writeup WHERE node.node_id=writeup.writeup_id AND node.author_user=$uid&quot;;
+$rows = $dbh-&gt;prepare($queryText);
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+$queryText2 = &quot;SELECT COUNT(vote_id) FROM vote WHERE weight&gt;0 AND vote_id=?&quot;;
+$rows2 = $dbh-&gt;prepare($queryText2);
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   $rows2-&gt;execute($$row[0]);
+   $upvotes += $rows2-&gt;fetchrow_array();
+}
+
+#
+# Heaven Total Reputation
+#
+if ($ch &gt; 0)
+{
+   $queryText = &quot;SELECT SUM(heaven.reputation) AS totalReputation FROM heaven WHERE heaven.type_nodetype=117 AND heaven.author_user=$uid&quot;;
+   $rows = $dbh-&gt;prepare($queryText);
+   $rows-&gt;execute()
+      or return $rows-&gt;errstr;
+   while($row = $rows-&gt;fetchrow_arrayref)
+   {
+      $heavenTotalReputation = $$row[0];
+   }
+
+}
+
+#
+# Cool Count
+#
+$queryText = &quot;SELECT COUNT(*) FROM node,writeup,coolwriteups WHERE node.node_id=writeup.writeup_id AND writeup.writeup_id=coolwriteups.coolwriteups_id AND node.author_user=$uid&quot;;
+$rows = $dbh-&gt;prepare($queryText);
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+$coolCount = $rows-&gt;fetchrow_array();
+
+#
+# Spent Vote Count
+#
+$queryText = &quot;SELECT COUNT(*) FROM vote WHERE voter_user=$uid&quot;;
+$rows = $dbh-&gt;prepare($queryText);
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+$spentVoteCount = $rows-&gt;fetchrow_array();
+
+$str .= '&lt;table class=&quot;mytable&quot;&gt;
+   &lt;tr&gt;
+   &lt;th&gt;Bonus Type&lt;/th&gt;
+   &lt;th&gt;#&lt;/th&gt;
+   &lt;th&gt;[in10se]\'s system&lt;br /&gt;XP Value&lt;/th&gt;
+   &lt;th&gt;[golFUR]\'s system&lt;br /&gt;XP Value&lt;/th&gt;
+   &lt;th&gt;[passport]\'s system&lt;br /&gt;Renown Value&lt;/th&gt;
+   &lt;th&gt;Plan 13a&lt;br /&gt;XP Value&lt;/th&gt;
+   &lt;th&gt;Plan 13b&lt;br /&gt;XP Value&lt;/th&gt;
+   &lt;tr class=&quot;oddrow&quot;&gt;
+   &lt;td&gt;&lt;b&gt;Current XP:&lt;/b&gt;&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.$xp.'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($xp * $in10se_xpBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($xp * $golfur_xpBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($xp * $passport_xpBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($xp * $mauler_xpBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($xp * $mauler2_xpBonus).'&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr class=&quot;evenrow&quot;&gt;
+   &lt;td&gt;&lt;b&gt;Writeups:&lt;/b&gt;&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.$writeupCount.'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($writeupCount * $in10se_wuBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($writeupCount * $golfur_wuBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($writeupCount * $passport_wuBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($writeupCount * $mauler_wuBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($writeupCount * $mauler2_wuBonus).'&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr class=&quot;oddrow&quot;&gt;
+   &lt;td&gt;&lt;b&gt;Reputation:&lt;/b&gt;&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.$totalReputation.'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($totalReputation * $in10se_voteReceivedBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($totalReputation * $golfur_voteReceivedBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($totalReputation * $passport_voteReceivedBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($totalReputation * $mauler_voteReceivedBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($totalReputation * $mauler2_voteReceivedBonus).'&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr class=&quot;evenrow&quot;&gt;
+   &lt;td&gt;&lt;b&gt;Upvotes Received:&lt;/b&gt;&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.$upvotes.'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($upvotes * $in10se_upvoteReceivedBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($upvotes * $golfur_upvoteReceivedBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($upvotes * $passport_upvoteReceivedBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($upvotes * $mauler_upvoteReceivedBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($upvotes * $mauler2_upvoteReceivedBonus).'&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr class=&quot;oddrow&quot;&gt;
+   &lt;td&gt;&lt;b&gt;Reputation (node heaven):&lt;/b&gt;&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.$heavenTotalReputation.'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($heavenTotalReputation * $in10se_voteReceivedBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($heavenTotalReputation * $golfur_voteReceivedBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($heavenTotalReputation * $passport_voteReceivedBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($heavenTotalReputation * $mauler_voteReceivedBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($heavenTotalReputation * 1).'&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr class=&quot;evenrow&quot;&gt;
+   &lt;td&gt;&lt;b&gt;C!s Received:&lt;/b&gt;&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.$coolCount.'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($coolCount * $in10se_coolBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($coolCount * $golfur_coolBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($coolCount * $passport_coolBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($coolCount * $mauler_coolBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($coolCount * $mauler2_coolBonus).'&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr class=&quot;oddrow&quot;&gt;
+   &lt;td&gt;&lt;b&gt;Votes Spent:&lt;/b&gt;&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.$spentVoteCount.'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($spentVoteCount * $in10se_voteSpentBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($spentVoteCount * $golfur_voteSpentBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($spentVoteCount * $passport_voteSpentBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($spentVoteCount * $mauler_voteSpentBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($spentVoteCount * $mauler2_voteSpentBonus).'&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr class=&quot;evenrow&quot;&gt;
+   &lt;td&gt;&lt;b&gt;Karma:&lt;/b&gt;&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.$karma.'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($karma* $in10se_karmaBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($karma* $golfur_karmaBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($karma* $passport_karmaBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($karma* $mauler_karmaBonus).'&lt;/td&gt;
+   &lt;td style=&quot;text-align:right&quot;&gt;'.($karma* $mauler2_karmaBonus).'&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;tr class=&quot;oddrow&quot;&gt;
+   &lt;td&gt;&lt;b&gt;Total&lt;/b&gt;&lt;/td&gt;
+   &lt;td&gt;&amp;nbsp;&lt;/td&gt;
+
+   &lt;td style=&quot;text-align:right&quot;&gt;&lt;b&gt;'.(($xp * $in10se_xpBonus) + ($writeupCount * $in10se_wuBonus) + ($totalReputation * $in10se_voteReceivedBonus) + ($heavenTotalReputation * $in10se_voteReceivedBonus) + ($upvotes * $in10se_upvoteReceivedBonus) + ($coolCount * $in10se_coolBonus) + ($spentVoteCount * $in10se_voteSpentBonus) + ($karma * $in10se_karmaBonus)).'&lt;/b&gt;&lt;/td&gt;
+
+   &lt;td style=&quot;text-align:right&quot;&gt;&lt;b&gt;'.(($xp * $golfur_xpBonus) + ($writeupCount * $golfur_wuBonus) + ($totalReputation * $golfur_voteReceivedBonus) + ($heavenTotalReputation * $golfur_voteReceivedBonus) + ($upvotes * $golfur_upvoteReceivedBonus) + ($coolCount * $golfur_coolBonus) + ($spentVoteCount * $golfur_voteSpentBonus) + ($karma * $golfur_karmaBonus)).'&lt;/b&gt;&lt;/td&gt;
+
+   &lt;td style=&quot;text-align:right&quot;&gt;&lt;b&gt;'.(($xp * $passport_xpBonus) + ($writeupCount * $passport_wuBonus) + ($totalReputation * $passport_voteReceivedBonus) + ($upvotes * $passport_upvoteReceivedBonus) + ($heavenTotalReputation * $passport_voteReceivedBonus) + ($coolCount * $passport_coolBonus) + ($spentVoteCount * $passport_voteSpentBonus) + ($karma * $passport_karmaBonus)).'&lt;/b&gt;&lt;/td&gt;
+
+   &lt;td style=&quot;text-align:right&quot;&gt;&lt;b&gt;'.(($xp * $mauler_xpBonus) + ($writeupCount * $mauler_wuBonus) + ($totalReputation * $mauler_voteReceivedBonus) + ($upvotes * $mauler_upvoteReceivedBonus) + ($heavenTotalReputation * $mauler_voteReceivedBonus) + ($coolCount * $mauler_coolBonus) + ($spentVoteCount * $mauler_voteSpentBonus) + ($karma * $mauler_karmaBonus)).'&lt;/b&gt;&lt;/td&gt;
+
+   &lt;td style=&quot;text-align:right&quot;&gt;&lt;b&gt;'.(($xp * $mauler2_xpBonus) + ($writeupCount * $mauler2_wuBonus) + ($totalReputation * $mauler2_voteReceivedBonus) + ($upvotes * $mauler2_upvoteReceivedBonus) + ($heavenTotalReputation * 1) + ($coolCount * $mauler2_coolBonus) + ($spentVoteCount * $mauler2_voteSpentBonus) + ($karma * $mauler2_karmaBonus)).'&lt;/b&gt;&lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;/table&gt;
+Remember that each system would have its own XP/Renown requirements to achieve the next level, so just because your XP is higher or lower in each proposal does not necessarily mean that your level would go up or down.';
+
+return $str;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-02-06 15:13:38</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>7</hits>
+  <node_id>1928939</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1144104</type_nodetype>
+  <document_id>1928939</document_id>
+  <author_user>1323377</author_user>
+  <package>0</package>
+  <title>tfxp: Compare Stats</title>
+</node>

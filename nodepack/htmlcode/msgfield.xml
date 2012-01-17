@@ -1,0 +1,191 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-07-07 02:21:10</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>12</hits>
+  <node_id>1328032</node_id>
+  <htmlcode_id>1328032</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#message field: provides a text field to send a message to a user(group)
+#
+#arguments:
+#	$mfuID - msgfield unique identifier, or special value of 0 or blank to indicate no more
+#	$flags - bitwise flags:
+#		1 = no CC box
+#		2 = do NOT show what was said here
+#	$aboutNode - node_id the message is about
+#	@tryRecipients - ID(s) of user(group)(s) to send message to
+#
+#if $mfuID is blank, this uses (a) hidden parameter(s) to know who to send the message(s) to;
+#otherwise, the hidden parameter(s) are ignored for normal message sending
+#
+#created: 2002.06.22.n6
+#updated: 2002.07.30.n2
+
+my ($mfuID, $flags, $aboutNode, @tryRecipients) = @_;
+
+my $UID = $USER-&gt;{node_id}||0;
+return if $UID==$HTMLVARS{guest_user};
+
+
+#gives information in HTML that an error occured; hovering the mouse over the message yields more information
+#created: 2002.06.22.n6
+#updated: 2002.07.07.n0
+local *oops = sub {
+	my $arg = 'msgField (htmlcode): ' . ($_[0] || 'unknown error');
+	$arg =~ s/&amp;/&amp;amp;/gs;
+	$arg =~ s/&lt;/&amp;lt;/gs;
+	$arg =~ s/&gt;/&amp;gt;/gs;
+	$arg =~ s/&quot;/&amp;quot;/gs;
+	$arg =~ s/\[/&amp;#91;/gs;
+	$arg =~ s/\]/&amp;#93;/gs;
+	return '&lt;span border=&quot;solid black 1px;&quot; title=&quot;' . $arg . '&quot;&gt;Sorry, a server error occured. This is likely only a temporary glitch, and things will soon be working properly again.&lt;/span&gt;';
+};
+
+
+#
+# deal with parameters
+#
+
+my $doNormalSend = (defined $mfuID) &amp;&amp; length($mfuID) &amp;&amp; ($mfuID !~ /^\s*0\s*$/);
+undef $mfuID unless $doNormalSend;
+
+
+#find bitwise flags
+$flags = (defined $flags) &amp;&amp; length($flags) &amp;&amp; ($flags=~/([1-9]\d*)/) ? $1 : 0;
+my $showCC = !($flags &amp; 1);
+my $showSaid = ($flags &amp; 2) ? 0 : 4;	#values wanted by sendPrivateMessage
+
+#node message is about
+$aboutNode = (defined $aboutNode) &amp;&amp; length($aboutNode) &amp;&amp; ($aboutNode=~/([1-9]\d*)/) ? $1 : 0;
+
+#find message recipient(s)
+my %recipients;
+my @getters;
+
+#finds recipients based on given list @tryRecipients (global since htmlcodes seem to get a bit weird with parameter passing sometimes)
+#returned list in @getters has no duplicates, and are all postive integers
+#real returned value is how many are in new list, equal to scalar(@getters)
+#created: 2002.07.14.n0
+#updated: 2002.07.14.n0
+local *validRecipients = sub {
+	@getters=();
+	return 0 unless scalar(@tryRecipients);
+	my %recipients;
+	foreach(@tryRecipients) {
+		if(/([1-9]\d*)/) {
+			$recipients{$_}=1;
+		}
+	}
+	return scalar(@getters = keys(%recipients));
+};
+
+if($doNormalSend) {
+	return oops('must give at least one valid recipient ID') unless validRecipients();
+	$showCC=0 if exists $recipients{$UID};	#no point in CC box if already going to /msg self
+}
+
+
+#
+# other setup
+#
+
+my $str='';
+my $nameTxt;	#text field
+my $nameCC;	#CC checkbox
+
+
+#
+# send message(s)
+#
+
+#tries to send a message
+#	set global vars $nameTxt and $nameCC before calling
+#created: 2002.07.06.n6
+#updated: 2002.07.22.n1
+my $MAXLEN=12345;	#my luggage combination
+local *trySend = sub {
+	return unless defined $query-&gt;param($nameTxt);
+	my $t;
+	return unless length($t=$query-&gt;param($nameTxt));
+	if(length($t)&gt;$MAXLEN) { $t=substr($t,0,$MAXLEN); }
+
+  #Deal with [scratch pads] --Swap
+  if ($nameTxt =~ /skratchMsg/){
+    my $getter_id = $getters[0];
+    my $getter_name = getNodeById($getter_id) -&gt; {title};
+    my $scratchTitle = $query -&gt; param('scratch_title');
+    $scratchTitle ||= &quot;unknown&quot;;
+    $aboutNode = 0;
+    $t = &quot;Re [$scratchTitle&quot;.&quot;[scratch by $getter_name]&quot;.&quot;|your scratch pad titled &quot;
+         .&quot;\&quot;$scratchTitle\&quot;]: &quot;.$t;
+  }
+
+	my $doCC = (defined $query-&gt;param($nameCC)) &amp;&amp; ($query-&gt;param($nameCC) eq '1') ? 1 : 0;
+	$HTMLVARS{msgparams} = {
+		'recipient_id' =&gt; \@getters,
+		'message' =&gt; $t,
+		'ccself' =&gt; $doCC,
+		'renode_id' =&gt; $aboutNode,
+	};
+	$t = htmlcode('sendPrivateMessage', $showSaid);
+	$str .= $t . &quot;&lt;br /&gt;\n&quot; if (defined $t) &amp;&amp; length($t);
+
+	$query-&gt;delete($nameTxt);
+	return;
+};
+
+if($doNormalSend) {
+	#send message as normal
+	$nameTxt = $mfuID.'_msgfieldmsg';
+	$nameCC = $mfuID.'_msgfieldcc';
+	trySend();
+} else {
+	#send whatever messages are left
+	my @origParams = $query-&gt;param();
+	my $base;
+	my $getters;
+	foreach(@origParams) {
+		next unless /^(.+?)_msgfieldmsg$/;
+		$base=$1;
+		$getters = $base.'_msgfieldget';
+		if( (defined $query-&gt;param($getters)) &amp;&amp; length($getters=$query-&gt;param($getters)) ) {
+			@tryRecipients = split(',',$getters);
+			next unless validRecipients();	#no valid things to send to
+		} else {
+			#don't know who to send to
+			next;
+		}
+		$nameTxt = $base . '_msgfieldmsg';
+		$nameCC = $base . '_msgfieldcc';
+		trySend();
+	}
+}
+
+return $str unless $doNormalSend;
+
+
+#
+# create form / display field
+#
+
+$str .= $query-&gt;hidden($mfuID.'_msgfieldget', join(',', @getters));	#used when doing &quot;cleanup&quot; send
+if($showCC) {
+	$str .= $query-&gt;checkbox($nameCC,'','1','CC').' ';
+}
+$str .= $query-&gt;textfield(-name=&gt;$nameTxt, value=&gt;'', size=&gt;24, class=&gt;'expandable');
+
+#
+# cleanup and return
+#
+
+return $str;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>msgField</title>
+</node>

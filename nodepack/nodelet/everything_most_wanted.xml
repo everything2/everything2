@@ -1,0 +1,45 @@
+<node>
+  <nltext></nltext>
+  <parent_container>20</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2008-03-26 16:11:31</createtime>
+  <lastupdate>0</lastupdate>
+  <hits>0</hits>
+  <node_id>1935407</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>1312198</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1935407</nodelet_id>
+  <nlcode>
+[%
+
+my $wantedLinktype = getNode(&quot;mostwanted&quot;,&quot;linktype&quot;)-&gt;{node_id};
+my $mostWanted = $DB-&gt;sqlSelectMany(&quot;to_node, from_node&quot;,&quot;links&quot;,&quot;linktype=$wantedLinktype limit 6&quot;);
+
+my $wantedStr;
+my $wCount = 0;
+
+while (my $w = $mostWanted-&gt;fetchrow_hashref) {
+$wCount++;
+$wantedStr .=&quot;&lt;p&gt;&quot;.linkNode($$w{from_node}).&quot; will pay 50XP to see &lt;b&gt;&quot;.linkNode($$w{to_node}).&quot;&lt;/b&gt; filled.&lt;/p&gt;&quot;;
+last if $wCount == 3;
+}
+
+$wantedStr .= &quot;&lt;p&gt;Know anything about ... &lt;/p&gt;&quot;;
+
+return $wantedStr;
+
+%]
+
+</nlcode>
+  <title>Everything Most Wanted</title>
+</node>

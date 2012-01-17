@@ -1,0 +1,46 @@
+<node>
+  <doctext>[%
+   my $csr = $DB-&gt;getDatabaseHandle()-&gt;prepare(&quot;select count(user_id) from user where unix_timestamp(lasttime)&gt;(unix_timestamp(now())-3600*24)&quot;);
+   $csr-&gt;execute or return &quot;SHIT&quot;; 
+   my ($userslast24)=$csr-&gt;fetchrow_array;
+ $csr = $DB-&gt;getDatabaseHandle()-&gt;prepare(&quot;select count(user_id) from user where unix_timestamp(lasttime)&gt;(unix_timestamp(now())-3600*24*7)&quot;);
+   $csr-&gt;execute or return &quot;SHIT&quot;; 
+   my ($userslastweek)=$csr-&gt;fetchrow_array;
+ $csr = $DB-&gt;getDatabaseHandle()-&gt;prepare(&quot;select count(user_id) from user where unix_timestamp(lasttime)&gt;(unix_timestamp(now())-3600*24*7*2)&quot;);
+   $csr-&gt;execute or return &quot;SHIT&quot;; 
+   my ($userslast2weeks)=$csr-&gt;fetchrow_array;
+ $csr = $DB-&gt;getDatabaseHandle()-&gt;prepare(&quot;select count(user_id) from user where unix_timestamp(lasttime)&gt;(unix_timestamp(now())-3600*24*7*4)&quot;);
+$csr-&gt;execute or return &quot;SHIT&quot;; 
+   my ($userslast4weeks)=$csr-&gt;fetchrow_array;
+   $csr = $DB-&gt;getDatabaseHandle()-&gt;prepare(&quot;select count(user_id) from user&quot;);
+   $csr-&gt;execute or return &quot;SHIT&quot;; 
+   my ($totalusers)=$csr-&gt;fetchrow_array;
+   $csr = $DB-&gt;getDatabaseHandle()-&gt;prepare(&quot;select count(user_id) from user where lasttime not like \&quot;0%\&quot;&quot;);
+   $csr-&gt;execute or return &quot;SHIT&quot;; 
+   my ($userseverloggedin)=$csr-&gt;fetchrow_array;
+   
+   &quot;&lt;TABLE&gt;
+    &lt;TR&gt;&lt;TD align=right&gt;&lt;B&gt;$totalusers&lt;/B&gt;&lt;/TD&gt;&lt;TD&gt; total users registered&lt;/TD&gt;&lt;/TR&gt;
+    &lt;TR&gt;&lt;TD align=right&gt;&lt;B&gt;$userseverloggedin&lt;/B&gt;&lt;/TD&gt;&lt;TD&gt; unique users logged in ever&lt;/TD&gt;&lt;/TR&gt;
+    &lt;TR&gt;&lt;TD align=right&gt;&lt;B&gt;$userslast4weeks&lt;/B&gt;&lt;/TD&gt;&lt;TD&gt; users logged in within the last 4 weeks&lt;/TD&gt;&lt;/TR&gt;
+    &lt;TR&gt;&lt;TD align=right&gt;&lt;B&gt;$userslast2weeks&lt;/B&gt;&lt;/TD&gt;&lt;TD&gt; users logged in within the last 2 weeks&lt;/TD&gt;&lt;/TR&gt; 
+    &lt;TR&gt;&lt;TD align=right&gt;&lt;B&gt;$userslastweek&lt;/B&gt;&lt;/TD&gt;&lt;TD&gt; users logged in within the last week&lt;/TD&gt;&lt;/TR&gt;
+    &lt;TR&gt;&lt;TD align=right&gt;&lt;B&gt;$userslast24&lt;/B&gt;&lt;/TD&gt;&lt;TD&gt; users logged in within the last 24 hours&lt;/TD&gt;&lt;/TR&gt;
+    &lt;/TABLE&gt;
+   &quot;;
+%]  </doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-04-04 00:48:59</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>22</hits>
+  <node_id>481489</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>481489</document_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>user statistics</title>
+</node>

@@ -1,0 +1,46 @@
+<node>
+  <nltext></nltext>
+  <parent_container>20</parent_container>
+  <icon></icon>
+  <core>R</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>1999-10-07 04:35:12</createtime>
+  <lastupdate>0</lastupdate>
+  <hits>0</hits>
+  <node_id>86</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>114</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>86</nodelet_id>
+  <nlcode>nodes in the cache:&lt;br&gt;
+[%
+my $str;
+my $count=0;
+my %pertype = ();
+foreach (values %Everything::NODES) {
+  if ($_ and ref $$_{type}) {
+
+#comment this back in to get a complete list of loaded nodes
+    #$str.=&quot;&lt;li&gt;&quot;.linkNode($_).&quot;($$_{type}{title})&quot;;
+    $pertype{$$_{type}{title}}++;	
+  }else{
+	$str .= &quot;&lt;li&gt;&lt;font color=red&gt;$$_{title}&lt;/font&gt;&quot; unless ref($$_{type});
+  }
+$count++;
+}
+$str.=&quot;&lt;br&gt;$count nodes in total&quot;;
+foreach (keys %pertype) {
+  $str.=&quot;&lt;br&gt;$pertype{$_} of $_&quot;;
+}
+
+$str;
+%]</nlcode>
+  <title>%NODES</title>
+</node>

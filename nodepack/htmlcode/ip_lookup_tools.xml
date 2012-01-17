@@ -1,0 +1,27 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-01-27 10:34:29</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1989357</node_id>
+  <htmlcode_id>1989357</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># encodeHTML should be a no-op here, but just in case...
+my $ip = encodeHTML(shift);
+
+return 
+  &quot;&lt;a href='http://whois.domaintools.com/$ip' target=\&quot;_blank\&quot;&gt;whois&lt;/a&gt;&quot;
+  . &quot; - &lt;a href='https://www.dan.me.uk/torcheck?ip=$ip' target=\&quot;_blank\&quot;&gt;Tor&lt;/a&gt;&quot;
+  . &quot; - &lt;a href='http://www.google.com/search?hl=en&amp;q=%22$ip%22&amp;btnG=Google+Search' target=\&quot;_blank\&quot;&gt;Google&lt;/a&gt;&quot;
+  . &quot; - &lt;a href='http://www.projecthoneypot.org/ip_$ip' target=\&quot;_blank\&quot;&gt;PH&lt;/a&gt;&quot;
+  . &quot; - &lt;a href='http://www.stopforumspam.com/ipcheck/$ip' target=\&quot;_blank\&quot;&gt;SFS&lt;/a&gt;&quot;
+  . &quot; - &lt;a href='http://www.botscout.com/ipcheck.htm?ip=$ip' target=\&quot;_blank\&quot;&gt;BS&lt;/a&gt;&quot;
+  ;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>ip lookup tools</title>
+</node>

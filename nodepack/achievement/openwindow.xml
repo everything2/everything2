@@ -1,0 +1,32 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-04-03 17:08:22</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <display>&lt;b&gt;Open Window Award&lt;/b&gt; &lt;br/&gt; &lt;i&gt;Have used the word &quot;defenestrate&quot; in at least 15 writeups.&lt;/i&gt;</display>
+  <achievement_type>writeup</achievement_type>
+  <hits>0</hits>
+  <node_id>1980775</node_id>
+  <achievement_id>1980775</achievement_id>
+  <code>my $uid = $$USER{'node_id'};
+
+
+#nodetype 117 is writeups, remember.
+my $whereStr = &quot;author_user=$uid and type_nodetype=117 and UPPER(doctext) like '%DEFENESTRATE%'&quot;;
+
+my $windowCount = $DB-&gt;sqlSelect(&quot;count(doctext)&quot;, 
+                                 &quot;document join node ON 
+                                  document.document_id=node.node_id&quot;, 
+                                  $whereStr);
+
+return 1 if $windowCount &gt;= 15;
+return 0;</code>
+  <type_nodetype>1917847</type_nodetype>
+  <private>0</private>
+  <author_user>1394568</author_user>
+  <achievement_still_available>1</achievement_still_available>
+  <package>0</package>
+  <title>openwindow</title>
+</node>

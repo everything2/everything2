@@ -1,0 +1,122 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-24 06:41:22</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>36</hits>
+  <node_id>167261</node_id>
+  <htmlcode_id>167261</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># [{parsetimestamp:time,flags}]
+# Parses out a datetime field into a more human-readable form
+# note: the expected time format in the parameter is: yyyy-mm-dd hh:mm:ss, although the year part works for any year after year 0
+#	flags: optional flags:
+#		1 = hide time (only show the date)
+#		2 = hide date (only show the time)
+#		4 = hide day of week (only useful if showing date)
+#		8 = show 'UTC' (recommended to show only if also showing time)
+#		16 = show full name of day of week (only useful if showing date)
+#		32 = show full name of month (only useful if showing date)
+#		64 = ignore user's local time zone settings
+#		128 = compact (yyyy-mm-dd@hh:mm)
+#		256 = hide seconds
+#		512 = leading zero on single-digit hours
+
+
+my ($timestamp,$flags)=@_;
+$flags = ($flags || 0)+0;
+my ($date, $time, $yy, $mm, $dd, $hrs, $min, $sec);
+ 
+if($timestamp =~ /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/)
+{
+  ($yy, $mm, $dd, $hrs, $min, $sec) = ($1, $2, $3, $4, $5, $6);
+  #let's hear it for fudge:
+  $mm-=1;
+}elsif($timestamp =~ / /)
+{
+  ($date, $time) = split / /,$timestamp;
+
+  ($hrs, $min, $sec) = split /:/, $time;
+  ($yy, $mm, $dd) = split /-/, $date;
+  $mm-=1;
+}
+# I repeat: let's hear it for fudge!
+return &quot;&lt;em&gt;never&lt;/em&gt;&quot; unless (int($yy)&gt;0 and int($mm)&gt;-1 and int($dd)&gt;0);
+
+use Time::Local;
+my $epoch_secs = timelocal( $sec, $min, $hrs, $dd, $mm, $yy);
+
+if(!($flags &amp; 64) &amp;&amp; $VARS-&gt;{'localTimeUse'}) {
+	$epoch_secs += $VARS-&gt;{'localTimeOffset'} if exists $VARS-&gt;{'localTimeOffset'};
+	#add 1 hour = 60 min * 60 s/min = 3600 seconds if daylight savings
+	$epoch_secs += 3600 if $VARS-&gt;{'localTimeDST'};	#maybe later, only add time if also in the time period for that - but is it true that some places have different daylight savings time stuff?
+}
+
+my $wday;
+($sec, $min, $hrs, $dd, $mm, $yy, $wday, undef, undef) = localtime($epoch_secs);
+$yy += 1900;	#stupid Perl
+++$mm;
+
+my $niceDate='';
+if(!($flags &amp; 2)) {	#show date
+	if ($flags &amp; 128) { # compact
+		$mm = substr('0'.$mm,-2);
+		$dd = substr('0'.$dd,-2);
+		$niceDate .= $yy. '-' .$mm. '-' .$dd;
+	} else {
+		if(!($flags &amp; 4)) {	#4=hide week day, 0=show week day
+		$niceDate .= ($flags &amp; 16)	#16=full day name, 0=short name
+			? (qw(Sunday Monday Tuesday Wednesday Thursday Friday Saturday))[$wday].', '
+			: (qw(Sun Mon Tue Wed Thu Fri Sat))[$wday].' '
+		;
+		}
+		my $fullMonthName = $flags &amp; 32;
+		$niceDate .= ($fullMonthName
+			? (qw(January February March April May June July August September October November December))
+			: (qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec))
+		)[$mm-1];
+		$dd='0'.$dd if length($dd)==1 &amp;&amp; !$fullMonthName;
+		$niceDate .= ' ' . $dd;
+		$niceDate .= ',' if $fullMonthName;
+		$niceDate .= ' '.$yy;
+	}
+}
+
+if(!($flags &amp; 1)) {	#show time
+	if ($flags &amp; 128) { # if compact
+		$niceDate .= '@' if length($niceDate);
+	} else {
+		$niceDate .= ' at ' if length($niceDate);
+	}
+	my $showAMPM='';
+	if($VARS-&gt;{'localTime12hr'}) {
+		if($hrs&lt;12) {
+			$showAMPM = ' AM';
+			$hrs=12 if $hrs==0;
+		} else {
+			$showAMPM = ' PM';
+			$hrs -= 12 unless $hrs==12;
+		}
+	}
+
+	$hrs = '0'.$hrs if $flags &amp; 512 and length($hrs)==1;
+	$min = '0'.$min if length($min)==1;
+	$niceDate .= $hrs.':'.$min;
+	if (!($flags &amp; 128 or $flags &amp; 256)) { # if no compact show seconds
+		$sec = '0'.$sec if length($sec)==1;
+		$niceDate .= ':'.$sec;
+	}	
+	$niceDate .= $showAMPM if length($showAMPM);
+}
+
+$niceDate .= ' UTC' if length($niceDate) &amp;&amp; ($flags &amp; 8);	#show UTC
+
+return $niceDate;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>parsetimestamp</title>
+</node>

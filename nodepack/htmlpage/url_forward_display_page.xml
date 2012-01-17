@@ -1,0 +1,64 @@
+<node>
+  <parent_container>0</parent_container>
+  <pagetype_nodetype>1943469</pagetype_nodetype>
+  <core>0</core>
+  <page>[%
+# This code is based on node_forward display page
+# I've modified it to redirect to an external URL contained in $$NODE{&quot;doctext&quot;} 
+# ~RP
+%]
+
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;[% $$NODE{ 'title' } %]@everything2.com&lt;/title&gt;
+
+    &lt;script language=&quot;JavaScript&quot;&gt;
+    &lt;!--
+        [%
+             'location.href = &quot;' . $$NODE{ &quot;doctext&quot; } . '&quot;;'
+               unless ( $$NODE{ 'doctext' } eq '' );
+                 # This is the real code, which lets gods edit the thing.
+                 # unless ( $$NODE{ 'doctext' } eq '' || isGod( $USER ) );
+        %]
+    //--&gt;
+    &lt;/script&gt;
+    &lt;noscript&gt;
+        [%
+            '&lt;meta http-equiv=&quot;refresh&quot; content=&quot;0;URL='.$$NODE{ &quot;doctext&quot; }.'&quot;&gt;'
+                unless ( $$NODE{ 'doctext' } eq '' || isGod( $USER ) );
+        %]
+    &lt;/noscript&gt;
+&lt;head&gt;
+&lt;/html&gt;
+
+
+&lt;body&gt;
+
+[%
+#    if ( $$NODE{ 'doctext' } eq '' );
+
+return '&lt;p&gt;&lt;a href=&quot;index.pl?node_id=' . $$NODE{ 'node_id' } . '&amp;displaytype=edit&quot;&gt;edit &lt;b&gt;' . $$NODE{ 'title' } . '&lt;/b&gt;&lt;/a&gt;&lt;/p&gt;'
+    if ( isGod( $USER ) );
+%]
+[%
+return '&lt;p&gt;&lt;strong&gt;forward-to:&lt;/strong&gt; ' . $$NODE{ 'doctext' } . '&lt;/p&gt;'
+    unless ( $$NODE{ 'doctext' } eq '' || ! isGod( $USER ) );
+%]
+&lt;/body&gt;
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-05-27 03:19:37</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1943471</htmlpage_id>
+  <hits>0</hits>
+  <node_id>1943471</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>1133650</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>url_forward display page</title>
+  <mimetype></mimetype>
+</node>

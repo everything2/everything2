@@ -1,0 +1,114 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-04-01 12:55:09</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1936067</node_id>
+  <htmlcode_id>1936067</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($enemyID, $inChat) = @_;
+
+use JSON;
+
+
+
+my $enemyList = '';
+if (htmlcode('isInUsergroup',$$USER{user_id}.',heroes')) {
+	$enemyList = &quot;villains&quot;;
+}
+if (htmlcode('isInUsergroup',$$USER{user_id}.',villains')) {
+	$enemyList = &quot;heroes&quot;;
+}
+
+return unless $enemyList;
+
+#return &quot;/msg kthejoker $enemyID&quot; if ($$USER{title} eq 'kthejoker');
+
+my $randVillain;
+if ($enemyID != -1) {
+	$randVillain = getNodeById($enemyID);
+	return unless htmlcode('isInUsergroup',$$randVillain{user_id}.&quot;,&quot;.$enemyList);
+}
+else {
+	my @enemies = @{getNode($enemyList,'usergroup')-&gt;{group}};
+	my $arrcount = @enemies;
+	$arrcount--;
+	$randVillain = getNodeById($enemies[int(rand($arrcount))]);
+}
+
+return unless $randVillain;
+
+my $vVars =getVars($randVillain);
+my $vWarVars = $vVars-&gt;{thewar};
+if (!$vWarVars) {
+	$vWarVars = '{ &quot;health&quot;: 150}';
+}
+$vWarVars = from_json($vWarVars);
+
+if (!$$VARS{thewar}) {
+	$$VARS{thewar} = '{&quot;health&quot;: 150}';
+}
+
+my $scalar = from_json($$VARS{thewar});
+return if (time - $scalar-&gt;{laststrike} &lt;= 4);
+return if $scalar-&gt;{fallen};
+
+$scalar-&gt;{strike} += 1;
+$scalar-&gt;{laststrike} = time;
+$$VARS{thewar} = to_json($scalar);
+setVars($USER,$VARS);
+
+my $bonus = 0;
+for my $key ( keys %{$scalar-&gt;{inventory}} ) {
+	$bonus += $scalar-&gt;{inventory}-&gt;{$key}-&gt;{damageBonus};	
+}
+
+for my $key ( keys %{$vWarVars-&gt;{inventory}} ) {
+	$bonus -= $vWarVars-&gt;{inventory}-&gt;{$key}-&gt;{shieldBonus};	
+}
+
+my $damage = int(rand(10))+getLevel($USER) + int($scalar-&gt;{kills} / 9) + $bonus;
+my $isCritical = (int(rand(99)) &lt; 2);
+$damage = $damage * 2 if $isCritical;
+$scalar-&gt;{damageDone} += $damage;
+$vWarVars-&gt;{health} -= $damage;
+if ($vWarVars-&gt;{health} &lt;= 0) {
+	$vWarVars-&gt;{fallen} = 1;
+	$scalar-&gt;{kills} += 1;
+	if (!htmlcode('isInUsergroup',$$randVillain{user_id}.',valhalla')) {
+		my $valhalla = getNode('valhalla','usergroup');
+		insertIntoNodegroup($valhalla,-1,$randVillain);
+		updateNode($valhalla,-1);
+	}
+
+	removeFromNodegroup(getNode($enemyList,'usergroup'),$randVillain,-1);
+	updateNode(getNode($enemyList,'usergroup'),-1);
+
+	for my $key ( keys %{$vWarVars-&gt;{inventory}} ) {
+		$scalar-&gt;{inventory}-&gt;{$key} = $vWarVars-&gt;{inventory}-&gt;{$key};
+	}
+
+	$vWarVars-&gt;{inventory} = {};
+}
+
+$vVars-&gt;{thewar} = to_json($vWarVars);
+setVars($randVillain, $vVars);
+
+my $warStr = to_json($scalar);
+$$VARS{thewar} = $warStr;
+
+if ($inChat) {
+my $message = &quot;/me strikes &quot;.$$randVillain{title} .&quot; for $damage damage!&quot;;
+$message .= &quot; CRITICAL HIT!&quot; if $isCritical;
+$message .= &quot;  &quot;.$$randVillain{title} .&quot; has fallen in battle!&quot; if $vWarVars-&gt;{fallen};
+$message .= &quot;  &quot;.$$randVillain{title} .&quot;'s health: &quot;.$vWarVars-&gt;{health} if ($vWarVars-&gt;{health} &gt; 0);
+return $message;
+}</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>strikeUser</title>
+</node>

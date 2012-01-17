@@ -1,0 +1,56 @@
+<node>
+  <doctext>&lt;h3&gt;New Titles in Search of Content&lt;/h3&gt;
+[%#/
+
+my $str;
+
+my $csr = $DB-&gt;sqlSelectMany('node.title, node.node_id, createdby_user',
+	&quot;node JOIN e2node ON node_id=e2node_id
+	LEFT JOIN nodegroup ON nodegroup_id = node.node_id&quot;,
+	&quot;node.createtime &gt; DATE_SUB(CURDATE(), INTERVAL 1 WEEK)
+		AND node.createtime &lt; DATE_SUB(CURDATE(), INTERVAL 30 MINUTE)
+		AND node.type_nodetype=116 AND nodegroup_id IS NULL
+		ORDER BY node_id DESC LIMIT 50&quot;);
+
+
+$str.='&lt;ol&gt;';
+
+while(my $row = $csr-&gt;fetchrow_hashref) {
+	my $uVars = getVars($$row{createdby_user});
+	unless ( ($$uVars{hideNodeshells}) &amp;&amp; (!isGod( $USER ))) {
+		$str.='&lt;li&gt;'.linkNodeTitle($$row{title}).&quot;&lt;/li&gt;\n&quot;;
+	}
+}
+
+$str.='&lt;/ol&gt;';
+
+return $str;
+%]
+&lt;p&gt;&lt;small&gt;(These are [nodeshell|empty headings] created between half an hour and one month ago.
+They exist to be filled with writing. If you feel like writing, but you don't know what,
+you might also like to visit [Everything's Most Wanted].
+[%
+return if (htmlcode('isGuest'));
+return &quot;[Advanced Settings] allows you to hide your own nodeshells from prying eyes.&quot;;
+%]
+See also [Random Nodeshells].
+[%
+return if (htmlcode('isGuest'));
+return 'And [Your Nodeshells], and [Your Filled Nodeshells].'; 
+%])&lt;/small&gt;&lt;/p&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-08-17 19:08:57</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>17</hits>
+  <node_id>1990106</node_id>
+  <edittime>2011-07-13 10:18:44</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1990106</document_id>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <title>nodeshells</title>
+</node>

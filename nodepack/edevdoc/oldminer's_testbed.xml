@@ -1,0 +1,195 @@
+<node>
+  <doctext>&lt;h1&gt;
+More Research Necessary
+&lt;/h1&gt;
+
+&lt;p&gt;
+Don't watch this space.  It might hurt your eyes.
+&lt;/p&gt;
+
+&lt;p&gt;
+There are primarily two special things about an [edevdoc].
+&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;  HTML is not screened through a function, so one is free to use &amp;lt;table&amp;gt;, &amp;lt;form&amp;gt; and &amp;lt;script&amp;gt; tags to test and demonstrate possible improvements or code fixes.&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+Instead of using [parselinks], [devparselinks] is used to replace text in form of &amp;#91;linked text&amp;#93; with the appropriate link to a node.  The special thing that devparselinks does is that it ignores doubled/trippled/quadrupled square brackets and collapses them into a single, unlinked set of brackets.  So &lt;code&gt;array&amp;#91;&amp;#91;element&amp;#93;&amp;#93;&lt;/code&gt; becomes &lt;code&gt;array[[element]]&lt;/code&gt;.  This makes it possible to write Javascript which uses arrays.  But you will have to use an editor to convert your square braces back and forth.  I suggest vi using the command
+&lt;code&gt;:%s/\[[.\{-}\]]/&amp;#91;&amp;#91;\1&amp;#93;&amp;#93;/g&lt;/code&gt; to convert from &quot;real&quot; Javascript to devparseable Javascript.  This will bork if you have multiple square braces in a row in the &quot;real&quot; Javscript.
+&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;hr&gt;
+
+&lt;div id=&quot;bookmarks&quot;&gt;&lt;h4&gt;User Bookmarks:&lt;/h4&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;/node/jscript/sortlist&quot;&gt;&lt;/script&gt;
+&lt;style type=&quot;text/css&quot;&gt;
+  a.sortselected {
+     padding: 1px;
+     border: yellow 3px solid;
+  }
+
+  .sortlink {
+     padding: 3px;
+     border: yellow 1px solid;
+     text-decoration: none;
+  }
+&lt;/style&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+// &lt;!--
+var lastLink = undefined;
+
+function msort(link) {
+
+  var list_id = link.getAttribute('list_id');
+  var order = link.getAttribute('order');
+  var sortby = link.getAttribute('sortby');
+  var switchLink = false;
+
+  // Presume sort order is initially ascending
+  if (order === undefined) {
+     order = 'asc';
+  }
+
+  // Save original values before we change them so they can be restored
+  if (link.originalHTML === undefined) {
+       link.originalHTML = link.innerHTML;
+  }
+
+  if (link.origtitle === undefined) {
+      link.origtitle = link.getAttribute('title');
+  }
+
+  // Restore the previous sort link if we just clicked away from it
+  if (lastLink === undefined || link != lastLink) {
+     switchLink = true;
+  }
+
+  if (switchLink) {
+
+     if (lastLink != undefined) {
+
+       var oldClass = lastLink.getAttribute('class');
+
+       oldClass = oldClass.replace(/\s*sortselected\s*/g, &quot;&quot;);
+       lastLink.setAttribute('class', oldClass);
+       lastLink.setAttribute('className', oldClass);
+
+       lastLink.innerHTML = lastLink.originalHTML;
+       lastLink.setAttribute('title', lastLink.origtitle);
+
+     }
+
+     var newClass = link.getAttribute('class');
+
+     newClass += &quot; sortselected&quot;;
+     link.setAttribute('class', newClass);
+     link.setAttribute('className', newClass);
+     link.setAttribute('title', &quot;Click to switch sort order&quot;);
+ 
+  }
+
+  lastLink = link;
+
+  // Only change search order if active sort link was clicked
+  if (!switchLink) {
+     if (order == 'desc'){
+       order = 'asc';
+       link.setAttribute('order','asc');
+     } else {
+       order = 'desc';
+       link.setAttribute('order','desc');
+     }
+  }
+
+  // Provide visual indicator of sort order
+  var uparrow = &quot;&lt;strong&gt;&amp;uarr;&lt;/strong&gt;&quot;;
+  var downarrow = &quot;&lt;strong&gt;&amp;darr;&lt;/strong&gt;&quot;;
+
+  if (order == 'desc') {
+       link.innerHTML = link.originalHTML + downarrow;
+  } else {
+       link.innerHTML = link.originalHTML + uparrow;
+  }
+
+  var array = parse_list_to_array(list_id, sortby);
+
+  // Work out a type to sort by
+  var itm = array[[1][[1];
+  var sortfn = mysortfn_by_attribute;
+  if (itm.match(/^[[\d\.]+$/)) sortfn = ts_sort_numeric;
+
+  array.sort(sortfn);
+
+  switch (order){
+  case &quot;desc&quot;:
+    array.reverse();
+    break;
+  }
+
+  var list = document.getElementById(list_id);
+
+  for (var k = 0; k &lt; array.length; k++){
+    list.appendChild(array[[k][[0]);
+  }
+
+  return;
+}
+
+// --&gt;
+&lt;/script&gt;
+&lt;p&gt;
+&lt;a class=&quot;sortlink&quot; href=&quot;javascript:void(0);&quot; onclick=&quot;msort(this)&quot; list_id=&quot;bookmarklist&quot;  sortby=&quot;nodename&quot; title=&quot;Click to sort by node title&quot;&gt;Sort by name&lt;/a&gt; &lt;a class=&quot;sortlink&quot; href=&quot;javascript:void(0);&quot; onclick=&quot;msort(this)&quot; list_id=&quot;bookmarklist&quot; sortby=&quot;tstamp&quot; title=&quot;Click to sort by node creation date&quot;&gt;Sort by date&lt;/a&gt;
+&lt;/p&gt;
+&lt;ul class=&quot;linklist&quot; id=&quot;bookmarklist&quot;&gt;
+&lt;li tstamp=&quot;941835769&quot; nodename=&quot;edebroux&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/user/edebroux&quot;&gt;edebroux&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;900529875&quot; nodename=&quot;lame&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/lame&quot;&gt;lame&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;900549351&quot; nodename=&quot;ttl&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/TTL&quot;&gt;TTL&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;900599216&quot; nodename=&quot;rpm&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/RPM&quot;&gt;RPM&lt;/a&gt;&lt;/li&gt;
+
+&lt;li tstamp=&quot;900681609&quot; nodename=&quot;current&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/current&quot;&gt;current&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;901111956&quot; nodename=&quot;bnf&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/BNF&quot;&gt;BNF&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;901741152&quot; nodename=&quot;vector&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/vector&quot;&gt;vector&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;902451159&quot; nodename=&quot;defeat&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/defeat&quot;&gt;defeat&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;903998200&quot; nodename=&quot;european union&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/European%2520Union&quot;&gt;European Union&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;904370910&quot; nodename=&quot;loveline&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/Loveline&quot;&gt;Loveline&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;912360347&quot; nodename=&quot;wazoo&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/wazoo&quot;&gt;wazoo&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;916744908&quot; nodename=&quot;dom&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/dom&quot;&gt;dom&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;916872269&quot; nodename=&quot;totem pole&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/totem%2520pole&quot;&gt;totem pole&lt;/a&gt;&lt;/li&gt;
+
+&lt;li tstamp=&quot;917359659&quot; nodename=&quot;apocalypse&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/Apocalypse&quot;&gt;Apocalypse&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;920617599&quot; nodename=&quot;mum&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/Mum&quot;&gt;Mum&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;921688573&quot; nodename=&quot;tulsa, oklahoma&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/Tulsa%252C%2520Oklahoma&quot;&gt;Tulsa, Oklahoma&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;925692650&quot; nodename=&quot;perspective corrected texture mapping&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/Perspective%2520Corrected%2520texture%2520Mapping&quot;&gt;Perspective Corrected texture Mapping&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;926295280&quot; nodename=&quot;subdivision surfaces&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/subdivision%2520surfaces&quot;&gt;subdivision surfaces&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;927379911&quot; nodename=&quot;land of the dead&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/Land%2520of%2520the%2520Dead&quot;&gt;Land of the Dead&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;929969066&quot; nodename=&quot;gene amdahl&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/Gene%2520Amdahl&quot;&gt;Gene Amdahl&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;930101450&quot; nodename=&quot;document analysis&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/Document%2520Analysis&quot;&gt;Document Analysis&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;930497586&quot; nodename=&quot;arrogance&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/arrogance&quot;&gt;arrogance&lt;/a&gt;&lt;/li&gt;
+
+&lt;li tstamp=&quot;933938651&quot; nodename=&quot;vco&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/VCO&quot;&gt;VCO&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;934297162&quot; nodename=&quot;peristalsis&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/peristalsis&quot;&gt;peristalsis&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;934305461&quot; nodename=&quot;parent class&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/parent%2520class&quot;&gt;parent class&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;935185274&quot; nodename=&quot;do we forgive our fathers in their time or in our time?&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/Do%2520we%2520forgive%2520our%2520fathers%2520in%2520their%2520time%2520or%2520in%2520our%2520time%253F&quot;&gt;Do we forgive our fathers in their time or in our time?&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;936622073&quot; nodename=&quot;yield&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/yield&quot;&gt;yield&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;936906154&quot; nodename=&quot;zardoz&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/Zardoz&quot;&gt;Zardoz&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;937135732&quot; nodename=&quot;inuit&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/Inuit&quot;&gt;Inuit&lt;/a&gt;&lt;/li&gt;
+&lt;li tstamp=&quot;937148092&quot; nodename=&quot;outfield&quot;&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/title/outfield&quot;&gt;outfield&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2004-11-16 10:55:24</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1684763</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>854232</type_nodetype>
+  <document_id>1684763</document_id>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>OldMiner's testbed</title>
+</node>

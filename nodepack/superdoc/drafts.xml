@@ -1,0 +1,156 @@
+<node>
+  <doctext>&lt;div id=&quot;pagebody&quot;&gt;
+[%
+my $user = $query -&gt; param('other_user');
+my $username;
+
+if ($user){
+	 my $u = getNode($user, 'user');
+	 return '&lt;p&gt;No user named &quot;'
+	 	.$query -&gt; escapeHTML($user)
+	 	.'&quot; found.&lt;/p&gt;' unless $u;
+	 $user = $$u{node_id};
+	 # record displayed status:
+	 $username = $$u{title} unless $user == $$USER{node_id};
+}
+
+$user ||= $$USER{node_id};
+$query -&gt; delete('other_user') unless $username;
+
+my $status = {}; # plural of Latin 'status' is 'status'
+my ($ps, $cansee, $collaborators, $nukeeslast, $title, $showhide, $cs, $nukees);
+my $draftType = getType('draft');
+
+my $statu = sub{
+	$_[0]-&gt;{type} = $draftType;
+	$ps = $_[0]-&gt;{publication_status};
+	if ($$status{$ps}){
+		$ps = $$status{$ps};
+	}else{ # only look up each status once
+		$ps = $ps ? $$status{$ps} = getNodeById($ps)-&gt;{title} : 'broken';
+		$$status{$ps} = 1 unless $username; # to track if any of mine nuked
+	}
+	qq'&lt;td class=&quot;status&quot;&gt;$ps&lt;/td&gt;';
+};
+
+my @showit = (
+	'title, author_user, publication_status, collaborators'
+	, 'node JOIN draft ON node_id = draft_id'
+	, &quot;author_user = $user AND type_nodetype = $$draftType{node_id}&quot;
+	, 'ORDER BY title'
+);
+
+unless ($username){
+	$title = 'Your drafts';
+
+	$cs = '&lt;th&gt;Collaborators';
+	$collaborators = sub{
+		qq'&lt;td class=&quot;collaborators&quot;&gt;$_[0]-&gt;{collaborators}&lt;/td&gt;';
+	};
+
+	if ($query -&gt; param('sexisgood') =~ /Sort nuked drafts (last)?/){
+		$nukeeslast = $1;
+		$DB -&gt; sqlDelete('uservars',
+			&quot;user_id=$$USER{node_id} AND setting_name = 'listnukeeslast'&quot;);
+		$DB -&gt; sqlInsert('uservars', {
+			user_id =&gt; $$USER{node_id}
+			, setting_name =&gt; 'listnukeeslast'
+			, setting_value =&gt; 1
+		}) if $nukeeslast;
+	}else{
+		$nukeeslast = $DB -&gt; sqlSelect('setting_value', 'uservars',
+			&quot;user_id=$$USER{node_id} AND setting_name='listnukeeslast'&quot;);
+	}
+
+	$showit[-1] = 'ORDER BY publication_status='
+		.getId(getNode('nuked', 'publication_status'))
+		.', title' if $nukeeslast;
+
+	unshift @showit, 'show paged content';
+
+}else{
+	$title = &quot;${username}'s drafts (visible to you)&quot;;
+	$cansee = getCompiledCode( getNode('canseedraft', 'htmlcode'), \&amp;evalCode);
+
+	$cs = '&lt;th title=&quot;shows whether you or a usergroup you are in is a collaborator on this draft&quot;&gt;Collaborator?';
+	$collaborators = sub{
+		my $yes = '&amp;nbsp;';
+		if ($_[0]-&gt;{collaborators}){
+			if ($_[0]-&gt;{collaborators} =~ qr/(?:^|,)\s*$$USER{title}\s*(?:$|,)/i){
+				$yes = 'you';
+			}elsif ($ps = 'private' || htmlcode('canseedraft', $_[0], 'edit')){
+				$yes = 'group';
+			}
+		}
+		qq'&lt;td class=&quot;collaborators&quot;&gt;$yes&lt;/td&gt;';
+	};
+
+	@showit = ('show content', $DB -&gt; sqlSelectMany(@showit));
+}
+
+my ($drafts, $navigation, $count) = htmlcode(
+	@showit
+	, '&lt;tr class=&quot;&amp;oddrow&quot;&gt; status, &quot;&lt;td&gt;&quot;, title, &quot;&lt;/td&gt;&quot;, coll'
+	, cansee =&gt; $cansee, status =&gt; $statu, coll =&gt; $collaborators);
+my $scr = '';
+
+unless (htmlcode('count scratchpads', $user) == 0){
+	$scr = htmlcode('convertscratchpads', $user); # only list, no conversion for other user
+}
+
+if ($scr eq '' and $drafts eq '') {
+	if (!$username) {
+		return '&lt;p&gt;You have no drafts.&lt;/p&gt;';
+	} else {
+		return &quot;&lt;p&gt;[${username}[user]] has no drafts or scratch pads visible to you.&lt;/p&gt;&quot;;
+	}
+}
+
+my $showcount = &quot;&lt;p&gt;You have $count drafts.&lt;/p&gt;&quot; if $navigation;
+
+if ($$status{nuked} # user has at least one 'nuked' draft shown on this page
+		|| $nukeeslast){
+	$nukees = htmlcode('openform')
+		.htmlcode('closeform', $nukeeslast ? 'Sort nuked drafts with others'
+			: 'Sort nuked drafts last');
+}
+
+my $str = '';
+
+$str .= $scr if $scr ne '';
+$str .=
+	&quot;&lt;h2&gt;$title&lt;/h2&gt;
+	$showcount
+	&lt;table&gt;&lt;tr&gt;&lt;th&gt;status&lt;/th&gt;&lt;th&gt;title&lt;/th&gt;$cs&lt;/th&gt;&lt;/tr&gt;
+	$drafts
+	&lt;/table&gt;
+	$nukees
+	$navigation&quot;
+   if $drafts ne '';
+
+return $str;
+%]
+&lt;/div&gt;
+
+[{openform:pagefooter}]
+[%
+return htmlcode('editwriteup') unless $query -&gt; param('other_user');
+'';
+%]
+&lt;/form&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-01-28 14:03:50</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>196</hits>
+  <node_id>1991135</node_id>
+  <edittime>2011-10-18 01:13:48</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1991135</document_id>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>Drafts</title>
+</node>

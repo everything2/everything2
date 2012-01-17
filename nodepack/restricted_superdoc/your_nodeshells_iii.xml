@@ -1,0 +1,100 @@
+<node>
+  <doctext>[%
+return if $$USER{node_id} == $HTMLVARS{guest_user};
+
+my $str = '&lt;form method=&quot;post&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;'.$$NODE{node_id}.'&quot; /&gt;';
+
+my $inputname = '';
+
+if($query-&gt;param('ns_user'))
+{
+	$inputname = $query-&gt;param('ns_user');
+}
+else
+{
+	$inputname = $$USER{title};
+}
+
+$str.=&quot;&lt;b&gt;Don't want your nodeshells searchable? You can turn it off in [User Settings].&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;&quot;;
+
+$str.= 'Look up user:&lt;br /&gt;&lt;input type=&quot;text&quot; name=&quot;ns_user&quot; value=&quot;'.$inputname.'&quot;&gt;&amp;nbsp;&lt;input type=&quot;submit&quot; value=&quot;View Nodeshells&quot; /&gt;&lt;/form&gt;&lt;hr /&gt;&lt;br /&gt;';
+
+my $nsUser = getNode($inputname, 'user');
+
+return $str.'No such user &quot;'.$inputname.'&quot;&lt;br /&gt;' unless $nsUser;
+
+
+my $nsVars = getVars($nsUser);
+
+return $str.linkNodeTitle($$nsUser{title}).'\'s nodeshells are not searchable.' if ( ($$nsVars{hideNodeshells}) &amp;&amp; (!isGod( $USER )) &amp;&amp; (!($$nsUser{title} eq $$USER{title})) );
+
+
+my $csr = $DB-&gt;sqlSelectMany('node_id, title, (select count(*) from nodegroup where nodegroup_id=node.node_id) as groupcount', 'node', 'type_nodetype='.getId(getType('e2node')).' and author_user='.$$nsUser{node_id}.' having groupcount=0', &quot;ORDER BY node.title&quot;);
+
+$str.=htmlcode('openform');
+
+$str.= '&lt;p&gt;(Be sure to check out [your filled nodeshells], too.)&lt;/p&gt; &lt;p&gt;&lt;strong&gt;'.$csr-&gt;rows.'&lt;/strong&gt; nodeshells created by '.( ($$nsUser{title} eq $$USER{title} ) ? &quot;you&quot; : $$nsUser{title} ).' which do not contain writeups:&lt;/p&gt;
+&lt;ul&gt;
+';
+
+
+my $icsr = $DB-&gt;getDatabaseHandle()-&gt;prepare('SELECT to_node FROM links WHERE linktype=1150375 AND from_node=?');
+
+my $ctr;
+my @nodes;
+while(my $row = $csr-&gt;fetchrow_hashref) {
+
+  if ($query-&gt;param(&quot;delete_$$row{node_id}&quot;))
+  {
+  my $nodeToDelete=getNode($$row{node_id});
+  if(($nodeToDelete{author_user}==$$USER{user_id}||isGod( $USER ))&amp;&amp; $$nodeToDelete{groupcount}==0)
+    {
+    $DB-&gt;sqlDelete('nodegroup', &quot;nodegroup_id=$$row{node_id}&quot;);
+# is it better to call nukeNode with a member of the admin group to achieve this?
+    }
+  }
+
+  $str .= '&lt;li&gt;' . linkNode($$row{node_id});
+  if($icsr-&gt;execute($$row{node_id}))
+  {
+    if($icsr-&gt;rows&gt;0)
+    {
+      $str .= ' - &lt;b&gt;Firm linked to:&lt;/b&gt; ';
+      $ctr = 0;
+      while(my $irow = $icsr-&gt;fetchrow_hashref)
+      {
+        if ($ctr &gt; 0)
+        {
+          $str .= ', ';
+        }
+        $str .= linkNode($$irow{to_node});
+        $ctr++;
+      }
+    }
+    elsif ($$USER{node_id}==$$nsUser{node_id}||isGod( $USER ))
+    {
+      $str .= $query-&gt;checkbox( -name =&gt; &quot;delete_$$row{node_id}&quot;, -label =&gt; '',   -value =&gt; 'off');
+    }
+  }
+}
+
+$str.='&lt;/ul&gt;';
+$str.=htmlcode('closeform');
+return $str;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-04-12 13:31:33</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>3</hits>
+  <node_id>1981961</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1981961</document_id>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <title>Your Nodeshells III</title>
+</node>

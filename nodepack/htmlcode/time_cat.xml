@@ -1,0 +1,530 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2004-02-26 19:55:42</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1522386</node_id>
+  <htmlcode_id>1522386</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>
+my $sept = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;type_nodetype=116 and createtime like '%2004-09%'&quot;,&quot;order by createtime&quot;);
+my $oct = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;type_nodetype=116 and createtime like '%2004-10%'&quot;,&quot;order by createtime&quot;);
+
+my @today = localtime(time);
+my $month = $today[4] +1;
+my $day = $today[3];
+my $year = $today[5] + 1900;
+
+if(length($day) ==1)
+	{
+	$day = &quot;0&quot; . $day;
+	}
+
+my ($str,$junk);
+
+#$junk .= &quot;day = $day&lt;br&gt;&quot;;
+
+$str .=&lt;&lt;EOD;
+&lt;script&gt;
+USETEXTLINKS = 1
+STARTALLOPEN = 0
+USEFRAMES = 0
+USEICONS = 0
+WRAPTEXT = 1
+PERSERVESTATE = 1
+EOD
+
+$str .= &quot;foldersTree = gFld('/', 'javascript:parent.op();')\n&quot;;
+$str .= &quot;f = foldersTree\n&quot;;
+
+$str .= &quot;fSub = insFld(f,gFld('January',''))\n&quot;;
+
+my ($one,$two,$three,$four,$where,$one_ref);
+
+my (%weekzero,%weekone,%weektwo,%weekthree,%weekfour,%weekfive,%weeksix,%weekseven,%weekeight,%weeknine,%weekten,%weekeleven,%weektwelve,%weekthirteen,%weekfourteen,%weekfifteen);
+
+$weekzero{&quot;2004-01-05&quot;} = &quot;Monday&quot;;
+# $weekzero{&quot;2004-01-06&quot;} = &quot;Tuesday&quot;;
+# $weekzero{&quot;2004-01-07&quot;} = &quot;Wednesday&quot;;
+# $weekzero{&quot;2004-01-08&quot;} = &quot;Thursday&quot;;
+# $weekzero{&quot;2004-01-09&quot;} = &quot;Friday&quot;;
+# $weekzero{&quot;2004-01-10&quot;} = &quot;Saturday&quot;;
+# $weekzero{&quot;2004-01-11&quot;} = &quot;Sunday&quot;;
+
+$weekone{&quot;2004-01-12&quot;} = &quot;Monday&quot;;
+$weekone{&quot;2004-01-13&quot;} = &quot;Tuesday&quot;;
+$weekone{&quot;2004-01-14&quot;} = &quot;Wednesday&quot;;
+$weekone{&quot;2004-01-15&quot;} = &quot;Thursday&quot;;
+$weekone{&quot;2004-01-16&quot;} = &quot;Friday&quot;;
+$weekone{&quot;2004-01-17&quot;} = &quot;Saturday&quot;;
+$weekone{&quot;2004-01-18&quot;} = &quot;Sunday&quot;;
+
+$weektwo{&quot;2004-01-19&quot;} = &quot;Monday&quot;;
+$weektwo{&quot;2004-01-20&quot;} = &quot;Tuesday&quot;;
+$weektwo{&quot;2004-01-21&quot;} = &quot;Wednesday&quot;;
+$weektwo{&quot;2004-01-22&quot;} = &quot;Thursday&quot;;
+$weektwo{&quot;2004-01-23&quot;} = &quot;Friday&quot;;
+$weektwo{&quot;2004-01-24&quot;} = &quot;Saturday&quot;;
+$weektwo{&quot;2004-01-25&quot;} = &quot;Sunday&quot;;
+
+$weekthree{&quot;2004-01-26&quot;} = &quot;Monday&quot;;
+$weekthree{&quot;2004-01-27&quot;} = &quot;Tuesday&quot;;
+$weekthree{&quot;2004-01-28&quot;} = &quot;Wednesday&quot;;
+$weekthree{&quot;2004-01-29&quot;} = &quot;Thursday&quot;;
+$weekthree{&quot;2004-01-30&quot;} = &quot;Friday&quot;;
+$weekthree{&quot;2004-01-31&quot;} = &quot;Saturday&quot;;
+
+$weekfour{&quot;2004-02-01&quot;} = &quot;Sunday&quot;;
+$weekfour{&quot;2004-02-02&quot;} = &quot;Monday&quot;;
+$weekfour{&quot;2004-02-03&quot;} = &quot;Tuesday&quot;;
+$weekfour{&quot;2004-02-04&quot;} = &quot;Wednesday&quot;;
+$weekfour{&quot;2004-02-05&quot;} = &quot;Thursday&quot;;
+$weekfour{&quot;2004-02-06&quot;} = &quot;Friday&quot;;
+$weekfour{&quot;2004-02-07&quot;} = &quot;Saturday&quot;;
+$weekfour{&quot;2004-02-08&quot;} = &quot;Sunday&quot;;
+
+$weekfive{&quot;2004-02-09&quot;} = &quot;Monday&quot;;
+$weekfive{&quot;2004-02-10&quot;} = &quot;Tuesday&quot;;
+$weekfive{&quot;2004-02-11&quot;} = &quot;Wednesday&quot;;
+$weekfive{&quot;2004-02-12&quot;} = &quot;Thursday&quot;;
+$weekfive{&quot;2004-02-13&quot;} = &quot;Friday&quot;;
+$weekfive{&quot;2004-02-14&quot;} = &quot;Saturday&quot;;
+$weekfive{&quot;2004-02-15&quot;} = &quot;Sunday&quot;;
+
+$weeksix{&quot;2004-02-16&quot;} = &quot;Monday&quot;;
+$weeksix{&quot;2004-02-17&quot;} = &quot;Tuesday&quot;;
+$weeksix{&quot;2004-02-18&quot;} = &quot;Wednesday&quot;;
+$weeksix{&quot;2004-02-19&quot;} = &quot;Thursday&quot;;
+$weeksix{&quot;2004-02-20&quot;} = &quot;Friday&quot;;
+$weeksix{&quot;2004-02-21&quot;} = &quot;Saturday&quot;;
+$weeksix{&quot;2004-02-22&quot;} = &quot;Sunday&quot;;
+
+$weekseven{&quot;2004-02-23&quot;} = &quot;Monday&quot;;
+$weekseven{&quot;2004-02-24&quot;} = &quot;Tuesday&quot;;
+$weekseven{&quot;2004-02-25&quot;} = &quot;Wednesday&quot;;
+$weekseven{&quot;2004-02-26&quot;} = &quot;Thursday&quot;;
+$weekseven{&quot;2004-02-27&quot;} = &quot;Friday&quot;;
+$weekseven{&quot;2004-02-28&quot;} = &quot;Saturday&quot;;
+$weekseven{&quot;2004-02-29&quot;} = &quot;Sunday&quot;;
+
+$weekeight{&quot;2004-03-01&quot;} = &quot;Monday&quot;;
+$weekeight{&quot;2004-03-02&quot;} = &quot;Tuesday&quot;;
+$weekeight{&quot;2004-03-03&quot;} = &quot;Wednesday&quot;;
+$weekeight{&quot;2004-03-04&quot;} = &quot;Thursday&quot;;
+$weekeight{&quot;2004-03-05&quot;} = &quot;Friday&quot;;
+$weekeight{&quot;2004-03-06&quot;} = &quot;Saturday&quot;;
+$weekeight{&quot;2004-03-07&quot;} = &quot;Sunday&quot;;
+
+$weeknine{&quot;2004-03-08&quot;} = &quot;Monday&quot;;
+$weeknine{&quot;2004-03-09&quot;} = &quot;Tuesday&quot;;
+$weeknine{&quot;2004-03-10&quot;} = &quot;Wednesday&quot;;
+$weeknine{&quot;2004-03-11&quot;} = &quot;Thursday&quot;;
+$weeknine{&quot;2004-03-12&quot;} = &quot;Friday&quot;;
+$weeknine{&quot;2004-03-13&quot;} = &quot;Saturday&quot;;
+$weeknine{&quot;2004-03-14&quot;} = &quot;Sunday&quot;;
+
+$weekten{&quot;2004-03-15&quot;} = &quot;Monday&quot;;
+$weekten{&quot;2004-03-16&quot;} = &quot;Tuesday&quot;;
+$weekten{&quot;2004-03-17&quot;} = &quot;Wednesday&quot;;
+$weekten{&quot;2004-03-18&quot;} = &quot;Thursday&quot;;
+$weekten{&quot;2004-03-19&quot;} = &quot;Friday&quot;;
+$weekten{&quot;2004-03-20&quot;} = &quot;Saturday&quot;;
+$weekten{&quot;2004-03-21&quot;} = &quot;Sunday&quot;;
+
+$weekeleven{&quot;2004-03-22&quot;} = &quot;Monday&quot;;
+$weekeleven{&quot;2004-03-23&quot;} = &quot;Tuesday&quot;;
+$weekeleven{&quot;2004-03-24&quot;} = &quot;Wednesday&quot;;
+$weekeleven{&quot;2004-03-25&quot;} = &quot;Thursday&quot;;
+$weekeleven{&quot;2004-03-26&quot;} = &quot;Friday&quot;;
+$weekeleven{&quot;2004-03-27&quot;} = &quot;Saturday&quot;;
+$weekeleven{&quot;2004-03-28&quot;} = &quot;Sunday&quot;;
+
+$weektwelve{&quot;2004-03-29&quot;} = &quot;Monday&quot;;
+$weektwelve{&quot;2004-03-30&quot;} = &quot;Tuesday&quot;;
+$weektwelve{&quot;2004-03-31&quot;} = &quot;Wednesday&quot;;
+$weektwelve{&quot;2004-04-01&quot;} = &quot;Thursday&quot;;
+$weektwelve{&quot;2004-04-02&quot;} = &quot;Friday&quot;;
+$weektwelve{&quot;2004-04-03&quot;} = &quot;Saturday&quot;;
+$weektwelve{&quot;2004-04-04&quot;} = &quot;Sunday&quot;;
+
+$weekthirteen{&quot;2004-04-05&quot;} = &quot;Monday&quot;;
+$weekthirteen{&quot;2004-04-06&quot;} = &quot;Tuesday&quot;;
+$weekthirteen{&quot;2004-04-07&quot;} = &quot;Wednesday&quot;;
+$weekthirteen{&quot;2004-04-08&quot;} = &quot;Thursday&quot;;
+$weekthirteen{&quot;2004-04-09&quot;} = &quot;Friday&quot;;
+$weekthirteen{&quot;2004-04-10&quot;} = &quot;Saturday&quot;;
+$weekthirteen{&quot;2004-04-11&quot;} = &quot;Sunday&quot;;
+
+$weekfourteen{&quot;2004-04-12&quot;} = &quot;Monday&quot;;
+$weekfourteen{&quot;2004-04-13&quot;} = &quot;Tuesday&quot;;
+$weekfourteen{&quot;2004-04-14&quot;} = &quot;Wednesday&quot;;
+$weekfourteen{&quot;2004-04-15&quot;} = &quot;Thursday&quot;;
+$weekfourteen{&quot;2004-04-16&quot;} = &quot;Friday&quot;;
+$weekfourteen{&quot;2004-04-17&quot;} = &quot;Saturday&quot;;
+$weekfourteen{&quot;2004-04-18&quot;} = &quot;Sunday&quot;;
+
+$weekfifteen{&quot;2004-04-19&quot;} = &quot;Monday&quot;;
+$weekfifteen{&quot;2004-04-20&quot;} = &quot;Tuesday&quot;;
+$weekfifteen{&quot;2004-04-21&quot;} = &quot;Wednesday&quot;;
+$weekfifteen{&quot;2004-04-22&quot;} = &quot;Thursday&quot;;
+$weekfifteen{&quot;2004-04-23&quot;} = &quot;Friday&quot;;
+$weekfifteen{&quot;2004-04-24&quot;} = &quot;Saturday&quot;;
+$weekfifteen{&quot;2004-04-25&quot;} = &quot;Sunday&quot;;
+
+
+$where = &quot;and (createtime like '%2004-09-04%' or createtime like '%2004-09-05%'or createtime like '%2004-09-06%' or createtime like '%2004-09-07%' or createtime like '%2004-09-08%'or createtime like '%2004-09-09%' or createtime like '%2004-09-10%' )&quot;;
+
+$one = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;type_nodetype=116 $where&quot;,&quot;order by createtime&quot;);
+
+$str .= &quot;fSubSub3 = insFld(fSub,gFld('Week 0: Jan 5 - Jan 11', ''))\n&quot;;
+
+foreach my $key (sort keys %weekzero)
+	{
+	my $date = $key;
+	$date =~ s/^2004-//;
+	$str .= &quot;fSubSubSub = insFld(fSubSub3,gFld('$weekzero{$key} $date', ''))\n&quot;;
+	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+	
+	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+	my $ref;
+	while ($ref = $select-&gt;fetchrow_hashref )
+		{
+		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+		$$ref{title} =~ s/'/\\'/g;
+		$str .= &quot;insDoc(fSubSubSub,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+		}
+	}
+
+
+
+# $str .= &quot;fSubSub = insFld(fSub,gFld('Week 1: Jan 12 - Jan 18', ''))\n&quot;;
+# 
+# foreach my $key (sort keys %weekone)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;fSubSubSub = insFld(fSubSub,gFld('$weekone{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(fSubSubSub,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+
+# $str .= &quot;fSubSubSubSub = insFld(fSub,gFld('Week 2: Jan 19 - Jan 25', ''))\n&quot;;
+# 
+# foreach my $key (sort keys %weektwo)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;fSubSubSubSubSub = insFld(fSubSubSubSub,gFld('$weektwo{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(fSubSubSubSubSub,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+# 	
+# $str .= &quot;fSubSubSubSubSub = insFld(fSub,gFld('Week 3: Jan 26 - Jan 31', ''))\n&quot;;
+# 
+# foreach my $key (sort keys %weekthree)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;fSubSubSubSubSubSub = insFld(fSubSubSubSubSub,gFld('$weekthree{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(fSubSubSubSubSubSub,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+# 
+# $str .= &quot;octfolder = insFld(f,gFld('February',''))\n&quot;;	
+# 
+# $str .= &quot;fSubSubSubSubSubSub = insFld(octfolder,gFld('Week 4: Feb 1 - Feb 8', ''))\n&quot;;
+# 
+# foreach my $key (sort keys %weekfour)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;fSubSubSubSubSubSubSub = insFld(fSubSubSubSubSubSub,gFld('$weekfour{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(fSubSubSubSubSubSubSub,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+# 	
+# 
+# 
+# $str .= &quot;oct5 = insFld(octfolder,gFld('Week 5: Feb 9 - Feb 15', ''))\n&quot;;
+# 
+# foreach my $key (sort keys %weekfive)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;ftest = insFld(oct5,gFld('$weekfive{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(ftest,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+# 
+# $str .= &quot;oct6 = insFld(octfolder,gFld('Week 6: Feb 16 - Feb 22', ''))\n&quot;;
+# 
+# foreach my $key (sort keys %weeksix)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;ftest1 = insFld(oct6,gFld('$weeksix{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(ftest1,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+# 	
+# $str .= &quot;oct7 = insFld(octfolder,gFld('Week 7: Feb 23 - Feb 29', ''))\n&quot;;
+# 
+# foreach my $key (sort keys %weekseven)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;ftest2 = insFld(oct7,gFld('$weekseven{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(ftest2,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+# $str .= &quot;novfolder = insFld(f,gFld('March',''))\n&quot;;
+# 
+# $str .= &quot;oct8 = insFld(novfolder,gFld('Week 8: March 1 - March 7', ''))\n&quot;;
+# 
+# foreach my $key (sort keys %weekeight)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;ftest3 = insFld(oct8,gFld('$weekeight{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(ftest3,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+# 
+# 
+# 
+# 
+# $str .= &quot;oct9 = insFld(novfolder,gFld('Week 9: March 8 - March 14', ''))\n&quot;;
+# 
+# foreach my $key (sort keys %weeknine)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;ftest4 = insFld(oct9,gFld('$weeknine{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(ftest4,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+# 
+# 
+# 	
+# $str .= &quot;nov10 = insFld(novfolder,gFld('Week 10: March 15 - March 21', ''))\n&quot;;
+# 
+# foreach my $key (sort keys %weekten)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;ftest6 = insFld(nov10,gFld('$weekten{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(ftest6,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+# 
+# $str .= &quot;nov11 = insFld(novfolder,gFld('Week 11: March 22 - March 28', ''))\n&quot;;
+# 
+# foreach my $key (sort keys %weekeleven)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;ftest7 = insFld(nov11,gFld('$weekeleven{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(ftest7,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+# 	
+# 	
+# $str .= &quot;nov12 = insFld(novfolder,gFld('Week 12: March 29 - April 4', ''))\n&quot;;
+# 
+# foreach my $key (sort keys %weektwelve)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;ftest8 = insFld(nov12,gFld('$weektwelve{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(ftest8,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+# 
+# 
+# $str .= &quot;decfolder = insFld(f,gFld('April',''))\n&quot;;
+# 	
+# $str .= &quot;nov12 = insFld(decfolder,gFld('Week 12: March 29 - April 4', ''))\n&quot;;
+# 
+# foreach my $key (sort keys %weektwelve)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;ftest8 = insFld(nov12,gFld('$weektwelve{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(ftest8,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+# 
+# $str .= &quot;nov13 = insFld(decfolder,gFld('Week 13: April 5 - April 11', ''))\n&quot;;
+# 
+# foreach my $key (sort keys %weekthirteen)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;ftest9 = insFld(nov13,gFld('$weekthirteen{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(ftest9,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+# 
+# 
+# $str .= &quot;dec13 = insFld(decfolder,gFld('Week 14: April 12 - April 18', ''))\n&quot;;
+# 
+# foreach my $key (sort keys %weekfourteen)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;ftest11 = insFld(dec13,gFld('$weekfourteen{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(ftest11,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+# 
+# $str .= &quot;dec14 = insFld(decfolder,gFld('Week 15: April 19 - April 25', ''))\n&quot;;
+# foreach my $key (sort keys %weekfifteen)
+# 	{
+# 	my $date = $key;
+# 	$date =~ s/^2004-//;
+# 	$str .= &quot;ftest12 = insFld(dec14,gFld('$weekfifteen{$key} $date', ''))\n&quot;;
+# 	my $where = &quot;type_nodetype=116 and createtime like '%&quot;.$key.&quot;%'&quot;;
+# 	
+# 	my $select = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;$where&quot;,&quot;order by createtime&quot;);
+# 	my $ref;
+# 	while ($ref = $select-&gt;fetchrow_hashref )
+# 		{
+# 		#$junk .= &quot;$$ref{title}&lt;br&gt;&quot;;
+# 		$$ref{title} =~ s/'/\\'/g;
+# 		$str .= &quot;insDoc(ftest12,gLnk('R', '$$ref{title}', 'index.pl?node_id=$$ref{node_id}&amp;tree=time&amp;lastnode_id=$$NODE{node_id}'))\n&quot;;
+# 		}
+# 	}
+
+
+$str .= &quot;&lt;/script&gt;&quot;;
+return $str;
+
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>329</author_user>
+  <package>0</package>
+  <title>time_cat</title>
+</node>

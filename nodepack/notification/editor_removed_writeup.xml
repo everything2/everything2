@@ -1,0 +1,31 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-06-09 10:04:45</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <notification_id>1992022</notification_id>
+  <hourLimit>48</hourLimit>
+  <hits>2</hits>
+  <node_id>1992022</node_id>
+  <code>my $reason = &quot;: $$args{reason}&quot; if $$args{reason};
+my $titleLink = (
+	getRef($$args{writeup_id})
+		&amp;&amp; htmlcode('canseedraft', $$args{writeup_id}))
+	? linkNode($$args{writeup_id})
+	: linkNodeTitle($$args{title});
+
+linkNode($$args{editor_id})
+.&quot; removed &lt;b&gt;$titleLink&lt;/b&gt; by &quot;
+.linkNode($$args{author_id})
+.$reason;</code>
+  <type_nodetype>1930710</type_nodetype>
+  <author_user>1828141</author_user>
+  <description>an editor removes a writeup</description>
+  <package>0</package>
+  <invalid_check>my $draft = getNodeById($$args{writeup_id});
+
+return ($draft &amp;&amp; $$draft{type}{title} ne 'draft');</invalid_check>
+  <title>editor removed writeup</title>
+</node>

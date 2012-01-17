@@ -1,0 +1,43 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>49</node_id>
+  <htmlcode_id>49</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($SETTINGNODE) = getNode('system settings',  getType('setting'));
+my $SETTINGS = getVars $SETTINGNODE;
+my ($HTMLVARS) = getNode('htmlvars nodegroup', getType('nodegroup'));
+my (@htvars) = @{ $$HTMLVARS{group} };
+my $OLDSETTINGS =
+{
+not_found =&gt; $$SETTINGS{notFound_node},
+permission_denied =&gt; $$SETTINGS{permissionDenied_node},
+search_group =&gt; $$SETTINGS{searchResults_node},
+duplicate_group =&gt; $$SETTINGS{duplicatesFound_node},
+
+node_locked =&gt; $$SETTINGS{nodeLocked_node}} ;
+
+@$SETTINGS{keys %$OLDSETTINGS}= values %$OLDSETTINGS;
+
+my @groups = (&quot;gods&quot;, &quot;content editors&quot;, &quot;everything editors&quot;, &quot;users with cool&quot;, &quot;edev&quot;, &quot;e2contact&quot;, &quot;chanops&quot;, &quot;sigtitle&quot;);
+
+foreach my $usergroup (@groups) {
+  my $G = getNode($usergroup, 'usergroup');
+  $DB-&gt;groupCache($G, $$G{group}, &quot;plain&quot;);
+  $$SETTINGS{lc(&quot;group_&quot;.$usergroup)} = $DB-&gt;getGroupCache($G);
+}
+my $GUEST_LINK = getNode('guest user link', 'linktype');
+$$SETTINGS{guest_link} = $GUEST_LINK if $GUEST_LINK;
+
+$SETTINGS;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>set_htmlvars</title>
+</node>

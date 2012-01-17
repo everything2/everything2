@@ -1,0 +1,72 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-02-14 20:23:46</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>4</hits>
+  <node_id>1930061</node_id>
+  <htmlcode_id>1930061</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($wuID) = @_;
+my $wu = getNodeById($wuID);
+
+my $wuHeader = '';
+
+$wuHeader .= &quot;
+
+	&lt;div class='writeup_info' id='writeup_$wuID'&gt;
+&lt;div style='float: left'&gt;
+		submitted by&lt;br /&gt;&lt;span class='writeup_author'&gt; &quot;.linkNode($$wu{author_user}).&quot;&lt;/span&gt;&lt;br /&gt;
+		&lt;span class='writeup_date'&gt;$$wu{createtime}&lt;/span&gt;
+&lt;/div&gt;
+&lt;div style='float: right'&gt;
+		&lt;span class='writeup_message'&gt;
+			&lt;a href='javascript:WU&quot;.$wuID.&quot;.writeupMessage()'&gt;MSG&lt;/a&gt;
+		&lt;/span&gt;
+		&lt;span class='writeup_bookmark' &gt;&quot;.
+			( $DB-&gt;sqlSelect('count(*)', 'links', &quot;from_node=&quot;.$$USER{node_id}.&quot; and to_node=&quot;.$$NODE{node_id}.&quot; and linktype=&quot;.getId(getNode('bookmark','linktype'))) ? 
+			&quot;bookmarked&quot; : 
+			&quot;&lt;a title='bookmark this writeup' href='javascript:WU&quot;.$wuID.&quot;.bookmark()'&gt;BOOK&lt;/a&gt;&quot;
+			).&quot;
+		&lt;/span&gt;
+		&lt;span class='writeup_favorite'&gt;&quot;.
+			( 0 == 1?
+			&quot;favorited&quot; : 
+			&quot;&lt;a href='javascript:WU&quot;.$wuID.&quot;.favorite()'&gt;FAVE&lt;/a&gt;&quot;
+			).&quot;
+		&lt;/span&gt;
+		&quot;;
+
+my $isEditor = htmlcode('isEditor');
+if ($isEditor) {
+$wuHeader .= &quot;
+		&lt;span class='writeup_kill'&gt;&quot;.
+			( 0 == 1? 
+			&quot;killed&quot; : 
+			&quot;&lt;a href='javascript:WU&quot;.$wuID.&quot;.killBox()'&gt;KILL&lt;/a&gt;&quot;
+			).&quot;
+		&lt;/span&gt;
+		&lt;span class='writeup_toolset small_text'&gt;
+			&lt;a href='javascript:WU&quot;.$wuID.&quot;.toolSet()'&gt;Admin Toolset&lt;/a&gt;
+		&lt;/span&gt;
+		&lt;span class='writeup_box' style='display:none'&gt;&lt;/span&gt;&quot;;
+
+$wuHeader.= &quot;
+&lt;/div&gt;
+&lt;div style='clear:both'&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;script type='text/javascript'&gt;
+ var WU&quot;.$wuID.&quot;;
+ Deferrer.defer(function() {WU&quot;.$wuID.&quot; = new WriteupAJAX(\$('writeup_&quot;.$wuID.&quot;'));}, 'writeupAjaxExists');
+&lt;/script&gt;&quot;;
+}
+
+
+$wuHeader;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>zenDisplayWriteupInfo</title>
+</node>

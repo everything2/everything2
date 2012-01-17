@@ -1,0 +1,33 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>11</pagetype_nodetype>
+  <core>R</core>
+  <page>[% if ($query-&gt;param(&quot;op&quot;) eq &quot;new&quot;) {
+	$$NODE{parent_node} = $query-&gt;param(&quot;lastnode_id&quot;);
+	updateNode $NODE, $USER;
+	
+}
+  if ($$NODE{parent_node}) {
+	my $PARENT = selectNode ($$NODE{parent_node});
+	return &quot;&lt;font size=2&gt;&lt;p align=right&gt;in reply to &quot; . linkNode ($PARENT) .&quot;&lt;/font&gt;&lt;br&gt;&lt;p&gt;&quot;;
+}
+%]
+
+[{parselinks:doctext}]
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:12</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>77</htmlpage_id>
+  <hits>0</hits>
+  <node_id>77</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>note display page</title>
+  <mimetype></mimetype>
+</node>

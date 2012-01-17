@@ -1,0 +1,36 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-01-19 10:01:07</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1239083</node_id>
+  <htmlcode_id>1239083</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#(this is probably almost useless, but lets see how it goes...)
+#this &quot;logs&quot; a warning to a query parameter, so a nodelet hack can show multiple warnings, all in 1 place
+#this only works for admins
+#the only parameter(s) is the warning message
+
+return unless exists $HTMLVARS{group_gods}{getId($USER)||0};
+my $count;
+if(!$query-&gt;param('silentwarn_count')) {
+	$count=0;
+} else {
+	$count=$query-&gt;param('silentwarn_count');
+	#don't worry about value, since ??? +1 will force it numeric anyway ???
+}
+
+my $msg = encodeHTML(join(',',@_));
+$msg = $count unless length($msg);
+$query-&gt;param('silentwarn_'.$count,$msg);
+$query-&gt;param('silentwarn_count',$count+1);
+
+'';</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>silentWarn</title>
+</node>

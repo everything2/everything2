@@ -1,0 +1,32 @@
+<node>
+  <parent_container>18</parent_container>
+  <pagetype_nodetype>332487</pagetype_nodetype>
+  <core>0</core>
+  <page>title: [{textfield:title}] &lt;br&gt;
+maintainer: [{node_menu:author_user,user,usergroup}] &lt;br&gt;
+datatype: [{textfield:datatype}] &lt;br&gt;
+&lt;p&gt;&lt;FONT SIZE=2&gt;&lt;b&gt;Edit the document text:&lt;/b&gt;&lt;/FONT&gt;&lt;br&gt;
+
+
+[{textarea:datacode}]
+[%
+$$NODE{datatype} = &quot;text/html&quot; if(exists $$NODE{datatype});
+&quot;&quot;;
+%]
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-12-22 03:18:46</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>332492</htmlpage_id>
+  <hits>0</hits>
+  <node_id>332492</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
+  <author_user>113</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>rawdata edit page</title>
+  <mimetype></mimetype>
+</node>

@@ -1,0 +1,187 @@
+<node>
+  <doctext>&lt;!DOCTYPE html&gt;
+
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+	&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;
+	&lt;title&gt;Everything2&lt;/title&gt;
+    &lt;style type=&quot;text/css&quot; media=&quot;screen&quot;&gt;
+        body,
+        th,
+        td,
+         {
+        	background-color: #fff;
+        	color: #151500;
+        }
+
+        body {
+        	background-image: url(http://clem-ec2-us.s3.amazonaws.com/e2/e2bg.jpg);
+        	font-family: Georgia, serif;
+        }
+        
+         #mainbody {
+        	width: 900px;
+        	margin: auto;
+        	padding: 5px;
+        	background-color: white;
+        	border: 1px #bbb solid;
+        	box-shadow:2px 2px 5px #555;
+            -webkit-box-shadow:2px 2px 5px #878787;
+            -moz-box-shadow:2px 2px 5px #878787;
+            
+        }
+        
+        #header {
+            width: 900px;
+            margin: auto;
+        }
+        
+        #header h1 {
+            margin: 0;
+        }
+        
+        h2 {
+            text-align: center;
+            font-style: italic;
+            font-size: 30px;
+            color: #033;
+        }
+        
+        h3 {
+            text-align: center;
+            font-size: 20px;
+            color: #033;
+        }
+        
+        #searchform {
+            text-align: center;
+        }
+        
+        #searchfield {
+            font-size: 20px;
+            width: 300px;
+            height: 25px;
+        }
+        
+        #search {
+            height: 30px;
+            font-size: 20px;
+        }
+        
+        .item {
+            width: 300px;
+            float: left;
+            
+        }
+        
+        hr {
+         clear: both;  
+/*         visibility: hidden;*/
+         color: transparent;
+         border: none; 
+        }
+        
+        #lure {
+         font-size: 20px;
+         text-align: center;   
+         font-weight: bold;
+         margin: 50px;   
+        }
+        
+        a:link, a:visited {
+         color: #151500;   
+            
+        }
+        
+        a.title {
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+            display: block;
+        }
+        
+        .type {
+         display: none;   
+        }
+        
+        cite {
+            text-align: center;
+            font-size: 11px;
+            display: block
+        }
+        
+        #coolstuff {
+            border-top: 1px #bbb solid;
+        }
+        
+        .content {
+            padding: 10px;
+            
+        }
+        
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;header&gt;
+    &lt;div id='header'&gt;
+    &lt;h1&gt;&lt;img src='http://clem-ec2-us.s3.amazonaws.com/e2/e2logo.gif' alt='everything2'&gt;&lt;/h1&gt;
+    &lt;/div&gt;
+&lt;/header&gt;
+&lt;div id='mainbody'&gt;
+    &lt;section&gt;
+[%
+my @wit = (
+
+&quot; Defying definition since 1999&quot;,
+&quot; Writing everything about everything.&quot;,
+&quot; Wikipedia's weird cousin/older brother.&quot;,
+&quot; Our fiction is more entertaining than Wikipedia's.&quot;,
+&quot; Defying definition since 1999&quot;,
+&quot; Writing everything about everything.&quot;,
+&quot; Words arranged in interesting ways&quot;,
+&quot; Welcome to the rebirth of your desire to write.&quot;
+);
+return &quot;&lt;h2 id='wit'&gt;&quot;.$wit[int(rand(@wit))].&quot;&lt;/h2&gt;&quot;;
+%]
+    &lt;/section&gt;
+    &lt;section&gt;
+        &lt;form action='/' method='GET' id='searchform'&gt;
+            &lt;input type='text' placeholder='Search' name='node' id='searchfield'&gt;
+            &lt;button type='submit' id='search'&gt;Enlighten me&lt;/button&gt;
+        &lt;/form&gt;
+    &lt;/section&gt;
+    
+    &lt;section&gt;
+        &lt;p id=&quot;lure&quot;&gt;
+            &lt;a href='/title/create+a+new+user'&gt;Sign up&lt;/a&gt; or &lt;a href='/title/login'&gt;login&lt;/a&gt;
+        &lt;/p&gt;
+        
+    &lt;/section&gt;
+    
+    &lt;section&gt;
+                &lt;div id=&quot;coolstuff&quot;&gt;
+                    &lt;h3&gt;The Best New Writing&lt;/h3&gt;
+   [%     htmlcode('displaynltext','New Cool Stuff'); %]
+
+    &lt;/section&gt;
+    &lt;hr&gt;
+    
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-11-10 15:04:05</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1990709</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>451267</type_nodetype>
+  <document_id>1990709</document_id>
+  <author_user>974148</author_user>
+  <package>0</package>
+  <title>ascorbic's front page</title>
+</node>

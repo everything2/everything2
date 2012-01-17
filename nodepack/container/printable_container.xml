@@ -1,0 +1,39 @@
+<node>
+  <parent_container>0</parent_container>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>11</hits>
+  <node_id>926672</node_id>
+  <context>&lt;html&gt;
+&lt;head&gt;&lt;style&gt;
+body {
+  color:black;
+  background:white;
+}
+
+a:link {
+  color:black;
+  text-decoration:none;
+}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;title&gt;[&quot;$$NODE{title}&quot;]&lt;/title&gt;
+&lt;center&gt;
+&lt;table width=90%&gt;
+&lt;tr&gt;&lt;td&gt;
+CONTAINED_STUFF
+&lt;/td&gt;
+&lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt; </context>
+  <type_nodetype>2</type_nodetype>
+  <container_id>926672</container_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>printable container</title>
+</node>

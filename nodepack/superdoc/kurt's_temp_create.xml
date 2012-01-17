@@ -1,0 +1,61 @@
+<node>
+  <doctext>[%
+return &quot;Nothing to see here&quot;;
+my $str = &quot;&quot;;
+
+my @USRS = getNodeWhere({}, getType('user'), 'node_id');
+
+foreach (@USRS)
+{
+  my $U = $_;
+  my $V = getVars($U);
+  
+  
+  $str .= &quot;For user $$U{title}:&lt;br&gt;&quot;;
+  my $links = $DB-&gt;getDatabaseHandle()-&gt;prepare(&quot;select to_node from links where linktype = 419565 and from_node = $$U{user_id}&quot;);
+  $links-&gt;execute();
+
+  while (my ($target) = $links-&gt;fetchrow())
+  {
+    my $T = getNodeById($target);
+    $str .= &quot;Link to $$T{title} ($$T{node_id})&lt;br&gt;&quot;;
+    
+
+    next unless($target =~ /([0-9]*)/);
+    next if(index($$V{bookbucket}, $1) &gt; -1);
+
+    $$V{bookbucket} .= &quot;,&quot; if($$V{bookbucket} &amp;&amp; $$V{bookbucket} ne &quot;&quot;);
+    $$V{bookbucket} .= $1;
+    
+  }
+
+  setVars($U, $V);
+  updateNode($U, $U, 1); 
+  $str .= &quot;bookbucket: $$V{bookbucket} &lt;br&gt;&quot;;
+
+
+  #A test
+  my $VA = getVars($U);
+  $str .= &quot;testing: $$VA{bookbucket} &lt;br&gt;&quot;;
+}
+
+
+$str;
+
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2004-07-26 17:49:16</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1548498</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1548498</document_id>
+  <author_user>329</author_user>
+  <package>0</package>
+  <title>Kurt's_Temp_Create</title>
+</node>

@@ -1,0 +1,160 @@
+<node>
+  <doctext>[{openform}]
+&lt;input type=&quot;text&quot; name=&quot;ftsearch&quot; &gt;&lt;select name=&quot;searchcombine&quot;&gt;&lt;option value=&quot;OR&quot;&gt;Any of these words (OR)&lt;/option&gt;&lt;option value=&quot;AND&quot;&gt;All of these words (AND)&lt;/option&gt;&lt;/select&gt;&lt;br&gt;
+&lt;br&gt;&lt;input type=&quot;submit&quot; value=&quot;Full text search&quot;&gt;&lt;/form&gt;
+[%
+  my $TEXT = $query-&gt;param(&quot;ftsearch&quot;);
+  my $str;
+  return &quot;Enter some words to search for&lt;br&gt;&quot; unless $TEXT;
+
+  my $dbs = getVars(getNode(&quot;fulltextdb settings&quot;,&quot;setting&quot;));
+  my $ftdb = DBI-&gt;connect(&quot;DBI:mysql:$$dbs{database}:$$dbs{hostname}&quot;, &quot;$$dbs{username}&quot;, &quot;$$dbs{password}&quot;);
+  $ftdb or return &quot;Ack! can't connect to ftdb&lt;br&gt;&quot;;
+
+  $TEXT =~ s/[^0-9A-Za-z\@\-\_\s]//g;
+  $TEXT =~ s/[\r\n]/ /g;
+  $TEXT =~ s/\s+/ /g;
+
+  my $sc = $query-&gt;param(&quot;searchcombine&quot;);
+  $sc = undef unless($sc eq &quot;AND&quot; or $sc eq &quot;OR&quot;);
+  $sc ||= &quot;OR&quot;;
+
+  my @words = split &quot; &quot;,$TEXT;
+  my $temptxt = &quot;&quot;;
+  
+  my $RESULTS;
+  my $ANDRESULTS; 
+  my $pass = 0;
+  my $CW = getVars(getNode(&quot;Common Words&quot;, &quot;setting&quot;));
+
+
+  foreach my $w (@words)
+  {
+     if(length($w) &lt; 4)
+     {
+        $str.=&quot;&lt;small&gt;$w - too short&lt;/small&gt;&lt;br&gt;&quot;;
+        next;
+     } 
+ 
+     if($$CW{$w})
+     {
+        $str.=&quot;&lt;small&gt;$w - the word is too common and has been omitted&lt;/small&gt;&lt;br&gt;&quot;;
+        next;
+     }
+
+     my $csr = $ftdb-&gt;prepare(&quot;SELECT ftdict_id FROM ftdict WHERE ftdict_word=&quot;.$ftdb-&gt;quote(&quot;$w&quot;).&quot; LIMIT 1&quot;);
+     $csr-&gt;execute();
+     my $row = $csr-&gt;fetchrow_hashref();
+     unless($row){
+        $str.=&quot;&lt;small&gt;$w - no results available&lt;/small&gt;&lt;br&gt;&quot;;
+        next;
+     }
+
+     my $dictid = $$row{ftdict_id};
+   
+     $csr = $ftdb-&gt;prepare(&quot;SELECT ftcache_cache from ftcache where ftcache_dictid=$dictid&quot;);
+     $csr-&gt;execute();
+     $row = $csr-&gt;fetchrow_hashref();
+     unless($$row{ftcache_cache}){
+        $str.=&quot;&lt;small&gt;$w - no results returned&lt;/small&gt;&lt;br&gt;&quot;;
+        next;
+     }
+
+     $str.=&quot;&lt;small&gt;$w - results found&lt;/small&gt;&lt;br&gt;&quot;;
+     $temptxt=&quot;$$row{ftcache_cache};&quot;;
+
+
+     foreach(split(&quot;;&quot;,$temptxt))
+     {
+       my @vals = split(&quot;-&quot;, $_);
+       if($sc eq &quot;AND&quot;)
+       {
+          $$ANDRESULTS{$vals[0]} = ($vals[1]+$$RESULTS{$vals[0]}) if $$RESULTS{$vals[0]};
+       }
+
+       $$RESULTS{$vals[0]} ||= 0;
+       $$RESULTS{$vals[0]} += $vals[1];
+     }
+
+     $RESULTS = $ANDRESULTS if($sc eq &quot;AND&quot; and $pass != 0);
+     $pass++;
+   }
+
+  my $startat = $query-&gt;param(&quot;startat&quot;);
+  $startat =~ s/[^0-9]//g;
+  $startat ||= 0;
+
+  my @final = sort { $$RESULTS{$b} &lt;=&gt; $$RESULTS{$a}} keys %$RESULTS;
+  my $cnt = $#final;
+  
+  if($cnt == -1){
+    $ftdb-&gt;disconnect(); 
+    return &quot;$str&lt;br&gt;No results found&quot;;
+  }
+  my $highend = $startat+50;
+  $highend = $cnt if $highend &gt; $cnt;
+  my $lowend = $startat; 
+  $lowend=1 if $lowend==0;
+
+  $str.=&quot;&lt;strong&gt;$cnt&lt;/strong&gt; results total, currently viewing results &lt;strong&gt;$lowend&lt;/strong&gt; through &lt;strong&gt;$highend&lt;/strong&gt;&lt;br&gt;&quot;;
+  $str.=&quot;&lt;br&gt;&lt;p align=\&quot;center\&quot;&gt;&lt;hr width=\&quot;300\&quot;&gt;&lt;/p&gt;&quot;;
+  $str.=&quot;&lt;table&gt;&quot;;
+  
+  for($startat..($startat+50))
+  { 
+     my $n = getNodeById($final[$_]);
+     next unless $n;
+     next unless $$n{type}{title} eq &quot;writeup&quot;;
+     my $e2n = getNodeById($$n{parent_e2node});
+     $str.=&quot;&lt;tr&gt;&lt;td&gt;&quot;.linkNode($n, $e2n-&gt;{title}).&quot; (&quot;.linkNode($e2n, &quot;full&quot;).&quot;) by &quot;.linkNode($$n{author_user}).&quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
+     $str.=&quot;&lt;tr&gt;&lt;td&gt;&lt;blockquote&gt;&quot;;
+     my $txt = substr($$n{doctext},0,300);
+     $txt =~ s/\&lt;.*?\&gt;//g;
+     $txt =~ s/[\[\]\|]//g;
+     $txt =~ s/\&amp;.*?\;//g;
+     $str.=&quot;&lt;small&gt;$txt&lt;/small&gt;&quot;;
+     $str.=&quot;&lt;/blockquote&gt;&lt;/td&gt;&lt;/tr&gt;&quot;;
+  }
+  $str.=&quot;&lt;/table&gt;&quot;;
+  $ftdb-&gt;disconnect();
+
+  
+ my $firststr = (($startat-50 &lt; 1)?(1):($startat-50)).&quot;-&quot;.(($startat==0)?(50):($startat));
+ $str.=&quot;&lt;p align=\&quot;center\&quot;&gt;&lt;table width=\&quot;70%\&quot;&gt;&lt;tr&gt;&quot;;
+  $str.=&quot;&lt;td width=\&quot;50%\&quot; align=\&quot;center\&quot;&gt;&quot;;
+  if(($startat-50) &gt;= 0){
+     $str.=linkNode($NODE,$firststr,{&quot;startat&quot; =&gt; ($startat-50), &quot;ftsearch&quot; =&gt; $query-&gt;param(&quot;ftsearch&quot;)});
+  }else{
+     $str.=$firststr;
+  }
+  $str.=&quot;&lt;/td&gt;&quot;;
+  $str.=&quot;&lt;td width=\&quot;50%\&quot; align=\&quot;center\&quot;&gt;&quot;;
+  my $secondstr = ($startat+50).&quot;-&quot;.(($startat + 100 &lt; $cnt)?($startat+100):($cnt));
+
+  if(($startat+50) &lt;= ($cnt)){
+     $str.=linkNode($NODE,$secondstr,{&quot;startat&quot; =&gt; ($startat+50), &quot;ftsearch&quot; =&gt; $query-&gt;param(&quot;ftsearch&quot;)});
+  }else{
+     $str.=&quot;(end of list)&quot;;
+  }
+
+  $str.=&quot;&lt;/td&gt;&quot;;
+  $str.=&quot;&lt;/tr&gt;&lt;/table&gt;&lt;/p&gt;&quot;;
+  return &quot;$str&quot;;
+  
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-10-18 06:31:42</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>1181518</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1144104</type_nodetype>
+  <document_id>1181518</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>full text search beta mk1</title>
+</node>

@@ -1,0 +1,94 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-02-09 23:53:42</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1251621</node_id>
+  <htmlcode_id>1251621</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $str = &quot;&quot;;
+
+use Everything::Experience;
+
+$str.=&quot;&lt;doctext&gt;&quot;;
+$str.=encodeHTML(htmlcode(&quot;displayUserText&quot;)) unless $query-&gt;param(&quot;no_doctext&quot;);
+$str.=&quot;&lt;/doctext&gt;\n&quot;;
+
+my $vars = getVars($NODE);
+
+# the DTD needs updating to deal with the added stuff
+# oh, and, this is probably horribly broken. sorry, i don't /do/ perl.
+
+$str.=&quot;&lt;experience&gt;&quot;.$$NODE{experience}.&quot;&lt;/experience&gt;\n&quot;;
+$str.=&quot;&lt;lasttime&gt;&quot;.$$NODE{lasttime}.&quot;&lt;/lasttime&gt;\n&quot;;
+$str.=&quot;&lt;level value=\&quot;&quot;.getLevel($NODE).&quot;\&quot;&gt;&quot;.$$vars{level}.&quot;&lt;/level&gt;\n&quot;;
+
+  $str.=&quot;&lt;writeups&gt;&quot;;
+if (defined $$vars{numwriteups}) {
+  $str.=$$vars{numwriteups}; 
+}
+  $str.=&quot;&lt;/writeups&gt;&quot;;
+
+ $str.=&quot;&lt;image&gt;&quot;;
+if (defined $$NODE{imgsrc}) {
+  $str.=$$NODE{imgsrc};
+}
+ $str.=&quot;&lt;/image&gt;\n&quot;;
+
+if (defined $$vars{cools}) {
+  $str.=&quot;&lt;cools&gt;&quot;.$$vars{coolsspent}.&quot;&lt;/cools&gt;&quot;;
+}
+
+  $str.=&quot;&lt;lastnoded&gt;\n&quot;;
+
+if (!$$vars{hidelastnoded}) {
+  my $n = $$NODE{title};
+  if (!(($n eq 'EDB') || ($n eq 'Klaproth') || ($n eq 'Cool Man Eddie') || ($n eq 'Webster 1913'))) {
+    my $ln = getNodeById($$vars{lastnoded});
+    if ($ln) {
+      $ln = getNodeById($$ln{parent_e2node});
+      $str.=&quot;&lt;e2link node_id=\&quot;$$ln{node_id}\&quot;&gt;&quot;.encodeHTML($$ln{title}).&quot;&lt;/e2link&gt;\n&quot;;
+    }
+  }
+}
+
+  $str.=&quot;&lt;/lastnoded&gt;\n&quot;;
+
+$str.=&quot;&lt;userstrings&gt;\n&quot;;
+  $str.=&quot;  &lt;mission&gt;&quot;.encodeHTML($$vars{mission}).&quot;&lt;/mission&gt;\n&quot;;
+  $str.=&quot;  &lt;specialties&gt;&quot;.encodeHTML($$vars{specialties}).&quot;&lt;/specialties&gt;\n&quot;;
+  $str.=&quot;  &lt;motto&gt;&quot;.encodeHTML($$vars{motto}).&quot;&lt;/motto&gt;\n&quot;;
+  $str.=&quot;  &lt;employment&gt;&quot;.encodeHTML($$vars{employment}).&quot;&lt;/employment&gt;\n&quot;;
+$str.=&quot;&lt;/userstrings&gt;\n&quot;;
+
+$str.=&quot;&lt;groupmembership&gt;\n&quot;;
+my @groups = ();
+my $U = getId($NODE);
+push( @groups, getNode('gods', 'usergroup')) if exists $HTMLVARS{'group_gods'}{$U};
+push( @groups, getNode('Content Editors', 'usergroup')) if exists $HTMLVARS{'group_content editors'}{$U};
+push( @groups, getNode('edev', 'usergroup')) if exists $HTMLVARS{'group_edev'}{$U};
+
+# There probably aren't too many usergroups with names that need to be encoded, but this will stop the errors before they occur.
+$str.= &quot;&lt;e2link node_id=\&quot;$$_{node_id}\&quot;&gt;&quot;.encodeHTML($$_{title}).&quot;&lt;/e2link&gt;\n&quot; 
+ foreach(@groups);
+
+$str.=&quot;&lt;/groupmembership&gt;\n&quot;;
+
+$str.=&quot;&lt;bookmarks&gt;\n&quot;;
+  my $linktype = getId(getNode('bookmark', 'linktype'));
+  my $csr = $DB-&gt;sqlSelectMany('to_node', 'links', &quot;from_node=$$NODE{node_id} and linktype=$linktype&quot;);
+  while (my $ROW = $csr-&gt;fetchrow_hashref()) { 
+    my $bm = getNodeById($$ROW{to_node}, 'light');
+    $str.=&quot;  &lt;e2link node_id=\&quot;$$bm{node_id}\&quot;&gt;&quot;.encodeHTML($$bm{title}).&quot;&lt;/e2link&gt;\n&quot;;
+  }
+$str.=&quot;&lt;/bookmarks&gt;\n&quot;;
+
+return $str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>formxml_user</title>
+</node>

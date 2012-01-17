@@ -1,0 +1,25 @@
+<node>
+  <doctext>I received an idea from [Shak] that I'll pass on...  (from previous edevified w/u's it didn't appear that this has been suggested before).&lt;/p&gt;
+
+&lt;p&gt;Idea:  an extra field in a user's homenode specifying the &lt;b&gt;amount&lt;/b&gt; of time the user has spent logged in to e2.  Admittedly, this is a rather 'pointless' feature, although it may have some uses...  I don't (yet) know how this would be implemented, but I think it has some potential.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Update: Thursday, January 17, 2002 at 09:48:19&lt;/p&gt;
+&lt;p&gt;Instead of 'time' (a difficult concept, see [JayBonci|jb]'s comments below), maybe a better quantity would be a simple 'user pageloads' or extended &quot;(user pageloads)/(hour)&quot;.  In other words, the number of pages the user has loaded (either a total or a running average).  The average would likely be computationally expensive, unless it were only available by specific request (or once daily/hourly, etc.).  But even now I'm having second thoughts, as regards &quot;stats stackers&quot; (or whatever they may be called) who go about simply loading pages as fast as possible to have the 'best' numbers.  Hmm.  Just some thoughts.
+&lt;bR&gt;&lt;br&gt;
+&lt;b&gt;jb says:&lt;/b&gt; It would be nearly impossible to calculate the back amount of time. Since websites have &quot;state&quot;, then sure, but surely people aren't always looking at the website. It's an impossible number from which we currently have absolutely no back data to fix it up with.  Cool idea, but really infeasible.
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-01-03 06:25:48</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1227612</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>854232</type_nodetype>
+  <document_id>1227612</document_id>
+  <author_user>694466</author_user>
+  <package>0</package>
+  <title>e2 time</title>
+</node>

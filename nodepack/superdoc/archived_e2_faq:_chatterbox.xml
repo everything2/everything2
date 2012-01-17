@@ -1,0 +1,173 @@
+<node>
+  <doctext>&lt;!-- This doc contains perl code. Please leave it as a superdoc. love, maus --&gt;
+
+&lt;p&gt;There are four communication channels for members of the Everything2 community:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The Chatterbox nodelet&lt;/li&gt;
+&lt;li&gt;The Java Chatterbox&lt;/li&gt;
+&lt;li&gt;The Squawkbox/Gab Central&lt;/li&gt;
+&lt;li&gt;The Message Inbox&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The [Chatterbox] is a blanket term for the increasingly elaborate messaging system that is built into E2, but also refers specifically to a [nodelet] which facilitates semi-real-time chat capabilities among users. The [Java Chatterbox] is a separate chat program (a [Java] applet, in geek parlance) that you can use instead of (or in addition to) the Chatterbox nodelet. There are also a couple of special pages that permit more advanced public and private communication via modified interfaces to the Chatterbox code.&lt;/p&gt;
+
+&lt;!--
+&lt;p&gt;If you're here because you clicked on a &lt;strong&gt;&#216;&lt;/strong&gt; symbol in the Other Users nodelet it means that particular user has been 'swallowed' by the [EDB] and is temporarily banned from communicating in the Chatterbox. &lt;em&gt;Please read on for details...&lt;/em&gt;&lt;/p&gt;
+--&gt;
+
+&lt;p&gt;&lt;strong&gt;Chatterbox Behavior&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;As the Chatterbox is E2's primary community forum, there are some types of behavior that are unacceptable there. These include public swipes at others, carrying on private arguments, and potty-mouthed petty insults. The Chatterbox is provided to everyone as a kind of playground, and bullies will &lt;em&gt;not&lt;/em&gt; be tolerated.&lt;/p&gt;
+
+&lt;p&gt;You will also observe that there are other rooms besides the main room (known as 'outside'). These include [Political Asylum], where many people prefer that you take discussions of a political nature. A full list is available at [Available Rooms].&lt;/p&gt;
+
+&lt;p&gt;It is possible for members of the admin group ('gods') to move you to another room, or even in extreme cases, to 'borg' you. In most cases, the god involved will let you know why, but really, you shouldn't need to ask once you have read this. In any event, whatever you use the chatterbox for, enjoy the facilities. Have fun, just don't run with scissors.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;On to the Q and A...&lt;/em&gt;&lt;/p&gt;
+
+
+&lt;blockquote&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: How can I [communicate] with my fellow noders?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Well, obviously, you can communicate with other Everythingians through your writeups, and some noders use their home nodes to post their IM and e-mail addresses (see also [EIMR]), mailing addresses (see also [EMAR]) and even phone numbers, but the best way to maintain real-time contact with other noders is through the [Chatterbox] nodelet or the [Squawkbox] page.&lt;/p&gt;
+
+&lt;p&gt;You can also use the [Message Inbox] page (there's a link for you in your [Vitals] [nodelet]) for writing and responding to private [msg]'s to and from other E2 users. Check it out, the [javascript] makes it very convenient.&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: Okay, what's the [Chatterbox]?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; The Chatterbox (often nicknamed the &lt;em&gt;Catbox&lt;/em&gt;) is a [nodelet] that [nate] has built that lets you talk to other logged-in users. All you have to do is type a message into the Chatterbox text box and click &quot;Talk&quot;. The Chatterbox text will update every time you load a new page, but if you hit &quot;Reload&quot; or &quot;Refresh&quot; right after submitting your text, your &quot;chatter&quot; will show up again, causing unnecessary embarrassment. &lt;em&gt;Do not&lt;/em&gt; &quot;repost form data&quot;.  &lt;em&gt;&lt;strong&gt;Don't do it!&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: So this is something I &lt;em&gt;have&lt;/em&gt; to deal with?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; No, since it's a [nodelet], you can turn it off on your [User Settings] page if you're feeling particularly anti-social. Doing so will automatically display &quot;you have [Message Inbox|#] messages&quot; above your topmost nodelet, where '#' is how many private messages you have, as well as a link to your Message Inbox.&lt;/p&gt;
+&lt;p&gt;You can also quickly disable the chatter part of the nodelet with &lt;tt&gt;[/chatteroff]&lt;/tt&gt; when you're working on a writeup and don't want to be distracted, and re-enable it with &lt;tt&gt;[/chatteron]&lt;/tt&gt; when you're done. See the &quot;nifty commands&quot; question further down in the FAQ for more info.&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: What if I wanna talk to someone in private?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; For that, you can use the Chatterbox's &quot;private chat&quot; feature. To send a private note to someone, type &quot;/msg&quot; (or &quot;/tell&quot;), add a space, type their username, add a space and then type what you want to say. If you're trying to talk to someone who has a space in their name, you'll have to use an underscore (_) instead of the space in their name. For instance, if you're talking to nate, you'll type:
+&lt;blockquote&gt;&lt;pre&gt;
+/msg nate Where shall I send the hush money?
+&lt;/pre&gt;&lt;/blockquote&gt;
+If you're talking to [dem bones], you'll need to replace the space in the name with an underscore, like this:
+&lt;blockquote&gt;&lt;pre&gt;
+/msg dem_bones Send it to my house, like you always do!
+&lt;/pre&gt;&lt;/blockquote&gt;
+If you want to send the same message to multiple users, you can put curly brackets around their names, separating each name with a space, like so:
+&lt;blockquote&gt;&lt;pre&gt;
+/msg{hemos clampe lawnjart} bones is sending the hush money as planned.
+&lt;/pre&gt;&lt;/blockquote&gt;
+Make sure you &lt;strong&gt;omit&lt;/strong&gt; the space between the &lt;tt&gt;/msg&lt;/tt&gt; and the opening curly bracket (as shown above) when sending to multiple users, or you will get a terse reply from [root] of the &quot;not a valid user or usergroup name or alias&quot; variety.&lt;/p&gt;
+
+&lt;p&gt;Once you've sent the message, it will appear immediately in that user's
+Message Inbox (They don't even have to be logged on!) and will stay there until
+they clear the message manually.&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: Help! My chatterbox is filled with private messages! How can I get rid of them after I have read them?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; To delete a private msg sent to you simply click the small box at the beginning of the message you wish to delete, then click the &quot;talk&quot; button. If there is nothing in the talk box, nothing gets posted to the chatterbox and your checked message is deleted. If you're sending a message (public or private), it will also automatically delete any private messages that you have checked. Note that you don't &lt;em&gt;have&lt;/em&gt; to delete private messages, you can keep them around if you so desire (especially if you get praise from [dannye] or a message from the lovely [jessicapierce]).&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: I don't like seeing my personal messages in the Chatterbox nodelet. How can I display only the chatter?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Look at the &lt;small&gt;&lt;strong&gt;Chatterbox Nodelet&lt;/strong&gt;&lt;/small&gt; section in your [User Settings], under the &lt;strong&gt;Display&lt;/strong&gt; heading. There's an option to &quot;Hide private messages in the chatterbox nodelet&quot; - check it and submit, and you're golden. Instead of your messages being shown, you'll see &quot;you have [Message Inbox|#] messages&quot; displayed above your topmost nodelet, where '#' is the number of messages waiting. When you notice this number rise, you'll know you have new messages in your Message Inbox.&lt;/p&gt;
+&lt;br /&gt;
+
+
+&lt;p&gt;&lt;strong&gt;Q: I hear there's a [Java Chatterbox]. How do I get on that? &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Look on the right side of your screen, you'll see a nodelet called [Vitals] (assuming that you have it turned on - you should, it's vital!). Click on the link that says &quot;Java Chatterbox&quot; and yer off!&lt;/p&gt;
+
+&lt;p&gt;Since the Java Chatterbox is a separate application, it requires some implementation of Sun Microsystem's [Java] run-time software to be installed on your computer. Unfortunately, not every implementation of Java works properly with the Java Chatterbox, so your mileage may vary. In fact, if your computer runs Mac OS X, you might want to check out the [Mattbox: Mac OS X Chatterbox Client|Mattbox] instead.&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: Is there a specific Chatterbox page that I should chatter on?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; No, you can chatter from anywhere, but if all you want to do is chatter, we recommend you do it from the [Squawkbox]. Alternately, you can use [Gab Central], which combines the features of Squawkbox with Message Inbox, or [Chatterlight] if you're into minimalist (and want to reduce database lag). You'll be so busy communicating that you may never have time to create another writeup ever again!&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: Are there any other nifty Chatterbox commands?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; You bet. If you'd like to receive and send private msg's but not read the general chatter you can type &lt;tt&gt;/chatteroff&lt;/tt&gt; in the box and hit the &quot;talk&quot; button. If you'd like to return to normal Chatterbox mode just type &lt;tt&gt;/chatteron&lt;/tt&gt;. Also, if you'd like to narrate a personal action you can use the &lt;tt&gt;/me&lt;/tt&gt; command to dictate the action. For example:
+&lt;blockquote&gt;&lt;pre&gt;
+/me is impressed with the latest writings from &amp;#91;Chiisuta&amp;#93; and &amp;#91;Lucy-S&amp;#93;.
+&lt;/pre&gt;&lt;/blockquote&gt;
+This would appear as:
+&lt;blockquote&gt;&lt;em&gt;
+[% linkNode($USER,0,{lastnode_id=&gt;0}); %] is impressed with the latest writings from [Chiisuta] and [Lucy-S].
+&lt;/em&gt;&lt;/blockquote&gt;
+The &lt;tt&gt;/me&lt;/tt&gt; is replaced with your name, so use proper grammar when constructing your action sentence!&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: What if I missed some chatter? &lt;em&gt;What if someone has been talking about me!?!&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Our dashing and handsome [ascorbic] has put together a beautiful Chatterbox archive that's easily searched. Check out &lt;a href=&quot;http://ascorbic.net/catbox/&quot; target=&quot;_blank&quot;&gt;ascorbic's chatterbox archive&lt;/a&gt; &lt;em&gt;(external link opens in a new window)&lt;/em&gt;.&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: Why don't I see anybody else in the [Other Users] nodelet?&lt;/strong&gt; and/or &lt;strong&gt;Why isn't anybody else talking?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Two possible reasons... There may be nobody else on, and nobody's talking. However, it may be that you've changed which room you're in. To change back to the outside room, where most people are, look at the top of the &lt;strong&gt;Other Users&lt;/strong&gt; [nodelet]. Notice it has a drop-down list. Pick &quot;outside&quot;, and press the &quot;go&quot; button that is close-by (note - &lt;strong&gt;not&lt;/strong&gt; the &quot;talk&quot; button). This will bring you back into the main room. You can also decide to go to a different room, such as [Noders Nursery]. You can find a list of rooms at the [Available Rooms] page.  Sometimes, if you're having a spirited discussion (read: shouting match) in the chatterbox, you may get automatically kicked into a different room, like [Political Asylum]. It is suggested that if you wish to have a freewheeling discussion that only involves one or two other users, you should take it into another room so you do not disturb the general chatter of the &quot;outside&quot; room.&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: What is the [Squawkbox]/[Gab Central]?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; The Squawkbox is a page that allows you to view the Chatterbox discussion across multiple rooms. You can monitor the threads in as many rooms as you'd like. You can also speak in any of these rooms without having to actually change the room you're &quot;in&quot;. This helps noders keep the politics in [Political Asylum] and the E2 questions and inevitable nonsense that follows in the [Outside] room. [Gab Central] is the same as the Squawkbox page, but with the functionality of [Message Inbox] added to it. Other popular rooms will hopefully develop with the help of the Squawkbox and Gab Central.&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;strong&gt;Q: What is the [Message Inbox]?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; The Message Inbox is a souped-up version of the
+Chatterbox that will display &lt;em&gt;all&lt;/em&gt; of your private messages on a single page with fancy options to make replying easier and less prone to typos. To delete a message from your Message Inbox simply check the box on the &lt;strong&gt;left&lt;/strong&gt; side of the writeup (below the &quot;&lt;strong&gt;delete&lt;/strong&gt;&quot; column header) and click the &quot;submit&quot; button (same effect as the &quot;talk&quot; button in the Chatterbox nodelet.&lt;/p&gt;
+
+&lt;p&gt;Another feature of the Message Inbox is the ability to organize messages by groups. If you're in [edev] or other usergroups, you can switch to just those messages using links that show up once you enable the &quot;Sort messages by the usergroup the message is for&quot; checkbox at the top of the page. This can make reading the messages in their context much easier.&lt;/p&gt;
+
+&lt;p&gt;If your messages are starting to pile up but you don't want to delete them just yet, you can archive one or more of them by checking the box on the &lt;strong&gt;right&lt;/strong&gt; side of the message (below the &quot;&lt;strong&gt;&amp;#91;un&amp;#93;Archive&lt;/strong&gt;&quot; column header) and clicking submit. This will mark the message(s) as &lt;em&gt;archived&lt;/em&gt; and prevent them from displaying. You can view your message archive by changing the setting on the drop-down menu at the top of the Message Inbox page.&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: What is the deal with groups?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; You may skip this answer if you do not belong to any usergroups.&lt;br /&gt;&lt;br /&gt;
+Still here? A group is a way to send messages to a large body of users with a particular interest, such as [edev], [e2film], [outies] or [Content Editors]. Simply &lt;tt&gt;/msg&lt;/tt&gt; the group as you would message another user, and everybody in that group will get your message. For example, if you are in the [edev] group, you could type:
+&lt;blockquote&gt;&lt;pre&gt;
+/msg edev I think &amp;#91;JayBonci&amp;#93; is working on the code again, as I'm suddenly wearing a kilt!
+&lt;/pre&gt;&lt;/blockquote&gt;
+which would send the message to everybody in the [edev] group, and make them all slightly annoyed at you. You must be a member of a group before you can send a message to that group.&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: What about that strange [blab!] button I see at the end of writeups?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; You may use [Writeup Settings] to change what information you see about a writeup. Writeup Settings now has a new &quot;code&quot; you may use; &lt;strong&gt;sendmsg&lt;/strong&gt; is its name. (You can use this code by either using the &quot;default: full&quot; button, or typing it in yourself for custom placement.) This allows you to easily send the writeup's author a message about that writeup. (Note: this is not an anonymously sent message, the person you're sending the message to sees your message the same as any other message send via /msg .) The writeup's title is also automatically prepended to your message, so you needn't bother with a copy-n-paste sequence to let the author know which of their (hopefully many and in-depth) writeups you're talking about. You send the message by pressing the vote! button - actually, you may vote and send messages to multiple writeup authors at the same time.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;How blab! Fits In:&lt;/em&gt; When there are no writeups to vote on, &quot;blab!&quot; is shown instead of &quot;vote!&quot; (you wouldn't be voting then, you would be blabbing). There is no functional difference, this is only changes the button's text.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Anonymous Writeup Author Note:&lt;/em&gt; This does not show who you sent the message(s) to, so if you prefer to not know writeup authors, they will remain anonymous to you.&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: What is the CC checkbox by the [blab!] box in the [writeup] display?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Check this box and whatever message you send to the writeup's author will be copied to your [Message Inbox].&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: Some jerk keeps sending me creepy messages! What should I do?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Unfortunately, not every noder is nice and trustworthy. If a fellow Everythingian begins messaging you with inappropriate or undesired comments or questions, first and foremost, politely ask them to stop. If they don't comply, you have a couple of options.&lt;/p&gt;
+&lt;p&gt;On your [User Settings] page, under the &lt;strong&gt;Private message filter&lt;/strong&gt; section, there is a text box labeled &quot;Decline messages from (user or group name):&quot;. To block messages from a user or usergroup, type the name into that text box and click the submit button. When the page reloads, they will be added to a &quot;You are ignoring:&quot; list beneath the &quot;Decline messages&quot; line. Any further messages sent from that person or group will not reach you, and the sender will be notified that you are blocking their messages. To remove the block, click the check box next to the name, and submit.&lt;/p&gt;
+&lt;p&gt;If the unwanted messages are from a usergroup, it's probably better if you just ask the group's moderator to take you out of the group rather than block the messages. If the messages you are getting from a user are more than just annoying (sexual harrassment, threats of violence, etc.), save the message(s) and report the incident(s) to [dem bones].&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;a name=&quot;q_borg&quot;&gt;&lt;strong&gt;Q: What's it mean when someone gets [Borged]?  What is an [EDB]?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Well, sometimes the [edb|Everything Death Borg] gets hungry. When it gets hungry, it tends to go looking for something to eat &amp;#8212; preferably some [derc|poor Everything noder]. The EDB's appetite is best whetted by swallowing someone who is [abusing] the Chatterbox with endless arguments, personal attacks, excessive profanity, or general dumbosity (though he may sometimes swallow someone else just for [fun]). When a noder is swallowed by EDB, they won't be able to send any messages in the Chatterbox for a period of time that varies based on how many times the EDB has had to deal with them, though they can still see what conversations are going on. At the end of the time-out [EDB] will poop the user back out, and they can safely [chatter] again &amp;#8212; ideally, in a more [mature] fashion).&lt;/p&gt;
+
+&lt;p&gt;While 'borged' a user's name will appear in the [Other Users] nodelet with a &lt;strong&gt;[E2 FAQ: Chatterbox|&#216;]&lt;/strong&gt; symbol next to their name. Also, nothing prevents a borged user from using their time in EDB's tummy constructively, as they can author and post new writeups without any difficulties.&lt;/p&gt;
+&lt;br /&gt;
+
+&lt;p&gt;&lt;strong&gt;Q: What about [#everything]?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; How'd you hear about that? Well, if you must know, #everything ('#e' for short - pronounced 'sharpie' if you speak American English and 'hashie' if you speak British/Australian English) is an [IRC] channel on the slashnet network. Way back in the day, before E2's Chatterbox and messaging system were developed, it was &quot;the&quot; IRC channel where noders would go to chat about Everything2... &lt;em&gt;but not anymore.&lt;/em&gt; The channel is still around and in use, but you enter it at &lt;em&gt;your own risk.&lt;/em&gt; See ModernAngel's [#everything|writeup] for a more detailed explanation.&lt;/p&gt;
+
+&lt;/blockquote&gt;
+
+&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;
+&lt;p align=center&gt;&lt;em&gt;back to&lt;/em&gt;&lt;br /&gt;
+&lt;strong&gt;[Everything FAQ]&lt;/strong&gt;&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-09-14 06:11:58</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2754</hits>
+  <node_id>747657</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>747657</document_id>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>Archived E2 FAQ: Chatterbox</title>
+</node>

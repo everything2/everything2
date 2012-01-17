@@ -1,0 +1,149 @@
+<node>
+  <doctext>&lt;br&gt;&lt;br&gt;&lt;br&gt;
+&lt;!--  wharfinger  11/23/00                                              --&gt;
+&lt;!--  This &quot;code&quot;, such as it is, is in the public domain.              --&gt;
+
+&lt;!--  Replace angle-brackets with &amp;lt;/&amp;gt; and square brackets with    --&gt;
+&lt;!--  &amp;#91;/&amp;#93;                                                       --&gt;
+
+&lt;script language=&quot;JavaScript&quot;&gt;
+&lt;!--
+    //---------------------------------------------------------------------
+    //  option == &quot;fix&quot; or &quot;restore&quot;
+    function do_fix_brackets( widget, option ) {
+        if ( option != 'fix' &amp;&amp; option != 'restore' ) {
+            window.alert(   'do_fix_brackets( ) error:\n\n' +
+                            '    option == &quot;' + option + '&quot;\n\n' +
+                            'It must be &quot;fix&quot; or &quot;restore&quot;.' );
+        } else {
+            //  Realistically speaking, we could use any non-'fix' value 
+            //  of option to signify 'restore' (I mean, that's what we ARE
+            //  doing, right?), but that's ugly. For example, you could 
+            //  call &quot;do_fix_brackets( 'foo', 'fixbrackets' )&quot; and have it 
+            //  do just the opposite of what it looks like.
+            widget.value = ( option == 'fix' )
+                                ? fix_brackets( widget.value )
+                                : restore_brackets( widget.value );
+
+            widget.select();
+            widget.focus();
+        }
+
+        return false;   //  Even if this was invoked by a &quot;submit&quot; button,
+                        //  don't submit.
+    }
+
+    //---------------------------------------------------------------------
+    //  Is there any way to pass by reference in JavaScript?
+    function fix_brackets( str ) {
+        str = str.replace( /\&amp;/g, '&amp;amp;' );
+        str = str.replace( /\&lt;/g, '&amp;lt;' );
+        str = str.replace( /\&gt;/g, '&amp;gt;' );
+
+        //  0x5b is left square bracket; 0x5d is right square bracket.
+        //  We do that because E2 will jump to conclusions about what the 
+        //  square brackets are for. If we needed the square brackets for 
+        //  the set operator, we could do eval( '/\x5b0-9\x5d/g' ) or 
+        //  something.
+        str = str.replace( /\x5b/g, '&amp;#91;' );
+        str = str.replace( /\x5d/g, '&amp;#93;' );
+
+        return str;
+    }
+
+    //---------------------------------------------------------------------
+    function restore_brackets( str ) {
+        str = str.replace( /&amp;lt;/g, '&lt;' );
+        str = str.replace( /&amp;gt;/g, '&gt;' );
+        str = str.replace( /&amp;amp;/g, '&amp;' );
+
+        //  0x5b is left square bracket; 0x5d is right square bracket.
+        //  We do that because E2 will jump to conclusions about what the 
+        //  square brackets are for.
+        str = str.replace( /&amp;#91;/g, '\x5b' );
+        str = str.replace( /&amp;#93;/g, '\x5d' );
+
+        return str;
+    }
+//--&gt;
+&lt;/script&gt;
+
+&lt;!-- **** HTML **** --&gt;
+&lt;noscript&gt;
+    &lt;p&gt;&lt;font color=&quot;#800000&quot;&gt;&lt;b&gt;
+    This is not going to work, because you don't have JavaScript.
+    You may not have it at all, or you may just have it disabled.  It comes 
+    to the same thing either way.
+    &lt;/b&gt;&lt;/font&gt;&lt;/p&gt;
+&lt;/noscript&gt;
+
+&lt;p align=&quot;justify&quot;&gt;You have fallen into the loving arms of the E2 Source Code 
+Formatter. Just paste your [source code] into the box and click the 
+&lt;b&gt;&quot;Reformat&quot;&lt;/b&gt; button, and [Vanna White|all your dreams will come true].  
+If you don't know (or don't care) what [source code] is, you won't find this 
+thing useful at all. &lt;/p&gt;
+
+&lt;p align=&quot;justify&quot;&gt;The &lt;b&gt;&quot;Reformat&quot;&lt;/b&gt; button replaces [angle bracket]s, 
+[square bracket]s, and [ampersand]s with appropriate [HTML character 
+entities]. &lt;b&gt;&quot;DEformat&quot;&lt;/b&gt; changes them back again. &lt;/p&gt;
+
+&lt;p align=&quot;justify&quot;&gt;Because users' [screen resolution]s vary, we strongly urge 
+you to keep your code &amp;lt;= 80 columns in width so that it doesn't mess with 
+E2's page formatting. If the lines are far too wide, [The Power Structure of Everything 2|a god] 
+may feel compelled to fix the thing -- and most of our gods are not 
+programmers. To that end, we also strongly encourage you to use spaces 
+instead of tabs: Most browsers display tabs as eight spaces, which increases 
+the line width for no good reason since you probably only want four-space 
+tabs anyway. Even if you don't, you should. Don't start me on about where the 
+braces go. &lt;/p&gt;
+
+&lt;p align=&quot;justify&quot;&gt;These operations are performed on the entire string, so 
+you'll want to paste in only the actual [source code] part of your [writeup]. 
+You'll need to supply your own &lt;tt&gt;&amp;lt;pre&amp;gt;&lt;/tt&gt; [E2 HTML tags|tag]s as 
+well. I fussed around with making it &lt;tt&gt;&amp;lt;pre&amp;gt;&lt;/tt&gt;-aware, but that got 
+painful. &lt;/p&gt;
+
+&lt;dl&gt;
+&lt;dt&gt;&lt;b&gt;Other E2 Formatting Utilities:&lt;/b&gt;&lt;/dt&gt;
+&lt;dd&gt;&lt;b&gt;[Wharfinger's Linebreaker]:&lt;/b&gt; For formatting poetry and [lyric]s.&lt;/dd&gt;
+&lt;/dl&gt;
+
+&lt;form name=&quot;codefixer&quot;&gt;
+    &lt;textarea name=&quot;edit&quot; cols=&quot;80&quot; rows=&quot;20&quot;&gt;&lt;/textarea&gt;
+
+    &lt;br&gt;
+
+    &lt;input type=&quot;button&quot; name=&quot;submit&quot; value=&quot;Reformat&quot; 
+        OnClick=&quot;do_fix_brackets( document.codefixer.edit, 'fix' )&quot;&gt;
+    &lt;input type=&quot;button&quot; name=&quot;submit&quot; value=&quot;DEformat&quot; 
+        OnClick=&quot;do_fix_brackets( document.codefixer.edit, 'restore' )&quot;&gt;
+    &lt;input type=&quot;button&quot; name=&quot;clear&quot; value=&quot;Clear&quot; 
+        OnClick=&quot;javascript:document.codefixer.edit.value='';&quot;&gt;
+    &lt;/input&gt;
+&lt;/form&gt;
+
+&lt;br&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;b&gt;[Nota bene]:&lt;/b&gt; &lt;/p&gt;
+&lt;p&gt;This was created by [wharfinger] and is being maintained by [wharfinger],
+so it's not fair to hassle [nate] about it if it [dog, the other white meat|eats your dog]. 
+[wharfinger]'s gnatlike [attention span] may crap out one day, and when that 
+happens it'll probably end up on [nate]'s plate after all, but we'll cross that bridge
+when we come to it. &lt;/p&gt;
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-11-25 17:05:01</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>850779</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>850779</document_id>
+  <author_user>113</author_user>
+  <package>0</package>
+  <title>E2 Source Code Formatter</title>
+</node>

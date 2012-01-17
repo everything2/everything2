@@ -1,0 +1,97 @@
+<node>
+  <doctext>[%
+
+####################################################################
+# get all the URL parameters
+
+my $wuType = abs int($query-&gt;param(&quot;wutype&quot;));
+
+my $count = abs int($query-&gt;param(&quot;count&quot;));
+$count = 50 if !$count or $count &gt; 50;
+
+my $page = abs int($query-&gt;param(&quot;page&quot;));
+
+####################################################################
+# Form with list of writeup types and number to show
+
+my (@WRTYPE) = getNodeWhere({type_nodetype =&gt; getId(getType('writeuptype'))});
+my %items;
+map $items{$$_{node_id}} = $$_{title}, @WRTYPE;
+
+my @idlist = sort { $items{$a} cmp $items{$b} } keys %items;
+unshift @idlist, 0;
+$items{0} = 'All';
+
+my $str = htmlcode('openform')
+	.qq'&lt;fieldset&gt;&lt;legend&gt;Choose...&lt;/legend&gt;
+	&lt;input type=&quot;hidden&quot; name=&quot;page&quot; value=&quot;$page&quot;&gt;
+	&lt;label&gt;&lt;strong&gt;Select Writeup Type:&lt;/strong&gt;'
+	.$query -&gt; popup_menu('wutype', \@idlist, 0, \%items)
+	.'&lt;/label&gt;
+	&lt;label&gt; &amp;nbsp; &lt;strong&gt;Number of writeups to display:&lt;/strong&gt;'
+	.$query -&gt; popup_menu('count', [0, 15, 25, 50, 75, 100, 150, 200, 250, 500], $count)
+	.'&lt;/label&gt; &amp;nbsp; '
+	.$query -&gt; submit('Get Writeups')
+	.'&lt;/fieldset&gt;&lt;/form&gt;';
+
+####################################################################
+# get writeups
+#
+
+my $where = &quot;wrtype_writeuptype=$wuType&quot; if $wuType;
+
+my $wus = $DB -&gt; sqlSelectMany('
+ 	writeup_id, parent_e2node, publishtime,
+	node.author_user,
+	type.title AS type_title
+','
+	writeup
+	JOIN node ON writeup_id = node.node_id
+	JOIN node type ON type.node_id = writeup.wrtype_writeuptype
+',
+	$where
+,'
+	ORDER BY publishtime DESC LIMIT '.($page * $count).','.$count
+);
+
+####################################################################
+# display
+#
+
+$str .= '&lt;table style=&quot;margin-left: auto; margin-right: auto;&quot;&gt;
+	&lt;tr&gt;
+	&lt;th&gt;Title&lt;/th&gt;
+	&lt;th&gt;Author&lt;/th&gt;
+	&lt;th&gt;Published&lt;/th&gt;
+	&lt;/tr&gt;'
+	.htmlcode('show content', $wus, '&lt;tr class=&quot;&amp;oddrow&quot;&gt;&quot;&lt;td&gt;&quot;, parenttitle, type,
+		&quot;&lt;/td&gt;&lt;td&gt;&quot;, author, &quot;&lt;/td&gt;&lt;td align=\'right\'&gt;&lt;small&gt;&quot;, listdate, &quot;&lt;/small&gt;&lt;/td&gt;&quot;')
+	.'&lt;/table&gt;';
+
+$str .= '&lt;p class=&quot;morelink&quot;&gt;';
+$str .= linkNode($NODE, '&amp;lt&amp;lt Prev',
+	{wutype =&gt; $wuType, page =&gt; $page-1, count =&gt; $count}).' | ' if $page;
+
+$str .= '&lt;b&gt;Page '.($page+1).'&lt;/b&gt; | '
+	.linkNode($NODE, 'Next &amp;gt;&amp;gt;',
+		{wutype =&gt; $wuType, page =&gt; $page+1, count =&gt; $count})
+	.'&lt;/p&gt;';
+
+return $str;
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-01-07 15:47:26</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>56</hits>
+  <node_id>1924773</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1924773</document_id>
+  <author_user>1323377</author_user>
+  <package>0</package>
+  <title>Writeups by Type</title>
+</node>

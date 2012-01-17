@@ -1,0 +1,42 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-02-20 19:43:26</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1257491</node_id>
+  <htmlcode_id>1257491</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># Emit all appropriate $VARS values as a string formatted 
+# in a consistent and human-readable way. This is used by 
+# the [ekw Scheme Cannery]; the format is also used by 
+# [ekw Preferences].
+#
+# wharfinger
+# 2/20/02
+
+# 3/3/02  wharfinger
+# Cleaned up (obfuscated?) and added sorting
+
+my ( $prefix ) = @_;
+
+# Grep for keys starting with the prefix followed by at 
+# least one other character. Sort the resulting list.
+my @names = sort grep { /^$prefix./ } keys %$VARS;
+
+my $str = '';
+
+for my $var ( @names ) {
+    $str .= &quot;$var=\&quot;$$VARS{ $var }\&quot;;\n&quot;;
+}
+
+$str;
+
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>113</author_user>
+  <package>0</package>
+  <title>getvarsvalues</title>
+</node>

@@ -1,0 +1,23 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-02-20 19:56:39</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <notification_id>1930837</notification_id>
+  <hourLimit>168</hourLimit>
+  <hits>0</hits>
+  <node_id>1930837</node_id>
+  <code>my $wu_link = getNodeById($$args{writeup_id}) ? linkNode($$args{writeup_id}) : &quot;... which I can't find! (node id: $$args{writeup_id})&quot;;
+return &quot;&lt;b&gt;&quot;.linkNode($$args{favorite_author}).&quot;&lt;/b&gt; posted a new writeup &quot;.$wu_link;</code>
+  <type_nodetype>1930710</type_nodetype>
+  <author_user>1312198</author_user>
+  <description>a [favorite author] of yours posts a writeup.</description>
+  <package>0</package>
+  <invalid_check>my $wu_link = getNodeById($$args{writeup_id});
+my $isInvalid = !defined $wu_link || $$wu_link{type}{title} ne 'writeup';
+return $isInvalid;
+</invalid_check>
+  <title>favorite</title>
+</node>

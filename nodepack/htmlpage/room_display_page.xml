@@ -1,0 +1,77 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>545241</pagetype_nodetype>
+  <core>0</core>
+  <page>[%
+use POSIX qw(ceil floor);
+
+return unless isGod($USER);
+
+my $open = &quot;1\;&quot;;
+my $locked = &quot;0\;&quot;;
+
+my $otherone;
+my $title = &quot;&quot;;
+if ($$NODE{criteria} eq $open) {
+  $title = &quot;lock&quot;;
+  $otherone = $locked;
+} elsif ($$NODE{criteria} eq $locked) {
+  $title = &quot;unlock&quot;;
+  $otherone = $open;
+} else {
+  return;
+}
+
+&quot;&lt;font size=1&gt;&lt;i&gt;&quot;.linkNode($NODE, $title, {room_criteria=&gt;$otherone}).&quot;&lt;/i&gt;&lt;/font&gt;&quot;;
+
+
+%]
+&lt;p&gt;
+
+[%
+use Everything::Room;
+
+my $canEnter = htmlcode('canEnterRoom');
+  
+if (!$$canEnter{canEnter}) {
+   my $errorMessage = $$canEnter{explanation};
+   $errorMessage = &quot;&lt;strong style='color:red;'&gt;$errorMessage&lt;/strong&gt;&quot;
+      if $$canEnter{warning};
+   return &quot;&lt;p&gt;$errorMessage&lt;/p&gt;&quot;;
+
+} else {
+
+  changeRoom($USER, $NODE);
+
+  # For room usage counting:
+  my (undef, undef, undef, $day, $mon, $year) = localtime();
+  $NODE-&gt;{lastused_date} = join &quot;-&quot;, ($year+1900,++$mon,$day);
+  updateNode($NODE, -1);
+
+  return &quot;You walk into $$NODE{title}&quot;;
+
+}
+
+%]
+&lt;p&gt;
+[{parselinks:doctext}]
+[%
+  return &quot;&lt;br&gt;&lt;p align=\&quot;right\&quot;&gt;(&quot;.linkNode(getNode(&quot;go outside&quot;, &quot;superdocnolinks&quot;)).&quot;)&lt;/p&gt;&quot;;
+%]
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-08-25 08:30:35</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>719848</htmlpage_id>
+  <hits>33</hits>
+  <node_id>719848</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>room display page</title>
+  <mimetype></mimetype>
+</node>

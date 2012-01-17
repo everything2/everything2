@@ -1,0 +1,691 @@
+<node>
+  <doctext>&lt;script language=&quot;JavaScript&quot; src=[% return urlGen({'node'=&gt;'Message Inbox JavaScript', 'type'=&gt;'rawdata', 'displaytype'=&gt;'raw' }); %]&gt;
+&lt;/script&gt;
+
+&lt;table&gt;
+[%
+
+
+my $UID = getId($USER)||0;
+
+
+if (!$UID || ($UID == $HTMLVARS{guest_user}) ){
+  return '&lt;tr&gt;&lt;td&gt;If you had an account, you\'d get
+          messages.&lt;/td&gt;&lt;/tr&gt;';
+}
+
+
+my $isRoot = exists $HTMLVARS{group_gods}{$UID};
+
+my $showStart = 0;
+my $foruser = '';
+my $olduser = '';
+
+
+my $str='';
+
+
+$str .= '&lt;form name=&quot;message_inbox_form&quot; method=&quot;POST&quot;&gt;
+           &lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;message&quot;&gt;';
+
+$str .= '&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;'.getId($NODE).'&quot;&gt;';
+
+$str .= $query-&gt;hidden('sexisgood','1');	#so auto-VARS changing works
+{
+
+	#for some reason, we're doing everything in a table; this at least
+	#make the options part a little easier
+
+	my @opts;
+	push @opts, htmlcode('varcheckbox',
+                       'autofillInbox,Autofill recipient');
+	push @opts, htmlcode('varcheckbox',
+                       'sortmyinbox,Sort messages by usergroup');
+
+	push @opts, 'Show only messages from user '.
+              $query-&gt;textfield(-name=&gt;'fromuser')  .
+              ', or do the inverse: ' .
+              $query-&gt;checkbox(-name=&gt;'notuser' ,
+                               -label=&gt;'hide from this user');
+
+ 	push @opts, 'Show only messages from group ' .
+              $query-&gt;textfield(-name=&gt;'fromgroup') .
+              ', or do the inverse: ' .
+              $query-&gt;checkbox(-name=&gt;'notgroup',
+                               -label=&gt;'hide to this group' );
+
+	push @opts, 'Show only archived/unarchived messages: ' .
+              htmlcode('varsComboBox',
+                       'msginboxUnArc,0, 0,all, 1,unarchived, 2,archived');
+
+	$str .= '&lt;tr&gt;&lt;td colspan=&quot;4&quot;&gt;&lt;strong&gt;Options&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;'.&quot;\n&quot;;
+	foreach(@opts) {
+		$str .= '&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan=&quot;2&quot;&gt;' . $_ . &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+	}
+}
+
+#show archived/unarchived things
+my $sqlFilterArc='';	#default of no filtering
+if( (exists $VARS-&gt;{msginboxUnArc}) &amp;&amp; (defined $VARS-&gt;{msginboxUnArc}) ) {
+	my $v=$VARS-&gt;{msginboxUnArc};
+	if($v eq '1') {
+		$sqlFilterArc=' AND archive=0';
+	} elsif($v eq '2') {
+		$sqlFilterArc=' AND archive!=0';
+	}
+}
+
+
+if ($isRoot) { #Root can spy on bots' inboxen.
+
+  if (defined($query-&gt;param('spy_user'))) {
+
+    #FIXME after the bot setting is set: get info from there instead
+
+    my @okaytospy = ($$USER{title}, 'Webster 1913', 'EDB', 'Klaproth',
+                     'Cool Man Eddie', 'Guest User', 'recipe',
+                     'Grease Monkey', 'Giant Teddy Bear', 'Virgil',
+                     'Content_Salvage');
+
+    my $okay;
+    $$okay{getId(getNode($_, 'user'))} = 1 foreach(@okaytospy);
+
+    $foruser = getNode($query-&gt;param('spy_user'), 'user');
+
+    unless(defined $foruser){
+
+      $foruser = $USER;
+      $str .= '&lt;tr&gt;&lt;td&gt;&lt;small&gt;(No such user ['.
+        $query-&gt;param('spy_user').'])&lt;/small&gt;&lt;/tr&gt;&lt;/td&gt;';
+
+    }
+
+    $foruser = $USER unless(exists $$okay{$$foruser{node_id}});
+
+  }
+  else {
+    $foruser = $USER;
+  }
+
+
+
+  $str .= '&lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;Message Inbox for:
+           &lt;select name=&quot;spy_user&quot;&gt;&lt;option value=&quot;'.
+           $$foruser{title}.'&quot;&gt;'.$$foruser{title}.'&lt;/option&gt;';
+
+  if (getId($foruser) != $UID) {
+    $str .= '&lt;option value=&quot;'.$$USER{title}.'&quot;&gt;'.$$USER{title}.'&lt;/option&gt;';
+  }
+
+  if (getId($foruser) != getId(getNode('Cool Man Eddie', 'user'))) {
+    $str .= '&lt;option value=&quot;Cool Man Eddie&quot;&gt;Cool Man Eddie&lt;/option&gt;';
+  }
+
+  if (getId($foruser) != getId(getNode('Guest User', 'user'))) {
+    $str .= '&lt;option value=&quot;Guest User&quot;&gt;Guest User&lt;/option&gt;';
+  }
+
+  if (getId($foruser) != getId(getNode('EDB', 'user'))) {
+    $str .= '&lt;option value=&quot;EDB&quot;&gt;EDB&lt;/option&gt;';
+  }
+
+  if (getId($foruser) != getId(getNode('Klaproth', 'user'))) {
+    $str .='&lt;option value=&quot;Klaproth&quot;&gt;Klaproth&lt;/option&gt;';
+  }
+
+  if (getId($foruser) != getId(getNode('Webster 1913', 'user'))) {
+    $str .='&lt;option value=&quot;Webster 1913&quot;&gt;Webster 1913&lt;/option&gt;';
+  }
+
+  if (getId($foruser) != getId(getNode('recipe', 'user'))) {
+    $str .='&lt;option value=&quot;Recipe&quot;&gt;Recipe&lt;/option&gt;';
+  }
+
+  if (getId($foruser) != getId(getNode('Giant Teddy Bear', 'user'))) {
+    $str .='&lt;option value=&quot;Giant Teddy Bear&quot;&gt;Giant Teddy Bear&lt;/option&gt;';
+  }
+
+  if (getId($foruser) != getId(getNode('Virgil', 'user'))) {
+    $str .='&lt;option value=&quot;Virgil&quot;&gt;Virgil&lt;/option&gt;';
+  }
+
+  if (getId($foruser) != getId(getNode('Grease Monkey', 'user'))) {
+    $str .='&lt;option value=&quot;Grease Monkey&quot;&gt;Grease Monkey&lt;/option&gt;';
+  }
+
+  if (getId($foruser) != getId(getNode('Content_Salvage', 'user'))) {
+    $str .='&lt;option value=&quot;Content_Salvage&quot;&gt;Content_Salvage&lt;/option&gt;';
+  }
+
+  $str .='&lt;/select&gt;&lt;/tr&gt;&lt;/td&gt;';
+
+}
+else {
+	$foruser = $USER;
+}
+
+#########originally All jay in here:
+
+my $sqlSortInboxNotUG=''; #non-usergroups
+if ($$VARS{sortmyinbox}) {
+
+	my $csr = $DB-&gt;sqlSelectMany('nodegroup_id',
+                               'nodegroup',
+                               &quot;node_id=$UID&quot;);
+
+	my $typ = getId(getType('usergroup'));
+	my $groups;
+
+	while ( my $row = $csr-&gt;fetchrow_hashref) {
+		my $n = getNodeById($$row{nodegroup_id});
+		next unless($$n{type_nodetype} == $typ);
+
+		$$groups{$$n{title}} = $$n{node_id};
+	}
+
+  if ($isRoot) {
+    $$groups{'Content Editors'} = getId(getNode('Content Editors',
+                                                'usergroup'));
+  }
+
+	my $sqlq;
+
+	foreach (keys(%$groups)) {
+		$sqlq = &quot;for_user=$$foruser{user_id} AND for_usergroup=$$groups{$_}&quot;;
+		$sqlq .= $sqlFilterArc if length($sqlFilterArc);
+		my $num = $DB-&gt;sqlSelect('count(*)', 'message', $sqlq);
+
+		my $tempstr = &quot;&lt;small&gt;$_: $num&lt;/small&gt;&quot;;
+
+		$tempstr = '&lt;strong&gt;&lt;big&gt;'.$tempstr.'&lt;/big&gt;&lt;/strong&gt;';
+
+		$str.= linkNode($NODE,$tempstr,{'fromgroup'=&gt;$_,
+                                     lastnode_id=&gt;0}).&quot;&lt;br/&gt;\n&quot; if($num &gt; 0);
+	}
+
+	#deal with non-usergroup for_usergroup stuff
+	#this is rather ugly
+	{
+		#creates: (for_usergroup!=838015 AND for_usergroup!=923653 AND (etc.))
+		$sqlq = &quot;for_user=$$foruser{user_id}&quot;;
+
+		if (scalar(keys(%$groups))) {
+      #jb says I removed the extra AND. we have one down below
+      #map in void context. Use foreach.
+      #Plus this doesn't form the string correctly
+			$sqlSortInboxNotUG = join(' OR ', map{ 'for_usergroup='.$_ }
+                                values(%$groups));
+
+			if (length($sqlSortInboxNotUG)) {
+				$sqlSortInboxNotUG = ' AND NOT (' . $sqlSortInboxNotUG.')';
+				$sqlq .= $sqlSortInboxNotUG;
+			}
+		}
+
+		$sqlq .= $sqlFilterArc if length($sqlFilterArc);
+
+		my $num = $DB-&gt;sqlSelect('count(*)', 'message', $sqlq);
+
+		my $tempstr = &quot;&lt;small&gt;other: $num&lt;/small&gt;&quot;;
+
+		$tempstr = '&lt;strong&gt;&lt;big&gt;'.$tempstr.'&lt;/big&gt;&lt;/strong&gt;';
+		$str.= linkNode($NODE,$tempstr).&quot;&lt;br/&gt;\n&quot; if($num &gt; 0);
+	}
+
+
+	$sqlq = &quot;for_user=$$foruser{user_id}&quot;;
+	$sqlq .= $sqlFilterArc if length($sqlFilterArc);
+	$str .= '('.linkNode($NODE, $DB-&gt;sqlSelect('count(*)',
+                                             'message', $sqlq).
+             ' messages total').&quot;)&lt;br /&gt;\n&quot;;
+
+	$str .= '&lt;br /&gt;';
+
+}
+
+
+my $limits = 'for_user='.getId($foruser);
+
+my $colHeading = '&lt;tr&gt;&lt;th align=&quot;left&quot;&gt;delete&lt;/th&gt;
+                      &lt;th&gt;send time&lt;/th&gt;
+                      &lt;th colspan=&quot;2&quot;
+                      align=&quot;right&quot;&gt;&amp;#91;un&amp;#93;Archive&lt;/th&gt;
+                 &lt;/tr&gt;'.&quot;\n&quot;;
+
+#TODO have an htmlcode that constructs the query, so XML ticker and
+#showmessages doesn't have to dupe code
+my $notUser =($query-&gt;param('notuser')  ? 1 : 0);
+my $notGroup=($query-&gt;param('notgroup') ? 1 : 0);
+
+my $filterUser;	        #user object, or 0 if none
+my $filterUsername;     #save the username
+my $filterGroup;	      #group object, or 0 if none
+my $filterGroupname;    #save the group name
+my $filterUID=0;	      #user ID, or 0 if none
+my $filterGID=0;	      #group ID, or 0 if none
+
+if ($filterUser=$query-&gt;param('fromuser')) {
+  $filterUsername = $filterUser;
+	$filterUser = getNode($filterUser, 'user');
+	$filterUID = $$filterUser{node_id} if $filterUser;
+}
+
+if ($filterGroup=$query-&gt;param('fromgroup')) {
+  $filterGroupname = $filterGroup;
+	$filterGroup = getNode($filterGroup, 'usergroup')
+                 || getNode($filterGroup, 'user');
+
+	$filterGID = $$filterGroup{node_id} if $filterGroup;
+}
+
+
+$filterUser      ||= 0;
+$filterUsername  ||=&quot;&quot;;
+$filterGroup     ||= 0;
+$filterGroupname ||= &quot;&quot;;
+
+$limits .= ' AND author_user'. ($notUser?'!=':'=').
+           $filterUID if $filterUser;
+
+$limits .= ' AND for_usergroup'.($notGroup?'!=':'=').
+           $filterGID if ($filterGID || $notGroup);
+
+if ($$VARS{sortmyinbox} &amp;&amp; !$filterGID &amp;&amp; length($sqlSortInboxNotUG)){
+  $limits .= $sqlSortInboxNotUG ;
+}
+
+$limits .= $sqlFilterArc if length($sqlFilterArc);
+
+my $showLimit='';
+my $showMax = $query-&gt;param('showmax') || $$VARS{inboxMax} || 0;
+
+if ($showMax =~ /\d+/) {
+	$showMax=$1;
+}
+else {
+	$showMax=0;
+}
+
+$showLimit= ' LIMIT '.$showMax if $showMax;
+
+#Paginate this bitch already! --Swap
+my $paginateLimit = 100;
+my $totalmsgs = $DB-&gt;sqlSelect('count(*)','message',$limits);
+
+ #Save this value for the pagination links below
+my $highestOffset;
+my $multiplier = int($totalmsgs/$paginateLimit);
+$multiplier-- if $totalmsgs &gt; 0 and $totalmsgs % $paginateLimit == 0;
+$highestOffset = $multiplier*$paginateLimit;
+
+#If no offset, default to the last page
+my $offset = $highestOffset;
+if (defined $query-&gt;param('offset')) {
+    $offset = int $query-&gt;param('offset');
+}
+
+#Don't go out of bounds!
+$offset = $highestOffset if $offset &gt; $highestOffset;
+$offset = 0 if $offset &lt; 0;
+
+
+my $csr = $DB-&gt;sqlSelectMany('*', 'message', $limits,
+                             &quot;ORDER BY message_id
+                              LIMIT $paginateLimit
+                              OFFSET $offset&quot;);
+
+#number of messages we're showing
+my $msgcount = $csr -&gt; rows;
+
+
+#Show pagination links if necessary, i.e. always ;-) --Swap
+my $paginationLinks;
+if ($offset &gt; 0 or $msgcount == $paginateLimit) {
+
+  #Some javascript to synch the two drop-down boxes at the top and
+  #bottom of the page.
+  my $synch_js = '
+function synchDD(id){
+    if(id == &quot;bot_dd&quot;){
+        document.getElementById(&quot;bot_dd&quot;).selectedIndex =
+            document.getElementById(&quot;top_dd&quot;).selectedIndex;
+    }
+    else{
+        document.getElementById(&quot;top_dd&quot;).selectedIndex =
+            document.getElementById(&quot;bot_dd&quot;).selectedIndex;
+    }
+}
+
+synchDD(&quot;bot_dd&quot;);';
+
+  $paginationLinks .= '&lt;/table&gt;';
+
+  my ($firstnav, $prevnav, $pretty_dd, $nextnav, $lastnav);
+
+  if ($offset &gt; 0) {
+    ##i.e if we're not on the second page which already has a link back
+    ##to the first one
+    if ($offset != $paginateLimit) {
+      $firstnav .= linkNode($NODE,&quot;first 1 &amp;ndash; $paginateLimit&quot;,
+                            { offset =&gt; 0,
+                              fromuser =&gt; $filterUsername,
+                              fromgroup =&gt; $filterGroupname,
+                              notuser =&gt; $notUser,
+                              notgroup =&gt; $notGroup});
+    }
+
+    my ($start,$end); $end = $offset; $start=$offset-$paginateLimit+1;
+    $prevnav .= linkNode($NODE,&quot;prev $start &amp;ndash; $end&quot;,
+                         { offset =&gt; $offset-$paginateLimit,
+                           fromuser =&gt; $filterUsername,
+                           fromgroup =&gt; $filterGroupname,
+                           notuser =&gt; $notUser,
+                           notgroup =&gt; $notGroup});
+  }
+
+
+  my $bot = $offset+1;
+  my $top = $offset+$msgcount;
+
+  #drop down box to select the page, [moosemanmoo]'s idea
+  my @offsets;
+  my $thisoffset=0;
+  my %labels;
+  while($thisoffset &lt;= $totalmsgs - $paginateLimit){
+    push @offsets, $thisoffset;
+    $labels{$thisoffset} = ($thisoffset+1).&quot; &amp;ndash; &quot;.
+                           ($thisoffset + $paginateLimit);
+    $thisoffset += $paginateLimit;
+  }
+  #Last item needs to be handled differently
+  push @offsets, $thisoffset;
+  $labels{$thisoffset} = ($thisoffset+1).&quot; &amp;ndash; &quot;.
+                          $totalmsgs;
+
+  $pretty_dd .= &quot;Select the page:&lt;br /&gt;&quot;;
+
+  $query -&gt; autoEscape(0); #CGI.pm escapes &amp; by default; don't do it
+                           #right now.
+  $pretty_dd .= $query -&gt; popup_menu(-name =&gt; &quot;offset&quot;,
+                                     -id =&gt; &quot;top_dd&quot;,
+                                     -values =&gt; \@offsets,
+                                     -default =&gt; $offset,
+                                     -labels =&gt; \%labels,
+                                     -onChange =&gt; $synch_js);
+  $query -&gt; autoEscape(1);
+
+
+  if ($msgcount == $paginateLimit and $top != $totalmsgs) {
+    my ($start,$end); $start = $offset+$paginateLimit+1;
+    my $nextpage = $offset+2*$paginateLimit;
+
+    $end  = $totalmsgs &lt; $nextpage ? $totalmsgs : $nextpage;
+    $nextnav .= linkNode($NODE,&quot;next $start &amp;ndash; $end&quot;,
+                         { offset =&gt; $offset+$paginateLimit,
+                           fromuser =&gt; $filterUsername,
+                           fromgroup =&gt; $filterGroupname,
+                           notuser =&gt; $notUser,
+                           notgroup =&gt; $notGroup});
+
+    ## i.e we're not on the penultimate page
+    if ($nextpage &lt; $totalmsgs) {
+      $lastnav .= linkNode($NODE,&quot;last &quot;. ($highestOffset+1) .
+                           &quot; &amp;ndash; $totalmsgs&quot;,
+                           { offset =&gt; $highestOffset,
+                             fromuser =&gt; $filterUsername,
+                             fromgroup =&gt; $filterGroupname,
+                             notuser =&gt; $notUser,
+                             notgroup =&gt; $notGroup});
+    }
+  }
+
+  #This is [moosemanmoo]'s CSS, thanks. --[Swap]
+  $paginationLinks .=&quot;
+    &lt;style type=\&quot;text/css\&quot;&gt;
+    #navigation_root {
+       margin 0px auto;
+       text-align: center;
+    }
+
+    #first_navigation,
+    #previous_navigation,
+    #pretty_drop_down_box,
+    #next_navigation,
+    #last_navigation {
+      padding: 0em;
+      margin: 0em;
+    }
+    #first_navigation,
+    #previous_navigation {
+      margin: 1em;
+    }
+    #next_navigation,
+    #last_navigation{
+      margin: 1em;
+   &lt;/style&gt;
+
+     &lt;div id=\&quot;navigation_root\&quot;&gt;
+       &lt;span id=\&quot;first_navigation\&quot;&gt; $firstnav &lt;/span&gt;
+       &lt;span id=\&quot;previous_navigation\&quot;&gt; $prevnav &lt;/span&gt;
+       &lt;span id=\&quot;next_navigation\&quot;&gt; $nextnav &lt;/span&gt;
+       &lt;span id=\&quot;last_navigation\&quot;&gt; $lastnav &lt;span&gt;
+       &lt;br /&gt;
+       &lt;span id=\&quot;pretty_drop_down_box\&quot;&gt; $pretty_dd &lt;/span&gt;
+     &lt;/div&gt;
+    &quot;;
+
+  $paginationLinks .= &quot;&lt;table&gt;\n&quot;;
+}
+
+$str .= $paginationLinks if $paginationLinks;
+
+$str .= $colHeading;
+
+my $flag = 0;
+my $t;
+my @chkboxes;
+my $talker;       #author of current message
+my $ug;           #usergroup current message is for
+
+#UIDs for Virgil, CME, Klaproth, and root.
+my @botlist = qw(1080927 839239 952215 113);
+my %bots = map{$_ =&gt; 1} @botlist;
+
+while (my $MSG = $csr-&gt;fetchrow_hashref) {
+	++$flag;
+	my $text = $$MSG{msgtext};
+
+	#FIXME show no user error message, like we do for bad usergroups
+	#(instead of just skipping the message)
+
+	$talker = $$MSG{author_user};
+	getRef($talker);
+	next unless($talker);
+
+	(my $name = $$talker{title}) =~ tr/ /_/;
+
+
+  #Bots, don't escape HTML for them.
+  unless ( exists $bots{$$MSG{author_user}} ) {
+    $text = escapeAngleBrackets($text);
+    $text = parseLinks($text,0,1);
+  }
+
+	$text =~ s/\[([^\]]*?)$/&amp;#91;$1/;	#dangling [ fixer	#]
+  $text =~ s/\[\]/\]/g;             #parse [] glitch fixer
+	$name = encodeHTML($name);
+	my $chkboxname = 'deletemsg_'.$$MSG{message_id};
+	push @chkboxes, $chkboxname;
+
+  # $query-&gt;textbox creates a newline after the tag, which messes up
+  # the table
+	$str.= '&lt;tr&gt;&lt;td valign=&quot;top&quot;&gt;'.
+         '&lt;input type=&quot;checkbox&quot; name=&quot;'.$chkboxname.'&quot; VALUE=&quot;yup&quot;&gt;';
+
+
+  #Jay's fix for usernames with a single quote in them...
+  local *eddiereply = sub {
+    my $splitStr1 = 'Hey, ';
+    my $splitStr2=' just ';
+    my @tempsplit = split($splitStr1,$text);
+    @tempsplit= split($splitStr2,$tempsplit[1]);
+    my $eddie = $tempsplit[0];
+    $eddie =~ s/\[user\]//g;
+    $eddie =~ s/\[//g;
+    $eddie =~ s/\]//g;
+    $eddie =~ s/ /_/g;
+    return $eddie;
+
+  };
+
+
+  my $safename = $name;
+  $safename = eddiereply() if ($safename eq &quot;Cool_Man_Eddie&quot;);
+  $safename =~ s/'/&amp;\#39;/g;
+  $safename =~ s/&quot;/&amp;\#34;/g;
+
+	$str.=&quot;(&lt;a onmouseover='replyTo(\&quot;$safename\&quot;,0)'
+             href='javascript:replyTo(\&quot;$safename\&quot;,1)'&gt;r&lt;/a&gt;)&quot;;
+
+  $ug = $$MSG{for_usergroup} || 0;
+
+  unless($ug==0) {
+    getRef($ug);
+    (my $safeug = $$ug{title}) =~ tr/ /_/;
+    $safeug =~ s/'/&amp;\#39;/g;
+    $safeug =~ s/&quot;/&amp;\#34;/g;
+    $str.=&quot;(&lt;a onmouseover='replyTo(\&quot;$safeug\&quot;,0)'
+            href='javascript:replyTo(\&quot;$safeug\&quot;,1)'&gt;ra&lt;/a&gt;)&quot;;
+  }
+  $str.=&quot;&lt;/td&gt;&lt;td&gt;&lt;small&gt;&amp;nbsp;&quot;;
+
+	$t = $$MSG{tstamp};
+	$str .= substr($t,0,4).'.'.substr($t,5,2).'.'.substr($t,8,2).
+           '&amp;nbsp;at&amp;nbsp;'.substr($t,11,2).':'.substr($t,14,2);
+
+	$str .= '&lt;/small&gt;&lt;/td&gt;&lt;td&gt;';
+
+	$ug = $$MSG{for_usergroup} || 0;
+	unless($ug==0) {
+		$ug = getNodeById($ug);
+		if (defined $ug) {
+			$str .= '('.linkNode($ug,0,{lastnode_id=&gt;0}).') ';
+		}
+    else {
+			$str .= '(no user or group with ID of '.$$MSG{for_usergroup}.') ';
+		}
+	}
+
+	#changes literal '\n' into HTML breaks (slash, then n; not a newline)
+	$text =~ s/\s+\\n\s+/&lt;br \/&gt;/g;
+
+  $str .= '&lt;em&gt;'.linkNode($talker).' says&lt;/em&gt; '.$text. '&lt;/td&gt;';
+
+	$str .= '&lt;td&gt;&lt;tt&gt;'.($$MSG{archive}?'A':'&amp;nbsp;').
+          '&lt;/tt&gt;&lt;input type=&quot;checkbox&quot; value=&quot;yup&quot; name=&quot;' .
+          ($$MSG{archive} ? 'un' : '') . 'archive_' .
+          $$MSG{message_id} . '&quot; /&gt;&lt;/td&gt;';
+
+	$str .= &quot;&lt;/tr&gt;\n&quot;;
+}
+$csr-&gt;finish();
+
+$str .= $colHeading;
+
+$str .= '&lt;tr&gt;&lt;td colspan=&quot;4&quot;&gt;';
+
+my $grandtotal = $DB -&gt; sqlSelect(&quot;count(*)&quot;,&quot;message&quot;,&quot;for_user=$UID&quot;);
+
+if ($flag) {
+
+	#at least 1 message showing
+	$str .= &quot;You have $totalmsgs messages&quot;;
+
+  #all filters that are being used
+	my @allFilters;
+
+  if ($filterUser) {
+    push( @allFilters, (($notUser? 'not':'').' from '.
+                        linkNode($filterUser )) ) ;
+  }
+
+  if ($filterGroup) {
+    push( @allFilters, (($notGroup?'not':'').' sent to group '.
+                        linkNode($filterGroup)) );
+  }
+
+	$str .= ' that are '.join(' and ',@allFilters) if scalar(@allFilters);
+  $str .= &quot; ($grandtotal grand total)&quot;;
+	$str .= '.';
+}
+else {
+	#no messages showing
+	$str .= '&lt;em&gt;You feel lonely.&lt;/em&gt; ';
+  $str .= &quot;&lt;small&gt;(but you do have a total of $grandtotal
+           messages)&lt;/small&gt;&quot; if $grandtotal;
+}
+
+$str .= '&lt;/td&gt;&lt;/tr&gt;';
+
+# Yes, this is ugly, sorry. :-(
+#                               --[Swap]
+$paginationLinks =~ s/id=\&quot;top_dd\&quot;/id=\&quot;bot_dd\&quot;/;
+$paginationLinks =~ s/synchDD\(\&amp;quot\;bot_dd\&amp;quot\;\)/synchDD\(\&amp;quot\;top_dd\&amp;quot\;\)/;
+
+$str .= $paginationLinks if $paginationLinks;
+
+$str .= '&lt;tr&gt;&lt;td colspan=&quot;4&quot;&gt;' . $query-&gt;reset('Clear All') .
+       ' &lt;input type=&quot;button&quot; value=&quot;Clear Reply&quot;
+                            onClick=&quot;clearReply();&quot;&gt;
+         &lt;input type=&quot;button&quot; value=&quot;Delete All&quot; onClick=&quot;checkAll();&quot;&gt;';
+
+$str.='&lt;input type=&quot;button&quot; value=&quot;Archive All&quot; onClick=&quot;archiveAll();&quot;&gt;';
+$str.='&lt;input type=&quot;button&quot; value=&quot;Unarchive All&quot; onClick=&quot;unarchiveAll();&quot;&gt;';
+$str.='&lt;/td&gt;&lt;/tr&gt;';
+
+
+# don't use $query-&gt;textfield() here, because sticky forms make things
+# really ugly if you happen to write something in the Chatterbox
+# don't blame me, i'm just the babysitter
+# N-Wing says: why not just clear it via $query-&gt;delete('message'); ?
+
+if ($query-&gt;param('sentmessage') ){
+$str .= '&lt;tr&gt;&lt;td colspan=&quot;4&quot;&gt;&lt;i&gt;'.
+         $query-&gt;param('sentmessage').
+         '&lt;/i&gt;&lt;/td&gt;&lt;/tr&gt;';
+}
+
+$str .= '&lt;tr&gt;&lt;td colspan=&quot;4&quot;&gt;
+         &lt;div id=&quot;MI_textbox&quot;&gt;
+         &lt;a name=&quot;box&quot;&gt;
+         &lt;textarea type=&quot;text&quot; name=&quot;message&quot; rows=&quot;1&quot; cols=&quot;35&quot;
+                  id=&quot;zetextbox&quot; size=&quot;40&quot; value=&quot;&quot;
+                  class=&quot;expandable&quot;
+                   &gt;&lt;/textarea&gt;
+         &lt;/a&gt;
+         &lt;/div&gt;'
+         unless $$VARS{'borged'};
+
+$str .= ' '.$query-&gt;submit('message send', 'submit') . &quot;\n&lt;/td&gt;&lt;/tr&gt;&quot;;
+
+$str .= $query-&gt;end_form();
+
+$str;
+%]
+&lt;/table&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-12-28 21:48:25</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>19</hits>
+  <node_id>891793</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>891793</document_id>
+  <author_user>220</author_user>
+  <package>0</package>
+  <title>Message Inbox</title>
+</node>

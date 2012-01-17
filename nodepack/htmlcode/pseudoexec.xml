@@ -1,0 +1,124 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-03-10 20:09:04</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1266536</node_id>
+  <htmlcode_id>1266536</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#this implements a new special [ ... ] link type,
+# [- ... -]
+#which only allow a few specific things; this is intended for user by any user
+#pass either the text as parameters, or better (since commas and such won't get messed up), in $HTMLVARS{pseudoExec}
+#admins can:
+#	play with this at [pseudoExec test]
+#	talk about it at [high level power: pseudo exec]
+
+my @allParams = @_;
+my $text;
+if(scalar(@allParams)) {
+	$text = join(',',@allParams);
+} else {
+	$text = $HTMLVARS{pseudoExec};
+	delete $HTMLVARS{pseudoExec};
+}
+return unless (defined $text) &amp;&amp; length($text);
+
+#things to expand inside [&quot; ... &quot;]
+#my quoteBracket = (
+#	'$$USER{title}'=&gt;$$USER{title},
+#);
+
+local *trim = sub {
+	my $s=$_[0] || '';
+	$s=~s/^\s+//;
+	$s=~s/\s+$//;
+	return $s;
+};
+
+my %pseudoCodes = (
+	'user'=&gt;$$USER{title},
+	'user_id'=&gt;$$USER{node_id},
+	'user_title'=&gt;$$USER{title},
+#	''=&gt;'',
+);
+
+#stolen from statsection_global
+local *commify = sub {
+	local $_ = shift;
+	return 0 unless defined $_;
+	1 while s/^([-+]?\d+)(\d{3})/$1,$2/;
+	return $_;
+};
+
+local *doSayings = sub {
+	my $usr = $_[0];
+	return 'pseudoExec.doSayings: No user given.' unless (defined $usr) &amp;&amp; (length($usr));
+	$usr = 'sayings_'.$usr;
+	my $codeNode = getNode($usr,'htmlcode');
+	return 'pseudoExec.doSayings: no sayings htmlcode exists: '.htmlEncode($usr) unless defined $codeNode;
+	return htmlcode($usr,'');
+};
+
+my $stats;
+my %statInfo;
+local *doStat = sub {
+	my $whichStat = $_[0];
+	if(!defined $stats) {
+		#stolen from statsection_global
+		$stats = getNode('Statistics Data','nodelet')-&gt;{nltext};
+		foreach(split(&quot;\n&quot;,$stats)) {
+			my ($k,$v)=split(': ',$_);
+			$v=commify($v);
+			$statInfo{$k}=$v;
+		}
+	}
+	return 'pseudoExec.doStat: no stat for: '.htmlEncode($whichStat) unless exists $statInfo{$whichStat};
+	return $statInfo{$whichStat};
+};
+
+#new way
+local *expandIt = sub {
+	my $raw = $_[0] || '';
+	my $canceled = '[-'.$raw.'-]';
+	return $canceled unless length($raw);
+	my $clean = trim($raw);
+	return $canceled unless length($clean);
+	return $pseudoCodes{$clean} if exists $pseudoCodes{$clean};
+	return doStat($1) if $clean =~ /^stat:([a-z]+)$/;
+	return doSayings($1) if $clean =~ /^sayings:([A-Za-z]+)$/;	#maybe more chars later
+	return $canceled;	#maybe server warning this
+};
+
+$text =~ s/\[-(.+?)-\]/expandIt($1)/ge;	#should we multi-line this?
+
+##old way
+#local *expandQuote = sub {
+#	my $raw = $_[0] || '';
+#	my $canceled = '[&quot;'.$raw.'&quot;]';
+#	return $canceled unless length($raw);
+#	my $clean = trim($raw);
+#	return $canceled unless length($clean);
+#
+#	#current user information, from $USER hash
+#	if( ($clean =~ /^\$USER-&gt;\{\s*(.+?)\s*\}$/) || ($clean =~ /^\$\$USER\{\s*(.+?)\s*\}$/) ) {
+#		my $k = $1;
+#		return $USER-&gt;{'title'} if $k eq 'title';
+#		return $USER-&gt;{'node_id'} if $k eq 'node_id';
+#		return $canceled;
+#	}
+#
+#	return $canceled;
+#};
+#
+#$text =~ s/\[\&quot;(.+?)\&quot;\]/expandQuote($1)/ge;	#should we do multi-line here?
+
+return $text;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>pseudoExec</title>
+</node>

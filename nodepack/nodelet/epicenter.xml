@@ -1,0 +1,102 @@
+<node>
+  <nltext></nltext>
+  <parent_container>175986</parent_container>
+  <icon>http://images.everything2.com/img/epicenter.gif</icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>1999-11-06 23:10:58</createtime>
+  <lastupdate>1308236549</lastupdate>
+  <hits>281</hits>
+  <node_id>262</node_id>
+  <iconHeight>26</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>170</iconWidth>
+  <author_user>315</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>262</nodelet_id>
+  <nlcode>[{borgcheck}][%
+
+return '' if $$USER{user_id} == $HTMLVARS{guest_user};
+use Everything::Experience;
+
+my $isRoot = htmlcode('isAdmin');
+my $isEd = $isRoot || htmlcode('isEditor');
+
+my ($loginStr, $votesLeftStr, $expStr, $serverTimeStr, $weblogStr);
+
+#####LOGIN STRING
+
+# Upon successful log-in, write current browser to VARS
+if ($query-&gt;param(&quot;op&quot;) eq &quot;login&quot;)
+	{ $$VARS{browser} = $ENV{HTTP_USER_AGENT}; }
+
+$loginStr = &quot;
+&lt;ul&gt;
+	&lt;li&gt;&quot;.linkNode($NODE, 'Log Out', {op=&gt;'logout'}).&quot;&lt;/li&gt;
+	&lt;li title=\&quot;User Settings\&quot;&gt;&quot;.linkNode($HTMLVARS{userSettings_node}, '',{lastnode_id=&gt;0}).&quot;&lt;/li&gt;
+	&lt;li title=\&quot;Your profile\&quot;&gt;&quot;.linkNode($USER,0,{lastnode_id=&gt;0}).' '.linkNode($USER,'&lt;small&gt;(edit)&lt;/small&gt;',{displaytype=&gt;'edit',lastnode_id=&gt;0}).&quot;&lt;/li&gt;
+	&lt;li title=\&quot;Draft, format, and organize your works in progress\&quot;&gt;&quot;.linkNode(getNode('Drafts','superdoc')).&quot;&lt;/li&gt;
+	&lt;li title=\&quot;View a randomly selected node\&quot;&gt;&quot;.htmlcode('randomnode','Random Node').&quot;&lt;/li&gt;
+	&lt;li title=\&quot;Need help?\&quot;&gt;&quot;.linkNode(getNode(
+		(getLevel($USER) &lt; 2 ? 'E2 Quick Start' : 'Everything2 Help'),'e2node'), 'Help').&quot;&lt;/li&gt;
+&lt;/ul&gt;&quot;;
+
+###VOTES LEFT, XP
+
+my @thingys = ();
+
+my $c = (int $$VARS{cools}) || 0;
+my $v = (int $$USER{votesleft}) || 0;
+if($v !~ /^\d+$/) { $v = 0; }
+if ($c || $v) {
+	if($c) { push @thingys, '&lt;strong id=&quot;chingsleft&quot;&gt;'.$c.'&lt;/strong&gt; C!'.($c&gt;1?'s':''); }
+	if($v) { push @thingys, '&lt;strong id=&quot;votesleft&quot;&gt;'.$v.'&lt;/strong&gt; vote'.($v&gt;1?'s':''); }
+}
+
+if (scalar(@thingys)) {
+	$votesLeftStr = &quot;\n\n\t&quot;.'&lt;p id=&quot;voteschingsleft&quot;&gt;You have ' . join(' and ',@thingys) . ' left today.&lt;/p&gt;';
+}
+
+$expStr = &quot;\n\n\t&quot;.'&lt;p id=&quot;experience&quot;&gt;'.htmlcode('shownewexp','TRUE').'&lt;/p&gt;';
+
+if ( $$NODE{type}{title} eq 'writeup' ||  $$NODE{type}{title} eq 'e2node' ) {
+	$weblogStr = '&quot;Add to&amp;hellip;&quot; in writeup ' ;
+	if ( $$VARS{ wufoot } =~ /addto/ ) {
+		$weblogStr .= 'foot' ;
+	} elsif ( $$VARS{ wuhead } =~ /addto/ ) {
+		$weblogStr .= 'head' ;
+	} else {
+		$weblogStr = linkNodeTitle( 'Advanced Settings' ).' and add them to your writeup foot' ;
+	}
+	$weblogStr = '&lt;p&gt;&lt;small&gt;For bookmark and weblog links see '.$weblogStr.'ers.&lt;/small&gt;&lt;/p&gt;' ;
+}
+
+unless 	($$VARS{GPoptout}) {
+	$expStr .= &quot;\n\n\t&quot;.'&lt;p id=&quot;gp&quot;&gt;'.htmlcode('showNewGP','TRUE').'&lt;/p&gt;';
+}
+
+
+
+#### SERVER TIME
+
+my $NOW = time;
+$serverTimeStr='server time' . &quot;&lt;br /&gt;\n\t\t&quot; . htmlcode('DateTimeLocal',$NOW.',1');
+
+if( (exists $VARS-&gt;{'localTimeUse'}) &amp;&amp; $VARS-&gt;{'localTimeUse'} ) {
+	$serverTimeStr .= &quot;&lt;br /&gt;\n\t\t&quot; . linkNodeTitle('Advanced Settings|your time') . &quot;&lt;br /&gt;\n\t\t&quot; . htmlcode('DateTimeLocal',$NOW);
+} else {
+	$serverTimeStr .= &quot;&lt;br /&gt;\n\t\t&quot; . linkNodeTitle('Advanced Settings|(set your time)');
+}
+
+$serverTimeStr = &quot;\n\n\t&quot;.'&lt;p id=&quot;servertime&quot;&gt;'.$serverTimeStr.'&lt;/p&gt;';
+
+return $loginStr .$votesLeftStr . $expStr . $weblogStr . $serverTimeStr;
+
+%]</nlcode>
+  <title>Epicenter</title>
+</node>

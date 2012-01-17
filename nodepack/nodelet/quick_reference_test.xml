@@ -1,0 +1,90 @@
+<node>
+  <nltext></nltext>
+  <parent_container>175986</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2004-11-24 21:54:46</createtime>
+  <lastupdate>0</lastupdate>
+  <hits>0</hits>
+  <node_id>1686097</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>8933</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1686097</nodelet_id>
+  <nlcode>&lt;!-- Lord Brawl made this cheesy little nodelet. ---&gt;
+&lt;p&gt;
+Look for more about this topic:
+[%
+my $topic =''; # Output string
+
+# What topic to link
+my $lookfor = $NODE-&gt;{title};
+if ($$NODE{type}{title} eq 'writeup') {
+  my $parentnode = getNodeById($NODE-&gt;{parent_e2node});
+  $lookfor = $parentnode-&gt;{title};
+}
+else
+{
+ if (($NODE-&gt;{title} eq 'Findings:') || ($NODE-&gt;{title} eq 'Nothing Found')) {
+   # Special case findings to look up what was searched
+   $lookfor = $query-&gt;param('node');
+ }
+}
+
+# Build a link for Wikipedia
+$topic = '&lt;br /&gt;try &lt;a href=&quot;http://en.wikipedia.org/wiki/';
+$topic .= $lookfor;
+$topic .= '&quot; target=&quot;_blank&quot;&gt;Wikipedia&lt;/a&gt; or ';
+# Build a link for Wiktionary
+$topic .= '&lt;a href=&quot;http://en.wiktionary.org/wiki/';
+$topic .= $lookfor;
+#$topic .= $parentnode{title};
+$topic .= '&quot; target=&quot;_blank&quot;&gt;Wiktionary&lt;/a&gt;';
+
+# ... and, on a new line ...
+$topic .= '&lt;br /&gt;';
+
+# Build a link for Google
+$topic .= 'try &lt;a href=&quot;http://www.google.com/search?q=%22';
+# ... Google replaces spaces with a &quot;+&quot; symbol ...
+my $googlestring = $lookfor;
+#$googlestring =~ s/ /+/g;
+$googlestring =~ tr/ /+/;
+$topic .= $googlestring;
+$topic .= '%22&amp;amp;sa=Search&quot; target=&quot;_blank&quot;&gt;Google&lt;/a&gt;';
+
+# Convert to a happy E2 form and display (default action)
+return '&lt;small&gt;'.parseLinks($topic).'&lt;/small&gt;';
+%]
+&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;p&gt;
+[%
+my $google = '';
+
+$google .= &quot;&lt;FORM method=GET action=\&quot;http://www.google.com/search\&quot; target=\&quot;_blank\&quot;&gt;&quot;;
+$google .= &quot;&lt;TABLE&gt;&lt;tr&gt;&lt;td&gt;Google search:&lt;br /&gt;&quot;;
+$google .= &quot;&lt;INPUT TYPE=text name=q size=24 maxlength=255 value=\&quot;&quot;;
+$google .= $NODE-&gt;{title};
+$google .= &quot;\&quot;&gt;&quot;;
+# Enable next two lines for safe search
+#$google .= &quot;&lt;INPUT type=hidden name=safe value=vss&gt;&quot;;
+#$google .= &quot;&lt;INPUT type=hidden name=vss value=1&gt;&quot;;
+$google .= &quot;&lt;br /&gt;&quot;;
+$google .= &quot;&lt;INPUT type=submit name=sa value=\&quot;Search\&quot;&gt;&quot;;
+$google .= &quot;&lt;/td&gt;&lt;/tr&gt;&lt;/TABLE&gt;&quot;;
+$google .= &quot;&lt;/FORM&gt;&quot;;
+%]
+&lt;/p&gt;</nlcode>
+  <title>Quick Reference Test</title>
+</node>

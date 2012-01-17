@@ -1,0 +1,181 @@
+<node>
+  <doctext>&lt;div name=&quot;poetry_words&quot;&gt;
+&lt;i&gt;begin words -- if you can't see 'em, it's not working&lt;/i&gt;&lt;br&gt;&lt;br&gt;
+&lt;script language=&quot;JavaScript&quot;&gt;
+var ob = String.fromCharCode(91);    // opening bracket
+var cb = String.fromCharCode(93);    // closing bracket
+
+function addWord(num) {
+  if (num&lt;0) addNewLine();
+  else {
+    var word = docElements.item(num).childNodes.item(0).data;
+    if (word.substring(0,1)==&quot;-&quot; &amp;&amp; fname.value.substring(fname.value.length-1)==&quot; &quot;) {
+      fname.value = fname.value.substring(0,fname.value.length-1)+word.substring(1)+&quot; &quot;;
+    } else if (fname.value.substring(fname.value.length-2)==&quot;- &quot;) {
+      fname.value = fname.value.substring(0,fname.value.length-2)+word+&quot; &quot;;
+    } else {
+      fname.value += word+&quot; &quot;;
+    }
+    docElements.item(num).style.color = &quot;white&quot;;
+    docElements.item(num).removeAttribute(&quot;href&quot;);
+    eval(&quot;wordArray&quot;+ob+&quot;wordArray.length&quot;+cb+&quot; = num&quot;);
+  }
+}
+
+function addNewLine() {
+  fname.value += &quot;\n&quot;; 
+  eval(&quot;wordArray&quot;+ob+&quot;wordArray.length&quot;+cb+&quot; = -1&quot;);
+}
+function deleteWord() {
+  var intWord = wordArray.pop();
+  if (intWord&gt;0) {
+    docElements.item(intWord).setAttribute(&quot;href&quot;,&quot;javascript:addWord(&quot;+intWord+&quot;)&quot;);
+    docElements.item(intWord).style.color = &quot;blue&quot;; // default
+  }
+  var tempArray = wordArray;
+  wordArray = new Array();
+  fname.value = &quot;&quot;;
+  for (var i=0; i&lt;tempArray.length; i++) addWord(eval(&quot;tempArray&quot;+ob+&quot;i&quot;+cb)); 
+  if (intWord&lt;0) deleteWord();
+}
+function deleteAll() {
+//  while (wordArray.length) deleteWord();
+  wordArray = new Array();
+  for (var i=0; i&lt;docElements.length; i++) {
+    docElements.item(i).setAttribute(&quot;href&quot;,&quot;javascript:addWord(&quot;+i+&quot;)&quot;);
+    docElements.item(i).style.color = &quot;blue&quot;; // default
+  }
+  fname.value = &quot;&quot;;
+}
+
+function buildRandom() {
+//  var delay = 2000;
+  deleteAll();
+  var newLineFactor = 8;
+  var wordCount = Math.floor(docElements.length*2/3);
+  //wordCount = prompt(&quot;How many words to choose?&quot;,wordCount);
+  for (var i=0; i&lt;wordCount; i++) {
+    var itemNum = Math.floor((newLineFactor+docElements.length)*Math.random())-newLineFactor;
+    if (itemNum&gt;=0 &amp;&amp; docElements.item(itemNum).style.color==&quot;blue&quot;) {
+      addWord(itemNum);
+    } else { 
+      if (itemNum&lt;0) addNewLine(); 
+      i--; 
+    }
+
+  }
+}
+function drawWords() {
+  var colNum = 100;
+  var colCount = 0;
+  var minSpaces = 6;
+  var maxSpaces = 20;
+
+  maxWords = Math.min(maxWords,strArray.length);
+  for (var i=0; i&lt;maxWords; i++) {
+    var randNum = Math.floor(strArray.length*Math.random());
+    var strWord = eval(&quot;strArray&quot;+ob+&quot;randNum&quot;+cb); //.toLowerCase();
+    if (strWord.length==0) { // in case of zero-length words
+      strArray.splice(randNum,1);
+    } else {
+      colCount += strWord.length;
+      if (colCount&gt;colNum) { 
+        document.write(&quot;&lt;br&gt;&quot;);
+        colCount = strWord.length;
+      }
+      for (var s=1; s&lt;minSpaces+Math.ceil((maxSpaces-minSpaces)*Math.random()); s++) {
+        colCount += 1; // space
+        document.write(&quot;&amp;nbsp;&quot;);
+      }
+      if (colCount&lt;=colNum) {
+        document.write(&quot;&lt;a style=\&quot;color:blue\&quot; href=\&quot;javascript:addWord(&quot;+i+&quot;)\&quot;&gt;&quot;+strWord+&quot;&lt;/a&gt;&quot;);
+        strArray.splice(randNum,1);
+      } else {
+        i--;
+      }
+    }
+  }
+}
+function buildWordArray(intMax) {
+  var arrWords = new Array();
+  for (var i=1; i&lt;arguments.length; i+=2) {
+    var arrTemp = eval(&quot;arguments&quot;+ob+&quot;i&quot;+cb+&quot;.split(\&quot; \&quot;)&quot;);
+    for (var j=0; j&lt;eval(&quot;arguments&quot;+ob+&quot;i+1&quot;+cb); j++) {
+      var intRandGet = Math.floor(arrTemp.length * Math.random());
+      var intRandPut = Math.floor(arrWords.length * Math.random());
+      arrWords.splice(intRandPut,0,arrTemp.splice(intRandGet,1));
+    }
+  }
+  return arrWords.splice(0,intMax);
+}
+
+var strVowels = &quot;a e i o u y&quot;;
+
+var strNouns = &quot;earth air sky sun fire flame water man woman rock tree flower rose cat dog statue knife telephone card window door house wall floor book store paper fence light lamp dark box key chain shirt suit dress shoe tie knot music ache beard glass wheel car truck one two three four five six seven eight nine ten zero bottle jar can plate cup fork knife spoon package dinner lunch breakfast dessert forest desert plain grass prairie coast ocean lake river water ground cloud storm rain drizzle thunder lightning night day dawn dusk twilight sunrise sunset diamond ruby emerald gem jewel ring heart breath mind bone blood eye nose ear mouth lip tongue teeth head arm hand finger body leg foot toe hip back chest nail hammer watch ball cat dog kitten puppy bird ant roach hamster pet mouse rat dirt slime mud oil stuff thing junk flame candle wood bed chair table blanket sheet curtain pole flag cushion sofa couch picture painting art red yellow orange blue green purple brown black white pink grey moon stair hall step heaven hell land sea mountain hill valley pit cave tunnel house roof basement attic bedroom kitchen television radio sign symbol man woman boy girl child baby adult adolescent word sentence yes no pencil pen line hook shovel garden clutter mess order chaos space time square circle triangle sphere ball cube orb angle matter energy week month date year century hour minute second instant moment half whole clay cloth silk metal brass bronze steel glass iron bump&quot;;
+// -s -es
+var strCvrbs = &quot;to be am are is was were have has had do can could must shall will&quot;;
+var strVerbs = &quot;like love prefer wish impress please surprise hear see saw sound belong contain include need appear seem hit explode fight run go work play blow breathe blink cut hit hurt love care need want burn adore shut open close read look search hunt crave admire smile wink grin pat poke hold squeeze write scribble draw paint color sketch skip hop jump walk stand fall sleep relax recline ease move push pull sniff flip turn scan serve take ask demand beg plead say command deliver speak cry frown scream yell eat discuss tell wave lighten darken flash shock embarass educate stalk race tow lift raise shoot change pursue drop pick erupt come drive thrust hush purr bark beg roll charge energize arise tear rip shred point sparkle shimmer shine swing slide spin dance laugh howl giggle tickle snore flap fly soar crash burn&quot;;
+// -s -es -ed -Xed -ing -Xing
+var strAdjcs = &quot;good well bad far better worse farther good well bad far better worse farther kind light dark blind deaf loud soft quiet alive dead sharp dull smooth rough hard easy terrible simple complex regular random pretty cute ugly hideous square electric wet dry arid moist last first previous next early late first second third fourth fifth partial complete entire dull boring &quot;; 
+// -er -r -Xer -ier -est -st -Xest -iest
+var strArtcs = &quot;a an the each every some any a an the each every some any a an the each every some any a an the each every some any a an the each every some any a an the each every some any a an the each every some any a an the each every some any a an the each every some any&quot;;
+
+var strAdvbs = &quot;always often sometimes seldom ever never very more most less least not&quot;; 
+// -ly
+var strIntjs = &quot;ah alas dear hello hey oh&quot;;
+var strPreps = &quot;above across after against along among around as at before behind below beneath beside between beyond but by during except for from inside into like near of off on onto outside over since than through to toward under underneath until up upon with within without&quot;;
+var strConjs = &quot;and but for nor or so yet after although as because before how if once since than that though till until when where whether while&quot;;
+var strProns = &quot;I you he she it we they me you him her it us them my your his her its our their mine yours his hers its ours theirs -self -selves&quot;;
+var strSuffs = &quot;-s -es -d -ed -ing -er -r -ier -est -st -iest -ly -th -y&quot;;
+
+var maxWords = 80;
+var strArray = buildWordArray(maxWords, strNouns,15, strCvrbs,5, strVerbs,15, strAdjcs,10, strArtcs,10, strAdvbs,5, strIntjs,2, strPreps,15, strConjs,5, strProns,15, strSuffs,5); // weighted distribution
+var wordArray = new Array();
+
+drawWords();
+&lt;/script&gt;
+&lt;br&gt;&lt;br&gt;&lt;i&gt;end words&lt;/i&gt;
+&lt;/div&gt;
+&lt;br&gt;
+
+&lt;form name=&quot;textform&quot;&gt;
+  Your poem:
+  &lt;br&gt;
+  &lt;b&gt;&lt;a href=&quot;javascript:addNewLine()&quot;&gt;new line&lt;/a&gt;&lt;/b&gt; &amp;nbsp; 
+  &lt;b&gt;&lt;a href=&quot;javascript:deleteWord()&quot;&gt;delete last word&lt;/a&gt;&lt;/b&gt; &amp;nbsp; 
+  &lt;b&gt;&lt;a href=&quot;javascript:buildRandom()&quot;&gt;create random poetry&lt;/a&gt;&lt;/b&gt; &amp;nbsp; 
+  &amp;nbsp; &amp;nbsp;
+  &lt;b&gt;&lt;a href=&quot;javascript:deleteAll()&quot;&gt;clear poem&lt;/a&gt;&lt;/b&gt; &amp;nbsp; 
+  &lt;b&gt;&lt;a href=&quot;javascript:location.reload()&quot;&gt;new words&lt;/a&gt;&lt;/b&gt; &amp;nbsp; 
+  &lt;br&gt;
+  &lt;textarea cols=&quot;60&quot; rows=&quot;16&quot; name=&quot;words&quot; wrap=&quot;soft&quot;&gt;&lt;/textarea&gt;
+
+&lt;/form&gt;
+
+&lt;script language=&quot;JavaScript&quot;&gt;
+  var fname = document.textform.words;
+  var docElements=document.getElementsByTagName(&quot;div&quot;);
+  for (var i=0; i&lt;docElements.length; i++) {
+    if (docElements.item(i).getAttribute(&quot;name&quot;)==&quot;poetry_words&quot;) {
+      docElements = docElements.item(0).getElementsByTagName(&quot;a&quot;); 
+      break;
+    }
+  }
+&lt;/script&gt;
+
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-08-09 13:51:09</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1344497</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>854232</type_nodetype>
+  <document_id>1344497</document_id>
+  <author_user>663551</author_user>
+  <package>0</package>
+  <title>e2 magnetic poetry</title>
+</node>

@@ -1,0 +1,66 @@
+<node>
+  <doctext>&lt;p&gt;
+[%
+my %stats;
+my %vars;
+
+local *commify = sub {
+
+    local $_  = shift;
+    return 0 unless defined $_;
+    1 while s/^([-+]?\d+)(\d{3})/$1,$2/;
+    return $_;
+
+};
+
+
+my $csr = $dbh-&gt;prepare('show status');
+$csr-&gt;execute;
+
+while (my ($key, $val) = $csr-&gt;fetchrow) {
+  $stats{$key} = $val;
+}
+$csr-&gt;finish;
+$csr = $dbh-&gt;prepare('show variables');
+$csr-&gt;execute;
+while (my ($key, $val) = $csr-&gt;fetchrow) {
+  $vars{$key} = $val;
+}
+$csr-&gt;finish;
+
+$stats{smq} = 
+sprintf(&quot;%.2f&quot;, 1000000*$stats{Slow_queries}/$stats{Questions});
+        my $time         = $stats{Uptime};
+        my ($d,$h,$m,$s) = (0, 0, 0, 0);
+
+        $d += int($time / (60*60*24)); $time -= $d * (60*60*24);
+        $h += int($time / (60*60));    $time -= $h * (60*60);
+        $m += int($time / (60));       $time -= $m * (60);
+        $s += int($time);
+
+        my $uptime = sprintf(&quot;%d+%02d:%02d:%02d&quot;, $d, $h, $m, $s);
+
+my $str;
+$str .= &quot;Uptime: $uptime&lt;br&gt;
+Queries: &quot;. commify($stats{Questions}) .&quot;&lt;br&gt;
+Slow (&gt;$vars{long_query_time} sec): &quot;.commify($stats{Slow_queries}).&quot;&lt;br&gt;
+Slow/Million: $stats{smq}&lt;br&gt;&quot;;
+
+$str;
+%]
+&lt;p&gt;Slow/Million Queries is a decent barometer of how much lag the Database is hitting.  Rising=bad, falling=good.</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-05-20 19:23:24</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1054397</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1054397</document_id>
+  <author_user>220</author_user>
+  <package>0</package>
+  <title>Database Lag-o-meter</title>
+</node>

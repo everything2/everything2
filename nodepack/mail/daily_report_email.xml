@@ -1,0 +1,30 @@
+<node>
+  <doctext>    The Everything2 Daily Report for [date]
+
+Good Morning, [user].  
+
+[content]
+
+The Everything2 Daily Report is a service of Everything2.com.
+If you don't want to get this mail, login and go to 
+http://everything2.com/?node=everything+email+options
+
+g'day!</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-05-31 03:07:30</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>14</hits>
+  <node_id>580977</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>154</type_nodetype>
+  <from_address></from_address>
+  <document_id>580977</document_id>
+  <attachment_file>0</attachment_file>
+  <author_user>315</author_user>
+  <mail_id>580977</mail_id>
+  <package>0</package>
+  <title>daily report email</title>
+</node>

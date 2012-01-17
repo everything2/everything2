@@ -1,0 +1,68 @@
+<node>
+  <doctext>&lt;p&gt;[N-Wing|I]'ve done a few things in code for April Fool's Day before. I thought it may be of interest to [edev]ers and other Perl programmers what some of the things were. This superdoc explains some of code of the things done before.&lt;/p&gt;
+&lt;p&gt;&lt;small&gt;(If I already have this somewhere else, er, oops! Please let me know. &amp;mdash; [N-Wing])&lt;/small&gt;&lt;/p&gt;
+
+&lt;p&gt;(I'm just cleaning out old junk for now, so there isn't any formatting or anything pretty like that. Sorry. --N-Wing, 2006-03-31(5)&lt;/p&gt;
+
+
+&lt;p style=&quot;border:solid black 1px;&quot;&gt;
+&lt;pre&gt;
+showchatter (htmlcode)
+
+#N-Wing AFD2004
+#sometimes make displayed text of same user show something else
+my $doAFD2004 = 0; #change this to 0 to easily disable AFD 2004 code
+if( $doAFD2004 &amp;&amp; ($$USER{node_id}==$aid) &amp;&amp; (rand(100)&lt;3) ) {
+my @otherSayings = (
+'/me is a monkey', '/me likes jumping', '/me is seeing things',
+'/me loves the taste of fresh floppy disks',
+'/me loves [EDB]',
+'Woah, eating [pizza] older than 8 days old is *not* a good idea!',
+'I just love April Fool\'s Day', 'Be like a tree and [leave|go away]!',
+'Mommy makes me mash my M and Ms.', 'Everybody, please downvote me!',
+'Testing, 1, 2, 3... hello? Is this mic on?',
+'Is Server Error! on your home node a bad thing?',
+'I just love this site! I\'m going to donate $1000 as soon as possible!',
+'/me drools for a living', '/me thinks you are all wimps',
+'IMPORTANT: Please downvote my writeups!',
+'Does anybody think I\'m too old?', 'My user name is ['.$$USER{title}.'].',
+'How is someone else saying something for me?',
+'I like cheese. I smell like cheese.',
+'I have nothing more to say. (Except for [everything|this], of course.)',
+'[Dep] said &quot;I didn\'t type that.&quot;',
+'Go ahead, make my [night].',
+'I don\'t like nuclear power plants. They taste too salty.',
+'It is still April Fool\'s Day in some parts of the world. Yay!'
+);
+if($isEDev) {
+push(@otherSayings, 'If I look at [showchatter] (htmlcode), I can see what is going on here.');
+push(@otherSayings, '#$@%* Am I cursing, or reading Perl?');
+}
+$text = $otherSayings[int(rand(@otherSayings))];
+} else {
+#end N-Wing AFD2004
+
+
+	$text = $$MSG{msgtext};
+
+
+} #N-Wing AFD2004
+
+&lt;/pre&gt;
+&lt;/p&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2006-03-31 23:55:41</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1796239</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1796239</document_id>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>AFD code</title>
+</node>

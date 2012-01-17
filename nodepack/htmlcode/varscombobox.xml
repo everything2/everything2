@@ -1,0 +1,136 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-05-11 07:20:07</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1300516</node_id>
+  <htmlcode_id>1300516</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#VARS combo box
+#safely allows a user to set a value in their $VARS via an uneditable combo box
+#
+#parameters:
+#	$key - which element is being changed; $VARS-&gt;{$key}
+#	$flags - bitwise flags:
+#		1 = separate 0 and undef - by default, a value of 0 will delete $VARS-&gt;{$key}; if this is set, the actual value of 0 will be stored; also note that there isn't a way to delete the key if changed
+#	@elements - elements of list:
+#		even indices is value, odd indices is what to display
+#		if this is not defined, values are taken from $HTMLVARS{choicelist} instead
+#		note: a 0 value must be defined, or one will be given to you
+#
+#examples:
+#	show small, medium, large, which will be set in $VARS-&gt;{editsize}
+#	[{varsComboBox:editsize,0, 0,small (default),1,medium,2,large}]
+#
+#	shows sizes with a comma in the labels
+#	note: use square brackets, and not curly braces
+#	$HTMLVARS{choicelist} = [
+#		'0', 'small, the default size',
+#		'1', 'medium, an actual useful size',
+#		'2', 'large, for high res displays',
+#	];
+#	htmlcode('varsComboBox', 'editsize,0');
+#
+#created: 2002.05.10.n5
+#updated: 2002.06.20.n4 by N-Wing
+
+my ($key, $flags, @elements) = @_;
+
+return if $HTMLVARS{guest_user}==$$USER{node_id};
+
+local *oops = sub {
+	return '&lt;span border=&quot;solid black 1px;&quot; title=&quot;varsComboBox&quot;&gt;!!! '.$_[0].' !!!&lt;/span&gt;';
+};
+
+
+#
+# deal with parameters
+#
+
+return oops('no $VARS key given') unless defined $key;
+return oops('invalid $VARS key given') unless $key =~ /(\w+)/;
+$key = $1;
+
+$flags = (defined $flags) ? $flags+0 : 0;
+my $separate0 = $flags &amp; 1;
+
+unless(scalar(@elements)) {
+	if( (exists $HTMLVARS{choicelist}) &amp;&amp; (defined $HTMLVARS{choicelist}) ) {
+		@elements = @{ $HTMLVARS{choicelist} };
+	} else {
+		return oops('no values given');
+	}
+}
+return oops('no elements given') if scalar(@elements)==0;
+return oops('missing final value') if (scalar(@elements)%2)==1;
+
+
+#
+# values/labels setup
+#
+
+my @values;
+my %labels;
+#can't just do something like %labels = @elements; because then we'd loose our order
+while(scalar(@elements)) {
+	my $k = shift(@elements);
+	return oops('@elements key #'.scalar(@values).' (index #'.(scalar(@values)&lt;&lt;1).') invalid') unless $k =~ /(-?[\w]+)/;
+	$k=$1;
+	return oops('key &quot;'.encodeHTML($k,1).'&quot; already exists; value is &quot;'.$labels{$k}.'&quot;') if exists $labels{$k};
+	my $v = shift(@elements);
+
+	push(@values, $k);
+	$labels{$k} = $v;
+}
+
+if(!exists $labels{0}) {
+	push(@values, 0);
+	$labels{0} = '0 (default)';
+}
+
+my $curDefault;
+
+
+#
+# possibly change VARS
+#
+
+my $qp = 'setvars_'.$key;
+if(defined $query-&gt;param($qp)) {
+	my $newVal = $query-&gt;param($qp);
+	if(exists $labels{$newVal}) {
+		#only allow a value explicitly given as allowed
+		if($newVal eq '0') {
+			#special case 0: do we delete or actually set
+			if($separate0) {
+				$VARS-&gt;{$key} = 0;
+			} else {
+				delete $VARS-&gt;{$key};
+			}
+		} else {
+			$VARS-&gt;{$key} = $newVal;
+		}
+	}
+}
+
+
+#
+# display combo box
+#
+
+my $curSel = (exists $VARS-&gt;{$key}) ? $VARS-&gt;{$key} : 0;
+if(!exists $labels{$curSel}) {
+	push(@values, $curSel);
+	$labels{$curSel} = $curSel
+}
+$labels{$curSel} = '* '.$labels{$curSel};
+
+return $query-&gt;popup_menu($qp, \@values, $curSel, \%labels);</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>varsComboBox</title>
+</node>

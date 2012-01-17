@@ -1,0 +1,22 @@
+<node>
+  <doctext>&lt;p&gt;The client that started it all? It may be easiest to use this in your browser directly, at [Java Chatterbox], but SourceForge has a slightly more recent version.&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-03-02 18:26:04</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <dlurl>http://sourceforge.net/project/showfiles.php?group_id=4370</dlurl>
+  <homeurl>http://sourceforge.net/projects/jchatter/</homeurl>
+  <hits>0</hits>
+  <node_id>1262679</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <e2client_id>1262679</e2client_id>
+  <type_nodetype>1261857</type_nodetype>
+  <version>0.1.12.1beta</version>
+  <document_id>1262679</document_id>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <clientstr>jchatter</clientstr>
+  <title>Java chatterbox client</title>
+</node>

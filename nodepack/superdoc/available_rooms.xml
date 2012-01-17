@@ -1,0 +1,41 @@
+<node>
+  <doctext>[%
+my @stuff = (&quot;Yeah, yeah, get a room...&quot;, &quot;I'll take door number three...&quot;, &quot;Hey, that's a llama back there!&quot;, &quot;Three doors, down, on your right, just past [Political Asylum]&quot;, &quot;They can't ALL be locked!?&quot;, &quot;Why be so stuffed up in a room? [Go outside]!&quot;);
+
+my $str =&quot;&lt;p align=\&quot;center\&quot;&gt;&quot;.($stuff[rand(@stuff)]).&quot;&lt;/p&gt;&lt;br&gt;&lt;br&gt;&quot;.&quot;&lt;p align=\&quot;right\&quot;&gt;..or you could &quot;.linkNode(getNode(&quot;go outside&quot;, &quot;superdocnolinks&quot;)).&quot;&lt;/p&gt;&lt;br&gt;&lt;br&gt;&quot;;
+
+my $csr = $DB-&gt;sqlSelectMany(&quot;node_id, title&quot;, &quot;node&quot;, &quot;type_nodetype=&quot;.getId(getType(&quot;room&quot;)));
+
+my $rooms;
+
+while(my $ROW = $csr-&gt;fetchrow_hashref())
+{
+   $$rooms{lc($$ROW{title})} = $$ROW{node_id};
+}
+
+  $str.=&quot;&lt;ul&gt;&quot;;
+
+foreach(sort(keys %$rooms))
+{
+  $str.=&quot;&lt;li&gt;&quot;.linkNode(getNodeById($$rooms{$_}));
+}
+
+  $str.=&quot;&lt;/ul&gt;&quot;;
+
+  return $str;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-02-14 02:17:45</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1253993</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1253993</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>Available Rooms</title>
+</node>

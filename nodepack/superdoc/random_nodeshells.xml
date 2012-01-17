@@ -1,0 +1,60 @@
+<node>
+  <doctext>[%
+
+return if $$USER{node_id} == $HTMLVARS{guest_user};
+
+my $maxId = $DB-&gt;sqlSelect(&quot;max(node_id)&quot;,&quot;node&quot;);
+my @rand;
+my $numNodes = 1200;
+
+for (my $x=1;$x&lt;=$numNodes;$x++) {
+push @rand, int (rand $maxId);
+}
+
+my $randStr = join(', ' , @rand);
+
+my $csr = $DB-&gt;sqlSelectMany('node_id', 'node', 'type_nodetype=116 and (select count(*) from nodegroup where nodegroup_id=node.node_id) = 0 and (select count(*) from links where linktype=1150375 and from_node=node.node_id limit 1) = 0 and node_id in ('.$randStr.')');
+
+
+my @nodes;
+while(my $row = $csr-&gt;fetchrow_hashref) {
+	push @nodes, $$row{node_id};
+}
+
+
+my $str = '
+&lt;p&gt;&lt;b&gt;How this works:&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;The code picks '.$numNodes.' random possible node_ids, then checks if the node_id actually exists, if it is an e2node nodetype, and if it has no writeups and no firmlinks. Interestingly, this usually produces between 30 and 40 nodeshells with pretty good consistency.&lt;/p&gt;
+
+&lt;p&gt;[Random nodeshells|Generate a new list]&lt;/p&gt;
+
+&lt;p&gt;Here are &lt;strong&gt;'.scalar(@nodes).'&lt;/strong&gt; random nodeshells:&lt;/p&gt;
+&lt;ul&gt;
+';
+
+foreach(@nodes) {
+	$str.='&lt;li&gt;'.linkNode($_).'&lt;/li&gt;
+';
+}
+
+$str.='&lt;/ul&gt;';
+
+return $str;
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2006-04-27 03:52:51</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>11</hits>
+  <node_id>1802702</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1802702</document_id>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>Random nodeshells</title>
+</node>

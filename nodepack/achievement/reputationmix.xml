@@ -1,0 +1,22 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-11-21 01:56:04</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <display>&lt;strong&gt;Tug of War&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Node with 30 Votes and Low Rep&lt;/i&gt;</display>
+  <achievement_type>reputation</achievement_type>
+  <hits>1</hits>
+  <node_id>1918325</node_id>
+  <achievement_id>1918325</achievement_id>
+  <code>my $controversial = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;node&quot;, &quot;author_user=$user_id and type_nodetype=117 and (reputation &gt;= -5 and reputation &lt;=10)  and (select count(*) from vote where vote_id=node_id)&gt;=30&quot;);
+return 1 if $controversial &gt;= 1;
+return 0;</code>
+  <type_nodetype>1917847</type_nodetype>
+  <private>0</private>
+  <author_user>1312198</author_user>
+  <achievement_still_available>1</achievement_still_available>
+  <package>0</package>
+  <title>reputationMix</title>
+</node>

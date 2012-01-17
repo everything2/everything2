@@ -1,0 +1,41 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-12-16 17:33:44</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1989085</node_id>
+  <htmlcode_id>1989085</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($node_id,$readonly,$num,$levels,$split,$showRating)=@_;
+$node_id=$$NODE{node_id} unless ($node_id);
+$num=$node_id unless ($num);
+$levels=10 unless ($levels);
+$split=2 unless ($split);
+my $str='&lt;div class=&quot;stars&quot;&gt;';
+
+my $currentRating=0;
+if ($showRating) {
+  $currentRating=$showRating;
+}
+else {
+  $currentRating=int(htmlcode('getAverageStarRating', $node_id)+0.5);
+}
+for (my $count=1; $count&lt;=$levels; $count++) {
+  $str.=&quot;&lt;input name='star$num' type='radio' class='star&quot;;
+  $str.=&quot; {split:$split}&quot; if ($split);
+  $str.=&quot;' checked='checked&quot; if ($count==$currentRating);
+  $str.=&quot;' value='$count&quot;;
+  $str.=&quot;' disabled='disabled&quot; if $readonly;
+  #$str.=&quot;' onClick='e2.ajax.starRateNode($node_id, $count); alert();&quot;;
+  $str.=&quot;' /&gt;&quot;;
+}
+$str.='&lt;/div&gt;';
+return $str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <title>stars</title>
+</node>

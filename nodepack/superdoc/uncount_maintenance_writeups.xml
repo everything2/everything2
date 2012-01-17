@@ -1,0 +1,96 @@
+<node>
+  <doctext>[%
+return &quot;[Swap] at work. If you're a coder type, click on viewcode to see what I'm up to.&quot; unless $$USER{title} eq 'Swap';
+
+my $doit = $query-&gt;param(&quot;doit&quot;);
+
+my $str = linkNode($NODE,
+                   &quot;Click here to do it. Only click once!&quot;, 
+                   {doit =&gt; 1});
+
+
+if ($doit) {
+
+  my $swappian_id = 1394568;
+
+  $str =&quot;&lt;p&gt;the maintenance nodes with writeups in them are &lt;/p&gt;&quot;;
+  my $table .= &quot;&lt;table&gt;&lt;tr&gt;&lt;td&gt;key&lt;/td&gt;&lt;td&gt;Maintenance Node&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+  my $talktome .= &quot;&lt;table&gt;
+                   &lt;tr&gt;&lt;td&gt;Author&lt;/td&gt;
+                   &lt;td&gt;Node&lt;/td&gt;
+                   &lt;td&gt;Total WU count&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+
+  foreach my $key ( keys %HTMLVARS) {
+    my $val = $HTMLVARS{$key};
+
+    next unless $val =~ /^\d*$/;
+    my $node = getNodeById($val);
+    next unless ($$node{'type'} -&gt; {'title'}) eq 'e2node';
+    next unless $$node{'group'};
+
+    $table .= &quot;&lt;tr&gt; &lt;td&gt; $key &lt;/td&gt; &lt;td&gt;&quot;.
+      linkNode($HTMLVARS{$key}).&quot;&lt;/td&gt; &lt;/tr&gt;\n&quot;;
+
+    my @wu_ids = @{$$node{'group'}};
+
+    #Don't count the first writeup, which explains what the
+    #maintenance node is about.
+    my $numwus = scalar @wu_ids;
+    foreach my $wu_id (@wu_ids[1 ..$numwus-1] ) {
+
+      my $wu = getNodeById($wu_id);
+      my $wuname = $$wu{'title'};
+      my $author = getNodeById($$wu{'author_user'});
+      my $authorname = $$author{'title'};
+
+      my $vars = getVars $author;
+
+      $talktome .=  &quot;&lt;tr&gt;&quot;.
+        &quot;&lt;td&gt;&quot; . linkNode($$author{node_id}).&quot;&lt;/td&gt;&quot;.
+        &quot;&lt;td&gt;&quot; . linkNode($$wu{node_id}).&quot;&lt;/td&gt;&quot;.
+        &quot;&lt;td&gt;&quot; . $$vars{numwriteups}.&quot;&lt;/td&gt;&quot;.
+        &quot;&lt;/tr&gt;\n&quot;;
+
+#      $$vars{numwriteups}--;
+
+#      setVars($author,$vars);
+
+      #Gotta notify people, let them know what's going on...
+      my $msg = &quot;Okay, that didn't work... you might be spammed a
+      little with multiple /msgs like this one while I try to fix your
+      writeup count due to [$wuname]. Apologies again.&quot;;
+
+      $HTMLVARS {msgparams} = {
+                               'author_id' =&gt; $swappian_id,
+                               'recipient_id' =&gt; $$author{node_id},
+                               'message' =&gt; $msg,
+                               'ccself' =&gt; 1
+                               };
+
+#      htmlcode('sendPrivateMessage','');
+   }
+  }
+
+  $table .= &quot;&lt;/table&gt;&quot;;
+  $talktome .= &quot;&lt;/table&gt;&quot;;
+
+  $str .= $table.&quot;&lt;hr width=\&quot;50%\&quot;&gt;&quot;.$talktome;
+}
+return $str;
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-04-08 16:08:17</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1981468</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1981468</document_id>
+  <author_user>1394568</author_user>
+  <package>0</package>
+  <title>Uncount maintenance writeups</title>
+</node>

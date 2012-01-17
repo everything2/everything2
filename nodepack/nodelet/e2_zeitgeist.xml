@@ -1,0 +1,59 @@
+<node>
+  <nltext></nltext>
+  <parent_container>175986</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2006-12-26 21:04:13</createtime>
+  <lastupdate>1322103512</lastupdate>
+  <hits>3</hits>
+  <node_id>1855429</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>974148</author_user>
+  <updateinterval>300</updateinterval>
+  <package>0</package>
+  <nodelet_id>1855429</nodelet_id>
+  <nlcode>&lt;p&gt;The word on the street...&lt;/p&gt;
+&lt;ol&gt;[%
+my $db = $CACHESTORE-&gt;{dbh};
+my $str = '';
+
+if (!$db) {
+
+  $str .=
+    &quot;&lt;li&gt;No items in cache to analyze at present.&lt;/li&gt;&quot;
+    ;
+
+} else {
+
+  my $limit = 20;
+  my $ignoreNodes = $$CACHESTORE{nodes};
+
+  my $csr = $db-&gt;prepare(&quot;
+    SELECT stats_id, hits
+      FROM stats
+      WHERE hits &gt; 1
+      ORDER BY hits DESC
+      LIMIT $limit
+    &quot;
+    );
+
+  $csr-&gt;execute();
+  while (my ($id, $hits) = $csr-&gt;fetchrow()) {
+    next if ($$ignoreNodes{$id});
+    $str .= '&lt;li&gt;'.linkNode($id).'&lt;/li&gt;';
+  }
+
+}
+
+$str;
+%]&lt;/ol&gt;
+</nlcode>
+  <title>E2 Zeitgeist</title>
+</node>

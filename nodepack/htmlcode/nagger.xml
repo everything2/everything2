@@ -1,0 +1,70 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-02-24 08:47:53</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>3</hits>
+  <node_id>1989601</node_id>
+  <htmlcode_id>1989601</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $str;
+
+return unless (htmlcode('getStarRatingCondition')==180);
+return unless ($$NODE{ type_nodetype } eq getType('e2node')-&gt;{node_id} || $$NODE{ type_nodetype } eq getType('writeup')-&gt;{node_id} ); # Only nag for writeups and e2nodes
+return if ($$NODE{ type_nodetype } eq 116 &amp;&amp; $$NODE{group} and not int( @{ $$NODE{group} })); # And not nodeshells
+
+if ($$NODE{ type_nodetype } eq getType('writeup')-&gt;{node_id}){
+  my $PARENT = getNodeById($$NODE{parent_e2node});
+  return unless($PARENT and $$PARENT{group} and my @grp = @{getNodeById($$NODE{parent_e2node})-&gt;{group}});
+  my $nwriteups = scalar(@grp);
+  return if ($nwriteups&gt;1);
+} # ...and not writeups in nodes containing more than one!
+
+  $str.='  &lt;script src=&quot;/js/jquery.colorbox.js&quot; type=&quot;text/javascript&quot; &gt;&lt;/script&gt;';
+  $str.='
+  &lt;script type=&quot;text/javascript&quot; &gt;
+       jQuery(document).ready(function(){
+         jQuery(&quot;.stars a&quot;).addClass(&quot;stars&quot;);    
+         if(!jQuery(&quot;input.star:checked&quot;).length) jQuery(&quot;a:not(.stars,.action)&quot;).colorbox({
+            width:&quot;50%&quot;,title:&quot;Please rate our nodes&quot;,inline:true, href:&quot;#nagbox&quot;, onOpen:function(){
+          jQuery(&quot;#decline&quot;).html(getLink(this.href,this.title));  
+        }
+        });
+         if(!jQuery(&quot;input.star:checked&quot;).length) jQuery(&quot;#search_submit&quot;).colorbox({
+            width:&quot;50%&quot;,title:&quot;Please rate this node before searching&quot;,inline:true, href:&quot;#nagbox&quot;, onOpen:function(){
+          jQuery(&quot;#decline&quot;).html(getLink(&quot;/title/&quot;+this.form.node.value,this.title));  
+        }
+        });
+
+       });    
+        
+function testFunction(fnName){
+return &quot;thing &quot;+fnName+&quot; called&quot;;
+}
+
+function getLink(linkhref, linktitle){
+  var rtn;
+  if (linktitle==&quot;Search within Everything2&quot;) {
+    rtn=&quot;&lt;p&gt;No, just &lt;a href=\&quot;&quot;+linkhref+&quot;\&quot;&gt;let me search&lt;/a&gt; please&lt;/p&gt;&quot;;
+  }
+  else if (linktitle) {
+    rtn=&quot;&lt;p&gt;No, just &lt;a href=\&quot;&quot;+linkhref+&quot;\&quot;&gt;take me to the page \'&quot;+linktitle+&quot;\'&lt;/a&gt; please&lt;/p&gt;&quot;;    
+  }
+  else {
+    rtn=&quot;&lt;p&gt;No, just let me &lt;a href=\&quot;&quot;+linkhref+&quot;\&quot;&gt;follow the link please&lt;/p&gt;&quot;;    
+  }
+  return rtn;
+}
+  &lt;/script&gt;';
+  $str.='&lt;link rel=&quot;stylesheet&quot; id=&quot;colorboxsheet&quot; type=&quot;text/css&quot; href=&quot;/js/colorbox.css&quot; media=&quot;all&quot;&gt;';
+
+
+return $str;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1322944</author_user>
+  <package>0</package>
+  <title>nagger</title>
+</node>

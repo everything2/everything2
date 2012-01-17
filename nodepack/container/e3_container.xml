@@ -1,0 +1,98 @@
+<node>
+  <parent_container>1988789</parent_container>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:10</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>20</hits>
+  <node_id>1988788</node_id>
+  <context>&lt;div id=&quot;header&quot; &gt;
+	&lt;div style='float: left'&gt;
+		&lt;div&gt;
+			&lt;h1 id='e2logo'&gt;&lt;a href=&quot;/&quot;&gt;Everything&lt;span id=&quot;e2logo2&quot;&gt;2&lt;/span&gt;&lt;/a&gt;&lt;/h1&gt;
+		&lt;/div&gt;
+		&lt;div style='margin-top: 1.5em' &gt;
+			&lt;ul id='nav'&gt;
+[%
+
+my $tab = htmlcode('getTab','');
+
+return &quot;
+				&lt;li class='tab &quot;.( $tab eq &quot;home&quot; ? &quot;selected&quot; : &quot;&quot;).&quot;'&gt;&quot;.linkNode(getNodeById(124)).&quot;&lt;/li&gt;
+				&lt;li class='tab &quot;.( $tab eq &quot;chat&quot; ? &quot;selected&quot; : &quot;&quot;).&quot;'&gt;&lt;a href='javascript:showTab(\&quot;chatter\&quot;);'&gt;CHAT&lt;/a&gt;&lt;/li&gt;
+				&lt;li class='tab &quot;.($tab eq &quot;read&quot; ? &quot;selected&quot; : &quot;&quot;).&quot;'&gt;&lt;a href='javascript:showTab(\&quot;read\&quot;);'&gt;READ&lt;/a&gt;&lt;/li&gt;
+				&lt;li class='tab &quot;.( $tab eq &quot;write&quot; ? &quot;selected&quot; : &quot;&quot;).&quot;'&gt;&lt;a href='javascript:showTab(\&quot;write\&quot;);'&gt;WRITE&lt;/a&gt;&lt;/li&gt;
+&quot;;
+%]
+			&lt;/ul&gt;
+		&lt;/div&gt;
+	&lt;/div&gt;
+		&lt;div id=&quot;links&quot; style='float: right; text-align: right;'&gt;
+			[{e3 minilogin}]			
+			&lt;div id='searchform'&gt;
+			[{e3searchform:noendform}]
+			&lt;/form&gt;&lt;!-- end of searchform --&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+		&lt;div style='clear: both'&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id='main_section' style='clear: both; width: 100%;'&gt;
+	&lt;div id='main_section_content' style='float: left; width: 75%; margin: .5em;'&gt;
+		CONTAINED_STUFF
+	&lt;/div&gt;
+	&lt;div id='main_section_nodelets' style='float: right; width: 22%;  margin: .3em; align: top;'&gt;
+		[{e3_showNodelets:right}]
+	&lt;/div&gt;
+	&lt;div style='clear:both'&gt; &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div id='hidden_chatter' style='display: none'&gt;
+[%
+
+return insertNodelet(170070);
+
+%]
+
+&lt;/div&gt;
+
+
+&lt;div id='hidden_read' style='display: none'&gt;&lt;/div&gt;
+&lt;div id='hidden_home' style='display: none'&gt;
+[%
+
+return parseCode(getNodeById(124));
+
+%]
+&lt;/div&gt;
+&lt;script&gt;
+
+function showTab(showType) {
+hideTab(currentTab);
+$(&quot;main_section_content&quot;).update($(&quot;hidden_&quot;+showType).innerHTML);
+currentTab = showType;
+}
+
+function hideTab(hideType) {
+
+$(&quot;hidden_&quot;+hideType).update($(&quot;main_section_content&quot;).innerHTML);
+
+}
+
+[%
+my $tab = htmlcode('getTab','');
+
+return &quot;currentTab = '&quot;.$tab.&quot;';&quot;;
+
+%]
+
+
+&lt;/script&gt;</context>
+  <type_nodetype>2</type_nodetype>
+  <container_id>1988788</container_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>e3 container</title>
+</node>

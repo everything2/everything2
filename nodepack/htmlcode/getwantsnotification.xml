@@ -1,0 +1,38 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-10-25 01:03:59</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1992694</node_id>
+  <htmlcode_id>1992694</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>use JSON;
+
+my ($notifyUser, $notifyName) = @_;
+
+getRef $notifyUser;
+return 0 unless $notifyUser &amp;&amp; $$notifyUser{type}{title} eq 'user';
+
+my $notification = getNode($notifyName, &quot;notification&quot;);
+return 0 unless $notification;
+my $notificationId = $$notification{node_id};
+
+my $notifyVars = getVars($notifyUser);
+my $notifySettings = $$notifyVars{settings};
+
+if ($notifySettings) {
+  my $jsonHash = from_json($notifySettings);
+  my $notificationPrefs = $$jsonHash{notifications};
+  return 1 if $notificationPrefs &amp;&amp; $$notificationPrefs{$notificationId};
+}
+
+return 0;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>getWantsNotification</title>
+</node>

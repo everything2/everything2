@@ -1,0 +1,45 @@
+<node>
+  <doctext>[{wapheader}]
+&lt;wml&gt;
+&lt;head&gt;
+  &lt;meta forua=&quot;true&quot; http-equiv=&quot;Pragma&quot; content=&quot;no-cache&quot; /&gt;
+  &lt;meta forua=&quot;true&quot; http-equiv=&quot;Cache-Control&quot; content=&quot;no-cache, must-revalidate&quot; /&gt;
+&lt;/head&gt;
+&lt;card&gt;&lt;p align=&quot;center&quot;&gt;Chatterbox&lt;/p&gt;
+[%
+my $str;
+
+return '' if htmlcode('isSpider');
+
+my $wherestr = 'for_user=0 and unix_timestamp(now())-unix_timestamp(tstamp) &lt; 300';
+$wherestr.=' and room='.$$USER{in_room};
+
+my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;, &quot;message&quot;, $wherestr);
+
+while(my $row = $csr-&gt;fetchrow_hashref)
+{
+  my $aut = getNodeById($$row{author_user});
+  $str.=&quot;&lt;p&gt;&amp;lt;$$aut{title}&amp;gt; &quot;.encodeHTML($$row{msgtext}).&quot;&lt;/p&gt;&quot;;
+}
+
+ $str.=&quot;&lt;p align=\&quot;center\&quot;&gt;&lt;a href=\&quot;/index.pl?node_id=$$NODE{node_id}&amp;amp;junk=&quot;.rand(1000).rand(1000).rand(1000).&quot;\&quot;&gt;refresh&lt;/a&gt;&lt;/p&gt;&quot;;
+
+return $str;
+%]
+&lt;/card&gt;
+&lt;/wml&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-05-04 02:58:50</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1296257</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1296169</type_nodetype>
+  <document_id>1296257</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>wap chatterbox</title>
+</node>

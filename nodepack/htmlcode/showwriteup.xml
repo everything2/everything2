@@ -1,0 +1,60 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-01 19:42:01</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>83</hits>
+  <node_id>136</node_id>
+  <htmlcode_id>136</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#####################################################
+#  showwriteup
+#
+#  displays part of a writeup, with a link to the entire thing
+
+my ($index, $max) = @_;
+return unless $index;
+$max ||= $index;
+
+my @group = @{ $$NODE{group} } if $$NODE{group};
+@group or return;
+return if $index &gt; @group;
+$max = int(@group) if $max &gt; @group;
+
+
+my $str;
+foreach ($index..$max) {
+	my $WRITEUP = $group[$_-1];
+	getRef $WRITEUP;
+	$WRITEUP or return;
+
+	$str .= htmlcode('displaywriteuptitle', $_).'&lt;/td&gt;&lt;td&gt;';
+
+	my $length = 900;
+	if (length($$WRITEUP{doctext}) &lt; $length) {
+		$str.=parseLinks(htmlScreen($$WRITEUP{doctext})) .' (' .linkNode($WRITEUP, 'go there').')';
+	} else {
+		my $firstwords = substr($$WRITEUP{doctext},0, $length+40);
+		$firstwords =~ s/\s+\w*$//gs;
+		$firstwords = parseLinks(htmlScreen($firstwords));
+		$firstwords =~ s/\[.*?$//;
+		$str.=$firstwords . '... (' . linkNode($WRITEUP, 'more').')';
+	}
+
+
+	#next 2 lines added Saturday, April 5, 2008
+	$str .= '&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;';
+	$str .= htmlcode('displayWriteupFooter', getId($WRITEUP));
+
+
+	$str.=&quot;&lt;/td&gt;&lt;/tr&gt;\n&lt;tr&gt;&lt;td&gt;&quot; if $_ &lt; $max;
+}
+$str;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>showwriteup</title>
+</node>

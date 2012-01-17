@@ -1,0 +1,107 @@
+<node>
+  <doctext>/* fonts */
+body {font-family: Arial, sans-serif; font-size: 12px;}
+table {font-size: 12px;}
+h1, h2, h3, h4 {font-weight: bold;}
+h1 {font-size: 130%;}
+.nodetitle {font-size: 150%; text-align: center;}
+h2, big {font-size: 110%;}
+h3, h4 {font-size: 100%;}
+small {font-size: 90%;}
+
+/* colors */
+a:link {color: #228;}
+a:visited {color: #633;}
+a:hover {color: #933;}
+.nodelet {border-color: #D8D8E8;}
+.writeup, #cooluserpicks, .weblog_item {border-color: #90909A;}
+
+/* backgrounds */
+#header {background-image: url('http://collopy.net/e2/header.gif'); background-repeat: repeat-x;} /* 50px high */
+#footer {background-image: url('http://collopy.net/e2/footer.gif'); background-repeat: repeat-x;} /* 100px high */
+.oddrow, #homenodeheader dt, .weblog_item {background-color: #E4E4F5;}
+
+/* structure */
+body {margin: 0;}
+#wrapper {padding: 50px 220px 0 15px;}
+#mainbody {width: 100%; float: left;}
+
+/* header */
+#header {height: 50px; width: 100%; position: absolute; top: 0; left: 0;}
+#e2logo {float: left; margin: 0 0 0 15px; padding: 0; font-size: 150%;}
+#e2logo a {text-decoration: none;}
+#e2logo img {border-style: none;}
+#searchform {width: 400px; float: right; padding-top: 5px;}
+#searchform input {float: left; margin-top: 5px;}
+#searchform label {display: block; font-size: 80%; float: right; clear: right; text-align: left; width: 100px;}
+#searchform label input {margin: 1px;}
+#announcements {visibility: hidden;}
+
+/* footer */
+#footer {clear: both; max-height: 88px; width: 100%; text-align: center; padding: 10px 0 2px;}
+#metalinks {margin: 2px; text-align: center; font-size: 80%; padding: 0;}
+#metalinks li {display: inline;}
+
+/* nodelets */
+#sidebar {position: relative; float: left; width: 200px; margin: 0 -100% 0 15px;}
+.nodelet {clear: both; word-wrap: break-word; margin: 5px 0; padding: 2px 5px 5px; border-style: solid; border-width: 2px;}
+.nodelet_title {margin: 0 0 2px; text-align: center;}
+#nodelet_262 ul {list-style-type: none; padding: 0;} /* for Epicenter */
+#nodelet_165437 ul {list-style-type: none; padding: 0 0 0 1em; margin: 2px 0;} /* for Vitals */
+#writeup_list {list-style-type: none; padding: 0;} /* for New Writeups - Zen */
+#writeup_list li {margin-bottom: 4px; text-align: right; clear: both;}
+#writeup_list .author {display: block; text-align: center; font-weight: bold;}
+#writeup_list .title {display: block; float: left; text-align: left; max-width: 140px;}
+#writeup_list .type {font-size: 90%;}
+#writeup_faves {list-style-type: none; padding: 0;} /* for Favorite Noders */
+#writeup_faves li {margin-bottom: 5px;}
+#room_options input {margin-top: 0;} /* for Other Users */
+.ns_title {margin: 5px 0 0;}
+
+/* welcome */
+#cooluserpicks {position: relative; float: left; width: 188px; border-style: solid; border-width: 1px; margin: 0 15px 0 -10px; padding: 2px 5px 0;}
+#cooluserpicks h3 {margin: 0 0 2px; text-align: center;}
+#cooluserpicks ul {list-style-type: none; padding: 0;}
+#cooluserpicks li {margin-bottom: 4px;}
+#welcome_message {text-align: center;}
+#creamofthecool {width: 100%;}
+.cotc_entry {border-bottom-width: 2px; border-bottom-style: solid; padding-bottom: 5px; margin-bottom: 15px;}
+.cotc_more {font-size: 90%; text-align: right;}
+#frontpage_news h2 {margin: 0; text-align: center;}
+.weblog_item {border-style: solid; border-width: 1px; margin: 5px 0; padding: 5px 5px 0;}
+.wl_title {font-weight: bold; float: left;}
+.wl_author, .wl_date {text-align: right;}
+.wl_links {text-align: right;}
+
+/* e2node */
+.createdby {text-align: right; margin-bottom: 5px;}
+.writeup {border-bottom-width: 2px; border-bottom-style: solid; padding-bottom: 5px; margin-bottom: 15px;}
+#displaytypelinks {float: right; text-align: right;}
+#displaytypelinks p {margin: 0;}
+#softlinks {clear: both;}
+
+/* homenode */
+#homenodepicbox {width: 50%; float: left;}
+#homenodeheader dl {display: block; width: 50%; float: right; margin: 0;}
+#homenodeheader dt {padding: 2px; text-align: right;}
+#homenodeheader dd {margin: 0; padding: 2px;}
+hr.clear {clear: both;}
+
+/* layout */
+textarea {width: 100%;}
+pre {display: block; overflow: auto;} /* to stop page-widening */</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-05-16 18:45:12</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1886668</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1854352</type_nodetype>
+  <document_id>1886668</document_id>
+  <author_user>1685996</author_user>
+  <package>0</package>
+  <title>Two Sheds' theme</title>
+</node>

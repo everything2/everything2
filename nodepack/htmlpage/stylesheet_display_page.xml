@@ -1,0 +1,181 @@
+<node>
+  <parent_container>18</parent_container>
+  <pagetype_nodetype>1854352</pagetype_nodetype>
+  <core>0</core>
+  <page>[%
+
+if(defined($query-&gt;param('switchToZen'))) {
+	delete $$VARS{preferred_theme};
+	getTheme();
+	return &quot;Zen theme enabled.&quot;; 
+}
+
+if($$VARS{preferred_theme}and $$VARS{preferred_theme}!=1854183) {
+  return &quot;Note that you'll need to &quot;.linkNode($NODE,'switch to the Zen theme',{switchToZen=&gt;'true'}).&quot; in order to be use stylesheets like this one.&lt;br&gt;&quot;;
+}
+
+%]
+[%
+my $str = '&lt;p&gt;&lt;cite&gt;by&amp;nbsp;' . linkNode ($$NODE{author_user}) . '&lt;/cite&gt;&lt;/p&gt;';
+$str .= '&lt;p&gt;'.linkNode($NODE, &quot;View this stylesheet&quot;, {displaytype =&gt; 'view'}).'&lt;/p&gt;';
+
+return $str if $$USER{ user_id } == $HTMLVARS{ guest_user } ;
+if ($query-&gt;param('userstyle')) {
+  $$VARS{userstyle} = $$NODE{node_id};
+}
+
+if ($$USER{user_id} == $$NODE{author_user} or exists($HTMLVARS{'group_gods'}{$$USER{'node_id'}}) ) {
+	my $VARSNODE = getNode( 'fixed stylesheets' ,'setting' ) ;
+	my $settings = getVars( $VARSNODE ) ;
+
+  if ( $query -&gt; param( 'fixstylesheet' ) ) {
+  	my $saveold = ( $query -&gt; param( 'saveold' ) ? '1' : '0' ) ;
+  	$str .= '&lt;p&gt;&lt;strong&gt;The stylesheet has been fixed. Changes will only become permanent
+		when you click on &quot;stumbit&quot;.&lt;/strong&gt;&lt;/p&gt;
+		&lt;textarea cols=&quot;60&quot; rows=&quot;30&quot; name=&quot;stylesheet_doctext&quot;&gt;'.
+		htmlcode( 'fixstylesheet' , $saveold ).'&lt;/textarea&gt;' ;
+  }
+  else {
+	# update fixed setting if doesn't need fixing:
+  	htmlcode( 'fixstylesheet' , 0 ) unless $$settings{ $$NODE{ node_id } } &gt;= $HTMLVARS{stylesheetFixLevel} ;
+	$str .= &quot;&lt;p&gt;&lt;strong&gt;Edit the stylesheet:&lt;/strong&gt;&lt;/p&gt;&quot;.
+		htmlcode(&quot;textarea&quot;,&quot;doctext,30,60&quot;);
+  }
+
+	if ( $$settings{ $$NODE{ node_id } } &lt; $HTMLVARS{stylesheetFixLevel} and
+			!$query -&gt; param( 'fixstylesheet') ){
+		$str .= '&lt;p&gt;You can automatically fix this stylesheet to adapt it to many of the recent changes in the E2 code.
+		Changes will not become permanent until you stumbit again.&lt;/p&gt;
+		&lt;p&gt;&lt;input type=&quot;submit&quot; name=&quot;fixstylesheet&quot; value=&quot;Autofix this stylesheet&quot;&gt;
+		&lt;label&gt;&lt;input type=&quot;checkbox&quot; name=&quot;saveold&quot; value=&quot;1&quot;&gt; Save old selectors in comments&lt;/label&gt;
+		&lt;/p&gt;';
+	} else {
+		my $MENUNODE = getNode('theme menu', 'setting');
+		my $menu = getVars($MENUNODE);
+		$str .= $query -&gt; checkbox(-name =&gt; 'inmenu', value =&gt; $HTMLVARS{stylesheetFixLevel} ,
+			checked =&gt; $$menu{$$NODE{node_id}}, label =&gt; 'Include in theme menu' );
+		if ($query -&gt; param('sexisgood') &amp;&amp;
+			$query -&gt; param('inmenu') != $$menu{$$NODE{node_id}}){
+			$$menu{$$NODE{node_id}} = $query -&gt; param('inmenu') ;
+			delete $$menu{$$NODE{node_id}} unless $query -&gt; param('inmenu');
+			setVars( $MENUNODE , $menu ) ;
+		}
+	}
+
+  if ($$USER{user_id} == $$NODE{author_user}) {
+    $str .=&quot;&lt;p&gt;Talk to your users:&lt;/p&gt;&quot;;
+  }
+  else {
+    $str .=&quot;&lt;p&gt;Talk to the stylesheet's users:&lt;/p&gt;&quot;;
+  }
+
+  $str .= '&lt;input type=&quot;text&quot; name=&quot;style_msg&quot; size=&quot;50&quot; value=&quot;&quot;&gt;';
+  $str .= &quot;&lt;br&gt;&quot;;
+
+  my $msg = $query -&gt; param('style_msg');
+
+  #Trim whitespace so that we don't send blank /msgs.
+  $msg =~ s/^\s*//;
+  $msg =~ s/\s*$//;
+
+  # Send /msg to users if there is a /msg to send --[Swap]
+  if ($msg) {
+    my $csr = $DB -&gt; sqlSelectMany('setting_id',
+                                   'setting',
+                                   &quot;vars like '%userstyle=$$NODE{node_id}%'&quot;);
+    my $numusers = $csr -&gt; rows;
+    my $maxusers = 500;
+
+    if ($numusers &gt; $maxusers) {
+      # Kernel blue has about 15,000 users at the time of this coding
+      # (April 2009). Somehow, I don't think that /msging 15,000
+      # people at once is a good idea. --[Swap]
+      $str .= &quot;&lt;p&gt;&lt;small&gt;Sorry, you have too many users! Talk to [e2
+      staff|an admin or editor] to make a general announcement on the
+      front page instead if you really need to.&lt;/small&gt;&lt;/p&gt;&quot;;
+    }
+    else {
+      my @stylesheet_users;
+      while (my $row = $csr -&gt; fetchrow_hashref) {
+        my $uid = $$row{'setting_id'};
+        my $user = getNodeById($uid) -&gt; {'title'};
+        push @stylesheet_users,$user;
+      }
+      $HTMLVARS{msgparams} ={
+                             'recipient' =&gt; \@stylesheet_users,
+                             'message' =&gt; $msg,
+                             };
+      htmlcode('sendPrivateMessage','0');
+
+      #No XSS!
+      $msg =~ s/\&lt;/\&amp;lt\;/g;
+      $msg =~ s/\&gt;/\&amp;gt\;/g;
+
+      $str .= &quot;&lt;p&gt;&lt;small&gt;You said, &lt;i&gt;\&quot;$msg\&quot;&lt;/i&gt; (sent to &quot;
+        .@stylesheet_users.&quot; users)&lt;/small&gt;&lt;/p&gt;\n&quot;;
+    }
+  }
+}
+
+my %autofix = ( autofix =&gt; '1' ) if $$USER{ user_id } == $$NODE{ author_user } ;
+$str .= '&lt;p&gt;'
+	.linkNode( $NODE , 'Try this stylesheet out' , {
+		displaytype =&gt; 'choosetheme'
+		, theme =&gt; $$NODE{ node_id }
+		, noscript =&gt; 1
+		, -id =&gt; 'testdrive'
+		, %autofix
+	})
+	.'&lt;/p&gt;' ;
+
+$str .= &quot;&lt;p&gt;&lt;input type='checkbox' &quot;.
+  ( $$VARS{userstyle} == $$NODE{node_id} ?&quot;checked='checked''&quot; :&quot;&quot;).
+  &quot; name='userstyle' value='&quot;.$$NODE{node_id}.
+  &quot;'&gt; Use this stylesheet&lt;/p&gt;&quot;;
+
+$str .= '&lt;input type=&quot;button&quot; value=&quot;Preview this style&quot;
+                  id=&quot;previewstyle&quot;&gt;';
+
+$str;
+
+%]
+&lt;script type='text/javascript'&gt;
+jQuery('#testdrive').bind('focus click', function(){
+	this.href = this.href.replace('&amp;noscript=1' , '');
+});
+
+var zenSheet = document.getElementById('zensheet');
+var	newStyle = document.createElement('link');
+newStyle.setAttribute('rel', 'stylesheet');
+newStyle.setAttribute('type', 'text/css');
+newStyle.setAttribute('href', '/index.pl?node_id=[% $$NODE{node_id} %]&amp;amp;displaytype=serve');
+document.getElementsByTagName('head')[0].appendChild(newStyle);
+
+newStyle.disabled = true; // belt &amp; braces for old IE
+zenSheet.disabled = false ; // ditto
+var newValue = 'Revert' ;
+document.getElementById('previewstyle').onclick = function () {
+	var oldValue = this.getAttribute('value');
+	this.setAttribute('value', newValue);
+	newValue = oldValue;
+	zenSheet.disabled = ( ! zenSheet.disabled ) ;
+	newStyle.disabled = ( ! newStyle.disabled ) ;
+}
+&lt;/script&gt;
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2006-02-13 16:41:43</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1854353</htmlpage_id>
+  <hits>4</hits>
+  <node_id>1854353</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>stylesheet display page</title>
+  <mimetype></mimetype>
+</node>

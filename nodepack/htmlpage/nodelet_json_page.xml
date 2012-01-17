@@ -1,0 +1,31 @@
+<node>
+  <parent_container>0</parent_container>
+  <pagetype_nodetype>9</pagetype_nodetype>
+  <core>R</core>
+  <page>[%
+
+use JSON;
+
+my $json = new JSON;
+my %pieces = ();
+$pieces{'node_'.$$NODE{node_id}} = htmlcode('listcode','nlcode');
+
+$json-&gt;objToJson(\%pieces, {pretty =&gt; 1, indent =&gt; 2});
+
+%]</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1894152</htmlpage_id>
+  <hits>1</hits>
+  <node_id>1894152</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>json</displaytype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>nodelet json page</title>
+  <mimetype>text/javascript</mimetype>
+</node>

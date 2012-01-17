@@ -1,0 +1,149 @@
+<node>
+  <doctext>The old one that didn't allow bulk moves</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-03-03 10:29:57</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1868374</node_id>
+  <htmlcode_id>1868374</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <code>[%
+return 'Hey, don\'t press that button!' unless(isGod($USER));
+
+my $initial_wu = '';
+
+if(defined($query-&gt;param('writeup_id')))
+{
+     $initial_wu = $query-&gt;param('writeup_id');
+}
+
+if(defined($query-&gt;param('old_writeup_id')))
+{
+     $initial_wu = $query-&gt;param('old_writeup_id');
+}
+
+my $str ='&lt;form method=&quot;post&quot; enctype=&quot;application/x-www-form-urlencoded&quot;&gt;
+&lt;big&gt;Welcome to the E2 moving company.  We promise we\'ll drop any and all valuable items.&lt;/big&gt;&lt;br&gt;&lt;br&gt;
+First we\'ll need the id of the writeup:&lt;br&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;1138488&quot;&gt;
+&lt;input type=&quot;text&quot; name=&quot;writeup_id&quot; value=&quot;'.$initial_wu.'&quot;&gt; - writeup id';
+
+unless($initial_wu eq '')
+{
+  my $tempnode = getNodeById($initial_wu);
+
+  if($tempnode){$str.= '&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;(currently &lt;a href=&quot;?node_id='.$$tempnode{node_id}.'&quot;&gt;'.$$tempnode{title}.'&lt;/a&gt;)';}else{ $str.= '(not a valid node_id)';}
+}
+
+$str .='&lt;br&gt;&lt;br&gt;
+Then we\'ll need either the id or the name of the new e2node:&lt;br&gt;&lt;br&gt;
+&lt;input type=&quot;text&quot; name=&quot;newparent_name&quot;&gt; - name of the e2node&lt;br&gt;
+&lt;b&gt; - or - &lt;/b&gt;&lt;br&gt;
+&lt;input type=&quot;text&quot; name=&quot;newparent_id&quot;&gt; - id of the e2node 
+&lt;br&gt;&lt;br&gt;
+&lt;br&gt;&lt;br&gt;
+&lt;input type=&quot;submit&quot; value=&quot;Move writeup&quot;&gt;
+&lt;/form&gt;&lt;br&gt;&lt;br&gt;&lt;hr&gt;&lt;br&gt;';
+
+unless(defined($query-&gt;param('writeup_id')))
+{
+  $str.='&lt;font color=&quot;red&quot;&gt;We\'ll need the writeup_id to continue&lt;/font&gt;';
+  return $str;
+
+}
+else
+{
+  
+  #return $str;
+ 
+my $newparent;
+   my $in_name = $query-&gt;param('newparent_name');
+   my $in_id = $query-&gt;param('newparent_id');
+ 
+  $newparent = getNode($in_name, 'e2node');
+  unless($newparent){
+    return &quot;The node name you entered does not exist&quot; if $in_name;
+  }
+  $newparent ||= getNodeById($in_id);
+  unless($newparent){
+    return &quot;The node_id you entered is not valid&quot; if $in_id;
+  }
+  return &quot;We'll need a name or id to continue&quot; unless($in_name or $in_id);
+
+   #return $str;
+
+   unless($newparent)
+   {
+       $str .= 'We need a valid parent id or parent name to continue.&lt;br&gt;&lt;br&gt;';
+       return $str;
+   }
+
+
+
+   if($$newparent{type_nodetype} != 116)
+   {
+       $str .= 'The id or name you specified does not correspond to a valid e2node.&lt;br&gt;&lt;br&gt;';
+
+       return $str;
+   }
+
+   my $wu = getNodeById($query-&gt;param('writeup_id'));
+  
+   return $str.'&lt;br&gt;The id you entered does not identify a writeup.&lt;br&gt;' unless($$wu{type_nodetype} == 117); #writeup nodetype id
+
+   my $Kid = getNode('Klaproth', 'user');
+
+      $DB-&gt;sqlInsert('message', {msgtext=&gt;'I moved your writeup &quot;['.$$wu{title}.']&quot; You can now find it at &quot;['.$$newparent{title}.']&quot;', author_user=&gt;$$Kid{node_id}, for_user=&gt;$$wu{author_user}, for_usergroup=&gt;$$USER{node_id}});
+
+   my $oldtitle = $$wu{title};
+
+   my $oldparent = getNodeById($$wu{parent_e2node});
+   removeFromNodegroup($oldparent, $wu, $USER);
+   $$wu{parent_e2node} = $$newparent{node_id};
+
+   my $wutype = getNodeById($$wu{wrtype_writeuptype});
+
+   $$wu{title} = $$newparent{title}.' ('.$$wutype{title}.')';   
+   insertIntoNodegroup($newparent, $USER, $wu); 
+     
+   updateNode($oldparent, -1);
+   updateNode($newparent, -1);
+   updateNode($wu, -1);
+
+   $str .= $oldtitle.' has been renamed to &lt;a href=&quot;index.pl?node_id='.$$wu{node_id}.'&quot;&gt;'.$$wu{title}.'&lt;/a&gt; and has been moved to ['.$$newparent{title}.']&lt;br&gt;&lt;br&gt;';
+
+   return $str;
+
+
+}
+
+return $str;
+%]
+&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;hr&gt;&lt;br&gt;
+&lt;Small&gt;&lt;p align=&quot;center&quot;&gt;&lt;strong&gt;Release Notes:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;This tool is in beta.  It will not delete or destroy writeups in any way.  It does the following things:
+&lt;ul&gt;
+&lt;li&gt;Determines the validity of the entered writeup and e2node
+&lt;li&gt;Changes the parent of the writeup
+&lt;li&gt;Adds and removes from the proper groups
+&lt;li&gt;Renames the writeup to the correct title (based on the new parent)
+&lt;/ul&gt;
+&lt;br&gt;&lt;br&gt;
+[Lord Brawl] says: Try [Klaproth Van Lines] for bulk moves. Certain conditions apply.
+&lt;br&gt;&lt;br&gt;
+The following things do not work:
+&lt;ul&gt;
+&lt;li&gt;Non-gods can see this errata text, because I'm lazy.
+&lt;/ul&gt;
+It all works correctly if you use it within those guidelines and rearrange the group when you are done.  All bugs go to [JayBonci].  Thanks
+&lt;/small&gt;</code>
+  <type_nodetype>1382262</type_nodetype>
+  <document_id>1868374</document_id>
+  <author_user>974148</author_user>
+  <package>0</package>
+  <title>magical writeup re-parenter archive</title>
+</node>

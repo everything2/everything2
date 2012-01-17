@@ -1,0 +1,230 @@
+<node>
+  <doctext>&lt;div style=&quot;width:600px&quot;&gt;
+[%
+use Digest::MD5 qw(md5_hex);
+
+return '' if $query-&gt;param(&quot;sendNewKey&quot;);
+
+my $str = '';
+
+### Get and clean up input from CGI
+my $uidGiven = $query-&gt;param('user_id') || '';
+my $validationKeyGiven = $query-&gt;param('validationkey') || '';
+$uidGiven =~ s/(\\g|;|&quot;|'|`|\s)//g; 
+$validationKeyGiven =~ s/(\\g|;|&quot;|'|`|\s)//g;
+
+
+### Try to getNode on what they gave
+### n.b. We don't want to error out here if the UID is wrong.  
+###   We test the UID (through $U) and the key as a pair, and 
+###   give feedback on the pair in a later section. ~~ KAD
+### if we see non-digits, the user probably tried input his username
+###   instead of user_id, be nice and try to get the id.
+###   If we can't find the username, set id to zero to fail gracefully
+if ($uidGiven =~ m/\D/) {
+	my $userNode;
+	$userNode = getNode($uidGiven, 'user'); 
+	if ($userNode) { $uidGiven = $userNode-&gt;{'node_id'}; }
+	else { $uidGiven = 0; }
+}
+my $U = getNodeById($uidGiven);
+
+
+### Generate the verification HTML form
+my $uidForForm = $uidGiven || '';
+### If they're logged in, be nice and fill in their UID for them
+$uidForForm = $$USER{user_id} unless $$USER{user_id} ==  $HTMLVARS{guest_user};
+my $keyVerificationForm = $query-&gt;start_form
+.$query-&gt;hidden('node_id', getId($NODE))
+.'&lt;div&gt;&lt;strong&gt;User ID&lt;/strong&gt;&lt;br /&gt;'
+.$query-&gt;textfield('user_id', $uidForForm, 20)
+.'&lt;/div&gt;&lt;br /&gt;'
+.'&lt;div&gt;&lt;strong&gt;Validation Key&lt;/strong&gt; (note: this is &lt;i&gt;not&lt;/i&gt; your password)&lt;br /&gt;'
+.$query-&gt;textfield('validationkey', '', 20)
+.'&lt;/div&gt;&lt;br /&gt;'
+.$query-&gt;submit('sexisgood', 'submit')
+.$query-&gt;end_form;
+
+
+### Generate the new key form
+my $newKeyBlurb = &quot;&lt;p&gt;Alternatively, if you haven't received your verification key or you're having problems with one we've sent you previously, we can re-send it.&lt;/p&gt;&quot;;
+my $newKeyForm = &quot;&lt;p&gt;The email will go to &lt;strong&gt;$$USER{email}&lt;/strong&gt;, which is what you have listed in your homenode.  To change this, &lt;a href=\&quot;/index.pl?node_id=$$USER{user_id}&amp;displaytype=edit\&quot;&gt;edit your email address on your homenode&lt;/a&gt; and come back to this page.  To send a new key to this address, click the button below:&lt;/p&gt;&quot;
+	.$query-&gt;start_form
+	.$query-&gt;hidden('node_id', getId($NODE))
+	.$query-&gt;submit('sendNewKey', 'Send me a new key!')
+	.$query-&gt;end_form;
+$newKeyForm = &quot;&lt;p&gt;Please login if you'd like us to email you a new key.&lt;/p&gt;&quot; if $$USER{user_id} ==  $HTMLVARS{guest_user};
+
+my $defaultFailMessage = 
+	&quot;&lt;p&gt;The User ID and Verification Key combination you gave doesn't appear to be valid. &quot;
+	.&quot;Please try again. &quot;
+	.$keyVerificationForm
+	.$newKeyBlurb.$newKeyForm
+	.&quot; If you continue to experience problems with validation, please send an email to &quot;
+	.&quot;&lt;a href=\&quot;mailto:e2webmaster\@everything2.com\&quot;&gt;e2webmaster\@everything2.com&lt;/a&gt; containing &quot;
+	.&quot;the User ID, Validation Key, and any other information you think we'd need to know.&quot;;
+
+
+### If a UID and VK have been submitted...
+if ($U &amp;&amp; $uidGiven &amp;&amp; $validationKeyGiven){
+	
+	
+	# Don't allow an account to be verified if an email address belongs to a locked
+	#  account already
+	if ($DB-&gt;sqlSelect(
+			&quot;user_id&quot;
+			, &quot;user&quot;
+			, &quot;email = &quot; . $DB-&gt;quote($$U{email}) . &quot; AND acctlock != ''&quot;
+			)
+		) {
+		$$U{validationkey} = md5_hex(rand());
+		$DB-&gt;updateNode($U,-1);
+		$str .= $defaultFailMessage;
+		return $str;
+	### Check to make sure the User ID and Validation Key combination is legit.
+	} elsif ($U &amp;&amp; $$U{validationkey} eq $validationKeyGiven) {
+
+		# If we have a validation key 32 chars long, it was generated after we insured
+		#  the key matched the current email address
+		if (length($validationKeyGiven) == 32) {
+			my $expectedValidationKey;
+			$expectedValidationKey .= $$U{user_salt} if $$U{user_salt};
+			$expectedValidationKey .= $$U{email} . $$U{createtime} . $$U{title};
+			$expectedValidationKey = md5_hex($expectedValidationKey);
+			if ($expectedValidationKey ne $validationKeyGiven) {
+				$str .= &quot;&lt;p&gt;Your current email does not match the one that was used to create this key.&quot;
+					. &quot;  Please send another verification request, and try again.&lt;/p&gt;&quot;
+					;
+				return $str;
+			}
+		}
+
+		# If this was a previously infected user,
+		#  infect the one trying to validate
+		my $infected = htmlcode('checkInfected');
+		my $uidGiven_vars = getVars($U);
+		$infected = 1 if $$uidGiven_vars{infected};
+
+		# If logged in now as a currently infected user,
+		#  infect the one trying to validate
+		if ($$USER{title} ne 'Guest User') {
+			$infected = 1 if $$VARS{infected};
+		}
+
+		if ($infected == 1) {
+			$$uidGiven_vars{infected} = 1;
+			setVars($U, $uidGiven_vars);
+			$str .=  $defaultFailMessage;
+			return $str;
+		}
+
+		### We have a good UID and VK pair.  Unlock.
+		$$U{validemail} = 1;
+		$DB-&gt;updateNode($U,-1);
+		$DB-&gt;sqlDelete(&quot;suspension&quot;, &quot;suspension_user=$$U{node_id} and suspension_sustype='1948205'&quot;);
+
+		$DB-&gt;sqlInsert(&quot;seclog&quot;, {
+			'seclog_node'=&gt;$$NODE{node_id}, 
+			'seclog_user' =&gt; $$U{node_id}, 
+			'seclog_details'=&gt; &quot;$$U{title} verified his or her email address!&quot;}
+		);
+		$str .= &quot;Congratulations!  You have successfully validated your email address.&quot;;
+		return $str;
+	}else{
+		### The UID / VK pair is wrong.
+		$str .=  $defaultFailMessage;
+		return $str;
+	}
+
+
+### If they submitted data, and we have one but not the other
+}elsif((!$uidGiven &amp;&amp; $validationKeyGiven) || ($uidGiven &amp;&amp; !$validationKeyGiven)){
+
+	$str .= &quot;&lt;p&gt;Please enter &lt;strong&gt;both&lt;/strong&gt; the User ID and Validation Key we sent to your email address:&lt;/p&gt;&quot;
+	.$keyVerificationForm
+	.$newKeyBlurb.$newKeyForm;
+	return $str;
+
+
+### If we didn't get any information from CGI, and we need some
+}else{
+
+	### Before we ask for a UID and VKey, check and see if they're logged in...
+	if($$USER{user_id} !=  $HTMLVARS{guest_user}){
+		### ... and if we need a UID and key from them.
+		my $sushash = $DB-&gt;sqlSelectHashref(&quot;suspension_sustype&quot;,
+			&quot;suspension&quot;,&quot;suspension_user=$$USER{node_id} and suspension_sustype='1948205'&quot;
+		);
+		### (that is, they're not suspended)
+		if($$USER{validemail} &amp;&amp; !$$sushash{suspension_sustype}){
+			$str .= &quot;You appear to have a valid email address on file with us.  &quot;
+			.&quot;Nothing to see here, move on!&quot;;
+			return $str;
+		}elsif(!$$USER{validemail} &amp;&amp; !$$sushash{suspension_sustype}){
+			$str .= &quot;&lt;p&gt;Your email address on file predates our validation procedures.  If you'd like to validate your email anyhow, feel free to do so.&lt;/p&gt;\n $newKeyForm&quot;;
+			return $str;
+		}
+	}
+	
+	### Ask for a UID and VKey.
+	$str .= &quot;&lt;p&gt;Please enter the User ID and Validation Key we sent to your email address:&lt;/p&gt;&quot;
+	.$keyVerificationForm
+	.$newKeyBlurb.$newKeyForm;
+	
+	return $str;
+}
+%]
+
+[%
+if($query-&gt;param(&quot;sendNewKey&quot;)){
+	### They've requested a new key.  Send one!
+	
+	if (!$$USER{user_salt}) {
+		$$USER{user_salt} = int(rand(2147483647));
+	}
+
+	### Generate and save a new validation key
+	my $validationkey = $$USER{user_salt} . $$USER{email} . $$USER{createtime} . $$USER{title};
+
+	$validationkey = md5_hex($validationkey);
+	$$USER{validationkey} = $validationkey;
+	$DB-&gt;updateNode($USER,-1);
+
+
+	### Email them the new validation key
+	use Everything::MAIL;
+	my ($n) = getNodeWhere({title=&gt;'Email address verification for Everything2'},
+	 						$DB-&gt;getType('mail')
+	);
+	$$n{doctext} =~ s/\&lt;name\&gt;/$$USER{realname}/g;
+	$$n{doctext} =~ s/\&lt;user_id\&gt;/$$USER{user_id}/g;
+	$$n{doctext} =~ s/\&lt;user_id\&gt;/$$USER{user_id}/g;
+	$$n{doctext} =~ s/\&lt;validationkey\&gt;/$$USER{validationkey}/g;
+	$$n{doctext} =~ s/\&lt;site_name\&gt;/$HTMLVARS{site_name}/g;
+	$$n{doctext} =~ s/\&lt;site_url\&gt;/http:\/\/$ENV{SERVER_NAME}\//g;
+	$$n{doctext} =~ s/\&lt;verify_email_url\&gt;/http:\/\/$ENV{SERVER_NAME}\/index\.pl\?node_id=$HTMLVARS{verifyEmailAccount_node}/g;
+	$$n{doctext} =~ s/\&lt;servername\&gt;/$ENV{SERVER_NAME}/g;
+	node2mail($$USER{email},$n, 1);
+
+	return &quot;&lt;p style=\&quot;width:600px; margin-left:50px;\&quot;&gt;A new verification key has been sent to $$USER{email}.  Please check your email and click the enclosed link to finish verifying your account.&lt;/p&gt;&quot;;
+	
+}
+
+%]
+&lt;/div&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-07-03 18:05:21</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>1948165</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1948165</document_id>
+  <author_user>650043</author_user>
+  <package>0</package>
+  <title>Verify your email account</title>
+</node>

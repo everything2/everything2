@@ -1,0 +1,77 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-10-25 15:53:46</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1876423</node_id>
+  <htmlcode_id>1876423</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>return unless exists $HTMLVARS{'group_gods'}{$$USER{node_id}};
+
+my $newStr = &quot;&lt;ul&gt;&quot;;
+
+my $nt = $$NODE{type}{title};
+
+if ($nt eq 'user') {
+
+	$newStr .=&quot;&lt;li&gt;&quot;.linkNode($NODE, 'bless', {op=&gt;'bless'}).'&lt;/li&gt;';
+	$newStr.=&quot;&lt;li&gt;&quot;.linkNode($NODE, 'bestow 25 votes', {op=&gt;'bestow'}).&quot;&lt;/li&gt;&quot;;
+	$newStr.=&quot;&lt;li&gt;&quot;.linkNodeTitle('bestow cools').&quot;&lt;/li&gt;&quot;;
+
+} elsif($nt eq 'writeup') {
+
+	$newStr.=&quot;&lt;li&gt;&quot;.linkNode(1138488,'Reparent Writeup',{old_writeup_id =&gt; $$NODE{node_id}}).&quot;&lt;/li&gt;&quot;;
+	$newStr.=&quot;&lt;li&gt;&quot;.linkNode(getNode('Renunciation Chainsaw', 'restricted_superdoc'), &quot;Change author&quot;, {'wu_id' =&gt; $$NODE{node_id}}).&quot;&lt;/li&gt;&quot;;
+
+}
+elsif($nt eq 'e2node') {
+
+	$newStr.=&quot;&lt;li&gt;&quot;.linkNode(1138488,'Reparent Writeups',{old_e2node_id =&gt; $$NODE{node_id}}).&quot;&lt;/li&gt;&quot;;
+	$newStr.=&quot;&lt;li&gt;&quot;.linkNode($NODE, 'Repair Node', {op=&gt;'repair_e2node', repair_id=&gt;$$NODE{node_id}}).&quot;&lt;/li&gt;&quot;;
+
+}
+
+$newStr .=&quot;&lt;/ul&gt;&quot;;
+
+return &quot;&lt;div class='nodelet_section'&gt;&lt;h4 class='ns_title'&gt;Node Toolset&lt;/h4&gt;&quot;.$newStr.&quot;&lt;/div&gt;&quot;;
+
+#creates a JavaScript popup confirm box
+#parameters:
+#	$linkDisp - link display text
+#	$prompt - prompt question
+#	$yupURL - hash ref to URL parameters; note: current node_id is automatically added
+#N-Wing: created Friday, May 24, 2002; updated Friday, May 24, 2002
+#local *confirmJS = sub($$$) {
+#	my ($linkDisp, $prompt, $yupURL) = @_;
+#	$yupURL-&gt;{node_id}=$$NODE{node_id} unless exists $yupURL-&gt;{node_id};
+#	#maybe we should just return a normal link if JS prompt is disabled
+#	$prompt =~ s/\\/\\\\/g;
+#	$prompt =~ s/&quot;/\\&quot;/g;
+#	$prompt =~ s/'/\\'/g;
+#	return '&lt;a href=\'javascript:if(confirm(&quot;'.$prompt.'&quot;)) { parent.location='.urlGen($yupURL).'; }\'&gt;'.$linkDisp.'&lt;/a&gt;';
+#};
+#my $title = $$NODE{title};
+#$title =~ s/\\/\\\\/g;
+#$title =~ s/'/\\'/g;
+#$title =~ s/'/\\&quot;/g;
+#
+#new way - N-Wing, Friday, May 24, 2002
+#if($nt eq 'user') {
+#	$str .= $nl.'&lt;strong&gt;Big Stick Measures&lt;/strong&gt;'.$nl;
+#	if($$NODE{acctlock}==0) {
+#		$str .= confirmJS('Lock User Account','If you lock &quot;'.$title.'&quot;s account, they can not use E2. Are you really sure you wish to lock them out?',{op=&gt;'lockaccount'});
+#	} else {
+#		$str .= confirmJS('Unlock User Account','Really unlock account &quot;'.$title.'&quot;?',{op=&gt;'unlockaccount'});
+#	}
+#	$str .= $nl;
+#}
+
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>old admin toolset</title>
+</node>

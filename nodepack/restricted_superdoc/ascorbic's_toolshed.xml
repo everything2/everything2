@@ -1,0 +1,147 @@
+<node>
+  <doctext>&lt;p&gt;&lt;textarea class='expandable' style='width: 400px; height: 1.7em'&gt;&lt;/textarea&gt;&lt;/p&gt;
+
+
+
+[%
+
+my $text = &quot;&lt;b&gt;test&lt;/b&gt;&quot;;
+return encodeHTML($text);
+
+return;
+my ($nodename, $lastnode, $title);
+$nodename = 'test&amp;gt;include';
+
+($nodename, $title) = split /\|/, $nodename;
+
+my $fragment;
+#split off url fragment
+($nodename, $fragment) = split /&amp;gt;/, $nodename;
+
+
+$title ||= $nodename;
+$nodename =~ s/\s+/ /gs;
+my $tip = $nodename;
+$tip =~ s/&quot;/''/g;
+
+#my $isNode = getNodeWhere({ title =&gt; $nodename});
+my $isNode = 1;
+#my $urlnode = CGI::escape($nodename);
+$nodename = rewriteCleanEscape($nodename);
+
+#add the fragment back
+if ($fragment) {
+    $nodename .= '#' . $fragment;
+}
+
+my $str = &quot;&quot;;
+#$str .= &quot;&lt;a title=\&quot;$tip\&quot; href=\&quot;$ENV{SCRIPT_NAME}?node=$urlnode&quot;;
+#if ($lastnode) { $str .= &quot;&amp;amp;lastnode_id=&quot; . getId($lastnode);}
+if (!$lastnode) {
+    $str .= &quot;&lt;a onmouseup=\&quot;document.cookie='lastnode_id=0; ; path=/'; 1;\&quot; title=\&quot;$tip\&quot; href=\&quot;/title/&quot;.$nodename;
+} else {	
+        $str .= &quot;&lt;a onmouseup=\&quot;document.cookie='lastnode_id=$lastnode; ; path=/'; 1;\&quot;  title=\&quot;$tip\&quot; href=\&quot;/title/&quot;.$nodename;
+}
+$str .= &quot;\&quot; &quot;.( $isNode ? &quot;class='populated'&quot; : &quot;class='unpopulated'&quot;).&quot; &gt;$title&lt;/a&gt;&quot;;
+$str;
+%]
+
+
+&lt;p&gt;&amp;uarr; That bit
+&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+&lt;p&gt;This &lt;strong&gt;Notelet Editor&lt;/strong&gt; lets you edit your Notelet. No, not your nodelet, your notelet (your notelet nodelet). [%
+return if $$USER{title} eq 'ascorbic';
+
+##########################################################################
+#
+# NOTE: this is not editing your Notelet, this is editing the code that
+# lets you edit your Notelet
+#
+# DO NOT CHANGE THIS UNLESS YOU ARE A CODER HERE
+#
+##########################################################################
+
+
+
+return 'Only logged in users can use this.' if $$USER{node_id}==$HTMLVARS{guest_user};
+return ' (Note: you currently don\'t have your Notelet on, so changing things here is rather pointless. You can turn on the Notelet nodelet by visiting your [user settings].)' unless $VARS-&gt;{nodelets} =~ /1290534/;	#kind of a hack, but it is quick
+#FIXME getId(getNode('Notelet','nodelet','light'))
+'';
+%] What is the notelet? It lets you put notes (or anything, really) into a nodelet. (Other nodelet settings are available at [Nodelet Settings].)&lt;/p&gt;
+
+
+
+
+[% 
+return;
+  use HTML::Parser;
+my $str = &quot;This is a [link]. This is a [http://www.ascorbic.net/|pipe] and this isn't: [http://ascorbic.net]. [http://apple.com/|pipe]. [http://www.bbc.co.uk [http://www.apple.com|aa] ]&quot;;
+
+$str =~ s/\[(http:\/\/[^\]\|\[&lt;&gt;]+)\|([^\]\|\[&lt;&gt;]+)\]/&lt;a href=&quot;$1&quot; target=&quot;_blank&quot;&gt;$2&lt;\/a&gt;/g;
+
+$str;
+
+%]
+
+
+[%
+return;
+my $sql = &quot;select count(*) as outnum from user where user_id &lt; 1822772&quot;;
+my $usr = $dbh-&gt;prepare($sql);
+$usr-&gt;execute or return 'Oh dear. Database oops';
+
+my $l = $usr-&gt;fetchrow_hashref;
+return &quot;out &quot; . $$l{outnum};
+%]
+
+[%
+return;
+return unless ($$USER{title} eq 'ascorbic');
+
+my $sql =    &quot;select * from user where user_id &gt; 1985554 order by user_id desc&quot;;
+
+
+my $usr = $dbh-&gt;prepare($sql);
+
+$usr-&gt;execute or return 'Oh dear. Database oops';
+
+my $row=1;
+
+my  $str = &quot;User,Email,Name,Id\n&quot;;
+while(my $N = $usr-&gt;fetchrow_hashref) {
+	my $login = htmlcode('timesince',$$N{lasttime});
+
+   $str .= sprintf('&quot;%s&quot;,&quot;%s&quot;,&quot;%s&quot;, &quot;%s&quot;' . &quot;\n&lt;br&gt;&quot;,
+                  $$N{nick},
+$$N{realname},
+                  $$N{email},
+                  $$N{user_id}
+                  );
+   $row= !$row;
+}
+$str;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2006-07-26 10:05:41</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1822016</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1822016</document_id>
+  <author_user>974148</author_user>
+  <package>0</package>
+  <title>ascorbic's toolshed</title>
+</node>

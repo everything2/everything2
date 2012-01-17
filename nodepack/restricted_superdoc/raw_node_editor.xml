@@ -1,0 +1,36 @@
+<node>
+  <doctext>Sometimes we need fire to fight fire... 
+&lt;p&gt;This allows you to edit a node and all its fields directly. 
+[{openform}] 
+[% 
+  'id: ' . $query-&gt;textfield('editnode') . ' or name and type: ' . $query-&gt;textfield('editnodetitle') . ', ' . $query-&gt;textfield('editnodetype'); 
+
+%] 
+&lt;p&gt; 
+[% 
+  my $EDITNODE = getNodeById($query-&gt;param('editnode')); 
+  my $name = $query-&gt;param('editnodetitle'); 
+  my $title = $query-&gt;param('editnodetype'); 
+  $EDITNODE ||= getNode($name, $title) if $name and $title; 
+  return 'no node!' if !$EDITNODE; my $str = ''; 
+
+  foreach my $field (keys %$EDITNODE) 
+   { next if $field eq &quot;passwd&quot;;
+    $str .= &quot;$field:&quot;; $str .= $query-&gt;textfield($field, encodeHTML($$EDITNODE{$field}), 40); $str .= &quot;&lt;br /&gt;\n&quot;; } $str; 
+%] 
+[{closeform}]</doctext>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-11-01 06:34:47</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>366647</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>366647</document_id>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>raw node editor</title>
+</node>

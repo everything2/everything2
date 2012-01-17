@@ -1,0 +1,175 @@
+<node>
+  <doctext>[%
+
+my $UID = getId($USER) || 0;
+
+if (!$UID || ($UID == $HTMLVARS{guest_user})) {
+	return xml_error('Not logged in.');
+}
+
+
+# load common code
+htmlcode('new msg system common');
+
+# functions
+my $xml_error = $HTMLVARS{newmsg_common}{xml_error};
+my $xml_escape = $HTMLVARS{newmsg_common}{xml_escape};
+my $get_user_permission = $HTMLVARS{newmsg_common}{get_user_permission};
+my $post_to_channel = $HTMLVARS{newmsg_common}{post_to_channel};
+
+# variables
+my $systemUID = $HTMLVARS{newmsg_common}{systemUID};
+
+
+
+# create a new channel
+if ($query-&gt;param('action') eq 'newchannel') {
+	
+	my $channame = $query-&gt;param('name');  # [?] escape
+	
+	# [ ] only members of chanops should be able to create public channels?
+	
+	# create the channel
+	$DB-&gt;sqlInsert('newmsg_channels', {'name' =&gt; $channame});
+	
+	# get its id
+	my $chanid = $DB-&gt;getDatabaseHandle()
+		-&gt;last_insert_id(undef, undef, undef, undef);
+	
+	# post the creation message to the new channel
+	&amp;$post_to_channel($chanid, $systemUID,
+		&quot;Conversation started: \&quot;$channame\&quot;&quot;);
+	
+	# set permissions for the owner
+	$DB-&gt;sqlInsert('newmsg_permissions', {
+		'channel_id' =&gt; $chanid,
+		'user_id' =&gt; $UID,
+		'level' =&gt; 3,  # owner
+	});
+	
+	return;
+}
+
+
+# post to a channel
+if ($query-&gt;param('action') eq 'newmessage') {
+	
+	my $chanid = int $query-&gt;param('channel');
+	my $text = $query-&gt;param('text');  # [ ] strip/sanitize/escape
+	
+	# make sure they actually typed something
+	if (!$text) {
+		return &amp;$xml_error('No message.');
+	}
+	
+	my $channame = $DB-&gt;sqlSelect(
+		'name', 'newmsg_channels', &quot;channel_id=$chanid&quot;);
+	
+	# make sure user has permission to write
+	my $isPublic = (substr($channame, 0, 1) eq '#');
+	my $userLevel = &amp;$get_user_permission($UID, $chanid);
+	
+	if ($isPublic ? $userLevel == 1 : $userLevel &lt; 2) {
+		return &amp;$xml_error('Permission denied.');
+	}
+	
+	# post the message to the channel
+	&amp;$post_to_channel($chanid, $UID, $text);
+	
+	return;
+}
+
+
+# (owner) rename a channel
+if ($query-&gt;param('action') eq 'renamechannel') {
+	
+	my $chanid = int $query-&gt;param('channel');
+	my $channame = $query-&gt;param('name');  # [ ] escape/sanitize
+	
+	# make sure user owns the channel
+	if (!&amp;$get_user_permission($UID, $chanid) &gt;= 3) {
+		return &amp;$xml_error('Permission denied.');
+	}
+	
+	# change the name
+	$DB-&gt;sqlUpdate('newmsg_channels',
+		{'name' =&gt; $channame}, &quot;channel_id=$chanid&quot;);
+	
+	# post a message to the channel describing the change
+	&amp;$post_to_channel($chanid, $systemUID,
+		&quot;Changed channel name to: \&quot;$channame\&quot;&quot;);
+	
+	return;
+}
+
+# (owner) set user permissions
+if ($query-&gt;param('action') eq 'setpermission') {
+	
+	my $chanid = int $query-&gt;param('channel');
+	my $othername = $query-&gt;param('username');  # [?] sanitize
+	my $newlevel = int $query-&gt;param('level');
+	
+	# make sure user owns the channel
+	if (!&amp;$get_user_permission($UID, $chanid) &gt;= 3) {
+		return &amp;$xml_error('Permission denied.');
+	}
+	
+	# get the user object
+	my $otherUSER = getNode($othername, 'user');
+	if (!$otherUSER) {
+		return &amp;$xml_error('Invalid user.');
+	}
+	
+	my $otherUID = $$otherUSER{node_id};
+	
+	# not allowed to change other owners' levels
+	if ($UID != $otherUID &amp;&amp; &amp;$get_user_permission($otherUID, $chanid) &gt;= 3) {
+		return &amp;$xml_error('Can\'t set another owner\'s permission level.');
+	}
+	
+	# set permissions for the user
+	# [ ] should be REPLACE, this way has a race-condition...
+		# however i think REPLACE will just keep adding records
+		# since i don't have uniqueness set up correctly
+	my $result = $DB-&gt;getDatabaseHandle()-&gt;do('
+		UPDATE newmsg_permissions SET level=?
+		WHERE channel_id=? AND user_id=?',
+		undef, $newlevel, $chanid, $otherUID);
+	
+	if ($result &lt; 1) {
+		$DB-&gt;sqlInsert('newmsg_permissions', {
+			'channel_id' =&gt; $chanid,
+			'user_id' =&gt; $otherUID,
+			'level' =&gt; $newlevel,
+		});
+	}
+	
+	# post a message to the channel describing the change
+	&amp;$post_to_channel($chanid, $systemUID,
+		linkNode($USER) . ' has set '
+		. linkNode($otherUSER) . ' to have '
+		. ('no', 'read-only', 'read/write', 'owner')[$newlevel]
+		. ' access to this channel.');
+	
+	return;
+}
+
+
+return &amp;$xml_error('Invalid or no action specified.');
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-06-04 18:14:54</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1988173</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1252389</type_nodetype>
+  <document_id>1988173</document_id>
+  <author_user>1797883</author_user>
+  <package>0</package>
+  <title>new msg system write</title>
+</node>

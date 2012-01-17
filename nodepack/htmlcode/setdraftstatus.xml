@@ -1,0 +1,191 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-02-10 14:21:34</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>4</hits>
+  <node_id>1991209</node_id>
+  <htmlcode_id>1991209</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># set publication_status and collaborators
+# show parent node, option to change it, and option to publish
+
+my $N = shift || $NODE;
+getRef $N;
+return '&lt;div class=&quot;error&quot;&gt;Not a draft.&lt;/div&gt;' unless $$N{type}{title} eq 'draft';
+
+return htmlcode('parentdraft', $N) if $query -&gt; param('parentdraft');
+
+my $ajax = &quot; instant ajax adminheader$$N{node_id}:voteit:$$N{node_id},5&quot;
+	if $query -&gt; param('ajaxTrigger');
+
+my %stash = (
+	public =&gt; 'visible to any logged-in user',
+	findable =&gt; 'as &quot;public,&quot; and may be shown in search findings',
+	private =&gt; 'visible only to you and any users and groups you choose below',
+	shared =&gt; 'your chosen collaborators can also edit',
+	review =&gt; 'as &quot;findable,&quot; and the site\'s editors are told you want feedback',
+	removed =&gt; 'you published this but it has since been removed: same as &quot;public&quot;',
+	nuked =&gt; 'you published this and it was deleted before Jun 10, 2011: same as &quot;private&quot;'
+);
+
+my @status = $DB -&gt; getNodeWhere({}, 'publication_status');
+my %labels = ();
+foreach (@status){
+	next unless $stash{$$_{title}};
+	$labels{$_-&gt;{node_id}} = &quot;$$_{title} &lt;small&gt;($stash{$$_{title}})&lt;/small&gt;&quot;;
+	$stash{$$_{title}} = $$_{node_id};
+
+}
+
+my @values = map $stash{$_}, qw(private shared public findable review); #sorted!
+push @values, $$N{publication_status}
+	if $stash{removed} == $$N{publication_status} || $stash{nuked} == $$N{publication_status};
+
+$query -&gt; autoEscape(0);
+
+my $str = htmlcode('openform')
+	.qq'&lt;fieldset class=&quot;draftstatus$ajax&quot;&gt;&lt;legend&gt;Status and Sharing&lt;/legend&gt;
+
+	&lt;p&gt;Draft status:&lt;/p&gt;
+	&lt;p&gt;'
+	.$query -&gt; radio_group(
+		-name =&gt; 'draft_publication_status',
+		values =&gt; \@values,
+		labels =&gt; \%labels,
+		default =&gt; $$N{publication_status},
+		-force =&gt; 1,
+		linebreak =&gt; 1
+	)
+	# note current status to avoid repeat notifications:
+	.$query -&gt; hidden(
+		-name =&gt; 'old_publication_status',
+		value =&gt; $$N{publication_status},
+		-force =&gt; 1
+	)
+	.'&lt;/p&gt;
+
+	&lt;p&gt;&lt;label&gt;Share with:&lt;br&gt;'
+	.htmlcode('textfield', 'collaborators', 80, 'expandable')
+	.'&lt;/label&gt;&lt;br&gt;&lt;small&gt;';
+
+$query -&gt; autoEscape(1);
+
+$str .= 'These users and groups can '
+	.($labels{$$N{publication_status}} =~ /^private/
+		? 'see this draft but not edit it. '
+		: 'edit this draft unless you set its status to &quot;private.&quot; ')
+			if $$N{collaborators};
+$str .= '(Put commas between names.)&lt;/small&gt;&lt;/p&gt;
+	&lt;/p&gt;';
+
+$str .= $query -&gt; submit(
+		-name =&gt; 'sexisgood',
+		value =&gt; 'Update status/sharing'
+	)
+	.$query -&gt; hidden(
+		-name =&gt; 'ajaxTrigger',
+		value =&gt; 1,
+		class =&gt; &quot;ajax draftstatus$$N{node_id}:setdraftstatus:$$N{node_id}&quot;
+	)
+	.'&lt;/fieldset&gt;&lt;/form&gt;';
+
+my $linktype = getId(getNode 'parent_node', 'linktype');
+
+if (my $newparent = $query -&gt; param('writeup_parent_e2node')){
+	# remove old attachment
+	$DB -&gt; sqlDelete('links', &quot;from_node=$$N{node_id} AND linktype=$linktype&quot;);
+
+	if ($newparent eq 'new'){
+		my $title = cleanNodeName($query-&gt;param('title'));
+		# insertNode checks user can do this and returns false if not or fails
+		$newparent = $DB -&gt; insertNode($title, 'e2node', $USER)
+			if $title;
+	}
+
+	$DB -&gt; sqlInsert('links', {
+		from_node =&gt; $$N{node_id},
+		to_node =&gt; $newparent,
+		linktype =&gt; $linktype
+	}) if $newparent &amp;&amp; $newparent !~ /\D/;
+}
+
+my ($parent, $editor, $changeParent, $detach) = $DB -&gt; sqlSelect(
+	'to_node, food' # 'food' is the approving editor, if any
+	, 'links'
+	, &quot;from_node=$$N{node_id} AND linktype=$linktype&quot;);
+
+if ($parent){
+	$parent = 'This draft is attached to: '
+		.linkNode($parent, , 0, {-class =&gt; 'title'});
+	$parent .= '&lt;br&gt;Approved for publication by '.linkNode($editor)
+		if $editor;
+	$changeParent = 'Change';
+	$detach = $query -&gt; submit(
+		-name =&gt; 'writeup_parent_e2node',
+		value =&gt; 'Detach',
+		class =&gt; &quot;ajax draftstatus$$N{node_id}:setdraftstatus?writeup_parent_e2node=/:$$N{node_id}&quot;
+	)
+	.' &amp;nbsp; ';
+}else{
+	$parent = 'This draft is not attached to any page';
+	$changeParent = 'Attach to page...';
+	$detach = '';
+}
+
+my ($publishas, $advanced);
+if ($query -&gt; param('advanced')){
+	$publishas = htmlcode('canpublishas');
+
+	$publishas = $query -&gt; p($publishas) if $publishas;
+
+	$advanced = '&lt;button type=&quot;submit&quot; name=&quot;confirmop&quot; value=&quot;publishdrafttodocument&quot;
+		title=&quot;publish this draft as a document&quot;&gt;Publish as document&lt;/button&gt;'
+		if htmlcode('isEditor');
+}else{
+	use Everything::Experience;
+	$advanced = $query -&gt; submit(
+		-name =&gt; 'advanced'
+		, value =&gt; 'Advanced option(s)...'
+		, class =&gt; &quot;ajax draftstatus$$N{node_id}:setdraftstatus?advanced=1:$$N{node_id}&quot;
+	) if getLevel($USER);
+}
+
+$advanced = $query -&gt; p($advanced) if $advanced;
+
+unless ($stash{removed} == $$N{publication_status}){
+ 	$str .= htmlcode('openform')
+	.&quot;&lt;fieldset class=\&quot;parentdraft\&quot;&gt;&lt;legend&gt;Attachment and Publishing&lt;/legend&gt;
+	&lt;p&gt;$parent&lt;/p&gt;
+	$publishas
+	$detach&quot;
+	.$query -&gt; submit(
+		-name =&gt; 'parentdraft',
+		value =&gt; $changeParent,
+		class =&gt; &quot;ajax draftstatus$$N{node_id}:parentdraft?parentdraft=attach:$$N{node_id}&quot;
+	)
+
+	.' &amp;nbsp; '
+	.$query -&gt; submit(
+		-name =&gt; 'parentdraft',
+		value =&gt; 'Publish',
+		class =&gt; &quot;ajax draftstatus$$N{node_id}:parentdraft?parentdraft=Publish&amp;publishas=/:$$N{node_id}&quot;
+	)
+	.&quot;&lt;p&gt;&lt;small&gt;Attached drafts are shown on the page they are attached to:
+	you always see your own draft, while other users with permission to see it
+	can click on a link to show it.&lt;/small&gt;
+	&lt;/p&gt;
+	&lt;/fieldset&gt;
+	$advanced
+	&lt;/form&gt;&quot;;
+}
+
+$query -&gt; div({id =&gt; &quot;draftstatus$$N{node_id}&quot;, class =&gt; 'parentdraft'}, $str);
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>setdraftstatus</title>
+</node>

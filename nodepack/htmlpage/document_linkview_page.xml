@@ -1,0 +1,135 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>3</pagetype_nodetype>
+  <core>0</core>
+  <page>[% return '&lt;p align=&quot;right&quot;&gt;Return to '.linkNode($NODE).'&lt;/p&gt;'; %]
+[%
+
+my @links;
+my @notlinks;
+
+my $regex = qr/\[(.*?)[\]\[\|]/;
+my $ntt = $NODE-&gt;{type}-&gt;{title};
+my $codeDoc = ($ntt eq 'superdoc') || ($ntt eq 'superdocnolinks') || ($ntt eq 'restricted_superdoc') || ($ntt eq 'oppressor_superdoc'); #FIXME better way of checking for code
+$regex = qr/\[([^%{].*?)[\]\[\|]/ if $codeDoc;
+my $text;
+my $scratchID;
+
+if ($$NODE{node_id}==1797151|$$NODE{node_id}==1065273) # i.e. if it's [Scratch Pads] or [E2 Scratch Pad]
+  {
+    my $scratchTable=&quot;scratch2&quot;;
+    $scratchID = $query-&gt;param('scratch_id') || 0;
+    $scratchTable=&quot;scratch&quot; if ($scratchID==getId($USER));
+    $text = $DB-&gt;sqlSelect(&quot;scratch_text&quot;, $scratchTable, &quot;scratch_id=$scratchID&quot;); 
+    $codeDoc = 0;
+  }
+
+else {
+  $text = $$NODE{doctext}
+}
+
+my @link_ids;
+while ($text =~ /$regex/g) {
+  my $lnk = $1;
+  #omit external links
+  next if ($lnk =~ /^\s*https?:\/\//);
+
+
+  $lnk = htmlScreen($lnk);
+
+  if (my $node_id = $DB-&gt;sqlSelect('node_id',
+                                'node','title='.$dbh-&gt;quote($lnk))) {
+    push @link_ids, [$node_id,$lnk];
+  }
+  else {
+    push @notlinks, linkNodeTitle($lnk, $NODE);
+  }
+}
+
+my %fillednode_ids;
+#Only make one SQL call to find the non-nodeshells.
+if (@link_ids) {
+  my $sql = &quot;SELECT DISTINCT nodegroup_id
+             FROM nodegroup
+             WHERE nodegroup_id IN (&quot;
+             .join(&quot;, &quot;,
+                   map $_ -&gt; [0],@link_ids
+                   ).&quot;)&quot;;
+
+  \@fillednode_ids{  @{$dbh -&gt; selectcol_arrayref($sql)}  };
+}
+
+#If it's a link to anything but an e2node (type 116), it's also filled.
+if (@link_ids){
+  my $sql = &quot;SELECT node_id
+             FROM node
+             WHERE type_nodetype != 116
+               AND node_id in (&quot;
+             .join(&quot;, &quot;,
+                   map $_ -&gt; [0],@link_ids
+                   ).&quot;)&quot;;
+
+  \@fillednode_ids{  @{$dbh -&gt; selectcol_arrayref($sql)}  };
+}
+
+foreach my $linkref(@link_ids) {
+  my $isfilled = exists $fillednode_ids{$linkref -&gt; [0]};
+  push @links, [linkNodeTitle($linkref -&gt; [1], $NODE), $isfilled ];
+}
+
+my $TAGNODE = getNode 'approved html tags', 'setting';
+my $TAGS=getVars($TAGNODE);
+
+#my $text = $$NODE{doctext};
+#$text =~ s/(\S{30})/$1 /g;
+$text = parseLinks($codeDoc?(parseCode($text)):(htmlScreen($text, $TAGS)));
+
+@notlinks = () if $codeDoc;
+
+$text = breakTags($text) unless $codeDoc;
+
+my $oddrowclr  = '#999999';
+
+if ( $$VARS{ 'preferred_theme' } == 1100936 ) {
+  $oddrowclr  = $$VARS{ekw_oddrowcolor} || $$THEME{bodyOddrowcolor} || $oddrowclr;
+}
+
+my $str;
+$str .= &quot;&lt;table class=\&quot;item\&quot;&gt;&lt;tr&gt;&lt;td width=\&quot;80%\&quot; class=\&quot;content\&quot;&gt;$text&lt;/td&gt;&lt;td
+     width=\&quot;5%\&quot;&gt;&lt;/td&gt;&lt;td valign=\&quot;top\&quot;
+     bgcolor=\&quot;&quot;.$oddrowclr.&quot;\&quot; class=\&quot;content\&quot;&gt;&lt;strong&gt;Existing:&lt;/strong&gt;&lt;br&gt;&quot;;
+
+$str .= &quot;&lt;ul class=\&quot;linklist\&quot;&gt;\n&quot;;
+
+foreach my $linkref(@links){
+  my $link = $$linkref[0];
+  my $isfilled = $$linkref[1];
+  $str .= &quot;&lt;li &quot;.($isfilled ? &quot;&quot; : &quot;class=\&quot;nodeshell\&quot;&quot; ).&quot;&gt;&quot;;
+  $str .= $link.&quot;&lt;/li&gt;\n&quot;;
+}
+$str .= &quot;&lt;/ul&gt;\n&quot;;
+$str .= &quot;&lt;hr width=\&quot;20\&quot;&gt;&lt;br&gt;&lt;strong&gt;Non-Existing:&lt;/strong&gt;&lt;br&gt;&quot;;
+
+$str .= &quot;&lt;ul class=\&quot;linklist\&quot;&gt;\n &lt;li&gt;&quot;;
+
+$str .=  join(&quot;&lt;/li&gt;\n&lt;li&gt;&quot;, @notlinks)
+         .&quot;&lt;/li&gt;\n&lt;/ul&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&quot;;
+
+%]
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2003-01-03 05:45:50</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1409922</htmlpage_id>
+  <hits>5</hits>
+  <node_id>1409922</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>linkview</displaytype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>document linkview page</title>
+  <mimetype></mimetype>
+</node>

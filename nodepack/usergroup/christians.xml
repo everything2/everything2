@@ -1,0 +1,43 @@
+<node>
+  <doctext>&lt;blockquote&gt;
+&lt;p align='center'&gt;&lt;small&gt;[Jesus Freak|What will people think when they read that you're a Jesus Freak?]&lt;/small&gt;&lt;/p&gt;
+
+&lt;p&gt;This is a group of noders who have sincerely and publicly declared that they are [Christian]. This is to say that &lt;strong&gt;according to their own lights and the teachings of their church, they have placed their [faith] in [Jesus Christ] as [Lord] and [Savior].&lt;/strong&gt;&lt;/p&gt;
+
+[%
+return '&lt;p&gt;If you\'re currently keeping your [light] under a bushel for whatever reason, know that if you decide to come out, we\'ve got your back.&lt;/p&gt;'
+unless grep {$_ == $$USER{user_id}} @{$$NODE{group}};
+&lt;&lt;__HERE__
+&lt;p&gt;This may mean something very different to you than it does to them. You may even consider their church's [doctrine]s to be so out of true with [scripture] (or [tradition] or [reason] or prophetic [revelation]) that you feel they shouldn't properly be called &quot;Christians&quot; at all. [It's just a node. It's not the freakin' Council of Nicaea.|This is fine.] Regarding our differences in belief and practice it's as [John Wesley] said in his sermon &lt;em&gt;The Catholic Spirit&lt;/em&gt;: &quot;We will talk of them, if need be, at a more convenient season.&quot;  The only grounds for asking that someone be removed from this list is if you have [substantial] proof that their public profession of faith was somehow [theonomist|insincere].&lt;/p&gt;
+
+&lt;p&gt;
+Our messages are archived at [usergroup message archive].&lt;br /&gt;
+Our collaborative node is [The Christian Sanctuary].&lt;br /&gt;
+Go in peace.&lt;/p&gt;
+__HERE__
+%]
+
+&lt;p align='center'&gt;/msg [per ou] to be added or removed from this list.&lt;/p&gt;
+
+&lt;!-- amen --&gt;
+&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;br /&gt;
+&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;b&gt;Testify!&lt;/b&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;
+[{weblog:3}]
+&lt;br /&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2002-12-15 22:29:04</createtime>
+  <hits>0</hits>
+  <node_id>1402260</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>16</type_nodetype>
+  <document_id>1402260</document_id>
+  <author_user>9208</author_user>
+  <package>0</package>
+  <title>christians</title>
+</node>

@@ -1,0 +1,23 @@
+<node>
+  <parent_container>0</parent_container>
+  <pagetype_nodetype>1296169</pagetype_nodetype>
+  <core>0</core>
+  <page>[%
+  return parseCode($$NODE{doctext});
+%]</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-05-04 00:18:40</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1296174</htmlpage_id>
+  <hits>0</hits>
+  <node_id>1296174</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>wapdoc display page</title>
+  <mimetype>text/vnd.wap.wml</mimetype>
+</node>

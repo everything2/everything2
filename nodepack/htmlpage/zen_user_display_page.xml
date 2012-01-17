@@ -1,0 +1,70 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>15</pagetype_nodetype>
+  <core>0</core>
+  <page>[{setupuservars}]
+&lt;div id='homenodeheader'&gt;
+[{homenodeinfectedinfo}]
+&lt;div id='homenodepicbox'&gt;
+[%
+return unless $DB-&gt;isApproved($NODE, getNode('users with image', 'nodegroup')) or getLevel($NODE) &gt;= 1;
+return unless $$NODE{imgsrc};
+'&lt;img src=&quot;http://images.everything2.com/'.$$NODE{imgsrc}.'&quot; id=&quot;userimage&quot;&gt;'; 
+%]
+[%
+return if getId($USER) != getId($NODE);
+'&lt;p&gt;' . linkNode($NODE, '(edit user information)', {displaytype=&gt;'edit'}) . '&lt;/p&gt;';
+%]
+&lt;/div&gt;
+[{zenDisplayUserInfo}]
+&lt;/div&gt;
+
+&lt;hr class='clear'&gt;
+
+&lt;table width=&quot;100%&quot; id='homenodetext'&gt;&lt;tr&gt;&lt;td&gt;
+[%  
+
+  return if (htmlcode(&quot;isGuest&quot;));
+  my $csr = $DB-&gt;sqlSelectMany('*','registration',
+    'from_user='.$$NODE{user_id}.' &amp;&amp; in_user_profile=1')
+      ||return 'SQL Problem.  Please notify a [coder].';
+  my $labels = ['Registry','Data','Comments'];
+  my $rows;
+  while(my $ref = $csr-&gt;fetchrow_hashref()){
+    push @$rows,{
+      'Registry'=&gt;linkNode($$ref{for_registry}),
+      'Data'=&gt;breakTags(parseLinks(htmlScreen($$ref{data}))),
+      'Comments'=&gt;breakTags(parseLinks(htmlScreen($$ref{comments}))),
+    };
+  }
+
+  return buildTable($labels,$rows,'class=&quot;registries&quot;,nolabels') if($rows);
+  return '';
+%]
+&lt;div class='content'&gt;
+[{displayUserText}]
+&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+
+
+ 
+
+[{showbookmarks}]
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-07-08 16:40:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1854179</htmlpage_id>
+  <hits>11</hits>
+  <node_id>1854179</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>470183</author_user>
+  <package>0</package>
+  <ownedby_theme>1854183</ownedby_theme>
+  <title>zen user display page</title>
+  <mimetype></mimetype>
+</node>

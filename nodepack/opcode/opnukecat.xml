@@ -1,0 +1,49 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2004-08-19 13:57:59</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1671491</node_id>
+  <htmlcode_id>1671491</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># First, we need the node object
+my $N = getNodeById($query-&gt;param('node_id'));
+
+;$query-&gt;param('node_id', '1682717');
+;$query-&gt;param('node', 'Delete Category');
+$query-&gt;param('result', 'foobarbas');
+
+
+# Next, do a little authorization to make sure the use can delete it
+# Is type = category?
+my $TYPE = getType('category');
+if ($$N{type_nodetype} == $$TYPE{node_id})
+{
+  # Is the current user the owner
+  if($$N{author_user} == $$USER{user_id})
+  {
+    # Okay, it looks like we are authorized to delete
+    # This is just a category, so don't tombstone it
+
+    # Regular users aren't allowed to nuke node, so here is a sloppy work-around
+    my $R = getNode('Kurt', 'user');
+    nukeNode($N, $R, 1);
+    $query-&gt;param('result', 'Success');
+  }
+  else
+  {
+      $query-&gt;param('result', 'Not-Your-Node');
+  }
+}
+else
+{
+  $query-&gt;param('result', 'Not-A-Category');
+}</code>
+  <type_nodetype>415056</type_nodetype>
+  <author_user>329</author_user>
+  <package>0</package>
+  <title>opNukeCat</title>
+</node>

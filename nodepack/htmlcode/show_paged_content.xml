@@ -1,0 +1,113 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-09-16 10:23:55</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1992403</node_id>
+  <htmlcode_id>1992403</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($select, $from, $where, $orderby, $instructions, %functions) = @_;
+my %parameters = $query -&gt; Vars();
+
+$orderby =~ s/\s*\bLIMIT\s+(\d+)\s*$//si;
+
+$parameters{perpage} ||= $1 || 50;
+$parameters{perpage} = int $parameters{perpage}; #SQueaL safely
+my $page = int(abs(delete $parameters{page})) || 1;
+
+my ($offset, $crs, $rowCount, $pageCount);
+
+do{
+	$offset = ($page - 1) * $parameters{perpage};
+
+	$crs = $DB -&gt; sqlSelectMany(
+		&quot;SQL_CALC_FOUND_ROWS
+		$select&quot;
+		, $from
+		, $where
+		, &quot;$orderby LIMIT $offset, $parameters{perpage}&quot;
+	);
+	
+	$rowCount = $DB -&gt; sqlSelect('FOUND_ROWS()');
+	$pageCount = int(($rowCount - 1)/$parameters{perpage}) + 1;
+
+} while $page &gt; $pageCount &amp;&amp; ($page = $pageCount);
+
+my $content = htmlcode('show content', $crs, $instructions, %functions);
+
+my $navigation = '';
+
+if ($pageCount &gt; 1){
+	# 3 possible parameters from url, 1 an ecore mistake, 1 from submit button
+	delete @parameters{qw(node node_id type op sexisgood)};
+	my $link = sub{
+		my ($p, $text) = @_;
+		my %class = (-class =&gt; $1.'link') if $text &amp;&amp; $text =~ /(?:^|;)(\w+)/;
+		$text ||= $p;
+
+		'&amp;nbsp;'
+		.linkNode($NODE, $text, {
+			%parameters
+			, page =&gt; $p
+			, -title =&gt; &quot;go to page $p&quot;
+			, %class
+		})
+		.' ';
+	};
+
+	my @navigation;
+	$navigation[$page] = qq'&lt;b class=&quot;thispage&quot;&gt;&amp;nbsp;$page &lt;/b&gt;';
+
+	# show five page numbers including this one, plus first and last,
+	# plus second/second-last if we also have 3rd/3rd last. Dots in gaps.
+	# max 9 links/dotties, so show all if count &lt;= 9
+	# 'go to' box if missing links
+	my ($n, $z) = $pageCount &gt; 9
+		? (5, $pageCount - $page &lt; 2 ? $pageCount - 5 : $page - 3)
+		: ($pageCount, 0);
+	my $i = $page;
+
+	until($navigation[--$i &gt; $z &amp;&amp; $i or $i = $i + $n]){
+		$navigation[$i] = &amp;$link($i);
+	}
+
+	if ($pageCount &gt; 9){
+		$navigation[1] ||= &amp;$link(1);
+		$navigation[2] ||= $navigation[3] ? &amp;$link(2) : '&amp;nbsp;&amp;hellip; ';
+		$navigation[$pageCount] ||= &amp;$link($pageCount);
+		$navigation[-2] ||=
+			$navigation[-3] ? &amp;$link($pageCount - 1) : '&amp;nbsp;&amp;hellip; ';
+
+		$navigation = htmlcode('openform', -class =&gt; 'pagination', -method =&gt; 'get')
+			.join (&quot;\n&quot;,
+				map {$query -&gt; hidden($_, $parameters{$_})} keys %parameters
+			)
+			.'&lt;p&gt;&lt;label&gt;Go to page:&lt;input type=&quot;text&quot; name=&quot;page&quot; size=&quot;2&quot;&gt;&lt;/input&gt;'
+			.htmlcode('closeform', 'Go');
+	}
+
+	$navigation[0] = &amp;$link(1, '&amp;#xAB;&amp;#xAB;first') if $page &gt; 2;
+	$navigation[0] .= &amp;$link($page - 1, '&amp;#xAB;prev') if $page &gt; 1;
+	$navigation[$pageCount] .= &amp;$link($page + 1, 'next&amp;#xBB;')
+		unless $page == $pageCount;
+	$navigation[$pageCount] .= &amp;$link($pageCount, 'last&amp;#xBB;&amp;#xBB;')
+		unless $page &gt; $pageCount - 2;
+
+	$navigation ='&lt;p class=&quot;pagination&quot;&gt;Pages: '
+		.join('', @navigation)
+		.&quot;&lt;/p&gt;$navigation&quot;;
+}
+
+my $last = $offset + $parameters{perpage};
+$last = $rowCount if $last &gt; $rowCount;
+
+return ($content, $navigation, $rowCount, $offset + 1, $last) if wantarray;
+return qq'$content $navigation';</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>show paged content</title>
+</node>

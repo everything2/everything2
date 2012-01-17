@@ -1,0 +1,92 @@
+<node>
+  <parent_container>0</parent_container>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>25</hits>
+  <node_id>1854174</node_id>
+  <context>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot; &quot;http://www.w3.org/TR/html4/loose.dtd&quot;&gt;
+&lt;html&gt;
+&lt;head&gt;
+	&lt;title&gt;[% $$NODE{title}; %]@Everything2.com&lt;/title&gt;
+	&lt;link rel=&quot;stylesheet&quot; id=&quot;basesheet&quot; type=&quot;text/css&quot; href=&quot;[{linkStylesheet:basesheet}]&quot; media=&quot;all&quot;&gt;
+[%
+'	&lt;link rel=&quot;stylesheet&quot; id=&quot;zensheet&quot; type=&quot;text/css&quot; href=&quot;'
+                 . htmlcode('linkStylesheet', $$VARS{userstyle}||$$THEME{default_style}, 'serve')
+                 . '&quot; media=&quot;screen,tv,projection&quot;&gt;' ;
+%][%
+
+if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
+	return '
+	&lt;style type=&quot;text/css&quot;&gt;
+' . htmlScreen($$VARS{customstyle}) . '
+	&lt;/style&gt;' ;
+}
+%]
+	&lt;link rel=&quot;stylesheet&quot; id=&quot;printsheet&quot; type=&quot;text/css&quot; href=&quot;[{linkStylesheet:print}]&quot; media=&quot;print&quot;&gt;
+[%
+
+if ($ENV{HTTP_HOST} !~ /^m\.everything2/i) {
+  return '
+	&lt;base href=&quot;http://' . $CONFIG{canonical_web_server} . '&quot;&gt;' if $$USER{ user_id } == $HTMLVARS{ guest_user } ;
+}
+
+%]
+[%
+my $url = 'http://'.$CONFIG{canonical_web_server} if $$USER{title} eq 'Guest User' and $ENV{HTTP_HOST} !~ /^$CONFIG{canonical_web_server}/;
+$url .= urlGenNoParams( $NODE , 'noQuotes' ) unless $$NODE{ node_id } eq $HTMLVARS{ default_node } ;
+$url ||= '/' ;
+return '	&lt;link rel=&quot;canonical&quot; href=&quot;' . $url . '&quot;&gt;' ;
+
+%][%
+
+return unless ($$NODE{type_nodetype}==116||$$NODE{node_id}==1140332||$$NODE{node_id}==668164); # e2nodes, 'Findings:', 'Nothing Found'
+return if $$NODE{group} and int( @{ $$NODE{group} } ); #e2node, not nodeshell
+return '
+	&lt;meta name=&quot;robots&quot; content=&quot;noindex, follow&quot;&gt;'; # Google still seems to index these pages.
+
+%]
+	&lt;meta name=&quot;wisdom&quot; content=&quot;Monkey! Bat! Robot Hat!&quot;&gt;
+	&lt;link rel=&quot;icon&quot; href=&quot;/favicon.ico&quot; type=&quot;image/vnd.microsoft.icon&quot;&gt;
+	&lt;!--[if lt IE 8]&gt;&lt;link rel=&quot;shortcut icon&quot; href=&quot;/favicon.ico&quot; type=&quot;image/x-icon&quot;&gt;&lt;![endif]--&gt;
+[%
+if ($$NODE{title} eq &quot;Cool Archive&quot;) {
+    return '	&lt;link rel=&quot;alternate&quot; type=&quot;application/atom+xml&quot; title=&quot;Everything2 Cool Archive&quot; href=&quot;/node/ticker/Cool+Archive+Atom+Feed'
+	. ( $query-&gt;param('cooluser') ? '?foruser='.$query-&gt;param('cooluser') : '' ) . '&quot;&gt;';
+}
+else {
+	return '	&lt;link rel=&quot;alternate&quot; type=&quot;application/atom+xml&quot; title=&quot;Everything2 New Writeups&quot; href=&quot;/node/ticker/New+Writeups+Atom+Feed'
+	. ( $$NODE{type_nodetype}==15 ? '?foruser='.$$NODE{title} : '' ) . '&quot;&gt;';
+}
+%]
+[{static javascript}]
+
+&lt;/head&gt;
+
+&lt;body class=&quot;[%
+my $str = 'writeuppage ' if $$NODE{e2node_id} || $$NODE{writeup_id} || $$NODE{draft_id};
+$str .= $$NODE{type}{title} ;
+return $str unless $str =~ /superdoc/ ;
+#superdocs and variants further identified by title
+my $id .= ( $$NODE{ node_id } != 124 ? lc( $$NODE{ 'title' } ) : 'frontpage' ) ;
+$id =~ s/\W//g ;
+$str.'&quot; id=&quot;'.$id ;
+%]&quot;&gt;
+CONTAINED_STUFF
+&lt;script src=&quot;http://www.google-analytics.com/urchin.js&quot; type=&quot;text/javascript&quot;&gt;
+&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+_uacct = &quot;UA-1314738-1&quot;;
+urchinTracker();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</context>
+  <type_nodetype>2</type_nodetype>
+  <container_id>1854174</container_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>zen stdcontainer</title>
+</node>

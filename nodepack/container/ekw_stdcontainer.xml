@@ -1,0 +1,40 @@
+<node>
+  <parent_container>0</parent_container>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>11</hits>
+  <node_id>1100988</node_id>
+  <context>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0 Transitional//EN&quot;
+  &quot;http://www.w3.org/TR/REC-html40/loose.dtd&quot;&gt; 
+&lt;html&gt;
+
+&lt;head&gt;
+    &lt;title&gt;[% $$NODE{title}; %]@Everything2.com&lt;/title&gt;
+[% # CSSURL could be a user setting, eh? That could be pretty darn cool. %]
+    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; [%
+    %]href=&quot;[% return &quot;/ekwcss.pl&quot;; return $$VARS{ 'ekw_CSSURL' } || &quot;/ekwcss/&quot;.CGI::escape($$USER{title}).&quot;.css&quot;; %]&quot; /&gt;
+    &lt;link rel='stylesheet' id='basesheet' type='text/css' href='/node/stylesheet/basesheet?displaytype=view'&gt;
+    &lt;meta name=&quot;wisdom&quot; content=&quot;Monkey! Bat! Robot Hat!&quot; /&gt;
+    &lt;link rel=&quot;icon&quot; href=&quot;/favicon.ico&quot; type=&quot;image/x-icon&quot; /&gt;&lt;!-- Both are needed - asc --&gt;
+    &lt;link rel=&quot;shortcut icon&quot; href=&quot;/favicon.ico&quot; type=&quot;image/x-icon&quot; /&gt;&lt;!-- Thanks Simpleton --&gt;
+    &lt;link rel=&quot;alternate&quot; type=&quot;application/atom+xml&quot; title=&quot;Everything2 New Writeups&quot; href=&quot;?node=New%20Writeups%20Atom%20Feed&amp;type=ticker&quot; /&gt;
+[{static javascript}] 
+&lt;/head&gt;
+
+[{ekw userbody}]
+CONTAINED_STUFF
+&lt;/body&gt;
+&lt;/html&gt;
+
+
+</context>
+  <type_nodetype>2</type_nodetype>
+  <container_id>1100988</container_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>ekw stdcontainer</title>
+</node>

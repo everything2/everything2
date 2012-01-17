@@ -1,0 +1,44 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-11 01:12:25</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>30</hits>
+  <node_id>280</node_id>
+  <htmlcode_id>280</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>return &quot;&lt;i&gt;you can't update this node&lt;/i&gt;&quot; unless canUpdateNode($USER, $NODE);
+my ($var, $title) = @_;
+my $SETTINGS = getVars($NODE);
+my @params = $query-&gt;param;
+my $str=&quot;&quot;; 
+
+foreach (@params) {
+  if (/setsetting_$var$/) {
+    $$SETTINGS{$var}=$query-&gt;param(&quot;setsetting_$var&quot;);    
+  }
+
+}
+
+if(getId($USER) == getId($NODE)) { $$VARS{$var} = $$SETTINGS{$var}; }
+else { setVars ($NODE, $SETTINGS); }
+
+my ($keysize, $valsize) = (15, 30);
+my ($keyclr, $valclr) = (&quot;#CCCCFF&quot;, &quot;#DEDEFF&quot;);
+my $t = $title ? $title:$var;
+
+$str.=&quot;&lt;TABLE width=100% cellpadding=2 cellspacing=0&gt;\n&quot;;
+$str.=&quot;&lt;TR&gt;&lt;TD width=20% class=\&quot;oddrow\&quot; bgcolor=$keyclr&gt;&lt;b&gt;$t&lt;/b&gt;&lt;/TD&gt;&quot; .
+      &quot;&lt;TD class=\&quot;oddrow\&quot; bgcolor=$valclr&gt;&quot;.
+      $query-&gt;textfield(&quot;setsetting_$var&quot;, $$SETTINGS{$var}, $valsize).&quot;&lt;/TD&gt;&lt;/TR&gt;\n&quot;;
+$str.=&quot;&lt;/TABLE&gt;\n&quot;;
+
+
+$str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>editSingleVar</title>
+</node>

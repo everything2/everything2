@@ -1,0 +1,128 @@
+<node>
+  <doctext>&lt;p align=&quot;center&quot;&gt;
+&lt;!-- img src=&quot;http://www.artists.co.nz/bonnyhut/scream.jpg&quot; --&gt;
+&lt;/p&gt;
+
+&lt;p align=&quot;center&quot;&gt;
+Hey. &lt;em&gt;It happens&lt;/em&gt;. Sit back. Relax. It'll get fixed. 
+If you think that it may not have been reported yet, email the e2webmaster account. In the meantime...
+&lt;br&gt;&lt;br&gt;
+
+&lt;big&gt;&lt;big&gt;&lt;big&gt;
+&lt;strong&gt;
+[%
+   my @options = (
+
+&quot;Go outside&quot;,
+&quot;Take off all your clothes&quot;,
+&quot;Go outside&quot;,
+&quot;Go outside&quot;,
+&quot;Read a book&quot;,
+&quot;Pour another round&quot;,
+&quot;Think of something to node&quot;,
+&quot;show up in #everything and bitch about it&quot;,
+&quot;RUN AROUND YOUR HOUSE LIKE A SCARED IDIOT&quot;,
+&quot;Have some tuna casserole&quot;,
+&quot;Memorize &lt;em&gt;West Side Story&lt;/em&gt;&quot;,
+&quot;Learn perl&quot;,
+&quot;Find something else on the Internet&quot;,
+&quot;Write emails to yourself&quot;,
+&quot;Go outside&quot;,
+&quot;Make a sandwich&quot;,
+&quot;Go out on a date&quot;,
+&quot;Find another human being and engage in conversation. In person, if at all possible.&quot;,
+&quot;Change the cat\'s litterbox&quot;,
+&quot;Paint a picture&quot;,
+&quot;Go outside&quot;,
+&quot;Take a roadtrip&quot;,
+&quot;Pee in the company coffee-pot&quot;,
+&quot;Knit a scarf&quot;,
+&quot;Bake a pie&quot;,
+&quot;Write a sonata in F# minor&quot;,
+&quot;Clean your room&quot;,
+&quot;Reorganize your CD collection&quot;,
+&quot;Go outside&quot;,
+&quot;Take the beer bottles that have been collecting in your kitchen to the nearest place at which they can be redeemed for cash&quot;,
+&quot;Find Buddha on the road. Then kill him.&quot;,
+&quot;Fuck wit Don&quot;,
+&quot;Enroll in a massage therapy course&quot;,
+&quot;ACCESS THIS PAGE IMMEDIATELY FOR SPECIAL BACKUP SERVER ADDRESS INFORMATION&quot;,
+&quot;Make a pig out of four pins and an eraser&quot;,
+&quot;Bootleg gin&quot;,
+&quot;Restore Order to the Balance&quot;,
+&quot;Restore Balance to the Order&quot;,
+&quot;Work on your spider scratch&quot;,
+&quot;Hold your breath&quot;,
+&quot;Eat a sandwich&quot;,
+&quot;Enjoy a refreshing beverage&quot;,
+&quot;Enjoy a zesty babaghanoush&quot;,
+&quot;Enjoy a mouthwatering chicken-fried steak&quot;,
+&quot;Drink two 8-ounce glasses of water&quot;,
+&quot;Try to count boobies on scrambled porn&quot;,
+&quot;Chill the fuck out&quot;,
+&quot;Eat the rich&quot;,
+&quot;Visit Wikipedia&quot;,
+&quot;Turn off your computer and cry&quot;,
+&quot;Call your mother&quot;,
+&quot;Inject heroin into your eyeball&quot;,
+&quot;Go sledding&quot;,
+&quot;Taste the rainbow&quot;,
+&quot;Bake a delicious cake&quot;,
+&quot;Come&quot;,
+&quot;Go outside&quot;,
+&quot;Fill out these forms&quot;,
+&quot;Smoke a ronny&quot;,
+&quot;Build relationships&quot;,
+&quot;Mingle&quot;,
+&quot;Play \'Swat the Kitty\'&quot;,
+&quot;Ride, ride, ride, let it ride&quot;,
+&quot;Have a seat, and dannye will be right with you&quot;,
+&quot;Order some stuff of the TV&quot;,
+&quot;Reappropriate Sis\'s wardrobe&quot;,
+&quot;Find a large group of people.  Say \'Hey, guys, look at this!\'  This will get their attention.  Then throw an imaginary ball in the air and watch as their eyes try to follow it.&quot;,
+&quot;Grow&quot;,
+&quot;Bite my crank&quot;,
+&quot;Unleash the Dark Army&quot;,
+&quot;Pray to the gods&quot;,
+&quot;Replace the filter in the sump pump&quot;,
+&quot;Take your pill&quot;,
+&quot;Reinvent the wheel&quot;,
+&quot;Learn new words&quot;,
+&quot;Aspire to reinnervate on a cut that reverberates&quot;,
+&quot;Bite the wax tadpole&quot;,
+&quot;Dance like there's ass in your pants&quot;,
+&quot;Undergo meme adjustment therapy&quot;,
+&quot;&lt;img src=http://chacha.ereet.st/.lucky25.gif&gt;&quot;,
+&quot;Eat something, skinny&quot;,
+&quot;Interpret Nostradamus&quot;,
+&quot;Invent a delicious recipe involving these components: mongolian fire oil, flax, barbecue sauce&quot;,
+&quot;[Donation Box|Write a check]&quot;,
+&quot;Find a job&quot;,
+&quot;Play the ressurector and give the dead some life&quot;,
+&quot;Clean your tongue&quot;,
+&quot;Expel gas from your rectum&quot;,
+&quot;Summon a being whose name your feeble human tongue can barely pronounce&quot;,
+&quot;Run! You're free! FREE!&quot;
+
+);
+
+  return $options[rand(@options)];
+%]
+&lt;/strong&gt;
+&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;
+&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-12-11 15:54:33</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1400116</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1400116</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>What to do if E2 goes down</title>
+</node>

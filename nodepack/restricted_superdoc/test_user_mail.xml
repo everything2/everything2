@@ -1,0 +1,81 @@
+<node>
+  <doctext>[%
+return linkNode($NODE, 'Send me a new user mail ', {'mailme' =&gt; 'true'}) . '&amp;rarr;' unless $query-&gt;param('mailme');
+
+#my $sql =    &quot;select user_id, nick, email, passwd,realname from user where lasttime=0 and user_id &gt; 1822772 group by email order by user_id desc&quot;;
+
+my $sql = &quot;select * from user where user_id=&quot; . $$USER{user_id};
+
+my $usr = $dbh-&gt;prepare($sql);
+
+$usr-&gt;execute or return 'Oh dear. Database oops';
+
+my $row=1;
+
+my  $str = &quot;&lt;table style='width: 100%; border-top: 1px gray solid'&gt;&lt;tr&gt;&lt;th&gt;User&lt;/th&gt;&lt;th&gt;email&lt;/th&gt;&lt;th&gt;Error?&lt;/th&gt;&lt;/tr&gt;\n&quot;;
+
+
+while(my $NEWUSER = $usr-&gt;fetchrow_hashref) {
+   my ($n) = $DB-&gt;getNodeWhere({title=&gt;'Everything2 New User Mail'}, $DB-&gt;getType('mail'));
+   $$n{doctext} =~ s/\&lt;name\&gt;/$$NEWUSER{realname}/;
+   $$n{doctext} =~ s/\&lt;user\&gt;/$$NEWUSER{nick}/;
+   $$n{doctext} =~ s/\&lt;passwd\&gt;/$$NEWUSER{passwd}/;
+   $$n{doctext} =~ s/\&lt;site_name\&gt;/$HTMLVARS{site_name}/;
+   $$n{doctext} =~ s/\&lt;homenode\&gt;/$HTMLVARS{site_url}index\.pl\?node=$$NEWUSER{nick}\&amp;type=user/;
+   $$n{doctext} =~ s/\&lt;site_url\&gt;/$HTMLVARS{site_url}/;
+   $$n{doctext} =~ s/\&lt;login\&gt;/$HTMLVARS{site_url}index\.pl\?node_id=$HTMLVARS{login_node}/;
+   
+   use Everything::MAIL;
+   node2mail($$NEWUSER{email},$n);
+   $n = getNodeById(getId($n), 'force');
+   
+   $str .= sprintf(&quot;\t&lt;tr class='%s'&gt;&lt;td&gt;&lt;a href='%s'&gt;%s&lt;/a&gt;&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;/tr&gt;\n&quot;,
+                  $row ? 'oddrow' : 'evenrow',
+                  urlGen({'node_id' =&gt; $$NEWUSER{user_id}}),
+                  $$NEWUSER{nick},
+                  $$NEWUSER{email},
+                  $MAIL::Sender::Error
+                  );
+   $row= !$row;
+   sleep(1);
+}
+$str .= '&lt;/table&gt;';
+$str;
+%]
+
+[%
+
+return;
+my ($n) = $DB-&gt;getNodeWhere({title=&gt;'Everything2 New User Mail'}, $DB-&gt;getType('mail'));
+$$n{doctext} =~ s/\&lt;name\&gt;/$$USER{realname}/;
+$$n{doctext} =~ s/\&lt;user\&gt;/$$USER{title}/;
+$$n{doctext} =~ s/\&lt;passwd\&gt;/pass/;
+$$n{doctext} =~ s/\&lt;site_name\&gt;/e2/;
+$$n{doctext} =~ s/\&lt;homenode\&gt;/$HTMLVARS{site_url}index\.pl\?node=$$USER{title}\&amp;type=user/;
+$$n{doctext} =~ s/\&lt;site_url\&gt;/$HTMLVARS{site_url}/;
+$$n{doctext} =~ s/\&lt;login\&gt;/$HTMLVARS{site_url}index\.pl\?node_id=$HTMLVARS{login_node}/;
+return linkNode($NODE, 'Mail ' . $$USER{realname} . ' &amp;lt;' . $$USER{email}, {'mailme' =&gt; 'true'}) . '&amp;gt;' unless $query-&gt;param('mailme');
+use Everything::MAIL;
+my $result = node2mail($$USER{email},  $n);
+$n = getNodeById(getId($n), 'force');
+my $iii;
+$iii = 'yup' unless $Mail::Sender::Error;
+'Result: ' . $Mail::Sender::Error . ($Mail::Sender::Error ? 'error' : 'ok'). $iii;
+
+%]
+	</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-04-24 08:24:16</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1881390</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1881390</document_id>
+  <author_user>974148</author_user>
+  <package>0</package>
+  <title>test user mail</title>
+</node>

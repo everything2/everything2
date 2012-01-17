@@ -1,0 +1,50 @@
+<node>
+  <doctext>&lt;p&gt;&lt;i&gt;I'm guessing this original author intended for this page to be a wiki of sorts, so I'll answer a few of the questions and initial my answers. -[Two Sheds|2s]&lt;/i&gt;&lt;/p&gt;
+
+&lt;P&gt;&lt;i&gt;yep, that was precisely the idea. you rock -[RoguePoet|RP]&lt;/i&gt;&lt;/p&gt;
+
+&lt;P&gt;&lt;i&gt;[dann] says&lt;/i&gt; I'm integrating these questions / comments into the frontpage bit on our code developments for this season, but will answer here as well.  These are all proposed and accepted features which will go into the next version of the live codebase, and we'll get to absolutely as many as we can before the launch date (which isn't set in stone yet).  &lt;/P&gt;
+
+&lt;P&gt;- WHO will be able to post this type of content? Will it be a level-based power, or available from level 1?&lt;/p&gt;
+
+&lt;P&gt;&lt;i&gt;[dann] says&lt;/i&gt; creation of all three types of multimedia conent will be level powers.  Which levels map to which powers have yet to be determined, but it will likely be images around level 3, audio around level 2, and video around level 6.&lt;/P&gt; 
+
+&lt;P&gt;- WHAT limits will there be on multimedia content (aside from the big 4: copyright, slander/libel, hate speech, adult content)? Can a standalone image/soundbyte/film be a node, or must it accompany a substantial text writeup?&lt;/p&gt;
+
+&lt;p&gt;&lt;i&gt;From what I've heard so far in conversations with admins and editors, it sounds like images, sounds, and video will have to accompany textual writeups. Images could be used for illustrating something (think maps or pictures of the topic of the writeup), as could sounds. There could also be audio versions of existing writeups, kind of like the podcast but listenable or downloadable individually. Video would be like images. -2s&lt;/i&gt;&lt;/p&gt;
+
+&lt;P&gt;&lt;i&gt;[dann] says&lt;/i&gt; Images and video will work somewhat analogously, in that they will be integrated into writeups.  The way it will work is this:  A superdoc will be available to upload images (hosted locally) or YouTube links.  Once the content is received (JPEG / youtube), you'll be given a token such as &amp;lt;e2image id=&quot;527387610&quot;&amp;gt; to drop into the texts of your writeups.  This will integrate the content where you placed the token without having image and video content as standalone nodes.  They will be managed by a pair of dbtables not tied into the nodetype heirarchy system&lt;/p&gt;
+
+&lt;P&gt;&lt;i&gt;[dann] says&lt;/i&gt; Audio will be managed slightly differently - it'll be integrated with writeups.  When posting a writeup, you'll be able to submit an MP3 with that writeup of supporting audio.  This is geared toards being a spoken word rendition of the writeup -- an audio writueptype.&lt;/p&gt;
+
+&lt;P&gt;&lt;i&gt;[dann] says&lt;/i&gt; multimedia content, at least in the beginning, will only be allowed in writeups (i.e. not messages, homenodes, notes, etc)&lt;/P&gt;
+
+&lt;P&gt;- WHERE will the content be hosted? What are the storage/bandwidth concerns here, if any?&lt;/p&gt;
+&lt;p&gt;&lt;i&gt;Images and audio would probably be hosted on E2 servers, but not the same ones that we use as webheads or for the database. This would probably mean adding a server. It would require a lot of storage on the new machine. The other concern is more processor load than network bandwidth, which is why we'd need another server. Video probably would not be on our own servers. -2s&lt;/i&gt;&lt;/p&gt;
+
+&lt;P&gt;&lt;i&gt;Do we already have a server that we can use for [hosting images &amp;amp; audio|that purpose], or would we need to pass the hat to purchase/lease one? -RP&lt;/i&gt;&lt;/p&gt;
+&lt;p&gt;&lt;i&gt;Neither. There is funding available. Expect more clarity on the front page within a few days. -2s&lt;/i&gt;&lt;/p&gt;
+
+&lt;P&gt;&lt;i&gt;[dann] says&lt;/i&gt; we already have image service separate from hypertext service - it's what serves up our homenode images.  We believe this will scale, even moreso with the new-new hardware which should be arriving soon.&lt;/P&gt;
+
+&lt;P&gt;- WHEN are the coders planning to implement this? Will it be a difficult hack (ie will this potentially divert resources from other coding projects)?&lt;/p&gt;
+
+&lt;p&gt;&lt;i&gt;When is more or less over the next few months. As far as I know, the people who've put the most effort into other projects of late haven't expressed interest in working on this, so it wouldn't divert their attention. [clampe] has or will soon have an intern working for him who will do some of the coding. -2s&lt;/i&gt;&lt;/p&gt;
+
+&lt;P&gt;&lt;i&gt;[dann] says&lt;/i&gt; Within the next three months.  We'll have support of an intern and our staff coders, and will be putting out a help call to Edev once our external development environment is online.&lt;/P&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-07-17 20:18:35</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1899571</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>854232</type_nodetype>
+  <document_id>1899571</document_id>
+  <author_user>1133650</author_user>
+  <package>0</package>
+  <title>Questions re: new media on E2</title>
+</node>

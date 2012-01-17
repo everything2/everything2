@@ -1,0 +1,361 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-03-27 20:16:00</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>35</hits>
+  <node_id>470044</node_id>
+  <htmlcode_id>470044</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#displays hints on improving the writeup
+
+#parameters:
+#(use no parameters when in a writeup display page)
+#
+#	$textInHV
+#		If set, this htmlcode can be called from a non-writeup
+#		by setting $HTMLVARS{writeuphints_text} to the text to
+#		check instead. This will also delete that value from
+#		the hash, to keep things clean.
+
+#updated 2005-01-04(2) by N-Wing to add in spelling
+
+my $textInHV = ((defined $_[0]) &amp;&amp; length($_[0]) &amp;&amp; $_[0]) ? 1 : 0;
+
+my $UID = getId($USER);
+my $isCE = (exists $HTMLVARS{group_gods}{$UID}) || (exists $HTMLVARS{'group_content editors'}{$UID});
+my $isMyWU = $textInHV || ($$NODE{author_user}==$UID);
+my @problems;	#all problems found
+
+#don't show unless it is your own writeup, or you are an editor
+unless($isMyWU) {
+	if($isCE) {
+		push @problems, '&lt;big&gt;Note&lt;/big&gt;: This isn\'t your writeup, so don\'t feel obliged to fix any problems listed here.';
+	} else {
+		return;
+	}
+}
+
+my $showDefault = !$$VARS{nohints};
+my $showHTML = !$$VARS{nohintHTML};
+my $showXHTML = $$VARS{hintXHTML};	#pref: strict HTML
+my $showSilly = $$VARS{hintSilly};
+my $showSpelling = !$$VARS{nohintSpelling};
+
+return unless $showDefault || $showHTML || $showXHTML || $showSilly || $showSpelling;
+
+my $showCat = 1;	#1 to show hint categories, 0 to hide
+my $curCat;
+
+my $writeup;
+if($textInHV) {
+	return unless exists $HTMLVARS{writeuphints_text};
+	$writeup = $HTMLVARS{writeuphints_text};
+	delete $HTMLVARS{writeuphints_text};
+	return unless length($writeup);
+} else {
+	my $N = $NODE;
+	$writeup = $$N{doctext};
+
+	#no hints on maintenance
+	my $pID = $$N{parent_e2node};
+	foreach(values(%HTMLVARS)) {
+		return if $pID eq $_;
+	}
+}
+
+my $c;
+my $i;
+
+#several tests are done on links, so may as well just find all links only once
+#note: scalar(@wuPartText) == scalar(@wuPartLink)+1
+#note: $wuPartText[$n] before $wuPartLink[$n] before $wuPartText[$n+1]
+my @wuPartText;
+my @wuPartLink;
+#there is probably a better way of doing this
+my @allParts = split(/\[(.*?)\]/s, $writeup);
+$i = -1;
+$c = scalar(@allParts);
+foreach(@allParts) {
+	push(@wuPartText, $allParts[++$i]);
+	if($i&lt;$c) {
+		push(@wuPartLink, $allParts[++$i]);
+	}
+}
+
+#Count paragraphs, accounting for both &lt;p...&gt; and &lt;BR&gt;&lt;BR&gt;
+my @allParagraphs = split(/\&lt;\w*?p|&lt;br&gt;\w*?&lt;br&gt;/si, $writeup);
+
+#while(scalar(@allParts)) {
+#	push(@wuPartText, shift @allParts);
+#	push(@wuPartLink, shift @allParts) if scalar(@allParts);
+#}
+
+$writeup = ' '.$writeup.' ';	#cheap hack - stylewise :( and speedwise :) - to make \s match at start and end
+
+#warning to bones:  you will need to escape any single quotes!
+#&quot;let's&quot; -&gt; &quot;let\'s&quot; -- (you get the idea)
+#also, use &amp;#91; and &amp;#93; instead of [ and ], respectively
+
+
+#default hints
+if($showDefault) {
+
+$curCat = $showCat ? '(essential) ' : '';
+
+#if(length $writeup &lt; 100) {
+#100 characters seems a bit short for our current E2.  Recommend all writeups be longer than E1's limit of 512.  This is an average-sized paragraph.
+if(length $writeup &lt; 512) {
+	push(@problems, $curCat.'You have a whole lot more space for your writeup...why so short? Tell us more! Try to include some references or &quot;further reading&quot; through hard-links.');
+}
+
+
+#my $numlinks = 0;
+#while($writeup =~ /\[.*?\]/g) {$numlinks++; }
+my $numlinks = scalar(@wuPartLink);
+#count number of paragraphs in the writeup
+my $numparagraphs = scalar(@allParagraphs);
+
+#if($numlinks &lt; 2 or $numlinks / (length $writeup) &lt; 2/1024) {
+#New linking suggestion:  see if we have an average of at least one link per paragraph rather than by character count.
+if($numlinks &lt; $numparagraphs) {
+	push(@problems, $curCat.'How about linking other nodes in your writeup? To link, put &quot;&amp;#91;&quot; and &quot;&amp;#93&quot; around a node name: &amp;#91;Brian Eno&amp;#93; creates a link to '.linkNodeTitle('Brian Eno').'. Also, you can use a pipe (|) to designate a title. &amp;#91;Brian Eno|Master of Sound&amp;#93; links to '.linkNodeTitle('Brian Eno').', but looks like this: '.linkNodeTitle('Brian Eno|Master of Sound').'.
+&lt;/p&gt;&lt;p&gt;
+Use the pipe to reduce the number of &lt;em&gt;dead-end links&lt;/em&gt; in your writeups by showing one thing and pointing to another. For example:  &amp;#91;fiction|those crazy voices in my head&amp;#93;.
+&lt;/p&gt;&lt;p&gt;
+You don\'t even need to have nodes created to make links to them, once you\'ve linked you can create the nodes simply by clicking on them -- the Everything search will give you a list of similar choices...use the &lt;em&gt;pipe&lt;/em&gt; to point to these or create a new node!'
+	);
+}
+
+#forgot to close a link - long link
+$i=127;	#too high? (99 was too short for some crazy softlinkers)
+$c='';
+foreach(@wuPartLink) {
+	if(length($_)&gt;$i) {
+		$c.=', ' if length($c);
+		$c.='&quot; &lt;code&gt;&amp;#91;'.encodeHTML(substr($_,0,$i),1).'&lt;/code&gt; &quot;';
+	}
+}
+if(length($c)) {
+	push @problems, $curCat.'You may have forgotten to close a link. Here is the start of the long links: '.$c.'.';
+}
+
+#forgot to close a link - [ in a link
+$c='';
+foreach(@wuPartLink) {
+	if( index($_,'[')!=-1 ) {
+		next if $_ =~ /[^[\]]*(?:\[[^\]|]*[\]|][^[\]]*)?/ ; # direct link, regexp from parselinks in HTML.pm
+		$c.=', ' if length($c);
+		$c.='&quot; &lt;code&gt;&amp;#91;'.encodeHTML($_,1).'&amp;#93;&lt;/code&gt; &quot;';
+	}
+}
+if(length($c)) {
+	push @problems, $curCat.'It looks like you forgot to close a link, since you tried to link to a node with &amp;#91; in the title. Here is what you linked to: '.$c.'.';
+}
+
+#forgot to close a link - no final ]
+if( ($i=index($wuPartText[-1],'['))!=-1 ) {
+	push @problems, $curCat.'Oops, it looks like you forgot to close your last link. You ended with: &quot; &lt;code&gt;'.encodeHTML(substr($wuPartText[-1],$i),1).'&lt;/code&gt; &quot;.';
+}
+
+} #end show default hints
+
+
+
+#HTML hints
+if($showHTML) {
+
+$curCat = $showCat ? '(basic HTML) ' : '';
+
+#HTML tags in links
+$c='';
+foreach(@wuPartLink) {
+	$i = (($i=index($_,'|'))==-1) ? $_ : substr($_,0,$i);	#only care about part that links, not display
+	if($i =~ /&lt;.*?&gt;/) {
+      $c.=', ' if length($c);
+      $c.='&quot; &lt;code&gt;'.encodeHTML($i,1).'&lt;/code&gt; &quot;';
+	}
+}
+
+if(length($c)) {
+	push @problems, $curCat.'You placed an HTML tag in a link. Either put the tag outside the link, or create a #pipe link, and put the tag in the display part. You tried to link to: '.$c.'.';
+}
+
+#non-escaped special characters &amp; &lt; &gt; [ ]
+if($writeup =~ /\s([&amp;&lt;&gt;])\s/) {
+	push @problems, $curCat.'The ampersand, less-than, and greater-than symbols have special meaning in HTML, and so to show them by themselves, they have to be entered a certain way. Here is how you should enter them:
+&lt;table border=&quot;1&quot; cellpadding=&quot;5&quot; cellspacing=&quot;0&quot;&gt;
+&lt;tr&gt;&lt;th&gt;symbol name&lt;/th&gt;&lt;th&gt;symbol to display&lt;/th&gt;&lt;th&gt;what to enter&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;ampersand&lt;/td&gt;&lt;td&gt;&amp;amp;&lt;/td&gt;&lt;td&gt;&lt;code&gt;&amp;amp;amp;&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;less than&lt;/td&gt;&lt;td&gt;&amp;lt;&lt;/td&gt;&lt;td&gt;&lt;code&gt;&amp;amp;lt;&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;greater than&lt;/td&gt;&lt;td&gt;&amp;gt;&lt;/td&gt;&lt;td&gt;&lt;code&gt;&amp;amp;gt;&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+For example, to show the symbol '.($i=encodeHTML($1,1)).' enter it as: &quot; &lt;code&gt;'.encodeHTML($i).'&lt;/code&gt; &quot;.';
+}
+if($writeup =~ /\s([\[\]])\s/) {
+	push @problems, $curCat.'On Everything, the square brackets, &amp;#91; and &amp;#93; have a special meaning - they form links to other nodes. If you want to just display them, you will have to use an HTML entity. To show an open square bracket &amp;#91; type in &quot; &lt;code&gt;&amp;amp;#91;&lt;/code&gt; &quot;. To show a close square bracket &amp;#93; type in &quot; &lt;code&gt;&amp;amp;#93;&lt;/code&gt; &quot;. If you already know this, and are wondering why you\'re seeing this message, you probably accidently inserted a space at the very '.($1 eq '[' ? 'start' : 'end').' of a link.';
+}
+
+#no closing semicolon on entity
+if($writeup =~ /\s&amp;(#?\w+)\s/) {
+	push @problems, $curCat.'All HTML entities should have a closing semicolon. You entered: &quot; &lt;code&gt;'.($i='&amp;amp;'.encodeHTML($1)).'&lt;/code&gt; &quot; but the correct way is: &quot; &lt;code&gt;'.$i.';&lt;/code&gt; &quot;.';
+}
+
+#no tags at all!
+## This section is no longer necessary now that we autoformat with &lt;p&gt; if no tags are found.
+#if(index($writeup,'&lt;')==-1) {
+#	push @problems, $curCat.'Did you know that you can use HTML to make your writeups look nicer? To create paragraphs, place a &lt;code&gt;&amp;lt;p&amp;gt;&lt;/code&gt; before, and a &lt;code&gt;&amp;lt;/p&amp;gt;&lt;/code&gt; after each paragraph. For much more HTML information, visit '.linkNodeTitle('E2 FAQ: HTML').' and the nodes it links to.';
+#	#probably trying to start a new paragraph
+#	if(index($writeup,&quot;\n\n&quot;)!=-1) {	#doesn't work - maybe check for CrLf - is this a Windows thing (if so, need to check Mac newline also), or a HTTP POST thing?
+#		push @problems, $curCat.'You can create paragraphs in HTML by putting &lt;code&gt;&amp;ltp&amp;gt;&lt;/code&gt; at the start of each paragraph, and &lt;code&gt;&amp;lt/p&amp;gt;&lt;/code&gt; at the end of each paragraph.';
+#	}
+#}
+
+} #end show HTML hints
+
+
+
+#strict HTML
+if($showXHTML) {
+
+$curCat = $showCat ? '(stricter HTML) ' : '';
+
+#bold tag
+if($writeup =~ /&lt;[Bb](\s.*?)?&gt;/) {
+	push @problems, $curCat.'If you want text to be bold, the &lt;code&gt;&amp;lt;strong&amp;gt;&lt;/code&gt; tag (instead of the &lt;code&gt;&amp;lt;b&amp;gt;&lt;/code&gt; tag) is better in most cases.';
+}
+
+#italics tag
+if($writeup =~ /&lt;[Ii](\s.*?)?&gt;/) {
+	push @problems, $curCat.'If you want text to be italics, there are a few other tags you could use instead of &lt;code&gt;&amp;lt;i&amp;gt;&lt;/code&gt;. The &lt;code&gt;&amp;lt;em&amp;gt;&lt;/code&gt; tag is the most commonly used alternative, which gives something &lt;em&gt;emphasis&lt;/em&gt;. In rarer cases, use &lt;code&gt;&amp;lt;cite&amp;gt;&lt;/code&gt; to cite something (such as a book title) or &lt;code&gt;&amp;lt;var&amp;gt;&lt;/code&gt; to indicate a variable. However, using the  &lt;code&gt;&amp;lt;i&amp;gt;&lt;/code&gt; tag here is OK for certain things, such as foreign words.';
+}
+
+#tt tag
+if($writeup =~ /&lt;tt(\s.*?)?&gt;/i) {
+	push @problems, $curCat.'There are a few other tags you may want to use instead of the &lt;code&gt;&amp;lt;tt&amp;gt;&lt;/code&gt; tag. You may want to use &lt;code&gt;&amp;lt;code&amp;gt;&lt;/code&gt;, to indicate a code fragment; &lt;code&gt;&amp;lt;samp&amp;gt;&lt;/code&gt;, to show sample output from a program, or &lt;code&gt;&amp;lt;kbd&amp;gt;&lt;/code&gt;, to indicate text for the user to enter (on a keyboard).';
+}
+
+#maybe check for balanced tags? have to watch for &lt;br /&gt; &lt;hr /&gt; (anything else?)
+
+#no closing paragraph tags
+if(($writeup =~ /&lt;[Pp](\s.*?)?&gt;/) &amp;&amp; ($writeup !~ /&lt;\/[Pp]&gt;/)) {
+	push @problems, $curCat.'Each paragraph tag, &lt;code&gt;&amp;lt;p&amp;gt;&lt;/code&gt; , should have a matching close paragraph tag, &lt;code&gt;&amp;lt;/p&amp;gt;&lt;/code&gt; .';
+}
+
+} #end show strict HTML hints
+
+
+
+
+
+#
+# spelling
+#
+
+my $spellInfo = undef;
+if($showSpelling) {
+	$spellInfo = getNode('bad spellings en-US','setting');
+	if(defined $spellInfo) {
+		$spellInfo = getVars($spellInfo);
+	}
+}
+if((defined $spellInfo) &amp;&amp; $showSpelling) {
+
+	$curCat = $showCat ? 'spelling &lt;small&gt;(English)&lt;/small&gt; ' : '';
+#	$curCat = $showCat ? 'spelling &lt;small&gt;(American English)&lt;/small&gt; ' : '';
+
+	my @badThings = ();
+	my %problemCount;	#key is problem description, value is number of times
+	foreach(keys(%$spellInfo)) {
+		unless(substr($_,0,1) eq '_') {
+			push(@badThings, $_);
+			$problemCount{$_} = 0;
+		}
+	}
+
+	#find all spelling problems
+	my $cheapSpellCheck;
+	foreach(@allParts) {
+		$cheapSpellCheck = lc($_);
+		$cheapSpellCheck =~ s/ +/_/gs;
+
+		foreach(@badThings) {
+			if(index($cheapSpellCheck, $_)!=-1) {
+				++$problemCount{$_};	#count the number of times spelling incorrectly (once per section)
+			}
+		}
+
+	}
+
+	#summary
+	foreach(keys(%problemCount)) {
+		$i = $problemCount{$_};
+		next if $i==0;
+		$c = $curCat;
+		#if($i&gt;1) { $c .= '(at least '.$i.' times) '; }	#doesn't work as users expect it (only once per section), and it isn't really worth fixing
+		push(@problems, $c . $$spellInfo{$_} );
+	}
+
+}
+undef $spellInfo;
+
+
+
+
+#silly hints
+#	every now and then, change which hints are commented out to keep things interesting
+if($showSilly) {
+
+$curCat = $showCat ? '(&lt;em&gt;s&lt;/em&gt;&lt;sup&gt;i&lt;/sup&gt;&lt;strong&gt;L&lt;/strong&gt;&lt;sub&gt;l&lt;/sub&gt;&lt;big&gt;y&lt;/big&gt;) ' : '';
+
+#silly hint - &quot;bad&quot; words
+#what other good &quot;bad&quot; words are there?
+if( (index($writeup,'AOL')!=-1) || ($writeup =~ /\smicrosoft\s/i) || ($writeup =~ /\sbill gates\s/i) ) {
+	push @problems, $curCat.'Shame on you! You used a bad word!';
+}
+
+if($writeup =~ /\ssoy\s/i) {
+	push @problems, $curCat.'SOY! SOY! SOY! Soy makes you strong! Strength crushes enemies! SOY!';
+}
+
+if($writeup =~ /server error/i) {
+	push @problems, $curCat.'Ah, quit your griping.';
+}
+
+#if(index($writeup,'!!!')!=-1) {
+#	push @problems, $curCat.'Wow! You sure need to calm down!';
+#}
+
+#if(index($writeup,'???')!=-1) {
+#	push @problems, $curCat.'Huh?';
+#}
+
+#foreach((':)',':(','):','(:',':-)',':-(','(-:',')-:','8-)')) {
+#	if(index($writeup,$_)!=-1) {
+#		push @problems, $curCat.'&lt;tt&gt;8-P&lt;/tt&gt;';
+#		last;
+#	}
+#}
+
+} #end show silly hints
+
+
+
+
+return if !scalar(@problems) || (!$isMyWU &amp;&amp; $isCE &amp;&amp; (scalar(@problems)==1));
+my $str = join('&lt;/p&gt;&lt;p&gt;',@problems);
+return unless $str;
+$str = parseLinks($str, ($textInHV ? 0 : $$NODE{parent_e2node}));
+
+$str = '&lt;p&gt;&lt;big&gt;&lt;strong&gt;Hints!&lt;/strong&gt;&lt;/big&gt; (choose which writeup hints display at &lt;a href='.urlGen({'node'=&gt;'Writeup Settings','type'=&gt;'superdoc'}).'&quot;&gt;Writeup Settings&lt;/a&gt;)&lt;/p&gt;&lt;p&gt;'.$str.'&lt;/p&gt;';
+$str = containHtml('thin outline container', $str) unless $$THEME{ 'noThinOutline' } ;
+
+$str;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>writeuphints</title>
+</node>

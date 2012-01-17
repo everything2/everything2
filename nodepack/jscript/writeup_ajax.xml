@@ -1,0 +1,85 @@
+<node>
+  <doctext>var writeupAjaxExists = undefined;
+var WriteupAJAX = undefined;
+Deferrer.defer( function() {
+ WriteupAJAX = Class.create( {
+
+header: &quot;&quot;,
+
+initialize: function (el) {
+this.header = el;
+this.node_id = el.id.substring(8);
+this.author = el.select(&quot;.writeup_author a&quot;).first().innerHTML;
+},
+
+getItem: function(item, displayStyle) {
+if (item == &quot;box&quot;) {
+box = this.header.select(&quot;.writeup_&quot;+item).first();
+box.style.display = 'block';
+return box;
+}
+return this.header.select(&quot;.writeup_&quot;+item).first();
+},
+
+writeupMessage: function() {
+
+this.getItem(&quot;box&quot;).update(&quot;&lt;input type=\'text\' size=\'70\' value=\'\' id=\'msg_&quot;+this.node_id+&quot;\' name= \'msgauthor\'/&gt; &lt;input type=\'button\' value=\'send\' onClick=\'WU&quot;+this.node_id+&quot;.sendmessage()\' /&gt; &lt;input type=\'button\' value=\'cancel\' onClick=\'Effect.BlindUp(WU&quot;+this.node_id+&quot;.getItem(\&quot;box\&quot;))\' /&gt;&quot;);
+
+},
+
+sendmessage: function() {
+E2AJAX.privateMessage(this.author.gsub(&quot; &quot;,&quot;_&quot;), $(&quot;msg_&quot;+this.node_id).value);
+this.getItem(&quot;box&quot;).update(&quot;message sent&quot;);
+Effect.BlindUp.delay(2, this.getItem(&quot;box&quot;));
+},
+
+bookmark: function() {
+E2AJAX.bookmarkNode(this.node_id);
+this.getItem(&quot;bookmark&quot;).update(&quot;bookmarked&quot;);
+},
+
+favorite: function() {
+this.getItem(&quot;favorite&quot;).update(&quot;favorited&quot;);
+},
+
+vote: function(weight) {
+E2AJAX.voteNode(this.node_id, weight);
+show = &quot;up&quot;;
+if (weight == -1) {show = &quot;down&quot;;}
+this.getItem(&quot;vote&quot;).update(&quot;voted &quot; + show);
+},
+
+cool: function () {
+E2AJAX.coolNode(this.node_id);
+this.getItem(&quot;cool&quot;).update(&quot;cooled&quot;);
+},
+
+killBox: function() {
+this.getItem(&quot;box&quot;).update(&quot;kill box&quot;);
+},
+
+kill: function() {
+this.getItem(&quot;kill&quot;).update(&quot;killed&quot;);
+},
+
+toolSet: function() {
+this.getItem(&quot;box&quot;).update(&quot;Publish   Hide&quot;);
+}
+
+});
+ writeupAjaxExists = 1;},&quot;Prototype&quot;);</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-02-14 20:37:46</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1930065</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1786405</type_nodetype>
+  <document_id>1930065</document_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>Writeup AJAX</title>
+</node>

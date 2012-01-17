@@ -1,0 +1,119 @@
+<node>
+  <doctext>[flamingweasel] submitted a patch for weblog's &quot;code&quot; field on Fri Jan 25 2002 at 11:57:55&lt;br&gt;
+patch's purpose: unknown&lt;br&gt;
+&lt;br&gt;
+Once again, This would require a bit more code to implement than is given in the patch.  It's an interesting idea, but I don't think it's ready yet.  Aesthetic changes that can be saved for later.</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-12-06 02:44:23</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1397448</node_id>
+  <htmlcode_id>1397448</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <code>my ($limit, $log_id,$remlabel, $hideLinker, $skipFilterHTML) = @_;
+$limit ||= 5;
+$log_id ||= getId($NODE);
+$remlabel||='remove';
+$skipFilterHTML = ($skipFilterHTML eq '1') ? 1 : 0;
+
+my $skip = 0;
+my $interval = $limit;
+my $uid = getId($USER);
+my $isRoot = exists $HTMLVARS{group_gods}{$uid};
+my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$uid};
+my $colspan = 2;
+
+#0=show (default), 1=CE can see, 2=root can see, 3=nobody can see
+#	not defined -&gt; 0
+#	1 or 2 or 3 -&gt; 1 or 2 or 3
+#	illegal -&gt; 3
+if(!defined $hideLinker) {
+	$hideLinker = 0;
+} elsif(($hideLinker =~ /^(\d)$/) &amp;&amp; (($hideLinker=$1)&lt;=3)) {
+} else {
+	$hideLinker = 3;
+}
+
+--$hideLinker if $isCE;
+if($isRoot) {
+	--$hideLinker;
+	++$colspan; #remove link
+}
+$hideLinker = 0 if $hideLinker &lt; 0;
+++$colspan unless $hideLinker;
+
+if(my $nwl = $query-&gt;param('nextweblog')) {
+	$skip = $nwl - $interval;
+	$limit = $nwl;  
+}
+
+my $csr = $DB-&gt;sqlSelectMany('*', 'weblog, node', 'weblog_id='.$log_id . ' &amp;&amp; removedby_user=0 and to_node = node_id', 'ORDER BY linkedtime DESC');
+
+my $str;
+
+$str.= '&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot;&gt;';
+
+my $VALIDTAGS;
+#if we're screening, get the allowed HTML tags
+unless($skipFilterHTML) {
+	my $TAGNODE = getNode('approved html tags','setting');
+	if($TAGNODE) {
+		$VALIDTAGS = getVars($TAGNODE);
+	} else {
+		#want to screen, but can't find tags; so ????
+		#TODO? just not allow any tags?
+	}
+}
+
+my $count = 0;
+my $text;
+while(my $L = $csr-&gt;fetchrow_hashref) {
+  
+	$count++;
+	next unless $skip &lt; $count;
+	last if $count &gt; $limit;
+
+	my $N = getNodeById($$L{to_node});
+	my ($date) = $$N{createtime};
+        # it's this, or get ekw to set $$THEME{writeupTitleColor}, right? --fw
+	$str.='&lt;tr bgcolor=&quot;'.($$VARS{ 'ekw_logobackground' } || $$THEME{writeupTitleColor}).&quot;\&quot;&gt;\n&quot;;
+	$str.='&lt;td width=&quot;70%&quot;&gt;' . linkNode($N).&quot;&lt;/td&gt;\n&quot;;
+	$str.='&lt;td&gt;by ' .linkNode($$N{author_user}) . &quot;&lt;br /&gt;($date)&quot; . &quot;&lt;/td&gt;\n&quot;;
+	$str .= '&lt;td&gt;'.($$L{linkedby_user}==$$N{author_user} ? '&amp;nbsp;' : ('linked by '.linkNode($$L{linkedby_user}))).&quot;&lt;/td&gt;\n&quot; unless $hideLinker;
+
+	$str.=&quot;&lt;td&gt;&lt;a href=&quot; . urlGen({node_id =&gt; $log_id, source =&gt; $log_id, to_node =&gt; getId($N), op =&gt; 'removeweblog', 'removedby_user' =&gt; getId($USER)}) . &quot;&gt;$remlabel&lt;/a&gt;&lt;/td&gt;\n&quot; if $isRoot;
+
+	$str.=&quot;&lt;/tr&gt;\n&quot;;
+	$text = $$N{doctext};
+	unless($skipFilterHTML) {
+		$text = htmlScreen($text,$VALIDTAGS);
+	}
+	$str.='&lt;tr&gt;&lt;td colspan=&quot;'.$colspan.'&quot;&gt;'.parseLinks($text).'&lt;/td&gt;&lt;/tr&gt;';
+	$str .= '&lt;tr&gt;&lt;td bgcolor=&quot;#000000&quot; colspan=&quot;'.$colspan.'&quot;&gt;'.htmlcode('clearimage','2,1').'&lt;/td&gt;&lt;/tr&gt;';
+}
+
+if($skip or $count &gt; $limit) {
+	$str.='&lt;tr&gt;&lt;td colspan=&quot;'.$colspan.'&quot;&gt;&lt;p align=&quot;right&quot;&gt;';
+	$str.= linkNode($NODE, '&lt;- newer', {nextweblog =&gt; $limit - $interval}) if $skip;
+	$str.= ' | ' if $skip and $count &gt; $limit;
+	if(getId($NODE) == $log_id) {
+		$str.= linkNode($NODE, 'older -&gt;', {nextweblog =&gt; $limit + $interval}) if $count &gt; $limit;
+	} else {
+		$str.= linkNode($log_id, 'older -&gt;') if $count &gt; $limit;
+	} 
+	$str .= '&lt;/td&gt;&lt;/tr&gt;';
+}
+$str.='&lt;/table&gt;';
+
+
+$str;</code>
+  <type_nodetype>1382262</type_nodetype>
+  <document_id>1397448</document_id>
+  <author_user>650043</author_user>
+  <package>0</package>
+  <title>patch - weblog (flamingweasel)</title>
+</node>

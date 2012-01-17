@@ -1,0 +1,75 @@
+<node>
+  <doctext>[flamingweasel] submitted a patch for [reallycool nodelet]'s &quot;nlcode&quot; field on Fri Jan 25 2002 at 11:44:18&lt;br&gt;
+patch's purpose: unknown&lt;br&gt;
+&lt;br&gt;
+This would've set the frontpage's &quot;cream of the cool&quot; section's background color to equal the Title's background.  We'd also have tohack with the links' css attributes to match the title / nodelet colors.  Data such as this should be in an oddrow class, anyhow (as not to be confusingly similar to something &quot;official&quot; -- 'Epicenter', 'Vitals', the site's title, etc (as opposed to the title of a writeup that's probably pretty good, but still only a writeup title).</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-12-06 02:24:25</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1397432</node_id>
+  <htmlcode_id>1397432</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <code>[%
+my $repthreshholdlo = 7;
+my $repthreshholdhi = 11;
+my $limit = 3;
+my $length = 280;
+
+my $csr = $dbh-&gt;prepare(&quot;SELECT writeup_id FROM writeup LEFT JOIN node ON node_id=writeup_id WHERE reputation &gt; $repthreshholdlo AND reputation &lt; $repthreshholdhi AND cooled != 0 ORDER BY writeup_id DESC LIMIT $limit&quot;);
+$csr-&gt;execute();
+my $str;
+
+my $HTML = getVars(getNode('approved HTML tags', 'setting'));
+
+
+$str.='&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot;&gt;';
+
+my %used;
+while (my ($WRITEUP) = $csr-&gt;fetchrow) {
+	getRef $WRITEUP;
+        #next unless $WRITEUP;
+        #if for any reason we get these reports, we'll need to uncomment the 
+        # top line
+        return &quot;BAD WRITEUP REF. TELL [JAYBONCI].&quot; unless($WRITEUP);
+
+	my $text;
+	if (length($$WRITEUP{doctext}) &lt; $length) {
+		$text=parseLinks(htmlScreen($$WRITEUP{doctext}, $HTML));
+	} else {
+		my $firstwords = substr($$WRITEUP{doctext},0, 512);
+		$firstwords =~ s/\s+\w*$//gs;
+		$firstwords = parseLinks(htmlScreen($firstwords, $HTML));
+		$firstwords =~ s/\[.*?$//;
+		$text=$firstwords .'... &lt;p align=&quot;right&quot;&gt;&lt;strong&gt;('
+		.linkNode($WRITEUP, 'more').')&lt;/strong&gt;';
+	}
+
+        #Jay's fix for the server errors.
+        #$str .= &quot;&lt;tr bgcolor=\&quot;$$THEME{writeupTitleColor}\&quot;&gt;&lt;td&gt;&quot; 
+        #$str .= &quot;&lt;tr bgcolor=\&quot;\#cccc99\&quot;&gt;&lt;td&gt;&quot;
+        #$str .= &quot;&lt;tr bgcolor=\&quot;\#ffffff\&quot;&gt;&lt;td&gt;&quot;
+        $str .= &quot;&lt;tr bgcolor=\&quot;&quot;
+        # mimicking ekw nodelet container; hopefully makes front page non-ugly for dark background ekw --fw
+        .($$VARS{ 'ekw_logobackground' } || $$THEME{ 'logoBackground' } || '#ffffff') 
+        .&quot;\&quot;&gt;&lt;td&gt;&quot;
+	.linkNode($$WRITEUP{parent_e2node}). '&amp;nbsp;'.linkNode($WRITEUP, '('.getNodeById($$WRITEUP{wrtype_writeuptype})-&gt;{title}
+.')'
+	). '&lt;/td&gt;&lt;td align=&quot;right&quot;&gt;by '. linkNode($$WRITEUP{author_user}).'&lt;/td&gt;&lt;/tr&gt;';
+	$str.=&quot;&lt;tr&gt;&lt;td colspan=\&quot;2\&quot;&gt;$text&lt;/td&gt;&lt;/tr&gt;&quot;;
+	$str.='&lt;tr&gt;&lt;td bgcolor=&quot;#000000&quot; colspan=&quot;2&quot;&gt;'.htmlcode('clearimage','2,1').&quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+}
+$csr-&gt;finish;
+$str.='&lt;/table&gt;';
+$str;
+%]</code>
+  <type_nodetype>1382262</type_nodetype>
+  <document_id>1397432</document_id>
+  <author_user>650043</author_user>
+  <package>0</package>
+  <title>patch - reallycool nodelet (flamingweasel)</title>
+</node>

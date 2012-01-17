@@ -1,0 +1,34 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-02-20 20:54:40</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <notification_id>1930852</notification_id>
+  <hourLimit>48</hourLimit>
+  <hits>0</hits>
+  <node_id>1930852</node_id>
+  <code>my $str;
+if ($$args{amount} &gt; 0) {
+$str .= &quot;You gained &quot;;
+}
+else {
+$str .= &quot;You lost &quot;;
+$$args{amount} = -1 * $$args{amount};
+}
+
+if ($$args{amount} == 1) {
+$str .= &quot;&lt;strong&gt;1&lt;/strong&gt; experience point.&quot;;
+}
+else {
+$str .= &quot;&lt;strong&gt;&quot;.$$args{amount}.&quot;&lt;/strong&gt; experience points.&quot;;
+}
+return $str;</code>
+  <type_nodetype>1930710</type_nodetype>
+  <author_user>1312198</author_user>
+  <description>you gain or lose [XP].</description>
+  <package>0</package>
+  <invalid_check></invalid_check>
+  <title>experience</title>
+</node>

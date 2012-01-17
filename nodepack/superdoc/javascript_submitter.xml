@@ -1,0 +1,44 @@
+<node>
+  <doctext>[%
+# Replaced kthejoker's userid with mine  -ap
+return 'Nothing to see here.' unless ($$USER{user_id} == 1009226) || ($$USER{user_id} == 974148);
+
+my $str = '';
+
+$str.= $query-&gt;start_form().&quot;
+
+&lt;p&gt;&lt;b&gt;Title&lt;/b&gt;&lt;/p&gt;
+&lt;input type='text' size='50' name='node' /&gt;
+
+&lt;p&gt;&lt;b&gt;Script&lt;/b&gt;&lt;/p&gt;
+&lt;textarea name='jscript_doctext' rows='80' cols='80'&gt;&lt;/textarea&gt;
+
+&lt;p&gt;&lt;b&gt;Description&lt;/b&gt;&lt;/p&gt;
+
+&lt;textarea name='jscript_desc'&gt;&lt;/textarea&gt;&quot;;
+
+
+$str .= &quot;&lt;input type='hidden' name='op' value='new' /&gt;&quot;;
+$str .= $query-&gt;hidden(&quot;type&quot;,&quot;jscript&quot;);
+$str .= $query-&gt;hidden(&quot;displaytype&quot;,&quot;display&quot;);
+$str .= $query-&gt;submit(&quot;sexisgood&quot;,&quot;Create Script&quot;);
+$str .= $query-&gt;end_form();
+
+return $str;
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-03-20 03:36:58</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>1872468</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1872468</document_id>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>Javascript Submitter</title>
+</node>

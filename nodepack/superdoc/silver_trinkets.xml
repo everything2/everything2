@@ -1,0 +1,42 @@
+<node>
+  <doctext>&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;p align=center&gt;
+&lt;font size=4&gt;
+[%
+### This measures the number of times a user has been sanctified by another user. It does not measure how many times other users have given them votes or eggs, or how many times they have been egged by another user. -m
+
+return 'Nobody knows how blessed you are, since you\'re hiding. Try logging in.' if $$USER{title} eq 'Guest User';
+return '&lt;em&gt;You are not feeling very special right now.&lt;/em&gt;' if $$USER{sanctity} &lt; 0;
+
+&quot;You feel validated -- every day, your fellow users look upon you and approve -- you have collected $$USER{sanctity} of their &quot; . linkNodeTitle('sanctify|Silver Trinkets');
+
+%]
+&lt;/font&gt;
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+&lt;/p&gt;
+[%
+return unless isGod($USER);
+
+my $u = $query-&gt;param('gtuser') || 0;
+$u = getNode($u, 'user') if $u;
+my $k;
+$k = $u ? $$u{sanctity} : 0;
+my $str = htmlcode('openform') . 'other user: ' . $query-&gt;textfield('gtuser') . $query-&gt;submit('SubMitt') . $query-&gt;end_form() . '&lt;br /&gt;';
+$str .= $u ? (linkNode($u) . '\'s sanctity: ' . $k) : 'no other user given';
+
+$str;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-11-07 03:45:46</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1962192</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1962192</document_id>
+  <author_user>1180811</author_user>
+  <package>0</package>
+  <title>Silver Trinkets</title>
+</node>

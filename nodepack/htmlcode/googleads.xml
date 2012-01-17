@@ -1,0 +1,67 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-02-10 05:30:25</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1989453</node_id>
+  <htmlcode_id>1989453</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($ad_location) = @_;
+my $node_id = $$NODE{node_id};
+return &quot;&quot; if $node_id == 1369958; #stupid pot node that got us busted
+return &quot;&quot; if $$NODE{type}{title} eq 'writeup' &amp;&amp; $$NODE{parent_e2node} == 1369958;
+
+return &quot;&quot; if $node_id == getNode('Nothing Found', 'superdoc')-&gt;{node_id};
+return &quot;&quot; if $node_id == getNode('Findings:', 'superdoc')-&gt;{node_id};
+return &quot;&quot; unless ($node_id =~ /^\d+$/);
+return &quot;&quot; if $query-&gt;url =~ /^https/;
+
+my ($ad_width, $ad_height, $ad_format, $ad_type);
+
+if ($ad_location eq 'nodelet') {
+
+  $ad_width =  160;
+  $ad_height = 600;
+  $ad_format = &quot;160x600_as&quot;;
+  $ad_type = &quot;text_image&quot;;
+
+# default case, 'topbanner'
+} else {
+
+  $ad_width =  728;
+  $ad_height = 90;
+  $ad_format = &quot;728x90_as&quot;;
+  $ad_type = &quot;text_image&quot;;
+
+}
+
+my $ad = &lt;&lt;ADTEXT;
+&lt;center&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+google_ad_client = &quot;pub-3290994517499171&quot;;
+google_ad_slot = &quot;7754250909&quot;;
+google_ad_width = $ad_width;
+google_ad_height = $ad_height;
+google_ad_format = &quot;$ad_format&quot;;
+google_ad_type = &quot;$ad_type&quot;;
+google_ad_channel = &quot;&quot;;
+google_page_url = &quot;http://everything2.com/?node_id=$node_id&quot;;
+&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot;
+  src=&quot;http://pagead2.googlesyndication.com/pagead/show_ads.js&quot;&gt;
+&lt;/script&gt;
+
+
+&lt;/center&gt;
+ADTEXT
+
+return $ad;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>googleads</title>
+</node>

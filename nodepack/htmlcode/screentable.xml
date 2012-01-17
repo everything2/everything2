@@ -1,0 +1,85 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-02-10 13:04:37</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1973836</node_id>
+  <htmlcode_id>1973836</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># By [call] - see [edev: Tables and HTML Validation]
+# Okay, in brief:
+# fast 'cause it's optimised to the 'common' cases:
+# Most writeups have no tables. Zoooom!
+# Writeups that have tables will mostly have valid tables:
+#   =&gt; Only a quick parse to validate.
+# We 'enforce' the validity of tables by outputting debug info
+#   for badly formed tables. This is UGLY so writeup authors will
+#   fix 'em quick.
+# In an HTMLcode, so compilation of this code is amortised.
+# [screenHTML] should still be used, and can be used to control
+#   attributes in the tags. Ideally this works on the output of
+#   screenHTML, but only because the 'debug' output uses &lt;div&gt;s
+#   with dashed outlines to help HTML writers find their oopsies.
+
+
+# Should be reasonably fast: scans through the HTML using a m''g, which
+# is about as fast as anything in perl can be. Stacks the tags (only
+# looks at table tags) and checks the structural validity by 
+# matching a two-level context descriptor (stack . tag) against
+# an RE describing valid contexts. (again, perl and RE =&gt; faster than
+# a bunch of ifs or whatever)
+sub tableWellFormed ($) {
+    my (@stack);
+    for ($_[0] =~ m{&lt;(/?table|/?tr|/?th|/?td)[\s&gt;]}ig) {
+        my $tag = lc $_;
+        my $top = $stack[$#stack];
+
+        if (substr($tag, 0, 1) eq '/') {
+            # Closing tag. Pop from stack and check that they match.
+            return (0, &quot;$top closed with $tag&quot;)
+              if pop @stack ne substr($tag, 1);
+        } else {
+            # Opening tag. Push, and check context is valid.
+            push @stack, $tag;
+            return (0, &quot;$tag inside $top&quot;) 
+                if (($top.$tag) !~ /^(table(tr)?|tr(td|th)|(td|th)(table))$/);
+        }
+    }
+    return (0, &quot;Unclosed table elements: &quot; . join &quot;, &quot;, @stack)
+        if ($#stack != -1);
+    return 1;
+}
+
+sub debugTag ($) {
+    my ($tag) = @_;
+    my $htmltag = $tag;
+    $htmltag =~ s/&lt;/&amp;amp;lt;/g; # should be encodeHTML, but of course
+                            # I don't have that in my standalone testbench.
+    $htmltag = &quot;&lt;strong&gt;&lt;small&gt;&amp;amp;lt;&quot; . $htmltag . &quot;&amp;amp;gt;&lt;/small&gt;&lt;/strong&gt;&quot;;
+
+    if (substr($tag, 0, 1) ne '/') {
+        return $htmltag . &quot;&lt;div style=\&quot;margin-left: 16px; border: dashed 1px grey\&quot;&gt;&quot;;
+    } else {
+        return &quot;&lt;/div&gt;&quot;. $htmltag;
+    }
+}
+
+sub debugTable ($$) {
+    my ($error, $html) = @_;
+    $html =~ s{&lt;((/?)(table|tr|td|th)((\s[^&gt;]*)|))&gt;}{debugTag $1}ige;
+    return &quot;&lt;p&gt;&lt;strong&gt;Table formatting error: $error&lt;/strong&gt;&lt;/p&gt;&quot;.$html;
+}
+
+my ($text) = @_;
+my ($valid, $error) = tableWellFormed($text);
+$text = debugTable ($error, $text) if ! $valid;
+
+$text;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <title>screenTable</title>
+</node>

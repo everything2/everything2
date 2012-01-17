@@ -1,0 +1,31 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-12-03 03:16:20</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1988950</node_id>
+  <htmlcode_id>1988950</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># Pass in either a node ID or a node ref
+my ($targetInput) = @_;
+my $isMaintenance = 0;
+
+getRef($targetNode);
+my $parentID = $$targetNode{parent_e2node};
+
+foreach (values %HTMLVARS) {
+  if ($parentID eq $_) {
+    $isMaintenance=1;
+    last;
+  }
+}
+
+return $isMaintenance;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>isMaintenanceWriteup</title>
+</node>

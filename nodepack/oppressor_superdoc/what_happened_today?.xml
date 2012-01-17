@@ -1,0 +1,46 @@
+<node>
+  <doctext>&lt;p&gt;This is the contents of today's [On This Day] nodelet. It is populated by default using the feed from &lt;a href=&quot;http://news.bbc.co.uk/onthisday/&quot;&gt;the BBC&lt;/a&gt;. However, we probably want to edit this to add or remove items and to add links. Any changes made here will show up again every year.&lt;/p&gt;
+&lt;form method=&quot;post&quot; enctype=&quot;application/x-www-form-urlencoded&quot;&gt;
+[%
+my $str;
+$str .= &quot;&lt;input type='hidden' name='node_id' value='&quot; . getId($NODE) . &quot;'&gt;&quot;;
+$str .= &quot;&lt;input type='hidden'&quot;;
+
+my $newsnode = getNode('Old News', 'setting');
+my $oldnews = getVars($newsnode);
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime;
+
+my $newnews = $query-&gt;param('news');
+
+if ($newnews) {
+   $$oldnews{$yday} = $newnews;
+   setVars($newsnode, $oldnews);
+   updateNode($newsnode);
+}
+
+if (!$$oldnews{$yday}) {
+   $$oldnews{$yday} = htmlcode('getOnThisDay');
+   setVars($newsnode, $oldnews);
+   updateNode($newsnode);
+}
+
+$str .= &quot;&lt;div style='width: 250px;  float: right; font-size: 80%' class='nodelet_content'&gt;&quot; . $$oldnews{$yday} . &quot;&lt;/div&gt;&quot;;
+$str .= &quot;&lt;textarea name='news' cols='50' rows='25'&gt;&quot; . encodeHTML($$oldnews{$yday}, 1) . &quot;&lt;/textarea&gt;&quot;;
+$str;
+%]
+&lt;input type='submit' name='submit' value='Save'&gt;&lt;/form&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2006-10-05 14:36:31</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1838080</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1144104</type_nodetype>
+  <document_id>1838080</document_id>
+  <author_user>974148</author_user>
+  <package>0</package>
+  <title>What happened today?</title>
+</node>

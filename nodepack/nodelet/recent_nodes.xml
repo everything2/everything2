@@ -1,0 +1,54 @@
+<node>
+  <nltext></nltext>
+  <parent_container>175986</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2002-06-25 13:03:43</createtime>
+  <lastupdate>1288191809</lastupdate>
+  <hits>0</hits>
+  <node_id>1322699</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>459692</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1322699</nodelet_id>
+  <nlcode>[%
+  $$VARS{nodetrail} ||= &quot;&quot;;
+  my @list = split(&quot;,&quot;,$$VARS{nodetrail});
+  #put this node_id at the top of the list for next time
+  $$VARS{nodetrail} = $$NODE{node_id} . ',';
+
+  return '&lt;small&gt;&lt;em&gt;All forgotten...&lt;/em&gt;&lt;/small&gt;' if $query-&gt;param('eraseTrail');
+
+  my @sayings = (&quot;A trail of crumbs&quot;, &quot;Footprints in the sand&quot;,
+		&quot;Are we there yet?&quot;, &quot;A snapshot...&quot;, &quot;The ghost of nodes past&quot;);
+
+  my $str = '&lt;em&gt;'.$sayings[(rand(@sayings))].'&lt;/em&gt;';
+  return $str unless scalar @list;
+
+  my $i=0;
+  my $list = '';
+  foreach (@list) {
+	next unless $_;
+ 	next unless $$VARS{nodetrail} !~ /\b$_\b/; 	#skip dupes
+	$list .= &quot;&lt;li&gt;&quot; . linkNode(getNodeById($_), undef, {&quot;lastnode_id&quot; =&gt; 0}) . &quot;&lt;/li&gt;&quot;;
+	$$VARS{nodetrail} .= $_ . ',' ; #push this onto the bottom of the list
+ 	last if ++$i &gt; 8;
+  }
+  my @quotes = (&quot;Cover my tracks&quot;, &quot;Deny my past&quot;, &quot;The Feds are knocking&quot;, &quot;Wipe the slate clean&quot;);
+	$str .= &quot;:\n&lt;ol&gt;$list\n&lt;/ol&gt;\n&quot;.
+		htmlcode('openform', -class =&gt; 'nodeletfoot').
+		$query -&gt; hidden('eraseTrail','1').
+		$query -&gt; submit('schwammdrueber', $quotes[(rand(@quotes))]).
+	'&lt;/form&gt;' if $list;
+$str;
+%]</nlcode>
+  <title>Recent Nodes</title>
+</node>

@@ -1,0 +1,66 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>117</pagetype_nodetype>
+  <core>0</core>
+  <page>[{votehead}]
+[{show writeups}]
+
+&lt;div id='displaytypelinks'&gt;
+&lt;p&gt;[% linkNode($NODE, 'link view', { displaytype =&gt; 'linkview' } ) %] &lt;/p&gt;
+&lt;/div&gt;
+
+[{votefoot}]
+
+[%
+return '' unless $HTMLVARS{isDevServer};
+return '' unless $$NODE{type}{title} eq 'writeup' and $$NODE{parent_e2node};
+my $str;
+# Stars for the parent e2node:
+my $PARENT = getNodeById($$NODE{parent_e2node});
+return unless($PARENT and $$PARENT{group} and my @grp = @{getNodeById($$NODE{parent_e2node})-&gt;{group}});
+my $nwriteups = scalar(@grp);
+if ($nwriteups==1) {
+  $str.=htmlcode('stars',&quot;$$NODE{parent_e2node},,,,&quot;);
+  $str.=htmlcode('nagbox');
+}
+else {
+  $str.=htmlcode('stars',&quot;$$NODE{parent_e2node},1,,,&quot;)
+  .'&lt;p&gt;This writeup is part of a larger node - please view '.linkNode($PARENT).' to rate it.&lt;/p&gt;';  
+}
+return $str;
+%]
+
+[{writeuphints}]
+
+[%
+return unless $$NODE{parent_e2node};
+'&lt;div id=&quot;softlinks&quot;&gt;
+'.htmlcode('softlink').'
+&lt;/div&gt;';
+%]
+
+[%
+return unless $$NODE{type}{title} ne 'draft' &amp;&amp; canUpdateNode($USER, $NODE) or
+	$$NODE{type}{title} eq 'draft' &amp;&amp; htmlcode('canseedraft', $NODE, 'edit') == 1;
+
+htmlcode('openform', -class=&gt;'writeup_add')
+	.htmlcode('editwriteup', $NODE)
+	.'&lt;/form&gt;';
+%]
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-07-08 16:03:57</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1854180</htmlpage_id>
+  <hits>17</hits>
+  <node_id>1854180</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>470183</author_user>
+  <package>0</package>
+  <ownedby_theme>1854183</ownedby_theme>
+  <title>zen writeup display page</title>
+  <mimetype></mimetype>
+</node>

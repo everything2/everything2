@@ -1,0 +1,1086 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-06-18 07:17:52</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1319377</node_id>
+  <htmlcode_id>1319377</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#sends a private message
+#
+#usage, examples, etc. in this node's &quot;help&quot; view:
+# ?node=sendPrivateMessage&amp;type=htmlcode&amp;displaytype=help
+#
+#updated: 2002.12.12.02
+#
+#although this was tested, an older version that is known to work is at sendPrivateMessageOld
+#
+#yes, this is *still* in beta
+#once this is stable, we'd probably get a 10000% speedup by putting this in a .pm (htmlcodes get compiled each time they're run, ouch) (or did JB integrate the compile-o-cache thing from a newer ecore?)
+#
+#do NOT change this: N-Wing is maintaining this function off a local
+#	copy; any changes made will be overwritten by the local copy
+
+
+#testtesttest: 1 user, not me. /msg to it says 1 user *and* 1 UG got. CC /msg says 1 user and 1 UG got. Should say 2 users. Or are we ignoring me?
+
+#TODO error condition for certain alias (me, I, anything else?) (maybe just hardcode in here, if a few)
+#TODO if target is bot (use bot setting), see if they have a special htmlcode (probably best to run after did everything else)
+
+#big big big big TODO: put this info into help displaytype ALSO 
+#big TODO:
+#	How do we want to handle don't-send-to-self and auto-archive-when-sending-to-self ?
+#	I've had 2 false starts that are specific to single-target, pseudo-group, and usergroup, but are pretty clumsy
+#	I'm now thinking maybe doing something like msg-ignore: user can specify groups to do certain things to.
+#
+#thought #2: instead of making another table, since this is all user-based, we can just throw things into VARS
+#	maybe: 'automsgsend_###' where ### is node_id of recipient (group or usergroup)
+#	if multiple cases match, do one that keeps the most
+#	bits:
+#		0    1      if NOT set, ignore everything else, and use default settings
+#		1-2  2,4,6  0=default, 2=always CC self, 4=never get self, 6=reserved
+#		4    8      set archived flag, if happens to get message
+
+#another thought: maybe change 'archive' field into 'folder' field; needs more thought: who create? who view? etc.
+
+
+#
+#parameters setup, part 1 of 2
+#
+
+#we're converting the old way of 2 separate params into the new way, which uses bit flags
+#the fun part is ensuring the old way works while we're converting
+my $flags = (defined $_[0]) &amp;&amp; length($_[0]) &amp;&amp; ($_[0]=~/([1-9]\d*)/) ? $1 : 0;
+my $keepParams = $flags &amp; 1;
+my $debug = $flags &amp; 2;
+$debug = $debug || ((defined $_[1]) &amp;&amp; $_[1]);	#backwards compatible
+my $showWhatSaid = $flags &amp; 4;
+
+
+#
+#constants and global vars setup, part 1 of 2
+#
+
+my $UID = $USER-&gt;{node_id} || 0;
+return '' if !$UID || ($HTMLVARS{guest_user}==$UID);	#FIXME is this the correct thing to check?
+return 'Public accounts such as '.linkNode($USER).' may not send messages.' if $USER-&gt;{title} eq 'everyone';	#TODO use bot thing or group account setting instead?
+my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
+#my $isCE = $isRoot || (exists $HTMLVARS{'group_content editors'}{$UID});
+
+
+#
+#parameters setup, part 2 of 2
+#
+
+return 'Sorry; unable to send message: something is programmed incorrectly - the message-sending routine doesn\'t know what to send! (arguments not set: pass via &lt;code&gt;$HTMLVARS{msgparams} = {&lt;/code&gt; ... &lt;code&gt;};&lt;/code&gt;)' unless (exists $HTMLVARS{msgparams}) &amp;&amp; (defined $HTMLVARS{msgparams});
+my $params = $HTMLVARS{msgparams};
+
+#determine message - quick checks for failure before we do database access
+return 'Nothing to send: no message was given.' unless (exists $params-&gt;{message}) &amp;&amp; (defined $params-&gt;{message}) &amp;&amp; length($params-&gt;{message});
+my $msg = $params-&gt;{message};
+#ensure message doesn't have any embeded newlines, which cause headaches
+if($msg =~ /^\s*(.*?)$/) {
+	$msg=$1;
+}
+if($msg =~ /^(.*?)\s*$/) {
+	$msg=$1;
+}
+$msg =~ s/\s+/ /g;	#only need 1 space between things
+return 'Nothing to send: message only consists of &quot;whitespace&quot; characters (for example, a space).' unless length($msg);
+#note: do NOT escape &lt; and &gt; since they are escaped upon recipient view
+
+
+#
+#constants and global vars setup, part 2 of 2
+#
+
+#sets up a hash that is stored in HTMLVARS, things can be cached between calls to this htmlcode
+#	creates a cached hash, if one with the given key does not already exists
+#	returns a ref to that hash
+#	note: since this returns a ref, nothing needs to be done later to update HTMLVARS
+local *getCachedHash = sub {
+	my $k = $_[0];
+	return undef unless (defined $k) &amp;&amp; length($k);
+	$k='sPMc_'.$k;
+	$HTMLVARS{$k}={} unless (exists $HTMLVARS{$k}) &amp;&amp; (defined $HTMLVARS{$k});
+	return $HTMLVARS{$k};
+};
+
+my $cachedTitles = getCachedHash('ug_title');
+my $cachedIDs = getCachedHash('ug_id');
+my $NT_U_ID = getNode('user','nodetype','light')-&gt;{node_id};
+my $NT_UG_ID = getNode('usergroup','nodetype','light')-&gt;{node_id};
+my $sqlTypes = '(' . join(' OR ',map { 'type_nodetype=' . $_ } ($NT_U_ID, $NT_UG_ID) ) . ')';
+
+
+#failure warning messages
+#these are always sent to the current user (which is not neccessarily the author we say the message is from)
+my @problems;
+
+#borg check - maybe [a] boolean param[s] to skip this?
+my $isBorgedFull = 0 &amp;&amp; !$isRoot;	#FIXME something else in VARS should be set	#fully borged, may not speak to anybody but self
+my $isBorged = $isBorgedFull || $VARS-&gt;{borged};	#partially borged, not allowed to speak publically
+
+
+#
+#subroutines
+#
+
+#returns if a parameter is set to 1 or not
+#if the given parameter exists and equals '1', then true is returned
+#any other condition will return false
+local *boolParam = sub {
+	return (defined $_[0]) &amp;&amp; (exists $params-&gt;{$_[0]}) &amp;&amp; (defined $params-&gt;{$_[0]}) &amp;&amp; ($params-&gt;{$_[0]} eq '1');
+};
+
+
+#returns the given thing's nodetype, or undef if unknown
+#created: 2002.07.08.n1
+#updated: 2002.07.08.n1
+local *getNodeType = sub {
+	my $testNode = $_[0];
+	return
+		(defined $testNode) &amp;&amp;
+		(ref $testNode eq 'HASH') &amp;&amp;
+		(exists $testNode-&gt;{type_nodetype})
+		? $testNode-&gt;{type_nodetype}
+		: undef
+	;
+};
+
+#returns if given thing is a usergroup
+#updated: 2002.07.08.n1
+local *isUserGroup = sub {
+	my $curType = getNodeType($_[0]);
+	return $curType &amp;&amp; ($curType==$NT_UG_ID);
+};
+
+#returns if given thing is a user or usergroup
+#updated: 2002.07.08.n1
+local *isUserOrGroup = sub {
+	my $curType = getNodeType($_[0]);
+	return $curType &amp;&amp; (($curType==$NT_U_ID) || ($curType==$NT_UG_ID));
+};
+
+#gets a user or usergroup
+#pass ($title) to get based on title (respecting chatterbox forwards)
+#pass ($id, 1) to get based on node ID
+#passed username should NOT be escaped
+##this tries really hard to deal with names with spaces and/or underscores, and should get them, no matter how they are set up
+#note: do NOT optimize this to use the light-get, since then usergroups wouldn't have their group members loaded (this may be no longer true - does the UG auto code deal with this properly?)
+#updated: 2002.11.10.n0
+my $FORWARDS;
+local *getCached = sub {
+	my ($ident,$isNumeric) = (@_[0,1]);
+	return undef unless defined($ident) &amp;&amp; length($ident);
+	my $N;
+
+	#get by ID
+	if((defined $isNumeric) &amp;&amp; $isNumeric) {
+		return undef unless $ident =~ /^(\d+)$/;
+		$ident=$1;
+		return $cachedIDs-&gt;{$ident} if exists $cachedIDs-&gt;{$ident};
+		$N=getNodeById($ident);
+		if(!isUserOrGroup($N)) { undef $N; }
+		if((defined $N) &amp;&amp; (exists $N-&gt;{title}) &amp;&amp; length($N-&gt;{title})) {
+			$cachedTitles-&gt;{$N-&gt;{title}} = $N;
+		}
+		$cachedIDs-&gt;{$ident} = $N;
+
+	#get by title
+	} else {
+		return $cachedTitles-&gt;{$ident} if exists $cachedTitles-&gt;{$ident};
+
+		#given title isn't cached, so find it
+		#a forward address takes precedence over a real user
+		if(!defined $FORWARDS) {
+			$FORWARDS = getCachedHash('forwards');
+			$FORWARDS = getVars(getNode('chatterbox forward','setting'));
+		}
+		my $forwarded = (exists $FORWARDS-&gt;{lc($ident)}) ? $FORWARDS-&gt;{$ident} : $ident;
+		my $escaped = $DB-&gt;quote($forwarded);
+
+		$N = getNode($forwarded,$NT_UG_ID) || getNode($forwarded,$NT_U_ID) || undef;
+		if(!defined $N) {
+			#try getting, underscores converted to spaces
+			$forwarded =~ tr/_/ /;
+			$N = getNode($forwarded,$NT_UG_ID) || getNode($forwarded,$NT_U_ID) || undef;
+		}
+#disabled this 2002.11.09.n5 - see displaytype=help for more information
+#		unless(defined $N) {
+#			#exact match doesn't work, use RE
+#
+#			#changes spaces or underscores in original text to a RE for SQL
+#			if($escaped =~ /^[\'\&quot;](.*?)[\'\&quot;]$/) {
+#				$escaped = '\'^'.$1.'$\'';
+#			}
+#			$escaped =~ s/[ _]/[ _]/g;	#this is correct; do NOT delete
+#
+#			my $csr = $DB-&gt;getDatabaseHandle()-&gt;prepare(
+#				'SELECT node_id FROM node WHERE (title REGEXP '.$escaped.') AND '.$sqlTypes.' LIMIT 1'
+##				'SELECT node_id FROM node WHERE (title LIKE '.$escaped.') AND '.$sqlTypes.' LIMIT 1'
+#			);
+#			if($csr &amp;&amp; $csr-&gt;execute()) {
+#				$N = $csr-&gt;fetchrow_hashref;
+#				$csr-&gt;finish();
+#				$N = $N ? getNodeById($N-&gt;{node_id}) : undef;
+#			}
+#		}
+
+		#found (or didn't find), so cache title and possibly forward
+		#note: $N may be invalid, but we're still caching the miss-hit, so we don't try getting it again
+		$cachedIDs-&gt;{$N-&gt;{node_id}} = $N if defined $N;
+		$cachedTitles-&gt;{$ident} = $N;
+		$cachedTitles-&gt;{$forwarded} = $N unless $ident eq $forwarded;
+	}
+
+	return $N;
+};
+
+#returns a list ref of items in a given parameter
+#if a given parameter (in $param) is invalid, an empty list ref is returned
+#otherwise, a list ref of all items is returned
+local *getParamList = sub {
+	my $p=$_[0];
+	my @l;
+	if( (defined $p) &amp;&amp; (exists $params-&gt;{$p}) &amp;&amp; (defined $params-&gt;{$p}) ) {
+		$p=$params-&gt;{$p};
+		my $r=ref $p;
+		if($r eq '') {
+			@l = ($p);
+		} elsif($r eq 'SCALAR') {
+			@l = ($$p);
+		} elsif($r eq 'ARRAY') {
+			return $p;
+		} elsif($r eq 'HASH') {
+			@l = keys(%$p);
+		}
+	}
+	return \@l;
+};
+
+
+#
+# main function
+#
+
+#determine author
+#note: in most cases, we'll just skip to the last 'unless' to use current user
+my $aid = $params-&gt;{author_id};
+if((defined $aid) &amp;&amp; length($aid) &amp;&amp; $aid &amp;&amp; ($aid =~ /^(\d+)$/)) {
+	$aid = getNodeById($1,'light') || undef;	#note that this allows any node to /msg user
+	$aid = (defined $aid) ? $aid-&gt;{node_id} : undef;
+} else {
+	undef $aid;
+}
+unless(defined $aid) {
+	#don't know author ID, so try to get author name
+	$aid = $params-&gt;{author};
+	if((defined $aid) &amp;&amp; length($aid)) {
+		$aid = getCached($aid) || undef;
+		$aid = (defined $aid) ? $aid-&gt;{node_id} : undef;
+	}
+}
+unless(defined $aid) {
+	#don't know author's title, either, so just use current user
+	$aid = $UID;
+}
+
+
+#determine node message is about
+#note: if message table is expanded to include something like 'about_node', this section can be mostly removed
+my $aboutNode = $params-&gt;{renode_id};
+if((defined $aboutNode) &amp;&amp; length($aboutNode) &amp;&amp; $aboutNode &amp;&amp; ($aboutNode=~/^(\d+)$/)) {
+	$aboutNode = getNodeById($1,'light') || undef;
+	if(defined $aboutNode) {
+		$aboutNode = length($aboutNode-&gt;{title}) ? $aboutNode-&gt;{title} : 'id://'.$aboutNode-&gt;{node_id};
+	}
+} else {
+	undef $aboutNode;
+}
+unless(defined $aboutNode) {
+	$aboutNode=$params-&gt;{renode};
+	if((defined $aboutNode) &amp;&amp; length($aboutNode) &amp;&amp; ($aboutNode=~/^(.+)$/)) {
+		$aboutNode=length($1) ? $1 : undef;
+	} else {
+		undef $aboutNode;
+	}
+}
+#took out this section 2002.07.13.n6 since WU blab area already strips this off
+#if(defined $aboutNode) {
+##	$aboutNode =~ s/\s+/ /g;
+#	if($aboutNode =~ /^(.+?) \(\w+\)$/) { $aboutNode=$1; }	#remove ' (type)' thing that writeup titles have
+##	$aboutNode =~ s/ \((thing|idea|person|place|definition)\)$//;	#most to least common, but few people would /msg Webby: thing, idea, definition, person, place
+#}
+
+#determine time to say message was sent
+my $sendTime = $params-&gt;{renode_id};
+if((defined $sendTime) &amp;&amp; ($sendTime =~ /^(\d{14})$/)) {	#Y10k bug
+	$sendTime = $1;
+} else {
+	undef $sendTime;
+}
+
+#determine which usergroup to say message was from
+my $fromGroup = $params-&gt;{fromgroup_id};
+if( (defined $fromGroup) &amp;&amp; length($fromGroup) &amp;&amp; $fromGroup &amp;&amp; ($fromGroup=~/^(\d+)$/) ) {
+	$fromGroup = getNodeById($1,'light') || undef;
+	if(defined $fromGroup) {
+		$fromGroup = $fromGroup-&gt;{node_id};
+	}
+} else {
+	$fromGroup = 0;
+}
+unless($fromGroup) {
+	if((defined $fromGroup) &amp;&amp; length($fromGroup) &amp;&amp; ($fromGroup=~/^(.+)$/)) {
+		if(length($1)) {
+			$fromGroup=getCached($1);
+			$fromGroup = (defined $fromGroup) ? $fromGroup-&gt;{node_id} : 0;
+		} else {
+			$fromGroup=0;
+		}
+	} else {
+		$fromGroup=0;
+	}
+}
+
+#
+#determine recipient(s)
+#
+
+#my $countUsers = 0;	#users we tried to /msg, including those ignoring us	#deprecated
+#my $countGroups = 0;	#groups we /msged	#deprecated
+
+#keeps track of who is ignoring a user/usergroup
+#meaning:
+#	key is ID of user(group) being ignored (&quot;ignoree&quot;)
+#	value is hash ref:
+#		key is ID of user ignoring the ignoree
+#		value is, itself, ignored :)  (value is always just 1)
+my $ignored = getCachedHash('ignore');
+
+my $skipIgnores = boolParam('skipignore');
+
+#stores who is ignoring the given user/usergroup
+#stored in $ignored
+#parameter: node_id of user(group) to ignore (if omitted, defaults to message's claimed author)
+#created: 2002.06.13.n4
+#updated: 2002.07.08.n1
+local *loadIgnores = sub {
+	my $whoIgnore = (defined $_[0]) &amp;&amp; $_[0] ? $_[0] : $aid;
+	return unless $whoIgnore =~ /^([1-9]\d*)$/;
+	$whoIgnore = $1;
+	if(exists $ignored-&gt;{$whoIgnore}) {
+		#already loaded, so don't bother getting again
+		return;
+	}
+
+	#get everybody that is ignoring the given user(group), and save it for later
+	my %curIgnore;
+	#from message (opcode)
+	my $csr = $DB-&gt;sqlSelectMany('messageignore_id', 'messageignore', 'ignore_node='.$whoIgnore);
+	return 'Ack! Unable to determine who is ignoring you!' unless defined $csr;
+	while(my ($ig) = $csr-&gt;fetchrow) {
+		$curIgnore{$ig}=1;
+	}
+	$csr-&gt;finish;
+
+	$ignored-&gt;{$whoIgnore} = \%curIgnore;
+};
+
+loadIgnores($aid);
+
+#determine who is online
+my %onlines;
+my $onlineOnly = boolParam('ono');
+if($onlineOnly) {
+	#ripped from message (opcode)
+	my $csr = $DB-&gt;sqlSelectMany('member_user', 'room', '', '');
+	while(my ($ol) = $csr-&gt;fetchrow) {
+		$onlines{$ol}=1;
+	}
+	$csr-&gt;finish;
+}
+
+#determine which groups get a copy sent to themselves
+my $ccGroups = boolParam('ccgroup');
+my $copyGroups;	#titles of groups that archive messages sent to them
+if(!$ccGroups) {
+	$copyGroups = getVars(getNode('allow message archive','setting'));
+}
+
+
+my $countUserAll = 0;	#count of users we tried to /msg, including those ignoring us
+my $countUserGot = 0;	#count of users that got our message
+my $countGroupGot = 0;	#count of groups that got our message
+#users who blocked us; key is user ID, value is 0 if blocked, 1 if possibly blocked (happens ignoring the usergroup, but could still get msg via another usergroup)
+#	after trying to send to everybody, anything with value of 1 is added to $countUserAll
+my %blockers;
+
+my %groups;	#groups that get a message; key is group ID, value is -1 if user isn't allowed to send there, 0 if usergroup doesn't get message (but people in it do), higher than 0 means the usergroup also gets the message
+my %users;	#users that get a message; key is user ID, value is group they're in (or 0 for none) (or -1 to not send to them)
+#%users is a hash so if multiple usergroups are messaged, the user will get a group message for a group they're in, instead of potentially a group they aren't in
+
+
+#
+#general routines that hopefully will be later moved to npbutil
+#
+
+
+#returns a value in $VARS-&gt;{_argument_}, constrained to the given values
+#parameters are all required:
+#	value to get value of in VARS
+#	default value to return, if value is not in VARS hash, or value is not one of the given values
+#	list or list ref of valid values
+#returns if all arguments aren't supplied
+#created: 2002.06.15.n6
+#updated: 2002.06.15.n6
+#TODO move into npbutil, after it is cleaned a bit
+#TODO bool version also for npbutil
+local *getVarsValue = sub {
+	my ($varsKey, $defaultVal, @allowedValues) = @_;
+
+	return unless (defined $varsKey) &amp;&amp; length($varsKey);
+
+	#possibly change list ref into list
+	if( (scalar(@allowedValues)==1) &amp;&amp; ((ref $allowedValues[0]) eq 'ARRAY') ) {
+		@allowedValues = @{$allowedValues[0]};
+	}
+
+	#determine what to return
+	return $defaultVal unless exists $VARS-&gt;{$varsKey};
+	my $val = $VARS-&gt;{$varsKey};
+	foreach(@allowedValues) {
+		return $val if $_ eq $val;
+	}
+	return $defaultVal;
+
+};
+
+
+#
+# flag recipients
+#
+
+
+#adds a user to the list to get the message (or not get message)
+#pass user object and optionally group ID (if no group is passed, defaults to no group)
+#included in things this functions does:
+#	all checks for where a user would not get a message: online-only, ignoring user, ignoring group
+#	finding (and possibly increasing) the msg group level
+#updated: 2002.11.09.n6
+local *addUser = sub {
+	my ($userObj, $groupID) = @_[0,1];
+	return unless defined $userObj;
+	$groupID = (defined $groupID) ? $groupID : 0;
+	my $uid = $userObj-&gt;{node_id};
+
+	if(exists $users{$uid}) {
+		#user is already getting message
+
+		return if $users{$uid}==-1;	#user doesn't want message
+
+		#if this is a group message, see if user knows it is from a group
+		if($groupID &amp;&amp; ($users{$uid}==0)) {
+			#user doesn't know this is from a group, so say it is
+			$users{$uid}=$groupID;
+		}
+
+	} else {
+		#user isn't set to get/not get a message
+
+		#check for ignoring author
+		if( (exists $ignored-&gt;{$aid}) &amp;&amp; (exists $ignored-&gt;{$aid}-&gt;{$uid}) ) {
+			$users{$uid}=-1;
+			$blockers{$uid}=0;
+			++$countUserAll;
+			return;
+		}
+
+		#check for online only
+		#this check should be before ignore-usergroup test; otherwise, the blocked-user message incorrectly includes people who are just ignoring OnO messages
+		if($onlineOnly &amp;&amp; !exists $onlines{$uid}) {
+			#message is online-only and the recipient isn't online
+			#see if they want the message anyway
+			#TODO? cache this?
+			my $v = getVars($userObj);
+			unless( $v-&gt;{getofflinemsgs} ) {
+				#user doesn't want ONO messages, and this msg was ONO, so block them from getting the message (to prevent having to look up their VARS again)
+				$users{$uid}=-1;
+				return;
+			}
+		}
+
+		#check for ignoring usergroup
+		#	The proper thing to do isn't clear when the recipient user is in
+		#	several of the usergroups this message is going to, and the
+		#	recipient is ignoring some groups, but not others. We could either
+		#	block the message if ANY of the usergroups are ignored, or block if
+		#	ALL of the usergroups are ignored. The latter case is done here;
+		#	this means there is a lower chance you'll miss a message you meant
+		#	to get, although there is a higher chance you'll get a message you
+		#	did not want.
+		if($groupID) {
+			$blockers{$uid}=$groupID;	#non-zero means may still get message
+			#don't mark as send-message, but also don't mark as do-not-send-at-all
+			return if( (exists $ignored-&gt;{$groupID}) &amp;&amp; (exists $ignored-&gt;{$groupID}-&gt;{$uid}) );
+			#note: countUsersAll is not adjusted here, so it doesn't count the same recipient twice; it is added later (&quot;deal with people who blocked&quot;)
+		}
+
+		#passed all checks, so allow message to be sent to user
+		delete $blockers{$uid};	#if blocked from 1 usergroup, but got anyway, forget that we tried to block
+		++$countUserAll;
+		++$countUserGot;
+		$users{$uid}=$groupID;
+	}
+};
+
+
+#auto-filtering: depending on recipients, sender may want to get/not get/archive/etc. the message for themselves
+my $FLAGAUTO_NEEDTEST = 1;	#if not present, assume value corrupt
+my $FLAGAUTO_ARCHIVE = 8;
+my $FLAGAUTO_DEFAULT = 0;
+my $FLAGAUTO_CC = 2;
+my $FLAGAUTO_NOGET = 4;
+my $FLAGAUTOMASK_GET = $FLAGAUTO_DEFAULT | $FLAGAUTO_CC | $FLAGAUTO_NOGET;
+my $selfShouldGet=boolParam('ccself') ? $FLAGAUTO_CC : 0;	#if should get message when normally wouldn't, or should NOT get message when normally would, or normal
+my $selfArchive=0;	#if should set own copy of msg to archived; value that is inserted into DB
+
+#updates the current auto-filtering options
+#stuff copied from top of this file, that I should later move to the displaytype=help view:
+#	thought #2: instead of making another table, since this is all user-based, we can just throw things into VARS
+#		maybe: 'automsgsend_###' where ### is node_id of recipient (group or usergroup)
+#		if multiple cases match, do one that keeps the most
+#		bits:
+#			0    1      if NOT set, ignore everything else, and use default settings
+#			1-2  2,4,6  0=default, 2=always CC self, 4=never get self, 6=reserved
+#			4    8      set archived flag, if happens to get message
+#parameter: node_id of recipient group or user
+#created: 2002.07.18.n4
+#updated: 2002.07.18.n4
+local *updateAutoFilter = sub {
+	my $id=$_[0];
+	return unless defined($id) &amp;&amp; length($id);
+	$id = 'automsgsend_'.$id;
+	return unless (exists $VARS-&gt;{$id}) &amp;&amp; (defined $VARS-&gt;{$id}) &amp;&amp; length($id=$VARS-&gt;{$id}) &amp;&amp; $id;
+	return unless ($id &amp; $FLAGAUTO_NEEDTEST)==$FLAGAUTO_NEEDTEST;
+	$id -= $FLAGAUTO_NEEDTEST;
+
+	#check archiving
+	if(!$selfArchive) {
+		$selfArchive = (($id &amp; $FLAGAUTO_ARCHIVE)==$FLAGAUTO_ARCHIVE) ? 1 : 0;
+	}
+
+	#check getting/not getting
+	$id = $id &amp; $FLAGAUTOMASK_GET;
+	return unless $id;	#if 0, then using default setting, so don't bother with more testing
+	if( $id==$FLAGAUTO_CC ) {
+		$selfShouldGet = $FLAGAUTO_CC;	#CC self has highest precedence
+	} elsif( ($id==$FLAGAUTO_NOGET) &amp;&amp; ($selfShouldGet!=$FLAGAUTO_CC) ) {	#block /msg, but only if not already force getting
+		$selfShouldGet = $FLAGAUTO_NOGET;
+	}
+	#else, keep current setting
+
+	return;
+};
+
+
+#adds a user or usergroup to get a message (or not get the message)
+#pass user or usergroup object
+#updated: 2002.11.09.n6
+local *addRecipient = sub {
+	my $u = $_[0];
+	return unless defined $u;
+	my $i=$u-&gt;{node_id};
+
+	if( isUserGroup($u) ) {
+
+		if(exists $groups{$i}) {
+			#already did this group, don't bother with again
+			next;
+		}
+		loadIgnores($i);
+		unless(Everything::isApproved($USER, $u)) {
+			push @problems, 'You are not allowed to message the ['.$u-&gt;{title}.'] usergroup.';
+			$groups{$i}=-1;
+			return;
+		}
+
+		#all checks pass, so send /msg to group and members
+		++$countGroupGot;
+		$groups{$i} = ($ccGroups || exists $copyGroups-&gt;{$u-&gt;{title}}) ? $i : 0;	#see if group gets a copy
+		#loop though all users
+		foreach( @{$DB-&gt;selectNodegroupFlat($u)} ) {
+			addUser($_, $i);
+		}
+
+	} else {
+		addUser($u);
+
+	}
+	updateAutoFilter($i);
+};
+
+
+
+#invalid node titles, aliases, and node IDs
+#	key is invalid item
+#	value is always 1
+my %invalidIDs;
+my %invalidNames;
+
+#for each recipient, either:
+#	add to send list
+#	reject for some reason (examples: permission denied, online-only)
+#	add to invalid item list
+
+#this is the only place where recipients are added to the list to be messaged
+my $n;
+foreach( @{getParamList('recipient_id')} ) {
+	$n = getCached($_,1);
+	if(defined $n) {
+		addRecipient($n);
+	} else {
+		$invalidIDs{$_}=1;
+	}
+}
+foreach( @{getParamList('recipient')} ) {
+	$n = getCached($_);
+	if(defined $n) {
+		addRecipient($n);
+	} else {
+		$n = $_;
+		$n =~ tr/ /_/;
+		$invalidNames{$n}=1;
+	}
+}
+
+updateAutoFilter('default');
+##special case author: delete it now? (or not) (maybe just see if not sent, and add changed message)
+
+
+
+
+##determine if message author is getting a copy
+#my $ccSelf =
+#	!( (exists $users{$aid}) &amp;&amp; ($users{$aid}&gt;0) ) &amp;&amp;	#don't copy self if already getting a copy
+#	(boolParam('ccself') || $VARS-&gt;{msgCCalways})	#copy self if says to this time, or user always wants CC (is this even settable anywhere? I don't think it is)
+#;
+
+
+#deal with people who blocked
+my @whoBlocked;	#users who blocked sender, and not because blocking the group (listing all the group blockers could get large fast)
+my $numBlocked = scalar(keys(%blockers));
+my $numBlockedGroup = 0;	#number of messages blocked because blocking usergroup
+foreach(keys(%blockers)) {
+	if($blockers{$_}==0) {
+		#blocking sender
+		push(@whoBlocked, getCached($_,1));
+	} else {
+		#blocking usergroup(s)
+		++$countUserAll;	#not done in addUser, so do it now
+		++$numBlockedGroup;
+	}
+}
+my $blockedInfoMethod = getVarsValue('informmsgignore', 0, 0,1,2,3);	#0=inform via msg, 1=inform in 'you said &quot;blah&quot;' area in chatterbox, 2=inform both ways, 3=don't inform
+
+if($numBlocked &amp;&amp; ($blockedInfoMethod==0 || $blockedInfoMethod==2)) {
+	#inform via a msg
+	my $bMessage = 'You were blocked by '.$numBlocked.' user'.($numBlocked==1?'':'s').' total';
+	my @bReason;
+	push(@bReason, $numBlockedGroup.' ignored the usergroup(s)') if $numBlockedGroup;
+	push(@bReason, scalar(@whoBlocked).' ('.join(', ', map { '[' . $_-&gt;{title} . ']' } @whoBlocked).') ignored you') if scalar(@whoBlocked);
+	$bMessage .= ': '.join(', ', @bReason) if scalar(@bReason);	#note: should always be true, but just in case
+	$bMessage .= '.';
+	push(@problems, $bMessage);
+}
+
+
+#when sending a message and we aren't a recipient, but we get it anyway, pick one of the normal recipients to be the for_usergroup
+#	if the message was sent to any usergroups, pick one of those
+#	otherwise, pick a random user
+#	in either case, this will return the node_id of the choosen node for for_usergroup
+#created: 2002.07.28.n0
+#updated: 2002.12.02.n1
+local *pickRandomForGroup = sub {
+
+	#first try a random group
+	foreach(keys(%groups)) {
+		if($_ &gt;= 0) { return $_; }	#if -1, then that group didn't get the message
+	}
+
+	#not sending to any groups, so pick a random user besides the sending user
+	foreach(keys(%users)) {
+		return $_ unless $_==$UID;	#yourself as a group is rather annoying
+	}
+
+	#return (exists $users{$UID}) ? $UID : 0;	#may have to return self as usergroup after all (oops, this makes all /msgs to self have yourself as a group; yuck)
+	return 0;
+};
+
+
+#special case sender getting msg
+if($selfShouldGet==$FLAGAUTO_CC) {
+	#set the for-group as just a random recipient of the message
+	#this is far from perfect, but there isn't a way to store all recipients, so this will have to do
+	#done here, and not relied upon at the actual msg-send part so we try to not get ourselves as the for-group we're sending to
+
+	#if sending to at least 1 group, try to make that the from group
+
+	#since we aren't sending to any groups, pick a random person
+	$users{$UID} = pickRandomForGroup() unless exists $users{$UID};
+} elsif($selfShouldGet==$FLAGAUTO_NOGET) {
+	delete $users{$UID} if exists $users{$UID};
+}
+
+
+#add things to message
+if($onlineOnly) {
+	#say ONO even for CCed to self message as a reminder of how it was sent
+	$msg = 'OnO: ' . $msg;
+}
+if(defined $aboutNode) {
+	#maybe FIXME: add another field to message table, although this wouldn't be used much (just for WU title area)
+	$msg = 're ['.$aboutNode.']: '.$msg;
+}
+#$ccSelf = $ccSelf ? $msg : undef;
+
+
+
+#construct invalid recipients message
+my $s = '';
+my @badIDs = sort { ($a&lt;=&gt;$b) || ($a cmp $b) } keys(%invalidIDs);
+if($n=scalar(@badIDs)) {
+	$s = 'Node ID' . ($n==1
+		? ' ' . $badIDs[0] . ' is not a valid user or usergroup ID.'
+		: 's ' . join(', ', @badIDs) . ' are not valid user or usergroup IDs.'
+	);
+}
+my @badNames = sort { $a cmp $b } keys(%invalidNames);
+if($n=scalar(@badNames)) {
+	$s .= ' ' if length($s);
+	if($n==1) {
+		$s .= $badNames[0] . ' is not a valid user or usergroup name or alias.';
+	} else {
+		$s .= join(@badNames) . ' are not valid user or usergroup names or aliases.';
+	}
+}
+if(length($s)) {
+	push(@problems, $s . ' You tried to say: \\n ' . $msg);	#slash, then 'n', not newline
+}
+
+
+#
+# finally send the message
+#
+
+#splits a message into chunks
+#tries to prevent breaking links and words, at the expense of more processing power
+#TODO: maybe move into npbutil; pass wholemessage, msglimit, msgparts
+my $MSGLIMIT = 255;
+my $MAXPARTS = 6;	#maximum number of short messages
+#my $MAXLIMIT = $MSGLIMIT * $MAXPARTS;
+#updated: 2002.07.14.n0
+local *splitMessage = sub {
+	my $wholeMessage = $_[0];
+	return ($wholeMessage) if length($wholeMessage)&lt;$MSGLIMIT;	#no work needed for splitting short messages
+
+	my $len=length($wholeMessage);
+	my @result = ();
+	my $i;
+	my $count;
+
+	#split long message into separate messages,
+	#trying to keep words and links together
+	#
+	#steps:
+	#	1	break words apart, but treat a link as 1 word
+	#	1.1	find the links
+	#	1.2	split non-links into separate words
+	#	2	throw words back together, &quot;wrapping&quot; where needed
+
+
+	#step 1: break words apart, but treat a link as 1 word
+
+	#step 1.1: find the links
+	my @splitLinks = split(/(\[.*?\])/, $wholeMessage);
+	#splitLinks: even indices is non-link, odd indices is link
+
+	#step 1.2: split non-links into separate words
+	my @words;
+	$count = scalar(@splitLinks);
+	for($i=0;$i&lt;$count;++$i) {
+
+		#even indices are non-links
+		push @words, split(/\s+/, $splitLinks[$i]);
+
+		last unless ++$i&lt;$count;
+
+		#odd indices are links
+		push @words, $splitLinks[$i];
+
+	}
+	undef @splitLinks;
+
+
+	#step 2: throw words back together, &quot;wrapping&quot; where needed
+	my $curMsg = '';
+	my $curLen = 0;
+	$count = scalar(@words);
+	foreach my $word (@words) {
+		$curLen = length($curMsg);
+
+		if( (length($word)+$curLen) &lt;= $MSGLIMIT ) {
+			#new word will fit in mini-message, so just append it
+			$curMsg .= $word.' ';
+
+		} else {
+			#no more room, so start a new line
+
+			#ensure new word can fit in a message (which it only very rarely wouldn't)
+			if( length($word) &lt;= $MSGLIMIT ) {
+				push(@result, substr($curMsg,0,length($curMsg)-1)) if length($curMsg)&gt;1;	#kill the trailing space
+				$curMsg = $word.' ';
+
+			} else {
+				#force ultra-long word to break
+
+				#this can be slightly improved:
+				#	if a link, try to keep target, and split up display
+				#	if a word, try splitting on non-letters
+
+				my $remainder;
+				if( $curLen &lt;= $MSGLIMIT ) {
+					#finish off current mini-message with first part of long word
+					$i=$MSGLIMIT-$curLen;
+					push(@result, $curMsg . substr($word, 0, $i));
+					$remainder = substr($word, $i);
+				} else {
+					$remainder = $word;
+				}
+
+				#split long word into parts until it can fit into a mini-message
+				while( length($remainder) &gt; $MSGLIMIT ) {
+					push(@result, substr($remainder,0,$MSGLIMIT));
+					$remainder = substr($remainder,$MSGLIMIT);
+					last if scalar(@result)&gt;=$MAXPARTS;
+				}
+
+				if(length($remainder)) {
+					#the leftovers start the next mini-message
+					$curMsg = $remainder.' ';
+				} else {
+					#no leftovers
+					$curMsg = '';
+				}
+
+			}
+
+		}
+
+		last if scalar(@result)&gt;=$MAXPARTS;
+	}
+
+	push(@result, substr($curMsg,0,length($curMsg)-1)) if (length($curMsg)&gt;1) &amp;&amp; (scalar(@result)&lt;$MAXPARTS);	#kill the trailing space
+
+	#remove leading and trailing literal '\n'
+	foreach(@result) {
+		s/^\\n //;
+		s/ \\n$//;
+	}
+
+	return @result;
+
+};
+
+my @msgs = splitMessage($msg);
+my $i;
+my @getters;	#groups and users that got message
+
+#send to groups archive
+unless($isBorgedFull) {	#borged users may only speak to themselves
+foreach $i (keys(%groups)) {
+	next if $groups{$i}&lt;0;
+	push(@getters, $i);	#count as 1 for group
+	next if $groups{$i}==0;
+	next if $debug;
+	foreach(@msgs) {
+		$DB-&gt;sqlInsert('message',{
+			'msgtext' =&gt; $_,
+			'author_user' =&gt; $aid,
+			'tstamp' =&gt; $sendTime,
+			'for_user' =&gt; $i,
+			'for_usergroup' =&gt; $i,	#don't bother with ($i || $fromGroup) since $i is never going to be 0
+		});
+	}
+}
+}
+
+#send to users
+my $triedSendWhileBorged=0;
+my $forUG;
+my $isArchived;
+foreach $i (keys(%users)) {
+
+	next if $users{$i}&lt;0;
+
+	$forUG=$users{$i};
+	if($i==$UID) {
+		#the for-group is really just a random recipient of the message
+		#this is far from perfect, but there isn't a way to store all recipients, so this will have to do
+		#if the msg was forced-gotten, then this was already done; but this is for the normal case
+		$forUG ||= pickRandomForGroup();
+		$isArchived=$selfArchive;
+	} else {
+		if($isBorgedFull) {
+			#fully borged users may only speak to themselves
+			$triedSendWhileBorged=1;
+			next;
+		}
+		$isArchived=0;
+		
+	}
+	$forUG ||= $fromGroup;
+
+	push(@getters, $i) if $users{$i}==0;	#only list people that aren't in a UG (otherwise, UG recipient list would be quite large)
+
+	next if $debug;
+
+	foreach(@msgs) {
+		$DB-&gt;sqlInsert('message',{
+			'msgtext' =&gt; $_,
+			'author_user' =&gt; $aid,
+			'tstamp' =&gt; $sendTime,
+			'for_user' =&gt; $i,
+			'for_usergroup' =&gt; $forUG,
+			'archive' =&gt; $isArchived,
+		});
+		#message_id is auto
+		#room is 0
+		#fullmessage_id was never implemented
+	}
+
+}
+push(@problems, 'It feels lonely in the deepest depth of EDB\'s massive stomach. (Since you are currently fully borged, you may only send messages to yourself.)') if $isBorgedFull &amp;&amp; $triedSendWhileBorged;
+
+
+#removed 2002.07.18.n4 because special case of own msg was folded into general case of recipients
+##send to author (but only if they didn't already get it)
+#if( (defined $ccSelf) &amp;&amp; !((exists $users{$aid}) &amp;&amp; ($users{$aid}!=-1) ) ) {
+#	my @selfmsgs = splitMessage($ccSelf);
+#	foreach(@selfmsgs) {
+#		$DB-&gt;sqlInsert('message',{
+#			'msgtext' =&gt; $_,
+#			'author_user' =&gt; $aid,
+#			'tstamp' =&gt; $sendTime,
+#			'for_user' =&gt; $aid,
+#
+#			#the for-group is really just a random recipient of the message
+#			#this is far from perfect, but there isn't a way to store all recipients, so this will have to do
+#			'for_usergroup' =&gt; ( (keys(%users))[0] || $fromGroup),
+#		});
+#	}
+#} else {
+#	undef $ccSelf;
+#}
+
+#inform user of any problems
+#	since these are sent back to the sending user, increase the maximum message length
+if(scalar(@problems)) {
+	my $rootUser = getNode('root','user','light') || undef;
+	$rootUser = (defined $rootUser) ? ($rootUser-&gt;{node_id} || 0) : 0;
+	$MAXPARTS+=2;	#ick, changing global constants
+	foreach my $prob (@problems) {
+		foreach(splitMessage($prob)) {
+			$DB-&gt;sqlInsert('message',{
+				'msgtext' =&gt; $_,
+				'author_user' =&gt; $rootUser,
+				'for_user' =&gt; $UID,	#the actual user gets the error(s), not the author we say is sending the message
+			});
+		}
+	}
+	$MAXPARTS-=2;	#ick, changing global constants
+}
+
+
+#link to groups and users that were messaged
+#parameters: node_id of user, optional alternate text to display
+local *linkU = sub {
+	my $id = $_[0];
+	my $altDisp = $_[1] || undef;
+	return '&lt;em title=&quot;sendPrivateMessage (htmlcode)&quot;&gt;!!! nobody !!!&lt;/em&gt;' unless $id;
+	return '&lt;a href=' . urlGen({node_id=&gt;$id}) . '&gt;' . ((defined $altDisp) ? $altDisp : getCached($id,1)-&gt;{title}) . '&lt;/a&gt;';
+};
+
+
+#
+#sent /msg information
+#
+
+#if multiple messages sent at same time (such as through the WU header area), find the query param to use
+my $qpm = 'sentmessage';
+if( defined $query-&gt;param($qpm) ) {
+	my $i=0;
+	while(defined $query-&gt;param($qpm.$i) ) {
+		++$i;
+	}
+	$qpm=$qpm.$i;
+}
+foreach(@msgs) {
+	#escape for sender's display
+	s/&lt;/&amp;lt;/g;
+	s/&gt;/&amp;gt;/g;
+}
+my $m = 'you said &quot;' . join('&quot;, &quot;', @msgs) . '&quot;';
+$m .= ' as '.linkU(getCached($aid,1)-&gt;{node_id}) if $aid!=$UID;
+unless(scalar(@getters)) {
+	$m .= ' to nobody';
+#	$m .= ' else' if $userCount;	#this happens if /msg goes to nobody (example: invalid user name), but cc-ing self
+} else {
+	#TODO allow only certain recipients to not be shown
+	#TODO loop though list anonrecipient, create hash, foreach loop checks hash to see if that recipient is anonymous
+	my $anonRecipient = boolParam('anonrecipient');
+	foreach(@getters) {
+		$_ = ($anonRecipient) ? linkU($_,'?') : linkU($_);
+	}
+	$m .= ' to ' . join(', ', @getters);
+}
+my $partCount=scalar(@msgs);
+$m .= ' (sent ';
+$m .= $partCount.' message parts ' unless $partCount==1;
+$m .= ' to '.$countUserGot.' noder'.($countUserGot==1?'':'s');
+$m .= ' and '.$countGroupGot.' group'.($countGroupGot==1?'':'s') unless $countGroupGot==0;
+#$m .= ' and yourself' if $ccSelf;
+if($numBlocked) {
+	$m .= ' (You were blocked by '.$numBlocked.' user'.($numBlocked==1?'':'s').' total';
+	if( $blockedInfoMethod==1 || $blockedInfoMethod==2 ) {
+		#inform who blocked
+		my @bReason;
+		push(@bReason, $numBlockedGroup.' ignored the usergroup(s)') if $numBlockedGroup;
+		push(@bReason, scalar(@whoBlocked).' ('.join(', ', map { linkU($_-&gt;{node_id}, $_-&gt;{title}) } @whoBlocked).') ignored you') if scalar(@whoBlocked);
+		$m .= ': '.join(', ', @bReason) if scalar(@bReason);	#note: should always be true, but just in case
+
+	}
+	$m .= '.)';
+}
+$m .= ')';
+$m .= ' (Note: no message was actually sent, since debug mode was enabled.)' if $debug;
+
+$query-&gt;param($qpm,$m);	#inform in chatterbox
+
+
+#
+#finalize
+#
+
+delete $HTMLVARS{msgparams} unless $keepParams;	#this htmlcode's parameters no longer needed
+
+return $showWhatSaid ? $m : undef;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>sendPrivateMessageOld</title>
+</node>

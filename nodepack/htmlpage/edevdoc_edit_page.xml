@@ -1,0 +1,28 @@
+<node>
+  <parent_container>18</parent_container>
+  <pagetype_nodetype>854232</pagetype_nodetype>
+  <core>0</core>
+  <page>&lt;p align=right&gt;
+[% linkNode($NODE,'display', {displaytype=&gt;'display'}) %]
+&lt;p&gt;
+&lt;h2&gt;title:&lt;/h2&gt;
+[{textfield:title}]
+&lt;p&gt;
+&lt;h2&gt;Edit the document text:&lt;/h2&gt;
+[{textarea:doctext}]</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-05-04 03:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1038521</htmlpage_id>
+  <hits>0</hits>
+  <node_id>1038521</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
+  <author_user>220</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>edevdoc edit page</title>
+  <mimetype></mimetype>
+</node>

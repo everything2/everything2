@@ -1,0 +1,61 @@
+<node>
+  <doctext>[%
+return unless htmlcode('isEditor' ) ;
+
+my $SETTINGSNODE = getNode( 'Disabled actions' , 'setting' ) ;
+my $disabled = getVars( $SETTINGSNODE ) ;
+
+my $id = $query -&gt; param( 'donode' ) ;
+$id ||= $query -&gt; param( 'lastnode_id' ) ;
+my $donode = getNodeById( $id ) ;
+my $nodetype = $$donode{ type_nodetype } ;
+my %options = ( b =&gt; 'bookmarking' , c =&gt; 'editor cools' , w =&gt; 'weblogging' , a =&gt; 'adding to categories (why?)' ,
+	L =&gt; 'changes to these settings (careful: hard to undo)' , O =&gt; 'nodetype options for this node' ) ;
+
+if ( $query -&gt; param( 'set' ) ) {
+	foreach my $x ( $id , $nodetype ) {
+		delete $$disabled{ $x } ;
+		my $setting = '' ;
+		foreach ( keys %options ) {
+			$setting .= $query -&gt; param( $_.$x ) ;
+		}
+		$$disabled{ $x } = $setting if $setting ;
+	}
+	setVars( $SETTINGSNODE , $disabled ) ;
+}
+
+my $str = htmlcode( 'openform' , 'fred' ) ;
+foreach ( [ $id , $$donode{ type }{ title } . ' ' . linkNode( $donode ) ] ,
+		[ $nodetype , 'nodetype ' . linkNode( $$donode{ type } ) ] ) {
+	my $x = $$_[0] ;
+	$str .= &quot;\n&lt;p&gt;For $$_[1] disable:&lt;/p&gt;\n&lt;p&gt;&quot; ;
+	foreach ( 'b' , 'c' , 'w' , 'a' , 'L' , 'O' ) {
+		my $checked = ' checked=&quot;checked&quot;' if $$disabled{ $x } =~ /$_/ ;
+		$str .= qq!\n&lt;label&gt;&lt;input type=&quot;checkbox&quot; name=&quot;$_$x&quot; value=&quot;$_&quot;$checked&gt;$options{ $_ }&lt;/label&gt;&lt;br&gt;!
+			if $options{ $_ } ;
+	}
+	$str .= &quot;\n&lt;/p&gt;&quot; ;
+	$options{ O } = 'these settings when individual nodes have their own' ;
+}
+return $str . '&lt;p&gt;&lt;input type=&quot;hidden&quot; name=&quot;donode&quot; value=&quot;'.$id.'&quot;&gt;
+&lt;input type=&quot;submit&quot; name=&quot;set&quot; value=&quot;Sumbit&quot;&gt;
+&lt;/p&gt;
+&lt;p&gt;Note: these settings only disable the links in page headers, not the functions themselves.
+&lt;/p&gt;
+&lt;/form&gt;' ;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-11-21 18:31:51</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1988894</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1988894</document_id>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>Disable actions</title>
+</node>

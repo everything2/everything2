@@ -1,0 +1,97 @@
+<node>
+  <doctext>&lt;h3&gt;Writeups in Node Heaven with C!s&lt;/h3&gt;
+&lt;p&gt;If a writeup is display multiple times, it means it has (had) multiple C!s.&lt;/p&gt;
+
+[%
+my $email = $query-&gt;param('e');
+
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+my $rows;
+my $str;
+my $dbrow;
+my $queryText;
+my $accountCutoff = 10;
+my $innerdbrow;
+my $innerrows;
+
+$queryText = 'select heaven.* from coolwriteups,heaven where coolwriteups_id=node_id AND author_user='.$$USER{node_id};
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+my $row;
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   $str .= $$row[2] . '&lt;br /&gt;';
+}
+
+$str .= &quot;&lt;p&gt;NOTE: If there are errors below it is because I am testing multiple things in my sandbox. The code to display the C!s in node heaven works properly.&lt;/p&gt;&lt;hr&gt;&quot;;
+
+return $str;
+%]
+
+[%
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+my $rows;
+my $str;
+my $dbrow;
+my $queryText;
+my $accountCutoff = 10;
+my $innerdbrow;
+my $innerrows;
+
+$str .= '&lt;hr&gt;&lt;p&gt;Testing area - [these are not the droids you are looking for|you can ignore this]&lt;/p&gt;';
+
+if ($$USER{user_id} = 1323377)
+{
+#$str .= 'HERE!!!!!!!!!!!!!!!!!';
+#adjustExp($USER, 13354);
+#$$USER{GP} = 24;
+#updateNode($USER, -1);
+}
+#$queryText = 'update user set experience=28599 where user_id=1323377';
+#$rows = $dbh-&gt;prepare($queryText)
+#   or return $rows-&gt;errstr;
+#$rows-&gt;execute()
+#   or return $rows-&gt;errstr;
+#adjustExp($USER, -1);
+
+
+$queryText = 'select * from user where user_id='.$$USER{node_id};
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+my $row;
+my $i;
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   for($i = 0; $i &lt; 20; $i++)
+   {
+      if ($i != 2)
+      {
+         $str .= $$row[$i] . '&lt;br /&gt;';
+      }
+   }
+}
+
+return $str;
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-01-28 15:20:28</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1927589</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1927589</document_id>
+  <author_user>1323377</author_user>
+  <package>0</package>
+  <title>in10se's sandbox2</title>
+</node>

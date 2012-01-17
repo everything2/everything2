@@ -1,0 +1,50 @@
+<node>
+  <doctext>Do-na-touch!
+
+[{openform}]
+&lt;INPUT type=hidden name=confirmpage value=1&gt;
+[%
+    my @nodetypes = getNodeWhere({type_nodetype =&gt; 1 }, &quot;nodetype&quot;);
+    my $str;
+    my %TVERSIONS;
+    my %NEWVERSIONS;
+
+    if (my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;,'typeversion')) {
+        while (my $N = $csr-&gt;fetchrow_hashref) { $TVERSIONS{$$N{typeversion_id}} = 1 }
+        $csr-&gt;finish;
+    }
+if (defined $query-&gt;param('confirmpage')) {
+    foreach ($query-&gt;param) {
+        next unless /^typeify_(\d+)$/;
+        my $n_id = $1;
+        $NEWVERSIONS{$n_id} = 1;
+        if (not $TVERSIONS{$n_id}) {
+            $DB-&gt;sqlInsert(&quot;typeversion&quot;, { typeversion_id=&gt; $n_id, version =&gt; 1 });
+        }
+    }
+
+    foreach (keys %TVERSIONS) {
+        $DB-&gt;sqlDelete(&quot;typeversion&quot;, &quot;typeversion_id=$_&quot;) unless exists $NEWVERSIONS{$_};
+    }
+} else { %NEWVERSIONS = %TVERSIONS }
+foreach (@nodetypes) {
+    $str.=$query-&gt;checkbox('typeify_'.getId($_), exists($NEWVERSIONS{getId($_)}), 1, $$_{title}).&quot;&lt;br&gt;&quot;;
+}
+$str;
+%]
+[{closeform}]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-01-10 18:42:59</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>906163</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>906163</document_id>
+  <author_user>220</author_user>
+  <package>0</package>
+  <title>typeversion controls</title>
+</node>

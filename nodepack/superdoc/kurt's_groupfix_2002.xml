@@ -1,0 +1,73 @@
+<node>
+  <doctext>[%
+return &quot;&quot;;
+use Time::Local;
+
+my $str = &quot;&quot;;
+
+my $dbh = $DB-&gt;getDatabaseHandle();
+my $c = $dbh-&gt;prepare(&quot;select node_id from heaven where killa_user=329 and type_nodetype=117 and author_user!=329&quot;);
+$c-&gt;execute();
+
+while(my ($id) = $c-&gt;fetchrow())
+{
+  my $gt = 0;
+  my $tot = 1;  
+  my $noinsert = 0;
+
+  my $CHILD = getNodeById($id, 'force');
+  my $PARENT = getNodeById($$CHILD{parent_e2node}, 'force');
+
+  $str .= &quot;For child $$CHILD{title} ($$CHILD{node_id}, of parent $$PARENT{title} ($$PARENT{node_id}) ... &lt;br&gt;\n&quot;; 
+
+  my $child_date = $$CHILD{createtime};
+  my ($cyyyy, $cmm, $cdd, $chh, $cMM, $css) = ($child_date =~ /(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/);
+  my $child_seconds = 0 ;# timelocal($css, $cMM, $chh, $cdd, $cmm - 1, $cyyyy - 1900);
+  if ($cmm - 1 &lt; 0) { $str .= &quot;DANGER!!!&lt;BR&gt;&quot; } ;
+
+  foreach (@{ $PARENT-&gt;{group} }) 
+  { 
+
+    $noinsert = 1 if ($_ == $$CHILD{node_id});
+    my $date = getNodeById($_)-&gt;{createtime};
+    
+    my ($yyyy, $mm, $dd, $hh, $MM, $ss) = ($date =~ /(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/);
+
+    my $epoch_seconds = timelocal($ss, $MM, $hh, $dd, $mm - 1, $yyyy - 1900);
+    
+    if ($epoch_seconds &lt; $child_seconds)
+    {
+      #$str .= &quot;$$CHILD{node_id} was written after $_ &lt;br&gt;&quot;;
+      $gt++;
+    }
+    else
+    {
+      #$str .= &quot;$$CHILD{node_id} was written before $_ &lt;br&gt;&quot;;
+    }
+      $tot++;
+  }
+
+  
+  insertIntoNodegroup($PARENT, $USER, $CHILD, $gt+1) unless ($noinsert == 1);
+  $str .= &quot;SKIP&quot; if ($noinsert == 1);
+  $str .= &quot;Insert me after $gt ($tot)&lt;br&gt;&quot;;
+
+}
+
+$str;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2004-08-07 14:19:09</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1669496</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1669496</document_id>
+  <author_user>329</author_user>
+  <package>0</package>
+  <title>Kurt's GroupFix 2002</title>
+</node>

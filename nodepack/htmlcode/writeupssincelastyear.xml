@@ -1,0 +1,55 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-02-25 15:25:51</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>1975837</node_id>
+  <htmlcode_id>1975837</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($userID) = @_;
+
+# Ignore maintenance writeups such as [Broken Nodes] and [Edit these E2 Titles]
+my $notIn = &quot; AND node.node_id NOT IN (&quot;;
+my $firstIn = 1;
+
+foreach (values %HTMLVARS) {
+
+  # Look for numbers, and presume all numbers are node IDs
+  next unless /^\d+$/;
+
+  if ($firstIn) {
+    $firstIn = 0;
+    $notIn .= $_;
+  }
+  else {
+    $notIn .= ', ' . $_;
+  }
+}
+
+$notIn .= &quot;) &quot;;
+
+# No node restriction string if no maintenance nodes were found
+$notIn = &quot;&quot; if $firstIn;
+
+my $sqlStr = &quot;SELECT COUNT(*)
+              FROM node JOIN writeup ON writeup.writeup_id=node.node_id
+              WHERE publishtime &gt; (NOW() - INTERVAL 1 YEAR)
+	              AND author_user=$userID
+	              $notIn&quot;;
+
+my $dbh = $DB-&gt;getDatabaseHandle();
+my $qh = $dbh -&gt; prepare($sqlStr);
+$qh -&gt; execute();
+my ($numwriteups) = $qh -&gt; fetchrow();
+$qh -&gt; finish();
+
+return $numwriteups;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1394568</author_user>
+  <package>0</package>
+  <title>writeupssincelastyear</title>
+</node>

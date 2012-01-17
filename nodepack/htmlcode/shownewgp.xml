@@ -1,0 +1,95 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-10-20 15:05:56</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1959548</node_id>
+  <htmlcode_id>1959548</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($shownumbers, $isxml, $newwuonly) = @_;
+use POSIX;
+#send TRUE if you want people to see how much GP they gained/lost
+return if $$USER{user_id} == $HTMLVARS{guest_user};
+unless($$VARS{oldGP}) {
+	$$VARS{oldGP} = $$USER{GP};
+}
+
+return  if ($$VARS{oldGP} == $$USER{GP} and not $newwuonly);
+my $VSETTINGS = getVars(getNode('vote settings', 'setting'));
+
+my $str;
+my $header = $$VSETTINGS{showExpHeader};
+my $footer = $$VSETTINGS{showExpFooter};
+my $newGP = $$USER{GP} - $$VARS{oldGP};
+
+($header, $footer) = ('', '') if htmlcode('isZen');
+
+my $xmlstr;
+$xmlstr = '&lt;gpinfo&gt;' if $isxml;
+$xmlstr .= &quot;&lt;gpchange value=\&quot;$newGP\&quot;&gt;$$USER{GP}&lt;/gpchange&gt;&quot; if $isxml;
+
+$str.=$header;
+unless($newwuonly)
+{
+
+my $gpNotify = $newGP;
+
+if($newGP &gt; 0) {
+	$str.='Yay! You gained ';
+} else {
+        $$VARS{oldGP} = $$USER{GP};
+	return;
+	$str.='Ack! You lost ';
+	$newGP= -$newGP;	#Positize for display only
+#	$newGP= -$newGP * 13;	#AFD2006 times 13
+}
+
+#htmlcode('achievementsByType','egperience');
+
+use JSON;
+my $notification = getNode('GP','notification')-&gt;{node_id};
+if ($$VARS{settings}) {
+	if (%{ from_json($$VARS{settings})-&gt;{notifications} }-&gt;{$notification}) {
+		my $argSet = { amount =&gt; $gpNotify };
+		my $argStr = to_json($argSet);
+		my $addNotifier = htmlcode('addNotification', $notification,$$USER{user_id},$argStr);
+	}
+}
+
+if ($shownumbers) {
+  if ($newGP &gt; 1) {
+     $str.='&lt;strong&gt;'.$newGP.'&lt;/strong&gt; GP!';
+  } else {
+     $str.='&lt;strong&gt;1&lt;/strong&gt; GP.';
+  }
+} else {
+	$str.='GP!';
+}
+
+} # (end) unless($newwuonly)
+
+
+$$VARS{oldGP} = $$USER{GP};
+#reset the new GP flag
+
+use Everything::Experience;
+
+my $lvl = getLevel($USER)+1;
+#my $LVLS = getVars(getNode('level experience', 'setting'));
+#my $WRPS = getVars(getNode('level writeups', 'setting'));
+
+
+
+$xmlstr.='&lt;/gpinfo&gt;' if $isxml;
+
+return $xmlstr if $isxml;
+return $str.$footer;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <title>showNewGP</title>
+</node>

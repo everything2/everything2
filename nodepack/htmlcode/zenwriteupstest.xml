@@ -1,0 +1,85 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-12-13 08:30:29</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1977377</node_id>
+  <htmlcode_id>1977377</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $limit = $$VARS{num_newwus} || 15;
+
+#if(!exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) &amp;&amp; !exists($HTMLVARS{'group_content editors'}{$$USER{node_id}})){  my $blah = getNodeById(1217114); return $$blah{nltext};}
+
+my $UID = $$USER{user_id} || 0;
+my $isRoot = exists($HTMLVARS{'group_gods'}{$UID}) ;
+my $cansee = ($isRoot || exists($HTMLVARS{'group_content editors'}{$UID}));
+
+my $str = '&lt;ul id=&quot;writeup_list&quot;&gt;';
+
+my $nwf = getNodeById(1801407); # hard-coded Test NW Feeder nodelet (ktj's revised feeder)
+my @wucache = eval('my '.$$nwf{nltext});
+my ($found, $count, $iter)  = 0;
+
+
+if ($cansee) {
+  # Admins can suppress display of hidden/deleted writeups - LB 29Apr06
+  if ($query-&gt;param(&quot;gochange&quot;)) { # Only swap on a &quot;show&quot; command from NW
+    if ($query-&gt;param(&quot;nw_nojunk&quot;)) {
+      $$VARS{nw_nojunk} = 1;
+    } else {
+      $$VARS{nw_nojunk} = 0;
+    }
+  }
+}
+
+while($found &lt; $limit) {
+#	$iter++; &gt;&gt;&gt; Causes the miss-most-recent display bug.
+	my $N = $wucache[0][$iter];
+	last if $N==undef;	#possible since hidden things are skipped
+	$iter++;
+
+	if($$N{notnew}) {
+		next unless ($cansee); # had &quot;or $UID==$$N{author_user}&quot; in condition, but historically users don't see their hidden writeups -2s, 18Jul07
+                # Suppress hidden/deleted w/us, if so selected - LB 29Apr06
+                next if $$VARS{nw_nojunk};
+	} else {
+		++$found;
+	}
+
+	$str .= &quot;\n&lt;li&gt;\n\t&lt;span class='writeupmeta&quot;.($$N{notnew} ? ' wu_hide' : '').&quot;'&gt;\n\t\t&lt;span class='author'&gt;&quot;.linkNode($$N{author_user}, '', {lastnode_id=&gt;undef}).'&lt;/span&gt;';
+
+	if($cansee) {
+                if($$N{reputation}&lt;0) {
+                  $str .= 'R:'.$$N{reputation}.' ';
+                }
+		if($$N{notnew}){
+			$str .= &quot;\n\t\t&lt;span class='hidden'&gt;(H!)&lt;/span&gt;&quot;;
+	                $str .= &quot;\n\t\t&lt;span class='hide'&gt;(&lt;a href=&quot;.urlGen({'node_id'=&gt;$$NODE{node_id}, 'op'=&gt;'unhidewriteup', 'hidewriteup'=&gt;$$N{writeup_id}}).'&gt;un-h!&lt;/a&gt;)&lt;/span&gt;';
+		}
+		else{
+			$str .= &quot;\n\t\t&lt;span class='hide'&gt;(&lt;a href=&quot;.urlGen({'node_id'=&gt;$$NODE{node_id}, 'op'=&gt;'hidewriteup', 'hidewriteup'=&gt;$$N{writeup_id}}).'&gt;h?&lt;/a&gt;)&lt;/span&gt;';
+                }
+		$str .= &quot;\n\t\t&lt;span class='hidden'&gt;(...)&lt;/span&gt;&quot; if $DB-&gt;sqlSelect('notnew', 'newwriteup', &quot;node_id=$$N{writeup_id}&quot;) != $$N{notnew};        
+	        $str .=' (X)' if $DB-&gt;sqlSelect('count(*)', 'weblog', &quot;weblog_id=855769 and to_node=$$N{writeup_id} limit 1&quot;); # 855769 - node row hardcoded
+	}
+
+
+
+	$str .= &quot;\n\t\t&lt;span class='title'&gt;&lt;a href='&quot;.urlGenNoParams(getNode($$N{parent_e2node}),1).&quot;#node_id_&quot;.$$N{writeup_id}.&quot;'&gt;&quot;.$$N{parent_title}.&quot;&lt;/a&gt;&lt;/span&gt;
+\t\t&lt;span class='type'&gt;(&quot;.linkNode($$N{writeup_id}, $$N{type_title},{lastnode_id=&gt;undef}).&quot;)&lt;/span&gt;
+\t&lt;/span&gt;&quot;;
+	$str.= &quot;\n&lt;/li&gt;&quot;;
+
+}
+
+$str.='&lt;/ul&gt;';
+
+return $str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>zenwriteupstest</title>
+</node>

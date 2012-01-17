@@ -1,0 +1,43 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-09-17 10:19:55</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1990327</node_id>
+  <htmlcode_id>1990327</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># provide a settings link/widget for the nodelet named by the first argument
+# second argument is link/opener text
+
+my ($name, $text, $id, $safename) = @_;
+$id = $safename = $name ;
+my $safetext= $text;
+$safename =~ s/ /\+/g;
+$safetext =~ s/ /\+/g;
+$id =~ s/\W//g ;
+$id =lc($id);
+return linkNode(getNode('Nodelet Settings', 'superdoc'), $text,
+		{'#'=&gt;$id.'nodeletsettings', -id=&gt;&quot;$id\settingswidget&quot;,
+		-class=&gt;&quot;ajax $id\settingswidget:nodeletsettingswidget?showwidget=$id\settings:$safename,$safetext&quot;
+	}) unless $query -&gt; param('showwidget') eq &quot;$id\settings&quot; ;
+
+my $content = parseLinks(htmlcode($name.' nodelet settings', 'inwidget'))||&quot;(no settings for $name)&quot;;
+return qq'&lt;div id=&quot;$id\settingswidget&quot;&gt;'.
+# wrap in div because the script function activation stuff works on one element
+# and to provide an offset parent to put the widget in the right place
+	htmlcode('widget', &quot;&lt;fieldset&gt;&lt;legend&gt;$text&lt;/legend&gt;\n$content&lt;br&gt;\n&quot;.
+	$query -&gt; hidden('sexisgood','1').
+	# include ajax trigger because the first time it's not inserted together with the nodelet
+	$query -&gt; hidden(-name =&gt; 'ajaxTrigger', value=&gt;1,
+		class=&gt;&quot;ajax $id:updateNodelet:$safename&quot;).
+	$query -&gt; submit(&quot;submit$id&quot;,'Save').&quot;\n&lt;/fieldset&gt;\n&quot;,
+	'form', $text , {showwidget=&gt;&quot;$id\settings&quot;}).'&lt;/div&gt;';
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>nodeletsettingswidget</title>
+</node>

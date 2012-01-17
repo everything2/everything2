@@ -1,0 +1,46 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>5</pagetype_nodetype>
+  <core>R</core>
+  <page>&lt;b&gt;pagetype&lt;/b&gt;: 
+[%
+	my $N = $DB-&gt;getNodeById($$NODE{pagetype_nodetype}, 'light');
+	linkNode $N;
+%]&lt;br&gt;
+&lt;b&gt;parent container&lt;/b&gt;:
+[% return linkNode ($$NODE{parent_container}) if $$NODE{parent_container};
+&quot;&lt;i&gt;none&lt;/i&gt;&quot;;
+%]
+&lt;br&gt;
+&lt;b&gt;displaytype&lt;/b&gt;:
+[&quot;$$NODE{displaytype}&quot;]
+&lt;br&gt;
+&lt;b&gt;theme&lt;/b&gt;:
+[%
+unless ($$NODE{ownedby_theme}) {
+  return &quot;&lt;i&gt;this htmlpage does not belong to a theme&lt;/i&gt;&quot;;
+}
+my $THEME = getNode $$NODE{ownedby_theme};
+linkNode($THEME);
+
+%]
+&lt;br&gt;
+&lt;b&gt;MIMEtype&lt;/b&gt;: [%&quot;$$NODE{mimetype}&quot;%]
+&lt;p&gt;[{listcode:page}]
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>65</htmlpage_id>
+  <hits>1</hits>
+  <node_id>65</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>htmlpage display page</title>
+  <mimetype></mimetype>
+</node>

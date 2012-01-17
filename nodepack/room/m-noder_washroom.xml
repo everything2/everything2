@@ -1,0 +1,34 @@
+<node>
+  <roomdata_id>553133</roomdata_id>
+  <doctext>&lt;font size=1&gt;(whoosh of toilet flushing, oh so gently)&lt;/font&gt;&lt;p&gt;
+&lt;i&gt;&quot;Sir, would you like a hot towel for your hands or neck?&quot;&lt;/i&gt;&lt;p&gt;
+[M-Noder]: &lt;b&gt;Thank you Jeeves, yes please.&lt;/b&gt;&lt;p&gt;
+&lt;i&gt;&quot;There you go sir, is there anyplace that I can preprogram the [M-Noder Executive Elevator] for you?&quot;&lt;/i&gt;&lt;p&gt;
+[M-Noder]: &lt;b&gt; [The Acolyte Observation Deck], please.  I do &lt;i&gt;so&lt;/i&gt; enjoy watching the little [Junior Noders] scurrying around, noding and voting, until they can get &quot;cool writeup&quot; powers...  *chuckle*&lt;/b&gt;&lt;p&gt;
+&lt;i&gt;*modest chuckle* &quot;Very good, sir.&quot;&lt;/i&gt;&lt;p&gt;
+&lt;font size=1&gt;(whoosh of elevator, rising stealthily at 400mph)&lt;/font&gt;&lt;p&gt;
+&lt;i&gt;&quot;The elevator is here for you sir.&quot;&lt;/i&gt;&lt;p&gt;
+[M-Noder]: &lt;b&gt;Thank you, Jeeves.&lt;/b&gt; (plunks 10 GP in a china bowl next to Jeeves)&lt;p&gt;
+&lt;i&gt;&quot;Thank [Jet-poop|you], sir!&quot;&lt;/i&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-05-16 15:00:02</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <lastused_date>2011-07-14</lastused_date>
+  <hits>260</hits>
+  <node_id>553133</node_id>
+  <criteria>my $numwr = $$VARS{numwriteups};
+$numwr ||= 0;
+return unless $numwr  &gt;= 1000 or isGod($USER);
+
+1;</criteria>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>545241</type_nodetype>
+  <document_id>553133</document_id>
+  <author_user>315</author_user>
+  <abreviation></abreviation>
+  <package>0</package>
+  <title>M-Noder Washroom</title>
+</node>

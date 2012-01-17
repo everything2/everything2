@@ -1,0 +1,71 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-04-17 12:53:49</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1982638</node_id>
+  <htmlcode_id>1982638</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#############################################################################
+#	Sub
+#		printHeader
+#
+#	Purpose
+#		For each page we serve, we need to pass standard HTML header
+#		information.  If we are script, we are responsible for doing
+#		this (the web server has no idea what kind of information we
+#		are passing).
+#
+#	Parameters
+#		$datatype - (optional) the MIME type of the data that we are
+#			to display	('image/gif', 'text/html', etc).  If not
+#			provided, the header will default to 'text/html'.
+#
+sub printHeader
+{
+	my ($datatype, $page, $lastnode) = @_;
+
+ 	my $len = length $page;
+	# default to plain html
+	$datatype ||= &quot;text/html&quot;;
+	my @cookies = ();
+	if ($lastnode &amp;&amp; $lastnode &gt; 0) {
+	#	push @cookies, $query-&gt;cookie( -name=&gt;'lastnode_id', -value=&gt;$lastnode);
+		push @cookies, $query-&gt;cookie( -name=&gt;'lastnode_id', -value=&gt;'');
+
+	} elsif ($lastnode == -1) {
+
+	} else {
+		push @cookies, $query-&gt;cookie('lastnode_id', '');
+	}
+	if ($$USER{cookie}) {
+		push @cookies, $$USER{cookie};
+	}
+	
+	if($ENV{SCRIPT_NAME}) {
+		my $dsp = $query-&gt;param('displaytype');
+		$dsp ||= &quot;display&quot;;
+
+		if($dsp eq &quot;display&quot; and $$NODE{type}{title} eq 'node_forward') {
+			print $query-&gt;redirect(
+			-location=&gt;urlGenNoParams (getNode($NODE{doctext}),1),
+			-nph=&gt;1, -status=&gt;303);
+			return &quot;&quot;;
+		}
+
+		if (@cookies) {
+			$query-&gt;header(-type=&gt; $datatype, 
+		 		-cookie=&gt;\@cookies, -content_length =&gt; $len);
+		} else {
+			$query-&gt;header(-type=&gt; $datatype, -content_length =&gt; $len);
+		}
+	}
+}</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <title>printHeaderTest</title>
+</node>

@@ -1,0 +1,67 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-01-20 00:38:57</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>4</hits>
+  <node_id>1989280</node_id>
+  <htmlcode_id>1989280</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>$$VARS{fxDuration} = '1' if (delete $$VARS{notransitions});
+
+my $lastnode = $$NODE{node_id};
+$lastnode = $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
+$lastnode = $query-&gt;param(&quot;lastnode_id&quot;)||0
+	if $$NODE{title} eq 'Findings:' &amp;&amp; $$NODE{type}{title} eq 'superdoc';
+
+my $e2 = &quot;node_id: $$NODE{node_id}&quot;;
+$e2 .= &quot;, lastnode_id: $lastnode&quot;;
+$e2 .= ', ignoreMissingLibraries: 1' if $HTMLVARS{ignoreMissingJsLibraries};
+
+my $cookie;
+foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
+	if ($$USER{title} ne 'Guest User'){
+		$$VARS{$_} = $cookie if $cookie = $query -&gt; cookie($_);
+		delete $$VARS{$_} if $cookie eq '0';
+	}
+	if ($$VARS{$_}){
+		my $quot = '&quot;' if $$VARS{$_} ne int $$VARS{$_};
+		$e2 .= &quot;, $_: $quot$$VARS{$_}$quot&quot;;
+	}
+}
+
+my $min = '.min' unless $HTMLVARS{isDevServer};
+my $libraries = qq'&lt;script src=&quot;http://code.jquery.com/jquery-1.4.4$min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
+# mark as guest but only in non-canonical domain so testing and caching both work
+my $compilerPath = '/js/GuestJavascript.js';
+
+unless ($$USER{title} eq 'Guest User'){
+	$libraries .= '
+	&lt;script src=&quot;/js/jquery-ui.min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
+	$compilerPath = '/node/jscript/Javascript+Compiler?a=9' ; # change this to force update
+}
+
+$libraries .= &lt;&lt;LIBS;
+	&lt;script src=&quot;/js/jquery.ba-bbq$min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+LIBS
+
+$libraries .= &lt;&lt;DEVLIBS . htmlcode('nagger') if $HTMLVARS{isDevServer};
+	&lt;script src=&quot;/stars/jquery.MetaData.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+	&lt;script src=&quot;/node/jscript/star+script&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+DEVLIBS
+
+return &lt;&lt;ENDJS;
+	&lt;script type='text/javascript'&gt;
+		e2 = {$e2};
+	&lt;/script&gt;
+	$libraries
+	&lt;script src='$compilerPath' type='text/javascript'&gt;&lt;/script&gt;
+ENDJS
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>static javascript</title>
+</node>

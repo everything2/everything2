@@ -1,0 +1,35 @@
+<node>
+  <doctext>[{schemahead}]
+&lt;xs:element name=&quot;node&quot;&gt;
+  &lt;xs:complexType&gt;
+    &lt;xs:sequence&gt;
+      &lt;xs:element ref=&quot;type&quot;/&gt;
+      &lt;xs:element ref=&quot;title&quot;/&gt;
+      &lt;xs:element ref=&quot;author&quot;/&gt;
+      &lt;xs:element ref=&quot;info&quot;/&gt;
+    &lt;/xs:sequence&gt;
+  &lt;/xs:complexType&gt;
+&lt;/xs:element&gt;
+
+&lt;xs:element name=&quot;type&quot; type=&quot;xs:string&quot;/&gt;
+&lt;xs:element name=&quot;title&quot; type=&quot;xs:string&quot;/&gt;
+&lt;xs:element name=&quot;author&quot; type=&quot;xs:string&quot;/&gt;
+&lt;xs:element name=&quot;info&quot; type=&quot;xs:string&quot;/&gt;
+[{schemafoot}]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-02-24 23:16:59</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1259759</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1258942</type_nodetype>
+  <document_id>1259759</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <schema_extends>0</schema_extends>
+  <e2schema_id>1259759</e2schema_id>
+  <title>default xmltrue schema</title>
+</node>

@@ -1,0 +1,444 @@
+<node>
+  <doctext>body{
+	background-color:#eef1ee;
+
+}
+
+a{
+        color:#334433;
+}
+
+a:hover{
+	color:#000;
+}
+
+/* background fix */
+
+#homenodetext{
+	background-color:#f8faf8;
+}
+
+#cooluserpicks, #staff_picks, #creamofthecool{
+	width:20%;
+	float:left;
+	margin:10px;
+	clear:both;
+}
+
+
+
+
+#cooluserpicks, #creamofthecool, #frontpage_news, #staff_picks{
+	margin-bottom:10px;
+	background-color:#f8faf8;
+	padding:0px;
+	margin:10px;
+}
+
+#cooluserpicks h3, #creamofthecool h3, #frontpage_news_title, #staff_picks h3{
+	background-color:#343;
+	font-weight:bold;
+	font-size:110%;
+	margin:0px;
+	width:99%;
+	padding:3px;
+}
+
+
+#cooluserpicks h3, #creamofthecool h3 a, #frontpage_news_title a, #staff_picks h3 a {
+	color:#FFF;
+	text-decoration:none;
+}
+
+.weblog_item{
+	margin-bottom:24px;
+}
+
+.wl_text{
+	background-color:#fff;
+	font-size:90%;
+}
+
+.wl_date, .wl_author{
+	font-size:78%;
+}
+
+#homenodeheader dl dt {
+	background-color:#232;
+	color:#FFF;
+}
+
+body, div, p, th, td, li, dd {
+	font-family: arial, lucida, sans serif;
+	font-size: 12px; 
+}
+
+h1 {
+	font-size: 130%;
+	font-weight: bold;
+}
+
+h2 {
+	font-size: 110%;
+	font-weight: bold;
+}
+
+h3 {
+	font-size: 100%;
+	font-weight: bold;
+}
+
+ul {
+	list-style-type:none;
+	list-style-type:lower-roman; /*hack, cause most browsers only recognize list-style-type:disc; */
+}
+
+big {
+	font-size: 110%;
+}
+
+small {
+	font-size: 90%;
+}
+
+#header {
+	height: 54px;
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color:#232;
+	position:fixed;
+	z-index:99; /* 5 gajillion*/
+	overflow:hidden;
+	background-image:url('http://i37.tinypic.com/2qvgrr4.jpg');
+	background-position:top left;
+	background-attachment:fixed;
+	background-repeat:no-repeat;
+}
+
+#wrapper {
+	padding-top: 54px;
+}
+
+#mainbody {
+	position: relative;
+	float: left;
+	width: 100%;
+}
+
+#sidebar {
+	position: relative;
+	float: left;
+	width: 200px;
+}
+
+#wrapper {
+	padding-right: 200px;	
+}
+
+#sidebar {
+	margin-right: -100%;
+	margin-left: 5px;
+}
+
+
+.nodelet .nodelet_title{
+	background-color:#343;
+	color:#FFF;
+        text-align:left;
+	width:97%;
+	padding:3px;
+	margin:0px;
+}
+
+#footer {
+	clear: both;
+	width: 100%;
+	text-align: center;
+	padding-top: 2px;
+}
+
+
+
+
+pre {
+	display: block;
+	overflow: auto;
+}
+
+#message, .writeup_title input[type=text]{
+width:99%;
+}
+
+#e2logo {
+	float: left;
+	text-align: left;
+	font-size: 240%;
+	font-weight:bold;
+	margin-left: 20px;
+	font-variant:small-caps;
+	font-family:times new roman, times, serif;
+}
+#e2logo a{
+	color:#EEE;
+}
+#e2logo a:hover{
+	color:#FFF;
+}
+
+#metalinks {
+	margin: 2px;
+	padding:  0;
+	display: block;
+	clear: both;
+	text-align: center;
+	font-size: 80%;
+}
+
+#metalinks li {
+	display: inline;
+	padding-right: 5px;
+	margin-left: 5px;
+}
+
+#e2logo a:link, #e2logo a:visited {
+	text-decoration: none;
+}
+
+#searchform {
+	width: 410px;
+	float: right;
+	text-align: right;
+	padding-top: 5px;
+	background-color:#232;
+	color:#FFF;
+	font-weight:bold;
+}
+
+#searchform input {
+	float: left;
+	display:block;
+	margin-top: 5px;
+}
+
+#searchform label {
+	display: block;
+	float: right;
+	clear: right;
+	text-align: left;
+	width: 100px;
+}
+
+#searchfom input[type=checkbox] {
+	height: 10px;
+	margin-top: 0;
+}
+
+#searchform label input {
+	margin: 1px;
+}
+
+.nodelet {
+	clear: both;
+	width: 200px;
+	padding: 0px;
+	word-wrap: break-word;
+	margin-bottom: 8px;
+	background-color:#FFF;
+	overflow:auto;
+	background-image:url('http://i34.tinypic.com/iwrzmq.gif');
+	background-position:top left;
+	background-repeat:no-repeat;
+}
+
+.nodelet h2 {
+	display: block;
+	margin: 0 -2px;
+
+}
+
+.writeup {
+	padding-bottom: 5px;
+	margin-bottom: 30px;
+	background-color:#f8faf8;
+}
+
+
+
+.createdby {
+	text-align: right;
+}
+
+.writeup_title {
+}
+
+.writeup_text {
+}
+
+#firmlink, #isalso {
+	font-size: 110%;
+	text-indent: 30px;
+}
+
+#softlinks{
+	display:block;
+}
+
+#softlinks table tr td{
+	width:100px;
+}
+
+#votebutton, #blabbutton {
+	display:block;
+}
+
+#killbutton {
+	float: right;
+	display:block;
+}
+
+#msgnum {
+	margin: 0;
+	margin-bottom: 5px;
+}
+
+#msgunarchived {
+	font-weight: bold;
+}
+
+#homenodepicbox {
+	width: 50%;
+	float: left;
+	clear: left;
+	overflow: auto;
+}
+
+#homenodeheader {
+	clear: both;
+}
+
+#homenodeheader dl {
+	display: block;
+	width: 50%;
+	float: right;
+	clear: right;
+	margin: 0;
+}
+
+#homenodeheader dt {
+	display: block;
+	padding: 2px;
+}
+
+#homenodeheader dd {
+	margin: 0;
+	padding: 2px;
+}
+
+hr.clear {
+	clear: both;
+	visibility: hidden;	
+}
+
+textarea {
+width: 100%;
+}
+
+#announcements {
+position: absolute;
+top: 20px;
+font-size: 85%;
+left: 300px;
+}
+
+#writeup_list {
+	list-style-type: none;
+	padding: 0;
+}
+
+#writeup_list li {
+	clear: both;
+	word-wrap: break-word;
+}
+
+#writeup_list span.writeupmeta {
+	display: block;
+	padding: 0px;
+	margin-bottom:6px;
+	width:200px;
+	background-color:#fbfbfb;
+}
+
+
+#writeup_list span .type {
+	font-size: 90%;
+	text-align: right;
+	float:right;
+	/*display: block;
+	word-wrap: no-wrap;
+	margin-bottom: 1px;
+	clear: right;*/
+}
+
+#writeup_list span.title {
+	float: left;
+	display: block;
+	clear: left;
+	margin-bottom: 1px;
+}
+
+#writeup_list span.author {
+	font-size: 90%;
+        font-weight:bold;
+	text-align:left;
+	display:block;
+	width:100%;
+}
+
+#writeup_list span.hidden, #writeup_list span.hide {
+	font-size: 85%;
+	margin-left: 3px;
+}
+
+big big big {
+	font-size: 600%;
+}
+
+#epicenter_zen {
+	float: right;
+	text-align: right;
+	font-size: 90%;
+}
+
+#nodelet_170070{
+	width:100%;
+	display:block;
+}
+
+#chatterlight_NW #nodelet_263{
+	width:400px;
+}
+
+#chatterlight_hints{
+	display:none;
+}
+
+#chatterlight_NW{
+	display:none;
+}</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-08-09 20:39:14</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1951996</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1854352</type_nodetype>
+  <document_id>1951996</document_id>
+  <author_user>1713388</author_user>
+  <package>0</package>
+  <title>STYLESHEET?!?!?!?!</title>
+</node>

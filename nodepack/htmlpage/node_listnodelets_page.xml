@@ -1,0 +1,92 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>7</pagetype_nodetype>
+  <core>0</core>
+  <page>[%
+$NODE = $GNODE = getNodeById($HTMLVARS{not_found}) unless $$NODE{type}{title} ne 'draft' or htmlcode('canseedraft',$NODE);
+'';
+%]&lt;table&gt;&lt;tr&gt;&lt;td&gt;
+   [{zensearchform}]
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;div class=&quot;nodelet&quot;&gt;
+&lt;div class=&quot;nodelet_title&quot;&gt;
+Nodelets
+&lt;/div&gt;
+[%
+# Duplicated wholesale from [nodelet meta-container]. This should be refactored,
+# probably much the way it is in pre-1.0
+#
+my $UID = $$USER{user_id};
+my $isAdmin = exists $HTMLVARS{'group_gods'}{$UID};
+my $isCE = $isAdmin || exists $HTMLVARS{'group_content editors'}{$UID};
+
+unless ( $$VARS{nodelets} ) {
+#
+#
+    #push default nodelets on
+#
+#
+    my ($DEFAULT) = $DB-&gt;getNodeById($HTMLVARS{'default_nodeletgroup'});
+#
+#
+    $$VARS{nodelets} = join ',', @{ $$DEFAULT{group} } ;
+}
+
+my $required = getNode('Master Control', 'nodelet') -&gt; { node_id } ;
+if( $isCE ) {
+  # If Master Control is not in the list of nodelets, add it right at the beginning. 
+	$$VARS{ nodelets } = &quot;$required,&quot;.$$VARS{ nodelets } unless $$VARS{ nodelets } =~ /\b$required\b/ ;
+}else{
+  # Otherwise, if it is there, remove it, keeping a comma as required
+    $$VARS{nodelets} =~ s/(,?)$required(,?)/$1 &amp;&amp; $2 ? &quot;,&quot;:&quot;&quot;/ge;
+}
+
+# Replace [New Writeups - Zen[nodelet]] (1868940) with [New Writeups[nodelet]] (263)
+$$VARS{nodelets} =~ s/\b1868940\b/263/g;
+# Ensure we didn't just cause New Writeups to occur twice
+$$VARS{nodelets} =~ s/(\b263\b.*),263\b/\1/g;
+
+my $nodelets = $HTMLVARS{ pagenodelets } || $$VARS{nodelets} ;
+my @nodelets = split(',',$nodelets) if $nodelets ;
+
+# Now, list them.
+#'&lt;ul&gt;' . ( join '', map {
+#  my $NODELET = getNode($_);
+#  '&lt;li&gt;'.linkNode($NODE, $NODELET-&gt;{title},
+#                  { displaytype =&gt; 'shownodelet',
+#                    nodelet_id =&gt; $_});
+#} @nodelets ) . '&lt;/ul&gt;';
+
+my $n = 1;
+'&lt;table width=&quot;100%&quot;&gt;' . ( join '', map {
+  my $NODELET = getNode($_);
+  $n = 1 - $n;
+  my $str;
+  if ($n) {
+    $str = '&lt;tr class=&quot;oddrow&quot;&gt;&lt;td&gt;';
+  } else {
+    $str = '&lt;tr class=&quot;evenrow&quot;&gt;&lt;td&gt;';
+  }
+  $str .= linkNode($NODE, $NODELET-&gt;{title},
+                   { displaytype =&gt; 'shownodelet',
+                     nodelet_id =&gt; $_}).'&lt;/t&gt;&lt;/tr&gt;';
+  } @nodelets) . '&lt;/table&gt;';
+%]
+
+&lt;/div&gt;</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-07-22 19:59:54</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1990032</htmlpage_id>
+  <hits>1</hits>
+  <node_id>1990032</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>listnodelets</displaytype>
+  <author_user>5603</author_user>
+  <package>0</package>
+  <ownedby_theme>1854183</ownedby_theme>
+  <title>node listnodelets page</title>
+  <mimetype></mimetype>
+</node>

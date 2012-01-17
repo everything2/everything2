@@ -1,0 +1,36 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-12-13 23:45:24</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1923963</node_id>
+  <htmlcode_id>1923963</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>return unless htmlcode('isEditor','');
+
+my @amount = (1, 10, 15, 20, 25, 30, 40);
+$$VARS{num_dreamwus} = 25 unless $$VARS{num_dreamwus};
+
+my $str = htmlcode('openform');
+
+$str.=&quot;\n\t&lt;input type='hidden' name='op' value='changewucount' /&gt;&quot;;
+$str.=&quot;\n\t&quot;.$query-&gt;hidden('gochange','foo');
+$str.=&quot;\n\t&lt;select name='amount'&gt;&quot;;
+for(@amount) {
+	$str.=&quot;\n\t\t&lt;option value=\&quot;$_\&quot;&quot;;
+	$str.=' selected=&quot;selected&quot;' if $_ == $$VARS{num_dreamwus};
+	$str.=&quot;&gt;$_&lt;/option&gt;&quot;;
+}
+$str.=&quot;\n\t&lt;/select&gt;&quot;;
+$str.=&quot;\n\t&quot;.$query-&gt;submit(&quot;sexisgood&quot;,&quot;show&quot;);
+$str.=&quot;\n\t&quot;.$query-&gt;checkbox(&quot;nw_nojunk&quot;, $$VARS{nw_nojunk}, '', &quot;No junk&quot;);
+$str.=&quot;\n&quot;.$query-&gt;end_form;
+$str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>dreamwuamount</title>
+</node>

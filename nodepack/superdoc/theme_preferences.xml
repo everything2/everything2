@@ -1,0 +1,347 @@
+<node>
+  <doctext>[%
+return '';
+    delete $$VARS{ 'themebodyBgcolor' };
+    delete $$VARS{ 'themebodyTextcolor' };
+    delete $$VARS{ 'themebodyLinkcolor' };
+    delete $$VARS{ 'themebodyVlinkcolor' };
+    delete $$VARS{ 'themebodyAlinkcolor' };
+    delete $$VARS{ 'themedocColor' };
+    delete $$VARS{ 'themeoddRowColor' };
+
+    delete $$VARS{ 'themelogoBorder' };
+    delete $$VARS{ 'themelogoBackground' };
+    delete $$VARS{ 'themelogoMainText' };
+    delete $$VARS{ 'themelogoAccentText' };
+
+    delete $$VARS{ 'themeheadingFont' };
+    delete $$VARS{ 'themelogoFont' };
+    delete $$VARS{ 'themelogoFontSize' };
+    delete $$VARS{ 'themenodeletBodyColor' };
+    delete $$VARS{ 'themetextFont' };
+    delete $$VARS{ 'themetextFontSize' };
+%]
+
+[{popwindow}]
+
+&lt;p&gt;&lt;strong&gt;Per-user E2 theme preferences.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;#canned&quot;&gt;Canned schemes&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Colors can be any valid HTML color: Either hex triplets 
+(&lt;tt&gt;&lt;b&gt;#&lt;font color=&quot;#c00000&quot;&gt;RR&lt;/font&gt;&lt;font color=&quot;#008000&quot;&gt;GG&lt;/font&gt;&lt;font color=&quot;#0000c0&quot;&gt;BB&lt;/font&gt;&lt;/b&gt;&lt;/tt&gt;) 
+or named colors (e.g. &lt;tt&gt;&lt;span duh_style=&quot;font-weight: bold; background-color: papayawhip;&quot;&gt;papayawhip&lt;/span&gt;&lt;/tt&gt;). 
+See [% linkNode( getNode( 'Named HTML Colors', 'superdoc' ) ) %] for some information that's actually useful. 
+&lt;/p&gt;
+
+&lt;p&gt;Font information is expressed in [Cascading Style Sheets|CSS] terms: 12 pixels is 
+expressed as &quot;&lt;tt&gt;12px&lt;/tt&gt;&quot;, 12 points is expressed as &quot;&lt;tt&gt;12p&lt;b&gt;t&lt;/b&gt;&lt;/tt&gt;&quot;. Font 
+names are comma-separated lists, such as &quot;&lt;tt&gt;Helvetica, Arial, sans-serif&lt;/tt&gt;&quot;, where 
+the browser tries to find the first one, then moves on down the list until it finds one 
+that's installed on your computer.
+&lt;/p&gt;
+
+[%
+#return '' if ( ! isGod( $USER ) );
+
+if ( $query-&gt;param( 'restore_defaults' ) || $query-&gt;param( 'canned' ) ) {
+    delete $$VARS{ 'ekw_bgcolor' };
+    delete $$VARS{ 'ekw_textcolor' };
+    delete $$VARS{ 'ekw_linkcolor' };
+    delete $$VARS{ 'ekw_vlinkcolor' };
+    delete $$VARS{ 'ekw_alinkcolor' };
+    delete $$VARS{ 'ekw_doccolor' };
+    delete $$VARS{ 'ekw_oddrowcolor' };
+    delete $$VARS{ 'ekw_textfont' };
+    delete $$VARS{ 'ekw_textfontsize' };
+    delete $$VARS{ 'ekw_headingfont' };
+
+    delete $$VARS{ 'ekw_logofont' };
+    delete $$VARS{ 'ekw_logofontsize' };
+    delete $$VARS{ 'ekw_logoborder' };
+    delete $$VARS{ 'ekw_logobackground' };
+    delete $$VARS{ 'ekw_logomaintext' };
+    delete $$VARS{ 'ekw_logoaccenttext' };
+
+    delete $$VARS{ 'themebodyBgcolor' };
+    delete $$VARS{ 'themebodyTextcolor' };
+    delete $$VARS{ 'themebodyLinkcolor' };
+    delete $$VARS{ 'themebodyVlinkcolor' };
+    delete $$VARS{ 'themebodyAlinkcolor' };
+    delete $$VARS{ 'themedocColor' };
+    delete $$VARS{ 'themeoddRowColor' };
+
+    delete $$VARS{ 'themelogoBorder' };
+    delete $$VARS{ 'themelogoBackground' };
+    delete $$VARS{ 'themelogoMainText' };
+    delete $$VARS{ 'themelogoAccentText' };
+}
+
+# Okay, there's better ways to do this.
+if ( $query-&gt;param( 'canned' ) eq 'jukka_dim' ) {
+    $$VARS{ 'ekw_bgcolor' }         = '#ddddbb';
+    $$VARS{ 'ekw_textcolor' }       = '#000000';
+    $$VARS{ 'ekw_linkcolor' }       = '#003366';
+    $$VARS{ 'ekw_vlinkcolor' }      = '#666633';
+    $$VARS{ 'ekw_alinkcolor' }      = '#cccc99';
+    $$VARS{ 'ekw_oddrowcolor' }     = '#cccc99';
+    $$VARS{ 'ekw_logobackground' }  = '#7e7e66';
+    $$VARS{ 'ekw_logomaintext' }    = '#ddddbb';
+    $$VARS{ 'ekw_logoaccenttext' }  = '#ffffff';
+    $$VARS{ 'ekw_logoborder' }      = '#003366';
+} elsif ( $query-&gt;param( 'canned' ) eq 'cheerful' ) {
+    $$VARS{ 'ekw_oddrowcolor' }     = '#e0e8f0';
+    $$VARS{ 'ekw_textcolor' }       = '#404040';
+    $$VARS{ 'ekw_linkcolor' }      = '#004080';
+    $$VARS{ 'ekw_alinkcolor' }      = '#f0f000'; # '#ffd000';
+    $$VARS{ 'ekw_vlinkcolor' }      = '#a0b0c0';
+
+    $$VARS{ 'ekw_logomaintext' }    = '#ffffff';
+    $$VARS{ 'ekw_logobackground' }  = '#3378cc';
+    $$VARS{ 'ekw_logoaccenttext' }  = '#f0f000'; # '#80c0ff';
+    $$VARS{ 'ekw_logoborder' }      = '#80c0ff';
+} elsif ( $query-&gt;param( 'canned' ) eq 'wharfinger' ) {
+    $$VARS{ 'ekw_oddrowcolor' }     = '#e0e0e0';
+    $$VARS{ 'ekw_textcolor' }       = '#101010';
+    $$VARS{ 'ekw_alinkcolor' }      = '#ffd000';
+    $$VARS{ 'ekw_vlinkcolor' }      = '#a0b0c0';
+    $$VARS{ 'ekw_logoaccenttext' }  = '#87ceeb';
+} elsif ( $query-&gt;param( 'canned' ) eq 'dark_green' ) {
+    $$VARS{ 'ekw_bgcolor' }         = '#002010';
+    $$VARS{ 'ekw_textcolor' }       = '#e0d0c0';
+    $$VARS{ 'ekw_linkcolor' }       = '#deb887';
+    $$VARS{ 'ekw_vlinkcolor' }      = '#907050';
+    $$VARS{ 'ekw_alinkcolor' }      = '#f5f5dc';
+    $$VARS{ 'ekw_oddrowcolor' }     = '#305040';
+
+    $$VARS{ 'ekw_logobackground' }  = '#105010';
+    $$VARS{ 'ekw_logomaintext' }    = '#e0d0c0';
+    $$VARS{ 'ekw_logoborder' }      = '#208020';
+#    $$VARS{ 'ekw_logoaccenttext' }  = '#ffff90'; # default
+} elsif ( $query-&gt;param( 'canned' ) eq 'dark_gray' ) {
+    $$VARS{ 'ekw_bgcolor' }         = '#181818';
+    $$VARS{ 'ekw_textcolor' }       = '#f0f0f0';
+    $$VARS{ 'ekw_linkcolor' }       = '#a0a0a0';
+    $$VARS{ 'ekw_vlinkcolor' }      = '#707070';
+    $$VARS{ 'ekw_alinkcolor' }      = '#f3f3f3';
+    $$VARS{ 'ekw_oddrowcolor' }     = '#404040';
+
+    $$VARS{ 'ekw_logobackground' }  = '#303030';
+    $$VARS{ 'ekw_logomaintext' }    = '#e0e0e0';
+    $$VARS{ 'ekw_logoborder' }      = '#909090';
+    $$VARS{ 'ekw_logoaccenttext' }  = '#ffff90'; # default
+} elsif ( $query-&gt;param( 'canned' ) eq 'muted_green' ) {
+    $$VARS{ 'ekw_bgcolor' }         = '#2f4f4f';
+    $$VARS{ 'ekw_oddrowcolor' }     = '#4f6f6f';
+    $$VARS{ 'ekw_textcolor' }       = '#f5f5f5';
+    $$VARS{ 'ekw_linkcolor' }       = '#c0d8c0';
+    $$VARS{ 'ekw_vlinkcolor' }      = '#c0c0d8';
+    $$VARS{ 'ekw_alinkcolor' }      = '#eee8aa';
+
+    $$VARS{ 'ekw_logoborder' }      = '#708090';
+    $$VARS{ 'ekw_logobackground' }  = '#183838';
+    $$VARS{ 'ekw_logomaintext' }    = '#eee8aa';
+    $$VARS{ 'ekw_logoaccenttext' }  = '#ffffe0';
+} elsif ( $query-&gt;param( 'canned' ) eq 'hotdog_stand' ) {
+    $$VARS{ 'ekw_bgcolor' }         = '#dddd00';
+    $$VARS{ 'ekw_oddrowcolor' }     = '#ffffff';
+    $$VARS{ 'ekw_textcolor' }       = '#000000';
+    $$VARS{ 'ekw_linkcolor' }       = '#ff0000';
+    $$VARS{ 'ekw_vlinkcolor' }      = '#880000';
+    $$VARS{ 'ekw_alinkcolor' }      = '#88ff00';
+
+    $$VARS{ 'ekw_logoborder' }      = '#000000';
+    $$VARS{ 'ekw_logobackground' }  = '#ff0000';
+    $$VARS{ 'ekw_logomaintext' }    = '#000000';
+    $$VARS{ 'ekw_logoaccenttext' }  = '#ffffff';
+}
+
+'';
+%]
+
+&lt;script language=&quot;JavaScript&quot;&gt;
+&lt;!--
+function set_ekw_field( field, value ) {
+    field.value = value;
+}
+//--&gt;
+&lt;/script&gt;
+
+&lt;noscript&gt;
+&lt;p&gt;&lt;font color=&quot;#a00000&quot;&gt;&lt;strong&gt;The &quot;swatch&quot; and &quot;restore&quot; 
+links will not work.&lt;/strong&gt; This is because your browser doesn't
+support JavaScript, or else you've got it turned off. &lt;/font&gt;&lt;/p&gt;
+&lt;/noscript&gt;
+
+&lt;table cellspacing=&quot;4&quot;&gt;
+
+[{openform2:ekwprefs}]
+
+&lt;input type=&quot;hidden&quot; name=&quot;set_values&quot; value=&quot;true&quot;&gt;&lt;/input&gt;
+
+&lt;style type=&quot;text/css&quot;&gt;
+&lt;!--
+th {
+    text-align: left;
+#    color: #202020;
+}
+--&gt;
+&lt;/style&gt;
+
+[%
+return '' if ( ! isGod( $USER ) );
+
+my $param_row = sub {
+    # $display_name     Name shown to user
+    # $param_name       Name of form field
+    # $user_field       Name of user setting in $$VARS
+    # $theme_field      Name of field in $$THEME
+    # $noswatch         Don't show a swatch link.
+    # $maxlength         Max value length
+    my ( $set, $display_name, $param_name, $user_field, $theme_field, $noswatch, $maxlength ) = @_;
+
+    $user_field = 'theme' . $theme_field;
+
+    $maxlength ||= 18;
+
+    my $val = $query-&gt;param( $param_name ) || $$VARS{ $user_field } || $$THEME{ $theme_field };
+    my $str = '';
+
+    $val =~ s/[^a-zA-Z0-9,#\- \:\;]//g;
+
+    if ( $set ) {
+        $$VARS{ $user_field } = $val;
+        $$THEME{ $theme_field } = $val;
+    }
+
+    $query-&gt;param( $param_name, $val );
+
+    $str .= &quot;&lt;tr valign=\&quot;top\&quot;&gt;\n&lt;td align=\&quot;right\&quot;&gt;&quot; . $display_name . &quot;&lt;/td&gt;\n&quot;;
+    $str .= &quot;&lt;td&gt;&quot; . $query-&gt;textfield( $param_name, $val, 12, $maxlength );
+    if ( $theme_field ) {
+        unless ( $noswatch ) {
+            $str .= &quot; (&lt;a alt=\&quot;Show &quot; . $display_name . &quot; color swatch\&quot; &quot;;
+            $str .= &quot;href=\&quot;javascript:pop_small( '/index.pl?node=color_swatch&amp;bgcolor=' + escape( &quot;;
+            $str .= &quot;document.forms.ekwprefs.&quot; . $param_name . &quot;.value ), 'color_swatch' );\&quot;&gt;swatch&lt;/a&gt;)\n&quot;;
+        }
+        $str .= &quot;&lt;/td&gt;\n&quot;;
+        $str .= &quot;&lt;td&gt;&quot; . $$THEME{ $theme_field };
+        $str .= &quot; (&lt;a href=\&quot;javascript:set_ekw_field( document.forms.ekwprefs.&quot; . $param_name . &quot;, &quot;;
+        $str .= &quot;'&quot; . $$THEME{ $theme_field } . &quot;' );\&quot;&gt;restore&lt;/a&gt;)&lt;/td&gt;\n&quot;;
+    } else {
+        $str .= &quot;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&quot;;
+    }
+    $str .= &quot;&lt;/tr&gt;\n\n&quot;;
+
+    return $str;
+};
+
+my $str = '';
+
+$str .= '
+&lt;tr bgcolor=&quot;#dddddd&quot;&gt;
+&lt;td class=&quot;oddrow&quot;&gt;&lt;b&gt;Attribute&lt;/b&gt;&lt;/th&gt;
+&lt;td class=&quot;oddrow&quot;&gt;&lt;b&gt;Value&lt;/b&gt;&lt;/th&gt;
+&lt;td class=&quot;oddrow&quot;&gt;&lt;b&gt;Theme Default&lt;/b&gt;&lt;/th&gt;
+&lt;/tr&gt;
+';
+
+my $set = ( $query-&gt;param( 'set_values' ) eq 'true' );
+
+# Fields
+$str .= &amp;$param_row( $set, 'Background Color',     'bgcolor',    'ekw_bgcolor',    'bodyBgcolor' );
+$str .= &amp;$param_row( $set, 'Nodelet Background Color',     'nodeletbgcolor',    'ekw_bgcolor',    'nodeletBodyColor' );
+$str .= &amp;$param_row( $set, 'Odd Row Color&lt;br&gt;(New Writeups, user search, user nodes)&lt;br&gt;',
+                     'oddrowcolor', 'ekw_oddrowcolor', 'oddRowColor' );
+$str .= &amp;$param_row( $set, 'Text Color',           'textcolor',  'ekw_textcolor',  'bodyTextcolor' );
+$str .= &amp;$param_row( $set, 'Unvisited Link Color', 'linkcolor',  'ekw_linkcolor',  'bodyLinkcolor' );
+$str .= &amp;$param_row( $set, 'Visited Link Color',   'vlinkcolor', 'ekw_vlinkcolor', 'bodyVlinkcolor' );
+$str .= &amp;$param_row( $set, 'Active Link Color',    'alinkcolor', 'ekw_alinkcolor', 'bodyAlinkcolor' );
+
+# What IS this, and who added it?! -- wharf
+#$str .= &amp;$param_row( $set, 'Doc Background Color &lt;br&gt;(not working yet, be patient)',
+#                     'doccolor', 'ekw_doccolor', 'docColor' );
+
+$str .= &quot;&lt;tr&gt;&lt;td colspan=\&quot;3\&quot;&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+
+$str .= &amp;$param_row( $set, 'Logo Border',      'logoborder',     'ekw_logoborder',     'logoBorder' );
+$str .= &amp;$param_row( $set, 'Logo/Nodelet Title Background',  'logobackground', 'ekw_logobackground', 'logoBackground' );
+$str .= &amp;$param_row( $set, 'Logo/Nodelet Title Text',   'logomaintext',   'ekw_logomaintext',   'logoMainText' );
+$str .= &amp;$param_row( $set, 'Logo Accent Text', 'logoaccenttext', 'ekw_logoaccenttext', 'logoAccentText' );
+
+$str .= &quot;&lt;tr&gt;&lt;td colspan=\&quot;3\&quot;&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+
+$str .= &amp;$param_row( $set, 'Text Font',             'textfont',     'ekw_textfont',     'textFont', 1, 48 );
+$str .= &amp;$param_row( $set, 'Text Font Size',        'textfontsize', 'ekw_textfontsize', 'textFontSize', 1 );
+$str .= &amp;$param_row( $set, 'Heading Font',          'headingfont',  'ekw_headingfont',  'headingFont', 1, 48 );
+$str .= &amp;$param_row( $set, 'Logo Font',             'logofont',     'ekw_logofont',     'logoFont', 1, 48 );
+$str .= &amp;$param_row( $set, 'Logo Font Size',        'logofontsize', 'ekw_logofontsize', 'logoFontSize', 1 );
+
+#if ( $$USER{ 'node_id' } == 470183 || $$USER{ 'node_id' } == 1090449 ) {
+#    $str .= &quot;&lt;tr&gt;&lt;td colspan=\&quot;3\&quot;&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+#    $str .= &amp;$param_row( $set, 'Nodelet Title CSS',        'nodelettitlestyle', 'ekw_nodelettitlestyle', 'nodeletTitleStyle', 1, 128 );
+#}
+
+$str;
+%]
+
+&lt;tr&gt;
+&lt;td colspan=&quot;2&quot; align=&quot;right&quot;&gt;[{closeform}] &lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;!--p&gt;[{openform2:ekwdefaults}]
+&lt;input type=&quot;hidden&quot; name=&quot;restore_defaults&quot; value=&quot;true&quot;&gt;&lt;/input&gt;
+Restore all theme defaults:
+[{closeform}]
+&lt;/p--&gt;
+
+[%
+return '' if ( ! isGod( $USER ) );
+
+my $str = '
+&lt;a name=&quot;canned&quot;&gt;&lt;/a&gt;
+&lt;p&gt;[{openform2:canned}]
+&lt;b&gt;Canned Schemes:&lt;/b&gt;
+&lt;select name=&quot;canned&quot;&gt;
+    &lt;option value=&quot;muted_green&quot;&gt;Muted Green&lt;/option&gt;
+    &lt;option value=&quot;ekw_defaults&quot;&gt;EKW Defaults&lt;/option&gt;
+    &lt;option value=&quot;jukka_dim&quot;&gt;Jukka Dim&lt;/option&gt;
+    &lt;option value=&quot;cheerful&quot;&gt;Cheerful&lt;/option&gt;
+    &lt;option value=&quot;wharfinger&quot;&gt;Narshroum&lt;/option&gt; &lt;!-- wharfinger\'s speshul mix --&gt;
+    &lt;option value=&quot;dark_green&quot;&gt;Dark Green&lt;/option&gt;
+    &lt;option value=&quot;dark_gray&quot;&gt;Dark Gray&lt;/option&gt;
+    &lt;option value=&quot;hotdog_stand&quot;&gt;Hot Dog Stand (karmaflux\'s Revenge)&lt;/option&gt;
+&lt;/select&gt;
+[{closeform}]
+&lt;/p&gt;';
+
+return parseCode( $str ) ;#if ( $$USER{ 'node_id' } == 470183 || $$USER{ 'node_id' } == 1090449 );
+#return '';
+%]
+
+&lt;p&gt;&lt;i&gt;The font-setting bit does appear to have an issue on Linux with Netscape 4 and Mozilla
+(then again, the Mozilla problem may be fixed now), 
+and also on MacOS X with OmniWeb. If anybody has any insight or educated guesses about 
+what might cause this, [wharfinger|I]'d love to hear from you. &lt;/i&gt;&lt;/p&gt;
+
+&lt;br /&gt;&lt;br /&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;p&gt;This is the only part of the theme that [ailie] didn't do the major work on, so please direct 
+complaints and/or suggestions to [wharfinger]. He'll know what to do with them. &lt;/p&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-07-23 18:35:48</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1178852</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1178852</document_id>
+  <author_user>113</author_user>
+  <package>0</package>
+  <title>Theme Preferences</title>
+</node>

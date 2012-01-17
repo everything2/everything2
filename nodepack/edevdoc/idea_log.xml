@@ -1,0 +1,181 @@
+<node>
+  <doctext>&lt;P&gt;([definition]) by &lt;b&gt;[Webster 1913]&lt;/b&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&lt;b&gt;[C?]&lt;/b&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&lt;small&gt;Wed Dec 22 1999 at 0:17:06&lt;/small&gt;&lt;/p&gt;
+&lt;P&gt;&lt;b&gt;I*de&quot;a*logue&lt;/b&gt; (?), n. &amp;#91;&lt;i&gt;Idea + -logue&lt;/i&gt;, as in theologue: cf. F. &lt;i&gt;id'eologue&lt;/i&gt;.&amp;#93;&lt;/p&gt;
+&lt;P&gt;One given to fanciful ideas or theories; a theorist; a spectator.&lt;/p&gt;
+&lt;P&gt;&amp;#91;R.&amp;#93;&lt;/p&gt;
+&lt;P&gt;&lt;i&gt;Mrs. Browning.&lt;/i&gt;&lt;/p&gt;
+&lt;hr /&gt;
+
+
+
+
+
+
+
+
+
+&lt;P&gt;&lt;big&gt;&lt;big&gt;source: &lt;b&gt;/msg [edev]&lt;/b&gt;&lt;/big&gt;&lt;/big&gt;&lt;/p&gt;
+
+&lt;P&gt;&lt;b&gt;(I) Implement a edev forum using [showdebate|existing code]. ~ RP&lt;/b&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;P&gt; 2007.03.20 at 23:29	(edev) RoguePoet says Okay, so first order of business: I am mightly surprised that you don't have a forum type thing stashed away back here. You guys made one of those for the CE group, right? Why did you not make a second iteration of the same code, for yourselves?
+&lt;P&gt;2007.03.20 at 23:30	(edev) RoguePoet says Or maybe I just have not stumbled across it yet?
+&lt;P&gt;2007.03.21 at 00:22	(edev) Swap says Edevites, a long long time ago when nate was young and the world was new, used to simply post nodes in the nodegel when they wanted to discuss stuff, namespaced with edev:
+&lt;P&gt;2007.03.21 at 00:25	(edev) ascorbic says Maybe we should resurrect that now we're on this rapid development cycle. Hmm, I dunno.
+&lt;P&gt;2007.03.21 at 00:28	(edev) kthejoker says Maybe instead we just should use collab docs, since they're a bit more interactive.
+&lt;P&gt; 2007.03.21 at 15:46	(edev) Oolong says It *is* true that our discussion forum software here is still pretty lousy, which is probably the main reason it's never been opened to the wider public (?). It's a shame, because I think it would be extremely valuable for all usergroups...
+&lt;P&gt; 2007.03.23 at 01:49	(edev) RoguePoet says Oolong: define &quot;lousy&quot;. Do you mean buggy, or is it just feature-poor?
+&lt;P&gt; 2007.03.25 at 17:01	(edev) ascorbic says I'm not sure how much of the reason for keeping it admin-only is a desire to prevent e2 turning into yet another web forum. I'll stress that I have not been told that this was the reason, but it seems a genuine area of concern, at least to me. The main problem with the discussion pages is that it's nearly impossible to keep track of conversations as they get updated. There's no way of displaying debates chronologically, not of getting notified if you get a reply. I've taken to searching the page for the current date in order to find new stuff. The code is in [showdebate].
+&lt;P&gt;2007.03.25 at 21:33	(edev) RoguePoet says C2 had a discussion system that was sh*t-hot. Built navigable comment trees and everything. Plus, it had a monitor nodelet for tracking new comments. Please tell me that code still exists somewhere.
+&lt;P&gt;	 2007.03.27 at 04:27	(edev) dann says Right - E2 is a modified 0.8 codebase, C2 was a modified pre-1.0 codebase. I've ported nodeballs between the two before, but it's been a few years. I'd guess that most of the C2 codebase could be ported with minimal effort. Pre-1.0 and 0.8 have vastly more similarities than differences.	 
+&lt;P&gt; 2007.03.27 at 19:49	(edev) dann says I'll put a sterilized db / perl mod dump on one of my boxes. Send me an email (dann@e2) for a link.
+&lt;/blockquote&gt;
+
+&lt;P&gt;&lt;b&gt;(II) Implement an on-site [E2 node tracker] ~ bol&lt;/b&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+ 2007.03.26 at 12:09	(edev) bol says Please please please can we have an on-site node tracker? Please?&lt;/blockquote&gt;
+
+&lt;P&gt;&lt;b&gt;(III) Catbox command that duplicates the blab box &quot;CC&quot; option ~ aionaever&lt;/b&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;&lt;P&gt;aionaever says How (non) trivial would it be to implement something like a /msg-cc command that duplicates clicking &quot;CC&quot; on a homenode or somesuch? Or does such a thing perhaps already exist?&lt;/p&gt;
+&lt;P&gt;RoguePoet says aionaever++ That's bugged me eternally&lt;/p&gt;
+&lt;P&gt;N-Wing says There is no &quot;real&quot; /msg CC thing, but you can fake it by doing: /msg{user1 user2 etc. your_name} Message here. (Note the curly braces, with spaces between user names.) And while we're talking about messages, if the &quot;cool, new&quot; way of messages ever breaks (/msg, home node, writeup), there is a backup, not-as-powerful old way, using /oldmsg&lt;/p&gt;
+&lt;/blockquote&gt;
+
+
+
+
+
+
+
+
+
+
+&lt;P&gt;&lt;big&gt;&lt;big&gt;source: &lt;b&gt;overheard in the [catbox]&lt;/b&gt;&lt;/big&gt;&lt;/big&gt;&lt;/p&gt;
+
+&lt;P&gt;&lt;b&gt;(n++) A &quot;cultural artifact&quot; nodetype ~ haze &amp;amp; spiregrain&lt;/b&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&amp;lt;mofaha&amp;gt; Hello. To whoever is responsible for reinstating Zhaus' Dead Rat Game writeup. Thank you.&lt;br /&gt;
+&amp;lt;haze&amp;gt; oh man, that one needs: node type &quot;E2 Cultural Artifact&quot;&lt;br /&gt;
+&amp;lt;spiregrain&amp;gt; haze - yes or &quot;Museum Peice&quot; or something&lt;br /&gt;
+&amp;lt;mofaha&amp;gt; All I know is, it is to be done to play the game to fun.
+&lt;/blockquote&gt;
+
+
+
+
+
+
+
+
+
+&lt;P&gt;&lt;big&gt;&lt;big&gt;source: &lt;b&gt;email&lt;/b&gt;&lt;/big&gt;&lt;/big&gt;&lt;/p&gt;
+
+&lt;P&gt;&lt;b&gt;(1) Update [Suggestions for E2] page w/ more inviting w/u ~ RP&lt;/b&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;pre&gt;
+	from	 	[RoguePoet] 
+	to	 	[dann] 
+	cc	 	[kthejoker]	 
+	date		Mar 19, 2007 4:43 PM	 
+	subject		Re: E2: Newdev
+&lt;/pre&gt;
+&lt;P&gt;I've thinking back to how many times I've referred noders to the [Suggestions for E2] page, even though I've always considered it to be the most discouraging node on E2. (To summarize the ancient w/u that resides there: &quot;Please take the time to send your brilliant idea to this anonymous email box. We'll add it to the end of this long long list of other brilliant ideas that we're currently ignoring. Maybe. Don't count on it.&quot;)&lt;/p&gt;
+
+&lt;P&gt;If the winds have changed under the current administration-- and both of you guys have just convinced me that it has-- then I say: Nuke that sucker. Supercede it with a more positive, more inviting welcome mat.&lt;/p&gt;
+
+&lt;pre&gt;
+	from	 	[dann]
+	to	 	[RoguePoet]	 
+	date		Mar 19, 2007 10:41 PM	 
+	subject		Re: E2: Newdev
+&lt;/pre&gt;
+&lt;P&gt;That page hadn't crossed my vision in years until you wrote that.
+I'll put that on my list of things to update.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;P&gt;&lt;big&gt;&lt;big&gt;source: from &lt;b&gt;[Community2|C2]&lt;/b&gt;&lt;/big&gt;&lt;/big&gt;&lt;/p&gt;
+
+&lt;P&gt;&lt;b&gt;(a) Registry nodetype&lt;/b&gt;&lt;/p&gt;
+
+&lt;blockquote&gt; (see also [edev: User Data])&lt;/blockquote&gt;
+
+
+
+
+
+
+
+
+
+
+
+&lt;P&gt;&lt;big&gt;&lt;big&gt;source: &lt;b&gt;fevered imaginings&lt;/b&gt;&lt;/big&gt;&lt;/big&gt;&lt;/p&gt;
+
+&lt;P&gt;&lt;b&gt;(&amp;Delta;) Leverage goats across all platforms ~ [kessenich]&lt;/b&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;&quot;I know where you can buy goats, cheap, just one or two counties west, right next to a hubcap cemetery. But how many [Leverage goats across all platforms|platforms] are we talking about, here? We need to provide our clients with the most flexible, scalable, value-added goats possible, using a critical core of goat management processes to enhance infrastructure and partner across organizational lines.&quot;&lt;/blockquote&gt;
+
+&lt;P&gt;&lt;b&gt;(&amp;Omega;) a &quot;New Logs&quot; nodelet ~ RP&lt;/b&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;Looks and works exactly like New Writeups except it displays the 15 most recent logs (daylogs, dream logs, ed logs, &amp;amp; root logs). I have wanted one of these since forever. Now that we've got a (log) nodetype this would be dirt simple, right?&lt;/blockquote&gt;
+
+
+
+
+
+
+
+&lt;P&gt;&lt;big&gt;&lt;big&gt;source: &lt;b&gt;[edev:|the days of yore]&lt;/b&gt;&lt;/big&gt;&lt;/big&gt;&lt;/p&gt;
+
+&lt;P&gt;[edev Discussion Archives :|edev Discussion Archives] (July 2001. obviously abandoned in favor of [usergroup message archive].)&lt;/p&gt;
+
+&lt;P&gt;[edev: Duplicate Messages]&lt;br /&gt;
+[edev: User Data] (implemented as registries in C2)&lt;br /&gt;
+[edev: Nodespheres - A suggestion for node associations]&lt;br /&gt;
+[edev: E2 index] (full text search)&lt;br /&gt;
+[edev: Minor Heaven Restructure]&lt;br /&gt;
+[edev: Anonymous nodes]&lt;br /&gt;
+[edev: Chatterbox ideas]&lt;br /&gt;
+[edev: mapping the nodegel]&lt;br /&gt;
+[edev: writeups and anchors]&lt;br /&gt;
+[edev: new msg's nodelet]
+&lt;/P&gt;
+
+&lt;P&gt;assorted relics: [edev: EDEV FAQ foundations], [Edev First Post!], [edev: organizing the Epicenter/Vitals nodelets], 
+[edev: escaping brackets in nodes], [edev: A solution to the problem of misspelled nodes], [edev: chomping long words in random nodes nodelet], [edev: Scratch-It for the Personal Nodelet], [edev: I Shot Guest User (but I did not shoot n-a-t-e)]
+
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-03-28 17:35:22</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1874708</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>854232</type_nodetype>
+  <document_id>1874708</document_id>
+  <author_user>1133650</author_user>
+  <package>0</package>
+  <title>idea log</title>
+</node>

@@ -1,0 +1,259 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>1522375</pagetype_nodetype>
+  <core>0</core>
+  <page>&lt;p align=&quot;right&quot;&gt;
+[% linkNode($NODE, 'display', {displaytype =&gt; 'display'}) %] 
+&lt;/p&gt;
+
+[%
+my $isCategoryEditor = 0;
+my $maintainer = getNodeById($$NODE{author_user});
+my $guestuserId = getId(getNode('guest user', 'user'));
+if ($$maintainer{type_nodetype} == getId(getType('user')))
+{
+  if(($$maintainer{node_id} == $$USER{user_id} || $$NODE{author_user} == $guestuserId)
+     &amp;&amp; $$USER{user_id} != $guestuserId)
+  {
+    $isCategoryEditor = 1;
+  }
+}
+elsif($$maintainer{type_nodetype} == getId(getType('usergroup')))
+{
+  if (htmlcode('isinUsergroup', $$USER{user_id}.','.$$maintainer{node_id}))
+  {
+    $isCategoryEditor = 1;
+  }
+}
+
+my $isCE = exists($HTMLVARS{'group_content editors'}{$$USER{user_id}});
+my $isRoot = exists($HTMLVARS{'group_gods'}{$$USER{user_id}});
+if ($isCE || $isRoot) { $isCategoryEditor = 1; }
+
+if ($isCategoryEditor != 1)
+{
+  return 'You cannot edit this category.';
+}
+
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+my $sql;
+
+# delete a link
+my $deleteId = int($query-&gt;param('del'));
+if ($deleteId &gt; 0)
+{
+  my $linktypeId = getId(getNode('category', 'linktype'));
+  $DB-&gt;sqlDelete(&quot;links&quot;, &quot;from_node=$$NODE{node_id} AND to_node=$deleteId AND linktype=$linktypeId&quot;);
+}
+
+
+my ($str, $addstr) = ('', '');
+if ($isCE || $isRoot) {
+
+	$str .= htmlcode('openform', 'setMaintainerForm')
+		. '&lt;fieldset&gt;&lt;legend&gt;Maintainer&lt;/legend&gt;'
+		;
+
+	# change the maintainer
+	my $setMaintainer = $query-&gt;param('setMaintainer');
+	if ($setMaintainer &amp;&amp; htmlcode('verifyRequest', 'setMaintainerForm')) {
+		my $newMaintainer = getNode($setMaintainer, 'user');
+		if (!$newMaintainer) {
+			$newMaintainer = getNode($setMaintainer, 'usergroup');
+		}
+		if ($newMaintainer) {
+			$$NODE{author_user} = $$newMaintainer{node_id};
+			updateNode($NODE, -1);
+			$maintainer = $newMaintainer;
+		} else { $str .= &quot;&lt;b&gt;Unable to find user or usergroup: $setMaintainer &lt;/b&gt;&lt;br&gt;&quot;; }
+	}
+	
+	$str .= ''
+		. htmlcode('verifyRequestForm', 'setMaintainerForm')
+		. 'Since you\'re an editor, you can change the maintainer of this category. &lt;br&gt; Enter the name of a user or usergroup: &lt;br&gt; (setting it to &quot;Guest User&quot; means that everyone who can create categories can contribute) &lt;br&gt;'
+		. $query-&gt;textfield('setMaintainer', $$maintainer{title}, 25)
+		. $query-&gt;submit(&quot;changeit&quot;, &quot;Change&quot;)
+		. '&lt;br&gt; Current maintainer: ' . linkNode($maintainer)
+		. '&lt;/fieldset&gt;'
+		. $query-&gt;endform
+		;
+} else {
+  $str .= '&lt;p&gt;To change the maintainer of this category, please contact an editor.&lt;/p&gt;';
+}
+
+
+my $catlinktype = getNode('category', 'linktype')-&gt;{node_id};
+
+
+# add a node if the user submitted the addnode form
+if ($query-&gt;param('addnode') &amp;&amp; htmlcode('verifyRequest', 'addCatNode'))
+{
+	my $addnodename = $query-&gt;param('addnodename');
+	my $byuser;
+	my $authornotfound = 0;
+	
+	if ($addnodename =~ /(.*)\[by (.*)\]$/) {
+		$addnodename = $1;
+		$byuser = getId(getNode($2, 'user'));
+		if (!$byuser) { $authornotfound = 1; }
+	}
+	
+	my $addnodeid;
+	if (!$authornotfound) {
+		$addnodeid = getId(getNode($addnodename, 'e2node'));
+	}
+	
+	if ($addnodeid &amp;&amp; $byuser) {
+		my $cursor = $DB-&gt;sqlSelectMany('writeup_id',
+			'writeup', &quot;parent_e2node = $addnodeid&quot;);
+		
+		my $wid;
+		$addnodeid = 0;
+		while (($wid) = $cursor-&gt;fetchrow()) {
+			if (getNode($wid)-&gt;{author_user} == $byuser) {
+				$addnodeid = $wid;
+				last;
+			}
+		}
+	}
+	
+	if ($addnodeid) {
+		$DB-&gt;sqlInsert(&quot;links&quot;, {
+			from_node =&gt; $$NODE{node_id},
+			to_node =&gt; $addnodeid,
+			linktype =&gt; $catlinktype,
+		});
+		$addstr .= &quot;Added &quot; . linkNode($addnodeid);
+	} else {
+		$addstr .= &quot;Node not found: &quot; . parseLinks(&quot;[$addnodename]&quot;);
+		if ($byuser) { $addstr .= &quot; by &quot; . linkNode($byuser); }
+		elsif ($authornotfound) { $addstr .= &quot; (unknown author given)&quot;; }
+	}
+}
+
+
+# reorder the nodes if the user submitted a reordering form
+if ($query-&gt;param('orderthem') &amp;&amp; htmlcode('verifyRequest', 'reorderCatNodes'))
+{
+	for my $param ($query-&gt;param) {
+		next unless $param =~ /^catfood_(\d+)$/;
+		my $nid = $1;
+		my $nf = $query-&gt;param($param);
+		$query-&gt;delete($param);
+		if ($nf eq '' || $nf =~ /\D/) { $nf = 0; }
+		
+		$sql = &quot;UPDATE links
+			SET food = $nf
+			WHERE links.to_node = $nid
+			AND links.from_node = $$NODE{node_id}
+			AND links.linktype = $catlinktype&quot;;
+		my $ds = $dbh-&gt;prepare($sql);
+		$ds-&gt;execute() or return $ds-&gt;errstr;
+	}
+}
+
+
+# &quot;add a node&quot; box---mostly so that editors can add nodes to categories
+
+$str .= htmlcode('openform', 'addCatNode')
+	. '&lt;fieldset&gt;&lt;legend&gt;Add by name&lt;/legend&gt;'
+	. '&lt;p&gt;Add a whole node (&quot;node title&quot;) or a single writeup (&quot;node title[by someone]&quot;):&lt;/p&gt;'
+	. htmlcode('verifyRequestForm', 'addCatNode')
+	;
+
+if ($addstr ne '') {
+	$str .= &quot;&lt;p&gt;$addstr&lt;/p&gt;&quot;;
+}
+
+$str .= ''
+	. $query-&gt;textfield(&quot;addnodename&quot;, '', 25)
+	. $query-&gt;submit(&quot;addnode&quot;, &quot;Add&quot;)
+	. '&lt;/fieldset&gt;' . $query-&gt;endform
+	;
+
+
+$str .= htmlcode('openform', 'updateDescrForm')
+	.'&lt;fieldset&gt;&lt;legend&gt;Category Description&lt;/legend&gt;'
+	.'&lt;textarea name=&quot;category_doctext&quot; id=&quot;category_doctext&quot; '
+	. htmlcode('customtextarea', '1')
+	. ' class=&quot;formattable&quot;&gt;'
+	. encodeHTML($$NODE{doctext})
+	. '&lt;/textarea&gt;'
+	. $query-&gt;submit(&quot;update&quot;, &quot;Update Description&quot;)
+	. '&lt;/fieldset&gt;' . $query-&gt;endform
+  ;
+
+
+# list nodes in the category, with &quot;delete&quot; links
+
+$sql = &quot;SELECT node.node_id,node.title,node.type_nodetype,node.author_user
+           FROM node,links
+           WHERE node.node_id=links.to_node
+            AND links.from_node=$$NODE{node_id}
+            AND links.linktype = $catlinktype
+           ORDER BY links.food, node.title, node.type_nodetype&quot;;
+my $ds = $dbh-&gt;prepare($sql);
+$ds-&gt;execute() or return $ds-&gt;errstr;
+
+my $ctr = 0;
+my $table = '';
+my $nodetype;
+while(my $row = $ds-&gt;fetchrow_hashref){
+	$ctr++;
+	$nodetype = getNode($$row{type_nodetype});
+	if ($ctr % 2 == 0){
+		$table .= '&lt;tr&gt;';
+	}else{
+		$table .= '&lt;tr class=&quot;oddrow&quot;&gt;';
+	}
+	$table .= '&lt;td&gt;'.linkNode($$row{node_id}, $$row{title}, {lastnode_id=&gt;0}).'&lt;/td&gt;
+        &lt;td&gt;'.($$nodetype{title} eq 'writeup' ?
+				linkNode($$row{author_user},'', {lastnode_id=&gt;0}):'&amp;nbsp;').'&lt;/td&gt;
+		&lt;td style=&quot;text-align:center&quot;&gt;'.$$nodetype{title}.'&lt;/td&gt;
+		&lt;td style=&quot;text-align:center&quot;&gt;&lt;a href=&quot;/index.pl?node_id='.$$NODE{node_id}.
+		'&amp;displaytype=edit&amp;del='.$$row{node_id}.'&quot;&gt;delete&lt;/a&gt;&lt;/td&gt;
+		&lt;td&gt;' . $query-&gt;textfield(&quot;catfood_$$row{node_id}&quot;, 10*$ctr, 10) . '&lt;/td&gt;
+	&lt;/tr&gt;';
+}
+
+unless ($ctr){
+	$str .= '&lt;p&gt;&lt;strong&gt;This category is empty.&lt;/strong&gt;&lt;/p&gt;';
+}else{
+	$str .= htmlcode('openform', 'reorderCatNodes')
+	. '&lt;fieldset&gt;&lt;legend&gt;Reorder&lt;/legend&gt;'
+	. htmlcode('verifyRequestForm', 'reorderCatNodes')
+	. qq'&lt;table&gt;
+		&lt;tr&gt;
+		&lt;th&gt;Title&lt;/th&gt;
+		&lt;th&gt;by&lt;/th&gt;
+		&lt;th&gt;Type&lt;/th&gt;
+		&lt;th&gt;Delete&lt;/th&gt;
+		&lt;th&gt;Order&lt;/th&gt;
+		&lt;/tr&gt;
+		$table
+		&lt;tr&gt;&lt;td colspan=&quot;4&quot;&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;'
+	. $query-&gt;submit(&quot;orderthem&quot;, &quot;Reorder&quot;)
+	. '&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;'
+	. '&lt;/fieldset&gt;'
+	. $query-&gt;endform;
+}
+return $str;
+%]
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2004-02-26 19:39:09</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1522377</htmlpage_id>
+  <hits>3</hits>
+  <node_id>1522377</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
+  <author_user>329</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>category edit page</title>
+  <mimetype></mimetype>
+</node>

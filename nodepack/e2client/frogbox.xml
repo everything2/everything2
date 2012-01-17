@@ -1,0 +1,36 @@
+<node>
+  <doctext>&lt;h1&gt;The Frogbox&lt;/h1&gt;
+
+&lt;p&gt;The Frogbox is an Everything2 [catbox]
+[clientdev|client] program. Version 0.99 was released in February 2009. &lt;/p&gt;
+
+&lt;p&gt;
+&lt;strong&gt;Download program at [http://code.google.com/p/everything2chatbox/downloads/list]&lt;/strong&gt;
+&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;
+[StrawberryFrog]&lt;br&gt;
+&lt;em&gt;ribbit&lt;/em&gt;
+&lt;/p&gt;
+
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2004-05-23 13:50:02</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <dlurl>http://everything2chatbox.googlecode.com/files/Frogbox_099.zip</dlurl>
+  <homeurl>http://www.frogmort.com/frogbox/</homeurl>
+  <hits>0</hits>
+  <node_id>1538724</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <e2client_id>1538724</e2client_id>
+  <type_nodetype>1261857</type_nodetype>
+  <version>0.99</version>
+  <document_id>1538724</document_id>
+  <author_user>6229</author_user>
+  <package>0</package>
+  <clientstr>Frogbox</clientstr>
+  <title>Frogbox</title>
+</node>

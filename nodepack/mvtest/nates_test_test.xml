@@ -1,0 +1,21 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-12-11 17:01:54</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1989003</node_id>
+  <starttime>2009-12-13 20:03:35</starttime>
+  <endtime>2009-12-13 19:58:29</endtime>
+  <enabled>0</enabled>
+  <type_nodetype>1988997</type_nodetype>
+  <setting_id>1989003</setting_id>
+  <vars>c|closeform=closeform2&amp;d|closeform=closeform2&amp;b|closeform=closeform2</vars>
+  <author_user>220</author_user>
+  <package>0</package>
+  <title>nates test test</title>
+  <mvtest_id>1989003</mvtest_id>
+  <conditions>control,b,c,d</conditions>
+</node>

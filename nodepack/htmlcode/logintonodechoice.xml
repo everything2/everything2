@@ -1,0 +1,23 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-11-03 12:30:27</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1192419</node_id>
+  <htmlcode_id>1192419</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($n, $title) = @_;
+my $selstr = '';
+
+$selstr = ' SELECTED ' if($$VARS{logintonode} == $n);
+
+return '&lt;option value=&quot;'.$n.'&quot;'.$selstr.'&gt;'.$title.'&lt;/option&gt;'.&quot;\n&quot;;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>logintonodechoice</title>
+</node>

@@ -1,0 +1,35 @@
+<node>
+  <doctext>&lt;name&gt;,
+&lt;p&gt;Welcome to Everything2, one of the internet's oldest and largest writing communities. You are receiving this message because someone gave this email address when registering on Everything2.&lt;/p&gt;
+&lt;p&gt;We hope that you have registered because you like what you have read on Everything2 and want to contribute. If you have only read a little of the site, please take the time to explore it some more before making your own contribution. In principle, everything has a place on Everything2, but that doesn't mean there is a place for just any old thing. The links at the bottom of writeup pages are a useful way to take a random walk through the site and get a feel for it. You may also find &lt;a href=&quot;http://&lt;servername&gt;/?node=E2 Quick Start&quot;&gt;E2 Quick Start&lt;/a&gt; useful reading.&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Verifying your account&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;To complete the registration process, click on the following link, or
+copy and paste it into your web browser:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;&lt;verify_email_url&gt;&amp;amp;user_id=&lt;user_id&gt;&amp;amp;validationkey=&lt;validationkey&gt;&quot;&gt;&lt;verify_email_url&gt;&amp;amp;user_id=&lt;user_id&gt;&amp;amp;validationkey=&lt;validationkey&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;If for some reason the link does not work, you can validate your
+account manually: on any Everything2 page, enter &quot;Verify your email
+account&quot; in the search box and click on the 'search' button. You will be taken to a page where you will be asked for your 
+user ID, which is  &lt;b&gt;&lt;user_id&gt;&lt;/b&gt;, and your validation key, which is &lt;b&gt;&lt;validationkey&gt;&lt;/b&gt;.&lt;/p&gt;
+
+&lt;p&gt;All the best,&lt;/p&gt;
+
+The Everything2 Staff&lt;br /&gt;
+&lt;site_url&gt;&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-09 21:42:27</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>47</hits>
+  <node_id>275</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>154</type_nodetype>
+  <from_address></from_address>
+  <document_id>275</document_id>
+  <attachment_file>0</attachment_file>
+  <author_user>113</author_user>
+  <mail_id>275</mail_id>
+  <package>0</package>
+  <title>Welcome to the Everything2 community!</title>
+</node>

@@ -1,0 +1,46 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-03-23 00:57:49</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>22</hits>
+  <node_id>461511</node_id>
+  <htmlcode_id>461511</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($src_id, $name, $group) = @_;
+
+return unless $$NODE{type}{sqltablelist} =~ /document/;
+return if $$NODE{node_id}==$$USER{node_id};	#stop newbies from *ifying their homenode, darnit!
+
+$name ||= 'Newsify';
+
+#see if user may add something to weblog
+unless(exists $HTMLVARS{group_gods}{getId($USER)}) {
+	return unless $group;
+	my $G = getNode($group,'usergroup');
+	return unless (defined $G) &amp;&amp; (grep /^$$USER{node_id}$/, @{ $$G{group} });
+}
+
+return if $DB-&gt;sqlSelect('weblog_id', 'weblog', 'weblog_id='.int($src_id).' AND to_node='.getId($NODE));	#see if already on current log
+
+my $title= $$NODE{title};
+$title =~s/[\&quot;]//gs;
+
+my $str = &quot;&lt;script language='javascript'&gt;\n&quot;;
+$str .= &quot;function confirm$name() {\n&quot;;
+$str .= &quot;  if(confirm(\&quot;Really $name '$title'?\&quot;))\n&quot;;
+$str .= '  { parent.location=';
+$str .= urlGen({ node_id =&gt; getId($NODE), source =&gt; $src_id,
+   target =&gt; getId($NODE), op =&gt; 'weblog'});
+$str .= &quot;;}\n&quot;;
+$str .= &quot;}\n&lt;/script&gt;\n&quot;;
+
+$str .= &quot;&lt;a href=\&quot;javascript:confirm$name();\&quot;&gt;$name!&lt;/a&gt; &lt;a href=&quot;.urlGen({node_id=&gt;$src_id}).&quot;&gt;(view)&lt;/a&gt;\n&quot;;
+$str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>newsify</title>
+</node>

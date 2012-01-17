@@ -1,0 +1,87 @@
+<node>
+  <doctext>[%
+use String::Similarity;
+my $doSimilaritySort = $HTMLVARS{isDevServer};
+
+my $str;
+my $title = $query-&gt;param('node');
+my $lnode = $query-&gt;param('lastnode_id') unless $$USER{user_id} == $HTMLVARS{guest_user};
+$lnode ||= '0';
+
+return htmlcode('randomnode','Psst! Over here!') unless $title;
+$str .= 'Here\'s the stuff we found when you searched for &quot;'.$title.'&quot;';
+
+$str .= qq'\n\t&lt;ul class&quot;findings&quot;&gt;';
+
+
+my $isRoot = exists $HTMLVARS{'group_gods'}{$$USER{node_id}};
+my $curType;
+my @nodes = @{ $$NODE{group} } if defined $$NODE{group};
+
+@nodes = sort { similarity($title, $$b{title}) &lt;=&gt; similarity($title, $$a{title}) } @nodes
+	if $doSimilaritySort;
+
+my @e2node_ids = map ($_ -&gt; {node_id},
+                      grep ($_ -&gt; {type}{title} eq &quot;e2node&quot;,
+                            @nodes)
+                      );
+
+my %fillednode_ids;
+
+#Only make one SQL call to find the non-nodeshells.
+if(@e2node_ids){
+  my $sql = &quot;SELECT DISTINCT nodegroup_id
+             FROM nodegroup
+             WHERE nodegroup_id IN (&quot;
+             .join(&quot;, &quot;, @e2node_ids).&quot;)&quot;;
+
+  \@fillednode_ids{  @{$dbh -&gt; selectcol_arrayref($sql)}  };
+}
+
+my $found;
+foreach my $ND (@nodes) {
+	next unless canReadNode($USER, $ND);
+	$curType = $$ND{type}{title};
+
+	next if $curType eq 'writeup';
+	next if $curType eq 'debatecomment';
+	next if $curType eq 'e2node' &amp;&amp; $$VARS{hidenodeshells} &amp;! exists $fillednode_ids{$$ND{node_id}};
+	next if $curType eq 'draft' and htmlcode('canseedraft', $ND) != 1;
+	next if $curType eq 'debate' and not $isRoot and not htmlcode('isinUsergroup',&quot;$$USER{node_id},$$ND{restricted}&quot;);
+
+	$found = 1;
+	# Mark nodeshells with class name
+	my $class = ' class=&quot;nodeshell&quot;'
+        unless $curType ne 'e2node' || exists $fillednode_ids{$$ND{node_id}};
+
+	$str .= &quot;&lt;li$class&gt;&quot; . linkNode($ND, '', {lastnode_id=&gt;$lnode}) ;
+	$str .= &quot; ($curType)&quot; unless $curType eq 'e2node';
+	$str .= &quot; similarity &quot;.similarity($title, $$ND{title}) if $HTMLVARS{isDevServer};
+	$str .= &quot;&lt;/li&gt;\n&quot;;
+}
+
+$str .= &quot;&lt;/ul&gt;\n&quot;;
+
+unless ($found){
+	$NODE = $GNODE = getNodeById($HTMLVARS{not_found});
+	return parseCode($$NODE{doctext});
+}
+
+$str . htmlcode('e2createnewnode');
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-12-17 04:59:01</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>19622</hits>
+  <node_id>1140332</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1140332</document_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>Findings:</title>
+</node>

@@ -1,0 +1,61 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-01-27 03:34:29</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1989345</node_id>
+  <htmlcode_id>1989345</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $isRoot = htmlcode('isAdmin');
+my $isEditor = htmlcode('isEditor');
+my $targetVars = getVars $NODE;
+my $iph = getNode('IP Hunter', 'restricted_superdoc');
+my $nh = getNode('Node Heaven', 'superdoc');
+my $oracle = getNode('The Oracle', 'oppressor_superdoc');
+my $ipblacklist = getNode('IP Blacklist', 'restricted_superdoc');
+
+#not sports illustrated!
+my $SI = getNode(&quot;Suspension Info&quot;, &quot;superdoc&quot;);
+my $str = linkNode($SI, &quot;Suspensions&quot;, {&quot;lookup_user&quot; =&gt; $$NODE{node_id}});
+
+$str.=linkNode($nh, ' - Node Heaven Search', {'heavenuser'=&gt;$$NODE{title}})
+   if $isEditor;
+
+if($isRoot){
+  my @addrs = split /\s*,\s*/, $$targetVars{ipaddy};
+
+	$str.= &quot;\n - &quot;.linkNode($oracle, &quot;The Oracle&quot;, {the_oracle_subject =&gt; $$NODE{title}}).' - '.linkNode($NODE,'editvars',{displaytype=&gt;'editvars'}) . '&lt;br /&gt;';
+	$str.= &quot;\nIP Hunt: &quot;.linkNode($iph, 'by name', {hunt_name =&gt; $$NODE{title}});
+	if (scalar @addrs) {
+		$str.= ' or ';
+		map {
+			my $ip = encodeHTML($_);
+			$str.= &quot;&lt;br&gt;\n&quot;
+				. linkNode($iph, 'by IP', {hunt_ip =&gt; $ip})
+				. &quot; ($ip &lt;small&gt;&quot;
+				. htmlcode('ip lookup tools', $ip)
+				. &quot;&lt;/small&gt;)&quot;
+				. '&amp;nbsp;'
+				. linkNode(
+					$ipblacklist
+					, &quot;Blacklist IP?&quot;
+					, {'bad_ip' =&gt; $ip}
+				)
+				;
+		} @addrs;
+	}
+
+} elsif ($isEditor) {
+	$str.= &quot;\n - &quot;.linkNode($oracle, &quot;The Oracle&quot;, {the_oracle_subject =&gt; $$NODE{title}}) . &quot;&lt;br /&gt;\n&quot;;
+}
+
+return $str;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>editor homenode tools</title>
+</node>

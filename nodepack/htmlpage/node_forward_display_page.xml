@@ -1,0 +1,137 @@
+<node>
+  <parent_container>0</parent_container>
+  <pagetype_nodetype>1147470</pagetype_nodetype>
+  <core>0</core>
+  <page>[%
+my $origTitle = $query-&gt;param(&quot;originalTitle&quot;);
+$HTMLVARS{circularLink} = ($origTitle eq $$NODE{title});
+
+my $targetNodeId = $$NODE{doctext};
+my $targetNode;
+if ($targetNodeId ne '') {
+   $targetNode = getNodeById($targetNodeId, 'light');
+}
+
+my $badLink = ($HTMLVARS{circularLink} || !$targetNode);
+$origTitle ||= $$NODE{title};
+
+my $urlParams = { };
+
+unless (isGod($USER) &amp;&amp; $badLink) {
+
+    if (!$badLink) {
+
+     # For good links, forward all users
+     $urlParams = { 'originalTitle' =&gt; $origTitle };
+
+    } else {
+
+     # For circular or non-functional links, send non-gods to the search page
+     $urlParams = {
+         'node' =&gt; $$NODE{title}
+         , 'match_all' =&gt; 1
+     };
+
+    }
+
+    $$urlParams{'lastnode_id'} = $query-&gt;param('lastnode_id')
+      if defined $query-&gt;param('lastnode_id');
+
+} else {
+
+    # For circular or non-functional links, send gods directly to the edit page
+    $targetNode = $NODE;
+    $urlParams = {
+      'displaytype' =&gt; 'edit'
+      , 'circularLink' =&gt; $HTMLVARS{circularLink}
+    };
+
+}
+
+my $redirect_url = urlGen($urlParams, 'no escape', $targetNode);
+$HTMLVARS{redirect_url} = urlGen($urlParams, 'no quotes', $targetNode);
+
+$HEADER_PARAMS{-status} = 303;
+$HEADER_PARAMS{-location} =
+  'http://' . $ENV{HTTP_HOST} . $redirect_url
+  ;
+
+return '';
+%]
+
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;[% $$NODE{title} %]@everything2.com&lt;/title&gt;
+
+    &lt;script language=&quot;JavaScript&quot;&gt;
+    &lt;!--
+[%
+            return 'location.href = &quot;' . $HTMLVARS{redirect_url} . '&quot;;';
+%]
+    //--&gt;
+    &lt;/script&gt;
+    &lt;noscript&gt;
+[%
+            return
+              '&lt;meta http-equiv=&quot;refresh&quot; content=&quot;0; URL='
+              . $HTMLVARS{redirect_url}
+              . '&quot;&gt;'
+              ;
+%]
+    &lt;/noscript&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+[%
+# The following is a simple informative display for gods only.
+# It shoudl never appear unless someone has disabled HTTP,
+#  META, *and* javascript redirects.
+my $str = '';
+
+return $str unless isGod($USER);
+
+$str .=
+  '&lt;p&gt;'
+  .  linkNode(
+       $$NODE{ 'node_id' }
+       , &quot;edit &lt;b&gt;$$NODE{ 'title' }&lt;/b&gt;&quot;
+       , { 'displaytype' =&gt; 'edit' }
+     )
+  . '&lt;/p&gt;'
+  ;
+
+if ($$NODE{doctext} ne '') {
+
+  $str .= '&lt;p&gt;&lt;strong&gt;forward-to:&lt;/strong&gt; '
+    . linkNode( $$NODE{ 'doctext' } )
+    . '&lt;/p&gt;'
+
+}
+
+if ($HTMLVARS{circularLink}) {
+
+  $str .= '&lt;p&gt;&lt;strong&gt;This is a circular link!&lt;/srong&gt;&lt;/p&gt;';
+
+}
+
+return $str;
+%]
+&lt;/body&gt;
+&lt;/html&gt;
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-08-28 19:38:31</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1147480</htmlpage_id>
+  <hits>2</hits>
+  <node_id>1147480</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>113</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>node_forward display page</title>
+  <mimetype></mimetype>
+</node>

@@ -1,0 +1,65 @@
+<node>
+  <parent_container></parent_container>
+  <pagetype_nodetype>1854352</pagetype_nodetype>
+  <core>0</core>
+  <page>[%
+if($$VARS{preferred_theme} &amp;&amp; $$VARS{preferred_theme}!=1854183) {
+	return &quot;/* You need to switch to the Zen theme in [User Settings] to use Zen stylesheets. */&quot;;
+} 
+if ($query-&gt;param('version')) {
+  # Set a far-future expiry time if a specific version is requested.
+  $HEADER_PARAMS{'-expires'} = '+10y';
+}
+
+my $out = $$NODE{doctext};
+my $autofix = $query -&gt; param( 'autofix' );
+if ( $autofix or $$USER{ user_id } != $HTMLVARS{ guest_user } ) {
+	unless ( htmlcode( 'displaySetting' , 'fixed stylesheets', $$NODE{ node_id } ) &gt;= $HTMLVARS{stylesheetFixLevel} ) {
+		$out = &quot;/*autofixed*/\n&quot;.htmlcode( 'fixstylesheet' , 0 ) if
+			$$USER{ user_id } != $$NODE{ author_user } or
+			$autofix ;
+	}
+}
+
+$out =~ s/^\s+//mg;
+$out .= &quot;/* SOFTLINK COLORS */\n&quot;;
+
+my $styleRule = '\\b\\s*(?:,[^{]*)?{[^}]*background[^;}]*#(?:(\\w\\w)(\\w\\w)(\\w\\w)|(\\w)(\\w)(\\w))';
+my @max = ( 255, 255, 255 ) ;
+my @min = ( 170, 170, 170 ) ;
+@max = (hex($1||$4.$4),hex($2||$5.$5),hex($3||$6.$6)) if
+	$out =~ /#sl1$styleRule/ ||
+	$out =~ /#mainbody$styleRule/ ||
+	$out =~ /\bbody$styleRule/ ;
+@min = (hex($1||$4.$4),hex($2||$5.$5),hex($3||$6.$6)) if
+	$out =~ /#sl64$styleRule/ ||
+	$out =~ /\.slend$styleRule/ ||
+	$out =~ /\.oddrow$styleRule/ ;
+
+
+for (my $i=64; $i; $i--){
+	$out .= &quot;td#sl$i\{background:#&quot;.(
+		join '' , ( map sprintf( '%02x', int($max[$_]-($i-1)*($max[$_]-$min[$_])/63) ), (0..2) )
+		).';}';
+	$out .= &quot;\n&quot; if $i % 4 == 1 ;
+}
+
+return $out;
+%]
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-09-03 07:30:07</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1990218</htmlpage_id>
+  <hits>2</hits>
+  <node_id>1990218</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>serve</displaytype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>stylesheet serve page</title>
+  <mimetype>text/css</mimetype>
+</node>

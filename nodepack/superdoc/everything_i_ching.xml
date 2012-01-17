@@ -1,0 +1,141 @@
+<node>
+  <doctext>[%
+
+my %figures = (
+          'BBBBFB' =&gt; 'Shih, the army',
+          'BFBBBB' =&gt; 'Pi, holding together (union)',
+          'FFBFFF' =&gt; 'Hsiao Ch\'u, the taming power of the small',
+          'FFFBFF' =&gt; 'Lu, treading (conduct)',
+          'BBBFFF' =&gt; 'T\'ai, peace',
+          'FFFBBB' =&gt; 'P\'i, standstill (stagnation)',
+          'FFFFBF' =&gt; 'T\'ung Jo e\'n, fellowship with men',
+          'FBFFFF' =&gt; 'Ta Yu, possession in great measure',
+          'BBBFBB' =&gt; 'Ch\'ien, Modesty',
+          'BBFBBB' =&gt; 'Yu, enthusiasm',
+          'BFFBBF' =&gt; 'Sui, following',
+          'FBBFFB' =&gt; 'Ku, Work on What Has Been Spoiled (Decay)',
+          'FBFBBF' =&gt; 'Shih Ho, biting through',
+          'FBBFBF' =&gt; 'Pi, grace',
+          'FBBBBB' =&gt; 'Po, splitting apart',
+          'BBBBBF' =&gt; 'Fu, return, the turning point',
+          'BFFFBB' =&gt; 'Hsien, influence (wooing)',
+          'BBFFFB' =&gt; 'Ho\' e\'ng, duration',
+          'FBBBFF' =&gt; 'Sun, decrease',
+          'FFBBBF' =&gt; 'I, increase',
+
+          'BFFFFF' =&gt; 'Kuai, break-through (resoluteness)',
+          'FFFFFB' =&gt; 'Kou, coming to meet',
+          'BFFBFB' =&gt; 'K\'un, oppression (exhaustion)',
+          'BFBFFB' =&gt; 'Ching, the well',
+          'FFBFBB' =&gt; 'Chien, development (gradual progress)',
+          'BBFBFF' =&gt; 'Kuei Mei, the marrying maiden',
+          'BBFFBF' =&gt; 'Fo\'^e\'ng, abundance (fullness)',
+          'FBFFBB' =&gt; 'Lu, the wanderer',
+          'FFBBFB' =&gt; 'Huan, dispersion (dissolution)',
+          'BFBBFF' =&gt; 'Chieh, limitation',
+          'BFBFBF' =&gt; 'Chi Chi, after completion',
+     
+          'FFFFFF' =&gt; 'Ch\'ien, the creative',
+          'BBBBBB' =&gt; 'K\'un, the receptive',
+          'BFBBBF' =&gt; 'Chun, difficulty at the beginning',
+          'FBBBFB' =&gt; 'Mo\'eng, youthful folly',
+          'BFBFFF' =&gt; 'Hsu, waiting (nourishment)',
+          'FFFBFB' =&gt; 'Sung, conflict',
+          'BBBBFF' =&gt; 'Lin, approach',
+          'FFBBBB' =&gt; 'Kuan, contemplation (view)',
+          'FFFBBF' =&gt; 'Wu Wang, innocence (the unexpected)',
+          'FBBFFF' =&gt; 'Ta Ch\'u, the taming power of the great',
+          'FBBBBF' =&gt; 'I, the corners of the mouth (providing nourishment)',
+
+          'BFFFFB' =&gt; 'Ta Kuo, preponderance of the great',
+          'BFBBFB' =&gt; 'K\'an, the abysmal (water)',
+          'FBFFBF' =&gt; 'Li, the clinging (fire)',
+          'FFFFBB' =&gt; 'Tun, retreat',
+          'BBFFFF' =&gt; 'Ta Chuang, the power of the great',
+          'FBFBBB' =&gt; 'Chin, progress',
+          'BBBFBF' =&gt; 'Ming I, darkening of the light',
+          'FFBFBF' =&gt; 'Chai Jo\' e\'n, the family (the clan)',
+          'FBFBFF' =&gt; 'K\'uei, opposition',
+          'BFBFBB' =&gt; 'Chien, obstruction',
+          'BBFBFB' =&gt; 'Hsieh, deliverence',
+          'BFFBBB' =&gt; 'Ts\'ui, gathering together (massing)',
+          'BBBFFB' =&gt; 'Sho\'^e\'ng, pushing upward',
+          'BFFFBF' =&gt; 'Ko, revolution (molting)',
+          'FBFFFB' =&gt; 'Ting, the caldron',
+          'BBFBBF' =&gt; 'Cho\'^e\'n, the arousing (shock, thunder)',
+          'FBBFBB' =&gt; 'Ko\'^e\'n, keeping still, mountain',
+          'FFBFFB' =&gt; 'Sun, the gentle (the penetrating, wind)',
+          'BFFBFF' =&gt; 'Tui, the joyous (lake)',
+          'FFBBFF' =&gt; 'Chung Fu, inner truth',
+          'BBFFBB' =&gt; 'Hsiao Kuo, preponderance of the small'
+        );
+
+
+#coin method
+
+my @pset = (&quot;B&quot;,&quot;F&quot;,&quot;B&quot;,&quot;F&quot;);
+my @sset = (&quot;F&quot;,&quot;F&quot;, &quot;B&quot;, &quot;B&quot;);
+
+my $primary;
+my $secondary;
+while (length($primary) &lt; 6) {
+  my $coins = int(rand(2))+int(rand(2))+int(rand(2));
+
+  $primary .= $pset[$coins];
+  $secondary .= $sset[$coins];
+  
+}
+
+my $PNODE = getNode($figures{$primary},'e2node');
+return &quot;$figures{$primary} not found!&quot;  unless $PNODE;
+my $PWRITEUP = getNodeById($$PNODE{group}[0]);
+
+my $SNODE = getNode($figures{$secondary}, 'e2node');
+return &quot;$figures{$secondary} not found!&quot; unless $SNODE;
+my $SWRITEUP = getNodeById($$SNODE{group}[0]);
+
+my $str;
+
+$str.= &quot;&lt;table width=100% border=0 cellpadding=3 cellspacing=1&gt;
+
+&lt;tr&gt;&lt;TH width=50%&gt;Primary Hexagram&lt;/TH&gt;&lt;TH width=50%&gt;Secondary Hexagram&lt;/TH&gt;&lt;/TR&gt;
+&lt;TR&gt;&lt;td width=50% valign=top&gt;\n&quot;;
+
+$str.=&quot;&lt;center&gt;&quot;.linkNode($PNODE).&quot;&lt;/center&gt;&lt;/td&gt;&lt;td width=50% valign=top&gt;&quot;;
+$str.=&quot;&lt;center&gt;&quot;.linkNode($SNODE).&quot;&lt;/center&gt;&lt;/tr&gt;&quot;;
+
+$str.=&quot;&lt;tr bgcolor=black&gt;&lt;td colspan=2&gt;
+&lt;table width=100% bgcolor=black cellpadding=2 cellspacing=0&gt;&lt;tr&gt;&lt;td align=center width=50%&gt;&quot;;
+$str.=htmlcode('generatehex', $primary).&quot;&lt;/td&gt;&lt;td width=50% align=center&gt;&quot;;
+$str.=htmlcode('generatehex', $secondary).&quot;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&quot;;
+
+$str.=&quot;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td valign=top width=50%&gt;&quot;;
+$str.=&quot;&lt;p&gt;&quot;.parseLinks($$PWRITEUP{doctext});
+$str.=&quot;&lt;/td&gt;&lt;td valign=top width=50%&gt;&quot;;
+$str.=&quot;&lt;p&gt;&quot;.parseLinks($$SWRITEUP{doctext});
+
+
+$str.=&quot;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&quot;;
+
+$str;
+%]
+&lt;br&gt;
+&lt;p align=right&gt;
+
+&lt;i&gt;The [Everything I Ching] is brought to you by [The Gilded Frame] and [nate]&lt;/i&gt;
+&lt;p align=center&gt;&lt;font size=5&gt;[% linkNode($NODE, 're-divine') %]&lt;/font&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-07-28 14:41:14</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1735</hits>
+  <node_id>674792</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>674792</document_id>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>Everything I Ching</title>
+</node>

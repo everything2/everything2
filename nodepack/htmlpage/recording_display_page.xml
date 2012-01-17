@@ -1,0 +1,43 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>1957954</pagetype_nodetype>
+  <core>0</core>
+  <page>[%
+
+
+my $TAGNODE = getNode 'approved html tags', 'setting';
+my $TAGS=getVars($TAGNODE);
+
+my $text = htmlScreen($$NODE{description}, $TAGS);
+$text = parseLinks($text);
+
+my $str;
+$str.=&quot;&lt;h2&gt;&lt;a href='$$NODE{link}'&gt;audio file&lt;/a&gt;&lt;/h2&gt;&quot;;
+if ($$NODE{recording_of}!=0) {
+  $str.=&quot;&lt;h3&gt;A recording of &quot;.linkNode($$NODE{recording_of}).&quot;&lt;/h3&gt;&quot;;
+  $str.=&quot;&lt;h4&gt;Written by &quot;.linkNode(getNode($$NODE{recording_of})-&gt;{author_user}).&quot;&lt;/h4&gt;&quot;;
+}
+$str.=&quot;&lt;h4&gt;Read by &quot;.linkNode($$NODE{read_by}).&quot;&lt;/h4&gt;&quot;;
+$str.=&quot;$text&quot;;
+$str.='&lt;p align=&quot;right&quot;&gt;('.linkNode($NODE, 'edit', {'displaytype'=&gt;'edit', 'lastnode_id'=&gt;0}).&quot;)&lt;/p&gt;&quot; if canUpdateNode($USER, $NODE);
+ 
+return $str;
+
+
+%]</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-10-15 16:37:27</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1958977</htmlpage_id>
+  <hits>0</hits>
+  <node_id>1958977</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>recording display page</title>
+  <mimetype></mimetype>
+</node>

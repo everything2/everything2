@@ -1,0 +1,56 @@
+<node>
+  <nltext></nltext>
+  <parent_container>175986</parent_container>
+  <icon>http://images.everything2.com/img/random_nodes.gif</icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2000-03-19 20:56:09</createtime>
+  <lastupdate>1322103604</lastupdate>
+  <hits>34</hits>
+  <node_id>1922511</node_id>
+  <iconHeight>25</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>170</iconWidth>
+  <author_user>114</author_user>
+  <updateinterval>-1</updateinterval>
+  <package>0</package>
+  <nodelet_id>1922511</nodelet_id>
+  <nlcode>[%
+my @choices = ('cousin','sibling','grandpa','grandma');
+my $r = $choices[rand(@choices)];
+my @phrase = (
+	'Nodes your '.$r.' would have liked:',
+	'After stirring Everything, these nodes rose to the top:',
+	'Look at this mess the Death Borg made!',
+	'Just another sprinkling of '.($r&lt;0.5?'indeterminacy':'randomness'),
+	'The '.($r&lt;0.5?'best':'worst').' nodes of all time:',
+	($r&lt;0.5?'Drink up!':'Food for thought:'),
+	'Things you could have written:',
+	'What you are reading:',
+	'Nodes to '.($r&lt;0.5?'live by':'die for').':',
+	'Little presents from the Node Fairy:',
+);
+
+my $str;
+$str.='&lt;em&gt;'.$phrase[rand(int(@phrase))].&quot;&lt;/em&gt;\n&lt;ul class=\&quot;linklist\&quot;&gt;\n&quot;;
+
+my $limit = 13;
+my $len = 20;
+
+my $csr = $DB-&gt;sqlSelectMany('from_node','links', &quot;linktype=&quot;.getId(getNode('coollink','linktype')).&quot; and (select type_nodetype from node where node_id=links.from_node) = &quot;.getId(getNode('e2node','nodetype')).&quot; order by rand() limit $limit&quot;);
+
+while (my $n = $csr-&gt;fetchrow_hashref) {
+	my $node_title = getNodeById($n-&gt;{from_node},'light')-&gt;{title};
+	$node_title =~ s/(\S{$len})\S{4,}/$1.../go;
+	$str .= '&lt;li&gt;' . linkNode($n-&gt;{from_node}, $node_title, {lastnode_id=&gt;0}) . &quot;&lt;/li&gt;\n&quot;;
+}
+
+$str . '&lt;/ul&gt;' ;
+
+%]</nlcode>
+  <title>Cool Staff Picks</title>
+</node>

@@ -1,0 +1,107 @@
+<node>
+  <doctext>[%
+return '&lt;p&gt;You need to sign in or '
+	.linkNode(getNode('Create a New User','superdoc'), 'register')
+	.' to use this page.&lt;/p&gt;
+	&lt;!-- ' if ($$USER{node_id} == $HTMLVARS{guest_user});
+$HTMLVARS{pageheader} = '&lt;!-- at end --&gt;'.htmlcode('settingsDocs');
+
+htmlcode('openform', -id =&gt; 'pagebody');
+
+%][%
+
+#editor options
+
+my $UID = getId($USER);
+return unless ((exists $HTMLVARS{'group_content editors'}{$UID}) || (exists $HTMLVARS{'group_gods'}{$UID}));
+my $nl = &quot;&lt;br /&gt;\n&quot;;
+my $str = &quot;&lt;p&gt;&lt;strong&gt;Editor Stuff&lt;/strong&gt;\n&quot;;
+
+$str .= $nl . htmlcode('varcheckbox','killfloor_showlinks,Add HTML in the killing floor display for easy copy &amp; paste');
+
+$str .= $nl . htmlcode('varcheckbox','hidenodenotes,Hide Node Notes');
+
+$str .= $nl . htmlcode('varcheckbox', 'episection_classic,Use classic (i.e. non-collapsible) editor nodelet section.') unless htmlcode('isZen');
+
+$str . '&lt;/p&gt;';
+%]
+
+
+[%
+#macro setup
+
+my $uid = getId($USER);
+return unless ((exists $HTMLVARS{'group_content editors'}{$uid}) || (exists $HTMLVARS{'group_gods'}{$uid}));
+my $f = $query-&gt;param('sexisgood'); #end of form indicator
+my $l=768; #max length of each macro
+
+#key is allowed macro, value is the default
+#note: things like $1 are NOT supposed to be interpolated - that is done when the macro is executed
+my %allowedMacros = (
+'room' =&gt; '/say /msg $1 Just so you know - you are not in the default room, where most people stay. To get back into the main room, either visit {go outside}, or: go to the top of the &quot;other users&quot; nodelet, pick &quot;outside&quot; from the dropdown list, and press the &quot;Go&quot; button.',
+'newbie' =&gt; '/say /msg $1 Hello, your writeups could use a little work. Read [Everything University] and [Everything FAQ] to improve your current and future writeups. $2+'.&quot;\n&quot;.'/say /msg $1 If you have any questions, you can send me a private message by typing this in the chatterbox: /msg $0 (Your message here.)',
+'html' =&gt; '/say /msg $1 Your writeups could be improved by using some HTML tags, such as &amp;lt;p&amp;gt; , which starts a new paragraph. [Everything FAQ: Can I use HTML in my writeups?] lists the tags allowed here, and [E2 HTML tags] shows you how to use them.',
+'wukill' =&gt; '/say /msg $1 FYI - I removed your writeup $2+',
+'nv' =&gt; '/say /msg $1 Hey, I know that you probably didn\'t mean to, but advertising your writeups (&quot;[nodevertising]&quot;) in the chatterbox isn\'t cool. Imagine if everyone did that - there would be no room for chatter.',
+'misc1' =&gt; '/say /msg $0 Use this for your own custom macro. See [macro FAQ] for information about macros.'.&quot;\n&quot;.'/say /msg $0 If you have an idea of another thing to add that would be wanted by many people, give N-Wing a /msg.',
+'misc2' =&gt; '/say /msg $0 Yup, this is an area for another custom macro.'
+);
+my @ks = sort(keys(%allowedMacros));
+
+my $k; my $v;
+
+foreach $k (@ks) {
+if( (defined $query-&gt;param('usemacro_'.$k)) &amp;&amp; ($v=$query-&gt;param('usemacro_'.$k) eq '1') ) {
+	#possibly add macro
+	if( (defined $query-&gt;param('macrotext_'.$k)) &amp;&amp; ($v=$query-&gt;param('macrotext_'.$k)) ) {
+		$v =~ tr/\r/\n/; $v =~ s/\n+/\n/gs; #line endings are a pain
+		$v =~ s/[^\n\x20-\x7e]//gs; #could probably also allow \x80-\xfe
+		$v = substr($v,0,$l);
+		$v =~ s/\{/[/gs; $v =~ s/\}/]/gs; #hack - it seems you can't use square brackets in a superdoc :(
+		$$VARS{'chatmacro_'.$k} = $v;
+	}
+} elsif($f) {
+	#delete unwanted macro (but only if no form submit problems)
+	delete $$VARS{'chatmacro_'.$k};
+}
+}
+
+my $str = '&lt;p&gt;&lt;strong&gt;Macros&lt;/strong&gt;&lt;/p&gt;'.&quot;\n&quot;.'&lt;table cellspacing=&quot;1&quot; cellpadding=&quot;2&quot; border=&quot;1&quot;&gt;&lt;tr&gt;&lt;th&gt;Use?&lt;/th&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Text&lt;/th&gt;&lt;/tr&gt;'.&quot;\n&quot;;
+
+my $z;
+foreach $k (@ks) {
+	$v = $$VARS{'chatmacro_'.$k};
+	$z = ($v &amp;&amp; length($v)&gt;0) ? 1 : 0;
+	unless($z) { $v = $allowedMacros{$k}; }
+	$v =~ s/\[/{/gs; $v =~ s/\]/}/gs; #square-link-in-superdoc workaround :(
+	$str .= '&lt;tr&gt;&lt;td&gt;' .
+	$query-&gt;checkbox('usemacro_'.$k, $z, '1', '')
+	. '&lt;/td&gt;&lt;td&gt;&lt;code&gt;' . $k . '&lt;/code&gt;&lt;/td&gt;&lt;td&gt;' .
+	$query-&gt;textarea(-name=&gt;'macrotext_'.$k, -default=&gt;$v, -rows=&gt;6, -columns=&gt;65, -override=&gt;1)
+	. &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+}
+
+$str .= &quot;&lt;/table&gt;\n&quot;.'If you will use a macro, make sure the &quot;Use&quot; column is checked. If you won\'t use it, uncheck it, and it will be deleted. The text in the &quot;macro&quot; area of a &quot;non-use&quot; macro is the default text, although you can change it (but be sure to check the &quot;use&quot; checkbox if you want to keep it). Each macro must currently begin with &lt;code&gt;/say&lt;/code&gt; (which indicates that you\'re saying something). Note: each macro is limited to '.$l.' characters. Sorry, until a better solution is found, instead of square brackets, &amp;#91; and &amp;#93;, you\'ll have to use curly brackets, { and } instead. &lt;tt&gt;:(&lt;/tt&gt; There is more information about macros at [macro FAQ].&lt;/p&gt;';
+
+$str;
+%]
+
+[{closeform}]
+[%
+return ' --&gt;' if $$USER{node_id} == $HTMLVARS{guest_user};
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-04-18 22:46:16</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>1022032</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1022032</document_id>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>Admin Settings</title>
+</node>

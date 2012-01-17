@@ -1,0 +1,88 @@
+<node>
+  <doctext>[%
+my $uid = getId($USER);
+my $isRoot = exists $HTMLVARS{group_gods}{$uid};
+
+my $dailypoll = $query-&gt;param('dailypoll') if $isRoot;
+my $poll_id = $query-&gt;param(&quot;poll_id&quot;);
+my $oldpolls = $query-&gt;param(&quot;oldpolls&quot;)||0;
+my ($pollfilter, $pollLink, %oldPollParameter);
+
+if ($oldpolls) {
+	$pollLink = linkNode($$NODE{node_id}, 'Hide old polls');
+	%oldPollParameter = (oldpolls =&gt; 1);
+}else{
+	$pollfilter = {'poll_status !' =&gt; 'closed'};
+	$pollLink = linkNode($$NODE{node_id}, 'Show old polls', {oldpolls =&gt; 1});
+}
+
+if ($dailypoll){
+	$DB-&gt;sqlUpdate('e2poll', {poll_status =&gt; 'closed'}, &quot;poll_status='current'&quot;);
+	$DB-&gt;sqlUpdate('e2poll', {poll_status =&gt; 'current'}, &quot;e2poll_id=$poll_id&quot;);
+
+	htmlcode('addNotification', 'e2poll', '', {e2poll_id =&gt; $poll_id});
+}
+
+my ($PrevLink, $NextLink);
+my $numtoshow=8;
+
+my $startat = $query-&gt;param(&quot;startat&quot;)||0;
+if ($startat) {
+	my $finishat=$startat-$numtoshow;
+	$PrevLink=linkNode($NODE,'previous',{startat =&gt; $finishat, %oldPollParameter});
+}
+my @nodes = getNodeWhere($pollfilter, 'e2poll'
+	, &quot;e2poll_id DESC LIMIT $startat, $numtoshow&quot;);
+
+my $str;
+
+$str .= '&lt;p&gt;Go to the &lt;b&gt;'.linkNodeTitle('Everything User Poll[superdoc]').'&lt;/b&gt;.';
+$str .= '&lt;/p&gt;&lt;p&gt;'.$pollLink.'.' if $isRoot;
+$str .= '&lt;/p&gt;
+	&lt;ul&gt;';
+
+foreach my $n (@nodes) {
+	getRef $n;
+	$str .= '&lt;li&gt;'.htmlcode('showpoll', $n, 'show status');
+
+	if ($isRoot){
+		$str .= '&lt;p&gt;'
+		.($$n{poll_status} ne 'current'
+			? linkNode($$NODE{node_id}, 'make current'
+				, {poll_id =&gt; $$n{node_id}, dailypoll =&gt; 1}).' | '
+			: ''
+		)
+		.linkNode($n, 'edit', {displaytype =&gt; 'edit'})
+		.' | '
+		.linkNode($n, 'delete', {node_id =&gt; $$n{node_id}, op =&gt; 'nuke'})
+		.'&lt;/p&gt;';
+	}
+	$str .= '&lt;/li&gt;';
+}
+
+if (scalar @nodes == $numtoshow) {
+	$NextLink = linkNode($NODE, 'next'
+		, {startat =&gt; $startat + $numtoshow, %oldPollParameter});
+}
+	
+$str.= qq'&lt;/ul&gt;
+	&lt;p align=&quot;right&quot; class=&quot;pagination&quot;&gt;$PrevLink $NextLink&lt;/p&gt;';
+
+return $str;
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2004-11-19 18:28:22</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>50</hits>
+  <node_id>1685332</node_id>
+  <edittime>2011-10-03 10:51:53</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1685332</document_id>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>Everything Poll Directory</title>
+</node>

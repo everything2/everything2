@@ -1,0 +1,32 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-10-10 08:24:41</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1175803</node_id>
+  <htmlcode_id>1175803</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#ReadThis - C! writeups
+
+  my $str = '&lt;ul&gt;';
+  my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;, &quot;coolwriteups&quot;, &quot;&quot;, &quot;order by tstamp desc limit 15&quot;);
+
+  while(my $row = $csr-&gt;fetchrow_hashref()){
+    my $cw = getNodeById($$row{coolwriteups_id});
+    next unless($cw);
+    my $np = getNodeById($$cw{parent_e2node});
+    $str .= '&lt;li&gt;'.linkNode($cw, $$np{title}, {lastnode_id =&gt; 0});
+    $str .= ' &lt;small&gt;('.linkNode($np,'full',{lastnode_id =&gt;0}).&quot;)&lt;/small&gt;&lt;/li&gt;\n&quot;;
+  }
+
+  $csr-&gt;finish();
+$str.='&lt;/ul&gt;';
+  return $str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>ReadThis_coolwus</title>
+</node>

@@ -1,0 +1,39 @@
+<node>
+  <rawdata_id>1471557</rawdata_id>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-05-08 00:02:09</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1471557</node_id>
+  <type_nodetype>332487</type_nodetype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <datacode>function replyTo(f, s, c) {
+       if (c || document.forms[f].setvar_autofillInbox.checked) {
+          document.forms[f].message.value = &quot;/msg &quot;+s+&quot; &quot;;
+          document.forms[f].message.focus();
+       }
+}
+
+function replyToEddie (s) {
+       replyTo(2,s,1);
+}
+
+function clearReply(f) {
+	document.forms[f].message.value = &quot;&quot;;
+}
+
+function checkAll(f){
+    for (i=0; i &lt; document.forms[f].elements.length; i++) {
+      if(document.forms[f].elements[i].name.substring(0,9) == &quot;deletemsg&quot;)
+          {document.forms[f].elements[i].checked=true;}
+    }
+}
+
+</datacode>
+  <title>Gab Central Javascript</title>
+  <datatype></datatype>
+</node>

@@ -1,0 +1,16 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-10-13 13:34:34</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1372676</node_id>
+  <type_nodetype>153</type_nodetype>
+  <setting_id>1372676</setting_id>
+  <author_user>459692</author_user>
+  <vars>hideskratchlink=1&amp;pmsgTime=1&amp;no_notify_kill=1&amp;hideauthore2node=1&amp;nowhynovotes=1&amp;hidelastnoded=1&amp;powersChatter=1&amp;skratchShare=1&amp;hidemsgyou=1&amp;showmessages_replylink=1&amp;noVoteXP=1&amp;topicSeparator=1&amp;nullvote=1&amp;powersMsg=1&amp;chatterbox_msgs_descend=1&amp;hidemsgme=1&amp;getofflinemsgs=1&amp;showRawPrivateMsg=1&amp;info_authorsince_off=1&amp;informmsgignore=1&amp;hidevotedata=1&amp;no_coolnotification=1&amp;noSoftLinks=1&amp;mitextarea=1&amp;showuseractions=1&amp;splitChatter=1&amp;sortmyinbox=1&amp;topicCbox=1&amp;noTypoCheck=1&amp;pmsgDate=1</vars>
+  <package>0</package>
+  <title>exportable vars</title>
+</node>

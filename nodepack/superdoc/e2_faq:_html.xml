@@ -1,0 +1,110 @@
+<node>
+  <doctext>&lt;p&gt;&lt;big&gt;&lt;strong&gt;Can I use HTML in my writeups?&lt;/strong&gt;&lt;/big&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;[Yes]&lt;/strong&gt; you can, but only those in an &quot;approved tag list&quot;.&lt;/p&gt;
+&lt;p&gt;
+It should be noted that you CANNOT use HTML within 
+a [hard link] (within the square brackets).
+&lt;/p&gt;
+&lt;p&gt;
+The tags you can use and what attributes are allowed
+are listed below.  If you want to learn more about the HTML allowed here, you can visit the (rather large) [E2 HTML tags], or start at its [E2 HTML tags : Chapter 0|contents].&lt;/p&gt;
+
+&lt;p&gt;&lt;i&gt;See also&lt;/i&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[HTML]
+&lt;li&gt;[HTML Symbol Reference]
+&lt;li&gt;[How To Format Poems and Simple Html]
+&lt;li&gt;[E2 FAQ: Using Special HTML Characters]
+&lt;/ul&gt;
+
+&lt;p&gt;Approved Tags and Attributes:&lt;/p&gt;
+
+&lt;p&gt;&lt;table border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;2&quot;&gt;
+&lt;tr&gt;&lt;th&gt;tag&lt;/th&gt;&lt;th&gt;attribute&amp;#91;s&amp;#93;&lt;/th&gt;&lt;th&gt;meaning/use&lt;/th&gt;&lt;/tr&gt;
+[%
+my $node = getNode('approved html tags', getType('setting'));
+my $tags = getVars($node);
+my $str = '';
+my @approvedtags = keys(%$tags);
+
+#quick reference; be sure to comment out any tags with no description
+my %quickRef = (
+	'abbr'=&gt;'&lt;strong&gt;abbr&lt;/strong&gt;eviation',
+#	'acronym'=&gt;'',
+	'b'=&gt;'&lt;strong&gt;b&lt;/strong&gt;old text (He said &lt;b&gt;what&lt;/b&gt;?)',
+	'big'=&gt;'&lt;strong&gt;big&lt;/strong&gt;ger text (Ghosts say &lt;big&gt;Boo!&lt;/big&gt;)',
+	'blockquote'=&gt;'for a long quotation',
+	'br'=&gt;'line &lt;strong&gt;br&lt;/strong&gt;eak (starts a new line)',
+	'cite'=&gt;'citation',
+	'code'=&gt;'computer code ('.linkNode($USER).' wonders what &lt;code&gt;linkNode($USER)&lt;/code&gt; does.)',
+	'dd'=&gt;'&lt;strong&gt;d&lt;/strong&gt;efinition &lt;strong&gt;d&lt;/strong&gt;efinition',
+	'del'=&gt;'&lt;strong&gt;del&lt;/strong&gt;eted from editing',
+	'dl'=&gt;'&lt;strong&gt;d&lt;/strong&gt;efinition &lt;strong&gt;l&lt;/strong&gt;ist',
+	'dt'=&gt;'&lt;strong&gt;d&lt;/strong&gt;efinition &lt;strong&gt;t&lt;/strong&gt;erm',
+	'em'=&gt;'&lt;strong&gt;em&lt;/strong&gt;phasis (This is the &lt;em&gt;real&lt;/em&gt; one.)',
+	'h1'=&gt;'&lt;strong&gt;h&lt;/strong&gt;eading level &lt;strong&gt;1&lt;/strong&gt; (top, most general level)',
+	'h2'=&gt;'&lt;strong&gt;h&lt;/strong&gt;eading level &lt;strong&gt;2&lt;/strong&gt;',
+	'h3'=&gt;'&lt;strong&gt;h&lt;/strong&gt;eading level &lt;strong&gt;3&lt;/strong&gt;',
+	'h4'=&gt;'&lt;strong&gt;h&lt;/strong&gt;eading level &lt;strong&gt;4&lt;/strong&gt;',
+	'h5'=&gt;'&lt;strong&gt;h&lt;/strong&gt;eading level &lt;strong&gt;5&lt;/strong&gt;',
+	'h6'=&gt;'&lt;strong&gt;h&lt;/strong&gt;eading level &lt;strong&gt;6&lt;/strong&gt; (lowest, most detailed level)',
+	'hr'=&gt;'&lt;strong&gt;h&lt;/strong&gt;orizontal &lt;strong&gt;r&lt;/strong&gt;ule (a line across the page)',
+	'i'=&gt;'&lt;strong&gt;i&lt;/strong&gt;talics (The &lt;i&gt;Titantic&lt;/i&gt; was as unsinkable as a bowling ball.)',
+	'ins'=&gt;'&lt;strong&gt;ins&lt;/strong&gt;erted from editing',
+	'kbd'=&gt;'&lt;strong&gt;k&lt;/strong&gt;ey&lt;strong&gt;b&lt;/strong&gt;oar&lt;strong&gt;d&lt;/strong&gt; text (She keyed &lt;kbd&gt;ls -AlF&lt;/kbd&gt; to see her files.)',
+	'li'=&gt;'&lt;strong&gt;l&lt;/strong&gt;ist &lt;strong&gt;i&lt;/strong&gt;tem',
+#	'nbsp'=&gt;'',
+	'ol'=&gt;'&lt;strong&gt;o&lt;/strong&gt;rdered &lt;strong&gt;l&lt;/strong&gt;ist',
+	'p'=&gt;'&lt;strong&gt;p&lt;/strong&gt;aragraph',
+	'pre'=&gt;'&lt;strong&gt;pre&lt;/strong&gt;-formatted - use this for a large section of text that should be fixed-width',
+#	'q'=&gt;'',
+	's'=&gt;'&lt;strong&gt;s&lt;/strong&gt;trikeout - same as &lt;code&gt;strike&lt;/code&gt; (I &lt;s&gt;like&lt;/s&gt; love sugar.)',
+#	'samp'=&gt;'',
+	'small'=&gt;'&lt;strong&gt;small&lt;/strong&gt;er text (&quot;&lt;small&gt;Yes, I borged '.linkNode($USER).'&lt;/small&gt;,&quot; he whispered.)',
+	'strike'=&gt;'&lt;strong&gt;strike&lt;/strong&gt;out - same as &lt;code&gt;s&lt;/code&gt; (I &lt;strike&gt;want&lt;/strike&gt; must have that new PC.)',
+	'strong'=&gt;'&lt;strong&gt;strong&lt;/strong&gt; (&lt;strong&gt;Pop&lt;/strong&gt; goes the weasel.)',
+	'sub'=&gt;'&lt;strong&gt;sub&lt;/strong&gt;script (&lt;sub&gt;sub&lt;/sub&gt;script)',
+	'sup'=&gt;'&lt;strong&gt;sup&lt;/strong&gt;erscript (&lt;sup&gt;sup&lt;/sup&gt;erscript)',
+	'tt'=&gt;'&lt;strong&gt;t&lt;/strong&gt;eletype &lt;strong&gt;t&lt;/strong&gt;ext',
+	'u'=&gt;'&lt;strong&gt;u&lt;/strong&gt;nderline (Did you ever visit &lt;u&gt;http://www.everything2.com/&lt;/u&gt; ?)',
+	'ul'=&gt;'&lt;strong&gt;u&lt;/strong&gt;nordered &lt;strong&gt;l&lt;/strong&gt;ist',
+	'var'=&gt;'&lt;strong&gt;var&lt;/strong&gt;iable (You usually want to avoid &lt;var&gt;x&lt;/var&gt;/0 .)',
+#	''=&gt;'',
+#	''=&gt;'',
+);
+
+@approvedtags = sort(@approvedtags);
+foreach my $tag (@approvedtags) {
+	$str .= '&lt;tr&gt;&lt;td&gt;&lt;code&gt;'.$tag.'&lt;/code&gt;&lt;/td&gt;&lt;td&gt;';
+	$str .= (($$tags{$tag} eq '1')
+		? '-'
+		: '&lt;code&gt;'.join('&lt;/code&gt;, &lt;code&gt;',split(',',$$tags{$tag})).'&lt;/code&gt;'
+	);
+	$str .= '&lt;/td&gt;&lt;td&gt;';
+	$str .= $quickRef{$tag} if exists $quickRef{$tag};
+	$str .= &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+}
+$str;
+%]
+&lt;/table&gt;&lt;/p&gt;
+
+&lt;p&gt;Miscellaneous Notes:&lt;/p&gt;&lt;ul&gt;
+&lt;li&gt;&lt;b&gt;&quot;Comments&quot; are not allowed on the Everything system!&lt;/b&gt;
+However, if there are any other tags you'd like go ahead and &lt;a href=&quot;mailto:everything@slashdot.org&quot;&gt;mail me&lt;/a&gt; about it...&lt;/li&gt;
+&lt;li&gt;If you want to use square brackets in your writeups, do &lt;code&gt;&amp;amp;#91;&lt;/code&gt; for &amp;#91; (open square bracket) and &lt;code&gt;&amp;amp;#93;&lt;/code&gt; for &amp;#93; (close square bracket).&lt;/li&gt;
+&lt;/ul&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1998-07-08 11:06:01</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>3664</hits>
+  <node_id>165480</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>165480</document_id>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>E2 FAQ: HTML</title>
+</node>

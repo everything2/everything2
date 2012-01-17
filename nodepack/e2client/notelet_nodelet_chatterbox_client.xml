@@ -1,0 +1,44 @@
+<node>
+  <doctext>&lt;p&gt;Hello, and welcome to the [Notelet Nodelet] [Chatterbox Client]. This project's goal is to provide a button in your notelet nodelet that will allow you access to a dynamic [chatterbox] that refreshes every 30 seconds.&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;How is this different from other chatterbox clients?&lt;/b&gt; - Because you are calling it from the everything2 site, there are no [user authentication] issues. Of course, right now you can't submit messages, but once that is functional it will not require you to go to an untrusted third party.&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;What do I need to run this?&lt;/b&gt; - The current version is functioning in [Internet Explorer|IE] 5.5 and above. I have run some basic tests using [Phoenix] 0.4 and [Mozilla] 1.2, but those are not supported in this release.&lt;/p&gt;
+&lt;p&gt;For you IE users: This calls an ActiveX component to do the parsing. You may need to download the MSXML SDK at http://msdn.microsoft.com/library/default.asp?url=/library/en-us/xmlsdk/htm/sdk_intro_6g53.asp. Mozilla has the parsing built in natively, so it won't need anything special at all.&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;How do I get this working?!&lt;/b&gt; - Because of the limited amount of space in the [notelet nodelet], especially for [The Power Structure of Everything 2|lower level noders], I suggest copying the code into a .js file and hosting it somewhere you trust, then importing that. You are more than welcome to use the script below as is, I will try hard not to change the .js file I am hosting without testing it first.&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;I can't get it to work!&lt;/b&gt; - Please remember that this is [Alpha] quality code. If it doesn't work for you pleae /msg me with your [browser] (IE), [version] (5.5) and [platform] (Windows 98, Mac) and I will do my best to find out what is going on. &lt;/p&gt;
+&lt;h3&gt;The notelet nodelet code:&lt;/h3&gt;
+&lt;pre&gt;
+
+&amp;lt;script language=&quot;javascript&quot; src=&quot;http://www.cornetdesign.com/chatterbox.js&quot;&amp;gt;
+&amp;lt;/script&amp;gt;
+&amp;lt;form&amp;gt;&amp;lt;input type=&quot;button&quot; value=&quot;Chatterbox&quot; 
+onClick=&quot;javascript:callChatterbox()&quot;&amp;gt;&amp;lt;form&amp;gt;
+
+
+&lt;/pre&gt;
+&lt;p&gt;(Note: you may have to remove the line breaks from the above code)&lt;/p&gt;
+
+&lt;h3&gt;The .js code&lt;/h3&gt;
+&lt;p&gt;This code takes advantage of the capabilities of newer browsers to parse the [Document Object Model|DOM] of [XML] structures. By hitting the [Universal Message XML Ticker], then parsing that, we get the messages. It also helps [E2 Lag Suggestions for Noders|reduce server load]. Yea!&lt;/p&gt;
+&lt;p&gt;This is an early release of the code, so it may change. However, the latest &quot;stable code&quot; (we are talking [Javascript] here) will be available in a .js file at http://www.cornetdesign.com/chatterbox.js&lt;/p&gt;
+&lt;p&gt;If you have suggestions, concerns, complaints, etc, please /[msg] them to [Anml4ixoye|me]. [Over and Out|kThanx].&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Things I know are missing&lt;/b&gt; - lessee, [pipelinks], handling of /me, the fact that it is in a [textarea] box, ability to submit messages. Let me know if you have a feature or bug request not on this list.&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2003-04-03 19:35:29</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <dlurl>http://www.cornetdesign.com/chatterbox.js</dlurl>
+  <homeurl>http://www.cornetdesign.com/chatterbox.js</homeurl>
+  <hits>0</hits>
+  <node_id>1449422</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <e2client_id>1449422</e2client_id>
+  <type_nodetype>1261857</type_nodetype>
+  <version>0.3</version>
+  <document_id>1449422</document_id>
+  <author_user>938208</author_user>
+  <package>0</package>
+  <clientstr>Anml4ixoye</clientstr>
+  <title>Notelet Nodelet Chatterbox Client</title>
+</node>

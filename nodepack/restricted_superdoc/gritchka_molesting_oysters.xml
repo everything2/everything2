@@ -1,0 +1,299 @@
+<node>
+  <doctext>&lt;style type=&quot;text/css&quot;&gt;
+  TH {text-align: left}
+  TD.user    {background-color: #FDD}
+  TD.e2node  {background-color: #DDF}
+  TD.writeup {background-color: #DFD}
+  TD.hid {
+     color:       red;
+     font-weight: bold;
+  }
+  TD.nsh {
+     color:       blue;
+     font-weight: bold;
+  }
+&lt;/style&gt;
+
+Various experiments in teaching myself Perl. Let me know if you think there are any lag or privacy issues in these, or stupid programming faults (such as why I kept getting sporadic &quot;subroutine redefined&quot; errors).
+
+&lt;h4 id=&quot;latest&quot;&gt;Latest nodes and types&lt;/h4&gt;
+
+This gets all the nodes of any kind created over any stretch of node_id's, but by default looks at the last 100.
+
+[%
+
+# Why on earth does this often come up with a subroutine redefined error?
+##sub GetLatestNodeID {
+    my $qh = $DB-&gt;getDatabaseHandle()-&gt;prepare(
+        'SELECT * FROM node
+         ORDER BY node_id DESC
+         LIMIT 0,1'
+        );
+    $qh-&gt;execute();
+    my $latest = $qh-&gt;fetchrow_hashref();
+    $qh-&gt;finish();
+##    return $$latest{node_id};
+##}
+my $latestid = $$latest{node_id};
+
+my $str = htmlcode('openform','');
+$str .= 'Starting node_id: '.$query-&gt;textfield('start');
+$str .= 'or '.$query-&gt;checkbox('show_latest');
+$str .= '&lt;br&gt;limit: '.$query-&gt;textfield('limit', '100').'&lt;br&gt;';
+$str .= $query-&gt;radio_group('options', ['all', 'nodeshells', 'users'], 'all').'&lt;br&gt;';
+$str .= htmlcode('closeform','').'&lt;br&gt;';
+
+my $limit = $query-&gt;param('limit');
+return $str unless $limit;
+
+my $start = $query-&gt;param('start');
+my $show_latest = ($query-&gt;param('show_latest') eq 'on');
+return $str.'&lt;br&gt;Enter start XOR check latest, NOT both' if ($start &amp;&amp; $show_latest);
+$start = $latestid - $limit + 1 if $show_latest;
+return $str unless $start;
+
+# to do: yeah, yeah, check they're numeric
+
+my $all_nodes = ($query-&gt;param('options') eq 'all');
+my $nodeshells_only = ($query-&gt;param('options') eq 'nodeshells');
+my $users_only = ($query-&gt;param('options') eq 'users');
+
+my $e2node;
+my $nodetype;
+my $nodetypeh;
+my $nodetypetitle;
+my $creator;
+my $creatorh;
+#my $author;
+#my $authorh;
+my $td;
+my $is_nodeshell;
+my $links;
+my $links_small = 1;
+my $newbieness;
+my $newbie_small = 5000;
+
+$str .= '&lt;table&gt;&lt;tr&gt;';
+# Now for the table headers. All options want node_id and title.
+# - 'all' also wants author, type, h(hidden), and nsh(nodeshell)
+# - 'nodeshells' also wants author, links, and newbieness
+# - 'users' also wants real name and e-mail address
+
+$str .= '&lt;th&gt;node_id&lt;/th&gt; &lt;th&gt;title&lt;/th&gt;';
+if ($all_nodes)
+    {$str .= '&lt;th&gt;author&lt;/th&gt; &lt;th&gt;type&lt;/th&gt; &lt;th&gt;hid?&lt;/th&gt; &lt;th&gt;nsh?&lt;/th&gt;';}
+elsif ($nodeshells_only)
+    {$str .= '&lt;th&gt;author&lt;/th&gt; &lt;th&gt;links&lt;/th&gt; &lt;th&gt;newbieness&lt;/th&gt;';}
+elsif ($users_only)
+    {$str .= '&lt;th&gt;name&lt;/th&gt; &lt;th&gt;address&lt;/th&gt;';}
+
+for (my $nodeid = $start; $nodeid &lt; $start + $limit; $nodeid++) {
+    $e2node = getNodeById($nodeid);
+    next unless $e2node;
+
+    $nodetype = $$e2node{type_nodetype};
+    $nodetypeh = getNode($nodetype);
+    $nodetypetitle = $$nodetypeh{title};
+
+    next if ($nodetypetitle eq 'category'); # these always follow user
+
+    next if ($users_only &amp;&amp; ($nodetypetitle ne 'user'));
+
+    $$e2node{group} ||= ();  # copied from Your Nodeshells
+    $is_nodeshell = (($nodetypetitle eq 'e2node') &amp;&amp; (!$$e2node{group}));
+    next if ($nodeshells_only &amp;&amp; !$is_nodeshell);
+
+    $str .= '&lt;tr&gt;&lt;td&gt;'.$nodeid.'&lt;/td&gt;';
+
+    $td = '&lt;td&gt;';
+    if ($all_nodes) {
+        # colour the lines differently by type, for some common types
+        if ($nodetypetitle eq 'user')
+            {$td = '&lt;td class=&quot;user&quot;&gt;'}
+        elsif ($nodetypetitle eq 'e2node')
+            {$td = '&lt;td class=&quot;e2node&quot;&gt;'}
+        elsif ($nodetypetitle eq 'writeup')
+            {$td = '&lt;td class=&quot;writeup&quot;&gt;'}
+    }
+    $str .= $td.linkNode($e2node).'&lt;/td&gt;';
+
+    if ($all_nodes || $nodeshells_only) {
+        $creator = $$e2node{author_user};
+        $creatorh = getNode($creator);
+        if ($creatorh) {
+            $str .= '&lt;td&gt;'.linkNode($creatorh).'&lt;/td&gt;';
+            # to do: also show createdby_user if author_user is root
+        }
+    }
+
+    if ($all_nodes) {
+        $str .= $td.$nodetypetitle.'&lt;/td&gt;';
+
+        if ($$e2node{notnew})
+            {$str .= '&lt;td class=&quot;hid&quot;&gt;h&lt;/td&gt;';}
+        else
+            {$str .= '&lt;td&gt;&amp;nbsp;'.'&lt;/td&gt;';}
+
+        if ($is_nodeshell)
+            {$str .= '&lt;td class=&quot;nsh&quot;&gt;nsh&lt;/td&gt;';}
+        else
+            {$str .= '&lt;td&gt;&amp;nbsp;'.'&lt;/td&gt;';}
+    }
+
+    if ($nodeshells_only) {
+    # For nodeshells, show number of links, and how new the creator was
+    # - later will bold the very new, exclude editors, etc.
+    # the fewer links, the less likely it is to be a good nodeshell
+        $links = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;links&quot;, &quot;from_node=$$e2node{node_id}&quot;);
+        ##$str .= '&lt;td&gt;'.&amp;boldifsmall($links, $links_small).'&lt;/td&gt;';
+        $links = '&lt;b&gt;'.$links.'&lt;/b&gt;' if ($links &lt; $links_small);
+        $str .= '&lt;td&gt;'.$links.'&lt;/td&gt;';
+        $newbieness = $nodeid - $$creatorh{node_id};
+        ##$str .= '&lt;td&gt;'.&amp;boldifsmall($newbieness, $newbie_small).'&lt;/td&gt;';
+        $newbieness = '&lt;b&gt;'.$newbieness.'&lt;/b&gt;' if ($newbieness &lt; $newbie_small);
+        $str .= '&lt;td&gt;'.$newbieness.'&lt;/td&gt;';
+    }
+
+    if ($users_only) {
+        $str .= '&lt;td&gt;'.$$e2node{realname}.'&lt;/td&gt;';
+        $str .= '&lt;td&gt;'.$$e2node{email}.'&lt;/td&gt;';
+    }
+
+    $str .= '&lt;/tr&gt;';
+}
+$str .= '&lt;/table&gt;';
+
+# What I would like to do now is put the update start value in its box
+
+return $str;
+
+## dammit, delete the bloody thing until I know why it causes errors
+##sub boldifsmall {
+##    my ($number, $limit) = @_;
+##    my $text = $number;
+##    $text = '&lt;b&gt;'.$number.'&lt;/b&gt;' if $number &lt;= $limit;
+##    return $text;
+##}
+
+%]
+
+
+
+&lt;hr&gt;
+&lt;h4 id=&quot;nodeshells&quot;&gt;Nodes by user&lt;/h4&gt;
+
+Like user search, but dispensing with all the sorting and filters, since I only want the most recent, including nodeshells. I want this for newbies and irregular users, mainly to track down their contribution of nodeshells versus nodes.
+
+[%
+my $str = htmlcode('openform', '');
+$str .= 'User: '.$query-&gt;textfield('username');
+$str .= ' limit: '.$query-&gt;textfield('limit', '100').'&lt;br&gt;';
+$str .= $query-&gt;radio_group('show_what', ['writeups','nodeshells','e2nodes'], 'writeups').'&lt;br&gt;';
+$str .= htmlcode('closeform', '');
+
+my $username  = $query-&gt;param('username');
+my $limit = $query-&gt;param('limit');
+return $str unless ($username and $limit);
+
+
+my $user = getNode($username, 'user');
+return $str.&quot;No such user $username&quot; unless $user;
+
+my $show_type;
+if ($query-&gt;param('show_what') eq 'writeups')
+    {$show_type = 'writeup';}
+else
+    {$show_type = 'e2node';}
+my $nodeshells_only = ($query-&gt;param('show_what') eq 'nodeshells');
+# To add: an option of all (requires SELECT * FROM node,writeup).
+# Another problem: limit of e.g. 100 nodeshells selects 100 e2nodes
+#     and only displays the lesser number that are nodeshells
+
+my $qh = $DB-&gt;getDatabaseHandle()-&gt;prepare (
+    'SELECT * FROM node
+     WHERE author_user = '.getId($user)
+     .' AND type_nodetype = '.getId(getType($show_type))
+     .' ORDER BY createtime DESC'
+     .' LIMIT 0,'.$limit
+    );
+$qh-&gt;execute();
+my @nodes;
+while (my $node = $qh-&gt;fetchrow_hashref()) {
+    push(@nodes, $node);
+}
+$qh-&gt;finish();
+
+my $ct = 0;
+my $e2node;
+my $is_nodeshell;
+foreach my $node (@nodes) {
+    if ($nodeshells_only) {
+        $e2node = getNodeById($$node{node_id});
+        # looks damned redundant to me, but needs it to work
+        next if defined $$e2node{group};
+    }
+    $str .= '&lt;br&gt;'.$$node{node_id}.' '.linkNodeTitle($$node{title});
+    $ct++;
+}
+$str .= '&lt;br&gt;No nodes to list for '.linkNodeTitle($username).'.' unless $ct;
+
+return $str;
+
+%]
+
+
+
+&lt;hr&gt;
+&lt;h4 id=&quot;update&quot;&gt;Update&lt;/h4&gt;
+Now for some relatively harmless field on which to practise updating. Let's adapt the [Renunciation Chainsaw|Change author] code to work on nodeshells. (Though in fact the [Quick Rename] code is much easier to understand.)
+[%
+my $str = htmlcode('openform', '');
+$str .= 'Nodeshell: '.$query-&gt;textfield('nodeshell').'&lt;br&gt;';
+$str .= 'Old creator: '.$query-&gt;textfield('oldcreator');
+$str .= 'New creator: '.$query-&gt;textfield('newcreator').'&lt;br&gt;';
+$str .= htmlcode('closeform', '');
+
+my $nodeshell  = $query-&gt;param('nodeshell');
+my $oldcreator = $query-&gt;param('oldcreator');
+my $newcreator = $query-&gt;param('newcreator');
+return $str unless ($nodeshell and $oldcreator and $newcreator);
+# $oldcreator not strictly necessary, but is sanity check
+
+my $nodeshellh = getNode($nodeshell, 'e2node');
+return $str.'No such e2node '.linkNodeTitle($nodeshell) unless $nodeshellh;
+my $oldcreatorh = getNode($oldcreator, 'user');
+return $str.'No such user '.linkNodeTitle($oldcreator) unless $oldcreatorh;
+my $newcreatorh = getNode($newcreator, 'user');
+return $str.'No such user '.linkNodeTitle($newcreator) unless $newcreatorh;
+
+unless ($$nodeshellh{createdby_user} == $$oldcreatorh{user_id})
+    {return $str.linkNodeTitle($nodeshell).' was not created by '.linkNodeTitle($oldcreator);}
+
+$nodeshellh-&gt;{createdby_user} = $$newcreatorh{user_id};
+$nodeshellh-&gt;{author_user}    = $$newcreatorh{user_id};
+updateNode($nodeshellh, -1);
+
+$str .= 'Okay, reassigned '.linkNodeTitle($nodeshell).' from '.$oldcreator.' to '.$newcreator;
+return $str;
+%]
+
+
+&lt;hr&gt;
+&lt;h4&gt;Editing writeup text&lt;/h4&gt;
+
+&lt;i&gt;to be pondered...&lt;/i&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2005-01-08 11:28:17</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1692099</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1692099</document_id>
+  <author_user>898906</author_user>
+  <package>0</package>
+  <title>Gritchka molesting oysters</title>
+</node>

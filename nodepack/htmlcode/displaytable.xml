@@ -1,0 +1,88 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-04 00:14:10</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>175</node_id>
+  <htmlcode_id>175</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># This generates an HTML table that contains the fields
+# of a database table.  The output is similar to what
+# you get when 'show columns from $table' is executed.
+my ($table, $edit) = @_;
+my @fields = $DB-&gt;getFieldsHash($table);
+my $field;
+my $fieldname;
+my $value;
+my $str = &quot;&quot;;
+
+$edit = 0 if(not defined $edit);
+
+$str .= &quot;&lt;table border=1 width=400&gt;\n&quot;;
+
+$field = $fields[0];
+
+  $str .= &quot; &lt;tr&gt;\n&quot;;
+foreach $fieldname (keys %$field)
+{
+  $str .= &quot;  &lt;td bgcolor=\&quot;#cccccc\&quot;&gt;$fieldname&lt;/td&gt;\n&quot;;
+}
+
+$str .= &quot;  &lt;td bgcolor=\&quot;#cccccc\&quot;&gt;Remove Field?&lt;/td&gt;\n&quot; if($edit);
+$str .= &quot; &lt;/tr&gt;\n&quot;;
+
+foreach $field (@fields)
+{
+  $str .= &quot; &lt;tr&gt;\n&quot;;
+  foreach $value (values %$field)
+  {
+    $value = &quot;&amp;nbsp;&quot; if($value eq &quot;&quot;); # fill in the blanks
+    $str .= &quot;  &lt;td&gt;$value&lt;/td&gt;\n&quot;;
+  }
+  $str .= &quot;  &lt;td&gt;&quot; .
+    $query-&gt;checkbox(-name =&gt; $$field{Field} . &quot;REMOVE&quot;,
+        -value =&gt; 'REMOVE',
+        -label =&gt; 'Remove?') .
+    &quot;  &lt;/td&gt;\n&quot; if($edit);
+  $str .= &quot; &lt;/tr&gt;\n&quot;;
+}
+
+$str .= &quot;&lt;/table&gt;\n&quot;;
+
+if($edit)
+{
+  $str .= &quot;&lt;br&gt;\n&quot;;
+  $str .= &quot;Add new field:&lt;br&gt;&quot;;
+  $str .= &quot;Field Name: &quot;;
+  $str .= $query-&gt;textfield( -name =&gt; &quot;fieldname_new&quot;,
+      -default =&gt; &quot;&quot;,
+      -size =&gt; 30,
+      -maxlength =&gt; 50);
+  $str .= &quot;&lt;br&gt;Field type: &quot;;
+  $str .= $query-&gt;textfield( -name =&gt; &quot;fieldtype_new&quot;,
+      -default =&gt; &quot;&quot;,
+      -size =&gt; 15,
+      -maxlength =&gt; 20);
+  $str .= &quot; (i.e. int(11), char(32), text, etc.)&quot;;
+  $str .= &quot;&lt;br&gt;Default value: &quot;;
+  $str .= $query-&gt;textfield( -name =&gt; &quot;fielddefault_new&quot;,
+      -default =&gt; &quot;&quot;,
+      -size =&gt; 50,
+      -maxlength =&gt; 50);
+  $str .= &quot;&lt;br&gt;\n&quot;;
+  $str .= $query-&gt;checkbox(-name =&gt; &quot;fieldprimary_new&quot;,
+      -value =&gt; &quot;primary&quot;,
+      -label =&gt; &quot;Primary Key?&quot;);
+  $str .= &quot;&lt;br&gt;\n&quot;;
+}
+
+$str;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>113</author_user>
+  <package>0</package>
+  <title>displaytable</title>
+</node>

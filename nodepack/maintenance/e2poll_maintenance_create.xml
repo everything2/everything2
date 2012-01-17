@@ -1,0 +1,47 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2004-11-19 07:27:51</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>10</hits>
+  <node_id>1685267</node_id>
+  <htmlcode_id>1685267</htmlcode_id>
+  <maintenance_id>1685267</maintenance_id>
+  <checks_arguments>0</checks_arguments>
+  <maintaintype>create</maintaintype>
+  <code>my ( $POLL ) = @_;
+
+getRef( $POLL );
+
+unless ($$POLL{title} &amp;&amp; $query -&gt; param('e2poll_question')) {
+	nukeNode($POLL, -1);
+	$query -&gt; param('node_id', getId(getNode('Everything Poll Creator', 'superdoc')));
+	return;
+}
+
+$$POLL{poll_author}=$$POLL{author_user};
+$$POLL{author_user} = getId(getNode('Content Editors', 'usergroup'));
+
+my @doctext = ();
+$$POLL{e2poll_results} = 0;
+
+for (1 .. 12){
+	if (my $queryVal = $query-&gt;param(&quot;option$_&quot;)){
+		push @doctext, $queryVal;
+		$$POLL{e2poll_results} .= ',0';
+	}
+};
+
+push @doctext, 'None of the above';
+$$POLL{doctext} = join &quot;\n\n&quot;, @doctext;
+
+updateNode( $POLL, -1 );
+</code>
+  <type_nodetype>150</type_nodetype>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <maintain_nodetype>1685242</maintain_nodetype>
+  <title>e2poll maintenance create</title>
+</node>

@@ -1,0 +1,39 @@
+<node>
+  <doctext>&lt;p&gt;
+&lt;b&gt;Cbriver&lt;/b&gt; is a bidirectional bridge between the everything2 chatterbox and irc.
+&lt;p&gt;
+Whatever anyone speaks in the chatterbox, cbriver copies to the irc channel #cbriver on the server irc.freenode.net.
+&lt;p&gt;
+Cbriver also allows you to talk on the chatterbox simply by writing to an irc channel.  
+&lt;p&gt;
+For instructions on how to use cbriver, see the &lt;a href=&quot;http://www.math.bme.hu/~ambrus/pu/cbstream/&quot;&gt;Cbstream and cbriver FAQ&lt;/a&gt;
+&lt;p&gt;
+Now announced in a node: [cbriver].
+
+
+
+
+
+
+
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-11-12 09:50:49</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <dlurl>irc://irc.freenode.net/#cbriver</dlurl>
+  <homeurl>http://www.math.bme.hu/~ambrus/pu/cbstream/</homeurl>
+  <hits>0</hits>
+  <node_id>1916878</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <e2client_id>1916878</e2client_id>
+  <type_nodetype>1261857</type_nodetype>
+  <version>1.0</version>
+  <document_id>1916878</document_id>
+  <author_user>1669361</author_user>
+  <package>0</package>
+  <clientstr>cbriver</clientstr>
+  <title>cbriver</title>
+</node>

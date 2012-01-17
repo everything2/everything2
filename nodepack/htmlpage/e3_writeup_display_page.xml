@@ -1,0 +1,47 @@
+<node>
+  <parent_container>1988788</parent_container>
+  <pagetype_nodetype>117</pagetype_nodetype>
+  <core>0</core>
+  <page>&lt;h2 class=&quot;topic&quot;&gt;[%
+my $PARENT = getNodeById($$NODE{parent_e2node});
+
+return &quot;This node is unparented. Please contact an administrator to have this repaired&quot; unless($PARENT and $$PARENT{group} and my @grp = @{getNodeById($$NODE{parent_e2node})-&gt;{group}});
+my $nwriteups = scalar(@grp);
+my $parent_e2node = getNodeById($$NODE{parent_e2node});
+my $nodeTitle=$$parent_e2node{title};
+return &quot;(&quot;.linkNode($parent_e2node,&quot;see all of $nodeTitle&quot;).(($nwriteups == 1)?(&quot;, no other writeups in this node)&quot;):(($nwriteups == 2)?(&quot;, there is 1 more in this node)&quot;):(&quot;, there are &quot;.($nwriteups-1).&quot; more in this node)&quot;))); 
+
+%]&lt;/h2&gt;
+[{firmlinks}]
+[{votehead}]
+&lt;div class='item'&gt;
+&lt;div class='contentinfo contentheader writeup_title'&gt;
+[{e3_displaywriteuptitle:0,timestamp}]
+&lt;/div&gt;
+&lt;div class=&quot;content writeup_text&quot;&gt;
+  [{displaywriteuptext}]
+&lt;/div&gt;
+&lt;div class=&quot;contentinfo contentfooter&quot;&gt;
+[{e3_displayWriteupFooter}]
+&lt;/div&gt;
+&lt;/div&gt;
+
+
+
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-07-08 16:03:57</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1988830</htmlpage_id>
+  <hits>0</hits>
+  <node_id>1988830</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>470183</author_user>
+  <package>0</package>
+  <ownedby_theme>1988787</ownedby_theme>
+  <title>e3 writeup display page</title>
+  <mimetype></mimetype>
+</node>

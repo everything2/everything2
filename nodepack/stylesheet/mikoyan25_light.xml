@@ -1,0 +1,473 @@
+<node>
+  <doctext>#header					{
+						position: absolute;
+						top: 4px;
+						left: 0px;
+						right: 10px;
+						height: 1px;
+						z-index: 25;
+						padding-left: 10px;
+						padding-top: 10px;
+						padding-bottom: 10px;		}
+#e2logo 				{
+						position: absolute; 
+						left: 10px; 
+						top: 0px;
+						right: 0px;
+						z-index: 50;
+						margin-top: 5px;
+						padding-bottom: 5px;
+						padding-left: 5px;
+						font-family: Verdana;
+						font-style: italic;
+						font-weight: bold;
+						font-size: 50px;
+						background-color: #C8C8C8;	}
+#e2logo a				{
+						color: white;
+						text-decoration: none;		}
+#searchform				{
+						position: absolute;
+						left: 10px;
+						top: 81px;
+						width: 250px;
+						height: 80px;
+						padding-top: 8px;
+										}
+#searchform input			{	display: inline;		}
+#frontpage h1				{	margin-top: 0px;		}
+#node_search				{
+						display: inline;
+						width: 183px;			}
+#searchform label 			{
+						float: left;
+						clear: left;
+						margin-top: 5px;
+						font-family: sans-serif;
+						font-size: 75%;
+						font-weight: bold;
+						text-align: left;		}
+
+/* 'search' button and 'talk' button in catbox */
+#search_submit,
+#talk_button input			{	width: 54px;			}
+#message				{	width: 183px;			}
+
+#epicenter_zen				{
+						background-color: transparent;
+						color: white;
+						position: absolute;
+						top: 15px;
+						right: 10px;
+						text-align: right;
+						z-index: 100;			}
+#epicenter_zen a			{	
+						color: white;
+						font-weight: bold;		}
+#epicenter_zen a:hover			{	text-decoration: underline;	}
+
+/*displays zen epicenter correctly for ed cooled nodes, otherwise is broken.*/
+
+/*
+#epicenter_zen_info			{	clear: none; 
+						float: right; 			}
+#voteInfo				{	clear: none;
+						float: left;			}
+#epicenter_zen_commands			{	clear: none; 
+						float: right; 
+						margin-top: -15px;		} */
+
+#wrapper				{
+						position: absolute;
+						top: 10px;
+						left: 0px;
+						width: 100%;
+						height: 100%;
+						z-index: 0;			}
+#sidebar				{
+						position: absolute;
+						top: 178px;
+						left: 10px;
+						width: 240px;
+						padding-top: 0px;
+						padding-bottom: 10px;
+						padding-right: 10px;		}
+#chatterlight_NW 			{
+						float: left;
+						clear: left;
+						width: 240px;
+						padding-right: 10px;
+						padding-bottom: 10px;
+						border-style: none solid none none;
+						border: thin;			} 
+#mainbody				{
+						z-index: 1;
+						position: absolute;
+						top: 75px;
+						left: 260px;
+						right: 10px;
+						padding-top: 9px;
+						padding-left: 10px;		}
+#mainbody h1				{	margin-top: 0px;		}
+#chatterlight_mainbody 			{ 
+						z-index: 1;
+						position: absolute;
+						top: 0px;
+						left: 260px;
+						right: 10px;
+						padding-top: 10px;
+						padding-left: 10px;
+										}
+#announcements,
+#footer,
+.type, 
+.clear,
+#printlink,
+#chatterlight_hints			{	display:none			}
+#writeup_list,
+#writeup_faves				{	list-style-type: none;		}
+#writeup_list li,
+#writeup_faves li			{	margin-left: -40px;		}
+#notifications li			{	margin-left: -27px;		}
+#writeup_list li			{	margin-bottom: 2px;		}
+
+#writeup_faves li			{
+						margin-bottom: 10px;
+						padding-bottom: 10px;
+						border: thin white;
+						border-style: none none solid none;
+										}
+#writeup_list li .writeupmeta author	{}
+#writeup_list li .writeupmeta author a	{}
+#writeup_list li .writeupmeta title	{}
+#writeup_list li .writeupmeta title	{}
+#writeup_faves .author{
+						display: inline;
+						text-align: left;
+						background-color: transparent;	}
+#writeup_faves .author a		{
+						text-decoration: none;
+						font-weight: bold;
+						color: #808080;			}
+#writeup_faves .author a:hover		{
+						text-decoration: underline;	}
+#nodelet_91 strong			{	text-decoration: underline;	}
+.author					{
+						background-color: #C8C8C8;
+						display: block;
+						text-align: center;
+						padding-bottom: 1px;		}
+.author a				{
+						color: white;
+						font-weight: bold;
+						text-decoration: none;		}
+.author a:hover				{	text-decoration: underline;	}
+.topic, .topic a			{
+						font-weight: normal;
+						text-decoration: none;
+						font-size: 12px;		}
+.topic a { 					/*color: black;*/
+						background-color: white;
+						font-weight: bold;
+										}
+topic a:hover				{	text-decoration: underline;	}
+body, div, p, li, dd, td, th		{
+						background-color: white;
+						font-size: 12px;
+						font-family: Arial, sans-serif;
+						color: #808080;}
+h1 					{
+						font-size: 150%;
+						font-weight: bold;		}
+h2 					{
+						font-size: 130%;
+						font-weight: bold;		}
+h3 					{
+						font-size: 120%;
+						font-weight: bold;		}
+h1 .populated, h1 a .populated,
+h2 .populated, h2 a .populated,
+h3 .populated, h3 a .populated		{
+/*						color: black;*/
+						background-color: white;
+										}
+big			 		{	font-size: 110%;		}
+small			 		{	font-size: 90%;			}	
+a					{
+						color: #808080;
+						font-weight: bold;
+						text-decoration: none;		}
+a:hover 				{	text-decoration: underline;	}
+.oddrow					{
+/*						color: white;*/
+						color; #808080;
+						background-color: #C8C8C8;	}
+.oddrow td				{
+						padding-bottom: 2px;
+						padding-top: 2px;		}
+
+.oddrow a				{
+						font-weight: bold;
+/*						color: white;*/
+						color; #808080;
+						text-decoration: none;		}
+.oddrow a:hover				{	text-decoration: underline;	}
+.evenrow td				{
+						background-color: #C8C8C8;
+						padding-bottom: 2px;
+						padding-top: 2px;
+						color: white;			}
+.evenrow a				{
+						background-color: #C8C8C8;
+						margin-bottom: 4px;
+						text-decoration: none;
+						color: white;			}
+.evenrow a:hover			{	text-decoration: underline;	}
+#softlinks				{
+						padding-bottom: 10px;
+						border-style: none none solid none;
+										}
+.nodelet h2 				{
+						display: block;
+						text-align: center;
+						background-color: #C8C8C8;
+						color: white;			}
+.writeup 				{
+						padding-bottom: 10px;
+						margin-bottom: 10px;
+						margin-top: 20px;	
+						border: thin;	
+						border-style: none none solid none;
+										}
+#welcome_message			{
+/*						border: thin;
+						border-style: none none solid none;*/
+						padding-bottom: 22px;
+						margin-bottom: 0px;		}
+#loglinks				{
+						display: none;
+						padding-top: 10px;
+						padding-bottom: 10px;
+						border-style: none none solid none;
+						border: thin;			}
+#loglinks table				{	width: 100%			}
+#loglinks td				{	width: 25%;
+						padding-left: 30px;		
+						padding-bottom: 10px;		}
+#cooluserpicks				{
+						float: left;
+						width: 50%;
+						list-style-type: none;
+						word-wrap: break-word;		}
+#cooluserpicks h3			{
+						color: white;
+						padding-top: 1px;
+						padding-bottom: 1px;
+						background-color: #C8C8C8;
+						width: 100%;			}
+#cooluserpicks h3 a			{	color: white;			}
+#cooluserpicks h3 a:hover		{	text-decoration: underline;	}
+
+#cooluserpicks li			{
+						font-size: 10px;
+						list-style-type: none;
+						word-wrap: break-word;
+						margin-left: -40px;
+										}
+#cooluserpicks li a			{
+						font-weight: normal;
+										}
+#cooluserpicks li a:hover		{	text-decoration: underline;	}
+
+#staff_picks				{	float: right;
+						clear: right;
+						width: 50%;			}
+#staff_picks li,
+#staff_picks li a			{	font-weight: normal;
+						list-style-type: none;
+						word-wrap: break-word;
+						font-size: 10px;
+						margin-left: -20px;		}
+.staff_pick a:hover			{	text-decoration: underline;	}
+
+#staff_picks h3 a			{	font-weight: bold;
+						font-size: 14px;
+						color: white;
+						background-color: #C8C8C8;	}
+
+#staff_picks h3				{	width: 100%
+						padding-bottom: 1px;
+						padding-top: 2px;
+						color: white;
+						background-color: #C8C8C8;	}
+
+#creamofthecool				{
+						clear: both;
+					}
+#creamofthecool_title,
+#creamofthecool_title a,
+#creamofthecool_title a .populated
+{
+						background-color: #C8C8C8;
+						font-size: 20px;
+						padding-top: 1px;
+						padding-bottom: 1px;
+						margin-top: 10px;
+						margin-bottom: 0px;
+						color: white;			}
+#creamofthecool_title .populated	{	color: white;			}
+
+.cotc_info				{
+						border: thin;
+						border-style: none none solid none;
+						padding-top: 10px;
+/*						margin-top: 19px;*/
+						margin-bottom: 10px;
+						margin-left: 0px;
+						margin-right: 0px;		}
+
+.cotc_info a				{ 
+						text-decoration: none;
+						font-weight: bold;		}
+.cotc_info a:hover			{	text-decoration: underline;	}
+
+#cotc .cotc_text			{
+						margin-left: -2px;
+						margin-right: 1px;		}
+
+#cotc .cotc_text a			{	
+						font-weight: bold;
+						text-decoration: none;		}
+#cotc .cotc_text a:hover 		{	text-decoration: underline;	}
+
+textarea				{
+						width: 100%;			}
+.nodetitle				{
+						background-color: #C8C8C8;
+						color: white;
+						padding-top: 1px;
+						padding-bottom: 1px;
+						font-size: 20px;		}
+.writeup_title a			{
+						font-weight: bold;
+						text-decoration: none;
+										}
+.writeup_title a:hover			{	text-decoration: underline;	}
+.writeup_text				{
+						margin-top: 10px;
+						margin-bottom: 10px;
+						line-height: 13pt;		}
+
+/*.writeup_text h3 .populated,
+.writeup_text h2 .populated,
+					{	background-color: white;
+						color: #000000;
+										}*/
+.cup_more				{	margin-bottom: 10px;		}
+#frontpage_news 			{	float: left;
+						clear: both;			}
+#frontpage_news_title 			{	margin-top: 10px;
+						font-size: 20px;
+						background-color: #C8C8C8;}
+#frontpage_news_title a			{	color: white;
+						background-color: #C8C8C8;
+						padding-bottom: 0px;
+}
+.weblog_item .wl_title			{
+						border: thin;
+						border-style: none none solid none;
+						margin-bottom: 5px;
+						margin-top: 20px;
+										}
+.wl_date, .wl_author			{	display: inline;		}
+
+#frontpage_news .wl_text		{
+						position: static;
+						margin-top: 5px;
+						margin-bottom: 10px;		}
+#frontpage_news .wl_text .populated	{
+						font-size: 12px;
+						position: static;
+										}
+#frontpage_news .wl_links		{	margin-bottom: 20px;		}
+
+.nodetype_1854352 #mainbody form:after	{
+						display: block ;
+						margin-top: 20px;
+						content: &quot;please /msg archiewood if anything doesn't display properly under this theme.&quot; ;
+						font-weight: bold ;		}
+
+#homenodepicbox 			{
+						width: 50%;
+						float: right;
+						margin-right: -10px;		}
+#homenodeheader dl 			{
+						margin-top: 0px;
+						width: 50%;
+						float: left;
+						clear: left;
+						display: block;			}
+#homenodeheader dt 			{
+						display: block;
+						padding: 2px;
+						background-color: #C8C8C8;
+						color: white;
+										}
+#homenodeheader input			{					}
+#homenodeheader dd 			{	padding: 2px;			}
+#homenodetext 				{
+						float: left;
+						clear: left;
+						padding-top: 10px;
+						padding-bottom: 10px;		}
+#bookmarks				{
+						float: left;
+						clear: left;			}
+.writeup_add				{
+						margin-top: 10px;
+						margin-bottom: 10px;		}
+
+#nodelet_170070 .nodelet_content	{	overflow: auto;			}
+#nodelet_1930708			{	width: 240px;
+						float: left;
+						padding-bottom: 10px;		}
+#nodelet_1855429 .nodelet_content li	{	margin-left: -15px;		}
+
+#nodelet_1923735 .nodelet_content #latestlogs,
+#nodelet_1923735 .nodelet_content #log_list
+					{ 	list-style-type: none;
+						margin-left: -40px;		}
+#nodelet_1923735 .nodelet_content #log_list li 
+					{	margin-bottom: 2px;		}
+
+#nodelet_1935779 .nodelet_content #nodelists
+					{	list-style-type: none;		
+						margin-left: -40px;		}
+
+#nodelet_1924754 .nodelet_content ul,
+#nodelet_1157024 .nodelet_content ul	{	margin-left: -25px;		}
+
+#nodelet_1322699 .nodelet_content ol	{	margin-left: -20px;		}
+
+#ednsection_patches .oddrow a		{	color: white;			}
+
+/* hide the 'hidden' marker next to hidden writeups */
+
+#nodelet_1923735 .nodelet_content #log_list li abbr 
+					{	display:none;			}
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-04-24 03:46:17</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1983570</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1854352</type_nodetype>
+  <document_id>1983570</document_id>
+  <author_user>1270706</author_user>
+  <package>0</package>
+  <title>mikoyan25 light</title>
+</node>

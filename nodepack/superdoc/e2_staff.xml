@@ -1,0 +1,264 @@
+<node>
+  <doctext>&lt;!-- 2008-03-11 avalyn // Removed borgo, LaggedyAnne, Lometa and Lord Brawl and from the list of gods and put them in the commented-out section that lists exeds. Removed Lord Brawl from Documentation and Servo5678 from Documentation Editors. Added The Debutante to the list of active gods, and dem bones to the list of inactive gods. --&gt;
+&lt;!-- 2008-01-13 alex // Replaced handmade lists for e2policy, mch (mentoring), and SIGTITLE with automatic code --&gt;
+&lt;!-- 2007-12-15 mauler // I updated the automatic code for displaying the gods so that it would reflect current realities and so that it would actually work, and then activated it. There's no reason why we shouldn't use this tool if we have it! It will keep the list accurate at all times and save time and effort of people having to constantly make updates by hand, as listed below --&gt;
+&lt;!-- 2007-12-08 alex // Updated active and inactive gods lists to reflect recently retired gods; put Jay back on active list --&gt;
+&lt;!-- 2007-12-01 haze // deleted ref to Klaproth, fixed some links to Help docs --&gt;
+&lt;!-- 2007-10-13 dann // Changed council listing to reflect e2policy group instead --&gt;
+&lt;!-- 2007-07-28 alex // Added grundoon, Two Sheds, LaggedyAnne, and Wiccanpiper to active gods list --&gt;
+&lt;!-- 2006-07-31 mauler // updated the gods registry (added witchiepoo, Lometa, ascorbic, removed Toaster, knifegirl, and Gritchka to the inactive list) --&gt;
+&lt;!-- 2006-07-13 avalyn // cleaned up punctuation, HTML, and minor alphabetical miscues in lists  --&gt;
+&lt;!-- 2007-03-04 panamaus // changed references of CtF to creases, added JerboaKolinowski to inactive gods list --&gt;
+
+
+
+
+&lt;p&gt;If you were brought here by clicking on the symbols by some user's names in the [Other Users] nodelet it is because that user is an editor of some type on E2. The following will explain the powers and functions of editors and &quot;[gods].&quot; If you have any questions about E2 and you've already read through the [Everything2 Help] and looked through the links provided in your [nodelet|nodelets] please [Chatterbox|msg] one of these volunteers and they will gladly help you out.
+&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The &lt;big&gt;&lt;strong&gt;$&lt;/strong&gt;&lt;/big&gt; symbol indicates the user is a [content editors|content editor]. These users are charged with helping users on the site with any and all issues related to writeup creation, submission, and maintenance.&lt;/li&gt;
+&lt;li&gt;The &lt;big&gt;&lt;strong&gt;@&lt;/strong&gt;&lt;/big&gt; symbol indicates the user is a &quot;[e2gods|god].&quot; These users are administrators who are charged keeping various aspects of the site running smoothly. Be warned: these users are not actual &quot;gods&quot; in the tradition of [Odin], [Osiris] and [Shiva] ... they are merely the 'gods' of E2. It's an antiquated nomenclature from the days when the only 'god' was [nate] so please forgive the blasphemy. The term remains on the books because it's too ingrained in the code to get rid of easily.&lt;/li&gt;
+&lt;li&gt;Some members of the gods group concern themselves strictly with the site's code and do not bear any symbol in the Other Users list. These people are not tasked with performing administrative or editorial duties unless they also have the @ or $ symbol. They used to have a * symbol in Other Users.&lt;/li&gt;
+&lt;li&gt;The &lt;big&gt;&lt;strong&gt;+&lt;/strong&gt;&lt;/big&gt; symbol indicates that its bearer is a member of the [chanops] group, which manages the [chatterbox].&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;If you were directed here because you're interested in being an everything2 editor please sit tight and wait for a call. [alex|I'm] trying to keep the number of staff at 40 or less by rotating new blood in now and then based on activity, merit, &lt;i&gt;writing&lt;/i&gt; skill, and ability to function in whichever role is needed at a given time. Also, I'll probably tap you on the shoulder quicker if you &lt;i&gt;don't&lt;/i&gt; msg me about it. The [gods] group is always watching and suggestions for new editorial staff are passed around based on their observations.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h3&gt;The [content editors|Content Editor] Usergroup:&lt;/h3&gt;
+
+&lt;p&gt;Membership in the content editor usergroup gives the user the following abilities:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The power to &quot;[cool]&quot; a node. &quot;[page of cool|Cooling]&quot; a node simply places that node onto the [Page of Cool].  It &lt;i&gt;&lt;b&gt;does not&lt;/b&gt;&lt;/i&gt; award any particular user with [xp] or change the reputation of &lt;i&gt;any&lt;/i&gt; of the writeups within the node. The nodes featured on [Page of Cool] are meant to stand as examples of [node for the ages|superior nodes]; nodes with writeups that are informative, humorous or just plain outstanding.  [Page of Cool] is checked by hundreds of users daily and the resulting attention usually means many + votes--which an editor believed the writeups deserved. &lt;b&gt;Note:&lt;/b&gt; A &quot;[page of cool|Cool]&quot; is &lt;i&gt;&lt;b&gt;not&lt;/b&gt;&lt;/i&gt; the same as a [C!].   A &quot;Cool&quot; simply moves the entire node to the [Page of Cool].&lt;/li&gt;
+
+&lt;li&gt;The power to delete a writeup.  When a writeup is deleted the author will lose the 5XP gained upon creation of said [writeup].  See [Writeup Deletion] for details.&lt;/li&gt;
+
+&lt;li&gt;The system content editors use to delete writeups is designed to minimize strain on the E2 server and keep the website loading pages fast.  Content editors get check-boxes next to all writeups and can put the writeup on [Node Row] (marked for destruction) and the server will expunge all of these writeups once per day.  If a writeup has been slated for destruction voting on that writeup is disabled.&lt;/li&gt;
+
+&lt;li&gt;Content editors can actually edit the text of any writeup.  They are assigned to go forth and fix spelling errors or broken links in writeups.  They are the editorial staff of E2 and help the [gods] group by handling [e2 nuke request|deletion requests] and error spotting / correcting.&lt;/li&gt;
+
+&lt;li&gt;Content editors can place a &quot;[firm link]&quot; from one node to another node (or a superdoc).  This will allow the node to display a better suggestion for where a writeup may want to go (or where more information on a topic is most likely to be found). Think of it as a nudge in the right direction.&lt;/li&gt;
+
+&lt;li&gt;Editors can [soft lock] a node - preventing further writeups from being added.  This is always done with the understanding that if a user has a better writeup they should [Drafts|create a draft] and have an editor take a look.  The node can be unlocked and the new writeup added if it's worthy or assimilating/replacing other writeups.&lt;/li&gt;
+
+&lt;li&gt;When doing a [everything user search|user search] on another user editors can see the reputation of that user's writeups, whether they've voted on them or not.&lt;!-- power extended to CEs 2008-11-10 // alex --&gt;&lt;/li&gt;
+
+&lt;/ul&gt;
+
+
+&lt;p&gt;The mission of these editors is three-fold:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Provide users, new and old, with examples of the best and brightest nodes.&lt;/li&gt;
+
+&lt;li&gt;Weed out writeups, new and old, that just don't &lt;i&gt;make the grade&lt;/i&gt;.  It's semantically impossible to draw a line in the sand that everyone is going to understand and, inevitably, a user will be upset that they've lost a writeup.  They'll want to know why.  The best advice I can give you is located at [Writeup Deletion].  Follow the advice given in this document, take some time to peruse the nodes on 
+[Page of Cool] and just observe E2 by clicking around for a few days before beginning to add your own content.&lt;/li&gt;
+
+&lt;li&gt;Editors are constantly [msg]ing new users to help them with their noding skills. Editors are always happy to answer a serious question  and a quick [Chatterbox|private msg] to them can often save a lot of frustration and time. &lt;i&gt;Let them help you.&lt;/i&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;b&gt;The Content Editor group is currently:&lt;/b&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+[%
+my @ppl;
+foreach(@{getNode(&quot;Content Editors&quot;, &quot;usergroup&quot;)-&gt;{group}})
+{
+  my $N = getNodeById($_);
+  next unless($N and $N-&gt;{type}{title} eq &quot;user&quot;);
+  push @ppl, $N;
+}
+
+return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/li&gt;&quot;} sort {lc($a-&gt;{title}) cmp lc($b-&gt;{title})} @ppl);
+%]
+
+&lt;/ol&gt;
+&lt;br /&gt;&lt;br /&gt;&lt;hr /&gt;&lt;br /&gt;&lt;br /&gt;
+&lt;h3&gt;The [e2gods|gods] usergroup:&lt;/h3&gt;
+
+&lt;p&gt;Okay, now these users have got some [action].  The group has the following abilities:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Gods have all the powers of the [Content Editor] group.&lt;/li&gt;
+&lt;li&gt;Gods have the power to bless a user. A '[bless]' grants the user 10 [GP]. Blessings are given for a multitude of reasons - a particularly intelligent remark in the [chatterbox] often results in a blessing.&lt;/li&gt;
+&lt;li&gt;Gods can 'bestow 25 votes' unto &lt;i&gt;any&lt;/i&gt; user. This means that that user will have 25 more votes to spend as they please that day.&lt;/li&gt;
+
+
+&lt;li&gt;Gods can delete an entire node or any writeups within a node. Gods handle [Edit these E2 titles|title edit requests] and help content editors handle the [Broken Nodes] by fixing spelling and misplaced links.  A god will not alter any meaningful text without a msg to the author. A god may leave an &lt;b&gt;Editor's Note:&lt;/b&gt; within a given writeup to add a comment or clear up a misapprehension.&lt;/li&gt;
+
+&lt;li&gt;Gods can move a writeup from one node to another. This is done on a case by case basis, to choose where the writeup should go best. This is usually done in the case of duplicate content, or where many different writeups should be all put together in the most easy to find place. You want writeups to be in the right place for all time, but if that changes, the gods can shuffle them around a bit. A user will receive a msg if a writeup is moved.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;To clear up a few common myths:  members of the gods group &lt;em&gt;cannot&lt;/em&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Vote on any given writeup more than once.&lt;/li&gt; 
+&lt;li&gt;Vote on their own writeups.&lt;/li&gt;
+&lt;li&gt;Have any effect on the reputation of a writeup other than casting their single vote.&lt;/li&gt;
+&lt;li&gt;See the reputation of a writeup before casting their vote (except as described above, via the user search).&lt;/li&gt;
+&lt;li&gt;Gods do not, contrary to popular belief, have infinite [C!|chings]. Both editors and gods &lt;i&gt;used&lt;/i&gt; to have this power.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The following is a list of users in the [gods] usergroup:&lt;/p&gt;
+
+&lt;!-- &lt;p&gt;&lt;strong&gt;Active:&lt;/strong&gt;&lt;/p&gt; --&gt;
+
+[%
+  # 2007-12-15 mauler // I fixed up this code for automatically displaying the gods and activated it. No reason why we shouldn't use this if we have it!
+
+  my @gods = map {getNodeById($_)} @{getNode(&quot;gods&quot;, &quot;usergroup&quot;)-&gt;{group}};
+  my @e2godsgrp = @{getNode(&quot;e2gods&quot;,&quot;usergroup&quot;)-&gt;{group}};
+  my @edcgrp = (&quot;dem bones&quot;, &quot;clampe&quot;, &quot;dbrown&quot;, &quot;hemos&quot;, &quot;Kurt&quot;, &quot;nate&quot;, &quot;robnotrob&quot;, &quot;robo&quot;, &quot;sgtbaker&quot;, &quot;jaybonci&quot;, &quot;thefez&quot;);
+  my @closegrp = (&quot;dbrown&quot;, &quot;hemos&quot;, &quot;Kurt&quot;, &quot;robnotrob&quot;, &quot;robo&quot;);
+
+  my %e2gods = map { $_ =&gt; 1} @e2godsgrp;
+  my %edc = map{ $_ =&gt; 1 } @edcgrp;
+  my %close = map{ $_ =&gt; 1} @closegrp;
+  
+  my (@active, @inactive);
+  foreach(@gods)
+  {
+    push @active, $_ if(exists($e2gods{$_-&gt;{node_id}}));
+    push @inactive, $_ if(not exists($e2gods{$_-&gt;{node_id}}));
+  }
+
+  my $str = &quot;&quot;;
+  $str.=&quot;&lt;strong&gt;Active:&lt;/strong&gt;&quot;;
+  $str.=&quot;&lt;ol&gt;&quot;;
+  foreach(sort {lc($a-&gt;{title}) cmp lc($b-&gt;{title})} @active)
+  {
+     $str.=&quot;&lt;li&gt;&quot;;
+     $str.=linkNode($_);
+     $str.=&quot;#&quot; if(exists($edc{$_-&gt;{title}}));
+     $str.=&quot;&lt;/li&gt;&quot;;
+  }
+  $str.=&quot;&lt;/ol&gt;&quot;;
+  $str.=&quot;&lt;strong&gt;Inactive:&lt;/strong&gt;&quot;;
+  $str.=&quot;&lt;ol&gt;&quot;;
+  foreach(sort {lc($a-&gt;{title}) cmp lc($b-&gt;{title})} @inactive)
+  {
+     $str.=&quot;&lt;li&gt;&quot;;
+     $str.=linkNode($_);
+     $str.=&quot;*&quot; if(exists($close{$_-&gt;{title}}) and not exists($edc{$_-&gt;{title}}));
+     $str.=&quot;#&quot; if(not exists($close{$_-&gt;{title}}) and exists($edc{$_-&gt;{title}}));
+     $str.=&quot;#*&quot; if(exists($close{$_-&gt;{title}}) and exists($edc{$_-&gt;{title}}));
+     $str.=&quot;&lt;/li&gt;&quot;;
+  }
+  $str.=&quot;&lt;/ol&gt;&quot;;
+  return $str;
+%]
+
+&lt;p&gt;&lt;strong&gt;*&lt;/strong&gt;These users are only in [gods] because they are closely related to the [the everything development company|Everydevel] company -- they are rarely active on the E2 system and mainly are on the list only so that they have access to [source code] and certain documents.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;#&lt;/strong&gt;These users are employees / owners of [the Everything Development Company].&lt;/p&gt;
+
+&lt;hr /&gt;
+&lt;h1&gt;Who does what?&lt;/h1&gt;
+
+&lt;p&gt;These people are in charge of things:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[nate]: Owner, Founder, Creator&lt;/li&gt;
+&lt;li&gt;[clampe]: E2 researcher and bandwidth provider&lt;/li&gt;
+&lt;li&gt;[alex]: Director of Operations and Site Administrator&lt;/li&gt;
+&lt;li&gt;[wertperch]: Deputy Director of Operations&lt;/li&gt;
+&lt;li&gt;[Oolong]: Lead Developer&lt;/li&gt;
+&lt;li&gt;[The Debutante]: Director of User Relations&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;
+These administrators and editors have special assignments:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[wertperch]: [Everything User Poll|E2 Polls]&lt;/li&gt;&lt;/ul&gt;
+
+&lt;p&gt;
+The following staff members work with [Oolong] to maintain and grow the site's code:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[ascorbic]&lt;/li&gt;
+&lt;li&gt;[call[user]]&lt;/li&gt;
+&lt;li&gt;[dann]&lt;/li&gt;
+&lt;li&gt;[DonJaime]&lt;/li&gt;
+&lt;li&gt;[OldMiner]&lt;/li&gt;
+&lt;li&gt;[in10se]&lt;/li&gt;
+&lt;li&gt;[Two Sheds]&lt;/li&gt;
+&lt;/ul&gt;
+
+[%
+#'
+my $groupName = &quot;e2core&quot;;
+my $group = getNode($groupName, &quot;usergroup&quot;);
+return '' if !$group;
+my $intro = &lt;&lt;INTRO;
+&lt;p&gt;
+These administrators and editors help [alex] guide [$groupName|site policy]:
+&lt;/p&gt;
+&lt;ul&gt;
+INTRO
+my $outro = &quot;&lt;/ul&gt;&quot;;
+my @ppl;
+foreach(@{$group-&gt;{group}})
+{
+  my $N = getNodeById($_);
+  next unless($N and $N-&gt;{type}{title} eq &quot;user&quot;);
+  push @ppl, $N;
+}
+
+my $userList =
+  join(&quot;\n&quot;,
+    map { &quot;&lt;li&gt;&quot; . linkNode($_) . &quot;&lt;/li&gt;&quot; }
+      sort {lc($a-&gt;{title}) cmp lc($b-&gt;{title})} @ppl
+  );
+
+return $intro . $userList . $outro;
+%]
+
+&lt;p&gt;Copyright compliance team:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[GrouchyOldMan]&lt;/li&gt;
+&lt;li&gt;[avalyn]&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;Documentation, FAQs, staff docs, [superdocs|sekrits]&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[Wiccanpiper]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;[SIGTITLE] user group: [Edit These E2 Titles|Node Titles]&lt;/p&gt;
+&lt;ul&gt;
+[%
+my @ppl;
+foreach(@{getNode(&quot;SIGTITLE&quot;, &quot;usergroup&quot;)-&gt;{group}})
+{
+  my $N = getNodeById($_);
+  next unless($N and $N-&gt;{type}{title} eq &quot;user&quot;);
+  push @ppl, $N;
+}
+
+return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/li&gt;&quot;} sort {lc($a-&gt;{title}) cmp lc($b-&gt;{title})} @ppl);
+%]
+
+&lt;/ul&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;That's it.&lt;/b&gt; If you've any questions about this or anything else (regarding E2) please [message] [alex] or e-mail him at &lt;strong&gt;alex /remove this junk and add an at sign/ staff.everything2.com&lt;/a&gt;&lt;/strong&gt;.&lt;/p&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-09-11 05:16:45</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2056</hits>
+  <node_id>743129</node_id>
+  <edittime>2011-08-04 22:43:30</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>743129</document_id>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>E2 staff</title>
+</node>

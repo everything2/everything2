@@ -1,0 +1,34 @@
+<node>
+  <parent_container>19</parent_container>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:10</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>16</hits>
+  <node_id>18</node_id>
+  <context>[%
+$query-&gt;start_form(-method=&gt;'POST', action=&gt;$ENV{script_name}, name=&gt;'pagebody', id=&gt;'pagebody') .
+$query-&gt;hidden('displaytype') .
+$query-&gt;hidden('node_id', getId($NODE));
+%]
+[%
+if ($NODE &amp;&amp; $$NODE{type} &amp;&amp; $query-&gt;param('displaytype') eq 'edit') {
+  my $type = $$NODE{type}{title};
+  return htmlcode('verifyRequestForm', &quot;edit_$type&quot;);
+} else {
+  return &quot;&quot;;
+}
+%]
+CONTAINED_STUFF
+[%
+$query-&gt;submit('sexisgood', 'stumbit') .
+$query-&gt;end_form;
+%]</context>
+  <type_nodetype>2</type_nodetype>
+  <container_id>18</container_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>formcontainer</title>
+</node>

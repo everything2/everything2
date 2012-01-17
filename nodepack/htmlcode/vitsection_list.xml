@@ -1,0 +1,31 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-07-21 05:34:01</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1116978</node_id>
+  <htmlcode_id>1116978</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $str=&quot;&lt;ul&gt;&quot;;
+
+$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Writeups by Type').&quot;&lt;/li&gt;&quot;;
+$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Everything\'s Most Wanted').&quot;&lt;/li&gt;&quot;;
+$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Cool Archive').' &lt;small&gt;(C! writeups)&lt;/small&gt;'.&quot;&lt;/li&gt;&quot;;
+$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Page of Cool').' &lt;small&gt;(Editor Picks)&lt;/small&gt;'.&quot;&lt;/li&gt;&quot;;
+$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Usergroup Picks').&quot;&lt;/li&gt;&quot;;
+$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('A Year Ago Today').&quot;&lt;/li&gt;&quot;;
+$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('News for Noders. Stuff that matters.|Old News').&quot;&lt;/li&gt;&quot;;
+$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Your nodeshells').&quot;&lt;/li&gt;&quot;;
+$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Random nodeshells').&quot;&lt;/li&gt;&quot;;
+
+$str.=&quot;&lt;/ul&gt;&quot;;
+
+$str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>vitsection_list</title>
+</node>

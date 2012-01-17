@@ -1,0 +1,72 @@
+<node>
+  <nltext></nltext>
+  <parent_container>175986</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>1999-11-09 05:45:42</createtime>
+  <lastupdate>0</lastupdate>
+  <hits>31</hits>
+  <node_id>271</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>113</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>271</nodelet_id>
+  <nlcode>[%
+return &quot;[e2coders|We] have no clue what this is, but whatever it is, it's not useful. So right now it's just disabled.&quot;;
+
+#wtf knows what this was supposed to be, so bye. --Swap
+
+#  return if (getId($USER) == $HTMLVARS{guest_user});
+#     my $str='';
+#  $str.=htmlcode('adminbar') if canUpdateNode($USER, $NODE);
+#
+#     #delete node function
+#     $str.=&quot;\n&lt;SCRIPT language=\&quot;javascript\&quot;&gt;
+#       function confirmDelete(){
+#          if(confirm(\&quot;Delete '$$NODE{title}'?\&quot;)){
+#		parent.location=&quot; .
+#		urlGen({node_id=&gt;getId($NODE),op=&gt;&quot;nuke&quot;}) .
+#		&quot;; }
+#        }
+#       &lt;/SCRIPT&gt;\n&quot;;
+#
+#     #add node to coolnode group
+#     my ($gr) = getNodeWhere({title=&gt;'coolnodes'},$NODETYPES{nodegroup});
+#     $str .= &quot;&lt;SCRIPT language=\&quot;javascript\&quot;&gt;
+#	function updateCoolGroup() {
+#	window.open('&quot; .
+#		urlGen({node_id =&gt; getId($gr),
+#			displaytype =&gt; 'editor',
+#			add =&gt; getId ($NODE)}, &quot;noquotes&quot;) .
+#		&quot;','&quot;. getId($gr) .&quot;',
+#		'');    
+#     }
+#     &lt;/SCRIPT&gt;\n&quot;;
+#     $str .= &quot;&lt;table width=98% border=0&gt;&lt;tr&gt;&quot;;
+#     
+#     if(canDeleteNode($USER,$NODE))
+#     {
+#        $str.= &quot;&lt;td align=center&gt;&lt;a href='javascript: confirmDelete();'&gt;
+#                  &lt;img border=0 src=\&quot;images/x.gif\&quot;&gt;&lt;/a&gt;&lt;/td&gt;&quot;;
+#        
+#     }
+#     if(canUpdateNode($USER,$gr))
+#     {
+#        $str.=&quot;&lt;td align=center&gt;
+#               &lt;a href='javascript: updateCoolGroup();'&gt;&lt;img border=0 src='images/plus.gif'&gt;&lt;/a&gt;&lt;/td&gt;&quot;
+#     }
+#     $str.
+#&quot;&lt;td align=center&gt;&lt;img border=0 src='images/b.gif'&gt;&lt;/td&gt;
+#     &lt;/tr&gt;&lt;/table&gt;
+#     &lt;/font&gt;&quot;;
+%]</nlcode>
+  <title>Controls</title>
+</node>

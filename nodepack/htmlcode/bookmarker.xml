@@ -1,0 +1,162 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-10-25 01:43:44</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1992696</node_id>
+  <htmlcode_id>1992696</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($node_id, $marktype, $bookmark_site) = @_;
+
+return 0 unless $node_id;
+return 0 if getId($USER) == $HTMLVARS{guest_user};
+
+my %notifications = (
+   'bookmark' =&gt; 'bookmark',
+   'socialbookmark' =&gt; 'socialBookmark',
+   );
+my $varInformer = &quot;no_${marktype}informer&quot;;
+my $varNotify = &quot;no_${marktype}notification&quot;;
+my $notifyName = $notifications{$marktype};
+
+return &quot;Not a valid bookmark type ($marktype)&quot; unless $notifyName;
+
+# Record bookmark in the database
+# Wrap in transaction (which does a SELECT ... FOR UPDATE) 
+#  so that there's no risk of double messaging on
+#  a race condition
+my $alreadyBookmarked = 0;
+my $LINKTYPE = getNode('bookmark', 'linktype');
+my $checkBookmarked = sub {
+   my ($linkTypeId, $userId) = (getId($LINKTYPE), getId($USER));
+   $alreadyBookmarked =
+      $DB-&gt;sqlSelect(
+         &quot;1&quot;
+         , 'links'
+         , &quot;from_node = $userId
+            AND to_node = $node_id
+            AND linktype = $linkTypeId&quot;
+      );
+   return if $alreadyBookmarked;
+   $DB-&gt;sqlInsert('links'
+      , {
+         from_node =&gt; $userId
+         , to_node =&gt; $node_id
+         , linktype =&gt; $linkTypeId
+      }
+      );
+   return;
+};
+
+if ($marktype eq 'bookmark') {
+   my $goodBookmarkResult = $DB-&gt;transactionWrap($checkBookmarked);
+   return 1 if $alreadyBookmarked or !$goodBookmarkResult;
+}
+
+return 1 if $$VARS{$varInformer};
+
+my $bookmarkNode = getNodeById($node_id);
+my $nodeType = $$bookmarkNode{type}{title} if $bookmarkNode;
+return &quot;Not a bookmarkable node&quot;
+  unless $bookmarkNode
+    and ($nodeType eq &quot;writeup&quot; || $nodeType eq &quot;e2node&quot;)
+    ;
+
+# Don't give bookmark notices for maintenance nodes like
+#  E2 bugs or Broken Nodes
+my $sysNodes = getVars(getNode(&quot;system settings&quot;, &quot;setting&quot;));
+while( my ($k, $v) = each %$sysNodes ) {
+  next unless $v =~ m/^\d+$/;
+  return &quot;Maintenance node doesn't get notifications.&quot; if $v == $node_id;
+}
+
+# Prepare the message that Cool Man Eddie will send, as well as the list of
+#  users who will be receiving the message.
+my $nt = $$bookmarkNode{title};
+my $bookmarkAuthor = $$bookmarkNode{author_user};
+my $eddie = getId(getNode('Cool Man Eddie','user'));
+my ($eddiemessage, $nodeshell) = ('', 0);
+
+my @writeupAuthors = ($bookmarkAuthor);
+
+if ($nodeType eq 'e2node') {
+
+   my @writeupGroup = @{ $$bookmarkNode{group} };
+
+   if (scalar @writeupGroup) {
+
+      @writeupAuthors = ();
+      $eddiemessage = &quot;the entire node [$nt], in which you have a writeup,&quot;;
+
+      foreach my $writeupId (@writeupGroup) {
+        my $writeup = getNodeById($writeupId, 'light');
+        next unless $writeup;  
+        push @writeupAuthors, $$writeup{author_user};
+      }
+
+   } else {
+
+     $eddiemessage = &quot;your nodeshell [$nt]&quot;;
+     $nodeshell = 1;
+
+  }
+
+} else {
+
+  $eddiemessage = &quot;your writeup [$nt]&quot;;
+
+}
+
+# Filter out those who don't exist and who are the same as the bookmarker
+my $filterBadUsers = sub {
+   my $informUserId = shift;
+   return 0 if $informUserId == getId($USER);
+   return 0 unless $informUserId;
+   return 1;
+};
+
+# Don't send messages from Cool Man Eddie to users who opted out,
+my $filterEddie = sub {
+   my $TV = getVars(shift);
+   return 0 if $$TV{$varNotify};
+   return 1; 
+};
+
+@writeupAuthors = grep { &amp;$filterBadUsers($_); } @writeupAuthors;
+my @messageAuthors = grep { &amp;$filterEddie($_); } @writeupAuthors;
+
+my $onSite = &quot;on $bookmark_site&quot; if $bookmark_site;
+
+my $msgParams = {
+  'author_id'    =&gt; $eddie,
+  'recipient_id' =&gt; \@messageAuthors,
+  'message'      =&gt; &quot;Yo, $eddiemessage was bookmarked$onSite. Dig it, baby.&quot;,
+  'fromgroup_id' =&gt; $$USER{node_id},
+};
+
+my $sendResult = htmlcode('sendPrivateMessage', $msgParams);
+
+# Send notifications to those who have opted to receive notifications
+foreach my $bookmarkedAuthor (@writeupAuthors) {
+  next unless htmlcode('getWantsNotification', $bookmarkedAuthor, $notifyName);
+  my $argSet = {
+    writeup_id =&gt; $node_id,
+    bookmark_user =&gt; $$USER{user_id},
+    nodeshell =&gt; $nodeshell,
+  };
+  $$argSet{bookmark_site} = $bookmark_site if $bookmark_site;
+  htmlcode('addNotification', $notifyName, $bookmarkedAuthor, $argSet);
+}
+
+
+1;
+
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>bookmarker</title>
+</node>

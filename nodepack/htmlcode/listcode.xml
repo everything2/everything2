@@ -1,0 +1,86 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>37</node_id>
+  <htmlcode_id>37</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($field,$codenode) = @_;
+$codenode ||= $NODE ;
+my $code = listCode($$codenode{$field}, 1);
+
+my $patchTitle;
+my $patchID;
+my $patchNode;
+
+if ($field eq 'script_text') {
+$patchID = $$codenode{script_id};
+$patchNode = getNode($patchID);
+$patchTitle = $$patchNode{title};
+}
+else {
+$patchID = $$codenode{node_id};
+ $patchTitle = $$codenode{title};
+}
+
+# This searches for [{ text }] nodelet section calls and replaces the text with a link.
+$code =~ s/\&amp;\#91;\{\s*(nodeletsection)\s*:\s*([^,\s}]*)\s*,\s*([^,\s}]*)(.*?)\}\&amp;\#93;/&quot;[\{&lt;a href=&quot;.urlGen({node=&gt;$1, type=&gt;'htmlcode'}).&quot;&gt;$1&lt;\/a&gt;:&lt;a href=&quot;.urlGen({node=&gt; $2 . &quot;section_&quot; . $3, type=&gt;'htmlcode'}).&quot;&gt;$2, $3&lt;\/a&gt;$4\}]&quot;/egs;
+
+# This searches for [{ text }] and replaces the text with a link.
+$code =~ s/\&amp;\#91;\{([^&lt;]*?)((\:(.*?))*?)\}\&amp;\#93;/&quot;[\{&lt;a href=&quot;.urlGen({node=&gt;$1, type=&gt;'htmlcode'}).&quot;&gt;$1&lt;\/a&gt;$2}]&quot;/egs;
+
+#this searches for &quot;htmlcode(&quot;text&quot;, params...)&quot; nodelet section calls and replaces the text with a link to the htmlcode.
+$code =~ s/htmlcode\s*\(\s*(&quot;|\')(nodeletsection)\1[,\s]*(['&quot;])[\s,]*([^,\)'&quot;]+)[\s'&quot;,]+([^,\)'&quot;]+)[\s'&quot;]*((\s*\,(.*?))*?)\s*\)/&quot;htmlcode\($1&lt;a href=&quot;.urlGen({node=&gt;$2, type=&gt;'htmlcode'}).&quot;&gt;$2&lt;\/a&gt;$1, &lt;a href=&quot;.urlGen({node=&gt; $4 . &quot;section_&quot; . $5, type=&gt;'htmlcode'}).&quot;&gt;$3$4$3, $3$5$3&lt;\/a&gt;, $3$6\)&quot;/egs;
+
+#this searches for &quot;htmlcode(&quot;text&quot;, params...)&quot; and replaces the text with a link to the htmlcode.
+$code =~ s/htmlcode\s*\(\s*(&quot;|\')\s*([^'&quot;]*?)\s*\1(((\s*^\s*\d+:\s*)*\s*,\s*[^,]+?)*?)\s*\)/&quot;htmlcode\($1&lt;a href=&quot;.urlGen({node=&gt;$2, type=&gt;'htmlcode'}).&quot;&gt;$2&lt;\/a&gt;$1$3\)&quot;/megs;
+
+my $text = '&lt;small&gt;'.htmlcode('varcheckbox', 'listcode_smaller', 'Smaller code listing').&quot;&lt;/small&gt;\n&quot;;
+
+ #ascorbic, sometime in autumn 2008
+ my $author_id = $$codenode{author_user};
+ if($author_id){
+ $text = '&lt;p&gt;Originally by ' . linkNode($$codenode{author_user}) . '&lt;/p&gt;' . $text;
+ }
+ else{
+ $text = &quot;&lt;p&gt;No author! This is a bug, get it fixed!&lt;/p&gt;&quot;.$text;
+ }
+
+#N-Wing, Sat, Jun 15, 2002 - help reduce long line horiz scrolling
+$code = '&lt;div style=&quot;font-size: smaller;&quot;&gt;'.$code.'&lt;/div&gt;' if $VARS-&gt;{listcode_smaller};
+
+#breaks the form on code edit pages an' patching a patch may get confusing.
+return $text.$code if ($query-&gt;param('displaytype') eq 'edit' or $$codenode{type}{title} eq 'patch');
+
+my $UID = getId($USER)||0;
+return $text unless (exists $HTMLVARS{group_gods}{$UID}) || (exists $HTMLVARS{group_edev}{$UID});
+$text = htmlcode('openform') . $text . '
+&lt;input type=&quot;submit&quot; name=&quot;sexisgood&quot; value=&quot;resize&quot;&gt;&lt;/form&gt;'.$code ;
+
+$text .= '&lt;strong&gt;Submit a patch&lt;/strong&gt;';
+$text .= $query-&gt;start_form('POST',$ENV{script_name}) .
+'&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;new&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;type&quot; value=&quot;patch&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;node&quot; value=&quot;'.$patchTitle.' (patch)&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;patch_for_node&quot; value=&quot;'.$patchID.'&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;patch_field&quot; value=&quot;'.$field.'&quot;&gt;
+';
+
+$text .= 'patch\'s purpose: '.$query-&gt;textfield('patch_purpose','',55,240).&quot;&lt;br /&gt;\n&quot;;
+$text .= $query-&gt;textarea('patch_code', $$codenode{$field}, 20, 60);
+$text .= &quot;&lt;br /&gt;\n&quot;;
+$text .= 'You are creating a patch here. It is possible to '.linkNode($codenode,'edit code directly',{displaytype =&gt; 'edit'}).', but don\'t do that with live code.&lt;br /&gt;' if exists $HTMLVARS{group_gods}{$UID};
+$text .= $query-&gt;submit();
+$text .= $query-&gt;end_form;
+
+$text;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>listcode</title>
+</node>

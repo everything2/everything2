@@ -1,0 +1,33 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>5</hits>
+  <node_id>47</node_id>
+  <htmlcode_id>47</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code> 	my ($PARAM) = @_;
+ 
+ 	my $str = $query-&gt;start_form(&quot;GET&quot;,$query-&gt;script_name).
+ 	$query-&gt;textfield(-name =&gt; &quot;node&quot;,
+                 -default =&gt; &quot;&quot;,
+                 -size =&gt; 50,
+                 -maxlength =&gt; 230) .
+ 	$query-&gt;submit(&quot;go_button&quot;, &quot;go&quot;);
+
+        $str.='&lt;input type=&quot;hidden&quot; name=&quot;lastnode_id&quot; value=&quot;'.$$NODE{node_id}.'&quot;&gt;'; 
+
+ #	foreach (keys %$PARAM) {  $str .= $query-&gt;hidden($_, $$PARAM{$_}); } 
+ 
+ 	$str.= $query-&gt;end_form unless $PARAM eq 'noendform';
+
+$str;
+ </code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>searchform</title>
+</node>

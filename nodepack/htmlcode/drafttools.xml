@@ -1,0 +1,124 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-10-24 06:53:08</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1992687</node_id>
+  <htmlcode_id>1992687</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($N, $open) = @_;
+getRef $N;
+
+return htmlcode('writeuptools', @_) if $$N{type}{title} eq 'writeup';
+
+my $isEditor = exists $HTMLVARS{'group_gods'}{$$USER{node_id}}
+	|| exists $HTMLVARS{'group_content editors'}{$$USER{node_id}};
+my $isMine = ($$N{author_user} == $$USER{node_id});
+
+my ($text , $linktitle, $parent, $editor, @tools, $attachment, $notes);
+my $n = $$N{node_id};
+my $id = 'adminheader'.$n ;
+
+my $author = getNodeById( $$N{author_user} );
+$author = $query -&gt; escapeHTML($$author{title}) if $author;
+
+my $status = getNodeById($$N{publication_status}) if $$N{publication_status};
+$status = $$status{title} if $status;
+
+$text = $status || 'private';
+$text = &quot;$text/tin-opened&quot; if $query -&gt; param('tinopener')
+	and $$N{collaborators} ne $$N{_ORIGINAL_VALUES}{collaborators};
+
+$linktitle = {
+	private =&gt; $isMine ? 'only visible to you and your collaborators' :
+		&quot;$author has given you permission to see this draft&quot;,
+	shared =&gt;  $isMine ? 'visible to you and your collaborators (who can also edit it)' :
+		&quot;$author has given you permission to see and edit this draft&quot;,
+	public =&gt; 'visible to all logged-in users',
+	findable =&gt; 'visible to all logged-in users, and may be shown in search findings',
+	review =&gt; 'comments/suggestions invited',
+	removed =&gt; 'removed by an editor',
+	nuked =&gt; 'posted and deleted before June 10, 2011'
+} -&gt; {$text} || $text;
+
+$text =~ s/^(\w)/\u$1/;
+$text .= '&lt;sup&gt;*&lt;/sup&gt;' if $text eq 'private' &amp;&amp; !$isMine;
+$text = &quot;&lt;b&gt;$text draft&lt;/b&gt;&quot;;
+
+if ($isMine and $$NODE{node_id} != $n){
+	push @tools, linkNode($N, 'Set draft status...', { # can't put the forms here: we're already in a form
+		'#' =&gt; &quot;draftstatus$n&quot;
+		, -class =&gt; &quot;ajax draftstatus$n:setdraftstatus?node_id=$n:$n&quot;
+		, -onclick =&gt; &quot;parent.location='#draftstatus$n'&quot; # inline JS. Whatever next?
+	});
+	
+	$attachment = linkNode($N, 'Publish here', {
+		'#' =&gt; &quot;draftstatus$n&quot;
+		, parentdraft =&gt; 'publish'
+		, writeup_parent_e2node =&gt; $$NODE{node_id}
+		, -id =&gt; &quot;publishhere$n&quot;
+		, -class =&gt; &quot;ajax publishhere$n:ajax+publishhere:$n&quot;
+	});
+}
+
+if ($isEditor){
+	my $linktype = getId(getNode 'parent_node', 'linktype');
+	my ($parent, $editor) = $DB -&gt; sqlSelect( # editor approval is flagged by feeding the link
+		'to_node, food', 'links', &quot;from_node=$$N{node_id} AND linktype=$linktype&quot;);
+
+	if ($parent and $editor || $status eq 'review'){
+		$attachment ||= 'Attached to '
+			.$query -&gt; b(linkNode($parent, $$NODE{node_id} == $parent ? 'this node' :''));
+
+		my $approve;
+		if ($editor){
+			$attachment .= '&lt;br&gt;&lt;br&gt;Approved for publication by '.linkNode($editor);
+			$linktitle .= '. Approved';
+			$approve = 'Revoke approval';
+		}else{
+			my $block = htmlcode('nopublishreason', $$N{author_user}, $parent);
+			if ($block &amp;&amp; !ref($block) &amp;&amp; $block !~ /email/){
+				$attachment .= &quot;&lt;br&gt;&lt;br&gt;Requires approval before publication because:&lt;br&gt;
+				&lt;small style='white-space:normal'&gt;$block&lt;/small&gt;&quot;;
+				$linktitle .= '. Needs approval';
+				$approve = 'Approve';
+			}
+		}
+
+		$attachment .= '&lt;br&gt;&lt;br&gt;'.linkNode($N, &quot;&lt;b&gt;$approve&lt;/b&gt;&quot;, {
+			op =&gt; 'approve_draft'
+			, revoke =&gt; $editor
+			, draft =&gt; $$N{node_id}
+			, e2node =&gt; $parent
+			, -class =&gt; &quot;action ajax $id:drafttools:$n,1&quot;
+		}) if $approve;
+
+	}
+
+	$notes = htmlcode('nodenote', $N) if $status eq 'review';
+}
+
+push @tools, $attachment if $attachment;
+push @tools, $notes if $notes;
+
+if (@tools){
+	$query -&gt; param('showwidget' , 'admin') if $open;
+	$text = htmlcode('widget'
+		, join('&lt;hr&gt;', @tools)
+		, 'span'
+		, $text
+		, {showwidget =&gt; 'admin', -title =&gt; &quot;$linktitle. Click here to show/hide admin options.&quot;}
+	);
+	$linktitle = '';
+}
+
+$query -&gt; span({class =&gt; 'admin', id =&gt; $id, title =&gt; $linktitle}, $text);
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>drafttools</title>
+</node>

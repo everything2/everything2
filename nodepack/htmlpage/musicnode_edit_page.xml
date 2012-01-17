@@ -1,0 +1,130 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>1089144</pagetype_nodetype>
+  <core>0</core>
+  <page>[%
+$query-&gt;start_multipart_form(&quot;POST&quot;, $ENV{script_name}) .
+$query-&gt;hidden(&quot;displaytype&quot;) .
+$query-&gt;hidden(&quot;node_id&quot;, getId $NODE);
+
+%]
+&lt;p align=right&gt;[%linkNode $NODE, &quot;display&quot;, {displaytype=&gt;&quot;display&quot;};%]
+
+&lt;p&gt;
+[%
+my $V = getVars $NODE;
+my $str;
+
+my $countkeys = int keys %$V;
+foreach ($query-&gt;param) {
+  if (/^remtrack_(\d+)$/) {
+    delete $$V{&quot;musictrack_$1&quot;} if exists $$V{&quot;musictrack_$1&quot;};
+  }
+  
+  if (/^title_(\d+)$/) {
+     my $num = $1;
+     my $title = $query-&gt;param($_);
+     my $name = &quot;file_$1&quot;;
+     my $tmpfile = &quot;/tmp/everythingmp3&quot;.rand(100000);
+     my $dir = &quot;/var/www/music&quot;;
+     my $url = &quot;music/&quot;;
+    
+     if ($query-&gt;param($name)) {
+       my ($fname) = $query-&gt;param($name);
+       my $musicname = $fname;
+
+
+
+       $musicname =~ tr/ /_/;
+       my @dos = split /\\/, $musicname;
+       my @unix = split /\//, $musicname;
+
+       if (@dos &gt; @unix) {
+         @unix = @dos;
+       }
+       $musicname = pop @unix;
+
+       $str.= &quot;'&quot;. $query-&gt;uploadInfo($fname)-&gt;{&quot;Content-Type&quot;}.&quot;'!&quot;;
+       
+       open OUTFILE, &quot;&gt;$tmpfile&quot;;
+       my ($buf, $size, $bytes);
+       while ($bytes = read($fname, $buf, 1024)) {
+         $size += $bytes;
+         print OUTFILE $buf;
+       }
+       close OUTFILE;
+
+
+       `mv $tmpfile $dir/$musicname`;
+       $$V{&quot;musictrack_$num&quot;} = &quot;$title&quot;.&quot;###&quot;.$url.$musicname;
+       $str.= &quot;$size bytes recieved for file $musicname&lt;br&gt;&quot;;
+     }
+  }
+
+
+}
+setVars ($NODE, $V);
+$str;
+%]
+
+[%
+my $magicnumber = 20;
+my $start = 0;
+
+my $V = getVars $NODE;
+my @tracks;
+
+
+
+
+foreach (keys %$V) {
+  push @tracks, $_ if /^musictrack_\d+$/;
+}
+
+my $str;
+$str.=&quot;&lt;p&gt;
+BEWARE!  I haven't tested this too much yet, but it seems to work fine for me on Win and Linux.  Upload the files as you would an image.  Please name the files appropriately (uniquely) as a common name ('song.mp3') will overwrite each other.  It will probably take a long time to u/l, but wait it out -- don't stop it if it seems like it's hanging.
+
+
+
+&lt;br&gt;&quot;;
+foreach (sort @tracks) { 
+  /musictrack_(\d+)/;
+  my $num = $1;
+  my ($track, $file) = split &quot;###&quot;, $$V{$_};
+  $str.= $query-&gt;checkbox(&quot;remtrack_$num&quot;, &quot;&quot;, 1, &quot;remove&quot;) . &quot;$track -&gt; $file&lt;br&gt;&quot;;
+  $start = $num;
+}
+
+my $end = $start + $magicnumber;
+foreach ($start+1..$end) {
+  $_ = &quot;0&quot;.$_ if length($_)== 1;
+  my $track = $_;
+  my $trackname = &quot;musictrack_$_&quot;;
+
+  $str.= $query-&gt;textfield(&quot;title_$track&quot;, &quot;&quot;). $query-&gt;filefield(&quot;file_$track&quot;).&quot;&lt;br&gt;&quot;;
+}
+
+
+$str;
+
+
+%]
+
+[{closeform}]</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-06-25 17:00:30</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1089160</htmlpage_id>
+  <hits>0</hits>
+  <node_id>1089160</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
+  <author_user>220</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>musicnode edit page</title>
+  <mimetype></mimetype>
+</node>

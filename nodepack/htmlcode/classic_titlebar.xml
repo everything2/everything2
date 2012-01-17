@@ -1,0 +1,30 @@
+<node>
+  <core></core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-09-15 07:16:55</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>11</hits>
+  <node_id>123</node_id>
+  <htmlcode_id>123</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $str = &quot;&lt;p align=right&gt;
+&lt;img src=images/Everything.gif&gt;&lt;BR&gt;
+[ &quot;;
+
+if ($USER == -1 or getId($USER) == $HTMLVARS{guest_user}) {
+	$str .= linkNodeTitle (&quot;login&quot;, $NODE, &quot;Log in&quot;); 	
+} else {
+	$str .= linkNode ($HTMLVARS{default_node}, &quot;log $$USER{title} out&quot;, {op =&gt; 'logout'})
+		. &quot; | &quot; . linkNode ($USER);
+}
+$str .= &quot; | &quot; . linkNodeTitle (&quot;user settings&quot;);
+$str .= &quot; | &quot; . linkNodeTitle (&quot;gigantic node lister&quot;, $NODE, &quot;GNL&quot;);
+$str .= &quot; | &quot; . linkNode ($HTMLVARS{default_node});
+$str . &quot; ] &lt;p&gt;&quot;;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>classic titlebar</title>
+</node>

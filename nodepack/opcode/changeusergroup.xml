@@ -1,0 +1,27 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-01-18 02:47:23</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1926113</node_id>
+  <htmlcode_id>1926113</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># Changes which usergroup is selected for the Usergroup Writeups nodelet.
+
+#return unless (exists $HTMLVARS{'group_gods'}{$$USER{node_id}}) || (exists $HTMLVARS{'group_content editors'}{$$USER{node_id}});
+
+if($query-&gt;param('newusergroup')) {
+	my $newUsergroup = $query-&gt;param('newusergroup');
+#	$group=$1;
+	$$VARS{nodeletusergroup}=$newUsergroup;
+}
+
+return 1;</code>
+  <type_nodetype>415056</type_nodetype>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <title>changeusergroup</title>
+</node>

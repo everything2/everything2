@@ -1,0 +1,32 @@
+<node>
+  <parent_container>18</parent_container>
+  <pagetype_nodetype>9</pagetype_nodetype>
+  <core>R</core>
+  <page>title:[{textfield:title}]
+maintained by:[{node_menu:author_user,user,usergroup}]&lt;br&gt;
+parent container:[{node_menu:parent_container}]&lt;br&gt;
+update interval: [{textfield:updateinterval}] (in seconds)
+&lt;br&gt;
+nodelet icon URL: [{textfield:icon}]&lt;br&gt;
+icon height: [{textfield:iconHeight}]&lt;br&gt;
+icon width: [{textfield:iconWidth}]&lt;br&gt;
+
+
+nodelet code:&lt;br /&gt;
+[{textarea:nlcode,30,80,off}]</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>74</htmlpage_id>
+  <hits>3</hits>
+  <node_id>74</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>nodelet edit page</title>
+  <mimetype></mimetype>
+</node>

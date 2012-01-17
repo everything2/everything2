@@ -1,0 +1,25 @@
+<node>
+  <parent_container>0</parent_container>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-10-18 13:05:38</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1992646</node_id>
+  <context>&lt;!--node_id=[% $NODE-&gt;{node_id}; %]--&gt;
+&lt;title&gt;[% $NODE-&gt;{title}; %]&lt;/title&gt;
+&lt;div id='wrapper'&gt;
+&lt;div id='mainbody'&gt;
+[{page header}]
+CONTAINED_STUFF
+&lt;/div&gt;
+&lt;/div wrapper&gt;
+</context>
+  <type_nodetype>2</type_nodetype>
+  <container_id>1992646</container_id>
+  <author_user>5603</author_user>
+  <package>0</package>
+  <title>mobile fragment stdcontainer</title>
+</node>

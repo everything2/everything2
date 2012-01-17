@@ -1,0 +1,19 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-04-05 17:32:38</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <notification_id>1936586</notification_id>
+  <hourLimit>168</hourLimit>
+  <hits>0</hits>
+  <node_id>1936586</node_id>
+  <code>return &quot;Your writeup &quot;.linkNode($$args{writeup_id}).&quot; was bookmarked on &quot;.$$args{bookmark_site}.&quot; by &quot;.linkNode($$args{bookmark_user});</code>
+  <type_nodetype>1930710</type_nodetype>
+  <author_user>1017738</author_user>
+  <description>a writeup of yours gets [social bookmarking|bookmarked on an external site].</description>
+  <package>0</package>
+  <invalid_check></invalid_check>
+  <title>socialBookmark</title>
+</node>

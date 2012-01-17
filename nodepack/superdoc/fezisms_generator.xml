@@ -1,0 +1,79 @@
+<node>
+  <doctext>&lt;br&gt;&lt;br&gt;&lt;br&gt;
+&lt;p align=center&gt;
+[%
+my @wit = (
+&quot;[The Fez is Responsible for Global Warming|DADDY NEEDS SOME]&quot;,
+&quot;[I actually, um, created, um, thefez|GLOOPY GLOBS OF]&quot;,
+&quot;[thefez may be an ape but he does not know sign language and we certainly do not trust him with kittens|HOLY FUCKLOADS OF]&quot;,
+&quot;[Enjoying Sex - Female|I JUST STEPPED IN]&quot;,
+&quot;[You know it is going to be a long day when...|WHAT'S UP WITH]&quot;,
+&quot;[A huge fierce green snake bars the way!|I GOTS ME A FIST FULL OF]&quot;,
+&quot;[natural outlaws|THE WHOLE MESS TURNED INTO]&quot;,
+&quot;[Alexander the Great and the Terrible, Horrible, No-Good Very Bad|THIS GUY GAVE ME]&quot;,
+&quot;[Underground Tokyo (overview)|NOBODY GETS MY]&quot;,
+&quot;[Desecrator|EVERYONE CLAIMS TO SEE]&quot;,
+&quot;[Inbeing|WHO WANTS A PIECE OF MY]&quot;,
+&quot;[Patton's Speech to the Third Army|DIDJA EVER HEAR THE ONE ABOUT]&quot;,
+&quot;[The Evil Overlord list|DON'T RUB ON MY]&quot;,
+&quot;[i have five things to say|LISTEN TO THE GLEEFUL GIBBERINGS OF THE]&quot;,
+&quot;[Yossarian's School of Badassary|I SHOT A NODER IN RENO JUST FOR]&quot;,
+&quot;[The Lincoln County War|YOU STEP BACK AND FILL THE VOID WITH]&quot;,
+&quot;[I actually, um, created, um, thefez. It's true.|EVERYTHING I EVER LEARNED ABOUT ILLUSION WAS FROM]&quot;,
+&quot;[almost every conspiracy I can think of started in thefez's crazed version of reality|GIANT CYBORGICAL]&quot;,
+&quot;[the imaginary world where I make up things and they are true|MIDEGET PORN STARS WITH]&quot;,
+&quot;[A person shouldn't believe in isms, they should believe in thefez|SUPER DUPER SNAZZY]&quot;,
+&quot;[SOY! SOY! SOY! soy makes you strong! strength crushes enemies! SOY!|SMACK DAB IN THE MIDDLE OF]&quot;,
+&quot;[SUPER KARATE MONKEY DEATH CAR|WHEN JESUS BUILT ME HE FORGOT ALL THE]&quot;,
+&quot;[oh boner, you didn't whiz on old glory, did you?|MY MIDGET WENT TO HELL AND ALL IT GOT ME WERE THESE STINKIN']&quot;,
+);
+&quot;&lt;b&gt;&lt;font size=3&gt;&quot;.$wit[int(rand(@wit))].&quot;&lt;/font&gt;&lt;/b&gt;&quot;;
+%]
+[%
+my @wit = (
+
+&quot;[giant mechanical spiders|HUMAN HEADS!]&quot;,
+&quot;[letters from a savior; offer for a few|HUMAN HEARTS!]&quot;,
+&quot;[The fez...episode one|NINJA BONGS!]&quot;,
+&quot;[everything 2 civil war|BASTARDASSES!]&quot;,
+&quot;[BIG FAT HAIRY VISION OF EVIL|BIG FAT HAIRY VISION OF EVIL!]&quot;,
+&quot;[anger, shaped like a man|PISS FOAM!]&quot;,
+&quot;[Lesbians! Monkeys! Soy!|SOY! SOY! SOY!]&quot;,
+&quot;[mutual funds|BITCH NUGGETS!]&quot;,
+&quot;[and lo, the phoenix shall hatcheth, and burrow through ye arse with fiery abandon!|NINJA ASS TRICKS!]&quot;,
+&quot;[Everything Commune|PEACE, MONEY AND SPACESHIPS!]&quot;,
+&quot;[Everything MUD|THREE OF FIVE EXPERIMENTS DYING BEFORE BIRTH!]&quot;,
+&quot;[soul aikido|SPACE HIPPIE VOODOO]&quot;,
+&quot;[Everyone has a dead bird story|PATENTED SPIRIT MANGLER!]&quot;,
+&quot;[Balki-isms|FOREIGN DESPOTS!]&quot;,
+&quot;[What's wrong with that lawnjart kid anyway?|FRIENDLY ASSASSINS!]&quot;,
+&quot;[A dangerous evening in Canada|ILLEGAL GENETIC MODIFICATIONS!]&quot;,
+&quot;[Philosophy won't keep you warm at night.|TRANSCENDENTAL MONKEY VIBRATIONS!]&quot;,
+&quot;[fezisms generator|GLORIOUS EVIL SQUISHY THINGS!]&quot;,
+&quot;[thefez haunts the node mountain|FULLY ACCREDITED SPIRITUAL MISFITS!]&quot;,
+&quot;[everything drugs|SECONAL AND SPANISH FLY!]&quot;,
+&quot;[spiders with human heads!|SEX MITTENS!]&quot;,
+&quot;[SUITCASE-SIZED NUCLEAR DEMOLITIONS DEVICES|SUITCASE-SIZED NUCLEAR DEMOLITIONS DEVICES!]&quot;,
+);
+
+&quot;&lt;b&gt;&lt;font size=3&gt;&quot;.$wit[int(rand(@wit))].&quot;&lt;/font&gt;&lt;/b&gt;&quot;;
+%]
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-10-11 23:20:51</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>3042</hits>
+  <node_id>784525</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>784525</document_id>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>Fezisms Generator</title>
+</node>

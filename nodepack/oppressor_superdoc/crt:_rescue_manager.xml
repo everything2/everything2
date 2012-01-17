@@ -1,0 +1,33 @@
+<node>
+  <doctext>[{crtnavbar}]
+[%
+my $e_id = $query-&gt;param(&quot;entry_id&quot;);
+return &quot;No such entry_id.&lt;br&gt;&quot; unless $e_id;
+my $hash = $DB-&gt;sqlSelectHashref(&quot;*&quot;, &quot;crtentries&quot;, &quot;entry_id=$e_id&quot;);
+my $str = &quot;&lt;ul&gt;&quot;;
+foreach(keys %$hash)
+{
+  $str.=&quot;&lt;li&gt;$_ = $$hash{$_}&quot;;
+}
+$str.=&quot;&lt;/ul&gt;&quot;;
+return $str;
+%]
+
+[%
+return &quot;&lt;p align=\&quot;right\&quot;&gt;Back to &quot;.linkNode(getNode(&quot;CRT: Master List&quot;, &quot;oppressor_superdoc&quot;)).&quot;&lt;/p&gt;&quot;;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-04-11 00:49:39</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1283583</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1144104</type_nodetype>
+  <document_id>1283583</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>CRT: Rescue Manager</title>
+</node>

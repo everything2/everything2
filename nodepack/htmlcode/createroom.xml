@@ -1,0 +1,26 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-08-25 17:59:59</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>8</hits>
+  <node_id>720339</node_id>
+  <htmlcode_id>720339</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>use Everything::Experience;
+return unless getLevel($USER) &gt;= $HTMLVARS{roomCreateLevel};
+
+my $cr = getId(getNode('create room','superdoc'));
+
+#linkNode($cr,'create',{lastnode_id=&gt;0});
+
+return '&lt;span title=&quot;create a new room to chat in&quot;&gt;'
+	. linkNode($cr,'create',{lastnode_id=&gt;0})
+	. '&lt;/span&gt;';</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>createroom</title>
+</node>

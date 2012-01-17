@@ -1,0 +1,241 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>1151141</pagetype_nodetype>
+  <core>0</core>
+  <page>&lt;p&gt;
+Back to [%linkNodeTitle(&quot;patch manager&quot;);%]
+&lt;/p&gt;
+&lt;p align=&quot;right&quot;&gt;
+[%
+    return &quot;&quot; unless isGod($USER);
+    my $str;
+    my $status = getNodeById($NODE -&gt; {cur_status});
+  
+    return linkNode($NODE, &quot;Apply this patch&quot;, 
+                    {&quot;op&quot; =&gt; &quot;applypatch&quot;,
+                     &quot;patch_id&quot; =&gt; &quot;$$NODE{node_id}&quot;})
+                     .&quot;&lt;Br&gt;&quot; unless $status -&gt; {applied};
+  
+  
+    $str.= &quot;&lt;font color=\&quot;red\&quot;&gt;The patch has been applied&lt;/font&gt;
+    &quot;.linkNode($NODE, &quot;Unapply&quot;, 
+               {&quot;op&quot; =&gt; &quot;applypatch&quot;, 
+                &quot;patch_id&quot; =&gt; &quot;$$NODE{node_id}&quot;,
+                &quot;displaytype&quot; =&gt; &quot;edit&quot;})
+      .&quot;&lt;br&gt;&quot; if $status -&gt; {applied};
+   return $str;
+%]
+
+[%
+
+
+my $status = getNodeById($NODE -&gt; {cur_status});
+
+return if $status -&gt; {applied}; #Don't edit if already applied the
+                                #patch. 
+return linkNode($NODE, 'edit',
+                {'displaytype'=&gt;'edit',
+                 'lastnode_id'=&gt;0})
+  if(isGod($USER) || $$NODE{author_user} == $$USER{user_id});
+
+return '';
+%]
+&lt;/p&gt;
+[%
+return htmlcode('openform','').'&lt;br&gt;' if isGod($USER)|| $$NODE{author_user} == $$USER{user_id};
+%]
+&lt;p&gt;
+[% linkNode($$NODE{author_user},0,{lastnode_id=&gt;0}); %] submitted a patch for 
+[%
+my $patchee = getNodeById($$NODE{for_node});
+my $patchee_text = '';
+if ($patchee) {
+
+    $patchee_text = linkNode($$NODE{for_node},0,{lastnode_id=&gt;0});
+
+} else {
+
+    $patchee_text = &quot;missing node $$NODE{for_node}&quot;;
+
+}
+
+return $patchee_text;
+
+%]
+'s &quot;&lt;code&gt;[&quot;$$NODE{field}&quot;]&lt;/code&gt;&quot; field on 
+[% htmlcode('parsetime','createtime'); %]
+&lt;br&gt;
+patch's purpose: [%
+return ( $$NODE{purpose} ? htmlScreen($$NODE{purpose},0) : '&lt;em&gt;unknown&lt;/em&gt;' ) unless isGod($USER)|| $$NODE{author_user} == $$USER{user_id};
+return htmlcode( 'textfield' , 'purpose', 80, 'expandable' ) ;
+%]
+&lt;br&gt;
+&lt;strong&gt;Additional instructions&lt;/strong&gt; for bringing it live: [%
+return ( $$NODE{instructions} ? htmlScreen($$NODE{instructions},0) : '&lt;em&gt;none&lt;/em&gt;' ) unless isGod($USER)|| $$NODE{author_user} == $$USER{user_id};
+return htmlcode( 'textfield' , 'instructions', 80, 'expandabole' ) ;
+%]
+&lt;br&gt;
+status: [%
+htmlcode('settype', ',status,cur_status,node_id,' . (isGod($USER)?1:0) );
+%]
+&lt;br&gt;
+assigned to: [%
+
+my $str = &quot; &quot;.htmlcode('assign_patch',$NODE-&gt;{node_id});
+
+$str=($$NODE{assigned_to} ? linkNode($$NODE{assigned_to}) : '&lt;em&gt;nobody&lt;/em&gt;') . $str;
+my $status=getNodeById($NODE -&gt; {cur_status});
+$str.= '&lt;p&gt;&lt;a href=&quot;http://everything2.com/node/superdoc/Patch+importer?patch_action=review&amp;patch_id='.$$NODE{node_id}.'&quot;&gt;Review and import patch&lt;/a&gt;&lt;/p&gt;' if $status -&gt; {title}eq&quot;production-ready&quot;;   
+
+return $str;
+
+%]
+&lt;/p&gt;
+[%
+return unless isGod($USER)|| $$NODE{author_user} == $$USER{user_id};
+
+if($query-&gt;param('sexisgood')) {
+
+  if ( isGod($USER) ) {
+	  #Changing the status of a patch assigns it to the person who changes
+	  #it, except for &quot;assigned&quot; status.
+	  my $newstat = $query -&gt; param(&quot;setfield_cur_status_$$NODE{node_id}&quot;);
+	  my $curstat = $$NODE{cur_status};
+	  my $assigned_stat = getNode(&quot;assigned&quot;,&quot;status&quot;) -&gt; {node_id};
+	
+	  if($newstat != $curstat &amp;&amp; $newstat != $assigned_stat){
+	    $$NODE{assigned_to} = $$USER{user_id};
+	  }
+	
+	  #If not assigned to anyone, it defaults to the person choosing the
+	  #assigned status.
+	  my $assigned_to = $query -&gt; param(&quot;setfield_assigned_to_$$NODE{node_id}&quot;);
+	  if($newstat == $assigned_stat &amp;&amp; !$assigned_to){
+	    $$NODE{assigned_to} = $$USER{user_id};
+	  }
+  }
+	$$NODE{ purpose } = $query -&gt; param( 'patch_purpose' ) || $$NODE{ purpose } ;
+	$$NODE{ instructions } = $query -&gt; param( 'patch_instructions' ) || $$NODE{ instructions } ;
+	updateNode($NODE,-1);
+}
+htmlcode('closeform','');
+%]
+
+&lt;p style=&quot;border:solid black 1px; padding:5px;&quot;&gt;Talk to people related to this patch:
+[{openform}]
+[%
+my $str='';
+my %whoRelated = (
+	'author' =&gt; $$NODE{author_user},
+	'assigned' =&gt; $$NODE{assigned_to},
+);
+
+my $w;
+foreach(sort(keys(%whoRelated))) {
+	next unless (exists $whoRelated{$_}) &amp;&amp; (defined $whoRelated{$_}) &amp;&amp; length($w=$whoRelated{$_}) &amp;&amp; $w;
+	$str .=  htmlcode('msgField', 'patch' . $$NODE{node_id} . '_' . $_ . '_' . $w . ',,' . $$NODE{node_id} . ',' . $w) . ' ' . $_ . ', ' . linkNode($w,0,{lastnode_id=&gt;0}) . &quot;&lt;br /&gt;\n&quot;;
+}
+
+return $str;
+%]
+[{msgField}]&lt;br /&gt;
+[{closeform}]
+&lt;/p&gt;
+
+[%
+my $patchedNode = $$NODE{for_node};
+my $patchCreateTime = $$NODE{createtime};
+# When there's a more recent patch to the current node, it's more helpful
+#  to diff against that, so we see just what this individual patch was
+#  intended to do.
+my $patchSearch = &lt;&lt;SQLEND;
+
+SELECT patch.patch_id
+  FROM patch
+  JOIN node
+    ON patch_id = node.node_id
+  JOIN status
+    ON patch.cur_status = status.status_id
+  WHERE patch.for_node = ?
+    AND node.createtime &gt; ?
+    AND status.applied = 1
+  ORDER BY node.createtime ASC
+  LIMIT 1
+
+SQLEND
+
+my $nextPatch = $DB-&gt;getDatabaseHandle()-&gt;selectrow_array(
+  $patchSearch
+  , {}
+  , ( $patchedNode, $patchCreateTime )
+);
+
+my $diffNode;
+my $codeOrig;
+
+if ($nextPatch) {
+
+  $diffNode = getNodeById($nextPatch);
+  $codeOrig = $$diffNode{code};
+
+} else {
+
+  $diffNode = getNodeById($$NODE{for_node});
+  $codeOrig = $$diffNode{$$NODE{field}};
+
+}
+
+my $codeNew = $NODE-&gt;{code};
+my $status = getNodeById($NODE -&gt; {cur_status});
+
+#Don't show applied/production-ready patches as reversed
+if($status -&gt; {applied}){
+  ($codeNew,$codeOrig) = ($codeOrig,$codeNew);
+}
+
+my $compareLink = linkNode($diffNode);
+my $shortDiff   = showPartialDiff($codeOrig,  $codeNew);
+my $longDiff    = showCompleteDiff($codeOrig, $codeNew);
+
+my $str = &lt;&lt;TEXTEND;
+&lt;p&gt;
+Diffing against $compareLink
+&lt;/p&gt;
+
+&lt;hr&gt;
+&lt;p&gt;Just the changes: &lt;br&gt;&lt;br&gt;
+&lt;/p&gt;
+&lt;pre&gt;
+$shortDiff
+&lt;/pre&gt;
+
+&lt;p&gt;
+The complete diff:&lt;br&gt;&lt;br&gt;
+&lt;/p&gt;
+&lt;pre&gt;
+$longDiff
+&lt;/pre&gt;
+
+TEXTEND
+
+return $str;
+
+%]
+
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-09-03 13:11:02</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1151154</htmlpage_id>
+  <hits>0</hits>
+  <node_id>1151154</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>220</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>patch display page</title>
+  <mimetype></mimetype>
+</node>

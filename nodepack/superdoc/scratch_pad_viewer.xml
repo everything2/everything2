@@ -1,0 +1,100 @@
+<node>
+  <doctext>&lt;p&gt;This page is so obsolete, even its [Scratch Pads[superdocnolinks]|replacement] is
+obsolete. &lt;strong&gt;[Drafts[superdoc]]&lt;/strong&gt; is the place to go now.
+&lt;/p&gt;
+&lt;hr&gt;
+
+&lt;p&gt;
+This is where you view (read-only) the Scratch Pad of another person.  You of course can view and edit your own Scratch Pads at [Scratch Pads].  Questions about this feature are answered at [E2 Options: Sharing your scratch pad].
+&lt;/p&gt;
+
+&lt;!--
+Saturday, November 13, 2004: SPV got nuked. [Lord Brawl] restored it from an old patch. Please report any wonkiness.
+Tuesday, November 16, 2004: Users with underscores or spaces in their names had problems. This should be fixed now.
+--&gt;
+
+
+[%
+use Everything::Experience;
+return 'Log in first, please.' if getId($USER) == $HTMLVARS{guest_user};
+my $UID = getId($USER);
+
+my $str = '&lt;form method=&quot;post&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;1147724&quot;&gt;';
+
+my $inputname = '';
+
+if($query-&gt;param('skratch_user'))
+{
+	$inputname = $query-&gt;param('skratch_user');
+}
+else
+{
+	$inputname = $$USER{title};
+}
+
+# Strip undescores (needed for parameter passing?)
+#$inputname =~ s/_/%20/g;  OLD WAY -- DOESN'T WORK WITH NEW PERL VERSION
+#$inputname =~ s/_/ /g;
+
+$str.= 'Look up user:&lt;br /&gt;&lt;input type=&quot;text&quot; name=&quot;skratch_user&quot; value=&quot;'.$inputname.'&quot; /&gt;&lt;br /&gt;&lt;input type=&quot;submit&quot; value=&quot;View pad&quot; /&gt;&lt;/form&gt;
+
+&lt;p&gt;&lt;hr /&gt;&lt;/p&gt;';
+
+return $str.'Please enter a user to view&lt;br&gt;' unless $query-&gt;param('skratch_user');
+
+my $skratchUser = getNode($inputname, 'user');
+
+return $str.'No such user &quot;'.$query-&gt;param('skratch_user').'&quot;&lt;br&gt;' unless $skratchUser;
+
+my $skratchVars = getVars($skratchUser);
+
+return $str.'['.$$skratchUser{title}.']\'s scratch pad is not publicly shared.' unless $$skratchVars{skratchShare} || isGod( $USER );
+
+my $skratching = $DB-&gt;sqlSelect('scratch_text', 'scratch', 'scratch_id='.getId($skratchUser));
+return $str.'User has no scratch pad!' unless $skratching;
+
+$inputname = $query-&gt;escape($$skratchUser{title});
+$inputname =~ s/%20/_/g;
+$inputname =~ s/%2A/*/g;
+# Code per a patch by fuzzie, added and tweaked by dann 
+$str.=htmlcode('openform')
+   .'&lt;input type=&quot;hidden&quot; name=&quot;skratch_user&quot; value=&quot;'
+   .$$skratchUser{title}.'&quot;&gt;'
+   .htmlcode('msgField',
+&quot;skratchMsg,,1065273,&quot;.$$skratchUser{node_id}.','.$$skratchUser{node_id})
+   .htmlcode('closeform').&quot;&lt;/p&gt;&lt;hr&gt;&quot;
+      unless $UID eq $$skratchUser{node_id};
+
+$str.='&lt;p align=&quot;right&quot;&gt;'.linkNode(getNode(&quot;E2 Printable Scratch Pad&quot;, &quot;superdocnolinks&quot;), &quot;printable&quot;, {displaytype =&gt; &quot;printable&quot;, for_user =&gt; &quot;$$skratchUser{node_id}&quot;}).&quot;&lt;/p&gt;&quot;;
+
+
+my $TAGS = getVars(getNode('approved html tags','setting'));
+my $skratchText = parseLinks(htmlScreen($skratching, $TAGS));
+
+if (isGod($USER)) {
+$skratchText.='
+&lt;p&gt;&lt;textarea name=&quot;skratch&quot; '.htmlcode('customtextarea','1').' wrap=&quot;virtual&quot; &gt;'.encodeHTML($skratching).'&lt;/textarea&gt;&lt;/p&gt;';
+}
+
+return $str.$skratchText;
+
+%]
+
+&lt;p class='small'&gt;[Bugs go to JayBonci]&lt;/p&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-08-29 01:51:37</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>8</hits>
+  <node_id>1147724</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1147724</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>Scratch Pad Viewer</title>
+</node>

@@ -1,0 +1,86 @@
+<node>
+  <nltext></nltext>
+  <parent_container>1854181</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2008-02-19 20:58:37</createtime>
+  <lastupdate>1258050675</lastupdate>
+  <hits>2</hits>
+  <node_id>1988563</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>1312198</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1988563</nodelet_id>
+  <nlcode>&lt;ul id='notifications'&gt;
+[%
+my $limit = 10;
+
+use JSON;
+my $str;
+
+my $temp = htmlcode('shownewexp');
+
+# hide node notes from non-editors
+my $isEditor = htmlcode('isEditor');
+my %editorOnlyNotifications = ( 1930989 =&gt; 1, );
+my %excludeNotifications = ();
+
+if (!$isEditor) {
+
+   %excludeNotifications = %editorOnlyNotifications;
+
+}
+
+my $otherNotifications = &quot;0&quot;;
+
+if ($$VARS{settings}) {
+
+   my $notificationList = %{from_json($$VARS{settings})}-&gt;{notifications};
+   my @notify;
+
+   for (keys %{$notificationList}) {
+      next if $excludeNotifications{$_};
+      push @notify, $_;
+   }
+
+   $otherNotifications = join(&quot;,&quot;,@notify);
+
+}
+
+
+my $dayLimits = { 1930852 =&gt; 2 #experience
+};
+
+my ($csr) = $DB-&gt;sqlSelectMany(&quot;notified.notification_id, args, (hourLimit*3600 - &quot;.time.&quot; + UNIX_TIMESTAMP(notified_time)) as timeLimit, is_seen, notified.notified_id&quot;,&quot;notified inner join notification on notification.notification_id=notified.notification_id&quot;,&quot;(user_id = $$USER{user_id} or user_id in ($otherNotifications)) and is_seen = 0 having (timeLimit &gt; 0) order by notified_id desc limit $limit&quot;);
+
+while (my $notify = $csr-&gt;fetchrow_hashref) {
+
+	my $argJSON = $$notify{args};
+	$argJSON =~ s/'/\'/g;
+	my $codeStr = '
+	use JSON;
+	my $argSet = \''.$argJSON.'\';
+	my $args = JSON::from_json($argSet);
+	'.getNodeById($$notify{notification_id})-&gt;{code};
+
+	$str .= &quot;&lt;li class='notified' id='notified_&quot;.$$notify{notified_id}.&quot;'&gt;&lt;div style='clear: both; '&gt;&lt;div style=' padding: .5em 0em .5em 0em; width: 10%; float: left;' &gt;(&lt;a href='javascript:E2AJAX.markNotificationSeen(&quot;.$$notify{notified_id}.&quot;)'&gt;x&lt;/a&gt;)&lt;/div&gt; &lt;div style='  float: right; width:89%'&gt;&quot;.parseLinks(evalCode($codeStr)).&quot;&lt;/div&gt;&lt;div style='clear:both'&gt;&lt;/div&gt;&lt;/div&gt;&lt;/li&gt;\n&quot;;
+}
+
+$str;
+
+%]
+&lt;/ul&gt;
+&lt;script&gt;
+ new PeriodicalExecuter(function() {E2AJAX.checkNotifications();},30);
+&lt;/script&gt;
+</nlcode>
+  <title>Notifications_Kthejoker</title>
+</node>

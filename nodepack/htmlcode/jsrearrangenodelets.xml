@@ -1,0 +1,162 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-07-28 17:29:33</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>33</hits>
+  <node_id>840319</node_id>
+  <htmlcode_id>840319</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#######
+#  this function allows users to select which nodelets
+#  they want to see and then order them
+#  usage: [{rearrangenodelets:nodelets,default nodelets}]
+#  first parameter:  user variable which stores the comma delimited list of selected node_id's ie $$VARS{nodelets}
+#  second parameter: nodeletgroup which contains nodelets a user can choose from
+#  optional third parameter: pass it a true value if you don't want to 
+#        open and close the form by default.
+#######
+my($varsfield,$nodeletgroup,$formoff)=@_;
+return if(getId($USER)==$HTMLVARS{guest_user});
+return &quot;You need to pass me a varsfield&quot; unless $varsfield;
+my $NG=getNode $nodeletgroup,&quot;nodeletgroup&quot;;
+my $GROUP=$$NG{group};
+my %unselected;
+my $addprefix=$varsfield.&quot;_add_&quot;;
+my $removeprefix=$varsfield.&quot;_rem_&quot;;
+
+
+map {$unselected{$_}=1} @{$GROUP};
+my (@nodelets)=split(/,/,$$VARS{$varsfield});
+
+foreach(@nodelets){
+   delete $unselected{$_};
+}
+my $str;
+
+foreach(grep{/^$addprefix/} $query-&gt;param()){
+   /^$addprefix(.*)/;
+   push @nodelets, $1 if $unselected{$1};
+   delete $unselected{$1};
+}
+
+my %remove;
+
+foreach(grep{/^$removeprefix/} $query-&gt;param()){
+   /^$removeprefix(.*)/;
+   $remove{$1}=1 unless $1 eq 'epicenter';
+   $unselected{$1}=1;
+}
+@nodelets=grep !$remove{$_}, @nodelets;
+
+foreach (@nodelets) { $_ = getId(getNode($_,'nodelet')) }
+
+$$VARS{$varsfield}=join(',',@nodelets);
+
+$str.=&lt;&lt;JSCRIPTDATA
+
+&lt;script language=&quot;JavaScript&quot;&gt;
+&lt;!--
+    //  Swap the values of two arbitrary objects. The interpreter will be kind 
+    //  enough to bombard the user with incomprehensible error messages if 
+    //  one or the other of the objects doesn't have a &quot;value&quot; property.
+    function swap_obj_values( obj_1, obj_2 )
+    {
+        tmp         = obj_1.value;
+        obj_1.value = obj_2.value
+        obj_2.value = tmp;
+    }
+
+    //  GRRRR.  It'd be nice if checkbox.value reflected checkbox.checked.
+    function swap_obj_checked( obj_1, obj_2 )
+    {
+        tmp           = obj_1.checked;
+        obj_1.checked = obj_2.checked
+        obj_2.checked = tmp;
+    }
+
+    //  on_nodelet_up() and on_nodelet_down() could be one function with a boolean 
+    //  up/down parameter, but, uh, hey.  It started to seem goofy when I did that.
+
+    //  The eval() shit is because we can't use forms.nodelets as an array due to 
+    //  the square bracket thing.  Urgh.  
+
+    //  Handle the clicking of an &quot;Up&quot; button.
+    function on_nodelet_up( button )
+    {
+        index       = new Number( new String( button.name ).replace( &quot;up_&quot;, &quot;&quot; ) );
+        this_edit   = eval( &quot;document.forms.nodelets.nodelet_&quot; + index );
+        that_edit   = eval( &quot;document.forms.nodelets.nodelet_&quot; + (index - 1 ) );
+        this_check  = eval( &quot;document.forms.nodelets.hide_nodelet_&quot; + index );
+        that_check  = eval( &quot;document.forms.nodelets.hide_nodelet_&quot; + (index - 1 ) );
+
+        swap_obj_values( this_edit, that_edit );
+        swap_obj_checked( this_check, that_check );
+    }
+
+    //  Handle the clicking of an &quot;Down&quot; button.
+    function on_nodelet_down( button )
+    {
+        index       = new Number( new String( button.name ).replace( &quot;down_&quot;, &quot;&quot; ) );
+        this_edit   = eval( &quot;document.forms.nodelets.nodelet_&quot; + index );
+        that_edit   = eval( &quot;document.forms.nodelets.nodelet_&quot; + (index + 1 ) );
+        this_check  = eval( &quot;document.forms.nodelets.hide_nodelet_&quot; + index );
+        that_check  = eval( &quot;document.forms.nodelets.hide_nodelet_&quot; + (index + 1 ) );
+
+        swap_obj_values( this_edit, that_edit );
+        swap_obj_checked( this_check, that_check );
+    }
+
+    //  Forbid the user from focusing an editbox.  In effect, they're 
+    //  read-only.
+    function on_focus_edit( editbox )
+    {
+        editbox.select();
+        editbox.blur();
+    }
+//--&gt;
+&lt;/script&gt;
+JSCRIPTDATA
+
+
+
+
+
+my($uptag,$downtag);
+$uptag||=&quot;up&quot;;
+$downtag||=&quot;down&quot;;
+$str.=htmlcode('openform') unless $formoff;
+$str.=&quot;&lt;TABLE&gt;&lt;TR&gt;&lt;TD&gt;Remove&lt;/TD&gt;&lt;/TR&gt;&quot;;
+
+getId(getNode('epicenter','nodelet'));
+
+for(my $i=0; $i&lt;@nodelets; $i++){
+   my $CURNODE=getNodeById($nodelets[$i]);
+
+   $str.=&quot;&lt;TR&gt;&lt;TD&gt;&quot;;
+   $str.=$query-&gt;checkbox(-name=&gt;&quot;$removeprefix&quot;.getId($CURNODE),-label=&gt;&quot; remove&quot;) unless getId($CURNODE)==$ep_id;
+   $str.=&quot;&lt;/TD&gt;&lt;TD&gt;$$CURNODE{title}&lt;/TD&gt;&quot;;
+   unless($i==0 or $i==$#nodelets){
+      $str.=&quot;&lt;TD&gt;&lt;a href=&quot;.urlGen({node_id=&gt;getId($NODE),displaytype=&gt;'display',nodeletclass=&gt;$varsfield,pos=&gt;$i,dir=&gt;'up'}).&quot;&gt;$uptag&lt;/A&gt;&lt;/TD&gt;&quot;.
+         &quot;&lt;TD&gt;&lt;a href=&quot;.urlGen({node_id=&gt;getId($NODE),displaytype=&gt;'display',nodeletclass=&gt;$varsfield,pos=&gt;$i,dir=&gt;'down'}).&quot;&gt;$downtag&lt;/A&gt;&lt;/TD&gt;&lt;/TR&gt;&quot;;
+  
+   } elsif($i==0){
+         $str.=&quot;&lt;TD&gt;&lt;/TD&gt;&lt;TD&gt;&lt;a href=&quot;.urlGen({node_id=&gt;getId($NODE),displaytype=&gt;'display',nodeletclass=&gt;$varsfield,pos=&gt;$i,dir=&gt;'down'}).&quot;&gt;$downtag&lt;/A&gt;&lt;/TD&gt;&lt;/TR&gt;&quot;;
+   } elsif($i==$#nodelets){
+         $str.=&quot;&lt;TD&gt;&lt;a href=&quot;.urlGen({node_id=&gt;getId($NODE),displaytype=&gt;'display',nodeletclass=&gt;$varsfield,pos=&gt;$i,dir=&gt;'up'}).&quot;&gt;$uptag&lt;/A&gt;&lt;/TD&gt;&lt;TD&gt;&lt;/TD&gt;&lt;/TR&gt;&quot;;
+   }
+}
+foreach(keys %unselected){
+    my $CURNODE=getNodeById($_);
+    $str.=&quot;&lt;TR&gt;&lt;TD&gt;&lt;/TD&gt;&lt;TD&gt;$$CURNODE{title}&lt;/TD&gt;&lt;TD colspan=2&gt;&quot;.$query-&gt;checkbox(-name=&gt;$addprefix.$$CURNODE{node_id},-label=&gt;&quot; add&quot;).&quot;&lt;/TD&gt;&lt;/TR&gt;&quot;;
+}
+$str.=&quot;&lt;/TABLE&gt;&quot;;
+$str.=htmlcode('closeform') unless $formoff;
+return $str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>jsrearrangenodelets</title>
+</node>

@@ -1,0 +1,61 @@
+<node>
+  <parent_container>1988788</parent_container>
+  <pagetype_nodetype>15</pagetype_nodetype>
+  <core>0</core>
+  <page>&lt;div id='main_section_content_left' style='width: 35%;  margin: .5em; float: left'&gt;
+&lt;h1&gt;[% return $$NODE{title}; %]&lt;/h1&gt;
+&lt;div&gt;&lt;img src='http://images.everything2.com/[% return $$NODE{imgsrc}; %]' id='userimage' width='100%'&gt;&lt;/div&gt;
+&lt;div&gt;
+&lt;a href='?op=favorite'&gt;Add to favorite users&lt;/a&gt;&lt;br /&gt;
+&lt;input type='text'/&gt; &lt;input type='button'&gt;Send Message&lt;/input&gt;&lt;br /&gt;
+[%
+
+#database setup
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'Oh, no! Unable to get database handle!' unless $dbh;
+ my $qh;	#query handle
+ my $typeID = getId(getType('writeup')) || 0;
+
+my $str;
+
+my $qh = $dbh-&gt;prepare(
+ 	'SELECT * FROM node,writeup WHERE node.author_user='.$$NODE{user_id}.
+ 	' AND node.type_nodetype='.$typeID.
+ 	' AND writeup.writeup_id=node.node_id ORDER BY CREATETIME DESC LIMIT 3' );
+ $qh-&gt;execute();	#gets current WUs and their info
+  while(my $r=$qh-&gt;fetchrow_hashref) {
+ 	$str.=linkNode($$r{node_id}, getNode($$r{parent_e2node})-&gt;{title}).&quot;&lt;br /&gt;&quot;;
+ }
+ $qh-&gt;finish();
+
+$str;
+
+%]
+&lt;/div&gt;
+
+[%
+
+return insertNodelet(getNode(&quot;User Info&quot;,&quot;nodelet&quot;)-&gt;{node_id}); %]
+&lt;/div&gt;
+	&lt;div id='main_section_content_right' style='width: 50%;  margin: .5em; float: right'&gt;
+ [{displayUserText}]
+
+
+		&lt;/div&gt;
+			&lt;div style='clear: both'&gt;&lt;/div&gt;</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-11-18 20:16:24</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1988796</htmlpage_id>
+  <hits>0</hits>
+  <node_id>1988796</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <ownedby_theme>1988787</ownedby_theme>
+  <title>e3 user display page</title>
+  <mimetype></mimetype>
+</node>

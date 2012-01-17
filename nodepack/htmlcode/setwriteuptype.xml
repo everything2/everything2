@@ -1,0 +1,88 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-12 19:27:55</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>24</hits>
+  <node_id>298</node_id>
+  <htmlcode_id>298</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($N, $title) = @_;
+
+my $type;
+if (ref $N){
+	$type = $$N{wrtype_writeuptype};
+}else{
+	$type = $N;
+}
+
+my $hidebox;
+
+unless ($type){
+	# no old type: new writeup/draft for publication
+	my $checked;
+
+	$title ||= $$NODE{title};
+	return $query -&gt; hidden('writeup_notnew', 1)
+		.'Writeup type: thing; don\'t show in New Writeups nodelet'
+		if getVars(getNode('boring heaven nodes', 'setting')) -&gt; {$title};
+
+	if (
+		$title =~ /^(January|February|March|April|May|June|July|August|September|October|November|December) [1-9]\d?, \d+/i ||
+		$title =~/^(dream|editor|root) Log: /i ||
+		$$VARS{HideNewWriteups}
+	){
+		$type = getNode('log', 'writeuptype')-&gt;{node_id} if $1;
+		$checked = 1;
+	}
+
+	$checked = ' checked=&quot;checked&quot;' if $checked
+		or ref($N) &amp;&amp; 
+		($$N{reputation} || $DB -&gt; sqlSelect('vote_id', 'vote', &quot;vote_id=$$N{node_id}&quot;)
+		|| $DB -&gt; sqlSelect(
+			'LEFT(notetext, 25)'
+			, 'nodenote'
+			, &quot;nodenote_nodeid=$$N{node_id}
+				AND noter_user = 0&quot;
+			, 'ORDER BY timestamp LIMIT 1'
+		) eq 'Restored from Node Heaven');
+
+	$type ||= getNode('thing', 'writeuptype') -&gt; {node_id};
+
+	$hidebox = qq!&lt;label&gt;&lt;input type=&quot;checkbox&quot; name=&quot;writeup_notnew&quot; value=&quot;1&quot;$checked&gt;don't
+		show in New Writeups nodelet&lt;/label&gt;!;
+}
+
+my $str = '&lt;label title=&quot;Set the general category of your writeup,
+	which helps identify the type of content in writeup listings.&quot;&gt;&lt;strong&gt;Writeup type:&lt;/strong&gt;';
+
+my (@WRTYPE) = getNodeWhere({type_nodetype =&gt; getId(getType('writeuptype'))});
+
+my %items;
+
+my $isEd = exists $HTMLVARS{'group_content editors'}{getId($USER)} ||
+	exists $HTMLVARS{'group_gods'}{getId($USER)} ||
+	$$USER{title} eq 'Webster 1913' ||
+	$$USER{title} eq 'Virgil';
+
+foreach (@WRTYPE){
+	next if (!$isEd and lc($$_{title}) eq 'definition'
+		|| lc($$_{title}) eq 'lede');
+	$items{$$_{node_id}} = $$_{title};
+}
+
+$items{$type} = '('.$type.')' if !defined($items{$type});
+my @idlist = sort { $items{$a} cmp $items{$b} } keys %items;
+
+$str.=$query-&gt;popup_menu('writeup_wrtype_writeuptype', 
+  \@idlist, $type, \%items) . '&lt;/label&gt;';
+
+$str . $hidebox;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>setwriteuptype</title>
+</node>

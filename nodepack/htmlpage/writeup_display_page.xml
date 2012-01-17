@@ -1,0 +1,78 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>117</pagetype_nodetype>
+  <core>0</core>
+  <page>&lt;p&gt;&lt;small&gt;[% 
+my $PARENT = getNodeById($$NODE{parent_e2node});
+
+return &quot;This node is unparented. Please contact an administrator to have this repaired&quot; unless($PARENT and $$PARENT{group} and my @grp = @{getNodeById($$NODE{parent_e2node})-&gt;{group}});
+my $nwriteups = scalar(@grp);
+my $nodeTitle=getNodeById($$NODE{parent_e2node})-&gt;{title};
+return &quot;(&quot;.linkNode($$NODE{parent_e2node},&quot;see all of $nodeTitle&quot;).(($nwriteups == 1)?(&quot;, no other writeups in this node)&quot;):(($nwriteups == 2)?(&quot;, there is 1 more in this node)&quot;):(&quot;, there are &quot;.($nwriteups-1).&quot; more in this node)&quot;))); 
+
+%]&lt;/small&gt;&lt;/p&gt;
+&lt;p&gt;
+[{firmlinks}]
+[{votehead}]
+[{displaywriteup}]
+[{votefoot}]
+[{writeuphints}]
+[{softlink}]
+
+&lt;p align=right&gt;&lt;font size=-1&gt;[% linkNode($NODE, 'printable version', { displaytype =&gt; 'printable', lastnode_id =&gt; '0', -rel =&gt; 'nofollow' } ) %] &lt;/font&gt;&lt;/p&gt;
+&lt;p align=right&gt;&lt;font size=-1&gt;[% linkNode($NODE, 'link view', { displaytype =&gt; 'linkview', lastnode_id =&gt; '0', -rel =&gt; 'nofollow' } ) %] &lt;/font&gt;&lt;/p&gt;
+
+[%
+return unless canUpdateNode($USER, $NODE);
+my $str;
+
+if (($$VARS{settings_useTinyMCE})||($$USER{user_id}==580946)) {
+$str.= '&lt;script type=&quot;text/javascript&quot;&gt;
+tinyMCE.init({
+theme: &quot;advanced&quot;,
+theme_advanced_disable : &quot;styleselect,image,anchor,link,unlink&quot;,
+mode: &quot;exact&quot;,
+elements: &quot;writeup_doctext&quot;,
+invalid_elements: &quot;a,img,table,tr,td,th,div,span&quot;,
+extended_valid_elements: &quot;big,small&quot;
+});
+&lt;/script&gt;';}
+
+$str.=htmlcode('openform');
+$str.= htmlcode('setwriteuptype', $$NODE{wrtype_writeuptype});
+$str.=&quot;&lt;br /&gt;&lt;strong&gt;Edit your writeup&lt;/strong&gt;&lt;br /&gt;\n&quot;;
+#$str.=htmlcode('textarea', 'doctext,14,60,virtual');
+$str.=htmlcode('textarea', 'doctext,'.htmlcode('customtextarea','0').',virtual');
+if (!($$VARS{settings_useTinyMCE})) {
+ 	$str.=htmlcode('formatButton','writeup_doctext');
+}
+
+if($$NODE{author_user} != $$USER{node_id}){
+  $str.=&quot;&lt;b&gt;Explain your edit to the author:&lt;/b&gt;&lt;br&gt;\n&quot;;
+  $str.=htmlcode('textfield','explanation,60').&quot;&lt;br /&gt;\n&quot;;
+}
+
+$str.=htmlcode('closeform');
+$str;
+
+
+#other stuff we need to put in here:
+#special parselinks for writeups (link to e2nodes only)
+#edit capabilities (N-Wing says: isn't this part done?)
+%]</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-04 23:51:10</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>219</htmlpage_id>
+  <hits>101</hits>
+  <node_id>219</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>writeup display page</title>
+  <mimetype></mimetype>
+</node>

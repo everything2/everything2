@@ -1,0 +1,88 @@
+<node>
+  <doctext>&lt;p&gt;Argh! There are too many things I want to do on E2, and I forget them all. This is just a little note area for myself.&lt;/p&gt;
+
+&lt;p&gt;&lt;table border=&quot;1&quot; cellpadding=&quot;3&quot; cellspacing=&quot;1&quot;&gt;
+&lt;tr&gt;&lt;th&gt;stage/timing&lt;/th&gt;&lt;th&gt;description&lt;/th&gt;&lt;/tr&gt;
+
+&lt;tr&gt;&lt;td&gt;working on&lt;/td&gt;&lt;td&gt;(created [useralias] (nodetype); started [useralias display page]; created useralias table (&lt;code&gt;CREATE TABLE useralias (&lt;/code&gt; ... &lt;code&gt;)&lt;/code&gt;); created [useralias] (dbtable); next: finish useralias display page; next: create useralias edit page; next: message opcode; next: homenode display of public)&lt;br /&gt;
+useralias dbtable: primary node_id, varchar(20) aliasname, int(11) realuser_id, tinyint(4) private &amp;#91;0 = public, &amp;gt;1 = private&amp;#93;; in private mode, people can respond to deletions (the original killer can respond in another node, so the same anonymous responder could be used) (on the other hand, editors may get sick of responding to stupid responses); in public mode, it can replace [chatterbox forward], and not need the creation of a dummy account&lt;br /&gt;database table setup:
+&lt;table border=&quot;1&quot;&gt;
+&lt;tr&gt;&lt;td bgcolor=&quot;#cccccc&quot;&gt;Key&lt;/td&gt;&lt;td bgcolor=&quot;#cccccc&quot;&gt;Type&lt;/td&gt;&lt;td bgcolor=&quot;#cccccc&quot;&gt;Null&lt;/td&gt;&lt;td bgcolor=&quot;#cccccc&quot;&gt;Extra&lt;/td&gt;&lt;td bgcolor=&quot;#cccccc&quot;&gt;Field&lt;/td&gt;&lt;td bgcolor=&quot;#cccccc&quot;&gt;Default&lt;/td&gt;&lt;th&gt;explained&lt;/th&gt;&lt;/tr&gt;
+ &lt;tr&gt;
+  &lt;td&gt;PRI&lt;/td&gt;
+  &lt;td&gt;int(11)&lt;/td&gt;
+  &lt;td&gt;not null&lt;/td&gt;
+  &lt;td&gt;auto_increment&lt;/td&gt;
+  &lt;td&gt;alias_id&lt;/td&gt;
+  &lt;td&gt;0&lt;/td&gt;
+  &lt;td&gt;this would match up with the node_id available in a URL&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+  &lt;td&gt;&amp;nbsp;&lt;/td&gt;
+  &lt;td&gt;varchar(20)&lt;/td&gt;
+  &lt;td&gt;&amp;nbsp;&lt;/td&gt;
+  &lt;td&gt;&amp;nbsp;&lt;/td&gt;
+  &lt;td&gt;aliasname&lt;/td&gt;
+  &lt;td&gt;&amp;nbsp;&lt;/td&gt;
+  &lt;td&gt;name of alias; this would probably be mostly randomly generated&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+  &lt;td&gt;&amp;nbsp;&lt;/td&gt;
+  &lt;td&gt;int(11)&lt;/td&gt;
+  &lt;td&gt;not null&lt;/td&gt;
+  &lt;td&gt;&amp;nbsp;&lt;/td&gt;
+  &lt;td&gt;realuser_id&lt;/td&gt;
+  &lt;td&gt;0&lt;/td&gt;
+  &lt;td&gt;node_id of the user who controls this alias; /msgs sent to this alias would go to this user&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+  &lt;td&gt;&amp;nbsp;&lt;/td&gt;
+  &lt;td&gt;tinyint(4) unsigned&lt;/td&gt;
+  &lt;td&gt;not null&lt;/td&gt;
+  &lt;td&gt;&amp;nbsp;&lt;/td&gt;
+  &lt;td&gt;howprivate&lt;/td&gt;
+  &lt;td&gt;0&lt;/td&gt;
+  &lt;td&gt;if the alias is public or private (if 0, public, this would replace the /msg alias table) (if postive, private, this would allow 1-way anonymous messages)&lt;/td&gt;
+ &lt;/tr&gt;
+&lt;/table&gt;
+&lt;/td&gt;&lt;/tr&gt;
+
+&lt;tr&gt;&lt;td&gt;doing&lt;/td&gt;&lt;td&gt;editor-only expando-nodelet-part&lt;/td&gt;&lt;/tr&gt;
+
+&lt;tr&gt;&lt;td&gt;later&lt;/td&gt;&lt;td&gt;diagram how messages should work - where they should be expanded, how they should be stored, etc.&lt;/td&gt;&lt;/tr&gt;
+
+&lt;tr&gt;&lt;td&gt;eventually&lt;/td&gt;&lt;td&gt;go through edev postings and either add ideas here, or respond in writeup of thing not happening&lt;/td&gt;&lt;/tr&gt;
+
+&lt;tr&gt;&lt;td&gt;?&lt;/td&gt;&lt;td&gt;view writeups by user (many on 1 page) - either have editor only, or disable downvote buttons&lt;/td&gt;&lt;/tr&gt;
+
+&lt;tr&gt;&lt;td&gt;slowly working on&lt;/td&gt;&lt;td&gt;[EDev FAQ]&lt;/td&gt;&lt;/tr&gt;
+
+&lt;tr&gt;&lt;td&gt;later?&lt;/td&gt;&lt;td&gt;[edev: Nodespheres - A suggestion for node associations]&lt;/td&gt;&lt;/tr&gt;
+
+&lt;tr&gt;&lt;td&gt;next?&lt;/td&gt;&lt;td&gt;have /.-style nodelet organization: up/down/kill&lt;/td&gt;&lt;/tr&gt;
+
+&lt;tr&gt;&lt;td&gt;doing&lt;/td&gt;&lt;td&gt;more things in [color fun]: floating RGB, RGB&amp;lt;-&amp;gt;CYMK, etc. (any ideas?)&lt;/td&gt;&lt;/tr&gt;
+
+&lt;!--
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;;td&amp;gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+--&gt;
+
+&lt;tr&gt;&lt;td&gt;very soon&lt;/td&gt;&lt;td&gt;delete all [% linkNode($USER); %]'s writeups&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-07-11 06:57:25</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1104645</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1104645</document_id>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>NPB TODO</title>
+</node>

@@ -1,0 +1,84 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-02-14 21:22:55</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>1930072</node_id>
+  <htmlcode_id>1930072</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>return if ($$USER{user_id}==$HTMLVARS{guest_user});
+# Upon successful log-in, write current browser to VARS
+if ($query-&gt;param(&quot;op&quot;) eq &quot;login&quot;)
+	{ $$VARS{browser} = $ENV{HTTP_USER_AGENT}; }
+
+my @thingys = ();
+my $votesLeftStr = &quot;&quot;;
+
+my $isRoot = htmlcode('isAdmin');
+my $isEd = $isRoot || htmlcode('isEditor');
+
+
+my $c = $$VARS{cools} || 0;
+my $v = $$USER{votesleft} || 0;
+if($v !~ /^\d+$/) { $v = 0; }
+if (int $c || int $v) {
+	if(int $c) { push @thingys, '&lt;strong id=&quot;chingsleft&quot;&gt;'.$c.'&lt;/strong&gt; C!'.($c&gt;1?'s':''); }
+	if(int $v) { push @thingys, '&lt;strong id=&quot;votesleft&quot;&gt;'.$v.'&lt;/strong&gt; vote'.($v&gt;1?'s':''); }
+}
+
+if (scalar(@thingys)) {
+	$votesLeftStr = &quot;\n\n\t&quot;.'&lt;span id=&quot;voteInfo&quot;&gt;You have ' . join(' and ',@thingys) . ' left today.&lt;/span&gt;';
+}
+
+my @xps = grep { /\S/ } ( htmlcode('shownewexp', 1), htmlcode('showNewGp', 1) );
+my $expStr = '';
+
+if (scalar @xps) {
+  $expStr .=
+    '&lt;span id=&quot;experience&quot;&gt;'
+    . join(' | ', @xps)
+    . '&lt;/span&gt;'
+    ;
+}
+
+$expStr =~ s/&lt;br ?\/?&gt;/ | /g;
+
+my @ifys = (
+   linkNode($NODE, 'print'
+      , {
+         displaytype=&gt;'printable'
+         , lastnode_id =&gt; 0
+         , scratch_id =&gt; $query-&gt;param('scratch_id')
+        }
+   )
+);
+
+push(@ifys, linkNode(getNode('chatterlight','fullpage'),'chat'));
+push(@ifys, linkNode(getNode('message inbox','superdoc'),'inbox'));
+
+my $opStr = join(&quot; | &quot;,@ifys);
+
+return &quot;&lt;div id='epicenter_zen'&gt;&lt;span id='epicenter_zen_info'&gt;
+&quot;.linkNode($USER,0,{lastnode_id=&gt;0}).&quot;
+ | &quot;.linkNode($NODE, 'Log Out', {op=&gt;'logout'}).&quot;
+ | &quot;.linkNode($HTMLVARS{userSettings_node}, 'Preferences',{lastnode_id=&gt;0}).&quot;
+ | &quot;.linkNode(getNode('Drafts','superdoc')).&quot;
+ | &quot;.linkNode(getNode('Everything2 Help','e2node'), 'Help').&quot;
+ | &quot;.htmlcode('randomnode','Random').&quot;
+&lt;/span&gt;
+&lt;br /&gt;
+$votesLeftStr&lt;br /&gt;
+$expStr&lt;br /&gt;
+&lt;span id='epicenter_zen_commands'&gt;
+$opStr
+&lt;/span&gt;
+&lt;/div&gt;&quot;;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>epicenterZen</title>
+</node>

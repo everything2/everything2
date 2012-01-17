@@ -1,0 +1,59 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-04 00:14:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>20</hits>
+  <node_id>846351</node_id>
+  <htmlcode_id>846351</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># [{uploadimage:field}]
+#
+# generates an input file field, and sets the field to the URL 
+
+use File::Copy;
+
+my ($field) = @_;
+my $str = &quot;&quot;;
+my $name = $field.&quot;_file&quot;;
+my $tmpfile = '/tmp/everythingimage' . rand(10000); 
+my $imagedir = '/var/everything/www/images/incoming';
+my $imageurl = 'images/incoming/';
+
+my $fname = $query-&gt;param($name);
+
+if (defined $fname) {
+
+  my $imgname = $fname;
+  $imgname =~ s/[^\w\.]*//g;
+
+  $str.=&quot;&lt;p&gt;Received &quot; . encodeHTML($fname) . &quot; of type &quot;;
+  $str.= &quot;'&quot;. $query-&gt;uploadInfo($fname)-&gt;{&quot;Content-Type&quot;}.&quot;'!&lt;/p&gt;&quot;;
+
+  open OUTFILE, &quot;&gt;$tmpfile&quot;;
+  my ($buf);
+  while (read($fname, $buf, 1024)) { 
+    print OUTFILE $buf;
+  }
+  close OUTFILE;
+
+  move($tmpfile, &quot;$imagedir/$imgname&quot;);
+  $$NODE{$field} = $imageurl . $imgname;
+  updateNode($NODE, $USER);
+
+}
+
+$str .= &quot;NOTE: Image directory is hard-coded in &quot;
+     . linkNode(getNode('uploadimage', 'htmlcode'))
+     . &quot;&lt;br&gt;&quot;
+     ;
+$str .= $query-&gt;filefield($name);
+
+$str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>testuploadimage</title>
+</node>

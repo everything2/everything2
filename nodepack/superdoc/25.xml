@@ -1,0 +1,29 @@
+<node>
+  <doctext>[{ennchoice}]
+&lt;br&gt;
+(see also [Writeups by Type])&lt;br&gt;&lt;br&gt;
+
+&lt;p ALIGN=LEFT&gt;
+&lt;p&gt;
+&lt;/p&gt;&lt;/ul&gt;
+&lt;table cellpadding=0 cellspacing=0 width=100%&gt;
+[{newnodes:25}]
+&lt;/table&gt;
+&lt;p align=&quot;right&quot;&gt;
+[% linkNode($NODE, 'printable version', { displaytype =&gt; 'printable' } ) %]
+&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-04-30 05:05:51</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>25928</hits>
+  <node_id>1148595</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1148595</document_id>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>25</title>
+</node>

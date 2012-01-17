@@ -1,0 +1,36 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>15</hits>
+  <node_id>45</node_id>
+  <htmlcode_id>45</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># [{parsetime:FIELD}]
+# Parses out a datetime field into a more human-readable form
+#
+
+
+my ($field)=@_;
+
+my ($date, $time) = split / /,$$NODE{$field};
+
+my ($hrs, $min, $sec) = split /:/, $time;
+my ($yy, $mm, $dd) = split /-/, $date;
+
+return '&lt;i&gt;never&lt;/i&gt;' unless (int($yy) and int($mm) and int($dd));
+
+use Time::Local;
+my $epoch_secs=timelocal( $sec, $min, $hrs, $dd, $mm-1, $yy);
+my $nicedate =localtime ($epoch_secs);
+
+$nicedate =~ s/(\d\d):(\d\d):(\d\d).*$/$yy at $1:$2:$3/;
+$nicedate;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>parsetime</title>
+</node>

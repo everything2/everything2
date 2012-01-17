@@ -1,0 +1,55 @@
+<node>
+  <doctext>var Deferrer = {
+	// Create a function that reports if the required object exists and is non-zero
+	findObjectFromString: function (checkElement) {
+		var elements = checkElement.split('.') ;
+		var foundObject = window ;
+		for (var elementChunk in elements) {
+			foundObject = foundObject[ elements[ elementChunk ] ] ;
+			if ( typeof foundObject == &quot;undefined&quot; ) return false ;
+		}
+		if (foundObject) return true ;
+		return false ;
+	},
+	defer: function (callback, requiredObject) {
+		if (!Deferrer.interval) {
+			Deferrer.interval = window.setInterval(Deferrer.checkInterval, 500);
+		}	
+		Deferrer.callbacks.push({callback: callback, requiredObject: requiredObject});
+	},
+	callbacks: [],
+	checkInterval: function () {
+		var c = Deferrer.callbacks;
+		var remaining = [];
+		for (var i=0; i &lt; c.length; i++) {
+			if (Deferrer.findObjectFromString(c[i].requiredObject)) {
+				c[i].callback();
+			} else {
+				remaining.push(c[i]);
+			}
+		}
+		Deferrer.callbacks = remaining;
+		if (Deferrer.callbacks.length == 0) {
+			window.clearInterval(Deferrer.interval);
+		}
+	},
+	onLoad: function (callback) {
+		Deferrer.defer(callback, &quot;document.getElementsByTagName('body').length&quot;);
+	}
+} ;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-09-11 10:02:56</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1990287</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1786405</type_nodetype>
+  <document_id>1990287</document_id>
+  <author_user>829913</author_user>
+  <package>0</package>
+  <title>Deferrer</title>
+</node>

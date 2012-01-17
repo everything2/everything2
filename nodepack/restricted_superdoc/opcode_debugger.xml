@@ -1,0 +1,69 @@
+<node>
+  <doctext>[%
+  my $str = htmlcode('openform');
+  my $eo = $query-&gt;param(&quot;execopcode&quot;);
+  $str.=&quot;Opcode: &lt;select name=\&quot;execopcode\&quot;&gt;\n&quot;;
+  my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;, &quot;node&quot;, &quot;type_nodetype=&quot;.getId(getType(&quot;opcode&quot;)), &quot;ORDER BY title asc&quot;);
+  while(my $ROW = $csr-&gt;fetchrow_hashref())
+  {
+    $str.= &quot;&lt;option value=\&quot;$$ROW{node_id}\&quot; &quot;;
+    $str.= &quot; SELECTED &quot; if($eo == $$ROW{node_id});
+    $str.= &quot;&gt;$$ROW{title}&lt;/option&gt;&quot;;
+  }
+
+  $str.=&quot;&lt;/select&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;input type=\&quot;checkbox\&quot; name=\&quot;nocode\&quot;&quot;.(($query-&gt;param(&quot;nocode&quot;) eq &quot;on&quot;)?(&quot;CHECKED&quot;):(&quot;&quot;)).&quot;&gt; Don't display code&lt;br&gt;&lt;br&gt;&lt;b&gt;&lt;small&gt;(key/value pairs to be emulated inside of \$query-&gt;param...)&lt;/small&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;&quot;;
+
+  for(0..7)
+  {
+    $str.=&quot;$_: &lt;input type=\&quot;text\&quot; name=\&quot;qpname$_\&quot; value=\&quot;&quot;.encodeHTML($query-&gt;param(&quot;qpname$_&quot;)).&quot;\&quot;&gt; -&amp;gt; &lt;input type=\&quot;text\&quot; name=\&quot;qpval$_\&quot; value=\&quot;&quot;.encodeHTML($query-&gt;param(&quot;qpval$_&quot;)).&quot;\&quot;&gt;&lt;br&gt;&quot;;
+  }
+   
+  $str.=&quot;&lt;input type=\&quot;submit\&quot; value=\&quot;emulate\&quot;&gt;&lt;/form&gt;&quot;;
+ 
+  $str.=&quot;&lt;br&gt;&lt;br&gt;&lt;hr&gt;&lt;br&gt;&quot;;
+
+  my $op = getNodeById($query-&gt;param('execopcode'));
+
+  if($op)
+  {
+    $str.=&quot;&lt;table border=\&quot;1\&quot;&gt;&lt;tr&gt;&lt;td&gt;&quot;.listCode($$op{code}).&quot;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&quot; unless($query-&gt;param(&quot;nocode&quot;) eq &quot;on&quot;);
+    my @choices;
+ 
+    for(0..7)
+    {
+      @choices = (&quot;qpname$_&quot;, &quot;qpval$_&quot;);
+      my $n = $query-&gt;param($choices[0]);
+      my $v = $query-&gt;param($choices[1]);
+  
+      if(defined($n) &amp;&amp; defined($v))
+      {
+          $query-&gt;param(&quot;$n&quot;, &quot;$v&quot;);
+      }
+    }
+ 
+     my $ret = eval($$op{code});
+     $str.=&quot;Returned: $ret&lt;br&gt;&lt;br&gt;&quot;;
+  }
+  else
+  {
+    $str.=&quot;Please choose an opcode.&lt;br&gt;&lt;br&gt;&quot;
+  }
+  return $str;
+%]
+&lt;br&gt;&lt;br&gt;
+This allows you to execute code as if it were eval()'ed and not as if it were really an opcode, thus chucking the errors that you'd like. Exact same results however. Keep also in mind that when opcodes are created that you don't have access to $NODE.  Also, you only have access to &quot;soft&quot; opcodes, and not hardcoded ones such as new.  Ecore pre-1.0 I think has better opcode debugging but our .8 bastard version just fails if something doesn't work. This should be a cleaner way of handling this code.  Bugs go to [JayBonci], on this debugger only.  </doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-02-22 08:53:55</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1258415</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1258415</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>opcode debugger</title>
+</node>

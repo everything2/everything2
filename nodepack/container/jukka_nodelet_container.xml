@@ -1,0 +1,30 @@
+<node>
+  <parent_container>0</parent_container>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-02-12 02:19:54</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>4</hits>
+  <node_id>415064</node_id>
+  <context>[%
+my $str;
+if($$NODELET{icon}) {
+	$str .= '&lt;img src=&quot;'.$$NODELET{icon}.'&quot; ';
+	$str .= 'height=&quot;'.$$NODELET{iconHeight}.'&quot; ' if $$NODELET{iconHeight};
+	$str .= 'width=&quot;'.$$NODELET{iconWidth}.'&quot; ' if $$NODELET{iconWidth};
+	$str .= 'border=&quot;0&quot; alt=&quot;'.$$NODELET{title}.'&quot;&gt;';
+} 
+else {
+	$str = '&lt;font color=&quot;ltbrown&quot;&gt;'.$$NODELET{title}.'&lt;/font&gt;';
+}  
+$str;
+%]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;span&gt;CONTAINED_STUFF&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;</context>
+  <type_nodetype>2</type_nodetype>
+  <container_id>415064</container_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>jukka nodelet container</title>
+</node>

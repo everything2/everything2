@@ -1,0 +1,65 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-11-19 16:07:34</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1988813</node_id>
+  <htmlcode_id>1988813</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($N) = @_ ;
+$N ||= $NODE ;
+
+my $isTarget = delete $HTMLVARS{notshown}-&gt;{targetauthor}
+	if defined $HTMLVARS{notshown} and $HTMLVARS{notshown}-&gt;{targetauthor} == $$N{author_user};
+
+if ($$N{author_user} == $$USER{user_id}){
+	$HTMLVARS{my_writeup} ||= $N if $$NODE{type}{title} eq 'e2node'; # used by [addwriteup]
+	return 1;
+}
+
+my $param = $query ? $query -&gt; param( 'showhidden' ) : undef;
+my @checks = ('unfavorite', 'lowrep');
+
+if ($$N{type}{title} eq 'draft'){
+	return 0 if $$USER{title} eq 'Guest User' or !htmlcode('canseedraft', $N);
+	unshift @checks, 'unpublished';
+}
+
+return 1 if $$NODE{node_id} == $$N{node_id} or $isTarget or 
+	$param == $$N{node_id} or $param eq 'all';
+
+my %tests = (
+	unpublished =&gt; sub{
+		getNodeById($$N{publication_status}) -&gt; {title} eq 'review' &amp;&amp; htmlcode('isEditor');
+	},
+
+	unfavorite =&gt; sub{ # disliked authors
+		!$$VARS{ unfavoriteusers } ||
+		$$VARS{ unfavoriteusers } !~ /\b$$N{author_user}\b/ ;
+	},
+
+	lowrep =&gt; sub{ # reputation threshold
+		my $threshold = $HTMLVARS{ writeuplowrepthreshold } || 'none' ;
+		$threshold = $$VARS{ repThreshold } || '0' if exists $$VARS{ repThreshold } ; # ecore stores 0 as ''
+		$threshold eq 'none' or $$N{reputation} &gt; $threshold;
+ 	}
+) ;
+
+foreach ( @checks ) { # not keys because priority order is important
+	unless ( &amp;{ $tests{$_} } ) {
+		return 1 if $param eq $_ ; # this is the reason it was hidden; we want it shown
+ 		push @{ $HTMLVARS{notshown}-&gt;{$_} }, $N
+		 	if defined $HTMLVARS{notshown} and defined $HTMLVARS{notshown}-&gt;{$_} ;
+		return 0 ;
+	}
+}
+
+return 1 ;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>canseewriteup</title>
+</node>

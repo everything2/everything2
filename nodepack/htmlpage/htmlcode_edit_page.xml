@@ -1,0 +1,32 @@
+<node>
+  <parent_container>18</parent_container>
+  <pagetype_nodetype>4</pagetype_nodetype>
+  <core>R</core>
+  <page>title:[{textfield:title}] maintained by:[{node_menu:author_user,user,usergroup}]&lt;br /&gt;
+[%
+  return &quot;&quot; unless (isGod($USER)||$$NODE{type_nodetype}!=1151141);
+  return linkNode($NODE, &quot;Apply this patch&quot;, {&quot;op&quot; =&gt; &quot;applypatch&quot;, &quot;patch_id&quot; =&gt; &quot;$$NODE{node_id}&quot;}).&quot;&lt;Br&gt;&quot; unless $query-&gt;param(&quot;op&quot;) eq &quot;applypatch&quot;;
+  return &quot;&lt;font color=\&quot;red\&quot;&gt;The patch has been applied&lt;/font&gt; &quot;.linkNode($NODE, &quot;Unapply&quot;, {&quot;op&quot; =&gt; &quot;applypatch&quot;, &quot;patch_id&quot; =&gt; &quot;$$NODE{node_id}&quot;}).&quot;&lt;br /&gt;&quot;;
+
+%]
+
+[{listcode:code}]
+&lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the code:&lt;/strong&gt;&lt;/small&gt;&lt;br /&gt;
+
+[{textarea:code,30,80}]</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>64</htmlpage_id>
+  <hits>1</hits>
+  <node_id>64</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>htmlcode edit page</title>
+  <mimetype></mimetype>
+</node>

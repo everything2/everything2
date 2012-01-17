@@ -1,0 +1,55 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-04-20 15:35:46</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>16</hits>
+  <node_id>505479</node_id>
+  <htmlcode_id>505479</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($limit) = @_;
+
+$limit ||= 50;
+
+my $qry = 'SELECT node_id FROM newwriteup';
+
+my $uid = getId($USER);
+my $isEd = (exists $HTMLVARS{'group_content editors'}{$uid}) || (exists $HTMLVARS{'group_gods'}{$uid});
+
+my $nr = getId(getNode('node row', 'superdoc'));
+
+$qry.= ' WHERE notnew=0 ' unless $isEd;
+$qry.= &quot; ORDER BY newwriteup_id DESC LIMIT $limit&quot;;
+
+my $ed = 'ed,' if $isEd;
+my $funk = sub{
+		my $N = shift;
+		my $kuid = $DB-&gt;sqlSelect('linkedby_user', 'weblog', &quot;weblog_id=$nr and to_node=$$N{node_id}&quot;) || 0;
+		my $str.='&lt;td&gt;';
+
+		if($$N{notnew}){
+		  $str .= '(&lt;font color=&quot;red&quot;&gt;H!&lt;/font&gt;)';
+                $str .= '(&lt;a href='.urlGen({'node_id'=&gt;$$NODE{node_id}, 'op'=&gt;'unhidewriteup', 'hidewriteup'=&gt;$$N{node_id}}).'&gt;un-h!&lt;/a&gt;)';
+                }else{
+		$str .= '(&lt;a href='.urlGen({'node_id'=&gt;$$NODE{node_id}, 'op'=&gt;'hidewriteup', 'hidewriteup'=&gt;$$N{node_id}}).'&gt;h?&lt;/a&gt;)';
+                }
+		$str .= '(&lt;font color=&quot;red&quot;&gt;...&lt;/font&gt;)' if $DB-&gt;sqlSelect('notnew', 'newwriteup', &quot;node_id=$$N{node_id}&quot;) != $$N{notnew};
+
+		$str.='&lt;/td&gt;&lt;td&gt;';
+		$str.='X' if $kuid;
+		$str.='&amp;nbsp;&lt;/td&gt;';
+		return $str;
+};
+
+my $nids = $dbh -&gt; selectcol_arrayref($qry);
+
+htmlcode('show content', $nids ,
+	qq'&lt;tr class=&quot;&amp;oddrow&quot;&gt;$ed &quot;&lt;td&gt;&quot;, parenttitle, type, &quot;&lt;/td&gt;&lt;td&gt;&quot;, listdate, &quot;&lt;/td&gt;&lt;td&gt;&quot;, author, &quot;&lt;/td&gt;&quot;', 'ed' =&gt; $funk);
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>newnodes</title>
+</node>

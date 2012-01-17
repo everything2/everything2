@@ -1,0 +1,52 @@
+<node>
+  <nltext></nltext>
+  <parent_container>17</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2001-12-12 21:32:11</createtime>
+  <lastupdate>1301255114</lastupdate>
+  <hits>6</hits>
+  <node_id>1801407</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>459692</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1801407</nodelet_id>
+  <nlcode>[%
+
+my $rawSQL = '';
+
+#N-Wing added 2005-12-25 to hide definition autonoding
+#177599 = definition (writeuptype)
+$rawSQL .= 'wrtype_writeuptype!=177599 ';
+
+$rawSQL .= 'ORDER BY writeup.publishtime DESC LIMIT 50';
+
+my $csr = $DB-&gt;sqlSelectMany('parent_e2node,
+(select title from node where node_id=writeup.wrtype_writeuptype limit 1) as type_title,
+writeup_id, notnew,
+(select author_user from node where node_id=writeup.writeup_id limit 1) as author_user,
+(select reputation from node where node_id=writeup.writeup_id limit 1) as reputation,
+(select title from node where node_id=writeup.parent_e2node limit 1) as parent_title', 'writeup', $rawSQL);
+
+my @wus;
+
+use Data::Dumper;
+local $Data::Dump::Purity = 1;
+
+while(my $row = $csr-&gt;fetchrow_hashref) {
+	getRef $row;
+	push @wus, $row;
+}
+ return Data::Dumper-&gt;Dump([\@wus]);
+
+%]</nlcode>
+  <title>Test NW Feeder</title>
+</node>

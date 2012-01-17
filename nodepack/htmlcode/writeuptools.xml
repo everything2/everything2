@@ -1,0 +1,144 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-10-23 19:49:46</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1992682</node_id>
+  <htmlcode_id>1992682</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($N, $open) = @_;
+getRef $N;
+
+return htmlcode('drafttools', @_) if $$N{type}{title} eq 'draft';
+
+my $isEditor = exists $HTMLVARS{'group_gods'}{$$USER{node_id}}
+	|| exists $HTMLVARS{'group_content editors'}{$$USER{node_id}};
+my $isMine = ($$N{author_user} == $$USER{node_id});
+return unless $isMine or $isEditor;
+
+my ($linktext , $linktitle, $hide, $insure,
+   $insured, $remove, $reassign, $nodenotes);
+
+my $n = $$N{node_id};
+my $id = 'adminheader'.$n ;
+my $ajax = &quot;ajax $id:writeuptools:$n,1&quot;;
+
+my $author = getNodeById( $$N{author_user} );
+$author = $query -&gt; escapeHTML($$author{title}) if $author;
+
+if ($$N{notnew}){
+	$hide = 'Unhide';
+	$linktitle .= 'Hidden';
+	$linktext = 'H';
+}else{
+	$hide = 'Hide';
+	$linktitle .= 'Published';
+	$linktext = 'P';
+}
+
+if ($isEditor and $$N{publication_status} and
+	my $publisher = $DB-&gt;sqlSelect('publisher','publish',&quot;publish_id = $n limit 1&quot;)){
+
+	$insured = 'Insured by '.($publisher ? linkNode($publisher) : '&amp;#91;missing editor&amp;#93;');
+	$linktitle .= &quot;; $insured&quot;;
+	$linktitle =~ s/&lt;.*?&gt;//g;
+
+	$linktext .= '&amp;#183;I';
+}
+
+if ($isMine){
+	$remove = linkNode($N, 'remove writeup', {
+		confirmop =&gt; 'remove'
+		, %{htmlcode('verifyRequestHash', 'remove')}
+		, writeup_id =&gt; $n
+		, writeup_parent_e2node =&gt; $$N{parent_e2node} # reattach to node
+		, draft_publication_status =&gt; getId(getNode 'private', 'publication_status')
+		, -class =&gt; &quot;action&quot; # no ajax: go to draft's own page
+		, -title =&gt; 'remove this writeup and return it to draft status'
+	});
+
+}elsif ($insured){
+	$insured .= ' ('.linkNode($NODE , 'undo', {confirmop=&gt;'insure', ins_id =&gt; $n,
+		-class =&gt; &quot;action $ajax&quot; ,
+		-title =&gt; 'remove the insurance on this writeup'
+	}).')';
+
+}else{
+	$insure = linkNode($NODE, 'Insure', {
+		op=&gt;'insure', ins_id=&gt;$n, -class=&gt;&quot;action $ajax&quot;
+	});
+
+	$remove = $query -&gt; small(
+		$query-&gt;textfield(
+			-name=&gt;'removereason'.$n,
+			class=&gt;'expandable', size=&gt; $$VARS{nokillpopup} ? 12 : 30,
+			title=&gt;&quot;Reason for removing ${author}'s writeup&quot;
+		)
+	)
+	.$query-&gt;checkbox(
+		-name =&gt; &quot;removenode$n&quot;
+		, value =&gt; 1
+		, checked =&gt; 0
+		, label =&gt; $$VARS{nokillpopup} ? 'axe' : 'Remove writeup'
+		, class =&gt; &quot;replace ajax $id:drafttools?op=remove&amp;removenode$n=1&amp;removereason$n=/&quot;
+			.&quot;&amp;removereason$n=/#Reason+for+removing+${author}'s+writeup:$n,1&quot;
+		, onclick =&gt; &quot;if (this.checked) \$('#killbutton').click();&quot; # for if no ajax
+	);
+}
+
+# mauler and riverrun don't want a widget:
+return $query -&gt; span({class =&gt; 'admin', id =&gt; $id}, $insured ? $insured : $insure.$remove)
+	if $$VARS{nokillpopup};
+
+my @out;
+
+if ($isEditor){
+	$reassign = linkNode(getNode('Magical Writeup Reparenter', 'superdoc')
+		, 'Reparent&amp;hellip;'
+		, {old_writeup_id =&gt; $n}
+	)
+	.' &amp;nbsp; '
+	.linkNode(getNode('Renunciation Chainsaw', 'oppressor_superdoc')
+		, 'Change author&amp;hellip;'
+		, {wu_id =&gt; $n}
+	);
+
+	if ($nodenotes = htmlcode('nodenote', $n)){
+		$linktext .= '&amp;#183;N';
+		$linktitle .= '; has nodenotes';
+	}
+
+	push @out, linkNode($NODE, &quot;$hide writeup&quot; , {
+		op =&gt; lc($hide).'writeup'
+		, hidewriteup =&gt; $n
+		, -class =&gt; &quot;action $ajax&quot;
+	});
+
+	push @out, $insure if $insure;
+	@out = (join ' &amp;#183; ', @out);
+}
+
+push @out, $insured if $insured;
+push @out, $remove if $remove;
+push @out, $reassign if $reassign;
+push @out, $nodenotes if $nodenotes;
+
+$query -&gt; param( 'showwidget' , 'admin' ) if $open ;
+
+return $query -&gt; span({class =&gt; 'admin', id =&gt; $id},
+	htmlcode('widget'
+		, join('&lt;hr&gt;', @out)
+		, 'span'
+		, &quot;&lt;b&gt;$linktext&lt;/b&gt;&quot;
+		, {showwidget =&gt; 'admin', -title =&gt; &quot;$linktitle. Click here to show/hide admin options.&quot;}
+	)
+);
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>writeuptools</title>
+</node>

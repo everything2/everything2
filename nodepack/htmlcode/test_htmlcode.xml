@@ -1,0 +1,60 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-04-10 15:02:41</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1877911</node_id>
+  <htmlcode_id>1877911</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($shownumbers, $isxml, $newwuonly) = @_;
+
+return if $$USER{user_id} == $HTMLVARS{guest_user};
+
+$$VARS{oldexp} = $$USER{experience} unless($$VARS{oldexp});
+return  if ($$VARS{oldexp} == $$USER{experience} and not $newwuonly);
+my $newexp = $$USER{experience} - $$VARS{oldexp};
+$$VARS{oldexp} = $$USER{experience};
+
+use Everything::Experience;
+
+my $lvl = getLevel($USER)+1;
+
+my $levelExperience = getVars(getNode('level experience', 'setting'))-&gt;{$lvl};
+my $expleft = $levelExperience - $$USER{experience} if $levelExperience;
+
+my $levelWriteups = getVars(getNode('level writeups', 'setting'))-&gt;{$lvl};
+my $wrpleft;
+
+$$VARS{numwriteups} ||= 0;
+
+if (($$VARS{settings_useHonorRoll}) || ($$USER{user_id} != 1312198)) {
+use POSIX;
+$wrpleft = ceil((($levelWriteups * getHRLF($USER)) - $$VARS{numwriteups})) if $levelWriteups;
+}
+else {
+$wrpleft = ($levelWriteups - $$VARS{numwriteups} - $$VARS{writeupbonus}) if $levelWriteups;
+}
+
+
+if (!$isxml) {
+my $str;
+$str.= ($newexp &gt; 0 ? &quot;You gained $newexp&quot; : &quot;Ack! You lost &quot;. (-1 * $newexp) ) .
+'&lt;strong&gt;'.$newexp.'&lt;/strong&gt; experience point'.($newexp &gt; 1 ? &quot;s&quot; : &quot;&quot;).'!' unless $newwuonly;
+$str.= '&lt;br /&gt;You need &lt;strong&gt;'.$expleft.'&lt;/strong&gt; more XP to earn level '.$lvl.'.' if $expleft &gt; 0;
+$str.= '&lt;br /&gt;You need &lt;strong&gt;'.$wrpleft.'&lt;/strong&gt; more writeups to earn level '.$lvl.'.' if $wrpleft &gt; 0;
+return $str;
+}
+
+my $xmlstr = &quot;&lt;xpinfo&gt;
+&lt;xpchange value=\&quot;$newexp\&quot;&gt;$$USER{experience}&lt;/xpchange&gt;
+&lt;nextlevel experience=\&quot;$expleft\&quot; writeups=\&quot;$wrpleft\&quot;&gt;$lvl&lt;/nextlevel&gt;
+&lt;/xpinfo&gt;&quot;;
+return $xmlstr;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>test_htmlcode</title>
+</node>

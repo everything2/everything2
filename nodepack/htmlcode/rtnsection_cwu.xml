@@ -1,0 +1,33 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-10-10 08:26:23</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1175804</node_id>
+  <htmlcode_id>1175804</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#ReadThis - C! writeups
+
+my $str = &quot;&lt;ul class='linklist'&gt;\n&quot;;
+my $csr = $DB-&gt;sqlSelectMany(&quot;distinct coolwriteups_id&quot;, &quot;coolwriteups&quot;, &quot;&quot;, &quot;order by tstamp desc limit 15&quot;);
+
+map {
+	my $wu = getNodeById $$_{coolwriteups_id};
+	my $parent = getNodeById $$wu{parent_e2node};
+	my $author = getNodeById $$wu{author_user};
+	$author = $$author{title} if $author ;
+	$str .= '&lt;li&gt;'.linkNode($parent, '', {'#' =&gt; $author, lastnode_id =&gt; 0}).&quot;&lt;/li&gt;\n&quot;;
+} @{$csr -&gt; fetchall_arrayref({})};
+
+$csr-&gt;finish();
+
+return &quot;$str&lt;/ul&gt;\n&quot;;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>rtnsection_cwu</title>
+</node>

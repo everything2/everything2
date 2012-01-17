@@ -1,0 +1,18 @@
+<node>
+  <doctext>&lt;script&gt;alert('Owned!');&lt;/script&gt;
+&lt;!-- Yes, we should really make sure to filter out scripts and things from titles in all cases... --&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-11-06 15:05:18</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1961984</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1961984</document_id>
+  <author_user>1323377</author_user>
+  <package>0</package>
+  <title>in10se's hilarious 1337 scripting joke</title>
+</node>

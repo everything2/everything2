@@ -1,0 +1,89 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-10-24 22:52:18</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1186040</node_id>
+  <htmlcode_id>1186040</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#call this when there is something strange happening, but it isn't
+#  a full blown Server Error!
+#
+#this logs some information to the warnlog table and displays a little
+#  warning message to the user ... unless it is N-Wing, then it just shows the
+#  message
+#
+#parameters:
+#	node_id of error (if omitted, uses current node_id) (useful for nodegroups)
+#	short description of problem (may not contain commas) (may be omitted, but logging the warning isn't very useful then)
+#
+#sample uses:
+#	htmlcode('logWarning',',I got a weird number. It was: '.$num);
+#	htmlcode('logWarning',$$WRITEUP{node_id}.',saw:'.$s.' expected:'.$e);
+#
+#since htmlcode can't pass commas, special HTMLVARS may be used to override parameters; if any of these exist, they will be deleted after their use
+#	$HTMLVARS{warn_nodeid} - node's ID; this probably isn't too useful
+#	$HTMLVARS{warn_reason} - reason; use this if you want to include commas in the reason
+#	$HTMLVARS{warn_user} - user ID that caused the problem; I can't think of a reason you would want to override this, but here it is anyway
+
+my @allParams = @_;
+
+my $nodeID;
+my $description;
+my $uid;
+my $UID = getId($USER);
+
+if(defined $HTMLVARS{warn_nodeid}) {
+	$nodeID = &quot;$HTMLVARS{warn_nodeid}&quot;;
+	delete $HTMLVARS{warn_nodeid};
+} else {
+	$nodeID = $allParams[0] || getId($NODE) || 0;
+}
+if(defined $HTMLVARS{warn_reason}) {
+	$description = &quot;$HTMLVARS{warn_reason}&quot;;
+	delete $HTMLVARS{warn_reason};
+} else {
+	$description = $allParams[1] || '';
+}
+if(defined $HTMLVARS{warn_user}) {
+	$uid = &quot;$HTMLVARS{warn_user}&quot;;
+	delete $HTMLVARS{warn_user};
+} else {
+	$uid = $UID || 0
+}
+
+my $info = '';
+
+local *createInfoString = sub {
+	$info='(node_id, user_id) = (' . $nodeID . ', ' . $uid . '); description = ' . $description;
+};
+
+if(exists $HTMLVARS{group_gods}{$UID}) {
+#if($UID == 9740) { #N-Wing
+	$info = createInfoString();
+} else {
+	my $dbh = $DB-&gt;getDatabaseHandle();
+	unless($dbh) {
+		$info = createInfoString() . ' Ack! No handle!';
+	} else {
+
+	my $values = join(',',($nodeID, $uid, $dbh-&gt;quote($description)));
+	my $result = $dbh-&gt;do('INSERT INTO warnlog (problemnode_id,problemuser_id,description) VALUES('.$values.')');
+
+	if($result) {
+		$info = '#'.$DB-&gt;sqlSelect('LAST_INSERT_ID()');
+	} else {
+		$info = createInfoString() . ' Ack! Unable to insert!';
+	}
+
+	}
+}
+'&lt;small&gt;( &lt;span style=&quot;color: blue;&quot;&gt;Server Warning!&lt;/span&gt; &lt;small&gt;(don\'t worry about this)&lt;/small&gt; '.$info.' )&lt;/small&gt;';</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>logWarning</title>
+</node>

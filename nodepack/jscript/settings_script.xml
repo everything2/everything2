@@ -1,0 +1,90 @@
+<node>
+  <doctext>e2.deleteCookie('settings_useTinyMCE');
+
+void new function(zensheet){
+	if (!zensheet) return;
+
+	var originalTheme = zensheet.href;
+	var originalSpeed = e2.fxDuration;
+	var themeMenu = $('#pagebody')[0].chosentheme;
+	var speedMenu = $('#pagebody')[0].setvars_fxDuration;
+
+	// give previews of the effects of a couple of settings on the [Settings] page
+	if (themeMenu){
+		$(themeMenu).change(newTheme);
+		$('&lt;label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;showThemePreview&quot; value=&quot;1&quot; '+
+				'checked=&quot;checked&quot;&gt;Preview theme&lt;/label&gt;')
+			.insertAfter(themeMenu); // theme menu has no label
+		var themeOption = $('#showThemePreview').click(newTheme)[0];
+	}
+
+	if (speedMenu){
+		$('option', speedMenu).click(newSpeed);
+		$('[%
+			my $widget = htmlcode('widget','----------------&lt;br&gt;----------------&lt;br&gt;----------------',
+			'div', 'Speed demo...', {showwidget=&gt;'speedtestwidget', -id=&gt;'speedtest'});
+			$widget =~ s/(?:href|onmouseup)=&quot;[^&quot;]*&quot;|\n//sg;
+			$widget;
+		%]')
+		.insertAfter(speedMenu.parentNode); // speed menu has label
+	}
+
+	// drag and drop nodelet menus on [Nodelet Settings] page
+	$('#rearrangenodelets')
+	.disableSelection()
+	.css({
+		cursor: 'n-resize',
+//		'list-style-image': 'url(&quot;&quot;)', up-down arrow, anybody?
+		'list-style-position': 'inside' // no frustration when dragging with the blob
+	})
+	.sortable({
+		axis: 'y',
+		update: function(){
+	   		$('#rearrangenodelets select').each(function(n){
+				this.name = 'nodeletedit' + (n+1);
+      		})
+	   	}
+	})
+	.find('li').append(' &amp;ndash;&amp;#x2195;&amp;ndash;');
+
+	function newTheme(){
+		if (!themeOption.checked || $(this).attr('selected'))
+			return zensheet.href = originalTheme;
+		zensheet.href=(themeMenu.value != 'default' ?
+			'/node/'+themeMenu.value :
+			'/node/stylesheet/[%$$THEME{default_style}%]') + '?displaytype=serve';
+	}
+
+	function widget(){ $('#speedtest').trigger('click'); }
+
+	function newSpeed(event){
+		e2.fxDuration = (1 * this.value) || 200;
+		if(e2.fxDuration == 1){
+			jQuery.fx.off = true;
+		}else{
+			jQuery.fx.off = false;
+		}
+		widget();
+		setTimeout(
+			function(){
+				widget();
+				e2.fxDuration = originalSpeed;
+			},
+			Math.max(e2.fxDuration*2,100) );
+	}
+}(document.getElementById('zensheet'));</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-11-03 11:14:53</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>100</hits>
+  <node_id>1990639</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1786405</type_nodetype>
+  <document_id>1990639</document_id>
+  <author_user>829913</author_user>
+  <package>0</package>
+  <title>settings script</title>
+</node>

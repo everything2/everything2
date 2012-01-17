@@ -1,0 +1,27 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-11-18 17:40:33</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <display>&lt;strong&gt;Century Award&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Node With Reputation of 100&lt;/i&gt;</display>
+  <achievement_type>reputation</achievement_type>
+  <hits>2</hits>
+  <node_id>1917860</node_id>
+  <achievement_id>1917860</achievement_id>
+  <code>
+my $highRep = $DB-&gt;sqlSelect(&quot;reputation&quot;,&quot;node&quot;,&quot;author_user=$user_id and type_nodetype=117 order by reputation desc limit 1&quot;);
+
+return 1 if $highRep &gt;= 100;
+return 0;
+
+
+</code>
+  <type_nodetype>1917847</type_nodetype>
+  <private>0</private>
+  <author_user>1312198</author_user>
+  <achievement_still_available>1</achievement_still_available>
+  <package>0</package>
+  <title>reputation100</title>
+</node>

@@ -1,0 +1,96 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-05 21:51:09</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>119</hits>
+  <node_id>1157507</node_id>
+  <htmlcode_id>1157507</htmlcode_id>
+  <maintenance_id>1157507</maintenance_id>
+  <checks_arguments>0</checks_arguments>
+  <maintaintype>create</maintaintype>
+  <code>my ( $COMMENT ) = @_;
+getRef( $COMMENT );
+
+if ( $$COMMENT{ 'parent_debatecomment' } ) {
+	# If you want a child, use nodetype debatecomment instead.
+	nukeNode( $COMMENT, $USER );
+	return;
+}
+
+my $ug_id = $query-&gt;param(&quot;debatecomment_restricted&quot;);
+my $ug = getNodeById($ug_id);
+
+if ($$COMMENT{title} =~ /^\s*$/) {
+  $$COMMENT{title} = &quot;Untitled &quot;. $$ug{title} .&quot; discussion&quot;;
+  updateNode( $COMMENT, $USER );
+}
+
+my $announce = $query -&gt; param('announce_to_ug');
+
+my $notify_ug_id = $ug_id;
+
+#notify e2gods instead of gods
+$notify_ug_id = 829913 if $notify_ug_id == 114;
+
+if ($announce) {
+  $HTMLVARS{msgparams} = {
+                          'author_id' =&gt; getId(getNode(&quot;Virgil&quot;,&quot;user&quot;)),
+                          'recipient_id' =&gt; $notify_ug_id,
+                          'message' =&gt; 'Make it known, [' .
+                          $$USER{title} .
+                          '] just started a new discussion: [' .
+                          $$ug{title}.': '.$$COMMENT{title} . '].'
+                          };
+
+  htmlcode('sendPrivateMessage','');
+}
+
+#Have to notify each group member, unless they don't want to be notified
+my @uids = split ',', htmlcode('usergroupToUserIds',$notify_ug_id);
+
+my $discussionNotification = getNode(&quot;newdiscussion&quot;,
+                                     &quot;notification&quot;) -&gt; {node_id};
+use JSON;
+foreach my $uid(@uids){
+
+  #Don't notify the creator.
+  next if($uid == $$USER{node_id});
+
+  my $v = getVars( getNodeById($uid));
+
+  #This curiously named value of &quot;settings&quot; in the user's vars refers
+  #*only* to the notifications settings.
+  next unless $$v{settings};
+
+  my %notifications = %{from_json($$v{settings})-&gt;{notifications}};
+
+  if($notifications{$discussionNotification} ){
+    my $argSet = {uid =&gt; $$USER{node_id}, 
+                  debate_id =&gt; $$COMMENT{ 'node_id' },
+                  gid =&gt; $ug_id};
+    my $argStr = to_json($argSet);
+    my $test = htmlcode('addNotification',$discussionNotification,
+                                           $uid, $argStr);
+  }
+}
+
+$$COMMENT{ 'root_debatecomment' } = $$COMMENT{ 'node_id' };
+
+#Since when creating we are taken immediately to the edit page, 
+#no need to screen the doctext. It'll be screened in the edit page.
+
+$$COMMENT{'doctext'} = $query -&gt; param('newdebate_text');
+
+updateNode( $COMMENT, $USER );
+# $$NODE{ 'root_debatecomment' } = $$NODE{ 'node_id' };
+# updateNode( $NODE, $USER );
+</code>
+  <type_nodetype>150</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <maintain_nodetype>1157413</maintain_nodetype>
+  <title>debate maintenance create</title>
+</node>

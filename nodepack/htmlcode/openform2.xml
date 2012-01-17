@@ -1,0 +1,33 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>5</hits>
+  <node_id>1101744</node_id>
+  <htmlcode_id>1101744</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($name) = @_;
+$name ||= '';
+
+my $scratchSave = $query-&gt;hidden('scratch_id')
+  if defined $query-&gt;param('scratch_id');
+
+$query-&gt;start_form(-method =&gt; 'POST',
+                   -action =&gt; urlGenNoParams($NODE,1),
+                   -name =&gt; $name,
+                   -id =&gt; $name) .
+
+$query-&gt;hidden('displaytype') .
+
+$scratchSave .
+
+$query-&gt;hidden('node_id', getId $NODE);
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>openform2</title>
+</node>

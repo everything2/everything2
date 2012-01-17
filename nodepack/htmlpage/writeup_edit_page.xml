@@ -1,0 +1,62 @@
+<node>
+  <parent_container>18</parent_container>
+  <pagetype_nodetype>117</pagetype_nodetype>
+  <core>0</core>
+  <page>[%
+
+my $uid = getId($USER);
+
+return ('If you need a writeup renamed or moved, please submit a request at '.linkNodeTitle('Edit These E2 Titles').'.') unless (exists $HTMLVARS{'group_gods'}{$uid}); # -ap 20080808
+
+my $str;
+my $pname = $query-&gt;param('parentnodename');
+if($pname) {
+	my $E2N = getNode($pname, 'e2node');
+	if($E2N) {
+		my $nid = getId($NODE);
+		$$NODE{parent_e2node} = getId($E2N);
+		updateNode($NODE, $USER);
+
+		my $alreadyIn = 0;
+		foreach(@{$$E2N{group}}) {
+			if($_==$nid) {
+				$alreadyIn = 1;
+				last;
+			}
+		}
+		if($alreadyIn) {
+			$str .= 'Writeup is already in ';
+		} else {
+			insertIntoNodegroup($E2N, -1, $NODE);
+			$str.= 'Writeup has been reparented with ';
+		}
+		$str .= linkNode($E2N) . '.';
+	} else {
+		$str.=&quot;No e2node named $pname exists!&quot;;
+	}
+}
+$str.='&lt;p&gt;parent e2node:';
+my $E2NODE = getNodeById($$NODE{parent_e2node});
+$str.$query-&gt;textfield('parentnodename', $$E2NODE{title});
+
+%]
+&lt;p&gt;
+Writeuptype:[{node_menu:wrtype_writeuptype}]
+&lt;p&gt;
+[{textarea:doctext}]</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-12-07 06:12:52</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>170046</htmlpage_id>
+  <hits>12</hits>
+  <node_id>170046</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>writeup edit page</title>
+  <mimetype></mimetype>
+</node>

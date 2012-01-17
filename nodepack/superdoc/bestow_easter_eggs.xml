@@ -1,0 +1,111 @@
+<node>
+  <doctext>&lt;!-- Just a little toy made by mauler, out of cut and pasted code.  I hope it doesn't break anything! --&gt;
+
+[%
+return 'Who do you think you are? The Easter Bunny?' unless isGod($USER);
+
+my @params = $query-&gt;param;
+my $str = '';
+
+my (@users, @thenodes);
+foreach (@params) {
+  if(/^eggUser(\d+)$/) {
+    $users[$1] = $query-&gt;param($_);
+  }
+}
+
+for(my $count=0; $count &lt; @users; $count++) {
+  next unless $users[$count];
+
+  my ($U) = getNode ($users[$count], 'user');
+  if (not $U) {
+    $str.=&quot;couldn't find user $users[$count]&lt;br /&gt;&quot;;
+    next;
+  }
+
+  # Send an automated notification.
+  $HTMLVARS{msgparams} = {
+    'recipient_id'=&gt;getId($U),
+    'message'=&gt;'Far out! Somebody has given you an [easter egg].',
+    'author'=&gt;'Cool Man Eddie',
+  };
+  my $failMessage = htmlcode('sendPrivateMessage','');
+
+  $str .= &quot;User $$U{title} was given one easter egg&quot;;
+  
+   my $v = getVars($U);
+   if (!exists($$v{easter_eggs})) {
+      $$v{easter_eggs} = 1;
+   }
+   else {
+	$$v{easter_eggs} += 1;
+   }
+   setVars($U, $v);
+   $str .= &quot;&lt;br /&gt;\n&quot;;
+
+}
+$str;
+
+%]
+
+[%
+return unless isGod($USER);
+
+# Build the table rows for inputting user names
+my $count = 5;
+my $str;
+$str.=htmlcode('openform');
+$str.='&lt;table border=&quot;1&quot;&gt;';
+
+#$str.=&quot;&lt;INPUT type=hidden name=op value=bestoweggs&gt;&quot;;
+
+$str.=&quot;\t&lt;tr&gt;&lt;th&gt;Egg these users&lt;/th&gt;&lt;/tr&gt; &quot;;
+
+for (my $i = 0; $i &lt; $count; $i++) {
+  $query-&gt;param(&quot;eggUser$i&quot;, '');
+  $str.=&quot;\n\t&lt;tr&gt;&lt;td&gt;&quot;;
+  $str.=$query-&gt;textfield(&quot;eggUser$i&quot;, '', 40, 80);
+  $str.=&quot;&lt;/td&gt;&quot;;
+}
+
+$str.='&lt;/table&gt;';
+
+$str.=htmlcode('closeform');
+
+$str;
+
+%]
+
+[%
+return unless isGod($USER);
+my ($str);
+
+if ($query-&gt;param(&quot;Give yourself an egg you greedy bastard&quot;)) {
+        if (!exists($$VARS{easter_eggs})) {
+		$$VARS{easter_eggs} = 1;
+	}
+	else {
+		$$VARS{easter_eggs} += 1;
+	}
+}
+
+$str.=htmlcode('openform');
+$str.=$query-&gt;submit('Give yourself an egg you greedy bastard');
+$str.=$query-&gt;end_form;
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-04-04 07:06:39</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1876290</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1876290</document_id>
+  <author_user>1180811</author_user>
+  <package>0</package>
+  <title>bestow easter eggs</title>
+</node>

@@ -1,0 +1,90 @@
+<node>
+  <doctext>[%
+return if $$USER{node_id} == $HTMLVARS{guest_user};
+
+my $str;
+my $userId=$$USER{node_id};
+
+if (htmlcode(&quot;isEditor&quot;)||htmlcode('isinUsergroup',&quot;$userId,chanops,1&quot;)) {
+  $str.=htmlcode(&quot;openform&quot;).&quot;&lt;p&gt;Check on user: &quot;;
+  $str.=$query-&gt;textfield(-name =&gt; &quot;username&quot;,
+                 -default =&gt; &quot;&quot;,
+                 -size =&gt; 40,
+                 -maxlength =&gt; 80);
+  $str.=htmlcode(&quot;closeform&quot;).&quot;&lt;/p&gt;&quot;;
+  if ($query-&gt;param('username')) {
+    $userId=getNode($query-&gt;param('username'),'user')-&gt;{user_id};
+  }
+}
+
+$str.=($query-&gt;param('username')) ?
+  (&quot;&lt;p&gt;&quot;.linkNode($userId).&quot; is ignoring&quot;) :
+  (&quot;&lt;p&gt;You are ignoring&quot;);
+
+my $csr = $DB-&gt;sqlSelectMany('ignore_node', 'messageignore', 'messageignore_id='.$userId);
+
+my @ignored;
+while(my $luser = $csr-&gt;fetchrow_hashref) {
+        my $user = getNodeById($$luser{ignore_node});
+        push @ignored, $$luser{ignore_node};
+}
+
+if ((scalar @ignored) == 0) {
+
+  $str.=' no one.&lt;/p&gt;';
+
+} else {
+
+  $str.=':&lt;/p&gt;&lt;ol&gt;';
+  $str.= join &quot;\n&quot;, map { '&lt;li&gt;'.linkNode($_).'&lt;/li&gt;'; } @ignored;
+  $str.='&lt;/ol&gt;';
+
+}
+
+$str.=$query-&gt;param('username') ?
+  (&quot;&lt;p&gt;&quot;.linkNode($userId).&quot; is being ignored by&quot;) :
+  ( scalar(@ignored) ? '&lt;p&gt;&lt;small&gt;You can ignore people more thoroughly at the '.linkNodeTitle( 'Pit of Abomination' ).
+  '.&lt;/small&gt;&lt;/p&gt;' : '' ).
+  &quot;&lt;p&gt;You are being ignored by&quot;;
+
+my $csr = $DB-&gt;sqlSelectMany('messageignore_id', 'messageignore', 'ignore_node='.$userId);
+
+my @ignoring;
+while(my $luser = $csr-&gt;fetchrow_hashref) {
+        my $user = getNodeById($$luser{messageignore_id});
+        push @ignoring, $$luser{messageignore_id};
+}
+
+if ((scalar @ignoring) == 0) {
+
+  $str.=' no one.&lt;/p&gt;';
+
+} else {
+
+  $str.=':&lt;/p&gt;&lt;ol&gt;';
+  $str.= join &quot;\n&quot;, map { '&lt;li&gt;'.linkNode($_).'&lt;/li&gt;'; } @ignoring;
+  $str.='&lt;/ol&gt;';
+
+}
+
+return $str;
+
+
+%]
+&lt;p align=&quot;right&quot;&gt;&lt;small&gt;Bugs go to [alex[user]] and/or [Oolong[user]].&lt;/small&gt;&lt;/p&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-06-19 04:41:33</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1946328</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1946328</document_id>
+  <author_user>1009226</author_user>
+  <package>0</package>
+  <title>Your ignore list</title>
+</node>

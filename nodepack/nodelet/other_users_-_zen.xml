@@ -1,0 +1,169 @@
+<node>
+  <nltext></nltext>
+  <parent_container>175986</parent_container>
+  <icon>http://images.everything2.com/img/otherusers.gif</icon>
+  <core></core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>1999-10-07 04:35:12</createtime>
+  <lastupdate>1200715825</lastupdate>
+  <hits>141</hits>
+  <node_id>1926236</node_id>
+  <iconHeight>27</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>170</iconWidth>
+  <author_user>114</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1926236</nodelet_id>
+  <nlcode>[%
+
+my $str;
+my $wherestr;
+
+$USER-&gt;{in_room} = 0;
+
+my $UID = $$USER{node_id};
+my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
+my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$UID};
+my $isEdev = exists $HTMLVARS{'group_edev'}{$UID};
+
+unless($isRoot || $$VARS{infravision}) {
+	$wherestr.=' AND ' if $wherestr;
+	$wherestr.='visible=0';
+}
+
+my $showActions = $$VARS{showuseractions} ? 1 : 0;
+
+my @doVerbs;
+my @doNouns;
+if($showActions) {
+@doVerbs = (
+	'eating', 'watching', 'stalking', 'filing',
+	'noding', 'amazed by', 'tired of', 'crying for',
+	'thinking of', 'fighting', 'bouncing towards',
+	'fleeing from', 'diving into', 'wishing for',
+	'skating towards', 'playing with',
+	'upvoting', 'learning of', 'teaching',
+	'getting friendly with', 'frowned upon by',
+	'sleeping on', 'getting hungry for', 'touching',
+	'beating up',
+	''	#leave this blank one in, so the verb is sometimes omitted
+);
+@doNouns = (
+	'a carrot', 'some money', 'EDB', 'nails', 'some feet',
+	'a balloon', 'wheels', 'soy', 'a monkey', 'a smurf',
+	'an onion', 'smoke', 'the birds', 'you!', 'a flashlight',
+	'hash', 'your speaker', 'an idiot', 'an expert', 'an AI',
+	'the human genome', 'upvotes', 'downvotes',
+	'their pants', 'smelly cheese', 'a pink elephant',
+	'teeth', 'a hippopotamus', 'noders', 'a scarf',
+	'your ear', 'killer bees', 'an angst sandwich'
+);
+}
+
+
+my $ignorelist = $DB-&gt;sqlSelectMany('ignore_node', 'messageignore', 'messageignore_id='.$UID);
+  
+my @ignore;
+while(my ($u) = $ignorelist-&gt;fetchrow()) {
+	 push @ignore, $u;
+}
+
+local *in_an_array = sub {
+  my $needle = shift;
+  my @haystack = @_;
+
+  for (@haystack) {
+    return 1 if $_ eq $needle;
+  }
+  return 0;
+};
+
+
+my $csr = $DB-&gt;sqlSelectMany('*', 'room', $wherestr, 'order by experience DESC');
+
+
+my $numUsers = 0;
+my $sameUser;	#if the user to show is the user that is loading the page
+my $userID;	#only get member_user from hash once
+my $is1337 = ($userID == 220 || $userID == 322);	#nate and hemos
+
+$str .= &quot;
+&lt;style&gt;
+.user_listing { clear: both;
+height: 34px; width: 160px;
+padding: 2px;
+margin-bottom: 1px;} 
+.user_icon {float: left;
+width: 30px;
+height: 30px; border: solid 1px #000;
+margin-right: 5px;}
+.user_info {
+font-style: italic;
+font-size: 98%;
+}
+&lt;/style&gt;&quot;;
+
+while(my $U = $csr-&gt;fetchrow_hashref()) {
+
+	$userID = $$U{member_user};
+	next if in_an_array($userID, @ignore) &amp;&amp; (!$isRoot);
+
+	$numUsers++;
+	$sameUser = $UID==$userID; #integer test fast
+
+	my $nameLink = linkNode($userID, $$U{nick}, {lastnode_id=&gt;0});
+	$nameLink = '&lt;strong&gt;'.$nameLink.'&lt;/strong&gt;' if $sameUser || $is1337;
+
+	my $flags='';
+	if (exists $HTMLVARS{'group_gods'}{$userID}) {
+    		$flags .= 'Admin';
+	}
+
+	if (($isRoot || $isCE) &amp;&amp; !($is1337)) {
+		my $getTime = $DB-&gt;sqlSelect(&quot;datediff(now(),createtime)+1 as difftime&quot;,&quot;node&quot;,&quot;node_id=&quot;.$userID.&quot; having difftime&lt;31&quot;);
+		if ($getTime) {
+			if ($getTime&lt;=3) {
+				$flags.='&lt;strong&gt;'.$getTime.'&lt;/strong&gt;';
+			}
+			else {
+			        $flags.=$getTime;
+			}
+		}
+  	}
+
+	if (exists $HTMLVARS{'group_content editors'}{$userID}) {
+		$flags .=  'Editor';
+	}
+
+	$flags .= 'Borged' if $$U{borgd}; #yes, no 'e' in 'borgd'
+
+	if($$U{visible}) {
+		$flags.='(Hidden)';
+	}
+
+	if($showActions &amp;&amp; !$sameUser &amp;&amp; (0.02 &gt; rand())) {
+		$nameLink.=' &lt;small&gt;is ' . $doVerbs[int(rand(@doVerbs))] . ' ' . $doNouns[int(rand(@doNouns))] . '&lt;/small&gt;';
+	}
+
+	$str .= &quot;&lt;div class='user_listing'&gt;
+			&lt;div class='user_icon'&gt;A&lt;/div&gt;
+			&lt;div class='user_name'&gt;$nameLink&lt;/div&gt;
+			&lt;div class='user_info'&gt;$flags&lt;/div&gt;
+		&lt;/div&gt;\n\t\t&quot;;
+}
+
+$csr-&gt;finish;
+
+return '&lt;em&gt;There are no noders in this room.&lt;/em&gt;' unless $numUsers;
+
+$str = 'Your fellow noders ('.$numUsers.'): &lt;br /&gt;' . $str;
+
+return $str;
+%]</nlcode>
+  <title>Other Users - Zen</title>
+</node>

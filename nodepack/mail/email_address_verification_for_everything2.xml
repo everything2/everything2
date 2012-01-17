@@ -1,0 +1,32 @@
+<node>
+  <doctext>&lt;name&gt;,
+	
+&lt;p&gt;It looks like either you have requested a new validation key for Everything2 or someone has requested one for you.  Here's a new key for you.  All this takes is either clicking on the following link, or copying and pasting it into your web browser:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;&lt;verify_email_url&gt;&amp;amp;user_id=&lt;user_id&gt;&amp;amp;validationkey=&lt;validationkey&gt;&quot;&gt;&lt;verify_email_url&gt;&amp;amp;user_id=&lt;user_id&gt;&amp;amp;validationkey=&lt;validationkey&gt;&lt;/a&gt;&lt;/p&gt;
+	
+&lt;p&gt;If that link is giving you any hassle, you can validate this email account manually: On Everything2, search for &quot;Verify your email account&quot;.  It will ask you for a user ID and an verification key.  Your user ID is &lt;strong&gt;&lt;user_id&gt;&lt;/strong&gt;, and your validation key is &lt;strong&gt;&lt;validationkey&gt;&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you continue to experience difficulty verifying the email address for your Everything2 account, please send an email to &lt;a href=&quot;mailto:e2webmaster@everything2.com&quot;&gt;e2webmaster@everything2.com&lt;/a&gt; with your user ID, your current validation key, and anything you think we'd need to know to fix the issue.&lt;/p&gt;
+
+&lt;p&gt;All love,&lt;br /&gt;
+The Everything2 Staff&lt;br /&gt;
+&lt;site_url&gt;&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-07-04 16:45:42</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1948244</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>154</type_nodetype>
+  <from_address></from_address>
+  <document_id>1948244</document_id>
+  <attachment_file>0</attachment_file>
+  <author_user>650043</author_user>
+  <mail_id>1948244</mail_id>
+  <package>0</package>
+  <title>Email address verification for Everything2</title>
+</node>

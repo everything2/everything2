@@ -1,0 +1,21 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-11-02 19:57:16</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <notification_id>1992747</notification_id>
+  <hourLimit>168</hourLimit>
+  <hits>1</hits>
+  <node_id>1992747</node_id>
+  <code>return linkNode($$args{chanop_id})
+  . ' dragged user ' . linkNode($$args{user_id})
+  . ' to ' . linkNode($$args{room_id});</code>
+  <type_nodetype>1930710</type_nodetype>
+  <author_user>5603</author_user>
+  <description>a chanop drags a user to another room</description>
+  <package>0</package>
+  <invalid_check></invalid_check>
+  <title>chanop dragged user</title>
+</node>

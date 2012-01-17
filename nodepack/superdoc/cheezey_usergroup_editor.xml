@@ -1,0 +1,123 @@
+<node>
+  <doctext>[%
+
+my $owners = getVars(getNode('usergroup owners','setting'));
+my @grps;
+my %protected = map { getId(getNode($_,'usergroup')) =&gt; 1} ();
+
+my @insiders = keys %$owners;
+if(isGod($USER)){
+    @insiders = ();
+    my $csr = $DB-&gt;sqlSelectMany('node_id', 'node', 'type_nodetype='.getId(getType('usergroup')));
+    my $row;
+    push @insiders, $$row{node_id} while($row = $csr-&gt;fetchrow_hashref());
+}
+
+foreach(sort {$a &lt;=&gt; $b} @insiders)
+{
+  unless($protected{$_})
+  {
+    if($$owners{$_} == $$USER{node_id} or isGod($USER))
+    {
+     push @grps, $_;
+    }
+  }
+}
+
+return 'You have nothing to edit here.' if @grps == 0;
+
+my $str.='&lt;table&gt;&lt;tr&gt;&lt;td width=&quot;200&quot; valign=&quot;top&quot; border=&quot;1&quot;&gt;Choose a usergroup to edit:&lt;ul&gt;
+';
+
+foreach(@grps)
+{
+   my $n = getNodeById($_);
+   $str.='&lt;li&gt;Edit '.linkNode($NODE, &quot;$$n{title}&quot;, { for_usergroup =&gt; $$n{node_id}}).'&lt;/li&gt;
+';
+}
+$str.='
+&lt;/ul&gt;';
+
+$str.='a';
+return $str.'&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;' unless $query-&gt;param('for_usergroup');
+$str.='b';
+my $usergroup = getNodeById($query-&gt;param('for_usergroup'));
+
+return $str.'&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;' unless $usergroup;
+$str.='c';
+$str.='&lt;/td&gt;&lt;td valign=&quot;top&quot;&gt;';
+my $foo = $owners;
+
+$str.='$$usergroup{node_id} = '.$$usergroup{node_id}.'&lt;br/&gt;';
+$str.='$$foo{$$usergroup{node_id}} = '.$$foo{$$usergroup{node_id}}.'&lt;br/&gt;';
+$str.='$$USER{node_id} = '.$$USER{node_id}.'&lt;br /&gt;';
+return $str unless($$foo{$$usergroup{node_id}} == $$USER{node_id} or isGod($USER));
+$str.='d&lt;br/&gt;';
+$str.='&lt;big&gt;&lt;big&gt;Editing '.linkNode($usergroup).'&lt;/big&gt;&lt;/big&gt;&lt;br /&gt;';
+
+foreach($query-&gt;param) {
+	if($_ =~ /rem_(\d+)/) {
+		my $u = getNodeById($1);
+		next unless $u;
+		removeFromNodegroup($usergroup,$u, -1);
+		$str.='Removed: '.linkNode($u).'&lt;br&gt;';
+	}
+}
+
+if($query-&gt;param('addperson')) {
+	my $u;
+	foreach(split(&quot;\n&quot;,$query-&gt;param('addperson'))) {
+		$_ =~ s/\s+$//g;
+		if(defined( $u=getNode($_,'user')) ) {
+			insertIntoNodegroup($usergroup, -1, $u);
+			$str.='Added user: '.linkNode($u).'&lt;br&gt;';
+			next;
+		}
+		if(defined( $u=getNode($_,'usergroup')) ) {
+			insertIntoNodegroup($usergroup, -1, $u);
+			$str.='Added usergroup: '.linkNode($u).'&lt;br&gt;';
+			next;
+		}
+		$str .= '&lt;font color=&quot;red&quot;&gt;No such user&amp;#91;group&amp;#93; ' . $_ . '!&lt;/font&gt;&lt;br&gt;';
+	}
+}
+
+updateNode($usergroup, -1);
+
+$str.=htmlcode('openform');
+$str.='&lt;table&gt;
+&lt;tr&gt;&lt;td width=&quot;200&quot;&gt;&lt;strong&gt;Remove?&lt;/strong&gt;&lt;/td&gt;&lt;td width=&quot;300&quot;&gt;User&lt;/td&gt;&lt;/tr&gt;
+';
+foreach(@{$$usergroup{group}})
+{
+ my $u = getNodeById($_);
+ next unless $u;
+ $str.=&quot;&lt;tr&gt;&lt;td&gt;&lt;input type=\&quot;checkbox\&quot; name=\&quot;rem_$$u{node_id}\&quot;&gt;&lt;/td&gt;&lt;td&gt;$$u{title}&lt;/td&gt;&lt;/tr&gt;&quot;;
+}
+$str.=&quot;&lt;/table&gt;&quot;;
+
+$str.=&quot;Add people (one per line):&lt;br&gt;&quot;;
+$str.=&quot;&lt;textarea name=\&quot;addperson\&quot; rows=\&quot;20\&quot; cols=\&quot;30\&quot;&gt;&lt;/textarea&gt;&quot;;
+$str.=&quot;&lt;input type=\&quot;submit\&quot; name=\&quot;submit\&quot; value=\&quot;Update group\&quot;&gt;&quot;;
+$str.=&quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;for_usergroup\&quot; value=\&quot;$$usergroup{node_id}\&quot;&gt;&quot;;
+
+$str.=&quot;&lt;/form&gt;&quot;;
+$str.=&quot;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&quot;;
+return $str;
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-09-04 08:31:13</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1709932</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1709932</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>cheezey usergroup editor</title>
+</node>

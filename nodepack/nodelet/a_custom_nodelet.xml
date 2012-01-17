@@ -1,0 +1,65 @@
+<node>
+  <nltext></nltext>
+  <parent_container>175986</parent_container>
+  <icon>http://images.everything2.com/img/epicenter.gif</icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>1999-11-06 23:10:58</createtime>
+  <lastupdate>1193925172</lastupdate>
+  <hits>275</hits>
+  <node_id>1915028</node_id>
+  <iconHeight>26</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>170</iconWidth>
+  <author_user>315</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1915028</nodelet_id>
+  <nlcode>[{googleSearchForm}]
+[%
+
+
+
+my ($loginStr, $votesLeftStr, $expStr);
+
+#####LOGIN STRING
+
+$loginStr .= linkNode($USER,'My Homenode',{displaytype=&gt;'edit',lastnode_id=&gt;0}).&quot;&lt;br /&gt;&quot;;
+$loginStr.= linkNode($HTMLVARS{userSettings_node}, 'My Preferences',{lastnode_id=&gt;0}) .&quot;&lt;br /&gt;&quot;;
+$loginStr.= linkNode(getNode('Multiple Scratch Pad Viewer','superdocnolinks'),'My Scratch Pad') .&quot;&lt;br /&gt;&quot;;
+
+###VOTES LEFT, XP
+
+my @thingys = ();
+
+my $c = $$VARS{cools} || 0;
+my $v = $$USER{votesleft} || 0;
+
+if($v !~ /^\d+$/) { $v = 0; }
+
+if ($c || $v) {
+	if($c) { push @thingys, '&lt;strong id=&quot;chingsleft&quot;&gt;'.$c.'&lt;/strong&gt; C!'.($c&gt;1?'s':''); }
+	if($v) { push @thingys, '&lt;strong id=&quot;votesleft&quot;&gt;'.$v.'&lt;/strong&gt; vote'.($v&gt;1?'s':''); }
+
+	if (scalar(@thingys)) {
+		$votesLeftStr = '&lt;p id=&quot;votesleft&quot;&gt;You have ' . join(' and ',@thingys) . ' left today.&lt;/p&gt;';
+	}
+}
+
+$expStr = '&lt;p id=&quot;experience&quot;&gt;'.htmlcode('shownewexp','TRUE').'&lt;/p&gt;';
+
+my $epicenterStr = $loginStr . $votesLeftStr . $expStr;
+return $epicenterStr;
+
+%]
+
+&lt;br /&gt;
+&lt;br /&gt;
+
+[% return linkNode($NODE,'edit this',{displaytype =&gt; &quot;edit&quot;}); %]</nlcode>
+  <title>A Custom Nodelet</title>
+</node>

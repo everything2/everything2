@@ -1,0 +1,70 @@
+<node>
+  <nltext></nltext>
+  <parent_container>175986</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2000-03-09 21:17:31</createtime>
+  <lastupdate>1258155003</lastupdate>
+  <hits>43</hits>
+  <node_id>1876900</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>315</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1876900</nodelet_id>
+  <nlcode>[%
+
+my $str;
+
+my $csr = $DB-&gt;sqlSelectMany(&quot;(select title from node where node_id=cooledby_user limit 1) as cooluser, coolwriteups_id, (select title from node where node_id=(select author_user from node where node_id=coolwriteups_id limit 1) limit 1) as wu_author, (select parent_e2node from writeup where writeup_id=coolwriteups_id limit 1) as parentNode, (select title from node where node_id=parentNode limit 1) as parentTitle&quot;, &quot;coolwriteups&quot;, &quot;&quot;, &quot;order by tstamp desc limit 100&quot;);
+
+#my $csr = $DB-&gt;sqlSelectMany(&quot;(select title from node where node_id=cooledby_user limit 1) as cooluser, coolwriteups_id, (select title from node where node_id=(select author_user from node where node_id=coolwriteups_id limit 1) limit 1) as wu_author, (select parent_e2node from writeup where writeup_id=coolwriteups_id limit 1) as parentNode, (select title from node where node_id=parentNode limit 1) as parentTitle, (select cooled from writeup where writeup_id=coolwriteups_id limit 1) as writeupCooled&quot;, &quot;coolwriteups&quot;, &quot;&quot;, &quot;order by tstamp desc limit 50&quot;);
+
+my $xml;
+use XML::Generator;
+my $XG = new XML::Generator;
+
+my $count = 15;
+my %used;
+
+$str.=&quot;\n\t&lt;ul class=\&quot;linklist\&quot;&gt;&quot;;
+
+while (my $CW = $csr-&gt;fetchrow_hashref()) {
+  next if exists $used{$$CW{coolwriteups_id}};
+  $used{$$CW{coolwriteups_id}} = 1;
+  $str.=&quot;\n\t\t&lt;li&gt;&quot;.linkNode($$CW{coolwriteups_id}, $$CW{parentTitle}, {lastnode_id =&gt; 0}) .&quot;&lt;/li&gt;&quot;;
+#  $str.=&quot;&lt;li&gt;&quot;.linkNode($$CW{coolwriteups_id}, $$CW{parentTitle}, {lastnode_id =&gt; 0}) .&quot; (&quot;.$$CW{writeupCooled}.&quot;)&lt;/li&gt;&quot;;
+  $xml .=&quot;\t&quot;.$XG-&gt;cooled({node_id =&gt; $$CW{coolwriteups_id}, 
+     parent_e2node =&gt; $$CW{parentNode}, 
+     author_user =&gt; $$CW{wu_author},
+     cooledby_user =&gt; $$CW{cooluser}},
+     $$CW{parentTitle}).&quot;\n&quot;;
+  last unless (--$count);
+}
+
+$str.= parseLinks( &quot;\n\t&lt;/ul&gt;
+	&lt;div class='morelink cup_more'&gt;([Cool Archive|more])&lt;/div&gt;&quot; ) ;
+
+$csr-&gt;finish;
+
+my $SETTINGS = getVars(getNode('system settings','setting'));
+$xml = $XG-&gt;COOLEDNODES(
+   $XG-&gt;INFO({site =&gt; $$SETTINGS{site_url}, sitename =&gt; $$SETTINGS{site_name},  servertime =&gt; scalar(localtime(time))}, 'Rendered by the Cool Nodes XML Ticker')
+   . &quot;\n&quot;.$xml . &quot;\n&quot;);
+
+my $XNODE = getNode('cool nodes XML ticker', 'fullpage');
+$$XNODE{doctext} = $xml;
+updateNode($XNODE, -1);
+
+$str . &quot; hey&lt;input type='button' onclick='E2AJAX.checkCools()'&gt;push&lt;/input&gt;&quot;;
+%]
+ey</nlcode>
+  <title>Cool User Picks</title>
+</node>

@@ -1,0 +1,56 @@
+<node>
+  <doctext>[%
+return if $$USER{node_id} == $HTMLVARS{guest_user};
+
+my $csr = $DB-&gt;sqlSelectMany('title'
+	, &quot;(Select title, e2node_id,
+			(select nodegroup_id from nodegroup where nodegroup_id = e2node_id limit 1) As groupentry
+		From e2node Join node On node.node_id = e2node_id
+		Where createdby_user = $$USER{node_id}
+		Having groupentry &gt; 0)
+		AS fillede2nodes
+	LEFT JOIN
+		(Select parent_e2node
+		From node
+		Join writeup On node_id = writeup_id
+		Where author_user = $$USER{node_id})
+		AS writeups
+	ON fillede2nodes.e2node_id = writeups.parent_e2node&quot;
+	, 'parent_e2node IS NULL');
+
+my @nodes;
+my $wu;
+
+while(my $row = $csr-&gt;fetchrow_hashref) {
+	push @nodes, $$row{title};
+}
+
+my $str = '&lt;p&gt;(Be sure to check out [Your nodeshells], too.)&lt;/p&gt;&lt;p&gt;&lt;strong&gt;'
+	.scalar(@nodes).'&lt;/strong&gt; nodeshells created by you which have been filled by someone else:&lt;/p&gt;
+&lt;ul&gt;
+';
+
+foreach(sort {lc($a) cmp lc($b)} @nodes) {
+	$str.='&lt;li&gt;'.linkNodeTitle($_).'&lt;/li&gt;
+';
+}
+
+$str.='&lt;/ul&gt;';
+
+return $str;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2006-04-06 16:37:46</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>14</hits>
+  <node_id>1797573</node_id>
+  <edittime>2011-07-13 09:18:11</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1797573</document_id>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>Your filled nodeshells</title>
+</node>

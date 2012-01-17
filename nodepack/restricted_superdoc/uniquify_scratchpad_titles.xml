@@ -1,0 +1,68 @@
+<node>
+  <doctext>[%
+return &quot;This has served its purpose.&quot;;
+
+my $str = linkNode($NODE,&quot;Do it!&quot;,{doitfaggot =&gt; 1});
+
+if ($query-&gt;param('doitfaggot') ) {
+
+  my $granswapo = 1875936;
+
+  my $csr = $DB-&gt;sqlSelectMany(&quot;scratch_user,scratch_title&quot;, &quot;scratch2&quot;,
+                               &quot;&quot;, 
+                               &quot;GROUP BY scratch_user,
+                                scratch_title having count(*)&gt;1&quot;);
+
+  while (my $scratch = $csr -&gt; fetchrow_hashref) {
+
+    my $uid = $$scratch{scratch_user};
+    my $title = $$scratch{scratch_title};
+
+    $title =~ s/\&quot;/\\\&quot;/g;
+
+    #Get the duplicated titles...
+    my $scratch_dupes = $DB -&gt; sqlSelectMany(&quot;*&quot;, &quot;scratch2&quot;,
+                                             &quot;scratch_user=$uid AND
+                                              scratch_title=\&quot;$title\&quot;&quot;);
+    my $count = 0;
+    while (my $dupe = $scratch_dupes -&gt; fetchrow_hashref) {
+
+      my $newtitle;
+      if($count){
+        $newtitle = &quot;$title - $count&quot;;
+      }
+      else{
+        $newtitle = $title;
+      }
+      $newtitle =~ s/\\\&quot;/\&quot;/g;
+
+      $DB -&gt; sqlUpdate(&quot;scratch2&quot;,
+                      { scratch_title =&gt; &quot;$newtitle&quot; },
+                      &quot;scratch_user=$uid 
+                       AND scratch_title=\&quot;$title\&quot;
+                       AND scratch_id = $$dupe{scratch_id}&quot;);
+      $count++;
+      $str .= &quot;&lt;br/&gt; &lt;br/&gt; Done $newtitle for user
+                      &quot;.linkNode($uid).&quot;!&lt;br/&gt;&quot; if $count;
+    }
+  }
+}
+
+return $str;
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-04-04 22:41:30</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1980960</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1980960</document_id>
+  <author_user>1394568</author_user>
+  <package>0</package>
+  <title>Uniquify scratchpad titles</title>
+</node>

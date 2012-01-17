@@ -1,0 +1,199 @@
+<node>
+  <doctext>[%
+
+##########
+# CODE SEARCH TOOL
+# This tool will search appropriate nodetypes
+#   i.e. no writeups, e2nodes, users, etc.
+#   for code typed into the search box.
+# The title of each found page will be displayed in a list
+# Clicking the title of the page will bring you to that code as &quot;displaytype=edit&quot;
+# You can preview how the page uses the code by clicking &quot;preview&quot;
+# This will unhide a DIV to show the line or lines containing the searched-for item.
+
+my $explaintest = 1; # set to 1 to run the EXPLAIN version of the SQL query
+my $testexplainoutput;
+
+my $current_node_id = 124; # default = home page
+my $current_node = getNodeById($current_node_id);
+my $notes = '&lt;ol&gt;&lt;b&gt;Temporary programming notes:&lt;/b&gt;';
+my $findword = $query-&gt;param('findword') || 'getNode';
+# if a valid nodetype is supplied, restricts the search to a specific nodetype
+my $nodetype = getId(getNode($query-&gt;param('searchnodetype'), &quot;nodetype&quot;));
+if ($nodetype) { $nodetype = &quot;AND type_nodetype = $nodetype&quot;; }
+$notes .= &quot;&lt;li&gt;restrict to: $nodetype&lt;/li&gt;&quot;;
+my $textfields = '';
+my $comments = &quot;&lt;p&gt;Code search tool&lt;/p&gt;&quot;;
+
+##########
+# This section is the actual page function
+# If explaintest == 1 run the EXPLAIN version at the end instead
+if ($explaintest == 0)
+{
+$notes .= &quot;&lt;li&gt;Got here&lt;/li&gt;&quot;;
+	#####
+	# Search for nodes with the code search term in them
+	# Do not search nodes that don't normally contain code
+	# Restrict the search to a single nodetype if searchnodetype != blank
+
+	if ($query-&gt;param('submit'))
+		{
+$notes .= &quot;&lt;li&gt;Got here too&lt;/li&gt;&quot;;
+# 		my $csr = $DB-&gt;sqlSelectMany
+# 			(
+# 			&quot;*&quot;, 
+# 			&quot;node JOIN document ON node.node_id=document.document_id&quot;, 
+# 			&quot;type_nodetype=117 
+# 				$ignorestring
+# 				and document.doctext REGEXP ('.$findword.')&quot;,
+# 			&quot;LIMIT 1&quot;
+# 			);
+		my $csr = $DB-&gt;sqlSelectMany
+			(
+			&quot;*&quot;, 
+			&quot;node JOIN document ON node.node_id=document.document_id&quot;, 
+			&quot;type_nodetype !=  6
+				AND type_nodetype !=  '11'
+				AND type_nodetype !=  '15'
+				AND type_nodetype !=  '116'
+				AND type_nodetype !=  '117'
+				AND type_nodetype !=  '118'
+				AND type_nodetype !=  '148'
+				AND type_nodetype !=  '153'
+				AND type_nodetype !=  '170067'
+				AND type_nodetype !=  '1147470'
+				AND type_nodetype !=  '1151141'
+				AND type_nodetype !=  '1685242'
+				AND type_nodetype !=  '1854352'
+				AND type_nodetype !=  '1915073'
+				AND type_nodetype !=  '1930710'
+				AND type_nodetype !=  '1946032'
+				AND type_nodetype !=  '1949335'
+				AND type_nodetype !=  '1957954'
+				AND type_nodetype !=  '1957956'
+				AND document.doctext REGEXP ('.$findword.')&quot;,
+			&quot;LIMIT 1&quot;
+			);
+	  
+		while (my $s = $csr-&gt;fetchrow_hashref)
+			{
+			$notes .= &quot;&lt;li&gt;&quot; . linkNode($$s{'node_id'}, $$s{'title'});
+			$notes .= &quot;&lt;/li&gt;&quot;;
+			$current_node_id = $$s{'node_id'}; # grabs the last one
+			}
+
+	  
+		$current_node = getNodeById($current_node_id);
+	  
+		$notes .= &quot;&lt;li&gt;Current node_id = &quot; 
+			. $current_node_id 
+			. &quot; by &quot;
+			. getNodeById($$current_node{author_user})-&gt;{title}
+			. &quot;&lt;/li&gt;&quot;;
+		}
+	
+	#####
+	# Format the writeup for display
+	my $writeup_text = $current_node-&gt;{'doctext'};
+	$writeup_text =~ s/&lt;/&amp;lt;/g;
+	$writeup_text =~ s/\[/$#91;/g;
+	$writeup_text = '&lt;div style=&quot;border: 4px dotted black; padding: 20px;&quot;&gt;' 
+					. $writeup_text 
+					. '&lt;/div&gt;';
+					   
+	$notes .= &quot;&lt;li&gt;Nodetype: &quot; . $$current_node{'type_nodetype'} . &quot;&lt;/li&gt;&quot;;
+	
+	#####
+	# Highlight find and replace words
+	# TODO: protect against conflicts such as $findword eq $replaceword
+	#   or one word contained within the other
+	$writeup_text =~ s/($findword)/&lt;span style=\&quot;background:yellow;\&quot;&gt;$1&lt;\/span&gt;/gi;
+	
+	#####
+	# Create textfields for the interface
+	# Would ignoreids be better as a textarea?
+	#   In testing it seems so but in practice you probably won't ignore more than a few
+	$textfields .= htmlcode('openform');
+	$textfields .= $query-&gt;textfield('findword') . &quot; Find &lt;br&gt;&quot;;
+	$textfields .= '&lt;input type=&quot;text&quot; name=&quot;searchnodetype&quot;&gt;'
+				   . 'Restrict search to one nodetype&lt;br&gt;';
+	$textfields .= '&lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;submit&quot; /&gt; ';
+	$textfields .= '&lt;/form&gt;';
+	
+	#####
+	# Display page - $notes does not have its own /ol tag
+	
+	return $comments . $textfields . $notes . &quot;&lt;/ol&gt;&quot; . $writeup_text;
+	}
+else
+	{
+	my $dbh = $DB-&gt;getDatabaseHandle();
+# Exclude: 
+#  6   image
+#  11  note
+#  15  user 
+#  116 e2node 
+#  117 writeup 
+#  118 writeuptype
+#  148 dbtable 
+#  153 setting
+#  170067 message
+#  1147470 node_forward
+#  1151141 patch
+#  1685242 e2poll
+#  1854352 stylesheet
+#  1915073 achievement
+#  1930710 notification
+#  1946032 ticket_type
+#  1949335 ticket
+#  1957954 recording
+#  1957956 podcast
+
+	my $csr = $dbh-&gt;prepare(&quot;EXPLAIN SELECT * 
+		FROM node JOIN document ON node.node_id = document.document_id 
+		WHERE type_nodetype != '6' 
+				AND type_nodetype != '11' 
+				AND type_nodetype != '15' 
+				AND type_nodetype != '116' 
+				AND type_nodetype != '117' 
+				AND type_nodetype != '118' 
+				AND type_nodetype != '148' 
+				AND type_nodetype != '153' 
+				AND type_nodetype != '170067' 
+				AND type_nodetype != '1147470' 
+				AND type_nodetype != '1151141' 
+				AND type_nodetype != '1685242' 
+				AND type_nodetype != '1854352' 
+				AND type_nodetype != '1915073' 
+				AND type_nodetype != '1930710' 
+				AND type_nodetype != '1946032' 
+				AND type_nodetype != '1949335' 
+				AND type_nodetype != '1957954' 
+				AND type_nodetype != '1957956' 
+			AND document.doctext REGEXP ('.$findword.') 
+		LIMIT 1&quot;);
+	$csr-&gt;execute();
+	while (my $s = $csr-&gt;fetchrow_hashref)
+		{
+		foreach my $keys (sort(keys(%{$s}))) 
+			{ $testexplainoutput .= &quot;\n\t&lt;li&gt;&quot; . $keys . &quot;: &quot; . $s-&gt;{$keys} . &quot;&lt;/li&gt;&quot;; }
+		}
+	return $testexplainoutput . &quot;&lt;/ol&gt;&quot;;
+	}
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-10-18 23:11:03</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1959339</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1959339</document_id>
+  <author_user>1503725</author_user>
+  <package>0</package>
+  <title>rootbeer277's sandbox 4</title>
+</node>

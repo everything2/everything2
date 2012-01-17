@@ -1,0 +1,19 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-03-26 16:16:21</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <notification_id>1935408</notification_id>
+  <hourLimit>168</hourLimit>
+  <hits>1</hits>
+  <node_id>1935408</node_id>
+  <code>return &quot;[USER X] has [filled] your Most Wanted nodeshell [Y].&quot;</code>
+  <type_nodetype>1930710</type_nodetype>
+  <author_user>1312198</author_user>
+  <description>someone fills one of your [Everything's Most Wanted|Most Wanted] requests.</description>
+  <package>0</package>
+  <invalid_check></invalid_check>
+  <title>mostwanted</title>
+</node>

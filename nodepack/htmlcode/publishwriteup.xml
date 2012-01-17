@@ -1,0 +1,137 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-03-04 06:11:53</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>1991341</node_id>
+  <htmlcode_id>1991341</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($WRITEUP, $E2NODE) = @_;
+
+# called from [publishdraft] or from [writeup maintenance create]
+# we have already checked that everything exists,
+# and that this user can publish this writeup to this node
+
+use DateTime;
+use DateTime::Format::Strptime;
+use JSON;
+
+my $WRTYPE = getNodeById($query-&gt;param('writeup_wrtype_writeuptype'));
+# if we haven't been given a type, use the default:
+$WRTYPE = getNode('thing', &quot;writeuptype&quot;)
+	unless $WRTYPE and $$WRTYPE{type}{title} eq 'writeuptype';
+
+my ($sec,$min,$hour,$mday,$mon,$year) = localtime(time);
+my $notnew = $query-&gt;param(&quot;writeup_notnew&quot;) || 0;
+
+# some of this should theoretically happen automatically. But sometimes fails. So:
+$$WRITEUP{parent_e2node} = getId $E2NODE;
+$$WRITEUP{wrtype_writeuptype} = getId $WRTYPE;
+$$WRITEUP{notnew} = $notnew;
+$$WRITEUP{title} = &quot;$$E2NODE{title} ($$WRTYPE{title})&quot;;
+$$WRITEUP{hits} = 0; # for drafts
+$$WRITEUP{publishtime} = $$E2NODE{updated} =
+	sprintf '%4d-%02d-%02d %02d:%02d:%02d', $year+1900,$mon+1,$mday,$hour,$min,$sec;
+
+$DB-&gt;sqlInsert('newwriteup', {node_id =&gt; getId($WRITEUP), notnew =&gt; $notnew});
+
+updateNode $WRITEUP, $USER; # after newwriteup insertion to update New Writeup data
+updateNode $E2NODE, -1;
+
+unless ($$WRTYPE{title} eq 'lede'){
+	# insert into the node group, last or before Webster entry;
+	# make sure Webster is last while we're at it
+	
+	my @addList = getNodeWhere({
+			parent_e2node =&gt; $$E2NODE{node_id},
+			author_user =&gt; getId(getNode('Webster 1913', 'user'))
+		}, 'writeup');
+	
+	removeFromNodegroup($E2NODE, $addList[0], -1) if @addList; # remove Webster
+	
+	unshift @addList, $WRITEUP;
+	insertIntoNodegroup($E2NODE, -1, \@addList);
+}else{
+	# insert at top of node group
+	insertIntoNodegroup($E2NODE, -1, $WRITEUP, 0);
+}
+
+# No XP, writeup count, notifications or achievement for maintenance nodes
+my $t = lc($$E2NODE{title});
+$t =~ s/\s/_/g;
+if (getVars(getNode('boring heaven nodes', 'setting')) -&gt; {$t}){
+	recordUserAction('createwriteupemaintenance', $$WRITEUP{node_id}, $$E2NODE{node_id});
+	return;
+}
+
+# record new node creation:
+recordUserAction('createwriteup', $$WRITEUP{node_id}, $$E2NODE{node_id});
+
+return if $$WRITEUP{author_user} != $$USER{node_id}; # no credit for publishas
+
+# credit user
+$$USER{experience}+=5;
+updateNode $USER, $USER;
+
+$$VARS{numwriteups}++;
+$$VARS{lastnoded} = $$WRITEUP{writeup_id};
+
+htmlcode('achievementsByType','writeup');
+
+# Inform people who have this person as one of their favorite authors
+my $favoriteNotification = getNode(&quot;favorite&quot;,&quot;notification&quot;)-&gt;{node_id};
+my $favoriteLinkType = getNode(&quot;favorite&quot;,&quot;linktype&quot;)-&gt;{node_id};
+my $faves = $DB-&gt;sqlSelectMany(
+	&quot;from_node&quot;,
+	&quot;links&quot;,
+	&quot;to_node = $$USER{user_id}
+	AND linktype= $favoriteLinkType&quot;);
+
+while (my $f = $faves-&gt;fetchrow_hashref){
+	my $fVars = getVars(getNodeById($$f{from_node}));
+	if ($$fVars{settings}) {
+		if (%{from_json($$fVars{settings})-&gt;
+			{notifications}}-&gt;{$favoriteNotification}
+		){
+			my $argSet = { writeup_id =&gt; getId($WRITEUP),
+				favorite_author =&gt; $$USER{user_id}};
+			my $argStr = to_json($argSet);
+			my $addNotifier = htmlcode('addNotification',
+				$favoriteNotification,
+			$$f{from_node},$argStr);
+		}
+	}
+}
+
+# Determine if this is a user created in the last two weeks
+my $dateParser = new DateTime::Format::Strptime(
+	pattern =&gt; '%F %T',
+	locale  =&gt; 'en_US',
+);
+my $createTime = $dateParser-&gt;parse_datetime($$USER{createtime});
+my $userAge = DateTime-&gt;now()-&gt;subtract_datetime($createTime);
+my $youngAge = DateTime::Duration-&gt;new(days =&gt; 14);
+my $isYoungin = (DateTime::Duration-&gt;compare($userAge, $youngAge) &lt; 0 ? 1 : 0);
+
+# Make a notification about a newbie writeup
+if ($$VARS{numwriteups} == 1 || $isYoungin) {
+
+	htmlcode('addNotification' , &quot;newbiewriteup&quot;, undef
+			, {
+				writeup_id =&gt; getId($WRITEUP),
+				author_id =&gt; $$USER{user_id},
+				publish_time =&gt; DateTime-&gt;now()-&gt;strftime(&quot;%F %T&quot;)
+			}
+	);
+}
+$query -&gt; param('publish', 'OK');
+
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>publishwriteup</title>
+</node>

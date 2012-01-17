@@ -1,0 +1,134 @@
+<node>
+  <doctext>&lt;!-- NPB TODO make in-page style sheets --&gt;
+
+&lt;p&gt;Okey-dokey, here are some FAQs for those in the [% linkNode(getNode('edev','usergroup')); %] usergroup.
+You, [% linkNode($USER,0,{lastnode_id=&gt;0}) . ', ' . ((exists $HTMLVARS{'group_edev'}{$$USER{node_id}}) ? '&lt;strong&gt;are&lt;/strong&gt; a respected &lt;small&gt;(haha, yeah, right!)&lt;/small&gt;' : 'are &lt;strong&gt;not&lt;/strong&gt; a'); %] member of the edev group here, on E2. In this FAQ, &quot;I&quot; is [N-Wing].
+&lt;/p&gt;
+
+&lt;p&gt;Questions:&lt;/p&gt;&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;#powers&quot;&gt;What are some of my superpowers?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#msg&quot;&gt;Why are random people sending me private messages that start with &quot;EDEV:&quot; or &quot;ONO: EDEV:&quot;?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#background&quot;&gt;What is the background of edev and it's relationship to the development of the site/source?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#bugnodetype&quot;&gt;What is with the &quot;bug&quot; nodetype?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#edevify&quot;&gt;What is this &quot;Edevify!&quot; link thingy I see in my Epicenter nodelet?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#ownesite&quot;&gt;Does everybody have their own Everything site for hacking on?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#edevite&quot;&gt;What is an edevite?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#edevdoc&quot;&gt;What is an Edevdoc?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#whyjoin&quot;&gt;Why did others (or, why should I) join the edev group?&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;(TODO) &lt;a href=&quot;#improvements&quot;&gt;How do we go about finding tasks here? If we have personal projects for the improvement of E2, what is the appropriate way to get started? Should I verify that what I'm thinking of is useful, or should I make it work and then submit source patches?&lt;/a&gt;&lt;/li&gt;
+&lt;!--
+&lt;li&gt;&lt;a href=&quot;#&quot;&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#&quot;&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#&quot;&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#&quot;&gt;&lt;/a&gt;&lt;/li&gt;
+--&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;hr /&gt;&lt;a name=&quot;powers&quot;&gt;Q: &lt;strong&gt;What are some of my superpowers?&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+A: I wouldn't say &lt;em&gt;superpowers&lt;/em&gt;, just &lt;em&gt;powers&lt;/em&gt;. Anyway:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;You're a hash! (in the [Other Users] nodelet, [edevite]s have a &lt;code&gt;%&lt;/code&gt; next to their name (which is only viewable by fellow edevites))&lt;/li&gt;
+&lt;li&gt;You can see the source code for many things here. If you visit something like a [superdoc] (for example, this node), if you append &lt;code&gt;&amp;amp;displaytype=viewcode&lt;/code&gt; to the URL, it will show the code that generates that node. When you have the [Everything Developer] nodelet turned on, you can more easily simply follow the little &quot;viewcode&quot; link (which only displays on nodes you may view the source for). For example, you can see this node's source by going [% linkNode($NODE,'here',{'displaytype'=&gt;'viewcode'}); %].&lt;/li&gt;
+&lt;li&gt;You can see other random things, like [dbtable]s (nodes and other things (like softlinks) are stored in tables in the database; viewing one shows the field names and storage types) and [theme] (a theme contains information about a generic theme).&lt;/li&gt;
+&lt;li&gt;You can see/use [List Nodes of Type], which lists nodes of a certain type. One example &lt;small&gt;(&lt;/small&gt;ab&lt;small&gt;)&lt;/small&gt;use of this is to get a list of rooms. [nate] in [Edev First Post!] &lt;small&gt;(doesn't that sound like a troll title?)&lt;/small&gt; lists some other node types you may be interested in. Actually, you should probably read that anyway, it has other starting information, too.&lt;/li&gt;
+&lt;li&gt;You have your own (well, shared with editors and admins) section in [user settings 2]. (As of the time this FAQ was written, there is only 1 setting there, which is explained in the &lt;a href=&quot;#msg&quot;&gt;next question&lt;/a&gt;.)&lt;/li&gt;
+&lt;li&gt;You can [Edevify] things. See the &lt;a href=&quot;#edevify&quot;&gt;later question&lt;/a&gt; for more information about this.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;&lt;hr /&gt;&lt;a name=&quot;msg&quot;&gt;Q: &lt;strong&gt;Why/how are random people sending me private messages that have '([edev])' in front of them?&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+A (short) : They aren't random people, and they aren't sending to just you.&lt;br /&gt;
+A (longer) : When somebody is a member of a [usergroup], they can send a private message to that group, which will then be sent to everybody in that group. In this case, those &quot;random people&quot; are other people in the [edev] usergroup, and they're typing something like this in the chatterbox:&lt;br /&gt;&lt;br /&gt;
+&lt;code&gt;/msg edev Hi everybody, I'm Doctor Nick! Have you seen [EDev FAQ] yet?&lt;/code&gt;&lt;br /&gt;&lt;br /&gt;
+and (assuming the other person is you), everybody in edev would then get a message that looks something like:&lt;br /&gt;&lt;br /&gt;
+&lt;form&gt;&lt;input type=&quot;checkbox&quot;&gt;
+([edev]) &lt;i&gt;[% $$USER{title}; %] says&lt;/i&gt; Hi everybody, I'm Doctor Nick! Have you seen [EDev FAQ] yet?&lt;br /&gt;&lt;br /&gt;
+. If the &lt;code&gt;/msg&lt;/code&gt; is changed to a &lt;code&gt;/msg?&lt;/code&gt; instead (with the question mark), then that message is only sent to people that are currently online (which will make the message start with 'ONO: '). For the most part, there isn't much reason to send this type of message in the edev group. For a little more information about this feature, see [online only /msg].
+&lt;/p&gt;
+
+
+&lt;p&gt;&lt;hr /&gt;&lt;a name=&quot;background&quot;&gt;Q: &lt;strong&gt;What is the background of edev and it's relationship to the development of the site/source?&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+A: The edev usergroup is pretty new, and it arose out of nothing. It seems that [nate] (the creator of the original Everything engine &lt;small&gt;(once found on &lt;span style=&quot;font-family:sans-serif;&quot;&gt;http://everything.slashdot.org/&lt;/span&gt;)&lt;/small&gt; and the main maintainer of the modern &lt;small&gt;(&quot;version 2&quot;)&lt;/small&gt; Everything engine &lt;small&gt;(found on &lt;a href=&quot;http://www.everydevel.com&quot; style=&quot;font-family:sans-serif;&quot; target=&quot;_blank&quot;&gt;http://www.EveryDevel.com/&lt;/a&gt;)&lt;/small&gt;, which this site is based on)
+wanted people to have the chance to poke around and learn how this beast works. They might even be able to fix some things...).
+&lt;!-- i decided these were probably what nate's motives were based on [Edev First Post!]. look ma, now that there's no &amp;qout; there's no more unclosed &lt;small&gt; tag! --fw --&gt;
+
+Some code snippets people have written as part of edev have been incorporated into the E2 code here. &lt;em&gt;Will yours be next?&lt;/em&gt; Note: edev users are &lt;strong&gt;not&lt;/strong&gt; able to add/change the code directly, only an [% linkNode(getNode('gods','usergroup'),'admin',{lastnode_id=&gt;0}); %] can do that.
+&lt;/p&gt;
+
+
+&lt;p&gt;&lt;hr /&gt;&lt;a name=&quot;bugnodetype&quot;&gt;Q: &lt;strong&gt;What is with the &quot;[bug]&quot; nodetype?&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+A: The nodetype bug was the start of a bug-tracking system. However, it was never finished, so the ones that exist were created accidently, and mean nothing.
+&lt;/p&gt;
+
+&lt;p&gt;&lt;hr /&gt;&lt;a name=&quot;edevify&quot;&gt;Q: &lt;strong&gt;What is this &quot;Edevify!&quot; link thingy I see in my Epicenter nodelet?&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+A: This simply puts whatever node you're viewing on the [edev] (usergroup) page. About the only time to use this is when you create a normal writeup that is relevant to edev. Note: this does not work on things like &quot;group&quot; nodes, which includes [e2node]s; to &quot;Edevify&quot; your writeup, you must be viewing your writeup alone (the easiest way is to follow the idea/thing link when viewing your writeup from the e2node).
+&lt;/p&gt;
+
+&lt;p&gt;&lt;hr /&gt;&lt;a name=&quot;ownesite&quot;&gt;Q: &lt;strong&gt;Does everybody have their own &lt;a href=&quot;http://www.everydevel.com/&quot;&gt;Everything site&lt;/a&gt; for hacking on?&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+A from [anotherone]: I really doubt that more than a few users have their own everythings. Installation isn't easy, even assuming you've got a spare server lying around.&lt;br /&gt;
+A continues with [N-Wing]: Real fun comes from the fact that EveryDevel's current version is 1.0, and Everything 2 (this site) has an older core. This means that several (important) things vary. Overall, the new ecore is a bit more flexible and easier to use. For example, instead of having to call a [htmlcode] by doing &lt;code&gt;htmlcode('htmlcode_name','param0,param1,etc')&lt;/code&gt;, the function can be called directly, like a normal Perl function.
+&lt;/p&gt;
+
+&lt;p&gt;&lt;hr /&gt;&lt;a name=&quot;edevite&quot;&gt;Q: &lt;strong&gt;What is an edevite?&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+A: Instead of calling somebody &quot;a member of the [edev] group&quot; or &quot;in the [edev] (user)group&quot;, I just call them an &quot;edevite&quot;.
+&lt;/p&gt;
+
+&lt;p&gt;&lt;hr /&gt;&lt;a name=&quot;edevdoc&quot;&gt;Q: &lt;strong&gt;What is an Edevdoc?&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+A: The [Edevdoc] extends the [document] nodetype, but allows edevites (and only edevites) to create and view it. Eventually, they will also any edevite to edit any other Edevdoc.
+&lt;/p&gt;
+
+&lt;p&gt;&lt;hr /&gt;&lt;a name=&quot;whyjoin&quot;&gt;Q: &lt;strong&gt;Why did others (or, why should I) join the edev group?&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+A from [anotherone]: I'm in the group because I like to take stuff apart, see how it works. [participate in your own manipulation|Understand what's going on]. I've had a few of my ideas implemented, and it was cool knowing that I'd dome something useful.&lt;br /&gt;
+A from [conform]: I'm interested (for the moment) on working on the theme implementation and I've got some ideas for nodelet UI improvements.&lt;br /&gt;
+A from [N-Wing]: I originally (way back in the old days of Everything 1) had fun trying to break/hack E1 (and later E2) (hence my previous E2 goal, &quot;Breaking Everything&quot;). Around the time I decided to start learning some Perl, the edev group was announced, so I was able to learn Perl from working code &lt;strong&gt;and&lt;/strong&gt; find more problems in E2 at the same time. (However, it wasn't until later I realized that E2 isn't the best place to start learning Perl from. &lt;tt&gt;:)&lt;/tt&gt; )
+&lt;/p&gt;
+
+&lt;p&gt;&lt;hr /&gt;&lt;a name=&quot;improvements&quot;&gt;Q: &lt;strong&gt;How do we go about finding tasks here? If we have personal projects for the improvement of E2, what is the appropriate way to get started? Should I verify that what I'm thinking of is useful, or should I make it work and then submit source patches?&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+A: (TODO (eventually...))
+&lt;/p&gt;
+
+&lt;!--
+&lt;p&gt;&lt;hr /&gt;&lt;a name=&quot;&quot;&gt;Q: &lt;strong&gt;&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+A:
+&lt;/p&gt;
+
+&lt;p&gt;&lt;hr /&gt;&lt;a name=&quot;&quot;&gt;Q: &lt;strong&gt;&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+A:
+&lt;/p&gt;
+
+&lt;p&gt;&lt;hr /&gt;&lt;a name=&quot;&quot;&gt;Q: &lt;strong&gt;&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+A:
+&lt;/p&gt;
+
+&lt;p&gt;&lt;hr /&gt;&lt;a name=&quot;&quot;&gt;Q: &lt;strong&gt;&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+A:
+&lt;/p&gt;
+
+&lt;p&gt;&lt;hr /&gt;&lt;a name=&quot;&quot;&gt;Q: &lt;strong&gt;&lt;/strong&gt;&lt;/a&gt;&lt;br /&gt;
+A:
+&lt;/p&gt;
+
+--&gt;
+
+&lt;hr /&gt;&lt;hr /&gt;&lt;hr /&gt;
+
+&lt;p&gt;&lt;big&gt;[N-Wing|I]'m in the middle of writing this! When the initial questions are all finished (probably never at this rate &lt;tt&gt;:-/&lt;/tt&gt; ), [N-Wing|I]'ll /msg the edev group.&lt;/big&gt;&lt;/p&gt;
+
+&lt;p&gt;Thanks to [conform] for many questions ([edev: EDEV FAQ foundations]), and [anotherone] for some answers.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;-- [% linkNode(getNode('N-Wing','user'),0,{lastnode_id=&gt;0}); %]&lt;/em&gt;&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-05-05 05:59:35</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1039833</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1039833</document_id>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>EDev FAQ</title>
+</node>

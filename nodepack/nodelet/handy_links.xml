@@ -1,0 +1,45 @@
+<node>
+  <nltext></nltext>
+  <parent_container>1898369</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2008-02-03 14:24:16</createtime>
+  <lastupdate>0</lastupdate>
+  <hits>8</hits>
+  <node_id>1928501</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>1017738</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1928501</nodelet_id>
+  <nlcode>[%
+
+my $str='';
+
+my $voted = $DB-&gt;sqlSelect(
+	'pollvote_id'
+	, 'e2poll JOIN pollvote ON e2poll_id = pollvote_id'
+	, &quot;is_dailypoll=1 AND voter_user=$$USER{node_id}&quot;
+);
+
+$str.='&lt;ul&gt;&lt;li&gt;';
+$str.='&lt;strong&gt;' unless $voted;
+$str.=linkNodeTitle('Everything User Poll');
+$str.='&lt;/strong&gt;' unless $voted;
+
+$str.='&lt;/li&gt;&lt;li&gt;'.linkNodeTitle('Everything\'s Most Wanted');
+$str.='&lt;/li&gt;&lt;li&gt;'.linkNodeTitle('Usergroup Picks').'&lt;/li&gt;&lt;/ul&gt;';
+
+
+return $str;
+
+%]</nlcode>
+  <title>Handy Links</title>
+</node>

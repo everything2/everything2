@@ -1,0 +1,634 @@
+<node>
+  <doctext>$(function(){
+	// full text search
+
+	var disableOtherChecks = function(setDisable) {
+		var checks = $('#search_form input[type=checkbox]:not(#full_text)');
+		checks.attr('disabled', setDisable);
+	};
+
+	$('#search_form').append(
+		'&lt;span&gt;&lt;label title=&quot;Search for text within writeups&quot;&gt;'+
+		'&lt;input name=&quot;full_text&quot; value=&quot;1&quot; id=&quot;full_text&quot; type=&quot;checkbox&quot;&gt;Full Text&lt;/label&gt;&lt;/span&gt;'
+	).bind('submit', function(){
+		if ( ! $('#full_text:checked').length ) return;
+		disableOtherChecks(true);
+		$('#search_form')
+		.attr('action', '/node/superdoc/E2+Full+Text+Search')
+		.append(
+			'&lt;input type=&quot;hidden&quot; name=&quot;cx&quot; value=&quot;017923811620760923756:pspyfx78im4&quot;&gt;'+
+			'&lt;input type=&quot;hidden&quot; name=&quot;cof&quot; value=&quot;FORID:9&quot;&gt;'+
+			'&lt;input type=&quot;hidden&quot; name=&quot;sa&quot; value=&quot;Search&quot;&gt;'
+		);
+		$('#node_search').attr('name', 'q');
+	});
+	$('#full_text')
+	.bind('change', function(){
+		if ($(this).is(':checked')) {
+			disableOtherChecks(true);
+		} else {
+			disableOtherChecks(false);
+		}
+	});
+
+	// can be useful to know where we really are
+	var link = $('head link[rel=canonical]');
+	e2.pageUrl = (link.length ? link[0].href : 'none');
+
+	// may have cached a version of a page with the wrong domain in the form
+	// make submit go to the proper place, but without query params which might have ops
+	var submitHref = location.href.replace( /\?.*/ , &quot;&quot; );
+	$('#epicenter form, #signin form').attr('action', submitHref);
+	e2.activate();
+});
+
+// turn e2 object into a handy flexible function and extend it
+e2 = $.extend( function(x){return e2.shortFunctions[typeof x].apply(this, arguments);}, e2, {
+
+	// e2.inclusiveSelect(selector): jQuery(selector).
+	// e2.inclusiveSelect(selector, x): select elements in and including x matching
+	// selector in the context of the whole document
+	inclusiveSelect: function(selector, x){
+		if (!x) return $(selector);
+		return $.merge($(x).filter(selector), $('*', x).filter(selector));
+	},
+
+	instructions: [],
+	
+	// e2.add(selector, fn, args): do $(selector).fn(args) on page load and
+	// on elements added by ajax update, with selector applied in document context
+	add: function(selector, fn, args){
+		// guest doesn't get/need jQuery.ui. Otherwise don't hide missing functions.
+		if (!$.fn[fn] &amp;&amp; (e2.guest || e2.ignoreMissingLibraries)) return;
+		if (!$.isArray(args)) args = [args];
+		e2.instructions.push({selector: selector, fn: fn, args: args});
+	},
+	
+	// e2.activate(el): run/bind all e2.instructions for elements in and including
+	// el (default = document) that match their selectors in document context
+	activate: function(el){
+		var hadFocus = e2.getFocus(el);
+		for (var i = 0, n; n = e2.instructions[i]; i++){
+			$.fn[n.fn].apply(e2.inclusiveSelect(n.selector, el), n.args);
+		}
+		if (hadFocus) $('#'+hadFocus).focus();
+	},
+	
+	// define functioning of e2() function for different argument types
+	shortFunctions: {
+		// e2(selector, function): e2.add(selector, 'each', function)
+		// e2(selector, fnName, x): e2.add(selector, fnName, x)
+		// e2(selector, x): e2.inclusiveSelect(selector, x)
+		// e2(selector): jQuery(selector)
+		'string': function(selector, x, y){
+			if (typeof x == 'function') return e2.add.call(this, selector, 'each', x);
+			if (typeof x == 'string') return e2.add.apply(this, arguments);
+			return e2.inclusiveSelect.apply(this, arguments);
+		},
+	
+		// e2(object): activate e2 js functions for single element or all elements in jQuery object
+		object: function(x){
+			if (x.tagName){
+				return e2.activate(this);
+			}else if (x.length){ // jQuery object
+				return x.each(function(){e2.activate(this);});
+			}
+		},
+	
+		// e2(function): provide a couple of useful metafunctions found in Prototype:
+		//	 e2(function).delay( delay, argument1, argument2, ... )
+		//	 e2(function).defer( arguments )
+		'function': function(fn){
+			$.extend(fn, {
+				delay: function(){
+					var context = this, args = $.makeArray(arguments), secs = args.shift();
+					return setTimeout(function(){fn.apply(context, args);}, secs*1000)
+				},
+				defer: function(){
+					var args = $.makeArray(arguments);
+					args.unshift(0.01);
+					return fn.delay.apply(this, args);
+				}
+			});
+			return fn;
+		}
+	},
+	
+	// UTILITY FUNCTIONS
+	
+	getUniqueId: function(){
+		if (!e2.idCounter) e2.idCounter = e2.now();
+		return 'e2-'+(e2.idCounter++).toString();
+	},
+	
+	// wrapper for setInterval, similar to/callable like Prototype's PeriodicalExecuter,
+	// but with automatic expiry function
+	// new e2.periodical( callback, period(seconds), expire after (seconds), callback when expired )
+	// period &lt; 0 to set it up to start later or to stop it and disable restart() without a new period
+	periodical: function(callback, period, expireAfter, expired){
+		var timer, reaper, executing,
+			p = this,
+			lastTime = e2.now();
+		function execute(late){
+			if (executing || late/1000 &gt; period*0.85) return;
+			executing = true;
+			try{
+				callback.call(p);
+			}catch(e){
+			}finally{
+				if (executing != 'sleep') executing = false; // could be told to sleep while executing
+				lastTime = e2.now() - late;
+			}
+		}
+		this.stop = function(){
+			if (timer) clearInterval(timer);
+			if (reaper) clearTimeout(reaper);
+			timer = reaper = false;
+		};
+		this.die = function(){
+			p.stop();
+			if (expired) expired.call(p);
+		};
+		(this.restart = function(newPeriod, newExpireAfter, newExpired){
+			if (timer) p.stop();
+			period = newPeriod || period;
+			expireAfter = newExpireAfter || expireAfter;
+			expired = newExpired || expired;
+			if (period &gt; 0) timer = setInterval(execute, period * 1000);
+			if (timer &amp;&amp; expireAfter) reaper = setTimeout(p.die, expireAfter * 1000);
+		})();
+		this.sleep = function(){
+			executing = 'sleep';
+		};
+		this.wake = function(){
+			if (executing == 'sleep') executing = false;
+			if (!timer || // can't wake the dead
+				e2.now() &lt; lastTime + period * 1000) return p; // can keep old rhythm
+			execute(0);
+			p.restart(); // establish new rhythm
+		};
+	},
+	
+	now: function(){
+		return (new Date()).getTime();
+	},
+	
+	getCookie: function(name){
+		var myCookie = (new RegExp(name+ '=\\s*([^;\\s]*)')).exec(document.cookie) ;
+		return myCookie &amp;&amp; myCookie[1];
+	},
+	
+	setCookie: function(name, value, days){
+		var dateString = '';
+		if (days){
+			var date = new Date();
+			date.setTime(date.getTime()+(days*24*60*60*1000));
+			dateString = &quot;;expires=&quot; + date.toGMTString()
+		}
+		document.cookie = name + &quot;=&quot; + value + &quot;;path=/&quot; + dateString;
+	},
+	
+	deleteCookie: function(name){
+		document.cookie = name + &quot;=;path=/;expires=Thu, 26 Aug 2010 16:00:00 GMT&quot;;
+	},
+
+	// e2.getFocus(el): if the focus is el or in el, return its id. Otherwide false.
+	// if focussed element has no id, give it one.
+	getFocus: function(el){
+		var ae = document.activeElement;
+		if (ae &amp;&amp; ae.tagName.toLowerCase() != 'body' &amp;&amp;
+				( ae.id || (ae.id = e2.getUniqueId()) ) &amp;&amp; e2('#'+ae.id, el).length)
+			return ae.id ;
+		return false ;
+	},
+	
+	getSelectedText: function(){
+		var el=document.activeElement;
+		if (el &amp;&amp; el.selectionEnd)
+			return el.value.slice(el.selectionStart, el.selectionEnd); // textarea/input
+		if(window.getSelection) return window.getSelection().toString(); // not IE
+		if(document.selection) return document.selection.createRange().text; // IE
+		return ''; // ack! Unknown browser error
+	},
+	
+	heightToScrollHeight: function(x, otherHeight) {
+		var init = otherHeight || x.scrollHeight;
+		x.style.height = init.toString() + 'px';
+		var diff = x.scrollHeight - init; // find discrepancy,
+		// and remove it twice because this repeats it:
+		x.style.height = ( x.scrollHeight - 2*diff ).toString() + 'px';
+	},
+	
+	startText: function(field, text){ // for, e.g., message reply links
+		var mbox = $('#'+field)[0];
+		mbox.value = text;
+		// move the cursor to the end of the text box
+		if (mbox.createTextRange) { // IE
+			var r = mbox.createTextRange();
+			r.moveStart('character', mbox.value.length);
+			r.select();
+		} else { // other, in particular webkit
+			mbox.focus();
+			if (mbox.setSelectionRange)
+				mbox.setSelectionRange(mbox.value.length, mbox.value.length);
+		}
+	},
+
+	vanish: function($thing){
+		e2(function(){
+			$thing.fadeTo(e2.fxDuration, 0, function(){
+				$thing.slideUp(e2.fxDuration, function(){
+					$thing.remove();
+				})
+			});
+		}).delay(e2.fxDuration/1000);
+	},
+
+	setLastnode: function(lastnode){
+		var REPLACE_PARAMS = 2;
+		var oldHref = this.href;
+		// deparam does not deal well with no query string, so provide a blank one
+		if (oldHref.indexOf('?') == -1) {
+			oldHref = oldHref.replace( /(#.*|$)/ , &quot;?$1&quot; );
+		}
+		var params = $.deparam.querystring(oldHref);
+		if (lastnode === undefined) {
+			delete params['lastnode_id'];
+		} else {
+			params.lastnode_id = lastnode;
+		}
+		this.href = $.param.querystring(oldHref, params, REPLACE_PARAMS);
+	},
+
+	// confirmop framework
+	confirmop: function(event){
+		if ( !confirm( &quot;Really &quot; + this.title + &quot;?&quot; ) ) {
+			event.preventDefault();
+		}else{
+			if (this.href){
+				var parname = /\bnotanop\b=([^?&amp;]*)/.exec( this.href ) || 'op';
+				if (parname.index){ // notanop
+					parname = parname[1] ;
+					this.href = this.href.replace( /\bnotanop\b=([^?&amp;]*)/ , '');
+					this.href = this.href.replace( /([?&amp;])&amp;|&amp;$/ , &quot;$1&quot; ) ;
+				}
+				this.href = this.href.replace( /\bconfirmop=/ , parname + '=' );
+			}else{
+				this.name = this.form.notanop ? this.form.notanop.value : 'op';
+			}
+		}
+	},
+	
+	// jQuery.append() calls scripts with AJAX and runs them, which doesn't always work (version 1.4.3):
+	// it fails on load for JS QuickTags HTML toolbar and on run for tinyMCE 2.0, for example. So:
+	loadScript: function(x){
+		// x is an url or a bogus script element made with jQuery('...') ('bogus' = fails except in FF)
+		var scr = document.createElement('script');
+		scr.setAttribute('type', 'text/javascript');
+		scr.setAttribute('src', (typeof x == 'string' ? x : x.src));
+		$('head')[0].appendChild(scr);
+	},
+	
+	// load a script and then do something with it: robuster than AJAX
+	// (jQuery.getScript() fails with tinyMCE 2.0, for example)
+	// callback runs when 'success' is true
+	doWithLibrary: function(url, success, callback, ack){
+		if (!window[success]){
+			e2.loadScript(url);
+			var started = e2.now();
+		}
+		wait();
+	
+		function wait(){
+		// can't use the onload event on the inserted script element because IE won't play
+			if (!window[success]){
+				if (e2.now() - started &lt; e2.timeout*1000/2) return setTimeout(wait, 100);
+				if (ack) ack();
+			}
+			callback()
+		}
+	},
+	
+	// 3rd party code (tinyMCE 2 and QuickTags) uses document write. Subvert it...
+	divertWrite: function(place){
+		e2.divertWrite.writeTo = place;
+		dump();
+	
+		// initialise
+		if (typeof e2.divertWrite.buffer != 'string'){
+			e2.divertWrite.buffer = '';
+			document.write = function(y){
+				e2.divertWrite.buffer = e2.divertWrite.buffer + y.toString();
+				dump();
+			};
+		}
+	
+		function dump(){
+			if (!e2.divertWrite.writeTo || !e2.divertWrite.buffer) return;
+			var z = $(e2.divertWrite.buffer);
+			e2.divertWrite.buffer = '';
+			var fn = (/head|body/i.test(e2.divertWrite.writeTo.tagName) ? 'append' : 'before');
+			z.each(function(){
+				// don't let jQuery at the scripts...
+				if (this.tagName.toLowerCase() == 'script' &amp;&amp; this.src) return e2.loadScript(this);
+				$(e2.divertWrite.writeTo)[fn](this);
+			});
+		}
+	},
+	
+	// activate tinyMCE if preferred, otherwise JS QuickTags,
+	// and provide switch to toggle to the other
+	htmlFormattingAids: (function(){
+		var initial = (e2.settings_useTinyMCE ? 'WYSIWYG editor' : 'HTML toolbar');
+		var aids = {
+			active: {},
+
+			'HTML toolbar': {
+				library: '/node/rawdata/HTMLToolbar?displaytype=raw',
+				test: 'edToolbar',
+	
+				stop: function(id){
+					$('#' + 'ed_toolbar_' + id).slideUp(e2.fxDuration);
+				},
+	
+				go: function(id){
+					if (!$('#' + 'ed_toolbar_' + id).length){
+						e2.divertWrite(null); // save it up until finished
+						edToolbar(id);
+						e2.divertWrite($('#'+id)[0]);
+					}
+					$('#' + 'ed_toolbar_' + id).hide().slideDown(e2.fxDuration);
+				}
+			},
+
+			'WYSIWYG editor': {
+				library: '/js/tiny_mce/tiny_mce.js?a=1',
+				test: 'tinyMCE',
+	
+				stop: function(id){ // don't use mceToggleEditor, it loses changes afterwards
+					tinyMCE.execCommand('mceRemoveControl', false, id);
+					e2.setCookie('settings_useTinyMCE', '0');
+				},
+	
+				go: function(id){
+					if (!aids['WYSIWYG editor'].initted){
+						tinymce.dom.Event.domLoaded = true; // Hah!
+						tinyMCE.init($.extend(e2.tinyMCESettings,{
+							mode: 'exact',
+							elements: id
+	    				}));
+	    				aids['WYSIWYG editor'].initted = true;
+			  		}else{
+						tinyMCE.execCommand('mceAddControl', false, id);
+					}
+					e2.setCookie('settings_useTinyMCE', '1');
+				}
+			}
+		};
+
+		function toggle(e){
+			e.preventDefault();
+			var id = this.targetId;
+			var $this = $(this);
+			var active = aids.active[id] || initial;
+			var other = 'WYSIWYG editorHTML toolbar'.replace(active, '');
+	
+			$this.addClass('pending');
+			e2.doWithLibrary(aids[other].library, aids[other].test, doToggle, function(){
+				alert('Ack! Failed to load library for ' + other + '.');});
+	
+			function doToggle(){
+				$this.removeClass('pending');
+				aids[active].stop(id);
+				e2(aids[other].go).defer(id); // drop errors
+				$this.find('span').text('offon'.replace($this.find('span').text(), ''));
+				aids.active[id] = other;
+			}
+		}
+	
+		return function(){
+			if (!this.id) this.id = e2.getUniqueId();
+			var id = this.id;
+			e2.doWithLibrary(aids[initial].library,
+				aids[initial].test,
+				function(){aids[initial].go(id);});
+
+			$('&lt;p&gt;&lt;button type=&quot;button&quot; id=&quot;' + id + '_switch&quot; href=&quot;#&quot;&gt;Turn &lt;span&gt;'+
+				(e2.settings_useTinyMCE ? 'off' : 'on') +
+				'&lt;/span&gt; &lt;abbr title=&quot;What you see is what you get&quot;&gt;WYSIWYG&lt;/abbr&gt; '+
+				'editing.&lt;/button&gt;&lt;/p&gt;')
+			.insertBefore(this)
+			.find('button').click(toggle)
+			[0].targetId = id;
+		}
+	})()
+
+// END e2 = $.extend(function(){..} , e2, { ...
+});
+
+// NOW DO STUFF:
+
+e2('.formattable', e2.htmlFormattingAids);
+
+// message reply links
+e2('.privmsg .action', 'show');
+
+// confirmop
+e2('a.action[href*=confirmop=], form button[name=confirmop], form :submit[name=confirmop]', 'click', e2.confirmop);
+
+// expandable inputs/textareas
+(function(){
+	function textareaEvent(e){
+		e.stopImmediatePropagation(); // i.e. only do this once. or IE may go crazy
+		if (this.replaces){ // i.e. is a replacement for an input element
+			// replace pasted newlines:
+			if (/[\r\n]/.test(this.value)) this.value = this.value.replace(/[\r\n]+/g , ' ');
+			if (e.which == 13 || // don't let return do anything
+				(this.maxlength &amp;&amp; this.value.length &gt;= this.maxlength &amp;&amp; // if at limit, then:
+					( e.which &gt; 47 || e.which == 32 ) &amp;&amp; // stop real character key...
+					( !(e.ctrlKey &amp;&amp; !e.altKey) &amp;&amp; !e.metaKey ) &amp;&amp; // with no unreal modifier...
+					e2.getSelectedText().length == 0) // ...unless it deletes old text
+					){
+				e.preventDefault();
+				// only react to one event per keything, keydown works in all browsers:
+				if (e.which == 13 &amp;&amp; e.type == 'keydown'){
+					if ( this.form.onsubmit &amp;&amp; !this.form.onsubmit() ) return ;
+					$(this.form).submit() ;
+				}
+			}
+		}
+		if (this.maxlength &amp;&amp; this.value.length &gt; this.maxlength) // possible if excess pasted in
+			this.value = this.value.substr(0, this.maxlength);
+		e2.heightToScrollHeight(this);
+	}
+
+	function copyInputStyles(source, destination){
+		var list=[ 'marginTop' , 'marginBottom' , 'marginLeft' , 'marginRight' ,
+		'paddingTop' , 'paddingBottom' , 'paddingLeft' , 'paddingRight' ,
+		'fontFamily' , 'height', 'width']; // haven't found a way to get fontSize right in IE...
+		if (!source[0].currentStyle) list[list.length] = 'fontSize';
+		for (var i=0; list[i]; i++){
+			destination.css(list[i], source.css(list[i]) ); }
+	}
+
+	function expandableTextarea(){
+		this.style.overflow = 'hidden' ;
+		if ( !this.getAttribute('rows') ) this.setAttribute( 'rows' , '2' ) ;
+		$(this).bind('keydown keypress keyup textInput', textareaEvent);
+		$(this).focus(function(){e2.heightToScrollHeight(this);});
+	}
+
+	function expandableInput(){
+		var replacement = document.createElement( 'textarea' ) ;
+		replacement.replaces = true;
+		replacement.innerHTML = this.value ;
+		for ( var atts = this.attributes , i=0 ; atts[i] ; i++ )
+			if ( !this.outerHTML || this.outerHTML.indexOf( atts[i].name + '=' ) &gt; -1 ) // filter for IE8
+				if ( !/size|type/.test( atts[i].name ) )
+					replacement.setAttribute( atts[i].name , atts[i].value ) ;
+		if ( this.getAttribute( 'maxlength' ) ) replacement.maxlength = this.getAttribute( 'maxlength' ) ;
+		replacement.setAttribute('rows', 1) ;
+		replacement.setAttribute('columns', this.getAttribute('size')) ;
+		expandableTextarea.call(replacement);
+		copyInputStyles($(this), $(replacement));
+		replacement.originalHeight = replacement.style.height;
+		replacement.style.verticalAlign = 'top' ;
+		this.parentNode.replaceChild( replacement , this );
+		if (!replacement.form[replacement.name]){ // fix occasional IE7 fail
+			replacement.form[replacement.name]=$('[name='+replacement.name+']',replacement.form)[0];
+		}
+		e2.heightToScrollHeight( replacement ) ;
+	}
+
+	e2('textarea.expandable', expandableTextarea);
+	e2('input.expandable', expandableInput);
+})();
+
+// widgets. After expandables so replaced inputs aren't display:none and so have dimensions to transfer.
+e2('.showwidget', function(){
+	var classtest = /\bwidget\b/ ;
+	for ( var j=0 , family = [ this , this , this ] ,
+		relations = [ 'previousSibling' , 'nextSibling' , 'parentNode' ]; family[2] ; j=(j+1)%3 ){
+		if ( family[j] ) family[j] = family[j][ relations[j] ] ;
+		if ( family[j] &amp;&amp; classtest.test( family[j].className ) ) {
+			this.removeAttribute( 'href' ) ;
+			$(this).click(showhide);
+			var w = this.targetwidget = family[j] ;
+			if ( w.parentNode != w.offsetParent )
+				w.parentNode.style.position = &quot;relative&quot; ;
+			if ( j == 2 || j == 5 ) break ; // it's inside the widget: closes only
+			w.style.marginTop = '0'; // widget has a top margin for the noscript version
+			w.style.display = 'block'; // IE8 needs this explicit
+			w.openedBy = this ;
+			adjust(w);
+			if (!/MSIE \d/.test(navigator.userAgent)) $(window).bind('resize',function(){
+				if (w.style.display == 'none') return;
+				adjust(w); //IE8 puts it a few thousand pixels to the right here
+			});
+			if ( !/\bopen\b/.test( this.className ) ) {
+				// widgets served with display:block but visibility:hidden for positioning in
+				// buggy browsers and so expandable inputs will have width and height (2009):
+				$(w).hide();
+				this.className = this.className + ' closed' ;
+			}
+			$(w).css('visibility', 'visible');
+			break ;
+		}
+	}
+
+	function showhide(){
+		var w = this.targetwidget ;
+		if (typeof(w) == 'undefined') return alert('Sorry, this widget opener has lost its widget.') ;
+		if (w.style.display == 'none') w.openedBy = this ;
+		$(w.openedBy).toggleClass('open').toggleClass('closed');
+		if (!/MSIE \d/.test(navigator.userAgent))
+			$(w).slideToggle(e2.fxDuration);
+		else // slideToggle generally fails on positioned elements in IE8
+			w.style.display = 'blocknone'.replace(w.style.display||'block','');
+		adjust(w);
+		if (w.style.display == 'block') $('textarea', w).focus();
+	}
+
+	function adjust(widget){ // put the widget in the right place
+		widget.style.top = ''+(widget.openedBy.offsetHeight)+'px'; // directly under opener
+		widget.style.left = widget.style.marginLeft = 0;
+		var opener = $(widget.openedBy);
+		widget=$(widget);
+		var adjust = opener.offset().left-widget.offset().left;
+		widget.css('left',adjust); // left-aligned to opener...
+		adjust = $(window).width()-widget.offset().left-widget.outerWidth(true);
+		if (adjust&lt;0) widget.css('margin-left', adjust); // or right-aligned to window if it would overflow
+	}
+});
+
+// browsers don't spell-check read-only form elements,
+// so editors' view of the source of review drafts is not readonly.
+// -&gt; stop edits before they can cause confusion:
+e2('textarea.readonly', function(){
+	$(this).bind('keydown keypress keyup textInput', function(e){
+//		for(i=this.value.length; i&gt;=0; i--){this.setSelectionRange(i, i);} // provoke spell-check in webkit
+		this.originalValue = this.value;
+		if (e.which &gt; 47 || e.which == 32){ // only stop real character keys...
+			e.stopImmediatePropagation();
+			e.preventDefault();
+			this.value = this.originalValue; // but make sure.
+		}
+	});
+});
+
+e2('.wuformaction', 'click', function(){
+	// to avoid duplication of names and other Bad Stuff in category and weblog forms in writeups, we only give
+	// their controls the right attributes when their button is clicked.
+	if (this.form.onsubmit &amp;&amp; !this.form.onsubmit()) return ;
+	this.form.op.value=this.value ;
+	var nodeid = this.name.replace( /[^0-9]+/ , '' ) ;
+	for ( var i = 0 , names = [ &quot;nid&quot; , &quot;cid&quot; , &quot;target&quot; , &quot;source&quot; ] ; names[i] ; i++ )
+		if ( this.form[ names[i] + nodeid ] )
+			this.form[ names[i] + nodeid ].name = names[i] ;
+	$(this.form).submit();
+	this.form.op.value = 'vote';
+});
+
+// Wrapper so we can have a named function to avoid dozens of identical anonymous functions
+(function(){
+
+	var MIDDLE_MOUSE = 2;
+
+	function addLastnode() {
+		e2.setLastnode.call(this, e2.lastnode_id);
+	}
+
+	function addLastnodeMouseup(e) {
+		if (e.which != MIDDLE_MOUSE) return;
+		addLastnode.call(this);
+	}
+
+	e2('body.writeuppage #mainbody .item .content a'
+		+ ', body.writeuppage #softlinks a'
+		+ ', body#findings #mainbody li a'
+		, function(index, el) {
+			// Don't put a lastnode_id on external links
+			if (!$(el).hasClass('externalLink')) {
+				e2.setLastnode.call(el);
+				$(el).click(addLastnode).mouseup(addLastnodeMouseup);
+			}
+		}
+	);
+
+})();
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-03-29 17:56:13</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>40</hits>
+  <node_id>1874924</node_id>
+  <edittime>2011-10-31 08:22:07</edittime>
+  <type_nodetype>1786405</type_nodetype>
+  <document_id>1874924</document_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>default javascript</title>
+</node>

@@ -1,0 +1,169 @@
+<node>
+  <doctext>[%
+parseLinks '&lt;p&gt;This page is so obsolete, even its [Scratch Pads[superdocnolinks]|replacement] is
+obsolete. &lt;strong&gt;[Drafts[superdoc]]&lt;/strong&gt; is the place to go now.
+&lt;/p&gt;'
+%]
+&lt;hr&gt;
+
+[%
+
+if ($$VARS{settings_useTinyMCE}) {
+return '&lt;script type=&quot;text/javascript&quot;&gt;
+tinyMCE.init({
+theme: &quot;advanced&quot;,
+theme_advanced_disable : &quot;styleselect,image,anchor,link,unlink&quot;,
+mode: &quot;exact&quot;,
+elements: &quot;skratch&quot;,
+invalid_elements: &quot;a,img,table,tr,td,th,div,span&quot;,
+extended_valid_elements: &quot;big,small&quot;
+});
+&lt;/script&gt;';}
+
+
+%]
+&lt;p&gt;This page is now essentially obsolete, with the new &lt;b&gt;[% linkNode(1797151,'Scratch Pads',{lastnode_id=&gt;0}); %]&lt;/b&gt; including and expanding on what it does, with multiple pads available to each user and several other new functions. You can access the contents of this pad in the new system, under the heading  [% linkNode(1797151,'Default Scratch Pad',{lastnode_id=&gt;0, scratch_id=&gt;$$USER{user_id}}); %].&lt;/p&gt;
+&lt;small&gt;
+
+&lt;p&gt;This is a private area (unless you say otherwise) for
+
+[% 
+
+
+###
+###   THIS IS NOT YOUR SCRATCHPAD.  THIS IS THE CODE THAT RUNS THE SCRATCHPADS.
+###   Please don't edit this, mistakenly thinking you're changing the contents
+###   of your scratchpad..   --[dann]
+###
+
+
+linkNode($USER,'you',{lastnode_id=&gt;0});
+
+%] to preview your writeups before submitting them. The HTML and text is displayed just like a regular writeup, except privately, viewable only by you and yours. You &lt;strong&gt;can&lt;/strong&gt; choose to have other people be able to view it, so that you can get comments on a writeup or what not, but this is not the default.  Use it to test or preview HTML (all the tags work just the same), or just to keep random notes to yourself.&lt;/p&gt;
+
+[{openform2:skratchform}]
+
+&lt;p&gt;
+
+[%
+
+return if getId($USER) == $HTMLVARS{guest_user};
+
+my $str = htmlcode('varcheckboxinverse','skratchShare,Private'); #have this first, so display says correct thing
+
+($$VARS{skratchShare} ? 'This is currently viewable to logged in noders. To make it private again, ' : 'This is currently private. If you wish to allow logged in noders to view it, un') .'check the following checkbox, then press the Update! button. For more information, see ' . linkNodeTitle('E2 Options: Sharing your scratch pad') . '.&lt;br /&gt;' . $str . '&lt;br /&gt;&lt;br /&gt;';
+
+%]
+&lt;/small&gt;
+[{varcheckboxinverse:noScratchHints,Show writeup hints here}]&lt;br /&gt;&lt;br /&gt;
+
+[%
+
+return if getId($USER) == $HTMLVARS{guest_user};
+
+my $skratch = $DB-&gt;sqlSelect('scratch_text', 'scratch', &quot;scratch_id = $$USER{node_id}&quot;);
+
+
+
+unless($skratch) {
+
+	$skratch = '';
+
+	$DB-&gt;sqlInsert('scratch', {'scratch_id'=&gt;$$USER{user_id}, 'scratch_text' =&gt; $skratch}) unless ($DB-&gt;sqlSelect('scratch_id', 'scratch', &quot;scratch_id = $$USER{node_id}&quot;));
+
+}
+
+
+
+my $input = '';
+
+$input = $query-&gt;param('skratch');
+
+my $TAGS = getVars(getNode('approved html tags','setting'));
+
+#MathML test start
+#admins and Gruime, who is helping me (N-Wing) with this can view MathML on their own scratchpads
+my $testOutOtherTags = 0;
+my $MATHTAGS = undef;
+if( (exists $HTMLVARS{group_gods}{$$USER{node_id}}) || ($$USER{node_id}eq '1413262') ) {
+	$testOutOtherTags = 1;
+	$MATHTAGS = getVars(getNode('approved MathML tags','setting'));
+	$HTMLVARS{'approvedTagsListRef'} = [$TAGS, $MATHTAGS];
+	htmlcode('mergedApprovedTags','');
+	my $combined = $HTMLVARS{'approvedTags'};
+	if(ref($combined) eq 'HASH') {
+		#just in case the htmlcode messes up, we don't want to
+		#prevent admins from using ANY tags
+		$TAGS = $combined;
+	}
+}
+#MathML test end
+
+
+#$input = htmlScreen($input, $TAGS);
+
+my $opt = $query-&gt;param('flavor') || 0;
+
+if($opt) {
+	if($opt eq 'append') {
+		$input = $skratch . $input;
+	} elsif($opt eq 'prepend') {
+		$input .= $skratch;
+	}
+}
+$skratch = $input if($query-&gt;param('skratchsubmit'));
+
+my $str = '';
+
+unless( $VARS-&gt;{noScratchHints} ) {
+	$HTMLVARS{writeuphints_text} = $skratch;
+	my $hintText = htmlcode('writeuphints',1);
+	$str .= '&lt;p&gt;'.$hintText.'&lt;/p&gt;' if (defined $hintText) &amp;&amp; length($hintText);
+}
+
+#MathML test start
+if($testOutOtherTags) {
+	$str .= '&lt;p&gt;&lt;big&gt;&lt;strong&gt;Note&lt;/strong&gt;: Since you are an admin, MathML is also enabled for you for testing, but only on your own scratch pad. Viewing another scratch pad will act as normal - MathML tags will be stripped out.&lt;/big&gt;&lt;br /&gt;Added tags: ';
+	my @l;
+	foreach(sort(keys(%$MATHTAGS))) {
+		if($MATHTAGS-&gt;{$_} eq '1') {
+			push(@l, $_);
+		} else {
+			push(@l, $_.' ('.$MATHTAGS-&gt;{$_}.')');
+		}
+	}
+	$str .= join(', ', @l) . ' .&lt;/p&gt;';
+}
+#MathML test end
+
+
+
+$DB-&gt;sqlUpdate('scratch', {'scratch_text' =&gt; $skratch}, &quot;scratch_id = $$USER{node_id}&quot;) if $query-&gt;param('skratchsubmit');
+
+
+
+$str .= (($skratch)?('&lt;table border=&quot;1&quot; cellpadding=&quot;5&quot; cellspacing=&quot;0&quot; id=&quot;scratchpadtable&quot;&gt;&lt;tr&gt;&lt;td&gt;' . parseLinks(htmlScreen($skratch, $TAGS),$NODE) . '&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;br&gt;&lt;br&gt;' .'&lt;small&gt;(' . length($skratch) . ' characters total)&lt;/small&gt;'):('&lt;em&gt;blank&lt;/em&gt;'));
+
+
+
+$str.='&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;p align=&quot;right&quot;&gt;'.linkNode(getNode(&quot;E2 Printable Scratch Pad&quot;, &quot;superdocnolinks&quot;), &quot;printable&quot;, {displaytype =&gt; &quot;printable&quot;}).&quot;&lt;/p&gt;&quot;;
+
+return $str.'&lt;textarea name=&quot;skratch&quot; '.htmlcode('customtextarea','1').' wrap=&quot;virtual&quot; &gt;'.encodeHTML($skratch).'&lt;/textarea&gt;&lt;br&gt;&lt;input type=&quot;hidden&quot; name=&quot;skratchsubmit&quot; value=&quot;1&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;sexisgood&quot; value=&quot;1&quot;&gt;&lt;input type=&quot;submit&quot; value=&quot;Update!&quot;&gt;&lt;/form&gt;'.htmlcode('formatButton','skratch');
+
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-05-31 01:42:40</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>7</hits>
+  <node_id>1065273</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1065266</type_nodetype>
+  <document_id>1065273</document_id>
+  <author_user>220</author_user>
+  <package>0</package>
+  <title>E2 Scratch Pad</title>
+</node>

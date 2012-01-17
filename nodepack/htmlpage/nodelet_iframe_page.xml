@@ -1,0 +1,28 @@
+<node>
+  <parent_container>1225502</parent_container>
+  <pagetype_nodetype>9</pagetype_nodetype>
+  <core>0</core>
+  <page>&lt;p&gt;&lt;table [%
+$$THEME{nodeletMCTableAttr} ? $$THEME{nodeletMCTableAttr} : 'cellpadding=&quot;1&quot; cellspacing=&quot;1&quot;';	#from nodelet meta-container
+%] width=&quot;100%&quot;&gt;&lt;tr&gt;&lt;td&gt;
+[%
+#fix displaytype from testembed to a better name after done testing
+insertNodelet($NODE);
+%]
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/p&gt;</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-12-30 09:03:30</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1225504</htmlpage_id>
+  <hits>0</hits>
+  <node_id>1225504</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>testembed</displaytype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>nodelet iframe page</title>
+  <mimetype></mimetype>
+</node>

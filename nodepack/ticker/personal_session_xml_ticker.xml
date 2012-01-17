@@ -1,0 +1,93 @@
+<node>
+  <doctext>&lt;?xml version=&quot;1.0&quot;?&gt; 
+&lt;e2session&gt;
+[%
+  use POSIX;
+  return &quot;&lt;currentuser user_id=\&quot;$$USER{user_id}\&quot;&gt;&quot;.encodeHTML($$USER{title}).&quot;&lt;/currentuser&gt;\n&quot;.
+         &quot;&lt;servertime time=\&quot;&quot;.scalar(time).&quot;\&quot;&gt;&quot;.asctime(localtime).&quot;&lt;/servertime&gt;&quot;;
+%]
+[%
+  return &quot;&quot; if ($$USER{user_id} == $HTMLVARS{guest_user});
+
+  my $str;
+  my $catch = htmlcode('borgcheck');
+
+  $str.=&quot;&lt;borgstatus value=\&quot;&quot;.(($$VARS{borged})?(&quot;1&quot;):(&quot;0&quot;)).&quot;\&quot;&gt;&quot;.(($$VARS{borged})?(&quot;borged&quot;):(&quot;unborged&quot;)).&quot;&lt;/borgstatus&gt;&quot;;
+
+  my $rm = getNodeById($$USER{in_room});
+  $str.=&quot;&lt;in_room&gt;&quot;.(($$USER{in_room} == 0)?(&quot;&quot;):(&quot;&lt;e2link node_id=\&quot;$$rm{node_id}\&quot;&gt;$$rm{title}&lt;/e2link&gt;&quot;)).&quot;&lt;/in_room&gt;&quot;;
+
+  $str.=&quot;&lt;personalnodes&gt;&quot;;
+   foreach(split('&lt;br&gt;',$$VARS{personal_nodelet}))
+   {
+       next unless $_;
+       $str.=&quot;&lt;pn&gt;&quot;.encodeHTML($_).&quot;&lt;/pn&gt;&quot;
+   }
+  $str.=&quot;&lt;/personalnodes&gt;&quot;;
+  $str.=htmlcode(&quot;shownewexp&quot;, &quot;TRUE,xml&quot;);
+
+
+#####Stolen from general container
+
+$DB-&gt;sqlInsert(&quot;iplog&quot;, {iplog_user =&gt; $$USER{user_id}, iplog_ipaddy =&gt;$ENV{REMOTE_ADDR}}) unless ($$VARS{ipaddy} eq $ENV{REMOTE_ADDR} || $$USER{user_id} == $HTMLVARS{'guest_user'});
+ $$VARS{ipaddy} = $ENV{REMOTE_ADDR};
+ #$$VARS{votetime} = &quot;&quot; if not $$VARS{votetest1};
+ my ($time) = split &quot; &quot;,$$USER{lasttime};
+
+ if ($$USER{node_id} != $HTMLVARS{guest_user} 
+  and (not exists $$VARS{votetime} or $$VARS{votetime} ne $time)) {
+   
+   use Everything::Experience;
+   my $VOTES = getVars(getNode('level votes', 'setting'));
+   my $COOLS = getVars(getNode('level cools', 'setting'));
+
+   my $lvl = getLevel $USER;
+   if (exists $$VOTES{$lvl} and $$VOTES{$lvl} =~ /^\d+$/) {
+     #$$VARS{votetest1} = &quot;hay&quot;;
+     $$USER{votesleft} = $$VOTES{$lvl};
+   }
+   #$$USER{votesleft} = $$VOTES{$lvl};
+   if (exists $$COOLS{$lvl} and $$COOLS{$lvl} =~ /^\d+$/) {
+     #$$VARS{votetest2} = &quot;nay&quot;;
+     $$VARS{cools} = $$COOLS{$lvl};
+   }
+   $$VARS{votesrefreshed} ||= 0;
+   $$VARS{votesrefreshed}++;
+   $$VARS{votetime} = $time;
+ }
+
+
+#####
+
+  $str.=&quot;&lt;cools&gt;&quot;.(($$VARS{cools})?($$VARS{cools}):(&quot;0&quot;)).&quot;&lt;/cools&gt;&quot;;
+  $str.=&quot;&lt;votesleft&gt;&quot;.$$USER{votesleft}.&quot;&lt;/votesleft&gt;&quot;;
+  $str.=&quot;&lt;karma&gt;&quot;.$$USER{karma}.&quot;&lt;/karma&gt;&quot;;
+  $str.=&quot;&lt;experience&gt;&quot;.$$USER{experience}.&quot;&lt;/experience&gt;&quot;;
+  $str.=&quot;&lt;numwriteups&gt;&quot;.(($$VARS{numwriteups})?($$VARS{numwriteups}):(&quot;0&quot;)).&quot;&lt;/numwriteups&gt;&quot;;
+
+
+my $userlock = $DB-&gt;sqlSelectHashref('*', 'nodelock', &quot;nodelock_node=$$USER{user_id}&quot;);
+$str.=&quot;&lt;forbiddance&gt;&quot;;
+$str.=encodeHTML($$userlock{nodelock_reason})if ($userlock);
+$str.=&quot;&lt;/forbiddance&gt;&quot;;
+
+
+  return $str;
+
+%]
+&lt;/e2session&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-03-02 23:45:58</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>1262798</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1252389</type_nodetype>
+  <document_id>1262798</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>Personal Session XML Ticker</title>
+</node>

@@ -1,0 +1,111 @@
+<node>
+  <doctext>[%
+ # Open the form, specifying the 'open_inplace' class to the form
+ # element as a hint to the javascript.
+ $query-&gt;start_form(-method =&gt; 'POST',
+                    -action =&gt; urlGenNoParams($NODE,1),
+                    -name =&gt; 'chatform',
+                    -id =&gt; 'chatform',
+                    -class =&gt; 'open_inplace') .
+ $query-&gt;hidden('displaytype') .
+ $query-&gt;hidden('node_id', getId $NODE);
+ %]
+
+&lt;div id='chatterbox_chatter'&gt;
+[{showchatter}]
+&lt;/div&gt;
+
+&lt;a name='chatbox'&gt;&lt;/a&gt;
+[%
+ return if getId($USER) == $HTMLVARS{guest_user};
+ my $str;
+ $str = '&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;message&quot; /&gt;&lt;br /&gt;'.&quot;\n\t\t&quot;;
+
+ $query-&gt;param('message','');
+
+ #borged or allow talk
+ $str .= htmlcode('borgcheck');
+ $str .= ($$VARS{borged} ? ('&lt;small&gt;You\'re borged, so you can\'t talk right'
+                            . ' now.&lt;/small&gt;&lt;br&gt;' 
+                            . $query-&gt;submit('message_send', 'erase'))
+          : ( &quot;&lt;input type='text' id='message' name='message'&quot;
+              .&quot; class='expandable' size='12' maxlength='512'&gt;&quot;
+              . &quot;\n\t\t&quot;
+              .  $query-&gt;submit(-name=&gt;'message_send',
+                                id=&gt;'message_send',
+                                value=&gt;'talk').
+              &quot;\n\t\t&quot;));
+
+ if (isSuspended($USER,&quot;chat&quot;)){
+   my $canMsg = ($$VARS{borged}
+                 ? &quot;chatting.&quot;
+                 : &quot;public chat, but you can /msg other users.&quot;);
+   $str .= &quot;&lt;p&gt;&lt;small&gt;You are currently suspended from $canMsg&lt;/small&gt;&lt;/p&gt;\n&quot;
+ }
+
+ $str.=$query-&gt;end_form;
+
+
+ #newbie help
+ #$str .= htmlcode('chatterinfo','help');
+ use Everything::Experience;
+ $str .= &quot;\n\t\t&quot;.'&lt;div align=&quot;center&quot;&gt;&lt;small&gt;'.linkNodeTitle('Chatterbox|How does this work?').&quot; | &quot;.linkNodeTitle('Chatterlight').&quot;&lt;/small&gt;&lt;/div&gt;\n&quot; if getLevel($USER)&lt;2;
+
+ #Jay's topic stuff
+
+ my $topicsetting;
+ my $topic = '';
+
+ unless($$VARS{hideTopic} ) {
+   $topicsetting = getVars(getNode('Room Topics', 'setting'));
+
+   if(exists($$topicsetting{$$USER{in_room}})) {
+     $topic = $$topicsetting{$$USER{in_room}};
+
+     utf8::decode($topic);
+
+     #new pseudo-exec thingy
+     #comment out next 2 lines to restore original way (but also get it in [Other Users] (nodelet))
+     $HTMLVARS{pseudoExec}=$topic;
+     $topic = htmlcode('pseudoExec','');
+
+     $topic = &quot;\n\t\t&quot;.'&lt;small&gt;'.parseLinks($topic).'&lt;/small&gt;'; #slighly different
+   }
+
+ }
+
+ $str.$topic;
+%]
+&lt;div class=&quot;nodeletfoot&quot;&gt;
+[%
+ return unless ((exists $HTMLVARS{'group_gods'}{$$USER{node_id}})
+                || (exists $HTMLVARS{'group_e2contact'}{$$USER{node_id}})
+                || (exists $HTMLVARS{'group_chanops'}{$$USER{node_id}}));
+ return linkNode($NODE, 'silence',
+                 {'confirmop' =&gt; 'flushcbox',
+                  -class=&gt;&quot;action ajax chatterbox:updateNodelet:Chatterbox&quot;}).'&lt;br&gt;';
+%]
+[%
+ return unless $USER-&gt;{in_room};
+ return linkNodeTitle('go outside[superdocnolinks]').'&lt;br&gt;';
+%]
+[%
+ delete $HTMLVARS{chatterboxsettingswidgetlink};
+%]
+&lt;/div&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-10-31 15:05:46</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1992738</node_id>
+  <edittime>2011-10-31 11:10:39</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1992738</document_id>
+  <author_user>5603</author_user>
+  <package>0</package>
+  <title>mobile chatterbox</title>
+</node>

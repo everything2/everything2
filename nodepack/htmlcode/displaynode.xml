@@ -1,0 +1,39 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>33</node_id>
+  <htmlcode_id>33</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($limit) = @_;
+
+$limit ||= 90000;
+my $str = '';
+my @noShow = ('table', 'type_nodetype', 'passwd');
+
+foreach my $key (keys %$NODE) {
+  unless (grep /^$key$/, @noShow) {
+    $str .= &quot;&lt;li&gt;&lt;B&gt;$key: &lt;/B&gt;&quot;;
+    
+    if ($key &amp;&amp; $key =~ /\_/ &amp;&amp; !($key =~ /\_id/))
+    {
+       $str .= linkNode $$NODE{$key}, &quot;&quot; if($$NODE{$key});
+       $str .= &quot;none&quot; unless($$NODE{$key});
+    }			
+    elsif ($$NODE{$key} and ref $$NODE{$key} eq &quot;HASH&quot;) {
+      $str .= linkNode $$NODE{$key}, &quot;&quot;, {lastnode =&gt; getId ($NODE)};
+    } else {$str .= $$NODE{$key} if (length ($$NODE{$key}) &lt; $limit);}	
+  $str .= &quot;&lt;BR&gt;\n&quot;;
+  }
+}
+
+$str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>displayNODE</title>
+</node>

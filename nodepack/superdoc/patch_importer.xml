@@ -1,0 +1,384 @@
+<node>
+  <doctext>[%
+my $str = &quot;&quot;;
+
+use XML::Simple;
+use LWP::Simple;
+use Digest::MD5 qw(md5_hex);
+
+my ($sourceDomain, $sourceName) = $HTMLVARS{isDevServer}
+	? ('everything2.com', 'the production server')
+	: ('dev1.everything2.com', 'the development server');
+
+my $xml = get( &quot;http://$sourceDomain/node/ticker/patch+exporter&quot;) ;
+
+my $xmls = XML::Simple-&gt;new(
+      ForceArray =&gt; 1,
+      ForceContent =&gt; 1,
+);
+
+my $patchsetref;
+
+eval {  $patchsetref = $xmls -&gt; XMLin($xml);  };
+
+if ($@) {
+   return &quot;&lt;h3&gt;Failed to parse XML!&lt;/h3&gt;&lt;pre&gt;$@&lt;/pre&gt;&quot;;
+}
+
+my $patch_id = $query -&gt; param(&quot;patch_id&quot;);
+
+my $patch_action = $query -&gt; param(&quot;patch_action&quot;);
+
+#These are the variables that the [imported patches] XML
+#ticker will serve to the other server.
+my $imported_patches_node = getNode(&quot;imported patch ids&quot;,&quot;setting&quot;);
+my $imported_patches = getVars($imported_patches_node);
+
+my (%patch,$for_node, $patchCodeHash);
+
+my $patchfound;
+if($patch_id){
+  #First find the patch...
+  foreach my $patchref (@{$patchsetref -&gt; {patch}} ) {
+    if ($patchref -&gt; {patch_id} == $patch_id){
+      $for_node = getNode($patchref -&gt; {for_node_title},
+                          $patchref -&gt; {for_node_nodetype});
+      %patch = %$patchref;
+      $patchfound = 1;
+
+      #Don't ask me why the newlines aren't the same, but this
+      #normalises them
+      $patch{code}[0]{content} =~ s/\n/\r\n/gs;
+      $patchCodeHash = md5_hex($patch{code}[0]{content});
+      last;
+    }
+  }
+
+  $str .= &quot;&lt;p&gt;No importable patch with id $patch_id!&lt;/p&gt;&quot; unless $patchfound;
+}
+
+#These functions are defined below. The hash will works as a switch
+#statement thing (perldoc -q switch).
+my %actions = (&quot;apply&quot; =&gt; \&amp;applyPatch,
+               &quot;import&quot; =&gt; \&amp;importPatch,
+               &quot;review&quot; =&gt; \&amp;reviewPatch,
+               );
+
+#The $str, %patch, $imported_patches, and $for_node variables are
+#&quot;global&quot; to these functions
+if($actions{$patch_action}&amp;&amp;$patchfound){
+  $actions{$patch_action} -&gt; ();
+}
+else{ #The default case
+  listPatches();
+}
+
+setVars($imported_patches_node,$imported_patches);
+
+return $str;
+
+
+##########################################################
+#
+#          Define subs below
+#
+##########################################################
+
+
+####################################
+#Import and apply a patch
+sub applyPatch{
+  unless($query -&gt; param('patch_code_hash') eq $patchCodeHash){
+  	$str .= &quot;&lt;p&gt;Code has been changed on $sourceName&lt;/p&gt;&quot;;
+  	reviewPatch();
+  }elsif(isGod($USER)){
+    if($for_node){
+
+      #First import the patch, but don't list the rest of the patches yet
+      my $imported_patch = importPatch(1);
+
+      #Now swap the code fields.
+      ($imported_patch -&gt; {code},
+       $for_node -&gt; { $imported_patch -&gt; {field} })
+        =
+          ($for_node -&gt; { $imported_patch -&gt; {field} },
+           $imported_patch -&gt; {code});
+
+      my $import_status_id = getId(getNode(&quot;imported-implemented&quot;,&quot;status&quot;));
+      $imported_patch -&gt; {cur_status} = $import_status_id;
+
+      updateNode($imported_patch, -1);
+      updateNode($for_node, -1);
+      $str .= &quot;&lt;p&gt;&lt;em&gt;Patch for &quot;.linkNode($for_node)
+             .&quot; applied.&lt;/em&gt;&lt;/p&gt;&quot;;
+
+    }
+    else{
+      #Nothing else to be done for this case, just import the patch.
+      importPatch(1);
+    }
+  }
+  else{
+    $str .= &quot;&lt;p&gt;Only [gods[usergroup]|admins] and &quot;
+           .&quot;[%%[usergroup]|splats] can apply patches from the dev &quot;
+           .&quot;server.&quot;;
+  }
+
+
+  listPatches();
+};
+
+
+########################################################################
+#Create a patch node here, but don't apply the patch
+sub importPatch{
+  my ($nolistpatches) = @_;
+
+  unless($query -&gt; param('patch_code_hash') eq $patchCodeHash){
+  	$str .= &quot;&lt;p&gt;Code has been changed on $sourceName&lt;/p&gt;&quot;;
+  	reviewPatch();
+  }elsif(isGod($USER)){
+
+    #If the patchable target node exists, create a patch for it
+    if ($for_node) {
+
+      #First we put all the patch information in the newly created patch node
+      my $patch_title = $patch{for_node_title}.&quot; (patch)&quot;;
+
+      my $author_id = getId(getNode($patch{author}, &quot;user&quot;));
+      my $import_status_id = getId(getNode(&quot;imported-pending&quot;,&quot;status&quot;));
+
+      my %newpatch;
+
+      $newpatch{author_user} = $author_id;
+      $newpatch{cur_status} = $import_status_id;
+
+      $newpatch{code} = $patch{code}[0]{content};
+      $newpatch{field} = $patch{field};
+      $newpatch{purpose} = $patch{purpose};
+      $newpatch{instructions} = $patch{instructions};
+      $newpatch{for_node} = $for_node -&gt; {node_id};
+      $newpatch{assigned_to} = $USER -&gt; {user_id};
+
+      #Have to set this so that [patch maint create] doesn't nuke it
+      $query -&gt; param(&quot;patch_field&quot;,$patch{field});
+
+      #now we try to create a new patch node here...
+      my $node_id = insertNode($patch_title, &quot;patch&quot;,
+                               $USER, \%newpatch);
+
+      unless($node_id){
+        $str .= &quot;&lt;p&gt;Huh, something's wrong. Can't import the &quot;
+               .&quot;patch!&lt;/p&gt;\n&quot;;
+        return;
+      }
+
+      $$imported_patches{$patch{patch_id}} = 1;
+
+      $str .= &quot;&lt;p&gt;&lt;em&gt;Patch for &quot;.linkNode($for_node).&quot; &quot;
+             .&quot;imported.&lt;/em&gt;&lt;/em&gt;&lt;/p&gt;\n&quot;;
+
+      listPatches() unless $nolistpatches;
+      return getNodeById($node_id);
+    }
+
+    #Else, target patchable node doesn't exist. Create it and use the
+    #patch data for its creation
+    else{
+      my $nodetype = getType($patch{for_node_nodetype});
+
+      my $node_id = insertNode($patch{for_node_title},
+                               $nodetype, $USER);
+      unless($node_id){
+        $str .= &quot;&lt;p&gt;Huh, something's &lt;strong&gt;wrong&lt;/strong&gt;. Can't &quot;
+               .&quot;create the node for &quot;
+               .&quot;which this patch was meant!&lt;/p&gt;\n&quot;
+      }
+
+      my $imported_node = getNodeById($node_id);
+      my $author_id= getId(getNode($patch{author},&quot;user&quot;));
+      $imported_node -&gt; {author_user} = $author_id;
+      $imported_node -&gt; {$patch{field}} = $patch{code}[0]{content};
+
+      updateNode($imported_node, -1);
+
+      $str .= &quot;&lt;p&gt;&lt;em&gt;Node creation patch for &quot;
+             .linkNode($imported_node).&quot; &quot;
+             .&quot;imported.&lt;/em&gt;&lt;/em&gt;&lt;/p&gt;\n&quot;;
+
+      $$imported_patches{$patch{patch_id}} = 1;
+      listPatches() unless $nolistpatches;
+    }
+  }
+
+  else{
+    $str .= &quot;&lt;p&gt;Only [gods[usergroup]|admins] and &quot;
+           .&quot;[%%[usergroup]|splats] can import patches from the dev &quot;
+           .&quot;server.&quot;;
+    listPatches() unless $nolistpatches;
+  }
+};
+
+
+######################################################################
+#Review the patch, allow importing and/or applying it.
+sub reviewPatch{
+
+  $str .= &quot;&lt;p&gt;&quot;.linkNode($NODE,&quot;Back to patch list&quot;)
+         .&quot;&lt;/p&gt;\n&quot;;
+
+  #Allow importing and applying the patch
+  if(isGod($USER)){
+  	$str .= htmlcode('openform')
+  		.$query -&gt; hidden(-name=&gt;'patch_code_hash', value=&gt;$patchCodeHash, force=&gt;1)
+		.$query -&gt; hidden('patch_id', $patch{patch_id});
+    $str .= '&lt;p align=&quot;right&quot;&gt;
+		&lt;button type=&quot;submit&quot; name=&quot;patch_action&quot; value=&quot;import&quot;&gt;Import this patch&lt;/button&gt;
+		&lt;br&gt;
+		&lt;button type=&quot;submit&quot; name=&quot;patch_action&quot; value=&quot;apply&quot;&gt;Import and apply this patch&lt;/button&gt;
+		&lt;/p&gt;
+		&lt;/form&gt;';
+  }
+
+  my $author = getNode($patch{author},&quot;user&quot;);
+
+  $str .= &quot;&lt;p&gt;&quot;.linkNode($author).&quot; has submitted a patch for &quot;
+          .linkNode($for_node)
+          .&quot;'s &lt;tt&gt;&quot;
+          .encodeHTML($patch{field})
+          .&quot;&lt;/tt&gt; field.&lt;/p&gt;\n&quot;
+          ;
+
+  $str .= encodeHTML(&quot;Its stated purpose is \&quot;$patch{purpose}\&quot;.&quot;);
+
+  if($patch{instructions}){
+    $str .= &quot;&lt;p&gt;Additional instructions read: \&quot;&quot;
+        . encodeHTML($patch{instructions})
+        . &quot;\&quot;.&lt;/p&gt;\n&quot;
+        ;
+  }
+	if (isGod($USER) or Everything::isApproved($USER, getNode('edev','usergroup'))){
+	  my $oldcode = $for_node -&gt; {$patch{field}};
+	  my $newcode = $patch{code}[0]{content};
+
+	  $str .= qq'&lt;p align=&quot;right&quot;&gt;&lt;strong&gt;NB:&lt;/strong&gt;This patch does not apply cleanly
+	  (i.e. it was based on different code on $sourceName).&lt;/p&gt;'
+	  	unless !$for_node or md5_hex($oldcode) eq $patch{target_hash};
+
+	  my $shortdiff = showPartialDiff($oldcode, $newcode);
+	  my $longdiff = showCompleteDiff($oldcode, $newcode);
+
+	  #Since this is a superdoc, these things get parsed, escape them.
+	  $shortdiff =~ s/\[/\&amp;#91;/gs;
+	  $longdiff  =~ s/\[/\&amp;#91;/gs;
+	  $shortdiff =~ s/\]/\&amp;#93;/gs;
+	  $longdiff  =~ s/\]/\&amp;#93;/gs;
+	
+	  $str .= &quot;&lt;p&gt;And now, the short diff:&lt;/p&gt;\n&quot;;
+	  $str .= &quot;&lt;pre&gt;$shortdiff&lt;/pre&gt;&quot;;
+	  $str .= &quot;&lt;p&gt;Long diff now follows:&lt;/p&gt;\n&quot;;
+	  $str .= &quot;&lt;pre&gt;$longdiff&lt;/pre&gt;&quot;;
+ }
+};
+
+
+#######################################################################
+#Show all possible patches to import
+sub listPatches{
+
+  if ($patchsetref &amp;&amp; $patchsetref-&gt;{patch} &amp;&amp; scalar @{$patchsetref -&gt; {patch}} ) {
+    $str .= &quot;&lt;p&gt;The following patches are available from $sourceName:&lt;/p&gt;\n&quot;;
+  }
+  else {
+    $str .= &quot;&lt;p&gt;No patches pending on $sourceName.&lt;/p&gt;\n&quot;;
+    return;
+  }
+
+  $str .= &quot;&lt;table&gt;\n&quot;;
+  $str .= &quot;\t&lt;tr&gt; &lt;th&gt;Patchee&lt;/th&gt; &lt;th&gt;Patcher&lt;/th&gt;&quot;
+          .&quot;&lt;th&gt;Purpose&lt;/th&gt; &lt;th&gt; Additional Instructions &lt;/th&gt; &quot;
+          .&quot;&lt;th&gt;Applies cleanly&lt;/th&gt;&lt;th colspan=\&quot;2\&quot;&gt;Manipulation&lt;/th&gt;&lt;/tr&gt;&quot;;
+
+  my $oddrow = 1; #For styling oddrows
+
+  my %patch_ids;
+
+  foreach my $patchref (@{$patchsetref -&gt; {patch}} ) {
+    my %patch = %$patchref;
+
+    $patch_ids{$patch{patch_id}} = 1;
+
+    next if exists $$imported_patches{$patch{patch_id}};
+
+    my $for_node = getNode($patch{for_node_title},
+                             $patch{for_node_nodetype});
+
+    my $author = getNode($patch{author},&quot;user&quot;);
+
+    my $localhash = &quot;+&quot;; #Whatever, something that can't be the output
+                         #of md5_hex.
+
+    #Default in case target node link doesn't exist here.
+    my $for_nodelink = $patch{for_node_title};
+
+    #Might be a patch for a node that doesn't exist here!
+    if ($for_node) {
+      my $targetcode = $for_node -&gt; {$patch{field} };
+      $localhash = md5_hex($targetcode);
+      $for_nodelink = linkNode($for_node);
+    }
+
+    if ($oddrow) {
+      $str .= &quot;\t&lt;tr class=\&quot;oddrow\&quot;&gt;\n&quot;;
+    }
+    else {
+      $str .= &quot;\t&lt;tr&gt;\n&quot;;
+    }
+    $oddrow = !$oddrow;
+
+    $str .= &quot;\t\t&lt;td&gt;&quot;.$for_nodelink.&quot;&lt;/td&gt;\n&quot;;
+    $str .= &quot;\t\t&lt;td&gt;&quot;.linkNode($author).&quot;&lt;/td&gt;\n&quot;;
+    $str .= &quot;\t\t&lt;td&gt;&quot;.(encodeHTML($patch{purpose}) || &quot;&lt;em&gt;none&lt;/em&gt;&quot;).&quot;&lt;/td&gt;\n&quot;;
+    $str .= &quot;\t\t&lt;td&gt;&quot;.(encodeHTML($patch{instructions}) || &quot;&lt;em&gt;none&lt;/em&gt;&quot;).&quot;&lt;/td&gt;\n&quot;;
+
+    $str .= &quot;\t\t&lt;td&gt;&quot;.($for_node ?
+                         ($localhash eq $patch{target_hash} ?
+                          &quot;yep&quot; :
+                          &quot;NO!&quot;)
+                         : &quot;NEW!&quot;
+                       )
+            .&quot;&lt;/td&gt;\n&quot;;
+
+    $str .= &quot;\t\t&lt;td&gt;&quot;
+            .linkNode($NODE,&quot;review patch&quot;,
+                {patch_id =&gt; $patch{patch_id},
+                 patch_action =&gt; &quot;review&quot;})
+            .&quot;&lt;/td&gt;\n&quot;;
+
+    $str .= &quot;\t\t&lt;td&gt;&lt;a href=\&quot;http://$sourceDomain/node/$patch{patch_id}\&quot;&gt;View original&lt;/a&gt;&lt;/td&gt;\n&quot;;
+  }
+  $str .= &quot;&lt;/table&gt;&quot;;
+
+  #Clean out the list of imported patches
+  foreach my $patch_id(keys %$imported_patches){
+    delete $$imported_patches{$patch_id} unless exists $patch_ids{$patch_id};
+  }
+};
+
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-06-20 07:21:00</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>72</hits>
+  <node_id>1988260</node_id>
+  <edittime>2011-07-25 09:36:59</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1988260</document_id>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>patch importer</title>
+</node>

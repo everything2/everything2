@@ -1,0 +1,38 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-02-04 22:08:20</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1989437</node_id>
+  <htmlcode_id>1989437</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># Code taken from confirmUser() and loginUser() in HTML.pm
+return -5 unless $query;
+
+my $loginCookie = $query-&gt;cookie($CONFIG{cookiepass});
+
+return -1 unless $loginCookie;
+
+my ($user_name, $cr_password) = split(/\|/, urlDecode($loginCookie));
+my $check_user = getNode($user_name, 'user');
+
+return -2 if !$check_user;
+return -3 if crypt($$check_user{passwd}, $$check_user{title}) ne $cr_password;
+return -4 if !$$check_user{acctlock};
+
+return 1
+  if ($check_user
+    &amp;&amp; crypt($$check_user{passwd}, $$check_user{title}) eq $cr_password
+    &amp;&amp; $$check_user{acctlock}
+  );
+
+return 0;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>checkInfected</title>
+</node>

@@ -1,0 +1,725 @@
+<node>
+  <doctext>[%
+####
+#### T  H  I  S     I  S     N  O  T     Y  O  U  R     S  C  R  A  T  C  H     P  A  D.
+####
+####                                        DO NOT DELETE THIS.
+####
+####
+return;
+%]
+
+&lt;script type='text/javascript'&gt;
+
+var deleteMe = 0;
+
+function deletePushed() {
+	deleteMe=1;
+}
+
+function postWriteup() {
+	title = $F('skratch_title');
+	doctext = $F('skratch_doctext');
+	wutype = $F('skratch_wutype');
+alert(title);
+	E2AJAX.postWriteup(title,doctext,wutype);
+	$('writeup_post').update('&lt;strong&gt;Writeup posted!&lt;/strong&gt;');
+}
+
+function confirmSubmit() {
+	if (deleteMe) {
+		var deleteYes = confirm('Are you sure want to delete this scratch pad?');
+		if (deleteYes) {
+			$('skratch_form').deleteIt.value=1;
+			return true;
+		}
+		else {
+			return deleteMe=false;
+		}
+	}
+	else {return true;}
+}
+&lt;/script&gt;
+
+
+[%
+
+#Function to check if user is allowed to be collab on given scratch
+#pad.
+local *canCollab = sub{
+  my $collab_csv = shift;
+  my %collab_ids;
+  my @collab_names = split &quot;,&quot;,$collab_csv;
+
+  foreach my $collab_name (@collab_names) {
+
+    $collab_name =~ s/^\s*//;
+    my $N = getNode($collab_name,&quot;user&quot;) ||
+            getNode($collab_name,&quot;usergroup&quot;);
+
+    #I think I'm digging this autoviv stuff too much
+    #(man perlglossary) --[Swap]
+    if ($N) {
+      \@collab_ids{
+                   map $_-&gt;{node_id},
+                   @{Everything::selectNodegroupFlat($N)}
+                   };
+    }
+
+  }
+  return exists $collab_ids{$$USER{node_id}};
+};
+
+
+
+my $usertitle = 'None';
+
+##################################################
+#INITIALIZATION
+
+my $UID = $$USER{node_id};
+my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
+my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$UID};
+
+#Since this variable is needed by both Perl and SQL below, it
+#must be set to 0. Just undefining it isn't enough, since SQL will
+#fail.
+$isCE ||=0;
+
+
+###############
+#return if isGuest
+
+return &quot;&lt;p&gt;You must be logged in to view scratch pads.&lt;/p&gt;&quot;
+  if getId($USER) == $HTMLVARS{guest_user};
+
+####################
+#declaring variables
+
+my ($str, $scratchTitle, $scratchText);
+
+my ($inputname, $scratchID);
+
+my $scratchUser = $$USER{node_id};
+my $scratchTable='scratch2';
+my $defaultPad = 0;
+my $filterPrivate =0;
+my $makePrivate = int $query-&gt;param(&quot;make_private&quot;);
+
+$scratchTitle = CGI::unescape(
+                              CGI::unescape($query -&gt;
+                                            param('scratch_title')
+                                            )
+                              );
+
+$inputname = $query-&gt;param('other_user') || $$USER{title};
+$inputname = encodeHTML($inputname);
+
+#Get the scratchpad ID by nodername and scratch title
+if($scratchTitle and $inputname){
+  my $noder = getNode($inputname,&quot;user&quot;);
+  if($noder){
+    if(lc($scratchTitle) =~ /^\s*default\s*scratch\s*pad\s*$/){
+      $scratchID = $$noder{user_id};
+    }
+    else {
+      my $csr = $dbh -&gt; prepare(&quot;SELECT scratch_id
+                                 FROM scratch2
+                                 WHERE scratch_user=$$noder{user_id}
+                                       AND scratch_title= ?&quot;);
+      $csr -&gt; execute($scratchTitle);
+      $scratchID = $csr -&gt; fetchrow;
+    }
+  }
+}
+
+$scratchID = int $query-&gt;param('scratch_id') unless $scratchID;
+
+my $otherUserForm = '';
+
+if (!$scratchID) { '
+	&lt;form method=&quot;post&quot;&gt;
+	&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;'.$$NODE{node_id}.'&quot;&gt;
+	Look up user: &lt;br/&gt;
+	&lt;input type=&quot;text&quot; name=&quot;other_user&quot; value=&quot;'.$inputname.'&quot; /&gt;&lt;br /&gt;
+	&lt;input type=&quot;submit&quot; value=&quot;View pad list&quot;&gt;
+	&lt;/form&gt;';
+}
+
+#############
+#if no default scratch pad, create one
+
+unless ($DB-&gt;sqlSelect('scratch_id', 'scratch', 
+                       &quot;scratch_id = $$USER{node_id}&quot;)) {
+
+	$DB-&gt;sqlInsert('scratch', {
+                             'scratch_user'=&gt; $$USER{user_id},
+                             'scratch_id'=&gt; $$USER{user_id},
+                             'scratch_title'=&gt;'',
+                             'scratch_private' =&gt; 0,
+                             'scratch_text' =&gt; ''});
+}
+
+###############################################
+#PROCESS SUBMISSIONS
+
+###########
+#update
+
+my $duplicateTitle;
+my $newTitle;
+my $currTitle;
+
+if ($query-&gt;param('skratchsubmit')) {
+  if ($scratchID==$scratchUser) {
+    $$VARS{skratchShare} = !($makePrivate);
+    $scratchTable='scratch';
+    $DB-&gt;sqlUpdate($scratchTable,
+                   {'scratch_user' =&gt; $$USER{user_id} },
+                   &quot;scratch_id=$scratchID&quot;);
+  }
+	$usertitle = $dbh-&gt;quote($$USER{title});
+
+  my $updateWhereStr =  &quot;scratch_id = $scratchID
+                         AND
+                         ((scratch_user = $$USER{user_id})
+                         OR
+                         (scratch_collab like $usertitle) OR $isCE)&quot;;
+
+	$DB-&gt;sqlUpdate($scratchTable,
+                 {'scratch_text' =&gt; $query-&gt;param(&quot;skratch_doctext&quot;),
+                  'scratch_private' =&gt; $makePrivate,
+                  scratch_collab =&gt; $query-&gt;param(&quot;collab&quot;)} ,
+                 $updateWhereStr) ;
+
+  #Check for duplicate titles...
+  $newTitle = $query-&gt;param(&quot;skratch_title&quot;);
+
+  #In prepare statements, ? gets replaced with params during execute()
+  #and everything gets escaped nicely. --Swap
+  my $csr = $dbh -&gt; prepare(&quot;SELECT scratch_title
+                             FROM scratch2
+                             WHERE scratch_user=$$USER{user_id}
+                                 AND scratch_title= ?
+                                 AND scratch_id &lt;&gt; $scratchID&quot;);
+                                                    #^^^^^^
+                                                    #We're looking for
+                                                    #not this pad with
+                                                    #the same title.
+  $csr -&gt; execute($newTitle);
+  $currTitle = $csr -&gt; fetchrow;
+
+  if(lc($newTitle) eq lc($currTitle)){
+    $duplicateTitle = 1;
+  }
+  else{
+    $DB -&gt; sqlUpdate($scratchTable,
+                     {scratch_title =&gt; $newTitle},
+                     $updateWhereStr);
+  }
+}
+
+##############
+#delete
+
+if ($query-&gt;param('deleteIt')) {
+ 	$DB-&gt;sqlDelete(&quot;scratch2&quot;,
+                 &quot;scratch_id = $scratchID AND scratch_user = $$USER{user_id}&quot;);
+	$scratchID=0;
+}
+
+#############
+#insert
+
+if ($query-&gt;param('new_scratch_title')) {
+	my $newPrivate = $query-&gt;param('new_scratch_private') || 0;
+
+  #Check for duplicate titles...
+  $newTitle = $query-&gt;param(&quot;new_scratch_title&quot;);
+
+  my $csr = $dbh -&gt; prepare(&quot;SELECT scratch_title
+                             FROM scratch2
+                             WHERE scratch_title=?
+                                   AND scratch_user = $$USER{user_id}&quot;);
+  $csr -&gt; execute($newTitle);
+
+  $currTitle = $csr -&gt;fetchrow;
+
+  if(lc($newTitle) eq lc($currTitle)){
+    $duplicateTitle = 1;
+  }
+  else{
+    $DB-&gt;sqlInsert($scratchTable,
+                   {
+                    'scratch_user'=&gt;$$USER{user_id},
+                    'scratch_title' =&gt; $query-&gt;param('new_scratch_title'),
+                    'scratch_private' =&gt; $newPrivate,
+                    'scratch_text' =&gt; ''});
+
+    $scratchID = $DB-&gt;sqlSelect('max(scratch_id)',
+                                $scratchTable,
+                                'scratch_user ='.$$USER{user_id});
+  }
+
+}
+
+#Sanitise...
+$newTitle = encodeHTML($newTitle);
+
+######################
+#set user to other user
+
+if ($query-&gt;param('other_user')) {
+	my $otherUser = getNode($query-&gt;param('other_user'), 'user');
+	if ($otherUser) {             #other user actually exists
+		$scratchUser = $$otherUser{node_id};
+		if ($scratchID==$scratchUser) {
+			$scratchTable='scratch';
+			$defaultPad = 1;
+		}
+		$filterPrivate=1  unless ($otherUser == $USER);
+	}
+	else {
+		## implied - scratchUser remains actual user, not &quot;other user&quot;
+		$str .= &quot;&lt;p&gt;No such user &lt;b&gt;&quot;;
+    $str .= htmlScreen($query-&gt;param('other_user')).&quot;&lt;/b&gt;&lt;/p&gt;&quot;;
+	}
+}
+
+my $userVars = getVars(getNodeById($scratchUser));
+my $shareDefault = ($$userVars{skratchShare}==1);
+
+##########################################################
+#DISPLAYING INFO
+
+if (!$scratchID) {
+
+  #################################
+  #SHOW PAD LIST
+
+	my $padList;
+
+  my $scratchPads = $DB-&gt;sqlSelectMany(
+     &quot;scratch_id, scratch_private, scratch_collab, scratch_title&quot;,
+     &quot;scratch2&quot;,
+     &quot;scratch_user = $scratchUser
+     ORDER BY scratch_title&quot;);
+
+  my $defaultPadVars =
+    $DB-&gt;sqlSelectHashref(&quot;scratch_id, scratch_private&quot;
+                         , 'scratch', &quot;scratch_id = $scratchUser&quot;);
+
+  $shareDefault = 0 if $$defaultPadVars{scratch_private};
+
+  if ($$defaultPadVars{scratch_id}
+      &amp;&amp; ($shareDefault || $scratchUser == $$USER{node_id})
+      ) {
+    $padList.= &quot;\n\t&quot;;
+    $padList.= &quot;&lt;li&gt;&quot; if $shareDefault;
+    $padList.= &quot;&lt;b&gt;&quot;;
+    $padList.= linkNode($NODE,'Default Scratch Pad',
+                        {scratch_id =&gt; $scratchUser,
+                         other_user =&gt; getNodeById($scratchUser)-&gt;{title} });
+    $padList .= &quot;&lt;/b&gt;&quot;;
+  }
+
+	while ( my $s = $scratchPads-&gt;fetchrow_hashref) {
+		my $isCollab = canCollab($$s{scratch_collab});
+
+    # filterPrivate is just a proxy for &quot;is this the actual user's list,
+    # or someone else's?&quot;
+		if (!( ($filterPrivate) &amp;&amp; ($$s{scratch_private}) &amp;&amp; (!$isCollab) )) {
+      my $scratchTitle=$$s{scratch_title};
+      $scratchTitle = encodeHTML($scratchTitle);
+      $scratchTitle='Nameless Pad' if (!$$s{scratch_title});
+
+      # prevents private pads from having numbers
+      # this is so private pads don't throw off the list when pointing
+      # other users to one of your pads.
+
+ 			if ($$s{scratch_private}) { 
+				$padList .=&quot;\n\t&lt;br /&gt;&quot;;
+			}
+      else {
+				$padList .= &quot;\n\t&lt;/li&gt;&lt;li&gt;&quot;;
+			}
+			$padList.=linkNode($NODE,
+                         $scratchTitle,
+                         {scratch_id =&gt; $$s{scratch_id} });
+      $padList .= ( $isCollab ? &quot; &lt;b&gt;collab&lt;/b&gt;&quot; : &quot;&quot;);
+		}
+
+	}
+	$padList .= &quot;\n\t&lt;/li&gt;&quot;;
+
+	if ($scratchPads-&gt;rows == 0) {
+		if ($filterPrivate) {
+			$padList.=&quot;\n\t&lt;li&gt;This user has no public scratch pads.&lt;/li&gt;&quot;;
+		}
+		else {
+			$padList.=&quot;\n\t&lt;li&gt;You currently only have the Default Scratch
+		                     Pad. You can create more using the text box
+                         below.&lt;/li&gt;&quot;;
+		}
+	}
+
+	$padList =&quot;&lt;ol&gt;&quot; . $padList. &quot;
+            &lt;/ol&gt;
+            &lt;p&gt;
+            &lt;small&gt;&lt;i&gt;NB: Only public pads are numbered,
+            for ease of referring other users to them.&lt;/i&gt;&lt;/small&gt;
+            &lt;/p&gt;&quot;;
+
+  ################
+  #create new pad form
+
+	my $newPadStr=	htmlcode('openform2','new_scratch').&quot;
+
+	&lt;p&gt;
+	Scratch Pad Title&lt;br /&gt;
+	&lt;input type='text' name='new_scratch_title' /&gt;&lt;br /&gt;
+	&lt;input type='checkbox' name='new_scratch_private' value='1' /&gt; Private?&lt;br /&gt;
+	&lt;input type='submit' value='Create Scratch Pad' /&gt;
+	&lt;/p&gt;
+	&lt;/form&gt;&quot;;
+
+  if($duplicateTitle){
+    $newPadStr .= &quot;&lt;p&gt;&lt;em&gt; You already have a scratch pad titled
+    \&quot;$newTitle\&quot;. Please choose a different title.&lt;/em&gt;&lt;/p&gt;&quot;;
+  }
+
+
+  ###############
+  #return pad List
+
+	return $str . $padList . $newPadStr . $otherUserForm;
+
+}
+else {
+
+  #################################################
+  #SHOW SCRATCH PAD
+
+	my $padVars = $DB-&gt;sqlSelectHashref(&quot;*&quot;, $scratchTable, 
+                                      &quot;scratch_id=$scratchID&quot;);
+
+	my $scratchText = $$padVars{scratch_text};
+	my $ownPad = (( $$padVars{scratch_user} == $$USER{user_id} ) |
+                ( $scratchID == $$USER{user_id} ));
+	my $isCollab = canCollab($$padVars{scratch_collab});
+
+	my $skratchUser = getNodeById($$padVars{scratch_user});
+
+	$$padVars{scratch_private} = 1 if ($defaultPad &amp;&amp; !$shareDefault);
+
+	my $editableFormStr;
+	my $sendMessageForm;
+	my $padText;
+	my $padForm;
+
+  ###############
+  #return if private
+
+	return &quot;&lt;p&gt;This scratch pad is private.&lt;/p&gt;&quot;
+    if (!$ownPad &amp;&amp; !$isCollab &amp;&amp; $$padVars{scratch_private});
+
+	my $padTitle = encodeHTML($$padVars{scratch_title});
+
+	if ($ownPad || $isCollab || $isCE) {
+
+    #################
+    #open form for editing
+
+    my $scratch_url = &quot;/user/&quot;
+                      .rewriteCleanEscape($$USER{title})
+                      .&quot;/scratchpads/&quot;
+                      .rewriteCleanEscape($padTitle);
+
+		$editableFormStr .= $query-&gt;start_form(
+                                           -method =&gt; 'POST'
+                                           , -action =&gt; $scratch_url
+                                           , -name =&gt; 'skratch_form'
+                                           , -id =&gt; 'skratch_form'
+                                           , -onSubmit =&gt; 'return confirmSubmit();'
+                                           );
+
+		if ($ownPad) {
+
+      #################
+      #offer up chance to make private
+      #and add collaborators
+      #and display writeup hints
+
+			
+			
+
+			
+		}
+	}
+	if (! $ownPad) {
+
+    #################
+    #display send message box
+
+    $sendMessageForm =
+    '&lt;form method=&quot;post&quot;&gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;skratch_user&quot;
+           value=&quot;'. $$skratchUser{title} .'&quot; /&gt;
+
+		&lt;input type=&quot;hidden&quot; name=&quot;other_user&quot; value=&quot;'.$inputname.'&quot; /&gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;scratch_id&quot; value=&quot;'.$scratchID.'&quot; /&gt;';
+    $sendMessageForm .= &quot;\n\t\t&quot;;
+
+    $sendMessageForm .=  htmlcode('msgField',
+                                  &quot;skratchMsg, ,&quot;.
+                                  $$NODE{node_id}.
+                                  &quot;,  &quot;.
+                                  $$skratchUser{node_id}. &quot;,&quot;  .
+                                  $$skratchUser{node_id});
+    $sendMessageForm .=
+      &quot;\n\t\t&quot;.
+        &quot;&lt;input type='hidden' name='scratch_title' value='$padTitle' /&gt;
+		     &lt;input type='hidden' name='node_id' value='$$NODE{node_id}' /&gt;
+	       &lt;input type='submit' name='message send' value='Send Message'/&gt;
+        &lt;/form&gt;
+      &lt;/p&gt;
+                          &lt;hr&gt;&quot;;
+	}
+
+  ##################
+  #MathML
+
+  my $TAGS = getVars(getNode('approved html tags','setting'));
+
+	my $testOutOtherTags = 0;
+	my $MATHTAGS = undef;
+	my $mathStr;
+	if ( (exists $HTMLVARS{group_gods}{$$USER{node_id}}) ||
+       ($$USER{node_id}eq '1413262') ) {
+		$testOutOtherTags = 1;
+		$MATHTAGS = getVars(getNode('approved MathML tags','setting'));
+		$HTMLVARS{'approvedTagsListRef'} = [$TAGS, $MATHTAGS];
+		htmlcode('mergedApprovedTags','');
+		my $combined = $HTMLVARS{'approvedTags'};
+		if (ref($combined) eq 'HASH') {
+			#just in case the htmlcode messes up, we don't want to
+			#prevent admins from using ANY tags
+			$TAGS = $combined;
+		}
+	}
+	if ($testOutOtherTags) {
+
+		
+
+		my @l;
+		foreach (sort(keys(%$MATHTAGS))) {
+			if ($MATHTAGS-&gt;{$_} eq '1') {
+				push(@l, $_);
+			}
+      else {
+				push(@l, $_.' ('.$MATHTAGS-&gt;{$_}.')');
+			}
+		}
+		
+	}
+
+
+  ####################
+  #show actual pad text
+
+  #Escape tags in title
+ 	$padText = &quot;
+	&lt;h2 class=\&quot;title\&quot;&gt;$padTitle&lt;/h2&gt;
+	&lt;p&gt;(&quot;.linkNode($NODE,
+                 'return to list of all pads',
+                 {other_user=&gt;$$skratchUser{title}}).&quot;)&lt;/p&gt;&quot;
+				. &quot;&lt;p&gt;&lt;abbr title=\&quot;Copy and paste this text into a message to send a link to this scratch pad\&quot;&gt;&lt;span class='scratchpadlink'&gt;&amp;#91;&quot;.$padTitle
+                                . &quot;&amp;#91;scratch by &quot;
+				. $$skratchUser{title}.&quot;&amp;#93;|LinkToMe&amp;#93;&lt;/span&gt;&lt;/abbr&gt;&lt;/p&gt;&quot;;
+
+	if ($scratchText) {
+		$padText .= '
+		&lt;div class=&quot;content&quot;&gt;' .
+        breakTags(parseLinks(screenTable(htmlScreen($scratchText, 
+                                                    $TAGS),$NODE))) .
+          '&lt;/div&gt;
+		';
+		if (length($scratchText) &gt; 65000) {
+
+			$padText .= '&lt;p style=&quot;font-size:
+			125%&quot;&gt;&lt;strong&gt;Caution!&lt;/strong&gt; Your scratch pad is longer than
+			the maximum node length of 65,000 characters.  If you post it in
+			its current form it will be truncated.&lt;/p&gt;';
+
+		}
+	}
+	else {
+		$padText .= '&lt;em&gt;blank&lt;/em&gt;';
+	}
+
+  #################
+  #suggest links
+
+  #if ( !$query-&gt;param(&quot;nosuggest&quot;) &amp;&amp; ($ownPad || $isCollab || $isCE) ) {
+  if (0) { # disable link suggester until the disable user setting is added
+
+    $padText .= &quot;&lt;h4&gt;Suggested Hardlinks&lt;/h4&gt;&quot;;
+
+    my $suggestStr = $scratchText;
+    $suggestStr = htmlScreen($suggestStr);
+
+    $suggestStr =~ s/,//g;
+    $suggestStr =~ s/\.//g;
+    $suggestStr = lc($suggestStr);
+
+
+    my @wordlist = split(&quot; &quot;,$suggestStr);
+    my $wordcount = @wordlist;
+
+    my $tested;
+
+    my @finallist;
+
+    my $e2nodeType = getNode('e2node','nodetype')-&gt;{node_id};
+    my $webby = getNode('Webster 1913','user')-&gt;{node_id};
+
+    my $count = 0;
+    my $finalStr;
+    my $derivedStr;
+    foreach (@wordlist) {
+      $derivedStr = '';
+      for (my $x = $count; $x &lt; $wordcount; $x++) {
+        if ($derivedStr eq '') {
+          $derivedStr = $wordlist[$x] . &quot; &quot;;
+          next if $DB-&gt;sqlSelect(&quot;1&quot;,
+                                 &quot;commonwords&quot;,
+                                 &quot;commonword = &quot;.$dbh-&gt;quote($wordlist[$x]));
+        }
+        else {
+          $derivedStr .= $wordlist[$x] . &quot; &quot;;
+        }
+        next if int($derivedStr) &gt; 0;
+        next if $$tested{$derivedStr};
+        next if length($derivedStr) &lt; 5;
+
+        my $n = $DB-&gt;sqlSelect(&quot;node_id&quot;,
+                               &quot;node&quot;,
+                               &quot;title = &quot;.$dbh-&gt;quote($derivedStr).&quot;
+                                AND
+                                type_nodetype=$e2nodeType limit 1&quot;);
+
+        $$tested{$derivedStr} = 1;
+        if ($n) {
+          my @derivedList = split(&quot; &quot;,$derivedStr);
+          foreach (@derivedList) {
+            $$tested{$_.&quot; &quot;} = 1;
+          }
+          my $group = getNodeById($n)-&gt;{group};
+          if ($group) {
+            my @wuList = @{$group};
+            next if ( scalar(@wuList) == 1  &amp;&amp;
+                      getNodeById($wuList[0])-&gt;{author_user} == $webby  );
+          }
+
+          push @finallist, linkNode($n);
+        }
+        last if ($x - $count) &gt; 5;
+      }
+      $count++;
+    }
+    $finalStr = join(&quot;, &quot;,@finallist);
+
+
+    $padText .= $finalStr;
+
+  }
+
+
+
+	if ($ownPad || $isCollab || $isCE) {
+
+
+		my (@WRTYPES) = getNodeWhere({type_nodetype =&gt;
+                                  getId(getType('writeuptype'))});
+
+		my @WRTYPE;
+		foreach (@WRTYPES) {
+			push @WRTYPE, $_ unless ( lc($$_{title}) eq 'definition' ||
+                                lc($$_{title}) eq 'lede');
+		}
+
+		my $chwriteup =&quot;\n&lt;select id='skratch_wutype' name='writeuptype'&gt;&quot;;
+		foreach (@WRTYPE) {
+			$chwriteup.=&quot;\n\t&lt;option value='&quot;.$$_{title}.&quot;'&gt;&quot;.$$_{title}.&quot;&lt;/option&gt;&quot;;
+		}
+		$chwriteup.=&quot;\n&lt;/select&gt;&quot;;
+
+
+		$padForm.=&quot;&lt;p&gt;&lt;b&gt;Title&lt;/b&gt; &quot;;
+    $padForm .=$query-&gt;textfield('skratch_title',
+                                 $padTitle,80).&quot;&lt;/p&gt;&quot;;
+
+    if($duplicateTitle){
+      $padForm .= &quot;&lt;p&gt;&lt;em&gt;You already have a scratch pad titled
+      &lt;strong&gt;\&quot;$newTitle\&quot;&lt;/strong&gt;. Please choose a different title.
+      The current title is &lt;strong&gt;$padTitle&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;&quot;;
+    }
+
+		$padForm.= htmlcode('script_tinyMCE','skratch_doctext');
+		$padForm.=&quot;
+			&lt;input type='hidden' name='node_id' value='$$NODE{node_id}' /&gt;&lt;br /&gt;
+			&lt;textarea id='skratch_doctext' name='skratch_doctext'&quot;
+			. htmlcode('customtextarea', '1')
+			. &quot; wrap='virtual' &gt;&quot;
+			.  encodeHTML($scratchText)
+			. '&lt;/textarea&gt;
+
+        &lt;br /&gt;
+        &lt;input type=&quot;hidden&quot; name=&quot;skratchsubmit&quot; value=&quot;1&quot; /&gt;
+        &lt;input type=&quot;hidden&quot; name=&quot;scratch_id&quot; value=&quot;'.$scratchID.'&quot; /&gt;
+        &lt;input type=&quot;hidden&quot; name=&quot;sexisgood&quot; value=&quot;1&quot; /&gt;
+        &lt;input type=&quot;hidden&quot; name=&quot;deleteIt&quot; value=&quot;&quot; /&gt;
+
+        &lt;input type=&quot;submit&quot; value=&quot;Update!&quot; /&gt;'.
+          &quot;\n\n\t\t&quot;.
+
+            ( $ownPad ? ($scratchID!=$$USER{node_id} ? '
+        &lt;input type=&quot;submit&quot; onclick=&quot;deletePushed();&quot; value=&quot;Delete!&quot; /&gt;':'')
+              :
+              &quot;
+        &lt;input type='hidden' name='make_private' &quot;.
+              ( $$padVars{scratch_private} ? &quot;value='1'&quot; : &quot;value='0'&quot;).&quot;  /&gt;
+
+        &lt;input type='hidden' name='collab' value='&quot;.
+              $$padVars{scratch_collab}.&quot;'  /&gt; &quot;
+             ).
+
+          $chwriteup.'
+
+        &lt;input id=&quot;writeup_post&quot; type=&quot;button&quot; 
+         onclick=&quot;postWriteup()&quot; value=&quot;Post!&quot; /&gt;&lt;/p&gt;
+       &lt;/form&gt;';
+	}
+
+	return $otherUserForm . $sendMessageForm. $editableFormStr .
+          $padText . $padForm;
+
+}
+
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-05-10 19:36:24</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>1989783</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1065266</type_nodetype>
+  <document_id>1989783</document_id>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>Scratch Pads Drafts</title>
+</node>

@@ -1,0 +1,36 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-10-19 05:29:54</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>1375509</node_id>
+  <htmlcode_id>1375509</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>use Everything::Experience;
+my $str;
+
+#pass 2 args: category and value
+local *genRow = sub {
+	return '&lt;div&gt;&lt;span class=&quot;var_label&quot;&gt;' . $_[0] . ': &lt;/span&gt;&lt;span class=&quot;var_value&quot;&gt;' . $_[1] . &quot;&lt;/span&gt;&lt;/div&gt;\n&quot;;
+};
+
+
+my $hv = getVars(getNode(&quot;hrstats&quot;, &quot;setting&quot;));
+my $IQM = (($$USER{merit})?($$USER{merit}):(0));
+
+$str .= genRow('Merit', sprintf('%.2f', $IQM || 0));
+$str .= genRow('LF', sprintf('%.4f', getHRLF($USER) || 0));
+$str .= genRow(&quot;Devotion&quot;, int(($$VARS{numwriteups} * $$USER{merit}) + .5));
+$str .= genRow(&quot;Merit mean&quot;,$$hv{mean});
+$str .= genRow(&quot;Merit stddev&quot;, $$hv{stddev});
+
+
+return &quot;&lt;div&gt;&quot;.$str.&quot;&lt;/div&gt;&quot;;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>statsection_advancement</title>
+</node>

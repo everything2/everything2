@@ -1,0 +1,51 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-05 21:51:09</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>124</hits>
+  <node_id>221</node_id>
+  <htmlcode_id>221</htmlcode_id>
+  <maintenance_id>221</maintenance_id>
+  <checks_arguments>0</checks_arguments>
+  <maintaintype>create</maintaintype>
+  <code>my ($WRITEUP) = @_;
+getRef $WRITEUP;
+
+my $E2NODE = $query-&gt;param('writeup_parent_e2node');
+getRef $E2NODE;
+
+# we need an e2node to insert the writeup into,
+# and the writeup must have some text:
+my $problem = (!$E2NODE or $query-&gt;param(&quot;writeup_doctext&quot;) eq '');
+
+# the user must be allowed to publish, the node must not be locked,
+# and the user must not have a writeup there already:
+$problem ||= htmlcode('nopublishreason', $USER, $E2NODE);
+
+# if no problem, attach writeup to node:
+return htmlcode('publishwriteup', $WRITEUP, $E2NODE) unless $problem;
+
+# otherwise, we don't want it:
+nukeNode $WRITEUP, -1, 1;
+
+return unless ref $problem eq &quot;HASH&quot;;
+
+# user already has a writeup in this E2node: update it
+$$problem{doctext} = $query-&gt;param(&quot;writeup_doctext&quot;);
+$$problem{wrtype_writeuptype} = $query -&gt; param('writeup_wrtype_writeuptype')
+	if $query -&gt; param('writeup_wrtype_writeuptype');
+updateNode $problem, $USER;
+
+# redirect to the updated writeup
+$HEADER_PARAMS{-status} = 303;
+$HEADER_PARAMS{-location} = htmlcode('urlToNode', $problem);
+</code>
+  <type_nodetype>150</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <maintain_nodetype>117</maintain_nodetype>
+  <title>writeup maintenance create</title>
+</node>

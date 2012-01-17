@@ -1,0 +1,83 @@
+<node>
+  <doctext>// this moved to default javascript and retired 2010-10-07 --DonJaime
+function replyToCB(s, onlineonly) {
+	var mbox = jQuery('#message')[0] ;
+	mbox.value = ( onlineonly ? '/msg? ' : '/msg ' ) + s + &quot; &quot;;
+	// move the cursor to the end of the text box
+	if (mbox.createTextRange) { // IE
+		var r = mbox.createTextRange();
+		r.moveStart('character', mbox.value.length);
+		r.select();
+	} else { // other, in particular webkit
+		mbox.focus();
+		if (mbox.setSelectionRange)
+			mbox.setSelectionRange(mbox.value.length, mbox.value.length);
+	}
+}
+
+// this moved to Everything2 ajax and retired 2010-10-07 --DonJaime
+function autorefreshChatterbox(chatperiod, msgperiod){
+	chatperiod = chatperiod||11 ;
+	msgperiod = msgperiod||23 ;
+	var stopAfter = 1800/chatperiod; // 30 minutes
+	var chatUpdater = new e2.ajax.periodicalUpdater(
+		'(chatterbox_chatter):showchatter', chatperiod, stopAfter, inactive);
+	var msgUpdater = new e2.ajax.periodicalUpdater(
+		'(chatterbox_messages):showmessages', msgperiod, {before:checkCheckBoxes, after:checkHr});
+	var stopped;
+
+	function inactive(){
+		msgUpdater.stop();
+		jQuery('#message').before('&lt;p&gt;&lt;strong&gt;Chatterbox auto-refresh stopped due to inactivity.&lt;/strong&gt; ' +
+			'&lt;button type=&quot;submit&quot;&gt;Restart&lt;/button&gt;&lt;/p&gt;');
+		stopped = true;
+		jQuery('#formcbox').bind('submit', reactivate);
+    }
+
+	function reactivate(){
+		if (stopped){
+			jQuery('message').focus();
+			stopped = false;
+		}
+		jQuery('#chatterbox')[0].unrefreshed = true;
+		chatUpdater.restart();
+		msgUpdater.restart();
+	}
+
+	function checkCheckBoxes(){
+		if (!jQuery('#chatterbox')[0].unrefreshed){
+			reactivate();
+  		}
+		return jQuery(&quot;#chatterbox_messages input:checked&quot;).length == 0;
+	}
+
+	function checkHr(u){
+		if ( !/&lt;\w/.test( jQuery('#chatterbox_messages')[0].innerHTML ) || jQuery('#formcbox hr').length )
+			return ;
+		jQuery('#chatterbox_chatter').before('&lt;hr width=&quot;40%&quot;&gt;');
+	}
+}
+
+if (/^chatterlight/.test(document.body.id)){
+	jQuery('#basesheet').before('&lt;style type=&quot;text/css&quot;&gt;#message {width: 97%;}&lt;/style&gt;');
+	jQuery('#message').focus();
+	if (e2.ajax) {
+		autorefreshChatterbox() ;
+		new e2.ajax.periodicalUpdater( 'newwriteups:updateNodelet:New+Writeups' , 180 );
+	}
+}</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-01-23 21:08:37</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>3</hits>
+  <node_id>1989311</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1786405</type_nodetype>
+  <document_id>1989311</document_id>
+  <author_user>829913</author_user>
+  <package>0</package>
+  <title>chatterbox script</title>
+</node>

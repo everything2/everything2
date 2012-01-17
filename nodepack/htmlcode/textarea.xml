@@ -1,0 +1,33 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>21</hits>
+  <node_id>52</node_id>
+  <htmlcode_id>52</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($field, $rows, $cols, $wrap) = @_;
+$cols ||= 80;
+$rows ||= 30;
+my $wrapSet = [ ];
+$wrapSet = [ -wrap =&gt; $wrap ] if ($wrap);
+
+my $name = $$NODE{type}{title} . &quot;_&quot; . $field;
+
+return $query-&gt;textarea(
+  -name       =&gt; $name
+  , -id       =&gt; $name
+  , -default  =&gt; $$NODE{$field}
+  , -rows     =&gt; $rows
+  , -columns  =&gt; $cols
+  , @$wrapSet
+  );
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>textarea</title>
+</node>

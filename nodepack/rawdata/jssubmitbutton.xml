@@ -1,0 +1,58 @@
+<node>
+  <rawdata_id>1953726</rawdata_id>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-08-29 04:17:41</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1953726</node_id>
+  <type_nodetype>332487</type_nodetype>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <datacode>function postWriteup() {
+	title = $F('test test test');
+	doctext = $F('skratch_doctext');
+	wutype = $F('skratch_wutype');
+	E2AJAX.postWriteup(title,doctext,wutype);
+	$('writeup_post').update('&lt;strong&gt;Writeup posted!&lt;/strong&gt;');
+}
+
+
+  String.prototype.contains = stringContains;
+
+  //  Define the member function. It doesn't matter 
+  //  in what order you do these two things.
+
+  function stringContains (s) {
+      //  Refer to this explicitly
+      return s.length &amp;&amp; (this.indexOf( s ) != -1);
+  }
+  function checkString () {
+      var id='writeup_doctext';
+      var MCE=false;
+      if (tinyMCE.getInstanceById(id)) {
+            tinyMCE.execCommand('mceRemoveControl', false, id);
+            MCE=true;
+      }
+      var elem = document.getElementById(id);
+      var someString = elem.value;
+      if (!someString.contains('\u005B')) {
+        if (MCE) tinyMCE.execCommand('mceAddControl', false, id);  
+        alert('You need to put links in there by placing square brackets around relevant words and phrases, like this: [a linked phrase]. If you want to link one thing but show another, put a pipe (|) between them like this: [link one thing|show another].');
+      }
+      if (!someString.contains('\&lt;p')) {
+        autoFormat(id);
+        alert ('You didn\'t include any paragraph tags, so they have been added automatically to make sure line breaks show as intended. You can use the Line Breaks button to do this yourself.');
+      }
+      else document.wusubform.submit();
+      return;
+  }
+
+  document.getElementById('submitWriteup').innerHTML = ''; 
+  document.write(&quot;&lt;input type=\'button\' onClick=\'checkString()\' id=\'newbutton\' value=\'submit\' title=\'Submit writeup\'&gt;&quot;);
+</datacode>
+  <title>jsSubmitButton</title>
+  <datatype></datatype>
+</node>

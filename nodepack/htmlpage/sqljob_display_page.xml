@@ -1,0 +1,89 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>1159647</pagetype_nodetype>
+  <core>0</core>
+  <page>[%
+return unless(isGod($USER));
+
+my $str.='&lt;i&gt;'.parseLinks($$NODE{doctext}).'&lt;/i&gt;&lt;br /&gt;&lt;br /&gt;This query is described in SQL by:&lt;br /&gt;&lt;blockquote&gt;&lt;code&gt;'.encodeHTML($$NODE{sqltext}).&quot;&lt;/code&gt;&lt;/blockquote&gt;&lt;br /&gt;\n&quot;;
+
+$str.='&lt;br /&gt;There are '.$DB-&gt;sqlSelect('count(*)', 'sqlresult', 'sqljob_id='.$$NODE{node_id}).parseLinks(' records found by the job last Word Galaxy...&lt;br&gt;&lt;br&gt;&lt;p align=&quot;center&quot;&gt;Back to [SQL Center]&lt;/p&gt;');
+
+$str.='&lt;ul&gt;';
+
+my $csr = $dbh-&gt;prepare('SELECT * FROM sqlresult where sqljob_id='.$$NODE{node_id}.' LIMIT 500');
+
+$csr-&gt;execute();
+
+my $nr = getId(getNode('node row', 'superdoc'));
+while(my $row = $csr-&gt;fetchrow_hashref()) {
+
+	my $resnode = getNodeById($$row{result_id});
+	next unless($resnode);
+	$str.='&lt;li&gt;'.linkNode($resnode, $$resnode{title});
+
+
+     if($$resnode{type_nodetype} == getId(getType('writeup')))
+     {
+	my $killer = $DB-&gt;sqlSelect('linkedby_user', 'weblog', 'weblog_id='.$nr.' and to_node='.$$resnode{node_id}) || 0;
+
+	my $kstring = '';
+
+	$kstring = ' &lt;small&gt;(marked for destruction)&lt;/small&gt;' if($killer);
+
+	$str .= '&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;('.linkNode(getNodeById($$resnode{parent_e2node}), 'full').')&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;small&gt;Rep:'.$$resnode{reputation}.'&lt;/small&gt;'.$kstring.'&lt;br /&gt;'.encodeHTML($$resnode{doctext}).'&lt;br /&gt;';
+     }
+     elsif($$resnode{type_nodetype} == getId(getType('e2node')))
+     {
+
+        my $nLinks = $DB-&gt;sqlSelect('count(*)', 'links', 'from_node='.$$resnode{node_id}.' AND linktype=0');
+
+        my $nWUs = $DB-&gt;sqlSelect('count(*)', 'writeup', 'parent_e2node='.$$resnode{node_id});
+ 
+        my $e2nLinks = '';
+        my $e2nWUs = '';
+
+        if($nLinks == 0)
+        {
+           $e2nLinks = 'No softlinks';
+        }
+        else
+        {
+           $e2nLinks = 'Softlinks: '.$nLinks;
+        }
+
+        if($nWUs == 0)
+        {
+            $e2nWUs = 'Nodeshell';
+        }
+        else
+        {
+            $e2nWUs = 'Writeups: '.$nWUs;
+        }
+
+        $str.='&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;('.$e2nWUs.' , '.$e2nLinks.')';
+
+     }
+
+}
+
+$str.='&lt;/ul&gt;';
+
+return $str;
+%]</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-09-17 07:47:03</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1159659</htmlpage_id>
+  <hits>1</hits>
+  <node_id>1159659</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>sqljob display page</title>
+  <mimetype></mimetype>
+</node>

@@ -1,0 +1,74 @@
+<node>
+  <nltext></nltext>
+  <parent_container>20</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2000-11-15 06:11:44</createtime>
+  <lastupdate>1322103018</lastupdate>
+  <hits>1</hits>
+  <node_id>838259</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>220</author_user>
+  <updateinterval>86400</updateinterval>
+  <package>0</package>
+  <nodelet_id>838259</nodelet_id>
+  <nlcode>[% 
+my $YESTERDAYSTATS = $DB-&gt;sqlSelectHashref('*', 'stats', 'TO_DAYS(NOW()) - TO_DAYS(stattime) &gt; 1', 'order by stattime desc LIMIT 1');
+my $TODAYSTATS;
+
+$TODAYSTATS-&gt;{nume2nodes} = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;e2node&quot;);
+$TODAYSTATS-&gt;{numwriteups} = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;writeup&quot;);
+$TODAYSTATS-&gt;{numusers} = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;user&quot;);
+$TODAYSTATS-&gt;{numlinks} = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;links&quot;);
+$TODAYSTATS-&gt;{xpsum} = $DB-&gt;sqlSelect(&quot;sum(experience)&quot;, &quot;user&quot;);
+$TODAYSTATS-&gt;{nodehits} = $DB-&gt;sqlSelect(&quot;sum(hits)&quot;, &quot;node&quot;);
+$TODAYSTATS-&gt;{numcools} = $DB-&gt;sqlSelect('count(*)', 'coolwriteups'); 
+$TODAYSTATS-&gt;{numedcools} = $DB-&gt;sqlSelect('count(*)','links','linktype='.getId(getNode(&quot;coollink&quot;, &quot;linktype&quot;)));
+$TODAYSTATS-&gt;{numvotes} = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;);
+
+$DB-&gt;sqlInsert(&quot;stats&quot;, $TODAYSTATS);
+
+#stats DB table is not getting updated, so N-Wing added SinceJune23 to
+#things until the DB table is fixed again (June 23 was the last update)
+
+my $str = '';
+
+my $nodes = $DB -&gt; sqlSelect('count(*)', 'e2node');
+my $firmlinks = $DB-&gt;sqlSelect('count(*)', 'links', 'linktype='.getId(getNode('firmlink', 'linktype')));
+my $usersonline = $DB-&gt;sqlSelect('count(*)', 'room','visible=0');
+
+$str.=&quot;nodes: $nodes\n&quot;;
+
+my $writeups = $DB-&gt;sqlSelect('count(*)', 'writeup');
+$str.=&quot;writeups: $writeups\n&quot;;
+$str.='writeupstoday: '.($$TODAYSTATS{numwriteups} - $$YESTERDAYSTATS{numwriteups}).&quot;\n&quot;;
+
+$str.=&quot;links: $$TODAYSTATS{numlinks}\n&quot;;
+$str.=&quot;firmlinks: $firmlinks\n&quot;;
+
+
+$str.=&quot;users: $$TODAYSTATS{numusers}\n&quot;;
+$str.='userstoday: '.($$TODAYSTATS{numusers}-$$YESTERDAYSTATS{numusers}).&quot;\n&quot;;
+
+$str.=&quot;votes: $$TODAYSTATS{numvotes}\n&quot;;
+$str.='votestoday: '.($$TODAYSTATS{numvotes}-$$YESTERDAYSTATS{numvotes}).&quot;\n&quot;;
+
+$str.=&quot;cools: $$TODAYSTATS{numcools}\n&quot;;
+$str.='coolstoday: '.($$TODAYSTATS{numcools}-$$YESTERDAYSTATS{numcools}).&quot;\n&quot;;
+
+$str.=&quot;hits: $$TODAYSTATS{nodehits}\n&quot;;
+$str.='hitstoday: '.($$TODAYSTATS{nodehits}-$$YESTERDAYSTATS{nodehits}).&quot;\n&quot;;
+
+$str.=&quot;usersonline: $usersonline&quot;;
+
+$str;
+%]</nlcode>
+  <title>Statistics Data</title>
+</node>

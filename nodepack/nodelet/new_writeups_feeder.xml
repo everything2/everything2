@@ -1,0 +1,50 @@
+<node>
+  <nltext></nltext>
+  <parent_container>17</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2001-12-12 21:32:11</createtime>
+  <lastupdate>1322104045</lastupdate>
+  <hits>24</hits>
+  <node_id>1216418</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>459692</author_user>
+  <updateinterval>300</updateinterval>
+  <package>0</package>
+  <nodelet_id>1216418</nodelet_id>
+  <nlcode>[%
+my $howMany = 100;
+
+use JSON;
+
+my $cuss = $DB-&gt;sqlSelectMany('
+	writeup_id, parent_e2node, notnew,
+	node.author_user, node.reputation,
+	type.title AS type_title,
+	node.title REGEXP
+		\'^((January|February|March|April|May|June|July|August|September|October'
+		.'|November|December) [[:digit:]]{1,2}, [[:digit:]]{4})'
+		.'|((dream|editor|root) Log: )\'
+	AS islog
+','
+	writeup
+	JOIN node ON writeup_id = node.node_id
+	JOIN node type ON type.node_id = writeup.wrtype_writeuptype'
+,
+	'node.author_user != ' .getNode('Webster 1913' , 'user') -&gt; {node_id}
+,
+&quot;
+	ORDER BY publishtime DESC LIMIT $howMany&quot;
+);
+
+to_json($cuss -&gt; fetchall_arrayref({}));
+%]</nlcode>
+  <title>New Writeups Feeder</title>
+</node>

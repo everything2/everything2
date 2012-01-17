@@ -1,0 +1,103 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-04-15 11:58:25</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1018297</node_id>
+  <htmlcode_id>1018297</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#doChatMacro
+# pass which macro name to &quot;run&quot;
+# $$VARS{chatmacro} should contain the macro's text (yes, this is a bit clunky, but passing complex arguments via htmlcode is a pain)
+# $$VARS{chatmacro_NAME} where NAME is the macro's name should contain the actual macro
+# returns: parsed macro text (used for debugging)
+
+my $whichMacro = $_[0];
+my $sep = &quot;\n&quot;;
+my $uid = getId($USER);
+my $uname = $$USER{'title'};
+$uname =~ s/ /_/g;
+
+if($whichMacro !~ /^[A-Za-z0-9_\-]+$/) {
+return '&quot;' . $whichMacro . '&quot; isn\'t a valid macro name' . $sep;
+}
+my $macroFull;
+unless( $macroFull = $$VARS{'chatmacro_'.$whichMacro} ) {
+return '&quot;' . $whichMacro . '&quot; doesn\'t exist' . $sep;
+}
+
+my $origSendTo = $query-&gt;param('sendto');
+my $origMessage = $query-&gt;param('message');
+my $str = '';
+my @args = split('\s+',$$VARS{'chatmacro'});
+unshift @args, $uname;
+
+#loop through each line of the macro
+my $line;
+my $result;
+my @lineParts;
+my $part;
+my @macroLines = split(/\n/, $macroFull);
+foreach $line (@macroLines) {
+next if $line=~/^$/;
+next if $line=~/^#/;
+next unless $line=~/^\/say\s+(.*?)$/;
+$line = $1;
+
+#loop through each part of the line, looking for special symbols
+@lineParts = split('\s+', $line);
+
+$result = '';
+foreach $part (@lineParts) {
+if($part =~ /^\$(.*)/) { #starts with $
+	my $r = $1;
+	if($r =~ /^\d+\+?$/) { #numbers with optional + at end
+		if(substr($r,-1,1) eq '+') {
+			$r = substr($r, 0, -1);
+			$result .= join(' ', @{@args}[$r..$#{@args}]);	#tye on PM says: @{$aRef}[$n..$#{$aRef}]
+		} else {
+			$result .= $args[$r];
+		}
+	} else {
+		$result .= $part;
+	}
+} else {
+	$result .= $part;
+}
+$result .= ' ';
+
+}
+
+$result =~ s/^\s+//;
+$result =~ s/\s+$//;
+
+# $DB-&gt;sqlInsert('message', {msgtext=&gt;'DEBUG: using line result: }'.$result.'{', author_user=&gt;$uid, for_user=&gt;$uid});
+
+$query-&gt;param(-name=&gt;'sendto', -value=&gt;'');
+$query-&gt;param(-name=&gt;'message',-value=&gt;$result);
+
+#following mixed from htmlcode and getCode to call message (opcode)
+my $CODE = getNode('message', getType('opcode'));
+if(defined $CODE) {
+$str .= 'eval='.
+evalCode('@_ = ();'.&quot;\n&quot; . $$CODE{'code'})
+.';'
+;
+}
+
+$str .= $result . $sep;
+
+}
+
+$query-&gt;param(-name=&gt;'sendto', -value=&gt;$origSendTo);
+$query-&gt;param(-name=&gt;'message',-value=&gt;$origMessage);
+
+$str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>doChatMacro</title>
+</node>

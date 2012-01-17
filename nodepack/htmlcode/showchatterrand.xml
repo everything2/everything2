@@ -1,0 +1,130 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-03-05 23:28:39</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1278319</node_id>
+  <htmlcode_id>1278319</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#originally in [chatterbox] (nodelet)
+
+return 'If you '.linkNode(getNode('Create A New User','superdoc'),'get a (&lt;strong&gt;free&lt;/strong&gt;) account',{lastnode_id=&gt;0}).', you can talk here.' if getId($USER) == $HTMLVARS{guest_user};
+return '&lt;p&gt;&lt;em&gt;your earplugs are in&lt;/em&gt;&lt;/p&gt;' if $$VARS{publicchatteroff};
+#we need to delete old stuff too
+my $str;
+my $wherestr = 'for_user=0 and unix_timestamp(now())-unix_timestamp(tstamp) &lt; 300';
+$wherestr.=' and room='.$$USER{in_room} unless ($$VARS{omniphonic});
+
+my $csr = $DB-&gt;sqlSelectMany('*', 'message', $wherestr, &quot;order by tstamp&quot;);
+
+my $lines;
+my @msgs;
+while(my $MSG = $csr-&gt;fetchrow_hashref) {
+	$lines++;
+	push @msgs, $MSG;
+}
+if($lines &gt;= 15) {
+	@msgs = splice(@msgs, -15);
+}
+
+my $aid;	#message's author ID
+foreach my $MSG (@msgs) {
+	my $text = $$MSG{msgtext};
+	$text =~ s/(\S{22})/$1 /g;
+#	$text = encodeHTML($text);
+	$text =~ s/\&lt;/\&amp;lt\;/g;
+	$text =~ s/\&gt;/\&amp;gt\;/g;
+#	$text =~ s/\&quot;/\&amp;quot\;/g;
+
+        if (not int(rand(5))%5) {
+        my $array = [ split /\s/, $text ];
+
+        my $i;
+        for ($i = @$array; --$i; ) {
+        my $j = int rand ($i+1);
+        next if $i == $j;
+        @$array[$i,$j] = @$array[$j,$i];
+    }
+        
+        $text = join &quot; &quot;, @$array;
+        }
+	$aid = $$MSG{author_user} || 0;
+
+	if($$MSG{room} != $$USER{in_room}) {
+		if($$MSG{room}) {
+			my $R = getNodeById($$MSG{room});
+			$str.='('.linkNode($R, $$R{abreviation}).')';
+		} else {
+			$str.='(out)';
+		}
+	}
+	$text = parseLinks($text);
+
+	#N-Wing/wharfinger spending way too much time on a stupid thing ...
+	#change *stuff* into HTML bold, /stuff/ into italics
+	if($text =~ /^\/me .*/) {
+		$text =~ s/(\/\w+\/)/&lt;\/i&gt;$1&lt;i&gt;/g;
+		$text =~ s/(\*\w+\*)/&lt;\/i&gt;&lt;strong&gt;$1&lt;\/strong&gt;&lt;i&gt;/g;
+	}
+
+	#  Oh ye of HTML entities, even unto malformed ones: Your 
+	# tricks are no match for my '1337 regex skillz.
+	$text =~ s/(\.| |\&amp;nbsp;?)+$/./;
+
+	#do \n stuff, but since this is easy to abuse, only let certain people do it
+	$text =~ s/\s+\\n\s+/&lt;br \/&gt;/g if exists $HTMLVARS{group_gods}{$aid};
+
+	my $userlink = linkNode( $$MSG{author_user} );
+	# Make bones and nate look impressive.
+	$userlink =~ s/^(.*)$/&lt;strong&gt;$1&lt;\/strong&gt;/ if ( $aid == 282 || $aid == 220 );
+
+	if ( $text =~ /^\/me (.*)/ ) {
+		$str .= '&lt;i&gt;' . $userlink . ' ' . $1 . '&lt;/i&gt;';
+	} else {
+		$str .= '&amp;lt;' . $userlink . '&amp;gt; ' . $text;
+	}
+	$str.=&quot;&lt;br /&gt;\n&quot;;
+}
+
+
+if(not $lines) {
+	#my $EDB = int(rand(100));
+        my $EDB = 100;
+	my $response = '&lt;i&gt;and all is quiet...&lt;/i&gt;';
+
+	if($EDB&lt;25) {
+		my @borgspeak = (
+		'grrrrr...', '/me hungry!', '/me smells blood',
+		&quot;$$USER{title} looks tasty.&quot;,
+		'&lt;i&gt;you feel its eyes watching you&lt;/i&gt;',
+		'/me is watching you',
+		'/me coughs politely and eats your soul',
+		'/me tries to bite your toe',
+		'/me starts eating your hair',
+		'/me whispers the names of forgotten demons in your ear',
+		&quot;mmmm $$USER{title} food&quot;
+		);
+
+		$response = $borgspeak[int(rand(@borgspeak))];
+
+		my $edblink = linkNodeTitle('EDB');
+		if($response =~ /\/me/) {
+			$response =~ s/\/me /&lt;i&gt;$edblink /;
+			$response .= '&lt;/i&gt;';
+		} else {
+			$response = &quot;&amp;lt;$edblink&amp;gt;&quot; . $response;
+		}
+	}
+
+	return $response;
+}
+
+$str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>showchatterrand</title>
+</node>

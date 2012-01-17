@@ -1,0 +1,23 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2004-02-26 19:26:26</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1522371</node_id>
+  <htmlcode_id>1522371</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $str;
+#	$str .=&lt;&lt;EOD;
+#	&lt;b&gt;&lt;a #href=&quot;index.pl?tree=personal&amp;node_id=$$NODE{node_id}&amp;lastnode_id=$$NODE{node_id}&quot;&gt;personal&lt;/a&gt;&lt;/b&gt; 
+#EOD
+$str.= htmlcode(&quot;personal_cat&quot;);	
+
+return $str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>329</author_user>
+  <package>0</package>
+  <title>switch_text</title>
+</node>

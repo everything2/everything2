@@ -1,0 +1,48 @@
+<node>
+  <doctext>[%
+no strict;
+my $str = &quot;&quot;;
+
+sub dumpvar {
+  my ($packageName) = @_;
+
+  local *alias;
+
+  *stash = *{&quot;${packageName}::&quot;};
+
+  # Iterate through the symbol table, which contains glob
+  # values indexed by symbol names.
+  while (($varName, $globValue) = each %stash) {
+    $str .= &quot;$varName =============================&lt;br&gt;\n&quot;;
+    *alias = $globValue;
+    if (defined ($alias)) {
+      $str .= &quot;\$$varName $alias &lt;br&gt;\n&quot;;
+    } 
+    if (defined (@alias)) {
+      $str .= &quot;\@$varName @alias &lt;br&gt;\n&quot;;
+    } 
+    if (defined (%alias)) {
+      $str .= &quot;\%$varName &quot; . %alias . &quot;&lt;br&gt;\n&quot;;
+    }
+  }
+}
+
+dumpvar(&quot;Everything&quot;);
+
+$str;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-01-12 02:12:45</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>93</hits>
+  <node_id>377790</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>377790</document_id>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>test symbol tables</title>
+</node>

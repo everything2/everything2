@@ -1,0 +1,128 @@
+<node>
+  <doctext>&lt;p&gt;Here you can choose which experimental JavaScript modules you would like to enable. You probably shouldn't bother unless you know what you are doing: many of them do not do anything on their own, and some of them do not work at all.
+&lt;/p&gt;
+
+[%
+
+return &quot;If you logged in, you'd be able to choose which javascripts to enable and disable.&quot; if $$USER{title} eq 'Guest User';
+
+my $jsettings = getNode('Javascript Repository listings', 'setting');
+return 'Sorry; unable to get script list.' if !defined $jsettings;
+$jsettings = getVars($jsettings);
+my @jskeys = keys %$jsettings;
+
+my $newVar = $$VARS{includedJS};
+
+foreach(my @params = $query-&gt;param) {
+	if ($_ =~ /^addjs__(\d+)$/) {
+		next if $newVar =~ /$1/;
+		$newVar .= &quot;,$1&quot;;
+	}
+	if ($_ =~ /^removejs__(\d+)$/) {
+	$newVar =~ s/$1//;
+	$newVar =~ s/,,/,/g;
+		## bug?  Won't remove extra commas at start or end
+	}
+}
+
+if ($newVar gt '') {
+	$$VARS{includedJS} = $newVar;
+	# Save the last updated time so we can timestamp external documents which are affected
+	#  by preferences for caching purposes.  Epoch is Unix time() seconds for easy comparison.
+	use DateTime;
+	$$VARS{'preference_last_update_time'} = DateTime-&gt;now()-&gt;epoch();
+}
+
+my $removeFormHeader = '';
+my $removeForm = '';
+
+
+$removeForm .= htmlcode('openform');
+$removeForm.=&quot;&lt;ul&gt;&quot;;
+
+my @jsfiles = split(',',$$VARS{includedJS});
+my $UserHasNoJSon = 1;
+
+foreach (@jsfiles) {
+	my $thisJS = getNodeById($_);
+	next unless $thisJS;
+	$UserHasNoJSon = 0;
+	getRef $thisJS;
+	$removeForm.=&quot;\n\t&lt;li&gt;&quot; . $query-&gt;checkbox(&quot;removejs__&quot;.$_,0,1,$$thisJS{title}). &quot;&lt;/li&gt;&quot;;
+}
+if ($UserHasNoJSon == 1) {
+	$removeFormHeader.=&quot;\n&lt;p&gt;You do not have any Javascripts enabled.&lt;/p&gt;&quot;;
+	} else {
+	$removeFormHeader.=&quot;\n&lt;p&gt;Your enabled Javascripts:&lt;/p&gt;&quot;;
+	}
+$removeForm.=&quot;\n&lt;/ul&gt;&quot;;
+$removeForm.=$query-&gt;submit(&quot;sexisgood&quot;,&quot;remove&quot;);
+$removeForm.=$query-&gt;end_form();
+$removeForm.=&quot;&lt;hr&gt;&quot;;
+
+my $str = &quot;\n\n\n&lt;p&gt;Available Javascripts:&lt;/p&gt;&quot;;
+
+
+
+$str.=&quot;\n\n&lt;!--&quot; . $$VARS{includedJS} . &quot;--&gt;\n\n&quot;;
+
+
+
+
+
+# sorting of any kind?
+
+my $page = 0;
+$page = $query-&gt;param(&quot;page&quot;) * 10 if defined($query-&gt;param(&quot;page&quot;)); #10 per page
+my $count = 0;
+my $editStr;
+
+$str.=htmlcode(&quot;openform&quot;);
+
+my $uid = $$USER{node_id};
+
+my $isCoder = htmlcode('isinUsergroup',&quot;$uid, edev,1&quot;) || 
+              htmlcode('isinUsergroup',&quot;$uid,e2coders,1&quot;);
+
+foreach (@jskeys) {
+	$count++;
+	next while $count &lt; $page;
+
+	$editStr = '';
+	if ($isCoder) {
+		$editStr = &quot; (&quot;.linkNode($_,&quot;patch&quot;,{displaytype =&gt; &quot;viewcode&quot;}).&quot;) &quot;;
+	}
+
+	my $hasJS = ($$VARS{includedJS} =~ /$_/);
+	next if $hasJS;
+		## Note $hasJS: used to check the box if JS was included
+		## changed to not display at all, more user friendly.
+		## Now does $hasJS does nothing here
+	$str.=
+		&quot;\n\n\t&lt;div class='weblog_item'&gt;&quot;
+		. $query-&gt;checkbox(&quot;addjs__&quot;
+		. $_, $hasJS, '1', &quot;&quot;)
+		. $editStr.$$jsettings{$_}.&quot;&lt;/div&gt;&quot;;
+}
+
+#$str.= &quot;\n\n&quot; . htmlcode(&quot;closeform&quot;);
+$str .= $query-&gt;submit(&quot;sexisgood&quot;, &quot;add&quot;) . $query-&gt;end_form;
+
+$removeFormHeader.$removeForm.$str;
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-03-07 20:37:51</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>9</hits>
+  <node_id>1869414</node_id>
+  <edittime>2011-08-11 08:12:50</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1869414</document_id>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>Javascript Repository</title>
+</node>

@@ -1,0 +1,60 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-07-28 22:34:43</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1990065</node_id>
+  <htmlcode_id>1990065</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>use POSIX;
+
+my ($shortString) = @_;
+
+my @encodeChars = qw/
+ a   c d e f   h     k   m n o     r s t u   w x   z
+ A B C D E F G H   J K L M N   P Q R   T U V W X Y Z
+   2 3 4     7 8 9 
+ /
+ ;
+# Exclude because of similarity: I l 1
+# Exclude because of similarity: O 0
+# Exclude because of similarity: i j
+# Exclude because of similarity: v y
+# Exclude because of similarity: g p q
+# Exclude because of similarity: b 6
+# Exclude because of similarity: S 5
+
+my %decodeChars;
+
+for (my $charValue = 0; $charValue &lt; $#encodeChars; $charValue++) {
+  $decodeChars{$encodeChars[$charValue]} = $charValue;
+}
+
+my $decodeInt = sub {
+  my $decodeMe = shift;
+  my $encodeResult = 0;
+
+  for my $nextChar (split //, $decodeMe) {
+    $encodeResult *= $#encodeChars;
+    my $nextCharValue = $decodeChars{$nextChar};
+    return (0, &quot;Invalid char: $nextChar&quot;) if !defined $nextCharValue;
+    $encodeResult += $nextCharValue;
+  }
+
+  return ($encodeResult, undef);
+};
+
+
+my ($decodeResult, $error) = &amp;$decodeInt($shortString);
+$error = &quot;$shortString = $decodeResult&quot;;
+my $decodeNode = getNodeById($decodeResult);
+return $decodeNode;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>decode short string</title>
+</node>

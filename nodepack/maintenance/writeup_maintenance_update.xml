@@ -1,0 +1,78 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-12 20:44:36</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>39</hits>
+  <node_id>310</node_id>
+  <htmlcode_id>310</htmlcode_id>
+  <maintenance_id>310</maintenance_id>
+  <checks_arguments>0</checks_arguments>
+  <maintaintype>update</maintaintype>
+  <code>my ($NODE) = @_;
+getRef $NODE;
+return unless $NODE;
+my $E2NODE = getNode $$NODE{parent_e2node};
+
+return unless $E2NODE;
+
+# avoid duplicate draft/writeup titles
+foreach (getNodeWhere({ # should be at most one, but if not, we fix that, too:
+	title =&gt; $$E2NODE{title}, author_user =&gt; $$NODE{author_user}
+	}, 'draft')){
+	updateNode($_, -1);
+}
+
+use Everything;
+use JSON;
+
+$DB-&gt;{cache}-&gt;incrementGlobalVersion($E2NODE);
+
+htmlcode('update New Writeups data');
+
+# Make a notification if someone's about to blank a writeup
+if(defined $query-&gt;param('writeup_doctext')) {
+
+  my $trimmedNewText = $query-&gt;param('writeup_doctext');
+  $trimmedNewText =~ s/^\s+|\s$//;
+  
+  return htmlcode('unpublishwriteup', $NODE, 'blanked') unless $trimmedNewText;
+
+  htmlcode('addNotification', 'blankedwriteup', 0, {
+  	writeup_id =&gt; getId($NODE)
+	, author_id =&gt; $$USER{user_id}
+  }) if length $trimmedNewText &lt; 20;
+}
+
+if($query-&gt;param('writeup_wrtype_writeuptype')) {
+
+  my $WRTYPE=getNode $$NODE{wrtype_writeuptype};
+  
+  if ($$WRTYPE{type}{title} ne 'writeuptype' or 
+     ($$WRTYPE{title} eq 'definition' || $$WRTYPE{title} eq 'lede' and
+	 not Everything::isApproved($USER, getNode('Content Editors','usergroup'))
+	 and $$USER{title} ne 'Webster 1913'
+	 and $$USER{title} ne 'Virgil'))
+  {
+    $WRTYPE=getNode('thing','writeuptype'); 
+    $$NODE{wrtype_writeuptype} = getId($WRTYPE);
+
+  }
+  my $title = &quot;$$E2NODE{title} ($$WRTYPE{title})&quot;;
+  return if $$NODE{title} eq $title;
+  #only YOU can prevent deep recursion...
+
+  return htmlcode('repair e2node', $E2NODE) if $$WRTYPE{title} eq 'lede';
+
+  $$NODE{title} = $title;
+  updateNode $NODE, -1;
+}
+</code>
+  <type_nodetype>150</type_nodetype>
+  <author_user>113</author_user>
+  <package>0</package>
+  <maintain_nodetype>117</maintain_nodetype>
+  <title>writeup maintenance update</title>
+</node>

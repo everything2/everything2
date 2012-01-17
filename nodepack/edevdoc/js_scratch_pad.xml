@@ -1,0 +1,42 @@
+<node>
+  <doctext>&lt;table border=&quot;0&quot; style=&quot;width: 100%&quot; cellpadding=&quot;3px&quot; cellspacing=&quot;3px&quot;&gt;
+&lt;tr&gt;&lt;td style=&quot;padding: 10px&quot;&gt;
+	&lt;h1 class=&quot;nodetitle&quot; id=&quot;pad_title&quot;&gt;Scratch Pad&lt;/h1&gt;
+	&lt;div class=&quot;createdby&quot;&gt;created by me&lt;/div&gt;
+	&lt;div class=&quot;writeup&quot; style=&quot;margin: 20px 0 20px&quot;&gt;
+		&lt;div class=&quot;writeup_title&quot;&gt;
+			&lt;table border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; width=&quot;100%&quot;&gt;
+			&lt;tr class=&quot;wu_header&quot;&gt;
+				&lt;td class=&quot;wu_typeauthorprint&quot; style=&quot;text-align: left;&quot;&gt;(draft) by &lt;strong&gt;me&lt;/strong&gt;&lt;/td&gt;
+				&lt;td class=&quot;wu_dtcreate&quot; style=&quot;text-align: right;&quot;&gt;&lt;small&gt;&lt;!--Wed Dec 24 2008 at 21:30:59--&gt;&lt;/small&gt;&lt;/td&gt;
+			&lt;/tr&gt;&lt;/table&gt;
+		&lt;/div&gt;
+		&lt;table class=&quot;writeuptable&quot;&gt;
+			&lt;tr&gt;&lt;td&gt;&lt;div class=&quot;writeup_text&quot; id=&quot;output&quot;&gt;&lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;
+			&lt;tr class=&quot;wu_footer&quot;&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;
+		&lt;/table&gt;
+	&lt;/div&gt;
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;
+	&lt;input style=&quot;width:100%&quot; onkeyup=&quot;document.getElementById('pad_title').innerHTML = value; document.title = value + ' - JS Scratch Pad@Everything2.com';&quot; value=&quot;Scratch Pad&quot;&gt;
+	&lt;textarea style=&quot;width:100%; height: 400px&quot; class=&quot;writeup_doctext&quot; wrap=&quot;virtual&quot; id=&quot;input&quot; onkeyup=&quot;if (fastUpdate) Render(); else rendered = 0;&quot;&gt;&lt;/textarea&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+
+&lt;script&gt;&lt;!--
+document.write(unescape(&quot;%3Cscript%3E%20%3C%21--%0Avar%20rendered%20%3D%200%3B%0Avar%20fastUpdate%20%3D%201%3B%0A%0Afunction%20Render%28%29%20%7B%0A%09if%20%28fastUpdate%20%7C%7C%20%21rendered%29%20%7B%0A%09%09var%20input%20%3D%20document.getElementById%28%27input%27%29.value%3B%0A%09%09input%20%3D%20input.replace%28/%5C%5B%28%5B%5E%5C%5B%7C%5C%5D%5D*%29%5C%5D/g%2C%20%27%3Ca%20href%3D%22http%3A//everything2.com/e2node/%241%22%20title%3D%22%241%22%3E%241%3C/a%3E%27%29%3B%0A%09%09input%20%3D%20input.replace%28/%5C%5B%28%5B%5E%5C%5B%7C%5C%5D%5D*%29%5C%7C%28%5B%5E%7C%5C%5D%5D*%29%5C%5D/g%2C%20%27%3Ca%20href%3D%22http%3A//everything2.com/e2node/%241%22%20title%3D%22%241%22%3E%242%3C/a%3E%27%29%3B%0A%09%09if%20%28%21input.match%28/%3C%28br%7Cp%7Cpre%29%3E/i%29%29%20input%20%3D%20input.replace%28/%5Cr%3F%5Cn%5Cr%3F%5Cn/g%2C%20%27%3Cp%3E%27%29.replace%28/%5Cr%3F%5Cn/g%2C%20%27%3Cbr%3E%27%29%3B%0A%09%09document.getElementById%28%27output%27%29.innerHTML%20%3D%20input%3B%0A%09%7D%0A%09%0A%09if%20%28%21fastUpdate%29%20setTimeout%28Render%2C%201000%29%3B%0A%7D%0A%0ARender%28%29%3B%0A//--%3E%0A%3C/script%3E&quot;));
+// --&gt;&lt;/script&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-01-29 00:34:33</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1972536</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>854232</type_nodetype>
+  <document_id>1972536</document_id>
+  <author_user>1797883</author_user>
+  <package>0</package>
+  <title>JS Scratch Pad</title>
+</node>

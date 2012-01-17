@@ -1,0 +1,126 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-03-07 21:43:37</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>75</hits>
+  <node_id>444740</node_id>
+  <htmlcode_id>444740</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>return if $$USER{user_id}==$HTMLVARS{guest_user};
+
+my $SETTINGS = getVars $NODE;
+my $now = $DB-&gt;sqlSelect(&quot;UNIX_TIMESTAMP(now())&quot;);
+
+my $maint_nodes;
+unless (exists $$SETTINGS{nwriteupsupdate} and 
+        $now - $$SETTINGS{nwriteupsupdate} &lt; 3600) {
+
+  $$SETTINGS{nwriteupsupdate} = $now;
+  my $type1 = getId(getType('writeup'));
+  my $user = getId($NODE);
+
+  my $wherestr = &quot;type_nodetype=$type1
+                  AND author_user=$user &quot;;
+
+  $maint_nodes = htmlcode('listMyMaintenanceNodes',$user);
+
+  $maint_nodes =~ s/ /, /g;
+
+  $wherestr .= &quot; AND node_id NOT IN ($maint_nodes)&quot; if $maint_nodes;
+
+  my $writeups = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;node&quot;,$wherestr);
+
+  $$SETTINGS{numwriteups} = int($writeups);
+}
+
+if($$USER{user_id} == $$NODE{user_id})
+{
+ #add numwriteups to $USER for honor roll
+
+      $$USER{numwriteups} = $$SETTINGS{numwriteups};
+      updateNode($USER, $USER);
+
+  delete $$VARS{can_weblog};
+  my $wls = getVars(getNode(&quot;webloggables&quot;, &quot;setting&quot;));
+  
+  my @canwl;
+  foreach(keys %$wls)
+  {
+      my $n = getNodeById($_);
+      next unless $n;
+      unless($$n{type}{title} eq &quot;usergroup&quot;)
+      {
+          if(exists($HTMLVARS{group_gods}{$$USER{node_id}})){
+             push @canwl, $_;
+          }
+
+          next;
+      }
+ 
+      if( exists($HTMLVARS{group_gods}{$$USER{node_id}}) || $DB-&gt;isApproved($USER, $n)){
+        push @canwl, $_;
+        next;
+      }  
+  }
+  push @canwl, getId(getNode('News for noders. Stuff that matters.', 'superdoc'))
+  	if exists($HTMLVARS{'group_content editors'}{$$USER{node_id}});
+
+  $$VARS{can_weblog} = join &quot;,&quot;, sort{$a &lt;=&gt; $b} @canwl;
+
+}
+
+
+my $numcools = $DB-&gt;sqlSelect('count(*)', 'coolwriteups', 'cooledby_user='.getId($NODE));
+$$SETTINGS{coolsspent} = linkNode(getNode('cool archive','superdoc'), $numcools, { useraction =&gt; 'cooled', cooluser =&gt; $$NODE{title} }) if $numcools;
+
+my $feedlink = linkNode(getNode('new writeups atom feed', 'ticker'), 'feed', {'foruser' =&gt; $$NODE{title}}, {'title' =&gt; &quot;Atom syndication feed of latest writeups&quot;, 'type' =&gt; &quot;application/atom+xml&quot;});
+
+$$SETTINGS{nwriteups} = $$SETTINGS{numwriteups} . &quot; - &quot; . &quot;&lt;a href=\&quot;/user/&quot;.rewriteCleanEscape($$NODE{title}).&quot;/writeups\&quot;&gt;View &quot; . $$NODE{title} . &quot;'s writeups&lt;/a&gt; &quot; . ' &lt;small&gt;(' . $feedlink .')&lt;/small&gt;' if $$SETTINGS{numwriteups};
+
+$$SETTINGS{nwriteups} = 0 if not $$SETTINGS{numwriteups};
+
+##Last writeup cache
+if($$SETTINGS{numwriteups} !~ /^\d+$/) {
+	#sometimes this gets messed up!
+} elsif($$SETTINGS{numwriteups} &gt; 0){
+
+  my $maintStr;
+  unless($maint_nodes){
+    $maint_nodes = htmlcode('listMyMaintenanceNodes',getId($NODE) );
+    $maint_nodes =~ s/ /, /g;
+    $maintStr = &quot; AND node_id NOT IN ($maint_nodes) &quot; if $maint_nodes;
+  }
+
+	$$SETTINGS{lastnoded} = $DB-&gt;sqlSelect('node_id', 'node JOIN writeup ON node_id=writeup_id',
+                                         &quot;author_user=$$NODE{node_id}&quot;
+                                         .$maintStr
+                                         .&quot; ORDER BY publishtime DESC LIMIT 1&quot;)
+	unless(getNodeById($$SETTINGS{lastnoded}));
+
+}
+
+
+use Everything::Experience;
+my $lvl = getLevel($NODE);
+$$SETTINGS{level} = $lvl;
+   
+my $TITLES= getVars(getNode('level titles','setting'));
+$$SETTINGS{level} .= &quot; ($$TITLES{$$SETTINGS{level}})&quot;;
+
+if ($$NODE{title} eq 'thefez') { $$SETTINGS{level} = &quot;-1 (Arcanist)&quot; } # --N 
+
+$$SETTINGS{level} .= &quot; \/ $$NODE{experience}&quot;;
+
+
+setVars($NODE, $SETTINGS);
+   
+'';
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>setupuservars</title>
+</node>

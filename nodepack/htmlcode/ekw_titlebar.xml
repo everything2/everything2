@@ -1,0 +1,48 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>6</hits>
+  <node_id>1118979</node_id>
+  <htmlcode_id>1118979</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $str = &quot;
+
+&lt;font size=2&gt;
+[&amp;nbsp;&quot;;
+
+#if (getId($USER) == $HTMLVARS{guest_user}) {
+#	$str .= linkNodeTitle (&quot;login&quot;, $NODE, &quot;Log in&quot;) 	
+#	  . &quot; | &quot; . linkNodeTitle(&quot;Create a new user&quot;);
+#} else {
+#	$str .= linkNode ($HTMLVARS{default_node}, &quot;log $$USER{title} out&quot;, {op =&gt; 'logout'})
+#		. &quot; | &quot; . linkNode ($USER);
+#	$str .= &quot; | &quot; . linkNodeTitle (&quot;user settings&quot;);
+#}
+
+my ($ABOUT) = getNode( 'About ekw theme', getType('document') );
+$str .= linkNode( $ABOUT, 'ekw About/FAQ' , {lastnode_id =&gt; undef});
+
+my ($PREFS) = getNode( 'ekw preferences', getType('superdoc') );
+$str .= &quot; | &quot; . linkNode( $PREFS, undef, {lastnode_id =&gt; undef});
+
+my ($GNL) = getNode('Gigantic Node Lister', getType('restricted_superdoc'));
+$str .= &quot; | &quot; . linkNode ($GNL, undef, {lastnode_id =&gt; undef}) if canReadNode ($USER, $GNL);
+
+my ($GCL) = getNode('Gigantic Code Lister', getType('restricted_superdoc'));
+$str .= &quot; | &quot; . linkNode ($GCL, undef, {lastnode_id =&gt; undef}) if canReadNode ($USER, $GCL);
+
+my ($ROOT) = getNode('root', getType('user'));
+my ($ss) = getNode('system settings', getType('setting'));
+
+$str .= &quot; | &quot; . linkNode ($ss, undef, {lastnode_id =&gt; undef}) if ($USER eq $ROOT);
+#$str .= &quot; | &quot; . linkNode ($HTMLVARS{default_node}, undef, {lastnode_id =&gt; undef});
+$str . &quot; ]&lt;/font&gt;&quot;;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>ekw titlebar</title>
+</node>

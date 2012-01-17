@@ -1,0 +1,69 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-04 00:14:10</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>17</hits>
+  <node_id>177</node_id>
+  <htmlcode_id>177</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>return &quot;&lt;i&gt;you can't update this node&lt;/i&gt;&quot; unless canUpdateNode($USER, $NODE);
+my $SETTINGS = getVars($NODE);
+my @params = $query-&gt;param;
+my $str=''; 
+
+foreach (@params) {
+  if(/setsetting_(.*)$/) {
+    $$SETTINGS{$1}=$query-&gt;param('setsetting_'.$1);
+  }
+}
+
+foreach (@params) {
+#  if(/delsetting_(\w*)$/) {
+  if(/delsetting_(.*)$/) { #for s/a/b in 'cloakers'
+    delete $$SETTINGS{$1};
+  }
+}
+
+
+if($query-&gt;param('newsetting') ne '' and $query-&gt;param('newval') ne ''){
+  my $title = $query-&gt;param('newsetting');
+  #$title =~ s/\W//g;  #i'm not sure what this protects
+  $$SETTINGS{$title} = $query-&gt;param('newval');
+}
+
+setVars ($NODE, $SETTINGS);
+my @skeys = keys %$SETTINGS;
+@skeys = sort {$a cmp $b} @skeys;
+
+my ($keysize, $valsize) = (15, 30);
+my $oddrow = '';
+
+$str.=&quot;&lt;table class='setvarstable'&gt;\n&quot;;
+$str.=&quot;&lt;tr&gt;&lt;th&gt;Remove&lt;/th&gt;&lt;th&gt;Setting&lt;/th&gt;&lt;th&gt;Value&lt;/th&gt;&lt;/tr&gt;\n&quot;;
+foreach(@skeys) {
+  $oddrow = ($oddrow ? '' : ' class=&quot;oddrow&quot;');
+  my $value = encodeHTML($$SETTINGS{$_});
+  #  This breaks if there's a double quote in the text, so we replace with &amp;quot;
+  $value =~ s/\&quot;/&amp;quot;/g;
+  $str.=qq'&lt;tr$oddrow&gt;&lt;td&gt;&lt;input type=&quot;checkbox&quot; name=&quot;delsetting_$_&quot;&gt;&lt;/td&gt;
+    &lt;td class=&quot;setting&quot;&gt;&lt;b&gt;$_&lt;/b&gt;&lt;/td&gt;
+    &lt;td class=&quot;setting&quot;&gt;&lt;textarea name=&quot;setsetting_$_&quot; class=&quot;expandable&quot;
+		cols=&quot;$valsize&quot; rows=&quot;1&quot;&gt;$value&lt;/textarea&gt;&lt;/td&gt;&lt;/tr&gt;\n';
+}
+$str.=qq'&lt;tr&gt;&lt;td&gt;&lt;/td&gt;
+   &lt;td&gt;&lt;input type=&quot;text&quot; name=&quot;newsetting&quot; size=&quot;$keysize&quot;&gt;&lt;/td&gt;
+   &lt;td&gt;&lt;textarea name=&quot;newval&quot; class=&quot;expandable&quot;
+   		cols=&quot;$valsize&quot; rows=&quot;1&quot;&gt;&lt;/textarea&gt;&lt;/td&gt;&lt;/tr&gt;\n';
+$str.=&quot;&lt;/table&gt;\n&quot;;
+
+
+$str;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>editvars</title>
+</node>

@@ -1,0 +1,63 @@
+<node>
+  <doctext>@import url(&quot;/node/stylesheet/bookworm&amp;displaytype=view&quot;);
+
+/* kuler: 1C1D21,31353D,445878, 92CDCF,EEEFF7 */
+ 
+body {
+	color: #1C1D21;
+	background-color: #EEEFF7;
+}
+
+
+
+
+a:link {
+	color: #445878;
+}
+
+a:link.external {
+	color: #339933;
+}
+
+a:visited {
+	color: #993333;
+}
+
+.oddrow, #searchform input, .nodelet, #msgnum, #homenodeheader dt, #epicenter_zen  {
+	background-color: #445878;
+color: #eeeff7;
+}
+
+.oddrow a:link, .nodelet a:link, #msgnum a:link, #homenodeheader dt a:link, #epicenter_zen a:link {
+color: #92CDCF;
+}
+
+
+.nodelet h2 {
+	background-color: #1C1D21;	
+}
+
+#writeup_list span.writeupmeta {
+	background: none;	
+}
+
+#writeup_list span.title {
+	color: #1C1D21;
+	background-color: #EEEFF7;
+}
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-03-12 17:12:00</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1933722</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1854352</type_nodetype>
+  <document_id>1933722</document_id>
+  <author_user>974148</author_user>
+  <package>0</package>
+  <title>bookworm blue</title>
+</node>

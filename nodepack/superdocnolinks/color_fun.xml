@@ -1,0 +1,243 @@
+<node>
+  <doctext>&lt;p&gt;&lt;small&gt;This will eventually have some things in which you can play with colors. But it is still being created, so don't go complaining to [% linkNodeTitle('N-Wing'); %] if you see Server Error!s.&lt;/small&gt;&lt;/p&gt;
+
+[%
+my %allColors;
+my $nl = &quot;&lt;br /&gt;\n&quot;;
+
+
+#lists all elements in hash chain that are in the given item's chain
+#arguments: hash, starting value
+local *hashChainListChain = sub {
+	my $hashChain = shift;
+	my $orig = shift;
+	return 0 unless $orig;
+	my $max = scalar(keys(%$hashChain));
+	my $cur = $orig;
+	my @found = ($cur);
+	do {
+		return @found unless exists $$hashChain{$cur}; #broken chain
+		$cur = $$hashChain{$cur};
+		return @found unless $cur; #broken chain
+		return @found if $cur eq $orig;	#did entire chain
+		push @found, $cur;
+	} while(--$max&gt;0);
+	return @found;
+};
+
+
+#returns if 2 key/values are in the same hash
+#arguments: hash, test 1, test 2
+local *hashChainIsSameChain = sub {
+	my $hashChain = shift;
+	my $test1 = shift;
+	my $test2 = shift;
+	return 0 unless $test1 &amp;&amp; $test2;
+	if($test1 eq $test2) {
+		return (exists $$hashChain{$test1}) ? 1 : 0;
+	}
+	my $max = scalar(keys(%$hashChain));
+
+	my $k = $test1;
+	do {
+		return 0 unless exists $$hashChain{$k}; #broken chain
+		$k = $$hashChain{$k};
+		return 0 unless $k; #broken chain
+		return 1 if $k eq $test2;
+	} while(--$max&gt;0);
+
+	return 0; #walked entire chain, and no match
+};
+
+
+#adds elements to a chain stored in a hash
+#arguments: hash, synonym 1, synonym 2
+#precondition: hash is empty or has valid chains (valid means no dead-ends and no trees)
+#postcondition: a new chain is created, or an existing chain is added to
+local *hashChainAdd = sub {
+	my $hashChain = shift;
+	my $k = shift;
+	my $v = shift;
+	return unless $k &amp;&amp; $v;
+
+	#only do tests once
+	my $inK = (exists $$hashChain{$k}) ? 1 : 0; #yes, ?1:0 is redundant, ...
+	my $inV = (exists $$hashChain{$v}) ? 1 : 0; #... but I want to force it
+
+	#cases:
+	#	1) same thing
+	#	1.1) doesn't exist	create link to self
+	#	1.2) exists			do nothing
+	#	2) both don't exist	create new chain
+	#	3) one exists		insert into chain
+	#	4) both exists
+	#	4.1) same chain		do nothing
+	#	4.2) different chains	merge chains
+
+	#case 1: equal elements
+	if($k eq $v) {
+		$$hashChain{$k} = $k unless $inK;
+
+	#case 2: both don't exist, so create new chain
+	} elsif(!$inK &amp;&amp; !$inV) {
+		$$hashChain{$k} = $v;
+		$$hashChain{$v} = $k;
+
+	#case 3: only 1 exists
+	} elsif(($inK &amp;&amp; !$inV) || ($inV &amp;&amp; !$inK)) {
+		($k, $v) = ($v, $k) if $inV;
+		$$hashChain{$v} = $$hashChain{$k};
+		$$hashChain{$k} = $v;
+
+	#case 4: both exist
+	} elsif($inK &amp;&amp; $inV) {
+		return if hashChainIsSameChain($hashChain, $k, $v);
+		my $t = $$hashChain{$v};
+		$$hashChain{$v} = $$hashChain{$k};
+		$$hashChain{$k} = $t;
+
+	#unknown case!
+	} else {
+		#TODO give some sort of error message
+		return;
+	}
+
+	return;
+};
+
+
+#returns a 3-digit hex code for the given 6-digit hex code
+#pass the hex code in the form '#rrggbb' or 'rrggbb'
+#if each component repeats, then the shortened form of '#rgb' will be returned
+local *hexMakeShort = sub {
+	my $c = $_[0];
+	return unless $c;
+	$c=substr($c,1) if substr($c,0,1) eq '#'; #don't want #
+	return unless lc($c)=~/^([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])([0-9a-f])$/; #FIXME NPB yuck
+	return unless ($1 eq $2) &amp;&amp; ($3 eq $4) &amp;&amp; ($5 eq $6);
+	return '#'.$1.$2.$3;
+};
+
+
+#returns a 6-digit hex code for the given 3-digit hex code
+#pass the hex code in the form '#rgb' or 'rgb', and the expanded form of '#rrggbb' will be returned
+local *hexMakeLong = sub {
+	my $c = $_[0];
+	return unless $c;
+	$c=substr($c,1) if substr($c,0,1) eq '#'; #don't want #
+	return unless lc($c)=~/^([0-9a-f])([0-9a-f])([0-9a-f])$/;
+	return '#'.$1.$1.$2.$2.$3.$3;
+};
+
+
+#loads the color hashes
+local *loadColors = sub {
+	return if scalar(keys(%allColors)); #already loaded
+
+	my @colorChart = (
+		#W3's specs for HTML 4
+		['black','#000'],
+		['silver','#c0c0c0'],
+		['gray','#808080'],
+		['white','#fff'],
+		['maroon','#800000'],
+		['red','#f00'],
+		['purple','#800080'],
+		['fuchsia','#f0f', 'magic pink'],
+		['green','#008000'],
+		['lime','#0f0'],
+		['olive','#808000'],
+		['yellow','#ff0'],
+		['navy','#000080'],
+		['blue','#00f'],
+		['teal','#008080'],
+		['aqua','#0ff'],
+
+		#miscellaneous
+
+#		['','#'],
+	);
+
+	my $p; my $c;
+	my $cur;
+	for my $single (@colorChart) {
+		$p = $$single[0];
+		for $cur (@$single) {
+			hashChainAdd(\%allColors, $p,$cur);
+			if($c=hexMakeLong($cur)) { hashChainAdd(\%allColors, $p,$c); }
+			if($c=hexMakeShort($cur)) { hashChainAdd(\%allColors, $p,$c); }
+		}
+	}
+
+	return;
+};
+
+
+#returns a (possibly 0-length) list of all forms for the given color
+local *findForms = sub {
+#	my %found;
+	my $origColor = $_[0];
+	return unless $origColor =~ /^([A-Za-z0-9#]+)$/;
+	$origColor = lc($1);
+	if($origColor =~ /^[0-9a-f]+$/) { $origColor='#'.$origColor; }
+
+	return hashChainListChain(\%allColors, $origColor);
+
+};
+
+
+my $str='';
+loadColors();
+my $defaultColor = 'green';
+my $inColor = $query-&gt;param('convertcolor') || $defaultColor;
+if($inColor =~ /^([A-Za-z0-9#]+)$/) {
+$inColor = $1;
+} else {
+$inColor = $defaultColor;
+}
+
+$str .= htmlcode('openform');
+$query-&gt;param('convertcolor',$inColor);
+$str .= 'color: ' . $query-&gt;textfield('convertcolor') . $nl;
+my @matches = findForms($inColor);
+$str .= 'color given: ' . $inColor . '; equal colors: ' . join(', ',@matches) . $nl;
+$str .= htmlcode('closeform') . $nl;
+
+if($query-&gt;param('known') eq '1') {
+$str .= 'supported colors: '.join(', ',sort(keys(%allColors))) . $nl;
+} else {
+$str .= linkNode($NODE,'show supported',{'known'=&gt;1}) . $nl;
+}
+
+if(scalar(@matches)&gt;0) {
+$str .= '&lt;table border=&quot;1&quot;&gt;'.&quot;\n&quot;.'&lt;tr&gt;&lt;th&gt;raw string&lt;/th&gt;&lt;th&gt;td bgcolor=&lt;/th&gt;&lt;th&gt;style=&quot;background-color:&lt;/th&gt;&lt;/tr&gt;'.&quot;\n&quot;;
+foreach(@matches) {
+$str .= '&lt;tr&gt;&lt;td&gt;'.linkNodeTitle($_).'&lt;/td&gt;&lt;td bgcolor=&quot;'.$_.'&quot;&gt;'.$_.'&lt;/td&gt;&lt;td style=&quot;background-color: '.$_.';&quot;&gt;'.$_.'&lt;/td&gt;&lt;/tr&gt;'.&quot;\n&quot;;
+}
+$str .= &quot;&lt;/table&gt;\n&quot;;
+}
+
+$str;
+%]
+&lt;/p&gt;
+
+&lt;hr /&gt;
+&lt;p&gt;
+wharf's stuff:&lt;br /&gt;
+[{popwindow}]
+&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-07-25 22:47:17</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1121058</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1065266</type_nodetype>
+  <document_id>1121058</document_id>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>color fun</title>
+</node>

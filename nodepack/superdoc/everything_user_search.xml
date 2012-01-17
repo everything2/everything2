@@ -1,0 +1,341 @@
+<node>
+  <doctext>&lt;p&gt;Here you can list all the writeups contributed by any user.
+&lt;/p&gt;
+
+[{openform:-method,get}]
+&lt;fieldset&gt;&lt;legend&gt;Choose user&lt;/legend&gt;
+&lt;label&gt;User name:
+[%
+my @friends = (
+	'lawnjart', 'clampe', 'dem bones', 'Jet-Poop', 'dannye', 'sensei', 'jessicapierce',
+	'junkpile', 'Lord Brawl', 'ToasterLeavings', 'wharfinger', 'Lometa', 'riverrun',
+	'jaybonci', 'Quizro', 'Demeter', 'ideath', 'dann', 'Evil Catullus', 'Mr. Hotel',
+	'Roninspoon', 'wertperch', 'anthropod', 'Professor Pi', 'Igloowhite', 'iceowl',
+	'panamaus', 'sid', 'Oolong', 'mauler', 'aneurin', 'Wiccanpiper', 'avalyn', 'TheDeadGuy',
+	'The Debutante', 'LaggedyAnne', 'Junkill', 'Jack', 'Timeshredder', 'Noung',
+	'The Custodian', 'Tem42', 'Aerobe', 'Auspice');
+my $friend = $query-&gt;param('usersearch');
+
+$friend ||= $friends[rand(@friends)];
+return 
+   $query-&gt;textfield('usersearch', $friend)
+   . $query-&gt;hidden('showquery')
+   ;
+
+# 2011-1-13 mauler // Removed creases, sneff, XWiz, added Aerobe, cassparadox
+# 2009-5-13 mauler // Removed WickerNipple, Rancid Pickle; renamed joer, dann; added Noung, The Custodian, Tem42
+# 2007-11-02 mauler // Removed Teiresias, ryano, ophie; added Jack
+# 2007-04-29 alex // Removed thefez, ailie, knifegirl, yossarian, tes, coby, donfreenut, Halspal, nate, pingouin, N-Wing, discofever, Uberfetus; renamed Cletus the Foetus; added aneurin, Wiccanpiper, avalyn, TheDeadGuy, Excalibre, DejaMorgana, haze, GrouchyOldMan, spiregrain, The Debutante, LaggedyAnne, paraclete, Junkill, XWiz, Timeshredder
+# 2011-3-20 mauler // Removed Bitriot (due to asamothing)
+# 2011-09-23 DonJaime // Renamed cassparadox -&gt; Auspice
+
+%]
+&lt;/label&gt;
+
+&lt;label&gt;Order By:
+[% #/
+my $choices = [
+	'writeup.publishtime DESC', 'writeup.publishtime ASC',
+	'node.title ASC', 'node.title DESC',
+	'node.reputation DESC', 'node.reputation ASC',
+	'writeup.wrtype_writeuptype ASC', 'writeup.wrtype_writeuptype DESC',
+	'length(node.title) ASC', 'length(node.title) DESC',
+	'node.hits ASC', 'node.hits DESC',
+	'RAND()',
+];
+
+my $labels = {
+	'writeup.publishtime DESC' =&gt; 'Age, Newest First',
+	'writeup.publishtime ASC' =&gt; 'Age, Oldest First',
+	'node.title ASC' =&gt; 'Title, Forwards (...012...ABC...)',
+	'node.title DESC' =&gt; 'Title, Backwards (...ZYX...210...)',
+	'node.reputation DESC' =&gt; 'Reputation, Highest First',
+	'node.reputation ASC' =&gt; 'Reputation, Lowest First',
+	'writeup.wrtype_writeuptype ASC' =&gt; 'Type (person, thing, idea, place, ...)',
+	'writeup.wrtype_writeuptype DESC' =&gt; 'Type (..., place, idea, thing, person)',
+	'length(node.title) ASC' =&gt; 'Title Length, Shortest First',
+	'length(node.title) DESC' =&gt; 'Title Length, Longest First',
+	'node.hits DESC' =&gt; 'Times Viewed, Most First',
+	'node.hits ASC' =&gt; 'Times Viewed, Least First',
+	'RAND()' =&gt; 'Random',
+};
+
+# while we have the options, check parameter validity:
+# don't let user execute arbitrary SQL -- VERY BAD
+
+$query-&gt;delete('orderby')
+	if $query-&gt;param('orderby') and !$$labels{$query-&gt;param('orderby')};
+
+return $query-&gt;hidden('filterhidden') .
+  $query-&gt;popup_menu(
+   -name =&gt; 'orderby',
+   -values =&gt; $choices,
+   -labels =&gt; $labels,
+   -default =&gt; 'writeup.publishtime DESC'
+  );
+%]
+&lt;/label&gt;
+&lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;submit&quot;&gt;
+&lt;/fieldset&gt;
+&lt;/form&gt;
+[% #/
+
+# keep all necessary parameters in %params hash for sort/filter links
+my %params = $query -&gt; Vars();
+my $us = htmlScreen($params{usersearch}); #user's title to find WUs on
+return '&lt;p&gt;Please give a user name.&lt;/p&gt;' unless $us;
+
+
+#quit if invalid user given
+my $user = getNode($us, 'user');
+return 'It seems that the user &quot;'.$us.'&quot; doesn\'t exist... how very, very strange...
+	(Did you type their name correctly?)' unless $user;
+
+# special service for Eddie
+return '&lt;p align=&quot;center&quot;&gt;&lt;big&gt;&lt;big&gt;&lt;strong&gt;G r o w l
+	[EDB reads his Message Inbox|!]&lt;/strong&gt;&lt;/big&gt;&lt;/big&gt;' if ($$user{title} eq 'EDB');
+
+# constants
+my $typeID = getId(getType('writeup')) or return &quot;Ack! Can't get writeup nodetype.&quot;;
+my $perpage = 50;	# number to show at a time
+
+my $uid = getId($user);	# lowercase = user searching on
+my $UID = $$USER{node_id}; # uppercase = user that is viewing
+my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
+my $isEd = $isRoot || (exists $HTMLVARS{'group_content editors'}{$UID});
+my $isMe = ($uid == $UID) &amp;&amp; ($uid!=0);
+my $rep = $isMe || $isEd;
+my $isGuest = $$USER{user_id} == $HTMLVARS{guest_user};
+
+# remove url-derived and other superfluous parameters, include defaults
+delete @params{qw(node node_id type op submit)};
+delete $params{page} unless $params{page} &gt; 1;
+$params{usersearch} = $$user{title}; # clean/right case for links
+$params{orderby} ||= 'writeup.publishtime DESC';
+$params{filterhidden} = (0,1,2)[int $params{filterhidden}] if $rep;
+
+# set up query
+my $edSelect = &quot;, (SELECT 1 FROM nodenote
+		WHERE nodenote.noter_user != 0
+			AND (nodenote.nodenote_nodeid = node.node_id
+			OR nodenote.nodenote_nodeid = writeup.parent_e2node)
+		LIMIT 1
+		) AS hasnote&quot; if $isEd;
+
+my ($voteSelect, $voteJoin) = (
+	', vote.weight'
+	, &quot;LEFT OUTER JOIN vote
+		ON vote.voter_user = $UID
+		AND vote.vote_id = node.node_id&quot;
+	) unless $isGuest;
+
+my ($filter, $showFilter) = (
+	'AND writeup.notnew '
+		.('= 0', '!= 0')[$params{filterhidden}-1]
+	, ' published '
+		.('not ')[$params{filterhidden}-1]
+		.'hidden'
+	) if $params{filterhidden};
+
+my @sqlQuery = (
+	&quot;node.node_id, writeup.parent_e2node, writeup.cooled,
+	type.title AS type_title, node.reputation, writeup.notnew, writeup.publishtime,
+	$uid AS author_user
+	$voteSelect
+	$edSelect&quot;
+   , 
+   &quot;node
+	LEFT OUTER JOIN writeup
+		ON writeup.writeup_id = node.node_id
+	$voteJoin
+	JOIN node AS type ON type.node_id=writeup.wrtype_writeuptype&quot;
+    ,
+	&quot;node.author_user = $uid
+	AND node.type_nodetype = $typeID
+	$filter&quot;
+    ,
+	&quot;ORDER BY $params{orderby}, node.node_id ASC
+	LIMIT $perpage&quot;
+);
+
+# utility functions for display
+
+my $tweakedLink = sub{
+# returns a sorting link with the current parameters, as overridden by given values
+# arguments:
+#	$text - link text
+#	$settings - hash ref of override values
+
+	my($text, $settings) = @_;
+	delete $$settings{page} unless $$settings{page} &gt; 1;
+
+	return &quot;&lt;strong&gt;$text&lt;/strong&gt;&quot;
+		unless scalar map {$$settings{$_} ne $params{$_} ? 1 : ()} keys %$settings;
+
+	my %linkParams = %params;
+	@linkParams{keys %$settings} = @$settings{keys %$settings};
+	return linkNode($NODE, $text, \%linkParams);
+};
+
+my $sortLink = sub{
+#	returns a heading sort up/down choice
+
+	my ($disp1, $disp2, $orderField, $backwards) = @_;
+
+	my ($sort1, $sort2) = (&quot;$orderField ASC&quot;, &quot;$orderField DESC&quot;);
+	($sort1, $sort2) = ($sort2, $sort1) if $backwards;
+
+	return &amp;$tweakedLink($disp1, {orderby =&gt; $sort1})
+		. '/'
+		. &amp;$tweakedLink($disp2, {orderby =&gt; $sort2});
+};
+
+# header
+my $head = '&lt;h2&gt;query arguments:&lt;/h2&gt;
+	&lt;pre&gt;'
+	.encodeHTML(join &quot;\n,\n&quot;, @sqlQuery)
+	.'&lt;/pre&gt;'
+	if $isRoot &amp;&amp; $params{showquery};
+
+if($rep) {
+	# explain extra information, and offer choice based on it
+	$head .= qq!&lt;p&gt;&lt;small&gt;Writeups published with '&lt;em&gt;Don't display in &quot;New Writeups&quot;&lt;/em&gt;'
+		checked have &quot;H&quot; for &lt;strong&gt;h&lt;/strong&gt;idden in the &quot;H&quot; column.!;
+	$head .= ' Writeups with node notes have &quot;N&quot; in the &quot;HN&quot; column.' if $isEd;
+	$head .= '&lt;/small&gt;&lt;/p&gt;
+		&lt;p&gt;Show: '
+		.&amp;$tweakedLink('all writeups', {filterhidden =&gt; 0})
+		.', '
+		.&amp;$tweakedLink('only unhidden writeups', {filterhidden =&gt; 1})
+		.', '
+		.&amp;$tweakedLink('only hidden writeups', {filterhidden=&gt; 2})
+		.'&lt;/p&gt;';
+}
+
+# build table header row, sort row and instructions for content rows in parallel
+
+# defining width here stops IE7 wrapping later
+my $thRow ='&lt;tr&gt;&lt;th align=&quot;center&quot;&gt;&lt;abbr title=&quot;Cools&quot; style=&quot;width:2em&quot;&gt;C!s&lt;/abbr&gt;&lt;/th&gt;
+	&lt;th align=&quot;left&quot;&gt;Writeup Title (type)&lt;/th&gt;';
+
+my $sortRow = '&lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;
+	&lt;td align=&quot;left&quot;&gt;&lt;small&gt;'
+	.&amp;$sortLink('forwards', 'backwards', 'node.title')
+	.'&lt;/small&gt;&lt;/td&gt;';
+
+my $instructions = '&lt;tr class=&quot;&amp;oddrow&quot;&gt;c, &quot;&lt;td align=\'left\'&gt;&quot;, parenttitle, type, &quot;&lt;/td&gt;&quot;';
+
+my %funx = (
+	c =&gt; sub {
+		my $cMsg = '&amp;nbsp;';
+		my $numCools = $_[0]-&gt;{cooled};
+		if ($numCools) {
+			$cMsg = &quot;${numCools}C!&quot;;
+			$cMsg .= 's' if $numCools &gt; 1;
+			$cMsg = &quot;&lt;strong&gt;$cMsg&lt;/strong&gt;&quot;;
+		}
+		return '&lt;td align=&quot;center&quot;&gt;' . $cMsg . '&lt;/td&gt;';
+	}
+);
+
+if ($rep){
+	$thRow .= '&lt;th colspan=&quot;2&quot; align=&quot;center&quot;&gt;&lt;abbr title=&quot;Reputation&quot;&gt;Rep&lt;/abbr&gt;&lt;/th&gt;';
+	$sortRow .= '&lt;td colspan=&quot;2&quot; align=&quot;center&quot;&gt;&lt;small&gt;'
+		.&amp;$sortLink('inc', 'dec', 'node.reputation').'&lt;/small&gt;&lt;/td&gt;';
+	$instructions .= ',rep';
+	$funx{rep} = sub{
+		my $wu = shift;
+		my $r = $$wu{reputation} || 0;
+
+		my $votescast =
+			$DB -&gt; {dbh} -&gt; selectall_hashref(
+			 &quot;SELECT weight, COUNT(voter_user) AS total
+			 	FROM vote
+				WHERE vote_id = $$wu{node_id}
+				GROUP BY weight&quot;
+			 , 'weight'
+			);
+		my $p = $votescast-&gt;{1}-&gt;{total} || 0;
+		my $m = $votescast-&gt;{-1}-&gt;{total} || 0;
+
+		return qq'&lt;td class=&quot;reputation&quot;&gt;$r&lt;/td&gt;
+			&lt;td class=&quot;reputation&quot;&gt;&lt;small&gt;+$p/-$m&lt;/small&gt;&lt;/td&gt;';
+	};
+}
+
+# Show users how they've voted on a writeup. -ap 20080731
+unless ($isMe || $isGuest) {
+	$thRow .= '&lt;th&gt;&lt;abbr title=&quot;Your vote&quot;&gt;Vote&lt;/abbr&gt;&lt;/th&gt;';
+	$sortRow .= '&lt;td&gt;&amp;nbsp;&lt;/td&gt;';
+	$instructions .=',vote';
+	$funx{vote} = sub{
+		'&lt;td align=&quot;center&quot;&gt;'
+		.('-', '&amp;nbsp;', '+')[$_[0]-&gt;{weight} + 1]
+		.'&lt;/td&gt;';
+	};
+}
+
+if ($rep) {
+	$thRow .= '&lt;th&gt;&lt;abbr title=&quot;H=Hidden';
+	my $flags = 'H';
+	$sortRow .= '&lt;td&gt;&amp;nbsp;&lt;/td&gt;';
+	$instructions .= ',hn';
+	$funx{hn} = sub{
+		'&lt;td align=&quot;center&quot;&gt;'
+		.($_[0]-&gt;{notnew} ? 'H' : '')
+		.($_[0]-&gt;{hasnote} ? 'N' : '')
+		.'&lt;/td&gt;';
+	};
+
+	if($isEd) {
+		$thRow .= ', N=Has node note';
+		$flags .= 'N';
+	}
+
+	$thRow .= qq'&quot;&gt;$flags&lt;/abbr&gt;&lt;/th&gt;';
+}
+
+$thRow .= '&lt;th align=&quot;center&quot;&gt;Published&lt;/th&gt;&lt;/tr&gt;';
+$sortRow .= '&lt;td align=&quot;center&quot;&gt;&lt;small&gt;'
+	.&amp;$sortLink('newest','oldest', 'writeup.publishtime', 1).' first&lt;/small&gt;&lt;/td&gt;&lt;/tr&gt;';
+$instructions .= ', &quot;&lt;td align=\'right\'&gt;&lt;small&gt;&quot;, listdate , &quot;&lt;/small&gt;&lt;/td&gt;&quot;';
+
+# get it...
+my ($wulist, $pages, $countWUs, $startRow, $lastRow) =
+	htmlcode('show paged content', @sqlQuery, $instructions, %funx);
+
+my $userHas = $isMe ? 'You have' : linkNode($user).' has';
+return &quot;$head
+	&lt;p&gt;$userHas no writeups$showFilter.&lt;/p&gt;&quot; unless $countWUs;
+
+$countWUs = ($countWUs == 1 ? 'one writeup' : &quot;$countWUs writeups&quot;)
+	.$showFilter
+	.($countWUs &gt; $perpage ? &quot;. Showing writeups $startRow to $lastRow&quot; : '');
+
+# spit it out
+return &quot;$head
+	&lt;p&gt;$userHas $countWUs:
+	&lt;/p&gt;
+	&lt;table border='0' cellspacing='0' width='100%'&gt;
+	$thRow
+	$sortRow
+	$wulist
+	&lt;/table&gt;
+	$pages&quot;;
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-03-07 16:42:55</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>795037</hits>
+  <node_id>1223826</node_id>
+  <edittime>2011-09-26 09:23:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1223826</document_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>Everything User Search</title>
+</node>

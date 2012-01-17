@@ -1,0 +1,125 @@
+<node>
+  <doctext>[%
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+my $rows;
+my $str;
+my $dbrow;
+my $queryText;
+my $limit = 100;
+my $recalcRows;
+my $row;
+
+$queryText = 'SELECT SUM(GP) FROM user';
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+my $totalGP = $rows-&gt;fetchrow_array();
+
+# get recalculated noders
+$queryText = &quot;SELECT user.user_id FROM setting,user WHERE setting.setting_id=user.user_id AND setting.vars LIKE '%hasRecalculated=1%'&quot;;
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+my @recalcUsers;
+while($row= $rows-&gt;fetchrow_arrayref)
+{
+  push(@recalcUsers, $$row[0]);
+}
+
+
+$queryText = 'SELECT user_id,gp FROM user ORDER BY gp DESC LIMIT '.$limit;
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+
+$str .= '&lt;p&gt;&lt;b&gt;Total GP in circulation:&lt;/b&gt; ' . $totalGP . '&lt;/p&gt;';
+
+$str .= '&lt;h3&gt;'.$limit.' Richest Noders&lt;/h3&gt;';
+$str .= '&lt;ol&gt;';
+my $richestUsersGP = 0;
+my $isRecalculated;
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   $str .= '&lt;li&gt;'.linkNode($$row[0]).' ('.$$row[1].'GP)';
+   $isRecalculated = 0;
+   foreach(@recalcUsers)
+   {
+      if ($_ == $$row[0])
+      {
+         $isRecalculated = 1;
+         last;
+      }
+   }
+   if (!$isRecalculated)
+   {
+      $str .= '&lt;b&gt;NOT A RECALCULATED USER&lt;/b&gt;';
+   }
+   $str .= '&lt;/li&gt;';
+   $richestUsersGP += $$row[1];
+}
+$str .= '&lt;/ol&gt;&lt;hr /&gt;';
+
+$queryText = 'SELECT user_id,gp FROM user WHERE gp&lt;&gt;0 ORDER BY gp LIMIT '.$limit;
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+my $row;
+$str .= '&lt;h3&gt;'.$limit.' Poorest Noders (ignore 0GP)&lt;/h3&gt;';
+$str .= '&lt;ol&gt;';
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   $str .= '&lt;li&gt;'.linkNode($$row[0]).' ('.$$row[1].'GP)&lt;/li&gt;';
+}
+$str .= '&lt;/ol&gt;';
+
+$str .= '&lt;p&gt;The top ' . $limit . ' users hold ' . ($richestUsersGP / $totalGP * 100) . '% of all the GP&lt;/p&gt;';
+
+#------------------------------------------------------------------------------------
+
+my $key;
+my $value;
+my $v = getVars($USER);
+
+$str .= '&lt;table border=&quot;1&quot;&gt;';
+while (($key, $value) = each(%{$v})){
+     $str .= '&lt;tr&gt;&lt;td&gt;'.$key.'&lt;/td&gt;&lt;td&gt;'.$value.'&lt;/td&gt;&lt;/tr&gt;';
+     if ($key eq '2003-04-21')
+     {
+        delete($$v{$key});
+     }
+     if ($value eq '' || $value eq ' ')
+     {
+          delete($$v{$key});
+     }
+}
+$str .= '&lt;/table&gt;';
+
+#my $keyToDelete = ' ';
+#delete($$v{$keyToDelete});
+setVars($USER, $v);
+$VARS = $v;
+
+return $str;
+
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-10-30 19:33:40</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1960848</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1960848</document_id>
+  <author_user>1323377</author_user>
+  <package>0</package>
+  <title>in10se's sandbox5</title>
+</node>

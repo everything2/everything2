@@ -1,0 +1,94 @@
+<node>
+  <nltext></nltext>
+  <parent_container>17</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2007-04-28 03:56:07</createtime>
+  <lastupdate>0</lastupdate>
+  <hits>1</hits>
+  <node_id>1882546</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>1312198</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1882546</nodelet_id>
+  <nlcode>&lt;script&gt;
+
+function updateTalk(msgText) {
+
+var checkmsg = $('formcbox').getInputs('checkbox').findAll(function(s) {
+  return s.checked;}).pluck('name').join(',');
+E2AJAX.sendMessage($F('message'),checkmsg,function() { E2AJAX.updateNodelet('1882546','AJAX Chatterbox');});
+}
+&lt;/script&gt;
+
+[{openform2:formcbox}]
+
+[%
+return if $$VARS{hideprivmessages};
+my $str = htmlcode('showmessages','10');
+$str .= '&lt;br /&gt;&lt;br /&gt;' if $str;
+$str;
+%]
+
+[{showchatter}]
+
+&lt;a name='chatbox'&gt;&lt;/a&gt;
+[%
+return if getId($USER) == $HTMLVARS{guest_user};
+my $str;
+$str = '&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;message&quot; /&gt;&lt;br /&gt;';
+
+$query-&gt;param('message','');
+
+if(defined $query-&gt;param('sentmessage')) {
+	my $told = $query-&gt;param('sentmessage');
+	my $i=0;
+	while(defined $query-&gt;param('sentmessage'.$i)) {
+		$told.=&quot;&lt;br /&gt;\n&quot;.$query-&gt;param('sentmessage'.$i);
+		++$i;
+	}
+	$told=parseLinks($told,0) unless $$VARS{showRawPrivateMsg};
+	$str.='&lt;p class=&quot;sentmessage&quot;&gt;'.$told.&quot;&lt;/p&gt;\n&quot;;
+}
+
+
+#borged or allow talk
+$str .= $$VARS{borged}
+    ? '&lt;small&gt;You\'re borged, so you can\'t talk right now.&lt;/small&gt;&lt;br /&gt;' . $query-&gt;submit('message_send', 'erase')
+    : &quot;&lt;input type='text' id='message' name='message' size='12' maxlength='512' /&gt;&quot; . &quot;\n&quot; . (htmlcode('hasJS','Everything2 AJAX') &amp;&amp; 0 ? &quot;&lt;input type='button' onclick='updateTalk()' value='talk' /&gt;&quot; : $query-&gt;submit('message_send', 'talk')). &quot;\n&quot;;
+;
+
+$str.=$query-&gt;end_form;
+
+
+my $topicsetting;
+my $topic = '';
+
+$topicsetting = getVars(getNode('Room Topics', 'setting'));
+
+if(exists($$topicsetting{$$USER{in_room}})) {
+	$topic = $$topicsetting{$$USER{in_room}};
+
+	$HTMLVARS{pseudoExec}=$topic;
+	$topic = htmlcode('pseudoExec','');
+
+	$topic = '&lt;div id=&quot;chat_topic&quot;&gt;'.parseLinks($topic).'&lt;/div&gt;'; #slighly different
+}
+
+$str.$topic;
+%]
+[%
+return unless exists $HTMLVARS{'group_gods'}{$$USER{node_id}};
+return '&lt;p align=&quot;right&quot;&gt;&lt;small&gt;'.linkNode($NODE, 'silence', {'op' =&gt; 'flushcbox'}).'&lt;/small&gt;&lt;/p&gt;';
+%]
+</nlcode>
+  <title>AJAX Chatterbox</title>
+</node>

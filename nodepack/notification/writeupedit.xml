@@ -1,0 +1,36 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-04-10 20:09:27</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <notification_id>1981770</notification_id>
+  <hourLimit>240000</hourLimit>
+  <hits>5</hits>
+  <node_id>1981770</node_id>
+  <code>my $ed_id = $$args{ed_id};
+my $wu_id = $$args{wu_id};
+my $explanation = $$args{explanation};
+
+#Would eds really try to abuse tags here?
+$explanation =~ s/\&lt;/\&amp;lt\;/g;
+$explanation =~ s/\&gt;/\&amp;gt\;/g;
+
+my $out = 'Your writeup titled &quot;'.linkNode($wu_id).'&quot; was edited by '.linkNode($ed_id);
+
+if($explanation){
+  $out .= &quot; who says, \&quot;$explanation\&quot;&quot;;
+}
+else{
+  $out .= &quot;. Contact &quot;.linkNode($ed_id).&quot; directly for further details.&quot;;
+}
+
+return $out;</code>
+  <type_nodetype>1930710</type_nodetype>
+  <author_user>1394568</author_user>
+  <description>an [Content Editors|editor] edits one of your writeups.</description>
+  <package>0</package>
+  <invalid_check></invalid_check>
+  <title>writeupedit</title>
+</node>

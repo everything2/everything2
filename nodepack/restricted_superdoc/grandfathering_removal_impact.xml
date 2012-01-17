@@ -1,0 +1,58 @@
+<node>
+  <doctext>[%
+  my $lvxp = getVars(getNode('level experience', 'setting'));
+  my $lvwu = getVars(getNode('level writeups', 'setting'));
+
+
+  my $V = getVars(getNode('level weenies', 'setting'));
+  my $str;
+  my @names = keys %$V;
+ @names = reverse(sort {$$V{$a} &lt;=&gt; $$V{$b}} @names);
+
+  foreach (@names) {
+    $str.=&quot;&lt;li&gt;[$_] was granted $$V{$_}...&quot;;
+
+    my $usr = getNode($_, 'user');
+    my $xp = $$usr{experience};
+    my $wus = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;node&quot;, &quot;type_nodetype=117 and author_user=$$usr{user_id}&quot;);
+
+    my $xpfor = 0;
+    my $wufor = 0;
+    my $curlv = 0;
+
+    for(my $i=2; $i&lt;=13; $i++)
+    {
+       if($$lvxp{$i} &gt; $xp){$xpfor = $i-1; $i = 15;};
+       $xpfor = 13 if($i == 13);
+    }
+    for(my $i=2; $i&lt;=13; $i++)
+    {
+       if($$lvwu{$i} &gt; $wus){$wufor = $i-1; $i = 15;};
+       $wufor = 13 if($i == 13);
+    }
+  
+    $curlv = $wufor;
+    $curlv = $xpfor if ($wufor &gt; $xpfor);
+
+    $str.= &quot;&lt;small&gt;and has currently enough writeups for Level $wufor and enough XP for Level $xpfor, making them Level $curlv.&lt;/small&gt;&quot;;
+
+    $str .= &quot; (unaffected)&quot; if($$V{$_} &lt;= $curlv);
+    $str .= &quot;\n&quot;; 
+}
+$str;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-10-13 22:47:32</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1178286</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1178286</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>Grandfathering removal impact</title>
+</node>

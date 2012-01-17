@@ -1,0 +1,155 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-07-11 21:25:20</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>16</hits>
+  <node_id>648516</node_id>
+  <htmlcode_id>648516</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>return unless (Everything::isApproved($USER, getNode('Content Editors', 'usergroup')) || isGod($USER));
+
+my @params = $query-&gt;param;
+my @deathrow;
+my $nr = getId(getNode('node row', 'superdoc'));
+foreach(@params) {
+	next unless /^killnode(\d+)$/;
+	next if $DB-&gt;sqlSelect('linkedby_user', 'weblog', &quot;weblog_id=$nr and to_node=$1&quot;); #hopefully, this will prevent double-kills
+
+	push @deathrow, $1;
+}
+
+return unless @deathrow;
+
+my $mass = getNode('massacre', 'opcode');
+my $UID = $$USER{node_id}||0;	#ID of person that is deleting
+return if !$UID;
+my $aid; #ID of user whose WU is killed
+#my $Kid = getId(getNode('Klaproth','user'));
+my $V; #vars of that user
+my $nid;
+my $m;
+my $r; #reason
+my $nt; #node title
+my $z;
+
+use Everything::Experience;
+
+foreach $nid (@deathrow) {
+
+	my $N = getNodeById($nid);
+	next unless($N);
+	#security fix to make sure that we can't delete non-writeups.
+	next unless($$N{type_nodetype} == getId(getType('writeup')));
+	$aid = $$N{author_user};
+         my $parentID = $$N{parent_e2node};
+	my $amount = -5;
+         my $noexp = 0;
+
+         foreach (values %HTMLVARS) {
+            if ($parentID eq $_) {
+               $noexp = 1;
+               last;
+            }
+         }
+
+         unless($noexp)
+         {
+	   adjustExp($aid, $amount);
+         }
+
+	if(
+		!$query-&gt;param('instakill'.$nid)
+	) {
+		$DB-&gt;sqlInsert('weblog',
+		{weblog_id =&gt; $nr,
+		to_node =&gt; $nid,
+		linkedby_user =&gt; getId($USER),
+		-linkedtime =&gt; 'now()'});
+	} else {
+		#jb says nukeNode($N, $USER) would never work
+		#Because CE's are not valid writeup deleters in
+		#the nodetype. Instead of changing the nodetype, change
+		#this codepath here.
+		nukeNode($N, -1);
+	}
+	
+	if($query-&gt;param('hidewu'.$nid)) {
+		$DB -&gt; sqlUpdate('newwriteup', { notnew=&gt;'1' }, &quot;node_id=$nid&quot;);
+		$DB -&gt; sqlUpdate('writeup', { notnew=&gt;'1' }, &quot;writeup_id=$nid&quot;);
+		$$N{notnew} = '1' ; # update cached version
+   }
+
+	next unless $aid;	#skip /msg if no WU author
+	next if ($aid==$UID) &amp;&amp; $query-&gt;param('noklapmsg'.$nid);	#no /msg to self
+
+	#N-Wing thinks it may make more sense for the user to just block Klaproth, instead of a special VARS value for that:
+	$V = getVars($aid);
+	$z = $$V{'no_notify_kill'} ? 0 : 1;
+
+	$nt = $$N{title};
+	if($nt=~/^(.*) \(.+?\)$/) { $nt=$1; }
+	if($z &amp;&amp; $noexp) {
+		#don't send msg for maintenance stuff, unless there is a reason
+		$z=0 unless (defined $query-&gt;param('killreason'.$nid)) &amp;&amp; (length($query-&gt;param('killreason'.$nid))!=0);
+	}
+
+	next unless $z;	#not msg-worthy
+
+	$m = (
+( (defined $query-&gt;param('killreason'.$nid)) &amp;&amp; (length($r=$query-&gt;param('killreason'.$nid))!=0) )
+	? $r.' '
+	: ''
+	);
+
+#new way:
+#	$HTMLVARS{msgparams} = {
+#		'author_id'=&gt;$Kid,
+#		'recipient_id'=&gt;$aid,
+#		'message'=&gt; '[Node Heaven] will become the new residence of your writeup I ate, ['.$nt.']. '.$m,
+#	};
+#	$HTMLVARS{msgparams}{fromgroup_id} = $UID if ( (defined $query-&gt;param('publickiller'.$nid)) &amp;&amp; ($query-&gt;param('publickiller'.$nid)) );
+#	$HTMLVARS{msgparams}{ccself} = 1 if ( (defined $query-&gt;param('ccmeklap'.$nid)) &amp;&amp; ($query-&gt;param('ccmeklap'.$nid)) );
+#	htmlcode('sendPrivateMessage','');
+
+
+#old way:
+#2007-11-21: removed klaproth -- ascorbic
+	my $msgHash = {
+		msgtext=&gt;'I deleted your writeup ['.$nt.']. '.$m.'[Node Heaven] will become its new residence.',
+#		author_user=&gt;$Kid,
+		author_user=&gt;$UID,
+		for_user=&gt;$aid,
+	};
+#	$$msgHash{for_usergroup} = $UID if ( (defined $query-&gt;param('publickiller'.$nid)) &amp;&amp; ($query-&gt;param('publickiller'.$nid)) );
+	$DB-&gt;sqlInsert('message', $msgHash);
+
+
+#old way:
+#	my $isAnon = defined $$msgHash{for_usergroup} ? '' : ' anonymously';
+	my $aut = getNodeById($aid);
+	$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $UID, 'seclog_node' =&gt; $$mass{node_id}, 'seclog_details' =&gt; &quot;[$nt] by [$$aut{title}] was killed: $m&quot;});
+
+
+##new way: (for testing only, so far; have to fix some things)
+#if($$USER{node_id}==9740) {	#making sure the msg is breaking properly
+#	my $wuAuthor = getNodeById($aid);
+#	$m = '['.$nt.'] by ['.$wuAuthor-&gt;{title}.'] was killed: '.$m;
+#	$m = $m . ' --------- ' . $m;	#DELETE ME DELETE ME DELETE ME
+#	foreach( split(/(.{254})/, $m) ) {
+#		next unless length($_);
+#		$DB-&gt;sqlInsert('message', {'for_user'=&gt;9740, 'msgtext'=&gt;$_, 'author_user'=&gt;9740} );
+#	}	#CHANGEME be like old way
+#}
+
+
+}	#foreach(@deathrow)
+
+htmlcode('update New Writeups data');</code>
+  <type_nodetype>415056</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>massacre</title>
+</node>

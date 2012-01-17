@@ -1,0 +1,71 @@
+<node>
+  <doctext>&lt;style type=&quot;text/css&quot;&gt;
+.mytable th, .mytable td
+{
+border: 1px solid silver;
+padding: 3px;
+}
+&lt;/style&gt;
+
+&lt;p align=center&gt;&lt;b&gt;[Everything's Most Wanted] is now automated&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;Okay, so [mauler|I] just finished fully automating the [Everything's Most Wanted] feature so that noders can manage bounties they have posted by themselves without having to go through the tedious process of messaging an admin several times. Hopefully this feature should be a lot more useful now. [Everything's Most Wanted|Check it out!]&lt;/p&gt;
+
+&lt;p&gt;The five most recently requested nodes are automatically listed below. If you fill one of these, please message the requesting noder to claim your prize. Please see [Everything's Most Wanted|the main list] for full details on conditions and rewards.&lt;/p&gt;
+
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+
+&lt;table&gt;
+[%
+use Everything::Experience; 
+
+my $str;
+
+$str.=&quot;&lt;p&gt;&lt;table class='mytable' align=center&gt;&lt;tr&gt;&lt;th&gt;Requesting Sheriff&lt;/th&gt;&lt;th&gt;Outlaw Nodeshell&lt;/th&gt;&lt;th&gt;GP Reward (if any)&lt;/th&gt;&lt;/tr&gt;&quot;;
+
+my $REQ = getVars(getNode('bounty order','setting'));
+my $OUT = getVars(getNode('outlaws', 'setting'));
+my $REW = getVars(getNode('bounties', 'setting'));
+my $HIGH = getVars(getNode('bounty number', 'setting'));
+my $MAX = 5;
+
+my $bountyTot = $$HIGH{1};
+my $numberShown = 0;
+my $outlawStr;
+my $requester;
+my $reward;
+
+for(my $i = $bountyTot; $numberShown &lt; $MAX; $i--) {
+
+if (exists $$REQ{$i}) {
+$numberShown++;
+$requester = $$REQ{$i};
+$outlawStr = $$OUT{$requester};
+$reward = $$REW{$requester};
+$str.=&quot;&lt;tr&gt;&lt;TD&gt;[$requester]&lt;/TD&gt;&lt;TD&gt;$outlawStr&lt;/TD&gt;&lt;TD&gt;$reward&lt;/TD&gt;&lt;/tr&gt;&quot;;
+}
+}
+
+$str;
+
+%]
+&lt;/table&gt;
+
+&lt;p align=center&gt;([Everything's Most Wanted|see full list])&lt;/p&gt;
+
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-05-17 04:00:50</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1986939</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1986939</document_id>
+  <author_user>1180811</author_user>
+  <package>0</package>
+  <title>Bounty Hunters Wanted</title>
+</node>

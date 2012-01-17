@@ -1,0 +1,31 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-02-21 18:56:07</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <notification_id>1930993</notification_id>
+  <hourLimit>120</hourLimit>
+  <hits>0</hits>
+  <node_id>1930993</node_id>
+  <code>my $parent = $$args{parent};
+my $reply = $$args{reply};
+my $root = $$args{root};
+
+$parent = getNodeById($parent);
+return linkNode($$args{uid}).&quot; has replied to a debate that no longer exists.&quot; unless $parent;
+$parent = $parent -&gt; {'title'};
+
+
+my $anchoredlink = '&lt;a href=&quot;'. urlGenNoParams($root,1) .'#debatecomment_'.$reply.'&quot;&gt;'.$parent.'&lt;/a&gt;';
+
+my $str .= linkNode($$args{uid}).&quot; has &lt;strong&gt;replied&lt;/strong&gt; to $anchoredlink&quot;;
+</code>
+  <type_nodetype>1930710</type_nodetype>
+  <author_user>1312198</author_user>
+  <description>a new [usergroup discussions|comment] gets posted to a discussion in one of your usergroups.</description>
+  <package>0</package>
+  <invalid_check></invalid_check>
+  <title>newcomment</title>
+</node>

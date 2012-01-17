@@ -1,0 +1,67 @@
+<node>
+  <nltext></nltext>
+  <parent_container>175986</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2002-04-24 04:50:11</createtime>
+  <lastupdate>1296584761</lastupdate>
+  <hits>0</hits>
+  <node_id>1290534</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>9740</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1290534</nodelet_id>
+  <nlcode>[%
+if((exists $VARS-&gt;{lockCustomHTML}) || (exists $VARS-&gt;{noteletLocked})) { #latter way is deprecated
+	#may later say why locked? or give a msg field to anon admin?
+	return 'Sorry, your Notelet is currently locked, probably because an administrator is working with your account. It should soon be back to normal.';
+}
+
+#message to display if text not set
+#(urlGen instead parseLinks to foil pranksters making e2nodes with same title)
+my $blankMsg = 'You currently have no text set for your personal nodelet. You can edit it at &lt;a href='.
+	urlGen({'node'=&gt;'Notelet Editor','type'=&gt;'superdoc'}).'&gt;Notelet Editor&lt;/a&gt; or &lt;br&gt;'.
+	linkNode($NODE, 'remove it here', {
+    op =&gt; 'movenodelet',
+    position =&gt; 'x',
+    nodelet =&gt; 'Notelet',
+    -id =&gt; 'noteletremovallink',
+    -class =&gt; 'ajax (noteletremovallink):ajaxEcho:'
+    .q!remove+it+here!
+    .q!&amp;lt;script+type='text/javascript'&amp;gt;!
+    .q!e2.vanish($('#notelet'));&amp;lt/script&amp;gt;!
+}).' or at your &lt;a href='.urlGen({'node'=&gt;'Nodelet Settings','type'=&gt;'superdoc'}).'&gt;Nodelet Settings&lt;/a&gt;';
+
+#have to deal with deprecated stuff
+if(exists $VARS-&gt;{personalRaw}) {
+	$VARS-&gt;{noteletRaw} = $VARS-&gt;{personalRaw};
+	delete $VARS-&gt;{personalRaw};
+}
+if(exists $VARS-&gt;{personalScreened}) {
+	$VARS-&gt;{noteletScreened} = $VARS-&gt;{personalScreened};
+	delete $VARS-&gt;{personalScreened};
+}
+
+return $blankMsg unless ((exists $VARS-&gt;{'noteletRaw'}) &amp;&amp; length($VARS-&gt;{'noteletRaw'}));
+unless(exists $VARS-&gt;{'noteletScreened'}) {
+	htmlcode('screenNotelet','');
+	return $blankMsg unless ((exists $VARS-&gt;{'noteletRaw'}) &amp;&amp; length($VARS-&gt;{'noteletRaw'}));
+}
+
+return parseLinks($VARS-&gt;{'noteletScreened'});
+
+%]
+
+&lt;div class=&quot;nodeletfoot&quot;&gt;([%
+linkNode(getNode('Notelet editor','superdoc'),'edit');
+%])&lt;/div&gt;</nlcode>
+  <title>Notelet</title>
+</node>

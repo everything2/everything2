@@ -1,0 +1,102 @@
+<node>
+  <doctext>&lt;p&gt;
+Alright, you are about to obliterate all nodes of a particular
+nodetype. Proceed with caution!
+&lt;/p&gt;
+
+[%
+
+local *generate_random_string = sub{
+	my $length_of_randomstring=shift; # the length of 
+  # the random string to generate
+
+	my @chars=('a'..'z');
+	my $random_string;
+	foreach (1..$length_of_randomstring) {
+		# rand @chars will generate a random 
+		# number between 0 and scalar @chars
+		$random_string.=$chars[rand @chars];
+	}
+	return $random_string;
+};
+
+
+
+my $str;
+my $UID = $$USER{node_id};
+
+if ($query -&gt; param(&quot;sexisgood&quot;)) {
+  my $randcheck = $query-&gt;param(&quot;randcheck&quot;);
+  my $randcheck_backwards = $query -&gt; param(&quot;randcheck_backwards&quot;);
+  my $condemned_nodetype = $query -&gt; param(&quot;condemned_nodetype&quot;);
+  my $condemned_nodetype_confirm = $query -&gt;
+                                     param(&quot;condemned_nodetype_confirm&quot;);
+
+  if($condemned_nodetype eq $condemned_nodetype_confirm and
+     $randcheck_backwards eq $randcheck){
+    my @doomednodes = getNodeWhere({},$condemned_nodetype);
+    foreach my $deadnode(@doomednodes){
+      nukeNode($deadnode,$USER);
+    }
+    $str .= &quot;&lt;p&gt;All nodes of type $condemned_nodetype have been nuked.
+                Bye bye!&lt;/p&gt;&quot;;
+  }
+  else{
+    $str .= &quot;&lt;p&gt;I'm sorry, Dave, I'm afraid I can't let you do that.&lt;/p&gt;&quot;;
+  }
+}
+
+else {
+  my @nodetypes = getNodeWhere({},&quot;nodetype&quot;,&quot;title&quot;);
+  my @nodetypes_titles = map $_ -&gt; {'title'},@nodetypes;
+
+  $str .= htmlcode('openform2',&quot;genocide&quot;);
+  $str .= &quot;&lt;p&gt;Choose the nodetype to completely wipe out:&lt;/p&gt;&quot;;
+
+    $str .= $query -&gt; popup_menu(&quot;condemned_nodetype&quot;,
+                                 \@nodetypes_titles,
+                                 &quot;&quot;,
+                                 {}
+                                 );
+
+  $str .= &quot;&lt;p&gt;Now you need to turn both keys at the same time to
+            [someone set up us the bomb|detonate the bomb]. First,
+            type the nodetype again:&lt;/p&gt;&quot;;
+
+  $str .= $query -&gt; textfield({-name =&gt; &quot;condemned_nodetype_confirm&quot;,
+                               -id =&gt; &quot;condemned_nodetype_confirm&quot;});
+
+  $str .= &quot;&lt;p&gt;Next, type the following string, backwards, for
+            confirmation.&lt;/p&gt;&quot;;
+
+  my $randcheck = generate_random_string(8);
+
+  $str .= &quot;&lt;p&gt;$randcheck: &quot;;
+  $str .= $query -&gt; textfield({-name =&gt; &quot;randcheck&quot;,
+                               -id =&gt; &quot;randcheck&quot;});
+
+  $randcheck = reverse($randcheck);
+  $str .= $query -&gt; hidden({-name =&gt; &quot;randcheck_backwards&quot;,
+                            -value =&gt; $randcheck});
+
+  $str .= htmlcode('closeform');
+}
+
+return $str;
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-05-27 18:22:55</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1988150</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1988150</document_id>
+  <author_user>1394568</author_user>
+  <package>0</package>
+  <title>genocide nodetype</title>
+</node>

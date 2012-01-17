@@ -1,0 +1,204 @@
+<node>
+  <doctext>[flamingweasel] submitted a patch for [Node Heaven]'s &quot;doctext&quot; field on Fri Jan 25 2002 at 16:55:59&lt;br&gt;
+patch's purpose: unknown&lt;br&gt;&lt;br&gt;
+
+Too old to do us any good.</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-12-06 14:23:46</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1397643</node_id>
+  <htmlcode_id>1397643</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <code>&lt;p&gt;
+Welcome to Node Heaven, where you may sit and reconcile with your dear departed writeups.
+&lt;/p&gt;
+&lt;p&gt;
+&lt;strong&gt;Note:&lt;/strong&gt; It takes &lt;em&gt;up to&lt;/em&gt; 48 hours for a writeup that was deleted to turn up in Node Heaven. Remember: first they must be &lt;em&gt;judged&lt;/em&gt;. For that 48 hours they are in purgatory...&lt;strong&gt;&lt;em&gt;[copper starlight|sleeping]&lt;/em&gt;&lt;/strong&gt;.
+&lt;/p&gt;
+[%
+return unless isGod($USER);
+my $str = &quot;&lt;p&gt;&lt;blockquote&gt;\n&quot;;
+$str .= &quot;Lucky you - not only can you see your messes, you can see others' messes, too.&lt;br /&gt;\n&quot;;
+$str .= htmlcode('openform') . &quot;\n&quot;;
+$str .= 'user: ' . $query-&gt;textfield('heavenuser') . &quot;&lt;br /&gt;\n&quot;;
+#$str .= '(this does not work yet) title: ' . $query-&gt;textfield(-name=&gt;'heaventitle', -size=&gt;32) . &quot;&lt;br /&gt;\n&quot;;
+$str .= htmlcode('closeform') . '&lt;/blockquote&gt;&lt;/p&gt;';
+
+$str;
+%]
+
+
+&lt;p align=&quot;center&quot;&gt;Here are the little Angels:&lt;/p&gt;
+&lt;p&gt;
+[%
+return '&lt;p&gt;Where are you going so fast? You have not yet begun to live. Why not [Create A New User|take a crack at life]?&lt;/p&gt;' if getId($USER) == $HTMLVARS{guest_user};
+
+use Everything::Experience;
+my $GUESTS = getVars(getNode('node heaven guests','setting'));
+
+my $isRoot = exists $HTMLVARS{group_gods}{$$USER{node_id}};
+
+return '&lt;em&gt;not yet, you\'re not ready&lt;/em&gt;' unless getLevel($USER) &gt;=1 or exists $$GUESTS{lc($$USER{title})} or $isRoot;
+
+#determine who to showing information for
+my $U = $USER;
+my $filterTitle;
+$U = getNode($query-&gt;param('heavenuser'),'user') if $isRoot &amp;&amp; $query-&gt;param('heavenuser');
+
+
+if($query-&gt;param('heaventitle') and $isRoot) {
+	#TODO need a real filter here
+	$filterTitle = $query-&gt;param('heaventitle');
+	$filterTitle =~ s/\&quot;.*//;
+}
+#if($$USER{title} eq 'N-Wing') {	#N-Wing TODO: lame SQL regex
+#	($U || $filterTitle) or return 'Hmmm... no user nor title. You loser.';
+#	undef $U if $filterTitle;
+#} else {
+	undef $filterTitle;
+	($U) or return 'Hmmm... no user. You loser.';
+#  }
+
+my ($showState,$hideBoring) = $query-&gt;param('showall') ? (1,0) : (0,1);
+
+
+#determine sorting order
+my $orderdata = {
+	'title' =&gt; 'title',
+	'createtime' =&gt; 'createtime',
+	'authorid' =&gt; 'author_user',
+	'rep' =&gt; 'reputation',
+	'nodeid' =&gt; 'node_id',
+};
+$$orderdata{'killerid'} = 'killa_user' if $isRoot;
+{
+	my @ks = keys(%$orderdata);
+	foreach(@ks) {
+		$$orderdata{$_.'desc'} = $$orderdata{$_}.' DESC';
+	}
+}
+my $sortOrder;
+$sortOrder = $query-&gt;param('orderby');
+$sortOrder = (exists $$orderdata{$sortOrder}) ? $$orderdata{$sortOrder} : '';
+$sortOrder ||= 'title';
+
+
+#generates a link for use on top of a column
+#only link to other Node Heaven displays using this function
+#	(if later linking options are added, changes only need to be made here)
+#parameters: text to display, sorting method
+local *genSortLink = sub {
+	my ($display, $orderBy) = @_;
+	$orderBy ||= $query-&gt;param('orderby') || 'title';
+	$display ||= $orderBy;
+	my $linkOpts = {
+		orderby=&gt;$orderBy,
+	};
+	$$linkOpts{showall}=1 if $showState;
+	$$linkOpts{heavenuser}=$$U{title} if $isRoot &amp;&amp; ($$U{node_id}!=$$USER{node_id});
+	my $linked = linkNode($NODE,$display,$linkOpts);
+	$linked = '&amp;#91;'.$linked.'&amp;#93;' if ($sortOrder eq $$orderdata{$orderBy}) &amp;&amp; ($showState!=$hideBoring);
+	return $linked;
+};
+
+
+my $str = '&lt;small&gt;';
+# . linkNode($NODE, ($showState ? 'hide &quot;boring&quot; deletions' : 'show all deletions (even &quot;boring&quot; ones)'), {showall=&gt;$hideBoring, orderby=&gt;($query-&gt;param('orderby')?$query-&gt;param('orderby'):'title')});
+$showState=!$showState;
+$str .= genSortLink(($hideBoring ? 'show all deletions (even &quot;boring&quot; ones)' : 'hide &quot;boring&quot; deletions'));
+$showState=!$showState;
+$str .= '&lt;/small&gt;&lt;br /&gt;&lt;table width=&quot;100%&quot;&gt;'.&quot;\n&quot;;
+
+
+my $sqlStatement = 'type_nodetype='.getId(getType('writeup'));
+$sqlStatement .= &quot; and author_user=&quot;.getId($U) if $U;
+#  $sqlStatement .= ' AND title LIKE &quot;'.$filterTitle.'&quot;' if $filterTitle;	#N-Wing is having problems with this *sigh*
+#  $str .= &quot;sql statement: ${sqlStatement}&lt;br /&gt;&quot;;
+
+
+
+my $csr = $DB-&gt;sqlSelectMany('*', 'heaven', $sqlStatement, 'ORDER BY '.$sortOrder);
+$str .= '&lt;tr&gt;&lt;th&gt;Create Time&lt;/th&gt;&lt;th&gt;Writeup Title&lt;/th&gt;&lt;th&gt;Rep&lt;/th&gt;';
+$str .= '&lt;th&gt;Killa&lt;/th&gt;' if $isRoot;
+$str .= &quot;&lt;/tr&gt;\n&lt;tr&gt;&quot;;
+
+$str .= '&lt;td align=&quot;center&quot;&gt;&lt;small&gt;'.genSortLink('oldest','createtime') . '/' . genSortLink('newest','createtimedesc') . ' first&lt;/small&gt;&lt;/td&gt;';
+$str .= '&lt;td align=&quot;center&quot;&gt;&lt;small&gt;'.genSortLink('fowards','title') . '/' . genSortLink('backwards','titledesc') . '&lt;/small&gt;&lt;/td&gt;';
+$str .= '&lt;td align=&quot;center&quot;&gt;&lt;small&gt;'.genSortLink('inc','rep').'/'.genSortLink('dec','repdesc').'&lt;/small&gt;&lt;/td&gt;';
+$str .= '&lt;td align=&quot;center&quot;&gt;&lt;small&gt;id '.genSortLink('asc','killerid').'/'.genSortLink('desc','killeriddesc').'&lt;/small&gt;&lt;/td&gt;' if $isRoot;
+$str .= &quot;&lt;/tr&gt;\n&quot;;
+
+#old way
+#$str .= '&lt;td align=&quot;center&quot;&gt;&lt;small&gt;'.linkNode($NODE,'oldest',{orderby=&gt;'createtime',showall=&gt;$showState}) . '/' . linkNode($NODE,'newest',{orderby=&gt;'createtimedesc',showall=&gt;$showState}) . ' first&lt;/small&gt;&lt;/td&gt;';
+#$str .= '&lt;td align=&quot;center&quot;&gt;&lt;small&gt;'.linkNode($NODE,'fowards',{orderby=&gt;'title',showall=&gt;$showState}) . '/' . linkNode($NODE,'backwards',{orderby=&gt;'titledesc',showall=&gt;$showState}) . '&lt;/small&gt;&lt;/td&gt;';
+#$str .= '&lt;td align=&quot;center&quot;&gt;&lt;small&gt;'.linkNode($NODE,'inc',{orderby=&gt;'rep',showall=&gt;$showState}).'/'.linkNode($NODE,'dec',{orderby=&gt;'repdesc',showall=&gt;$showState}).'&lt;/small&gt;&lt;/td&gt;';
+#$str .= '&lt;td align=&quot;center&quot;&gt;&lt;small&gt;id '.linkNode($NODE,'asc',{orderby=&gt;'killerid',showall=&gt;$showState}).'/'.linkNode($NODE,'desc',{orderby=&gt;'killeriddesc',showall=&gt;$showState}).'&lt;/small&gt;&lt;/td&gt;' if $isRoot;
+#$str .= &quot;&lt;/tr&gt;\n&quot;;
+
+
+my $count;
+my $T = getNode('Node Heaven Visitation', 'superdoc');
+my $boring = getVars(getNode('boring heaven nodes', 'setting'));
+
+my $t;
+my $allCount = 0;
+while(my $N = $csr-&gt;fetchrow_hashref) {
+	return 'no nodes by this user have been nuked' if int($N) == -1;
+	++$allCount;
+	$t = $$N{title};
+
+	#begin jb's changes here
+	my $tmp = $t;
+	$tmp =~ s/\s/\_/g;
+	$tmp =~ s/\_\(.*\)//g;
+	next if($hideBoring &amp;&amp; $$boring{lc($tmp)});
+	#next if $hideBoring &amp;&amp; (($t =~ /^Definitions That Need Work/) || ($t =~ /^E2 Bugs/) || ($t =~ /^E2 nuke request/) || ($t =~ /^Edit These E2 Titles/) || ($t =~ /^Suggestions for E2/) ); #FIXME really should have an 'archive' feature
+	$count++;
+	$str.=&quot;&lt;tr&gt;&lt;td&gt;&lt;small&gt;$$N{createtime}&lt;/small&gt;&lt;/td&gt;&lt;td&gt;&quot;
+      .linkNode($T, $t, {visit_id =&gt; $$N{node_id}})
+      .'&lt;/td&gt;&lt;td&gt;'.$$N{reputation}.'&lt;/td&gt;'; 
+	if($isRoot) {
+		$str .= '&lt;td&gt;' . (($$N{killa_user}==-1) ? '?' : linkNode($$N{killa_user})) . '&lt;/td&gt;';
+	}
+	$str.=&quot;&lt;/tr&gt;\n&quot;;
+
+	$repCount += $$N{reputation}; # for fw's &quot;evil anti-$username&quot; feature
+}
+
+$str .= &quot;&lt;/table&gt;\n&quot;;
+
+# silly anti-$username feature, like p_i calculated by hand
+# on his homenode: grabs the user's reps &amp; node count
+# in here and calculates what a user with these nodes' 
+#level would be. --fw
+$antiUserStr = 'Your angelic counterpart has ' . $allCount . ' writeups (' . $count . ' shown) and a rep of ' . $repCount .
+	       ', making your zombie twin Level ';
+
+if 	(($allCount &lt; 25)   || ($repCount &lt; 50))    { $antiUserStr .= '1, Initiate.'; }
+elsif 	(($allCount &lt; 70)   || ($repCount &lt; 200))   { $antiUserStr .= '2, Novice.'; }
+elsif	(($allCount &lt; 150)  || ($repCount &lt; 400))   { $antiUserStr .= '3, Acolyte.'; }
+elsif	(($allCount &lt; 250)  || ($repCount &lt; 800))   { $antiUserStr .= '4, Scribe.'; }
+elsif	(($allCount &lt; 380)  || ($repCount &lt; 1350))  { $antiUserStr .= '5, Monk.'; }
+elsif	(($allCount &lt; 515)  || ($repCount &lt; 2100))  { $antiUserStr .= '6, Crafter.'; }
+elsif	(($allCount &lt; 700)  || ($repCount &lt; 2900))  { $antiUserStr .= '7, Artisan.'; }
+elsif	(($allCount &lt; 900)  || ($repCount &lt; 4000))  { $antiUserStr .= '8, Seer.'; }
+elsif	(($allCount &lt; 1215) || ($repCount &lt; 7500))  { $antiUserStr .= '9, Archivist.'; } # really silly to go beyond here...
+elsif	(($allCount &lt; 1800) || ($repCount &lt; 13000)) { $antiUserStr .= '10, Avatar.';}	# quite absurd.
+elsif	(($allCount &lt; 2700) || ($repCount &lt; 23000)) { $antiUserStr .= '11, Godhead.';} # i mean, really.
+elsif	(($allCount &lt; 4500) || ($repCount &lt; 38000)) { $antiUserStr .= '11, Pseudo_God.';}
+else						    { $antiUserStr .= '12, Pedant. Wow.'; }
+
+#$allCount . ' deleted writeups total, ' . $count . &quot; shown&lt;br /&gt;\n&quot; . $str;
+$antiUserStr . &quot;&lt;br /&gt;\n&quot; . &quot;&lt;small&gt;Inspired by [Pseudo_Intellectual]'s homenode&lt;/small&gt;&lt;br /&gt;\n&quot; . $str;
+%]</code>
+  <type_nodetype>1382262</type_nodetype>
+  <document_id>1397643</document_id>
+  <author_user>650043</author_user>
+  <package>0</package>
+  <title>patch - Node Heaven (flamingweasel)</title>
+</node>

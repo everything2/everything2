@@ -1,0 +1,61 @@
+<node>
+  <nltext></nltext>
+  <parent_container>0</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2000-06-22 19:39:59</createtime>
+  <lastupdate>1322103512</lastupdate>
+  <hits>46</hits>
+  <node_id>1882821</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>114</author_user>
+  <updateinterval>300</updateinterval>
+  <package>0</package>
+  <nodelet_id>1882821</nodelet_id>
+  <nlcode>[%
+my $repthreshholdlo = 18 ;
+my $repthreshholdhi = 26;
+my $limit = 4;
+my $length = 512;
+
+my $csr = $DB-&gt;sqlSelectMany(
+	'wu.node_id, wu.author_user,
+		parent_e2node,
+		doctext,
+		type.title as type_title'
+	,
+	'node wu
+		JOIN writeup ON writeup_id= wu.node_id 
+		JOIN document on document_id = wu.node_id
+		JOIN node type on type.node_id = writeup.wrtype_writeuptype'
+	,
+	&quot;wu.reputation &gt; $repthreshholdlo
+		AND wu.reputation &lt; $repthreshholdhi
+		AND writeup.cooled != 0&quot;
+	,
+	&quot;ORDER BY writeup.publishtime DESC LIMIT $limit&quot;
+);
+
+my $str = htmlcode( 'show content' , $csr , 'parenttitle, type, byline,'.$length ) ;
+
+# stop PRE breaking layout: replace PRE with TT; fix spaces and newlines to still work
+while ( $str =~ /&lt;pre&gt;(.*?)&lt;\/pre&gt;/si )
+	{
+	my $temp = $1;
+	$temp =~ s/\n/&lt;br&gt;/g;
+	$str =~ s/&lt;pre&gt;(.*?)&lt;\/pre&gt;/&lt;tt&gt;$temp&lt;\/tt&gt;/si;
+	$str =~ s/  / &amp;nbsp;/g; # replace two spaces with space and nbsp
+	}
+$str =~ s!&lt;hr.+&gt;!&lt;hr&gt;!ig ; # no width on hr to avoid stretch
+
+&quot;&lt;div id=\&quot;cotc\&quot;&gt;\n$str\n&lt;/div&gt;&quot; ;
+%]</nlcode>
+  <title>Cream of the Cool</title>
+</node>

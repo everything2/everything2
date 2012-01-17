@@ -1,0 +1,78 @@
+<node>
+  <doctext>[{UnderConstruction}]
+&lt;p&gt;Yeah, lets see &lt;strong&gt;you&lt;/strong&gt; try to rewrite this thing in less than a year. :)&lt;/p&gt;
+&lt;p&gt;Note: this is restricted so I don't have to worry about potential security holes while I'm working on it. I'll rename and change the type of this once I'm closer to beta stage. -- [N-Wing]&lt;/p&gt;
+
+[%
+#updated: 2003.03.06.n4
+
+my $UID = getId($USER) || 0;
+return 'Maybe you\'d get messages if you had an account.' if !$UID || ($UID==$HTMLVARS{guest_user});
+
+my $isRoot = exists $HTMLVARS{group_gods}{$UID};
+my $NL = &quot;\n&quot;;
+my $BR = &quot;&lt;br /&gt;\n&quot;;
+
+
+my $str='';
+
+
+#form stuff
+$str .= '&lt;form name=&quot;form1&quot; method=&quot;POST&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;message&quot; /&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;'.getId($NODE).'&quot; /&gt;'.$NL;
+
+
+#display the plethora of options
+
+my $showSticky = '&amp;#91; S &amp;#93;';	#could be better to have some cool little picture or something (chewed gum?)
+$str .= '&lt;p&gt;&lt;strong&gt;Options&lt;/strong&gt;&lt;br /&gt;&lt;small&gt;Settings with &quot;'.$showSticky.'&quot; next to them indicate they are &quot;sticky&quot; - they keep their setting for the next time you visit the '.encodeHTML($$NODE{title},1).'. All other options will reset to their default values.&lt;/small&gt;&lt;/p&gt;'.$NL;
+
+$str .= $showSticky.htmlcode('varcheckbox', 'autofillInbox,Autofill recipient').$BR;
+$str .= $showSticky.htmlcode('varcheckbox', 'sortmyinbox,Sort messages by the usergroup the message is for').$BR;
+$str .= 'only show messages ' . $query-&gt;popup_menu('notfromuser', [0, 1], 0, {0=&gt;'from',1=&gt;'not from'}) . ' the user ' . $query-&gt;textfield(-name=&gt;'fromuser') . $BR;	#TODO even better to have user(group) entry htmlcode
+$str .= 'only show messages ' . $query-&gt;popup_menu('notfromug', [0, 1], 0, {0=&gt;'from',1=&gt;'not from'}) . ' the group ' . $query-&gt;textfield(-name=&gt;'fromug') . $BR;	#TODO even better to have user(group) entry htmlcode
+$str .= $showSticky.' archived/unarchived: show ' . htmlcode('varsComboBox', 'msginboxUnArc,0, 0,all, 1,unarchived, 2,archived') . ' messages'.$BR;
+
+$str .= 'notfromuser='.$query-&gt;param('notfromuser').$BR;
+$str .= 'notfromug='.$query-&gt;param('notfromug').$BR;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#much, much, TODO
+
+#form closing
+my @notFunny = ('talc','blab','sumbit','summit','sub mitt','tawk','Please send any message I may have, and update any of the above settings I may have changed.');
+$str .= $query-&gt;submit('message send', $notFunny[int(rand(@notFunny))]);
+$str .= $query-&gt;hidden('sexisgood','1');	#hack so auto-VARS changing works
+$str .= $query-&gt;endform();
+
+$str;
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2003-03-07 00:03:02</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1438735</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1438735</document_id>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>N-Wing tries a Message Inbox rewrite</title>
+</node>

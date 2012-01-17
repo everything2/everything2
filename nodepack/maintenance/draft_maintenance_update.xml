@@ -1,0 +1,88 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-03-04 14:35:00</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>4</hits>
+  <node_id>1991387</node_id>
+  <htmlcode_id>1991387</htmlcode_id>
+  <maintenance_id>1991387</maintenance_id>
+  <checks_arguments>0</checks_arguments>
+  <maintaintype>update</maintaintype>
+  <code>my ($N) = @_;
+getRef $N;
+
+# validate new publication_status. Make 'private' if invalid.
+# notify editor(s) if status changed to review:
+if ($query -&gt; param('draft_publication_status') and
+		$query -&gt; param('old_publication_status') != $$N{publication_status}){
+	my $status = getNodeById($$N{publication_status});
+
+	unless ($status &amp;&amp; $$status{type}{title} eq 'publication_status'){
+		$$N{publication_status} = getId(getNode('private', 'publication_status'));
+		return updateNode($N, $USER) if $$N{publication_status};
+
+	}elsif($$status{title} eq 'review'){
+
+		my $editor = $DB-&gt;sqlSelect(
+			'nodelock_user'
+			, 'nodelock'
+			, &quot;nodelock_node=$$N{author_user}&quot;
+		);
+
+		$editor ||= $DB-&gt;sqlSelect(
+			'suspendedby_user'
+			, 'suspension'
+			, &quot;suspension_user=$$N{author_user}
+		         AND suspension_sustype=&quot;.getId(getNode('writeup', 'sustype'))
+		);
+
+		# record event in node history:
+		my $note = ' (while suspended by '.linkNode($editor).') ' if $editor;
+		my $nodenote_id = htmlcode('addNodenote', $$N{node_id}, &quot;author requested review$note&quot;);
+
+		# Notify. If no $editor, everyone gets it:
+		htmlcode('addNotification', 'draft for review', $editor
+			, {draft_id =&gt; $$N{node_id}, nodenote_id =&gt; $nodenote_id});
+
+	}
+}
+
+# avoid empty names/duplicate names for writeups/drafts by same user:
+my $title = my $urTitle = cleanNodeName($$N{title}) || 'untitled draft';
+my $count = 1;
+
+while(
+	$DB -&gt; sqlSelect(
+		'node_id',
+		'node',
+		'title='.$DB-&gt;quote($title)
+		.&quot;	AND type_nodetype=$$N{type_nodetype}
+			AND author_user=$$N{author_user}
+			AND node_id!=$$N{node_id}&quot;)
+		or
+	$DB -&gt; sqlSelect(
+		'writeup_id',
+		'node e2
+			JOIN writeup ON e2.node_id=parent_e2node
+			JOIN node wu ON wu.node_id=writeup_id',
+		'e2.title='.$DB-&gt;quote($title).&quot;
+			AND wu.author_user=$$N{author_user}&quot;)
+){
+	$title = &quot;$urTitle ($count)&quot;;
+	$count++;
+}
+
+return if $title eq $$N{title};
+
+$$N{title} = $title;
+updateNode($N, $USER);
+</code>
+  <type_nodetype>150</type_nodetype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <maintain_nodetype>1991079</maintain_nodetype>
+  <title>draft maintenance update</title>
+</node>

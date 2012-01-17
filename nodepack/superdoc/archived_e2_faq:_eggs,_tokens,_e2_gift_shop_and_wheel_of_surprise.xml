@@ -1,0 +1,59 @@
+<node>
+  <doctext>&lt;p&gt;
+This document is not current, and is kept only for archival purposes. Please refer to [Everything2 Help] for all up-do-date help documents.&lt;/p&gt;
+
+&lt;p&gt;The [E2 Gift Shop] and [Wheel of Surprise] are two features that let you trade some of your [The Voting/Experience System|XP] for exciting trinkets, and to give [C!|chings] away to other users. They are comparatively new parts of the E2 system.&lt;/p&gt; 
+&lt;p&gt;Eggs and Tokens are toys for use in the chatterbox.&lt;/p&gt;
+ &lt;p&gt; The [E2 Gift Shop] has four or five sections. 
+&lt;ol&gt; 
+&lt;li&gt;&lt;em&gt;Give the gift of ching!&lt;/em&gt; - If you have [C!|chings] to spend, you can instead given them to another user. You can enter a username here and hit &quot;Give C!&quot;. They'll get a notification from [Cool Man Eddie]. If you use the &quot;Give anonymously&quot; option, it won't mention who the gift is from.&lt;/li&gt; 
+&lt;li&gt;&lt;em&gt;Buy Ching&lt;/em&gt; - If you are above [Voting/Experience System|Level 3], you can buy a [C!|ching] for 100XP; no matter what level you are, you can only buy one per day. You can then spend your ching on excellent writeups in the usual way, or give them to other users to spend.&lt;/li&gt; 
+&lt;li&gt;&lt;em&gt;Outside Topic Setter&lt;/em&gt; - If you have a &quot;token&quot; to spare, you can use it to change the [chatterbox] topic here. &lt;/li&gt;
+ &lt;li&gt;&lt;em&gt;Buy tokens&lt;/em&gt; - If you are [Voting/Experience System|Level 6] or above, you can buy new tokens for 70XP.&lt;/li&gt;
+ &lt;li&gt;&lt;em&gt;Self Eggs-amination&lt;/em&gt; - This dreadful pun heralds a simple view of the number of eggs you have.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/p&gt; 
+&lt;p&gt;Spinning the [Wheel of Surprise] gives you the chance of winning a fabulous prize. The [Wheel of Surprise] page displays the odds of winning each prize. For only 5 XP, you could win nothing at all, an XP award, a package of chings, an Egg or a Token. E2 lets you earn [XP] and [C!|chings] in various ways, but the [Wheel of Surprise] is the only way to get hold of Eggs and Tokens (until you get to Level 6, when a &quot;Buy Tokens&quot; button will appear in [E2 Gift Shop]).&lt;/p&gt;  
+&lt;p&gt;
+[The Power Structure of Everything2|Admins] may also give eggs as a reward to noders they favour.&lt;/p&gt; 
+&lt;p&gt;A Token allows you to set the chatterbox topic, by means of the panel in [E2 Gift Shop]&lt;/p&gt; &lt;p&gt;An Egg unlocks some new features in the chatterbox. When you have an Egg, you can use it on other users with the &quot;/egg&quot; command. Like this: 
+&lt;blockquote&gt;
+&lt;pre&gt;
+/egg N0b0dY 
+ &lt;span style='font-variant: small-caps'&gt;[% linkNode($USER,0,{lastnode_id=&gt;0}); %] eggs N0b0dy&lt;/span&gt;
+&lt;/blockquote&gt;
+Your victim then receives a +3 XP boost and your egg-count goes down by one. You can also issue &quot;smite&quot;, &quot;hugg&quot;, or &quot;anvil&quot; commands, which work in the same way, again rewarding victim and reducing your egg-count. 
+&lt;blockquote&gt;
+&lt;pre&gt;
+/smite N0b0dY 
+&lt;span style='font-variant: small-caps'&gt;[% linkNode($USER,0,{lastnode_id=&gt;0}); %] smites N0b0dy&lt;/span&gt;
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;pre&gt;
+/hugg N0b0dY 
+&lt;span style='font-variant: small-caps'&gt;[% linkNode($USER,0,{lastnode_id=&gt;0}); %] huggs N0b0dy&lt;/span&gt;
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;pre&gt;
+/anvil N0b0dY 
+&lt;span style='font-variant: small-caps'&gt;[% linkNode($USER,0,{lastnode_id=&gt;0}); %] anvils N0b0dy&lt;/span&gt;
+&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-04-09 15:25:56</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1877658</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1877658</document_id>
+  <author_user>1303697</author_user>
+  <package>0</package>
+  <title>Archived E2 FAQ: Eggs, Tokens, E2 Gift Shop and Wheel of Surprise</title>
+</node>

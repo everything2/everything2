@@ -1,0 +1,63 @@
+<node>
+  <doctext>&lt;p&gt;CACHESTORE is broken somehow&lt;br&gt;- [N-Wing]&lt;br&gt;... but seems fine now&lt;/p&gt;
+
+
+&lt;p&gt;&lt;pre&gt;
+[%
+my $UID = $$USER{node_id}||0;
+return 'not for you' unless exists $HTMLVARS{group_edev}{$UID};
+
+my $str = '
+';
+
+my $cs;
+
+if(0) {
+#THIS SEEMS TO BE THE NORMAL ONE
+#called from HTML.pm
+$cs = new Everything::CacheStore 'cache_store:web2';
+$cs ||= 'nope';
+$str .= '1 - ' . $cs . '
+';
+undef $cs;
+}
+
+if(0) {
+#called from HTML.pm
+$cs = new Everything::CacheStore 'cache_store:db1';
+$cs ||= 'nope';
+$str .= '2 - ' . $cs . '
+';
+undef $cs;
+}
+
+if(0) {
+$cs = new Everything::CacheStore 'cache_store:thisisnotavalidserver';
+$cs ||= 'nope';
+$str .= '3 - ' . $cs . '
+';
+undef $cs;
+}
+
+'
+
+'.$str.'
+
+';
+%]
+&lt;/pre&gt;&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-03-24 05:15:03</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1873627</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1873627</document_id>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>CACHESTORE broken</title>
+</node>

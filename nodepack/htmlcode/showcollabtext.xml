@@ -1,0 +1,41 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-02-19 18:32:29</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1256941</node_id>
+  <htmlcode_id>1256941</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># parseLinks() and htmlScreen() on given field for 
+# the node we're on (in? at?). 
+#
+# wharfinger
+# 2/19/02
+
+my ( $field ) = @_;
+
+my $doctext = $$NODE{ 'doctext' };
+my $TAGNODE = getNode( 'approved html tags', 'setting' );
+my $TAGS    = getVars( $TAGNODE );
+
+$$TAGS{ 'highlight' } = 1;
+
+$doctext = parseLinks( htmlScreen( $doctext, $TAGS ) );
+
+#N-Wing 2002.04.16.n2 - took out \s* - IIRC, tags can't have gaps in front
+$doctext =~ s/&lt;highlight\s*&gt;/&lt;span class=&quot;oddrow&quot;&gt;/gi;
+$doctext =~ s/&lt;\/highlight\s*&gt;/&lt;\/span&gt;/gi;
+#$doctext =~ s/&lt;\s*highlight\s*&gt;/&lt;span class=&quot;oddrow&quot;&gt;/gi;
+#$doctext =~ s/&lt;\s*\/\s*highlight\s*&gt;/&lt;\/span&gt;/gi;
+
+return $doctext;
+
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>113</author_user>
+  <package>0</package>
+  <title>showcollabtext</title>
+</node>

@@ -1,0 +1,592 @@
+<node>
+  <doctext>&lt;style type=&quot;text/css&quot;&gt;
+#mainbody li {
+	margin: 1em;
+}
+&lt;/style&gt;
+
+&lt;p&gt;&lt;i&gt;1/13/08 Modified by [katherine] - removed &quot;posting to new writeups&quot;, removed video spec, cleaned up a bit.&lt;/i&gt;&lt;/p&gt;
+
+&lt;p&gt;This is a comprehensive list and description of the features which should go into the site during the Fall 2007 development cycle.  The feature descriptions run on a few assumptions:&lt;/p&gt;
+
+&lt;ul&gt;
+	&lt;li&gt;All themes other than Zen will be disabled.  If users are particularly attached to Jukka, EKW, or Classic, they'll need to use the Zen stylesheets for them.  [ascorbic] has already started on [Jukka|one of these], and [Two Sheds] has volunteered to port (or coordinate porting) of the rest.  [nate] will be putting together the new Guest User theme, because it can have the greatest revenue impact.&lt;/li&gt;
+	
+	&lt;li&gt;Every feature will need to be coded, documented, and tested by coder or group of coders.  This needs to be comprehensively documented in your root logs.  This is how [katherine|we]'[kthejoker|ll] keep track of who to [blame when it blows up|bestow eternal thanks upon].  A basic details block for a given feature-group should include things like:
+	
+		&lt;p align=&quot;center&quot;&gt;&lt;pre&gt;
+			&lt;b&gt;Coded by:&lt;/b&gt;
+			&lt;b&gt;Affected / Created nodes:&lt;/b&gt;
+			&lt;b&gt;Documented by:&lt;/b&gt;
+			&lt;b&gt;Documentation located at:&lt;/b&gt;
+			&lt;b&gt;Tested by:&lt;/b&gt;
+		&lt;/pre&gt;&lt;/p&gt;
+
+	&lt;/li&gt;
+	
+        &lt;li&gt;Once you get something coded, tested, and documented, &amp;lt;strike&amp;gt; it off the list on this node.&lt;/li&gt;
+
+	&lt;li&gt;I'll use pretty generic names for documents in these descriptions.  Feel free to be creative when implementing them.  Names like &quot;the draughty atelier&quot; are far better choices than &quot;the zen theme stylesheet creator&quot;.&lt;/li&gt;
+	
+	&lt;li&gt;If you code or document a feature, someone else needs to test it.  Testing involves evaluation of the code, testing the functionality, and proofreading the documentation.  [if more than three want to test it, go for it|At least three] users need to test each feature, and at least one of the testers per feature needs to be a coder-god who didn't write the feature itself ([katherine|me], [nate], [kthejoker], [ascorbic], [Two Sheds], [alex], [avalyn], [N-Wing], [Lord Brawl], [Oolong], [in10se], or [RoguePoet]).  We're looking mainly for security holes, level / power / group checks, and efficient use of processor cycles and database time.&lt;/li&gt;
+
+	&lt;li&gt;We'll need to modularize wherever possible.  These features will take half a year if we rewrite basic functions (series, tagging, commenting, etc) multiple times for different node types.&lt;/li&gt;
+	
+	&lt;li&gt;Documentation should go in the [E2 FAQ] unless there's a compelling reason to do otherwise: [E2 FAQ: Homenodes], [E2 FAQ: Image nodes], [E2 FAQ: Community Spotlight], etc.&lt;/li&gt;
+	
+	&lt;li&gt;Many of these features are tightly integrated, meaning it may be difficult to implement one without helping out with others as well.  Communication will be key here - create all the usergroups you need.&lt;/li&gt;
+	
+	&lt;li&gt;Once this development cycle is finished, we'll likely repurpose web4 back into the main webhead cluster.  Future development will likely not be this time consuming or involved, and can probably be done on the production servers with few problems.  Consequently, save what you want to save locally at the end of the development cycle, because once the features are integrated, this codebase may go away.  I may keep it around to hack at full-text search, too, so I don't crash the production cluster.  We'll see.&lt;/li&gt;
+	
+&lt;/ul&gt;
+
+&lt;p align=&quot;right&quot;&gt;&lt;i&gt;Without further delay, new features, in alphabetical order:&lt;/i&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Audio, Image, Equation, and Map support&lt;/h3&gt;
+
+	&lt;p&gt;Audio, image, equation, and map support will need to be integrated as tokens to be placed into a writeup: &quot;e2audio&quot;, &quot;e2image, and &quot;e2map&quot;, respectively.  Audio, equations, and images will be stored locally, and map data will be stored on google's and youtube's servers, respectively.  These tokens will need to be parsed by a new htmlcode: we want multimedia content in writeups only, not on homenodes or in messages, comments, registrations, etc.  Images will display normally, equations will display as images, and maps will embed their own UIs.  Audio is a special case that may require its own player (which, IIRC, [nate] has already started writing in flash - [ascorbic], I'd imagine you'd be ideally suited to help with this, if you have the time, and if you chose to implement it this way.  If we use flash, we'll need to somehow be able to download the audio file).  If we want to link to the audio content directly, and let it play in the browser, that would have its advantages.  These five features have enough in common that they should probably be written by a &lt;i&gt;multimedia team&lt;/i&gt; led by [nate], [kthejoker], or [ascorbic], or a combination thereof who's willing and has the time.&lt;/p&gt;
+	
+	&lt;p&gt;Creation of multimedia nodes will need to be available to all users, regardless of level.  If we need to tie this to user-level or other privilege later, we can do so then.  Management of these nodes will on the whole operate along the same premises:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;An &lt;b&gt;upload page&lt;/b&gt; which allows users to create the multimedia node (image, audio, equation, or map), and verify necessary parameters:
+			&lt;ul&gt;
+				&lt;li&gt;Audio: the compression algorithm (MP3) and size (less than 25 MB)&lt;/li&gt;
+				&lt;li&gt;Images: the encoding algorithm (JPEG, PNG, or GIF) and size (less than 100 KB)&lt;/li&gt;
+				&lt;li&gt;Equations: correctly formatted LaTeX, and backend-creation of an image from the given LaTeX code&lt;/li&gt;
+				&lt;li&gt;Maps: the google or yahoo embedding link&lt;/li&gt;
+			&lt;/ul&gt;
+		This page should also allow the user to input copyright data (required) and a brief text description (also required).  This will refresh (on the same superdoc) with a link to:&lt;/li&gt;
+		
+		&lt;li&gt;The &lt;b&gt;audio, image, equation, or map node&lt;/b&gt; itself.  This will require display and edit htmlpages:
+			&lt;ul&gt;
+				&lt;li&gt;The &lt;b&gt;display page&lt;/b&gt; will need to show:
+					&lt;ul&gt;
+						&lt;li&gt;the &lt;b&gt;multimedia content&lt;/b&gt; itself, as it would be seen if the user drops the embed code straight into a writeup,&lt;/li&gt;
+						&lt;li&gt;the &lt;b&gt;media token&lt;/b&gt; ( &amp;lt;e2audio id=&quot;$$NODE{id}&quot;&amp;gt;, or e2image, e2equation, or e2map as appropriate ), as well as a summary of configurable options (e2image: width, height; all: align (center, right, left)).&lt;/li&gt;
+						&lt;li&gt;a list of &lt;b&gt;tags&lt;/b&gt;, and an input field for new tags&lt;/li&gt;
+						&lt;li&gt;a &lt;b&gt;dropdown series input&lt;/b&gt; which allows the user to add the object to a nodegroup of that same type (image: album; audio: podcast; maps: journey).  This code can probably be borrowed form the serialization procedures for writeups, discussed below.&lt;/li&gt;
+						&lt;li&gt;a &lt;b&gt;comment thread&lt;/b&gt;&lt;/li&gt;
+						&lt;li&gt;a &lt;b&gt;vote&lt;/b&gt; button cluster&lt;/li&gt;
+						&lt;li&gt;a &lt;b&gt;C!&lt;/b&gt; button&lt;/li&gt;
+						&lt;li&gt;a &lt;b&gt;link to the FAQ entry&lt;/b&gt; in which this type is discussed&lt;/li&gt;
+						&lt;li&gt;a &lt;b&gt;brief note&lt;/b&gt; encouraing users to comment on this node with a link to any writeup in which they use the image, equation, audio, or map&lt;/li&gt;
+						&lt;li&gt;A DHTML dropdown box (&quot;Flag this image / audio / map / equation&quot;) with options of &quot;for review&quot;, &quot;as inappropriate&quot;, &quot;as spam&quot;, or &quot;as abuse&quot;.  This can probably be the same HTMLcode used in writeups, comments, registries, etc.&lt;/li&gt;
+						&lt;li&gt;a &lt;b&gt;nuke button&lt;/b&gt;, available only to content editors, gods, and the author of the content.  If the content license the author selected is an open license (GNU, CC, etc - these will be flagged in the $LICENSE node object), the nuke button should be &lt;i&gt;disabled&lt;/i&gt; for the author user.  When multimedia content is uploaded, we don't need folks deleting things that may be used in others' writeups.  If, for example, a user uploads a Creative Commons open-licensed photo of the Taj Mahal, and five other folks use that photo in their writeups, that user forfeits the rights to then remove that content (since it was posted with that license type, and removing it could damage the reputation of the other user's writeups, not to mention be hard to track &quot;what was used where&quot;).  If the user in this example later wants to azamoth, we can remove all of their writeups, but should re-owner their open-license media (the Taj Mahal photo) to the [everyone] account, under the same license.&lt;/li&gt;
+					&lt;/ul&gt;
+				&lt;/li&gt;
+				&lt;li&gt;The &lt;b&gt;edit page&lt;/b&gt; will need to show a field to re-upload the content.  Only Content Editors and Gods will have links to the edit pages (check this in the htmlpage, too - we don't want people typing in '&amp;displaytype=edit' and getting to it).  We don't want users changing multimedia content once it's submitted - this would beg for bait-and-switch.  If they need an edit, they'll have to get someone on staff to do it, so we can make sure they're not swapping Picasso for goatse.cx.  The single exception here is the equation type: there's not much bait and switch that can be done here, and edits may need to happen after submission to get it right.&lt;/li&gt;
+			&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;Each type will need to have its own tracking superdoc: &quot;everything new images&quot;, &quot;everything new audio&quot;, &quot;everything new equations&quot;, and &quot;everything new maps&quot;, respectively,  using Everything New Nodes as a template.  If someone can coalesce all of this attractively into the same document, go for it.  One document is easier to manage than six.&lt;/li&gt;
+		&lt;li&gt;Each media type will need a corresponding RSS / ATOM feed.&lt;/li&gt;
+		&lt;li&gt;Each type will also need a repository, in which any user can tag-search for appropriate open-licensed or self-submitted content to embed in his/her own writeup.  If all five types are in the same repository superdoc, that should work fine.&lt;/li&gt;
+		&lt;li&gt;Equations should employ a script on the backend to perform LaTeX conversion into an embeddable image: http://www.mayer.dial.pipex.com/tex.htm should work.  [wntrmute] advised that LatexRender and TeX Converter should help: &quot;apparently there's a perl version of the popular latexrender&quot;.  If you need help, [katherine|I've] been [complete with an automated build system!|typesetting my articles and book] in LaTeX for university, and can help get things started here if you like.&lt;/li&gt;
+		&lt;li&gt;Images, equation-images, and audio should be stored on a dedicated server or server-cluster.  I can configure media.everything2.com to point to a server or group of servers in our load balancer, and we should have submission and service scripts to handle synchronization.  If we can tie fixing homenode images into this system, all the better.&lt;/li&gt;
+		&lt;li&gt;Finally, the user should earn 1 XP for creation of multimedia nodes, and lose 1 XP should if their multimedia node is nuked.&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Behavioral Standards&lt;/h3&gt;
+	
+	&lt;p&gt;The terms of service, community guidelines, editorial guidelines, and administrative guidelines are being developed in the [e2policy] group on the production site.  The only changes which will need to be made to the system to accommodate these are:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;An entry in the &quot;Getting started with Everything2&quot; guide, discussed later in this document, and&lt;/li&gt;
+		&lt;li&gt;A set of links in the zen footer to the terms of use.  The terms of use will link users to the other requisite documents.&lt;/li&gt;
+	&lt;/ul&gt;
+	
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Community Spotlight&lt;/h3&gt;
+
+	&lt;p&gt;Community spotlight is like a editor cool, but for users.  It will allow members of staff to highlight noders who have made significant contributions to the site, but haven't been appropriately recognized.  It will need to be implemented in four sections:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;A &lt;b&gt;homenode button&lt;/b&gt;, available to users above level N (configurable, probably 4), to nominate the user for the community spotlight.  This will need to take a brief description of why the user deserves it, and put that user ID ($NODE) and description on a list, to be displayed on...&lt;/li&gt;
+		&lt;li&gt;A &lt;b&gt;spotlight management superdoc&lt;/b&gt;, available to a spotlight group (I have [LaggedyAnne] and [wiccanpiper] shoulder-tapped for this, but am open to adding more to the selection group), which allows members of that spotlight group to approve the nomination and place the nomination on...&lt;/li&gt;
+		&lt;li&gt;A &lt;b&gt;frontpage widget&lt;/b&gt;, showing the most recent three spotlighted users, along with the description of what they've done to contribute to the site.  Once they've received the spotlight, it should permanently display...&lt;/li&gt;
+		&lt;li&gt;A bit of text on their homenode in recognition (somewhere in the venetian blinds next to the user image).&lt;/li&gt;
+	&lt;/ul&gt;
+	
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;External links&lt;/h3&gt;
+
+	&lt;p&gt;We need to enable external links from anywhere in the site.  Noders typically list these in link and pipelink form, so I would recommend we follow suit in enabling it as a feature.  &lt;b&gt;NOTE&lt;/b&gt;:  This will likely require changes to linkNode() in an underlying perl module (/usr/local/everything/lib/Everything/HTML.pm), so will need to be coded by [someone who has access to web4 in the cluster|an active coder-god] on E2.  The person or team who writes this feature may also want to closely consider writing the semantic URL features.  This feature should should:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;Check for a URL (regexp) in the link target, whether [a normal link] or [ceci n'est pas une pipe, link|pipe link].  &amp;#91;http://www.google.com/&amp;#93; and &amp;#91;http://www.google.com|the search site linked here&amp;#93; should go to the same place.  If the user leaves out the protocol in the URL (e.g. &amp;#91;www.google.com&amp;#93;, without the &quot;http://&quot;), it should take them to the e2 node on &quot;www.google.com&quot;.&lt;/li&gt;
+	&lt;/ul&gt;
+		
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Frontpage (for guest user)&lt;/h3&gt;
+
+	&lt;p&gt;Quoted from the community newsletter, &quot;The frontpage as shown to [Guest User|users not logged in] will be vastly simplified, with only news, recent nodes, C!s, a search box, and editor cools.&quot;  We'll need someone to design and code this.  This, along with the &quot;frontpage (for logged-in users)&quot; should probably be coded by a team consisting of a graphic designer and a coder.  This will only pull data from a few tables and present it attractively to visitors.  Bonus points if you can make it auto-update when new C!s, cools, and nodes are posted.  It will require:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;The three most recent &lt;b&gt;news items&lt;/b&gt;, as well as the following four most recent headlines;&lt;/li&gt;
+		&lt;li&gt;A list of &lt;b&gt;new writeups&lt;/b&gt; and their authors;&lt;/li&gt;
+		&lt;li&gt;A list of &lt;b&gt;recently C!-ed writeups&lt;/b&gt;;&lt;/li&gt;
+		&lt;li&gt;A list of &lt;b&gt;recently editor-cooled nodes&lt;/b&gt;; and&lt;/li&gt;
+		&lt;li&gt;A place for users to &lt;b&gt;login&lt;/b&gt;;&lt;/li&gt;
+	&lt;/ul&gt;
+	
+	&lt;p&gt;Guest user will have advertisements where we currently have nodelets, with the exception of the login nodelet.  The look and feel of the new guest-user frontpage should be crafted accordingly.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Frontpage (for logged-in users)&lt;/h3&gt;
+
+	&lt;p&gt;Ideally, the new logged-in-user frontpage will be driven by AJAX, for drag-and-drop ease in adding and removing modules.  The script.aculo.us javascript library (based on prototype.js) is relatively standard, and does this task well.  It should be heavily considered.  We may need to rig the JS includes in cache, so not to eat up heaps of bandwidth pushing the same code down the pipe repeatedly.&lt;/p&gt;
+	
+	&lt;p&gt;The front page should consist of a number of nodelets, each offering a specific type of information.  Users should be able to add nodelets to their frontpage by means of an epicenter-like required (not closeable) widget.  Look at pageflakes.com, popurls.com (not dynamic, but still useful), and netvibes.com to see a few ways we can lay this out.  These nodelet should include:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;The &lt;b&gt;uncloseable nodelet&lt;/b&gt;, top and center which lets you add new widgets to the frontpage, and includes links to the current daylog, dreamlog, and editor logs, as well as a link to &quot;news for noders&quot;;&lt;/li&gt;
+		&lt;li&gt;A &lt;b&gt;calendar of events&lt;/b&gt;, including quests and gatherings (which will need to be driven by a setting node or perhaps a dbtable + restricted_superdoc.)  If we can integrate an iCalendar (RFP, works with MS Exchange) or hCalendar (Microformat, works with Web apps, Linux and Apple easily, will likely be integrated with Firefox 3.x) feed with this, bonus points.&lt;/li&gt;
+		&lt;li&gt;A list of the most recent &lt;b&gt;writeups&lt;/b&gt;, and link to that RSS feed&lt;/li&gt;
+		&lt;li&gt;The ledes of the writeups on &lt;b&gt;Cream of the Cool&lt;/b&gt;, and link to that RSS feed&lt;/li&gt;
+		&lt;li&gt;A list of the most recent &lt;b&gt;C!s&lt;/b&gt;, and link to that RSS feed&lt;/li&gt;
+		&lt;li&gt;A list of the most recent &lt;b&gt;editor cools&lt;/b&gt;, and link to that RSS feed&lt;/li&gt;
+		&lt;li&gt;A list of the most recent &lt;b&gt;audio nodes&lt;/b&gt;, and link to that RSS feed&lt;/li&gt;
+		&lt;li&gt;A list of the most recent &lt;b&gt;image nodes&lt;/b&gt;, and link to that RSS feed&lt;/li&gt;
+		&lt;li&gt;A list of the most recent &lt;b&gt;map nodes&lt;/b&gt;, and link to that RSS feed&lt;/li&gt;
+		&lt;li&gt;A list of the most recent &lt;b&gt;equation nodes&lt;/b&gt;, and link to that RSS feed&lt;/li&gt;
+		&lt;li&gt;A list of the most recent &lt;b&gt;registry responses&lt;/b&gt;, and link to that RSS feed&lt;/li&gt;
+		&lt;li&gt;Links to the most recent &lt;b&gt;daylogs&lt;/b&gt; by everyone on the site (and a link to that RSS feed)&lt;/li&gt;
+		&lt;li&gt;Your 10 most recent messages, with a link to the message inbox (same RSS thoughts as above)&lt;/li&gt;
+		&lt;li&gt;The full text of [News for Noders]&lt;/li&gt;
+		&lt;li&gt;The ubiquitous tag cloud (daily, weekly, monthly, or all), linked to the full tag list / search pages&lt;/li&gt;
+		&lt;li&gt;The E2 Poll and Statistics nodelets would be more appropriate as frontpage widgets (exclusively - as in &quot;no longer available as nodelets&quot;).&lt;/li&gt;
+		&lt;li&gt;While we're at it, &quot;E2 Zeitgeist&quot; is inappropriate content for a nodelet, and should be disabled.  &quot;best of&quot; lists are all-too-often instruments of self-fulfilling prophesy, and I fail to see how this is any different.  Administrators have access to this data through our statistics tracing packages when we need it.&lt;/li&gt;
+		&lt;li&gt;The frontpage should have three columns in which the nodelets can be dropped: one 1/4 available width, one 1/2 available width, and the last another 1/4.  Those nodelets dropped into the third section should display on every page (what we now understand as &quot;nodelets&quot;).  We want the default &quot;new, improved, AJAX-driven&quot; frontpage to look as close to the current page as possible, while giving people the ability to modify it.  Look at the frontpage using [sam512]'s kernel blue theme - this is an ideal default state.&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Getting started with Everything2&lt;/h3&gt;
+
+	&lt;p&gt;&quot;Getting Started with Everything2&quot; is the new manner by which users will sign up for accounts and get integrated with the site.  There's a great deal of work involved here, and we'll need to keep the process as streamlined as possible.  Major thanks to [Wiccanpiper], [LaggedyAnne], [Two Sheds], [alex], and [Lord Brawl] for helping with this section.  It will consist of five steps:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;&lt;b&gt;Page one:&lt;/b&gt; &quot;Join up with Everything2&quot;, will take the details needed to create a new user account.  It will need:
+			&lt;ul&gt;
+				&lt;li&gt;A &lt;b&gt;brief text description&lt;/b&gt; of who we are, who's in charge, and other basic information,&lt;/li&gt;
+				&lt;li&gt;A &lt;b&gt;real name&lt;/b&gt; field,&lt;/li&gt;
+				&lt;li&gt;A &lt;b&gt;username&lt;/b&gt; field, which will check via prototype.js to verify the name is valid, and if it's taken, and give feedback when necessary,&lt;/li&gt;
+				&lt;li&gt;An &lt;b&gt;email address&lt;/b&gt; field, which will check via prototype.js to verify the email address isn't already used by another account,&lt;/li&gt;
+				&lt;li&gt;The standard &lt;b&gt;password&lt;/b&gt; and repeat-password fields.  A quick non-AJAX javascript call can be made to ensure these two fields are the same before submitting,&lt;/li&gt;
+				&lt;li&gt;A &lt;b&gt;CAPTCHA&lt;/b&gt; to nominally verify a user as human (please integrate this functionality in partnership with &lt;a href=&quot;http://recaptcha.net/&quot;&gt;recaptcha.net&lt;/a&gt;,) and&lt;/li&gt;
+				&lt;li&gt;A &lt;b&gt;stumbit button&lt;/b&gt;.&lt;/li&gt;
+			&lt;/ul&gt;
+			Upon taking and verifying these details as unique, an email will be sent to the user with a link, containing an authentication hash.  If the user came here from a writeup page (see the first entry in the &quot;writeups and e2nodes&quot; section of this document), the text they input to the writeup box, and the title of the writeup should be stored in their scratchpad, along with a note telling them this and advising them to seek out a mentor in the welcome email.  Once the user clicks on this link (or a second one, without the built-in hash), it will take them to page two:
+		&lt;/li&gt;
+		&lt;li&gt;&lt;b&gt;Page two:&lt;/b&gt; Reviewing the Terms of Service and Community Guidelines:
+			&lt;ul&gt;
+				&lt;li&gt;If the user didn't click on the emailed link with the hash, page two will ask them to copy and paste the hash back to E2 to verify their email address.&lt;/li&gt;
+				&lt;li&gt;Page two should then display the contents of the Terms of Service and Community Guidelines, with radio buttons for &quot;Accept&quot; and &quot;Decline&quot;, with a next button.  If they accept, move them to page three.  If they decline, nuke the newly created user-node and bring them back to the frontpage.&lt;/li&gt;
+				&lt;li&gt;Users to pass this point in account creation should be given 10 votes.  We'll probably need to (as of clicking submit here) post a flag in $VARS that the user has accepted the TOS.  This page needs to check, then, that that flag doesn't already exist before giving them ten votes.&lt;/li&gt;
+			&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;&lt;b&gt;Page three:&lt;/b&gt; &quot;Tell us about yourself&quot;, in which we collect basic contact and biographical information about the user, containing:
+			&lt;ul&gt;
+				&lt;li&gt;Input boxes for &lt;b&gt;mission drive&lt;/b&gt; with E2, specialties, school/company, and motto,&lt;/li&gt;
+				&lt;li&gt;A text box for &lt;b&gt;bio information&lt;/b&gt; to become their starter homenode text, and&lt;/li&gt;
+				&lt;li&gt;Forms to fill out &lt;b&gt;Basic registry information&lt;/b&gt;, such as AIM, Jabber, LJ, flickr, and skype accounts.  These data should be dynamically input, with plus and minus buttons to create or remove pairs of inputs for key (registry) and value (their input).  This bit is optional.&lt;/li&gt;
+				&lt;li&gt;A &lt;b&gt;next button&lt;/b&gt;, taking them to page four&lt;/li&gt;
+			&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;&lt;b&gt;Page four: &quot;Anatomy of the Nodegel&quot;, in which we describe the buttons and levers of E2, and how to use them:&lt;/b&gt;
+			&lt;ul&gt;
+				&lt;li&gt;A screenshot of a sample e2node with two writeups, labeled (softlinks, title, search, writeups, nodelets, hardlinks, etc)&lt;/li&gt;
+				&lt;li&gt;A screenshot of a sample homenode, labeled (groups, contents, blab, how to tell if they're on staff, etc)&lt;/li&gt;
+				&lt;li&gt;A quick walk-through on how to create a writeup, and where to get help&lt;/li&gt;
+				&lt;li&gt;A quick glossary of strange and new E2 terms (nodegel, nodeshell, softlinks, etc)&lt;/li&gt;
+				&lt;li&gt;A crash course in basic HTML and E2 linking&lt;/li&gt;
+				&lt;li&gt;A downloadable, printable PDF containing details on how to format and link writeups for E2, also covering use of TinyMCE&lt;/li&gt;
+				&lt;li&gt;A &quot;next&quot; button, taking them to page 5&lt;/li&gt;
+			&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;&lt;b&gt;Page five: &quot;We're here to help!&quot;, in which we discuss:&lt;/b&gt;
+			&lt;ul&gt;
+				&lt;li&gt;The &lt;b&gt;power structure&lt;/b&gt;, and hand-wavey overviews of the functions of each of the staff groups;&lt;/li&gt;
+				&lt;li&gt;The &lt;b&gt;E2 FAQ&lt;/b&gt;, and links to the more important guidelines (e2 quick start, read this first, &quot;what is E2?&quot;);&lt;/li&gt;
+				&lt;li&gt;Links to &lt;b&gt;Cool stuff&lt;/b&gt;, such as C!s and editor cools;&lt;/li&gt;
+				&lt;li&gt;Links to open special interest groups (CST, e2prose, e2poetry, e2religion, iNode, e2pandas, etc);&lt;/li&gt;
+				&lt;li&gt;A link to the &lt;b&gt;mentor request&lt;/b&gt; form;&lt;/li&gt;
+				&lt;li&gt;A brief discussion of how to use the chatterbox and message inbox; and&lt;/li&gt;
+				&lt;li&gt;A &quot;you're finished!&quot; button which takes them to their new frontpage.&lt;/li&gt;
+			&lt;/ul&gt;
+		&lt;/li&gt;
+	&lt;/ul&gt;
+
+	&lt;p&gt;I'd also like to see some sort of progress bar as a user progresses through the five steps, so their know there are only five, and know (nominally) how far they are in the account creation process.&lt;/p&gt;
+
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Homenode updates&lt;/h3&gt;
+
+	&lt;p&gt;We may want ways to show what a user's been up on on their homenode more easily:&lt;/p&gt;
+
+	&lt;ul&gt;
+		&lt;li&gt;A &lt;b&gt;position description&lt;/b&gt; in the upper-right section of homenodes, saying that &quot;$$NODE{title} is a member of Everything2 staff as $position&quot;, if indeed they are on staff;&lt;/li&gt;
+		&lt;li&gt;A similar description in the upper-right-hand section to the staff description if the user is a mentor or in edev;&lt;/li&gt;
+		&lt;li&gt;An optional display in the body of the homenode of the most recent daylogs posted;&lt;/li&gt;
+		&lt;li&gt;An optional display in the body of the homenode of the most recent registrations posted;&lt;/li&gt;
+		&lt;li&gt;A link to the most recent comments added;&lt;/li&gt;
+		&lt;li&gt;An optional display in the body of the homenode of the ledes of the user's most recent writeups (the titles, not just the count)&lt;/li&gt;
+		&lt;li&gt;An optional display in the body of the homenode of the user's bookmarks&lt;/li&gt;
+		&lt;li&gt;In the edit page, a list of checkboxes to enable and disable these options&lt;/li&gt;
+		&lt;li&gt;An optional display of their contact information from the registries&lt;/li&gt;
+		&lt;li&gt;Updated links to the user's RSS feeds (writeups, daylogs, comments, bookmarks, and multimedia nodes) with the standard (recognizable) orange RSS buttons&lt;/li&gt;
+		&lt;li&gt;Bonus points for integrating hCard markup of all public and available data&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;License Nodetype&lt;/h3&gt;
+
+	&lt;p&gt;A fair bit of our new functionality depends on the availability of various content licenses.  We'll need a nodetype (and htmlpages) for &quot;license&quot;, a page by which e2gods can add new licenses, and a selection of popular licenses:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;The GNU Free Documentation License,&lt;/li&gt;
+		&lt;li&gt;The Creative Commons Licenses,&lt;/li&gt;
+		&lt;li&gt;Public Domain,&lt;/li&gt;
+		&lt;li&gt;All Rights Reserved, and&lt;/li&gt;
+		&lt;li&gt;The MIT license&lt;/li&gt;
+	&lt;/ul&gt;
+	
+	&lt;p&gt;This nodetype needs to store the license text, the license ID, an icon for display in the header or footer of a writeup that uses this license, and a link for further information.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Locks and Forbiddance&lt;/h3&gt;
+
+	&lt;p&gt;Most new level powers will need corresponding forbiddance options to the E2 staff, and locking will need to be published on a generally accessible blotter:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;Homenodes will need forbiddance (and unforbiddance) buttons for posting audio, images, equations, maps, registries, registrations, comments, and usergroups; and for reposting writeups to the frontpage, retitling their writeups, and posting writeups as non-votable.&lt;/li&gt;
+		&lt;li&gt;Locking accounts will require a reason which should be stored in $USER's $$VARS.&lt;/li&gt;
+		&lt;li&gt;A centralized blotter should be put up at [Everything2 Lock Ledger] with information on the most recent 25 account forbiddances and lockings: people on staff should see the date, username, acting staffer, and action.  Everyone else should see only the date and the action.&lt;/li&gt;
+		&lt;li&gt;Locking of a user account should be permanent, and automatically queue all of their writeups for deletion which have been posted under a closed-license.  Their open-licensed work should be moved to the everyone account.  This is a necessary evil required by our Terms of Service (currently in last stages of draft), which is itself a necessary evil required by our offering of multimedia content.  [Take the good with the bad|Such is life].&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Message Inbox&lt;/h3&gt;
+
+	&lt;p&gt;A few general repairs are needed to Message Inbox:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;&lt;b&gt;Pagination&lt;/b&gt;: We'll need a way of seeing only 50 messages at a time, with links to previous and next pages of messages.  Bonus points if you write this using a pagination htmlcode which is dynamic enough to use in other areas of the site.&lt;/li&gt;
+		&lt;li&gt;&lt;b&gt;Organization&lt;/b&gt;: The options presented currently are a bit bewildering to the uninitiated. Some of the options (autofill, threading) need to stay in the main preferences node, and the user and group fields should become dropdown boxes &lt;i&gt;beside&lt;/i&gt; the archive selector, in one formatted row.&lt;/li&gt;
+		&lt;li&gt;&lt;b&gt;Display&lt;/b&gt;: it would be nice to see oddrow highlighting and bordering of the message table in CSS.&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Nightly Email&lt;/h3&gt;
+
+	&lt;p&gt;From the community newsletter, &quot;Finally, we'll be bringing back the E2 Nightly Email.  This will allow you to follow the nodes of those in your friends list, and optionaly a summary of all new writeups for the day.&quot;  I'm pretty sure [nate] has most of this done, but it bears listing here.  We'll need:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;A centralized superdoc to manage who we're watching, and&lt;/li&gt;
+		&lt;li&gt;An option in preferences to enable or disable the nightly email.&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Other Users and Chatterbox&lt;/h3&gt;
+
+	&lt;p&gt;Three very small features will need to be coded into the Other Users / Chatterbox system:&lt;/p&gt;
+
+	&lt;ul&gt;
+		&lt;li&gt;Members of staff will need to be able to hide their symbols in &quot;Other Users&quot; and the Chatterbox from time to time.  This won't hide their symbol on the power structure node, or on their homenode, however.  This will likely need to be done by means of a toggle button in one of the two chat-related nodelets.&lt;/li&gt;
+		&lt;li&gt;We'd like a system similar to CowBotNeal in #everything by which increments (++) and decrements (--) in popularity are stored on a separate page.  This will likely be integrated as a few lines in the message opcode which increment and decrement values in a separate settings node, and a separate superdoc to track what's been up-incremented and down-incremented.  As an example, if I were to say in the chatterbox &quot;Jack++ for this idea&quot;, the score for the word &quot;Jack&quot; would increase in the setting node and on the superdoc.&lt;/li&gt;
+		&lt;li&gt;Finally, we need a list of &quot;online helpers&quot;, linked from either the chatterbox or the other users nodelet.  This should list all gods, content editors, edevites, and mentors who have been online in the past 5 minutes.&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Polls&lt;/h3&gt;
+
+	&lt;p&gt;Two small changes need to be made to the poll system&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;All users need to be given the ability to vote in a poll, regardless of whether they've earned or been blessed with votes.  This should be fairly straightforward.&lt;/li&gt;
+		&lt;li&gt;When a poll is closed, all users need to be able to see the results.&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+
+&lt;h3&gt;Powers Page&lt;/h3&gt;
+
+	&lt;p&gt;Here's one for the documenters:&lt;/p&gt;
+
+	&lt;p&gt;Users should be able to visit a page that links them to all of our strangely named documents with which they can do something: this needs to be a user's version of [god powers and how to use them].  Good examples of what to include here are (*looking down the list of superdocs*)  [Lies, damn lies], [Random Nodeshells], [Your filled nodeshells], [ekw shredder], [Everything Poll Directory] and creator, [The Draughty Atelier], [My Big Writeup List], [squawkbox], [Your Nodeshells], [What to do if E2 goes down], [Voting Oracle], [EIMR], [EMAR], [Gab Central], [usergroup message archive], [Teddisms generator], [oblique strategies garden], [The Power Structure of Everything2], [E2 FAQ], [Cool Archive], [ENN], [Everything New Nodes], [Message Inbox], [Piercisms Generator], [Voting/Experience System], [Nate's Pseudo-Wisdoms], [Page of Cool], [Everything Quote Server], and most of the vitals nodelet.&lt;/p&gt;
+	
+	&lt;p&gt;If we want to leave some of these at easter eggs, I'm OK with that.  Important documents require a table of contents or otherwise centralized reference point.  Gods have this, at [god powers and how to use them].  Normal users don't, yet.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+
+&lt;h3&gt;Registries&lt;/h3&gt;
+
+	&lt;p&gt;Registries are a quick and easy (though they may need a new name) home for GTKY content.  [katherine|I've] already written some of this, and will start crossing things off when it's live here:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;A &lt;b&gt;registry nodetype&lt;/b&gt;, with registry dbtable, nodetype, and display and edit htmlpages:
+			&lt;ul&gt;
+				&lt;li&gt;the &lt;b&gt;registry dbtable&lt;/b&gt; contains the question (e.g. &quot;What is your flickr account?&quot;, display text (&quot;Flickr account:&quot;), and the code to parse the answer (e.g. &quot;'http://www.flickr.com/photos/'.$_&quot;),&lt;/li&gt;
+				&lt;li&gt;the &lt;b&gt;registry display page&lt;/b&gt; contains the code to show the question (e.g. &quot;Do you have a flickr account?&quot;, ask for an answer, and display a paginated (most recent 25) answers.  Each answer should have AJAX-voting and moderations buttons, as we'll see also in writeups andcomments.  Next to the question input box should be a checkbox: &quot;do you want this answer to show up on your homenode&quot; or somesuch.  As a part of each entry, a DHTML dropdown in the footer (&quot;Flag this entry&quot;) should be present with options of &quot;for review&quot;, &quot;as inappropriate&quot;, &quot;as spam&quot;, and &quot;as abuse&quot;.  This should probably be the same htmlcode used in writeups, comments, and media nodes as well.&lt;/li&gt;
+				&lt;li&gt;The &lt;b&gt;registry edit page&lt;/b&gt; should only be visible by gods, to change the parse-code (if any is required for that specific registry), and posibly fix the question.  This is another bait-and-switch opportunity we'd like to mitigate.&lt;/b&gt;&lt;/li&gt;
+				&lt;li&gt;Finally, users will gain 2XP for posting their data to a registry, and lose 2XP when their post is removed (either by themselves, or by a god / content editor)&lt;/li&gt;
+			&lt;/ul&gt;
+		&lt;/li&gt;
+		&lt;li&gt;A &lt;b&gt;registrations dbtable&lt;/b&gt; (registry_id int(11), user_id int(11), response varchar(255), on_homenode (int(1)) for storing responses to registries&lt;/li&gt;
+		&lt;li&gt;A &lt;b&gt;superdoc&lt;/b&gt; to allow creation of registries by users level four and greater&lt;/li&gt;
+		&lt;li&gt;Creation of registries should append a note to an appropriate section of [Security Monitor] as well.&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Semantic Web&lt;/h3&gt;
+
+	&lt;p&gt;We should update the URL structures of E2 to conform with semantic web conventions.  For the majority of E2 URLs, I'd rather see URLs like &quot;http://everything2.com/user/katherine&quot; than &quot;http://everything2.com/?node_id=650043&quot;. The same person or team who writes this may also want to work on the External URL facilities - the modifications needed for both will likely need to be made in the same places:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;We'll need to &lt;b&gt;update linkNode()&lt;/b&gt; in HTML.pm to form the new URLs.  It will probably be prohibitively expensive to include a getNode() call in every linkNode(), though we could do some pretty cool stuff (i.e. &quot;&amp;;lt;a href='http://everything2.com/node/Some_Writeup' class='unpopulated'&amp;gt;&quot;).  If you try this and determine that it doesn't put too much load on the servers, leave it in - we can build off of it.  Once CSS3 is fully supported in browsers, we can use the class rewrite rules to add icons next to external links automatically by appending &quot;class='external'&quot; to the A tag.&lt;/li&gt;
+		&lt;li&gt;We'll need to create a &lt;b&gt;parser for incoming URLs&lt;/b&gt; (tied into HTML.pm's getCGI(), likely) which maintains backwards-compatibility with our current URL structure (so we don't lose our places in the google's pageranks).  This will need to parse out the new URL structure into the parameter hash that the rest of our system is used to ( { 'node'=&gt; 'katherine','type'=&gt;'user', 'displaytype' =&gt; 'edit' }).  This will cause our getCGI procedure to act like Ruby on Rails' route.rb - you may want to look a this for for reference.&lt;/li&gt;
+		&lt;li&gt;I would think the optimum URL structure would be &quot;http://everything2.com/$nodetype/$title/$displaytype/$op&quot;, where $displaytype and $op are, of course, optional (defaulting to &quot;display&quot; and &quot;&quot;, respectively).  $nodetype would have to default to &quot;node&quot;, unless other data was specifically available.  In the case of pages with multiple nodes (e2nodes + writeups), we may have to come up with something a little more creative (overloading $op, perhaps?)&lt;/li&gt;
+		&lt;li&gt;We may need to implement this in two phases: making the parser work well, while maintaining compatibility with current URL structures, then making linkNode work well, while transitioning site links to the new format.&lt;/li&gt;
+		&lt;li&gt;Most of the translation work here can be done in mod_rewrite directives.&lt;/li&gt;
+		&lt;li&gt;This will also enable us to integrate RSS / ATOM feeds: &quot;http://www.everything2.com/users/alex/feed/writeups&quot;, for example.&lt;/li&gt;
+		&lt;li&gt;Bonus points if you embed &lt;b&gt;RDF syntactic metadata&lt;/b&gt; into zen general container.&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Social Bookmarking&lt;/h3&gt;
+
+	&lt;p&gt;Social bookmarking is a phenomenon that allows users to tag, descripe, and share URLs with other members of those sites.&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;In the footer of each writeup, we'll need links to post the article to various social bookmarking sites.&lt;/li&gt;
+		&lt;li&gt;An array of checkboxes in &lt;b&gt;User Preferences&lt;/b&gt; to enable and disable bookmarking to various sites.&lt;/li&gt;
+		&lt;li&gt;Guest user should see (and the default should be) del.icio.us, digg, reddit, ma.gnolia, stumbleupon, and slashdot, for now.&lt;/li&gt;
+		&lt;li&gt;Peter Harkins has written a pretty neat WordPress plugin (PHP) which builds these links, at http://push.cx/sociable .  It's a good list of available sites, and how their publication URLs are structured.&lt;/li&gt;
+	&lt;/ul&gt;
+	
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Syndication&lt;/h3&gt;
+
+	&lt;p&gt;Nate has been working on updating our RSS feeds, and has them mostly complete (IIRC).  We'll still need a few things, however, to make them usable across the web:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;A &lt;b&gt;superdoc&lt;/b&gt; listing of all available RSS feeds, including JSON support.  The JSON feeds should operate as a line of javascript to be dropped into any page on the web which uses the JavaScript XMLHttpRequest function to build a list of the contents of that feed in-place on that site.&lt;/li&gt;
+		&lt;li&gt;For daylogs, full text should show up in the RSS feeds.&lt;/li&gt;
+		&lt;li&gt;For writeups, the ledes should show up, as well as a link to &quot;read more...&quot;&lt;/li&gt;
+		&lt;li&gt;For media, embed links should be present in the feed, to enable podcasting.&lt;/li&gt;
+		&lt;li&gt;[Two Sheds] has put together a facebook plugin which will likely evolve into the &quot;standard plugin&quot; for E2 on that site.  If you'd like to help out with this, he's the point of contact.&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Tagging&lt;/h3&gt;
+
+	&lt;p&gt;Full text search is going to be difficult and processor-cycle costly to integrate, and will need to be integrated at a later date (when we have the horsepower to handle it).  For the time being, tagging and tag-search should serve us well.  To enable this, we'll need:&lt;/p&gt;
+
+	&lt;ul&gt;
+		&lt;li&gt;A &lt;b&gt;dbtable&lt;/b&gt; for tags on nodes (node_id int(11), user_id int(11), tag varchar(64)).  It may be a valid discussion to add Soundex codes here as well, for matching in the search superdoc.&lt;/li&gt;
+		&lt;li&gt;A &lt;b&gt;listing superdoc&lt;/b&gt; for users to manage the tags they've given to nodes&lt;/li&gt;
+		&lt;li&gt;A &lt;b&gt;mass-tagging superdoc&lt;/b&gt; which allows users to tag their own materials en-masse.&lt;/li&gt;
+		&lt;li&gt;A &lt;b&gt;tracking superdoc&lt;/b&gt; which content editors can use to see who's been tagging what, and allow them to remove the tag if it's inappropriate.&lt;/li&gt;
+		&lt;li&gt;An updated &lt;b&gt;search page&lt;/b&gt; that allows users to search by tags.&lt;/li&gt;
+		&lt;li&gt;An &lt;b&gt;htmlcode&lt;/b&gt; to be dropped into any node in the system to allow tagging of that node (as long as they're logged in)&lt;/li&gt;
+		&lt;li&gt;A second &lt;b&gt;htmlcode&lt;/b&gt; which displays tags on any given node in the system.  Editors should be able to remove tags here if they're inappropriate, with small [x] buttons next to each.  Users should also be able to remove their own tags through the same system.&lt;/li&gt;
+		&lt;li&gt;These htmlcodes should be embedded in writeups, registries, registry entries, comments, multimedia nodes&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;User Search&lt;/h3&gt;
+
+	&lt;p&gt;User search will need to be updated to allow for our new content types, and to fix its pagination:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;User search will need to be updated to list writeups, images, audio, maps, equations, and comments that user has created.  Whether these are all presented on the same page, or are presented creatively in tabs is the decision of the person or team who writes it.&lt;/li&gt;
+		&lt;li&gt;It may make more sense to move &quot;user search&quot; (superdoc) to &quot;user contributions page&quot; (htmlpage) or some such name, especially in light of our semantic web updates.&lt;/li&gt;
+		&lt;li&gt;&lt;s&gt;Pagination needs to be fixed, badly.  It should be transparent and unambiguous how a user gets from the current page to the next page of results, and when he or she is at the first or last page.  Google and Flickr both have outstanding pagination systems, and can be used as models for our own.&lt;/s&gt; - Fixed by [Oolong]. Any coder-god willing to certify it tested, please step up to the fold (I've had good feedback from 5 or 6 other people). Root-logged; I'm thinking this doesn't really call for any other documentation?&lt;/li&gt;
+		&lt;li&gt;Bonus points for cleaning up &quot;User Settings&quot; while you're at it, to give it the same basic layout this page will have&lt;/li&gt;
+		&lt;li&gt;Creation of usergroups should append a note to an appropriate section of [Security Monitor] as well.&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Usergroup updates&lt;/h3&gt;
+
+	&lt;p&gt;A few updates need to be made to our usergroup handling.  Most of these features will need to go into the usergroup display page:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;Owners of a usergroup should be able to flag that group as &quot;able to be messaged by non-members&quot;.&lt;/li&gt;
+		&lt;li&gt;Owners of a usergroup should be able to be able to send invites on behalf of that group to users who aren't currently members.  Whether this is done on usergroup display page, user display page, or both is up to the developer.&lt;/li&gt;
+		&lt;li&gt;Owners of a usergroup should be able to give the usergroup an open-door policy, allowing other users to join without having to message a god or the owner.&lt;/li&gt;
+		&lt;li&gt;Members of a usergroup should be able to leave the usergroup without having to message a god or the owner.&lt;/li&gt;
+		&lt;li&gt;Owners of a usergroup sould be able to flag that usergroup as &quot;announce only&quot; (useful for mentors, secret santa, etc)&lt;/li&gt;
+		&lt;li&gt;The usergroup display page should verify that the group's owner is a member of coders or gods before calling parseCode() on its $$NODE{doctext}.  Non-gods shouldn't be able to run arbitrary code in their usergroup descriptions.&lt;/li&gt;
+		&lt;li&gt;Finally, users level six and above should be able to create their own usergroups.&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+
+
+&lt;h3&gt;Writeups, comments and e2nodes&lt;/h3&gt;
+
+	&lt;p&gt;We'll need a fair bit of updates to writeups as a driving force in most of these features:&lt;/p&gt;
+
+	&lt;ul&gt;
+		&lt;li&gt;In &lt;b&gt;e2node display page&lt;/b&gt;, don't display the writeup-input textarea for anyone, but have an &quot;add writeup&quot; button that generates it dynamically. However, for guest user, rather than displaying the textarea, it displays a signup form.  Thanks to [ascorbic] for this idea.&lt;/li&gt;
+		&lt;li&gt;All &lt;b&gt;voting buttons&lt;/b&gt; and the &lt;b&gt;C! button&lt;/b&gt; should be replaced with AJAX buttons.  We already have the ajaxvote system - this should be made the standard, with the radio buttons available as a compatibility preference.  Upvotes should be a red &quot;++&quot; PNG, downvotes should be a green &quot;--&quot; PNG, and C!s should be a blue &quot;C!&quot; png, with tooltips for guidance( &amp;lt;a href=&quot;your prototype.js call&quot; title=&quot;Tooltip (upvote, downvote, C!)&quot; &amp;gt; ).  These need to be in the writeup footer, along with the social bookmarking buttons&lt;/li&gt;
+		&lt;li&gt;The writeup footer should show the &lt;b&gt;hit count&lt;/b&gt; for a user's writeups ($$NODE{hits} + $$NODE{parent_e2node}{hits})&lt;/li&gt;
+		&lt;li&gt;The writeup header should show a &lt;b&gt;trashcan icon&lt;/b&gt; for those with access to delete the writeup (c_e, gods, and the writeup author).  This should bring up an &quot;are you sure?!?&quot; popup.  If they click &quot;yes&quot;, it should automatically remove the writeup without a page refresh (using DHTML to set the div's innerHTML contents to &quot;this writeup has been deleted,&quot; or somesuch).  Whenever a writeup is removed, by self or others, the user should be docked the 5XP they were given when it was posted.  If the author does this (and not an editor or god), a note should be appended to ...&lt;/li&gt;
+		&lt;li&gt;A &lt;b&gt;superdoc&lt;/b&gt;, which editors and gods can use to track self-immolation.&lt;/li&gt;
+		&lt;li&gt;The writeup header should show a &lt;b&gt;title edit icon&lt;/b&gt; for those with access to retitle the writeup (c_e, gods, and the writeup author).  This should bring up a &quot;To where shall I move it?&quot; popup (source can probably be borrowed from node cloner) with OK and cancel buttons.  If the user clicks OK, it should process the re-parenting to a new writeup.  If the author does this (and not an editor or god), a note should be appended to ...&lt;/li&gt;
+		&lt;li&gt;A &lt;b&gt;superdoc&lt;/b&gt;, which editors and gods can use to track self-retitling.&lt;/li&gt;
+		&lt;li&gt;A DHTML dropdown in the footer (&quot;Flag this writeup&quot;) with options of &quot;for review / corrected&quot;, &quot;as inappropriate&quot;, &quot;as spam&quot;, or &quot;as abuse&quot;.&lt;/li&gt;
+		&lt;li&gt;The &lt;b&gt;unlimiching&lt;/b&gt; ability should be removed from editors and gods - we need to use those we've earned through the system just like everyone else.  This will also increase the visibility of editor cools, and slow down the churn rate in the C! lists.&lt;/li&gt;
+		&lt;li&gt;&lt;b&gt;Multiple writeups per user per e2node&lt;/b&gt; should be available.  This will need to be closely coordinated with the folks implementing the Semantic Web functionality, to make sure the standard they choose will work.&lt;/li&gt;
+		&lt;li&gt;Editors and Gods need to be able to see reputations on writeups without voting on them (to properly enforce the -5 rep rule)&lt;/li&gt;
+		&lt;li&gt;The media token (e2image, e2audio, e2map, and e2equation) parser will have to be integrated into writeup displays separate from parseLinks - as mentioned previously, we only want multimedia content in writeups for now - not homenodes, comments, registrations, etc.&lt;/li&gt;
+		
+		&lt;li&gt;&lt;b&gt;Writeup Comments&lt;/b&gt;
+			&lt;ul&gt;
+				&lt;li&gt;Users level two and higher should be able to leave comments on writeups.&lt;/li&gt;
+				&lt;li&gt;A &lt;b&gt;threaded comment&lt;/b&gt; system will need to be designed for writueps, and adapted to multimedia nodes (audio, image, equation, map).  This can probable be done with:&lt;/li&gt;
+				&lt;li&gt;An &lt;b&gt;htmlcode&lt;/b&gt; to be dropped into any node to display the comment thread; and&lt;/li&gt;
+				&lt;li&gt;A &lt;b&gt;dbtable&lt;/b&gt; to store the comments (comment_id int(11) auto_increment, comment_text text, comment_time datetime, by_user int(11), parent_comment int(11))&lt;/li&gt;
+				&lt;li&gt;Comments will need to be votable, but not C!-able.  The vote code which operates on writeups, polls, multimedia, and registrations should ideally work here as well.&lt;/li&gt;
+				&lt;li&gt;Comments will need the same DHTML drop-down box as writeups, registrations, and multimedia for flagging content as inappropriate, spam, abuse, to be reviewed, problem corrected, etc.&lt;/li&gt;
+				&lt;li&gt;Those who post content will need to be able to flag their writeups and media as non-commentable, and will need to be able to remove comments on their materials.&lt;/li&gt;
+			&lt;/ul&gt;
+		&lt;/li&gt;
+		
+		&lt;li&gt;&lt;b&gt;Writeup Ledes&lt;/b&gt;
+			&lt;ul&gt;
+				&lt;li&gt;Writeups (and only writeups) should have a second (smaller, height-wise) input box above the main box for input of the lede / abstract / overview.  This will need to be stored in the writeup dbtable and displayed above the writeup text on the display page.  Cream of the cool, writeup-related RSS feeds, and writeup-display on homenodes should all use this lede, rather than the arbitary (and truncated) first NNN characters of a writeup text.&lt;/li&gt;
+			&lt;/ul&gt;
+		&lt;/li&gt;
+		
+		&lt;li&gt;&lt;b&gt;Writeup licensing&lt;/b&gt;
+			&lt;ul&gt;
+				&lt;li&gt;The edit and input facilities for writeups will need to add License selection as a drop-down listing of existing license nodes, stored in the writeup dbtable.&lt;/li&gt;
+				&lt;li&gt;Users will also need a &lt;b&gt;superdoc&lt;/b&gt; for batch-licensing of their works.&lt;/li&gt;
+			&lt;/ul&gt;
+		&lt;/li&gt;
+		
+		&lt;li&gt;&lt;b&gt;Serialization and Table of Contents&lt;/b&gt;
+			&lt;ul&gt;
+				&lt;li&gt;Writeups should have the ability to link to previous and next nodes in a series, as well as a &quot;table of contents&quot; node for that series.  This should be configured by buttons in the sidebar of their writeups which popup input boxes asing for previous, next, and table of contents writeup titles.  This information should be stored in the writeup table (previous_writeup int(11), toc_writeup int(11), and  next_writeup int(11), respectively).&lt;/li&gt;
+			&lt;/ul&gt;
+		&lt;/li&gt;
+		
+		&lt;li&gt;&lt;b&gt;Non-votable writeups&lt;/b&gt;
+			&lt;ul&gt;
+				&lt;li&gt;The writeup creation and update facilities should give users level five and greater the ability to opt-out of voting and C!-ing on that writeup.  When a user does this, it should be noted on...&lt;/li&gt;
+				&lt;li&gt;A &lt;b&gt;superdoc&lt;/b&gt; which editors can use to follow those who have posted writeups as non-votable.&lt;/li&gt;
+				&lt;li&gt;If a user un-flags their writeup as non-votable (which would enable them to receive votes and C!s again), the writeup should then be re-posted to new nodes, following the procedure outlined above.&lt;/li&gt;
+			&lt;/ul&gt;
+		&lt;/li&gt;
+		
+		&lt;li&gt;The writeup header should be moved to a &lt;b&gt;writeup sidebar&lt;/b&gt; (on the opposite side of the writeups from the nodelets) to accomodate the author's homenode link, print link, blab box, word count, tagging, tag display, licensing, serializing / TOC, date and time information on that writeup.  This sidebar should be slightly narrower than an average nodelet, to accomodate those who have limited screen real-estate.&lt;/li&gt;
+		&lt;li&gt;Finally, if an e2node has a firmlink and no writeups, $USER isn't in content_ediors or e2gods, the page should be redirected (in HTML.pm - not as an HTTP refresh or equivalent) to the target of the firmlink.&lt;/li&gt;
+		&lt;li&gt;Bonus points for creating a superdoc to drag-and-drop writeup sidebar and footer elements in place, rather than using our rather arcane configuration setup in &quot;writeup settings&quot;.&lt;/li&gt;
+		&lt;li&gt;Bonus points for integrating a &quot;&lt;b&gt;download as PDF&lt;/b&gt;&quot; icon into the writeup headers.  Email [katherine|me] for more information on this - a simple PDF distiller on the backend using the displaytype=print CSS-styled source should do fine.&lt;/li&gt;
+		&lt;li&gt;Bonus points for integrating &lt;b&gt;hAtom markup&lt;/b&gt; into writeup and e2node display pages.&lt;/li&gt;
+	&lt;/ul&gt;
+
+&lt;hr /&gt;
+
+
+&lt;h3&gt;Zen Theme&lt;/h3&gt;
+
+	&lt;p&gt;Finally, we'll have to update our themes for the new update as well:&lt;/p&gt;
+	
+	&lt;ul&gt;
+		&lt;li&gt;All themes other than the Zen Theme will need to be rewritten as zen stylesheets.  [Two Sheds] has volunteered to port or coordinate porting of these themes.&lt;/li&gt;
+		&lt;li&gt;All themes other than the Zen Theme will then need to be disabled.  For those users who currently have deprecated themes active, their $VARS will have to be updated with the necessary zen-theme stylesheet equivalents.&lt;/li&gt;
+		&lt;li&gt;Theme selection in User Preferences&quot; will need to consist of &quot;accepted stylesheet selection.&lt;/li&gt;
+		&lt;li&gt;Our zen theme stylesheet nodetype will need to be updated with a new data element: accepted.&lt;/li&gt;
+		&lt;li&gt;When a stylesheet is accepted, the node should be locked from further changes.  This will probably need to be done on the stylesheet's display page, available to e2gods and [coders] only.&lt;/li&gt;
+		&lt;li&gt;A printable stylesheet will need to be created, tested against an e2node, writeup, homenode, and superdoc.  This will need to render a printer-friendly version of the page.  A &quot;media=print&quot; link should be be added in the HTTP header for every page load.  The standard stylesheet should remain &quot;media=screen&quot;.&lt;/li&gt;
+		&lt;li&gt;Guest user will not need to see any nodelets other than &quot;Login&quot;.  That space should be filled with google ads.&lt;/li&gt;
+		&lt;li&gt;The text &quot;Unless otherwise noted, copyright of the above works resides with
+their original author(s).&quot; will need to be displayed in the footer.&lt;/li&gt;
+		&lt;li&gt;Once our theme contest is concluded on the production site and the rewards have been distributed, [nate] will integrate the production-default (Guest User) stylesheet from those he thinks are the best for the site.&lt;/li&gt;
+	&lt;/ul&gt;
+	
+
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-11-28 00:07:35</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1919380</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1919380</document_id>
+  <author_user>650043</author_user>
+  <package>0</package>
+  <title>Everything2 Fall 2007 Feature Set Developmental Specification</title>
+</node>

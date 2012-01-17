@@ -1,0 +1,97 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-01-09 14:20:44</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>3</hits>
+  <node_id>1857921</node_id>
+  <htmlcode_id>1857921</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $POLL = $query-&gt;param(&quot;e2poll_id&quot;);
+
+getRef( $POLL );
+
+my ($count, $optionstr) = (0, &quot;&quot;);
+
+local *filterSub = sub {
+   for (@_) {
+
+      s/\&quot;/ \\\&quot;/g;
+
+      return $_;
+
+   }
+
+};
+
+for (1 .. 12) {
+
+  my $queryVal = $query-&gt;param(&quot;option&quot; . $_);
+
+  if (defined($queryVal) &amp;&amp; $queryVal) {
+
+     $optionstr .=$count.' =&gt; &quot;'.filterSub($queryVal).'&quot;, ';
+     $count++;
+
+  }
+
+};
+
+$optionstr.=$count.' =&gt; &quot;None of the above.&quot;';
+$count++;
+
+my $pollquestion = $query-&gt;param(&quot;poll_question&quot;);
+
+if (defined($pollquestion) &amp;&amp; $pollquestion) {
+   $pollquestion = filterSub($pollquestion);
+}
+
+
+my $str = '
+[%
+
+my $question=&quot;&lt;p&gt;'.$pollquestion.'&lt;/p&gt;&quot;;
+my %options=('.$optionstr.');
+$HTMLVARS{options}={'.$optionstr.'};
+my @values=();
+my $key;
+foreach $key (sort {$a &lt;=&gt; $b} (keys(%options))) {
+	push @values, $key;
+}
+
+if (!$HTMLVARS{hasvoted}) {
+	my $radioname=&quot;poll__'.$$POLL{node_id}.'&quot;;
+	$question.=$query-&gt;radio_group(
+-name=&gt;$radioname,
+-values=&gt;\@values,
+-default=&gt;0,
+-linebreak=&gt;&quot;true&quot;,
+-labels =&gt; \%options);
+}
+
+return $question;
+%]';
+
+my $optstr=$$POLL{e2poll_results};
+my $normalVotes = substr($optstr,0,rindex($optstr,&quot;,&quot;));
+my $notaVote = substr($optstr,rindex($optstr,&quot;,&quot;)); #None of the Above
+my $count2=0;
+
+my @personal = split(/,/, $optstr);
+my $optsize = @personal;
+for ($count2=$optsize;$count2&lt;$count;$count2++) {
+$normalVotes.=&quot;,0&quot;;
+}
+$optstr = $normalVotes.$notaVote;
+$$POLL{e2poll_results}=$optstr;
+
+$$POLL{doctext}=$str;
+updateNode( $POLL, -1 );
+</code>
+  <type_nodetype>415056</type_nodetype>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>polledit</title>
+</node>

@@ -1,0 +1,66 @@
+<node>
+  <doctext>[%
+
+  return 'Curiosity killed the cat, ya know.' if(!exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) &amp;&amp; !exists($HTMLVARS{'group_content editors'}{$$USER{node_id}}));
+
+  my $str = 'Everything\'s 100 Highest Rep Writeups of This Month (visible only to staff members, but maybe we should change that?):';
+
+#my $authorID=getNode('Oolong', 'user')-&gt;{node_id};
+#my $parentNode=getNode('Moo', 'e2node')-&gt;{node_id};
+#my $nodeLink=linkNode(getNodeWhere({author_user=&gt;$authorID, parent_e2node=&gt;$parentNode}, 'writeup'));
+#if (length($nodeLink)){
+#  $str.=$nodeLink; 
+#}
+#else {
+#  $str.=&quot;Sorry, couldn't find it.&quot;;
+#}
+#return $str;
+  my $csr = $dbh-&gt;prepare('SELECT node_id FROM node WHERE type_nodetype=117 AND createtime &gt; (CURDATE() - INTERVAL 1 MONTH) ORDER BY reputation DESC LIMIT 100');
+
+  #my $csr = $dbh-&gt;prepare('SELECT node_id FROM writeup, node WHERE writeup.writeup_id=node.node_id AND node.createtime &gt; (CURDATE() - INTERVAL 1 MONTH) ORDER BY writeup.cooled DESC LIMIT 50');
+
+ # my $csr = $dbh-&gt;prepare('SELECT node_id FROM writeup INNER JOIN node ON writeup.writeup_id=node.node_id WHERE node.createtime &gt; (CURDATE() - INTERVAL 1 MONTH) ORDER BY writeup.cooled DESC LIMIT 50');
+ # This version is slightly less simple. I wonder if there's any advantage?
+
+  $csr-&gt;execute();
+
+  $str .= '&lt;br&gt;&lt;br&gt;&lt;table width=&quot;100%&quot;&gt;&lt;tr bgcolor=&quot;#CCCCCC&quot;&gt;&lt;th width=&quot;32&quot;&gt;#&lt;/th&gt;&lt;th width=&quot;48&quot;&gt;Rep&lt;/th&gt;&lt;th width=&quot;200&quot;&gt;Writeup&lt;/th&gt;&lt;th width=&quot;200&quot;&gt;Author&lt;/th&gt;&lt;/tr&gt;';
+
+  my $count=0;
+
+  while(my $row = $csr-&gt;fetchrow_hashref())
+  {
+
+      my $bestnode = getNodeById($$row{node_id});
+
+      next unless($bestnode);
+
+      my $bestparent = getNodeById($$bestnode{parent_e2node});
+      my $bestuser = getNodeById($$bestnode{author_user});
+      my $bestrep = $$bestnode{reputation};
+      $count=$count+1;
+
+     $str.='&lt;tr&gt;&lt;td&gt;'.$count.'&lt;/td&gt;&lt;td&gt;'.$bestrep.'&lt;/td&gt;&lt;td&gt;'.linkNode($bestnode, $$bestnode{title}).' - '.linkNode($bestparent, 'full').' &lt;b&gt;'.$$bestnode{cooled}.'C!&lt;/b&gt;&lt;/td&gt;&lt;td&gt; by '.linkNode($bestuser, $$bestuser{title}).'&lt;/td&gt;&lt;/tr&gt;';
+
+  }
+
+  $str .= '&lt;/table&gt;';
+
+
+  return $str;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-09-18 21:45:16</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1955925</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1955925</document_id>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <title>Oolong's Sandier Box</title>
+</node>

@@ -1,0 +1,139 @@
+<node>
+  <nltext></nltext>
+  <parent_container></parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto></nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2011-09-05 11:23:24</createtime>
+  <lastupdate>1322103324</lastupdate>
+  <hits>0</hits>
+  <node_id>1992356</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>1828141</author_user>
+  <updateinterval>86399</updateinterval>
+  <package>0</package>
+  <nodelet_id>1992356</nodelet_id>
+  <nlcode>[%
+my $eLimit = 2; # no node note after this many days = editor neglected
+my $aLimit = 10; # still up for review this many days after last note = author neglected
+my $aBoot = 25; # still up for review this long after last note = revert status
+my $reminderBot = 'Virgil';
+
+my $notification = getId(getNode('draft for review', 'notification'));
+my $review = getId(getNode('review', 'publication_status'));
+my $lasttime = getNode('Neglected Drafts', 'nodelet') -&gt; {nltext};
+
+my $eNudge = sub{
+	# repeat notification on editor neglect (but not too often)
+	my $N = shift;
+	my $lastNudge = 0;
+	$lastNudge = $1 if $lasttime =~ /&lt;!-- $$N{node_id}:(\d+) --&gt;/;
+
+	if ($$N{days} - $lastNudge &gt;= $eLimit){
+		htmlcode('addNotification', $notification, $notification
+			, {draft_id =&gt; $$N{node_id}, nodenote_id =&gt; $$N{nodenote_id}, neglected =&gt; 1}
+		);
+		$lastNudge = $$N{days};
+	}
+
+	&quot;&lt;!-- $$N{node_id}:$lastNudge --&gt;&quot;;
+};
+
+my $aNudge = sub{
+	# send reminder message on author neglect (but only once)
+	# push back to 'findable' status after more neglect
+	my $N = shift;
+	my $message;
+
+	if ($$N{days} &gt; $aBoot){
+		$DB -&gt; sqlUpdate('draft'
+			, {publication_status =&gt; getId(getNode('findable', 'publication_status'))}
+			, &quot;draft_id = $$N{node_id}&quot;);
+		$message = 'too long. Its status has been changed to &quot;findable&quot;';
+	}
+
+	$message ||= 'some time. Please consider publishing it or changing its status'
+		unless $lasttime =~ /&lt;!-- $$N{node_id} --&gt;/;
+
+	htmlcode('sendPrivateMessage', {
+		author_id =&gt; getId(getNode($reminderBot, 'user'))
+		, recipient_id =&gt; $$N{author_user}
+		# [show content] caches the author...
+		, message =&gt; &quot;Your draft [$$N{title}\[by $$N{author}{title}]]
+			has been up for review for $message.&quot;
+	}) if $message;
+
+	&quot;&lt;!-- $$N{node_id} --&gt;&quot;;
+};
+
+my $setType = sub{
+	# make hashref look enough like a real node that linkNode works properly
+	$_[0] -&gt; {type}{title} = 'draft';
+	'';
+};
+
+my $days = sub{
+	qq'&lt;span class=&quot;days&quot;&gt;&amp;#91;$_[0]-&gt;{days} days&amp;#93;&lt;/span&gt;';
+};
+
+my @parameters = (
+	{
+		who =&gt; 'Editor'
+		, neglect =&gt; $eLimit
+		, noter_user =&gt; '= 0'
+		, nudge =&gt; $eNudge
+	}, {
+		who =&gt; 'Author'
+		, neglect =&gt; $aLimit
+		, noter_user =&gt; '!= 0'
+		, nudge =&gt; $aNudge
+	}
+);
+
+my $str;
+
+foreach my $params (@parameters){
+	$str .= &quot;&lt;h4&gt;$$params{who} neglect&lt;/h4&gt;&quot;;
+
+	my $drafts = $DB -&gt; sqlSelectMany(
+		&quot;node_id, title, author_user, basenote.nodenote_id,
+			DATEDIFF(NOW(), basenote.timestamp) AS days&quot;
+		, &quot;draft
+			JOIN node on node_id = draft_id
+			JOIN nodenote AS basenote
+				ON draft_id = nodenote_nodeid
+				AND basenote.noter_user $$params{noter_user}
+			LEFT JOIN nodenote AS newer
+				ON basenote.nodenote_nodeid = newer.nodenote_nodeid
+				AND basenote.timestamp &lt; newer.timestamp&quot;
+		, &quot;publication_status = $review
+			AND basenote.timestamp &lt; NOW()- INTERVAL $$params{neglect} DAY
+			AND newer.timestamp IS NULL&quot;
+		, &quot;ORDER BY basenote.timestamp&quot;
+	);
+	
+	my $list = htmlcode('show content', $drafts, '&lt;li&gt; setType, title, byline, days, nudge',
+		setType =&gt; $setType, days =&gt; $days, nudge =&gt; $$params{nudge});
+
+	if ($list){
+		$str .= qq'&lt;ul class=&quot;infolist&quot;&gt;$list&lt;/ul&gt;' if $list;
+	}else{
+		$str .= '&lt;p&gt;&lt;small&gt;&lt;em&gt;(none)&lt;em&gt;&lt;/small&gt;&lt;/p&gt;';
+	}
+}
+
+$str;
+
+%]
+&lt;div class=&quot;nodeletfoot&quot;&gt;
+	&lt;a href=&quot;/node/superdoc/Drafts For Review&quot;&gt;Drafts for Review&lt;/a&gt;
+&lt;/div&gt;
+</nlcode>
+  <title>Neglected Drafts</title>
+</node>

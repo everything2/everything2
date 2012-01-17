@@ -1,0 +1,47 @@
+<node>
+  <doctext>&lt;p&gt;My first project is a slight change to the search box; unfortunately I don't understand thememing&lt;/p&gt;
+
+  &lt;table cellspacing=0 cellpadding=0 border=0 width=&quot;100%&quot;&gt;
+    &lt;tr&gt;
+      &lt;td bgcolor=&quot;#003366&quot; colspan=2&gt;&lt;img src=&quot;http://thepope.org/img/clear.gif&quot; width=1 height=5 border=0 alt=&quot; &quot;&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr bgcolor=#b5b587&gt;
+      &lt;td valign=bottom&gt;&lt;A HREF=&quot;/index.pl?node_id=124&amp;lastnode_id=1121148&quot;&gt;&lt;img src=&quot;http://thepope.org/img/e2_others_01.gif&quot; width=350 height=42 alt=&quot;Everything2&quot; border=0&gt;&lt;/a&gt;&lt;/td&gt;
+      &lt;td valign=middle&gt;
+        &lt;!-- This font size will make the search box smaller on linux, does
+             not affect win/mac machines --&gt;
+        &lt;font size=2&gt;
+    &lt;table cellpadding=&quot;0&quot; cellspacing=&quot;0&quot;&gt;&lt;tr valign=&quot;middle&quot;&gt;&lt;FORM METHOD=&quot;POST&quot;  ENCTYPE=&quot;application/x-www-form-urlencoded&quot;&gt;
+&lt;td&gt;&lt;INPUT TYPE=&quot;text&quot; NAME=&quot;node&quot;  SIZE=28 MAXLENGTH=80&gt;&lt;input type=&quot;hidden&quot; name=&quot;type&quot; value=&quot;superdoc&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;lastnode_id&quot; value=&quot;1121148&quot;&gt;&lt;/td&gt;&lt;td&gt;&lt;input type=&quot;image&quot; name=&quot;searchy&quot; border=&quot;0&quot; alt=&quot;search&quot; align=&quot;middle&quot; src=&quot;http://thepope.org/img/search_button.gif&quot;&gt;&lt;/td&gt;&lt;td style=&quot;font-family:sans-serif;&quot;&gt;&lt;small&gt;&lt;small&gt;
+&lt;INPUT TYPE=&quot;checkbox&quot; NAME=&quot;soundex&quot; VALUE=&quot;1&quot; DEFAULT=&quot;0&quot;&gt;Near Matches
+&lt;br /&gt;
+&lt;INPUT TYPE=&quot;checkbox&quot; NAME=&quot;match_all&quot; VALUE=&quot;1&quot; DEFAULT=&quot;0&quot;&gt;Ignore Exact
+&lt;/small&gt;&lt;/small&gt;&lt;/td&gt;&lt;td&gt;&lt;select name=&quot;type&quot;&gt;&lt;option&gt;e2node&lt;option&gt;user&lt;option&gt;superdoc&lt;option&gt;edevdoc&lt;/select&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;       
+        &lt;/font&gt;
+      &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr bgcolor=&quot;#ddddbb&quot;&gt;
+      &lt;td colspan=2&gt;&lt;A HREF=&quot;/index.pl?node_id=124&amp;lastnode_id=1121148&quot;&gt;&lt;img src=&quot;http://thepope.org/img/e2_others_02.gif&quot; height=8 width=350 border=0 alt=&quot;Everything2&quot;&gt;&lt;/a&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/table&gt;
+  &lt;/form&gt;
+&lt;!-- TABLE #1 Ends here --&gt;
+
+
+
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-07-26 00:38:37</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1121148</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>854232</type_nodetype>
+  <document_id>1121148</document_id>
+  <author_user>950724</author_user>
+  <package>0</package>
+  <title>Stilroc's Backyard</title>
+</node>

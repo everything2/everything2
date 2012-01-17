@@ -1,0 +1,55 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-04 00:14:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>183</node_id>
+  <htmlcode_id>183</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># This checks the CGI params to see what we need to do
+# to this table.
+my ($table) = @_;
+my $param;
+
+# Check to see if we need to remove a column
+foreach $param ($query-&gt;param)
+{
+  if(($param =~ /REMOVE$/) &amp;&amp;
+     ($query-&gt;param($param) eq &quot;REMOVE&quot;))
+  {
+    my $fieldname = $param;
+    $fieldname =~ s/REMOVE$//;
+    $DB-&gt;dropFieldFromTable($table, $fieldname); 
+
+    # Null out this field
+    $query-&gt;param($param, &quot;&quot;);
+  }
+}
+
+# If we need to create a new field in the table...
+if((defined $query-&gt;param(&quot;fieldname_new&quot;)) &amp;&amp;
+           (defined $query-&gt;param(&quot;fieldtype_new&quot;)) )
+{
+  my $fieldname = $query-&gt;param(&quot;fieldname_new&quot;);
+  my $fieldtype = $query-&gt;param(&quot;fieldtype_new&quot;);
+  my $primary = $query-&gt;param(&quot;fieldprimary_new&quot;);
+  my $default = $query-&gt;param(&quot;fielddefault_new&quot;);
+
+  $DB-&gt;addFieldToTable($table, $fieldname, $fieldtype, $primary, $default); 
+
+  $query-&gt;param(&quot;fieldname_new&quot;, &quot;&quot;);
+  $query-&gt;param(&quot;fieldtype_new&quot;, &quot;&quot;);
+  $query-&gt;param(&quot;fieldprimary_new&quot;, &quot;&quot;);
+  $query-&gt;param(&quot;fielddefault_new&quot;, &quot;&quot;);
+}
+
+&quot;&quot;;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>113</author_user>
+  <package>0</package>
+  <title>updatetable</title>
+</node>

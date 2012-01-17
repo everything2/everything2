@@ -1,0 +1,31 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-10-13 06:07:16</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>1372587</node_id>
+  <htmlcode_id>1372587</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>use Everything::Room;
+my $entrance= &quot;0&quot;;
+my $str = &quot;&quot;;
+my $canEnter = htmlcode('canEnterRoom');
+
+if ($$canEnter{canEnter}) {
+  $entrance=1;
+  changeRoom($USER, $NODE);
+} else {
+  $str .= &quot;&lt;reason&gt;&quot;.$$canEnter{explanation}.&quot;&lt;/reason&gt;\n&quot;;
+  $str .= &quot;&lt;warning&gt;&quot;.$$canEnter{warning}.&quot;&lt;/warning&gt;\n&quot;;
+}
+$str .= &quot;&lt;canenter&gt;&quot;.$entrance.&quot;&lt;/canenter&gt;\n&quot;;
+$str .=&quot;&lt;description&gt;&quot;.encodeHTML(($query-&gt;param(&quot;links_noparse&quot;))?($$NODE{doctext}):(parseLinks($$NODE{doctext}))).&quot;&lt;/description&gt;&quot;;
+$str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>formxml_room</title>
+</node>

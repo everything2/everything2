@@ -1,0 +1,62 @@
+<node>
+  <doctext>&lt;!-- last update 16 November 2004 by panamaus --&gt;
+&lt;p&gt;&lt;strong&gt;The backstory&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;small&gt;2004.08.03 at 13:40&lt;/small&gt; ([e2gods]) &lt;em&gt;[knifegirl] says&lt;/em&gt; Has anyone seen this before: writeups got 'detached' from their parent nodeshells. I reparented them, but their votecounts (+/-) show zero. Also the w/us in the user's list show us, eg, +6/--6. [altruism] by [pi] is one example.&lt;br /&gt;
+&lt;br /&gt;...&lt;br /&gt;&lt;br /&gt;
+&lt;small&gt;2004.08.04 at 21:28&lt;/small&gt; ([e2gods]) &lt;em&gt;[dem bones] says&lt;/em&gt; Yikes. Looks like we have a relatively serious bug here. From viewing Node Heaven it would appear that Kurt is deleting writeups without Klaproth msg's ... but Kurt isn't doing that. I didn't realize exactly what knifegirl was talking about regarding pi before. If this is brought up in the chatterbox please send people to me with what writeup(s) were deleted and we'll fix it.&lt;br /&gt;
+&lt;br /&gt;
+&lt;small&gt;2004.08.04 at 21:41&lt;/small&gt; ([e2gods]) &lt;em&gt;[dem bones] says&lt;/em&gt; Everybody check your node heavens and see if you have anything deleted by Kurt ... because Kurt doesn't edit here ... ever.&lt;br /&gt;
+&lt;br /&gt;
+&lt;small&gt;2004.08.04 at 21:45&lt;/small&gt; ([e2gods]) &lt;em&gt;[dem bones] says&lt;/em&gt; I lost one as well ... also starting with &quot;A&quot; ... that's three.
+&lt;/blockquote&gt;
+
+&lt;p&gt;At some point around the middle of 2004, many months after the E2 servers had been relocated to the University of Michigan and were running in a reasonably stable condition, a strange database glitch occurred. So far as [panamaus|I] know, nobody ever figured out what the hell actually happened to cause this problem, so it may well happen again, but here's the gist of it:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Over an undetermined period of time, several (dozen? hundred? thousand?) writeups were deleted from the database without any Klaproth message&lt;/li&gt;
+&lt;li&gt;All of the affected writeups had node titles that began with numerals or the letter A, and&lt;/li&gt;
+&lt;li&gt;Every such writeup deletion was attributed in Node Heaven to [Kurt], an ancient god by virtue of his affiliation with Blockstackers, and who, as legend has it, &lt;em&gt;has never, ever deleted anything from the database.&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Once this problem was noticed by knifegirl on 3 August, and again by another user (see &lt;a href=&quot;http://www.livejournal.com/community/everything2/2004/08/04/&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;), the alarm was sounded and the code monkeys were summoned from their day jobs to investigate. Word came down from the control room that the problem could be easily fixed by running a few scripts, and that all the writeups deleted by this bug would be restored.&lt;/p&gt;
+
+&lt;p&gt;But were the writeups really &quot;deleted&quot;? Or had something else happened to them that made them just appear so? In some cases, the writeups were still listed in the author's writeup list, and therefore still in the regular database, but were both orphaned from the parent node (as noted in knifegirl's first message, above) &lt;em&gt;and&lt;/em&gt; listed in the author's Node Heaven as if they had been killed... very strange.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;The present&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;And so it came to pass. The scripts were written and run, and all the affected writeups were fixed (or so [Bugs go to JayBonci|the Russians] would have us believe). But like any &quot;miracle&quot; cure, this mass resurrection just ended up making an army of zombies. &lt;em&gt;BRAAAAINS!&lt;/em&gt; Namely:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Every automagically resurrected writeup was subject to the same side effect that every manually resurrected writeup suffers: A loss of vote swing data. Summary writeup reputation is retained, but the +/- data on votes is lost, so you end up with a writeup that has a non-zero reputation but a +0/-0 score... up until someone votes on it (possibly &lt;em&gt;again&lt;/em&gt;), and the counter starts over&lt;/li&gt;
+&lt;li&gt;As if that weren't enough, automatically reinserting these writeups back into their respective e2node tables &lt;em&gt;&lt;strong&gt;sometimes&lt;/strong&gt;&lt;/em&gt; produced a duplication of the writeup data in said tables... resulting in the bizarre phenomenon of duplicated writeups in the same node. (Why we don't script a fix for this, I've no idea...)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;While this is all a bit unfluffy to say the least, it is undeniably better than just writing off the deletions as an unrecoverable data loss and leaving work early to grab a beer, or (&lt;strong&gt;GOD FORBID&lt;/strong&gt;) having to manually resurrect every single damn one of them. However, it does leave us with a chronic condition of stumbling across the remnants of this disaster here and there, and mending by hand the mess that's left over as best we can. Which leads us to:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;How to fix the problems&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;First of all, you may be snooping around in other users' [Node Heaven]s being the damned nosey thing you are (you interloper!), and notice some of these writeups apparently deleted by [Kurt]. Before you kneejerk and hit that resurrect button, remember that restored writeups don't ever leave Node Heaven. Their ghosts remain as a reminder of the sin that was committed during the slaying. So don't resurrect that writeup before checking the real live e2node first and verifying that the writeup has not already been returned there.&lt;/li&gt;
+&lt;li&gt;If the writeup needs resurrecting, make it so. (If you editors can't do this, just keep reading. Some of this might be god-level instruction only.) You will probably have to reparent the newborn orphan to its proper parent node after this, if you're unlucky.&lt;/li&gt;
+&lt;li&gt;If and when the writeup is alive and breathing in its proper parent node, but is suffering from the embarrassing condition of duplication, you must fix the node table by hand. To so do, click on the &quot;launch editor&quot; link below the node title on the parent e2node. This evokes a javascript window of the node table editor. Scan the list of node_ids listed until you find the duplicate. Select the &lt;em&gt;first&lt;/em&gt; instance of the duplicated node_id and click the &quot;remove&quot; link. Then click the &quot;Save&quot; button. When the table refreshes, check to insure that the duplication is gone. If it is, click the &quot;close&quot; link to dismiss the window. If not, try the &lt;em&gt;second&lt;/em&gt; instance of the duplication and repeat.&lt;/li&gt;
+&lt;li&gt;Following up, regardless of what you may find or do, you should click the repair link to repair the node of any display or content disparities that remain from your changes or script mods. If all looks well, move along. If weirdness remains, report the problem to [Halspal], who will promptly note it on a cocktail napkin, which Mary will accidentally wash to shreds because she forgot to check his pants pockets.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Mauler's alternate method of fixing the duplication problem, which you may or may not find easier than the one described above&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;When you find a writeup that is suffering from Kurt/A, simply reparent the writeup to another node (any node), and then reparent it back to it's original node. Wallah! Everything is hunky-dory again! (I look for any excuse to say &quot;Wallah!&quot; or &quot;hunky-dory&quot;). Don't forget to click repair/reorder to get things back in the correct order again.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;That's about it. If you can't do some or any of the things described above, it's probably because you need god powers. If so, refer the matter to your local neighborhood god of choice, and we'll take the mop from there. If any of this is wrong or misleading, [e2gods|we]'ll sort it out directly and [panamaus|I]'ll get the credit. Or blame.&lt;/p&gt;
+
+&lt;br /&gt;&lt;br /&gt;
+&lt;p align=center&gt;
+&lt;em&gt;back to&lt;br /&gt;
+&lt;strong&gt;&lt;a href=&quot;/index.pl?garbage=77777&amp;op=randomnode&quot;&gt;Random Node&lt;/a&gt;&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2004-11-16 06:15:31</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1684742</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1144104</type_nodetype>
+  <document_id>1684742</document_id>
+  <author_user>983517</author_user>
+  <package>0</package>
+  <title>The Damned Kurt/A Bug</title>
+</node>

@@ -1,0 +1,55 @@
+<node>
+  <doctext>[%
+  my @params = $query-&gt;param;
+
+  foreach (@params) {
+    if (/approvepic_(\d+)$/) {
+      my $num = int($1);
+      $DB-&gt;getDatabaseHandle()-&gt;do(&quot;delete from newuserimage where newuserimage_id=$num&quot;);
+    }
+   if (/deletepic_(\d+)$/) {
+     my $num = int($1);
+     my $U = getNodeById($num);
+     $$U{imgsrc} = &quot;&quot;;
+     updateNode($U, -1);
+     $DB-&gt;getDatabaseHandle()-&gt;do(&quot;delete from newuserimage where newuserimage_id=$num&quot;);
+    }
+  }
+
+%]
+
+New user images:
+[{openform}]
+[%
+  my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;, 'newuserimage', '1 = 1', 'LIMIT 10');
+  my $str;  
+
+  while (my $P = $csr-&gt;fetchrow_hashref()) {
+    my $U = getNodeById($$P{newuserimage_id});
+    $str.=&quot;&lt;img src=//images.everything2.com/$$U{imgsrc}&gt;&quot;;
+    $str.=&quot;&lt;br&gt;posted by &quot;.linkNode($U);
+    $str.=$query-&gt;checkbox(&quot;approvepic_$$P{newuserimage_id}&quot;, &quot;&quot;, &quot;1&quot;, &quot;approve&quot;);
+    $str.=$query-&gt;checkbox(&quot;deletepic_$$P{newuserimage_id}&quot;, &quot;&quot;, &quot;1&quot;, &quot;remove&quot;);
+    $str.=&quot;&lt;hr width=90%&gt;&lt;p&gt;&quot;;
+  }
+  $csr-&gt;finish;
+
+  $str;
+%]
+
+[{closeform}]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-05-11 15:03:54</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1685</hits>
+  <node_id>541882</node_id>
+  <edittime>2011-08-01 18:52:07</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>541882</document_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>New user images</title>
+</node>

@@ -1,0 +1,81 @@
+<node>
+  <doctext>@import url(&quot;/?node_id=1965235&amp;amp;displaytype=view&quot;) ; /* [Understatement]: layout */
+
+/* LINKS */
+
+:link {
+	color: #444 ;	
+	}
+
+:visited {
+	border-bottom-style: none ;	
+	color: #666 ;	
+	}
+
+a:active, a:hover {
+	color: black ;	
+	background-color: #eee ;	
+	}
+
+#softlinks a:hover , #softlinks td:hover {
+	background-color: white ;
+	}
+
+@media print {
+.content :link {
+	border-bottom-style: none ;	
+	}
+}
+
+/* OUTLINES instead of COLOURS */
+
+body , .nodelet , #loglinks , #cooluserpicks , #staff_picks , #creamofthecool {
+	border-top-style: solid ;
+	}
+
+div, p, li, dd , .oddrow {
+	background-color: transparent ;
+	}
+
+#e2logo {
+	border-bottom-style: dotted ;
+	}
+
+.nodelet_content ,
+#frontpage .linklist , #frontpage #cotc {
+	border-top-style: dotted ;
+	}
+
+/**#creamofthecool #cotc h3 {
+	border-bottom-style: none ;
+	}
+*/
+#e2logo :link , #e2logo :visited , #e2logo a:hover , 
+#creamofthecool h3 :link , #creamofthecool h3 :visited , #creamofthecool h3 a:hover {
+	color: inherit ;
+	}
+
+.nodelet h2 , #frontpage_news_title :link , #frontpage_news_title :visited {
+	color: inherit ;
+	}
+
+#softlinks td {
+	border-style: solid ;
+	border-color: white ;
+	}
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-11-26 15:48:16</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1965286</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1854352</type_nodetype>
+  <document_id>1965286</document_id>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>Bare Understatement</title>
+</node>

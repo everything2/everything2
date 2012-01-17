@@ -1,0 +1,91 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-07-20 20:46:49</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>3</hits>
+  <node_id>1990015</node_id>
+  <htmlcode_id>1990015</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($originalN, $isIncludedParent) = @_;
+my $N = $originalN || $NODE;
+getRef $N;
+my $nodeid = $$N{node_id};
+
+my $category_nodeid = getType('category')-&gt;{node_id};
+my $catlinktype = getNode('category', 'linktype')-&gt;{node_id};
+
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+my $sql = &quot;SELECT node.node_id, node.author_user
+	FROM node, links
+	WHERE node.node_id = links.from_node
+	AND links.to_node = $nodeid
+	AND node.type_nodetype = $category_nodeid
+	AND links.linktype = $catlinktype&quot;;
+my $ds = $dbh-&gt;prepare($sql);
+$ds-&gt;execute() or return $ds-&gt;errstr;
+
+my @items = ();
+while(my $row = $ds-&gt;fetchrow_hashref) {
+	$sql = &quot;SELECT node.node_id
+		FROM node, links
+		WHERE node.node_id = links.to_node
+		AND links.from_node = $$row{node_id}
+		AND links.linktype = $catlinktype
+		ORDER BY links.food, node.title, node.type_nodetype&quot;;
+	my $ids = $dbh-&gt;prepare($sql);
+	$ids-&gt;execute() or return $ids-&gt;errstr;
+	my $prev = -2;
+	my $next = -2;
+	while (my $irow = $ids-&gt;fetchrow_hashref) {
+		if ($$irow{node_id} == $nodeid) { $next = -1; }
+		elsif ($next == -1) { $next = $$irow{node_id}; }
+		elsif ($next == -2) { $prev = $$irow{node_id}; }
+		else { last };
+	}
+	my $authorCat = {-class =&gt; ' authors'} if $$N{type}{title} eq 'writeup' &amp;&amp; $$row{author_user} == $$N{author_user};
+	if ($prev &lt; 0) { $prev = ' '; }
+	else { $prev = linkNode($prev, '&amp;#xab;', { -title =&gt; 'Previous: '.getNodeById($prev)-&gt;{title}, -class =&gt; 'previous' }); }
+	if ($next &lt; 0) { $next = ' '; }
+	else { $next = linkNode($next, '&amp;#xbb;', { -title =&gt; 'Next: '.getNodeById($next)-&gt;{title}, -class =&gt; 'next' }); }
+	my $s = &quot;$prev&amp;nbsp;&amp;nbsp;&quot; . linkNode($$row{node_id}, '', $authorCat) . &quot;&amp;nbsp;&amp;nbsp;$next&quot;;
+	$s =~ s/^\s+//;
+	$s =~ s/\s+$//;
+	unless ($authorCat){
+		push @items, $s;
+	}else{
+		unshift @items, $s;
+	}
+}
+
+
+# show parent e2node categories along with writeup categories
+my $parentNodeId = $$N{parent_e2node};
+
+# prevent recursion from missing or self-referencing parent e2node
+if ($parentNodeId &amp;&amp; $parentNodeId != $originalN
+	&amp;&amp; $$N{type}{title} eq 'writeup' &amp;&amp; !exists $HTMLVARS{e2nodeCategories}
+   ) {
+	$HTMLVARS{e2nodeCategories} =
+		htmlcode('listnodecategories', $parentNodeId, 'is parent');
+}
+
+if (@items || $HTMLVARS{e2nodeCategories}) {
+	my $ies = (@items != 1 ? 'ies' : 'y');
+	my ($c, $addId) = !$isIncludedParent ? ('C', qq' id=&quot;categories$nodeid&quot;') : ('Page c', '');
+	my $moggies = qq'&lt;h4&gt;${c}ategor$ies:&lt;/h4&gt; &lt;ul&gt;&lt;li&gt;'.(join '&lt;/li&gt;&lt;li&gt;', @items).'&lt;/li&gt;&lt;/ul&gt;' if @items;
+	return qq'&lt;div class=&quot;categories&quot;$addId&quot;&gt;$moggies\n$HTMLVARS{e2nodeCategories}\n&lt;/div&gt;';
+}
+
+#id so content can be ajaxed in, but no class so no styling that makes it take up space:
+return qq'&lt;div id=&quot;categories$nodeid&quot;&gt;&lt;/div&gt;' unless $isIncludedParent;
+'';
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1797883</author_user>
+  <package>0</package>
+  <title>listnodecategories</title>
+</node>

@@ -1,0 +1,275 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-03-06 06:37:05</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>15</hits>
+  <node_id>1991436</node_id>
+  <htmlcode_id>1991436</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($maxmsgs,$showOpts) = @_;
+my $json = {};
+my $jsoncount = 1 if $showOpts =~ /j/;
+
+my $untrueGods = getVars(getNode(&quot;Untrue Gods&quot;,&quot;setting&quot;));
+
+#display options
+$showOpts ||= '';
+my $noreplylink = {$HTMLVARS{klaproth} =&gt; 1};
+
+my $showD = $$VARS{pmsgDate} || (index($showOpts,'d')!=-1); #show date
+my $showT = $$VARS{pmsgTime} || (index($showOpts,'t')!=-1); #show time
+my $showDT = $showD || $showT;
+my $showArc = index($showOpts,'a')!=-1;      #show archived messages (usually don't)
+my $showNotArc = index($showOpts,'A')==-1;   #show non-archive messages (usually do)
+return unless $showArc || $showNotArc;
+my $showGroup = index($showOpts,'g')==-1;    #show group messages (usually do)
+my $showNotGroup = index($showOpts,'G')==-1; #show group messages (usually do)
+my $canSeeHidden = htmlcode('isEditor');
+return unless $showGroup || $showNotGroup;
+
+return if getId($USER) == $HTMLVARS{guest_user};
+
+my $showLastOnes = ! ($$VARS{chatterbox_msgs_ascend} || 0); 
+
+if($maxmsgs =~ /^(.)(\d+)$/) {
+  #force oldest/newest first
+  $maxmsgs=$2;
+  if($1 eq '-') {
+    $showLastOnes=1;
+  } elsif($1 eq '+') {
+    $showLastOnes=0;
+  }
+}
+
+$maxmsgs ||= 10;
+$maxmsgs = 100 if ($maxmsgs &gt; 100);
+
+my $order = $showLastOnes ? 'DESC' : 'ASC';
+my $limits = 'for_user='.getId($USER);
+my $totalMsg = $DB-&gt;sqlSelect('COUNT(*)','message',$limits); #total messages for user, archived and not, group and not, from all users
+my $filterUser = $query-&gt;param('fromuser');
+if($filterUser) {
+  $filterUser = getNode($filterUser, 'user');
+  $filterUser = $filterUser ? $$filterUser{node_id} : 0;
+}
+$limits .= ' AND author_user='.$filterUser if $filterUser;
+
+my $filterMinor = ''; #things to only filter for display, and not for the &quot;X more in inbox&quot; message
+unless($showGroup &amp;&amp; $showNotGroup) {
+
+  $filterMinor .= ' AND for_usergroup=0' unless $showGroup;
+  $filterMinor .= ' AND for_usergroup!=0' unless $showNotGroup;
+}
+unless($showArc &amp;&amp; $showNotArc) {
+  $filterMinor .= ' AND archive=0' unless $showArc;
+  $filterMinor .= ' AND archive!=0' unless $showNotArc;
+}
+
+my $csr = $DB-&gt;sqlSelectMany('*', 'message', $limits . $filterMinor, &quot;ORDER BY  message_id $order LIMIT $maxmsgs&quot;);
+my $UID = getId($USER) || 0;
+my $isEDev = exists $HTMLVARS{group_edev}{$UID};
+
+my $aid;  #message's author's ID
+my $a; #message's author; have to do this in case sender has been deleted (!)
+my $ugID;
+my $UG;
+my $flags;
+my $userLink;
+
+#UIDs for Virgil, CME, Klaproth, and root.
+my @botlist = qw(1080927 839239 952215 113);
+my %bots = map{$_ =&gt; 1} @botlist;
+
+my $string;
+my @msgs = @{ $csr-&gt;fetchall_arrayref( {} ) };
+@msgs = reverse @msgs if $showLastOnes;
+foreach my $MSG (@msgs) {
+  my $text = $$MSG{msgtext};
+
+  #Bots, don't escape HTML for them.
+  unless( exists $bots{$$MSG{author_user}} ){
+    $text = escapeAngleBrackets($text);
+  }
+
+  $text =~ s/\[([^\]]*?)$/&amp;#91;$1/; #unclosed [ fixer
+  my $timestamp = $$MSG{tstamp};
+  $timestamp =~ s/\D//g;
+  my $str = qq'&lt;div class=&quot;privmsg timestamp_$timestamp&quot; id=&quot;message_$$MSG{message_id}&quot;&gt;';
+
+  $aid = $$MSG{author_user} || 0;
+  if($aid) { $a = getNodeById($aid) || 0; } else { undef $a; }
+  my $authorVars = getVars $a if $a;
+  my $name = $a ? $$a{title} : '?';
+  $name =~ tr/ /_/;
+  $name = encodeHTML($name);
+
+  local *eddiereply = sub {
+    my $splitStr1='Hey, ';
+    my $splitStr2=' just cooled';
+    my $splitStr3=' just \[E2 Gift'; # Cater for C! gifts notifications - BlackPawn
+    my @tempsplit = split($splitStr1,$text);
+    my $coolStr = $tempsplit[1];
+
+    my @coolsplit= split(/$splitStr2/,$tempsplit[1]);
+    if ($coolsplit[0] eq $coolStr) {
+    @coolsplit= split(/$splitStr3/,$tempsplit[1]);
+    }
+
+    my $eddie = $coolsplit[0];
+    $eddie =~ s/\[user\]//g;
+    $eddie =~ s/\[//g;
+    $eddie =~ s/ /_/g;
+    $eddie =~ s/\]//g;
+    return $eddie;
+  };
+
+
+  if($$VARS{showmessages_replylink} and not $$noreplylink{$$MSG{author_user}}){
+      $str.='&lt;div class=&quot;repliable&quot;&gt;&lt;/div&gt;'
+  }
+
+  $ugID = $$MSG{for_usergroup};
+  $UG = $ugID ? getNodeById($ugID) : undef;
+
+  if($$VARS{showmessages_replylink} &amp;&amp; defined($UG) and not $$noreplylink{$$MSG{author_user}}) {
+    my $grptitle = $$UG{node_id}==$UID ? '' : $$UG{title};
+    # Grmph. -- wharf
+    $grptitle =~ s/ /_/g;
+    $grptitle =~ s/&quot;/&amp;quot;/g;
+    $grptitle =~ s/'/\\'/g;
+    # Test for ONO. This is moderately cheesy because the message text
+    # could start with &quot;ONO: &quot;, but that's rare in practice. The table
+    # doesn't track ONOness, so the text is all we've got.
+    my $ono = '?' if $text =~ /^O[nN]O: /;
+  }
+
+  if($showDT) {
+    my $tsflags = 128; # compact timestamp
+    $str .= '&lt;small style=&quot;font-family: sans-serif;&quot;&gt;';
+    $tsflags |= 1 if !$showT; # hide time 
+    $tsflags |= 2 if !$showD; # hide date
+    $str .= htmlcode('parsetimestamp', &quot;$$MSG{tstamp},$tsflags&quot;);
+    $str .= '&lt;/small&gt; ';
+  }
+
+  $str .= '(' . linkNode($UG,0,{lastnode_id=&gt;0}) . ') ' if $ugID;
+
+  #N-Wing probably doing too much work...
+  #changes literal '\n' into HTML breaks (slash, then n; not a newline)
+  $text =~ s/\s+\\n\s+/&lt;br&gt;/g;
+
+  if ($$VARS{chatterbox_authorsince} &amp;&amp; $a &amp;&amp; $authorVars) {
+     $str .= '&lt;small&gt;('
+             . htmlcode('timesince', $a-&gt;{lasttime}, 1)
+             . ')&lt;/small&gt; '
+                  if (!$$authorVars{hidelastseen} || $canSeeHidden);
+  }
+
+  if($$VARS{powersMsg}) {
+    # Separating mere coders from the gods...
+    my $isCommitter = htmlcode('isinUsergroup',&quot;$aid,%%&quot;);
+    my $notReallyRoot = exists $$untrueGods{$aid};
+
+    my $isChanop = htmlcode('isinUsergroup',&quot;$aid,chanops,1&quot;);
+
+    $flags = '';
+    if(exists $HTMLVARS{group_gods}{$aid} &amp;&amp; !$notReallyRoot) {
+      $flags .= '@';
+    } elsif(exists $HTMLVARS{'group_content editors'}{$aid}) {
+      $flags .= '$';
+    }
+
+    $flags .= '*' if $isCommitter;
+
+    $flags .= '+' if $isChanop;
+
+    $flags .= '%' if $isEDev &amp;&amp; exists $HTMLVARS{group_edev}{$aid};
+    if(length($flags)) {
+      $flags = '&lt;small&gt;'.$flags.'&lt;/small&gt; ';
+      $str .= $flags;
+    }
+  }
+
+  $userLink = $a ? linkNode($a, 0) : '?';
+
+  $str .= '&lt;cite&gt;'.$userLink.' says&lt;/cite&gt; ' . parseLinks($text,0,1);
+  my $mbid = $$MSG{message_id};
+  my $noReplyWhy;
+  my $replyBox = htmlcode('messageBox', $aid, 1, $mbid, $ugID, \$noReplyWhy);
+  my $replyWidgetOptions = {
+    showwidget =&gt; $mbid
+    , '-title' =&gt; &quot;Reply to $name&quot;
+    , '-closetitle' =&gt; 'hide reply box'
+    };
+  my $removeBox = htmlcode('confirmDeleteMessage', $mbid);
+  my $removeWidgetOptions = {
+    showwidget =&gt; &quot;deletemsg_$mbid&quot;
+    , '-title' =&gt; &quot;Delete the above message&quot;
+    , '-closetitle' =&gt; 'hide delete box'
+    , '-id' =&gt; &quot;remove$mbid&quot;
+    };
+  $str .= &quot;&lt;div class='actions'&gt;&quot;;
+  if ($replyBox) {
+    $str .=  &quot;&quot;
+      . &quot;&lt;div class='reply'&gt;&quot;
+      . htmlcode('widget', $replyBox, 'div', &quot;Reply&quot;, $replyWidgetOptions)
+      . &quot;&lt;/div&gt;&quot;
+      ;
+  } else {
+    $str .=  &quot;&quot;
+      . &quot;&lt;div class='reply'&gt;&quot;
+      . &quot;&lt;a title='&quot; . encodeHTML($noReplyWhy) . &quot;'&gt;&quot;
+      . &quot;Can't reply&quot;
+      . &quot;&lt;/a&gt;&quot;
+      . &quot;&lt;/div&gt;&quot;
+      ;
+     
+  }
+  $str.= &quot;&quot;
+    . '&lt;div class=&quot;delete&quot;&gt;'
+    . htmlcode('widget', $removeBox, 'div', &quot;Remove&quot;, $removeWidgetOptions)
+    . '&lt;/div&gt;'
+    ;
+  $str .= &quot;&lt;/div&gt;&quot;; # &lt;/div actions&gt;
+  $str .= &quot;&lt;/div&gt;&quot;; # &lt;/div privmsg&gt;
+
+
+	unless ($jsoncount){
+		$string.=&quot;$str\n&quot;;
+	}else{
+		$$json{$jsoncount} = {
+			value =&gt; $str,
+			id =&gt; $$MSG{message_id},
+			timestamp =&gt; $timestamp
+		};
+	$jsoncount++;
+	}
+}
+
+if($totalMsg) {
+  my $MI_node = getNode(&quot;Message Inbox&quot;, &quot;superdoc&quot;);
+  my $str = qq'&lt;p id=&quot;message_total$totalMsg&quot; class=&quot;timestamp_920101106172500&quot;&gt;(you have '.
+     linkNode($MI_node,&quot;$totalMsg private messages&quot;).')&lt;/p&gt;';
+	unless ($jsoncount){
+		$string.=&quot;$str\n&quot;;
+	}else{
+		$$json{$jsoncount} = {
+			value =&gt; $str,
+			id =&gt; &quot;total$totalMsg&quot;, # will be replaced if number changes
+			timestamp =&gt; '920101106172500' # keep at bottom. 90,000 years should be enough
+		};
+	}
+
+}
+
+return $string unless $jsoncount;
+return $json;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <title>testshowmessages</title>
+</node>

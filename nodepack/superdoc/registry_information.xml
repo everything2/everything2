@@ -1,0 +1,44 @@
+<node>
+  <doctext>[%
+ return &quot;You'd see something here if you had an account.&quot; if (htmlcode(&quot;isGuest&quot;));
+
+  my $csr = $DB-&gt;sqlSelectMany('*','registration',&quot;from_user=$$USER{user_id}&quot;)
+    ||return &quot;SQL Problem.  Please notify a [coder].&quot;;
+  my $labels = ['Registry','Data','Comments','Profile?'];
+  my $rows;
+  while(my $ref = $csr-&gt;fetchrow_hashref()){
+    push @$rows,{
+      'Registry'=&gt;linkNode($$ref{for_registry}),
+      'Data'=&gt;htmlScreen($$ref{data}),
+      'Comments'=&gt;htmlScreen($$ref{comments}),
+      'Profile?'=&gt;['No','Yes']-&gt;[$$ref{in_user_profile}]
+    };
+  }
+  if($rows){
+    return &quot;&lt;p&gt;To add more registry entries, check out [The Registries[superdoc]].&lt;/p&gt;&quot;
+      . buildTable($labels,$rows)
+      ;
+  }else{
+    return '&lt;div style=&quot;text-align:center;font-weight:bold;margin:20px;&quot;&gt;'
+    . &quot;You haven\'t added your data to any registries yet.&lt;br&gt;&quot;
+    . &quot;To add some, visit [The Registries[superdoc]].&quot;
+    . &quot;&lt;/div&gt;&quot;
+    ;
+  }
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-11-12 21:40:46</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1988627</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1988627</document_id>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <title>Registry Information</title>
+</node>

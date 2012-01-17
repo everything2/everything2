@@ -1,0 +1,329 @@
+<node>
+  <doctext>[bis] submitted a patch for [Message Inbox]'s &quot;doctext&quot; field on Fri Feb 15 2002 at 20:53:18&lt;br&gt;
+patch's purpose: unknown&lt;br&gt;
+&lt;Br&gt;
+This was too old to do us any good without a description of what it was trying to do..</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-12-06 19:48:23</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1397767</node_id>
+  <htmlcode_id>1397767</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <code>&lt;script language=&quot;JavaScript&quot;&gt;
+function replyTo(s, c) {
+	if (c == 0) {
+		if (document.form1.autofill.checked == 0) {
+			return;
+		}
+	}
+	document.form1.message.value = &quot;/msg &quot; + s + &quot; &quot;;
+	document.form1.message.focus();
+}
+
+function clearReply() {
+	document.form1.message.value = &quot;&quot;;
+}
+&lt;/script&gt;
+
+&lt;table&gt;
+[%
+return '&lt;tr&gt;&lt;td&gt;If you had an account, you\'d get messages.&lt;/td&gt;&lt;/tr&gt;' if (getId($USER) == $HTMLVARS{guest_user});
+
+#sub jscriptSafe{
+#  my $thingy = $_[0];
+#  $thingy =~ s/'/&amp;\#39;/g;
+#  $thingy =~ s/&quot;/&amp;\#34;/g;
+
+#  return $thingy;
+#}
+
+
+
+# if this page has been submitted...
+if(defined($query-&gt;param('message send'))) {
+	#...any changes to the checkbox should be reflected in $VARS...
+	if(defined($query-&gt;param('autofill'))) {
+		$VARS-&gt;{autofillInbox} = 1;
+	} else {
+		delete $$VARS{autofillInbox};
+	}
+} else {
+	#...otherwise, let $VARS dictate the state of the checkbox
+	if(exists($VARS-&gt;{autofillInbox})) {
+		$query-&gt;param('autofill', 'on');
+	}
+}
+
+my $showStart = 0;
+my $numShow = 0;
+my $foruser = '';
+my $olduser = '';
+
+#filtering on archived/unarchived
+my $sqlFilterArc;
+#note: this section must be before archive display options, to make sure displayed setting matches what we'll actually filter on
+my $filterUnArc = lc($query-&gt;param('arcunarc') || '');	#also used later for showing what the filtering was
+if($filterUnArc eq 'unarchived') {
+	$sqlFilterArc = ' AND archive=0';
+} elsif($filterUnArc eq 'archived') {
+	$sqlFilterArc = ' AND archive=1';
+} else {
+	$sqlFilterArc=0;
+	$filterUnArc = 'all';	#force so displays will be correct
+}
+$query-&gt;param('arcunarc',$filterUnArc);
+
+my $str =&quot;&quot;;
+#$str.= htmlcode('openform').&quot;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&quot;.htmlcode('varcheckbox','sortmyinbox,Sort my messages in message inbox').&quot;&lt;br&gt;&lt;input type=\&quot;submit\&quot; value=\&quot;Change Now\&quot;&gt;&lt;/form&gt;&quot;;
+
+$str .= '&lt;form name=&quot;form1&quot; method=&quot;POST&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;message&quot;&gt;';
+$str .= '&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;'.getId($NODE).'&quot;&gt;';
+{
+	#for some reason, we're doing everything in a table; this at least make the options part a little easier
+	my @opts;
+	push @opts, $query-&gt;checkbox(-name=&gt;'autofill', -label=&gt;'Autofill Recipient');
+	push @opts, 'only show from user '  . $query-&gt;textfield(-name=&gt;'fromuser')  . ', or do the inverse: ' . $query-&gt;checkbox(-name=&gt;'notuser' ,-label=&gt;'hide from this user');
+	push @opts, 'only show from group ' . $query-&gt;textfield(-name=&gt;'fromgroup') . ', or do the inverse: ' . $query-&gt;checkbox(-name=&gt;'notgroup',-label=&gt;'hide to this group' );
+	push @opts, 'archived/unarchived messages: '.$query-&gt;popup_menu(-name=&gt;'arcunarc', -values=&gt;['all','archived','unarchived'], -default=&gt;'all');
+	foreach(@opts) {
+		$str .= '&lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;' . $_ . &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+	}
+}
+
+
+if(isGod($USER)) {
+
+if(defined($query-&gt;param('spy_user'))) {
+
+	$foruser = getNode($query-&gt;param('spy_user'), 'user');
+
+	unless(defined $foruser){
+ 
+		$foruser = $USER;
+		$str .= '&lt;tr&gt;&lt;td&gt;&lt;small&gt;(No such user ['.$query-&gt;param('spy_user').'])&lt;/small&gt;&lt;/tr&gt;&lt;/td&gt;';
+
+	} 
+
+} else {
+	$foruser = $USER;
+}
+
+
+
+$str .= '&lt;tr&gt;&lt;td colspan=&quot;2&quot;&gt;Message Inbox for: &lt;select name=&quot;spy_user&quot;&gt;&lt;option value=&quot;'.$$foruser{title}.'&quot;&gt;'.$$foruser{title}.'&lt;/option&gt;';
+
+if(getId($foruser) != getId($USER)){  $str .= '&lt;option value=&quot;'.$$USER{title}.'&quot;&gt;'.$$USER{title}.'&lt;/option&gt;';}
+
+if(getId($foruser) != getId(getNode('Cool Man Eddie', 'user'))){ $str .= '&lt;option value=&quot;Cool Man Eddie&quot;&gt;Cool Man Eddie&lt;/option&gt;';}
+
+if(getId($foruser) != getId(getNode('Guest User', 'user'))){
+$str .= '&lt;option value=&quot;Guest User&quot;&gt;Guest User&lt;/option&gt;';}
+
+if(getId($foruser) != getId(getNode('EDB', 'user'))){ $str .= '&lt;option value=&quot;EDB&quot;&gt;EDB&lt;/option&gt;';}
+
+if(getId($foruser) != getId(getNode('Klaproth', 'user'))){ $str .='&lt;option value=&quot;Klaproth&quot;&gt;Klaproth&lt;/option&gt;';}
+
+if(getId($foruser) != getId(getNode('Webster 1913', 'user'))){ $str .='&lt;option value=&quot;Webster 1913&quot;&gt;Webster 1913&lt;/option&gt;';}
+
+$str .='&lt;/select&gt;&lt;/tr&gt;&lt;/td&gt;';
+
+} else {
+	$foruser = $USER;
+}
+#########All jay in here:
+
+if($$VARS{sortmyinbox})
+{
+my $csr = $DB-&gt;sqlSelectMany(&quot;nodegroup_id&quot;, &quot;nodegroup&quot;, &quot;node_id=$$USER{user_id}&quot;);
+
+	my $typ = getId(getType('usergroup'));
+	my $groups;
+
+	while( my $row = $csr-&gt;fetchrow_hashref) {
+		my $n = getNodeById($$row{nodegroup_id});
+		next unless($$n{type_nodetype} == $typ);
+
+		$$groups{$$n{title}} = $$n{node_id};
+	}
+
+	$$groups{&quot;Content Editors&quot;} = getId(getNode('Content Editors', 'usergroup')) if exists($HTMLVARS{'group_gods'}{$$USER{user_id}});
+
+	foreach(keys(%$groups)) {
+		my $num = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;message&quot;, &quot;for_user=$$foruser{user_id} AND for_usergroup=$$groups{$_} AND archive=0&quot;);
+
+		my $tempstr = &quot;&lt;small&gt;$_: $num&lt;/small&gt;&quot;;
+
+		$tempstr = &quot;&lt;b&gt;&lt;big&gt;&quot;.$tempstr.&quot;&lt;/big&gt;&lt;/b&gt;&quot; if($num &gt; 0);
+		$str.= &quot;&lt;a href=&quot;.urlGen({'fromgroup'=&gt;$_, 'node_id'=&gt;$$NODE{node_id}}).&quot;&gt;$tempstr&lt;/a&gt;&lt;br /&gt;\n&quot;;
+	}
+	$str .= '('.linkNode($NODE, $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;message&quot;, &quot;for_user=$$foruser{user_id} AND archive=0&quot;).&quot; unarchived messages total&quot;).&quot;)&lt;br /&gt;\n&quot;;
+	$str .= &quot;&lt;br /&gt;&quot;;
+
+	#return $str;
+}
+
+
+my $limits = 'for_user='.getId($foruser);
+
+
+
+my $colHeading = '&lt;tr&gt;&lt;th align=&quot;left&quot;&gt;delete&lt;/th&gt;&lt;th colspan=&quot;2&quot; align=&quot;right&quot;&gt;&amp;#91;un&amp;#93;Archive&lt;/th&gt;&lt;/tr&gt;'.&quot;\n&quot;;
+$str .= $colHeading;
+
+#TODO have an htmlcode that constructs the query, so XML ticker and showmessages doesn't have to dupe code
+my $notUser =($query-&gt;param('notuser')  ? 1 : 0);
+my $notGroup=($query-&gt;param('notgroup') ? 1 : 0);
+my $filterUser;	#user object, or 0 if none
+my $filterGroup;	#group object, or 0 if none
+my $filterUID=0;	#user ID, or 0 if none
+my $filterGID=0;	#group ID, or 0 if none
+
+if($filterUser=$query-&gt;param('fromuser')) {
+	$filterUser = getNode($filterUser, 'user');
+	$filterUID = $$filterUser{node_id} if $filterUser;
+}
+if($filterGroup=$query-&gt;param('fromgroup')) {
+	$filterGroup = getNode($filterGroup, 'usergroup');
+	$filterGID = $$filterGroup{node_id} if $filterGroup;
+}
+$filterUser ||= 0;
+$filterGroup ||= 0;
+$limits .= ' AND author_user'.($notUser?'!=':'=').$filterUID if $filterUser;
+$limits .= ' AND for_usergroup'.($notGroup?'!=':'=').$filterGID if ($filterGID || $notGroup);
+$limits .= ' AND for_usergroup = 0' if (!($filterGID) &amp;&amp; $$VARS{sortmyinbox});
+$limits .= $sqlFilterArc if $sqlFilterArc;
+
+#TODO - low thingy, too
+my $showLimit='';
+my $showMax = $query-&gt;param('showmax') || $$VARS{inboxMax} || 0;
+if($showMax =~ /\d+/) {
+	$showMax=$1;
+} else {
+	$showMax=0;
+}
+$showLimit= ' LIMIT '.$showMax if $showMax;
+
+#my $ugID;
+#if($filterUser and $ugID=getNode($filterUser, 'usergroup')) {
+#	$filterGroup = $filterUser;
+#	$filterUser = 0;
+#	$ugID = getId($ugID);
+#} elsif($filterUser) {
+#	$filterUser = getNode($filterUser, 'user');
+#	$filterUser = $filterUser ? $$filterUser{node_id} : 0;
+#}
+#$limits .= ' AND author_user='.$filterUser if $filterUser;
+##old way of filtering usergroups was there &quot;long enough&quot; - N-Wing
+## $limits .= ' AND (msgtext like &quot;['.uc($filterGroup).']%&quot; OR for_usergroup=&quot;'.$ugID.'&quot;)' if $filterGroup;
+#$limits .= ' AND for_usergroup=&quot;'.$ugID.'&quot;' if $filterGroup;
+
+
+my $csr = $DB-&gt;sqlSelectMany('*', 'message', $limits, 'ORDER BY tstamp');
+
+my $flag = 0;
+my $t;
+my @chkboxes;
+my $ugID;	#ID of usergroup current message is for
+
+while(my $MSG = $csr-&gt;fetchrow_hashref) {
+	++$flag;
+	my $text = $$MSG{msgtext};
+	my $talker = $$MSG{author_user};
+	getRef($talker);
+        next unless($talker);
+
+	(my $name = $$talker{title}) =~ tr/ /_/;
+
+	#this should prevent punctuation chars in nicks from breaking our HTML
+#	$text = encodeHTML($text);
+# these two lines are stolen from showchatter. Why isn't the code shared?
+	$text =~ s/\&lt;/\&amp;lt\;/g;
+	$text =~ s/\&gt;/\&amp;gt\;/g;
+	$name = encodeHTML($name);
+	my $chkboxname = 'deletemsg_'.$$MSG{message_id};
+	push @chkboxes, $chkboxname;
+
+	$str.= '&lt;tr&gt;&lt;td valign=&quot;top&quot;&gt;'. #$query-&gt;checkbox($chkboxname, '', 'yup', ' ');
+	'&lt;input type=&quot;checkbox&quot; name=&quot;'.$chkboxname.'&quot; VALUE=&quot;yup&quot;&gt;'; #auto thing creates a newline after the tag, which messes up the table
+#	$str.= &quot;&lt;td&gt;&lt;a onmouseover='replyTo(\&quot;$name\&quot;)' onclick='replyTo(\&quot;$name\&quot;)' href='#box'&gt;reply&lt;/a&gt;&lt;/td&gt;&quot;;
+
+#Jay's fix for usernames with a single quote in them...
+
+my $safename = $name;
+$safename =~ s/'/&amp;\#39;/g;
+$safename =~ s/&quot;/&amp;\#34;/g;
+
+	$str .= &quot;&lt;input type='button' value='Reply' onmouseover='replyTo(\&quot;$safename\&quot;, 0)' onClick='replyTo(\&quot;$safename\&quot;, 1)'&gt;&lt;small&gt;&amp;nbsp;&quot;;
+
+	$t = $$MSG{tstamp};
+	$str .= substr($t,0,4).'.'.substr($t,4,2).'.'.substr($t,6,2).'&amp;nbsp;at&amp;nbsp;'.substr($t,8,2).':'.substr($t,10,2);
+
+	$str .= '&lt;/small&gt;&lt;/td&gt;&lt;td&gt;';
+
+	$ugID = $$MSG{for_usergroup} || 0;
+	$str .= '(' . linkNode(getNodeById($ugID)) . ') ' if $ugID;
+
+	$str .= '&lt;em&gt;'.linkNode($talker).' says&lt;/em&gt; '.parseLinks($text) . '&lt;/td&gt;';
+
+	$str .= '&lt;td&gt;&lt;tt&gt;'.($$MSG{archive}?'A':'&amp;nbsp;').'&lt;/tt&gt; &lt;input type=&quot;checkbox&quot; value=&quot;yup&quot; name=&quot;' . ($$MSG{archive} ? 'un' : '') . 'archive_' . $$MSG{message_id} . '&quot; /&gt;&lt;/td&gt;';
+
+	$str .= &quot;&lt;/tr&gt;\n&quot;;
+}
+$csr-&gt;finish();
+
+$str .= $colHeading;
+
+$str .= '&lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;';
+if($flag) {
+	#at least 1 message showing
+	$str .= &quot;You have $flag messages total&quot;;
+	my @allFilters;	#all filters that are being used
+	push( @allFilters, (($notUser? 'not':'').' from '         .linkNode($filterUser )) ) if $filterUser;
+	push( @allFilters, (($notGroup?'not':'').' sent to group '.linkNode($filterGroup)) ) if $filterGroup;
+	$str .= ' that are '.join(' and ',@allFilters) if scalar(@allFilters);
+	$str .= '.';
+} else {
+	#no messages showing
+	$str .= '&lt;em&gt;There\'s nothing more depressing than an empty mailbox, especially today.&lt;/em&gt;';
+}
+$str .= '&lt;/td&gt;&lt;/tr&gt;';
+
+
+#oh, lord -- I know I should be doing this with a JScript array
+#please forgive me
+$str .= '&lt;script language=&quot;javascript&quot;&gt;
+function checkAll () {
+';
+foreach (@chkboxes) {
+	$str.= &quot;window.document.form1.$_.checked = 1;\n&quot;;
+}           
+$str .= &quot;}\n&lt;/script&gt;&quot;;
+$str .= '&lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;' . $query-&gt;reset('Clear All') . &quot; &lt;input type='button' value='Clear Reply' onClick='clearReply()'&gt;&quot;.' &lt;input type=&quot;button&quot; value=&quot;Check All&quot; onClick=&quot;checkAll();&quot;&gt;&lt;/td&gt;&lt;/tr&gt;';
+
+# don't use $query-&gt;textfield() here, because sticky forms make things
+# really ugly if you happen to write something in the Chatterbox
+# don't blame me, i'm just the babysitter
+# N-Wing says: why not just clear it via $query-&gt;param('settingtoclear','');?
+$str .= '&lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&lt;i&gt;'.$query-&gt;param('sentmessage').'&lt;/i&gt;&lt;/td&gt;&lt;/tr&gt;' if $query-&gt;param('sentmessage');
+$str .= '&lt;tr&gt;&lt;td colspan=&quot;3&quot;&gt;&lt;a name=&quot;box&quot;&gt;'.(($$VARS{mitextarea} == 1)?('&lt;textarea name=&quot;message&quot; rows=&quot;8&quot; cols=&quot;35&quot; onkeypress=&quot;var mylen = new String(document.form1.message.value); if(mylen.length &gt; 255) alert(\'You can only have up to 255 characters in this field. You currently have \'+ String(mylen.length) + \'.  If you send this message now, some characters will be truncated.\');&quot;&gt;&lt;/textarea&gt;'):('&lt;input type=&quot;text&quot; name=&quot;message&quot; value=&quot;&quot; size=&quot;40&quot; maxlength=&quot;255&quot;&gt;')) unless $$VARS{'borged'};
+$str .= ' '.$query-&gt;submit('message send', 'submit') . &quot;\n&lt;/td&gt;&lt;/tr&gt;&quot;;
+# $str .= '&lt;tr&gt;&lt;td&gt;' . $query-&gt;reset('Clear All') . &quot;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;&quot;;
+
+$str .= $query-&gt;end_form();
+
+$str;
+%]
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;small&gt;Report any errors to [JayBonci] or [N-Wing]. Originally by [chromatic] and [nate].&lt;/small&gt;&lt;/p&gt;</code>
+  <type_nodetype>1382262</type_nodetype>
+  <document_id>1397767</document_id>
+  <author_user>650043</author_user>
+  <package>0</package>
+  <title>patch - Message Inbox (bis)</title>
+</node>

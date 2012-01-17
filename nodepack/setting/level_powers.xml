@@ -1,0 +1,16 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-11-11 00:57:56</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1962878</node_id>
+  <type_nodetype>153</type_nodetype>
+  <setting_id>1962878</setting_id>
+  <author_user>1180811</author_user>
+  <vars>6=Buy%20%5btoken%7ctokens%5d%20at%20the%20%5bE2%20Gift%20Shop%5d&amp;11=%5bSanctify%5d%20other%20users%20with%20%5bGP%5d%2e&amp;3=Buy%20easter%20eggs%20at%20the%20%5bE2%20Gift%20Shop%5d%3b%20create%20polls&amp;7=Buy%20easter%20eggs%20at%20the%20%5bE2%20Gift%20Shop%5d&amp;9=Give%20votes%20to%20other%20users%20at%20the%20%5bE2%20Gift%20Shop%5d&amp;2=Buy%20additional%20votes%20at%20the%20%5bE2%20Gift%20Shop%5d&amp;12=Can%20purchase%20up%20to%20one%20extra%20C%21%20per%20day%20at%20the%20E2%20Gift%20Shop&amp;8=Give%20easter%20eggs%20to%20other%20users%20at%20the%20%5bE2%20Gift%20Shop%5d&amp;4=C%21%20power%21%3b%20may%20become%20a%20mentor&amp;1=Vote%20on%20E2%20writeups%20by%20other%20users&amp;10=Cloak%20oneself%20in%20the%20Other%20Users%20nodelet&amp;5=Homenode%20image%3b%20create%20rooms</vars>
+  <package>0</package>
+  <title>level powers</title>
+</node>

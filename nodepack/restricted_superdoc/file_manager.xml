@@ -1,0 +1,100 @@
+<node>
+  <doctext>[%
+use Everything::File;
+my $god = isGod($USER);
+my $str = &quot;&quot;;
+my $file = new Everything::File($query-&gt;param(&quot;filename&quot;));
+my $filename = $file-&gt;getRelativeFilename();
+
+if($god || (not ($filename =~ /\.\./)))
+{
+  my $parent = new Everything::File($file-&gt;getParentDir());
+
+  $str .= $query-&gt;start_multipart_form(&quot;POST&quot;,
+    $ENV{script_name}) . &quot;\n&quot;;
+  $str .= $query-&gt;hidden(&quot;displaytype&quot;) . &quot;\n&quot;;
+  $str .= $query-&gt;hidden(&quot;node_id&quot;, getId $NODE) . &quot;\n&quot;;
+
+  $str .= &quot;File: &quot;;
+  $str .= $query-&gt;textfield(&quot;filename&quot;, undef, 40);
+  $str .= $query-&gt;submit('go', 'Go') . &quot;\n&quot;;
+  $str .= $query-&gt;end_form;
+
+  $str .= &quot;&lt;p&gt;&quot; .
+    $parent-&gt;linkFile(&quot;.. Parent Directory&quot;, 0, $god) . &quot;\n&quot;;
+
+  if($file-&gt;isDirectory())
+  {
+    my $filename;
+    my $subfile;
+    my @sortedFiles;
+
+    opendir DIR, $file-&gt;getFullFilename();
+    my @files = readdir DIR;
+    closedir DIR;
+
+    @sortedFiles = sort @files;
+    $str .= &quot;&lt;ul&gt;\n&quot;;
+    foreach my $f (@sortedFiles)
+    {
+      next if($f eq &quot;..&quot; or $f eq &quot;.&quot;);
+      $filename = Everything::File::genFilename(
+        $file-&gt;getFullFilename(), $f);
+      $subfile = new Everything::File($filename);
+      $str .= &quot;&lt;li&gt;&quot;;
+      $str .= $subfile-&gt;linkFile($f, 0, $god);
+      $str .= &quot;/&quot; if(-d $filename);
+      $str .= &quot;&lt;/li&gt;\n&quot;;  
+    }
+    $str .= &quot;&lt;/ul&gt;\n&quot;;
+  }
+  else
+  {
+    if(not ($file-&gt;isText()))
+    {
+      my $type = $file-&gt;getFileType();
+      my $url = $file-&gt;linkFileRaw(&quot;filedata&quot;, $god);
+
+      $str .= &quot;&lt;p&gt;&lt;font size=2&gt;Can't edit file. &quot;;
+      $str .= &quot;Binary data&lt;/font&gt;&lt;br&gt;&quot;;
+
+      $str .= (($type =~ /image/) ? &quot;&lt;img src=&quot; : &quot;&lt;a href=&quot;);
+      $str .= $url . &quot;&gt;&quot;;
+      $str .= &quot;Download this file&lt;/a&gt;&quot;
+        if(not ($type =~ /image/));
+    }
+    else
+    {
+      my $contents = encodeHTML($file-&gt;read(), 1);
+    
+      $str .= &quot;&lt;p&gt;&quot;;
+      $str .= $file-&gt;linkFile(&quot;Edit this file&quot;, 1, $god);
+      $str .= &quot;&lt;table border=1 width='75%'&gt;&lt;tr&gt;&lt;td&gt;\n&quot;;
+      $str .= &quot;&lt;pre&gt;\n&quot; . $contents . &quot;\n&lt;/pre&gt;\n&quot;;
+      $str .= &quot;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;\n&quot;;
+    }
+  }
+}
+else
+{
+  $str .= &quot;&lt;p&gt;&lt;b&gt;Forbidden!&lt;/b&gt;  You are not allowed to &quot;;
+  $str .= &quot;view this file.\n&quot;;
+}
+
+$str;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-12-22 03:18:46</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>23</hits>
+  <node_id>332500</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>332500</document_id>
+  <author_user>113</author_user>
+  <package>0</package>
+  <title>File Manager</title>
+</node>

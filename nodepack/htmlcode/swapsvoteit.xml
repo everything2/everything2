@@ -1,0 +1,225 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-03-07 15:46:16</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>106</hits>
+  <node_id>1976464</node_id>
+  <htmlcode_id>1976464</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#voteit - pass writeup's node_id
+
+my ($N,$showParts) = @_;
+
+$N = $NODE unless $N;
+
+getRef($N);
+return unless $$N{type}{title} eq 'writeup';
+
+$showParts ||= 3;# 1=show killing stuff, 2=show voting stuff
+
+my $userID = getId($USER);
+return if $userID == $HTMLVARS{default_user};
+my $isEd = (exists $HTMLVARS{group_gods}{$userID}) || (exists $HTMLVARS{'group_content editors'}{$userID});
+my $inPrintMode = $query-&gt;param('displaytype') eq 'printable'; #FIXME - is that the best way to see if printable?
+
+my $nid = getId($N);
+return '&lt;font color=&quot;blue&quot;&gt;(ERROR: unknown node_id in voteit)&lt;/font&gt;' if !$nid;
+my $nr = getId(getNode('node row', 'superdoc'));
+
+
+my ($kuid, $unkuid) = $DB-&gt;sqlSelect('linkedby_user, removedby_user', 'weblog', &quot;weblog_id=$nr and to_node=$nid&quot;);
+$kuid ||= 0;
+$unkuid ||= 0;
+
+
+my $str='';
+
+if (($showParts &amp; 1) &amp;&amp; ($isEd || $kuid)) {
+  $str .= '(&lt;small id=&quot;killheader' . $nid . '&quot;&gt;';
+
+  if ($isEd) {
+
+    if ($kuid) {
+      $str.=linkNode($nr, 'X').' by '.linkNode($kuid);
+      $str .= ', restored by '.linkNode($unkuid) if $unkuid;
+    }
+    elsif (!$inPrintMode) {
+
+      #		#N-Wing, Friday, May 24, 2002: only load insurance info once
+      #		unless( (exists $HTMLVARS{cache_nukeinsurance}) &amp;&amp; (defined $HTMLVARS{cache_nukeinsurance}) ) {
+      #			$HTMLVARS{cache_nukeinsurance} = getVars(getNode('nuke insurance', 'setting'));
+      #		}
+      #		my $publish = $HTMLVARS{cache_nukeinsurance};
+
+      my $publish = $DB-&gt;sqlSelect('publisher','publish',&quot;publish_id = $nid limit 1&quot;) || 0;
+
+      if ($publish) {
+        $str .= 'insured by '.linkNode($publish).' ('.linkNode($NODE, 'undo', {op=&gt;'insure', ins_id=&gt;$nid}).')';
+      }
+      else {
+
+        $str.=linkNode($NODE, 'Insure', {op=&gt;'insure', ins_id=&gt;$nid}).' ';
+        $str .= $query-&gt;checkbox('killnode'.$nid, 0, 1, 'axe');
+        $str .= $query-&gt;checkbox('instakill'.$nid, 0, 1, 'InstaKill');
+
+        #maybe make this optional
+        $str .= '&lt;small&gt;'.$query-&gt;textfield('killreason'.$nid, '', 12, 200).'&lt;/small&gt;';
+
+      }
+    }
+  }
+  else {
+    if ($kuid &amp;&amp; !$unkuid) {
+      $str .= 'marked for destruction';
+    }
+  }
+  $str .= '&lt;/small&gt;) ';
+  $str = '' if $inPrintMode;  #FIXME have a $curSection thingy instead
+
+}                               #killing section
+
+
+return $str if ($$N{wrtype_writeuptype} eq getId(getNode('definition', 'writeuptype')));
+return $str if htmlcode('flagged',$nid.',unvotable');
+
+my $votestr;
+if ($showParts &amp; 2) {
+
+  #no voting on maintenance e2nodes
+  my $isMaintenance = 0;
+  {
+    my $parentID = $$N{parent_e2node};
+    foreach (values %HTMLVARS) {
+      if ($parentID eq $_) {
+        #return $votestr;	#original way
+        $isMaintenance=1;
+        last;
+      }
+    }
+  }
+
+  use Everything::Experience;
+  #
+
+  #N-Wing, Tuesday, February 11, 2003 - cached vote label settings
+  my $CACHE_NAME = 'cache_voteit_votesettings';
+  unless ( (exists $HTMLVARS{$CACHE_NAME}) &amp;&amp; (defined $HTMLVARS{$CACHE_NAME}) ) {
+    $HTMLVARS{$CACHE_NAME} = getVars(getNode('vote settings','setting'));
+  }
+
+  my $VSETTINGS = $HTMLVARS{$CACHE_NAME};
+  my $uplbl = $$VSETTINGS{upLabel} if exists $$VSETTINGS{upLabel};
+  $uplbl ||= 'up';
+  my $dnlbl = $$VSETTINGS{downLabel} if exists $$VSETTINGS{downLabel};
+  $dnlbl ||= 'down';
+  my $nolbl = $$VSETTINGS{nullLabel} if exists $$VSETTINGS{nullLabel};
+  $nolbl ||= 'none';
+
+  my $isMine = $userID==$$N{author_user};
+  my $prevvote = $isMine ? 0 : $DB-&gt;sqlSelect('weight', 'vote', 'vote_id='.$$N{node_id}.' and voter_user='.$userID) || 0;
+  if ( $isMine || $prevvote ) {
+
+    #N-Wing, Sunday, June 23, 2002 - slightly changed appearance of vote info
+
+    my $uv = $prevvote;
+    my $r = $$N{reputation} || 0;
+
+    #new way - slower, but shows things exactly as we know it
+    my ($numP) = $DB-&gt;sqlSelect('count(*)', 'vote', &quot;vote_id=$$N{node_id} AND weight&gt;0&quot;);
+    my ($numM) = $DB-&gt;sqlSelect('count(*)', 'vote', &quot;vote_id=$$N{node_id} AND weight&lt;0&quot;);
+
+    my $p = $numP;
+    my $m = $numM;
+
+    #format voting info
+    $r = '&lt;strong&gt;'.$r.'&lt;/strong&gt;' if $query-&gt;param('vote__'.$nid);
+    $p = '+'.$p;
+    $m = '-'.$m;
+    if ($uv&gt;0) {
+      $uv='+';
+      $p = '&lt;strong&gt;'.$p.'&lt;/strong&gt;';
+    }
+    elsif ($uv&lt;0) {
+      $uv='-';
+      $m = '&lt;strong&gt;'.$m.'&lt;/strong&gt;';
+    }
+    else {
+      $uv='?';
+    }
+
+    $votestr .= $$VSETTINGS{voteheader} . '&lt;small&gt;&lt;abbr title=&quot;reputation&quot;&gt;Rep&lt;/abbr&gt;: '.$r.' ( '.$p.' / '.$m.' )';
+    $votestr .= ' (&lt;a href=&quot;/node/superdoc/Reputation%20Graph&amp;id='.$nid.'&quot;&gt;Rep Graph&lt;/a&gt;)';
+    $votestr .= ' ('.$uv.')' unless $isMine;
+
+    $votestr .= '&lt;/small&gt;' . $$VSETTINGS{voteFooter};
+  }
+
+
+  return $votestr if $isMaintenance || $inPrintMode;
+  return $votestr if( $kuid &amp;&amp; !$unkuid);
+
+  return $votestr.'&amp;nbsp;' if $isMine;
+
+  unless ($$USER{votesleft}) {
+    $votestr.='&lt;strong&gt;&amp;nbsp; '.linkNodeTitle('Why Don\'t I Have Votes Today?|?',0).' &amp;nbsp;&lt;/strong&gt;' unless (exists $$VARS{nowhynovotes} and $$VARS{nowhynovotes});
+    return $votestr.'&amp;nbsp;';
+  }
+
+  $votestr.=&quot;&lt;span class='vote_buttons'&gt;&quot;;
+  $votestr .= $$VSETTINGS{voteHeader};
+
+  #else this is part of a checkbox group
+  if ($prevvote &lt;= 0) {
+    $votestr.='&lt;input type=&quot;radio&quot; name=&quot;vote__'.$nid.'&quot; '
+                           #Uncomment this for revoting down
+              .&quot;value='1'&quot; #.($prevvote&gt;0 ?
+                           #  &quot; checked &quot; : &quot;&quot;)
+              .($prevvote != 0 ?
+                &quot;id=\&quot;revote__u_$nid\&quot;&quot; : &quot;id=\&quot;vote__u_$nid\&quot;&quot;)
+              .&quot;&gt; $uplbl&quot;;
+  }
+
+  #Don't allow revoting down
+  if($prevvote == 0){
+    $votestr.='&lt;input type=&quot;radio&quot; name=&quot;vote__'.$nid.'&quot; '
+                            #Uncomment this for revoting down
+               .&quot;value='-1'&quot;#.($prevvote&lt;0 ?
+                            #  &quot; checked &quot; : &quot;&quot;)
+              .($prevvote != 0 ?
+                &quot;id=\&quot;revote__d_$nid\&quot;&quot; : &quot;id=\&quot;vote__d_$nid\&quot;&quot;)
+              .&quot;&gt; $dnlbl&quot;;
+  }
+
+  if (exists $$VARS{nullvote} and $$VARS{nullvote} eq 'on' and $prevvote &lt;= 0) {
+    $votestr .= '&lt;input type=&quot;radio&quot; checked name=&quot;vote__'
+                .getId($N).&quot;\&quot; value=\&quot;$prevvote\&quot;&gt;&quot;
+                .($prevvote == 0 ? &quot;$nolbl&quot; : &quot;$dnlbl&quot;);
+  }
+
+
+  if (my $numvoteit = $query-&gt;param('numvoteit')) {
+    $query-&gt;param('numvoteit', $numvoteit+1);
+  }
+  else {
+    $query-&gt;param('numvoteit', 1);
+  }
+
+
+  $votestr .= $$VSETTINGS{voteFooter};
+  $votestr .=&quot;&lt;/span&gt;&quot;;
+  $votestr = &quot;&lt;span id='voteinfo_$nid' style='white-space: nowrap' nowrap='nowrap'&gt;$votestr&lt;/span&gt;&quot;;
+}                               #vote-only section
+
+
+$str .= $votestr;
+
+return $str;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>swapsvoteit</title>
+</node>

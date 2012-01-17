@@ -1,0 +1,130 @@
+<node>
+  <doctext>[%
+my $str .= '';
+
+# To be done:
+#   &quot;create&quot; for crtleads:
+#       allow &quot;create by all&quot; with a create maintainance that
+#       forbids preterite users from creating;
+#
+#   &quot;delete&quot; for editors/crtleads:
+#       allow &quot;delete by all&quot; with delete maintainance, or 
+#       just allow delete by CEs and let non-CE crtleads lump
+#       it?
+#
+#   Test, test, test the locking code.
+#       Maybe ask nate how that feature was intended to work, 
+#       or hey, maybe it exists in a later version of 
+#       ecore...?
+#
+#   Damn, we need ACLs.
+
+#---------------------------------------------------------
+# Is the user allowed in?
+my $uid     = getId( $USER );
+my $isRoot  = exists $HTMLVARS{ 'group_gods' }{ $uid };
+my $isCE    = exists $HTMLVARS{ 'group_content editors' }{ $uid };
+
+my $allowed = $isRoot || $isCE;
+
+$allowed ||= Everything::isApproved( $USER, getNode( 'crtleads', 'usergroup' ) );
+
+return &quot;&lt;p&gt;Permission denied.&lt;/p&gt;&quot; unless ( $allowed );
+
+$str .= '
+&lt;p&gt;&lt;b&gt;Here\'s how these puppies operate:&lt;/b&gt;&lt;/p&gt;
+
+&lt;dl&gt;
+&lt;dt&gt;&lt;b&gt;Access&lt;/b&gt;&lt;/dt&gt;
+
+&lt;dd&gt;
+&lt;p&gt;Any CE or god can view or edit any collaboration node. A regular 
+user can\'t, unless one of us explicitly grants access. You grant 
+access by editing the node and adding the user\'s name to the 
+&quot;Allowed Users&quot; list for that node (just type it into the box; it 
+should be clear). You can also add a user&lt;em&gt;group&lt;/em&gt; to the 
+list: In that case, every user who belongs to that group will have 
+access (&lt;em&gt;full&lt;/em&gt; access) to the node. &lt;/p&gt;
+&lt;/dd&gt;
+
+&lt;dt&gt;&lt;b&gt;Locking&lt;/b&gt;&lt;/dt&gt;
+&lt;dd&gt;
+&lt;p&gt;The only difficulty with this is the fact that two different 
+users will, inevitably, end up trying to edit the same node at the 
+same time. They\'ll step on each other\'s changes. We handle this 
+problem the way everybody does: When somebody begins editing a 
+collaboration node, it is automatically &quot;locked&quot;. CEs and gods can 
+forcibly unlock a collaboration node, but don\'t 
+do it too casually because, once again, you may step on the 
+user\'s changes. Any user can voluntarily release his or her 
+&lt;em&gt;own&lt;/em&gt; lock on a collaboration node (but they\'ll forget, 
+which is why you can do it yourself). Finally, all &quot;locks&quot; on 
+these nodes expire after fifteen idle minutes, or maybe it\'s 
+twenty. I can\'t remember. &lt;strong&gt;Use it or lose it.&lt;/strong&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The &quot;locking&quot; feature may be a bit perplexing at first, but 
+it\'s necessary if the feature is to be useful in practice. 
+&lt;/p&gt;
+
+&lt;/dd&gt;
+&lt;/dl&gt;
+
+&lt;br /&gt;
+&lt;p&gt;The HTML &quot;rules&quot; here are the same as for writeups, except 
+that you can also use the mysterious and powerful 
+&amp;lt;highlight&amp;gt; tag. 
+&lt;/p&gt;
+';
+
+$str .= '
+    &lt;hr /&gt;
+    &lt;b&gt;Search for a collaboration node:&lt;/b&gt;&lt;br /&gt;
+    &lt;form method=&quot;post&quot; enctype=&quot;application/x-www-form-urlencoded&quot;&gt;
+    &lt;input type=&quot;text&quot; name=&quot;node&quot; value=&quot;&quot; size=&quot;50&quot; maxlength=&quot;64&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;type&quot; value=&quot;collaboration&quot;&gt;
+    &lt;input type=&quot;submit&quot; name=&quot;searchy&quot; value=&quot;search&quot;&gt;
+    &lt;br /&gt;
+    &lt;input type=&quot;checkbox&quot; name=&quot;soundex&quot; value=&quot;1&quot; default=&quot;0&quot;&gt;Near Matches
+    &lt;input type=&quot;checkbox&quot; name=&quot;match_all&quot; value=&quot;1&quot; default=&quot;0&quot;&gt;Ignore Exact
+    &lt;/form&gt;
+';
+
+$str .= '
+    &lt;hr /&gt;
+    &lt;b&gt;Create a new collaboration node:&lt;/b&gt;&lt;br /&gt;
+    &lt;form method=&quot;post&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;new&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;type&quot; value=&quot;collaboration&quot;&gt;
+    &lt;input type=&quot;hidden&quot; name=&quot;displaytype&quot; value=&quot;useredit&quot;&gt;
+    &lt;input type=&quot;text&quot; size=&quot;50&quot; maxlength=&quot;64&quot; name=&quot;node&quot; value=&quot;&quot;&gt;
+    &lt;input type=&quot;submit&quot; value=&quot;create&quot;&gt;
+    &lt;/form&gt;
+';
+
+$str .= '
+&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;&lt;br /&gt;
+&lt;p&gt;&lt;i&gt;Bug reports and tearful accusations (or admissions) of 
+infidelity go to &lt;a href=&quot;/index.pl?node_id=470183&quot;&gt;wharfinger&lt;/a&gt;.&lt;/i&gt;
+&lt;/p&gt;
+';
+
+$str;
+%]
+
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-02-18 22:02:04</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1256403</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1256403</document_id>
+  <author_user>113</author_user>
+  <package>0</package>
+  <title>E2 Collaboration Nodes</title>
+</node>

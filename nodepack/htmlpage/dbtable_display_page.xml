@@ -1,0 +1,110 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>148</pagetype_nodetype>
+  <core>R</core>
+  <page>&lt;p&gt;
+Database table [% $$NODE{title}; %]
+
+[%
+
+return &quot;&lt;/p&gt;&quot; unless isGod($USER);
+
+my $dbh = $DB-&gt;getDatabaseHandle();
+my $tableName = $$NODE{title};
+my $strRowCount = &quot;&lt;small&gt;(&quot;;
+my $sthTableStats;
+
+if (!$dbh) {
+
+   $strRowCount .= 'Unable to get database handle for record count!';
+
+} else {
+
+   my $qh = $dbh-&gt;prepare(&quot;SHOW TABLE STATUS LIKE '$tableName'&quot;);
+   $qh-&gt;execute();
+   $sthTableStats = $qh-&gt;fetchrow_hashref();
+   $qh-&gt;finish();
+
+}
+
+my $engine = $sthTableStats-&gt;{'Engine'};
+my $rowCount = $sthTableStats-&gt;{'Rows'};
+
+$strRowCount .= &quot;Engine: $engine&quot;;
+
+if ($engine eq 'MyISAM') {
+
+   $strRowCount .= &quot;, $rowCount actual record&quot;;
+   $strRowCount .= &quot;s&quot; if ($rowCount != 1);
+   $strRowCount .= &quot;.)&lt;/small&gt;&lt;/p&gt;&quot;;
+
+} else {
+
+   $strRowCount .= &quot;, approx. $rowCount record&quot;;
+   $strRowCount .= &quot;s&quot; if ($rowCount != 1);
+
+   if ($query-&gt;param('showRowCount')
+            &amp;&amp; htmlcode('verifyRequest', 'showRowCount')) {
+
+      $rowCount = -1;
+      my $qh = $dbh-&gt;prepare('SELECT COUNT(*) FROM ' . $$NODE{title});
+
+      if($qh) {
+
+         $qh-&gt;execute();
+         ($rowCount) = $qh-&gt;fetchrow();
+         $qh-&gt;finish();
+         $strRowCount .= &quot;, $rowCount actual record&quot;;
+         $strRowCount .= &quot;s&quot; if ($rowCount != 1);
+         $strRowCount .= &quot;.&quot;;
+
+      } else {
+
+         $strRowCount .= &quot;; Failed to find row count!&quot;;
+
+      }
+
+      $strRowCount .= &quot;)&lt;/small&gt;&lt;/p&gt;&quot;;
+
+   } else {
+
+      $strRowCount .= ''
+         . &quot;)&lt;/small&gt;&lt;/p&gt;&quot;
+         . htmlcode('openform', 'showcountform')
+         . htmlcode('verifyRequestForm', 'showRowCount')
+         . $query-&gt;submit(
+            -name =&gt; 'showRowCount'
+            , -value =&gt; 1
+            , -label =&gt; &quot;Show row count.  (DB intensive.)&quot;
+         )
+         . '&lt;/form&gt;'
+         ;
+
+   }
+
+}
+
+
+return $strRowCount;
+
+%]
+
+&lt;p align=&quot;right&quot;&gt;[% linkNode($NODE, &quot;indexes&quot;, {displaytype =&gt; &quot;index&quot;}) %]&lt;/p&gt;
+[{displaytable:$$NODE{title}}]
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-04 00:14:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>185</htmlpage_id>
+  <hits>1</hits>
+  <node_id>185</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>113</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>dbtable display page</title>
+  <mimetype></mimetype>
+</node>

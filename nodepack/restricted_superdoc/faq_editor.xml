@@ -1,0 +1,66 @@
+<node>
+  <doctext>[%
+
+my  $faqData;
+
+my $fID = $query-&gt;param(&quot;faq_id&quot;) || 0;
+
+if ($query-&gt;param(&quot;sexisgood&quot;)) {
+	if ($query-&gt;param(&quot;edit_faq&quot;)) {
+		$fID = $query-&gt;param(&quot;edit_faq&quot;);
+		$DB-&gt;sqlUpdate(&quot;faq&quot;,{question =&gt; $query-&gt;param(&quot;faq_question&quot;), answer =&gt; $query-&gt;param(&quot;faq_answer&quot;), keywords =&gt; $query-&gt;param(&quot;faq_keywords&quot;)},&quot;faq_id = $fID&quot;);
+	}
+	else {
+		$DB-&gt;sqlInsert(&quot;faq&quot;,{question =&gt; $query-&gt;param(&quot;faq_question&quot;), answer =&gt; $query-&gt;param(&quot;faq_answer&quot;), keywords =&gt; $query-&gt;param(&quot;faq_keywords&quot;)});
+	}
+}
+
+if ($fID) {
+$faqData = $DB-&gt;sqlSelectHashref(&quot;*&quot;,&quot;faq&quot;,&quot;faq_id = $fID&quot;);
+}
+
+my $str;
+
+$str.=htmlcode('openform');
+
+$str .= $query-&gt;hidden(&quot;edit_faq&quot;,$fID) if $fID;
+
+$str.=&quot;&lt;p&gt;Question: &lt;/p&gt;
+
+&lt;textarea rows='6' cols='40' name='faq_question'&gt;
+&quot;.$$faqData{question}.&quot;
+&lt;/textarea&gt;
+
+&lt;p&gt;Answer: &lt;/p&gt;
+
+&lt;textarea rows='6' cols='40' name='faq_answer'&gt;
+&quot;.$$faqData{answer}.&quot;
+&lt;/textarea&gt;
+
+&lt;p&gt;Keywords (separated by commas):&lt;/p&gt;
+
+&lt;textarea rows='1' cols='40' name='faq_keywords'&gt;
+&quot;.$$faqData{keywords}.&quot;
+&lt;/textarea&gt;&quot;;
+
+
+$str.=htmlcode('closeform');
+
+return $str;
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-05-11 02:47:35</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1885718</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>1885718</document_id>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>FAQ Editor</title>
+</node>

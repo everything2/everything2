@@ -1,0 +1,45 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-11-14 07:03:31</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1988681</node_id>
+  <htmlcode_id>1988681</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($user_id) = @_;
+return unless $user_id;
+my $limit = 10;
+
+use JSON;
+my $str;
+
+
+my ($csr) = $DB-&gt;sqlSelectMany(&quot;node_id, doctext&quot;, &quot;node inner join document on node.node_id =document.document_id&quot;,&quot;node.author_user = $user_id and node.type_nodetype=1988675 order by node_id desc limit 50&quot;);
+
+while (my $feedItem = $csr-&gt;fetchrow_hashref) {
+
+	$str .= &quot;&lt;div class='feeditem' id='feeditem_&quot;.$$feedItem{node_id}.&quot;' style='padding: .5em; margin-bottom: .2em'&gt;&quot;.$$feedItem{doctext}.&quot;&lt;/div&gt;\n&quot;;
+}
+
+$str = 
+&quot;&lt;div id='feed_list' style='margin-left: 0; padding-left: 0; font-size: 90%;'&gt;&quot;.$str. &quot;&lt;/div&gt;&quot;;
+
+if ($user_id == $$USER{user_id}) {
+$str = &quot;
+&lt;h4&gt;Add feed item&lt;/h4&gt;
+&lt;textarea name='new_feed_item' id='new_feed_item'&gt;&lt;/textarea&gt;
+&lt;br /&gt;
+&lt;input type='button' onclick='E2AJAX.addFeedItem(\$F(\&quot;new_feed_item\&quot;))' value='Add' /&gt;
+&quot; .$str;
+}
+
+$str;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>displayUserFeed</title>
+</node>

@@ -1,0 +1,48 @@
+<node>
+  <doctext>[%
+   use Everything::Search;
+
+   my $keywords = cleanNodeName($query-&gt;param('keywords'));
+   my $e2ntype = getId(getNode(&quot;e2node&quot;,&quot;nodetype&quot;));
+   
+   return &quot;no keywords supplied&quot; unless $keywords;
+   my $nodes = Everything::Search::searchNodeName($keywords, [$e2ntype], 0, 1);
+
+   use XML::Generator;
+   my $XG = new XML::Generator;
+
+   my $xml;
+
+   $xml .= &quot;\n\t&quot;.$XG-&gt;channel(&quot;\n\t\t&quot;
+     .$XG-&gt;title(&quot;RDF Search&quot;).&quot;\n\t\t&quot;
+     .$XG-&gt;link(&quot;http://everything2.com/?node_id=&quot;.getId($NODE)).&quot;\n\t\t&quot;
+     .$XG-&gt;description(&quot;RDF intergace to E2 Search.  \&quot;keywords\&quot; parameter should use + delimited words.&quot;).&quot;\n\t&quot;);
+   use Everything::XML;
+   foreach (@$nodes) {
+     $xml .= &quot;\n\t&quot;.$XG-&gt;item(&quot;\n\t\t&quot;
+       .$XG-&gt;title(Everything::XML::makeXmlSafe($$_{title})). &quot;\n\t\t&quot;
+       .$XG-&gt;link(&quot;http://everything2.com/?node_id=&quot;.getId($_)) . &quot;\n\t&quot;
+       ) unless $$_{type_nodetype} != $e2ntype;
+   }
+
+
+   $xml = $XG-&gt;RDF($xml.&quot;\n&quot;);
+   
+   $xml;
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-05-09 00:08:00</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1043278</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>451267</type_nodetype>
+  <document_id>1043278</document_id>
+  <author_user>220</author_user>
+  <package>0</package>
+  <title>rdf search</title>
+</node>

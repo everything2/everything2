@@ -1,0 +1,46 @@
+<node>
+  <doctext>&lt;table width=100%&gt;
+
+[%
+my $N = getNode('oblique strategies data', 'restricted_superdoc');
+my @strategies = eval $$N{doctext};
+
+#return $strategies[0];
+my @grid;
+
+foreach (1..20) {
+  $grid[int(rand(10))][int(rand(10))] = $strategies[int(rand(@strategies))];
+}
+
+my $str;
+foreach my $y (1..10) {
+  $str.=&quot;&lt;tr&gt;\n&quot;;   
+  foreach my $x (1..10) {
+    my $strategy = &quot;&quot;;
+    $strategy = $grid[$y][$x] if defined $grid[$y][$x];
+    $str.=&quot;&lt;td&gt;$strategy&lt;/td&gt;&quot;;
+  }
+  $str.=&quot;&lt;/tr&gt;&quot;;
+}
+
+$str;
+
+%]
+
+&lt;/table&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-03-01 23:07:42</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1262425</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1262425</document_id>
+  <author_user>220</author_user>
+  <package>0</package>
+  <title>oblique strategies garden</title>
+</node>

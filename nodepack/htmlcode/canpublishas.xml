@@ -1,0 +1,75 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-11-08 11:17:53</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1992776</node_id>
+  <htmlcode_id>1992776</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># if an argument: return 1 if current user can publish under this name
+# if no argument: return a form control with names of accounts from which user can choose
+
+my $anonymousPublishLevel = 1; # users at or above this level can publish as 'everyone'
+my $target = shift;
+
+use Everything::Experience;
+
+return '' unless $USER &amp;&amp; $$USER{title} ne 'Guest User'
+	and getLevel($USER) &gt;= $anonymousPublishLevel;
+
+my %accounts = (
+	everyone =&gt; 1
+	, Virgil =&gt; 'e2docs'
+);
+
+@accounts{('Webster 1913', 'EDB', 'Klaproth', 'Cool Man Eddie')} = (1,1,1,1) if htmlcode('isEditor');
+
+if ($target){
+	return '' unless $target;
+	
+	return 1 if $accounts{$target} == 1
+		or $DB -&gt; isApproved($USER, getNode($accounts{$target}, 'usergroup'));
+	
+	return '';
+}
+
+my @names;
+foreach (keys %accounts){
+	push @names, $_ if $accounts{$_} == 1
+		or $DB -&gt; isApproved($USER, getNode($accounts{$_}, 'usergroup'));
+}
+
+my $blah = '&lt;br&gt;&lt;small&gt;N.B. By publishing to a different account you cede your
+	copyright and lose all control over your writeup&lt;/small&gt;';
+
+if (scalar @names == 1){
+	return $query -&gt; checkbox(
+		-name =&gt; 'publishas'
+		, value =&gt; 'everyone'
+		, label =&gt; &quot;publish anonymously (as 'everyone')&quot;
+	)
+	.$blah;
+
+}elsif(@names){
+	@names = sort {$a eq 'everyone' ? -1 : $b eq 'everyone' ? 1 : lc($a) cmp lc($b)} @names;
+	return $query -&gt; label(
+		'publish as:'
+		.$query -&gt; popup_menu(
+			-name =&gt; 'publishas'
+			, -values =&gt; ['', @names]
+			, default =&gt; ''
+		)
+	)
+	.$blah;
+}
+
+return '';
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>canpublishas</title>
+</node>

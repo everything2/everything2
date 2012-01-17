@@ -1,0 +1,47 @@
+<node>
+  <nltext></nltext>
+  <parent_container>175986</parent_container>
+  <icon></icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2006-07-26 08:24:14</createtime>
+  <lastupdate>1300208406</lastupdate>
+  <hits>10</hits>
+  <node_id>1822002</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>974148</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1822002</nodelet_id>
+  <nlcode>[%
+my $str = &quot;&lt;updated&gt;&quot;;
+my ($sec,$min,$hour,$mday,$mon,$year) = localtime;
+$str .= sprintf(&quot;%04d-%02d-%02dT%02d:%02d:%02dZ&quot;, $year + 1900, $mon + 1, $mday, $hour, $min, $sec);
+
+$str .= &quot;&lt;/updated&gt;\n&quot;;
+
+my $numberofwriteups = 25;
+my $contentslicelength = 1024 ;
+
+my $nodeids = $dbh -&gt; selectcol_arrayref(
+	&quot;SELECT node_id
+	FROM newwriteup
+	WHERE notnew=0
+	ORDER BY newwriteup_id DESC limit $numberofwriteups&quot; ) ;
+
+while ( $contentslicelength &gt; 0 ) {
+	my $meat = htmlcode( 'atomiseNode' , $nodeids , $contentslicelength );
+	return $str . $meat if length( $meat ) &lt; 65000 ; # nltext can only hold 65535
+	$contentslicelength -= 100 ;
+}
+return $str ;
+
+%]</nlcode>
+  <title>New Writeups Atom Source</title>
+</node>

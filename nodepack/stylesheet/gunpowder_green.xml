@@ -1,0 +1,501 @@
+<node>
+  <doctext>/* [GunpowderGreen]'s Theme. */
+
+/* Not all elements are defined in this file... */
+/*The basics*/
+body {
+	font-family:  georgia, times, serif;
+	/* This is a starting point: use relative for the rest */
+	//font-size: 0.8em; 
+}
+
+h1 {
+	font-size: 150%;
+	font-weight: bold;
+}
+
+h2 {
+	font-size: 110%;
+	font-weight: bold;
+}
+
+h3 {
+	font-size: 100%;
+	font-weight: bold;
+}
+
+big {
+	font-size: 120%;
+	line-height:120%;
+}
+
+big big big big big big big {
+	font-size:inherit;
+}
+
+small {
+	font-size: 80%;
+}
+
+/*Basic structure: this is based on ALA's 'Holy Grail' design. */
+
+#header {
+	height: 56px;
+	width: 100%;
+	position: absolute;
+	top: 0px;
+	left: 0;
+	border-bottom: 3px #063 outset;
+	background-color:#143;
+	color:white;
+	font-size:0.8em;
+}
+
+#wrapper {
+	padding-top: 60px;
+}
+
+#mainbody {
+	position: relative;
+	float: left;
+	width: 100%;
+	margin-left: 2em;
+}
+
+#sidebar {
+	position: relative;
+	float: left;
+	width: 190px;
+}
+
+/*Nodelets on right*/
+
+#wrapper {
+	padding-right: 232px;	
+}
+
+#sidebar {
+	margin-right: -100%;
+	margin-left: 5px;
+}
+
+
+/*Nodelets on left*/
+/*
+#wrapper {
+	padding-left: 205px;	
+}
+
+#sidebar {
+	right: 205px;
+	margin-left: -100%;
+}
+* html #left {
+	left: 200px;
+}
+
+*/
+/*end nodelet layout*/ 
+
+#footer {
+	clear: both;
+	width: 100%;
+	border-top: 3px gray double;
+	text-align: center;
+	padding-top: 2px;
+	margin-top:8px;
+}
+
+/* Colours, etc */
+body {
+	color: black;
+	background-color: white;
+}
+
+a {
+	color: #063;
+	text-decoration:none;
+}
+
+a:visited {
+	color: #093;
+}
+
+a:hover {
+	border-bottom: 1px solid #0a3;
+}
+
+
+/* specifics */
+
+pre {
+/* to stop page-widening */
+	display: block;
+	overflow: auto;
+}
+
+#e2logo {
+	float: left;
+	text-align: left;
+	font-size: 180%;
+	margin-left: 16px;
+}
+
+#metalinks {
+	margin: 2px;
+	padding:  0;
+	display: block;
+	clear: both;
+	text-align: center;
+	font-size: 80%;
+}
+
+#metalinks li {
+	display: inline;
+	padding-right: 5px;
+	margin-left: 5px;
+}
+
+#e2logo a:link, #e2logo a:visited {
+	text-decoration: none;
+	font-weight: bold;
+	color:white;
+}
+
+#searchform {
+	width: 420px;
+	float: right;
+	text-align: right;
+	padding-top: 5px;
+}
+
+#searchform input {
+	float: left;
+	margin-top: 5px;
+}
+
+#searchform label {
+	display: block;
+	font-size: 85%;
+	float: right;
+	clear: right;
+	text-align: left;
+	width: 100px;
+}
+
+#searchform label input {
+	margin: 1px;
+}
+
+.nodelet {
+	clear: both;
+	padding-top: 1px;
+	padding-right: 3px;
+	padding-left: 3px;
+	border: 3px #063 inset;
+	word-wrap: break-word;
+	margin-bottom: 2px;
+	font-size:95%;
+	line-height:120%;
+}
+
+.nodelet .infolist .contentinfo {
+    background-color:white;
+    border-top:1px dotted #009999;
+    color:black;
+    padding:3px;
+}
+
+.nodelet_content {
+	padding: 5px;
+}
+
+.nodelet h2 {
+	display: block;
+	margin: 0 -2px;
+	text-align: center;
+	background-color: #143;
+	color: white;
+}
+
+.writeup {
+	border: 3px #063 outset;
+	padding: 1px;
+	margin: 1px auto 8px auto;
+	//padding-left: 2em;
+	font-size:0.95em;
+	width:40em;
+}
+
+div .writeup_text {
+	padding: 16px;
+}
+
+.writeup_text p {
+	text-indent: 1em;
+	margin:0.6em;
+	line-height:120%;
+        overflow-x:auto;
+        overflow-y:hidden;
+}
+
+.createdby {
+	text-align: right;
+	font-size:90%;
+}
+
+.wu_header {
+	background-color:#143;
+	color:white;
+	padding:2px;
+	display:block;
+	text-align:center;
+}
+.wu_header td{
+	padding:2px 6px;
+}
+.wu_header a {
+	font:bold;
+	color:white;
+}
+
+.wu_footer {
+	background-color:#143;
+	color:white;
+	padding:2px;
+	display:block;
+	text-align:center;
+}
+.wu_footer a {
+	font:bold;
+	color:white;
+}
+.wu_footer td{
+	padding:2px 6px;
+}
+
+
+
+
+#firmlink, #isalso {
+	font-size: 110%;
+	text-indent: 30px;
+}
+
+#votebutton, #blabbutton {
+	// float: left;
+}
+
+#killbutton {
+	float: right;
+}
+
+#msgnum {
+	margin: 0;
+	margin-bottom: 5px;
+}
+
+#msgunarchived {
+	font-weight: bold;
+}
+
+#homenodepicbox {
+	width: 50%;
+	float: left;
+	clear: left;
+	overflow: auto;
+}
+
+#homenodeheader {
+	clear: both;
+}
+
+#homenodeheader dl {
+	display: block;
+	width: 50%;
+	float: right;
+	clear: right;
+	margin: 0;
+}
+
+.softlinks {
+	background:blue;
+	border:solid black;
+}
+
+#homenodeheader dt {
+	display: block;
+	background-color: #369;
+	padding: 2px;
+}
+
+#homenodeheader dd {
+	margin: 0;
+	padding: 2px;
+}
+
+
+#epicenter_zen {
+	float:right;
+}
+
+hr.clear {
+	clear: both;
+	visibility: hidden;	
+}
+
+textarea {
+	width: 100%;
+}
+
+#announcements {
+	position: absolute;
+	bottom: 20px;
+	font-size: 12px;
+	left: 300px;
+	display:none;
+}
+#writeup_list {
+	list-style-type: none;
+	padding: 0;
+}
+
+#writeup_list li {
+	clear: both;
+	word-wrap: break-word;
+}
+
+#writeup_list span.writeupmeta {
+	display: block;
+	text-align: center;
+	padding: 0px;
+	clear: both;
+	margin: 0 -1px;
+}
+
+#writeup_list span.type {
+	font-size: 90%;
+	display: block;
+	text-align: right;
+	word-wrap: no-wrap;
+	margin-bottom: 1px;
+	clear: right;
+}
+
+#writeup_list span.title {
+	float: left;
+	display: block;
+	clear: left;
+	margin-bottom: 1px;
+}
+
+#writeup_list span.author {
+}
+
+#writeup_list span.hidden, #writeup_list span.hide {
+	font-size: 85%;
+	margin-left: 3px;
+	display:inline;
+}
+
+#writeup_list{
+	background:white;
+	color:black;
+}
+
+#writeup_list li
+{
+	padding: 1px;
+}
+
+#writeup_list span.author a {
+	display: block;
+	text-align: center;
+	margin-bottom: 2px;
+	background-color: #060;
+	color:white;
+	border: 2px inset #063;
+}
+
+#writeup_list span.type {
+	font-size: 80%;
+	text-align: right;
+	background:white;
+	color:black;
+}
+
+#writeup_list li a {
+	display: inline;
+	padding: 0;
+	border: 0;
+	background:white;
+	color:black;
+}
+
+#writeup_list span.writeupmeta {
+	background-color: white;
+	color: black;
+	border:1px;
+}
+
+
+.cotc_more {
+	margin-top:-0.5em;
+	margin-bottom:1em;
+}
+
+
+
+#homenodeheader {
+	font-size:90%;
+}
+
+#homenodeheader dt {
+	background-color:#143;
+	color:white;
+	font-weight:bold
+	padding:3px;
+}
+
+
+
+#cooluserpicks {
+	width:67%;
+	float:left;
+}
+
+#creamofthecool {
+	width:45%;
+	margin:auto;
+	border:3px outset #063;
+	float:right;
+	padding:8px;
+	padding-top:0px;
+}
+
+#frontpage_news {
+	width:45%;
+	float:left;
+	border:3px outset #063;
+	padding:8px;
+	padding-top:0px;
+}
+
+#loglinks td {
+	text-align:center;
+}</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-08-27 11:53:06</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1905818</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1854352</type_nodetype>
+  <document_id>1905818</document_id>
+  <author_user>1322944</author_user>
+  <package>0</package>
+  <title>Gunpowder Green</title>
+</node>

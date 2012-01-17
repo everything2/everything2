@@ -1,0 +1,37 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-07-26 21:42:28</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>16</hits>
+  <node_id>672208</node_id>
+  <htmlcode_id>672208</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>use Everything::Experience;
+#return if getLevel($USER) &gt; 2;
+return unless $$USER{title} eq 'JayBonci';
+
+my @tips = (
+&quot;[E2 FAQ: What Not To Do]&quot;,
+&quot;[hard link]&quot;,
+&quot;[Please use plain text]&quot;,
+&quot;[Link and Link]&quot;,
+&quot;[E2 FAQ: Integrate Your Writeups]&quot;,
+&quot;[soft link]&quot;,
+&quot;[Pick Titles Carefully]&quot;,
+&quot;[Please Attribute Anything You Quote]&quot;,
+&quot;[pipe link]&quot;,
+&quot;[E2 HTML]&quot;,
+&quot;[The Perfect Node]&quot;,
+&quot;[E2 Glossary]&quot;,
+&quot;[Node For The Ages]&quot;);
+
+&quot;&lt;hr width=40%&gt;&lt;p align=center&gt;&quot;.
+parseLinks($tips[rand(int(@tips))]);</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>randotip</title>
+</node>

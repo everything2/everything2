@@ -1,0 +1,34 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>152</pagetype_nodetype>
+  <core>0</core>
+  <page>[% unless ($$NODE{group}) {
+	&quot;&lt;i&gt;This nodeball is empty&lt;/i&gt;&quot;;
+} else {
+	my $GROUP = $$NODE{group};
+	my $str = &quot;&lt;ul&gt;\n&quot;;
+	foreach my $N  (@$GROUP) {
+		$N = $DB-&gt;getNodeById($N, 'light');
+		$str .= &quot;&lt;li&gt;&quot; . linkNode ($N) . &quot;($$N{type}{title})&quot;;
+	}
+	$str.&quot;\n&lt;/ul&gt;&quot;;
+}
+%]
+&lt;p&gt;[{windowview:editor,launch editor}]
+&lt;p&gt;[{displayvars}]</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-04 00:14:12</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>191</htmlpage_id>
+  <hits>6</hits>
+  <node_id>191</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>113</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>nodeball display page</title>
+  <mimetype></mimetype>
+</node>

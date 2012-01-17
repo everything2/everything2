@@ -1,0 +1,101 @@
+<node>
+  <parent_container>1100949</parent_container>
+  <pagetype_nodetype>117</pagetype_nodetype>
+  <core>0</core>
+  <page>&lt;h2 class=&quot;topic&quot;&gt;[% 
+my $PARENT = getNodeById($$NODE{parent_e2node});
+
+return &quot;This node is unparented. Please contact an administrator to have this repaired&quot; unless($PARENT and $$PARENT{group} and my @grp = @{getNodeById($$NODE{parent_e2node})-&gt;{group}}); my $nwriteups = scalar(@grp);
+return &quot;(all of &quot;.linkNode($$NODE{parent_e2node}, undef, {lastnode_id =&gt; undef}).(($nwriteups == 1)?(&quot;, no other writeups in this node)&quot;):(($nwriteups == 2)?(&quot;, there is 1 more in this node)&quot;):(&quot;, there are &quot;.($nwriteups-1).&quot; more in this node)&quot;))); 
+
+%]&lt;/h2&gt;
+[{firmlinks}]
+[{votehead}]
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;10&quot; border=&quot;0&quot;&gt;
+&lt;tr&gt;&lt;td valign=&quot;top&quot;&gt;
+[{displaywriteuptitle:0,timestamp}]
+&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td valign=&quot;top&quot; class=&quot;writeup_text&quot;&gt;
+  [{displaywriteuptext}]
+&lt;/td&gt;&lt;/tr&gt;
+
+
+&lt;!-- next 3 lines added Saturday, April 5, 2008 --&gt;
+&lt;tr&gt;&lt;td&gt;
+[{displayWriteupFooter}]
+&lt;/td&gt;&lt;/tr&gt;
+
+
+&lt;tr&gt;&lt;td bgcolor=&quot;[%
+  $$VARS{ekw_logobackground} || $$THEME{logoBackground} || &quot;#305880&quot;;
+%]&quot;&gt;[{clearimage:2,1}]&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;p align=&quot;right&quot;&gt;&lt;font size=&quot;-1&quot;&gt;[% linkNode($NODE, 'printable version', { displaytype =&gt; 'printable' } ) %] &lt;/font&gt;&lt;/p&gt;
+&lt;p align=right&gt;&lt;font size=-1&gt;[% linkNode($NODE, 'link view', { displaytype =&gt; 'linkview' } ) %] &lt;/font&gt;&lt;/p&gt;
+[{votefoot}]
+[{writeuphints}]
+[{softlink}]
+
+
+&lt;table width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;10&quot; border=&quot;0&quot;&gt;
+&lt;tr&gt;
+  &lt;td valign=&quot;top&quot;&gt;
+[%
+return unless (canUpdateNode($USER, $NODE)); 
+my $str;
+#if (($$VARS{settings_useTinyMCE})||($$USER{user_id}==580946)) {
+if ($$VARS{settings_useTinyMCE}) {
+$str.= '&lt;script type=&quot;text/javascript&quot;&gt;
+tinyMCE.init({
+theme: &quot;advanced&quot;,
+theme_advanced_disable : &quot;styleselect,image,anchor,link,unlink&quot;,
+apply_source_formatting : true,
+mode: &quot;exact&quot;,
+elements: &quot;writeup_doctext&quot;,
+invalid_elements: &quot;a,img,table,tr,td,th,div,span&quot;,
+extended_valid_elements: &quot;big,small&quot;
+});
+&lt;/script&gt;';}
+
+$str.=htmlcode(&quot;openform&quot;);
+#$str.=&quot;&lt;b&gt;Edit your summary&lt;/b&gt;&lt;br&gt;\n&quot;;
+#$str.=htmlcode('textfield','title,60').&quot;&lt;br&gt;\n&quot;;
+$str.= htmlcode('setwriteuptype', $$NODE{wrtype_writeuptype});
+$str.=&quot;&lt;br&gt;&lt;b&gt;Edit your writeup&lt;/b&gt;&lt;br&gt;\n&quot;;
+#$str.=htmlcode(&quot;textarea&quot;, &quot;doctext,14,60,virtual&quot;);
+$str.=htmlcode(&quot;textarea&quot;, &quot;doctext,&quot;.htmlcode('customtextarea','0').&quot;,virtual&quot;);
+
+if($$NODE{author_user} != $$USER{node_id}){
+  $str.=&quot;&lt;br&gt;&lt;b&gt;Explain your edit to the author:&lt;/b&gt;&lt;br&gt;\n&quot;;
+  $str.=htmlcode('textfield','explanation,60').&quot;&lt;br /&gt;\n&quot;;
+}
+
+$str.=htmlcode(&quot;closeform&quot;);
+$str;
+%]
+&lt;/tr&gt;&lt;/td&gt;
+&lt;/table&gt;
+
+[%
+#other stuff we need to put in here:
+#special parselinks for writeups (link to e2nodes only)
+#edit capabilities
+
+&quot;&quot;;
+%]</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-07-08 16:03:57</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1101655</htmlpage_id>
+  <hits>1</hits>
+  <node_id>1101655</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>470183</author_user>
+  <package>0</package>
+  <ownedby_theme>1100936</ownedby_theme>
+  <title>ekw writeup display page</title>
+  <mimetype></mimetype>
+</node>

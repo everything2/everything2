@@ -1,0 +1,59 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>1988997</pagetype_nodetype>
+  <core>0</core>
+  <page>[%  
+my $str = '';
+if ($$NODE{enabled} == 0) {
+  $str .= &quot;This test is not running&quot;;
+  if ($$NODE{starttime} ne &quot;0000-00-00 00:00:00&quot;) {
+     $str .= &quot;, it last ran from $$NODE{starttime} to $$NODE{endtime}.&quot;;
+  }else {  
+     $str .= &quot;.&quot;;
+  }
+} else {
+  $str .= &quot;This test has been running since $$NODE{starttime}&quot;;
+}
+
+$str .= &quot;&lt;p&gt;&quot;. linkNode($NODE, &quot;edit this test&quot;, { 'displaytype' =&gt; 'edit' });
+%]
+&lt;p&gt;
+&lt;b&gt;Conditions&lt;/b&gt;:
+[%
+  if (not $$NODE{conditions}) {
+    return &quot;no conditions have been specified.&quot;;
+  }
+  
+  my @conditions = split &quot;,&quot;, $$NODE{conditions};
+  my $str;
+  my $V = getVars($NODE);
+  foreach my $cond (@conditions) {
+    $str .= &quot;&lt;li&gt;code blocks for $cond&lt;ul&gt;&quot;;
+    if (not keys %$V) { $str .= &quot;&lt;li&gt;&lt;i&gt;no changes&lt;/i&gt;&lt;/li&gt;&quot;; }
+    foreach my $key (keys %$V) {
+       if ($key =~ /^$cond\|(.*)$/) {
+         $str .= &quot;&lt;li&gt;&quot;. linkNodeTitle($$V{$key}) . &quot; replaces &quot; . linkNodeTitle($1)
+       }
+    }
+    $str .= &quot;&lt;/ul&gt;&quot;;
+  }
+
+  return $str;
+%]
+</page>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-12-11 15:53:02</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <htmlpage_id>1988999</htmlpage_id>
+  <hits>0</hits>
+  <node_id>1988999</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <author_user>220</author_user>
+  <package>0</package>
+  <ownedby_theme>0</ownedby_theme>
+  <title>mvtest display page</title>
+  <mimetype></mimetype>
+</node>

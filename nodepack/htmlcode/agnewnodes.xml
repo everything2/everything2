@@ -1,0 +1,61 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-05-30 16:55:58</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>4</hits>
+  <node_id>1064708</node_id>
+  <htmlcode_id>1064708</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($limit) = @_;
+
+$limit ||= 50;
+
+#my $batch = $DB-&gt;sqlSelect(&quot;max(batch)&quot;, &quot;newnodes&quot;);
+
+my $qry = &quot;SELECT * FROM newwriteup, node where newwriteup.node_id=node.node_id 
+         &quot;;
+
+my $uid = getId($USER);
+my $isEd = (exists $HTMLVARS{'group_content editors'}{$uid}) || (exists $HTMLVARS{'group_gods'}{$uid});
+
+my $nr = getId(getNode('node row', 'superdoc'));
+my $nid;
+my $kuid;
+
+$qry.= 'and notnew=0 ' unless $isEd;
+$qry.= &quot; order by newwriteup_id DESC LIMIT $limit&quot;;
+
+
+my $csr = $Everything::dbh-&gt;prepare($qry);
+
+$csr-&gt;execute or return 'Ack! Error in executing query: '.$qry;
+my $count=0;
+my @colors = ('#ccccff', '#ffffcc'); #FIXME theme-driven
+
+my $str ='';
+while(my $N = $csr-&gt;fetchrow_hashref){
+  $nid = $$N{node_id};
+  $N = getNode $nid;
+  $str .= '&lt;tr bgcolor=&quot;'.$colors[++$count%2].'&quot;&gt;';
+
+  
+  $str.='&lt;td align=&quot;left&quot;&gt;'
+    .linkNode($N, 0, {displaytype =&gt; &quot;printable&quot;})
+    .'&lt;/td&gt;&lt;td align=&quot;right&quot;&gt;'
+    .($$N{author_user})
+    .'&lt;/td&gt;' if ($$N{title});
+
+  $str.=&quot;&lt;/tr&gt;\n&quot;;
+}
+$csr-&gt;finish;
+
+$str;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>5567</author_user>
+  <package>0</package>
+  <title>AGnewnodes</title>
+</node>

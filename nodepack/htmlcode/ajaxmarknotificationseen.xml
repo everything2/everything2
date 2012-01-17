@@ -1,0 +1,39 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-10-30 19:35:41</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1990564</node_id>
+  <htmlcode_id>1990564</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $notified_id = shift;
+return 'invalid argument' unless $notified_id =~ /^\d+$/;
+
+my $for_user =
+$DB-&gt;sqlSelect(&quot;user_id&quot;
+		, &quot;notified&quot;
+		, &quot;notified_id = $notified_id&quot;
+	);
+my $isPersonalNotification = ($for_user == $$USER{user_id});
+
+if ($isPersonalNotification) {
+	$DB-&gt;sqlUpdate(&quot;notified&quot;,{is_seen =&gt; 1}, &quot;notified_id = $notified_id&quot;);
+} else {
+	$DB-&gt;sqlInsert(&quot;notified&quot;,
+	{
+		is_seen =&gt; 1
+		, -user_id =&gt; $$USER{user_id}
+		, -reference_notified_id =&gt; $notified_id
+		, -notified_time =&gt; 'now()'
+	}
+	);
+}
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>ajaxMarkNotificationSeen</title>
+</node>

@@ -1,0 +1,44 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-09-29 17:04:21</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1168347</node_id>
+  <htmlcode_id>1168347</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#like [textfield], but manually sets values from submitted form
+#precondition:
+#	%$NODE should be set to current node
+#parameters:
+#	unique parameter text field will have
+#	key in %$NODE to assign to, if given in form
+#	text field display width (optional)
+#	maximum length accepted (this is enforced in display only, not in actual setting) (optional)
+#returns:
+#	string for form use that contains a text field area
+#postcondition:
+#	if form submitted, $$NODE{$assignTo} has new value
+
+my($formParam, $assignTo, $lenDisp, $lenMax) = @_;
+return unless $formParam;
+return unless $assignTo;
+$lenMax = undef unless $lenMax;
+$formParam = 'tf2_' . ($$NODE{node_id}||0) . '_' . $formParam;
+
+if($query-&gt;param($formParam)) {
+	if( !length( $$NODE{$assignTo} = $query-&gt;param($formParam) ) ) {
+		delete $$NODE{$assignTo};
+	}
+} else {
+	$query-&gt;param($formParam, $$NODE{$assignTo});
+}
+
+$query-&gt;textfield($formParam, $$NODE{$assignTo}, $lenDisp, $lenMax);</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>textfield2</title>
+</node>

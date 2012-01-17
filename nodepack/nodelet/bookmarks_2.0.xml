@@ -1,0 +1,123 @@
+<node>
+  <nltext></nltext>
+  <parent_container>20</parent_container>
+  <icon>http://images.everything2.com/img/bookmarks.gif</icon>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>2004-07-14 01:45:31</createtime>
+  <lastupdate>0</lastupdate>
+  <hits>0</hits>
+  <node_id>1546595</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>329</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>1546595</nodelet_id>
+  <nlcode>[%
+my $str = &quot;&quot;;
+
+#return &quot;Nothing to see here, &quot; . $$USER{title} . &quot;... move along.&quot; unless ($$USER{user_id} eq $$NODE{author_user});
+
+############################
+# Some revised node bucket code
+############################
+
+
+my $CAT = getNode('category', 'nodetype');
+
+if($$NODE{type_nodetype} == $$CAT{node_id})
+	{
+	return &quot;&quot; unless($$NODE{author_user} == $$USER{author_user});
+	}
+
+my $PARAMS = { op =&gt; 'addBook', &quot;bnode_&quot; . $$NODE{node_id} =&gt; 1 };
+$str .= linkNode($NODE, &quot;Add '$$NODE{title}'&quot;, $PARAMS) . &quot;&lt;BR&gt;&quot;;
+
+$str .= $query-&gt;start_multipart_form(&quot;POST&quot;, $ENV{script_name}) .
+  $query-&gt;hidden(&quot;displaytype&quot;) .
+  $query-&gt;hidden(&quot;node_id&quot;, $$NODE{node_id}) .
+  $query-&gt;hidden(-name =&gt; &quot;op&quot;, -default =&gt; &quot;bookop&quot;, -override =&gt; 1);
+
+
+my @bnodes;
+@bnodes = split ',', $$VARS{bookbucket} if (defined($$VARS{bookbucket}));
+
+
+my $isGroup = 0;
+
+
+if($$NODE{type_nodetype} == $$CAT{node_id})
+	{
+	$isGroup = &quot;nodegroup&quot;;
+	}
+
+
+unless (@bnodes)
+{
+  $str .= &quot;No Unsorted Bookmarks&lt;br&gt;\n&quot; unless(@bnodes);
+}
+else
+{
+  foreach $_ (@bnodes)
+  {
+    my $node = getNode $_;
+
+    # Can't use CGI::checkbox here because it insists on having a label...
+    $str .= &quot;&lt;INPUT TYPE='checkbox' NAME='bnode_$_' &quot; .
+      &quot;VALUE='ON' UNCHECKED&gt;&quot;;
+    $str .= linkNode($node) . &quot;&lt;br&gt;\n&quot;;
+  }
+
+  $str .= &quot;&lt;font size=1&gt;\n&quot;;
+
+  $str .= &quot;&lt;INPUT TYPE='checkbox' NAME='dropexec' VALUE='ON' CHECKED&gt;&quot; .
+    &quot;Execute and drop&lt;br&gt;\n&quot; if($isGroup);
+
+  if($isGroup)
+  {
+    $str .= $query-&gt;submit( -name =&gt; &quot;bgroupadd&quot;, -value =&gt; &quot;Add to Category&quot;) .&quot;\n&quot;;
+  }
+
+  $str .= $query-&gt;submit( -name =&gt; &quot;bdrop&quot;, -value =&gt; &quot;Drop&quot; ) . &quot;\n&quot;;
+  $str .= $query-&gt;submit( -name =&gt; &quot;bflush&quot;, -value =&gt; &quot;Drop All&quot; ) . &quot;\n&quot;;
+
+  $str .= &quot;&lt;/font&gt;\n&quot;;
+}
+
+$str .= &quot;&lt;/form&gt;&quot;;
+
+
+
+
+
+############################
+# Hierarchies
+############################
+
+
+$str .= &quot;
+&lt;style&gt;
+   BODY {background-color: white}
+   TD {font-size: 10pt; 
+       font-family: verdana,helvetica;}
+&lt;/style&gt;
+&lt;script src=\&quot;ua.js\&quot;&gt;&lt;/script&gt;
+&lt;script src=\&quot;ftiens4.js\&quot;&gt;&lt;/script&gt;
+
+&quot; . htmlcode(&quot;switch_text&quot;) . &quot;
+
+&lt;a href=\&quot;http://www.treemenu.net/\&quot;&gt;&lt;/a&gt;
+&lt;br&gt;&lt;script&gt;initializeDocument()&lt;/script&gt;&lt;br&gt;
+&lt;input type=\&quot;button\&quot; value=\&quot;New Category\&quot; onclick=\&quot;addcat()\&quot;&gt;
+&lt;/form&gt;&quot;;
+
+$str;
+%]</nlcode>
+  <title>Bookmarks 2.0</title>
+</node>

@@ -1,0 +1,20 @@
+<node>
+  <doctext>e2.add(function(inElement){
+	jQuery(inElement + ' .nodelet_section .ns_title').click(function(){
+ 		jQuery(this).next().slideToggle(e2.fxDuration); }).css('cursor', 'pointer');
+});</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-03-21 18:26:34</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1872990</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1786405</type_nodetype>
+  <document_id>1872990</document_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>Nodelet Section Collapser</title>
+</node>

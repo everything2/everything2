@@ -1,0 +1,37 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-11-15 00:47:58</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>837929</node_id>
+  <htmlcode_id>837929</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($field) = @_;
+
+#this has been deprecated by {nodeletsection} as described in {edev: nodeletsection}
+
+my $param = 'edn_hide'.$field;
+
+my $v;
+if(defined ($v=$query-&gt;param($param))) {
+if($v) {
+	$$VARS{$param}=1; #previously: $$VARS{$param}=$v;
+} else {
+	$$VARS{$param}=0; #why doesn't this work: delete $$VARS{$param};
+}
+}
+
+
+if($$VARS{$param}) {
+	return '('.linkNode($NODE, 'show '.$field, {$param =&gt; 0}).')&lt;br /&gt;';
+} else { 
+	return '('.linkNode($NODE,'hide',{$param =&gt; 1}).&quot;) &lt;strong&gt;$field&lt;/strong&gt;&lt;br /&gt;&quot;.htmlcode(&quot;ednsection_$field&quot;,'');
+}</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>220</author_user>
+  <package>0</package>
+  <title>ednsection</title>
+</node>

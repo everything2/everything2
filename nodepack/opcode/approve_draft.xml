@@ -1,0 +1,29 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2011-10-25 11:10:03</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1992697</node_id>
+  <htmlcode_id>1992697</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>return unless htmlcode('isEditor');
+
+my $draft = $query -&gt; param('draft');
+my $e2node = $query -&gt; param('e2node');
+my $previousEditor = $query -&gt; param('revoke');
+
+my $food = $previousEditor ? 0 : $$USER{node_id};
+
+my $linktype = getId(getNode('parent_node', 'linktype'));
+my $success = $DB -&gt; sqlUpdate( # editor approval flagged by feeding the link
+	'links', {food =&gt; $food},
+	&quot;from_node=$draft AND to_node=$e2node AND linktype=$linktype&quot;);
+</code>
+  <type_nodetype>415056</type_nodetype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>approve_draft</title>
+</node>

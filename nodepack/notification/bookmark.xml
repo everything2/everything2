@@ -1,0 +1,28 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-02-25 18:09:19</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <notification_id>1931545</notification_id>
+  <hourLimit>168</hourLimit>
+  <hits>1</hits>
+  <node_id>1931545</node_id>
+  <code>my $nodetype = &quot;Your writeup&quot;;
+my $bookmarkedNode = getNode($$args{writeup_id});
+if ($$bookmarkedNode{type}{title} eq 'e2node') {
+   if ($$args{nodeshell}) {
+      $nodetype = &quot;The nodeshell you created&quot;;
+   } else {
+      $nodetype = &quot;The node in which you have a writeup&quot;;
+   }
+}
+return &quot;$nodetype &quot;.linkNode($$args{writeup_id}).&quot; was bookmarked by &quot;.linkNode($$args{bookmark_user});</code>
+  <type_nodetype>1930710</type_nodetype>
+  <author_user>1312198</author_user>
+  <description>a writeup of yours gets [bookmarked] by another noder.</description>
+  <package>0</package>
+  <invalid_check></invalid_check>
+  <title>bookmark</title>
+</node>

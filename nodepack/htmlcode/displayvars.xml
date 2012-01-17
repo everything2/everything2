@@ -1,0 +1,52 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-04 00:14:10</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>20</hits>
+  <node_id>176</node_id>
+  <htmlcode_id>176</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $SETTINGS = getVars $NODE;
+my $str = '';
+my ($keyclr, $valclr) = ('#CCCCFF', '#DEDEFF');
+
+
+my @skeys = keys %$SETTINGS;
+if(not @skeys) { 
+	return &quot;&lt;em&gt;the node's settings are empty&lt;/em&gt;&lt;br&gt;\n&quot;;
+}
+
+$str .= scalar(@skeys).' key/value pair';
+$str .= 's' unless scalar(@skeys)==1;
+$str .= ':
+';
+
+@skeys = sort {$a cmp $b} @skeys;
+
+# wharfinger 9/29/01: Make the text in the table readable
+# even if the theme's body text color doesn't contrast well
+# with the tasteful lavender cell backgrounds.
+#$str.='&lt;style type=&quot;text/css&quot;&gt;
+#&lt;!--
+#td.setting {
+#	color: #101010;
+#}
+#--&gt;
+#&lt;/style&gt;
+#';
+
+$str.=&quot;&lt;table width=\&quot;100%\&quot; cellpadding=\&quot;1\&quot; cellspacing=\&quot;1\&quot; border=\&quot;0\&quot;&gt;\n&quot;;
+$str.=&quot;&lt;TR&gt;&lt;TH&gt;Setting&lt;/TH&gt;&lt;TH&gt;Value&lt;/TH&gt;&lt;/TR&gt;\n&quot;;
+foreach (@skeys) {
+	$str.= '&lt;tr&gt;&lt;td class=&quot;setting&quot; bgcolor=&quot;'.$keyclr.'&quot;&gt;'.$_.'&lt;/td&gt;&lt;td class=&quot;setting&quot; bgcolor=&quot;'.$valclr.'&quot;&gt;'.encodeHTML($$SETTINGS{$_}, 1).&quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;  
+}
+$str .=&quot;&lt;/table&gt;\n&quot;;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>displayvars</title>
+</node>

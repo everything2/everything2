@@ -1,0 +1,33 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-04-17 16:29:05</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>49</hits>
+  <node_id>500201</node_id>
+  <htmlcode_id>500201</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>return unless $$VARS{borged};
+my $t = time;
+my $str;
+my $numborged = $$VARS{numborged};
+$numborged ||= 1;
+$numborged *=2;
+
+if ($t - $$VARS{borged} &lt; 300+60*$numborged) {
+	$str .= linkNodeTitle('You\'ve Been Borged!');
+} else {
+	$$VARS{lastborg} = $$VARS{borged};
+	delete $$VARS{borged};
+	$str .= '&lt;em&gt;'.linkNodeTitle('EDB') . ' has spit you out...&lt;/em&gt;'; 
+	$DB-&gt;sqlUpdate('room', {borgd =&gt; '0'}, 'member_user='.getId($USER));
+}
+
+$str.'&lt;br /&gt;&lt;br /&gt;';</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>315</author_user>
+  <package>0</package>
+  <title>borgcheck</title>
+</node>

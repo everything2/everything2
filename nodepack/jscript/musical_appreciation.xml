@@ -1,0 +1,172 @@
+<node>
+  <doctext>bFlat.prototype.getTextContent = function(o) {
+   if (typeof(o.textContent) != &quot;undefined&quot;)
+      return o.textContent;
+   else if (typeof(o.innerText) != &quot;undefined&quot;)
+      return o.innerText;
+   else if (o.nodeName == '#text')
+      return o.data;
+   else
+      return &quot;&quot;;
+}
+
+bFlat.prototype.setTextContent = function(o, textVal) {
+   if (typeof(o.textContent) != &quot;undefined&quot;)
+      o.textContent = textVal;
+   else if (typeof(o.innerText) != &quot;undefined&quot;)
+      o.innerText = textVal;
+   else if (o.nodeName == '#text')
+      o.data = textVal;
+}
+
+bFlat.prototype.blow = function() {
+   this.totalLens = this.nonWhitespaceTextLength(this.replace_element);
+   this.newSquash();
+   this.squashText(this.replace_element);
+}
+
+bFlat.prototype.zzz = function(n)
+   { var str = ''; while (n--) { str += 'Z'; } return str; };
+
+bFlat.prototype.Bzzz = function(n)
+   { return 'B' + this.zzz(n - 1); };
+
+bFlat.prototype.nonWhitespaceTextLength =
+   function(o) {
+   if (!o) o = this.replace_element;
+   var elemText = bFlat.prototype.getTextContent(o);
+   var textLen = elemText.length;
+
+   // Disregard whitespace-only elements
+   if (elemText.strip().length == 0) {
+      textLen = 0;
+   }
+
+   if (o.childNodes.length) {
+      textLen = 0;
+      $A(o.childNodes).each(function(child) {
+        textLen += bFlat.prototype.nonWhitespaceTextLength(child);
+      });
+   }
+   
+   return textLen;
+};
+
+
+bFlat.prototype.newSquash =
+   function() {
+   // Skip past the stuff that was just replaced
+   this.replaceAtLen += this.lenReplace;
+   // Replace at least 100 characters, plus up to 1/8th of total text
+   //  but only a few characters if this is the first time
+   if (this.lenReplace) {
+     this.lenReplace = 100 + Math.floor((Math.random() * (this.totalLens + 1) / 8));
+   } else {
+     this.lenReplace = 100 + Math.floor(Math.random() * 50);
+   }
+   // Replace starting between 0 and 20% of the total text from here
+   this.replaceAtLen += Math.floor((Math.random() * (this.totalLens + 1) / 5));
+   this.replaceStr = this.Bzzz(this.lenReplace);
+};
+
+bFlat.prototype.squashText =
+   function(o) {
+   if (o.childNodes.length) {
+      var bindSquash = this.squashText.bind(this);
+      $A(o.childNodes).each(bindSquash);
+      return;
+   }
+   var origText = this.getTextContent(o);
+   var addLen = origText.length;
+   // Disregard whitespace-only elements
+   if (origText.strip().length == 0) {
+      return;
+   }
+   if (this.curLen + addLen &gt; this.replaceAtLen &amp;&amp;
+       this.curLen &lt; this.replaceAtLen + this.lenReplace) {
+      var startText = '';
+      var endText = '';
+      var newText;
+      // By default, presume we're starting at the start of the
+      //  replacement string and replacing this whole text node
+      var replaceStart = 0;
+      var replaceNum = addLen;
+      // If we've already printed some of the replacement string,
+      //  skip past the already-used parts
+      if (this.curLen &gt; this.replaceAtLen) {
+         replaceStart = this.curLen - this.replaceAtLen;
+      }
+      // If there is more replacement string than there is room
+      //  for in this text node, don't print it all
+      if (this.replaceAtLen - this.curLen + replaceNum &gt; addLen) {
+         replaceNum = addLen - replaceStart;
+      }
+      newText = this.replaceStr.substr(replaceStart, replaceNum);
+
+      if (this.curLen &lt; this.replaceAtLen) {
+         startText = origText.substr(0, this.replaceAtLen - this.curLen);
+         // Add dash if we're interrupting
+         if (startText.substr(-1).search(/\S/) != -1) {
+            startText += this.mdash;
+         }
+      } else if (this.curLen - this.replaceAtLen + addLen &gt; this.lenReplace) {
+         endText = origText.substr(this.lenReplace - this.curLen + this.replaceAtLen);
+      }
+
+      // Add soft hyphens in all inserted text so it doesn''t stretch
+      //  the screen obnoxiously
+      newText = newText.replace(/(.)/g, &quot;$1&quot; + this.shy);
+      this.setTextContent(o, startText + newText + endText);
+
+   }
+
+   this.curLen += addLen;
+
+   if (this.curLen &gt; this.replaceAtLen + this.lenReplace) {
+      this.newSquash();
+   }
+};
+
+function bFlat(replace_element) {
+
+   this.replace_element = replace_element;
+   this.shy = String.fromCharCode(173);
+   this.mdash = String.fromCharCode(8212);
+   this.curLen = 0;
+   this.replaceStr = 'BZZZ';
+   this.replaceAtLen = 100;
+   this.lenReplace = 0;
+
+}
+
+function flatify(buttonClicked) {
+
+   // Element is not automatically extended in IE when called from onClick handler
+   buttonClicked = Element.extend(buttonClicked);
+
+   var wu_div = buttonClicked.ancestors().find(
+     function(o) { return o.hasClassName('item') }
+   );
+   var wu_content = wu_div.select('.content').first();
+   var musical = new bFlat(wu_content);
+   musical.blow();
+
+}
+
+
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-07-09 22:33:25</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1989982</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1786405</type_nodetype>
+  <document_id>1989982</document_id>
+  <author_user>829913</author_user>
+  <package>0</package>
+  <title>musical appreciation</title>
+</node>

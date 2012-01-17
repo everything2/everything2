@@ -1,0 +1,122 @@
+<node>
+  <doctext>&lt;p&gt;&lt;b&gt;&lt;big&gt;[Everything2 Help] &amp;gt; [Everything2 Categories]&lt;/big&gt;&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;A [category] is a way to group a list of related nodes. You can create a category that only you can edit, a category that anyone can edit, or a category that can be maintained by any [Everything2 Usergroups|usergroup] you are a member of.&lt;/p&gt;
+
+&lt;p&gt;The scope of categories is limitless. Some examples might include:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;[%$$USER{title}%]'s Favorite Movies&lt;/li&gt;
+&lt;li&gt;The Definitive Guide To Star Trek&lt;/li&gt;
+&lt;li&gt;Everything2 Memes&lt;/li&gt;
+&lt;li&gt;Funny Node Titles&lt;/li&gt;
+&lt;li&gt;The Best Books of All Time&lt;/li&gt;
+&lt;li&gt;Albums [%$$USER{title}%] Owns&lt;/li&gt;
+&lt;li&gt;Writeups About Love&lt;/li&gt;
+&lt;li&gt;Angsty Poetry&lt;/li&gt;
+&lt;li&gt;Human Diseases&lt;/li&gt;
+&lt;li&gt;... the list could go on and on&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Before you create your own category you might want to visit the [Display Categories|category display page] to see if you can contribute to an existing category.&lt;/p&gt;
+
+[%
+
+my $str;
+my $guestUser = $HTMLVARS{guest_user};
+use Everything::Experience;
+#
+# Filter people out who can't create categories
+#
+if ($$USER{node_id} == $guestUser)
+{
+   return 'You must be [login|logged in] to create a category.';
+}
+if (getLevel($USER) &lt;= 1)
+{
+   $str.='Note that until you are at least Level 2, you can only add your own writeups to categories.';
+}
+# this check may or may not be needed/wanted
+my $userlock = $DB-&gt;sqlSelectHashref('*', 'nodelock', &quot;nodelock_node=$$USER{user_id}&quot;);
+if ($userlock)
+{
+   return 'You are forbidden from creating categories.';
+}
+
+#
+# Output Form
+#
+
+$str .= $query-&gt;startform;
+$query-&gt;param(&quot;node&quot;, &quot;&quot;);
+$str .= '&lt;p&gt;&lt;b&gt;Category Name:&lt;/b&gt;&lt;br /&gt;';
+$str .= $query-&gt;textfield(-name =&gt; &quot;node&quot;,
+                          -default =&gt; &quot;&quot;,
+                          -size =&gt; 50,
+                          -maxlength =&gt; 255);
+$str .= '&lt;/p&gt;
+         &lt;p&gt;&lt;b&gt;Maintainer:&lt;/b&gt;&lt;br /&gt;';
+
+# Get usergroups current user is a member of
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+my $sql = &quot;SELECT DISTINCT ug.node_id,ug.title 
+           FROM node ug,nodegroup ng 
+           WHERE ng.nodegroup_id=ug.node_id AND ng.node_id=$$USER{user_id} 
+           ORDER BY ug.title&quot;;
+my $ds = $dbh-&gt;prepare($sql);
+$ds-&gt;execute() or return $ds-&gt;errstr;
+my $catType = getId(getType('category'));
+my @vals;
+my %txts;
+# current user
+$txts{$$USER{user_id}} = &quot;Me ($$USER{title})&quot;;
+push @vals, $$USER{user_id};
+# guest user will be used for &quot;Any Noder&quot;
+$txts{$guestUser} = &quot;Any Noder&quot;;
+push @vals, $guestUser;
+while(my $ug = $ds-&gt;fetchrow_hashref)
+{ 
+   $txts{$$ug{node_id}} = $$ug{title} . &quot; (usergroup)&quot;;
+   push @vals, $$ug{node_id};
+}
+$str .= $query-&gt;popup_menu(&quot;maintainer&quot;, \@vals, &quot;&quot;, \%txts );
+
+my @customDimensions = htmlcode('customtextarea');
+
+# clear op which is set to &quot;&quot; on page load
+# also clear 'type' which may have been set to navigate to this page
+$query-&gt;delete('op', 'type');
+
+$str .= '&lt;/p&gt;'
+     . '&lt;fieldset&gt;&lt;legend&gt;Category Description&lt;/legend&gt;'
+     . $query-&gt;textarea(
+         -name =&gt; &quot;category_doctext&quot;
+         , -id =&gt; &quot;category_doctext&quot;
+         , -class =&gt; &quot;formattable&quot;
+         , @customDimensions
+         )
+     . '&lt;/fieldset&gt;'
+     . $query-&gt;hidden(-name =&gt; &quot;op&quot;, -value =&gt; &quot;new&quot;)
+     . $query-&gt;hidden(-name =&gt; &quot;type&quot;, -value =&gt; $catType)
+     ;
+$str .= $query-&gt;submit(&quot;createit&quot;, &quot;Create It!&quot;);
+$str .= $query-&gt;endform;
+
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-03-26 17:48:19</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>11</hits>
+  <node_id>1935419</node_id>
+  <edittime>2011-07-03 08:04:53</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1935419</document_id>
+  <author_user>1323377</author_user>
+  <package>0</package>
+  <title>Create Category</title>
+</node>

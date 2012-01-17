@@ -1,0 +1,16 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-04-25 03:09:27</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1291145</node_id>
+  <type_nodetype>153</type_nodetype>
+  <setting_id>1291145</setting_id>
+  <author_user>9740</author_user>
+  <vars>bot_id=bit%20flags%3a%200%3dno%20talking%20allowed%2c%201%3dbot%20may%20talk%2c%202%3duser%20may%20talk%20to%20bot</vars>
+  <package>0</package>
+  <title>bot info</title>
+</node>

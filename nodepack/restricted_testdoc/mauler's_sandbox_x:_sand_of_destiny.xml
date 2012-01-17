@@ -1,0 +1,684 @@
+<node>
+  <doctext>&lt;p&gt;Welcome to the Everything2 Gift Shop!&lt;/p&gt;
+
+[%
+
+my $isHalloween = 0;
+if ($isHalloween) {
+return &quot;&lt;p&gt;Check out our [The Costume Shop|sister store]!&lt;/p&gt;&quot;;
+
+}
+
+%]
+
+[%
+
+return if ($$VARS{GPoptout});
+
+use Everything::Experience;
+
+my $minLevel = 1;
+my $StarCost = 25;
+
+return unless getLevel($USER)&gt;= $minLevel;
+
+my $str = &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Star&lt;/b&gt;&lt;/p&gt;&lt;p&gt;You have made it to Level [The Everything2 Voting/Experience System|Level $minLevel], so you have the power to [Sanctify user|Sanctify] other users with GP. Would you can purchase an &lt;b&gt;Amber Star&lt;/b&gt; to reward other users. Amber Stars currently cost &lt;b&gt;$StarCost GP&lt;/b&gt;.&lt;p&gt;Giving a user a Amber Star sends them a private message telling them that you have given them a Star and informing them of the reason why they earned it.&lt;/p&gt;&quot;;
+
+if (getLevel($USER)&lt; $minLevel) {
+
+$str.=&quot;&lt;p&gt;Sorry you do not have enough GP to buy a Amber Star right now. Please come back when you have &lt;b&gt;$StarCost GP&lt;/b&gt;.&lt;/p&gt;&quot;;
+
+return $str;
+
+}
+
+if ($query-&gt;param('give_star')) {
+	my $recipient = $query-&gt;param('givee');
+        my $reason = $query-&gt;param('starReason');
+	my $U = getNode($recipient, 'user');
+	return &quot;&lt;p&gt;That user doesn't exist! Please [E2 Gift Shop|try again].&lt;/p&gt;&quot; unless $U;
+        return &quot;&lt;p&gt;You must enter a reason. Please [E2 Gift Shop|try again].&lt;/p&gt;&quot; unless $reason;
+        $$U{stars} += 1;
+	updateNode($U,-1);
+        adjustGP($USER, -$StarCost);
+
+#$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; getId(getNode('The Gift of Star', 'node_forward')), 'seclog_details' =&gt; &quot;$$USER{title} gave an Amber Star to $$U{title} at the [E2 Gift Shop] because $reason.&quot;});
+
+	my $from = $$USER{title};
+	$HTMLVARS{msgparams} = {
+		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
+		'recipient_id' =&gt; $$U{user_id},
+		'message' =&gt; &quot;Sweet! $from just [E2 Gift Shop|awarded you] an Amber Star, because $reason&quot;
+	};
+	htmlcode('sendPrivateMessage','');
+	$str = &quot;&lt;p&gt;Okay, an Amber Star has been awarded to [&quot; . $$U{title} .&quot;]. &quot;;
+	if ($$USER{GP} &gt;= $StarCost) {
+		return $str . &quot;You have &lt;b&gt;&quot; . $$USER{GP} . &quot;&lt;/b&gt; GP left. Would you like to [E2 Gift Shop|give another Star]?&lt;/p&gt;&quot;;
+	}
+        return $str . &quot;You now have &lt;b&gt;&quot; . $$USER{GP} . &quot;&lt;/b&gt; GP left.&lt;/p&gt;&quot;;
+
+}
+
+$str.=$query-&gt;start_form();
+$str.=$query-&gt;hidden('node_id', $$NODE{node_id});
+$str.=&quot;&lt;p&gt;Who's the lucky noder? &quot; . $query-&gt;textfield('givee');
+$str.=&quot; And why are you giving them a star? &quot; . $query-&gt;textfield('starReason') . &quot; &quot;;
+$str.=$query-&gt;submit('give_star','Star Them!');
+$str.=$query-&gt;end_form();
+
+%]
+
+[%
+
+return if ($$VARS{GPoptout});
+
+use Everything::Experience;
+
+my $minLevel = 11;
+my $Sanctificity = 10;
+
+return unless getLevel($USER)&gt;= $minLevel;
+
+my $str = &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Sanctity&lt;/b&gt;&lt;/p&gt;&lt;p&gt;You are at least [The Everything2 Voting/Experience System|Level $minLevel], so you have the power to [Sanctify user|Sanctify] other users with GP. Would you like to [Sanctify user|sanctify someone]?&lt;/p&gt;&lt;p&gt;NEW! You can now also sanctify users directly when you visit their homenodes by using the link in your Epicenter nodelet. Note that if you do it this way your sanctification will be anonymous.&quot;;
+
+return $str;
+
+%]
+
+[%
+
+#return &quot;&lt;p&gt;Hold your horses!&lt;/p&gt;&quot; unless $$USER{title} eq 'mauler';
+
+my $voteCost = 1;
+
+my $minlevel = 2;
+my $lvl = getLevel($USER);
+my $CurGP = $$USER{GP};
+
+my $str = &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Votes&lt;/b&gt;&lt;/p&gt;&quot;;
+
+return $str if ($$VARS{GPoptout});
+
+if (($lvl &gt;= $minlevel) &amp;&amp; ($CurGP &gt;= $voteCost)) {
+
+     $str.=&quot;&lt;p&gt;Because you are at least [The Everything2 Voting/Experience System|Level $minlevel] you can also buy additional votes, if you want. Each additional vote costs &lt;b&gt;$voteCost GP&lt;/b&gt;. You currently have &lt;b&gt;$CurGP GP&lt;/b&gt;.&lt;/p&gt;&lt;p&gt;Please note that these votes will expire and reset at the end of the day, just like normal votes.&lt;/p&gt;&quot;;
+
+     my $voteIncrease = $query-&gt;param(&quot;numVotes&quot;);
+
+     if ($query-&gt;param('buyVotes')){
+
+          if ($voteIncrease &lt; 1){
+
+               $str.=&quot;&lt;p&gt;You must enter a positive number.&lt;/p&gt;&quot;;
+
+          } elsif ($voteIncrease &lt;= $$USER{GP}) {
+
+               $$USER{votesleft} += $voteIncrease;
+               $$USER{GP} -= ($voteIncrease*$voteCost);
+              $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; getId(getNode('Buy Votes', 'node_forward')), 'seclog_details' =&gt; &quot;$$USER{title} purchased $voteIncrease votes at the [E2 Gift Shop].&quot;});
+              updateNode($USER, -1);
+
+               $str= &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Votes&lt;/b&gt;&lt;/p&gt;&lt;p&gt;You now have &lt;b&gt;$$USER{votesleft}&lt;/b&gt; total votes. Happy voting!&lt;/p&gt;&quot;; 
+          } else {
+               $str.=&quot;&lt;p&gt;You do not have enough GP!&lt;/p&gt;&quot;;
+          }
+     }
+
+     $str.=htmlcode('openform');
+     $str.=&quot;&lt;/p&gt;&lt;p&gt;How many votes would you like to buy? &quot; . $query-&gt;textfield('numVotes').&quot;&lt;br /&gt;&lt;br /&gt;&quot;;
+     $str.=$query-&gt;submit(&quot;buyVotes&quot;,&quot;Buy Votes&quot;);
+     $str.=$query-&gt;end_form;
+
+} elsif ($lvl &gt;= $minlevel) {
+
+     return &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Votes&lt;/b&gt;&lt;/p&gt;&lt;p&gt;You do not have enough GP to buy votes at this time. Please come back when you have more GP!&lt;/p&gt;&quot;;
+
+} else {
+
+     return &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Votes&lt;/b&gt;&lt;/p&gt;&lt;p&gt;You are not a high enough level to buy votes yet. Please come back when you reach [The Everything2 Voting/Experience System|Level $minlevel]!&lt;/p&gt;&quot;;
+
+}
+
+return $str;
+
+%]
+
+[%
+
+
+#return &quot;&lt;p&gt;Hold your horses!&lt;/p&gt;&quot; unless $$USER{title} eq 'mauler';
+
+my $minLev = 9;
+my $votesLev = 1;
+my $lvl = getLevel($USER);
+my $vts = $$USER{votesleft};
+
+return if (($lvl &lt; $votesLev) || ($lvl &lt; $minLev));
+
+my $str = &quot;&lt;p&gt;Give the gift of votes! If you happen to have votes to spare, you can give up to 25 of them at a time to another user as a gift. Please use this to encourage newbies.&lt;/p&gt;&quot;;
+
+return $str.&quot;&lt;p&gt;Sorry, but it looks like you don't have any votes to give away now. Please come back when you have some votes.&lt;/p&gt;&quot; if $vts &lt; 1;
+
+$str.=&quot;&lt;p&gt;You currently have &lt;b&gt;$vts&lt;/b&gt; votes.&lt;/p&gt;&quot;;
+
+if ($query-&gt;param('give_votes')) {
+	my $recipient = $query-&gt;param('give_to');
+        my $amt = $query-&gt;param('votesGiven');
+	my $U = getNode($recipient, 'user');
+	return &quot;&lt;p&gt;That user doesn't exist! Please [E2 Gift Shop|try again].&lt;/p&gt;&quot; unless $U;
+        return &quot;&lt;p&gt;You do not have that many votes! Please [E2 Gift Shop|try again].&lt;/p&gt;&quot; unless $amt &lt;= $vts;
+        return &quot;&lt;p&gt;You must enter a number less than 26 and greater than zero. Please [E2 Gift Shop|try again].&lt;/p&gt;&quot; if ($amt &lt; 1 || $amt &gt; 25);
+	$$U{votesleft}+=$amt;
+        $$U{sanctity} += 1;
+	updateNode($U,-1);
+	$$USER{votesleft}-=$amt;
+
+$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; getId(getNode('The Gift of Votes', 'node_forward')), 'seclog_details' =&gt; &quot;$$USER{title} gave $amt of their votes to $$U{title} at the [E2 Gift Shop].&quot;});
+
+	my $from =  ($query-&gt;param('anon') eq 'sssh') ? &quot;someone mysterious&quot; : ('[' . $$USER{title} . ']');
+	$HTMLVARS{msgparams} = {
+		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
+		'recipient_id' =&gt; $$U{user_id},
+		'message' =&gt; &quot;Whoa! $from just [E2 Gift Shop|gave you] &quot;.($amt||&quot;0&quot;).&quot; vote&quot;.($amt == 1 ? &quot;&quot; :&quot;s&quot;).&quot; to spend. You'd better use 'em by midnight, baby!&quot;
+	};
+	htmlcode('sendPrivateMessage','');
+	$str = &quot;&lt;p&gt;Okay, &quot;.($amt||&quot;0&quot;).&quot; vote&quot;.($amt == 1 ? &quot; is&quot; :&quot;s are&quot;).&quot; waiting for [&quot; . $$U{title} .&quot;]. &quot;;
+	if ($$USER{votesleft} != 0) {
+		return $str . &quot;You have &lt;b&gt;&quot; . $$USER{votesleft} . &quot;&lt;/b&gt; votes left. Would you like to [E2 Gift Shop|give some more]?&lt;/p&gt;&quot;;
+	}
+        return $str . &quot;Those were your last votes for today!&lt;/p&gt;&quot;;
+
+}
+
+$str.=$query-&gt;start_form();
+$str.=$query-&gt;hidden('node_id', $$NODE{node_id});
+
+$str.=&quot;&lt;p&gt;Who's the lucky noder? &quot; . $query-&gt;textfield('give_to');
+$str.=&quot; And how many votes are you giving them? &quot; . $query-&gt;textfield('votesGiven');
+$str.=$query-&gt;checkbox(-name=&gt;'anon',
+		           -value=&gt;'sssh',
+		           -label=&gt;'Give anonymously') . '&lt;/p&gt;';
+$str.=$query-&gt;submit('give_votes','Give Votes!');
+$str.=$query-&gt;end_form();
+
+%]
+
+[%
+
+my $ChingLev = 4;
+my $lvl = getLevel($USER);
+
+my $str = &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Ching&lt;/b&gt;&lt;/p&gt;&quot;;
+
+$str.=&quot;&lt;p&gt;Give the gift of ching! If you happen to have a C! to spare, why not spread the love and give it to a fellow noder?&lt;/p&gt;&quot; if ($lvl &gt;= $ChingLev);
+
+return $str;
+
+%]
+
+[%
+#return &quot;&lt;p&gt;Hold your horses!&lt;/p&gt;&quot; unless $$USER{title} eq 'ascorbic';
+
+my $ChingLev = 4;
+my $lvl = getLevel($USER);
+
+return &quot;&lt;p&gt;Sorry, you must be [The Everything2 Voting/Experience System|Level $ChingLev] to give away C!s&lt;/p&gt;&quot; unless ($lvl &gt;= $ChingLev);
+
+return &quot;&lt;p&gt;Sorry, but you don't have a C! to give away. Please come back when you have a C!.&lt;/p&gt;&quot; if $$VARS{cools} &lt; 1;
+
+my $str;
+#my $forceAllow = (exists $HTMLVARS{group_gods}{$$USER{user_id}}) || (exists $HTMLVARS{'group_content editors'}{$$USER{user_id}}); 
+
+if ($query-&gt;param('give_cool')) {
+	my $recipient = $query-&gt;param('give_to');
+
+	my $user = getNode($recipient, 'user');
+	return &quot;&lt;p&gt;The user '$recipient' doesn't exist! Please [E2 Gift Shop|try again].&lt;/p&gt;&quot; unless $user;
+	my $v = getVars($user);
+#        return &quot;&lt;p&gt;That user has spent more cools than they have posted writeups. Perhaps you should encourage them to node more often.&lt;/p&gt;&quot; if ($$v{coolsspent} ge $$v{numwriteups});
+	$$v{cools}++;
+	setVars($user, $v);
+        $$user{sanctity} += 1;
+	updateNode($user,-1);
+	$$VARS{cools}--;
+
+$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; getId(getNode('The Gift of Ching', 'node_forward')), 'seclog_details' =&gt; &quot;$$USER{title} gave a C! to $$user{title} at the [E2 Gift Shop].&quot;});
+
+	my $from =  ($query-&gt;param('anon') eq 'sssh') ? &quot;someone mysterious&quot; : ('[' . $$USER{title} . ']');
+	$HTMLVARS{msgparams} = {
+		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
+		'recipient_id' =&gt; $$user{user_id},
+#		'message' =&gt; 'Hey '.$$user{title}.&quot;, $from just [E2 Gift Shop|gave you] a C! to spend. You\'d better use it by midnight, baby!&quot;
+		'message' =&gt; &quot;Hey, $from just [E2 Gift Shop|gave you] a C! to spend. Use it to rock someone's world!&quot;
+	};
+	htmlcode('sendPrivateMessage','');
+	$str = &quot;&lt;p&gt;A neatly-wrapped C! is waiting for [&quot; . $$user{title} .&quot;]. &quot;;
+	if ($$VARS{cools} != 0) {
+		return $str . &quot;You have &lt;b&gt;&quot; . $$VARS{cools} . &quot;&lt;/b&gt; C!s left. Would you like to [E2 Gift Shop|give another]?&lt;/p&gt;&quot;;
+	}
+        return $str . &quot;That was your last C! for today.&lt;/p&gt;&quot;;
+
+}
+
+$str.=$query-&gt;start_form();
+$str.=$query-&gt;hidden('node_id', $$NODE{node_id});
+#if ($forceAllow) {
+#	$str.= &quot;&lt;p&gt;As you're a stick-wielding oppressor you have unlimited C!s to give away. Please don't go overboard on this: we want to keep these gifts special, and would mostly expect them to be given by 'ordinary' users.&quot;;
+#} else {
+#	$str .= &quot;&lt;p&gt;You currently have &quot; . $$VARS{cools} . &quot; C!&quot; . ($$VARS{cools} &gt; 1 ? 's' : '') . ' to give.';	
+#}
+$str.= &quot;&lt;/p&gt;&lt;p&gt;Who's the lucky noder? &quot; . $query-&gt;textfield('give_to');
+
+
+$str.= $query-&gt;checkbox(-name=&gt;'anon',
+		           -value=&gt;'sssh',
+		           -label=&gt;'Give anonymously') . '&lt;/p&gt;';
+$str.=$query-&gt;submit('give_cool','Give C!');
+$str.=$query-&gt;end_form();
+
+
+
+%]
+
+[%
+
+use Time::Local;
+
+my $minLevel = 12;
+my $gpCost = 100;
+my $ChingLevel = 4;
+my $lvl = getLevel($USER);
+
+#return unless $lvl &gt;= $ChingLevel;
+return if ($$VARS{GPoptout});
+
+my $msg = &quot;&lt;p&gt;If you'd like another ching to use or give away, you might be able to buy one for the bargain price of &lt;strong&gt;$gpCost GP&lt;/strong&gt;. You must be at least [The Everything2 Voting/Experience System|Level $minLevel], and you can only buy one C! every 24 hours.&lt;/p&gt;&quot;;
+
+return $msg.&quot;&lt;p&gt;Sorry, you must be [The Everything2 Voting/Experience System|Level $minLevel] in order to buy chings.&lt;/p&gt;&quot; unless $lvl&gt;= $minLevel;
+
+return &quot;&lt;p&gt;Sorry, you must have at least $gpCost GP in order to buy a ching.&lt;/p&gt;&quot; unless $$USER{GP} &gt;= $gpCost;
+
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,
+$yday,$isdst)=localtime(time-86400);
+my $hours24 = sprintf &quot;%4d-%02d-%02d %02d:%02d:%02d&quot;,
+$year+1900,$mon+1,$mday,$hour,$min,$sec;
+
+($sec,$min,$hour,$mday,$mon,$year,$wday,
+$yday,$isdst)=localtime(time);
+my $curTime = sprintf &quot;%4d-%02d-%02d %02d:%02d:%02d&quot;,
+$year+1900,$mon+1,$mday,$hour,$min,$sec;
+
+   if ($$VARS{chingbought} gt $hours24) {
+
+my ($d, $t) = split(' ',$$VARS{chingbought});
+my ($hour, $min, $sec) = split(':',$t);
+my ($year, $month, $day) = split('-',$d);
+my $ching_time = timelocal($sec, $min, $hour, $day, $month-1, $year);
+
+my ($d, $t) = split(' ',$hours24);
+my ($hour, $min, $sec) = split(':',$t);
+my ($year, $month, $day) = split('-',$d);
+my $hour_time = timelocal($sec, $min, $hour, $day, $month-1, $year);
+
+my $timeDiff = $ching_time-$hour_time;
+my $hourDiff = floor($timeDiff / 3600);
+my $minDiff = floor(($timeDiff - $hourDiff * 3600) / 60);
+
+return &quot;&lt;p&gt;You bought your last ching at &lt;b&gt;&quot;.$$VARS{chingbought}.&quot;&lt;/b&gt;.&lt;br /&gt; You may buy another ching in $hourDiff hours, $minDiff minutes.&lt;/p&gt;&quot;;
+}
+
+
+if ($query-&gt;param('buy_ching')) {
+
+#if $query-&gt;param('give_to') {
+#	my $user = getNode($query-&gt;param('give_to'), 'user');
+#	return &quot;&lt;p&gt;The user '$recipient' doesn't exist!&lt;/p&gt;&quot; unless $user;
+#	my $v = getVars($user);
+#	$$v{cools}++;
+#	setVars($user, $v);
+#}
+#else {
+#$$VARS{cools}++;
+#}
+
+$$VARS{cools}++;
+$$VARS{chingbought} = $curTime;
+setVars ($USER, $VARS);
+
+$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; getId(getNode('Buy Chings', 'node_forward')), 'seclog_details' =&gt; &quot;$$USER{title} purchased a C! at the [E2 Gift Shop] for $gpCost GP.&quot;});
+
+$$USER{GP} += (-1*$gpCost);
+ return &quot;&lt;p&gt;Transaction complete. Thank you, come again!&lt;/p&gt;&quot;;
+}
+
+
+my $str;
+
+
+$str.=&quot;&lt;p&gt;You currently have &lt;b&gt;&quot;.$$USER{GP}.&quot; GP&lt;/b&gt;.&lt;/p&gt;&quot;;
+$str.=$query-&gt;start_form();
+$str.=&quot;&lt;input type='hidden' name='node_id' value='$$NODE{node_id}' /&gt;&quot;;
+$str.=$query-&gt;submit('buy_ching','Buy Ching!');
+$str.=$query-&gt;end_form();
+
+return $msg.$str;
+
+%]
+
+&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;The Gift of Topic&lt;/b&gt;&lt;/p&gt;
+
+[%
+
+my $minlevel = 6;
+
+my $lvl = getLevel($USER);
+
+my $tokenCost = 50;
+my $canBuy = (($$USER{GP} &gt;= $tokenCost) &amp;&amp; ($lvl &gt;= $minlevel));
+
+my ($str, $resultStr);
+
+$$VARS{tokens} = 0 unless exists($$VARS{tokens});
+
+if ($query-&gt;param(&quot;buyToken&quot;)) {
+
+	$$USER{GP} += (-1*$tokenCost);
+
+	$$VARS{tokens}++;
+	setVars $USER, $VARS;
+	$resultStr = &quot;Sweet, now you have &lt;b&gt;&quot;.$$VARS{tokens}.&quot;&lt;/b&gt; token&quot;.($$VARS{tokens} == 1 ? &quot;&quot; :&quot;s&quot;);
+}
+
+if ($$VARS{tokens} == 0) {
+	$str = &quot;&lt;p&gt;You don't have any tokens right now.&lt;/p&gt;&quot;;
+
+	if ($canBuy) {
+		$str.=&quot;Wanna buy one? Only $tokenCost GP ...&lt;/p&gt;&quot;;
+		$str.=htmlcode('openform');
+		$str.=$query-&gt;submit(&quot;buyToken&quot;,&quot;Buy Token&quot;);
+		$str.=$query-&gt;end_form;
+	}
+	else {
+		$str.=&quot;&lt;p&gt;You can't buy one right now. You need to be&quot;;
+		$str.=&quot; at least [Voting/Experience System|Level $minlevel] and have at least &lt;b&gt;$tokenCost GP&lt;/b&gt;.&lt;/p&gt;&quot;;
+	}
+
+	return $str;
+}
+
+if ($query-&gt;param(&quot;setTopic&quot;)) {
+	$$VARS{tokens}--;
+
+	#possibly limit topic changes to one every 30 minutes?
+
+	my $room = 0;
+
+
+
+	my $settingsnode = getNodeById(1149799); #More hard-coded goodness for speed.
+	my $topics = getVars($settingsnode);
+        my $utf8topic = $query-&gt;param(&quot;newtopic&quot;);
+        utf8::encode($utf8topic);
+        $utf8topic = htmlScreen($utf8topic); #Admins and chanops can still put HTML in topic, though.
+	$$topics{$room} = $utf8topic;
+	setVars($settingsnode, $topics);
+
+       $DB-&gt;sqlInsert(&quot;seclog&quot;, {'seclog_node'=&gt;$$NODE{node_id}, 'seclog_user' =&gt; $$USER{node_id}, 'seclog_details'=&gt; &quot;$$USER{title} changed room topic to '&quot;.$utf8topic.&quot;'&quot;});
+
+	return &quot;The topic has been updated. Go now and enjoy the fruits of your labor.&quot;;
+}
+
+$str.=&quot;&lt;p&gt;You currently have &lt;b&gt;&quot;.$$VARS{tokens}.&quot;&lt;/b&gt; token&quot;.($$VARS{tokens} == 1 ? &quot;&quot; :&quot;s&quot;).&quot;&lt;/p&gt;&quot;;
+
+
+if (isSuspended($USER,&quot;topic&quot;)) {
+
+return $str.&quot;&lt;p&gt;Your topic privileges have been suspended. Ask nicely and maybe they will be restored.&lt;/p&gt;&quot;;
+
+}
+
+$str.=&quot;&lt;p&gt;You can update the outside room topic for the low cost of &lt;b&gt;1&lt;/b&gt; token. To do so, just fill in the box below. The only rules are no insults or harassment of noders, no utter nonsense, and no links to NSFW material. Violators will lose their topic-setting privileges.&quot;;
+
+$str.=htmlcode('openform');
+$str.=$query-&gt;textfield(&quot;newtopic&quot;, &quot;New Topic&quot;, 100).&quot;&lt;br /&gt;&quot;;
+$str.=$query-&gt;submit(&quot;setTopic&quot;,&quot;Set The Topic&quot;);
+$str.=$query-&gt;end_form;
+
+return $str.$resultStr if ($$VARS{GPoptout});
+
+if ($lvl &gt;= $minlevel) {
+
+     $str.=&quot;&lt;p&gt;Because you are at least [The Everything2 Voting/Experience System|Level $minlevel]&quot;;
+
+     if ($$USER{GP} &gt;= $tokenCost){
+          $str.= &quot;, you can also buy more tokens, if you want. One token costs &lt;b&gt;$tokenCost GP&lt;/b&gt;.&lt;/p&gt;&quot;;
+
+          $str.=htmlcode('openform');
+          $str.=$query-&gt;submit(&quot;buyToken&quot;,&quot;Buy Token&quot;);
+          $str.=$query-&gt;end_form;
+
+     } else {
+          $str.= &quot;, you are allowed to buy additional tokens. But one token costs &lt;b&gt;$tokenCost GP&lt;/b&gt;, so you do not have enough GP right now. Please come back when you have more GP.&lt;/p&gt;&quot;;
+     }
+}
+
+return $str.$resultStr;
+
+
+%]
+
+[%
+
+my $minlevel = 7;
+
+my $lvl = getLevel($USER);
+
+#return unless $lvl &gt;= $minlevel;
+#return unless exists($$USER{GP});
+
+my $eggCost = 25;
+my $canBuy = (($$USER{GP} &gt;= $eggCost) &amp;&amp; ($lvl &gt;= $minlevel));
+
+my ($str, $resultStr);
+
+$str.=&quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Eggs&lt;/b&gt;&lt;/p&gt;&quot;;
+
+$$VARS{easter_eggs} = 0 unless exists($$VARS{easter_eggs});
+
+return $str if ($$VARS{GPoptout});
+
+if ($query-&gt;param(&quot;buyEgg&quot;)) {
+
+	$$USER{GP} += (-1*$eggCost);
+
+
+	$$VARS{easter_eggs}++;
+	setVars $USER, $VARS;
+	$resultStr = &quot;Sweet, now you have &quot;.$$VARS{easter_eggs}.&quot; easter egg&quot;.($$VARS{easter_eggs} == 1 ? &quot;&quot; :&quot;s&quot;);
+}
+
+if ($canBuy) {
+
+     $str.=&quot;&lt;p&gt;You also can buy Easter Eggs if you want. Only &lt;b&gt;$eggCost GP&lt;/b&gt;!&lt;/p&gt;&quot;;
+
+     if ($resultStr eq '') {
+          $str.=&quot;&lt;p&gt;You currently have &lt;b&gt;&quot;.$$VARS{easter_eggs}.&quot;&lt;/b&gt; Easter Egg&quot;.($$VARS{easter_eggs} == 1 ? &quot;&quot; :&quot;s&quot;).&quot;&lt;/p&gt;&quot;;
+     }
+
+     $str.=htmlcode('openform');
+     $str.=$query-&gt;submit(&quot;buyEgg&quot;,&quot;Buy Easter Egg&quot;);
+     $str.=$query-&gt;end_form;
+
+} elsif ($lvl &gt;= $minlevel) {
+
+     $str.=&quot;&lt;p&gt;You do not have enough GP to buy an easter egg right now. Please come back when you have at least $eggCost GP.&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;&quot;;
+
+} else {
+
+     $str.=&quot;&lt;p&gt;You are not a high enough level to buy easter eggs yet. Please come back when you reach [The Everything2 Voting/Experience System|Level $minlevel].&lt;br /&gt;&lt;br /&gt;&lt;/p&gt;&quot;;
+
+}
+
+return $str.$resultStr;
+
+
+%]
+
+[%
+
+#return &quot;&lt;p&gt;Hold your horses!&lt;/p&gt;&quot; unless $$USER{title} eq 'mauler';
+
+my $minLev = 8;
+my $buyEggsLev = 7;
+my $lvl = getLevel($USER);
+my $eggs = $$VARS{easter_eggs};
+
+return if (($lvl &lt; $buyEggsLev) || ($lvl &lt; $minLev));
+
+my $str = &quot;&lt;p&gt;Give the gift of eggs! If you happen to have some easter eggs to spare, you can give one to another user as a gift. Please use this to encourage newbies.&lt;/p&gt;&quot;;
+
+return $str.&quot;&lt;p&gt;Sorry, but it looks like you don't have any eggs to give away now. Please come back when you have an egg.&lt;/p&gt;&quot; if $eggs &lt; 1;
+
+if ($query-&gt;param('give_egg')) {
+	my $recipient = $query-&gt;param('give_to');
+	my $U = getNode($recipient, 'user');
+	return &quot;&lt;p&gt;That user doesn't exist! Please [E2 Gift Shop|try again].&lt;/p&gt;&quot; unless $U;
+	my $v = getVars($U);
+	$$v{easter_eggs}++;
+	setVars($U, $v);
+	$$VARS{easter_eggs}--;
+
+#$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; getId(getNode('The Gift of Eggs', 'node_forward')), 'seclog_details' =&gt; &quot;$$USER{title} gave an easter egg to $$U{title} at the [E2 Gift Shop].&quot;});
+
+	my $from =  ($query-&gt;param('anon') eq 'sssh') ? &quot;someone mysterious&quot; : ('[' . $$USER{title} . ']');
+	$HTMLVARS{msgparams} = {
+		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
+		'recipient_id' =&gt; $$U{user_id},
+		'message' =&gt; &quot;Hey, $from just gave you an [easter egg]! That means you are tastier than an omelette!&quot;
+	};
+	htmlcode('sendPrivateMessage','');
+	$str = &quot;&lt;p&gt;Okay, the Easter Bunny just paid a visit to [&quot; . $$U{title} .&quot;]. &quot;;
+	if ($$USER{votesleft} != 0) {
+		return $str . &quot;You have &lt;b&gt;&quot;.($$VARS{easter_eggs}||&quot;0&quot;).&quot;&lt;/b&gt; easter egg&quot;.($$VARS{easter_eggs} == 1 ? &quot;&quot; :&quot;s&quot;).&quot; left. Would you like to [E2 Gift Shop|give another]?&lt;/p&gt;&quot;;
+	}
+        return $str . &quot;You just gave away your last easter egg!&lt;/p&gt;&quot;;
+
+}
+
+$str.=$query-&gt;start_form();
+$str.=$query-&gt;hidden('node_id', $$NODE{node_id});
+
+$str.=&quot;&lt;p&gt;Who's the lucky noder? &quot; . $query-&gt;textfield('give_to');
+$str.=$query-&gt;checkbox(-name=&gt;'anon',
+		           -value=&gt;'sssh',
+		           -label=&gt;'Give anonymously') . '&lt;/p&gt;';
+$str.=$query-&gt;submit('give_egg','Egg them!');
+$str.=$query-&gt;end_form();
+
+%]
+
+[%
+return ''; # You'll have to convince me that this is a good idea. -a.
+return if ($$VARS{GPoptout});
+
+my $titleCost = 10000;
+my $needsTitleLev = 13;
+
+my $GP = $$USER{GP};
+my $SugTitle;
+my $SugLevel;
+my $suggester;
+
+my $str=&quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Level Title&lt;/b&gt;&lt;/p&gt;&quot;;
+
+$str.=&quot;&lt;p&gt;If you have enough GP, you might be able to suggest a title for a currently untitled [Voting/Experience System|user level]. Titles currently cost &lt;b&gt;$titleCost GP&lt;/b&gt;.&lt;/p&gt;&quot;;
+
+if ($GP &lt; $titleCost) {
+   $str.=&quot;&lt;p&gt;Sorry, you don't have enough GP yet to buy a level title.&lt;/p&gt;&quot;;
+   return $str;
+}
+
+$str.=&quot;&lt;p&gt;It looks like you have enough GP to buy a new level title. Be sure to check the [Voting/Experience System|list of currently titled levels] before you proceed!&lt;/p&gt;&quot;;
+
+if ($query-&gt;param(&quot;suggest_title&quot;)) {
+   $SugTitle = $query-&gt;param(&quot;new_title&quot;);
+   $SugLevel = $query-&gt;param(&quot;new_level&quot;);
+   $suggester = $$USER{title};
+   if ($SugTitle eq '') {
+      $str.=&quot;&lt;p&gt;You must enter a new title!&lt;/p&gt;&quot;;
+      return $str;
+   }
+   unless ($SugLevel &gt;= $needsTitleLev) {
+      $str.=&quot;&lt;p&gt;You must enter Level number of at least $needsTitleLev or higher!&lt;/p&gt;&quot;;
+      return $str;
+   }
+
+   $$USER{GP} -= ($titleCost);
+   updateNode($USER, -1);
+
+   $HTMLVARS{msgparams} = {
+	'author_id' =&gt; getId(getNode('root', 'user')),
+	'recipient_id' =&gt; getId(getNode('Bank of Everything', 'usergroup')),
+	'message' =&gt; &quot;Hey, [$suggester] just purchased the right to suggest the title $SugTitle for Level $SugLevel. Approve or disapprove?&quot;
+   };
+   htmlcode('sendPrivateMessage','');
+
+   $str= &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Level Title&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Your suggestion of level title &lt;b&gt;$SugTitle&lt;/b&gt; for Level &lt;b&gt;$SugLevel&lt;/b&gt; has been successfully submitted!&lt;/p&gt;&lt;p&gt;Your account has been deducted &lt;b&gt;$titleCost GP&lt;/b&gt;&lt;/p&gt;&quot;;
+   return $str;
+}
+
+$str.=$query-&gt;start_form();
+$str.=$query-&gt;hidden('node_id', $$NODE{node_id});
+$str.=&quot;&lt;p&gt;Suggest new Level Title &quot; . $query-&gt;textfield('new_title');
+$str.=&quot; for Level &quot; . $query-&gt;textfield('new_level', $needsTitleLev, 5) . &quot;&lt;/p&gt;&quot;;
+$str.=$query-&gt;submit('suggest_title','Suggest Title!');
+$str.=$query-&gt;end_form();
+
+%]
+
+
+[%
+my $str= &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;Self Eggsamination&lt;/b&gt;&lt;/p&gt;&quot;;
+
+if ($$VARS{GPoptout}){
+   $str.=&quot;&lt;p&gt;You currently have &lt;b&gt;&quot;.($$VARS{easter_eggs}||&quot;0&quot;).&quot;&lt;/b&gt; easter egg&quot;.($$VARS{easter_eggs} == 1 ? &quot;&quot; :&quot;s&quot;).&quot; and &lt;b&gt;&quot;.($$VARS{tokens}||&quot;0&quot;).&quot;&lt;/b&gt; token&quot;.($$VARS{tokens} == 1 ? &quot;&quot; :&quot;s&quot;).&quot;.&lt;/p&gt;&quot;;
+} else {
+   $str.=&quot;&lt;p&gt;You currently have &lt;b&gt;&quot;.$$USER{GP}.&quot; GP&lt;/b&gt;, &lt;b&gt;&quot;.($$VARS{easter_eggs}||&quot;0&quot;).&quot;&lt;/b&gt; easter egg&quot;.($$VARS{easter_eggs} == 1 ? &quot;&quot; :&quot;s&quot;).&quot;, and &lt;b&gt;&quot;.($$VARS{tokens}||&quot;0&quot;).&quot;&lt;/b&gt; token&quot;.($$VARS{tokens} == 1 ? &quot;&quot; :&quot;s&quot;).&quot;.&lt;/p&gt;&quot;;
+}
+
+return $str;
+
+#return &quot;&lt;h3&gt;Bank Account&lt;/h3&gt;
+#
+#&lt;p&gt;You have &lt;b&gt;&quot;.$$USER{GP}.&quot; GP&lt;/b&gt;.&lt;/p&gt;&quot;;
+
+
+%]
+
+[%
+###This makes sure future XP and GP messages in the epicenter will be accurate - mauler
+
+$$VARS{oldexp} = $$USER{experience};
+$$VARS{oldGP} = $$USER{GP};
+
+return &quot;&quot;;
+
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-05-13 12:52:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1986409</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1965649</type_nodetype>
+  <document_id>1986409</document_id>
+  <author_user>1180811</author_user>
+  <package>0</package>
+  <title>Mauler's Sandbox X: Sand of Destiny</title>
+</node>

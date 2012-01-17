@@ -1,0 +1,120 @@
+<node>
+  <doctext>&lt;p align=&quot;center&quot;&gt;[{settingsDocs}]&lt;/p&gt;
+
+&lt;p&gt;Here's where you can configure your [Everything Daily Report]...
+ 
+[%
+return 'but only if you are [login|logged in]...' if $$USER{title} eq 'Guest User' or $$USER{title} eq 'everyone' or (getId($USER) == $HTMLVARS{guest_user});
+
+if(defined ($query-&gt;param('set_wantsreport'))) {
+	my $val = $query-&gt;param('set_wantsreport');
+	if($$USER{wantsreport} != $val) { 
+		$$USER{wantsreport} = $val;
+		updateNode($USER, -1);
+	}
+}
+
+my $str = htmlcode('openform');
+if ($$USER{wantsreport}) {
+  $str.=&quot;If you are sick of that [Everything Daily Report] trash, you can always &lt;strong&gt;disable&lt;/strong&gt; it:&quot;;
+} else {
+  $str.=&quot;To get the miracle of the [Everything Daily Report], first you have to &lt;strong&gt;enable&lt;/strong&gt; it:&quot;;
+}
+
+;
+$str.'&lt;p&gt;'.$query-&gt;radio_group('set_wantsreport', ['0','1'],
+  $$USER{wantsreport}, 0, {'0'=&gt;'disabled', '1'=&gt;'enabled'})
+
+.&quot;
+&lt;p&gt;Once you've decided &lt;strong&gt;yes&lt;\/strong&gt;, you can filter out stuff you don't want in the report...
+&lt;p&gt;&quot;;
+%]
+[%
+return if getId($USER) == $HTMLVARS{guest_user};
+
+  my $str;
+
+  if (defined $query-&gt;param('set_emailNohtml')) {
+
+    $$VARS{emailNohtml} = $query-&gt;param('set_emailNohtml');
+  }
+  $str.=$query-&gt;radio_group(&quot;set_emailNohtml&quot;, ['0','1','2'],
+     $$VARS{emailNohtml}, 0, {'0' =&gt; &quot;full html&quot;, '1' =&gt; 'URLs and Titles', '2' =&gt; 'Node titles'});
+  $str;
+%]&lt;br&gt;
+
+[{varcheckbox:emailNostats, Don't give me Everything Statistics}]&lt;br&gt;
+[{varcheckbox:emailNonews, Don't give me New News}]&lt;br&gt;
+[{varcheckbox:emailNocools, Don't give me the 25 top rated cool writeups}]&lt;br&gt;
+[{varcheckbox:emailNoeditorcools, Don't give me the editor cool picks}]&lt;br&gt;
+[% #varcheckbox:emailNoreps, Don't give me rep changes on my writeups %]&lt;br&gt;
+[% my $str =&quot;
+&lt;p&gt;And if you would like, you can &lt;strong&gt;subscribe&lt;/strong&gt; to a few users' new writeups (just type a name in the box and [stumbit], or check to remove):
+&lt;p&gt;&quot;;
+
+# $$VARS{emailSubscribedusers} = &quot;&quot;;
+  return if ($$USER{title} eq 'everyone' or getId($USER)==$HTMLVARS{guest_user});
+  my @users = split (',', $$VARS{emailSubscribedusers});
+  my $maxusers = 25;
+
+  if (my $newuser = $query-&gt;param('adduser') and @users &lt; $maxusers) {
+#    $str.=&quot;$newuser&lt;br&gt;&lt;br&gt;&quot;;
+
+     #Bah, usernames don't need angle brackets, do they?
+     $newuser =~ s/\&lt;//g;
+     $newuser =~ s/\&gt;//g;
+
+     last unless $newuser;
+     my $U = getNode($newuser, 'user');
+     if ($U) {
+        push @users, getId($U);
+     } else {
+       $str.=&quot;&lt;br&gt;&lt;i&gt;Oh &lt;b&gt;poop&lt;/b&gt;.  I can't seem to find the user \&quot;$newuser\&quot;&quot;;
+     }           
+  }
+
+  $str.= '&lt;em&gt;No users currently subscribed&lt;/em&gt;' unless @users;
+  my @newusers;
+  my %usrhash;
+
+  foreach (@users) {
+    #$str.=&quot;$_&lt;br&gt;&lt;br&gt;&quot;;
+        if (defined $query-&gt;param(&quot;removeuser_$_&quot;)) {
+         next;
+      }
+      if (defined $usrhash{$_}) {
+       $str.=&quot;&lt;br&gt;didn't you already add &quot;.linkNode($_).&quot;?  I mean, they're not &lt;i&gt;that&lt;/i&gt; cool.&lt;br&gt;&quot;;
+       next;
+     } 
+
+      $usrhash{$_} = 1;
+      
+      push @newusers, $_;
+      $str.=&quot;&lt;br&gt;&quot;
+      . $query-&gt;checkbox(&quot;removeuser_$_&quot;, '', 1, '')
+      .linkNode($_, '', {lastnode_id =&gt; 0});   
+  }
+  $$VARS{emailSubscribedusers} = join (',', @newusers);
+
+  return $str.&quot;&lt;br&gt;&lt;i&gt;you have reached your maximum of $maxusers users&lt;/i&gt;&quot;.htmlcode('closeform') if @newusers &gt;=$maxusers;
+    
+  $str.=&quot;&lt;P&gt;add &lt;input type=textfield name=adduser value='' length=15 maxlength=40&gt; to your subscription&quot;; 
+
+  $str.'&lt;p&gt;'.htmlcode('closeform');
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-05-30 17:37:16</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>4500</hits>
+  <node_id>579988</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>579988</document_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>Everything Email Options</title>
+</node>

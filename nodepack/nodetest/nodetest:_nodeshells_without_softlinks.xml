@@ -1,0 +1,24 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nodetest_appliesto>116</nodetest_appliesto>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-06-02 19:34:58</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1312045</node_id>
+  <nodetest_active>1</nodetest_active>
+  <nodetest_id>1312045</nodetest_id>
+  <nodetest_code>my ($E2NODE) = @_;
+
+return &quot;y&quot; if(exists($$E2NODE{group}));
+my $links = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;links&quot;,&quot;from_node=$$E2NODE{node_id}&quot;);
+return &quot;y&quot; if $links &gt; 0; 
+return &quot;n&quot;;</nodetest_code>
+  <type_nodetype>1308757</type_nodetype>
+  <author_user>459692</author_user>
+  <nodetest_description>Nodeshells that don't have any softlinks. They are probably lost.</nodetest_description>
+  <package>0</package>
+  <title>nodetest: Nodeshells without softlinks</title>
+</node>

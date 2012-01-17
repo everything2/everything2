@@ -1,0 +1,34 @@
+<node>
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Thu Nov 24 03:07:24 2011&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Jostling Elders&quot; node_id=&quot;1991517&quot; parent_e2node=&quot;1037960&quot; author_user=&quot;OldMiner&quot;&gt;French Internet Acronyms&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;DonJaime&quot; node_id=&quot;1975781&quot; parent_e2node=&quot;1975780&quot; author_user=&quot;sam512&quot;&gt;Mike Murphy&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Oolong&quot; node_id=&quot;1989654&quot; parent_e2node=&quot;1988049&quot; author_user=&quot;DonJaime&quot;&gt;test test&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Oolong&quot; node_id=&quot;227005&quot; parent_e2node=&quot;227004&quot; author_user=&quot;Webster 1913&quot;&gt;Draft&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Jostling Elders&quot; node_id=&quot;1990930&quot; parent_e2node=&quot;1990599&quot; author_user=&quot;DonJaime&quot;&gt;unit testing&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;OldMiner&quot; node_id=&quot;1982960&quot; parent_e2node=&quot;1982959&quot; author_user=&quot;Swap&quot;&gt;Coding for E2: Finding the Code&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;OldMiner&quot; node_id=&quot;1990621&quot; parent_e2node=&quot;1990594&quot; author_user=&quot;puppet&quot;&gt;foobarbaz&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;OldMiner&quot; node_id=&quot;1682701&quot; parent_e2node=&quot;15431&quot; author_user=&quot;Webster 1913&quot;&gt;M&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;OldMiner&quot; node_id=&quot;1990993&quot; parent_e2node=&quot;15431&quot; author_user=&quot;Jostling Elders&quot;&gt;M&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;OldMiner&quot; node_id=&quot;1990930&quot; parent_e2node=&quot;1990599&quot; author_user=&quot;DonJaime&quot;&gt;unit testing&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Oolong&quot; node_id=&quot;1990930&quot; parent_e2node=&quot;1990599&quot; author_user=&quot;DonJaime&quot;&gt;unit testing&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;DonJaime&quot; node_id=&quot;1988389&quot; parent_e2node=&quot;1988388&quot; author_user=&quot;&quot;&gt;test writeup without valid author&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;DonJaime&quot; node_id=&quot;1990708&quot; parent_e2node=&quot;1990599&quot; author_user=&quot;puppet&quot;&gt;unit testing&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;DonJaime&quot; node_id=&quot;1990695&quot; parent_e2node=&quot;1990434&quot; author_user=&quot;puppet&quot;&gt;i no longer have a dog&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;DonJaime&quot; node_id=&quot;1982154&quot; parent_e2node=&quot;368049&quot; author_user=&quot;BlackPawn&quot;&gt;Suggestions for E2&lt;/cooled&gt;
+
+&lt;/COOLEDNODES&gt;</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-07-08 18:00:08</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1101708</node_id>
+  <edittime>2011-11-23 22:07:24</edittime>
+  <type_nodetype>451267</type_nodetype>
+  <document_id>1101708</document_id>
+  <author_user>220</author_user>
+  <package>0</package>
+  <title>Cool Nodes XML Ticker</title>
+</node>

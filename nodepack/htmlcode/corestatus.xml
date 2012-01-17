@@ -1,0 +1,29 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>30</node_id>
+  <htmlcode_id>30</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>return unless $$USER{title} eq 'root';
+
+my $str;
+
+if ($$NODE{core}) {
+  $str .=linkNode($NODE,&quot;remove&quot;, {&quot;$$NODE{type}{title}_core&quot; =&gt; &quot;0&quot;})
+     .&quot; from core&quot;;
+} else {
+  $str .=linkNode ($NODE, &quot;include&quot;, {&quot;$$NODE{type}{title}_core&quot; =&gt; 'R'})
+    .&quot; in core&quot;;
+
+}
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>113</author_user>
+  <package>0</package>
+  <title>coreStatus</title>
+</node>

@@ -1,0 +1,154 @@
+<node>
+  <doctext>[{openform}]
+[%
+my $str='';
+if($query-&gt;param('headforthehills')) {
+	delete $$VARS{customstyle};
+	return &quot;&lt;p&gt;Is that better? Perhaps you'd rather [style defacer|edit the style manually].&lt;/p&gt;&quot;;
+}
+
+if(length($$VARS{preferred_theme})&amp;&amp;($$VARS{preferred_theme}!=1854183)) {
+	$str.= &quot;\n&lt;p&gt;You are currently using the &quot;.linkNode($$VARS{preferred_theme}).&quot;. You'll need to &quot;.linkNode($NODE,'switch to the Zen theme',{switchToZen=&gt;'true'}).&quot; to use this page.&lt;/p&gt;&quot;.$query-&gt;checkbox('switchToZen', 0, '1', &quot;Switch to Zen.&quot;);
+}
+if($query-&gt;param('switchToZen')) {
+	delete $$VARS{preferred_theme};
+	getTheme();
+	$str.= &quot;Zen theme enabled.&quot;; 
+}
+if($query-&gt;param('skeletonize')) {
+	$$VARS{userstyle} =1931418;
+	$str.= &quot;Skeleton theme switched on.&quot;; 
+}
+
+if (!$query-&gt;param('puree')) {
+	 $str.= &quot;&lt;p&gt;This is a nice place to recycle your ekw preferences into a fresh new custom stylesheet!&quot;;
+	if (defined($$VARS{userstyle}) &amp;&amp; $$VARS{userstyle}!=1931418){
+		$str.=&quot;You should probably switch to [skeleton stylesheet] before doing this.&lt;/p&gt;&quot;.
+		$query-&gt;checkbox('skeletonize', 1, '1', &quot;Switch to [skeleton stylesheet].&quot;);
+	}
+	if (defined($$VARS{customstyle}) &amp;&amp; length($$VARS{customstyle})) {
+		$str .= &quot;&lt;p&gt;&lt;strong&gt;WARNING!&lt;/strong&gt; You already have a custom stylesheet. 
+		Using the Nice Friendly ekw Replicator will OVERWRITE your existing style.&lt;/strong&gt;&lt;/p&gt;&quot;;
+	}
+	
+	$str .= &quot;&lt;p&gt;&quot; . $query-&gt;submit('puree', 'Fire up that delightful little replicator thingamy') . '&lt;/p&gt;';
+	return $str;
+}
+
+my $css = &quot;
+
+/* These are the basic colours and fonts */
+body, div, p, th, td, li, dd {
+	background-color: &quot;. $$VARS{'ekw_bgcolor'} . &quot;;
+	font-size: &quot; . $$VARS{'ekw_textfontsize'} . &quot;;
+	font-family: &quot; . $$VARS{'ekw_textfont'} . &quot;;
+	color: &quot; . $$VARS{'ekw_textcolor'} . &quot;;
+} 
+
+/* These are headings */
+
+h1, h2, h3, h4 {
+	font-family: &quot;. $$VARS{'ekw_headingfont'} . &quot;;
+}
+
+/* links ... */
+a:link {
+	color: &quot;. $$VARS{'ekw_linkcolor'} . &quot;;	
+}
+
+a:visited {
+	color: &quot;. $$VARS{'ekw_vlinkcolor'} . &quot;;
+}
+
+a:active, a:hover {
+	color: &quot;. $$VARS{'ekw_alinkcolor'} . &quot;;
+}
+
+/* The title of the nodelet */
+
+.nodelet h2 {
+	color:  &quot;. $$VARS{'ekw_logomaintext'} . &quot;;
+	background-color: &quot;. $$VARS{'ekw_logobackground'} . &quot;;
+}
+
+/* The nodelet border colour should be the same as the nodelet title background */
+.nodelet {
+	border-color: &quot;. $$VARS{'ekw_logobackground'} . &quot;;
+	background-color: &quot;. $$VARS{'ekw_bgcolor'} . &quot;;
+}
+
+pre, tt {
+	font-size: &quot; . $$VARS{'ekw_monofontsize'} . &quot;;
+}
+
+.oddrow, #homenodeheader dt  {
+	background-color: &quot; . $$VARS{'ekw_oddrowcolor'} . &quot;;
+}
+
+
+/* Apply some ekw-ish styling to the New Writeups nodelet */
+
+#writeup_list span.writeupmeta {
+	background-color: &quot;. $$VARS{'ekw_bgcolor'} . &quot;;
+}
+
+#writeup_list li {
+	padding: 3px;
+}
+
+#writeup_list span.author a {
+	display: block;
+	text-align: center;
+	margin-bottom: 2px;
+	background-color: &quot; . $$VARS{'ekw_oddrowcolor'} . &quot;;
+}
+
+#writeup_list span.type {
+	text-align: right;
+}
+
+#writeup_list li a {
+	display: inline;
+	padding: 0;
+	border: 0;
+}
+
+#writeup_list span.writeupmeta a:link {
+	color: &quot;. $$VARS{'ekw_linkcolor'} . &quot;;
+}
+
+#writeup_list span.writeupmeta a:visited {
+	color: &quot;. $$VARS{'ekw_vlinkcolor'} . &quot;;
+}
+
+#writeup_list span.writeupmeta a:active, a:hover {
+	color: &quot;. $$VARS{'ekw_alinkcolor'} . &quot;;
+}
+
+&quot;;
+
+$$VARS{customstyle} = $css;
+
+$str = &quot;&lt;p&gt;Your old ekw settings have been recycled into a shiny new custom style. You should be seeing it now. 
+Perhaps you'd like to [style defacer|edit it] to make it perfect.&lt;/p&gt;&quot;;
+$str .= &quot;&lt;p style='background-color: white; color: black; font-size: 12px; font-family: sans-serif'&gt;&quot;;
+$str .= $query-&gt;submit('headforthehills', &quot;My screen is all messed up!&quot;) . &quot;&lt;/p&gt;&quot;;
+$str;
+%]
+
+[% $query-&gt;end_form %]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2006-12-24 16:43:42</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1960832</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1960832</document_id>
+  <author_user>974148</author_user>
+  <package>0</package>
+  <title>Nice Friendly ekw Replicator</title>
+</node>

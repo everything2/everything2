@@ -1,0 +1,517 @@
+<node>
+  <doctext>body div, p, th, td, li, dd {
+	font-family: Verdana;
+	font-size: 8pt;
+}
+
+h1 {
+	font-size: 130%;
+	font-weight: bold;
+        font-family: Palatino Linotype;
+}
+
+h2 {
+	font-size: 110%;
+	font-weight: bold;
+        font-family: Helvetica;
+}
+
+h3 {
+	font-size: 100%;
+	font-weight: bold;
+        font-family: Helvetica;
+}
+
+big {
+	font-size: 110%;
+}
+
+small {
+	font-size: 90%;
+}
+
+body { 
+	background: #FFFFFF; 
+	background-image: url(x);
+	background-repeat: no-repeat;
+	background-position: top left;
+}
+
+/*Basic structure: this is based on ALA's 'Holy Grail' design. */
+
+#header {
+	height: 49px;
+	width: 102%;
+	position: absolute;
+	top: 0;
+	left: 0;
+        background: #616D7E;
+        background-image: url(http://img521.imageshack.us/img521/1535/backgroundblahsi6.png);
+	background-repeat: no-repeat;
+}
+
+#wrapper {
+	padding-top: 40px;
+}
+
+#mainbody {
+	position: relative;
+	float: left;
+	width: 100%;
+}
+
+#sidebar {
+	position: relative;
+	float: left;
+	width: 188px;
+        padding: 5px;
+	background-image: url(http://img296.imageshack.us/img296/8069/e22tp3.png);
+}
+
+/*Nodelets on right*/
+
+#wrapper {
+	padding-right: 205px;	
+}
+
+#sidebar {
+	margin-right: -100%;
+	margin-left: 2px;
+}
+
+
+/*Nodelets on left*/
+/*
+#wrapper {
+	padding-left: 205px;	
+}
+
+#sidebar {
+	right: 205px;
+	margin-left: -100%;
+	border: 1px gray solid;
+}
+* html #left {
+  left: 200px;
+}
+
+/*end nodelet layout*/ 
+
+#footer {
+	clear: both;
+	width: 100%;
+	background-image: url(http://img296.imageshack.us/img296/8069/e22tp3.png);
+	background-repeat: repeat;
+	background-attachment: fixed;
+	text-align: center;
+}
+
+/* Colours, etc */
+
+body {
+	color: black;
+	background-color: white;
+        border-right-width: 1px;
+}
+
+a:link {
+	color: #6D7B8D;
+        text-decoration: none;
+}
+
+a:visited {
+	color: #6D7B8D;
+        text-decoration: none;
+}
+
+a:active, a:hover {
+	color: #6D7B8D;
+        text-decoration: underline;
+}
+
+
+
+/* specifics */
+
+pre {
+	display: block;
+	overflow: auto;
+	border: 1px gray solid;
+        background: #CCCCFF;
+}
+
+#e2logo {
+	float: left;
+	margin-left: 22px;
+	margin-top: 17.5px;
+}
+
+#metalinks {
+	margin: 2px;
+	padding:  0;
+	display: block;
+	clear: both;
+	text-align: center;
+	font-size: 8pt;
+}
+
+#metalinks li {
+	display: inline;
+	padding-right: 5px;
+        margin-left: 5px;
+}
+
+#e2logo a:link, #e2logo a:visited {
+	text-decoration: blink;      
+}
+
+#searchform {
+	width: 380px;
+	float: right;
+	text-align: right;
+	padding-top: 5px;
+}
+
+#searchform input {
+	float: left;
+	margin-top: 3px;
+}
+
+#searchform label {
+	display: block;
+	font-size: 7pt;
+	float: right;
+	clear: right;
+	text-align: left;
+	width: 110px;
+	margin-right: 3px;
+}
+
+#searchform label input {
+	margin: 1px;
+}
+
+
+.nodelet {
+	clear: both;
+	width: 190px;
+	padding: 2px;
+	word-wrap: break-word;
+	margin-bottom: 1px;
+	border-top: #616D7E;
+        border-left: #616D7E;
+        border-bottom: #6D7B8D;
+        border-right: #657383;
+        border: 1px solid;
+	padding-bottom: 10px;
+	background-color: #FFFFFF;
+}
+
+/* no clue */
+
+pre, tt {
+	font-size: 8pt;
+}
+
+/* odd colour sidebar rows */
+
+.oddrow, #homenodeheader dt  {
+	background-color: #dbdbdb;
+	border-top: 1px ridge;
+	padding-top: 2.5px;
+	padding-bottom: 2.5px;
+}
+
+/* sidebar headings, epicenter, new writeups, vitals.. */
+
+.nodelet h2 {
+	display: block;
+	margin: 1px;
+	font-size: 130%;
+	font-weight: bold;
+        font-family: Palatino Linotype;
+        border-bottom: 1px dashed;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.writeup {
+	border-bottom: 1px gray solid;
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+}
+
+.createdby {
+	text-align: right;
+}
+
+.writeup_title {
+}
+
+.writeup_text {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+#firmlink, #isalso {
+	font-size: 110%;
+	text-indent: 30px;
+}
+
+#votebutton, #blabbutton {
+	float: left;
+	border: 1px gray solid;
+}
+
+#killbutton {
+	float: right;
+}
+
+#msgnum {
+	margin: 0;
+	margin-bottom: 5px;
+}
+
+#msgunarchived {
+	font-weight: bold;
+}
+
+#homenodepicbox {
+	width: 50%;
+	float: left;
+	clear: left;
+	overflow: auto;
+	background: #FFFFFF; 
+	background-image: url(x);
+	background-repeat: no-repeat;
+	background-position: center right;
+	background-attachment: fixed;
+}
+
+#homenodeheader {
+	clear: both;
+}
+
+#homenodeheader dl {
+	display: block;
+	width: 50%;
+	float: right;
+	clear: right;
+	margin: 0;
+}
+
+#homenodeheader dt {
+	display: block;
+	background-color: #dbdbdb;
+	padding: 2.5px;
+}
+
+#homenodeheader dd {
+	margin: 0;
+	text-align: right;
+	padding: 2.5px;
+}
+
+hr.clear {
+	clear: both;
+	visibility: hidden;
+}
+
+textarea {
+        width: 100%;
+	border: 1px gray solid;	
+}
+
+#announcements {
+visibility: hidden;
+position: absolute;
+}
+
+headerepicenter {
+        position: absolute;
+        top: 10px;
+        left: 300px;
+	background-image: url(x);
+}
+
+#writeup_list {
+	list-style-type: none;
+	padding: 0;
+	border: 1px gray solid;
+}
+
+#writeup_list li {
+	clear: both;
+	word-wrap: break-word;
+	border: 1px gray solid;
+}
+
+#writeup_list span.writeupmeta {
+	display: block;
+	text-align: center;
+	padding: 2.5px;
+	clear: both;
+	background-color: #dbdbdb;	
+	color: white;
+	margin: 0 -1px;
+	border: 1px gray solid;
+}
+
+#writeup_list span.writeupmeta a:link, #writeup_list span.writeupmeta 
+
+a:visited {
+	color: white;
+}
+
+
+#writeup_list span.type {
+	font-size: 90%;
+	display: block;
+	text-align: right;
+	word-wrap: no-wrap;
+	margin-bottom: 1px;
+	clear: right;
+}
+
+#writeup_list span.title {
+	float: left;
+	display: block;
+	clear: left;
+	margin-bottom: 1px;
+}
+
+#writeup_list span.author {
+}
+
+#writeup_list span.hidden, #writeup_list span.hide {
+	font-size: 85%;
+	margin-left: 3px;
+}
+
+big big big {
+font-size: inherit;
+	border: 1px gray solid;
+}
+
+/* cool user picks */
+
+#cooluserpicks {
+	float: left;
+	width: 188px;
+        border: 1px #616D7E solid;
+	padding: 5px;
+        padding-bottom: 5px;
+	background: #FFFFFF; 
+	background-image: url(x);
+	background-repeat: no-repeat;
+	background-position: bottom right;
+	background-attachment: fixed;
+}
+
+/* cool user picks heading to content spacing and footer to content spacing */
+
+#cooluserpicks ul {
+	margin: 0px;
+	padding-top: 5px;
+}
+
+/* cool user picks heading */
+
+#cooluserpicks h3 {
+	background-image: url(x);
+	background-repeat: no-repeat;
+	text-align: left;
+	font-size: 130%;
+	font-weight: bold;
+        font-family: Palatino Linotype;
+	margin: 0px;
+	height: 15px;
+	width: 190px;	
+        border-bottom: 1px dashed;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+/* cool user pick inside table */
+
+#cooluserpicks ul li {
+	list-style-type: none;
+        border-bottom: 1px ridge;
+        text-align: center;
+	padding: 5px;
+}
+
+/* Header in Cream of the Cool */
+
+#creamofthecool h2 {
+        visibility: hidden;
+        position: absolute;
+}
+
+/* Headings in Cream of the Cool */
+
+.cotc_info {
+	padding: 4.5px;
+	font-size: 130%;
+	font-weight: bold;
+        font-family: Palatino Linotype;
+	background-color: #dbdbdb;
+	border-top: 1px ridge;
+}
+
+/* cream of the cool content */
+
+.cotc_entry {
+	padding-top: 5px;
+        padding-bottom: 5px;
+}
+
+/* The Welcome Message */
+#welcome_message {
+        visibility: hidden;
+}
+
+/* Header in News for Noders */
+#frontpage_news h2 {
+	font-size: 130%;
+	font-weight: bold;
+        font-family: Palatino Linotype;
+	border-top: 1px solid;
+	padding-top: 2.5px;
+	padding-bottom: 2.5px;
+        padding-left: 2.5px;
+}
+
+/* News for Noders */
+
+#frontpage_news { 
+	border: 0px dashed;
+}
+
+.oddrow, #frontpage_news dt {
+	background-color: #dbdbdb;
+}
+
+/* Header in News for Noders */
+#frontpage_news h3 {
+	border: 0px dashed;
+}
+
+#staff_picks {
+        font-family: Verdana;
+} </doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-08-18 01:10:01</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1904432</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1854352</type_nodetype>
+  <document_id>1904432</document_id>
+  <author_user>1848187</author_user>
+  <package>0</package>
+  <title>the goodnight star backdrop</title>
+</node>

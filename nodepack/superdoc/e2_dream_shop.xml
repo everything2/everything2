@@ -1,0 +1,85 @@
+<node>
+  <doctext>[%
+use Everything::Experience;
+
+return &quot;&lt;p&gt;[Dreamvirus|I'm] working on this...just walk away before we both say something we regret.&lt;/p&gt;&quot; unless $$USER{title} eq 'Dreamvirus';
+
+my $str = &quot;&lt;p align=\&quot;center\&quot;&gt;&lt;big&gt;&lt;strong&gt;Welcome to the E2 Dream Shop!&lt;/strong&gt;&lt;/big&gt;&lt;/p&gt;&quot;;
+
+my $isHalloween = 0;
+if ($isHalloween) {
+  $str.=&quot;&lt;p align=\&quot;center\&quot;&gt;Check out our [The Costume Shop|sister store]!&lt;/p&gt;&quot;;
+}
+
+return &quot;&lt;p align=\&quot;center\&quot;&gt;You have opted out of the GP system, so I'm afraid your credit is no good here. Come back if you change your mind.&lt;/p&gt;&quot; if ($$VARS{GPoptout});
+
+## Start Shop Build
+my $userLevel = getLevel($USER);
+
+# my @elements = (&quot;title&quot;, &quot;minlevel&quot;, &quot;cost&quot;, &quot;text1&quot;, &quot;text2&quot;);
+my @sanctify = (&quot;[Sanctify User]&quot;, 11, 10, &quot;&quot;, &quot;&quot;);
+my @buyVotes = (&quot;Buy Votes&quot;, 2, 1, &quot;&lt;p&gt;How many? &quot;. $query-&gt;textfield('numVotes').&quot;&lt;br /&gt;&quot;, &quot;&quot;);
+my @giftVotes = ();
+my @giftChing = ();
+my @buyChing = ();
+my @buyToken = ();
+my @setTopic = ();
+my @buyEgg = ();
+my @giftEgg = ();
+
+my @shop = ( \@sanctify, \@buyVotes );
+
+my $minLevel = 0;
+my $title = &quot;&quot;;
+my $curGP = $$USER{GP};
+my $cost = 0;
+my $cellsInRow=0;
+my $text1 = &quot;&quot;;
+my $text2 = &quot;&quot;;
+
+$str.= &quot;&lt;hr width=\&quot;50%\&quot;&gt;&lt;p align=\&quot;center\&quot;&gt;&lt;b&gt;Self Eggsamination&lt;/b&gt;&lt;/p&gt;&quot;;
+
+if ($$VARS{GPoptout}){
+   $str.=&quot;&lt;p align=\&quot;center\&quot;&gt;You currently have &lt;b&gt;&quot;.($$VARS{easter_eggs}||&quot;0&quot;).&quot;&lt;/b&gt; easter egg&quot;.($$VARS{easter_eggs} == 1 ? &quot;&quot; :&quot;s&quot;).&quot; and &lt;b&gt;&quot;.($$VARS{tokens}||&quot;0&quot;).&quot;&lt;/b&gt; token&quot;.($$VARS{tokens} == 1 ? &quot;&quot; :&quot;s&quot;).&quot;.&lt;/p&gt;&quot;;
+} else {
+   $str.=&quot;&lt;p align=\&quot;center\&quot;&gt;You currently have &lt;b&gt;&quot;.$$USER{GP}.&quot; GP&lt;/b&gt;, &lt;b&gt;&quot;.($$VARS{easter_eggs}||&quot;0&quot;).&quot;&lt;/b&gt; easter egg&quot;.($$VARS{easter_eggs} == 1 ? &quot;&quot; :&quot;s&quot;).&quot;, and &lt;b&gt;&quot;.($$VARS{tokens}||&quot;0&quot;).&quot;&lt;/b&gt; token&quot;.($$VARS{tokens} == 1 ? &quot;&quot; :&quot;s&quot;).&quot;.&lt;/p&gt;&quot;;
+}
+
+$str.=&quot;&lt;p align=\&quot;center\&quot;&gt;&lt;table width=\&quot;90%\&quot;&gt;&lt;tr&gt;&quot;;
+
+foreach my $shop (@shop) {
+  $minLevel = @$shop-&gt;[1];
+  $cost = @$shop-&gt;[2];
+  $title = @$shop-&gt;[0];
+  if ($userLevel &gt;= $minLevel) {
+    if ($cellsInRow==4){$str.=&quot;&lt;/tr&gt;&lt;tr&gt;&quot;; $cellsInRow=0;}
+    $str.= &quot;&lt;td align=\&quot;center\&quot;&gt;&lt;div style=\&quot;margin:0.5em; padding:0.5em; border:1px solid #555\&quot;&gt;&quot;;
+    $str.=&quot;&lt;p&gt;$title&lt;/p&gt;&quot;.@$shop-&gt;[3].@$shop-&gt;[4];
+    $str.=&quot;&lt;/div&gt;&lt;/td&gt;&quot;;
+    $cellsInRow++;
+  }
+}
+
+$str.=&quot;&lt;/tr&gt;&lt;/table&gt;&lt;/p&gt;\n&quot;;
+
+# FORM STUFF HERE
+
+return $str;
+
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2007-03-20 18:04:40</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1964529</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1964529</document_id>
+  <author_user>974148</author_user>
+  <package>0</package>
+  <title>E2 Dream Shop</title>
+</node>

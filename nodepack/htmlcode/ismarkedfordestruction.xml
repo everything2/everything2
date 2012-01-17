@@ -1,0 +1,31 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-10-23 11:41:12</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1990530</node_id>
+  <htmlcode_id>1990530</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $check_wu = shift;
+my $wu_id = int(getId($check_wu));
+my $noderow = getId(getNode('node row', 'superdoc')) ;
+
+my ($kuid, $unkuid) =
+  $DB-&gt;sqlSelect(
+    'linkedby_user, removedby_user', 'weblog'
+    , &quot;weblog_id=$noderow and to_node=$wu_id&quot;
+  );
+$kuid ||= 0;
+$unkuid ||= 0;
+
+return 1 if ($kuid &amp;&amp; !$unkuid);
+return 0;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>isMarkedForDestruction</title>
+</node>

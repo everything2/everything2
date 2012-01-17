@@ -1,0 +1,149 @@
+<node>
+  <core>R</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-04 00:14:11</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>2</hits>
+  <node_id>182</node_id>
+  <htmlcode_id>182</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>no strict;
+use Everything::XML;
+my @modules = (
+	'Everything',
+	'Everything::XML',
+	'Everything::NodeBase',
+	'Everything::Experience',
+	'Everything::HTML'
+);
+my $str;
+
+my $showHTMLCODE = $$VARS{scf_nohtmlcode} ? 0 : 1;	#must be 0 or 1
+
+if(not $query-&gt;param('choicefunc')) {
+	my %funcs;
+	my $rows = 0;
+	$str .= '&lt;table&gt;&lt;tr&gt;';
+
+	my $colwidth = int (100/(int(@modules)+$showHTMLCODE)) .'%';
+	foreach my $modname (@modules) {
+		local *stash;
+		*stash = *{ &quot;${modname}::&quot; };
+		my @modfuncs;
+		foreach(keys %stash) {
+			push (@modfuncs, $_) if (defined &amp;{ $stash{$_} } and ($modname eq 'Everything' or not exists $Everything::{$_})) ;
+		}
+		@modfuncs = sort {$a cmp $b} @modfuncs;
+		$funcs{$modname} = \@modfuncs;
+		$rows = int(@modfuncs) if $rows &lt; int(@modfuncs);
+		$str.='&lt;th width=&quot;'.$colwidth.'&quot;&gt;'.$modname.'&lt;/th&gt;';
+	}
+
+	if($showHTMLCODE) {
+		$str.=&quot;&lt;th width=\&quot;$colwidth\&quot;&gt;HTMLCODE&lt;/th&gt;\n&quot;;
+		my @HTMLCODE = $DB-&gt;getNodeWhere({1=&gt;1}, $DB-&gt;getType('htmlcode'), 'title ASC', 'light');
+#		@HTMLCODE = sort {$a cmp $b} @HTMLCODE;
+		$funcs{htmlcode}= \@HTMLCODE;
+		$rows=int(@HTMLCODE) if $rows &lt; @HTMLCODE;
+	}
+
+	$str .= &quot;&lt;/tr&gt;\n&quot;;
+
+	my $count=0;
+	while($count &lt; $rows) {
+		$str.='&lt;tr&gt;';
+		foreach(@modules) {
+			$str.= '&lt;td&gt;';
+			$str.=linkNode($NODE, $funcs{$_}[$count], {
+				choicefunc =&gt; $funcs{$_}[$count],
+				lastnode_id=&gt;0
+			}) if (int (@{ $funcs{$_} }) &gt; $count);
+			$str.='&lt;/td&gt;';
+		}
+		$str.='&lt;td&gt;';
+		$str.= linkNode($funcs{htmlcode}[$count]) if $count &lt; @{ $funcs{htmlcode} };
+		$str.=&quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+		$count++;
+	}  
+
+	return $str.='&lt;/table&gt;';
+}
+
+#else, we have have a specific function to display
+$str.= 'or go back to the code '.linkNode($NODE, 'index');
+my $choicefunc = $query-&gt;param('choicefunc');
+my $parentmod = '';
+
+foreach my $modname (@modules) {
+	next if $parentmod;
+	local *stash;
+	*stash = *{ &quot;${modname}::&quot; };
+	if (exists $stash{$choicefunc}) {
+		$parentmod=$modname;
+	}
+}
+unless($parentmod) {
+        $choicefunc =~ s/&lt;/\&amp;lt\;/g;
+        $choicefunc =~ s/&gt;/\&amp;gt\;/g;
+	return &quot;&lt;em&gt;Sorry, man.  No dice on $choicefunc&lt;/em&gt;.&lt;br /&gt;\n&quot;; 
+}
+
+
+my $parentfile;
+my @mod;
+
+foreach (@INC)
+{
+   $parentfile = &quot;$_\/&quot;.$parentmod.&quot;.pm&quot;;
+   $parentfile =~ s/\:\:/\//g;
+   open MODULE, $parentfile or next;
+   @mod = &lt;MODULE&gt;;
+   close MODULE;
+   last;
+}
+
+
+if (@mod) {
+	$str.= &quot;module $parentmod loaded: &quot;.int(@mod).&quot; lines\n&quot;;
+} else {
+	$str.= &quot;hmm. couldn't load modules $parentfile\n&quot;;
+}
+
+my $count = 0;
+my @lines;
+my $fullText = '';
+while(@mod &gt; $count and not @lines) {
+	$fullText .= $mod[$count];
+	if($mod[$count] =~ /^sub $choicefunc\s*/) {
+
+		my $i = $count;
+		my $flag;
+		do {
+			$i--;
+			$mod[$i]=~/\s*(\S)/;
+
+			$flag = (not defined $1 or $1 eq '#');
+		} while($i &gt; 0 and $flag);
+		do {
+			$i++;
+			push @lines, $mod[$i];
+		} while (not ($mod[$i] =~ /^\}\s*$/ ));
+
+	}
+	$count++;
+}
+
+if (@lines) {
+	$str.= listCode(join('', @lines));
+} else {
+	$str = listCode($fullText);
+}
+$str;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>113</author_user>
+  <package>0</package>
+  <title>showChoiceFunc</title>
+</node>

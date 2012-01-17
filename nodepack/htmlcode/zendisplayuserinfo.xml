@@ -1,0 +1,293 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-06-09 07:50:30</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>12</hits>
+  <node_id>1873630</node_id>
+  <htmlcode_id>1873630</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#this to deprecates displaySingleVar - instead of many calls to that, only 1 call is needed to this, displayUserInfo
+#updated: Thursday, June 13, 2002
+
+
+my @showThings = (
+	'msgalias',
+	'createtime',
+	'last',
+	'nwriteups',
+	'recentwriteups',
+	'level',
+	'gp',
+	'coolsspent',
+	'mission',
+	'specialties',
+	'employment',
+	'motto',
+	'groups',
+	'categories',
+	'lastnoded',
+	'presents',
+	'skratchshare',
+	'manip',
+	'msgme',
+	'msgyou',
+);
+
+my @noHTMLSCREEN = ('nwriteups', 'coolsspent', 'level');
+
+#only works when called from a user node
+#FIXME? should we abort for locked users? maybe just certain things?
+return unless ($$NODE{type_nodetype}==getId(getType('user')));
+
+#constants
+my $UID = getId($USER);
+my $isGuest = ($UID==$HTMLVARS{'guest_user'});
+my $nid = getId($NODE);
+my $isRoot = exists($HTMLVARS{'group_gods'}{$$USER{user_id}});
+my $isMe = (!$isGuest) &amp;&amp; ($nid==$UID);
+my $isEd = htmlcode('isEditor');
+my $isChanop = htmlcode('isinUsergroup', $USER, 'chanops', 'recurse');
+my $SETTINGS = getVars $NODE;
+
+#display
+my $textPre;
+my $textMid;
+my $textPost;
+	$textPre = '&lt;dt&gt;';
+	$textMid = '&lt;/dt&gt;&lt;dd&gt;';
+	$textPost = &quot;&lt;/dd&gt;\n&quot;;
+
+local *hash2var = sub {
+my $hash_ref = $_[0];
+my $str;
+while ( my ($key, $value) = each(%$hash_ref) ) {
+        $str.= &quot;$key=&gt;$value|||&quot;;
+    }
+
+$str = substr($str,0,-3);
+
+return $str;}
+;
+
+local * var2hash = sub {
+my ($str2) = @_;
+my @split2 = split(/\|\|\|/,$str2);
+my ($tstr, $hash, @temp);
+foreach (@split2) {
+  @temp = split(/\=\&gt;/, $_);
+
+  $$hash{$temp[0]} = $temp[1];
+}
+
+return $hash;}
+;
+
+local *info_groups = sub {
+	return if $$VARS{hidehomenodeUG} ;
+#        return unless($HTMLVARS{'group_gods'}{$$NODE{node_id}} || $HTMLVARS{'group_content editors'}{$$NODE{node_id}});
+	return htmlcode('showUserGroups','').(($HTMLVARS{'group_gods'}{$$NODE{node_id}} || $HTMLVARS{'group_content editors'}{$$NODE{node_id}})?(&quot; - &quot;.linkNode(getNode(&quot;Editor Endorsements&quot;,&quot;superdoc&quot;),&quot;My Endorsements&quot;,{editor=&gt;$$NODE{node_id}})):(''));
+#return &quot;&quot;;
+};
+
+local *info_categories = sub {
+	return if $$VARS{hidehomenodeUC} ;
+	return htmlcode('showUserCategories');
+};
+
+local *info_msgalias = sub {
+	#jb says: same as in [usercheck]
+	my $cf = getVars(getNode('chatterbox forward', 'setting'));
+	my $retstr = '';
+	return unless($$cf{lc($$NODE{title})});
+
+	my $ptr = $$cf{lc($$NODE{title})};
+	my $tousr = getNode($ptr, 'user');
+	unless($tousr)
+	{
+		$ptr =~ s/_/ /g;
+		$tousr = getNode($ptr, 'user')||getNode($ptr, 'usergroup');
+	}
+	return unless $tousr;
+	return linkNode($tousr);
+
+};
+
+local *info_lastnoded = sub {
+	return if $$VARS{hidelastnoded};
+	my $n = $$NODE{title};
+	return if ($n eq 'EDB') || ($n eq 'Klaproth') || ($n eq 'Cool Man Eddie') || ($n eq 'Webster 1913');
+
+	my $lastnoded = getNodeById($$SETTINGS{lastnoded});
+	return unless($lastnoded);
+	my $parentnode = getNodeById($$lastnoded{parent_e2node});
+
+	return linkNode($lastnoded, $$parentnode{title});
+
+};
+
+local *info_skratchshare = sub {
+	return if $isGuest;
+	return linkNode(getNode('Drafts', 'superdoc'), 'Your drafts')
+		if ($$USER{node_id} == $$NODE{node_id});
+	return linkNode(getNode('Drafts', 'superdoc'), &quot;$$NODE{title}'s drafts&quot;,
+		{other_user =&gt; $$NODE{title}});
+};
+
+local *info_manip = sub {
+	return unless $isEd || $isChanop;
+	return htmlcode('editor homenode tools');
+};
+
+local *info_gp = sub {
+        return if $isGuest;
+        return unless($isMe or $isRoot);
+        return if ((exists $$VARS{GPoptout})&amp;&amp;(defined $$VARS{GPoptout}));
+        return $$NODE{GP};
+};
+
+local *info_recentwriteups = sub{
+    return unless $$SETTINGS{showrecentwucount};
+    my $recentwriteups = htmlcode('writeupssincelastyear',$nid);
+    $recentwriteups = '&lt;em&gt;none!&lt;/em&gt;' unless $recentwriteups; 
+    return $recentwriteups;
+};
+
+local *info_msgme = sub {
+	return '&lt;div id=&quot;userMessage&quot;&gt;'.htmlcode('messageBox',$$NODE{node_id},1).'&lt;/div&gt;';
+};
+
+local *info_msgyou = sub {
+	return if $isGuest;
+	return if $$VARS{hidemsgyou};
+	return unless my $nummsgs = $DB-&gt;sqlSelect('count(*)', 'message', &quot;for_user=$$USER{node_id} and author_user=$$NODE{node_id}&quot;);
+	return linkNode(getNode('message inbox', 'superdoc'), &quot;$nummsgs messages&quot;,{ fromuser =&gt; $$NODE{title} });
+
+};
+
+local *info_last = sub {
+	return if $$SETTINGS{hidelastseen} &amp;&amp; !$isEd;
+	my $tmp = htmlcode('timesince',$$NODE{lasttime});
+	$tmp = defined($tmp) ? (' ('.$tmp.')') : '';
+	return htmlcode('parsetime','lasttime') . $tmp;
+};
+
+local *info_usersince = sub {
+
+	my $tmp = htmlcode('timesince',$$NODE{createtime});
+	$tmp = defined($tmp) ? (' ('.$tmp.')') : '';
+	return htmlcode('parsetime','createtime') . $tmp;
+};
+
+local *info_presents = sub {
+	return unless $isMe;
+	return if $$VARS{hidevotedata};
+	#thanks to epicenter nodelet, vote opcode, and {voting/experience system}
+	my $v = $$USER{votesleft} || 0;
+	my $c = $$VARS{cools} || 0;
+	my $VOTES = getVars(getNode('level votes', 'setting')) || 0;
+	my $COOLS = getVars(getNode('level cools', 'setting')) || 0;
+	use Everything::Experience;
+	my $lvl = getLevel($USER) || 0;
+	my $tV = $VOTES ? $$VOTES{$lvl} : 0; $tV = 0 if $tV eq 'NONE';
+	my $tC = $COOLS ? $$COOLS{$lvl} : 0; $tC = 0 if $tC eq 'NONE';
+	return '&lt;strong&gt;'.$v.'&lt;/strong&gt;&lt;small&gt; / '.$tV.'&lt;/small&gt; votes &amp;nbsp; | &amp;nbsp; &lt;strong&gt;'.$c.'&lt;/strong&gt;&lt;small&gt; / '.$tC.'&lt;/small&gt; C!s';
+};
+
+local *infoDefault = sub {
+	my $k = $_[0] || '';
+#	if ($$USER{user_id} == 1312198) {
+#		my $var = getVars $NODE;
+#		my $hn = var2hash($$var{homenode});
+#		if (!$$hn{$k}) {
+#			 $$hn{$k} = $$SETTINGS{$k} ? $$SETTINGS{$k} : $$NODE{$k};
+#		}
+##		$$var{homenode} = hash2var($hn);
+#		setVars($NODE, $var);
+#
+#		my $v = htmlScreen($$hn{$k}) unless grep /$k/, @noHTMLSCREEN;
+#		return parseLinks($v);
+#	}
+	my $v = $$SETTINGS{$k} ? $$SETTINGS{$k} : $$NODE{$k};
+	$v = htmlScreen($v) unless grep /$k/, @noHTMLSCREEN;
+	return parseLinks($v);
+};
+
+#titles of info things to display
+my %prettyTitles = (
+	createtime=&gt;'user since',
+	last=&gt;'last seen',
+	nwriteups=&gt;'number of write-ups',
+  recentwriteups=&gt;'number of write-ups within last year',
+	level=&gt;'level / experience',
+        gp=&gt;'GP',
+	mission=&gt;'mission drive within everything',
+	specialties=&gt;'specialties',
+	employment=&gt;'school/company',
+	motto=&gt;'motto',
+	groups=&gt;'member of',
+	categories=&gt;'categories maintained',
+	lastnoded=&gt;'most recent writeup',
+#	msgme=&gt;'/msg me',	#set for each user, below
+	msgyou=&gt;'/msgs from me',
+	skratchshare=&gt;'notes to self',
+	msgalias=&gt;'is a chatterbox forward for',
+	manip=&gt;'manipulation',
+	coolsspent=&gt;'C!s spent',
+	presents=&gt;'your daily votes and C!s',
+);
+if($isMe) {
+	$prettyTitles{msgme} = '/msg yourself';
+	$prettyTitles{msgyou} = 'talking to yourself';
+} else {
+	my $t=$$NODE{title};
+	$t=~tr/ /_/;
+	$prettyTitles{msgme} = 'Send private message to '.$$NODE{title};
+}
+
+my %specialDisplays = (
+	msgalias=&gt;\&amp;info_msgalias,
+	last=&gt;\&amp;info_last,
+	groups=&gt;\&amp;info_groups,
+	categories=&gt;\&amp;info_categories,
+	recentwriteups=&gt;\&amp;info_recentwriteups,
+  gp=&gt;\&amp;info_gp,
+	msgme=&gt;,\&amp;info_msgme,
+	msgyou=&gt;,\&amp;info_msgyou,
+	presents=&gt;\&amp;info_presents,
+	lastnoded=&gt;\&amp;info_lastnoded,
+	skratchshare=&gt;\&amp;info_skratchshare,
+	manip=&gt;\&amp;info_manip,
+);
+unless(($nid==220) ||($nid==322)) {	#hack around nate and hemos
+	$specialDisplays{'createtime'} = \&amp;info_usersince;
+}
+
+#build result
+my $str = '';
+my $locker = getNodeById($$NODE{acctlock});
+$str .= '&lt;big&gt;&lt;strong&gt;Account locked&lt;/strong&gt;&lt;/big&gt; by '.linkNode($locker).'&lt;br&gt;' if((exists($HTMLVARS{'group_content editors'}{$UID}) || exists($HTMLVARS{'group_gods'}{$UID})) &amp;&amp; $$NODE{acctlock} != 0);
+my $t; #nice Title
+my $s; #which Sub to call
+my $r; #Result of sub call
+
+$str .=  qq'&lt;dl id=&quot;userinfo&quot;&gt;\n';
+
+foreach my $k (@showThings) {
+	$t = $prettyTitles{$k} || $k;
+	$s = $specialDisplays{$k} || \&amp;infoDefault; #TODO generate function by title name, if doesn't exist, do default stuff
+	$r = &amp;$s($k);
+	if($r) { $str .= $textPre . $t . $textMid . $r . $textPost; }
+}
+$str .=  &quot;&lt;/dl&gt;\n&quot;;
+
+$str;
+
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>zenDisplayUserInfo</title>
+</node>

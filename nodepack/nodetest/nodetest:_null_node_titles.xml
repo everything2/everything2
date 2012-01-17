@@ -1,0 +1,27 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <nodetest_appliesto>0</nodetest_appliesto>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-06-24 03:30:31</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1321948</node_id>
+  <nodetest_active>1</nodetest_active>
+  <nodetest_id>1321948</nodetest_id>
+  <nodetest_code>my ($NODE) = @_;
+
+if(not exists($$NODE{title}) or $$NODE{title} eq &quot;&quot; or &quot;$$NODE{title}&quot; eq &quot;0&quot; or &quot;$$NODE{title}&quot; eq &quot; &quot;)
+{
+  $$NODE{title} = &quot;Damaged node - $$NODE{type}{title} - id: $$NODE{node_id}. Please report this error. (nodetest sweep)&quot;;
+  updateNode($NODE, -1);
+  return &quot;f&quot;;
+}
+  return &quot;y&quot;;</nodetest_code>
+  <type_nodetype>1308757</type_nodetype>
+  <author_user>459692</author_user>
+  <nodetest_description>Makes sure there aren't null node titles that trip us up. Applies to all nodes</nodetest_description>
+  <package>0</package>
+  <title>nodetest: null node titles</title>
+</node>

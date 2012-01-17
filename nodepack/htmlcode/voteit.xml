@@ -1,0 +1,138 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-03-07 15:46:16</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>132</hits>
+  <node_id>444186</node_id>
+  <htmlcode_id>444186</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>return if $$USER{user_id} == $HTMLVARS{guest_user} ;
+my ( $N , $showwhat ) = @_ ;
+$N ||= $NODE ;
+getRef( $N ) ;
+
+my $isEditor = htmlcode( 'isEditor' ) ;
+return $isEditor ? 'no writeup' : '' unless $N and $$N{writeup_id} || $$N{draft_id};
+
+$showwhat ||= 7 ; #1: kill only; 2: vote only; 3: both
+
+my $n = $$N{node_id} ;
+my $votesettings = getVars(getNode('vote settings','setting')) ;
+my $isMine = $$USER{user_id}==$$N{author_user};
+
+my $author = getNodeById( $$N{author_user} );
+$author = $query -&gt; escapeHTML($$author{title}) if $author;
+
+my $edstr;
+
+if ($showwhat &amp; 1 and $isEditor || $isMine || $$N{type}{title} eq 'draft') { # admin tools
+	$edstr .= htmlcode(&quot;$$N{type}{title}tools&quot;, $N);
+}
+
+return $edstr unless $$N{type}{title} eq 'writeup' and $showwhat &amp; 2 ;
+
+my $uplbl = $$votesettings{upLabel} || 'up' ;
+my $dnlbl = $$votesettings{downLabel} || 'down' ;
+my $nolbl = $$votesettings{nullLabel} || 'none';
+
+my $novotereason ;
+$novotereason = 'this writeup is a definition' if $$N{wrtype_writeuptype} eq getId(getNode('definition', 'writeuptype')) ;
+$novotereason = 'voting has been disabled for this writeup' if htmlcode('flagged',$n.',unvotable');
+
+foreach (values %HTMLVARS) {
+	if ($$N{parent_e2node} eq $_) {
+		$novotereason = 'this is a maintenance node' ;
+		last ;
+	}
+}
+
+my $votestr = '&amp;nbsp; ' if $edstr ;
+my $prevvote = $isMine ? 0 : $DB-&gt;sqlSelect('weight', 'vote', 'vote_id='.$n.
+	' and voter_user='.$$USER{user_id}) || 0;
+
+$votestr .= &quot;&lt;span id=\&quot;voteinfo_$n\&quot; class=\&quot;voteinfo\&quot;&gt;&quot; ;
+if ( $isMine || $prevvote and !$novotereason ) { # show votes cast
+	my $uv ;
+	my $r = $$N{reputation} || 0;
+	my ($p) = $DB-&gt;sqlSelect('count(*)', 'vote', &quot;vote_id=$n AND weight&gt;0&quot;);
+	my ($m) = $DB-&gt;sqlSelect('count(*)', 'vote', &quot;vote_id=$n AND weight&lt;0&quot;);
+
+	#Hack for rounding, add 0.5 and chop off the decimal part.
+	my $rating = int(100*$p/($p+$m) + 0.5) if ($p || $m);
+	$rating ||= 0 ;
+	$rating .= '% of '.($p+$m).' votes' ;
+
+    # mark up voting info
+	$p = '+'.$p;
+	$m = '-'.$m;
+	if ($prevvote&gt;0) {
+		$uv='+';
+		$p = '&lt;strong&gt;'.$p.'&lt;/strong&gt;';
+	} elsif ($prevvote&lt;0) {
+		$uv='-';
+		$m = '&lt;strong&gt;'.$m.'&lt;/strong&gt;';
+	} else {
+		$uv='?';
+	}
+	$r = '&lt;strong&gt;'.$r.'&lt;/strong&gt;' if $query-&gt;param('vote__'.$n);
+
+	$votestr .= '&lt;span class=&quot;votescast&quot; title=&quot;'.$rating.'&quot;&gt;&lt;abbr title=&quot;reputation&quot;&gt;Rep&lt;/abbr&gt;: '.$r.' ( '.$p.' / '.$m.' )' .
+		' (&lt;a href=&quot;/node/superdoc/Reputation+Graph?id='.$n.'&quot; title=&quot;graph of reputation over time&quot;&gt;Rep Graph&lt;/a&gt;)';
+    $votestr .= ' ('.$uv.') ' unless $isMine;
+	$votestr .= '&lt;/span&gt;' ;
+}
+
+unless ( $isMine ) {
+	$novotereason = ' unvotable&quot; title=&quot;'.$novotereason if $novotereason ;
+	$votestr.=&quot;&lt;span class=\&quot;vote_buttons$novotereason\&quot;&gt;&quot;;
+	if ( $novotereason ) {
+		$votestr .= '(unvotable)' ;
+	} elsif ($$USER{votesleft}) {
+		$votestr .= 'Vote:' unless $votestr =~ /votescast/ ;
+		my @values = ( 1 , -1 ) ;
+		push( @values , 0 ) if $$VARS{nullvote} &amp;&amp; $$VARS{nullvote} ne 'off' ; #'off' for legacy
+		my %labels = ( 1 =&gt; $uplbl , -1 =&gt; $dnlbl , 0 =&gt; $nolbl ) ;
+		my $confirm = 'confirm' if $$VARS{votesafety};
+		my $replace = 'replace ' unless $$VARS{noreplacevotebuttons};
+		my $clas = $replace.&quot;ajax voteinfo_$n:voteit?$confirm\op=vote&amp;vote__$n=&quot; ;
+		my $ofauthor = $$VARS{anonymousvote} == 1 &amp;&amp; !$prevvote ? 'this' : $author.&quot;'s&quot; ;
+		my %attributes = (
+			1 =&gt; { class =&gt; $clas.&quot;1:$n,2&quot; , title =&gt; &quot;upvote $ofauthor writeup&quot; },
+			-1 =&gt; { class =&gt; &quot;$clas-1:$n,2&quot; , title =&gt; &quot;downvote $ofauthor writeup&quot; },
+			0 =&gt; {class =&gt; $replace }
+		) ;
+		if ( $prevvote ){
+			$attributes{ $prevvote } = { class=&gt;$replace , disabled=&gt;'disabled',
+				title=&gt;'you '.( $prevvote&gt;0 ? 'up' : 'down').&quot;voted $author\'s writeup&quot; } ;
+		}
+
+		$votestr .= $query -&gt; radio_group( -name=&gt;&quot;vote__$n&quot; , Values=&gt;\@values ,
+			default=&gt;$prevvote, labels=&gt;\%labels, attributes=&gt;\%attributes );
+
+		if (my $numvoteit = $query-&gt;param('numvoteit')) { # this hackery is for votefooter: vote or blab button
+			$query-&gt;param('numvoteit', $numvoteit+1);
+		} else {
+			$query-&gt;param('numvoteit', 1);
+		}
+	}else{
+		use Everything::Experience;
+		$votestr.= '&lt;strong&gt;vote failed:&lt;/strong&gt; '
+			if $query-&gt;param(&quot;vote__$n&quot;) &amp;&amp; $query -&gt; param(&quot;vote__$n&quot;) != $prevvote;
+		my $level = getLevel($USER);
+		$votestr.= '('.linkNodeTitle(&quot;Why Don't I Have Votes Today?|out of votes&quot;).')'
+			if $level &amp;&amp; htmlcode('displaySetting' , 'level votes', $level) ;
+	}
+	$votestr .='&lt;/span&gt;' ;
+}
+
+$votestr .='&lt;/span&gt;' ;
+return $edstr.$votestr ;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>voteit</title>
+</node>

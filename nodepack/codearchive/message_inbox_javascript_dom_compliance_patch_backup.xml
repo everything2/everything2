@@ -1,0 +1,68 @@
+<node>
+  <doctext>originally by s_alanet (May 9 2002)
+&lt;br&gt;&lt;br&gt;
+Try as I may, try as I might. I can't get this thing to work on Netscape, IE, and Opera. The current code does. While DOM compliance might be nice, if it ain't really broke, let's not play with it.</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2003-01-12 16:47:32</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1414309</node_id>
+  <htmlcode_id>1414309</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <code>function replyTo(s, c) {
+        //alert(&quot;foo!&quot;);
+	if (c == 0) {
+		if (document.form1.autofill.checked == 0) {
+			return;
+		}
+	}
+	document.form1.message.value = &quot;/msg &quot; + s + &quot; &quot;;
+	document.form1.message.focus();
+}
+
+function clearReply() {
+	document.form1.message.value = &quot;&quot;;
+}
+
+function checkAll(){
+// Brief discussion of the validity of the next three lines of code
+// Dom Level 1 Reference: 
+//   http://www.w3c.org/TR/2000/WD-DOM-Level-1-20000929
+
+// line +1 is valid because of &quot;The HTMLCollection object 
+// has the following properties: length &quot;, and form1 being an
+// HTMLCollection. &quot;item(index) This method returns a Node object.&quot;
+// Ergo, saying item(1).length refers to the &quot;length&quot; of item #1.
+// For checkboxes, this is probably not what you want. Saying
+// item.length has no meaning under the DOM spec, except perhaps
+// in that it would calculate the &quot;length&quot; of the item function...
+
+// line +2 is valid because name is a property of all form elements.
+// substring is a method of all strings (which name is).
+
+// Line +3: checked is a property of check boxes. To be anal, you'd want
+// to dump the type of the form item and see if it's (first) a
+// HTMLInputElement, and (second) if property &quot;type&quot; is right.
+
+// Ok. Now, I haven't actually run this code in context (I can't
+// without lots of effort). But if you're running on a DOM level 1
+// compliant browser, this should work.
+
+// (If you're going to criticize this code, you'd best RT_F_M.)
+
+    for (i=0; i &lt; document.form1.length; i++) {
+      if(document.form1.item[i].name.substring(0,9) == &quot;deletemsg&quot;)
+          {document.form1.item[i].checked=1;}
+    }
+}
+</code>
+  <type_nodetype>1382262</type_nodetype>
+  <document_id>1414309</document_id>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>Message Inbox JavaScript DOM compliance patch backup</title>
+</node>

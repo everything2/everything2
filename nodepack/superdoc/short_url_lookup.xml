@@ -1,0 +1,51 @@
+<node>
+  <doctext>[%
+return unless $query;
+
+my $shortString = $query-&gt;param('short_string');
+my $redirectNode = htmlcode('decode short string', $shortString);
+
+if (!defined $redirectNode) {
+
+  my $errorString =
+    $shortString eq '' ?
+      &quot;There doesn't look to be a short URL to look up.&quot;
+      : &quot;The string &lt;strong&gt;$shortString&lt;/strong&gt; doesn't appear to go anywhere.&quot;
+    ;
+
+  return
+    '&lt;h3&gt;Short URL Error&lt;/h3&gt;'
+    . &quot;&lt;p&gt;&quot;
+    . $errorString
+    . &quot;  Why not &quot;
+    . htmlcode('randomnode', 'try a random node')
+    . &quot; instead?&quot;
+    . &quot;&lt;/p&gt;&quot;
+    ;
+
+}
+
+my $urlParams = { };
+my $bNoQuoteUrl = 1;
+
+$HTMLVARS{redirect_url} = urlGen($urlParams, $bNoQuoteUrl, $redirectNode);
+$HEADER_PARAMS{-status} = 303;
+$HEADER_PARAMS{-location} =
+  'http://' . $ENV{HTTP_HOST} . $HTMLVARS{redirect_url}
+  ;
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2010-07-28 23:27:14</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1990067</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1990067</document_id>
+  <author_user>1449265</author_user>
+  <package>0</package>
+  <title>Short URL Lookup</title>
+</node>

@@ -1,0 +1,383 @@
+<node>
+  <doctext>[%
+linkNode(&quot;1920074&quot;);
+%]
+
+[%
+
+linkNode('verify your email account').'[test]';
+
+%]
+
+
+
+[%
+my $str='&lt;form id=&quot;&quot; name=&quot;wtf&quot; enctype=&quot;multipart/form-data&quot; action=&quot;/title/Unpopular+Node&quot; method=&quot;post&quot;&gt;';
+
+$str.=htmlcode('stars',&quot;$$NODE{node_id},$$NODE{node_id},,&quot;);
+
+$str.='&lt;/form&gt;';
+
+return $str;
+%]
+
+
+[% return;
+
+#Was:
+
+return '&lt;script type=&quot;text/javascript&quot;&gt;
+jQuery(function(){
+ jQuery(&quot;.star&quot;).rating({
+  callback: function(value, link){
+   alert(&quot;The value selected was \'&quot; + value + &quot;\'\n\nWith this callback function I can automatically submit the form with this code:\nthis.form.submit();&quot;);
+  }
+ });
+});&lt;/script&gt;';
+%]
+
+&lt;hr&gt;
+
+
+You are [% return (htmlcode(&quot;isGuest&quot;)) ? &quot;A GUEST&quot; : &quot;a registered user.&quot;.htmlcode(&quot;isGuest&quot;); %]
+
+
+
+
+&lt;hr&gt;
+[% linkNodeTitle(&quot;Writeups by Type&quot;, &quot;superdoc&quot;, &quot;more&quot;); %]
+
+[% 
+
+eval { use Image::Magick; };
+if ($@) {
+   return &quot;&lt;h3&gt;Image::Magick load failed!&lt;/h3&gt;&lt;pre&gt;$@_&lt;/pre&gt;&quot;;
+}
+else {
+
+   my $image = Image::Magick -&gt; new();
+   undef $image;
+
+   return &quot;No errors?&quot;;
+
+}
+
+%]
+
+[%  
+
+        my @types = $query-&gt;param(&quot;type&quot;);
+        foreach(@types) {
+                $_ = getId($DB-&gt;getType($_));
+        }
+
+my $title=&quot;SLI&quot;;
+my $by_user=&quot;justhal&quot;;
+                my %selecthash = (title =&gt; $title);
+                my @selecttypes = @types;
+                $selecthash{type_nodetype} = \@selecttypes if @selecttypes;
+                if (length ($by_user)) {
+                        $selecthash{type_nodetype} = 117; # (A writeup)
+                        $selecthash{author_user} = getNode($by_user, 'user')-&gt;{node_id};
+                        $selecthash{title} = &quot;~$title&quot;;
+                }
+
+return &quot;$by_user ... $selecthash{title} ... $selecthash{author_user} ... &quot;.$DB-&gt;selectNodeWhere(\%selecthash);
+
+%]
+
+
+&lt;style&gt;
+&lt;!--
+th {
+  text-align:left;
+}
+
+.bar {
+  font-size:1px;
+  background-color:#0a0;
+  border-top:2px solid #5a5;
+  border-left:2px solid #5a5;
+  border-bottom:2px solid #050;
+  border-right:2px solid #050;
+  padding:0px;
+}
+--&gt;
+&lt;/style&gt;
+
+
+[%
+
+my $WRITEUP = getNodeById (1966521);
+
+my $TAGNODE = getNode 'approved html tags', 'setting';
+my $TAGS=getVars($TAGNODE);
+
+my $text = htmlScreen($$WRITEUP{doctext}, $TAGS);
+#$text =~ s/(\S{30})/$1 /g;
+$text = parseLinks($text);
+$text = breakTags($text);
+
+return $text;
+
+%]
+
+[%         return &quot;You: $$USER{title}\n&quot;; %]
+
+
+
+
+[%         return &quot;You Oolong&quot; if ($$USER{title}eq'Oolong'); %]
+
+
+[%
+return;
+# Made by Oolong, with code adapted from [A Year Ago Today] and [Reputation Graph].
+
+my $yearsago=1;
+my ($sec,$min,$hour,$mday,$month,$year,$wday,$yday,$isdst) =
+        gmtime(time);
+$year+= 1900;
+my $strYear;
+
+
+my $str='&lt;table&gt;&lt;tr&gt;&lt;th&gt;Month to&lt;/th&gt;&lt;th colspan=&quot;2&quot;&gt;New writeups (surviving, not hidden)&lt;/th&gt;&lt;th colspan=&quot;2&quot;&gt;New users&lt;/th&gt;&lt;th colspan=&quot;2&quot;&gt;C!s spent&lt;/th&gt;&lt;th title=&quot;ratio of cools to new writeups&quot;&gt;C!:NW&lt;/th&gt;&lt;th title=&quot;New writeups per day&quot;&gt;NW/day&lt;/th&gt;&lt;/tr&gt;';
+
+for ($yearsago=0; $yearsago&lt;11; $yearsago++) {
+  my $strYear = ($year+1).'';
+  if (length($strYear)==1)
+  {
+    $strYear = &quot;0&quot;.$strYear;
+  }
+  my $strDate = $year.&quot;-12-01&quot;;
+  my $limit = 'type_nodetype='.getId(getType('writeup')).&quot; and createtime &gt;= '&quot;.$strDate.&quot;' and createtime &lt; DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 YEAR) and writeup.notnew=0&quot;;
+
+  my $wucnt = $DB-&gt;sqlSelect('count(*)', 'node JOIN writeup on writeup.writeup_id=node.node_id', $limit);
+
+  my $limit = 'type_nodetype='.getId(getType('user')).&quot; and createtime &gt;= '&quot;.$strDate.&quot;' and createtime &lt; DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 YEAR)&quot;;
+
+  my $usercnt = $DB-&gt;sqlSelect('count(*)', 'node', $limit);
+
+  my $limit = &quot;tstamp &gt;= '&quot;.$strDate.&quot;' and tstamp &lt; DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 YEAR)&quot;;
+
+  my $coolcnt = $DB-&gt;sqlSelect('count(*)', 'coolwriteups', $limit);
+
+
+  $str.=&quot;&lt;tr&gt;&quot;;
+  $str .= '&lt;td class=&quot;DateLabel&quot;&gt;';
+    if ($year==0)
+    {
+      $str .= '&lt;b&gt;'.($year+1).'&lt;/b&gt;';
+    }
+    else
+    {
+      $str .= ($year+1);
+    }
+    $str .= '&lt;/td&gt;';
+
+  $str.= &quot;&lt;td&gt;$wucnt&lt;/td&gt;&lt;td&gt;&lt;span class='bar' style='padding-right:&quot;.($wucnt/600).&quot;px;'&gt;&amp;nbsp;&lt;/span&gt;&lt;/td&gt;&lt;td&gt;$usercnt&lt;/td&gt;&lt;td&gt;&lt;span class='bar' style='padding-right:&quot;.($usercnt/600).&quot;px;'&gt;&amp;nbsp;&lt;/span&gt;&lt;/td&gt;&lt;td&gt;$coolcnt&lt;/td&gt;&lt;td&gt;&lt;span class='bar' style='padding-right:&quot;.($coolcnt/600).&quot;px;'&gt;&amp;nbsp;&lt;/span&gt;&lt;/td&gt;&quot;;
+  $str.=&quot;&lt;td&gt;&quot;.sprintf(&quot;%.2f&quot;, $coolcnt/$wucnt).&quot;&lt;/td&gt;&quot; if ($coolcnt&gt;0);
+  $str.=&quot;&lt;td&gt;&quot;.sprintf(&quot;%.2f&quot;, $wucnt/365.24).&quot;&lt;/td&gt;&quot;;
+#  $str.=&quot;&lt;td&gt;&quot;.$coolcnt/$wucnt.&quot;&lt;/td&gt;&quot; if ($coolcnt&gt;0);
+  $str.=&quot;&lt;/tr&gt;&quot;;
+
+  $year--;
+  if($year&lt;0) {
+      $year = 11;
+      $year--;
+    } 
+
+}
+$str.=&quot;&lt;/table&gt;&quot;;
+return $str;
+
+%]
+
+
+
+
+[%
+return;
+  use Everything::Experience;
+  return &quot;Spirits flee!&quot; if $$USER{title} eq &quot;Guest User&quot;;
+  my $cnt = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;voter_user=896205&quot;);
+# AND votetime LIKE '2008-11-%'
+#1118012
+if ($cnt == 0) {
+  return &quot;..thou art too young yet. Come back soon.&quot; if getLevel($USER) == 1;
+  return &quot;Thou hast grown, but are still yet a man. Prove thy judgment!&quot;;
+  }
+  #my $up = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;voter_user=$$USER{node_id} and weight=1&quot;);
+  #jb says: We do not  need to show anyone what percentage of their votes are
+  # up or down. Typically I'd like to keep this system as honest as possible and
+  # knowledge of your voting percentages in the +/- sense, keeps the numbers
+  # from possibly being honest.  People's voting habits would be unnaturally
+  # affected by knowing the exact number.
+  # See also: [The tree of knowledge of good and evil]
+
+  #my $pcUp = sprintf(&quot;%.2f&quot;, 100*($up / $cnt));
+  my $total = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;votetime LIKE '2008-11-%'&quot;);
+  my $percent = sprintf(&quot;%.4f&quot;, 100*($cnt / $total));
+  my $wus = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;writeup&quot;);
+
+my $webbyWus = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;node&quot;, &quot;type_nodetype=117 and author_user=176726&quot;);
+$wus -= $webbyWus;
+  my $wuspercent = sprintf(&quot;%.4f&quot;, 100*($cnt/$wus));
+
+  return &quot;Thou hast cast $cnt votes... $percent\% of the judgements made of all time, across $wuspercent\% of all votable writeups.&quot;;
+%]
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+&lt;p align=&quot;right&quot;&gt;&lt;small&gt;Keep in mind, these numbers could be wildly inaccurate. Oracles aren't known for their precision.&lt;/small&gt;&lt;/p&gt;
+
+
+
+
+
+[%
+
+return &quot;user_id: $$USER{user_id}; node_id: $$USER{node_id}&quot;;
+
+%]
+
+[%
+use POSIX qw(strftime);
+return strftime(&quot;%a, %d %b %Y %H:%M:%S %z&quot;, localtime(time())) . &quot;\n&quot;;
+%]
+
+[%
+
+	my $hitStr; # This is a kludgy way to do this, but it seems efficient - Oo.
+	(my $y,my $m,my $d) = split /-/, $$NODE{createtime};
+	my $dateval = $d+31*$m+365*$y; 
+	if ($dateval &gt; 733253 ) { $hitStr=&quot;&lt;span title='hits since creation'&gt;&quot;; }
+	else { $hitStr=&quot;&lt;span title='hits since 23rd October 2008'&gt;&quot;; }
+
+	return $hitStr.&quot;&lt;/span&gt;&quot;;
+
+#(my $y,my $m,my $d) = split /-/, $$NODE{createtime};
+#my $dv1 = $d+31*$m+365*$y;
+#($y,$m,$d) = split /-/, &quot;2008-10-23&quot;;
+#my $dv2 = $d+31*$m+365*$y;
+
+#if ($dv1 &lt; $dv2) {
+#return $dv1.&quot; dv2: $dv2 &quot;.$$NODE{createtime};
+#}
+#else {
+#return &quot;later&quot;;
+#}
+# if ($$NODE{createtime}&lt;&quot;2008-03-08 10:08:33&quot;);
+#    my @keys = keys $HTMLVARS;
+ #   my @values = values $HTMLVARS;
+  #  while ($#keys &gt;= 0) {
+   #     print pop(@keys), '=', pop(@values), &quot;\n&quot;;
+    #}
+
+
+%]
+
+
+&lt;hr&gt;
+[%
+
+return ; #$HTMLVARS{group_gods};
+
+
+use Everything::Experience;
+
+adjustGP($$USER{user_id}, 1);
+
+my $str='[level experience]: 0=0';
+
+
+
+for (my $i=1; $i&lt;12; $i++) {
+  $str.='&amp;'.$i.'='.100*(3+$i*($i+1));
+}
+
+for (my $i=12; $i&lt;=100; $i++) {
+  $str.='&amp;'.$i.'='.($i*2500-14000);
+}
+
+
+$str.='&lt;br&gt;&lt;br&gt;[level writeups]:';
+
+for (my $i=0; $i&lt;=100; $i++) {
+  $str.=$i.'='.10*$i.'&amp;';
+}
+
+
+$str.='&lt;br&gt;&lt;br&gt;[level cools]:';
+
+for (my $i=0; $i&lt;4; $i++) {
+  $str.=$i.'='.'1&amp;';
+}
+
+for (my $i=4; $i&lt;=101; $i++) {
+  $str.=$i.'='.'1&amp;';
+}
+
+
+$str.='&lt;br&gt;&lt;br&gt;[level votes]: 0=0&amp;';
+
+for (my $i=1; $i&lt;101; $i++) {
+  $str.=$i.'='.'50&amp;';
+}
+
+$str.='&lt;br&gt;&lt;br&gt;[level titles]: ';
+
+for (my $i=12; $i&lt;101; $i++) {
+  $str.=$i.'=Pedant&amp;';
+}
+$str.='&lt;p&gt;or...&lt;/p&gt;';
+for (my $i=12; $i&lt;101; $i++) {
+  $str.=$i.'=Transcendant&amp;';
+}
+
+return $str;
+
+%]
+
+
+&lt;hr&gt;
+
+[%
+return;
+my $str=&quot;user_id &quot;.$$USER{user_id}.&quot; node_id &quot;.$$USER{node_id};
+
+
+	my $parent=getNode(1957092);
+	my $parentOwner=getNode(1957092)-&gt;{author_user};
+	my $str.=$$parent{title}.$parentOwner;
+if ($$USER{title}eq'Oolong'){
+	$HTMLVARS{msgparams} = {
+		'author_id' =&gt; $$USER{user_id},
+		'recipient_id' =&gt; $parentOwner,
+		'message' =&gt; 'Hey, [' . $$USER{title} . '] just replied to [' . getNode(1957092)-&gt;{title} . ']',
+	};
+	htmlcode('sendPrivateMessage','');
+}
+
+#if ($$USER{title} eq 'Oolong'){
+# $DB-&gt;sqlInsert(&quot;message&quot;, {author_user=&gt;getId(getNode(&quot;root&quot;,&quot;user&quot;)), for_user=&gt;$parentOwner, msgtext=&gt;&quot;Hey, $$USER{title} just replied to [&quot;.getNode($parent).&quot;].&quot;);
+ #unless ($parentOwner==$$USER{node_id});
+#}
+
+
+return $str;
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-02-08 10:08:33</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1929198</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1929198</document_id>
+  <author_user>1017738</author_user>
+  <package>0</package>
+  <title>Oolong's Testing Ground</title>
+</node>

@@ -1,0 +1,45 @@
+<node>
+  <doctext>[%
+my $SRCNODE = getNodeById($query-&gt;param(&quot;srcnode_id&quot;));
+return 'No node to clone.' unless $SRCNODE;
+
+my $newname = $query-&gt;param(&quot;newname&quot;);
+return 'No name for cloned node.' unless $newname;
+
+my %DATA = (%$SRCNODE);
+
+  # Delete the node id so that when we insert it, it
+  # get a new id.
+  delete $DATA{node_id};
+  delete $DATA{type};
+  delete $DATA{group} if(exists $DATA{group});
+  delete $DATA{title}; # we want to use the new title.
+delete $DATA{_ORIGINAL_VALUES}; # so update doesn't fail in insertNode
+
+my $newid = insertNode($newname, $$SRCNODE{type}, $USER, \%DATA);
+
+my $str;
+if ($newid){
+	$str = &quot;Node &quot; . linkNode($SRCNODE) .
+    	' has been cloned as ' . linkNode($newid);
+}else{
+	$str = 'Ack! Clone failed.'
+}
+
+$query -&gt; p($str);
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-02-14 17:08:25</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>58</hits>
+  <node_id>418271</node_id>
+  <edittime>2011-10-20 06:35:30</edittime>
+  <type_nodetype>13</type_nodetype>
+  <document_id>418271</document_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>node cloner</title>
+</node>

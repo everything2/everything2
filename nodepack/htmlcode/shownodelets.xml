@@ -1,0 +1,86 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-02-18 00:38:35</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>955342</node_id>
+  <htmlcode_id>955342</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>#shows the left-side or right-side nodelets
+#parameter: 'left' or 'right' (default)
+
+my ($curSide) = @_;
+my $onRight;
+my $useTable = $$THEME{noTable} ? 0 : 1;
+
+if($curSide =~ /^l/) {
+	return '';	#NPB FIXME this is until the nodelet meta-container knows right and left
+	$curSide = 'left';
+	$onRight = 0;
+} else {
+	$curSide = 'right';
+	$onRight = 1;
+}
+
+my $str = '';
+
+$str .= htmlcode('nodelet meta-container', $curSide);
+
+if(length($str) &amp;&amp; $useTable) {
+	#NPB TODO nodelet width shouldn't be hard coded here
+	$str = &quot;&lt;td width=\&quot;170\&quot; valign=\&quot;top\&quot;&gt;\n&quot; . $str . &quot;\n&lt;/td&gt;\n&quot;;
+}
+
+#add a little gap between main contents and nodelets
+my $spaceCol = '&lt;td width=&quot;2&quot;&gt;&amp;nbsp;&lt;/td&gt;';
+if ($useTable) {
+	if($onRight) {
+		$str = $spaceCol . $str;
+	} else {
+		$str .= $spaceCol;
+	}
+}
+
+my $isZen = htmlcode('isZen','');
+## zen theme 1854354 = Kyle's Style, the only theme this was designed for
+if ( ($$VARS{nodelet_tabs}) &amp;&amp; ($isZen) &amp;&amp; ($$VARS{userstyle}==1854354) ) {
+	my $specialStr;
+
+	my $UID = $$USER{user_id};
+	my $isAdmin = exists $HTMLVARS{'group_gods'}{$UID};
+	my $isCE = $isAdmin || exists $HTMLVARS{'group_content editors'}{$UID};
+
+	my $curr = $$VARS{current_nodelet};
+	my $currNodelet;
+
+	my @nodelets = split(',',$$VARS{nodelets});
+	if ($isCE) {
+		my $nl = getNode('Master Control','nodelet');
+		unshift(@nodelets, getId($nl));
+	}
+
+	foreach (@nodelets) {
+		$currNodelet = insertNodelet($_) if ($_ == $curr);
+
+		my $N = getNodeById($_);
+		getRef $N;
+
+		$specialStr .= &quot;
+		&lt;span class='nodelet_tab &quot;.( $_ == $curr ? &quot;nodelet_selected&quot; : &quot;&quot;).&quot;' id='nt_&quot;.$$N{node_id}.&quot;'&gt;$$N{title}&lt;/span&gt;
+		&lt;div class='hidden' id='nc_&quot;.$$N{node_id}.&quot;'&gt;&quot;.insertNodelet($_).&quot;&lt;/div&gt; &quot;;
+	}
+
+	$specialStr.=&quot;&lt;div id='nodelet_content'&gt;$currNodelet&lt;/div&gt;&quot;;
+
+	$str = $specialStr;
+}
+
+return $str;</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>showNodelets</title>
+</node>

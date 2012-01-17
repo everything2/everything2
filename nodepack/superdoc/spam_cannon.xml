@@ -1,0 +1,164 @@
+<node>
+  <doctext>[%
+my $MAX_VICTIMS = 20;
+
+my $uid   = getId( $USER );
+my $foad  = &quot;&lt;p&gt;&lt;strong&gt;Permission Denied.&lt;/strong&gt;&lt;/p&gt;\n&quot;;
+my $level  = $$VARS{ 'level' };
+
+$level =~ s/([0-9]+).*$/$1/;
+
+return $foad unless ( isGod( $USER ) ) || exists $HTMLVARS{ 'group_content editors' }{ $uid };
+return $foad if ( $$VARS{ 'no_goodies' } );
+
+# return '&lt;p style=&quot;color: #c00000; font-weight: bold;&quot;&gt;Closed for renovations.&lt;/p&gt;' if ( $uid != 470183 );
+
+my $msgtext = '';
+if ( defined $query-&gt;param( 'spam_message' ) ) {
+    $msgtext = $query-&gt;param( 'spam_message' );
+
+    $msgtext =~ s/&amp;/&amp;amp;/g;
+    $msgtext =~ s/\[/&amp;#91;/g;
+    $msgtext =~ s/\]/&amp;#93;/g;
+    $msgtext =~ s/&quot;/&amp;quot;/g;
+}
+
+my $str = '
+&lt;p&gt;The Spam Cannon sends a single /msg to multiple recipients, without having to create a usergroup. Usergroups are not yet supported as recipients, but /msg aliases are. &lt;/p&gt;
+&lt;p&gt;The privilege of using this tool will be revoked if abused. &lt;/p&gt;
+
+' . htmlcode( 'openform2', 'spammer' ) . '
+&lt;table&gt;
+&lt;tr&gt;
+&lt;td valign=&quot;top&quot; align=&quot;right&quot; width=&quot;100&quot;&gt;
+    &lt;p&gt;&lt;b&gt;Recipients:&lt;/b&gt;&lt;/p&gt;
+    &lt;p&gt;&lt;i&gt;Put each username on its own line, and don\'t hardlink them. Don\'t bother with underscores.&lt;/i&gt;&lt;/p&gt;
+&lt;/td&gt; 
+&lt;td&gt;
+    &lt;textarea name=&quot;recipients&quot; rows=&quot;20&quot; cols=&quot;30&quot;&gt;' . $query-&gt;param( 'recipients' ) . '&lt;/textarea&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td valign=&quot;top&quot; align=&quot;right&quot;&gt;&lt;p&gt;&lt;b&gt;Message:&lt;/b&gt;&lt;/p&gt;&lt;/td&gt;
+    &lt;td&gt;
+&lt;input type=&quot;text&quot; size=&quot;40&quot; maxlength=&quot;243&quot; name=&quot;spam_message&quot; value=&quot;' . $msgtext . '&quot;&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+    &lt;td valign=&quot;top&quot; colspan=&quot;2&quot; align=&quot;right&quot;&gt;&lt;input type=&quot;submit&quot; value=&quot;Send&quot;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;/form&gt;
+';
+
+if ( defined $query-&gt;param( 'recipients' ) &amp;&amp; defined $query-&gt;param( 'spam_message' ) ) {
+    my $recipients = $query-&gt;param( 'recipients' );
+    my $message   = $query-&gt;param( 'spam_message' );
+
+    # Remove HTML tags from message
+    $message =~ s/&lt;[^&gt;]+&gt;//g;
+
+    # Feedback to user
+    $str .= &quot;&lt;dl&gt;\n&lt;dt&gt;&lt;b&gt;Sent message:&lt;/b&gt;&lt;/dt&gt;\n&quot;;
+    $str .= &quot;&lt;dd&gt;&quot; . $message . &quot;&lt;/dd&gt;\n&quot;;
+    $str .= &quot;&lt;dd&gt;&amp;nbsp;&lt;/dd&gt;\n&quot;;
+    $str .= &quot;&lt;dt&gt;&lt;b&gt;To users:&lt;/b&gt;&lt;/dt&gt;\n&quot;;
+
+    # Remove whitespace from beginning and end of each line in 
+    # list of recipients.
+    $recipients =~ s/\s*\n\s*/\n/g;
+
+    # Split recipient list into array
+    my @users = split( '\n', $recipients );
+    my $forwards = getVars( getNode( 'chatterbox forward', 'setting' ) );
+    my $count = 0;
+    my $sent;  # Keep track of who we've sent the /msg to, so as to avoid repeats.
+
+    # Iterate through recipient list
+    foreach my $victimname ( @users ) {
+        if ( ++$count &gt; $MAX_VICTIMS ) {
+            $str .= &quot;&lt;dd&gt;&lt;font color=\&quot;#c00000\&quot;&gt;&lt;strong&gt;Enough.&lt;/strong&gt;&lt;/font&gt; You trying to talk to the whole world at once?&lt;/dd&gt;\n&quot;;
+            last;
+        }
+
+        # If it's an alias, get the proper username before getting the user hash.
+        $victimname = $$forwards{ lc( $victimname ) } if ( exists( $$forwards{ lc( $victimname ) } ) );
+        my $victim = getNode( $victimname, 'user' );
+
+        # Skip duplicates
+        if ( $$sent{ $$victim{ 'node_id' } } ) {
+            $str .= &quot;&lt;dd&gt;&lt;font color=\&quot;#c00000\&quot;&gt;You sent this to &quot; . linkNode( $$victim{ 'node_id' } ) . &quot; already.&lt;/font&gt;&lt;/dd&gt;\n&quot;;
+            next;
+        } else {
+            $$sent{ $$victim{ 'node_id' } } = 1;
+        }
+
+#        my $victim = getNode( $victimname, 'user' );
+#        $victimname = $$forwards{lc($victimname)} if(exists($$forwards{lc($victimname)}));
+        # Have to do it in this order bc c_e =&gt; Content_Editors
+#        my $victim = getNode( $victimname, 'usergroup' );
+#        $victim = getNode( $victimname, 'user' );
+        # return 'We don't have a user here' unless($victim);
+
+#        if($$victim{type_nodetype} = getId(getType('usergroup')))
+#        {
+
+#            next unless(isApproved($USER, $victim));
+
+#            my $grp = $$victim{group};
+
+#            foreach(@$grp)
+#            {
+                # send message.
+                # There has to be a cleaner way to do this (without weird bugs). 
+                # Let me see if I can come up with a way.
+                # I wanted to overhaul the message system. Now might be a good 
+                # time - jb
+#            }
+#        }
+
+        if ( $victim ) {
+            # Some feedback for the user
+            $str .= &quot;&lt;dd&gt;&quot; . linkNode( $$victim{ 'node_id' } ) . &quot;&lt;/dd&gt;\n&quot;;
+
+            # Insert message into messages table.
+            $DB-&gt;sqlInsert( 'message', 
+                { msgtext =&gt; &quot;(massmail): &quot; . $message,
+                  author_user =&gt; $$USER{ 'node_id' },
+                  for_user =&gt; $$victim{ 'node_id' } } );
+        } else {
+            # SAY WHAT?! HE AIN'T HERE! HE DON'T EXIST!
+            $str .= &quot;&lt;dd&gt;&lt;font color=\&quot;#c00000\&quot;&gt;User &lt;b&gt;\&quot;&quot; . $victimname . &quot;\&quot;&lt;/b&gt; does not exist.&lt;/font&gt;&lt;/dd&gt;\n&quot;;
+        }
+    }
+
+    $str .= &quot;&lt;/dl&gt;\n&quot;;
+
+    $str .= &quot;&lt;p&gt;No users specified.&lt;/p&gt;\n&quot; if ( $count == 0 );
+}
+
+$str .= &quot;&lt;br&gt;\n&quot;;
+$str .= &quot;&lt;p&gt;&lt;i&gt;Bug reports go to [wharfinger]. &lt;/i&gt;&lt;/p&gt;\n&quot;;
+
+$str;
+%]
+
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-09-28 15:04:23</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1167721</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1167721</document_id>
+  <author_user>113</author_user>
+  <package>0</package>
+  <title>Spam Cannon</title>
+</node>

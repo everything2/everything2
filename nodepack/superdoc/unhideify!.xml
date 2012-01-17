@@ -1,0 +1,65 @@
+<node>
+  <doctext>[%
+### 12.30.2002 by [dann]
+# $$VARS{hidden_weblog} is used only to tell Epicenter whether or not to show
+# a link to this node under the -ifys section.  The only other $VARs this
+# affects will be $$VARS{hide_weblog_(node_id_of_group)}.
+
+if(my $src_id = $query-&gt;param('show_weblog')){
+  delete $$VARS{'hide_weblog_'.$src_id};
+  my $somethingStillHidden = 0;
+  foreach(keys %$VARS){
+    if(/hide_weblog*/){
+      $somethingStillHidden = 1;
+    }  
+  }
+  delete $$VARS{'hidden_weblog'} unless $somethingStillHidden;
+}
+
+### Do this again here (also in [simplenewsify]) so it'll auto-update the list
+### If they're clicking around the hide links  in epicenterwhile on this page.
+### Setting the VAR twice won't hurt us.
+if(my $src_id = $query-&gt;param('hide_weblog')){
+  $$VARS{'hide_weblog_'.$src_id} = 1;
+  $$VARS{'hidden_weblog'} = 1;
+}
+
+my @SOURCES;
+foreach (keys %$VARS){
+  if(/hide_weblog_(\d*)/){
+    push @SOURCES,getNode($1);
+  }
+}
+my $str = scalar(@SOURCES)?
+  '&lt;p&gt;You are hiding weblog abilities from '.scalar(@SOURCES).' usergroup'.
+  (scalar(@SOURCES)==1?'':'s').'.&lt;/p&gt;':
+  '&lt;p&gt;You aren\'t hiding any weblog abilities.&lt;/p&gt;';
+
+return $str unless scalar @SOURCES;
+
+$str.='&lt;ul&gt;';
+foreach (@SOURCES){
+  my $link = '&lt;a href='.
+    urlGen({node_id=&gt;$$NODE{node_id},'show_weblog'=&gt;&quot;$$_{node_id}&quot;})
+    .'&gt;here&lt;/a&gt;';
+  $str.=&quot;&lt;li&gt;Click $link to unhide your weblog abilities from &quot;.linkNode($_).&quot;&lt;/li&gt;\n&quot;;
+}
+$str.='&lt;/ul&gt;';
+%]
+&lt;p align='right'&gt;&lt;small&gt;Bugs go to [dann]&lt;/small&gt;&lt;/p&gt;
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-12-31 03:59:41</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1408528</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1408528</document_id>
+  <author_user>650043</author_user>
+  <package>0</package>
+  <title>Unhideify!</title>
+</node>

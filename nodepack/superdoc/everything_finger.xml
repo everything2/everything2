@@ -1,0 +1,83 @@
+<node>
+  <doctext>[%
+
+my $str;
+my $wherestr;
+
+#new way
+#htmlcode('setCloakVision','') unless exists $HTMLVARS{arg}{userVision};
+#
+#
+#
+#
+
+#old way
+unless($$VARS{infravision}) {
+	$wherestr.=' and ' if $wherestr;
+	$wherestr.='visible=0';
+}
+
+my $csr = $DB-&gt;sqlSelectMany('*', 'room', $wherestr, 'order by experience DESC');
+
+$str.= '&lt;table align=&quot;center&quot; width=&quot;75%&quot; cellpadding=&quot;2&quot; border=&quot;1&quot; cellspacing=&quot;0&quot;&gt;&lt;tr&gt;&lt;th&gt;Who&lt;/th&gt;&lt;th&gt;What&lt;/th&gt;&lt;th&gt;Where&lt;/th&gt;&lt;/tr&gt;';
+
+my $UID = getId($USER);	#logged on user's ID
+my $uid;	#current display user's ID
+
+my $newbielook = 1 if(exists($HTMLVARS{'group_gods'}{$UID}) || exists($HTMLVARS{'group_content editors'}{$UID}));
+
+my $flags;
+my $num = 0;
+while (my $U = $csr-&gt;fetchrow_hashref) {
+	$num++;
+	$uid = $$U{member_user};
+	$str.='&lt;tr&gt;&lt;td&gt;';
+	$str.=linkNode($uid, $$U{nick}, {lastnode_id=&gt;0});
+  
+	$flags = '';
+
+	$flags .= '&lt;font color=&quot;#ff0000&quot;&gt;invis&lt;/font&gt;' if $$U{visible};
+
+	$flags .= '@' if exists $HTMLVARS{group_gods}{$uid};
+	$flags .= '$' if exists $HTMLVARS{'group_content editors'}{$uid};
+	$flags .= '%' if exists $HTMLVARS{group_edev}{$uid};
+
+        my $difftime = time()-$U-&gt;{unixcreatetime};
+	if($newbielook and $difftime &lt; 60*60*24*30) {
+		my $d = sprintf(&quot;%d&quot;, $difftime/(60*60*24))+1;
+		$flags .= '&lt;strong&gt;' if $d&lt;=3;
+		$flags .= $d;
+		$flags .= '&lt;/strong&gt;' if $d&lt;=3;
+	}
+
+
+	$str .= '&lt;/td&gt;&lt;td&gt;'.$flags.'&lt;/td&gt;&lt;td&gt;';
+
+	$str .= ($$U{room_id}) ? linkNode($$U{room_id}) : 'outside';
+	$str .= &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+}
+$csr-&gt;finish;
+
+$str.='&lt;/table&gt;';
+
+return '&lt;em&gt;No users are logged in!&lt;/em&gt;' unless $num;
+my $intro = &quot;There are currently $num users on Everything2&lt;br&gt;&quot;;
+
+$intro.$str;
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-05-16 17:30:54</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>11320</hits>
+  <node_id>553317</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>553317</document_id>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>Everything Finger</title>
+</node>

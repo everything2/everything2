@@ -1,0 +1,826 @@
+<node>
+  <doctext>/*
+---------------------------------------
+BASIC HTML STYLING 
+----------------------------------------
+*/
+body
+{
+font-size: 85%;
+font-family: Arial Unicode MS, Arial, Tahoma, Helvetica, Sans-Serif;
+margin: 0;
+padding: 0;
+background-color: #fff;
+}
+
+a
+{
+color: #36c;
+text-decoration: underline;
+}
+
+a:visited
+{
+color: #c63;
+}
+
+a.unpopulated
+{
+text-decoration: none;
+border-bottom: 1px dashed #33f;
+}
+
+a:hover
+{
+color: #a00;
+text-decoration: none;
+}
+
+abbr, acronym, dfn
+{
+text-decoration: none;
+border-bottom: 1px dotted silver;
+}
+
+big
+{
+font-size: 110%;
+}
+
+big big
+{
+font-size: 104%;
+}
+
+blockquote
+{
+margin: 1em 3em;
+border-left: 1px dotted silver;
+padding-left: 10px;
+}
+
+cite
+{
+font-style: italic;
+border-bottom: 1px solid #fcfcfc;
+}
+
+code, tt, pre, kbd, var
+{
+font-family: Monaco, Lucida Console, monospace;
+}
+
+kbd
+{
+padding: 3px;
+background-color: #eee;
+border-top: 2px solid #ddd;
+border-left: 2px solid #ddd;
+border-bottom: 2px solid #999;
+border-right: 2px solid #999;
+}
+
+/* simulated key press */
+kbd:hover
+{
+   background-color: #ccc;
+   border-top: 2px solid #999;
+   border-left: 2px solid #999;
+   border-bottom: 2px solid #ddd;
+   border-right: 2px solid #ddd;
+}
+
+dt
+{
+font-weight: bold;
+padding-bottom: 3px;
+}
+
+dd
+{
+margin-left: 3em;
+margin-bottom: .5em;
+}
+
+del
+{
+color: #eee;
+}
+
+form
+{
+margin: 0;
+padding: 0;
+}
+
+h1, h2, h3, h4 ,h5 ,h6
+{
+font-weight: bold;
+}
+
+h1 { font-size: 135%; }
+h2 { font-size: 130%; }
+h3 { font-size: 120%; }
+h4 { font-size: 110%; }
+h5 { font-size: 105%; }
+h6 { font-size: 100%; }
+
+img, a img
+{
+border: 0;
+}
+
+label
+{
+font-weight: bold;
+}
+
+ol
+{
+list-style-type: decimal;
+padding: 0;
+margin-left: 2.25em;
+}
+
+ol ol
+{
+list-style-type: upper-alpha;
+}
+
+ol ol ol
+{
+list-style-type: upper-roman;
+}
+
+ol ol ol ol
+{
+list-style-type: lower-alpha;
+}
+
+ol ol ol ol ol
+{
+list-style-type: lower-roman;
+}
+
+small
+{
+font-size: 88%;
+}
+
+small small
+{
+font-size: 96%;
+}
+
+td, td td, td td td, td td td td
+{
+font-size: 100%;
+}
+
+textarea
+{
+font-family: Monaco, Lucida Console, monospace;
+font-size: .9em;
+width: 99%;
+}
+
+th
+{
+font-weight: bold;
+background-color: #369;
+padding: 3px;
+border-bottom: 1px solid #036;
+border-right: 1px solid #036;
+color: #fff;
+}
+
+ul
+{
+list-style: square;
+margin-left: 2.25em;
+padding: 0;
+}
+
+ul ul
+{
+list-style: disc;
+}
+
+ul ul ul
+{
+list-style: circle;
+}
+
+/*
+---------------------------------------
+ZEN SPECIFIC STYLING
+----------------------------------------
+*/
+
+#wrapper
+{
+padding-top: 70px; /* header goes in this gap */
+padding-right: 270px; /* sidebar goes in this gap */
+margin: 2px 2px 20px 20px;
+}
+
+#chatterlight_mainbody
+{
+padding-top: 70px; /* header goes in this gap */
+padding-right: 270px; /* sidebar goes in this gap */
+margin: 2px 2px 0 20px;
+}
+
+#chatterlight_mainbody #links p
+{
+margin: 0;
+padding: 0;
+}
+
+#mainbody, #chatterbox_nodelet
+{
+float: left;
+margin-top: 20px;
+width: 100%;
+margin-bottom: 20px;
+}
+
+.nodetitle
+{
+font-size: 135%;
+letter-spacing: 2px;
+padding-bottom: 5px;
+border-bottom: 2px solid #bbb;
+}
+
+#chatterlight_Notifications
+{
+width: 250px;
+float: left;
+margin-left: 20px;
+}
+
+#chatterlight_NW
+{
+width: 250px;
+float: left;
+margin-left: 20px;
+}
+
+#sidebar
+{
+float: left;
+margin-left: 20px;
+width: 250px;
+margin-right: -100%;
+padding-top: 20px;
+}
+
+#header, #chatterlight_search
+{
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 50px;
+margin: 0px;
+padding: 0 2px 0 20px;
+overflow: hidden; /* IE fix */
+background-color: #369;
+border-bottom: 2px solid #036;
+color: #fff;
+}
+
+#e2logo
+{
+margin-top: 10px;
+}
+
+#e2logo a
+{
+color: #fff;
+}
+
+#epicenter_zen
+{
+background-color: #000;
+color: #fff;
+position: fixed;
+bottom: 0;
+left: 0;
+right: 2px;
+height: 20px;
+font-size: .83em;
+padding: 0 2em;
+filter: alpha(opacity=70);
+-moz-opacity: .7;
+opacity: .7;
+}
+
+#epicenter_zen a
+{
+color: aliceblue;
+}
+
+#epicenter_zen br
+{
+display: none;
+}
+
+#searchform
+{
+float: right;
+margin-top: 12px;
+font-size: .85em;
+}
+
+#announcements
+{
+display: none;
+}
+
+#footer
+{
+clear: both;
+text-align: center;
+margin-bottom: 25px;
+}
+
+/*
+----------------------------------
+FRONT PAGE
+----------------------------------
+*/
+
+#welcome_message
+{
+margin-bottom: 10px;
+padding: 5px;
+background-color: #ffc;
+border-top: 2px solid #eea;
+border-left: 2px solid #eea;
+border-right: 2px solid #cc8;
+border-bottom: 2px solid #cc8;
+}
+
+#loglinks
+{
+margin-bottom: 10px;
+padding: 5px;
+background-color: #ffeedd;
+border-top: 2px solid #ffddbb;
+border-left: 2px solid #ffddbb;
+border-right: 2px solid #ddbb99;
+border-bottom: 2px solid #ddbb99;
+}
+
+#loglinks table
+{
+padding: 0;
+margin: 0 0 10px 0;
+width: 75%;
+display: inline;
+}
+
+#loglinks table td
+{
+padding: 5px;
+text-align: center;
+width: 25%
+}
+
+#cooluserpicks
+{
+padding: 5px;
+margin-bottom: 10px;
+float: left;
+width: 250px;
+margin: 0 10px 10px 0;
+background-color: #F0F8FF;
+border-top: 2px solid #e0e8ee;
+border-left: 2px solid #e0e8ee;
+border-right: 2px solid #a0a8aa;
+border-bottom: 2px solid #a0a8aa;
+}
+
+#cooluserpicks ul
+{
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+#cooluserpicks ul li
+{
+border-bottom: 1px solid #a0a8aa;
+}
+
+#cooluserpicks ul li a
+{
+display: block;
+padding: 3px 0;
+}
+
+#cooluserpicks ul li a:hover
+{
+background-color: #e0e8ee;
+}
+
+#staff_picks
+{
+margin-left: 275px;
+margin-bottom: 10px;
+padding: 5px;
+background-color: #F0F8FF;
+border-top: 2px solid #e0e8ee;
+border-left: 2px solid #e0e8ee;
+border-right: 2px solid #a0a8aa;
+border-bottom: 2px solid #a0a8aa;
+}
+
+#staff_picks h3, #cooluserpicks h3
+{
+margin: -3px -3px 3px -3px;
+font-size: .85em;
+background-color: #e0e8ee;
+padding: 3px;
+border-bottom: #a0a8aa;
+}
+
+#staff_picks h3 a
+{
+color: #000;
+}
+
+.cotc_entry
+{
+background-color: #fefefe;
+border-top: 2px solid #ddd;
+border-left: 2px solid #ddd;
+border-bottom: 2px solid #bbb;
+border-right: 2px solid #bbb;
+padding: 5px;
+margin-bottom: 20px;
+}
+
+.cotc_info
+{
+background-color: #ddd;
+margin: -3px -3px 3px -3px;
+border-bottom: 2px solid #bbb;
+padding: 0 5px;
+}
+
+/*
+-----------------------------------------
+HOMENODES
+-----------------------------------------
+*/
+
+#homenodepicbox
+{
+float: right;
+padding: 5px;
+background-color: #fff;
+border: 1px solid #666;
+margin: 0 0 10px 10px;
+}
+
+#homenodeheader dt
+{
+background-color: #F0F8FF;
+padding: 3px;
+}
+
+#bookmarks ul
+{
+max-height: 300px;
+overflow: auto;
+padding: 3px;
+border: 1px solid silver;
+}
+
+/*
+-----------------------------------------
+E2NODES AND WRITEUPS
+-----------------------------------------
+*/
+
+.createdby
+{
+text-align: right;
+padding: 5px;
+clear: both;
+}
+
+.writeup
+{
+border-top: 2px solid #ddd;
+border-left: 2px solid #ddd;
+border-right: 2px solid #999;
+border-bottom: 2px solid #999;
+margin-bottom: 20px;
+padding: 10px;
+background-color: #fff;
+clear: both;
+}
+
+.writeup_title
+{
+background-color: #F0F8FF;
+border-bottom: 2px solid #a0a8aa;
+margin: -8px -8px 5px -8px;
+padding: 10px;
+}
+
+.topic
+{
+margin-bottom: 10px;
+padding: 5px;
+background-color: #ffc;
+border-top: 2px solid #eea;
+border-left: 2px solid #eea;
+border-right: 2px solid #cc8;
+border-bottom: 2px solid #cc8;
+font-size: .80em;
+}
+
+#firmlink
+{
+float: left;
+width: 47.5%;
+}
+
+#isalso
+{
+float: right;
+width: 47.5%;
+text-align: right;
+}
+
+#admintools
+{
+margin: 10px 0;
+padding: 5px;
+background-color: #ffc;
+border-top: 2px solid #eea;
+border-left: 2px solid #eea;
+border-right: 2px solid #cc8;
+border-bottom: 2px solid #cc8;
+}
+
+#admintools h3
+{
+margin: 0;
+}
+
+.writeup_add
+{
+background-color: #f0f8ff;
+border-top: 2px solid #e0e8ee;
+border-left: 2px solid #e0e8ee;
+border-right: 2px solid #a0a8aa;
+border-bottom: 2px solid #a0a8aa;
+padding: 5px;
+margin-top: 10px;
+}
+
+.writeup_add h2
+{
+margin: -3px -3px 3px -3px;
+background-color: #e0e8ee;
+font-size: .9em;
+padding: 3px;
+}
+
+
+/*
+-----------------------------------------
+NODELETS
+-----------------------------------------
+*/
+
+.nodelet
+{
+padding: 0 5px 5px 5px;
+margin-bottom: 20px;
+font-size: .9em;
+background-color: #F0F8FF;
+border-top: 2px solid #e0e8ee;
+border-left: 2px solid #e0e8ee;
+border-right: 2px solid #a0a8aa;
+border-bottom: 2px solid #a0a8aa;
+}
+
+.nodelet h2
+{
+margin-top: 0;
+}
+
+.nodelet .nodelet_title
+{
+margin: 2px -3px 5px -3px;
+padding: 0 5px 3px 5px;
+background-color: #e0e8ee;
+border-bottom: 2px solid #a0a8aa;
+}
+
+#nodelet_1689202 img.oddrow, #nodelet_1689202 img.evenrow
+{
+background-color: #777;
+border-bottom: 2px solid #000;
+border-right: 2px solid #000;
+border-left: 2px solid #ccc;
+border-top: 2px solid #ccc;
+}
+
+/*
+#nodelet_1687135
+{
+position: absolute;
+right: -250px;
+width: 225px;
+}
+*/
+
+#weblogs
+{
+max-height: 75px;
+overflow: auto;
+border: 1px solid silver;
+padding: 2px;
+}
+
+ul#writeup_list
+{
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+ul#writeup_list li
+{
+padding: 0 0 5px 0;
+}
+
+#writeup_list .author
+{
+display: block;
+text-align: center;
+background-color: #e0e8ee;
+border-bottom: #a0a8aa;
+}
+
+#writeup_list .hide, #writeup_list .hidden
+{
+font-size: .8em;
+}
+
+#writeup_list li .wu_hide
+{
+border: 2px solid #fc9;
+display: block;
+padding: 3px;
+}
+
+#nodelet_91 strong a
+{
+color: #a50;
+}
+
+/*
+---------------------------------------------
+COMMON CLASSES
+---------------------------------------------
+*/
+.weblog_item
+{
+background-color: #efe;
+border-top: 2px solid #ada;
+border-left: 2px solid #ada;
+border-bottom: 2px solid #6c6;
+border-right: 2px solid #6c6;
+padding: 5px;
+margin-bottom: 20px;
+}
+
+.wl_title, .wl_author
+{
+margin: -3px -3px 0 -3px;
+background-color: #aca;
+padding: 1px 3px;
+}
+
+.wl_date
+{
+background-color: #aca;
+border-bottom: 2px solid #6c6;
+margin: 0 -3px 3px -3px;
+padding: 3px;
+}
+
+.wl_remove
+{
+float: right;
+background-color: #aca;
+}
+
+.evenrow
+{
+background-color: #F0F8FF;
+}
+
+.evenrow td, td .evenrow, td.evenrow
+{
+border-bottom: 1px solid #e0e8ee;
+border-right: 1px solid #e0e8ee;
+padding: 0 3px;
+}
+
+.oddrow
+{
+background-color: #fff;
+}
+
+.oddrow td, td .oddrow, td.oddrow
+{
+border-bottom: 1px solid #e0e8ee;
+border-right: 1px solid #e0e8ee;
+padding: 0 3px;
+}
+
+.writeup a
+{
+text-decoration: none;
+border-bottom: 1px solid #eee;
+}
+
+.writeup a:hover
+{
+text-decoration: underline;
+border-bottom: 0;
+}
+
+/* HTMLToolbar Styling */
+#ed_strong {
+	font-weight: bold;
+}
+
+#ed_hardlink {
+	color: #36c;
+	text-decoration: underline;
+}
+
+#ed_pipe_link {
+	color: #36c;
+	text-decoration: underline;
+}
+
+#ed_del {
+	text-decoration: line-through;
+}
+
+#ed_em {
+	font-style: italic;
+}
+
+#ed_code, #ed_pre {
+	font-family: &quot;Courier New&quot;, Courier, mono;
+}
+
+#chatterlight_hints, #chatterlight_credit
+{ 
+display: none; 
+}
+
+.chat_E2D2, .chat_in10se,
+.chat_E2D2 a, .chat_in10se a
+{
+color: #600;
+font-size: 105%;
+}
+
+.text_codechat
+{
+font-family: monospace;
+color: #0c0;
+background-color: #000;
+padding: 1px;
+}
+
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2008-03-12 20:31:20</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1933748</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1854352</type_nodetype>
+  <document_id>1933748</document_id>
+  <author_user>1323377</author_user>
+  <package>0</package>
+  <title>MakeMeOneWithEverything</title>
+</node>

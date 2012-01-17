@@ -1,0 +1,25 @@
+<node>
+  <core>R</core>
+  <nodetype_id>3</nodetype_id>
+  <verify_edits>0</verify_edits>
+  <restrictdupes>0</restrictdupes>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <extends_nodetype>7</extends_nodetype>
+  <createtime>1999-10-07 04:35:10</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <sqltable>document</sqltable>
+  <hits>9</hits>
+  <grouptable></grouptable>
+  <node_id>3</node_id>
+  <restrict_nodetype>0</restrict_nodetype>
+  <typeVersioned>0</typeVersioned>
+  <type_nodetype>1</type_nodetype>
+  <writers_user>1685561</writers_user>
+  <author_user>114</author_user>
+  <package>0</package>
+  <readers_user>0</readers_user>
+  <title>document</title>
+  <deleters_user>1685561</deleters_user>
+</node>

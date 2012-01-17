@@ -1,0 +1,19 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-10-07 04:35:12</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>186</hits>
+  <node_id>83</node_id>
+  <image_id>83</image_id>
+  <type_nodetype>6</type_nodetype>
+  <alt>noisy</alt>
+  <src>images/noisy_sunset.jpg</src>
+  <author_user>114</author_user>
+  <description>&lt;a href=http://oostendorp.net/gimpart&gt;MORE&lt;/a&gt;</description>
+  <package>0</package>
+  <thumbsrc></thumbsrc>
+  <title>noisy sunset</title>
+</node>

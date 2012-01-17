@@ -1,0 +1,65 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2005-05-27 14:33:22</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1725680</node_id>
+  <htmlcode_id>1725680</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code># Split text up more intelligently. Text outside
+# tags or entities is the only text which will
+# impact formatting, so this will be
+# split. Textinside tags is not visible (and is
+# probably an external URL orsome such) and so
+# should not be split.
+# 
+# The text is split into sections beginning with '&lt;'
+# or '&gt;'.  Sections beginning with '&lt;' are
+# internal to tags, sections beginning with nothing
+# or '&gt;' are external to tags.
+# 
+# External sections are split further into regions
+# beginning with '&amp;' or ';'. Those which begin '&amp;'
+# are entities and left intact, those which begin
+# ';' are the ends of entities and the beginning of
+# plain text and are split in the traditional
+# fashion. This has the undesirable behaviour that
+# text including lots of entities or semicolons may
+# not be split, but this is unlikely to be
+# encountered much in practice.
+# -- [call]
+
+my ($text, $max) = @_;
+$max ||= 30;
+# Transform spurious '&amp;' to '&amp;amp;'
+$text =~ s/&amp;(?![a-zA-Z#0-9]+;)/&amp;amp;/g;
+my $rem=$max;
+$text = join '', map {
+ 	  $_ = join '', map {
+            $rem += $max
+                  if ($rem &lt;= 0);
+
+            unless (/^&amp;/) {
+ 	      s/(\S{$rem})/$1 /;  # split off the initial remaining chunk
+ 	      s/(\S{$max})/$1 /g; # split the rest into $max-sized chunks
+              # deduct any trailing non-space from allowance.
+ 	      $rem -= length($1) if (/(\S+)$/);
+            } else {
+              $rem -= 1;
+            };
+ 	    $_;
+ 	  } /([&amp;;^]?[^&amp;;]*)/ig
+	    unless (/^&lt;/);
+  $_;
+} $text =~ /([&lt;&gt;^]?[^&lt;&gt;]*)/ig;
+
+return $text;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1312198</author_user>
+  <package>0</package>
+  <title>messageSplit</title>
+</node>

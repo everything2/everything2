@@ -1,0 +1,71 @@
+<node>
+  <nltext></nltext>
+  <parent_container>20</parent_container>
+  <icon></icon>
+  <core>R</core>
+  <reputation>0</reputation>
+  <nlgoto>0</nlgoto>
+  <lockedby_user>0</lockedby_user>
+  <totalvotes>0</totalvotes>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <createtime>1999-10-07 04:35:12</createtime>
+  <lastupdate>0</lastupdate>
+  <hits>0</hits>
+  <node_id>92</node_id>
+  <iconHeight>0</iconHeight>
+  <type_nodetype>9</type_nodetype>
+  <iconWidth>0</iconWidth>
+  <author_user>114</author_user>
+  <updateinterval>0</updateinterval>
+  <package>0</package>
+  <nodelet_id>92</nodelet_id>
+  <nlcode>&lt;table width=100%&gt;&lt;tr&gt;&lt;td bgcolor=#CCCCCC&gt;
+
+
+[%
+return &quot;Whatever this is, it's not working nor immediately useful.
+It's disabled for now.&quot;;
+
+# my $str = &quot;&quot;;
+
+# $str .= htmlcode('openform');
+
+# return &quot;&lt;i&gt;you have no rating points left&lt;/i&gt;&quot; if (not $$VARS{rating_points});
+# if (not defined $$VARS{ratings}) { $$VARS{ratings}=&quot;&quot;;}
+# my @ratednodes = split ',', $$VARS{ratings};
+
+# $str .= &quot;you have &lt;b&gt;$$VARS{rating_points}&lt;/b&gt; votes left&lt;br&gt;&quot;;
+
+# my $id = getId $NODE;
+# return $str if (grep { /$id/ } @ratednodes);
+
+# if ($query-&gt;param(&quot;add_rating&quot;)) {
+#   my $RATING = insertNode(
+#     &quot;$$USER{title}'s rating for node &quot;.getId($NODE),
+#     $NODETYPES{rating}, $USER,
+#     {rated_node =&gt; getId($NODE),
+#     points =&gt; $query-&gt;param(&quot;add_rating&quot;)}
+#   );
+
+#   push @ratednodes, getId($NODE);
+#   $$VARS{ratings} = join &quot;,&quot;, @ratednodes;
+#   $$VARS{rating_points}--;
+#   return &quot;thanks for voting&lt;br&gt;you have &lt;b&gt;$$VARS{rating_points}&lt;/b&gt; votes left&quot;;
+# }
+
+
+# #use links to get direct pointer to rating
+# #so we can see if we let the current noder rate or not
+# my @list = (-1, 1);
+# my %vals = ($list[0] =&gt; &quot;I dont like this node&quot;, $list[1] =&gt; &quot;I like this node&quot;);
+# $str .= &quot;your vote:&lt;br&gt;&quot;
+#   .$query-&gt;radio_group(&quot;add_rating&quot;, \@list, &quot;&quot;, &quot;true&quot;, \%vals);
+# $str .= $query-&gt;submit(&quot;maybsex&quot;, &quot;ok&quot;)
+#   .$query-&gt;end_form;
+# $str;
+%]
+&lt;/TD&gt;&lt;/TR&gt;
+&lt;/TABLE&gt;
+</nlcode>
+  <title>Ratings</title>
+</node>

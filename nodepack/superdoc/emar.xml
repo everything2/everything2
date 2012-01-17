@@ -1,0 +1,1078 @@
+<node>
+  <doctext>[%
+
+my $UID = getId($USER)||0;
+
+return '&lt;tr&gt;&lt;td&gt;Had you logged in, you\'d now be seeing something here.&lt;/td&gt;&lt;/tr&gt;' if !$UID || ($UID == $HTMLVARS{guest_user});
+
+my $str = qq{
+
+&lt;!-- Last updated 27 July 2008 by jp --&gt;
+&lt;!-- ***WARNING*** Curly brackets must be escaped or not used at all --&gt;
+
+&lt;small&gt;&lt;strong&gt;See also: [EIMR|Everything Instant Messaging Registry]&lt;/strong&gt;&lt;/small&gt;
+&lt;h1&gt;Everything Mailing Address Registry&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;/index.pl?node_id=575003&quot;&gt;creases&lt;/a&gt; is the primary administrator of this list; /msg him with your address to be added. No need to ask whether you can be added - the answer is yes!&lt;/p&gt;
+
+&lt;p&gt;Please note that this superdoc is expressly for the purpose of making your address public, and you can therefore have NO guarantee or expectation of confidentiality. As of Oct. 2005 access to this page is restricted to logged-in users but we still cannot promise that it will never be indexed by a search engine or otherwise become available on an external site.&lt;/p&gt;
+
+&lt;p&gt;&lt;b&gt;NOTE:&lt;/b&gt; In the interest of removing superfluous information, [jessicapierce|I]'ve removed the &quot;USA&quot; from all American addresses. If it looks like a US address (i.e., ends with &quot;city, state, 5-digit zip code&quot;), it probably is. /Msg user if uncertain.&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;p&gt;&lt;b&gt;Another note, please to note it:&lt;/b&gt; This list is not intended for solicitation purposes.  The addresses below have been made public with the implicit trust that fellow users will not use them for spamming. The most appropriate places for advertising yourself or your causes are daylogs and your homenode.&lt;/p&gt;
+
+
+&lt;hr&gt;
+&lt;p align=center&gt;
+&lt;a href=&quot;#A&quot;&gt;A&lt;/a&gt; &amp;middot; &lt;a href=&quot;#B&quot;&gt;B&lt;/a&gt; &amp;middot; &lt;a href=&quot;#C&quot;&gt;C&lt;/a&gt; &amp;middot; &lt;a href=&quot;#D&quot;&gt;D&lt;/a&gt; &amp;middot; &lt;a href=&quot;#E&quot;&gt;E&lt;/a&gt; &amp;middot; &lt;a href=&quot;#F&quot;&gt;F&lt;/a&gt; &amp;middot; &lt;a href=&quot;#G&quot;&gt;G&lt;/a&gt; &amp;middot; &lt;a href=&quot;#H&quot;&gt;H&lt;/a&gt; &amp;middot; &lt;a href=&quot;#I&quot;&gt;I&lt;/a&gt; &amp;middot; &lt;a href=&quot;#J&quot;&gt;J&lt;/a&gt; &amp;middot; &lt;a href=&quot;#K&quot;&gt;K&lt;/a&gt; &amp;middot; &lt;a href=&quot;#L&quot;&gt;L&lt;/a&gt; &amp;middot; &lt;a href=&quot;#M&quot;&gt;M&lt;/a&gt; &amp;middot; &lt;a href=&quot;#N&quot;&gt;N&lt;/a&gt; &amp;middot; &lt;a href=&quot;#O&quot;&gt;O&lt;/a&gt; &amp;middot; &lt;a href=&quot;#P&quot;&gt;P&lt;/a&gt; &amp;middot; &lt;a href=&quot;#Q&quot;&gt;Q&lt;/a&gt; &amp;middot; &lt;a href=&quot;#R&quot;&gt;R&lt;/a&gt; &amp;middot; &lt;a href=&quot;#S&quot;&gt;S&lt;/a&gt; &amp;middot; &lt;a href=&quot;#T&quot;&gt;T&lt;/a&gt; &amp;middot; &lt;a href=&quot;#UVW&quot;&gt;UVW&lt;/a&gt; &amp;middot; &lt;a href=&quot;#XYZ&quot;&gt;XYZ&lt;/a&gt;
+&lt;/p&gt;
+&lt;hr&gt;
+
+&lt;a id=&quot;A&quot; name=&quot;A&quot;&gt;&lt;/a&gt;
+&lt;p&gt;&lt;a href=&quot;/index.pl?node_id=5708&quot;&gt;Accipiter&lt;/a&gt;&lt;br /&gt;
+2345 Cobb Pkwy. #M8 &lt;br /&gt;
+Smyrna, GA 30080&lt;/p&gt;
+
+&lt;p&gt;[Addien]&lt;br /&gt;
+621 Palm Blvd.&lt;br /&gt;
+Laguna Vista, TX 78578&lt;/p&gt;
+
+&lt;p&gt;[&#198;lien] (Chris Dolan)&lt;br /&gt;
+27800 N. McBean Pkwy. #355&lt;br /&gt;
+Valencia, CA 91354&lt;/p&gt;
+
+
+&lt;p&gt;[Akasha]&lt;br /&gt;
+1621 Bittern Drive&lt;br /&gt;
+Sunnyvale, CA 94087-4605&lt;/p&gt;
+
+&lt;p&gt;[Albert Herring]&lt;br /&gt;
+88 Gertrude Road&lt;br /&gt;
+West Bridgford&lt;br /&gt;
+Nottingham&lt;br /&gt;
+NG2 5DB&lt;br /&gt;
+UK&lt;/p&gt;
+
+&lt;p&gt;[alex.tan|Alex Tan]&lt;br /&gt;
+3, Jln Kerjasama&lt;br /&gt;
+Sunrise Park&lt;br /&gt;
+Kluang&lt;br /&gt;
+Johor 86000&lt;br /&gt;
+Malaysia&lt;/p&gt;
+
+&lt;p&gt;[allegory]&lt;br /&gt;
+45A Kilsyth Road&lt;br /&gt;
+Brookline, MA 02445&lt;/p&gt;
+
+&lt;p&gt;[Alpha42] &lt;br /&gt;
+PO Box 18162 &lt;br /&gt;
+Baltimore, MD 21220 &lt;/p&gt;
+
+&lt;p&gt;[Altusmens]&lt;br /&gt;
+2087 de Maisonneuve&lt;br /&gt;
+Apt. 18&lt;br /&gt;
+Montreal QC &amp;nbsp;H3H 1K9&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[AndieX] (Andreas Ahlstrand)&lt;br /&gt;
+Magistratsv. 55 G:206&lt;br /&gt;
+226 44 Lund&lt;br /&gt;
+Sweden&lt;/p&gt;
+
+&lt;p&gt;[anemotis] (Courtney Neuschwander)&lt;br /&gt;
+1540 W. Kent Ave.&lt;br /&gt;
+Missoula, MT 59801&lt;/p&gt;
+
+&lt;p&gt;[alex] (Alex K.)&lt;br /&gt;
+PO Box 3722&lt;br /&gt;
+West Lafayette, IN 47996-3722&lt;/p&gt;
+
+&lt;p&gt;[apraetor]&lt;br /&gt;
+WPI - Box 474&lt;br /&gt;
+100 Institute Rd.&lt;br /&gt;
+Worcester, MA 01609&lt;/p&gt;
+
+&lt;p&gt;[arkaem] (nae)&lt;br /&gt;
+88 Dumaresq Street&lt;br /&gt;
+Hamilton NSW 2303&lt;br /&gt;
+Australia&lt;/p&gt;
+
+&lt;p&gt;[arcterex] (Alan Bailward)&lt;br /&gt;
+32288 McRae Ave&lt;br /&gt;
+Mission BC V2V5B5&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[arrowfall]&lt;br /&gt;
+PO Box 23377&lt;br /&gt;
+Seattle, WA 98102&lt;/p&gt;
+
+&lt;p&gt;[Auron] (Brandon B.)&lt;br /&gt;
+98 E. 12th Ave., Apt M&lt;br /&gt;
+Columbus, OH 43201&lt;/p&gt;
+
+&lt;p&gt;[asofel] (Rob)&lt;br /&gt;
+58 Main Street&lt;br /&gt;
+Stanley NB E6B 1A4&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[atesh] (D. Ozaydin)&lt;br /&gt;
+2217 Ravenwood&lt;br /&gt;
+Norman, OK 73071&lt;/p&gt;
+
+&lt;p&gt;[atlas] (Ed Anderson)&lt;br /&gt;
+20 S. Kellogg Ave.&lt;br /&gt;
+Goleta, CA 93117&lt;/p&gt;
+
+&lt;p&gt;[Attache]&lt;br /&gt;
+6915 Bingham &lt;br /&gt;
+Dearborn, MI 48126 &lt;/p&gt;
+
+&lt;a id=&quot;B&quot; name=&quot;B&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[BadMojo] (Joseph Moon)&lt;br /&gt;
+5325 Roosevelt Way NE&lt;br /&gt;
+Seattle, WA 98105&lt;/p&gt;
+
+&lt;p&gt;[Becca] (Jessica K. Hornbeck) &lt;br /&gt;
+5805 Rocky Trace Court&lt;br /&gt;
+Concord, NC 28027&lt;/p&gt;
+
+&lt;p&gt;[belgand] (Mark M. Smith) &lt;br /&gt;
+710 Crestwood Dr. Apt. 4 &lt;/br&gt;
+Manhattan, KS 66502 &lt;/p&gt;
+
+&lt;p&gt;[Bitca] (home address)&lt;br /&gt;
+1776 Hillmont Dr &lt;br /&gt;
+Nashville, TN 37215 &lt;/p&gt;
+
+&lt;p&gt;[borgo] and [borgette] (Bob &amp; Anna Toborg)&lt;br /&gt;
+124 E. Tulane Rd.&lt;br /&gt;
+Columbus, OH 43202&lt;/p&gt; 
+
+&lt;p&gt;[brassmule] (Mike Spraitzar)&lt;br /&gt;
+1343 S Kings Drive&lt;br /&gt;
+Charlotte, NC 28207-2145&lt;/p&gt;
+
+&lt;p&gt;[bus ridin' fool] (Ashley F.)&lt;br /&gt;
+283 East 45th Ave&lt;br /&gt;
+Vancouver BC V5W 1X2&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;a id=&quot;C&quot; name=&quot;C&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[CamTarn] (Andy Walker)&lt;br /&gt;
+52 North Grange Rd&lt;br /&gt;
+Bearsden, Glasgow&lt;br /&gt;
+G61 3AF&lt;br /&gt;
+United Kingdom&lt;/p&gt;
+
+&lt;p&gt;[cbustapeck] (Christopher Busta-Peck)&lt;br /&gt;
+3205 Van Aken Blvd&lt;br&gt;
+Shaker Heights, OH 44120&lt;/p&gt;
+
+&lt;p&gt;[ccunning] (Chad Cunningham)&lt;br /&gt;
+5765 Sharets Dr. &lt;br /&gt;
+Galloway OH 43119&lt;/p&gt;
+
+&lt;p&gt;[Cephalopunk] (Will Piper)&lt;br /&gt;
+205 A Wilson St. &lt;br /&gt;
+Greensboro, NC 27401&lt;/p&gt;
+
+&lt;p&gt;[Charlie] Orme&lt;br /&gt;
+1906-2150 rue Mackay&lt;br /&gt;
+Montreal QC H3G 2M2&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[Chelman] (M.T.Chelmowski) &lt;br /&gt;
+Graaf Balderikstraat 18 &lt;br /&gt;
+3032 HC Rotterdam &lt;br /&gt;
+The Netherlands&lt;/p&gt;
+
+&lt;p&gt;[Chihuahua Grub] (Crunchy T. Hotel)&lt;br /&gt;
+7 Dunboy St. #2 &lt;br /&gt;
+Brighton, MA 02135&lt;/p&gt;
+
+&lt;p&gt;[Chiisuta] (Christa Weber)&lt;br /&gt;
+7 Dunboy St. #2 &lt;br /&gt;
+Brighton, MA 02135&lt;/p&gt;
+
+&lt;p&gt;[ch'i-lin] and [Ysardo]&lt;br /&gt;
+5828 Joshua St.&lt;br /&gt;
+Lansing, MI 48911 &lt;/p&gt;
+
+&lt;p&gt;[Chris-O] and [LadySun] - International House of Floyd &lt;br /&gt;
+403 Somerset St. Apt 3 &lt;br /&gt;
+Bound Brook, NJ 08805&lt;/p&gt;
+
+&lt;p&gt;[CloudStrife] (Neal Butler)&lt;br /&gt;
+32 Arbour Place&lt;br /&gt;
+Stoneybatter&lt;br /&gt;
+Dublin 7&lt;br /&gt;
+Ireland&lt;/p&gt;
+
+&lt;p&gt;[Cool Beans] (Orla Russell-Conway)&lt;br /&gt;
+13 Robert Emmet Close&lt;br /&gt;
+Dublin 8&lt;br /&gt;
+Ireland&lt;/p&gt;
+
+&lt;p&gt;[CrAzE] (Patrick Dougherty)&lt;br /&gt;
+117 Strecker Rd.&lt;br /&gt;
+Ellisville, MO 63011-5200&lt;/p&gt;
+
+&lt;a id=&quot;D&quot; name=&quot;D&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[danlowlite] (Dan Maurer) &lt;br /&gt;
+405 Normal St. &lt;br /&gt;
+Normal, IL 61761&lt;/p&gt;
+
+&lt;p&gt;[dann] (Dann Stayskal)&lt;br /&gt;
+1704 Blue Danube St. #2078&lt;br /&gt;
+Arlington, TX, 76015&lt;/p&gt;
+
+&lt;p&gt;[dannye]&lt;br /&gt;
+PO Box 26104&lt;br /&gt;
+Little Rock, AR 72221&lt;/p&gt;
+
+&lt;p&gt;[darl] (Claude)&lt;br /&gt;
+12 Silver Road&lt;br /&gt;
+Oxford&lt;br /&gt;
+OX4 3AP&lt;br /&gt;
+United Kingdom&lt;/p&gt;
+
+&lt;p&gt;[Datajunkie]&lt;br /&gt;
+E. Fuller&lt;br /&gt;
+156 School Street #5&lt;br /&gt;
+Somerville, MA 02143&lt;/p&gt;
+
+&lt;p&gt;[DaVinciLe0]&lt;br /&gt;
+2422 Prospect St&lt;br /&gt;
+Berkeley, CA 94704-2588&lt;/p&gt;
+
+&lt;p&gt;[Dawggy] and [Harmony] (Jerry and Sandye Wilson)&lt;br /&gt;
+PO Box 335&lt;br /&gt;
+Dexter, MO 63841&lt;/p&gt;
+
+&lt;p&gt;[Demeter]&lt;br /&gt;
+34 Mulgrave Street&lt;br /&gt;
+Ashhurst&lt;br /&gt;
+New Zealand&lt;/p&gt;
+
+&lt;p&gt;[Devon] Hart&lt;br /&gt;
+9825-103 Street NW&lt;br /&gt;
+Edmonton, AB T5K 2M3&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[Disco Jesus] (Robert Hailman)&lt;br /&gt;
+199 Hunter St. W apt #1&lt;br /&gt;
+Peterborough ON K9H 2L1&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[discofever] (Ken Teague)&lt;br /&gt;
+1121 9th St., Apt. B&lt;br /&gt;
+New Orleans, LA 70115-2300&lt;/p&gt;
+
+&lt;p&gt;[dizzy] and [katyana] (Anthony and Dana)&lt;br /&gt;
+8170 Cypress Circle&lt;br /&gt;
+Dexter, MI 48130&lt;/p&gt;
+
+&lt;p&gt;[dmd] (Daniel Drucker)&lt;br /&gt;
+4410 Osage Ave, Apt 2R&lt;br /&gt;
+Philadelphia, PA 19104&lt;/p&gt;
+
+&lt;a id=&quot;E&quot; name=&quot;E&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[edebroux] (Elizabeth Debroux)&lt;br /&gt;
+167 East 1st Ave #36 &lt;br /&gt;
+Salt Lake City, UT 84103&lt;/p&gt;
+
+&lt;p&gt;[elephino] ( L. Johnson)&lt;br /&gt;
+PO Box 8632 &lt;br /&gt;
+Atlanta, GA 31106&lt;/p&gt;
+
+&lt;p&gt;[enth] (Jack)&lt;br /&gt;
+1729 Boylston Ave, #10&lt;br /&gt;
+Seattle, WA 98122&lt;/p&gt;
+
+&lt;p&gt;[Error404]&lt;br /&gt;
+32245 Cordova Ave. &lt;br /&gt;
+Abbotsford BC V2T 4B4&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[eversion] &lt;br /&gt;
+25 Eagle Street &lt;br /&gt;
+Pennfields, Wolverhampton&lt;br /&gt;
+WV3 7DN&lt;br /&gt;
+United Kingdom&lt;/p&gt;
+
+&lt;a id=&quot;F&quot; name=&quot;F&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[Focus] (T. Sahargun)&lt;br /&gt;
+4039 E. Edgemont Ave.&lt;br /&gt;
+Phoenix, AZ 85008&lt;/p&gt;
+
+&lt;p&gt;[Footprints] (Shai Vardi)&lt;br /&gt;
+Beit Govrin Street 18 apt. 14&lt;br /&gt; 
+P.O. Box 4235&lt;br /&gt; 
+47280 Ramat Hasharon&lt;br /&gt; 
+Israel&lt;/p&gt;
+
+&lt;p&gt;Shawn &quot;[Fruan]&quot; Poulsen&lt;br /&gt;
+21 Port Hills Road &lt;br /&gt;
+Heathcote Valley &lt;br /&gt;
+Christchurch 8002 &lt;br /&gt;
+New Zealand &lt;/p&gt;
+
+&lt;p&gt;Funhouse Newhaus &lt;br /&gt;
+4407 NE 8th Ave. &lt;br /&gt;
+Portland, OR 97211 &lt;/p&gt;
+
+&lt;p&gt;[Fustflum]&lt;br /&gt;
+4800 Fifth Avenue &lt;br /&gt;
+Youngstown, OH 44505-1209&lt;/p&gt;
+
+&lt;p&gt;[futurebird] (Susan Murray)&lt;br /&gt;
+50 West 90th Street, E1 &lt;br /&gt;
+New York, NY 10024 &lt;/p&gt;
+
+&lt;p&gt;[fuzzie]&lt;br /&gt;
+49 Langford Road &lt;br /&gt;
+Trowbridge &lt;br /&gt;
+Wiltshire &lt;br /&gt;
+BA14 8NX&lt;br /&gt;
+United Kingdom&lt;/p&gt;
+
+&lt;p&gt;[fuzzy and blue] and [Jongleur]&lt;br /&gt;
+3255 Ferry Street&lt;br /&gt;
+Eugene, OR 97405&lt;/p&gt;
+
+&lt;a id=&quot;G&quot; name=&quot;G&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[General Lee] (L.H. Spiva, Esq.)&lt;br /&gt;
+2433 Thomas Dr. #163&lt;br /&gt;
+Panama City Beach, FL 32408&lt;/p&gt;
+
+&lt;p&gt;[General Wesc] &lt;br /&gt;
+1670 NC 33 West &lt;br /&gt;
+Chocowinity, NC 27817&lt;/p&gt;
+
+&lt;p&gt;[getzburg] &lt;br /&gt;
+23 Baldwin Rd &lt;br /&gt;
+Portsmouth, RI 02871&lt;/p&gt;
+
+&lt;p&gt;[GhettoAardvark]&lt;br&gt;
+Zach Grow&lt;br&gt;
+26230 SW Canyon Creek Road, Apt 304&lt;br&gt;
+Wilsonville, OR 97070&lt;/p&gt;
+
+&lt;p&gt;[Glowing Fish] &lt;br /&gt;
+Matthew Harris&lt;br /&gt; 
+253 N Broadway #407 &lt;br /&gt;
+Portland, OR 97227&lt;/p&gt;
+
+&lt;p&gt;[grundoon]&lt;br /&gt;
+1204 Colby Drive&lt;br /&gt;
+Davis, CA 95616&lt;/p&gt;
+
+&lt;p&gt;[gwenllian] (Martina Thompson)&lt;br /&gt;
+PO Box 3722&lt;br /&gt;
+West Lafayette, IN 47996-3722&lt;/p&gt;
+
+&lt;a id=&quot;H&quot; name=&quot;H&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[Hai-Etlik] (Kevin Smith)&lt;br /&gt;
+1856 Sandra Plc.&lt;br /&gt;
+Duncan BC V9L 5A8&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[HamsterMan] (Alex Trenchard)&lt;br /&gt;
+'Westcroft'&lt;br /&gt;
+Blackdown Ave&lt;br /&gt;
+Woking&lt;br /&gt;
+GU22 8QG&lt;br /&gt;
+United Kingdom&lt;/p&gt;
+
+&lt;p&gt;[Harmony] and [Dawggy] (Sandye and Jerry Wilson)&lt;br /&gt;
+PO Box 335&lt;br /&gt;
+Dexter, MO 63841&lt;/p&gt;
+
+&lt;p&gt;[Harpsichord_fanatic]&lt;br /&gt;
+8-822 Main St. N&lt;br /&gt;
+Moose Jaw, SK S6H 3K6 &lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[heppigirl] and [tWD]&lt;br /&gt;
+2 Bloom Street&lt;br /&gt;
+Moonee Ponds&lt;br /&gt;
+Victoria 3039&lt;br /&gt;
+Australia&lt;/p&gt;
+
+&lt;p&gt;[hodgepodge] (Zachary Keane) &lt;br /&gt;
+2907 Austin St.&lt;br /&gt;
+Houston, TX 77004 &lt;/p&gt;
+
+&lt;p&gt;Jason [holliman|Holliman]&lt;br /&gt;
+8011 Southaven Circle W. &lt;br /&gt;
+Southaven, MS 38671&lt;/p&gt;
+
+&lt;p&gt;[Hyphenated]&lt;br /&gt;
+26 MacArthur Drive&lt;br /&gt;
+Edison, NJ 08837-2830&lt;/p&gt;
+
+&lt;a id=&quot;I&quot; name=&quot;I&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[iamkaym] (Kay Musette)&lt;br /&gt;
+POB 291634 &lt;br /&gt;
+Port Orange, FL 32129-1634&lt;/p&gt;
+
+&lt;p&gt;[icicle] (C. McCurdy) &lt;br /&gt;
+1724 SE Taylor St.&lt;br&gt;
+Portland, OR 97214&lt;br /&gt;
+(icicle would like to note that she has big dogs and guns)&lt;/p&gt;
+
+&lt;p&gt;[Infinite Burn] (Scott Roche)&lt;br /&gt;
+156-02 77th Street &lt;br /&gt;
+Howard Beach, NY 11414&lt;/p&gt;
+
+&lt;a id=&quot;J&quot; name=&quot;J&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[jaubertmoniker]&lt;br /&gt;
+235 Main St #3&lt;br /&gt;
+Medford, MA 02155&lt;/p&gt;
+
+&lt;p&gt;[JayBonci]&lt;br /&gt;
+7 Washington Ave&lt;br /&gt;
+Holyoke, MA 01040&lt;/p&gt;
+
+&lt;p&gt;[jessicapierce]&lt;br /&gt;
+PO Box 8632&lt;br /&gt;
+Atlanta, GA 31106&lt;/p&gt;
+
+&lt;p&gt;[jm229] (John Morton)&lt;br /&gt;
+PO Box 1043&lt;br /&gt;
+Canal Street Station&lt;br /&gt;
+New York, NY 10013&lt;/p&gt;
+
+&lt;p&gt;[joes3029] (John Heathcote)&lt;br /&gt;
+PO Box 1040&lt;br /&gt; 
+Pietermaritzburg 3245&lt;br /&gt;
+Natal&lt;br /&gt;
+South Africa&lt;/p&gt;
+
+&lt;p&gt;[johnruss]&lt;br /&gt;
+1012 Cash Drive&lt;br /&gt;
+Arkadelphia, AR 71923&lt;/p&gt;
+
+&lt;p&gt;[Jongleur] and [fuzzy and blue]&lt;br /&gt;
+3255 Ferry Street&lt;br /&gt;
+Eugene, OR 97405&lt;/p&gt;
+
+&lt;p&gt;[jt] (Jason)&lt;br /&gt;
+88 Dumaresq Street&lt;br /&gt;
+Hamilton, NSW 2303&lt;br /&gt;
+Australia&lt;/p&gt;
+
+&lt;p&gt;Junkill (Kellum Johnson)&lt;br /&gt;
+403 E. Tyler St.&lt;br/&gt;
+Richardson, TX 75081&lt;/p&gt;
+
+&lt;p&gt;[Jurph]&lt;br /&gt;
+1502 November Circle, Apt. 201&lt;br /&gt;
+Silver Spring, MD 20904&lt;/p&gt;
+
+&lt;a id=&quot;K&quot; name=&quot;K&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[Kalon]&lt;br /&gt;
+PO Box 601&lt;br /&gt;
+Rockdale&lt;br /&gt;
+New South Wales&lt;br /&gt;
+2216&lt;br /&gt;
+Australia&lt;/p&gt;
+
+&lt;p&gt;[karma debt]&lt;br /&gt;
+1728 Columbia Street&lt;br&gt;
+Eugene, OR 97403&lt;/p&gt;
+
+&lt;p&gt;[katyana] and [dizzy] (Dana and Anthony)&lt;br /&gt;
+8170 Cypress Circle&lt;br /&gt;
+Dexter, MI 48130&lt;/p&gt;
+
+&lt;p&gt;[kiladogg] (Kelsey)&lt;br /&gt;
+505 Chenery Street&lt;br /&gt;
+San Francisco, CA 94131&lt;/p&gt;
+
+&lt;p&gt;[Kit] (Lindsey E. Peterson-Pope)&lt;br /&gt;
+1110 S Harrison St&lt;br /&gt;
+Moscow, ID 83843 &lt;/p&gt;
+
+&lt;p&gt;[kslawson] (Kim Slawson)&lt;br /&gt;
+501 Main Street&lt;br&gt;
+Rockland, ME 04841&lt;/p&gt;
+
+&lt;p&gt;[kthejoker] (Kyle Hale)&lt;br /&gt;
+4510 Wellbrook Lane&lt;br /&gt;
+Katy, TX 77450&lt;/p&gt;
+
+&lt;a id=&quot;L&quot; name=&quot;L&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[LadySun] and [Chris-O] - International House of Floyd &lt;br /&gt;
+403 Somerset St. Apt 3 &lt;br /&gt;
+Bound Brook, NJ 08805&lt;/p&gt;
+
+&lt;p&gt;[Laura Elizabeth]&lt;br&gt;
+1689 Madison Avenue, #1&lt;br&gt;
+Bridgeport, CT 06606&lt;/p&gt;
+
+&lt;p&gt;[LaylaLeigh]&lt;br /&gt;
+516 S. Mendenhall St., Apt. H&lt;br /&gt;
+Greensboro, NC 27403&lt;/p&gt;
+
+&lt;p&gt;[lillianvalencia] &lt;br /&gt;
+1303 N Calvert St., Apt 2R &lt;br /&gt;
+Baltimore, MD 21202&lt;/p&gt;
+
+&lt;p&gt;[Linca] - Antonin Lucas &lt;br /&gt;
+3 rue de la Cossonnerie &lt;br /&gt;
+75001 Paris&lt;br /&gt;
+France&lt;/p&gt;
+
+&lt;p&gt;[Lith] (Martyn Safrin)&lt;br /&gt;
+833 Central Avenue, Apt. 4C&lt;br /&gt;
+Far Rockaway, NY 11691&lt;/p&gt;
+
+&lt;p&gt;[Lother]&lt;br /&gt;
+Haukkam&#228;enkatu 1 A 5&lt;br /&gt;
+FIN-33560 Tampere&lt;br /&gt;
+Finland&lt;/p&gt;
+
+&lt;p&gt;[Lucy-S] and [Braunbeck] &lt;br /&gt;
+P.O. Box 26991&lt;br /&gt;
+Columbus, OH 43226-0991&lt;/p&gt;
+
+&lt;a id=&quot;M&quot; name=&quot;M&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[magicmanzach]&lt;br /&gt;
+154 Columbia St.&lt;br /&gt;
+Apt. #3&lt;br /&gt;
+Malden, MA 02148&lt;/p&gt;
+
+&lt;p&gt;[Magus]&lt;br /&gt;
+1080 Terrace St. #707 &lt;br /&gt;
+Muskegon, MI 49442&lt;/p&gt;
+
+&lt;p&gt;[markadm]&lt;br /&gt;
+39 Springfield Road&lt;br /&gt;
+South Queensferry&lt;br /&gt;
+West Lothian EH30 9SA&lt;br /&gt;
+United Kingdom&lt;/p&gt;
+
+&lt;p&gt;[Matt_t_hat]  (Matt) &lt;br /&gt;
+24 Elham Close &lt;br /&gt;
+Margate &lt;br /&gt;
+Kent &lt;br /&gt;
+CT9 3RQ &lt;br /&gt;
+UK&lt;/p&gt;
+
+&lt;p&gt;[mblase] &lt;br /&gt;
+410 W. Hanssler Place &lt;br /&gt;
+Peoria, IL 61604-2866&lt;/p&gt;
+
+&lt;p&gt;[Wuukiee] &amp;amp; [mcc]&lt;br&gt;
+744 El Sereno Drive&lt;br&gt;
+San Jose, CA 95123&lt;/p&gt;
+
+&lt;p&gt;[mcSey] &lt;br /&gt;
+10667 N. Loop Rd. &lt;br /&gt;
+Savanna, IL 61074&lt;/p&gt;
+
+&lt;p&gt;[mellamaphone] &lt;br /&gt;
+88 Dumaresq Street &lt;br /&gt;
+Hamilton, NSW 2303&lt;br /&gt;
+Australia&lt;/p&gt;
+
+&lt;p&gt;[Mitchevious]&lt;br /&gt;
+1634 Birch St.&lt;br /&gt;
+Green Bay, WI 54304&lt;/p&gt;
+
+&lt;p&gt;[ModernAngel]&lt;br /&gt;
+1820 NW 15th Vista #4&lt;br /&gt;
+Boca Raton, FL 33432&lt;/p&gt;
+
+&lt;p&gt;[Monomer]&lt;br /&gt;
+1/5 Daphne Street&lt;br /&gt;
+Prospect, SA 5082&lt;br /&gt;
+Australia&lt;/p&gt;
+
+&lt;p&gt;[Mortice] (Tom Stuart)&lt;br /&gt;
+205 Westbrook Avenue&lt;br /&gt;
+Westbrook&lt;br /&gt;
+Margate&lt;br /&gt;
+CT9 5HS &lt;br /&gt;
+United Kingdom&lt;/p&gt;
+
+&lt;p&gt;[MrSmith]&lt;br /&gt;
+416 N. 6th St.&lt;br /&gt;
+Mt. Vernon, IL 62864&lt;/p&gt;
+
+&lt;p&gt;[Muse]&lt;br /&gt;
+Sterling Valentine&lt;br /&gt;
+617 N. Hayes St. &lt;br /&gt;
+Moscow, ID 83843-3238&lt;/p&gt;
+
+&lt;p&gt;[Myrkabah]&lt;br /&gt;
+63 Mapleridge Lane&lt;br /&gt;
+Asheville NC, 28806&lt;/p&gt;
+
+&lt;a id=&quot;N&quot; name=&quot;N&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[naked_ape] (Daniel Gomez)&lt;br /&gt;
+Casp, 158 3&amp;#221; 4&amp;#170;&lt;br /&gt;
+08013 - Barcelona&lt;br /&gt;
+Spain&lt;/p&gt;
+
+&lt;p&gt;[neil] (Neil Moore)&lt;br /&gt;
+4308 Chas Cir.&lt;br /&gt;
+Lexington, KY 40515-1416&lt;/p&gt;
+
+&lt;p&gt;[NightShadow] (Jay Seals)&lt;br /&gt;
+3416 Towne Village Road&lt;br /&gt;
+Antioch, TN 37213&lt;/p&gt;
+
+&lt;p&gt;[NinjaPenguin]&lt;br /&gt;
+K. Costanzo&lt;br /&gt;
+25 Dighton St. #4&lt;br /&gt;
+Brighton, MA 02135&lt;/p&gt;
+
+&lt;p&gt;[N0Nick]&lt;br /&gt;
+8 Rachel Yanait St.&lt;br /&gt;
+Ashdod 77731&lt;br /&gt;
+Israel&lt;/p&gt;
+
+&lt;p&gt;[No Springs] (Adam Butler)&lt;br /&gt;
+306 Timberline West&lt;br /&gt;
+Bessemer AL 35022&lt;/p&gt;
+
+&lt;p&gt;[nocodeforparanoia] (Bruce)&lt;br /&gt;
+420 Jefferson St. NE Apt E&lt;br /&gt;
+Albuquerque, NM 87108&lt;/p&gt;
+
+&lt;p&gt;[novalis] (Dave Turner)&lt;br /&gt;
+59 Booth Lane&lt;br /&gt;
+Haverford, PA 19041&lt;/p&gt;
+
+&lt;p&gt;[novasoy] (Edward Hammerbeck)&lt;br /&gt;
+700 W. Liberty Street, 2nd Floor &lt;br /&gt;
+Louisville, KY 40203&lt;/p&gt;
+
+&lt;p&gt;[N-Wing]&lt;br /&gt;
+268 St. David Dr.&lt;br /&gt;
+Mt. Laurel, NJ 08054-2906&lt;/p&gt;
+
+&lt;a id=&quot;O&quot; name=&quot;O&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[oakling]&lt;br /&gt;
+919 44th Street&lt;br/&gt;
+Oakland, CA 94608&lt;/p&gt;
+
+&lt;p&gt;[OberonDarksoul](Lawrence Matthews)&lt;br/&gt;
+Wye Villa&lt;br/&gt;
+3 Athelstan Road&lt;br/&gt;
+Dorchester, Dorset&lt;br/&gt;
+DT1 1NR&lt;br/&gt;
+United Kingdom&lt;/p&gt;
+
+&lt;p&gt;[ocelotbob] (K. Calhoun)&lt;br /&gt;
+2200 E. Ball Rd #1&lt;br /&gt;
+Anaheim, CA 92806&lt;/p&gt;
+
+&lt;p&gt;[olmanrvr] (John Garrett)&lt;br /&gt;
+2021 N. Halifax Ave.&lt;br /&gt;
+Daytona Beach, FL 32118&lt;/p&gt;
+
+&lt;p&gt;[--OutpostMir--] (Matthew Adair)&lt;br /&gt;
+1612 Cason Trail&lt;br /&gt;
+Murfreesboro, TN 37128&lt;/p&gt;
+
+&lt;a id=&quot;P&quot; name=&quot;P&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[Palpz] (Greg Clarke)&lt;br /&gt;
+10 - 10 Deerfield Drive&lt;br&gt;
+Nepean, ON K2G 3R6&lt;br&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[panamaus]&lt;br /&gt;
+PO Box 6677&lt;br /&gt;
+Santa Barbara, CA 93160-6677&lt;/p&gt;
+
+&lt;p&gt;[Pantaliamon] (tinahb)&lt;br /&gt;
+1616 16th Street, NW #207&lt;br /&gt;
+Washington, DC 20009&lt;/p&gt;
+
+&lt;p&gt;[Phyrkrakr]&lt;br /&gt;
+1301 Elm&lt;br /&gt;
+Rolla, MO 65401&lt;/p&gt;
+
+&lt;p&gt;[PopeFelix] (Hon. Rev. Dr. Occupant, c/o Kit Peters) &lt;br /&gt;
+76 Nassau St Apt E&lt;br /&gt;
+Charleston, SC 29403&lt;/p&gt;
+
+&lt;p&gt;[Pseudo_Intellectual]&lt;br /&gt;
+4481 Gladstone Street&lt;br /&gt;
+Vancouver, BC V5N 4Z7&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;P&gt;[psydereal]&lt;br /&gt;
+126 Brenton Ct.&lt;br /&gt;
+Mountain View CA 94043&lt;/p&gt;
+
+&lt;p&gt;[purple_curtain]&lt;br /&gt;
+19 Florence Road&lt;br /&gt;
+Sutton Coldfield, W. Midlands&lt;br /&gt;
+B73 5NJ&lt;br /&gt;
+United Kingdom&lt;/p&gt;
+
+&lt;p&gt;[Pylon] (Mike)&lt;br /&gt;
+8301 Summit Cedar Lane&lt;br /&gt;
+Liverpool, NY 13090-1118&lt;/p&gt;
+
+&lt;a id=&quot;Q&quot; name=&quot;Q&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[qousqous]&lt;br /&gt;
+1720 SE Poplar Av&lt;br /&gt;
+Portland, OR 97214-4829&lt;/p&gt;
+
+&lt;p&gt;[QuietLight]&lt;br /&gt;
+7 Redwood Drive&lt;br /&gt;
+Dix Hills, NY 11746&lt;/p&gt;
+
+&lt;p&gt;[QXZ]&lt;br /&gt;
+1819 25th Rd., First Floor&lt;br /&gt;
+Astoria, NY 11102&lt;/p&gt;
+
+&lt;a id=&quot;R&quot; name=&quot;R&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[RACECAR] (R. Brocken)&lt;br /&gt;
+2437 Emerson Ave. South #4&lt;br /&gt;
+Minneapolis, MN 55405&lt;/p&gt;
+
+&lt;p&gt;[Rancid_Pickle]&lt;br /&gt;
+Warped Reality Studios&lt;br /&gt;
+PO Box 272814&lt;br /&gt;
+Fort Collins, CO 80527&lt;/p&gt;
+
+&lt;p&gt;[rdude]&lt;br /&gt;
+18133 NE 185th Pl&lt;br /&gt;
+Woodinville, WA 98072&lt;/p&gt;
+
+&lt;p&gt;[renderer] (Matthias, King of Mediocrity)&lt;br /&gt;
+1610 NW Barnsley Ct.&lt;br /&gt;
+Portland, OR 97229&lt;/p&gt;
+
+&lt;p&gt;[rescdsk] (Thomas Smith)&lt;br /&gt;
+1809 Garden St.&lt;br /&gt;
+West Lafayette, IN 47906&lt;/p&gt;
+
+&lt;p&gt;[RimRod]&lt;br /&gt;
+391 West Side Drive #201&lt;br /&gt;
+Gaithersburg, MD 20878&lt;/p&gt;
+
+&lt;p&gt;[riverrun]&lt;br /&gt;
+P.O. Box 3108&lt;br /&gt;
+South Pasadena, CA 91031&lt;/p&gt;
+
+&lt;p&gt;[Robo]&lt;br /&gt;
+170 College Ave&lt;br /&gt;
+STE 230&lt;br /&gt;
+Holland, MI 49423&lt;/p&gt;
+
+&lt;p&gt;[Robocoder]&lt;br /&gt;
+1063 Foxchase Dr.&lt;br /&gt;
+San Jose, CA 95123 &lt;/p&gt;
+
+&lt;p&gt;[RoguePoet] (Mike Kelley)&lt;br&gt;
+1133 Railroad Ave #314&lt;br&gt;
+Bellingham, WA 98225&lt;/p&gt;
+
+&lt;p&gt;[Roninspoon]&lt;br /&gt;
+216 Pioneers Peak Ave&lt;br /&gt;
+Henderson, NV 89015&lt;/p&gt;
+
+&lt;p&gt;[RPGeek] (Daniel Roberge) &lt;br /&gt;
+4842 Queensland Road&lt;br /&gt;
+Vancouver BC V6T 1G2&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;a id=&quot;S&quot; name=&quot;S&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[Saige] (Angela S.)&lt;br /&gt;
+4006 W. Lake Samm Pkwy NE #C3&lt;br /&gt;
+Redmond, WA 98052&lt;/p&gt;
+
+&lt;p&gt;[samgrover] (Satyajit Grover)&lt;br /&gt;
+1705 SW 11th Ave #305&lt;br /&gt;
+Portland, OR 97201&lt;/p&gt;
+
+&lt;p&gt;[sauth] (Sean Hickey) &lt;br /&gt;
+7418 Elmwood Ave #3&lt;br /&gt;
+Middleton, WI, 53562
+
+&lt;p&gt;[scarletblood] (Kareen Tan)&lt;br /&gt;
+Blk 121 Serangoon North Ave 1&lt;br /&gt;
+#10-201&lt;br /&gt;
+Singapore 550121&lt;/p&gt;
+
+&lt;p&gt;[Scribe]&lt;br /&gt;
+3205 Van Aken Blvd&lt;br&gt;
+Shaker Heights, OH 44120&lt;/p&gt;
+
+&lt;p&gt;[sctprog] Scott MacDonald&lt;br /&gt;
+#201 4231 Bow Tr. S.W.&lt;br /&gt;
+Calgary, AB T3C 2G1&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[SEF]&lt;br /&gt;
+113 Sunnyside Avenue &lt;br /&gt;
+Piedmont, CA 94611&lt;/p&gt;
+
+&lt;p&gt;[segnbora-t|Segnbora] (Suzanne Marie Saunders)&lt;br /&gt;
+15421 Plantation Oaks Dr., Apt. 14&lt;br&gt;
+Tampa, FL 33647&lt;/p&gt;
+
+&lt;p&gt;[Senso] (Manuel Lanctot)&lt;br /&gt;
+2097 rue Valois &lt;br /&gt;
+Montreal, QC H1W 3M6&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[ShadowNode]&lt;br /&gt;
+Apt #2201 4288 Grange Street&lt;br /&gt;
+Burnaby, BC V5H 1P2&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[siouxsie] (Susie L.)&lt;br /&gt;
+6606 Cordelila Road&lt;br /&gt;
+Rowlett, TX 75089 &lt;/p&gt;
+
+&lt;p&gt;[Sir Norris]&lt;br /&gt;
+3 Petrel Close&lt;br /&gt;
+Torquay, Devon&lt;br /&gt;
+TQ2 7SP&lt;br /&gt;
+United Kingdom&lt;/p&gt;
+
+&lt;p&gt;[siren] (I. Mulvany)&lt;br /&gt;
+11H Herengracht&lt;br /&gt;
+2511 EG Den Haag&lt;br /&gt;
+The Netherlands&lt;/p&gt;
+
+&lt;p&gt;[sloebertje]&lt;br /&gt;
+Fuutlaan 28&lt;br /&gt;
+2623 MT Delft&lt;br /&gt;
+The Netherlands&lt;/p&gt;
+
+&lt;p&gt;[smartalix] (Alix Paultre)&lt;br /&gt;
+500 E 63rd St. 22A&lt;br /&gt;
+New York, NY 10021&lt;/p&gt;
+
+&lt;p&gt;[smileloki]&lt;br /&gt;
+Simon's Rock College&lt;br /&gt;
+84 Alford Rd., Box 392&lt;br /&gt;
+Great Barrington, MA 01230&lt;/p&gt;
+
+&lt;p&gt;[sneff]&lt;br /&gt;
+407/508 Riley St&lt;br /&gt;
+Surry Hills &lt;br /&gt;
+Sydney, NSW 2010&lt;br /&gt;
+Australia&lt;/p&gt;
+
+&lt;p&gt;[Sondheim] (Joshua Carr)  &lt;br /&gt;
+185 Prospect Park South West, Apt. 207  &lt;br /&gt;
+Brooklyn, NY 11218&lt;/p&gt;
+
+&lt;p&gt;[Sontra] (Steven Orr)&lt;br /&gt;
+469 Davis Road&lt;br /&gt;
+Ladysmith, BC&lt;br /&gt;
+Canada V9G 1V8&lt;/p&gt;
+
+&lt;p&gt;[sparklemuse] (Mary Henkes)&lt;br /&gt;
+1023 Florence Ave., Apt. 2&lt;br /&gt;
+Evanston, IL 60202&lt;/p&gt;
+
+&lt;p&gt;[stagmeister] (Jason Lustig)&lt;br /&gt;
+26 Heritage West&lt;br /&gt;
+Williamsville, NY 14221&lt;/p&gt;
+
+&lt;p&gt;[sui]&lt;br /&gt;
+GPO Box 1520N&lt;br /&gt;
+Melbourne, VIC 3001&lt;br /&gt;
+Australia&lt;/p&gt;
+
+&lt;p&gt;[Swap] (Jordi) &lt;br /&gt;
+Avenida de las Fuentes 82-C  &lt;br /&gt;
+Tecamachalco &lt;br /&gt;
+Ciudad de M&#233;xico &lt;br /&gt;
+Edomex C.P. 53950 &lt;br /&gt;
+Mexico&lt;/p&gt;
+
+&lt;p&gt;[Sylvar] (Ben Ostrowsky)&lt;br /&gt;
+14305 Wedgewood Ct #107,&lt;br /&gt;
+Tampa FL 33613-3002&lt;/P&gt;
+
+&lt;a id=&quot;T&quot; name=&quot;T&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[TanisNikana]&lt;br /&gt;
+PO Box 24&lt;br /&gt;
+Dundee, OR 97115&lt;/p&gt;
+
+&lt;p&gt;[tarapinstation]&lt;br /&gt;
+253 East Crestwood Drive, Apt. A-5 &lt;br /&gt;
+Camp Hill, PA 17011-1204&lt;/p&gt;
+
+&lt;p&gt;[Tato]&lt;br /&gt;
+5200 Roosevelt Way NE #302 &lt;br /&gt;
+Seattle, WA 98105&lt;/p&gt;
+
+&lt;p&gt;[Tem42]&lt;br /&gt;
+1670 NC 33 West &lt;br /&gt;
+Chocowinity, NC 27817&lt;/p&gt;
+
+&lt;p&gt;[Templeton]&lt;br /&gt;
+7402 Tilden St&lt;br /&gt;
+Hyattsville, MD 20784&lt;/p&gt;
+
+&lt;p&gt;[Tlachtga]&lt;/a&gt; (Mary Jones)&lt;br /&gt;
+119 E. Mount Airy Ave., Apt #3&lt;br /&gt;
+Philadelphia, PA 19119&lt;/p&gt;
+
+&lt;p&gt;[Toasterleavings] (Shane Brown)&lt;br /&gt;
+24 Frederick Street&lt;br /&gt;
+Taringa, QLD 4068&lt;br /&gt;
+Australia&lt;/p&gt;
+
+&lt;p&gt;[Transitional Man] (David Wyatt)&lt;br /&gt;
+3386 Karl Rd.&lt;br/&gt;
+Columbus, OH 43224&lt;/p&gt;
+
+&lt;p&gt;[Truffle]&lt;br /&gt;
+7683 Kingsway&lt;br /&gt;
+Burnaby, BC V3N 3C8&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[trust the doctor] (Adam Greves)&lt;br /&gt;
+1 Northdown Park Road &lt;br /&gt;
+
+Cliftonville&lt;br /&gt;
+Margate, Kent&lt;br /&gt;
+CT9 2NB&lt;br /&gt;
+United Kingdom&lt;/p&gt;
+
+&lt;p&gt;[trybonun] &lt;br /&gt;
+616 Ard Rd &lt;br /&gt;
+Ray City, GA 31645&lt;/p&gt;
+
+&lt;p&gt;[tWD] and [heppigirl]&lt;br /&gt;
+2 Bloom Street&lt;br /&gt;
+Moonee Ponds, VIC 3039&lt;br /&gt;
+Australia&lt;/p&gt;
+
+&lt;p&gt;[Twiin] (Jairus Pryor)&lt;br /&gt;
+1502 Clementine Boulevard&lt;br /&gt;
+Ottawa, ON K1H 8E9&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[Two Sheds] (Peter Collopy)&lt;br /&gt;
+923 South 49th Street #1R&lt;br /&gt;
+Philadelphia, PA 19143&lt;/p&gt;
+
+&lt;a id=&quot;UVW&quot; name=&quot;UVW&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[Uri E Bakay] (Amar Saleem)&lt;br /&gt;
+7 Hingley Street&lt;br /&gt;
+Cradley Heath&lt;br /&gt;
+West Midlands B64 5LA&lt;br /&gt;
+England&lt;/p&gt;
+
+&lt;p&gt;[Void_Ptr] (Rosangela Canino-Koning)&lt;br /&gt;
+87 E 23rd Street &lt;br /&gt;
+Holland, MI 49423&lt;/p&gt;
+
+&lt;p&gt;[Walter]&lt;br /&gt;
+1819 25th Rd, 1st Floor&lt;br /&gt;
+Astoria, NY 11102&lt;/p&gt;
+
+&lt;p&gt;[wamckee] (William A. McKee)&lt;br /&gt;
+P.O. Box 535&lt;br /&gt;
+Station B&lt;br /&gt;
+Ottawa, ON K1P 5P6&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[weasello]&lt;br /&gt;
+#407 1631 McKenzie Ave.&lt;br /&gt;
+Victoria, BC V8T 4X6&lt;br /&gt;
+Canada&lt;/p&gt;
+
+&lt;p&gt;[wertperch] (Kevin Weedon)&lt;br /&gt;
+1204 Colby Drive&lt;br /&gt;
+Davis, CA 95616&lt;/p&gt;
+
+&lt;p&gt;[Wiccanpiper] and [briarcub]&lt;br /&gt;
+107 E Sullivan St.&lt;br /&gt;
+Heyworth, IL 61745&lt;/p&gt;
+
+&lt;p&gt;[Wntrmute]&lt;br /&gt;
+Flat 7&lt;br /&gt;
+37 South Clerk Street&lt;br /&gt;
+Edinburgh, EH8 9NZ&lt;br /&gt;
+Scotland&lt;/p&gt;
+
+&lt;p&gt;[wonko]&lt;br /&gt;
+20605 SW Pike St. &lt;br /&gt;
+Beaverton, OR 97007&lt;/p&gt;
+
+&lt;p&gt;[wonko6942] (Ian Feldman)&lt;br /&gt;
+5649 N Drake&lt;br /&gt;
+Chicago, IL 60659-4419&lt;br /&gt;
+(college address, valid late August through mid-May):Ian Feldman&lt;br /&gt;
+Sid Richardson College&lt;br /&gt;
+6360 Main Street&lt;br /&gt;
+Houston, TX 77005&lt;/p&gt;
+
+&lt;p&gt;[wordnerd] (Stephen Van Doren)&lt;br /&gt;
+1050 Sherman St #311&lt;br&gt;
+Denver, CO 80203 &lt;/p&gt;
+
+&lt;p&gt;[Wuukiee] &amp;amp; [mcc]&lt;br&gt;
+744 El Sereno Drive&lt;br&gt;
+San Jose, CA 95123&lt;/p&gt;
+
+&lt;a id=&quot;XYZ&quot; name=&quot;XYZ&quot;&gt;&lt;/a&gt;
+
+&lt;p&gt;[yclept]&lt;br /&gt;
+80 Woodschurch Road&lt;br /&gt;
+Flemington, NJ 08822&lt;/p&gt;
+
+&lt;p&gt;[Ysardo] and [ch'i-lin]&lt;br /&gt;
+5828 Joshua St.&lt;br /&gt;
+Lansing, MI 48911&lt;/p&gt;
+
+&lt;!-- Converted to superdoc and blocked non-users from viewing it // Apatrix 2005-10-22 --&gt;
+
+};
+
+return $str;
+
+%]</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-08-23 01:41:25</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1143729</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1143729</document_id>
+  <author_user>113</author_user>
+  <package>0</package>
+  <title>EMAR</title>
+</node>

@@ -1,0 +1,307 @@
+<node>
+  <doctext>[Delta-Sys] submitted a patch for [displayWriteupInfo]'s &quot;code&quot; field on Sat Apr 13 2002 at 02:23:25&lt;Br&gt;
+patch's purpose: unknown&lt;Br&gt;
+&lt;bR&gt;
+Too old to be of any use without any documentation of what the patch was supposed to fix.</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2002-12-06 20:06:57</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1397778</node_id>
+  <htmlcode_id>1397778</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <code>#customized display of writeup information
+#pass (optional) writeup ID, (optional) things to show
+#updated: 2002.03.18.n1
+
+
+#client-side error
+local *userWarn = sub {
+	return '&lt;small title=&quot;displayWriteupInfo (htmlcode)&quot;&gt;!!! ' . $_[0] . ' !!!&lt;/small&gt;';
+};
+
+#
+# setup
+#
+
+#parameters
+my ($wuID, @showThings) = @_;
+my $nID = getId($NODE);
+$wuID ||= $nID || 0;
+return 'Ack! displayWriteupInfo: Unable to get node_id' unless $wuID;
+my $WRITEUP = getNodeById($wuID) || 0;
+return 'Ack! displayWriteupInfo: No node with node_id '.$wuID unless $WRITEUP;
+my $viewingAlone = $wuID==$nID;	#true if viewing WU by itself, false if possibly with others (in an e2node)
+unless (scalar(@showThings)) {
+	#mostly &quot;classic&quot;
+	@showThings = ('l:typeauthorprint','c:kill','c:vote');
+	if($wuID==$nID) {
+		push @showThings, ('r:dtcreate','\n','l:cfull');
+	} else {
+		push @showThings, ('c:cshort','r:dtcreate');
+	}
+}
+{
+	my $max = 16; #don't let user go nuts
+	@showThings = @showThings[0..$max-1] if scalar(@showThings)&gt;$max;
+}
+
+#constants
+my $UID = getId($USER)||$HTMLVARS{'guest_user'};
+#my $uid = $UID;	#deprecated
+my $isGuest = ($UID==$HTMLVARS{'guest_user'});
+my $isRoot = !$isGuest &amp;&amp; exists $HTMLVARS{group_gods}{$UID};
+my $isCE = !$isGuest &amp;&amp; ($isRoot || exists $HTMLVARS{'group_content editors'}{$UID});
+my $aid = $$WRITEUP{author_user} || 0;
+my $isMine = (!$isGuest) &amp;&amp; ($aid==$UID);
+
+my $t;	#temporary values that subs can use
+
+#update: only used 1 place, so rather pointless - N-Wing
+##test for WU being votable or C!able
+#my $mayVote=undef;
+local *isVotable = sub {
+	return 1;
+#	return $mayVote if defined $mayVote;	#already known, use cached value
+#	my $unVotable = getVars(getNode('boring heaven nodes','setting'));
+#	$t = $$WRITEUP{title};
+#	$t =~ s/\s/_/g;
+#	$t =~ s/_\(.*?\)^//;	#get rid of &quot; (thing)&quot;
+#	$mayVote = (exists $$unVotable{$t}) &amp;&amp; $$unVotable{$t};
+#	return $mayVote;
+};
+
+#display constants
+my %tDataOpen = (
+	'l'=&gt;'&lt;td&gt;',
+	'c'=&gt;'&lt;td align=&quot;center&quot;&gt;',
+	'r'=&gt;'&lt;td align=&quot;right&quot;&gt;',
+);
+my $tDataClose = '&lt;/td&gt;';
+my $tRowOpen = '&lt;table border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; width=&quot;100%&quot;&gt;&lt;tr&gt;';
+my $tRowClose = &quot;&lt;/tr&gt;&lt;/table&gt;\n&quot;;
+
+
+#
+# subs
+#
+
+local *info_wutype = sub {
+	$t = $$WRITEUP{wrtype_writeuptype} || 0;
+	return userWarn(linkNode($WRITEUP, 'bad WU type: 0')) unless $t;
+	getRef $t;
+	return userWarn(linkNode($WRITEUP, 'bad WU type: '.$$t{node_id})) unless $t;
+	return userWarn(linkNode($WRITEUP, '0 length WU type title: '.$$t{node_id})) unless length($$t{title});
+	return '('.linkNode($WRITEUP, $$t{title}).')';
+};
+
+local *info_kill = sub {
+	return htmlcode('voteit',$wuID.',1');
+};
+
+local *info_vote = sub {
+	return isVotable() ? '&lt;span style=&quot;white-space: nowrap&quot;&gt;'.htmlcode('voteit',$wuID.',2').'&lt;/span&gt;' : '';
+};
+
+local *info_c_full = sub {
+	return htmlcode('writeupcools',$wuID);
+};
+
+local *info_c_short = sub {
+	return htmlcode('CoolUncoolIt',$wuID);
+};
+
+local *info_dt_create = sub {
+	return '&lt;small&gt;'.htmlcode('parsetimestamp', $$WRITEUP{createtime}).'&lt;/small&gt;';
+};
+
+local *info_author = sub {
+	return '&lt;A NAME=&quot;' .$$WRITEUP{author_user} . '&quot; /&gt; by &lt;strong&gt;'.linkNode($$WRITEUP{author_user},0,{lastnode_id=&gt;0}).'&lt;/strong&gt;';
+};
+
+local *info_author_anon = sub {
+	return ($isMine || hasVoted($WRITEUP, $USER)) ? &amp;info_author() : '(anonymous)';
+};
+
+local *info_author_pseudo = sub {
+	return &amp;info_author() if $isMine || hasVoted($WRITEUP, $USER);
+	my $AT = getNodeById($$WRITEUP{author_user});
+	return '(very anonymous)' unless $AT;
+	$AT = $$AT{title};
+	return '(&lt;a href='.urlGen( $AT ? ({node=&gt;$AT, type=&gt;'user'}) : ({node_id=&gt;$$WRITEUP{author_user}}) ).' title=&quot;'.$AT.'&quot;&gt;anonymous&lt;/a&gt;)'; #try hard to ensure link will work
+};
+
+local *info_print = sub {
+	return '('.linkNode($WRITEUP, 'print', {displaytype=&gt;'printable',lastnode_id=&gt;0}).')';
+};
+
+local *info_typeauthor = sub {
+	return &amp;info_wutype() . ' ' . &amp;info_author() . ' ' . &amp;info_print();
+};
+
+local *info_notnew = sub {
+	return '' unless $isCE || $isMine;
+	return '&lt;small&gt;(created ' . ($$WRITEUP{notnew} ? 'hidden' : 'publicly') . ')&lt;/small&gt;';
+};
+
+local *info_length = sub {
+
+	my $wdt = $$WRITEUP{doctext} || '';
+	my $r = length($wdt).' chars, ';
+	#this part may be slow
+	$wdt =~ s/\&lt;.+?\&gt;//gs;	#weak attempt at HTML tag removal
+	$r .= (($wdt =~ s/\W+/ /gs)||0).' words';
+#	$r .= scalar(split(' ',$wdt)).' words';
+
+	return $r;
+#	return length($$WRITEUP{doctext}) . ' &lt;small&gt;characters&lt;/small&gt;';
+};
+
+#local *send_reply = sub {
+#	return;
+#	#N-Wing says: make this a JS (r)-like thing? (uncomment the hash line below, too so this is called)
+#	#JayBonci TODO
+#};
+
+#TODO? checkbox to have anonymous? maybe just for certain people?
+#this is the old version
+local *old_sendMessage = sub {
+	return if $isGuest;
+	my $s='msgwuauthor_'.$wuID;
+	my $t='';
+	my $l=0;
+	if(($aid!=$UID) &amp;&amp; $$VARS{borged}) {
+		$t = '(you may not talk now)';
+	} elsif( (defined $query-&gt;param($s)) &amp;&amp; (length($query-&gt;param($s)))  ) {
+
+		$t = $$WRITEUP{title};
+#		$t =~ s/ \([^ ]*?\)//o;
+		$t =~ s/ \(\w+\)$//o;
+		$l=length($t) || 0;
+		#prepend title, so WU author knows what sender is talking about
+		$t = 're: ['.$t.']: '.$query-&gt;param($s);
+		#clear text field
+		$query-&gt;param($s,'');
+
+		#send message
+		if($aid) {
+			$DB-&gt;sqlInsert('message', {msgtext=&gt;$t, author_user=&gt;$UID, for_user=&gt;$aid});
+
+			#temporary way for to get a copy - remove this once there is a better way to CC themselves any message
+			if( (defined $query-&gt;param('cc'.$s)) &amp;&amp; ($query-&gt;param('cc'.$s) eq '1') ) {
+				$DB-&gt;sqlInsert('message', {msgtext=&gt;$t, author_user=&gt;$UID, for_user=&gt;$UID, for_usergroup=&gt;$aid});	#if the for_usergroup is axed, need to append some text to sent message
+			}
+
+			$t=' &lt;small&gt;(you said: &quot;'.parseLinks($t,$NODE).'&quot;)&lt;/small&gt;';
+		}
+
+	}
+	return $query-&gt;checkbox('cc'.$s,'','1','CC ').$query-&gt;textfield($s,'',16,255-$l).$t;
+};
+
+#TODO? checkbox to have anonymous? maybe just for certain people?
+local *sendMessage = sub {
+	return if $isGuest;
+	my $qp='msgwuauthor_'.$wuID;	#query parameter
+	my $t='';	#text to display - what was sent, error, etc.
+	my $l=0;
+	if(($aid!=$UID) &amp;&amp; $$VARS{borged}) {
+		$t = '(you may not talk now)';
+	} elsif( (defined $query-&gt;param($qp)) &amp;&amp; (length($query-&gt;param($qp)))  ) {
+		my $msg = $query-&gt;param($qp);
+		my $wut = $$WRITEUP{title};
+		$wut =~ s/ \(\w+\)$//o;
+		$l = (length($wut)+7) || 0;	# 5 = length('re [') + length(']: ')
+
+		my $ccMe = (defined $query-&gt;param('cc'.$qp)) &amp;&amp; ($query-&gt;param('cc'.$qp) eq '1') ? 1 : 0;
+
+		$HTMLVARS{msgparams} = {
+			'recipient_id'=&gt;$aid,
+			'message'=&gt;$msg,
+			'ccself'=&gt;$ccMe,
+			'renode'=&gt;$wut,
+#			'renode_id'=&gt;$wuID,	#do this instead of 'renode' if and when message table gets its own field for this
+		};
+		my $failMessage = htmlcode('sendPrivateMessage','');
+		$failMessage = undef unless (defined $failMessage) &amp;&amp; (length($failMessage));
+		if(defined $failMessage) {
+			$t = ' &lt;strong&gt;Error&lt;/strong&gt;: unable to send writeup message &quot;'.$msg.'&quot;: '.$failMessage;
+		} else {
+			$query-&gt;param($qp,'');	#clear text field
+			$t = ' &lt;small&gt;(sent writeup message &quot;'.parseLinks($msg,$NODE).'&quot;)&lt;/small&gt;';
+		}
+	}
+	return $query-&gt;checkbox('cc'.$qp,'','1','CC ').$query-&gt;textfield($qp,'',20,255-$l).$t;
+};
+
+my %specialDisplays = (
+	'type'=&gt;\&amp;info_wutype,
+	'kill'=&gt;\&amp;info_kill,
+	'vote'=&gt;\&amp;info_vote,
+	'cfull'=&gt;\&amp;info_c_full,
+	'cshort'=&gt;\&amp;info_c_short,
+	'dtcreate'=&gt;\&amp;info_dt_create,
+	'author'=&gt;\&amp;info_author,
+	'authoranon'=&gt;\&amp;info_author_anon,
+	'print'=&gt;\&amp;info_print,
+	'pseudoanon'=&gt;\&amp;info_author_pseudo,
+	'typeauthorprint'=&gt;\&amp;info_typeauthor,
+	'notnew'=&gt;\&amp;info_notnew,
+	'length'=&gt;\&amp;info_length,
+#	'reply'=&gt;\&amp;send_reply,
+#	'sendmsg'=&gt;\&amp;old_sendMessage,	#if WU msg area isn't working right,
+	'sendmsg'=&gt;\&amp;sendMessage,	#uncomment above line and comment this line
+);
+
+
+#
+# main
+#
+
+#build result
+my $str = '';
+my $useK;
+my $s; #which Sub to call
+my $r; #Result of sub call
+my $align; #alignment
+my $curRow = '';
+foreach my $k (@showThings) {
+
+	$useK = $k;
+	$align = $tDataOpen{l};
+	if($useK eq '\n') { #literal characters '\' and 'n', not newline
+		if(length($curRow)) {
+			$str .= $tRowOpen . $curRow . $tRowClose;
+			$curRow = '';
+
+		}
+		next;
+
+	} elsif($useK =~ /^(.):(.+)$/) {
+		$align = $tDataOpen{$1} || $align;
+		$useK = $2;
+
+	}
+	next if length($useK)==0;
+
+	$s = $specialDisplays{$useK} || 0;
+	$curRow .= $align.'&lt;small&gt;(unknown value: &quot;'.$useK.'&quot;; see '.linkNodeTitle('Writeup Settings').')&lt;/small&gt;'.$tDataClose unless $s; #debug
+	next unless $s; #user enters text, so it could be wrong
+	delete $specialDisplays{$useK}; #only allow each display to be used once
+	$r = &amp;$s();
+	if(defined $r) { $curRow .= $align . $r . $tDataClose; }
+}
+
+$str .= $tRowOpen . $curRow . $tRowClose if length($curRow);
+
+$str;</code>
+  <type_nodetype>1382262</type_nodetype>
+  <document_id>1397778</document_id>
+  <author_user>650043</author_user>
+  <package>0</package>
+  <title>patch - displayWriteupInfo (Delta-Sys)</title>
+</node>

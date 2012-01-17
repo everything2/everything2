@@ -1,0 +1,121 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2001-12-13 08:30:29</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>3</hits>
+  <node_id>1801440</node_id>
+  <htmlcode_id>1801440</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($limit) = @_;
+$limit ||= 15;
+
+#return &quot;This is a test of the \&quot;fix up expensive code\&quot; system. This is only a test. Back in 20-30 -jaybonci&quot; unless $USER-&gt;{title} eq &quot;JayBonci&quot;;
+if(!exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) &amp;&amp; !exists($HTMLVARS{'group_content editors'}{$$USER{node_id}})){  my $blah = getNode('New Writeups Normal', 'nodelet'); return $$blah{nltext};}
+#we need this for now
+
+
+my $UID = $$USER{user_id} || 0;
+$limit = $$VARS{num_newwus} if($$VARS{num_newwus});
+my $cansee =(exists($HTMLVARS{'group_gods'}{$UID}) || exists($HTMLVARS{'group_content editors'}{$UID}));
+my $isgod = ((exists($HTMLVARS{'group_gods'}{$UID}))?1:0);
+my $nr = getId(getNode('node row', 'superdoc'));
+#$limit = 20 if $cansee;
+my $str = '&lt;table width=&quot;100%&quot; border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot;&gt;';
+
+my $count=0;
+my @colors;
+@colors = split(/\s*,\s*/,$$THEME{themeColors}) if exists $$THEME{themeColors};
+@colors = ('#CCCC99') unless @colors;
+
+my $nwf = getNode('New Writeups Feeder', 'nodelet');
+my @wucache = eval('my '.$$nwf{nltext});
+my $found  = 0;
+my $iter = 0;
+#return $yea[0][1]{title};
+
+
+#gets a node given the ID
+#this caches nodes between hits, so it doesn't hurt to get 1 node a zillion times
+#originally in Everything Discussion Directory
+#note: this may be completely pointless if E2 caches things anyway, but I don't have much faith in that :-|
+#returns undef if unable to get a node
+#created: 2001.11.27.n2; updated: 2002.01.23.n3
+#author: N-Wing
+#my %ids;
+#local *getNodeFromID = sub {
+#	my $nid = $_[0];
+#	return undef unless (defined $nid) &amp;&amp; ($nid=~/^\d+$/);
+#
+#	#already known, return it
+#	return $ids{$nid} if exists $ids{$nid};
+#
+#	#unknown, find that
+#	my $N = getNodeById($nid);
+#	return undef unless defined $N;
+#	return $ids{$nid}=$N;
+#};
+
+while($found &lt; $limit) {
+#	$iter++; &gt;&gt;&gt; Causes the miss-most-recent display bug.
+	my $N = $wucache[0][$iter];
+	$iter++;
+	last if $N==undef;	#possible since hidden things are skipped
+
+#	$found++ unless($$N{notnew});
+#	#$found++;
+#	next if(!($cansee) &amp;&amp; $$N{notnew}==1);
+	if($$N{notnew}==1) {
+		#hidden writeups only seen by editors and that writeup's author
+		next unless ($cansee or $UID==$$N{author_user});
+	} else {
+		++$found;
+	}
+
+	my $PN = getNodeById($$N{parent_e2node});
+	my $WR = getNodeById($$N{wrtype_writeuptype});
+#	my $PN = getNodeFromID($$N{parent_e2node});	#sometimes repeated
+#	my $WR = getNodeFromID($$N{wrtype_writeuptype});	#repeated many times
+	my $clr = $colors[$count++%int(@colors)];
+	my $st;
+	$st = $$PN{title} if(ref $PN eq 'HASH');
+	my $len = 24;
+	my @words = split ' ', $st;
+
+	foreach(@words) {
+		if(length($_) &gt; $len) {
+#			$_ = substr($st, 0, $len);
+#			$_ .= '...';
+			$_ = substr($_, 0, $len).'...';
+		}
+	}
+
+	$st = join ' ', @words;
+
+	$str .= '&lt;tr bgcolor=&quot;'.$clr.'&quot;&gt;&lt;td class=&quot;oddrow&quot; align=&quot;center&quot; colspan=&quot;2&quot;&gt;&lt;strong&gt;'.linkNode($$N{author_user}, '', {lastnode_id=&gt;undef});
+
+	if($cansee) {
+		$str .='&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;';
+		if($$N{notnew}){
+		  $str .= '(&lt;font color=&quot;red&quot;&gt;H!&lt;/font&gt;)';
+                $str .= '(&lt;a href='.urlGen({'node_id'=&gt;$$NODE{node_id}, 'op'=&gt;'unhidewriteup', 'hidewriteup'=&gt;$$N{node_id}}).'&gt;un-h!&lt;/a&gt;)';
+                }else{
+		$str .= '(&lt;a href='.urlGen({'node_id'=&gt;$$NODE{node_id}, 'op'=&gt;'hidewriteup', 'hidewriteup'=&gt;$$N{node_id}}).'&gt;h?&lt;/a&gt;)';
+                }
+	$str .= '(&lt;font color=&quot;red&quot;&gt;...&lt;/font&gt;)' if $DB-&gt;sqlSelect('notnew', 'newwriteup', &quot;node_id=$$N{node_id}&quot;) != $$N{notnew};
+        my $kuid = $DB-&gt;sqlSelect('linkedby_user', 'weblog', &quot;weblog_id=$nr and to_node=$$N{node_id}&quot;) || 0;
+        $str .=' (X)' if $kuid;
+	}
+
+	$str .= '&lt;/strong&gt;&lt;/td&gt;';
+	$str .= '&lt;/tr&gt;&lt;tr&gt;&lt;td align=&quot;left&quot;&gt;'.linkNode($PN, $st, {lastnode_id=&gt;undef}).'&lt;/td&gt;&lt;td align=&quot;right&quot;&gt;&lt;small&gt;('.linkNode($N, $$WR{title},{lastnode_id=&gt;undef}).')&lt;/small&gt;';
+	$str.= &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+}
+$str.='&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>459692</author_user>
+  <package>0</package>
+  <title>newwriteups3</title>
+</node>

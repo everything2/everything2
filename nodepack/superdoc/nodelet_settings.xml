@@ -1,0 +1,61 @@
+<node>
+  <doctext>[%
+return '&lt;p&gt;You need to sign in or '
+	.linkNode(getNode('Create a New User','superdoc'), 'register')
+	.' to use this page.&lt;/p&gt;
+	&lt;!-- ' if ($$USER{node_id} == $HTMLVARS{guest_user});
+
+htmlcode('movenodelet', getNode('Epicenter','nodelet')-&gt;{node_id}, 'x') if $$VARS{settings_useEpicenterZen};
+$HTMLVARS{pageheader} = '&lt;!-- bottom --&gt;'.htmlcode('settingsDocs');
+htmlcode('openform',-id=&gt;'pagebody');
+%]
+
+&lt;fieldset&gt;&lt;legend&gt;Choose and sort nodelets
+&lt;/legend&gt;
+You can change the order of nodelets by dragging and dropping the menus here (don't forget to save) or by dragging them around by the title on most other pages.
+[{rearrangenodelets:nodelets,classic nodelets,1}]
+If the 'Epicenter' nodelet is not selected, its functions are placed in the page header[%
+return '' if $$THEME{isZen};
+' if you use the zen theme. You are currently not using the zen theme, and are therefore advised
+not to remove the epicenter nodelet';
+%].&lt;/fieldset&gt;
+
+[%
+my $str;
+my @nodelets= split ',', $$VARS{nodelets};
+foreach (@nodelets){
+	my $n = getNodeById($_);
+	my $name = $$n{title}.' nodelet settings';
+	next unless $n &amp;&amp; $$n{type}-&gt;{title} eq 'nodelet' &amp;&amp;
+		getNode($name,'htmlcode');
+	my $id = lc($name);
+	$id =~ s/\W//g;
+	$str .= qq'&lt;fieldset id=&quot;$id&quot;&gt;&lt;legend&gt;$name&lt;/legend&gt;\n'.
+		htmlcode($name).&quot;\n&lt;/fieldset&gt;\n&quot;;
+}
+return &quot;&lt;h2&gt;Settings\n&lt;/h2&gt;\n$str&quot; if $str;
+'';
+%]
+
+[{closeform:Save settings}]
+&lt;script type=&quot;text/javascript&quot; src=&quot;/node/jscript/settings+script&quot;&gt;&lt;/script&gt;
+[%
+return '--&gt;' if $$USER{node_id} == $HTMLVARS{guest_user};
+'';
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2004-09-29 03:13:54</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>78</hits>
+  <node_id>1677879</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1677879</document_id>
+  <author_user>9740</author_user>
+  <package>0</package>
+  <title>Nodelet Settings</title>
+</node>

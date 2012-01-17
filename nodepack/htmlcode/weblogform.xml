@@ -1,0 +1,85 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2009-12-27 14:47:36</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1989139</node_id>
+  <htmlcode_id>1989139</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ( $N , $inwriteupform ) = @_ ;
+getRef $N ;
+$N ||= $NODE ;
+
+my $options = '' ;
+my $notification ;
+
+unless ( $HTMLVARS{ cachedweblogoptions } ) {
+	my $wls = getVars( getNode( 'webloggables' , 'setting' ) ) ;
+	foreach( split ',' , $$VARS{ can_weblog } ){
+		next if $$VARS{ 'hide_weblog_'.$_ };
+		my $groupTitle = &quot;News&quot; ;
+		if ( $$VARS{ nameifyweblogs } ) {
+			$groupTitle = $$wls{ $_ } ;
+		} else {
+			$groupTitle = getNodeById($_,&quot;light&quot;)-&gt;{title} unless $_ == 165580 ;
+		}
+		$options.=&quot;\n\t\t\t&lt;option value=\&quot;$_\&quot;&gt;$groupTitle&lt;/option&gt;&quot;;
+	}
+	$HTMLVARS{ cachedweblogoptions } = $options
+		if $$NODE{type}{title} eq 'e2node' &amp;&amp; scalar @{ $$NODE{ group } } &gt; 1 ;
+} else {
+	$options = $HTMLVARS{ cachedweblogoptions } ;
+	delete $HTMLVARS{ cachedweblogoptions } if $$N{ node_id } == ${ $$NODE{ group } }[-1] ;
+}
+
+my $sourceid ;
+if ( $query -&gt; param( 'op' ) eq 'weblog' and $query -&gt; param( 'target' ) == $$N{ node_id } ) {
+	$sourceid = $query -&gt; param( 'source' ) ;
+	if ( $sourceid ) {
+		$options =~ s/$sourceid/$sourceid&quot; selected=&quot;selected/ ;
+		my $success = $DB -&gt; sqlSelect( &quot;weblog_id&quot; , &quot;weblog&quot; ,
+			&quot;weblog_id=$sourceid and to_node=$$N{ node_id } and linkedby_user=$$USER{ user_id }&quot; ) ;
+		$notification = ( $success ? 'Added ' : 'Failed to add ' ) .
+			&quot;$$N{ title } to &quot;.linkNode( $sourceid ) .
+			( $success ? ' (' .
+			linkNode( $NODE , 'undo' , { op =&gt; 'removeweblog' ,
+			source =&gt; $sourceid , to_node =&gt; $$N{ node_id } ,
+			-class=&gt;&quot;ajax weblogform$$N{node_id}:weblogform:$$N{node_id},$inwriteupform&quot; } ) . ')' : '' ) ;
+	} else {
+		$notification = 'No page chosen: nothing added to anything.' ;
+	}
+}
+$notification = &quot;&lt;p&gt;&lt;small&gt;$notification&lt;/small&gt;&lt;/p&gt;&quot; if $notification ;
+
+return linkNodeTitle( 'Edit weblog menu[superdoc]|Edit weblog menu&amp;hellip;' ).$notification
+	if $$VARS{ can_weblog } and not $options ;
+
+$options = &quot;\n\t\t\t&lt;option value=\&quot;\&quot; selected=\&quot;selected\&quot;&gt;Choose&amp;hellip;&lt;/option&gt;$options&quot;
+	unless $sourceid ;
+
+my ( $class , $addnid ) = ( &quot;wuformaction &quot; , $$N{ node_id } ) if $inwriteupform ;
+$class .= &quot;ajax weblogform$$N{node_id}:weblogform?op=weblog&amp;target=/target$addnid&amp;source=/source$addnid:$$N{node_id},$inwriteupform&quot; ;
+
+return qq'&lt;fieldset id=&quot;weblogform$$N{node_id}&quot;&gt;&lt;legend&gt;Add this '	.
+	( $$N{type}{title} eq 'e2node' ? 'entire page ' : $$N{type}{title} ) .
+	qq' to a usergroup page:&lt;/legend&gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;target$addnid&quot; value=&quot;$$N{ node_id }&quot;&gt;
+		&lt;select name=&quot;source$addnid&quot;&gt;
+		$options
+		&lt;/select&gt;
+		&lt;button value=&quot;weblog&quot; name=&quot;'.( $inwriteupform ? qq'wl$addnid&quot; type=&quot;button&quot;' : 'op&quot; type=&quot;submit&quot;' ) .
+		qq'class=&quot;$class&quot;&gt;Add&lt;/button&gt;&lt;br&gt;
+		&lt;small&gt;'.linkNodeTitle( 'Edit weblog menu[superdoc]|Edit this menu&amp;hellip;' ) .
+		&quot;&lt;/small&gt;
+	$notification
+	&lt;/fieldset&gt;
+	&quot; ;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>1828141</author_user>
+  <package>0</package>
+  <title>weblogform</title>
+</node>

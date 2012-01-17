@@ -1,0 +1,164 @@
+<node>
+  <doctext>[%
+my $str=&quot;Sorry. Only account holders may view this page.&quot;;
+
+# nate asked that only logged in users be able to see this discussion.
+return $str if (getId($USER) == $HTMLVARS{guest_user});
+
+$str=&quot;&lt;p&gt;
+[dannye] and [paraclete] sent us this [Letters to the Editors|Letter] dated July 21, 2006.&quot;;
+
+$str.=&quot;&lt;blockquote&gt;
+&lt;p&gt;
+Dear Editor(s):&lt;/p&gt;
+&lt;p&gt;
+There has been a great deal of moaning in the catbox of late as to the never-ending 500s, power outages, and general site-not-workingness of Everything2.com. Sometimes it's so bad that, even if the site is up long enough for you to be able to post something, there's no guarantee it's going to be working long enough for people to actually get to read it. Established users are for the most part able to put up with the server blips, but it's hard to imagine why a new user would want to. Where's the incentive? Even the established users are starting to buckle from the pressure. Seriously, this is 2006, not 1996, and folks are used to their websites working like Japanese automobiles: That is, reliably.&lt;/p&gt;
+&lt;p&gt;
+There is also a lot of moaning about how the site is on its knees and dying. Considering that there's a fair-on good chance that a new user will encounter a 500 error fairly early on when using the site, it's not surprising that people are put off / drifting off. Sure, the dedicated old-timers stick around because they know there's no other place on the web like E2. But how long will that continue to be the case as the userbase dries up? When one is used to seeing over 100 votes on a new writeup, how long will 30 make it seem as if you really have an audience? Once it's down to 10, will that be the last straw?&lt;/p&gt;
+&lt;p&gt;
+We both love this place dearly. But we'd rather see the plug pulled than see it have a slow, drawn-out and agonizingly dull send-off. Better yet, we could always actually get this place working. Reliable, fast page loads = (slightly more) contented userbase + something more likely to attract and keep new users.&lt;/p&gt;
+&lt;p&gt;
+Because at the end of the day, this is the big hurdle that we need to get over; getting the site working. This has been going on for months, and the management need to be more forthcoming about what the problems are and what their plans are (if any) to solve them. Is it because we need a new server? Because there's enough dedicated users here who want to see the place work that we could find the way to raise the money for a new server. Is it the code? Then let's work out a way for the site to raise enough funds to hire a full-time coding monkey. Could we not-so-subtly point out that C2 is apparently the enhanced model of E2? Does dann ever plan to incorporate those enhancements into E2? If so, when? If not, why not?&lt;/p&gt;
+&lt;p&gt;
+The bottom line of this letter is this: We need someone in charge to openly tell the userbase what the prognosis is on these ongoing outages and sixty-second page loads. Just letting it continue along this path without comment is not only unacceptable, it's actively alienating the people who want to support the place and keep it running.&lt;/p&gt;
+&lt;p&gt;
+Thanks in advance for your prompt reply.&lt;/p&gt;
+&lt;p&gt;
+Users [paraclete] and [dannye]&lt;/p&gt;
+&lt;/blockquote&gt;&quot;;
+%]
+
+[%
+# nate asked that only logged in users be able to see this discussion.
+return if (getId($USER) == $HTMLVARS{guest_user});
+
+my $str=&quot;&lt;hr&gt;
+&lt;em&gt;[Lord Brawl] replies&lt;/em&gt;:
+&lt;p&gt;
+I had no idea about most of this but [nate] helped out with some info and explanations.&lt;/p&gt;
+&quot;;
+
+$str.=&quot;&lt;h3&gt;Part the first: Stability&lt;/h3&gt;
+&lt;p&gt;
+In brief, the majority of the recent [500 Internal Server Error]s can be attributed to complications arising from the power fluctuations in [Michigan] which disrupted the happy little family of everything2 web servers. Nate notes that:
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;
+We are running on 4 machines ... we are talking about getting another server or two this fall, since at peak traffic our severs have loads of 3+&lt;/em&gt;&lt;/p&gt;
+&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;
+You may ask &lt;em&gt;3+ what?&lt;/em&gt; This seems to be the UNIX [load average] statistic. A quote [http://www.teamquest.com/resources/gunther/display/5/index.htm| here] (external link) attributed to the book &lt;strong&gt;[UNIX Power tools]&lt;/strong&gt; notes that: &lt;em&gt;... High load averages usually mean that the system is being used heavily and the response time is correspondingly slow.&lt;/em&gt; Ideally the number of available CPUs should exceed the load average. If our servers have 1 CPU each, as seems likely, then a 3+ load average is horridly bad. If they have 2 CPUs each, this is still pretty bad. It seems unlikely that our hand-me-down servers have more than 1 or at most 2 CPUs in them.&lt;/p&gt;
+&lt;p&gt;
+Nate goes on to say:
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;
+As for the power outages, the whole of [Washtenaw county] had a bad week.  After 3 years or so without any problem, we had 3 outages in about 14 days.&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;
+Since then we've had at least one more failure, so we're up to 4 or more now. The power problems are of preeminent importance in terms of site stability. We have in fact had one generous offer of a donation of a [Uninterruptable Power Supply|UPS]. On this front, nate says that:
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;
+... if the UPS can handle ~1200-1600 watt output for any length of time it would be useful.&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;
+I've handed this offer to [dann] since I'm not involved in physical site operations, nor do I wish to be.&lt;/p&gt;
+&lt;p&gt;
+Still on the subject of power problems, nate tells us:
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;
+... &amp;#91;Cowboy Neal&amp;#93;'s house didn't have power for about 36 hours, so at least we never suffered that.  Since the machines come up at different times and are interdependent, it's not terribly probable that the site will be 100% working without some tweaking after an outage.&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;
+In other words, as an example, if Machine C boots up first and wants something from Machine A, which isn't awake yet, C waits. Meanwhile Machine B comes up and wants some service on A or C that's not running yet, so it waits or the function fails out. Now A finally comes up but doesn't fully start because of the problems at B. Finally C finishes loading but problems at both B and A reduce its operation. Result: a running but partly busted site. A UPS would be a huge help in preventing this scenario during power blips by keeping everything running (as it were).&lt;/p&gt;
+
+&lt;p&gt;
+So, in short, the site's hardware is vulnerable to power problems that may only be evident to people in Michigan, who will then be unlikely to tell us about it. What to do? Call for help, of course. There's an &lt;strong&gt;e2webmaster&lt;/strong&gt; account which can be used to report site operations issues. Nate says:
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;
+... I don't have these things going to my pager like SourceForge does, so I rely on our avid users to alert me to things like new writeups failing, the site slow because one of the webservers failed to boot, or replication getting hoarked causing bad performance.  I got one phone call and one email thru this whole ordeal, so I would relay that ... please just email e2webmaster &amp;#91;at the site, that is,  everything2.com&amp;#93; and say 'site performance sucks, do something about it'.&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;
+Admin staff have added a FAQ, [E2 FAQ: How come the site goes down so much?].&lt;/p&gt;
+&quot;;
+%]
+
+[%
+# nate asked that only logged in users be able to see this discussion.
+return if (getId($USER) == $HTMLVARS{guest_user});
+
+my $str=&quot;&lt;h3&gt;Part the second: Fresh meat&lt;/h3&gt;
+&lt;p&gt;
+Some admins don't see the kind of drop-off mentioned by dannye and paraclete. Personally, I do feel that we've encountered a lull in attracting new noders. It may simply be that it's summer time in the [northern hemisphere] when college and university students are working at low-paying summer jobs and adults are away at the cottage. It may also be a by-product of increasingly restrictive atmosphere towards free use of the interweb on corporate LANs and public intranets. That's only going to get worse: this  week's 410-15 vote by the U.S. [House of Representatives] on DOPA, the [Deleting Online Predators Act of 2006] means that sites like e2 may soon be inaccessible from public terminals at US libraries and schools! (For more, see [http://news.com.com/2100-1028_3-6099414.html?part=rss&amp;tag=6099414&amp;subj=news|this external link].)&lt;/p&gt;
+&lt;p&gt;
+Regardless, if the new servers and/or the UPS come to fruition in the next month or two, leading to improved page load times and stability, I'd like to start a New User Quest in September or October. (That gives me some time to figure out how it could work....)&lt;/p&gt;
+&quot;;
+%]
+
+[%
+# nate asked that only logged in users be able to see this discussion.
+return if (getId($USER) == $HTMLVARS{guest_user});
+
+my $str=&quot;&lt;h3&gt;Part the third: Forthcoming&lt;/h3&gt;
+&lt;p&gt;
+Our faithful correspondents write:
+&lt;blockquote&gt;&lt;p&gt;&lt;em&gt;
+... the management need to be more forthcoming about what the problems are and what their plans are (if any) to solve them.&lt;/em&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;
+You now know everything that I know. It's not a conspiracy of silence so much as it is the case of [The Blind Men and the Elephant]. Each of us knows a bit, but the bits often don't seem to jive, and much goes unreported because it's only in aggregate that we discover the elephant in the room. (Heh. We have lots of nodes about elephants. I love e2. [They couldn't hit an elephant at this dist...|elephant], [elephants are contagious|elephant], [The Elephant is Slow to Mate|elephant], [Monkey, monkey, monkey, monkey, William Shatner|William Shatner].)&lt;/p&gt;
+&quot;;
+%]
+
+[%
+# nate asked that only logged in users be able to see this discussion.
+return if (getId($USER) == $HTMLVARS{guest_user});
+
+my $str=&quot;&lt;h3&gt;Part the fourth: Coders and the e2 code base&lt;/h3&gt;
+&lt;p&gt;
+One of our admin/coders notes that coders &lt;em&gt;... don't work cheap: In US dollars, 30,000 yearly would be the absolute minimum.&lt;/em&gt; Personally, as a software development manager in Real Life, I'd be shocked if you could get a quality developer for less than twice that amount. And that doesn't cover requirements analysis, QA, system administration, etc. etc. And once again, our recent problems are as much operational than they are code-centric, though nate says that &amp;quot;&lt;em&gt;the code itself is just as much of a problem. Too many queries per page, and not enough points of caching&lt;/em&gt;.&amp;quot;&lt;/p&gt;
+&lt;p&gt;
+Our faithful correspondents write:
+&lt;blockquote&gt;&lt;p&gt;&lt;em&gt;
+Could we not-so-subtly point out that C2 is apparently the enhanced model of E2? Does dann ever plan to incorporate those enhancements into E2? If so, when? If not, why not? 
+&lt;/em&gt;&lt;/p&gt;&lt;/blockquote&gt;
+There's no chance that E2 will run on C2's code base in the foreseeable future. There was a plan for [the new e2] (see also [Editor Log: July 2005|this] by [Cletus the Foetus|CtF]) slated for 2005 to port E2's interface to C2's code base, with the hand off ideally on November 13, to coincide with the original e1-to-e2 port in 1999. However this project did not succeed. It seems that many of the reasons that led to the original c2/e2 divergence forestalled any form of reintegration. In short, it's dead.&lt;/p&gt;
+&lt;p&gt;
+dann has another iron in the fire, based on [Ruby on Rails]. If we went that way, nate would prefer that we &amp;quot;take a database dump&amp;quot; and &amp;quot;call it everything3&amp;quot;. There's no timeline for this one, and dann says that it doesn't look like anything is going to happen anytime soon. Again this would require a lot more volunteer coder effort than we have on hand. To me, there's also a significant question of server capacity, especially if we want to run both in parallel for a while.&lt;/p&gt;
+&lt;p&gt;
+In the meantime I've added both [avalyn] and [ascorbic] to the [e2gods] roster, giving us some more active coder capacity on the team that has access to the necessary buttons to implement changes.&lt;/p&gt;
+&quot;;
+%]
+
+[%
+# nate asked that only logged in users be able to see this discussion.
+return if (getId($USER) == $HTMLVARS{guest_user});
+
+my $str=&quot;&lt;h3&gt;Pour a fifth: The Bottom Line&lt;/h3&gt;
+&lt;p&gt;
+Our faithful correspondents write:
+&lt;blockquote&gt;&lt;p&gt;&lt;em&gt;
+We need someone in charge to openly tell the user base what the prognosis is on these ongoing outages and sixty-second page loads.&lt;/em&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;
+Damfino. At a guess I'd say you can expect them all through August with a chance of improvement after Labour Day. In the meantime, when things get sucked down a hole, take nate's advice: &lt;em&gt;email e2webmaster &amp;#91;at everything2.com&amp;#93; and say 'site performance sucks, do something about it'.&lt;/em&gt; It [Politeness is always in order|couldn't hurt] to say &amp;quot;please&amp;quot;.&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;p&gt;
+Comments from [00100], [dann], [Lometa], [ascorbic], and [N-Wing] have been of help in formulating this response. Any errors, omissions, or misattributions are my own.&lt;/p&gt;
+&quot;;
+%]
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2006-07-29 18:18:14</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>0</hits>
+  <node_id>1822653</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>14</type_nodetype>
+  <document_id>1822653</document_id>
+  <author_user>8933</author_user>
+  <package>0</package>
+  <title>Letters to the Editors: July 2006</title>
+</node>

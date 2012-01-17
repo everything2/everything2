@@ -1,0 +1,95 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2000-02-15 19:27:40</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>14</hits>
+  <node_id>419552</node_id>
+  <htmlcode_id>419552</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my $node_id = $query-&gt;param('bookmark_id');
+
+$node_id or return;
+return if getId($USER) == $HTMLVARS{guest_user};
+return unless htmlcode('verifyRequest', 'bookmark');
+my $LINKTYPE = getNode('bookmark', 'linktype');
+
+$DB-&gt;sqlInsert('links', {from_node =&gt; getId($USER), to_node =&gt; $node_id, linktype =&gt; getId($LINKTYPE)});
+
+return 1 if $$VARS{no_bookmarkinformer};
+
+my $tempnode = getNodeById($node_id);
+return 1 if (($$tempnode{type}{title} ne &quot;writeup&quot;) &amp;&amp; ($$tempnode{type}{title} ne &quot;e2node&quot;)); #only send CME for writeups &amp; e2nodes
+
+my $sysNodes = getVars(getNode(&quot;system settings&quot;, &quot;setting&quot;));
+while( my ($k, $v) = each %$sysNodes ) {
+  $v =~ s/[A-Za-z\@\-\_\s]//g;
+  return 1 if (eval($v)==$node_id);
+}
+
+my $eddie = getId(getNode('Cool Man Eddie','user'));
+my @tempgroup = @{ $$tempnode{group} } if $$tempnode{group};
+my @group;
+my $TV;
+foreach (@tempgroup) {
+	my $not_self_user = ($_ != getId($USER));
+	$TV = getVars(getNodeById($_)-&gt;{author_user});
+	if ((!$$TV{no_bookmarknotification})&amp;&amp;($not_self_user)) {
+		push @group, $_;
+	}
+}
+
+my $nt = $$tempnode{title};
+my ($eddiemessage, $nodeshell) = ('', 0);
+my @writeupAuthors;
+
+if(scalar(@tempgroup)) {
+	return 1 unless @group;
+	@writeupAuthors = map { getNodeById($_)-&gt;{author_user} } @group;
+	$eddiemessage = &quot;the entire node [$nt], in which you have a writeup,&quot;;
+}
+else {
+	my $notifiee = $$tempnode{createdby_user} || $$tempnode{author_user};
+	$TV = getVars(getNodeById($notifiee));
+	if ($$TV{no_bookmarknotification}) { return 1;}
+	if (getId($USER) == $notifiee) {return 1;}
+	push @writeupAuthors, $notifiee;
+	if ($$tempnode{type}{title} eq 'writeup') {
+		$eddiemessage =&quot;your writeup [$nt]&quot;;
+	} else {
+		$nodeshell = 1;
+		$eddiemessage =&quot;your nodeshell [$nt]&quot;;
+	}
+}
+
+use JSON;
+my $notification = getNode(&quot;bookmark&quot;,&quot;notification&quot;)-&gt;{node_id};
+foreach (@writeupAuthors) {
+	my $authorVars = getVars(getNodeById($_));
+	if ($$authorVars{settings}) {
+		if (%{ from_json($$authorVars{settings})-&gt;{notifications} }-&gt;{$notification}) {
+			htmlcode('addNotification', $notification, $_, {
+				writeup_id =&gt; $$tempnode{node_id}
+				, bookmark_user =&gt; $$USER{user_id}
+				, nodeshell =&gt; $nodeshell
+			});
+		}
+	}
+}
+
+htmlcode('sendPrivateMessage',{
+	fromgroup_id =&gt; $$USER{node_id},
+	'author_id' =&gt; $eddie,
+	'recipient_id' =&gt; \@writeupAuthors,
+	'message' =&gt; 'Yo, '.$eddiemessage.' was bookmarked. Dig it, baby.',
+});
+
+1;
+</code>
+  <type_nodetype>415056</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>bookmark</title>
+</node>

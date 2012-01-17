@@ -1,0 +1,288 @@
+<node>
+  <doctext>if (typeof($) == 'undefined') {
+  var $ = function (o) {
+	  return document.getElementById(o);
+  };
+}
+var VoteMachine = function () {
+	var b = document.getElementsByTagName('input');
+	for (var i =0; i&lt;b.length;i++) {
+		var o = b[i];
+		if (o.getAttribute('type') == 'hidden'
+        &amp;&amp; o.getAttribute('name') == 'node_id') {
+			VoteMachine.node_id = o.getAttribute('value');
+		}
+		if (o.getAttribute('type') == 'submit' &amp;&amp; o.getAttribute('name') == 'sexisgreat') {
+			o.setAttribute('value', 'blab!');
+		}
+		if (o.getAttribute('type') != 'radio') continue;
+		var n = o.getAttribute('name');
+		if (n.substr(0,6) != 'vote__') continue;
+		if (o.getAttribute('value') != 1) continue;
+		n = n.substr(6);
+
+    //Are we revoting?
+    var revote = (o.getAttribute('id').substr(0,6) == &quot;revote&quot;);
+    var prevvote = 0;
+    if(revote){
+      if(o.checked){
+        prevvote = 1;
+      }
+      else{
+        prevvote = -1;
+      }
+    }
+
+		var f = o.parentNode.parentNode;
+		f.setAttribute('id', 'header' + n);
+		f.innerHTML = '';
+		var s = document.createElement('span');
+		f.appendChild(s);
+
+    var up, down, flip;
+    if(!revote){
+		  up = document.createElement('input');
+		  up.setAttribute('type', 'button');
+		  up.setAttribute('value', 'Up');
+		  up.setAttribute('name', n);
+		  up.onclick = VoteMachine.vote;
+		  up.votefield = s;
+
+		  down = document.createElement('input');
+		  down.setAttribute('type', 'button');
+		  down.setAttribute('value', 'Down');
+		  down.setAttribute('name', n);
+		  down.onclick = VoteMachine.vote;
+		  down.votefield = s;
+    }
+    else{
+		  flip = document.createElement('input');
+		  flip.setAttribute('type', 'button');
+      if(prevvote == 1){
+		    flip.setAttribute('value', 'Flip down');
+      }
+      else{
+        flip.setAttribute('value', 'Flip up');
+      }
+		  flip.setAttribute('name', n);
+		  flip.onclick = VoteMachine.vote;
+		  flip.votefield = s;
+    }
+
+		var bw = document.createElement('span');
+		f.appendChild(bw);
+    if(!revote){
+		  bw.innerHTML = 'QuickVote: ';
+		  bw.appendChild(up);
+		  bw.appendChild(down);
+    }
+    else{
+      bw.appendChild(flip);
+    }
+	}
+
+};
+
+VoteMachine.vote = function () {
+	this.req = new XMLHTTP;
+	var x = this;
+  var revote = (x.value.substr(0,4) == &quot;Flip&quot;);
+	x.parentNode.style.display = 'none';
+  if(revote){
+    	x.votefield.innerHTML = ' Flipping vote...';
+  }
+  else{
+	  x.votefield.innerHTML = 'Voting...';
+  }
+	this.req.callback = function (o) {
+
+		var r = o.responseXML.getElementsByTagName('reputation')[0];
+
+    var voteinfo = document.getElementById(&quot;voteinfo_&quot;+x.name);
+
+		voteinfo.innerHTML = &quot;&lt;small&gt;&quot; + '&lt;abbrev title=&quot;Reputation&quot;&gt;'
+      + 'Rep&lt;/abbrev&gt;: ' + r.firstChild.nodeValue + ' ( +'
+      + r.getAttribute('up') + ' / -' + r.getAttribute('down') +' ) '
+		  + (r.getAttribute('cast') == '1' ? '+' : '-') + &quot;&lt;/small&gt;&quot;;
+
+
+
+		var votes = document.getElementById('votesleft');
+		votes.innerHTML = new Number(votes.innerHTML) - 1;
+	};
+
+  var thevote;
+  if(this.value == 'Up' || this.value == 'Flip up'){
+    thevote = '1';
+  }
+  else{
+    thevote = '-1';
+  }
+
+	var v = '/index.pl?' + document.cookie + &quot;&amp;node_id=&quot; + this.name
+       	  + &quot;&amp;op=swapvote&amp;displaytype=xmltrue&amp;vote__&quot; + this.name + &quot;=&quot;
+          + thevote;
+
+  this.req.send(v);
+
+};
+
+var KillingMachine = function() {
+	var b = $('killbutton');
+	if (!b) {
+		return;
+	}
+	this.button = document.createElement('input');
+	this.button.setAttribute('type', 'button');
+	this.button.setAttribute('value','QuickKill');
+	b.parentNode.insertBefore(this.button, b);
+	this.button.onclick = function () {
+		var o = document.getElementsByTagName('input');
+		var x = new Object();
+		for (var i=0;i&lt;o.length;i++) {
+			var n = o[i].getAttribute('name');
+			if ((typeof(n) == 'undefined') || !n || !n.length) continue;
+			if (n.substr(0,8) == 'killnode') {
+				n = n.substr(8);
+				if (typeof(x['node' + n]) == 'undefined') {
+					var xx = x['node' + n] = new Object();
+					xx.node_id = n;
+				}
+				xx.kill = o[i].checked;
+				continue;
+			}
+			if (n.substr(0,9) == 'instakill') {
+				n = n.substr(9);
+				if (typeof(x['node' + n]) == 'undefined') {
+					var xx = x['node' + n] = new Object();
+					xx.node_id = n;
+				}
+				xx.instakill = o[i].checked;
+				continue;
+			}
+			if (n.substr(0,10) == 'killreason') {
+				n = n.substr(10);
+				if (typeof(x['node' + n]) == 'undefined') {
+					var xx = x['node' + n] = new Object();
+					xx.node_id = n;
+				}
+				xx.reason = o[i].value;
+				continue;
+			}
+		}
+		var str = '?op=massacre&amp;displaytype=xmltrue&amp;node_id=' + VoteMachine.node_id + '&amp;';
+		var killnum=0;
+		for (var q in x) {
+			var j = x[q];
+			if (j.kill) {
+				var r = prompt(&quot;Kill reason for id &quot; + j.node_id + &quot;:&quot;, j.reason);
+				if (r.length) {
+					killnum++;
+					var s = &quot;publickiller&quot; + j.node_id + &quot;=1&amp;hidewu&quot; + j.node_id + &quot;=1&amp;killnode&quot; + j.node_id + &quot;=1&amp;killreason&quot; + j.node_id + &quot;=&quot; + escape(r) + &quot;&amp;&quot;;
+					str += s;
+					if (j.instakill) {
+						str += &quot;instakill&quot; + j.node_id + &quot;=1&amp;&quot;;
+					}
+				}
+			}
+		}
+		if (killnum &lt;1) {
+			alert(&quot;No nodes selected to axe&quot;);
+			return;
+		}
+		var req = new XMLHTTP;
+		this.disabled = 1;
+		this.setAttribute('value', 'Killing...');
+		var button = this;
+		req.callback = function (o) {
+			var w = o.responseXML.getElementsByTagName('writeup');
+			for (var i=0;i&lt;w.length;i++) {
+				if (w[i].getAttribute('marked') == '1') {
+					var h = $('killheader' + w[i].getAttribute('node_id'));
+					if (h) {
+						h.innerHTML = 'Marked for destruction';
+					}
+				}
+			}
+			button.disabled = false;
+			button.setAttribute('value', 'QuickKill');
+		};
+		req.send(str);
+		return false;
+	};
+};
+
+
+var XMLHTTP = function() {
+  this.xmlhttp=false;
+  /*@cc_on @*/
+  /*@if (@_jscript_version &gt;= 5)
+   // JScript gives us Conditional compilation, we can cope with old IE version
+   // and security blocked creation of the objects.
+   try {
+   this.xmlhttp = new ActiveXObject(&quot;Msxml2.XMLHTTP&quot;);
+   } catch (e) {
+   try {
+   this.xmlhttp = new ActiveXObject(&quot;Microsoft.XMLHTTP&quot;);
+   } catch (E) {
+   this.xmlhttp = false;
+   }
+   }
+   @end @*/
+  if (!this.xmlhttp) {
+    if(typeof XMLHttpRequest!='undefined')
+      this.xmlhttp = new XMLHttpRequest();
+    else
+		  alert(&quot;Your browser is too old or something. QuickVote won't work for you&quot;);
+  }
+	this.callback = function (x){};
+};
+
+XMLHTTP.prototype.send = function (uri) {
+  this.xmlhttp.open(&quot;GET&quot;, uri, true);
+  var x = this; //safari gets confused by 'this'
+  this.xmlhttp.onreadystatechange = function() {
+	  if (x.xmlhttp.readyState==4) {
+	    if (x.xmlhttp.status == '200')
+	    {
+			  x.callback(x.xmlhttp);
+	    }
+	    else if (typeof(x.xmlhttp.status) != 'undefined'){
+			  alert(x.xmlhttp.status + ' : ' + x.xmlhttp.statusText);
+		  } else {
+			  alert('That vote might not have had time to register (though it probably did).');
+		  }
+	  }
+	};
+  this.xmlhttp.send(null);
+};
+
+var checkInterval = function () {
+  if (document.getElementsByTagName('body').length &gt; 0) {
+
+    window.clearInterval(interval);
+    VoteMachine();
+    if (typeof(isZen) != 'undefined' &amp;&amp; isZen) {
+	    var k = new KillingMachine();
+    }
+
+  }
+};
+
+var interval = window.setInterval(checkInterval, 1000);
+</doctext>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>2006-10-25 11:14:54</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>1</hits>
+  <node_id>1984562</node_id>
+  <edittime>0000-00-00 00:00:00</edittime>
+  <type_nodetype>1786405</type_nodetype>
+  <document_id>1984562</document_id>
+  <author_user>974148</author_user>
+  <package>0</package>
+  <title>Swap's async voting</title>
+</node>

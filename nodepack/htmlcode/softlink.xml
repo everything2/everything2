@@ -1,0 +1,206 @@
+<node>
+  <core>0</core>
+  <reputation>0</reputation>
+  <lockedby_user>0</lockedby_user>
+  <createtime>1999-11-18 01:09:04</createtime>
+  <locktime>0000-00-00 00:00:00</locktime>
+  <totalvotes>0</totalvotes>
+  <hits>46</hits>
+  <node_id>166222</node_id>
+  <htmlcode_id>166222</htmlcode_id>
+  <checks_arguments>0</checks_arguments>
+  <code>my ($softserve) = @_; #parameter used by formxml_writeup and formxml_e2node
+
+if($softserve eq 'xml'){
+	return if $$VARS{noSoftLinks};
+}
+return if($query-&gt;param('no_softlinks'));
+
+my $N = getNodeById($$NODE{parent_e2node},'light') if $$NODE{type}{title} eq 'writeup' ;
+$N ||= $NODE;
+my $lnid;
+if ($$USER{user_id} == $HTMLVARS{guest_user}) {
+	$lnid=0;
+}
+else {
+	$lnid=$$N{node_id};
+}
+
+my %unlinkables;
+foreach(keys %HTMLVARS) {
+	$unlinkables{$HTMLVARS{$_}} = 1;
+}
+return if $unlinkables{ $$N{node_id} };
+
+my $isRoot = exists $HTMLVARS{group_gods}{ $$USER{user_id} };
+my $cantrim = $isRoot;
+
+my $limit;
+if($$USER{user_id} == $HTMLVARS{guest_user}) {
+	$limit = 24;
+} elsif($isRoot) {
+	$limit = 64;
+} else {
+	$limit = 48;
+}
+
+my $csr = $dbh-&gt;prepare(
+	'select node.type_nodetype, node.title, links.hits, links.to_node 
+	from links use index (linktype_fromnode_hits), node 
+	where links.from_node='.$$N{node_id}.&quot;
+		and links.to_node = node.node_id
+		and links.linktype=0 
+	order by links.hits desc
+	limit $limit&quot;
+	);
+
+$csr-&gt;execute;
+my @nodelinks;
+while (my $link = $csr-&gt;fetchrow_hashref) {
+	push @nodelinks, $link;
+}
+$csr-&gt;finish;
+
+#xml output here;
+if($softserve){
+	my $ss ='';
+	if($softserve eq 'xml') {
+		foreach my $n (@nodelinks){
+			my $tn = getNodeById($$n{to_node},'light');
+			$ss .= '&lt;e2link node_id=&quot;'.$$tn{node_id}.'&quot; weight=&quot;'.$$n{hits}.'&quot;&gt;'
+				.encodeHTML($$tn{title}).&quot;&lt;/e2link&gt;\n&quot;;
+		}
+		return $ss;
+	}
+};
+
+return '' unless @nodelinks ;
+my $str = &quot;\n&quot;
+	.'&lt;table cellpadding=&quot;10&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; width=&quot;100%&quot;&gt;'
+	.&quot;\n\t&quot;.'&lt;tr&gt;';
+my $n=0;
+
+my (@maxval, @minval, $gradeattstart, $format);
+unless ($$VARS{preferred_theme} &amp;&amp; $$VARS{preferred_theme} != $HTMLVARS{default_theme}
+	or $$VARS{nogradekw}){
+		@maxval = (1) ;
+		@minval = (65) ;
+		$gradeattstart = 'id=&quot;sl' ;
+		$format = '%1d' ;
+
+} elsif ($$VARS{preferred_theme} == getId(getNode('ekw theme','theme'))&amp;&amp; !$$VARS{nogradekw}) {
+	if ($$VARS{ekw_bgcolor} =~ /\#(\w\w)(\w\w)(\w\w)$/)
+		{ @maxval = (hex($1),hex($2),hex($3)); }
+	if ($$VARS{ekw_oddrowcolor} =~ /\#(\w\w)(\w\w)(\w\w)$/)
+		{ @minval = (hex($1),hex($2),hex($3)); }
+}
+
+my $showTitle;
+
+$gradeattstart ||= 'bgcolor=&quot;#';
+@maxval = (255,255,255) unless @maxval;
+@minval = (170,170,170) unless @minval;
+$format ||= '%02x' ;
+my $dimensions = scalar @maxval - 1;
+my $steps = scalar @nodelinks;
+
+my $e2nodetype = getId(getType('e2node'));
+my $grade ;
+my $nid;
+my @badOnes;	#auto-clean bad links
+my $numCols = 4;
+
+my $thisnode = $$N{node_id};
+
+#Look for the non-nodeshells --[Swap]
+my @e2node_ids = map $_ -&gt; {to_node}, @nodelinks;
+
+my %fillednode_ids;
+
+if(@e2node_ids){
+  my $sql = &quot;SELECT DISTINCT nodegroup_id
+             FROM nodegroup
+             WHERE nodegroup_id IN (&quot;
+             .join(&quot;, &quot;, @e2node_ids).&quot;)&quot;;
+
+  #Populate the hash with autovivify (man perlglossary) --[Swap]
+  \@fillednode_ids{  @{$dbh -&gt; selectcol_arrayref($sql)}  };
+}
+
+foreach my $l (@nodelinks) {
+
+	$nid = $$l{to_node};
+	my $nodeshelltest = exists $fillednode_ids{$nid};
+	next if (!$nodeshelltest &amp;&amp; $$VARS{hidenodeshells});
+
+	push(@badOnes,$nid) if $cantrim;	#assume link is guilty...
+
+	next if $$l{type_nodetype} != $e2nodetype;
+	next if exists $unlinkables{$nid};
+	next if $thisnode == $nid;
+	pop(@badOnes) if $cantrim;	#...until proven innocent
+
+#==================
+#nate sez: don't touch this, we have to send this data up to [googleads] b/c they look for naughtywords
+# in links
+	if (not exists $$NODE{linklist}) {
+ 		$$NODE{linklist} = [ $l ];
+	} else {
+		push @{$$NODE{linklist}}, $l;
+	}
+#end nate sez
+#=================
+
+	unless ($$VARS{nogradlinks}){
+		$grade = &quot; $gradeattstart&quot;;
+		foreach (0..$dimensions) {
+			$grade .= sprintf($format, $maxval[$_] -
+	 			 ($maxval[$_] - $minval[$_])/$steps * $n);
+		}
+	$grade .= '&quot;' ;
+	}
+
+	$str.= &quot;&lt;/tr&gt;\n\t&lt;tr&gt;&quot; if($n &amp;&amp; !($n%$numCols));
+	$str.= &quot;\n\t\t&quot;.'&lt;td'.$grade.qq' class=&quot;sw$$l{hits}'.($nodeshelltest ? '' : ' nodeshell').'&quot;&gt;';
+
+	$str.= $query-&gt;checkbox('cutlinkto_'. $nid, 0, '1', '') if $cantrim;
+	$showTitle = $$l{title};
+
+	$str.= linkNode($nid, $showTitle, {lastnode_id=&gt;$lnid}) ;
+
+	$str.= ' ('.$$l{hits}.')' if $cantrim;
+	$str.=&quot;&lt;/td&gt;&quot;;
+	++$n;
+}
+
+for(;$n%$numCols;++$n) { $str.=&quot;\n\t\t&quot;.'&lt;td'.(
+	$$VARS{nogradlinks}||$$VARS{nogradekw} ? '' : ' class=&quot;slend&quot;'
+	).'&gt;&amp;nbsp;&lt;/td&gt;'; }
+$str.=&quot;\n\t&lt;/tr&gt;\n&lt;/table&gt;\n&quot;;
+
+
+if($cantrim) {
+
+	#TODO: call a FN to delete these instead (or maybe only if admin)
+	foreach(@badOnes) {
+		$str .= '&lt;input type=&quot;hidden&quot; name=&quot;cutlinkto_'.$_.'&quot; value=&quot;1&quot; /&gt;';
+	}
+
+	$str = htmlcode('openform')
+		.'&lt;input type=&quot;HIDDEN&quot; name=&quot;op&quot; value=&quot;linktrim&quot;&gt;'
+		.'&lt;input type=&quot;HIDDEN&quot; name=&quot;cutlinkfrom&quot; value=&quot;'.$$N{node_id}.'&quot;&gt;'
+		.htmlcode('verifyRequestForm', &quot;linktrim&quot;)
+		. $str;
+	my $nbo = scalar(@badOnes);
+	$str .= '('.$nbo.' extra will be trimmed) ' if $nbo;
+	$str .= $query-&gt;submit('go','trim links') . '&lt;/form&gt;';
+}
+
+return $str if exists $$THEME{noThinOutline};
+containHtml('thin outline container', $str);
+</code>
+  <type_nodetype>4</type_nodetype>
+  <author_user>114</author_user>
+  <package>0</package>
+  <title>softlink</title>
+</node>
