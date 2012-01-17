@@ -64,6 +64,7 @@ sub main
 		"debate" => [],
 		"debatecomment" => [],
 		"collaboration" => [],
+		"e2poll" => [],
 		};
 
 	while(my $row = $csr->fetchrow_hashref())
