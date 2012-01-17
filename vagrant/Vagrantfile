@@ -8,10 +8,6 @@ Vagrant::Config.run do |config|
   
   config.vm.share_folder("dropfiles","/dropfiles","./dropfiles")
 
-#  config.vm.provision :puppet, :options => "--verbose --debug" do |puppet|
-#    puppet.manifest_file = "edev_squeeze.pp"
-#  end
-
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = "cookbooks"
     chef.add_recipe("edev")
