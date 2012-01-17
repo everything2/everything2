@@ -13,7 +13,9 @@ sub node_to_xml
 
 	# Remove cached stuff from the nodelet	
 	$NODE->{nltext} = "";
-
+	# Clean the code from line endings
+	$NODE->{nlcode} = $this->_clean_code($NODE->{nlcode});
+	
 	return $this->SUPER::node_to_xml($NODE);
 }
 
