@@ -23,10 +23,6 @@ sub node_to_xml
 	delete $NODE->{resolvedInheritance};
 	delete $NODE->{sqltablelist};
 
-	foreach my $key(keys %$NODE)
-	{
-		$NODE->{$key} = $this->_sanitize($NODE->{$key});
-	}
 	return $this->{xs}->XMLout({node => $NODE});
 }
 
@@ -45,15 +41,15 @@ sub xml_to_node_post
 	return $N;
 }
 
-# Credit to: http://perl-xml.sourceforge.net/faq/
-sub _sanitize
+sub _clean_code
 {
-	my ($this,$string) = @_;
+	my ($this, $string) = @_;
 
-	$string =~ tr/\x91\x92\x93\x94\x96\x97/''""\-\-/;
-	$string =~ s/\x85/.../sg;
-	$string =~ tr/\x80-\x9F//d;
-	
-	return($string);
+	# Remove old windows line endings
+	$string =~ s|\r\n|\n|g;
+	# Remove a bad control character found in the code
+	$string =~ s|\cC||g;
+	return $string;
 }
+
 1;

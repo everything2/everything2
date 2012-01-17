@@ -2,7 +2,7 @@
 
 use strict;
 use lib qw(lib);
-package Everything::node::opcode;
+package Everything::node::htmlcode;
 use base qw(Everything::node::node);
 
 sub node_to_xml

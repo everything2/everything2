@@ -60,7 +60,10 @@ sub main
 		"user" => [113,952215,779713,839239], #root,klaproth,guest user,cool man eddie
 		"node_forward" => [],
 		"ticket" => [], 
-		"draft" => []
+		"draft" => [],
+		"debate" => [],
+		"debatecomment" => [],
+		"collaboration" => [],
 		};
 
 	while(my $row = $csr->fetchrow_hashref())
