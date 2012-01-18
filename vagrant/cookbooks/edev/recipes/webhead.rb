@@ -95,28 +95,6 @@ git '/var/everything/' do
   action :sync
 end
 
-#template '/root/.hgrc' do
-#  owner "root"
-#  group "root"
-#  mode "0755"
-#  action "create"
-#  source "hgrc.erb"
-#end
-
-#execute "mercurial_ecore_checkout" do
-#  #command "hg clone -rproduction http://hg.everything2.com/ecore"
-#  command "hg clone http://hg.everything2.com/ecore"
-#  cwd "/var/everything"
-#  creates "/var/everything/ecore/Everything.pm"
-#end
-
-#execute "mercurial_www_checkout" do
-#  command "hg clone -rproduction http://hg.everything2.com/www"
-#  cwd "/var/everything"
-#  creates "/var/everything/www/index.pl"
-#end
-
-
 directory '/etc/everything' do
   owner "root"
   group "root"
