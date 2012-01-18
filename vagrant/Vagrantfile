@@ -1,6 +1,6 @@
 Vagrant::Config.run do |config|
-  config.vm.forward_port("web",80,8888)
-  config.vm.forward_port("ssh",22,3333)
+  config.vm.forward_port(80,8888)
+  config.vm.forward_port(22,3333)
 
   config.vm.box = "edev_squeeze"
   config.vm.box_url = "http://bonci.net/edev_squeeze.box"
