@@ -3,14 +3,11 @@ Vagrant::Config.run do |config|
   config.vm.forward_port("ssh",22,3333)
 
   config.vm.box = "edev_squeeze"
+  config.vm.box_url = "http://bonci.net/edev_squeeze.box"
   config.ssh.private_key_path = "./edev_root"
   config.ssh.username = "root"
   
   config.vm.share_folder("dropfiles","/dropfiles","./dropfiles")
-
-#  config.vm.provision :puppet, :options => "--verbose --debug" do |puppet|
-#    puppet.manifest_file = "edev_squeeze.pp"
-#  end
 
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = "cookbooks"

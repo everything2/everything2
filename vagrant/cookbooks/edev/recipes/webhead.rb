@@ -28,7 +28,10 @@ to_install = [
     'libclone-perl',
     'libtest-deep-perl',
     'libdevel-caller-perl',
-    'mercurial'
+    'libdbd-mysql-perl',
+    'mercurial',
+    'git',
+
 ]
 
 to_install.each do |p|
@@ -86,32 +89,38 @@ directory '/var/everything' do
   recursive true
 end
 
-template '/root/.hgrc' do
-  owner "root"
-  group "root"
-  mode "0755"
-  action "create"
-  source "hgrc.erb"
+git '/var/everything/' do
+  repository 'git://github.com/everything2/everything2.git'
+  reference "master"
+  action :sync
 end
 
-execute "mercurial_ecore_checkout" do
-  #command "hg clone -rproduction http://hg.everything2.com/ecore"
-  command "hg clone http://hg.everything2.com/ecore"
-  cwd "/var/everything"
-  creates "/var/everything/ecore/Everything.pm"
-end
+#template '/root/.hgrc' do
+#  owner "root"
+#  group "root"
+#  mode "0755"
+#  action "create"
+#  source "hgrc.erb"
+#end
 
-execute "mercurial_www_checkout" do
-  command "hg clone -rproduction http://hg.everything2.com/www"
-  cwd "/var/everything"
-  creates "/var/everything/www/index.pl"
-end
+#execute "mercurial_ecore_checkout" do
+#  #command "hg clone -rproduction http://hg.everything2.com/ecore"
+#  command "hg clone http://hg.everything2.com/ecore"
+#  cwd "/var/everything"
+#  creates "/var/everything/ecore/Everything.pm"
+#end
 
-execute "e2_stylesheet_gen" do
-  command "/var/everything/ecore/bin/generateStylesheets.pl"
-  cwd "/var/everything/ecore/bin"
-  creates "/var/everything/www/stylesheets"
-end
+#execute "mercurial_www_checkout" do
+#  command "hg clone -rproduction http://hg.everything2.com/www"
+#  cwd "/var/everything"
+#  creates "/var/everything/www/index.pl"
+#end
+
+#execute "e2_stylesheet_gen" do
+#  command "/var/everything/ecore/bin/generateStylesheets.pl"
+#  cwd "/var/everything/ecore/bin"
+#  creates "/var/everything/www/stylesheets"
+#end
 
 directory '/etc/everything' do
   owner "root"
