@@ -1,19 +1,19 @@
 #!/usr/bin/perl -w
 
 use strict;
-use utf8;
 use lib qw(lib);
-use Getopt::Long;
-use DBI;
-use DBD::mysql;
-use XML::Simple;
 use ecoretool::base;
-use Data::Dumper;
-
 package ecoretool::bootstrap;
 use base qw(ecoretool::base);
 
+use strict;
+use utf8;
 use Everything;
+use Data::Dumper;
+use DBI;
+use DBD::mysql;
+use XML::Simple;
+use Getopt::Long;
 
 sub new
 {
@@ -26,7 +26,37 @@ sub new
 sub main
 {
 	my ($this) = @_;	
-	my $basedir = "/root/nodepack";
+
+	my $options;
+
+	GetOptions(
+		"u|user=s" => \$options->{user},
+		"p|password=s" => \$options->{password},
+		"d|database=s" => \$options->{database},
+		"n|nodepack=s" => \$options->{nodepack},
+	);
+	
+	if(not defined($options->{user}))
+	{
+		$options->{user} = "root";
+	}
+
+	if(not defined($options->{password}))
+	{
+		$options->{password} = "";
+	}
+
+	if(not defined($options->{database}))
+	{
+		$options->{database} = "";
+	}
+
+	if(not defined($options->{nodepack}))
+	{
+		$options->{nodepack} = "./nodepack";
+	}
+
+	my $basedir = $options->{nodepack};
 	
 	my $dirhandle;
 	my $dbtabledir = "$basedir/dbtable";
@@ -34,7 +64,7 @@ sub main
 
 	opendir $dirhandle, $dbtabledir;
 
-	my $newdbh = DBI->connect("DBI:mysql:database=everything_else;user=root");
+	my $newdbh = DBI->connect("DBI:mysql:database=$$options{database};user=$$options{user};password=$$options{password}");
 	die "No database" unless $newdbh;
 	foreach my $file(readdir($dirhandle))
 	{
