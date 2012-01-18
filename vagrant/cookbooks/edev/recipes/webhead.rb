@@ -116,11 +116,6 @@ end
 #  creates "/var/everything/www/index.pl"
 #end
 
-#execute "e2_stylesheet_gen" do
-#  command "/var/everything/ecore/bin/generateStylesheets.pl"
-#  cwd "/var/everything/ecore/bin"
-#  creates "/var/everything/www/stylesheets"
-#end
 
 directory '/etc/everything' do
   owner "root"

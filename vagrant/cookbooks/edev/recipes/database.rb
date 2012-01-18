@@ -18,9 +18,10 @@ execute "database bootstrap" do
   creates "/etc/chef_setup/database_bootstrap"
 end
 
-#execute "mysql standup" do
-#  command "zcat /dropfiles/everything.sql.gz | mysql -u root everything; touch /etc/chef_setup/mysql_standup"
-#  creates "/etc/chef_setup/mysql_standup"
-#  timeout 10800
-#end
+# Belongs in its own section under "apps"
+execute "e2_stylesheet_gen" do
+  command "/var/everything/ecore/bin/generateStylesheets.pl"
+  cwd "/var/everything/ecore/bin"
+  creates "/var/everything/www/stylesheets"
+end
 
