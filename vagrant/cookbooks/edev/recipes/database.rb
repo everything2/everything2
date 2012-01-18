@@ -13,6 +13,11 @@ execute "mysql permissions" do
   creates "/etc/chef_setup/mysql_permissions"
 end
 
+execute "database bootstrap" do
+  command "/var/everything/tools/ecoretool.pl bootstrap -d everything -n /var/everything/nodepack; touch /etc/chef_setup/database_bootstrap"
+  creates "/etc/chef_setup/database_bootstrap"
+end
+
 #execute "mysql standup" do
 #  command "zcat /dropfiles/everything.sql.gz | mysql -u root everything; touch /etc/chef_setup/mysql_standup"
 #  creates "/etc/chef_setup/mysql_standup"
