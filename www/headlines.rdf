@@ -1,0 +1,13 @@
+Content-type: text/html
+
+<h1>Software error:</h1>
+<pre>Can't locate XML/Parser.pm in @INC (@INC contains: /usr/local/lib/perl5/5.8.4/i686-linux /usr/local/lib/perl5/5.8.4 /usr/local/lib/perl5/site_perl/5.8.4/i686-linux /usr/local/lib/perl5/site_perl/5.8.4 /usr/local/lib/perl5/site_perl .) at /usr/local/lib/perl5/site_perl/Everything/XML.pm line 13.
+BEGIN failed--compilation aborted at /usr/local/lib/perl5/site_perl/Everything/XML.pm line 13.
+Compilation failed in require at /usr/local/everything/bin/genRDF.pl line 5.
+BEGIN failed--compilation aborted at /usr/local/everything/bin/genRDF.pl line 5.
+</pre>
+<p>
+For help, please send mail to this site's webmaster, giving this error message 
+and the time and date of the error.
+
+</p>

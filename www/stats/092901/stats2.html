@@ -1,0 +1,107 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="ja">
+   <meta name="GENERATOR" content="Mozilla/4.7 [en] (Win98; U) [Netscape]">
+   <title>Everything Statistics (2) - 30 September 2001</title>
+</head>
+<body>
+
+<h2>Node Reputation Statistics</h2>
+
+Now that we mapped out what Level noders are in, how much they node, and
+what XP they gain for doing so it is time to look at some general statistics
+on writeup reputation. There are several methods to quantify an average
+writeup quality (such as Simple Node-Fu, Writeup Node-Fu, Ching-Fu). This
+analysis will make use of the <a href="../?node_id=939621">Median Node-Fu
+(MNF)</a>, since it is unbiased towards outliers with respect to writeup
+reputation. It is beyond the scope of this analysis to describe why the
+<i>median</i> is a better measure of central tendency for writeup reputations than the
+mean (as used in WNF), but <a href="../?node_id=939621">this writeup</a>
+has some more information on the issue.
+
+<p>I calculated the Median Node-Fu for each individual noder with one or
+more writeups. This data can be seen in the following histogram:
+
+<center><img SRC="histogram.png" height=402 width=616></center>
+
+The mean value for the MNF data is 1.93, which indicates that most of the
+noders score a Median Node-Fu=2, approximately. However, this distribution
+is fairly broad, as indicated by the <a href="../?node=standard%20deviation">Standard
+Deviation</a> = 3.89. The histogram outline is more or less symmetric,
+although it has a broader tail on the high end. This is somewhat understandable,
+since noders who consistently score low reputations on E2 are not likely
+to stick around for very long (and as a result eventually lose all their
+writeups if they prove to be sub-par). I also calculated the <i>average
+reputations</i> for each noder. The histogram showed less symmetry as was
+expected, and is somewhat biased towards higher values (Mean = 2.93, Standard
+deviation = 4.46).
+
+<p>An alternative method of plotting this data is in <i>cumulative</i>
+form. This can be seen in the following plot:
+
+<center><img SRC="cumulhist.png" height=438 width=574></center>
+
+From this plot, you can calculate how your writeup reputations compare
+to those of <i>all</i> the other noders. For instance, if you have a Median
+Node-Fu=3, look in the table and you see that 78% of all the noders have
+a lower MNF than you (<i>i.e</i>. you're in the top 22%).
+
+<p>If we look at the reputation of <i>all</i> nodes, of <i>all</i> noders
+combined we obtain the following histogram:
+
+<center><img SRC="rephist.png" height=438 width=574></center>
+
+<p>The histogram shows an overwhelming number of writeups with a
+reputation=0--1, with a long tail towards the higher end of the
+distribution. Below reputation=0, the number of writeups drops rapidly
+to very low figures:
+
+<p align=center><b>The voting system effectively weeds out the junk.</b>
+
+<p>Let's put some numbers on this conclusion. Of the approximately
+390,000 writeups in the database (and we're not counting <a href="../?node_id=176726">Webster 1913</a>)
+<ul>
+<li>only <i>1723</i> writeups have a reputation of -5 or lower. This is 0.4% of
+all the user writeups.
+<li>only <i>208</i> writeups have a reputation of -10 or lower. This is 0.1% of
+all the user writeups.
+</ul>
+
+<h2>Median Node-Fu Product</h2>
+
+Another statistic to measure a noder's progress is the <a href="../?node_id=954232">Median
+Node-Fu Product</a> (MNFP). This ranks a noder by the quality of his/her
+contributions (Median Node-Fu), and the quantity (number of writeups):
+
+<p align=center><big>MNFP = (MNF+1) x (#writeups)</big></center>
+
+<p>Again, this is not the place to completely describe this parameter, so
+I suggest you read the <a href="../?node_id=954232">Median Node-Fu Product</a>
+writeup. The MNFP is basically another method of ranking all the noders
+in the database, similar to the EBU ranking, except that it is solely based
+on the noder's writeup <i>quality</i> and <i>quantity</i>. Similar to the
+XP/#writeups plot on the <a href="stats.html">previous page</a>, we can
+plot the MNFP as a function of the number of writeups for all the noder
+levels. This can be seen in the following plot:
+
+<img SRC="lvlMNFP.png" height=491 width=636>
+
+<p>The data represents what the average noder can expect for his/her MNFP.
+Calculate your own MNFP using the aforementioned formula, look in the graph
+for the number of writeups that you have, and see if your nodes are doing
+better than the average. Alternatively, this ranking would be a pretty
+neat method to base a level-advancement system on, since it is solely
+based on writeup quantity and reputation (as opposed to the XP system).
+
+<p>The next section consists of some MNF and MNFP rankings of the noder
+base.
+
+<hr>
+<a href="stats.html"><b>Previous Page</b></a> - <a href="stats3.html"><b>Next Page</b></a>
+
+<p align=center>*** <a href="../?node_id=768243">Professor Pi</a> - October 1, 2001 ***
+
+</body>
+</html>

@@ -1,0 +1,947 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="ja">
+   <meta name="GENERATOR" content="Mozilla/4.7 [en] (Win98; U) [Netscape]">
+   <title>The Honor Roll - an Addition to the E2 Level Advancement System</title>
+</head>
+<body>
+
+<h1>
+The Honor Roll - An addition to the E2 Level Advancement System</h1>
+
+<hr WIDTH="100%">
+<br>I will try to keep this document as short as necessary. Many issues
+have already been discussed quite extensively. To read up on some of the
+background, please refer to:
+<ul>
+<li>
+<a href="../../?node=Everything%20Statistics%20-%20September%2029%2C%202001">Everything
+Statistics - September 29, 2001</a>, <a href="../../?node=Everything%20Statistics%20-%20September%2029%2C%202001%20%282%29">Part
+(2)</a>, <a href="../../?node=Everything%20Statistics%20-%20September%2029%2C%202001%20%283%29">Part
+(3)</a></li>
+
+<li>
+<a href="../../?node_id=1172481">October 5, 2001</a></li>
+
+<li>
+<a href="../../?NODE_ID=1174972">Interquartile
+Mean</a></li>
+
+<li>
+<a href="../../?node_id=954232">Median Node-Fu Product</a></li>
+
+<li>
+<a href="../../?NODE_ID=939621">Node Fu</a></li>
+</ul>
+In this discussion I will mainly focus on the details of the <b><a href="../../?node_id=831469">Honor
+Roll</a></b>; an addition to the current E2 Level Advancement system. The
+initial proposal can be found <a href="../../?node=Everything%20Statistics%20-%20September%2029%2C%202001%20%282%29">here</a>.
+<br>
+<hr WIDTH="100%">
+<h2>
+Contents</h2>
+
+<ul>
+<li>
+<a href="#whychange">Why change the Level Advancement System?</a></li>
+
+<li>
+<a href="#summarydisc">Summary of Discussion</a></li>
+
+<li>
+<a href="#iqm">The Interquartile Mean as measure of central tendency</a></li>
+
+<li>
+<a href="#honorroll">The Honor Roll</a></li>
+
+<li>
+<a href="#implication">Implications of the Honor Roll</a></li>
+
+<li>
+<a href="#implementation">Implementation</a></li>
+</ul>
+
+<hr WIDTH="100%">
+<h2>
+<a NAME="whychange"></a>Why change the Level Advancement System?</h2>
+E2 is unique with respect to its wide diversity of topics that can be found:
+factual knowledge, poetry, politics, science, history... Name any subject and
+it is represented in some form or another. This content is added by a group
+of noders with a very diverse background, culture and motivation to do
+so.
+
+<p>With this diversity comes a broad range of <i>noding styles</i>. Some noders
+focus very much on <i>quantity</i>; quickly add as many nodes on a wide
+variety of topics. Others take the <i>quality</i> approach: add well-researched,
+in-depth writeups on a topic. Of course there is a huge group that falls
+somewhere in between, and then we have the very few brilliant minds who
+can crank out 5 or more masterpieces in a day. There are many approaches to
+climbing the E2 ladder, but as long as the writeups are for the best of
+the database, any approach is fine:
+<center>
+<p>"Node any way you want, as long as it is good for E2"</center>
+
+<p>To be more concrete: I don't judge the addition of plain, non-explicated
+lyrics (leaving copyright issues out of the debate), complete books from
+the public domain, or <i>complete</i> and <i>maintained</i> databases (notice
+the emphasis). The test of time will tell whether a contribution is worth its bytes.
+
+
+<p>Now let's look at how the contribution of noders is valued: each writeup
+is rewarded (or punished) with votes, the noder accumulates XP, and ultimately
+gains levels. Climbing the ranks of E2 is <i>a game</i> with a fixed set
+of rules called the <a href="../../?node=Voting%2FExperience%20System">Voting/Experience
+System</a>. This game element is to a large extent what keeps E2 ticking:
+noders are enticed to <i>add content</i> and <i>evaluate work of their
+peers</i> through voting.
+
+<p>But... not all writeups are equal. The Level Advancement system is supposed
+to reward both <i>quality</i> of writeups (through the XP requirements
+for leveling-up) as well as <i>quantity</i> (through the number-of writeups
+requirements). And that's where the rules of the game appear to be a little outdated.
+As I have showed in my recent statistics on noder data (<a href="../../stats">http://everything2.com/stats</a>),
+the experienced noder reaches XP requirements for leveling up <i>much faster</i>
+than the writeups-requirements. This has the following effects on the content
+of the database:
+<ul>
+
+<li>"Bad" writeups are not removed or improved. Instead, they remain hidden
+in the sheer volume of writeups. There is no incentive to do anything
+about this, since it results in loss of a writeup, or loss of
+noding-time that can be used to generate more writeups. Either way, it
+doesn't help the noder to level-up. Unfortunately that's the way some
+noders appear to play this game. It is quite discouraging to hit <a
+href="../../?node=Random%20Node">Random Node</a> and being offered yet
+another <i>vague</i>, <i>unfunny</i> or <i>uninformative</i> one-liner.
+The low reputation of these writeups is offers no incentive to fix
+things. The writeup stays, unless by chance an editor or a god notices
+it. With 40,000 writeups, that's a hard task.</li>
+
+<li>
+<a href="../../?node=Noding%20for%20Numbers">Noding for Numbers</a>.
+In words, it is highly discouraged but in practice, there is nothing to
+stop a noder from adding a whole string of hidden, sub-par writeups, simply
+to level-up.</li>
+</ul>
+
+E2 is continuously aiming to improve itself. "<a
+href="../../?node_id=960246">Raising the Bar</a>", to quote dannye's
+brilliant writeup. And he is right (isn't he always?). With this in mind
+it is unfortunate that we are stuck with a Level Advancement system that
+---in effect--- only rewards <i>quantity</i>, and not <i>quality</i>.
+Agreed, it is <i>only a game</i>, but the rules of the game are no
+longer appropriate with respect to the way we play it, or the way we are
+supposed to play it. With that in mind, and with the support from many
+noders (although <a href="../../?node_id=282">dem bones</a> and <a
+href="../../?node_id=459692">JayBonci</a> deserve a special mention), I
+investigated some improvements over the current Level Advancement
+system.
+
+
+<h2>
+<a NAME="summarydisc"></a>Summary of Discussion</h2>
+On Wednesday, October 3,  I released the <a href="../../stats">Everything Statistics</a>
+document. <a href="../../?node=Everything%20Statistics%20-%20September%2029%2C%202001">The
+discussion</a> on the proposed Level Advancement system generated a large
+volume of valuable comments, criticism and encouragement. The proposed
+system was based on two criterions that I used to characterize noder progress:
+<a href="../../?node_id=939621">Median
+Node Fu</a> and <a href="../../?NODE_ID=954232">Median
+Node-Fu Product</a>. In hindsight, there were several serious issues that
+were not addressed properly, namely:
+<ul>
+<li>
+The median is a one-point parameter that is sensitive towards targeted
+downvoting</li>
+
+<li>
+The median is restricted to integer values, and is thus not a very <i>responsive</i>
+parameter.</li>
+
+<li>
+The proposed system punishes current noders; noders will drop levels</li>
+
+<li>
+Noders will change the way they write; they no longer add writeups that
+don't "score" well, and they will remove writeups to improve their stats..</li>
+
+<li>
+There is no incentive to vote or otherwise improve the database, since
+XP has no more function for level advancement.</li>
+
+<li>
+Is node-reputation a valid criterion to evaluate node quality?</li>
+</ul>
+To accommodate these valid points, I stepped away from the initial proposal,
+and modified he system to a <i>reward-only</i> system; <b><a href="../../?node_id=1171698">The
+Honor Roll</a></b>. Compared to the initial proposal, this system has the
+following advantages:
+<ul>
+<li>
+Every noder will remain at his/her level. No one is "punished.</li>
+
+<li>
+Noding styles are not altered. Any content counts towards level advancement,
+but high-reputation content will earn level advancement more quickly</li>
+
+<li>
+XP is still required to level-up; noders are encouraged to vote or participate
+otherwise</li>
+</ul>
+There issues with properly calculating the "average" node reputation, making
+the system less prone to downvoting, were left open in the proposal, and
+I will fill in those gaps in this discussion. The point of "node quality"
+is of course a subjective issue, but looking at the list of noders who
+will benefit from the Honor Roll, I believe that this system offers a significant
+improvement over the current system.
+
+<h2>
+<a NAME="iqm"></a>The Interquartile Mean as measure of central tendency</h2>
+
+The major problem with the median as <a
+href="../../?node=Measures%20of%20Central%20Tendency">measure of central
+tendency</a> is that it is a rather coarse parameter for determining an
+average. This is <i>not</i> because the median by itself is inaccurate,
+but because of the <i>discreteness</i> of the population; node
+reputations can only assume <i>integer</i> values (..., 0, 1, 2, ....).
+Since the median is the middle (value) of the distribution, it is always
+an integer (for an odd number of writeups).
+
+<p>The other problem, the sensitivity of the median towards targeted
+downvoting is <i>not</i> a flaw of the median by itself, as it is meant
+to describe random occurrences/treatments on a population (<i>i.e.</i>
+every writeup has the same chance to be viewed/voted on). Of course,
+targeted downvoting is not a random phenomenon. On the other hand, this
+makes the median an unreliable parameter to obtain a noder's average
+reputation, and this issue must be addressed.
+
+
+<p>A more robust method to obtain an average node-reputation would incorporate
+more datapoints; for instance, we could use an average of the 1st quartile,
+median and 3rd quartile as estimates (such as <a href="../../?node_id=1172127">proposed</a>
+by <a href="../../?node_id=977274">1010011010</a>). However, this system is
+still prone to targeted downvoting around those three points.
+
+<p>To obtain more robustness, we need to incorporate even more datapoints.
+Yerricde's <a href="../../?node_id=1171171">proposal</a> to use the <a href="../../?node_id=1174972">Interquartile
+Mean</a> (IQM) proved to be the most promising. I also investigated
+the <a href="../../?NODE="Interdecile%20mean">Interdecile Mean</a>, but
+hopefully the following plot will make it clear why this measure (or even
+wider ranges, up to the geometric mean) are less appropriate as a measure
+of central tendency.
+
+<p>The following plot shows why the writeup-reputation distribution for
+ALL the writeups in the database, in cumulative form (e.g. approximately
+50% of all the writeups has a reputation 4 or lower).
+<center><img SRC="rephistogram.png" height=594 width=778></center>
+
+<p>The black line indicates the range of the Interquartile Mean (it goes through
+the 25% and 75% values for writeup reputation). The red line indicates
+the range for the Interdecile Mean (10% and 90% values for writeup reputation).
+The area between the actual curve and the lines is a measure for the skewness
+of the range that we are sampling. In the case of a <i>symmetric</i> distribution,
+the IQM and IDM lines would go through the point of inflection, and in
+this case you would have a "positive" and a "negative" area, together equaling
+to zero. As can be seen , <i>node reputation is not symmetrically distributed</i>.
+
+<p>But more importantly, there are fewer datapoints at the extremes of
+the plot (<i>i.e.</i> low and high reputation). As a result, the accuracy
+of these values is less; there is greater <i>confidence</i> in the value of the
+quartiles than the deciles. Now visualize the area
+that is enclosed by the line for the interquartile mean and the reputation-curve.
+Slide the quartile points over a little, and the enclosed area will change
+its value slightly. Now do the same thing with the area enclosed by the
+decile points; a small change in the value of the deciles significantly
+changes size of the enclosed area. You can also draw a line going
+through the begin and endpoints, representing the geometric mean, and you
+will see the drastic effect of peak skewness.
+
+<p>In words, the inaccuracy of the endpoints significantly affects the
+amount of skewness that is incorporated in the average. As a result, the
+<i>Interquartile Mean</i> is a more appropriate measure of central
+tendency for this distribution. Since we are using exactly 50% of all
+the writeup-reputations, the Interquartile Mean is also relatively
+stable with respect to mass downvoting.
+
+<p>The IQM for ALL noders can be seen in the following histogram:
+<center><img SRC="IQMhist.png" height=509 width=669></center>
+The distribution of IQM for all noders shows a much better symmetry and
+continuity than the histogram for MNF (see <a href="../../stats">Everything
+Statistics</a>). This is mostly due to the higher responsiveness of the
+IQM, as compared to the median. This high degree of symmetry further suggests
+that the IQM is a stable and unbiased measure of central tendency for the
+node reputation distributions that we encounter. The slight upward skew
+of the distribution is to be expected, since low-reputation writeups are more prone to removal).
+The mean reputation=2.31 (with a standard deviation=3.88).
+<p>The following graph shows the data in a cumulative form:
+<center><img SRC="IQMhistcumul.png" height=495 width=642></center>
+This plot is convenient to estimate the entry level for the Honor Roll.
+<i>E.g.</i> if we set the entry level at IQM>=3, 29% of ALL noders with 1 or more writeups
+will benefit from the Honor Roll system (that is, if they have at least
+25 writeups and meet the XP requirements).
+
+
+<h2>
+<a NAME="honorroll"></a>The Honor Roll</h2>
+<a href="../../?node=Everything%20Statistics%20-%20September%2029%2C%202001%20%282%29">Everything
+Statistics, September 29, 2001 (2)</a> shows the first proposal I made
+of the Honor Roll system. The figures that were stated were initial <i>guesstimates</i>
+of the <b>entry level,</b> <b>IQM cap </b>and <b>IQMP </b>requirements
+for the Honor Roll. Based on the additional IQM statistics from above,
+I adjusted the figures to more appropriate values.
+
+<p>
+<center><table BORDER COLS=4 WIDTH="100%" BGCOLOR="#999999" >
+<tr>
+<th ROWSPAN="2">Level</th>
+
+<th COLSPAN="2">Regular Requirements</th>
+
+<th ROWSPAN="2" BGCOLOR="#FFCC00">Honor Roll IQM>=5
+<br>IQMP Required</th>
+</tr>
+
+<tr>
+<th>XP Required</th>
+
+<th>Writeups Required, IQM&lt;5</th>
+</tr>
+
+<tr>
+<td>1</td>
+
+<td>0</td>
+
+<td>0</td>
+
+<td BGCOLOR="#FFCC00">N/A</td>
+</tr>
+
+<tr>
+<td>2</td>
+
+<td>50</td>
+
+<td>25</td>
+
+<td BGCOLOR="#FFCC00">N/A</td>
+</tr>
+
+<tr>
+<td>3</td>
+
+<td>200</td>
+
+<td>70</td>
+
+<td BGCOLOR="#FFCC00">350</td>
+</tr>
+
+<tr>
+<td>4</td>
+
+<td>400</td>
+
+<td>150</td>
+
+<td BGCOLOR="#FFCC00">750</td>
+</tr>
+
+<tr>
+<td>5</td>
+
+<td>800</td>
+
+<td>250</td>
+
+<td BGCOLOR="#FFCC00">1250</td>
+</tr>
+
+<tr>
+<td>6</td>
+
+<td>1350</td>
+
+<td>380</td>
+
+<td BGCOLOR="#FFCC00">1900</td>
+</tr>
+
+<tr>
+<td>7</td>
+
+<td>2100</td>
+
+<td>515</td>
+
+<td BGCOLOR="#FFCC00">2575</td>
+</tr>
+
+<tr>
+<td>8</td>
+
+<td>2900</td>
+
+<td>700</td>
+
+<td BGCOLOR="#FFCC00">3500</td>
+</tr>
+
+<tr>
+<td>9</td>
+
+<td>4000</td>
+
+<td>900</td>
+
+<td BGCOLOR="#FFCC00">4500</td>
+</tr>
+
+<tr>
+<td>10</td>
+
+<td>7500</td>
+
+<td>1215</td>
+
+<td BGCOLOR="#FFCC00">6075</td>
+</tr>
+
+<tr>
+<td>11</td>
+
+<td>13000</td>
+
+<td>1800</td>
+
+<td BGCOLOR="#FFCC00">9000</td>
+</tr>
+
+<tr>
+<td>12</td>
+
+<td>23000</td>
+
+<td>2700</td>
+
+<td BGCOLOR="#FFCC00">13500</td>
+</tr>
+
+<tr>
+<td>13</td>
+
+<td>38000</td>
+
+<td>4500</td>
+
+<td BGCOLOR="#FFCC00">22500</td>
+</tr>
+</table></center>
+
+<ul>
+<li>
+<i>Every</i> noder advances after meeting the XP and WU requirements (second
+and third columns).</li>
+
+<li>
+The [Honor Roll] - Noders can advance levels with fewer writeups if they
+meet the following requirements:</li>
+
+<ul>
+<li>
+Meet the regular XP requirements.</li>
+
+<li>
+Obtained Level 2 through the Regular Requirements.</li>
+
+<li>
+Obtain an Interquartile Mean node-reputation (IQM) of 5 or more.</li>
+</ul>
+
+<li>
+Level advancement in the Honor Roll goes according to IQMP; the product
+of the IQM and the number of writeups.</li>
+
+<li>
+Noders in the Honor Roll with an IQM>=10 will advance as if they have an
+IQM=10 (A "cap" on IQM)</li>
+</ul>
+
+The requirements of the Honor Roll are set up as follows. The IQMP
+requirements in the Honor Roll were set to 5 times the number of
+writeups required, since 5 is the IQM entry level for the Honor Roll. As
+a result, a noder with an IQM=5 (exactly), will advance through the
+levels according to the Regular Requirements. Noders with a higher
+average node reputation (IQM) than 5 will require fewer writeups to
+level up. E.g., a noder at IQM=8 needs to meet only 5/8 = 62.5% of the
+Regular writeup requirements.
+
+<p>The cap on the IQM is set at twice IQM value for the entry level. This
+assures that a noder must node at least half of the writeups required for
+leveling up according to the Regular requirements (5/10 = 50%).
+
+<p>The XP requirements <i>always</i> apply for leveling up; <i>e.g</i>.
+a noder with IQM=7 and 500 writeups (IQMP=3500) <i>must</i> have
+at least 2900 XP to advance to Level 8. This rule encourages voting participation.
+
+<p>The entry level, and cap can easily be adjusted in the future. This
+may be necessary when vote-inflation becomes an issue (more noders will
+input more votes to the system), or the average quality of the writeups
+significantly improves (that's the ultimate goal of this system...)
+
+<p align=center><b>Noders following the Regular requirements will NEVER drop any levels.
+Noders in the Honor Roll <i>may level down </i>when we raise the Honor
+Roll entry level in the future. </b>
+
+<p>The Honor Roll is a <i>reward</i> for
+high quality noding that must be earned. Noders entering the Honor Roll
+should be aware that we will <a href="../../?node_id=960246">keep raising
+the bar</a>.
+
+<p>The following table shows how much the Writeup requirements drop in
+the Honor System, with an Entry level IQM=5 and a cap IQM>=10. Noders
+with fractional IQM values will require a number of writeups somewhere
+between the lower and higher IQM values listed in the table.
+
+<p>
+<center><table BORDER=3 CELLSPACING=3 CELLPADDING=3 WIDTH="100%" >
+<tr BGCOLOR="#3366FF">
+<th ROWSPAN="2">level</th>
+
+<th COLSPAN="6">Writeups required for listed IQM</th>
+</tr>
+
+<tr BGCOLOR="#999999">
+<th>5</th>
+
+<th>6</th>
+
+<th>7</th>
+
+<th>8</th>
+
+<th>9</th>
+
+<th>>=10</th>
+</tr>
+
+<tr>
+<td>1</td>
+
+<td>0</td>
+
+<td>---</td>
+
+<td>---</td>
+
+<td>---</td>
+
+<td>---</td>
+
+<td>---</td>
+</tr>
+
+<tr>
+<td>2</td>
+
+<td>25</td>
+
+<td>---</td>
+
+<td>---</td>
+
+<td>---</td>
+
+<td>---</td>
+
+<td>---</td>
+</tr>
+
+<tr>
+<td>3</td>
+
+<td>70</td>
+
+<td>58</td>
+
+<td>50</td>
+
+<td>44</td>
+
+<td>39</td>
+
+<td>35</td>
+</tr>
+
+<tr>
+<td>4</td>
+
+<td>150</td>
+
+<td>125</td>
+
+<td>107</td>
+
+<td>94</td>
+
+<td>83</td>
+
+<td>75</td>
+</tr>
+
+<tr>
+<td>5</td>
+
+<td>250</td>
+
+<td>208</td>
+
+<td>179</td>
+
+<td>156</td>
+
+<td>139</td>
+
+<td>125</td>
+</tr>
+
+<tr>
+<td>6</td>
+
+<td>380</td>
+
+<td>317</td>
+
+<td>271</td>
+
+<td>238</td>
+
+<td>211</td>
+
+<td>190</td>
+</tr>
+
+<tr>
+<td>7</td>
+
+<td>515</td>
+
+<td>429</td>
+
+<td>368</td>
+
+<td>322</td>
+
+<td>286</td>
+
+<td>258</td>
+</tr>
+
+<tr>
+<td>8</td>
+
+<td>700</td>
+
+<td>583</td>
+
+<td>500</td>
+
+<td>438</td>
+
+<td>389</td>
+
+<td>350</td>
+</tr>
+
+<tr>
+<td>9</td>
+
+<td>900</td>
+
+<td>750</td>
+
+<td>643</td>
+
+<td>563</td>
+
+<td>500</td>
+
+<td>450</td>
+</tr>
+
+<tr>
+<td>10</td>
+
+<td>1215</td>
+
+<td>1013</td>
+
+<td>868</td>
+
+<td>759</td>
+
+<td>675</td>
+
+<td>608</td>
+</tr>
+
+<tr>
+<td>11</td>
+
+<td>1800</td>
+
+<td>1500</td>
+
+<td>1286</td>
+
+<td>1125</td>
+
+<td>1000</td>
+
+<td>900</td>
+</tr>
+
+<tr>
+<td>12</td>
+
+<td>2700</td>
+
+<td>2250</td>
+
+<td>1929</td>
+
+<td>1688</td>
+
+<td>1500</td>
+
+<td>1350</td>
+</tr>
+
+<tr>
+<td>13</td>
+
+<td>4500</td>
+
+<td>3750</td>
+
+<td>3214</td>
+
+<td>2813</td>
+
+<td>2500</td>
+
+<td>2250</td>
+</tr>
+</table></center>
+
+<p><h2><a NAME="implication"></a>Implications of the Honor Roll</h2>
+
+For now, I have set the entry level of the Honor Roll at IQM=5 and a cap
+at IQM=10. These values could still be adjusted. Several noders will immediately
+encounter a level gain after implementation of the system. I have investigated
+the impact of setting the IQM entry level at IQM= 3, 4, 4.5, 5, and
+6 (with a cap always 2x the entry level IQMP). Lower IQM entry levels are
+undesired, because the Honor Roll entry would fall below the average IQMP
+of all noders. Higher IQM entry levels are undesired, since the threshold
+would be too high for many noders.
+
+<p><b>It is important to set the IQM entry level <i>not too high</i>, because
+we want to encourage as many noders as possible to enter the Honor Roll,
+and improve their writeups.</b>
+
+<p>How does that work out in numbers? The following table shows how many
+noders would benefit from the Honor Roll, based on their IQM and number
+of writeups:
+
+<p>Total number of noders with 25 or more writeups: <b>2205 </b>(eligible
+for entering Honor Roll)
+
+<p>
+<table BORDER COLS=6 WIDTH="100%" >
+<tr BGCOLOR="#3366FF">
+<th ROWSPAN="2">Level Gain</th>
+
+<th COLSPAN="5"># of noders gaining levels for listed IQM Entry level into
+the Honor Roll</th>
+</tr>
+
+<tr BGCOLOR="#999999">
+<th>3</th>
+
+<th>4</th>
+
+<th>4.5</th>
+
+<th>5</th>
+
+<th>6</th>
+</tr>
+
+<tr>
+<td>0</td>
+
+<td>610</td>
+
+<td>430</td>
+
+<td>359</td>
+
+<td>282</td>
+
+<td>178</td>
+</tr>
+
+<tr>
+<td>1</td>
+
+<td>411</td>
+
+<td>243</td>
+
+<td>173</td>
+
+<td>133</td>
+
+<td>76</td>
+</tr>
+
+<tr>
+<td>2</td>
+
+<td>112</td>
+
+<td>53</td>
+
+<td>41</td>
+
+<td>24</td>
+
+<td>13</td>
+</tr>
+
+<tr>
+<td>3</td>
+
+<td>8</td>
+
+<td>3</td>
+
+<td>2</td>
+
+<td>1</td>
+
+<td>0</td>
+</tr>
+
+<tr>
+<td>Total in Honor Roll
+<br>(% of Eligible)</td>
+
+<td>1141 (52%)</td>
+
+<td>729 (33%)</td>
+
+<td>575 (26%)</td>
+
+<td>440 (20%)</td>
+
+<td>267 (12%)</td>
+</tr>
+</table>
+
+<p>The most important conclusion from this data comes from the bottom
+row. If we select an IQM=5 entry level, approximately 20% of all the
+noders with 25 writeups or more will fall into the Honor Roll system,
+and see a <i>direct benefit</i>, either by reduced number of writeups
+required to level-up or by direct leveling up. Alternatively, IQM entry
+levels 4 or 4.5 would be acceptable. For higher entry levels, very few
+noders would see benefits of the system. At IQM=3 too many noders would
+level up too quickly.
+
+<center>
+<p><b>My recommendation is to set an IQM=5 entry level, and a cap at IQM=10.</b></center>
+
+<p>To see what a listing of noders that would benefit from the Honor Roll, refer to:
+
+<ul>
+<li>
+<a href="IQM.html">IQM.html</a> - ranking on IQM of full dataset</li>
+
+<li>
+<a href="IQM3entry.html">IQM3entry.html</a> - ranking on level gain,
+Entry Level IQM=3</li>
+
+<li>
+<a href="IQM4entry.html">IQM4entry.html</a> - ranking on level gain,
+Entry Level IQM=4</li>
+
+<li>
+<a href="IQM4.5entry.html">IQM4.5entry.html</a> - ranking on level gain,
+Entry Level IQM=4.5</li>
+
+<li>
+<b><a href="IQM5entry.html">IQM5entry.html</a> - ranking on level gain,
+Entry Level IQM=5 (RECOMMENDED)</b></li>
+
+<li>
+<a href="IQM6entry.html">IQM6entry.html</a> - ranking on level gain,
+Entry Level IQM=6</li>
+</ul>
+
+<h2>
+<a NAME="implementation"></a>Implementation</h2>
+
+<p><br>"Live" calculation of the Interquartile Mean is too computationally 
+intensive, since it requires collecting of <i>all</i> the node reputation data
+for a certain noder. This cannot be done with adding one or two simple counters
+(as would be the case with the geometric mean), since the Interquartile
+range is partially based on the <i>rank</i> of the writeup reputations.
+
+<p>We can calculate IQM every night during database backup. The IQM will
+assume a fixed value for one day. This has the benefit that adding a new
+writeup does not show a direct drop in IQM (with possible loss of a Level).
+<p>The first step in calculating IQM is obtaining the data. JayBonci has
+timed this process, and it should not take more than 5 minutes. The second
+step is the actual calculation of IQM. I have devised a fast method to
+calculate IQM that only requires reading the reputation data once. A sorting
+routine would be much, much slower...
+
+<p>The algorithm places the node reputations in bins, from the lowest to
+the highest reputation. From this data, the IQM can be calculated very
+quickly. The method works since writeup reputations can only assume integer
+values, and thus the bin values are not range values, but the actual node
+reputations. The algorithm can be found here: <a href="IQMCalc.txt">IQMCalc.txt</a>.
+
+<p><b>Disclaimer: I am NOT a programmer, so cut me some slack for not using
+a "real" programming language, and for the other quirky things that could
+possibly be improved in the code... DO let me know when you suspect there
+is a bug in my calculation method.</b>
+
+<p>Applying the level-up criterion and calculating the IQMP from a fixed
+daily IQM value should be very simple.
+
+<p>I suggest a step-wise implementation of the Honor Roll System. For each
+step we should check what the effects are on the database, with respect
+to lag.
+<ol>
+<li>Implement the code that retrieves node data during backup.</li>
+
+<li>Calculation of the IQM for all noders. This should first be done in
+the background, so that we can check the output before we release it
+onto the masses. The IQM calculation must be absolutely foul-proof.</li>
+
+<li>Implement IQM reporting on homenodes. Let noders get a "feel" for the numbers,
+and the effect of adding writeups on their IQM.</li>
+
+<li>In the background, calculate level gains for noders (without actually processing
+the level-ups).</li>
+
+<li>Implement the full Honor Roll system, with level-ups for noders that qualify</li>
+
+<li>Have a beer and be happy</li>
+</ol>
+
+</body>
+</html>

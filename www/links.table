@@ -1,0 +1,20 @@
+# MySQL dump 8.16
+#
+# Host: localhost    Database: everything
+#--------------------------------------------------------
+# Server version	3.23.42-max-log
+
+#
+# Table structure for table 'links'
+#
+
+CREATE TABLE links (
+  from_node int(11) NOT NULL default '0',
+  to_node int(11) NOT NULL default '0',
+  linktype int(11) NOT NULL default '0',
+  hits int(11) NOT NULL default '0',
+  food int(11) default '0',
+  PRIMARY KEY  (from_node,to_node,linktype),
+  KEY to_node (to_node)
+) TYPE=MyISAM PACK_KEYS=1;
+

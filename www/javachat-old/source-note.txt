@@ -1,0 +1,3 @@
+URL for source for the chatterbox client available at http://www.everything2.com/index.pl?node=chatterbox+client 
+chatterbox client page at http://sourceforge.net/projects/jchatter/ 
+other information at http://nwing.ccy.net/java/e2chat/ 
