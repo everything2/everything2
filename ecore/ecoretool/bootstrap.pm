@@ -106,7 +106,7 @@ sub main
 	}
 	closedir($dirhandle);
 
-	initEverything('everything_else');
+	initEverything($$options{database});
 
 	opendir $dirhandle,$basedir;
 	foreach my $nodetype(readdir($dirhandle))
