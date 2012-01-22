@@ -23,6 +23,8 @@ sub node_to_xml
 	delete $NODE->{resolvedInheritance};
 	delete $NODE->{sqltablelist};
 
+	$NODE->{hits} = 0;
+
 	return $this->{xs}->XMLout({node => $NODE});
 }
 
