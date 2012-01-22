@@ -63,7 +63,7 @@ $XG-&gt;USERSEARCH($str);
   <createtime>2000-09-25 19:10:19</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>4146</hits>
+  <hits>0</hits>
   <node_id>762826</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>451267</type_nodetype>

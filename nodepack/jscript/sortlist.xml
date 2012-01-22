@@ -145,7 +145,7 @@ function ts_sort_numeric(a,b) {
   <createtime>2009-05-10 03:17:15</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>379</hits>
+  <hits>0</hits>
   <node_id>1985920</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>

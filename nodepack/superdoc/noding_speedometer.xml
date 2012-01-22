@@ -141,7 +141,7 @@ while (my $N = $clocked_nodes-&gt;fetchrow_hashref) {
   <createtime>2001-11-27 01:27:05</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>5</hits>
+  <hits>0</hits>
   <node_id>1206744</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

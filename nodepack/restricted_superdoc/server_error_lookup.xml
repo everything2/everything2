@@ -125,7 +125,7 @@ return(&quot;&lt;p&gt;$totalCount total lines in file, $errorCount lines shown.&
   <createtime>2009-04-16 17:54:03</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>220</hits>
+  <hits>0</hits>
   <node_id>1982517</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

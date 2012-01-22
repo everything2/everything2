@@ -6,7 +6,7 @@
   <createtime>1999-10-07 04:35:10</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>43</hits>
+  <hits>0</hits>
   <node_id>19</node_id>
   <context>[% 
  htmlcode('log ip');

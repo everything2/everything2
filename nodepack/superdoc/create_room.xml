@@ -36,7 +36,7 @@ $str.=$query-&gt;end_form;
   <createtime>2000-08-25 07:27:25</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>619</hits>
+  <hits>0</hits>
   <node_id>719799</node_id>
   <edittime>2011-09-04 02:46:08</edittime>
   <type_nodetype>14</type_nodetype>

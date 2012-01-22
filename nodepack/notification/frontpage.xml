@@ -7,7 +7,7 @@
   <totalvotes>0</totalvotes>
   <notification_id>1930853</notification_id>
   <hourLimit>240</hourLimit>
-  <hits>4</hits>
+  <hits>0</hits>
   <node_id>1930853</node_id>
   <code>return &quot;There's a new item on the [Welcome to Everything|front page]&quot;;</code>
   <type_nodetype>1930710</type_nodetype>

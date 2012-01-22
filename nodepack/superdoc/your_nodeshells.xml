@@ -67,7 +67,7 @@ return $str;
   <createtime>2003-01-06 08:51:19</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>19</hits>
+  <hits>0</hits>
   <node_id>1411291</node_id>
   <edittime>2011-07-13 09:15:12</edittime>
   <type_nodetype>14</type_nodetype>

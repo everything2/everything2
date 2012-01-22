@@ -22,7 +22,7 @@ delete($$VARS{customstyle});
   <createtime>2006-12-24 15:51:09</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>2</hits>
+  <hits>0</hits>
   <node_id>1855110</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1065266</type_nodetype>

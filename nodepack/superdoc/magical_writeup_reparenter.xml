@@ -348,7 +348,7 @@ return($inputs_string
   <createtime>2001-08-15 17:27:29</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>43</hits>
+  <hits>0</hits>
   <node_id>1138488</node_id>
   <edittime>2011-08-21 04:21:36</edittime>
   <type_nodetype>14</type_nodetype>

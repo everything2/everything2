@@ -499,7 +499,7 @@ $(this).attr('src', $(this).attr('src').replace('?d=wavatar&amp;', '?d='+g+'&amp
   <createtime>2009-04-23 14:04:02</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>31</hits>
+  <hits>0</hits>
   <node_id>1983490</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>

@@ -7,7 +7,7 @@
   <totalvotes>0</totalvotes>
   <notification_id>1989749</notification_id>
   <hourLimit>336</hourLimit>
-  <hits>3</hits>
+  <hits>0</hits>
   <node_id>1989749</node_id>
   <code>my $author_link = getNodeById($$args{author_id}) ?
   linkNode($$args{author_id})

@@ -53,7 +53,7 @@ $userID = $$N{member_user};
   <createtime>2000-06-10 15:52:12</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>15687</hits>
+  <hits>0</hits>
   <node_id>597846</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>451267</type_nodetype>

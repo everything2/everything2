@@ -666,7 +666,7 @@ return ((rand(10) &lt; 5)?($str):($str2));
   <createtime>2000-02-04 17:19:23</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>32992</hits>
+  <hits>0</hits>
   <node_id>407437</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

@@ -7,7 +7,7 @@
   <totalvotes>0</totalvotes>
   <notification_id>1992747</notification_id>
   <hourLimit>168</hourLimit>
-  <hits>1</hits>
+  <hits>0</hits>
   <node_id>1992747</node_id>
   <code>return linkNode($$args{chanop_id})
   . ' dragged user ' . linkNode($$args{user_id})

@@ -7,7 +7,7 @@
   <totalvotes>0</totalvotes>
   <display>&lt;strong&gt;Dry Ice&lt;/strong&gt; &lt;br/&gt; &lt;em&gt;Node with 20 Cools&lt;/em&gt;</display>
   <achievement_type>cool</achievement_type>
-  <hits>1</hits>
+  <hits>0</hits>
   <node_id>1918136</node_id>
   <achievement_id>1918136</achievement_id>
   <code>my $coolCount = $DB-&gt;sqlSelect(&quot;max(cooled)&quot;,&quot;writeup&quot;,&quot;writeup_id in (select node_id from node where author_user=$user_id and type_nodetype=117)&quot;);

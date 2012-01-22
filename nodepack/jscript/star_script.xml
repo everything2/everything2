@@ -31,7 +31,7 @@ jQuery(document).ready( function() {
   <createtime>2009-12-23 18:51:28</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>20639</hits>
+  <hits>0</hits>
   <node_id>1989127</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>

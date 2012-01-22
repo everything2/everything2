@@ -354,7 +354,7 @@ table.registries {
   <createtime>2009-02-11 14:18:17</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>2488</hits>
+  <hits>0</hits>
   <node_id>1973976</node_id>
   <edittime>2011-07-02 09:30:03</edittime>
   <type_nodetype>1854352</type_nodetype>

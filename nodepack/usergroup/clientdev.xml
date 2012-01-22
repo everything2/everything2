@@ -81,7 +81,7 @@ return '' unless Everything::isApproved($USER, $NODE);
   <totalvotes>0</totalvotes>
   <locktime>0000-00-00 00:00:00</locktime>
   <createtime>2001-11-14 08:33:38</createtime>
-  <hits>2</hits>
+  <hits>0</hits>
   <node_id>1199641</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>16</type_nodetype>

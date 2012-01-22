@@ -10,7 +10,7 @@
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <sqltable>document</sqltable>
-  <hits>3</hits>
+  <hits>0</hits>
   <grouptable>nodegroup</grouptable>
   <node_id>16</node_id>
   <restrict_nodetype>15</restrict_nodetype>

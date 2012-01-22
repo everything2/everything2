@@ -330,7 +330,7 @@ return &quot;$head
   <createtime>2000-03-07 16:42:55</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>795037</hits>
+  <hits>0</hits>
   <node_id>1223826</node_id>
   <edittime>2011-09-26 09:23:00</edittime>
   <type_nodetype>14</type_nodetype>

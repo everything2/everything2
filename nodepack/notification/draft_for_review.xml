@@ -7,7 +7,7 @@
   <totalvotes>0</totalvotes>
   <notification_id>1991920</notification_id>
   <hourLimit>168</hourLimit>
-  <hits>5</hits>
+  <hits>0</hits>
   <node_id>1991920</node_id>
   <code>my $draft_id = $$args{draft_id} || 0;
 my $nodenote_id = $$args{nodenote_id} || 0;

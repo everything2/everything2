@@ -161,7 +161,7 @@ if (($message =~ /^\/sanctify\s+(.*)$/)) {
   <createtime>2008-11-29 04:38:56</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>1</hits>
+  <hits>0</hits>
   <node_id>1965650</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1965649</type_nodetype>

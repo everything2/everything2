@@ -26,7 +26,7 @@ return $xml;
   <createtime>2010-05-07 12:34:56</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>132</hits>
+  <hits>0</hits>
   <node_id>1989702</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1252389</type_nodetype>

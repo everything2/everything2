@@ -7,7 +7,7 @@
   <totalvotes>0</totalvotes>
   <notification_id>1988825</notification_id>
   <hourLimit>0</hourLimit>
-  <hits>3</hits>
+  <hits>0</hits>
   <node_id>1988825</node_id>
   <code>return linkNode($$args{user_id}).&quot; has updated their profile feed.&quot;;</code>
   <type_nodetype>1930710</type_nodetype>

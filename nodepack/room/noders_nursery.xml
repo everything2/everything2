@@ -13,7 +13,7 @@ and editors -- a place to ask questions outside of the public eye.&lt;/p&gt;
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <lastused_date>2011-03-25</lastused_date>
-  <hits>1303</hits>
+  <hits>0</hits>
   <node_id>553146</node_id>
   <criteria>my $uid = getId($USER);
 return 1 if (exists $HTMLVARS{'group_content editors'}{$uid}) || (exists $HTMLVARS{'group_gods'}{$uid});

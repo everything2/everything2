@@ -44,7 +44,7 @@ $header. $str. $footer .
   <createtime>1999-11-23 10:20:13</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>581</hits>
+  <hits>0</hits>
   <node_id>167151</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

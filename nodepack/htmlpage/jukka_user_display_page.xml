@@ -40,7 +40,7 @@ linkNode($NODE, '(edit user information)', {displaytype=&gt;'edit'});
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>415068</htmlpage_id>
-  <hits>99</hits>
+  <hits>0</hits>
   <node_id>415068</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

@@ -169,7 +169,7 @@ document.getElementById('previewstyle').onclick = function () {
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1854353</htmlpage_id>
-  <hits>4</hits>
+  <hits>0</hits>
   <node_id>1854353</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

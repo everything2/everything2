@@ -158,7 +158,7 @@ return $str.'&lt;textarea name=&quot;skratch&quot; '.htmlcode('customtextarea','
   <createtime>2001-05-31 01:42:40</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>7</hits>
+  <hits>0</hits>
   <node_id>1065273</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1065266</type_nodetype>

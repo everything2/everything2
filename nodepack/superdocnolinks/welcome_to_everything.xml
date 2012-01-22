@@ -50,7 +50,7 @@ return $zenStr ;
   <createtime>1999-09-15 07:16:56</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>1354965</hits>
+  <hits>0</hits>
   <node_id>124</node_id>
   <edittime>2011-08-20 07:51:00</edittime>
   <type_nodetype>1065266</type_nodetype>

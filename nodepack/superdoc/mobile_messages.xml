@@ -114,7 +114,7 @@ delete $HTMLVARS{chatterboxsettingswidgetlink};
   <createtime>2011-10-31 16:13:08</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>1</hits>
+  <hits>0</hits>
   <node_id>1992740</node_id>
   <edittime>2011-10-31 12:18:39</edittime>
   <type_nodetype>14</type_nodetype>

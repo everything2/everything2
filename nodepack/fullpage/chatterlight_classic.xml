@@ -64,7 +64,7 @@ $('message').focus();
   <createtime>2008-05-22 23:11:10</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>1</hits>
+  <hits>0</hits>
   <node_id>1942820</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>451267</type_nodetype>

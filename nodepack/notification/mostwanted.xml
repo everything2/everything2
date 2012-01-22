@@ -7,7 +7,7 @@
   <totalvotes>0</totalvotes>
   <notification_id>1935408</notification_id>
   <hourLimit>168</hourLimit>
-  <hits>1</hits>
+  <hits>0</hits>
   <node_id>1935408</node_id>
   <code>return &quot;[USER X] has [filled] your Most Wanted nodeshell [Y].&quot;</code>
   <type_nodetype>1930710</type_nodetype>

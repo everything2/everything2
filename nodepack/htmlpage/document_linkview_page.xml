@@ -123,7 +123,7 @@ $str .=  join(&quot;&lt;/li&gt;\n&lt;li&gt;&quot;, @notlinks)
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1409922</htmlpage_id>
-  <hits>5</hits>
+  <hits>0</hits>
   <node_id>1409922</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>linkview</displaytype>

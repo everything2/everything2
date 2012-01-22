@@ -6,7 +6,7 @@
   <createtime>1999-10-07 04:35:10</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>16</hits>
+  <hits>0</hits>
   <node_id>18</node_id>
   <context>[%
 $query-&gt;start_form(-method=&gt;'POST', action=&gt;$ENV{script_name}, name=&gt;'pagebody', id=&gt;'pagebody') .

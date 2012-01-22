@@ -7,7 +7,7 @@
   <totalvotes>0</totalvotes>
   <display>&lt;strong&gt;Printing Press&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Posted 10 New Writeups In One Month&lt;/i&gt;</display>
   <achievement_type>writeup</achievement_type>
-  <hits>1</hits>
+  <hits>0</hits>
   <node_id>1920608</node_id>
   <achievement_id>1920608</achievement_id>
   <code>my $maxWusInAMonth = $DB-&gt;sqlSelect(

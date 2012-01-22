@@ -253,7 +253,7 @@ return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/
   <createtime>2000-09-11 05:16:45</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>2056</hits>
+  <hits>0</hits>
   <node_id>743129</node_id>
   <edittime>2011-08-04 22:43:30</edittime>
   <type_nodetype>14</type_nodetype>

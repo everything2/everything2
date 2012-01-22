@@ -8,7 +8,7 @@
   <locktime>0000-00-00 00:00:00</locktime>
   <createtime>1999-11-04 00:14:09</createtime>
   <package>0</package>
-  <hits>1</hits>
+  <hits>0</hits>
   <node_id>166</node_id>
   <_create_table_statement>/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;

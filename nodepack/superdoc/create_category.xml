@@ -111,7 +111,7 @@ $str .= $query-&gt;endform;
   <createtime>2008-03-26 17:48:19</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>11</hits>
+  <hits>0</hits>
   <node_id>1935419</node_id>
   <edittime>2011-07-03 08:04:53</edittime>
   <type_nodetype>14</type_nodetype>

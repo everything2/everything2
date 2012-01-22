@@ -223,7 +223,7 @@ return htmlcode('testDisplayWriteupInfo','1842035');
   <createtime>1999-12-06 08:27:49</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>68799</hits>
+  <hits>0</hits>
   <node_id>1923473</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1065266</type_nodetype>

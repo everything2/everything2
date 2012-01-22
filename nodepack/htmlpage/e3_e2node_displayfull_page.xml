@@ -96,7 +96,7 @@ linkNode( $NODE , '&lt;strong&gt;Show all hidden writeups&lt;/strong&gt;' , { -c
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1989782</htmlpage_id>
-  <hits>1</hits>
+  <hits>0</hits>
   <node_id>1989782</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>displayfull</displaytype>

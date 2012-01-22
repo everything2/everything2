@@ -172,7 +172,7 @@ E2AJAX = e2.ajax = jQuery.extend(e2.ajax,{
   <createtime>2010-09-11 09:07:56</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>1</hits>
+  <hits>0</hits>
   <node_id>1990285</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>

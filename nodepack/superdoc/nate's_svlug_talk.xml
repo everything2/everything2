@@ -97,7 +97,7 @@ join &quot;\n&quot;, @lines;
   <createtime>2000-09-06 03:38:09</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>313</hits>
+  <hits>0</hits>
   <node_id>735780</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

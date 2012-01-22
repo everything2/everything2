@@ -7,7 +7,7 @@
   <totalvotes>0</totalvotes>
   <notification_id>1930989</notification_id>
   <hourLimit>72</hourLimit>
-  <hits>3</hits>
+  <hits>0</hits>
   <node_id>1930989</node_id>
   <code>my $N = getNodeById($$args{node_id});
 return linkNode($$args{node_noter}).

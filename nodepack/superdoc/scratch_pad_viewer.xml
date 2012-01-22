@@ -89,7 +89,7 @@ return $str.$skratchText;
   <createtime>2001-08-29 01:51:37</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>8</hits>
+  <hits>0</hits>
   <node_id>1147724</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

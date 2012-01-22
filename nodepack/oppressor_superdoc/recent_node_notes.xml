@@ -91,7 +91,7 @@ $str.=&quot;\n&lt;/table&gt;&lt;br&gt;$paging&quot;;
   <createtime>2003-02-13 19:14:47</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>80</hits>
+  <hits>0</hits>
   <node_id>1429619</node_id>
   <edittime>2011-08-11 04:58:09</edittime>
   <type_nodetype>1144104</type_nodetype>

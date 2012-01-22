@@ -31,7 +31,7 @@ Note: logging in behind a proxy and/or firewall doesn't seem to work. Sorry abou
   <createtime>2000-04-04 02:00:38</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>12250</hits>
+  <hits>0</hits>
   <node_id>481581</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

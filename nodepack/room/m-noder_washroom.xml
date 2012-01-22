@@ -17,7 +17,7 @@
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <lastused_date>2011-07-14</lastused_date>
-  <hits>260</hits>
+  <hits>0</hits>
   <node_id>553133</node_id>
   <criteria>my $numwr = $$VARS{numwriteups};
 $numwr ||= 0;

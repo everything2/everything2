@@ -6,7 +6,7 @@
   <createtime>1999-11-10 23:09:53</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>5</hits>
+  <hits>0</hits>
   <node_id>277</node_id>
   <context>&lt;TR&gt;&lt;TD bgcolor=[%
 return $$VARS{nodelet_textclr} if $$VARS{nodelet_textclr};

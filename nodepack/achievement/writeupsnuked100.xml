@@ -7,7 +7,7 @@
   <totalvotes>0</totalvotes>
   <display>&lt;strong&gt;Welcome To Hell, Here's Your Accordion&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;100 Writeups In Node Heaven&lt;/i&gt;</display>
   <achievement_type>writeup</achievement_type>
-  <hits>4</hits>
+  <hits>0</hits>
   <node_id>1918344</node_id>
   <achievement_id>1918344</achievement_id>
   <code>my $heavenCount =

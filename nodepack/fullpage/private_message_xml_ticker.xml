@@ -78,7 +78,7 @@ $nl.$XG-&gt;PRIVATE_MESSAGES($str.$nl);
   <createtime>2000-06-12 15:14:48</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>29303</hits>
+  <hits>0</hits>
   <node_id>600299</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>451267</type_nodetype>

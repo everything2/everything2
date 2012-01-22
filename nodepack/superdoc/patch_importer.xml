@@ -373,7 +373,7 @@ sub listPatches{
   <createtime>2009-06-20 07:21:00</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>72</hits>
+  <hits>0</hits>
   <node_id>1988260</node_id>
   <edittime>2011-07-25 09:36:59</edittime>
   <type_nodetype>14</type_nodetype>

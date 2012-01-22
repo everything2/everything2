@@ -20,7 +20,7 @@ if($theme)
   <createtime>1999-12-22 01:23:15</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>42</hits>
+  <hits>0</hits>
   <node_id>285356</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

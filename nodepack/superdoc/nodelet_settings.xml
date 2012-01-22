@@ -50,7 +50,7 @@ return '--&gt;' if $$USER{node_id} == $HTMLVARS{guest_user};
   <createtime>2004-09-29 03:13:54</createtime>
   <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>78</hits>
+  <hits>0</hits>
   <node_id>1677879</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
