@@ -15,12 +15,10 @@ $pass =~ s/./\*/g;
 $query-&gt;param(&quot;passwd&quot;, $pass);
 $query-&gt;delete('op');
 
-my $host = $ENV{HTTP_HOST} ;
-$host =~ s/:\d+$// ;
 my $goto = getId($NODE);
 $goto = $HTMLVARS{default_node} if $goto == $HTMLVARS{default_guest_node};
 $query-&gt;start_form(-method =&gt; &quot;POST&quot;
-  , -action =&gt; 'http://'.$host.$query-&gt;script_name
+  , -action =&gt; $query-&gt;script_name
   , -name =&gt; &quot;loginform&quot;
   , -id =&gt; &quot;loginform&quot;
   ) .
