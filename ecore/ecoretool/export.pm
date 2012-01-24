@@ -132,8 +132,15 @@ sub xml_to_file
 		print "Could not write node: $$node{node_id}, invalid title\n";
 		return;
 	}
+	my $dbh = $DB->{dbh};
+	if(not defined($dbh))
+	{
+		print "No database handle in xml_to_file for node $$node{title}\n";
+		return;
+	}
+
 	open $handle, ">/$$this{basedir}/$type/$outtitle.xml" or die "Open error '$$this{basedir}/$type/$outtitle.xml': $!";
-	print $handle $obj->node_to_xml($node);
+	print $handle $obj->node_to_xml($node, $dbh);
 	close $handle;
 }
 
