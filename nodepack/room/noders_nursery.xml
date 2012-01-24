@@ -6,14 +6,9 @@ and editors -- a place to ask questions outside of the public eye.&lt;/p&gt;
 
 &lt;p&gt;Make sure to start with the [E2 FAQ],&lt;br&gt;the source of all that is good and good.&lt;/p&gt;
 </doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2000-05-16 15:16:13</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <lastused_date>2011-03-25</lastused_date>
-  <hits>1303</hits>
   <node_id>553146</node_id>
   <criteria>my $uid = getId($USER);
 return 1 if (exists $HTMLVARS{'group_content editors'}{$uid}) || (exists $HTMLVARS{'group_gods'}{$uid});
@@ -32,7 +27,5 @@ return 1 if getLevel($USER) &lt;= 3 or getLevel($USER) &gt;= 6;
   <type_nodetype>545241</type_nodetype>
   <document_id>553146</document_id>
   <author_user>114</author_user>
-  <abreviation></abreviation>
-  <package>0</package>
   <title>Noders Nursery</title>
 </node>

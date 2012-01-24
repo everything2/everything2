@@ -105,18 +105,12 @@ return $str;
 
 
 </doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-10-01 10:14:43</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1957344</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <document_id>1957344</document_id>
   <author_user>1017738</author_user>
-  <package>0</package>
   <title>The Recommender</title>
 </node>

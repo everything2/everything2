@@ -1,14 +1,8 @@
 <node>
   <type_nodetype>1915073</type_nodetype>
-  <core>0</core>
-  <reputation>0</reputation>
   <author_user>1312198</author_user>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-02-15 01:54:49</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <package>0</package>
-  <hits>0</hits>
   <node_id>1930101</node_id>
   <title>isGuest</title>
 </node>

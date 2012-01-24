@@ -1,45 +1,26 @@
 <node>
-  <sanctity>0</sanctity>
   <nick></nick>
   <experience>-160</experience>
   <email></email>
   <realname></realname>
-  <imgsrc></imgsrc>
   <edittime>0000-00-00 00:00:00</edittime>
   <lasttime>2001-11-28 12:18:15</lasttime>
   <type_nodetype>15</type_nodetype>
-  <stars>0</stars>
   <document_id>113</document_id>
   <vars>browser=%20&amp;displaypref_e2node=displayfull&amp;ipaddy=%20&amp;level=0%20%28Initiate%29%20%2f%20%2d160&amp;nodelets=262%2c170070%2c91%2c263%2c1157024%2c165437&amp;num_newwus=25&amp;numwriteups=%20&amp;nwriteups=%20&amp;nwriteupsupdate=1326178503&amp;oldGP=%20&amp;oldexp=%20&amp;preferred_theme=1854183&amp;settings_useWriteupBonus=1&amp;showmessages_replylink=1&amp;userstyle=1882070&amp;votesrefreshed=1&amp;votetime=2009%2d06%2d03&amp;writeupbonus=%20</vars>
   <author_user>113</author_user>
-  <numwriteups>0</numwriteups>
   <title>root</title>
   <user_id>113</user_id>
   <doctext>He's the god of [gods] &amp;#8212; instant access. Unlimited power.
 Great hair.</doctext>
   <core>R</core>
   <session_id></session_id>
-  <validemail>0</validemail>
-  <reputation>0</reputation>
   <validationkey></validationkey>
-  <lockedby_user>0</lockedby_user>
-  <hashed_password>0</hashed_password>
   <createtime>1999-10-07 04:35:13</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>716</hits>
-  <acctlock>0</acctlock>
   <node_id>113</node_id>
-  <votesleft>0</votesleft>
-  <wantsreport>0</wantsreport>
-  <votes>0</votes>
-  <in_room>0</in_room>
   <setting_id>113</setting_id>
-  <users_clan>0</users_clan>
   <karma>19</karma>
-  <GP>0</GP>
   <user_salt></user_salt>
-  <package>0</package>
   <passwd></passwd>
-  <merit>0</merit>
 </node>

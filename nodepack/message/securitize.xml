@@ -1,14 +1,8 @@
 <node>
   <type_nodetype>170067</type_nodetype>
-  <core>0</core>
-  <reputation>0</reputation>
   <author_user>433254</author_user>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-05-31 20:38:09</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <package>0</package>
-  <hits>0</hits>
   <node_id>1311248</node_id>
   <title>securitize</title>
 </node>

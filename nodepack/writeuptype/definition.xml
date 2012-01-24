@@ -1,14 +1,8 @@
 <node>
   <type_nodetype>118</type_nodetype>
-  <core>0</core>
-  <reputation>0</reputation>
   <author_user>220</author_user>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-12-21 17:34:17</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <package>0</package>
-  <hits>4</hits>
   <node_id>177599</node_id>
   <title>definition</title>
 </node>

@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-12-22 03:18:46</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>332498</node_id>
   <type_nodetype>153</type_nodetype>
   <setting_id>332498</setting_id>
   <author_user>113</author_user>
   <vars>txt=text%2fplain&amp;jpg=image%2fjpeg&amp;gz=application%2fx%2dgzip&amp;html=text%2fhtml&amp;png=image%2fpng&amp;gif=image%2fgif&amp;jpeg=image%2fjpeg&amp;tar=application%2fx%2dtar&amp;htm=text%2fhtml</vars>
-  <package>0</package>
   <title>filetypes</title>
 </node>

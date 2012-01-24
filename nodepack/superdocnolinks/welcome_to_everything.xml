@@ -45,17 +45,12 @@ return $zenStr ;
 
 %]</doctext>
   <core></core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-09-15 07:16:56</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>1354965</hits>
   <node_id>124</node_id>
   <edittime>2011-08-20 07:51:00</edittime>
   <type_nodetype>1065266</type_nodetype>
   <document_id>124</document_id>
   <author_user>114</author_user>
-  <package>0</package>
   <title>Welcome to Everything</title>
 </node>

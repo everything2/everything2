@@ -1,7 +1,6 @@
 <node>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1308757</pagetype_nodetype>
-  <core>0</core>
   <page>&lt;H4&gt;Title:&lt;/H4&gt;[{textfield:title}]&lt;br&gt;
 &lt;h4&gt;Applies to:&lt;/h4&gt;[{node_menu:nodetest_appliesto,nodetype}]&lt;br&gt;
 &lt;H4&gt;Description:&lt;/h4&gt;[{textfield:nodetest_description,255}]&lt;br&gt;
@@ -9,19 +8,13 @@
 &lt;h4&gt;Active:&lt;/h4&gt;[{yesno_field:nodetest_active}]&lt;br&gt;&lt;br&gt;
 
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-09-17 07:59:16</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1308761</htmlpage_id>
-  <hits>0</hits>
   <node_id>1308761</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
   <author_user>459692</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>nodetest edit page</title>
   <mimetype></mimetype>
 </node>

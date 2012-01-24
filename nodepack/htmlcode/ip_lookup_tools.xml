@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2010-01-27 10:34:29</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>1</hits>
   <node_id>1989357</node_id>
   <htmlcode_id>1989357</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code># encodeHTML should be a no-op here, but just in case...
 my $ip = encodeHTML(shift);
 
@@ -22,6 +16,5 @@ return
   ;</code>
   <type_nodetype>4</type_nodetype>
   <author_user>1449265</author_user>
-  <package>0</package>
   <title>ip lookup tools</title>
 </node>

@@ -104,18 +104,12 @@ $str;
 &lt;!--
 &lt;p style=&quot;font-family: sans-serif; font-size: 200%; background-color: yellow; border: solid black 3px; margin-left: 20px; margin-right: 20px; margin-top: 50px; margin-bottom: 10px; padding: 10px;&quot; align=&quot;center&quot;&gt;the following tool is under construction&lt;/p&gt;
 --&gt;</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-07-13 21:35:26</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1107432</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
   <document_id>1107432</document_id>
   <author_user>9740</author_user>
-  <package>0</package>
   <title>N-Wing's super utility belt</title>
 </node>

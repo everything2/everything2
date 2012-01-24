@@ -1,22 +1,14 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2007-11-21 03:18:38</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <display>&lt;strong&gt;Big Wheels Keep On Turning&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Spun the [Wheel of Surprise] 1000 times&lt;/i&gt;</display>
   <achievement_type>miscellaneous</achievement_type>
-  <hits>0</hits>
   <node_id>1918341</node_id>
   <achievement_id>1918341</achievement_id>
   <code>my $uVars = getVars(getNodeById($user_id));
 return 1 if $$uVars{spin_wheel} &gt;=1000;
 return 0;</code>
   <type_nodetype>1917847</type_nodetype>
-  <private>0</private>
   <author_user>1312198</author_user>
-  <achievement_still_available>1</achievement_still_available>
-  <package>0</package>
   <title>wheelspin1000</title>
 </node>

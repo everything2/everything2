@@ -139,18 +139,12 @@ return htmlcode('editwriteup') unless $query -&gt; param('other_user');
 %]
 &lt;/form&gt;
 </doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2011-01-28 14:03:50</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>196</hits>
   <node_id>1991135</node_id>
   <edittime>2011-10-18 01:13:48</edittime>
   <type_nodetype>14</type_nodetype>
   <document_id>1991135</document_id>
   <author_user>1828141</author_user>
-  <package>0</package>
   <title>Drafts</title>
 </node>

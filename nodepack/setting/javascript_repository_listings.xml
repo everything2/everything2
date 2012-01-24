@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2007-03-08 18:09:25</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1869642</node_id>
   <type_nodetype>153</type_nodetype>
   <setting_id>1869642</setting_id>
   <author_user>1312198</author_user>
   <vars>1786409=%3cb%3eMenu%20Collapser%3c%2fb%3e%20by%20%5bExcalibre%5d%20%3cbr%20%2f%3eCollapse%20your%20nodelets%20at%20the%20click%20of%20a%20mouse%2e%3cbr%20%2f%3e&amp;1872965=%3cb%3e%5bZen%20Nodelet%20Collapser%5d%3c%2fb%3e%20by%20%5bkthejoker%5d%3cbr%20%2f%3eA%20nodelet%20collapser%20for%20the%20%5bzen%20theme%5d%2e%3cbr%20%2f%3e&amp;1872990=%3cb%3e%5bNodelet%20Section%20Collapser%5d%3c%2fb%3e%20by%20%5bkthejoker%5d%3cbr%20%2f%3eCollapse%20sections%20within%20nodelets%2e%3cbr%20%2f%3e&amp;1874173=%3cb%3e%5bNodelet%20Switcher%5d%3c%2fb%3e%20by%20%5bkthejoker%5d%3cbr%20%2f%3e&amp;1874924=%3cb%3e%5bdefault%20javascript%5d%3c%2fb%3e%20by%20%5bascorbic%5d%3cbr%20%2f%3e&amp;1878034=%3cb%3e%5bEverything2%20Ajax%5d%3c%2fb%3e%20by%20%5bkthejoker%5d%3cbr%20%2f%3e&amp;1916933=%3cb%3e%5bempty%20javascript%5d%3c%2fb%3e%20by%20%5bkthejoker%5d%3cbr%20%2f%3e&amp;1921756=%3cb%3e%5btest%20jscript%5d%3c%2fb%3e%20by%20%5bkthejoker%5d%3cbr%20%2f%3e&amp;1930065=%3cb%3e%5bWriteup%20AJAX%5d%3c%2fb%3e%20by%20%5bkthejoker%5d%3cbr%20%2f%3e&amp;1951752=%3cb%3e%5bHTML%20toolbar%5d%3c%2fb%3e%20by%20%5bOolong%5d%3cbr%20%2f%3e&amp;1982974=%3cb%3e%5bprole%27s%20enhancements%5d%3c%2fb%3e%20by%20%5bprole%5d%3cbr%20%2f%3e&amp;1983490=%3cb%3e%5bjstest%5d%3c%2fb%3e%20by%20%5bin10se%5d%3cbr%20%2f%3e&amp;1988891=%3cb%3e%5bE3%20Everything2%20AJAX%5d%3c%2fb%3e%20by%20%5bkthejoker%5d%3cbr%20%2f%3e&amp;1989127=%3cb%3e%5bstar%20script%5d%3c%2fb%3e%20by%20%5bOolong%5d%3cbr%20%2f%3e&amp;1989311=%3cb%3e%5bchatterbox%20script%5d%3c%2fb%3e%20by%20%5bDonJaime%5d%3cbr%20%2f%3e&amp;1989982=%3cb%3e%5bmusical%20appreciation%5d%3c%2fb%3e%20by%20%5bOldMiner%5d%3cbr%20%2f%3e&amp;1990137=%3cb%3e%5bjavascript%20debugger%5d%3c%2fb%3e%20by%20%5bDonJaime%5d%3cbr%20%2f%3e&amp;1990285=%3cb%3e%5bAdditional%20Everything2%20Ajax%5d%3c%2fb%3e%20by%20%5bDonJaime%5d%3cbr%20%2f%3eAdd%20experimental%20e2%2eajax%20functions%3cbr%3e&amp;1990287=%3cb%3e%5bDeferrer%5d%3c%2fb%3e%20by%20%5bDonJaime%5d%3cbr%20%2f%3e%0a&amp;1990639=%3cb%3e%5bsettings%20script%5d%3c%2fb%3e%20by%20%5bDonJaime%5d%3cbr%20%2f%3e%0a&amp;1990821=%3cb%3e%5btext%20format%20script%5d%3c%2fb%3e%20by%20%5bDonJaime%5d%3cbr%20%2f%3e%0a&amp;1990830=%3cb%3e%5bHTMLToolbar%5d%3c%2fb%3e%20by%20%5bDonJaime%5d%3cbr%20%2f%3e%0a&amp;1992495=%3cb%3e%5bmobile%20jscript%5d%3c%2fb%3e%20by%20%5bcall%5d%3cbr%20%2f%3e%0a</vars>
-  <package>0</package>
   <title>Javascript Repository listings</title>
 </node>

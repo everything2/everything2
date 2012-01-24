@@ -1,20 +1,12 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-04-02 12:40:05</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <display>&lt;b&gt;Guest of Valhalla&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Participated in April Fools' Day 2008 Ragnarok!&lt;/i&gt;</display>
   <achievement_type>usergroup</achievement_type>
-  <hits>0</hits>
   <node_id>1936186</node_id>
   <achievement_id>1936186</achievement_id>
   <code>return htmlcode('isinUsergroup',$user_id.',valhalla');</code>
   <type_nodetype>1917847</type_nodetype>
-  <private>0</private>
   <author_user>1312198</author_user>
-  <achievement_still_available>1</achievement_still_available>
-  <package>0</package>
   <title>usergroupValhalla</title>
 </node>

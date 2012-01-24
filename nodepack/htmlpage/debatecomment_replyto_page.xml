@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1156105</pagetype_nodetype>
-  <core>0</core>
   <page>&lt;form method=&quot;post&quot; id=&quot;pagebody&quot;&gt;
 [{showdebate:0}]
 
@@ -48,19 +47,13 @@ $newtitle =~ s/&quot;/&amp;quot;/g;
 &lt;input type=&quot;submit&quot; name=&quot;sexisgood&quot; value=&quot;sumbit&quot;&gt;';
 %]
 &lt;/form&gt;</page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-09-11 02:38:37</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1156529</htmlpage_id>
-  <hits>0</hits>
   <node_id>1156529</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>replyto</displaytype>
   <author_user>113</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>debatecomment replyto page</title>
   <mimetype></mimetype>
 </node>

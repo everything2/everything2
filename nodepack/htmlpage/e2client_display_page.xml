@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1261857</pagetype_nodetype>
-  <core>0</core>
   <page>[%
 return (($$USER{user_id} == $$NODE{author_user})?('&lt;p align=&quot;right&quot;&gt;'.linkNode($NODE, 'edit', {'displaytype'=&gt;'edit'}).'&lt;/p&gt;'):(''));
 %]
@@ -23,19 +22,13 @@ return parseLinks($str);
 &lt;br&gt;&lt;br&gt;&lt;hr&gt;&lt;br&gt;
 [{parselinks:doctext}]
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-02-28 21:52:30</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1261883</htmlpage_id>
-  <hits>0</hits>
   <node_id>1261883</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <author_user>459692</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>e2client display page</title>
   <mimetype></mimetype>
 </node>

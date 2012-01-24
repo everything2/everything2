@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-11-04 00:25:03</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>213</node_id>
   <type_nodetype>153</type_nodetype>
   <setting_id>213</setting_id>
   <author_user>113</author_user>
   <vars>FIXED=Fixed&amp;NAB=NAB%20%2d%20Not%20a%20bug&amp;FOL=FOL%20%2d%20Fact%20of%20Life&amp;NEW=New&amp;UTR=UTR%20%2d%20Unable%20to%20reproduce&amp;DUPLICATE=Duplicate</vars>
-  <package>0</package>
   <title>bugstatus</title>
 </node>

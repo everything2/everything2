@@ -2,27 +2,19 @@
   <doctext>&lt;p&gt;[gods|admins] have their C!s set to 0 every other day. (&lt;strong&gt;Update&lt;/strong&gt;: this doesn't seem to happen to editors; sorry to pester you about this.) This happens regardless of the number of C!s the user has used. The Epicenter display shows 0 C!s, which accurately reflects the user's &lt;code&gt;$$VARS{cools}&lt;/code&gt; value of 0. Of course, this value is incorrect in the first place. Note: there are no problems of C!ing, just the display (and the information behind that) is wrong.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Update&lt;/strong&gt;: it turns out it was only me. When I was working on something else, in a certain page, I made it give me 0 C!s left when I viewed it. So as soon as I viewed this page, I lost all my C!s for that day. If I didn't view that page, I had my normal C!s.&lt;/p&gt;</doctext>
-  <priority>0</priority>
-  <core>0</core>
-  <reputation>0</reputation>
   <status>closed</status>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-09-28 22:09:27</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <useragentos></useragentos>
-  <hits>0</hits>
   <useragentversion></useragentversion>
   <node_id>1167912</node_id>
   <assigned_to>9740</assigned_to>
   <category>server</category>
   <edittime>0000-00-00 00:00:00</edittime>
   <severity>minor</severity>
-  <theme>0</theme>
   <type_nodetype>1160420</type_nodetype>
   <document_id>1167912</document_id>
   <author_user>9740</author_user>
-  <package>0</package>
   <ebug_id>1167912</ebug_id>
   <resolution>invalid</resolution>
   <title>C! allocation for editors</title>

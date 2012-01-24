@@ -1,14 +1,9 @@
 <node>
   <type_nodetype>148</type_nodetype>
   <core>R</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <author_user>113</author_user>
   <totalvotes>0</totalvotes>
-  <locktime>0000-00-00 00:00:00</locktime>
   <createtime>1999-11-04 00:14:10</createtime>
-  <package>0</package>
-  <hits>26</hits>
   <node_id>173</node_id>
   <_create_table_statement>/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;

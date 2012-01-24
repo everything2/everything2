@@ -1,16 +1,10 @@
 <node>
   <rawdata_id>335664</rawdata_id>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-12-22 03:26:43</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>159150</hits>
   <node_id>335664</node_id>
   <type_nodetype>332487</type_nodetype>
   <author_user>315</author_user>
-  <package>0</package>
   <datacode>[%
 # To use this, you will need to install libgd and GD.pm.
 use GD;

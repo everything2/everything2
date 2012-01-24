@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-02-10 03:13:00</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1251696</node_id>
   <htmlcode_id>1251696</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>#allows a non-privileged user (ie, a non-admin) that is the &quot;leader&quot; of a usergroup to potentially add a user to a usergroup
 #note: the &quot;leader&quot; of a usergroup is simply the first user in the group
 #parameters: none
@@ -49,6 +43,5 @@ if( $UID==(${$$NODE{group}}[0] || 0) ) {
 return '';</code>
   <type_nodetype>4</type_nodetype>
   <author_user>9740</author_user>
-  <package>0</package>
   <title>usergroupLeaderAdd</title>
 </node>

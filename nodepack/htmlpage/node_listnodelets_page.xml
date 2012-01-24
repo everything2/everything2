@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>7</pagetype_nodetype>
-  <core>0</core>
   <page>[%
 $NODE = $GNODE = getNodeById($HTMLVARS{not_found}) unless $$NODE{type}{title} ne 'draft' or htmlcode('canseedraft',$NODE);
 '';
@@ -74,18 +73,13 @@ my $n = 1;
 %]
 
 &lt;/div&gt;</page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2010-07-22 19:59:54</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1990032</htmlpage_id>
-  <hits>1</hits>
   <node_id>1990032</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>listnodelets</displaytype>
   <author_user>5603</author_user>
-  <package>0</package>
   <ownedby_theme>1854183</ownedby_theme>
   <title>node listnodelets page</title>
   <mimetype></mimetype>

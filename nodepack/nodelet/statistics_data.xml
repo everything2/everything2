@@ -1,23 +1,14 @@
 <node>
   <nltext></nltext>
   <parent_container>20</parent_container>
-  <icon></icon>
-  <core>0</core>
-  <reputation>0</reputation>
   <nlgoto>0</nlgoto>
-  <lockedby_user>0</lockedby_user>
   <totalvotes>0</totalvotes>
-  <locktime>0000-00-00 00:00:00</locktime>
   <createtime>2000-11-15 06:11:44</createtime>
   <lastupdate>1322103018</lastupdate>
-  <hits>1</hits>
   <node_id>838259</node_id>
-  <iconHeight>0</iconHeight>
   <type_nodetype>9</type_nodetype>
-  <iconWidth>0</iconWidth>
   <author_user>220</author_user>
   <updateinterval>86400</updateinterval>
-  <package>0</package>
   <nodelet_id>838259</nodelet_id>
   <nlcode>[% 
 my $YESTERDAYSTATS = $DB-&gt;sqlSelectHashref('*', 'stats', 'TO_DAYS(NOW()) - TO_DAYS(stattime) &gt; 1', 'order by stattime desc LIMIT 1');

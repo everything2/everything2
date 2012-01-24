@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-04-21 06:01:32</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>3</hits>
   <node_id>1288865</node_id>
   <status_id>1288865</status_id>
   <type_nodetype>1288633</type_nodetype>
   <author_user>9740</author_user>
-  <package>0</package>
   <title>implemented</title>
   <applied>1</applied>
 </node>

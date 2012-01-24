@@ -1,22 +1,15 @@
 <node>
   <parent_container>926672</parent_container>
   <pagetype_nodetype>14</pagetype_nodetype>
-  <core>0</core>
   <page>[{parsecode:doctext}]
 [{printablefooter}]</page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-03-04 16:51:12</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>972011</htmlpage_id>
-  <hits>1</hits>
   <node_id>972011</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>printable</displaytype>
   <author_user>9740</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>superdoc printable page</title>
   <mimetype></mimetype>
 </node>

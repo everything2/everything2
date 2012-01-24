@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-04-05 16:43:35</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>7</hits>
   <node_id>1936578</node_id>
   <htmlcode_id>1936578</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>my $node_id = $query-&gt;param('node_id');
 my $bookmark_site = $query-&gt;param('bookmark_site');
 
@@ -87,6 +81,5 @@ my $sendResult = htmlcode('sendPrivateMessage','');
 </code>
   <type_nodetype>415056</type_nodetype>
   <author_user>1017738</author_user>
-  <package>0</package>
   <title>socialBookmark</title>
 </node>

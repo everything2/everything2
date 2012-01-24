@@ -1,7 +1,6 @@
 <node>
   <parent_container>0</parent_container>
   <pagetype_nodetype>7</pagetype_nodetype>
-  <core>0</core>
   <page>[%
 $NODE = $GNODE = getNodeById($HTMLVARS{not_found}) unless $$NODE{type}{title} ne 'draft' or htmlcode('canseedraft',$NODE);
 '';
@@ -11,19 +10,13 @@ $str.= htmlcode(&quot;xmlheader&quot;).htmlcode(&quot;formxml&quot;).htmlcode(&q
 return $str;
 %]
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-02-09 22:18:21</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1251582</htmlpage_id>
-  <hits>3</hits>
   <node_id>1251582</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>xmltrue</displaytype>
   <author_user>459692</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>node xmltrue page</title>
   <mimetype>text/xml</mimetype>
 </node>

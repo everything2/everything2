@@ -1,25 +1,13 @@
 <node>
   <core></core>
   <nodetype_id>117</nodetype_id>
-  <verify_edits>0</verify_edits>
-  <restrictdupes>0</restrictdupes>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <extends_nodetype>1991079</extends_nodetype>
   <createtime>1999-09-15 07:22:38</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <sqltable>writeup</sqltable>
-  <hits>82</hits>
-  <grouptable></grouptable>
   <node_id>117</node_id>
-  <restrict_nodetype>0</restrict_nodetype>
-  <typeVersioned>0</typeVersioned>
   <type_nodetype>1</type_nodetype>
-  <writers_user>0</writers_user>
   <author_user>113</author_user>
-  <package>0</package>
-  <readers_user>0</readers_user>
   <title>writeup</title>
   <deleters_user>114</deleters_user>
 </node>

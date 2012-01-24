@@ -4,18 +4,12 @@
 &lt;p&gt;
 To prevent spam, new accounts begin with an &quot;email suspension&quot; which prevents them from chatting in any room, but not from sending messages.  They will need to click on the link in their welcome email or visit [Verify your email address].  If the user has issues validating, visit their homenode [Infected Users|to see if they are infected].  If they are, they may be a repeat offender creating a new account.
 &lt;/p&gt;</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-07-04 09:48:16</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>2</hits>
   <node_id>1948205</node_id>
   <edittime>2011-09-07 20:27:11</edittime>
   <type_nodetype>1399991</type_nodetype>
   <document_id>1948205</document_id>
   <author_user>650043</author_user>
-  <package>0</package>
   <title>email</title>
 </node>

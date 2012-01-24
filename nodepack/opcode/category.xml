@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-03-30 03:43:04</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>2</hits>
   <node_id>1935812</node_id>
   <htmlcode_id>1935812</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>use Everything::Experience;
 
 return if getId($USER) == $HTMLVARS{guest_user};
@@ -98,6 +92,5 @@ return 1;
 </code>
   <type_nodetype>415056</type_nodetype>
   <author_user>1323377</author_user>
-  <package>0</package>
   <title>category</title>
 </node>

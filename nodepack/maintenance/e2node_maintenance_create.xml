@@ -1,15 +1,9 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2000-05-02 18:28:11</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>21</hits>
   <node_id>527249</node_id>
   <htmlcode_id>527249</htmlcode_id>
   <maintenance_id>527249</maintenance_id>
-  <checks_arguments>0</checks_arguments>
   <maintaintype>create</maintaintype>
   <code>my ($E2NODE) = @_;
 getRef $E2NODE;
@@ -20,7 +14,6 @@ $$E2NODE{author_user} = getId(getNode('Content Editors', 'usergroup')); # Conten
 updateNode($E2NODE, -1);</code>
   <type_nodetype>150</type_nodetype>
   <author_user>315</author_user>
-  <package>0</package>
   <maintain_nodetype>116</maintain_nodetype>
   <title>e2node maintenance create</title>
 </node>

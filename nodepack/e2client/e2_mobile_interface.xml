@@ -52,15 +52,9 @@ I plan on making the [source code] freely available as soon as it's in a slightl
 &lt;p&gt;
 Suggestions? Questions? Comments? /msg me or send [email] to ryan@wonko.com.
 &lt;/p&gt;</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2003-02-16 21:33:27</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <dlurl></dlurl>
   <homeurl>http://wonko.com/e2/mobile/</homeurl>
-  <hits>0</hits>
   <node_id>1430823</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <e2client_id>1430823</e2client_id>
@@ -68,7 +62,6 @@ Suggestions? Questions? Comments? /msg me or send [email] to ryan@wonko.com.
   <version>1.0</version>
   <document_id>1430823</document_id>
   <author_user>5089</author_user>
-  <package>0</package>
   <clientstr>e2mi</clientstr>
   <title>E2 Mobile Interface</title>
 </node>

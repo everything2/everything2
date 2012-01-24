@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>15</pagetype_nodetype>
-  <core>0</core>
   <page>[{setupuservars}]
 &lt;div id='homenodeheader'&gt;
 [{homenodeinfectedinfo}]
@@ -52,18 +51,13 @@ return if getId($USER) != getId($NODE);
 
 [{showbookmarks}]
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-07-08 16:40:11</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1854179</htmlpage_id>
-  <hits>11</hits>
   <node_id>1854179</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <author_user>470183</author_user>
-  <package>0</package>
   <ownedby_theme>1854183</ownedby_theme>
   <title>zen user display page</title>
   <mimetype></mimetype>

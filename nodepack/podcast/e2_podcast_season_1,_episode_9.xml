@@ -1,12 +1,6 @@
 <node>
-  <core>0</core>
-  <pubdate>0000-00-00 00:00:00</pubdate>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-11-03 15:06:17</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1961442</node_id>
   <podcast_id>1961442</podcast_id>
   <type_nodetype>1957956</type_nodetype>
@@ -20,6 +14,5 @@
 &lt;li&gt;[jackie boy] by [Henry Flower], read by [Bitriot]
 &lt;li&gt;[God Algorithm] by [Aphexious], read at the [Portland Nodeslam]
 &lt;/ul&gt;</description>
-  <package>0</package>
   <title>E2 Podcast Season 1, Episode 9</title>
 </node>

@@ -1,25 +1,11 @@
 <node>
-  <core>0</core>
   <nodetype_id>1991079</nodetype_id>
-  <verify_edits>0</verify_edits>
-  <restrictdupes>0</restrictdupes>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <extends_nodetype>3</extends_nodetype>
   <createtime>2011-01-21 18:39:44</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <sqltable>draft</sqltable>
-  <hits>1</hits>
-  <grouptable></grouptable>
   <node_id>1991079</node_id>
-  <restrict_nodetype>0</restrict_nodetype>
-  <typeVersioned>0</typeVersioned>
   <type_nodetype>1</type_nodetype>
-  <writers_user>0</writers_user>
   <author_user>1828141</author_user>
-  <package>0</package>
-  <readers_user>0</readers_user>
   <title>draft</title>
-  <deleters_user>0</deleters_user>
 </node>

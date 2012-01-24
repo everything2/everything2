@@ -3,16 +3,10 @@
 patch's purpose: unknown&lt;Br&gt;
 &lt;bR&gt;
 Too old to be of any use without any documentation of what the patch was supposed to fix.</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-12-06 20:06:57</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>1</hits>
   <node_id>1397778</node_id>
   <htmlcode_id>1397778</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <edittime>0000-00-00 00:00:00</edittime>
   <code>#customized display of writeup information
 #pass (optional) writeup ID, (optional) things to show
@@ -302,6 +296,5 @@ $str;</code>
   <type_nodetype>1382262</type_nodetype>
   <document_id>1397778</document_id>
   <author_user>650043</author_user>
-  <package>0</package>
   <title>patch - displayWriteupInfo (Delta-Sys)</title>
 </node>

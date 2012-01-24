@@ -1,18 +1,12 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-12-22 02:32:42</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>109</hits>
   <node_id>314235</node_id>
   <type_nodetype>175990</type_nodetype>
   <themesetting_id>314235</themesetting_id>
   <setting_id>314235</setting_id>
   <author_user>315</author_user>
   <vars>nodeletBodyColor=%2399cccc&amp;nodeletGradTop=%23ccccff&amp;nodeletTitleColor=%23ccffcc&amp;docColor=%23cccccc&amp;bodyBgcolor=%23ccccff&amp;nodeletGradBot=%2399cccc&amp;oddRowColor=%23bfecbf</vars>
-  <package>0</package>
   <parent_theme>415072</parent_theme>
   <title>classic theme water settings</title>
 </node>

@@ -1,19 +1,12 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2009-11-19 18:41:10</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <notification_id>1988825</notification_id>
-  <hourLimit>0</hourLimit>
-  <hits>3</hits>
   <node_id>1988825</node_id>
   <code>return linkNode($$args{user_id}).&quot; has updated their profile feed.&quot;;</code>
   <type_nodetype>1930710</type_nodetype>
   <author_user>1312198</author_user>
   <description>somebody updates their profile</description>
-  <package>0</package>
   <invalid_check></invalid_check>
   <title>feeditem</title>
 </node>

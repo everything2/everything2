@@ -22,15 +22,10 @@ the text boxes. if they are wrong then it won't tell you.&lt;/p&gt;
 &lt;p&gt;version 0.2 will be coming very very soon, with private
 messages!!!&lt;/p&gt;
 &lt;p&gt;This is my first program with libxml2 and gtk so any comments would be apretiated! (my code is also ugly and uncommented at the moment *eg*&lt;/p&gt;</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-12-09 20:50:20</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <dlurl>http://theflat.net/~ed/catbox.tar.gz</dlurl>
   <homeurl>http://theflat.net/~ed/catbox.php</homeurl>
-  <hits>0</hits>
   <node_id>1399210</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <e2client_id>1399210</e2client_id>
@@ -38,7 +33,6 @@ messages!!!&lt;/p&gt;
   <version>0.1beta</version>
   <document_id>1399210</document_id>
   <author_user>1287389</author_user>
-  <package>0</package>
   <clientstr>GTK+1.2 Catbox Client</clientstr>
   <title>GTK+1.2 Catbox Client</title>
 </node>

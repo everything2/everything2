@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2010-12-18 07:18:19</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1990971</node_id>
   <htmlcode_id>1990971</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code># pass a user object (or nothing to default to the current node, or current user if the current node is not a user), and the categories maintained by the user will be returned
 
 
@@ -35,6 +29,5 @@ return join(', ', @categories);
 </code>
   <type_nodetype>4</type_nodetype>
   <author_user>1797883</author_user>
-  <package>0</package>
   <title>showUserCategories</title>
 </node>

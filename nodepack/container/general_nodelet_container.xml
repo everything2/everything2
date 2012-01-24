@@ -1,12 +1,8 @@
 <node>
   <parent_container>20</parent_container>
   <core>R</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-12-17 04:54:25</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>3</hits>
   <node_id>175986</node_id>
   <context>[% 
 if(defined $$THEME{generalNodelet_container}) {
@@ -19,6 +15,5 @@ if(defined $$THEME{generalNodelet_container}) {
   <type_nodetype>2</type_nodetype>
   <container_id>175986</container_id>
   <author_user>114</author_user>
-  <package>0</package>
   <title>general nodelet container</title>
 </node>

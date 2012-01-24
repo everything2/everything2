@@ -1,16 +1,10 @@
 <node>
   <rawdata_id>1242410</rawdata_id>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-01-24 18:33:30</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1242410</node_id>
   <type_nodetype>332487</type_nodetype>
   <author_user>113</author_user>
-  <package>0</package>
   <datacode>[%
 '
 //  JavaScript class for handling colors

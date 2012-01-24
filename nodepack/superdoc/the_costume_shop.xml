@@ -57,18 +57,12 @@ return unless isGod($USER);
 return &quot;&lt;p&gt;Note that since you are an administrator you can also remove abusive costumes at the [Costume Remover].&lt;/p&gt;&quot;;
 
 %]</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2007-10-31 23:56:48</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>18</hits>
   <node_id>1914948</node_id>
   <edittime>2011-10-30 23:20:15</edittime>
   <type_nodetype>14</type_nodetype>
   <document_id>1914948</document_id>
   <author_user>1312198</author_user>
-  <package>0</package>
   <title>The Costume Shop</title>
 </node>

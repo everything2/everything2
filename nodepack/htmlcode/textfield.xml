@@ -1,14 +1,9 @@
 <node>
   <core>R</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-10-07 04:35:11</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>11</hits>
   <node_id>53</node_id>
   <htmlcode_id>53</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>my ($field, $length, $expandable, $addClass) = @_;
 $length ||= 20;
 my $class = &quot;expandable&quot; if $expandable ;
@@ -17,6 +12,5 @@ my @classes = ( class =&gt; $class ) if $class;
 $query-&gt;textfield(-name=&gt;$$NODE{type}{title} .'_'. $field, value=&gt;$$NODE{$field}, size=&gt;$length ,@classes );</code>
   <type_nodetype>4</type_nodetype>
   <author_user>114</author_user>
-  <package>0</package>
   <title>textfield</title>
 </node>

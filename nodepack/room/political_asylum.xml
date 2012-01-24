@@ -1,21 +1,14 @@
 <node>
   <roomdata_id>553129</roomdata_id>
   <doctext>&lt;i&gt;&lt;b&gt;Political animals: tear each other to pieces here.&lt;/b&gt;&lt;/i&gt; </doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2000-05-16 14:56:30</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <lastused_date>2011-03-12</lastused_date>
-  <hits>580</hits>
   <node_id>553129</node_id>
   <criteria>1;</criteria>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>545241</type_nodetype>
   <document_id>553129</document_id>
   <author_user>315</author_user>
-  <abreviation></abreviation>
-  <package>0</package>
   <title>Political Asylum</title>
 </node>

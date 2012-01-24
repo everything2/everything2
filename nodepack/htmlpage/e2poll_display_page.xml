@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1685242</pagetype_nodetype>
-  <core>0</core>
   <page>[{showpoll}]
 &lt;p align=&quot;right&quot; class=&quot;morelink&quot;&gt;[%
 parseLinks '[Everything Poll Archive[superdoc]|Past polls]
@@ -9,19 +8,13 @@ parseLinks '[Everything Poll Archive[superdoc]|Past polls]
 	| [Everything Poll Creator[superdoc]|New poll]
 	&lt;br&gt; [Polls[by Virgil]|About polls]'; 
 %]&lt;/p&gt;</page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-12-18 18:06:57</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1968193</htmlpage_id>
-  <hits>12</hits>
   <node_id>1968193</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <author_user>1017738</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>e2poll display page</title>
   <mimetype></mimetype>
 </node>

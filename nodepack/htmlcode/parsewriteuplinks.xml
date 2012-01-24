@@ -1,20 +1,13 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-11-11 18:49:09</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>7</hits>
   <node_id>293</node_id>
   <htmlcode_id>293</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code> 	my ($field) = @_;
 	my $text = $$NODE{$field};
 	$text =~ s/\[(.*?)\]/linkNodeTitle ($1, $NODE)/egs;
 	$text;</code>
   <type_nodetype>4</type_nodetype>
   <author_user>113</author_user>
-  <package>0</package>
   <title>parsewriteuplinks</title>
 </node>

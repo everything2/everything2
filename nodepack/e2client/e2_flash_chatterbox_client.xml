@@ -15,15 +15,10 @@ The ASP files can be seen in their entirities by going to cornetdesign.com/e2cha
 &lt;li&gt;Pipe Links! Not sure yet how to handle displaying the pipe links, but this is a big one.&lt;/li&gt;
 &lt;li&gt;Proper rendering of character entities - I think I was a bit lazy when I handled that part of the movie&lt;/li&gt;
 &lt;/ul&gt;</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-11-11 02:13:07</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <dlurl>http://www.cornetdesign.com/e2.html</dlurl>
   <homeurl>http://www.cornetdesign.com</homeurl>
-  <hits>0</hits>
   <node_id>1386266</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <e2client_id>1386266</e2client_id>
@@ -31,7 +26,6 @@ The ASP files can be seen in their entirities by going to cornetdesign.com/e2cha
   <version>0.8</version>
   <document_id>1386266</document_id>
   <author_user>938208</author_user>
-  <package>0</package>
   <clientstr>chatterbox.flash.5.0</clientstr>
   <title>E2 Flash Chatterbox Client</title>
 </node>

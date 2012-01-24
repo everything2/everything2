@@ -14,15 +14,19 @@ sub new
 
 sub node_to_xml
 {
-	my ($this, $N) = @_;
+	my ($this, $N, $dbh) = @_;
 	my $NODE = Clone::clone($N);
 
+	$NODE->{hits} = 0;
+	
 	delete $NODE->{_ORIGINAL_VALUES};
+	delete $NODE->{resolvedInheritance};
+
+	$this->_strip_defaults($NODE,$dbh);
+	delete $NODE->{sqltablelist};
 	delete $NODE->{type};
 	delete $NODE->{tableArray};
-	delete $NODE->{resolvedInheritance};
-	delete $NODE->{sqltablelist};
-
+	
 	return $this->{xs}->XMLout({node => $NODE});
 }
 
@@ -50,6 +54,47 @@ sub _clean_code
 	# Remove a bad control character found in the code
 	$string =~ s|\cC||g;
 	return $string;
+}
+
+sub _strip_defaults
+{
+	my ($this, $NODE, $dbh) = @_;
+
+	if(not defined($NODE->{type}->{tableArray}))
+	{
+		print STDERR "Missing internal table array construct!\n";
+		exit;
+	}
+
+	if(not defined($dbh))
+	{
+		print STDERR "No database handle for _strip_defaults in node $$NODE{title}\n";
+		return;
+	}
+
+	foreach my $table("node",@{$NODE->{type}->{tableArray}})
+	{
+		my $csr = $dbh->prepare("EXPLAIN $table");
+
+		if(not defined $csr)
+		{
+			print STDERR "Could not explain table: $table in node $$NODE{title}\n";
+			next;
+		}
+
+		$csr->execute();
+		while(my $row = $csr->fetchrow_hashref())
+		{
+			if(exists($NODE->{$row->{Field}}))
+			{
+				if(defined($row->{Default}) and $NODE->{$row->{Field}} eq $row->{Default} and $row->{Default} ne "NULL")
+				{
+					delete $NODE->{$row->{Field}};
+					#print STDERR "Stripped $$row{Field} from $$NODE{title}\n";
+				}
+			}
+		}
+	}
 }
 
 1;

@@ -2,22 +2,15 @@
   <nltext></nltext>
   <parent_container>175986</parent_container>
   <icon>http://images.everything2.com/img/epic_icon_search_DDDDBB.gif</icon>
-  <core>0</core>
-  <reputation>0</reputation>
   <nlgoto>0</nlgoto>
-  <lockedby_user>0</lockedby_user>
   <totalvotes>0</totalvotes>
-  <locktime>0000-00-00 00:00:00</locktime>
   <createtime>2004-11-23 21:56:06</createtime>
   <lastupdate>1244298209</lastupdate>
-  <hits>0</hits>
   <node_id>1685943</node_id>
   <iconHeight>23</iconHeight>
   <type_nodetype>9</type_nodetype>
   <iconWidth>37</iconWidth>
   <author_user>8933</author_user>
-  <updateinterval>0</updateinterval>
-  <package>0</package>
   <nodelet_id>1685943</nodelet_id>
   <nlcode>[%
 # Lord Brawl made this cheesy little nodelet and DonJaime tidied it up a bit

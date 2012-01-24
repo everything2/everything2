@@ -102,18 +102,12 @@ Type e2bug (Inherits type document):
 I want you to be able to bug something that's in the buggable group by having a Bug! link next to Edevify! etc etc.  This would be helpful in making it easy to file bugs.  Bugs that we report should also be acessable through the edev nodelet. &quot;Assigned to you&quot; in a manner similar to message inbox.
 &lt;br&gt;&lt;br&gt;
 I know this is similar to what you had above, but it took a little bit of my own spin.  Thoughts? -[JayBonci|jb]</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-09-05 16:35:15</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1152772</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>854232</type_nodetype>
   <document_id>1152772</document_id>
   <author_user>9740</author_user>
-  <package>0</package>
   <title>buggy ideas</title>
 </node>

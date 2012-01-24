@@ -1,13 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2011-05-09 11:58:05</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <notification_id>1991920</notification_id>
   <hourLimit>168</hourLimit>
-  <hits>5</hits>
   <node_id>1991920</node_id>
   <code>my $draft_id = $$args{draft_id} || 0;
 my $nodenote_id = $$args{nodenote_id} || 0;
@@ -65,7 +60,6 @@ return '&lt;cite&gt;'.linkNode($$draft{author_user})
   <type_nodetype>1930710</type_nodetype>
   <author_user>1828141</author_user>
   <description>a user asks for review of a draft</description>
-  <package>0</package>
   <invalid_check>my $draft = getNodeById($$args{draft_id});
 my $status = getNodeById($$draft{publication_status});
 return ($$status{title} ne 'review');</invalid_check>

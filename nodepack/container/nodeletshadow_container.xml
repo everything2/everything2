@@ -1,12 +1,8 @@
 <node>
   <parent_container>0</parent_container>
   <core>R</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-10-07 04:35:10</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>11</hits>
   <node_id>21</node_id>
   <context>&lt;table width=100% cellspacing=0 cellpadding=0 border=0&gt;
 &lt;tr&gt;
@@ -25,6 +21,5 @@
   <type_nodetype>2</type_nodetype>
   <container_id>21</container_id>
   <author_user>114</author_user>
-  <package>0</package>
   <title>nodeletshadow container</title>
 </node>

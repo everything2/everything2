@@ -148,17 +148,12 @@
   &lt;/tr&gt;
 &lt;/table&gt;</doctext>
   <core></core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-09-15 07:16:56</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>486610</hits>
   <node_id>618658</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <document_id>618658</document_id>
   <author_user>114</author_user>
-  <package>0</package>
   <title>test front</title>
 </node>

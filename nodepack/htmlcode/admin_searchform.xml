@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-10-01 19:29:28</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>29</hits>
   <node_id>134</node_id>
   <htmlcode_id>134</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>my ($PARAM) = @_;
 
 my $nid = getId($NODE) || '';
@@ -60,6 +54,5 @@ $str .= &quot;\n\t\t\t&quot; .$query-&gt;start_form(&quot;POST&quot;,$query-&gt;
 </code>
   <type_nodetype>4</type_nodetype>
   <author_user>315</author_user>
-  <package>0</package>
   <title>admin searchform</title>
 </node>

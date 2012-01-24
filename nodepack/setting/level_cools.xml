@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2000-03-09 21:52:53</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>41</hits>
   <node_id>447744</node_id>
   <type_nodetype>153</type_nodetype>
   <setting_id>447744</setting_id>
   <author_user>220</author_user>
   <vars>32=2&amp;33=2&amp;21=1&amp;63=3&amp;90=4&amp;71=3&amp;7=1&amp;26=2&amp;80=4&amp;99=4&amp;18=1&amp;72=3&amp;16=1&amp;44=2&amp;55=3&amp;27=2&amp;84=4&amp;74=3&amp;57=3&amp;95=4&amp;61=3&amp;20=1&amp;92=4&amp;89=4&amp;10=1&amp;31=2&amp;35=2&amp;11=1&amp;91=4&amp;78=4&amp;48=2&amp;87=4&amp;77=4&amp;93=4&amp;29=2&amp;65=3&amp;50=3&amp;39=2&amp;64=3&amp;97=4&amp;12=1&amp;41=2&amp;58=3&amp;15=1&amp;52=3&amp;81=4&amp;60=3&amp;56=3&amp;45=2&amp;66=3&amp;73=3&amp;19=1&amp;76=4&amp;86=4&amp;62=3&amp;54=3&amp;67=3&amp;70=3&amp;68=3&amp;2=NONE&amp;17=1&amp;1=NONE&amp;88=4&amp;30=2&amp;100=5&amp;82=4&amp;25=2&amp;28=2&amp;40=2&amp;75=4&amp;83=4&amp;14=1&amp;59=3&amp;69=3&amp;49=2&amp;24=1&amp;53=3&amp;79=4&amp;42=2&amp;22=1&amp;46=2&amp;0=NONE&amp;13=1&amp;23=1&amp;96=4&amp;6=1&amp;85=4&amp;36=2&amp;3=NONE&amp;94=4&amp;51=3&amp;9=1&amp;47=2&amp;38=2&amp;8=1&amp;4=1&amp;98=4&amp;34=2&amp;37=2&amp;43=2&amp;5=1</vars>
-  <package>0</package>
   <title>level cools</title>
 </node>

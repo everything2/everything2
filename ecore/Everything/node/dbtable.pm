@@ -9,7 +9,7 @@ use base qw(Everything::node::node);
 
 sub node_to_xml
 {
-	my ($this, $N) = @_;
+	my ($this, $N, $dbh) = @_;
 	my $NODE = Clone::clone($N);
 
 	my $create_table_statement = `mysqldump --skip-add-drop-table --skip-add-locks --skip-disable-keys --skip-set-charset --skip-comments -d -u everything everything $$NODE{title}`;
@@ -19,7 +19,7 @@ sub node_to_xml
 	}
 
 	$NODE->{_create_table_statement} = $create_table_statement;
-	return $this->SUPER::node_to_xml($NODE);
+	return $this->SUPER::node_to_xml($NODE, $dbh);
 }
 
 sub xml_to_node_post

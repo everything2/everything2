@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2006-09-08 17:11:26</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>2</hits>
   <node_id>1832095</node_id>
   <htmlcode_id>1832095</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>my $host = $ENV{HTTP_HOST} || $CONFIG{canonical_web_server} || &quot;everything2.com&quot;;
 my $host = &quot;http://$host&quot; ;
 
@@ -36,6 +30,5 @@ $length ||= 1024 ;
 return htmlcode( 'show content' , $input , &quot;xml &lt;entry&gt; atominfo, $length&quot; , ( atominfo =&gt; $atominfo) ) ;</code>
   <type_nodetype>4</type_nodetype>
   <author_user>974148</author_user>
-  <package>0</package>
   <title>atomiseNode</title>
 </node>

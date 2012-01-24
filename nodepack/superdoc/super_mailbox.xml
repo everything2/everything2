@@ -114,18 +114,12 @@ $moreMsgStr .= '&lt;/p&gt;'
 # Display the number of messages, and link to Message Inbox
 %]
 </doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2004-03-21 17:00:41</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1527016</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <document_id>1527016</document_id>
   <author_user>8933</author_user>
-  <package>0</package>
   <title>super mailbox</title>
 </node>

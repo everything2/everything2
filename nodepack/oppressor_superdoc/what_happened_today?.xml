@@ -29,18 +29,12 @@ $str .= &quot;&lt;textarea name='news' cols='50' rows='25'&gt;&quot; . encodeHTM
 $str;
 %]
 &lt;input type='submit' name='submit' value='Save'&gt;&lt;/form&gt;</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2006-10-05 14:36:31</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1838080</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1144104</type_nodetype>
   <document_id>1838080</document_id>
   <author_user>974148</author_user>
-  <package>0</package>
   <title>What happened today?</title>
 </node>

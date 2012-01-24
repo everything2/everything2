@@ -1,13 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2007-11-20 03:36:27</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <display>&lt;strong&gt;Cooler Than Cool&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Node with 5 Cools&lt;/i&gt;</display>
   <achievement_type>cool</achievement_type>
-  <hits>1</hits>
   <node_id>1918131</node_id>
   <achievement_id>1918131</achievement_id>
   <code>my $coolCount = $DB-&gt;sqlSelect(&quot;max(cooled)&quot;,&quot;writeup&quot;,&quot;writeup_id in (select node_id from node where author_user=$user_id and type_nodetype=117)&quot;);
@@ -15,9 +10,6 @@
 return 1 if $coolCount &gt;=5;
 return 0;</code>
   <type_nodetype>1917847</type_nodetype>
-  <private>0</private>
   <author_user>1312198</author_user>
-  <achievement_still_available>1</achievement_still_available>
-  <package>0</package>
   <title>coolnode5</title>
 </node>

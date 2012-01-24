@@ -214,18 +214,12 @@ $str.= '&lt;table class=&quot;mytable&quot;&gt;
 return $str;
 
 %]</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-11-03 13:47:51</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1961423</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
   <document_id>1961423</document_id>
   <author_user>1180811</author_user>
-  <package>0</package>
   <title>mauler's Sandbox VIII: Eight is Great</title>
 </node>

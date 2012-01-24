@@ -1,24 +1,14 @@
 <node>
-  <core>0</core>
   <nodetype_id>1983550</nodetype_id>
-  <verify_edits>0</verify_edits>
   <restrictdupes>1</restrictdupes>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <extends_nodetype>14</extends_nodetype>
   <createtime>2009-04-23 23:37:28</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <sqltable></sqltable>
-  <hits>0</hits>
-  <grouptable></grouptable>
   <node_id>1983550</node_id>
-  <restrict_nodetype>0</restrict_nodetype>
-  <typeVersioned>0</typeVersioned>
   <type_nodetype>1</type_nodetype>
   <writers_user>114</writers_user>
   <author_user>1394568</author_user>
-  <package>0</package>
   <readers_user>838015</readers_user>
   <title>edevsuperdoc</title>
   <deleters_user>114</deleters_user>

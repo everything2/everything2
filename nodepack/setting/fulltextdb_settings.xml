@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-10-25 10:47:13</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1378567</node_id>
   <type_nodetype>153</type_nodetype>
   <setting_id>1378567</setting_id>
   <author_user>459692</author_user>
   <vars>lastnode=1379033&amp;username=everyuser&amp;hostname=hillgiant&amp;database=everything&amp;password=e2isdum</vars>
-  <package>0</package>
   <title>fulltextdb settings</title>
 </node>

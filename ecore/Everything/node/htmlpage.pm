@@ -7,11 +7,11 @@ use base qw(Everything::node::node);
 
 sub node_to_xml
 {
-	my ($this, $NODE) = @_;
+	my ($this, $NODE, $dbh) = @_;
 
 	# Strip old windows line endings
 	$NODE->{page} = $this->_clean_code($NODE->{page});
-	return $this->SUPER::node_to_xml($NODE);
+	return $this->SUPER::node_to_xml($NODE, $dbh);
 }
 
 1;

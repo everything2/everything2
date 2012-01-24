@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-01-22 13:25:43</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1240793</node_id>
   <htmlcode_id>1240793</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>#just call this in a usergroup page
 #optional argument: user name to /msg to join the group; this should already have any spaces converted into underlines
 #this will create a link to 'usergroup message archive' with the current group already selected
@@ -27,6 +21,5 @@ my ($num)=$DB-&gt;sqlSelect('COUNT(*)','message','for_user='.$gid.' AND for_user
 return '&lt;a href='.urlGen({'node'=&gt;'usergroup message archive', 'type'=&gt;'superdoc', 'viewgroup'=&gt;$$NODE{title}}).'&gt;'.$num.'&lt;/a&gt; message'.($num==1?' has':'s have').' been sent to this group.';</code>
   <type_nodetype>4</type_nodetype>
   <author_user>9740</author_user>
-  <package>0</package>
   <title>linkGroupMessages</title>
 </node>

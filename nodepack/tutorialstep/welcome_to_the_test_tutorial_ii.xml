@@ -22,20 +22,14 @@ We can have a list of steps that require completion, using their $VARS to store 
 &lt;Br&gt;&lt;br&gt;
 Also, keep in mind that we can be sneaky and write down what the users are going to, for our records, and use that data to improve this tutorial.
 &lt;/small&gt;</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-10-12 12:55:48</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1177444</node_id>
   <tutorialstep_id>1177444</tutorialstep_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1177317</type_nodetype>
   <document_id>1177444</document_id>
   <author_user>459692</author_user>
-  <package>0</package>
   <parent_tutorial>1177323</parent_tutorial>
   <title>Welcome to the test tutorial II</title>
 </node>

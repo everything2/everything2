@@ -352,18 +352,12 @@ Node Display (has no effect in Zen theme): [{varMenu: displaypref_e2node,display
 [%
 return ' --&gt;' if $$USER{node_id} == $HTMLVARS{guest_user};
 %]</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-09-22 15:06:00</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>84</hits>
   <node_id>1163528</node_id>
   <edittime>2011-08-11 15:49:27</edittime>
   <type_nodetype>14</type_nodetype>
   <document_id>1163528</document_id>
   <author_user>9740</author_user>
-  <package>0</package>
   <title>Advanced Settings</title>
 </node>

@@ -1,7 +1,6 @@
 <node>
   <parent_container></parent_container>
   <pagetype_nodetype>1854352</pagetype_nodetype>
-  <core>0</core>
   <page>[%
 if($$VARS{preferred_theme} &amp;&amp; $$VARS{preferred_theme}!=1854183) {
 	return &quot;/* You need to switch to the Zen theme in [User Settings] to use Zen stylesheets. */&quot;;
@@ -47,19 +46,13 @@ for (my $i=64; $i; $i--){
 return $out;
 %]
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2010-09-03 07:30:07</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1990218</htmlpage_id>
-  <hits>2</hits>
   <node_id>1990218</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>serve</displaytype>
   <author_user>1828141</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>stylesheet serve page</title>
   <mimetype>text/css</mimetype>
 </node>

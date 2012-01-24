@@ -5,19 +5,13 @@
   <page>&lt;img src=&quot;/[&quot;$$NODE{src}&quot;]&quot; alt=&quot;[&quot;$$NODE{alt}&quot;]&quot;&gt;
 &lt;p&gt;[{parselinks:description}]&lt;/p&gt;
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-10-07 04:35:11</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>67</htmlpage_id>
-  <hits>1</hits>
   <node_id>67</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <author_user>114</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>image display page</title>
   <mimetype></mimetype>
 </node>

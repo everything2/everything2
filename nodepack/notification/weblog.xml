@@ -1,19 +1,13 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-02-20 20:50:46</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <notification_id>1930850</notification_id>
   <hourLimit>168</hourLimit>
-  <hits>0</hits>
   <node_id>1930850</node_id>
   <code>return linkNode($$args{writeup_id}).&quot; was added to the &lt;b&gt;&quot;.linkNode($$args{group_id}).&quot;&lt;/b&gt; weblog.&quot;;</code>
   <type_nodetype>1930710</type_nodetype>
   <author_user>1312198</author_user>
   <description>a node is [weblogged] to a usergroup you belong to.</description>
-  <package>0</package>
   <invalid_check></invalid_check>
   <title>weblog</title>
 </node>

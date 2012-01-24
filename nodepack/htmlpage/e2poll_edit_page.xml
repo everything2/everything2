@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1685242</pagetype_nodetype>
-  <core>0</core>
   <page>[{openform}]
 &lt;fieldset&gt;&lt;legend&gt;Edit poll&lt;/legend&gt;
 [%
@@ -25,19 +24,13 @@ $query -&gt; escapeHTML($$NODE{doctext});
 &lt;h2&gt;[%$$NODE{title}%]&lt;/h2&gt;
 [{showpoll}]
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2011-10-02 19:56:05</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1992456</htmlpage_id>
-  <hits>0</hits>
   <node_id>1992456</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
   <author_user>1828141</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>e2poll edit page</title>
   <mimetype></mimetype>
 </node>

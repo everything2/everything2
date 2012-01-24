@@ -1,13 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-02-21 18:08:24</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <notification_id>1930989</notification_id>
   <hourLimit>72</hourLimit>
-  <hits>3</hits>
   <node_id>1930989</node_id>
   <code>my $N = getNodeById($$args{node_id});
 return linkNode($$args{node_noter}).
@@ -16,7 +11,6 @@ return linkNode($$args{node_noter}).
   <type_nodetype>1930710</type_nodetype>
   <author_user>1312198</author_user>
   <description>a new [node note] gets posted.</description>
-  <package>0</package>
   <invalid_check>my $N = getNodeById($$args{node_id});
 
 return 1 if !$N;

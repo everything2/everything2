@@ -1,18 +1,12 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-12-23 16:58:57</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>26</hits>
   <node_id>364466</node_id>
   <type_nodetype>175990</type_nodetype>
   <themesetting_id>364466</themesetting_id>
   <setting_id>364466</setting_id>
   <author_user>315</author_user>
   <vars>bodyVlinkcolor=%23999900&amp;writeupTitleColor=%23660000&amp;bodyTextcolor=%23ffff99&amp;docColor=%23333333&amp;bodyBgcolor=%23000000&amp;nodeletBodyColor=%23666666&amp;bodyLinkcolor=%23ff9900&amp;nodeletGradTop=%23ffff00&amp;nodeletTitleColor=%23ffff00&amp;nodeletGradBot=%23ff0000&amp;oddRowColor=%23333333&amp;nodeletTitleFontAttr=color%3d%22%23000000%22</vars>
-  <package>0</package>
   <parent_theme>415072</parent_theme>
   <title>classic theme charred settings</title>
 </node>

@@ -85,18 +85,12 @@ $str .= '&lt;p&gt;Total Items in Original: ' . scalar(@origAgain) . '&lt;br /&gt
 return $str;
 
 %]</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2009-03-02 17:18:22</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1976438</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1065266</type_nodetype>
   <document_id>1976438</document_id>
   <author_user>1323377</author_user>
-  <package>0</package>
   <title>in10se's sandbox 5</title>
 </node>

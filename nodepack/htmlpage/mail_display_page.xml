@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>154</pagetype_nodetype>
-  <core>0</core>
   <page>&lt;TABLE width=100% cellpadding=0 cellspacing=1 border=0&gt;
 &lt;TR bgcolor=[%
   $$VARS{mailhead_color} or &quot;#CCCCCC&quot;;
@@ -21,19 +20,13 @@ if (not $$NODE{from_address}) {
 &lt;/TABLE&gt;
 [{parseLinks:doctext}]
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-11-04 00:14:12</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>195</htmlpage_id>
-  <hits>0</hits>
   <node_id>195</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <author_user>113</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>mail display page</title>
   <mimetype></mimetype>
 </node>

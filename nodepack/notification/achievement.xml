@@ -1,19 +1,13 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-02-27 00:34:14</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <notification_id>1931728</notification_id>
   <hourLimit>72</hourLimit>
-  <hits>0</hits>
   <node_id>1931728</node_id>
   <code>return &quot;You earned the &quot;.getNodeById($$args{achievement_id})-&gt;{display}.&quot; achievement!&quot;;</code>
   <type_nodetype>1930710</type_nodetype>
   <author_user>1312198</author_user>
   <description>you fulfill [my achievements|an achievement].</description>
-  <package>0</package>
   <invalid_check></invalid_check>
   <title>achievement</title>
 </node>

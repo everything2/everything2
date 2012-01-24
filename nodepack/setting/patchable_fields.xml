@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2003-01-15 09:29:28</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1415665</node_id>
   <type_nodetype>153</type_nodetype>
   <setting_id>1415665</setting_id>
   <author_user>459692</author_user>
   <vars>code=1&amp;context=1&amp;datacode=1&amp;doctext=1&amp;hourLimit=1&amp;invalid_check=1&amp;nlcode=1&amp;page=1</vars>
-  <package>0</package>
   <title>patchable fields</title>
 </node>

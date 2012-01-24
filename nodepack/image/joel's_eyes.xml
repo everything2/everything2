@@ -1,11 +1,6 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2000-10-12 19:57:40</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>8</hits>
   <node_id>785787</node_id>
   <image_id>785787</image_id>
   <type_nodetype>6</type_nodetype>
@@ -13,7 +8,6 @@
   <src>images/incoming/joeleyes.jpg</src>
   <author_user>8790</author_user>
   <description></description>
-  <package>0</package>
   <thumbsrc></thumbsrc>
   <title>Joel's Eyes</title>
 </node>

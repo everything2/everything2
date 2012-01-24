@@ -2,16 +2,10 @@
   <doctext>test info for the bug&lt;br /&gt;
 this takes just the same info a writeup would.&lt;br /&gt;
 The [luser|user] can take this space to explain, in detail, what the&lt;s&gt;ir&lt;/s&gt;^H^H problem is.</doctext>
-  <priority>0</priority>
-  <core>0</core>
-  <reputation>0</reputation>
   <status>open</status>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-09-20 06:49:46</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <useragentos>Commodore 64</useragentos>
-  <hits>0</hits>
   <useragentversion>3.14159</useragentversion>
   <node_id>1161972</node_id>
   <assigned_to>9740</assigned_to>
@@ -22,7 +16,6 @@ The [luser|user] can take this space to explain, in detail, what the&lt;s&gt;ir&
   <type_nodetype>1160420</type_nodetype>
   <document_id>1161972</document_id>
   <author_user>9740</author_user>
-  <package>0</package>
   <ebug_id>1161972</ebug_id>
   <resolution>assigned</resolution>
   <title>bug example submission</title>

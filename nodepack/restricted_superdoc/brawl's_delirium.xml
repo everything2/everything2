@@ -206,18 +206,12 @@ return $topic . $intro . $str;
 [{closeform}]
 Quick Reference Test is Brawl's nodelet sandbox. Use at own risk.
 </doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-06-14 02:57:25</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1080591</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
   <document_id>1080591</document_id>
   <author_user>8933</author_user>
-  <package>0</package>
   <title>Brawl's Delirium</title>
 </node>

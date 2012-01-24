@@ -1,17 +1,11 @@
 <node>
   <doctext>New feed item.</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2009-11-14 07:00:00</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>3</hits>
   <node_id>1988679</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1988675</type_nodetype>
   <document_id>1988679</document_id>
   <author_user>1312198</author_user>
-  <package>0</package>
   <title>new feed item</title>
 </node>

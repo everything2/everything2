@@ -1,25 +1,11 @@
 <node>
-  <core>0</core>
   <nodetype_id>170067</nodetype_id>
-  <verify_edits>0</verify_edits>
-  <restrictdupes>0</restrictdupes>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
-  <extends_nodetype>0</extends_nodetype>
   <createtime>1999-12-07 07:52:25</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <sqltable></sqltable>
-  <hits>17</hits>
-  <grouptable></grouptable>
   <node_id>170067</node_id>
-  <restrict_nodetype>0</restrict_nodetype>
-  <typeVersioned>0</typeVersioned>
   <type_nodetype>1</type_nodetype>
-  <writers_user>0</writers_user>
   <author_user>113</author_user>
-  <package>0</package>
   <readers_user>114</readers_user>
   <title>message</title>
-  <deleters_user>0</deleters_user>
 </node>

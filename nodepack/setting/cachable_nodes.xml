@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-03-19 08:15:19</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1270881</node_id>
   <type_nodetype>153</type_nodetype>
   <setting_id>1270881</setting_id>
   <author_user>220</author_user>
   <vars>124=300&amp;1869865=300&amp;523351=300</vars>
-  <package>0</package>
   <title>cachable_nodes</title>
 </node>

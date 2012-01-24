@@ -1,15 +1,10 @@
 <node>
   <core>R</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-11-04 00:14:07</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>156</node_id>
   <htmlcode_id>156</htmlcode_id>
   <maintenance_id>156</maintenance_id>
-  <checks_arguments>0</checks_arguments>
   <maintaintype>create</maintaintype>
   <code># This gets called for each new dbtable node.  We
 # want to create the associated table here.
@@ -19,7 +14,6 @@ getRef $NODE;
 $DB-&gt;createNodeTable($$NODE{title});</code>
   <type_nodetype>150</type_nodetype>
   <author_user>113</author_user>
-  <package>0</package>
   <maintain_nodetype>148</maintain_nodetype>
   <title>dbtable maintenance create</title>
 </node>

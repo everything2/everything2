@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2000-02-12 02:19:56</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>7</hits>
   <node_id>415066</node_id>
   <htmlcode_id>415066</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>my ($height, $width) = @_;
 
 $height ||= 1;
@@ -16,6 +10,5 @@ $width ||= 1;
 &quot;&lt;img src=\&quot;$HTMLVARS{imageroot}/img/clear.gif\&quot; border=\&quot;0\&quot; height=\&quot;$height\&quot; width=\&quot;$width\&quot; alt=\&quot;\&quot;&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
   <author_user>114</author_user>
-  <package>0</package>
   <title>clearimage</title>
 </node>

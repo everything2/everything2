@@ -20,18 +20,12 @@ return $result;
 %]
 
 [{closeform}]</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-05-30 08:41:08</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1064942</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
   <document_id>1064942</document_id>
   <author_user>220</author_user>
-  <package>0</package>
   <title>chromatic scratch pad</title>
 </node>

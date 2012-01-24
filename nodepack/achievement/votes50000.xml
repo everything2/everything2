@@ -1,13 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2007-12-07 00:50:13</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <display>&lt;strong&gt;Ballot Stuffer&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Cast 50000 Votes&lt;/i&gt;</display>
   <achievement_type>vote</achievement_type>
-  <hits>0</hits>
   <node_id>1920614</node_id>
   <achievement_id>1920614</achievement_id>
   <code>my $voteCount = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;vote&quot;,&quot;voter_user=$user_id&quot;);
@@ -15,9 +10,6 @@
 return 1 if $voteCount &gt;= 50000;
 return 0;</code>
   <type_nodetype>1917847</type_nodetype>
-  <private>0</private>
   <author_user>1312198</author_user>
-  <achievement_still_available>1</achievement_still_available>
-  <package>0</package>
   <title>votes50000</title>
 </node>

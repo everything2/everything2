@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <totalvotes>0</totalvotes>
-  <locktime>0000-00-00 00:00:00</locktime>
   <createtime>2000-02-12 02:17:58</createtime>
-  <hits>1</hits>
   <node_id>415062</node_id>
   <type_nodetype>175989</type_nodetype>
   <setting_id>415062</setting_id>
   <author_user>113</author_user>
   <vars>bodyVlinkcolor=%23333399&amp;bodyTextcolor=%23000000&amp;author=Nathan%20Oostendorp%20and%20Darrick%20Brown&amp;description=The%20default%20Everything%20Theme&amp;version=0%2e2&amp;bodyBgcolor=%23FFFFFF&amp;nodeletParent_container=20&amp;nodeletBodyColor=%23FFFFFF&amp;generalParent_container=17&amp;nodeletBodyFontAttr=size%3d2&amp;bodyLinkcolor=%23993333&amp;nodeletTitleColor=%23CC99FF&amp;nodeletTitleBackground=%22%22&amp;nodeletMCTableAttr=cellpadding%3d1%20cellspacing%3d1&amp;nodeletTitleFontAttr=color%3dwhite</vars>
-  <package>0</package>
   <title>default theme</title>
 </node>

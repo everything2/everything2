@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>7</pagetype_nodetype>
-  <core>0</core>
   <page>[%
 # This edit page displays each field of a node with a
 # (usually) appropriate form item in which to edit the
@@ -118,19 +117,13 @@ $str .= htmlcode( 'closeform' );
 $str;
 %]
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2000-01-30 08:29:05</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>404270</htmlpage_id>
-  <hits>15</hits>
   <node_id>404270</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>basicedit</displaytype>
   <author_user>315</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>node basicedit page</title>
   <mimetype></mimetype>
 </node>

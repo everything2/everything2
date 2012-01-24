@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1254859</pagetype_nodetype>
-  <core>0</core>
   <page>[% # table for margin %]&lt;table cellpadding=&quot;8&quot; width=&quot;100%&quot;&gt;&lt;tr&gt;&lt;td&gt;
 [%
 #---------------------------------------------------------
@@ -178,19 +177,13 @@ return $str;
 
 
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-02-15 17:14:42</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1254872</htmlpage_id>
-  <hits>1</hits>
   <node_id>1254872</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>useredit</displaytype>
   <author_user>113</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>collaboration useredit page</title>
   <mimetype></mimetype>
 </node>

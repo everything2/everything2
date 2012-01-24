@@ -1,14 +1,9 @@
 <node>
   <core>R</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-10-07 04:35:11</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>7</hits>
   <node_id>57</node_id>
   <htmlcode_id>57</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>return &quot;&quot; unless $DB -&gt; canUpdateNode($USER, $NODE);
 my ($displaytype, $title, $width, $height) = @_;
 
@@ -28,6 +23,5 @@ $height||=400;
 &lt;A href=\&quot;javascript:launchThaDamnWinda()\&quot;&gt;$title&lt;/a&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
   <author_user>114</author_user>
-  <package>0</package>
   <title>windowview</title>
 </node>

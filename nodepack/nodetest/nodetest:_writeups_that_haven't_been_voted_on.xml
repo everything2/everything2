@@ -1,12 +1,7 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
   <nodetest_appliesto>117</nodetest_appliesto>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-05-27 11:17:53</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1308807</node_id>
   <nodetest_active>1</nodetest_active>
   <nodetest_id>1308807</nodetest_id>
@@ -20,6 +15,5 @@ return &quot;y&quot;;</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
   <author_user>459692</author_user>
   <nodetest_description>Writeups that have had zero votes cast on them. Webster writeups are excluded</nodetest_description>
-  <package>0</package>
   <title>nodetest: Writeups that haven't been voted on</title>
 </node>

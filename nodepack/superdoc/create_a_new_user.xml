@@ -380,17 +380,12 @@ __HERE__
 %]
 </doctext>
   <core>R</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-10-07 04:35:12</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>36050</hits>
   <node_id>101</node_id>
   <edittime>2011-09-06 06:02:13</edittime>
   <type_nodetype>14</type_nodetype>
   <document_id>101</document_id>
   <author_user>114</author_user>
-  <package>0</package>
   <title>Create a New User</title>
 </node>
