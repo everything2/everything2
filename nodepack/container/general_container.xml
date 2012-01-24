@@ -1,12 +1,8 @@
 <node>
   <parent_container>1854175</parent_container>
   <core>R</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-10-07 04:35:10</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>19</node_id>
   <context>[% 
  htmlcode('log ip');
@@ -66,6 +62,5 @@ CONTAINED_STUFF
   <type_nodetype>2</type_nodetype>
   <container_id>19</container_id>
   <author_user>114</author_user>
-  <package>0</package>
   <title>general container</title>
 </node>

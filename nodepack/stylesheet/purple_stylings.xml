@@ -752,18 +752,12 @@ th.oddrow {
 		#metalinks {
 			display: none;
 		}</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-03-11 15:10:00</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1933589</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1854352</type_nodetype>
   <document_id>1933589</document_id>
   <author_user>1244556</author_user>
-  <package>0</package>
   <title>Purple Stylings</title>
 </node>

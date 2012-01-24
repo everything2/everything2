@@ -1,12 +1,6 @@
 <node>
-  <core>0</core>
-  <pubdate>0000-00-00 00:00:00</pubdate>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2009-01-11 06:13:58</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1970672</node_id>
   <podcast_id>1970672</podcast_id>
   <type_nodetype>1957956</type_nodetype>
@@ -24,6 +18,5 @@ The second episode in the probably-incorrectly-named 'season 4' of [The Everythi
 &lt;/ul&gt;
 
 </description>
-  <package>0</package>
   <title>E2 Podcast Season 4, Episode 2</title>
 </node>

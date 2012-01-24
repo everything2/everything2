@@ -2,22 +2,16 @@
   <nltext></nltext>
   <parent_container>175986</parent_container>
   <icon>http://images.everything2.com/img/random_nodes.gif</icon>
-  <core>0</core>
-  <reputation>0</reputation>
   <nlgoto>0</nlgoto>
-  <lockedby_user>0</lockedby_user>
   <totalvotes>0</totalvotes>
-  <locktime>0000-00-00 00:00:00</locktime>
   <createtime>2000-03-19 20:56:09</createtime>
   <lastupdate>1322103605</lastupdate>
-  <hits>0</hits>
   <node_id>1988650</node_id>
   <iconHeight>25</iconHeight>
   <type_nodetype>9</type_nodetype>
   <iconWidth>170</iconWidth>
   <author_user>114</author_user>
   <updateinterval>-1</updateinterval>
-  <package>0</package>
   <nodelet_id>1988650</nodelet_id>
   <nlcode>	&lt;ul class=&quot;linklist&quot;&gt;
 		&lt;li&gt;&lt;a onmouseup=&quot;document.cookie='lastnode_id=0; ; path=/'; 1;&quot; href=&quot;/user/kthejoker/writeups/test+tube&quot;&gt;test tube&lt;/a&gt;&lt;/li&gt;

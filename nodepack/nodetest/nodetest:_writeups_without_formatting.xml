@@ -1,12 +1,7 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
   <nodetest_appliesto>117</nodetest_appliesto>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-05-31 20:00:50</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1311234</node_id>
   <nodetest_active>1</nodetest_active>
   <nodetest_id>1311234</nodetest_id>
@@ -17,6 +12,5 @@ return &quot;n&quot;;</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
   <author_user>459692</author_user>
   <nodetest_description>Writeups that have no formatting, not even a &amp;lt;p&amp;gt; tag or its equivalent</nodetest_description>
-  <package>0</package>
   <title>nodetest: Writeups without formatting</title>
 </node>

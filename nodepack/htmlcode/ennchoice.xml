@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-05-08 05:52:17</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1298803</node_id>
   <htmlcode_id>1298803</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>my $nodes = {&quot;25&quot; =&gt; &quot;25&quot;, &quot;100&quot; =&gt; &quot;Everything New Nodes&quot;, &quot;200&quot; =&gt; &quot;E2N&quot;, &quot;300&quot; =&gt; &quot;ENN&quot;, &quot;1024&quot; =&gt; &quot;EKN&quot;};
 
 my $str = '&lt;p align=&quot;right&quot;&gt;&lt;form method=\&quot;post\&quot;&gt;';
@@ -22,6 +16,5 @@ $str.='&lt;/select&gt;&lt;input type=&quot;submit&quot; value=&quot;go&quot;&gt;
 return $str;</code>
   <type_nodetype>4</type_nodetype>
   <author_user>459692</author_user>
-  <package>0</package>
   <title>ennchoice</title>
 </node>

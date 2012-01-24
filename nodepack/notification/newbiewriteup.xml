@@ -1,13 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2010-05-07 21:37:43</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <notification_id>1989749</notification_id>
   <hourLimit>336</hourLimit>
-  <hits>0</hits>
   <node_id>1989749</node_id>
   <code>my $author_link = getNodeById($$args{author_id}) ?
   linkNode($$args{author_id})
@@ -25,7 +20,6 @@ return &quot;A new user, &lt;b&gt;$author_link&lt;/b&gt;, posted a writeup $wu_l
   <type_nodetype>1930710</type_nodetype>
   <author_user>1449265</author_user>
   <description>a new user posts a writeup</description>
-  <package>0</package>
   <invalid_check>use DateTime;
 use DateTime::Format::Strptime;
 my $dateParser = new DateTime::Format::Strptime(

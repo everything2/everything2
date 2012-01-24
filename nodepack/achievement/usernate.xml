@@ -1,21 +1,13 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2007-11-21 01:20:09</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <display>&lt;strong&gt;Nate&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Mr. Oostendorp&lt;/i&gt;</display>
   <achievement_type>user</achievement_type>
-  <hits>0</hits>
   <node_id>1918318</node_id>
   <achievement_id>1918318</achievement_id>
   <code>return 1 if $user_id == 220;
 return 0;</code>
   <type_nodetype>1917847</type_nodetype>
-  <private>0</private>
   <author_user>1312198</author_user>
-  <achievement_still_available>1</achievement_still_available>
-  <package>0</package>
   <title>userNate</title>
 </node>

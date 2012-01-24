@@ -8,13 +8,13 @@ use base qw(Everything::node::node);
 
 sub node_to_xml
 {
-	my ($this, $N) = @_;
+	my ($this, $N, $dbh) = @_;
 	my $NODE = Clone::clone($N);
 
 	# Remove group stuff from the node	
 	delete $NODE->{group};
 
-	return $this->SUPER::node_to_xml($NODE);
+	return $this->SUPER::node_to_xml($NODE, $dbh);
 }
 
 1;

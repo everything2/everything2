@@ -14,18 +14,12 @@ $str = $$xml{nltext};
 utf8::encode($str);
 $str;
 %]</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-01-21 13:55:27</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1926580</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1252389</type_nodetype>
   <document_id>1926580</document_id>
   <author_user>1017738</author_user>
-  <package>0</package>
   <title>Cool Archive Atom Feed</title>
 </node>

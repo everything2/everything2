@@ -8,7 +8,7 @@ use base qw(Everything::node::node);
 
 sub node_to_xml
 {
-	my ($this, $N) = @_;
+	my ($this, $N, $dbh) = @_;
 	my $NODE = Clone::clone($N);
 
 	# Remove cached stuff from the nodelet	
@@ -16,7 +16,7 @@ sub node_to_xml
 	# Clean the code from line endings
 	$NODE->{nlcode} = $this->_clean_code($NODE->{nlcode});
 	
-	return $this->SUPER::node_to_xml($NODE);
+	return $this->SUPER::node_to_xml($NODE, $dbh);
 }
 
 1;

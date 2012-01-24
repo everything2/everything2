@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1930710</pagetype_nodetype>
-  <core>0</core>
   <page>&lt;dl&gt;
 &lt;dt&gt;[% parseLinks(qq!Description (used in [Notifications nodelet settings[htmlcode]]).  Changing this may have [canseeNotification[htmlcode]|security implications].!) %]&lt;/dt&gt;
 &lt;dd&gt;[% $$NODE{description} %]&lt;/dd&gt;
@@ -14,19 +13,13 @@
 &lt;/dl&gt;
 
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-02-19 21:25:14</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1930717</htmlpage_id>
-  <hits>0</hits>
   <node_id>1930717</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <author_user>1312198</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>notification display page</title>
   <mimetype></mimetype>
 </node>

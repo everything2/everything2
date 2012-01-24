@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1876758</pagetype_nodetype>
-  <core>0</core>
   <page>[%     return if (htmlcode(&quot;isGuest&quot;));
 '&lt;div style=&quot;margin:20px;text-align:center;font-weight:bold;&quot;&gt;( back to '.linkNodeTitle('Registry Information').' )&lt;/div&gt;' %]
 
@@ -164,19 +163,13 @@
 '( '.linkNodeTitle('Recent Registry Entries|What are other people saying?').' )'%]
 &lt;/div&gt;
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2009-11-12 21:44:29</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1988628</htmlpage_id>
-  <hits>0</hits>
   <node_id>1988628</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <author_user>1017738</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>registry display page</title>
   <mimetype></mimetype>
 </node>

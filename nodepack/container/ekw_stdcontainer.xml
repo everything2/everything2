@@ -1,12 +1,8 @@
 <node>
   <parent_container>0</parent_container>
   <core>R</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-10-07 04:35:11</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1100988</node_id>
   <context>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0 Transitional//EN&quot;
   &quot;http://www.w3.org/TR/REC-html40/loose.dtd&quot;&gt; 
@@ -35,6 +31,5 @@ CONTAINED_STUFF
   <type_nodetype>2</type_nodetype>
   <container_id>1100988</container_id>
   <author_user>114</author_user>
-  <package>0</package>
   <title>ekw stdcontainer</title>
 </node>

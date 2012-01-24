@@ -1,12 +1,8 @@
 <node>
   <parent_container>0</parent_container>
   <core>R</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-10-07 04:35:11</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1898369</node_id>
   <context>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
 &lt;feed xmlns=&quot;http://www.w3.org/2005/Atom&quot; xml:base=&quot;http://everything2.com/&quot;&gt;
@@ -26,6 +22,5 @@ CONTAINED_STUFF
   <type_nodetype>2</type_nodetype>
   <container_id>1898369</container_id>
   <author_user>114</author_user>
-  <package>0</package>
   <title>atom container</title>
 </node>

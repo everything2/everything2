@@ -1,14 +1,9 @@
 <node>
   <core>R</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-10-07 04:35:11</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>26</node_id>
   <htmlcode_id>26</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>return if $$USER{title} eq 'Guest User';
 
 my $disp = $query-&gt;param('displaytype');
@@ -119,6 +114,5 @@ $str.=&quot;\n&lt;SCRIPT language=\&quot;javascript\&quot;&gt;
 &quot;&lt;div id='adminbar'&gt;$str&lt;/div&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
   <author_user>114</author_user>
-  <package>0</package>
   <title>adminbar</title>
 </node>

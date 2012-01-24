@@ -1,15 +1,9 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2007-03-20 03:58:58</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1988678</node_id>
   <htmlcode_id>1988678</htmlcode_id>
   <maintenance_id>1988678</maintenance_id>
-  <checks_arguments>0</checks_arguments>
   <maintaintype>create</maintaintype>
   <code>my ($FEEDITEM) = @_;
 
@@ -21,7 +15,6 @@ $$FEEDITEM{doctext} = $query-&gt;param(&quot;doctext&quot;);
 updateNode($FEEDITEM, -1);</code>
   <type_nodetype>150</type_nodetype>
   <author_user>1312198</author_user>
-  <package>0</package>
   <maintain_nodetype>1988675</maintain_nodetype>
   <title>feeditem maintenance create</title>
 </node>

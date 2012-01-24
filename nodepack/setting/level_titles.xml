@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2000-03-07 18:29:48</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>444411</node_id>
   <type_nodetype>153</type_nodetype>
   <setting_id>444411</setting_id>
   <author_user>220</author_user>
   <vars>33=Optimate&amp;32=Optimate&amp;90=Avatar&amp;63=Prophet&amp;21=Poobah&amp;71=Ageless%20Master&amp;7=Chronicler&amp;80=Divinity&amp;26=Vizier&amp;99=Transcendent&amp;18=Panjandrum&amp;72=Ageless%20Master&amp;16=Panjandrum&amp;44=Divine%20Monarch&amp;55=Visionary&amp;27=Vizier&amp;84=Demigodhead&amp;74=Immortal&amp;95=Transcendent&amp;57=Visionary&amp;61=Prophet&amp;20=Poobah&amp;92=Transcendent&amp;89=Avatar&amp;10=Polymath&amp;31=Optimate&amp;35=Princeps&amp;11=Literatus&amp;91=Transcendent&amp;78=Bodhisattva&amp;48=Renunciant&amp;87=Godling&amp;93=Transcendent&amp;77=Bodhisattva&amp;65=Sage&amp;29=Grand%20Vizier&amp;50=Mystic&amp;39=Hegemon&amp;64=Sage&amp;97=Transcendent&amp;12=Laureate&amp;58=Seer&amp;41=Monarch&amp;15=Keeper%20of%20the%20Seal&amp;81=Divinity&amp;52=Soothsayer&amp;60=Seer&amp;56=Visionary&amp;73=Immortal&amp;66=Sage&amp;45=Divine%20Monarch&amp;86=Godling&amp;76=Bodhisattva&amp;19=Poobah&amp;62=Prophet&amp;54=Soothsayer&amp;67=Enlightened%20One&amp;70=Ageless%20Master&amp;68=Enlightened%20One&amp;2=Acolyte&amp;17=Panjandrum&amp;1=Novice&amp;88=Avatar&amp;30=Grand%20Vizier&amp;100=Godhead&amp;82=Demigodhead&amp;25=Vizier&amp;28=Grand%20Vizier&amp;83=Demigodhead&amp;75=Immortal&amp;40=Monarch&amp;14=Protector%20of%20the%20Art&amp;69=Enlightened%20One&amp;59=Seer&amp;49=Mystic&amp;24=Grand%20Poobah&amp;53=Soothsayer&amp;79=Divinity&amp;22=Grand%20Poobah&amp;42=Monarch&amp;0=Initiate&amp;46=Renunciant&amp;13=Guardian%20of%20the%20Word&amp;23=Grand%20Poobah&amp;96=Transcendent&amp;6=Artificer&amp;85=Godling&amp;3=Scribe&amp;36=Princeps&amp;94=Transcendent&amp;51=Mystic&amp;9=Archivist&amp;47=Renunciant&amp;8=Encyclopedist&amp;38=Hegemon&amp;4=Wordsmith&amp;98=Transcendent&amp;34=Princeps&amp;37=Hegemon&amp;43=Divine%20Monarch&amp;5=Crafter</vars>
-  <package>0</package>
   <title>level titles</title>
 </node>

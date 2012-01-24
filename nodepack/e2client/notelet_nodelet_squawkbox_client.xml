@@ -2,15 +2,10 @@
   <doctext>&lt;p&gt;Yet another chatterbox client, however this one works directly within E2 and your browser, and requires just the [squawkbox], the [notelet nodelet], and some [javascript|glue].  Simply follow [Notelet Nodelet Squawkbox Client|the instructions], and every time you visit the [squawkbox], the client will start itself.  When you navigate away from the squawkbox, [Everything2|everything] goes back to normal.&lt;/p&gt;
 
 &lt;p&gt;It auto-refreshes your browser, but will not refresh if you are in the middle of typing a message.  [Notelet Nodelet HTML tricks|Just some fun with HTML and the nodelet].&lt;/p&gt;</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2003-07-08 19:37:02</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <dlurl>http://www.pitt.edu/~rttaylor/e2/squawkboxclient.js</dlurl>
   <homeurl>http://www.everything2.com/?node=Notelet%20Nodelet%20Squawkbox%20Client</homeurl>
-  <hits>0</hits>
   <node_id>1475247</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <e2client_id>1475247</e2client_id>
@@ -18,7 +13,6 @@
   <version>1.0 RFC</version>
   <document_id>1475247</document_id>
   <author_user>1323377</author_user>
-  <package>0</package>
   <clientstr>SquawkTalk.js</clientstr>
   <title>Notelet Nodelet Squawkbox Client</title>
 </node>

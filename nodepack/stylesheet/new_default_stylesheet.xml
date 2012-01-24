@@ -846,18 +846,12 @@ td {
 			width: auto;
 			padding: 0;
 		}</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-06-29 09:26:34</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1947527</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1854352</type_nodetype>
   <document_id>1947527</document_id>
   <author_user>1224172</author_user>
-  <package>0</package>
   <title>New Default Stylesheet</title>
 </node>

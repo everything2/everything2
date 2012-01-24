@@ -422,18 +422,12 @@ return $str;
 %]
 
 </doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2005-05-17 23:20:18</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1723170</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
   <document_id>1723170</document_id>
   <author_user>958245</author_user>
-  <package>0</package>
   <title>the wertperch occasional playground</title>
 </node>

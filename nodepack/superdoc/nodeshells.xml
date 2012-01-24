@@ -39,18 +39,12 @@ return if (htmlcode('isGuest'));
 return 'And [Your Nodeshells], and [Your Filled Nodeshells].'; 
 %])&lt;/small&gt;&lt;/p&gt;
 </doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2010-08-17 19:08:57</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1990106</node_id>
   <edittime>2011-07-13 10:18:44</edittime>
   <type_nodetype>14</type_nodetype>
   <document_id>1990106</document_id>
   <author_user>1017738</author_user>
-  <package>0</package>
   <title>nodeshells</title>
 </node>

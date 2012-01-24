@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2009-03-27 11:44:17</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1980157</node_id>
   <htmlcode_id>1980157</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>#Generates a hashref used to verify the form submission. Pass a prefix.
 my ($prefix) = @_;
 use Digest::MD5 qw(md5_hex);
@@ -28,6 +22,5 @@ if ($$USER{title} eq 'Guest User') {
 return {$prefix . '_nonce' =&gt; $nonce, $prefix . '_seed' =&gt; $rand};</code>
   <type_nodetype>4</type_nodetype>
   <author_user>974148</author_user>
-  <package>0</package>
   <title>verifyRequestHash</title>
 </node>

@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-10-01 18:12:01</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>132</node_id>
   <htmlcode_id>132</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code># [{displaywriteup:WRITEUPNUMBER}]
 #
 # a function exclusively for e2nodes - to display writeups
@@ -41,6 +35,5 @@ containHtml('thin outline container', $str);
 </code>
   <type_nodetype>4</type_nodetype>
   <author_user>315</author_user>
-  <package>0</package>
   <title>displaywriteup</title>
 </node>

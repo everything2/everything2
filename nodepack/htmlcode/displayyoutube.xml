@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2007-04-10 15:49:46</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1877915</node_id>
   <htmlcode_id>1877915</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>#May 2 2007, removed per Dann's instructions - ktj
 return;
 
@@ -21,6 +15,5 @@ return unless $ytLink;
 return '&lt;object width=&quot;425&quot; height=&quot;350&quot;&gt;&lt;param name=&quot;movie&quot; value=&quot;'.$ytLink.'&quot;&gt;&lt;/param&gt;&lt;embed src=&quot;'.$ytLink.'&quot; type=&quot;application/x-shockwave-flash&quot; width=&quot;425&quot; height=&quot;350&quot;&gt;&lt;/embed&gt;&lt;/object&gt;';</code>
   <type_nodetype>4</type_nodetype>
   <author_user>1312198</author_user>
-  <package>0</package>
   <title>displayYouTube</title>
 </node>

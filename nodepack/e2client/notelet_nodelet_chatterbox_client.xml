@@ -22,15 +22,10 @@ onClick=&quot;javascript:callChatterbox()&quot;&amp;gt;&amp;lt;form&amp;gt;
 &lt;p&gt;This is an early release of the code, so it may change. However, the latest &quot;stable code&quot; (we are talking [Javascript] here) will be available in a .js file at http://www.cornetdesign.com/chatterbox.js&lt;/p&gt;
 &lt;p&gt;If you have suggestions, concerns, complaints, etc, please /[msg] them to [Anml4ixoye|me]. [Over and Out|kThanx].&lt;/p&gt;
 &lt;p&gt;&lt;b&gt;Things I know are missing&lt;/b&gt; - lessee, [pipelinks], handling of /me, the fact that it is in a [textarea] box, ability to submit messages. Let me know if you have a feature or bug request not on this list.&lt;/p&gt;</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2003-04-03 19:35:29</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <dlurl>http://www.cornetdesign.com/chatterbox.js</dlurl>
   <homeurl>http://www.cornetdesign.com/chatterbox.js</homeurl>
-  <hits>0</hits>
   <node_id>1449422</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <e2client_id>1449422</e2client_id>
@@ -38,7 +33,6 @@ onClick=&quot;javascript:callChatterbox()&quot;&amp;gt;&amp;lt;form&amp;gt;
   <version>0.3</version>
   <document_id>1449422</document_id>
   <author_user>938208</author_user>
-  <package>0</package>
   <clientstr>Anml4ixoye</clientstr>
   <title>Notelet Nodelet Chatterbox Client</title>
 </node>

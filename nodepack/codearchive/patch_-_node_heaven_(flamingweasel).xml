@@ -3,16 +3,10 @@
 patch's purpose: unknown&lt;br&gt;&lt;br&gt;
 
 Too old to do us any good.</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-12-06 14:23:46</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1397643</node_id>
   <htmlcode_id>1397643</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <edittime>0000-00-00 00:00:00</edittime>
   <code>&lt;p&gt;
 Welcome to Node Heaven, where you may sit and reconcile with your dear departed writeups.
@@ -199,6 +193,5 @@ $antiUserStr . &quot;&lt;br /&gt;\n&quot; . &quot;&lt;small&gt;Inspired by [Pseu
   <type_nodetype>1382262</type_nodetype>
   <document_id>1397643</document_id>
   <author_user>650043</author_user>
-  <package>0</package>
   <title>patch - Node Heaven (flamingweasel)</title>
 </node>

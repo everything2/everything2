@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2010-07-23 13:47:31</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1990040</node_id>
   <htmlcode_id>1990040</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>my $canEdit = canUpdateNode($USER, $NODE) &amp;&amp; $USER-&gt;{user_id} == $NODE-&gt;{author_user};
 my $dt = $query-&gt;param('displaytype') || 'display';
 my @tabs;
@@ -70,6 +64,5 @@ return ('&lt;div id=&quot;zen_mobiletabs&quot;&gt;'
 </code>
   <type_nodetype>4</type_nodetype>
   <author_user>5603</author_user>
-  <package>0</package>
   <title>zenMobileTabs</title>
 </node>

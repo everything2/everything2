@@ -1,7 +1,6 @@
 <node>
   <parent_container>1100949</parent_container>
   <pagetype_nodetype>117</pagetype_nodetype>
-  <core>0</core>
   <page>&lt;h2 class=&quot;topic&quot;&gt;[% 
 my $PARENT = getNodeById($$NODE{parent_e2node});
 
@@ -83,18 +82,13 @@ $str;
 
 &quot;&quot;;
 %]</page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-07-08 16:03:57</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1101655</htmlpage_id>
-  <hits>0</hits>
   <node_id>1101655</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <author_user>470183</author_user>
-  <package>0</package>
   <ownedby_theme>1100936</ownedby_theme>
   <title>ekw writeup display page</title>
   <mimetype></mimetype>

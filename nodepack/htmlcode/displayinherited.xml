@@ -1,14 +1,9 @@
 <node>
   <core>R</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-10-07 04:35:11</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>32</node_id>
   <htmlcode_id>32</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code># This diplays inherited values for a nodetype.  This
 # checks to see if the given field has any inherited
 # values.
@@ -43,6 +38,5 @@ elsif($$NODE{$field} eq &quot;-1&quot;)
 $str = &quot; ( Inherited value: $str )&quot; if ($str ne &quot;&quot;);</code>
   <type_nodetype>4</type_nodetype>
   <author_user>113</author_user>
-  <package>0</package>
   <title>displayInherited</title>
 </node>

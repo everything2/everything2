@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2000-11-15 01:13:41</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>837958</node_id>
   <htmlcode_id>837958</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>my $str='[&lt;i&gt;Ajax call parameters, not original page parameters&lt;/i&gt;]&lt;br&gt;' if $query-&gt;param('displaytype')eq 'ajaxupdate';
 my $c=0;
 my $q;
@@ -44,6 +38,5 @@ $str = &quot;&lt;small&gt;$c&lt;br&gt;&lt;/small&gt;\n&quot;.$str if $c;
 $str;</code>
   <type_nodetype>4</type_nodetype>
   <author_user>220</author_user>
-  <package>0</package>
   <title>ednsection_cgiparam</title>
 </node>

@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <totalvotes>0</totalvotes>
-  <locktime>0000-00-00 00:00:00</locktime>
   <createtime>2000-03-07 15:46:17</createtime>
-  <hits>0</hits>
   <node_id>444187</node_id>
   <type_nodetype>152</type_nodetype>
   <setting_id>444187</setting_id>
   <author_user>315</author_user>
   <vars>author=Nathan%20Oostendorp&amp;description=this%20nodeball%20allows%20you%20to%20create%20a%20voting%20system%20within%20an%20everything%2e%20%20The%20Users%20cast%20allotted%20votes%20on%20allowed%20nodes%20in%20order%20to%20gain%20experience%20for%20themselves%20and%20the%20votee%20%2d%2d%20votes%20are%20tallied%20in%20the%20%22reputation%22%20field%20and%20each%20vote%20is%20logged%20in%20the%20vote%20table%2e&amp;version=0%2e4%2e5</vars>
-  <package>0</package>
   <title>experience nodeball</title>
 </node>

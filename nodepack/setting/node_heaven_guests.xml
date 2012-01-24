@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2000-10-16 22:32:34</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>792084</node_id>
   <type_nodetype>153</type_nodetype>
   <setting_id>792084</setting_id>
   <author_user>220</author_user>
   <vars>lower_case_letters_only_please=1&amp;toasterleavings=1&amp;aalnan=1&amp;cody=1</vars>
-  <package>0</package>
   <title>Node Heaven Guests</title>
 </node>

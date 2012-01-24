@@ -1,12 +1,8 @@
 <node>
   <parent_container>1100988</parent_container>
   <core>R</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-10-07 04:35:10</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1100949</node_id>
   <context>&lt;!-- BEGIN ekw container --&gt;
 &lt;table style=&quot;margin-left: 10px;&quot; width=&quot;98%&quot; border=&quot;0&quot; cellpadding=&quot;0&quot;&gt;
@@ -86,6 +82,5 @@ $$VARS{ekw_logobackground} || $$THEME{logoBackground} || &quot;#305880&quot;;
   <type_nodetype>2</type_nodetype>
   <container_id>1100949</container_id>
   <author_user>114</author_user>
-  <package>0</package>
   <title>ekw container</title>
 </node>

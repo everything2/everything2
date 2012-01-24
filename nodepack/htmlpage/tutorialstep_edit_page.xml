@@ -1,7 +1,6 @@
 <node>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1177317</pagetype_nodetype>
-  <core>0</core>
   <page>&lt;h4&gt;title&lt;/h4&gt;[{textfield:title}]
 &lt;h4&gt;maintainer:&lt;/h4&gt;[{node_menu:author_user,user,usergroup}]
 &lt;h4&gt;member of tutorial (id):&lt;/h4&gt;[{node_menu:parent_tutorial,tutorial}]
@@ -9,19 +8,13 @@
 [{textarea:doctext,30,60}]
 
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-10-12 07:19:44</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1177320</htmlpage_id>
-  <hits>0</hits>
   <node_id>1177320</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
   <author_user>459692</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>tutorialstep edit page</title>
   <mimetype></mimetype>
 </node>

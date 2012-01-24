@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-02-20 17:09:59</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>958429</node_id>
   <htmlcode_id>958429</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>#another ugly hack by N-Wing to try out the new XP system without messing up the old one
 #after the new XP system works, it should be moved into the Everything Perl module, and have the obvious changes made
 #NPB TODO - list method to map old XP into new XP fields
@@ -58,6 +52,5 @@ if(which eq 'misc') {
 #setVars($who, $userVars);</code>
   <type_nodetype>4</type_nodetype>
   <author_user>9740</author_user>
-  <package>0</package>
   <title>adjustNewXP</title>
 </node>

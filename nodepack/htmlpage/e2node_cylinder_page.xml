@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>116</pagetype_nodetype>
-  <core>0</core>
   <page>[{votehead}]
 &lt;table width=100% cellpadding=1 cellspacing=1&gt;
 
@@ -78,19 +77,13 @@ $str;
 %]
 
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-11-08 22:39:55</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>267</htmlpage_id>
-  <hits>0</hits>
   <node_id>267</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>cylinder</displaytype>
   <author_user>315</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>e2node cylinder page</title>
   <mimetype></mimetype>
 </node>

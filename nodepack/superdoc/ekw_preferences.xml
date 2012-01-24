@@ -244,18 +244,12 @@ $str;
 
 
 </doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-07-23 18:35:48</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1118951</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <document_id>1118951</document_id>
   <author_user>113</author_user>
-  <package>0</package>
   <title>ekw Preferences</title>
 </node>

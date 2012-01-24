@@ -98,18 +98,12 @@ window.onload = SymOnLoad;
 //--&gt;
 &lt;/script&gt;
 </doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2009-04-03 15:18:29</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1980760</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <document_id>1980760</document_id>
   <author_user>331</author_user>
-  <package>0</package>
   <title>Survey Randomizer Thingy</title>
 </node>

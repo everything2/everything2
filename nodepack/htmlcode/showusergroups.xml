@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-03-03 00:49:32</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>970447</node_id>
   <htmlcode_id>970447</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>#pass a user object (or nothing to default to the current node, or current user if the current node is not a user), and the groups the user belongs to will be returned
 
 my $U = $_[0];
@@ -74,6 +68,5 @@ return if !scalar(@groups);
 return join(', ', @groups);</code>
   <type_nodetype>4</type_nodetype>
   <author_user>9740</author_user>
-  <package>0</package>
   <title>showUserGroups</title>
 </node>

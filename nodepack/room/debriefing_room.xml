@@ -1,21 +1,14 @@
 <node>
   <roomdata_id>1973457</roomdata_id>
   <doctext>Place to handle disruptive users</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2009-02-06 19:56:20</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <lastused_date>2011-03-08</lastused_date>
-  <hits>0</hits>
   <node_id>1973457</node_id>
   <criteria>0;</criteria>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>545241</type_nodetype>
   <document_id>1973457</document_id>
   <author_user>114</author_user>
-  <abreviation></abreviation>
-  <package>0</package>
   <title>Debriefing Room</title>
 </node>

@@ -1,25 +1,18 @@
 <node>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1258942</pagetype_nodetype>
-  <core>0</core>
   <page>&lt;h4&gt;title:&lt;/h4&gt;[{textfield:title}]
 &lt;h4&gt;maintainer:&lt;/h4&gt;[{node_menu:author_user,user,usergroup}]
 &lt;h4&gt;schema_extends:&lt;/h4&gt;[{node_menu:schema_extends,ticker,nodetype}]
 &lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the document text:&lt;/strong&gt;&lt;/small&gt;&lt;br /&gt;
 [{textarea:doctext,30,80}]</page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-02-23 04:29:11</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1258952</htmlpage_id>
-  <hits>0</hits>
   <node_id>1258952</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
   <author_user>459692</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>schema edit page</title>
   <mimetype></mimetype>
 </node>

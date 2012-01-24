@@ -2,16 +2,10 @@
   <doctext>originally by s_alanet (May 9 2002)
 &lt;br&gt;&lt;br&gt;
 Try as I may, try as I might. I can't get this thing to work on Netscape, IE, and Opera. The current code does. While DOM compliance might be nice, if it ain't really broke, let's not play with it.</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2003-01-12 16:47:32</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1414309</node_id>
   <htmlcode_id>1414309</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <edittime>0000-00-00 00:00:00</edittime>
   <code>function replyTo(s, c) {
         //alert(&quot;foo!&quot;);
@@ -63,6 +57,5 @@ function checkAll(){
   <type_nodetype>1382262</type_nodetype>
   <document_id>1414309</document_id>
   <author_user>459692</author_user>
-  <package>0</package>
   <title>Message Inbox JavaScript DOM compliance patch backup</title>
 </node>

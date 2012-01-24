@@ -176,18 +176,12 @@ return $str;
 
 %]
 </doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-12-11 07:43:49</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1399999</node_id>
   <edittime>2011-09-04 22:05:10</edittime>
   <type_nodetype>14</type_nodetype>
   <document_id>1399999</document_id>
   <author_user>459692</author_user>
-  <package>0</package>
   <title>Suspension Info</title>
 </node>

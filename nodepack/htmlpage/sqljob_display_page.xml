@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1159647</pagetype_nodetype>
-  <core>0</core>
   <page>[%
 return unless(isGod($USER));
 
@@ -71,19 +70,13 @@ $str.='&lt;/ul&gt;';
 
 return $str;
 %]</page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-09-17 07:47:03</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1159659</htmlpage_id>
-  <hits>0</hits>
   <node_id>1159659</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <author_user>459692</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>sqljob display page</title>
   <mimetype></mimetype>
 </node>

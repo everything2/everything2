@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <totalvotes>0</totalvotes>
-  <locktime>0000-00-00 00:00:00</locktime>
   <createtime>2000-02-12 02:17:58</createtime>
-  <hits>0</hits>
   <node_id>1100936</node_id>
   <type_nodetype>175989</type_nodetype>
   <setting_id>1100936</setting_id>
   <author_user>113</author_user>
   <vars>textFontSize=12px&amp;textFont=Arial%2c%20sans%2dserif&amp;monoFontSize=9pt&amp;logoBackground=%23305880&amp;bodyBgcolor=%23f8f8f8&amp;writeupTitleColor=%23d0d0d0&amp;logoMainText=%23f0f0f0&amp;oddRowColor=%23d0d0d0&amp;nodeletBodyColor=%23F8F8F8&amp;themeColors=%23c0c0c0&amp;logoFontSize=17pt&amp;version=post%2dpre%2dpre%2dalpha&amp;thinOutlineHeader=%3ctable%20width%3d100%25%20cellpadding%3d0%20cellspacing%3d10%20border%3d0%3e%3ctr%3e%3ctd%20valign%3dtop%3e&amp;headingFont=Tahoma%2cVerdana%2cHelvetica%2cArial&amp;description=Reworking%20of%20the%20jukka%2fdefault%20themes&amp;logoALink=%23ffff90&amp;bodyVlinkcolor=%23808080&amp;nodeletParent_container=1101195&amp;logoBorder=%23000000&amp;nodeletMCTableAttr=cellpadding%3d2%20cellspacing%3d0%20border%3d0%20&amp;nodeletTitleBackground=%22%22&amp;logoAccentText=%23ffff90&amp;logoFont=Tahoma%2cVerdana%2cHelvetica%2cArial&amp;bodyAlinkcolor=%23ffd000&amp;docColor_UNUSED=%23f5f5f5&amp;nodeletTitleFontAttr=color%3d%23e8e8e8%20comment%3dNO_LONGER_USED&amp;thinOutlineFooter=%3c%2ftd%3e%3c%2ftr%3e%3c%2ftable%3e&amp;bodyLinkcolor=%23103860&amp;nodeletTitleColor=%23305880&amp;nodeletBodyFontAttr=size%3d2&amp;CSSURL=%2findex%2epl%3fnode_id%3d1100984%26displaytype%3draw&amp;bodyTextcolor=%23000000&amp;generalParent_container=1100949&amp;author=ailie%20and%20wharfinger&amp;generalNodelet_container=1101195&amp;monoFont=Courier%20New%2cCourier%2cmonospace</vars>
-  <package>0</package>
   <title>ekw theme</title>
 </node>

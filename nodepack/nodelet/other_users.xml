@@ -3,21 +3,15 @@
   <parent_container>175986</parent_container>
   <icon>http://images.everything2.com/img/otherusers.gif</icon>
   <core></core>
-  <reputation>0</reputation>
   <nlgoto>0</nlgoto>
-  <lockedby_user>0</lockedby_user>
   <totalvotes>0</totalvotes>
-  <locktime>0000-00-00 00:00:00</locktime>
   <createtime>1999-10-07 04:35:12</createtime>
   <lastupdate>1320029528</lastupdate>
-  <hits>0</hits>
   <node_id>91</node_id>
   <iconHeight>27</iconHeight>
   <type_nodetype>9</type_nodetype>
   <iconWidth>170</iconWidth>
   <author_user>114</author_user>
-  <updateinterval>0</updateinterval>
-  <package>0</package>
   <nodelet_id>91</nodelet_id>
   <nlcode>[{changeroom:Other Users}]
 [%

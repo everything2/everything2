@@ -1,13 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2010-10-07 07:29:47</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <notification_id>1990431</notification_id>
   <hourLimit>720</hourLimit>
-  <hits>0</hits>
   <node_id>1990431</node_id>
   <code>my $author_link = getNodeById($$args{author_id}) ?
   linkNode($$args{author_id})
@@ -24,7 +19,6 @@ return &quot;$author_link &lt;strong&gt;blanked&lt;/strong&gt; $wu_link.&quot;;
   <type_nodetype>1930710</type_nodetype>
   <author_user>1449265</author_user>
   <description>a user blanks a writeup</description>
-  <package>0</package>
   <invalid_check>my $target_wu = getNodeById($$args{writeup_id});
 my $trimmedNewText = $$target_wu{'doctext'} if $target_wu;
 $trimmedNewText =~ s/^\s+|\s$//;

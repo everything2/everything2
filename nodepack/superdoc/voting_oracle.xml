@@ -33,18 +33,12 @@ $wus -= $webbyWus;
 %]
 &lt;br&gt;&lt;br&gt;&lt;br&gt;
 &lt;p align=&quot;right&quot;&gt;&lt;small&gt;Keep in mind, these numbers could be wildly inaccurate. Oracles aren't known for their precision.&lt;/small&gt;&lt;/p&gt;</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-12-01 09:23:08</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1395195</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <document_id>1395195</document_id>
   <author_user>459692</author_user>
-  <package>0</package>
   <title>Voting Oracle</title>
 </node>

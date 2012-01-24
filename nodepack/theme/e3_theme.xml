@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <totalvotes>0</totalvotes>
-  <locktime>0000-00-00 00:00:00</locktime>
   <createtime>2000-02-12 02:17:58</createtime>
-  <hits>0</hits>
   <node_id>1988787</node_id>
   <type_nodetype>175989</type_nodetype>
   <setting_id>1988787</setting_id>
   <author_user>113</author_user>
   <vars>nodeletParent_container=1101195&amp;noTable=1&amp;version=0%2e99&amp;author=kthejoker&amp;description=New%20UI&amp;generalNodelet_container=1988790&amp;generalParent_container=1988788&amp;noThinOutline=1&amp;CSSURL=%2findex%2epl%3fnode_id%3d1100984%26displaytype%3draw</vars>
-  <package>0</package>
   <title>e3 theme</title>
 </node>

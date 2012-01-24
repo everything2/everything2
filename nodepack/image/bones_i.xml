@@ -1,11 +1,6 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2000-01-26 16:17:44</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>401270</node_id>
   <image_id>401270</image_id>
   <type_nodetype>6</type_nodetype>
@@ -13,7 +8,6 @@
   <src>images/incoming/bones.jpg</src>
   <author_user>282</author_user>
   <description></description>
-  <package>0</package>
   <thumbsrc></thumbsrc>
   <title>BONES I</title>
 </node>

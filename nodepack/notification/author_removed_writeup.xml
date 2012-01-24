@@ -1,13 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2011-06-16 13:49:37</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <notification_id>1992062</notification_id>
   <hourLimit>240</hourLimit>
-  <hits>0</hits>
   <node_id>1992062</node_id>
   <code>my $titleLink = (
 	getRef($$args{writeup_id})
@@ -22,7 +17,6 @@ linkNode($$args{author_id})
   <type_nodetype>1930710</type_nodetype>
   <author_user>1828141</author_user>
   <description>a user removes a writeup</description>
-  <package>0</package>
   <invalid_check>my $draft = getNodeById($$args{writeup_id});
 
 return ($draft &amp;&amp; $$draft{type}{title} ne 'draft');</invalid_check>

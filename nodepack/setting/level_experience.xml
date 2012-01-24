@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2000-03-07 18:25:18</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>444403</node_id>
   <type_nodetype>153</type_nodetype>
   <setting_id>444403</setting_id>
   <author_user>113</author_user>
   <vars>33=68500&amp;32=66000&amp;90=211000&amp;63=143500&amp;21=38500&amp;71=163500&amp;7=5900&amp;80=186000&amp;26=51000&amp;99=233500&amp;18=31000&amp;72=166000&amp;16=26000&amp;44=96000&amp;55=123500&amp;74=171000&amp;27=53500&amp;84=196000&amp;95=223500&amp;57=128500&amp;61=138500&amp;20=36000&amp;92=216000&amp;89=208500&amp;10=11300&amp;31=63500&amp;35=73500&amp;11=13500&amp;91=213500&amp;78=181000&amp;48=106000&amp;87=203500&amp;93=218500&amp;77=178500&amp;65=148500&amp;29=58500&amp;50=111000&amp;39=83500&amp;64=146000&amp;97=228500&amp;58=131000&amp;41=88500&amp;12=16000&amp;15=23500&amp;81=188500&amp;52=116000&amp;60=136000&amp;56=126000&amp;73=168500&amp;66=151000&amp;45=98500&amp;86=201000&amp;76=176000&amp;19=33500&amp;62=141000&amp;54=121000&amp;67=153500&amp;70=161000&amp;68=156000&amp;2=900&amp;17=28500&amp;1=500&amp;88=206000&amp;30=61000&amp;100=236000&amp;82=191000&amp;25=48500&amp;28=56000&amp;83=193500&amp;75=173500&amp;40=86000&amp;14=21000&amp;69=158500&amp;59=133500&amp;49=108500&amp;24=46000&amp;53=118500&amp;79=183500&amp;22=41000&amp;42=91000&amp;0=0&amp;46=101000&amp;23=43500&amp;13=18500&amp;96=226000&amp;6=4500&amp;85=198500&amp;3=1500&amp;36=76000&amp;94=221000&amp;9=9300&amp;51=113500&amp;47=103500&amp;8=7500&amp;38=81000&amp;98=231000&amp;4=2300&amp;34=71000&amp;37=78500&amp;43=93500&amp;5=3300</vars>
-  <package>0</package>
   <title>level experience</title>
 </node>

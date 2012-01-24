@@ -1,14 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-07-16 15:57:10</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1109816</node_id>
   <htmlcode_id>1109816</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code># Inserts collapsible nodelet sections. These are stored in separate htmlcodes in the form (nodelet-abbreviation)section_(section-title) - that is, if you see something like 'htmlcode('nodeletsection','edn,patches');' the code you need will be at [ednsection_patches].
 
 my ($nlAbbrev, $nlSection, $altTitle, $linkTo, $styleTitle, $styleContent) = @_;
@@ -62,6 +56,5 @@ return qq'&lt;div id=&quot;$sectionId&quot; class=&quot;nodeletsection&quot;&gt;
 </code>
   <type_nodetype>4</type_nodetype>
   <author_user>9740</author_user>
-  <package>0</package>
   <title>nodeletsection</title>
 </node>

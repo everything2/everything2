@@ -1,21 +1,14 @@
 <node>
   <parent_container></parent_container>
   <pagetype_nodetype></pagetype_nodetype>
-  <core>0</core>
   <page></page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2011-08-27 12:28:55</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1992315</htmlpage_id>
-  <hits>0</hits>
   <node_id>1992315</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype></displaytype>
   <author_user>1449265</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>room viewcode page</title>
   <mimetype></mimetype>
 </node>

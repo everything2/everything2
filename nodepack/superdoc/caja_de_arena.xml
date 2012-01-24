@@ -4,18 +4,12 @@ delete $HTMLVARS{group_gods};
 delete $HTMLVARS{'group_content editors'};
 htmlcode('canpublishas');
 %]</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2009-06-04 20:17:42</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1988177</node_id>
   <edittime>2011-11-11 16:44:40</edittime>
   <type_nodetype>14</type_nodetype>
   <document_id>1988177</document_id>
   <author_user>1828141</author_user>
-  <package>0</package>
   <title>caja de arena</title>
 </node>

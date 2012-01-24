@@ -1,13 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2007-11-19 19:22:43</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <display>&lt;strong&gt;Miss Congeniality&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Total Reputation of 1000&lt;/i&gt;</display>
   <achievement_type>reputation</achievement_type>
-  <hits>0</hits>
   <node_id>1918062</node_id>
   <achievement_id>1918062</achievement_id>
   <code>my $totalRep = $DB-&gt;sqlSelect(&quot;sum(reputation)&quot;,&quot;node&quot;,&quot;author_user=$user_id and type_nodetype=117&quot;);
@@ -15,9 +10,6 @@
 return 1 if $totalRep &gt;= 1000;
 return 0;</code>
   <type_nodetype>1917847</type_nodetype>
-  <private>0</private>
   <author_user>1312198</author_user>
-  <achievement_still_available>1</achievement_still_available>
-  <package>0</package>
   <title>totalreputation1000</title>
 </node>

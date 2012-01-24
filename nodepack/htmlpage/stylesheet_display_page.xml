@@ -1,7 +1,6 @@
 <node>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1854352</pagetype_nodetype>
-  <core>0</core>
   <page>[%
 
 if(defined($query-&gt;param('switchToZen'))) {
@@ -163,19 +162,13 @@ document.getElementById('previewstyle').onclick = function () {
 }
 &lt;/script&gt;
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2006-02-13 16:41:43</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1854353</htmlpage_id>
-  <hits>0</hits>
   <node_id>1854353</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <author_user>1312198</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>stylesheet display page</title>
   <mimetype></mimetype>
 </node>

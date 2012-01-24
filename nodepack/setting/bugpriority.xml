@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-11-04 00:25:03</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>211</node_id>
   <type_nodetype>153</type_nodetype>
   <setting_id>211</setting_id>
   <author_user>113</author_user>
   <vars>A=A%20%2d%20critical&amp;B=B%20%2d%20serious&amp;C=C%20%2d%20important&amp;D=D%20%2d%20minor%20issue&amp;E=E%20%2d%20who%20cares%3f</vars>
-  <package>0</package>
   <title>bugpriority</title>
 </node>

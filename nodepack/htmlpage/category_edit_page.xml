@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1522375</pagetype_nodetype>
-  <core>0</core>
   <page>&lt;p align=&quot;right&quot;&gt;
 [% linkNode($NODE, 'display', {displaytype =&gt; 'display'}) %] 
 &lt;/p&gt;
@@ -241,19 +240,13 @@ unless ($ctr){
 return $str;
 %]
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2004-02-26 19:39:09</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1522377</htmlpage_id>
-  <hits>0</hits>
   <node_id>1522377</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
   <author_user>329</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>category edit page</title>
   <mimetype></mimetype>
 </node>

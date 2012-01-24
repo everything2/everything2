@@ -1,14 +1,9 @@
 <node>
   <core>R</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-11-04 00:14:11</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>539558</node_id>
   <htmlcode_id>539558</htmlcode_id>
-  <checks_arguments>0</checks_arguments>
   <code>use POSIX qw(strftime);
 use File::Copy;
 
@@ -109,6 +104,5 @@ $str;
 </code>
   <type_nodetype>4</type_nodetype>
   <author_user>315</author_user>
-  <package>0</package>
   <title>uploaduserimage</title>
 </node>

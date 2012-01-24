@@ -1,16 +1,10 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <totalvotes>0</totalvotes>
-  <locktime>0000-00-00 00:00:00</locktime>
   <createtime>1999-11-12 23:40:49</createtime>
-  <hits>0</hits>
   <node_id>314</node_id>
   <type_nodetype>152</type_nodetype>
   <setting_id>314</setting_id>
   <author_user>315</author_user>
   <vars>author=Nate%20Oostendorp&amp;description=Nodeball%20to%20keep%20track%20of%20the%20Everything%202%20site%20functionality%20%20%20&amp;version=0%2e5%2e1%2e3</vars>
-  <package>0</package>
   <title>eclone nodeball</title>
 </node>

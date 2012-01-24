@@ -2,22 +2,13 @@
   <nltext></nltext>
   <parent_container>175986</parent_container>
   <icon>http://images.everything2.com/img/readthis.gif</icon>
-  <core>0</core>
-  <reputation>0</reputation>
   <nlgoto>0</nlgoto>
-  <lockedby_user>0</lockedby_user>
   <totalvotes>0</totalvotes>
-  <locktime>0000-00-00 00:00:00</locktime>
   <createtime>2001-09-12 02:32:38</createtime>
   <lastupdate>1002165129</lastupdate>
-  <hits>0</hits>
   <node_id>1157024</node_id>
-  <iconHeight>0</iconHeight>
   <type_nodetype>9</type_nodetype>
-  <iconWidth>0</iconWidth>
   <author_user>459692</author_user>
-  <updateinterval>0</updateinterval>
-  <package>0</package>
   <nodelet_id>1157024</nodelet_id>
   <nlcode>[{nodeletsection:rtn,cwu,Cool Writeups,Cool Archive,,i}]
 

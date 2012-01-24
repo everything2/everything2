@@ -1,7 +1,6 @@
 <node>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1261857</pagetype_nodetype>
-  <core>0</core>
   <page>&lt;table&gt;
 &lt;tr&gt;&lt;td&gt;&lt;b&gt;Title:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
 &lt;tr&gt;&lt;td&gt;&lt;b&gt;Client ID (string):&lt;/b&gt;&lt;/td&gt;&lt;td&gt;[{textfield:clientstr}]&lt;/td&gt;&lt;/tr&gt;
@@ -14,19 +13,13 @@
 [{textarea:doctext,30,60}]
 
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2002-02-28 21:58:19</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1261885</htmlpage_id>
-  <hits>0</hits>
   <node_id>1261885</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
   <author_user>459692</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>e2client edit page</title>
   <mimetype></mimetype>
 </node>

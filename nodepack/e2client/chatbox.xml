@@ -3,15 +3,10 @@
 For Windows 
 Requires Windows XP SP2, Vista or later, and .Net 3.5 SP1
 </doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2009-02-13 19:35:17</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <dlurl>http://everything2chatbox.googlecode.com/files/ChatboxInstaller_025.msi</dlurl>
   <homeurl>http://code.google.com/p/everything2chatbox/</homeurl>
-  <hits>0</hits>
   <node_id>1974266</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <e2client_id>1974266</e2client_id>
@@ -19,7 +14,6 @@ Requires Windows XP SP2, Vista or later, and .Net 3.5 SP1
   <version>0.25</version>
   <document_id>1974266</document_id>
   <author_user>6229</author_user>
-  <package>0</package>
   <clientstr>Chatbox</clientstr>
   <title>Chatbox</title>
 </node>

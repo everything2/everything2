@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>15</pagetype_nodetype>
-  <core>0</core>
   <page>[%
 $HTMLVARS{pageheader} = '&lt;!-- put at end --&gt;'.htmlcode('settingsDocs');
 $query-&gt;start_multipart_form(-method=&gt;'POST', action=&gt;$ENV{script_name}.'?usereditpage=1', id=&gt;'pagebody') .
@@ -101,19 +100,13 @@ if (jQuery('#bookmarklist li').length &gt; 1) {
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 [{closeform}]
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-12-17 04:59:03</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>176001</htmlpage_id>
-  <hits>0</hits>
   <node_id>176001</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
   <author_user>315</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>classic user edit page</title>
   <mimetype></mimetype>
 </node>

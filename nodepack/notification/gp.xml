@@ -1,13 +1,8 @@
 <node>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2008-10-20 14:36:53</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <notification_id>1959540</notification_id>
   <hourLimit>108</hourLimit>
-  <hits>0</hits>
   <node_id>1959540</node_id>
   <code>my $str;
 if ($$args{amount} &gt; 0) {
@@ -28,7 +23,6 @@ return $str;</code>
   <type_nodetype>1930710</type_nodetype>
   <author_user>1017738</author_user>
   <description>you gain or lose [GP].</description>
-  <package>0</package>
   <invalid_check></invalid_check>
   <title>gp</title>
 </node>

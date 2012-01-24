@@ -1,7 +1,6 @@
 <node>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1227031</pagetype_nodetype>
-  <core>0</core>
   <page>[%
 my $uid = getId($USER);
 return ('If you want to rename this entire e2node, please submit a request at '.linkNodeTitle('Edit These E2 Titles').'.') unless (exists $HTMLVARS{'group_content editors'}{$uid} || exists $HTMLVARS{'group_gods'}{$uid});
@@ -9,19 +8,13 @@ my $str = htmlcode('textfield','title').&quot; (title)&lt;br&gt;&lt;br&gt;&quot;
 $str.=htmlcode('textfield','e2imagenode_copyright').&quot; (copyright) &lt;br&gt;&quot;;
 $str.=htmlcode('textfield','e2imagenode_imgpath').&quot; (img src)&lt;br&gt;&quot;;
 %]</page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>1999-12-07 06:11:56</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1227041</htmlpage_id>
-  <hits>0</hits>
   <node_id>1227041</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
   <author_user>315</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>e2imagenode edit page</title>
   <mimetype></mimetype>
 </node>

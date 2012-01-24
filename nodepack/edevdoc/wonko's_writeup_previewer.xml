@@ -63,18 +63,12 @@ valid tags that can be used on E2, see [E2 HTML tags].
 &lt;div name=&quot;poop&quot; id=&quot;poop&quot; style=&quot;border: 1px solid #000000; padding: 4px; font-family: Arial,Helvetica,sans-serif; font-size: 9pt; width: 100%;&quot;&gt;
 
 &lt;/div&gt;</doctext>
-  <core>0</core>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2001-05-30 22:23:06</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
-  <hits>0</hits>
   <node_id>1065081</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>854232</type_nodetype>
   <document_id>1065081</document_id>
   <author_user>5089</author_user>
-  <package>0</package>
   <title>Wonko's Writeup Previewer</title>
 </node>

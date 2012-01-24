@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>3</pagetype_nodetype>
-  <core>0</core>
   <page>[% return '&lt;p align=&quot;right&quot;&gt;Return to '.linkNode($NODE).'&lt;/p&gt;'; %]
 [%
 
@@ -117,19 +116,13 @@ $str .=  join(&quot;&lt;/li&gt;\n&lt;li&gt;&quot;, @notlinks)
 
 %]
 </page>
-  <reputation>0</reputation>
-  <lockedby_user>0</lockedby_user>
   <createtime>2003-01-03 05:45:50</createtime>
-  <locktime>0000-00-00 00:00:00</locktime>
   <totalvotes>0</totalvotes>
   <htmlpage_id>1409922</htmlpage_id>
-  <hits>0</hits>
   <node_id>1409922</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>linkview</displaytype>
   <author_user>459692</author_user>
-  <package>0</package>
-  <ownedby_theme>0</ownedby_theme>
   <title>document linkview page</title>
   <mimetype></mimetype>
 </node>
