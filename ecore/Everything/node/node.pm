@@ -90,7 +90,7 @@ sub _strip_defaults
 				if(defined($row->{Default}) and $NODE->{$row->{Field}} eq $row->{Default} and $row->{Default} ne "NULL")
 				{
 					delete $NODE->{$row->{Field}};
-					print STDERR "Stripped $$row{Field} from $$NODE{title}\n";
+					#print STDERR "Stripped $$row{Field} from $$NODE{title}\n";
 				}
 			}
 		}
