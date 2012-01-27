@@ -23,38 +23,48 @@ sub new
 	return bless $this,$class;
 }
 
+sub _inputs
+{
+	return {
+	"user" => 
+	{
+		"alias" => ["u"],
+		"type" => "s",
+		"default" => "root",
+		"help" => "The user to connect to the database with",
+	},
+	"password" =>
+	{
+		"alias" => ["p"],
+		"type" => "s",
+		"default" => "",
+		"help" => "The password to the database for the user",
+	},
+
+	"database" => 
+	{
+		"alias" => ["d"],
+		"type" => "s",
+		"default" => "everything",
+		"help" => "The database to connect to",
+	},
+
+	"nodepack" =>
+	{
+		"alias" => ["n"],
+		"type" => "s",
+		"default" => "./nodepack",
+		"help" => "The directory to load the nodepack from",
+	},
+
+	};
+}
+
 sub main
 {
 	my ($this) = @_;	
 
-	my $options;
-
-	GetOptions(
-		"u|user=s" => \$options->{user},
-		"p|password=s" => \$options->{password},
-		"d|database=s" => \$options->{database},
-		"n|nodepack=s" => \$options->{nodepack},
-	);
-	
-	if(not defined($options->{user}))
-	{
-		$options->{user} = "root";
-	}
-
-	if(not defined($options->{password}))
-	{
-		$options->{password} = "";
-	}
-
-	if(not defined($options->{database}))
-	{
-		$options->{database} = "";
-	}
-
-	if(not defined($options->{nodepack}))
-	{
-		$options->{nodepack} = "./nodepack";
-	}
+	my $options = $this->_handle_inputs();
 
 	my $basedir = $options->{nodepack};
 	
@@ -152,11 +162,6 @@ sub main
 	}
 }
 
-sub help
-{
-
-}
-
 sub _values_into_table
 {
 	my ($this, $newdbh, $NODE, $table) = @_;
@@ -167,12 +172,15 @@ sub _values_into_table
 	
 	while (my $row = $sth->fetchrow_hashref())
 	{
-		push @$node_columns, $row->{Field};
+		if(exists($NODE->{$row->{Field}}))
+		{
+			push @$node_columns, $row->{Field};
+		}
 	}
 
 	$sth->finish();
 			
-	my $node_bootstrap_template = "INSERT INTO $table VALUES(".join(',',split(//,('?'x(@$node_columns)))).")";
+	my $node_bootstrap_template = "INSERT INTO $table (".join(",",@$node_columns).") VALUES(".join(',',split(//,('?'x(@$node_columns)))).")";
 	my $insertdata;
 
 	foreach my $column (@$node_columns)
