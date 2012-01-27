@@ -91,7 +91,7 @@ end
 
 git '/var/everything/' do
   repository 'git://github.com/everything2/everything2.git'
-  reference "master"
+  revision 'jaybonci_local_development_fixes'
   action :sync
 end
 
