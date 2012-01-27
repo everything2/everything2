@@ -56,6 +56,7 @@ sub main
 		"writeup" => [], 
 		"category" => [],
 		"document" => [],
+		"edevdoc" => [],
 		"patch" => [],
 		"user" => [113,952215,779713,839239], #root,klaproth,guest user,cool man eddie
 		"node_forward" => [],
@@ -125,7 +126,7 @@ sub xml_to_file
 
 	my $outtitle = $$node{title};
 	$outtitle = lc($outtitle);
-	$outtitle =~ s/[\s\/\:]/_/g;
+	$outtitle =~ s/[\s\/\:\?]/_/g;
 	
 	if(length($$node{title}) == 0)
 	{
