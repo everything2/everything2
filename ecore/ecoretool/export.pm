@@ -1,7 +1,6 @@
 #!/usr/bin/perl -w
 
 use strict;
-use utf8;
 use lib qw(lib);
 
 use ecoretool::base;
@@ -143,7 +142,7 @@ sub xml_to_file
 		return;
 	}
 
-	open $handle, ">/$$this{basedir}/$type/$outtitle.xml" or die "Open error '$$this{basedir}/$type/$outtitle.xml': $!";
+	open $handle, ">$$this{basedir}/$type/$outtitle.xml" or die "Open error '$$this{basedir}/$type/$outtitle.xml': $!";
 	print $handle $obj->node_to_xml($node, $dbh);
 	close $handle;
 }
