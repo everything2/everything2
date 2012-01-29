@@ -6,14 +6,11 @@ use ecoretool::base;
 package ecoretool::bootstrap;
 use base qw(ecoretool::base);
 
-use strict;
 use utf8;
 use Everything;
-use Data::Dumper;
 use DBI;
 use DBD::mysql;
 use XML::Simple;
-use Getopt::Long;
 
 sub new
 {
