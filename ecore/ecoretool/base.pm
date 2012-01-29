@@ -130,4 +130,23 @@ sub get_worker_object
 	return $obj
 }
 
+sub _skippable_types
+{
+	return {
+		"e2node" => [],
+		"writeup" => [], 
+		"category" => [],
+		"document" => [],
+		"edevdoc" => [],
+		"patch" => [],
+		"user" => [113,952215,779713,839239], #root,klaproth,guest user,cool man eddie
+		"node_forward" => [],
+		"ticket" => [], 
+		"draft" => [],
+		"debate" => [],
+		"debatecomment" => [],
+		"collaboration" => [],
+		"e2poll" => [],
+	};
+}
 1;

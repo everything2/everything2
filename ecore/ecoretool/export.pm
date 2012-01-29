@@ -51,22 +51,7 @@ sub main
 
 	$this->{basedir} = $options->{nodepack};
 
-	my $skiptypes = {
-		"e2node" => [],
-		"writeup" => [], 
-		"category" => [],
-		"document" => [],
-		"edevdoc" => [],
-		"patch" => [],
-		"user" => [113,952215,779713,839239], #root,klaproth,guest user,cool man eddie
-		"node_forward" => [],
-		"ticket" => [], 
-		"draft" => [],
-		"debate" => [],
-		"debatecomment" => [],
-		"collaboration" => [],
-		"e2poll" => [],
-		};
+	my $skiptypes = $this->_skippable_types();
 
 	while(my $row = $csr->fetchrow_hashref())
 	{
