@@ -1,7 +1,6 @@
 #!/usr/bin/perl -w
 
 use strict;
-use utf8;
 use lib qw(lib);
 
 use ecoretool::base;

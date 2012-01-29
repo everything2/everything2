@@ -6,7 +6,6 @@ use ecoretool::base;
 package ecoretool::bootstrap;
 use base qw(ecoretool::base);
 
-use utf8;
 use Everything;
 use DBI;
 use DBD::mysql;
