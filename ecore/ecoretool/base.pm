@@ -30,6 +30,11 @@ sub _handle_inputs
 
 	foreach my $input_key(keys %$inputs)
 	{
+		if(not defined($inputs->{$input_key}->{alias}))
+		{
+			$inputs->{$input_key}->{alias} = [];
+		}
+
 		my $firstarg = join("|",$input_key,@{$inputs->{$input_key}->{alias}});
 		if(exists($inputs->{$input_key}->{type}))
 		{

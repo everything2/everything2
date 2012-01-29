@@ -37,19 +37,20 @@ BEGIN
 use Everything;
 use Everything::node::node;
 
-initEverything 'everything';
-
 sub main
 {
 	my ($this) = @_;
 
-	initEverything 'everything';
+	my $options = $this->_handle_inputs();
+
+	initEverything $options->{database};
+
 	my $node = getNode("nodetype","nodetype");
 
 	my $csr = $DB->{dbh}->prepare("select node_id from node where type_nodetype=1");
 	$csr->execute();
 
-	$this->{basedir} = "/root/nodepack";
+	$this->{basedir} = $options->{nodepack};
 
 	my $skiptypes = {
 		"e2node" => [],
@@ -101,14 +102,16 @@ sub main
 		}
 	}
 
-
-	foreach my $provider (keys %$dataproviders)
+	unless($options->{'skip-data'})
 	{
-		my $obj = "Everything::dataprovider::$provider";
-		no strict 'refs';
-		$obj = $obj->new($DB->{dbh},$this->{basedir});
-		print STDERR "Calling dataprovider: $provider\n";
-		$obj->data_out($this->{nodeidcache});
+		foreach my $provider (keys %$dataproviders)
+		{
+			my $obj = "Everything::dataprovider::$provider";
+			no strict 'refs';
+			$obj = $obj->new($DB->{dbh},$this->{basedir});
+			print STDERR "Calling dataprovider: $provider\n";
+			$obj->data_out($this->{nodeidcache});
+		}
 	}
 }
 
@@ -148,6 +151,48 @@ sub xml_to_file
 sub shortdesc
 {
 	return "Export the state of the current everything database to xml";
+}
+
+sub _inputs
+{
+	return 
+	{
+	"user" => 
+	{
+		"alias" => ["u"],
+		"type" => "s",
+		"default" => "root",
+		"help" => "The user to connect to the database with. Note, currently unsupported; value is in everything.conf",
+	},
+	"password" =>
+	{
+		"alias" => ["p"],
+		"type" => "s",
+		"default" => "",
+		"help" => "The password to the database for the user. Node, currently unsupported; value is in everything.conf",
+	},
+
+	"database" => 
+	{
+		"alias" => ["d"],
+		"type" => "s",
+		"default" => "everything",
+		"help" => "The database to connect to",
+	},
+
+	"nodepack" =>
+	{
+		"alias" => ["n"],
+		"type" => "s",
+		"default" => "./nodepack",
+		"help" => "The directory to export the nodepack to",
+	},
+	"skip-data" =>
+	{
+		"default" => 0,
+		"help" => "Skip exporting of the data providers",
+	},
+	};
 }
 
 1;
