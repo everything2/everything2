@@ -218,7 +218,6 @@ if($query-&gt;param(&quot;sendNewKey&quot;)){
   <node_id>1948165</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
-  <document_id>1948165</document_id>
   <author_user>650043</author_user>
   <title>Verify your email account</title>
 </node>

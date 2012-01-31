@@ -53,7 +53,6 @@ return qq'&lt;p&gt;Sorry, but nothing matching &quot;$nt&quot; was found.$str'
   <node_id>668164</node_id>
   <edittime>2011-10-23 08:16:51</edittime>
   <type_nodetype>14</type_nodetype>
-  <document_id>668164</document_id>
   <author_user>114</author_user>
   <title>Nothing Found</title>
 </node>

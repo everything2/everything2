@@ -252,7 +252,6 @@ return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/
   <node_id>743129</node_id>
   <edittime>2011-08-04 22:43:30</edittime>
   <type_nodetype>14</type_nodetype>
-  <document_id>743129</document_id>
   <author_user>315</author_user>
   <title>E2 staff</title>
 </node>

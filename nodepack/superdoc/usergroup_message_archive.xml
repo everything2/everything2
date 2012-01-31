@@ -234,7 +234,6 @@ htmlcode('openform','').$str.$BRN.htmlcode('closeform','');
   <node_id>1199723</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
-  <document_id>1199723</document_id>
   <author_user>9740</author_user>
   <title>usergroup message archive</title>
 </node>

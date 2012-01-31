@@ -108,7 +108,6 @@ return if getId($USER) == $HTMLVARS{guest_user};
   <node_id>579988</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
-  <document_id>579988</document_id>
   <author_user>114</author_user>
   <title>Everything Email Options</title>
 </node>
