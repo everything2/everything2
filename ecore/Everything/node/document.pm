@@ -14,4 +14,17 @@ sub node_to_xml
 	return $this->SUPER::node_to_xml($NODE, $dbh);
 }
 
+sub xml_no_consider
+{
+	my ($this) = @_;
+	return ["document_id",@{$this->SUPER::xml_no_consider()}];
+}
+
+sub xml_to_node_post
+{
+	my ($this, $N) = @_;
+	$N->{document_id} = $N->{node_id};
+	return $N;
+}
+
 1;

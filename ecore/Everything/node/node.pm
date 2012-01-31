@@ -17,17 +17,21 @@ sub node_to_xml
 	my ($this, $N, $dbh) = @_;
 	my $NODE = Clone::clone($N);
 
-	$NODE->{hits} = 0;
-	
-	delete $NODE->{_ORIGINAL_VALUES};
-	delete $NODE->{resolvedInheritance};
-
 	$this->_strip_defaults($NODE,$dbh);
-	delete $NODE->{sqltablelist};
-	delete $NODE->{type};
-	delete $NODE->{tableArray};
-	
+
+	foreach my $field(@{$this->xml_no_consider()})
+	{
+		delete $NODE->{$field};
+	}
+
 	return $this->{xs}->XMLout({node => $NODE});
+}
+
+sub xml_no_consider
+{
+	my ($this) = @_;
+
+	return ["_ORIGINAL_VALUES", "hits","type"];
 }
 
 sub xml_to_node

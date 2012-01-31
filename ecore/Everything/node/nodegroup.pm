@@ -17,4 +17,10 @@ sub node_to_xml
 	return $this->SUPER::node_to_xml($NODE, $dbh);
 }
 
+sub xml_no_consider
+{
+	my ($this) = @_;
+	return ["group",@{$this->SUPER::xml_no_consider()}];
+}
+
 1;
