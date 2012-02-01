@@ -7,11 +7,8 @@
   <node_id>1173314</node_id>
   <assigned_to>459692</assigned_to>
   <category>display</category>
-  <edittime>0000-00-00 00:00:00</edittime>
   <severity>medium</severity>
   <type_nodetype>1160420</type_nodetype>
-  <document_id>1173314</document_id>
-  <ebug_id>1173314</ebug_id>
   <resolution>fixed</resolution>
   <title>writeup entities</title>
   <errorlocation>htmlcode</errorlocation>

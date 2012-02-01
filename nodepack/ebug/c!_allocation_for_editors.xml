@@ -8,11 +8,8 @@
   <node_id>1167912</node_id>
   <assigned_to>9740</assigned_to>
   <category>server</category>
-  <edittime>0000-00-00 00:00:00</edittime>
   <severity>minor</severity>
   <type_nodetype>1160420</type_nodetype>
-  <document_id>1167912</document_id>
-  <ebug_id>1167912</ebug_id>
   <resolution>invalid</resolution>
   <title>C! allocation for editors</title>
   <errorlocation>superdoc</errorlocation>
