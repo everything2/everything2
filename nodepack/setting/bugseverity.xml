@@ -1,7 +1,6 @@
 <node>
   <node_id>212</node_id>
   <type_nodetype>153</type_nodetype>
-  <setting_id>212</setting_id>
   <vars>S10=10%20%2d%20Engineering%20work%20item&amp;S01=01%20%2d%20Crash&amp;S02=02%20%2d%20Data%20corruption&amp;S03=03%20%2d%20Incorrectly%20functioning&amp;S04=04%20%2d%20Incorrectly%20functioning%20with%20workaround&amp;S05=05%20%2d%20Nonfunctioning&amp;S06=06%20%2d%20UI%20issue</vars>
   <title>bugseverity</title>
 </node>

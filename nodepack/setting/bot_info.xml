@@ -1,7 +1,6 @@
 <node>
   <node_id>1291145</node_id>
   <type_nodetype>153</type_nodetype>
-  <setting_id>1291145</setting_id>
   <vars>bot_id=bit%20flags%3a%200%3dno%20talking%20allowed%2c%201%3dbot%20may%20talk%2c%202%3duser%20may%20talk%20to%20bot</vars>
   <title>bot info</title>
 </node>

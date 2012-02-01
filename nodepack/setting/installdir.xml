@@ -1,7 +1,6 @@
 <node>
   <node_id>363831</node_id>
   <type_nodetype>153</type_nodetype>
-  <setting_id>363831</setting_id>
   <vars>installdir=%2fusr%2flocal%2feverything</vars>
   <title>installDir</title>
 </node>

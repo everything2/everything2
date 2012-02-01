@@ -1,7 +1,6 @@
 <node>
   <node_id>214</node_id>
   <type_nodetype>153</type_nodetype>
-  <setting_id>214</setting_id>
   <vars>ebc=everything%2eblockstackers%2ecom&amp;perlmonks=perlmonks%2eorg&amp;ecore=ecore</vars>
   <title>bugsubsystem</title>
 </node>

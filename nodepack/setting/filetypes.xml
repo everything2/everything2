@@ -1,7 +1,6 @@
 <node>
   <node_id>332498</node_id>
   <type_nodetype>153</type_nodetype>
-  <setting_id>332498</setting_id>
   <vars>txt=text%2fplain&amp;jpg=image%2fjpeg&amp;gz=application%2fx%2dgzip&amp;html=text%2fhtml&amp;png=image%2fpng&amp;gif=image%2fgif&amp;jpeg=image%2fjpeg&amp;tar=application%2fx%2dtar&amp;htm=text%2fhtml</vars>
   <title>filetypes</title>
 </node>

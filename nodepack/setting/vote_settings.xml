@@ -1,7 +1,6 @@
 <node>
   <node_id>444191</node_id>
   <type_nodetype>153</type_nodetype>
-  <setting_id>444191</setting_id>
   <vars>downLabel=%2d&amp;voterExpChance=%2e40&amp;voteHeader=%3cfont%20size%3d1%3e&amp;voteeExpChance=%2e33&amp;voteFooter=%3c%2ffont%3e&amp;showExpHeader=%3cbr%3e%3cfont%20size%3d2%3e&amp;nullLabel=O&amp;upLabel=%2b&amp;validTypes=writeup%2ce2poll&amp;showExpFooter=%3c%2ffont%3e%3cbr%3e</vars>
   <title>vote settings</title>
 </node>
