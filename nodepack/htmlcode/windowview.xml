@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>57</node_id>
   <code>return &quot;&quot; unless $DB -&gt; canUpdateNode($USER, $NODE);
 my ($displaytype, $title, $width, $height) = @_;

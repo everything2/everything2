@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1917847</pagetype_nodetype>
-  <core>R</core>
   <page>&lt;p&gt;&lt;strong&gt;Displaying:&lt;/strong&gt; [% $$NODE{display}; %]&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Type:&lt;/strong&gt; [% $$NODE{achievement_type}; %]&lt;/p&gt;

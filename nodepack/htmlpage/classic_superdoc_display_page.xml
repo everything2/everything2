@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>14</pagetype_nodetype>
-  <core>R</core>
   <page>[%
   my $str = htmlcode('parsecode','doctext');
 

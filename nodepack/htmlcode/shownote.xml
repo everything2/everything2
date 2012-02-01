@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>51</node_id>
   <code>my @notes = getNodeWhere ({'parent_node' =&gt; getId ($NODE)}, $NODETYPES{note});
 

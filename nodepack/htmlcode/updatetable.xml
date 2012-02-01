@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>183</node_id>
   <code># This checks the CGI params to see what we need to do
 # to this table.

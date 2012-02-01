@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>175</node_id>
   <code># This generates an HTML table that contains the fields
 # of a database table.  The output is similar to what

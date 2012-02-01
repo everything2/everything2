@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>28</node_id>
   <code>my ($var, $label) = @_;
 $label ||= &quot; &quot;;

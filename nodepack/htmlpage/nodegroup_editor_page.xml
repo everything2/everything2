@@ -1,7 +1,6 @@
 <node>
   <parent_container>22</parent_container>
   <pagetype_nodetype>8</pagetype_nodetype>
-  <core>R</core>
   <page>&lt;p align=right&gt;
 [%
 if ($query-&gt;param('op') eq 'close') {

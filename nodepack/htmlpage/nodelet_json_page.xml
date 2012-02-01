@@ -1,7 +1,6 @@
 <node>
   <parent_container>0</parent_container>
   <pagetype_nodetype>9</pagetype_nodetype>
-  <core>R</core>
   <page>[%
 
 use JSON;

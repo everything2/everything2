@@ -1,7 +1,6 @@
 <node>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1151141</pagetype_nodetype>
-  <core>R</core>
   <page>&lt;p&gt;
 title:[{textfield:title}] maintained by:[{node_menu:author_user,user,usergroup}]
 &lt;/p&gt;

@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>6</pagetype_nodetype>
-  <core>R</core>
   <page>&lt;img src=&quot;/[&quot;$$NODE{src}&quot;]&quot; alt=&quot;[&quot;$$NODE{alt}&quot;]&quot;&gt;
 &lt;p&gt;[{parselinks:description}]&lt;/p&gt;
 </page>

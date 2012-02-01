@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>25</node_id>
   <code>&quot;&lt;font size=1&gt;&lt;a href=&quot;. urlGen ({node =&gt; &quot;RE: $$NODE{title}&quot;, 
 	type=&gt; 'note', lastnode_id =&gt; getId ($NODE), op =&gt; 'new', displaytype =&gt; 'edit'}).

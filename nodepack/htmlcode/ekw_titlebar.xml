@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>1118979</node_id>
   <code>my $str = &quot;
 

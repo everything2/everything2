@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1491416</pagetype_nodetype>
-  <core>R</core>
   <page>[% $NODE-&gt;{doctext} %]</page>
   <node_id>1491424</node_id>
   <type_nodetype>5</type_nodetype>

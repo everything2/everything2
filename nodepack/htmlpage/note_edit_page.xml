@@ -1,7 +1,6 @@
 <node>
   <parent_container>18</parent_container>
   <pagetype_nodetype>11</pagetype_nodetype>
-  <core>R</core>
   <page>[% if ($query-&gt;param(&quot;op&quot;) eq &quot;new&quot;) {
 	$$NODE{parent_node} = $query-&gt;param(&quot;lastnode_id&quot;);
 	updateNode $NODE, $USER;

@@ -1,5 +1,4 @@
 <node>
-  <core></core>
   <nodetype_id>118</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <sqltable></sqltable>

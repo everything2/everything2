@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>1854188</node_id>
   <code>my ($PARAM) = @_;
 

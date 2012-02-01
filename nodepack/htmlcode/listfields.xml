@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>36</node_id>
   <code>my $str;
 $str .= &quot;&lt;li&gt;&quot;;

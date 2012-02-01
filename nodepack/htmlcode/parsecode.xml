@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>43</node_id>
   <code> 	my ($field, $nolinks) = @_;
 	my $text = $$NODE{$field};

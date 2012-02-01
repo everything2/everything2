@@ -1,5 +1,4 @@
 <node>
-  <core></core>
   <node_id>127</node_id>
   <code>my $bgcolor = $$VARS{bgcolor};
 my $textcolor = $$VARS{textcolor};

@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>3</pagetype_nodetype>
-  <core>R</core>
   <page>&lt;p align=&quot;right&quot;&gt;[% linkNode($NODE, 
                              'edit', 
                              {displaytype=&gt;&quot;edit&quot;}) 

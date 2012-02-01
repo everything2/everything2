@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <nodetype_id>150</nodetype_id>
   <extends_nodetype>7</extends_nodetype>
   <sqltable>htmlcode,maintenance</sqltable>

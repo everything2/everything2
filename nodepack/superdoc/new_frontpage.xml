@@ -169,7 +169,6 @@ $welcomeStr.='
 
 return $welcomeStr;
 %]</doctext>
-  <core></core>
   <node_id>1985715</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

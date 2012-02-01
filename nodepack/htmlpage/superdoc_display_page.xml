@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>14</pagetype_nodetype>
-  <core>R</core>
   <page>&lt;p align=&quot;right&quot;&gt;&lt;small&gt;[% linkNode($NODE, 'printable version', { displaytype =&gt; 'printable' } ) %]&lt;/small&gt;&lt;/p&gt;
 
 [{parsecode:doctext}]</page>

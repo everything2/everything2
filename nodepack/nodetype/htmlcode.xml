@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <nodetype_id>4</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>7</extends_nodetype>

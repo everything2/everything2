@@ -1,7 +1,6 @@
 <node>
   <parent_container>18</parent_container>
   <pagetype_nodetype>14</pagetype_nodetype>
-  <core>R</core>
   <page>&lt;h4&gt;title&lt;/h4&gt;[{textfield:title}]
 &lt;h4&gt;maintainer:&lt;/h4&gt; [{node_menu:author_user,user,usergroup}]
 &lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the document text:&lt;/strong&gt;&lt;/small&gt;&lt;/p&gt;

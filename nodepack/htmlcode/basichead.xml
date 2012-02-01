@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>27</node_id>
   <code>&quot;&lt;head&gt;
 &lt;title&gt;$$NODE{title}&lt;/title&gt;&quot; . 

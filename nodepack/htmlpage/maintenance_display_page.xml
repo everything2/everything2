@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>150</pagetype_nodetype>
-  <core>R</core>
   <page>Maintains: 
 [%
 my $N = $DB-&gt;getNodeById($$NODE{maintain_nodetype}, 'light');

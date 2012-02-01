@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>148</type_nodetype>
-  <core>R</core>
   <node_id>171</node_id>
   <_create_table_statement>/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;

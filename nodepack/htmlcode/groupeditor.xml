@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>35</node_id>
   <code>my $id = getId $NODE;
 

@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>148</pagetype_nodetype>
-  <core>R</core>
   <page>&lt;p&gt;
 Database table [% $$NODE{title}; %]
 

@@ -44,7 +44,6 @@ if ($$USER{user_id} != $HTMLVARS{guest_user}) {
 return $zenStr ;
 
 %]</doctext>
-  <core></core>
   <node_id>124</node_id>
   <edittime>2011-08-20 07:51:00</edittime>
   <type_nodetype>1065266</type_nodetype>

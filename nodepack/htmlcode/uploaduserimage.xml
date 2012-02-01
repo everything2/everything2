@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>539558</node_id>
   <code>use POSIX qw(strftime);
 use File::Copy;

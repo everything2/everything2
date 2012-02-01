@@ -1,6 +1,5 @@
 <node>
   <nodetype_id>1</nodetype_id>
-  <core>R</core>
   <verify_edits>1</verify_edits>
   <restrictdupes>1</restrictdupes>
   <sqltable>nodetype</sqltable>

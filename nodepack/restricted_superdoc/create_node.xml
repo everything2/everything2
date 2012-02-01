@@ -50,7 +50,6 @@ $str .= $query-&gt;submit(&quot;createit&quot;, &quot;Create It!&quot;) . &quot;
 $str .= $query-&gt;endform;
 $str;
 %]</doctext>
-  <core>R</core>
   <node_id>197</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

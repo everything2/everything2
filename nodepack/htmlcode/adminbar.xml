@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>26</node_id>
   <code>return if $$USER{title} eq 'Guest User';
 

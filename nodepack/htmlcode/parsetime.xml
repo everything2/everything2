@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>45</node_id>
   <code># [{parsetime:FIELD}]
 # Parses out a datetime field into a more human-readable form

@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>7</pagetype_nodetype>
-  <core>R</core>
   <page>This is a temporary edit page for the basic node.  If we
 want to edit raw nodes, we will need to implement this.</page>
   <node_id>190</node_id>

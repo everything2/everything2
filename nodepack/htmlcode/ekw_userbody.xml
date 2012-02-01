@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>1101124</node_id>
   <code>my $bgcolor ||= $$VARS{ ekw_bgcolor };
 $bgcolor ||= $$THEME{ bodyBgcolor };

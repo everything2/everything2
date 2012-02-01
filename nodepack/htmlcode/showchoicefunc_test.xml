@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>1956253</node_id>
   <code>no strict;
 use Everything::XML;

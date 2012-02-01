@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>5</pagetype_nodetype>
-  <core>R</core>
   <page>&lt;b&gt;pagetype&lt;/b&gt;: 
 [%
 	my $N = $DB-&gt;getNodeById($$NODE{pagetype_nodetype}, 'light');

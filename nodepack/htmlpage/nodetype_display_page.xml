@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1</pagetype_nodetype>
-  <core>R</core>
   <page>&lt;p&gt;&lt;a href=[%
 urlGen({
 'node'=&gt;'List Nodes of Type',

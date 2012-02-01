@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>177</node_id>
   <code>return &quot;&lt;i&gt;you can't update this node&lt;/i&gt;&quot; unless canUpdateNode($USER, $NODE);
 my $SETTINGS = getVars($NODE);

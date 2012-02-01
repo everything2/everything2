@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>38</node_id>
   <code>my ($field) = @_;
 

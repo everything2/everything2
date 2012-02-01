@@ -19,7 +19,6 @@
     $str .= &quot;$field:&quot;; $str .= $query-&gt;textfield($field, encodeHTML($$EDITNODE{$field}), 40); $str .= &quot;&lt;br /&gt;\n&quot;; } $str; 
 %] 
 [{closeform}]</doctext>
-  <core>R</core>
   <node_id>366647</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

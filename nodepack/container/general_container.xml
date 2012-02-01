@@ -1,6 +1,5 @@
 <node>
   <parent_container>1854175</parent_container>
-  <core>R</core>
   <node_id>19</node_id>
   <context>[% 
  htmlcode('log ip');

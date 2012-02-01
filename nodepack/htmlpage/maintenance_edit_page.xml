@@ -1,7 +1,6 @@
 <node>
   <parent_container>18</parent_container>
   <pagetype_nodetype>150</pagetype_nodetype>
-  <core>R</core>
   <page>title:[{textfield:title}] maintained by:[{node_menu:author_user,user,usergroup}]&lt;br&gt;
 Maintains: [{node_menu:maintain_nodetype}]&lt;br&gt;
 maintaintype:[{textfield:maintaintype}](create, update, or delete)&lt;br&gt;

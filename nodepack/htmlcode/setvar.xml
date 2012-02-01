@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>50</node_id>
   <code>my ($var, $len) = @_;
 $len ||=10;

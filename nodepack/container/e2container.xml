@@ -1,6 +1,5 @@
 <node>
   <parent_container>22</parent_container>
-  <core>R</core>
   <node_id>17</node_id>
   <context>&lt;!-- stats tracking --&gt;
 &lt;script src=&quot;/mint/?js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;

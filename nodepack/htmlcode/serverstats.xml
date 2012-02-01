@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>48</node_id>
   <code>my $date = `date`;
 my $uptime = `uptime`;

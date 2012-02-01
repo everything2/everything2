@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>44</node_id>
   <code>my ($field) = @_;
 my $n = (($$USER{node_id} == $HTMLVARS{guest_user})?(undef):($NODE));

@@ -1,7 +1,6 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>151</pagetype_nodetype>
-  <core>R</core>
   <page>[{setupuservars}]
 &lt;p align=&quot;right&quot;&gt;[%
 return if getId($USER) != getId($NODE);

@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>30</node_id>
   <code>return unless $$USER{title} eq 'root';
 

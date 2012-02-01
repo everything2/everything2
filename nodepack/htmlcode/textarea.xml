@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>52</node_id>
   <code>my ($field, $rows, $cols, $wrap) = @_;
 $cols ||= 80;

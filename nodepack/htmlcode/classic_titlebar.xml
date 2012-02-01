@@ -1,5 +1,4 @@
 <node>
-  <core></core>
   <node_id>123</node_id>
   <code>my $str = &quot;&lt;p align=right&gt;
 &lt;img src=images/Everything.gif&gt;&lt;BR&gt;

@@ -1,5 +1,4 @@
 <node>
-  <core>R</core>
   <node_id>1989043</node_id>
   <code>$query-&gt;submit(&quot;sexisgood&quot;, &quot;submit to your master&quot;) .
 $query-&gt;end_form;

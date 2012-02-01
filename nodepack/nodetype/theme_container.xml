@@ -1,5 +1,4 @@
 <node>
-  <core></core>
   <nodetype_id>115</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>2</extends_nodetype>
