@@ -1,7 +1,6 @@
 <node>
   <doctext>The old code for the ednsection_everydevel nodelet section that used XML::RSS, before XML::RSS got all stupid on us. It's now handled on the back end.</doctext>
   <node_id>1385959</node_id>
-  <htmlcode_id>1385959</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <code>use XML::RSS;
 my $txt=getNode('Everything Developer Data','nodelet')-&gt;{nltext};
@@ -20,6 +19,5 @@ $rss=undef;
 $str;
 </code>
   <type_nodetype>1382262</type_nodetype>
-  <document_id>1385959</document_id>
   <title>XML::RSS old everydevel section</title>
 </node>

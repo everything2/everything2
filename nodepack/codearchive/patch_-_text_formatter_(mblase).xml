@@ -5,7 +5,6 @@ patch's purpose: unknown&lt;br&gt;
 The code had changed since this patch was submitted.
 </doctext>
   <node_id>1397059</node_id>
-  <htmlcode_id>1397059</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <code>[% return '&lt;p&gt;Note: this is from [Magical Text Formatter]&lt;/p&gt;' if exists $HTMLVARS{'group_edev'}{getId($USER)}; %]
 &lt;p&gt;&lt;small&gt;updated: 2001.10.10&lt;/small&gt;&lt;/p&gt;
@@ -428,6 +427,5 @@ function addStyles(mark,tag,str) {
 // --&gt;
 &lt;/script&gt;</code>
   <type_nodetype>1382262</type_nodetype>
-  <document_id>1397059</document_id>
   <title>patch - text formatter (mblase)</title>
 </node>

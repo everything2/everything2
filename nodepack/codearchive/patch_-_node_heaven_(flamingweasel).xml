@@ -4,7 +4,6 @@ patch's purpose: unknown&lt;br&gt;&lt;br&gt;
 
 Too old to do us any good.</doctext>
   <node_id>1397643</node_id>
-  <htmlcode_id>1397643</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <code>&lt;p&gt;
 Welcome to Node Heaven, where you may sit and reconcile with your dear departed writeups.
@@ -189,6 +188,5 @@ else						    { $antiUserStr .= '12, Pedant. Wow.'; }
 $antiUserStr . &quot;&lt;br /&gt;\n&quot; . &quot;&lt;small&gt;Inspired by [Pseudo_Intellectual]'s homenode&lt;/small&gt;&lt;br /&gt;\n&quot; . $str;
 %]</code>
   <type_nodetype>1382262</type_nodetype>
-  <document_id>1397643</document_id>
   <title>patch - Node Heaven (flamingweasel)</title>
 </node>

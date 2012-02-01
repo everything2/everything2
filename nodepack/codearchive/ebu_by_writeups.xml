@@ -1,7 +1,6 @@
 <node>
   <doctext>This is a beta of Everything's Best Users by writeup. It'll be archived here, but we don't really need it in production inside of EBU.</doctext>
   <node_id>1385533</node_id>
-  <htmlcode_id>1385533</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <code>[%
 #return ''; # By number of writeups.  Turn off for now.
@@ -60,6 +59,5 @@ if (getId($USER) ne $HTMLVARS{guest_user} and
 $str;
 %]</code>
   <type_nodetype>1382262</type_nodetype>
-  <document_id>1385533</document_id>
   <title>EBU by writeups</title>
 </node>

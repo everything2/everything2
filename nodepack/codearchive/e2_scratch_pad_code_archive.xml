@@ -1,7 +1,6 @@
 <node>
   <doctext>[E2 Scratch pad]--someone keeps clearing out the code by accident.  Here is the code to restore it to it's original glory.</doctext>
   <node_id>1421854</node_id>
-  <htmlcode_id>1421854</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <code>&lt;p&gt;This is a private area (unless you say otherwise) for
 
@@ -114,6 +113,5 @@ return $str.'&lt;textarea name=&quot;skratch&quot; '.htmlcode('customtextarea','
 %]
 </code>
   <type_nodetype>1382262</type_nodetype>
-  <document_id>1421854</document_id>
   <title>E2 Scratch Pad Code Archive</title>
 </node>

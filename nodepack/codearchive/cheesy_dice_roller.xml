@@ -1,7 +1,6 @@
 <node>
   <doctext>This was a dice roller I created a while ago. Dumb dumb dumb, and I'm not even sure that it works.  I still lose the game I created it for. =c/</doctext>
   <node_id>1385539</node_id>
-  <htmlcode_id>1385539</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <code>So yeah. I was playing this game. And I needed this thing to make random numbers for me.  I'm abusing my power ;)
 &lt;p align=&quot;center&quot;&gt;[% return linkNode($NODE, &quot;Hit me again&quot;)%]&lt;/p&gt;
@@ -13,6 +12,5 @@
    return &quot;&lt;br&gt;&lt;br&gt;You rolled a &quot;.sprintf(&quot;%d&quot;, rand(6)).&quot;&lt;br&gt;&quot;;
 %]</code>
   <type_nodetype>1382262</type_nodetype>
-  <document_id>1385539</document_id>
   <title>cheesy dice roller</title>
 </node>

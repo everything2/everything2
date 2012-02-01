@@ -1,7 +1,6 @@
 <node>
   <doctext>The old node resurrect code.</doctext>
   <node_id>1404860</node_id>
-  <htmlcode_id>1404860</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <code>[%
 return &quot;&quot;;
@@ -73,6 +72,5 @@ return &quot;&lt;h1&gt;&quot;.linkNode($id, &quot;IT LIVES!&quot;).&quot;&lt;/h1
 
 %]</code>
   <type_nodetype>1382262</type_nodetype>
-  <document_id>1404860</document_id>
   <title>old resurrect code</title>
 </node>

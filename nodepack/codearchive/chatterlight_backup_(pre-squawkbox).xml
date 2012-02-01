@@ -1,7 +1,6 @@
 <node>
   <doctext>This is the code for chatterlight before I revamped it to use the squawkbox code (which has multi-rooming, better laid out, etc).</doctext>
   <node_id>1443744</node_id>
-  <htmlcode_id>1443744</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <code>[%
 # Lightweight chatterbox page.
@@ -121,6 +120,5 @@ $str;
 
 </code>
   <type_nodetype>1382262</type_nodetype>
-  <document_id>1443744</document_id>
   <title>chatterlight backup (pre-squawkbox)</title>
 </node>

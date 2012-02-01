@@ -1,7 +1,6 @@
 <node>
   <doctext>[mindslip]'s patch to [adminbar]. I don't think he's patching the right spot, because adminbar is (as the name suggests) admin-only.  Saving this code in case he or she wants it.</doctext>
   <node_id>1429854</node_id>
-  <htmlcode_id>1429854</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <code># Note: This is built around pre-1.0 code, not everything2.com code
 # Best called from &quot;general container&quot; like this:
@@ -87,6 +86,5 @@ $str = &quot;$str | &lt;/font&gt;  &quot;;
 
 }</code>
   <type_nodetype>1382262</type_nodetype>
-  <document_id>1429854</document_id>
   <title>adminbar (patch) - mindslip</title>
 </node>

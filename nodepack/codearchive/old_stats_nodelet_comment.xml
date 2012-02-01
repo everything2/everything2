@@ -1,7 +1,6 @@
 <node>
   <doctext>commented out in the statistics nodelet, which means it was still run...</doctext>
   <node_id>1505907</node_id>
-  <htmlcode_id>1505907</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <code>
 &lt;!--
@@ -30,6 +29,5 @@ $str;
 &lt;/table&gt;
 --&gt;</code>
   <type_nodetype>1382262</type_nodetype>
-  <document_id>1505907</document_id>
   <title>old stats nodelet comment</title>
 </node>

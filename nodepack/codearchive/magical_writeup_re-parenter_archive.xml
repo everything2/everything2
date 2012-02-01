@@ -1,7 +1,6 @@
 <node>
   <doctext>The old one that didn't allow bulk moves</doctext>
   <node_id>1868374</node_id>
-  <htmlcode_id>1868374</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <code>[%
 return 'Hey, don\'t press that button!' unless(isGod($USER));
@@ -134,6 +133,5 @@ The following things do not work:
 It all works correctly if you use it within those guidelines and rearrange the group when you are done.  All bugs go to [JayBonci].  Thanks
 &lt;/small&gt;</code>
   <type_nodetype>1382262</type_nodetype>
-  <document_id>1868374</document_id>
   <title>magical writeup re-parenter archive</title>
 </node>

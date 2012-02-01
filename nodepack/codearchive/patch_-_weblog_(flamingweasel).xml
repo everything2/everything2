@@ -4,7 +4,6 @@ patch's purpose: unknown&lt;br&gt;
 &lt;br&gt;
 Once again, This would require a bit more code to implement than is given in the patch.  It's an interesting idea, but I don't think it's ready yet.  Aesthetic changes that can be saved for later.</doctext>
   <node_id>1397448</node_id>
-  <htmlcode_id>1397448</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <code>my ($limit, $log_id,$remlabel, $hideLinker, $skipFilterHTML) = @_;
 $limit ||= 5;
@@ -104,6 +103,5 @@ $str.='&lt;/table&gt;';
 
 $str;</code>
   <type_nodetype>1382262</type_nodetype>
-  <document_id>1397448</document_id>
   <title>patch - weblog (flamingweasel)</title>
 </node>

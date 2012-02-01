@@ -1,7 +1,6 @@
 <node>
   <doctext>Random nodes is a cached nodelet, so the code is always executed as Guest User. A patch was supplied by [x1cygnus] to clean that up, and until we figure out what the desired result of this code is (which is kind of silly in the first place), then we'll just leave this here.</doctext>
   <node_id>1386937</node_id>
-  <htmlcode_id>1386937</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <code>[% 
 my $UID = getId($USER) || 0;
@@ -34,6 +33,5 @@ foreach(1..12) {
 $str;
 %]</code>
   <type_nodetype>1382262</type_nodetype>
-  <document_id>1386937</document_id>
   <title>Random Nodes (pre-cleanup)</title>
 </node>
