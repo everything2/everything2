@@ -27,7 +27,10 @@ sub xml_to_node_post
 sub node_id_equivs
 {
 	my ($this) = @_;
-	return ["user_id",@{$this->SUPER::node_id_equivs}];
+	# Suck up a bit of a hack here to remove chained dependencies here
+	# We'll just add the setting_id, and make it possible for settings to be applied to any node
+
+	return ["user_id","setting_id",@{$this->SUPER::node_id_equivs}];
 }
 
 1;
