@@ -2,7 +2,6 @@
   <createtime>2007-03-23 16:59:46</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1873508</node_id>
-  <htmlcode_id>1873508</htmlcode_id>
   <code>my ($name, $value) = @_;
 
 my $idList = '[,\\d]*' ;

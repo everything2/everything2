@@ -2,7 +2,6 @@
   <createtime>2011-10-02 14:54:46</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1992448</node_id>
-  <htmlcode_id>1992448</htmlcode_id>
   <code>my $POLL = shift;
 getRef $POLL;
 return 0 unless $POLL &amp;&amp; $$POLL{type}{title} eq 'e2poll';

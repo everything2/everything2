@@ -2,7 +2,6 @@
   <createtime>2011-09-16 10:23:55</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1992403</node_id>
-  <htmlcode_id>1992403</htmlcode_id>
   <code>my ($select, $from, $where, $orderby, $instructions, %functions) = @_;
 my %parameters = $query -&gt; Vars();
 

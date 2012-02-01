@@ -2,7 +2,6 @@
   <createtime>2010-07-28 22:34:43</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1990065</node_id>
-  <htmlcode_id>1990065</htmlcode_id>
   <code>use POSIX;
 
 my ($shortString) = @_;

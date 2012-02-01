@@ -2,7 +2,6 @@
   <createtime>2011-01-21 01:11:21</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1991061</node_id>
-  <htmlcode_id>1991061</htmlcode_id>
   <code>my $theme_id = $$VARS{preferred_theme};
 my $theme = getNodeById($theme_id);
 return ($theme &amp;&amp; $$theme{title} eq 'ekw theme');</code>

@@ -2,7 +2,6 @@
   <createtime>2004-06-07 17:11:51</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1541152</node_id>
-  <htmlcode_id>1541152</htmlcode_id>
   <code>
 my $str;
 $str .=&lt;&lt;EOD;

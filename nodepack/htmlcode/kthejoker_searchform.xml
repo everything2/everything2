@@ -3,7 +3,6 @@
   <createtime>1999-10-07 04:35:11</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1854188</node_id>
-  <htmlcode_id>1854188</htmlcode_id>
   <code>my ($PARAM) = @_;
 
 my $default ='';

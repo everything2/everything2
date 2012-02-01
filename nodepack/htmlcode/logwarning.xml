@@ -2,7 +2,6 @@
   <createtime>2001-10-24 22:52:18</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1186040</node_id>
-  <htmlcode_id>1186040</htmlcode_id>
   <code>#call this when there is something strange happening, but it isn't
 #  a full blown Server Error!
 #

@@ -2,7 +2,6 @@
   <createtime>2010-02-17 09:41:32</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1989523</node_id>
-  <htmlcode_id>1989523</htmlcode_id>
   <code>my ($queryid, $N) = @_ ;
 getRef $N ;
 $N ||= $NODE ;

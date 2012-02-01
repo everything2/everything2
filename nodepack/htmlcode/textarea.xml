@@ -3,7 +3,6 @@
   <createtime>1999-10-07 04:35:11</createtime>
   <totalvotes>0</totalvotes>
   <node_id>52</node_id>
-  <htmlcode_id>52</htmlcode_id>
   <code>my ($field, $rows, $cols, $wrap) = @_;
 $cols ||= 80;
 $rows ||= 30;

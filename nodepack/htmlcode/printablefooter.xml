@@ -2,7 +2,6 @@
   <createtime>2001-02-07 22:10:30</createtime>
   <totalvotes>0</totalvotes>
   <node_id>942347</node_id>
-  <htmlcode_id>942347</htmlcode_id>
   <code>my $str = '
 &lt;table width=&quot;100%&quot; border=&quot;0&quot;&gt;&lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;
 ';

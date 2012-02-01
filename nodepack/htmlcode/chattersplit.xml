@@ -2,7 +2,6 @@
   <createtime>2004-12-22 17:13:45</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1689930</node_id>
-  <htmlcode_id>1689930</htmlcode_id>
   <code>my $maxLen = ((exists $VARS-&gt;{splitChatter}) &amp;&amp; (defined $VARS-&gt;{splitChatter}) &amp;&amp; ($VARS-&gt;{splitChatter}=~/^([1-9]\d*)$/)) ? $1 : 0;
 $maxLen += 0;
 if($maxLen&lt;1) {

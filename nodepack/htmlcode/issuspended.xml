@@ -2,7 +2,6 @@
   <createtime>2011-09-04 06:12:16</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1992338</node_id>
-  <htmlcode_id>1992338</htmlcode_id>
   <code>my ($type, $targetUser) = @_;
 
 $targetUser = $USER unless $targetUser;

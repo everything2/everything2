@@ -3,7 +3,6 @@
   <createtime>1999-11-04 00:14:11</createtime>
   <totalvotes>0</totalvotes>
   <node_id>846351</node_id>
-  <htmlcode_id>846351</htmlcode_id>
   <code># [{uploadimage:field}]
 #
 # generates an input file field, and sets the field to the URL 

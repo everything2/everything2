@@ -2,7 +2,6 @@
   <createtime>2000-01-24 06:38:04</createtime>
   <totalvotes>0</totalvotes>
   <node_id>399488</node_id>
-  <htmlcode_id>399488</htmlcode_id>
   <code>my @NAMES =@_;
 
 return unless @NAMES;

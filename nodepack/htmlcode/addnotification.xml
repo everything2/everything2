@@ -2,7 +2,6 @@
   <createtime>2008-02-20 20:12:27</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1930843</node_id>
-  <htmlcode_id>1930843</htmlcode_id>
   <code>my ($notification_id, $user_id, $args) = @_;
 
 use JSON;

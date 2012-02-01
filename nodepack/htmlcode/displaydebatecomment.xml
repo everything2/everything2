@@ -2,7 +2,6 @@
   <createtime>2001-09-09 01:46:15</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1155127</node_id>
-  <htmlcode_id>1155127</htmlcode_id>
   <code>#  $displaymode:
 #       0       Display first comment only, no children at all (used in edit page &amp; replyto page)
 #       1       Display full text of all comments (used in display page)

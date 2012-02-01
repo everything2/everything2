@@ -2,7 +2,6 @@
   <createtime>2001-10-01 22:01:52</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1721888</node_id>
-  <htmlcode_id>1721888</htmlcode_id>
   <code>return if(!exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) &amp;&amp; !exists($HTMLVARS{'group_content editors'}{$$USER{node_id}}));
    
 my $defaultreason=&quot;&quot;;

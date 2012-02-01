@@ -3,7 +3,6 @@
   <createtime>1999-11-04 00:14:10</createtime>
   <totalvotes>0</totalvotes>
   <node_id>176</node_id>
-  <htmlcode_id>176</htmlcode_id>
   <code>my $SETTINGS = getVars $NODE;
 my $str = '';
 my ($keyclr, $valclr) = ('#CCCCFF', '#DEDEFF');

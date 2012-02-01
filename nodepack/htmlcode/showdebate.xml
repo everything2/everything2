@@ -2,7 +2,6 @@
   <createtime>2001-10-07 15:06:31</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1173524</node_id>
-  <htmlcode_id>1173524</htmlcode_id>
   <code>#!/bin/perl
 use strict;
 

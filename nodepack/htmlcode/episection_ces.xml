@@ -2,7 +2,6 @@
   <createtime>2001-08-04 21:18:27</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1129970</node_id>
-  <htmlcode_id>1129970</htmlcode_id>
   <code>my $votable =
 	(
 		htmlcode('flagged', $$NODE{node_id}.',unvotable') ?

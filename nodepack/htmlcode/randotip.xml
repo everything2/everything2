@@ -2,7 +2,6 @@
   <createtime>2000-07-26 21:42:28</createtime>
   <totalvotes>0</totalvotes>
   <node_id>672208</node_id>
-  <htmlcode_id>672208</htmlcode_id>
   <code>use Everything::Experience;
 #return if getLevel($USER) &gt; 2;
 return unless $$USER{title} eq 'JayBonci';

@@ -2,7 +2,6 @@
   <createtime>2010-02-10 05:30:25</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1989453</node_id>
-  <htmlcode_id>1989453</htmlcode_id>
   <code>my ($ad_location) = @_;
 my $node_id = $$NODE{node_id};
 return &quot;&quot; if $node_id == 1369958; #stupid pot node that got us busted

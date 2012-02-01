@@ -2,7 +2,6 @@
   <createtime>2008-02-22 18:23:46</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1931150</node_id>
-  <htmlcode_id>1931150</htmlcode_id>
   <code>return if $$VARS{noadinheader};
 my $node_id = $$NODE{node_id};
 return if $node_id == getNode('Nothing Found', 'superdoc')-&gt;{node_id};

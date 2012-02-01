@@ -2,7 +2,6 @@
   <createtime>2001-09-29 17:04:21</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1168347</node_id>
-  <htmlcode_id>1168347</htmlcode_id>
   <code>#like [textfield], but manually sets values from submitted form
 #precondition:
 #	%$NODE should be set to current node

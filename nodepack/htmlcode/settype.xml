@@ -2,7 +2,6 @@
   <createtime>2002-04-29 23:46:46</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1293807</node_id>
-  <htmlcode_id>1293807</htmlcode_id>
   <code>#Completely rewritten by Swap, since this thing was unnecessarily
 #general and optimised and therefore complicated, when it's in fact
 #only called from one place.

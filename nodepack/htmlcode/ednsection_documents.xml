@@ -2,7 +2,6 @@
   <createtime>2000-11-15 01:14:22</createtime>
   <totalvotes>0</totalvotes>
   <node_id>837960</node_id>
-  <htmlcode_id>837960</htmlcode_id>
   <code>my $nl = &quot;&lt;br /&gt;\n&quot;;
 linkNodeTitle('EDev FAQ').$nl.
 '&lt;a href=&quot;http://everydevel.everything2.com/?node=everything+documentation+index&quot; target=&quot;_blank&quot;&gt;Everything Documentation Index&lt;/a&gt;'.$nl.

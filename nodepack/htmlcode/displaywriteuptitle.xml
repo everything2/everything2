@@ -2,7 +2,6 @@
   <createtime>1999-11-06 21:24:01</createtime>
   <totalvotes>0</totalvotes>
   <node_id>259</node_id>
-  <htmlcode_id>259</htmlcode_id>
   <code>#displaywriteuptitle - pass the writeup's node_id and timestamp
 
 my ($num, $timestamp) = @_;

@@ -2,7 +2,6 @@
   <createtime>2008-02-03 12:01:12</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1928483</node_id>
-  <htmlcode_id>1928483</htmlcode_id>
   <code>#returns a series of social bookmarking links.
 
 my ($targetNode, $includeTitles, $asList, $full) = @_;

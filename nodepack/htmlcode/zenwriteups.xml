@@ -2,7 +2,6 @@
   <createtime>2001-12-13 08:30:29</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1868932</node_id>
-  <htmlcode_id>1868932</htmlcode_id>
   <code>my ($isLogs) = @_;
 
 my $UID = $$USER{user_id} || $HTMLVARS{guest_user} ;

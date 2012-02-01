@@ -2,7 +2,6 @@
   <createtime>2002-02-11 01:30:37</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1252198</node_id>
-  <htmlcode_id>1252198</htmlcode_id>
   <code>my ($nid) = @_;
 
 my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;,&quot;links&quot;,&quot;linktype=&quot;.getId(getNode('firmlink', 'linktype')).&quot; AND from_node=$nid&quot;);

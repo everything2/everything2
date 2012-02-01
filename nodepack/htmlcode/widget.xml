@@ -2,7 +2,6 @@
   <createtime>2010-01-02 00:07:27</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1989193</node_id>
-  <htmlcode_id>1989193</htmlcode_id>
   <code># first two arguments for the widget, second two for the opener link
 # if no $linktext is provided, there will be no opener link
 # $parameters contains parameters for the link, including

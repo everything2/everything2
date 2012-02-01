@@ -3,7 +3,6 @@
   <createtime>1999-10-07 04:35:11</createtime>
   <totalvotes>0</totalvotes>
   <node_id>31</node_id>
-  <htmlcode_id>31</htmlcode_id>
   <code>my $title = $query-&gt;param(&quot;node&quot;);
 return unless $title;
 

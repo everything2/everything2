@@ -2,7 +2,6 @@
   <createtime>2009-08-11 08:24:03</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1988405</node_id>
-  <htmlcode_id>1988405</htmlcode_id>
   <code>my $intro ;
 
 if(length($$VARS{preferred_theme})&amp;&amp;($$VARS{preferred_theme}!=1854183)) {

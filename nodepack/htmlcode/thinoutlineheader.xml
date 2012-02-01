@@ -2,7 +2,6 @@
   <createtime>2000-05-10 18:41:38</createtime>
   <totalvotes>0</totalvotes>
   <node_id>539978</node_id>
-  <htmlcode_id>539978</htmlcode_id>
   <code>
 return $$THEME{thinOutlineHeader} if exists $$THEME{thinOutlineHeader};
 

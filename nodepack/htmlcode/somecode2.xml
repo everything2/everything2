@@ -2,7 +2,6 @@
   <createtime>2009-12-17 18:10:10</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1989098</node_id>
-  <htmlcode_id>1989098</htmlcode_id>
   <code>
 
 return &quot;You are looking at a test version&quot;;</code>

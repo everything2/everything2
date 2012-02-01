@@ -2,7 +2,6 @@
   <createtime>2011-03-08 06:11:21</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1991488</node_id>
-  <htmlcode_id>1991488</htmlcode_id>
   <code>my $destination = shift;
 $destination = $NODE if !defined $destination;
 

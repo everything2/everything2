@@ -2,7 +2,6 @@
   <createtime>2010-09-17 10:19:55</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1990327</node_id>
-  <htmlcode_id>1990327</htmlcode_id>
   <code># provide a settings link/widget for the nodelet named by the first argument
 # second argument is link/opener text
 

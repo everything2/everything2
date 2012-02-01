@@ -2,7 +2,6 @@
   <createtime>2007-04-10 15:02:41</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1877911</node_id>
-  <htmlcode_id>1877911</htmlcode_id>
   <code>my ($shownumbers, $isxml, $newwuonly) = @_;
 
 return if $$USER{user_id} == $HTMLVARS{guest_user};

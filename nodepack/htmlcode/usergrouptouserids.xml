@@ -2,7 +2,6 @@
   <createtime>2009-03-31 04:17:23</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1980272</node_id>
-  <htmlcode_id>1980272</htmlcode_id>
   <code>#Given a ug_id or a ug hash, convert it to a comma-separated string of user IDs
 my ($ug) = @_;
 

@@ -2,7 +2,6 @@
   <createtime>2001-10-02 07:03:36</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1170009</node_id>
-  <htmlcode_id>1170009</htmlcode_id>
   <code>#This takes one of two inputs.
 #If it takes a zero or is blank, then the style is going to be in &quot;#rows,#cols&quot; 
 # format for the HTMLcode formatting

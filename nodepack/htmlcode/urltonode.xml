@@ -2,7 +2,6 @@
   <createtime>2011-01-15 21:37:23</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1991048</node_id>
-  <htmlcode_id>1991048</htmlcode_id>
   <code>my $targetNode = shift;
 getRef $targetNode;
 

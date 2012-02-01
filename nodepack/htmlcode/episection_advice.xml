@@ -2,7 +2,6 @@
   <createtime>2001-07-18 22:59:09</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1112300</node_id>
-  <htmlcode_id>1112300</htmlcode_id>
   <code>'&lt;ul&gt;'.
 '&lt;li&gt;'.linkNodeTitle('E2 Quick Start|Quick Start').'&lt;/li&gt;'.
 '&lt;li&gt;'.linkNodeTitle('Everything2 Help').'&lt;/li&gt;'.

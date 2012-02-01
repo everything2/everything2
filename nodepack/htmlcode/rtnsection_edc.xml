@@ -2,7 +2,6 @@
   <createtime>2001-10-10 08:28:22</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1175807</node_id>
-  <htmlcode_id>1175807</htmlcode_id>
   <code>#ed Cools - See [ReadThis]
 
   my $str = '&lt;ul class=&quot;linklist&quot;&gt;';

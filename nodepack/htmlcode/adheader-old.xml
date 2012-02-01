@@ -2,7 +2,6 @@
   <createtime>2001-11-14 03:37:49</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1216858</node_id>
-  <htmlcode_id>1216858</htmlcode_id>
   <code>my $ad = &lt;&lt;ADTEXT;
 &lt;CENTER&gt;
 &lt;ILAYER height=80&gt; &lt;/ILAYER&gt;

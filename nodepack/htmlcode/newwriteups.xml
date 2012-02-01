@@ -2,7 +2,6 @@
   <createtime>1999-11-09 20:45:42</createtime>
   <totalvotes>0</totalvotes>
   <node_id>273</node_id>
-  <htmlcode_id>273</htmlcode_id>
   <code>my ($limit) = @_;
 $limit ||= 15;
 #$limit = int($$VARS{newnodes_limit}) 

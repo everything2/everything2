@@ -2,7 +2,6 @@
   <createtime>2009-06-18 23:10:48</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1988250</node_id>
-  <htmlcode_id>1988250</htmlcode_id>
   <code>#This should only be called from patch display page --[Swap]
 my ($patch_id) = @_;
 

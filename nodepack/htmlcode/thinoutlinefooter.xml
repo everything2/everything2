@@ -2,7 +2,6 @@
   <createtime>2000-05-10 18:44:36</createtime>
   <totalvotes>0</totalvotes>
   <node_id>539986</node_id>
-  <htmlcode_id>539986</htmlcode_id>
   <code>
 return $$THEME{thinOutlineFooter} if exists $$THEME{thinOutlineFooter};
 my $str;

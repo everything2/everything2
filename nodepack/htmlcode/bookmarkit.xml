@@ -2,7 +2,6 @@
   <createtime>2000-02-15 20:42:42</createtime>
   <totalvotes>0</totalvotes>
   <node_id>419639</node_id>
-  <htmlcode_id>419639</htmlcode_id>
   <code>return if $$USER{user_id} == $HTMLVARS{guest_user};
 
 my ( $N , $text , $title ) = @_ ;

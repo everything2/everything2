@@ -2,7 +2,6 @@
   <createtime>2001-12-13 08:30:29</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1216679</node_id>
-  <htmlcode_id>1216679</htmlcode_id>
   <code>my ($limit) = @_;
 $limit ||= 15;
 if($$USER{user_id} eq $HTMLVARS{guest_user}){

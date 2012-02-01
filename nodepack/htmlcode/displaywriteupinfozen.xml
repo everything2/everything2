@@ -2,7 +2,6 @@
   <createtime>2001-09-22 13:09:46</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1872771</node_id>
-  <htmlcode_id>1872771</htmlcode_id>
   <code>#customized display of writeup information
 #pass (optional) writeup ID, (optional) things to show
 #updated: Wednesday, February 26, 2003 to prepare for making this work for header and/or footer (right now, this seems to do much unneeded caching, but it will serve a useful purpose later)

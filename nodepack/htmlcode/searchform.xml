@@ -3,7 +3,6 @@
   <createtime>1999-10-07 04:35:11</createtime>
   <totalvotes>0</totalvotes>
   <node_id>47</node_id>
-  <htmlcode_id>47</htmlcode_id>
   <code> 	my ($PARAM) = @_;
  
  	my $str = $query-&gt;start_form(&quot;GET&quot;,$query-&gt;script_name).

@@ -2,7 +2,6 @@
   <createtime>2011-10-25 01:43:44</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1992696</node_id>
-  <htmlcode_id>1992696</htmlcode_id>
   <code>my ($node_id, $marktype, $bookmark_site) = @_;
 
 return 0 unless $node_id;

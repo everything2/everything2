@@ -2,7 +2,6 @@
   <createtime>2001-02-07 22:08:16</createtime>
   <totalvotes>0</totalvotes>
   <node_id>942345</node_id>
-  <htmlcode_id>942345</htmlcode_id>
   <code>my ($WRITEUP) = @_;
   getRef $WRITEUP;
   $WRITEUP ||= $NODE;

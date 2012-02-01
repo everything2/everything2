@@ -2,7 +2,6 @@
   <createtime>2002-02-10 23:19:28</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1252154</node_id>
-  <htmlcode_id>1252154</htmlcode_id>
   <code>my ($WRITEUPID) = @_;
 use Everything::Experience;
 

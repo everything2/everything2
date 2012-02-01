@@ -2,7 +2,6 @@
   <createtime>2000-03-23 00:57:49</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1364410</node_id>
-  <htmlcode_id>1364410</htmlcode_id>
   <code>my ($src_id, $name) = @_;
 
 return unless $$NODE{type}{sqltablelist} =~ /document/;

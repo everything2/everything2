@@ -2,7 +2,6 @@
   <createtime>2007-11-19 17:36:31</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1918037</node_id>
-  <htmlcode_id>1918037</htmlcode_id>
   <code>my ($aType, $user_id) = @_;
 return unless $aType;
 

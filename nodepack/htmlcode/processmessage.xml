@@ -2,7 +2,6 @@
   <createtime>2001-03-04 21:38:27</createtime>
   <totalvotes>0</totalvotes>
   <node_id>972298</node_id>
-  <htmlcode_id>972298</htmlcode_id>
   <code>[%
 #[message] (opcode) gets uglier and uglier as more chatter commands are added
 #to help simplify things, this assumes that the command and parameters are already split on a space, and takes the appropriate action

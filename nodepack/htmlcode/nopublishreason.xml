@@ -2,7 +2,6 @@
   <createtime>2011-03-04 06:12:05</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1991344</node_id>
-  <htmlcode_id>1991344</htmlcode_id>
   <code># find any reasons for a user not being able to post a writeup (to an e2node)
 # second argument is optional.
 # returns text of reason, existing writeup, or ''

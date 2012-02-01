@@ -2,7 +2,6 @@
   <createtime>2002-03-10 20:09:04</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1266536</node_id>
-  <htmlcode_id>1266536</htmlcode_id>
   <code>#this implements a new special [ ... ] link type,
 # [- ... -]
 #which only allow a few specific things; this is intended for user by any user

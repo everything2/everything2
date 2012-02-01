@@ -2,7 +2,6 @@
   <createtime>2001-07-27 01:26:11</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1122166</node_id>
-  <htmlcode_id>1122166</htmlcode_id>
   <code>#   This generates a link which launches a little window with a &quot;color swatch&quot; in it; 
 #   see [color_swatch] for that. You'll need to include [popwindow] somewhere, for 
 #   the pop_small() JavaScript function.

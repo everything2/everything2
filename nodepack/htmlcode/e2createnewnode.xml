@@ -2,7 +2,6 @@
   <createtime>1999-12-16 23:45:45</createtime>
   <totalvotes>0</totalvotes>
   <node_id>175616</node_id>
-  <htmlcode_id>175616</htmlcode_id>
   <code>my $title = $query-&gt;param('node');
 
 #Don't allow creation of nodes that begin with http(s)://

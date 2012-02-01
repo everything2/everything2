@@ -2,7 +2,6 @@
   <createtime>2002-10-13 06:07:16</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1372587</node_id>
-  <htmlcode_id>1372587</htmlcode_id>
   <code>use Everything::Room;
 my $entrance= &quot;0&quot;;
 my $str = &quot;&quot;;

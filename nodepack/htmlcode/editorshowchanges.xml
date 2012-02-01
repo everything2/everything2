@@ -2,7 +2,6 @@
   <createtime>2009-11-14 14:05:18</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1988687</node_id>
-  <htmlcode_id>1988687</htmlcode_id>
   <code>return '' unless canReadNode($$USER{user_id}, $NODE);
 
 my $link;

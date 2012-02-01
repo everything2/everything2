@@ -2,7 +2,6 @@
   <createtime>2002-07-07 02:21:10</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1328032</node_id>
-  <htmlcode_id>1328032</htmlcode_id>
   <code>#message field: provides a text field to send a message to a user(group)
 #
 #arguments:

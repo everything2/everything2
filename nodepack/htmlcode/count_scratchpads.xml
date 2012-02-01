@@ -2,7 +2,6 @@
   <createtime>2011-10-17 07:57:38</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1992493</node_id>
-  <htmlcode_id>1992493</htmlcode_id>
   <code>my ($user_id) = shift;
 
 $user_id = int(getId $user_id);

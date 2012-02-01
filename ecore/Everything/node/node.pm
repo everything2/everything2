@@ -31,7 +31,13 @@ sub xml_no_consider
 {
 	my ($this) = @_;
 
-	return ["_ORIGINAL_VALUES", "hits","type"];
+	return ["_ORIGINAL_VALUES", "hits","type",@{$this->node_id_equivs()}];
+}
+
+sub node_id_equivs
+{
+	my ($this) = @_;
+	return [];
 }
 
 sub xml_to_node
@@ -40,6 +46,11 @@ sub xml_to_node
 	
 	my $NODE = $this->{xs}->XMLin($xml);
 	$NODE = $NODE->{node};
+
+	foreach my $field (@{$this->node_id_equivs()})
+	{
+		$NODE->{$field} = $NODE->{node_id};
+	}
 	return $this->xml_to_node_post($NODE);
 }
 

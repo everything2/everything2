@@ -2,7 +2,6 @@
   <createtime>2009-12-27 14:47:36</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1989139</node_id>
-  <htmlcode_id>1989139</htmlcode_id>
   <code>my ( $N , $inwriteupform ) = @_ ;
 getRef $N ;
 $N ||= $NODE ;

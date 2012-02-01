@@ -2,7 +2,6 @@
   <createtime>2010-07-21 18:51:25</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1990020</node_id>
-  <htmlcode_id>1990020</htmlcode_id>
   <code># takes no arguments
 # returns a string containing letters to indicate disabled actions for the current node:
 # b(ookmark), c(ool), w(eblog), (c)a(tegory), O(verride), L(ink to disable page)

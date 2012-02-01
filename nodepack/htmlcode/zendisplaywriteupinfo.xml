@@ -2,7 +2,6 @@
   <createtime>2008-02-14 20:23:46</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1930061</node_id>
-  <htmlcode_id>1930061</htmlcode_id>
   <code>my ($wuID) = @_;
 my $wu = getNodeById($wuID);
 

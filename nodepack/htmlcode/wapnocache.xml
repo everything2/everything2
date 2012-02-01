@@ -2,7 +2,6 @@
   <createtime>2002-05-19 20:36:47</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1304944</node_id>
-  <htmlcode_id>1304944</htmlcode_id>
   <code>#wap no-cache stuff.
 return &quot;&lt;meta forua=\&quot;true\&quot; http-equiv=\&quot;Pragma\&quot; content=\&quot;no-cache\&quot; /&gt;
   &lt;meta forua=\&quot;true\&quot; http-equiv=\&quot;Cache-Control\&quot; content=\&quot;no-cache, must-revalidate\&quot; /&gt;&quot;;</code>

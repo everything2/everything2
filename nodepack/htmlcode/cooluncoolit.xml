@@ -2,7 +2,6 @@
   <createtime>2001-03-20 01:16:29</createtime>
   <totalvotes>0</totalvotes>
   <node_id>987796</node_id>
-  <htmlcode_id>987796</htmlcode_id>
   <code>my ($N) = @_;
 $N = $NODE unless $N;
 getRef($N);

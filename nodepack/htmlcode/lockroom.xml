@@ -2,7 +2,6 @@
   <createtime>2000-08-25 17:07:25</createtime>
   <totalvotes>0</totalvotes>
   <node_id>720265</node_id>
-  <htmlcode_id>720265</htmlcode_id>
   <code>return unless isGod($USER);
 
 #my ($R) = @_;

@@ -2,7 +2,6 @@
   <createtime>2008-06-22 10:51:44</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1946647</node_id>
-  <htmlcode_id>1946647</htmlcode_id>
   <code>my ($nodeID, $includeTitles, $asList, $myTitle, $sbURL, $sbTitle, $imgTitle)=@_;
 
 my $myurl=&quot;http://everything2.com/node/&quot;.$nodeID;

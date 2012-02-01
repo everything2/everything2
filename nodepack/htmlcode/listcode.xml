@@ -3,7 +3,6 @@
   <createtime>1999-10-07 04:35:11</createtime>
   <totalvotes>0</totalvotes>
   <node_id>37</node_id>
-  <htmlcode_id>37</htmlcode_id>
   <code>my ($field,$codenode) = @_;
 $codenode ||= $NODE ;
 my $code = listCode($$codenode{$field}, 1);

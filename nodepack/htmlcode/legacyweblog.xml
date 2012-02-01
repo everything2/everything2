@@ -2,7 +2,6 @@
   <createtime>2009-07-06 09:46:14</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1988325</node_id>
-  <htmlcode_id>1988325</htmlcode_id>
   <code>my ($limit, $log_id,$remlabel, $hideLinker, $skipFilterHTML, $listOnly) = @_;
 $limit ||= 5;
 $log_id ||= getId($NODE);

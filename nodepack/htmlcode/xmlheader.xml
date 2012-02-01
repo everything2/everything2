@@ -2,7 +2,6 @@
   <createtime>2002-02-09 23:56:04</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1251623</node_id>
-  <htmlcode_id>1251623</htmlcode_id>
   <code>my $str.=&quot;&quot;;
 $str .= &quot;&lt;node node_id=\&quot;$$NODE{node_id}\&quot; createtime=\&quot;&quot;.
 	($$NODE{publishtime}||$$NODE{createtime})

@@ -2,7 +2,6 @@
   <createtime>2009-12-11 12:56:41</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1988991</node_id>
-  <htmlcode_id>1988991</htmlcode_id>
   <code># Returns the average star rating for a node, over all ratings in the same condition
 #  as the current user.
 # Returns the average star rating (float) or undef if there have not been enough

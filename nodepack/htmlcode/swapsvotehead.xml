@@ -2,7 +2,6 @@
   <createtime>2000-03-07 16:33:20</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1976481</node_id>
-  <htmlcode_id>1976481</htmlcode_id>
   <code>my $uid=$$USER{node_id}||0;
 return if !$uid || ($uid eq $HTMLVARS{default_user});
 my $canDoStuff = $$USER{votesleft} || (exists $HTMLVARS{'group_content editors'}{$uid}) || (exists $HTMLVARS{group_gods}{$uid}) || (exists $HTMLVARS{group_edev}{$uid});

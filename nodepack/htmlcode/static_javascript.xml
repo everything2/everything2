@@ -2,7 +2,6 @@
   <createtime>2010-01-20 00:38:57</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1989280</node_id>
-  <htmlcode_id>1989280</htmlcode_id>
   <code>$$VARS{fxDuration} = '1' if (delete $$VARS{notransitions});
 
 my $lastnode = $$NODE{node_id};

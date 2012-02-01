@@ -2,7 +2,6 @@
   <createtime>2000-03-07 17:04:17</createtime>
   <totalvotes>0</totalvotes>
   <node_id>444272</node_id>
-  <htmlcode_id>444272</htmlcode_id>
   <code>my ($shownumbers, $isxml, $newwuonly) = @_;
 use POSIX;
 #send TRUE if you want people to see how much exp they gained/lost

@@ -2,7 +2,6 @@
   <createtime>2006-08-05 12:38:25</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1824306</node_id>
-  <htmlcode_id>1824306</htmlcode_id>
   <code>my ($sql) = join(',', @_);
 my $res = $dbh-&gt;prepare('explain ' . $sql);
 $res-&gt;execute() or return 'Oops ' . $sql;

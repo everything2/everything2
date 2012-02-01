@@ -2,7 +2,6 @@
   <createtime>1999-11-10 23:46:53</createtime>
   <totalvotes>0</totalvotes>
   <node_id>279</node_id>
-  <htmlcode_id>279</htmlcode_id>
   <code>my ($varname, $title) = @_;
 my $SETTINGS = getVars $NODE;
 my $t = $title ? $title : $varname;

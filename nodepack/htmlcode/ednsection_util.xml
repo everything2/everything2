@@ -2,7 +2,6 @@
   <createtime>2001-07-23 04:57:10</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1118512</node_id>
-  <htmlcode_id>1118512</htmlcode_id>
   <code>#Useful nodelet section in EDev Nodelet
 
 my $nl = &quot;&lt;br /&gt;\n&quot;;

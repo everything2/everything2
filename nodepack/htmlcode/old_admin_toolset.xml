@@ -2,7 +2,6 @@
   <createtime>2001-10-25 15:53:46</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1876423</node_id>
-  <htmlcode_id>1876423</htmlcode_id>
   <code>return unless exists $HTMLVARS{'group_gods'}{$$USER{node_id}};
 
 my $newStr = &quot;&lt;ul&gt;&quot;;

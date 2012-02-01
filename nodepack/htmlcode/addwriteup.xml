@@ -2,7 +2,6 @@
   <createtime>1999-11-04 22:43:48</createtime>
   <totalvotes>0</totalvotes>
   <node_id>217</node_id>
-  <htmlcode_id>217</htmlcode_id>
   <code>my $canPublishDirectly = 2; # this level doesn't have to create draft first
 
 if (getVars(getNode('boring heaven nodes', 'setting')) -&gt; {$$NODE{title}}){

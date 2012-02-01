@@ -2,7 +2,6 @@
   <createtime>2002-10-13 06:18:01</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1372590</node_id>
-  <htmlcode_id>1372590</htmlcode_id>
   <code>return htmlcode(&quot;formxml_superdoc&quot;);</code>
   <type_nodetype>4</type_nodetype>
   <author_user>459692</author_user>

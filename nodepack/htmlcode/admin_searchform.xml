@@ -2,7 +2,6 @@
   <createtime>1999-10-01 19:29:28</createtime>
   <totalvotes>0</totalvotes>
   <node_id>134</node_id>
-  <htmlcode_id>134</htmlcode_id>
   <code>my ($PARAM) = @_;
 
 my $nid = getId($NODE) || '';

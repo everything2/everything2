@@ -3,7 +3,6 @@
   <createtime>1999-10-07 04:35:11</createtime>
   <totalvotes>0</totalvotes>
   <node_id>53</node_id>
-  <htmlcode_id>53</htmlcode_id>
   <code>my ($field, $length, $expandable, $addClass) = @_;
 $length ||= 20;
 my $class = &quot;expandable&quot; if $expandable ;

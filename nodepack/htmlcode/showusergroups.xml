@@ -2,7 +2,6 @@
   <createtime>2001-03-03 00:49:32</createtime>
   <totalvotes>0</totalvotes>
   <node_id>970447</node_id>
-  <htmlcode_id>970447</htmlcode_id>
   <code>#pass a user object (or nothing to default to the current node, or current user if the current node is not a user), and the groups the user belongs to will be returned
 
 my $U = $_[0];

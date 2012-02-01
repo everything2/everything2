@@ -2,7 +2,6 @@
   <createtime>2009-03-27 10:45:32</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1979757</node_id>
-  <htmlcode_id>1979757</htmlcode_id>
   <code>#Generates the form fields used to verify the form submission. Pass a prefix.
 my ($prefix) = @_;
 use Digest::MD5 qw(md5_hex);

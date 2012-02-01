@@ -2,7 +2,6 @@
   <createtime>2009-11-23 10:37:59</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1988907</node_id>
-  <htmlcode_id>1988907</htmlcode_id>
   <code>my $disabled = shift || htmlcode('getdisabledactions');
 
 my $b ;

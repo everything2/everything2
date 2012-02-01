@@ -2,7 +2,6 @@
   <createtime>2002-03-23 12:20:09</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1273299</node_id>
-  <htmlcode_id>1273299</htmlcode_id>
   <code>use Everything::Experience;
 my $str;
 

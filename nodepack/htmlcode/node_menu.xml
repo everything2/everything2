@@ -2,7 +2,6 @@
   <createtime>1999-12-17 05:35:18</createtime>
   <totalvotes>0</totalvotes>
   <node_id>176006</node_id>
-  <htmlcode_id>176006</htmlcode_id>
   <code>my ($field, @VALUES) = @_;
 my @idlist;
 my %items;

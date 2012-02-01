@@ -3,7 +3,6 @@
   <createtime>1999-10-07 04:35:11</createtime>
   <totalvotes>0</totalvotes>
   <node_id>36</node_id>
-  <htmlcode_id>36</htmlcode_id>
   <code>my $str;
 $str .= &quot;&lt;li&gt;&quot;;
 $str .= join &quot;\n&lt;li&gt;&quot;, $DB-&gt;getFields;

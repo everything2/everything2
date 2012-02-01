@@ -2,7 +2,6 @@
   <createtime>2009-11-19 16:07:34</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1988813</node_id>
-  <htmlcode_id>1988813</htmlcode_id>
   <code>my ($N) = @_ ;
 $N ||= $NODE ;
 

@@ -2,7 +2,6 @@
   <createtime>2000-11-28 17:26:04</createtime>
   <totalvotes>0</totalvotes>
   <node_id>854225</node_id>
-  <htmlcode_id>854225</htmlcode_id>
   <code>return unless exists $HTMLVARS{group_edev}{$$USER{user_id}};
 
 my $ntt = $$NODE{type}{title};

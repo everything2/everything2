@@ -2,7 +2,6 @@
   <createtime>2000-11-15 01:13:41</createtime>
   <totalvotes>0</totalvotes>
   <node_id>837958</node_id>
-  <htmlcode_id>837958</htmlcode_id>
   <code>my $str='[&lt;i&gt;Ajax call parameters, not original page parameters&lt;/i&gt;]&lt;br&gt;' if $query-&gt;param('displaytype')eq 'ajaxupdate';
 my $c=0;
 my $q;

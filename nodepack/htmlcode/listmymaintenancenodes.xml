@@ -2,7 +2,6 @@
   <createtime>2009-04-09 22:10:34</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1981645</node_id>
-  <htmlcode_id>1981645</htmlcode_id>
   <code>my ($uid) = @_;
 
 $uid = $$NODE{node_id} unless $uid;

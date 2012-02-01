@@ -2,7 +2,6 @@
   <createtime>2004-02-26 19:55:42</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1522386</node_id>
-  <htmlcode_id>1522386</htmlcode_id>
   <code>
 my $sept = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;type_nodetype=116 and createtime like '%2004-09%'&quot;,&quot;order by createtime&quot;);
 my $oct = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;type_nodetype=116 and createtime like '%2004-10%'&quot;,&quot;order by createtime&quot;);

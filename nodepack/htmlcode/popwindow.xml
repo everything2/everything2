@@ -2,7 +2,6 @@
   <createtime>2001-07-26 02:52:41</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1121226</node_id>
-  <htmlcode_id>1121226</htmlcode_id>
   <code># Pop up a window, 300 x 400 pixels in size, scrollable but non-resizable.
 # It has no menu, nor has it a status bar. When it appears, we focus it. 
 # No two windows belonging to the same browser can have the same name: 

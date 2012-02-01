@@ -2,7 +2,6 @@
   <createtime>1999-12-06 07:17:21</createtime>
   <totalvotes>0</totalvotes>
   <node_id>169637</node_id>
-  <htmlcode_id>169637</htmlcode_id>
   <code>return unless exists $HTMLVARS{'group_content editors'}{$$USER{node_id}} || exists $HTMLVARS{group_gods}{$$USER{node_id}};
 my $ntypet = $$NODE{type}{title};
 return unless ($ntypet eq 'e2node' || $ntypet eq 'superdoc' || $ntypet eq 'superdocnolinks' || $ntypet eq 'document');

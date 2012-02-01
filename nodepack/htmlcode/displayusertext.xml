@@ -2,7 +2,6 @@
   <createtime>2001-09-29 08:08:51</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1168156</node_id>
-  <htmlcode_id>1168156</htmlcode_id>
   <code>my $txt;
 
 if($DB-&gt;isApproved($NODE, getNode('users with codehome', 'nodegroup')))

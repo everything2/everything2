@@ -2,7 +2,6 @@
   <createtime>2011-03-06 06:37:05</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1991436</node_id>
-  <htmlcode_id>1991436</htmlcode_id>
   <code>my ($maxmsgs,$showOpts) = @_;
 my $json = {};
 my $jsoncount = 1 if $showOpts =~ /j/;

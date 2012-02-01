@@ -2,7 +2,6 @@
   <createtime>2002-05-08 05:52:17</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1298803</node_id>
-  <htmlcode_id>1298803</htmlcode_id>
   <code>my $nodes = {&quot;25&quot; =&gt; &quot;25&quot;, &quot;100&quot; =&gt; &quot;Everything New Nodes&quot;, &quot;200&quot; =&gt; &quot;E2N&quot;, &quot;300&quot; =&gt; &quot;ENN&quot;, &quot;1024&quot; =&gt; &quot;EKN&quot;};
 
 my $str = '&lt;p align=&quot;right&quot;&gt;&lt;form method=\&quot;post\&quot;&gt;';

@@ -2,7 +2,6 @@
   <createtime>1999-11-24 06:41:22</createtime>
   <totalvotes>0</totalvotes>
   <node_id>167261</node_id>
-  <htmlcode_id>167261</htmlcode_id>
   <code># [{parsetimestamp:time,flags}]
 # Parses out a datetime field into a more human-readable form
 # note: the expected time format in the parameter is: yyyy-mm-dd hh:mm:ss, although the year part works for any year after year 0

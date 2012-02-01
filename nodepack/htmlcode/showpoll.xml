@@ -2,7 +2,6 @@
   <createtime>2011-10-02 14:54:52</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1992449</node_id>
-  <htmlcode_id>1992449</htmlcode_id>
   <code>my ($POLL, $showStatus) = @_;
 getRef $POLL;
 $POLL ||= $NODE;

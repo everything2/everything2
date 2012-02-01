@@ -17,13 +17,18 @@ sub node_to_xml
 sub xml_no_consider
 {
 	my ($this) = @_;
-	return ["document_id",@{$this->SUPER::xml_no_consider()}];
+	return [@{$this->SUPER::xml_no_consider()}];
+}
+
+sub node_id_equivs
+{
+	my ($this) = @_;
+	return ["document_id"];
 }
 
 sub xml_to_node_post
 {
 	my ($this, $N) = @_;
-	$N->{document_id} = $N->{node_id};
 	return $N;
 }
 

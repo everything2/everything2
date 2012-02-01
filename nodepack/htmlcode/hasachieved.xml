@@ -2,7 +2,6 @@
   <createtime>2007-11-18 17:47:42</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1917862</node_id>
-  <htmlcode_id>1917862</htmlcode_id>
   <code>my ($achievement, $user_id) = @_;
 
 $user_id ||= $$USER{user_id};

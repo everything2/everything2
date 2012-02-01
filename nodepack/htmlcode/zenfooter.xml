@@ -2,7 +2,6 @@
   <createtime>2001-06-03 06:12:00</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1854205</node_id>
-  <htmlcode_id>1854205</htmlcode_id>
   <code>my $str;
 
 # Pseudorandom letter in range 'A'..'Z'

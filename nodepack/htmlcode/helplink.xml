@@ -2,7 +2,6 @@
   <createtime>2002-03-08 11:32:25</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1265536</node_id>
-  <htmlcode_id>1265536</htmlcode_id>
   <code>my ($suppress) = @_; 
 my $noHelp = $suppress ? '' : '&lt;p&gt;&amp;nbsp;&lt;/p&gt;';
 

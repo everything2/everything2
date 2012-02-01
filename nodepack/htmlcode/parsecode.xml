@@ -3,7 +3,6 @@
   <createtime>1999-10-07 04:35:11</createtime>
   <totalvotes>0</totalvotes>
   <node_id>43</node_id>
-  <htmlcode_id>43</htmlcode_id>
   <code> 	my ($field, $nolinks) = @_;
 	my $text = $$NODE{$field};
 	$text = parseCode ($text);

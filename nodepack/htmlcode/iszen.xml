@@ -2,7 +2,6 @@
   <createtime>2007-03-05 20:56:23</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1868935</node_id>
-  <htmlcode_id>1868935</htmlcode_id>
   <code>!defined $THEME or $$THEME{isZen};</code>
   <type_nodetype>4</type_nodetype>
   <author_user>1312198</author_user>

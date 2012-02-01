@@ -2,7 +2,6 @@
   <createtime>2011-06-22 13:06:27</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1992091</node_id>
-  <htmlcode_id>1992091</htmlcode_id>
   <code>my $tomb = shift;
 my $angel_id = $$tomb{node_id};
 

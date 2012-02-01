@@ -2,7 +2,6 @@
   <createtime>2009-11-19 18:08:21</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1988818</node_id>
-  <htmlcode_id>1988818</htmlcode_id>
   <code>my $tab = &quot;read&quot;;
 
 if ($$NODE{node_id} == 124) {$tab = &quot;home&quot;;}

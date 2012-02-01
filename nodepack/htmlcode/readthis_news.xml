@@ -2,7 +2,6 @@
   <createtime>2001-10-10 08:06:24</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1175798</node_id>
-  <htmlcode_id>1175798</htmlcode_id>
   <code>  my $str = '&lt;ul&gt;';
   my $csr = $DB-&gt;sqlSelectMany('*', 'weblog, node', 'weblog_id=165580 &amp;&amp; removedby_user=0 and to_node = node_id', 'ORDER BY linkedtime DESC LIMIT 4');
   

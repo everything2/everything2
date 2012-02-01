@@ -2,7 +2,6 @@
   <createtime>2005-02-08 16:59:28</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1698043</node_id>
-  <htmlcode_id>1698043</htmlcode_id>
   <code>#return '';
 
 # Create a 'format' button for a named element.

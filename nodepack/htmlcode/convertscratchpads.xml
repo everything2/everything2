@@ -2,7 +2,6 @@
   <createtime>2011-02-16 22:21:33</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1991280</node_id>
-  <htmlcode_id>1991280</htmlcode_id>
   <code>my $uid = shift;
 my $lookingAtSelf = (!$uid || $uid == $$USER{node_id});
 my $doConversion = ($query -&gt; param('converttodrafts') == 1 &amp;&amp; $lookingAtSelf);

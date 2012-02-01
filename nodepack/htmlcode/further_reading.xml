@@ -2,7 +2,6 @@
   <createtime>2009-11-13 15:26:33</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1988640</node_id>
-  <htmlcode_id>1988640</htmlcode_id>
   <code>my ($num) = @_;
 
 if ($num == 1) {

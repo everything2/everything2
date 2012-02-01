@@ -2,7 +2,6 @@
   <createtime>2002-02-23 03:17:17</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1258917</node_id>
-  <htmlcode_id>1258917</htmlcode_id>
   <code>my ($schemafor) = @_;
 
 my $noderef = getNodeById($schemafor);

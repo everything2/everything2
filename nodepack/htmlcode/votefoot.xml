@@ -2,7 +2,6 @@
   <createtime>2000-03-07 16:38:59</createtime>
   <totalvotes>0</totalvotes>
   <node_id>444246</node_id>
-  <htmlcode_id>444246</htmlcode_id>
   <code>my $uid = $$USER{user_id}||$HTMLVARS{guest_user};
 return $query-&gt;end_form if $$NODE{type}{title} eq &quot;e2node&quot; &amp;&amp; not $$NODE{group} || $uid==$HTMLVARS{guest_user} ;
 my $isKiller = (exists $HTMLVARS{'group_content editors'}{$uid} || exists $HTMLVARS{group_gods}{$uid});

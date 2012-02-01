@@ -2,7 +2,6 @@
   <createtime>2000-03-07 15:46:16</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1930099</node_id>
-  <htmlcode_id>1930099</htmlcode_id>
   <code>#voteit - pass writeup's node_id
 
 my ($N,$showParts) = @_;

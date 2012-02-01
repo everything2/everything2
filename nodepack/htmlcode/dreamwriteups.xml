@@ -2,7 +2,6 @@
   <createtime>2001-12-13 08:30:29</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1919556</node_id>
-  <htmlcode_id>1919556</htmlcode_id>
   <code>my $limit = $$VARS{num_dreamwus} || 15;
 
 #if(!exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) &amp;&amp; !exists($HTMLVARS{'group_content editors'}{$$USER{node_id}})){  my $blah = getNodeById(1217114); return $$blah{nltext};}

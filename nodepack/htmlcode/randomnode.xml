@@ -2,7 +2,6 @@
   <createtime>1999-12-27 22:07:34</createtime>
   <totalvotes>0</totalvotes>
   <node_id>366162</node_id>
-  <htmlcode_id>366162</htmlcode_id>
   <code>my ($title) = @_;
 
 $title||='random';

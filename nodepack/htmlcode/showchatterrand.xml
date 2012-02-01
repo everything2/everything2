@@ -2,7 +2,6 @@
   <createtime>2001-03-05 23:28:39</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1278319</node_id>
-  <htmlcode_id>1278319</htmlcode_id>
   <code>#originally in [chatterbox] (nodelet)
 
 return 'If you '.linkNode(getNode('Create A New User','superdoc'),'get a (&lt;strong&gt;free&lt;/strong&gt;) account',{lastnode_id=&gt;0}).', you can talk here.' if getId($USER) == $HTMLVARS{guest_user};

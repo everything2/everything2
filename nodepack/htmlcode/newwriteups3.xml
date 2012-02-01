@@ -2,7 +2,6 @@
   <createtime>2001-12-13 08:30:29</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1801440</node_id>
-  <htmlcode_id>1801440</htmlcode_id>
   <code>my ($limit) = @_;
 $limit ||= 15;
 

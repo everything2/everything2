@@ -2,7 +2,6 @@
   <createtime>2001-11-03 12:30:27</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1192419</node_id>
-  <htmlcode_id>1192419</htmlcode_id>
   <code>my ($n, $title) = @_;
 my $selstr = '';
 

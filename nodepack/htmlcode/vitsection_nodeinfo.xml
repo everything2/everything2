@@ -2,7 +2,6 @@
   <createtime>2001-07-21 05:03:58</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1116973</node_id>
-  <htmlcode_id>1116973</htmlcode_id>
   <code>my $str=&quot;&lt;ul&gt;&quot;;
 
 $str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('E2 HTML Tags').&quot;&lt;/li&gt;&quot;;

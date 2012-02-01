@@ -14,4 +14,9 @@ sub node_to_xml
 	return $this->SUPER::node_to_xml($NODE, $dbh);
 }
 
+sub node_id_equivs
+{
+	return ["htmlcode_id"];
+}
+
 1;

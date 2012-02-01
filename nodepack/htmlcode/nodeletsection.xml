@@ -2,7 +2,6 @@
   <createtime>2001-07-16 15:57:10</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1109816</node_id>
-  <htmlcode_id>1109816</htmlcode_id>
   <code># Inserts collapsible nodelet sections. These are stored in separate htmlcodes in the form (nodelet-abbreviation)section_(section-title) - that is, if you see something like 'htmlcode('nodeletsection','edn,patches');' the code you need will be at [ednsection_patches].
 
 my ($nlAbbrev, $nlSection, $altTitle, $linkTo, $styleTitle, $styleContent) = @_;

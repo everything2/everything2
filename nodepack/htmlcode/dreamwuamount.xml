@@ -2,7 +2,6 @@
   <createtime>2001-12-13 23:45:24</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1923963</node_id>
-  <htmlcode_id>1923963</htmlcode_id>
   <code>return unless htmlcode('isEditor','');
 
 my @amount = (1, 10, 15, 20, 25, 30, 40);

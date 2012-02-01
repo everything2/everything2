@@ -2,7 +2,6 @@
   <createtime>1999-11-18 01:09:04</createtime>
   <totalvotes>0</totalvotes>
   <node_id>166222</node_id>
-  <htmlcode_id>166222</htmlcode_id>
   <code>my ($softserve) = @_; #parameter used by formxml_writeup and formxml_e2node
 
 if($softserve eq 'xml'){

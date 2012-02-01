@@ -2,7 +2,6 @@
   <createtime>2007-03-25 18:15:14</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1873970</node_id>
-  <htmlcode_id>1873970</htmlcode_id>
   <code>my $s = '
 
 local * hash2var = sub {

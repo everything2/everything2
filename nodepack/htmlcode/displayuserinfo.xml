@@ -2,7 +2,6 @@
   <createtime>2001-06-09 07:50:30</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1075515</node_id>
-  <htmlcode_id>1075515</htmlcode_id>
   <code>#this to deprecates displaySingleVar - instead of many calls to that, only 1 call is needed to this, displayUserInfo
 #updated: Thursday, June 13, 2002
 #updated: 2008-03-31(1)

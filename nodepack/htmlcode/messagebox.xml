@@ -2,7 +2,6 @@
   <createtime>2011-03-06 06:50:10</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1991438</node_id>
-  <htmlcode_id>1991438</htmlcode_id>
   <code>my ($userID, $showCC, $messageID, $usergroupID, $failReasonRef) = @_;
 # This should probably be extended to include a possible topic
 

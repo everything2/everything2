@@ -2,7 +2,6 @@
   <createtime>2010-07-20 20:46:49</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1990015</node_id>
-  <htmlcode_id>1990015</htmlcode_id>
   <code>my ($originalN, $isIncludedParent) = @_;
 my $N = $originalN || $NODE;
 getRef $N;

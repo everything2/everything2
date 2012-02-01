@@ -2,7 +2,6 @@
   <createtime>2002-02-10 23:12:00</createtime>
   <totalvotes>0</totalvotes>
   <node_id>1259936</node_id>
-  <htmlcode_id>1259936</htmlcode_id>
   <code>#patch from fuzzie.. sorta
 #applied so that you can choose not to get the findings doc.
 return &quot;&quot; if (($query-&gt;param(&quot;no_superdocs&quot;) == 1) || ($query-&gt;param(&quot;no_findings&quot;) == 1 &amp;&amp; $$NODE{node_id} == $HTMLVARS{searchResults_node}));
