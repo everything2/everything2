@@ -14,6 +14,5 @@ $query-&gt;textfield('choicefunc').' '.htmlcode('varcheckboxinverse','scf_nohtml
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
   <document_id>1956255</document_id>
-  <author_user>113</author_user>
   <title>Gigantic Code Lister test</title>
 </node>

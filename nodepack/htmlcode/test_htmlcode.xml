@@ -47,6 +47,5 @@ my $xmlstr = &quot;&lt;xpinfo&gt;
 &lt;/xpinfo&gt;&quot;;
 return $xmlstr;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>test_htmlcode</title>
 </node>

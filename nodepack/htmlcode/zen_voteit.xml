@@ -239,6 +239,5 @@ $str = &quot;&lt;span id='voteinfo_$nid' style='white-space: nowrap' nowrap='now
 $str;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>zen_voteit</title>
 </node>

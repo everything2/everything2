@@ -19,6 +19,5 @@ $DB-&gt;getDatabaseHandle()-&gt;do(&quot;update weblog set removedby_user=$$USER
 
 htmlcode('update New Writeups data') if $src == 855769; # evil magic number for Node Row: this won't be needed for long</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>315</author_user>
   <title>removeweblog</title>
 </node>

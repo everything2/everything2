@@ -318,6 +318,5 @@ $query-&gt;param($msg, 'somehow passed as valid parameter, but not matched up');
 return;
 </code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>9740</author_user>
   <title>nodeletwidget</title>
 </node>

@@ -90,6 +90,5 @@ $query-&gt;param(-name=&gt;'message',-value=&gt;$origMessage);
 
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>doChatMacro</title>
 </node>

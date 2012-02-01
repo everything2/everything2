@@ -13,7 +13,6 @@ my $VARS= {
 	description=&gt;&quot;   &quot;};
 setVars $NODE, $VARS;</code>
   <type_nodetype>150</type_nodetype>
-  <author_user>113</author_user>
   <maintain_nodetype>152</maintain_nodetype>
   <title>nodeball maintenance create</title>
 </node>

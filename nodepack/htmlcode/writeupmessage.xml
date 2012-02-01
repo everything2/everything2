@@ -32,6 +32,5 @@ if( $msgreport ) {
 qq'&lt;p id=&quot;sent$queryid&quot; class=&quot;sentmessage&quot;&gt;$msgreport&lt;/p&gt;'
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>writeupmessage</title>
 </node>

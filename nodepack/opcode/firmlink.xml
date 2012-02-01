@@ -45,6 +45,5 @@ $DB-&gt;sqlInsert(&quot;firmlink_note&quot;,
 return 1;
 </code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>459692</author_user>
   <title>firmlink</title>
 </node>

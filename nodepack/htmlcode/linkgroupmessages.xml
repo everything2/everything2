@@ -19,6 +19,5 @@ my ($num)=$DB-&gt;sqlSelect('COUNT(*)','message','for_user='.$gid.' AND for_user
 
 return '&lt;a href='.urlGen({'node'=&gt;'usergroup message archive', 'type'=&gt;'superdoc', 'viewgroup'=&gt;$$NODE{title}}).'&gt;'.$num.'&lt;/a&gt; message'.($num==1?' has':'s have').' been sent to this group.';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>linkGroupMessages</title>
 </node>

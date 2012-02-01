@@ -32,6 +32,5 @@ linkNode($NODE, 'Go ahead. Hit me in the face.', { punch =&gt; 1 });
   <node_id>716619</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
-  <author_user>114</author_user>
   <title>punch thyself</title>
 </node>

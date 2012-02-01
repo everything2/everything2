@@ -112,6 +112,5 @@ foreach my $notify (@$db_notifieds) {
 return $notification_list;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>notificationsJSON</title>
 </node>

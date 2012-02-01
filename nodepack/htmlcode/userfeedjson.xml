@@ -23,6 +23,5 @@ while (my $feedItem = $csr-&gt;fetchrow_hashref) {
 return $feed_list;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>userFeedJSON</title>
 </node>

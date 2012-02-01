@@ -4,7 +4,6 @@
   <node_id>211</node_id>
   <type_nodetype>153</type_nodetype>
   <setting_id>211</setting_id>
-  <author_user>113</author_user>
   <vars>A=A%20%2d%20critical&amp;B=B%20%2d%20serious&amp;C=C%20%2d%20important&amp;D=D%20%2d%20minor%20issue&amp;E=E%20%2d%20who%20cares%3f</vars>
   <title>bugpriority</title>
 </node>

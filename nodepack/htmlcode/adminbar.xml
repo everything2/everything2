@@ -112,6 +112,5 @@ $str.=&quot;\n&lt;SCRIPT language=\&quot;javascript\&quot;&gt;
                                
 &quot;&lt;div id='adminbar'&gt;$str&lt;/div&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>adminbar</title>
 </node>

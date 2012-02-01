@@ -18,7 +18,6 @@ my $anchoredlink = '&lt;a href=&quot;'. urlGenNoParams($root,1) .'#debatecomment
 my $str .= linkNode($$args{uid}).&quot; has &lt;strong&gt;replied&lt;/strong&gt; to $anchoredlink&quot;;
 </code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1312198</author_user>
   <description>a new [usergroup discussions|comment] gets posted to a discussion in one of your usergroups.</description>
   <invalid_check></invalid_check>
   <title>newcomment</title>

@@ -131,6 +131,5 @@ $str.=&quot;&lt;small&gt;&lt;small&gt;Full Text&lt;/small&gt;&lt;/small&gt;&quot
 #$str . '&lt;/small&gt;&lt;/small&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';
 $str . '&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>usersearchform</title>
 </node>

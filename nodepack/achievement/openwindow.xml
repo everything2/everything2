@@ -19,6 +19,5 @@ my $windowCount = $DB-&gt;sqlSelect(&quot;count(doctext)&quot;,
 return 1 if $windowCount &gt;= 15;
 return 0;</code>
   <type_nodetype>1917847</type_nodetype>
-  <author_user>1394568</author_user>
   <title>openwindow</title>
 </node>

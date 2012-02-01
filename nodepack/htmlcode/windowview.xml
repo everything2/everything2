@@ -21,6 +21,5 @@ $height||=400;
 &lt;/SCRIPT&gt;
 &lt;A href=\&quot;javascript:launchThaDamnWinda()\&quot;&gt;$title&lt;/a&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>windowview</title>
 </node>

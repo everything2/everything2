@@ -45,6 +45,5 @@ return &amp;$isMember($U -&gt; {'node_id'}, $recursion, $$usergroup{group});
 
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>isinUsergroup</title>
 </node>

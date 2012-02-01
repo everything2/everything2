@@ -23,6 +23,5 @@ $query-&gt;param('silentwarn_count',$count+1);
 
 '';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>silentWarn</title>
 </node>

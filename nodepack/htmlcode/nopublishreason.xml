@@ -59,6 +59,5 @@ return 'This node is locked. '
 	[Content Editors[usergroup]|editor].&lt;/p&gt;'));
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>nopublishreason</title>
 </node>

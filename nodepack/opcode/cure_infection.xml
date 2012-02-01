@@ -15,6 +15,5 @@ setVars($cureUser, $cureVars);
 
 return 1;</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>1449265</author_user>
   <title>cure_infection</title>
 </node>

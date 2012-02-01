@@ -24,6 +24,5 @@ document.write(&quot;&lt;input type=\'button\' onClick=\'autoFormat(\&quot;'.$na
 
 return $finalstr;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>formatButton</title>
 </node>

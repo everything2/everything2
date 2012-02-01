@@ -4,7 +4,6 @@
   <node_id>1467462</node_id>
   <type_nodetype>153</type_nodetype>
   <setting_id>1467462</setting_id>
-  <author_user>9740</author_user>
   <vars>math=1&amp;ms=1&amp;mfrac=1&amp;msup=1&amp;mtext=1&amp;msub=1&amp;mphantom=1&amp;mroot=1&amp;mi=1&amp;msqrt=1&amp;msubsup=1&amp;munder=1&amp;mover=1&amp;mfenced=1&amp;mmultiscripts=1&amp;mrow=1&amp;mn=1&amp;munderover=1&amp;mo=1</vars>
   <title>approved MathML tags</title>
 </node>

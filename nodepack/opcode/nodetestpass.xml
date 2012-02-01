@@ -10,6 +10,5 @@ my $node = $DB-&gt;getDatabaseHandle-&gt;quote($query-&gt;param(&quot;node_id&qu
 $DB-&gt;sqlDelete(&quot;nodetestresult&quot;, &quot;nodetestresult_node=$node&quot;);
 return 1;</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>459692</author_user>
   <title>nodetestpass</title>
 </node>

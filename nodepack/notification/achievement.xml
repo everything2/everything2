@@ -6,7 +6,6 @@
   <node_id>1931728</node_id>
   <code>return &quot;You earned the &quot;.getNodeById($$args{achievement_id})-&gt;{display}.&quot; achievement!&quot;;</code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1312198</author_user>
   <description>you fulfill [my achievements|an achievement].</description>
   <invalid_check></invalid_check>
   <title>achievement</title>

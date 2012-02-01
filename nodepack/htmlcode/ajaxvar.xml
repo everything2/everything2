@@ -33,6 +33,5 @@ my $retval = $$VARS{$name}||'0';
 return &quot;{name: '$name', value: '$retval', oldval: '$oldVal'}&quot;;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>ajaxVar</title>
 </node>

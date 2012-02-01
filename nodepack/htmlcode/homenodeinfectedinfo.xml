@@ -55,6 +55,5 @@ ENDHTML
 return '&lt;div id=&quot;homenode_infection&quot; class=&quot;warning&quot;&gt;' . $infectedHTML . '&lt;/div&gt;';
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1449265</author_user>
   <title>homenodeinfectedinfo</title>
 </node>

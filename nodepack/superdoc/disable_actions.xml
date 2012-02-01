@@ -49,6 +49,5 @@ return $str . '&lt;p&gt;&lt;input type=&quot;hidden&quot; name=&quot;donode&quot
   <node_id>1988894</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
-  <author_user>1828141</author_user>
   <title>Disable actions</title>
 </node>

@@ -20,6 +20,5 @@ if ($$USER{title} eq 'Guest User') {
 
 return {$prefix . '_nonce' =&gt; $nonce, $prefix . '_seed' =&gt; $rand};</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>974148</author_user>
   <title>verifyRequestHash</title>
 </node>

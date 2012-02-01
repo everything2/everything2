@@ -91,6 +91,5 @@ $DB-&gt;sqlInsert('links',
 return 1;
 </code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>1323377</author_user>
   <title>category</title>
 </node>

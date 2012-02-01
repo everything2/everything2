@@ -24,7 +24,6 @@ $$N{doctext} = $query-&gt;param('room_doctext') if defined $query-&gt;param('roo
 
 updateNode($N, -1);</code>
   <type_nodetype>150</type_nodetype>
-  <author_user>114</author_user>
   <maintain_nodetype>545241</maintain_nodetype>
   <title>room maintenance create</title>
 </node>

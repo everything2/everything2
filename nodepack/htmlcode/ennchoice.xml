@@ -14,6 +14,5 @@ $str.=&quot;&lt;option value=\&quot;$$nodes{$_}\&quot;&quot;.(($$nodes{$_} eq $$
 $str.='&lt;/select&gt;&lt;input type=&quot;submit&quot; value=&quot;go&quot;&gt;&lt;/form&gt;&lt;/p&gt;';
 return $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>459692</author_user>
   <title>ennchoice</title>
 </node>

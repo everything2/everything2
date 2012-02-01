@@ -44,6 +44,5 @@ if($EDB&lt;25) {
 return $response;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>borgspeak</title>
 </node>

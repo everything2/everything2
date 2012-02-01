@@ -58,7 +58,6 @@ return '&lt;cite&gt;'.linkNode($$draft{author_user})
 	.$numReviewText;
 </code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1828141</author_user>
   <description>a user asks for review of a draft</description>
   <invalid_check>my $draft = getNodeById($$args{draft_id});
 my $status = getNodeById($$draft{publication_status});

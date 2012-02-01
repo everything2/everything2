@@ -8,7 +8,6 @@
   <lastupdate>946339423</lastupdate>
   <node_id>90</node_id>
   <type_nodetype>9</type_nodetype>
-  <author_user>114</author_user>
   <nodelet_id>90</nodelet_id>
   <nlcode>Node ID:[% getId $NODE %]&lt;br&gt;
 Created on:&lt;br&gt; [&quot;$$NODE{createtime}&quot;]&lt;br&gt;

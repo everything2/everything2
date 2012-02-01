@@ -32,6 +32,5 @@ updateNode($U, -1);
 htmlcode('achievementsByType', 'karma', $$U{user_id});
 </code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>114</author_user>
   <title>bless</title>
 </node>

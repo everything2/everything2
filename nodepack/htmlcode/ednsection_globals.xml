@@ -82,6 +82,5 @@ my %expand = (
   use strict 'refs';
 $str.'&lt;/table&gt;';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>220</author_user>
   <title>ednsection_globals</title>
 </node>

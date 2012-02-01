@@ -15,7 +15,6 @@ $query-&gt;hidden(&quot;node_id&quot;, getId $NODE);
   <node_id>187</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>upload</displaytype>
-  <author_user>113</author_user>
   <title>image upload page</title>
   <mimetype></mimetype>
 </node>

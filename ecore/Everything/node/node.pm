@@ -31,7 +31,7 @@ sub xml_no_consider
 {
 	my ($this) = @_;
 
-	return ["_ORIGINAL_VALUES", "hits","type",@{$this->node_id_equivs()}];
+	return ["_ORIGINAL_VALUES", "hits","type","author_user",@{$this->node_id_equivs()}];
 }
 
 sub node_id_equivs
@@ -57,6 +57,10 @@ sub xml_to_node
 sub xml_to_node_post
 {
 	my ($this, $N) = @_;
+	
+	# The uid for root
+	$N->{author_user} = 113;
+
 	return $N;
 }
 

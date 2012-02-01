@@ -76,6 +76,5 @@ if(exists $HTMLVARS{group_gods}{$UID}) {
 }
 '&lt;small&gt;( &lt;span style=&quot;color: blue;&quot;&gt;Server Warning!&lt;/span&gt; &lt;small&gt;(don\'t worry about this)&lt;/small&gt; '.$info.' )&lt;/small&gt;';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>logWarning</title>
 </node>

@@ -34,7 +34,6 @@ return &quot;(&quot;.linkNode($parent_e2node,&quot;see all of $nodeTitle&quot;).
   <node_id>1988830</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
-  <author_user>470183</author_user>
   <ownedby_theme>1988787</ownedby_theme>
   <title>e3 writeup display page</title>
   <mimetype></mimetype>

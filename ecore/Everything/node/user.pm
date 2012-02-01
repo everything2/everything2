@@ -21,7 +21,7 @@ sub xml_to_node_post
 {
 	my ($this, $N) = @_;
 	$N->{passwd} = "blah";
-	return $N;
+	return $this->SUPER::xml_to_node_post($N);
 }
 
 sub node_id_equivs

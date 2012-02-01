@@ -4,6 +4,5 @@
   <node_id>1142673</node_id>
   <code>linkNode($NODE, ($_[0] || 'printable version'), {displaytype=&gt;'printable',lastnode_id=&gt;0} );</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>printable</title>
 </node>

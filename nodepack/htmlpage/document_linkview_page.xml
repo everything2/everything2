@@ -122,7 +122,6 @@ $str .=  join(&quot;&lt;/li&gt;\n&lt;li&gt;&quot;, @notlinks)
   <node_id>1409922</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>linkview</displaytype>
-  <author_user>459692</author_user>
   <title>document linkview page</title>
   <mimetype></mimetype>
 </node>

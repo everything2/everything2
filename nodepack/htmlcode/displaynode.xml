@@ -27,6 +27,5 @@ foreach my $key (keys %$NODE) {
 
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>displayNODE</title>
 </node>

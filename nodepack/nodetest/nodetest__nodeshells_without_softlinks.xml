@@ -12,7 +12,6 @@ my $links = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;links&quot;,&quot;from
 return &quot;y&quot; if $links &gt; 0; 
 return &quot;n&quot;;</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
-  <author_user>459692</author_user>
   <nodetest_description>Nodeshells that don't have any softlinks. They are probably lost.</nodetest_description>
   <title>nodetest: Nodeshells without softlinks</title>
 </node>

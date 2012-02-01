@@ -26,10 +26,4 @@ sub node_id_equivs
 	return ["document_id", @{$this->SUPER::node_id_equivs()}];
 }
 
-sub xml_to_node_post
-{
-	my ($this, $N) = @_;
-	return $N;
-}
-
 1;

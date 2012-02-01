@@ -47,6 +47,5 @@ $str .= $query-&gt;filefield($name);
 
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>testuploadimage</title>
 </node>

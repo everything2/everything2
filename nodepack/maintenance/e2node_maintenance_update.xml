@@ -19,7 +19,6 @@ if ($$NODE{author_user} != $CE){
 htmlcode('repair e2node', $NODE, 'No reorder');
 </code>
   <type_nodetype>150</type_nodetype>
-  <author_user>220</author_user>
   <maintain_nodetype>116</maintain_nodetype>
   <title>e2node maintenance update</title>
 </node>

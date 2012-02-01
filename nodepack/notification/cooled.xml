@@ -6,7 +6,6 @@
   <node_id>1930720</node_id>
   <code>return &quot;Your writeup &quot;.linkNode($$args{writeup_id}).&quot; was cooled by &quot;.linkNode($$args{cooluser_id});</code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1312198</author_user>
   <description>a writeup of yours gets [C!|cooled].</description>
   <invalid_check></invalid_check>
   <title>cooled</title>

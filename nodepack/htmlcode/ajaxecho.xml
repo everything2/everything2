@@ -5,6 +5,5 @@
   <code># provide simple user feedback for AJAX opcode call (e.g., sanctify in [page actions])
 return shift;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>ajaxEcho</title>
 </node>

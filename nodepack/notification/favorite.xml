@@ -7,7 +7,6 @@
   <code>my $wu_link = getNodeById($$args{writeup_id}) ? linkNode($$args{writeup_id}) : &quot;... which I can't find! (node id: $$args{writeup_id})&quot;;
 return &quot;&lt;b&gt;&quot;.linkNode($$args{favorite_author}).&quot;&lt;/b&gt; posted a new writeup &quot;.$wu_link;</code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1312198</author_user>
   <description>a [favorite author] of yours posts a writeup.</description>
   <invalid_check>my $wu_link = getNodeById($$args{writeup_id});
 my $isInvalid = !defined $wu_link || $$wu_link{type}{title} ne 'writeup';

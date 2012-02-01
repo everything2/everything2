@@ -105,6 +105,5 @@ my $numdead = scalar @deadpeople;
 return $deadpeople[$uid % $numdead];
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1394568</author_user>
   <title>afd2009Username</title>
 </node>

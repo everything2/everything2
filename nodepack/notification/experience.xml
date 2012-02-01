@@ -21,7 +21,6 @@ $str .= &quot;&lt;strong&gt;&quot;.$$args{amount}.&quot;&lt;/strong&gt; experien
 }
 return $str;</code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1312198</author_user>
   <description>you gain or lose [XP].</description>
   <invalid_check></invalid_check>
   <title>experience</title>

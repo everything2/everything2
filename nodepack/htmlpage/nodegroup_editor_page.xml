@@ -20,7 +20,6 @@ linkNode $NODE, &quot;close&quot;, {displaytype=&gt; $query-&gt;param('displayty
   <node_id>72</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>editor</displaytype>
-  <author_user>114</author_user>
   <title>nodegroup editor page</title>
   <mimetype></mimetype>
 </node>

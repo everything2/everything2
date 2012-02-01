@@ -19,7 +19,6 @@ $$NODE{datatype} = &quot;text/html&quot; if(exists $$NODE{datatype});
   <node_id>332492</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
-  <author_user>113</author_user>
   <title>rawdata edit page</title>
   <mimetype></mimetype>
 </node>

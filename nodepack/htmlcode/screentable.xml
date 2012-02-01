@@ -72,6 +72,5 @@ $text = debugTable ($error, $text) if ! $valid;
 
 $text;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1017738</author_user>
   <title>screenTable</title>
 </node>

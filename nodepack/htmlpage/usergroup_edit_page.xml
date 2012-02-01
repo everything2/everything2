@@ -40,7 +40,6 @@ $query-&gt;checkbox('usergroup_messageArchive',$$NODE{messageArchive},1,'Archive
   <node_id>846444</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
-  <author_user>220</author_user>
   <title>usergroup edit page</title>
   <mimetype></mimetype>
 </node>

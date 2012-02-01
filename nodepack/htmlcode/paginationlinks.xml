@@ -33,6 +33,5 @@ if ($offset &gt; 0 or $numthispage == $limit) {
 return $str;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1394568</author_user>
   <title>paginationlinks</title>
 </node>

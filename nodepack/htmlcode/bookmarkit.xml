@@ -24,6 +24,5 @@ $$params{'-id'} = &quot;bookmark$$N{node_id}&quot; ;
 
 linkNode($NODE, $text, $params);</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>bookmarkit</title>
 </node>

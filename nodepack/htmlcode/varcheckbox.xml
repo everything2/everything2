@@ -20,6 +20,5 @@ if($query-&gt;param('setvar_'.$k)) {
 
 $query-&gt;checkbox('setvar_'.$k, $$VARS{$k}, '1', $title);</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>varcheckbox</title>
 </node>

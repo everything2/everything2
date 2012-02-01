@@ -26,6 +26,5 @@ foreach my $type (keys %approvedtypes) {
 }
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>create_nodes</title>
 </node>

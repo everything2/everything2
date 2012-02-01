@@ -23,6 +23,5 @@ $str.=&quot;\n\t&quot;.$query-&gt;checkbox(-name=&gt;&quot;nw_nojunk&quot;, chec
 $str.=&quot;\n&quot;.$query-&gt;end_form;
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>459692</author_user>
   <title>nwuamount</title>
 </node>

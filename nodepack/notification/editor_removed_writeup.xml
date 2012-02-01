@@ -16,7 +16,6 @@ linkNode($$args{editor_id})
 .linkNode($$args{author_id})
 .$reason;</code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1828141</author_user>
   <description>an editor removes a writeup</description>
   <invalid_check>my $draft = getNodeById($$args{writeup_id});
 

@@ -18,6 +18,5 @@ linkNode($NODE,'I like it!', {confirmop =&gt; 'ilikeit', like_id =&gt; $$WU{node
 	-title =&gt; 'send a message to the author telling them someone likes their work'} );
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>ilikeit</title>
 </node>

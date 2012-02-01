@@ -72,6 +72,5 @@ $message .= &quot;  &quot;.$$randVillain{title} .&quot;'s health: &quot;.$vWarVa
 return $message;
 }</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>hugguser</title>
 </node>

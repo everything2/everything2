@@ -277,6 +277,5 @@ var interval = window.setInterval(checkInterval, 1000);
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>
   <document_id>1984562</document_id>
-  <author_user>974148</author_user>
   <title>Swap's async voting</title>
 </node>

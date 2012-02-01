@@ -129,7 +129,6 @@ insertIntoNodegroup( $PARENT, -1, [getId( $COMMENT )] );
 #$DB-&gt;sqlUpdate( 'debatecomment', {-updated =&gt; 'now()'}, &quot;debatecomment_id=&quot; . getId( $PARENT ) );
 </code>
   <type_nodetype>150</type_nodetype>
-  <author_user>114</author_user>
   <maintain_nodetype>1156105</maintain_nodetype>
   <title>debatecomment maintenance create</title>
 </node>

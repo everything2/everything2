@@ -15,7 +15,6 @@ $str .=&quot;&lt;i&gt;&quot;.getNodeById($status)-&gt;{title}.&quot;&lt;/i&gt;&q
 return $str;
 </code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1312198</author_user>
   <description>a new [patch manager|patch] has been submitted.</description>
   <invalid_check>return 1 if !getNodeById($$args{patch_id});
 return 0;</invalid_check>

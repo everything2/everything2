@@ -20,6 +20,5 @@ Everything::Experience::adjustExp($$N{author_user}, -5) unless $nopain;
 
 nukeNode($N, $USER);</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>315</author_user>
   <title>kill</title>
 </node>

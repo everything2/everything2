@@ -18,6 +18,5 @@ return unless $JS;
 return ($$VARS{includedJS} =~ /$JS/);
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>hasJS</title>
 </node>

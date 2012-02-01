@@ -40,6 +40,5 @@ $DB-&gt;sqlUpdate(&quot;e2poll&quot;, {
 		, totalvotes =&gt; $votesum}
 	, &quot;e2poll_id=$pollId&quot;);</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>1312198</author_user>
   <title>pollvote</title>
 </node>

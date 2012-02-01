@@ -18,7 +18,6 @@ if ($$args{node_id}) {
 }
 return $str;</code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1017738</author_user>
   <description>a writeup of yours gets [Voting/Experience system|voted] on.</description>
   <invalid_check></invalid_check>
   <title>voting</title>

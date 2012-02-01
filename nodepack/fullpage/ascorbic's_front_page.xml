@@ -176,6 +176,5 @@ return &quot;&lt;h2 id='wit'&gt;&quot;.$wit[int(rand(@wit))].&quot;&lt;/h2&gt;&q
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>451267</type_nodetype>
   <document_id>1990709</document_id>
-  <author_user>974148</author_user>
   <title>ascorbic's front page</title>
 </node>

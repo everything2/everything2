@@ -230,6 +230,5 @@ $str .= $$VSETTINGS{voteFooter};
 
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>voteit2</title>
 </node>

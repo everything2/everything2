@@ -63,6 +63,5 @@ if ($fname = $query-&gt;upload($name)) { #recent change to CGI.pm
 }
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1017738</author_user>
   <title>uploadAudio</title>
 </node>

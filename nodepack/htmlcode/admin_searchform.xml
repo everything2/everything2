@@ -52,6 +52,5 @@ $str .= &quot;\n\t\t\t&quot; .$query-&gt;start_form(&quot;POST&quot;,$query-&gt;
 	&lt;/div&gt;';
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>admin searchform</title>
 </node>

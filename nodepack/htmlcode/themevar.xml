@@ -9,6 +9,5 @@
 	return $$THEME{$useVar} || $defaultVal;
 #}</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>themeVar</title>
 </node>

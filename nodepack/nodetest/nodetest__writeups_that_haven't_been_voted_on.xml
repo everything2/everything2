@@ -13,7 +13,6 @@ my $count = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;vote
 return &quot;n&quot; if $count == 0;
 return &quot;y&quot;;</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
-  <author_user>459692</author_user>
   <nodetest_description>Writeups that have had zero votes cast on them. Webster writeups are excluded</nodetest_description>
   <title>nodetest: Writeups that haven't been voted on</title>
 </node>

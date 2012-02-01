@@ -19,6 +19,5 @@ foreach (keys %displaytypes) {
 
 $str.=containHtml('thin outline container',$opts).&quot;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>113</author_user>
   <title>e2nodedisplayopts</title>
 </node>

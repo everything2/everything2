@@ -72,6 +72,5 @@ return qq'&lt;fieldset id=&quot;weblogform$$N{node_id}&quot;&gt;&lt;legend&gt;Ad
 	&quot; ;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>weblogform</title>
 </node>

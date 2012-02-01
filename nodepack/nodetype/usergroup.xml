@@ -11,7 +11,6 @@
   <restrict_nodetype>15</restrict_nodetype>
   <type_nodetype>1</type_nodetype>
   <writers_user>114</writers_user>
-  <author_user>114</author_user>
   <title>usergroup</title>
   <deleters_user>114</deleters_user>
 </node>

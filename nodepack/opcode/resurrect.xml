@@ -61,6 +61,5 @@ my $id = reinsertCorpse($N);
 
 $query-&gt;param('node_id', $id);</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>315</author_user>
   <title>resurrect</title>
 </node>

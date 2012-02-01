@@ -19,6 +19,5 @@ $str .= '&lt;li&gt;' .  linkNode ($ss, undef, {lastnode_id =&gt; undef})  . '&lt
 
 return '&lt;ul id=&quot;metalinks&quot;&gt;'.$str.'&lt;/ul&gt;' if $str ;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>zen titlebar</title>
 </node>

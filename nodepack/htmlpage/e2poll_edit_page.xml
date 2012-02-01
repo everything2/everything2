@@ -30,7 +30,6 @@ $query -&gt; escapeHTML($$NODE{doctext});
   <node_id>1992456</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
-  <author_user>1828141</author_user>
   <title>e2poll edit page</title>
   <mimetype></mimetype>
 </node>

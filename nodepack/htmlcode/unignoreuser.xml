@@ -30,6 +30,5 @@ $query-&gt;param('DEBUGignoreUser', 'tried to unignore '.$$U{title});
 return &quot;$$U{title} unignored&quot;;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1394568</author_user>
   <title>unignoreUser</title>
 </node>

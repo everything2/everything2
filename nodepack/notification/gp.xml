@@ -21,7 +21,6 @@ $str .= &quot;&lt;strong&gt;&quot;.$$args{amount}.&quot;&lt;/strong&gt; GP.&quot
 }
 return $str;</code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1017738</author_user>
   <description>you gain or lose [GP].</description>
   <invalid_check></invalid_check>
   <title>gp</title>

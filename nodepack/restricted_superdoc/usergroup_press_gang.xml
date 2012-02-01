@@ -91,6 +91,5 @@ if ( defined $query-&gt;param( 'usernames' ) &amp;&amp; defined $query-&gt;param
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
   <document_id>1176730</document_id>
-  <author_user>113</author_user>
   <title>Usergroup Press Gang</title>
 </node>

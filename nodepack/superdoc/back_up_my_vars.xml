@@ -170,6 +170,5 @@ return $backupInfo . $str;
   <node_id>1991362</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
-  <author_user>1449265</author_user>
   <title>Back Up My Vars</title>
 </node>

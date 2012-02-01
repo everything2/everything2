@@ -106,6 +106,5 @@ if ($str ne '') {
 return &quot;$parentstr\n$str&quot; ;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>459692</author_user>
   <title>firmlinks</title>
 </node>

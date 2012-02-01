@@ -48,6 +48,5 @@ $str .= &quot;\n&lt;/table&gt;\n&quot;;
 
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>ekwFooter</title>
 </node>

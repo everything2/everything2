@@ -7,6 +7,5 @@
 	type=&gt; 'note', lastnode_id =&gt; getId ($NODE), op =&gt; 'new', displaytype =&gt; 'edit'}).
 	&quot;&gt;add a note&lt;/a&gt;&lt;/font&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>addnote</title>
 </node>

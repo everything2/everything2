@@ -20,6 +20,5 @@ return '' if $DB-&gt;sqlSelect('weblog_id', 'weblog', 'weblog_id='.int($src_id).
 	')&lt;/small&gt;&amp;nbsp;';
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>simplenewsify</title>
 </node>

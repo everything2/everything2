@@ -15,7 +15,6 @@ if ($$bookmarkedNode{type}{title} eq 'e2node') {
 }
 return &quot;$nodetype &quot;.linkNode($$args{writeup_id}).&quot; was bookmarked by &quot;.linkNode($$args{bookmark_user});</code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1312198</author_user>
   <description>a writeup of yours gets [bookmarked] by another noder.</description>
   <invalid_check></invalid_check>
   <title>bookmark</title>

@@ -10,6 +10,5 @@ $selstr = ' SELECTED ' if($$VARS{logintonode} == $n);
 return '&lt;option value=&quot;'.$n.'&quot;'.$selstr.'&gt;'.$title.'&lt;/option&gt;'.&quot;\n&quot;;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>459692</author_user>
   <title>logintonodechoice</title>
 </node>

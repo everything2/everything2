@@ -25,6 +25,5 @@ if($$R{criteria} eq $open) {
 
 linkNode($NODE, $title, {op=&gt;'lockroom', target =&gt; getId($R)});</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>lockroom</title>
 </node>

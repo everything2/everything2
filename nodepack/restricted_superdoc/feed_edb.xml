@@ -49,6 +49,5 @@ if( (defined $query-&gt;param('numborgings')) &amp;&amp; defined($t=$query-&gt;p
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
   <document_id>1262818</document_id>
-  <author_user>9740</author_user>
   <title>feed EDB</title>
 </node>

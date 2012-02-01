@@ -144,6 +144,5 @@ return htmlcode('editwriteup') unless $query -&gt; param('other_user');
   <node_id>1991135</node_id>
   <edittime>2011-10-18 01:13:48</edittime>
   <type_nodetype>14</type_nodetype>
-  <author_user>1828141</author_user>
   <title>Drafts</title>
 </node>

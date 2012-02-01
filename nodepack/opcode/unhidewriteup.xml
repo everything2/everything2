@@ -18,6 +18,5 @@ if($query-&gt;param('hidewriteup'))
 return &quot;&quot;;
 </code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>459692</author_user>
   <title>unhidewriteup</title>
 </node>

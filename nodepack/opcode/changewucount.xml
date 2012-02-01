@@ -23,6 +23,5 @@ if ( $query-&gt;param( 'nw_nojunk' ) ) {
 return 1;
 </code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>459692</author_user>
   <title>changewucount</title>
 </node>

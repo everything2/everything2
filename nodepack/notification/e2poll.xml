@@ -6,7 +6,6 @@
   <node_id>1930854</node_id>
   <code>return &quot;There's a new [Everything Poll Directory|E2 Poll] available to vote on...&quot;</code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1312198</author_user>
   <description>a new [e2poll] is posted.</description>
   <invalid_check></invalid_check>
   <title>e2poll</title>

@@ -58,6 +58,5 @@ $str .= htmlcode('displayWriteupInfo',$WRITEUP-&gt;{node_id});
 return $str;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>displayWriteupFooter</title>
 </node>

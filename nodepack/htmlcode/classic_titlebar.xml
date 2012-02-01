@@ -18,6 +18,5 @@ $str .= &quot; | &quot; . linkNodeTitle (&quot;gigantic node lister&quot;, $NODE
 $str .= &quot; | &quot; . linkNode ($HTMLVARS{default_node});
 $str . &quot; ] &lt;p&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>classic titlebar</title>
 </node>

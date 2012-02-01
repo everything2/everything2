@@ -75,6 +75,5 @@ $str.=$query-&gt;popup_menu('writeup_wrtype_writeuptype',
 $str . $hidebox;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>setwriteuptype</title>
 </node>

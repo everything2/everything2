@@ -15,6 +15,5 @@ $str.=$$CN{nltext};
 
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>displaynltext</title>
 </node>

@@ -5,6 +5,5 @@
   <code>return join( '&lt;br&gt;' , @_ ) ;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>return my arguments</title>
 </node>

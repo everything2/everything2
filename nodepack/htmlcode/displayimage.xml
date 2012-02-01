@@ -18,6 +18,5 @@ $IMG or return &quot;no image $name!&quot;;
 
 &quot;&lt;IMG SRC=\&quot;$$IMG{src}\&quot;&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>displayimage</title>
 </node>

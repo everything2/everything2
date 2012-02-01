@@ -17,7 +17,6 @@ parseCode($$PAGE{page}, $NODE);
   <node_id>1854176</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>displayfull</displaytype>
-  <author_user>470183</author_user>
   <ownedby_theme>1854183</ownedby_theme>
   <title>zen e2node displayfull page</title>
   <mimetype></mimetype>

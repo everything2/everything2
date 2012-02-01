@@ -4,7 +4,6 @@
   <totalvotes>0</totalvotes>
   <node_id>1298616</node_id>
   <type_nodetype>332487</type_nodetype>
-  <author_user>459692</author_user>
   <datacode>function replyTo(s, c) {
        if (c || document.message_inbox_form.setvar_autofillInbox.checked) {
           document.message_inbox_form.message.value = &quot;/msg &quot;+s+&quot; &quot;;

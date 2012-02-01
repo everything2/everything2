@@ -8,6 +8,5 @@ return 0;
 #return ($$USER{title} eq 'N-Wing') ? 1 : 0;
 #return isGod($USER) ? 1 : 0;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>useNewXPSystem</title>
 </node>

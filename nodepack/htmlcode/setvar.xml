@@ -11,6 +11,5 @@ if ($query-&gt;param(&quot;sexisgood&quot;) and not $query-&gt;param(&quot;set$v
 }
 $query-&gt;textfield(&quot;set$var&quot;, $$VARS{$var}, $len);</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>setvar</title>
 </node>

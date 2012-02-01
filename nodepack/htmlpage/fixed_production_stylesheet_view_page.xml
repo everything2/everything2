@@ -12,7 +12,6 @@ return htmlcode( 'fixstylesheet' , 0 ) ;
   <node_id>1988465</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>productiontheme</displaytype>
-  <author_user>1828141</author_user>
   <title>fixed production stylesheet view page</title>
   <mimetype>text/css</mimetype>
 </node>

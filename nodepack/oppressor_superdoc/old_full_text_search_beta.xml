@@ -244,6 +244,5 @@ return $resstr.'We found the following:&lt;br&gt;&lt;br&gt;'.$str.$moretxt;
   <node_id>1378561</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1144104</type_nodetype>
-  <author_user>459692</author_user>
   <title>old full text search beta</title>
 </node>

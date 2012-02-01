@@ -123,6 +123,5 @@ $labels{$curSel} = '* '.$labels{$curSel};
 
 return $query-&gt;popup_menu($qp, \@values, $curSel, \%labels);</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>varsComboBox</title>
 </node>

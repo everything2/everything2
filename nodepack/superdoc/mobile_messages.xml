@@ -113,6 +113,5 @@ delete $HTMLVARS{chatterboxsettingswidgetlink};
   <node_id>1992740</node_id>
   <edittime>2011-10-31 12:18:39</edittime>
   <type_nodetype>14</type_nodetype>
-  <author_user>5603</author_user>
   <title>mobile messages</title>
 </node>

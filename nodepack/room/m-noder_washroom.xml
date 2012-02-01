@@ -22,6 +22,5 @@ return unless $numwr  &gt;= 1000 or isGod($USER);
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>545241</type_nodetype>
   <document_id>553133</document_id>
-  <author_user>315</author_user>
   <title>M-Noder Washroom</title>
 </node>

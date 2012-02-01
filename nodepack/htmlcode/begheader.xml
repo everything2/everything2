@@ -24,6 +24,5 @@ my $key = $keys[$index];
 &quot;&lt;div class='begheader'&gt;&quot;.linkNodeTitle(&quot;Donation Box|$key&quot;).&quot; &quot;
 .linkNodeTitle(&quot;Buy Stuff, E2 Gets Money|$$pairs{$key}&quot;).&quot;&lt;br /&gt;Please report server problems to e2webmaster at everything2.com&lt;/div&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>220</author_user>
   <title>begheader</title>
 </node>

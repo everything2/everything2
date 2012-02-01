@@ -8,7 +8,6 @@
   . ' dragged user ' . linkNode($$args{user_id})
   . ' to ' . linkNode($$args{room_id});</code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>5603</author_user>
   <description>a chanop drags a user to another room</description>
   <invalid_check></invalid_check>
   <title>chanop dragged user</title>

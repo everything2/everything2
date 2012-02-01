@@ -30,7 +30,6 @@ my $argStr = to_json($argSet);
 my $addNotifier = htmlcode('addNotification', $notification_id, $user_id, $argStr);
 </code>
   <type_nodetype>150</type_nodetype>
-  <author_user>459692</author_user>
   <maintain_nodetype>1151141</maintain_nodetype>
   <title>patch create maint</title>
 </node>

@@ -18,6 +18,5 @@ return unless (getLevel($NODE)&gt;=5) || $DB-&gt;isApproved($NODE, getNode('user
 '&lt;img src=&quot;http://images.everything2.com/'.$$NODE{imgsrc}.'&quot;&gt;';
 #'&lt;img src=&quot;'.$imgsrc.'&quot;&gt;';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>showuserimage</title>
 </node>

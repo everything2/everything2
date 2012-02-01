@@ -17,6 +17,5 @@ $vlinkcolor ||= &quot;#333399&quot;;
  RIGHTMARGIN=0 text=\&quot;$textcolor\&quot; bgcolor=\&quot;$bgcolor\&quot; 
 link=\&quot;$linkcolor\&quot; vlink=\&quot;$vlinkcolor\&quot; background=\&quot;images/ebg.gif\&quot;&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>113</author_user>
   <title>eclonebody</title>
 </node>

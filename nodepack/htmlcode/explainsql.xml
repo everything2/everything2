@@ -27,6 +27,5 @@ while (my $r = $res-&gt;fetchrow_hashref) {
 $str .= '&lt;/table&gt;';
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>974148</author_user>
   <title>explainsql</title>
 </node>

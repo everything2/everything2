@@ -10,7 +10,6 @@
 return &quot;y&quot; if($$WRITEUP{doctext} =~ /\&lt;/);
 return &quot;n&quot;;</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
-  <author_user>459692</author_user>
   <nodetest_description>Writeups that have no formatting, not even a &amp;lt;p&amp;gt; tag or its equivalent</nodetest_description>
   <title>nodetest: Writeups without formatting</title>
 </node>

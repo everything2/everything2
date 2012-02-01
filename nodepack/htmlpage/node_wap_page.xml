@@ -14,7 +14,6 @@ $NODE = $GNODE = getNodeById($HTMLVARS{not_found}) unless $$NODE{type}{title} ne
   <node_id>1296239</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>wap</displaytype>
-  <author_user>459692</author_user>
   <title>node wap page</title>
   <mimetype>text/vnd.wap.wml</mimetype>
 </node>

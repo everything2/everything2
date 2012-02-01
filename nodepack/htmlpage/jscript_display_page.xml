@@ -12,7 +12,6 @@ return $out;
   <node_id>1786408</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
-  <author_user>1312198</author_user>
   <title>jscript display page</title>
   <mimetype>text/javascript</mimetype>
 </node>

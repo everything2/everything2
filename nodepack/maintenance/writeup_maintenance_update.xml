@@ -65,7 +65,6 @@ if($query-&gt;param('writeup_wrtype_writeuptype')) {
 }
 </code>
   <type_nodetype>150</type_nodetype>
-  <author_user>113</author_user>
   <maintain_nodetype>117</maintain_nodetype>
   <title>writeup maintenance update</title>
 </node>

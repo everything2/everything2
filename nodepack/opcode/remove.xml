@@ -63,6 +63,5 @@ foreach $nid (@list){
 
 htmlcode('update New Writeups data');</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>1828141</author_user>
   <title>remove</title>
 </node>

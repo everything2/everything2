@@ -93,6 +93,5 @@ $str .= parseLinks('&lt;p&gt;([ENN|Older stuff])&lt;/p&gt;');
 
 return $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1017738</author_user>
   <title>zenTableWriteups</title>
 </node>

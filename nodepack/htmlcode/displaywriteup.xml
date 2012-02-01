@@ -33,6 +33,5 @@ $str .= htmlcode('displayWriteupFooter', getId($WRITEUP));
 containHtml('thin outline container', $str);
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>displaywriteup</title>
 </node>

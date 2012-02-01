@@ -24,7 +24,6 @@ getRef($N);
 
 updateNode($N, -1);</code>
   <type_nodetype>150</type_nodetype>
-  <author_user>1503725</author_user>
   <maintain_nodetype>1949335</maintain_nodetype>
   <title>ticket maintenance create</title>
 </node>

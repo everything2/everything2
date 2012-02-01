@@ -49,6 +49,5 @@ function loadNode(nodeid) {
   <node_id>700295</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
-  <author_user>114</author_user>
   <title>vttest</title>
 </node>

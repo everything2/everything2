@@ -4,7 +4,6 @@
   <node_id>335663</node_id>
   <type_nodetype>152</type_nodetype>
   <setting_id>335663</setting_id>
-  <author_user>315</author_user>
   <vars>author=Darrick%20Brown%20and%20Nate%20Oostendorp%20&amp;description=Dynamically%20created%20gradient%20images%20for%20nodelet%20titlebars%2e%20%20%20&amp;version=0%2e1%2e1</vars>
   <title>nodeletstyles</title>
 </node>

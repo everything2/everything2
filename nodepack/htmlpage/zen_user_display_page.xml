@@ -57,7 +57,6 @@ return if getId($USER) != getId($NODE);
   <node_id>1854179</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
-  <author_user>470183</author_user>
   <ownedby_theme>1854183</ownedby_theme>
   <title>zen user display page</title>
   <mimetype></mimetype>

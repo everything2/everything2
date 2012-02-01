@@ -22,6 +22,5 @@
 . htmlcode('static javascript')
 . &quot;&lt;/head&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>basichead</title>
 </node>

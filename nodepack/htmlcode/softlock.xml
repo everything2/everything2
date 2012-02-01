@@ -51,6 +51,5 @@ $str .='&lt;/fieldset&gt;&lt;/form&gt;';
 
 return $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>459692</author_user>
   <title>softlock</title>
 </node>

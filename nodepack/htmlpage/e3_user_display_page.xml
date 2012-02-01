@@ -48,7 +48,6 @@ return insertNodelet(getNode(&quot;User Info&quot;,&quot;nodelet&quot;)-&gt;{nod
   <node_id>1988796</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
-  <author_user>1312198</author_user>
   <ownedby_theme>1988787</ownedby_theme>
   <title>e3 user display page</title>
   <mimetype></mimetype>

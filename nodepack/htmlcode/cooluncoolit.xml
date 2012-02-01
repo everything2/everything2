@@ -37,6 +37,5 @@ $str . ' &lt;b&gt;'.linkNode( $NODE , 'C?' , { $op=&gt;'cool', cool_id=&gt;$$N{ 
 	-title =&gt; &quot;C! $author&quot;.&quot;'s writeup&quot; , -class =&gt; &quot;action&quot; }).'&lt;/b&gt;';
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>CoolUncoolIt</title>
 </node>

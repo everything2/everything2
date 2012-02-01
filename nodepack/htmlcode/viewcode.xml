@@ -13,6 +13,5 @@ return unless ($ntt eq 'superdoc') || ($ntt eq 'superdocnolinks') || ($ntt eq 'n
 
 '&lt;font size=&quot;1&quot;&gt;'.linkNode($NODE, 'viewcode', {'displaytype'=&gt;'viewcode', 'lastnode_id'=&gt;0}).'&lt;/font&gt;';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>220</author_user>
   <title>viewcode</title>
 </node>

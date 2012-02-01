@@ -10,6 +10,5 @@ my $nr = getId(getNode('node row', 'superdoc'));
 
 return $DB-&gt;sqlSelect('linkedby_user', 'weblog', &quot;weblog_id=$nr and to_node=$nodeID limit 1&quot;) || 0;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>onNodeRow</title>
 </node>

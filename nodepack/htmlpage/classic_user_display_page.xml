@@ -22,7 +22,6 @@ linkNode($NODE, 'edit', {displaytype=&gt;'edit'});
   <node_id>176000</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
-  <author_user>114</author_user>
   <ownedby_theme>415072</ownedby_theme>
   <title>classic user display page</title>
   <mimetype></mimetype>

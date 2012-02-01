@@ -404,6 +404,5 @@ if ( $$USER{ 'user_id' } != 433254 ) {
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
   <document_id>943637</document_id>
-  <author_user>433254</author_user>
   <title>scratches on walls</title>
 </node>

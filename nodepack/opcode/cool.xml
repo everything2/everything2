@@ -61,6 +61,5 @@ htmlcode('achievementsByType','cool,'.$$COOL{author_user});
 
 '';</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>114</author_user>
   <title>cool</title>
 </node>

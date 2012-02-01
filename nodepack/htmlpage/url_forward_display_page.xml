@@ -51,7 +51,6 @@ return '&lt;p&gt;&lt;strong&gt;forward-to:&lt;/strong&gt; ' . $$NODE{ 'doctext' 
   <node_id>1943471</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
-  <author_user>1133650</author_user>
   <title>url_forward display page</title>
   <mimetype></mimetype>
 </node>

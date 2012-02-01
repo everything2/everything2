@@ -116,7 +116,6 @@ return $$THEME{thinOutlineFooter} if exists $$THEME{thinOutlineFooter};
   <node_id>1161970</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
-  <author_user>9740</author_user>
   <title>ebug display page</title>
   <mimetype></mimetype>
 </node>

@@ -7,7 +7,6 @@
   <type_nodetype>1988997</type_nodetype>
   <setting_id>1989023</setting_id>
   <vars>test2|somecode=somecode2&amp;test|somecode=somecode2</vars>
-  <author_user>220</author_user>
   <title>nates test test two</title>
   <mvtest_id>1989023</mvtest_id>
   <conditions>control,test,test2</conditions>

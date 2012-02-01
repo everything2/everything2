@@ -31,6 +31,5 @@ htmlcode( 'show content' , shift || $$NODE{group} || $NODE
 );
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>show writeups</title>
 </node>

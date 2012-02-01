@@ -4,7 +4,6 @@
   <totalvotes>0</totalvotes>
   <node_id>1100984</node_id>
   <type_nodetype>332487</type_nodetype>
-  <author_user>114</author_user>
   <datacode>.oddrow {
     background-color: [%
 $$VARS{ekw_oddrowcolor} || $$THEME{oddRowColor} || &quot;#cccc99&quot;;

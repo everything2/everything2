@@ -33,6 +33,5 @@ $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' 
 	};
 	htmlcode('sendPrivateMessage','');</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>1180811</author_user>
   <title>sanctify</title>
 </node>

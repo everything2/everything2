@@ -28,7 +28,6 @@ return parseLinks($str);
   <node_id>1261883</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
-  <author_user>459692</author_user>
   <title>e2client display page</title>
   <mimetype></mimetype>
 </node>

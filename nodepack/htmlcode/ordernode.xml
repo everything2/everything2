@@ -43,6 +43,5 @@ $str .= '&lt;button name=&quot;op&quot; value=&quot;repair_e2node_noreorder&quot
 
 &quot;$str&lt;/fieldset&gt;&lt;/form&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>ordernode</title>
 </node>

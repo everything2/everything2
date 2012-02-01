@@ -81,6 +81,5 @@ $$VARS{ekw_logobackground} || $$THEME{logoBackground} || &quot;#305880&quot;;
 </context>
   <type_nodetype>2</type_nodetype>
   <container_id>1100949</container_id>
-  <author_user>114</author_user>
   <title>ekw container</title>
 </node>

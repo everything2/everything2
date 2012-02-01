@@ -5,7 +5,6 @@
   <node_id>1988825</node_id>
   <code>return linkNode($$args{user_id}).&quot; has updated their profile feed.&quot;;</code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1312198</author_user>
   <description>somebody updates their profile</description>
   <invalid_check></invalid_check>
   <title>feeditem</title>

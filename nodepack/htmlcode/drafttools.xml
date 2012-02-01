@@ -111,6 +111,5 @@ if (@tools){
 $query -&gt; span({class =&gt; 'admin', id =&gt; $id, title =&gt; $linktitle}, $text);
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>drafttools</title>
 </node>

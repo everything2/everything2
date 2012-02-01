@@ -26,7 +26,7 @@ sub xml_to_node_post
 {
 	my ($this, $N) = @_;
 	delete $N->{_create_table_statement};
-	return $N;
+	return $this->SUPER::xml_to_node_post($N);
 }
 
 1;

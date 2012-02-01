@@ -32,6 +32,5 @@ my $sane_node = getNodeById($crazy_node_id, 'force');
 $sane_node;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1449265</author_user>
   <title>make node sane</title>
 </node>

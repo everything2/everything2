@@ -15,6 +15,5 @@ my $LINKTYPE = getNode('favorite', 'linktype');
 
 $DB-&gt;sqlInsert('links', {-from_node =&gt; getId($USER), -to_node =&gt; $node_id, -linktype =&gt; getId($LINKTYPE)});</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>1312198</author_user>
   <title>favorite</title>
 </node>

@@ -26,6 +26,5 @@ return $str . &quot;\n&lt;/dl&gt;\n\n&quot;;
   <node_id>1974729</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
-  <author_user>1503725</author_user>
   <title>List HTML tags</title>
 </node>

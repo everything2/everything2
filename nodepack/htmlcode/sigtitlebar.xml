@@ -72,6 +72,5 @@ if ($is_e2node) {
 # Return the string                               
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>8933</author_user>
   <title>sigtitlebar</title>
 </node>

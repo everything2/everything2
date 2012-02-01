@@ -20,6 +20,5 @@ if ($t - $$VARS{borged} &lt; 300+60*$numborged) {
 
 $str.'&lt;br /&gt;&lt;br /&gt;';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>borgcheck</title>
 </node>

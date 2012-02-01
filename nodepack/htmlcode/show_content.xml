@@ -216,6 +216,5 @@ foreach my $N ( @input ) {
 return $str ;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>show content</title>
 </node>

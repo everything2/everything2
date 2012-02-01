@@ -29,6 +29,5 @@ foreach($query-&gt;param) {
 htmlcode('addNodenote', $notefor, $notetext, $USER) if $notetext;
 </code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>459692</author_user>
   <title>nodenote</title>
 </node>

@@ -17,6 +17,5 @@ foreach (@months) {
 
 return $isDaylog;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>isdaylog</title>
 </node>

@@ -60,6 +60,5 @@ $query-&gt;param('setCloakVision','see'.$lSee.'.cloak'.$lCloak);
 
 return 'see'.$lSee.'.cloak'.$lCloak;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>setCloakVision</title>
 </node>

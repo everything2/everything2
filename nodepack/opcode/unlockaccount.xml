@@ -17,6 +17,5 @@ my $OP = getId(getNode(&quot;unlockaccount&quot;,&quot;opcode&quot;));
 
 $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; $OP, 'seclog_details' =&gt; &quot;$$uid{title}'s account was unlocked by $$USER{title}&quot;});</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>459692</author_user>
   <title>unlockaccount</title>
 </node>

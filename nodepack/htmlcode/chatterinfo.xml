@@ -42,6 +42,5 @@ $str .= '&lt;p align=&quot;center&quot;&gt;&lt;small&gt;'.linkNodeTitle('E2 FAQ:
 
 $str.'&lt;p&gt;&lt;small&gt;(chatterinfo is deprecated)&lt;/small&gt;&lt;/p&gt;';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>chatterinfo</title>
 </node>

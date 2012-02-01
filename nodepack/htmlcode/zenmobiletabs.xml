@@ -62,6 +62,5 @@ return ('&lt;div id=&quot;zen_mobiletabs&quot;&gt;'
         . '&lt;/div&gt;');
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>5603</author_user>
   <title>zenMobileTabs</title>
 </node>

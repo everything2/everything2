@@ -125,6 +125,5 @@ $votestr .='&lt;/span&gt;' ;
 return $edstr.$votestr ;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>voteit</title>
 </node>

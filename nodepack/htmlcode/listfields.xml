@@ -10,6 +10,5 @@ $str .=&quot;\n&lt;li&gt;&quot;;
 $str .= join &quot;\n&lt;li&gt;&quot;, $DB-&gt;getFields($$NODE{table});
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>113</author_user>
   <title>listFields</title>
 </node>

@@ -8,7 +8,6 @@
   <lastupdate>946339466</lastupdate>
   <node_id>87</node_id>
   <type_nodetype>9</type_nodetype>
-  <author_user>114</author_user>
   <nodelet_id>87</nodelet_id>
   <nlcode>[%
 my $str;

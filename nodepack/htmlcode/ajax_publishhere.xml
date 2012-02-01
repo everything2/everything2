@@ -21,6 +21,5 @@ return $query -&gt; hidden('writeup_parent_e2node')
 		class=&quot;wuformaction&quot;&gt;Publish&lt;/button&gt;';
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>ajax publishhere</title>
 </node>

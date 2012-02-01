@@ -6,6 +6,5 @@
 
 return ($HTMLVARS{group_gods}{$userID}) || ($HTMLVARS{'group_content editors'}{$userID});</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>isEditor</title>
 </node>

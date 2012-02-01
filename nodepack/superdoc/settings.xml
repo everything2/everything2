@@ -193,6 +193,5 @@ return ' --&gt;' if $$USER{node_id} == $HTMLVARS{guest_user};
   <node_id>108</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
-  <author_user>114</author_user>
   <title>Settings</title>
 </node>

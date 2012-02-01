@@ -44,6 +44,5 @@ delete $$parameters{ -closetitle } ;
 $$parameters{ displaytype } = $query -&gt; param( 'displaytype' ) if $query -&gt; param( 'displaytype' ) ;
 return $str.linkNode( $N , $linktext , $parameters ) ;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>widget</title>
 </node>

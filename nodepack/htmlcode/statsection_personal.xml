@@ -39,6 +39,5 @@ $str .= genRow('GP', $$USER{GP});
 
 return '&lt;div&gt;'.$str.'&lt;/div&gt;';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>statsection_personal</title>
 </node>

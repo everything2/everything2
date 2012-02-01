@@ -4,7 +4,6 @@
   <totalvotes>0</totalvotes>
   <node_id>415065</node_id>
   <type_nodetype>332487</type_nodetype>
-  <author_user>114</author_user>
   <datacode>
 /* This dummy is here because IE3 sometimes ignores the first style, not
    used any where, but needed to make this css-def function properly */

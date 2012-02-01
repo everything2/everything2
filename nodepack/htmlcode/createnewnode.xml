@@ -59,6 +59,5 @@ foreach my $type (@aprtypes) {
 
 $str.'&lt;/ul&gt;';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>113</author_user>
   <title>createnewnode</title>
 </node>

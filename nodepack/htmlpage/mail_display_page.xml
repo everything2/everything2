@@ -26,7 +26,6 @@ if (not $$NODE{from_address}) {
   <node_id>195</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
-  <author_user>113</author_user>
   <title>mail display page</title>
   <mimetype></mimetype>
 </node>

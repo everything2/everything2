@@ -297,6 +297,5 @@ require LWP::Simple;
         }
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>974148</author_user>
   <title>getOnThisDay</title>
 </node>

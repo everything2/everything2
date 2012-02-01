@@ -28,6 +28,5 @@ return ' background=&quot;'.$bk.'&quot;' if $bk;
 &lt;/tr&gt;</context>
   <type_nodetype>2</type_nodetype>
   <container_id>20</container_id>
-  <author_user>113</author_user>
   <title>nodelet container</title>
 </node>

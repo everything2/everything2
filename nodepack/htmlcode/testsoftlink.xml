@@ -95,6 +95,5 @@ if ($cantrim) {
 return $str if exists $$THEME{noThinOutline};
 containHtml('thin outline container', $str);</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>testsoftlink</title>
 </node>

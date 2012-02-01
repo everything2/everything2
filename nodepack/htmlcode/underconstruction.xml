@@ -26,6 +26,5 @@ $str .= '&lt;/p&gt;
 
 return $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>UnderConstruction</title>
 </node>

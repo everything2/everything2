@@ -16,6 +16,5 @@ SELECT TOP 10 * FROM (SELECT N.TITLE, REP, TV, REP/TV RAT
   <node_id>1934115</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
-  <author_user>580946</author_user>
   <title>Wall of Controversy</title>
 </node>

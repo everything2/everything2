@@ -56,6 +56,5 @@ $id .= &quot;forward&quot; if defined $givenTitle;
 return &quot;\t&quot;.'&lt;div class=&quot;topic&quot; id=&quot;' . $id . '&quot;&gt;'.$retstr.'.)&lt;/div&gt;';
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>459692</author_user>
   <title>usercheck</title>
 </node>

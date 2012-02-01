@@ -40,6 +40,5 @@ push @links, linkNode($HTMLVARS{default_node},0,$noPrevLink);
 &lt;p&gt;&lt;small&gt;[ ' . join(' | ',@links) . ' ] &lt;/small&gt;&lt;/p&gt;
 ';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>titlebar</title>
 </node>

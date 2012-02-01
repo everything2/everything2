@@ -37,6 +37,5 @@ my $str = &quot;&lt;tr bgcolor=\&quot;$clr\&quot;&gt;&lt;td align=\&quot;left\&q
 
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>displaySingleVar</title>
 </node>

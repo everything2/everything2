@@ -62,6 +62,5 @@ if (scalar @names == 1){
 return '';
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>canpublishas</title>
 </node>

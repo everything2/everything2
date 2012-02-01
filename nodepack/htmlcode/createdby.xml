@@ -14,6 +14,5 @@ my $text = $$VARS{hideauthore2node} ? 'anonymous' : '' ;
 $crby ? 'created by '.linkNode($crby,$text,{lastnode_id=&gt;0}) : '(creator unknown)'
 ).'&lt;/div&gt;';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>createdby</title>
 </node>

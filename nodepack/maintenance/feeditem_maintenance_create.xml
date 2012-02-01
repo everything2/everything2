@@ -14,7 +14,6 @@ $$FEEDITEM{doctext} = $query-&gt;param(&quot;doctext&quot;);
 
 updateNode($FEEDITEM, -1);</code>
   <type_nodetype>150</type_nodetype>
-  <author_user>1312198</author_user>
   <maintain_nodetype>1988675</maintain_nodetype>
   <title>feeditem maintenance create</title>
 </node>

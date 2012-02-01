@@ -7,7 +7,6 @@
   <lastupdate>1160062803</lastupdate>
   <node_id>1838069</node_id>
   <type_nodetype>9</type_nodetype>
-  <author_user>974148</author_user>
   <nodelet_id>1838069</nodelet_id>
   <nlcode>[%
 return &quot;This is currently broken&quot;;

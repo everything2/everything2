@@ -48,7 +48,6 @@ $$CATEGORY{author_user} = $$MAINTAINER{node_id};
 updateNode($CATEGORY, -1);
 </code>
   <type_nodetype>150</type_nodetype>
-  <author_user>1323377</author_user>
   <maintain_nodetype>1522375</maintain_nodetype>
   <title>category maintenance create</title>
 </node>

@@ -43,6 +43,5 @@ if((defined $query-&gt;param(&quot;fieldname_new&quot;)) &amp;&amp;
 &quot;&quot;;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>113</author_user>
   <title>updatetable</title>
 </node>

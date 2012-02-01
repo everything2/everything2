@@ -54,6 +54,5 @@ return qq'&lt;div id=&quot;$sectionId&quot; class=&quot;nodeletsection&quot;&gt;
 	&lt;div class=&quot;sectionheading&quot;&gt;$s&lt;/div&gt;\n$content&lt;/div&gt;\n';
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>nodeletsection</title>
 </node>

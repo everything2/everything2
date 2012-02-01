@@ -73,6 +73,5 @@ if ( ($$VARS{nodelet_tabs}) &amp;&amp; ($isZen) &amp;&amp; ($$VARS{userstyle}==1
 
 return $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>showNodelets</title>
 </node>

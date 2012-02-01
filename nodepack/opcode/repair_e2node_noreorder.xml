@@ -15,6 +15,5 @@ return 1 if $result;
 return undef;
 </code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>459692</author_user>
   <title>repair_e2node_noreorder</title>
 </node>

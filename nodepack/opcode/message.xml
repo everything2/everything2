@@ -708,6 +708,5 @@ if($message =~ /^\/(msg\??|tell\??)(\{.+?\}\??|\s+\S+)(\s+.+)?$/si) {
 }
 </code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>114</author_user>
   <title>message</title>
 </node>

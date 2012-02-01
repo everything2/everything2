@@ -83,7 +83,6 @@ updateNode( $COMMENT, $USER );
 # updateNode( $NODE, $USER );
 </code>
   <type_nodetype>150</type_nodetype>
-  <author_user>114</author_user>
   <maintain_nodetype>1157413</maintain_nodetype>
   <title>debate maintenance create</title>
 </node>

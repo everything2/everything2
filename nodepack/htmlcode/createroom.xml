@@ -13,6 +13,5 @@ return '&lt;span title=&quot;create a new room to chat in&quot;&gt;'
 	. linkNode($cr,'create',{lastnode_id=&gt;0})
 	. '&lt;/span&gt;';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>createroom</title>
 </node>

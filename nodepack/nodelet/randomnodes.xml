@@ -6,7 +6,6 @@
   <createtime>2000-01-05 19:16:07</createtime>
   <node_id>372079</node_id>
   <type_nodetype>9</type_nodetype>
-  <author_user>114</author_user>
   <nodelet_id>372079</nodelet_id>
   <nlcode>[%
   my $numnodes = 15;

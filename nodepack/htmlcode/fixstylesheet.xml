@@ -108,6 +108,5 @@ $output = $addstyles.$output if $fixwasneeded ;
 
 $output ;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>fixstylesheet</title>
 </node>

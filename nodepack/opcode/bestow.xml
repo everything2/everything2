@@ -18,6 +18,5 @@ updateNode($U, -1);
 $U = getNodeById(getId($U), 'force');
 if (getId($U) == getId($USER)) { $USER = $U ; }</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>114</author_user>
   <title>bestow</title>
 </node>

@@ -24,6 +24,5 @@ my $nicedate =localtime ($epoch_secs);
 $nicedate =~ s/(\d\d):(\d\d):(\d\d).*$/$yy at $1:$2:$3/;
 $nicedate;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>parsetime</title>
 </node>

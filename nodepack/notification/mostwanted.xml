@@ -6,7 +6,6 @@
   <node_id>1935408</node_id>
   <code>return &quot;[USER X] has [filled] your Most Wanted nodeshell [Y].&quot;</code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1312198</author_user>
   <description>someone fills one of your [Everything's Most Wanted|Most Wanted] requests.</description>
   <invalid_check></invalid_check>
   <title>mostwanted</title>

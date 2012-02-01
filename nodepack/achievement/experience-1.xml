@@ -9,7 +9,6 @@
 return 1 if $xpCount &lt; 0;
 return 0;</code>
   <type_nodetype>1917847</type_nodetype>
-  <author_user>1312198</author_user>
   <achievement_still_available>0</achievement_still_available>
   <title>experience-1</title>
 </node>

@@ -37,6 +37,5 @@ else
   $query-&gt;param('result', 'Not-A-Category');
 }</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>329</author_user>
   <title>opNukeCat</title>
 </node>

@@ -4,7 +4,6 @@
   <node_id>213</node_id>
   <type_nodetype>153</type_nodetype>
   <setting_id>213</setting_id>
-  <author_user>113</author_user>
   <vars>FIXED=Fixed&amp;NAB=NAB%20%2d%20Not%20a%20bug&amp;FOL=FOL%20%2d%20Fact%20of%20Life&amp;NEW=New&amp;UTR=UTR%20%2d%20Unable%20to%20reproduce&amp;DUPLICATE=Duplicate</vars>
   <title>bugstatus</title>
 </node>

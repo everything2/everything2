@@ -13,7 +13,6 @@ $$E2NODE{author_user} = getId(getNode('Content Editors', 'usergroup')); # Conten
 
 updateNode($E2NODE, -1);</code>
   <type_nodetype>150</type_nodetype>
-  <author_user>315</author_user>
   <maintain_nodetype>116</maintain_nodetype>
   <title>e2node maintenance create</title>
 </node>

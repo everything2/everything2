@@ -184,6 +184,5 @@ for(0..50){$str.=&quot;$_: &quot;.$query-&gt;param(&quot;$_&quot;).'&lt;br /&gt;
 $str;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>groupeditor</title>
 </node>

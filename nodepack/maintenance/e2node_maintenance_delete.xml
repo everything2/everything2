@@ -18,7 +18,6 @@ foreach(@$group) {
 
 1;</code>
   <type_nodetype>150</type_nodetype>
-  <author_user>114</author_user>
   <maintain_nodetype>116</maintain_nodetype>
   <title>e2node maintenance delete</title>
 </node>

@@ -17,6 +17,5 @@ my $success = $DB -&gt; sqlUpdate( # editor approval flagged by feeding the link
 	&quot;from_node=$draft AND to_node=$e2node AND linktype=$linktype&quot;);
 </code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>1828141</author_user>
   <title>approve_draft</title>
 </node>

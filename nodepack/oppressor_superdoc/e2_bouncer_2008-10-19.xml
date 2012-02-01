@@ -121,6 +121,5 @@ foreach(sort(keys %$rooms))
   <node_id>1959479</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1144104</type_nodetype>
-  <author_user>113</author_user>
   <title>E2 Bouncer 2008-10-19</title>
 </node>

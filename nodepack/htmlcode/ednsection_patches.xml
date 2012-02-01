@@ -19,6 +19,5 @@ $str.= '&lt;/table&gt;&lt;p align=&quot;center&quot;&gt;'.linkNodeTitle(&quot;Pa
 $str .= '&lt;br&gt;&lt;a href=&quot;http://devel.everything2.com/ecore&quot;&gt;Mercurial Repository&lt;/a&gt;&lt;/p&gt;' if $HTMLVARS{isDevServer};
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>220</author_user>
   <title>ednsection_patches</title>
 </node>

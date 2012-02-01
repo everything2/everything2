@@ -7,7 +7,6 @@
   <lastupdate>1309374173</lastupdate>
   <node_id>1935779</node_id>
   <type_nodetype>9</type_nodetype>
-  <author_user>1323377</author_user>
   <nodelet_id>1935779</nodelet_id>
   <nlcode>[%
 my $uid = $$USER{user_id};

@@ -15,6 +15,5 @@ htmlcode('openform').'&lt;fieldset&gt;&lt;legend&gt;Add node forward&lt;/legend&
 	&lt;/fieldset&gt;
 	&lt;/form&gt;';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1017738</author_user>
   <title>addnodeforward</title>
 </node>

@@ -91,6 +91,5 @@ return '&lt;span id=&quot;cools'.$$N{node_id}.'&quot; class=&quot;cools&quot;&gt
 $coollink.'&lt;/span&gt;' ;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>writeupcools</title>
 </node>

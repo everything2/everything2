@@ -57,6 +57,5 @@ $text = $otherSayings[int(rand(@otherSayings))];
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
   <document_id>1796239</document_id>
-  <author_user>9740</author_user>
   <title>AFD code</title>
 </node>

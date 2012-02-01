@@ -33,6 +33,5 @@ $str .= &quot;}\n&lt;/script&gt;\n&quot;;
 $str .= &quot;&lt;a href=\&quot;javascript:confirm$name();\&quot;&gt;$name!&lt;/a&gt; &lt;a href=&quot;.urlGen({node_id=&gt;$src_id}).&quot;&gt;(view)&lt;/a&gt;\n&quot;;
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>newsify</title>
 </node>

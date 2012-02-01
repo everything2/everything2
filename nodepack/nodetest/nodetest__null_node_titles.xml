@@ -14,7 +14,6 @@ if(not exists($$NODE{title}) or $$NODE{title} eq &quot;&quot; or &quot;$$NODE{ti
 }
   return &quot;y&quot;;</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
-  <author_user>459692</author_user>
   <nodetest_description>Makes sure there aren't null node titles that trip us up. Applies to all nodes</nodetest_description>
   <title>nodetest: null node titles</title>
 </node>

@@ -28,6 +28,5 @@ for (my $count=1; $count&lt;=$levels; $count++) {
 $str.='&lt;/div&gt;';
 return $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1017738</author_user>
   <title>stars</title>
 </node>

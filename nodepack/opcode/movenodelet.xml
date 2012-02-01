@@ -7,6 +7,5 @@
 
 htmlcode('movenodelet',$query-&gt;param('nodelet'),$query-&gt;param('position'));</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>1828141</author_user>
   <title>movenodelet</title>
 </node>

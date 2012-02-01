@@ -4,7 +4,6 @@
   <totalvotes>0</totalvotes>
   <node_id>335664</node_id>
   <type_nodetype>332487</type_nodetype>
-  <author_user>315</author_user>
   <datacode>[%
 # To use this, you will need to install libgd and GD.pm.
 use GD;

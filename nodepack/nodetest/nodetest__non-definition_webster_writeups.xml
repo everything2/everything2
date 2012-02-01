@@ -13,7 +13,6 @@ return &quot;y&quot; unless($$WRITEUP{author_user} == $$webby{node_id});
 return &quot;n&quot; unless($$WRITEUP{wrtype_writeuptype} == $$def{node_id});
 return &quot;y&quot;;</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
-  <author_user>459692</author_user>
   <nodetest_description>Webby defs that aren't &quot;definitions&quot;. Will be autocorrected by the &quot;fix&quot; functionality soon.</nodetest_description>
   <title>nodetest: Non-definition Webster writeups</title>
 </node>

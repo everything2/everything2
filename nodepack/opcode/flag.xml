@@ -34,6 +34,5 @@ $DB-&gt;sqlInsert(&quot;links&quot;,{linktype =&gt; $fLink, from_node =&gt; $fla
 
 </code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>1312198</author_user>
   <title>flag</title>
 </node>

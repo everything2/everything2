@@ -262,6 +262,5 @@ return $string unless $jsoncount;
 return $json;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1017738</author_user>
   <title>testshowmessages</title>
 </node>

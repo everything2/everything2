@@ -68,6 +68,5 @@ local *displaydebatecomment = sub{ # use local not lexical variable so it can be
 
 &amp;displaydebatecomment;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>113</author_user>
   <title>displaydebatecomment</title>
 </node>

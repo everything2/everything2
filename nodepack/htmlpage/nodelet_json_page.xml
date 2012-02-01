@@ -19,7 +19,6 @@ $json-&gt;objToJson(\%pieces, {pretty =&gt; 1, indent =&gt; 2});
   <node_id>1894152</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>json</displaytype>
-  <author_user>114</author_user>
   <title>nodelet json page</title>
   <mimetype>text/javascript</mimetype>
 </node>

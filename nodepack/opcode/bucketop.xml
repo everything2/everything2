@@ -38,6 +38,5 @@ if($query-&gt;param(&quot;bdrop&quot;) or $query-&gt;param(&quot;dropexec&quot;)
   delete $$VARS{nodebucket} unless($bucket &amp;&amp; $bucket ne &quot;&quot;);
 }</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>220</author_user>
   <title>bucketop</title>
 </node>

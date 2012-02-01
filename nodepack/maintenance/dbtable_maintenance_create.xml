@@ -13,7 +13,6 @@ my ($NODE) = @_;
 getRef $NODE;
 $DB-&gt;createNodeTable($$NODE{title});</code>
   <type_nodetype>150</type_nodetype>
-  <author_user>113</author_user>
   <maintain_nodetype>148</maintain_nodetype>
   <title>dbtable maintenance create</title>
 </node>

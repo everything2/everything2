@@ -22,6 +22,5 @@ while ($index &lt; @group) {
 $str.=&quot;&lt;/multicol&gt;&quot;;
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>listwriteups</title>
 </node>

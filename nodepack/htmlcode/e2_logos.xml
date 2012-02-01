@@ -15,6 +15,5 @@ linkNode ($HTMLVARS{default_node},
   &quot;&lt;IMG border=0 src=$HTMLVARS{imageroot}/images/$rand &gt;&quot;);
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>e2 logos</title>
 </node>

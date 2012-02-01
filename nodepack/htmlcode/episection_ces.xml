@@ -205,6 +205,5 @@ $str.=($oldway ? '&lt;small&gt;' : '&lt;li&gt;&lt;small&gt;').linkNodeTitle($sub
 return $str;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>episection_ces</title>
 </node>

@@ -77,6 +77,5 @@ unless (defined $vote or $$POLL{poll_status} eq 'closed'){
 return $str;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>showpoll</title>
 </node>

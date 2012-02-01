@@ -18,6 +18,5 @@ if ($$USER{title} eq 'Guest User') {
 
 return ($test eq $query-&gt;param($prefix . '_nonce')) ? 1 : 0;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>974148</author_user>
   <title>verifyRequest</title>
 </node>

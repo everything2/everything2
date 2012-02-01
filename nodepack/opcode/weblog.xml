@@ -58,6 +58,5 @@ if ($$SRC{title} eq 'News for noders. Stuff that matters.') {
 
 </code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>114</author_user>
   <title>weblog</title>
 </node>

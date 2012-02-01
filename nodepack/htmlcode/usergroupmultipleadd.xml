@@ -19,6 +19,5 @@ if (exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) and not exists($$nomulti{$$
 '';
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>113</author_user>
   <title>usergroupmultipleadd</title>
 </node>

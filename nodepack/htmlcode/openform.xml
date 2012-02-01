@@ -21,6 +21,5 @@ $query-&gt;hidden(&quot;displaytype&quot;) . &quot;\n&quot; .
 $query-&gt;hidden('node_id', $$NODE{node_id});
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>openform</title>
 </node>

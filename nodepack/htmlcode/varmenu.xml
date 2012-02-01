@@ -31,6 +31,5 @@ my $SELECT = $$VARS{$var};
 
 $query-&gt;popup_menu($name, \@titlelist, $SELECT, \%items);</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>varMenu</title>
 </node>

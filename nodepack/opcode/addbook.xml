@@ -11,6 +11,5 @@
   $$VARS{bookbucket} .= $1;
 }</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>220</author_user>
   <title>addBook</title>
 </node>

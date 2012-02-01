@@ -41,6 +41,5 @@ $str .= '
 htmlcode( 'widget' , $str , 'form' , '' , { showwidget =&gt; '' } ) ;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>confirmop</title>
 </node>

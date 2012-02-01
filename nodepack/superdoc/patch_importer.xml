@@ -372,6 +372,5 @@ sub listPatches{
   <node_id>1988260</node_id>
   <edittime>2011-07-25 09:36:59</edittime>
   <type_nodetype>14</type_nodetype>
-  <author_user>1449265</author_user>
   <title>patch importer</title>
 </node>

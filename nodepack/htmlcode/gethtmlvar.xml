@@ -10,6 +10,5 @@ if  ( (exists $HTMLVARS{$varName}) &amp;&amp; (defined $HTMLVARS{$varName}) ) {
 
 return 0;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>getHTMLVAR</title>
 </node>

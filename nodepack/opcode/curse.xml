@@ -13,6 +13,5 @@ $$U{karma} -= 1;
 
 updateNode($U, -1);</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>114</author_user>
   <title>curse</title>
 </node>

@@ -18,6 +18,5 @@ return 1 if ($kuid &amp;&amp; !$unkuid);
 return 0;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1449265</author_user>
   <title>isMarkedForDestruction</title>
 </node>

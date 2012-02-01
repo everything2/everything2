@@ -19,7 +19,6 @@ linkNode $NODE, &quot;close&quot;, {displaytype=&gt; $query-&gt;param('displayty
   <node_id>1522378</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>editor</displaytype>
-  <author_user>329</author_user>
   <title>category editor page</title>
   <mimetype></mimetype>
 </node>

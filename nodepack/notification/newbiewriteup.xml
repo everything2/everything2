@@ -18,7 +18,6 @@ my $wu_link = getNodeById($$args{writeup_id}) ?
 return &quot;A new user, &lt;b&gt;$author_link&lt;/b&gt;, posted a writeup $wu_link.&quot;;
 </code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1449265</author_user>
   <description>a new user posts a writeup</description>
   <invalid_check>use DateTime;
 use DateTime::Format::Strptime;

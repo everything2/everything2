@@ -18,6 +18,5 @@ if ($$NODE{enabled} == 0 and $$NODE{starttime} ne $blanktime and $$NODE{endtime}
   updateNode($NODE, -1);
 } </code>
   <type_nodetype>150</type_nodetype>
-  <author_user>220</author_user>
   <title>mvtest maintenance update</title>
 </node>

@@ -100,7 +100,6 @@ return to_json($str);
   <node_id>1989647</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>ajaxupdate</displaytype>
-  <author_user>1828141</author_user>
   <title>ajax update page</title>
   <mimetype>text/plain</mimetype>
 </node>

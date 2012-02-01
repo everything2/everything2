@@ -28,7 +28,6 @@ setVars($JNODE, $SETTINGS);
 
 updateNode($JSCRIPT, -1);</code>
   <type_nodetype>150</type_nodetype>
-  <author_user>1312198</author_user>
   <maintain_nodetype>1786405</maintain_nodetype>
   <title>jscript maintenance create</title>
 </node>

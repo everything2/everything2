@@ -58,6 +58,5 @@ foreach(@allSettings) {
 
 return '&lt;div class=&quot;settingsdocs&quot;&gt;&amp;ndash; &amp;nbsp;' . join(' &amp;#183; ', @allSettings) . ' &amp;nbsp; &amp;ndash;&lt;/div&gt;';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>settingsDocs</title>
 </node>

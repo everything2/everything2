@@ -145,7 +145,6 @@ delete $HTMLVARS{admintools};
   <node_id>1990150</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
-  <author_user>1828141</author_user>
   <ownedby_theme>1854183</ownedby_theme>
   <title>zen e2node display page</title>
   <mimetype></mimetype>

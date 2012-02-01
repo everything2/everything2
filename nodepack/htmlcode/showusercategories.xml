@@ -27,6 +27,5 @@ return if !scalar(@categories);
 return join(', ', @categories);
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1797883</author_user>
   <title>showUserCategories</title>
 </node>

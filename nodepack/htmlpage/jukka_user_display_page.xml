@@ -40,7 +40,6 @@ linkNode($NODE, '(edit user information)', {displaytype=&gt;'edit'});
   <node_id>415068</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
-  <author_user>114</author_user>
   <title>jukka user display page</title>
   <mimetype></mimetype>
 </node>

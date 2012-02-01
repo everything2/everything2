@@ -27,6 +27,5 @@ if(exists($HTMLVARS{'group_gods'}{$$USER{node_id}})){
 
 return &quot;(&lt;small&gt; &quot;.join(&quot; | &quot;, @choices).&quot; &lt;/small&gt;)&lt;br&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>459692</author_user>
   <title>repaire2node</title>
 </node>

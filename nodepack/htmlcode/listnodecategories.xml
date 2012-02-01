@@ -78,6 +78,5 @@ return qq'&lt;div id=&quot;categories$nodeid&quot;&gt;&lt;/div&gt;' unless $isIn
 '';
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1797883</author_user>
   <title>listnodecategories</title>
 </node>

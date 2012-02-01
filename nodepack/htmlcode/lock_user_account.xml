@@ -27,6 +27,5 @@ setVars($uid, $V);
 updateNode($uid, -1);
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1449265</author_user>
   <title>lock user account</title>
 </node>

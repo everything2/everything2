@@ -37,6 +37,5 @@ return ($sum / $count) if ($count &gt;= $minRatings);
 return undef;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1449265</author_user>
   <title>getAverageStarRating</title>
 </node>

@@ -19,6 +19,5 @@ $str .= genRow('Tokens',$$VARS{tokens});
 
 return '&lt;div&gt;'.$str.'&lt;/div&gt;';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1180811</author_user>
   <title>statsection_fun</title>
 </node>

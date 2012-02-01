@@ -21,6 +21,5 @@ $scratchSave .
 $query-&gt;hidden('node_id', getId $NODE);
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>openform2</title>
 </node>

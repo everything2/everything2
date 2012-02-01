@@ -22,6 +22,5 @@ $killButton = $isKiller &amp;&amp; $$NODE{type}{title} ne 'draft' ? &quot;&lt;p&
 return sprintf($rowFormat,
 	$voteButton, $killButton) . $query-&gt;end_form;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>votefoot</title>
 </node>

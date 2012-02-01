@@ -16,6 +16,5 @@ $str.= encodeHTML($txt);
 $str.=&quot;&lt;/superdoctext&gt;\n&quot;;
 return $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>459692</author_user>
   <title>formxml_superdoc</title>
 </node>

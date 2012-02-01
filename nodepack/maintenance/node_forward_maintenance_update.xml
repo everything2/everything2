@@ -19,7 +19,6 @@ if ($forwardTitle) {
   updateNode($FORWARD, -1);
 }</code>
   <type_nodetype>150</type_nodetype>
-  <author_user>1828141</author_user>
   <maintain_nodetype>1147470</maintain_nodetype>
   <title>node_forward maintenance update</title>
 </node>

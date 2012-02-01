@@ -8,6 +8,5 @@
   <code>onkeypress=&quot;var mylen = new String(document.form1.message.value); if(mylen.length &gt; 255) alert(\'You can only have up to 255 characters in this field. You currently have \'+ String(mylen.length) + \'.  If you send this message now, some characters will be truncated.\');&quot;</code>
   <type_nodetype>1382262</type_nodetype>
   <document_id>1414257</document_id>
-  <author_user>459692</author_user>
   <title>Message Inbox box length warning</title>
 </node>

@@ -111,6 +111,5 @@ $text =~ s/\[-(.+?)-\]/expandIt($1)/ge;	#should we multi-line this?
 
 return $text;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>pseudoExec</title>
 </node>

@@ -4,7 +4,6 @@
   <totalvotes>0</totalvotes>
   <node_id>332497</node_id>
   <type_nodetype>332487</type_nodetype>
-  <author_user>113</author_user>
   <datacode>[%
 # This gets a file from the system and returns the data
 # contained within.  This defaults to 'image/gif' as a

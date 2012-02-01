@@ -14,7 +14,6 @@ if ($$NODE{parent_theme}) {
   <node_id>175995</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
-  <author_user>113</author_user>
   <title>themesetting display page</title>
   <mimetype></mimetype>
 </node>

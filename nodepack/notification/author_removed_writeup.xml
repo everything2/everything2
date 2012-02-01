@@ -15,7 +15,6 @@ my $reason = &quot; ($$args{reason})&quot; if $$args{reason};
 linkNode($$args{author_id})
 .&quot; removed &lt;b&gt;$titleLink&lt;/b&gt;$reason&quot;;</code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1828141</author_user>
   <description>a user removes a writeup</description>
   <invalid_check>my $draft = getNodeById($$args{writeup_id});
 

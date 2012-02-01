@@ -20,6 +20,5 @@ $str.=linkNode($$a{achievement_id}).&quot; - &quot;.$result.&quot;&lt;br /&gt;&q
 
 return $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>achievementsByType</title>
 </node>

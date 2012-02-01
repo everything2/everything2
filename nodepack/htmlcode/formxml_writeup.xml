@@ -9,6 +9,5 @@ $str.= &quot;&lt;softlinks&gt;\n&quot;.htmlcode(&quot;softlink&quot;, &quot;xml&
 
 return $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>459692</author_user>
   <title>formxml_writeup</title>
 </node>

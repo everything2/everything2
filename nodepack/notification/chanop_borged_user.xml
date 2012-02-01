@@ -7,7 +7,6 @@
   <code>return linkNode($$args{chanop_id})
   . ' borged user ' . linkNode($$args{user_id});</code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>5603</author_user>
   <description>a chanop borgs someone</description>
   <invalid_check></invalid_check>
   <title>chanop borged user</title>

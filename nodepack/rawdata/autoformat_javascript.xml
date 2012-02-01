@@ -4,7 +4,6 @@
   <totalvotes>0</totalvotes>
   <node_id>1705316</node_id>
   <type_nodetype>332487</type_nodetype>
-  <author_user>1312198</author_user>
   <datacode>function autoFormat (id)
 {
   var elem = document.getElementsByName(id).item(0);

@@ -8,6 +8,5 @@ my $n = (($$USER{node_id} == $HTMLVARS{guest_user})?(undef):($NODE));
 parseLinks( $$NODE{$field} , $n ) ;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>parselinks</title>
 </node>

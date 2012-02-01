@@ -75,6 +75,5 @@ $passout{systemUID} = 1080927;  # Virgil
 $HTMLVARS{newmsg_common} = \%passout;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1797883</author_user>
   <title>new msg system common</title>
 </node>

@@ -13,7 +13,6 @@ return unless(@grp);
 return &quot;y&quot; unless @grp &gt; 1;
 return &quot;n&quot;;</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
-  <author_user>459692</author_user>
   <nodetest_description>Finds instances where it says : x is also an e2node. Those are duplicate titles</nodetest_description>
   <title>nodetest: Duplicate node titles</title>
 </node>

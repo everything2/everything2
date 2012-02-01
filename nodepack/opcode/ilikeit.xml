@@ -67,6 +67,5 @@ my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR} || undef;
 $DB-&gt;sqlInsert('likedit',{likedit_ip =&gt; $addr, likedit_node =&gt; $$LIKE{node_id}});
 </code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>1312198</author_user>
   <title>ilikeit</title>
 </node>

@@ -19,6 +19,5 @@ $menu-&gt;addSettings($settings);
 $menu-&gt;writePopupHTML($query,$name,$selected);
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>113</author_user>
   <title>settingMenu</title>
 </node>

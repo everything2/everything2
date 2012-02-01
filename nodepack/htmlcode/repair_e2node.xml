@@ -62,6 +62,5 @@ return &quot;repaired and reordered&quot; unless $no_order;
 return &quot;repaired&quot;;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1449265</author_user>
   <title>repair e2node</title>
 </node>

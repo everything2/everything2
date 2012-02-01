@@ -11,6 +11,5 @@ my $isFlagged = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;links&quot;,&quot;l
 
 return $isFlagged;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1312198</author_user>
   <title>flagged</title>
 </node>

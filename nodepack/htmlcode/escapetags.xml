@@ -11,6 +11,5 @@ $str =~ s/\&gt;/\&amp;gt\;/g;
 
 return $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1394568</author_user>
   <title>escapetags</title>
 </node>

@@ -52,6 +52,5 @@ $DB-&gt;sqlInsert(&quot;message&quot;, {author_user=&gt;getId(getNode(&quot;root
 return updateNode($TOPATCH, $USER);
 </code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>459692</author_user>
   <title>applypatch</title>
 </node>

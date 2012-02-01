@@ -52,6 +52,5 @@ $str.=qq'\n&lt;span title=&quot;Show all results, even when there is a page matc
 return $str . &quot;\n&lt;/form&gt;&quot;;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>zensearchform</title>
 </node>

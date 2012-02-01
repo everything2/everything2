@@ -28,7 +28,6 @@ if ($$USER{title} eq 'ascorbic') {
   <node_id>1933854</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>viewcode</displaytype>
-  <author_user>1017738</author_user>
   <title>nodelet viewcode page</title>
   <mimetype></mimetype>
 </node>

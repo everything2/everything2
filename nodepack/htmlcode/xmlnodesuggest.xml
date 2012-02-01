@@ -40,6 +40,5 @@ foreach(@grp)
 $retstr.=&quot;&lt;/sametitles&gt;&quot;;
 return $retstr;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>459692</author_user>
   <title>xmlnodesuggest</title>
 </node>

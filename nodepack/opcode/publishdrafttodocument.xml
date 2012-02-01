@@ -25,6 +25,5 @@ $DB -&gt; {cache} -&gt; removeNode($draft); # and it's in the wrong typecache, s
 $query -&gt; delete('node');
 $query -&gt; param('node_id', $nid);</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>1828141</author_user>
   <title>publishdrafttodocument</title>
 </node>

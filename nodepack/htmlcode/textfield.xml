@@ -10,6 +10,5 @@ $class = join &quot; &quot;, ($class, $addClass);
 my @classes = ( class =&gt; $class ) if $class;
 $query-&gt;textfield(-name=&gt;$$NODE{type}{title} .'_'. $field, value=&gt;$$NODE{$field}, size=&gt;$length ,@classes );</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>textfield</title>
 </node>

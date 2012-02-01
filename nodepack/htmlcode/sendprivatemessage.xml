@@ -987,6 +987,5 @@ delete $HTMLVARS{msgparams} unless $keepParams;
 return $showWhatSaid ? $m : undef;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>sendPrivateMessage</title>
 </node>

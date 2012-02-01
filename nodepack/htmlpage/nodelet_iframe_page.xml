@@ -15,7 +15,6 @@ insertNodelet($NODE);
   <node_id>1225504</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>testembed</displaytype>
-  <author_user>9740</author_user>
   <title>nodelet iframe page</title>
   <mimetype></mimetype>
 </node>

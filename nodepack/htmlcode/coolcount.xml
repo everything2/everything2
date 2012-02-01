@@ -6,6 +6,5 @@
 
 return $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;coolwriteups JOIN node ON coolwriteups_id = node_id&quot;,&quot;author_user=$user_id and type_nodetype=117&quot;);</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1449265</author_user>
   <title>coolcount</title>
 </node>

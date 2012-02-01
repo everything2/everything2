@@ -22,7 +22,6 @@ $DB-&gt;sqlDelete('room', &quot;member_user = $$DELETED_USER{node_id}&quot;);
 
 </code>
   <type_nodetype>150</type_nodetype>
-  <author_user>1449265</author_user>
   <maintain_nodetype>15</maintain_nodetype>
   <title>user maintenance delete</title>
 </node>

@@ -46,6 +46,5 @@ function rot13(str){
   <node_id>1271440</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
-  <author_user>459692</author_user>
   <title>E2 Rot13 Encoder</title>
 </node>

@@ -7,6 +7,5 @@
   <achievement_id>1920606</achievement_id>
   <code>return htmlcode('isinUsergroup',$user_id.',ninjagirls');</code>
   <type_nodetype>1917847</type_nodetype>
-  <author_user>1312198</author_user>
   <title>usergroupNinjagirls</title>
 </node>

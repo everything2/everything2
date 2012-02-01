@@ -23,7 +23,6 @@ else{
 
 return $out;</code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1394568</author_user>
   <description>an [Content Editors|editor] edits one of your writeups.</description>
   <invalid_check></invalid_check>
   <title>writeupedit</title>

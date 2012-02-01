@@ -10,6 +10,5 @@
 return 1 if $coolCount &gt;=10;
 return 0;</code>
   <type_nodetype>1917847</type_nodetype>
-  <author_user>1312198</author_user>
   <title>coolnode10</title>
 </node>

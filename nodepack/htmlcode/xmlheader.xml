@@ -14,6 +14,5 @@ $crby=getNodeById($crby);
 $str.=&quot;&lt;author user_id=\&quot;$$crby{node_id}\&quot;&gt;&quot;.encodeHTML($$crby{title}).&quot;&lt;/author&gt;\n&quot;;
 return $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>459692</author_user>
   <title>xmlheader</title>
 </node>

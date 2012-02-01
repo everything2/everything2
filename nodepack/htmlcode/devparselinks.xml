@@ -11,6 +11,5 @@ $text=~s/(?&lt;!\[)\[(?!\[)(.*?)(?&lt;!\])\](?!\])/linkNodeTitle ($1, $NODE)/egs
         $text=~s/\]{2,}/]/gs; 
  unMSify($text);  #take out microsoft chars</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>devparselinks</title>
 </node>

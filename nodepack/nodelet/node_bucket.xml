@@ -6,7 +6,6 @@
   <createtime>2001-01-13 19:53:45</createtime>
   <node_id>909986</node_id>
   <type_nodetype>9</type_nodetype>
-  <author_user>220</author_user>
   <nodelet_id>909986</nodelet_id>
   <nlcode>[%
 return &quot;&quot; unless isGod($USER);

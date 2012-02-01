@@ -28,6 +28,5 @@ my ( $input , $length ) = @_ ;
 $length ||= 1024 ;
 return htmlcode( 'show content' , $input , &quot;xml &lt;entry&gt; atominfo, $length&quot; , ( atominfo =&gt; $atominfo) ) ;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>974148</author_user>
   <title>atomiseNode</title>
 </node>

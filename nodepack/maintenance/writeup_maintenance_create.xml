@@ -38,7 +38,6 @@ $HEADER_PARAMS{-status} = 303;
 $HEADER_PARAMS{-location} = htmlcode('urlToNode', $problem);
 </code>
   <type_nodetype>150</type_nodetype>
-  <author_user>114</author_user>
   <maintain_nodetype>117</maintain_nodetype>
   <title>writeup maintenance create</title>
 </node>

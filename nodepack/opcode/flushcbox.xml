@@ -24,6 +24,5 @@ $DB-&gt;sqlDelete(&quot;message&quot;, &quot;for_user = 0 AND room = $currentRoo
 return 1;
 </code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>459692</author_user>
   <title>flushcbox</title>
 </node>

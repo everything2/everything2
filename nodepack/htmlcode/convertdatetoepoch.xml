@@ -14,6 +14,5 @@ my $epoch = Mktime($year,$month,$day, $hour,$min,$sec);
 
 return $epoch;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1394568</author_user>
   <title>convertdatetoepoch</title>
 </node>

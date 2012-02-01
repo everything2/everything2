@@ -36,6 +36,5 @@ foreach my $var ($query-&gt;param) {
 $str = &quot;&lt;small&gt;$c&lt;br&gt;&lt;/small&gt;\n&quot;.$str if $c;
 $str;</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>220</author_user>
   <title>ednsection_cgiparam</title>
 </node>

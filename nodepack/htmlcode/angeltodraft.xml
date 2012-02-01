@@ -54,6 +54,5 @@ if ($N &amp;&amp; $$N{doctext} eq $$data{doctext}){
 return &quot;Reincarnation of angel id $angel_id failed!&quot;;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>angelToDraft</title>
 </node>

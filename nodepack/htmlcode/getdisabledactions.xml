@@ -18,6 +18,5 @@ $disabled =~ s/[baw]//g if $query -&gt; param( 'addto' ) ;
 return $disabled;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1797883</author_user>
   <title>getdisabledactions</title>
 </node>

@@ -22,6 +22,5 @@ parseCode(qq\
 [{varcheckbox:hideprivmessages,Don't show private messages in the chatterbox}]&lt;br&gt;
 \);</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>Chatterbox nodelet settings</title>
 </node>

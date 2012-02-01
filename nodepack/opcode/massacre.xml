@@ -143,6 +143,5 @@ foreach $nid (@deathrow) {
 
 htmlcode('update New Writeups data');</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>315</author_user>
   <title>massacre</title>
 </node>

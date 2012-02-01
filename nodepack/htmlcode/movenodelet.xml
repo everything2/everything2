@@ -35,6 +35,5 @@ if ( $position =~ /^(before|after)(\d*)$/ ){
 $$VARS{nodelets} = &quot;$$VARS{nodelets},$nodelet&quot; unless $$VARS{nodelets} =~ /\b$nodelet\b/ ;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>movenodelet</title>
 </node>

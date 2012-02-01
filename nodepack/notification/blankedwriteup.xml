@@ -17,7 +17,6 @@ my $wu_link =  $target_wu ?
 return &quot;$author_link &lt;strong&gt;blanked&lt;/strong&gt; $wu_link.&quot;;
 </code>
   <type_nodetype>1930710</type_nodetype>
-  <author_user>1449265</author_user>
   <description>a user blanks a writeup</description>
   <invalid_check>my $target_wu = getNodeById($$args{writeup_id});
 my $trimmedNewText = $$target_wu{'doctext'} if $target_wu;

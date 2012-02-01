@@ -53,7 +53,6 @@ $newtitle =~ s/&quot;/&amp;quot;/g;
   <node_id>1156529</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>replyto</displaytype>
-  <author_user>113</author_user>
   <title>debatecomment replyto page</title>
   <mimetype></mimetype>
 </node>

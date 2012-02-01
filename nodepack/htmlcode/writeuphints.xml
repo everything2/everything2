@@ -348,6 +348,5 @@ $str = containHtml('thin outline container', $str) unless $$THEME{ 'noThinOutlin
 $str;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>writeuphints</title>
 </node>

@@ -75,7 +75,6 @@ $$N{title} = $title;
 updateNode($N, $USER);
 </code>
   <type_nodetype>150</type_nodetype>
-  <author_user>1828141</author_user>
   <maintain_nodetype>1991079</maintain_nodetype>
   <title>draft maintenance update</title>
 </node>

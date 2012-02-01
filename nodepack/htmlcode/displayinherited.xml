@@ -36,6 +36,5 @@ elsif($$NODE{$field} eq &quot;-1&quot;)
 
 $str = &quot; ( Inherited value: $str )&quot; if ($str ne &quot;&quot;);</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>113</author_user>
   <title>displayInherited</title>
 </node>

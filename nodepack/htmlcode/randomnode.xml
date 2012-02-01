@@ -10,6 +10,5 @@ my $rnd = int(rand(100000));
 '&lt;a href='.urlGen({op=&gt;'randomnode', garbage=&gt;$rnd}).&quot;&gt;$title&lt;/a&gt;&quot;;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>315</author_user>
   <title>randomnode</title>
 </node>

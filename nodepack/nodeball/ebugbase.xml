@@ -4,7 +4,6 @@
   <node_id>200</node_id>
   <type_nodetype>152</type_nodetype>
   <setting_id>200</setting_id>
-  <author_user>113</author_user>
   <vars>author=Darrick%20Brown&amp;description=allows%20users%20to%20submit%20bugs%2c%20and%20then%20a%20group%20of%20developers%20to%20flag%20their%20status%20in%20the%20system&amp;version=0%2e5%2e2&amp;homepage=http%3a%2f%2feverydevel%2ecom</vars>
   <title>EBugbase</title>
 </node>

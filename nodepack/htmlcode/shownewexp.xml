@@ -104,6 +104,5 @@ return $xmlstr if $isxml;
 return $str.$footer;
 </code>
   <type_nodetype>4</type_nodetype>
-  <author_user>114</author_user>
   <title>shownewexp</title>
 </node>

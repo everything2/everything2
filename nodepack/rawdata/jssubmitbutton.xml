@@ -4,7 +4,6 @@
   <totalvotes>0</totalvotes>
   <node_id>1953726</node_id>
   <type_nodetype>332487</type_nodetype>
-  <author_user>1017738</author_user>
   <datacode>function postWriteup() {
 	title = $F('test test test');
 	doctext = $F('skratch_doctext');

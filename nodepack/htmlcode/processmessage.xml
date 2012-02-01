@@ -55,6 +55,5 @@ return 0;
 ???? I don't want this run yet, so this line will cause a server error....
 %]</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>9740</author_user>
   <title>processMessage</title>
 </node>

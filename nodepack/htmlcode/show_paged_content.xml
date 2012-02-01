@@ -100,6 +100,5 @@ $last = $rowCount if $last &gt; $rowCount;
 return ($content, $navigation, $rowCount, $offset + 1, $last) if wantarray;
 return qq'$content $navigation';</code>
   <type_nodetype>4</type_nodetype>
-  <author_user>1828141</author_user>
   <title>show paged content</title>
 </node>

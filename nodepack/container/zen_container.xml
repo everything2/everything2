@@ -44,6 +44,5 @@ return htmlcode('epicenterZen') unless $$VARS{nodelets} =~ /\b$epid\b/ || $$USER
 &lt;/div&gt;</context>
   <type_nodetype>2</type_nodetype>
   <container_id>1854175</container_id>
-  <author_user>114</author_user>
   <title>zen container</title>
 </node>

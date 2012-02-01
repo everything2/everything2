@@ -17,6 +17,5 @@ my $uid = $$USER{'node_id'};
 
 $DB-&gt;sqlDelete('links', &quot;from_node = $uid AND to_node = $node_id AND linktype = $$LINKTYPE{node_id}&quot;);</code>
   <type_nodetype>415056</type_nodetype>
-  <author_user>1312198</author_user>
   <title>unfavorite</title>
 </node>

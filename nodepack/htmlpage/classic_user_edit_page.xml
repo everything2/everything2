@@ -106,7 +106,6 @@ if (jQuery('#bookmarklist li').length &gt; 1) {
   <node_id>176001</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
-  <author_user>315</author_user>
   <title>classic user edit page</title>
   <mimetype></mimetype>
 </node>

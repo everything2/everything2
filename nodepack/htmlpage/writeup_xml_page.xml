@@ -19,7 +19,6 @@ node2xml($NODE, []);
   <node_id>266</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>xml</displaytype>
-  <author_user>315</author_user>
   <title>writeup xml page</title>
   <mimetype>text/xml</mimetype>
 </node>
