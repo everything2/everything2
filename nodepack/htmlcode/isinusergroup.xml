@@ -1,6 +1,5 @@
 <node>
   <createtime>2004-12-07 21:17:31</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1687850</node_id>
   <code># This htmlcode simply checks if for the given user_id $U, is it
 # in the usergroup $usergroup? The usergroup can be specified by

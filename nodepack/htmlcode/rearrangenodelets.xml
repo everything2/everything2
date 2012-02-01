@@ -1,6 +1,5 @@
 <node>
   <createtime>2000-07-28 17:29:33</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>675041</node_id>
   <code>#  allows users to select nodelets and their order
 #  usage: [{rearrangenodelets:nodelets,default nodelets}]

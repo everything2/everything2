@@ -72,7 +72,6 @@ if (window.onload) {
   window.onload = menuCollapser.init;
 }</doctext>
   <createtime>2006-02-13 16:46:15</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1786409</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>

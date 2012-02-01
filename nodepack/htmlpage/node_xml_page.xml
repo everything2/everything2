@@ -6,7 +6,6 @@
 &lt;message&gt;You can only use the XML displaytype on your own writeups.&lt;/message&gt;
 &lt;/error&gt;</page>
   <createtime>2001-01-10 18:07:42</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>906130</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>xml</displaytype>

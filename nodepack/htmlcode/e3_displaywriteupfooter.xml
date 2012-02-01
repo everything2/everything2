@@ -1,6 +1,5 @@
 <node>
   <createtime>2008-04-06 00:56:59</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1988834</node_id>
   <code>#displayWriteupFooter - pass nothing if viewing a writeup or writeup's index in e2node group if viewing an e2node
 #yucky writeup identification mostly from displaywriteuptitle (htmlcode)

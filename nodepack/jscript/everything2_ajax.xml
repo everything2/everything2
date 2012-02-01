@@ -706,7 +706,6 @@ if (e2.isChatterlight) e2('#message', e2(function(){
 }
 </doctext>
   <createtime>2007-04-11 00:08:07</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1878034</node_id>
   <edittime>2011-08-08 05:12:26</edittime>
   <type_nodetype>1786405</type_nodetype>

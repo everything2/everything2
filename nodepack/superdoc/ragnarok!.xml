@@ -135,7 +135,6 @@ return $str . $strikeStr;
 
 %]</doctext>
   <createtime>2008-04-01 03:23:24</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1936034</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

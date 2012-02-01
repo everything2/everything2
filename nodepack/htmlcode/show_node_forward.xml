@@ -1,6 +1,5 @@
 <node>
   <createtime>2009-12-05 00:45:45</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1988961</node_id>
   <code>return &quot;&quot; unless ($query &amp;&amp; defined $query-&gt;param('originalTitle'));
 

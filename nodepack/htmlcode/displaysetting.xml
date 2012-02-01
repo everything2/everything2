@@ -1,6 +1,5 @@
 <node>
   <createtime>1999-11-04 00:14:10</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>174</node_id>
   <code># This displays the value of a setting given the key
 # $setting - the name of the setting node

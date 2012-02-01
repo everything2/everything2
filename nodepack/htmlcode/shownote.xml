@@ -1,7 +1,6 @@
 <node>
   <core>R</core>
   <createtime>1999-10-07 04:35:11</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>51</node_id>
   <code>my @notes = getNodeWhere ({'parent_node' =&gt; getId ($NODE)}, $NODETYPES{note});
 

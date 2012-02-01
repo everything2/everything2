@@ -1,6 +1,5 @@
 <node>
   <createtime>2011-10-02 14:54:46</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1992448</node_id>
   <code>my $POLL = shift;
 getRef $POLL;

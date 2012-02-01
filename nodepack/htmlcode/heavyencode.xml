@@ -1,6 +1,5 @@
 <node>
   <createtime>2002-11-29 07:10:03</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1394533</node_id>
   <code>my ($html) = @_;
                my $outstr = &quot;&quot;;

@@ -1,6 +1,5 @@
 <node>
   <createtime>1999-11-24 06:41:22</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>167261</node_id>
   <code># [{parsetimestamp:time,flags}]
 # Parses out a datetime field into a more human-readable form

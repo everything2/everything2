@@ -1,6 +1,5 @@
 <node>
   <createtime>2001-02-17 08:10:04</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>954668</node_id>
   <code>#returns the given $$THEME variable, or a default if the theme variable is blank
 #sub themeVar($;$) {

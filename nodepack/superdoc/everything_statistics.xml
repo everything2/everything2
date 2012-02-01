@@ -29,7 +29,6 @@ $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;node&quot;, &quot;type_nodetype=$$
 
   </doctext>
   <createtime>1998-07-16 21:32:41</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>165493</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

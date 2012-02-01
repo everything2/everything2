@@ -719,7 +719,6 @@ textarea { width:95%; font-family: monospace; }
 .chat_user :after { content:&quot;&gt;&quot;; }
 */</doctext>
   <createtime>2008-02-20 20:02:22</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1930840</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1854352</type_nodetype>

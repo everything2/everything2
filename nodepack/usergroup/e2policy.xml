@@ -15,7 +15,6 @@
 return '' unless grep {$_ == $$USER{user_id}} @{$$NODE{group}};
 &quot;&lt;p&gt;&lt;i&gt;Please join us at the [e2policy drafting table]&lt;/i&gt;&lt;/p&gt;&quot;
 %]</doctext>
-  <totalvotes>0</totalvotes>
   <createtime>2007-08-23 00:25:03</createtime>
   <node_id>1905185</node_id>
   <edittime>0000-00-00 00:00:00</edittime>

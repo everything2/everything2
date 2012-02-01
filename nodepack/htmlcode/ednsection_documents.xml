@@ -1,6 +1,5 @@
 <node>
   <createtime>2000-11-15 01:14:22</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>837960</node_id>
   <code>my $nl = &quot;&lt;br /&gt;\n&quot;;
 linkNodeTitle('EDev FAQ').$nl.

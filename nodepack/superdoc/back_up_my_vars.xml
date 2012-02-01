@@ -166,7 +166,6 @@ return $backupInfo . $str;
 %]
 </doctext>
   <createtime>2011-03-04 06:13:02</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1991362</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

@@ -2,7 +2,6 @@
   <nodetype_id>1308757</nodetype_id>
   <extends_nodetype>7</extends_nodetype>
   <createtime>2002-05-27 08:34:53</createtime>
-  <totalvotes>0</totalvotes>
   <sqltable>nodetest</sqltable>
   <node_id>1308757</node_id>
   <type_nodetype>1</type_nodetype>

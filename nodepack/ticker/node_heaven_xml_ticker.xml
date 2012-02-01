@@ -34,7 +34,6 @@ $str.=&quot;&lt;/nodeheaven&gt;\n&quot;;
 return $str;
 %]</doctext>
   <createtime>2002-04-25 22:59:23</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1291666</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1252389</type_nodetype>

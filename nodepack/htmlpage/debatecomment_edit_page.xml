@@ -73,7 +73,6 @@ return parseCode( $str );
 %]
 </page>
   <createtime>2001-09-06 14:25:35</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1153392</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

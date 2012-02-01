@@ -1,6 +1,5 @@
 <node>
   <createtime>2002-02-19 18:32:29</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1256941</node_id>
   <code># parseLinks() and htmlScreen() on given field for 
 # the node we're on (in? at?). 

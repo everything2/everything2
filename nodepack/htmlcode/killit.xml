@@ -1,6 +1,5 @@
 <node>
   <createtime>1999-12-06 08:54:35</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>169671</node_id>
   <code>return unless ($$NODE{type}{title} eq 'writeup');
 return htmlcode('newsify', '855769,kill,Everything editors');

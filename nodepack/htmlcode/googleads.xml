@@ -1,6 +1,5 @@
 <node>
   <createtime>2010-02-10 05:30:25</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1989453</node_id>
   <code>my ($ad_location) = @_;
 my $node_id = $$NODE{node_id};

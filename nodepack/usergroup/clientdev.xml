@@ -75,7 +75,6 @@ return '' unless Everything::isApproved($USER, $NODE);
 &quot;&lt;p&gt;\n&quot;.htmlcode('weblog','').&quot;\n&lt;p&gt;&quot;;
 %]
 &lt;p&gt;&lt;hr /&gt;&lt;/p&gt;</doctext>
-  <totalvotes>0</totalvotes>
   <createtime>2001-11-14 08:33:38</createtime>
   <node_id>1199641</node_id>
   <edittime>0000-00-00 00:00:00</edittime>

@@ -1,6 +1,5 @@
 <node>
   <createtime>2009-11-18 19:54:55</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1988792</node_id>
   <code>my $tab = htmlcode('getTab','');
 

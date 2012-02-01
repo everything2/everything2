@@ -1,6 +1,5 @@
 <node>
   <createtime>2002-02-12 07:59:02</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1252979</node_id>
   <code>my ($txt) = @_;
 return unless $txt;

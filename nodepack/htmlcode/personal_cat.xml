@@ -1,6 +1,5 @@
 <node>
   <createtime>2004-02-26 19:31:42</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1522372</node_id>
   <code>my ($ref,$subref,%display,$text,$temp_ref);
 my $node_id = $NODE-&gt;{node_id};

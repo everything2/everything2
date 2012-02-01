@@ -13,7 +13,6 @@
 [% linkNode($NODE, 'printable version', { displaytype =&gt; 'printable' } ) %]
 &lt;/p&gt;</doctext>
   <createtime>2000-04-30 05:05:51</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1148595</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

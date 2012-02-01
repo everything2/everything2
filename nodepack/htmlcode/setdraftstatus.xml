@@ -1,6 +1,5 @@
 <node>
   <createtime>2011-02-10 14:21:34</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1991209</node_id>
   <code># set publication_status and collaborators
 # show parent node, option to change it, and option to publish

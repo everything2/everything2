@@ -14,7 +14,6 @@ linkNode $NODE, &quot;close&quot;, {displaytype=&gt; $query-&gt;param('displayty
 [{groupeditor}]
 &lt;/FORM&gt;</page>
   <createtime>2004-02-26 19:40:55</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1522378</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>editor</displaytype>

@@ -1,6 +1,5 @@
 <node>
   <createtime>2001-02-19 08:17:47</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>956694</node_id>
   <code>my @globals = qw($USER $THEME $VARS $DB %HTMLVARS $query);
 my $ajax='ajax ednsection_globals:nodeletsection:edn,globals';

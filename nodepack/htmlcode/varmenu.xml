@@ -1,6 +1,5 @@
 <node>
   <createtime>1999-10-07 04:35:11</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>56</node_id>
   <code>my ($var, @itemlist) = @_;
 return if (getId($USER) == $HTMLVARS{guest_user});

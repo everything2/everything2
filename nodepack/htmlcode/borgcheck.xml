@@ -1,6 +1,5 @@
 <node>
   <createtime>2000-04-17 16:29:05</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>500201</node_id>
   <code>return unless $$VARS{borged};
 my $t = time;

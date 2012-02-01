@@ -1,6 +1,5 @@
 <node>
   <createtime>2010-10-23 11:41:12</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1990530</node_id>
   <code>my $check_wu = shift;
 my $wu_id = int(getId($check_wu));

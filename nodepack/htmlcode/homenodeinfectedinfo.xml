@@ -1,6 +1,5 @@
 <node>
   <createtime>2011-01-22 02:06:36</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1991085</node_id>
   <code>return &quot;&quot; unless htmlcode('isEditor');
 

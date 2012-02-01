@@ -7,7 +7,6 @@ return unless isGod($USER) or Everything::isApproved($USER, getNode('edev','user
 htmlcode('listcode','doctext');
 %]</page>
   <createtime>2002-11-03 04:40:55</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1382601</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>viewcode</displaytype>

@@ -1,6 +1,5 @@
 <node>
   <createtime>2009-03-27 10:41:45</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1979756</node_id>
   <code>#checks that the form was a real e2 one
 my ($prefix) = @_;

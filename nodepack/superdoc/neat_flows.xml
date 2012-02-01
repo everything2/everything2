@@ -25,7 +25,6 @@ return unless isGod($USER) or $$USER{title} eq 'flamingweasel';
 
 %]</doctext>
   <createtime>2001-07-03 00:20:02</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1096837</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

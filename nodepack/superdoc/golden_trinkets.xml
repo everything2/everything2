@@ -25,7 +25,6 @@ $str .= $u ? (linkNode($u) . '\'s karma: ' . $k) : 'no other user given';
 $str;
 %]</doctext>
   <createtime>2000-09-07 07:20:12</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>737456</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

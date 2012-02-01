@@ -1,6 +1,5 @@
 <node>
   <createtime>2001-04-15 11:58:25</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1018297</node_id>
   <code>#doChatMacro
 # pass which macro name to &quot;run&quot;

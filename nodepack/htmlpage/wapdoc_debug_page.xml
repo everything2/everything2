@@ -5,7 +5,6 @@
 return encodeHTML(parseCode(getNode(&quot;wapdoc display page&quot;, &quot;htmlpage&quot;)-&gt;{page}));
 %]</page>
   <createtime>2002-05-18 09:54:18</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1304255</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>debug</displaytype>

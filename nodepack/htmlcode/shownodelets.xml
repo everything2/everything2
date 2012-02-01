@@ -1,6 +1,5 @@
 <node>
   <createtime>2001-02-18 00:38:35</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>955342</node_id>
   <code>#shows the left-side or right-side nodelets
 #parameter: 'left' or 'right' (default)

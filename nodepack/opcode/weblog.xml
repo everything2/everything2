@@ -1,6 +1,5 @@
 <node>
   <createtime>2000-03-20 04:46:22</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>458215</node_id>
   <htmlcode_id>458215</htmlcode_id>
   <code>my $SRC = $query-&gt;param(&quot;source&quot;);

@@ -71,7 +71,6 @@ $str . htmlcode('e2createnewnode');
 
 %]</doctext>
   <createtime>1999-12-17 04:59:01</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1140332</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

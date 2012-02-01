@@ -1,6 +1,5 @@
 <node>
   <createtime>2001-12-13 08:30:29</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1923731</node_id>
   <code>my $limit = $$VARS{num_newwus} || 15;
 

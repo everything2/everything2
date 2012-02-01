@@ -1,6 +1,5 @@
 <node>
   <createtime>2002-02-10 23:12:00</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1252150</node_id>
   <code>my $grp = $$NODE{group};
 my $str = &quot;&quot;;

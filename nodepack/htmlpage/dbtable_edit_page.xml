@@ -5,7 +5,6 @@
   <page>[{updatetable:$$NODE{title}}]
 [{displaytable:$$NODE{title},1}]</page>
   <createtime>1999-11-04 00:14:11</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>186</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

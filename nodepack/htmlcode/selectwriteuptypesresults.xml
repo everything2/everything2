@@ -1,6 +1,5 @@
 <node>
   <createtime>2007-06-30 06:05:11</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1895704</node_id>
   <code>my ($listName, $bitOptions, $returnType) = @_;
 $listName = 'multiplewriteuptypes' unless $listName;

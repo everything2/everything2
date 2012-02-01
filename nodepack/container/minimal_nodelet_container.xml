@@ -1,7 +1,6 @@
 <node>
   <parent_container>21</parent_container>
   <createtime>1999-11-10 23:09:53</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>277</node_id>
   <context>&lt;TR&gt;&lt;TD bgcolor=[%
 return $$VARS{nodelet_textclr} if $$VARS{nodelet_textclr};

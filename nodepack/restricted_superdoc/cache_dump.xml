@@ -22,7 +22,6 @@ $str .= &quot;&lt;/ul&gt;\n&quot;;
 $str;
 %]</doctext>
   <createtime>2000-01-06 17:34:09</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>372563</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

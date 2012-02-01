@@ -4,7 +4,6 @@
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>8</extends_nodetype>
   <createtime>1999-09-15 07:21:41</createtime>
-  <totalvotes>0</totalvotes>
   <sqltable>e2node</sqltable>
   <grouptable>nodegroup</grouptable>
   <node_id>116</node_id>

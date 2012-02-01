@@ -86,7 +86,6 @@ if ( defined $query-&gt;param( 'usernames' ) &amp;&amp; defined $query-&gt;param
 &lt;p&gt;&lt;i&gt;Bug reports go to [JayBonci]. &lt;/i&gt;&lt;/p&gt;
 </doctext>
   <createtime>2001-09-27 19:05:13</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1176730</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

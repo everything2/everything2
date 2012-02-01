@@ -1,6 +1,5 @@
 <node>
   <createtime>2010-09-17 10:02:39</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1990323</node_id>
   <code># moves a nodelet to a position (top=0)
 # position=x removes nodelet (unless it's Master Control and the user is Godlike)

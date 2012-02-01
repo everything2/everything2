@@ -1,6 +1,5 @@
 <node>
   <createtime>2009-11-19 18:41:10</createtime>
-  <totalvotes>0</totalvotes>
   <notification_id>1988825</notification_id>
   <node_id>1988825</node_id>
   <code>return linkNode($$args{user_id}).&quot; has updated their profile feed.&quot;;</code>

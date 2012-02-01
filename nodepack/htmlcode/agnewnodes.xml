@@ -1,6 +1,5 @@
 <node>
   <createtime>2001-05-30 16:55:58</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1064708</node_id>
   <code>my ($limit) = @_;
 

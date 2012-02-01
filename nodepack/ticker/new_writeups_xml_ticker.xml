@@ -33,7 +33,6 @@ $str.=&quot;&lt;/newwriteups&gt;\n&quot;;
 return $str;
 %]</doctext>
   <createtime>2002-04-26 02:26:33</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1291781</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1252389</type_nodetype>

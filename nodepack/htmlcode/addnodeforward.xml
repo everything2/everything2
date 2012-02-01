@@ -1,6 +1,5 @@
 <node>
   <createtime>2009-06-15 11:19:38</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1988226</node_id>
   <code>return unless exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) ||
 	exists($HTMLVARS{'group_content editors'}{$$USER{node_id}});

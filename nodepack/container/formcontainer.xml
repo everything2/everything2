@@ -2,7 +2,6 @@
   <parent_container>19</parent_container>
   <core>R</core>
   <createtime>1999-10-07 04:35:10</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>18</node_id>
   <context>[%
 $query-&gt;start_form(-method=&gt;'POST', action=&gt;$ENV{script_name}, name=&gt;'pagebody', id=&gt;'pagebody') .

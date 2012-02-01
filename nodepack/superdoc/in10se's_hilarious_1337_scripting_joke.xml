@@ -2,7 +2,6 @@
   <doctext>&lt;script&gt;alert('Owned!');&lt;/script&gt;
 &lt;!-- Yes, we should really make sure to filter out scripts and things from titles in all cases... --&gt;</doctext>
   <createtime>2008-11-06 15:05:18</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1961984</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

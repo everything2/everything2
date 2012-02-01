@@ -1,6 +1,5 @@
 <node>
   <createtime>2002-08-04 22:26:37</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1342337</node_id>
   <code>#VARS integer
 #safely allows a user to set an integer in their $VARS via a text field

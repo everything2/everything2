@@ -1,6 +1,5 @@
 <node>
   <createtime>2001-01-12 10:07:06</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>908369</node_id>
   <code>my $csr = $DB-&gt;sqlSelectMany(&quot;to_node&quot;, &quot;weblog&quot;, &quot;weblog_id=&quot;.getNode('edev','usergroup')-&gt;{node_id}.&quot; and removedby_user=0&quot;, &quot;order by tstamp DESC limit 5&quot; );
 

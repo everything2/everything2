@@ -28,7 +28,6 @@ return $str . &quot;\n&lt;/ol&gt;\n\n&quot;;
 
 %]</doctext>
   <createtime>2008-05-14 18:49:21</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1941643</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

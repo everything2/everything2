@@ -27,7 +27,6 @@ The corresponding [standard deviation] is: &lt;tt&gt;[% my $hrstats = getVars(ge
 
 &lt;hr&gt;</doctext>
   <createtime>2002-03-11 03:28:09</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1266694</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

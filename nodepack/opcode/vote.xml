@@ -1,6 +1,5 @@
 <node>
   <createtime>2000-03-07 15:46:17</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>444189</node_id>
   <htmlcode_id>444189</htmlcode_id>
   <code>return unless $$USER{votesleft};

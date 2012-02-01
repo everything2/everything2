@@ -7,7 +7,6 @@ local $$NODE{ doctext } = get( $query -&gt; param( 'theme' ).&quot;?displaytype=
 return htmlcode( 'fixstylesheet' , 0 ) ;
 %]</page>
   <createtime>2009-09-01 16:00:00</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1988465</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>productiontheme</displaytype>

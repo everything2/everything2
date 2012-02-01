@@ -1,6 +1,5 @@
 <node>
   <createtime>2000-03-20 02:41:43</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>458113</node_id>
   <code>return htmlcode( 'legacyweblog' , @_ ) unless ( htmlcode( 'isZen' ) ) ;
 my ( $interval, $log_id, $remlabel, $hideLinker, $skipFilterHTML, $listOnly ) = @_ ;

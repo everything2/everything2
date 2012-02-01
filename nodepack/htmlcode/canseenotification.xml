@@ -1,6 +1,5 @@
 <node>
   <createtime>2010-10-07 08:55:43</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1990439</node_id>
   <code>my $notification = shift;
 getRef $notification;

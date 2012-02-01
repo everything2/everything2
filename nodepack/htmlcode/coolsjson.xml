@@ -1,6 +1,5 @@
 <node>
   <createtime>2010-10-31 18:38:17</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1990574</node_id>
   <code>my $csr = $DB-&gt;sqlSelectMany(&quot;
 	(select title from node where node_id=cooledby_user limit 1) as cooluser, coolwriteups_id,

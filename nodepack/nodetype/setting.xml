@@ -3,7 +3,6 @@
   <core>R</core>
   <extends_nodetype>7</extends_nodetype>
   <sqltable>setting</sqltable>
-  <totalvotes>0</totalvotes>
   <createtime>1999-11-04 00:14:05</createtime>
   <node_id>153</node_id>
   <type_nodetype>1</type_nodetype>

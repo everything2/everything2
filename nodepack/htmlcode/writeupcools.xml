@@ -1,6 +1,5 @@
 <node>
   <createtime>2001-09-21 22:32:06</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1163178</node_id>
   <code>my ( $N ) = @_ ;
 $N = $NODE unless $N ;

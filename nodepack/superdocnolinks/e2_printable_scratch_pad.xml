@@ -13,7 +13,6 @@ return &quot;Not public&quot; unless($suV-&gt;{skratchShare} or $su == $$USER{no
 return parseLinks($DB-&gt;sqlSelect('scratch_text','scratch', &quot;scratch_id = $su&quot;)).&quot;&lt;br&gt;&lt;br&gt;$exitlink&lt;br&gt;&lt;br&gt;&quot;;
 %]</doctext>
   <createtime>2003-02-13 06:22:55</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1429417</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1065266</type_nodetype>

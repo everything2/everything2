@@ -7,7 +7,6 @@ $NODE = $GNODE = getNodeById($HTMLVARS{not_found}) unless $$NODE{type}{title} ne
 %]
 [{editvars}]</page>
   <createtime>2010-09-03 10:51:46</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1990226</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>editvars</displaytype>

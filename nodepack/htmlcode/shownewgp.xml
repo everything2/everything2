@@ -1,6 +1,5 @@
 <node>
   <createtime>2008-10-20 15:05:56</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1959548</node_id>
   <code>my ($shownumbers, $isxml, $newwuonly) = @_;
 use POSIX;

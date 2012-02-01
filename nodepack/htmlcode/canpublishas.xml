@@ -1,6 +1,5 @@
 <node>
   <createtime>2011-11-08 11:17:53</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1992776</node_id>
   <code># if an argument: return 1 if current user can publish under this name
 # if no argument: return a form control with names of accounts from which user can choose

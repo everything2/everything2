@@ -1,6 +1,5 @@
 <node>
   <createtime>2001-12-13 23:45:24</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1217086</node_id>
   <code>return '' if ($$USER{user_id} == $HTMLVARS{guest_user});
 my ($nodelet,$noAdminNoJunkOption) = @_ ;

@@ -1,6 +1,5 @@
 <node>
   <createtime>2010-12-18 07:18:19</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1990971</node_id>
   <code># pass a user object (or nothing to default to the current node, or current user if the current node is not a user), and the categories maintained by the user will be returned
 

@@ -10,7 +10,6 @@
 &lt;h2&gt;Edit the document text:&lt;/h2&gt;
 [{textarea:doctext}]</page>
   <createtime>2001-05-04 03:35:11</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1038521</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

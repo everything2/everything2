@@ -1,6 +1,5 @@
 <node>
   <createtime>2009-11-14 05:16:26</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1988668</node_id>
   <code>my $limit = 10;
 my $wrap = shift;

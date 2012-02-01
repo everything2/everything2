@@ -1,6 +1,5 @@
 <node>
   <createtime>2001-03-31 00:20:46</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1002054</node_id>
   <code>#returns if current server time matches the given day
 #parameter: case insensitive string(s) of date(s) - if more than 1, then any matches counts as a success

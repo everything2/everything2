@@ -48,7 +48,6 @@ htmlcode('openform', -class=&gt;'writeup_add')
 %]
 </page>
   <createtime>2001-07-08 16:03:57</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1854180</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

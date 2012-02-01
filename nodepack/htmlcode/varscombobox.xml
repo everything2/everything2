@@ -1,6 +1,5 @@
 <node>
   <createtime>2002-05-11 07:20:07</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1300516</node_id>
   <code>#VARS combo box
 #safely allows a user to set a value in their $VARS via an uneditable combo box

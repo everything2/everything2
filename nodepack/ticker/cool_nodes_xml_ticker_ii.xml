@@ -54,7 +54,6 @@ while(my $row = $csr-&gt;fetchrow_hashref)
 $str.=&quot;&lt;/coolwriteups&gt;\n&quot;;
 %]</doctext>
   <createtime>2002-04-26 06:58:54</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1291874</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1252389</type_nodetype>

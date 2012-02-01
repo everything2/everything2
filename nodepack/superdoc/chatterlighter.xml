@@ -13,7 +13,6 @@ insertNodelet( getNode( 'Chatterbox', 'nodelet' ) );
 &lt;/div&gt;
 </doctext>
   <createtime>2010-01-28 13:01:50</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1989376</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

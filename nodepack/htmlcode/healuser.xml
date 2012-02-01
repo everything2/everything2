@@ -1,6 +1,5 @@
 <node>
   <createtime>2008-04-01 15:51:30</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1936081</node_id>
   <code>my ($healID, $inChat) = @_;
 

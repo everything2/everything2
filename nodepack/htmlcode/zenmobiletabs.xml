@@ -1,6 +1,5 @@
 <node>
   <createtime>2010-07-23 13:47:31</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1990040</node_id>
   <code>my $canEdit = canUpdateNode($USER, $NODE) &amp;&amp; $USER-&gt;{user_id} == $NODE-&gt;{author_user};
 my $dt = $query-&gt;param('displaytype') || 'display';

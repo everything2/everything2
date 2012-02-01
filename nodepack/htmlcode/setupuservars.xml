@@ -1,6 +1,5 @@
 <node>
   <createtime>2000-03-07 21:43:37</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>444740</node_id>
   <code>return if $$USER{user_id}==$HTMLVARS{guest_user};
 

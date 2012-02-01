@@ -1,6 +1,5 @@
 <node>
   <createtime>2000-08-25 17:59:59</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>720339</node_id>
   <code>use Everything::Experience;
 return unless getLevel($USER) &gt;= $HTMLVARS{roomCreateLevel};

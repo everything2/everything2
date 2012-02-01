@@ -1,6 +1,5 @@
 <node>
   <createtime>2009-12-14 16:38:00</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1989045</node_id>
   <code># Returns a session ID for the current user for the current test (star ratings)
 # This ID is intended to uniquely identify a person

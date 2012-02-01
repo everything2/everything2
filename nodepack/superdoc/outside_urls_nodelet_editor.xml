@@ -133,7 +133,6 @@ $str .= '&lt;br /&gt;'.$query-&gt;submit('changeoutsideurls',$btns[rand(int(@btn
 return $str;
 %]&lt;/p&gt;</doctext>
   <createtime>2002-05-29 18:01:58</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1310129</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

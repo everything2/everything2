@@ -1,7 +1,6 @@
 <node>
   <parent_container>0</parent_container>
   <createtime>1999-10-07 04:35:10</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1854181</node_id>
   <context>&lt;div class='nodelet' id='[%
 my $id = lc( $$NODELET{ 'title' } ) ;

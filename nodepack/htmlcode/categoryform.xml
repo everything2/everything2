@@ -1,6 +1,5 @@
 <node>
   <createtime>2009-12-28 15:08:21</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1989163</node_id>
   <code>use Everything::Experience ;
 return if getLevel( $USER ) &lt;= 1 &amp;&amp; !htmlcode( 'isEditor', $USER );

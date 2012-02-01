@@ -1,6 +1,5 @@
 <node>
   <createtime>2001-09-15 20:13:43</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1159162</node_id>
   <htmlcode_id>1159162</htmlcode_id>
   <code>return unless exists($HTMLVARS{'group_gods'}{$$USER{user_id}});

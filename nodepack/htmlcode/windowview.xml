@@ -1,7 +1,6 @@
 <node>
   <core>R</core>
   <createtime>1999-10-07 04:35:11</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>57</node_id>
   <code>return &quot;&quot; unless $DB -&gt; canUpdateNode($USER, $NODE);
 my ($displaytype, $title, $width, $height) = @_;

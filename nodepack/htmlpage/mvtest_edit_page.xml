@@ -41,7 +41,6 @@ return $str;
 &lt;i&gt;Syntax is CONDITION|ORIGINAL -&gt; SUBSTITUTE, where ORIGINAL and SUBSTITUTE are htmlcodes -- to substitute htmlcode &quot;yesno_field&quot; with &quot;yesno_field_2&quot; in condition A the key is &quot;A|yesno_field&quot; with value &quot;yesno_field_2&quot;.&lt;/i&gt;
 &lt;br&gt;</page>
   <createtime>2009-12-11 16:21:01</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1989001</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

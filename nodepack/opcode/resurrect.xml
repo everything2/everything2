@@ -1,6 +1,5 @@
 <node>
   <createtime>2000-09-18 19:29:09</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>754045</node_id>
   <htmlcode_id>754045</htmlcode_id>
   <code>return unless isGod($USER);

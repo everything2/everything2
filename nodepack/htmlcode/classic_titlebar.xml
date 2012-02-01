@@ -1,7 +1,6 @@
 <node>
   <core></core>
   <createtime>1999-09-15 07:16:55</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>123</node_id>
   <code>my $str = &quot;&lt;p align=right&gt;
 &lt;img src=images/Everything.gif&gt;&lt;BR&gt;

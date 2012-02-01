@@ -1,6 +1,5 @@
 <node>
   <createtime>2007-03-17 15:57:05</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1919378</node_id>
   <code>my $uid = $$USER{user_id};
 return $HTMLVARS{group_gods}{$uid};</code>

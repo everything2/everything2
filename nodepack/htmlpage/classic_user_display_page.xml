@@ -17,7 +17,6 @@ linkNode($NODE, 'edit', {displaytype=&gt;'edit'});
 
 [{showbookmarks}]</page>
   <createtime>1999-12-17 04:59:03</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>176000</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

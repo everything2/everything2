@@ -399,7 +399,6 @@ if ( $$USER{ 'user_id' } != 433254 ) {
 '';
 %]</doctext>
   <createtime>2001-02-08 18:41:49</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>943637</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

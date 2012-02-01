@@ -5,7 +5,6 @@
 htmlcode('listcode','code',getNode('listcode','htmlcode'));
 %]</doctext>
   <createtime>2010-11-25 14:04:47</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1990816</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

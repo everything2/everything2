@@ -1,6 +1,5 @@
 <node>
   <createtime>2000-03-07 16:33:20</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>444234</node_id>
   <code>my $uid=$$USER{node_id}||$HTMLVARS{guest_user};
 my $canDoStuff = $$USER{votesleft} || (exists $HTMLVARS{'group_content editors'}{$uid}) || (exists $HTMLVARS{group_gods}{$uid}) || (exists $HTMLVARS{group_edev}{$uid}) unless $uid == $HTMLVARS{guest_user};

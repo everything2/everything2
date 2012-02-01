@@ -1,6 +1,5 @@
 <node>
   <createtime>2009-03-27 11:44:17</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1980157</node_id>
   <code>#Generates a hashref used to verify the form submission. Pass a prefix.
 my ($prefix) = @_;

@@ -95,7 +95,6 @@ $str.=$query-&gt;end_form;
 
 %]</doctext>
   <createtime>2007-04-04 07:06:39</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1876290</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

@@ -1,6 +1,5 @@
 <node>
   <createtime>2007-05-23 01:28:11</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1887815</node_id>
   <htmlcode_id>1887815</htmlcode_id>
   <code>my $uName = $query-&gt;param(&quot;new_leader&quot;);

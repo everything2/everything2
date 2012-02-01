@@ -92,7 +92,6 @@ $str.='&lt;/tr&gt;&lt;/table&gt;&lt;/form&gt;';
 return $str;
 %]</doctext>
   <createtime>2001-09-13 06:12:02</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1157630</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

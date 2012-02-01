@@ -70,7 +70,6 @@ if ( $isRoot ) {
 $str;
 %]</doctext>
   <createtime>2001-07-10 00:34:34</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1916986</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

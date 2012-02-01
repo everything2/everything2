@@ -109,7 +109,6 @@ delete $HTMLVARS{chatterboxsettingswidgetlink};
 &lt;/div&gt;
 </doctext>
   <createtime>2011-10-31 16:13:08</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1992740</node_id>
   <edittime>2011-10-31 12:18:39</edittime>
   <type_nodetype>14</type_nodetype>

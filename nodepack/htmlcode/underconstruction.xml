@@ -1,6 +1,5 @@
 <node>
   <createtime>2002-05-11 19:44:28</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1300727</node_id>
   <code>#this just gives an &quot;under construction&quot; notice
 #first parameter is user that is making change, so we know who to blame :)

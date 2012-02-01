@@ -10,7 +10,6 @@ $query-&gt;hidden(&quot;node_id&quot;, getId $NODE);
 
 [{testuploadimage:src}][{closeform}]</page>
   <createtime>1999-11-04 00:14:11</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>187</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>upload</displaytype>

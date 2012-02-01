@@ -159,7 +159,6 @@ return &amp;$xml_error('Invalid or no action specified.');
 
 %]</doctext>
   <createtime>2009-06-04 18:14:54</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1988173</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1252389</type_nodetype>

@@ -81,7 +81,6 @@ $str .= '&lt;/table&gt;
 return $str;
 %]</doctext>
   <createtime>2008-11-08 11:59:18</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1962430</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

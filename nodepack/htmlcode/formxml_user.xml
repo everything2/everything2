@@ -1,6 +1,5 @@
 <node>
   <createtime>2002-02-09 23:53:42</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1251621</node_id>
   <code>my $str = &quot;&quot;;
 

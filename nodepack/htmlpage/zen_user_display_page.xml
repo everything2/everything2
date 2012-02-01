@@ -52,7 +52,6 @@ return if getId($USER) != getId($NODE);
 [{showbookmarks}]
 </page>
   <createtime>2001-07-08 16:40:11</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1854179</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

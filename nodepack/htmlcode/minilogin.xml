@@ -1,6 +1,5 @@
 <node>
   <createtime>2000-09-15 01:11:19</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>748856</node_id>
   <code>#jb says: security fixes
 my $pass = $query-&gt;param(&quot;passwd&quot;);

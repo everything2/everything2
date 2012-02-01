@@ -1,6 +1,5 @@
 <node>
   <createtime>2010-09-15 12:48:25</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1990309</node_id>
   <code>my $inwidget = shift;
 my $name = 'set_personalnode';

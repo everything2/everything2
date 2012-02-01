@@ -1,6 +1,5 @@
 <node>
   <createtime>2011-10-23 19:49:46</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1992682</node_id>
   <code>my ($N, $open) = @_;
 getRef $N;

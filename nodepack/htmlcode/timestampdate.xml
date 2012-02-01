@@ -1,6 +1,5 @@
 <node>
   <createtime>2002-03-10 19:40:12</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1266514</node_id>
   <code># htmlcode('timestampDate',$NODETHINGY{createtime})
 # shows just the date, in a locale-dependant manner, dependant upon the user's setting

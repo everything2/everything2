@@ -33,7 +33,6 @@ $csr-&gt;finish;
 $XG-&gt;NewNodes($str);
 %]</doctext>
   <createtime>2000-10-10 00:16:12</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>781532</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>451267</type_nodetype>

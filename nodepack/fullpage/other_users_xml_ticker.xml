@@ -48,7 +48,6 @@ $userID = $$N{member_user};
 
 %]</doctext>
   <createtime>2000-06-10 15:52:12</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>597846</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>451267</type_nodetype>

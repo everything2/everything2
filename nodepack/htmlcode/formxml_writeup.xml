@@ -1,6 +1,5 @@
 <node>
   <createtime>2002-02-11 02:42:46</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1252233</node_id>
   <code>my $str = &quot;&quot;;
 $str.= htmlcode(&quot;xmlfirmlinks&quot;, &quot;$$NODE{parent_e2node}&quot;);

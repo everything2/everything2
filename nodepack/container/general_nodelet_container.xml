@@ -2,7 +2,6 @@
   <parent_container>20</parent_container>
   <core>R</core>
   <createtime>1999-12-17 04:54:25</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>175986</node_id>
   <context>[% 
 if(defined $$THEME{generalNodelet_container}) {

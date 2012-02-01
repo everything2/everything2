@@ -25,7 +25,6 @@ return $str;
 
 &lt;p align=&quot;right&quot;&gt;&lt;small&gt;Bugs go to [% linkNode(1009226) %], who may or may not know what to do with them.&lt;/small&gt;&lt;/p&gt;</doctext>
   <createtime>2008-07-24 02:36:06</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1950299</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1144104</type_nodetype>

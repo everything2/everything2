@@ -1,6 +1,5 @@
 <node>
   <createtime>2002-02-23 03:17:17</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1258917</node_id>
   <code>my ($schemafor) = @_;
 

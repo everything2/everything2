@@ -1,6 +1,5 @@
 <node>
   <createtime>2002-01-22 13:25:43</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1240793</node_id>
   <code>#just call this in a usergroup page
 #optional argument: user name to /msg to join the group; this should already have any spaces converted into underlines

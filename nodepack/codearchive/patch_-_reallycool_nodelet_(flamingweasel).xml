@@ -4,7 +4,6 @@ patch's purpose: unknown&lt;br&gt;
 &lt;br&gt;
 This would've set the frontpage's &quot;cream of the cool&quot; section's background color to equal the Title's background.  We'd also have tohack with the links' css attributes to match the title / nodelet colors.  Data such as this should be in an oddrow class, anyhow (as not to be confusingly similar to something &quot;official&quot; -- 'Epicenter', 'Vitals', the site's title, etc (as opposed to the title of a writeup that's probably pretty good, but still only a writeup title).</doctext>
   <createtime>2002-12-06 02:24:25</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1397432</node_id>
   <htmlcode_id>1397432</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>

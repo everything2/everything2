@@ -3,7 +3,6 @@
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>153</extends_nodetype>
   <createtime>1999-12-17 04:55:19</createtime>
-  <totalvotes>0</totalvotes>
   <sqltable>themesetting</sqltable>
   <node_id>175990</node_id>
   <type_nodetype>1</type_nodetype>

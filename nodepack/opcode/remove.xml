@@ -1,6 +1,5 @@
 <node>
   <createtime>2011-06-04 14:08:42</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1992001</node_id>
   <htmlcode_id>1992001</htmlcode_id>
   <code>if (my $wu = $query -&gt; param('writeup_id')){ # user removing own writeup

@@ -36,7 +36,6 @@ body {margin: 0;}
 #room_options input {margin-top: 0;} /* for Other Users */
 .ns_title {margin: 5px 0 0;}</doctext>
   <createtime>2007-11-23 16:39:56</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1918718</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1854352</type_nodetype>

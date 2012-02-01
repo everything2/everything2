@@ -1,6 +1,5 @@
 <node>
   <createtime>2009-02-25 07:55:28</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1975735</node_id>
   <code>my ($epoch) = @_;
 

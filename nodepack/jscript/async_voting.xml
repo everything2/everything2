@@ -321,7 +321,6 @@ XMLHTTP.prototype.send = function (uri) {
 }
 </doctext>
   <createtime>2006-10-25 11:14:54</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1842173</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>

@@ -1,6 +1,5 @@
 <node>
   <createtime>2000-11-15 00:47:58</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>837929</node_id>
   <code>my ($field) = @_;
 

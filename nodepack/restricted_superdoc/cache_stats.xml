@@ -43,7 +43,6 @@ To adjust expiration time check out [cache_settings]&lt;br&gt;
 To add static types use [cachable_types]&lt;br&gt;
 To add specific nodes use [cachable_nodes]</doctext>
   <createtime>2002-03-19 16:10:11</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1271036</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

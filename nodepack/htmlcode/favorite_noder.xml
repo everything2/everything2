@@ -1,6 +1,5 @@
 <node>
   <createtime>2007-04-03 18:56:20</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1876163</node_id>
   <code>my $class = &quot;ajax favoritenoder:favorite_noder&quot; ;
 

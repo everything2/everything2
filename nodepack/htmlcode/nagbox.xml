@@ -1,6 +1,5 @@
 <node>
   <createtime>2010-03-01 16:14:54</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1989645</node_id>
   <code>my $node_id=$$NODE{parent_e2node}|$$NODE{node_id};
 my $str;

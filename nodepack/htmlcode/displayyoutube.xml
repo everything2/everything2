@@ -1,6 +1,5 @@
 <node>
   <createtime>2007-04-10 15:49:46</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1877915</node_id>
   <code>#May 2 2007, removed per Dann's instructions - ktj
 return;

@@ -1,6 +1,5 @@
 <node>
   <createtime>2009-12-03 03:16:20</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1988950</node_id>
   <code># Pass in either a node ID or a node ref
 my ($targetInput) = @_;

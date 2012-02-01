@@ -1,7 +1,6 @@
 <node>
   <core>R</core>
   <createtime>1999-11-04 00:14:11</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>183</node_id>
   <code># This checks the CGI params to see what we need to do
 # to this table.

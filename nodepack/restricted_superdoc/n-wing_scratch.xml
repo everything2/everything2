@@ -376,7 +376,6 @@ $str .= &quot;&lt;/tr&gt;&lt;/table&gt;\n&quot;;
 $str;
 %]</doctext>
   <createtime>2002-10-20 03:18:56</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1375941</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

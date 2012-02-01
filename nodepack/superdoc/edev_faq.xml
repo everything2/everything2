@@ -118,7 +118,6 @@ A:
 
 &lt;p&gt;&lt;em&gt;-- [% linkNode(getNode('N-Wing','user'),0,{lastnode_id=&gt;0}); %]&lt;/em&gt;&lt;/p&gt;</doctext>
   <createtime>2001-05-05 05:59:35</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1039833</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

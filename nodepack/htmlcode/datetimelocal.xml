@@ -1,6 +1,5 @@
 <node>
   <createtime>2002-09-08 02:21:24</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1358138</node_id>
   <code>#returns the date and time, in long format
 #

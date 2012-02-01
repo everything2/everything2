@@ -3,7 +3,6 @@
   <restrictdupes>-1</restrictdupes>
   <extends_nodetype>116</extends_nodetype>
   <createtime>2002-01-02 09:13:36</createtime>
-  <totalvotes>0</totalvotes>
   <sqltable>e2imagenode</sqltable>
   <node_id>1227031</node_id>
   <restrict_nodetype>117</restrict_nodetype>

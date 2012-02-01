@@ -21,7 +21,6 @@ return $str if $str;
 &quot;&lt;i&gt;no users logged in&lt;/i&gt;&quot;;
 %] </doctext>
   <createtime>2000-03-11 17:29:12</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>449654</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

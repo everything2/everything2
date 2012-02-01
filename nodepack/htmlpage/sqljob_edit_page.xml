@@ -6,7 +6,6 @@
 &lt;H4&gt;SQL Query:&lt;/h4&gt;[{textarea:sqltext,15,45}]&lt;br&gt;
 &lt;h4&gt;run:&lt;/h4&gt;[{yesno_field:goexec}]&lt;br&gt;&lt;br&gt;</page>
   <createtime>2001-09-17 07:59:16</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1159667</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

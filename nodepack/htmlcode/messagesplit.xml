@@ -1,6 +1,5 @@
 <node>
   <createtime>2005-05-27 14:33:22</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1725680</node_id>
   <code># Split text up more intelligently. Text outside
 # tags or entities is the only text which will

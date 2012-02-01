@@ -1,6 +1,5 @@
 <node>
   <createtime>2011-03-09 15:53:37</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1991522</node_id>
   <code>my ($messageID,$actioned)=@_;
 my $str;

@@ -58,7 +58,6 @@ while (my $N = $csr-&gt;fetchrow_hashref) {
 $XG-&gt;USERSEARCH($str);
 %]</doctext>
   <createtime>2000-09-25 19:10:19</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>762826</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>451267</type_nodetype>

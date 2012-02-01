@@ -13,7 +13,6 @@ encodeHTML($free . &quot;\n\n&quot;
            . $xen . &quot;\n\n&quot;);
 %]&lt;/pre&gt;</doctext>
   <createtime>2011-10-24 14:38:02</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1992691</node_id>
   <edittime>2011-11-01 12:13:59</edittime>
   <type_nodetype>13</type_nodetype>

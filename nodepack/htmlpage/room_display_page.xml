@@ -59,7 +59,6 @@ if (!$$canEnter{canEnter}) {
 %]
 </page>
   <createtime>2000-08-25 08:30:35</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>719848</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

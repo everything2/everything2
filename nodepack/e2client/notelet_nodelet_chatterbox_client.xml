@@ -23,7 +23,6 @@ onClick=&quot;javascript:callChatterbox()&quot;&amp;gt;&amp;lt;form&amp;gt;
 &lt;p&gt;If you have suggestions, concerns, complaints, etc, please /[msg] them to [Anml4ixoye|me]. [Over and Out|kThanx].&lt;/p&gt;
 &lt;p&gt;&lt;b&gt;Things I know are missing&lt;/b&gt; - lessee, [pipelinks], handling of /me, the fact that it is in a [textarea] box, ability to submit messages. Let me know if you have a feature or bug request not on this list.&lt;/p&gt;</doctext>
   <createtime>2003-04-03 19:35:29</createtime>
-  <totalvotes>0</totalvotes>
   <dlurl>http://www.cornetdesign.com/chatterbox.js</dlurl>
   <homeurl>http://www.cornetdesign.com/chatterbox.js</homeurl>
   <node_id>1449422</node_id>

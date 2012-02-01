@@ -11,7 +11,6 @@
 &lt;tt&gt;/msg{USER_1 USER_2} This is my group message&lt;/tt&gt;&lt;br&gt;
 Note that there is no space before the first curly brace and the usernames are separated by spaces, with underscores for spaces in the usernames.  It is recommended to include a note that this message was sent to the group in question to prevent confusion since there is no feedback for this.&lt;br&gt;
 Example: &lt;tt&gt;/msg{rootbeer277 Simulacron3 Spifficus_Rex} Mafia message: I think Aerobe is the cop.  Let's kill her tonight.&lt;/tt&gt;&lt;/p&gt;</doctext>
-  <totalvotes>0</totalvotes>
   <createtime>2008-12-02 02:38:51</createtime>
   <node_id>1966072</node_id>
   <edittime>0000-00-00 00:00:00</edittime>

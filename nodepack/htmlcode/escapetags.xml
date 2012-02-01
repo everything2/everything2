@@ -1,6 +1,5 @@
 <node>
   <createtime>2009-03-25 23:02:08</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1979554</node_id>
   <code>#Pass it arguments, returns them all as a single string, neutering all tags (HTML, XML, whatever).
 

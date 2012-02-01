@@ -44,7 +44,6 @@ if( (defined $query-&gt;param('numborgings')) &amp;&amp; defined($t=$query-&gt;p
 %]
 &lt;/p&gt;</doctext>
   <createtime>2002-03-03 00:21:58</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1262818</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

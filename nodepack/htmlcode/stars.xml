@@ -1,6 +1,5 @@
 <node>
   <createtime>2009-12-16 17:33:44</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1989085</node_id>
   <code>my ($node_id,$readonly,$num,$levels,$split,$showRating)=@_;
 $node_id=$$NODE{node_id} unless ($node_id);

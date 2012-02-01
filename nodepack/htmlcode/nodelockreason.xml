@@ -1,6 +1,5 @@
 <node>
   <createtime>2002-04-24 23:43:22</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1291038</node_id>
   <code>my ($wuid) = @_;
 my $userwriteup;

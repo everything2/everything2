@@ -7,7 +7,6 @@ $out =~ s/^\s+//mg unless exists($HTMLVARS{'group_edev'}{$$USER{node_id}});
 return $out;
 %]</page>
   <createtime>2006-02-13 16:41:43</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1786408</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

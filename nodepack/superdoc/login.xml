@@ -39,7 +39,6 @@ $str .= $query-&gt;start_form(
 $str;
 %]</doctext>
   <createtime>1999-10-07 04:35:13</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>109</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

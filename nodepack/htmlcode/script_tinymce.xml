@@ -1,6 +1,5 @@
 <node>
   <createtime>2007-12-07 02:37:26</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1920625</node_id>
   <code>my ($elements, $textarea) = @_;
 my $mode = 'none';

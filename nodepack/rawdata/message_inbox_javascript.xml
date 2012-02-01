@@ -1,7 +1,6 @@
 <node>
   <rawdata_id>1298616</rawdata_id>
   <createtime>2002-05-08 00:02:09</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1298616</node_id>
   <type_nodetype>332487</type_nodetype>
   <datacode>function replyTo(s, c) {

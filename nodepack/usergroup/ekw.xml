@@ -16,7 +16,6 @@ foreach my $N (@$GROUP) {
 $str.&quot;&lt;/ul&gt;\n&lt;p&gt;&quot;;
 %]
 &lt;/p&gt;</doctext>
-  <totalvotes>0</totalvotes>
   <createtime>2001-07-24 22:24:03</createtime>
   <node_id>1120062</node_id>
   <edittime>0000-00-00 00:00:00</edittime>

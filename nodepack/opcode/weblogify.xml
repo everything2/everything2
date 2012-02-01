@@ -1,6 +1,5 @@
 <node>
   <createtime>2007-04-27 20:50:07</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1882499</node_id>
   <htmlcode_id>1882499</htmlcode_id>
   <code>my $disp = $query-&gt;param(&quot;ify_display&quot;);

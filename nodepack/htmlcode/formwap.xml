@@ -1,6 +1,5 @@
 <node>
   <createtime>2002-02-09 21:32:21</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1296245</node_id>
   <code>my $ntype = getNodeById($$NODE{type_nodetype});
 return &quot;&quot; unless $ntype;

@@ -1,6 +1,5 @@
 <node>
   <createtime>2003-06-12 00:07:56</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1468740</node_id>
   <code>#merges multiple hash refs of allowed [HTML] tags into a new hash
 #a hash containing valid tags has:

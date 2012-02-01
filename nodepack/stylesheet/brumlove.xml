@@ -469,7 +469,6 @@ h1.nodetitle
 .action_whisper, .action_roll, .action_fireball, .action_sanctify, .action_egg 
      { font-variant: small-caps; }</doctext>
   <createtime>2007-04-26 00:13:54</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1881898</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1854352</type_nodetype>

@@ -29,7 +29,6 @@ linkNode($THEME);
 &lt;p&gt;[{listcode:page}]
 </page>
   <createtime>1999-10-07 04:35:11</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>65</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

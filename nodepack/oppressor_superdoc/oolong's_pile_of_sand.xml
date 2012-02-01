@@ -58,7 +58,6 @@ my $csr = $dbh-&gt;prepare(&quot;SELECT * FROM message WHERE author_user = $$USE
 # '.$$msg{room}.'
 %]</doctext>
   <createtime>2008-09-29 23:00:47</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1957153</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1144104</type_nodetype>

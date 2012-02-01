@@ -9,7 +9,6 @@ $$NODE{datatype} = &quot;text/html&quot; if(exists $$NODE{datatype});
 %]
 </page>
   <createtime>1999-12-22 03:18:45</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>332491</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

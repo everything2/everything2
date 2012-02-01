@@ -1,6 +1,5 @@
 <node>
   <createtime>2011-03-04 06:11:53</createtime>
-  <totalvotes>0</totalvotes>
   <node_id>1991341</node_id>
   <code>my ($WRITEUP, $E2NODE) = @_;
 
