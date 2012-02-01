@@ -219,7 +219,6 @@ $str .= htmlcode('closeform');
 
 %]</doctext>
   <node_id>1946673</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1144104</type_nodetype>
   <title>The Oracle</title>
 </node>

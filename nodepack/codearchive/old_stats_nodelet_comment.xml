@@ -1,7 +1,6 @@
 <node>
   <doctext>commented out in the statistics nodelet, which means it was still run...</doctext>
   <node_id>1505907</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <code>
 &lt;!--
 &lt;table cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; width=&quot;90%&quot;&gt;

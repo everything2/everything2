@@ -166,7 +166,6 @@ foreach $key (@order)
 $str .= &quot;&lt;/table&gt;&quot;;
 %]</doctext>
   <node_id>207</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>bugbase stats</title>
 </node>

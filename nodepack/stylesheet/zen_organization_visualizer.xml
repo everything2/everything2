@@ -78,7 +78,6 @@ body { margin:0px; }
 
 textarea { width:95%; font-family: monospace; }</doctext>
   <node_id>1930556</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1854352</type_nodetype>
   <title>Zen Organization Visualizer</title>
 </node>

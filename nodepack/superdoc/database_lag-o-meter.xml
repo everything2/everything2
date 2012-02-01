@@ -50,7 +50,6 @@ $str;
 %]
 &lt;p&gt;Slow/Million Queries is a decent barometer of how much lag the Database is hitting.  Rising=bad, falling=good.</doctext>
   <node_id>1054397</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>Database Lag-o-meter</title>
 </node>

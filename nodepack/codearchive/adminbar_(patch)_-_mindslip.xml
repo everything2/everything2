@@ -1,7 +1,6 @@
 <node>
   <doctext>[mindslip]'s patch to [adminbar]. I don't think he's patching the right spot, because adminbar is (as the name suggests) admin-only.  Saving this code in case he or she wants it.</doctext>
   <node_id>1429854</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <code># Note: This is built around pre-1.0 code, not everything2.com code
 # Best called from &quot;general container&quot; like this:
 #  14: CONTAINED_STUFF

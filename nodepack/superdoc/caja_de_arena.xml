@@ -5,7 +5,6 @@ delete $HTMLVARS{'group_content editors'};
 htmlcode('canpublishas');
 %]</doctext>
   <node_id>1988177</node_id>
-  <edittime>2011-11-11 16:44:40</edittime>
   <type_nodetype>14</type_nodetype>
   <title>caja de arena</title>
 </node>

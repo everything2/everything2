@@ -91,7 +91,6 @@ $str;
 return ' --&gt;' if $$USER{node_id} == $HTMLVARS{guest_user};
 %]</doctext>
   <node_id>1022032</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>Admin Settings</title>
 </node>

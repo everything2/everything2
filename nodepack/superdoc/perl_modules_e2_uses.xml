@@ -60,7 +60,6 @@ return $str;
 
 %]</doctext>
   <node_id>1988900</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>Perl modules E2 uses</title>
 </node>

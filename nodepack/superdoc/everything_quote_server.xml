@@ -661,7 +661,6 @@ return ((rand(10) &lt; 5)?($str):($str2));
 %]
 &lt;br&gt;&lt;br&gt;&lt;br&gt;</doctext>
   <node_id>407437</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>Everything Quote Server</title>
 </node>

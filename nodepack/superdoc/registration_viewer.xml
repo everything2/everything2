@@ -39,7 +39,6 @@
   linkNode($DIRECTORY,'here',{'chosen_type'=&gt;'registry'}).'&lt;/div&gt;';
 %]</doctext>
   <node_id>1988626</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>Registration Viewer</title>
 </node>

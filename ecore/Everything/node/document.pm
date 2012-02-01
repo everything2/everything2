@@ -17,7 +17,7 @@ sub node_to_xml
 sub xml_no_consider
 {
 	my ($this) = @_;
-	return [@{$this->SUPER::xml_no_consider()}];
+	return ["edittime",@{$this->SUPER::xml_no_consider()}];
 }
 
 sub node_id_equivs

@@ -1,7 +1,6 @@
 <node>
   <doctext>Looks like you're coming from &lt;strong&gt;[% htmlcode('get ips') %]&lt;/strong&gt;&lt;br&gt;&lt;br&gt; Hope that helps.</doctext>
   <node_id>1429847</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>ipfrom</title>
 </node>

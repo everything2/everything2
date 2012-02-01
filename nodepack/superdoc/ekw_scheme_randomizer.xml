@@ -17,7 +17,6 @@ return '&lt;p align=&quot;right&quot;&gt;'.linkNode($NODE, &quot;Hit me baby, on
 &lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
 &lt;small&gt;idea originally by [ocelotbob]&lt;/small&gt;</doctext>
   <node_id>1313691</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>EKW Scheme randomizer</title>
 </node>

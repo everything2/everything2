@@ -230,7 +230,6 @@ htmlcode('openform','').$str.$BRN.htmlcode('closeform','');
 
 &lt;p align=&quot;right&quot;&gt;&lt;small&gt;(bugs to [N-Wing])&lt;/small&gt;&lt;/p&gt;</doctext>
   <node_id>1199723</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>usergroup message archive</title>
 </node>

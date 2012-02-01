@@ -913,7 +913,6 @@ font-size: 100%;
 .patch_later {background: navy!important; }
 .patch_undone {background : olive !important;}</doctext>
   <node_id>1976666</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1854352</type_nodetype>
   <title>Blue Steel</title>
 </node>

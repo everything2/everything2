@@ -6,7 +6,6 @@
 &lt;code&gt;link to $$VARS{userstyle}: 
 [% htmlcode('linkStylesheet', getNode($$VARS{userstyle})) %]&lt;/code&gt;</doctext>
   <node_id>1990060</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>test linkstylesheet</title>
 </node>

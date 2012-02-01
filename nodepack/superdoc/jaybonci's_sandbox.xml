@@ -56,7 +56,6 @@ Got:
   return $USER-&gt;{createtime};
 %]</doctext>
   <node_id>1146920</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>JayBonci's sandbox</title>
 </node>

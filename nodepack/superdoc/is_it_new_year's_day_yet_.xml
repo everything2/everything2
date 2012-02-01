@@ -12,7 +12,6 @@ $str .= &quot;&lt;p align=\&quot;center\&quot;&gt;&lt;big&gt;&lt;big&gt;&lt;big&
 return $str;
 %]</doctext>
   <node_id>1980685</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>Is it New Year's Day yet?</title>
 </node>

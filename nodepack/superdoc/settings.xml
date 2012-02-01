@@ -188,7 +188,6 @@ $str.'&lt;br&gt;';
 return ' --&gt;' if $$USER{node_id} == $HTMLVARS{guest_user};
 %]</doctext>
   <node_id>108</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>Settings</title>
 </node>

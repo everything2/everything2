@@ -1,7 +1,6 @@
 <node>
   <doctext>The old one that didn't allow bulk moves</doctext>
   <node_id>1868374</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <code>[%
 return 'Hey, don\'t press that button!' unless(isGod($USER));
 

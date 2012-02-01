@@ -82,7 +82,6 @@ return htmlcode('varsComboBox', 'localTimeOffset,0'.$params);
 
 [{closeform}]</doctext>
   <node_id>1358157</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>Local Settings</title>
 </node>

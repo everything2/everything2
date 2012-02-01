@@ -5,7 +5,6 @@ delete @prams{qw(node node_id type op sexisgood)};
 $query -&gt; p(linkNode(getNode('E2 Full Text Search', 'superdoc'), 'Over here...', \%prams));
 %]</doctext>
   <node_id>1914790</node_id>
-  <edittime>2011-10-31 09:05:03</edittime>
   <type_nodetype>14</type_nodetype>
   <title>Google Search Beta</title>
 </node>

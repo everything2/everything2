@@ -108,7 +108,6 @@ $str .= '&lt;/table&gt;
 return $str;
 %]</doctext>
   <node_id>1933698</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>Theme Nirvana</title>
 </node>

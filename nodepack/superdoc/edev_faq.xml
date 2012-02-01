@@ -118,7 +118,6 @@ A:
 
 &lt;p&gt;&lt;em&gt;-- [% linkNode(getNode('N-Wing','user'),0,{lastnode_id=&gt;0}); %]&lt;/em&gt;&lt;/p&gt;</doctext>
   <node_id>1039833</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>EDev FAQ</title>
 </node>

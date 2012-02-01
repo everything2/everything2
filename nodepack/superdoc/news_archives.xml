@@ -77,7 +77,6 @@ $text.=&quot;&lt;/table&gt;&quot;;
   return $text.&quot;&lt;p align='right'&gt;Bugs go to [dann]&lt;/p&gt;&quot;;
 %]</doctext>
   <node_id>1433012</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>News Archives</title>
 </node>

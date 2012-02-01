@@ -85,7 +85,6 @@ $html .= &quot;Total bugs matching query: $total\n&quot;;
 $html;
 %]</doctext>
   <node_id>206</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>bug query results</title>
 </node>

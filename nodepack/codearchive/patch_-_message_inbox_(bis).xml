@@ -4,7 +4,6 @@ patch's purpose: unknown&lt;br&gt;
 &lt;Br&gt;
 This was too old to do us any good without a description of what it was trying to do..</doctext>
   <node_id>1397767</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <code>&lt;script language=&quot;JavaScript&quot;&gt;
 function replyTo(s, c) {
 	if (c == 0) {

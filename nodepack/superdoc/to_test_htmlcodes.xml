@@ -9,7 +9,6 @@ return &quot;$t&lt;br&gt;&quot; . $HTMLVARS{raintest};
 
 %]</doctext>
   <node_id>1988181</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>to test htmlcodes</title>
 </node>

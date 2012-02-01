@@ -19,7 +19,6 @@ my $bah=&quot;stuff&quot;;
 #htmlcode('testhtmlcode',&quot;$blah, $bah&quot;)
 %]</doctext>
   <node_id>673177</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>test htmlcode</title>
 </node>

@@ -40,7 +40,6 @@ $str.='&lt;/ul&gt;';
 return $str;
 %]</doctext>
   <node_id>1797573</node_id>
-  <edittime>2011-07-13 09:18:11</edittime>
   <type_nodetype>14</type_nodetype>
   <title>Your filled nodeshells</title>
 </node>

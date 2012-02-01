@@ -20,7 +20,6 @@ $str .= &quot;Return to &quot; . linkNode(getNodeById($query-&gt;param('lastnode
 $str;
 %]</doctext>
   <node_id>1522384</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>remove item from category</title>
 </node>

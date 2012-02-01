@@ -141,7 +141,6 @@ while($dbrow = $rows-&gt;fetchrow_arrayref)
 $str .= '&lt;/table&gt;';
 %]</doctext>
   <node_id>1960670</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>
   <title>in10se's sandbox 3</title>
 </node>

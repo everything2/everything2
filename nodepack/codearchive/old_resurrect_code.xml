@@ -1,7 +1,6 @@
 <node>
   <doctext>The old node resurrect code.</doctext>
   <node_id>1404860</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <code>[%
 return &quot;&quot;;
 

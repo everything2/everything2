@@ -106,7 +106,6 @@ $str .= $query-&gt;endform;
 %]
 </doctext>
   <node_id>1935419</node_id>
-  <edittime>2011-07-03 08:04:53</edittime>
   <type_nodetype>14</type_nodetype>
   <title>Create Category</title>
 </node>

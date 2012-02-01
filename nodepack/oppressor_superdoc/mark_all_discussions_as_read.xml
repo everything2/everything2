@@ -89,7 +89,6 @@ elsif($doneRoot and $isRoot){
 return $str;
 %]</doctext>
   <node_id>1977737</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1144104</type_nodetype>
   <title>mark all discussions as read</title>
 </node>
