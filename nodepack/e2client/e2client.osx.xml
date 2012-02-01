@@ -6,11 +6,8 @@ Note that the download is source only, see the readme for instructions on compil
 Also note that anyone with experience with cocoa development is welcome to help out, just drop me a line. I can set up a cvs or something, no need to duplicate effort )</doctext>
   <dlurl>http://www.math.ohio-state.edu/~ccunning/e2client.tar.gz</dlurl>
   <node_id>1273646</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
-  <e2client_id>1273646</e2client_id>
   <type_nodetype>1261857</type_nodetype>
   <version>notevenusable-alpha</version>
-  <document_id>1273646</document_id>
   <clientstr>e2client.osx</clientstr>
   <title>e2client.osx</title>
 </node>

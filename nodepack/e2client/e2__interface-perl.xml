@@ -3,11 +3,8 @@
   <dlurl>http://joseweeks.com/e2interface/E2-Interface-0.34.tar.gz</dlurl>
   <homeurl>http://joseweeks.com/e2interface</homeurl>
   <node_id>1388785</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
-  <e2client_id>1388785</e2client_id>
   <type_nodetype>1261857</type_nodetype>
   <version>0.34</version>
-  <document_id>1388785</document_id>
   <clientstr>e2interface-perl</clientstr>
   <title>E2::Interface-perl</title>
 </node>

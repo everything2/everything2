@@ -6,11 +6,8 @@ Requires Windows XP SP2, Vista or later, and .Net 3.5 SP1
   <dlurl>http://everything2chatbox.googlecode.com/files/ChatboxInstaller_025.msi</dlurl>
   <homeurl>http://code.google.com/p/everything2chatbox/</homeurl>
   <node_id>1974266</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
-  <e2client_id>1974266</e2client_id>
   <type_nodetype>1261857</type_nodetype>
   <version>0.25</version>
-  <document_id>1974266</document_id>
   <clientstr>Chatbox</clientstr>
   <title>Chatbox</title>
 </node>
