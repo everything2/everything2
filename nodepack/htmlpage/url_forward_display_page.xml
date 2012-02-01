@@ -47,7 +47,6 @@ return '&lt;p&gt;&lt;strong&gt;forward-to:&lt;/strong&gt; ' . $$NODE{ 'doctext' 
 </page>
   <createtime>2008-05-27 03:19:37</createtime>
   <totalvotes>0</totalvotes>
-  <htmlpage_id>1943471</htmlpage_id>
   <node_id>1943471</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

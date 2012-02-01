@@ -141,7 +141,6 @@ delete $HTMLVARS{admintools};
 </page>
   <createtime>2010-08-25 05:07:52</createtime>
   <totalvotes>0</totalvotes>
-  <htmlpage_id>1990150</htmlpage_id>
   <node_id>1990150</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

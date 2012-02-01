@@ -53,7 +53,6 @@ return if getId($USER) != getId($NODE);
 </page>
   <createtime>2001-07-08 16:40:11</createtime>
   <totalvotes>0</totalvotes>
-  <htmlpage_id>1854179</htmlpage_id>
   <node_id>1854179</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

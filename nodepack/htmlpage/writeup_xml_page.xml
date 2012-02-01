@@ -15,7 +15,6 @@ node2xml($NODE, []);
 </page>
   <createtime>1999-11-08 21:54:51</createtime>
   <totalvotes>0</totalvotes>
-  <htmlpage_id>266</htmlpage_id>
   <node_id>266</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>xml</displaytype>

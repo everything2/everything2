@@ -26,7 +26,6 @@ $query -&gt; escapeHTML($$NODE{doctext});
 </page>
   <createtime>2011-10-02 19:56:05</createtime>
   <totalvotes>0</totalvotes>
-  <htmlpage_id>1992456</htmlpage_id>
   <node_id>1992456</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

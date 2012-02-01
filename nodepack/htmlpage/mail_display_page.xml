@@ -22,7 +22,6 @@ if (not $$NODE{from_address}) {
 </page>
   <createtime>1999-11-04 00:14:12</createtime>
   <totalvotes>0</totalvotes>
-  <htmlpage_id>195</htmlpage_id>
   <node_id>195</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

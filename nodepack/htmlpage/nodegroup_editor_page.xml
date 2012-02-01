@@ -16,7 +16,6 @@ linkNode $NODE, &quot;close&quot;, {displaytype=&gt; $query-&gt;param('displayty
 &lt;/FORM&gt;</page>
   <createtime>1999-10-07 04:35:11</createtime>
   <totalvotes>0</totalvotes>
-  <htmlpage_id>72</htmlpage_id>
   <node_id>72</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>editor</displaytype>

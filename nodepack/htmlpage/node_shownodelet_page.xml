@@ -29,7 +29,6 @@ $NODE = $GNODE = getNodeById($HTMLVARS{not_found}) unless $$NODE{type}{title} ne
 </page>
   <createtime>2010-07-22 20:16:23</createtime>
   <totalvotes>0</totalvotes>
-  <htmlpage_id>1990033</htmlpage_id>
   <node_id>1990033</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>shownodelet</displaytype>

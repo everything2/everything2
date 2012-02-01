@@ -10,7 +10,6 @@ $str.=htmlcode('textfield','e2imagenode_imgpath').&quot; (img src)&lt;br&gt;&quo
 %]</page>
   <createtime>1999-12-07 06:11:56</createtime>
   <totalvotes>0</totalvotes>
-  <htmlpage_id>1227041</htmlpage_id>
   <node_id>1227041</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

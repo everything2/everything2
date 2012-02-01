@@ -44,7 +44,6 @@ return insertNodelet(getNode(&quot;User Info&quot;,&quot;nodelet&quot;)-&gt;{nod
 			&lt;div style='clear: both'&gt;&lt;/div&gt;</page>
   <createtime>2009-11-18 20:16:24</createtime>
   <totalvotes>0</totalvotes>
-  <htmlpage_id>1988796</htmlpage_id>
   <node_id>1988796</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

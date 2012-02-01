@@ -164,7 +164,6 @@ document.getElementById('previewstyle').onclick = function () {
 </page>
   <createtime>2006-02-13 16:41:43</createtime>
   <totalvotes>0</totalvotes>
-  <htmlpage_id>1854353</htmlpage_id>
   <node_id>1854353</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

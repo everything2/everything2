@@ -24,7 +24,6 @@ if ($$USER{title} eq 'ascorbic') {
 </page>
   <createtime>2008-03-13 19:09:43</createtime>
   <totalvotes>0</totalvotes>
-  <htmlpage_id>1933854</htmlpage_id>
   <node_id>1933854</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>viewcode</displaytype>

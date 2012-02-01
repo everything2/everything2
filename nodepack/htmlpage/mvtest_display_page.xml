@@ -42,7 +42,6 @@ $str .= &quot;&lt;p&gt;&quot;. linkNode($NODE, &quot;edit this test&quot;, { 'di
 </page>
   <createtime>2009-12-11 15:53:02</createtime>
   <totalvotes>0</totalvotes>
-  <htmlpage_id>1988999</htmlpage_id>
   <node_id>1988999</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

@@ -102,7 +102,6 @@ if (jQuery('#bookmarklist li').length &gt; 1) {
 </page>
   <createtime>1999-12-17 04:59:03</createtime>
   <totalvotes>0</totalvotes>
-  <htmlpage_id>176001</htmlpage_id>
   <node_id>176001</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
