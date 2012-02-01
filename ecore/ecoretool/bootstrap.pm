@@ -70,6 +70,18 @@ sub main
 
 	opendir $dirhandle, $dbtabledir;
 
+	if(! -d $basedir)
+	{
+		print STDERR "Could not find nodepack dir '$basedir'\n";
+		exit;
+	}
+
+	unless($dirhandle)
+	{
+		print STDERR "Could not open nodepack dbtable dir '$basedir/$dbtabledir'\n";
+		exit;
+	}
+
 	my $newdbh = DBI->connect("DBI:mysql:database=$$options{database};user=$$options{user};password=$$options{password}");
 	die "No database" unless $newdbh;
 	foreach my $file(readdir($dirhandle))
@@ -97,15 +109,16 @@ sub main
 		print STDERR "Inserting $file...\n";
 		my $datahandle;
 		open $datahandle, "$nodetypedir/$file";
-		my $xmldata = $this->{xs}->XMLin($datahandle);
+		my $obj = $this->get_worker_object("nodetype");
+		my $NODE = $obj->xml_to_node($datahandle);
 		close $datahandle;
 		
 		foreach my $table(qw|node nodetype|)
 		{
-			$this->_values_into_table($newdbh,$xmldata->{node},$table);
+			$this->_values_into_table($newdbh,$NODE,$table);
 		}
 		
-		if(scalar(keys %{$xmldata->{node}}))
+		if(scalar(keys %$NODE))
 		{
 			print STDERR "Leftover keys in nodetype bootstrap in $file";
 		}
