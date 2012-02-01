@@ -2,7 +2,6 @@
   <display>&lt;b&gt;Guest of Valhalla&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Participated in April Fools' Day 2008 Ragnarok!&lt;/i&gt;</display>
   <achievement_type>usergroup</achievement_type>
   <node_id>1936186</node_id>
-  <achievement_id>1936186</achievement_id>
   <code>return htmlcode('isinUsergroup',$user_id.',valhalla');</code>
   <type_nodetype>1917847</type_nodetype>
   <title>usergroupValhalla</title>

@@ -2,7 +2,6 @@
   <display>&lt;strong&gt;Ice Machine&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Cooled 100 Nodes&lt;/i&gt;</display>
   <achievement_type>cool</achievement_type>
   <node_id>1918123</node_id>
-  <achievement_id>1918123</achievement_id>
   <code>my $coolCount = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;coolwriteups&quot;,&quot;cooledby_user=$user_id&quot;);
 
 return 1 if $coolCount &gt;=100;

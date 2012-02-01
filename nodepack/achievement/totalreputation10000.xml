@@ -2,7 +2,6 @@
   <display>&lt;strong&gt;Most Likely To Succeed&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Total Reputation of 10000&lt;/i&gt;</display>
   <achievement_type>reputation</achievement_type>
   <node_id>1918065</node_id>
-  <achievement_id>1918065</achievement_id>
   <code>my $totalRep = $DB-&gt;sqlSelect(&quot;sum(reputation)&quot;,&quot;node&quot;,&quot;author_user=$user_id and type_nodetype=117&quot;);
 
 return 1 if $totalRep &gt;= 10000;

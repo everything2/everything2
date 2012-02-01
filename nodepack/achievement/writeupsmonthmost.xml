@@ -2,7 +2,6 @@
   <display>&lt;strong&gt;Stop The Presses&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Posted Most Writeups In A Month&lt;/i&gt;</display>
   <achievement_type>writeup</achievement_type>
   <node_id>1920610</node_id>
-  <achievement_id>1920610</achievement_id>
   <code>return 0;</code>
   <type_nodetype>1917847</type_nodetype>
   <title>writeupsMonthMost</title>

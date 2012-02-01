@@ -2,7 +2,6 @@
   <display>&lt;strong&gt;This Is A Token Badge&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Collected 100 Tokens&lt;/i&gt;</display>
   <achievement_type>miscellaneous</achievement_type>
   <node_id>1918342</node_id>
-  <achievement_id>1918342</achievement_id>
   <code>my $uVars = getVars(getNodeById($user_id));
 return 1 if $$uVars{tokens_bought} &gt;=100;
 return 0;</code>

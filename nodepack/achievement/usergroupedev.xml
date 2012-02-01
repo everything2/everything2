@@ -2,7 +2,6 @@
   <display>&lt;b&gt;Code Monkey&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Member of [edev] Usergroup&lt;/i&gt;</display>
   <achievement_type>usergroup</achievement_type>
   <node_id>1920603</node_id>
-  <achievement_id>1920603</achievement_id>
   <code>return htmlcode('isinUsergroup',$user_id.',edev');</code>
   <type_nodetype>1917847</type_nodetype>
   <title>usergroupEdev</title>

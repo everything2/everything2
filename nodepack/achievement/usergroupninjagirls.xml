@@ -2,7 +2,6 @@
   <display>&lt;b&gt;Ninja Girl&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Member of Ninjagirls Usergroup&lt;/i&gt;</display>
   <achievement_type>usergroup</achievement_type>
   <node_id>1920606</node_id>
-  <achievement_id>1920606</achievement_id>
   <code>return htmlcode('isinUsergroup',$user_id.',ninjagirls');</code>
   <type_nodetype>1917847</type_nodetype>
   <title>usergroupNinjagirls</title>
