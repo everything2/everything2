@@ -40,6 +40,5 @@ return htmlcode('epicenterZen') unless $$VARS{nodelets} =~ /\b$epid\b/ || $$USER
     [{zen titlebar}]
 &lt;/div&gt;</context>
   <type_nodetype>2</type_nodetype>
-  <container_id>1854175</container_id>
   <title>zen container</title>
 </node>

@@ -10,6 +10,5 @@ if(defined $$THEME{generalNodelet_container}) {
 '';
 %]CONTAINED_STUFF</context>
   <type_nodetype>2</type_nodetype>
-  <container_id>175986</container_id>
   <title>general nodelet container</title>
 </node>

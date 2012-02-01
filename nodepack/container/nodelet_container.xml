@@ -25,6 +25,5 @@ return ' background=&quot;'.$bk.'&quot;' if $bk;
 &lt;/td&gt;
 &lt;/tr&gt;</context>
   <type_nodetype>2</type_nodetype>
-  <container_id>20</container_id>
   <title>nodelet container</title>
 </node>
