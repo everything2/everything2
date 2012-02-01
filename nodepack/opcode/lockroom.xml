@@ -1,5 +1,4 @@
 <node>
-  <createtime>2000-08-25 16:52:22</createtime>
   <node_id>720242</node_id>
   <htmlcode_id>720242</htmlcode_id>
   <code>return unless isGod($USER);

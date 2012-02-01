@@ -247,7 +247,6 @@ return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/
 
 &lt;p&gt;&lt;b&gt;That's it.&lt;/b&gt; If you've any questions about this or anything else (regarding E2) please [message] [alex] or e-mail him at &lt;strong&gt;alex /remove this junk and add an at sign/ staff.everything2.com&lt;/a&gt;&lt;/strong&gt;.&lt;/p&gt;
 </doctext>
-  <createtime>2000-09-11 05:16:45</createtime>
   <node_id>743129</node_id>
   <edittime>2011-08-04 22:43:30</edittime>
   <type_nodetype>14</type_nodetype>

@@ -3,7 +3,6 @@
   <nodetype_id>116</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>8</extends_nodetype>
-  <createtime>1999-09-15 07:21:41</createtime>
   <sqltable>e2node</sqltable>
   <grouptable>nodegroup</grouptable>
   <node_id>116</node_id>

@@ -1,5 +1,4 @@
 <node>
-  <createtime>1999-11-13 00:26:51</createtime>
   <node_id>316</node_id>
   <code>my $str;
 my $title = $query-&gt;param('node');

@@ -213,7 +213,6 @@ if($query-&gt;param(&quot;sendNewKey&quot;)){
 %]
 &lt;/div&gt;
 </doctext>
-  <createtime>2008-07-03 18:05:21</createtime>
   <node_id>1948165</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

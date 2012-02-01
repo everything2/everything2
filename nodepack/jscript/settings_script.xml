@@ -73,7 +73,6 @@ void new function(zensheet){
 			Math.max(e2.fxDuration*2,100) );
 	}
 }(document.getElementById('zensheet'));</doctext>
-  <createtime>2010-11-03 11:14:53</createtime>
   <node_id>1990639</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>

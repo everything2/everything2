@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-07-21 04:49:17</createtime>
   <node_id>1116965</node_id>
   <code>my $str = &quot;&lt;ul&gt;&quot;;
 $str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Node Tracker').&quot;&lt;/li&gt;&quot;;

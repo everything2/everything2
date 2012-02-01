@@ -44,7 +44,6 @@ return listdir( $listdir, 0 );
 
 %]
 </doctext>
-  <createtime>2000-11-29 14:59:20</createtime>
   <node_id>855431</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

@@ -152,7 +152,6 @@ return $str.'&lt;textarea name=&quot;skratch&quot; '.htmlcode('customtextarea','
 
 %]
 </doctext>
-  <createtime>2001-05-31 01:42:40</createtime>
   <node_id>1065273</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1065266</type_nodetype>

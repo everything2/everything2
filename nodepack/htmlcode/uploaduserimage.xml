@@ -1,6 +1,5 @@
 <node>
   <core>R</core>
-  <createtime>1999-11-04 00:14:11</createtime>
   <node_id>539558</node_id>
   <code>use POSIX qw(strftime);
 use File::Copy;

@@ -570,7 +570,6 @@ $str .= '&lt;h3&gt;DEBUGGING OUTPUT: You may ignore this&lt;/h3&gt;'.$strDebug;
 
 return $str;
 %]</doctext>
-  <createtime>2008-01-07 15:47:26</createtime>
   <node_id>1924476</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

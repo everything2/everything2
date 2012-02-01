@@ -9,7 +9,6 @@ $$THEME{nodeletMCTableAttr} ? $$THEME{nodeletMCTableAttr} : 'cellpadding=&quot;1
 insertNodelet($NODE);
 %]
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/p&gt;</page>
-  <createtime>2001-12-30 09:03:30</createtime>
   <node_id>1225504</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>testembed</displaytype>

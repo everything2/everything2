@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-03-04 06:12:15</createtime>
   <node_id>1991348</node_id>
   <code># choose an e2node to be the parent of a draft
 # optionally, publish the draft to it as a writeup

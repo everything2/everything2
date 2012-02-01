@@ -1,5 +1,4 @@
 <node>
-  <createtime>2009-03-31 04:17:23</createtime>
   <node_id>1980272</node_id>
   <code>#Given a ug_id or a ug hash, convert it to a comma-separated string of user IDs
 my ($ug) = @_;

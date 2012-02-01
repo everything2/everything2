@@ -1,5 +1,4 @@
 <node>
-  <createtime>2008-06-20 10:20:38</createtime>
   <node_id>1946454</node_id>
   <htmlcode_id>1946454</htmlcode_id>
   <code>#Kicks the user into another room and locks them there. We could just add a 'lock in' parameter to E2 Bouncer, but I figure it might be nice to have a command for it, and I'm inclined to tie it in with borg-handling anyway...

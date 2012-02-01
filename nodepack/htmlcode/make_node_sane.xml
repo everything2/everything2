@@ -1,5 +1,4 @@
 <node>
-  <createtime>2010-02-18 12:41:38</createtime>
   <node_id>1989543</node_id>
   <code># Expects single parameter, node_id or node ref
 # returns undef if unable to make node sane

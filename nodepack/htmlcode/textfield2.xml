@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-09-29 17:04:21</createtime>
   <node_id>1168347</node_id>
   <code>#like [textfield], but manually sets values from submitted form
 #precondition:

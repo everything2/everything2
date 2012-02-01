@@ -1,6 +1,5 @@
 <node>
   <parent_container>21</parent_container>
-  <createtime>1999-10-07 04:35:10</createtime>
   <node_id>20</node_id>
   <context>&lt;tr[%
 #changes to this should maybe also done to [ekw nodelet container], [jukka nodelet container], and maybe others

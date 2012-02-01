@@ -1,5 +1,4 @@
 <node>
-  <createtime>2010-01-27 03:34:29</createtime>
   <node_id>1989345</node_id>
   <code>my $isRoot = htmlcode('isAdmin');
 my $isEditor = htmlcode('isEditor');

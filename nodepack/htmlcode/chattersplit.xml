@@ -1,5 +1,4 @@
 <node>
-  <createtime>2004-12-22 17:13:45</createtime>
   <node_id>1689930</node_id>
   <code>my $maxLen = ((exists $VARS-&gt;{splitChatter}) &amp;&amp; (defined $VARS-&gt;{splitChatter}) &amp;&amp; ($VARS-&gt;{splitChatter}=~/^([1-9]\d*)$/)) ? $1 : 0;
 $maxLen += 0;

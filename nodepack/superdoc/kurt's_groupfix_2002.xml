@@ -56,7 +56,6 @@ while(my ($id) = $c-&gt;fetchrow())
 
 $str;
 %]</doctext>
-  <createtime>2004-08-07 14:19:09</createtime>
   <node_id>1669496</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

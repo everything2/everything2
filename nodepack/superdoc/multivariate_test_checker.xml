@@ -27,7 +27,6 @@ check_test_substitutions('somecode'); }%]
 &lt;a href=&quot;/node/superdoc/multivariate+test+checker&quot; onclick=&quot;var today = new Date(); today.setTime( today.getTime() + 100000000000 );  document.cookie='condition=optout; expires=' + today.toGMTString() +'; path=/;'; alert('You opted out'); 1;&quot;&gt;OPT OUT&lt;/a&gt;
 
 </doctext>
-  <createtime>2009-12-17 15:31:37</createtime>
   <node_id>1989096</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

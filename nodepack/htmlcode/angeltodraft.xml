@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-06-22 13:06:27</createtime>
   <node_id>1992091</node_id>
   <code>my $tomb = shift;
 my $angel_id = $$tomb{node_id};

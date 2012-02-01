@@ -14,7 +14,6 @@ $str = $$xml{nltext};
 utf8::encode($str);
 $str;
 %]</doctext>
-  <createtime>2008-01-21 13:55:27</createtime>
   <node_id>1926580</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1252389</type_nodetype>

@@ -1,5 +1,4 @@
 <node>
-  <createtime>2000-07-17 02:13:08</createtime>
   <node_id>657441</node_id>
   <code>return unless getId($NODE) eq getId($USER);
 return unless $$VARS{cansupercloak};

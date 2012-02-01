@@ -1,6 +1,5 @@
 <node>
   <core>R</core>
-  <createtime>1999-10-07 04:35:11</createtime>
   <node_id>45</node_id>
   <code># [{parsetime:FIELD}]
 # Parses out a datetime field into a more human-readable form

@@ -87,7 +87,6 @@ foreach (@maints) {$str .= '&lt;li&gt;'.linkNode($_).'&lt;/li&gt;
 $str . '&lt;/ul&gt;' ;
 %]
 </page>
-  <createtime>1999-10-07 04:35:12</createtime>
   <node_id>75</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

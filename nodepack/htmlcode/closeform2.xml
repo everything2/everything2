@@ -1,6 +1,5 @@
 <node>
   <core>R</core>
-  <createtime>1999-10-07 04:35:11</createtime>
   <node_id>1989043</node_id>
   <code>$query-&gt;submit(&quot;sexisgood&quot;, &quot;submit to your master&quot;) .
 $query-&gt;end_form;

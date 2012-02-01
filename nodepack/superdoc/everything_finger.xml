@@ -66,7 +66,6 @@ my $intro = &quot;There are currently $num users on Everything2&lt;br&gt;&quot;;
 $intro.$str;
 
 %]</doctext>
-  <createtime>2000-05-16 17:30:54</createtime>
   <node_id>553317</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

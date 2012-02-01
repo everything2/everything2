@@ -1,6 +1,5 @@
 <node>
   <core>R</core>
-  <createtime>1999-10-07 04:35:11</createtime>
   <node_id>53</node_id>
   <code>my ($field, $length, $expandable, $addClass) = @_;
 $length ||= 20;

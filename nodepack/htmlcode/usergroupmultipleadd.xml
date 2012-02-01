@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-10-11 15:35:44</createtime>
   <node_id>1176810</node_id>
   <code># update 5/15/02 by jaybonci: Removed specific node references. Code cleanup.
 # update 4/03/03 by jaybonci: ANother cleanup. Changed to simple usergroup 

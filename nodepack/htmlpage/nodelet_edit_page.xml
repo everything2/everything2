@@ -14,7 +14,6 @@ icon width: [{textfield:iconWidth}]&lt;br&gt;
 
 nodelet code:&lt;br /&gt;
 [{textarea:nlcode,30,80,off}]</page>
-  <createtime>1999-10-07 04:35:11</createtime>
   <node_id>74</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

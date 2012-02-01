@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-10-12 06:42:03</createtime>
   <node_id>1177302</node_id>
   <code>#return unless ($$USER{user_id} == 459692);
 return unless exists($$VARS{tutorial});

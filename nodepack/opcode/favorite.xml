@@ -1,5 +1,4 @@
 <node>
-  <createtime>2008-02-21 03:46:48</createtime>
   <node_id>1930913</node_id>
   <htmlcode_id>1930913</htmlcode_id>
   <code>my $node_id = $query -&gt; param(&quot;fave_id&quot;);

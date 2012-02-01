@@ -2,7 +2,6 @@
   <nodetype_id>451267</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>14</extends_nodetype>
-  <createtime>2000-03-13 03:41:08</createtime>
   <sqltable></sqltable>
   <node_id>451267</node_id>
   <type_nodetype>1</type_nodetype>

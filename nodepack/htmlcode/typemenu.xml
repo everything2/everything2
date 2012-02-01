@@ -1,5 +1,4 @@
 <node>
-  <createtime>1999-12-22 01:10:29</createtime>
   <node_id>279553</node_id>
   <code># This constructs an HTML popup menu using the FormMenu
 # package of Everything.  Values of the menu come from

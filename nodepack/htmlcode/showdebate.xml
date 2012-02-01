@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-10-07 15:06:31</createtime>
   <node_id>1173524</node_id>
   <code>#!/bin/perl
 use strict;

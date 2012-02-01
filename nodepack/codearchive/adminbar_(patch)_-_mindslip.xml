@@ -1,6 +1,5 @@
 <node>
   <doctext>[mindslip]'s patch to [adminbar]. I don't think he's patching the right spot, because adminbar is (as the name suggests) admin-only.  Saving this code in case he or she wants it.</doctext>
-  <createtime>2003-02-14 06:10:53</createtime>
   <node_id>1429854</node_id>
   <htmlcode_id>1429854</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>

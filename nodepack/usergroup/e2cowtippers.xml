@@ -15,7 +15,6 @@ A test usergroup. Cows can be tipped in the [Cowtippery|pasture].
 How to enable this feature? 
 Add the usergroup to the 'webloggables' table (numeric value seems to be node ID of the usergroup) *done this for E2cowtippers*  Wait for a user VARS regen to make the *ify! commands available. I am not sure if this is caused by logging in/out, vote regen, or other. Once the VARS regen, the new *ify! will appear.
 --&gt;</doctext>
-  <createtime>2004-03-07 13:34:45</createtime>
   <node_id>1524349</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>16</type_nodetype>

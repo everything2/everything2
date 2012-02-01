@@ -366,7 +366,6 @@ if ($$USER{title}eq'Oolong'){
 return $str;
 
 %]</doctext>
-  <createtime>2008-02-08 10:08:33</createtime>
   <node_id>1929198</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

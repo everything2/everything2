@@ -1,5 +1,4 @@
 <node>
-  <createtime>2000-03-07 16:33:20</createtime>
   <node_id>1976481</node_id>
   <code>my $uid=$$USER{node_id}||0;
 return if !$uid || ($uid eq $HTMLVARS{default_user});

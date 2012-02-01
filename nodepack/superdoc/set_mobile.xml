@@ -20,7 +20,6 @@ Set 'mobile' mode for this client. Sets a cookie. COOKIE!
     . $query-&gt;submit('set')
     . $query-&gt;end_form();
 %]</doctext>
-  <createtime>2010-07-22 15:40:47</createtime>
   <node_id>1990027</node_id>
   <edittime>2011-11-01 09:42:21</edittime>
   <type_nodetype>14</type_nodetype>

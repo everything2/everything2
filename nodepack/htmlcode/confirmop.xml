@@ -1,5 +1,4 @@
 <node>
-  <createtime>2010-02-16 15:20:51</createtime>
   <node_id>1989510</node_id>
   <code>my $N = $query -&gt; param('like_id') || $query -&gt; param( 'cool_id' ) || $query -&gt; param( 'ins_id' ) || $query -&gt; param('cure_user_id');
 my $node = getNodeById( $N ) if $N;

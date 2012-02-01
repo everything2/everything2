@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-07-13 06:12:21</createtime>
   <node_id>1992202</node_id>
   <code>use Digest::MD5('md5_hex');
 

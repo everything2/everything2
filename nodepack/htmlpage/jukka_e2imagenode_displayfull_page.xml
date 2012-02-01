@@ -51,7 +51,6 @@ htmlcode('windowview', 'editor,launch editor');
 &lt;tr&gt;&lt;td&gt;
 	[{addwriteup}]
 &lt;/tr&gt;&lt;/td&gt;&lt;/table&gt;</page>
-  <createtime>2000-02-12 02:19:56</createtime>
   <node_id>1227043</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

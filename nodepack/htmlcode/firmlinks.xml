@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-09-01 21:39:39</createtime>
   <node_id>1150188</node_id>
   <code>#displays firmlinks for this e2node or writeup
 #	for admins, also shows widgets to allow deleting of checked items

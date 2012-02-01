@@ -1,6 +1,5 @@
 <node>
   <rawdata_id>1953726</rawdata_id>
-  <createtime>2008-08-29 04:17:41</createtime>
   <node_id>1953726</node_id>
   <type_nodetype>332487</type_nodetype>
   <datacode>function postWriteup() {

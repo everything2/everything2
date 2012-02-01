@@ -238,7 +238,6 @@ $str .= qq|&lt;p align=&quot;right&quot;&gt;$nextprev&lt;/p&gt;| if length($next
 
 return $str;
 %]</doctext>
-  <createtime>2000-12-05 17:41:07</createtime>
   <node_id>863558</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

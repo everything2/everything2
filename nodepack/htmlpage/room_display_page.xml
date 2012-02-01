@@ -58,7 +58,6 @@ if (!$$canEnter{canEnter}) {
   return &quot;&lt;br&gt;&lt;p align=\&quot;right\&quot;&gt;(&quot;.linkNode(getNode(&quot;go outside&quot;, &quot;superdocnolinks&quot;)).&quot;)&lt;/p&gt;&quot;;
 %]
 </page>
-  <createtime>2000-08-25 08:30:35</createtime>
   <node_id>719848</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

@@ -1,6 +1,5 @@
 <node>
   <core>R</core>
-  <createtime>1999-11-04 00:14:10</createtime>
   <node_id>175</node_id>
   <code># This generates an HTML table that contains the fields
 # of a database table.  The output is similar to what

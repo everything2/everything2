@@ -44,7 +44,6 @@ function loadNode(nodeid) {
 
 &lt;div id='node_91'&gt;NOTHING&lt;/DIV&gt;
 </doctext>
-  <createtime>2000-08-13 22:40:32</createtime>
   <node_id>700295</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

@@ -1,5 +1,4 @@
 <node>
-  <createtime>2002-10-13 06:07:16</createtime>
   <node_id>1372587</node_id>
   <code>use Everything::Room;
 my $entrance= &quot;0&quot;;

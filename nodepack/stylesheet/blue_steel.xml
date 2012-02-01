@@ -912,7 +912,6 @@ font-size: 100%;
 .patch_invalid { background: darkred !important; }
 .patch_later {background: navy!important; }
 .patch_undone {background : olive !important;}</doctext>
-  <createtime>2009-03-04 03:55:05</createtime>
   <node_id>1976666</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1854352</type_nodetype>

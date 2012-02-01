@@ -1,5 +1,4 @@
 <node>
-  <createtime>2009-12-11 13:01:29</createtime>
   <node_id>1988993</node_id>
   <htmlcode_id>1988993</htmlcode_id>
   <code>my $dbh = $DB-&gt;getDatabaseHandle();

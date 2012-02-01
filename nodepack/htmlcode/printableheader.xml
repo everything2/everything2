@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-02-07 22:08:16</createtime>
   <node_id>942345</node_id>
   <code>my ($WRITEUP) = @_;
   getRef $WRITEUP;

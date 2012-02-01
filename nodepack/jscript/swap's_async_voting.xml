@@ -271,7 +271,6 @@ var checkInterval = function () {
 
 var interval = window.setInterval(checkInterval, 1000);
 </doctext>
-  <createtime>2006-10-25 11:14:54</createtime>
   <node_id>1984562</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>

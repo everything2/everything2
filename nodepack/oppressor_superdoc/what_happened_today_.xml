@@ -29,7 +29,6 @@ $str .= &quot;&lt;textarea name='news' cols='50' rows='25'&gt;&quot; . encodeHTM
 $str;
 %]
 &lt;input type='submit' name='submit' value='Save'&gt;&lt;/form&gt;</doctext>
-  <createtime>2006-10-05 14:36:31</createtime>
   <node_id>1838080</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1144104</type_nodetype>

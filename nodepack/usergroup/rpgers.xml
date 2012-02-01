@@ -8,7 +8,6 @@ return '' unless $$USER{node_id}==9740;
 htmlcode('usergroupLeaderAdd','');
 %]
 [{weblog}]</doctext>
-  <createtime>2002-01-16 08:59:13</createtime>
   <node_id>1237120</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>16</type_nodetype>

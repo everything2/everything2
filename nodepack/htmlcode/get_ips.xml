@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-05-15 00:04:00</createtime>
   <node_id>1991942</node_id>
   <code>my $intFromAddr = sub {
   my $addr = shift;

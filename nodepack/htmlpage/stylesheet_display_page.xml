@@ -162,7 +162,6 @@ document.getElementById('previewstyle').onclick = function () {
 }
 &lt;/script&gt;
 </page>
-  <createtime>2006-02-13 16:41:43</createtime>
   <node_id>1854353</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

@@ -1,5 +1,4 @@
 <node>
-  <createtime>2010-07-28 10:20:49</createtime>
   <node_id>1990059</node_id>
   <code># Generate a link to a stylesheet, incorporating the version 
 # number of the node into the URL. This can be used in conjunction

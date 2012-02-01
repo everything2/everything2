@@ -36,7 +36,6 @@ $str.= buildTable(['key','value'],[
 $str.=htmlcode(&quot;closeform&quot;);
 return $str;
 %]</page>
-  <createtime>2009-11-12 21:52:03</createtime>
   <node_id>1988629</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

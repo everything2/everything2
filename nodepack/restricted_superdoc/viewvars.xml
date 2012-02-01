@@ -12,7 +12,6 @@ $str.=&quot;$_ : $$V{$_}&lt;br&gt;&quot;;
 
 $str;
 %]</doctext>
-  <createtime>2000-05-04 19:54:44</createtime>
   <node_id>530149</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

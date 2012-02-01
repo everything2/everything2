@@ -239,7 +239,6 @@ return $resstr.'Your search didn\'t bring back any results. &lt;br&gt;&lt;br&gt;
 return $resstr.'We found the following:&lt;br&gt;&lt;br&gt;'.$str.$moretxt;
 
 %]</doctext>
-  <createtime>2001-10-18 06:31:42</createtime>
   <node_id>1378561</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1144104</type_nodetype>

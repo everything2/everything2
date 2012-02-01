@@ -1,5 +1,4 @@
 <node>
-  <createtime>2000-09-18 18:36:40</createtime>
   <node_id>753955</node_id>
   <code>use Everything::Experience;
 return if getId($USER) == $HTMLVARS{guest_user};

@@ -1,5 +1,4 @@
 <node>
-  <createtime>2010-07-28 22:30:41</createtime>
   <node_id>1990063</node_id>
   <code>use POSIX;
 

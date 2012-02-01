@@ -1,5 +1,4 @@
 <node>
-  <createtime>2010-11-19 16:03:43</createtime>
   <node_id>1990779</node_id>
   <code>htmlcode('varcheckbox','showuseractions','Spy on Other Users (just for fun)');
 </code>

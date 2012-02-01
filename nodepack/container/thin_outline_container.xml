@@ -1,6 +1,5 @@
 <node>
   <parent_container>0</parent_container>
-  <createtime>1999-11-11 05:20:06</createtime>
   <node_id>283</node_id>
   <context>[%
 return $$THEME{thinOutlineHeader} if exists $$THEME{thinOutlineHeader};

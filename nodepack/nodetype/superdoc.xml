@@ -3,7 +3,6 @@
   <nodetype_id>14</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>3</extends_nodetype>
-  <createtime>1999-10-07 04:35:10</createtime>
   <sqltable></sqltable>
   <node_id>14</node_id>
   <type_nodetype>1</type_nodetype>

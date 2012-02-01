@@ -1,5 +1,4 @@
 <node>
-  <createtime>2002-04-23 00:25:14</createtime>
   <node_id>1289767</node_id>
   <code>my $cf = getVars(getNode(&quot;chatterbox forward&quot;, &quot;setting&quot;));
 my $retstr = &quot;&lt;sametitles&gt;&quot;;

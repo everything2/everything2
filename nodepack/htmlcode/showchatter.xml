@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-03-05 23:28:39</createtime>
   <node_id>973519</node_id>
   <code>my $json = {};
 my $jsoncount = 1 if shift;

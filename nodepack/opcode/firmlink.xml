@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-09-02 06:31:14</createtime>
   <node_id>1150387</node_id>
   <htmlcode_id>1150387</htmlcode_id>
   <code>my $RECURSE = 1;

@@ -22,7 +22,6 @@ if ($$USER{title} eq 'ascorbic') {
 %]
 [{listcode:nlcode}]
 </page>
-  <createtime>2008-03-13 19:09:43</createtime>
   <node_id>1933854</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>viewcode</displaytype>

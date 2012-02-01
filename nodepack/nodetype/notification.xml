@@ -1,7 +1,6 @@
 <node>
   <nodetype_id>1930710</nodetype_id>
   <extends_nodetype>7</extends_nodetype>
-  <createtime>2008-02-19 21:08:28</createtime>
   <sqltable>notification</sqltable>
   <node_id>1930710</node_id>
   <type_nodetype>1</type_nodetype>

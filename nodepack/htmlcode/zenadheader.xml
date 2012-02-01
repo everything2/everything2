@@ -1,5 +1,4 @@
 <node>
-  <createtime>2008-07-27 16:38:09</createtime>
   <node_id>1950676</node_id>
   <code>return unless $$VARS{zenadinheader};
 my $SETTINGS = getVars(getNode('system settings','setting'));

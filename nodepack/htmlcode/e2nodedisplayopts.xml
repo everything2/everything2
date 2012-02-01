@@ -1,5 +1,4 @@
 <node>
-  <createtime>1999-11-15 08:16:39</createtime>
   <node_id>165438</node_id>
   <code>my ($align) =@_;
 

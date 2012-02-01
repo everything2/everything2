@@ -1,5 +1,4 @@
 <node>
-  <createtime>2002-01-18 21:22:59</createtime>
   <node_id>1238735</node_id>
   <code>#this displays the titles of nodelets, which can be just the text, or maybe an image
 #parts of the nodelet containers for various themes were moved and merged here: [nodelet container], [jukka nodelet container], [ekw nodelet container] (if I missed any, please tell me!)

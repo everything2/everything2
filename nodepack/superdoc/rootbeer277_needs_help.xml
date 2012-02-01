@@ -48,7 +48,6 @@ $testexplainoutput .= &quot;&lt;/ul&gt;&quot;;
 return $testexplainoutput . $querytextcopy;
 
 %]</doctext>
-  <createtime>2008-11-05 20:45:34</createtime>
   <node_id>1961836</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

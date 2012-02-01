@@ -1,5 +1,4 @@
 <node>
-  <createtime>2000-05-10 18:41:38</createtime>
   <node_id>539978</node_id>
   <code>
 return $$THEME{thinOutlineHeader} if exists $$THEME{thinOutlineHeader};

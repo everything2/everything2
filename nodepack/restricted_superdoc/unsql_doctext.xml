@@ -16,7 +16,6 @@ from backup, node_id: &lt;input type=&quot;text&quot; name=&quot;sql_id&quot;&gt
   updateNode($sqlid, -1);
   return &quot;Done&quot;;
 %]</doctext>
-  <createtime>2002-05-19 21:52:29</createtime>
   <node_id>1304974</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

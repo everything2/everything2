@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-06-09 07:50:30</createtime>
   <node_id>1075515</node_id>
   <code>#this to deprecates displaySingleVar - instead of many calls to that, only 1 call is needed to this, displayUserInfo
 #updated: Thursday, June 13, 2002

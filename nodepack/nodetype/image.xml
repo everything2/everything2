@@ -2,7 +2,6 @@
   <core>R</core>
   <nodetype_id>6</nodetype_id>
   <extends_nodetype>7</extends_nodetype>
-  <createtime>1999-10-07 04:35:10</createtime>
   <sqltable>image</sqltable>
   <node_id>6</node_id>
   <type_nodetype>1</type_nodetype>

@@ -25,7 +25,6 @@ $str;
   return linkNode($NODE, &quot;Edit&quot;, {displaytype =&gt; 'edit'}) . &quot; this piece&quot; if canUpdateNode($USER, $NODE);
 
 %]</page>
-  <createtime>2001-06-25 16:44:12</createtime>
   <node_id>1089146</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

@@ -186,7 +186,6 @@ $str.=$tClose;
 return $str;
 %]
 </doctext>
-  <createtime>2001-02-09 23:55:55</createtime>
   <node_id>945284</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

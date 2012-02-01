@@ -1,7 +1,6 @@
 <node>
   <nodetype_id>1258942</nodetype_id>
   <extends_nodetype>1252389</extends_nodetype>
-  <createtime>2002-02-23 04:19:35</createtime>
   <sqltable>e2schema</sqltable>
   <node_id>1258942</node_id>
   <type_nodetype>1</type_nodetype>

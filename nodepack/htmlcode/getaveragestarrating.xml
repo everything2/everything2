@@ -1,5 +1,4 @@
 <node>
-  <createtime>2009-12-11 12:56:41</createtime>
   <node_id>1988991</node_id>
   <code># Returns the average star rating for a node, over all ratings in the same condition
 #  as the current user.

@@ -218,7 +218,6 @@ $str .= htmlcode('closeform').'&lt;/p&gt;';
 $str;
 %]
 </page>
-  <createtime>2000-11-21 19:59:08</createtime>
   <node_id>846440</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

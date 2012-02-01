@@ -2,7 +2,6 @@
   <nodetype_id>1988997</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>153</extends_nodetype>
-  <createtime>2009-12-11 15:44:05</createtime>
   <sqltable>mvtest</sqltable>
   <node_id>1988997</node_id>
   <type_nodetype>1</type_nodetype>

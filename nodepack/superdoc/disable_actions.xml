@@ -44,7 +44,6 @@ return $str . '&lt;p&gt;&lt;input type=&quot;hidden&quot; name=&quot;donode&quot
 &lt;/p&gt;
 &lt;/form&gt;' ;
 %]</doctext>
-  <createtime>2009-11-21 18:31:51</createtime>
   <node_id>1988894</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

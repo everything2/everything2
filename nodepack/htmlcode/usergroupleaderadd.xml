@@ -1,5 +1,4 @@
 <node>
-  <createtime>2002-02-10 03:13:00</createtime>
   <node_id>1251696</node_id>
   <code>#allows a non-privileged user (ie, a non-admin) that is the &quot;leader&quot; of a usergroup to potentially add a user to a usergroup
 #note: the &quot;leader&quot; of a usergroup is simply the first user in the group

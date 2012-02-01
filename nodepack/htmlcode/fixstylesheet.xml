@@ -1,5 +1,4 @@
 <node>
-  <createtime>2009-08-25 10:44:46</createtime>
   <node_id>1988433</node_id>
   <code>my $VARSNODE = getNode( 'fixed stylesheets' ,'setting' ) ;
 my $fixed = getVars( $VARSNODE ) ;

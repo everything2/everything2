@@ -7,7 +7,6 @@ my $N = $DB-&gt;getNodeById($query-&gt;param('node_id'));
 %]
 &lt;p&gt;Better stay away.</doctext>
   <core>R</core>
-  <createtime>1999-10-07 04:35:12</createtime>
   <node_id>100</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

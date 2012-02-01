@@ -10,7 +10,6 @@
 &lt;i&gt;&quot;The elevator is here for you sir.&quot;&lt;/i&gt;&lt;p&gt;
 [M-Noder]: &lt;b&gt;Thank you, Jeeves.&lt;/b&gt; (plunks 10 GP in a china bowl next to Jeeves)&lt;p&gt;
 &lt;i&gt;&quot;Thank [Jet-poop|you], sir!&quot;&lt;/i&gt;</doctext>
-  <createtime>2000-05-16 15:00:02</createtime>
   <lastused_date>2011-07-14</lastused_date>
   <node_id>553133</node_id>
   <criteria>my $numwr = $$VARS{numwriteups};

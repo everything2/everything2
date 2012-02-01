@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-10-17 07:57:38</createtime>
   <node_id>1992493</node_id>
   <code>my ($user_id) = shift;
 

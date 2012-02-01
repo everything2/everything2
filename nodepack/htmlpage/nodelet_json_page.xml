@@ -13,7 +13,6 @@ $pieces{'node_'.$$NODE{node_id}} = htmlcode('listcode','nlcode');
 $json-&gt;objToJson(\%pieces, {pretty =&gt; 1, indent =&gt; 2});
 
 %]</page>
-  <createtime>1999-10-07 04:35:11</createtime>
   <node_id>1894152</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>json</displaytype>

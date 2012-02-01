@@ -1,5 +1,4 @@
 <node>
-  <createtime>2002-03-10 20:09:04</createtime>
   <node_id>1266536</node_id>
   <code>#this implements a new special [ ... ] link type,
 # [- ... -]

@@ -12,7 +12,6 @@ insertNodelet( getNode( 'Chatterbox', 'nodelet' ) );
  	&lt;p&gt;&lt;span title=&quot;What chatroom you are in&quot;&gt;Now talking in: [% linkNode($$USER{in_room}) || &quot;outside&quot;; %] &lt;/span&gt; [{changeroom}]
 &lt;/div&gt;
 </doctext>
-  <createtime>2010-01-28 13:01:50</createtime>
   <node_id>1989376</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

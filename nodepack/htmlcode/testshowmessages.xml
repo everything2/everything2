@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-03-06 06:37:05</createtime>
   <node_id>1991436</node_id>
   <code>my ($maxmsgs,$showOpts) = @_;
 my $json = {};

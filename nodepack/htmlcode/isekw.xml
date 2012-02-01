@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-01-21 01:11:21</createtime>
   <node_id>1991061</node_id>
   <code>my $theme_id = $$VARS{preferred_theme};
 my $theme = getNodeById($theme_id);

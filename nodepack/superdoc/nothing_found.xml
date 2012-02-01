@@ -48,7 +48,6 @@ return qq'&lt;p&gt;Sorry, but nothing matching &quot;$nt&quot; was found.$str'
 
 %]
 </doctext>
-  <createtime>2000-05-04 14:02:15</createtime>
   <node_id>668164</node_id>
   <edittime>2011-10-23 08:16:51</edittime>
   <type_nodetype>14</type_nodetype>

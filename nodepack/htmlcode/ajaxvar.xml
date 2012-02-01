@@ -1,5 +1,4 @@
 <node>
-  <createtime>2007-03-23 16:59:46</createtime>
   <node_id>1873508</node_id>
   <code>my ($name, $value) = @_;
 

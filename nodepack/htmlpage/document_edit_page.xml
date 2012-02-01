@@ -7,7 +7,6 @@
 &lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the document text:&lt;/strong&gt;&lt;/small&gt;&lt;br /&gt;
 
 [{textarea:doctext,30,60}]</page>
-  <createtime>1999-10-07 04:35:11</createtime>
   <node_id>62</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

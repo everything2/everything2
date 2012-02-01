@@ -38,7 +38,6 @@ $str .= $query-&gt;start_form(
         $str.=&quot;&lt;p&gt;Don't have an account? [Create a new user|Create one]!&quot;;
 $str;
 %]</doctext>
-  <createtime>1999-10-07 04:35:13</createtime>
   <node_id>109</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

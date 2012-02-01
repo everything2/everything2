@@ -18,7 +18,6 @@ $str.=$query-&gt;submit('Drink deeply from the well of cool');
 $str.=$query-&gt;end_form;
 
 %]</doctext>
-  <createtime>2007-12-16 15:12:54</createtime>
   <node_id>1921941</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

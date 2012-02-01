@@ -27,7 +27,6 @@ $str .= $query-&gt;end_form();
 return $str;
 
 %]</doctext>
-  <createtime>2007-03-20 03:36:58</createtime>
   <node_id>1872468</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

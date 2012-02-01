@@ -47,7 +47,6 @@ $newtitle =~ s/&quot;/&amp;quot;/g;
 &lt;input type=&quot;submit&quot; name=&quot;sexisgood&quot; value=&quot;sumbit&quot;&gt;';
 %]
 &lt;/form&gt;</page>
-  <createtime>2001-09-11 02:38:37</createtime>
   <node_id>1156529</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>replyto</displaytype>

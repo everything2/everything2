@@ -2,7 +2,6 @@
   <doctext>HTML entities act strangely in writeups. When viewing a writeup with entities in an e2node, the entities are converted into their &quot;value&quot; in the text area, which would cause the WU to become incorrect once submitted. However, when viewing the writeup by itself (in [writeup display page]), the entities are correctly not converted, and show in expanded form.</doctext>
   <priority>-32</priority>
   <status>closed</status>
-  <createtime>2001-10-07 04:03:46</createtime>
   <useragentos></useragentos>
   <useragentversion></useragentversion>
   <node_id>1173314</node_id>

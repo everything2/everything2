@@ -47,7 +47,6 @@ $str .= $query-&gt;textfield('testPE','', 50, 1000) . ' ' . $query-&gt;submit('r
 $str;
 %]
 &lt;/p&gt;</doctext>
-  <createtime>2002-03-10 20:38:26</createtime>
   <node_id>1266555</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

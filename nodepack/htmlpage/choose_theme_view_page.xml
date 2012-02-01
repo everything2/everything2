@@ -205,7 +205,6 @@ $str =~ s!(&lt;a [^&gt;]*?href\s*=\s*['&quot;][^?'&quot;&gt;]*?)\?!$1$querystrin
 $str =~ s!(&lt;a [^&gt;]*?href\s*=\s*['&quot;][^&amp;'&quot;&gt;]*?)((?:#[^'&quot;&gt;]*?)?['&quot;].*?&gt;)!$1$querystring$2!g ;
 $str ;
 %]</page>
-  <createtime>2009-08-28 16:41:43</createtime>
   <node_id>1988422</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>choosetheme</displaytype>

@@ -229,7 +229,6 @@ htmlcode('openform','').$str.$BRN.htmlcode('closeform','');
 &lt;/p&gt;
 
 &lt;p align=&quot;right&quot;&gt;&lt;small&gt;(bugs to [N-Wing])&lt;/small&gt;&lt;/p&gt;</doctext>
-  <createtime>2001-11-14 14:10:47</createtime>
   <node_id>1199723</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

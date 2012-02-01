@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-12-13 08:30:29</createtime>
   <node_id>1919556</node_id>
   <code>my $limit = $$VARS{num_dreamwus} || 15;
 

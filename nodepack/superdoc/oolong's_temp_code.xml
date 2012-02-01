@@ -67,7 +67,6 @@ $str .= &quot;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;\n&quot;;
 
 return $str;
 %]</doctext>
-  <createtime>2008-06-29 23:58:04</createtime>
   <node_id>1947629</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

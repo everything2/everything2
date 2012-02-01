@@ -1,5 +1,4 @@
 <node>
-  <createtime>2004-02-26 19:26:26</createtime>
   <node_id>1522371</node_id>
   <code>my $str;
 #	$str .=&lt;&lt;EOD;

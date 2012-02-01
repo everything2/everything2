@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-01-15 21:37:23</createtime>
   <node_id>1991048</node_id>
   <code>my $targetNode = shift;
 getRef $targetNode;

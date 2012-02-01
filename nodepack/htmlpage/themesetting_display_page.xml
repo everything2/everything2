@@ -8,7 +8,6 @@ if ($$NODE{parent_theme}) {
 &quot;&lt;i&gt;these settings don't have a theme yet&lt;/i&gt;&quot;;
 %]&lt;br&gt;
 [{displayvars}]</page>
-  <createtime>1999-12-17 04:55:23</createtime>
   <node_id>175995</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

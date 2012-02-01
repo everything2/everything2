@@ -1,5 +1,4 @@
 <node>
-  <createtime>2008-08-12 03:50:53</createtime>
   <node_id>1952207</node_id>
   <htmlcode_id>1952207</htmlcode_id>
   <code>my $for_user = $query-&gt;param('sendto');

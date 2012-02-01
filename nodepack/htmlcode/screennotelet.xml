@@ -1,5 +1,4 @@
 <node>
-  <createtime>2002-04-25 11:49:52</createtime>
   <node_id>1291361</node_id>
   <code>#screens notelet text
 #reads &quot;raw&quot; and writes &quot;screened&quot;

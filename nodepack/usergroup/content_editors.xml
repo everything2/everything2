@@ -5,7 +5,6 @@
 #return unless Everything::isApproved($USER, $NODE);
 #htmlcode('weblog', '15');
 %]</doctext>
-  <createtime>2001-01-23 19:50:11</createtime>
   <node_id>923653</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>16</type_nodetype>

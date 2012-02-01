@@ -201,7 +201,6 @@ if($showWUs) {
 
 return $str;
 %]</doctext>
-  <createtime>2008-11-16 05:48:21</createtime>
   <node_id>1963801</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

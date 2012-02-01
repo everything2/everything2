@@ -1,6 +1,5 @@
 <node>
   <doctext>Eventually, this will list daily, dream, editor, and root logs. [N-Wing|I]'m thinking we could just get all root lots, but for the rest, limit them to specific years. Clicking on a year would show those. But maybe for daily and dream lots, specific months. Picking a specific (smallest unit) could make links to the e2node, and each specific WU (also show the user).</doctext>
-  <createtime>2002-05-29 17:57:33</createtime>
   <node_id>1310127</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

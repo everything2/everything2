@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>148</type_nodetype>
-  <createtime>2011-05-14 22:33:28</createtime>
   <node_id>1991941</node_id>
   <_create_table_statement>/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;

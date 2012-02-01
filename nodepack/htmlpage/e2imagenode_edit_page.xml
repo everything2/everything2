@@ -8,7 +8,6 @@ my $str = htmlcode('textfield','title').&quot; (title)&lt;br&gt;&lt;br&gt;&quot;
 $str.=htmlcode('textfield','e2imagenode_copyright').&quot; (copyright) &lt;br&gt;&quot;;
 $str.=htmlcode('textfield','e2imagenode_imgpath').&quot; (img src)&lt;br&gt;&quot;;
 %]</page>
-  <createtime>1999-12-07 06:11:56</createtime>
   <node_id>1227041</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

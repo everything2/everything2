@@ -214,7 +214,6 @@ $str.= '&lt;table class=&quot;mytable&quot;&gt;
 return $str;
 
 %]</doctext>
-  <createtime>2008-11-03 13:47:51</createtime>
   <node_id>1961423</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

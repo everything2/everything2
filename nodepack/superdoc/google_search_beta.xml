@@ -4,7 +4,6 @@ my %prams = $query -&gt; Vars;
 delete @prams{qw(node node_id type op sexisgood)};
 $query -&gt; p(linkNode(getNode('E2 Full Text Search', 'superdoc'), 'Over here...', \%prams));
 %]</doctext>
-  <createtime>2007-10-30 23:32:51</createtime>
   <node_id>1914790</node_id>
   <edittime>2011-10-31 09:05:03</edittime>
   <type_nodetype>14</type_nodetype>

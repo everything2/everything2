@@ -1,5 +1,4 @@
 <node>
-  <createtime>2002-05-24 19:25:15</createtime>
   <node_id>1307637</node_id>
   <htmlcode_id>1307637</htmlcode_id>
   <code>#borgs the current node 1 time (iff current node is a user and current user is an admin)

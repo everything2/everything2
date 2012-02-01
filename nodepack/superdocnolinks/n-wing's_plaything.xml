@@ -610,7 +610,6 @@ return ('couldn\'t find ' . $module) unless scalar(@allLines);
 
 &lt;/div&gt;
 </doctext>
-  <createtime>2001-02-14 02:01:37</createtime>
   <node_id>950586</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1065266</type_nodetype>

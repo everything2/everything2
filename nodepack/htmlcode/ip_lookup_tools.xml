@@ -1,5 +1,4 @@
 <node>
-  <createtime>2010-01-27 10:34:29</createtime>
   <node_id>1989357</node_id>
   <code># encodeHTML should be a no-op here, but just in case...
 my $ip = encodeHTML(shift);

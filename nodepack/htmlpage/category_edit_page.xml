@@ -240,7 +240,6 @@ unless ($ctr){
 return $str;
 %]
 </page>
-  <createtime>2004-02-26 19:39:09</createtime>
   <node_id>1522377</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

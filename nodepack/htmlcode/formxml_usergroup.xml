@@ -1,5 +1,4 @@
 <node>
-  <createtime>2002-05-01 23:00:23</createtime>
   <node_id>1294803</node_id>
   <code>my $txt = parseCode($$NODE{doctext});
 my $str = &quot;&quot;;

@@ -21,7 +21,6 @@ $str .= &quot;\n\t\t&lt;dd&gt;&quot; . $listvars-&gt;{$keys} . &quot;&lt;/dd&gt;
 return $str . &quot;\n&lt;/dl&gt;\n\n&quot;;
 
 %]</doctext>
-  <createtime>2009-02-17 18:19:23</createtime>
   <node_id>1974729</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

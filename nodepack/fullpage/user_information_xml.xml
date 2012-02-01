@@ -119,7 +119,6 @@ if(length($ug)) {
 $str;
 %]
 &lt;/user&gt;</doctext>
-  <createtime>2001-07-04 17:15:28</createtime>
   <node_id>1098218</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>451267</type_nodetype>

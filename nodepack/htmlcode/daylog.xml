@@ -1,5 +1,4 @@
 <node>
-  <createtime>2000-01-26 16:55:55</createtime>
   <node_id>401321</node_id>
   <code>my @months = qw(January February March April May June July August September October November December);
 

@@ -1,5 +1,4 @@
 <node>
-  <createtime>1999-11-04 22:43:48</createtime>
   <node_id>217</node_id>
   <code>my $canPublishDirectly = 2; # this level doesn't have to create draft first
 

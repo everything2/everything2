@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-10-25 01:43:44</createtime>
   <node_id>1992696</node_id>
   <code>my ($node_id, $marktype, $bookmark_site) = @_;
 

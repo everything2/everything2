@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-01-13 19:53:45</createtime>
   <node_id>1547879</node_id>
   <htmlcode_id>1547879</htmlcode_id>
   <code>foreach my $bnode ($query-&gt;param())

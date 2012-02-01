@@ -1,5 +1,4 @@
 <node>
-  <createtime>2000-02-15 20:00:46</createtime>
   <node_id>419587</node_id>
   <code>my ($edit, $createform) = @_;
 #the maximum number to display

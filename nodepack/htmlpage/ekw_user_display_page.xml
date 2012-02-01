@@ -37,7 +37,6 @@ linkNode($NODE, '(edit user information)', {displaytype=&gt;'edit'});
 [{showbookmarks}]
 
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</page>
-  <createtime>2001-07-08 16:40:11</createtime>
   <node_id>1101671</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

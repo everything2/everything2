@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-10-25 11:10:03</createtime>
   <node_id>1992697</node_id>
   <htmlcode_id>1992697</htmlcode_id>
   <code>return unless htmlcode('isEditor');

@@ -1,5 +1,4 @@
 <node>
-  <createtime>2007-01-09 14:20:44</createtime>
   <node_id>1857921</node_id>
   <htmlcode_id>1857921</htmlcode_id>
   <code>my $POLL = $query-&gt;param(&quot;e2poll_id&quot;);

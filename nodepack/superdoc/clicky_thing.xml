@@ -36,7 +36,6 @@ $str.=&quot;&lt;/ol&gt;&quot;;
 return $str;
 
 %]</doctext>
-  <createtime>2008-04-08 22:55:59</createtime>
   <node_id>1937035</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

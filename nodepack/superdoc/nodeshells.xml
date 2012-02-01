@@ -39,7 +39,6 @@ return if (htmlcode('isGuest'));
 return 'And [Your Nodeshells], and [Your Filled Nodeshells].'; 
 %])&lt;/small&gt;&lt;/p&gt;
 </doctext>
-  <createtime>2010-08-17 19:08:57</createtime>
   <node_id>1990106</node_id>
   <edittime>2011-07-13 10:18:44</edittime>
   <type_nodetype>14</type_nodetype>

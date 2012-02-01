@@ -30,7 +30,6 @@ foreach (@$emailforwards) {
 $str;
 
 %]</doctext>
-  <createtime>2003-04-07 00:36:52</createtime>
   <node_id>1450461</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>451267</type_nodetype>

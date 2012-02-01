@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-12-13 08:30:29</createtime>
   <node_id>1868932</node_id>
   <code>my ($isLogs) = @_;
 

@@ -139,7 +139,6 @@ return htmlcode('editwriteup') unless $query -&gt; param('other_user');
 %]
 &lt;/form&gt;
 </doctext>
-  <createtime>2011-01-28 14:03:50</createtime>
   <node_id>1991135</node_id>
   <edittime>2011-10-18 01:13:48</edittime>
   <type_nodetype>14</type_nodetype>

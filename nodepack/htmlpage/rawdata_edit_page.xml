@@ -13,7 +13,6 @@ $$NODE{datatype} = &quot;text/html&quot; if(exists $$NODE{datatype});
 &quot;&quot;;
 %]
 </page>
-  <createtime>1999-12-22 03:18:46</createtime>
   <node_id>332492</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

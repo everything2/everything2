@@ -1,5 +1,4 @@
 <node>
-  <createtime>2006-09-08 17:11:26</createtime>
   <node_id>1832095</node_id>
   <code>my $host = $ENV{HTTP_HOST} || $CONFIG{canonical_web_server} || &quot;everything2.com&quot;;
 my $host = &quot;http://$host&quot; ;

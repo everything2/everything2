@@ -98,7 +98,6 @@ return &quot;e2.guest=true;\n$str&quot; if ($$USER{title} eq 'Guest User' or $qu
 return $str;
 %]
 </doctext>
-  <createtime>2007-03-09 19:02:05</createtime>
   <node_id>1869865</node_id>
   <edittime>2011-08-08 05:17:59</edittime>
   <type_nodetype>1786405</type_nodetype>

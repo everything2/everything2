@@ -3,7 +3,6 @@
 	jQuery(inElement + ' .nodelet_section .ns_title').click(function(){
  		jQuery(this).next().slideToggle(e2.fxDuration); }).css('cursor', 'pointer');
 });</doctext>
-  <createtime>2007-03-21 18:26:34</createtime>
   <node_id>1872990</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>

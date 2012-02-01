@@ -1,6 +1,5 @@
 <node>
   <doctext>Since we really don't need this anymore, and it's not linked to from anywhere, we can retire the [I want my old level back!].  It has been superseded by the [Honor Roll], and is a piece of E2 history. It also references a [setting], [level weenies], which will get removed as soon as it gets faded out of getLevel.</doctext>
-  <createtime>2002-11-12 07:13:54</createtime>
   <node_id>1386935</node_id>
   <htmlcode_id>1386935</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>

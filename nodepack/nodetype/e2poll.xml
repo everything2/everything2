@@ -2,7 +2,6 @@
   <nodetype_id>1685242</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>14</extends_nodetype>
-  <createtime>2004-11-19 05:46:08</createtime>
   <sqltable>e2poll</sqltable>
   <node_id>1685242</node_id>
   <restrict_nodetype>14</restrict_nodetype>

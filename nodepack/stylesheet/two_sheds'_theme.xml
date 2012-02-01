@@ -90,7 +90,6 @@ hr.clear {clear: both;}
 /* layout */
 textarea {width: 100%;}
 pre {display: block; overflow: auto;} /* to stop page-widening */</doctext>
-  <createtime>2007-05-16 18:45:12</createtime>
   <node_id>1886668</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1854352</type_nodetype>

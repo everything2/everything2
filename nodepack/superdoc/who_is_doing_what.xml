@@ -25,7 +25,6 @@ $str .= '&lt;/ul&gt;';
 return $str;
 %]
 </doctext>
-  <createtime>2001-10-30 07:41:43</createtime>
   <node_id>1189539</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

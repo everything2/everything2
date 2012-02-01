@@ -90,7 +90,6 @@ if ($$USER{node_id} == $$NODE{author_user}){
 
 $str;
 %]</page>
-  <createtime>2011-02-02 17:02:59</createtime>
   <node_id>1991179</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

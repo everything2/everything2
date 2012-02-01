@@ -2,7 +2,6 @@
   <nodetype_id>1957956</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>7</extends_nodetype>
-  <createtime>2008-10-07 00:05:34</createtime>
   <sqltable>podcast</sqltable>
   <node_id>1957956</node_id>
   <type_nodetype>1</type_nodetype>

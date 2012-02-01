@@ -1,6 +1,5 @@
 <node>
   <parent_container>0</parent_container>
-  <createtime>1999-10-07 04:35:10</createtime>
   <node_id>1988790</node_id>
   <context>&lt;!-- BEGIN nodelet container --&gt;
 &lt;div class='nodelet' id='[%

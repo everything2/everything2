@@ -126,7 +126,6 @@ $str .= htmlcode( 'closeform' );
 
 return $str;
 %]</page>
-  <createtime>2008-10-15 16:12:00</createtime>
   <node_id>1958975</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-03-04 21:38:27</createtime>
   <node_id>972298</node_id>
   <code>[%
 #[message] (opcode) gets uglier and uglier as more chatter commands are added

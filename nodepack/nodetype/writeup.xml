@@ -2,7 +2,6 @@
   <core></core>
   <nodetype_id>117</nodetype_id>
   <extends_nodetype>1991079</extends_nodetype>
-  <createtime>1999-09-15 07:22:38</createtime>
   <sqltable>writeup</sqltable>
   <node_id>117</node_id>
   <type_nodetype>1</type_nodetype>

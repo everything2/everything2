@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-07-27 01:26:11</createtime>
   <node_id>1122166</node_id>
   <code>#   This generates a link which launches a little window with a &quot;color swatch&quot; in it; 
 #   see [color_swatch] for that. You'll need to include [popwindow] somewhere, for 

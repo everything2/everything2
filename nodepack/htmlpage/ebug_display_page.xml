@@ -110,7 +110,6 @@ htmlcode('textfield2','tester,useragentos');
 return $$THEME{thinOutlineFooter} if exists $$THEME{thinOutlineFooter};
 '&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';
 %]</page>
-  <createtime>2001-09-20 06:44:02</createtime>
   <node_id>1161970</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

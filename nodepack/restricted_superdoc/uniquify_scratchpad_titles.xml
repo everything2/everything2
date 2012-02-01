@@ -51,7 +51,6 @@ if ($query-&gt;param('doitfaggot') ) {
 return $str;
 %]
 </doctext>
-  <createtime>2009-04-04 22:41:30</createtime>
   <node_id>1980960</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

@@ -1,5 +1,4 @@
 <node>
-  <createtime>2006-08-05 12:38:25</createtime>
   <node_id>1824306</node_id>
   <code>my ($sql) = join(',', @_);
 my $res = $dbh-&gt;prepare('explain ' . $sql);

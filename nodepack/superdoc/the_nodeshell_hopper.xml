@@ -110,7 +110,6 @@ $str .= '&lt;form method=&quot;post&quot;&gt;
 
 return $str;
 %]</doctext>
-  <createtime>2001-08-18 21:53:08</createtime>
   <node_id>1140925</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

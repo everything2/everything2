@@ -1,5 +1,4 @@
 <node>
-  <createtime>2010-02-17 09:41:32</createtime>
   <node_id>1989523</node_id>
   <code>my ($queryid, $N) = @_ ;
 getRef $N ;

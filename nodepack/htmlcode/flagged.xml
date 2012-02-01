@@ -1,5 +1,4 @@
 <node>
-  <createtime>2007-12-05 05:04:13</createtime>
   <node_id>1920368</node_id>
   <code>my ($node_id, $flagType) = @_;
 return unless $node_id;

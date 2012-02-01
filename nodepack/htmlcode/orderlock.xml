@@ -1,5 +1,4 @@
 <node>
-  <createtime>2003-06-03 14:27:27</createtime>
   <node_id>1466529</node_id>
   <code>return unless(exists($HTMLVARS{'group_gods'}{$USER-&gt;{node_id}}));
 my $str = htmlcode('openform');

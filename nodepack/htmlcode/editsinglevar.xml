@@ -1,5 +1,4 @@
 <node>
-  <createtime>1999-11-11 01:12:25</createtime>
   <node_id>280</node_id>
   <code>return &quot;&lt;i&gt;you can't update this node&lt;/i&gt;&quot; unless canUpdateNode($USER, $NODE);
 my ($var, $title) = @_;

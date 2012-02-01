@@ -20,7 +20,6 @@ foreach my $N  (@$GROUP) {
 return $str;
 %]
 </doctext>
-  <createtime>2009-05-14 15:49:55</createtime>
   <node_id>1986601</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1065266</type_nodetype>

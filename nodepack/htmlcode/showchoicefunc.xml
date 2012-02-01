@@ -1,6 +1,5 @@
 <node>
   <core>R</core>
-  <createtime>1999-11-04 00:14:11</createtime>
   <node_id>182</node_id>
   <code>no strict;
 use Everything::XML;

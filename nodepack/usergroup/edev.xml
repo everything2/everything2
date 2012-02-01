@@ -84,7 +84,6 @@ if($query-&gt;param('luckyuser')) {
 
 $str;
 %]</doctext>
-  <createtime>2000-11-15 02:02:02</createtime>
   <node_id>838015</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>16</type_nodetype>

@@ -218,7 +218,6 @@ $str .= $query-&gt;hidden(&quot;new_var&quot;,$varEdit);
 $str .= htmlcode('closeform');
 
 %]</doctext>
-  <createtime>2008-06-22 14:13:26</createtime>
   <node_id>1946673</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1144104</type_nodetype>

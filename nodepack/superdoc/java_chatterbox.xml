@@ -25,7 +25,6 @@ Note: logging in behind a proxy and/or firewall doesn't seem to work. Sorry abou
 --&gt;
 &lt;code&gt;/msg&lt;/code&gt; &lt;a href=[% urlGen({'node'=&gt;'N-Wing', 'type'=&gt;'user'}); %]&gt;N-Wing&lt;/a&gt; with problems (although note that this has not been updated for a while)
 &lt;/p&gt;</doctext>
-  <createtime>2000-04-04 02:00:38</createtime>
   <node_id>481581</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

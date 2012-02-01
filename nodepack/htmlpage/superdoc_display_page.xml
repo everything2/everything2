@@ -5,7 +5,6 @@
   <page>&lt;p align=&quot;right&quot;&gt;&lt;small&gt;[% linkNode($NODE, 'printable version', { displaytype =&gt; 'printable' } ) %]&lt;/small&gt;&lt;/p&gt;
 
 [{parsecode:doctext}]</page>
-  <createtime>2000-02-12 02:17:57</createtime>
   <node_id>415058</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

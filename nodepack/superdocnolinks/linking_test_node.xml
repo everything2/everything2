@@ -54,7 +54,6 @@ $str .= &quot;\&quot; &quot;.( $isNode ? &quot;class='populated'&quot; : &quot;c
 $str;
 %]
 </doctext>
-  <createtime>2009-05-01 19:53:42</createtime>
   <node_id>1984667</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1065266</type_nodetype>

@@ -22,7 +22,6 @@ return parseLinks($str);
 &lt;br&gt;&lt;br&gt;&lt;hr&gt;&lt;br&gt;
 [{parselinks:doctext}]
 </page>
-  <createtime>2002-02-28 21:52:30</createtime>
   <node_id>1261883</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

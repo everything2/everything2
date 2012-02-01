@@ -1,5 +1,4 @@
 <node>
-  <createtime>1999-11-04 00:14:10</createtime>
   <node_id>178</node_id>
   <code># This constructs an HTML list menu using the FormMenu
 # package of Everything.  Values of the menu come from

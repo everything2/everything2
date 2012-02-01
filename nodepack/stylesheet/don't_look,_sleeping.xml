@@ -349,7 +349,6 @@ td.wu_social { float: right }
 #chatterlight_NW { float: left; width: 190px; }
 #chatterlight_hints { display: none; }
 #chatterbox_nodelet .nodelet { width: 700px }</doctext>
-  <createtime>2009-04-05 21:41:17</createtime>
   <node_id>1981109</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1854352</type_nodetype>

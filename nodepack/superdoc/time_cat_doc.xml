@@ -49,7 +49,6 @@ insDoc(fSix,gLnk('R', 'samuthas', 'index.pl?node_id=1526645&amp;tree=time&amp;la
 EOD
 return $str;
 %]</doctext>
-  <createtime>2004-03-19 15:44:08</createtime>
   <node_id>1526701</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

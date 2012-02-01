@@ -1,6 +1,5 @@
 <node>
   <doctext>The old code for the ednsection_everydevel nodelet section that used XML::RSS, before XML::RSS got all stupid on us. It's now handled on the back end.</doctext>
-  <createtime>2002-11-10 08:01:25</createtime>
   <node_id>1385959</node_id>
   <htmlcode_id>1385959</htmlcode_id>
   <edittime>0000-00-00 00:00:00</edittime>

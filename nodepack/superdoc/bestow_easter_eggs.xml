@@ -94,7 +94,6 @@ $str.=$query-&gt;submit('Give yourself an egg you greedy bastard');
 $str.=$query-&gt;end_form;
 
 %]</doctext>
-  <createtime>2007-04-04 07:06:39</createtime>
   <node_id>1876290</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

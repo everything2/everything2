@@ -1,5 +1,4 @@
 <node>
-  <createtime>2007-03-17 15:57:05</createtime>
   <node_id>1871713</node_id>
   <code>my $userID = $$USER{user_id};
 

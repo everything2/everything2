@@ -4,7 +4,6 @@ my ($user,$pass) = Everything::getCredentials(&quot;/etc/everyuser.pwd&quot;);
 return &quot;$user, $pass&quot;;
 %]
 </doctext>
-  <createtime>2009-04-02 19:36:52</createtime>
   <node_id>1980663</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

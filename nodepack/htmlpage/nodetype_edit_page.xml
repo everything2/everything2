@@ -19,7 +19,6 @@
 [{displayInherited:restrictdupes}]
 &lt;p&gt;verify edits to maintain security: [{node_menu:verify_edits, -no_0, -yes_1}]
 &lt;/p&gt;</page>
-  <createtime>1999-10-07 04:35:12</createtime>
   <node_id>76</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

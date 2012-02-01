@@ -1,5 +1,4 @@
 <node>
-  <createtime>1999-11-12 01:02:50</createtime>
   <node_id>296</node_id>
   <code>  my $str;
   $str.= linkNode($query-&gt;param(&quot;lastnode_id&quot;), '&lt;img src=images/e2back.gif border=0 

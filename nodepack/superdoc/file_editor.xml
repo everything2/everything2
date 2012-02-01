@@ -36,7 +36,6 @@ $str .= $query-&gt;submit('submit', 'Submit') . &quot;\n&quot;;
 $str;
 
 %]</doctext>
-  <createtime>1999-12-22 03:18:46</createtime>
   <node_id>332499</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

@@ -1,6 +1,5 @@
 <node>
   <rawdata_id>1705316</rawdata_id>
-  <createtime>2005-03-08 02:22:26</createtime>
   <node_id>1705316</node_id>
   <type_nodetype>332487</type_nodetype>
   <datacode>function autoFormat (id)

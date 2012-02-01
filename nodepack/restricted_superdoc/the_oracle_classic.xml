@@ -79,7 +79,6 @@ $str.=htmlcode('closeform');
 
 
 %]</doctext>
-  <createtime>2000-11-04 21:24:36</createtime>
   <node_id>1947127</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

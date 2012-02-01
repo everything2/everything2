@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-10-02 14:54:52</createtime>
   <node_id>1992449</node_id>
   <code>my ($POLL, $showStatus) = @_;
 getRef $POLL;

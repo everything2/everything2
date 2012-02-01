@@ -1,6 +1,5 @@
 <node>
   <doctext>A webapp for a graphical nodegel visualiser that represents upvotes, downvotes and chings, as well as reputation and createtime.</doctext>
-  <createtime>2003-11-02 00:59:47</createtime>
   <dlurl>http://blakjak.sytes.net/nodestar/index.php</dlurl>
   <homeurl>http://www.everything2.com/index.pl?node_id=1504689</homeurl>
   <node_id>1505055</node_id>

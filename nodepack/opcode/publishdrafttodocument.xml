@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-03-24 21:35:03</createtime>
   <node_id>1991740</node_id>
   <htmlcode_id>1991740</htmlcode_id>
   <code>my $TYPE = getType('document');

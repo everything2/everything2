@@ -19,7 +19,6 @@ if(int('test')&gt;0){$str .= 'int';}else{$str .= 'not int';}
 
 return $str;
 %]</doctext>
-  <createtime>2009-05-13 15:36:56</createtime>
   <node_id>1986442</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

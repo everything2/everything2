@@ -123,7 +123,6 @@ if ($page || $ctr == $count){
 return $str;
 %]
 </page>
-  <createtime>2004-02-26 19:37:44</createtime>
   <node_id>1522376</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

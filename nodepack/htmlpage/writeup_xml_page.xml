@@ -13,7 +13,6 @@ node2xml($NODE, []);
 #&quot;Can't use an undefined value as an ARRAY reference at /usr/local/lib/perl5/site_perl/Everything/XML.pm line 594&quot;
 %]
 </page>
-  <createtime>1999-11-08 21:54:51</createtime>
   <node_id>266</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>xml</displaytype>

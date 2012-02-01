@@ -38,7 +38,6 @@
   'You can find a complete list of registries '.
   linkNode($DIRECTORY,'here',{'chosen_type'=&gt;'registry'}).'&lt;/div&gt;';
 %]</doctext>
-  <createtime>2009-11-12 21:38:50</createtime>
   <node_id>1988626</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

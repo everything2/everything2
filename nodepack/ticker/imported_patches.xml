@@ -20,7 +20,6 @@ my $xml = $xmls -&gt; XMLout({patchset =&gt; \@id_array});
 return $xml; 
 %]
 </doctext>
-  <createtime>2010-05-07 12:34:56</createtime>
   <node_id>1989702</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1252389</type_nodetype>

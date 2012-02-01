@@ -1,5 +1,4 @@
 <node>
-  <createtime>2000-07-27 14:38:38</createtime>
   <node_id>673178</node_id>
   <code>my ($blah,$bah)=@_;
 return &quot;$blah : $bah&quot;;</code>

@@ -41,7 +41,6 @@ delete $HTMLVARS{pagenodelets} if $HTMLVARS{pagenodelets} eq $$VARS{nodelets};
 return insertNodelet($NODE);
 %]
 </page>
-  <createtime>1999-10-07 04:35:11</createtime>
   <node_id>73</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

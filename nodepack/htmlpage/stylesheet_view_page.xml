@@ -9,7 +9,6 @@ if ($query-&gt;param('version')) {
 
 return $$NODE{doctext};
 %]</page>
-  <createtime>2006-12-20 19:39:20</createtime>
   <node_id>1854395</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>view</displaytype>

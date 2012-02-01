@@ -8,7 +8,6 @@ $NODE = $GNODE = getNodeById($HTMLVARS{not_found}) unless $$NODE{type}{title} ne
 &lt;wml&gt;
 [{formwap}]
 &lt;/wml&gt;</page>
-  <createtime>2002-05-04 02:24:18</createtime>
   <node_id>1296239</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>wap</displaytype>

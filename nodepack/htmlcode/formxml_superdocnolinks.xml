@@ -1,5 +1,4 @@
 <node>
-  <createtime>2002-10-13 06:18:01</createtime>
   <node_id>1372590</node_id>
   <code>return htmlcode(&quot;formxml_superdoc&quot;);</code>
   <type_nodetype>4</type_nodetype>

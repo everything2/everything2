@@ -1,5 +1,4 @@
 <node>
-  <createtime>2007-06-30 05:27:07</createtime>
   <node_id>1895696</node_id>
   <code>my ($listName, $bitOptions) = @_;
 $listName = 'multiplewriteuptypes' unless $listName;

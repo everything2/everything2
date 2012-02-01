@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-02-19 08:17:47</createtime>
   <node_id>1438180</node_id>
   <code>my $patches = $DB-&gt;sqlSelectMany(&quot;patch_id, (select author_user from node where node_id=patch.patch_id limit 1) as author_user, (select title from node where node_id=patch.patch_id limit 1) as title&quot;, &quot;patch&quot;, &quot;cur_status=1983892 order by patch_id desc limit 7&quot;);
 return 'No patches. Word.' unless $patches-&gt;rows;

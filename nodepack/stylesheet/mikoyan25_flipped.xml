@@ -435,7 +435,6 @@ textarea				{
 .action_whisper .text, .action_roll,
 .action_fireball, .action_sanctify,
 .action_egg				{	font-variant: smallcaps;	}</doctext>
-  <createtime>2008-08-09 13:00:07</createtime>
   <node_id>1951961</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1854352</type_nodetype>

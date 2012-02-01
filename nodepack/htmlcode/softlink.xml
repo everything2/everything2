@@ -1,5 +1,4 @@
 <node>
-  <createtime>1999-11-18 01:09:04</createtime>
   <node_id>166222</node_id>
   <code>my ($softserve) = @_; #parameter used by formxml_writeup and formxml_e2node
 

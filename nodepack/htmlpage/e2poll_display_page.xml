@@ -8,7 +8,6 @@ parseLinks '[Everything Poll Archive[superdoc]|Past polls]
 	| [Everything Poll Creator[superdoc]|New poll]
 	&lt;br&gt; [Polls[by Virgil]|About polls]'; 
 %]&lt;/p&gt;</page>
-  <createtime>2008-12-18 18:06:57</createtime>
   <node_id>1968193</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

@@ -342,7 +342,6 @@ return($inputs_string
 	. &quot;&lt;p&gt;[Lord Brawl] says: Try [Klaproth Van Lines] for bulk moves. Certain conditions apply.&lt;/p&gt;&quot;);
 %]
 </doctext>
-  <createtime>2001-08-15 17:27:29</createtime>
   <node_id>1138488</node_id>
   <edittime>2011-08-21 04:21:36</edittime>
   <type_nodetype>14</type_nodetype>

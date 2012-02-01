@@ -121,7 +121,6 @@ $xml .= '&lt;/channels&gt;';
 return $xml;
 
 %]</doctext>
-  <createtime>2009-06-04 18:13:19</createtime>
   <node_id>1988172</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1252389</type_nodetype>

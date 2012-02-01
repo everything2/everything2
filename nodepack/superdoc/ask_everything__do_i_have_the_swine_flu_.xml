@@ -71,7 +71,6 @@ my @flu = (
 &quot;&lt;b&gt;&lt;font size='+1'&gt;&quot;.$flu[int(rand(@flu))].&quot;&lt;/font&gt;&lt;/b&gt;&quot;;
 %]
 &lt;/p&gt;</doctext>
-  <createtime>2009-04-30 16:44:50</createtime>
   <node_id>1984497</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

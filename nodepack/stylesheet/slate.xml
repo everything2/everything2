@@ -99,7 +99,6 @@ pre {display: block; overflow: auto;} /* to stop page-widening */
 #epicenter_zen {z-index: 10; position: fixed; bottom: 0; left: 0px; width: 100%; min-width: 1000px; height: 16px; padding: 2px 10px; background-color: white; border-top: 2px solid #90909A;}
 #epicenter_zen a {text-decoration: none;}
 #epicenter_zen BR { display: none;}</doctext>
-  <createtime>2007-04-03 23:56:20</createtime>
   <node_id>1876222</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1854352</type_nodetype>

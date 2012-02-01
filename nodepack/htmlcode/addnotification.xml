@@ -1,5 +1,4 @@
 <node>
-  <createtime>2008-02-20 20:12:27</createtime>
   <node_id>1930843</node_id>
   <code>my ($notification_id, $user_id, $args) = @_;
 

@@ -1,5 +1,4 @@
 <node>
-  <createtime>2008-06-22 10:51:44</createtime>
   <node_id>1946647</node_id>
   <code>my ($nodeID, $includeTitles, $asList, $myTitle, $sbURL, $sbTitle, $imgTitle)=@_;
 

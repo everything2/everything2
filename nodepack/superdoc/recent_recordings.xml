@@ -42,7 +42,6 @@ $str .= '
 return $str;
 
 %]</doctext>
-  <createtime>2009-03-24 14:32:49</createtime>
   <node_id>1979352</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

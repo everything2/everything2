@@ -1,5 +1,4 @@
 <node>
-  <createtime>1999-11-09 20:45:42</createtime>
   <node_id>273</node_id>
   <code>my ($limit) = @_;
 $limit ||= 15;

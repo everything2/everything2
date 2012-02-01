@@ -1,5 +1,4 @@
 <node>
-  <createtime>2008-04-01 18:10:30</createtime>
   <node_id>1936098</node_id>
   <code>return;
 my ($enemyID, $inChat) = @_;

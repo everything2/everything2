@@ -44,7 +44,6 @@ return '--&gt;' if $$USER{node_id} == $HTMLVARS{guest_user};
 '';
 %]
 </doctext>
-  <createtime>2004-09-29 03:13:54</createtime>
   <node_id>1677879</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

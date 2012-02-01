@@ -1,6 +1,5 @@
 <node>
   <core>R</core>
-  <createtime>1999-11-04 00:14:10</createtime>
   <node_id>176</node_id>
   <code>my $SETTINGS = getVars $NODE;
 my $str = '';

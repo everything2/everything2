@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-03-12 15:18:12</createtime>
   <node_id>1991540</node_id>
   <code>my $feeder = getNode('New Writeups Feeder', 'nodelet');
 

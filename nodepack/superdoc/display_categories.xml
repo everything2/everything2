@@ -167,7 +167,6 @@ $str .= '&lt;/p&gt;';
 return $str;
 %]
 </doctext>
-  <createtime>2008-03-30 04:33:14</createtime>
   <node_id>1935817</node_id>
   <edittime>2011-07-03 09:08:21</edittime>
   <type_nodetype>14</type_nodetype>

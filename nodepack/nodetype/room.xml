@@ -2,7 +2,6 @@
   <nodetype_id>545241</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>3</extends_nodetype>
-  <createtime>2000-05-12 19:13:15</createtime>
   <sqltable>roomdata</sqltable>
   <grouptable>nodegroup</grouptable>
   <node_id>545241</node_id>

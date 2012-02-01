@@ -1,5 +1,4 @@
 <node>
-  <createtime>2009-11-14 07:03:31</createtime>
   <node_id>1988681</node_id>
   <code>my ($user_id) = @_;
 return unless $user_id;

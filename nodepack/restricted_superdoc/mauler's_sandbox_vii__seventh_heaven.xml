@@ -153,7 +153,6 @@ while($row = $rows-&gt;fetchrow_arrayref)
 }
 $str .= '&lt;/ol&gt;';
 %]</doctext>
-  <createtime>2008-10-30 15:05:25</createtime>
   <node_id>1960820</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

@@ -46,7 +46,6 @@ for (my $i=64; $i; $i--){
 return $out;
 %]
 </page>
-  <createtime>2010-09-03 07:30:07</createtime>
   <node_id>1990218</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>serve</displaytype>

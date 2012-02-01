@@ -92,7 +92,6 @@ return $strRowCount;
 &lt;p align=&quot;right&quot;&gt;[% linkNode($NODE, &quot;indexes&quot;, {displaytype =&gt; &quot;index&quot;}) %]&lt;/p&gt;
 [{displaytable:$$NODE{title}}]
 </page>
-  <createtime>1999-11-04 00:14:11</createtime>
   <node_id>185</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

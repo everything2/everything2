@@ -1,5 +1,4 @@
 <node>
-  <createtime>2009-11-20 13:58:00</createtime>
   <node_id>1988863</node_id>
   <code># let page inject stuff into the header:
 my ($str,$after) = split /&lt;!--.*?--&gt;/, (delete $HTMLVARS{pageheader})

@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-11-14 03:37:49</createtime>
   <node_id>1199540</node_id>
   <code>return if $$VARS{noadinheader};
 my $node_id = $$NODE{node_id};

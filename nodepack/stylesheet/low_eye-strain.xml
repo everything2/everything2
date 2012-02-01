@@ -735,7 +735,6 @@ span.hasvoted span.title a:visited { color: #6f748f; }
      { font-style: italic; }
 .action_whisper, .action_roll, .action_fireball, .action_sanctify, .action_egg 
      { font-variant: small-caps; }</doctext>
-  <createtime>2008-02-24 15:20:51</createtime>
   <node_id>1931383</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1854352</type_nodetype>

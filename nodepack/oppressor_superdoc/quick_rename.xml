@@ -80,7 +80,6 @@ $str.=htmlcode('closeform', &quot;Retitle items&quot;);
 
 %]
 </doctext>
-  <createtime>2003-05-13 03:58:37</createtime>
   <node_id>1460966</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1144104</type_nodetype>

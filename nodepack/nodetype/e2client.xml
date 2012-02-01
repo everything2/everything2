@@ -2,7 +2,6 @@
   <nodetype_id>1261857</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>3</extends_nodetype>
-  <createtime>2002-02-28 21:05:28</createtime>
   <sqltable>e2client</sqltable>
   <node_id>1261857</node_id>
   <type_nodetype>1</type_nodetype>

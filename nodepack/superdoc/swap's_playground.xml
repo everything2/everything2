@@ -12,7 +12,6 @@ $str .= $HTMLVARS{'group_gods'}{$USER -&gt; {node_id}};
 return $str;
 %]
 </doctext>
-  <createtime>2009-02-22 01:33:29</createtime>
   <node_id>1975239</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

@@ -5,7 +5,6 @@
 my $str = parseCode($$NODE{datacode});
 $str;
 %]</page>
-  <createtime>1999-12-22 03:18:46</createtime>
   <node_id>332493</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>raw</displaytype>

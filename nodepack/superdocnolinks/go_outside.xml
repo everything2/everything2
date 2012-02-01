@@ -22,7 +22,6 @@ changeRoom($USER,0);
 'You step outside. You see many noders here.';
 %]
 </doctext>
-  <createtime>2001-07-09 08:19:51</createtime>
   <node_id>1102338</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1065266</type_nodetype>

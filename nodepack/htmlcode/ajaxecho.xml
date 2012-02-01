@@ -1,5 +1,4 @@
 <node>
-  <createtime>2010-11-29 12:34:58</createtime>
   <node_id>1990853</node_id>
   <code># provide simple user feedback for AJAX opcode call (e.g., sanctify in [page actions])
 return shift;</code>

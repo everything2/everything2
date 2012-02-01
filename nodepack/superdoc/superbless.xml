@@ -97,7 +97,6 @@ $str .= '&lt;/table&gt;'
 $str;
 
 %]</doctext>
-  <createtime>2000-03-15 21:12:45</createtime>
   <node_id>453574</node_id>
   <edittime>2011-11-15 00:34:29</edittime>
   <type_nodetype>14</type_nodetype>

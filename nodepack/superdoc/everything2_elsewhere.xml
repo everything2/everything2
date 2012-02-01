@@ -11,7 +11,6 @@
 &lt;/ul&gt;
 &lt;p&gt;You might also like to see the [Community Directory].&lt;/p&gt;
 &lt;p&gt;Complaints? Suggestions? Tell [Oolong] about it. [% return htmlcode('openform').htmlcode('msgField', 'msggrpowner'.'1017738'.',,' .$$NODE{node_id}.','.'1017738').htmlcode('closeform'); %]&lt;/p&gt;</doctext>
-  <createtime>2008-02-05 12:17:11</createtime>
   <node_id>1928765</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

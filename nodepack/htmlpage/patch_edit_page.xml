@@ -32,7 +32,6 @@ $str .= $query -&gt; checkbox( -name=&gt;'op' , value=&gt;'applypatch' , selecte
 $query -&gt; hidden( 'patch_id' , $$NODE{node_id} ) if $HTMLVARS{isDevServer} ;
 return $str;
 %]</page>
-  <createtime>1999-10-07 04:35:11</createtime>
   <node_id>1977053</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

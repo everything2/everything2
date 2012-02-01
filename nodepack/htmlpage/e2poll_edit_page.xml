@@ -24,7 +24,6 @@ $query -&gt; escapeHTML($$NODE{doctext});
 &lt;h2&gt;[%$$NODE{title}%]&lt;/h2&gt;
 [{showpoll}]
 </page>
-  <createtime>2011-10-02 19:56:05</createtime>
   <node_id>1992456</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

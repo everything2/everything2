@@ -1,5 +1,4 @@
 <node>
-  <createtime>2007-12-04 16:20:17</createtime>
   <node_id>1920278</node_id>
   <code>my $agent = $ENV{HTTP_USER_AGENT};
 

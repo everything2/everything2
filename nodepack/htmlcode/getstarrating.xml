@@ -1,5 +1,4 @@
 <node>
-  <createtime>2009-12-11 12:41:44</createtime>
   <node_id>1988989</node_id>
   <code># Returns the star rating for a node that the current user/Guest-User-session previously set.
 # Returns the rating (1-10) or undef if there has been no rating by this user.

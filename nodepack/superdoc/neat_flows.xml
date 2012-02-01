@@ -24,7 +24,6 @@ return unless isGod($USER) or $$USER{title} eq 'flamingweasel';
 &lt;br&gt;&lt;a href=http://mixedeuphoria.everything2.com/nate/neat_flows/neat_flows.mp3&gt;NEAT FLOWS MP3&lt;/a&gt;&quot;;
 
 %]</doctext>
-  <createtime>2001-07-03 00:20:02</createtime>
   <node_id>1096837</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

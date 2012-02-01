@@ -660,7 +660,6 @@ my $str2 = parseCode($$eqs2{doctext});
 return ((rand(10) &lt; 5)?($str):($str2));
 %]
 &lt;br&gt;&lt;br&gt;&lt;br&gt;</doctext>
-  <createtime>2000-02-04 17:19:23</createtime>
   <node_id>407437</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

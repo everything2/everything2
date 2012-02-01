@@ -8,7 +8,6 @@
 &lt;b&gt;&lt;font size=2&gt;thumbnail source:&lt;/b&gt;&lt;/font&gt;[{textfield:thumbsrc}]&lt;br&gt;
 &lt;b&gt;&lt;font size=2&gt;description:&lt;/font&gt;&lt;br&gt;&lt;/b&gt;[{textarea:description}]&lt;br&gt;
 </page>
-  <createtime>1999-10-07 04:35:11</createtime>
   <node_id>68</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

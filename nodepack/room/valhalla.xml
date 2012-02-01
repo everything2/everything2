@@ -3,7 +3,6 @@
   <doctext>&lt;p style=&quot;font-size:135%&quot;&gt;And we,&lt;/p&gt;
 &lt;p style=&quot;font-size:135%&quot;&gt;The dead,&lt;/p&gt;
 &lt;p style=&quot;font-size:135%&quot;&gt;We wait.&lt;/p&gt;</doctext>
-  <createtime>2000-05-12 19:21:35</createtime>
   <lastused_date>2011-11-04</lastused_date>
   <node_id>545263</node_id>
   <criteria>return 0 unless isGod($USER);

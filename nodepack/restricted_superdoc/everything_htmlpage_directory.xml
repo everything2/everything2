@@ -13,7 +13,6 @@ foreach my $n (getNodeWhere({type_nodetype =&gt; \@types},&quot;&quot;,
 return $str;
 %]
 </doctext>
-  <createtime>2000-12-01 18:47:17</createtime>
   <node_id>858813</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

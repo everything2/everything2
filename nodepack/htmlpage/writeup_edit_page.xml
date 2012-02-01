@@ -43,7 +43,6 @@ $str.$query-&gt;textfield('parentnodename', $$E2NODE{title});
 Writeuptype:[{node_menu:wrtype_writeuptype}]
 &lt;p&gt;
 [{textarea:doctext}]</page>
-  <createtime>1999-12-07 06:12:52</createtime>
   <node_id>170046</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

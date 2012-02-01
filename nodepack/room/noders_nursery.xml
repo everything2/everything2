@@ -6,7 +6,6 @@ and editors -- a place to ask questions outside of the public eye.&lt;/p&gt;
 
 &lt;p&gt;Make sure to start with the [E2 FAQ],&lt;br&gt;the source of all that is good and good.&lt;/p&gt;
 </doctext>
-  <createtime>2000-05-16 15:16:13</createtime>
   <lastused_date>2011-03-25</lastused_date>
   <node_id>553146</node_id>
   <criteria>my $uid = getId($USER);

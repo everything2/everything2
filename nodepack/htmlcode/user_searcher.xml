@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-06-30 01:07:22</createtime>
   <node_id>1992148</node_id>
   <code>my ($searchTerm) = @_;
 # recover escaped commas from input

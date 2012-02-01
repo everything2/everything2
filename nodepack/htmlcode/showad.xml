@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-02-17 07:31:10</createtime>
   <node_id>954647</node_id>
   <code>#showAd - places the top or bottom part of an annoying banner ad
 #optional parameter - if starts with 'b' (for bottom), then places bottom part; otherwise, places top part

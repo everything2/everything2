@@ -1,6 +1,5 @@
 <node>
   <doctext>[% return insertNodelet(1988889); %]</doctext>
-  <createtime>2009-11-21 15:51:55</createtime>
   <node_id>1988890</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>451267</type_nodetype>

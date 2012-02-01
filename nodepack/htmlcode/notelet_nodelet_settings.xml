@@ -1,5 +1,4 @@
 <node>
-  <createtime>2010-09-15 12:45:53</createtime>
   <node_id>1990303</node_id>
   <code>'You can edit your &lt;strong&gt;Notelet Nodelet&lt;/strong&gt; at the '.
 linkNodeTitle('Notelet editor[superdoc]');</code>

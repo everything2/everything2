@@ -1,5 +1,4 @@
 <node>
-  <createtime>2002-03-06 23:01:43</createtime>
   <node_id>1264746</node_id>
   <code>#return &quot;&quot; unless($$USER{title} eq &quot;JayBonci&quot;);
 return &quot;&quot; unless(exists($HTMLVARS{'group_gods'}{$$USER{user_id}}));

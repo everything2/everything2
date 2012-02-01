@@ -49,7 +49,6 @@ if (window.onload) {
 } else {
   window.onload = nodeletSwitcher.init;
 }</doctext>
-  <createtime>2007-03-26 13:31:30</createtime>
   <node_id>1874173</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>

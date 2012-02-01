@@ -1,7 +1,6 @@
 <node>
   <nodetype_id>1151141</nodetype_id>
   <extends_nodetype>4</extends_nodetype>
-  <createtime>2001-09-03 12:36:34</createtime>
   <sqltable>patch</sqltable>
   <node_id>1151141</node_id>
   <type_nodetype>1</type_nodetype>

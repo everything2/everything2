@@ -47,7 +47,6 @@ $userID = $$N{member_user};
 &quot;\n&quot;.$XG-&gt;OTHER_USERS($str.&quot;\n&quot;);
 
 %]</doctext>
-  <createtime>2000-06-10 15:52:12</createtime>
   <node_id>597846</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>451267</type_nodetype>

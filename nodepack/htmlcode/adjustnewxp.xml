@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-02-20 17:09:59</createtime>
   <node_id>958429</node_id>
   <code>#another ugly hack by N-Wing to try out the new XP system without messing up the old one
 #after the new XP system works, it should be moved into the Everything Perl module, and have the obvious changes made

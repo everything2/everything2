@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-01-24 01:40:12</createtime>
   <node_id>1991091</node_id>
   <htmlcode_id>1991091</htmlcode_id>
   <code>return 0 unless htmlcode('isAdmin', $USER) || !htmlcode('verifyRequest', 'cure_infection');

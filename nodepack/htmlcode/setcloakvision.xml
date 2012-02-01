@@ -1,5 +1,4 @@
 <node>
-  <createtime>2002-03-29 07:48:53</createtime>
   <node_id>1276614</node_id>
   <code>#this sets HTMLVARS to the appropriate cloaking and infravision level for the current user
 

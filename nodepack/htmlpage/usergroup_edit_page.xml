@@ -34,7 +34,6 @@ $query-&gt;checkbox('usergroup_messageArchive',$$NODE{messageArchive},1,'Archive
 
 &lt;p&gt;&lt;b&gt;Usergroup Doctext&lt;/b&gt;&lt;/p&gt;
 [{textarea:doctext}]</page>
-  <createtime>2000-11-21 20:03:31</createtime>
   <node_id>846444</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>

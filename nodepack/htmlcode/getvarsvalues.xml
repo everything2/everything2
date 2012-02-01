@@ -1,5 +1,4 @@
 <node>
-  <createtime>2002-02-20 19:43:26</createtime>
   <node_id>1257491</node_id>
   <code># Emit all appropriate $VARS values as a string formatted 
 # in a consistent and human-readable way. This is used by 

@@ -1,6 +1,5 @@
 <node>
   <parent_container>0</parent_container>
-  <createtime>2011-10-18 13:05:38</createtime>
   <node_id>1992646</node_id>
   <context>&lt;!--node_id=[% $NODE-&gt;{node_id}; %]--&gt;
 &lt;title&gt;[% $NODE-&gt;{title}; %]&lt;/title&gt;

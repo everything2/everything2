@@ -5,7 +5,6 @@
   <page>&lt;img src=&quot;/[&quot;$$NODE{src}&quot;]&quot; alt=&quot;[&quot;$$NODE{alt}&quot;]&quot;&gt;
 &lt;p&gt;[{parselinks:description}]&lt;/p&gt;
 </page>
-  <createtime>1999-10-07 04:35:11</createtime>
   <node_id>67</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

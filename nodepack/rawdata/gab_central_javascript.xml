@@ -1,6 +1,5 @@
 <node>
   <rawdata_id>1471557</rawdata_id>
-  <createtime>2002-05-08 00:02:09</createtime>
   <node_id>1471557</node_id>
   <type_nodetype>332487</type_nodetype>
   <datacode>function replyTo(f, s, c) {

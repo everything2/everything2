@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-09-09 01:46:15</createtime>
   <node_id>1155127</node_id>
   <code>#  $displaymode:
 #       0       Display first comment only, no children at all (used in edit page &amp; replyto page)

@@ -1,5 +1,4 @@
 <node>
-  <createtime>2008-10-30 15:07:00</createtime>
   <node_id>1960821</node_id>
   <htmlcode_id>1960821</htmlcode_id>
   <code>return if ($$VARS{GPoptout});

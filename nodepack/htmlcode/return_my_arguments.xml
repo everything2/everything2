@@ -1,5 +1,4 @@
 <node>
-  <createtime>2009-11-05 12:08:23</createtime>
   <node_id>1988551</node_id>
   <code>return join( '&lt;br&gt;' , @_ ) ;
 </code>

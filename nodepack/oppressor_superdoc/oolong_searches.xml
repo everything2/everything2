@@ -39,7 +39,6 @@ searchControl.addSearcher(siteSearch);
     &lt;/script&gt;
     &lt;div id=&quot;searchcontrol&quot;&gt;Loading...&lt;/div&gt;
 </doctext>
-  <createtime>2008-10-07 12:11:16</createtime>
   <node_id>1958020</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1144104</type_nodetype>

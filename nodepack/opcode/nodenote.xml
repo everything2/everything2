@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-10-17 06:38:39</createtime>
   <node_id>1180774</node_id>
   <htmlcode_id>1180774</htmlcode_id>
   <code>return if(!exists($HTMLVARS{'group_gods'}{$$USER{node_id}})

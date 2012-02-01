@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-09-02 10:43:11</createtime>
   <node_id>1992326</node_id>
   <code>if (isGod($USER) || exists ($HTMLVARS{&quot;group_content editors&quot;}{$$USER{node_id}})){
 	my $str =&quot;

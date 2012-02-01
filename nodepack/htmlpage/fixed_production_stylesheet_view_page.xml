@@ -6,7 +6,6 @@ use LWP::Simple;
 local $$NODE{ doctext } = get( $query -&gt; param( 'theme' ).&quot;?displaytype=serve&quot; ) ;
 return htmlcode( 'fixstylesheet' , 0 ) ;
 %]</page>
-  <createtime>2009-09-01 16:00:00</createtime>
   <node_id>1988465</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>productiontheme</displaytype>

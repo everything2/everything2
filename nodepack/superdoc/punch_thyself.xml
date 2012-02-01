@@ -27,7 +27,6 @@ if($query-&gt;param('punch')
 } 
 linkNode($NODE, 'Go ahead. Hit me in the face.', { punch =&gt; 1 });
 %]</doctext>
-  <createtime>2000-08-23 00:13:22</createtime>
   <node_id>716619</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

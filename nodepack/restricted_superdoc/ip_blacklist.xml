@@ -231,7 +231,6 @@ return $str;
 
 [{blacklistedIPs}]
 </doctext>
-  <createtime>2008-07-03 11:55:01</createtime>
   <node_id>1948146</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

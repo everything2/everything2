@@ -33,7 +33,6 @@ foreach (@nodetypes) {
 $str;
 %]
 [{closeform}]</doctext>
-  <createtime>2001-01-10 18:42:59</createtime>
   <node_id>906163</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

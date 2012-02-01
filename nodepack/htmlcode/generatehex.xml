@@ -1,5 +1,4 @@
 <node>
-  <createtime>2000-07-28 16:48:09</createtime>
   <node_id>675011</node_id>
   <code>my ($hex)= @_;
 

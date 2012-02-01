@@ -140,7 +140,6 @@ $str;
 %]
 
 [% $query-&gt;end_form %]</doctext>
-  <createtime>2006-12-24 16:43:42</createtime>
   <node_id>1855115</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

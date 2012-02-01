@@ -1,5 +1,4 @@
 <node>
-  <createtime>2010-02-04 22:08:20</createtime>
   <node_id>1989437</node_id>
   <code># Code taken from confirmUser() and loginUser() in HTML.pm
 return -5 unless $query;

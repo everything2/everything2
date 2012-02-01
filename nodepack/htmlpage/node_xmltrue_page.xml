@@ -10,7 +10,6 @@ $str.= htmlcode(&quot;xmlheader&quot;).htmlcode(&quot;formxml&quot;).htmlcode(&q
 return $str;
 %]
 </page>
-  <createtime>2002-02-09 22:18:21</createtime>
   <node_id>1251582</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>xmltrue</displaytype>

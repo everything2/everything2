@@ -74,7 +74,6 @@ last if ($count == $numWriteups);
 return $str;
 
 %]</doctext>
-  <createtime>2007-11-16 05:14:47</createtime>
   <node_id>1917476</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

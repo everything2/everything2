@@ -20,7 +20,6 @@ if (not $$NODE{from_address}) {
 &lt;/TABLE&gt;
 [{parseLinks:doctext}]
 </page>
-  <createtime>1999-11-04 00:14:12</createtime>
   <node_id>195</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

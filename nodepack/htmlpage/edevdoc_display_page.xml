@@ -15,7 +15,6 @@ return $$THEME{noThinOutline}
 	: containHtml('thin outline container',$str)
 ;
 %]</page>
-  <createtime>2009-05-05 06:33:12</createtime>
   <node_id>1985290</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

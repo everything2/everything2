@@ -31,7 +31,7 @@ sub xml_no_consider
 {
 	my ($this) = @_;
 
-	return ["_ORIGINAL_VALUES", "hits","type","author_user","totalvotes",@{$this->node_id_equivs()}];
+	return ["_ORIGINAL_VALUES", "hits","type","author_user","totalvotes","createtime",@{$this->node_id_equivs()}];
 }
 
 sub node_id_equivs

@@ -1,5 +1,4 @@
 <node>
-  <createtime>2000-03-07 16:38:59</createtime>
   <node_id>444246</node_id>
   <code>my $uid = $$USER{user_id}||$HTMLVARS{guest_user};
 return $query-&gt;end_form if $$NODE{type}{title} eq &quot;e2node&quot; &amp;&amp; not $$NODE{group} || $uid==$HTMLVARS{guest_user} ;

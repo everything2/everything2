@@ -8,7 +8,6 @@ htmlcode('new msg system common');
 return &quot;$t&lt;br&gt;&quot; . $HTMLVARS{raintest};
 
 %]</doctext>
-  <createtime>2009-06-05 06:57:22</createtime>
   <node_id>1988181</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

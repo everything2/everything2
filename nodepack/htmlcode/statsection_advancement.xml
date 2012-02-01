@@ -1,5 +1,4 @@
 <node>
-  <createtime>2002-10-19 05:29:54</createtime>
   <node_id>1375509</node_id>
   <code>use Everything::Experience;
 my $str;

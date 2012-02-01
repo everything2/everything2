@@ -44,7 +44,6 @@ $text =~ s/\&gt;/\&amp;gt\;/g;
 $str.$text;
 
 %]</doctext>
-  <createtime>1999-12-28 21:55:43</createtime>
   <node_id>366659</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

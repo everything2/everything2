@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-03-09 19:26:51</createtime>
   <node_id>977694</node_id>
   <htmlcode_id>977694</htmlcode_id>
   <code>return unless htmlcode('verifyRequest', 'linktrim');

@@ -7,7 +7,6 @@ foreach (keys %$N) {
 }
 $str
 %]</doctext>
-  <createtime>2006-04-05 02:40:38</createtime>
   <node_id>1797217</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

@@ -1,5 +1,4 @@
 <node>
-  <createtime>2008-02-14 21:22:55</createtime>
   <node_id>1930072</node_id>
   <code>return if ($$USER{user_id}==$HTMLVARS{guest_user});
 # Upon successful log-in, write current browser to VARS

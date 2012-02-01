@@ -19,7 +19,6 @@ else
 $str .= &quot;Return to &quot; . linkNode(getNodeById($query-&gt;param('lastnode_id')));
 $str;
 %]</doctext>
-  <createtime>2004-02-26 19:53:23</createtime>
   <node_id>1522384</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

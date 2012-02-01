@@ -139,7 +139,6 @@ function ts_sort_numeric(a,b) {
   if (isNaN(bb)) bb = 0;
   return bb-aa;
 }</doctext>
-  <createtime>2009-05-10 03:17:15</createtime>
   <node_id>1985920</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>

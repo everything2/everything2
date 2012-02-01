@@ -1,5 +1,4 @@
 <node>
-  <createtime>2010-02-05 01:44:16</createtime>
   <node_id>1989445</node_id>
   <code>my $str;
 my $offset = int($query-&gt;param('offset')) || 0;

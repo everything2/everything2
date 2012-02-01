@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-09-02 06:52:36</createtime>
   <node_id>1150391</node_id>
   <code>my $RECURSE = 1;
 return unless htmlcode('isinUsergroup', $USER, 'SIGTITLE', $RECURSE)

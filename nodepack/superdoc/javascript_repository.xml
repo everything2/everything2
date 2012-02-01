@@ -111,7 +111,6 @@ $str .= $query-&gt;submit(&quot;sexisgood&quot;, &quot;add&quot;) . $query-&gt;e
 $removeFormHeader.$removeForm.$str;
 
 %]</doctext>
-  <createtime>2007-03-07 20:37:51</createtime>
   <node_id>1869414</node_id>
   <edittime>2011-08-11 08:12:50</edittime>
   <type_nodetype>14</type_nodetype>

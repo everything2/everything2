@@ -8,7 +8,6 @@ $collection =~ s/\n/&lt;br&gt;/g ;
 $collection =~ s/\s/&amp;nbsp;/g ;
 &quot;$collection&quot; ;
 %]</doctext>
-  <createtime>2004-07-01 03:55:43</createtime>
   <node_id>1544578</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

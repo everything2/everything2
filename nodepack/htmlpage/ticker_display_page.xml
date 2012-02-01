@@ -4,7 +4,6 @@
   <page>[%
 return parseCode($$NODE{doctext});
 %]</page>
-  <createtime>2002-02-11 04:22:42</createtime>
   <node_id>1252294</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

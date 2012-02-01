@@ -6,7 +6,6 @@ my $inc = join ',', @INC;
 
 $inc;
 %]</doctext>
-  <createtime>1999-12-22 20:17:43</createtime>
   <node_id>363821</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

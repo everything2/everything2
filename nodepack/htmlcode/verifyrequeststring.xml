@@ -1,5 +1,4 @@
 <node>
-  <createtime>2009-03-27 11:44:17</createtime>
   <node_id>1979760</node_id>
   <code>#Generates a query string used to verify the form submission. Pass a prefix.
 my ($prefix) = @_;

@@ -1,5 +1,4 @@
 <node>
-  <createtime>2011-03-08 06:11:21</createtime>
   <node_id>1991488</node_id>
   <code>my $destination = shift;
 $destination = $NODE if !defined $destination;

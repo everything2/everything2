@@ -17,7 +17,6 @@ my $str = &quot;Since one year ago, on &quot;.$oneyearago.&quot;, &quot;.linkNod
 return $str;
 
 %]</doctext>
-  <createtime>2009-02-22 01:33:29</createtime>
   <node_id>1975906</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

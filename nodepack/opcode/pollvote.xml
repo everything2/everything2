@@ -1,5 +1,4 @@
 <node>
-  <createtime>2004-11-19 21:13:50</createtime>
   <node_id>1685363</node_id>
   <htmlcode_id>1685363</htmlcode_id>
   <code>return if getId($USER) == $HTMLVARS{guest_user};

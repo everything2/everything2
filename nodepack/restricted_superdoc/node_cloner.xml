@@ -28,7 +28,6 @@ if ($newid){
 
 $query -&gt; p($str);
 %]</doctext>
-  <createtime>2000-02-14 17:08:25</createtime>
   <node_id>418271</node_id>
   <edittime>2011-10-20 06:35:30</edittime>
   <type_nodetype>13</type_nodetype>

@@ -1,5 +1,4 @@
 <node>
-  <createtime>2009-12-14 18:11:19</createtime>
   <node_id>1989048</node_id>
   <code># Returns the condition for the current user for the current test (star ratings)
 # This condition is intended to be consistent for an individual's use of the site

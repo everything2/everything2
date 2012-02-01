@@ -27,7 +27,6 @@ $str .= qq'&lt;p align=&quot;right&quot; class=&quot;pagination&quot;&gt;$PrevLi
 return $str;
 
 %]</doctext>
-  <createtime>2004-12-29 23:56:48</createtime>
   <node_id>1690777</node_id>
   <edittime>2011-10-03 07:10:35</edittime>
   <type_nodetype>14</type_nodetype>

@@ -34,7 +34,6 @@ $HEADER_PARAMS{-location} =
   'http://' . $ENV{HTTP_HOST} . $HTMLVARS{redirect_url}
   ;
 %]</doctext>
-  <createtime>2010-07-28 23:27:14</createtime>
   <node_id>1990067</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>14</type_nodetype>

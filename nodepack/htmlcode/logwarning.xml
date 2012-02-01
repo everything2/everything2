@@ -1,5 +1,4 @@
 <node>
-  <createtime>2001-10-24 22:52:18</createtime>
   <node_id>1186040</node_id>
   <code>#call this when there is something strange happening, but it isn't
 #  a full blown Server Error!

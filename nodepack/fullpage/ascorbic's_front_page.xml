@@ -170,7 +170,6 @@ return &quot;&lt;h2 id='wit'&gt;&quot;.$wit[int(rand(@wit))].&quot;&lt;/h2&gt;&q
 &lt;/body&gt;
 &lt;/html&gt;
 </doctext>
-  <createtime>2010-11-10 15:04:05</createtime>
   <node_id>1990709</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>451267</type_nodetype>

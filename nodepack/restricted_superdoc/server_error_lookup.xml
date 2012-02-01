@@ -119,7 +119,6 @@ unless ($fullText)
 return(&quot;&lt;p&gt;$totalCount total lines in file, $errorCount lines shown.&lt;/p&gt;&lt;pre&gt;&quot; . $fullText . &quot;&lt;/pre&gt;&quot;);
 
 %]</doctext>
-  <createtime>2009-04-16 17:54:03</createtime>
   <node_id>1982517</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>

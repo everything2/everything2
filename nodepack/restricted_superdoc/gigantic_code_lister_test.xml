@@ -8,7 +8,6 @@ $query-&gt;textfield('choicefunc').' '.htmlcode('varcheckboxinverse','scf_nohtml
 
 [{showChoiceFunc test}]</doctext>
   <core>R</core>
-  <createtime>1999-11-04 00:14:12</createtime>
   <node_id>1956255</node_id>
   <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
