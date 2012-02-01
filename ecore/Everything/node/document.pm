@@ -23,7 +23,7 @@ sub xml_no_consider
 sub node_id_equivs
 {
 	my ($this) = @_;
-	return ["document_id"];
+	return ["document_id", @{$this->SUPER::node_id_equivs()}];
 }
 
 sub xml_to_node_post

@@ -16,7 +16,8 @@ sub node_to_xml
 
 sub node_id_equivs
 {
-	return ["htmlcode_id"];
+	my ($this) = @_;
+	return ["htmlcode_id", @{$this->SUPER::node_id_equivs()}];
 }
 
 1;

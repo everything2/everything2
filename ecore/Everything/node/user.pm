@@ -4,7 +4,7 @@ use strict;
 use lib qw(lib);
 use Clone qw(clone);
 package Everything::node::user;
-use base qw(Everything::node::node);
+use base qw(Everything::node::document);
 
 sub node_to_xml
 {
