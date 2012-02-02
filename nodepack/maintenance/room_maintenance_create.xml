@@ -1,7 +1,5 @@
 <node>
   <node_id>719776</node_id>
-  <htmlcode_id>719776</htmlcode_id>
-  <maintenance_id>719776</maintenance_id>
   <maintaintype>create</maintaintype>
   <code>my ($N) = @_;
 

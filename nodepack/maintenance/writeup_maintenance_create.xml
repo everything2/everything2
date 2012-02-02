@@ -1,7 +1,5 @@
 <node>
   <node_id>221</node_id>
-  <htmlcode_id>221</htmlcode_id>
-  <maintenance_id>221</maintenance_id>
   <maintaintype>create</maintaintype>
   <code>my ($WRITEUP) = @_;
 getRef $WRITEUP;

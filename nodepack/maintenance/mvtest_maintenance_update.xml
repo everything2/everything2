@@ -1,7 +1,5 @@
 <node>
   <node_id>1989025</node_id>
-  <htmlcode_id>1989025</htmlcode_id>
-  <maintenance_id>1989025</maintenance_id>
   <code>my ($NODE) = @_;
 getRef $NODE;
 return unless $NODE;

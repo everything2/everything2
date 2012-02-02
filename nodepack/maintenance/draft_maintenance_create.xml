@@ -1,7 +1,5 @@
 <node>
   <node_id>1991245</node_id>
-  <htmlcode_id>1991245</htmlcode_id>
-  <maintenance_id>1991245</maintenance_id>
   <maintaintype>create</maintaintype>
   <code>my ($D) = @_;
 getRef $D;

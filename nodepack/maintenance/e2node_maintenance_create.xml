@@ -1,7 +1,5 @@
 <node>
   <node_id>527249</node_id>
-  <htmlcode_id>527249</htmlcode_id>
-  <maintenance_id>527249</maintenance_id>
   <maintaintype>create</maintaintype>
   <code>my ($E2NODE) = @_;
 getRef $E2NODE;

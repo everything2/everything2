@@ -1,7 +1,5 @@
 <node>
   <node_id>157</node_id>
-  <htmlcode_id>157</htmlcode_id>
-  <maintenance_id>157</maintenance_id>
   <maintaintype>delete</maintaintype>
   <code># This gets called each time a dbtable node gets deleted.
 # We want to delete the associated table here.

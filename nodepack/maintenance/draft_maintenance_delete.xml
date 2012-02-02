@@ -1,7 +1,5 @@
 <node>
   <node_id>1991810</node_id>
-  <htmlcode_id>1991810</htmlcode_id>
-  <maintenance_id>1991810</maintenance_id>
   <maintaintype>delete</maintaintype>
   <code># get rid of any votes and cools left over from a time as a writeup
 # record level-relevant info for old users who have not recalculated their XP

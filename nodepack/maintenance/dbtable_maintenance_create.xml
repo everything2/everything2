@@ -1,7 +1,5 @@
 <node>
   <node_id>156</node_id>
-  <htmlcode_id>156</htmlcode_id>
-  <maintenance_id>156</maintenance_id>
   <maintaintype>create</maintaintype>
   <code># This gets called for each new dbtable node.  We
 # want to create the associated table here.

@@ -1,7 +1,5 @@
 <node>
   <node_id>1854359</node_id>
-  <htmlcode_id>1854359</htmlcode_id>
-  <maintenance_id>1854359</maintenance_id>
   <maintaintype>create</maintaintype>
   <code>return; # Disabled - 'Maintains' set to 'none' in 'Edit Node', more importantly.
 my ( $STYLESHEET ) = @_;

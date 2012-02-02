@@ -1,7 +1,5 @@
 <node>
   <node_id>1415704</node_id>
-  <htmlcode_id>1415704</htmlcode_id>
-  <maintenance_id>1415704</maintenance_id>
   <maintaintype>update</maintaintype>
   <code>my ($PATCH) = @_;
 getRef($PATCH);

@@ -1,7 +1,5 @@
 <node>
   <node_id>1988227</node_id>
-  <htmlcode_id>1988227</htmlcode_id>
-  <maintenance_id>1988227</maintenance_id>
   <maintaintype>create</maintaintype>
   <code>my ($FORWARD)=@_;
 getRef ($FORWARD);

@@ -1,7 +1,5 @@
 <node>
   <node_id>1685267</node_id>
-  <htmlcode_id>1685267</htmlcode_id>
-  <maintenance_id>1685267</maintenance_id>
   <maintaintype>create</maintaintype>
   <code>my ( $POLL ) = @_;
 
