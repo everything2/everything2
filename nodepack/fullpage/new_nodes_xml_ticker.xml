@@ -33,8 +33,6 @@ $csr-&gt;finish;
 $XG-&gt;NewNodes($str);
 %]</doctext>
   <node_id>781532</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>451267</type_nodetype>
-  <document_id>781532</document_id>
   <title>New Nodes XML Ticker</title>
 </node>
