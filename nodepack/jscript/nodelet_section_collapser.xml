@@ -4,8 +4,6 @@
  		jQuery(this).next().slideToggle(e2.fxDuration); }).css('cursor', 'pointer');
 });</doctext>
   <node_id>1872990</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>
-  <document_id>1872990</document_id>
   <title>Nodelet Section Collapser</title>
 </node>

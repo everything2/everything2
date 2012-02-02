@@ -140,8 +140,6 @@ function ts_sort_numeric(a,b) {
   return bb-aa;
 }</doctext>
   <node_id>1985920</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>
-  <document_id>1985920</document_id>
   <title>sortlist</title>
 </node>

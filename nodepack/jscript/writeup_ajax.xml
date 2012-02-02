@@ -69,8 +69,6 @@ this.getItem(&quot;box&quot;).update(&quot;Publish   Hide&quot;);
 });
  writeupAjaxExists = 1;},&quot;Prototype&quot;);</doctext>
   <node_id>1930065</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>
-  <document_id>1930065</document_id>
   <title>Writeup AJAX</title>
 </node>

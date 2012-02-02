@@ -72,8 +72,6 @@ if (window.onload) {
   window.onload = menuCollapser.init;
 }</doctext>
   <node_id>1786409</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>
-  <document_id>1786409</document_id>
   <title>E2 Nodelet Collapser</title>
 </node>

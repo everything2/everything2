@@ -67,8 +67,6 @@ if (/^chatterlight/.test(document.body.id)){
 	}
 }</doctext>
   <node_id>1989311</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>
-  <document_id>1989311</document_id>
   <title>chatterbox script</title>
 </node>

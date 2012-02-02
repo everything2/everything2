@@ -167,8 +167,6 @@ E2AJAX = e2.ajax = jQuery.extend(e2.ajax,{
 	}
 });</doctext>
   <node_id>1990285</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>
-  <document_id>1990285</document_id>
   <title>Additional Everything2 Ajax</title>
 </node>

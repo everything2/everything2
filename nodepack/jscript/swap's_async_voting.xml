@@ -272,8 +272,6 @@ var checkInterval = function () {
 var interval = window.setInterval(checkInterval, 1000);
 </doctext>
   <node_id>1984562</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1786405</type_nodetype>
-  <document_id>1984562</document_id>
   <title>Swap's async voting</title>
 </node>

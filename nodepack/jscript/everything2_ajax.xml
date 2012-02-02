@@ -706,8 +706,6 @@ if (e2.isChatterlight) e2('#message', e2(function(){
 }
 </doctext>
   <node_id>1878034</node_id>
-  <edittime>2011-08-08 05:12:26</edittime>
   <type_nodetype>1786405</type_nodetype>
-  <document_id>1878034</document_id>
   <title>Everything2 Ajax</title>
 </node>
