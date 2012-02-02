@@ -1,7 +1,6 @@
 <node>
   <node_id>274</node_id>
   <type_nodetype>152</type_nodetype>
-  <setting_id>274</setting_id>
   <vars>description=Allows%20sending%20and%20recieving%20of%20email%20via%20the%20Everything%3a%3aMAIL%20module&amp;author=Nathan%20Oostendorp%20and%20Daron%20Vroon&amp;version=0%2e1%2e1</vars>
   <title>Nodemail</title>
 </node>

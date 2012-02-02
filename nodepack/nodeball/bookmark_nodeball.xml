@@ -1,7 +1,6 @@
 <node>
   <node_id>419588</node_id>
   <type_nodetype>152</type_nodetype>
-  <setting_id>419588</setting_id>
   <vars>description=Allows%20users%20to%20%22bookmark%22%20nodes%20from%20their%20home%20node%20and%20see%20them%2c%20edit%20them%2c%20and%20etc%2e%20%20Bookmarking%20is%20implimented%20through%20a%20linktype%2e%20%20%20&amp;author=Nathan%20Oostendorp&amp;version=0%2e5</vars>
   <title>bookmark nodeball</title>
 </node>
