@@ -148,6 +148,7 @@ sub _skippable_types
 		"debatecomment" => [],
 		"collaboration" => [],
 		"e2poll" => [],
+		"musicdoc" => [],
 	};
 }
 1;
