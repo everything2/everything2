@@ -1,5 +1,4 @@
 <node>
-  <nodetype_id>1151141</nodetype_id>
   <extends_nodetype>4</extends_nodetype>
   <sqltable>patch</sqltable>
   <node_id>1151141</node_id>

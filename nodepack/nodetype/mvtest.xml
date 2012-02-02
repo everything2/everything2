@@ -1,5 +1,4 @@
 <node>
-  <nodetype_id>1988997</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>153</extends_nodetype>
   <sqltable>mvtest</sqltable>

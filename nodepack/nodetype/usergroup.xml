@@ -1,5 +1,4 @@
 <node>
-  <nodetype_id>16</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>8</extends_nodetype>
   <sqltable>document</sqltable>

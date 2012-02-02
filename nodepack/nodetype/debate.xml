@@ -1,5 +1,4 @@
 <node>
-  <nodetype_id>1157413</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>1156105</extends_nodetype>
   <sqltable></sqltable>

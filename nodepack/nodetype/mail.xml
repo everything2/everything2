@@ -1,5 +1,4 @@
 <node>
-  <nodetype_id>154</nodetype_id>
   <extends_nodetype>3</extends_nodetype>
   <sqltable>mail</sqltable>
   <node_id>154</node_id>

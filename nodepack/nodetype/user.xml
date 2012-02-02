@@ -1,5 +1,4 @@
 <node>
-  <nodetype_id>15</nodetype_id>
   <verify_edits>1</verify_edits>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>7</extends_nodetype>

@@ -1,5 +1,4 @@
 <node>
-  <nodetype_id>6</nodetype_id>
   <extends_nodetype>7</extends_nodetype>
   <sqltable>image</sqltable>
   <node_id>6</node_id>

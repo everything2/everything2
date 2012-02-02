@@ -1,5 +1,4 @@
 <node>
-  <nodetype_id>3</nodetype_id>
   <extends_nodetype>7</extends_nodetype>
   <sqltable>document</sqltable>
   <node_id>3</node_id>

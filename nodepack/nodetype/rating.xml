@@ -1,5 +1,4 @@
 <node>
-  <nodetype_id>12</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <sqltable>rating</sqltable>
   <node_id>12</node_id>

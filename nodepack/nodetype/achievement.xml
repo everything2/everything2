@@ -1,5 +1,4 @@
 <node>
-  <nodetype_id>1917847</nodetype_id>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>7</extends_nodetype>
   <sqltable>achievement</sqltable>

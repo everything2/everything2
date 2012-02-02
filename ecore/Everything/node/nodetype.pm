@@ -11,4 +11,10 @@ sub xml_no_consider
 	return ["resolvedInheritance","sqltablelist","tableArray",@{$this->SUPER::xml_no_consider()}];
 }
 
+sub node_id_equivs
+{
+	my ($this) = @_;
+	return ["nodetype_id", @{$this->SUPER::node_id_equivs()}];
+}
+
 1;

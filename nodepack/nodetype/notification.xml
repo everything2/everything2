@@ -1,5 +1,4 @@
 <node>
-  <nodetype_id>1930710</nodetype_id>
   <extends_nodetype>7</extends_nodetype>
   <sqltable>notification</sqltable>
   <node_id>1930710</node_id>

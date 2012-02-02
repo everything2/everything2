@@ -1,5 +1,4 @@
 <node>
-  <nodetype_id>151</nodetype_id>
   <extends_nodetype>3</extends_nodetype>
   <sqltable>setting</sqltable>
   <node_id>151</node_id>
