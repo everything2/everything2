@@ -3,9 +3,7 @@
   <starttime>2010-01-19 17:53:51</starttime>
   <enabled>1</enabled>
   <type_nodetype>1988997</type_nodetype>
-  <setting_id>1989023</setting_id>
   <vars>test2|somecode=somecode2&amp;test|somecode=somecode2</vars>
   <title>nates test test two</title>
-  <mvtest_id>1989023</mvtest_id>
   <conditions>control,test,test2</conditions>
 </node>
