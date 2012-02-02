@@ -2,7 +2,6 @@
   <nodetest_appliesto>117</nodetest_appliesto>
   <node_id>1308809</node_id>
   <nodetest_active>1</nodetest_active>
-  <nodetest_id>1308809</nodetest_id>
   <nodetest_code>my ($WRITEUP) = @_;
 
 my $e2n = getNodeById($$WRITEUP{parent_e2node});
@@ -11,4 +10,9 @@ return &quot;n&quot;;</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
   <nodetest_description>Writeups that don't have a valid parent E2node</nodetest_description>
   <title>nodetest: Writeups with invalid parents</title>
+  <nlcode>my ($WRITEUP) = @_;
+
+my $e2n = getNodeById($$WRITEUP{parent_e2node});
+return &quot;y&quot; if $e2n;
+return &quot;n&quot;;</nlcode>
 </node>

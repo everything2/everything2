@@ -2,7 +2,6 @@
   <nodetest_appliesto>117</nodetest_appliesto>
   <node_id>1311234</node_id>
   <nodetest_active>1</nodetest_active>
-  <nodetest_id>1311234</nodetest_id>
   <nodetest_code>my ($WRITEUP) = @_;
 
 return &quot;y&quot; if($$WRITEUP{doctext} =~ /\&lt;/);
@@ -10,4 +9,8 @@ return &quot;n&quot;;</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
   <nodetest_description>Writeups that have no formatting, not even a &amp;lt;p&amp;gt; tag or its equivalent</nodetest_description>
   <title>nodetest: Writeups without formatting</title>
+  <nlcode>my ($WRITEUP) = @_;
+
+return &quot;y&quot; if($$WRITEUP{doctext} =~ /\&lt;/);
+return &quot;n&quot;;</nlcode>
 </node>

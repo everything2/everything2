@@ -1,7 +1,6 @@
 <node>
   <node_id>1321948</node_id>
   <nodetest_active>1</nodetest_active>
-  <nodetest_id>1321948</nodetest_id>
   <nodetest_code>my ($NODE) = @_;
 
 if(not exists($$NODE{title}) or $$NODE{title} eq &quot;&quot; or &quot;$$NODE{title}&quot; eq &quot;0&quot; or &quot;$$NODE{title}&quot; eq &quot; &quot;)
@@ -14,4 +13,13 @@ if(not exists($$NODE{title}) or $$NODE{title} eq &quot;&quot; or &quot;$$NODE{ti
   <type_nodetype>1308757</type_nodetype>
   <nodetest_description>Makes sure there aren't null node titles that trip us up. Applies to all nodes</nodetest_description>
   <title>nodetest: null node titles</title>
+  <nlcode>my ($NODE) = @_;
+
+if(not exists($$NODE{title}) or $$NODE{title} eq &quot;&quot; or &quot;$$NODE{title}&quot; eq &quot;0&quot; or &quot;$$NODE{title}&quot; eq &quot; &quot;)
+{
+  $$NODE{title} = &quot;Damaged node - $$NODE{type}{title} - id: $$NODE{node_id}. Please report this error. (nodetest sweep)&quot;;
+  updateNode($NODE, -1);
+  return &quot;f&quot;;
+}
+  return &quot;y&quot;;</nlcode>
 </node>
