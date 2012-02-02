@@ -149,6 +149,7 @@ sub _skippable_types
 		"collaboration" => [],
 		"e2poll" => [],
 		"musicdoc" => [],
+		"musicnode" => [],
 	};
 }
 1;
