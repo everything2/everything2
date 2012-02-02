@@ -111,6 +111,7 @@ sub get_worker_object
 	my $obj;
 	
 	return unless $type; #TODO: error
+	$type =~ s/-/_/g;
 	eval("use Everything::node::$type;");
 	
 	#TODO: Search in @INC first, don't be lazy
