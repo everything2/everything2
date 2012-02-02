@@ -8,7 +8,6 @@
   <iconHeight>22</iconHeight>
   <type_nodetype>9</type_nodetype>
   <iconWidth>170</iconWidth>
-  <nodelet_id>1988889</nodelet_id>
   <nlcode>&lt;script type=&quot;text/Javascript&quot;&gt;
 &lt;!--
 function replyToCB(s, ono) {

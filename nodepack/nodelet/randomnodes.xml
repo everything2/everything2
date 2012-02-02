@@ -4,7 +4,6 @@
   <nlgoto>0</nlgoto>
   <node_id>372079</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>372079</nodelet_id>
   <nlcode>[%
   my $numnodes = 15;
   my @nodelinks;

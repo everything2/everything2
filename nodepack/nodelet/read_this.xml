@@ -4,7 +4,6 @@
   <nlgoto></nlgoto>
   <node_id>1990486</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>1990486</nodelet_id>
   <nlcode>[%
 # Start with C!s from [rtnsection_cwu]
 my $str='';

@@ -5,7 +5,6 @@
   <lastupdate>1300695397</lastupdate>
   <node_id>1687135</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>1687135</nodelet_id>
   <nlcode>[%
 
 # originally, this nodelet was a fake nodelet force inserted by 'showNodelets';

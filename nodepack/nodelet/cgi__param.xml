@@ -5,7 +5,6 @@
   <lastupdate>946339466</lastupdate>
   <node_id>87</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>87</nodelet_id>
   <nlcode>[%
 my $str;
 foreach ($query-&gt;param) {

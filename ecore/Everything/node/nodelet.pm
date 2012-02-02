@@ -19,4 +19,10 @@ sub node_to_xml
 	return $this->SUPER::node_to_xml($NODE, $dbh);
 }
 
+sub node_id_equivs
+{
+	my ($this) = @_;
+	return ["nodelet_id", @{$this->SUPER::node_id_equivs()}];
+}
+
 1;

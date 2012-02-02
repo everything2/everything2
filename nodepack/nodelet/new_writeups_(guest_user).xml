@@ -6,7 +6,6 @@
   <node_id>1988428</node_id>
   <type_nodetype>9</type_nodetype>
   <updateinterval>300</updateinterval>
-  <nodelet_id>1988428</nodelet_id>
   <nlcode>[{zenwriteups}]
 </nlcode>
   <title>New Writeups (guest user)</title>

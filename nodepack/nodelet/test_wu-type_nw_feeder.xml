@@ -6,7 +6,6 @@
   <node_id>1923730</node_id>
   <type_nodetype>9</type_nodetype>
   <updateinterval>-1</updateinterval>
-  <nodelet_id>1923730</nodelet_id>
   <nlcode>[%
 
 my $rawSQL = '';

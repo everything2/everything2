@@ -6,7 +6,6 @@
   <node_id>967928</node_id>
   <type_nodetype>9</type_nodetype>
   <updateinterval>60</updateinterval>
-  <nodelet_id>967928</nodelet_id>
   <nlcode>[%
 return;
 #DON'T TAKE THIS RETURN OUT UNLESS YOU ARE NATE

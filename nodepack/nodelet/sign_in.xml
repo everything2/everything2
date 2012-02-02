@@ -5,7 +5,6 @@
   <lastupdate>1289056226</lastupdate>
   <node_id>1990657</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>1990657</nodelet_id>
   <nlcode>[%
 
 my $isGuest = $$USER{user_id} == $HTMLVARS{guest_user};

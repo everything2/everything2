@@ -8,7 +8,6 @@
   <iconHeight>26</iconHeight>
   <type_nodetype>9</type_nodetype>
   <iconWidth>170</iconWidth>
-  <nodelet_id>262</nodelet_id>
   <nlcode>[{borgcheck}][%
 
 return '' if $$USER{user_id} == $HTMLVARS{guest_user};

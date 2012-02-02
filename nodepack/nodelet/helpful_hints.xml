@@ -8,7 +8,6 @@
   <iconHeight>25</iconHeight>
   <type_nodetype>9</type_nodetype>
   <iconWidth>170</iconWidth>
-  <nodelet_id>1988648</nodelet_id>
   <nlcode>[% return &quot;&lt;p&gt;Writeups should include links, like this: &amp;#091;hard link] [target|pipe link] [http://example.com|external link]&lt;/p&gt;&quot;; %]</nlcode>
   <title>Helpful Hints</title>
 </node>

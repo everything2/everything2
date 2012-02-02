@@ -6,7 +6,6 @@
   <node_id>618679</node_id>
   <type_nodetype>9</type_nodetype>
   <updateinterval>300</updateinterval>
-  <nodelet_id>618679</nodelet_id>
   <nlcode>[%
 my $repthreshholdlo = 18;
 my $repthreshholdhi = 26;

@@ -4,7 +4,6 @@
   <nlgoto></nlgoto>
   <node_id>1990474</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>1990474</nodelet_id>
   <nlcode>[%
 my $str = htmlcode('showmessages','5', 'pD');
 return $str;

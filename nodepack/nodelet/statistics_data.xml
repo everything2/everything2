@@ -6,7 +6,6 @@
   <node_id>838259</node_id>
   <type_nodetype>9</type_nodetype>
   <updateinterval>86400</updateinterval>
-  <nodelet_id>838259</nodelet_id>
   <nlcode>[% 
 my $YESTERDAYSTATS = $DB-&gt;sqlSelectHashref('*', 'stats', 'TO_DAYS(NOW()) - TO_DAYS(stattime) &gt; 1', 'order by stattime desc LIMIT 1');
 my $TODAYSTATS;

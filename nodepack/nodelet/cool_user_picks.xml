@@ -5,7 +5,6 @@
   <lastupdate>1258155003</lastupdate>
   <node_id>1876900</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>1876900</nodelet_id>
   <nlcode>[%
 
 my $str;

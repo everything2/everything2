@@ -4,7 +4,6 @@
   <nlgoto>0</nlgoto>
   <node_id>145</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>145</nodelet_id>
   <nlcode>[%
      my $str='';
 

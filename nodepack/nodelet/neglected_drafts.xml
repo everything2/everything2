@@ -6,7 +6,6 @@
   <node_id>1992356</node_id>
   <type_nodetype>9</type_nodetype>
   <updateinterval>86399</updateinterval>
-  <nodelet_id>1992356</nodelet_id>
   <nlcode>[%
 my $eLimit = 2; # no node note after this many days = editor neglected
 my $aLimit = 10; # still up for review this many days after last note = author neglected

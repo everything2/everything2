@@ -5,7 +5,6 @@
   <lastupdate>1301255114</lastupdate>
   <node_id>1801407</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>1801407</nodelet_id>
   <nlcode>[%
 
 my $rawSQL = '';

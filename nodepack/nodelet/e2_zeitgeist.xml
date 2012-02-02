@@ -6,7 +6,6 @@
   <node_id>1855429</node_id>
   <type_nodetype>9</type_nodetype>
   <updateinterval>300</updateinterval>
-  <nodelet_id>1855429</nodelet_id>
   <nlcode>&lt;p&gt;The word on the street...&lt;/p&gt;
 &lt;ol&gt;[%
 my $db = $CACHESTORE-&gt;{dbh};

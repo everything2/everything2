@@ -6,7 +6,6 @@
   <node_id>1124969</node_id>
   <type_nodetype>9</type_nodetype>
   <updateinterval>200</updateinterval>
-  <nodelet_id>1124969</nodelet_id>
   <nlcode>[%
 my $str;
 my $csr= $DB-&gt;sqlSelectMany(&quot;*&quot;, &quot;coolwriteups&quot;, &quot;&quot;, &quot;order by tstamp desc limit 16&quot;);

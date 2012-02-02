@@ -6,7 +6,6 @@
   <node_id>94</node_id>
   <type_nodetype>9</type_nodetype>
   <updateinterval>60</updateinterval>
-  <nodelet_id>94</nodelet_id>
   <nlcode>[%
 my $time = `date`;
 $time =~ s/\n.*$//;

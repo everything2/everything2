@@ -9,7 +9,6 @@
   <type_nodetype>9</type_nodetype>
   <iconWidth>170</iconWidth>
   <updateinterval>-1</updateinterval>
-  <nodelet_id>1922511</nodelet_id>
   <nlcode>[%
 my @choices = ('cousin','sibling','grandpa','grandma');
 my $r = $choices[rand(@choices)];

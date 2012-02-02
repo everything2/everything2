@@ -5,7 +5,6 @@
   <lastupdate>1264775823</lastupdate>
   <node_id>1988649</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>1988649</nodelet_id>
   <nlcode>       [%
 my $writeupID = $query-&gt;param('lastcoolwriteup') || 10000000;
 my $repthreshholdlo = 18 ;

@@ -6,7 +6,6 @@
   <node_id>1252384</node_id>
   <type_nodetype>9</type_nodetype>
   <updateinterval>30</updateinterval>
-  <nodelet_id>1252384</nodelet_id>
   <nlcode>[% 
 my @phrase = (
   'Nodes your grandma would have liked:',

@@ -5,7 +5,6 @@
   <lastupdate>1160062803</lastupdate>
   <node_id>1838069</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>1838069</nodelet_id>
   <nlcode>[%
 return &quot;This is currently broken&quot;;
 my $newsnode = getNode('Old News', 'setting');

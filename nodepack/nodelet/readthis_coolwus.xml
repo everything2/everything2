@@ -6,7 +6,6 @@
   <node_id>1175786</node_id>
   <type_nodetype>9</type_nodetype>
   <updateinterval>300</updateinterval>
-  <nodelet_id>1175786</nodelet_id>
   <nlcode>[{ReadThis_coolwus}]</nlcode>
   <title>ReadThis_coolwus</title>
 </node>

@@ -6,7 +6,6 @@
   <node_id>1988409</node_id>
   <type_nodetype>9</type_nodetype>
   <updateinterval>300</updateinterval>
-  <nodelet_id>1988409</nodelet_id>
   <nlcode>[%
 return htmlcode('weblog', '5,165580,,,1') ;
 %]</nlcode>

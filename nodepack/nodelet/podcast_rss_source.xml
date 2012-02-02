@@ -5,7 +5,6 @@
   <lastupdate>1237979166</lastupdate>
   <node_id>1979473</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>1979473</nodelet_id>
   <nlcode>[%
 my $str = &quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; ?&gt;\n&quot;;
 $str .= &quot;&lt;rss xmlns:itunes=\&quot;http://www.itunes.com/dtds/podcast-1.0.dtd\&quot; version=\&quot;2.0\&quot;&gt;&quot;;

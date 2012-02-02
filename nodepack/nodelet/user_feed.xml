@@ -5,7 +5,6 @@
   <lastupdate>1258761162</lastupdate>
   <node_id>1988878</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>1988878</nodelet_id>
   <nlcode>[%
 
 return unless $$NODE{type_nodetype} eq getNode(&quot;user&quot;,&quot;nodetype&quot;)-&gt;{node_id};

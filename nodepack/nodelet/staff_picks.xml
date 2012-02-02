@@ -6,7 +6,6 @@
   <node_id>1916666</node_id>
   <type_nodetype>9</type_nodetype>
   <updateinterval>30</updateinterval>
-  <nodelet_id>1916666</nodelet_id>
   <nlcode>[%
 
 my @NODELIST;

@@ -4,7 +4,6 @@
   <nlgoto>0</nlgoto>
   <node_id>86</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>86</nodelet_id>
   <nlcode>nodes in the cache:&lt;br&gt;
 [%
 my $str;

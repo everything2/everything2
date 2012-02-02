@@ -5,7 +5,6 @@
   <lastupdate>945154868</lastupdate>
   <node_id>159</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>159</nodelet_id>
   <nlcode>Total nodes in cache: 
 [%  sprintf &quot;%d&quot;, $DB-&gt;getCache()-&gt;getCacheSize(); %] &lt;br&gt;
 

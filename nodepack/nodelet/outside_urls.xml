@@ -4,7 +4,6 @@
   <nlgoto>0</nlgoto>
   <node_id>1313146</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>1313146</nodelet_id>
   <nlcode>[%
 if((exists $VARS-&gt;{lockCustomHTML})) { 	#may later say why locked? or give a msg field to anon admin?
 	return '&lt;p&gt;Sorry, the Outside URLs nodelet is currently locked, probably because an admimistrator is working with your account. It should soon be back to normal.&lt;/p&gt;';

@@ -5,7 +5,6 @@
   <lastupdate>1296584761</lastupdate>
   <node_id>1290534</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>1290534</nodelet_id>
   <nlcode>[%
 if((exists $VARS-&gt;{lockCustomHTML}) || (exists $VARS-&gt;{noteletLocked})) { #latter way is deprecated
 	#may later say why locked? or give a msg field to anon admin?

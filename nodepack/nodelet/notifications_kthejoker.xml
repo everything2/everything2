@@ -5,7 +5,6 @@
   <lastupdate>1258050675</lastupdate>
   <node_id>1988563</node_id>
   <type_nodetype>9</type_nodetype>
-  <nodelet_id>1988563</nodelet_id>
   <nlcode>&lt;ul id='notifications'&gt;
 [%
 my $limit = 10;
