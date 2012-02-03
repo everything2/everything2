@@ -1,6 +1,5 @@
 <node>
   <node_id>1946454</node_id>
-  <htmlcode_id>1946454</htmlcode_id>
   <code>#Kicks the user into another room and locks them there. We could just add a 'lock in' parameter to E2 Bouncer, but I figure it might be nice to have a command for it, and I'm inclined to tie it in with borg-handling anyway...
 #N-Wing, Friday, May 24, 2002
 

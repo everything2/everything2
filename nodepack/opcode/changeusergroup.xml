@@ -1,6 +1,5 @@
 <node>
   <node_id>1926113</node_id>
-  <htmlcode_id>1926113</htmlcode_id>
   <code># Changes which usergroup is selected for the Usergroup Writeups nodelet.
 
 #return unless (exists $HTMLVARS{'group_gods'}{$$USER{node_id}}) || (exists $HTMLVARS{'group_content editors'}{$$USER{node_id}});

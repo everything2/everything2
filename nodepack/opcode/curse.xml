@@ -1,6 +1,5 @@
 <node>
   <node_id>444709</node_id>
-  <htmlcode_id>444709</htmlcode_id>
   <code>return;
 return unless isGod($USER);
 my $U = $query-&gt;param('node_id');

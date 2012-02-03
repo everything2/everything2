@@ -1,6 +1,5 @@
 <node>
   <node_id>1254097</node_id>
-  <htmlcode_id>1254097</htmlcode_id>
   <code>#demo/test of sendPrivateMessage (htmlcode), a replacement for /msg
 
 my $message = $query-&gt;param('message');

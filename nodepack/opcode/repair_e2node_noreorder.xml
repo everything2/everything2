@@ -1,6 +1,5 @@
 <node>
   <node_id>1466148</node_id>
-  <htmlcode_id>1466148</htmlcode_id>
   <code>return unless exists($HTMLVARS{'group_gods'}{$$USER{user_id}}) or
 	exists($HTMLVARS{'group_content editors'}{$$USER{user_id}});
 

@@ -1,6 +1,5 @@
 <node>
   <node_id>1887815</node_id>
-  <htmlcode_id>1887815</htmlcode_id>
   <code>my $uName = $query-&gt;param(&quot;new_leader&quot;);
 my $userGroup = $query-&gt;param(&quot;node_id&quot;);
 

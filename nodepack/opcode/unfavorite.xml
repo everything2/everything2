@@ -1,6 +1,5 @@
 <node>
   <node_id>1930914</node_id>
-  <htmlcode_id>1930914</htmlcode_id>
   <code>my $node_id = $query -&gt; param(&quot;fave_id&quot;);
 
 my $NODE = getNodeById($node_id);

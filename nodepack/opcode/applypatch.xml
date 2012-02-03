@@ -1,6 +1,5 @@
 <node>
   <node_id>1353244</node_id>
-  <htmlcode_id>1353244</htmlcode_id>
   <code>return -1 unless isGod($USER);
 my $patchid = $query-&gt;param(&quot;patch_id&quot;);
 return -2 unless $patchid;

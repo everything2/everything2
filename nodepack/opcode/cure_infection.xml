@@ -1,6 +1,5 @@
 <node>
   <node_id>1991091</node_id>
-  <htmlcode_id>1991091</htmlcode_id>
   <code>return 0 unless htmlcode('isAdmin', $USER) || !htmlcode('verifyRequest', 'cure_infection');
 
 my $cureUserId = int($query-&gt;param(&quot;cure_user_id&quot;));

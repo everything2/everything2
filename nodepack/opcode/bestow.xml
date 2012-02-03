@@ -1,6 +1,5 @@
 <node>
   <node_id>444712</node_id>
-  <htmlcode_id>444712</htmlcode_id>
   <code>return unless isGod($USER);
 my $U = $query-&gt;param('bestow_id');
 getRef $U;

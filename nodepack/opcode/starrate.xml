@@ -1,6 +1,5 @@
 <node>
   <node_id>1988993</node_id>
-  <htmlcode_id>1988993</htmlcode_id>
   <code>my $dbh = $DB-&gt;getDatabaseHandle();
 
 return unless htmlcode('verifyRequest', 'starrating');

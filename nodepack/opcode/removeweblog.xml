@@ -1,6 +1,5 @@
 <node>
   <node_id>485617</node_id>
-  <htmlcode_id>485617</htmlcode_id>
   <code># This removes one item from a weblog
 my $src = int($query-&gt;param(&quot;source&quot;));
 my $to_node = int($query-&gt;param(&quot;to_node&quot;));

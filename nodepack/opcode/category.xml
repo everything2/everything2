@@ -1,6 +1,5 @@
 <node>
   <node_id>1935812</node_id>
-  <htmlcode_id>1935812</htmlcode_id>
   <code>use Everything::Experience;
 
 return if getId($USER) == $HTMLVARS{guest_user};

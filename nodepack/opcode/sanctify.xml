@@ -1,6 +1,5 @@
 <node>
   <node_id>1960821</node_id>
-  <htmlcode_id>1960821</htmlcode_id>
   <code>return if ($$VARS{GPoptout});
 
 my $minLevel = 11;

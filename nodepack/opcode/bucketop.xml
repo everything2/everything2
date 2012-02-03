@@ -1,6 +1,5 @@
 <node>
   <node_id>909984</node_id>
-  <htmlcode_id>909984</htmlcode_id>
   <code>return unless isGod($USER);
 if($query-&gt;param(&quot;bgroupadd&quot;))
 {

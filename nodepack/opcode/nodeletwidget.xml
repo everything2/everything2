@@ -1,6 +1,5 @@
 <node>
   <node_id>1239467</node_id>
-  <htmlcode_id>1239467</htmlcode_id>
   <code>
 #performs operations on a single nodelet for the user, such as move, insert, remove
 #	this messes with the current user $VARS-&gt;{nodelets}

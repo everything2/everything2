@@ -3,15 +3,6 @@
 use strict;
 use lib qw(lib);
 package Everything::node::opcode;
-use base qw(Everything::node::node);
-
-sub node_to_xml
-{
-	my ($this, $NODE, $dbh) = @_;
-
-	# Strip old windows line endings
-	$NODE->{code} = $this->_clean_code($NODE->{code});
-	return $this->SUPER::node_to_xml($NODE, $dbh);
-}
+use base qw(Everything::node::htmlcode);
 
 1;

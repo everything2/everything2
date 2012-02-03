@@ -1,6 +1,5 @@
 <node>
   <node_id>1671491</node_id>
-  <htmlcode_id>1671491</htmlcode_id>
   <code># First, we need the node object
 my $N = getNodeById($query-&gt;param('node_id'));
 

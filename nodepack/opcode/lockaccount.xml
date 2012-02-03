@@ -1,6 +1,5 @@
 <node>
   <node_id>1203049</node_id>
-  <htmlcode_id>1203049</htmlcode_id>
   <code>return unless(isGod($USER));
 
 my $uid = $query-&gt;param('lock_id');

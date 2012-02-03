@@ -1,6 +1,5 @@
 <node>
   <node_id>444189</node_id>
-  <htmlcode_id>444189</htmlcode_id>
   <code>return unless $$USER{votesleft};
 return if isSuspended($USER, &quot;vote&quot;);
 return if getId($USER) == $HTMLVARS{guest_user};

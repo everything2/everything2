@@ -1,6 +1,5 @@
 <node>
   <node_id>1882499</node_id>
-  <htmlcode_id>1882499</htmlcode_id>
   <code>my $disp = $query-&gt;param(&quot;ify_display&quot;);
 
 my $nid =  $query-&gt;param(&quot;node_id&quot;);

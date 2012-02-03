@@ -1,6 +1,5 @@
 <node>
   <node_id>419552</node_id>
-  <htmlcode_id>419552</htmlcode_id>
   <code>my $node_id = $query-&gt;param('bookmark_id');
 
 $node_id or return;

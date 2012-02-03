@@ -1,6 +1,5 @@
 <node>
   <node_id>1685363</node_id>
-  <htmlcode_id>1685363</htmlcode_id>
   <code>return if getId($USER) == $HTMLVARS{guest_user};
 
 my $pollId = $query -&gt; param('poll_id');

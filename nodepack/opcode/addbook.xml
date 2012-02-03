@@ -1,6 +1,5 @@
 <node>
   <node_id>1547879</node_id>
-  <htmlcode_id>1547879</htmlcode_id>
   <code>foreach my $bnode ($query-&gt;param())
 {
   next unless($bnode =~ /^bnode_([0-9]*)$/);
