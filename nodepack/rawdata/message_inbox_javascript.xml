@@ -1,5 +1,4 @@
 <node>
-  <rawdata_id>1298616</rawdata_id>
   <node_id>1298616</node_id>
   <type_nodetype>332487</type_nodetype>
   <datacode>function replyTo(s, c) {
