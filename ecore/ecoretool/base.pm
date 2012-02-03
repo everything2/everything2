@@ -150,6 +150,7 @@ sub _skippable_types
 		"e2poll" => [],
 		"musicdoc" => [],
 		"musicnode" => [],
+		"oppressor_document" => [],
 	};
 }
 1;
