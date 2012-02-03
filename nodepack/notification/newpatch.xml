@@ -1,5 +1,4 @@
 <node>
-  <notification_id>1930919</notification_id>
   <hourLimit>2400</hourLimit>
   <node_id>1930919</node_id>
   <code>my $str = &quot;&lt;b&gt;&quot;.linkNode($$args{patch_id}).&quot;&lt;/b&gt;&lt;br /&gt;was submitted to [Patch Manager]&lt;br /&gt;&quot;;

@@ -1,5 +1,4 @@
 <node>
-  <notification_id>1930852</notification_id>
   <hourLimit>48</hourLimit>
   <node_id>1930852</node_id>
   <code>my $str;

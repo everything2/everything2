@@ -1,5 +1,4 @@
 <node>
-  <notification_id>1930854</notification_id>
   <hourLimit>168</hourLimit>
   <node_id>1930854</node_id>
   <code>return &quot;There's a new [Everything Poll Directory|E2 Poll] available to vote on...&quot;</code>

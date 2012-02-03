@@ -1,5 +1,4 @@
 <node>
-  <notification_id>1981770</notification_id>
   <hourLimit>240000</hourLimit>
   <node_id>1981770</node_id>
   <code>my $ed_id = $$args{ed_id};

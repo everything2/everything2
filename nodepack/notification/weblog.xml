@@ -1,5 +1,4 @@
 <node>
-  <notification_id>1930850</notification_id>
   <hourLimit>168</hourLimit>
   <node_id>1930850</node_id>
   <code>return linkNode($$args{writeup_id}).&quot; was added to the &lt;b&gt;&quot;.linkNode($$args{group_id}).&quot;&lt;/b&gt; weblog.&quot;;</code>

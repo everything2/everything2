@@ -1,5 +1,4 @@
 <node>
-  <notification_id>1930853</notification_id>
   <hourLimit>240</hourLimit>
   <node_id>1930853</node_id>
   <code>return &quot;There's a new item on the [Welcome to Everything|front page]&quot;;</code>
