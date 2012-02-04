@@ -1,11 +1,8 @@
 <node>
   <doctext>Introduction yesno</doctext>
   <node_id>1988633</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1876758</type_nodetype>
-  <document_id>1988633</document_id>
   <question></question>
-  <registry_id>1988633</registry_id>
   <title>Registry of Foo</title>
   <input_style>yes/no</input_style>
 </node>

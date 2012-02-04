@@ -1,11 +1,8 @@
 <node>
   <doctext>What datum do you think belongs in here?</doctext>
   <node_id>1991065</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1876758</type_nodetype>
-  <document_id>1991065</document_id>
   <question></question>
-  <registry_id>1991065</registry_id>
   <title>Date testing registry</title>
   <input_style>date</input_style>
 </node>
