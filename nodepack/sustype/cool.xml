@@ -1,8 +1,6 @@
 <node>
   <doctext>Removes a person's ability to C! something. Any unspent cools the user has are destroyed, and won't regenerate until the day after this hex has been repealed.</doctext>
   <node_id>1399996</node_id>
-  <edittime>2011-09-04 22:02:43</edittime>
   <type_nodetype>1399991</type_nodetype>
-  <document_id>1399996</document_id>
   <title>cool</title>
 </node>
