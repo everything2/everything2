@@ -17,8 +17,6 @@ delete($$VARS{customstyle});
 &lt;input type='submit' name='submit' value='Throw that paint'&gt;
 &lt;/form&gt;</doctext>
   <node_id>1855110</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1065266</type_nodetype>
-  <document_id>1855110</document_id>
   <title>Style Defacer</title>
 </node>

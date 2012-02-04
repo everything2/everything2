@@ -32,8 +32,6 @@ function loadNode(nodeid) {
 &lt;div id='node_91'&gt;NOTHING&lt;/DIV&gt;
 </doctext>
   <node_id>1894157</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1065266</type_nodetype>
-  <document_id>1894157</document_id>
   <title>vttest-nolinks</title>
 </node>
