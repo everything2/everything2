@@ -3,8 +3,6 @@
 node_id, title from node where title like &quot;%everything%&quot; and type_nodetype=116 order
 by createtime</doctext>
   <node_id>1142259</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
-  <document_id>1142259</document_id>
   <title>Everything Title Searcher</title>
 </node>

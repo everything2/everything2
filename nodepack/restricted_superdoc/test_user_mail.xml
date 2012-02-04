@@ -65,8 +65,6 @@ $iii = 'yup' unless $Mail::Sender::Error;
 %]
 	</doctext>
   <node_id>1881390</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
-  <document_id>1881390</document_id>
   <title>test user mail</title>
 </node>

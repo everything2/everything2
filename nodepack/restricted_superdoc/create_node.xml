@@ -51,8 +51,6 @@ $str .= $query-&gt;endform;
 $str;
 %]</doctext>
   <node_id>197</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
-  <document_id>197</document_id>
   <title>create node</title>
 </node>

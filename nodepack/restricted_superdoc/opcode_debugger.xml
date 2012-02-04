@@ -53,8 +53,6 @@
 &lt;br&gt;&lt;br&gt;
 This allows you to execute code as if it were eval()'ed and not as if it were really an opcode, thus chucking the errors that you'd like. Exact same results however. Keep also in mind that when opcodes are created that you don't have access to $NODE.  Also, you only have access to &quot;soft&quot; opcodes, and not hardcoded ones such as new.  Ecore pre-1.0 I think has better opcode debugging but our .8 bastard version just fails if something doesn't work. This should be a cleaner way of handling this code.  Bugs go to [JayBonci], on this debugger only.  </doctext>
   <node_id>1258415</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
-  <document_id>1258415</document_id>
   <title>opcode debugger</title>
 </node>

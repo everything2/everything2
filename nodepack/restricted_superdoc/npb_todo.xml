@@ -72,8 +72,6 @@ useralias dbtable: primary node_id, varchar(20) aliasname, int(11) realuser_id, 
 &lt;tr&gt;&lt;td&gt;very soon&lt;/td&gt;&lt;td&gt;delete all [% linkNode($USER); %]'s writeups&lt;/td&gt;&lt;/tr&gt;
 &lt;/table&gt;&lt;/p&gt;</doctext>
   <node_id>1104645</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
-  <document_id>1104645</document_id>
   <title>NPB TODO</title>
 </node>

@@ -399,8 +399,6 @@ if ( $$USER{ 'user_id' } != 433254 ) {
 '';
 %]</doctext>
   <node_id>943637</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
-  <document_id>943637</document_id>
   <title>scratches on walls</title>
 </node>

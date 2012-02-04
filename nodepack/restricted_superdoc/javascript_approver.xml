@@ -3,8 +3,6 @@
 2. clicking a link loads the doctext from that jscript into a box for examination (and editing? or do we just reject it and make them try again? ...)&lt;br /&gt;
 3. a link also approves a jscript by adding it to the JS repository.</doctext>
   <node_id>1873010</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
-  <document_id>1873010</document_id>
   <title>Javascript Approver</title>
 </node>

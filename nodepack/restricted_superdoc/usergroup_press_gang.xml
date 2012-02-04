@@ -86,8 +86,6 @@ if ( defined $query-&gt;param( 'usernames' ) &amp;&amp; defined $query-&gt;param
 &lt;p&gt;&lt;i&gt;Bug reports go to [JayBonci]. &lt;/i&gt;&lt;/p&gt;
 </doctext>
   <node_id>1176730</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>13</type_nodetype>
-  <document_id>1176730</document_id>
   <title>Usergroup Press Gang</title>
 </node>
