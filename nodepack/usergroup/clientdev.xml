@@ -76,8 +76,6 @@ return '' unless Everything::isApproved($USER, $NODE);
 %]
 &lt;p&gt;&lt;hr /&gt;&lt;/p&gt;</doctext>
   <node_id>1199641</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>16</type_nodetype>
-  <document_id>1199641</document_id>
   <title>clientdev</title>
 </node>

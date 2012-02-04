@@ -6,8 +6,6 @@ return unless isGod($USER);
 htmlcode('weblog', '15');
 %]</doctext>
   <node_id>114</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>16</type_nodetype>
-  <document_id>114</document_id>
   <title>gods</title>
 </node>

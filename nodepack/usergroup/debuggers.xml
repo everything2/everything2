@@ -1,8 +1,6 @@
 <node>
   <doctext>Debuggers is a group put in place to allow someone to give more feedback to an admin if trouble breaks out and cannot be replicated.  This will allow a user to repro the problem and get a more sophisticated debugging display.</doctext>
   <node_id>1192564</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>16</type_nodetype>
-  <document_id>1192564</document_id>
   <title>debuggers</title>
 </node>

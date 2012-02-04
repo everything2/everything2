@@ -12,8 +12,6 @@
 Note that there is no space before the first curly brace and the usernames are separated by spaces, with underscores for spaces in the usernames.  It is recommended to include a note that this message was sent to the group in question to prevent confusion since there is no feedback for this.&lt;br&gt;
 Example: &lt;tt&gt;/msg{rootbeer277 Simulacron3 Spifficus_Rex} Mafia message: I think Aerobe is the cop.  Let's kill her tonight.&lt;/tt&gt;&lt;/p&gt;</doctext>
   <node_id>1966072</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>16</type_nodetype>
-  <document_id>1966072</document_id>
   <title>e2Mafia</title>
 </node>
