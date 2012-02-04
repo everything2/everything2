@@ -1,8 +1,6 @@
 <node>
   <node_id>320307</node_id>
   <type_nodetype>175990</type_nodetype>
-  <themesetting_id>320307</themesetting_id>
-  <setting_id>320307</setting_id>
   <vars>nodeletGradBot=%23ff0000&amp;bodyBgcolor=%23ffcc33&amp;nodeletGradTop=%23ffff00&amp;docColor=%23ff9999&amp;nodeletTitleColor=%23ffff00</vars>
   <parent_theme>415072</parent_theme>
   <title>classic theme wired settings</title>

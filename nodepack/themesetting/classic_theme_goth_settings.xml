@@ -1,8 +1,6 @@
 <node>
   <node_id>268892</node_id>
   <type_nodetype>175990</type_nodetype>
-  <themesetting_id>268892</themesetting_id>
-  <setting_id>268892</setting_id>
   <vars>bodyVlinkcolor=%236666cc&amp;bodyTextcolor=%23ffffff&amp;docColor=%23333333&amp;bodyBgcolor=%230000000&amp;nodeletBodyColor=%23666666&amp;bodyLinkcolor=%239999ff&amp;nodeleTitleFontAttr=color%3d%23FFFFFF&amp;nodeletTitleColor=%23333333&amp;nodeletGradTop=%23000000&amp;oddRowColor=%23444444&amp;nodeletGradBot=%23330066&amp;nodeletTitleFontAttr=color%3d%22%23FFFFFF%22</vars>
   <parent_theme>415072</parent_theme>
   <title>classic theme goth settings</title>
