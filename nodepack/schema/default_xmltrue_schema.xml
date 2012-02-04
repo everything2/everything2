@@ -17,9 +17,6 @@
 &lt;xs:element name=&quot;info&quot; type=&quot;xs:string&quot;/&gt;
 [{schemafoot}]</doctext>
   <node_id>1259759</node_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1258942</type_nodetype>
-  <document_id>1259759</document_id>
-  <e2schema_id>1259759</e2schema_id>
   <title>default xmltrue schema</title>
 </node>
