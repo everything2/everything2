@@ -151,6 +151,7 @@ sub _skippable_types
 		"musicdoc" => [],
 		"musicnode" => [],
 		"oppressor_document" => [],
+		"recording" => [],
 	};
 }
 1;
