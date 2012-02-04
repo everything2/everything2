@@ -23,10 +23,7 @@ We can have a list of steps that require completion, using their $VARS to store 
 Also, keep in mind that we can be sneaky and write down what the users are going to, for our records, and use that data to improve this tutorial.
 &lt;/small&gt;</doctext>
   <node_id>1177325</node_id>
-  <tutorialstep_id></tutorialstep_id>
-  <edittime>0000-00-00 00:00:00</edittime>
   <type_nodetype>1177317</type_nodetype>
-  <document_id>1177325</document_id>
   <parent_tutorial></parent_tutorial>
   <title>Welcome to the test tutorial</title>
 </node>
