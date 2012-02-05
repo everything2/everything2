@@ -40,16 +40,16 @@ sub main
 {
 	my ($this) = @_;
 
-	my $options = $this->_handle_inputs();
+	$this->{options} = $this->_handle_inputs();
 
-	initEverything $options->{database};
+	initEverything $this->{options}->{database};
 
 	my $node = getNode("nodetype","nodetype");
 
 	my $csr = $DB->{dbh}->prepare("select node_id from node where type_nodetype=1");
 	$csr->execute();
 
-	$this->{basedir} = $options->{nodepack};
+	$this->{basedir} = $this->{options}->{nodepack};
 
 	my $skiptypes = $this->_skippable_types();
 
@@ -86,7 +86,7 @@ sub main
 		}
 	}
 
-	unless($options->{'skip-data'})
+	unless($this->{options}->{'skip-data'})
 	{
 		foreach my $provider (keys %$dataproviders)
 		{
@@ -128,7 +128,7 @@ sub xml_to_file
 	}
 
 	open $handle, ">$$this{basedir}/$type/$outtitle.xml" or die "Open error '$$this{basedir}/$type/$outtitle.xml': $!";
-	print $handle $obj->node_to_xml($node, $dbh);
+	print $handle $obj->node_to_xml($node, $dbh, $this->{options});
 	close $handle;
 }
 
