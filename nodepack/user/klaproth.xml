@@ -1,6 +1,5 @@
 <node>
   <nick></nick>
-  <experience>164</experience>
   <email></email>
   <realname></realname>
   <imgsrc>images/userincoming/Klaproth.jpeg</imgsrc>
@@ -32,8 +31,6 @@ You are here to listen.&lt;/p&gt;
 &lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
 &lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
 </doctext>
-  <session_id></session_id>
-  <validationkey></validationkey>
   <node_id>952215</node_id>
   <user_salt></user_salt>
   <passwd></passwd>

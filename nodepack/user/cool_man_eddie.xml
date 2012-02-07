@@ -1,6 +1,5 @@
 <node>
   <nick></nick>
-  <experience>153</experience>
   <email></email>
   <realname></realname>
   <imgsrc>images/userincoming/Cool_Man_Eddie.jpeg</imgsrc>
@@ -17,8 +16,6 @@ Y'know ya want it -- turn me on in [User Settings].
 If I sent you a message, and you're not sure what it means, [C!|get the skinny on cool].
 &lt;br&gt;&lt;br&gt;
 [Cool Man Eddie meets Message Inbox]</doctext>
-  <session_id></session_id>
-  <validationkey></validationkey>
   <node_id>839239</node_id>
   <karma>1</karma>
   <GP>3</GP>
