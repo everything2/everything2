@@ -33,4 +33,10 @@ sub node_id_equivs
 	return ["user_id","setting_id",@{$this->SUPER::node_id_equivs}];
 }
 
+sub xml_no_consider
+{
+	my ($this) = @_;
+	return ["in_room", @{$this->SUPER::xml_no_consider()}];
+}
+
 1;
