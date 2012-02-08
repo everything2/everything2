@@ -141,6 +141,7 @@ sub _skippable_types
 		"edevdoc" => [],
 		"patch" => [],
 		"user" => [113,952215,779713,839239], #root,klaproth,guest user,cool man eddie
+		"usergroup" => [838015, 114, 829913, 923653, 1199641, 1969185], #Edev, gods, e2gods, content editors, clientdev, chanops
 		"node_forward" => [],
 		"ticket" => [], 
 		"draft" => [],

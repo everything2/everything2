@@ -14,7 +14,7 @@ sub data_out
 
 	my $linkcsr = $this->{dbh}->prepare("select * from nodegroup where nodegroup_id IN($inclause) and node_id IN($inclause)");
 	$linkcsr->execute();
-	my $data;
+	my $data = {"group" => []};
 	while(my $row = $linkcsr->fetchrow_hashref())
 	{
 		push @{$data->{group}}, $row;
