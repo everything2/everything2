@@ -6,7 +6,7 @@ $NODE = $GNODE = getNodeById($HTMLVARS{not_found}) unless $$NODE{type}{title} ne
 '';
 %]
 [{editvars}]</page>
-  <node_id>1990226</node_id>
+  <node_id>2024261</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>editvars</displaytype>
   <title>node editvars page</title>

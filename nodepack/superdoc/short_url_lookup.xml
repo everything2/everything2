@@ -34,7 +34,7 @@ $HEADER_PARAMS{-location} =
   'http://' . $ENV{HTTP_HOST} . $HTMLVARS{redirect_url}
   ;
 %]</doctext>
-  <node_id>1990067</node_id>
+  <node_id>2021986</node_id>
   <type_nodetype>14</type_nodetype>
   <title>Short URL Lookup</title>
 </node>

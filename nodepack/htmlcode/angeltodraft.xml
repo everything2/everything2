@@ -1,5 +1,5 @@
 <node>
-  <node_id>1992091</node_id>
+  <node_id>2047887</node_id>
   <code>my $tomb = shift;
 my $angel_id = $$tomb{node_id};
 

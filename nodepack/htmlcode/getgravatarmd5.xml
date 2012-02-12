@@ -1,5 +1,5 @@
 <node>
-  <node_id>1992202</node_id>
+  <node_id>2048927</node_id>
   <code>use Digest::MD5('md5_hex');
 
 my $gravatarUser = shift;

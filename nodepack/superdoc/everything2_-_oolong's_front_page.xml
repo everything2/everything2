@@ -44,7 +44,7 @@ if ($$USER{user_id} != $HTMLVARS{guest_user}) {
 return $zenStr ;
 
 %]</doctext>
-  <node_id>1990483</node_id>
+  <node_id>2027509</node_id>
   <type_nodetype>14</type_nodetype>
   <title>Everything2 - Oolong's Front Page</title>
 </node>

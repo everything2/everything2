@@ -1,5 +1,5 @@
 <node>
-  <node_id>1988978</node_id>
+  <node_id>2003804</node_id>
   <code>my $user_id = shift;
 
 return $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;coolwriteups JOIN node ON coolwriteups_id = node_id&quot;,&quot;author_user=$user_id and type_nodetype=117&quot;);</code>

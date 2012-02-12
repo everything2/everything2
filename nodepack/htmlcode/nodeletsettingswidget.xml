@@ -1,5 +1,5 @@
 <node>
-  <node_id>1990327</node_id>
+  <node_id>2025425</node_id>
   <code># provide a settings link/widget for the nodelet named by the first argument
 # second argument is link/opener text
 

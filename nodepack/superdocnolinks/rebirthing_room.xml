@@ -24,7 +24,7 @@ if (ref $N){ # $N is the draft
 
 return &quot;Ack! $N&quot;; # $N is an error message
 %]</doctext>
-  <node_id>1992084</node_id>
+  <node_id>2047877</node_id>
   <type_nodetype>1065266</type_nodetype>
   <title>Rebirthing room</title>
 </node>

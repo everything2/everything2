@@ -166,7 +166,7 @@ E2AJAX = e2.ajax = jQuery.extend(e2.ajax,{
 		
 	}
 });</doctext>
-  <node_id>1990285</node_id>
+  <node_id>2024790</node_id>
   <type_nodetype>1786405</type_nodetype>
   <title>Additional Everything2 Ajax</title>
 </node>

@@ -90,7 +90,7 @@ if ($$USER{node_id} == $$NODE{author_user}){
 
 $str;
 %]</page>
-  <node_id>1991179</node_id>
+  <node_id>2035519</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <title>draft display page</title>

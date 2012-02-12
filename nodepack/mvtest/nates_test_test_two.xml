@@ -2,7 +2,7 @@
   <node_id>1989023</node_id>
   <starttime>2010-01-19 17:53:51</starttime>
   <enabled>1</enabled>
-  <type_nodetype>1988997</type_nodetype>
+  <type_nodetype>2032070</type_nodetype>
   <vars>test2|somecode=somecode2&amp;test|somecode=somecode2</vars>
   <title>nates test test two</title>
   <conditions>control,test,test2</conditions>

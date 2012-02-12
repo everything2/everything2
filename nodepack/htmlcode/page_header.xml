@@ -1,5 +1,5 @@
 <node>
-  <node_id>1988863</node_id>
+  <node_id>2002477</node_id>
   <code># let page inject stuff into the header:
 my ($str,$after) = split /&lt;!--.*?--&gt;/, (delete $HTMLVARS{pageheader})
 	if $HTMLVARS{pageheader};

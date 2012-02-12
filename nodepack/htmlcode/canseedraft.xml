@@ -1,5 +1,5 @@
 <node>
-  <node_id>1991173</node_id>
+  <node_id>2035530</node_id>
   <code>return 0 if $$USER{node_id} == $HTMLVARS{guest_user};
 
 my ($N, $editCheck) = @_;

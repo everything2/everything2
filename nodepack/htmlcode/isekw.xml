@@ -1,5 +1,5 @@
 <node>
-  <node_id>1991061</node_id>
+  <node_id>2033881</node_id>
   <code>my $theme_id = $$VARS{preferred_theme};
 my $theme = getNodeById($theme_id);
 return ($theme &amp;&amp; $$theme{title} eq 'ekw theme');</code>

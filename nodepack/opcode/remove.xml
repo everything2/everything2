@@ -1,5 +1,5 @@
 <node>
-  <node_id>1992001</node_id>
+  <node_id>2047058</node_id>
   <code>if (my $wu = $query -&gt; param('writeup_id')){ # user removing own writeup
 
 	return unless htmlcode('verifyRequest', 'remove')

@@ -1,5 +1,5 @@
 <node>
-  <node_id>1988741</node_id>
+  <node_id>2002034</node_id>
   <code>if ($$USER{user_id} == $HTMLVARS{guest_user}) {
   return 1 ;
 }

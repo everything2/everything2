@@ -1,5 +1,5 @@
 <node>
-  <node_id>1988918</node_id>
+  <node_id>2002809</node_id>
   <code>local $$VARS{wufoot} = &quot;l:kill,$$VARS{wufoot}&quot;
 	unless !$$VARS{wufoot} or $$VARS{wufoot} =~ /\bkill\b/ or $$VARS{wuhead} =~ /\bkill\b/;
 

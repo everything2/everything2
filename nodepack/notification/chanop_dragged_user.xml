@@ -1,6 +1,6 @@
 <node>
   <hourLimit>168</hourLimit>
-  <node_id>1992747</node_id>
+  <node_id>2054467</node_id>
   <code>return linkNode($$args{chanop_id})
   . ' dragged user ' . linkNode($$args{user_id})
   . ' to ' . linkNode($$args{room_id});</code>

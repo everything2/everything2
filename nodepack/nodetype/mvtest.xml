@@ -2,7 +2,7 @@
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>153</extends_nodetype>
   <sqltable>mvtest</sqltable>
-  <node_id>1988997</node_id>
+  <node_id>2032070</node_id>
   <type_nodetype>1</type_nodetype>
   <writers_user>114</writers_user>
   <readers_user>114</readers_user>

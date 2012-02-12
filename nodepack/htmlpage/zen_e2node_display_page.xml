@@ -139,7 +139,7 @@ delete $HTMLVARS{admintools};
 [{addwriteup}]
 [{nagbox}]
 </page>
-  <node_id>1990150</node_id>
+  <node_id>2023717</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <ownedby_theme>1854183</ownedby_theme>

@@ -1,6 +1,6 @@
 <node>
   <hourLimit>168</hourLimit>
-  <node_id>1992749</node_id>
+  <node_id>2054468</node_id>
   <code>return linkNode($$args{chanop_id})
   . ' borged user ' . linkNode($$args{user_id});</code>
   <type_nodetype>1930710</type_nodetype>

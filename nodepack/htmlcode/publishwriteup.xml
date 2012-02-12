@@ -1,5 +1,5 @@
 <node>
-  <node_id>1991341</node_id>
+  <node_id>2036500</node_id>
   <code>my ($WRITEUP, $E2NODE) = @_;
 
 # called from [publishdraft] or from [writeup maintenance create]

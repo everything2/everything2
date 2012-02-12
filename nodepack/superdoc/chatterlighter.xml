@@ -12,7 +12,7 @@ insertNodelet( getNode( 'Chatterbox', 'nodelet' ) );
  	&lt;p&gt;&lt;span title=&quot;What chatroom you are in&quot;&gt;Now talking in: [% linkNode($$USER{in_room}) || &quot;outside&quot;; %] &lt;/span&gt; [{changeroom}]
 &lt;/div&gt;
 </doctext>
-  <node_id>1989376</node_id>
+  <node_id>2007476</node_id>
   <type_nodetype>14</type_nodetype>
   <title>Chatterlighter</title>
 </node>

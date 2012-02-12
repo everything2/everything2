@@ -1,5 +1,5 @@
 <node>
-  <node_id>1991280</node_id>
+  <node_id>2035639</node_id>
   <code>my $uid = shift;
 my $lookingAtSelf = (!$uid || $uid == $$USER{node_id});
 my $doConversion = ($query -&gt; param('converttodrafts') == 1 &amp;&amp; $lookingAtSelf);

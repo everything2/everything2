@@ -260,7 +260,7 @@ if($showWUs) {
 return $str;
 %]
 </doctext>
-  <node_id>1988529</node_id>
+  <node_id>2000213</node_id>
   <type_nodetype>14</type_nodetype>
   <title>iron noder progress</title>
 </node>

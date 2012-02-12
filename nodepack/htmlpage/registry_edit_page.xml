@@ -36,7 +36,7 @@ $str.= buildTable(['key','value'],[
 $str.=htmlcode(&quot;closeform&quot;);
 return $str;
 %]</page>
-  <node_id>1988629</node_id>
+  <node_id>2001832</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
   <title>registry edit page</title>

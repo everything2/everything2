@@ -1,5 +1,5 @@
 <node>
-  <node_id>1992326</node_id>
+  <node_id>2051203</node_id>
   <code>if (isGod($USER) || exists ($HTMLVARS{&quot;group_content editors&quot;}{$$USER{node_id}})){
 	my $str =&quot;
 	&lt;div id='admintools'&gt;

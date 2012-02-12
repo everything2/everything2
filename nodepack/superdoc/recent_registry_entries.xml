@@ -46,7 +46,7 @@
   return buildTable($labels,$rows,'class=&quot;registries&quot;','center');
 # 4th option centers the table, so we don't need &lt;center&gt; any more --alexander
 %]</doctext>
-  <node_id>1988616</node_id>
+  <node_id>2001828</node_id>
   <type_nodetype>14</type_nodetype>
   <title>Recent Registry Entries</title>
 </node>

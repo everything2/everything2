@@ -1,5 +1,5 @@
 <node>
-  <node_id>1988433</node_id>
+  <node_id>1995928</node_id>
   <code>my $VARSNODE = getNode( 'fixed stylesheets' ,'setting' ) ;
 my $fixed = getVars( $VARSNODE ) ;
 my $howfixed = $$fixed{ $$NODE{ node_id } } ;

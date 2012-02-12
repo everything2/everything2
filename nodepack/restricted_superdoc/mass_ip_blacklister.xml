@@ -89,7 +89,7 @@ return $query-&gt;start_form(-method=&gt;'post')
 .$query-&gt;end_form;
 %]
 [{blacklistedIPs}]</doctext>
-  <node_id>1989308</node_id>
+  <node_id>2007188</node_id>
   <type_nodetype>13</type_nodetype>
   <title>Mass IP Blacklister</title>
 </node>

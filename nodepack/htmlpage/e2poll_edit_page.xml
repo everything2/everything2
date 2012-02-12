@@ -24,7 +24,7 @@ $query -&gt; escapeHTML($$NODE{doctext});
 &lt;h2&gt;[%$$NODE{title}%]&lt;/h2&gt;
 [{showpoll}]
 </page>
-  <node_id>1992456</node_id>
+  <node_id>2052745</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
   <title>e2poll edit page</title>
