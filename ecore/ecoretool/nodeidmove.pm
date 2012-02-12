@@ -100,12 +100,18 @@ sub main
 		
 	foreach my $table(split(",",$TYPE->{sqltablelist}),"node")
 	{
-		print STDERR "..updating table: $table\n";
+		print STDERR "...updating table: $table\n";
 
 		if(exists($Nfrom->{$table."_id"}))
 		{
 			$DB->{dbh}->do("UPDATE $table SET $table"."_id=$$options{to} WHERE $table"."_id=$$options{from}");
 		}
+	}
+
+	if($Nfrom->{type_nodetype} == 1)
+	{
+		print STDERR "...this is a type, moving nodetypes\n";
+		$DB->{dbh}->do("UPDATE node SET type_nodetype=$$options{to} WHERE type_nodetype=$$options{from}");
 	}
 
 	print STDERR "done\n";
