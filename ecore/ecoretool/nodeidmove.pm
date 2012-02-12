@@ -97,7 +97,12 @@ sub main
 	print STDERR "Moving node_id:$$options{from} to node_id:$$options{to}\n";
 
 	my $TYPE = getType($Nfrom->{type_nodetype});
-		
+
+	if(not defined($TYPE->{sqltablelist}))
+	{
+		$TYPE->{sqltablelist} = "";
+	}
+	
 	foreach my $table(split(",",$TYPE->{sqltablelist}),"node")
 	{
 		print STDERR "...updating table: $table\n";
