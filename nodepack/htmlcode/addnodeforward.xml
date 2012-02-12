@@ -1,5 +1,5 @@
 <node>
-  <node_id>1988226</node_id>
+  <node_id>1991266</node_id>
   <code>return unless exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) ||
 	exists($HTMLVARS{'group_content editors'}{$$USER{node_id}});
 
