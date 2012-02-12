@@ -176,18 +176,15 @@ sub _values_into_table
 	my ($this, $newdbh, $NODE, $table) = @_;
 
 	my $node_columns;
-	my $sth = $newdbh->prepare("EXPLAIN $table");
-	$sth->execute();
+	my $table_columns = $this->_get_table_columns($newdbh, $table);
 	
-	while (my $row = $sth->fetchrow_hashref())
+	foreach my $c (@$table_columns)
 	{
-		if(exists($NODE->{$row->{Field}}))
+		if(exists($NODE->{$c}))
 		{
-			push @$node_columns, $row->{Field};
+			push @$node_columns, $c;
 		}
 	}
-
-	$sth->finish();
 			
 	my $node_bootstrap_template = "INSERT INTO $table (".join(",",@$node_columns).") VALUES(".join(',',split(//,('?'x(@$node_columns)))).")";
 	my $insertdata;

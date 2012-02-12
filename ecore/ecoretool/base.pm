@@ -155,4 +155,23 @@ sub _skippable_types
 		"recording" => [],
 	};
 }
+
+sub _get_table_columns
+{
+	my ($this, $dbh, $table) = @_;
+
+	my $columns;
+	my $sth = $dbh->prepare("EXPLAIN $table");
+	$sth->execute();
+	
+	while (my $row = $sth->fetchrow_hashref())
+	{
+		push @$columns, $row->{Field};
+	}
+
+	$sth->finish();
+
+	return $columns;
+}
+
 1;
