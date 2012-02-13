@@ -1,8 +1,0 @@
-<node>
-  <node_id>1989043</node_id>
-  <code>$query-&gt;submit(&quot;sexisgood&quot;, &quot;submit to your master&quot;) .
-$query-&gt;end_form;
-#why are you taunting me?</code>
-  <type_nodetype>4</type_nodetype>
-  <title>closeform2</title>
-</node>
