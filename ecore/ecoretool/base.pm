@@ -153,6 +153,8 @@ sub _skippable_types
 		"musicnode" => [],
 		"oppressor_document" => [],
 		"recording" => [],
+		# print, Kernel Blue, and basesheet
+		"stylesheet" => [2004473,1882070,1973976],
 	};
 }
 
