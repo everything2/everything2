@@ -15,6 +15,6 @@ $$D{doctext} = $query -&gt; param('writeup_doctext') if $query -&gt; param('writ
 updateNode($D, $USER);
 </code>
   <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>1991079</maintain_nodetype>
+  <maintain_nodetype>2035430</maintain_nodetype>
   <title>draft maintenance create</title>
 </node>

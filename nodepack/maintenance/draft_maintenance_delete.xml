@@ -31,6 +31,6 @@ $DB -&gt; sqlUpdate('xpHistoryCache',
 	&quot;xpHistoryCache_id=$$N{author_user}&quot;);
 </code>
   <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>1991079</maintain_nodetype>
+  <maintain_nodetype>2035430</maintain_nodetype>
   <title>draft maintenance delete</title>
 </node>
