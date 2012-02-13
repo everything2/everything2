@@ -29,7 +29,6 @@ sub node_xml_prep
 sub node_to_xml
 {
 	my ($this, $N, $dbh, $options) = @_;
-
 	my $NODE = $this->node_xml_prep($N, $dbh, $options);
 
 	return $this->{xs}->XMLout({node => $NODE});
