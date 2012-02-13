@@ -65,7 +65,7 @@ sub main
 
 	initEverything $options->{database};
 
-	find(sub{ if(-e $_&& $File::Find::name =~ /\.xml$/){push @$files,$File::Find::name; }}, $options->{nodepack});
+	find(sub{ if(-e $_ && $File::Find::dir ne "$$options{nodepack}/_data/" && $File::Find::name =~ /\.xml$/){push @$files,$File::Find::name; }}, $options->{nodepack});
 	my $rootuser = getNode("root","user");
 
 	foreach my $nodexml(@$files)
@@ -108,7 +108,7 @@ sub main
 
 			foreach my $nfield (keys %$node)
 			{
-				next unless $nfield eq "code" or $nfield eq "doctext";
+				next unless $nfield eq "code" or $nfield eq "doctext" or $nfield eq "context";
 
 				next if $nfield eq "_create_table_statement";
 				next unless defined($source_code_copy->{$nfield});
@@ -116,7 +116,7 @@ sub main
 				if($node->{$nfield} ne $source_code_copy->{$nfield})
 				{
 					print STDERR "Node: $$node{title}, field: $nfield needs updating\n";
-					#print STDERR $this->field_diff($source_code_copy->{$nfield}, $node->{$nfield});
+					print STDERR $this->field_diff($source_code_copy->{$nfield}, $node->{$nfield});
 					$dbnode->{$nfield} = $node->{$nfield};
 					$DB->updateNode($dbnode,$rootuser);
 					print STDERR "Node updated!\n";
