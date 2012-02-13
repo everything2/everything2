@@ -32,7 +32,7 @@ sub node_id_equivs
 sub xml_no_consider
 {
 	my ($this) = @_;
-	return ["in_room","GP","experience","session_id","validationkey",@{$this->SUPER::xml_no_consider()}];
+	return ["in_room","karma","GP","experience","session_id","validationkey",@{$this->SUPER::xml_no_consider()}];
 }
 
 1;
