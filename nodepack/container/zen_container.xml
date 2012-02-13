@@ -2,6 +2,7 @@
   <parent_container>1854174</parent_container>
   <node_id>1854175</node_id>
   <context>[{zenadheader}]
+
 &lt;div id='header'&gt;
 [%
 my $epid = getNode('Epicenter','nodelet')-&gt;{node_id};

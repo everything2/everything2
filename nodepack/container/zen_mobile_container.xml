@@ -3,133 +3,44 @@
   <node_id>2021824</node_id>
   <context>&lt;meta content=&quot;width=device-width; initial-scale=1.0; user-scalable=1;&quot;
       name=&quot;viewport&quot;&gt;[{zenadheader}]
-&lt;script type=&quot;text/javascript&quot;
-        src=&quot;/node/jscript/mobile jscript&quot;&gt;&lt;/script&gt;
 &lt;div id=&quot;mobilewrapper&quot;&gt;
 &lt;div id='header'&gt;
+[%
+my $epid = getNode('Epicenter','nodelet')-&gt;{node_id};
+if ($$VARS{settings_useEpicenterZen}){
+	$$VARS{nodelets} =~ s/(?:(^|,),+)|(?:\b$epid\b,*)|(?:,*$)/$1/g ;
+	delete $$VARS{settings_useEpicenterZen};
+}
+return htmlcode('epicenterZen') unless $$VARS{nodelets} =~ /\b$epid\b/;
+'';
+%]
 
-&lt;div id='announcements'&gt;&lt;/div&gt;
+&lt;div id='announcements'&gt;
+
+&lt;/div&gt;
 
 &lt;h1 id='e2logo'&gt;&lt;a href=&quot;/&quot;&gt;Everything&lt;span id=&quot;e2logo2&quot;&gt;2&lt;/span&gt;&lt;/a&gt;&lt;/h1&gt;
 [{searchform}]
 &lt;/div&gt;
 
-&lt;!-- Tab bar --&gt;
-&lt;div id=&quot;zen_mobiletabs&quot; class=&quot;zen_mobiletabs&quot;&gt;
-  &lt;span class=&quot;zen_mobiletab_selected&quot; onClick=&quot;clickTab(this)&quot;
-       id=&quot;page_tab&quot;&gt;[%        return $NODE-&gt;{title};
-                               #linkNode($NODE); %]&lt;/span&gt;
-  &lt;span class=&quot;zen_mobiletab&quot; onClick=&quot;clickTab(this)&quot;
-       id=&quot;newwriteups_tab&quot;&gt;[%
-                               return &quot;New writeups&quot;;
-                               # linkNodeTitle(&quot;New writeups&quot;);
-%]&lt;/span&gt;
-  &lt;span class=&quot;zen_mobiletab&quot; onClick=&quot;clickTab(this)&quot;
-       id=&quot;social_tab&quot;&gt;Social&lt;/span&gt;
-  &lt;span class=&quot;zen_mobiletab&quot; onClick=&quot;clickTab(this)&quot;
-       id=&quot;more_tab&quot;&gt;[%        return &quot;More...&quot;;
-                               linkNode($NODE, 'More...', { displaytype =&gt; 'listnodelets' }); %]&lt;/span&gt;
-&lt;/div&gt;
+[{zenMobileTabs}]
 
 &lt;div id='wrapper'&gt;
 
   &lt;div id='mainbody'&gt;
 
-    &lt;div id=&quot;page_container&quot; class=&quot;zen_mobileframe&quot;&gt;
-      &lt;!-- google_ad_section_start --&gt;
-      [{page header}]
-      CONTAINED_STUFF
-      &lt;!-- google_ad_section_end --&gt;
-    &lt;/div&gt;
-
-    &lt;div id=&quot;newwriteups_container&quot; class=&quot;zen_mobileframe&quot;
-         style=&quot;display: none&quot;&gt;
-      &lt;p&gt;New writeups&lt;/p&gt;
-    &lt;/div&gt;
-
-    &lt;div id=&quot;social_container&quot; class=&quot;zen_mobileframe&quot;
-         style=&quot;display: none&quot;&gt;
-
-      &lt;div id=&quot;zen_mobiletabs&quot; class=&quot;zen_mobiletabs&quot;&gt;
-        &lt;span class=&quot;zen_mobiletab_selected&quot;
-              onClick=&quot;clickTab(this)&quot;
-              id=&quot;messages_tab&quot;&gt;Messages&lt;/span&gt;
-        &lt;span class=&quot;zen_mobiletab&quot;
-              onClick=&quot;clickTab(this)&quot;
-              id=&quot;otherusers_tab&quot;&gt;Other users&lt;/span&gt;
-        &lt;span class=&quot;zen_mobiletab&quot;
-              onClick=&quot;clickTab(this)&quot;
-              id=&quot;chat_tab&quot;&gt;Chat&lt;/span&gt;
-      &lt;/div&gt;&lt;!-- mobiletabs --&gt;
-      &lt;div&gt;
-        &lt;div id=&quot;messages_container&quot; class=&quot;zen_mobileframe&quot;&gt;
-         [% my $n = getNode('Chatterbox', 'nodelet');
-            updateNodelet($n);
-            $n-&gt;{nltext}; %]
-        &lt;/div&gt;
-        &lt;div id=&quot;otherusers_container&quot; class=&quot;zen_mobileframe&quot;
-             style=&quot;display: none&quot;&gt;
-          Other Users
-        &lt;/div&gt;
-        &lt;div id=&quot;chat_container&quot; class=&quot;zen_mobileframe&quot;
-             style=&quot;display: none&quot;&gt;
-          Chat
-        &lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-
-    &lt;div id=&quot;more_container&quot; class=&quot;zen_mobileframe&quot;
-         style=&quot;display: none&quot;&gt;
-      &lt;p&gt;More stuff.&lt;/p&gt;
-    &lt;/div&gt;
-
-  &lt;/div&gt;
-
-&lt;script language=&quot;javascript&quot;&gt;&lt;!--
-var e = document.getElementById ('page_container');
-setContainerHTML (e, e.innerHTML);
-e = document.getElementById('header');
-setContainerHTML (e, e.innerHTML);
-
-document.getElementById('newwriteups_container')
-  .initial_url = '/node/nodelet/New+Writeups?mobile_fragment=1';
-document.getElementById('more_container')
-  .initial_url = '/index.pl?displaytype=listnodelets&amp;mobile_fragment=1';
-
-e = document.getElementById('messages_container');
-setContainerHTML (e, e.innerHTML);
-
-document.getElementById('chat_container')
-  .initial_url = '/node/superdoc/mobile+chatterbox?mobile_fragment=1';
-
-/* Fetch initial messages */
-e = document.getElementById('messages_container');
-e.initial_url = '/node/superdoc/mobile+messages?mobile_fragment=1';
-e = document.getElementById('messages_tab');
-clickTab(e);
-
-
-//--&gt;&lt;/script&gt;
+&lt;!-- google_ad_section_start --&gt;
+[{page header}]
+    CONTAINED_STUFF
+&lt;!-- google_ad_section_end --&gt;
+&lt;/div&gt;
 
 &lt;/div wrapper&gt;
 &lt;div id='footer'&gt;
 [{zenFooter}]
     [{zen titlebar}]
 &lt;/div&gt;
-&lt;/div&gt;
-
-
-&lt;p&gt;To do:&lt;/p&gt;
-&lt;ol&gt;&lt;li&gt;Mobile messages nodelet&lt;/li&gt;
-&lt;li&gt;Mobile chat nodelet&lt;/li&gt;
-&lt;li&gt;Mobilise 'Other Users' with a 'refresh' button&lt;/li&gt;
-&lt;li&gt;Mobile front page with login box&lt;/li&gt;
-&lt;li&gt;Stylesheet fixes:
-&lt;ol&gt;&lt;li&gt;List-ify Other Users&lt;/li&gt;
-    &lt;li&gt;Spruce up tabs&lt;/li&gt;&lt;/ol&gt;
-&lt;/ol&gt;
-
-</context>
+&lt;/div&gt;</context>
   <type_nodetype>2</type_nodetype>
   <title>zen mobile container</title>
 </node>
