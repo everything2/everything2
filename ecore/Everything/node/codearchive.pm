@@ -5,13 +5,13 @@ use lib qw(lib);
 package Everything::node::codearchive;
 use base qw(Everything::node::htmlcode);
 
-sub node_to_xml
+sub node_xml_prep
 {
 	my ($this, $NODE, $dbh) = @_;
 
 	# Strip old windows line endings
 	$NODE->{doctext} = $this->_clean_code($NODE->{doctext});
-	return $this->SUPER::node_to_xml($NODE, $dbh);
+	return $this->SUPER::node_xml_prep($NODE, $dbh);
 }
 
 sub node_id_equivs

@@ -7,27 +7,26 @@ package Everything::node::dbtable;
 use Everything::node::node;
 use base qw(Everything::node::node);
 
-sub node_to_xml
+sub node_xml_prep
 {
 	my ($this, $N, $dbh, $options) = @_;
 	my $NODE = Clone::clone($N);
 	
-
-	my $password_string = "-p $$options{password}";
+	my $password_string = " -p$$options{password}";
 
 	if($$options{password} eq "")
 	{
 		$password_string = "";
 	}		
 
-	my $create_table_statement = `mysqldump --skip-add-drop-table --skip-add-locks --skip-disable-keys --skip-set-charset --skip-comments -d -u $$options{user} $password_string everything $$NODE{title}`;
+	my $create_table_statement = `mysqldump --skip-add-drop-table --skip-add-locks --skip-disable-keys --skip-set-charset --skip-comments -d -u $$options{user}$password_string everything $$NODE{title}`;
 	if(not defined($create_table_statement))
 	{
 		die "Could not get create table statement for dbtable $$NODE{title}";
 	}
 
 	$NODE->{_create_table_statement} = $create_table_statement;
-	return $this->SUPER::node_to_xml($NODE, $dbh);
+	return $this->SUPER::node_xml_prep($NODE, $dbh);
 }
 
 sub xml_to_node_post

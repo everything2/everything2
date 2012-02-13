@@ -6,13 +6,13 @@ package Everything::node::usergroup;
 use base qw(Everything::node::nodegroup);
 
 # Stolen from document, though I had to:
-sub node_to_xml
+sub node_xml_prep
 {
 	my ($this, $NODE, $dbh) = @_;
 
 	# Strip old windows line endings
 	$NODE->{doctext} = $this->_clean_code($NODE->{doctext});
-	return $this->SUPER::node_to_xml($NODE, $dbh);
+	return $this->SUPER::node_xml_prep($NODE, $dbh);
 }
 
 sub xml_no_consider

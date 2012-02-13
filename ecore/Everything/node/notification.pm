@@ -6,7 +6,7 @@ use Clone qw(clone);
 package Everything::node::notification;
 use base qw(Everything::node::node);
 
-sub node_to_xml
+sub node_xml_prep
 {
 	my ($this, $N, $dbh) = @_;
 	my $NODE = Clone::clone($N);
@@ -16,7 +16,7 @@ sub node_to_xml
 	$NODE->{invalid_check} = $this->_clean_code($NODE->{invalid_check});
 	$NODE->{description} = $this->_clean_code($NODE->{description});
 	
-	return $this->SUPER::node_to_xml($NODE, $dbh);
+	return $this->SUPER::node_xml_prep($NODE, $dbh);
 }
 
 sub node_id_equivs

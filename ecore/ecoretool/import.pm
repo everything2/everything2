@@ -10,6 +10,7 @@ use base qw(ecoretool::base);
 use XML::Simple;
 use File::Find qw(find);
 use Everything;
+use Algorithm::Diff qw(diff);
 
 use vars qw($files);
 
@@ -89,18 +90,55 @@ sub main
 
 		if(not defined($dbnode))
 		{
-			print STDERR "Node needs inserting: $$node{title}\n";
+			#print STDERR "Node needs inserting: $$node{title}\n";
 		}else{
+			if($node->{type_nodetype} != $dbnode->{type_nodetype})
+			{
+				#print STDERR "Node id collision in $$node{title}, skipping\n";
+				next;
+			}
+
+			my $thistype = getType($node->{type_nodetype});
+			#next unless $thistype->{title} eq "maintenance";
+
+			my $obj = $this->get_worker_object($thistype->{title});
+
+			my $source_code_copy = $obj->node_xml_prep($dbnode, $DB->{dbh}, $options);
+
 			foreach my $nfield (keys %$node)
 			{
-				if($node->{$nfield} ne $dbnode->{$nfield})
+				next if $nfield eq "_create_table_statement";
+				next unless defined($source_code_copy->{$nfield});
+
+				if($node->{$nfield} ne $source_code_copy->{$nfield})
 				{
 					print STDERR "Node: $$node{title}, field: $nfield needs updating\n";
-				}		
+					print STDERR $this->field_diff($source_code_copy->{$nfield}, $node->{$nfield});
+				}
 			}
 		}
 	}
 
+}
+
+sub field_diff
+{
+	my ($this, $orig, $new) = @_;
+	my $output = diff([split("\n", $orig)], [split("\n", $new)]);
+	if(not defined($output))
+	{
+		return "";
+	}
+
+	my $outstr;
+	foreach my $chunk (@$output) {
+		foreach my $line (@$chunk) {
+			my ($sign, $lineno, $text) = @$line;
+			$outstr .= sprintf("%4d$sign %s\n", $lineno+1, $text);
+		}
+	}
+
+	return $outstr;
 }
 
 sub shortdesc

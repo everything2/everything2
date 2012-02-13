@@ -6,7 +6,7 @@ use Clone qw(clone);
 package Everything::node::nodegroup;
 use base qw(Everything::node::node);
 
-sub node_to_xml
+sub node_xml_prep
 {
 	my ($this, $N, $dbh) = @_;
 	my $NODE = Clone::clone($N);
@@ -14,7 +14,7 @@ sub node_to_xml
 	# Remove group stuff from the node	
 	delete $NODE->{group};
 
-	return $this->SUPER::node_to_xml($NODE, $dbh);
+	return $this->SUPER::node_xml_prep($NODE, $dbh);
 }
 
 sub xml_no_consider

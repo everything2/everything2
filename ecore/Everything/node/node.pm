@@ -12,17 +12,25 @@ sub new
 	return bless $this,$class;
 }
 
-sub node_to_xml
+sub node_xml_prep
 {
-	my ($this, $N, $dbh) = @_;
+	my ($this, $N, $dbh, $options) = @_;
 	my $NODE = Clone::clone($N);
-
+	
 	$this->_strip_defaults($NODE,$dbh);
-
 	foreach my $field(@{$this->xml_no_consider()})
 	{
 		delete $NODE->{$field};
 	}
+
+	return $NODE;
+}
+
+sub node_to_xml
+{
+	my ($this, $N, $dbh, $options) = @_;
+
+	my $NODE = $this->node_xml_prep($N, $dbh, $options);
 
 	return $this->{xs}->XMLout({node => $NODE});
 }
