@@ -1,125 +1,101 @@
 <node>
-  <doctext>It is a grim day such that you need to be here.  The slaughter of many have seen this altar, and many more will be sacrificed.  Many users choose to remove all of their writeups; so be it.  These writeups will be sent to heaven, instead of the crypt, so that there may be a second chance.  &lt;br&gt;&lt;br&gt;This simply lines up a really large killing floor page, and doesn't actually delete anything. The deleting process from there is the same. No more than a few hundred at a shot (POST data cannot handle more than that)&lt;br&gt;&lt;br&gt;
+  <doctext>&lt;p&gt;Welcome to the mountaintop. Don't mind the blood.
+&lt;/p&gt;
 
-[%#'
+&lt;p&gt;&lt;strong&gt;N.B.:&lt;/strong&gt; If you used the previous version of this page, be aware that this tool has been sharpened: it &lt;em&gt;will&lt;/em&gt; remove the writeups you select.
+&lt;/p&gt;
 
-my $str = '';
+&lt;h2&gt;Instructions
+&lt;/h2&gt;
 
-if($query-&gt;param('listforuser'))
-{
-    my $listuser = getNode($query-&gt;param('listforuser'), 'user');
+&lt;ol&gt;
+&lt;li&gt;Enter a user's name in the box. Sumbit.
+&lt;/li&gt;
+&lt;li&gt;Choose which writeups to spare (if any) from the list provided, or choose to remove all writeups at once.
+&lt;/li&gt;
+&lt;li&gt;Confirm that you really want to do this.
+&lt;/li&gt;
+&lt;li&gt;Repeat as necessary.
+&lt;/li&gt;
+&lt;li&gt;Shed a tear, keep a minute's silence, then hold up the bloody heart to the crowd.
+&lt;/li&gt;
+&lt;/ol&gt;
 
-  return 'There was no user: &quot;'.$query-&gt;param('user_name').'&quot; back to the '.linkNode($NODE, $$NODE{title}) unless($listuser);
+[{openform}]
+&lt;fieldset&gt;&lt;legend&gt;
 
-  my $csr = $DB-&gt;getDatabaseHandle()-&gt;prepare('SELECT * FROM node WHERE type_nodetype=\'117\' AND author_user=\''.$$listuser{node_id}.'\' ORDER BY node_id');
+[% #))
 
-  if($csr-&gt;execute())
-  {
-  
-     my $row;
-
-     while($row = $csr-&gt;fetchrow_hashref())
-     {
-          $str.=$$row{node_id}.&quot;&lt;br /&gt;&quot;;
-     }
-    
-  }
-
-  return $str;
-
+my ($userName, $user, $str) = ($query -&gt; param('author'), 0, '');
+if ($userName){
+	$user = getNode($userName, 'user');
+	$str = $query -&gt; escapeHTML($userName)
+		.' is not a user.&lt;br&gt;' unless $user;
 }
 
-if($query-&gt;param('user_name') &amp;&amp; $query-&gt;param('namelist'))
-{
+return &quot;Step 1: the victim&lt;/legend&gt;
+	$str&lt;label&gt;User name:&quot;
+	.$query -&gt; textfield('author')
+	.'&lt;/label&gt;'
+	.$query -&gt; submit('submit', 'sumbit')
+	unless $user;
 
-  my $names = $query-&gt;param('namelist');
-my $uservictim = getNode($query-&gt;param('user_name'), 'user');
+my $wuType = getType('writeup');
 
-  return 'There was no user: &quot;'.$query-&gt;param('user_name').'&quot; back to the '.linkNode($NODE, $$NODE{title}) unless($uservictim);
+my ($list, $navigation, $count, $offset, $last) = htmlcode('show paged content'
+	, 'title, node_id'
+	, 'node'
+	, &quot;type_nodetype=$$wuType{node_id} AND author_user=$$user{node_id}&quot;
+	, 'ORDER BY title LIMIT 100'
+	, '&lt;tr class=&quot;&amp;oddrow&quot;&gt;axe, &quot;&lt;td&gt;&quot;, title, &quot;&lt;/td&gt;&quot;'
+	, axe =&gt; sub{
+		$_[0]-&gt;{type} = $wuType; # this should make the links nicer. Fails.
+		return $query -&gt; td({align =&gt; 'center'}
+		, $query -&gt; checkbox(
+			-name =&gt; &quot;removenode$_[0]-&gt;{node_id}&quot;
+			, value =&gt; 1
+			, label =&gt; ''
+			, checked =&gt; 1
+		));
+	}
+);
 
-  $names =~ s/\s+\n/\n/g;
+return ($query -&gt; param('op') eq 'remove' ? 'Step 5' : 'Nothing to do')
+	.&quot;&lt;/legend&gt;$$user{title} has no writeups.&quot;
+	unless $count;
 
-  my @namelist = split('\n', $names);
+my $page = $query -&gt; param('page') || 1;
+$page = &quot;: page $page&quot; if ($page - 1) || $count &gt; $last;
 
-  foreach my $parentnode (@namelist)
-  {
-     next unless($parentnode);
-     my $wu = getNode($parentnode, 'e2node');
-     $str.= &quot;&lt;li&gt; No such node: [$parentnode]&quot; unless($wu);
+$str = 'Step '
+	.($query -&gt; param('op') eq 'remove' ? 4 : 2)
+	.': show mercy (or not)&lt;/legend&gt;'
+	.$query -&gt; hidden('author')
+	.$query -&gt; h2(linkNode($user). &quot;'s writeups$page&quot;)
+	.qq'&lt;table&gt;&lt;tr&gt;&lt;th&gt;axe&lt;/th&gt;&lt;th&gt;title&lt;/th&gt;
+	$list
+	&lt;/table&gt;
+	$navigation
+	&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;remove&quot;&gt;'
+	.$query -&gt; p(
+		$query -&gt; label('Reason for removal (optional):'
+			.$query -&gt; textfield(-name =&gt; 'removereason', size =&gt; 50)
+		)
+	);
 
-     next unless($wu);
+$str .= $query -&gt; p($query -&gt; checkbox(
+	-name =&gt; 'removeauthor'
+	, value =&gt; 1
+	, label =&gt; &quot;remove all of $$user{title}'s writeups&quot;
+)) if $page;
 
-     my $csr = $dbh-&gt;prepare('SELECT * FROM node LEFT JOIN writeup ON node.node_id = writeup.writeup_id where writeup.parent_e2node='.$$wu{node_id}.' AND node.author_user='.$$uservictim{node_id}.' ');
+$str.$query -&gt; p('&lt;button type=&quot;submit&quot; name=&quot;confirmop&quot; value=&quot;remove&quot;
+	title=&quot;remove these writeups&quot;&gt;Let the axe fall&lt;/button&gt;');
 
-    $csr-&gt;execute();
-
-    while(my $ROW = $csr-&gt;fetchrow_hashref())
-    {
-        $str .= '&lt;br /&gt;'.$$ROW{node_id};
-    }
-
-    $csr-&gt;finish();
-  }
-
-  return $str;
-
-}
-
-if($query-&gt;param('user_name') &amp;&amp; $query-&gt;param('idlist'))
-{
-  my $ids = $query-&gt;param('idlist');
-  my $uservictim = getNode($query-&gt;param('user_name'), 'user');
-
-  return 'There was no user: &quot;'.$query-&gt;param('user_name').'&quot; back to the '.linkNode($NODE, $$NODE{title}) unless($uservictim);
-
-  $ids =~ s/\s+\n/\n/g;
-
-  my @idlist = split('\n', $ids);
-  my $tempid;
-
-  $str.= '&lt;form method=&quot;post&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;1150966&quot;&gt;The following nodes by '.$$uservictim{title}.' are ready to be sent to the killing floor.  Nothing has happened to them yet.&lt;br&gt;&lt;ul&gt;';
-
-  foreach my $wu (@idlist){
-
-       next unless $wu;
-
-       $tempid = getNodeById($wu);
-     
-       next unless $tempid;
-
-       next unless $$tempid{type_nodetype} == 117;
-
-       next unless $$tempid{author_user} == $$uservictim{node_id};
-
-       $str.='&lt;li&gt;'.linkNode($tempid, $$tempid{title});
-
-       $str.='&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;vote&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;nopain'.$$tempid{node_id}.'&quot; value=&quot;1&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;removenode'.$$tempid{node_id}.'&quot; value=&quot;1&quot;&gt;';
-
-  }
-
-  $str.= '&lt;br&gt;&lt;br&gt;&lt;INPUT TYPE=&quot;submit&quot; NAME=&quot;node&quot; VALUE=&quot;the killing floor II&quot;&gt;&lt;/ul&gt;&lt;/form&gt;';
-
-}
-else
-{
-$str ='
-&lt;form method=&quot;post&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;1150966&quot;&gt;
-The user\'s username:
-&lt;input type=&quot;text&quot; name=&quot;user_name&quot;&gt;&lt;br&gt;
-A list of the ids by that user.  Name is used here as a safety.&lt;br&gt;
-&lt;textarea name=&quot;idlist&quot; ROWS=20 COLS=30&gt;&lt;/textarea&gt;&lt;br&gt;
-&lt;input type=&quot;submit&quot; value=&quot;prepare the slaughter&quot;&gt;
-&lt;/form&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;form method=&quot;post&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;1150966&quot;&gt;Generate an id list for a user:&lt;br&gt;&lt;input type=&quot;text&quot; name=&quot;listforuser&quot;&gt;&lt;input type=&quot;submit&quot; value=&quot;generate list&quot;&gt;&lt;/form&gt;&lt;Br&gt;&lt;br&gt;&lt;hr&gt;&lt;br&gt;&lt;form method=&quot;post&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;1150966&quot;&gt;
-The user\'s username:
-&lt;input type=&quot;text&quot; name=&quot;user_name&quot;&gt;&lt;br&gt;
-A list of the names so that ids can be generated by that user.  (will be cleaned up eventually) Username is used here again as a safety.&lt;br&gt;
-&lt;textarea name=&quot;namelist&quot; ROWS=20 COLS=30&gt;&lt;/textarea&gt;&lt;br&gt;
-&lt;input type=&quot;submit&quot; value=&quot;get the ids of writeups&quot;&gt;
-&lt;/form&gt;';
-}
-
-return $str;
-%]</doctext>
+%]
+&lt;/fieldset&gt;
+&lt;/form&gt;
+</doctext>
   <node_id>1150966</node_id>
   <type_nodetype>1144104</type_nodetype>
   <title>Altar of Sacrifice</title>

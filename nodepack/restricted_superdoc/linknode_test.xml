@@ -1,5 +1,9 @@
 <node>
   <doctext>[%
+return linkNode('1986442');
+%]
+
+[%
 my $str;
 
 my $test = 'test';

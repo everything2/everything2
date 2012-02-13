@@ -1,56 +1,5 @@
 <node>
-  <doctext>/* LAYOUT */
-
-body {
-padding: 0 15em 0 0 ;
-}
-
-#wrapper {
-width: 100% ;
-}
-
-#header , #footer {
-margin: 0 -15em 0 0 ;
-padding: 0.5em ;
-border-bottom: 1px solid black ;
-}
-
-#mainbody , #sidebar {
-float: left ;
-}
-
-#mainbody {
-width: 100% ;
-}
-
-#sidebar {
-width: 13.5em ;
-margin: 0 -14.5em 0 0 ;
-padding-left: 0.5em ;
-border-left: 1px solid black ;
-}
-
-#footer {
-clear: left ;
-border-top: 1px solid black ;
-border-bottom: none ;
-}
-
-pre {
-overflow: auto ;
-}
-
-/* FRONT PAGE */
-
-#loglinks , #cooluserpicks , #staff_picks {
-float: left ;
-clear: left ;
-width: 14em ;
-}
-
-#creamofthecool , #frontpage_news {
-margin-left: 14.5em ;
-}
+  <doctext>@import url( &quot;http://devel.everything2.com/node/stylesheet/Beauty?displaytype=view&quot; ) ;
 </doctext>
   <node_id>1986077</node_id>
   <type_nodetype>1854352</type_nodetype>

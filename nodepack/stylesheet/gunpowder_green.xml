@@ -1,12 +1,19 @@
 <node>
-  <doctext>/* [GunpowderGreen]'s Theme. */
+  <doctext>/*= autofix added rules. adjust to taste: */
+.weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
+.weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
+.weblog .title, .nodelet .title {font-weight: bold;}
+.actions , .actions li {display:inline;margin:0;padding:0 0.5em 0 0;}
+.actions { display: block ; }
+/*= end autofix added rules */
+
+/* [GunpowderGreen]'s Theme. */
 
 /* Not all elements are defined in this file... */
 /*The basics*/
 body {
 	font-family:  georgia, times, serif;
-	/* This is a starting point: use relative for the rest */
-	//font-size: 0.8em; 
+	font-size: 1em; 
 }
 
 h1 {
@@ -187,6 +194,10 @@ pre {
 	margin: 1px;
 }
 
+label {
+white-space:nowrap;
+}
+
 .nodelet {
 	clear: both;
 	padding-top: 1px;
@@ -199,13 +210,6 @@ pre {
 	line-height:120%;
 }
 
-.nodelet .infolist .contentinfo {
-    background-color:white;
-    border-top:1px dotted #009999;
-    color:black;
-    padding:3px;
-}
-
 .nodelet_content {
 	padding: 5px;
 }
@@ -216,22 +220,30 @@ pre {
 	text-align: center;
 	background-color: #143;
 	color: white;
+    padding: 2px;
 }
 
-.writeup {
+.nodelet .infolist .contentinfo {
+    background-color: white;
+    border-bottom: 1px dotted #9cc;
+    color: black;
+    padding: 3px;
+    text-align: center;
+}
+
+.writeuppage .item {
 	border: 3px #063 outset;
 	padding: 1px;
-	margin: 1px auto 8px auto;
-	//padding-left: 2em;
+	margin: 8px auto;
 	font-size:0.95em;
 	width:40em;
 }
 
-div .writeup_text {
+.writeuppage .item .content {
 	padding: 16px;
 }
 
-.writeup_text p {
+.writeuppage .item .content p {
 	text-indent: 1em;
 	margin:0.6em;
 	line-height:120%;
@@ -270,8 +282,15 @@ div .writeup_text {
 	font:bold;
 	color:white;
 }
+.wu_footer .widget a {
+	font:bold;
+	color:#096;
+}
+
 .wu_footer td{
+    display: teable-cell;
 	padding:2px 6px;
+    width:8em;
 }
 
 
@@ -318,11 +337,14 @@ div .writeup_text {
 	margin: 0;
 }
 
-.softlinks {
-	background:blue;
-	border:solid black;
+#softlinks td {
+    background:#999;
 }
-
+div#softlinks {
+    border:outset 2px #096;
+    padding:2px;
+    margin:8px;
+}
 #homenodeheader dt {
 	display: block;
 	background-color: #369;
@@ -355,91 +377,38 @@ textarea {
 	left: 300px;
 	display:none;
 }
-#writeup_list {
+.nodelet .infolist {
 	list-style-type: none;
 	padding: 0;
+    border-top:1px dashed #99CCCC;
+    background:white;
+    color:black;
+    margin-top:9px;
 }
 
-#writeup_list li {
+.nodelet .infolist li {
 	clear: both;
 	word-wrap: break-word;
-}
+    padding: 1px;}
 
-#writeup_list span.writeupmeta {
-	display: block;
-	text-align: center;
-	padding: 0px;
-	clear: both;
-	margin: 0 -1px;
-}
-
-#writeup_list span.type {
-	font-size: 90%;
-	display: block;
-	text-align: right;
-	word-wrap: no-wrap;
-	margin-bottom: 1px;
-	clear: right;
-}
-
-#writeup_list span.title {
-	float: left;
-	display: block;
-	clear: left;
-	margin-bottom: 1px;
-}
-
-#writeup_list span.author {
-}
-
-#writeup_list span.hidden, #writeup_list span.hide {
+.nodelet .infolist span.hidden, .nodelet .infolist span.hide {
 	font-size: 85%;
 	margin-left: 3px;
 	display:inline;
 }
 
-#writeup_list{
-	background:white;
-	color:black;
-}
 
-#writeup_list li
-{
-	padding: 1px;
-}
-
-#writeup_list span.author a {
-	display: block;
-	text-align: center;
-	margin-bottom: 2px;
-	background-color: #060;
-	color:white;
-	border: 2px inset #063;
-}
-
-#writeup_list span.type {
-	font-size: 80%;
-	text-align: right;
-	background:white;
-	color:black;
-}
-
-#writeup_list li a {
+.nodelet .infolist li a {
 	display: inline;
 	padding: 0;
-	border: 0;
 	background:white;
 	color:black;
 }
 
-#writeup_list span.writeupmeta {
-	background-color: white;
-	color: black;
-	border:1px;
-}
 
 
-.cotc_more {
+
+#creamofthecool .morelink {
 	margin-top:-0.5em;
 	margin-bottom:1em;
 }

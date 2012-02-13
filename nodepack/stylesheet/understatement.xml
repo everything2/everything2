@@ -185,6 +185,10 @@ textarea {
 	list-style: none ;
 	}
 
+.nodeletsection .linklist li {
+	margin-left: 1em ;
+	}
+
 ul.linklist {
 	margin-bottom: 0.5em ;
 	}
@@ -420,6 +424,10 @@ div.nodelet ul {
 	padding-left: 1em ;
 	list-style: circle outside ;
 	}
+
+.nodelet .admin {
+	white-space: nowrap;
+}
 
 #otherusers li {
 	list-style: none ;
@@ -670,9 +678,14 @@ body {
 	font-family: &quot;Arial Unicode MS&quot; , sans-serif ;
 	} /* Exploder fails to look elsewhere for missing glyphs */
 
-h1 , h2 , h3 , caption , h4 , #homenodeheader dt, .title {
+h1 , h2 , h3 , caption , h4 , #homenodeheader dt, .item .title, .infolist .title {
 	font-weight: bold ;
 	}
+
+.infolist .hasvoted .title, .infolist .mine .title {
+	font-weight: normal;
+}
+
 
 a {
 	text-decoration: none ;
@@ -713,8 +726,12 @@ small small small small {
 	}
 
 pre, tt , #search_form * , #search_form label ,
-.writeuppage .contentfooter , .weblog .item .date , .remove , .linkedby , #creamofthecool .content , 
-.morelink , .editlink , div.nodelet .morelink {
+.writeuppage .contentfooter ,
+.weblog .item .date , .remove , .linkedby ,
+#creamofthecool .content , 
+.morelink , .editlink ,
+div.nodelet .morelink,
+.nodelet .admin {
 	font-size: 84% ;
 	}
 

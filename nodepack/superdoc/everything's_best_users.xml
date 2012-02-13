@@ -116,18 +116,13 @@ my $skip = {
 	'Cool Man Eddie'=&gt;1,
 	'ShadowLost'=&gt;1,
 	'EDB'=&gt;1,
-
-
-
-
-
 	'everyone'=&gt;1,
 };
 
 
 # ... set the query limits (including 'no monkeys')
 my $maxShow = 60;
-my $limit = $maxShow + 10;
+my $limit = $maxShow;
 
 $limit += (keys %$skip);
 $limit += (keys %{ $HTMLVARS{'group_gods'}}) if $$VARS{ebu_noadmins};
@@ -137,26 +132,33 @@ if ($$VARS{ebu_newusers}) {
 $recent = &quot; and (select createtime from node where node_id=user.user_id)&gt;'$datestr 00:00:00'&quot;;
 }
 
+# use the same cutoff date for fled users that we do for recent users
+# the old code cut off recent users at 2 years and fled users at 1 year
+my $noFled = '';
+if ($$VARS{ebu_showrecent}) {
+$noFled = &quot; and user.lasttime&gt;'$datestr 00:00:00' &quot;;
+}
+
 # Run the query
 my $csr = '';
 if ( $$VARS{ebu_showmerit} ) {
     # Query for all users with &gt;24 writeups, sort by merit
-    $csr = $DB-&gt;sqlSelectMany(&quot;user_id&quot;, &quot;user&quot;, &quot;numwriteups &gt; 24 order by merit desc limit $limit&quot;);
+    $csr = $DB-&gt;sqlSelectMany(&quot;user_id&quot;, &quot;user&quot;, &quot;numwriteups &gt; 24 $noFled order by merit desc limit $limit&quot;);
 }
 
 if ( $$VARS{ebu_showdevotion} ) {
     # Query for all users with &gt;24 writeups, sort by merit
-    $csr = $DB-&gt;sqlSelectMany(&quot;user_id&quot;, &quot;user&quot;, &quot;numwriteups &gt; 24 order by (numwriteups*merit) desc limit $limit&quot;);
+    $csr = $DB-&gt;sqlSelectMany(&quot;user_id&quot;, &quot;user&quot;, &quot;numwriteups &gt; 24 $noFled order by (numwriteups*merit) desc limit $limit&quot;);
 }
 
 if ( $$VARS{ebu_showaddiction} ) {
     # Query for all users with &gt;24 writeups, sort by merit
-    $csr = $DB-&gt;sqlSelectMany(&quot;user_id, ((numwriteups*merit)/datediff(now(),node.createtime)) as addiction&quot;, &quot;user, node&quot;, &quot;numwriteups &gt; 24 and node.node_id=user.user_id order by addiction desc limit $limit&quot;);
+    $csr = $DB-&gt;sqlSelectMany(&quot;user_id, ((numwriteups*merit)/datediff(now(),node.createtime)) as addiction&quot;, &quot;user, node&quot;, &quot;numwriteups &gt; 24 $noFled and node.node_id=user.user_id order by addiction desc limit $limit&quot;);
 }
 
 if ($csr eq '') { # default
     # Query for all users, sort by XP (classic EBU sort)
-    $csr = $DB-&gt;sqlSelectMany(&quot;user_id&quot;, &quot;user&quot;, &quot;user_id &gt; 0 $recent order by experience desc limit $limit&quot;);
+    $csr = $DB-&gt;sqlSelectMany(&quot;user_id&quot;, &quot;user&quot;, &quot;user_id &gt; 0 $noFled $recent order by experience desc limit $limit&quot;);
 }
 
 # Set up to loop over the result set
@@ -181,11 +183,6 @@ while(my $nid = $csr-&gt;fetchrow_hashref) {
 	next if(exists $$skip{$$node{title}});
 	next if($$VARS{ebu_noadmins} &amp;&amp; exists $HTMLVARS{'group_gods'}{$$node{node_id}});
 	next if($step &gt;= $maxShow);
-
-        # Skip fled users if the checkbox says to do so
-        my $ontime = htmlcode('timesince',$node-&gt;{lasttime});
-#        my $fleduser = ($ontime =~ /year/);
-	next if($$VARS{ebu_showrecent} &amp;&amp; ($ontime =~ /year/));
 
 	# This record is for the person who is logged in
 	$isMe = $$node{node_id}==$uid; 

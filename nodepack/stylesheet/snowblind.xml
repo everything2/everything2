@@ -1,39 +1,93 @@
 <node>
-  <doctext>#header 
-   {
-    position: absolute;
-    top: 0; 
-    left: 0; 
-    right: 0;
-   }
+  <doctext>/* These are the basic colours and fonts */
+body, div, p, th, td, li, dd {
+	background-color: #ffffff;
+	font-size: 12px;
+	font-family: Arial, sans-serif;
+	color: #000000;
+} 
 
-#mainbody {position: relative; float: left; width: 100%;}
+/* These are headings */
 
-body {background-color: white;}
+h1, h2, h3, h4 {
+	font-family: Arial, Sans-serif;
+}
 
-#sidebar {position: relative; float: left; 
-        width: 200px; margin-right: -206px;}
+/* links ... */
+a:link {
+	color: #103860;	
+}
 
-#e2logo 
-   {
-    font-family: &quot;Garamond&quot;;
-    linkcolor: #103860;
-    position: absolute; 
-    top: 0.2em; 
-    left: 0.6em; 
-    margin: 0; 
-    width: 30px; 
-    height: 30px;
-   }
+a:visited {
+	color: #808080;
+}
 
-#searchform {margin-top: 0.5em; text-align: right;}
+a:active, a:hover {
+	color: #bbbbbb;
+}
 
-#wrapper 
-   {margin-top: 4em; padding-right: 206px;
-		        width: 200px; margin-right: -206px;}
+/* The title of the nodelet */
 
-#footer 
-   {clear: both;}</doctext>
+.nodelet h2 {
+	color:  black;
+	background-color: white;
+}
+
+/* The nodelet border colour should be the same as the nodelet title background */
+.nodelet {
+	border-color: white;
+	background-color: #ffffff;
+}
+
+pre, tt {
+	font-size: 9pt;
+}
+
+.oddrow, #homenodeheader dt  {
+	background-color: #efefef;
+}
+
+
+/* Apply some ekw-ish styling to the New Writeups nodelet */
+
+#writeup_list span.writeupmeta {
+	background-color: #ffffff;
+}
+
+#writeup_list li {
+	padding: 3px;
+}
+
+#writeup_list span.author a {
+	display: block;
+	text-align: center;
+	margin-bottom: 2px;
+	background-color: #d0d0d0;
+}
+
+#writeup_list span.type {
+	text-align: right;
+}
+
+#writeup_list li a {
+	display: inline;
+	padding: 0;
+	border: 0;
+}
+
+#writeup_list span.writeupmeta a:link {
+	color: #103860;
+}
+
+#writeup_list span.writeupmeta a:visited {
+	color: #808080;
+}
+
+#writeup_list span.writeupmeta a:active, a:hover {
+	color: #bbbbbb;
+}
+
+</doctext>
   <node_id>1932334</node_id>
   <type_nodetype>1854352</type_nodetype>
   <title>Snowblind</title>

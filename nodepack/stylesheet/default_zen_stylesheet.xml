@@ -698,7 +698,13 @@ td {
 
 		#metalinks {
 			display: none;
-		}</doctext>
+		}
+
+/* Make survey message visible by moving it down below header */
+#surveymessage {
+   margin-top: 65px !important;
+   margin-bottom: -65px !important;
+}</doctext>
   <node_id>1854393</node_id>
   <type_nodetype>1854352</type_nodetype>
   <title>default zen stylesheet</title>

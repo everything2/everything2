@@ -1,49 +1,60 @@
 <node>
-  <doctext>&lt;p&gt;Work in progress. Some of these might be wildly inaccurate or completely broken.&lt;/p&gt;
-[%
+  <doctext>[%
 
 return &quot;If you logged in, you could see what achievements you've earned here.&quot; if $$USER{'title'} eq 'Guest User';
 
-my $debugStr;
+my $debugStr = '';
+my @debug = ($$USER{node_id}, 1) if $query -&gt; param('debug');
 
-#as far as I can tell, even though kthej had commented some of these out, they all have to 
-#be uncommented because achievementsByType has side effects of checking if the type of 
-#achievements has been achieved - Swap
-$debugStr .= htmlcode('achievementsByType','reputation');
-$debugStr .= htmlcode('achievementsByType','cool');
-$debugStr .= htmlcode('achievementsByType','user');
-$debugStr .= htmlcode('achievementsByType','usergroup');
-$debugStr .= htmlcode('achievementsByType','vote');
-$debugStr .= htmlcode('achievementsByType','writeup');
-$debugStr .= htmlcode('achievementsByType','karma');
-$debugStr .= htmlcode('achievementsByType','experience');
-$debugStr .= htmlcode('achievementsByType','miscellaneous');
+# we check these anyway:
+$debugStr .= htmlcode('achievementsByType', 'user', @debug);
+$debugStr .= htmlcode('achievementsByType', 'usergroup', @debug);
+$debugStr .= htmlcode('achievementsByType', 'miscellaneous', @debug);
 
-my $totalAchievements = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;achievement&quot;);
-
-my $achievementList = $DB-&gt;sqlSelectMany(&quot;achieved_achievement&quot;,&quot;achieved&quot;,&quot;achieved_user=$$USER{user_id}&quot;);
-my $A;
-my $str;
-my $aCount = 0;
-
-
-while (my $a = $achievementList-&gt;fetchrow_hashref) {
-my $A = getNodeById($$a{achieved_achievement});
-#Replaced kthejoker's node_id with mine until we figure out what to do with this -ap 20080817
-$str.=&quot;&lt;li&gt;&quot;.$$A{display}.($$USER{user_id} == 1009226 ? &quot; &quot;.linkNode($A,'edit',{displaytype=&gt;'edit'}) : &quot;&quot;).&quot;&lt;/li&gt;&quot;;
-
-$aCount++;
+if (@debug){
+	# but these are always called where something might trigger a relevant achievement:
+	$debugStr .= htmlcode('achievementsByType', 'reputation', @debug);
+	$debugStr .= htmlcode('achievementsByType', 'cool', @debug);
+	$debugStr .= htmlcode('achievementsByType', 'vote', @debug);
+	$debugStr .= htmlcode('achievementsByType', 'karma', @debug);
+	$debugStr .= htmlcode('achievementsByType', 'experience', @debug);
+	$debugStr .= htmlcode('achievementsByType', 'writeup', @debug);
 }
 
-$str =&quot;&lt;ul&gt;&quot; . $str . &quot;&lt;/ul&gt;&quot;;
 
-$str.=&quot;&lt;p&gt;You have reached &lt;strong&gt;$aCount&lt;/strong&gt; out of a total of &lt;strong&gt;$totalAchievements&lt;/strong&gt; achievements.&lt;/p&gt;&quot;;
+my $achievementList = $DB-&gt;sqlSelectMany(
+	'display, achievement_still_available, achieved_achievement'
+	, &quot;achievement LEFT OUTER JOIN achieved
+		ON achieved_achievement=achievement_id
+		AND achieved_user=$$USER{node_id}&quot;
+	, ''
+	, 'ORDER BY achievement_type, subtype DESC'
+);
 
-$str.=&quot;&lt;h3&gt;Achievements Left To Earn&lt;/h3&gt;&quot;;
+my $aStr;
+my $uStr;
+my $aCount = 0;
+my $uCount = 0;
 
-$str .= htmlcode('achievementsLeft');
+while (my $a = $achievementList-&gt;fetchrow_hashref){
+	if ($$a{achieved_achievement}){
+		$aStr .= $query -&gt; li($$a{display});
+		$aCount++;
+	}elsif($$a{achievement_still_available}){
+		$uStr .= $query -&gt; li($$a{display});
+		$uCount++;
+	}
+}
 
-#$str .= $debugStr if ($$USER{title} eq 'kthejoker');
+my $totalAchievements = $aCount + $uCount;
+
+my $str = $query -&gt; p(&quot;You have reached &lt;strong&gt;$aCount&lt;/strong&gt; out of a total of
+		&lt;strong&gt;$totalAchievements&lt;/strong&gt; achievements:&quot;)
+	.$query -&gt; ul($aStr)
+	.$query -&gt; h3('Achievements Left To Reach')
+	.$query -&gt; ul($uStr);
+
+$str .= $debugStr if $debugStr &amp;&amp; $DB -&gt; isApproved($USER, getNode('edev', 'usergroup'));
 
 return $str;
 

@@ -1,5 +1,15 @@
 <node>
-  <doctext>/* This is the Baltic stylesheet for the zen theme, by WaldemarExkul, increasingly loosely based on ascorbic's template. If it doesn't work for you, blame WE, or perhaps your browser, but definitely not ascorbic. */
+  <doctext>/*= Comments containing old/disabled rules start with = for easy finding */
+/*= autofix added rules. adjust to taste: */
+.weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
+.weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
+.weblog .title, .nodelet .title {font-weight: bold;}
+.actions , .actions li {display:inline;margin:0;padding:0 0.5em 0 0;}
+.actions { display: block ; }
+/*= end autofix added rules */
+
+/*= Comments containing old/disabled rules start with = for easy finding */
+/* This is the Baltic stylesheet for the zen theme, by WaldemarExkul, increasingly loosely based on ascorbic's template. If it doesn't work for you, blame WE, or perhaps your browser, but definitely not ascorbic. */
 
 /* It's mostly in muted blues and greys. The E2 logo and search box remain at the top of the screen even when you scroll the rest of the page. You may find this mildly convenient or extremely annoying. Possibly both. */
 
@@ -43,7 +53,7 @@ h1.nodetitle {
     border: thin solid #4f5863;
     text-shadow: #4f5863 2px 2px 2px;
     padding: 6px;
-    margin-bottom: 0px;
+    margin-bottom: 1em;
     text-align: center;
 }
 
@@ -125,6 +135,12 @@ abbr {
       background: #dddddd;
       border-top: thin solid #4f5863;
       border-left: thin solid #4f5863;
+      margin-top: 1px;
+}
+
+#currentuserpoll img.oddrow {                    
+      background: url(http://pics.livejournal.com/q_pheevr/pic/000547cf) #dddddd;
+      border: 2px outset #4f5863;
       margin-top: 1px;
 }
 
@@ -277,13 +293,15 @@ blockquote {
 }
 
 /* other users */
-#nodelet_91 h2:before{
+/*=#nodelet_91 h2:before*/
+#otherusers h2:before{
       content: &quot;Hell is &quot;;
       /* TWAJS */
 }
 
 /* current poll title */
-#nodelet_1689202 h3 {
+/*=#nodelet_1689202 h3*/
+#currentuserpoll h3 {
     display: block;
     text-align: center;
     padding: 1px;
@@ -297,23 +315,27 @@ blockquote {
 */ 
 
 /* On This Day is borked, so strike it out! */
-#nodelet_1838069 .nodelet_title {
+/*=#nodelet_1838069 .nodelet_title*/
+#onthisday .nodelet_title {
     text-decoration: line-through;
 }
 
 /* Writeup list (in the &quot;New Writeups - Zen&quot; nodelet) */
 
-#nodelet_1868940 {
+/*=#nodelet_1868940*/
+#newwriteupszen, #newwriteups {
     padding-bottom: 2em;
 }
 
-#nodelet_1868940 div.nodelet_content {
+/*=#nodelet_1868940 div.nodelet_content*/
+#newwriteupszen div.nodelet_content, #newwriteups div.nodelet_content{
     padding-bottom: 4px;
     margin: 1px;
     width: 99%;
 }
 
-#nodelet_1868940 ul {
+/*=#nodelet_1868940 ul*/
+#newwriteupszen ul, newwriteups ul{
     list-style-type: none;
     margin-left: 0px;
     padding-left: 0px;
@@ -323,15 +345,18 @@ blockquote {
     width: 99%;
 }
 
-#writeup_list li {
+/*=#writeup_list li*/
+.nodelet .infolist li {
     word-wrap: break-word;
     margin: 1px;
     padding: 1px;
     display: block;
     clear: left;
+    border-bottom: thin solid #4f5863;
 }
 
-#writeup_list span.author{
+/*=#writeup_list span.author*/
+ DISABLED DISABLED /*=  /*= .nodelet .infolist span.author */  */ {
     text-align: center;
     display: block;
     clear: all;
@@ -341,7 +366,8 @@ blockquote {
     border-left: thin solid #4f5863;
 }
 
-#writeup_list span.title {
+/*=#writeup_list span.title*/
+ DISABLED DISABLED /*=  /*= .nodelet .infolist span.title */   */ {
     display: block;
     float: left;
     text-align: left;
@@ -351,7 +377,8 @@ blockquote {
     background: transparent;
 }
 
-#writeup_list span.type {
+/*=#writeup_list span.type*/
+ DISABLED DISABLED /*=  /*= .nodelet .infolist span.type */   */ {
     font-size: 80%;
     text-align: right;
     display: block;
@@ -362,38 +389,48 @@ blockquote {
     background: transparent;
 }
 
-#witeup_list span.writeupmeta {
+/*=#witeup_list span.writeupmeta*/
+#witeup_list span.infolist .contentinfo {
     display: block;
     border-bottom: thin solid #313539;
     clear: both;
 }
 
-#writeup_list span.hidden, #writeup_list span.hide {
+
+/*=#writeup_list span.hidden, #writeup_list span.hide*/
+.nodelet .infolist span.hidden, .nodelet .infolist span.hide {
     font-size: 80%;
     margin-left: 3px;
     display: block;
     float: right;
 } 
 
-#writeup_list span.hasvoted span.type:after{
-    content: &quot; [v]&quot;;
+
+li.hasvoted:after{
+    content: &quot;  [voted]&quot;;
+    color: #888888;
+    font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+    font-variant: small-caps;
 }
 
 /* New Writeups */
 
-#nodelet_263 {
+/*=#nodelet_263*/
+#newwriteups {
     padding-bottom: 1em;
 }
 
 
-#nodelet_263 div.nodelet_content {
+/*=#nodelet_263 div.nodelet_content*/
+#newwriteups div.nodelet_content {
     padding-bottom: 1em;
     margin: 1px;
     width: 99%;
 }
 
 
-#nodelet_263 ul {
+/*=#nodelet_263 ul*/
+#newwriteups ul {
     list-style-type: none;
     margin-left: 0px;
     padding-left: 0px;
@@ -403,18 +440,25 @@ blockquote {
     width: 99%;
 }
 
-#nodelet_263 form {
+/*=#nodelet_263 form*/
+#newwriteups form {
 	display: block;
+}
+
+li span.type{
+    padding-left: 1em;
 }
 
 /* Statistics nodelet */
 
-#nodelet_838296 h2.nodelet_title:before {
+/*=#nodelet_838296 h2.nodelet_title:before*/
+#statistics h2.nodelet_title:before {
     content: &quot;Lies, Damn Lies, and &quot;
 }
 
 
-#nodelet_838296 span.var_label {
+/*=#nodelet_838296 span.var_label*/
+#statistics span.var_label {
     display: block;
     text-align: right;
     float: left;
@@ -422,7 +466,8 @@ blockquote {
     margin-left: 7ex;
 }
 
-#nodelet_838296 span.var_value {
+/*=#nodelet_838296 span.var_value*/
+#statistics span.var_value {
     display: block;
     text-align: left;
     float: right;
@@ -430,7 +475,8 @@ blockquote {
     margin-right: 2ex;
 }
 
-#nodelet_838296 div {
+/*=#nodelet_838296 div*/
+#statistics div {
     display: block;
     clear: both;
     border-top: thin dotted #555555;
@@ -453,7 +499,8 @@ blockquote {
 
 /* Quick Reference */
 
-#nodelet_1685943 p small {
+/*=#nodelet_1685943 p small*/
+#quickreference p small {
     padding-left: 4ex;
 }
 
@@ -482,32 +529,42 @@ blockquote {
     font-variant: small-caps;
     margin-top: 1px;
     padding-top: 1px;
+    padding-right: 1em;
     margin-bottom: 8px;
     position: relative;
     top: -5ex;
 }
 
-.writeup {
+/*=.writeup*/
+.writeuppage .item {
     border: thin solid #4f5863;
     padding-bottom: 5px;
     margin-bottom: 10px;
     counter-increment: wucounter;
 }
 
-.writeup_text {
+/*=.writeup_text*/
+.writeuppage .item .content {
     padding-left: 11px;
     padding-right: 11px;
     clear: both;
     text-align: justify;
 }
 
-.writeup_text blockquote {
+/*=.writeup_text blockquote*/
+.writeuppage .item .content blockquote {
     text-align: justify;
+}
+
+.wu_hits{
+    padding-right: 1em;
+    font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
 }
 
 /* What the heck, let's enlarge the first letter of each writeup. Because we can. We could make this a drop cap by adding &quot;float: left&quot;; however, there are lots of writeups whose first paragraph is only one line, so it would look kinda dorky. */
 
-.writeup_text:first-letter {
+/*=.writeup_text:first-letter*/
+.writeuppage .item .content:first-letter {
     font-size: 200%;
     font-family: inherit;
     color: inherit;
@@ -515,7 +572,8 @@ blockquote {
     font-style: inherit;
 }
 
-.writeup_title {
+/*=.writeup_title*/
+.writeuppage .contentheader {
     font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
     background: url(http://pics.livejournal.com/q_pheevr/pic/000547cf) #c8c9ca;
     padding-left: 11px;
@@ -697,7 +755,8 @@ blockquote {
     margin-right: 7px;
 }
 
-.weblog_item {
+/*=.weblog_item*/
+.weblog .item {
     border-left: 2px solid #4f5863;
     border-top: 2px solid #4f5863;
     margin-bottom: 8px;
@@ -705,7 +764,8 @@ blockquote {
     padding-top: 8px;
 }
 
-.wl_title, .wl_author {
+/*=.wl_title, .wl_author*/
+.weblog .item .title, .weblog .item .contentinfo cite {
     font-family: &quot;CG Omega&quot;,&quot;Trebuchet MS&quot;,sans-serif;
     background: #dddddd;
     padding: 3px;
@@ -715,18 +775,21 @@ blockquote {
     display: inline;
 }
 
-.wl_date {
+/*=.wl_date*/
+.weblog .item .date {
     font-size: 80%;
     font-family: &quot;CG Omega&quot;,&quot;Trebuchet MS&quot;,sans-serif;
     display: inline;
 }
 
-.wl_links {
+/*=.wl_links*/
+.weblog .morelink {
     display: block;
     align: left;
 }
 
-.wl_links, .wl_links a:link, .wl_links a:visited {
+/*=.wl_links, .wl_links a:link, .wl_links a:visited*/
+.weblog .morelink, .weblog .morelink a:link, .weblog .morelink a:visited {
     color: #ffffff;
     background: #313539;
     text-align: center;
@@ -865,10 +928,12 @@ div#staff_picks {
       content: &quot;The &quot;;
 }
 
-.cotc_entry {
+/*=.cotc_entry*/
+#creamofthecool .item {
 }
 
-.cotc_info {
+/*=.cotc_info*/
+#creamofthecool .contentinfo {
     font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
     padding: 2px;
     background: #dddddd;
@@ -877,7 +942,8 @@ div#staff_picks {
 
 }
 
-.cotc_info:before {
+/*=.cotc_info:before*/
+#creamofthecool .contentinfo:before {
     content: &quot;\2606\ &quot;;
     color: #c09000;
     font-weight: bold;
@@ -946,6 +1012,18 @@ body {
 
 .nodeshell{
     font-style: italic;
+}
+
+ul{
+    list-style-type: disc;
+}
+
+li.nodeshell{
+    list-style-type: circle;
+}
+
+div#surveymessage {
+        display: none;
 }
 </doctext>
   <node_id>1902801</node_id>

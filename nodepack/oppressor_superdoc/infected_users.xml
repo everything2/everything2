@@ -7,7 +7,7 @@ Infection is a rare condition which is applied automatically to a user if they a
 Infected users will always get an error when attempting to verify their email accounts and, even if they are validated manually, anything they say in the public catbox will silently be ignored.
 &lt;/p&gt;
 
-&lt;p style=&quot;float: left;&quot;&gt;
+&lt;p&gt;
 If a user is infected, Content Editors and gods will see this at the top of the user's homenode:
 &lt;/p&gt;
 &lt;div id=&quot;homenode_infection&quot; class=&quot;warning&quot;&gt;

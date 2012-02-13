@@ -26,7 +26,7 @@ local *humanTime = sub {
 #limit put in 2006 August 26 while N-Wing trying to get working again
 #maybe later this will be removed or user-runtime-setable
 #50 is big enough for now
-my $resultLimit = 50;
+my $resultLimit = 500;
 
 #every log entry below this number is from 2003 or earlier - generally
 #not very useful for our hunting purposes. We'll exclude them from the search.

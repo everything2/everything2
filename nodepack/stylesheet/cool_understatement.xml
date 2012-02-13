@@ -1,14 +1,5 @@
 <node>
-  <doctext>@import url(&quot;/?node_id=1965235&amp;displaytype=view&quot;) ; /* [Understatement]: layout */
-/*= autofix added rules. adjust to taste: */
-.weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
-.weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
-.weblog .title, .nodelet .title {font-weight: bold;}
-.actions , .actions li {display:inline;margin:0;padding:0 0.5em 0 0;}
-.actions { display: block ; }
-/*= end autofix added rules */
-
-/*= Comments containing old/disabled rules start with = for easy finding */
+  <doctext>@import url(&quot;/node/stylesheet/understatement?displaytype=view&quot;) ;
 
 /* LINKS */
 
@@ -31,7 +22,7 @@ a:active, a:hover {
 
 /* OTHER COLOURS */
 
-body , #search_form {
+body , #search_form , .slend{
 	background-color: #fefeff ;
 	color: black ;
 	}
@@ -40,10 +31,7 @@ div, p, li, dd , .oddrow {
 	background-color: transparent ;
 	}
 
-/*=#e2logo , #chatterlight_search , #e2logo a:after , .nodelet h2 ,
-#loglinks h3 , #cooluserpicks h3 , #staff_picks h3 , #creamofthecool h3 , 
-.node_id1685342 #mainbody img.oddrow , #nodelet_1689202 img.oddrow*/
-#e2logo , #chatterlight_search , #e2logo a:after , .nodelet h2 ,
+#header , #chatterlight_search , #e2logo a:after , .nodelet h2 ,
 #loglinks h3 , #cooluserpicks h3 , #staff_picks h3 , #creamofthecool h3 , 
 #everythinguserpoll #mainbody img.oddrow , #currentuserpoll img.oddrow {
 	background: #456 ;
@@ -80,9 +68,13 @@ body , div , span , p , li , ul , ol , dd , dt , table , tr , td , a , h1 , h2 ,
 	border-color: #8ac ;
 	}
 
-#softlinks table {
+#softlinks table, #sl1 {
 	background-color: #e8ecef ;
 	}
+
+#sl64 {
+    background: #8ac;
+}
 
 #softlinks td {
 	border-style: solid ;

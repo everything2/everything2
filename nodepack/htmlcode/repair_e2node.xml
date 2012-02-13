@@ -19,7 +19,7 @@ foreach(@$grp)
 {
   my $wu = getNodeById($_);
  
-  my $reject = 1 unless $wu &amp;&amp; $$wu{type}{title} eq &quot;writeup&quot;;
+  my $reject = 1 unless $wu &amp;&amp; $$wu{type}{title} eq &quot;writeup&quot; &amp;&amp; !grep {$$_{node_id} == $$wu{node_id}} @wus;
   $update_group ||= $reject;
   next if $reject;
 

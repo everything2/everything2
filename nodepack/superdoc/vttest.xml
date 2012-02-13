@@ -1,49 +1,30 @@
 <node>
   <doctext>[%
 
-return join &quot;,&quot;, $query-&gt;param;
+delete $$VARS{aug2011survey};
+
+#NOTE: this is new survey code, for DR Cliff Lampe, don't mess with it.  2011-8-8 NJO
 
 
+return if $$USER{ user_id } == $HTMLVARS{ guest_user };
+return if exists $$VARS{aug2011survey};
 
-%]
-
-[%
-return linkNodeTitle('vttest', 0);
-
-%]
-
-&lt;script src=&quot;/prototype.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;/json.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
-&lt;SCRIPT&gt;
-
-function customUpdater(transport) {
-    alert(transport); 
-    var response = transport.parseJSON();
-    for (var piece in response) {
-        $(piece).innerHTML = response[piece];
-    }
+if ($query-&gt;param(&quot;nothankssurvey&quot;)) {
+  $$VARS{aug2011survey} = &quot;declined&quot;;
+  return;
 }
 
-
-function loadNode(nodeid) {
-	var params = [];
-        params['node_id'] = nodeid;
-        params['displaytype'] = json;
-
-
-        var ajax = new Ajax.Request(
-		'/index.pl',
-		{method: 'post', asynchronous:false, parameters: params.toQueryString()}
-		);
-        customUpdater(ajax.transport);
-        return 1;
-}
-
-&lt;/SCRIPT&gt;
+return '
+&lt;center&gt;
+Participate in a Michigan State University research project about how people use Everything2 and have a chance to win one of 50 $10 Amazon gift certificates! 
+&lt;br&gt;&lt;b&gt;'
+.linkNodeTitle(&quot;aug2011survey|Take the Survey&quot;)
+.&quot;&lt;/b&gt;, &lt;small&gt;&quot;
+.linkNode($NODE, &quot;No thanks&quot;, { nothankssurvey =&gt; 1 })
+.'&lt;/small&gt; &lt;/center&gt;';
 
 
-&lt;div id='node_91'&gt;NOTHING&lt;/DIV&gt;
-</doctext>
+%]</doctext>
   <node_id>700295</node_id>
   <type_nodetype>14</type_nodetype>
   <title>vttest</title>

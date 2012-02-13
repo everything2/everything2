@@ -7,27 +7,29 @@ getRef $U;
 
 return unless $$U{type}{title} eq 'user';
 
-my $gp = int($query-&gt;param('experience'));
+my $gp = int($query-&gt;param('experience')); # I have no idea where this parameter might get called from, so I'm leaving it in place to be on the safe side.
 $gp ||= 10;
 
+$$U{gp} += $gp;
 $$U{karma} += 1;
-adjustGP($U, $gp);
+
+htmlcode('achievementsByType','karma');
+# htmlcode('achievementsByType','experience');
 
 my $bless = getNode(&quot;bless&quot;,&quot;opcode&quot;);
 $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; $$bless{node_id}, 'seclog_details' =&gt; &quot;$$U{title} was blessed 10GP by $$USER{title}&quot;});
 
-my $from =  &quot;!&quot;;
-htmlcode('sendPrivateMessage'
-	, {
+	my $from =  &quot;!&quot;;
+	$HTMLVARS{msgparams} = {
 		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
 		'recipient_id' =&gt; $$U{user_id},
 		'message' =&gt; &quot;Whoa, you&amp;rsquo;ve just been [bless|blessed]$from&quot;
-	}
-);
+	};
+	htmlcode('sendPrivateMessage','');
 
 updateNode($U, -1);
-htmlcode('achievementsByType', 'karma', $$U{user_id});
-</code>
+
+adjustGP($U, $gp);</code>
   <type_nodetype>415056</type_nodetype>
   <title>bless</title>
 </node>

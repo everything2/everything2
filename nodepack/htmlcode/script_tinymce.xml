@@ -84,12 +84,7 @@ if (window.tinyMCE) {
     entity_encoding: &quot;raw&quot;,
     invalid_elements: &quot;a,img,table,tr,td,th,div,span&quot;,
     remove_linebreaks: false,
-    extended_valid_elements: &quot;big,small,i,b,tt,p[align],hr[width]&quot;,
-    formats: {
-       alignleft:    { selector: 'p', attributes : { align: &quot;left&quot; } },
-       alignright:   { selector: 'p', attributes : { align: &quot;right&quot; } },
-       aligncenter:  { selector: 'p', attributes : { align: &quot;center&quot; } }
-    }
+    extended_valid_elements: &quot;big,small,i,b,tt&quot;
   });
 }
 

@@ -7,9 +7,10 @@ return htmlcode('writeuptools', @_) if $$N{type}{title} eq 'writeup';
 
 my $isEditor = exists $HTMLVARS{'group_gods'}{$$USER{node_id}}
 	|| exists $HTMLVARS{'group_content editors'}{$$USER{node_id}};
+
 my $isMine = ($$N{author_user} == $$USER{node_id});
 
-my ($text , $linktitle, $parent, $editor, @tools, $attachment, $notes);
+my (@tools, $text , $linktitle, $attachment, $notes) = ();
 my $n = $$N{node_id};
 my $id = 'adminheader'.$n ;
 
@@ -60,11 +61,26 @@ if ($isEditor){
 	my ($parent, $editor) = $DB -&gt; sqlSelect( # editor approval is flagged by feeding the link
 		'to_node, food', 'links', &quot;from_node=$$N{node_id} AND linktype=$linktype&quot;);
 
+	unless ($status eq 'private' || $status eq 'removed' || $isMine){
+		if ($query -&gt; param('makeprivate')){
+			$$N{publication_status} = getId(getNode('private', 'publication_status'));
+			updateNode($N, -1);
+			$text = $status = $linktitle = 'Made Private';
+			$DB -&gt; sqlUpdate('links', {food =&gt; ($editor = 0)},
+				&quot;from_node=$$N{node_id} AND linktype=$linktype&quot;) if $editor;
+		}else{
+			push @tools, linkNode($N, 'Make private', {
+				makeprivate =&gt; 1
+				, -class =&gt; &quot;action ajax $id:drafttools:$n,1&quot;
+			});
+		}
+	}
+
 	if ($parent and $editor || $status eq 'review'){
 		$attachment ||= 'Attached to '
 			.$query -&gt; b(linkNode($parent, $$NODE{node_id} == $parent ? 'this node' :''));
 
-		my $approve;
+		my $approve = '';
 		if ($editor){
 			$attachment .= '&lt;br&gt;&lt;br&gt;Approved for publication by '.linkNode($editor);
 			$linktitle .= '. Approved';

@@ -808,6 +808,13 @@ margin:0px;
 	font-size:15px;
 	background-color:#c4d8f0;
 position:relative;
+}
+
+/* Make survey message visible on writeup/e2node/superdoc pages */
+#surveymessage {
+   margin-top: 35px !important;
+   margin-bottom: -10px !important;
+   padding-bottom: 0px !important;
 }</doctext>
   <node_id>1873551</node_id>
   <type_nodetype>1854352</type_nodetype>

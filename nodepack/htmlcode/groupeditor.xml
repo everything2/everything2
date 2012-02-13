@@ -22,25 +22,7 @@ function saveForm()
 
 	}
 
-        var groupCountNew = i - 1;
-        var groupCountOld = myForm.groupMemberCountOrig.value;
-
-	myForm.groupMemberCount.value = groupCountNew;
-
-	if (groupCountNew == 0 ||
-            (groupCountOld &gt; 4 &amp;&amp; groupCountNew &lt; (groupCountOld / 2))
-           )
- 	{
-	    return confirm(\&quot;Reduce group to \&quot; + groupCountOld
-                           + \&quot; members which originally had \&quot;
-			   + groupCountNew + \&quot; members?\&quot;
-                          );
-	}
-	else
-	{
-	   return true;
-	}
-
+	return true;
 }
 
 function swapUp()
@@ -135,7 +117,7 @@ with(document.forms.f$id.group)
 
 &lt;/SCRIPT&gt;&quot;;
 
-$str .= &quot;&lt;form method=\&quot;POST\&quot; name=\&quot;f$id\&quot; onSubmit=\&quot;return saveForm()\&quot;&gt;&quot;;
+$str .= &quot;&lt;form method=\&quot;POST\&quot; name=\&quot;f$id\&quot; onSubmit=\&quot;saveForm()\&quot;&gt;&quot;;
 
 my $GROUP = $$NODE{group};
 
@@ -156,12 +138,6 @@ for (my $i = 0; $i &lt; (5 + @$GROUP); $i++) {
 	$str .= &quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;$i\&quot; value=\&quot;\&quot;&gt;\n&quot;;
 }
 
-$str .= &quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;groupMemberCount\&quot; value=\&quot;\&quot;&gt;\n&quot;;
-$str .= &quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;groupMemberCountOrig\&quot; value=\&quot;&quot;
-     . scalar @$GROUP
-     . &quot;\&quot;&gt;\n&quot;
-     ;
-
 $str .= $query-&gt;hidden('node_id', getId $NODE) . $query-&gt;hidden('displaytype');
 
 $str .= '
@@ -171,15 +147,14 @@ $str .= '
 &lt;a href=&quot;javascript:swapDn();&quot;&gt;down&lt;/a&gt;
 &lt;a href=&quot;javascript:zoomOp();&quot;&gt;view&lt;/a&gt;
 
-&lt;input type=&quot;submit&quot; border=&quot;0&quot; value=&quot;Save&quot;&quot;&gt;';
+&lt;input type=&quot;submit&quot; border=&quot;0&quot; value=&quot;Save&quot; onClick=&quot;javascript:saveForm()&quot;&gt;';
 
 $str .= '&lt;/form&gt;';
 
 $str.='jb testing:&lt;br /&gt;';
 for(0..50){$str.=&quot;$_: &quot;.$query-&gt;param(&quot;$_&quot;).'&lt;br /&gt;' if $query-&gt;param(&quot;$_&quot;);}
 
-$str;
-</code>
+$str;</code>
   <type_nodetype>4</type_nodetype>
   <title>groupeditor</title>
 </node>

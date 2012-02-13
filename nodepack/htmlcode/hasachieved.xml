@@ -1,48 +1,39 @@
 <node>
   <node_id>1917862</node_id>
-  <code>my ($achievement, $user_id) = @_;
+  <code>my ($ACH, $user_id, $force) = @_;
 
-$user_id ||= $$USER{user_id};
-return unless getNodeById($user_id)-&gt;{type_nodetype} = 15;
-
-my $ACH = 0;
-$ACH = getNode($achievement,&quot;achievement&quot;);
-$ACH ||= getNodeById($achievement);
-
+getRef $ACH;
+$ACH ||= getNode($_[0], 'achievement');
 return 0 unless $ACH;
 
-my $achieved = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;achieved&quot;,&quot;achieved_user=$user_id and achieved_achievement=&quot;.$$ACH{node_id}.&quot; limit 1&quot;);
-return 1 if $achieved;
+$user_id ||= $$USER{user_id};
+return unless getNodeById($user_id)-&gt;{type}{title} eq 'user';
 
-my $codeStr = &quot;
-[%
-my \$user_id = &quot;. $user_id.&quot;;
+$force = undef unless $force == 1;
 
-&quot;.$$ACH{code}.&quot;
+return 1 if $DB-&gt;sqlSelect('count(*)'
+	, 'achieved'
+	, &quot;achieved_user=$user_id
+		AND achieved_achievement=$$ACH{node_id} LIMIT 1&quot;
+);
 
-%]&quot;;
+return 0 unless $$ACH{achievement_still_available};
 
-my $result = parseCode($codeStr);
+my $result = $force || evalCode(&quot;my \$user_id = $user_id;\n$$ACH{code}&quot;, $NODE);
 
 if ($result == 1) {
 	$DB-&gt;sqlInsert(&quot;achieved&quot;,{achieved_user =&gt; $user_id, achieved_achievement =&gt; $$ACH{node_id}});
 
 	use JSON;
 	my $notification = getNode(&quot;achievement&quot;,&quot;notification&quot;)-&gt;{node_id};
-	if ($$VARS{settings}) {
-		if (%{ from_json($$VARS{settings})-&gt;{notifications} }-&gt;{$notification}) {
-			my $argSet = { achievement_id =&gt; $$ACH{node_id} };
-			my $argStr = to_json($argSet);
-			my $addNotifier = htmlcode('addNotification', $notification,$user_id,$argStr);
-		}
+	if ($$VARS{settings} &amp;&amp; %{ from_json($$VARS{settings})-&gt;{notifications} }-&gt;{$notification}) {
+		htmlcode('addNotification', $notification, $user_id, {
+			achievement_id =&gt; $$ACH{node_id}
+		});
 	}
 }
 
 return $result;
-
-
-
-
 </code>
   <type_nodetype>4</type_nodetype>
   <title>hasAchieved</title>

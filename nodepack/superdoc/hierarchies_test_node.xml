@@ -2,7 +2,7 @@
   <doctext>[%
 my $str = &quot;&quot;;
 
-return &quot;Nothing to see here, &quot; . $USER-&gt;{title} . &quot;... move along.&quot; unless htmlcode('isEditor');
+return &quot;Nothing to see here, &quot; . $USER-&gt;{title} . &quot;... move along.&quot; unless ($USER-&gt;{title} eq 'Kurt');
 
 $str = &quot;
 &lt;style&gt;

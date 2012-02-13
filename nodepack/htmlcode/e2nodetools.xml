@@ -25,11 +25,30 @@
 
 	$str .= htmlcode('openform')
 		.'&lt;fieldset&gt;&lt;legend&gt;Change title&lt;/legend&gt;';
+		
+	my $newTitle = $query-&gt;param('e2node_title');
+	if ($newTitle ne $query-&gt;param('oldTitle')){
+		# repair node if title has changed
+		if ($$NODE{title} eq $newTitle) {
+		   htmlcode('repair e2node', $NODE, 'no-reorder');
+		   $str .= &quot;Repaired node to rename all contained writeups.&quot;;
 
-	# repair node if title has changed
-	if ($query-&gt;param('e2node_title') &amp;&amp; $$NODE{title} ne $query-&gt;param('oldTitle')) {
-	   htmlcode('repair e2node', $NODE, 'no-reorder');
-	   $str .= &quot;Repaired node to rename all contained writeups.&lt;br&gt;&quot;;
+		}else{
+		# failed rename
+			my $reason = getNode($newTitle, 'e2node');
+			$str .= $reason
+				? linkNode($reason)
+				.' already exists. '
+				.linkNode(getNode('Magical Writeup Reparenter', 'superdoc')
+					, 'Move all writeups &amp;hellip;'
+					, {old_e2node_id =&gt; $$NODE{node_id}
+						, new_e2node_id =&gt; $$reason{node_id}
+						, reparent_all =&gt; 1
+					}
+				) 
+				: 'Ack! Rename failed.';
+		}
+		$str .= '&lt;br&gt;';
 	}
 
 	$str .= htmlcode('textfield', 'title')

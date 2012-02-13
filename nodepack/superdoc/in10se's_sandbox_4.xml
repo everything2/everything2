@@ -1,82 +1,144 @@
 <node>
-  <doctext>[{openform}]
-&lt;p&gt;&lt;b&gt;My Pretend Writeup&lt;/b&gt;&lt;br /&gt;
-&lt;textarea name=&quot;mywriteup&quot; id=&quot;mywriteup&quot; rows=&quot;15&quot; style=&quot;width:100%&quot;&gt;
-[%
-my $str = '';
-my $wu = getNodeById(1492501);
-#my $dbWriteupText = $$wu{doctext};
-my $dbWriteupText = &quot;Pretend this is the writeup text that is stored in the database.
+  <doctext>[%
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+my $rows;
+my $dbrow;
+my $queryText;
+my $str;
 
-When you edit and submit this page, it will simulate editing one of your writeups.
+my ($sec,$min,$hour,$day,$month,$yr19,@rest) =   localtime(time);
+$str .= 'Web Server DateTime: '.($yr19+1900).'-'.($month+1).'-'.$day.' '.$hour.':'.$min.':'.$sec.'&lt;br /&gt;';
 
-For some reason, any HTML tag is being counted as a diff. I think this my be because after submitting, the characters might be different. This would obviously have to be worked out, but I don't have time to debug right now.
-
- * one 1
- * two 2
- * three 3&quot;;
-my $submittedWriteupText = $query-&gt;param(&quot;mywriteup&quot;) . '';
-
-if ($submittedWriteupText eq '')
+my $queryText = &quot;SELECT NOW()&quot;;
+$rows = $dbh-&gt;prepare($queryText)
+  or return $rows-&gt;errstr;
+$rows-&gt;execute()
+  or return $rows-&gt;errstr;
+while($dbrow = $rows-&gt;fetchrow_arrayref)
 {
-   $str .= $dbWriteupText;
+   $str .= 'DB DateTime: '.$$dbrow[0].'&lt;br /&gt;';
 }
-else
-{
-   $str .= $submittedWriteupText;
-}
-$str .= '&lt;/textarea&gt;
-         &lt;input type=&quot;submit&quot; value=&quot;Do Diff&quot; /&gt;
-         &lt;/form&gt;
-         &lt;hr /&gt;';
-
-use Algorithm::Diff qw(diff);
-
-my @orig= split(/[ \n]/, $dbWriteupText);
-my @rev = split(/[ \n]/, $submittedWriteupText);
-my $diff = diff \@orig, \@rev;
-
-my $shift = 0;
-
-my $changeCtr = 0;
-my $unchangedCtr = 0;
-for my $hunk (@$diff)
-{
-    for my $change (@$hunk)
-    {
-        if ($change-&gt;[0] eq &quot;-&quot;)
-        {
-            # process deletions
-            splice @orig, $change-&gt;[1] + $shift, 1;
-            --$shift;
-            $changeCtr++;
-        }
-        elsif ($change-&gt;[0] eq &quot;+&quot;)
-        {
-            # process additions
-            splice @orig, $change-&gt;[1], 0, $change-&gt;[2];
-            ++$shift;
-            $changeCtr++;
-        }
-    }
-}
-
-$str .= '&lt;div style=&quot;border:1px solid #ccc;padding:3px&quot;&gt;ORIGINAL
-&lt;pre&gt;' . $dbWriteupText . '&lt;/pre&gt;&lt;/div&gt;
-
-&lt;div style=&quot;border:1px solid #ccc;padding:3px&quot;&gt;EDIT
-&lt;pre&gt;'. $submittedWriteupText . '&lt;/pre&gt;&lt;/div&gt;';
-
-my @origAgain = split(/[ \n]/, $dbWriteupText);
-my @revAgain = split(/[ \n]/, $submittedWriteupText);
-$str .= '&lt;p&gt;Total Items in Original: ' . scalar(@origAgain) . '&lt;br /&gt;
-         Total Items in Edit: ' . scalar(@revAgain) . '&lt;br /&gt;
-         Total Changes in Edit: ' . $changeCtr . '&lt;/p&gt;';
-
 
 return $str;
+%]
 
-%]</doctext>
+&lt;hr&gt;
+
+[%
+my $str;
+my $var;
+$str .= '1) true or true and true = ' . (1 or 1 &amp;&amp; 1) . '&lt;br /&gt;'
+      . '2) true or true and false = ' . (1 or 1 &amp;&amp; 0) . '&lt;br /&gt;'
+      . '3) true or false and true = ' . (1 or 0 &amp;&amp; 1) . '&lt;br /&gt;'
+      . '4) true or false and false = ' . (1 or 0 &amp;&amp; 0) . '&lt;br /&gt;'
+      . '5) false or true and true = ' . (0 or 1 &amp;&amp; 1) . '&lt;br /&gt;'
+      . '6) false or true and false = ' . (0 or 1 &amp;&amp; 0 ) . '&lt;br /&gt;'
+      . '7) false or false and true = ' . (0 or 0 &amp;&amp; 1) . '&lt;br /&gt;'
+      . '8) false or false and false = ' . (0 or 0 &amp;&amp; 0 ) . '&lt;br /&gt;'
+      . '&lt;hr /&gt;';
+if ($var = 'var'){
+      $str .= 'true&lt;hr /&gt;';
+}else{
+      $str .= 'false&lt;hr /&gt;';
+}
+$str .= '1) true or true and true = ' . (1 or 1  &amp;&amp; 1) . '&lt;br /&gt;'
+      . '2) true or true and false = ' . (1 or 1 &amp;&amp; 0) . '&lt;br /&gt;'
+      . '3) true or false and true = ' . (1 or 0 &amp;&amp; 1) . '&lt;br /&gt;'
+      . '4) true or false and false = ' . (1 or 0 &amp;&amp; 0) . '&lt;br /&gt;'
+      . '5) false or true and true = ' . (0 or 1 &amp;&amp; 1) . '&lt;br /&gt;'
+      . '6) false or true and false = ' . (0 or 1 &amp;&amp; 0 ) . '&lt;br /&gt;'
+      . '7) false or false and true = ' . (0 or 0 &amp;&amp; 1) . '&lt;br /&gt;'
+      . '8) false or false and false = ' . (0 or 0 &amp;&amp; 0 ) . '&lt;br /&gt;'
+      . '&lt;hr /&gt;';
+return $str;
+%]
+
+&lt;form method=&quot;get&quot;&gt;
+&lt;b&gt;Show the last&lt;/b&gt;
+&lt;select name=&quot;count&quot;&gt;
+   &lt;option value=&quot;25&quot;&gt;25&lt;/option&gt;
+   &lt;option value=&quot;50&quot;&gt;50&lt;/option&gt;
+   &lt;option value=&quot;100&quot;&gt;100&lt;/option&gt;
+   &lt;option value=&quot;200&quot;&gt;200&lt;/option&gt;
+   &lt;option value=&quot;300&quot;&gt;300&lt;/option&gt;
+   &lt;option value=&quot;400&quot;&gt;400&lt;/option&gt;
+   &lt;option value=&quot;500&quot; selected=&quot;selected&quot;&gt;500&lt;/option&gt;
+   &lt;option value=&quot;600&quot;&gt;600&lt;/option&gt;
+   &lt;option value=&quot;700&quot;&gt;700&lt;/option&gt;
+   &lt;option value=&quot;800&quot;&gt;800&lt;/option&gt;
+   &lt;option value=&quot;900&quot;&gt;900&lt;/option&gt;
+   &lt;option value=&quot;1000&quot;&gt;1000&lt;/option&gt;
+&lt;/select&gt;
+&lt;b&gt;seen noders.&lt;/b&gt;&lt;br /&gt;
+&lt;b&gt;Icon Size:&lt;/b&gt;
+&lt;select name=&quot;size&quot;&gt;
+   &lt;option value=&quot;16&quot;&gt;16&lt;/option&gt;
+   &lt;option value=&quot;24&quot;&gt;24&lt;/option&gt;
+   &lt;option value=&quot;32&quot;&gt;32&lt;/option&gt;
+   &lt;option value=&quot;48&quot; selected=&quot;selected&quot;&gt;48&lt;/option&gt;
+   &lt;option value=&quot;64&quot;&gt;64&lt;/option&gt;
+   &lt;option value=&quot;128&quot;&gt;128&lt;/option&gt;
+   &lt;option value=&quot;256&quot;&gt;256&lt;/option&gt;
+&lt;/select&gt;&lt;br /&gt;
+&lt;b&gt;Default Icon Style:&lt;/b&gt;
+&lt;select name=&quot;gtype&quot;&gt;
+   &lt;option value=&quot;identicon&quot;&gt;Identicon&lt;/option&gt;
+   &lt;option value=&quot;monsterid&quot;&gt;MonsterID&lt;/option&gt;
+   &lt;option value=&quot;wavatar&quot;&gt;Wavatar&lt;/option&gt;
+&lt;/select&gt; (if the user has a gravatar account, the default will be overridden)&lt;br /&gt;
+&lt;input type=&quot;submit&quot; value=&quot;Go&quot;&gt;
+&lt;/form&gt;
+&lt;hr /&gt;
+
+[%
+my $count = int($query-&gt;param(&quot;count&quot;));
+if ($count !~ /^[0-9]*$/)
+{
+  $count = 500;
+}
+my $size = int($query-&gt;param(&quot;size&quot;));
+if ($size !~ /^[0-9]*$/)
+{
+  $size = 48;
+}
+my $gtype = $query-&gt;param(&quot;gtype&quot;);
+
+my $str = '
+&lt;style type=&quot;text/css&quot;&gt;
+.ImgBox{
+float: left;
+height: '.($size+30).'px;
+width: '.($size+30).'px;
+font-size: 75%;
+text-align: center;
+}
+&lt;/style&gt;
+';
+
+use Digest::MD5('md5_hex');
+
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+my $rows;
+my $dbrow;
+my $u;
+
+my $queryText = &quot;SELECT user_id FROM user ORDER BY lasttime DESC LIMIT &quot;.$count;
+$rows = $dbh-&gt;prepare($queryText)
+  or return $rows-&gt;errstr;
+$rows-&gt;execute()
+  or return $rows-&gt;errstr;
+while($dbrow = $rows-&gt;fetchrow_arrayref)
+{
+  $u = getNodeById($$dbrow[0]);
+  $str .= '&lt;div class=&quot;ImgBox&quot;&gt;&lt;img src=&quot;http://gravatar.com/avatar/'.md5_hex($$u{email}).'?d='.$gtype.'&amp;s='.$size.'&quot; alt=&quot;.&quot; /&gt;&lt;br /&gt;'.linkNode($u).'&lt;/div&gt;';
+}
+$str .= '&lt;hr style=&quot;clear:both&quot; /&gt;';
+$str .= '&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;$$NODE{node_id}&quot; /&gt;';
+return $str;
+%]
+</doctext>
   <node_id>1963357</node_id>
   <type_nodetype>14</type_nodetype>
   <title>in10se's sandbox 4</title>

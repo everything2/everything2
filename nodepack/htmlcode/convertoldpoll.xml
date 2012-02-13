@@ -8,7 +8,7 @@ parseCode($POLL -&gt; {doctext}) =~ /&lt;p&gt;([^&lt;]+)/;
 return 0 unless $$POLL{question} = $1;
 
 my $i = 0;
-my $options;
+my $options = '';
 while ($HTMLVARS{options} -&gt; {$i}){
 	$options .= $HTMLVARS{options} -&gt; {$i++}.&quot;\n\n&quot;;
 }

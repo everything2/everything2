@@ -27,7 +27,7 @@ if ($target){
 	return '';
 }
 
-my @names;
+my @names = ();
 foreach (keys %accounts){
 	push @names, $_ if $accounts{$_} == 1
 		or $DB -&gt; isApproved($USER, getNode($accounts{$_}, 'usergroup'));

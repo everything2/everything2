@@ -254,68 +254,80 @@ text-indent: -1.5em;
 /* FONTS */
 
 body {
-font-family: Helvetica , Arial , sans-serif ;
+	font-family: Helvetica , Arial , sans-serif ;
 }
 
 * html body {
-font-family: &quot;Arial Unicode MS&quot; , Arial , sans-serif ;
+	font-family: &quot;Arial Unicode MS&quot; , Arial , sans-serif ;
 } /* Exploder fails to look elsewhere for missing glyphs */
 
 a {
-text-decoration: none ;
+	text-decoration: none ;
 }
 
 #e2logo, .nodelet_title {
-font-style: italic;
+	font-style: italic;
 }
 
 #e2logo {
-font-size: 1.8em;
+	font-size: 1.8em;
 }
 
 #e2logo2 {
-font-style: normal ;
-font-size: 50% ;
-vertical-align: sub ;
+	font-style: normal ;
+	font-size: 50% ;
+	vertical-align: sub ;
 }
 
 h1, h2, h3, h4, div.contentinfo .title {
-font-family: serif;
+	font-family: serif;
+}
+
+.content {
+	line-height: 140%;
 }
 
 h1 {
-font-size: 150% ;
+	font-size: 150% ;
 }
 
 h2 {
-font-size: 130% ;
+	font-size: 130% ;
 }
 
 h3 {
-font-size: 115% ;
+	font-size: 115% ;
 }
 
 .title , .nodelet_title , h4 {
-font-size: 100% ;
+	font-size: 100% ;
 }
 
-#searchform , .nodelet_content , #frontpage #mainbody .linklist , .morelink , .weblog .date, .nodelet .admin {
-font-size: 90% ;
+#searchform , .nodelet_content , #frontpage #mainbody .linklist , .morelink , .weblog .date, .nodelet .admin, .sentmessage{
+	font-size: 90% ;
 }
 
 .title, dt {
-font-style: normal ;
-font-weight: bold ;
+	font-style: normal ;
+	font-weight: bold ;
+}
+
+.mine .title, .hasvoted .title {
+	font-weight: normal ;
 }
 
 /* END FONTS */
 
+.externalLink {
+	background-image: url(&quot;http://donjaime.de/externalLinkGrayscale.png&quot;)
+}
+
 /* SHININESS &amp; CORNERS */
 
 #header , .nodelet_title , .contentheader , .nodelet .title {
-background-image: url( &quot;http://donjaime.de/topleft.png&quot; ) ;
-background-position: -20px 0 ;
-background-repeat: no-repeat ;
+	background-image: url( &quot;http://donjaime.de/topleft.png&quot; ) ;
+	background-position: -20px 0 ;
+	background-repeat: no-repeat ;
 }
 .nodelet .title {
 background-position: -28px -3px ;
@@ -389,17 +401,17 @@ background-color: #203010 ;
 }
 
 :link, #header label, #header :link, #header :visited, .nodelet_title {
-color: #142800 ;
+color: #243810 ;
 }
 
-html , .oddrow ,
+.oddrow ,
 .contentheader , .item .content:before , 
 .nodelet .title , .nodelet .type:before {
 background-color: #dce6c8 ;
 }
 
 html {
-padding: 0;
+background-color: #b4bda0;
 }
 
 #frontpage .item .content , #frontpage .item .morelink {
@@ -444,7 +456,7 @@ border: none ;
 /* Contrast: G-B = 3(R-G) */
 
 :visited {
-color: #201008 ;
+color: #281810 ;
 }
 
 #header, #mainbody:before,

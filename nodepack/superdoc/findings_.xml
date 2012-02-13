@@ -1,25 +1,30 @@
 <node>
   <doctext>[%
-use String::Similarity;
-my $doSimilaritySort = $HTMLVARS{isDevServer};
+
+use Time::HiRes;
+my @start = Time::HiRes::gettimeofday;
+my $timeStr;
+my $timeCount = 1;
 
 my $str;
 my $title = $query-&gt;param('node');
-my $lnode = $query-&gt;param('lastnode_id') unless $$USER{user_id} == $HTMLVARS{guest_user};
+my $lnode = $query-&gt;param('lastnode_id');
 $lnode ||= '0';
 
 return htmlcode('randomnode','Psst! Over here!') unless $title;
 $str .= 'Here\'s the stuff we found when you searched for &quot;'.$title.'&quot;';
 
-$str .= qq'\n\t&lt;ul class&quot;findings&quot;&gt;';
+$str .= qq'\n\t&lt;ul class=&quot;findings&quot;&gt;';
 
 
 my $isRoot = exists $HTMLVARS{'group_gods'}{$$USER{node_id}};
 my $curType;
-my @nodes = @{ $$NODE{group} } if defined $$NODE{group};
 
-@nodes = sort { similarity($title, $$b{title}) &lt;=&gt; similarity($title, $$a{title}) } @nodes
-	if $doSimilaritySort;
+my @nodes;
+#For some reason, sometimes e2 thinks there is no nodegroup here. Huh? --[Swap]
+if(defined $$NODE{group}) {
+ @nodes = @{ $$NODE{group} };
+}
 
 my @e2node_ids = map ($_ -&gt; {node_id},
                       grep ($_ -&gt; {type}{title} eq &quot;e2node&quot;,
@@ -38,38 +43,53 @@ if(@e2node_ids){
   \@fillednode_ids{  @{$dbh -&gt; selectcol_arrayref($sql)}  };
 }
 
-my $found;
-foreach my $ND (@nodes) {
+foreach my $ND (@{ $$NODE{group} }) {
+	#$ND = getNodeById($ND, 'light');
 	next unless canReadNode($USER, $ND);
 	$curType = $$ND{type}{title};
 
 	next if $curType eq 'writeup';
 	next if $curType eq 'debatecomment';
-	next if $curType eq 'e2node' &amp;&amp; $$VARS{hidenodeshells} &amp;! exists $fillednode_ids{$$ND{node_id}};
+
 	next if $curType eq 'draft' and htmlcode('canseedraft', $ND) != 1;
-	next if $curType eq 'debate' and not $isRoot and not htmlcode('isinUsergroup',&quot;$$USER{node_id},$$ND{restricted}&quot;);
+	if ($curType eq 'debate' and not $isRoot) {
+		next unless htmlcode('isinUsergroup',&quot;$$USER{node_id},$$ND{restricted}&quot;);
+	}
 
-	$found = 1;
+	my $openli = &quot;&lt;li&gt;&quot;;
 	# Mark nodeshells with class name
-	my $class = ' class=&quot;nodeshell&quot;'
-        unless $curType ne 'e2node' || exists $fillednode_ids{$$ND{node_id}};
-
-	$str .= &quot;&lt;li$class&gt;&quot; . linkNode($ND, '', {lastnode_id=&gt;$lnode}) ;
-	$str .= &quot; ($curType)&quot; unless $curType eq 'e2node';
-	$str .= &quot; similarity &quot;.similarity($title, $$ND{title}) if $HTMLVARS{isDevServer};
+	if ($curType eq 'e2node') {
+			$openli = '&lt;li class=&quot;nodeshell&quot;&gt;' 
+        unless exists $fillednode_ids{$$ND{node_id}};
+	}
+	if ($$USER{user_id} == $HTMLVARS{guest_user}){
+		$str .= $openli . linkNode($ND, '', {lastnode_id=&gt;0}) ;
+	}
+	else {
+		$str .= $openli . linkNode($ND, '', {lastnode_id=&gt;$lnode}) ;
+	}
+	if($curType ne 'e2node'){
+		$str .= &quot; ($curType)&quot;;
+	}
+	#$str .= &quot;($ND-&gt;{node_id})&quot; if $HTMLVARS{'group_gods'}{$USER-&gt;{node_id}};
 	$str .= &quot;&lt;/li&gt;\n&quot;;
+
+#	$str .= '&lt;tr&gt;&lt;td&gt;';
+#	$str .= linkNode($ND, '', {lastnode_id=&gt;$lnode}) . '&lt;/td&gt;&lt;td&gt;';
+#	$str .= ($curType eq 'e2node' ? '' : '('.$curType.')') . '&lt;/td&gt;&lt;td&gt;';
+#	$str .= htmlcode('parsetimestamp',$$ND{createtime}); #this may be too much; maybe just the date? or even just month and year?
+#	$str .= &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
+
 }
 
 $str .= &quot;&lt;/ul&gt;\n&quot;;
 
-unless ($found){
-	$NODE = $GNODE = getNodeById($HTMLVARS{not_found});
-	return parseCode($$NODE{doctext});
-}
-
-$str . htmlcode('e2createnewnode');
-
-%]</doctext>
+$str
+#.'&lt;/table&gt;'
+;
+%]
+[{e2createnewnode}]
+</doctext>
   <node_id>1140332</node_id>
   <type_nodetype>14</type_nodetype>
   <title>Findings:</title>

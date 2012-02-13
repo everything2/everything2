@@ -42,7 +42,6 @@ elsif($d =~ /^nyd/) {
 return '1' if ($mon==0 and $mday==1 and ($y?$y==$year:1));
 }
 
-# return &quot;mday=$mday  mon=$mon  year=$year hour=$hour&quot;;
 return 0;
 </code>
   <type_nodetype>4</type_nodetype>

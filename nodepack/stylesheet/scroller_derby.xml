@@ -1,5 +1,21 @@
 <node>
-  <doctext>body {
+  <doctext>/*= autofix added rules. adjust to taste: */
+.weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
+.weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
+.weblog .title, .nodelet .title {font-weight: bold;}
+.actions , .actions li {display:inline;margin:0;padding:0 0.5em 0 0;}
+.actions { display: block ; }
+/*= end autofix added rules */
+
+/*= Comments containing old/disabled rules start with = for easy finding */
+/*= autofix added basic compatibility rules */
+.weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
+.weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
+.weblog .title, .nodelet .title {font-weight: bold;}
+/*= end autofix added rules */
+
+/*= Comments containing old/disabled rules start with = for easy finding */
+body {
     background: #404040;
     padding: 0px;
     font-family: Georgia, serif;
@@ -195,19 +211,22 @@ h1.nodetitle{
     padding-bottom: 2px;
 }
 
-div.writeup{
+/*=div.writeup*/
+.writeuppage .item{
     border: thin solid #404040;
     margin-bottom: 5px;
     margin-top: 3px;
     padding: 4px;
 }
 
-div.writeup_title{
+/*=div.writeup_title*/
+div.writeuppage .contentheader{
     border-bottom: thin dotted #404040;
     padding: 4px;
 }
 
-div.writeup_text{
+/*=div.writeup_text*/
+.writeuppage .item .content{
     width: 100%;
     line-height: 132%;
 }
@@ -277,12 +296,14 @@ div.writeup_text{
     overflow: auto;
 }
 
-#nodelet_1689202 img.oddrow{
+/*=#nodelet_1689202 img.oddrow*/
+#currentuserpoll img.oddrow{
     background: #119922;
     border: thin solid #404040;
 }
 
-#chatterbox_chatter i, #nodelet_91 small{
+/*=#chatterbox_chatter i, #nodelet_91 small*/
+#chatterbox_chatter i, #otherusers small{
     color: #dd0000;
     font-style: italic;
 }
@@ -291,43 +312,56 @@ div.writeup_text{
     color: #dd0000;
 }
 
-#writeup_list li{
+/*=#writeup_list li*/
+.nodelet .infolist li{
     display: block;
     margin-bottom: 4px;
     margin-left: 12px;
     text-indent: -12px;
 }
 
-#writeup_list{
+/*=#writeup_list*/
+.nodelet .infolist{
     display: block;
     margin-left: 2px;
     padding-left: 2px;
 }
 
-#writeup_list li span.author{
+/*=#writeup_list li span.author*/
+ DISABLED /*= .nodelet .infolist li span.author */  DISABLED /*= 
+ /*= .nodelet .infolist li span.author */  */ {
     display: block;
 }
 
-#writeup_list li span.author:after{
+/*=#writeup_list li span.author:after*/
+ DISABLED /*= .nodelet .infolist li span.author:after */  DISABLED /*= 
+ /*= .nodelet .infolist li span.author:after */  */ {
     content: &quot;:\ &quot;;
 }
 
-#writeup_list li span.title{
+/*=#writeup_list li span.title*/
+ DISABLED /*= .nodelet .infolist li span.title */  DISABLED /*= 
+ /*= .nodelet .infolist li span.title */  */ {
     font-weight: bold;
 }
 
-#writeup_list li span.type{
+/*=#writeup_list li span.type*/
+ DISABLED /*= .nodelet .infolist li span.type */  DISABLED /*= 
+ /*= .nodelet .infolist li span.type */  */ {
     font-size: smaller;
 }
 
-#writeup_list span.hasvoted span.title:before{
-    content: &quot;&#149; &quot;;
+/*=#writeup_list li.hasvoted span.title:before*/
+ DISABLED /*= .nodelet .infolist li.hasvoted span.title:before */  DISABLED /*= 
+ /*= .nodelet .infolist li.hasvoted span.title:before */  */ {
+    content: &quot;&#194;&#149; &quot;;
     color: #dd00dd;
     display: inline;
     margin-left: -1.2ex;
 }
 
-#nodelet_91 div.nodelet_content {
+/*=#nodelet_91 div.nodelet_content*/
+#otherusers div.nodelet_content {
     margin-left: 2em;
     line-height: 150%;
 }
@@ -398,7 +432,12 @@ abbr[title], acronym[title]{
     content: &quot; (nodeshell)&quot;;
     display: inline;
     color: #dd0000;
-}</doctext>
+}
+
+div#surveymessage {
+        display: none;
+}
+</doctext>
   <node_id>1950684</node_id>
   <type_nodetype>1854352</type_nodetype>
   <title>Scroller Derby</title>

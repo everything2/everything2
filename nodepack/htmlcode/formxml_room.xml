@@ -1,19 +1,13 @@
 <node>
   <node_id>1372587</node_id>
   <code>use Everything::Room;
-my $entrance= &quot;0&quot;;
-my $str = &quot;&quot;;
-my $canEnter = htmlcode('canEnterRoom');
-
-if ($$canEnter{canEnter}) {
+my $entrance=&quot;0&quot;;
+if(eval($$NODE{criteria}) and not getId($USER) == $HTMLVARS{guest_user}){
   $entrance=1;
   changeRoom($USER, $NODE);
-} else {
-  $str .= &quot;&lt;reason&gt;&quot;.$$canEnter{explanation}.&quot;&lt;/reason&gt;\n&quot;;
-  $str .= &quot;&lt;warning&gt;&quot;.$$canEnter{warning}.&quot;&lt;/warning&gt;\n&quot;;
 }
-$str .= &quot;&lt;canenter&gt;&quot;.$entrance.&quot;&lt;/canenter&gt;\n&quot;;
-$str .=&quot;&lt;description&gt;&quot;.encodeHTML(($query-&gt;param(&quot;links_noparse&quot;))?($$NODE{doctext}):(parseLinks($$NODE{doctext}))).&quot;&lt;/description&gt;&quot;;
+my $str = &quot;&lt;canenter&gt;&quot;.$entrance.&quot;&lt;/canenter&gt;\n&quot;;
+$str.=&quot;&lt;description&gt;&quot;.encodeHTML(($query-&gt;param(&quot;links_noparse&quot;))?($$NODE{doctext}):(parseLinks($$NODE{doctext}))).&quot;&lt;/description&gt;&quot;;
 $str;</code>
   <type_nodetype>4</type_nodetype>
   <title>formxml_room</title>

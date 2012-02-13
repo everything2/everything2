@@ -3,8 +3,7 @@
 &lt;p&gt;If these are the questions which come to mind, maybe you should come in.  The room is restricted to new users,
 and editors -- a place to ask questions outside of the public eye.&lt;/p&gt;
 
-&lt;p&gt;Make sure to start with the [E2 FAQ],&lt;br&gt;the source of all that is good and good.&lt;/p&gt;
-</doctext>
+&lt;p&gt;Make sure to start with the [E2 FAQ], the source of all that is good and good.&lt;/p&gt;</doctext>
   <node_id>553146</node_id>
   <criteria>my $uid = getId($USER);
 return 1 if (exists $HTMLVARS{'group_content editors'}{$uid}) || (exists $HTMLVARS{'group_gods'}{$uid});

@@ -5,9 +5,6 @@ if ($ENV{HTTP_REFERER}) {
 }
 %]
 [%
-return &quot;&lt;p&gt;urlGenNoParams: &quot;.urlGenNoParams().&quot;&lt;/p&gt;&lt;hr&gt;&quot;;
-%]
-[%
 return; # &quot;socialBookmark htmlcode not working yet...&lt;br&gt;&quot;;
 my ($nodeID, $includeTitles, $asList, $full)=@_;
 $nodeID=getId($NODE) unless $nodeID;

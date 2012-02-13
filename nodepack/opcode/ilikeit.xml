@@ -23,6 +23,20 @@ $DB-&gt;sqlInsert(&quot;links&quot;,{from_node =&gt; $$USER{user_id}, to_node =&
 
 return if ($$LIKE{author_user} == getId(getNode('Webster 1913', 'user')));
 
+my $logQueryLikeIt = &lt;&lt;SQLEND;
+INSERT INTO likeitlog
+  (user_agent, liked_node_id, hits)
+  VALUES
+  (?, ?, ?)
+  ON DUPLICATE KEY UPDATE
+    hits=hits+1
+SQLEND
+
+$DB-&gt;getDatabaseHandle()-&gt;do(
+  $logQueryLikeIt, undef
+  , $ENV{HTTP_USER_AGENT}, $nid, 1
+);
+
 my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time - 86400*30);
 $year += 1900;
 $mon++;

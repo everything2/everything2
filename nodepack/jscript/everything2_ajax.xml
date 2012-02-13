@@ -651,59 +651,6 @@ e2('#chatterbox:not(.pending)', function(){
 if (e2.isChatterlight) e2('#message', e2(function(){
 	$(this).css('width','').focus();
 }).defer); // defer for IE
-
-{
-	var cache = []
-
-	e2('.userComplete', function() {
-
-		inputComplete = $(this);
-		var holderId = inputComplete.attr('id');
-		if (!holderId)
-			holderId = e2.getUniqueId();
-		holderId += &quot;-autocomplete-holder&quot;;
-
-		if (window.console &amp;&amp; console.log) {
-			console.log(
-				&quot;Attaching to &quot; + inputComplete.attr('nodeName')
-				+ &quot; with holder id of &quot; + holderId
-				);
-		}
-
-		var menuHolder = $('&lt;div&gt;&lt;/div&gt;');
-		menuHolder.width(inputComplete.width());
-		menuHolder.css('position', 'absolute');
-		menuHolder.attr('id', holderId);
-		menuHolder.insertAfter(inputComplete);
-
-		inputComplete.autocomplete({
-			appendTo: '#' + holderId,
-			minLength: 2,
-			source: function(request, response) {
-				var term = request.term;
-				if (term in cache) {
-					response(cache[term]);
-					return;
-				}
-
-				var cleanTerm = term.replace(/\|COMMA\|/g, '|COMMACOMMA|')
-					.replace(/,/g, '|COMMA|')
-					;
-				e2.ajax.htmlcode('user searcher',
-					{ args: cleanTerm, ajax: { dataType: 'json', success: cacheAndReturn } }
-				);
-
-				function cacheAndReturn(data) {
-					cache[term] = data;
-					response(data);
-				}
-			}
-			
-		});
-
-	});
-
-}
 </doctext>
   <node_id>1878034</node_id>
   <type_nodetype>1786405</type_nodetype>

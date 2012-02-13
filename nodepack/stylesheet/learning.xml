@@ -311,7 +311,7 @@ hr.clear {
 	visibility: hidden;	
 }
 
-div.writeup_add {
+form.writeup_add {
         display: static;
         float:left;
 }

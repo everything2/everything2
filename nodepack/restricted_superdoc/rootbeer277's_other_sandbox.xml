@@ -1,5 +1,13 @@
 <node>
-  <doctext>&lt;p&gt;[% 
+  <doctext>&lt;p&gt;[%
+my $id = 1503725;
+my $altDisp = 'hidden user';
+
+#return '&lt;a href=' . urlGen({node_id=&gt;$id}) . '&gt;' . ((defined $altDisp) ? $altDisp : getNodeById($id)-&gt;{title}) . '&lt;/a&gt;';
+return linkNode($id, ((defined $altDisp) ? $altDisp : getNodeById($id)-&gt;{title}));
+%]&lt;/p&gt;
+
+&lt;p&gt;[% 
 my $str = $query-&gt;start_form(&quot;POST&quot;, $query-&gt;script_name);
 $str .= $query-&gt;end_form; 
 $str =~ s/&lt;/&amp;lt;/g; 

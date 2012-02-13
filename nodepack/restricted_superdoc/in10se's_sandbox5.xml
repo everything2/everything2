@@ -6,7 +6,7 @@ my $rows;
 my $str;
 my $dbrow;
 my $queryText;
-my $limit = 100;
+my $limit = 50;
 my $recalcRows;
 my $row;
 

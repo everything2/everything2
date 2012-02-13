@@ -1,5 +1,16 @@
 <node>
-  <doctext>/* This is just kernel blue modified a little by Swap */
+  <doctext>/* autofix added basic compatibility rules */
+.weblog .title,
+.weblog .date,
+.weblog .contentinfo cite,
+.nodelet .title {
+ display: block;
+}
+.weblog .title {
+ margin-bottom:0.5em;
+ font-weight:bold;
+ font-size:107%;
+}
 
 /* I use spaces instead of tabs because it makes text editing easier in a web-based environment. */
 
@@ -12,7 +23,7 @@ td {
 }
 
 /* darker detailing/backgrounds */
- .nodelet h2,
+ .nodelet_title,
  #header,
  #footer,
  #footer a:link,
@@ -35,7 +46,7 @@ td {
  }
 
 /* medium backgrounds/details */
- .nodelet h2 {
+ .nodelet_title {
   color: #c5cdd7;
  }
  .oddrow,
@@ -64,11 +75,11 @@ td {
 
 /* dark horizontal rules */
  .nodetitle,
- .cotc_info {
+ #creamofthecool .contentinfo {
   border-bottom-color: #333333;
  }
 
- .wl_text {
+ .weblog .item .content {
   border-top-color: #333333;
  }
 
@@ -132,7 +143,7 @@ td {
   font-weight: bold;
  }
 
- h2 {
+ h2 , h3.nodelet_title {
   font-size: 130%;
   font-weight: bold;
  }
@@ -328,25 +339,29 @@ td {
     #staff_picks h3 {
      margin: 0;
     }
-    .linklist {
+    .linklist , .linklist li {
      padding: 0;
-     margin: 5px 0;
+     margin: 0;
+     display: block ;
      list-style: none outside none;
     }
-     .linklist li {
+    #mainbody .linklist {
+     margin: 5px 0;
+    }
+     #mainbody .linklist li {
       padding: 1px 0;
       border-bottom-width: 1px;
       border-bottom-style: solid;
       text-align: left;
-      margin: 0;
       border-bottom-color: #d3d3d3;
      }
-      .linklist li a {
+      #mainbody .linklist li a {
        padding: 1px;
        display: block;
        text-decoration: none;
       }
-    .cup_more,
+    .morelink,
+    .editlink,
     .sp_more {
      text-align: right;
     }
@@ -355,32 +370,31 @@ td {
     h3#creamofthecool_title {
      margin: 0;
     }
-    #creamofthecool table {
-     border-collapse: collapse;
+    #creamofthecool .content {
      margin: 5px 0;
     }
     #cotc {
      overflow: auto;
     }
-     .cotc_entry {
+     #creamofthecool .item {
       margin: 0px 0;
      }
-      .cotc_info {
+      #creamofthecool .contentinfo {
        font-weight: bold;
        padding-bottom: 5px;
        border-bottom-width: 1px;
        border-bottom-style: solid;
        margin-bottom: 2px;
       }
-       .cotc_info a {
+       #creamofthecool .contentinfo a {
         text-decoration: none;
        }
-      .cotc_text {
+      #creamofthecool .content {
       }
-       .cotc_text blockquote {
+       #creamofthecool .content blockquote {
         margin: 0 5%;
        }
-      .cotc_more {
+      #creamofthecool .morelink {
        text-align: right;
       }
    #frontpage_news {
@@ -389,41 +403,38 @@ td {
     #frontpage_news h2 {
     }
     /* news entries resemble writeups: */
-    .weblog_item {
+    .weblog .item {
      margin: 20px 0;
     }
-     .wl_title {
+     .weblog .item .title {
       display: inline;
       font-weight: bold;
      }
-      .wl_title a {
+      .weblog .item .title {
        text-decoration: none;
       }
-     .wl_author {
+     .weblog .item .contentinfo cite {
       margin-left: 5px;
       display: inline;
       font-weight: bold;
      }
-     .wl_author:before {
-      content: &quot;by &quot;;
-     }
-      .wl_author a {
+      .weblog .item .contentinfo cite a {
        text-decoration: none;
       }
-     .wl_date {
+     .weblog .item .date {
       margin-left: 5px;
       display: inline;
       font-weight: bold;
      }
-     .wl_date:before {
+     .weblog .item .date:before {
       content: &quot;on &quot;;
      }
-     .wl_remove {
+     .remove {
       margin-left: 5px;
       display: inline;
       font-weight: bold;
      }
-     .wl_text {
+     .weblog .item .content {
       clear: both;
       margin-top: 3px;
       border-top-width: 1px;
@@ -442,29 +453,35 @@ td {
     font-weight: normal;
     text-indent: 0px;
    }
-   .createdby {
-    text-align: right;
+.createdby {
+    float: right;
+}
+
+.actions , .actions li {
+	display: inline ;
+	margin: 0 ;
+	padding: 0 ;
+}
+
+.actions .action {
+	padding-right: 5pt ;
+}
+
+.e2node #pageheader {
     margin-bottom: 40px;
    }
-   .writeup {
+
+.writeuppage .item {
     margin: 20px 0 60px;
    }
-    .writeup_title {
+    .writeuppage .contentheader {
      background: #c5cdd7;
      padding: 5px;
      border-top-color: #333333;
      border-top-width: 1px;
      border-top-style: solid;
     }
-     .writeup_title td {
-     }
-    .writeuptable {
-     width: 100%;
-     overflow: auto;
-     border-collapse: collapse;
-     border-width: 0;
-    }
-     .writeup_text {
+     .writeuppage .item .content {
       background-color: #eee;
       padding: 20px;
       overflow: auto;
@@ -486,9 +503,29 @@ td {
       ul ul ul ul { list-style: disc; }
       ul ul ul ul ul { list-style: circle; }
       ul ul ul ul ul ul { list-style: square; }
-    .writeuptable table {
+    .content table {
      border-collapse: collapse;
-     border-width: 0 0 1px 0;
+    }
+    .content th,
+    .content td  {
+     border: 1px solid gray;
+     padding: 5px;
+     text-align: left;
+     vertical-align: top;
+    }
+    .content th *:first-child,
+    .content td *:first-child {
+     margin-top: 0;
+    }
+    .content th *:last-child,
+    .content td *.last-child {
+     margin-bottom: 0;
+    }
+    .content th {
+     background-color: #C5CDD7;
+    }
+    .content td {
+     background-color: #f6f6f6;
     }
     .wu_footer {
      background-color: #C5CDD7;
@@ -541,7 +578,9 @@ td {
    /*** END REGULAR NODES ***/
 
    /*** HOMENODES ***/
-
+hr.clear {
+display: none ;
+}
    #homenodeheader {
     margin-top: 20px;
    }
@@ -572,46 +611,25 @@ td {
       font-size: 90%;
      }
     
-   hr.clear {
-    /*
-     I can only find one place where hr.clear appears
-     so I don't know if this will break other pages
-
-     clear: both;
-     visibility: hidden;
-    */
-    display: none;
-   }
-
    #homenodetext {
     width: 100%;
     clear: both;
    }
 
-   #bookmarks {
-   }
-
-    #bookmarks h4 {
-    }
-
-    #bookmarks ul {
-    }
-
-
-     #bookmarks li {
-     }
-
    /*** END HOMENODES ***/
 
    /*** SCRATCHPAD ***/
 
-   #scratchpadtable {
-    border-collapse: collapse;
-    border-width: 1px;
+   #skratch_form .content {
+    background-color: #eee;
+    padding: 20px;
+    overflow: auto;
    }
-
-    #scratchpadtable td {
-     padding: 20px;
+    #skratch_form .content *:first-child {
+     margin-top: 0;
+    }
+    #skratch_form .content *:last-child {
+     margin-bottom: 0;
     }
 
    /*** END SCRATCHPAD ***/
@@ -619,7 +637,7 @@ td {
    /*** TABLES OF DATA ***/
 
    .oddrow td,
-   .evenrow td {
+   .oddrow + tr td , .evenrow td {
     padding: 4px;
    }
 
@@ -636,11 +654,6 @@ td {
    margin-right: -100%;
   }
 
-   /* These appear at the top of the sidebar iff you have no chatterbox nodelet */
-   #msgnum,
-   #msgunarchived {
-   }
-
    .nodelet {
     clear: both;
     padding: 0;
@@ -650,7 +663,7 @@ td {
     margin-bottom: 2px;
    }
 
-    .nodelet h2 {
+    .nodelet_title {
      display: block;
      margin: 0;
      padding: 0 5px;
@@ -661,65 +674,61 @@ td {
      padding: 5px;
     }
 
-     /*** NEW WRITEUPS ZEN NODELET (#1868940) ***/
+     /*** NEW WRITEUPS ***/
 
-     #writeup_list {
+     .nodelet .infolist {
       margin: 0;
       padding: 0;
       list-style: none outside none;
      }
-      #writeup_list li {
+      .nodelet .infolist li {
        margin: 0;
        padding: 1px;
        border-bottom-width: 1px;
        border-bottom-style: solid;
        border-color: #d3d3d3;
       }
-       #writeup_list span.writeupmeta {
+       .nodelet .infolist .contentinfo {
         display: block;
        }
-        #writeup_list span.author {
-         float: right;
-         font-size: 90%;
-        }
-        #writeup_list span.author:before {
-         content: &quot;by &quot;;
-        }
-        #writeup_list span.title {
+        .nodelet .title {
          font-weight: bold;
+         text-decoration: none;
         }
-        #writeup_list span.hasvoted span.title {
+        .nodelet .hasvoted .title {
           font-weight: normal;
         }
-         #writeup_list span.title a {
-          text-decoration: none;
-         }
-
-         #writeup_list span.title a:hover {
-         }
-
-        #writeup_list span.type {
+        .nodelet .infolist span.hidden,
+        .nodelet .infolist span.hide {
          font-size: 90%;
         }
-        #writeup_list span.hidden,
-        #writeup_list span.hide {
-         font-size: 90%;
-        }
-      #newWriteupsMore {
+      .nodelet .morelink {
        text-align: right;
       }
-     /*** END NEW WRITEUPS ZEN NODELET ***/
+     /*** END NEW WRITEUPS ***/
+     
+/* NOTIFICATIONS */
+#notifications ul , #notifications li {
+	display: block ;
+	margin: 0 ; 
+	padding: 0 ;
+}
 
-     /*** EPICENTER NODELET (#262) ***/
+#notifications li {
+	padding: 1px 1px 1px 24px ;
+	text-indent: -23px ;
+}
+
+     /*** EPICENTER NODELET ***/
 
 
-     #nodelet_262 ul {
+     #epicenter ul {
       margin: 5px;
       padding: 0;
       list-style: disc inside none;
      }
 
-      #nodelet_262 li {
+      #epicenter li {
       }
 
      #experience {
@@ -728,13 +737,9 @@ td {
 
      /*** END EPICENTER NODELET ***/
 
-     /*** CHATTERBOX NODELET (#170070) ***/
+     /*** CHATTERBOX NODELET  ***/
 
-     /* catbox symbols... */
-     #nodelet_170070 {
-     }
-
-     #nodelet_170070 .nodelet_content {
+     #chatterbox .nodelet_content {
       overflow: auto;
      }
 
@@ -745,22 +750,18 @@ td {
 
      /*** END CHATTERBOX NODELET ***/
 
+/* PERSONAL LINKS NODELET */
+#personallinks .linklist {
+margin-bottom: 1em ;
+}
 
+     /*** AD NODELET ***/
 
-
-     /*** AD NODELET (#1931151) ***/
-
-     #nodelet_1931153 {
+     #ads {
       background-color: white;
-
-
-
-
-
      }
 
-      #nodelet_1931153 h2 {
-
+      #ads h2 {
        display: none;
       }
 
@@ -803,8 +804,8 @@ td {
  float: left;
  width: 25%;
 }
- #chatterlight_NW #nodelet_263,
- #chatterlight_Notifications #nodelet_1930708 {
+ #chatterlight_NW #newwriteups,
+ #chatterlight_Notifications #notifications {
   margin: 1em;
  }
   #chatterlight_NW .nodelet,
@@ -842,6 +843,14 @@ font-size: 12px;
 font-family: Arial, sans-serif;
 color: #B0B0B0;
 } 
+
+.writeuppage .contentheader {
+    background: #444444;
+}
+
+.writeuppage .item .content {
+    background-color: #222222;
+}
 
 /* These are headings */
 
@@ -907,9 +916,9 @@ font-size: 100%;
 #message { width: 95%}
 
 /*Patch Manager coloring */
-.patch_pending_review, .patch_assigned { background: purple !important; }
-.patch_implemented { background: darkgreen !important; }
-.patch_invalid { background: darkred !important; }
+.patch_imported-pending, .patch_pending_review, .patch_assigned { background: purple !important; }
+.patch_imported-implemented, .patch_implemented { background: darkgreen !important; }
+p.patch_invalid { background: darkred !important; }
 .patch_later {background: navy!important; }
 .patch_undone {background : olive !important;}</doctext>
   <node_id>1976666</node_id>

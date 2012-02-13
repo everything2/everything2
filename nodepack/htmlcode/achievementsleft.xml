@@ -1,27 +1,21 @@
 <node>
   <node_id>1919370</node_id>
-  <code>my $str;
-
-$str .= &quot;&lt;ul&gt;&quot;;
+  <code>my $str = '';
 
 my $unAchieved = $DB-&gt;sqlSelectMany(
-   &quot;display&quot;
-   , &quot;achievement&quot;
-   , &quot;achievement_still_available = 1
-   AND achievement_id NOT IN 
-      (SELECT achieved_achievement
-         FROM achieved
-         WHERE achieved_user=$$USER{user_id})
-   &quot;
-   );
+	'display'
+	, &quot;achievement LEFT OUTER JOIN achieved
+		ON achieved_achievement=achievement_id
+		AND achieved_user=$$USER{node_id}&quot;
+	, 'achievement_still_available=1
+	   AND achieved_achievement IS NULL'
+);
 
 while (my $u = $unAchieved-&gt;fetchrow_hashref) {
    $str.= &quot;&lt;li&gt;$$u{display}&lt;/li&gt;&quot;;
 }
 
-$str .= &quot;&lt;/ul&gt;&quot;;
-
-return $str;
+return $query -&gt; ul($str);
 </code>
   <type_nodetype>4</type_nodetype>
   <title>achievementsLeft</title>

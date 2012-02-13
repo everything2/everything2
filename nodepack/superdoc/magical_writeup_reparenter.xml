@@ -5,9 +5,10 @@
 return 'No magic for you, I\'m afraid.' unless htmlcode('isEditor');
 
 ## Writeup reparenting tool
-## This is called from the Master Control Nodelet
-##   If called from an e2node view, it will pass old_e2node_id
-##   If called from a writeup view it will pass old_writeup_id
+## This is called from e2node or writeup admin tools, or
+## the Master Control Nodelet
+##   If called from an e2node, it is passed old_e2node_id
+##   If called from a writeup it is passed old_writeup_id
 ##     and we'll need to lookup its parent to get the old_e2node_id
 ## Needs old_e2node_id, new_e2node_id, list of writeup_ids
 ## Once the reparenting is done, the new e2node will need
@@ -278,6 +279,7 @@ my $list_writeups = sub {
 	if ($group &amp;&amp; scalar @$group)
 		{
 		$selection_string .= &quot;\n&lt;ul&gt;&quot;; 
+		my $check_all = $query -&gt; param('reparent_all');
 		foreach my $move_writeup_id (@$group)
 			{
 			my $move_writeup = $getNodeByNameOrId-&gt;($move_writeup_id, 'writeup');
@@ -295,7 +297,7 @@ my $list_writeups = sub {
 				$selection_string .= &quot;\n\t&lt;li&gt;&quot;
 				. $query-&gt;checkbox(-name =&gt; &quot;reparent_$move_writeup_id&quot;
 					, -value =&gt; '1'
-					, -checked =&gt; $checked
+					, -checked =&gt; $check_all || $checked
 					, -label =&gt; $label
 					)
 				. &quot;&lt;/li&gt;&quot;;

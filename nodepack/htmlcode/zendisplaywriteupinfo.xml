@@ -7,53 +7,46 @@ my $wuHeader = '';
 
 $wuHeader .= &quot;
 
-	&lt;div class='writeup_info' id='writeup_$wuID'&gt;
-&lt;div style='float: left'&gt;
-		submitted by&lt;br /&gt;&lt;span class='writeup_author'&gt; &quot;.linkNode($$wu{author_user}).&quot;&lt;/span&gt;&lt;br /&gt;
-		&lt;span class='writeup_date'&gt;$$wu{createtime}&lt;/span&gt;
-&lt;/div&gt;
-&lt;div style='float: right'&gt;
-		&lt;span class='writeup_message'&gt;
-			&lt;a href='javascript:WU&quot;.$wuID.&quot;.writeupMessage()'&gt;MSG&lt;/a&gt;
-		&lt;/span&gt;
-		&lt;span class='writeup_bookmark' &gt;&quot;.
-			( $DB-&gt;sqlSelect('count(*)', 'links', &quot;from_node=&quot;.$$USER{node_id}.&quot; and to_node=&quot;.$$NODE{node_id}.&quot; and linktype=&quot;.getId(getNode('bookmark','linktype'))) ? 
-			&quot;bookmarked&quot; : 
-			&quot;&lt;a title='bookmark this writeup' href='javascript:WU&quot;.$wuID.&quot;.bookmark()'&gt;BOOK&lt;/a&gt;&quot;
-			).&quot;
-		&lt;/span&gt;
-		&lt;span class='writeup_favorite'&gt;&quot;.
-			( 0 == 1?
-			&quot;favorited&quot; : 
-			&quot;&lt;a href='javascript:WU&quot;.$wuID.&quot;.favorite()'&gt;FAVE&lt;/a&gt;&quot;
-			).&quot;
-		&lt;/span&gt;
-		&quot;;
+
+&lt;div class='writeup_info' id='writeup_$wuID'&gt;
+
+&lt;span class='writeup_type'&gt;&quot;.linkNode($$wu{wutype}).&quot;&lt;/span&gt;
+&lt;span class='writeup_author'&gt;by &quot;.linkNode($$wu{author_user}).&quot;&lt;/span&gt;
+&lt;span class='writeup_date'&gt;$$wu{createtime}&lt;/span&gt;
+&lt;span class='writeup_message'&gt;
+&lt;a href='javascript:WU&quot;.$wuID.&quot;.writeupMessage()'&gt;&lt;img src='http://24.174.47.208:8080/e2icons/message.png' alt='send message' /&gt;&lt;/a&gt;
+&lt;/span&gt;
+&lt;span class='writeup_bookmark' &gt;&quot;.( 0 == 1? &quot;bookmarked&quot; : &quot;
+&lt;a title='bookmark this writeup' href='javascript:WU&quot;.$wuID.&quot;.bookmark()'&gt;&lt;img src='http://24.174.47.208:8080/e2icons/bookmark.gif' alt='bookmark writeup' /&gt;&quot;).&quot;&lt;/a&gt;
+&lt;/span&gt;
+&lt;span class='writeup_favorite'&gt;&quot;.( 0 == 1? &quot;favorited&quot; : &quot;
+&lt;a href='javascript:WU&quot;.$wuID.&quot;.favorite()'&gt;&lt;img src='http://24.174.47.208:8080/e2icons/favorite.png' alt='add author to favorites' /&gt;&quot;).&quot;&lt;/a&gt;
+&lt;/span&gt;
+&lt;span class='writeup_vote'&gt;&quot;.( 0 == 1? &quot;voted&quot; : &quot;
+&lt;a href='javascript:WU&quot;.$wuID.&quot;.vote(1)'&gt;&lt;img src='http://24.174.47.208:8080/e2icons/upvote.png' alt='vote up writeup' /&gt;&lt;/a&gt;
+ 
+&lt;a href='javascript:WU&quot;.$wuID.&quot;.vote(-1)'&gt;&lt;img src='http://24.174.47.208:8080/e2icons/downvote.png' alt='downvote writeup' /&gt;&lt;/a&gt;&quot;) .&quot;&lt;/span&gt;
+&lt;span class='writeup_cool'&gt;&quot;.( 0 == 1? &quot;C!ed&quot; : &quot;&lt;a href='javascript:WU&quot;.$wuID.&quot;.cool()'&gt;C?&lt;/a&gt;&quot;) .&quot;&lt;/span&gt;&quot;;
 
 my $isEditor = htmlcode('isEditor');
 if ($isEditor) {
 $wuHeader .= &quot;
-		&lt;span class='writeup_kill'&gt;&quot;.
-			( 0 == 1? 
-			&quot;killed&quot; : 
-			&quot;&lt;a href='javascript:WU&quot;.$wuID.&quot;.killBox()'&gt;KILL&lt;/a&gt;&quot;
-			).&quot;
-		&lt;/span&gt;
-		&lt;span class='writeup_toolset small_text'&gt;
-			&lt;a href='javascript:WU&quot;.$wuID.&quot;.toolSet()'&gt;Admin Toolset&lt;/a&gt;
-		&lt;/span&gt;
-		&lt;span class='writeup_box' style='display:none'&gt;&lt;/span&gt;&quot;;
-
-$wuHeader.= &quot;
-&lt;/div&gt;
-&lt;div style='clear:both'&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;script type='text/javascript'&gt;
- var WU&quot;.$wuID.&quot;;
- Deferrer.defer(function() {WU&quot;.$wuID.&quot; = new WriteupAJAX(\$('writeup_&quot;.$wuID.&quot;'));}, 'writeupAjaxExists');
-&lt;/script&gt;&quot;;
+&lt;span class='writeup_kill'&gt;&quot;.( 0 == 1? &quot;killed&quot; : &quot;&lt;a href='javascript:WU&quot;.$wuID.&quot;.killBox()'&gt;&lt;img src='http://24.174.47.208:8080/e2icons/kill.gif' alt='mark for destruction'/&gt;&lt;/a&gt;&quot;).&quot;&lt;/span&gt;
+&lt;span class='writeup_toolset small_text'&gt;&lt;a href='javascript:WU&quot;.$wuID.&quot;.toolSet()'&gt;Admin Toolset&lt;/a&gt;&lt;/span&gt;
+&lt;span class='writeup_box'&gt;&lt;/span&gt;&quot;;
 }
 
+$wuHeader.=&quot;
+&lt;/div&gt;&quot; .
+
+'
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+var WU'.$wuID.';
+Deferrer.defer(function() {WU'.$wuID.' = new WriteupAJAX($(&quot;writeup_'.$wuID.'&quot;));}, &quot;writeupAjaxExists&quot;);
+&lt;/script&gt;
+
+';
 
 $wuHeader;</code>
   <type_nodetype>4</type_nodetype>

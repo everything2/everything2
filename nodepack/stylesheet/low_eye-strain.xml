@@ -1,5 +1,22 @@
 <node>
-  <doctext>/**************************************************/
+  <doctext>/*= autofix added basic compatibility rules */
+.weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {}
+.weblog .title {margin-bottom:0em;font-weight:bold;font-size:107%;}
+.weblog .title, .nodelet .title {text-decoration: none;}
+.weblog .hasvoted .links { color: #6f748f; font-weight: normal;}
+.weblog .content {margin-bottom:1em;}
+.populated {text-decoration: none;}
+.cite {text-decoration: none;}
+.weblog .type {text-decoration: none;}
+.type {text-decoration: none;}
+.author {text-decoration: none;}
+.title a {text-decoration: none;}
+
+.weblog .content {padding-bottom: 15px;}
+
+/*= end autofix added rules */
+/*= Comments containing old/disabled rules start with = for easy finding */
+/**************************************************/
 /* In Pretentious Russia                          */
 /*                                                */
 /* This started as the colours from Sam512's      */
@@ -41,8 +58,10 @@
 	margin-right: 1%;
 }
 
-	#nodelet_263,
-	#nodelet_1930708 {
+	/*=#nodelet_263,
+	#nodelet_1930708*/
+#newwriteups,
+	#notifications {
 		margin: 1em;
 	}
 
@@ -97,7 +116,8 @@ td {
 		border-bottom-color: #333333;
 	}
 
-	.wl_text {
+	/*=.wl_text*/
+.weblog .item .content {
 		border-top-color: #333333;
 	}
 
@@ -287,7 +307,8 @@ display: inline ;}
 				#cotc {
 				}
 
-					.cotc_entry {
+					/*=.cotc_entry*/
+#creamofthecool .item {
 						width: 300px;
 						border-width: 1px;
 						border-style: solid;
@@ -295,7 +316,8 @@ display: inline ;}
 						margin: 2px 0;
 					}
 
-						.cotc_info {
+						/*=.cotc_info*/
+#creamofthecool .contentinfo {
 							font-weight: bold;
 							padding-bottom: 5px;
 							border-bottom-width: 1px;
@@ -303,15 +325,18 @@ display: inline ;}
 							margin-bottom: 5px;
 						}
 
-						.cotc_text {
+						/*=.cotc_text*/
+#creamofthecool .content {
 							font-size: 100%;
 						}
 
-							.cotc_text blockquote {
+							/*=.cotc_text blockquote*/
+#creamofthecool .content blockquote {
 								margin: 0 5%;
 							}
 
-						.cotc_more {
+						/*=.cotc_more*/
+#creamofthecool .morelink {
 							font-size: 70%;
 							text-align: right;
 						}
@@ -336,7 +361,8 @@ display: inline ;}
 				margin-bottom: 40px;
 			}
 
-			.writeup {
+			/*=.writeup*/
+.writeuppage .item {
 				margin: 20px 0 60px;
 			}
 
@@ -356,7 +382,8 @@ display: inline ;}
 					overflow: auto;
 				}
 
-					.writeup_text {
+					/*=.writeup_text*/
+.writeuppage .item .content {
 						padding: 20px;
 						overflow: auto;
 					}
@@ -536,48 +563,59 @@ display: inline ;}
 
 					/*** NEW WRITEUPS ZEN NODELET (#1868940) ***/
 
-					#writeup_list {
+					/*=#writeup_list*/
+.nodelet .infolist {
 						margin: 0;
 						padding: 0;
 						list-style: none outside none;
 					}
 
-						#writeup_list li {
+						/*=#writeup_list li*/
+.nodelet .infolist li {
 							margin: 0;
 							padding: 1px;
 							border-bottom-width: 1px;
 							border-bottom-style: solid;
 						}
 
-							#writeup_list span.writeupmeta {
+							/*=#writeup_list span.writeupmeta*/
+.nodelet .infolist .contentinfo {
 								display: block;
 							}
 
-								#writeup_list span.author {
+								/*=#writeup_list span.author*/
+/*=DISABLED .nodelet .infolist span.author*/ {
 									float: right;
 									font-size: 90%;
 								}
 
-								#writeup_list span.author:before {
+								/*=#writeup_list span.author:before*/
+/*=DISABLED .nodelet .infolist span.author:before*/ {
 									content: &quot;by &quot;;
 								}
 
-								#writeup_list span.title {
+								/*=#writeup_list span.title*/
+/*=DISABLED .nodelet .infolist span.title*/ {
 								}
 
-									#writeup_list span.title a {
+									/*=#writeup_list span.title a*/
+/*=DISABLED .nodelet .infolist span.title a*/ {
 										text-decoration: none;
 									}
 
-									#writeup_list span.title a:hover {
+									/*=#writeup_list span.title a:hover*/
+/*=DISABLED .nodelet .infolist span.title a:hover*/ {
 									}
 
 
-								#writeup_list span.type {
+								/*=#writeup_list span.type*/
+/*=DISABLED .nodelet .infolist span.type*/ {
 								}
 
-								#writeup_list span.hidden,
-								#writeup_list span.hide {
+								/*=#writeup_list span.hidden,
+								#writeup_list span.hide*/
+.nodelet .infolist span.hidden,
+								.nodelet .infolist span.hide {
 									font-size: 90%;
 								}
 
@@ -585,13 +623,15 @@ display: inline ;}
 
 					/*** EPICENTER NODELET (#262) ***/
 
-					#nodelet_262 ul {
+					/*=#nodelet_262 ul*/
+#epicenter ul {
 						margin: 5px;
 						padding: 0;
 						list-style: disc inside none;
 					}
 
-						#nodelet_262 li {
+						/*=#nodelet_262 li*/
+#epicenter li {
 						}
 
 					#experience {
@@ -602,7 +642,8 @@ display: inline ;}
 
 					/*** CHATTERBOX NODELET (#170070) ***/
 
-					#nodelet_170070 .nodelet_content {
+					/*=#nodelet_170070 .nodelet_content*/
+#chatterbox .nodelet_content {
 						overflow: auto;
 					}
 
@@ -724,7 +765,8 @@ span.hasvoted span.title a:visited { color: #6f748f; }
 .chat_user a {color: #958b00;}
 
 .chat_BlackPawn a {color: Blue;}
-
+.chat_E2D2 { background: red; }
+.chat_E2D2 a { color: Black; )
 .flags {font-size: x-small} .me, .my, .sing {font-style: italic} .whisper {font-size: small; color: purple;}
 
 .sigil_chat 
@@ -734,7 +776,11 @@ span.hasvoted span.title a:visited { color: #6f748f; }
 .action_me, .action_sing 
      { font-style: italic; }
 .action_whisper, .action_roll, .action_fireball, .action_sanctify, .action_egg 
-     { font-variant: small-caps; }</doctext>
+     { font-variant: small-caps; }
+
+body div#surveymessage {
+margin-top: 55px !important;
+}</doctext>
   <node_id>1931383</node_id>
   <type_nodetype>1854352</type_nodetype>
   <title>Low eye-strain</title>

@@ -165,7 +165,8 @@ pre {
 }
 
 #e2logo a:link, #e2logo a:visited {
-	text-decoration: blink;      
+	//text-decoration: blink;      
+        //[Swap] commented this out, June 20, 2009
 }
 
 #searchform {

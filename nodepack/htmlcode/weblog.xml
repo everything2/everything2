@@ -5,6 +5,7 @@ my ( $interval, $log_id, $remlabel, $hideLinker, $skipFilterHTML, $listOnly ) = 
 
 $log_id ||= getId( $NODE ) ;
 $interval ||= 5 ;
+$listOnly ||= 0 ;
 
 my $endat = $interval ;
 if ($query &amp;&amp; $query-&gt;param( 'nextweblog' )) {
@@ -84,7 +85,8 @@ if ( $offset or $isolder ) {
 	$str .= '&lt;/div&gt;' ;
 }
 
-&quot;&lt;div class=\&quot;weblog\&quot;&gt;\n$str\n&lt;/div&gt;&quot; ;</code>
+&quot;&lt;div class=\&quot;weblog\&quot;&gt;\n$str\n&lt;/div&gt;&quot; ;
+</code>
   <type_nodetype>4</type_nodetype>
   <title>weblog</title>
 </node>

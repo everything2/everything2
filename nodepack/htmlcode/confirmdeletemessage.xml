@@ -1,8 +1,6 @@
 <node>
   <node_id>2044460</node_id>
   <code>my ($messageID,$actioned)=@_;
-my $str;
-
 
 if ($actioned eq &quot;deleted&quot;) {
   return &quot;Message deleted&quot;;
@@ -14,9 +12,9 @@ if ($actioned eq &quot;archived&quot;) {
 
 my $archiveWhat=&quot;archive_$messageID&quot;;
 
-$str.=linkNode( $NODE , 'Archive message' , { op =&gt; 'message', $archiveWhat =&gt; 'yup', lastnode_id =&gt; 0 , -title =&gt; &quot;archive the above message&quot; , -class =&gt; &quot;action ajax message_$messageID:confirmDeleteMessage:$messageID,archived&quot; });
+my $str = linkNode( $NODE , 'Archive message' , { op =&gt; 'message', $archiveWhat =&gt; 'yup', lastnode_id =&gt; 0 , -title =&gt; &quot;archive the above message&quot; , -class =&gt; &quot;action ajax message_$messageID:confirmDeleteMessage:$messageID,archived&quot; })
 
-$str.=' or ';
+.' or ';
 
 my $deleteWhat=&quot;deletemsg_$messageID&quot;;
 

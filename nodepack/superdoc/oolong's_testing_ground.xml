@@ -1,68 +1,19 @@
 <node>
   <doctext>[%
-linkNode(&quot;1920074&quot;);
-%]
 
-[%
-
-linkNode('verify your email account').'[test]';
-
-%]
-
-
-
-[%
-my $str='&lt;form id=&quot;&quot; name=&quot;wtf&quot; enctype=&quot;multipart/form-data&quot; action=&quot;/title/Unpopular+Node&quot; method=&quot;post&quot;&gt;';
-
-$str.=htmlcode('stars',&quot;$$NODE{node_id},$$NODE{node_id},,&quot;);
-
-$str.='&lt;/form&gt;';
+my $str = '$CONFIG{canonical_web_server} = '
+          . $CONFIG{canonical_web_server}
+          ;
 
 return $str;
+
 %]
 
-
-[% return;
-
-#Was:
-
-return '&lt;script type=&quot;text/javascript&quot;&gt;
-jQuery(function(){
- jQuery(&quot;.star&quot;).rating({
-  callback: function(value, link){
-   alert(&quot;The value selected was \'&quot; + value + &quot;\'\n\nWith this callback function I can automatically submit the form with this code:\nthis.form.submit();&quot;);
-  }
- });
-});&lt;/script&gt;';
+[%
+  my $forwardId=getNode(&quot;Oolong&quot;,&quot;e2node&quot;)-&gt;{node_id};
+  return $forwardId;
 %]
-
 &lt;hr&gt;
-
-
-You are [% return (htmlcode(&quot;isGuest&quot;)) ? &quot;A GUEST&quot; : &quot;a registered user.&quot;.htmlcode(&quot;isGuest&quot;); %]
-
-
-
-
-&lt;hr&gt;
-[% linkNodeTitle(&quot;Writeups by Type&quot;, &quot;superdoc&quot;, &quot;more&quot;); %]
-
-[% 
-
-eval { use Image::Magick; };
-if ($@) {
-   return &quot;&lt;h3&gt;Image::Magick load failed!&lt;/h3&gt;&lt;pre&gt;$@_&lt;/pre&gt;&quot;;
-}
-else {
-
-   my $image = Image::Magick -&gt; new();
-   undef $image;
-
-   return &quot;No errors?&quot;;
-
-}
-
-%]
 
 [%  
 

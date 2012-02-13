@@ -440,49 +440,6 @@ display: none;
 #newwriteupszen .nodelet_content {
 width: 100%;
 }
-#newwriteups li {
-  position: relative;
-}
-#newwriteups li, #newwriteups .hide {
-  display: block;
-  clear: both;
-}
-#newwriteups cite {
-  display: block;
-  height: 0;
-  overflow: none;
-  visibility: hidden;
-}
-#newwriteups cite .author {
-  display:block;
-  float:left;
-  text-align:center;
-  visibility:visible;
-  width:100%;
-  background-color:#CCCC99;
-  font-weight: bold;
-  font-style: normal;
-  top: 0;
-  position: absolute;
-}
-#newwriteups .title {
-  display: inline-block;
-  text-align: left;
-  background: transparent;
-  font-weight: normal;
-  width: 70%;
-  margin-top: 1.2em;
-  float: left;
-}
-#newwriteups .type {
-  margin-top: 1.2em;
-}
-#newwriteups .type, #newwriteups .hide {
-  display: inline-block;
-  float: right;
-  text-align: right;
-  width: 30%;
-}
 .infolist .contentinfo {
 clear: both;
 }

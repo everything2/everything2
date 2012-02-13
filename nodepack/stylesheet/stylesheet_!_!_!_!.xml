@@ -241,7 +241,6 @@ width:99%;
 
 .nodelet {
 	clear: both;
-	width: 200px;
 	padding: 0px;
 	word-wrap: break-word;
 	margin-bottom: 8px;

@@ -21,9 +21,12 @@ return 0 if $editCheck &amp;&amp; !$$N{collaborators};
 my $status = getNodeById($$N{publication_status});
 return 0 if !$status || $$status{type}{title} ne 'publication_status';
 
+my $isEditor = exists $HTMLVARS{'group_gods'}{$$USER{node_id}}
+	|| exists $HTMLVARS{'group_content editors'}{$$USER{node_id}};
+
 my %equivalents = (
 	nuked =&gt; 'private'
-	, removed =&gt; 'public'
+	, removed =&gt; $isEditor ? 'public' : 'private'
 	, review =&gt; 'findable'
 );
 

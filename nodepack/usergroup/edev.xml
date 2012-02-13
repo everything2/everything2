@@ -1,5 +1,6 @@
 <node>
-  <doctext>[%
+  <doctext>&lt;p style=&quot;text-align:right&quot;&gt;&lt;a href=&quot;http://webchat.freenode.net/?channels=everything2&quot;&gt;Join us on IRC&lt;/a&gt; | [{linkGroupMessages}] | [edev FAQ]&lt;/p&gt;
+[%
 my $UID = getId($USER);
 my $isGuest = !$UID || ($UID==$HTMLVARS{'guest_user'});
 my $isEdev = !$isGuest &amp;&amp; exists($HTMLVARS{'group_edev'}{$UID});

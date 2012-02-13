@@ -4,17 +4,7 @@
 my ($prefix) = @_;
 use Digest::MD5 qw(md5_hex);
 my $rand = rand(999999999);
-my $nonce;
-
-if ($$USER{title} eq 'Guest User') {
-
-  $nonce = md5_hex(htmlcode('getStarRatingSessionId') . ' ' . $rand);
-
-} else {
-
-  $nonce = md5_hex($$USER{passwd} . ' ' . $$USER{email} . $rand);
-
-}
+my $nonce = md5_hex($$USER{passwd} . ' ' . $$USER{email} . $rand);
 
 return $prefix . '_nonce = ' . $nonce . '&amp;' . $prefix . '_seed = ' . $rand;</code>
   <type_nodetype>4</type_nodetype>

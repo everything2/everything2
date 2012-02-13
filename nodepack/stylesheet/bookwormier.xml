@@ -982,7 +982,7 @@ input#message {
 	display: none;
 }
 
-#mobilewrapper #wrapper {
+#mobilewrapper &gt; #wrapper {
 	padding: 0 5px;
 	margin: 0;
 	overflow: auto;
@@ -1036,9 +1036,6 @@ input#message {
 	border: 1px #bbb solid;
 	border-bottom: none;
 	margin-right: 1px;
-	/* Support longer titles in tabs... */
-	overflow: hidden;
-	white-space:nowrap;
 }
 
 .zen_mobiletab_selected {

@@ -338,7 +338,14 @@ font-size: inherit;
 float: right;
 text-align: right;
 font-size: 90%;
-}</doctext>
+}
+
+#surveymessage {
+	margin-top: 45px !important;
+	margin-bottom: -45px !important;
+	width: 60%;
+}
+</doctext>
   <node_id>1931418</node_id>
   <type_nodetype>1854352</type_nodetype>
   <title>Skeleton stylesheet</title>

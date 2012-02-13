@@ -22,7 +22,7 @@ my $wrap = sub{ $query -&gt; div({id =&gt; &quot;draftstatus$$N{node_id}&quot;, 
 	)
 )};
 
-my ($str, $publishAs);
+my ($str, $publishAs) = ();
 
 if ($publish){
 	# check the user is allowed to post writeups

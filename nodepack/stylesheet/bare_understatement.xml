@@ -1,6 +1,5 @@
 <node>
-  <doctext>@import url(&quot;/?node_id=1965235&amp;amp;displaytype=view&quot;) ; /* [Understatement]: layout */
-
+  <doctext>@import url(&quot;/node/stylesheet/understatement?displaytype=view&quot;) ;
 /* LINKS */
 
 :link {
@@ -33,23 +32,19 @@ body , .nodelet , #loglinks , #cooluserpicks , #staff_picks , #creamofthecool {
 	border-top-style: solid ;
 	}
 
+body {
+	-moz-border-radius-topright: 0.5em ; /* not disappear under coloured header */
+	}
+
 div, p, li, dd , .oddrow {
 	background-color: transparent ;
 	}
 
-#e2logo {
-	border-bottom-style: dotted ;
-	}
-
 .nodelet_content ,
-#frontpage .linklist , #frontpage #cotc {
+#frontpage #mainbody .linklist , #frontpage #cotc {
 	border-top-style: dotted ;
 	}
 
-/**#creamofthecool #cotc h3 {
-	border-bottom-style: none ;
-	}
-*/
 #e2logo :link , #e2logo :visited , #e2logo a:hover , 
 #creamofthecool h3 :link , #creamofthecool h3 :visited , #creamofthecool h3 a:hover {
 	color: inherit ;
@@ -57,6 +52,10 @@ div, p, li, dd , .oddrow {
 
 .nodelet h2 , #frontpage_news_title :link , #frontpage_news_title :visited {
 	color: inherit ;
+	}
+
+td , th {
+	border-color: gray ;
 	}
 
 #softlinks td {

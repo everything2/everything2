@@ -193,9 +193,10 @@ if ($query-&gt;param('give_votes')) {
         return &quot;&lt;p&gt;You do not have that many votes! Please [E2 Gift Shop|try again].&lt;/p&gt;&quot; unless $amt &lt;= $vts;
         return &quot;&lt;p&gt;You must enter a number less than 26 and greater than zero. Please [E2 Gift Shop|try again].&lt;/p&gt;&quot; if ($amt &lt; 1 || $amt &gt; 25);
 	$$U{votesleft}+=$amt;
-        $$U{sanctity} += 1;
+	$$U{sanctity} += 1;
 	updateNode($U,-1);
 	$$USER{votesleft}-=$amt;
+	updateNode($USER, -1);
 
 $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; getId(getNode('The Gift of Votes', 'node_forward')), 'seclog_details' =&gt; &quot;$$USER{title} gave $amt of their votes to $$U{title} at the [E2 Gift Shop].&quot;});
 
@@ -417,6 +418,7 @@ if ($query-&gt;param(&quot;buyToken&quot;) &amp;&amp; $$USER{GP} &gt;= $tokenCos
 	$$USER{GP} += (-1*$tokenCost);
 
 	$$VARS{tokens}++;
+	$$VARS{tokens_bought}++;
 	setVars $USER, $VARS;
 	$resultStr = &quot;Sweet, now you have &lt;b&gt;&quot;.$$VARS{tokens}.&quot;&lt;/b&gt; token&quot;.($$VARS{tokens} == 1 ? &quot;&quot; :&quot;s&quot;);
 }
@@ -540,12 +542,14 @@ if ($query-&gt;param(&quot;buyEgg&quot;)) {
 
 	$$USER{GP} += (-1*$eggCost);
 	$$VARS{easter_eggs}++;
+	$$VARS{easter_eggs_bought}++;
 	$boughtEggs = 1;
 }
 elsif ($query-&gt;param(&quot;buyFiveEggs&quot;)) {
 
 	$$USER{GP} += (-5*$eggCost);
 	$$VARS{easter_eggs} += 5;
+	$$VARS{easter_eggs_bought} += 5;
 	$boughtEggs = 1;
 }
 if ($boughtEggs) {
@@ -702,6 +706,8 @@ if ($$VARS{GPoptout}){
 } else {
    $str.=&quot;&lt;p&gt;You currently have &lt;b&gt;&quot;.$$USER{GP}.&quot; GP&lt;/b&gt;, &lt;b&gt;&quot;.($$VARS{easter_eggs}||&quot;0&quot;).&quot;&lt;/b&gt; easter egg&quot;.($$VARS{easter_eggs} == 1 ? &quot;&quot; :&quot;s&quot;).&quot;, and &lt;b&gt;&quot;.($$VARS{tokens}||&quot;0&quot;).&quot;&lt;/b&gt; token&quot;.($$VARS{tokens} == 1 ? &quot;&quot; :&quot;s&quot;).&quot;.&lt;/p&gt;&quot;;
 }
+
+htmlcode('achievementsByType','miscellaneous,'.$$USER{user_id});
 
 return $str;
 

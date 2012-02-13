@@ -1,6 +1,9 @@
 <node>
   <doctext>[%
-require DateTime;
+my $currentYear = '2011';
+my $dateMinInc = '' . $currentYear . '-11-01';
+my $dateMaxExc = '' . $currentYear . '-12-03';
+my $triggerAchievement = $query -&gt; param('ironise'); # option to activate achievement if iron noder period is not one calendar month
 
 #constants
 my $UID = getId($USER)||$HTMLVARS{'guest_user'}||0;
@@ -10,15 +13,43 @@ my $isCE = !$isGuest &amp;&amp; ($isRoot || exists $HTMLVARS{'group_content edit
 my $ironLeader;
 my $isIronLeader = 0;
 my $isIronNoder = 0;
-my $currentYear = DateTime-&gt;now-&gt;year;
 
 #if there are more iron noder things later, this section should be updated to select appropriate group
 #	ironnoders	2008 November
 my $groupTitle = 'ironnoders';
 my @groupTypes = ('usergroup');
 
-my $dateMinInc = '' . $currentYear . '-11-01';
-my $dateMaxExc = '' . $currentYear . '-12-01';
+my %maintenanceNodeSet = 
+	map { $_ =&gt; 1 }
+		grep { /^\d+$/ } values %HTMLVARS;
+
+my $isMaintenanceNode = sub {
+
+	my $checkNode = shift;
+	my $parentNode = $$checkNode{parent_e2node} if $checkNode and ref $checkNode;
+
+	return 0 unless $parentNode;
+	return 0 unless $maintenanceNodeSet{$parentNode};
+	return 1;
+
+};
+
+my $isDaylogNode = sub {
+
+	my $checkNode = shift;
+	my $parentTitle = $$checkNode{parenttitle};
+	
+	return 1
+		if $parentTitle =~ m/^(?:January|February|March|April|May|June|July|
+								August|September|October|November|December)\s
+								[[:digit:]]{1,2},\s[[:digit:]]{4}$/ix;
+	return 1
+		if $parentTitle =~ m/^(dream|editor|root) Log:/i;
+	return 1
+		if $parentTitle =~ m/^letters to the editors:/i;
+	return 0;
+
+};
 
 my $ug = undef;
 foreach(@groupTypes) {
@@ -51,12 +82,9 @@ foreach $ironID (@{$$ug{group}}) {
 		next;
 	}
 
-        $ironLeader = $ironID if !defined $ironLeader;
+	$ironLeader = $ironID if !defined $ironLeader;
 
 	$ironNoders{$ironID} = $u;
-
-#	$str .= '&lt;li&gt;'.linkNode($u).'&lt;/li&gt;
-#';
 
 }
 
@@ -86,7 +114,9 @@ if($showWUs &amp;&amp; (defined $dbh)) {
 
 	my $getWriteupQuery = &lt;&lt;QUERY;
 SELECT
-	node.node_id, node.title, parent.title 'parenttitle', writeup.publishtime
+	node.node_id, node.title
+	, parent.title 'parenttitle', writeup.parent_e2node
+	, writeup.publishtime
 	, vote.vote_id, writeup.wrtype_writeuptype, writeup.writeup_id
 	FROM node
 	LEFT OUTER JOIN vote
@@ -136,6 +166,7 @@ my @displayOrder = sort(keys(%ironNodersBySortKey));
 
 my $BIGNUMBER = 99999;
 my $WUCOUNTFORIRON = 30;
+my $MAXDAYLOGCOUNT = 5;
 my $statTotalWU = 0;
 my $statTotalNoders = 0;
 my $statNonzeroNoders = 0;
@@ -173,7 +204,16 @@ foreach $sortKey (@displayOrder) {
 			push(@userWUs, $r);
 		}
 		$qh-&gt;finish();
-		$statUserWU = scalar(@userWUs);
+		my $daylogCount = 0;
+		my @validWUs = grep { !&amp;$isMaintenanceNode($_) } @userWUs;
+		@validWUs = grep { !&amp;$isDaylogNode($_) || ++$daylogCount &lt;= $MAXDAYLOGCOUNT } @validWUs;
+			
+		$statUserWU = scalar(@validWUs);
+		if ($daylogCount &gt; $MAXDAYLOGCOUNT) {
+			my $excess = $daylogCount - $MAXDAYLOGCOUNT;
+			my $plural = $excess &gt; 1 ? 's' : '';
+			$statUserWU .= &quot; ignoring $excess daylog$plural above the $MAXDAYLOGCOUNT limit&quot;;
+		}
 		$htmlListUser .= ' (' . $statUserWU . ')';
 
 		$htmlListUser .= &quot;&lt;ol&gt;\n&quot;;
@@ -194,7 +234,7 @@ foreach $sortKey (@displayOrder) {
 			}
 		);
 
-		$htmlListUser .= htmlcode('show content', \@userWUs, $instructions, %functionMap)
+		$htmlListUser .= htmlcode('show content', \@validWUs, $instructions, %functionMap)
 			. '&lt;/ol&gt;'
 			;
 
@@ -203,7 +243,10 @@ foreach $sortKey (@displayOrder) {
 		$statTotalWU += $statUserWU;
 		if ($UID == $ironID) { $statYourWU = $statUserWU; }
 		if ($statUserWU &gt; 0) { $statNonzeroNoders++; }
-		if ($statUserWU &gt;= $WUCOUNTFORIRON) { $statIronNoders++; }
+		if ($statUserWU &gt;= $WUCOUNTFORIRON) {
+			$statIronNoders++;
+			htmlcode('hasAchieved', 'writeupsMonth30', $ironID, 1) if $triggerAchievement;
+		}
 		if($statUserWU &lt; $statMinCount) { $statMinCount = $statUserWU; }
 		if(($statUserWU &lt; $statMinCountPositive) &amp;&amp; ($statUserWU&gt;0) ) { $statMinCountPositive = $statUserWU; }
 		if($statUserWU &gt; $statMaxCount) { $statMaxCount = $statUserWU; }

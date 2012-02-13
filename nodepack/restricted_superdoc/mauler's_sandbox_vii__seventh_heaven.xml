@@ -81,7 +81,7 @@ $rows = $dbh-&gt;prepare($queryText)
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
 my $row;
-$str .= '&lt;h3&gt;'.$limit.' Poorest Noders (ignore 0GP)&lt;/h3&gt;';
+$str .= '&lt;h3&gt;'.$limit2.' Poorest Noders (ignore 0GP)&lt;/h3&gt;';
 $str .= '&lt;ol&gt;';
 while($row = $rows-&gt;fetchrow_arrayref)
 {

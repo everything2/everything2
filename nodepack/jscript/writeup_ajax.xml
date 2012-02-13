@@ -12,25 +12,24 @@ this.node_id = el.id.substring(8);
 this.author = el.select(&quot;.writeup_author a&quot;).first().innerHTML;
 },
 
-getItem: function(item, displayStyle) {
+getItem: function(item) {
 if (item == &quot;box&quot;) {
 box = this.header.select(&quot;.writeup_&quot;+item).first();
-box.style.display = 'block';
+box.style.display = &quot;block&quot;;
 return box;
 }
 return this.header.select(&quot;.writeup_&quot;+item).first();
 },
 
 writeupMessage: function() {
-
-this.getItem(&quot;box&quot;).update(&quot;&lt;input type=\'text\' size=\'70\' value=\'\' id=\'msg_&quot;+this.node_id+&quot;\' name= \'msgauthor\'/&gt; &lt;input type=\'button\' value=\'send\' onClick=\'WU&quot;+this.node_id+&quot;.sendmessage()\' /&gt; &lt;input type=\'button\' value=\'cancel\' onClick=\'Effect.BlindUp(WU&quot;+this.node_id+&quot;.getItem(\&quot;box\&quot;))\' /&gt;&quot;);
+this.getItem(&quot;box&quot;).update(&quot;&lt;input type=\'text\' size=\'70\' value=\'\' id=\'msg_&quot;+this.node_id+&quot;\' name= \'msgauthor\'/&gt; &lt;input type=\'button\' value=\'send\' onClick=\'WU&quot;+this.node_id+&quot;.sendmessage()\' /&gt; &lt;input type=\'button\' value=\'cancel\' onClick=\'WU&quot;+this.node_id+&quot;.getItem(\&quot;box\&quot;).hide()\' /&gt;&quot;);
 
 },
 
 sendmessage: function() {
 E2AJAX.privateMessage(this.author.gsub(&quot; &quot;,&quot;_&quot;), $(&quot;msg_&quot;+this.node_id).value);
 this.getItem(&quot;box&quot;).update(&quot;message sent&quot;);
-Effect.BlindUp.delay(2, this.getItem(&quot;box&quot;));
+Element.hide.delay(2, this.getItem(&quot;box&quot;));
 },
 
 bookmark: function() {

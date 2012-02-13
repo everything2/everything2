@@ -2,13 +2,35 @@
   <node_id>2008367</node_id>
   <code>my ($ad_location) = @_;
 my $node_id = $$NODE{node_id};
-return &quot;&quot; if $node_id == 1369958; #stupid pot node that got us busted
-return &quot;&quot; if $$NODE{type}{title} eq 'writeup' &amp;&amp; $$NODE{parent_e2node} == 1369958;
 
-return &quot;&quot; if $node_id == getNode('Nothing Found', 'superdoc')-&gt;{node_id};
-return &quot;&quot; if $node_id == getNode('Findings:', 'superdoc')-&gt;{node_id};
-return &quot;&quot; unless ($node_id =~ /^\d+$/);
-return &quot;&quot; if $query-&gt;url =~ /^https/;
+my @badnodes = qw(1921577 1369958 2003596 29906 149007);
+
+foreach my $nid (@badnodes) {
+   return &quot;&lt;!-- noad:badnode --&gt;&quot; if $node_id == $nid or $$NODE{type}{title} eq 'writeup' &amp;&amp; $$NODE{parent_e2node} == $nid;
+   if (exists $$NODE{linklist}) {
+      foreach my $l (@{ $$NODE{linklist} }) {
+         return &quot;&lt;!-- noad:badnodelink --&gt;&quot; if $l-&gt;{to_node} == $nid;
+      }
+   }
+}
+
+
+my @badwords = qw(boob breast butt ass lesbian cock dick penis sex oral anal drug pot weed crack cocaine fuck wank whore vagina vag cunt tits titty twat shit slut snatch queef queer poon prick puss orgasm nigg nuts muff motherfuck jizz hell homo handjob fag dildo dick clit cum bitch rape ejaculate bsdm fisting balling);
+
+foreach my $word (@badwords) {
+        return &quot;&lt;!-- noad:badword --&gt;&quot; if $$NODE{title} =~ /\b$word/i or $$NODE{title} =~ /$word\b/i;
+        if (exists $$NODE{linklist}) {
+          foreach my $l (@{ $$NODE{linklist} }) {
+              my $title = getNode($l-&gt;{to_node})-&gt;{title};
+              return &quot;&lt;!-- noad:$title/$word --&gt;&quot; if $title =~ /\b$word/i or $title =~ /$word\b/i;
+          }
+        }
+}
+
+return &quot;&lt;!-- noad:nothingfound --&gt;&quot; if $node_id == getNode('Nothing Found', 'superdoc')-&gt;{node_id};
+return &quot;&lt;!-- noad:findings --&gt;&quot; if $node_id == getNode('Findings:', 'superdoc')-&gt;{node_id};
+return &quot;&lt;!-- noad:badnodeid --&gt;&quot; unless ($node_id =~ /^\d+$/);
+return &quot;&lt;!-- noad:https --&gt;&quot; if $query-&gt;url =~ /^https/;
 
 my ($ad_width, $ad_height, $ad_format, $ad_type);
 
@@ -31,19 +53,15 @@ if ($ad_location eq 'nodelet') {
 
 my $ad = &lt;&lt;ADTEXT;
 &lt;center&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
-google_ad_client = &quot;pub-3290994517499171&quot;;
-google_ad_slot = &quot;7754250909&quot;;
-google_ad_width = $ad_width;
-google_ad_height = $ad_height;
-google_ad_format = &quot;$ad_format&quot;;
-google_ad_type = &quot;$ad_type&quot;;
-google_ad_channel = &quot;&quot;;
-google_page_url = &quot;http://everything2.com/?node_id=$node_id&quot;;
+&lt;script type=&quot;text/javascript&quot;&gt;&lt;!--
+google_ad_client = &quot;ca-pub-0613380022572506&quot;;
+/* E2 top banner */
+google_ad_slot = &quot;9636638260&quot;;
+google_ad_width = 728;
+google_ad_height = 90;
+//--&gt;
 &lt;/script&gt;
-&lt;script type=&quot;text/javascript&quot;
-  src=&quot;http://pagead2.googlesyndication.com/pagead/show_ads.js&quot;&gt;
-&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;http://pagead2.googlesyndication.com/pagead/show_ads.js&quot;&gt;&lt;/script&gt;
 
 
 &lt;/center&gt;

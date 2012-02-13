@@ -56,7 +56,12 @@ fieldset + fieldset, form + form fieldset, .parentdraft, #admintools + .writeup_
 	width: 100%;
 }
 
+
 /* end THIS STUFF */
+
+big big big big big big {
+font-size: 100%;
+}
 
 .externalLink {
 	background:transparent url(/img/external.png) no-repeat scroll right center; 
@@ -162,6 +167,7 @@ fieldset{ /* this is FF default; IE has none */
     float: left;
     margin: 4px;
     font-size: 90%;
+    position: relative;
 }
 
 #messages .reply .widget {
@@ -173,13 +179,13 @@ fieldset{ /* this is FF default; IE has none */
 	display: block ;
 }
 
-div.privmsg {
+#messages div.privmsg {
 	display: block;
 	clear: both;
 	border-top: dotted 1px;
 	padding-top:6px;
 }
-div.privmsg:first-child {
+#messages div.privmsg:first-child {
 	border-top: none;
 	padding-top:0px;
 }
@@ -303,51 +309,7 @@ table.registries {
 .warning p {
    margin: 0;
    padding: 1px;
-}
-
-/* Begin jQuery UI minimal stuff for autcomplete menus */
-.ui-corner-all, .ui-corner-top, .ui-corner-left, .ui-corner-tl { -moz-border-radius-topleft: 4px; -webkit-border-top-left-radius: 4px; -khtml-border-top-left-radius: 4px; border-top-left-radius: 4px; }
-.ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr { -moz-border-radius-topright: 4px; -webkit-border-top-right-radius: 4px; -khtml-border-top-right-radius: 4px; border-top-right-radius: 4px; }
-.ui-corner-all, .ui-corner-bottom, .ui-corner-left, .ui-corner-bl { -moz-border-radius-bottomleft: 4px; -webkit-border-bottom-left-radius: 4px; -khtml-border-bottom-left-radius: 4px; border-bottom-left-radius: 4px; }
-.ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br { -moz-border-radius-bottomright: 4px; -webkit-border-bottom-right-radius: 4px; -khtml-border-bottom-right-radius: 4px; border-bottom-right-radius: 4px; }
-
-.ui-autocomplete { position: absolute; cursor: default; }
-
-* html .ui-autocomplete { width:1px; } /* without this, the menu expands to 100% in IE6 */
-
-.ui-menu {
-   list-style:none;
-   padding: 2px;
-   margin: 0;
-   display:block;
-   float: left;
-}
-.ui-menu .ui-menu {
-   margin-top: -3px;
-}
-.ui-menu .ui-menu-item {
-   margin:0;
-   padding: 0;
-   zoom: 1;
-   float: left;
-   clear: left;
-   width: 100%;
-}
-.ui-menu .ui-menu-item a {
-   text-decoration:none;
-   display:block;
-   padding:.2em .4em;
-   line-height:1.5;
-   zoom:1;
-}
-.ui-menu .ui-menu-item a.ui-state-hover,
-.ui-menu .ui-menu-item a.ui-state-active {
-   font-weight: normal;
-   margin: -1px;
-}
-/* End jQuery UI minimal stuff for autcomplete menus */
-
-</doctext>
+}</doctext>
   <node_id>1973976</node_id>
   <type_nodetype>1854352</type_nodetype>
   <title>basesheet</title>

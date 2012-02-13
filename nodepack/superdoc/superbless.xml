@@ -3,7 +3,7 @@
 use Everything::Experience;
 
 return ''
-   unless isGod($USER) 
+   unless htmlcode('isEditor',$USER) 
    and htmlcode('verifyRequest', 'superbless')
    ;
 
@@ -50,7 +50,7 @@ my $signum = ($curGP&gt;0) ? 1 : (($curGP&lt;0) ? -1 : 0);
   if($signum!=0) {
     $$U{karma}+=$signum;
     updateNode($U, -1);
-    htmlcode('achievementsByType', 'karma', $$U{user_id});
+    htmlcode('achievementsByType','karma');
     adjustGP($U, $curGP);
   } else {
     $str .= ', so nothing was changed';
@@ -63,7 +63,7 @@ $str;
 
 [%
 return '&lt;p&gt;You have not yet learned that spell.&lt;/p&gt;'
-  unless isGod($USER);
+  unless htmlcode('isEditor',$USER);
 my $count = 10;
 
 my $str;

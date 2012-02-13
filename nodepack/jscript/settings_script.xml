@@ -31,7 +31,7 @@ void new function(zensheet){
 
 	// drag and drop nodelet menus on [Nodelet Settings] page
 	$('#rearrangenodelets')
-	.disableSelection()
+//	.disableSelection()
 	.css({
 		cursor: 'n-resize',
 //		'list-style-image': 'url(&quot;&quot;)', up-down arrow, anybody?

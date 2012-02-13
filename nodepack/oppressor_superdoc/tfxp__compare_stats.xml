@@ -30,7 +30,12 @@ padding: 3px;
 [%
 
 my $nid = getId($NODE);
-my $uid = getId($USER);
+my $uid = int($query-&gt;param(&quot;userid&quot;));
+if ($uid &lt;= 0)
+{
+   $uid = getId($USER);
+}
+
 
 ##################################################
 # set variables for each system

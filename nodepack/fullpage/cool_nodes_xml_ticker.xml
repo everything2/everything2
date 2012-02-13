@@ -1,20 +1,20 @@
 <node>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Thu Nov 24 03:07:24 2011&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
-	&lt;cooled cooledby_user=&quot;Jostling Elders&quot; node_id=&quot;1991517&quot; parent_e2node=&quot;1037960&quot; author_user=&quot;OldMiner&quot;&gt;French Internet Acronyms&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;DonJaime&quot; node_id=&quot;1975781&quot; parent_e2node=&quot;1975780&quot; author_user=&quot;sam512&quot;&gt;Mike Murphy&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Oolong&quot; node_id=&quot;1989654&quot; parent_e2node=&quot;1988049&quot; author_user=&quot;DonJaime&quot;&gt;test test&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Oolong&quot; node_id=&quot;227005&quot; parent_e2node=&quot;227004&quot; author_user=&quot;Webster 1913&quot;&gt;Draft&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jostling Elders&quot; node_id=&quot;1990930&quot; parent_e2node=&quot;1990599&quot; author_user=&quot;DonJaime&quot;&gt;unit testing&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;OldMiner&quot; node_id=&quot;1982960&quot; parent_e2node=&quot;1982959&quot; author_user=&quot;Swap&quot;&gt;Coding for E2: Finding the Code&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;OldMiner&quot; node_id=&quot;1990621&quot; parent_e2node=&quot;1990594&quot; author_user=&quot;puppet&quot;&gt;foobarbaz&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;OldMiner&quot; node_id=&quot;1682701&quot; parent_e2node=&quot;15431&quot; author_user=&quot;Webster 1913&quot;&gt;M&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;OldMiner&quot; node_id=&quot;1990993&quot; parent_e2node=&quot;15431&quot; author_user=&quot;Jostling Elders&quot;&gt;M&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;OldMiner&quot; node_id=&quot;1990930&quot; parent_e2node=&quot;1990599&quot; author_user=&quot;DonJaime&quot;&gt;unit testing&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Oolong&quot; node_id=&quot;1990930&quot; parent_e2node=&quot;1990599&quot; author_user=&quot;DonJaime&quot;&gt;unit testing&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;DonJaime&quot; node_id=&quot;1988389&quot; parent_e2node=&quot;1988388&quot; author_user=&quot;&quot;&gt;test writeup without valid author&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;DonJaime&quot; node_id=&quot;1990708&quot; parent_e2node=&quot;1990599&quot; author_user=&quot;puppet&quot;&gt;unit testing&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;DonJaime&quot; node_id=&quot;1990695&quot; parent_e2node=&quot;1990434&quot; author_user=&quot;puppet&quot;&gt;i no longer have a dog&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;DonJaime&quot; node_id=&quot;1982154&quot; parent_e2node=&quot;368049&quot; author_user=&quot;BlackPawn&quot;&gt;Suggestions for E2&lt;/cooled&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Mon Feb 13 16:30:07 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;originalzin&quot; node_id=&quot;2060831&quot; parent_e2node=&quot;1754592&quot; author_user=&quot;Glowing Fish&quot;&gt;Brokeback Mountain&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2061065&quot; parent_e2node=&quot;2061070&quot; author_user=&quot;Zephronias&quot;&gt;Fangasm&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Uberbanana&quot; node_id=&quot;1317124&quot; parent_e2node=&quot;1317123&quot; author_user=&quot;dodo37&quot;&gt;Yoda's syntax&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;gnarl&quot; node_id=&quot;2056917&quot; parent_e2node=&quot;411346&quot; author_user=&quot;JD&quot;&gt;The Muppets&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;2060434&quot; parent_e2node=&quot;2060907&quot; author_user=&quot;Uberbanana&quot;&gt;Kermit the Frog Hosts Larry King Live&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;fool4luv&quot; node_id=&quot;1980934&quot; parent_e2node=&quot;1726536&quot; author_user=&quot;prole&quot;&gt;secret city map with pins set at the places their eyes had met&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;2060906&quot; parent_e2node=&quot;2060914&quot; author_user=&quot;moeyz&quot;&gt;a woman who fell through the cracks&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;momomom&quot; node_id=&quot;2060613&quot; parent_e2node=&quot;2061053&quot; author_user=&quot;latamyk&quot;&gt;A Liter of Light&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;kozmund&quot; node_id=&quot;1028402&quot; parent_e2node=&quot;1739999&quot; author_user=&quot;Halspal&quot;&gt;The little green guy&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;StuartO)))&quot; node_id=&quot;1081097&quot; parent_e2node=&quot;1081093&quot; author_user=&quot;Professor Pi&quot;&gt;Everything Professional Career Network&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;1438841&quot; parent_e2node=&quot;1120611&quot; author_user=&quot;posix&quot;&gt;Cover letter&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1517390&quot; parent_e2node=&quot;1517380&quot; author_user=&quot;ilyanep&quot;&gt;Daniel Rutherford&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2051942&quot; parent_e2node=&quot;2060998&quot; author_user=&quot;Zephronias&quot;&gt;So then I tried staring into the abyss, but it got distracted by a weasel and ditched me&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Intentions&quot; node_id=&quot;936531&quot; parent_e2node=&quot;936454&quot; author_user=&quot;psydereal&quot;&gt;I wonder if he ever thinks about me&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;drownzsurf&quot; node_id=&quot;2061042&quot; parent_e2node=&quot;2061041&quot; author_user=&quot;LeftUnspoken&quot;&gt;Brotherly Destruction&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

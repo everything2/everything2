@@ -18,7 +18,7 @@ my %stash = (
 	private =&gt; 'visible only to you and any users and groups you choose below',
 	shared =&gt; 'your chosen collaborators can also edit',
 	review =&gt; 'as &quot;findable,&quot; and the site\'s editors are told you want feedback',
-	removed =&gt; 'you published this but it has since been removed: same as &quot;public&quot;',
+	removed =&gt; 'you published this and an editor removed it: as &quot;private&quot; but visible to editors',
 	nuked =&gt; 'you published this and it was deleted before Jun 10, 2011: same as &quot;private&quot;'
 );
 
@@ -126,7 +126,7 @@ if ($parent){
 	$detach = '';
 }
 
-my ($publishas, $advanced);
+my ($publishas, $advanced) = ();
 if ($query -&gt; param('advanced')){
 	$publishas = htmlcode('canpublishas');
 

@@ -5,14 +5,14 @@
 }
 &lt;/style&gt;
 
-&lt;p&gt;&lt;i&gt;1/13/08 Modified by [katherine] - removed &quot;posting to new writeups&quot;, removed video spec, cleaned up a bit.&lt;/i&gt;&lt;/p&gt;
+&lt;p&gt;&lt;i&gt;1/13/08 Modified by [dann] - removed &quot;posting to new writeups&quot;, removed video spec, cleaned up a bit.&lt;/i&gt;&lt;/p&gt;
 
 &lt;p&gt;This is a comprehensive list and description of the features which should go into the site during the Fall 2007 development cycle.  The feature descriptions run on a few assumptions:&lt;/p&gt;
 
 &lt;ul&gt;
 	&lt;li&gt;All themes other than Zen will be disabled.  If users are particularly attached to Jukka, EKW, or Classic, they'll need to use the Zen stylesheets for them.  [ascorbic] has already started on [Jukka|one of these], and [Two Sheds] has volunteered to port (or coordinate porting) of the rest.  [nate] will be putting together the new Guest User theme, because it can have the greatest revenue impact.&lt;/li&gt;
 	
-	&lt;li&gt;Every feature will need to be coded, documented, and tested by coder or group of coders.  This needs to be comprehensively documented in your root logs.  This is how [katherine|we]'[kthejoker|ll] keep track of who to [blame when it blows up|bestow eternal thanks upon].  A basic details block for a given feature-group should include things like:
+	&lt;li&gt;Every feature will need to be coded, documented, and tested by coder or group of coders.  This needs to be comprehensively documented in your root logs.  This is how [dann|we]'[kthejoker|ll] keep track of who to [blame when it blows up|bestow eternal thanks upon].  A basic details block for a given feature-group should include things like:
 	
 		&lt;p align=&quot;center&quot;&gt;&lt;pre&gt;
 			&lt;b&gt;Coded by:&lt;/b&gt;
@@ -28,7 +28,7 @@
 
 	&lt;li&gt;I'll use pretty generic names for documents in these descriptions.  Feel free to be creative when implementing them.  Names like &quot;the draughty atelier&quot; are far better choices than &quot;the zen theme stylesheet creator&quot;.&lt;/li&gt;
 	
-	&lt;li&gt;If you code or document a feature, someone else needs to test it.  Testing involves evaluation of the code, testing the functionality, and proofreading the documentation.  [if more than three want to test it, go for it|At least three] users need to test each feature, and at least one of the testers per feature needs to be a coder-god who didn't write the feature itself ([katherine|me], [nate], [kthejoker], [ascorbic], [Two Sheds], [alex], [avalyn], [N-Wing], [Lord Brawl], [Oolong], [in10se], or [RoguePoet]).  We're looking mainly for security holes, level / power / group checks, and efficient use of processor cycles and database time.&lt;/li&gt;
+	&lt;li&gt;If you code or document a feature, someone else needs to test it.  Testing involves evaluation of the code, testing the functionality, and proofreading the documentation.  [if more than three want to test it, go for it|At least three] users need to test each feature, and at least one of the testers per feature needs to be a coder-god who didn't write the feature itself ([dann|me], [nate], [kthejoker], [ascorbic], [Two Sheds], [alex], [avalyn], [N-Wing], [Lord Brawl], [Oolong], [in10se], or [RoguePoet]).  We're looking mainly for security holes, level / power / group checks, and efficient use of processor cycles and database time.&lt;/li&gt;
 
 	&lt;li&gt;We'll need to modularize wherever possible.  These features will take half a year if we rewrite basic functions (series, tagging, commenting, etc) multiple times for different node types.&lt;/li&gt;
 	
@@ -85,7 +85,7 @@
 		&lt;li&gt;Each type will need to have its own tracking superdoc: &quot;everything new images&quot;, &quot;everything new audio&quot;, &quot;everything new equations&quot;, and &quot;everything new maps&quot;, respectively,  using Everything New Nodes as a template.  If someone can coalesce all of this attractively into the same document, go for it.  One document is easier to manage than six.&lt;/li&gt;
 		&lt;li&gt;Each media type will need a corresponding RSS / ATOM feed.&lt;/li&gt;
 		&lt;li&gt;Each type will also need a repository, in which any user can tag-search for appropriate open-licensed or self-submitted content to embed in his/her own writeup.  If all five types are in the same repository superdoc, that should work fine.&lt;/li&gt;
-		&lt;li&gt;Equations should employ a script on the backend to perform LaTeX conversion into an embeddable image: http://www.mayer.dial.pipex.com/tex.htm should work.  [wntrmute] advised that LatexRender and TeX Converter should help: &quot;apparently there's a perl version of the popular latexrender&quot;.  If you need help, [katherine|I've] been [complete with an automated build system!|typesetting my articles and book] in LaTeX for university, and can help get things started here if you like.&lt;/li&gt;
+		&lt;li&gt;Equations should employ a script on the backend to perform LaTeX conversion into an embeddable image: http://www.mayer.dial.pipex.com/tex.htm should work.  [wntrmute] advised that LatexRender and TeX Converter should help: &quot;apparently there's a perl version of the popular latexrender&quot;.  If you need help, [dann|I've] been [complete with an automated build system!|typesetting my articles and book] in LaTeX for university, and can help get things started here if you like.&lt;/li&gt;
 		&lt;li&gt;Images, equation-images, and audio should be stored on a dedicated server or server-cluster.  I can configure media.everything2.com to point to a server or group of servers in our load balancer, and we should have submission and service scripts to handle synchronization.  If we can tie fixing homenode images into this system, all the better.&lt;/li&gt;
 		&lt;li&gt;Finally, the user should earn 1 XP for creation of multimedia nodes, and lose 1 XP should if their multimedia node is nuked.&lt;/li&gt;
 	&lt;/ul&gt;
@@ -367,7 +367,7 @@
 
 &lt;h3&gt;Registries&lt;/h3&gt;
 
-	&lt;p&gt;Registries are a quick and easy (though they may need a new name) home for GTKY content.  [katherine|I've] already written some of this, and will start crossing things off when it's live here:&lt;/p&gt;
+	&lt;p&gt;Registries are a quick and easy (though they may need a new name) home for GTKY content.  [dann|I've] already written some of this, and will start crossing things off when it's live here:&lt;/p&gt;
 	
 	&lt;ul&gt;
 		&lt;li&gt;A &lt;b&gt;registry nodetype&lt;/b&gt;, with registry dbtable, nodetype, and display and edit htmlpages:
@@ -389,11 +389,11 @@
 
 &lt;h3&gt;Semantic Web&lt;/h3&gt;
 
-	&lt;p&gt;We should update the URL structures of E2 to conform with semantic web conventions.  For the majority of E2 URLs, I'd rather see URLs like &quot;http://everything2.com/user/katherine&quot; than &quot;http://everything2.com/?node_id=650043&quot;. The same person or team who writes this may also want to work on the External URL facilities - the modifications needed for both will likely need to be made in the same places:&lt;/p&gt;
+	&lt;p&gt;We should update the URL structures of E2 to conform with semantic web conventions.  For the majority of E2 URLs, I'd rather see URLs like &quot;http://everything2.com/user/dann&quot; than &quot;http://everything2.com/?node_id=650043&quot;. The same person or team who writes this may also want to work on the External URL facilities - the modifications needed for both will likely need to be made in the same places:&lt;/p&gt;
 	
 	&lt;ul&gt;
 		&lt;li&gt;We'll need to &lt;b&gt;update linkNode()&lt;/b&gt; in HTML.pm to form the new URLs.  It will probably be prohibitively expensive to include a getNode() call in every linkNode(), though we could do some pretty cool stuff (i.e. &quot;&amp;;lt;a href='http://everything2.com/node/Some_Writeup' class='unpopulated'&amp;gt;&quot;).  If you try this and determine that it doesn't put too much load on the servers, leave it in - we can build off of it.  Once CSS3 is fully supported in browsers, we can use the class rewrite rules to add icons next to external links automatically by appending &quot;class='external'&quot; to the A tag.&lt;/li&gt;
-		&lt;li&gt;We'll need to create a &lt;b&gt;parser for incoming URLs&lt;/b&gt; (tied into HTML.pm's getCGI(), likely) which maintains backwards-compatibility with our current URL structure (so we don't lose our places in the google's pageranks).  This will need to parse out the new URL structure into the parameter hash that the rest of our system is used to ( { 'node'=&gt; 'katherine','type'=&gt;'user', 'displaytype' =&gt; 'edit' }).  This will cause our getCGI procedure to act like Ruby on Rails' route.rb - you may want to look a this for for reference.&lt;/li&gt;
+		&lt;li&gt;We'll need to create a &lt;b&gt;parser for incoming URLs&lt;/b&gt; (tied into HTML.pm's getCGI(), likely) which maintains backwards-compatibility with our current URL structure (so we don't lose our places in the google's pageranks).  This will need to parse out the new URL structure into the parameter hash that the rest of our system is used to ( { 'node'=&gt; 'dann','type'=&gt;'user', 'displaytype' =&gt; 'edit' }).  This will cause our getCGI procedure to act like Ruby on Rails' route.rb - you may want to look a this for for reference.&lt;/li&gt;
 		&lt;li&gt;I would think the optimum URL structure would be &quot;http://everything2.com/$nodetype/$title/$displaytype/$op&quot;, where $displaytype and $op are, of course, optional (defaulting to &quot;display&quot; and &quot;&quot;, respectively).  $nodetype would have to default to &quot;node&quot;, unless other data was specifically available.  In the case of pages with multiple nodes (e2nodes + writeups), we may have to come up with something a little more creative (overloading $op, perhaps?)&lt;/li&gt;
 		&lt;li&gt;We may need to implement this in two phases: making the parser work well, while maintaining compatibility with current URL structures, then making linkNode work well, while transitioning site links to the new format.&lt;/li&gt;
 		&lt;li&gt;Most of the translation work here can be done in mod_rewrite directives.&lt;/li&gt;
@@ -549,7 +549,7 @@
 		&lt;li&gt;The writeup header should be moved to a &lt;b&gt;writeup sidebar&lt;/b&gt; (on the opposite side of the writeups from the nodelets) to accomodate the author's homenode link, print link, blab box, word count, tagging, tag display, licensing, serializing / TOC, date and time information on that writeup.  This sidebar should be slightly narrower than an average nodelet, to accomodate those who have limited screen real-estate.&lt;/li&gt;
 		&lt;li&gt;Finally, if an e2node has a firmlink and no writeups, $USER isn't in content_ediors or e2gods, the page should be redirected (in HTML.pm - not as an HTTP refresh or equivalent) to the target of the firmlink.&lt;/li&gt;
 		&lt;li&gt;Bonus points for creating a superdoc to drag-and-drop writeup sidebar and footer elements in place, rather than using our rather arcane configuration setup in &quot;writeup settings&quot;.&lt;/li&gt;
-		&lt;li&gt;Bonus points for integrating a &quot;&lt;b&gt;download as PDF&lt;/b&gt;&quot; icon into the writeup headers.  Email [katherine|me] for more information on this - a simple PDF distiller on the backend using the displaytype=print CSS-styled source should do fine.&lt;/li&gt;
+		&lt;li&gt;Bonus points for integrating a &quot;&lt;b&gt;download as PDF&lt;/b&gt;&quot; icon into the writeup headers.  Email [dann|me] for more information on this - a simple PDF distiller on the backend using the displaytype=print CSS-styled source should do fine.&lt;/li&gt;
 		&lt;li&gt;Bonus points for integrating &lt;b&gt;hAtom markup&lt;/b&gt; into writeup and e2node display pages.&lt;/li&gt;
 	&lt;/ul&gt;
 

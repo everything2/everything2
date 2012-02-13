@@ -1,5 +1,14 @@
 <node>
-  <doctext>body, input {
+  <doctext>/*= autofix added rules. adjust to taste: */
+.weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
+.weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
+.weblog .title, .nodelet .title {font-weight: bold;}
+.actions , .actions li {display:inline;margin:0;padding:0 0.5em 0 0;}
+.actions { display: block ; }
+/*= end autofix added rules */
+
+/*= Comments containing old/disabled rules start with = for easy finding */
+body, input {
 	font-family: &quot;Gill Sans&quot;,Gibraltar,sans-serif;
 }
 
@@ -211,16 +220,19 @@ textarea {
 	padding-bottom: 1px;
 }
 
-#nodelet_91 div.nodelet_content {
+/*=#nodelet_91 div.nodelet_content*/
+#otherusers div.nodelet_content {
 	text-align: center;
 }
 
-#nodelet_91 h4 {
+/*=#nodelet_91 h4*/
+#otherusers h4 {
 	padding: 1px;
 	margin: 1px;
 }
 
-.writeup {
+/*=.writeup*/
+.writeuppage .item {
 	padding: 8px;
 	margin: 8px;
 	background: #708090;
@@ -229,13 +241,15 @@ textarea {
 	border: thin dotted black;
 }
 
-.writeup_title strong a {
+/*=.writeup_title strong a*/
+.writeuppage .contentheader strong a {
 	color: ivory;
 	font-size: 120%;
 	font-weight: normal;
 }
 
-.writeup_text {
+/*=.writeup_text*/
+.writeuppage .item .content {
 	font-family: Palatino,serif;
 	line-height: 140%;
 	background: ivory;
@@ -436,13 +450,15 @@ h1.nodetitle {
 /* Writeup list (in the &quot;New Writeups - Zen&quot; nodelet) */
 
 
-#nodelet_1868940 div.nodelet_content {
+/*=#nodelet_1868940 div.nodelet_content*/
+#newwriteupszen div.nodelet_content {
     padding-bottom: 4px;
     margin: 1px;
     width: 99%;
 }
 
-#nodelet_1868940 ul {
+/*=#nodelet_1868940 ul*/
+#newwriteupszen ul {
     list-style-type: none;
     padding-top: 0px;
     margin-top: 1px;
@@ -452,7 +468,8 @@ h1.nodetitle {
     margin-left: 1px;
 }
 
-#writeup_list li {
+/*=#writeup_list li*/
+.nodelet .infolist li {
     word-wrap: break-word;
     margin: 1px;
     padding: 1px;
@@ -462,7 +479,8 @@ h1.nodetitle {
 }
 
 
-#writeup_list span.author{
+/*=#writeup_list span.author*/
+ DISABLED /*= .nodelet .infolist span.author */ {
     text-align: left;
     font-weight: bold;
     display: inline;
@@ -470,19 +488,22 @@ h1.nodetitle {
     color: black;
 }
 
-#writeup_list span.author:after {
+/*=#writeup_list span.author:after*/
+ DISABLED /*= .nodelet .infolist span.author:after */  {
 	content: &quot;: &quot;;
 	color: black;
 }
 
-#writeup_list span.author:before {
+/*=#writeup_list span.author:before*/
+ DISABLED /*= .nodelet .infolist span.author:before */  {
 	content: &quot;\2022\ &quot;;
 	color: ivory;
 	text-shadow: 1px 1px 1px black;
 }
 
 
-#writeup_list span.title {
+/*=#writeup_list span.title*/
+ DISABLED /*= .nodelet .infolist span.title */  {
     display: inline;
     text-align: left;
     margin-right: 4px;
@@ -491,7 +512,8 @@ h1.nodetitle {
 }
 
 
-#writeup_list span.type {
+/*=#writeup_list span.type*/
+ DISABLED /*= .nodelet .infolist span.type */  {
     font-size: 80%;
     text-align: right;
     display: inline;
@@ -499,13 +521,15 @@ h1.nodetitle {
     color: black;
 }
 
-#witeup-list span.writeupmeta {
+/*=#witeup-list span.writeupmeta*/
+#witeup-list span.infolist .contentinfo {
     display: block;
     border-bottom: thin solid black;
     clear: both;
 }
 
-#writeup_list span.hidden, #writeup_list span.hide {
+/*=#writeup_list span.hidden, #writeup_list span.hide*/
+.nodelet .infolist span.hidden, .nodelet .infolist span.hide {
     font-size: 80%;
     margin-left: 3px;
     display: block;
@@ -517,7 +541,8 @@ h1.nodetitle {
 	color: ivory;
 }
 
-.cotc_entry {
+/*=.cotc_entry*/
+#creamofthecool .item {
 	padding: 8px;
 	margin: 8px;
 	background: #708090;
@@ -527,24 +552,28 @@ h1.nodetitle {
     margin-top: 4px;
 }
 
-.cotc_info {
+/*=.cotc_info*/
+#creamofthecool .contentinfo {
 	margin-bottom: 3px;
 	font-size: 110%;
 	color: ivory;
 }
 
-.cotc_info a {
+/*=.cotc_info a*/
+#creamofthecool .contentinfo a {
 	color: ivory;
 }
 
-.cotc_text {
+/*=.cotc_text*/
+#creamofthecool .content {
 	font-family: Palatino,serif;
 	line-height: 140%;
 	background: ivory;
 	padding: 8px;
 }
 
-.cotc_more {
+/*=.cotc_more*/
+#creamofthecool .morelink {
 	font-family: &quot;Gill Sans&quot;,Gibraltar,sans-serif;
 	display: block;
 	clear: all;
@@ -661,7 +690,8 @@ input[type=&quot;checkbox&quot;] {
 	color: ivory;
 }
 
-.weblog_item {
+/*=.weblog_item*/
+.weblog .item {
 	padding: 8px;
 	margin: 8px;
 	background: #708090;
@@ -671,36 +701,47 @@ input[type=&quot;checkbox&quot;] {
     margin-top: 4px;
 }
 
-.wl_title, .wl_author, .wl_date {
+/*=.wl_title, .wl_author, .wl_date*/
+.weblog .item .title, .weblog .item .contentinfo cite, .weblog .item .date {
 	margin-bottom: 3px;
 	font-size: 110%;
 	display: inline;
 	color: ivory;
 }
 
-.wl_title a, .wl_author a, .wl_date a {
+/*=.wl_title a, .wl_author a, .wl_date a*/
+.weblog .item .title, .weblog .item .contentinfo cite a, .weblog .item .date a {
 	color: ivory;
 }
 
-.wl_author:before {
+/*=.wl_author:before*/
+ DISABLED /*= .weblog .item .author:before */  {
 	content: &quot; - posted by &quot;;
 }
 
-.wl_date:before {
+/*=.wl_date:before*/
+.weblog .item .date:before {
 	content: &quot; [&quot;;
 }
 
-.wl_date:after {
+/*=.wl_date:after*/
+.weblog .item .date:after {
 	content: &quot;]&quot;;
 }
 
-.wl_text {
+/*=.wl_text*/
+.weblog .item .content {
 	font-family: Palatino,serif;
 	line-height: 140%;
 	background: ivory;
 	padding: 8px;
 	margin-top: 4px;
 }
+
+div#surveymessage {
+        display: none;
+}
+
 </doctext>
   <node_id>1907213</node_id>
   <type_nodetype>1854352</type_nodetype>

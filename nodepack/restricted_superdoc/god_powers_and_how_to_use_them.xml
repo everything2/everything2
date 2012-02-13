@@ -5,7 +5,7 @@
 &lt;tr&gt;&lt;td align=&quot;right&quot;&gt;Delete large numbers of nodeshells&lt;/td&gt;&lt;td&gt;[The Nodeshell Hopper]&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td align=&quot;right&quot;&gt;Rename large numbers of nodes&lt;/td&gt;&lt;td&gt;[Quick Rename]&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td align=&quot;right&quot;&gt;Database Automation Reports&lt;/td&gt;&lt;td&gt;[Robotic Editor Shack]&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td align=&quot;right&quot;&gt;Give arbitrary XP&lt;/td&gt;&lt;td&gt;[superbless]&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td align=&quot;right&quot;&gt;Give arbitrary &lt;s&gt;XP&lt;/s&gt; [GP]&lt;/td&gt;&lt;td&gt;[superbless]&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td align=&quot;right&quot;&gt;Find database objects&lt;/td&gt;&lt;td&gt;[List Nodes of Type]&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td align=&quot;right&quot;&gt;All the superdocs&lt;/td&gt;&lt;td&gt;[Everything Document Directory]&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td align=&quot;right&quot;&gt;All the debate nodes&lt;/td&gt;&lt;td&gt;[Everything Discussion Directory]&lt;/td&gt;&lt;/tr&gt;
@@ -122,7 +122,7 @@ particularly promising.
 &lt;p&gt;
 &lt;dl&gt;
      &lt;dt&gt;[bless]
-     &lt;dd&gt;Adds 10 XP to a user's total [experience point]s.
+     &lt;dd&gt;Adds 10 GP to a user's total.
      &lt;br&gt;
      &lt;br&gt;To bless a user, go to the user's [home node] and click the &lt;b&gt;bless&lt;/b&gt; link in your [Epicenter] nodelet.
      &lt;br&gt;
@@ -134,12 +134,12 @@ particularly promising.
      &lt;br&gt;
      &lt;br&gt;To bestow votes on a user, go to the user's home node and click the &lt;b&gt;bestow 25 votes&lt;/b&gt; link in your Epicenter [nodelet].
      &lt;br&gt;
-     &lt;br&gt; &lt;i&gt;This is actually my favourite way of encouraging users. They gain XP and also participate further in the voting process. I always ask them if they would like the votes, why I am doing this, and to &quot;use them wisely and well to help guide the nodeflow.&quot; [sensei]&lt;/i&gt;&lt;p&gt;
+     &lt;br&gt; &lt;i&gt;This is actually my favourite way of encouraging users. They gain GP and also participate further in the voting process. I always ask them if they would like the votes, why I am doing this, and to &quot;use them wisely and well to help guide the nodeflow.&quot; [sensei]&lt;/i&gt;&lt;p&gt;
 &lt;p&gt;
      &lt;dt&gt;[superbless]
-     &lt;dd&gt;Bless a user with a specific amount of XP
+     &lt;dd&gt;Bless a user with a specific amount of GP
      &lt;br&gt;
-     &lt;br&gt;&lt;i&gt;&lt;b&gt;[nate] sez&lt;/b&gt;&lt;/i&gt;: Pretty straightforward - go to the [superbless] doc, and type the user's nick and the amount of XP.  
+     &lt;br&gt;&lt;i&gt;&lt;b&gt;[nate] sez&lt;/b&gt;&lt;/i&gt;: Pretty straightforward - go to the [superbless] doc, and type the user's nick and the amount of GP.  
 
 &lt;/dl&gt;
 
@@ -157,12 +157,9 @@ particularly promising.
 &lt;p&gt;  &lt;dt&gt;[locking rooms]
      &lt;dd&gt;&lt;b&gt;&lt;i&gt;[nate] sez&lt;/i&gt;&lt;/b&gt;
      &lt;br&gt;If you go into a non-system room (ie one you create yourself, or one a user has created)
-you will see a [lock] link in the Other Users nodelet.  Clicking on this will lock the room, making it impossible
-
-for any other users to enter.  Note: gods can also lock/unlock rooms from the room's node.  Once
-locked, the link will change to [unlock] which will reverse the process.
+you will see a [lock] link in the Other Users nodelet.  Clicking on this will lock the room, making it impossible for any other users to enter.  Note: gods can also lock/unlock rooms from the room's node.  Once locked, the link will change to [unlock] which will reverse the process.
 &lt;p&gt;
-To set a topic, particularly if you need HTML, edit [Room Topics]. For a list of all rooms see [Available Rooms].
+To set a topic, particularly if you need HTML, edit [Room Topics]. For a list of all rooms see [Available Rooms].&lt;/p&gt;
 
 &lt;/dl&gt;
 
@@ -171,26 +168,16 @@ To set a topic, particularly if you need HTML, edit [Room Topics]. For a list of
 
 &lt;dt&gt;&lt;b&gt;Removing a &quot;Troll&quot; account:&lt;/b&gt;
      &lt;dd&gt;
-     &lt;br&gt;[dem bones|I] would prefer to have all of these bannings actually
-run by me and preferably have me pull the trigger.  This is
-a relatively serious action and it's just easier to have it
-all lead back to one person and a paid employee/part owner
-at that.  The [Stile] infestation was an excellent example
-of you guys taking things into your own hands and I'm very
-grateful you did but if I am &quot;around&quot; I'd rather handle all
-of these myself.  If a user appears to have &quot;gone off the deep end&quot;
-you can always use [the borg clinic] and/or [node forbiddance] to remove all of their privileges on the site.  You can also suspend voting/C! power via their home nodes.  Again, though,
-this is pretty serious stuff and I'd prefer to be the &quot;bad guy&quot;
-or at least be consulted.  Easier if somebody complains.
+     &lt;br&gt;[alex|I] would prefer to have all &quot;troll&quot; bans run by me and have me pull the trigger.  This is a serious action and it's just easier to have it all lead back to one person. If a user is out of line in the catbox, please defer to members of the [chanops] group or call in an [e2contact] person. If they're noding up a storm of dross, you can suspend posting/voting/C! privileges via their home nodes. If there's a troll epidemic or coordinated activity (like the time we had some [The Stile Project|Stile Project] issues), please wait for me or one of my deputies (currently [wertperch], [The Debutante], or [Oolong[user]]) to give the order to crack down before axing accounts. Generally there is no urgency and often there is no need to remove an account once it's been neutralised.
      &lt;br&gt;
-     &lt;br&gt;&lt;i&gt;(--[dem bones|bones])&lt;/i&gt;
+     &lt;br&gt;&lt;i&gt;(--[alex])&lt;/i&gt;
 
 &lt;p&gt;
-     &lt;dt&gt;[deleting a home node]
-     &lt;dd&gt;&lt;b&gt;Don't.&lt;/b&gt;
-&lt;dt&gt;&lt;b&gt;Locking a User Account&lt;/b&gt;&lt;p&gt;
+     &lt;dt&gt;[deleting a home node]&lt;/dt&gt;
+     &lt;dd&gt;Homenode content may be removed for gross asshattery. Posting other people's data or content, putting in Goatse or exploit links, porn, or other expressly forbidden content justifies the removal of that content. Spam accounts, defined as accounts obviously created solely for the purpose of posting ads in their homenode, may be summarily deleted. You will typically find that these accounts were created early to mid-morning, US/Eastern, and originate in southern Asia. Almost all accounts created from the Philippines, Vietnam, India, Bangladesh, Pakistan, and Sri Lanka fall in this category.&lt;/dd&gt;
+&lt;dt&gt;&lt;b&gt;Locking a User Account&lt;/b&gt;&lt;/dt&gt;&lt;p&gt;
 &lt;blockquote&gt;
-Only [nate], [dem bones], or other serious heavy-hitters should ever lock an account.  Msg [dem bones].
+Only the aforementioned heavy hitters should lock an account without consulting [alex|me]. Be cautious.
 
 
 
@@ -233,15 +220,8 @@ Only [nate], [dem bones], or other serious heavy-hitters should ever lock an acc
      &lt;dt&gt;[rearranging write-ups]
      &lt;dd&gt;Write-ups are generally displayed in the order that they were created (in &quot;full&quot; node display, the earliest write-up appears at the top of the node). Webster 1913's write-ups should always appear at the bottom of the node. It is sometimes necessary to reorder write-ups to put Webster at the bottom, or to highlight a particular write-up within a node. You can rearrange the order of write-ups using the editor panel. (Is there an official name for this?)
      &lt;br&gt;
-     &lt;br&gt;Click the &lt;b&gt;launch editor&lt;/b&gt; link at the top of the node, just beneath the node title on the left side. The editor panel will open.  There you can click on a write-up title and use the &lt;b&gt;up&lt;/b&gt; or &lt;b&gt;down&lt;/b&gt; links to move it around. When you are done, click the &lt;b&gt;Save&lt;/b&gt; button then the &lt;b&gt;close&lt;/b&gt; link to close the Java panel.
-     &lt;br&gt;
-     &lt;br&gt;&lt;b&gt;IMPORTANT NOTE:&lt;/b&gt; Some early experimenting with the editor panel had bad results for me with any browser other than Netscape. (Most severely, the use of the panel in IE caused the write-ups to be deleted.) Unless nate, bones or dbrown can say otherwise, it's probably best to stick with Netscape on this one.
-     &lt;br&gt;
-     &lt;br&gt;&lt;i&gt;(-kg)&lt;/i&gt;
+     &lt;br&gt;Click the &lt;b&gt;launch editor&lt;/b&gt; link at the top of the node, just beneath the node title on the left side. The editor panel will open.  There you can click on a write-up title and use the &lt;b&gt;up&lt;/b&gt; or &lt;b&gt;down&lt;/b&gt; links to move it around. When you are done, click the &lt;b&gt;Save&lt;/b&gt; button then the &lt;b&gt;close&lt;/b&gt; link to close the Javascript panel. Do exactly that to avoid a bug that has made such lists vanish in the past.&lt;/p&gt;
 
-&lt;p&gt;&lt;b&gt;ALSO:&lt;/b&gt; I've been unable to get this to work with Netscape 6, though 4.x works fine. I've got a Mac (go ahead, throw vegetables at me), so your mileage may vary. No adverse effects, it just won't rearrange 'em.
-
-&lt;p&gt;&lt;i&gt;(-[Uberfetus|uber])&lt;/i&gt;
 &lt;/dl&gt;
 
 &lt;h1&gt;Node Funerary Rites&lt;/h1&gt;

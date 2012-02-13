@@ -1,8 +1,8 @@
 <node>
-  <doctext>Chat client in C# and WPF for public and private messages.
-For Windows 
-Requires Windows XP SP2, Vista or later, and .Net 3.5 SP1
-</doctext>
+  <doctext>An everything2 chat client written in C# and WPF, for viewing and sending public and private messages.
+Also shows other users, new writeups, recent cools and editor cools.
+For Windows: Requires Windows XP SP2, Vista or later, and .Net 3.5 SP1.
+More details are available via the home page.</doctext>
   <dlurl>http://everything2chatbox.googlecode.com/files/ChatboxInstaller_025.msi</dlurl>
   <homeurl>http://code.google.com/p/everything2chatbox/</homeurl>
   <node_id>1974266</node_id>

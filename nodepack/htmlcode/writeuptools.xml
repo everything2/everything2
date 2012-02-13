@@ -11,7 +11,7 @@ my $isMine = ($$N{author_user} == $$USER{node_id});
 return unless $isMine or $isEditor;
 
 my ($linktext , $linktitle, $hide, $insure,
-   $insured, $remove, $reassign, $nodenotes);
+   $insured, $remove, $reassign, $nodenotes) = ();
 
 my $n = $$N{node_id};
 my $id = 'adminheader'.$n ;
@@ -84,7 +84,7 @@ if ($isMine){
 return $query -&gt; span({class =&gt; 'admin', id =&gt; $id}, $insured ? $insured : $insure.$remove)
 	if $$VARS{nokillpopup};
 
-my @out;
+my @out = ();
 
 if ($isEditor){
 	$reassign = linkNode(getNode('Magical Writeup Reparenter', 'superdoc')

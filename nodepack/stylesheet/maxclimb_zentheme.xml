@@ -1,5 +1,12 @@
 <node>
-  <doctext>      /*-------------------------------------------------------------*/
+  <doctext>/*= autofix added basic compatibility rules */
+.weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
+.weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
+.weblog .title, .nodelet .title {font-weight: bold;}
+/*= end autofix added rules */
+
+/*= Comments containing old/disabled rules start with = for easy finding */
+      /*-------------------------------------------------------------*/
      /* This is a stylesheet for ascorbic's zen theme, by maxClimb  */
     /*                                                             */
    /* I've moved everything from the skeleton that I've changed   */
@@ -7,35 +14,319 @@
  /* as well.                                                    */
 /*-------------------------------------------------------------*/
 
+
+ /* 4/16/11 trying to keep writeup_add from being layered on top of softlinks, and other weirdness */
+/*           floats had no effect.                                                                */
+   
+
+.writeup_add {
+        float:none;
+        margin-top: 600px;
+}
+
+#softlinks {
+        float:none;
+}
+
+
+ /*-------------------*/
+/* updated 2/15/2010 */
+
+#printlink {
+        padding-top: 5px;
+}
+.item .contentinfo .title {
+        padding-left: 10px;
+}
+
+.item .contentinfo a:link {
+        color: white;
+}
+.item .contentinfo a:visited {
+        color: white;
+}
+.item .contentinfo a:hover {
+        color: #eeebdd;
+}
+.item .contentinfo a:active {
+        color: white;
+}
+
+
+.cools .widget a:link {
+        color: black;
+}
+.cools .widget a:visited {
+        color: blue;
+}
+.cools .widget a:hover {
+        color: black;
+}
+.cools .widget a:active {
+        color: black;
+}
+
+#cotc .item .contentinfo a:link {
+        color: #4c8797;
+}
+#cotc .item .contentinfo a:visited {
+        color: #4c8797;
+}
+#cotc .item .contentinfo a:hover {
+        color: #4c8797;
+}
+#cotc .item .contentinfo a:active {
+        color: #4c8797;
+}
+
+
+
+.writeup_title .wu_author a:link {
+        color: #4c8797;
+}
+.wu_header .wu_type .type a:link {
+        color: #4c8797;
+}
+.item .wu_cfull a:link {
+        color: #4c8797;
+}
+
+
+
+#newwriteups .contentinfo  {
+	background-color: #eeebdd;
+        
+}
+
+#newwriteups .contentinfo cite {
+        color: black;
+}
+
+#newwriteups li {
+        margin-top: 3px;
+        border-bottom:1px solid #508499;
+}
+
 #cooluserpicks {
 	background-color: #eeebdd;
-       /* background-image: url(http://www.kenvective.com/e2/brn35_plaster.png); */
+	/* background-image: url(http://www.kenvective.com/e2/brn35_plaster.png); */
 	border-style: solid;
 	border-width: 1px;
 	border-color: #4c8797;
 	padding: 5px;
-        width: 220px;
-        float: left;
-        margin-left:10px;
-        margin-right: 15px;
-        margin-bottom: 15px;
+	width: 220px;
+	float: left;
+	margin-left:10px;
+	margin-right: 15px;
+	margin-bottom: 15px;
 	/* list-style-type: disc; */
 	list-style-position: outside;
 	list-style-image: url(http://www.kenvective.com/e2/ul_ching.png);
 }
 
-.cotc_info{
- width: 10%;
+#creamofthecool{
+	margin-top: 100px;
+	float: none;
 }
 
-.wl_title {
+#cotc {
+       float: right;
+       width: 70%;
+       margin-right: 50px;
+       text-align: left;
+}
+
+#creamofthecool_title a{
+	display: block;
+        float: none;
+        width: 300px;
+	padding: 5px;
+        margin-left: 250px;
+        margin-right: 0px;
+        margin-top: 10px;
+        margin-bottom: 5px; 
+	color: white;
+        background-image: url(http://www.kenvective.com/e2/oddrow_crnr_grad.png);
+        background-repeat: no-repeat;
+	background-position: 0px 5px;
+}
+
+
+
+
+
+#staff_picks  {
+	/*float: left;*/
+      display: block;
+	margin-bottom: 1px;
+	width: 85%;
+}
+
+#staff_picks h3 {
+        display: block;
+	/*float: left;*/
+        font-size: 120%;
+	font-weight: bold;
+	color: white;
+        background-image: url(http://www.kenvective.com/e2/oddrow_crnr_grad.png);
+        background-repeat: no-repeat;
+	background-position: 0px 0px;
+	padding-left: 10px;
+        vertical-align: middle;
+        width: 300px;
+        padding: 5px; 
+        margin-left: 253px;
+}
+
+#staff_picks ul{
+      display: block;
+      float: none;
+      margin-left: 260px;
+}
+
+#staff_picks ul.linklist li {
+    text-align: left;
+    float: left;
+    list-style: bullet;
+    padding: 0px 10px 0px 0px;
+    margin: 5px;
+    
+}
+
+
+
+
+#loglinks{
+	/*background-color: #eeebdd;*/
+	/* background-image: url(http://www.kenvective.com/e2/brn35_plaster.png); */
+	/*border-style: solid;
+	border-width: 1px;
+	border-color: #4c8797;*/
+	padding: 5px;
+	padding-bottom: 33px;
+	margin-top: 5px;
+	margin-left:10px;
+	margin-right: 10px;
+	margin-bottom: 5px;
+	
+}
+
+#loglinks h3 {
+	font-size: 100%;
+	font-weight: bold;
+	/*background-color: #5a5341;*/
+	/*color: white;*/
+	/*background-image: url(http://www.kenvective.com/e2/h3_crnr_cool.png);
+	background-repeat: no-repeat;
+	background-position: 0px 0px;*/
+	padding-left: 0px;
+	vertical-align: middle;
+	float: left;
+	/*padding-right: 178px;*/
+}
+
+#loglinks ul {
+	/*margin-left: 25px;*/
+}
+
+#loglinks li {
+	float: left;
+	margin-left: 20px;
+	font-size: 12px;
+}
+
+
+
+
+/*=.weblog_item h3 a*/
+.weblog .item h3 a{
+        color:  white;
+}
+
+/*=.wl_title*/
+.weblog .item .title {
         font-size: 14px;
         font-weight: 800;
+        background-image: url(http://www.kenvective.com/e2/h3_crnr_grad5.png);
+        background-repeat: no-repeat;
+	background-position: 0px 0px;
 }
 
+
+/* ------- New Writeups --------*/
+
+/*=#writeup_list*/
+.nodelet .infolist  {
+	list-style-type: none;
+	padding: 0;
+}
+
+/*=#writeup_list  li*/
+.nodelet .infolist  li {
+	clear: both;
+	word-wrap: break-word;
+        margin: 5px;
+        /*border-style: solid;
+        border-color: #5a5343;
+        border-width: 1px;*/
+}
+/*=#writeup_list .contentinfo a:link, .contentinfo a:visited*/
+.nodelet .infolist .contentinfo a:link, .contentinfo a:visited {
+	color: #715C37;	
+}
+
+
+/*=#writeup_list .contentinfo .author*/
+/*=DISABLED .nodelet .infolist .contentinfo .author*/ {
+	font-size: 80%;
+        margin-left: 5px;
+	margin-bottom: 1px;
+	text-align: right;
+}
+
+/*=#writeup_list .contentinfo .title*/
+/*=DISABLED .nodelet .infolist .contentinfo .title*/ {
+        font-size: 120%;
+	float: left;
+	display: block;
+	clear: left;
+        margin-left: 5px;
+	margin-bottom: 3px;
+	background-color: #eeebdd;
+}
+
+/*=#writeup_list .contentinfo .title a:link, .contentinfo a:visited*/
+/*=DISABLED .nodelet .infolist .contentinfo .title a:link*/, .contentinfo a:visited {
+	color:#4c8797;	
+}
+
+/*=#writeup_list .contentinfo .type*/
+/*=DISABLED .nodelet .infolist .contentinfo .type*/ {
+	font-size: 80%;
+	display: block;
+	text-align: right;
+	word-wrap: no-wrap;
+	margin-bottom: 6px;
+	clear: right;
+	background-color: #eeebdd;
+}
+
+/*=#writeup_list .contentinfo .type a:link, .contentinfo a:visited*/
+/*=DISABLED .nodelet .infolist .contentinfo .type a:link*/, .contentinfo a:visited {
+	color:#715C37;	
+}
+
+
+/*=#writeup_list .contentinfo .hidden, .contentinfo .hide*/
+.nodelet .infolist .contentinfo .hidden, .contentinfo .hide {
+	font-size: 85%;
+	margin-left: 3px;
+}
+
+
 #welcome_message {
-        font-size: 24px;
-        text-align: center;
+	font-size: 24px;
+	text-align: center;
 }
 
 #frontpage_news {
@@ -45,7 +336,8 @@
         clear: both;
 }
 
-.weblog_item {
+/*=.weblog_item*/
+.weblog .item {
 	/* background-color: #eeebdd; */
        /* background-image: url(http://www.kenvective.com/e2/brn35_plaster.png); */
 	border-bottom-style: solid;
@@ -59,7 +351,8 @@
 }
 
 
-.cotc_entry {
+/*=.cotc_entry*/
+#creamofthecool .item {
 	border-bottom-style: solid;
 	border-bottom-width: 1px;
 	border-bottom-color: #4c8797;
@@ -127,6 +420,7 @@
 }
 
 .nodelet td {
+        font-size: 80%;
         padding-left: 10px;
         padding-right: 5px;
         padding-top: 1px;
@@ -149,7 +443,7 @@
 
 /*
 #nodelet_263 {
-	background-image: url(http://www.kenvective.com/e2/brn35_plaster.png);
+	/* background-image: url(http://www.kenvective.com/e2/brn35_plaster.png); */
 }
 */       
 
@@ -186,14 +480,13 @@
 #e2logo {
 	float: left;
 	text-align: right;
-	font-size: 150%;
-	padding-left: 275px;
+	font-size: 200%;
+	padding-left: 325px;
         background-image: url(http://www.kenvective.com/e2/e2Logo.png);
         background-repeat: no-repeat;
-	background-position: 10px top;
+	background-position: 15px top;
         height: 40px;
         color: black;
-        z-index: 0;
 }
 
 #e2logo a{
@@ -207,7 +500,7 @@
 body {
 	color: black;
 	background-color: #e2d8ac;
-        background-image: url(http://www.kenvective.com/e2/brn35_plaster.png);
+        /* background-image: url(http://www.kenvective.com/e2/brn35_plaster.png); */
 }
 
 a:link {
@@ -222,20 +515,23 @@ a:visited {
 
 /*The basics*/
 body {
-	font-family: &quot;lucida sans&quot;, &quot;lucida sans unicode&quot;, lucida, arial, sans-serif;
+	/*font-family:  arial, sans-serif;
 	/* This is a starting point: use relative for the rest */
-	font-size: 11px; 
+	font-size: 12px; 
         font-weight: normal;
+		font-family:Verdana, Geneva, sans-serif;
 }
 
 div,p, th, td, li, dd {
-	font-family: &quot;lucida sans&quot;, &quot;lucida sans unicode&quot;, lucida, arial, sans-serif;
+	/*font-family:  arial, sans-serif;
 	/* This is a starting point: use relative for the rest */
-	font-size: 11px; 
-        font-weight: lighter;
+	font-size: 12px; 
+        font-weight: normal;
+		font-family:Verdana, Geneva, sans-serif;
 }
 
-#writeup_list span.writeupmeta {
+/*=#writeup_list span.writeupmeta*/
+.nodelet .infolist .contentinfo {
 	display: block;
 	text-align: center;
 	padding: 2px;
@@ -245,7 +541,8 @@ div,p, th, td, li, dd {
 	margin: 0 -1px;
 }
 
-.writeup_text {
+/*=.writeup_text*/
+.writeuppage .item .content {
 	margin-top: 10px;
 	margin-right: 25px;
 	margin-left: 10px;
@@ -256,16 +553,13 @@ div,p, th, td, li, dd {
 	font-size: 100%;
 	font-weight: bold;
         /* background-color: #5a5341; */
-	color: white;
-        background-image: url(http://www.kenvective.com/e2/h3_crnr_grad5.png);
-        background-repeat: no-repeat;
-	background-position: 0px 0px;
+
         padding-left:10px;
         /*
         border-bottom-color: #bfb7a5;
         border-bottom-style: solid;
         border-bottom-width: 1px;
-        */
+	*/
 }
 
 #frontpage_news h2 {
@@ -303,6 +597,12 @@ div,p, th, td, li, dd {
 	width: 100%;
         z-index: 10;
 }
+
+strong {
+        font-weight: bold;
+        font-size: 110%;
+
+}
   /*------------------------------------------*/
  /* What's unchanged from skeleton is below  */
 /*------------------------------------------*/
@@ -339,18 +639,25 @@ small {
 }
 
 #header {
-	height: 40px;
+	height: 80px;
 	width: 100%;
 	position: absolute;
 	top: 0;
 	left: 0;
-	border-bottom: 1px gray solid;
+	border-bottom: 1px gray solid; 
+        border-bottom-color: #4c8797;
+        float: left;
 }
 
 #sidebar {
 	position: relative;
 	float: left;
 	width: 190px;
+	margin-right: -100%;
+	margin-left: 5px;
+	/*right: 205px;*/
+	/*margin-left: -100%;*/
+        margin-top: 40px;
 }
 
 /*Nodelets on right*/
@@ -359,10 +666,6 @@ small {
 	padding-right: 205px;	
 }
 
-#sidebar {
-	margin-right: -100%;
-	margin-left: 5px;
-}
 
 
 /*Nodelets on left*/
@@ -371,10 +674,7 @@ small {
 	padding-left: 205px;	
 }
 
-#sidebar {
-	right: 205px;
-	margin-left: -100%;
-}
+
 * html #left {
   left: 200px;
 }
@@ -421,14 +721,15 @@ pre {
 }
 
 #search_form {
-	width: 610px;
+	width: 350px;
 	float: right;
 	text-align: left;
 	padding-top: 5px;
+        padding-right: 10px;
 }
 
 #search_form input {
-	float: right;
+	//float: right;
 	margin-top: 5px;
 }
 
@@ -447,7 +748,8 @@ pre {
 
 
 
-.writeup {
+/*=.writeup*/
+.writeuppage .item {
 	border-bottom: 1px gray solid;
 	padding-bottom: 5px;
 	margin-bottom: 5px;
@@ -462,7 +764,8 @@ pre {
 .writeup_title {
 }
 
-.writeup_text {
+/*=.writeup_text*/
+.writeuppage .item .content {
 }
 
 #firmlink, #isalso {
@@ -533,64 +836,21 @@ font-size: 85%;
 left: 300px;
 }
 
-.writeupmeta {
+/*=.writeupmeta*/
+.infolist .contentinfo {
 	
 }
  
-#writeup_list  {
-	list-style-type: none;
-	padding: 0;
-}
-
-#writeup_list  li {
-	clear: both;
-	word-wrap: break-word;
-}
-#writeup_list .writeupmeta a:link, .writeupmeta a:visited {
-	color: white;	
-}
-
-#writeup_list .writeupmeta .title {
-	float: left;
-	display: block;
-	clear: left;
-	margin-bottom: 1px;
-	background-color: #eeebdd;
-}
-
-#writeup_list .writeupmeta .title a:link, .writeupmeta a:visited {
-	color:#715C37;	
-}
-
-#writeup_list .writeupmeta .type {
-	font-size: 90%;
-	display: block;
-	text-align: right;
-	word-wrap: no-wrap;
-	margin-bottom: 1px;
-	clear: right;
-	background-color: #eeebdd;
-}
-
-#writeup_list .writeupmeta .type a:link, .writeupmeta a:visited {
-	color:#715C37;	
-}
-
-#writeup_list .writeupmeta .author {
-}
-
-#writeup_list .writeupmeta .hidden, .writeupmeta .hide {
-	font-size: 85%;
-	margin-left: 3px;
-}
 
 #chatterlight_mainbody { float: left; width: 800px; margin-left: 10px; }
 #chatterlight_NW { float: left; width: 190px; }
 #chatterlight_hints { display: none; }
 
-#nodelet_170070 { width: 100%; }
+/*=#nodelet_170070*/
+#chatterbox { width: 196px; }
 
-.nodeshell { font-style: italic; }</doctext>
+.nodeshell { font-style: italic; }
+</doctext>
   <node_id>1876637</node_id>
   <type_nodetype>1854352</type_nodetype>
   <title>maxClimb_zenTheme</title>

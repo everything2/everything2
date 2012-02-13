@@ -104,6 +104,7 @@ foreach my $wu (@wus) {
 }
 
 my ($day, $month, $year) = (gmtime(time + $$VARS{localTimeOffset} + $$VARS{localTimeDST}*3600))[3 .. 5];
+$month += 1; # month initially 0..11; make it 1..12
 $year += 1900;
 $day = &quot;0$day&quot; if $day &lt; 10;
 $month = &quot;0$month&quot; if $month &lt; 10;

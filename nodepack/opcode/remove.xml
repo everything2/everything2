@@ -13,28 +13,36 @@
 return unless htmlcode('isEditor');
 
 my @list;
-foreach ($query-&gt;param){
-	next unless /^removenode(\d+)$/;
-	push @list, $1;
+unless ($query -&gt; param('removeauthor')){
+	foreach ($query-&gt;param){
+		next unless /^removenode(\d+)$/;
+		push @list, $1;
+	}
+}else{
+	my $author = getNode($query -&gt; param('author'), 'user');
+	return unless $author;
+	@list = @{$DB -&gt; selectNodeWhere({author_user =&gt; $$author{node_id}}, 'writeup')};
 }
 
 return unless @list;
 
+my $bulkreason = $query -&gt; param('removereason');
 my $nid;
+my $count = 0;
 
 foreach $nid (@list){
 	my $N = getNodeById $nid;
 	next unless $N &amp;&amp; $$N{type}{title} eq 'writeup';
 	next if $$N{publication_status}; # insured
 
-	my $reason = $query-&gt;param('removereason'.$nid);
+	my $reason = $bulkreason || $query-&gt;param('removereason'.$nid);
 	next unless htmlcode('unpublishwriteup', $N, $reason);
 
 	my $aid = $$N{author_user};
 
 	# notify author:
 	next unless $aid;	#skip /msg if no WU author
-	my $parent = getNodeById $$N{parent_e2node};
+	my $parent = getNodeById($$N{parent_e2node});
 	my $title = $$parent{title} if $parent;
 	$title ||= $$N{title};
 

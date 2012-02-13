@@ -1,22 +1,6 @@
 <node>
   <node_id>2022928</node_id>
-  <code>my $node_id=$$NODE{parent_e2node}|$$NODE{node_id};
-my $str;
-
-if (htmlcode('getStarRatingCondition')==180) {
-
-  $str.=&quot;&lt;div style='display:none'&gt;
-  	&lt;div id='nagbox' style='padding:10px;'&gt;
-Hi, before you leave this page we'd appreciate it if you would let us know what you thought of it on a scale of 1 to 5 stars.&quot;;
-  $str.=htmlcode('stars',&quot;$node_id,,,,&quot;);
-  
-  $str.=&quot;&lt;span id='decline'&gt;&lt;/span&gt;	&lt;/div&gt;
-&lt;/div&gt;&quot;;
-
-}
-
-return $str;
-</code>
+  <code>return;</code>
   <type_nodetype>4</type_nodetype>
   <title>nagbox</title>
 </node>

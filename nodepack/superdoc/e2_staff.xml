@@ -112,7 +112,7 @@ return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/
 
   my @gods = map {getNodeById($_)} @{getNode(&quot;gods&quot;, &quot;usergroup&quot;)-&gt;{group}};
   my @e2godsgrp = @{getNode(&quot;e2gods&quot;,&quot;usergroup&quot;)-&gt;{group}};
-  my @edcgrp = (&quot;dem bones&quot;, &quot;clampe&quot;, &quot;dbrown&quot;, &quot;hemos&quot;, &quot;Kurt&quot;, &quot;nate&quot;, &quot;robnotrob&quot;, &quot;robo&quot;, &quot;sgtbaker&quot;, &quot;jaybonci&quot;, &quot;thefez&quot;);
+  my @edcgrp = (&quot;dem bones&quot;, &quot;clampe&quot;, &quot;hemos&quot;, &quot;Kurt&quot;, &quot;nate&quot;, &quot;thefez&quot;);
   my @closegrp = (&quot;dbrown&quot;, &quot;hemos&quot;, &quot;Kurt&quot;, &quot;robnotrob&quot;, &quot;robo&quot;);
 
   my %e2gods = map { $_ =&gt; 1} @e2godsgrp;
@@ -161,12 +161,12 @@ return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/
 
 &lt;p&gt;These people are in charge of things:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;[nate]: Owner, Founder, Creator&lt;/li&gt;
+&lt;li&gt;[jaybonci]: Site owner&lt;/li&gt;
 &lt;li&gt;[clampe]: E2 researcher and bandwidth provider&lt;/li&gt;
-&lt;li&gt;[alex]: Director of Operations and Site Administrator&lt;/li&gt;
-&lt;li&gt;[wertperch]: Deputy Director of Operations&lt;/li&gt;
+&lt;li&gt;[alex]: Director of Operations and site administrator&lt;/li&gt;
+&lt;li&gt;[mauler]: Deputy Director of Operations&lt;/li&gt;
 &lt;li&gt;[Oolong]: Lead Developer&lt;/li&gt;
-&lt;li&gt;[The Debutante]: Director of User Relations&lt;/li&gt;
+&lt;li&gt;[The Debutante]: Director of User Relations (interim Jan-Jul 2012: [alex[user]])&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;
@@ -193,7 +193,7 @@ my $group = getNode($groupName, &quot;usergroup&quot;);
 return '' if !$group;
 my $intro = &lt;&lt;INTRO;
 &lt;p&gt;
-These administrators and editors help [alex] guide [$groupName|site policy]:
+These administrators and editors handle appeals and guide [$groupName|site policy]:
 &lt;/p&gt;
 &lt;ul&gt;
 INTRO
@@ -215,16 +215,15 @@ my $userList =
 return $intro . $userList . $outro;
 %]
 
-&lt;p&gt;Copyright compliance team:&lt;/p&gt;
+&lt;p&gt;Copyright compliance:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;[GrouchyOldMan]&lt;/li&gt;
 &lt;li&gt;[avalyn]&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr /&gt;
 
 &lt;p&gt;Documentation, FAQs, staff docs, [superdocs|sekrits]&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;[Wiccanpiper]&lt;/li&gt;
+&lt;li&gt;[Aerobe]&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;hr /&gt;

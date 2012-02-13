@@ -394,7 +394,7 @@ local *sendMessage = sub {
 	}
 	my $nN = $query-&gt;checkbox(-name=&gt;'nn'.$queryid, value=&gt;$$WRITEUP{node_id}, label=&gt;'NN ',
 			title=&gt;'check to record this message as a node note')
-		if $isCE and $isDraft;
+		if $isCE;
 	return $nN
 		.$query-&gt;checkbox( -name=&gt;'cc'.$queryid, value=&gt;'1', label=&gt;'CC ',
 			title=&gt;'check to send a copy of this message to yourself' )

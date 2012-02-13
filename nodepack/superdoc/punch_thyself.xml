@@ -1,6 +1,6 @@
 <node>
   <doctext>[%
-return 'Temporarily disabled following XP/level changes.';
+return 'Disabled following XP/level changes. Burn your GP at the [Wheel of Surprise] or give it away.';
 return if ($$VARS{GPoptout});
 
 return '&lt;em&gt;This is gonna &lt;strong&gt;hurt&lt;/strong&gt; you, '.$$USER{title}.'.&lt;/em&gt; No kidding: You\'ll regret it.&lt;br /&gt;' if $$USER{GP}&lt;100 and $$USER{GP}&gt;9;

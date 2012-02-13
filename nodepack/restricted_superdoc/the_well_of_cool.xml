@@ -4,13 +4,8 @@ return unless isGod($USER);
 
 my ($str);
 
-$$VARS{cools} |= 0;
-$$VARS{biznatch} = 'mebbes';
-
 if ($query-&gt;param(&quot;Drink deeply from the well of cool&quot;)) {
         $$VARS{cools} += 1;
-        $str.=&quot;&lt;h4&gt;Gulp gulp gulp!&lt;/h4&gt;&quot;;
-        $str.=&quot;Your cools should now be $$VARS{cools}.&quot;;
 }
 
 $str.=htmlcode('openform');

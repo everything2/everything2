@@ -52,13 +52,31 @@ while (my $link = $csr-&gt;fetchrow_hashref) {
 }
 $csr-&gt;finish;
 
+#Look for the non-nodeshells --[Swap]
+my @e2node_ids = map $_ -&gt; {to_node}, @nodelinks;
+
+my %fillednode_ids;
+
+if(@e2node_ids){
+  my $sql = &quot;SELECT DISTINCT nodegroup_id
+             FROM nodegroup
+             WHERE nodegroup_id IN (&quot;
+             .join(&quot;, &quot;, @e2node_ids).&quot;)&quot;;
+
+  #Populate the hash with autovivify (man perlglossary) --[Swap]
+  \@fillednode_ids{  @{$dbh -&gt; selectcol_arrayref($sql)}  };
+}
+
+
+
 #xml output here;
 if($softserve){
 	my $ss ='';
 	if($softserve eq 'xml') {
 		foreach my $n (@nodelinks){
 			my $tn = getNodeById($$n{to_node},'light');
-			$ss .= '&lt;e2link node_id=&quot;'.$$tn{node_id}.'&quot; weight=&quot;'.$$n{hits}.'&quot;&gt;'
+			my $nodeshelltest = exists $fillednode_ids{$$tn{node_id}};
+			$ss .= '&lt;e2link node_id=&quot;'.$$tn{node_id}.'&quot; weight=&quot;'.$$n{hits}.'&quot; filled=&quot;'.($nodeshelltest? '1' : '0').'&quot;&gt;'
 				.encodeHTML($$tn{title}).&quot;&lt;/e2link&gt;\n&quot;;
 		}
 		return $ss;
@@ -103,22 +121,17 @@ my $numCols = 4;
 
 my $thisnode = $$N{node_id};
 
-#Look for the non-nodeshells --[Swap]
-my @e2node_ids = map $_ -&gt; {to_node}, @nodelinks;
-
-my %fillednode_ids;
-
-if(@e2node_ids){
-  my $sql = &quot;SELECT DISTINCT nodegroup_id
-             FROM nodegroup
-             WHERE nodegroup_id IN (&quot;
-             .join(&quot;, &quot;, @e2node_ids).&quot;)&quot;;
-
-  #Populate the hash with autovivify (man perlglossary) --[Swap]
-  \@fillednode_ids{  @{$dbh -&gt; selectcol_arrayref($sql)}  };
-}
-
 foreach my $l (@nodelinks) {
+
+        my @badwords = qw(boob breast butt ass lesbian cock dick penis sex oral anal drug pot weed crack cocaine fuck wank whore vagina vag cunt tits titty twat shit slut snatch queef queer poon prick puss orgasm nigg nuts muff motherfuck jizz hell homo handjob fag dildo dick clit cum bitch rape ejaculate bsdm fisting balling);
+        if($$USER{user_id} == $HTMLVARS{guest_user})
+        {
+          my $isbad = 0;
+          foreach my $word (@badwords) {
+            if($$l{title} =~ /\b$word/i or $$l{title} =~ /$word\b/i){ $isbad = 1; last; }
+          }
+          next if $isbad;
+        }
 
 	$nid = $$l{to_node};
 	my $nodeshelltest = exists $fillednode_ids{$nid};

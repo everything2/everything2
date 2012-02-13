@@ -1,5 +1,5 @@
 <node>
-  <doctext>&lt;p style=&quot;text-align:right&quot;&gt;See also: [http://devel.everything2.org/ecore|Mercurial]&lt;/p&gt;
+  <doctext>&lt;p style=&quot;text-align:right&quot;&gt;See also: [http://everything2.org/hgweb.cgi|Mercurial]&lt;/p&gt;
 [{openform}]
 pick yer function: [%
 $query-&gt;textfield('choicefunc').' '.htmlcode('varcheckboxinverse','scf_nohtmlcode,Show htmlcodes');

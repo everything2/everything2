@@ -1,5 +1,5 @@
 <node>
-  <doctext>&lt;p&gt;&lt;textarea class='expandable' style='width: 400px; height: 1.7em'&gt;&lt;/textarea&gt;&lt;/p&gt;
+  <doctext>&lt;p&gt;&lt;textarea class='bespin' style='width: 400px; height: 1.7em'&gt;&lt;/textarea&gt;&lt;/p&gt;
 
 
 
@@ -95,19 +95,25 @@ $str;
 
 [%
 return;
-my $sql = &quot;select count(*) as outnum from user where user_id &lt; 1822772&quot;;
+my $sql = &quot;SELECT user.nick, setting.vars FROM setting,user WHERE setting.setting_id=user.user_id AND (setting.vars LIKE \'%rowser=vim%\')&quot;;
+
 my $usr = $dbh-&gt;prepare($sql);
 $usr-&gt;execute or return 'Oh dear. Database oops';
 
-my $l = $usr-&gt;fetchrow_hashref;
-return &quot;out &quot; . $$l{outnum};
+my $str;
+while(my $N = $usr-&gt;fetchrow_hashref) {
+$str .= &quot;&lt;br&gt; &quot; . linkNodeTitle($$N{nick}) . ' ' . $$N{vars};
+
+}
+
+$str;
 %]
 
 [%
-return;
+#return;
 return unless ($$USER{title} eq 'ascorbic');
 
-my $sql =    &quot;select * from user where user_id &gt; 1985554 order by user_id desc&quot;;
+my $sql = &quot;select * from user order by user_id desc limit 1000&quot;;
 
 
 my $usr = $dbh-&gt;prepare($sql);

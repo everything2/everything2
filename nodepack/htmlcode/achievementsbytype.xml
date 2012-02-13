@@ -1,19 +1,24 @@
 <node>
   <node_id>1918037</node_id>
-  <code>my ($aType, $user_id) = @_;
+  <code>my ($aType, $user_id, $debug) = @_;
 return unless $aType;
 
 $user_id ||= $$USER{user_id};
 
-my $achList = $DB-&gt;sqlSelectMany(&quot;achievement_id&quot;,&quot;achievement&quot;,&quot;achievement_type = '$aType'&quot;);
-return unless $achList;
+my @achList = getNodeWhere({achievement_type =&gt; $aType}, 'achievement', 'subtype, title ASC');
+return unless @achList;
 
 my $str;
+my $finishedgroup = '';
 
-while (my $a = $achList-&gt;fetchrow_hashref) {
-my $result = htmlcode('hasAchieved',$$a{achievement_id}.&quot;,&quot;.$user_id);
-$str.=linkNode($$a{achievement_id}).&quot; - &quot;.$result.&quot;&lt;br /&gt;&quot; if $$USER{title} eq 'kthejoker';
+foreach my $a (@achList) {
+	# forget about blah100 if we haven't got blah050:
+	next if $$a{subtype} &amp;&amp; $$a{subtype} eq $finishedgroup;
 
+	my $result = htmlcode('hasAchieved', $a, $user_id);
+	$finishedgroup = $$a{subtype} unless $result;
+
+	$str.=linkNode($a).&quot; - $result&lt;br&gt;&quot; if $debug;
 }
 
 return $str;</code>

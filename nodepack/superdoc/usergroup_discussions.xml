@@ -275,7 +275,7 @@ $str .='&lt;input type=&quot;submit&quot; name=&quot;sexisgood&quot; value=&quot
 $str .= &quot;\n&lt;/form&gt;&quot;;
 
 $str .= '&lt;br /&gt;
-&lt;p align=&quot;right&quot;&gt;&lt;small&gt;Bugs go to [Swap]&lt;/small&gt;&lt;/p&gt;';
+&lt;p align=&quot;right&quot;&gt;&lt;small&gt;Bugs go to [e2 bugs]&lt;/small&gt;&lt;/p&gt;';
 
 return $str;
 %]

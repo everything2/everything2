@@ -8,15 +8,15 @@ if ($USER-&gt;{'title'} eq &quot;Guest User&quot;)
 
 getRef($N);
 
-#$$N{'user_created'}   = $USER-&gt;{'user_id'};
-#$$N{'createtime'}     = NOW();
-#$$N{'doctext'}        = $query-&gt;param('description');
-#$$N{'summary'}        = $query-&gt;param('summary');
-#$$N{'status'}         = 1927740;  # &quot;undone&quot;
-#$$N{'tickettype'}     = $query-&gt;param('tickettype');
-#$$N{'priority'}       = 5;        # default lowest
-#$$N{'locked_comment'} = &quot;Not locked&quot;;
-#$$N{'title'}          = &quot;test title&quot;;
+$$N{'user_created'}   = $USER-&gt;{'user_id'};
+$$N{'createtime'}     = NOW();
+$$N{'doctext'}        = $query-&gt;param('description');
+$$N{'summary'}        = $query-&gt;param('summary');
+$$N{'status'}         = 1927740;  # &quot;undone&quot;
+$$N{'type'}           = $query-&gt;param('tickettype');
+$$N{'priority'}       = 5;        # default lowest
+$$N{'locked_comment'} = &quot;Not locked&quot;;
+$$N{'title'}          = &quot;test title&quot;;
 
 updateNode($N, -1);</code>
   <type_nodetype>150</type_nodetype>

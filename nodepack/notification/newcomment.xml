@@ -5,10 +5,7 @@
 my $reply = $$args{reply};
 my $root = $$args{root};
 
-$parent = getNodeById($parent);
-return linkNode($$args{uid}).&quot; has replied to a debate that no longer exists.&quot; unless $parent;
-$parent = $parent -&gt; {'title'};
-
+$parent = getNodeById($parent) -&gt; {'title'};
 
 my $anchoredlink = '&lt;a href=&quot;'. urlGenNoParams($root,1) .'#debatecomment_'.$reply.'&quot;&gt;'.$parent.'&lt;/a&gt;';
 

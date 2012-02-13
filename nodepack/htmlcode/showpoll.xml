@@ -21,8 +21,13 @@ my $str = '&lt;h2&gt;'.linkNode($POLL).&quot;$showStatus&lt;/h2&gt;&quot;
 
 $str .= '&lt;p&gt;&lt;cite&gt;by '
 	.linkNode($$POLL{poll_author}, '', {-class =&gt; 'author'})
-	.'&lt;/cite&gt;&lt;/p&gt;
-	&lt;h3&gt;'
+	.'&lt;/cite&gt;';
+
+$str .= $query -&gt; small(' ('.linkNode($POLL, 'edit', {displaytype =&gt; 'edit'}).')')
+	if $$POLL{poll_status} eq 'new' &amp;&amp; $query -&gt; param('displaytype') ne 'edit'
+		&amp;&amp; canUpdateNode($USER, $POLL);
+
+$str .=	'&lt;/p&gt;&lt;h3&gt;'
 	.$query -&gt; escapeHTML($$POLL{question}) # question is unsanitised user input...
 	.'&lt;/h3&gt;';
 

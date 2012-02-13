@@ -1,5 +1,7 @@
 <node>
-  <doctext>body
+  <doctext>div#surveymessage { margin-top: 75px !important; }
+
+body
 {
 font-family: Arial Unicode MS,Veranda,Arial,Tahoma,Calibri,Helvetica,Sans-Serif;
 font-size: .85em;
@@ -680,6 +682,13 @@ border-bottom: 2px solid #b9b39d;
 .wu_hide
 {
 font-size: 85%;
+}
+
+.chat_ushdfgakjasgh
+{
+text-decoration: line-through;
+color: #aaa;
+font-size: 80%;
 }</doctext>
   <node_id>1902207</node_id>
   <type_nodetype>1854352</type_nodetype>

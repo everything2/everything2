@@ -27,7 +27,9 @@ do{
 
 } while $page &gt; $pageCount &amp;&amp; ($page = $pageCount);
 
-my $content = htmlcode('show content', $crs, $instructions, %functions);
+my $content = $instructions
+	? htmlcode('show content', $crs, $instructions, %functions)
+	: $crs; # no instructions: caller wants to handle it
 
 my $navigation = '';
 
@@ -72,12 +74,19 @@ if ($pageCount &gt; 1){
 		$navigation[-2] ||=
 			$navigation[-3] ? &amp;$link($pageCount - 1) : '&amp;nbsp;&amp;hellip; ';
 
-		$navigation = htmlcode('openform', -class =&gt; 'pagination', -method =&gt; 'get')
-			.join (&quot;\n&quot;,
-				map {$query -&gt; hidden($_, $parameters{$_})} keys %parameters
-			)
-			.'&lt;p&gt;&lt;label&gt;Go to page:&lt;input type=&quot;text&quot; name=&quot;page&quot; size=&quot;2&quot;&gt;&lt;/input&gt;'
-			.htmlcode('closeform', 'Go');
+		$navigation = '&lt;p&gt;&lt;label&gt;Go to page:&lt;input type=&quot;text&quot; name=&quot;page&quot; size=&quot;2&quot;&gt;&lt;/label&gt;'
+			.$query -&gt; submit('submit', 'Go');
+
+		unless($functions{noform}){
+			$navigation = htmlcode('openform', -class =&gt; 'pagination', -method =&gt; 'get')
+				.join (&quot;\n&quot;,
+					map {$query -&gt; hidden($_, $parameters{$_})} keys %parameters
+				)
+				.$navigation
+				.'&lt;/form&gt;';
+		}else{
+			$navigation = $query -&gt; div({class=&gt;'pagination'}, $navigation);
+		}
 	}
 
 	$navigation[0] = &amp;$link(1, '&amp;#xAB;&amp;#xAB;first') if $page &gt; 2;

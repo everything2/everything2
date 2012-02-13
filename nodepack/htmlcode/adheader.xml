@@ -3,7 +3,11 @@
   <code>return if $$VARS{noadinheader};
 my $node_id = $$NODE{node_id};
 return if $node_id == 1369958; #stupid pot node that got us busted
+return if $node_id == 2003596; #stupid ass licking node that got us busted
+
 return if $$NODE{type}{title} eq 'writeup' &amp;&amp; $$NODE{parent_e2node} == 1369958;
+return if $$NODE{type}{title} eq 'writeup' &amp;&amp; $$NODE{parent_e2node} == 2003596;
+
 
 return if $node_id == getNode('Nothing Found', 'superdoc')-&gt;{node_id};
 return if $node_id == getNode('Findings:', 'superdoc')-&gt;{node_id};

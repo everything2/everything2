@@ -1,40 +1,26 @@
 <node>
   <node_id>401321</node_id>
-  <code>my @months = qw(January February March April May June July August September October November December);
+  <code>my @months = qw(January February March April May June
+	July August September October November December);
 
-my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
-        gmtime(time);
+my ($sec,$min,$hour,$mday,$mon,$year) = gmtime(time);
 
 $year+= 1900;
 
 my $daydate = &quot;$months[$mon] $mday, $year&quot;;
-# Link to monthly ed log instead, since the dailies are extinct
+# Create daylog e2node if it's not already there.
+$DB -&gt; insertNode($daydate, 'e2node', getNode('Cool Man Eddie', 'user'))
+	unless getNode($daydate, 'e2node');
+
+# Link to monthly ed log/root
 my $mnthdate = $months[$mon].' '.$year;
 
-my $logarchive = getNode(&quot;Log Archive&quot;,&quot;superdoc&quot;,&quot;light&quot;);
-
-# Create daylog e2node if it's not already there.
-my $daylog = getNode($daydate, 'e2node');
-
-if (!$daylog) {
-
-  local $USER = getNode('Cool Man Eddie', 'user');
-  local $query = CGI-&gt;new;
-  $query-&gt;param('node', $daydate);
-  $query-&gt;param('type', 'e2node');
-  $query-&gt;param('op', 'new');
-  opNew();
-
-}
-
-parseLinks(
-&quot;&lt;ul class=\&quot;linklist\&quot;&gt;
-&lt;li class=\&quot;loglink\&quot;&gt;[$daydate|Day logs for $daydate]&lt;/li&gt;
-&lt;li class=\&quot;loglink\&quot;&gt;[Editor Log: $mnthdate|Editor logs for $mnthdate]&lt;/li&gt;
-&lt;li class=\&quot;loglink\&quot;&gt;[root log: $mnthdate|Coder logs for $mnthdate]&lt;/li&gt;
-&lt;li class=\&quot;loglink\&quot;&gt;&quot;.linkNode($logarchive).&quot;&lt;/li&gt;
-&lt;/ul&gt; &quot;
-) ;
+parseLinks(qq'&lt;ul class=&quot;linklist&quot;&gt;
+	&lt;li class=&quot;loglink&quot;&gt;[$daydate|Day logs for $daydate]&lt;/li&gt;
+	&lt;li class=&quot;loglink&quot;&gt;[Editor Log: $mnthdate|Editor logs for $mnthdate]&lt;/li&gt;
+	&lt;li class=&quot;loglink&quot;&gt;[root log: $mnthdate|Coder logs for $mnthdate]&lt;/li&gt;
+	&lt;li class=&quot;loglink&quot;&gt;[Log Archive[superdoc]]&lt;/li&gt;
+&lt;/ul&gt;');
 </code>
   <type_nodetype>4</type_nodetype>
   <title>daylog</title>

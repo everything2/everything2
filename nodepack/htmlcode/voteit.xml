@@ -17,7 +17,7 @@ my $isMine = $$USER{user_id}==$$N{author_user};
 my $author = getNodeById( $$N{author_user} );
 $author = $query -&gt; escapeHTML($$author{title}) if $author;
 
-my $edstr;
+my $edstr = '';
 
 if ($showwhat &amp; 1 and $isEditor || $isMine || $$N{type}{title} eq 'draft') { # admin tools
 	$edstr .= htmlcode(&quot;$$N{type}{title}tools&quot;, $N);
@@ -29,7 +29,7 @@ my $uplbl = $$votesettings{upLabel} || 'up' ;
 my $dnlbl = $$votesettings{downLabel} || 'down' ;
 my $nolbl = $$votesettings{nullLabel} || 'none';
 
-my $novotereason ;
+my $novotereason = '';
 $novotereason = 'this writeup is a definition' if $$N{wrtype_writeuptype} eq getId(getNode('definition', 'writeuptype')) ;
 $novotereason = 'voting has been disabled for this writeup' if htmlcode('flagged',$n.',unvotable');
 
@@ -40,7 +40,8 @@ foreach (values %HTMLVARS) {
 	}
 }
 
-my $votestr = '&amp;nbsp; ' if $edstr ;
+my $votestr = '';
+$votestr = '&amp;nbsp; ' if $edstr ;
 my $prevvote = $isMine ? 0 : $DB-&gt;sqlSelect('weight', 'vote', 'vote_id='.$n.
 	' and voter_user='.$$USER{user_id}) || 0;
 

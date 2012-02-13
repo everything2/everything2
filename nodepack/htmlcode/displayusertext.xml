@@ -15,7 +15,6 @@ else
 
 
 $txt = parseLinks($txt) unless($query-&gt;param(&quot;links_noparse&quot;));
-$txt = htmlcode('displayYouTube','').$txt;
 return $txt;</code>
   <type_nodetype>4</type_nodetype>
   <title>displayUserText</title>

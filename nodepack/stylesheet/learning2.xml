@@ -1,5 +1,12 @@
 <node>
-  <doctext>/* by Simulacron3 on the shoulders of others*/
+  <doctext>/*= autofix added basic compatibility rules */
+.weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
+.weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
+.weblog .title, .nodelet .title {font-weight: bold;}
+/*= end autofix added rules */
+
+/*= Comments containing old/disabled rules start with = for easy finding */
+/* by Simulacron3 on the shoulders of others*/
 
 
 /*Basic positioning */
@@ -63,24 +70,6 @@ div#searchform {
 					}
 
 
-#epicenter_zen
-{
-color: #000;
-height: 20px;
-margin: 0 auto;
-text-align: center;
-padding: 3px 2em;
-float: right;
-position: fixed;
-bottom: 0px;
-left: 0;
-z-index: 10000;
-}
-
-#epicenter_zen br{
-display: none;
-padding: 20px;
-}
 
 
 #wrapper {
@@ -212,18 +201,18 @@ a:visited {
 
 /* Background and border colors */
 
-body {background-color: pink;}
+body {background-color: tan;}
 
 div {background-color: inherit;}
 
 p, th, td, li, dd {
-        /*background-color: pink; */
+        /*background-color: tan; */
         color: black;
 }
 
 
 #header {
-         background-color: red;
+         background-color: brown;
          border-bottom: thick solid black;
 }
 
@@ -277,7 +266,8 @@ td.oddrow {
         /* background-color: white; */
 }
 
-.writeup {
+/*=.writeup*/
+.writeuppage .item {
 	border-bottom: 1px black solid;
         background-color: white;
 }
@@ -286,11 +276,13 @@ textarea {
         background-color: white;
 }
 
-#writeup_list {
+/*=#writeup_list*/
+.nodelet .infolist {
     /* background-color: white; */
 }
 
-#writeup_list span.writeupmeta {
+/*=#writeup_list span.writeupmeta*/
+.nodelet .infolist .contentinfo {
 	/* background-color: white; */
 }
 
@@ -334,7 +326,8 @@ pre {
 	text-align: center;
 }
 
-.writeup {
+/*=.writeup*/
+.writeuppage .item {
 	border-bottom: 1px black solid;
 	padding-bottom: 5px;
 	margin: 5px;
@@ -347,8 +340,10 @@ pre {
 .writeup_title {
 }
 
-.writeup_text {
+/*=.writeup_text*/
+.writeuppage .item .content {
         background-color: white;
+        padding=5 em;
 }
 
 #firmlink, #isalso {
@@ -410,7 +405,7 @@ hr.clear {
 	visibility: hidden;	
 }
 
-div.writeup_add {
+form.writeup_add {
         display: static;
         float:left;
 }
@@ -428,17 +423,20 @@ textarea {
         left: 150px;
 }
 
-#writeup_list {
+/*=#writeup_list*/
+.nodelet .infolist {
 	list-style-type: none;
 	padding: 5px;
 }
 
-#writeup_list li {
+/*=#writeup_list li*/
+.nodelet .infolist li {
 	clear: both;
 	word-wrap: break-word;
 }
 
-#writeup_list span.writeupmeta {
+/*=#writeup_list span.writeupmeta*/
+.nodelet .infolist .contentinfo {
 	display: block;
 	text-align: left;
 	padding: 2px;
@@ -447,12 +445,14 @@ textarea {
 	margin: 0 -1px;
 }
 
-#writeup_list span.writeupmeta a:link, #writeup_list span.writeupmeta a:visited {
+/*=#writeup_list span.writeupmeta a:link, #writeup_list span.writeupmeta a:visited*/
+.nodelet .infolist .contentinfo a:link, .nodelet .infolist .contentinfo a:visited {
 	color: black;	
 }
 
 
-#writeup_list span.type {
+/*=#writeup_list span.type*/
+/*=DISABLED .nodelet .infolist span.type*/ {
         /* display: none; */
 	font-size: 90%;
 	/*display: block;*/
@@ -461,7 +461,8 @@ textarea {
 	margin-bottom: 1px;
 }
 
-#writeup_list span.title {
+/*=#writeup_list span.title*/
+/*=DISABLED .nodelet .infolist span.title*/ {
 	/* float: left; */
 	display: block;
 	/*clear: right;*/
@@ -470,7 +471,8 @@ textarea {
 
 }
 
-#writeup_list span.author {
+/*=#writeup_list span.author*/
+/*=DISABLED .nodelet .infolist span.author*/ {
         position: relative;
         float: left;
         /*clear: left;*/
@@ -478,7 +480,8 @@ textarea {
         font-size: 90%;
 }
 
-#writeup_list span.hidden, #writeup_list span.hide {
+/*=#writeup_list span.hidden, #writeup_list span.hide*/
+.nodelet .infolist span.hidden, .nodelet .infolist span.hide {
 	font-size: 85%;
 	margin-left: 3px;
 }
@@ -504,7 +507,8 @@ textarea {
 */
 /*end nodelet layout*/ 
 
-.writeupmeta {color: red}
+/*=.writeupmeta*/
+.infolist .contentinfo {color: brown}
  </doctext>
   <node_id>1883091</node_id>
   <type_nodetype>1854352</type_nodetype>

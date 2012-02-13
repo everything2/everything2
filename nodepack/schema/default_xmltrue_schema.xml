@@ -1,21 +1,8 @@
 <node>
-  <doctext>[{schemahead}]
-&lt;xs:element name=&quot;node&quot;&gt;
-  &lt;xs:complexType&gt;
-    &lt;xs:sequence&gt;
-      &lt;xs:element ref=&quot;type&quot;/&gt;
-      &lt;xs:element ref=&quot;title&quot;/&gt;
-      &lt;xs:element ref=&quot;author&quot;/&gt;
-      &lt;xs:element ref=&quot;info&quot;/&gt;
-    &lt;/xs:sequence&gt;
-  &lt;/xs:complexType&gt;
-&lt;/xs:element&gt;
-
-&lt;xs:element name=&quot;type&quot; type=&quot;xs:string&quot;/&gt;
-&lt;xs:element name=&quot;title&quot; type=&quot;xs:string&quot;/&gt;
-&lt;xs:element name=&quot;author&quot; type=&quot;xs:string&quot;/&gt;
-&lt;xs:element name=&quot;info&quot; type=&quot;xs:string&quot;/&gt;
-[{schemafoot}]</doctext>
+  <doctext>&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
+I'm a totally blank schema!  (This text added by om to stop an XML error on this page.)
+&lt;/xs:schema&gt;</doctext>
   <node_id>1259759</node_id>
   <type_nodetype>1258942</type_nodetype>
   <title>default xmltrue schema</title>

@@ -1,144 +1,82 @@
 <node>
   <doctext>[%
-
-##############################################################
-#
-# NOTE TO YOU CODER TYPES:
-#
-# Yes, all these hardcoded queries/values are lame. This was just a 
-# test. I'll fix the dates and stuff if people like the idea.
-#
-##############################################################
-
 my $dbh = $DB-&gt;getDatabaseHandle();
 return 'No database handle!' unless $dbh;
 my $rows;
 my $str;
 my $dbrow;
 my $queryText;
-my $year = 2008;
-my $month = 11;
-my $limit = 10;
+my $withinXMonthsOfDec = int($query-&gt;param(&quot;withinXMonthsOfDec&quot;)) || 6;
+my $seenInLastXMonths = int($query-&gt;param(&quot;seenInLastXMonths&quot;)) || 12;
+my $writeupCount = int($query-&gt;param(&quot;writeupCount&quot;)) || 1;
+my $ctr = 0;
+my @choices;
 
-$queryText = &quot;SELECT node.node_id,SUM(vote.weight) AS rep FROM vote,writeup,node WHERE vote.vote_id=writeup.writeup_id AND writeup.parent_e2node=node.node_id AND votetime LIKE '&quot;.$year.&quot;-&quot;.$month.&quot;%' AND node.title NOT LIKE '%, &quot;.$year.&quot;' GROUP BY node.node_id ORDER BY rep DESC LIMIT &quot;.$limit;
+$queryText = &quot;SELECT node.node_id,user.numwriteups,node.createtime,user.lasttime
+              FROM node,user 
+              WHERE node.node_id=user.user_id
+               AND node.createtime&lt;=DATE_ADD(NOW(), INTERVAL -&quot;.(120-$withinXMonthsOfDec).&quot; MONTH)
+               AND user.lasttime&gt;=DATE_ADD(NOW(), INTERVAL -&quot;.$seenInLastXMonths.&quot; MONTH)
+               AND user.numwriteups&gt;=&quot;.$writeupCount.&quot;
+              ORDER BY createtime DESC&quot;;
+
 $rows = $dbh-&gt;prepare($queryText)
   or return $rows-&gt;errstr;
 $rows-&gt;execute()
   or return $rows-&gt;errstr;
-$str .= '&lt;h3&gt;e2nodes with the highest rep based on votes given this month (daylogs filtered)&lt;/h3&gt;';
-$str .= '&lt;ul&gt;';
-while($dbrow = $rows-&gt;fetchrow_arrayref)
+$str .= '&lt;form method=&quot;get&quot;&gt;&lt;div style=&quot;border: 1px solid #ccc;padding:10px;margin-bottom: 10px&quot;&gt;
+         &lt;h3&gt;Show users who:&lt;br /&gt;
+are within ';
+
+@choices = ();
+for(my $i=0;$i&lt;=12;$i++)
 {
-   $str .= '&lt;li&gt;'.linkNode($$dbrow[0]).' ('.$$dbrow[1].')&lt;/li&gt;';
+   push @choices, $i
 }
-$str .= '&lt;/ul&gt;';
+$str .= $query-&gt;popup_menu('withinXMonthsOfDec', \@choices, $withinXMonthsOfDec);
+$str .= ' month(s) of their decaversary&lt;br /&gt;
+         have logged in within the last ';
 
-
-$queryText = &quot;SELECT vote.vote_id,SUM(vote.weight) AS rep FROM vote,node WHERE vote.vote_id=node.node_id AND node.type_nodetype=117 AND votetime LIKE '&quot;.$year.&quot;-&quot;.$month.&quot;%' AND node.createtime NOT LIKE '&quot;.$year.&quot;-&quot;.$month.&quot;%' GROUP BY vote_id ORDER BY rep DESC LIMIT &quot;.$limit;
-$rows = $dbh-&gt;prepare($queryText)
-  or return $rows-&gt;errstr;
-$rows-&gt;execute()
-  or return $rows-&gt;errstr;
-$str .= '&lt;h3&gt;Writeups with the highest rep based on votes given this month for writeups NOT written this month&lt;/h3&gt;';
-$str .= '&lt;ul&gt;';
-while($dbrow = $rows-&gt;fetchrow_arrayref)
+@choices = ();
+for(my $i=1;$i&lt;=120;$i++)
 {
-   $str .= '&lt;li&gt;'.linkNode($$dbrow[0]).' ('.$$dbrow[1].')&lt;/li&gt;';
+   push @choices, $i
 }
-$str .= '&lt;/ul&gt;';
+$str .= $query-&gt;popup_menu('seenInLastXMonths', \@choices, $seenInLastXMonths);
+$str .= ' month(s)&lt;br /&gt;
+         and have at least ';
 
-
-$queryText = &quot;SELECT vote.vote_id,SUM(vote.weight) AS rep FROM vote,node WHERE vote.vote_id=node.node_id AND node.type_nodetype=117 AND votetime LIKE '&quot;.$year.&quot;-&quot;.$month.&quot;%' AND node.createtime NOT LIKE '&quot;.$year.&quot;-&quot;.$month.&quot;%' GROUP BY vote_id ORDER BY rep LIMIT &quot;.$limit;
-$rows = $dbh-&gt;prepare($queryText)
-  or return $rows-&gt;errstr;
-$rows-&gt;execute()
-  or return $rows-&gt;errstr;
-$str .= '&lt;h3&gt;Writeups with the lowest rep based on votes given this month for writeups NOT written this month&lt;/h3&gt;';
-$str .= '&lt;ul&gt;';
-while($dbrow = $rows-&gt;fetchrow_arrayref)
+@choices = ();
+for(my $i=0;$i&lt;=25;$i++)
 {
-   $str .= '&lt;li&gt;'.linkNode($$dbrow[0]).' ('.$$dbrow[1].')&lt;/li&gt;';
+   push @choices, $i
 }
-$str .= '&lt;/ul&gt;';
+$str .= $query-&gt;popup_menu('writeupCount', \@choices, $writeupCount);
+$str .= ' writeup(s)&lt;/h3&gt;
+         &lt;input type=&quot;submit&quot; value=&quot;Submit&quot; /&gt;
+         &lt;/div&gt;&lt;/form&gt;';
 
-return $str;
-
-
-
-
-
-##############################################
-# TEST FOR NEW WRITEUPS FEEDER (NOTE: IT DOESN'T WORK BECAUSE MIN() does not work the same in mySQL as it does in other DBs
-##############################################
-
-$queryText = &quot;select min(writeup_id) from writeup order by writeup_id asc limit 50&quot;;
-$rows = $dbh-&gt;prepare($queryText)
-  or return $rows-&gt;errstr;
-$rows-&gt;execute()
-  or return $rows-&gt;errstr;
-my $minwriteupid = $rows-&gt;fetchrow_array();
-$str .= '&lt;p&gt;min writeup_id = '.$minwriteupid.'&lt;/p&gt;';
-
-my $queryText = &quot;select
-      wutypenode.title,
-      writeup.writeup_id,
-      writeup.notnew,
-      wunode.author_user,
-      wunode.reputation,
-      parente2node.title,
-      writeup.parent_e2node
-   from writeup left join node as wunode on wunode.node_id = writeup.writeup_id
-      left join node as wutypenode on wutypenode.node_id = writeup.wrtype_writeuptype
-      left join node as parente2node on parente2node.node_id = writeup.parent_e2node
-   where writeup_id &gt;= (select min(writeup_id)
-                           from writeup
-                           where notnew=0
-                           order by writeup_id desc limit 50)
-   order by writeup_id desc&quot;;
-
-$rows = $dbh-&gt;prepare($queryText)
-  or return $rows-&gt;errstr;
-$rows-&gt;execute()
-  or return $rows-&gt;errstr;
-my $rowCtr = 0;
-my $unhiddenCtr = 0;
-my $cssClass;
 $str .= '&lt;table&gt;
          &lt;tr&gt;
          &lt;th&gt;#&lt;/th&gt;
-         &lt;th&gt;Title&lt;/th&gt;
-         &lt;th&gt;Type&lt;/th&gt;
-         &lt;th&gt;Author&lt;/th&gt;
-         &lt;th&gt;Hidden&lt;/th&gt;
-         &lt;th&gt;Rep&lt;/th&gt;
+         &lt;th&gt;User&lt;/th&gt;
+         &lt;th&gt;Writeups&lt;/th&gt;
+         &lt;th&gt;Join Date&lt;/th&gt;
+         &lt;th&gt;Last Seen&lt;/th&gt;
          &lt;/tr&gt;';
-
 while($dbrow = $rows-&gt;fetchrow_arrayref)
 {
-  $rowCtr++;
-  if ($$dbrow[2] == 0)
-  {
-    $unhiddenCtr++;
-  }
-  if ($rowCtr % 2 == 0)
-  { 
-    $cssClass = 'evenrow'; 
-  }
-  else
-  { 
-    $cssClass = 'oddrow';
-  }
-  $str .= '&lt;tr class=&quot;'.$cssClass.'&quot;&gt;
-           &lt;td&gt;'.$rowCtr.'&lt;/td&gt;
-           &lt;td&gt;'.linkNode($$dbrow[6]).'&lt;/td&gt;
-           &lt;td&gt;&lt;a href=&quot;/index.pl?node_id='.$$dbrow[1].'&quot;&gt;'.$$dbrow[0].'&lt;/a&gt;&lt;/td&gt;
-           &lt;td&gt;'.linkNode($$dbrow[3]).'&lt;/td&gt;
-           &lt;td&gt;'.$$dbrow[2].' ('.$unhiddenCtr.')&lt;/td&gt;
-           &lt;td&gt;'.$$dbrow[4].'&lt;/td&gt;
-           &lt;/tr&gt;';
-  if ($rowCtr &gt;= 120){last;}
+   $ctr++;
+   $str .= '&lt;tr&gt;
+            &lt;td&gt;'.$ctr.'&lt;/td&gt;
+            &lt;td&gt;'.linkNode($$dbrow[0]).'&lt;/td&gt;
+            &lt;td style=&quot;text-align:center&quot;&gt;'.$$dbrow[1].'&lt;/td&gt;
+            &lt;td style=&quot;text-align:center&quot;&gt;'.$$dbrow[2].'&lt;/td&gt;
+            &lt;td style=&quot;text-align:center&quot;&gt;'.$$dbrow[3].'&lt;/td&gt;
+            &lt;/tr&gt;';
 }
 $str .= '&lt;/table&gt;';
+return $str;
 %]</doctext>
   <node_id>1960670</node_id>
   <type_nodetype>14</type_nodetype>

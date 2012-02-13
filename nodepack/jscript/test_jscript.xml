@@ -1,8 +1,7 @@
 <node>
-  <doctext>//[%
-//print $query-&gt;header('text/javascript');
-//%]
-</doctext>
+  <doctext>[%
+# print $query-&gt;header('text/javascript');
+%]</doctext>
   <node_id>1921756</node_id>
   <type_nodetype>1786405</type_nodetype>
   <title>test jscript</title>

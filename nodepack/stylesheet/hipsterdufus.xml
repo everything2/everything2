@@ -821,7 +821,13 @@ padding: 0 3px;
 { 
 display: none; 
 }
-</doctext>
+
+.chat_ushdfgakjasgh
+{
+text-decoration: line-through;
+color: #aaa;
+font-size: 80%;
+}</doctext>
   <node_id>1934436</node_id>
   <type_nodetype>1854352</type_nodetype>
   <title>HipsterDufus</title>

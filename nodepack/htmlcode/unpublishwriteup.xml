@@ -71,13 +71,20 @@ htmlcode('addNotification', &quot;$notification removed writeup&quot;, 0, {
 $reason = &quot;: $reason&quot; if $reason;
 htmlcode('addNodenote', $wu, &quot;Removed by $remover$reason&quot;);
 
+my $author = getNodeById($$wu{author_user});
+my $mass = getNode('massacre', 'opcode');
+
+$DB-&gt;sqlInsert('seclog', {
+	seclog_user =&gt; $$USER{node_id}
+	, seclog_node =&gt; $$mass{node_id}
+	, seclog_details =&gt; &quot;[$title] by [$$author{title}] was removed$reason&quot;
+});
+
 unless($noexp){
 	use Everything::Experience;
 	adjustExp($$wu{author_user}, -5);
 
-	my $author = getNodeById($$wu{author_user});
 	my $vars = getVars $author;
-
 	$$vars{numwriteups}--;
 	$$author{numwriteups} = $$vars{numwriteups};
 

@@ -25,7 +25,7 @@ return unless($isGod); ## temp until system is ready
 my (@TKTTYPES) = getNodeWhere({type_nodetype =&gt; getId(getType('ticket_type'))});
 my @TKTTYPE;
 foreach(@TKTTYPES) { push @TKTTYPE, $_; }
-my $settickettype =&quot;\n\t\t&lt;select id='tickettype' name='ticket_tickettype'&gt;&quot;;
+my $settickettype =&quot;\n\t\t&lt;select id='tickettype' name='tickettype'&gt;&quot;;
 foreach(@TKTTYPE) { $settickettype.=&quot;\n\t\t\t&lt;option value='&quot;.$_-&gt;{node_id}.&quot;'&gt;&quot;.$_-&gt;{title}.&quot;&lt;/option&gt;&quot;; }
 $settickettype.=&quot;\n\t\t&lt;/select&gt;&quot;;
 
@@ -33,8 +33,8 @@ $settickettype.=&quot;\n\t\t&lt;/select&gt;&quot;;
 my $header = &quot;&lt;h3&gt;Create a New Ticket&lt;/h3&gt;\n&quot;
 		. '&lt;form method=&quot;post&quot; action=&quot;/index.pl&quot; enctype=&quot;multipart/form-data&quot;&gt;';
 #my $ticketsummary = $query-&gt;textfield('summary');
-my $ticketsummary = '&lt;input type=&quot;text&quot; class=&quot;summary&quot; name=&quot;ticket_summary&quot; maxlength=&quot;250&quot;&gt;';
-my $ticketdescription = &quot;&lt;textarea id='description' name='document_doctext' &quot;
+my $ticketsummary = '&lt;input type=&quot;text&quot; class=&quot;summary&quot; name=&quot;summary&quot; maxlength=&quot;250&quot;&gt;';
+my $ticketdescription = &quot;&lt;textarea id='description' name='description' &quot;
 	. htmlcode('customtextarea','1')
 	. &quot; wrap='virtual' &gt;&quot;
 	. &quot;&lt;/textarea&gt;&quot;;
@@ -54,7 +54,7 @@ if ($isGod || $isCE)
 #if (0) ## testing
 	{
 	$adminchecktitle = '&lt;span class=&quot;staff_only&quot;&gt;Admin&lt;br&gt;Only?&lt;/span&gt;';
-	$admincheck = '&lt;span class=&quot;staff_only&quot;&gt;&lt;input type=&quot;checkbox&quot; name=&quot;ticket_admin_only&quot; value=&quot;1&quot;&gt;';
+	$admincheck = '&lt;span class=&quot;staff_only&quot;&gt;&lt;input type=&quot;checkbox&quot; name=&quot;adminonly&quot; value=&quot;1&quot;&gt;';
 	}
 else
 	{
@@ -104,7 +104,7 @@ while (my $s = $csr-&gt;fetchrow_hashref)
 	$output .= &quot;&lt;p&gt;&quot;;
 	foreach my $keys (sort(keys(%{$s})))
 		{ $output .= $keys . &quot;:&quot; . $s-&gt;{$keys} . &quot; &quot;; }
-	#$output .= &quot;summary: &quot; . $s-&gt;{'summary'} . &quot;&lt;/p&gt;&quot;;
+	$output .= &quot;summary: &quot; . $s-&gt;{'summary'} . &quot;&lt;/p&gt;&quot;;
 	}
 #$testnode = getNodeById(1966911);
 #$output .= $testnode-&gt;{'summary'};

@@ -14,7 +14,7 @@ my $TAGS    = getVars( $TAGNODE );
 
 $$TAGS{ 'highlight' } = 1;
 
-$doctext = parseLinks( htmlScreen( $doctext, $TAGS ) );
+$doctext = breakTags( parseLinks( htmlScreen( $doctext, $TAGS ) ) );
 
 #N-Wing 2002.04.16.n2 - took out \s* - IIRC, tags can't have gaps in front
 $doctext =~ s/&lt;highlight\s*&gt;/&lt;span class=&quot;oddrow&quot;&gt;/gi;

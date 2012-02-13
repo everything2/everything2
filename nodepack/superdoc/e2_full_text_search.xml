@@ -4,8 +4,9 @@
 &lt;/script&gt;
 &lt;div class=&quot;cse-branding-right&quot; style=&quot;background-color:#FFFFFF;color:#000000&quot;&gt;
   &lt;div class=&quot;cse-branding-form&quot;&gt;
-    &lt;form action=&quot;http://everything2.com/title/Google%20Search%20Beta&quot; id=&quot;cse-search-box&quot;&gt;
+    &lt;form action=&quot;&quot; id=&quot;cse-search-box&quot;&gt;
       &lt;div&gt;
+        &lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;[%$$NODE{node_id};%]&quot;&gt;
         &lt;input type=&quot;hidden&quot; name=&quot;cx&quot; value=&quot;017923811620760923756:pspyfx78im4&quot;&gt;
         &lt;input type=&quot;hidden&quot; name=&quot;cof&quot; value=&quot;FORID:9&quot;&gt;
         &lt;input type=&quot;hidden&quot; name=&quot;ie&quot; value=&quot;UTF-8&quot;&gt;

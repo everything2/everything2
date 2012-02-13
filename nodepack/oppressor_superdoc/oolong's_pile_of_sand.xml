@@ -1,37 +1,17 @@
 <node>
-  <doctext>[{openform}]
-
-[%
-
-return $query-&gt;textfield(-name=&gt;&quot;meh&quot;, class=&gt;&quot;expandable ajax sent123:messageBox:1017738,0,123&quot;, size=&gt;20, maxlength=&gt;1234 ); 
-
-%]
-
-[{closeform}]
-
-&lt;hr&gt;
-
-
-&lt;p&gt;
+  <doctext>&lt;p&gt;
 Sometimes I think we should have standardised names for these things. Mostly, though, I don't.
 &lt;/p&gt;
 [{openform}]
 [{uploadAudio:link}]
 [{closeform}]
 
-
-
 [%
-#return;
-#my $str;
-#$str .=&quot;This is keys %GLOBAL returns:&lt;br/&gt;&quot;;
-#my @keys = keys %GLOBAL;
-#$str .= &quot;@keys&quot;;
-#return $str;
-%]
-
-[%
-return htmlcode('usermsgbox','1017738');
+my $str;
+$str .=&quot;This is keys %GLOBAL returns:&lt;br/&gt;&quot;;
+my @keys = keys %GLOBAL;
+$str .= &quot;@keys&quot;;
+return $str;
 %]
 
 [%

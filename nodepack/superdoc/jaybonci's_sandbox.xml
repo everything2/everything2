@@ -1,5 +1,11 @@
 <node>
-  <doctext>[%
+  <doctext>&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
+[%
+  return unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
+%]
+
+[%
+  return;
 my $name = &quot;rusty2222222222&quot;;
 my $olduser;
 my @allUserTypes = ('user', 'usergroup', 'superdoc', 'restricted_superdoc', 'nodetype', 'document', 'superdocnolinks');
@@ -51,10 +57,7 @@ return $foo-&gt;[0];
    }
    return $str;
 %]
-Got: 
-[%
-  return $USER-&gt;{createtime};
-%]</doctext>
+</doctext>
   <node_id>1146920</node_id>
   <type_nodetype>14</type_nodetype>
   <title>JayBonci's sandbox</title>

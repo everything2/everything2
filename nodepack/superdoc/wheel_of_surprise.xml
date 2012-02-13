@@ -3,10 +3,6 @@
 
 return '&lt;p&gt;You must be logged in to be suprised.&lt;/p&gt;' if( (getId($USER)==$HTMLVARS{guest_user}) || ($USER-&gt;{title} eq 'Guest User') );
 
-
-#for AnneMarie
-#return &quot;You, go away.&quot; if ($$USER{user_id} == 1787841);
-
 my $isHalloween = htmlcode('isSpecialDate','halloween');
 
 my $costumeCost = 5;
@@ -262,7 +258,7 @@ htmlcode('achievementsByType','miscellaneous,'.$$USER{user_id});
 }
 
 if (!$isHalloween) {
-$str = '&lt;h3&gt;Welcome, welcome, one and all. Step right up, put your [5 GP|nickel] in the hat and spin the wonderful Wheel of Surprise! Who knows what mysterious wonders will emerge?&lt;/h3&gt;&lt;p&gt;&lt;small&gt;Guarantee void in Tennessee.&lt;/small&gt;&lt;/p&gt;';
+$str = '&lt;h3&gt;Welcome, welcome, one and all. Step right up, put your [5 GP|nickel] in the hat and spin the wonderful Wheel of Surprise! Who knows what mysterious wonders will emerge?&lt;/h3&gt;&lt;p&gt;&lt;small&gt;All rights reserved. Must be 18 to play (19 in Quebec and Alabama). Contest open to legal residents of Earth and overseas territories only. Wash cold, tumble dry low. Guarantee void in Tennessee.&lt;/small&gt;&lt;/p&gt;';
 }
 else {
 $str = '&lt;h3&gt;Welcome, welcome, one and all. Tonight we\'re offering a Trick or Treat Special - and it\'s free to spin, all night long! Who knows what mysterious wonders will emerge?&lt;/h3&gt;&lt;p&gt;&lt;small&gt;Guarantee void in Transylvania.&lt;/small&gt;&lt;/p&gt;';

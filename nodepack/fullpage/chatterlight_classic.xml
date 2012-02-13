@@ -4,9 +4,14 @@
 	&lt;head&gt;
 	&lt;title&gt;[% $$NODE{title}; %]&lt;/title&gt;
 [%
-'	&lt;link rel=&quot;stylesheet&quot; id=&quot;zensheet&quot; type=&quot;text/css&quot; href=&quot;'
-                 . htmlcode('linkStylesheet', $$VARS{userstyle}||$$THEME{default_style})
-                 . '&amp;amp;displaytype=view&quot; media=&quot;screen,tv,projection&quot;&gt;' ;
+	
+if (exists(($$VARS{userstyle})) and defined(($$VARS{userstyle})) ) {
+	return &quot;\t&lt;link rel='stylesheet' id='zensheet' type='text/css' href='/?node_id=&quot; . $$VARS{userstyle}. &quot;&amp;amp;displaytype=view'&gt;&quot; ;
+}
+else {	#ascorbic's default
+	return &quot;\t&lt;link rel='stylesheet' id='zensheet' type='text/css' href='/?node_id=1854393&amp;amp;displaytype=view'&gt;&quot;;
+}
+
 %]
 [%
 if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {

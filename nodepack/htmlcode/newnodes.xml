@@ -4,32 +4,31 @@
 
 $limit ||= 50;
 
-my $qry = 'SELECT node_id FROM newwriteup';
+my $qry = 'SELECT writeup_id FROM writeup';
 
 my $uid = getId($USER);
 my $isEd = (exists $HTMLVARS{'group_content editors'}{$uid}) || (exists $HTMLVARS{'group_gods'}{$uid});
 
-my $nr = getId(getNode('node row', 'superdoc'));
-
 $qry.= ' WHERE notnew=0 ' unless $isEd;
-$qry.= &quot; ORDER BY newwriteup_id DESC LIMIT $limit&quot;;
+$qry.= &quot; ORDER BY publishtime DESC LIMIT $limit&quot;;
 
 my $ed = 'ed,' if $isEd;
 my $funk = sub{
-		my $N = shift;
-		my $kuid = $DB-&gt;sqlSelect('linkedby_user', 'weblog', &quot;weblog_id=$nr and to_node=$$N{node_id}&quot;) || 0;
+		my $N = shift; # $N is a full node by now
 		my $str.='&lt;td&gt;';
 
 		if($$N{notnew}){
 		  $str .= '(&lt;font color=&quot;red&quot;&gt;H!&lt;/font&gt;)';
-                $str .= '(&lt;a href='.urlGen({'node_id'=&gt;$$NODE{node_id}, 'op'=&gt;'unhidewriteup', 'hidewriteup'=&gt;$$N{node_id}}).'&gt;un-h!&lt;/a&gt;)';
+                $str .= '(&lt;a href='.urlGen({'node_id'=&gt;$$NODE{node_id}
+					, 'op'=&gt;'unhidewriteup', 'hidewriteup'=&gt;$$N{node_id}}).'&gt;un-h!&lt;/a&gt;)';
                 }else{
-		$str .= '(&lt;a href='.urlGen({'node_id'=&gt;$$NODE{node_id}, 'op'=&gt;'hidewriteup', 'hidewriteup'=&gt;$$N{node_id}}).'&gt;h?&lt;/a&gt;)';
+		$str .= '(&lt;a href='.urlGen({'node_id'=&gt;$$NODE{node_id}
+			, 'op'=&gt;'hidewriteup', 'hidewriteup'=&gt;$$N{node_id}}).'&gt;h?&lt;/a&gt;)';
                 }
-		$str .= '(&lt;font color=&quot;red&quot;&gt;...&lt;/font&gt;)' if $DB-&gt;sqlSelect('notnew', 'newwriteup', &quot;node_id=$$N{node_id}&quot;) != $$N{notnew};
+		$str .= '(&lt;font color=&quot;red&quot;&gt;...&lt;/font&gt;)'
+			if $DB-&gt;sqlSelect('notnew', 'newwriteup', &quot;node_id=$$N{node_id}&quot;) != $$N{notnew};
 
 		$str.='&lt;/td&gt;&lt;td&gt;';
-		$str.='X' if $kuid;
 		$str.='&amp;nbsp;&lt;/td&gt;';
 		return $str;
 };

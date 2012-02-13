@@ -74,7 +74,7 @@ my $userLink;
 my @botlist = qw(1080927 839239 952215 113);
 my %bots = map{$_ =&gt; 1} @botlist;
 
-my $string;
+my $string = '';
 my @msgs = @{ $csr-&gt;fetchall_arrayref( {} ) };
 @msgs = reverse @msgs if $showLastOnes;
 foreach my $MSG (@msgs) {
@@ -189,7 +189,7 @@ foreach my $MSG (@msgs) {
   $str .= '&lt;cite&gt;'.$userLink.' says&lt;/cite&gt; ' . parseLinks($text,0,1);
   my $mbid = $$MSG{message_id};
   my $noReplyWhy;
-  my $replyBox = htmlcode('messageBox', $aid, 1, $mbid, $ugID, \$noReplyWhy);
+  my $replyBox = htmlcode('messageBox', $aid, 0, $mbid, $ugID, \$noReplyWhy);
   my $replyWidgetOptions = {
     showwidget =&gt; $mbid
     , '-title' =&gt; &quot;Reply to $name&quot;
