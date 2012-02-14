@@ -30,8 +30,7 @@ unless ($$USER{user_id} == $HTMLVARS{guest_user}){
 		targetauthor =&gt; $query -&gt; param('author_id')};
 }
 
-return unless $stuff -&gt; [0];
-my $str = htmlcode('show writeups', $stuff);
+my $str = $stuff -&gt; [0] ? htmlcode('show writeups', $stuff) : '';
 return $str unless $HTMLVARS{notshown};
 
 # add missing matching draft if requested

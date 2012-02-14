@@ -1,5 +1,5 @@
 <node>
-  <display>&lt;b&gt;Code Monkey&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Member of [edev] Usergroup&lt;/i&gt;</display>
+  <display>&lt;b&gt;Code Monkey&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Member of [edev[usergroup]] usergroup&lt;/i&gt;</display>
   <achievement_type>usergroup</achievement_type>
   <node_id>1920603</node_id>
   <code>return htmlcode('isinUsergroup',$user_id.',edev');</code>

@@ -48,8 +48,7 @@ my $XNODE = getNode('cool nodes XML ticker', 'fullpage');
 $$XNODE{doctext} = $xml;
 updateNode($XNODE, -1);
 
-$str . &quot; hey&lt;input type='button' onclick='E2AJAX.checkCools()'&gt;push&lt;/input&gt;&quot;;
-%]
-ey</nlcode>
+$str;
+%]</nlcode>
   <title>Cool User Picks</title>
 </node>

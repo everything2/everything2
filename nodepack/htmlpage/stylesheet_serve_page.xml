@@ -1,5 +1,5 @@
 <node>
-  <parent_container></parent_container>
+  <parent_container>0</parent_container>
   <pagetype_nodetype>1854352</pagetype_nodetype>
   <page>[%
 if($$VARS{preferred_theme} &amp;&amp; $$VARS{preferred_theme}!=1854183) {

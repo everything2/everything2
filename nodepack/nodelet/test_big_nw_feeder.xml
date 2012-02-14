@@ -4,7 +4,7 @@
   <nlgoto>0</nlgoto>
   <node_id>1923494</node_id>
   <type_nodetype>9</type_nodetype>
-  <updateinterval>-1</updateinterval>
+  <updateinterval>2147483647</updateinterval>
   <nlcode>[%
 
 my $rawSQL = '';

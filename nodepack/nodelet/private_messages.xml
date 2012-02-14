@@ -1,11 +1,20 @@
 <node>
   <nltext></nltext>
   <parent_container>0</parent_container>
-  <nlgoto></nlgoto>
+  <nlgoto>0</nlgoto>
   <node_id>2015323</node_id>
   <type_nodetype>9</type_nodetype>
   <nlcode>[%
-my $str = htmlcode('showmessages','5', 'pD');
+  eval(&quot;sub {\n&quot;
+       . getNode('showmessages_expand', 'htmlcode')-&gt;{code}
+       . &quot;\n}&quot;
+      );
+return &quot;&lt;pre&gt;Error on loading htmlcode: &lt;/pre&gt;&lt;div&gt;$@&lt;/div&gt;&quot; if $@;
+return '&lt;pre&gt;No error loading htmlcode.&lt;/pre&gt;';
+%]
+
+[%
+my $str = htmlcode('showmessages_expand','5', 'pD');
 return $str;
 %]</nlcode>
   <title>Private Messages</title>

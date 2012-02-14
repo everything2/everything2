@@ -116,11 +116,10 @@ sub main
 						next;	
 					}
 					print STDERR "Node: $$node{title}, field: $nfield needs updating\n";
-					next unless $nfield eq "code" or $nfield eq "doctext" or $nfield eq "context";
 					print STDERR $this->field_diff($source_code_copy->{$nfield}, $node->{$nfield});
-					#$dbnode->{$nfield} = $node->{$nfield};
-					#$DB->updateNode($dbnode,$rootuser);
-					#print STDERR "Node updated!\n";
+					$dbnode->{$nfield} = $node->{$nfield};
+					$DB->updateNode($dbnode,$rootuser);
+					print STDERR "Node updated!\n";
 				}
 			}
 		}

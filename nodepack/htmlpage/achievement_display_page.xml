@@ -5,6 +5,10 @@
 
 &lt;p&gt;&lt;strong&gt;Type:&lt;/strong&gt; [% $$NODE{achievement_type}; %]&lt;/p&gt;
 
+&lt;p&gt;&lt;strong&gt;Subtype:&lt;/strong&gt; [% $$NODE{subtype} %]&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Still available:&lt;/strong&gt; [% $$NODE{achievement_still_available} ? 'yes' : 'no'; %]&lt;/p&gt;
+
 [{listcode:code}]
 </page>
   <node_id>1917858</node_id>

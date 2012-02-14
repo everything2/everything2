@@ -1,7 +1,8 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>4</pagetype_nodetype>
-  <page>[{listcode:code}]</page>
+  <page>[{listcode:code}]
+</page>
   <node_id>63</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

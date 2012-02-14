@@ -1,20 +1,14 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>8</pagetype_nodetype>
-  <page>
-[% unless ($$NODE{group}) {
+  <page>[% unless ($$NODE{group}) {
 	&quot;&lt;i&gt;This nodegroup is empty&lt;/i&gt;&quot;;
 } else {
-	my $GROUP = $$NODE{group};
-	my $str;
-	foreach my $N  (@$GROUP) {
-		$N = $DB-&gt;getNodeById($N, 'light');
-		$str .= &quot;&lt;li&gt;&quot; . linkNode ($N) . &quot;($$N{type}{title})&quot;;
-	}
-	$str;
+	my @list = map {$query -&gt; li(linkNode($_))} @{$$NODE{group}};
+	$query -&gt; ul( {id =&gt; 'pagecontent'}, join(&quot;\n&quot;, @list) );
 }
 %]
-&lt;p&gt;[{windowview:editor,launch editor}]
+&lt;div id=&quot;pagefooter&quot;&gt;[{windowview:editor,launch editor}]&lt;/div&gt;
 </page>
   <node_id>70</node_id>
   <type_nodetype>5</type_nodetype>

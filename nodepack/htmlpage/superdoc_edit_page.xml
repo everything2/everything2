@@ -4,7 +4,7 @@
   <page>&lt;h4&gt;title&lt;/h4&gt;[{textfield:title}]
 &lt;h4&gt;maintainer:&lt;/h4&gt; [{node_menu:author_user,user,usergroup}]
 &lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the document text:&lt;/strong&gt;&lt;/small&gt;&lt;/p&gt;
-&lt;p align=&quot;center&quot; style=&quot;border: solid black 2px; background: #ffa; color: black; spacing: 2px; padding: 5px;&quot;&gt;&lt;big&gt;&lt;strong&gt;Danger! This is editing the code with no undo function!&lt;/strong&gt;&lt;/big&gt;&lt;/p&gt;
+&lt;p align=&quot;center&quot; style=&quot;border: solid black 2px; background: #ffa; color: black; spacing: 2px; padding: 5px;&quot;&gt;&lt;big&gt;&lt;strong&gt;Danger! This is editing the code with no undo function! &lt;em&gt;Please use patches to edit code, it drives us nuts when you don't. Ideally, put the patches on the development server.&lt;/em&gt;&lt;/strong&gt;&lt;/big&gt;&lt;/p&gt;
 
 [{textarea:doctext,30,80}]
 &lt;br /&gt;</page>

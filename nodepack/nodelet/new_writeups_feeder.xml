@@ -4,7 +4,7 @@
   <nlgoto>0</nlgoto>
   <node_id>1216418</node_id>
   <type_nodetype>9</type_nodetype>
-  <updateinterval>300</updateinterval>
+  <updateinterval>3000000</updateinterval>
   <nlcode>[%
 my $howMany = 100;
 

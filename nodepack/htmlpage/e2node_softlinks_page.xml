@@ -12,5 +12,5 @@ return $str;
   <type_nodetype>5</type_nodetype>
   <displaytype>softlinks</displaytype>
   <title>e2node softlinks page</title>
-  <mimetype></mimetype>
+  <mimetype>text/xml</mimetype>
 </node>

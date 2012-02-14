@@ -1,11 +1,14 @@
 <node>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1917847</pagetype_nodetype>
-  <page>title:[{textfield:title}] maintained by:[{node_menu:author_user,user,usergroup}]&lt;br /&gt;
-display:[{textfield:display,100}]&lt;br /&gt;
-type:[{textfield:achievement_type}]&lt;br /&gt;
+  <page>&lt;p&gt;title:[{textfield:title}] maintained by:[{node_menu:author_user,user,usergroup}]&lt;br&gt;
+display:[{textfield:display,100}]&lt;br&gt;
+type:[{textfield:achievement_type}]&lt;br&gt;
+subtype:[{textfield:subtype}]&lt;br&gt;
+&lt;small&gt;When checking &lt;a href=&quot;/node/htmlcode/achievementsByType&quot;&gt;achievements by type&lt;/a&gt;, achievements of the same subtype are checked in title order only up to the first unachieved one.&lt;/small&gt;
+&lt;/p&gt;
 [{listcode:code}]
-&lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the code:&lt;/strong&gt;&lt;/small&gt;&lt;br /&gt;
+&lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the code:&lt;/strong&gt;&lt;/small&gt;&lt;br&gt;
 
 [{textarea:code,30,80}]</page>
   <node_id>1917859</node_id>

@@ -1,5 +1,5 @@
 <node>
-  <extends_nodetype>1991079</extends_nodetype>
+  <extends_nodetype>2035430</extends_nodetype>
   <sqltable>writeup</sqltable>
   <node_id>117</node_id>
   <type_nodetype>1</type_nodetype>

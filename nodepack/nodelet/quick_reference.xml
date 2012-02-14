@@ -34,7 +34,7 @@ $str .= &quot;&lt;li&gt;Try [http://en.wikipedia.org/wiki/$lookfor|Wikipedia] or
 $lookfor =~ s/ /\+/g ;
 $str .= &quot;$lookfor%22&amp;amp;sa=Search|Google]&lt;/li&gt;\n&lt;/ul&gt;&quot;;
 
-# Convert to a happy E2 form and display (default action)
+# Convert links and display
 parseLinks( $str ) ;
 %]</nlcode>
   <title>Quick Reference</title>

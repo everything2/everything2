@@ -1,5 +1,5 @@
 <node>
-  <display>&lt;strong&gt;Stop The Presses&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Posted Most Writeups In A Month&lt;/i&gt;</display>
+  <display>&lt;strong&gt;Stop the Presses&lt;/strong&gt;&lt;br&gt;&lt;i&gt;Posted most writeups in a month&lt;/i&gt;</display>
   <achievement_type>writeup</achievement_type>
   <node_id>1920610</node_id>
   <code>return 0;</code>

@@ -1,5 +1,5 @@
 <node>
-  <display>&lt;strong&gt;It's Alive!&lt;/strong&gt; &lt;br /&gt; &lt;em&gt;A live zombie node with at most -10 rep&lt;/em&gt;</display>
+  <display>&lt;strong&gt;It's Alive!&lt;/strong&gt; &lt;br /&gt; &lt;em&gt;A zombie writeup with at most -10 rep&lt;/em&gt;</display>
   <achievement_type>reputation</achievement_type>
   <node_id>1918324</node_id>
   <code>my $zombieNode = $DB-&gt;sqlSelect(&quot;min(reputation)&quot;,&quot;node&quot;,&quot;author_user=$user_id&quot;);

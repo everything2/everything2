@@ -11,10 +11,10 @@
 [%
 
 if (htmlcode('isZen')) {
-  return htmlcode('zenwriteups') . '&lt;div class=&quot;morelink&quot; id=&quot;newWriteupsMore&quot;&gt;(' . linkNode(523351, 'more') . ')&lt;/div&gt;';
+  return htmlcode('zenwriteups') . &quot;&lt;div id=newWriteupsMore&gt;(&quot; . linkNode(523351, &quot;more&quot;) . &quot;)&lt;/div&gt;&quot;;
 }
 
-return htmlcode('newwriteups2') . '&lt;div class=&quot;morelink&quot; id=&quot;newWriteupsMore&quot;&gt;(' . linkNode(523351, 'more') . ')&lt;/div&gt;';
+return htmlcode('newwriteups2') . &quot;&lt;div id=newWriteupsMore&gt;(&quot; . linkNode(523351, &quot;more&quot;) . &quot;)&lt;/div&gt;&quot;;
 
 
 %]</nlcode>

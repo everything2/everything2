@@ -11,16 +11,18 @@
   <nlcode>[%
 my @choices = ('cousin','sibling','grandpa','grandma');
 my $r = $choices[rand(@choices)];
+my $rn = rand();
 my @phrase = (
 	'Nodes your '.$r.' would have liked:',
 	'After stirring Everything, these nodes rose to the top:',
 	'Look at this mess the Death Borg made!',
-	'Just another sprinkling of '.($r&lt;0.5?'indeterminacy':'randomness'),
-	'The '.($r&lt;0.5?'best':'worst').' nodes of all time:',
-	($r&lt;0.5?'Drink up!':'Food for thought:'),
+	'Just another sprinkling of '.($rn&lt;0.5?'indeterminacy':'randomness'),
+	'The '.($rn&lt;0.5?'best':'worst').' nodes of all time:',
+	($rn&lt;0.5?'Drink up!':'Food for thought:'),
 	'Things you could have written:',
 	'What you are reading:',
-	'Nodes to '.($r&lt;0.5?'live by':'die for').':',
+	'Read this. You know you want to:',
+	'Nodes to '.($rn&lt;0.5?'live by':'die for').':',
 	'Little presents from the Node Fairy:',
 );
 
@@ -36,21 +38,11 @@ foreach(1..12) {
 	$str .= ' class=&quot;nodeshell&quot;'  unless $$RN{'group'} ;
 	$str .= '&gt;' . linkNode($RN, $node_title, {lastnode_id=&gt;0}) . &quot;&lt;/li&gt;\n&quot;;
 }
-$str.&quot;&lt;/ul&gt;\n&quot; ;
+$str .= &quot;&lt;/ul&gt;\n&quot; ;
 
-# kthejoker - 11.28.07
-# Replaced with e2Cooled Nodes Rather than pure Randomness.
-#my $limit = 13;
-#my $len = 20;
+return $str;
 
-#my $csr = $DB-&gt;sqlSelectMany('from_node','links', &quot;linktype=&quot;.getId(getNode('coollink','linktype')).&quot; and (select type_nodetype from node where node_id=links.from_node) = &quot;.getId(getNode('e2node','nodetype')).&quot; order by rand() limit $limit&quot;);
-
-#while (my $n = $csr-&gt;fetchrow_hashref) {
-#	my $node_title = getNodeById($n-&gt;{from_node},'light')-&gt;{title};
-#	$node_title =~ s/(\S{$len})\S{4,}/$1.../go;
-#	$str .= linkNode($n-&gt;{from_node}, $node_title, {lastnode_id=&gt;0}) . &quot;&lt;br /&gt;\n&quot;;
-#}
-
-%]</nlcode>
+%]
+</nlcode>
   <title>Random Nodes</title>
 </node>

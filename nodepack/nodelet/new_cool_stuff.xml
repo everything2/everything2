@@ -1,14 +1,14 @@
 <node>
   <nltext></nltext>
-  <parent_container>0</parent_container>
-  <nlgoto></nlgoto>
+  <parent_container>19</parent_container>
+  <nlgoto>0</nlgoto>
   <node_id>2027488</node_id>
   <type_nodetype>9</type_nodetype>
   <nlcode>[%
 my $repthreshholdlo = 12 ;
 #my $repthreshholdhi = 26;
 my $maxage = &quot;1 WEEK&quot;;
-my $pulllimit = 12;
+my $pulllimit = 24;
 my $limit=3;
 my $length = '1024-512';
 

@@ -28,18 +28,19 @@ if ($$NODE{criteria} eq $open) {
 &lt;p&gt;
 
 [%
-use Everything::Room;
-
-my $canEnter = htmlcode('canEnterRoom');
   
-if (!$$canEnter{canEnter}) {
-   my $errorMessage = $$canEnter{explanation};
-   $errorMessage = &quot;&lt;strong style='color:red;'&gt;$errorMessage&lt;/strong&gt;&quot;
-      if $$canEnter{warning};
-   return &quot;&lt;p&gt;$errorMessage&lt;/p&gt;&quot;;
+  return &quot;You cannot go into $$NODE{title}, I'm sorry.&quot; unless eval($$NODE{criteria}) and not getId($USER) == $HTMLVARS{guest_user};
+if ($$VARS{lockedin} &gt; time)
+	{
+	my $remainingtime = ceil(($$VARS{lockedin} - time)/ 60);
+	my $lockmessage = &quot;&lt;p&gt;&lt;strong style='color:red;'&gt;&quot;
+		. &quot;You cannot change rooms for $remainingtime minutes.  &quot;
+		. &quot;You can still send private messages, however, or talk to people in your current room.  &quot;
+		. &quot;&lt;/strong&gt;&lt;/p&gt;&quot;;
+	return $lockmessage;
+	}
 
-} else {
-
+  use Everything::Room;
   changeRoom($USER, $NODE);
 
   # For room usage counting:
@@ -49,15 +50,12 @@ if (!$$canEnter{canEnter}) {
 
   return &quot;You walk into $$NODE{title}&quot;;
 
-}
-
 %]
 &lt;p&gt;
 [{parselinks:doctext}]
 [%
   return &quot;&lt;br&gt;&lt;p align=\&quot;right\&quot;&gt;(&quot;.linkNode(getNode(&quot;go outside&quot;, &quot;superdocnolinks&quot;)).&quot;)&lt;/p&gt;&quot;;
-%]
-</page>
+%]</page>
   <node_id>719848</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

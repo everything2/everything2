@@ -3,11 +3,11 @@
 Also shows other users, new writeups, recent cools and editor cools.
 For Windows: Requires Windows XP SP2, Vista or later, and .Net 3.5 SP1.
 More details are available via the home page.</doctext>
-  <dlurl>http://everything2chatbox.googlecode.com/files/ChatboxInstaller_025.msi</dlurl>
+  <dlurl>http://everything2chatbox.googlecode.com/files/ChatboxInstaller_036.msi</dlurl>
   <homeurl>http://code.google.com/p/everything2chatbox/</homeurl>
   <node_id>1974266</node_id>
   <type_nodetype>1261857</type_nodetype>
-  <version>0.25</version>
+  <version>0.36</version>
   <clientstr>Chatbox</clientstr>
   <title>Chatbox</title>
 </node>

@@ -5,34 +5,21 @@
 [% linkNode($NODE, 'display', {displaytype =&gt; 'display'}) %] 
 &lt;/p&gt;
 
-[%
-my $isCategoryEditor = 0;
-my $maintainer = getNodeById($$NODE{author_user});
-my $guestuserId = getId(getNode('guest user', 'user'));
-if ($$maintainer{type_nodetype} == getId(getType('user')))
-{
-  if(($$maintainer{node_id} == $$USER{user_id} || $$NODE{author_user} == $guestuserId)
-     &amp;&amp; $$USER{user_id} != $guestuserId)
-  {
-    $isCategoryEditor = 1;
-  }
-}
-elsif($$maintainer{type_nodetype} == getId(getType('usergroup')))
-{
-  if (htmlcode('isinUsergroup', $$USER{user_id}.','.$$maintainer{node_id}))
-  {
-    $isCategoryEditor = 1;
-  }
+[%#/
+return 'You cannot edit this category.'
+	unless $$USER{title} ne 'Guest User' and canUpdateNode($USER, $NODE);
+
+if ($query -&gt; param('op') eq 'nuke'
+	&amp;&amp; $query -&gt; param('node_id') == $$NODE{node_id}
+	&amp;&amp; htmlcode('verifyRequest', 'nukecat')
+){
+	nukeNode($NODE, -1);
+	return $query -&gt; b('Category deleted');
 }
 
-my $isCE = exists($HTMLVARS{'group_content editors'}{$$USER{user_id}});
-my $isRoot = exists($HTMLVARS{'group_gods'}{$$USER{user_id}});
-if ($isCE || $isRoot) { $isCategoryEditor = 1; }
 
-if ($isCategoryEditor != 1)
-{
-  return 'You cannot edit this category.';
-}
+my $isCE = exists($HTMLVARS{'group_gods'}{$$USER{user_id}})
+	|| exists($HTMLVARS{'group_content editors'}{$$USER{user_id}});
 
 my $dbh = $DB-&gt;getDatabaseHandle();
 return 'No database handle!' unless $dbh;
@@ -48,8 +35,8 @@ if ($deleteId &gt; 0)
 
 
 my ($str, $addstr) = ('', '');
-if ($isCE || $isRoot) {
-
+if ($isCE) {
+	my $maintainer = getNodeById($$NODE{author_user});
 	$str .= htmlcode('openform', 'setMaintainerForm')
 		. '&lt;fieldset&gt;&lt;legend&gt;Maintainer&lt;/legend&gt;'
 		;
@@ -237,6 +224,15 @@ unless ($ctr){
 	. '&lt;/fieldset&gt;'
 	. $query-&gt;endform;
 }
+
+$str .= htmlcode('openform')
+	.htmlcode('verifyRequestForm', 'nukecat')
+	.'&lt;br&gt;
+	&lt;button type=&quot;submit&quot; name=&quot;confirmop&quot; value=&quot;nuke&quot;
+		title=&quot;delete this category&quot;&gt;Delete Category&lt;/button&gt;
+	&lt;/form&gt;'
+		if $$NODE{author_user} == $$USER{node_id} || $isCE;
+
 return $str;
 %]
 </page>

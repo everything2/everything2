@@ -1,5 +1,5 @@
 <node>
-  <display>&lt;b&gt;Ninja Girl&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Member of Ninjagirls Usergroup&lt;/i&gt;</display>
+  <display>&lt;b&gt;Ninja Girl&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Member of Ninjagirls usergroup&lt;/i&gt;</display>
   <achievement_type>usergroup</achievement_type>
   <node_id>1920606</node_id>
   <code>return htmlcode('isinUsergroup',$user_id.',ninjagirls');</code>

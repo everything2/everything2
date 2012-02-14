@@ -1,5 +1,5 @@
 <node>
-  <hourLimit>168</hourLimit>
+  <hourLimit>720</hourLimit>
   <node_id>1930854</node_id>
   <code>return &quot;There's a new [Everything Poll Directory|E2 Poll] available to vote on...&quot;</code>
   <type_nodetype>1930710</type_nodetype>

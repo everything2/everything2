@@ -1,5 +1,5 @@
 <node>
-  <display>&lt;strong&gt;Big Wheels Keep On Turning&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Spun the [Wheel of Surprise] 1000 times&lt;/i&gt;</display>
+  <display>&lt;strong&gt;Big Wheels Keep on Turning&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Spun the [Wheel of Surprise] 1000 times&lt;/i&gt;</display>
   <achievement_type>miscellaneous</achievement_type>
   <node_id>1918341</node_id>
   <code>my $uVars = getVars(getNodeById($user_id));
