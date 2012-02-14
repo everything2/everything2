@@ -32,7 +32,13 @@ sub node_id_equivs
 sub xml_no_store
 {
 	my ($this) = @_;
-	return ["in_room","karma","GP","experience","session_id","validationkey",@{$this->SUPER::xml_no_store()}];
+	return ["numwriteups","merit","user_salt","in_room","karma","GP","experience","session_id","validationkey",@{$this->SUPER::xml_no_store()}];
+}
+
+sub import_no_consider
+{
+	my ($this) = @_;
+	return ["vars","lasttime",@{$this->SUPER::import_no_consider()}];
 }
 
 1;

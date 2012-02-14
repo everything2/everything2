@@ -65,7 +65,7 @@ sub main
 
 	initEverything $options->{database};
 
-	find(sub{ if(-e $_ && $File::Find::dir ne "$$options{nodepack}/_data/" && $File::Find::name =~ /\.xml$/){push @$files,$File::Find::name; }}, $options->{nodepack});
+	find(sub{ if(-e $_ && $File::Find::dir ne "$$options{nodepack}/_data" && $File::Find::name =~ /\.xml$/){push @$files,$File::Find::name; }}, $options->{nodepack});
 	my $rootuser = getNode("root","user");
 
 	foreach my $nodexml(@$files)
@@ -112,7 +112,7 @@ sub main
 				{
 					if(grep { /^$nfield$/ } @{$obj->import_no_consider()})
 					{
-						#print STDERR "Skipping field in '$$node{title}' due to being marked no_consider: $nfield\n";
+						print STDERR "Skipping field in '$$node{title}' due to being marked no_consider: $nfield\n";
 						next;	
 					}
 					print STDERR "Node: $$node{title}, field: $nfield needs updating\n";
