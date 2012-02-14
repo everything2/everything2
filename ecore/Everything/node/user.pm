@@ -38,7 +38,7 @@ sub xml_no_store
 sub import_no_consider
 {
 	my ($this) = @_;
-	return ["vars","lasttime",@{$this->SUPER::import_no_consider()}];
+	return ["lasttime","passwd",@{$this->SUPER::import_no_consider()}];
 }
 
 1;
