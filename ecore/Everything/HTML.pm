@@ -2936,7 +2936,7 @@ sub mod_perlInit
 	return if $query->user_agent and $query->user_agent =~ /WebStripper/;
 	$USER = loginUser();
 
-	assign_test_condition();
+	#assign_test_condition();
 	$CACHESTORE = undef;
 
        #only for Everything2.com
