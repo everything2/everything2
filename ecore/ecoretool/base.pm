@@ -156,6 +156,8 @@ sub _skippable_types
 		"recording" => [],
 		# print, Kernel Blue, and basesheet
 		"stylesheet" => [2004473,1882070,1973976],
+		# Noders Nursery, M-Noder Washroom, Political Asylum, Valhalla
+		"room" => [553146,553133,553129,545263],
 	};
 }
 

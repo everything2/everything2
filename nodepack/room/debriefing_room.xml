@@ -1,9 +1,0 @@
-<node>
-  <doctext>Place to handle disruptive users</doctext>
-  <node_id>1973457</node_id>
-  <criteria>return 0 unless htmlcode('isinUsergroup', $$USER{user_id}, 'chanops', &quot;recurse&quot;);
-
-1;</criteria>
-  <type_nodetype>545241</type_nodetype>
-  <title>Debriefing Room</title>
-</node>
