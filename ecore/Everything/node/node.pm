@@ -18,7 +18,7 @@ sub node_xml_prep
 	my $NODE = Clone::clone($N);
 	
 	$this->_strip_defaults($NODE,$dbh);
-	foreach my $field(@{$this->xml_no_consider()})
+	foreach my $field(@{$this->xml_no_store()})
 	{
 		delete $NODE->{$field};
 	}
@@ -34,7 +34,7 @@ sub node_to_xml
 	return $this->{xs}->XMLout({node => $NODE});
 }
 
-sub xml_no_consider
+sub xml_no_store
 {
 	my ($this) = @_;
 
@@ -121,6 +121,12 @@ sub _strip_defaults
 			}
 		}
 	}
+}
+
+sub import_no_consider
+{
+	my ($this) = @_;
+	return [];
 }
 
 1;

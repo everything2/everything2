@@ -36,4 +36,10 @@ sub xml_to_node_post
 	return $this->SUPER::xml_to_node_post($N);
 }
 
+sub import_no_consider
+{
+	my ($this) = @_;
+	return ["_create_table_statement", $this->SUPER::import_no_consider()];
+}
+
 1;

@@ -5,10 +5,10 @@ use lib qw(lib);
 package Everything::node::nodetype;
 use base qw(Everything::node::node);
 
-sub xml_no_consider
+sub xml_no_store
 {
 	my ($this) = @_;
-	return ["resolvedInheritance","sqltablelist","tableArray",@{$this->SUPER::xml_no_consider()}];
+	return ["resolvedInheritance","sqltablelist","tableArray",@{$this->SUPER::xml_no_store()}];
 }
 
 sub node_id_equivs

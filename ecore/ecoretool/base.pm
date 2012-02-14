@@ -145,6 +145,7 @@ sub _skippable_types
 		"node_forward" => [],
 		"ticket" => [], 
 		"draft" => [],
+		"podcast" => [],
 		"debate" => [],
 		"debatecomment" => [],
 		"collaboration" => [],

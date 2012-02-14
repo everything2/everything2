@@ -100,7 +100,6 @@ sub main
 			}
 
 			my $thistype = getType($node->{type_nodetype});
-			#next unless $thistype->{title} eq "maintenance";
 
 			my $obj = $this->get_worker_object($thistype->{title});
 
@@ -108,18 +107,20 @@ sub main
 
 			foreach my $nfield (keys %$node)
 			{
-				next unless $nfield eq "code" or $nfield eq "doctext" or $nfield eq "context";
-
-				next if $nfield eq "_create_table_statement";
 				next unless defined($source_code_copy->{$nfield});
-
 				if($node->{$nfield} ne $source_code_copy->{$nfield})
 				{
+					if(grep { /^$nfield$/ } @{$obj->import_no_consider()})
+					{
+						#print STDERR "Skipping field in '$$node{title}' due to being marked no_consider: $nfield\n";
+						next;	
+					}
 					print STDERR "Node: $$node{title}, field: $nfield needs updating\n";
+					next unless $nfield eq "code" or $nfield eq "doctext" or $nfield eq "context";
 					print STDERR $this->field_diff($source_code_copy->{$nfield}, $node->{$nfield});
-					$dbnode->{$nfield} = $node->{$nfield};
-					$DB->updateNode($dbnode,$rootuser);
-					print STDERR "Node updated!\n";
+					#$dbnode->{$nfield} = $node->{$nfield};
+					#$DB->updateNode($dbnode,$rootuser);
+					#print STDERR "Node updated!\n";
 				}
 			}
 		}

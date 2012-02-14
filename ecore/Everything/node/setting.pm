@@ -11,4 +11,10 @@ sub node_id_equivs
 	return ["setting_id",@{$this->SUPER::node_id_equivs()}];
 }
 
+sub import_no_consider
+{
+	my ($this) = @_;
+	return ["vars", @{$this->SUPER::import_no_consider()}];
+}
+
 1;

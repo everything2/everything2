@@ -20,10 +20,10 @@ sub node_id_equivs
 	return ["roomdata_id", @{$this->SUPER::node_id_equivs()}];
 }
 
-sub xml_no_consider
+sub xml_no_store
 {
 	my ($this) = @_;
-	return ["lastused_date",@{$this->SUPER::xml_no_consider()}];
+	return ["lastused_date",@{$this->SUPER::xml_no_store()}];
 }
 
 1;

@@ -29,10 +29,10 @@ sub node_id_equivs
 	return ["user_id","setting_id",@{$this->SUPER::node_id_equivs}];
 }
 
-sub xml_no_consider
+sub xml_no_store
 {
 	my ($this) = @_;
-	return ["in_room","karma","GP","experience","session_id","validationkey",@{$this->SUPER::xml_no_consider()}];
+	return ["in_room","karma","GP","experience","session_id","validationkey",@{$this->SUPER::xml_no_store()}];
 }
 
 1;

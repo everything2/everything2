@@ -14,10 +14,10 @@ sub node_xml_prep
 	return $this->SUPER::node_xml_prep($NODE, $dbh);
 }
 
-sub xml_no_consider
+sub xml_no_store
 {
 	my ($this) = @_;
-	return ["edittime",@{$this->SUPER::xml_no_consider()}];
+	return ["edittime",@{$this->SUPER::xml_no_store()}];
 }
 
 sub node_id_equivs

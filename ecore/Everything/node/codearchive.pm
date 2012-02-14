@@ -20,10 +20,10 @@ sub node_id_equivs
 	return ["document_id", @{$this->SUPER::node_id_equivs()}];
 }
 
-sub xml_no_consider
+sub xml_no_store
 {
 	my ($this) = @_;
-	return ["edittime", @{$this->SUPER::xml_no_consider()}];
+	return ["edittime", @{$this->SUPER::xml_no_store()}];
 }
 
 1;
