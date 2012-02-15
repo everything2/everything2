@@ -69,6 +69,12 @@ sub main
 
 		while(my $item = $typecsr->fetchrow_hashref())
 		{
+			my $typeobj = $this->get_worker_object($$node{title});
+			if(grep {/^$$item{node_id}$/} @{$typeobj->never_export()})
+			{
+				print "Explicitly skipping export on $$node{title}/$$item{title}\n";
+				next;
+			}
 			my $tnode = getNodeById($item->{node_id});
 			$this->xml_to_file($tnode);
 			$this->{nodeidcache}->{$tnode->{node_id}} = 1;

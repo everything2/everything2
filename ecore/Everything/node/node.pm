@@ -75,6 +75,10 @@ sub _clean_code
 {
 	my ($this, $string) = @_;
 
+	if(not defined($string))
+	{
+		return;
+	}
 	# Remove old windows line endings
 	$string =~ s|\r\n|\n|g;
 	# Remove a bad control character found in the code
@@ -126,10 +130,16 @@ sub _strip_defaults
 sub import_no_consider
 {
 	my ($this) = @_;
-	return [];
+	return ["node_id"];
 }
 
 sub import_skip_update
+{
+	my ($this) = @_;
+	return [];
+}
+
+sub never_export
 {
 	my ($this) = @_;
 	return [];

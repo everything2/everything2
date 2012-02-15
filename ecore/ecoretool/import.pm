@@ -10,6 +10,8 @@ use base qw(ecoretool::base);
 use XML::Simple;
 use File::Find qw(find);
 use Everything;
+use Everything::Search; # Horrible hack for object problems in Everything::NodeBase
+use Everything::HTML; # See above
 use Algorithm::Diff qw(diff);
 
 use vars qw($files);
@@ -87,19 +89,31 @@ sub main
 			next;
 		}
 
+		my $thistype = getType($node->{type_nodetype});
 		my $dbnode = getNode($node->{node_id});
 
 		if(not defined($dbnode))
 		{
-			#print STDERR "Node needs inserting: $$node{title}\n";
+			$dbnode = getNode($node->{title},getType($node->{type_nodetype}));
+		}
+
+		if(not defined($dbnode))
+		{
+			print STDERR "Node needs inserting: $$node{title}\n";
+			# sub insertNode ($this, $title, $TYPE, $USER, $DATA)
+			delete $node->{node_id};
+			my $title = $node->{title};
+			delete $node->{title};
+			delete $node->{type_nodetype};
+			$DB->insertNode($title,$thistype,$rootuser,$node);
+			print STDERR "Node inserted!\n";
+
 		}else{
 			if($node->{type_nodetype} != $dbnode->{type_nodetype})
 			{
 				#print STDERR "Node id collision in $$node{title}, skipping\n";
 				next;
 			}
-
-			my $thistype = getType($node->{type_nodetype});
 
 			my $obj = $this->get_worker_object($thistype->{title});
 			if(grep { /^$$node{node_id}$/ } @{$obj->import_skip_update()})
