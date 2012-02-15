@@ -29,7 +29,7 @@ CREATE TABLE `node` (
   KEY `createtime` (`createtime`),
   KEY `authortype` (`type_nodetype`,`author_user`),
   KEY `reputation_totalvotes` (`reputation`,`totalvotes`)
-) ENGINE=InnoDB AUTO_INCREMENT=1992826 DEFAULT CHARSET=latin1 PACK_KEYS=1;
+) ENGINE=InnoDB AUTO_INCREMENT=2059234 DEFAULT CHARSET=latin1 PACK_KEYS=1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

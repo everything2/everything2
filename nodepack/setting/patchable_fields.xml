@@ -1,6 +1,6 @@
 <node>
   <node_id>1415665</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>code=1&amp;context=1&amp;datacode=1&amp;doctext=1&amp;hourLimit=1&amp;invalid_check=1&amp;nlcode=1&amp;page=1</vars>
+  <vars>doctext=1&amp;page=1&amp;hourLimit=1&amp;invalid_check=1&amp;datacode=1&amp;context=1&amp;nlcode=1&amp;code=1</vars>
   <title>patchable fields</title>
 </node>

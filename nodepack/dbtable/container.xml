@@ -14,7 +14,7 @@ CREATE TABLE `container` (
   `context` text,
   `parent_container` int(11) DEFAULT NULL,
   PRIMARY KEY (`container_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1992647 DEFAULT CHARSET=latin1 PACK_KEYS=1;
+) ENGINE=InnoDB AUTO_INCREMENT=2021825 DEFAULT CHARSET=latin1 PACK_KEYS=1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

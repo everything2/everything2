@@ -22,7 +22,7 @@ CREATE TABLE `nodetype` (
   `typeVersioned` int(11) NOT NULL DEFAULT '0',
   `verify_edits` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`nodetype_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1991080 DEFAULT CHARSET=latin1 PACK_KEYS=1;
+) ENGINE=InnoDB AUTO_INCREMENT=2035431 DEFAULT CHARSET=latin1 PACK_KEYS=1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

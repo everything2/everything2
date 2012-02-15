@@ -1,11 +1,12 @@
 <node>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Tue Feb 14 01:30:07 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Tue Feb 14 02:25:08 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Lometa&quot; node_id=&quot;1496285&quot; parent_e2node=&quot;681550&quot; author_user=&quot;eliserh&quot;&gt;The Gone, Growing in Number&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;2061013&quot; parent_e2node=&quot;2061019&quot; author_user=&quot;The Custodian&quot;&gt;Lost Horizon Night Market&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2051942&quot; parent_e2node=&quot;2060998&quot; author_user=&quot;Zephronias&quot;&gt;So then I tried staring into the abyss, but it got distracted by a weasel and ditched me&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;kozmund&quot; node_id=&quot;1057488&quot; parent_e2node=&quot;1740044&quot; author_user=&quot;Halspal&quot;&gt;The Country House&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;StuartO)))&quot; node_id=&quot;2049228&quot; parent_e2node=&quot;2061064&quot; author_user=&quot;Pandeism Fish&quot;&gt;Galzeekebull, the fear-eating demon, goes on a date&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2060613&quot; parent_e2node=&quot;2061053&quot; author_user=&quot;latamyk&quot;&gt;A Liter of Light&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;jessicaj&quot; node_id=&quot;2060990&quot; parent_e2node=&quot;2060946&quot; author_user=&quot;Tem42&quot;&gt;Nomen oblitum&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;RoguePoet&quot; node_id=&quot;2061013&quot; parent_e2node=&quot;2061019&quot; author_user=&quot;The Custodian&quot;&gt;Lost Horizon Night Market&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2060560&quot; parent_e2node=&quot;2061083&quot; author_user=&quot;The Custodian&quot;&gt;They Prayed to their Code To Give them Light&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Halspal&quot; node_id=&quot;2060546&quot; parent_e2node=&quot;2060426&quot; author_user=&quot;jaybonci&quot;&gt;root log: February 2012&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;1391076&quot; parent_e2node=&quot;1391075&quot; author_user=&quot;grundoon&quot;&gt;No longer in my list of names&lt;/cooled&gt;
@@ -14,7 +15,6 @@
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2061065&quot; parent_e2node=&quot;2061070&quot; author_user=&quot;Zephronias&quot;&gt;Fangasm&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Uberbanana&quot; node_id=&quot;1317124&quot; parent_e2node=&quot;1317123&quot; author_user=&quot;dodo37&quot;&gt;Yoda's syntax&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;gnarl&quot; node_id=&quot;2056917&quot; parent_e2node=&quot;411346&quot; author_user=&quot;JD&quot;&gt;The Muppets&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;2060434&quot; parent_e2node=&quot;2060907&quot; author_user=&quot;Uberbanana&quot;&gt;Kermit the Frog Hosts Larry King Live&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

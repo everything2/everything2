@@ -1,6 +1,6 @@
 <node>
   <node_id>276</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>mailServer=192%2e168%2e1%2e249&amp;client=everything2%2ecom&amp;newestoldmailserver=216%2e144%2e199%2e194&amp;systemMailFrom=postmaster%40everything2%2ecom&amp;newUser_mail=275&amp;otheroldmailserver=216%2e200%2e201%2e210&amp;oldmailserver=208%2e44%2e192%2e14</vars>
+  <vars>client=everything2%2ecom&amp;mailServer=192%2e168%2e1%2e1&amp;newUser_mail=275&amp;newestoldmailserver=216%2e144%2e199%2e194&amp;oldClient=everything2%2ecom&amp;oldmailserver=208%2e44%2e192%2e14&amp;otheroldmailserver=216%2e200%2e201%2e210&amp;retiredMailServerOn2011May3=192%2e168%2e1%2e249&amp;systemMailFrom=postmaster%40everything2%2ecom</vars>
   <title>mail settings</title>
 </node>
