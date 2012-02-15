@@ -102,6 +102,11 @@ sub main
 			my $thistype = getType($node->{type_nodetype});
 
 			my $obj = $this->get_worker_object($thistype->{title});
+			if(grep { /^$$node{node_id}$/ } @{$obj->import_skip_update()})
+			{
+				#print STDERR "Skipping explicit update on node_id: $$node{node_id}\n";
+				next;
+			}
 
 			my $source_code_copy = $obj->node_xml_prep($dbnode, $DB->{dbh}, $options);
 
@@ -112,7 +117,7 @@ sub main
 				{
 					if(grep { /^$nfield$/ } @{$obj->import_no_consider()})
 					{
-						print STDERR "Skipping field in '$$node{title}' due to being marked no_consider: $nfield\n";
+						#print STDERR "Skipping field in '$$node{title}' due to being marked no_consider: $nfield\n";
 						next;	
 					}
 					print STDERR "Node: $$node{title}, field: $nfield needs updating\n";
@@ -122,9 +127,9 @@ sub main
 					}else{
 						print STDERR $this->field_diff($this->diffable_var_string($source_code_copy->{$nfield}), $this->diffable_var_string($node->{$nfield}));				
 					}
-					#$dbnode->{$nfield} = $node->{$nfield};
-					#$DB->updateNode($dbnode,$rootuser);
-					#print STDERR "Node updated!\n";
+					$dbnode->{$nfield} = $node->{$nfield};
+					$DB->updateNode($dbnode,$rootuser);
+					print STDERR "Node updated!\n";
 				}
 			}
 		}

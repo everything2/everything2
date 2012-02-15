@@ -129,4 +129,10 @@ sub import_no_consider
 	return [];
 }
 
+sub import_skip_update
+{
+	my ($this) = @_;
+	return [];
+}
+
 1;
