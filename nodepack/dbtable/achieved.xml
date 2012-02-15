@@ -13,8 +13,9 @@ CREATE TABLE `achieved` (
   `achieved_id` int(11) NOT NULL AUTO_INCREMENT,
   `achieved_user` int(11) NOT NULL DEFAULT '0',
   `achieved_achievement` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`achieved_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16991 DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`achieved_id`),
+  KEY `user_achievement` (`achieved_user`,`achieved_achievement`)
+) ENGINE=InnoDB AUTO_INCREMENT=19873 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

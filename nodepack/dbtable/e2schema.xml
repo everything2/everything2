@@ -13,7 +13,7 @@ CREATE TABLE `e2schema` (
   `e2schema_id` int(11) NOT NULL,
   `schema_extends` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`e2schema_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

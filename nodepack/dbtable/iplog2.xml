@@ -18,7 +18,7 @@ CREATE TABLE `iplog2` (
   UNIQUE KEY `ip_user` (`ip_user`,`ip_addy`),
   KEY `iplog2_user` (`ip_user`),
   KEY `iplog2_addy` (`ip_addy`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=264453 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

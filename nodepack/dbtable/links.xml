@@ -15,7 +15,6 @@ CREATE TABLE `links` (
   `linktype` int(11) NOT NULL DEFAULT '0',
   `hits` int(11) NOT NULL DEFAULT '0',
   `food` int(11) DEFAULT '0',
-  `addtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`from_node`,`to_node`,`linktype`),
   KEY `to_node` (`to_node`),
   KEY `linktype_fromnode_hits` (`linktype`,`from_node`,`hits`),

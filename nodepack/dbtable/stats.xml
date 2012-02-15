@@ -23,7 +23,7 @@ CREATE TABLE `stats` (
   `numvotes` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`stats_id`),
   KEY `stattime` (`stattime`)
-) ENGINE=InnoDB AUTO_INCREMENT=497724 DEFAULT CHARSET=latin1 PACK_KEYS=1;
+) ENGINE=InnoDB AUTO_INCREMENT=452754 DEFAULT CHARSET=latin1 PACK_KEYS=1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

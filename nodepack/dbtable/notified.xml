@@ -20,8 +20,8 @@ CREATE TABLE `notified` (
   PRIMARY KEY (`notified_id`),
   KEY `user_seen` (`user_id`,`is_seen`),
   KEY `reference_notified_id` (`reference_notified_id`),
-  KEY `ref_notified_id__user_id__is_seen` (`reference_notified_id`,`user_id`,`is_seen`)
-) ENGINE=InnoDB AUTO_INCREMENT=48145 DEFAULT CHARSET=latin1;
+  KEY `reference_notified_id__user_id__is_seen` (`reference_notified_id`,`user_id`,`is_seen`)
+) ENGINE=InnoDB AUTO_INCREMENT=190311 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
