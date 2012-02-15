@@ -608,7 +608,12 @@ sub updateHits
 	return if Everything::HTML::isSpider();
 	my $author_restrict = "AND author_user != $$USER{node_id}";
 	$DB->sqlUpdate('hits', { -hits => 'hits+1' }, "node_id=$id");
-	$DB->sqlUpdate('node', { -hits => 'hits+1' }, "node_id=$id $author_restrict");
+
+	#Shift this work some to the webhead
+	if($$NODE{author_user} != $$USER{node_id})
+	{
+		$DB->sqlUpdate('node', { -hits => 'hits+1' }, "node_id=$id");
+	}
 
 	if ($$NODE{type}{title} eq 'e2node' && $$NODE{group}) {
 		my $groupList = '(';
