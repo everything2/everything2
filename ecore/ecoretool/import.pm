@@ -116,15 +116,34 @@ sub main
 						next;	
 					}
 					print STDERR "Node: $$node{title}, field: $nfield needs updating\n";
-					print STDERR $this->field_diff($source_code_copy->{$nfield}, $node->{$nfield});
-					$dbnode->{$nfield} = $node->{$nfield};
-					$DB->updateNode($dbnode,$rootuser);
-					print STDERR "Node updated!\n";
+					if($nfield ne "vars")
+					{
+						print STDERR $this->field_diff($source_code_copy->{$nfield}, $node->{$nfield});
+					}else{
+						print STDERR $this->field_diff($this->diffable_var_string($source_code_copy->{$nfield}), $this->diffable_var_string($node->{$nfield}));				
+					}
+					#$dbnode->{$nfield} = $node->{$nfield};
+					#$DB->updateNode($dbnode,$rootuser);
+					#print STDERR "Node updated!\n";
 				}
 			}
 		}
 	}
 
+}
+
+sub diffable_var_string
+{
+	my ($this, $vars) = @_;
+	my $varhash = {Everything::getVarHashFromStringFast($vars)};
+
+	my $outstr ="";
+	foreach my $key(sort { $b cmp $a } keys %$varhash)
+	{
+		$outstr .= "(var) $key = ".$varhash->{$key}."\n";
+	}
+
+	return $outstr;
 }
 
 sub field_diff
