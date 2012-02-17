@@ -64,7 +64,7 @@ sub main
 			next;
 		}
 
-		my $typecsr = $DB->{dbh}->prepare("select node_id,tile from node where type_nodetype=$$node{node_id}");
+		my $typecsr = $DB->{dbh}->prepare("select node_id,title from node where type_nodetype=$$node{node_id}");
 		$typecsr->execute();
 
 		while(my $item = $typecsr->fetchrow_hashref())
