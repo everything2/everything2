@@ -2171,7 +2171,7 @@ sub gotoNode
 	}
 	
 
-	updateHits ($NODE, $USER) unless $query->param('op') ne "" or $query->param("displaytype") eq "ajaxupdate";
+	#updateHits ($NODE, $USER) unless $query->param('op') ne "" or $query->param("displaytype") eq "ajaxupdate";
 
 	# Create softlinks -- a linktype of 0 is the default
 	my $linktype = 0;
