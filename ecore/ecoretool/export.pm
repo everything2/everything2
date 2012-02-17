@@ -64,7 +64,7 @@ sub main
 			next;
 		}
 
-		my $typecsr = $DB->{dbh}->prepare("select node_id from node where type_nodetype=$$node{node_id}");
+		my $typecsr = $DB->{dbh}->prepare("select node_id,tile from node where type_nodetype=$$node{node_id}");
 		$typecsr->execute();
 
 		while(my $item = $typecsr->fetchrow_hashref())
@@ -72,7 +72,7 @@ sub main
 			my $typeobj = $this->get_worker_object($$node{title});
 			if(grep {/^$$item{node_id}$/} @{$typeobj->never_export()})
 			{
-				print "Explicitly skipping export on $$node{title}/$$item{title}\n";
+				print "Explicitly skipping export on $$node{title}: '$$item{title}'\n";
 				next;
 			}
 			my $tnode = getNodeById($item->{node_id});
