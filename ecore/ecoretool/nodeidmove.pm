@@ -11,14 +11,6 @@ use DBI;
 use DBD::mysql;
 use XML::Simple;
 
-sub new
-{
-	my ($class) = @_;
-	my $this;
-	$this->{xs} = XML::Simple->new("NoSort" => 1, "KeepRoot" => 1, "NoAttr" => 1, "SuppressEmpty" => "");
-	return bless $this,$class;
-}
-
 sub _inputs
 {
 	return {

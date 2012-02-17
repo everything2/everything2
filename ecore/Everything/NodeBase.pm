@@ -2118,6 +2118,12 @@ sub deriveType
 	}
 
 	$$NODETYPE{sqltablelist} = $$NODETYPE{sqltable};
+	if(not defined $$NODETYPE{sqltablelist})
+	{
+		# We'll want a cleaner way of doing this, for now this suppresses errors on bootstrap
+		$$NODETYPE{sqltablelist} = "";
+	}
+
 	$PARENT = $this->getType($$NODETYPE{extends_nodetype});
 
 	if(defined $PARENT)

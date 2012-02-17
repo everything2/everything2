@@ -8,7 +8,7 @@ package Everything::node::node;
 sub new
 {
 	my ($class) = shift;
-	my $this = {"xs" => XML::Simple->new("NoSort" => 1, "KeepRoot" => 1, "NoAttr" => 1,"SuppressEmpty" => 1, "NumericEscape" => 1)};
+	my $this = {"xs" => XML::Simple->new("NoSort" => 1, "KeepRoot" => 1, "NoAttr" => 1,"SuppressEmpty" => 1, "NumericEscape" => 2)};
 	return bless $this,$class;
 }
 
