@@ -9,7 +9,7 @@ sub new
 {
 	my ($class) = @_;
 	my $this;
-	$this->{xs} = XML::Simple->new("NoSort" => 1, "KeepRoot" => 1, "NoAttr" => 1, "SuppressEmpty" => "");
+	$this->{xs} = XML::Simple->new("NoSort" => 1, "KeepRoot" => 1, "NoAttr" => 1,"SuppressEmpty" => 1);
 	return bless $this,$class;
 }
 

@@ -8,7 +8,7 @@ package Everything::node::node;
 sub new
 {
 	my ($class) = shift;
-	my $this = {"xs" => XML::Simple->new("NoSort" => 1, "KeepRoot" => 1, "NoAttr" => 1,"SuppressEmpty" => "", "NumericEscape" => 2)};
+	my $this = {"xs" => XML::Simple->new("NoSort" => 1, "KeepRoot" => 1, "NoAttr" => 1,"SuppressEmpty" => 1, "NumericEscape" => 1)};
 	return bless $this,$class;
 }
 
@@ -117,12 +117,17 @@ sub _strip_defaults
 		{
 			if(exists($NODE->{$row->{Field}}))
 			{
-				if(defined($row->{Default}) and $NODE->{$row->{Field}} eq $row->{Default} and $row->{Default} ne "NULL")
+				if(defined($row->{Default}) and defined($NODE->{$row->{Field}}) and ($NODE->{$row->{Field}} eq $row->{Default}))
 				{
 					delete $NODE->{$row->{Field}};
 					#print STDERR "Stripped $$row{Field} from $$NODE{title}\n";
+				}elsif(not defined($row->{Default}) and not defined($NODE->{$row->{Field}}))
+				{
+					delete $NODE->{$row->{Field}};
 				}
 			}
+
+			
 		}
 	}
 }
