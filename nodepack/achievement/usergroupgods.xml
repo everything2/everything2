@@ -1,7 +1,6 @@
 <node>
   <display>&lt;b&gt;God Mode&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Member of Gods usergroup&lt;/i&gt;</display>
   <achievement_type>usergroup</achievement_type>
-  <subtype></subtype>
   <node_id>1920602</node_id>
   <code>return 1 if $HTMLVARS{group_gods}{$user_id};
 return 0;</code>

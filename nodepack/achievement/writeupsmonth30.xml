@@ -1,7 +1,6 @@
 <node>
   <display>&lt;strong&gt;[THE IRON NODER CHALLENGE|IRON NODER]&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Posted 30 new writeups in one month&lt;/i&gt;</display>
   <achievement_type>writeup</achievement_type>
-  <subtype></subtype>
   <node_id>1977814</node_id>
   <code>my $maxWusInAMonth = $DB-&gt;sqlSelect(
 	&quot;nwus&quot;,
