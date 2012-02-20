@@ -11,6 +11,11 @@ sub node_xml_prep
 
 	# Strip old windows line endings
 	$NODE->{datacode} = $this->_clean_code($NODE->{datacode});
+
+	if($NODE->{datatype} eq "")
+	{
+		delete $NODE->{datatype};
+	}
 	return $this->SUPER::node_xml_prep($NODE, $dbh);
 }
 
