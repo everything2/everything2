@@ -1,4 +1,5 @@
 <node>
+  <sqltable></sqltable>
   <node_id>7</node_id>
   <type_nodetype>1</type_nodetype>
   <writers_user>114</writers_user>

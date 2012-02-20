@@ -11,6 +11,17 @@ sub xml_no_store
 	return ["resolvedInheritance","sqltablelist","tableArray",@{$this->SUPER::xml_no_store()}];
 }
 
+sub node_xml_prep
+{
+	my ($this, $NODE, $dbh) = @_;
+
+	if($NODE->{sqltable} eq "")
+	{
+		delete $NODE->{datatype};
+	}
+	return $this->SUPER::node_xml_prep($NODE, $dbh);
+}
+
 sub node_id_equivs
 {
 	my ($this) = @_;
