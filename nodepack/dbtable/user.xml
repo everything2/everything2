@@ -32,13 +32,14 @@ CREATE TABLE `user` (
   `GP` int(11) NOT NULL DEFAULT '0',
   `sanctity` int(11) NOT NULL DEFAULT '0',
   `stars` int(11) NOT NULL DEFAULT '0',
+  `hashed_password` tinyint(1) DEFAULT '0',
   `session_id` int(11) DEFAULT NULL,
   `user_salt` int(11) DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   KEY `email` (`email`),
   KEY `lasttime` (`lasttime`),
   KEY `session_id` (`session_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2061155 DEFAULT CHARSET=latin1 PACK_KEYS=1;
+) ENGINE=InnoDB AUTO_INCREMENT=1991836 DEFAULT CHARSET=latin1 PACK_KEYS=1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

@@ -18,7 +18,6 @@ CREATE TABLE `writeup` (
   `publishtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`writeup_id`),
   KEY `parent_e2node_index` (`parent_e2node`),
-  KEY `idx_cooled` (`cooled`),
   KEY `writeuptype` (`wrtype_writeuptype`),
   KEY `publishtime_index` (`publishtime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1;

@@ -20,7 +20,7 @@ CREATE TABLE `nodenote` (
   KEY `nodenote_nodeid` (`nodenote_nodeid`),
   KEY `noter_user` (`noter_user`),
   KEY `nodenote_nodeid__noter_user` (`nodenote_nodeid`,`noter_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=1746876 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1735213 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

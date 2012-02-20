@@ -11,8 +11,7 @@
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `status` (
   `status_id` int(11) NOT NULL DEFAULT '0',
-  `applied` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`status_id`)
+  `applied` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

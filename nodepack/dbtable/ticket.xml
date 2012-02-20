@@ -15,13 +15,13 @@ CREATE TABLE `ticket` (
   `date_closed` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `locked_comment` char(255) NOT NULL DEFAULT '',
   `status` int(11) NOT NULL DEFAULT '0',
-  `tickettype` int(11) DEFAULT NULL,
   `user_created` int(11) NOT NULL DEFAULT '0',
   `user_assigned` int(11) NOT NULL DEFAULT '0',
   `locked_user` int(11) NOT NULL DEFAULT '0',
   `admin_only` int(2) NOT NULL DEFAULT '0',
   `priority` int(11) NOT NULL DEFAULT '1',
   `summary` char(255) NOT NULL DEFAULT '',
+  `tickettype` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ticket_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
