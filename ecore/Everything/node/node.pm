@@ -4,6 +4,7 @@ use strict;
 use XML::Simple;
 use Clone qw(clone);
 package Everything::node::node;
+use utf8;
 
 sub new
 {
@@ -17,10 +18,29 @@ sub node_xml_prep
 	my ($this, $N, $dbh, $options) = @_;
 	my $NODE = Clone::clone($N);
 	
+	$this->_node_xml_latin1_conversion($NODE);
 	$this->_strip_defaults($NODE,$dbh);
+
 	foreach my $field(@{$this->xml_no_store()})
 	{
 		delete $NODE->{$field};
+	}
+
+	return $NODE;
+}
+
+sub _node_xml_latin1_conversion
+{
+	my ($this, $NODE) = @_;
+
+	foreach my $key (keys %$NODE)
+	{
+		next if not defined($NODE->{$key});
+		next if $NODE->{$key} eq "";
+		if(!utf8::is_utf8($NODE->{$key}))
+		{
+			utf8::decode($NODE->{$key});
+		}
 	}
 
 	return $NODE;
