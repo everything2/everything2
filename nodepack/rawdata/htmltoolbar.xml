@@ -803,5 +803,4 @@ function edShowExtraCookie() {
 	return false;
 }</datacode>
   <title>HTMLtoolbar</title>
-  <datatype></datatype>
 </node>

@@ -755,5 +755,4 @@ function edShowExtraCookie() {
 	return false;
 }</datacode>
   <title>HTMLtoolbar Classic</title>
-  <datatype></datatype>
 </node>

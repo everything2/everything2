@@ -44,5 +44,4 @@
   document.write(&quot;&lt;input type=\'button\' onClick=\'checkString()\' id=\'newbutton\' value=\'submit\' title=\'Submit writeup\'&gt;&quot;);
 </datacode>
   <title>jsSubmitButton</title>
-  <datatype></datatype>
 </node>

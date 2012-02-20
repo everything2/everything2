@@ -1,6 +1,7 @@
 <node>
   <display>&lt;strong&gt;Prom Queen&lt;/strong&gt; &lt;br/&gt; &lt;em&gt;Writeup reputation of 200&lt;/em&gt;</display>
   <achievement_type>reputation</achievement_type>
+  <subtype></subtype>
   <node_id>1918066</node_id>
   <code>my $highRep = $DB-&gt;sqlSelect(&quot;reputation&quot;,&quot;node&quot;,&quot;author_user=$user_id and type_nodetype=117 order by reputation desc limit 1&quot;);
 
