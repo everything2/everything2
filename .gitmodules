@@ -1,0 +1,3 @@
+[submodule "vagrant/cookbooks/chef-apt-repo"]
+	path = vagrant/cookbooks/chef-apt-repo
+	url = https://github.com/sometimesfood/chef-apt-repo.git
