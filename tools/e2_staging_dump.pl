@@ -25,9 +25,18 @@ $sth->execute();
 my $now = [localtime()];
 my $dumpfile = "everything.staging.".($now->[5]+1900).sprintf("%02d",$now->[4]).sprintf("%02d",$now->[3]).".sql";
 
+
+my $table_list;
+
 while(my $line = $sth->fetchrow_arrayref)
 {
 	my $table = $line->[0];
+	next if $table eq "currentusers";
+	push @$table_list, $table;
+}
+
+foreach my $table(@$table_list, "currentusers")
+{
 	print STDERR "Dumping $table\n";
 	my $extra = "";
 	if(exists $tables->{$table})
@@ -36,5 +45,7 @@ while(my $line = $sth->fetchrow_arrayref)
 	}
 	`mysqldump --single-transaction $extra --user=root everything $table >> $dumpfile`;
 }
+
+print STDERR "Compressing output\n";
 
 `gzip $dumpfile`;
