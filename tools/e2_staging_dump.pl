@@ -12,9 +12,18 @@ my $tables =
 	# This is close enough to what we want
 	"links" => "--where='linktype != 0'",
 	"message" => "--no-data",
+	"heaven" => "--no-data",
+	"nodebak" => "--no-data",
+	"ftsearch" => "--no-data",
+	"ftcache" => "--no-data",
+	"ftdict" => "--no-data",
+	"deletedhits" => "--no-data",
+	"hits" => "--no-data",
 };
 
-my $dbh = DBI->connect("DBI:mysql:database=everything","root");
+my $password = $ARGV[0];
+
+my $dbh = DBI->connect("DBI:mysql:database=everything","root", $password);
 
 die "No database" unless $dbh;
 
