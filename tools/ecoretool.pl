@@ -1,40 +1,22 @@
 #!/usr/bin/perl -w
 
 use strict;
+use lib qw(lib /var/everything/ecore ecore);
+package ecoretool;
 use Getopt::Long;
 use Clone;
-use lib qw(lib /var/everything/ecore ecore);
+use Module::Pluggable search_path => ["ecoretool"], except => 'ecoretool::base', instantiate => 'new';
 
-#TODO: Wrap this in BEGIN and just search for available modules
-#Also generate allowed_directives
-
-use vars qw($allowed_directives);
-
-BEGIN
-{
-	unshift @INC, qw(lib /var/everything/ecore);
-	foreach my $librarydir (@INC)
-	{
-		if (-d "$librarydir/ecoretool")
-		{
-			my $libdirhandle; opendir($libdirhandle, "$librarydir/ecoretool");
-			foreach my $libfile (readdir($libdirhandle))
-			{
-				my $fullfile = "$librarydir/ecoretool/$libfile";
-				next unless -f $fullfile and -e $fullfile;
-				$libfile =~ s/\.pm//g;
-				eval("use ecoretool::$libfile;");
-				next if $libfile eq "base";	
-				my $obj = "ecoretool::$libfile";
-				no strict 'refs';
-				print STDERR $@ if $@;
-				$allowed_directives->{$libfile} = $obj->shortdesc();
-			}
-		}		
-	}
-}
-
+my $allowed_directives;
 my $directive = $ARGV[0];
+
+foreach my $plugin (ecoretool::plugins())
+{
+	my $name = ref $plugin;
+	$name =~ s/ecoretool\:://g;
+	my $shortdesc = $plugin->shortdesc();
+	$allowed_directives->{$name} = $shortdesc;
+}
 
 if($directive and exists($allowed_directives->{$directive}))
 {
