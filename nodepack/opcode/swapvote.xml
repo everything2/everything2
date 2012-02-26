@@ -1,0 +1,164 @@
+<node>
+  <node_id>1976465</node_id>
+  <code>return unless $$USER{votesleft};
+return if isSuspended($USER, &quot;vote&quot;);
+return if getId($USER) == $HTMLVARS{guest_user};
+my @params = $query-&gt;param;
+my $defID = getId(getNode('definition','writeuptype')) || 0;
+
+my $unVotable = getVars(getNode('boring heaven nodes', 'setting'));
+
+use Everything::Experience;
+
+#See [E2 Options: Declining vote XP]
+$$VARS{noVoteXP} ||= 0;
+
+my $UID = getId($USER) || 0;
+
+my $oldXP = $$USER{experience};
+my $t;
+my $prev_uid = 0;
+my $numTimes=0;
+my $VSETTINGS = getVars(getNode('vote settings', 'setting'));
+my $countPlus=0;
+my $countMinus=0;
+
+my $VOTES = getVars(getNode('level votes','setting'));
+my $numVotes = $$VOTES{getLevel($USER)};
+
+
+foreach (@params) {
+  next unless /^vote\_\_(\d+)$/;
+
+  my $N = $1;
+  my $val = $query-&gt;param($_);
+  next unless ($val eq '1' or $val eq '-1');
+
+  getRef($N);
+
+  next unless $N;
+  #TODO next unless is WU
+  next if $$N{author_user} == $UID;
+  next if $$N{wrtype_writeuptype}==$defID;
+  #next if hasVoted($N, $USER);
+
+  #don't allow voting on maintenance WUs
+  $t=$$N{title};
+  if ($t =~ /^(.*?) \(\w+\)$/) {
+    $t=$1;
+  }
+  $t =~ s/\s/_/g;
+  if ($$unVotable{lc($t)}) {
+    htmlcode('logWarning',getId($N).',vote: attempt on maintenance: '.$val.' from '.$UID);
+    next;
+  }
+
+  #N-Wing
+  if ($$N{author_user}==$prev_uid) {
+    ++$numTimes;
+    if ($val&gt;0) {
+      ++$countPlus;
+    }
+    elsif ($val&lt;0) {
+      ++$countMinus;
+    }
+  }
+  else {
+    $prev_uid = $$N{author_user};
+  }
+
+  #castVote(getId($N), $USER, $val, $$VARS{noVoteXP}, $VSETTINGS);
+  #CastVote(getId($N), $USER, $val, 0, $VSETTINGS);
+  swapCastVote(getId($N), $USER, $val, 0, $VSETTINGS);
+
+  htmlcode('achievementsByType','vote,'.$$USER{user_id});
+  htmlcode('achievementsByType','reputation,'.$$N{author_user});
+
+
+  last unless $$USER{votesleft};
+}
+
+#N-Wing
+if ($numTimes) {
+  ++$numTimes;
+  htmlcode('logWarning',',vote: multiple ('.$numTimes.') votes ('.$countPlus.'+  '.$countMinus.'-) for same person: '.$prev_uid);
+}
+
+
+sub swapCastVote {
+  my ($NODE, $USER, $weight, $noxp, $VSETTINGS) = @_;
+  getRef($NODE, $USER);
+
+  return unless $$USER{votesleft};
+  #return if they don't have any votes left today
+
+  #jb says: Allow for $VSETTINGS to be specified. This will save
+  # us a few cycles in castVote
+
+  $VSETTINGS ||= getVars(getNode('vote settings', 'setting'));
+  my @votetypes = split /\s*\,\s*/, $$VSETTINGS{validTypes};
+
+  return if (@votetypes and not grep(/^$$NODE{type}{title}$/, @votetypes));
+  #if no types are specified, the user can vote on anything
+  #otherwise, they can only vote on &quot;validTypes&quot;
+
+  my $alreadyvoted = !(Everything::Experience::insertVote($NODE, $USER, $weight));
+  #if insertVote succeeded, the vote has been inserted and approved.
+  #now we assign points
+
+  #Else, already voted, update the table manually, check that the vote is
+  #actually different.
+  my $prevweight = 0;
+  if($alreadyvoted){
+    $prevweight  = $DB-&gt;sqlSelect('weight',
+                                  'vote',
+                                  'voter_user='.$$USER{node_id}
+                                  .' AND vote_id='.$$NODE{node_id});
+
+    if ($prevweight != $weight
+        &amp;&amp; $prevweight &lt; 0){ #Only allow revoting up
+
+      $DB-&gt;sqlUpdate(&quot;vote&quot;,
+                     { -weight =&gt; $weight,
+                       -revotetime =&gt; &quot;NOW()&quot;},
+                     &quot;voter_user=$$USER{node_id}
+                      AND vote_id=$$NODE{node_id}&quot;);
+    }
+  }
+
+  adjustRep($NODE, $weight-$prevweight);
+
+  #the nodes author has a chance of recieving or losing a GP
+  #if (rand(1.0) &lt; $$VSETTINGS{voteeExpChance}) {
+  #	adjustExp($$NODE{author_user}, $weight);
+  #}
+
+  #the node's author gains 1 XP for an upvote or a flipped up
+  #downvote.
+  if ($weight&gt;0 and $prevweight &lt;= 0) {
+    adjustExp($$NODE{author_user}, $weight);
+  }
+  #Revoting down, note the subtle difference with above condition
+  #elsif($weight &lt; 0 and $prevweight &gt; 0){
+  #   adjustExp($$NODE{author_user}, $weight);
+  #}
+  #^^^
+  #Commented out, no revoting down allowed
+
+
+  #the voter has a chance of receiving a GP
+  if (rand(1.0) &lt; $$VSETTINGS{voterExpChance} &amp;&amp; !$alreadyvoted) {
+    adjustGP($USER, 1) unless($noxp);
+    #jb says this is for decline vote XP option
+    #we pass this $noxp if we want to skip the XP option
+  }
+
+  $$USER{votesleft}-- unless ($alreadyvoted and $weight==$prevweight);
+  updateNode($USER, -1);
+
+  1;
+}
+</code>
+  <type_nodetype>415056</type_nodetype>
+  <title>swapvote</title>
+</node>

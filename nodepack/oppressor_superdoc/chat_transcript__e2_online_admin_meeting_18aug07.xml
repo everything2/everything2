@@ -1,0 +1,867 @@
+<node>
+  <doctext>&lt;p&gt;What follows below is the edited log from the first Online Gods/Editors Meeting which took place on 18 August 2007 at 19h00 GMT.  It's edited for length - I have removed various comings and goings, and other IRC administrivia, and fixed typos, but that's it.  The raw log will remain available, at request to me.&lt;/p&gt;
+
+&lt;p&gt;At the conclusion of the log, I've summarized the ACTIONS agreed upon and they're listed for easy reference.&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;p&gt;(2007-08-18 13:58:19) =-= dann has changed the topic to &#147;1) Fit and function of IRC for our discussion medium; 2) The theme quest publicity; 3) Terms of service; 4) Timing of and technology for next meeting; 5) Forum for issues with users&#148; &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:00:45) &amp;lt;dann&gt; This is more or less a test-run meeting, to wrap up a few things from previous conversations, and see if IRC works well for us, collaboration-wise. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:01:07) &amp;lt;spiregrain&gt; I move dann chairs this thing&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:01:15) &amp;lt;AndrewAguecheek&gt; seconded&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:01:16) &amp;lt;Wiccanpiper&gt; seconded!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:01:17) &amp;lt;DEB&gt; Seconded. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:01:18) &amp;lt;dann&gt; We only have five things to discuss this go-around, all of which are in the topic. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:01:20) &amp;lt;dann&gt; *smiles*&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:01:34) &amp;lt;spiregrain&gt; let's go to 1)&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:01:55) &amp;lt;Two_Sheds&gt; It sounds like 1 and 4 are closely related.  Could we do them together? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:02:00) &amp;lt;spiregrain&gt; How many of us are IRC first timers? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:02:02) &amp;lt;dann&gt; I'd imagine so. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:02:04) &amp;lt;Wiccanpiper&gt; so moved!&lt;/p&gt;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:02:10) &amp;lt;eien_meru&gt; seconded. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:02:15) &amp;lt;DEB&gt; I'm an IRC newb. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:02:23) &amp;lt;Dimview&gt; I am new too&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:02:29) *&lt;em&gt;  Gorgonzola used IRC once several years ago, but didn't like the mIRC licensing agreement&lt;/em&gt; &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:02:31) &amp;lt;spiregrain&gt; of the IRC newbs, are you using one of the web interfaces? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:02:37) &amp;lt;XWiz&gt; I've not used IRC before. I'm using a program called 'Linkinus'. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:02:46) &amp;lt;Dimview&gt; ChatZilla&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:02:48) &amp;lt;Gorgonzola&gt; Good thing there are Web interfaces for me to use now. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:02:58) &amp;lt;Wiccanpiper&gt; Other than Yahoo!, I investigated Meebo, which has a browser front end, but didn't get very far past creating an account and trying it out. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:03:00) &amp;lt;DEB&gt; ChatZilla also. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:03:00) &amp;lt;dann&gt; for those of you who are new (or re-newed) to IRC, was it too difficult to setup, or will it be a challenge to get going again later? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:03:06) * &lt;em&gt;Gorgonzola is using the client on SlashNET directly&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:03:26) &amp;lt;XWiz&gt; Very easy to set up; no problems.  There's also a pretty good node on ICQ that helped. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:03:31) &amp;lt;Dimview&gt; Easy and einfach. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:03:38) * &lt;em&gt;spiregrain checks e2 to see if anyone is having probs with it&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:03:39) *&lt;em&gt; XWiz means IRC. &lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:03:43) &amp;lt;Wiccanpiper&gt; I found Chatzilla very easy to install into Firefox and use, and www.mirc.com has a nice list of commands. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:03:45) &amp;lt;Gorgonzola&gt; It was a (forehead intall)&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:03:53) &amp;lt;DEB&gt; I was almost reduced to tears, but not quite. Considering that I live 2000 years ago, it can't be bad going. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:03:55) &amp;lt;Gorgonzola&gt; ERm, Foreheal install. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:04:03) &amp;lt;cletus&gt; Mac users: I'm on Colloquy, which is also handy&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:04:10) &amp;lt;LordBrawl&gt; I was vaguely put off by the website name, but once I'd assured myself it was legit, no issues w/ setup&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:04:14) * &lt;em&gt;eien_meru uses Colloquy as well.&lt;/em&gt; &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:04:23) * &lt;em&gt;AndrewAguecheek users mIRC&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:04:26) &amp;lt;spiregrain&gt; LB - what website name is that? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:04:28) * &lt;em&gt;AndrewAguecheek uses*&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:04:31) &amp;lt;LordBrawl&gt; &quot;hacksrus.com&quot;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:04:50) &amp;lt;LordBrawl&gt; (Home of chatzilla)&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:05:04) &amp;lt;spiregrain&gt; hahaha&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:05:10) &amp;lt;dann&gt; will it be a good idea for one of us to put together a document on the staff side of things describing how to setup at least one good IRC client on each of the four major platforms?  (win, lin, osx, web)&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:05:18) &amp;lt;spiregrain&gt; dann - yes&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:05:24) &amp;lt;DEB&gt; Yes, I think so. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:05:25) &amp;lt;Wiccanpiper&gt; I nominate spiregrain!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:05:26) &amp;lt;Gorgonzola&gt; Right there is the principal drawback: The short idle-out time. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:05:28) &amp;lt;Dimview&gt; Definitely&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:05:44) &amp;lt;spiregrain&gt; I can only speak for Linux and Web&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:06:00) &amp;lt;spiregrain&gt; but will type something up on those two and the generics tomorrow&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:06:09) &amp;lt;dann&gt; it seems like we've got 13 out of 52 active folks on staff here. it's very good for a first-run - thanks for all of your efforts to make it in!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:06:14) &amp;lt;Wiccanpiper&gt; The best for Windows is still mIRC, I think, I can help with that one, spire. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:06:16) &amp;lt;spiregrain&gt; what IRC setup are you using? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:06:28) &amp;lt;spiregrain&gt; anthropod- what IRC setup are you using? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:06:34) &amp;lt;dann&gt; ok - I'll put the IRC doc on &quot;the list&quot; if anyone wants to take action on it, message me and we'll work it through&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:06:48) &amp;lt;Dimview&gt; I've been hanging for hours without being time outed&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:07:08) &amp;lt;Gorgonzola&gt; I think it depends on where you're connecting from. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:07:37) &amp;lt;Gorgonzola&gt; Plus.com dropped my connection after a very short time idle. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:07:46) &amp;lt;spiregrain&gt; Plus.com is mine&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:07:46) &amp;lt;dann&gt; second on the agenda is the theme quest, and how to get news of it &quot;out there&quot;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:08:04) &amp;lt;spiregrain&gt; Plus.com might be therefore be bollloxed&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:08:21) &amp;lt;eien_meru&gt; Well, it's been frontpaged. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:08:26) &amp;lt;LordBrawl&gt; Out where, dann? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:08:32) &amp;lt;dann&gt; we've managed to get MSU to offer $250 for the winner of the quest, as decided by the userbase&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:08:36) &amp;lt;cletus&gt; what if we changed the default theme to some contender every couple of days? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:08:36) &amp;lt;LordBrawl&gt; Out beyond &quot;regular e2&quot; ? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:08:38) &amp;lt;Wiccanpiper&gt; We could all stick it on our homenodes . . . &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:08:39) &amp;lt;eien_meru&gt; I think the main issue with having the design quest is that the site's structure hasn't solidified yet. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:08:40) =-= spiregrain has changed the topic to &quot;1) Fit and function of IRC for our discussion medium; ** 2) The theme quest publicity; ** 3) Terms of service; 4) Timing of and technology for next meeting; 5) Forum for issues with users&quot;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:08:57) &amp;lt;eien_meru&gt; I mean, people are still playing with what elements are tagged by what names and IDs, and so on. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:09:02) &amp;lt;dann&gt; the issue is, so far as I know, that we don't have many entrants.  My take on it may be a few days stale, though&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:09:19) &amp;lt;dann&gt; Two_Sheds: how many folks do you estimate are participating? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:09:22) &amp;lt;DEB&gt; How many entrants do we have? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:09:28) &amp;lt;LordBrawl&gt; My recent experience with my quest it that you need to keep hammerin', and you need people to see progress&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:09:38) &amp;lt;spiregrain&gt; I consider myself quite techie, but I've got no idea how to do CSS and no time/inclination  to learn&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:09:51) &amp;lt;spiregrain&gt; there is a barrier to entry that will limit the number of participants&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:10:01) &amp;lt;DEB&gt; I certainly don't have the foggiest idea about it. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:10:06) &amp;lt;Two_Sheds&gt; Whoa, my connection was broken for awhile. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:10:08) &amp;lt;Gorgonzola&gt; Designing a whole new theme is a big undertaking &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:10:09) &amp;lt;LordBrawl&gt; And with something so visual, we may need images. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:10:33) &amp;lt;Gorgonzola&gt; Much more so than a regular quest, where a really good writeup can be made in a few hours
+
+&lt;p&gt;(2007-08-18 14:10:35) &amp;lt;LordBrawl&gt; Maybe everyone who participates should get into &quot;users with image&quot; so they can post a screen shot on their h/n? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:10:49) &amp;lt;Gorgonzola&gt; I like that&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:10:53) &amp;lt;XWiz&gt; Homenode images don't really work reliably enough for that, do they? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:10:55) &amp;lt;dann&gt; that would make a good bit of sense, yes&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:10:57) &amp;lt;Dimview&gt; Good one. LB&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:10:58) &amp;lt;LordBrawl&gt; And we could have a master list with a &quot;new and cool&quot;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:11:01) &amp;lt;cletus&gt; screen shots, yes&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:11:16) &amp;lt;eien_meru&gt; XWiz: At one time [Excalibre] was using his homenode image in such a manner. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:11:22) &amp;lt;dann&gt; this is true - you typically have to resubmit them four to ten times to get them to stick on every server&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:11:27) &amp;lt;spiregrain&gt; maybe we should put some screen grabs of the new themes onto the quest announcement. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:11:49) &amp;lt;LordBrawl&gt; Yes, something great and maybe somethin' awful&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:11:51) &amp;lt;spiregrain&gt; dann - can that be fixed? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:11:55) &amp;lt;cletus&gt; a consolidated list of contenders + images&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:11:58) &amp;lt;LordBrawl&gt; &quot;this could be the theme unless YOU help us&quot;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:12:07) &amp;lt;eien_meru&gt; heh&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:12:21) &amp;lt;anthropod2&gt; Maybe I'm actually in now? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:12:25) &amp;lt;AndrewAguecheek&gt; hah, do we need someone to design a very nasty theme then? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:12:27) &amp;lt;anthropod2&gt; I am! I can speak. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:12:28) &amp;lt;dann&gt; spire: indeed it can.  the quest node is a doc, so it's not as HTML-filtered as some of the rest of our nodetypes&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:12:28) &amp;lt;Two_Sheds&gt; I think the site's structure has solidified. We're happy to add ids and classes, but it's definitely style-able now, and I don't think anything done now will break later. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:12:35) &amp;lt;LordBrawl&gt; I got my latest user image to stabilize by just reloading and checking until all the servers synch'd up&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:12:36) &amp;lt;Wiccanpiper&gt; Hi Anthro, you are indeed!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:12:47) &amp;lt;anthropod2&gt; whew&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:12:50) &amp;lt;cletus&gt; hi anthro&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:12:58) &amp;lt;spiregrain&gt; the themes are here: [http://www.everything2.com/index.pl? node_id=1854411&amp;lastnode_id=1901628]&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:13:00) &amp;lt;anthropod2&gt; This is hard for the old folks. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:13:16) &amp;lt;spiregrain&gt; anthropod - what are you using? Plus.com? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:13:33) &amp;lt;anthropod2&gt; I'm on slashnet now. &lt;/p&gt; 
+
+&lt;p&gt;(2007-08-18 14:13:44) &amp;lt;spiregrain&gt; might actually work then&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:14:09) &amp;lt;Two_Sheds&gt; I've been trying to create a list of contenders, but the only person who sent me his entries still needs to work on them a bit. There's one theme so far that I think is really good, and that user hasn't submitted. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:14:12) &amp;lt;LordBrawl&gt; DO we want to attract designers who aren't e2 users? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:14:13) &amp;lt;spiregrain&gt; which usergroups are likely to have CSS fiends in them? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:14:13) &amp;lt;Two_Sheds&gt; I'll ask him to, though. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:14:22) &amp;lt;XWiz&gt; Which theme? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:14:27) &amp;lt;LordBrawl&gt; Or do we want it to come from within? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:15:07) &amp;lt;dann&gt; LordBrawl: I think the plan is to offer the reward predominantly to the userbase. If we want outside designers, we could probably get them, though &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:15:10) &amp;lt;AndrewAguecheek&gt; LB does it matter if it's not from within? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:15:42) &amp;lt;spiregrain&gt; someone from without, who wanted to do any sort of testing would have to join up anyway&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:15:42) &amp;lt;dann&gt; I know we initially discussed having [CmdrTaco|Malda]'s wife work on the design, as well as a few other design houses&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:15:45) &amp;lt;Gorgonzola&gt; It's not as if it takes more than 5 minutes to create an E2 user account. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:16:01) &amp;lt;AndrewAguecheek&gt; - if the user base wants a homegrown design they'd vote for it on that basis wouldn't they&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:16:04) &amp;lt;cletus&gt; i think anyone who made a proper skin for e2 would be welcomed as a member of the community pretty quick&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:16:10) &amp;lt;dann&gt; I'd certainly rather focus on internal submissions, but wouldn't want to rule external ones out entirely -- so long as we can pull them into the fold, so to speak&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:16:17) &amp;lt;LordBrawl&gt; Just that if we want to promote it in design communities outside e2, that's a horse of a different colo(u)r&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:16:57) &amp;lt;DEB&gt; It perhaps only matters to the extent that users understand what is required and probably have a firmer grasp of that. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:17:09) &amp;lt;LordBrawl&gt; Can all users see and use [The Catwalk]? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:17:12) &amp;lt;dann&gt; this is also true - if we want design communities to participate, I think we'll have to have much more rigid rules than &quot;make it look good - be experimental, and have fun!&quot;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:17:15) &amp;lt;eien_meru&gt; LB: yes&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:17:19) &amp;lt;Gorgonzola&gt; No idea&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:17:21) &amp;lt;Two_Sheds_2&gt; Yes, everyone can use [The Catwalk]. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:17:30) &amp;lt;eien_meru&gt; It doesn't even have a level restriction. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:18:14) &amp;lt;spiregrain&gt; I think people know about the compo, you can't really do more than put it on the front page&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:18:25) &amp;lt;cletus&gt; what kinds of rules would an outside designer have to know? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:18:32) &amp;lt;AndrewAguecheek&gt; Will we really need more rules - what could happen if we didn't? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:18:34) &amp;lt;spiregrain&gt; the trouble is that the people with the skills, time and inclination to compete are fewer and further between&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:18:34) &amp;lt;DEB&gt; If we were to invite outside agencies (for want of a better term), I think that we'd have to have some sort of clear design brief. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:18:36) &amp;lt;Two_Sheds_2&gt; I think providing some examples would help. I'll add my theme as one for starters. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:18:40) &amp;lt;XWiz&gt; It's a least a page down on the front page for me, though - can we get it nearer the top? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:18:44) &amp;lt;LordBrawl&gt; We haven't promoted [The Catwalk] directly though&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:18:59) &amp;lt;Wiccanpiper&gt; I looked at [The Catwalk] and had a bit of fun with it. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:19:05) &amp;lt;spiregrain&gt; people form the outside should be invited to let their imagination run wild&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:19:06) &amp;lt;anthropod2&gt; Yeah I never heard of [The Catwalk] before. It's cool. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:19:17) &amp;lt;Two_Sheds_2&gt; I think it would be tricky for an outsider to know what all the widgets they're styling are supposed to do. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:19:23) &amp;lt;spiregrain&gt; we've all spent the last several years staring at the same old layout&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:19:24) &amp;lt;LordBrawl&gt; I can't even see it with a quick glance at &quot;[Make E2 Pretty]&quot;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:19:35) &amp;lt;AndrewAguecheek&gt; If people from the outside do something wrong, then are we under any mandate to accept their entry? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:19:48) &amp;lt;Two_Sheds_2&gt; We can add a link to [The Catwalk] to the front page announcement. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:19:51) &amp;lt;dann&gt; that's something good to add to the announcement node, then - a link to [The Catwalk]&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:19:51) &amp;lt;spiregrain&gt; outsides will have a fresh perspective&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:20:21) &amp;lt;spiregrain&gt; It'd be great if [The Catwalk] have preview pics&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:20:21) &amp;lt;dann&gt; was [montana] a regular user before putting together our Jukka theme? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:20:30) &amp;lt;spiregrain&gt; it's a bit Mystery Meat at the moment&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:20:36) &amp;lt;dann&gt; Two_Sheds_2: can we re-factor [The Catwalk] to include previews? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:20:37) &amp;lt;eien_meru&gt; It's not like E2 fundamentally changes any of the theory of graphic design. Outsiders would be just fine. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:20:48) &amp;lt;Wiccanpiper&gt; Just as long as outsiders don't feel the need to put a silly face as part of the theme, as so many web sites do!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:21:11) &amp;lt;eien_meru&gt; Wiccanpiper: ooh, we could totally make a web2.0 icon for E2 ... &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:21:15) &amp;lt;Two_Sheds_2&gt; I agree, spiregrain, but I think that it might take a lot of work just to understand what's there. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:21:20) &amp;lt;AndrewAguecheek&gt; WP even if they did, would people vote for it? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:21:20) &amp;lt;Two_Sheds_2&gt; More than $250 worth. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:21:37) &amp;lt;Wiccanpiper&gt; ha, AA, I hope not!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:21:43) &amp;lt;Two_Sheds_2&gt; Maybe, dann. I haven't played with that code. It's by [kthejoker] and [ascorbic]. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:22:06) &amp;lt;dann&gt; two: good to know - I'll brin it up with them, then&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:22:12) &amp;lt;LordBrawl&gt; That would really help, I think&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:22:18) &amp;lt;spiregrain&gt; even if there was a separate previews page, that'd be swell&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:22:21) &amp;lt;LordBrawl&gt; I don't want to click every bloody link&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:22:26) &amp;lt;Wiccanpiper&gt; If we allow an outsider to use their winning theme as part of promoting themselves, that might be worth more than the $250? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:22:33) &amp;lt;spiregrain&gt; most of them are a bit rickety anyway&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:22:34) &amp;lt;LordBrawl&gt; Especially when I do so and 60% are blue and gray!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:22:48) &amp;lt;Two_Sheds_2&gt; When I do web design I spend a lot of time talking to clients about what functions they want different elements to have.  That's the piece I think might make an outsider's work difficult. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:22:52) &amp;lt;eien_meru&gt; &quot;I skinned a site from the 90's into the future&quot; would look nice. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:22:56) &amp;lt;spiregrain&gt; some of them have cool rounded corners and stuff&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:23:13) &amp;lt;AndrewAguecheek&gt; WP that would also promote e2 to a certain extent, which might be a good reason to do that anyway. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:23:20) &amp;lt;cletus&gt; i think what we need is more spinning pentagram gifs&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:23:21) &amp;lt;LordBrawl&gt; (of course I'm blue/green colourblind)&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:23:35) &amp;lt;spiregrain&gt; (spinning pentagram gifs)++&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:23:41) &amp;lt;LordBrawl&gt; IS there one up there now that's really wow! ? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:23:51) &amp;lt;Wiccanpiper&gt; Hey!  I see enough spinning pentagrams as it is &lt;g&gt;
+
+&lt;p&gt;(2007-08-18 14:24:15) &amp;lt;spiregrain&gt; brumlove is probably the most !!!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:24:25) &amp;lt;Gorgonzola&gt; 3:30's going to be my limit, kids&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:24:40) &amp;lt;dann&gt; I've been using kernel blue, per suggestion of TwoSheds. It's not that bad, but doesn't scale well (when I have to apple-plus to increase the font size, that is)&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:24:53) &amp;lt;eien_meru&gt; Kernel Blue is nice. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:25:22) &amp;lt;dann&gt; OK. we've got a few places to improve the theme quest&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:25:40) &amp;lt;spiregrain&gt; brumlove has jukka colours, but diagonal pinstripes, rounded corners . . .  and notelets on the left!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:25:54) &amp;lt;eien_meru&gt; It's also disgusting. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:26:10) &amp;lt;AndrewAguecheek&gt; notelets on the left?  Heresy!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:26:20) &amp;lt;dann&gt; Since Gorgonzola has to leave soon, let's handle number 5 next - an appropriate forum in which to handle user-locking&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:26:31) &amp;lt;dann&gt; Gorgonzola: you want to take this one? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:26:54) =-= spiregrain has changed the topic to &quot;1) Fit and function of IRC for our discussion medium; 2) The theme quest publicity; 3) Terms of service; 4) Timing of and technology for next meeting; ** 5) Forum for issues with users **&quot;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:27:13) &amp;lt;spiregrain&gt; e_m - that too!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:27:45) &amp;lt;cletus&gt; sorry, what's this item about?  borging, banning, suchlike? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:27:47) &amp;lt;LordBrawl&gt; Can we have a problem statement? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:27:56) &amp;lt;Gorgonzola&gt; Well, I'd like to suggest that when we have *real* problems with a particular user&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:28:38) &amp;lt;Gorgonzola&gt; that consequences stay in the Gods group, or ideally with just Blockstackers&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:28:57) &amp;lt;anthropod2&gt; Why? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:29:10) &amp;lt;cletus&gt; what does &quot;consequences&quot; mean? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:29:24) &amp;lt;spiregrain&gt; Gorgo - in a nutshell, just because there is an editors group doesn't mean that editors are the right people to deal? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:29:25) &amp;lt;dann&gt; I think my main issue with keeping it within blockstackers is this:  none of them is involved socially in E2 any longer. None of them, in fact, are here in this meeitng
+
+&lt;p&gt;(2007-08-18 14:29:33) &amp;lt;Two_Sheds&gt; I think it's a connection problem, spiregrain. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:30:08) &amp;lt;dann&gt; (BSI is [Nate], [Hemos], [Kurt], and [CmdrTaco|Malda] -- only one of whom is still involved in the site )&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:30:12) &amp;lt;eien_meru&gt; I think we could reduce the net drama by letting the Gods deal with bannings and such. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:30:14) &amp;lt;spiregrain&gt; If someone said that C-Es job is *not* to handle persistently abusing noders, but it was in the lap of e2 gods, that'd be find by me&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:30:47) &amp;lt;AndrewAguecheek&gt; Whilst that seems like a fair point, Blockstackers may have something of a shadowy cabal feel to it. There should probably some democratic element. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:30:48) &amp;lt;Gorgonzola&gt; Well, we recently had an issue where the protracted C_E discussion of someone's banishment caused some bad side effects. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:30:53) &amp;lt;LordBrawl&gt; CEs should refer problems to Jack, that's what the job is for&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:30:59) &amp;lt;spiregrain&gt; but C-E's would still have opinions about it, but they'd realise that like Renaming Writeups, it was none of their business&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:31:03) &amp;lt;LordBrawl&gt; He can take it forward or handle it as needs be&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:31:15) &amp;lt;anthropod2&gt; the lord is right, I think. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:31:20) &amp;lt;LordBrawl&gt; &quot;It Worked For Me&quot; (tm)&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:31:25) &amp;lt;eien_meru&gt; Agreed. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:31:28) &amp;lt;Gorgonzola&gt; I think spregrain's characterization is right on the mark&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:31:33) &amp;lt;dann&gt; I'm not going to pretend we're not talking about my previous discussions regarding amnesiac - but I will contend that those dealt more with &quot;why should we ban?&quot; than &quot;should we ban him&quot;, at least in retrospect. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:32:09) &amp;lt;Gorgonzola&gt; OK guys that's my 2 kopecks' worth&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:32:22) &amp;lt;DEB&gt; Bye Gorgo!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:32:23) &amp;lt;eien_meru&gt; Bye, mate. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:32:27) &amp;lt;cletus&gt; bye gorg&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:32:30) &amp;lt;Wiccanpiper&gt; One moment, all, and I should've asked earlier - is anyone beside me logging this, in case I get bounced for any reason? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:32:30) &amp;lt;AndrewAguecheek&gt; Bye Gorg&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:32:35) &amp;lt;Dimview&gt; Bye, Gorgo&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:32:36) &amp;lt;Wiccanpiper&gt; bye Gorgo!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:32:37) &amp;lt;spiregrain&gt; I've never had a problem with the idea that e2 belongs to BSI and is run by those BSI empower.  I have certain powers, but that gives me no general rights beyond that&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:32:39) &amp;lt;-- Gorgonzola has left irc.slashnet.org (Quit: Leaving)
+
+&lt;p&gt;(2007-08-18 14:32:41) &amp;lt;eien_meru&gt; Wiccanpiper: I am. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:32:42) &amp;lt;dann&gt; I wouldn't have any issue restricting actual bannings to gods-only.   Discussing the topic of bannings, however, should involve everyone's input on staff. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:33:00) &amp;lt;dann&gt; Wiccanpiper: I'm also logging it&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:33:01) &amp;lt;cletus&gt; i am of two minds about this&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:33:06) &amp;lt;Wiccanpiper&gt; Cool!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:33:21) &amp;lt;LordBrawl&gt; I think that protracted discussion leads to dispute and inaction&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:33:31) &amp;lt;spiregrain&gt; I agree with LB&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:33:33) &amp;lt;eien_meru&gt; I was about to say something similar to what LB said. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:33:35) &amp;lt;LordBrawl&gt; Whereas, when I had to do it and just did it, it almost never caused any ripples&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:33:38) &amp;lt;cletus&gt; on the one hand, i agree it ought to be something the executive staff has some input into&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:33:46) &amp;lt;AndrewAguecheek&gt; Lack of discussion leads to a certain amount of FUD&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:33:57) &amp;lt;eien_meru&gt; And FUD leads to drama. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:34:02) &amp;lt;Wiccanpiper&gt; Speakin' as a former C_E, it's nice for eds to be involved as much as possible in things -- makes the transition to @hood nicer. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:34:07) &amp;lt;cletus&gt; on the other hand, i do kind of like it to be a quiet affair, or at least one that can be done at a stroke&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:34:07) &amp;lt;eien_meru&gt; Especially around the anti-establishment folks. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:34:15) &amp;lt;LordBrawl&gt; Even when I did lock [Amnesiac], after his own private request to me, it caused almost no fuss.  I ed log'd it right after, and it was calm &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:34:40) &amp;lt;Wiccanpiper&gt; LB - protracted debate can be a problem, but dann/Jack can always call a halt to it . . .&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:34:50) &amp;lt;spiregrain&gt; think of all the cool writeups the godmins and C_Es could have written instead of the mighty tracts in [The future of amnesiac]&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:34:55) &amp;lt;DEB&gt; Or it could be given a time limit. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:35:16) &amp;lt;eien_meru&gt; spiregrain: come on, C_Es don't write writeups. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:35:19) * &lt;em&gt;LordBrawl observes that we're still talking, and nothing has happened yet&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:35:54) &amp;lt;spiregrain&gt; the idea we had last time there was an protracted argument was that Jack should read the discussion, but then Just Do It (Where &quot;It&quot; was whatever he alone decided)&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:36:00) &amp;lt;LordBrawl&gt; Though as far as I know the subject himself has gone to ground&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:36:02) &amp;lt;Two_Sheds&gt; I think that the results of swift action might be less bad than we fear. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:36:08) &amp;lt;dann&gt; There are two paths forward, in my mind:&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:36:12) &amp;lt;spiregrain&gt; e_m - well, we bloody well should&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:36:22) &amp;lt;cletus&gt; [apatrix] chided me for my heavy hand on this issue, but i really do think that it should be something that all e2gods can do, and only e2gods can do, and they can sort out the regulatory/disciplinary questions amongst themselves&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:36:23) &amp;lt;spiregrain&gt; e_m - I think that should be a requirement&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:36:36) &amp;lt;eien_meru&gt; spiregrain: I was joking. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:36:45) &amp;lt;AndrewAguecheek&gt; I would be in favour of some quick procedure, but I do think there should be a procedure. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:37:03) &amp;lt;dann&gt; The first involves discussing our third point here, coming up with a consensus on terms of use, and enforcing them when violated in the future&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:37:25) &amp;lt;spiregrain&gt; e_m- yeah, I know, but really, if you haven't contributed a non-log writeup for 90 days you should be out on your ear. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:37:34) &amp;lt;spiregrain&gt; anyway, that's off topic&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:37:37) &amp;lt;cletus&gt; yes, the procedure for doing it, and the conditions for doing it, are two questions&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:37:54) &amp;lt;dann&gt; the second path involves one of the e2gods who had a deal with him taking action against [amnesiac|him] for violating that deal&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:37:58) &amp;lt;dann&gt; both are valid, in my mind&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:38:24) &amp;lt;Wiccanpiper&gt; Well, I stand by what I said: everyone grows up knowing certain (unwritten) rules for behaving, and when those are violated (and we know that when we see it), I think action's called for, TOS or no TOS. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:38:49) &amp;lt;dann&gt; I completely agree with cletus here - all gods should be able to lock.   My only contention is that I'd like to see those rules published somewhere. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:38:56) * &lt;em&gt;Wiccanpiper is exercising his aged status to be grumpy&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:39:10) &amp;lt;Dimview&gt; Wiccan++&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:39:14) &amp;lt;eien_meru&gt; Wiccanpiper: The problem is we get situations like the current one when action is called for only when it targets someone with a name. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:39:19) &amp;lt;AndrewAguecheek&gt; The problem with having written rules is that grey areas develop very quickly&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:39:24) &amp;lt;dann&gt; My &quot;first draft&quot; of the rules I published in the second discussion node: copyright infringement, libel, slander, spamming, hacking, hate speech, and abuse of secondary accounts. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:39:26) &amp;lt;AndrewAguecheek&gt; Some people like to dance on the edge of the cliff. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:39:29) &amp;lt;eien_meru&gt; Without a TOS, it seems arbitrary. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:39:34) &amp;lt;cletus&gt; the kids today, skating their boards on city hall steps. it's an outrage!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:39:39) &amp;lt;dann&gt; Andrew: I agree - it will always evolve into a judgment call. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:39:40) * &lt;em&gt;Wiccanpiper launches into a coughing fit to give the meeting realism&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:39:48) &amp;lt;spiregrain&gt; skateboarding ain't' a crime, dude&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:39:52) &amp;lt;LordBrawl&gt; I don't think it's arbitrary, because we so seldom do it&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:39:56) &amp;lt;cletus&gt; okay, are we segueing to item #3 now? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:40:01) &amp;lt;dann&gt; cletus: I believe so. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:40:04) &amp;lt;eien_meru&gt; spiregrain: Yeah, but putting those damn stickers on your locker is. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:40:17) &amp;lt;LordBrawl&gt; This particular case is difficult because we don't agree amongst 
+ourselves if it's over the line&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:40:28) &amp;lt;spiregrain&gt; LB - that doesn't matter&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:40:35) &amp;lt;spiregrain&gt; Jack can act as he sees fit&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:40:55) &amp;lt;anthropod2&gt; I don't understand what abuse of secondary accounts is, exactly. &lt;/p&gt; 
+
+&lt;p&gt;(2007-08-18 14:40:58) &amp;lt;spiregrain&gt; he's read the Discussion, and it's for him to act or not&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:41:06) &amp;lt;LordBrawl&gt; I still claim that my &quot;[Editor Log: June 2006]&quot; on &quot;locking accounts&quot; is sufficient
+
+&lt;p&gt;(2007-08-18 14:41:13) &amp;lt;cletus&gt; spiregrain, shall we revise the topic, then? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:41:17) &amp;lt;dann&gt; LB: either (a) that doesn't matter because you (plural, Jack included) had a deal with him which was broken, or (b) it's undefined, as we haven't yet drawn a line&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:41:27) &amp;lt;spiregrain&gt;&quot;1) Fit and function of IRC for our discussion medium; 2) The theme quest publicity; **3) Terms of service;** 4) Timing of and technology for next meeting; 5) Forum for issues with users&quot;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:41:44) &amp;lt;spiregrain&gt; the deal with him was/is the line&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:41:56) =-= spiregrain has changed the topic to &quot;1) Fit and function of IRC for our discussion medium; 2) The theme quest publicity; **3) Terms of service;** 4) Timing of and technology for next meeting; 5) Forum for issues with users&quot;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:42:16) &amp;lt;cletus&gt; as for TOS&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:42:20) &amp;lt;cletus&gt; i am a firm believer in common law&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:42:35) &amp;lt;dann&gt; anthro: abuse of second accounts hasn't happened in a long time -- it typically involves one person leveling a few accounts to get votes, so each account can upvote / ching the other accounts of the same person.  I don't think I've seen that here in four or five years&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:42:53) *&lt;em&gt; LordBrawl agrees&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:42:55) &amp;lt;AndrewAguecheek&gt; Part of the issue with giving the power to lock to all gods is that some will, rightly or wrongly, be more heavy-handed than others and the system won't average it out. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:42:55) &amp;lt;cletus&gt; if you know the precedent, then you know the law&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:43:10) &amp;lt;anthropod2&gt; Right okay, if that's all it is, fine, I agree. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:43:27) &amp;lt;Wiccanpiper&gt; I agree with AA.  If I thought someone needed locking, I'd pass it on to Jack or dann. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:43:33) &amp;lt;LordBrawl&gt; AA: yes, but so long as Jack/dann etc. can see these actions in Security Monitor it can be reviewed&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:43:48) &amp;lt;dann&gt; LB - spot-on. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:43:59) &amp;lt;cletus&gt; yep&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:44:02) &amp;lt;AndrewAguecheek&gt; LB, by then the damage may already be done though. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:44:05) &amp;lt;LordBrawl&gt; Seldom do we need a fast lock.  Forbidance suffices to control most damage&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:44:15) &amp;lt;AndrewAguecheek&gt; Good point&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:44:17) &amp;lt;cletus&gt; in the past when there was a problem with heavy-handedness (that, ahem, wasn't ryan), we dealt with it amongst ourselves quietly&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:44:34) &amp;lt;LordBrawl&gt; And if someone's really over the top abusive, there's room bounce&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:44:45) &amp;lt;LordBrawl&gt; or the borg clinic&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:44:50) &amp;lt;AndrewAguecheek&gt; cletus, it caused resentment amongst the userbase - quiet resolution wasn't appreciated at the time by a lot of people. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:45:11) &amp;lt;LordBrawl&gt; In the old days I used to borg a*holes from Valhalla, so the EDB 
+message wasn't seen. Really removed the drama&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:45:13) &amp;lt;cletus&gt; i understand. sometimes doing things that allow resentment is the lesser of two evils&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:45:37) &amp;lt;spiregrain&gt; I am in favour of precedent in the actual real laws of the land - but e2 ought to have something like &quot;Don't do hate speech, strong personal abuse, have secondary accounts . . .  - and if you do, you'll be dealt with at our discretion, including account locks and banns&quot;.   Then our discretion is informed by precedent. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:45:38) &amp;lt;dann&gt; I don't remember who recommended it (it's probably in one of the two discussion-sagas), but I think it would be a good idea to maintain a public roster of who's been locked, and why&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:45:40) &amp;lt;AndrewAguecheek&gt; possibly, but it can have longterm effects. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:45:58) &amp;lt;cletus&gt; i do believe in making e2gods accountable for borging and banning, to the other e2gods and to jack &amp; dann&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:46:13) &amp;lt;LordBrawl&gt; I reported any account locks in my Ed logs, with reasoning&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:46:22) &amp;lt;cletus&gt; AA, so can the alternatives&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:46:32) &amp;lt;LordBrawl&gt; Exception: New Level 1 commercials, etc.  Since nobody should care&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:46:34) &amp;lt;Wiccanpiper&gt; Resentment?  At some point people *have* to understand being an a**hole has consequences.  So often resentment has meant &quot;you whacked my little friend&quot; and I'm pissed. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:47:10) &amp;lt;AndrewAguecheek&gt; Wiccan, yes, but people don't always agree as to what exactly is being an a**hole - hence the need for TOS though I suppose. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:47:11) &amp;lt;cletus&gt; the only one who ever confronted me with their resentment did so in a way inappropriate manner, that suggested he would have been impossible to please anyway&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:47:15) &amp;lt;dann&gt; LB - certainly.  I think there would be a point to having a centralized blotter, though.  This way the already documented precedent is accessible in one place&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:47:24) &amp;lt;Wiccanpiper&gt; AA: true that. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:47:27) &amp;lt;AndrewAguecheek&gt; cletus, a lot of people left the site quietly instead&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:47:37) &amp;lt;cletus&gt; i remember, i was there&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:47:38) &amp;lt;XWiz&gt; I must say, next time the problem arises why can't people say 'Well, [Amnesiac] gets away with it . . . '; we need consistency above all. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:47:58) &amp;lt;AndrewAguecheek&gt; LB that sounds like a good plan. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:48:26) &amp;lt;spiregrain&gt; the trouble with ed logs is that all the good content in them is hard to search&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:48:40) &amp;lt;spiregrain&gt; for&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:48:48) &amp;lt;Wiccanpiper&gt; Y'all, [Amnesiac] was sort of an extreme case -- his antics aren't leading us to a harder line than we need, are they? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:48:51) &amp;lt;LordBrawl&gt; &quot;Security Monitor&quot; shows locks and unlocks already&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:49:11) &amp;lt;eien_meru&gt; Wiccanpiper: They probably are.  I still agree with Jack's observation in the second discussion. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:49:12) &amp;lt;LordBrawl&gt; Someone used to index the ed logs . . .  &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:49:14) &amp;lt;cletus&gt; a public list could have who was banned and why, but perhaps not by whom; that is something that should be known to the e2gods, and that they ought all be prepared to explain and defend&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:49:29) &amp;lt;cletus&gt; ditto for a borg blotter, maybe&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:49:31) &amp;lt;eien_meru&gt; LordBrawl: It wouldn't be terribly difficult to reindex them. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:49:31) &amp;lt;XWiz&gt; He's also a kind of benchmark. I can say anything, up to and including the recent controversial phrase. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:49:39) &amp;lt;Wiccanpiper&gt; cletus: yes, that'd help with the transparency thing!
+
+&lt;p&gt;(2007-08-18 14:49:58) --&gt;Heisenberg_e2 (Heisenberg@cloak-A4C79228.dip.t-dialin.net) has joined #everything2
+
+&lt;p&gt;(2007-08-18 14:50:00) &amp;lt;dann&gt; cletus: indeed. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:50:10) &amp;lt;Heisenberg_e2&gt; evening. sorry to be late. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:50:10) &amp;lt;AndrewAguecheek&gt; a public list with all e2gods taking cabinet responsibility would work I think. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:50:13) &amp;lt;DEB&gt; Welcome, Heisy. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:50:14) &amp;lt;spiregrain&gt; hihi heisenberg!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:50:19) &amp;lt;AndrewAguecheek&gt; Hi Heis&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:50:25) *&lt;em&gt;Dimview waves to Heisy.&lt;/em&gt; &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:50:26) &amp;lt;LordBrawl&gt; &quot;[Everything Editor Logs]&quot; by gnarl&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:50:28) &amp;lt;dann&gt; howdy, Heisenberg&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:50:45) &amp;lt;Heisenberg_e2&gt; I'm at my inlaws in Germany and only now managed to sneak to use their horrible windows machine. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:51:00) &amp;lt;Heisenberg_e2&gt; DIALUP!!!!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:51:03) &amp;lt;Wiccanpiper&gt; Heisy!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:51:27) &amp;lt;cletus&gt; okay, so if we have a ban registry and a borg blotter, then users can know the precedents. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:51:35) &amp;lt;dann&gt; So, is concensus that our TOS will be represented by the precedent expressed in this lock-log? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:51:53) &amp;lt;cletus&gt; do we need to cover anything else with an explicit TOS? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:52:05) &amp;lt;LordBrawl&gt; Again I plug my ed log, perhaps rewritten&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:52:07) &amp;lt;AndrewAguecheek&gt; cletus, and anyone who feels they were treated unfairly will at least be able to see the reasons given, and offer a defence. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:52:21) &amp;lt;LordBrawl&gt; if not for that, than as a guideline for staff&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:52:24) &amp;lt;cletus&gt; yes, i'd support that, AA&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:52:59) &amp;lt;dann&gt; That sounds good to me. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:53:04) &amp;lt;cletus&gt; if anything should go in a proper TOS, it's copyright rules&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:53:06) &amp;lt;AndrewAguecheek&gt; hm.   A basic TOS might still be a good idea, he precedents will serve to interpret it. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:53:15) &amp;lt;spiregrain&gt; cletus -explicit TOS is just that list above &quot;No spam, persistent personal abuse, secondary accounts, plagarism . . . &quot; etc, keep it simple&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:53:20) &amp;lt;AndrewAguecheek&gt; Yes. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:53:26) &amp;lt;cletus&gt; yes yes&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:53:31) &amp;lt;eien_meru&gt; Yes. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:53:38) &amp;lt;spiregrain&gt; AA - are you a lawyer by any chance? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:53:45) &amp;lt;Heisenberg_e2&gt; sounds sensible. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:53:47) &amp;lt;AndrewAguecheek&gt; that's AA LLB to you ;-)&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:53:51) &amp;lt;DEB&gt; That's all that's needed. Essentially an expression of what Wiccanpiper refers to as basic social norms. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:54:02) &amp;lt;Dimview&gt; Seems sensible. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:54:12) &amp;lt;dann&gt; I can integrate my simple list into the FAQ (with some examples) as the TOS, if we think that can work sustainably. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:54:31) &amp;lt;Wiccanpiper&gt; Would someone quickly recap for Heisy's benefit? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:54:56) &amp;lt;dann&gt; That's all I have on the agenda for this meeting.   Does anyone else have a topic we should cover as a group? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:55:03) &amp;lt;spiregrain&gt; &quot;copyright infringement, libel, slander, spamming, hacking, hate speech, and abuse of secondary accounts.&quot; - but I'd say it needs qualifiers like &quot;persistent&quot;, &quot;knowing&quot;, &quot;serious&quot; or something&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:55:05) &amp;lt;cletus&gt; wow, we're almost done with the agenda. i had doubts, but this is a really fruitful way of doing this. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:55:18) &amp;lt;Wiccanpiper&gt; YES, please, #4&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:55:23) &amp;lt;LordBrawl&gt; when and how to meet again&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:55:27) &amp;lt;LordBrawl&gt; oops, jinx&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:55:37) &amp;lt;Wiccanpiper&gt; Trying to schedule this was, well, trying &lt;g&gt;
+
+&lt;p&gt;(2007-08-18 14:55:37) &amp;lt;dann&gt; Ahh yes. I thought we rolled #4 into #1. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:55:41) =-= spiregrain has changed the topic to &quot;1) Fit and function of IRC for our discussion medium; 2) The theme quest publicity; 3) Terms of service;** 4) Timing of and technology for next meeting;** 5) Forum for issues with users&quot;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:56:00) &amp;lt;Wiccanpiper&gt; I've had to promise locally-grown bacon to Jack!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:56:04) &amp;lt;dann&gt; I think we should keep these as-needed. I'm not a fan of meetings without plans and agendas&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:56:14) *&lt;em&gt; LordBrawl concurs&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:56:17) *&lt;em&gt;cletus concurs&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:56:18) &amp;lt;DEB&gt; I think that for 12-15 of this, the medium is acceptable.  For more, it could perhaps prove tricky.  Assuming of course that we have more attendees. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:56:29) &amp;lt;Wiccanpiper&gt; agreed, dann, when we accumulate say, three or more agenda items? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:56:33) &amp;lt;dann&gt; in fact, with the amount of productivity we've had here so far, I'd be surprised if we needed them more than once every month or three&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:56:34) &amp;lt;spiregrain&gt; two thoughts on that - this started at 8pm for me which is great.   so I don't mind being slightly inconvenienced next time &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:57:01) &amp;lt;XWiz&gt; I'll happily try to fit in with everyone else. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:57:03) &amp;lt;dann&gt; This time works fine for me - just about any time on weekends will. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:57:07) &amp;lt;Wiccanpiper&gt; I'll volunteer to keep organizing them . . .  &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:57:12) &amp;lt;cletus&gt; my schedule's pretty much wide open. ah grad student life. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:57:17) &amp;lt;Heisenberg_e2&gt; Ahem. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:57:18) &amp;lt;Dimview&gt; I will make time for meetings. No problem. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:57:21) &amp;lt;Wiccanpiper&gt; and next one, I'll give more lead time and announcements
+
+&lt;p&gt;(2007-08-18 14:57:22) &amp;lt;spiregrain&gt; it is way better than CE Discussions for certain things
+
+&lt;p&gt;(2007-08-18 14:57:22) &amp;lt;dann&gt; Wiccanpiper: that helps immensely, please to keep organizing them
+
+
+&lt;p&gt;(2007-08-18 14:57:59) &amp;lt;AndrewAguecheek&gt; Can we have someone to submit agenda items to?  If enough people raise an issue, then it'd be an indication a meeting is worthwhile. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:58:00) &amp;lt;spiregrain&gt; ACTIONS:  spiregrain and wiccanpiper to writeup something about the best ways to get into IRC for eds and godmins &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:58:17) &amp;lt;Heisenberg_e2&gt; this would mean 7 am on the weekend for me, but I can always use my macbook in bed. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:58:29) &amp;lt;dann&gt; Andrew: yes - please send agenda items to me&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:58:39) &amp;lt;Two_Sheds&gt; I think having open community fora as similar discussion is still a good idea. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:58:44) &amp;lt;spiregrain&gt; ACTIONS: all to send agenda items to dann&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:59:01) &amp;lt;Heisenberg_e2&gt; could somebody send me the log of todays discussions? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:59:11) &amp;lt;Wiccanpiper&gt; One last thing: shall I publish this log as a superdoc? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:59:11) &amp;lt;Two_Sheds&gt; But we might need a separate channel for asking to speak next if there are a lot of people. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:59:20) &amp;lt;Heisenberg_e2&gt; ah. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:59:24) &amp;lt;dann&gt; ACTIONS: Dann to put together borg blotter and lock ledger, forum for feedback, TOS in FAQ&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:59:39) &amp;lt;AndrewAguecheek&gt; Wiccan, yes, but gods/editors only? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:59:41) &amp;lt;dann&gt; Wiccanpiper: publish it as an oppressor_superdoc (eds/gods only)&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:59:51) &amp;lt;Wiccanpiper&gt; I AM TEH OPPRESSOR&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 14:59:58) &amp;lt;eien_meru&gt; Oh dear. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 15:00:02) &amp;lt;dann&gt; *smiles*&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 15:00:04) *&lt;em&gt; DEB cowers&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 15:00:10) *&lt;em&gt; Dimview bows. &lt;/em&gt; &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 15:00:22) &amp;lt;Wiccanpiper&gt; I'll put the ACTIONS as a separate part at the end of the log, for ease of viewing&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 15:00:29) &amp;lt;dann&gt; Thanks, Joe. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 15:00:44) *&lt;em&gt;  Wiccanpiper oppresses eien_meru&lt;/em&gt; &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 15:01:01) &amp;lt;eien_meru&gt; On that note, I need to go meet my parental units for lunch. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 15:01:02) &amp;lt;spiregrain&gt; right, are we done with the chat? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 15:01:04) &amp;lt;dann&gt; Thank you, everyone for showing up today. This meeting has exceeded my expectations. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 15:01:07) &amp;lt;eien_meru&gt; Thanks for a productive meeting, everyone. &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 15:01:08) &amp;lt;dann&gt; I think we're done, yes&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 15:01:10) &amp;lt;spiregrain&gt; where's the after party? &lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 15:01:14) &amp;lt;Wiccanpiper&gt; And thanks to everyone who helped set it up!&lt;/p&gt;
+
+&lt;p&gt;(2007-08-18 15:01:16) &amp;lt;cletus&gt; thanks a lot, everyone!&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;p&gt;ACTION ITEMS&lt;/p&gt;&lt;big&gt;
+&lt;ul&gt;
+&lt;li&gt;[spiregrain] and [wiccanpiper] to writeup something about the best ways to get into IRC for eds and godmins.&lt;/li&gt;
+&lt;li&gt;Anyone having agenda items for the next meeting should send them to [dann]. &lt;/li&gt;
+&lt;li&gt;[dann] to put together a borg blotter and lock ledger, a forum for feedback, and a Terms Of Service in the FAQ. &lt;/li&gt;&lt;/ul&gt;&lt;/big&gt;
+
+</doctext>
+  <node_id>1904697</node_id>
+  <type_nodetype>1144104</type_nodetype>
+  <title>Chat Transcript: E2 Online Admin Meeting 18Aug07</title>
+</node>

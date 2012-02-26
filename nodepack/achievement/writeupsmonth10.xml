@@ -1,6 +1,7 @@
 <node>
   <display>&lt;strong&gt;Printing Press&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Posted 10 new writeups in one month&lt;/i&gt;</display>
   <achievement_type>writeup</achievement_type>
+  <subtype></subtype>
   <node_id>1920608</node_id>
   <code>my $maxWusInAMonth = $DB-&gt;sqlSelect(
 	&quot;nwus&quot;,

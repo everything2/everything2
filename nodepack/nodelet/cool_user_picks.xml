@@ -4,6 +4,7 @@
   <nlgoto>0</nlgoto>
   <node_id>1876900</node_id>
   <type_nodetype>9</type_nodetype>
+  <updateinterval>30</updateinterval>
   <nlcode>[%
 
 my $str;

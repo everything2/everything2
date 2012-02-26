@@ -1,0 +1,11 @@
+<node>
+  <display>&lt;strong&gt;Ching Ching&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Received 50 Cools&lt;/i&gt;</display>
+  <achievement_type>cool</achievement_type>
+  <subtype>user</subtype>
+  <node_id>1918124</node_id>
+  <code>my $coolCount = htmlcode('coolcount', $user_id);
+return 1 if $coolCount &gt;=50;
+return 0;</code>
+  <type_nodetype>1917847</type_nodetype>
+  <title>cools050</title>
+</node>

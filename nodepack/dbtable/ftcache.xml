@@ -15,7 +15,7 @@ CREATE TABLE `ftcache` (
   `ftache_when` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `ftcache_id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`ftcache_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=177810 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

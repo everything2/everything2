@@ -16,7 +16,7 @@ CREATE TABLE `dbstats` (
   `questions` int(11) NOT NULL DEFAULT '0',
   `slow` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`dbstats_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=88111 DEFAULT CHARSET=latin1 PACK_KEYS=1;
+) ENGINE=InnoDB AUTO_INCREMENT=87704 DEFAULT CHARSET=latin1 PACK_KEYS=1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

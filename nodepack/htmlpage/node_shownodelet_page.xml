@@ -30,6 +30,7 @@ $NODE = $GNODE = getNodeById($HTMLVARS{not_found}) unless $$NODE{type}{title} ne
   <node_id>2021826</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>shownodelet</displaytype>
+  <ownedby_theme>1854183</ownedby_theme>
   <title>node shownodelet page</title>
   <mimetype></mimetype>
 </node>

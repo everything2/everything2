@@ -1,0 +1,34 @@
+<node>
+  <doctext>[%
+
+my $selectQueryLikeIt = &lt;&lt;SQLEND;
+SELECT user_agent, SUM(hits) 'total_likes'
+  FROM likeitlog
+  GROUP BY user_agent
+  ORDER BY total_likes DESC
+SQLEND
+
+my $hitters =
+  $DB-&gt;getDatabaseHandle()-&gt;selectall_arrayref(
+    $selectQueryLikeIt
+    , { Slice =&gt; {} }
+  );
+
+my $str = ''
+  . &quot;&lt;h4&gt;Total hits for all user agent likes&lt;/h4&gt;&quot;
+  . &quot;&lt;dl&gt;&quot;
+  . (
+    join &quot;\n&quot;
+      =&gt; map {
+        &quot;&lt;dt&gt;$_-&gt;{user_agent}&lt;/dt&gt;&quot;
+        . &quot;&lt;dd&gt;$_-&gt;{total_likes}&lt;/dd&gt;&quot;
+      } @$hitters
+  )
+  . &quot;&lt;/dl&gt;&quot;
+  ;
+
+%]</doctext>
+  <node_id>2015861</node_id>
+  <type_nodetype>1144104</type_nodetype>
+  <title>likeit logger</title>
+</node>

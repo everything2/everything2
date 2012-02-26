@@ -1,0 +1,114 @@
+<node>
+  <doctext>&lt;p&gt;This is a list of writeups which have an opening to an HTML comment (&amp;lt;--) without a closing (--&amp;gt;).  As such, they may have some content hidden.  Up until about 6 months ago, this wouldn't have hidden content most times because our HTML tag balancing code worked differently. -[oldminer[user]|om], 2010 April 03
+&lt;/p&gt;
+
+&lt;h3&gt;Run on 2010 Apr 04:&lt;/h3&gt;
+
+[%
+
+my @badCommentedIds =
+ (
+  860767,
+  1223206
+ );
+
+my $listItems = 
+  '&lt;li&gt;'
+  . join '&lt;li&gt;'
+      , map { linkNode(getNodeById($_)); } @badCommentedIds
+  ;
+
+return '&lt;ol&gt;'
+ . $listItems
+ . '&lt;/ol&gt;'
+ ;
+
+%]
+
+&lt;h3&gt;Original Run on 2010 Apr 02:&lt;/h3&gt;
+
+[%
+
+my @badCommentedIds =
+ (
+  135001,
+  141913,
+  247885,
+  293733,
+  618542,
+  623251,
+  644271,
+  671955,
+  712527,
+  744345,
+  745329,
+  758053,
+  860767,
+  928099,
+  928114,
+  928120,
+  928133,
+  928155,
+  928171,
+  928195,
+  928202,
+  928257,
+  928280,
+  928319,
+  928328,
+  928376,
+  928453,
+  928476,
+  928487,
+  928500,
+  928656,
+  928663,
+  928673,
+  1061592,
+  1096833,
+  1115576,
+  1149808,
+  1171785,
+  1182745,
+  1223206,
+  1279682,
+  1299190,
+  1317983,
+  1326295,
+  1351449,
+  1391500,
+  1440348,
+  1449797,
+  1484146,
+  1492060,
+  1499927,
+  1501369,
+  1501841,
+  1504308,
+  1508750,
+  1516860,
+  1522293,
+  1524639,
+  1533422,
+  1533492,
+  1543149,
+  1676476,
+  1709027,
+ );
+
+my $listItems = 
+  '&lt;li&gt;'
+  . join '&lt;li&gt;'
+      , map { linkNode(getNodeById($_)); } @badCommentedIds
+  ;
+
+return '&lt;ol&gt;'
+ . $listItems
+ . '&lt;/ol&gt;'
+ ;
+
+%]</doctext>
+  <node_id>2013679</node_id>
+  <type_nodetype>1144104</type_nodetype>
+  <title>badly commented writeups</title>
+</node>

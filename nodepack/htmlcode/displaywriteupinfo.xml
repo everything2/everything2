@@ -301,7 +301,8 @@ local *info_hits = sub {
 	if ($dateval &gt; 733253 ) { $hitStr='publication'; }
 	else { $hitStr='23rd October 2008'; }
         #my $hitshits=$DB-&gt;sqlSelect(&quot;hits&quot;,&quot;node&quot;,&quot;node_id=$wuID&quot;); # $$WRITEUP{hits} ?
-	return qq'&lt;span title=&quot;hits since $hitStr according to the node table&quot;&gt;Hits: $$WRITEUP{hits}&lt;/span&gt;';
+	#return qq'&lt;span title=&quot;hits since $hitStr according to the node table&quot;&gt;Hits: $$WRITEUP{hits}&lt;/span&gt;';
+        return &quot;&quot;
 };
 
 

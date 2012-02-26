@@ -1,5 +1,4 @@
 <node>
-  <hourLimit>120</hourLimit>
   <node_id>1961735</node_id>
   <code>my $str;
 if ($$args{weight} &gt; 0) {

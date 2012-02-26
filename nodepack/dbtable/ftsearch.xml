@@ -18,7 +18,7 @@ CREATE TABLE `ftsearch` (
   PRIMARY KEY (`ftsearch_id`),
   KEY `ftsearch_dictid` (`ftsearch_dictid`),
   KEY `ftsearch_writeup` (`ftsearch_writeup`)
-) ENGINE=InnoDB AUTO_INCREMENT=12692469 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

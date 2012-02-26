@@ -167,12 +167,12 @@ font-style: italic;
 &lt;/style&gt;
 
 &lt;!--
-Yeah, I know tables aren't for layout. Shut up. This is in beta.
+Yeah, I know tables aren't for layout. Shut up. This is a proof of concept.
 --&gt;
 &lt;table id=&quot;MyChatterlight&quot;&gt;
    &lt;tr&gt;
       &lt;td colspan=&quot;2&quot; id=&quot;Header&quot; style=&quot;font-size:80%&quot;&gt;
-         This is a working beta. If you see any bugs or have any suggestions, please let [in10se] know. The images you see next to each noder are [http://gravatar.com|Gravatars]. You can edit your image by signing up for one (with the same email you use on E2).
+         This is a working beta. If you see any bugs or have any suggestions, please let [in10se] know. Gravatars are disabled due to request by 'The Management'.
       &lt;/td&gt;
    &lt;/tr&gt;
    &lt;tr&gt;

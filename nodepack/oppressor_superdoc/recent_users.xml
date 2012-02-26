@@ -1,0 +1,67 @@
+<node>
+  <doctext>[%
+use Digest::MD5('md5_hex');
+
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+my $rows;
+my $str;
+my $dbrow;
+my $queryText;
+my $U;
+my $flags;
+my $ctr = 0;
+my $uid;
+
+my $powStructLink = '&lt;a href='.urlGen({'node'=&gt;'E2 staff', 'nodetype'=&gt;'superdoc'});
+my $linkRoots = $powStructLink . ' title=&quot;e2gods&quot;&gt;@&lt;/a&gt;';
+my $linkCEs = $powStructLink . ' title=&quot;Content Editors&quot;&gt;$&lt;/a&gt;';
+my $linkChanops = $powStructLink.' title=&quot;chanops&quot;&gt;+&lt;/a&gt;';
+my $untrueGods = getVars(getNode(&quot;Untrue Gods&quot;,&quot;setting&quot;));
+
+$queryText = &quot;SELECT user_id FROM user,node WHERE user.user_id=node.node_id AND lasttime&gt;=ADDDATE(NOW(), INTERVAL -1 DAY) ORDER BY node.title&quot;;
+$rows = $dbh-&gt;prepare($queryText)
+  or return $rows-&gt;errstr;
+$rows-&gt;execute()
+  or return $rows-&gt;errstr;
+$str .= '&lt;p&gt;The following is a list of users who have logged in over the last 24 hours.&lt;/p&gt;
+         &lt;table border=&quot;1&quot;&gt;
+         &lt;tr&gt;
+         &lt;th&gt;#&lt;/th&gt;
+         &lt;th&gt;Name&lt;/th&gt;
+         &lt;th&gt;Title&lt;/th&gt;
+         &lt;/tr&gt;';
+while($dbrow = $rows-&gt;fetchrow_arrayref)
+{
+   $ctr++;
+   $uid = $$dbrow[0];
+   $U = getNodeById($uid);
+
+   my $notReallyRoot = exists $$untrueGods{$uid};
+   my $thisChanop = htmlcode('isinUsergroup', $uid, 'chanops' , 'recurse');
+   
+   $flags = '';
+   if (exists $HTMLVARS{'group_gods'}{$$U{user_id}} &amp;&amp; !$notReallyRoot) {
+      $flags .= $linkRoots;
+   }
+   if (exists $HTMLVARS{'group_content editors'}{$uid}) {
+      $flags .= $linkCEs;
+   }
+   $flags .= $linkChanops if $thisChanop;
+   
+# gravatar column (if approved)            &lt;td&gt;&lt;img src=&quot;http://gravatar.com/avatar/'.md5_hex($$U{email}).'?d=identicon&amp;s=32&quot; alt=&quot;.&quot; /&gt;&lt;/td&gt;
+# lastseen time (if approved)            &lt;td style=&quot;text-align:center&quot;&gt;'.$$U{lasttime}.'&lt;/td&gt;
+   $str .= '&lt;tr&gt;
+            &lt;td style=&quot;text-align:center&quot;&gt;'.$ctr.'&lt;/td&gt;
+            &lt;td&gt;'.linkNode($U).'&lt;/td&gt;
+            &lt;td style=&quot;text-align:center&quot;&gt;'.$flags.'&lt;/td&gt;
+            &lt;/tr&gt;';
+}
+$str .= '&lt;/table&gt;';
+
+return $str;
+%]</doctext>
+  <node_id>2045175</node_id>
+  <type_nodetype>1144104</type_nodetype>
+  <title>Recent Users</title>
+</node>

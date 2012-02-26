@@ -18,7 +18,7 @@ CREATE TABLE `likeitlog` (
   UNIQUE KEY `user_agent__liked_node_id` (`user_agent`,`liked_node_id`),
   KEY `user_agent` (`user_agent`),
   KEY `liked_node_id` (`liked_node_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=57011 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=57715 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

@@ -1,0 +1,205 @@
+<node>
+  <doctext>[%
+my $isGod = htmlcode('isGod', $USER);
+my $isEd = htmlcode('isEditor', $USER);
+my $isOp = htmlcode('isinUsergroup', $USER, 'chanops');
+if($isGod != 1 &amp;&amp; $isEd != 1 &amp;&amp; $isOp != 1)
+{
+   return 'My sandbox, my rules. Go build your sandcastles elsewhere.';
+}
+
+my $str;
+$str = '&lt;style type=&quot;text/css&quot;&gt;td{padding:3px}&lt;/style&gt;
+&lt;p&gt;&lt;b&gt;&lt;big&gt;Just because a user is listed below does not mean it is ush, but it is ush-like... Always be sure before taking action on a new account!&lt;/b&gt;&lt;/big&gt;&lt;/p&gt;
+&lt;p&gt;&lt;small&gt;contact [in10se] with updates (i.e., you find one or more ush accounts that are not listed below)&lt;/small&gt;&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Jump to accounts matched:&lt;/b&gt; &lt;a href=&quot;#byEmail&quot;&gt;by email&lt;/a&gt; | &lt;a href=&quot;#byPassword&quot;&gt;by password&lt;/a&gt; | &lt;a href=&quot;#byBrowser&quot;&gt;by browser&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;By default, this page shows the last 25 matching accounts for each category. &lt;a href=&quot;/node/superdoc/in10se%2527s+sandbox+6?showall=1&quot;&gt;Click here&lt;/a&gt; to view all matching results.&lt;/p&gt;';
+
+my $dbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $dbh;
+my $rows;
+my $dbrow;
+my $queryText;
+my $limit = 100;
+my $recalcRows;
+my $row;
+my $u;
+my $showpw = int($query-&gt;param(&quot;showpw&quot;));
+if ($isGod != 1){$showpw=0;}
+my $showpwMatch = 42;
+my $showAll = int($query-&gt;param(&quot;showall&quot;));
+
+
+
+# By Email
+$queryText = 'SELECT user.user_id FROM user WHERE 
+   email like \'%@imapemail.co.uk\'
+      OR email like \'%@dudeism.co.uk\'
+      OR email like \'%@tempinbox.co.uk\'
+      OR email like \'%@tempinbox.com\'
+      OR email like \'%@woofalump.com\'
+      OR email like \'%@cwazylove.co.uk\'
+      OR email like \'%@cwazylove.com\'
+      OR email like \'%@gateshead.net\'
+      OR email like \'%@dalgetybay.co.uk\'
+      OR email like \'%@gmx.com\'
+      OR email like \'%@gmx.us\'
+      OR email like \'%@oisdghs.com\'
+      OR email like \'%@catholic.org\'
+      OR email like \'%@mailinator.com\'
+      OR email like \'%@yopmail.com\'
+      OR email like \'%@yopmail.com\'
+      OR email like \'%@temporaryemail.net\'
+      OR email like \'%@filzmail.com\'
+      OR email like \'%@spam.la\'
+      OR email like \'%@mytrashmail.com\'
+      OR email like \'%@owlpic.com\'
+      OR email like \'%@spamfree24.%\'
+   ORDER BY user.user_id DESC';
+if ($showAll &lt;= 0)
+{
+   $queryText .= ' LIMIT 25'
+}
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+
+$str .= '&lt;h3 id=&quot;byEmail&quot;&gt;By Email&lt;/h3&gt;
+   &lt;div style=&quot;border:1px solid #ccc;overflow:auto;padding:5px;height: 500px&quot;&gt;
+   &lt;table border=&quot;1&quot; cellspacing=&quot;0&quot;&gt;
+   &lt;tr&gt;
+   &lt;th&gt;User&lt;/th&gt;';
+if (isGod($USER) &amp;&amp; $showpw == $showpwMatch) { $str .= '&lt;th&gt;PW&lt;/th&gt;'; }
+$str .= '&lt;th&gt;Create Time&lt;/th&gt;
+   &lt;th&gt;Email&lt;/th&gt;
+   &lt;th&gt;Lock Status&lt;/th&gt;
+   &lt;th&gt;Links&lt;/th&gt;
+   &lt;/tr&gt;';
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   $u = getNodeById($$row[0]);
+   $str .= '&lt;tr&gt;
+      &lt;td&gt;' . linkNode($u) . '&lt;/td&gt;';
+if (isGod($USER) &amp;&amp; $showpw == $showpwMatch) { $str .= '&lt;td&gt;' . $$u{passwd} . '&lt;/td&gt;'; }
+   $str .=  '&lt;td&gt;' . $$u{createtime} . '&lt;/td&gt;
+      &lt;td&gt;' . $$u{email} . '&lt;/td&gt;
+      &lt;td&gt;';
+   if ($$u{acctlock} &gt; 0) { $str .= '&lt;b style=&quot;color:red&quot;&gt;Locked&lt;/b&gt;'; }
+   else { $str .= '&lt;a href=&quot;/?node_id='.$$NODE{node_id}.'&amp;lock_id='.$$u{user_id}.'&amp;op=lockaccount&quot;&gt;Lock Account&lt;/a&gt;'; }
+   $str .= '&lt;/td&gt;
+      &lt;td&gt;&lt;a href=&quot;/node/oppressor_superdoc/The+Oracle?the_oracle_subject=' . $$u{title} . '&quot;&gt;The Oracle&lt;/a&gt;
+         | &lt;a href=&quot;/node/restricted_superdoc/IP+Hunter?hunt_name=' . $$u{title} . '&quot;&gt;IP Hunt&lt;/a&gt;
+      &lt;/tr&gt;';
+}
+$str .= '&lt;/table&gt;
+         &lt;/div&gt;';
+
+
+# By Password
+$queryText = 'SELECT user.user_id FROM user WHERE 
+   passwd=\'nothanks\'
+   ORDER BY user.user_id DESC';
+if ($showAll &lt;= 0)
+{
+   $queryText .= ' LIMIT 25'
+}
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+
+$str .= '&lt;h3 id=&quot;byPassword&quot;&gt;By Password&lt;/h3&gt;
+   &lt;div style=&quot;border:1px solid #ccc;overflow:auto;padding:5px;height: 500px&quot;&gt;
+   &lt;table border=&quot;1&quot; cellspacing=&quot;0&quot;&gt;
+   &lt;tr&gt;
+   &lt;th&gt;User&lt;/th&gt;';
+if (isGod($USER) &amp;&amp; $showpw == $showpwMatch) { $str .= '&lt;th&gt;PW&lt;/th&gt;'; }
+$str .= '&lt;th&gt;Create Time&lt;/th&gt;
+   &lt;th&gt;Email&lt;/th&gt;
+   &lt;th&gt;Lock Status&lt;/th&gt;
+   &lt;th&gt;Links&lt;/th&gt;
+   &lt;/tr&gt;';
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   $u = getNodeById($$row[0]);
+   $str .= '&lt;tr&gt;
+      &lt;td&gt;' . linkNode($u) . '&lt;/td&gt;';
+if (isGod($USER) &amp;&amp; $showpw == $showpwMatch) { $str .= '&lt;td&gt;' . $$u{passwd} . '&lt;/td&gt;'; }
+   $str .=  '&lt;td&gt;' . $$u{createtime} . '&lt;/td&gt;
+      &lt;td&gt;' . $$u{email} . '&lt;/td&gt;
+      &lt;td&gt;';
+   if ($$u{acctlock} &gt; 0) { $str .= '&lt;b style=&quot;color:red&quot;&gt;Locked&lt;/b&gt;'; }
+   else { $str .= '&lt;a href=&quot;/?node_id='.$$NODE{node_id}.'&amp;lock_id='.$$u{user_id}.'&amp;op=lockaccount&quot;&gt;Lock Account&lt;/a&gt;'; }
+   $str .= '&lt;/td&gt;
+      &lt;td&gt;&lt;a href=&quot;/node/oppressor_superdoc/The+Oracle?the_oracle_subject=' . $$u{title} . '&quot;&gt;The Oracle&lt;/a&gt;
+         | &lt;a href=&quot;/node/restricted_superdoc/IP+Hunter?hunt_name=' . $$u{title} . '&quot;&gt;IP Hunt&lt;/a&gt;
+      &lt;/tr&gt;';
+}
+$str .= '&lt;/table&gt;
+         &lt;/div&gt;';
+
+# By Browser
+$queryText = &quot;SELECT user.user_id
+   FROM setting,user
+   WHERE setting.setting_id=user.user_id
+      AND (setting.vars LIKE '%rowser=vim%'
+         OR setting.vars LIKE '%rowser=%IceCat%'
+         OR setting.vars LIKE '%rowser=Mozilla\%2f5\%2e0\%20\%28X11\%3b\%20U\%3b\%20Linux\%20i686\%3b\%20en\%2dUS\%3b\%20rv\%3a1\%2e9\%2e1\%2e4\%29\%20Gecko\%2f20091030%'
+         OR setting.vars LIKE '%rowser=Mozilla\%2f5\%2e0\%20\%28X11\%3b\%20U\%3b\%20Linux\%20i686\%3b\%20en\%2dUS\%3b\%20rv\%3a1\%2e9\%2e2\%29\%20Gecko\%2f20100121%'
+         OR setting.vars LIKE '%rowser=Mozilla\%2f5\%2e0\%20\%28Windows\%3b\%20U\%3b\%20Windows\%20NT\%205\%2e1\%3b\%20en\%2dUS\%3b\%20rv\%3a1\%2e9\%2e0\%2e6\%29\%20Gecko\%2f2009011913\%20Firefox\%2f3\%2e0\%2e6\%20\%28\%2eNET\%20CLR\%203\%2e5\%2e30729\%29%'
+         OR setting.vars LIKE '%rowser=Mozilla\%2f5\%2e0\%20\%28X11\%3b\%20U\%3b\%20Linux\%20i686\%3b\%20en\%2dUS\%29\%20AppleWebKit\%2f532\%2e8\%20\%28KHTML\%2c\%20like\%20Gecko\%29\%20Iron\%2f4\%2e0\%2e275\%2e2\%20Chrome\%2f4\%2e0\%2e275\%2e2\%20Safari\%2f532\%2e8%'
+         OR setting.vars LIKE '%rowser=Mozilla\%2f5\%2e0\%20\%28Windows\%3b\%20U\%3b\%20Windows\%20NT\%205\%2e1\%3b\%20en\%2dUS\%3b\%20rv\%3a1\%2e9\%2e2\%29\%20Gecko\%2f20100115\%20Firefox\%2f3\%2e6%'
+         OR setting.vars LIKE '%rowser=Mozilla\%2f5\%2e0\%20\%28Windows\%3b\%20U\%3b\%20Windows\%20NT\%205\%2e1\%3b\%20en\%2dUS\%3b\%20rv\%3a1\%2e9\%2e2\%29\%20Gecko\%2f20100316\%20Firefox\%2f3\%2e6%'
+      )
+   ORDER BY user.user_id DESC&quot;;
+if ($showAll &lt;= 0)
+{
+   $queryText .= ' LIMIT 25'
+}
+
+$rows = $dbh-&gt;prepare($queryText)
+   or return $rows-&gt;errstr;
+$rows-&gt;execute()
+   or return $rows-&gt;errstr;
+
+$str .= '&lt;h3 id=&quot;byBrowser&quot;&gt;By Browser&lt;/h3&gt;
+   &lt;div style=&quot;border:1px solid #ccc;overflow:auto;padding:5px;height: 500px&quot;&gt;
+   &lt;table border=&quot;1&quot; cellspacing=&quot;0&quot;&gt;
+   &lt;tr&gt;
+   &lt;th&gt;User&lt;/th&gt;';
+if (isGod($USER) &amp;&amp; $showpw == $showpwMatch) { $str .= '&lt;th&gt;PW&lt;/th&gt;'; }
+$str .= '&lt;th&gt;Create Time&lt;/th&gt;
+   &lt;th&gt;Email&lt;/th&gt;
+   &lt;th&gt;Lock Status&lt;/th&gt;
+   &lt;th&gt;Links&lt;/th&gt;
+   &lt;/tr&gt;';
+while($row = $rows-&gt;fetchrow_arrayref)
+{
+   $u = getNodeById($$row[0]);
+   $str .= '&lt;tr&gt;
+      &lt;td&gt;' . linkNode($u) . '&lt;/td&gt;';
+if (isGod($USER) &amp;&amp; $showpw == $showpwMatch) { $str .= '&lt;td&gt;' . $$u{passwd} . '&lt;/td&gt;'; }
+   $str .=  '&lt;td&gt;' . $$u{createtime} . '&lt;/td&gt;
+      &lt;td&gt;' . $$u{email} . '&lt;/td&gt;
+      &lt;td&gt;';
+   if ($$u{acctlock} &gt; 0) { $str .= '&lt;b style=&quot;color:red&quot;&gt;Locked&lt;/b&gt;'; }
+   else { $str .= '&lt;a href=&quot;/?node_id='.$$NODE{node_id}.'&amp;lock_id='.$$u{user_id}.'&amp;op=lockaccount&quot;&gt;Lock Account&lt;/a&gt;'; }
+   $str .= '&lt;/td&gt;
+      &lt;td&gt;&lt;a href=&quot;/node/oppressor_superdoc/The+Oracle?the_oracle_subject=' . $$u{title} . '&quot;&gt;The Oracle&lt;/a&gt;
+         | &lt;a href=&quot;/node/restricted_superdoc/IP+Hunter?hunt_name=' . $$u{title} . '&quot;&gt;IP Hunt&lt;/a&gt;
+      &lt;/tr&gt;';
+}
+$str .= '&lt;/table&gt;
+         &lt;/div&gt;';
+
+
+return $str;
+
+%]
+
+</doctext>
+  <node_id>2007317</node_id>
+  <type_nodetype>14</type_nodetype>
+  <title>in10se's sandbox 6</title>
+</node>

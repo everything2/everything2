@@ -13,8 +13,8 @@ CREATE TABLE `pollvote` (
   `pollvote_id` int(11) NOT NULL DEFAULT '0',
   `voter_user` int(11) NOT NULL DEFAULT '0',
   `choice` tinyint(4) NOT NULL DEFAULT '0',
-  `votetime` datetime DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`voter_user`,`pollvote_id`)
+  `votetime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`pollvote_id`,`voter_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

@@ -1,0 +1,14 @@
+<node>
+  <doctext>&lt;p&gt;So here is what I am proposing for the Star. Starting at Level 1, users can give away &quot;stars&quot; to other users. This is a glorified private message, wherein the recipient gets a message from Cool Man Eddie telling them that &quot;so and so gave you a star because&quot; and the giver is required to input a reason (if they don't give a reason they get an error msg). The two main goals are to give lower level users something fun to spend GP on, and to encourage communication between users, particularly positive communication.&lt;/p&gt;
+
+&lt;p&gt;Cost: Stars cost 75 GP for level 1, and 5 GP *less* each level, leveling out at a minimum cost of 25 GP for high level users. This ensures that the star is not as cool as a sanctification (in addition to the fact that it does not give GP or silver trinkets).&lt;/p&gt;
+
+&lt;p&gt;Tracking: Stars will not be publicly tracked in any way whatsoever. They will make the giver and receiver feel good, but no one else will know. I was planning to track number of stars received just in case we decide to do something later, but at most I was thinking we might put it under the &quot;Fun Stuff&quot; heading in the Stats nodelet, along with tokens and eggs, where people could only see their own total.&lt;/p&gt;
+
+&lt;p&gt;Star Color: Users can specify a color for each star they give. Theoretically they could come up with some kind of abusive star, but this is no net danger since users can already just as easily send a much more abusive private message.&lt;/p&gt;
+
+&lt;p&gt;Implementation is [mauler's sandbox XI|here].&lt;/p&gt;</doctext>
+  <node_id>1988231</node_id>
+  <type_nodetype>1965649</type_nodetype>
+  <title>my updated proposal in 300 words or less</title>
+</node>

@@ -4,6 +4,7 @@
   <nlgoto>0</nlgoto>
   <node_id>2027488</node_id>
   <type_nodetype>9</type_nodetype>
+  <updateinterval>600</updateinterval>
   <nlcode>[%
 my $repthreshholdlo = 12 ;
 #my $repthreshholdhi = 26;

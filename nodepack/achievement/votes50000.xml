@@ -1,6 +1,7 @@
 <node>
   <display>&lt;strong&gt;Ballot Stuffer&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Cast 50000 votes&lt;/i&gt;</display>
   <achievement_type>vote</achievement_type>
+  <subtype>give</subtype>
   <node_id>1920614</node_id>
   <code>my $voteCount = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;vote&quot;,&quot;voter_user=$user_id&quot;);
 

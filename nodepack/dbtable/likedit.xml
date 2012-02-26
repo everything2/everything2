@@ -15,7 +15,7 @@ CREATE TABLE `likedit` (
   `likedit_node` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`likedit_id`),
   KEY `likedit_ip_node` (`likedit_ip`,`likedit_node`)
-) ENGINE=InnoDB AUTO_INCREMENT=353375 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=603870 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

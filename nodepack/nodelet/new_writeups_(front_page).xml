@@ -1,0 +1,17 @@
+<node>
+  <nltext></nltext>
+  <parent_container>0</parent_container>
+  <nlgoto>0</nlgoto>
+  <node_id>2030577</node_id>
+  <type_nodetype>9</type_nodetype>
+  <nlcode>[%
+my $c = $$VARS{num_newwus};
+$$VARS{num_newwus} = 10;
+
+my $ret = htmlcode('zenwriteups');
+
+$$VARS{num_newwus} = $c;
+return $ret;
+%]...</nlcode>
+  <title>New Writeups (Front page)</title>
+</node>

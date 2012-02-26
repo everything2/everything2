@@ -54,7 +54,7 @@ foreach my $n (@nodes) {
 		)
 		.linkNode($n, 'edit', {displaytype =&gt; 'edit'})
 		.' | '
-		.linkNode($n, 'delete', {node_id =&gt; $$n{node_id}, op =&gt; 'nuke'})
+		.linkNode($n, 'delete', {node_id =&gt; $$n{node_id}, confirmop =&gt; 'nuke'})
 		.'&lt;/p&gt;';
 	}
 	$str .= '&lt;/li&gt;';
