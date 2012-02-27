@@ -1,15 +1,19 @@
 <node>
   <node_id>2006837</node_id>
-  <code>$$VARS{fxDuration} = '1' if (delete $$VARS{notransitions});
+  <code>use JSON;
+
+$$VARS{fxDuration} = '1' if (delete $$VARS{notransitions});
 
 my $lastnode = $$NODE{node_id};
 $lastnode = $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
 $lastnode = $query-&gt;param(&quot;lastnode_id&quot;)||0
 	if $$NODE{title} eq 'Findings:' &amp;&amp; $$NODE{type}{title} eq 'superdoc';
 
-my $e2 = &quot;node_id: $$NODE{node_id}&quot;;
-$e2 .= &quot;, lastnode_id: $lastnode&quot;;
-$e2 .= ', ignoreMissingLibraries: 1' if $HTMLVARS{ignoreMissingJsLibraries};
+my $e2; 
+$e2-&gt;{node_id} = $$NODE{node_id};
+$e2-&gt;{lastnode_id} = $lastnode;
+$e2-&gt;{title} = $$NODE{title};
+$e2-&gt;{ignoreMissingLibraries} = 1 if $HTMLVARS{ignoreMissingJsLibraries};
 
 my $cookie;
 foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
@@ -17,11 +21,10 @@ foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', '
 		$$VARS{$_} = $cookie if $cookie = $query -&gt; cookie($_);
 		delete $$VARS{$_} if $cookie eq '0';
 	}
-	if ($$VARS{$_}){
-		my $quot = '&quot;' if $$VARS{$_} ne int $$VARS{$_};
-		$e2 .= &quot;, $_: $quot$$VARS{$_}$quot&quot;;
-	}
+        $e2-&gt;{$_} = $$VARS{$_} if ($$VARS{$_});
 }
+
+$e2 = encode_json($e2);
 
 my $min = '.min' unless $HTMLVARS{isDevServer};
 my $libraries = qq'&lt;script src=&quot;http://code.jquery.com/jquery-1.4.4$min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
@@ -45,12 +48,11 @@ DEVLIBS
 
 return &lt;&lt;ENDJS;
 	&lt;script type='text/javascript'&gt;
-		e2 = {$e2};
+		e2 = $e2;
 	&lt;/script&gt;
 	$libraries
 	&lt;script src='$compilerPath' type='text/javascript'&gt;&lt;/script&gt;
-ENDJS
-</code>
+ENDJS</code>
   <type_nodetype>4</type_nodetype>
   <title>static javascript</title>
 </node>
