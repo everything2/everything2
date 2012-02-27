@@ -23,3 +23,8 @@ end
 Then /^the (.*?) form is present$/ do |formname|
   @browser.form_validate(formname)
 end
+
+Then /^the page is node_id (\d+)$/ do |node_id|
+  @browser.assert_page_is_node_id(node_id)
+end
+
