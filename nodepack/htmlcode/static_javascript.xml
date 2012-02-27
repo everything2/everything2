@@ -47,7 +47,7 @@ $libraries .= &lt;&lt;DEVLIBS . htmlcode('nagger') if $HTMLVARS{isDevServer};
 DEVLIBS
 
 return &lt;&lt;ENDJS;
-	&lt;script type='text/javascript'&gt;
+	&lt;script type='text/javascript' name='nodeinfojson' id='nodeinfojson'&gt;
 		e2 = $e2;
 	&lt;/script&gt;
 	$libraries
