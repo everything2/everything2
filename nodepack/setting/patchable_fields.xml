@@ -1,6 +1,37 @@
 <node>
   <node_id>1415665</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>doctext=1&amp;page=1&amp;hourLimit=1&amp;invalid_check=1&amp;datacode=1&amp;context=1&amp;nlcode=1&amp;code=1</vars>
+  <vars>
+    <value>1</value>
+    <key>doctext</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>page</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>hourLimit</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>invalid_check</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>datacode</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>context</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>nlcode</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>code</key>
+  </vars>
   <title>patchable fields</title>
 </node>

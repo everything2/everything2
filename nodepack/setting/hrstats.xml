@@ -1,6 +1,13 @@
 <node>
   <node_id>1373661</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>mean=14%2e2306&amp;stddev=7%2e9983</vars>
+  <vars>
+    <value>7.9983</value>
+    <key>stddev</key>
+  </vars>
+  <vars>
+    <value>14.2306</value>
+    <key>mean</key>
+  </vars>
   <title>hrstats</title>
 </node>

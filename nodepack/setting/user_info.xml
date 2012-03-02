@@ -1,6 +1,17 @@
 <node>
   <node_id>1177941</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>copy_this_for_when_you_edit=%20may%20be%20causing%20%3cfont%20color%3d%22%23dd0000%22%3eServer%20Error%21%3c%2ffont%3es%20%3csmall%3e%28so%20ignore%20them%20for%20now%29%3c%2fsmall%3e&amp;change_spaces_to_underscores_here=But%20anything%20goes%20here%2e%20In%20most%20cases%2c%20a%20space%20in%20front%20of%20your%20VALUE%20looks%20nicer%2e&amp;another_edit_thingy=%20is%20breaking%20things%2c%20so%20ignore%20any%20%3cfont%20color%3d%22%23dd0000%22%3eServer%20Error%21%3c%2ffont%3es%20for%20now</vars>
+  <vars>
+    <value> is breaking things, so ignore any &lt;font color=&quot;#dd0000&quot;&gt;Server Error!&lt;/font&gt;s for now</value>
+    <key>another_edit_thingy</key>
+  </vars>
+  <vars>
+    <value> may be causing &lt;font color=&quot;#dd0000&quot;&gt;Server Error!&lt;/font&gt;s &lt;small&gt;(so ignore them for now)&lt;/small&gt;</value>
+    <key>copy_this_for_when_you_edit</key>
+  </vars>
+  <vars>
+    <value>But anything goes here. In most cases, a space in front of your VALUE looks nicer.</value>
+    <key>change_spaces_to_underscores_here</key>
+  </vars>
   <title>User Info</title>
 </node>

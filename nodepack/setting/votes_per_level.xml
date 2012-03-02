@@ -1,6 +1,45 @@
 <node>
   <node_id>442998</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>6=60&amp;11=160&amp;3=20&amp;7=75&amp;9=115&amp;2=10&amp;8=95&amp;4=30&amp;10=135&amp;5=45</vars>
+  <vars>
+    <value>60</value>
+    <key>6</key>
+  </vars>
+  <vars>
+    <value>160</value>
+    <key>11</key>
+  </vars>
+  <vars>
+    <value>20</value>
+    <key>3</key>
+  </vars>
+  <vars>
+    <value>75</value>
+    <key>7</key>
+  </vars>
+  <vars>
+    <value>115</value>
+    <key>9</key>
+  </vars>
+  <vars>
+    <value>10</value>
+    <key>2</key>
+  </vars>
+  <vars>
+    <value>95</value>
+    <key>8</key>
+  </vars>
+  <vars>
+    <value>30</value>
+    <key>4</key>
+  </vars>
+  <vars>
+    <value>135</value>
+    <key>10</key>
+  </vars>
+  <vars>
+    <value>45</value>
+    <key>5</key>
+  </vars>
   <title>Votes per level</title>
 </node>

@@ -1,6 +1,45 @@
 <node>
   <node_id>1983374</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>1109290=1&amp;1306028=1&amp;1323377=1&amp;1449265=1&amp;1828141=1&amp;1996423=1&amp;2002004=1&amp;499273=1&amp;5603=1&amp;9740=1</vars>
+  <vars>
+    <value>1</value>
+    <key>1449265</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>1306028</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>1996423</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>5603</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>1828141</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>1323377</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>9740</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>499273</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>2002004</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>1109290</key>
+  </vars>
   <title>Untrue Gods</title>
 </node>

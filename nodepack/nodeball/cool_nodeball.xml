@@ -1,6 +1,17 @@
 <node>
   <node_id>741062</node_id>
   <type_nodetype>152</type_nodetype>
-  <vars>author=nate&amp;description=%20%20%20&amp;version=0%2e1%2e1</vars>
+  <vars>
+    <value>0.1.1</value>
+    <key>version</key>
+  </vars>
+  <vars>
+    <value>nate</value>
+    <key>author</key>
+  </vars>
+  <vars>
+    <value>   </value>
+    <key>description</key>
+  </vars>
   <title>cool nodeball</title>
 </node>

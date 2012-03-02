@@ -1,6 +1,53 @@
 <node>
   <node_id>1962878</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>6=Buy%20%5btoken%7ctokens%5d%20at%20the%20%5bE2%20Gift%20Shop%5d&amp;11=%5bSanctify%5d%20other%20users%20with%20%5bGP%5d%2e&amp;3=Buy%20easter%20eggs%20at%20the%20%5bE2%20Gift%20Shop%5d%3b%20create%20polls&amp;7=Buy%20easter%20eggs%20at%20the%20%5bE2%20Gift%20Shop%5d&amp;9=Give%20votes%20to%20other%20users%20at%20the%20%5bE2%20Gift%20Shop%5d&amp;2=Buy%20additional%20votes%20at%20the%20%5bE2%20Gift%20Shop%5d&amp;12=Can%20purchase%20up%20to%20one%20extra%20C%21%20per%20day%20at%20the%20E2%20Gift%20Shop&amp;8=Give%20easter%20eggs%20to%20other%20users%20at%20the%20%5bE2%20Gift%20Shop%5d&amp;4=C%21%20power%21%3b%20may%20become%20a%20mentor&amp;1=Vote%20on%20E2%20writeups%20by%20other%20users&amp;10=Cloak%20oneself%20in%20the%20Other%20Users%20nodelet&amp;5=Homenode%20image%3b%20create%20rooms</vars>
+  <vars>
+    <value>Buy [token|tokens] at the [E2 Gift Shop]</value>
+    <key>6</key>
+  </vars>
+  <vars>
+    <value>[Sanctify] other users with [GP].</value>
+    <key>11</key>
+  </vars>
+  <vars>
+    <value>Buy easter eggs at the [E2 Gift Shop]; create polls</value>
+    <key>3</key>
+  </vars>
+  <vars>
+    <value>Buy easter eggs at the [E2 Gift Shop]</value>
+    <key>7</key>
+  </vars>
+  <vars>
+    <value>Give votes to other users at the [E2 Gift Shop]</value>
+    <key>9</key>
+  </vars>
+  <vars>
+    <value>Buy additional votes at the [E2 Gift Shop]</value>
+    <key>2</key>
+  </vars>
+  <vars>
+    <value>Can purchase up to one extra C! per day at the E2 Gift Shop</value>
+    <key>12</key>
+  </vars>
+  <vars>
+    <value>Give easter eggs to other users at the [E2 Gift Shop]</value>
+    <key>8</key>
+  </vars>
+  <vars>
+    <value>C! power!; may become a mentor</value>
+    <key>4</key>
+  </vars>
+  <vars>
+    <value>Vote on E2 writeups by other users</value>
+    <key>1</key>
+  </vars>
+  <vars>
+    <value>Cloak oneself in the Other Users nodelet</value>
+    <key>10</key>
+  </vars>
+  <vars>
+    <value>Homenode image; create rooms</value>
+    <key>5</key>
+  </vars>
   <title>level powers</title>
 </node>

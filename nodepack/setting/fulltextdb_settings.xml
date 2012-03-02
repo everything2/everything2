@@ -1,6 +1,25 @@
 <node>
   <node_id>1378567</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>lastnode=1379033&amp;username=everyuser&amp;hostname=hillgiant&amp;database=everything&amp;password=e2isdum</vars>
+  <vars>
+    <value>everything</value>
+    <key>database</key>
+  </vars>
+  <vars>
+    <value>1379033</value>
+    <key>lastnode</key>
+  </vars>
+  <vars>
+    <value>e2isdum</value>
+    <key>password</key>
+  </vars>
+  <vars>
+    <value>hillgiant</value>
+    <key>hostname</key>
+  </vars>
+  <vars>
+    <value>everyuser</value>
+    <key>username</key>
+  </vars>
   <title>fulltextdb settings</title>
 </node>

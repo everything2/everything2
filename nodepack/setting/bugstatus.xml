@@ -1,6 +1,29 @@
 <node>
   <node_id>213</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>FIXED=Fixed&amp;NAB=NAB%20%2d%20Not%20a%20bug&amp;FOL=FOL%20%2d%20Fact%20of%20Life&amp;NEW=New&amp;UTR=UTR%20%2d%20Unable%20to%20reproduce&amp;DUPLICATE=Duplicate</vars>
+  <vars>
+    <value>New</value>
+    <key>NEW</key>
+  </vars>
+  <vars>
+    <value>Duplicate</value>
+    <key>DUPLICATE</key>
+  </vars>
+  <vars>
+    <value>Fixed</value>
+    <key>FIXED</key>
+  </vars>
+  <vars>
+    <value>NAB - Not a bug</value>
+    <key>NAB</key>
+  </vars>
+  <vars>
+    <value>FOL - Fact of Life</value>
+    <key>FOL</key>
+  </vars>
+  <vars>
+    <value>UTR - Unable to reproduce</value>
+    <key>UTR</key>
+  </vars>
   <title>bugstatus</title>
 </node>

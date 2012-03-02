@@ -1,6 +1,41 @@
 <node>
   <node_id>276</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>client=everything2%2ecom&amp;mailServer=192%2e168%2e1%2e1&amp;newUser_mail=275&amp;newestoldmailserver=216%2e144%2e199%2e194&amp;oldClient=everything2%2ecom&amp;oldmailserver=208%2e44%2e192%2e14&amp;otheroldmailserver=216%2e200%2e201%2e210&amp;retiredMailServerOn2011May3=192%2e168%2e1%2e249&amp;systemMailFrom=postmaster%40everything2%2ecom</vars>
+  <vars>
+    <value>everything2.com</value>
+    <key>client</key>
+  </vars>
+  <vars>
+    <value>192.168.1.1</value>
+    <key>mailServer</key>
+  </vars>
+  <vars>
+    <value>216.144.199.194</value>
+    <key>newestoldmailserver</key>
+  </vars>
+  <vars>
+    <value>postmaster@everything2.com</value>
+    <key>systemMailFrom</key>
+  </vars>
+  <vars>
+    <value>everything2.com</value>
+    <key>oldClient</key>
+  </vars>
+  <vars>
+    <value>275</value>
+    <key>newUser_mail</key>
+  </vars>
+  <vars>
+    <value>216.200.201.210</value>
+    <key>otheroldmailserver</key>
+  </vars>
+  <vars>
+    <value>192.168.1.249</value>
+    <key>retiredMailServerOn2011May3</key>
+  </vars>
+  <vars>
+    <value>208.44.192.14</value>
+    <key>oldmailserver</key>
+  </vars>
   <title>mail settings</title>
 </node>

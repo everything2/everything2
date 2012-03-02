@@ -1,6 +1,37 @@
 <node>
   <node_id>965729</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>aalnan=1&amp;remember_to_use_lowercase=1&amp;E2Med=1&amp;maultest=1&amp;bipolarbear=1&amp;halspal=1&amp;anemotis=1&amp;padlock=1</vars>
+  <vars>
+    <value>1</value>
+    <key>aalnan</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>remember_to_use_lowercase</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>E2Med</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>maultest</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>bipolarbear</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>halspal</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>anemotis</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>padlock</key>
+  </vars>
   <title>cloakers</title>
 </node>

@@ -1,6 +1,25 @@
 <node>
   <node_id>211</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>A=A%20%2d%20critical&amp;B=B%20%2d%20serious&amp;C=C%20%2d%20important&amp;D=D%20%2d%20minor%20issue&amp;E=E%20%2d%20who%20cares%3f</vars>
+  <vars>
+    <value>A - critical</value>
+    <key>A</key>
+  </vars>
+  <vars>
+    <value>C - important</value>
+    <key>C</key>
+  </vars>
+  <vars>
+    <value>D - minor issue</value>
+    <key>D</key>
+  </vars>
+  <vars>
+    <value>B - serious</value>
+    <key>B</key>
+  </vars>
+  <vars>
+    <value>E - who cares?</value>
+    <key>E</key>
+  </vars>
   <title>bugpriority</title>
 </node>

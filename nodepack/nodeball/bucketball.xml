@@ -1,6 +1,17 @@
 <node>
   <node_id>909983</node_id>
   <type_nodetype>152</type_nodetype>
-  <vars>author=nate%2fdarrick&amp;description=backport%20of%20nodebucket%20for%20non%2dJS%20group%20manipulation&amp;version=0%2e8</vars>
+  <vars>
+    <value>0.8</value>
+    <key>version</key>
+  </vars>
+  <vars>
+    <value>nate/darrick</value>
+    <key>author</key>
+  </vars>
+  <vars>
+    <value>backport of nodebucket for non-JS group manipulation</value>
+    <key>description</key>
+  </vars>
   <title>bucketball</title>
 </node>

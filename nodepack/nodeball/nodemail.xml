@@ -1,6 +1,17 @@
 <node>
   <node_id>274</node_id>
   <type_nodetype>152</type_nodetype>
-  <vars>description=Allows%20sending%20and%20recieving%20of%20email%20via%20the%20Everything%3a%3aMAIL%20module&amp;author=Nathan%20Oostendorp%20and%20Daron%20Vroon&amp;version=0%2e1%2e1</vars>
+  <vars>
+    <value>0.1.1</value>
+    <key>version</key>
+  </vars>
+  <vars>
+    <value>Nathan Oostendorp and Daron Vroon</value>
+    <key>author</key>
+  </vars>
+  <vars>
+    <value>Allows sending and recieving of email via the Everything::MAIL module</value>
+    <key>description</key>
+  </vars>
   <title>Nodemail</title>
 </node>

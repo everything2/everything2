@@ -1,6 +1,21 @@
 <node>
   <node_id>792084</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>lower_case_letters_only_please=1&amp;toasterleavings=1&amp;aalnan=1&amp;cody=1</vars>
+  <vars>
+    <value>1</value>
+    <key>lower_case_letters_only_please</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>aalnan</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>cody</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>toasterleavings</key>
+  </vars>
   <title>Node Heaven Guests</title>
 </node>

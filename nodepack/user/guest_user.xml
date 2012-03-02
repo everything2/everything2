@@ -3,7 +3,58 @@
   <email>root@localhost</email>
   <realname>Guest User</realname>
   <type_nodetype>15</type_nodetype>
-  <vars>collapsedNodelets=signin%21&amp;hasRecalculated=1&amp;ipaddy=62%2e253%2e128%2e7&amp;level=0%20%28Initiate%29%20%2f%200&amp;nodelets=2029388%2c2027508%2c263&amp;num_newwus=10&amp;numwriteups=%20&amp;nwriteups=%20&amp;nwriteupsupdate=1329097281&amp;preference_last_update_time=1278018700&amp;wufoot=c%3asocial%2cc%3avote%2cc%3acfull&amp;wuhead=c%3atype%2cl%3aauthor%2cr%3adtcreate&amp;zenadinheader=1</vars>
+  <vars>
+    <value>1</value>
+    <key>zenadinheader</key>
+  </vars>
+  <vars>
+    <value>2029388,2027508,263</value>
+    <key>nodelets</key>
+  </vars>
+  <vars>
+    <value>c:social,c:vote,c:cfull</value>
+    <key>wufoot</key>
+  </vars>
+  <vars>
+    <value>62.253.128.7</value>
+    <key>ipaddy</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>numwriteups</key>
+  </vars>
+  <vars>
+    <value>0 (Initiate) / 0</value>
+    <key>level</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>hasRecalculated</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>nwriteups</key>
+  </vars>
+  <vars>
+    <value>1278018700</value>
+    <key>preference_last_update_time</key>
+  </vars>
+  <vars>
+    <value>1329097281</value>
+    <key>nwriteupsupdate</key>
+  </vars>
+  <vars>
+    <value>signin!</value>
+    <key>collapsedNodelets</key>
+  </vars>
+  <vars>
+    <value>10</value>
+    <key>num_newwus</key>
+  </vars>
+  <vars>
+    <value>c:type,l:author,r:dtcreate</value>
+    <key>wuhead</key>
+  </vars>
   <title>Guest User</title>
   <doctext></doctext>
   <validemail>1</validemail>

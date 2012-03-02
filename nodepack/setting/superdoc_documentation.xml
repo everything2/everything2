@@ -1,6 +1,141 @@
 <node>
   <node_id>1468368</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>1157630=Anonyous%20Voting%20superdoc%2e%20More%20of%20a%20toy%20than%20anything%20else%2c%20but%20helps%20you%20to%20keep%20your%20voting%20anonymous%2e&amp;1148595=An%20%5bENN%5d%2dstyle%20listing%20with%2025%20as%20the%20default&amp;204=The%20old%2c%20old%20bug%2dtracking%20system%2e%20Do%20not%20use%2c%20it%20needs%20to%20be%20phased%20out%2e&amp;165473=Rambling%20musings%20from%20the%20early%20days%20of%20BSI%2e%20Please%20leave%20for%20posterity%2e&amp;206=A%20component%20of%20the%20old%20bug%2dtracking%20system%2e%20Do%20not%20use%2e&amp;1253668=WolfDaddy%27s%20loosely%20code%2dbacked%20project%20to%20have%20an%20E2%20family%20tree%20in%20place%2e%20It%27s%20self%2dcontained%20and%20hardcoded%20so%20he%20can%20use%20it%2e&amp;529746=Previous%20C%21%20listing%20document&amp;165558=Link%20to%20offsite%20for%20adfu%20document%2e%20Now%20relatively%20obsolete%2e&amp;719799=Level%20power%20document%20used%20to%20create%20rooms&amp;1392044=FAQ%20about%20how%20to%20submissions%20to%20the%20%5bEverything%20FAQ%5d&amp;1054397=A%20database%20monitoring%20utility%2e%20It%20shows%20the%20%22slow%22%20or%20hanging%20queries%20on%20the%20database%2e%20Basic%20explanation%20is%20included%2e&amp;1428988=Separate%20doc%20discussing%20some%20of%20the%20other%20buttons%20editors%20use%20to%20get%20their%20job%20done%2e&amp;1430673=%5bpanamaus%5d%27%20personal%20spot%20for%20testing%20perl%20code%2e%20Don%27t%20delete%2e&amp;1167437=N%2dWing%27s%20attempt%20at%20an%20integrated%20bug%20tracking%20system%20for%20the%20site%2e&amp;1256403=The%20document%20used%20to%20create%20and%20control%20E2%20Collaboration%20Nodes%2e&amp;1051765=The%20page%20with%20our%20PayPal%20links%20and%20previous%20campaign%20amounts%2e%20This%20is%20updated%20manually%2e&amp;1372629=Vitals%20superdoc%20that%20shows%20writeups%20that%20were%20submitted%20a%20year%20ago%20this%20day%2e%20This%20only%20shows%20writeups%20that%20have%20lasted%2e%20It%27s%20a%20little%20expensive%20to%20generate%2c%20so%20it%20could%20probably%20be%20moved%20to%20a%20cron%20job%2e&amp;207=Another%20part%20of%20the%20old%20bug%20system%2e%20Do%20not%20use%2e%20It%20is%20pending%20phasing%20out%2e&amp;165472=Pointer%20to%20BSI%20main%20page%2e%20Please%20leave%20standing%20for%20%22corporate%22&amp;365128=This%20is%20the%20regular%20user%27s%20document%20to%20create%20an%20e2node%2e%20This%20is%20different%20from%20the%20administrative%20version%2c%20%5bCreate%20node%5d&amp;1253993=The%20rooms%20on%20the%20system%20that%20one%20can%20visit%20in%2e%20Remember%2c%20they%20expire%20after%20two%20weeks%20in%20a%20cron%20job%2e&amp;828815=FAQ%20item&amp;1316764=Instructions%20on%20how%20to%20contact%20bones%20in%20case%20of%20a%20discovered%20copyright%20violation%20by%20an%20E2%20user%2e%20Mentioned%20in%20the%20FAQ%2c%20do%20not%20delete%2e&amp;1396984=%5bdann%5d%27s%20personal%20spot%20for%20running%20code%2e%20Don%27t%20delete%2e&amp;1422492=Public%20document%20that%20clearly%20outlines%20policy%2e%20The%20users%20see%20it%20exactly%20the%20way%20the%20editors%20see%20it%2e&amp;165501=An%20old%20Easter%20Egg%20node%20by%20nate%20from%20a%20long%20time%20ago%2e%20Do%20not%20delete%2e&amp;1208082=MNFP%20and%20LF%20listing%20for%20people%20on%20the%20Honor%20Roll%20%2d%20primarily%20used%20while%20the%20system%20was%20under%20development&amp;1314567=FAQ%20item&amp;1164315=A%20basic%20README%20for%20the%20ekw%20theme%2c%20explaining%20some%20of%20the%20features%2e&amp;743857=Transforms%20newlines%20into%20break%20tags%2c%20akin%20to%20the%20%5bWriteup%20Formatter%5d%2c%20but%20older%2e%20Possibly%20obsolete%2e&amp;382987=The%20duplicates%20found%20document%2c%20for%20when%20multiple%20nodes%20are%20of%20the%20same%20title%2e%20This%20is%20a%20core%20system%20document%2c%20do%20not%20delete%2e&amp;101=The%20document%20where%20you%20sign%20up%20for%20a%20new%20user%20account%2e&amp;165497=Legacy%20document%20about%20adfu%2c%20please%20leave%20for%20posterity%2e&amp;1213001=Javascript%20utility%20to%20alphabetize%20items%2e</vars>
+  <vars>
+    <value>An [ENN]-style listing with 25 as the default</value>
+    <key>1148595</key>
+  </vars>
+  <vars>
+    <value>Anonyous Voting superdoc. More of a toy than anything else, but helps you to keep your voting anonymous.</value>
+    <key>1157630</key>
+  </vars>
+  <vars>
+    <value>The old, old bug-tracking system. Do not use, it needs to be phased out.</value>
+    <key>204</key>
+  </vars>
+  <vars>
+    <value>Rambling musings from the early days of BSI. Please leave for posterity.</value>
+    <key>165473</key>
+  </vars>
+  <vars>
+    <value>A component of the old bug-tracking system. Do not use.</value>
+    <key>206</key>
+  </vars>
+  <vars>
+    <value>WolfDaddy's loosely code-backed project to have an E2 family tree in place. It's self-contained and hardcoded so he can use it.</value>
+    <key>1253668</key>
+  </vars>
+  <vars>
+    <value>Previous C! listing document</value>
+    <key>529746</key>
+  </vars>
+  <vars>
+    <value>Link to offsite for adfu document. Now relatively obsolete.</value>
+    <key>165558</key>
+  </vars>
+  <vars>
+    <value>Level power document used to create rooms</value>
+    <key>719799</key>
+  </vars>
+  <vars>
+    <value>FAQ about how to submissions to the [Everything FAQ]</value>
+    <key>1392044</key>
+  </vars>
+  <vars>
+    <value>A database monitoring utility. It shows the &quot;slow&quot; or hanging queries on the database. Basic explanation is included.</value>
+    <key>1054397</key>
+  </vars>
+  <vars>
+    <value>Separate doc discussing some of the other buttons editors use to get their job done.</value>
+    <key>1428988</key>
+  </vars>
+  <vars>
+    <value>[panamaus]' personal spot for testing perl code. Don't delete.</value>
+    <key>1430673</key>
+  </vars>
+  <vars>
+    <value>N-Wing's attempt at an integrated bug tracking system for the site.</value>
+    <key>1167437</key>
+  </vars>
+  <vars>
+    <value>The page with our PayPal links and previous campaign amounts. This is updated manually.</value>
+    <key>1051765</key>
+  </vars>
+  <vars>
+    <value>Vitals superdoc that shows writeups that were submitted a year ago this day. This only shows writeups that have lasted. It's a little expensive to generate, so it could probably be moved to a cron job.</value>
+    <key>1372629</key>
+  </vars>
+  <vars>
+    <value>The document used to create and control E2 Collaboration Nodes.</value>
+    <key>1256403</key>
+  </vars>
+  <vars>
+    <value>Another part of the old bug system. Do not use. It is pending phasing out.</value>
+    <key>207</key>
+  </vars>
+  <vars>
+    <value>Pointer to BSI main page. Please leave standing for &quot;corporate&quot;</value>
+    <key>165472</key>
+  </vars>
+  <vars>
+    <value>This is the regular user's document to create an e2node. This is different from the administrative version, [Create node]</value>
+    <key>365128</key>
+  </vars>
+  <vars>
+    <value>The rooms on the system that one can visit in. Remember, they expire after two weeks in a cron job.</value>
+    <key>1253993</key>
+  </vars>
+  <vars>
+    <value>Instructions on how to contact bones in case of a discovered copyright violation by an E2 user. Mentioned in the FAQ, do not delete.</value>
+    <key>1316764</key>
+  </vars>
+  <vars>
+    <value>FAQ item</value>
+    <key>828815</key>
+  </vars>
+  <vars>
+    <value>[dann]'s personal spot for running code. Don't delete.</value>
+    <key>1396984</key>
+  </vars>
+  <vars>
+    <value>Public document that clearly outlines policy. The users see it exactly the way the editors see it.</value>
+    <key>1422492</key>
+  </vars>
+  <vars>
+    <value>An old Easter Egg node by nate from a long time ago. Do not delete.</value>
+    <key>165501</key>
+  </vars>
+  <vars>
+    <value>MNFP and LF listing for people on the Honor Roll - primarily used while the system was under development</value>
+    <key>1208082</key>
+  </vars>
+  <vars>
+    <value>FAQ item</value>
+    <key>1314567</key>
+  </vars>
+  <vars>
+    <value>The duplicates found document, for when multiple nodes are of the same title. This is a core system document, do not delete.</value>
+    <key>382987</key>
+  </vars>
+  <vars>
+    <value>A basic README for the ekw theme, explaining some of the features.</value>
+    <key>1164315</key>
+  </vars>
+  <vars>
+    <value>Transforms newlines into break tags, akin to the [Writeup Formatter], but older. Possibly obsolete.</value>
+    <key>743857</key>
+  </vars>
+  <vars>
+    <value>The document where you sign up for a new user account.</value>
+    <key>101</key>
+  </vars>
+  <vars>
+    <value>Legacy document about adfu, please leave for posterity.</value>
+    <key>165497</key>
+  </vars>
+  <vars>
+    <value>Javascript utility to alphabetize items.</value>
+    <key>1213001</key>
+  </vars>
   <title>superdoc documentation</title>
 </node>

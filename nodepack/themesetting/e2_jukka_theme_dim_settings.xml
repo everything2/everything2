@@ -1,7 +1,22 @@
 <node>
   <node_id>465140</node_id>
   <type_nodetype>175990</type_nodetype>
-  <vars>titleColor=%23b5b587&amp;writeupTitleColor=%23b5b587&amp;vlink=%23666633&amp;bodyBgColor=%23ddddbb</vars>
+  <vars>
+    <value>#ddddbb</value>
+    <key>bodyBgColor</key>
+  </vars>
+  <vars>
+    <value>#666633</value>
+    <key>vlink</key>
+  </vars>
+  <vars>
+    <value>#b5b587</value>
+    <key>titleColor</key>
+  </vars>
+  <vars>
+    <value>#b5b587</value>
+    <key>writeupTitleColor</key>
+  </vars>
   <parent_theme>415073</parent_theme>
   <title>e2 jukka theme dim settings</title>
 </node>

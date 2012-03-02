@@ -1,6 +1,185 @@
 <node>
   <node_id>1986587</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>Aerobe=%5bWolf%20Hall%5d&amp;Ashigaru=%5bMartha%20Vickers%5d&amp;Auduster=%5bJohn%20Lilburne%5d&amp;Bitriot=%5bBlockstackers%20Intergalactic%5d&amp;ChristineWinter=%5bBlow%20it%20out%20your%20ass%20it%27s%20Veruca%20Salt%5d&amp;GhettoAardvark=%5bJohn%20Lasseter%5d&amp;Glowing Fish=%5bLeo%20Tolstoy%5d&amp;Halspal=%5bNevil%20Shute%5d%20or%20any%20of%20his%20books&amp;Heisenberg=Writeups%20relating%20to%20%5bITALO%20DISCO%5d%21&amp;Heitah=%5bFarting%20belches%5d&amp;Jet-Poop=%5bThe%20Magdalene%20Laundries%5d&amp;JohnnyCashed=%5bThe%20Boy%20Crisis%5d&amp;Morwen=%5bThe%20Avengers%5d&amp;OldMiner=%5bBoulder%2c%20Colorado%5d&amp;Oolong=%20&amp;Posmella=%5bRevolutionary%20Road%5d&amp;ReiToei=%5bMichael%20Jackson%5d&amp;Simulacron3=%5bMartin%20Buber%5d&amp;StuartO)))=%5bMadonna%5d&amp;Tem42=%5bForest%20Stewardship%20Council%5d&amp;The Custodian=%5bJohn%20Hughes%5d&amp;TheDeadGuy=%5bMartha%20Vickers%5d&amp;Timeshredder=%5bbanana%20hammock%5d&amp;Wuukiee=%5bGilroy%20Garlic%20Festival%5d&amp;Zephronias=%5bPhilosophus%20Stone%20and%20the%20Sound%20of%20Terror%21%5d&amp;avalyn=%5bChicago%20White%20Sox%5d&amp;borgo=%5bJimmy%20Buffett%5d&amp;cassparadox=%5bQliphoth%5d&amp;civilwaractionfigure=%5bShakira%5d&amp;dannye=%5bPatti%20LaBelle%5d&amp;decoy hunches=%5bVowels%20as%20Clear%20as%20Church%20Bells%5d&amp;e2hockey=%5bLos%20Angeles%20Kings%5d&amp;e2reneta=%5bJohn%20Lasseter%5d&amp;eh2=%5bStratford%20Festival%5d&amp;gnarl=%5bConflict%20Kitchen%5d&amp;jessicaj=%5bRequiem%20Mass%20in%20D%20Minor%5d&amp;joer=%5bTallulah%20Bankhead%5d&amp;kthejoker=Famous%20Georges%3a%20%5bGeorge%20Allen%5d%20%28the%20Redskins%20owner%29%2c%20%5bGeorge%20Brett%5d%2c%20and%2for%20%5bGorgeous%20George%5d%20%28aka%20%5bGeorge%20Wagner%5d%29&amp;liveforever=%5bPueyrredones%5d&amp;mauler=%5bNemesis%20Enforcer%5d&amp;misterfuffie=%5bYGBSM%5d&amp;randombit=%5bAntiterrorism%20and%20Effective%20Death%20Penalty%20Act%20%28AEDPA%29%5d&amp;tentative=%5bHerding%20dog%5d&amp;wertperch=Various&amp;wordnerd=%5bKarl%20Urban%5d</vars>
+  <vars>
+    <value>[Los Angeles Kings]</value>
+    <key>e2hockey</key>
+  </vars>
+  <vars>
+    <value>Famous Georges: [George Allen] (the Redskins owner), [George Brett], and/or [Gorgeous George] (aka [George Wagner])</value>
+    <key>kthejoker</key>
+  </vars>
+  <vars>
+    <value>[John Hughes]</value>
+    <key>The Custodian</key>
+  </vars>
+  <vars>
+    <value>[John Lasseter]</value>
+    <key>GhettoAardvark</key>
+  </vars>
+  <vars>
+    <value>[banana hammock]</value>
+    <key>Timeshredder</key>
+  </vars>
+  <vars>
+    <value>[Karl Urban]</value>
+    <key>wordnerd</key>
+  </vars>
+  <vars>
+    <value>[Madonna]</value>
+    <key>StuartO)))</key>
+  </vars>
+  <vars>
+    <value>[Boulder, Colorado]</value>
+    <key>OldMiner</key>
+  </vars>
+  <vars>
+    <value>[Herding dog]</value>
+    <key>tentative</key>
+  </vars>
+  <vars>
+    <value>[Conflict Kitchen]</value>
+    <key>gnarl</key>
+  </vars>
+  <vars>
+    <value>[Tallulah Bankhead]</value>
+    <key>joer</key>
+  </vars>
+  <vars>
+    <value>[Revolutionary Road]</value>
+    <key>Posmella</key>
+  </vars>
+  <vars>
+    <value>[Martha Vickers]</value>
+    <key>Ashigaru</key>
+  </vars>
+  <vars>
+    <value>[Farting belches]</value>
+    <key>Heitah</key>
+  </vars>
+  <vars>
+    <value>[John Lilburne]</value>
+    <key>Auduster</key>
+  </vars>
+  <vars>
+    <value>[Nemesis Enforcer]</value>
+    <key>mauler</key>
+  </vars>
+  <vars>
+    <value>[Pueyrredones]</value>
+    <key>liveforever</key>
+  </vars>
+  <vars>
+    <value>[YGBSM]</value>
+    <key>misterfuffie</key>
+  </vars>
+  <vars>
+    <value>[Martin Buber]</value>
+    <key>Simulacron3</key>
+  </vars>
+  <vars>
+    <value>[The Avengers]</value>
+    <key>Morwen</key>
+  </vars>
+  <vars>
+    <value>[Gilroy Garlic Festival]</value>
+    <key>Wuukiee</key>
+  </vars>
+  <vars>
+    <value>[Qliphoth]</value>
+    <key>cassparadox</key>
+  </vars>
+  <vars>
+    <value>[Jimmy Buffett]</value>
+    <key>borgo</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>Oolong</key>
+  </vars>
+  <vars>
+    <value>[Nevil Shute] or any of his books</value>
+    <key>Halspal</key>
+  </vars>
+  <vars>
+    <value>[Philosophus Stone and the Sound of Terror!]</value>
+    <key>Zephronias</key>
+  </vars>
+  <vars>
+    <value>[John Lasseter]</value>
+    <key>e2reneta</key>
+  </vars>
+  <vars>
+    <value>[Requiem Mass in D Minor]</value>
+    <key>jessicaj</key>
+  </vars>
+  <vars>
+    <value>[Shakira]</value>
+    <key>civilwaractionfigure</key>
+  </vars>
+  <vars>
+    <value>[The Boy Crisis]</value>
+    <key>JohnnyCashed</key>
+  </vars>
+  <vars>
+    <value>[Patti LaBelle]</value>
+    <key>dannye</key>
+  </vars>
+  <vars>
+    <value>Writeups relating to [ITALO DISCO]!</value>
+    <key>Heisenberg</key>
+  </vars>
+  <vars>
+    <value>[Leo Tolstoy]</value>
+    <key>Glowing Fish</key>
+  </vars>
+  <vars>
+    <value>[Martha Vickers]</value>
+    <key>TheDeadGuy</key>
+  </vars>
+  <vars>
+    <value>[Stratford Festival]</value>
+    <key>eh2</key>
+  </vars>
+  <vars>
+    <value>[Antiterrorism and Effective Death Penalty Act (AEDPA)]</value>
+    <key>randombit</key>
+  </vars>
+  <vars>
+    <value>[Blow it out your ass it's Veruca Salt]</value>
+    <key>ChristineWinter</key>
+  </vars>
+  <vars>
+    <value>[Forest Stewardship Council]</value>
+    <key>Tem42</key>
+  </vars>
+  <vars>
+    <value>[Vowels as Clear as Church Bells]</value>
+    <key>decoy hunches</key>
+  </vars>
+  <vars>
+    <value>[Michael Jackson]</value>
+    <key>ReiToei</key>
+  </vars>
+  <vars>
+    <value>Various</value>
+    <key>wertperch</key>
+  </vars>
+  <vars>
+    <value>[Wolf Hall]</value>
+    <key>Aerobe</key>
+  </vars>
+  <vars>
+    <value>[Blockstackers Intergalactic]</value>
+    <key>Bitriot</key>
+  </vars>
+  <vars>
+    <value>[The Magdalene Laundries]</value>
+    <key>Jet-Poop</key>
+  </vars>
+  <vars>
+    <value>[Chicago White Sox]</value>
+    <key>avalyn</key>
+  </vars>
   <title>outlaws</title>
 </node>

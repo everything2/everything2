@@ -1,6 +1,21 @@
 <node>
   <node_id>1270881</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>124=300&amp;1869865=300&amp;2030780=300&amp;523351=300</vars>
+  <vars>
+    <value>300</value>
+    <key>2030780</key>
+  </vars>
+  <vars>
+    <value>300</value>
+    <key>124</key>
+  </vars>
+  <vars>
+    <value>300</value>
+    <key>1869865</key>
+  </vars>
+  <vars>
+    <value>300</value>
+    <key>523351</key>
+  </vars>
   <title>cachable_nodes</title>
 </node>

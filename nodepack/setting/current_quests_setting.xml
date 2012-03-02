@@ -1,6 +1,9 @@
 <node>
   <node_id>1937963</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>gonein60seconds=%5bGone%20in%20Sixty%20Seconds%202008%20Quest%5d</vars>
+  <vars>
+    <value>[Gone in Sixty Seconds 2008 Quest]</value>
+    <key>gonein60seconds</key>
+  </vars>
   <title>current quests setting</title>
 </node>

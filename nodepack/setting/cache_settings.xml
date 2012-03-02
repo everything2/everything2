@@ -1,6 +1,9 @@
 <node>
   <node_id>1270858</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>expire=86400</vars>
+  <vars>
+    <value>86400</value>
+    <key>expire</key>
+  </vars>
   <title>cache_settings</title>
 </node>

@@ -1,6 +1,77 @@
 <node>
   <node_id>1922142</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>anvil=anvils&amp;beer=pours%20a%20fine%20cold%20beer%20for&amp;caviar=caviars&amp;egg=eggs&amp;giantsquid=giant%20squids&amp;highfive=highfives&amp;hug=hugs&amp;hugg=huggs&amp;maul=mauls&amp;omelet=omelets&amp;omelette=French%2domelets&amp;pie=pies&amp;pizza=pizzas&amp;rubberchicken=rubber%20chickens&amp;smite=smites&amp;special=shoots%20laser%20eyes%20at&amp;tea=makes%20a%20nice%20cup%20of%20tea%20for&amp;tomato=tomatos</vars>
+  <vars>
+    <value>pies</value>
+    <key>pie</key>
+  </vars>
+  <vars>
+    <value>tomatos</value>
+    <key>tomato</key>
+  </vars>
+  <vars>
+    <value>caviars</value>
+    <key>caviar</key>
+  </vars>
+  <vars>
+    <value>pizzas</value>
+    <key>pizza</key>
+  </vars>
+  <vars>
+    <value>giant squids</value>
+    <key>giantsquid</key>
+  </vars>
+  <vars>
+    <value>pours a fine cold beer for</value>
+    <key>beer</key>
+  </vars>
+  <vars>
+    <value>shoots laser eyes at</value>
+    <key>special</key>
+  </vars>
+  <vars>
+    <value>smites</value>
+    <key>smite</key>
+  </vars>
+  <vars>
+    <value>French-omelets</value>
+    <key>omelette</key>
+  </vars>
+  <vars>
+    <value>eggs</value>
+    <key>egg</key>
+  </vars>
+  <vars>
+    <value>anvils</value>
+    <key>anvil</key>
+  </vars>
+  <vars>
+    <value>highfives</value>
+    <key>highfive</key>
+  </vars>
+  <vars>
+    <value>hugs</value>
+    <key>hug</key>
+  </vars>
+  <vars>
+    <value>huggs</value>
+    <key>hugg</key>
+  </vars>
+  <vars>
+    <value>rubber chickens</value>
+    <key>rubberchicken</key>
+  </vars>
+  <vars>
+    <value>omelets</value>
+    <key>omelet</key>
+  </vars>
+  <vars>
+    <value>mauls</value>
+    <key>maul</key>
+  </vars>
+  <vars>
+    <value>makes a nice cup of tea for</value>
+    <key>tea</key>
+  </vars>
   <title>egg commands</title>
 </node>

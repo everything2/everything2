@@ -1,7 +1,26 @@
 <node>
   <node_id>320307</node_id>
   <type_nodetype>175990</type_nodetype>
-  <vars>nodeletGradBot=%23ff0000&amp;bodyBgcolor=%23ffcc33&amp;nodeletGradTop=%23ffff00&amp;docColor=%23ff9999&amp;nodeletTitleColor=%23ffff00</vars>
+  <vars>
+    <value>#ff0000</value>
+    <key>nodeletGradBot</key>
+  </vars>
+  <vars>
+    <value>#ff9999</value>
+    <key>docColor</key>
+  </vars>
+  <vars>
+    <value>#ffff00</value>
+    <key>nodeletTitleColor</key>
+  </vars>
+  <vars>
+    <value>#ffcc33</value>
+    <key>bodyBgcolor</key>
+  </vars>
+  <vars>
+    <value>#ffff00</value>
+    <key>nodeletGradTop</key>
+  </vars>
   <parent_theme>415072</parent_theme>
   <title>classic theme wired settings</title>
 </node>

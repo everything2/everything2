@@ -1,6 +1,9 @@
 <node>
   <node_id>1291145</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>bot_id=bit%20flags%3a%200%3dno%20talking%20allowed%2c%201%3dbot%20may%20talk%2c%202%3duser%20may%20talk%20to%20bot</vars>
+  <vars>
+    <value>bit flags: 0=no talking allowed, 1=bot may talk, 2=user may talk to bot</value>
+    <key>bot_id</key>
+  </vars>
   <title>bot info</title>
 </node>

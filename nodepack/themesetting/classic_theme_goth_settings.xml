@@ -1,7 +1,54 @@
 <node>
   <node_id>268892</node_id>
   <type_nodetype>175990</type_nodetype>
-  <vars>bodyVlinkcolor=%236666cc&amp;bodyTextcolor=%23ffffff&amp;docColor=%23333333&amp;bodyBgcolor=%230000000&amp;nodeletBodyColor=%23666666&amp;bodyLinkcolor=%239999ff&amp;nodeleTitleFontAttr=color%3d%23FFFFFF&amp;nodeletTitleColor=%23333333&amp;nodeletGradTop=%23000000&amp;oddRowColor=%23444444&amp;nodeletGradBot=%23330066&amp;nodeletTitleFontAttr=color%3d%22%23FFFFFF%22</vars>
+  <vars>
+    <value>#ffffff</value>
+    <key>bodyTextcolor</key>
+  </vars>
+  <vars>
+    <value>color=&quot;#FFFFFF&quot;</value>
+    <key>nodeletTitleFontAttr</key>
+  </vars>
+  <vars>
+    <value>color=#FFFFFF</value>
+    <key>nodeleTitleFontAttr</key>
+  </vars>
+  <vars>
+    <value>#9999ff</value>
+    <key>bodyLinkcolor</key>
+  </vars>
+  <vars>
+    <value>#6666cc</value>
+    <key>bodyVlinkcolor</key>
+  </vars>
+  <vars>
+    <value>#330066</value>
+    <key>nodeletGradBot</key>
+  </vars>
+  <vars>
+    <value>#333333</value>
+    <key>docColor</key>
+  </vars>
+  <vars>
+    <value>#666666</value>
+    <key>nodeletBodyColor</key>
+  </vars>
+  <vars>
+    <value>#333333</value>
+    <key>nodeletTitleColor</key>
+  </vars>
+  <vars>
+    <value>#444444</value>
+    <key>oddRowColor</key>
+  </vars>
+  <vars>
+    <value>#000000</value>
+    <key>nodeletGradTop</key>
+  </vars>
+  <vars>
+    <value>#0000000</value>
+    <key>bodyBgcolor</key>
+  </vars>
   <parent_theme>415072</parent_theme>
   <title>classic theme goth settings</title>
 </node>

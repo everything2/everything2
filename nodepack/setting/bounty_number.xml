@@ -1,6 +1,13 @@
 <node>
   <node_id>1986610</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>1=95&amp;justice=11</vars>
+  <vars>
+    <value>95</value>
+    <key>1</key>
+  </vars>
+  <vars>
+    <value>11</value>
+    <key>justice</key>
+  </vars>
   <title>bounty number</title>
 </node>

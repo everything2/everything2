@@ -1,6 +1,41 @@
 <node>
   <node_id>1315939</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>document=1&amp;oppressor_superdoc=1&amp;restricted_superdoc=1&amp;superdoc=1&amp;user=1&amp;collaboration =1&amp;e2node=1&amp;collaboration=1&amp;superdocnolinks=1</vars>
+  <vars>
+    <value>1</value>
+    <key>collaboration </key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>oppressor_superdoc</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>document</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>e2node</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>collaboration</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>restricted_superdoc</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>superdoc</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>superdocnolinks</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>user</key>
+  </vars>
   <title>default searchtypes</title>
 </node>

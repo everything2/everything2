@@ -1,6 +1,41 @@
 <node>
   <node_id>332498</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>txt=text%2fplain&amp;jpg=image%2fjpeg&amp;gz=application%2fx%2dgzip&amp;html=text%2fhtml&amp;png=image%2fpng&amp;gif=image%2fgif&amp;jpeg=image%2fjpeg&amp;tar=application%2fx%2dtar&amp;htm=text%2fhtml</vars>
+  <vars>
+    <value>application/x-tar</value>
+    <key>tar</key>
+  </vars>
+  <vars>
+    <value>image/png</value>
+    <key>png</key>
+  </vars>
+  <vars>
+    <value>text/html</value>
+    <key>htm</key>
+  </vars>
+  <vars>
+    <value>text/plain</value>
+    <key>txt</key>
+  </vars>
+  <vars>
+    <value>text/html</value>
+    <key>html</key>
+  </vars>
+  <vars>
+    <value>image/jpeg</value>
+    <key>jpg</key>
+  </vars>
+  <vars>
+    <value>image/jpeg</value>
+    <key>jpeg</key>
+  </vars>
+  <vars>
+    <value>image/gif</value>
+    <key>gif</key>
+  </vars>
+  <vars>
+    <value>application/x-gzip</value>
+    <key>gz</key>
+  </vars>
   <title>filetypes</title>
 </node>

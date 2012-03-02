@@ -1,6 +1,33 @@
 <node>
   <node_id>212</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>S10=10%20%2d%20Engineering%20work%20item&amp;S01=01%20%2d%20Crash&amp;S02=02%20%2d%20Data%20corruption&amp;S03=03%20%2d%20Incorrectly%20functioning&amp;S04=04%20%2d%20Incorrectly%20functioning%20with%20workaround&amp;S05=05%20%2d%20Nonfunctioning&amp;S06=06%20%2d%20UI%20issue</vars>
+  <vars>
+    <value>01 - Crash</value>
+    <key>S01</key>
+  </vars>
+  <vars>
+    <value>06 - UI issue</value>
+    <key>S06</key>
+  </vars>
+  <vars>
+    <value>03 - Incorrectly functioning</value>
+    <key>S03</key>
+  </vars>
+  <vars>
+    <value>04 - Incorrectly functioning with workaround</value>
+    <key>S04</key>
+  </vars>
+  <vars>
+    <value>10 - Engineering work item</value>
+    <key>S10</key>
+  </vars>
+  <vars>
+    <value>05 - Nonfunctioning</value>
+    <key>S05</key>
+  </vars>
+  <vars>
+    <value>02 - Data corruption</value>
+    <key>S02</key>
+  </vars>
   <title>bugseverity</title>
 </node>

@@ -1,6 +1,9 @@
 <node>
   <node_id>1980347</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>Isaac Newton=1</vars>
+  <vars>
+    <value>1</value>
+    <key>Isaac Newton</key>
+  </vars>
   <title>famous dead people</title>
 </node>

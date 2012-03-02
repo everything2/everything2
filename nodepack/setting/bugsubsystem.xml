@@ -1,6 +1,17 @@
 <node>
   <node_id>214</node_id>
   <type_nodetype>153</type_nodetype>
-  <vars>ebc=everything%2eblockstackers%2ecom&amp;perlmonks=perlmonks%2eorg&amp;ecore=ecore</vars>
+  <vars>
+    <value>everything.blockstackers.com</value>
+    <key>ebc</key>
+  </vars>
+  <vars>
+    <value>ecore</value>
+    <key>ecore</key>
+  </vars>
+  <vars>
+    <value>perlmonks.org</value>
+    <key>perlmonks</key>
+  </vars>
   <title>bugsubsystem</title>
 </node>

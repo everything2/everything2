@@ -2,6 +2,33 @@
   <doctext></doctext>
   <node_id>176159</node_id>
   <type_nodetype>151</type_nodetype>
-  <vars>lastnode=%20&amp;level=0%20%28Initiate%29%20%2f%20&amp;nwriteups=%20&amp;nwriteupsupdate=1291998468&amp;meatloaf=Big%20and%20Juicy&amp;barf=good&amp;numwriteups=%20</vars>
+  <vars>
+    <value></value>
+    <key>lastnode</key>
+  </vars>
+  <vars>
+    <value>0 (Initiate) / </value>
+    <key>level</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>nwriteups</key>
+  </vars>
+  <vars>
+    <value>1291998468</value>
+    <key>nwriteupsupdate</key>
+  </vars>
+  <vars>
+    <value>Big and Juicy</value>
+    <key>meatloaf</key>
+  </vars>
+  <vars>
+    <value>good</value>
+    <key>barf</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>numwriteups</key>
+  </vars>
   <title>fdsafdas</title>
 </node>

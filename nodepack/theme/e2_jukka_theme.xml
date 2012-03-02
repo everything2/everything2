@@ -2,6 +2,73 @@
   <node_id>415073</node_id>
   <type_nodetype>175989</type_nodetype>
   <setting_id>415073</setting_id>
-  <vars>titleColor=%23cccc99&amp;thinOutlineFooter=%3c%2ftd%3e%3c%2ftr%3e%3c%2ftable%3e&amp;vlink=%237f7f66&amp;description=new%20default%20e2%20theme%20&amp;themeColors=%23cccc99&amp;version=0%2e1%2e1&amp;generalParent_container=415063&amp;generalNodelet_container=415064&amp;oddRowColor=%23cccc99&amp;link=%23003366&amp;writeupTitleColor=%23cccc99&amp;author=Jukka%20Rajala%20and%20Nathan%20Oostendorp&amp;bodyBgColor=%23ffffff&amp;thinOutlineHeader=%3ctable%20width%3d100%25%20cellpadding%3d0%20cellspacing%3d10%20border%3d0%3e%3ctr%3e%3ctd%20valign%3dtop%3e&amp;nodeletMCTableAttr=%20cellspacing%3d0%20cellpadding%3d0%20border%3d0&amp;useImageButtons=true&amp;searchIcon=%2fimg%2fsearch_button%2egif</vars>
+  <vars>
+    <value>#003366</value>
+    <key>link</key>
+  </vars>
+  <vars>
+    <value>#7f7f66</value>
+    <key>vlink</key>
+  </vars>
+  <vars>
+    <value>0.1.1</value>
+    <key>version</key>
+  </vars>
+  <vars>
+    <value>#cccc99</value>
+    <key>writeupTitleColor</key>
+  </vars>
+  <vars>
+    <value>Jukka Rajala and Nathan Oostendorp</value>
+    <key>author</key>
+  </vars>
+  <vars>
+    <value>true</value>
+    <key>useImageButtons</key>
+  </vars>
+  <vars>
+    <value>new default e2 theme </value>
+    <key>description</key>
+  </vars>
+  <vars>
+    <value> cellspacing=0 cellpadding=0 border=0</value>
+    <key>nodeletMCTableAttr</key>
+  </vars>
+  <vars>
+    <value>415064</value>
+    <key>generalNodelet_container</key>
+  </vars>
+  <vars>
+    <value>&lt;table width=100% cellpadding=0 cellspacing=10 border=0&gt;&lt;tr&gt;&lt;td valign=top&gt;</value>
+    <key>thinOutlineHeader</key>
+  </vars>
+  <vars>
+    <value>415063</value>
+    <key>generalParent_container</key>
+  </vars>
+  <vars>
+    <value>#ffffff</value>
+    <key>bodyBgColor</key>
+  </vars>
+  <vars>
+    <value>#cccc99</value>
+    <key>themeColors</key>
+  </vars>
+  <vars>
+    <value>#cccc99</value>
+    <key>titleColor</key>
+  </vars>
+  <vars>
+    <value>/img/search_button.gif</value>
+    <key>searchIcon</key>
+  </vars>
+  <vars>
+    <value>#cccc99</value>
+    <key>oddRowColor</key>
+  </vars>
+  <vars>
+    <value>&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</value>
+    <key>thinOutlineFooter</key>
+  </vars>
   <title>e2 jukka theme</title>
 </node>

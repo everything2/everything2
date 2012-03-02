@@ -2,6 +2,65 @@
   <node_id>415062</node_id>
   <type_nodetype>175989</type_nodetype>
   <setting_id>415062</setting_id>
-  <vars>bodyVlinkcolor=%23333399&amp;bodyTextcolor=%23000000&amp;author=Nathan%20Oostendorp%20and%20Darrick%20Brown&amp;description=The%20default%20Everything%20Theme&amp;version=0%2e2&amp;bodyBgcolor=%23FFFFFF&amp;nodeletParent_container=20&amp;nodeletBodyColor=%23FFFFFF&amp;generalParent_container=17&amp;nodeletBodyFontAttr=size%3d2&amp;bodyLinkcolor=%23993333&amp;nodeletTitleColor=%23CC99FF&amp;nodeletTitleBackground=%22%22&amp;nodeletMCTableAttr=cellpadding%3d1%20cellspacing%3d1&amp;nodeletTitleFontAttr=color%3dwhite</vars>
+  <vars>
+    <value>#000000</value>
+    <key>bodyTextcolor</key>
+  </vars>
+  <vars>
+    <value>20</value>
+    <key>nodeletParent_container</key>
+  </vars>
+  <vars>
+    <value>size=2</value>
+    <key>nodeletBodyFontAttr</key>
+  </vars>
+  <vars>
+    <value>0.2</value>
+    <key>version</key>
+  </vars>
+  <vars>
+    <value>color=white</value>
+    <key>nodeletTitleFontAttr</key>
+  </vars>
+  <vars>
+    <value>Nathan Oostendorp and Darrick Brown</value>
+    <key>author</key>
+  </vars>
+  <vars>
+    <value>The default Everything Theme</value>
+    <key>description</key>
+  </vars>
+  <vars>
+    <value>#993333</value>
+    <key>bodyLinkcolor</key>
+  </vars>
+  <vars>
+    <value>cellpadding=1 cellspacing=1</value>
+    <key>nodeletMCTableAttr</key>
+  </vars>
+  <vars>
+    <value>17</value>
+    <key>generalParent_container</key>
+  </vars>
+  <vars>
+    <value>#333399</value>
+    <key>bodyVlinkcolor</key>
+  </vars>
+  <vars>
+    <value>#FFFFFF</value>
+    <key>nodeletBodyColor</key>
+  </vars>
+  <vars>
+    <value>&quot;&quot;</value>
+    <key>nodeletTitleBackground</key>
+  </vars>
+  <vars>
+    <value>#CC99FF</value>
+    <key>nodeletTitleColor</key>
+  </vars>
+  <vars>
+    <value>#FFFFFF</value>
+    <key>bodyBgcolor</key>
+  </vars>
   <title>default theme</title>
 </node>
