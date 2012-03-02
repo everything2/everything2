@@ -17,12 +17,3 @@ execute "database bootstrap" do
   command "/var/everything/tools/ecoretool.pl bootstrap -d everything -n /var/everything/nodepack; touch /etc/chef_setup/database_bootstrap"
   creates "/etc/chef_setup/database_bootstrap"
 end
-
-apt_repo "percona" do
-  url "http://repo.percona.com/apt"
-  distribution "squeeze"
-  components ["main"]
-  key_id "1C4CBDCDCD2EFD2A"
-end
-
-package 'xtrabackup'
