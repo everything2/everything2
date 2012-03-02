@@ -2,16 +2,17 @@
 
 use strict;
 package ecoretool::base;
-
+use XML::Simple qw(:strict);
 use Getopt::Long;
 
 sub new
 {
 	my ($class) = @_;
 	my $this;
-	$this->{xs} = XML::Simple->new("NoSort" => 1, "KeepRoot" => 1, "NoAttr" => 1,"SuppressEmpty" => 1, "NumericEscape" => 2);
+	$this->{xs} = XML::Simple->new("NoSort" => 1, "NoAttr" => 1, "KeepRoot" => 1, "SuppressEmpty" => 1, "NumericEscape" => 2, "ForceArray" => 0, "KeyAttr" => {});
 	return bless $this,$class;
 }
+
 
 sub _inputs
 {

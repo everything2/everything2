@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use XML::Simple;
+use XML::Simple qw(:strict);
 use Clone qw(clone);
 package Everything::node::node;
 use utf8;
@@ -9,7 +9,7 @@ use utf8;
 sub new
 {
 	my ($class) = shift;
-	my $this = {"xs" => XML::Simple->new("NoSort" => 1, "KeepRoot" => 1, "NoAttr" => 1,"SuppressEmpty" => 1, "NumericEscape" => 2)};
+	my $this = {"xs" => XML::Simple->new("NoSort" => 1, "KeepRoot" => 1, "SuppressEmpty" => 1, "NumericEscape" => 2, "KeyAttr" => {}, "ForceArray" => ['vars'], "NoAttr" => 1)};
 	return bless $this,$class;
 }
 
@@ -51,6 +51,17 @@ sub node_to_xml
 	my ($this, $N, $dbh, $options) = @_;
 	my $NODE = $this->node_xml_prep($N, $dbh, $options);
 
+	my $vars_out;
+	if(exists($NODE->{vars}))
+	{
+		$vars_out = {Everything::getVarHashFromStringFast($NODE->{vars})};
+		$NODE->{vars} = [];
+		foreach my $key(keys %$vars_out)
+		{
+			push @{$NODE->{vars}},{"key" => $key, "value" => $vars_out->{$key}};
+		}
+	}
+
 	return $this->{xs}->XMLout({node => $NODE});
 }
 
@@ -72,13 +83,37 @@ sub xml_to_node
 	my ($this, $xml) = @_;
 	
 	my $NODE = $this->{xs}->XMLin($xml);
+	die "Malformed XML, no <node> construct!\n" unless ref $NODE eq "HASH";
 	$NODE = $NODE->{node};
+
+	die "Malformed node construct, not a hash!\n".Data::Dumper->Dump([$NODE]) unless ref $NODE eq "HASH";
 
 	foreach my $field (@{$this->node_id_equivs()})
 	{
 		$NODE->{$field} = $NODE->{node_id};
 	}
+	$NODE = $this->_repack_node_vars($NODE);
 	return $this->xml_to_node_post($NODE);
+}
+
+sub _repack_node_vars
+{
+	my ($this, $NODE) = @_;
+
+	return $NODE unless(exists($NODE->{vars}));
+	# XML::Simple always packs vars into an array
+	return $NODE unless ref $NODE->{vars} eq "ARRAY";
+	my $vars_in;
+	foreach my $varsitem (@{$NODE->{vars}})
+	{
+		next unless defined($varsitem->{key});
+		$vars_in->{$varsitem->{key}} = $varsitem->{value};
+	}
+	$vars_in ||= {};
+
+	$NODE->{vars} = Everything::getVarStringFromHash($vars_in);
+
+	return $NODE;
 }
 
 sub xml_to_node_post

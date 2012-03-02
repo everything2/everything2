@@ -9,7 +9,7 @@ sub new
 {
 	my ($class, $dbh, $basedir) = @_;
 
-	my $this = {"dbh" => $dbh, "basedir" => $basedir, "xs" => XML::Simple->new("NoSort" => 1, "KeepRoot" => 1, "NoAttr" => 1, "SuppressEmpty" => "")};
+	my $this = {"dbh" => $dbh, "basedir" => $basedir, "xs" => XML::Simple->new("NoSort" => 1, "KeepRoot" => 1, "NoAttr" => 1,"SuppressEmpty" => 1, "NumericEscape" => 2, "KeyAttr" => {}, "ForceArray" => ['vars'])};
 	return bless $this,$class;
 }
 
