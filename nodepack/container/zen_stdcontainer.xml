@@ -56,7 +56,7 @@ else {
 }
 %]
 [{static javascript}]
-
+[{googleanalytics}]
 &lt;/head&gt;
 
 &lt;body class=&quot;[%
@@ -69,12 +69,6 @@ $id =~ s/\W//g ;
 $str.'&quot; id=&quot;'.$id ;
 %]&quot;&gt;
 CONTAINED_STUFF
-&lt;script src=&quot;http://www.google-analytics.com/urchin.js&quot; type=&quot;text/javascript&quot;&gt;
-&lt;/script&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
-_uacct = &quot;UA-1314738-1&quot;;
-urchinTracker();
-&lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;</context>
   <type_nodetype>2</type_nodetype>

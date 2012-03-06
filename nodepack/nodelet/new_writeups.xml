@@ -7,15 +7,13 @@
   <iconHeight>26</iconHeight>
   <type_nodetype>9</type_nodetype>
   <iconWidth>170</iconWidth>
-  <nlcode>[{nwuamount}]
-
-[%
+  <nlcode>[%
+# cached version for Guest User
 return htmlcode('displaynltext', 'New Writeups (Guest User)' )
 	if $$USER{ user_id } == $HTMLVARS{ guest_user } ;
 
-return htmlcode('zenwriteups','') if htmlcode('isZen') ;
-
-return htmlcode('newwriteups2') ;
+# live version with options for logged-in user
+htmlcode('nwuamount').htmlcode($$THEME{isZen} ? 'zenwriteups' : 'newwriteups2');
 %]
 
 &lt;div class=&quot;nodeletfoot morelink&quot;&gt;([%linkNode(getNode('Writeups by Type', 'superdoc'), 'more')%])&lt;/div&gt;</nlcode>

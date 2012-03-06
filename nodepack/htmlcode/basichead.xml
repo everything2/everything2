@@ -17,6 +17,7 @@
 ' : '
 ' )
 . htmlcode('static javascript')
+. htmlcode('googleanalytics')
 . &quot;&lt;/head&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
   <title>basichead</title>

@@ -1,0 +1,19 @@
+<node>
+  <node_id>2061803</node_id>
+  <code>return qq!
+&lt;script type=&quot;text/javascript&quot;&gt;
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-1314738-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+&lt;/script&gt;!;</code>
+  <type_nodetype>4</type_nodetype>
+  <title>googleanalytics</title>
+</node>
