@@ -13,7 +13,7 @@ my @R = (
 );
 
 $str.=$R[int(rand(@R))];
-$str.=' &lt;a href=&quot;/node/usergroup/edev&quot;&gt;The Everything Development Company&lt;/a&gt;. All content copyright &amp;#169; original author unless stated otherwise.';
+$str.=' Everything2 Media, LLC. All content copyright &amp;#169; original author unless stated otherwise.';
 
 if ( rand() &lt; 0.1 ) {
     my @gibberish = (
