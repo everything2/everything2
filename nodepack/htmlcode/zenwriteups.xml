@@ -10,7 +10,7 @@ my $cansee = ( exists($HTMLVARS{'group_gods'}{$UID} )
 use JSON;
 
 my $nltext = getNode(&quot;New Writeups Feeder&quot;, 'nodelet') -&gt; {nltext};
-return &quot;&lt;em&gt;No writeups&lt;/em&gt;&quot; unless $nltext != &quot;&quot;;
+return &quot;&lt;em&gt;No writeups&lt;/em&gt;&quot; if $nltext eq &quot;&quot;;
 
 my @newwus = @{from_json($nltext)};
 
