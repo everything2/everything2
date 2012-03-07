@@ -13,7 +13,6 @@ my @addrs = htmlcode('get ips');
 my $isRoot = exists $HTMLVARS{group_gods}{getId($USER)};
 
 ### Generate the CAPTCHA (the keys must be different for .com, .net, and .org)
-use HTML::Tiny;
 use Captcha::reCAPTCHA;
 my $captcha = Captcha::reCAPTCHA-&gt;new;
 my $reCAPTCHAPublicKey = '';
