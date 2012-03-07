@@ -9,7 +9,10 @@ my $cansee = ( exists($HTMLVARS{'group_gods'}{$UID} )
 
 use JSON;
 
-my @newwus = @{from_json( getNode(&quot;New Writeups Feeder&quot;, 'nodelet') -&gt; {nltext} )};
+my $nltext = getNode(&quot;New Writeups Feeder&quot;, 'nodelet') -&gt; {nltext};
+return &quot;&lt;em&gt;No writeups&lt;/em&gt;&quot; unless $nltext != &quot;&quot;;
+
+my @newwus = @{from_json($nltext)};
 
 my $noHidden = !$isLogs;
 $noHidden = $noHidden &amp;&amp; $$VARS{nw_nojunk} if $cansee;
