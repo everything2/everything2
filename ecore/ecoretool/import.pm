@@ -16,14 +16,6 @@ use Algorithm::Diff qw(diff);
 
 use vars qw($files);
 
-sub new
-{
-	my ($class) = @_;
-	my $this;
-	$this->{xs} = XML::Simple->new("NoSort" => 1, "KeepRoot" => 1, "NoAttr" => 1, "SuppressEmpty" => "");
-	return bless $this,$class;
-}
-
 sub _inputs
 {
 	return {
