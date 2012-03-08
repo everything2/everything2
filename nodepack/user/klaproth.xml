@@ -25,10 +25,6 @@
     <key>oldGP</key>
   </vars>
   <vars>
-    <value>Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Chrome/9.0.597.98 Safari/534.13</value>
-    <key>browser</key>
-  </vars>
-  <vars>
     <value></value>
     <key>easter_eggs</key>
   </vars>

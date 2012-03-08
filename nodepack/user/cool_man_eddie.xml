@@ -21,10 +21,6 @@
     <key>oldGP</key>
   </vars>
   <vars>
-    <value>Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13</value>
-    <key>browser</key>
-  </vars>
-  <vars>
     <value>140.247.130.229</value>
     <key>ipaddy</key>
   </vars>
@@ -61,7 +57,7 @@
     <key>nullvote</key>
   </vars>
   <vars>
-    <value>1329864015</value>
+    <value>1330624818</value>
     <key>nwriteupsupdate</key>
   </vars>
   <vars>

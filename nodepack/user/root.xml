@@ -20,15 +20,11 @@
     <key>oldGP</key>
   </vars>
   <vars>
-    <value>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11</value>
-    <key>browser</key>
-  </vars>
-  <vars>
     <value></value>
     <key>ipaddy</key>
   </vars>
   <vars>
-    <value>2012-02-28</value>
+    <value>2012-02-27</value>
     <key>votetime</key>
   </vars>
   <vars>
@@ -52,7 +48,7 @@
     <key>nwriteups</key>
   </vars>
   <vars>
-    <value>1330445563</value>
+    <value>1330374419</value>
     <key>preference_last_update_time</key>
   </vars>
   <vars>
@@ -60,7 +56,7 @@
     <key>nullvote</key>
   </vars>
   <vars>
-    <value>1329518052</value>
+    <value>1330374395</value>
     <key>nwriteupsupdate</key>
   </vars>
   <vars>

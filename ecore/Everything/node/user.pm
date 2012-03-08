@@ -29,6 +29,12 @@ sub node_id_equivs
 	return ["user_id","setting_id",@{$this->SUPER::node_id_equivs}];
 }
 
+sub xml_vars_no_store
+{
+	my ($this) = @_;
+	return ["browser", @{$this->SUPER::xml_vars_no_store()}];
+}
+
 sub xml_no_store
 {
 	my ($this) = @_;

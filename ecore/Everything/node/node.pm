@@ -58,11 +58,18 @@ sub node_to_xml
 		$NODE->{vars} = [];
 		foreach my $key(keys %$vars_out)
 		{
+			next if(grep(/^$key$/, @{$this->xml_vars_no_store()}));
 			push @{$NODE->{vars}},{"key" => $key, "value" => $vars_out->{$key}};
 		}
 	}
 
 	return $this->{xs}->XMLout({node => $NODE});
+}
+
+sub xml_vars_no_store
+{
+	my ($this) = @_;
+	return [];
 }
 
 sub xml_no_store
