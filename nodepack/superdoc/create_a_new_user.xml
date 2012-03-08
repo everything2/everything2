@@ -13,24 +13,30 @@ my @addrs = htmlcode('get ips');
 my $isRoot = exists $HTMLVARS{group_gods}{getId($USER)};
 
 ### Generate the CAPTCHA (the keys must be different for .com, .net, and .org)
+
+my $reCAPTCHA;
 use Captcha::reCAPTCHA;
 my $captcha = Captcha::reCAPTCHA-&gt;new;
 my $reCAPTCHAPublicKey = '';
 my $reCAPTCHAPrivateKey = '';
-my $server = $ENV{HTTP_HOST};
 
-if($server =~ m/everything2\.com$/){
-	$reCAPTCHAPublicKey = '6LfsXAIAAAAAABqYVncS2qc2o7P8rHoxOH_3QH2t';
+if($CONFIG{use_captcha} != 0)
+{
+  my $server = $ENV{HTTP_HOST};
+  if($server =~ m/everything2\.com$/){
+  	$reCAPTCHAPublicKey = '6LfsXAIAAAAAABqYVncS2qc2o7P8rHoxOH_3QH2t';
 	$reCAPTCHAPrivateKey = '6LfsXAIAAAAAAM4PtmzdbhTmpiieSNJ2YUBnjPRd';
-}elsif($server =~ m/everything2\.net$/){
+  }elsif($server =~ m/everything2\.net$/){
 	$reCAPTCHAPublicKey = '6LfuXAIAAAAAAIeVU24N_zB8Ez0kK9rzNeOKx8HX';
 	$reCAPTCHAPrivateKey = '6LfuXAIAAAAAAAA9bE5SO5c60BH69t6lT4B4ShY2';
-}elsif($server =~ m/everything2\.org$/){
+  }elsif($server =~ m/everything2\.org$/){
 	$reCAPTCHAPublicKey = '6LfvXAIAAAAAAI2xn_O42yiTXbB_e-9gA6AfXVi8';
 	$reCAPTCHAPrivateKey = '6LfvXAIAAAAAAAOPw0yZVfmK4Nviw-KTiLfMdq_g';
+  }
+  $reCAPTCHA = $captcha-&gt;get_html( $reCAPTCHAPublicKey );
+}else{
+  $reCAPTCHA = &quot;&quot;;
 }
-my $reCAPTCHA = $captcha-&gt;get_html( $reCAPTCHAPublicKey );
-
 
 ### Generate the Login HTML stub
 local *generateLogin = sub {
@@ -118,15 +124,17 @@ if ($query-&gt;param('op') eq 'newuser') {
 ##################
 #CHECK THE CAPTCHA
 
-my $challenge = $query-&gt;param('recaptcha_challenge_field');
-my $response = $query-&gt;param('recaptcha_response_field');
-my $result = $captcha-&gt;check_answer( $reCAPTCHAPrivateKey, $ENV{'REMOTE_ADDR'}, $challenge, $response );
+if($CONFIG{use_captcha} != 0)
+{
+  my $challenge = $query-&gt;param('recaptcha_challenge_field');
+  my $response = $query-&gt;param('recaptcha_response_field');
+  my $result = $captcha-&gt;check_answer( $reCAPTCHAPrivateKey, $ENV{'REMOTE_ADDR'}, $challenge, $response );
 
-unless ( $result-&gt;{is_valid} ) {
+  unless ( $result-&gt;{is_valid} ) {
 	debugLog('attempted create user ['.encodeHTML($name,1).'], but failed CAPTCHA.');
 	$errorMessage=&quot;You did not correctly type the two reCAPTCHA words.  Please try again.&quot;;
+  }
 }
-
 
 
 ####################
@@ -376,8 +384,7 @@ __HERE__
 
 	return $str;
 
-%]
-</doctext>
+%]</doctext>
   <node_id>101</node_id>
   <type_nodetype>14</type_nodetype>
   <title>Create a New User</title>
