@@ -19,7 +19,16 @@ sub node_xml_prep
 		$password_string = "";
 	}		
 
-	my $create_table_statement = `mysqldump --skip-add-drop-table --skip-add-locks --skip-disable-keys --skip-set-charset --skip-comments -d -u $$options{user}$password_string $$options{database} $$NODE{title}`;
+	my $sth = $dbh->prepare("SHOW CREATE TABLE $$NODE{title}");
+	$sth->execute();
+	my $create_table_statement;
+
+	if(my $result = $sth->fetchrow_arrayref())
+	{
+		$create_table_statement = $result->[1];
+	}
+
+	#my $create_table_statement = `mysqldump --skip-add-drop-table --skip-add-locks --skip-disable-keys --skip-set-charset --skip-comments -d -u $$options{user}$password_string $$options{database} $$NODE{title}`;
 	if(not defined($create_table_statement))
 	{
 		die "Could not get create table statement for dbtable $$NODE{title}";
