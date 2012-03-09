@@ -1,15 +1,7 @@
 <node>
   <type_nodetype>148</type_nodetype>
   <node_id>1919228</node_id>
-  <_create_table_statement>/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `iplog2` (
+  <_create_table_statement>CREATE TABLE `iplog2` (
   `iplog2_id` int(11) NOT NULL AUTO_INCREMENT,
   `ip_user` int(11) NOT NULL DEFAULT '0',
   `ip_addy` char(100) NOT NULL DEFAULT '',
@@ -18,15 +10,6 @@ CREATE TABLE `iplog2` (
   UNIQUE KEY `ip_user` (`ip_user`,`ip_addy`),
   KEY `iplog2_user` (`ip_user`),
   KEY `iplog2_addy` (`ip_addy`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
-</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>iplog2</title>
 </node>
