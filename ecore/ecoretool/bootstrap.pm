@@ -167,7 +167,7 @@ sub _values_into_table
 {
 	my ($this, $newdbh, $NODE, $table) = @_;
 
-	my $node_columns;
+	my $node_columns = [];
 	my $table_columns = $this->_get_table_columns($newdbh, $table);
 	
 	foreach my $c (@$table_columns)
@@ -177,7 +177,9 @@ sub _values_into_table
 			push @$node_columns, $c;
 		}
 	}
-			
+
+	return unless(scalar(@$node_columns) > 0);
+	
 	my $node_bootstrap_template = "INSERT INTO $table (".join(",",@$node_columns).") VALUES(".join(',',split(//,('?'x(@$node_columns)))).")";
 	my $insertdata;
 
