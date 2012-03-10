@@ -112,7 +112,7 @@ sub main
 		
 		if(scalar(keys %$NODE))
 		{
-			print STDERR "Leftover keys in nodetype bootstrap in $file";
+			print STDERR "Warning: Leftover keys in nodetype bootstrap in $file (".join(",",keys %$NODE).")\n";
 		}
 	}
 	closedir($dirhandle);
