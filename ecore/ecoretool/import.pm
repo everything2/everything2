@@ -10,7 +10,10 @@ use base qw(ecoretool::base);
 use XML::Simple;
 use File::Find qw(find);
 use Everything;
-use Everything::Search; # Horrible hack for object problems in Everything::NodeBase
+
+# Everything::Search is needed here because it is a horrible hack for object problems in Everything::NodeBase
+# eval() it because for now, it doesn't exist in perlmonks
+eval("use Everything::Search;"); 
 use Everything::HTML; # See above
 use Algorithm::Diff qw(diff);
 
