@@ -1,0 +1,3 @@
+[submodule "ecoretool"]
+	path = ecoretool
+	url = git://github.com/everything2/ecoretool.git
