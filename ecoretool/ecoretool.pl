@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
 
 use strict;
-use lib qw(lib /var/everything/ecore ecore);
+use lib qw(lib /var/everything/ecore /var/everything/ecoretool/lib);
 package ecoretool;
 use Getopt::Long;
 use Clone;
-use Module::Pluggable search_path => ["ecoretool"], except => 'ecoretool::base', instantiate => 'new';
+use Module::Pluggable search_path => ['ecoretool'],search_dirs => ['lib'],except => 'ecoretool::base', instantiate => 'new';
 
 my $allowed_directives;
 my $directive = $ARGV[0];
