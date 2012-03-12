@@ -14,6 +14,6 @@ execute "mysql permissions" do
 end
 
 execute "database bootstrap" do
-  command "/var/everything/tools/ecoretool.pl bootstrap -d everything -n /var/everything/nodepack; touch /etc/chef_setup/database_bootstrap"
+  command "/var/everything/ecoretool/ecoretool.pl bootstrap -d everything -n /var/everything/nodepack; touch /etc/chef_setup/database_bootstrap"
   creates "/etc/chef_setup/database_bootstrap"
 end
