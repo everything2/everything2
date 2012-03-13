@@ -13,8 +13,6 @@ Vagrant::Config.run do |config|
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = "cookbooks"
     chef.roles_path = "roles"
-    #chef.json = JSON.parse(File.read(File.dirname(__FILE__) + "/config/node.json"))
     chef.add_role("e2dev")
-    chef.add_recipe("edev")
   end
 end
