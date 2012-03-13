@@ -90,7 +90,7 @@ directory '/var/everything' do
 end
 
 git '/var/everything/' do
-  repository 'git://github.com/everything2/everything2.git'
+  repository node["edev"]["gitrepo"]
   enable_submodules true
   action :sync
 end
