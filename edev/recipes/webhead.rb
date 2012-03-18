@@ -55,6 +55,9 @@ template '/etc/apache2/conf.d/everything' do
   mode "0755"
   action "create"
   source 'everything.erb'
+  variables(
+    "rewrite_urls" => node["edev"]["rewrite_urls"]
+  )
 end
 
 link '/etc/apache2/mods-enabled/rewrite.load' do
