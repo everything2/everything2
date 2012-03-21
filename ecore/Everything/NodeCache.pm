@@ -102,8 +102,6 @@ sub new
 	$this->{typeVerified} = {};
 	$this->{typeVersion} = {};
 	
-	$this->{methodCache}= {};
-
 	if ($memcache) { 
         	$this->{memcache} = new Everything::Memcache $memcache, $nodeBase;
     	}
@@ -588,12 +586,6 @@ sub isSameVersion
 	if($ver == $this->{version}{$$NODE{node_id}}) {
 		$$this{verified}{$$NODE{node_id}} = 1;
 	    return 1;	
-	}
-	if ($$NODE{title} eq 'nodemethod' and 
-		$$NODE{type}{node_id} == 1 and
-		exists $this->{version}{$$NODE{node_id}}) {
-		#the nodemethod type has been incremented.  Wipe the methodCache
-		$this->{methodCache} = {};
 	}
 	return 0;
 }
