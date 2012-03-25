@@ -105,10 +105,6 @@
     <key>lastborg</key>
   </vars>
   <vars>
-    <value>2011-02-23</value>
-    <key>votetime</key>
-  </vars>
-  <vars>
     <value>1</value>
     <key>hide_weblog_1358106</key>
   </vars>
@@ -179,10 +175,6 @@
   <vars>
     <value>415073</value>
     <key>preferred_theme</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>includedJS</key>
   </vars>
   <title>Klaproth</title>
   <doctext>&lt;br&gt;&lt;br&gt;

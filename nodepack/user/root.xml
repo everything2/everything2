@@ -20,14 +20,6 @@
     <key>oldGP</key>
   </vars>
   <vars>
-    <value>150</value>
-    <key>ListNodesOfType_Type</key>
-  </vars>
-  <vars>
-    <value>2012-03-19</value>
-    <key>votetime</key>
-  </vars>
-  <vars>
     <value></value>
     <key>employment</key>
   </vars>
@@ -98,10 +90,6 @@
   <vars>
     <value>Big and Juicy</value>
     <key>meatloaf</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>includedJS</key>
   </vars>
   <title>root</title>
   <doctext>He's the god of [gods] &amp;#8212; instant access. Unlimited power.

@@ -21,10 +21,6 @@
     <key>oldGP</key>
   </vars>
   <vars>
-    <value>2011-01-19</value>
-    <key>votetime</key>
-  </vars>
-  <vars>
     <value></value>
     <key>employment</key>
   </vars>
@@ -95,10 +91,6 @@
   <vars>
     <value>415073</value>
     <key>preferred_theme</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>includedJS</key>
   </vars>
   <title>Cool Man Eddie</title>
   <doctext>Just hangin'...  You know, chillin'.&lt;br&gt;
