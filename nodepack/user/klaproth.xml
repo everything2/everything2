@@ -121,10 +121,6 @@
     <key>num_newwus</key>
   </vars>
   <vars>
-    <value>36</value>
-    <key>votesrefreshed</key>
-  </vars>
-  <vars>
     <value>displayfull</value>
     <key>displaypref_e2node</key>
   </vars>

@@ -56,10 +56,6 @@
     <key>barf</key>
   </vars>
   <vars>
-    <value>7</value>
-    <key>votesrefreshed</key>
-  </vars>
-  <vars>
     <value>(default)</value>
     <key>displaypref_e2node</key>
   </vars>
