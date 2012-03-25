@@ -20,11 +20,11 @@
     <key>oldGP</key>
   </vars>
   <vars>
-    <value></value>
-    <key>ipaddy</key>
+    <value>150</value>
+    <key>ListNodesOfType_Type</key>
   </vars>
   <vars>
-    <value>2012-02-27</value>
+    <value>2012-03-19</value>
     <key>votetime</key>
   </vars>
   <vars>
@@ -56,10 +56,6 @@
     <key>nullvote</key>
   </vars>
   <vars>
-    <value>1330374395</value>
-    <key>nwriteupsupdate</key>
-  </vars>
-  <vars>
     <value>15</value>
     <key>num_newwus</key>
   </vars>
@@ -68,7 +64,7 @@
     <key>barf</key>
   </vars>
   <vars>
-    <value>5</value>
+    <value>7</value>
     <key>votesrefreshed</key>
   </vars>
   <vars>
@@ -98,10 +94,6 @@
   <vars>
     <value></value>
     <key>motto</key>
-  </vars>
-  <vars>
-    <value>0 (Initiate) / -160</value>
-    <key>level</key>
   </vars>
   <vars>
     <value>Big and Juicy</value>

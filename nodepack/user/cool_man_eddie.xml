@@ -21,10 +21,6 @@
     <key>oldGP</key>
   </vars>
   <vars>
-    <value>140.247.130.229</value>
-    <key>ipaddy</key>
-  </vars>
-  <vars>
     <value>2011-01-19</value>
     <key>votetime</key>
   </vars>
@@ -55,10 +51,6 @@
   <vars>
     <value>off</value>
     <key>nullvote</key>
-  </vars>
-  <vars>
-    <value>1330624818</value>
-    <key>nwriteupsupdate</key>
   </vars>
   <vars>
     <value>1</value>
@@ -95,10 +87,6 @@
   <vars>
     <value></value>
     <key>motto</key>
-  </vars>
-  <vars>
-    <value>0 (Initiate) / 169</value>
-    <key>level</key>
   </vars>
   <vars>
     <value></value>

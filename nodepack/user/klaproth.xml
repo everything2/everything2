@@ -89,10 +89,6 @@
     <key>motto</key>
   </vars>
   <vars>
-    <value>0 (Initiate) / 169</value>
-    <key>level</key>
-  </vars>
-  <vars>
     <value>1</value>
     <key>hide_weblog_1402260</key>
   </vars>
@@ -103,10 +99,6 @@
   <vars>
     <value>Relax on the beach!</value>
     <key>mission</key>
-  </vars>
-  <vars>
-    <value>92.236.27.197</value>
-    <key>ipaddy</key>
   </vars>
   <vars>
     <value>1060197241</value>
@@ -123,10 +115,6 @@
   <vars>
     <value>1</value>
     <key>epi_hideces</key>
-  </vars>
-  <vars>
-    <value>1327207744</value>
-    <key>nwriteupsupdate</key>
   </vars>
   <vars>
     <value>off</value>

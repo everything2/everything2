@@ -16,16 +16,8 @@
     <key>wufoot</key>
   </vars>
   <vars>
-    <value>62.253.128.7</value>
-    <key>ipaddy</key>
-  </vars>
-  <vars>
     <value></value>
     <key>numwriteups</key>
-  </vars>
-  <vars>
-    <value>0 (Initiate) / 0</value>
-    <key>level</key>
   </vars>
   <vars>
     <value>1</value>
@@ -38,10 +30,6 @@
   <vars>
     <value>1278018700</value>
     <key>preference_last_update_time</key>
-  </vars>
-  <vars>
-    <value>1329097281</value>
-    <key>nwriteupsupdate</key>
   </vars>
   <vars>
     <value>signin!</value>
