@@ -1,7 +1,6 @@
 <node>
   <node_id>415062</node_id>
   <type_nodetype>175989</type_nodetype>
-  <setting_id>415062</setting_id>
   <vars>
     <value>#000000</value>
     <key>bodyTextcolor</key>

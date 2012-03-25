@@ -1,7 +1,6 @@
 <node>
   <node_id>1100936</node_id>
   <type_nodetype>175989</type_nodetype>
-  <setting_id>1100936</setting_id>
   <vars>
     <value>#ffd000</value>
     <key>bodyAlinkcolor</key>
