@@ -32,7 +32,7 @@ my $sth = $dbh->prepare("SHOW TABLES");
 $sth->execute();
 
 my $now = [localtime()];
-my $dumpfile = "everything.staging.".($now->[5]+1900).sprintf("%02d",$now->[4]).sprintf("%02d",$now->[3]).".sql";
+my $dumpfile = "everything.staging.".($now->[5]+1900).sprintf("%02d",$now->[4]+1).sprintf("%02d",$now->[3]).".sql";
 
 
 my $table_list;
