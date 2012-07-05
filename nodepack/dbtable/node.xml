@@ -21,6 +21,6 @@
   KEY `createtime` (`createtime`),
   KEY `authortype` (`type_nodetype`,`author_user`),
   KEY `reputation_totalvotes` (`reputation`,`totalvotes`)
-) ENGINE=InnoDB AUTO_INCREMENT=2061813 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=2067268 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>node</title>
 </node>

@@ -13,6 +13,6 @@
   KEY `user_seen` (`user_id`,`is_seen`),
   KEY `reference_notified_id` (`reference_notified_id`),
   KEY `reference_notified_id__user_id__is_seen` (`reference_notified_id`,`user_id`,`is_seen`)
-) ENGINE=InnoDB AUTO_INCREMENT=192128 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=213848 DEFAULT CHARSET=latin1</_create_table_statement>
   <title>notified</title>
 </node>

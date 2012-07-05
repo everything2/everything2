@@ -535,6 +535,11 @@ if($message =~ /^\/(msg\??|tell\??)(\{.+?\}\??|\s+\S+)(\s+.+)?$/si) {
 	$$OTHERUSERS{nltext} =  Everything::HTML::parseCode($$OTHERUSERS{nlcode}, $OTHERUSERS);
 	updateNode($OTHERUSERS, -1);
 
+        htmlcode('addNotification', 'chanop borged user', 0, {
+	       chanop_id =&gt; $USER-&gt;{node_id},
+	       user_id =&gt; $U-&gt;{node_id}
+	});
+
 	#as of 2008-08-12, not showing messages in public area
 	return;
 
@@ -554,11 +559,6 @@ if($message =~ /^\/(msg\??|tell\??)(\{.+?\}\??|\s+\S+)(\s+.+)?$/si) {
 		author_user =&gt; getId($BORG),
 		for_user =&gt; 0,
 		room =&gt; $$USER{in_room}
-	});
-
-	htmlcode('addNotification', 'chanop borged user', 0, {
-	       chanop_id =&gt; $USER-&gt;{node_id},
-	       user_id =&gt; $U-&gt;{node_id}
 	});
 
 	return;
@@ -702,8 +702,7 @@ if($message =~ /^\/(msg\??|tell\??)(\{.+?\}\??|\s+\S+)(\s+.+)?$/si) {
 	return if ($$VARS{infected} == 1);
 
 	$DB-&gt;sqlInsert('message', {msgtext =&gt; $message, author_user =&gt; getId($USER), for_user =&gt; 0, room =&gt; $$USER{in_room}});
-}
-</code>
+}</code>
   <type_nodetype>415056</type_nodetype>
   <title>message</title>
 </node>

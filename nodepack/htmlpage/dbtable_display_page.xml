@@ -90,17 +90,7 @@ return $strRowCount;
 
 &lt;p align=&quot;right&quot;&gt;[% linkNode($NODE, &quot;indexes&quot;, {displaytype =&gt; &quot;index&quot;}) %]&lt;/p&gt;
 [{displaytable:$$NODE{title}}]
-
-&lt;p&gt;Create statement
-[%
-  my $dbh = $DB-&gt;getDatabaseHandle();
-  my $sth = $dbh-&gt;prepare(&quot;SHOW CREATE TABLE $$NODE{title}&quot;);
-  $sth-&gt;execute();
-  my $create = $sth-&gt;fetchrow_arrayref()-&gt;[1];
-  my $lines = scalar(split(&quot;\n&quot;,$create));
-  return qq|&lt;textarea id=&quot;create_statement&quot; readonly=&quot;readonly&quot; rows=&quot;$lines&quot;&gt;$create&lt;/textarea&gt;|;
-%]
-&lt;/p&gt;</page>
+</page>
   <node_id>185</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

@@ -56,6 +56,12 @@ $str .= $query-&gt;textarea( -name =&gt; &quot;update_$field&quot;,
       -default =&gt; $$NODE{$field}, -rows =&gt; 20, -columns =&gt; $size,
       -maxlength =&gt; $1 ) . &quot;&lt;br&gt;\n&quot;;
 
+$field=&quot;pubdate&quot;;
+$str .= &quot;$field: &quot;;
+$str .= $query-&gt;textarea( -name =&gt; &quot;update_$field&quot;,
+      -default =&gt; $$NODE{$field}, -rows =&gt; 20, -columns =&gt; $size,
+      -maxlength =&gt; $1 ) . &quot;&lt;br&gt;\n&quot;;
+
 
 $str .= htmlcode( 'closeform' );
 

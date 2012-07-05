@@ -23,6 +23,6 @@
   KEY `for_user_for_usergroup` (`for_user`,`for_usergroup`),
   KEY `foruser_tstamp_message_id` (`for_user`,`tstamp`,`message_id`),
   KEY `message_author` (`author_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=19652317 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>message</title>
 </node>

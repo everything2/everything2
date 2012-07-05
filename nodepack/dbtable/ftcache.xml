@@ -7,6 +7,6 @@
   `ftache_when` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `ftcache_id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`ftcache_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=177810 DEFAULT CHARSET=latin1</_create_table_statement>
   <title>ftcache</title>
 </node>

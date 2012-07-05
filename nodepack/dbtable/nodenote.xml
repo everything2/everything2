@@ -12,6 +12,6 @@
   KEY `nodenote_nodeid` (`nodenote_nodeid`),
   KEY `noter_user` (`noter_user`),
   KEY `nodenote_nodeid__noter_user` (`nodenote_nodeid`,`noter_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=1747016 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=1750140 DEFAULT CHARSET=latin1</_create_table_statement>
   <title>nodenote</title>
 </node>

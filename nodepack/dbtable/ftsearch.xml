@@ -10,6 +10,6 @@
   PRIMARY KEY (`ftsearch_id`),
   KEY `ftsearch_dictid` (`ftsearch_dictid`),
   KEY `ftsearch_writeup` (`ftsearch_writeup`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=12692469 DEFAULT CHARSET=latin1</_create_table_statement>
   <title>ftsearch</title>
 </node>

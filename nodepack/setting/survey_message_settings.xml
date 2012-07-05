@@ -18,12 +18,12 @@
     <key>survey_message</key>
   </vars>
   <vars>
-    <value> 0</value>
-    <key>enabled</key>
-  </vars>
-  <vars>
     <value>http://www.surveygizmo.com/s/148593/e2-users</value>
     <key>survey_target</key>
+  </vars>
+  <vars>
+    <value> 0</value>
+    <key>enabled</key>
   </vars>
   <title>survey message settings</title>
 </node>

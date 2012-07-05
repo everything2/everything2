@@ -189,6 +189,7 @@ insertIntoNodegroup($n, $USER, $c)
 if(0) {
 my $gu = getNode('Guest User','user');
 my $v = getVars($gu);
+#TODO add if not there, instead of just clearing
 #$$v{displaypref_e2node}='displayfull';
 $$v{nodelets}='262,457857,263,165437,174581';
 #$$v{nodelets}='262,457857,263,165437,174581';
@@ -608,8 +609,7 @@ return ('couldn\'t find ' . $module) unless scalar(@allLines);
 
 
 
-&lt;/div&gt;
-</doctext>
+&lt;/div&gt;</doctext>
   <node_id>950586</node_id>
   <type_nodetype>1065266</type_nodetype>
   <title>N-Wing's plaything</title>

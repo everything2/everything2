@@ -9,7 +9,7 @@ foreach(@grp)
    next unless canReadNode($USER, $n);
    next if($$n{node_id} == $$NODE{node_id});
    my $tmp = &quot;&lt;nodesuggest type=\&quot;$$n{type}{title}\&quot;&gt;&quot;;
-   $tmp.= &quot;&lt;e2link node_id=\&quot;$$n{node_id}\&quot;&gt;$$n{title}&lt;/e2link&gt;&quot;;
+   $tmp.= '&lt;e2link node_id=&quot;'.$$n{node_id}.'&quot;&gt;'.encodeHTML($$n{title}).'&lt;/e2link&gt;';
 
    if($$n{type}{title} eq 'user')
    {
@@ -26,7 +26,7 @@ foreach(@grp)
          $tousr = getNode($ptr, 'user');
       }  
 
-      $tmp .= &quot;&lt;useralias&gt;&lt;e2link node_id=\&quot;$$tousr{node_id}\&quot;&gt;$$tousr{title}&lt;/e2link&gt;&lt;/useralias&gt;&quot;;
+      $tmp .= '&lt;useralias&gt;&lt;e2link node_id=&quot;'.$$tousr{node_id}.'&quot;&gt;'.encodeHTML($$tousr{title}).'&lt;/e2link&gt;&lt;/useralias&gt;';
     }
 
    }

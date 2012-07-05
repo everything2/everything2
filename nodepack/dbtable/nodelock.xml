@@ -9,6 +9,6 @@
   `nodelock_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`nodelock_id`),
   KEY `nodelock_node_index` (`nodelock_node`)
-) ENGINE=InnoDB AUTO_INCREMENT=5319 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=5328 DEFAULT CHARSET=latin1</_create_table_statement>
   <title>nodelock</title>
 </node>

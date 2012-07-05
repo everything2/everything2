@@ -6,9 +6,10 @@ return &quot;&lt;p&gt;Undifferentiated from the masses of the streets, you fall 
 my $rowCtr = 0;
 my $unVotable = getVars(getNode('boring heaven nodes', 'setting'));
 my ($title, $queryText, $rows);
-my $count = 300;
+my $count = 1000;
 my $maxVotes = int($query-&gt;param(&quot;mv&quot;));
 my ($minRep, $repRestriction, $repStr) = (undef, '', '');
+my $resultCtr = 100;
 
 if ($maxVotes &lt;= 0)
 {
@@ -29,7 +30,7 @@ if (defined $query-&gt;param(&quot;mr&quot;) &amp;&amp; $query-&gt;param(&quot;m
 my $dbh = $DB-&gt;getDatabaseHandle();
 return 'No database handle!' unless $dbh;
 
-my $str = '&lt;p&gt;These nodes have fallen between the cracks, and seem to have gone unnoticed. This page lists &lt;em&gt;up to&lt;/em&gt; 50 writeups that you haven\'t voted on that have fewer than '.$maxVotes.' total vote(s)'.$repStr.' on E2. Since they have been neglected until now, why don\'t you visit them and click that vote button?&lt;/p&gt;
+my $str = '&lt;p&gt;These nodes have fallen between the cracks, and seem to have gone unnoticed. This page lists &lt;em&gt;up to&lt;/em&gt; '.$resultCtr.' writeups that you haven\'t voted on that have fewer than '.$maxVotes.' total vote(s)'.$repStr.' on E2. Since they have been neglected until now, why don\'t you visit them and click that vote button?&lt;/p&gt;
 
 &lt;form method=&quot;get&quot;&gt;&lt;div&gt;
 &lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;'.getId($NODE).'&quot; /&gt;
@@ -90,6 +91,7 @@ SELECT title, author_user, createtime, writeup_id, totalvotes
     $repRestriction
     AND vote.voter_user IS NULL
     AND wrtype_writeuptype &lt;&gt; 177599
+  ORDER BY writeup.writeup_id
   LIMIT $count
 
 ENDQUERY
@@ -120,7 +122,7 @@ while(my $wu = $rows-&gt;fetchrow_hashref)
          &lt;td style=&quot;text-align:right&quot;&gt;'.$$wu{createtime}.'&lt;/td&gt;
          &lt;/tr&gt;';
    }
-   last if ($rowCtr &gt;= 50);
+   last if ($rowCtr &gt;= $resultCtr);
 }
 
 if ($rowCtr == 0)

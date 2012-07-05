@@ -12,6 +12,6 @@
   `reputation` int(11) NOT NULL DEFAULT '0',
   `data` text NOT NULL,
   PRIMARY KEY (`node_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=2067202 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>tomb</title>
 </node>

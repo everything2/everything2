@@ -85,12 +85,13 @@ if($$SETTINGS{numwriteups} !~ /^\d+$/) {
     $maintStr = &quot; AND node_id NOT IN ($maint_nodes) &quot; if $maint_nodes;
   }
 
-	$$SETTINGS{lastnoded} = $DB-&gt;sqlSelect('node_id', 'node JOIN writeup ON node_id=writeup_id',
+	my $lastnoded = getNodeById($$SETTINGS{lastnoded});
+	delete $$SETTINGS{lastnoded} unless $lastnoded and $$lastnoded{type}{title} eq 'writeup';
+
+	$$SETTINGS{lastnoded} ||= $DB-&gt;sqlSelect('node_id', 'node JOIN writeup ON node_id=writeup_id',
                                          &quot;author_user=$$NODE{node_id}&quot;
                                          .$maintStr
-                                         .&quot; ORDER BY publishtime DESC LIMIT 1&quot;)
-	unless(getNodeById($$SETTINGS{lastnoded}));
-
+                                         .&quot; ORDER BY publishtime DESC LIMIT 1&quot;);
 }
 
 

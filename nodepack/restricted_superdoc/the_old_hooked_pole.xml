@@ -9,7 +9,7 @@ my $str = '&lt;h3&gt;&amp;ldquo;Off the stage with \'em!&amp;rdquo;&lt;/h3&gt;
   This does the following things:
   &lt;/p&gt;
   &lt;ul&gt;
-    &lt;li&gt;Checks to see if the user has every logged in
+    &lt;li&gt;Checks to see if the user has ever logged in
     &lt;li&gt;Checks if the user has any live writeups
     &lt;li&gt;Checks if the user has any live e2nodes
     &lt;li&gt;Deletes the user if it is safe

@@ -587,14 +587,11 @@ return $str.$resultStr;
 
 [%
 
-#return &quot;&lt;p&gt;Hold your horses!&lt;/p&gt;&quot; unless $$USER{title} eq 'mauler';
-
-my $minLev = 8;
 my $buyEggsLev = 7;
 my $lvl = getLevel($USER);
 my $eggs = $$VARS{easter_eggs};
 
-return if (($lvl &lt; $buyEggsLev) || ($lvl &lt; $minLev));
+return if ($lvl &lt; $buyEggsLev);
 
 my $str = &quot;&lt;p&gt;Give the gift of eggs! If you happen to have some easter eggs to spare, you can give one to another user as a gift. Please use this to encourage newbies.&lt;/p&gt;&quot;;
 

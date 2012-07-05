@@ -54,12 +54,12 @@
     <key>iwstf</key>
   </vars>
   <vars>
-    <value>yossarian</value>
-    <key>yoss</key>
-  </vars>
-  <vars>
     <value>devon</value>
     <key>dev</key>
+  </vars>
+  <vars>
+    <value>yossarian</value>
+    <key>yoss</key>
   </vars>
   <vars>
     <value>Ouroboros</value>
@@ -74,6 +74,10 @@
     <key>tbbk</key>
   </vars>
   <vars>
+    <value>dustfromamoth</value>
+    <key>moth</key>
+  </vars>
+  <vars>
     <value>chattering magpie</value>
     <key>chatmag</key>
   </vars>
@@ -82,20 +86,16 @@
     <key>cs</key>
   </vars>
   <vars>
-    <value>dustfromamoth</value>
-    <key>moth</key>
-  </vars>
-  <vars>
     <value>Phyllis Stein</value>
     <key>ps</key>
   </vars>
   <vars>
-    <value>pseudo_intellectual</value>
-    <key>p_i</key>
-  </vars>
-  <vars>
     <value>creases</value>
     <key>ctf</key>
+  </vars>
+  <vars>
+    <value>pseudo_intellectual</value>
+    <key>p_i</key>
   </vars>
   <vars>
     <value>Excalibur</value>
@@ -150,12 +150,12 @@
     <key>e_c</key>
   </vars>
   <vars>
-    <value>JohnnyCashed</value>
-    <key>e2herpes</key>
-  </vars>
-  <vars>
     <value>will</value>
     <key>wilco</key>
+  </vars>
+  <vars>
+    <value>JohnnyCashed</value>
+    <key>e2herpes</key>
   </vars>
   <vars>
     <value>marku</value>
@@ -170,12 +170,12 @@
     <key>a_a</key>
   </vars>
   <vars>
-    <value>deeahblita</value>
-    <key>dee</key>
-  </vars>
-  <vars>
     <value>kthejoker</value>
     <key>kyle</key>
+  </vars>
+  <vars>
+    <value>deeahblita</value>
+    <key>dee</key>
   </vars>
   <vars>
     <value>Pseudo_Intellectual</value>
@@ -226,12 +226,12 @@
     <key>andromache01</key>
   </vars>
   <vars>
-    <value>chase</value>
-    <key>cpt</key>
-  </vars>
-  <vars>
     <value>alex</value>
     <key>apatrix</key>
+  </vars>
+  <vars>
+    <value>chase</value>
+    <key>cpt</key>
   </vars>
   <vars>
     <value>MightyMooquack</value>
@@ -254,12 +254,12 @@
     <key>dem</key>
   </vars>
   <vars>
-    <value>Pseudomancer</value>
-    <key>pm</key>
-  </vars>
-  <vars>
     <value>junkpile</value>
     <key>junk</key>
+  </vars>
+  <vars>
+    <value>Pseudomancer</value>
+    <key>pm</key>
   </vars>
   <vars>
     <value>skow</value>
@@ -282,12 +282,12 @@
     <key>2s</key>
   </vars>
   <vars>
-    <value>lila</value>
-    <key>darsi</key>
-  </vars>
-  <vars>
     <value>lawnjart</value>
     <key>jhasen</key>
+  </vars>
+  <vars>
+    <value>lila</value>
+    <key>darsi</key>
   </vars>
   <vars>
     <value>allseeingeye</value>
@@ -310,20 +310,20 @@
     <key>logar</key>
   </vars>
   <vars>
-    <value>avalyn</value>
-    <key>avalyn_by_day</key>
-  </vars>
-  <vars>
     <value>EHelper</value>
     <key>i</key>
   </vars>
   <vars>
-    <value>but not necessary here</value>
-    <key>_remember_to_include_underscores_here</key>
+    <value>avalyn</value>
+    <key>avalyn_by_day</key>
   </vars>
   <vars>
     <value>nocodeforparanoia</value>
     <key>nocode</key>
+  </vars>
+  <vars>
+    <value>but not necessary here</value>
+    <key>_remember_to_include_underscores_here</key>
   </vars>
   <vars>
     <value>Laz</value>
@@ -338,10 +338,6 @@
     <key>bluebird_is_sad</key>
   </vars>
   <vars>
-    <value>GoodKingNerdnor</value>
-    <key>gkn</key>
-  </vars>
-  <vars>
     <value>jethro bodine</value>
     <key>jbo</key>
   </vars>
@@ -350,12 +346,16 @@
     <key>ktj</key>
   </vars>
   <vars>
-    <value>Alias Mother Jonez</value>
-    <key>amj</key>
+    <value>GoodKingNerdnor</value>
+    <key>gkn</key>
   </vars>
   <vars>
     <value>rancid_pickle</value>
     <key>r_p</key>
+  </vars>
+  <vars>
+    <value>Alias Mother Jonez</value>
+    <key>amj</key>
   </vars>
   <vars>
     <value>Omnidirectional Halo</value>
@@ -366,24 +366,24 @@
     <key>c_e</key>
   </vars>
   <vars>
-    <value>flamingweasel</value>
-    <key>fweez</key>
-  </vars>
-  <vars>
     <value>JohnnyGoodyear</value>
     <key>jg</key>
+  </vars>
+  <vars>
+    <value>flamingweasel</value>
+    <key>fweez</key>
   </vars>
   <vars>
     <value>Protector of Mankind</value>
     <key>pofm</key>
   </vars>
   <vars>
-    <value>GangstaFeelsGood</value>
-    <key>gfg</key>
-  </vars>
-  <vars>
     <value>Metacognizant</value>
     <key>metac</key>
+  </vars>
+  <vars>
+    <value>GangstaFeelsGood</value>
+    <key>gfg</key>
   </vars>
   <vars>
     <value>roninspoon</value>
@@ -466,10 +466,6 @@
     <key>themagus</key>
   </vars>
   <vars>
-    <value>kobold</value>
-    <key>anbolb</key>
-  </vars>
-  <vars>
     <value>creases</value>
     <key>cletus_the_foetus</key>
   </vars>
@@ -478,32 +474,36 @@
     <key>ctw</key>
   </vars>
   <vars>
-    <value>princess loulou</value>
-    <key>lou</key>
+    <value>kobold</value>
+    <key>anbolb</key>
   </vars>
   <vars>
-    <value>TGWPtEoGCStFhC</value>
-    <key>tgw</key>
+    <value>princess loulou</value>
+    <key>lou</key>
   </vars>
   <vars>
     <value>Auspice</value>
     <key>cassparadox</key>
   </vars>
   <vars>
-    <value>Jet-Poop</value>
-    <key>decaversal_studios</key>
+    <value>TGWPtEoGCStFhC</value>
+    <key>tgw</key>
   </vars>
   <vars>
     <value>djuxtaposition</value>
     <key>djux</key>
   </vars>
   <vars>
-    <value>Uberfetus</value>
-    <key>uber</key>
+    <value>Jet-Poop</value>
+    <key>decaversal_studios</key>
   </vars>
   <vars>
     <value>therevengingo</value>
     <key>therev</key>
+  </vars>
+  <vars>
+    <value>Uberfetus</value>
+    <key>uber</key>
   </vars>
   <vars>
     <value>igloowhite</value>
@@ -558,12 +558,12 @@
     <key>nl4e</key>
   </vars>
   <vars>
-    <value>KillerPenguin</value>
-    <key>kp</key>
-  </vars>
-  <vars>
     <value>TanisNikana</value>
     <key>tanis</key>
+  </vars>
+  <vars>
+    <value>KillerPenguin</value>
+    <key>kp</key>
   </vars>
   <vars>
     <value>IWhoSawTheFace</value>
@@ -582,12 +582,12 @@
     <key>tl</key>
   </vars>
   <vars>
-    <value>gleeme</value>
-    <key>natchlucid</key>
-  </vars>
-  <vars>
     <value>knile</value>
     <key>knile87</key>
+  </vars>
+  <vars>
+    <value>gleeme</value>
+    <key>natchlucid</key>
   </vars>
   <vars>
     <value>witchiepoo</value>
@@ -638,32 +638,32 @@
     <key>ex</key>
   </vars>
   <vars>
-    <value>scarcatcher</value>
-    <key>czarkhan</key>
-  </vars>
-  <vars>
     <value>nyar</value>
     <key>{nyarlothotep}</key>
   </vars>
   <vars>
-    <value>Ancientsnow</value>
-    <key>asnow</key>
+    <value>scarcatcher</value>
+    <key>czarkhan</key>
   </vars>
   <vars>
     <value>taschenrechner</value>
     <key>tasch</key>
   </vars>
   <vars>
+    <value>Ancientsnow</value>
+    <key>asnow</key>
+  </vars>
+  <vars>
     <value>Use case exactly matching the username here</value>
     <key>_use_lower_case_here_only</key>
   </vars>
   <vars>
-    <value>fuzzie</value>
-    <key>insanefuzzie</key>
-  </vars>
-  <vars>
     <value>^Davion^</value>
     <key>davion</key>
+  </vars>
+  <vars>
+    <value>fuzzie</value>
+    <key>insanefuzzie</key>
   </vars>
   <title>chatterbox forward</title>
 </node>

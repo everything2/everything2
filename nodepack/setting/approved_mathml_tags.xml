@@ -27,11 +27,11 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>mi</key>
+    <key>msqrt</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>msqrt</key>
+    <key>mi</key>
   </vars>
   <vars>
     <value>1</value>
@@ -63,11 +63,11 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>mrow</key>
+    <key>mn</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>mn</key>
+    <key>mrow</key>
   </vars>
   <vars>
     <value>1</value>

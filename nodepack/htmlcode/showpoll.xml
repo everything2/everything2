@@ -15,6 +15,8 @@ my $vote = ($DB-&gt;sqlSelect(
 	, &quot;voter_user=$$USER{node_id} AND pollvote_id=$$POLL{node_id}&quot;
 ))[0];
 
+$vote = -1 unless defined $vote;
+
 $showStatus = &quot; ($$POLL{poll_status})&quot; if $showStatus;
 my $str = '&lt;h2&gt;'.linkNode($POLL).&quot;$showStatus&lt;/h2&gt;&quot;
 	unless $$POLL{node_id} == $$NODE{node_id};
@@ -33,15 +35,17 @@ $str .=	'&lt;/p&gt;&lt;h3&gt;'
 
 my @options = split /\s*\n\s*/s, parseLinks($$POLL{doctext});
 
-unless (defined $vote or $$POLL{poll_status} eq 'closed'){
+unless ($vote &gt; -1 or $$POLL{poll_status} eq 'closed'){
 	my @values = ();
 	@options = map {(($values[scalar @values] = scalar @values) =&gt; $_)} @options;
+	$query-&gt;autoEscape(undef);
 	my $buttons = $query-&gt;radio_group(
 		-name =&gt; 'vote',
 		-values =&gt; \@values,
 		-linebreak=&gt;&quot;true&quot;,
 		-labels =&gt; {@options}
 	);
+	$query-&gt;autoEscape(1);
 	unless ($$POLL{poll_status} eq 'new'){
 		$str .= htmlcode('openform', -class =&gt; 'e2poll')
 			.qq'&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;pollvote&quot;&gt;
@@ -61,8 +65,8 @@ unless (defined $vote or $$POLL{poll_status} eq 'closed'){
 	while($options[$i]){
 		$str.='&lt;tr&gt;
 		&lt;td&gt;'.($i == $vote ? '&lt;b&gt;' : '').$options[$i].($i ==$vote ? '&lt;/b&gt;' : '').'&lt;/td&gt;
-		&lt;td&gt;'.$results[$i].'&lt;/td&gt;
-		&lt;td&gt;'.sprintf(&quot;%2.2f&quot;,($results[$i]/$votedivider)*100).'%&lt;/td&gt;
+		&lt;td align=&quot;right&quot;&gt;&amp;nbsp;'.$results[$i].'&amp;nbsp;&lt;/td&gt;
+		&lt;td align=&quot;right&quot;&gt;'.sprintf(&quot;%2.2f&quot;,($results[$i]/$votedivider)*100).'%&lt;/td&gt;
 		&lt;/tr&gt;';
 		$str.=&quot;&lt;tr&gt;&lt;td colspan='3'&gt;&lt;img class='oddrow' src='/images/incoming/dot.gif'
 			height='8' width='&quot;
@@ -71,13 +75,14 @@ unless (defined $vote or $$POLL{poll_status} eq 'closed'){
 	}
 	$str.='&lt;tr&gt;
 	&lt;td&gt;&lt;b&gt;Total&lt;/b&gt;&lt;/td&gt;
-	&lt;td&gt;'.$$POLL{totalvotes}.'&lt;/td&gt;
-	&lt;td&gt;'.sprintf(&quot;%2.2f&quot;,100).'%&lt;/td&gt;
+	&lt;td align=&quot;right&quot;&gt;&amp;nbsp;'.$$POLL{totalvotes}.'&amp;nbsp;&lt;/td&gt;
+	&lt;td align=&quot;right&quot;&gt;'.sprintf(&quot;%2.2f&quot;,100).'%&lt;/td&gt;
 	&lt;/tr&gt;';
 	$str.='&lt;/table&gt;';
 }
 
 return $str;
+
 </code>
   <type_nodetype>4</type_nodetype>
   <title>showpoll</title>

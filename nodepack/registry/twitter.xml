@@ -1,5 +1,7 @@
 <node>
-  <doctext>Enter your Twitter username and/or profile URL.</doctext>
+  <doctext>Enter your Twitter username and/or profile URL.
+
+The official Everything2 account is [https://twitter.com/#!/everything2com|@everything2com] - it currently just outputs links to new writeups as they come.</doctext>
   <node_id>2007586</node_id>
   <type_nodetype>1876758</type_nodetype>
   <question></question>
