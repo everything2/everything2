@@ -7,6 +7,11 @@ directory "/etc/chef_setup" do
   mode "0755"
 end
 
+execute "apt-get-preinstall" do
+  command "apt-get update"
+  ignore_failure true
+end
+
 include_recipe "edev::webhead"
 include_recipe "edev::tools"
 include_recipe "edev::devel"
