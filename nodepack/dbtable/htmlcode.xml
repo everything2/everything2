@@ -5,6 +5,6 @@
   `htmlcode_id` int(11) NOT NULL AUTO_INCREMENT,
   `code` text,
   PRIMARY KEY (`htmlcode_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2067071 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=2067280 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>htmlcode</title>
 </node>

@@ -1,0 +1,24 @@
+<node>
+  <node_id>2067279</node_id>
+  <code>my $procname = $NODE-&gt;{title};
+my $parameters = $NODE-&gt;{parameters};
+my $proctext = $NODE-&gt;{doctext};
+
+my $value = $DB-&gt;createMysqlProcedure(&quot;ecore_test_$procname&quot;, $parameters, $proctext, &quot;PROCEDURE&quot;, 1);
+if(not ref $value eq &quot;ARRAY&quot;)
+{
+  return &quot;Creation not attempted&quot;;
+}
+
+if($value-&gt;[0] == 1)
+{
+  return &quot;Created successfully&quot;;
+}
+
+if($value-&gt;[0] == 0)
+{
+  return &quot;Mysql procedure creation failed: &quot;.$value-&gt;[1];
+}</code>
+  <type_nodetype>4</type_nodetype>
+  <title>mysqlproctest</title>
+</node>

@@ -1,0 +1,13 @@
+<node>
+  <node_id>2067272</node_id>
+  <maintaintype>create</maintaintype>
+  <code>my ($N) = @_;
+getRef($N);
+
+$DB-&gt;createMysqlProcedure($N-&gt;{title}, $N-&gt;{parameters}, $N-&gt;{doctext});
+
+</code>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>2061807</maintain_nodetype>
+  <title>mysqlproc maintenance create</title>
+</node>

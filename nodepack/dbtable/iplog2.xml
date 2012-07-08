@@ -10,6 +10,6 @@
   UNIQUE KEY `ip_user` (`ip_user`,`ip_addy`),
   KEY `iplog2_user` (`ip_user`),
   KEY `iplog2_addy` (`ip_addy`)
-) ENGINE=InnoDB AUTO_INCREMENT=264453 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>iplog2</title>
 </node>

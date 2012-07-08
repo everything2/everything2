@@ -19,6 +19,6 @@
   KEY `heaven_author_user` (`author_user`),
   KEY `title` (`title`),
   KEY `author_user__title` (`author_user`,`title`)
-) ENGINE=InnoDB AUTO_INCREMENT=2056468 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>heaven</title>
 </node>

@@ -10,6 +10,6 @@
   UNIQUE KEY `user_agent__liked_node_id` (`user_agent`,`liked_node_id`),
   KEY `user_agent` (`user_agent`),
   KEY `liked_node_id` (`liked_node_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=67431 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=67430 DEFAULT CHARSET=latin1</_create_table_statement>
   <title>likeitlog</title>
 </node>

@@ -1,0 +1,10 @@
+<node>
+  <type_nodetype>148</type_nodetype>
+  <node_id>2067268</node_id>
+  <_create_table_statement>CREATE TABLE `mysqlproc` (
+  `mysqlproc_id` int(11) NOT NULL DEFAULT '0',
+  `parameters` text NOT NULL,
+  PRIMARY KEY (`mysqlproc_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1</_create_table_statement>
+  <title>mysqlproc</title>
+</node>

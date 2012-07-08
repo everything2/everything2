@@ -12,6 +12,6 @@
   KEY `iplog_user__iplog_id` (`iplog_user`,`iplog_id`),
   KEY `iplog_user__iplog_ipaddy__iplog_time` (`iplog_user`,`iplog_ipaddy`,`iplog_time`),
   KEY `iplog_user__iplog_time` (`iplog_user`,`iplog_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=4473054 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>iplog</title>
 </node>
