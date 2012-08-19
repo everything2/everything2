@@ -31,7 +31,7 @@ to_install = [
     'libdbd-mysql-perl',
     'mercurial',
     'git',
-
+    'libnet-amazon-s3-perl',
 ]
 
 to_install.each do |p|
