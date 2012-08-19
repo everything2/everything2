@@ -36,6 +36,7 @@ foreach $nid (@list){
 	next if $$N{publication_status}; # insured
 
 	my $reason = $bulkreason || $query-&gt;param('removereason'.$nid);
+	$reason = '' if $reason eq 'none';
 	next unless htmlcode('unpublishwriteup', $N, $reason);
 
 	my $aid = $$N{author_user};

@@ -260,7 +260,7 @@ local *info_length = sub {
 	#however, it isn't worth taking
 	#the CPU time to find exact values
 
-	my $wdt = $$WRITEUP{doctext} || '';
+	my $wdt = breakTags($$WRITEUP{doctext}) || '';
 	my $c;	#count
 
 	#paragraphs - could be off by one if &lt;p&gt; incorrectly used to end a paragraph instead of to start one

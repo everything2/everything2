@@ -11,6 +11,6 @@
   PRIMARY KEY (`softlink_creation_id`),
   KEY `creater_user_id__to_node__displayed` (`creater_user_id`,`to_node`,`displayed`),
   KEY `creater_user_id__create_time` (`creater_user_id`,`create_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=2325322 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=4189987 DEFAULT CHARSET=latin1</_create_table_statement>
   <title>softlink_creation</title>
 </node>

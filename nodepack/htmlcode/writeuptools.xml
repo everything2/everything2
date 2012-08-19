@@ -62,6 +62,9 @@ if ($isMine){
 		op=&gt;'insure', ins_id=&gt;$n, -class=&gt;&quot;action $ajax&quot;
 	});
 
+	my $authorForAjax = $author;
+	$authorForAjax =~ s/ /+/g;
+
 	$remove = $query -&gt; small(
 		$query-&gt;textfield(
 			-name=&gt;'removereason'.$n,
@@ -75,7 +78,7 @@ if ($isMine){
 		, checked =&gt; 0
 		, label =&gt; $$VARS{nokillpopup} ? 'axe' : 'Remove writeup'
 		, class =&gt; &quot;replace ajax $id:drafttools?op=remove&amp;removenode$n=1&amp;removereason$n=/&quot;
-			.&quot;&amp;removereason$n=/#Reason+for+removing+${author}'s+writeup:$n,1&quot;
+			.&quot;&amp;removereason$n=/#Reason+for+removing+${authorForAjax}'s+writeup:$n,1&quot;
 		, onclick =&gt; &quot;if (this.checked) \$('#killbutton').click();&quot; # for if no ajax
 	);
 }

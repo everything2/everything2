@@ -151,6 +151,7 @@ $queryText = &quot;SELECT user.user_id
          OR setting.vars LIKE '%rowser=Mozilla\%2f5\%2e0\%20\%28X11\%3b\%20U\%3b\%20Linux\%20i686\%3b\%20en\%2dUS\%29\%20AppleWebKit\%2f532\%2e8\%20\%28KHTML\%2c\%20like\%20Gecko\%29\%20Iron\%2f4\%2e0\%2e275\%2e2\%20Chrome\%2f4\%2e0\%2e275\%2e2\%20Safari\%2f532\%2e8%'
          OR setting.vars LIKE '%rowser=Mozilla\%2f5\%2e0\%20\%28Windows\%3b\%20U\%3b\%20Windows\%20NT\%205\%2e1\%3b\%20en\%2dUS\%3b\%20rv\%3a1\%2e9\%2e2\%29\%20Gecko\%2f20100115\%20Firefox\%2f3\%2e6%'
          OR setting.vars LIKE '%rowser=Mozilla\%2f5\%2e0\%20\%28Windows\%3b\%20U\%3b\%20Windows\%20NT\%205\%2e1\%3b\%20en\%2dUS\%3b\%20rv\%3a1\%2e9\%2e2\%29\%20Gecko\%2f20100316\%20Firefox\%2f3\%2e6%'
+         OR setting.vars LIKE '%hahahaha%'
       )
    ORDER BY user.user_id DESC&quot;;
 if ($showAll &lt;= 0)
@@ -197,7 +198,6 @@ $str .= '&lt;/table&gt;
 return $str;
 
 %]
-
 </doctext>
   <node_id>2007317</node_id>
   <type_nodetype>14</type_nodetype>

@@ -11,6 +11,6 @@
   UNIQUE KEY `message_id` (`message_id`),
   KEY `tstamp_index` (`tstamp`),
   KEY `author_user` (`author_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=485911 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=688650 DEFAULT CHARSET=latin1</_create_table_statement>
   <title>publicmessages</title>
 </node>

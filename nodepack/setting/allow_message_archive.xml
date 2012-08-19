@@ -35,11 +35,11 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>E2Pagans</key>
+    <key>e2music</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>e2music</key>
+    <key>E2Pagans</key>
   </vars>
   <vars>
     <value>1</value>
@@ -79,11 +79,11 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>Mornington Crescent</key>
+    <key>RPGers</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>RPGers</key>
+    <key>Mornington Crescent</key>
   </vars>
   <vars>
     <value>1</value>
@@ -99,11 +99,11 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>E2science</key>
+    <key>e2biography</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>e2biography</key>
+    <key>E2science</key>
   </vars>
   <vars>
     <value>1</value>
@@ -127,11 +127,11 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>bush telegraph</key>
+    <key>bipolars</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>bipolars</key>
+    <key>bush telegraph</key>
   </vars>
   <vars>
     <value>1</value>
@@ -139,11 +139,11 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>e2scifi</key>
+    <key>e2armory</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>e2armory</key>
+    <key>e2scifi</key>
   </vars>
   <vars>
     <value>1</value>
@@ -159,10 +159,6 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>distractednoders</key>
-  </vars>
-  <vars>
-    <value>1</value>
     <key>e2comix</key>
   </vars>
   <vars>
@@ -171,11 +167,15 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>E2Medicine</key>
+    <key>distractednoders</key>
   </vars>
   <vars>
     <value>1</value>
     <key>nodahs</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>E2Medicine</key>
   </vars>
   <vars>
     <value>1</value>
@@ -187,11 +187,11 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>BookMoochers</key>
+    <key>tfxp</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>tfxp</key>
+    <key>BookMoochers</key>
   </vars>
   <vars>
     <value>1</value>
@@ -207,11 +207,11 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>edev</key>
+    <key>gearheads</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>gearheads</key>
+    <key>edev</key>
   </vars>
   <vars>
     <value>1</value>
@@ -283,11 +283,11 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>VideoGames</key>
+    <key>CST_Group</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>CST_Group</key>
+    <key>VideoGames</key>
   </vars>
   <vars>
     <value>1</value>

@@ -10,7 +10,7 @@ if ($$VARS{settings_useEpicenterZen}){
 	$$VARS{nodelets} =~ s/(?:(^|,),+)|(?:\b$epid\b,*)|(?:,*$)/$1/g ;
 	delete $$VARS{settings_useEpicenterZen};
 }
-return htmlcode('epicenterZen') unless $$VARS{nodelets} =~ /\b$epid\b/ || $$USER{title} eq 'Guest User';
+return htmlcode('epicenterZen') if $$VARS{nodelets} &amp;&amp; $$VARS{nodelets} !~ /\b$epid\b/;
 '';
 %]
 &lt;div id='searchform'&gt;

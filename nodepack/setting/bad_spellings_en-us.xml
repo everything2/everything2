@@ -34,20 +34,20 @@
     <key>_im</key>
   </vars>
   <vars>
-    <value>compat&lt;strong&gt;i&lt;/strong&gt;bility</value>
-    <key>compatability</key>
-  </vars>
-  <vars>
     <value>haven't (contraction of HAVE NOT)</value>
     <key>havent</key>
   </vars>
   <vars>
-    <value>exist&lt;strong&gt;e&lt;/strong&gt;nce</value>
-    <key>existance</key>
+    <value>compat&lt;strong&gt;i&lt;/strong&gt;bility</value>
+    <key>compatability</key>
   </vars>
   <vars>
     <value>s&lt;strong&gt;ie&lt;/strong&gt;ge ([I before E])</value>
     <key>seige</key>
+  </vars>
+  <vars>
+    <value>exist&lt;strong&gt;e&lt;/strong&gt;nce</value>
+    <key>existance</key>
   </vars>
   <vars>
     <value>bec&lt;strong&gt;au&lt;/strong&gt;se (typo)</value>
@@ -62,16 +62,16 @@
     <key>freind</key>
   </vars>
   <vars>
+    <value>b&lt;strong&gt;e&lt;/strong&gt;stiality</value>
+    <key>beastiality</key>
+  </vars>
+  <vars>
     <value>maint&lt;strong&gt;e&lt;/strong&gt;n&lt;strong&gt;a&lt;/strong&gt;nce</value>
     <key>maintainence</key>
   </vars>
   <vars>
     <value>weird (&lt;strong&gt;We&lt;/strong&gt; are &lt;strong&gt;we&lt;/strong&gt;ird.) &lt;em&gt;exception&lt;/em&gt; to [I before E].</value>
     <key>wierd</key>
-  </vars>
-  <vars>
-    <value>b&lt;strong&gt;e&lt;/strong&gt;stiality</value>
-    <key>beastiality</key>
   </vars>
   <vars>
     <value>rec&lt;strong&gt;ei&lt;/strong&gt;ve ([I before E])</value>
@@ -106,24 +106,24 @@
     <key>amature</key>
   </vars>
   <vars>
-    <value>should &lt;strong&gt;have&lt;/strong&gt;</value>
-    <key>should_of</key>
-  </vars>
-  <vars>
     <value>only accepted correct spelling is two words, &lt;strong&gt;all right&lt;/strong&gt;</value>
     <key>_alright_hmmm_this_may_be_OK_in_the_UK</key>
+  </vars>
+  <vars>
+    <value>should &lt;strong&gt;have&lt;/strong&gt;</value>
+    <key>should_of</key>
   </vars>
   <vars>
     <value>re&lt;strong&gt;comm&lt;/strong&gt;end</value>
     <key>reccomend</key>
   </vars>
   <vars>
-    <value>hi&lt;strong&gt;l&lt;/strong&gt;arious</value>
-    <key>hillarious</key>
-  </vars>
-  <vars>
     <value>beca&lt;strong&gt;us&lt;/strong&gt;e (typo)</value>
     <key>becasue</key>
+  </vars>
+  <vars>
+    <value>hi&lt;strong&gt;l&lt;/strong&gt;arious</value>
+    <key>hillarious</key>
   </vars>
   <vars>
     <value>for&lt;strong&gt;e&lt;/strong&gt;seeable</value>
@@ -166,12 +166,12 @@
     <key>seperat</key>
   </vars>
   <vars>
-    <value>prefe&lt;strong&gt;rr&lt;/strong&gt;ed</value>
-    <key>prefered</key>
-  </vars>
-  <vars>
     <value>a&lt;strong&gt;cq&lt;/strong&gt;uaintance</value>
     <key>aquaintance</key>
+  </vars>
+  <vars>
+    <value>prefe&lt;strong&gt;rr&lt;/strong&gt;ed</value>
+    <key>prefered</key>
   </vars>
   <vars>
     <value>r&lt;strong&gt;i&lt;/strong&gt;diculous</value>
@@ -186,16 +186,16 @@
     <key>jsut</key>
   </vars>
   <vars>
+    <value>&lt;strong&gt;a lot&lt;/strong&gt; is two words, but it's OK in words like &quot;zealot&quot;</value>
+    <key>alot</key>
+  </vars>
+  <vars>
     <value>equiv&lt;strong&gt;a&lt;/strong&gt;lent</value>
     <key>equivelent</key>
   </vars>
   <vars>
     <value>mast&lt;strong&gt;u&lt;/strong&gt;rbation</value>
     <key>masterbation</key>
-  </vars>
-  <vars>
-    <value>&lt;strong&gt;a lot&lt;/strong&gt; is two words, but it's OK in words like &quot;zealot&quot;</value>
-    <key>alot</key>
   </vars>
   <vars>
     <value>bes&lt;strong&gt;ie&lt;/strong&gt;ge ([I before E])</value>

@@ -9,6 +9,6 @@
   PRIMARY KEY (`firmlink_note_id`),
   UNIQUE KEY `from_node` (`from_node`,`to_node`),
   KEY `to_node` (`to_node`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>firmlink_note</title>
 </node>

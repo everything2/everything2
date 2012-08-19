@@ -14,12 +14,12 @@
     <key>table</key>
   </vars>
   <vars>
-    <value>1</value>
-    <key>tt</key>
-  </vars>
-  <vars>
     <value>align</value>
     <key>h5</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>tt</key>
   </vars>
   <vars>
     <value>1</value>
@@ -38,12 +38,12 @@
     <key>caption</key>
   </vars>
   <vars>
-    <value>1</value>
-    <key>sup</key>
-  </vars>
-  <vars>
     <value>align</value>
     <key>h6</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>sup</key>
   </vars>
   <vars>
     <value>1</value>
@@ -58,16 +58,16 @@
     <key>h1</key>
   </vars>
   <vars>
-    <value>1</value>
-    <key>br</key>
+    <value>lang,title</value>
+    <key>acronym</key>
   </vars>
   <vars>
     <value>1</value>
     <key>tbody</key>
   </vars>
   <vars>
-    <value>lang,title</value>
-    <key>acronym</key>
+    <value>1</value>
+    <key>br</key>
   </vars>
   <vars>
     <value>1</value>
@@ -98,12 +98,12 @@
     <key>hr</key>
   </vars>
   <vars>
-    <value>cite</value>
-    <key>q</key>
-  </vars>
-  <vars>
     <value>1</value>
     <key>b</key>
+  </vars>
+  <vars>
+    <value>cite</value>
+    <key>q</key>
   </vars>
   <vars>
     <value>1</value>
@@ -115,11 +115,11 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>kbd</key>
+    <key>dl</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>dl</key>
+    <key>kbd</key>
   </vars>
   <vars>
     <value>1</value>

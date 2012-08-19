@@ -1,0 +1,11 @@
+<node>
+  <parent_container>19</parent_container>
+  <pagetype_nodetype>2061807</pagetype_nodetype>
+  <page>&lt;b&gt;CREATE PROCEDURE [% $NODE-&gt;{title}%]([% $NODE-&gt;{parameters} %])&lt;/b&gt;&lt;br /&gt;
+[{listcode:doctext}]</page>
+  <node_id>2067270</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
+  <title>mysqlproc display page</title>
+  <mimetype></mimetype>
+</node>

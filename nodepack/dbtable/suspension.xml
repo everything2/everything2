@@ -12,6 +12,6 @@
   KEY `suspension_sustype` (`suspension_sustype`),
   KEY `suspendedby_user` (`suspendedby_user`),
   KEY `suspension_user` (`suspension_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=49478 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=50570 DEFAULT CHARSET=latin1</_create_table_statement>
   <title>suspension</title>
 </node>

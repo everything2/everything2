@@ -52,6 +52,8 @@ if ($currentDisplay ne 'help'){
 }
 
 my $spacer = &quot;&lt;li style='list-style: none'&gt;&lt;br&gt;&lt;/li&gt;&quot;;
+my $direWarning = ' (&lt;strong&gt;writeup:&lt;/strong&gt; only nuke under exceptional circumstances.
+	Removal is almost certainly a better idea.)' if $nt eq 'writeup';
 
 $newStr .= $spacer
 	.$query -&gt; li(
@@ -61,11 +63,11 @@ $newStr .= $spacer
 			, title =&gt; 'nuke this node'
 		}, 'Delete Node'
 	))
+	.$direWarning
 	.$spacer
 	if canDeleteNode($USER, $NODE)
-		and $$NODE{type}{title} ne 'writeup'
-		and $$NODE{type}{title} ne 'draft'
-		and $$NODE{type}{title} ne 'user';
+		and $nt ne 'draft'
+		and $nt ne 'user';
 
 
 if ($nt eq 'user') {

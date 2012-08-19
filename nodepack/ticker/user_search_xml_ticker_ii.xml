@@ -38,7 +38,7 @@ my $nr = getId(getNode(&quot;node row&quot;, &quot;superdoc&quot;));
 my $csr = $DB-&gt;sqlSelectMany(&quot;node_id&quot;, &quot;node JOIN writeup ON node_id=writeup_id&quot;,
 	&quot;author_user=$$searchuser{node_id} $sort $limit&quot;);
 
-$str.=&quot;&lt;usersearch user=\&quot;$$searchuser{title}\&quot; writeupCount=\&quot;$wuCount\&quot;&gt;&quot;;
+$str.='&lt;usersearch user=&quot;'.encodeHTML($$searchuser{title}).'&quot; writeupCount=&quot;'.$wuCount.'&quot;&gt;';
 
 while(my $row = $csr-&gt;fetchrow_hashref)
 {
@@ -77,8 +77,7 @@ while(my $row = $csr-&gt;fetchrow_hashref)
 $str.=&quot;&lt;/usersearch&gt;&quot;;
 
 return $str;
-%]
-</doctext>
+%]</doctext>
   <node_id>1291794</node_id>
   <type_nodetype>1252389</type_nodetype>
   <title>User Search XML Ticker II</title>

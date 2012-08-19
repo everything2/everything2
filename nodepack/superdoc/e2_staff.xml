@@ -164,9 +164,9 @@ return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/
 &lt;li&gt;[jaybonci]: Site owner&lt;/li&gt;
 &lt;li&gt;[clampe]: E2 researcher and bandwidth provider&lt;/li&gt;
 &lt;li&gt;[alex]: Director of Operations and site administrator&lt;/li&gt;
-&lt;li&gt;[mauler]: Deputy Director of Operations&lt;/li&gt;
+&lt;li&gt;[wertperch]: Deputy Director of Operations&lt;/li&gt;
 &lt;li&gt;[Oolong]: Lead Developer&lt;/li&gt;
-&lt;li&gt;[The Debutante]: Director of User Relations (interim Jan-Jul 2012: [alex[user]])&lt;/li&gt;
+&lt;li&gt;[The Debutante]: Director of User Relations&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;
@@ -181,7 +181,6 @@ The following staff members work with [Oolong] to maintain and grow the site's c
 &lt;li&gt;[call[user]]&lt;/li&gt;
 &lt;li&gt;[dann]&lt;/li&gt;
 &lt;li&gt;[DonJaime]&lt;/li&gt;
-&lt;li&gt;[OldMiner]&lt;/li&gt;
 &lt;li&gt;[in10se]&lt;/li&gt;
 &lt;li&gt;[Two Sheds]&lt;/li&gt;
 &lt;/ul&gt;

@@ -7,6 +7,6 @@
   `notnew` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`newwriteup_id`),
   KEY `node_id` (`node_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1842269 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=1843759 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>newwriteup</title>
 </node>

@@ -1,43 +1,12 @@
 <node>
   <node_id>167264</node_id>
   <maintaintype>delete</maintaintype>
-  <code>my ($NODE) = @_;
-getRef $NODE;
+  <code># although writeups should not be nuked, the opcode is still there, and gods may
+# use it. So to avoid writeups getting nuked, we turn them into drafts first.
+# (Then the draft gets nuked. )
 
-my $AUTH = getNodeById($$NODE{author_user});
-my $V = getVars $AUTH;
-
-my $E2NODE = getNodeById($$NODE{parent_e2node});
-
-my $noexp = 0;
-
-if($E2NODE){ #Yes, writeups can be messed up in many ways
-  my $parentID = $$E2NODE{node_id};
-
-  #Check for maintenance nodes
-  foreach (values %HTMLVARS) {
-    if ($parentID eq $_) {
-      $noexp=1;
-      last;
-    }
-  }
-}
-
-unless($noexp){
-  $$V{numwriteups}--;
-  $DB-&gt;sqlUpdate(&quot;user&quot;,
-                 {numwriteups =&gt; $$V{numwriteups} },
-                 &quot;user_id=$$NODE{author_user}&quot;);
-}
-
-setVars($AUTH, $V);
-
-updateNode($AUTH);
-
-$DB-&gt;sqlDelete('vote', 'vote_id='.getId($NODE));
-$DB-&gt;sqlDelete('newwriteup', 'node_id='.getId($NODE));
-
-htmlcode('update New Writeups data');</code>
+htmlcode('unpublishwriteup', $_[0], '(nuked)');
+</code>
   <type_nodetype>150</type_nodetype>
   <maintain_nodetype>117</maintain_nodetype>
   <title>writeup maintenance delete</title>

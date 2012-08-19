@@ -2886,6 +2886,62 @@ sub replaceNodegroup
 	return $this->insertIntoNodegroup ($_[1], $USER, $REPLACE);  
 }
 
+
+sub createMysqlProcedure
+{
+	my ($this, $procname, $parameters, $procbody, $type, $testonly) = @_;
+
+	return unless defined($procname) and defined($parameters) and defined($procbody);
+	return unless $procname =~ /\S/ and $parameters =~ /\S/ and $procbody =~ /\S/;
+
+	$type = "PROCEDURE" unless(defined $type and $type != "");
+	$procbody =~ s/\r\n/\n/smg;
+	if(!$testonly)
+	{
+		my $testresult = $this->createMysqlProcedure("ecore_test_$procname", $parameters, $procbody, $type, 1);
+		if(ref $testresult ne "ARRAY" or $testresult->[0] == 0) 
+		{
+			return [0,$this->{dbh}->errstr];
+		}else{
+			$this->dropMysqlProcedure("ecore_test_$procname");
+		}
+	}
+
+	$this->{dbh}->{'AutoCommit'} = 0;
+	$this->{dbh}->{'RaiseError'} = 1;
+	$this->dropMysqlProcedure($procname, $type);
+
+	my $create_procedure = "";
+	$create_procedure .= "CREATE $type $procname($parameters)\n";
+	$create_procedure .= "BEGIN\n";
+	$create_procedure .= "$procbody\n";
+	$create_procedure .= "END\n";
+
+	eval {
+		$this->{dbh}->do($create_procedure);
+		$this->{dbh}->commit();
+	};
+
+	$this->{dbh}->{'AutoCommit'} = 1;
+	$this->{dbh}->{'RaiseError'} = 0;
+	if($@)
+	{
+		return [0, $@];
+	}else{
+		return [1, ""];
+	}
+}
+
+sub dropMysqlProcedure
+{
+	my ($this, $procname, $type) = @_;
+	
+	return unless defined($procname) and $procname =~ /\S/;
+	$type = "PROCEDURE" unless(defined $type and $type != "");	
+
+	return $this->{dbh}->do("DROP $type IF EXISTS $procname");
+}
+
 #############################################################################
 #	GroupCache code
 #############################################################################

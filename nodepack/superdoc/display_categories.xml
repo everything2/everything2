@@ -15,7 +15,7 @@ my $ds;
 my $str;
 my $ctr = 0;
 
-my $count = 30;
+my $count = 50;
 my $page = int($query-&gt;param('p'));
 if ($page &lt; 0)
 {

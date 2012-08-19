@@ -10,6 +10,6 @@
   `ownedby_theme` int(11) NOT NULL DEFAULT '0',
   `mimetype` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`htmlpage_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2052746 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=2067271 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>htmlpage</title>
 </node>

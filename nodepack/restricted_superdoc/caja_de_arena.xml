@@ -1,290 +1,116 @@
 <node>
   <doctext>[%
+my $NODE = getNode('DonJaime', 'user');
+return if $$USER{user_id}==$HTMLVARS{guest_user};
 
-return &quot;&lt;p&gt;If you had an account, you could get messages.&lt;/p&gt;&quot;
-	if $$USER{node_id} == $HTMLVARS{guest_user};
+my $SETTINGS = getVars $NODE;
+my $now = $DB-&gt;sqlSelect(&quot;UNIX_TIMESTAMP(now())&quot;);
 
-# options
-my $str = htmlcode('openform', 'message_inbox_form')
-	.'&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;message&quot;&gt;'
-	.$query -&gt; hidden('perpage')
-	.$query-&gt;hidden('sexisgood','1')	#so auto-VARS changing works
-	.$query -&gt; fieldset(
-		$query -&gt; legend('Options')
-#		.htmlcode('varcheckbox', 'autofillInbox', 'Autofill recipient').'&lt;br&gt;'
-		.htmlcode('varcheckbox', 'sortmyinbox', 'Sort messages by usergroup').'&lt;br&gt;'
-		.'Show only messages from user '
-			.$query-&gt;textfield(-name=&gt;'fromuser')
-	        .', or do the inverse: '
-	        .$query-&gt;checkbox(-name=&gt;'notuser', -label=&gt;'hide from this user').'&lt;br&gt;'
-		.'Show only messages for group '
-	        .$query-&gt;textfield(-name=&gt;'fromgroup')
-	        .', or do the inverse: '
-	        .$query-&gt;checkbox(-name=&gt;'notgroup', -label=&gt;'hide to this group' ).'&lt;br&gt;'
-		.'Show only archived/unarchived messages: '
-	        .htmlcode('varsComboBox', 'msginboxUnArc,0, 0,all, 1,unarchived, 2,archived')
-	);
+my $maint_nodes;
+unless (exists $$SETTINGS{nwriteupsupdate} and 
+        $now - $$SETTINGS{nwriteupsupdate} &lt; 3600) {
 
-# get parameters for messages to show
-my $filterUser = $query -&gt; param('fromuser');
-my $filterGroup = $query -&gt; param('fromgroup');
-my $spyon = $query -&gt; param('spy_user');
+  $$SETTINGS{nwriteupsupdate} = $now;
+  my $type1 = getId(getType('writeup'));
+  my $user = getId($NODE);
 
-my $isRoot = exists $HTMLVARS{group_gods}{$$USER{node_id}};
-my $bots = getVars(getNode('bot inboxes', 'setting')) if $isRoot or $spyon;
-my $grandtotal;
+  my $wherestr = &quot;type_nodetype=$type1
+                  AND author_user=$user &quot;;
 
-# show alternate user account's messages
-my $spystring = '';
-if ($isRoot) {
+  $maint_nodes = htmlcode('listMyMaintenanceNodes',$user);
 
-	my @names = sort {lc($a) cmp lc($b)} keys(%$bots);
-	unshift @names, $$USER{title};
+  $maint_nodes =~ s/ /, /g;
 
-	$spystring = $query -&gt; label(
-		'Message inbox for: '
-		.$query -&gt; popup_menu(
-			-name =&gt; 'spy_user'
-			, values =&gt; \@names
-	));
+  $wherestr .= &quot; AND node_id NOT IN ($maint_nodes)&quot; if $maint_nodes;
+
+  my $writeups = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;node&quot;,$wherestr);
+
+  $$SETTINGS{numwriteups} = int($writeups);
 }
 
-my $foruser = 0;
-if ($spyon) {
-	my $u = getNode($spyon, 'user');
-	if ($u){
-		my $okUg = getNode($$bots{$$u{title}}, 'usergroup');
-		$foruser = $u if $okUg and $DB -&gt; isApproved($USER, $okUg);
+if($$USER{user_id} == $$NODE{user_id})
+{
+ #add numwriteups to $USER for honor roll
 
-	}elsif($isRoot){
-		$spystring .= '&lt;small&gt;&quot;'
-			.$query-&gt;escapeHTML($spyon)
-			.'&quot; is not a user&lt;/small&gt;';
-	}
+      $$USER{numwriteups} = $$SETTINGS{numwriteups};
+      updateNode($USER, $USER);
+
+  delete $$VARS{can_weblog};
+  my $wls = getVars(getNode(&quot;webloggables&quot;, &quot;setting&quot;));
+  
+  my @canwl;
+  foreach(keys %$wls)
+  {
+      my $n = getNodeById($_);
+      next unless $n;
+      unless($$n{type}{title} eq &quot;usergroup&quot;)
+      {
+          if(exists($HTMLVARS{group_gods}{$$USER{node_id}})){
+             push @canwl, $_;
+          }
+
+          next;
+      }
+ 
+      if( exists($HTMLVARS{group_gods}{$$USER{node_id}}) || $DB-&gt;isApproved($USER, $n)){
+        push @canwl, $_;
+        next;
+      }  
+  }
+  push @canwl, getId(getNode('News for noders. Stuff that matters.', 'superdoc'))
+  	if exists($HTMLVARS{'group_content editors'}{$$USER{node_id}});
+
+  $$VARS{can_weblog} = join &quot;,&quot;, sort{$a &lt;=&gt; $b} @canwl;
+
 }
 
-$str .= $query -&gt; p($spystring) if $spystring;
-$foruser = ($foruser || $USER) -&gt; {node_id};
 
-# start building SQL WHERE string
-# TODO: look at XML ticker and consider sharing code
-my $sqlWhere = &quot;for_user=$foruser&quot;;
+my $numcools = $DB-&gt;sqlSelect('count(*)', 'coolwriteups', 'cooledby_user='.getId($NODE));
+$$SETTINGS{coolsspent} = linkNode(getNode('cool archive','superdoc'), $numcools, { useraction =&gt; 'cooled', cooluser =&gt; $$NODE{title} }) if $numcools;
 
-#show archived/unarchived things
-$sqlWhere .= (
-	'' # default is no filtering
-	, ' AND archive=0'
-	, ' AND archive!=0'
-)[$$VARS{msginboxUnArc}];
+my $feedlink = linkNode(getNode('new writeups atom feed', 'ticker'), 'feed', {'foruser' =&gt; $$NODE{title}}, {'title' =&gt; &quot;Atom syndication feed of latest writeups&quot;, 'type' =&gt; &quot;application/atom+xml&quot;});
 
-my $showFilters = (
-	''
-	, ' unarchived'
-	, ' archived'
-)[$$VARS{msginboxUnArc}].' messages';
+$$SETTINGS{nwriteups} = $$SETTINGS{numwriteups} . &quot; - &quot; . &quot;&lt;a href=\&quot;/user/&quot;.rewriteCleanEscape($$NODE{title}).&quot;/writeups\&quot;&gt;View &quot; . $$NODE{title} . &quot;'s writeups&lt;/a&gt; &quot; . ' &lt;small&gt;(' . $feedlink .')&lt;/small&gt;' if $$SETTINGS{numwriteups};
 
-$filterUser = getNode($filterUser, 'user') if $filterUser;
-$filterGroup = getNode($filterGroup, 'usergroup') if $filterGroup;
+$$SETTINGS{nwriteups} = 0 if not $$SETTINGS{numwriteups};
 
-# sort by usergroup?
-my $ugJoin = '';
-if ($$VARS{sortmyinbox}){
-	# get a list of usergroups from which we have messages, with how many
-	my $ugType = getType('usergroup');
-	my $csr = $DB -&gt; sqlSelectMany(
-		'count(*), title'
-		, &quot;message
-			LEFT JOIN node
-				ON for_usergroup = node_id
-				AND type_nodetype=$$ugType{node_id}&quot;
-		, $sqlWhere
-		, 'GROUP BY title
-			ORDER BY (title IS NULL)'
-	);
+##Last writeup cache
+if($$SETTINGS{numwriteups} !~ /^\d+$/) {
+	#sometimes this gets messed up!
+} elsif($$SETTINGS{numwriteups} &gt; 0){
 
-	my $totalMess = 0;
+  my $maintStr;
+  unless($maint_nodes){
+    $maint_nodes = htmlcode('listMyMaintenanceNodes',getId($NODE) );
+    $maint_nodes =~ s/ /, /g;
+    $maintStr = &quot; AND node_id NOT IN ($maint_nodes) &quot; if $maint_nodes;
+  }
 
-	while (my $group = $csr-&gt;fetchrow_hashref()){
-		my $num = $$group{'count(*)'};
-		my $title = $$group{title} || 'No group';
-		$str .= linkNode($NODE, &quot;&lt;strong&gt;$title&lt;/strong&gt;: &quot;
-			, {'fromgroup'=&gt;$$group{title}}).&quot;$num&lt;br&gt;\n&quot;;
-		$totalMess += $num;
-	}
+	my $lastnoded = getNodeById($$SETTINGS{lastnoded});
+	delete $$SETTINGS{lastnoded} unless $lastnoded and $$lastnoded{type}{title} eq 'writeup';
 
-	$str .= '('.linkNode($NODE, &quot;$totalMess$showFilters total&quot;).&quot;)&lt;br&gt;&lt;br&gt;\n&quot;;
-	$grandtotal = $totalMess unless $$VARS{msginboxUnArc};
-
-	unless ($filterGroup){
-		# default display is messages not for a group:
-		$ugJoin = 'LEFT JOIN node ON for_usergroup = node_id';
-		$sqlWhere .= &quot; AND (for_usergroup=0 OR type_nodetype != $$ugType{node_id})&quot;;
-		$showFilters .= ' not to any usergroup';
-	}
+	$$SETTINGS{lastnoded} ||= $DB-&gt;sqlSelect('node_id', 'node JOIN writeup ON node_id=writeup_id',
+                                         &quot;author_user=$$NODE{node_id}&quot;
+                                         .$maintStr
+                                         .&quot; ORDER BY publishtime DESC LIMIT 1&quot;);
 }
 
-$grandtotal ||= $DB -&gt; sqlSelect(&quot;count(*)&quot;,&quot;message&quot;,&quot;for_user=$foruser&quot;);
 
-# from user/to usergroup
-if ($filterUser){
-	my ($n, $not) = $query-&gt;param('notuser')  ? ('!', ' not') : ('', '');
-	$sqlWhere .= &quot; AND message.author_user$n=$$filterUser{node_id}&quot;;
-	$showFilters .= &quot;$not from &quot;.linkNode($filterUser);
-}
+use Everything::Experience;
+my $lvl = getLevel($NODE);
+$$SETTINGS{level} = $lvl;
+   
+my $TITLES= getVars(getNode('level titles','setting'));
+$$SETTINGS{level} .= &quot; ($$TITLES{$$SETTINGS{level}})&quot;;
 
-if ($filterGroup){
-	my ($n, $not) = $query-&gt;param('notgroup')  ? ('!', ' not') : ('', '');
-	$sqlWhere .= &quot; AND for_usergroup$n=$$filterGroup{node_id}&quot;;
-	$showFilters .= &quot;$not to usergroup &quot;.linkNode($filterGroup);
-}
+if ($$NODE{title} eq 'thefez') { $$SETTINGS{level} = &quot;-1 (Arcanist)&quot; } # --N 
 
-# provoke jump to last page:
-$query -&gt; param('page', 1000000000) unless $query -&gt; param('page');
+$$SETTINGS{level} .= &quot; \/ $$NODE{experience}&quot;;
 
-# get messages
-my ($csr, $paginationLinks, $totalmsgs, $firstmsg, $lastmsg) = htmlcode(
-	'show paged content'
-	, 'message.*'
-	, &quot;message $ugJoin&quot;
-	, &quot;$sqlWhere&quot;,
-    , 'ORDER BY message_id
-		LIMIT 100' # can be overridden by 'perpage' parameter
-	, 0 # no instructions, so it doesn't 'show' but returns cursor
-	, noform =&gt; 1 # 'go to page' box not wrapped in form
-);
 
-# display
-my $colHeading = '&lt;tr&gt;&lt;th align=&quot;left&quot;&gt;delete&lt;/th&gt;&lt;th&gt;send time&lt;/th&gt;
-	&lt;th colspan=&quot;2&quot; align=&quot;right&quot;&gt;&amp;#91;un&amp;#93;Archive&lt;/th&gt;&lt;/tr&gt;';
-
-$str .= &quot;$paginationLinks
-	&lt;table&gt;
-	$colHeading&quot; if $totalmsgs;
-
-while (my $MSG = $csr-&gt;fetchrow_hashref){
-	my $text = $$MSG{msgtext};
-	my $from = $$MSG{author_user};
-	my $ug = $$MSG{for_usergroup};
-
-	getRef($from, $ug);
-	$from ||= {title =&gt; '&amp;#91;unknown user]'};
-	$ug = 0 if $ug &amp;&amp; $$ug{type}{title} ne 'usergroup';
-
-	# don't escape HTML for bots
-	unless ($$bots{$$from{title}} eq 'Content Editors') {
-		$text = escapeAngleBrackets($text);
-		$text = parseLinks($text,0,1);
-		$text =~ s/\[/&amp;#91;/g; # no spare [s for page parseLinks
-	}
-	$text =~ s/\s+\\n\s+/&lt;br&gt;/g; # replace literal '\n' with HTML breaks
-
-	# delete box
-	$str.= qq'&lt;tr class=&quot;privmsg&quot;&gt;&lt;td&gt;'.$query -&gt; checkbox(
-		-name =&gt; 'deletemsg_'.$$MSG{message_id}
-		, value =&gt; 'yup'
-		, valign =&gt; 'top'
-		, label =&gt; ''
-		, class =&gt; 'delete'
-	);
-
-	# reply links
-	my $a = '';
-	foreach (encodeHTML($$from{title}), $ug &amp;&amp; $$ug{title}){
-		# make names safe and find user if it's from Eddie.
-		# (To find more users, patch the messages, not this)
-		$text =~ /\[([^\[\]]*)\[user]/ + ($_ = $1) if $_ eq 'Cool Man Eddie'; # (sic)
-		next unless $_;
-		$_ =~ s/'/&amp;\#39;/g;
-		$_ =~ s/&quot;/&amp;\#34;/g;
-		$_ =~ s/ /_/g;
-
-		$str .= '('
-			.$query -&gt; a({
-				class =&gt; 'action reply'
-#				, onmouseover =&gt; 'if(e2.autofillInbox){e2.startText('zetextbox','/msg $_ ', 1);}'
-				, href =&gt; &quot;javascript:e2.startText('zetextbox','/msg $_ ')&quot;
-			}, &quot;r$a&quot;).')';
-		$a = 'a';
-	}
-
-	# time sent
-	my $t = $$MSG{tstamp};
-	$str .= '&lt;/td&gt;&lt;td&gt;&lt;small&gt;&amp;nbsp;'
-		.substr($t,0,4).'.'.substr($t,5,2).'.'.substr($t,8,2)
-		.'&amp;nbsp;at&amp;nbsp;'.substr($t,11,2).':'.substr($t,14,2)
-		.'&lt;/small&gt;&lt;/td&gt;&lt;td&gt;';
-
-	# message
-	$str .= '('.linkNode($ug).') ' if $ug;
-	$str .= '&lt;em&gt;'.linkNode($from).&quot; says&lt;/em&gt; $text. &lt;/td&gt;&quot;;
-
-	# archive box
-	$str .= '&lt;td&gt;&lt;tt&gt;'.($$MSG{archive}?'A':'&amp;nbsp;').'&lt;/tt&gt;'
-		.$query -&gt; checkbox(
-			-name =&gt; ($$MSG{archive} ? 'un' : '').&quot;archive_$$MSG{message_id}&quot;
-			, value =&gt; 'yup'
-			, label =&gt; ''
-			, class =&gt; 'archive'
-		)
-		.&quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
-}
-
-# summary report
-unless ($totalmsgs || $filterUser || $filterGroup
-		|| $$VARS{msginboxUnArc} == 2 # archived only
-		|| $foruser != $$USER{node_id}){
-	#no messages showing
-	$showFilters = &quot;&lt;em&gt;You may feel lonely.&lt;/em&gt;
-		&lt;small&gt;(But you do have $grandtotal messages all together)&lt;/small&gt;&quot;
-		if $grandtotal;
-}else{
-	$str .= $colHeading if $lastmsg - $firstmsg &gt; 10;
-	$str .= '&lt;/table&gt;' if $totalmsgs;
-
-	$totalmsgs ||= 'no';
-	$showFilters =~ s/messages/message/ if $totalmsgs == 1;
-	$showFilters = ($foruser == $$USER{node_id} ? 'You have '
-			: linkNode($foruser).' has ')
-		.$totalmsgs
-		.$showFilters;
-	$showFilters .= &quot;. ($grandtotal all together)&quot; if $totalmsgs != $grandtotal;
-}
-
-$str .= $query -&gt; p($showFilters);
-
-# form manipulation buttons
-$str .= $paginationLinks.$query -&gt; p(
-	$query-&gt;reset('Clear All')
-    .q! &lt;input type=&quot;button&quot; value=&quot;Clear Reply&quot;
-        onclick=&quot;$('#zetextbox').val('');&quot;&gt;
-	&lt;input type=&quot;button&quot; value=&quot;Delete All&quot;
-		onclick=&quot;$('.delete').each(function(){this.checked=true;});&quot;&gt;
-	&lt;input type=&quot;button&quot; value=&quot;Archive All&quot;
-		onclick=&quot;$('.archive&amp;#91;name^=archive]').each(function(){this.checked=true;});&quot;&gt;
-	&lt;input type=&quot;button&quot; value=&quot;Unarchive All&quot;
-		onclick=&quot;$('.archive&amp;#91;name^=unarchive]').each(function(){this.checked=true;});&quot;&gt;!
-);
-
-# message and box
-if ($query-&gt;param('sentmessage') ){
-$str .= '&lt;p&gt;&lt;i&gt;'.
-	$query-&gt;param('sentmessage').
-	'&lt;/i&gt;&lt;/p&gt;';
-}
-
-$str .= $query -&gt; div({id =&gt; 'MI_textbox'}, $query -&gt; textarea(
-	-name =&gt; 'message'
-	, value =&gt; ''
-	, force =&gt; 1
-	, rows =&gt; 1
-	, cols =&gt; 35
-	, id =&gt; 'zetextbox'
-	, class =&gt; 'expandable'
-)) unless $$VARS{'borged'};
-
-$str.' '
-	.$query-&gt;submit('message send', 'submit')
-	.$query-&gt;end_form();
+setVars($NODE, $SETTINGS);
+   
+linkNode($$SETTINGS{lastnoded});
 
 %]</doctext>
   <node_id>2000674</node_id>

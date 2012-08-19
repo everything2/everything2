@@ -1,17 +1,41 @@
 <node>
-  <doctext>&lt;p&gt;How many &quot;ilikeit&quot;s do your writeups have? (NOTE: the likedit table was erased, and new ilikeits were not being saved for an unknown period of time. This issue was just fixed 2008-08-25)&lt;/p&gt;
+  <doctext>&lt;h3&gt;How many &lt;tt&gt;ilikeit&lt;/tt&gt;s do your writeups have?&lt;/h3&gt;
+&lt;p&gt;&lt;small&gt;(since August 25, 2008)&lt;/small&gt;&lt;/p&gt;
 [%
+
+my $str;
+my $username = $$USER{title};
+my $uid = $$USER{node_id};
+my $isG = isGod($USER);
+
+if ($isG == 1)
+{
+   if($query-&gt;param('username'))
+   {
+      $username = $query-&gt;param('username');
+      my $n = getNode($username, 'user');
+      if ($n) { $uid = $$n{node_id}; }
+   }
+
+   $str .= '&lt;div style=&quot;padding:10px;margin:10px;border:1px solid #ccc&quot;&gt;
+               &lt;form method=&quot;get&quot;&gt;
+                  &lt;b&gt;Username:&lt;/b&gt;
+                  &lt;input type=&quot;text&quot; name=&quot;username&quot; value=&quot;'.$username.'&quot; /&gt;
+                  &lt;input type=&quot;submit&quot; name=&quot;s&quot; value=&quot;Submit&quot; /&gt;
+               &lt;/form&gt;
+            &lt;/div&gt;';
+}
+
 my $dbh = $DB-&gt;getDatabaseHandle();
 return 'No database handle!' unless $dbh;
 my $rows;
-my $str;
-my $dbrow;
 
+my $dbrow;
 my $queryText = &quot;SELECT node.node_id,COUNT(likedit.likedit_node) AS likeditcount 
 FROM node,likedit 
 WHERE node.node_id=likedit.likedit_node
  AND node.type_nodetype=117
- AND node.author_user=&quot;.$$USER{node_id}.&quot;
+ AND node.author_user=&quot;.$uid.&quot;
 GROUP BY likedit.likedit_node
 ORDER BY likeditcount DESC,node.title&quot;;
 
@@ -29,81 +53,12 @@ $rows = $dbh-&gt;prepare($queryText)
   or return $rows-&gt;errstr;
 $rows-&gt;execute()
   or return $rows-&gt;errstr;
-$str .= '&lt;ol&gt;';
+$str .= '&lt;table&gt;';
 while($dbrow = $rows-&gt;fetchrow_arrayref)
 {
-  $str .= '&lt;li&gt;'.linkNode($$dbrow[0]).' - '.$$dbrow[1].'&lt;/li&gt;';
+  $str .= '&lt;tr&gt;&lt;td&gt;'.linkNode($$dbrow[0]).'&lt;/td&gt;&lt;td align=&quot;right&quot;&gt;'.$$dbrow[1].'&lt;/td&gt;&lt;/tr&gt;';
 }
-$str .= '&lt;/ol&gt;';
-return $str;
-%]
-
-&lt;hr&gt;
-&lt;hr&gt;
-
-[%
-return;
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
-my $rows;
-my $urows;
-my $str;
-my $dbrow;
-$str .= '&lt;h3&gt;Resurrected Nodes by node_id&lt;/h3&gt;';
-
-my $queryText = &quot;SELECT node.node_id,node.author_user FROM node,heaven WHERE node.node_id=heaven.node_id ORDER BY node.title,node.node_id&quot;;
-$rows = $dbh-&gt;prepare($queryText)
-  or return $rows-&gt;errstr;
-$rows-&gt;execute()
-  or return $rows-&gt;errstr;
-$str .= '&lt;ol style=&quot;margin-left:55px&quot;&gt;';
-while($dbrow = $rows-&gt;fetchrow_arrayref)
-{
-  $str .= '&lt;li&gt;'.linkNode($$dbrow[0]).' by '.linkNode($$dbrow[1]).'&lt;/li&gt;';
-  #$queryText = 'UPDATE heaven SET author_user='.($$dbrow[1]+100000000).' WHERE node_id='.$$dbrow[0];
-  #$urows = $dbh-&gt;prepare($queryText);
-  #$urows-&gt;execute();
-  #$str .= '&lt;li&gt;'.$queryText.'&lt;/li&gt;';
-}
-$str .= '&lt;/ol&gt;';
-
-#my $queryText = &quot;SELECT node_id,author_user,title FROM heaven where author_user&gt;=10000000&quot;;
-#$rows = $dbh-&gt;prepare($queryText)
-#  or return $rows-&gt;errstr;
-#$rows-&gt;execute()
-#  or return $rows-&gt;errstr;
-#$str .= '&lt;ol style=&quot;margin-left:55px&quot;&gt;';
-#while($dbrow = $rows-&gt;fetchrow_arrayref)
-#{
-#  $str .= '&lt;li&gt;'.linkNode($$dbrow[0]).' by '.$$dbrow[1].'&lt;/li&gt;';
-#}
-#$str .= '&lt;/ol&gt;';
-
-
-
-
-
-
-
-
-$str .= '&lt;h3&gt;Resurrected nodes by title/author&lt;/h3&gt;';
-$str .= '&lt;p&gt;&lt;em&gt;This works, but takes about 3 minutes to run and returns about 5650 results, so I exited out of the code before the query&lt;/em&gt;&lt;/p&gt;';
-return $str;
-
-#my $queryText = &quot;SELECT node.node_id,node.author_user FROM node,heaven WHERE node.author_user=heaven.author_user AND #node.title=heaven.title ORDER BY node.title,node.node_id&quot;;
-#$rows = $dbh-&gt;prepare($queryText)
-#  or return $rows-&gt;errstr;
-#$rows-&gt;execute()
-#  or return $rows-&gt;errstr;
-#$str .= '&lt;ol style=&quot;margin-left:55px&quot;&gt;';
-#while($dbrow = $rows-&gt;fetchrow_arrayref)
-#{
-#  $str .= '&lt;li&gt;'.linkNode($$dbrow[0]).' by '.linkNode($$dbrow[1]).'&lt;/li&gt;';
-#}
-#$str .= '&lt;/ol&gt;';
-
-
-
+$str .= '&lt;/table&gt;';
 
 return $str;
 %]</doctext>

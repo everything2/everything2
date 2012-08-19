@@ -30,6 +30,6 @@
   KEY `email` (`email`),
   KEY `lasttime` (`lasttime`),
   KEY `session_id` (`session_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2061811 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB AUTO_INCREMENT=2067268 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>user</title>
 </node>

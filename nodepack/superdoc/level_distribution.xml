@@ -5,7 +5,7 @@ my $queryText;
 my $rows;
 my $dbrow;
 my $str;
-my %styles;
+my %levels;
 my $key;
 my $n;
 
@@ -13,7 +13,7 @@ my $n;
 
 sub hashValueDescendingNum
 {
-   $styles{$b} &lt;=&gt; $styles{$a};
+   $levels{$b} &lt;=&gt; $levels{$a};
 }
 
 my $nodeId = getId($NODE);
@@ -40,13 +40,13 @@ $rows-&gt;execute()
 while($dbrow = $rows-&gt;fetchrow_arrayref)
 {
    $$dbrow[1] =~ m/level=([0-9]+)/;
-   if (exists($styles{$1}))
+   if (exists($levels{$1}))
    {
-      $styles{$1} = $styles{$1}+1;
+      $levels{$1} = $levels{$1}+1;
    }
    else
    {
-      $styles{$1} = 1;
+      $levels{$1} = 1;
    }
 }
 
@@ -57,7 +57,7 @@ $str .= '&lt;table align=&quot;center&quot;&gt;
    &lt;th&gt;Number of Users&lt;/th&gt;
    &lt;/tr&gt;';
 my $ctr = 0;
-foreach $key (sort hashValueDescendingNum (keys(%styles))) {
+foreach $key (sort hashValueDescendingNum (keys(%levels))) {
    $ctr++;
    #$n = getNodeById($key+0);
 
@@ -72,7 +72,7 @@ foreach $key (sort hashValueDescendingNum (keys(%styles))) {
 
    $str .= '&lt;td&gt;'.($key+0).'&lt;/td&gt;
       &lt;td style=&quot;text-align:center&quot;&gt;'.(getVars(getNode('level titles', 'setting'))-&gt;{($key+0)} || 0).'&lt;/td&gt;
-      &lt;td style=&quot;text-align:right&quot;&gt;'.$styles{$key}.'&lt;/td&gt;
+      &lt;td style=&quot;text-align:right&quot;&gt;'.$levels{$key}.'&lt;/td&gt;
       &lt;/tr&gt;';
 }
 $str .= '&lt;/table&gt;

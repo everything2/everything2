@@ -6,12 +6,8 @@
     <key>pie</key>
   </vars>
   <vars>
-    <value>tomatos</value>
+    <value>tomatoes</value>
     <key>tomato</key>
-  </vars>
-  <vars>
-    <value>caviars</value>
-    <key>caviar</key>
   </vars>
   <vars>
     <value>pizzas</value>
@@ -26,7 +22,7 @@
     <key>beer</key>
   </vars>
   <vars>
-    <value>shoots laser eyes at</value>
+    <value>drops a hammer on</value>
     <key>special</key>
   </vars>
   <vars>
@@ -38,12 +34,24 @@
     <key>omelette</key>
   </vars>
   <vars>
-    <value>eggs</value>
+    <value>nudges</value>
+    <key>nudge</key>
+  </vars>
+  <vars>
+    <value>throws an egg at</value>
     <key>egg</key>
   </vars>
   <vars>
-    <value>anvils</value>
+    <value>offers cookies to</value>
+    <key>cookie</key>
+  </vars>
+  <vars>
+    <value>drops an anvil on</value>
     <key>anvil</key>
+  </vars>
+  <vars>
+    <value>lights a candle for</value>
+    <key>candle</key>
   </vars>
   <vars>
     <value>highfives</value>
@@ -52,10 +60,6 @@
   <vars>
     <value>hugs</value>
     <key>hug</key>
-  </vars>
-  <vars>
-    <value>huggs</value>
-    <key>hugg</key>
   </vars>
   <vars>
     <value>rubber chickens</value>

@@ -26,6 +26,14 @@
     <key>2</key>
   </vars>
   <vars>
+    <value>[croakery] tracked down [Conflict Kitchen] and earned 50 GP from [gnarl]!</value>
+    <key>12</key>
+  </vars>
+  <vars>
+    <value>[gnarl] tracked down [Gilroy Garlic Festival] and earned 150 GP from [Wuukiee]!</value>
+    <key>14</key>
+  </vars>
+  <vars>
     <value>[drownzsurf] wrangled up [El Greco] and earned 300 GP from [mauler]!</value>
     <key>8</key>
   </vars>
@@ -36,6 +44,10 @@
   <vars>
     <value>[lucychili] figured out [how to kill that mocking bird outside your window] and earned 1 GP and a C! from [Heitah]!</value>
     <key>1</key>
+  </vars>
+  <vars>
+    <value>[Croakery] rounded up [Vowels as Clear as Church Bells] and earned a bounty from [decoy hunches] of You are given three wishes which shall be made manifest under the condition that you ask for them by acts not words. Drunken haiku for you on Sunday. and 333 GP!</value>
+    <key>13</key>
   </vars>
   <vars>
     <value>[StuartO)))] tracked down [Heston Blumenthal] and earned 100 GP from [Oolong]!</value>
