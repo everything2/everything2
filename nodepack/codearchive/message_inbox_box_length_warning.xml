@@ -1,7 +1,0 @@
-<node>
-  <doctext>The alert-on-type code for the message inbox that has been removed (jan-12-2003)</doctext>
-  <node_id>1414257</node_id>
-  <code>onkeypress=&quot;var mylen = new String(document.form1.message.value); if(mylen.length &gt; 255) alert(\'You can only have up to 255 characters in this field. You currently have \'+ String(mylen.length) + \'.  If you send this message now, some characters will be truncated.\');&quot;</code>
-  <type_nodetype>1382262</type_nodetype>
-  <title>Message Inbox box length warning</title>
-</node>
