@@ -9,4 +9,4 @@ $ENV{TZ} = '+0000';
 
 my $staticNodetypes = 1;
 
-mod_perlInit "everything", $staticNodetypes, { servers => ["127.0.0.1:11211"] };
+mod_perlInit "everything", $staticNodetypes, {};
