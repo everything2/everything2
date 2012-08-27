@@ -8,16 +8,17 @@ package Everything::MAIL;
 
 use strict;
 use Everything;
-
+use Email::Sender::Simple qw(try_to_sendmail);
+use Email::Simple;
+use Email::Simple::Creator;
+use Email::Sender::Transport::SMTP;
 
 
 sub BEGIN {
 	use Exporter ();
 	use vars       qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	@ISA=qw(Exporter);
-	@EXPORT=qw(
-			node2mail
-			mail2node);
+	@EXPORT=qw(node2mail);
 }
 
 
@@ -28,70 +29,35 @@ sub node2mail {
 		$DB->getType("user"));
 	my $subject = $$node{title};
 	my $body = $$node{doctext};
-	use Mail::Sender;
 
 	my $SETTING = getNode('mail settings', 'setting');
-	my ($mailserver, $from);
-	my $client = undef;
+	my ($from);
 	if ($SETTING) {
 		my $MAILSTUFF = getVars $SETTING;
-		$mailserver = $$MAILSTUFF{mailServer};
 		$from = $$MAILSTUFF{systemMailFrom};
-		$client = $$MAILSTUFF{client};
 	}
 	# Make sure we gots some defaults
-	$mailserver ||= "localhost";
 	$from ||= "root\@localhost";
 
-	my $sender = new Mail::Sender({smtp => $mailserver, from => $from});
-	$sender->{client} = $client if defined $client;
-	my $headers = "MIME-Version: 1.0\r\nContent-type: text/html\r\nContent-Transfer-Encoding: 7bit" if $html;
 
-	$sender->MailMsg({to=>$addr,
-			headers => $headers, 
-			subject=>$subject,
-			msg => $body});
-	$sender->Close();                
+	my $transport = Email::Sender::Transport::SMTP->new(
+  	{ "host" => $Everything::CONFIG{smtp_host},
+    	  "port" => $Everything::CONFIG{smtp_port},
+    	  "ssl" => $Everything::CONFIG{smtp_use_ssl},
+    	  "sasl_username" => $Everything::CONFIG{smtp_user},
+    	  "sasl_password" => $Everything::CONFIG{smtp_pass},
+  	});
+
+	my $email = Email::Simple->create(
+  	"header" => [
+     		"To"		=> $addr,
+     		"From"		=>  $from,
+     		"Subject"		=> $subject,
+  	],
+  	"body" => $body
+	);
+
+	try_to_sendmail($email, { "transport" => $transport });
 }
 
-sub mail2node
-{
-	my ($file) = @_;
-	my @filez = (ref $file eq "ARRAY") ? @$file:($file);
-	use Mail::Address;
-	my $line = '';
-	my ($from, $to, $subject, $body);
-	foreach(@filez)
-	{
-		open FILE,"<$_" or die 'suck!\n';
-		until($line =~ /^Subject\: /)
-		{
-			$line=<FILE>;
-			if($line =~ /^From\:/)       
-			{ 
-				my ($addr) = Mail::Address->parse($line);
-				$from = $addr->address;
-			}
-			if($line =~ /^To\:/)  
-			{
-				my ($addr) = Mail::Address->parse($line);
-				$to = $addr->address;
-			}
-			if($line =~ /^Subject\: (.*?)/)
-			{ print "hya!\n"; $subject = $1; }
-			print "blah: $line" if ($line);
-		}
-		while(<FILE>)
-		{
-			my $body .= $_;
-		}
-		my ($user) = $DB->getNodeWhere({email=>$to},
-			$DB->getType("user"));
-		my $node;
-		%$node = { author_user => getId($user),
-			from_address => $from,
-			doctext => $body};
-        $DB->insertNode($subject, $DB->getType("mail"), -1, $node);
-	}
-}
 1;
