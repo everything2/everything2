@@ -9,7 +9,7 @@ my ($title, $queryText, $rows);
 my $count = 1000;
 my $maxVotes = int($query-&gt;param(&quot;mv&quot;));
 my ($minRep, $repRestriction, $repStr) = (undef, '', '');
-my $resultCtr = 100;
+my $resultCtr = 50;
 
 if ($maxVotes &lt;= 0)
 {
@@ -89,6 +89,7 @@ SELECT title, author_user, createtime, writeup_id, totalvotes
   WHERE
     node.totalvotes &lt;= $maxVotes
     $repRestriction
+    AND node.author_user &lt;&gt; $$USER{user_id}
     AND vote.voter_user IS NULL
     AND wrtype_writeuptype &lt;&gt; 177599
   ORDER BY writeup.writeup_id
@@ -134,7 +135,6 @@ $str .= '&lt;/table&gt;
 
 return $str;
 %]
-
 </doctext>
   <node_id>1927770</node_id>
   <type_nodetype>14</type_nodetype>
