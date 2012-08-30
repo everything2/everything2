@@ -1,8 +1,20 @@
 <node>
-  <doctext>&lt;p style=&quot;text-align:right&quot;&gt;Created by [in10se]&lt;/p&gt;
+  <doctext>&lt;!-- Facebook JavaScript SDK required for most of these plugins --&gt;
+&lt;div id=&quot;fb-root&quot;&gt;&lt;/div&gt;
+&lt;script&gt;
+window.fbAsyncInit = function() {
+   FB.init({appId: '107951585912983', status: true, cookie: true, xfbml: true});
+};
+(function() {
+   var e = document.createElement('script');
+   e.type = 'text/javascript';
+   e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+   e.async = true;
+   document.getElementById('fb-root').appendChild(e);
+}());
+&lt;/script&gt;
 
-&lt;p&gt;NOTE: The plugins below which require us to register an application or web site on Facebook are currently not working because we haven't registered.&lt;/p&gt;
-&lt;p&gt;&lt;small&gt;&lt;em&gt;Also, this isn't a real sandbox. It's just a sample page.&lt;/em&gt;&lt;/small&gt;&lt;/p&gt;
+&lt;p style=&quot;text-align:right&quot;&gt;Created by [in10se]&lt;/p&gt;
 
 &lt;style type=&quot;text/css&quot;&gt;
 .Box
@@ -12,75 +24,163 @@ padding: 10px;
 margin-bottom: 2em;
 background-color: #eee;
 }
+.Notice
+{
+border: 1px solid #a00;
+padding: 10px;
+margin-bottom: 2em;
+background-color: #fee;
+}
 &lt;/style&gt;
 
-&lt;div class=&quot;Box&quot;&gt;
-&lt;h3&gt;Activity Feed&lt;/h3&gt;
-&lt;iframe src=&quot;http://www.facebook.com/plugins/activity.php?site=everything2.com&amp;amp;width=300&amp;amp;height=300&amp;amp;header=true&amp;amp;colorscheme=light&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; allowTransparency=&quot;true&quot; style=&quot;border:none; overflow:hidden; width:300px; height:300px&quot;&gt;&lt;/iframe&gt;
+&lt;div class=&quot;Notice&quot;&gt;
+&lt;p&gt;This page is slow due to the large number of sample plugins displayed. No normal page would actually need all of this, so load times wouldn't be affect all that much.&lt;/p&gt;
+&lt;p&gt;You must also be logged into Facebook for many of these plugins to be of any use.&lt;/p&gt;
 &lt;/div&gt;
 
 &lt;div class=&quot;Box&quot;&gt;
-&lt;h3&gt;Like Button&lt;/h3&gt;
-&lt;p&gt;&lt;em&gt;'Like Button' requires meta tags on each page to be able to fully function properly.&lt;/em&gt;&lt;/p&gt;
-&lt;iframe src=&quot;http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Feverything2.com&amp;amp;layout=standard&amp;amp;show_faces=true&amp;amp;width=450&amp;amp;action=like&amp;amp;colorscheme=light&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; allowTransparency=&quot;true&quot; style=&quot;border:none; overflow:hidden; width:450px;&quot;&gt;&lt;/iframe&gt;
+   &lt;h3&gt;Like Button&lt;/h3&gt;
+   &lt;p&gt;Set the data-href attribute to the URL you want to 'Like'. Leaving it blank will 'Like' the current page.&lt;/p&gt;
+
+   &lt;div class=&quot;Box&quot;&gt;
+   Like Current Page&lt;br /&gt;
+   &lt;div class=&quot;fb-like&quot; data-send=&quot;true&quot; data-width=&quot;450&quot; data-show-faces=&quot;true&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
+
+   &lt;div class=&quot;Box&quot;&gt;
+   Like E2 Home Page&lt;br /&gt;
+   &lt;div class=&quot;fb-like&quot; data-href=&quot;http://everything2.com&quot; data-send=&quot;true&quot; data-width=&quot;450&quot; data-show-faces=&quot;true&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
+
+   &lt;div class=&quot;Box&quot;&gt;
+   Like E2 Facebook Page (i.e., become a fan)&lt;br /&gt;
+   &lt;div class=&quot;fb-like&quot; data-href=&quot;https://www.facebook.com/Everything2com&quot; data-send=&quot;true&quot; data-width=&quot;450&quot; data-show-faces=&quot;true&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
 &lt;/div&gt;
 
 &lt;div class=&quot;Box&quot;&gt;
-&lt;h3&gt;Like Box&lt;/h3&gt;
-&lt;p&gt;&lt;em&gt;'Like Box' requires that you have an Everything2 'Page' on Facebook (which, to my knowledge, we do not have). I have put an example of what it would look like by using [my|another] page.&lt;/em&gt;&lt;/p&gt;
-&lt;iframe src=&quot;http://www.facebook.com/plugins/fan.php?id=83511682984&amp;amp;width=292&amp;amp;connections=10&amp;amp;stream=true&amp;amp;header=true&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; allowTransparency=&quot;true&quot; style=&quot;border:none; overflow:hidden; width:292px; height:500px&quot;&gt;&lt;/iframe&gt;
+   &lt;h3&gt;Send Button&lt;/h3&gt;
+   &lt;p&gt;Set the data-href attribute to the URL you want to Send. Leaving it blank will send the current page.&lt;/p&gt;
+
+   &lt;div class=&quot;Box&quot;&gt;
+   Send Current Page&lt;br /&gt;
+   &lt;div class=&quot;fb-send&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
+
+   &lt;div class=&quot;Box&quot;&gt;
+   Send E2 Home Page&lt;br /&gt;
+   &lt;div class=&quot;fb-send&quot; data-href=&quot;http://everything2.com&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
+
+   &lt;div class=&quot;Box&quot;&gt;
+   Send E2 Facebook Page&lt;br /&gt;
+   &lt;div class=&quot;fb-send&quot; data-href=&quot;https://www.facebook.com/Everything2com&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
 &lt;/div&gt;
 
 &lt;div class=&quot;Box&quot;&gt;
-&lt;h3&gt;Recommendations&lt;/h3&gt;
-&lt;iframe src=&quot;http://www.facebook.com/plugins/recommendations.php?site=everything2.com&amp;amp;width=300&amp;amp;height=300&amp;amp;header=true&amp;amp;colorscheme=light&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; allowTransparency=&quot;true&quot; style=&quot;border:none; overflow:hidden; width:300px; height:300px&quot;&gt;&lt;/iframe&gt;
+   &lt;h3&gt;Subscribe&lt;/h3&gt;
+   &lt;p&gt;This is supposed to display the E2 Facebook wall posts. It does not appear to work for 'Pages', but may work for individual profiles.&lt;/p&gt;
+   &lt;div class=&quot;fb-subscribe&quot; data-href=&quot;https://www.facebook.com/Everything2com&quot; data-show-faces=&quot;true&quot; data-width=&quot;450&quot;&gt;&lt;/div&gt;
 &lt;/div&gt;
 
 &lt;div class=&quot;Box&quot;&gt;
-&lt;h3&gt;Live Stream&lt;/h3&gt;
-&lt;p&gt;&lt;em&gt;'Live Stream' requires a Facebook 'App'. There is an existing Everything2 App, but I don't know exactly what it does. I have used it for this example. It appears to either show the public stream of anyone who installed the app or the app's Wall...&lt;/em&gt;&lt;/p&gt;
-&lt;iframe src=&quot;http://www.facebook.com/plugins/livefeed.php?app_id=2556901341&amp;amp;width=420&amp;amp;height=500&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; allowTransparency=&quot;true&quot; style=&quot;border:none; overflow:hidden; width:420px; height:500px&quot;&gt;&lt;/iframe&gt;
-&lt;/div&gt;
+   &lt;h3&gt;Comments&lt;/h3&gt;
+   &lt;p&gt;Allow comments on a page.&lt;/p&gt;
 
-&lt;hr&gt;
+   &lt;div class=&quot;Box&quot;&gt;
+   Comment on Current Page&lt;br /&gt;
+   &lt;div class=&quot;fb-comments&quot; data-num-posts=&quot;5&quot; data-width=&quot;470&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
+
+   &lt;div class=&quot;Box&quot;&gt;
+   Comment on the E2 Home Page&lt;br /&gt;
+   &lt;div class=&quot;fb-comments&quot; data-href=&quot;http://everything2.com&quot; data-num-posts=&quot;5&quot; data-width=&quot;470&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
+
+   &lt;div class=&quot;Box&quot;&gt;
+   Comment on E2 Facebook Page&lt;br /&gt;
+   &lt;div class=&quot;fb-comments&quot; data-href=&quot;https://facebook.com/Everything2com&quot; data-num-posts=&quot;2&quot; data-width=&quot;470&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
+&lt;/div&gt;
 
 &lt;div class=&quot;Box&quot;&gt;
-&lt;h3&gt;Comments&lt;/h3&gt;
-&lt;p&gt;&lt;em&gt;'Comments' requires that we register E2 on Facebook.&lt;/em&gt;&lt;/p&gt;
-&lt;fb:comments xid=&quot;everything2.com&quot; numposts=&quot;10&quot; width=&quot;420&quot; /&gt;
+   &lt;h3&gt;Activity Feed&lt;/h3&gt;
+   &lt;p&gt;Can be set up to monitor a domain or app.&lt;/p&gt;
+   
+   &lt;div class=&quot;Box&quot;&gt;
+   Domain: everything2.com&lt;br /&gt;
+   &lt;div class=&quot;fb-activity&quot; data-site=&quot;everything2.com&quot; data-width=&quot;300&quot; data-height=&quot;300&quot; data-header=&quot;true&quot; data-recommendations=&quot;true&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
+
+   &lt;div class=&quot;Box&quot;&gt;
+   App ID: 107951585912983&lt;br /&gt;
+   &lt;div class=&quot;fb-activity&quot; data-app-id=&quot;107951585912983&quot; data-width=&quot;300&quot; data-height=&quot;300&quot; data-header=&quot;true&quot; data-recommendations=&quot;true&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
 &lt;/div&gt;
 
 &lt;div class=&quot;Box&quot;&gt;
-&lt;h3&gt;Facepile&lt;/h3&gt;
-&lt;p&gt;&lt;em&gt;'Facepile' requires that we register E2 on Facebook.&lt;/em&gt;&lt;/p&gt;
-&lt;fb:facepile max-rows=&quot;3&quot; width=&quot;200&quot; /&gt;
+   &lt;h3&gt;Recommendations&lt;/h3&gt;
+   &lt;p&gt;Can be set up to monitor a domain or app.&lt;/p&gt;
+   
+   &lt;div class=&quot;Box&quot;&gt;
+   Domain: everything2.com&lt;br /&gt;
+   &lt;div class=&quot;fb-recommendations&quot; data-site=&quot;everything2.com&quot; data-width=&quot;300&quot; data-height=&quot;300&quot; data-header=&quot;true&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
+
+   &lt;div class=&quot;Box&quot;&gt;
+   App ID: 107951585912983&lt;br /&gt;
+   &lt;div class=&quot;fb-recommendations&quot; data-app-id=&quot;107951585912983&quot; data-width=&quot;300&quot; data-height=&quot;300&quot; data-header=&quot;true&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
 &lt;/div&gt;
 
 &lt;div class=&quot;Box&quot;&gt;
-&lt;h3&gt;Login with Faces&lt;/h3&gt;
-&lt;p&gt;&lt;em&gt;'Login with Faces' requires that we register E2 on Facebook.&lt;/em&gt;&lt;/p&gt;
-&lt;fb:login-button show-faces=&quot;true&quot; width=&quot;200&quot; max-rows=&quot;3&quot; /&gt;
+   &lt;h3&gt;Like Box&lt;/h3&gt;
+   &lt;p&gt;Show your fans and page activity.&lt;/p&gt;
+   &lt;div class=&quot;fb-like-box&quot; data-href=&quot;http://www.facebook.com/everything2com&quot; data-width=&quot;292&quot; data-show-faces=&quot;true&quot; data-stream=&quot;true&quot; data-header=&quot;true&quot;&gt;&lt;/div&gt;
 &lt;/div&gt;
 
+&lt;div class=&quot;Box&quot;&gt;
+   &lt;h3&gt;Login Button&lt;/h3&gt;
+   &lt;p&gt;If not logged in, shows login button, else shows your friends who are also fans of E2.&lt;/p&gt;
+   &lt;div class=&quot;fb-login-button&quot; data-show-faces=&quot;true&quot; data-width=&quot;200&quot; data-max-rows=&quot;5&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
 
+&lt;div class=&quot;Box&quot;&gt;
+   &lt;h3&gt;Registration&lt;/h3&gt;
+   &lt;p&gt;Allows users to register for E2 through Facebook. (It's probably much more complicated that this, and we'd probably never want to use this, but it's included for completeness...)
+   &lt;iframe src=&quot;https://www.facebook.com/plugins/registration?
+             client_id=113869198637480&amp;
+             redirect_uri=https%3A%2F%2Fdevelopers.facebook.com%2Ftools%2Fecho%2F&amp;
+             fields=name,birthday,gender,location,email&quot;
+        scrolling=&quot;auto&quot;
+        frameborder=&quot;no&quot;
+        style=&quot;border:none&quot;
+        allowTransparency=&quot;true&quot;
+        width=&quot;100%&quot;
+        height=&quot;330&quot;&gt;
+&lt;/iframe&gt;
+&lt;/div&gt;
 
+&lt;div class=&quot;Box&quot;&gt;
+   &lt;h3&gt;Facepile&lt;/h3&gt;
+   &lt;p&gt;Shows friends who have liked a certain page&lt;/p&gt;
 
-&lt;div id=&quot;fb-root&quot;&gt;&lt;/div&gt;
-    &lt;script&gt;
-      window.fbAsyncInit = function() {
-        FB.init({appId: '107951585912983', status: true, cookie: true,
-                 xfbml: true});
-      };
-      (function() {
-        var e = document.createElement('script');
-        e.type = 'text/javascript';
-        e.src = document.location.protocol +
-          '//connect.facebook.net/en_US/all.js';
-        e.async = true;
-        document.getElementById('fb-root').appendChild(e);
-      }());
-    &lt;/script&gt;
-</doctext>
+   &lt;div class=&quot;Box&quot;&gt;
+   E2 Facebook Page&lt;br /&gt;
+   &lt;div class=&quot;fb-facepile&quot; data-href=&quot;https://facebook.com/everything2com&quot; data-max-rows=&quot;5&quot; data-width=&quot;300&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
+
+   &lt;div class=&quot;Box&quot;&gt;
+   E2 Home Page&lt;br /&gt;
+   &lt;div class=&quot;fb-facepile&quot; data-href=&quot;http://everything2.com&quot; data-max-rows=&quot;5&quot; data-width=&quot;300&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
+
+   &lt;div class=&quot;Box&quot;&gt;
+   Current Page?&lt;br /&gt;
+   &lt;div class=&quot;fb-facepile&quot; data-max-rows=&quot;5&quot; data-width=&quot;300&quot;&gt;&lt;/div&gt;
+   &lt;/div&gt;
+&lt;/div&gt;</doctext>
   <node_id>2015279</node_id>
   <type_nodetype>14</type_nodetype>
   <title>Facebook Social Plugins Sandbox</title>
