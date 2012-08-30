@@ -14,9 +14,7 @@ my $tables =
 	"message" => "--no-data",
 	"heaven" => "--no-data",
 	"nodebak" => "--no-data",
-	"ftsearch" => "--no-data",
 	"ftcache" => "--no-data",
-	"ftdict" => "--no-data",
 	"deletedhits" => "--no-data",
 	"hits" => "--no-data",
 };
