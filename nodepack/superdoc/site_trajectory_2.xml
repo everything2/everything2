@@ -30,7 +30,7 @@ my $strMonth;
 
 my $str=&quot;&lt;table&gt;\n&lt;tr&gt;\n&lt;th&gt;Month to&lt;/th&gt;\n&lt;th colspan='2'&gt;New writeups&lt;/th&gt;\n&lt;th colspan='2'&gt;New users&lt;br&gt;(contributing)&lt;/th&gt;\n&lt;th colspan='2'&gt;C!s spent&lt;/th&gt;\n&lt;th title='ratio of cools to new writeups'&gt;C!:NW&lt;/th&gt;&lt;/tr&gt;&quot;;
 $monthsago=1;
-while ($year&gt;1999) {
+while ($year&gt;2006) {
   my $strMonth = ($month+1).'';
   if (length($strMonth)==1)
   {
@@ -62,7 +62,7 @@ while ($year&gt;1999) {
     }
     $str .= '&lt;/td&gt;';
 
-  $str.= &quot;\n\t&lt;td&gt;$wucnt&lt;/td&gt;\n\t&lt;td&gt;&lt;span class='bar' style='padding-right:&quot;.($wucnt/45).&quot;px;'&gt;&amp;nbsp;&lt;/span&gt;&lt;/td&gt;\n\t&lt;td&gt;$usercnt&lt;/td&gt;\n\t&lt;td&gt;&lt;span class='bar' style='padding-right:&quot;.($usercnt/45).&quot;px;'&gt;&amp;nbsp;&lt;/span&gt;&lt;/td&gt;\n\t&lt;td&gt;$coolcnt&lt;/td&gt;\n\t&lt;td&gt;&lt;span class='bar' style='padding-right:&quot;.($coolcnt/45).&quot;px;'&gt;&amp;nbsp;&lt;/span&gt;&lt;/td&gt;&quot;;
+  $str.= &quot;\n\t&lt;td&gt;$wucnt&lt;/td&gt;\n\t&lt;td&gt;&lt;span class='bar' style='padding-right:&quot;.($wucnt/10).&quot;px;'&gt;&amp;nbsp;&lt;/span&gt;&lt;/td&gt;\n\t&lt;td&gt;$usercnt&lt;/td&gt;\n\t&lt;td&gt;&lt;span class='bar' style='padding-right:&quot;.($usercnt).&quot;px;'&gt;&amp;nbsp;&lt;/span&gt;&lt;/td&gt;\n\t&lt;td&gt;$coolcnt&lt;/td&gt;\n\t&lt;td&gt;&lt;span class='bar' style='padding-right:&quot;.($coolcnt/10).&quot;px;'&gt;&amp;nbsp;&lt;/span&gt;&lt;/td&gt;&quot;;
   $str.=&quot;\n\t&lt;td&gt;&quot;.sprintf(&quot;%.2f&quot;, $coolcnt/$wucnt).&quot;&lt;/td&gt;&quot; if ($wucnt&gt;0);
 #  $str.=&quot;\n\t&lt;td&gt;&quot;.$coolcnt/$wucnt.&quot;&lt;/td&gt;&quot; if ($coolcnt&gt;0);
   $str.=&quot;&lt;/tr&gt;&quot;;
