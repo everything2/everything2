@@ -58,7 +58,7 @@
     <key>titleColor</key>
   </vars>
   <vars>
-    <value>/img/search_button.gif</value>
+    <value>http://static.everything2.com/search_button.gif</value>
     <key>searchIcon</key>
   </vars>
   <vars>
