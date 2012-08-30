@@ -236,7 +236,7 @@ h1#e2logo {
 	overflow: hidden; /* sets a window big enough to show the background image and nothing else */
 	background-repeat: no-repeat;
 	background-position: 0 0;
-	background-image: url(http://everything2.com/img/e2_tight.gif);
+	background-image: url(http://static.everything2.com/e2_tight.gif);
 }
 h1#e2logo a {
 	display: block;
