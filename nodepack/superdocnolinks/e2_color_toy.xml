@@ -193,7 +193,7 @@ names&lt;/a&gt; like &lt;/i&gt;&lt;tt&gt;dodgerblue&lt;/tt&gt;&lt;i&gt; etc.&lt;
 &lt;/form&gt;
 
 &lt;div class=&quot;gradcell&quot; id=&quot;dechex&quot; width=&quot;64px&quot; height=&quot;32px&quot;&gt;
-&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;48&quot; height=&quot;24&quot; /&gt;
+&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;48&quot; height=&quot;24&quot; /&gt;
 &lt;/div&gt;
 
 &lt;hr&gt;
@@ -205,22 +205,22 @@ From &lt;input type=&quot;text&quot; size=&quot;12&quot; name=&quot;from&quot; v
 &lt;input type=&quot;checkbox&quot; name=&quot;nametohex&quot; __checked&gt;Convert named colors to hex&lt;/input&gt;
 &lt;table cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot;&gt;
 &lt;tr&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad0&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad1&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad2&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad3&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad4&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad5&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad6&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad7&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad8&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad9&quot; &gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad10&quot;&gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad11&quot;&gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad12&quot;&gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad13&quot;&gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad14&quot;&gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
-&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad15&quot;&gt;&lt;img src=&quot;/images/incoming/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad0&quot; &gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad1&quot; &gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad2&quot; &gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad3&quot; &gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad4&quot; &gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad5&quot; &gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad6&quot; &gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad7&quot; &gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad8&quot; &gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad9&quot; &gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad10&quot;&gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad11&quot;&gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad12&quot;&gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad13&quot;&gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad14&quot;&gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;&lt;div class=&quot;gradcell&quot; id=&quot;grad15&quot;&gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;24&quot; height=&quot;24&quot; /&gt;&lt;/div&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr align=&quot;center&quot;&gt;
 &lt;td&gt;1&lt;/td&gt;&lt;td&gt;2&lt;/td&gt;&lt;td&gt;3&lt;/td&gt;&lt;td&gt;4&lt;/td&gt;
@@ -294,7 +294,6 @@ MacOS 9.2.2 but not MacOS 10.1.2. A few weeks later: [cbustapeck]
 just let me know that icab pre2.6 has expired, and all is well on 
 [icab] pre2.71, on MacOS 9.2.2 and X. 
 &lt;/i&gt;&lt;/p&gt;
-
 
 
 
