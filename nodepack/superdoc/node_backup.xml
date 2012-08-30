@@ -1,6 +1,7 @@
 <node>
   <doctext>[%
 # Assume writeup-backups/ exists in the www/ directory:
+return &quot;Node backup is offline due to the move to cloud services. If you miss this, please let [jaybonci] know, and we'll reimplement it somehow&quot;;
 my $pathprefix = '/var/everything/www/';
 my $directory = 'writeup-backups/';
 
