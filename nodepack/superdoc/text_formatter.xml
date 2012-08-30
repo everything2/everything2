@@ -273,7 +273,7 @@ function popupHTML() {
 // to add: close the popup window if it's already there
 
   var popupWin = window.open('', 'popup', 'status,scrollbars,resizable,width=480,height=360,left=20,top=20');
-  var popupText = &quot;&lt;html&gt;&lt;head&gt;&lt;link href='/styledef.css' rel='stylesheet' type='text/css'&gt;&quot;;
+  var popupText = &quot;&lt;html&gt;&lt;head&gt;&lt;link href='http://jscss.everything2.com/styledef.css' rel='stylesheet' type='text/css'&gt;&quot;;
   popupText += &quot;&lt;title&gt;Magical Text Formatter Preview@everything2.com&lt;/title&gt;&quot;;
   popupText += &quot;&lt;/head&gt;&lt;body bgcolor='white'&gt;&quot;;
   popupText += &quot;&lt;p align='right'&gt;&lt;a href='javascript:window.close()'&gt;Close window&lt;/a&gt;&lt;/p&gt;&quot;;
@@ -422,8 +422,7 @@ function addStyles(mark,tag,str) {
   return str;
 }
 // --&gt;
-&lt;/script&gt;
-</doctext>
+&lt;/script&gt;</doctext>
   <node_id>1133419</node_id>
   <type_nodetype>14</type_nodetype>
   <title>Text Formatter</title>
