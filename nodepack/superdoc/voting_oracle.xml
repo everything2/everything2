@@ -19,15 +19,15 @@ if ($cnt == 0) {
   # affected by knowing the exact number.
   # See also: [The tree of knowledge of good and evil]
 
-  #my $pcUp = sprintf(&quot;%.2f&quot;, 100*($up / $cnt));
+  #my $pcUp = sprintf(&quot;%.3f&quot;, 100*($up / $cnt));
   my $total = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;);
   my $percent = sprintf(&quot;%.4f&quot;, 100*($cnt / $total));
   my $wus = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;writeup&quot;);
-  my $uppercent = sprintf(&quot;%.1f&quot;, 100*($upcnt / $cnt));
+  my $uppercent = sprintf(&quot;%.3f&quot;, 100*($upcnt / $cnt));
 
 my $webbyWus = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;node&quot;, &quot;type_nodetype=117 and author_user=176726&quot;);
 $wus -= $webbyWus;
-  my $wuspercent = sprintf(&quot;%.1f&quot;, 100*($cnt/$wus));
+  my $wuspercent = sprintf(&quot;%.3f&quot;, 100*($cnt/$wus));
 
   return &quot;Thou hast cast $cnt votes... $percent\% of the judgements made of all time, across $wuspercent\% of all votable writeups. Of these, $uppercent\% are upvotes.&quot;;
 %]
