@@ -13,8 +13,8 @@ $text = parseLinks($text);
 my $str;
 $str.= &lt;&lt;ENDTEXT;
 
-&lt;object type=&quot;application/x-shockwave-flash&quot; data=&quot;/swf/player_mp3_maxi.swf&quot; width=&quot;300&quot; height=&quot;20&quot;&gt;
-    &lt;param name=&quot;movie&quot; value=&quot;/swf/player_mp3_maxi.swf&quot; /&gt;
+&lt;object type=&quot;application/x-shockwave-flash&quot; data=&quot;http://static.everything2.com/player_mp3_maxi.swf&quot; width=&quot;300&quot; height=&quot;20&quot;&gt;
+    &lt;param name=&quot;movie&quot; value=&quot;http://static.everything2.com/player_mp3_maxi.swf&quot; /&gt;
     &lt;param name=&quot;bgcolor&quot; value=&quot;#ffffff&quot; /&gt;
     &lt;param name=&quot;FlashVars&quot; value=&quot;mp3=$$NODE{link}&amp;amp;width=300&amp;amp;autoload=0&amp;amp;volume=50&amp;amp;showstop=1&amp;amp;showinfo=1&amp;amp;showvolume=1&quot; /&gt;
 &lt;/object&gt;
