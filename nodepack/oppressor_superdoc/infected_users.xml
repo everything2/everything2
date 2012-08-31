@@ -12,7 +12,7 @@ If a user is infected, Content Editors and gods will see this at the top of the 
 &lt;/p&gt;
 &lt;div id=&quot;homenode_infection&quot; class=&quot;warning&quot;&gt;
     &lt;div&gt;
-       &lt;img src=&quot;/images/openiconlibrary/biohazard.png&quot; alt=&quot;Biohazard Sign&quot; title=&quot;User is infected&quot;&gt;
+       &lt;img src=&quot;http://static.everything2.com/biohazard.png&quot; alt=&quot;Biohazard Sign&quot; title=&quot;User is infected&quot;&gt;
        &lt;p&gt;
        This user is [Infected Users[oppressor_superdoc]|infected].
        &lt;/p&gt;
@@ -37,8 +37,7 @@ Infections can be caught in a few ways:
 
 &lt;p&gt;
 Infections are intentionally constructed to be very hard to catch and to be hard to detect for the user affected by them.  This is a balance between befuddling problem users while not adversely affecting any legit users.
-&lt;/p&gt;
-</doctext>
+&lt;/p&gt;</doctext>
   <node_id>2034109</node_id>
   <type_nodetype>1144104</type_nodetype>
   <title>Infected Users</title>
