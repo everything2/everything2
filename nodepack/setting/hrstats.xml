@@ -2,11 +2,11 @@
   <node_id>1373661</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <value>8.0337</value>
+    <value>8.0336</value>
     <key>stddev</key>
   </vars>
   <vars>
-    <value>14.6619</value>
+    <value>14.6624</value>
     <key>mean</key>
   </vars>
   <title>hrstats</title>
