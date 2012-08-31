@@ -1,0 +1,40 @@
+<node>
+  <doctext>$.extend(e2, {
+	fxDuration: (e2.fxDuration || 200) - 1, // fx off is stored as 1
+	isChatterlight: /^Chatterlight/i.test(document.title) &amp;&amp; (e2.autoChat = true),
+	collapsedNodelets: e2.collapsedNodelets || '',
+	
+	tinyMCESettings: {
+		// add mode before use
+		theme: 'advanced',
+		plugins: 'table',
+		theme_advanced_buttons3_add_before: 'tablecontrols,|',
+		theme_advanced_disable: 'styleselect,image,anchor,link,unlink,row_props,cell_props',
+		theme_advanced_statusbar_location: 'bottom',
+		theme_advanced_resizing: true,
+		element_format: 'html',
+		remove_linebreaks: false,
+		forced_root_block: '',
+		inline_styles: false,
+		entity_encoding: 'raw',
+		invalid_elements: 'a,img,div,span',
+		extended_valid_elements: 'big,small,i,b,tt,p[align],hr[width]',
+		formats: {
+			alignleft:    { selector: 'p', attributes : { align: &quot;left&quot; } },
+			alignright:   { selector: 'p', attributes : { align: &quot;right&quot; } },
+			aligncenter:  { selector: 'p', attributes : { align: &quot;center&quot; } }
+		}
+	},
+	
+	timeout: 20, //seconds
+	defaultUpdatePeriod: 3.5, // minutes
+	sleepAfter: 17 // minutes
+});
+
+jQuery.fx.interval = 40; // 25 frames/second: assume user is human. (Default = 13 =&gt; ~80Hz == daft)
+if (e2.fxDuration == 0) jQuery.fx.off = true;
+</doctext>
+  <node_id>2069287</node_id>
+  <type_nodetype>1786405</type_nodetype>
+  <title>Boilerplate Javascript</title>
+</node>
