@@ -3,8 +3,6 @@
 use strict;
 use Everything;
 use Everything::HTML;
-use Everything::CacheStore;
-
 
 initEverything "everything", 0, { servers => ["127.0.0.1:11211"] };
 

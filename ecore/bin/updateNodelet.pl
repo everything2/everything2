@@ -5,7 +5,6 @@ use lib "/var/everything/ecore";
 use strict;
 use Everything;
 use Everything::HTML;
-use Everything::CacheStore;
 use POSIX qw(strftime);
 use Time::HiRes qw(gettimeofday tv_interval);
 
