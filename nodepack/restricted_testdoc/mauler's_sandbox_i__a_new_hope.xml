@@ -3,7 +3,7 @@
 
   return 'Do you really want to see the eldritch horrors that result when I try to write code?' unless $USER-&gt;{title} eq 'mauler';
 
-  my $str = 'Everything\'s \&quot;Special\&quot; Writeups (visible only to staff members):';
+  my $str = 'Candidates for CotC';
 
   #my $csr = $dbh-&gt;prepare('SELECT node_id FROM node WHERE type_nodetype=117 AND reputation&gt;18 ORDER BY createtime LIMIT 300');
 
