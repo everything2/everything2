@@ -1,7 +1,7 @@
 <node>
   <nltext></nltext>
   <parent_container>175986</parent_container>
-  <icon>http://images.everything2.com/img/epic_icon_search_DDDDBB.gif</icon>
+  <icon>http://static.everything2.com/epic_icon_search_DDDDBB.gif</icon>
   <nlgoto>0</nlgoto>
   <node_id>1685943</node_id>
   <iconHeight>23</iconHeight>

@@ -110,7 +110,7 @@ foreach my $params (@parameters){
 	if ($list){
 		$str .= qq'&lt;ul class=&quot;infolist&quot;&gt;$list&lt;/ul&gt;' if $list;
 	}else{
-		$str .= '&lt;p&gt;&lt;small&gt;&lt;em&gt;(none)&lt;em&gt;&lt;/small&gt;&lt;/p&gt;';
+		$str .= '&lt;p&gt;&lt;small&gt;&lt;em&gt;(none)&lt;/em&gt;&lt;/small&gt;&lt;/p&gt;';
 	}
 }
 

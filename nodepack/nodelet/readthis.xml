@@ -1,7 +1,7 @@
 <node>
   <nltext></nltext>
   <parent_container>175986</parent_container>
-  <icon>http://images.everything2.com/img/readthis.gif</icon>
+  <icon>http://static.everything2.com/readthis.gif</icon>
   <nlgoto>0</nlgoto>
   <node_id>1157024</node_id>
   <type_nodetype>9</type_nodetype>

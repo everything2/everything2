@@ -1,7 +1,7 @@
 <node>
   <nltext></nltext>
   <parent_container>175986</parent_container>
-  <icon>http://images.everything2.com/img/chatterbox.gif</icon>
+  <icon>http://static.everything2.com/chatterbox.gif</icon>
   <nlgoto>0</nlgoto>
   <node_id>170070</node_id>
   <iconHeight>22</iconHeight>

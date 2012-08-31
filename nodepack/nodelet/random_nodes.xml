@@ -1,7 +1,7 @@
 <node>
   <nltext></nltext>
   <parent_container>175986</parent_container>
-  <icon>http://images.everything2.com/img/random_nodes.gif</icon>
+  <icon>http://static.everything2.com/random_nodes.gif</icon>
   <nlgoto>0</nlgoto>
   <node_id>457857</node_id>
   <iconHeight>25</iconHeight>

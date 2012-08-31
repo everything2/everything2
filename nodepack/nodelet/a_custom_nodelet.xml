@@ -1,7 +1,7 @@
 <node>
   <nltext></nltext>
   <parent_container>175986</parent_container>
-  <icon>http://images.everything2.com/img/epicenter.gif</icon>
+  <icon>http://static.everything2.com/epicenter.gif</icon>
   <nlgoto>0</nlgoto>
   <node_id>1915028</node_id>
   <iconHeight>26</iconHeight>
