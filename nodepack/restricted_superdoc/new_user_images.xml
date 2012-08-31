@@ -21,6 +21,7 @@
 New user images:
 [{openform}]
 [%
+  return &quot;Doesn't work on S3 yet!&quot;;
   my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;, 'newuserimage', '1 = 1', 'LIMIT 10');
   my $str;  
 
