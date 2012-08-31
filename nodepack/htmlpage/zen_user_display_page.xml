@@ -5,11 +5,7 @@
 &lt;div id='homenodeheader'&gt;
 [{homenodeinfectedinfo}]
 &lt;div id='homenodepicbox'&gt;
-[%
-return unless $DB-&gt;isApproved($NODE, getNode('users with image', 'nodegroup')) or getLevel($NODE) &gt;= 1;
-return unless $$NODE{imgsrc};
-'&lt;img src=&quot;http://images.everything2.com/'.$$NODE{imgsrc}.'&quot; id=&quot;userimage&quot;&gt;'; 
-%]
+[{showuserimage}]
 [%
 return if getId($USER) != getId($NODE);
 '&lt;p&gt;' . linkNode($NODE, '(edit user information)', {displaytype=&gt;'edit'}) . '&lt;/p&gt;';
@@ -49,8 +45,7 @@ return if getId($USER) != getId($NODE);
 
  
 
-[{showbookmarks}]
-</page>
+[{showbookmarks}]</page>
   <node_id>1854179</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
