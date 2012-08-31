@@ -146,8 +146,12 @@
     <key>Tem42</key>
   </vars>
   <vars>
-    <value>333</value>
+    <value>420</value>
     <key>decoy hunches</key>
+  </vars>
+  <vars>
+    <value>200</value>
+    <key>Clockmaker</key>
   </vars>
   <vars>
     <value>N/A</value>
