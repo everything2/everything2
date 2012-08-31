@@ -18,6 +18,11 @@
     <key>1930065</key>
   </vars>
   <vars>
+    <value>&lt;b&gt;[Boilerplate Javascript]&lt;/b&gt; by [jaybonci]&lt;br /&gt;
+</value>
+    <key>2069287</key>
+  </vars>
+  <vars>
     <value>&lt;b&gt;[universal message json ticker]&lt;/b&gt; by [ascorbic]&lt;br /&gt;
 </value>
     <key>2033914</key>
@@ -36,12 +41,12 @@
     <key>1872990</key>
   </vars>
   <vars>
-    <value>&lt;b&gt;[javascript debugger]&lt;/b&gt; by [gods]&lt;br /&gt;</value>
-    <key>2023560</key>
-  </vars>
-  <vars>
     <value>&lt;b&gt;[musical appreciation]&lt;/b&gt; by [OldMiner]&lt;br /&gt;</value>
     <key>2020854</key>
+  </vars>
+  <vars>
+    <value>&lt;b&gt;[javascript debugger]&lt;/b&gt; by [gods]&lt;br /&gt;</value>
+    <key>2023560</key>
   </vars>
   <title>Javascript Repository listings</title>
 </node>
