@@ -30,6 +30,10 @@
     <key>1</key>
   </vars>
   <vars>
+    <value>Clockmaker</value>
+    <key>96</key>
+  </vars>
+  <vars>
     <value>Morwen</value>
     <key>55</key>
   </vars>
@@ -56,6 +60,10 @@
   <vars>
     <value>randombit</value>
     <key>57</key>
+  </vars>
+  <vars>
+    <value>decoy hunches</value>
+    <key>97</key>
   </vars>
   <vars>
     <value>StuartO)))</value>
