@@ -362,7 +362,7 @@ e2 = $.extend( function(x){return e2.shortFunctions[typeof x].apply(this, argume
 			},
 
 			'WYSIWYG editor': {
-				library: '/js/tiny_mce/tiny_mce.js?a=1',
+				library: 'http://jscss.everything2.com/tiny_mce/tiny_mce.js?a=1',
 				test: 'tinyMCE',
 	
 				stop: function(id){ // don't use mceToggleEditor, it loses changes afterwards
@@ -421,7 +421,13 @@ e2 = $.extend( function(x){return e2.shortFunctions[typeof x].apply(this, argume
 			.find('button').click(toggle)
 			[0].targetId = id;
 		}
-	})()
+	})(),
+	
+	// fix IE &lt;= 7 form button fail. (innerHTML is submitted instead of value)
+	iebuttonfix: function(){
+		$('&lt;input type=&quot;hidden&quot; name=&quot;'+this.name+'&quot; value=&quot;'+this.cloneNode().value+'&quot;&gt;').insertAfter(this);
+		this.name = 'iebutton';
+	}
 
 // END e2 = $.extend(function(){..} , e2, { ...
 });
@@ -435,6 +441,9 @@ e2('.privmsg .action', 'show');
 
 // confirmop
 e2('a.action[href*=confirmop=], form button[name=confirmop], form :submit[name=confirmop]', 'click', e2.confirmop);
+
+// fix ie567 form buttons
+if ($.browser.msie &amp;&amp; $.browser.version &lt;= 7) e2(&quot;form button&quot;, &quot;click&quot;, e2.iebuttonfix);
 
 // expandable inputs/textareas
 (function(){
@@ -615,8 +624,7 @@ e2('.wuformaction', 'click', function(){
 		}
 	);
 
-})();
-</doctext>
+})();</doctext>
   <node_id>1874924</node_id>
   <type_nodetype>1786405</type_nodetype>
   <title>default javascript</title>
