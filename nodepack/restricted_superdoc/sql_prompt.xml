@@ -66,9 +66,7 @@ my $execstr = $query-&gt;param('sqlquery');
 return '' unless $execstr;
 
 
-my ($user,$pass) = ($CONFIG{'rootuser'}, $CONFIG{'rootpass'});
-my $dsn = &quot;DBI:mysql:everything:$CONFIG{everything_dbserv};mysql_multi_statements=1&quot;;
-my $dbh = DBI-&gt;connect($dsn, $user, $pass);
+my $dbh = $DB-&gt;getDatabaseHandle();
 use Time::HiRes;
 my @start = Time::HiRes::gettimeofday;
 my $cursor = eval { $dbh-&gt;prepare($execstr) };
