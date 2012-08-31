@@ -1,0 +1,15 @@
+<node>
+  <node_id>2067940</node_id>
+  <maintaintype>create</maintaintype>
+  <code>my ($PODCAST) = @_;
+getRef $PODCAST;
+
+$$PODCAST{createdby_user} = $$PODCAST{author_user} || getId($USER);
+$$PODCAST{author_user} = getId(getNode('podpeople', 'usergroup')); # so all podpeople can edit it
+
+updateNode($PODCAST, -1);
+</code>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>1957956</maintain_nodetype>
+  <title>podcast maintenance create</title>
+</node>
