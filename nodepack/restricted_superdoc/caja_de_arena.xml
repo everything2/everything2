@@ -1,118 +1,61 @@
 <node>
   <doctext>[%
-my $NODE = getNode('DonJaime', 'user');
-return if $$USER{user_id}==$HTMLVARS{guest_user};
+my $review = getId(getNode('review', 'publication_status'));
+my @noteResponse = (
+	&quot;, (Select CONCAT(timestamp, ': ', notetext) From nodenote As response
+		Where response.nodenote_nodeid = request.nodenote_nodeid
+			And response.timestamp &gt; request.timestamp
+			Order By response.timestamp Desc Limit 1) as latestnote,
+		(Select count(*) From nodenote As response
+		Where response.nodenote_nodeid = request.nodenote_nodeid
+			And response.timestamp &gt; request.timestamp) as notecount&quot;
+	, &quot;notecount &gt; 0,&quot;
+	, '&lt;th align=&quot;center&quot; title=&quot;node notes&quot;&gt;N?&lt;/th&gt;'
+	, 'notes'
+	)
+	if htmlcode('isEditor');
 
-my $SETTINGS = getVars $NODE;
-my $now = $DB-&gt;sqlSelect(&quot;UNIX_TIMESTAMP(now())&quot;);
+my $drafts = $DB -&gt; sqlSelectMany(
+	&quot;title, author_user, request.timestamp AS publishtime $noteResponse[0]&quot;
+	, &quot;draft
+		JOIN node on node_id = draft_id
+		JOIN nodenote AS request
+			ON draft_id = nodenote_nodeid
+			AND request.noter_user = 0
+		LEFT JOIN nodenote AS newer
+			ON request.nodenote_nodeid = newer.nodenote_nodeid
+			AND newer.noter_user = 0
+			AND request.timestamp &lt; newer.timestamp&quot;
+	, &quot;publication_status = $review
+		AND newer.timestamp IS NULL&quot;
+	, &quot;ORDER BY $noteResponse[1] request.timestamp&quot;
+);
 
-my $maint_nodes;
-unless (exists $$SETTINGS{nwriteupsupdate} and 
-        $now - $$SETTINGS{nwriteupsupdate} &lt; 3600) {
+my %funx = (
+	startline =&gt; sub{
+		$_[0] -&gt; {type}{title} = 'draft';
+		'&lt;td&gt;';
+	},
+	notes =&gt; sub{
+		$_[0]{latestnote} =~ s/\[user\]//;
+		my $note = encodeHTML($_[0]{latestnote}, 'adv');
+		'&lt;td align=&quot;center&quot;&gt;'
+		.($_[0]{notecount} ? linkNode($_[0], $_[0]{notecount},
+				{'#' =&gt; 'nodenotes', -title =&gt; &quot;$_[0]{notecount} notes; latest $note&quot;})
+			: '&amp;nbsp;')
+		.'&lt;/td&gt;';
+	}
+);
 
-  $$SETTINGS{nwriteupsupdate} = $now;
-  my $type1 = getId(getType('writeup'));
-  my $user = getId($NODE);
-
-  my $wherestr = &quot;type_nodetype=$type1
-                  AND author_user=$user &quot;;
-
-  $maint_nodes = htmlcode('listMyMaintenanceNodes',$user);
-
-  $maint_nodes =~ s/ /, /g;
-
-  $wherestr .= &quot; AND node_id NOT IN ($maint_nodes)&quot; if $maint_nodes;
-
-  my $writeups = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;node&quot;,$wherestr);
-
-  $$SETTINGS{numwriteups} = int($writeups);
-}
-
-if($$USER{user_id} == $$NODE{user_id})
-{
- #add numwriteups to $USER for honor roll
-
-      $$USER{numwriteups} = $$SETTINGS{numwriteups};
-      updateNode($USER, $USER);
-
-  delete $$VARS{can_weblog};
-  my $wls = getVars(getNode(&quot;webloggables&quot;, &quot;setting&quot;));
-  
-  my @canwl;
-  foreach(keys %$wls)
-  {
-      my $n = getNodeById($_);
-      next unless $n;
-      unless($$n{type}{title} eq &quot;usergroup&quot;)
-      {
-          if(exists($HTMLVARS{group_gods}{$$USER{node_id}})){
-             push @canwl, $_;
-          }
-
-          next;
-      }
- 
-      if( exists($HTMLVARS{group_gods}{$$USER{node_id}}) || $DB-&gt;isApproved($USER, $n)){
-        push @canwl, $_;
-        next;
-      }  
-  }
-  push @canwl, getId(getNode('News for noders. Stuff that matters.', 'superdoc'))
-  	if exists($HTMLVARS{'group_content editors'}{$$USER{node_id}});
-
-  $$VARS{can_weblog} = join &quot;,&quot;, sort{$a &lt;=&gt; $b} @canwl;
-
-}
-
-
-my $numcools = $DB-&gt;sqlSelect('count(*)', 'coolwriteups', 'cooledby_user='.getId($NODE));
-$$SETTINGS{coolsspent} = linkNode(getNode('cool archive','superdoc'), $numcools, { useraction =&gt; 'cooled', cooluser =&gt; $$NODE{title} }) if $numcools;
-
-my $feedlink = linkNode(getNode('new writeups atom feed', 'ticker'), 'feed', {'foruser' =&gt; $$NODE{title}}, {'title' =&gt; &quot;Atom syndication feed of latest writeups&quot;, 'type' =&gt; &quot;application/atom+xml&quot;});
-
-$$SETTINGS{nwriteups} = $$SETTINGS{numwriteups} . &quot; - &quot; . &quot;&lt;a href=\&quot;/user/&quot;.rewriteCleanEscape($$NODE{title}).&quot;/writeups\&quot;&gt;View &quot; . $$NODE{title} . &quot;'s writeups&lt;/a&gt; &quot; . ' &lt;small&gt;(' . $feedlink .')&lt;/small&gt;' if $$SETTINGS{numwriteups};
-
-$$SETTINGS{nwriteups} = 0 if not $$SETTINGS{numwriteups};
-
-##Last writeup cache
-if($$SETTINGS{numwriteups} !~ /^\d+$/) {
-	#sometimes this gets messed up!
-} elsif($$SETTINGS{numwriteups} &gt; 0){
-
-  my $maintStr;
-  unless($maint_nodes){
-    $maint_nodes = htmlcode('listMyMaintenanceNodes',getId($NODE) );
-    $maint_nodes =~ s/ /, /g;
-    $maintStr = &quot; AND node_id NOT IN ($maint_nodes) &quot; if $maint_nodes;
-  }
-
-	my $lastnoded = getNodeById($$SETTINGS{lastnoded});
-	delete $$SETTINGS{lastnoded} unless $lastnoded and $$lastnoded{type}{title} eq 'writeup';
-
-	$$SETTINGS{lastnoded} ||= $DB-&gt;sqlSelect('node_id', 'node JOIN writeup ON node_id=writeup_id',
-                                         &quot;author_user=$$NODE{node_id}&quot;
-                                         .$maintStr
-                                         .&quot; ORDER BY publishtime DESC LIMIT 1&quot;);
-}
-
-
-use Everything::Experience;
-my $lvl = getLevel($NODE);
-$$SETTINGS{level} = $lvl;
-   
-my $TITLES= getVars(getNode('level titles','setting'));
-$$SETTINGS{level} .= &quot; ($$TITLES{$$SETTINGS{level}})&quot;;
-
-if ($$NODE{title} eq 'thefez') { $$SETTINGS{level} = &quot;-1 (Arcanist)&quot; } # --N 
-
-$$SETTINGS{level} .= &quot; \/ $$NODE{experience}&quot;;
-
-
-setVars($NODE, $SETTINGS);
-   
-linkNode($$SETTINGS{lastnoded});
-
-%]</doctext>
+&quot;&lt;table&gt;
+&lt;tr&gt;&lt;th&gt;Draft&lt;/th&gt;$noteResponse[2]&lt;/tr&gt;&quot;
+.htmlcode('show content', $drafts
+	, qq!&lt;tr class=&quot;&amp;oddrow&quot;&gt; startline, title, byline, &quot;&lt;/td&gt;
+		&quot;, $noteResponse[3]!,
+	%funx)
+.'&lt;/table&gt;';
+%]
+</doctext>
   <node_id>2000674</node_id>
   <type_nodetype>13</type_nodetype>
   <title>caja de arena</title>
