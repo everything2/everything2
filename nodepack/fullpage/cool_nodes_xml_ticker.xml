@@ -1,5 +1,6 @@
 <node>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Tue Sep  4 01:00:04 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Tue Sep  4 03:00:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Auspice&quot; node_id=&quot;2069628&quot; parent_e2node=&quot;2069640&quot; author_user=&quot;iceowl&quot;&gt;Exit the Grid, Enter the Monkey&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1224612&quot; parent_e2node=&quot;566686&quot; author_user=&quot;borgo&quot;&gt;The Knights of Labor&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Andrew Aguecheek&quot; node_id=&quot;2069575&quot; parent_e2node=&quot;2069574&quot; author_user=&quot;dannye&quot;&gt;Shorkie Tzu&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Nora&quot; node_id=&quot;2068498&quot; parent_e2node=&quot;2069630&quot; author_user=&quot;Tem42&quot;&gt;Editor Log: August 2012&lt;/cooled&gt;
@@ -14,7 +15,6 @@
 	&lt;cooled cooledby_user=&quot;etouffee&quot; node_id=&quot;1877127&quot; parent_e2node=&quot;1877126&quot; author_user=&quot;poetic&quot;&gt;the galaxy that may or may not exist between them&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;vonCube&quot; node_id=&quot;1689975&quot; parent_e2node=&quot;1528647&quot; author_user=&quot;Noung&quot;&gt;Iranian Revolution&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;gwenllian&quot; node_id=&quot;2069163&quot; parent_e2node=&quot;2069128&quot; author_user=&quot;wertperch&quot;&gt;August 21, 2012&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;2001639&quot; parent_e2node=&quot;2001638&quot; author_user=&quot;rootbeer277&quot;&gt;Power surge&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>
