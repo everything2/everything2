@@ -35,7 +35,7 @@
 
    $count++;
 
-    $str.='&lt;tr&gt;&lt;td bgcolor=&quot;' . $barbgcolor . '&quot;&gt;&lt;img src=&quot;images/incoming/dot.gif&quot; height=&quot;2&quot; width=&quot;1&quot; alt=&quot;&quot; /&gt;&lt;/td&gt;&lt;/tr&gt;';
+    $str.='&lt;tr&gt;&lt;td bgcolor=&quot;' . $barbgcolor . '&quot;&gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; height=&quot;2&quot; width=&quot;1&quot; alt=&quot;&quot; /&gt;&lt;/td&gt;&lt;/tr&gt;';
    
   }
 
