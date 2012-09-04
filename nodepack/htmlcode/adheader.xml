@@ -16,9 +16,9 @@ return if $query-&gt;url =~ /^https/;
 my $ad = &lt;&lt;ADTEXT;
 &lt;center&gt;
 &lt;script type=&quot;text/javascript&quot;&gt;&lt;!--
-google_ad_client = &quot;pub-3290994517499171&quot;;
-/* old ads */
-google_ad_slot = &quot;8323754831&quot;;
+google_ad_client = &quot;ca-pub-0613380022572506&quot;;
+/* E2 top banner */
+google_ad_slot = &quot;9636638260&quot;;
 google_ad_width = 728;
 google_ad_height = 90;
 //--&gt;
