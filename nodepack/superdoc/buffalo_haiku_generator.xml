@@ -32,7 +32,8 @@ my $sentence='';
 
 
 $str.=&quot;&lt;ul&gt;\n\t&lt;li&gt;&quot;.linkNode($NODE, &quot;Furthermore!&quot;, {moar =&gt; 'further'}).&quot;&lt;/li&gt;\n&quot;;
-$str.=&quot;\n\t&lt;li&gt;&quot;.linkNodeTitle(&quot;Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo&quot;).&quot;&lt;/li&gt;&lt;/ul&gt;\n&quot;;
+$str.=&quot;\t&lt;li&gt;&quot;.linkNodeTitle(&quot;Buffalo Generator|More buffalo, less haiku&quot;).&quot;&lt;/li&gt;\n&quot;;
+$str.=&quot;\t&lt;li&gt;&quot;.linkNodeTitle(&quot;Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo&quot;).&quot;&lt;/li&gt;&lt;/ul&gt;\n&quot;;
 
 return $str;
 
