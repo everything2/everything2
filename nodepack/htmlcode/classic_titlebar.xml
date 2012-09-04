@@ -1,7 +1,7 @@
 <node>
   <node_id>123</node_id>
   <code>my $str = &quot;&lt;p align=right&gt;
-&lt;img src=images/Everything.gif&gt;&lt;BR&gt;
+&lt;img src=&quot;http://static.everything2.com/Everything.gif&quot;&gt;&lt;BR&gt;
 [ &quot;;
 
 if ($USER == -1 or getId($USER) == $HTMLVARS{guest_user}) {
