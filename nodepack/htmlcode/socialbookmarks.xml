@@ -76,6 +76,15 @@ my $socialSites = {
       , imagename =&gt; 'google_bmarks.gif'
     }
     ,
+  'googleplus'
+    =&gt; {
+      posturl =&gt; 'https://plus.google.com/share'
+      , params =&gt; { 'title' =&gt; $title, 'url' =&gt; $url }
+      , classname =&gt; 'social_googleplus'
+      , listname =&gt; 'Google Plus'
+      , imagename =&gt; 'google_bmarks.gif'
+    }
+    ,
   'blinklist'
     =&gt; {
       posturl =&gt; 'http://blinklist.com/blink'
@@ -224,7 +233,6 @@ my $makeSocialLink = sub {
 $str .= join '', map { &amp;$makeSocialLink($_, $url, $title, $includeTitles, $asList); } @showNetworks;
 $str = &quot;&lt;ul class=\&quot;bookmarkList\&quot;&gt;\n$str&lt;/ul&gt;\n&quot; if $asList;
 return $str;
-
 </code>
   <type_nodetype>4</type_nodetype>
   <title>socialBookmarks</title>
