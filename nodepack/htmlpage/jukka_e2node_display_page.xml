@@ -12,7 +12,7 @@
             &lt;td&gt;
               [{displaywriteuptitle:1,timestamp}]
             &lt;/td&gt;
-            &lt;td rowspan='2' bgcolor=&quot;#000000&quot;&gt;&lt;img src=&quot;img/clear.gif&quot; height='1' width='2' border='0' alt=&quot; &quot; /&gt;&lt;/td&gt;
+            &lt;td rowspan='2' bgcolor=&quot;#000000&quot;&gt;&lt;img src=&quot;http://static.everything2.com/clear.gif&quot; height='1' width='2' border='0' alt=&quot; &quot; /&gt;&lt;/td&gt;
             &lt;td&gt;
               [{displaywriteuptitle:2, timestamp}]
             &lt;/td&gt;
@@ -48,7 +48,7 @@
   &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-  &lt;td bgcolor=&quot;#000000&quot;&gt;&lt;img src=&quot;img/clear.gif&quot; height='2' width='1' border='0' alt=&quot; &quot; /&gt;&lt;/td&gt;
+  &lt;td bgcolor=&quot;#000000&quot;&gt;&lt;img src=&quot;http://static.everything2.com/clear.gif&quot; height='2' width='1' border='0' alt=&quot; &quot; /&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/table&gt;
 &lt;p align='right'&gt;&lt;font size='-1'&gt;[% linkNode($NODE, 'printable version', { displaytype =&gt; 'printable' } ) %] &lt;/font&gt;&lt;/p&gt;
