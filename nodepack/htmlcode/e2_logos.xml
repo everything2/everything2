@@ -10,7 +10,7 @@
 my $rand = $logos[int(rand(@logos))];
 
 linkNode ($HTMLVARS{default_node}, 
-  &quot;&lt;IMG border=0 src=$HTMLVARS{imageroot}/images/$rand &gt;&quot;);
+  &quot;&lt;IMG border=0 src=\&quot;http://static.everything2.com/\&quot; &gt;&quot;);
 </code>
   <type_nodetype>4</type_nodetype>
   <title>e2 logos</title>
