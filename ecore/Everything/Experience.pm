@@ -150,11 +150,6 @@ sub getLevel {
                 }
         }
 
-	#my $WEENIES = getVars(getNode('level weenies', 'setting'));
-   	#if (exists $$WEENIES{$$USER{title}} 
-	#	and $$WEENIES{$$USER{title}} > $level) {
-	#	$level = $$WEENIES{$$USER{title}};
-	#}
         $level;
 }
 
