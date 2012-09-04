@@ -10,15 +10,8 @@
   &lt;link rel=&quot;shortcut icon&quot; href=&quot;/favicon.ico&quot; type=&quot;image/x-icon&quot; /&gt;
  &lt;link rel=&quot;alternate&quot; type=&quot;application/atom+xml&quot; title=&quot;Everything2 New Writeups&quot; href=&quot;/?node=New%20Writeups%20Atom%20Feed&amp;type=ticker&quot; /&gt;
 &lt;link rel='stylesheet' id='basesheet' type='text/css' href='/node/stylesheet/basesheet?displaytype=view'&gt;
-&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;[%
- # urlGen ({node_id=&gt;getId(getNode('jukka styledef', 'rawdata'))});
-%]/styledef.css&quot; /&gt; 
+&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;http://jscss.everything2.com/styledef.css&quot; /&gt; 
 &lt;meta name=&quot;keywords&quot; lang=&quot;en-us&quot; content=&quot;&quot; /&gt;
-
-[%
-#return unless ($$NODE{node_id}==1140332);
-#return '&lt;meta name=&quot;robots&quot; content=&quot;noindex, follow&quot;&gt;';
- %]
 
 &lt;title&gt;[% encodeHTML($$NODE{title}); %]@Everything2.com&lt;/title&gt;
 
@@ -44,10 +37,10 @@ marginleft=&quot;2&quot; leftmargin=&quot;2&quot; marginright=&quot;2&quot; righ
 
   &lt;table cellspacing='0' cellpadding='0' border='0' width=&quot;100%&quot;&gt;
     &lt;tr&gt;
-      &lt;td bgcolor=&quot;#003366&quot; colspan='2'&gt;&lt;img src=&quot;[&quot;$HTMLVARS{imageroot}&quot;]/img/clear.gif&quot; width='1' height='5' border='0' alt=&quot; &quot; /&gt;&lt;/td&gt;
+      &lt;td bgcolor=&quot;#003366&quot; colspan='2'&gt;&lt;img src=&quot;http://static.everything2.com/clear.gif&quot; width='1' height='5' border='0' alt=&quot; &quot; /&gt;&lt;/td&gt;
     &lt;/tr&gt;
     &lt;tr bgcolor=&quot;[&quot;$$THEME{titleColor}&quot;]&quot;&gt;
-      &lt;td valign='bottom'&gt;[% linkNode($HTMLVARS{default_node}, '&lt;img src=&quot;'.$HTMLVARS{imageroot}.'/img/e2_others_01.gif&quot; width=&quot;350&quot; height=&quot;42&quot; alt=&quot;Everything2&quot; border=&quot;0&quot; /&gt;', {lastnode_id =&gt; undef}); %]&lt;/td&gt;
+      &lt;td valign='bottom'&gt;[% linkNode($HTMLVARS{default_node}, '&lt;img src=&quot;http://static.everything2.com/e2_others_01.gif&quot; width=&quot;350&quot; height=&quot;42&quot; alt=&quot;Everything2&quot; border=&quot;0&quot; /&gt;', {lastnode_id =&gt; undef}); %]&lt;/td&gt;
       &lt;td valign='middle'&gt;
         &lt;!-- This font size will make the search box smaller on linux, does
              not affect win/mac machines --&gt;
@@ -57,7 +50,7 @@ marginleft=&quot;2&quot; leftmargin=&quot;2&quot; marginright=&quot;2&quot; righ
       &lt;/td&gt;
     &lt;/tr&gt;
     &lt;tr bgcolor=&quot;[&quot;$$THEME{bodyBgColor}&quot;]&quot;&gt;
-      &lt;td colspan=2&gt;[% linkNode($HTMLVARS{default_node}, '&lt;img src=&quot;'.$HTMLVARS{imageroot}.'/img/e2_others_02.gif&quot; height=&quot;8&quot; width=&quot;350&quot; border=&quot;0&quot; alt=&quot;Everything2&quot; /&gt;', {lastnode_id =&gt; undef}); %]&lt;/td&gt;
+      &lt;td colspan=2&gt;[% linkNode($HTMLVARS{default_node}, '&lt;img src=&quot;http://static.everything2.com/e2_others_02.gif&quot; height=&quot;8&quot; width=&quot;350&quot; border=&quot;0&quot; alt=&quot;Everything2&quot; /&gt;', {lastnode_id =&gt; undef}); %]&lt;/td&gt;
     &lt;/tr&gt;
   &lt;/table&gt;
   &lt;/form&gt;
@@ -72,7 +65,7 @@ marginleft=&quot;2&quot; leftmargin=&quot;2&quot; marginright=&quot;2&quot; righ
       &lt;h1 class=&quot;topic&quot;&gt;[% encodeHTML($$NODE{title}); %]&lt;/h1&gt;
 CONTAINED_STUFF
     &lt;/td&gt;
-    &lt;td bgcolor=&quot;#000000&quot; width=&quot;2&quot;&gt;&lt;img src=&quot;/img/clear.gif&quot; height='1' width='2' alt=&quot;&quot; /&gt;&lt;/td&gt;
+    &lt;td bgcolor=&quot;#000000&quot; width=&quot;2&quot;&gt;&lt;img src=&quot;http://static.everything2.com/clear.gif&quot; height='1' width='2' alt=&quot;&quot; /&gt;&lt;/td&gt;
 &lt;!-- google_ad_section_start(weight=ignore) --&gt;
 [{showNodelets:right}]
 &lt;!-- google_ad_section_end --&gt;
@@ -118,7 +111,7 @@ $str;
 &lt;!--
 &lt;/td&gt;&lt;/tr&gt;
     &lt;tr&gt;
-      &lt;td bgcolor=&quot;#003366&quot;&gt;&lt;img src=&quot;[&quot;$HTMLVARS{imageroot}&quot;]/img/clear.gif&quot; width=&quot;1&quot; height=&quot;1&quot; border=&quot;0&quot; alt=&quot; &quot; /&gt;&lt;/td&gt;
+      &lt;td bgcolor=&quot;#003366&quot;&gt;&lt;img src=&quot;http://static.everything2.com/clear.gif&quot; width=&quot;1&quot; height=&quot;1&quot; border=&quot;0&quot; alt=&quot; &quot; /&gt;&lt;/td&gt;
     &lt;/tr&gt;
   &lt;/table&gt;
 --&gt;
