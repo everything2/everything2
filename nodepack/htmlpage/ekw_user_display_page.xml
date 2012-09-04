@@ -5,11 +5,7 @@
 [{thinoutlineheader:49%}]
 
 &lt;p align=&quot;center&quot;&gt;&amp;nbsp;
-[%
-return unless $DB-&gt;isApproved($NODE, getNode('users with image', 'nodegroup')) or getLevel($NODE) &gt;= 5;
-return unless $$NODE{imgsrc};
-'&lt;img src=&quot;http://images.everything2.com/'.$$NODE{imgsrc}.'&quot;&gt;&lt;br /&gt;';
-%]
+[{showuserimage}]
 [%
 return if getId($USER) != getId($NODE);
 linkNode($NODE, '(edit user information)', {displaytype=&gt;'edit'});
