@@ -8,9 +8,9 @@ my $rows;
 while (my $letter = chop $hex) {
   my $row = &quot;&lt;tr&gt;&lt;td align=center&gt;&lt;img width=128 height=14 src=&quot;;
   if (uc($letter) eq 'B') {
-    $row .=&quot;/images/broke.gif&quot;;
+    $row .=&quot;http://static.everything2.com/broke.gif&quot;;
   } else {
-    $row .=&quot;/images/full.gif&quot;;
+    $row .=&quot;http://static.everything2.com/full.gif&quot;;
   }
   $row.=&quot;&gt;&lt;/td&gt;&lt;/tr&gt;&quot;;
   $rows = $row.$rows;
