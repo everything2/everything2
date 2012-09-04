@@ -1,11 +1,7 @@
 <node>
   <parent_container>22</parent_container>
   <node_id>17</node_id>
-  <context>&lt;!-- stats tracking --&gt;
-&lt;script src=&quot;/mint/?js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
-
-
-&lt;table width=&quot;95%&quot; align=&quot;center&quot;&gt;
+  <context>&lt;table width=&quot;95%&quot; align=&quot;center&quot;&gt;
 &lt;tr&gt;
 &lt;td&gt;
 [{searchform:noendform}]
@@ -15,7 +11,7 @@
 #N-Wing, Tuesday, June 4, 2002
 my $str = urlGen() . '&gt;';
 return $str.'&lt;strong&gt;Everything&lt;/strong&gt;&lt;small&gt;&lt;sub&gt;2&lt;/sub&gt;&lt;/small&gt;' if $query-&gt;url =~ /^https/;
-return $str.'&lt;img src=&quot;' . $HTMLVARS{imageroot} . '/images/e2.gif&quot; border=&quot;0&quot; title=&quot;Everything 2&quot;&gt;';
+return $str.'&lt;img src=&quot;http://static.everything2.com/e2.gif&quot; border=&quot;0&quot; title=&quot;Everything 2&quot;&gt;';
 %]&lt;/a&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
