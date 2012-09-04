@@ -12,7 +12,7 @@ $vlinkcolor ||= &quot;#333399&quot;;
 
 &quot;&lt;BODY MARGINWIDTH=0 MARGINHEIGHT=0 TOPMARGIN=0 LEFTMARGIN=0
  RIGHTMARGIN=0 text=\&quot;$textcolor\&quot; bgcolor=\&quot;$bgcolor\&quot; 
-link=\&quot;$linkcolor\&quot; vlink=\&quot;$vlinkcolor\&quot; background=\&quot;images/ebg.gif\&quot;&gt;&quot;;</code>
+link=\&quot;$linkcolor\&quot; vlink=\&quot;$vlinkcolor\&quot; background=\&quot;http://static.everything2.com/ebg.gif\&quot;&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
   <title>eclonebody</title>
 </node>
