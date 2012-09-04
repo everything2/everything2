@@ -1,0 +1,38 @@
+<node>
+  <node_id>2069289</node_id>
+  <code># We never get here if we're Guest User
+return &quot;&quot; if ($$USER{title} eq 'Guest User' or $query -&gt; param('guest'));
+
+while ($$VARS{includedJS} =~ s/(^|,)(?:
+	(1878034)| # Everything2 Ajax
+	(1872965)| # Zen Nodelet Collapser
+	1872456| # Prototype 1
+	1872457| # Prototype 2
+	1842173	 # async voting
+	)\b($|\1)?,*/$1/x ) {
+	delete $$VARS{noquickvote} if $2;
+	delete $$VARS{nonodeletcollapser} if $3;
+}
+
+my ($str, $N, @JS) ;
+@JS = ( getNode('boilerplate javascript','jscript'),getNode('default javascript', 'jscript'));
+push @JS, getNode('Everything2 Ajax', 'jscript') unless $$VARS{noquickvote} ;
+push @JS, getNode('Zen Nodelet Collapser', 'jscript') unless $$VARS{nonodeletcollapser} ;
+push @JS , split(',', $$VARS{includedJS}) if $$VARS{includedJS};
+
+my $jscss = &quot;http://jscss.everything2.com&quot;;
+my $str = &quot;&quot;;
+
+my $jsType = getId(getType('jscript'));
+foreach (@JS) {
+	getRef $_;
+	next unless $_ &amp;&amp; $$_{type_nodetype} == $jsType;
+	$str .= &quot;&lt;script src='$jscss/$$_{node_id}.js' type='text/javascript'&gt;&lt;/script&gt;\n&quot;;
+
+}
+
+return $str;
+</code>
+  <type_nodetype>4</type_nodetype>
+  <title>javascript_decider</title>
+</node>
