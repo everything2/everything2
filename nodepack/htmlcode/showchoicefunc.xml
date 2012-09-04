@@ -1,7 +1,9 @@
 <node>
   <node_id>182</node_id>
-  <code>no strict;
+  <code>no strict 'refs';
 use Everything::XML;
+use Everything::Experience; # may not be loaded -&gt; can't be listed
+
 my @modules = (
 	'Everything',
 	'Everything::XML',
@@ -20,11 +22,10 @@ if(not $query-&gt;param('choicefunc')) {
 
 	my $colwidth = int (100/(int(@modules)+$showHTMLCODE)) .'%';
 	foreach my $modname (@modules) {
-		local *stash;
-		*stash = *{ &quot;${modname}::&quot; };
+		my $stash = \%{ &quot;${modname}::&quot; };
 		my @modfuncs;
-		foreach(keys %stash) {
-			push (@modfuncs, $_) if (defined &amp;{ $stash{$_} } and ($modname eq 'Everything' or not exists $Everything::{$_})) ;
+		foreach(keys %$stash) {
+			push (@modfuncs, $_) if (defined *{&quot;${modname}::$_&quot;}{CODE} and ($modname eq 'Everything' or not exists $Everything::{$_})) ;
 		}
 		@modfuncs = sort {$a cmp $b} @modfuncs;
 		$funcs{$modname} = \@modfuncs;
@@ -69,9 +70,8 @@ my $parentmod = '';
 
 foreach my $modname (@modules) {
 	next if $parentmod;
-	local *stash;
-	*stash = *{ &quot;${modname}::&quot; };
-	if (exists $stash{$choicefunc}) {
+	my $stash = \%{ &quot;${modname}::&quot; };
+	if (exists $stash-&gt;{$choicefunc}) {
 		$parentmod=$modname;
 	}
 }
