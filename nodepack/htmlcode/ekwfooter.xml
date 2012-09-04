@@ -6,7 +6,7 @@
 my $str;
 
 $str = '&lt;table cellpadding=&quot;3&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; width=&quot;100%&quot;&gt;'.&quot;\n&quot;.
-	'&lt;tr&gt;&lt;td&gt;&lt;img src=&quot;images/incoming/dot.gif&quot; width=&quot;1&quot; height=&quot;25&quot; alt=&quot;&quot;&gt;&lt;/td&gt;&lt;/tr&gt;'.&quot;\n&lt;tr&quot;;
+	'&lt;tr&gt;&lt;td&gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;1&quot; height=&quot;25&quot; alt=&quot;&quot;&gt;&lt;/td&gt;&lt;/tr&gt;'.&quot;\n&lt;tr&quot;;
 $str .= '&gt;&lt;td align=&quot;center&quot;&gt;';
 
 # Pseudorandom letter in range 'A'..'Z'
