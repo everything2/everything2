@@ -68,19 +68,9 @@ sub displayPage
 		$page = $container;
 	}	
    
-  #  my $XP = $$USER{experience};
-#	delete $$USER{experience};  #hopefully this will clear up XP corruption
-	setVars $USER, $VARS unless getId($USER) == $HTMLVARS{guest_user};
- #   $$USER{experience} = $XP;	
 	printHeader($$NODE{datatype}, $page, $lastnode);
 
-#	TOTAL HACK for SSL
-    #$page =~ s|http\:(//thepope\.org/img)|https:$1|gs if $query-&gt;url =~ /^https/;
-	#($ENV{SCRIPT_NAME} =~ /^https/);
-	
-	# We are done.  Print the page to the browser.
-#	$page =~ s|http://thepope\.org/img/|http://216.200.201.213/~thepope/img/|gs;
-#	$page =~ s|http://adfu\.blockstackers\.com/|http://216.200.201.212/~adfu/|gs;
+
 	if ($isGuest and $CACHESTORE and $CACHESTORE-&gt;canCache($NODE, $query)) { 
        $CACHESTORE-&gt;cachePage($$NODE{node_id}, $page);	
 	}
