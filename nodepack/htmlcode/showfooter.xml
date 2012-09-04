@@ -6,7 +6,7 @@
 my $str;
 
 $str = '&lt;table cellpadding=&quot;3&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; width=&quot;100%&quot;&gt;'.&quot;\n&quot;.
-	'&lt;tr&gt;&lt;td&gt;&lt;img src=&quot;'.$HTMLVARS{imageroot}.'/img/clear.gif&quot; width=&quot;1&quot; height=&quot;25&quot; alt=&quot;&quot; /&gt;&lt;/td&gt;&lt;/tr&gt;'.&quot;\n&lt;tr&quot;;
+	'&lt;tr&gt;&lt;td&gt;&lt;img src=&quot;http://static.everything2.com/clear.gif&quot; width=&quot;1&quot; height=&quot;25&quot; alt=&quot;&quot; /&gt;&lt;/td&gt;&lt;/tr&gt;'.&quot;\n&lt;tr&quot;;
 $str .= ' bgcolor=&quot;#cccc99&quot;'; #FIXME theme-generated
 $str .= '&gt;&lt;td align=&quot;center&quot; style=&quot;border:solid black 1px;&quot;&gt;';
 
@@ -33,7 +33,7 @@ $str.=&quot;&lt;br /&gt;&quot;;
 
 $str .= &quot;&lt;/td&gt;&lt;/tr&gt;\n&lt;tr&gt;&lt;td&quot;;
 $str .= ' bgcolor=&quot;#003366&quot;'; #FIXME theme-driven
-$str .= '&gt;&lt;img src=&quot;'.$HTMLVARS{imageroot}.'/img/clear.gif&quot; width=&quot;1&quot; height=&quot;1&quot; border=&quot;0&quot; alt=&quot; &quot; /&gt;&lt;/td&gt;&lt;/tr&gt;';
+$str .= '&gt;&lt;img src=&quot;http://static.everything2.com/clear.gif&quot; width=&quot;1&quot; height=&quot;1&quot; border=&quot;0&quot; alt=&quot; &quot; /&gt;&lt;/td&gt;&lt;/tr&gt;';
 $str .= &quot;\n&lt;/table&gt;\n&quot;;
 
 $str;</code>
