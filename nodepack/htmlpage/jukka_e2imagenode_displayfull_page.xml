@@ -32,7 +32,7 @@ htmlcode('windowview', 'editor,launch editor');
       .&quot;\n\t&lt;/td&gt;\n&lt;/tr&gt;&quot;;
    $count++;
 
-    $str.='&lt;tr&gt;&lt;td bgcolor=#000000&gt;&lt;img src=http://yoda.blockstackers.com/img/clear.gif height=2 width=1 alt=&quot;&quot;&gt;&lt;/td&gt;&lt;/tr&gt;';
+    $str.='&lt;tr&gt;&lt;td bgcolor=#000000&gt;&lt;img src=&quot;http://static.everything2.com/clear.gif&quot; height=2 width=1 alt=&quot;&quot;&gt;&lt;/td&gt;&lt;/tr&gt;';
    
   }
   $str;
