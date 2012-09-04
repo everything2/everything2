@@ -1,7 +1,0 @@
-<node>
-  <node_id>1296198</node_id>
-  <code>return &quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;\n
-&lt;!DOCTYPE wml PUBLIC \&quot;-//WAPFORUM//DTD WML 1.2//EN\&quot; \&quot;http://www.wapforum.org/DTD/wml_1.2.xml\&quot;&gt;&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>wapheader</title>
-</node>
