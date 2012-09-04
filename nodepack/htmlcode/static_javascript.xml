@@ -29,20 +29,23 @@ $e2 = encode_json($e2);
 my $min = '.min' unless $HTMLVARS{isDevServer};
 my $libraries = qq'&lt;script src=&quot;http://code.jquery.com/jquery-1.4.4$min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
 # mark as guest but only in non-canonical domain so testing and caching both work
-my $compilerPath = '/js/GuestJavascript.js';
+
+
+my $GUjs = &quot;&lt;script src='http://jscss.everything2.com/GuestJavascript.js' type='text/javascript'&gt;&lt;/script&gt;&quot;;
+my $js_decisions = htmlcode('javascript_decider');
 
 unless ($$USER{title} eq 'Guest User'){
 	$libraries .= '
-	&lt;script src=&quot;/js/jquery-ui.min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
-	$compilerPath = '/node/jscript/Javascript+Compiler?a=9' ; # change this to force update
+	&lt;script src=&quot;http://jscss.everything2.com/jquery-ui.min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
+	$GUjs = &quot;&quot;;
 }
 
 $libraries .= &lt;&lt;LIBS;
-	&lt;script src=&quot;/js/jquery.ba-bbq$min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+	&lt;script src=&quot;http://jscss.everything2.com/jquery.ba-bbq$min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
 LIBS
 
 $libraries .= &lt;&lt;DEVLIBS . htmlcode('nagger') if $HTMLVARS{isDevServer};
-	&lt;script src=&quot;/stars/jquery.MetaData.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+	&lt;script src=&quot;http://jscss.everything2.com/stars/jquery.MetaData.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
 	&lt;script src=&quot;/node/jscript/star+script&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
 DEVLIBS
 
@@ -50,8 +53,9 @@ return &lt;&lt;ENDJS;
 	&lt;script type='text/javascript' name='nodeinfojson' id='nodeinfojson'&gt;
 		e2 = $e2;
 	&lt;/script&gt;
-	$libraries
-	&lt;script src='$compilerPath' type='text/javascript'&gt;&lt;/script&gt;
+        $libraries
+        $js_decisions
+        $GUjs
 ENDJS</code>
   <type_nodetype>4</type_nodetype>
   <title>static javascript</title>
