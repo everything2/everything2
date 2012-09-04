@@ -32,7 +32,7 @@ if ($n) {
     &amp;&amp; $$USER{ user_id } != $HTMLVARS{ guest_user };
   $escapeTitle =~ s/%[0-9A-F]{2}|_//g;
   my $stylesheetFilename = &quot;${escapeTitle}_v$v$autofixText.css&quot;; 
-  return &quot;/stylesheet/$stylesheetFilename&quot;;
+  return &quot;http://jscss.everything2.com/$stylesheetFilename&quot;;
 } else {
   return $n;
 }
