@@ -73,7 +73,7 @@ $newStr .= $spacer
 if ($nt eq 'user') {
 	$newStr .= $spacer
 	.$query -&gt; li(linkNode(getNode('The Old Hooked Pole', 'restricted_superdoc')
-		, 'Smite user'
+		, 'Detonate noder'
 		, {notanop =&gt; 'usernames'
 			, confirmop =&gt; $$NODE{title}
 			, -title =&gt; 'delete user account if safe, otherwise lock it'
