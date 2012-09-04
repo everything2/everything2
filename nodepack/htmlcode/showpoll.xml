@@ -30,7 +30,7 @@ $str .= $query -&gt; small(' ('.linkNode($POLL, 'edit', {displaytype =&gt; 'edit
 		&amp;&amp; canUpdateNode($USER, $POLL);
 
 $str .=	'&lt;/p&gt;&lt;h3&gt;'
-	.$query -&gt; escapeHTML($$POLL{question}) # question is unsanitised user input...
+	.parseLinks($query -&gt; escapeHTML($$POLL{question})) # question is unsanitised user input...
 	.'&lt;/h3&gt;';
 
 my @options = split /\s*\n\s*/s, parseLinks($$POLL{doctext});
@@ -68,7 +68,7 @@ unless ($vote &gt; -1 or $$POLL{poll_status} eq 'closed'){
 		&lt;td align=&quot;right&quot;&gt;&amp;nbsp;'.$results[$i].'&amp;nbsp;&lt;/td&gt;
 		&lt;td align=&quot;right&quot;&gt;'.sprintf(&quot;%2.2f&quot;,($results[$i]/$votedivider)*100).'%&lt;/td&gt;
 		&lt;/tr&gt;';
-		$str.=&quot;&lt;tr&gt;&lt;td colspan='3'&gt;&lt;img class='oddrow' src='/images/incoming/dot.gif'
+		$str.=&quot;&lt;tr&gt;&lt;td colspan='3'&gt;&lt;img class='oddrow' src='http://static.everything2.com/dot.gif'
 			height='8' width='&quot;
 			.sprintf(&quot;%2.0f&quot;,($results[$i]/$votedivider)*180).&quot;' /&gt;&lt;/td&gt;&lt;/tr&gt;&quot;;
 		$i++;
@@ -82,7 +82,6 @@ unless ($vote &gt; -1 or $$POLL{poll_status} eq 'closed'){
 }
 
 return $str;
-
 </code>
   <type_nodetype>4</type_nodetype>
   <title>showpoll</title>
