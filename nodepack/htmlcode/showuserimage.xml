@@ -1,20 +1,16 @@
 <node>
   <node_id>1143107</node_id>
-  <code>#return;  #sorry kids, spectre had all those goodies
-
-
-#originally from a user display page
+  <code>return unless $DB-&gt;isApproved($NODE, getNode('users with image', 'nodegroup')) or getLevel($NODE) &gt;= 1;
 return if isSuspended($NODE,&quot;homenodepic&quot;);
 return unless $$NODE{imgsrc};
-unless($_[0] || 0) {
-return unless (getLevel($NODE)&gt;=5) || $DB-&gt;isApproved($NODE, getNode('users with image', 'nodegroup'));
+my $imgsrc = $$NODE{imgsrc};
+if($CONFIG{homenode_image_host} =~ /s3/)
+{
+ $imgsrc = &quot;$$NODE{title}&quot;;
+ $imgsrc =~ s/\W/_/g;
 }
-
-#my $imgsrc = $DB-&gt;sqlSelect(&quot;imgsrc&quot;, &quot;imgsrc&quot;, &quot;&quot;, &quot;ORDER BY rand() LIMIT 1&quot;);
-
-#4-1-02 nate
-'&lt;img src=&quot;http://images.everything2.com/'.$$NODE{imgsrc}.'&quot;&gt;';
-#'&lt;img src=&quot;'.$imgsrc.'&quot;&gt;';</code>
+$imgsrc = &quot;/$imgsrc&quot; if ($imgsrc !~ /^\//);
+'&lt;img src=&quot;http://'.$CONFIG{homenode_image_host}.$imgsrc.'&quot; id=&quot;userimage&quot;&gt;'; </code>
   <type_nodetype>4</type_nodetype>
   <title>showuserimage</title>
 </node>
