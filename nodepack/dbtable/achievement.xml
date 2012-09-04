@@ -9,6 +9,6 @@
   `achievement_still_available` tinyint(4) NOT NULL DEFAULT '1',
   `subtype` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`achievement_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2010056 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>achievement</title>
 </node>

@@ -7,6 +7,7 @@
   `link` char(255) NOT NULL DEFAULT '',
   `pubdate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `announcement` int(11) NOT NULL DEFAULT '0',
+  `createdby_user` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`podcast_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>podcast</title>

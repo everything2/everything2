@@ -8,6 +8,6 @@
   `lasttime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `hits` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`nodetracker_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=937 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>nodetracker</title>
 </node>

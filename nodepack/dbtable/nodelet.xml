@@ -13,6 +13,6 @@
   `iconHeight` int(11) NOT NULL DEFAULT '0',
   `iconWidth` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`nodelet_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2051343 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>nodelet</title>
 </node>

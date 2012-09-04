@@ -5,6 +5,6 @@
   `setting_id` int(11) NOT NULL AUTO_INCREMENT,
   `vars` text NOT NULL,
   PRIMARY KEY (`setting_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2067268 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>setting</title>
 </node>

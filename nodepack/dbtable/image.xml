@@ -8,6 +8,6 @@
   `thumbsrc` varchar(255) DEFAULT NULL,
   `description` text,
   PRIMARY KEY (`image_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2004480 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>image</title>
 </node>

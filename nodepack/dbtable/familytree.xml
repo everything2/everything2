@@ -7,6 +7,6 @@
   `familytree_parent` int(11) NOT NULL DEFAULT '0',
   `familytree_comment` char(255) DEFAULT NULL,
   PRIMARY KEY (`familytree_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=234 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>familytree</title>
 </node>

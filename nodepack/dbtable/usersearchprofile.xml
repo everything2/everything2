@@ -6,6 +6,6 @@
   `searchtype` varchar(25) NOT NULL DEFAULT '',
   `searched_user` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`profile_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=47422 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>usersearchprofile</title>
 </node>

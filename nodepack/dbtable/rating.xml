@@ -6,6 +6,6 @@
   `rated_node` int(11) NOT NULL DEFAULT '0',
   `points` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`rating_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1391809 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>rating</title>
 </node>

@@ -14,6 +14,6 @@
   KEY `max_ip__min_ip` (`max_ip`,`min_ip`),
   KEY `ban_timestamp` (`ban_timestamp`),
   KEY `ipblacklistref_id` (`ipblacklistref_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>ipblacklistrange</title>
 </node>

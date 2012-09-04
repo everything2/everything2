@@ -11,6 +11,6 @@
   `recommendationLink` char(32) NOT NULL DEFAULT '',
   `moderators` text NOT NULL,
   PRIMARY KEY (`usergroup_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1935965 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>usergroup</title>
 </node>

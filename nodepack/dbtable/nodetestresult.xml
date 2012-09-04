@@ -8,6 +8,6 @@
   `nodetestresult_pass` tinyint(1) NOT NULL DEFAULT '0',
   `nodetestresult_id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`nodetestresult_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=427878938 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>nodetestresult</title>
 </node>

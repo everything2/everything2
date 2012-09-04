@@ -7,6 +7,6 @@
   `achieved_achievement` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`achieved_id`),
   KEY `user_achievement` (`achieved_user`,`achieved_achievement`)
-) ENGINE=InnoDB AUTO_INCREMENT=20222 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>achieved</title>
 </node>

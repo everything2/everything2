@@ -8,6 +8,6 @@
   `questions` int(11) NOT NULL DEFAULT '0',
   `slow` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`dbstats_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=87704 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>dbstats</title>
 </node>

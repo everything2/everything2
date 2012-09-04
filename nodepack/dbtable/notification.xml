@@ -8,6 +8,6 @@
   `description` text NOT NULL,
   `invalid_check` text,
   PRIMARY KEY (`notification_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2054469 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>notification</title>
 </node>

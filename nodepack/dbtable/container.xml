@@ -6,6 +6,6 @@
   `context` text,
   `parent_container` int(11) DEFAULT NULL,
   PRIMARY KEY (`container_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2021825 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>container</title>
 </node>

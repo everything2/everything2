@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>148</type_nodetype>
   <node_id>2016713</node_id>
-  <_create_table_statement>CREATE ALGORITHM=UNDEFINED DEFINER=`everyuser`@`192.168.1.%` SQL SECURITY DEFINER VIEW `currentusers` AS select sql_no_cache `everything`.`user`.`user_id` AS `user_id` from `user` where (`everything`.`user`.`lasttime` &gt;= (now() - interval 300 second))</_create_table_statement>
+  <_create_table_statement>CREATE ALGORITHM=UNDEFINED DEFINER=`everyuser`@`%` SQL SECURITY DEFINER VIEW `currentusers` AS select sql_no_cache `user`.`user_id` AS `user_id` from `user` where (`user`.`lasttime` &gt;= (now() - interval 300 second))</_create_table_statement>
   <title>currentusers</title>
 </node>

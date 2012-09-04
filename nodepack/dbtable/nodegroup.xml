@@ -10,6 +10,6 @@
   KEY `nodememberof` (`node_id`),
   KEY `orderby_index` (`orderby`),
   KEY `nodegroup_id_orderby` (`nodegroup_id`,`orderby`)
-) ENGINE=InnoDB AUTO_INCREMENT=2067267 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>nodegroup</title>
 </node>

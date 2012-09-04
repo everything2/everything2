@@ -5,6 +5,6 @@
   `commonwords_id` int(11) NOT NULL AUTO_INCREMENT,
   `commonword` char(127) NOT NULL DEFAULT '',
   PRIMARY KEY (`commonwords_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1011 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>commonwords</title>
 </node>

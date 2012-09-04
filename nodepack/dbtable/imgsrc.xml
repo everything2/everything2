@@ -5,6 +5,6 @@
   `imgsrc_id` int(11) NOT NULL AUTO_INCREMENT,
   `imgsrc` char(128) NOT NULL DEFAULT '',
   PRIMARY KEY (`imgsrc_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=250 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>imgsrc</title>
 </node>

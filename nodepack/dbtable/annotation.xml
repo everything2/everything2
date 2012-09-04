@@ -7,6 +7,6 @@
   `ann_text` text NOT NULL,
   `ann_location` char(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`annotation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>annotation</title>
 </node>

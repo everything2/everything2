@@ -15,6 +15,6 @@
   `numvotes` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`stats_id`),
   KEY `stattime` (`stattime`)
-) ENGINE=InnoDB AUTO_INCREMENT=452754 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>stats</title>
 </node>

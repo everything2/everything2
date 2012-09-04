@@ -8,6 +8,6 @@
   `keywords` text NOT NULL,
   `hits` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`faq_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>faq</title>
 </node>

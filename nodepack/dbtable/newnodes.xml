@@ -7,6 +7,6 @@
   `node_id` int(11) NOT NULL DEFAULT '0',
   `notnew` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`,`batch`)
-) ENGINE=InnoDB AUTO_INCREMENT=34111866 DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>newnodes</title>
 </node>

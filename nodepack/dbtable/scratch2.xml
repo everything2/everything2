@@ -10,6 +10,6 @@
   `scratch_collab` char(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`scratch_id`),
   KEY `scratch_user` (`scratch_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=20528 DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <title>scratch2</title>
 </node>
