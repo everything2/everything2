@@ -18,6 +18,13 @@ $DB-&gt;sqlInsert('seclog',
 # Delete all public messages from locked user
 $DB-&gt;sqlDelete('message', &quot;for_user = 0 AND author_user = $$uid{user_id}&quot;);
 
+# revert all review drafts to 'findable' status
+# (they won't actually be findable unless/until the account is unlocked)
+$DB -&gt; sqlUpdate('draft JOIN node ON draft_id=node_id'
+	, {publication_status =&gt; getId(getNode('findable', 'publication_status'))}
+	, &quot;node.author_user = $$uid{node_id} AND
+		draft.publication_status = &quot; . getId(getNode('review', 'publication_status')));
+
 # hide the locked user's scratch pad.
 my $V = getVars($uid);
 delete $$V{skratchShare};
