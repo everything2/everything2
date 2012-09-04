@@ -28,11 +28,11 @@ sub node_xml_prep
 		$create_table_statement = $result->[1];
 	}
 
-	#my $create_table_statement = `mysqldump --skip-add-drop-table --skip-add-locks --skip-disable-keys --skip-set-charset --skip-comments -d -u $$options{user}$password_string $$options{database} $$NODE{title}`;
 	if(not defined($create_table_statement))
 	{
 		die "Could not get create table statement for dbtable $$NODE{title}";
 	}
+	$create_table_statement =~ s/AUTO_INCREMENT=\d+ //g;
 
 	$NODE->{_create_table_statement} = $create_table_statement;
 	return $this->SUPER::node_xml_prep($NODE, $dbh);
