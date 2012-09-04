@@ -346,7 +346,7 @@ local *music = sub {
 	return ''
 		. '&lt;button title=&quot;Add additional World Cup content&quot;'
 		. ' onClick=&quot;flatify(this);return false;&quot;&gt;'
-		. '&lt;img src=&quot;/images/futbol.png&quot;&gt;'
+		. '&lt;img src=&quot;http://static.everything2.com/futbol.png&quot;&gt;'
 		. '&lt;/button&gt;'
 		;
 };
@@ -482,8 +482,7 @@ unless ($inHeader) {
 	delete $HTMLVARS{$CACHE_NAME};
 }
 
-$str;
-</code>
+$str;</code>
   <type_nodetype>4</type_nodetype>
   <title>displayWriteupInfo</title>
 </node>
