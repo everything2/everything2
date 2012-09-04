@@ -1,7 +1,7 @@
 <node>
   <doctext>[%
 
-my @verbNouns=('buffalo', 'police', 'bream', 'perch', 'char', 'people', 'dice', 'cod', 'smelt', 'pants');
+my @verbNouns=('Buffalo', 'buffalo', 'police', 'bream', 'perch', 'char', 'people', 'dice', 'cod', 'smelt', 'pants');
 my @intermediatePunctuation=(',', ';', ',', ':', '...');
 my @finalPunctuation=('.', '!', '?');
 
@@ -16,13 +16,13 @@ while (1) {
 
     $sentence.=$verbNouns[int(rand(@verbNouns))];
     last if(rand(1)&lt;0.1);
-    $sentence.=$intermediatePunctuation[int(rand(@intermediatePunctuation))] if (rand(1)&lt;0.4);
+    $sentence.=$intermediatePunctuation[int(rand(@intermediatePunctuation))] if (rand(1)&lt;0.25);
     $sentence.=&quot; &quot;;
   }
   $sentence=ucfirst($sentence);
   $sentence.=$finalPunctuation[int(rand(@finalPunctuation))].' ';
   $str.=$sentence;
-  last if(rand(1)&lt;0.5);
+  last if(rand(1)&lt;0.4);
 }
 
 $str.=&quot;&lt;ul&gt;\n\t&lt;li&gt;&quot;.linkNode($NODE, &quot;MOAR&quot;, {moar =&gt; 'more'}).&quot;&lt;/li&gt;\n&quot;;
