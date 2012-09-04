@@ -1,16 +1,13 @@
 <node>
   <node_id>296</node_id>
   <code>  my $str;
-  $str.= linkNode($query-&gt;param(&quot;lastnode_id&quot;), '&lt;img src=images/e2back.gif border=0 
+  $str.= linkNode($query-&gt;param(&quot;lastnode_id&quot;), '&lt;img src=&quot;http://static.everything2.com/e2back.gif&quot; border=0 
 	height=22 width=22 alt=&quot;last node&quot;&gt;') if $query-&gt;param(&quot;lastnode_id&quot;); 
-  $str.= linkNode($USER,&quot;&lt;img src=images/e2home.gif border=0 
+  $str.= linkNode($USER,&quot;&lt;img src=&quot;http://static.everything2.com/e2home.gif&quot; border=0 
 	height=22 width=22 alt=\&quot;go home\&quot;&gt;&quot;) if getId($USER) != $HTMLVARS{guest_user};
-  $str.= linkNodeTitle(&quot;\&quot;Everything University\&quot;|&lt;img src=images/e2help.gif border=0 
+  $str.= linkNodeTitle(&quot;\&quot;Everything University\&quot;|&lt;img src=&quot;http://static.everything2.com/e2help.gif&quot; border=0 
 	height=22 width=22 alt=\&quot;help\&quot;&gt;&quot;);
-  #$str.= linkNode($NODE, &quot;&lt;img src=images/e2book.gif border=0 
-#	height=22 width=22 alt=\&quot;bookmark\&quot;&gt;&quot;, {op=&gt;'bookmark'});
-  $str;
-</code>
+  $str;</code>
   <type_nodetype>4</type_nodetype>
   <title>classic iconbar</title>
 </node>
