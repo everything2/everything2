@@ -171,7 +171,7 @@ cite {
 &lt;body&gt;
     &lt;header&gt;
         &lt;div id='header'&gt;
-            &lt;h1&gt;&lt;img src='http://everything2.com/img/e2_tight.gif' alt='everything2'&gt;&lt;/h1&gt;
+            &lt;h1&gt;&lt;img src='http://static.everything2.com/e2_tight.gif' alt='everything2'&gt;&lt;/h1&gt;
         &lt;/div&gt;
     &lt;/header&gt;
     &lt;div id='mainbody'&gt;
