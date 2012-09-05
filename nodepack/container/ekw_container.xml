@@ -46,10 +46,10 @@ $$VARS{ekw_logoaccenttext} || $$THEME{logoAccentText} || &quot;#ffff90&quot;;
     [{ekw titlebar}]
   &lt;/td&gt;
  &lt;/tr&gt;
- &lt;tr&gt;&lt;td&gt;&lt;img height=&quot;4&quot; src=&quot;images/incoming/dot.gif&quot;&gt;&lt;/td&gt;&lt;/tr&gt;
+ &lt;tr&gt;&lt;td&gt;&lt;img height=&quot;4&quot; src=&quot;http://static.everything2.com/dot.gif&quot;&gt;&lt;/td&gt;&lt;/tr&gt;
  &lt;tr&gt;&lt;td bgcolor=&quot;[%
 $$VARS{ekw_logobackground} || $$THEME{logoBackground} || &quot;#305880&quot;;
-%]&quot; colspan=&quot;3&quot; height=&quot;1&quot;&gt;&lt;img height=&quot;2&quot; src=&quot;images/incoming/dot.gif&quot;&gt;&lt;/td&gt;
+%]&quot; colspan=&quot;3&quot; height=&quot;1&quot;&gt;&lt;img height=&quot;2&quot; src=&quot;http://static.everything2.com/dot.gif&quot;&gt;&lt;/td&gt;
  &lt;/tr&gt;
 &lt;/table&gt;
     &lt;!--tr&gt;&lt;td--&gt;
@@ -67,15 +67,14 @@ $$VARS{ekw_logobackground} || $$THEME{logoBackground} || &quot;#305880&quot;;
  &lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;br /&gt;&lt;/td&gt;&lt;/tr&gt;
  &lt;tr&gt;&lt;td bgcolor=&quot;[%
 $$VARS{ekw_logobackground} || $$THEME{logoBackground} || &quot;#305880&quot;;
-%]&quot; colspan=&quot;3&quot; height=&quot;1&quot;&gt;&lt;img height=&quot;2&quot; src=&quot;images/incoming/dot.gif&quot;&gt;&lt;/td&gt;
+%]&quot; colspan=&quot;3&quot; height=&quot;1&quot;&gt;&lt;img height=&quot;2&quot; src=&quot;http://static.everything2.com/dot.gif&quot;&gt;&lt;/td&gt;
  &lt;/tr&gt;
 &lt;/table&gt;
 &lt;!-- End main table --&gt;
 
 [{ekwFooter}]
 
-&lt;!-- END ekw container --&gt;
-</context>
+&lt;!-- END ekw container --&gt;</context>
   <type_nodetype>2</type_nodetype>
   <title>ekw container</title>
 </node>
