@@ -1,7 +1,0 @@
-<node>
-  <extends_nodetype>3</extends_nodetype>
-  <sqltable>setting</sqltable>
-  <node_id>151</node_id>
-  <type_nodetype>1</type_nodetype>
-  <title>meta-user</title>
-</node>
