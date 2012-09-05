@@ -2891,8 +2891,10 @@ sub createMysqlProcedure
 {
 	my ($this, $procname, $parameters, $procbody, $type, $testonly) = @_;
 
-	return unless defined($procname) and defined($parameters) and defined($procbody);
-	return unless $procname =~ /\S/ and $parameters =~ /\S/ and $procbody =~ /\S/;
+	$parameters = "" unless defined($parameters);
+
+	return unless defined($procname) and defined($procbody);
+	return unless $procname =~ /\S/ and $procbody =~ /\S/;
 
 	$type = "PROCEDURE" unless(defined $type and $type != "");
 	$procbody =~ s/\r\n/\n/smg;
@@ -2903,7 +2905,7 @@ sub createMysqlProcedure
 		{
 			return [0,$this->{dbh}->errstr];
 		}else{
-			$this->dropMysqlProcedure("ecore_test_$procname");
+			$this->dropMysqlProcedure("ecore_test_$procname", $type);
 		}
 	}
 
