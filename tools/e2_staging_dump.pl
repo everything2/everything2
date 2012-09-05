@@ -1,7 +1,10 @@
 #!/usr/bin/perl -w
 
 use strict;
+use lib qw(/var/everything/ecore);
+
 use DBI;
+use Everything;
 
 my $tables = 
 {
@@ -14,14 +17,15 @@ my $tables =
 	"message" => "--no-data",
 	"heaven" => "--no-data",
 	"nodebak" => "--no-data",
-	"ftcache" => "--no-data",
 	"deletedhits" => "--no-data",
 	"hits" => "--no-data",
 };
 
-my $password = $ARGV[0];
+my $password = $Everything::CONFIG{everypass};
+my $user = $Everything::CONFIG{everyuser};
+my $host = $Everything::CONFIG{everything_dbserv};
 
-my $dbh = DBI->connect("DBI:mysql:database=everything","root", $password);
+my $dbh = DBI->connect("DBI:mysql:database=everything;host=$host",$user, $password);
 
 die "No database" unless $dbh;
 
@@ -50,7 +54,7 @@ foreach my $table(@$table_list, "currentusers")
 	{
 		$extra = $tables->{$table};
 	}
-	`mysqldump --single-transaction $extra --user=root everything $table >> $dumpfile`;
+	`mysqldump --single-transaction $extra --user=$user --password=$password --host=$host everything $table >> $dumpfile`;
 }
 
 print STDERR "Compressing output\n";
