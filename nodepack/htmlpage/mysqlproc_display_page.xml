@@ -8,7 +8,7 @@
 [% return $NODE-&gt;{doctext}; %]
 &lt;/pre&gt;
 &lt;b&gt;END&lt;/b&gt;&lt;br /&gt;</page>
-  <node_id>2067270</node_id>
+  <node_id>2069689</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <title>mysqlproc display page</title>
