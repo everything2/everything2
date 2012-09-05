@@ -1,8 +1,13 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>2061807</pagetype_nodetype>
-  <page>&lt;b&gt;CREATE PROCEDURE [% $NODE-&gt;{title}%]([% $NODE-&gt;{parameters} %])&lt;/b&gt;&lt;br /&gt;
-[{listcode:doctext}]</page>
+  <page>&lt;br /&gt;
+&lt;b&gt;CREATE PROCEDURE [% $NODE-&gt;{title}%]([% $NODE-&gt;{parameters} %])&lt;/b&gt;&lt;br /&gt;
+&lt;b&gt;BEGIN&lt;/b&gt;&lt;br /&gt;
+&lt;pre&gt;
+[% return $NODE-&gt;{doctext}; %]
+&lt;/pre&gt;
+&lt;b&gt;END&lt;/b&gt;&lt;br /&gt;</page>
   <node_id>2067270</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

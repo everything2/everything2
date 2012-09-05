@@ -12,6 +12,7 @@ if(not ref $value eq &quot;ARRAY&quot;)
 
 if($value-&gt;[0] == 1)
 {
+  $DB-&gt;dropMysqlProcedure(&quot;ecore_test_$procname&quot;, &quot;PROCEDURE&quot;);
   return &quot;Created successfully&quot;;
 }
 
