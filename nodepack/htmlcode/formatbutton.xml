@@ -10,12 +10,9 @@ my ($name) = @_;
 # avoid showing a useless button
 # in a browser with no javascript.
 
-my $finalstr = '&lt;script language=&quot;JavaScript&quot; src=';
+my $afjs = getNode(&quot;Autoformat Javascript&quot;,&quot;jscript&quot;);
 
-$finalstr.= urlGen({&quot;node&quot;=&gt;&quot;AutoFormat Javascript&quot;, &quot;type&quot;=&gt;&quot;rawdata&quot;, &quot;displaytype&quot;=&gt;&quot;raw&quot; });
-
-$finalstr.='&gt;
-&lt;/script&gt;
+my $finalstr = '&lt;script language=&quot;JavaScript&quot; src=\'http://jscss.everything2.com/'.$$afjs{node_id}.'.js\'&gt;&lt;/script&gt;
 &lt;script&gt;&lt;!--
 document.write(&quot;&lt;input type=\'button\' onClick=\'autoFormat(\&quot;'.$name.'\&quot;)\' value=\'format\' id=\'formatButton\'&gt;&quot;);
 // --&gt;&lt;/script&gt;';
