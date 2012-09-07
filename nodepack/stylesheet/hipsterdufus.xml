@@ -1,0 +1,834 @@
+<node>
+  <doctext>/*
+---------------------------------------
+BASIC HTML STYLING 
+----------------------------------------
+*/
+body
+{
+font-size: 85%;
+font-family: Arial Unicode MS, Arial, Tahoma, Helvetica, Sans-Serif;
+margin: 0;
+padding: 0;
+/*background: #157be1 url(http://www.pitt.edu/~rttaylor/e2/hipsterdufus/page_bg.gif) repeat-x 0 0;*/
+background-color: #69c;
+line-height: 130%;
+}
+
+a
+{
+color: #36c;
+text-decoration: underline;
+}
+
+a:visited
+{
+color: #c63;
+}
+
+a.unpopulated
+{
+text-decoration: none;
+border-bottom: 1px dashed #33f;
+}
+
+a:hover
+{
+color: #a00;
+text-decoration: none;
+}
+
+abbr, acronym, dfn
+{
+text-decoration: none;
+border-bottom: 1px dotted silver;
+}
+
+big
+{
+font-size: 110%;
+}
+
+big big
+{
+font-size: 104%;
+}
+
+blockquote
+{
+margin: 1em 3em;
+border-left: 1px dotted silver;
+padding-left: 10px;
+}
+
+cite
+{
+font-style: italic;
+border-bottom: 1px solid #fcfcfc;
+}
+
+code, tt, pre, kbd, var
+{
+font-family: Monaco, Lucida Console, monospace;
+}
+
+pre
+{
+font-size: 85%;
+}
+
+dt
+{
+font-weight: bold;
+padding-bottom: 3px;
+}
+
+dd
+{
+margin-left: 3em;
+margin-bottom: .5em;
+}
+
+del
+{
+color: #ccc;
+}
+
+form
+{
+margin: 0;
+padding: 0;
+}
+
+h1, h2, h3, h4 ,h5 ,h6
+{
+font-weight: bold;
+}
+
+h1 { font-size: 135%; }
+h2 { font-size: 130%; }
+h3 { font-size: 120%; }
+h4 { font-size: 110%; }
+h5 { font-size: 105%; }
+h6 { font-size: 100%; }
+
+img, a img
+{
+border: 0;
+}
+
+label
+{
+font-weight: bold;
+}
+
+ol
+{
+list-style-type: decimal;
+padding: 0;
+margin-left: 2.25em;
+}
+
+ol ol
+{
+list-style-type: upper-alpha;
+}
+
+ol ol ol
+{
+list-style-type: upper-roman;
+}
+
+ol ol ol ol
+{
+list-style-type: lower-alpha;
+}
+
+ol ol ol ol ol
+{
+list-style-type: lower-roman;
+}
+
+small
+{
+font-size: 88%;
+}
+
+small small
+{
+font-size: 96%;
+}
+
+td, td td, td td td, td td td td
+{
+font-size: 100%;
+}
+
+textarea
+{
+font-family: Monaco, Lucida Console, monospace;
+font-size: .9em;
+width: 99%;
+}
+
+th
+{
+font-weight: bold;
+background-color: #369;
+padding: 3px;
+border-bottom: 1px solid #036;
+border-right: 1px solid #036;
+color: #fff;
+}
+
+ul
+{
+list-style: square;
+margin-left: 2.25em;
+padding: 0;
+}
+
+ul ul
+{
+list-style: disc;
+}
+
+ul ul ul
+{
+list-style: circle;
+}
+
+/*
+----------------------------------------
+ZEN SPECIFIC STYLING
+----------------------------------------
+*/
+
+#wrapper
+{
+margin-top: 77px;
+text-align: left;
+}
+
+#mainbody
+{
+margin: 0 277px 20px 25px;
+border-top: 1px solid #fff;
+border-left: 1px solid #fff;
+border-right: 1px solid #000;
+border-bottom: 1px solid #000;
+padding: 0 20px 20px 20px;
+background: #fff url(http://www.pitt.edu/~rttaylor/e2/hipsterdufus/section_shadow.gif) repeat-x 0 0;
+}
+
+#chatterlight_mainbody
+{
+margin: 77px 277px 20px 25px;
+text-align: left;
+border-top: 1px solid #fff;
+border-left: 1px solid #fff;
+border-right: 1px solid #000;
+border-bottom: 1px solid #000;
+padding: 0 20px 20px 20px;
+background: #fff url(http://www.pitt.edu/~rttaylor/e2/hipsterdufus/section_shadow.gif) repeat-x 0 0;
+}
+
+.nodetitle
+{
+letter-spacing: 1px;
+padding: 10px 20px;
+margin: -1px -20px 0 -21px;
+/*background-color: #157be1;*/
+background-color: #369;
+border-top: 1px solid #9cf;
+border-left: 1px solid #9cf;
+border-right: 1px solid #036;
+border-bottom: 1px solid #036;
+color: #fff;
+}
+
+#sidebar, #chatterlight_NW
+{
+width: 250px;
+position: absolute;
+top: 77px;
+right: 25px;
+background-color: #4a4a4a;
+border-left: 1px solid #7f7f7f;
+border-right: 1px solid #000;
+color: #ccc;
+font-size: .9em;
+clear: both;
+}
+
+#sidebar a, #chatterlight_NW a
+{
+color: #fff;
+}
+
+#sidebar a:visited, #chatterlight_NW a:visited
+{
+color: #ffcc00;
+}
+
+#sidebar a:hover, #chatterlight_NW a:hover
+{
+color: #ffcc00;
+}
+
+#header, #chatterlight_search
+{
+position: absolute;
+top: 25px;
+left: 25px;
+right: 25px;
+height: 50px;
+margin: 0px;
+padding: 0 20px 0 20px;
+overflow: hidden; /* IE fix */
+background-color: #4a4a4a;
+border-top: 1px solid #7f7f7f;
+border-left: 1px solid #7f7f7f;
+border-right: 1px solid #000;
+border-bottom: 1px solid #000;
+color: #ccc;
+}
+
+#e2logo
+{
+margin-top: 17px;
+}
+
+#e2logo a
+{
+color: #fff;
+}
+
+#epicenter_zen
+{
+background-color: #000;
+color: #fff;
+position: fixed;
+bottom: 0;
+left: 0;
+right: 2px;
+height: 20px;
+font-size: .83em;
+padding: 0 2em;
+filter: alpha(opacity=70);
+-moz-opacity: .7;
+opacity: .7;
+}
+
+#epicenter_zen a
+{
+color: aliceblue;
+}
+
+
+#epicenter_zen br
+{
+display: none;
+}
+
+#searchform
+{
+float: right;
+margin-top: 12px;
+font-size: .85em;
+}
+
+#announcements
+{
+display: none;
+}
+
+#footer
+{
+clear: both;
+text-align: center;
+margin-bottom: 25px;
+}
+
+/*
+----------------------------------
+FRONT PAGE
+----------------------------------
+*/
+
+#welcome_message
+{
+margin-bottom: 10px;
+padding: 5px;
+background-color: #ffc;
+border-top: 2px solid #eea;
+border-left: 2px solid #eea;
+border-right: 2px solid #cc8;
+border-bottom: 2px solid #cc8;
+}
+
+#loglinks
+{
+margin-bottom: 10px;
+padding: 5px;
+background-color: #ffeedd;
+border-top: 2px solid #ffddbb;
+border-left: 2px solid #ffddbb;
+border-right: 2px solid #ddbb99;
+border-bottom: 2px solid #ddbb99;
+}
+
+#loglinks table
+{
+padding: 0;
+margin-bottom: 0 0 10 0;
+width: 75%;
+display: inline;
+}
+
+#loglinks table td
+{
+padding: 5px;
+text-align: center;
+width: 25%
+}
+
+#cooluserpicks
+{
+padding: 5px;
+margin-bottom: 10px;
+float: left;
+width: 250px;
+margin: 0 10px 10px 0;
+background-color: #157be1;
+border-top: 1px solid #3399ff;
+border-left: 1px solid #3399ff;
+border-right: 1px solid #0055bb;
+border-bottom: 1px solid #0055bb;
+color: #ccc;
+}
+
+#cooluserpicks ul
+{
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+#cooluserpicks ul li
+{
+border-bottom: 1px solid #3399ff;
+}
+
+#cooluserpicks ul li a
+{
+display: block;
+padding: 3px 0;
+color: #fff;
+}
+
+#cooluserpicks ul li a:hover
+{
+background-color: #05b;
+color: #ffcc00;
+}
+
+#staff_picks
+{
+margin-left: 275px;
+margin-bottom: 10px;
+padding: 5px;
+background-color: #157be1;
+border-top: 1px solid #3399ff;
+border-left: 1px solid #3399ff;
+border-right: 1px solid #0055bb;
+border-bottom: 1px solid #0055bb;
+color: #ccc;
+}
+
+#staff_picks a:hover
+{
+color: #ffcc00;
+}
+
+#staff_picks h3, #cooluserpicks h3
+{
+font-size: .85em;
+padding: 3px;
+border-bottom: 2px dotted #ccc;
+margin: 0;
+}
+
+#staff_picks a
+{
+color: #fff;
+}
+
+#staff_picks h3 a
+{
+color: #ccc;
+}
+
+.cotc_entry
+{
+background-color: #fefefe;
+border: 1px solid #000;
+border-left: 1px solid #7f7f7f;
+border-top: 0;
+padding: 5px;
+}
+
+.cotc_info
+{
+border-top: 1px solid #7f7f7f;
+border-bottom: 1px solid #000;
+padding: 10px;
+background-color: #4a4a4a;
+color: #ccc;
+margin: -5px -5px 5px -5px;
+}
+
+.cotc_info a
+{
+color: #fff;
+}
+
+.cotc_info a:visited, .cotc_info a:hover
+{
+color: #ffcc00;
+}
+
+/*
+-----------------------------------------
+HOMENODES
+-----------------------------------------
+*/
+
+#homenodepicbox
+{
+float: right;
+padding: 5px;
+background-color: #fff;
+border: 1px solid #666;
+margin: 0 0 10px 10px;
+}
+
+#homenodeheader dt
+{
+background-color: #F0F8FF;
+padding: 3px;
+}
+
+#bookmarks ul
+{
+max-height: 300px;
+overflow: auto;
+padding: 3px;
+border: 1px solid silver;
+}
+
+/*
+-----------------------------------------
+E2NODES AND WRITEUPS
+-----------------------------------------
+*/
+
+.createdby
+{
+text-align: right;
+padding: 5px;
+clear: both;
+border-bottom: 1px solid #000;
+}
+
+.writeup
+{
+clear: both;
+border: 1px solid #000;
+border-top: 1px solid #7f7f7f;
+}
+
+.writeuptable, .writeuptable tbody, .writeuptable tr, .writeuptable td
+{
+margin: 0;
+padding: 0;
+border: 0;
+}
+
+.writeuptable
+{
+background: #fff url(http://www.pitt.edu/~rttaylor/e2/hipsterdufus/section_shadow.gif) repeat-x 0 0;
+}
+
+.writeup_title
+{
+border-bottom: 1px solid #000;
+padding: 10px 20px;
+background-color: #4a4a4a;
+color: #ccc;
+}
+
+.writeup_title td
+{
+color: #ccc;
+}
+
+.writeup_title a
+{
+color: #fff;
+}
+
+.writeup_title a:visited
+{
+color: #ffcc00;
+}
+
+.writeup_title a:hover
+{
+color: #ffcc00;
+}
+
+.writeup_text
+{
+padding: 20px;
+}
+
+.topic
+{
+font-size: .80em;
+text-align: center;
+}
+
+#firmlink
+{
+}
+
+#isalso
+{
+}
+
+#admintools
+{
+margin: 10px 0;
+padding: 5px;
+background-color: #ffc;
+border-top: 2px solid #eea;
+border-left: 2px solid #eea;
+border-right: 2px solid #cc8;
+border-bottom: 2px solid #cc8;
+}
+
+#admintools h3
+{
+margin: 0;
+}
+
+.writeup_add
+{
+background-color: #157be1;
+border-top: 1px solid #39f;
+border-left: 1px solid #39f;
+border-right: 1px solid #05b;
+border-bottom: 1px solid #05b;
+padding: 10px;
+margin-top: 20px;
+color: #ccc;
+}
+
+.writeup_add a
+{
+color: #fff;
+}
+
+.writeup_add h2
+{
+margin: -10px -10px 10px -10px;
+background-color: #00177d;
+font-size: .9em;
+padding: 3px;
+}
+
+#softlinks
+{
+margin-top: 20px;
+}
+
+#softlinks td
+{
+border-top: 1px solid #7f7f7f;
+border-left: 1px solid #7f7f7f;
+border-right: 1px solid #000;
+border-bottom: 1px solid #000;
+}
+
+
+/*
+-----------------------------------------
+NODELETS
+-----------------------------------------
+*/
+
+.nodelet
+{
+padding: 10px;
+border-top: 1px solid #7f7f7f;
+border-bottom: 1px solid #000;
+}
+
+.nodelet h2
+{
+margin-top: 0;
+}
+
+.nodelet .nodelet_title
+{
+border-bottom: 2px dotted #cfcfcf;
+}
+
+#nodelet_1689202 img.oddrow, #nodelet_1689202 img.evenrow
+{
+background-color: #777;
+border-bottom: 2px solid #000;
+border-right: 2px solid #000;
+border-left: 2px solid #ccc;
+border-top: 2px solid #ccc;
+}
+
+#weblogs
+{
+max-height: 75px;
+overflow: auto;
+border: 1px solid silver;
+padding: 2px;
+}
+
+ul#writeup_list
+{
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+ul#writeup_list li
+{
+padding: 2px 0 4px 0;
+border-top: 1px solid #7f7f7f;
+border-bottom: 1px solid #000;
+}
+
+#writeup_list .author
+{
+display: block;
+text-align: center;
+border-bottom: 1px solid #575757;
+font-size: .9em;
+}
+
+#writeup_list .author a
+{
+color: #ccc;
+}
+
+#writeup_list .hide, #writeup_list .hidden
+{
+font-size: .8em;
+}
+
+#writeup_list li .wu_hide
+{
+border: 1px solid #fc0;
+display: block;
+padding: 3px;
+}
+
+#nodelet_91 strong a
+{
+margin-left: 1em;
+color: #fc0;
+}
+
+/*
+---------------------------------------------
+COMMON CLASSES
+---------------------------------------------
+*/
+.weblog_item
+{
+border-top: 1px solid #39f;
+border-left: 1px solid #39f;
+border-bottom: 1px solid #05b;
+border-right: 1px solid #05b;
+padding: 5px;
+}
+
+.wl_title, .wl_author
+{
+margin: -5px -5px 0 -5px;
+background-color: #157be1;
+padding: 1px 3px;
+}
+
+.wl_title a, .wl_author a
+{
+color: #fff;
+}
+
+
+.wl_title a:visited, .wl_author a:visited, .wl_title a:hover, .wl_author a:hover
+{
+color: #fc0;
+}
+
+.wl_date
+{
+background-color: #157be1;
+border-bottom: 1px solid #05b;
+margin: 0 -5px 3px -5px;
+padding: 3px;
+}
+
+.wl_remove:
+{
+float: right;
+background-color: #aca;
+}
+
+.evenrow
+{
+background-color: #F0F8FF;
+}
+
+.evenrow td, td .evenrow, td.evenrow
+{
+border-bottom: 1px solid #e0e8ee;
+border-right: 1px solid #e0e8ee;
+padding: 0 3px;
+}
+
+.oddrow
+{
+background-color: #fff;
+}
+
+.oddrow td, td .oddrow, td.oddrow
+{
+border-bottom: 1px solid #e0e8ee;
+border-right: 1px solid #e0e8ee;
+padding: 0 3px;
+}
+
+#chatterlight_hints, #chatterlight_credit
+{ 
+display: none; 
+}
+
+.chat_ushdfgakjasgh
+{
+text-decoration: line-through;
+color: #aaa;
+font-size: 80%;
+}</doctext>
+  <node_id>1934436</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <title>HipsterDufus</title>
+</node>

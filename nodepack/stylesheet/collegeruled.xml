@@ -1,0 +1,298 @@
+<node>
+  <doctext>/*
+---------------------------------------
+BASIC HTML STYLING 
+----------------------------------------
+*/
+body
+{
+font-size: 85%;
+font-family: Arial Unicode MS, Arial, Tahoma, Helvetica, Sans-Serif;
+margin: 0 auto;
+padding: 0;
+background-color: #fff;
+text-align: center;
+line-height: 1.4em;
+}
+
+a
+{
+color: #36c;
+text-decoration: underline;
+}
+
+a:visited
+{
+color: #c63;
+}
+
+a.unpopulated
+{
+text-decoration: none;
+border-bottom: 1px dashed #33f;
+}
+
+a:hover
+{
+color: #a00;
+text-decoration: none;
+}
+
+abbr, acronym, dfn
+{
+text-decoration: none;
+border-bottom: 1px dotted silver;
+}
+
+big
+{
+font-size: 110%;
+}
+
+big big
+{
+font-size: 104%;
+}
+
+blockquote
+{
+margin: 1em 3em;
+border-left: 1px dotted silver;
+padding-left: 10px;
+}
+
+cite
+{
+font-style: italic;
+border-bottom: 1px solid #fcfcfc;
+}
+
+code, tt, pre, kbd, var
+{
+font-family: Monaco, Lucida Console, monospace;
+}
+
+kbd
+{
+padding: 3px;
+background-color: #eee;
+border-top: 2px solid #ddd;
+border-left: 2px solid #ddd;
+border-bottom: 2px solid #999;
+border-right: 2px solid #999;
+}
+
+/* simulated key press */
+kbd:hover
+{
+   background-color: #ccc;
+   border-top: 2px solid #999;
+   border-left: 2px solid #999;
+   border-bottom: 2px solid #ddd;
+   border-right: 2px solid #ddd;
+}
+
+dt
+{
+font-weight: bold;
+padding-bottom: 3px;
+}
+
+dd
+{
+margin-left: 3em;
+margin-bottom: .5em;
+}
+
+del
+{
+color: #eee;
+}
+
+form
+{
+margin: 0;
+padding: 0;
+}
+
+h1, h2, h3, h4 ,h5 ,h6
+{
+font-weight: bold;
+}
+
+h1 { font-size: 135%; }
+h2 { font-size: 130%; }
+h3 { font-size: 120%; }
+h4 { font-size: 110%; }
+h5 { font-size: 105%; }
+h6 { font-size: 100%; }
+
+img, a img
+{
+border: 0;
+}
+
+label
+{
+font-weight: bold;
+}
+
+ol
+{
+list-style-type: decimal;
+padding: 0;
+margin-left: 2.25em;
+}
+
+ol ol
+{
+list-style-type: upper-alpha;
+}
+
+ol ol ol
+{
+list-style-type: upper-roman;
+}
+
+ol ol ol ol
+{
+list-style-type: lower-alpha;
+}
+
+ol ol ol ol ol
+{
+list-style-type: lower-roman;
+}
+
+small
+{
+font-size: 88%;
+}
+
+small small
+{
+font-size: 96%;
+}
+
+td, td td, td td td, td td td td
+{
+font-size: 100%;
+}
+
+textarea
+{
+font-family: Monaco, Lucida Console, monospace;
+font-size: .9em;
+width: 99%;
+}
+
+th
+{
+font-weight: bold;
+background-color: #369;
+padding: 3px;
+border-bottom: 1px solid #036;
+border-right: 1px solid #036;
+color: #fff;
+}
+th a, th a:link, th a:visited
+{
+color: #eee;
+}
+
+ul
+{
+list-style: square;
+margin-left: 2.25em;
+padding: 0;
+}
+
+ul ul
+{
+list-style: disc;
+}
+
+ul ul ul
+{
+list-style: circle;
+}
+
+/*
+---------------------------------------
+ZEN SPECIFIC STYLING
+----------------------------------------
+*/
+#wrapper:after{
+content: &quot;.&quot;;
+display: block;
+clear: both;
+visibility: hidden;
+line-height: 0;
+height: 0;
+}
+#wrapper
+{
+/*padding-right: 255px;*/ /* sidebar goes in this gap */
+background: #fff url(http://www.pitt.edu/~rttaylor/e2/collegeruled/collegeruledbg.png) repeat-y scroll top left;
+margin: 0 auto;
+text-align: left;
+display: inline-block;
+min-width: 760px;
+max-width: 1000px;
+}
+html[xmlns] #wrapper{
+display: block;
+}
+* html #wrapper{
+height: 1%;
+}
+
+
+
+#mainbody, #chatterbox_nodelet
+{
+float: left;
+}
+
+#pageheader, #pagebody, #pagefooter {
+padding: 10px 20px 20px 130px;
+}
+
+#sidebar
+{
+float: left;
+width: 250px;
+margin-right: -250px;
+padding-top: 20px;
+}
+
+.nodelet{
+background-color: #FCF0AD;
+margin-bottom: 20px;
+}
+
+
+#searchform
+{
+float: right;
+margin-top: 12px;
+font-size: .85em;
+}
+
+#announcements
+{
+display: none;
+}
+
+#footer
+{
+clear: both;
+text-align: center;
+margin-bottom: 25px;
+}
+
+</doctext>
+  <node_id>2022033</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <title>CollegeRuled</title>
+</node>

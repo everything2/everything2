@@ -1,0 +1,332 @@
+<node>
+  <doctext>/* This is the skeleton stylesheet for the zen theme, by ascorbic */
+/* You may use this file as a foundation for any new work, but you may find it easier to start from scratch. */
+/* Not all elements are defined in this file, so you'll most likely want to refer to the html as well. */
+
+/*The basics*/
+#announcements { display: none  }
+
+div#nodelet_263 div.nodelet_content { height: 180px; overflow: auto }
+
+input { width: 200px }
+label input { width: auto }
+
+body, div, p, th, td, li, dd {
+	font-family: &quot;lucida grande&quot;, &quot;lucida sans&quot;, &quot;lucida sans unicode&quot;, lucida, arial, sans-serif;
+	/* This is a starting point: use relative for the rest */
+	font-size: 11px; 
+}
+
+h1 {
+	font-size: 130%;
+	font-weight: bold;
+}
+
+h2 {
+	font-size: 110%;
+	font-weight: bold;
+}
+
+h3 {
+	font-size: 100%;
+	font-weight: bold;
+}
+
+big {
+	font-size: 110%;
+}
+
+small {
+	font-size: 90%;
+}
+
+/*Basic structure: this is based on ALA's 'Holy Grail' design. */
+
+#header {
+	height: 80px;
+	width: 255px;
+	position: fixed;
+	top: 0;
+	right: 0;
+	background: #f8f8f8;
+}
+
+#searchform label { 
+text-align: left;
+width: 10em;
+display: block; float: right; background-color: #eee; margin-right: 5px }
+
+#wrapper {
+	padding-top: 40px;
+}
+
+#mainbody {
+	position: relative;
+	float: left;
+	width: 100%;
+}
+
+#sidebar {
+	position: relative;
+top: 40px;
+	float: left;
+	width: 190px;
+}
+
+/*Nodelets on right*/
+
+#wrapper {
+	padding-right: 205px;	
+}
+
+#sidebar {
+	margin-right: -100%;
+	margin-left: 5px;
+}
+
+
+/*Nodelets on left*/
+/*
+#wrapper {
+	padding-left: 205px;	
+}
+
+#sidebar {
+	right: 205px;
+	margin-left: -100%;
+}
+* html #left {
+  left: 200px;
+}
+
+*/
+/*end nodelet layout*/ 
+
+#footer {
+	clear: both;
+	width: 100%;
+	border-top: 1px gray solid;
+	text-align: center;
+	padding-top: 2px;
+}
+
+/* Colours, etc */
+body {
+	color: black;
+	background-color: white;
+}
+
+a:link {
+	color: #333399;
+}
+
+a:visited {
+	color: #993333;
+}
+
+
+
+/* specifics */
+
+pre {
+/* to stop page-widening */
+	display: block;
+	overflow: auto;
+}
+
+#e2logo {
+	
+	font-size: 150%;
+position: absolute;
+top: 20px;
+left: 10px
+}
+
+#metalinks {
+	margin: 2px;
+	padding:  0;
+	display: block;
+	clear: both;
+	text-align: center;
+	font-size: 80%;
+}
+
+#metalinks li {
+	display: inline;
+	padding-right: 5px;
+	margin-left: 5px;
+}
+
+#e2logo a:link, #e2logo a:visited {
+	text-decoration: none;
+}
+
+#searchform {
+	width: 300px;
+	float: right;
+	text-align: right;
+	padding-top: 5px;
+}
+ 
+
+.nodelet {
+	clear: both;
+	width: 196px;
+	padding: 0 2px;
+	border: 1px gray solid;
+	word-wrap: break-word;
+	margin-bottom: 2px;
+}
+
+.nodelet h2 {
+	display: block;
+	margin: 0 -2px;
+	text-align: center;
+	background-color: gray;
+	color: white;
+}
+
+.writeup {
+	border-bottom: 1px gray solid;
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+}
+
+
+
+.createdby {
+	text-align: right;
+}
+
+.writeup_title {
+}
+
+.writeup_text {
+}
+
+#firmlink, #isalso {
+	font-size: 110%;
+	text-indent: 30px;
+}
+
+#votebutton, #blabbutton {
+	float: left;
+}
+
+#killbutton {
+	float: right;
+}
+
+#msgnum {
+	margin: 0;
+	margin-bottom: 5px;
+}
+
+#msgunarchived {
+	font-weight: bold;
+}
+
+#homenodepicbox {
+	width: 50%;
+	float: left;
+	clear: left;
+	overflow: auto;
+}
+
+#homenodeheader {
+	clear: both;
+}
+
+#homenodeheader dl {
+	display: block;
+	width: 50%;
+	float: right;
+	clear: right;
+	margin: 0;
+}
+
+#homenodeheader dt {
+	display: block;
+	background-color: gray;
+	padding: 2px;
+}
+
+#homenodeheader dd {
+	margin: 0;
+	padding: 2px;
+}
+
+hr.clear {
+	clear: both;
+	visibility: hidden;	
+}
+
+textarea {
+width: 100%;
+}
+
+#announcements {
+position: absolute;
+top: 20px;
+font-size: 85%;
+left: 300px;
+}
+
+#writeup_list {
+	list-style-type: none;
+	padding: 0;
+}
+
+#writeup_list li {
+	clear: both;
+	word-wrap: break-word;
+}
+
+#writeup_list span.writeupmeta {
+	display: block;
+	text-align: center;
+	padding: 2px;
+	clear: both;
+	background-color: gray;	
+	color: white;
+	margin: 0 -1px;
+}
+
+#writeup_list span.writeupmeta a:link, #writeup_list span.writeupmeta a:visited {
+	color: white;	
+}
+
+
+#writeup_list span.type {
+	font-size: 90%;
+	display: block;
+	text-align: right;
+	word-wrap: no-wrap;
+	margin-bottom: 1px;
+	clear: right;
+}
+
+#writeup_list span.title {
+	float: left;
+	display: block;
+	clear: left;
+	margin-bottom: 1px;
+}
+
+#writeup_list span.author {
+}
+
+#writeup_list span.hidden, #writeup_list span.hide {
+	font-size: 85%;
+	margin-left: 3px;
+}
+
+big big big {
+font-size: inherit;
+}
+
+</doctext>
+  <node_id>1904606</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <title>Dada</title>
+</node>

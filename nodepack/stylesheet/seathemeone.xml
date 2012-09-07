@@ -1,0 +1,23 @@
+<node>
+  <doctext>       body {background-color: white;}
+
+	#header {position: absolute; top: 0; left: 0; right: 0;}
+
+	#e2logo {position: absolute; top: 10px; left: 10px; 
+          margin: 0; width: 30px; height: 30px;}
+
+	#searchform {position: absolute; top: 10px; right: 10px; text-align: right;}
+
+
+	#mainbody {position: absolute; left:10px; float: left; width: 100%;}
+
+	#sidebar {position: absolute; width: 300px; right: 10px;}
+
+
+	#wrapper {margin-top: 4em; padding-right: 206px;
+		width: 200px; margin-right: -206px;}
+	#footer {clear: both;}</doctext>
+  <node_id>1934602</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <title>seathemeone</title>
+</node>

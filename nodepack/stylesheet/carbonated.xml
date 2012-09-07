@@ -1,0 +1,724 @@
+<node>
+  <doctext>/* Customization section:                                             */
+/* Copy the section below into (Style Defacer) to customize the       */
+/*   colors, borders, text, and links.                                */
+/* You can also change which nodelet is &quot;featured&quot; in the upper-      */
+/*   right hand corner of the page.                                   */
+
+/* Don't forget to put the Chatterbox nodelet at the TOP of the stack */
+
+/* ****************************************************************** */
+/*                                                             colors */
+body 
+	{ background: rgb( 0, 0, 0 ); } /* darkest */
+#header,
+.nodelet_title
+	{ background: rgb( 153, 153, 153 ) ; } /* extra dark */
+.oddrow,
+#softlinks,
+.writeup_title,
+.author,
+#homenodeheader DT,
+.cotc_info,
+#frontpage_news,
+#loglinks table
+	{ background: rgb( 187, 187, 187 ); } /* dark */
+blockquote, 
+#mainbody, 
+.wu_footer,
+.nodelet, 
+.title, 
+.type, 
+.nodelet_content, 
+#homenodeheader DL, 
+#staff_picks, 
+#cooluserpicks, 
+.weblog_item, 
+.wl_title, 
+.wl_author, 
+.wl_date
+	{ background: rgb( 221, 221, 221 ); } /* medium */
+#softlinks TD,
+.writeup,
+.writeup_text,
+#homenodetext TD,
+#msgnum,
+#chatterbox_chatter,
+.cotc_entry,
+.wl_text
+	{ background: rgb( 238, 238, 238 ); } /* light */
+
+/* ****************************************************************** */
+/*                                                            borders */
+blockquote 
+	{
+	border-top:      2px dashed  rgb( 187, 187, 187 );   /* dark */
+	border-bottom:   2px dashed  rgb( 187, 187, 187 );   /* dark */
+	border-left:     4px solid   rgb( 187, 187, 187 );   /* dark */
+	border-right:    0px;
+	}
+#softlinks TD
+	{ border:        1px solid   rgb( 187, 187, 187 ); } /* dark */
+#staff_picks LI,
+#cooluserpicks LI,
+#nodelet_1930708 LI
+	{ border-bottom: 2px solid   rgb( 0, 0, 0 ); } /* darkest */
+.writeup, 
+.cotc_entry,
+.weblog_item
+	{ border-bottom: 2px dashed  rgb( 0, 0, 0 ); } /* darkest */
+.nodelet,
+#msgnum,
+#room_options,
+#staff_picks
+	{ border:        1px solid   rgb( 0, 0, 0 ); } /* darkest */
+#room_options
+	{ 
+	border-top:   0px; 
+	border-left:  0px;
+	border-right: 0px;
+	}
+
+/* ****************************************************************** */
+/*                                                               text */
+table, 
+body 
+	{ color: rgb( 0, 0, 0 ); }
+h1, h2, h3, h4, h5, h6 
+	{ color: rgb( 0, 0, 0 ); }
+#chatterbox_chatter
+	{ font-family: &quot;arial unicode ms&quot;, sans-serif; }
+.writeup_text,
+#homenodetext TD,
+.cotc_entry TD,
+.wl_text
+	{ font-size: 9pt; }  /* size of main site content */
+#chatterbox_chatter
+	{ font-size: 8pt; }  /* size of chatterbox messages */
+
+/* ****************************************************************** */
+/*                                                              links */
+a, 
+a:visited 
+	{ color: rgb( 0, 0, 170 ); }
+a:hover 
+	{ color: rgb( 0, 0, 255 ); }
+#softlinks a:visited, 
+#nodelet_1868940 a:visited,
+#nodelet_1919557 a:visited,
+#nodelet_457857 a:visited
+	{ color: rgb( 0, 0, 0 ); }
+
+.nodeshell a 
+	{ color: rgb( 187, 0, 0); }
+.nodeshell a:active,
+.nodeshell a:hover,
+.nodeshell a:focus 
+	{ color: rgb( 255, 0, 0); }
+
+.hasvoted ,
+.hasvoted a, 
+.hasvoted a:active, 
+.hasvoted a:hover, 
+.hasvoted a:focus,
+.hasvoted a:visited
+	{ color: rgb( 0, 0, 0); }
+/* ****************************************************************** */
+/*                                                             images */
+#header 
+	{
+	background-image: url(http://everything2.com/img/e2_solid.gif);
+	/* background-image: url(http://everything2.com/img/e2_transparent.gif); */
+	background-repeat: no-repeat;
+	background-position: bottom left;
+	}
+
+/* ****************************************************************** */
+/*                                                   featured nodelet */
+
+
+#nodelet_######
+	{
+	position: absolute;
+	top: 50px;
+	left: 767px;
+	width: 170px;
+	border-right: 0px;
+	}
+#nodelet_######
+	{
+	position: absolute;
+	top: 0px;
+	left: 938px;
+	width: 170px;
+	border-right: 0px;
+	}
+#nodelet_######
+	{
+	position: absolute;
+	top: 0px;
+	left: 1109px;
+	width: 170px;
+	border-right: 0px;
+	}
+
+/*   Chatterbox:         170070   */
+/*   Dreams:             1919557  */
+/*   Edev:               836984   */
+/*   Epicenter:          262      */
+/*   Favorite Noders:    1876005  */
+/*   Logs:               1923735  */
+/*   New Writeups:       263      */
+/*   Notelet:            1290534  */
+/*   Notifications:      1930708  */
+/*   Other Users:        91       */
+/*   Personal Links:     174581   */
+/*   Quick Reference:    1685943  */
+/*   Random Nodes:       457857   */
+/*   Read This:          1157024  */
+/*   Recent Nodes:       1322699  */
+/*   Statistics:         838296   */
+/*   User Poll:          1689202  */
+/*   Usergroup Writeups: 1924754  */
+/*   Vitals:             165437   */
+/*   Zeitgeist:          1855429  */
+/*   Master Conrol:      1687135  */ /* Editor nodelet */
+/*   New Writeups - Zen: 1868940  */ /* obsolete */
+
+/* ****************************************************************** */
+/* ****************************************************************** */
+/* End of customization                                               */
+/* ****************************************************************** */
+/* ****************************************************************** */
+
+/* ****************************************************************** */
+/* ****************************************************************** */
+/*                             KNOWN BUGS                             */
+/* ****************************************************************** */
+/* Main page link doesn't quite cover the whole E2 logo               */
+/* Featured nodelet doesn't push the other nodelets below it          */
+/*   instead it overlaps.  Don't know how to fix this.                */
+/*   Quick Fix: only allow 4 nodelets wide at the bottom.             */
+/* ****************************************************************** */
+/* ****************************************************************** */
+
+table { 
+	font: 8pt sans-serif;
+	}
+body {
+	margin: 0px;
+	font: 8pt sans-serif;
+	}
+
+a, a:visited {
+	text-decoration: none;
+	}
+a:hover {
+	/* important -- shows if two words next to each other */
+	/*   are two different links or just one */
+	text-decoration: underline;
+	}
+
+#softlinks TD {
+	text-align: center;
+	width: 25%;
+	}
+
+blockquote {
+	padding-left: 9px;
+	padding-right: 5px;
+	}
+
+/* headers stand out by playing with margins */
+.writeup_text h1, #homenodetext TABLE h1, .cotc_text TD h1 {
+	margin-left: -9px;
+	font-family: arial, sans-serif;
+	font-size: 20pt;
+	}
+.writeup_text h2, #homenodetext TABLE h2, .cotc_text TD h2 {
+	margin-left: -9px;
+	font-family: sans-serif;
+	font-size: 18pt;
+	}
+.writeup_text h3, #homenodetext TABLE h3, .cotc_text TD h3 {
+	margin-left: -9px;
+	font-family: sans-serif;
+	font-size: 16pt;
+	}
+.writeup_text h4, #homenodetext TABLE h4, .cotc_text TD h4 {
+	margin-left: -5px;
+	font-family: sans-serif;
+	font-size: 14pt;
+	}
+.writeup_text h5, #homenodetext TABLE h5, .cotc_text TD h5 {
+	margin-left: -5px;
+	font-family: sans-serif;
+	font-size: 12pt;
+	}
+.writeup_text h6, #homenodetext TABLE h6, .cotc_text TD h6 {
+	margin-left: 0px;
+	font-family: sans-serif;
+	font-size: 9pt;
+	}
+#firmlink, #isalso, .topic {
+	font: 12pt sans-serif;
+	font-weight: bold;
+	margin: 0px;
+	padding: 0px;
+	padding-left: 10px;
+	}
+.nodetitle {
+	font: 24pt sans-serif;
+	font-weight: bold;
+	margin: 0px;
+	padding: 0px;
+	padding-top: 5px;
+	}
+
+/* prevent small abuse by making it px, not %, which can be piled up */
+/* also use sans-serif font - easier to read tiny text */
+small {
+	font-size: 7pt;
+	font-family: sans-serif;
+	}
+
+/* allow big abuse */
+big {
+	font-size: 110%;
+	}
+
+/* this will prevent the SMALL tag from being used in conjuction with sup and sub */
+sup {
+	font: 8pt serif;
+	}
+
+sub {
+	font: 8pt serif;
+	}
+
+ol                { list-style: decimal; }
+ol ol             { list-style: upper-alpha; }
+ol ol ol          { list-style: upper-roman; }
+ol ol ol ol       { list-style: lower-alpha; }
+ol ol ol ol ol    { list-style: lower-roman; }
+ul                { list-style: square; }
+ul ul             { list-style: disc; }
+ul ul ul          { list-style: circle; }
+ul ul ul ul       { list-style: square; }
+ul ul ul ul ul    { list-style: disc; }
+ul ul ul ul ul ul { list-style: circle; }
+
+
+#wrapper { 
+	padding-top: 40px; 
+	}
+	#mainbody { 
+		position: relative;
+		float: left;
+		width: 758px;
+		padding: 5px;
+		overflow: auto;
+		}
+		.writeup {
+			padding: 0px;
+			margin: 0px;
+			border-left: 0px;
+			border-right: 0px;
+			border-top: 0px;
+			}
+			.writeuptable { 
+				width: 100%; 
+				}
+
+			.writeup_title {
+				padding: 5px;
+				margin: 0px;
+				}
+			.writeup_text, #homenodetext TD {
+				padding-top: 5px;
+				padding-bottom: 5px;
+				margin: 0px;
+				padding-left: 10px;
+				padding-right: 10px;
+				font: 9pt serif;
+				}
+			.writeup_text LI, #homenodetext LI {
+				margin-top: 4px;
+				}
+			.writeup_text DT, #homenodetext DT {
+				margin-top: 4px;
+				}
+			.writeup_text DT, #homenodetext DT {
+				font-family: &quot;arial unicode ms&quot;, sans-serif;
+				font-weight: bold;
+				}
+			.wu_footer {
+				width: 99%;
+				}
+			.wu_footer TD {
+				padding: 3px;
+				}
+
+	#sidebar { 
+		width: 768px;
+		clear: both;
+		/* background: blue; */ /* testing */
+		}
+		#msgnum {
+			width: 180px;
+			text-align: center;
+			margin: 0px;
+			padding: 0px;
+			}
+		.nodelet { 
+			width: 190px; 
+			float: left;
+			}
+		.nodelet h2 {
+			text-align: center;
+			}
+		#nodelet_1868940 { }   /* New Writeups - zen */ 
+			.writeupmeta {  /*one for each of New Writeups*/
+				}
+				#nodelet_263 UL,
+				#nodelet_1868940 UL, 
+				#nodelet_1923735 UL, 
+				#nodelet_1919557 UL {
+					list-style: none;
+					padding: 0px;
+					margin: 0px;
+					margin-bottom: 10px; 
+					}
+				#nodelet_263 LI,
+				#nodelet_1868940 LI, 
+				#nodelet_1923735 LI, 
+				#nodelet_1919557 LI { 
+					clear: both;
+					}
+				.author { 
+					font-weight: bold;
+					text-align: center;
+					width: 100%;
+					display: block;
+					clear: both;
+					}
+				.hidden,
+				.hide {
+					float: left;
+					}
+				.title { 
+					float: left;
+					width: 65%;
+					clear: left;
+					}
+				.type { 
+					float: right;
+					width: 35%;
+					text-align: right;
+					}
+				#newWriteupsMore { 
+					clear: both; 
+					text-align:right; 
+					}
+		#nodelet_165437 { } /*Vitals*/
+		#nodelet_91 { } /*Other Users*/
+				#room_options { 
+					border-top: 0px;
+					border-left: 0px;
+					border-right: 0px; 
+					margin-bottom: 5px;
+					} 
+		#nodelet_836984 { overflow: auto; } /* Edev */
+		#nodelet_262 { }  /*Epicenter*/
+			#nodelet_262 UL {
+				list-style: none;
+				padding: 0px;
+				}
+			#nodelet_262 SMALL {
+				margin-left: 10px;
+				}
+		#nodelet_1930708 UL {
+			list-style: none; 
+			margin: 0px; 
+			padding: 0px;
+			}
+		#nodelet_1930708 LI {
+			border-top: 0px;
+			border-left: 0px; 
+			border-right: 0px;
+			margin-left: 0px;
+			padding: 2px;
+			margin-bottom: 0px;
+			text-align: center;
+			font-family: sans-serif;
+			text-weight: bold;
+			}
+
+		#nodelet_170070 {  /*chatterbox*/
+			width: 99.9%;
+			overflow: auto;
+			}
+			#message {
+				width: 90%;
+				}
+			.nodelet_content { 
+				margin: 5px;
+				}
+		#nodelet_1689202 { /* User Poll */
+			overflow: auto; 
+			}	
+		#nodelet_1687135 { /* Master Control */
+			height: 700px; 
+			overflow: auto; 
+			}
+
+
+#header {
+	z-index: 10;
+	position: fixed;
+	top: 0px;
+	left: -40px;
+	height: 50px;
+	width: 978px;
+	min-width: 978px;
+	background-image: url(http://everything2.com/img/e2_solid.gif);
+	/* background-image: url(http://everything2.com/img/e2_transparent.gif); */
+	background-repeat: no-repeat;
+	background-position: bottom left;
+	}
+	#header h1 { 
+		/* invisible text covers most of the e2 logo */
+		/* creates the illusion that the logo is the link */
+		margin: 0px;
+		padding: 0px;
+		margin-left: 85px;
+		font: 45px bold; 
+		}
+	#searchform { 
+		float: right;
+		text-align: right;
+		width: 275px; 
+		margin-right: 3px;
+		padding: 0px;
+		}
+
+	#announcements { display:none; } /*display:none to hide*/
+	#epicenter_zen {
+		float: right;
+		text-align:right;
+		margin-right: 5px;
+		}
+	#epicenter_zen_commands BR {
+		display: none;
+		}
+
+
+#footer { display: none; }
+
+#homenodeheader {
+	display: block;
+	clear: both;
+	padding: 5px;
+	}
+
+	#homenodepicbox {
+		width: 66%; 
+		float: left;
+		clear: left;
+		}
+
+	#userimage {
+		max-width: 100% ;    /* best thing since sliced bread */
+		}
+
+	#homenodeheader dl {
+		width: 34%; 
+		float: right;
+		clear: right;
+		}
+
+	#homenodeheader dt {
+		font-weight: bold;
+		padding: 1px;
+		padding-left: 10px;
+		}
+
+	#homenodeheader dd {
+		text-align: right;
+		margin: 0px;
+		padding: 1px;
+		}
+	hr.clear {
+		clear: both;
+		}
+
+#staff_picks {
+	clear: both;
+	float: left;
+	width: 140px;
+	text-align: center;
+	padding: 5px;
+	margin-right: 10px;
+	}
+#cooluserpicks { 
+	float: left;
+	margin-right: 10px;
+	width: 150px;
+	padding-bottom: 10px;
+	}
+#staff_picks ul,
+#cooluserpicks ul {
+	list-style: none; 
+	margin: 0px; 
+	padding: 0px;
+	}
+#staff_picks li,
+#cooluserpicks li {
+	border-top: 0px;
+	border-left: 0px; 
+	border-right: 0px;
+	margin-left: 0px;
+	padding: 2px;
+	margin-bottom: 0px;
+	text-align: center;
+	font-family: sans-serif;
+	text-weight: bold;
+	}
+.sp_more {
+	display:block;
+	text-align:right;
+	}
+.cup_more {
+	display:block;
+	text-align:right;
+	}
+.morelink { 
+	text-align: right; 
+	}
+
+#creamofthecool h3 { 
+	width: 90%; 
+	}
+#creamofthecool { 
+	width: 750px; 
+	}
+.cotc_text TD {
+	font-family: serif;
+	padding-left: 10px;
+	padding-right: 170px;
+	}
+.cotc_info {
+	padding: 3px;
+	}
+.cotc_entry {
+	border-top: 0px;
+	border-left: 0px;
+	border-right: 0px;
+	padding-bottom: 8px;
+	}
+
+#frontpage_news {
+	padding: 0px;
+	margin: 0px;
+	}
+#frontpage_news h2 {
+	margin: 0px;
+	padding: 5px;
+	}
+
+.weblog_item {
+	border-top: 0px;
+	border-left: 0px;
+	border-right: 0px;
+	margin: 0px;
+	padding: 0px;
+	}
+.wl_title {
+	float: left;
+	margin: 0px;
+	padding: 0px;
+	padding-top: 5px;
+	padding-left: 10px;
+	font-weight: bold;
+	}
+.wl_author {
+	float: right;
+	margin: 0px;
+	padding: 0px;
+	padding-top: 5px;
+	padding-right: 10px;
+	margin-top: 0px;
+	font-weight: bold;
+	}
+.wl_date {
+	clear: right;
+	float: right;
+	margin: 0px;
+	padding: 0px;
+	padding-right: 10px;
+	margin-top: 0px;
+	}
+.wl_text {
+	clear: both; 
+	margin: 0px;
+	padding: 10px;
+	}
+
+.linklist { list-style: none; display: inline; }
+.loglink { float: left; width: 178px; text-align:right; }
+.loglink LI { margin: 0px; padding: 0px; }
+
+#welcome_message { display: none; }
+
+#e2logo a {
+	filter:alpha(opacity=0);
+	-moz-opacity: 0;
+	opacity: 0;
+	float: left;
+	} 
+
+textarea { width:95%; font-family: monospace; }
+
+#vandalism { height: 500px; width: 90%; }
+
+.debatelink { float: right; }
+
+#nodelet_170070 { clear: both; }
+
+#links { background: rgb(221,221,221); }
+
+#chatterlight_mainbody { 
+	 background: #cccccc; 
+	 width: 767px; 
+	 padding-top: 17px; 
+	}
+#chatterlight_mainbody p {
+	margin-left: 10px; 
+	margin-top: 8px;
+	}
+#chatterlight_hints { display: none; } 
+
+.sigil_chat 
+     { font-size: 70%; }
+.sigil_content_editors
+     { color: green; }
+.action_me, .action_sing 
+     { font-style: italic; }
+.action_whisper, .action_roll, .action_fireball, .action_sanctify, .action_egg 
+     { font-variant: small-caps; }
+
+.patch_pending_review, .patch_assigned 
+	{ background: pink; }
+.patch_implemented 
+	{ background: lightgreen; }
+.patch_assigned, .patch_later, .patch_undone, .patch_invalid 
+	{ background: yellow; }
+
+/*
+.chat_user :before { content:&quot;&lt;&quot;; }
+.chat_user :after { content:&quot;&gt;&quot;; }
+*/</doctext>
+  <node_id>1930840</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <title>Carbonated</title>
+</node>

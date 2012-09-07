@@ -1,0 +1,136 @@
+<node>
+  <doctext>#header { margin-top: 1em; position: absolute; top: 0; left: 0; right: 0; background-color: #8FBC8F; }
+	
+#wrapper { margin-top: 6em; padding-right: 206px;} 			 width: 200px; margin-right: -206px;}		
+#footer { clear: both;}
+
+#e2logo { position: absolute; top: 0.2em; left: 0.6em;margin: 0; width: 30px; height: 30px; padding: 4px;
+background-color: #8AA37B;
+border-color: #000000; 
+border width: thin;  
+border-style: double;}
+
+#searchform { margin-top: 0.5em; text-align: right;}
+
+#announcements { display: none;}
+
+#mainbody { position: relative; float: left; width: 100%;}	
+#sidebar { position: relative; float: left; width: 200px; margin-right: -206px;}
+
+
+#e2logo {
+position: absolute;
+top: 10;
+left: 0.6em;
+margin: 0;
+width: 30px;
+font-size: 200%;
+font-family: bookman old style;
+font-weight: lighter; }
+#e2logo a:link {color: purple; text-decoration: none;}
+#e2logo a:visited {color: purple; text-decoration: none;}
+#e2logo a:hover {color: #ff0000; text-decoration: none;}
+
+#searchform {
+width: 400px;
+padding: 4px;
+float: right;
+font-family: bookman old style;
+font-weight: lighter;
+font-size: 80%;
+}
+
+#searchform input {
+float: left; }
+
+
+#searchform label {
+width: 130px;
+margin-right: 2px;
+font-family: bookman old style
+font-size: 75%;
+font-weight: lighter;
+text-align: left;
+float: right;
+clear: right; }
+
+h1 { 
+  font-weight: 100; 
+  font-size: 16pt;
+  line-height: 18pt; 
+  font-family: bookman old style; 
+  font-variant: normal;
+  font-style: normal; }
+
+h2 {
+font-weight: lighter;
+font-size: 14pt;
+line-height: 16pt;
+font-family: bookman old style;
+font-variant: normal;
+font-style: normal;
+text-align: center; }
+
+h3 {
+font-weight: lighter;
+font-size: 14pt;
+line-height: 16pt;
+font-family: bookman old style;
+font-variant: normal;
+font-style: normal; }
+
+h4 {
+font-weight: lighter;
+font-size: 14pt;
+line-height: 16pt;
+font-family: bookman old style;
+font-variant: normal;
+font-style: normal; }
+
+
+body {background-color: #8FBC8F;
+font-family: bookman old style;
+font-weight: lighter;
+margin-right: 1em;
+margin-left: 1em;
+margin-top: 2em;
+padding: 10px;
+font-size: 95%; }
+
+body a:link { color: #4b0082; text-decoration: none; }
+body a:visited { color: #4b0082; text-decoration: none; }
+body a:hover { color: #ff0000; text-decoration: none }
+
+.nodelet h2,
+#writeup_list span.writeupmeta, 
+#writeup_list span.writeupmeta a:link, 
+#writeup_list span.writeupmeta a:visisted
+{ { background-color: #8AA37B;
+font-family: bookman old style;
+font-weight: lighter;
+float: center; }
+
+.nodelet 
+{ background-color: #8FBC8F; 
+font-family: bookman old style; 
+font-weight: lighter;
+font-size: 85%;
+border-color: #000000; 
+border width: thin;  
+border-style: double;
+padding: 8px; }
+
+}
+
+pre, tt {
+	font-size: 9pt;
+}
+
+
+.oddrow, #homenodeheader dt
+{background-color: #8AA37B;
+font-family: bookman old style; }</doctext>
+  <node_id>1926288</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <title>Green &amp; Purple</title>
+</node>

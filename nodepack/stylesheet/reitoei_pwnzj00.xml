@@ -1,0 +1,422 @@
+<node>
+  <doctext>body, div, p, th, td, li, dd {
+	background-color:#FFFFFF;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #333333;
+	font-size:12px;
+}
+body {
+	background-image: url(http://www.eirscape.com/clients/everything2/background_page.gif);
+	background-repeat: repeat;
+}
+h1 {
+	font-size:130%;
+	font-weight:bold;
+}
+
+h1.nodetitle {
+	font-family: Georgia, &quot;Times New Roman&quot;, Times, serif;
+	font-size: 2.2em;
+	font-weight: normal;
+	color: #CC3333;
+	background-color: #fcf2f2;
+	padding: 3px;
+	border-bottom:  #CCCCCC solid 1px;
+}
+
+h1#e2logo {
+	margin: 0px;
+	padding: 0px;
+}
+
+h1#e2logo a {
+	background-color: #FFFFFF;
+	background-image: url(http://www.eirscape.com/clients/everything2/header_link.gif);
+	background-repeat: no-repeat;	
+	width: 230px;
+	height: 70px;
+	font-size: 0px;
+	display: block;
+	margin: 0px;
+	padding: 0px;
+}
+
+h2 {
+	font-size:110%;
+	font-weight:bold;
+}
+h3 {
+	font-size:100%;
+	font-weight:bold;
+}
+big {
+	font-size:110%;
+}
+small {
+	font-size:90%;
+}
+#header {
+	padding-top:0px;
+	background-color: #FFFFFF;
+	position:absolute;
+	left:50%;
+	width:1168px;
+	margin-left:-600px;
+	padding-left: 0px;
+	padding-right: 8px;
+	height: 80px;
+	border-bottom: #666666 solid 3px;
+	clear: both;	
+}
+#wrapper {
+	position:absolute;
+	left:50%;
+	width:1160px;
+	margin-top:90px;
+	margin-left:-600px;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+#mainbody {
+	float:left;
+	position:relative;
+	width:950px;
+}
+#sidebar {
+	float:left;
+	position:relative;
+	width:190px;
+	padding-left: 6px;
+	padding-top: 5px;
+}
+#wrapper {
+	overflow:hidden;
+}
+#sidebar {
+	margin-left:5px;
+	margin-right:-100%;
+	border-left: solid #CCCCCC 1px;
+}
+#softlinks td {
+	border-right:1px solid white;
+	width:25%;
+}
+#displaytypelinks {
+	display:none;
+	float:right;
+}
+#votefooter {
+	float:left;
+}
+#softlinks {
+	border-bottom:2px solid white;
+	border-top:2px solid white;
+	float:left;
+	margin-bottom:5px;
+	margin-top:5px;
+	padding-bottom:20px;
+	padding-top:20px;
+	width:100%;
+}
+#footer {
+	border-top:1px solid gray;
+	padding-top:2px;
+	text-align:center;
+	float: left;
+	height: 200px;
+	width: 1000px;
+	background-color: #00FF00;
+	display: none;
+}
+body {
+	color:black;
+}
+a:link {
+	color: #CC0000;
+	text-decoration: underline;
+}
+a:visited {
+	color: #990033;
+}
+pre {
+	display:block;
+	overflow:auto;
+}
+#e2logo {
+	float:left;
+	font-size:200%;
+	margin-left:20px;
+	text-align:left;
+}
+#metalinks {
+	clear:both;
+	display:block;
+	font-size:80%;
+	margin:2px;
+	padding:0pt;
+	text-align:center;
+}
+#metalinks li {
+	display:inline;
+	margin-left:5px;
+	padding-right:5px;
+}
+#e2logo a:link, #e2logo a:visited {
+	color:black;
+	text-decoration:none;
+}
+#searchform {
+	background-color:#FFFFFF;
+	float:right;
+	padding-top:25px;
+	text-align:right;
+	width:410px;
+}
+#searchform input {
+	float:left;
+	margin-top:5px;
+}
+#searchform label {
+	clear:right;
+	color:black;
+	display:block;
+	float:right;
+	font-size:85%;
+	margin-right:2px;
+	text-align:left;
+	width:100px;
+}
+#searchform label input {
+	margin:1px;
+}
+.nodelet {
+	border:0px solid gray;
+	clear:both;
+	margin-bottom:2px;
+	padding:0pt 2px;
+	width:196px;
+}
+.nodelet h2 {
+	background-color:blue;
+	color:black;
+	display:block;
+	margin:0pt -2px;
+	text-align:center;
+}
+td.oddrow {
+	background-color:#DDEEFF;
+}
+.writeup {
+	border-bottom:1px solid gray;
+	margin-bottom:5px;
+	padding-bottom:5px;
+}
+.createdby {
+	text-align:right;
+}
+.writeup_title {
+}
+.writeup_text {
+}
+#firmlink, #isalso {
+	font-size:110%;
+	text-indent:30px;
+}
+#votebutton, #blabbutton {
+	float:left;
+}
+#killbutton {
+	float:right;
+}
+#msgnum {
+	margin:0pt 0pt 5px;
+}
+#msgunarchived {
+	font-weight:bold;
+}
+#homenodepicbox {
+	clear:left;
+	float:left;
+	overflow:auto;
+	width:50%;
+}
+#homenodeheader {
+	clear:both;
+}
+#homenodeheader dl {
+	clear:right;
+	display:block;
+	float:right;
+	margin:0pt;
+	width:50%;
+}
+#homenodeheader dt {
+	background-color:gray;
+	display:block;
+	padding:2px;
+}
+#homenodeheader dd {
+	margin:0pt;
+	padding:2px;
+}
+hr.clear {
+	clear:both;
+	visibility:hidden;
+}
+div.writeup_add {
+	float:left;
+}
+textarea {
+	background-color:#DDEEFF;
+	width:100%;
+}
+#announcements {
+	display:none;
+	font-size:85%;
+	left:150px;
+	position:absolute;
+	top:20px;
+}
+#writeup_list {
+	list-style-type:none;
+	padding:13px;
+}
+#writeup_list li {
+	clear:both;
+}
+#writeup_list span.writeupmeta {
+	background-color:blue;
+	clear:both;
+	color:black;
+	display:block;
+	margin:0pt -1px;
+	padding:2px;
+	text-align:center;
+}
+#writeup_list span.writeupmeta a:link, #writeup_list span.writeupmeta a:visited {
+	color:black;
+}
+#writeup_list span.type {
+	clear:right;
+	display:block;
+	font-size:90%;
+	margin-bottom:1px;
+	text-align:right;
+}
+#writeup_list span.title {
+	clear:left;
+	display:block;
+	float:left;
+	margin-bottom:1px;
+}
+#writeup_list span.author {
+}
+#writeup_list span.hidden, #writeup_list span.hide {
+	font-size:85%;
+	margin-left:3px;
+}
+
+div.nodelet_content {
+}
+
+div.nodelet_content ul {
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+div.nodelet_content ul li {
+	padding-top: 1px;
+	padding-bottom: 2px;
+}
+
+
+div.nodelet_content ul li a {
+	background-image: url(http://www.eirscape.com/clients/everything2/0176_spiral.png);
+	background-repeat: no-repeat;
+	padding-left: 16px;
+	font-size: 12px;
+}
+
+h2.nodelet_title {
+	text-align: left;
+	background-color: #CCCCCC;
+	color:#333333;
+	font-family: Georgia, &quot;Times New Roman&quot;, Times, serif;
+	padding: 4px;
+	text-transform: uppercase;
+}
+
+td.oddrow {
+	background-color: #f1f0f0;
+}
+
+div#cooluserpicks {
+	width: 200px;
+	float: left;
+	padding-right: 12px;
+}
+
+div#cooluserpicks h3 {
+	text-align: left;
+	background-color: #CCCCCC;
+	color:#333333;
+	font-family: Georgia, &quot;Times New Roman&quot;, Times, serif;
+	padding: 4px;
+	text-transform: uppercase;
+}
+
+div#cooluserpicks ul {
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+
+}
+div#cooluserpicks ul li {
+	background-image: url(http://www.eirscape.com/clients/everything2/0200_small_arrow.png);
+	background-repeat: no-repeat;
+	background-position: 0px 4px;
+	padding: 4px;
+	padding-left: 17px;
+}
+
+
+div#cotc {
+	width: 700px;
+	padding-left: 12px;
+}
+
+div.cotc_info {
+	background-image: url(http://www.eirscape.com/clients/everything2/icon_cool_header.jpg);
+	background-repeat: no-repeat;
+	padding: 10px;
+	padding-left: 30px;
+	height: 25px;
+	font-family: Georgia, &quot;Times New Roman&quot;, Times, serif;
+	font-size: 2em;
+	margin: 10px;
+	letter-spacing: -1px;
+}
+div.cotc_text {
+	line-height: 16px;
+}
+div#welcome_message {
+	display: none;
+}
+div#creamofthecool h2 {
+	display: none;
+}
+div#frontpage_news {
+}
+div#frontpage_news strong {
+	font-family: Georgia, &quot;Times New Roman&quot;, Times, serif;
+	font-size: 1.2em;
+}
+div.thinoutline {
+	margin: 0px;
+	padding: 0px;
+}</doctext>
+  <node_id>1903029</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <title>ReiToei_pwnzj00</title>
+</node>

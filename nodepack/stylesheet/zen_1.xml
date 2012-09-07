@@ -1,0 +1,16 @@
+<node>
+  <doctext>#header {position: absolute; top: 0; width: 100%; }
+	#wrapper {margin-top: 4em; padding-right: 206px;} 
+			 width: 200px; margin-right: -206px;}	
+	#footer {clear: both;}			
+#e2logo {position: absolute; top: 0.2em; left: 0.6em;margin: 0; width: 30px; height: 30px;}
+	#searchform {margin-top: 0.5em; text-align: right;}
+#announcements {display: none;}
+#mainbody {position: relative; float: left; width: 100%;}
+	#sidebar {position: relative; float: left;width: 200px; margin-right: -206px;}
+body {background-color: pink;}
+</doctext>
+  <node_id>1919216</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <title>zen 1</title>
+</node>

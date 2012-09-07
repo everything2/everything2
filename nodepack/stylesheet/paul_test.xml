@@ -1,0 +1,139 @@
+<node>
+  <doctext>* {}
+
+body {
+	background-image: url(http://www.eirscape.ie/clients/everything2/img/bg_body.gif);
+	background-position: center;
+	background-repeat: repeat-y;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	background-color: #999;
+	color: #333333;
+	margin: 0;
+	padding: 0;
+}
+
+a:link {color: #0066CC}      /* unvisited link */
+a:visited {color: #663300}  /* visited link */
+
+
+#wrapper, #header, #footer {
+	width: 970px;
+	margin: 0 auto;
+	clear: both;
+}
+
+#header {
+	height: 80px;
+	width: 960px;
+	background-image: url(http://www.eirscape.ie/clients/everything2/img/bg_header.jpg);
+	background-repeat: no-repeat;
+	margin-top: 12px;
+	padding-top: 20px;
+	border-bottom: solid 5px #e2e2e2;
+}
+
+#footer {
+	height: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	text-align: center;
+	width: 960px;
+	background-color: #f2f2f2;
+	margin-bottom: 12px;
+	padding-top: 20px;
+	border-top: solid 5px #e2e2e2;
+}
+
+
+
+#mainbody {
+	width: 685px;
+	float: right;
+	padding-left: 15px;
+	padding-right: 40px;
+}
+
+#sidebar {
+	float: left;
+	width: 220px;
+	margin-left: 5px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.nodelet {
+	padding: 10px;
+	padding-bottom: 10px;
+	padding-top: 0;
+	border-bottom: solid 5px #e2e2e2;
+	border-top: solid 1px #e2e2e2;	
+	background-color: #f7f7f7;
+	margin-bottom: 10px;
+}
+
+h1,h2 {
+	font-family: Georgia, &quot;Times New Roman&quot;, Times, serif;
+	font-weight: normal;
+}
+
+h1 {
+	letter-spacing: -1px;
+}
+
+h2.nodelet_title {
+	margin-bottom: 7px;
+	margin-top: 5px;
+	padding-top: 4px;
+	font-size: 22px;
+	color: #073C70;
+}
+
+ul.linklist, ul.linklist li, .nodelet_content ul, ul.infolist  {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#searchform {
+	width: 600px;
+	float: right;
+	padding-top: 20px;
+}
+
+#searchform label {
+	color: #FFFFFF;
+}
+
+#e2logo {
+	margin: 0;
+}
+
+#e2logo a {
+	display: block;
+	width: 240px;
+	height: 60px;
+	text-indent: -999px;
+}
+
+h1.nodetitle {
+	font-size: 24px;
+}
+
+.content.writeup_text p {
+	line-height: 18px;
+}
+
+.createdby a {
+	color: #FFFFFF;
+	background-color: #1C3A56;
+	padding: 1px;
+}
+
+.createdby {
+	margin-bottom: 5px;
+}</doctext>
+  <node_id>2002625</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <title>Paul Test</title>
+</node>

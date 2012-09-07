@@ -1,0 +1,1032 @@
+<node>
+  <doctext>/*= Comments containing old/disabled rules start with = for easy finding */
+/*= autofix added rules. adjust to taste: */
+.weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
+.weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
+.weblog .title, .nodelet .title {font-weight: bold;}
+.actions , .actions li {display:inline;margin:0;padding:0 0.5em 0 0;}
+.actions { display: block ; }
+/*= end autofix added rules */
+
+/*= Comments containing old/disabled rules start with = for easy finding */
+/* This is the Baltic stylesheet for the zen theme, by WaldemarExkul, increasingly loosely based on ascorbic's template. If it doesn't work for you, blame WE, or perhaps your browser, but definitely not ascorbic. */
+
+/* It's mostly in muted blues and greys. The E2 logo and search box remain at the top of the screen even when you scroll the rest of the page. You may find this mildly convenient or extremely annoying. Possibly both. */
+
+/* The Web browser I use, and the one in which I do the most thorough checking and tweaking of this stylesheet, is iCab (www.icab.de). Although I try believe in making code as browser-independent as possible, there's just no getting around the fact that different browsers treat the same code in (sometimes alarmingly) different ways. In addition to iCab, Baltic should look basically okay in Safari and in the various Mozilla-based browsers. It looks like a dog's breakfast in Internet Explorer. This is not so much because I dislike IE (although I do), but rather because I don't have a particularly convenient way of testing the stylesheet on any recent version of IE--I use Mac OS, for which no version of IE has been produced since (I think) 5.2.2. So in my world, IE is simply obsolete. If you use IE, this is probably not the right stylesheet for you, but if there are parts of it you like, please feel free to incorporate them into something that works better on your system. */
+
+/* I'm still mucking around with this, so if you're really attached to the current version, you should probably make yourself a copy, just in case I eventually do something with it that you don't like. I have been trying to keep up with (or not too far behind) changes to the html code on the site, so you may also find my occasional updates to the style sheet useful. */
+
+/* Fonts and where to find 'em */
+/* This seems to be slowing down rendering something fierce, and not actually doing any good, so I'm commenting it out.
+@font-face {
+    font-family: &quot;Charis SIL&quot;;
+    src: url('http://scripts.sil.org/CharisSIL_download');
+}
+*/
+
+#header {z-index:10;}
+
+body {
+    /* The following are some nice, freely available fonts with lots of Unicode characters. */
+    font-family: &quot;Charis SIL&quot;,&quot;Linux Libertine O&quot;,Junicode,JunicodeRegular,Gentium,serif;
+    /* I really like Junicode, but I think Charis SIL is more readable on the screen.
+    /* Junicode is similar to Garamond; Charis SIL is similar to Bitstream Charter. */
+    color: #000000;
+    background-color: #ffffff;
+}
+
+/* Heading fonts and sizes */
+
+h1 {
+    font-size: xx-large;
+    font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+}
+
+h1.nodetitle {
+    color: #ffffff;
+    font-size: xx-large;
+    font-weight: normal;
+    font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+    background: url(http://pics.livejournal.com/q_pheevr/pic/000547cf) #c8c9ca;
+    color: #313539;
+    border: thin solid #4f5863;
+    text-shadow: #4f5863 2px 2px 2px;
+    padding: 6px;
+    margin-bottom: 1em;
+    text-align: center;
+}
+
+h2 {
+    font-size: x-large;
+    font-weight: normal;
+    font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+h3 {
+    font-size: large;
+    font-weight: normal;
+    font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+}
+
+/* Placement of nodelets (in sidebar) vs. mainbody */
+
+#wrapper {
+    position: static;
+    clear: both;
+    margin-top: 90px;
+    width: 100%;
+}
+
+#mainbody {
+    position: static;
+    float: left;
+    width: 74%;
+    clear: both;
+    margin-left: 7px;
+    margin-right: 8px;
+}
+
+#sidebar {
+    position: absolute;
+    float: right;
+    width: 24%;
+    margin-top: 9px;
+    margin-left: 10px;
+    right: 8px;
+}
+
+/* default treatments of various sorts of tags */
+
+a:link {
+    color: #4f5863;
+    text-decoration: none;
+    font-weight: bold;    
+}
+
+a:visited {
+    color: #4f5863;
+    text-decoration: none;
+    font-weight: normal;      
+}
+
+a:hover {
+    color: #000000;
+    text-decoration: underline;
+}
+
+a:active {
+    color: #ffffff;
+    background: #4f5863;
+    text-decoration: none;
+    border-bottom: none;
+}
+
+abbr {
+    border-bottom: thin dotted;
+    /* iCab does this automatically. I like it, so I'm going to make your browser do it, too. (Mwa ha ha.)  */
+}
+
+/* Odd-numbered rows in &quot;New Writeups&quot;; bar graph lines in the poll; odd rows in Everything User Search. */
+
+.oddrow {                    
+      background: #dddddd;
+      border-top: thin solid #4f5863;
+      border-left: thin solid #4f5863;
+      margin-top: 1px;
+}
+
+#currentuserpoll img.oddrow {                    
+      background: url(http://pics.livejournal.com/q_pheevr/pic/000547cf) #dddddd;
+      border: 2px outset #4f5863;
+      margin-top: 1px;
+}
+
+pre {
+/* to stop page-widening */
+    display: block;
+    overflow: auto;
+    font-family: Monaco,monospace;
+    font-weight: normal;
+}
+
+pre a:link {font-weight: normal}
+
+hr.clear {
+    clear: both;
+    visibility: hidden;    
+}
+
+td {
+    vertical-align: top;
+}
+
+textarea {
+    width: 100%;
+}
+
+big big big {
+    font-size: inherit;
+}
+
+blockquote {
+    margin-left: 10%;
+    margin-right: 10%;
+    font-size: 90%;
+}
+
+
+/* header placement and style, including logo format and search form */
+
+#header {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    padding-left: 100px;   
+    background: url('http://pics.livejournal.com/q_pheevr/pic/00051k09');
+    color: #ffffff;
+    height: 80px;
+    border-bottom: outset 2px #4f5863;
+    width: 100%;
+}
+
+
+#e2logo {
+    text-align: center;
+    text-decoration: none;
+    font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+    color: #ffffff;
+    border: none;
+    background: transparent;
+    padding: 1px;
+    position: absolute;
+    top: 12px;
+    right: 180px;
+}
+
+#e2logo a:link, #e2logo a:visited {
+    text-decoration: none;
+    font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+    font-size: xx-large;
+    text-transform: lowercase;
+    color: #ffffff;
+    border: none;
+    background: transparent;
+    text-shadow: #e7e8ea 0px 0px 3px;
+}
+
+#e2logo a:hover, #e2logo a:active {
+    text-shadow: #ffffff 0px 0px 11px;
+    border-bottom: none;
+}
+
+#searchform {
+    width: 410px;  
+    float: left;
+    clear: left;
+    text-align: left;
+    position: absolute;
+    left: 120px;
+    top: 24px;
+    font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+}
+
+#searchform input {
+    float: left;
+    margin-top: 5px;
+    margin-left: 4px;
+}
+
+#searchform label {
+    display: block;
+    font-size: 85%;
+    float: right;
+    clear: right;
+    text-align: left;
+    width: 17ex;      
+}
+
+#searchform label input {
+    margin: 1px;
+}
+
+#searchform input[type=&quot;checkbox&quot;] {
+    margin-right: 3px;
+}
+
+#announcements {
+    display: none;
+    width: 0px;
+    /* Get rid of the text that says you need css to get rid of it! */
+}
+
+
+/* nodelets */
+
+.nodelet {
+    clear: both;
+    width: 96%;
+    padding: 1px;
+    border: thin solid #313539;
+    word-wrap: break-word;
+    margin: 7px;
+}
+
+.nodelet_title, .nodelet h2 {
+    display: block;
+    margin-left: -2px;
+    margin-right: -2px;
+    margin-top: -2px;
+    margin-bottom: 1px;
+    text-align: center;
+    background: #313539;
+    color: #ffffff;
+    text-transform: lowercase;
+    font-variant: small-caps;
+}
+
+.nodelet_content {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+/* other users */
+/*=#nodelet_91 h2:before*/
+#otherusers h2:before{
+      content: &quot;Hell is &quot;;
+      /* TWAJS */
+}
+
+/* current poll title */
+/*=#nodelet_1689202 h3*/
+#currentuserpoll h3 {
+    display: block;
+    text-align: center;
+    padding: 1px;
+    margin: 1px;
+}
+
+/* justify my catbox 
+#nodelet_170070 {
+    text-align: justify;
+}    
+*/ 
+
+/* On This Day is borked, so strike it out! */
+/*=#nodelet_1838069 .nodelet_title*/
+#onthisday .nodelet_title {
+    text-decoration: line-through;
+}
+
+/* Writeup list (in the &quot;New Writeups - Zen&quot; nodelet) */
+
+/*=#nodelet_1868940*/
+#newwriteupszen, #newwriteups {
+    padding-bottom: 2em;
+}
+
+/*=#nodelet_1868940 div.nodelet_content*/
+#newwriteupszen div.nodelet_content, #newwriteups div.nodelet_content{
+    padding-bottom: 4px;
+    margin: 1px;
+    width: 99%;
+}
+
+/*=#nodelet_1868940 ul*/
+#newwriteupszen ul, newwriteups ul{
+    list-style-type: none;
+    margin-left: 0px;
+    padding-left: 0px;
+    padding-top: 0px;
+    margin-top: 1px;
+    margin-bottom: 8px;
+    width: 99%;
+}
+
+/*=#writeup_list li*/
+.nodelet .infolist li {
+    word-wrap: break-word;
+    margin: 1px;
+    padding: 1px;
+    display: block;
+    clear: left;
+    border-bottom: thin solid #4f5863;
+}
+
+/*=#writeup_list span.author*/
+ DISABLED DISABLED /*=  /*= .nodelet .infolist span.author */  */ {
+    text-align: center;
+    display: block;
+    clear: all;
+    width: 100%;
+    background: #dddddd;
+    border-top: thin solid #4f5863;
+    border-left: thin solid #4f5863;
+}
+
+/*=#writeup_list span.title*/
+ DISABLED DISABLED /*=  /*= .nodelet .infolist span.title */   */ {
+    display: block;
+    float: left;
+    text-align: left;
+    clear: left;
+    width: 70%;
+    margin-right: 4px;
+    background: transparent;
+}
+
+/*=#writeup_list span.type*/
+ DISABLED DISABLED /*=  /*= .nodelet .infolist span.type */   */ {
+    font-size: 80%;
+    text-align: right;
+    display: block;
+    float: right;
+    clear: right;
+    word-wrap: no-wrap;
+    width: 25%;
+    background: transparent;
+}
+
+/*=#witeup_list span.writeupmeta*/
+#witeup_list span.infolist .contentinfo {
+    display: block;
+    border-bottom: thin solid #313539;
+    clear: both;
+}
+
+
+/*=#writeup_list span.hidden, #writeup_list span.hide*/
+.nodelet .infolist span.hidden, .nodelet .infolist span.hide {
+    font-size: 80%;
+    margin-left: 3px;
+    display: block;
+    float: right;
+} 
+
+
+li.hasvoted:after{
+    content: &quot;  [voted]&quot;;
+    color: #888888;
+    font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+    font-variant: small-caps;
+}
+
+/* New Writeups */
+
+/*=#nodelet_263*/
+#newwriteups {
+    padding-bottom: 1em;
+}
+
+
+/*=#nodelet_263 div.nodelet_content*/
+#newwriteups div.nodelet_content {
+    padding-bottom: 1em;
+    margin: 1px;
+    width: 99%;
+}
+
+
+/*=#nodelet_263 ul*/
+#newwriteups ul {
+    list-style-type: none;
+    margin-left: 0px;
+    padding-left: 0px;
+    padding-top: 0px;
+    margin-top: 1px;
+    margin-bottom: 6px;
+    width: 99%;
+}
+
+/*=#nodelet_263 form*/
+#newwriteups form {
+	display: block;
+}
+
+li span.type{
+    padding-left: 1em;
+}
+
+/* Statistics nodelet */
+
+/*=#nodelet_838296 h2.nodelet_title:before*/
+#statistics h2.nodelet_title:before {
+    content: &quot;Lies, Damn Lies, and &quot;
+}
+
+
+/*=#nodelet_838296 span.var_label*/
+#statistics span.var_label {
+    display: block;
+    text-align: right;
+    float: left;
+    clear: left;
+    margin-left: 7ex;
+}
+
+/*=#nodelet_838296 span.var_value*/
+#statistics span.var_value {
+    display: block;
+    text-align: left;
+    float: right;
+    clear: right;
+    margin-right: 2ex;
+}
+
+/*=#nodelet_838296 div*/
+#statistics div {
+    display: block;
+    clear: both;
+    border-top: thin dotted #555555;
+}
+
+
+/* Compact stats */
+/*
+#nodelet_838296 div {
+    display: inline;
+    clear: both;
+    font-size: 80%;
+}
+
+#nodelet_838296 div:after {
+    content: &quot; | &quot;;
+}
+*/
+
+
+/* Quick Reference */
+
+/*=#nodelet_1685943 p small*/
+#quickreference p small {
+    padding-left: 4ex;
+}
+
+/* What's up with these &quot;metal inks&quot;? (= Donation Box; anything else?) */
+
+#metalinks {
+    margin: 2px;
+    padding:  0;
+    display: block;
+    clear: both;
+    text-align: center;
+}
+
+#metalinks li {
+    display: inline;
+    padding-right: 5px;
+    margin-left: 5px;
+}
+
+/* Nodes and writeups */
+
+.createdby {
+    text-align: right;
+    float: right;
+    font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+    font-variant: small-caps;
+    margin-top: 1px;
+    padding-top: 1px;
+    padding-right: 1em;
+    margin-bottom: 8px;
+    position: relative;
+    top: -5ex;
+}
+
+/*=.writeup*/
+.writeuppage .item {
+    border: thin solid #4f5863;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    counter-increment: wucounter;
+}
+
+/*=.writeup_text*/
+.writeuppage .item .content {
+    padding-left: 11px;
+    padding-right: 11px;
+    clear: both;
+    text-align: justify;
+}
+
+/*=.writeup_text blockquote*/
+.writeuppage .item .content blockquote {
+    text-align: justify;
+}
+
+.wu_hits{
+    padding-right: 1em;
+    font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+}
+
+/* What the heck, let's enlarge the first letter of each writeup. Because we can. We could make this a drop cap by adding &quot;float: left&quot;; however, there are lots of writeups whose first paragraph is only one line, so it would look kinda dorky. */
+
+/*=.writeup_text:first-letter*/
+.writeuppage .item .content:first-letter {
+    font-size: 200%;
+    font-family: inherit;
+    color: inherit;
+    font-variant: inherit;
+    font-style: inherit;
+}
+
+/*=.writeup_title*/
+.writeuppage .contentheader {
+    font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+    background: url(http://pics.livejournal.com/q_pheevr/pic/000547cf) #c8c9ca;
+    padding-left: 11px;
+    padding-right: 24px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    border-bottom: thin solid #4f5863;
+}
+
+
+.topic {
+    font-size: 110%;
+    margin-left: 2em;
+}
+
+/* Place a pointing hand (Unicode 261B) before firmlinks, isalso, and see all (which are of class &quot;topic&quot;). */
+
+.topic:before {
+      content: &quot;\261B\ &quot;;
+      font-size: 120%;
+      font-weight: normal;
+/*    color: #4f5863;    */
+}
+
+#votebutton, #blabbutton {
+    float: left;
+}
+
+#displaytypelinks, #votefooter{
+    display: inline;
+}
+
+#displaytypelinks p{
+    display: inline;
+    margin-left: 14px;
+    margin-right: 14px;
+}
+
+#displaytypelinks p:before{
+    content: &quot;[&quot;;
+}
+
+#displaytypelinks p:after{
+    content: &quot;]&quot;;
+}
+
+
+#killbutton {
+    float: right;
+}
+
+#msgnum {
+    margin: 0;
+    margin-bottom: 5px;
+}
+
+#msgunarchived {
+    font-weight: bold;
+}
+
+/* Home Nodes */
+
+#homenodepicbox {
+    max-width: 48%;
+    float: left;
+    clear: left;
+    overflow: auto;
+    margin-top: 5px;
+    margin-right: 5px;
+    border: thin solid #313539;
+    padding: 0px;
+}
+
+#homenodeheader {
+    clear: both;
+    margin-top: 4px;
+}
+
+#homenodeheader dl {
+    display: block;
+    width: 50%;
+    float: right;
+    clear: right;
+    margin: 0;
+}
+
+#homenodeheader dt {
+    display: block;
+    background-color: #c8c9ca;
+    padding: 2px;
+}
+
+#homenodeheader dd {
+    padding: 2px;
+}
+
+
+/* Softlinks */
+
+#softlinks {
+    clear: left;
+    padding-top: 10px;
+}
+
+#softlinks:before {
+    content: &quot;You can get there from here: &quot;;
+    font-weight: bold;
+}
+
+
+/* Let's make all the softlinks the same width, even if their titles vary greatly in length. */
+
+#softlinks td {
+    width: 25%;
+}
+
+
+/* Decorated softlinks (down-right curving arrow before) */
+
+#softlinks a:before {
+    content: &quot;\27A5\ &quot;;
+      font-weight: lighter;
+}
+
+/* add new writeup */
+
+.writeup_add {
+    padding-top: 10px;
+}    
+
+
+/* Front page stuff */
+
+#welcome_message {
+    font-size: 120%;
+    font-style: italic;
+    text-align: left;
+    text-indent: -30px;
+    margin-left: 30px;
+}
+
+#welcome_message:before {
+      content: &quot;\24d8\ &quot;;
+      font-size: 150%;
+      font-weight: normal;
+      font-style: normal;
+      color: #c00000;
+      width: 30px;
+      vertical-align: baseline;
+      text-align: left;
+      text-shadow: #a01010 2px 2px 2px;
+}
+
+
+/* log links */
+
+#loglinks td, #loglinks td a:link, #loglinks td a:visited {
+    color: #ffffff;
+    background: #313539;
+    font-size: 10px;
+    font-family: &quot;CG Omega&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+}
+
+#loglinks td {
+    border: thin groove;
+    text-align: center;
+    padding: 2px;
+}
+
+#loglinks table {
+    margin-top: 10px;
+    width: 57%;
+}
+
+/* News for Noders (stuff that matters) */
+
+#frontpage_news {
+    width: 57%;
+    margin-right: 7px;
+}
+
+/*=.weblog_item*/
+.weblog .item {
+    border-left: 2px solid #4f5863;
+    border-top: 2px solid #4f5863;
+    margin-bottom: 8px;
+    padding-left: 4px;
+    padding-top: 8px;
+}
+
+/*=.wl_title, .wl_author*/
+.weblog .item .title, .weblog .item .contentinfo cite {
+    font-family: &quot;CG Omega&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+    background: #dddddd;
+    padding: 3px;
+    margin-left: 1px;
+    margin-right: 1px;
+    border: thin solid #313539;
+    display: inline;
+}
+
+/*=.wl_date*/
+.weblog .item .date {
+    font-size: 80%;
+    font-family: &quot;CG Omega&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+    display: inline;
+}
+
+/*=.wl_links*/
+.weblog .morelink {
+    display: block;
+    align: left;
+}
+
+/*=.wl_links, .wl_links a:link, .wl_links a:visited*/
+.weblog .morelink, .weblog .morelink a:link, .weblog .morelink a:visited {
+    color: #ffffff;
+    background: #313539;
+    text-align: center;
+}
+
+/* Staff picks */
+
+div#staff_picks {
+    border: thin solid #313539;
+    margin-bottom: 8px;
+    margin-top: 1px;
+    width: 57%;
+    margin-right: 7px;
+ 
+}
+
+#staff_picks p {
+   font-family: &quot;CG Omega&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+   line-height: 150%;
+   padding-top: 0px;
+   padding-bottom: 0px;
+   padding-left: 8px;
+   padding-right: 8px;
+}
+
+#staff_picks a {
+    
+}
+
+#staff_picks h3 {
+    display: block;
+    margin-left: -1px;
+    margin-right: -1px;
+    margin-top: -1px;
+    margin-bottom: 1px;
+    text-align: center;
+    background: #313539;
+    color: #ffffff;
+    text-transform: lowercase;
+    font-variant: small-caps;
+    font-size: 150%;
+    font-weight: normal;
+}
+
+
+#staff_picks h3 a:link, #staff_picks h3 a:visited {
+    color: #ffffff;
+}
+
+/* Cool user picks */
+
+#cooluserpicks {
+    width: 40%;
+    float: right;
+    border-top: thin solid #313539;
+    border-left: thin solid #313539;
+    border-right: thin solid #313539;
+    background: #ffffff;
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 3px;
+    padding-bottom: 0px;
+    margin-left: 4px;
+    font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+    margin-bottom: 0px;
+}
+
+#cooluserpicks h3 {
+    text-align: center;
+    color: white;
+    font-variant: small-caps;
+    background:  #313539;
+    font-size: x-large;
+    margin: -4px;
+}
+
+/* Replace the usual ul bullets in Cool User Picks with gold stars */
+
+#cooluserpicks ul {
+    list-style-type: none;
+    list-style-position: outside;
+    padding-left: 3ex;
+    margin-left: 15px;
+    margin-right: 15px;
+    padding-right: 3ex;
+}
+
+#cooluserpicks li {
+    text-indent: -3ex;
+}
+
+#cooluserpicks li:before {
+    content: &quot;\2606\ &quot;;
+    color: #c09000;
+    font-weight: bold;
+    width: 3ex;
+}
+
+#cooluserpicks p:before {
+      content: &quot;\261B\ &quot;;
+      font-size: 120%;
+      color: #4f5863;
+}
+
+#cooluserpicks p {
+      margin-left: 1ex;
+}
+
+
+/* The cream of the cool */
+
+#creamofthecool {
+    border-bottom: thin solid #313539;
+    border-left: thin solid #313539;
+    border-right: thin solid #313539;
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-bottom: 3px;
+    padding-top: 0px;
+    background: #ffffff;
+    float: right;
+    display: block;
+    margin-top: 0px;
+    margin-left: 4px;
+    width: 40%;
+    clear: right;
+}
+
+#creamofthecool h2 {
+    text-align: center;
+    font-variant: small-caps;
+    text-transform: lowercase;
+}
+
+#creamofthecool h2:before {
+      content: &quot;The &quot;;
+}
+
+/*=.cotc_entry*/
+#creamofthecool .item {
+}
+
+/*=.cotc_info*/
+#creamofthecool .contentinfo {
+    font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+    padding: 2px;
+    background: #dddddd;
+    border: thin solid #313539;
+    font-style: normal;
+
+}
+
+/*=.cotc_info:before*/
+#creamofthecool .contentinfo:before {
+    content: &quot;\2606\ &quot;;
+    color: #c09000;
+    font-weight: bold;
+}
+
+/* footer placement and style */
+
+#footer {
+    position: static;
+    bottom: 2px;
+    clear: both;
+    width: 74%;
+    border-top: 2px solid #313539;
+    border-bottom: 2px solid #313539;
+    text-align: center;
+    padding-top: 2px;
+}
+
+.begheader a:before{
+    content: &quot;[&quot;;
+}
+
+.begheader a:after{
+    content: &quot;]&quot;;
+}
+
+/* Zen Epicenter */
+
+div#epicenter_zen {
+    display: block;
+    position: absolute;
+    right: 370px;
+    top: 16px;
+    background: url(http://pics.livejournal.com/q_pheevr/pic/000547cf) #c8c9ca;
+    padding: 5px;
+    border: thin outset;
+    color: #000000;
+    font-size: 10px;
+    font-family: &quot;CG Omega&quot;,&quot;Trebuchet MS&quot;,sans-serif;
+    text-align: center;
+}
+
+/* Hey, I know! Let's muck around with transparency! 
+
+div#header {
+    -moz-opacity: 0.8;
+    filter: alpha(opacity=80);
+}
+
+div#header:hover {
+    -moz-opacity: 1.0;
+    filter: alpha(opacity=100);
+}
+
+body {
+    -moz-opacity: 1.0;
+    filter: alpha(opacity=100);
+}
+
+ ...or not. This produces weird results in Firefox and other Mozillian browsers under Mac OS X; the entire page goes faint until you mouse over the header, which is not the intended effect. */
+
+#chatterlight_mainbody { float: left; width: 60%; padding: 8px; } 
+#chatterlight_NW { float: right; width: 36%; clear: none; padding: 8px;} 
+#chatterlight_hints { display: none; }
+
+
+.nodeshell{
+    font-style: italic;
+}
+
+ul{
+    list-style-type: disc;
+}
+
+li.nodeshell{
+    list-style-type: circle;
+}
+
+div#surveymessage {
+        display: none;
+}
+</doctext>
+  <node_id>1902801</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <title>Baltic</title>
+</node>

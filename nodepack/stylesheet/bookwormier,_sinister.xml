@@ -1,0 +1,28 @@
+<node>
+  <doctext>@import url(&quot;http://everything2.com/node/stylesheet/Bookwormier?displaytype=view&quot;);
+#wrapper {
+	padding-left: 280px; /* sidebar goes in this gap */
+	padding-right: 20px;
+	margin: 0;
+}
+
+#sidebar {
+	position: absolute;
+	left: 10px;
+}
+
+#loglinks,
+#cooluserpicks,
+#staff_picks {
+	float: right;
+	margin-right: 0;
+	margin-left: 20px;
+}
+
+#creamofthecool, #frontpage_news  {
+	padding-left: 20px;
+}</doctext>
+  <node_id>2001670</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <title>bookwormier, sinister</title>
+</node>

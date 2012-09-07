@@ -1,0 +1,647 @@
+<node>
+  <doctext>body
+{
+font-family: Verdana,Arial,Tahoma,Calibri,Helvetica,Sans-Serif;
+font-size: .85em;
+color: #000;
+margin: 0;
+padding: 0;
+background-color: #fff;
+}
+
+td
+{
+font-size: .95em;
+}
+
+td td, td td td, td td td td
+{
+font-size: inherit;
+}
+
+a, a:link
+{
+color: #039;
+text-decoration: none;
+}
+
+a:visited
+{
+color: #636;
+}
+
+a:hover 
+{
+color: #933;
+text-decoration: underline;
+}
+
+abbr, acronym
+{
+border-bottom: 1px dotted #300;
+}
+
+big
+{
+font-size: 110%;
+}
+
+big big big
+{
+font-size: 101%;
+}
+
+blockquote
+{
+margin: 1em 3em;
+line-height: 1.6;
+border: 1px dashed #999;
+background: #eeeeee;
+}
+
+code
+{
+margin: 1em 3em;
+line-height: 1.6;
+border: 1px dashed #999;
+background: #eeeeee;
+font-family: monospace;
+}
+
+/* TODO - style input, select, and button elements */
+
+h1, h2, h3, h4 ,h5, h6
+{
+margin: 1em 0 0.2em 0;
+border-bottom: 1px dotted #ccc;
+font-family: arial, verdana, sans-serif;
+}
+
+h1 { font-size: 150%; }
+h2 { font-size: 140%; }
+h3 { font-size: 130%; }
+h4 { font-size: 120%; }
+h5 { font-size: 110%; }
+h6 { font-size: 105%; }
+
+pre {
+display: block;
+overflow: auto;
+font-size: smaller;
+}
+
+small
+{
+font-size: 90%;
+}
+
+small small small
+{
+font-size: 99%;
+}
+
+/* classes and ids */
+
+#header {
+height: 65px;
+width: 100%;
+position: absolute;
+top: 0;
+left: 0;
+background: #036 url(http://www.pitt.edu/~rttaylor/e2/css/header-bg.jpg) top left repeat-x;
+color: #fff;
+font-size: 75%;
+}
+
+#header a, #header a:link, #header a:visited
+{
+text-decoration: none;
+}
+
+#e2logo a, #e2logo a:link, #e2logo a:visited
+{
+color: #ccc;
+text-decoration: none;
+border: 0;
+font-size: 125%;
+}
+
+#e2logo a:hover
+{
+color: 
+
+#header #searchform
+{
+float: right;
+clear: right;
+width: 200px;
+padding-top: 10px;
+}
+
+#header #searchform input[type=&quot;text&quot;]
+{
+width: 115px;
+}
+
+#header #searchform label
+{
+}
+
+#wrapper
+{
+padding: 80px 220px 0 20px;
+margin: 0;
+}
+
+.nodetitle
+{
+font-weight: bold;
+font-size: 150%;
+letter-spacing: 2px;
+}
+
+#firmlink, #isalso
+{
+float: right;
+width: 25%;
+clear: both;
+margin: 0;
+padding: 0;
+background-color: silver;
+font-size: 85%;
+font-weight: normal;
+}
+
+.oddrow
+{
+background-color: #f9f3dd;
+}
+
+.createdby
+{
+text-align: right;
+margin-bottom: 1em;
+clear: both;
+}
+
+#sidebar
+{
+position: relative;
+float: left;
+width: 200px;
+margin-right: -100%;
+margin-left: 20px;
+}
+
+h2.topic
+{
+font-size: 90%;
+border: 0;
+text-align: center;
+}
+
+.writeup
+{
+background: url(http://www.pitt.edu/~rttaylor/e2/css/left-top-corner-box.jpg) top left no-repeat;
+margin-bottom: 20px;
+border-bottom: 3px dotted #aaa;
+padding-bottom: 20px;
+}
+
+.writeup_title 
+{
+padding: 12px 15px;
+border-bottom: 1px solid #f6f6f6;
+margin-bottom: 1em;
+margin-left: 1px;
+}
+
+.writeup_title a
+{
+color: #000;
+}
+
+.writeup_text
+{
+padding: 0 10px 10px 10px;
+}
+
+.writeuptable
+{
+background: url(http://www.pitt.edu/~rttaylor/e2/css/right-bottom-corner-box.jpg) bottom right no-repeat;
+}
+
+/* for some reason, the softlink table is not displayed block in firefox, it is to the right of the vote button */
+#votefooter, #softlinks, #votebutton, #displaytypelinks
+{
+clear: both;
+display: block;
+margin-top: 10px;
+}
+
+.nodelet
+{
+clear: both;
+width: 194px;
+padding: 0 2px;
+word-wrap: break-word;
+margin-bottom: 2px;
+background: url(http://www.pitt.edu/~rttaylor/e2/css/brown-left-top-corner-box.jpg) top left no-repeat;
+margin-bottom: 10px;
+font-size: 85%;
+}
+
+.nodelet h2
+{
+padding: 12px 3px 3px 15px;
+display: block;
+margin: 0;
+font-size: 125%;
+border: 0;
+}
+
+.nodelet_content
+{
+padding: 3px 15px;
+background: url(http://www.pitt.edu/~rttaylor/e2/css/right-bottom-corner-box.jpg) bottom right no-repeat;
+}
+
+.nodelet ul, .nodelet ul li
+{
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+.nodelet ul li a
+{
+display: block;
+border-bottom: 1px solid #f4e7bc;
+padding: 3px 1em;
+}
+
+.nodelet ul li a:hover
+{
+background-color: #f4e7bc;
+}
+
+/* chatterbox nodelet */
+#nodelet_170070 input
+{
+margin-top: 3px;
+}
+
+/* Homepage */
+#cooluserpicks
+{
+float: left;
+width: 200px;
+margin-right: 20px;
+background: url(http://www.pitt.edu/~rttaylor/e2/css/brown-left-top-corner-box.jpg) top left no-repeat;
+font-size: 85%;
+}
+
+#cooluserpicks h3
+{
+border: 0;
+font-size: 125%;
+padding: 2px 3px 3px 15px;
+}
+
+#cooluserpicks ul, #cooluserpicks ul li
+{
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+#cooluserpicks ul
+{
+background: url(http://www.pitt.edu/~rttaylor/e2/css/right-bottom-corner-box.jpg) bottom right no-repeat;
+}
+
+#cooluserpicks ul li a
+{
+display: block;
+border-top: 1px solid #f4e7bc;
+padding: 3px 1em;
+margin: 1px;
+}
+
+#cooluserpicks ul li a:hover
+{
+background-color: #f4e7bc;
+}
+
+#welcome_message
+{
+border: 1px solid #ccc;
+padding: 3px;
+margin: 0 0 1em 20px;
+background-color: #eee;
+font-weight: bold;
+clear: right;
+}
+
+#creamofthecool h2
+{
+border: 0;
+}
+
+.cotc_entry
+{
+background: url(http://www.pitt.edu/~rttaylor/e2/css/left-top-corner-box.jpg) top left no-repeat;
+margin-bottom: 12px;
+}
+
+.cotc_info
+{
+padding: 12px 15px 0 15px;
+font-weight: bold;
+}
+
+.cotc_text
+{
+background: url(http://www.pitt.edu/~rttaylor/e2/css/right-bottom-corner-box.jpg) bottom right no-repeat;
+padding: 12px 15px;
+}
+
+.cotc_more
+{
+margin-top: 1em;
+text-align: right;
+}
+
+#frontpage_news h2
+{
+border: 0;
+}
+
+.weblog_item
+{
+background: url(http://www.pitt.edu/~rttaylor/e2/css/left-top-corner-box.jpg) top left no-repeat;
+margin-bottom: 12px;
+}
+
+.wl_title
+{
+padding-top: 12px;
+font-weight: bold;
+padding-left: 15px;
+}
+
+.wl_author:before
+{
+content: &quot;by: &quot;;
+}
+
+.wl_author, .wl_date
+{
+padding-left: 15px;
+font-size: 75%;
+}
+
+.wl_text
+{
+background: url(http://www.pitt.edu/~rttaylor/e2/css/right-bottom-corner-box.jpg) bottom right no-repeat;
+padding: 12px 15px;
+}
+
+/* homenodes */
+#homenodeheader
+{
+background: url(http://www.pitt.edu/~rttaylor/e2/css/left-top-corner-box.jpg) top left no-repeat;
+font-size: 90%;
+clear: both;
+padding-bottom: 10px;
+border-bottom: 3px dotted #aaa;
+margin-top: 5px;
+}
+
+#homenodepicbox
+{
+float: right;
+margin-top: 20px;
+}
+
+#homenodeheader dl
+{
+padding: 12px 15px;
+background: url(http://www.pitt.edu/~rttaylor/e2/css/right-bottom-corner-box.jpg) bottom right no-repeat;
+}
+
+#homenodeheader dt
+{
+font-weight: bold;
+}
+
+#homenodeheader dd
+{
+margin-left: 2em;
+margin-bottom: 10px;
+}
+
+#writeup_list li
+{
+padding: 3px;
+border-top: 1px solid #f4e7bc;
+}
+
+#writeup_list span.author a
+{
+display: block;
+text-align: center;
+margin-bottom: 2px;
+background-color: #fdf0c5
+}
+
+#writeup_list span.type
+{
+font-size: 80%;
+text-align: right;
+}
+
+#writeup_list li a
+{
+display: inline;
+padding: 0;
+border: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* STYLES BELOW ARE UNEDITED FROM DEFAULT ZEN THEME */
+
+#mainbody {
+	position: relative;
+	float: left;
+	width: 100%;
+}
+
+#footer {
+	clear: both;
+	width: 100%;
+	border-top: 1px gray solid;
+	text-align: center;
+	padding-top: 2px;
+}
+
+
+
+/* specifics */
+
+#e2logo {
+	float: left;
+	text-align: left;
+	font-size: 150%;
+	margin-left: 20px;
+}
+
+#metalinks {
+	margin: 2px;
+	padding:  0;
+	display: block;
+	clear: both;
+	text-align: center;
+	font-size: 80%;
+}
+
+#metalinks li {
+	display: inline;
+	padding-right: 5px;
+	margin-left: 5px;
+}
+
+#searchform label input {
+	margin: 1px;
+}
+
+#firmlink, #isalso {
+	font-size: 110%;
+	text-indent: 30px;
+}
+
+#votebutton, #blabbutton {
+	float: left;
+}
+
+#killbutton {
+	float: right;
+}
+
+#msgnum {
+	margin: 0;
+	margin-bottom: 5px;
+}
+
+#msgunarchived {
+	font-weight: bold;
+}
+
+hr.clear {
+	clear: both;
+	visibility: hidden;	
+}
+
+textarea {
+width: 100%;
+}
+
+#announcements {
+position: absolute;
+top: 20px;
+font-size: 85%;
+left: 300px;
+display: none;
+}
+
+#writeup_list span.hidden, #writeup_list span.hide {
+	font-size: 85%;
+	margin-left: 3px;
+}
+
+#softlinks td[bgcolor=&quot;#ffffff&quot;] { background-color: #f5f7f6; }
+#softlinks td[bgcolor=&quot;#fdfdfd&quot;] { background-color: #F1F4F4; }
+#softlinks td[bgcolor=&quot;#fbfbfb&quot;] { background-color: #EDF1F2; }
+#softlinks td[bgcolor=&quot;#f9f9f9&quot;] { background-color: #E9EEF0; }
+
+#softlinks td[bgcolor=&quot;#f7f7f7&quot;] { background-color: #E5EBEE; }
+#softlinks td[bgcolor=&quot;#f6f6f6&quot;] { background-color: #E1E8EC; }
+#softlinks td[bgcolor=&quot;#f4f4f4&quot;] { background-color: #DDE5EA; }
+#softlinks td[bgcolor=&quot;#f2f2f2&quot;] { background-color: #D9E2E8; }
+
+#softlinks td[bgcolor=&quot;#f0f0f0&quot;] { background-color: #D5DFE6; }
+#softlinks td[bgcolor=&quot;#efefef&quot;] { background-color: #D1DCE5; }
+#softlinks td[bgcolor=&quot;#ededed&quot;] { background-color: #CDD9E3; }
+#softlinks td[bgcolor=&quot;#ebebeb&quot;] { background-color: #C9D6E1; }
+
+#softlinks td[bgcolor=&quot;#e9e9e9&quot;] { background-color: #C5D3DF; }
+#softlinks td[bgcolor=&quot;#e7e7e7&quot;] { background-color: #C0D0DD; }
+#softlinks td[bgcolor=&quot;#e6e6e6&quot;] { background-color: #BCCDDB; }
+#softlinks td[bgcolor=&quot;#e4e4e4&quot;] { background-color: #B8CAD9; }
+
+#softlinks td[bgcolor=&quot;#e2e2e2&quot;] { background-color: #B4C7D7; }
+#softlinks td[bgcolor=&quot;#e0e0e0&quot;] { background-color: #B0C4D5; }
+#softlinks td[bgcolor=&quot;#dfdfdf&quot;] { background-color: #ACC1D3; }
+#softlinks td[bgcolor=&quot;#dddddd&quot;] { background-color: #A8BED1; }
+
+#softlinks td[bgcolor=&quot;#dbdbdb&quot;] { background-color: #A4BBCF; }
+#softlinks td[bgcolor=&quot;#d9d9d9&quot;] { background-color: #A0B8CD; }
+#softlinks td[bgcolor=&quot;#d8d8d8&quot;] { background-color: #9CB5CB; }
+#softlinks td[bgcolor=&quot;#d6d6d6&quot;] { background-color: #98B2C9; }
+
+#softlinks td[bgcolor=&quot;#d4d4d4&quot;] { background-color: #94AEC8; }
+#softlinks td[bgcolor=&quot;#d2d2d2&quot;] { background-color: #90ABC6; }
+#softlinks td[bgcolor=&quot;#d0d0d0&quot;] { background-color: #8CA8C4; }
+#softlinks td[bgcolor=&quot;#cfcfcf&quot;] { background-color: #88A5C2; }
+
+#softlinks td[bgcolor=&quot;#cdcdcd&quot;] { background-color: #84A2C0; }
+#softlinks td[bgcolor=&quot;#cbcbcb&quot;] { background-color: #809FBE; }
+#softlinks td[bgcolor=&quot;#c9c9c9&quot;] { background-color: #7C9CBC; }
+#softlinks td[bgcolor=&quot;#c8c8c8&quot;] { background-color: #7899BA; }
+
+#softlinks td[bgcolor=&quot;#c6c6c6&quot;] { background-color: #7496B8; }
+#softlinks td[bgcolor=&quot;#c4c4c4&quot;] { background-color: #7093B6; }
+#softlinks td[bgcolor=&quot;#c2c2c2&quot;] { background-color: #6C90B4; }
+#softlinks td[bgcolor=&quot;#c1c1c1&quot;] { background-color: #688DB2; }
+
+#softlinks td[bgcolor=&quot;#bfbfbf&quot;] { background-color: #648AB0; }
+#softlinks td[bgcolor=&quot;#bdbdbd&quot;] { background-color: #5F87AE; }
+#softlinks td[bgcolor=&quot;#bbbbbb&quot;] { background-color: #5B84AC; }
+#softlinks td[bgcolor=&quot;#b9b9b9&quot;] { background-color: #5781AA; }
+
+#softlinks td[bgcolor=&quot;#b8b8b8&quot;] { background-color: #537EA8; }
+#softlinks td[bgcolor=&quot;#b6b6b6&quot;] { background-color: #4F7BA7; }
+#softlinks td[bgcolor=&quot;#b4b4b4&quot;] { background-color: #4B78A5; }
+#softlinks td[bgcolor=&quot;#b2b2b2&quot;] { background-color: #4775A3; }
+
+#softlinks td[bgcolor=&quot;#b1b1b1&quot;] { background-color: #4372A1; }
+#softlinks td[bgcolor=&quot;#afafaf&quot;] { background-color: #3F6F9F; }
+#softlinks td[bgcolor=&quot;#adadad&quot;] { background-color: #3B6C9D; }
+#softlinks td[bgcolor=&quot;#ababab&quot;] { background-color: #37699B; }</doctext>
+  <node_id>1908210</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <title>in10se's stylesheet, changed a little bit.</title>
+</node>

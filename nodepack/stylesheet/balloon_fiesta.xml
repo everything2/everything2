@@ -1,0 +1,418 @@
+<node>
+  <doctext>/* This is the skeleton stylesheet for the zen theme, by ascorbic */
+/* You may use this file as a foundation for any new work, but you may find it easier to start from scratch. */
+/* Not all elements are defined in this file, so you'll most likely want to refer to the html as well. */
+
+/*The basics*/
+body, table, td, th {
+	font-family: &quot;lucida grande&quot;, &quot;lucida sans&quot;, &quot;lucida sans unicode&quot;, lucida, arial, sans-serif;
+	/* This is a starting point: use relative for the rest */
+	font-size: 12px; 
+}
+
+h1 {
+	font-size: 130%;
+	font-weight: bold;
+}
+
+h2 {
+	font-size: 110%;
+	font-weight: bold;
+}
+
+h3 {
+	font-size: 100%;
+	font-weight: bold;
+}
+
+big {
+	font-size: 110%;
+}
+
+small {
+	font-size: 90%;
+}
+
+/*Basic structure: this is based on ALA's 'Holy Grail' design. */
+
+#header {
+	height: 30px;
+	position: absolute;
+	padding: 5px 0;
+	top: 3px;
+	left: 18px;
+	right: 261px;
+	background-color: #069;	
+	color: #ddf;
+z-index: 100;
+}
+
+#wrapper {
+	margin: -5px 10px;
+	overflow: hidden;
+}
+
+#mainbody {
+	position: relative;
+	width: 100%;
+	background-color: white;
+	border: 1px #069 solid;
+	border-top: none;
+	float: left;
+/*  	margin-bottom: -20000px; 
+	padding: 40px 10px 20040px 10px;
+*/	
+	padding: 40px 10px 10px 10px;
+}
+
+#sidebar {
+	position: relative;
+	float: left;
+	width: 240px;
+}
+
+/*Nodelets on right*/
+
+#wrapper {
+	padding-right: 265px;	
+}
+
+#sidebar {
+	margin-right: -100%;
+	margin-left: 5px;
+}
+
+
+/*Nodelets on left*/
+/*
+#wrapper {
+	padding-left: 205px;	
+}
+
+#sidebar {
+	right: 215px;
+	margin-left: -100%;
+}
+* html #left {
+  left: 200px;
+}
+
+*/
+/*end nodelet layout*/ 
+
+#footer {
+	clear: both;
+	width: 100%;
+	border-top: 1px #069 solid;
+	text-align: center;
+	padding-top: 2px;
+	margin-top: 5px;
+	font-size: 85%;
+}
+
+/* Colours, etc */
+body {
+	color: black;
+	background-color: #ccf;
+}
+
+a:link {
+	color: #333399;
+}
+
+a:link.external {
+	color: #339933;
+}
+
+a:visited {
+	color: #993333;
+}
+
+.oddrow {
+	background-color: #ccf;
+}
+
+/* specifics */
+
+pre {
+/* to stop page-widening */
+	display: block;
+	overflow: auto;
+}
+
+#e2logo {
+	float: left;
+	text-align: left;
+	font-size: 150%;
+	margin: 5px 0 0 20px;
+	display: block;
+}
+
+#e2logo a:link, #e2logo a:visited {
+	color: #ddf;
+}
+
+#metalinks {
+	margin: 2px;
+	padding:  0;
+	display: block;
+	clear: both;
+	text-align: center;
+	font-size: 80%;
+}
+
+#metalinks li {
+	display: inline;
+	padding-right: 5px;
+	margin-left: 5px;
+}
+
+#e2logo a:link, #e2logo a:visited {
+	text-decoration: none;
+}
+
+#searchform {
+	float: right;
+	text-align: right;
+	padding: 0 5px 5px 0;
+	width: 450px;
+}
+
+#searchform input {
+	float: left;
+	margin-top: 4px;
+}
+
+#searchform label {
+	display: block;
+	font-size: 65%;
+	float: right;
+	clear: right;
+	width: 100px;
+	text-align: left;
+margin-top: -2px;
+}
+
+#searchform input {
+	font-size: 120%;
+	background-color: #ccf;
+	color: #369;
+	margin-right: 2px;
+}
+
+#searchform input[type=checkbox] {
+	margin-top: 0;
+height: 10px;
+}
+
+
+.nodelet {
+	clear: both;
+	width: 232px;
+	padding: 0 2px;
+	border: 1px #069 solid;
+	word-wrap: break-word;
+	margin-bottom: 2px;
+	background-color: white;
+	font-size: 90%;
+}
+
+.nodelet td {
+	font-size: 90%;
+}
+
+.nodelet h2 {
+	display: block;
+	margin: 0 -2px;
+	text-align: center;
+	padding: 1px 0 2px 0;
+	background-color: #069;	
+	color: #ddf;
+}
+
+.nodelet ol, .nodelet ul {
+	padding-left: 25px;
+}
+
+.writeup {
+	border-bottom: 1px #069 solid;
+	padding-bottom: 5px;
+	margin-bottom: 5px;
+}
+
+
+
+.createdby {
+	text-align: right;
+}
+
+.writeup_title {
+}
+
+.writeup_text {
+}
+
+#firmlink, #isalso {
+	font-size: 110%;
+	text-indent: 30px;
+}
+
+#votebutton, #blabbutton {
+	float: left;
+}
+
+#killbutton {
+	float: right;
+}
+
+#msgnum {
+	padding: 2px;
+	text-align: center;
+	border: 1px #069 solid;
+	word-wrap: break-word;
+	margin: 0 0 2px 0;
+	background-color: white;
+	display: block;
+	width: 232px;
+	font-size: 90%;
+}
+
+#msgunarchived {
+	font-weight: bold;
+}
+
+#homenodepicbox {
+	width: 50%;
+	float: left;
+	clear: left;
+	overflow: auto;
+}
+
+#homenodeheader {
+	clear: both;
+}
+
+#homenodeheader dl {
+	display: block;
+	width: 50%;
+	float: right;
+	clear: right;
+	margin: 0;
+}
+
+#homenodeheader dt {
+	display: block;
+	background-color:  #069;
+	padding: 2px;
+	color: white;
+}
+
+#homenodeheader dd {
+	margin: 0;
+	padding: 2px;
+}
+
+hr.clear, hr#endwrapper {
+	clear: both;
+	visibility: hidden;	
+}
+
+textarea {
+width: 100%;
+background-color: #efe;
+}
+
+#announcements {
+display: none;
+}
+
+#nodelet_1322699 ol, #nodelet_1855429 ol {
+padding-left: 25px;
+}
+
+
+#writeup_list {
+	list-style-type: none;
+	padding: 0;
+}
+
+#writeup_list li {
+	clear: both;
+	word-wrap: break-word;
+}
+
+#writeup_list span.writeupmeta {
+	display: block;
+	text-align: center;
+	padding: 2px;
+	clear: both;
+	background-color: #ccf;	
+
+}
+.wu_hide {
+opacity: .5;
+filter: alpha(opacity=50);
+}
+
+.wu_hide:hover {
+opacity: 1;
+filter: alpha(opacity=100);
+}
+
+
+#writeup_list span.type {
+	font-size: 90%;
+float: right;
+margin-top: -1.5em;
+}
+
+#writeup_list span.title {
+	display: block;
+	clear: both;
+	background-color: #fff;	
+padding: 3px;
+margin-top: 3px;
+}
+
+#writeup_list span.author {
+}
+
+#writeup_list span.hidden, #writeup_list span.hide {
+	font-size: 85%;
+	/*	display: block;*/
+	margin-left: 3px;
+}
+
+
+#epicenter_zen {
+font-size: 75%;
+text-align: center;
+width: 100%;
+background-color: #669;
+position: fixed;
+bottom: 0;
+margin: 0;
+left: 0;
+right: 0;
+padding: 3px;
+	font-family: Candara,&quot;Trebuchet MS&quot;,sans-serif;
+border-top: 1px white solid;
+
+}
+
+#epicenter_zen br {
+display: none;
+}
+
+#voteInfo {
+padding: 0 200px 0 100px;
+}
+
+#epicenter_zen a:link {
+ color: inherit;
+
+}</doctext>
+  <node_id>1855833</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <title>Balloon fiesta</title>
+</node>

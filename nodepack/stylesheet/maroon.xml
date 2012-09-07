@@ -1,0 +1,581 @@
+<node>
+  <doctext>body,
+th,
+td {
+	background-color: #400000;
+	color: #ffffff;
+	font-family: verdana, arial, sans-serif;
+	font-size: 10px;
+	padding: 0;
+	margin: 0;
+}
+
+	td {
+		background-color: transparent;
+	}
+
+	.oddrow {
+		background-color: #7a7773;
+	}
+
+	a:link {
+		color: #d0d0d9;	
+	}
+
+	a:visited {
+		color: #cfa77f;
+	}
+
+	a:active,
+	a:hover,
+	a:focus {
+		color: #B22222;
+	}
+
+	big {
+		font-size: 110%;
+	}
+
+	small {
+		font-size: 90%;
+	}
+
+	h1,h2,h3,h4,h5,h6 {
+		color: #9898b2;
+		font-family: Tahoma, Verdana, Helvetica, Arial, sans-serif;
+	}
+
+	h1 {
+		font-size: 140%;
+		font-weight: bold;
+	}
+
+	h2 {
+		font-size: 110%;
+		font-weight: bold;
+	}
+
+	form {
+		margin: 0;
+		padding: 0;
+	}
+
+	#wrapper {
+		margin: 0px 0px 0px 0px;
+		padding-top: 56px; /* header goes in this gap */
+		padding-right: 260px; /* sidebar goes in this gap */
+	}
+
+		#mainbody {
+			font-size: 110%;
+			position: relative;
+			float: left;
+			width: 100%;
+		}
+
+		#mainbody *:first-child {
+			margin-top: 0;
+		}
+
+			.nodetitle {
+				background-color: #223322;
+				color: white;
+				font-size: 30px;
+				font-face: arial, sans-serif;
+				padding: 20px;
+				font-weight: normal;
+				margin: 0;
+			}
+
+			.nodetitle:before {
+				content: &quot;\'&quot;;
+			}
+
+			.nodetitle:after {
+				content: &quot;\'&quot;;
+			}
+
+
+			/*** FRONT PAGE SPECIFIC ***/
+
+			#cooluserpicks,
+			#welcome_message,
+			#creamofthecool {
+				clear: both;
+				float: left;
+				margin-right: 20px;
+				margin-bottom: 20px;
+			}
+
+			#cooluserpicks,
+			.cotc_entry {
+				width: 250px;
+				background-color: #400000;
+				border: 1px solid #c3c3c3;
+				padding: 5px;
+			}
+
+			#cooluserpicks {
+			}
+
+				#cooluserpicks ul {
+					padding: 0;
+					margin: 5px;
+					list-style: none outside none;
+				}
+
+					#cooluserpicks li {
+						padding: 1px;
+						border-bottom: 1px solid #d3d3d3;
+						text-align: center;
+						margin: 0;
+					}
+
+						#cooluserpicks li a {
+							padding: 1px;
+							display: block;
+							text-decoration: none;
+						}
+
+						#cooluserpicks li a:hover {
+						}
+
+			#welcome_message {
+				width: 252px;
+				text-align: center;
+				border: 1px solid #d3d3d3;
+				padding: 5px;
+				font-size: 120%;
+				font-weight: bold;
+			}
+
+			#creamofthecool {
+				padding: 0;
+			}
+
+				#creamofthecool h2 {
+					text-align: center;
+					font-size: 130%;
+					margin: 20px 0 2px;
+				}
+
+				#creamofthecool table {
+					border-collapse: collapse;
+				}
+
+				#cotc {
+				}
+
+					.cotc_entry {
+						margin: 2px 0;
+					}
+
+						.cotc_info {
+							font-weight: bold;
+							font-size: 100%;
+							padding-bottom: 5px;
+							border-bottom: 1px solid #d3d3d3;
+							margin-bottom: 5px;
+						}
+
+						.cotc_text {
+						}
+
+						.cotc_more {
+							text-align: right;
+						}
+
+			#frontpage_news {
+				padding-left: 280px; /* cotc etc. (above) go in this gap */
+				font-size: 110%;
+			}
+
+				#frontpage_news h2 {
+					font-size: 150%;
+				}
+
+				/* news entries resemble writeups: */
+
+				.weblog_item {
+					margin: 20px 0 60px;
+				}
+
+					.wl_title {
+						font-weight: bold;
+						font-size: 130%;
+					}
+
+					.wl_author {
+						display: inline;
+					}
+
+					.wl_author:before {
+						content: &quot;by &quot;;
+					}
+
+					.wl_date {
+						display: inline;
+					}
+
+					.wl_date:before {
+						content: &quot; on &quot;;
+					}
+
+					.wl_remove {
+						display: inline;
+					}
+
+					.wl_text {
+						margin-top: 2px;
+						border-top: 1px solid #333333;
+						padding-top: 2px;
+					}
+
+			/*** END FRONT PAGE ***/
+
+			/*** REGULAR NODES ***/
+
+				#firmlink,
+				#isalso,
+				.createdby,
+				.topic {
+					background-color: #223322;
+					color: #ffffff;
+					margin: 0;
+					padding: 0 20px;
+					font-size: 11px;
+					font-weight: normal;
+				}
+
+				.writeup {
+				}
+
+					.writeup_title {
+						background-color: #000000;
+						font-size: 12px;
+						padding: 20px;
+					}
+
+						.writeup_title a {
+							text-decoration: none;
+							color: #ffffff;
+						}
+
+						.writeup_title td {
+							vertical-align: center;
+						}
+
+							.writeup_title td strong {
+								font-weight: normal;
+								font-size: 20px;
+							}
+
+					.writeuptable {
+						width: 100%;
+					}
+
+						.writeup_text {
+							padding: 20px;
+							background-color: #000000;
+						}
+					
+							h3 {
+								font-size: 100%;
+								font-weight: bold;
+							}
+
+							p {
+								margin: 10px 0;
+							}
+
+							pre {
+								/* to stop page-widening */
+								display: block;
+								overflow: auto;
+							}
+
+				#displaytypelinks {
+					margin: 5px 0;
+					font-size: 90%;
+					text-align: right;
+				}
+
+					#displaytypelinks p {
+						display: inline;
+					}
+
+				#killbutton,
+				#votebutton,
+				#blabbutton {
+					float: centre;
+					margin: 5px 0;
+				}
+
+				#softlinks {
+					margin: 5px 0;
+					clear: both;
+				}
+
+					#softlinks table {
+						border-collapse: collapse;
+					}
+
+						#softlinks td {
+							border: 1px solid #d3d3d3;
+							padding: 0;
+						}
+
+							#softlinks td a {
+								display: block;
+								padding: 5px;
+								height: 100%;
+							}
+
+							#softlinks td a:hover {
+							}
+
+				textarea {
+					width: 100%;
+				}
+			
+				.writeup_add {
+					margin: 20px 0;
+				}
+
+			/*** END REGULAR NODES ***/
+
+			/*** HOMENODES ***/
+
+			#homenodeheader {
+				margin-top: 20px;
+			}
+
+				#homenodepicbox {
+					width: 50%;
+					overflow: auto;
+					float: left;
+				}
+
+					#userimage {
+					}
+
+				#homenodeheader dl {
+					width: 250px;
+					float: right;
+					display: block;
+				}
+
+					#homenodeheader dt {
+						display: block;
+						background-color: #7a7773;
+						padding: 2px;
+						font-size: 90%;
+					}
+
+					#homenodeheader dd {
+						padding: 2px;
+						margin: 0;
+						text-align: right;
+						font-size: 90%;
+					}
+				
+			hr.clear {
+				display: none;
+				/*
+					I can only find one place where hr.clear appears
+					so I don't know if this will break other pages
+					clear: both;
+					visibility: hidden;
+				*/
+			}
+
+			#homenodetext {
+				clear: both;
+			}
+
+			#bookmarks {
+			}
+
+				#bookmarks h4 {
+				}
+
+				#bookmarks ul {
+				}
+
+					#bookmarks li {
+					}
+
+			/*** END HOMENODES ***/
+
+		#sidebar {
+			float: left;
+			margin-left: 0px;
+			width: 250px;
+			margin-right: -100%;
+		}
+
+			.nodelet {
+				clear: both;
+				padding: 0;
+				border: 1px #6f6f8d dotted;
+				word-wrap: break-word;
+				margin-bottom: 2px;
+			}
+
+				.nodelet h2 {
+					display: block;
+					background-color: #223322;
+					margin: 0;
+					padding: 0 5px;
+					color: #ffffff;
+				}
+
+				.nodelet_content {
+					padding: 5px;
+				}
+
+					#experience {
+						font-size: 12px;
+					}
+
+				/*** NEW WRITEUPS ZEN NODELET ***/
+
+				#writeup_list {
+					margin: 0;
+					padding: 0;
+					list-style: none outside none;
+				}
+
+					#writeup_list li {
+						margin: 0;
+						padding: 1px;
+						border-bottom: 1px solid #d3d3d3;
+					}
+
+						#writeup_list span.writeupmeta {
+							display: block;
+						}
+
+							#writeup_list span.author {
+								float: right;
+								font-size: 90%;
+							}
+
+							#writeup_list span.author:before {
+								content: &quot;by &quot;;
+							}
+
+							#writeup_list span.title {
+							}
+
+								#writeup_list span.title a {
+									text-decoration: none;
+								}
+
+								#writeup_list span.title a:hover {
+								}
+
+							#writeup_list span.type {
+								display: none;
+							}
+
+							#writeup_list span.hidden,
+							#writeup_list span.hide {
+								font-size: 90%;
+							}
+
+				/*** END NEW WRITEUPS ZEN NODELET ***/
+
+				/*** EPICENTER NODELET (#262) ***/
+
+					#nodelet_262 ul {
+						margin: 5px;
+						padding: 0;
+						list-style: disc inside circle;
+					}
+
+						#nodelet_262 li {
+                                                        margin: 5px;
+						}
+
+				/*** END EPICENTER NODELET ***/
+
+				/*** CHATTERBOX NODELET (#170070) ***/
+
+				#msgnum {
+					display: inline;
+				}
+
+				#nodelet_170070 .nodelet_content {
+					overflow: auto;
+				}
+
+				/*** END CHATTERBOX NODELET ***/
+
+	#header {
+		height: 55px;
+		position: absolute;
+		top: 0;
+		left: 0;
+		background-color: #2F4F4F;
+		border-bottom: 0px #800000 solid;
+		width: 100%;
+
+	}
+
+		#searchform {
+			position: absolute;
+			top: 0px;
+			bottom: 0px;
+			left: 0px;
+			width: 50%;
+			padding: 10px 0 10px 20px;
+		}
+
+			#searchform label {
+				display: none;
+			}
+
+		#announcements {
+			display: none;
+		}
+
+		#e2logo {
+			margin: 0;
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			width: 50%;
+			font-family: ScriptS, Verdana, Helvetica, Arial;
+			text-align: right;
+			font-size: 30px;
+			padding: 10px;
+			font-weight: bold;
+		}
+
+			#e2logo a:link,
+			#e2logo a:visited {
+				color: #fefeff;
+				text-decoration: none;
+			}
+
+	#footer {
+		clear: both;
+		border-top: 1px #bebebe solid;
+		background-color: #440000;
+		padding: 5px;
+		text-align: right;
+		font-size: 90%;
+	}
+
+		.begheader {
+		}
+
+		#metalinks {
+			display: inline;
+		}</doctext>
+  <node_id>1903725</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <title>Maroon</title>
+</node>
