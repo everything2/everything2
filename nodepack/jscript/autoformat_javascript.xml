@@ -1,7 +1,5 @@
 <node>
-  <node_id>1705316</node_id>
-  <type_nodetype>332487</type_nodetype>
-  <datacode>function autoFormat (id)
+  <doctext>function autoFormat (id)
 {
   var elem = document.getElementsByName(id).item(0);
   var text = elem.value;
@@ -28,6 +26,8 @@
   elem.value = text;
 
 }
-</datacode>
-  <title>AutoFormat Javascript</title>
+</doctext>
+  <node_id>2069739</node_id>
+  <type_nodetype>1786405</type_nodetype>
+  <title>Autoformat javascript</title>
 </node>
