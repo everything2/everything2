@@ -7,9 +7,116 @@
 
 &lt;head&gt;
     &lt;title&gt;[% $$NODE{title}; %]@Everything2.com&lt;/title&gt;
-[% # CSSURL could be a user setting, eh? That could be pretty darn cool. %]
-    &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; [%
-    %]href=&quot;[% return &quot;/ekwcss.pl&quot;; return $$VARS{ 'ekw_CSSURL' } || &quot;/ekwcss/&quot;.CGI::escape($$USER{title}).&quot;.css&quot;; %]&quot; /&gt;
+    &lt;style&gt;
+.oddrow {
+    background-color: [%
+$$VARS{ekw_oddrowcolor} || $$THEME{oddRowColor} || &quot;#cccc99&quot;;
+%];
+}
+
+.evenrow {
+    background-color: [%
+$$VARS{ekw_bgcolor} || $$THEME{bodyBgcolor} || &quot;#ffffff&quot;;
+%];
+}
+
+tt, pre, code {
+    font-family: [% 
+$$VARS{ekw_monofont} || $$THEME{monoFont} || &quot;Courier New, monospace&quot;; 
+%];
+    font-size: [% 
+$$VARS{ekw_monofontsize} || $$THEME{monoFontSize} || &quot;9pt&quot;; 
+%];
+}
+
+body, p, td, th, .time {
+    font-family: [%
+$$VARS{ekw_textfont} || $$THEME{textFont} || &quot;arial, helvetica, serif&quot;;
+%];
+    font-size: [%
+$$VARS{ekw_textfontsize} || $$THEME{textFontSize} || &quot;12px&quot;;
+%];
+}
+
+h1, h2, h3, h4 {
+    font-family: [%
+$$VARS{ekw_headingfont} || $$THEME{headingFont} || &quot;Tahoma,Verdana,Helvetica,Arial&quot;;
+%];
+}
+
+
+h1.topic {
+    font-family: [%
+$$VARS{ekw_textfont} || $$THEME{textFont} || &quot;arial, helvetica, serif&quot;;
+%];
+    font-size: 80%;
+    text-indent: 10px;
+}
+
+h2.topic {
+    font-family: [%
+$$VARS{ekw_textfont} || $$THEME{textFont} || &quot;arial, helvetica, serif&quot;;
+%];
+    font-size: [%
+$$VARS{ekw_textfontsize} || $$THEME{textFontSize} || &quot;12px&quot;;
+%];
+    text-indent: 30px;
+}
+
+.time {
+    align: right;
+}
+
+.rightmenu {
+    text-indent: 10px;
+}
+
+.newwrite {
+    margin-left: 3px;
+}
+
+p.ekwlogo {
+    font-family: [%
+$$VARS{ekw_logofont} || $$THEME{logoFont} || &quot;Verdana,Tahoma,Helvetica,Arial&quot;;
+%];
+    font-size: [%
+$$VARS{ekw_logofontsize} || $$THEME{logoFontSize} || &quot;17pt&quot;;
+%];
+    font-weight: bold;
+    border: 0px;
+    padding: 0px;
+}
+
+h1, h2, h3 {
+    font-family: [%
+$$VARS{ekw_headingfont} || $$THEME{headingFont} || &quot;Verdana,Tahoma,Helvetica,Arial&quot;;
+%];
+}
+
+h1 {
+    font-size: 13pt;
+}
+
+h1.nodetitle {
+    font-size: 13pt;
+}
+
+h2 {
+    font-size: 12pt;
+}
+
+h3 {
+    font-size: 11pt;
+}
+
+small {
+    font-size: 75%;
+}
+
+big {
+    font-size: 110%;
+}
+&lt;/style&gt;
     &lt;link rel='stylesheet' id='basesheet' type='text/css' href='/node/stylesheet/basesheet?displaytype=view'&gt;
     &lt;meta name=&quot;wisdom&quot; content=&quot;Monkey! Bat! Robot Hat!&quot; /&gt;
     &lt;link rel=&quot;icon&quot; href=&quot;/favicon.ico&quot; type=&quot;image/x-icon&quot; /&gt;&lt;!-- Both are needed - asc --&gt;
