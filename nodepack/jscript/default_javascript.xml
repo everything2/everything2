@@ -340,11 +340,12 @@ e2 = $.extend( function(x){return e2.shortFunctions[typeof x].apply(this, argume
 	// and provide switch to toggle to the other
 	htmlFormattingAids: (function(){
 		var initial = (e2.settings_useTinyMCE ? 'WYSIWYG editor' : 'HTML toolbar');
+                //HTMLToolbar is now: 2069738
 		var aids = {
 			active: {},
 
 			'HTML toolbar': {
-				library: '/node/rawdata/HTMLToolbar?displaytype=raw',
+				library: 'http://jscss.everything2.com/2069738.js',
 				test: 'edToolbar',
 	
 				stop: function(id){
