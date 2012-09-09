@@ -1,7 +1,5 @@
 <node>
-  <node_id>1298616</node_id>
-  <type_nodetype>332487</type_nodetype>
-  <datacode>function replyTo(s, c) {
+  <doctext>function replyTo(s, c) {
        if (c || document.message_inbox_form.setvar_autofillInbox.checked) {
           document.message_inbox_form.message.value = &quot;/msg &quot;+s+&quot; &quot;;
           document.message_inbox_form.message.focus();
@@ -68,7 +66,8 @@ function shrinkTextbox(textbox) {
 
    }
 
-}
-</datacode>
-  <title>Message Inbox JavaScript</title>
+}</doctext>
+  <node_id>2069795</node_id>
+  <type_nodetype>1786405</type_nodetype>
+  <title>message inbox javascript</title>
 </node>

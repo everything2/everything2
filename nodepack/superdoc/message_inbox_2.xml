@@ -1,5 +1,5 @@
 <node>
-  <doctext>&lt;script language=&quot;JavaScript&quot; src=[% return urlGen({'node'=&gt;'Message Inbox JavaScript', 'type'=&gt;'rawdata', 'displaytype'=&gt;'raw' }); %]&gt;
+  <doctext>&lt;script language=&quot;JavaScript&quot; src=&quot;http://jscss.everything2.com/2069795.js&quot;&gt;
 &lt;/script&gt;
 
 &lt;table&gt;
@@ -376,8 +376,7 @@ $str .= $query-&gt;end_form();
 
 $str;
 %]
-&lt;/table&gt;
-</doctext>
+&lt;/table&gt;</doctext>
   <node_id>1798778</node_id>
   <type_nodetype>14</type_nodetype>
   <title>Message Inbox 2</title>
