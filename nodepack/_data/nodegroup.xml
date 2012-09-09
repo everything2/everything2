@@ -2052,12 +2052,6 @@
     <rank>2</rank>
   </group>
   <group>
-    <node_id>332497</node_id>
-    <orderby>3</orderby>
-    <nodegroup_id>332495</nodegroup_id>
-    <rank>3</rank>
-  </group>
-  <group>
     <node_id>332489</node_id>
     <orderby>4</orderby>
     <nodegroup_id>332495</nodegroup_id>
