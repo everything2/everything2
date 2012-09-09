@@ -1,5 +1,5 @@
 <node>
-  <doctext>&lt;script language=&quot;JavaScript&quot; src=[% return urlGen({'node'=&gt;'Gab Central JavaScript', 'type'=&gt;'rawdata', 'displaytype'=&gt;'raw' }); %] &gt;
+  <doctext>&lt;script language=&quot;JavaScript&quot; src=&quot;http://jscss.everything2.com/2069769.js&quot; &gt;
 &lt;/script&gt;
 
 [%
