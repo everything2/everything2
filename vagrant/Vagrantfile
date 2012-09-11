@@ -3,7 +3,7 @@ Vagrant::Config.run do |config|
   config.vm.forward_port 22,3333,:auto => true
 
   config.vm.box = "edev_squeeze"
-  config.vm.box_url = "http://bonci.net/edev_squeeze.box"
+  config.vm.box_url = "http://vagrantbox.everything2.com/edev_squeeze.box"
   config.ssh.private_key_path = "./edev_root"
   config.ssh.username = "root"
   
