@@ -1,0 +1,1 @@
+{"name":"e2webhead","description":"Role for all e2webheads","json_class":"Chef::Role","default_attributes":{},"override_attributes":{},"chef_type":"role","run_list":["recipe[e2web]","recipe[e2helper]","recipe[e2webdebug]","recipe[e2engine]"],"env_run_lists":{}}
