@@ -1,1 +1,1 @@
-{"name":"e2development","description":"","json_class":"Chef::Role","default_attributes":{},"override_attributes":{},"chef_type":"role","run_list":["recipe[e2cron]","recipe[e2database]","recipe[e2engine]","recipe[e2helper]","recipe[e2web]","recipe[e2webdebug]"],"env_run_lists":{}}
+{"name":"e2development","description":"","json_class":"Chef::Role","default_attributes":{},"override_attributes":{},"chef_type":"role","run_list":["recipe[e2engine]","recipe[e2database]","recipe[e2cron]","recipe[e2helper]","recipe[e2web]","recipe[e2webdebug]"],"env_run_lists":{}}
