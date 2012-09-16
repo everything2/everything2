@@ -1,0 +1,97 @@
+PerlSwitches -I/var/everything/ecore
+ServerName everything2.com
+NameVirtualHost *:80
+<VirtualHost *:80>
+	ServerName everything2.com
+	ServerAlias www.everything2.com
+	ServerAlias everything2.net
+	ServerAlias www.everything2.net
+	ServerAlias everything2.org
+	ServerAlias www.everything2.org
+	ServerAdmin e2webmaster@everything2.com
+	
+	DocumentRoot /var/everything/www
+
+        <IfDefine PERLDB>
+                <Perl>
+                        use Apache::DB ();
+                        Apache::DB->init;
+                </Perl>
+
+                <Location />
+                        PerlFixupHandler Apache::DB
+                </Location>
+        </IfDefine>
+
+        <Perl>
+		use CGI;
+		CGI->compile(':all');
+        </Perl>
+
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride None
+	</Directory>
+
+	# Make sure that processes in production never stray above 300M
+        <Perl>
+        use Apache2::SizeLimit;
+        $Apache2::SizeLimit::MAX_PROCESS_SIZE  = 300000;
+        $Apache2::SizeLimit::CHECK_EVERY_N_REQUESTS = 5;
+        </Perl>
+
+        PerlCleanupHandler Apache2::SizeLimit
+
+	PerlModule Apache2::compat
+	PerlModule Apache::DBI CGI Everything Everything::HTML
+	PerlResponseHandler ModPerl::Registry
+	PerlOptions +ParseHeaders
+
+	<Directory /var/everything/www/>
+		DirectoryIndex index.pl
+		AddHandler perl-script .pl
+		Options +ExecCGI +FollowSymLinks
+		AllowOverride None
+		Order allow,deny
+		allow from all
+		Include /var/everything/ecore/mod_rewrite.conf
+		AddOutputFilterByType DEFLATE text/javascript text/html text/xml text/css application/x-javascript
+
+	        # TOR BJORNRUD'S TRACKING MODULE CONFIG
+	        #CookieDomain .everything2.com
+	        #CookieExpires "2 years"
+	        #CookieName "e2_usertrack"
+	        #this is super important as usertrack is not turned on by default, even if the module is loaded.
+	        #CookieTracking on
+
+	</Directory>
+
+	<Location /perly-status>
+		SetHandler perl-script
+		PerlResponseHandler Apache2::Status
+		PerlSetVar StatusOptionsAll On
+		PerlSetVar StatusDeparseOptions "-p -sC"
+	</Location>
+	ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+	<Directory "/usr/lib/cgi-bin">
+		AllowOverride None
+		Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+		Order allow,deny
+		Allow from all
+	</Directory>
+
+	# LOG FOR TOR BJORNRUD'S TRACKING MODULE
+	#CustomLog /var/log/apache2/clickstream "%{cookie}n %r %t|%{userpass}C" env=!dontlog
+
+	
+	#this was the old customlog before enabling joining login info with usertrack module
+	#CustomLog /var/log/apache2/clickstream "%{cookie}n %r %t" env=!dontlog
+	# NORMAL LOGS
+	ErrorLog "|/usr/sbin/rotatelogs -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600"
+	# Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
+	LogLevel warn
+
+	CustomLog "|/usr/sbin/rotatelogs -f /var/log/apache2/e2.access.%Y%m%d%H.log 3600" combined env=!dontlog
+	ServerSignature On
+
+</VirtualHost>

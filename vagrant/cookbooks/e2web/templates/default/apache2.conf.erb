@@ -1,0 +1,83 @@
+LockFile ${APACHE_LOCK_DIR}/accept.lock
+PidFile ${APACHE_PID_FILE}
+
+Timeout 300
+KeepAlive On
+MaxKeepAliveRequests 100
+KeepAliveTimeout 15
+
+# E2 USE PREFORK SO THIS IS THE APPLICABLE SECTION
+<IfModule mpm_prefork_module>
+	StartServers         20
+	MinSpareServers      10
+	MaxSpareServers      20
+	MaxClients           35
+	MaxRequestsPerChild  4000 
+</IfModule>
+
+# These need to be set in /etc/apache2/envvars
+User ${APACHE_RUN_USER}
+Group ${APACHE_RUN_GROUP}
+
+##### LOGGING #####
+# CENTRAL ERROR LOG
+ErrorLog ${APACHE_LOG_DIR}/error.log
+# DEFAULT LOG LEVEL
+LogLevel warn
+# FILTER OUT THESE LOGS IN APACHE
+# DON'T LOG LOOPBACK REQUESTS
+SetEnvIf Remote_Addr "127\.0\.0\.1" dontlog
+# DON'T LOG PROXY CHECK OF SERVER_LIVE, MISSING FAVICON AND ROBOTS.TXT
+SetEnvIf Request_URI "^/server_live\.html$" dontlog
+SetEnvIf Request_URI "favicon.ico$" dontlog
+SetEnvIf Request_URI "^/robots\.txt$" dontlog
+# E2 IS BEHING PROXY SO %h WAS CHANGED TO %{X-Forwarded-For}i
+LogFormat "%v:%p %{X-Forwarded-For}i %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
+LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" combined
+LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %O" common
+LogFormat "%{Referer}i -> %U" referer
+LogFormat "%{User-agent}i" agent
+
+##### E2 CUSTOM SETTINGS #####
+UseCanonicalName On
+# DEFAULT RETURN TYPE IF NOT SPECIFIED OR INTERPRETED
+DefaultType text/plain
+# DON'T RDNS LOOK UP HOST IPS FOR BEST SPEED
+HostnameLookups Off
+# SPECIFY, ENABLE AND PROTECT .htaccess FILES
+AccessFileName .htaccess
+<Files ~ "^\.ht">
+	Order allow,deny
+	Deny from all
+	Satisfy all
+</Files>
+
+##### Enable User Tracking for E2 Research #####
+
+<IfModule usertrack>
+	CookieDomain .everything2.com
+	CookieExpires "2 years"
+	CookieName "E2 usertrack"
+
+	#this is super important as usertrack is not turned on by default, even if the module is loaded.
+	CookieTracking on  
+</IfModule>
+CustomLog "/var/log/clickstream" "%{cookie}n %r %t"
+
+
+##### INCLUDE ADDITIONAL CONFIGURATION #####
+# Include module configuration:
+Include mods-enabled/*.load
+Include mods-enabled/*.conf
+
+# Include all the user configurations:
+Include httpd.conf
+
+# Include ports listing
+Include ports.conf
+
+# Include generic snippets of statements
+Include conf.d/
+
+# Include the virtual host configurations:
+Include sites-enabled/
