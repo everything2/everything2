@@ -6,6 +6,8 @@
 #
 # You are free to use/modify these files under the same terms as the Everything Engine itself
 
+require 'json'
+
 to_install = [
     'perl',
     'libalgorithm-diff-perl',
@@ -57,13 +59,7 @@ directory '/etc/everything' do
   action "create"
 end
 
-template '/etc/everything/everything.conf' do
-  owner "www-data"
-  group "www-data"
-  source "everything.conf.erb"
-  action "create"
-  mode "0755"
-  variables({
+everything_conf_variables = {
     "everyuser" => node["e2engine"]["everyuser"],
     "everypass" => node["e2engine"]["everypass"],
     "everything_dbserv" => node["e2engine"]["everything_dbserv"],
@@ -79,6 +75,20 @@ template '/etc/everything/everything.conf' do
     "smtp_port" => node["e2engine"]["smtp_port"],
     "smtp_user" => node["e2engine"]["smtp_user"],
     "smtp_pass" => node["e2engine"]["smtp_pass"],
-    "environment" => node["e2engine"]["environment"],
-  })
+    "environment" => node["e2engine"]["environment"] }
+
+template '/etc/everything/everything.conf' do
+  owner "www-data"
+  group "www-data"
+  source "everything.conf.erb"
+  action "create"
+  mode "0755"
+  variables(everything_conf_variables)
+end
+
+file '/etc/everything/everything.conf.json' do
+  owner "www-data"
+  group "www-data"
+  content JSON.pretty_generate(everything_conf_variables)
+  mode "0755"
 end
