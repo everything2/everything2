@@ -6,10 +6,6 @@
 #  and we can use the main room as a public whiteboard
 50 * * * * /usr/local/everything/bin/cleanCbox.pl
 
-# checkApache is the only everything script run
-#  on both web2 and web5/web6
-* * * * * /usr/local/everything/bin/checkApache.pl
-
 52 * * * * /usr/local/everything/bin/genDBstats.pl
 0-59/5 * * * * /usr/local/everything/bin/updateNodelet.pl
 0-59/5 * * * * /usr/local/everything/bin/refreshRoom.pl
