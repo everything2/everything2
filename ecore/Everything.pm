@@ -17,6 +17,7 @@ use strict;
 use DBI;
 use DateTime;
 use Everything::NodeBase;
+use JSON;
 use Devel::Caller qw(caller_args);
 use Config::Simple;
 
@@ -24,10 +25,11 @@ use Config::Simple;
 sub BEGIN
 {
 	use Exporter ();
-	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
+	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS %CONFIG $CONF);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
               %CONFIG
+	      $CONF
               $DB
               $dbh
               getRef
@@ -75,7 +77,21 @@ sub BEGIN
               printErr
               printLog
             );
- 	Config::Simple -> import_from('/etc/everything/everything.conf',\%CONFIG);
+
+	my $json_config = "/etc/everything/everything.conf.json";
+	my ($json_handle, $json_data);
+	open $json_handle, $json_config;
+	{
+		local $/ = undef;
+		$json_data = <$json_handle>;
+	}
+	close $json_handle;
+	$CONF = JSON::from_json($json_data);
+	foreach my $key(keys %$CONF)
+	{
+		$CONFIG{$key} = $CONF->{$key};
+	}
+
 }
 
 use vars qw($DB);
