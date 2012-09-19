@@ -26,5 +26,4 @@ It will download the base box one time, and instantiate a test version of the vi
 ## Everything2's submodules
 E2 submodules a few pieces of its project out so that it can be used in the sister project, perlmonks:
 
- * [cookbooks](https://github.com/everything2/cookbooks) - The cookbook files used by [chef](http://www.opscode.com/chef/)
  * [ecoretool](https://github.com/everything2/ecoretool) - The node to xml management utility
