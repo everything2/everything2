@@ -2,8 +2,8 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
-my $str = '$CONFIG{canonical_web_server} = '
-          . $CONFIG{canonical_web_server}
+my $str = '$Everything::CONF-&gt;{canonical_web_server} = '
+          . $Everything::CONF-&gt;{canonical_web_server}
           ;
 
 return $str;

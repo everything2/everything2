@@ -11,8 +11,8 @@ my $titleNode = $targetNode;
 my $parentNode = getNode($$targetNode{parent_e2node}) if $$targetNode{parent_e2node};
 $titleNode = $parentNode if $parentNode;
 my $bDontQuoteUrl = 1;
-my $url = 'http://' . $1 if $ENV{HTTP_HOST} =~ /(?:.+?\.)($CONFIG{canonical_web_server})(?::\d+)/;
-$url = 'http://' . $CONFIG{canonical_web_server} if $url eq '';
+my $url = 'http://' . $1 if $ENV{HTTP_HOST} =~ /(?:.+?\.)($Everything::CONF-&gt;{canonical_web_server})(?::\d+)/;
+$url = 'http://' . $Everything::CONF-&gt;{canonical_web_server} if $url eq '';
 $url .= urlGen({ }, $bDontQuoteUrl, $targetNode);
 my $title = $$titleNode{title};
 

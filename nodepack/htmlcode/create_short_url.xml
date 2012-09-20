@@ -41,7 +41,7 @@ my $encodeInt = sub {
 my $shortString = &amp;$encodeInt($targetId);
 my $shortLink =
   'http://'
-  . $CONFIG{canonical_web_server}
+  . $Everything::CONF-&gt;{canonical_web_server}
   . '/s/'
   . $shortString
   ;

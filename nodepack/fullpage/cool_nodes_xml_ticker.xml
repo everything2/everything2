@@ -1,6 +1,7 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Thu Sep 20 12:35:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Thu Sep 20 13:25:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;legbagede&quot; node_id=&quot;831347&quot; parent_e2node=&quot;831270&quot; author_user=&quot;junkpile&quot;&gt;David Macaulay&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;CapSkippy&quot; node_id=&quot;2045027&quot; parent_e2node=&quot;2054607&quot; author_user=&quot;etouffee&quot;&gt;Want. So Possessive.&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Uberbanana&quot; node_id=&quot;2021953&quot; parent_e2node=&quot;2021952&quot; author_user=&quot;Jet-Poop&quot;&gt;L.A. Squid&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;montecarlo&quot; node_id=&quot;2070108&quot; parent_e2node=&quot;2070107&quot; author_user=&quot;Tem42&quot;&gt;#muslimrage&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1141376&quot; parent_e2node=&quot;1141360&quot; author_user=&quot;Grzcyrgba&quot;&gt;Yerkes classification system&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;wertperch&quot; node_id=&quot;919084&quot; parent_e2node=&quot;390094&quot; author_user=&quot;Gritchka&quot;&gt;Captain Pugwash&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Halspal&quot; node_id=&quot;1373707&quot; parent_e2node=&quot;142711&quot; author_user=&quot;momomom&quot;&gt;Dia de los Muertos&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2052840&quot; parent_e2node=&quot;2070111&quot; author_user=&quot;Pandeism Fish&quot;&gt;A Murder in Pieces: Part II&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>
