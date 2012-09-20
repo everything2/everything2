@@ -5,7 +5,7 @@
   <code># Code taken from confirmUser() and loginUser() in HTML.pm
 return -5 unless $query;
 
-my $loginCookie = $query-&gt;cookie($CONFIG{cookiepass});
+my $loginCookie = $query-&gt;cookie($Everything::CONF-&gt;{cookiepass});
 
 return -1 unless $loginCookie;
 
