@@ -8,10 +8,10 @@ KeepAliveTimeout 15
 
 # E2 USE PREFORK SO THIS IS THE APPLICABLE SECTION
 <IfModule mpm_prefork_module>
-	StartServers         20
-	MinSpareServers      10
-	MaxSpareServers      20
-	MaxClients           35
+	StartServers         <%= @startservers %>
+	MinSpareServers      <%= @minspareservers %>
+	MaxSpareServers      <%= @maxspareservers %>
+	MaxClients           <%= @maxclients %>
 	MaxRequestsPerChild  4000 
 </IfModule>
 

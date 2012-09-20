@@ -9,7 +9,6 @@
 
 to_install = [
     'apache2-mpm-prefork',
-    'perl',
     'libapache2-mod-perl2',
 ]
 
@@ -33,6 +32,7 @@ template '/etc/apache2/apache2.conf' do
   action "create"
   source 'apache2.conf.erb'
   notifies :reload, "service[apache2]", :delayed
+  variables(node["e2web"])
 end
 
 link '/etc/apache2/mods-enabled/rewrite.load' do
