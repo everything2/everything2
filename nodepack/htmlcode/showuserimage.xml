@@ -6,11 +6,11 @@
 return if isSuspended($NODE,&quot;homenodepic&quot;);
 return unless $$NODE{imgsrc};
 my $imgsrc = $$NODE{imgsrc};
-if($CONFIG{homenode_image_host} =~ /s3/)
+if($Everything::CONF-&gt;{homenode_image_host} =~ /s3/)
 {
  $imgsrc = &quot;$$NODE{title}&quot;;
  $imgsrc =~ s/\W/_/g;
 }
 $imgsrc = &quot;/$imgsrc&quot; if ($imgsrc !~ /^\//);
-'&lt;img src=&quot;http://'.$CONFIG{homenode_image_host}.$imgsrc.'&quot; id=&quot;userimage&quot;&gt;'; </code>
+'&lt;img src=&quot;http://'.$Everything::CONF-&gt;{homenode_image_host}.$imgsrc.'&quot; id=&quot;userimage&quot;&gt;'; </code>
 </node>
