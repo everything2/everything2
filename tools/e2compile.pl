@@ -58,7 +58,6 @@ my $var_mapping =
 	'$GNODE' => '::HTML::',
 	'%HTMLVARS' => '::HTML::',
 	'$DB' => '::',
-	'%CONFIG' => '::',
 	'$VARS' => '::HTML::',
 	'$query' => '::HTML::',
 	'$HTTP_ERROR_CODE' => '::HTML::',
