@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;p&gt;&lt;b&gt;The following noders receive a (super)blessing for Quest Rescues:&lt;/b&gt;&lt;/p&gt;
 
 &lt;pre&gt;
@@ -240,6 +241,5 @@ Noder			Rescues			Blessing
 &lt;/ol&gt;
 </doctext>
   <node_id>1365131</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>CRTQ Results</title>
 </node>

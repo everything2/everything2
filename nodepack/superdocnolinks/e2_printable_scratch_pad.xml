@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1065266</type_nodetype>
   <doctext>[%
 return &quot;This thing is obsolete. Printable layout should be done with CSS.&quot;;
 my $su = $query-&gt;param(&quot;for_user&quot;);
@@ -13,6 +14,5 @@ return &quot;Not public&quot; unless($suV-&gt;{skratchShare} or $su == $$USER{no
 return parseLinks($DB-&gt;sqlSelect('scratch_text','scratch', &quot;scratch_id = $su&quot;)).&quot;&lt;br&gt;&lt;br&gt;$exitlink&lt;br&gt;&lt;br&gt;&quot;;
 %]</doctext>
   <node_id>1429417</node_id>
-  <type_nodetype>1065266</type_nodetype>
   <title>E2 Printable Scratch Pad</title>
 </node>

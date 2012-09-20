@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2021983</node_id>
+  <title>decode short string</title>
   <code>use POSIX;
 
 my ($shortString) = @_;
@@ -44,6 +46,4 @@ $error = &quot;$shortString = $decodeResult&quot;;
 my $decodeNode = getNodeById($decodeResult);
 return $decodeNode;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>decode short string</title>
 </node>

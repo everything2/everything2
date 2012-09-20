@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>174</node_id>
+  <title>displaySetting</title>
   <code># This displays the value of a setting given the key
 # $setting - the name of the setting node
 # $key - the key to display
@@ -14,6 +16,4 @@ $vars = getVars($SETTING);
 $str .= $$vars{$key};
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>displaySetting</title>
 </node>

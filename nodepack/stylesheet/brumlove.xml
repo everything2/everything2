@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* Based on ascorbic's zen skeleton CSS */
 /* It's like jukka dim, but narrow and weird. */
 /* It's all reverse-y for one thing... */
@@ -469,6 +470,5 @@ h1.nodetitle
 .action_whisper, .action_roll, .action_fireball, .action_sanctify, .action_egg 
      { font-variant: small-caps; }</doctext>
   <node_id>1881898</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Brumlove</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
   my $uid = $$USER{node_id};
@@ -155,6 +156,5 @@ while(my $msg = $msgcsr-&gt;fetchrow_hashref)
   return $str;
 %]</doctext>
   <node_id>1443693</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>squawkbox</title>
 </node>

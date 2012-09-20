@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[%
   return unless isGod($USER);
   my $str = htmlcode('openform');
@@ -71,6 +72,5 @@
 %]
 &lt;/table&gt;</doctext>
   <node_id>1273195</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>wkwtest</title>
 </node>

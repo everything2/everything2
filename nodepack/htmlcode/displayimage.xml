@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>399488</node_id>
+  <title>displayimage</title>
   <code>my @NAMES =@_;
 
 return unless @NAMES;
@@ -15,6 +17,4 @@ my $IMG = getNode $name, 'image';
 $IMG or return &quot;no image $name!&quot;;
 
 &quot;&lt;IMG SRC=\&quot;$$IMG{src}\&quot;&gt;&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>displayimage</title>
 </node>

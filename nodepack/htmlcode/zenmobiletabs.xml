@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2021829</node_id>
+  <title>zenMobileTabs</title>
   <code>my $canEdit = canUpdateNode($USER, $NODE) &amp;&amp; $USER-&gt;{user_id} == $NODE-&gt;{author_user};
 my $dt = $query-&gt;param('displaytype') || 'display';
 my @tabs;
@@ -59,6 +61,4 @@ return ('&lt;div id=&quot;zen_mobiletabs&quot;&gt;'
         } @tabs)
         . '&lt;/div&gt;');
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>zenMobileTabs</title>
 </node>

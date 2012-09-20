@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>986854</node_id>
+  <title>testsoftlink</title>
   <code>my $N;
 
 
@@ -92,6 +94,4 @@ if ($cantrim) {
 
 return $str if exists $$THEME{noThinOutline};
 containHtml('thin outline container', $str);</code>
-  <type_nodetype>4</type_nodetype>
-  <title>testsoftlink</title>
 </node>

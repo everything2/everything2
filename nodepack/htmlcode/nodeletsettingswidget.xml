@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2025425</node_id>
+  <title>nodeletsettingswidget</title>
   <code># provide a settings link/widget for the nodelet named by the first argument
 # second argument is link/opener text
 
@@ -27,6 +29,4 @@ return qq'&lt;div id=&quot;$id\settingswidget&quot;&gt;'.
 	$query -&gt; submit(&quot;submit$id&quot;,'Save').&quot;\n&lt;/fieldset&gt;\n&quot;,
 	'form', $text , {showwidget=&gt;&quot;$id\settings&quot;}).'&lt;/div&gt;';
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>nodeletsettingswidget</title>
 </node>

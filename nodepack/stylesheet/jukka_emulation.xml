@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/*= autofix added basic compatibility rules */
 /* archiewood fixed News For Noders headers. */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
@@ -542,6 +543,5 @@ td#sl4{background:#fcfcfa;}td#sl3{background:#fdfdfb;}td#sl2{background:#fefefd;
 
 </doctext>
   <node_id>1855548</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>jukka emulation</title>
 </node>

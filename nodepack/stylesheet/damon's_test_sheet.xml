@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>.nodelet ul {
 	padding:0px 0px 0px 16px;
 	margin:0px 0px 10px 0px;
@@ -817,6 +818,5 @@ position:relative;
    padding-bottom: 0px !important;
 }</doctext>
   <node_id>1873551</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>damon's test sheet</title>
 </node>

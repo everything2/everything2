@@ -1,5 +1,4 @@
 <node>
-  <node_id>444187</node_id>
   <type_nodetype>152</type_nodetype>
   <vars>
     <value>0.4.5</value>
@@ -13,5 +12,6 @@
     <value>this nodeball allows you to create a voting system within an everything.  The Users cast allotted votes on allowed nodes in order to gain experience for themselves and the votee -- votes are tallied in the &quot;reputation&quot; field and each vote is logged in the vote table.</value>
     <key>description</key>
   </vars>
+  <node_id>444187</node_id>
   <title>experience nodeball</title>
 </node>

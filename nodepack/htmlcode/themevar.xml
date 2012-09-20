@@ -1,11 +1,11 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>954668</node_id>
+  <title>themeVar</title>
   <code>#returns the given $$THEME variable, or a default if the theme variable is blank
 #sub themeVar($;$) {
 	my ($useVar, $defaultVal) = @_;
 	$defaultVal ||= '';
 	return $$THEME{$useVar} || $defaultVal;
 #}</code>
-  <type_nodetype>4</type_nodetype>
-  <title>themeVar</title>
 </node>

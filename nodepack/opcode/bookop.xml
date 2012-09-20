@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1547883</node_id>
+  <title>bookop</title>
   <code>
 if($query-&gt;param(&quot;bgroupadd&quot;))
 {
@@ -47,6 +49,4 @@ if($query-&gt;param(&quot;bdrop&quot;) or $query-&gt;param(&quot;dropexec&quot;)
   $$VARS{bookbucket} = $bucket;
   delete $$VARS{bookbucket} unless($bucket &amp;&amp; $bucket ne &quot;&quot;);
 }</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>bookop</title>
 </node>

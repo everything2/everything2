@@ -1,5 +1,4 @@
 <node>
-  <node_id>1986592</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>[BIII] rounded up [tambourine] and earned a bounty from [borgo] of kudo's!</value>
@@ -57,5 +56,6 @@
     <value>[davoroy] tracked down [Leo Tolstoy] and earned 400 GP from [Glowing Fish]!</value>
     <key>5</key>
   </vars>
+  <node_id>1986592</node_id>
   <title>justice served</title>
 </node>

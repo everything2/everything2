@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>e2.deleteCookie('settings_useTinyMCE');
 
 void new function(zensheet){
@@ -74,6 +75,5 @@ void new function(zensheet){
 	}
 }(document.getElementById('zensheet'));</doctext>
   <node_id>2028514</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>settings script</title>
 </node>

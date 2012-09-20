@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return '&lt;p&gt;You need to sign in or '
 	.linkNode(getNode('Create a New User','superdoc'), 'register')
@@ -91,6 +92,5 @@ $str;
 return ' --&gt;' if $$USER{node_id} == $HTMLVARS{guest_user};
 %]</doctext>
   <node_id>1022032</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Admin Settings</title>
 </node>

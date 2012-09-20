@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return sprintf(&quot;&lt;h4 style='text-align: center'&gt;Now only %2.2f%% made up!&lt;/h4&gt;&quot;, rand() * 100);
 %]
@@ -9,6 +10,5 @@ $$nl{nltext};
 %]
 &lt;/div&gt;</doctext>
   <node_id>1866195</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Lies, damn lies</title>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <node_id>2010054</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>1</value>
@@ -49,5 +48,6 @@
     <value>1</value>
     <key>436040</key>
   </vars>
+  <node_id>2010054</node_id>
   <title>fool's errand</title>
 </node>

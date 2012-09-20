@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>$.ajaxSetup({
 	type: 'POST',
 	url: 'http://'+window.location.hostname+&quot;/index.pl&quot;,
@@ -653,6 +654,5 @@ if (e2.isChatterlight) e2('#message', e2(function(){
 }).defer); // defer for IE
 </doctext>
   <node_id>1878034</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>Everything2 Ajax</title>
 </node>

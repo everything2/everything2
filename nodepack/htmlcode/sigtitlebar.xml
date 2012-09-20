@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1775621</node_id>
+  <title>sigtitlebar</title>
   <code># Lord Brawl, 8 Jan 2006.
 # Goal: To give non-e2god members of SIGTITLE the ability
 # to edit titles. This ability applies for e2nodes only. 
@@ -69,6 +71,4 @@ if ($is_e2node) {
 
 # Return the string                               
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>sigtitlebar</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1179553</node_id>
+  <title>uninsure</title>
   <code>#deprecated by [insure]
 return;
 
@@ -23,6 +25,4 @@ return unless($query-&gt;param('ins_id'));
  setVars($inslist, $insvars);
 
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>uninsure</title>
 </node>

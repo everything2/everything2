@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1930099</node_id>
+  <title>zen_voteit</title>
   <code>#voteit - pass writeup's node_id
 
 my ($N,$showParts) = @_;
@@ -236,6 +238,4 @@ $str = &quot;&lt;span id='voteinfo_$nid' style='white-space: nowrap' nowrap='now
 
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>zen_voteit</title>
 </node>

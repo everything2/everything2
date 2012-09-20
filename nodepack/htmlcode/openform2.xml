@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1101744</node_id>
+  <title>openform2</title>
   <code>my ($name) = @_;
 $name ||= '';
 
@@ -17,6 +19,4 @@ $scratchSave .
 
 $query-&gt;hidden('node_id', getId $NODE);
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>openform2</title>
 </node>

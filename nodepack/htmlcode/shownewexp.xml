@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>444272</node_id>
+  <title>shownewexp</title>
   <code>my ($shownumbers, $isxml, $newwuonly) = @_;
 use POSIX;
 #send TRUE if you want people to see how much exp they gained/lost
@@ -101,6 +103,4 @@ $xmlstr.='&lt;/xpinfo&gt;' if $isxml;
 return $xmlstr if $isxml;
 return $str.$footer;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>shownewexp</title>
 </node>

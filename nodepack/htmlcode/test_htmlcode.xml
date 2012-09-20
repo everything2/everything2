@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1877911</node_id>
+  <title>test_htmlcode</title>
   <code>my ($shownumbers, $isxml, $newwuonly) = @_;
 
 return if $$USER{user_id} == $HTMLVARS{guest_user};
@@ -44,6 +46,4 @@ my $xmlstr = &quot;&lt;xpinfo&gt;
 &lt;nextlevel experience=\&quot;$expleft\&quot; writeups=\&quot;$wrpleft\&quot;&gt;$lvl&lt;/nextlevel&gt;
 &lt;/xpinfo&gt;&quot;;
 return $xmlstr;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>test_htmlcode</title>
 </node>

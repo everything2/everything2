@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2015407</node_id>
+  <title>showmessages_expand</title>
   <code>#originally in [chatterbox] (nodelet)
 return if getId($USER) == $HTMLVARS{guest_user};
 
@@ -289,6 +291,4 @@ if ($totalMsg) {
 $str .= '&lt;br /&gt;(you have ' . $moreMsgStr . ')' if length($moreMsgStr);
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>showmessages_expand</title>
 </node>

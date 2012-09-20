@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;script type=&quot;text/javascript&quot;&gt;
 	$('head').append('&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;http://www.google.com/cse/api/branding.css&quot;&gt;');
 &lt;/script&gt;
@@ -40,6 +41,5 @@
 &lt;!-- Google Search Result Snippet Ends --&gt;
 </doctext>
   <node_id>1185524</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>E2 Full Text Search</title>
 </node>

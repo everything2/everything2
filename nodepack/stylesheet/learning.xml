@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* by Simulacron3 on the shoulders of others*/
 
 
@@ -387,6 +388,5 @@ left: 150px;
 
  </doctext>
   <node_id>1873567</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>learning</title>
 </node>

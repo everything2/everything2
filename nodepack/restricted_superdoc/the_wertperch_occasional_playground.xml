@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>Countdown code - thanks to kthejoker
 &lt;p&gt;
 &lt;b&gt;
@@ -423,6 +424,5 @@ return $str;
 
 </doctext>
   <node_id>1723170</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>the wertperch occasional playground</title>
 </node>

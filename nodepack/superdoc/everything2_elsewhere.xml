@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;http://twitter.com/everything2com&quot;&gt;New Writeups Twitter Feed&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;http://webchat.freenode.net/?channels=everything2&quot;&gt;#Everything2 IRC chat&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;http://community.livejournal.com/everything2/profile&quot;&gt;LiveJournal community&lt;/a&gt;&lt;/li&gt;
@@ -13,6 +14,5 @@
 &lt;p&gt;You might also like to see the [Community Directory].&lt;/p&gt;
 &lt;p&gt;Complaints? Suggestions? Tell [Oolong] about it. [% return htmlcode('openform').htmlcode('msgField', 'msggrpowner'.'1017738'.',,' .$$NODE{node_id}.','.'1017738').htmlcode('closeform'); %]&lt;/p&gt;</doctext>
   <node_id>1928765</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Everything2 Elsewhere</title>
 </node>

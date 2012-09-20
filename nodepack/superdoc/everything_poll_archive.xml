@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 my $numtoshow=10;
@@ -28,6 +29,5 @@ return $str;
 
 %]</doctext>
   <node_id>1690777</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Everything Poll Archive</title>
 </node>

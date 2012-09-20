@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[{openform}]
 pick yer function: [%
 $query-&gt;textfield('choicefunc').' '.htmlcode('varcheckboxinverse','scf_nohtmlcode,Show htmlcodes');
@@ -8,6 +9,5 @@ $query-&gt;textfield('choicefunc').' '.htmlcode('varcheckboxinverse','scf_nohtml
 
 [{showChoiceFunc test}]</doctext>
   <node_id>1956255</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Gigantic Code Lister test</title>
 </node>

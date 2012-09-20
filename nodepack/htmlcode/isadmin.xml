@@ -1,7 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1919378</node_id>
+  <title>isAdmin</title>
   <code>my $uid = $$USER{user_id};
 return $HTMLVARS{group_gods}{$uid};</code>
-  <type_nodetype>4</type_nodetype>
-  <title>isAdmin</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1203049</node_id>
+  <title>lockaccount</title>
   <code>return unless(isGod($USER));
 
 my $uid = $query-&gt;param('lock_id');
@@ -7,6 +9,4 @@ return unless $uid;
 htmlcode('lock user account', $uid);
 
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>lockaccount</title>
 </node>

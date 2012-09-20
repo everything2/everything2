@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1895696</node_id>
+  <title>selectWriteupTypes</title>
   <code>my ($listName, $bitOptions) = @_;
 $listName = 'multiplewriteuptypes' unless $listName;
 $bitOptions |= 0;
@@ -72,6 +74,4 @@ $str .= $query-&gt;scrolling_list(
 
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>selectWriteupTypes</title>
 </node>

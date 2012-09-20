@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2045921</node_id>
+  <title>unpublishwriteup</title>
   <code>my ($wu, $reason) = @_;
 
 getRef $wu;
@@ -93,6 +95,4 @@ unless($noexp){
 }
 
 return 1;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>unpublishwriteup</title>
 </node>

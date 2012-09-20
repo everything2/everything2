@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>954647</node_id>
+  <title>showAd</title>
   <code>#showAd - places the top or bottom part of an annoying banner ad
 #optional parameter - if starts with 'b' (for bottom), then places bottom part; otherwise, places top part
 #ad text was originally from jukka container
@@ -36,6 +38,4 @@ ADTEXT
 
 	return $ad;
 #}</code>
-  <type_nodetype>4</type_nodetype>
-  <title>showAd</title>
 </node>

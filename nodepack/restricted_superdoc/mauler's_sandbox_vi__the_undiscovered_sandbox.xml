@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[%
 
 my $str=&quot;&lt;p&gt;Am I opted out?&lt;/p&gt;&quot;;
@@ -17,6 +18,5 @@ return $str;
 
 %]</doctext>
   <node_id>1959900</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>mauler's sandbox VI: The Undiscovered Sandbox</title>
 </node>

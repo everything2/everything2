@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>458113</node_id>
+  <title>weblog</title>
   <code>return htmlcode( 'legacyweblog' , @_ ) unless ( htmlcode( 'isZen' ) ) ;
 my ( $interval, $log_id, $remlabel, $hideLinker, $skipFilterHTML, $listOnly ) = @_ ;
 
@@ -87,6 +89,4 @@ if ( $offset or $isolder ) {
 
 &quot;&lt;div class=\&quot;weblog\&quot;&gt;\n$str\n&lt;/div&gt;&quot; ;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>weblog</title>
 </node>

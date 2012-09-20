@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>2</type_nodetype>
   <parent_container>1854174</parent_container>
   <node_id>2021824</node_id>
   <context>&lt;meta content=&quot;width=device-width; initial-scale=1.0; user-scalable=1;&quot;
@@ -41,6 +42,5 @@ return htmlcode('epicenterZen') unless $$VARS{nodelets} =~ /\b$epid\b/;
     [{zen titlebar}]
 &lt;/div&gt;
 &lt;/div&gt;</context>
-  <type_nodetype>2</type_nodetype>
   <title>zen mobile container</title>
 </node>

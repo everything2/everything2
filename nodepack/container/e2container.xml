@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>2</type_nodetype>
   <parent_container>22</parent_container>
   <node_id>17</node_id>
   <context>&lt;table width=&quot;95%&quot; align=&quot;center&quot;&gt;
@@ -39,6 +40,5 @@ CONTAINED_STUFF
 [{showNodelets:right}]
 &lt;/tr&gt;
 &lt;/table&gt;</context>
-  <type_nodetype>2</type_nodetype>
   <title>e2container</title>
 </node>

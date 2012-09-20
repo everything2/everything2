@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1109816</node_id>
+  <title>nodeletsection</title>
   <code># Inserts collapsible nodelet sections. These are stored in separate htmlcodes in the form (nodelet-abbreviation)section_(section-title) - that is, if you see something like 'htmlcode('nodeletsection','edn,patches');' the code you need will be at [ednsection_patches].
 
 my ($nlAbbrev, $nlSection, $altTitle, $linkTo, $styleTitle, $styleContent) = @_;
@@ -51,6 +53,4 @@ if($showContent) {
 return qq'&lt;div id=&quot;$sectionId&quot; class=&quot;nodeletsection&quot;&gt;
 	&lt;div class=&quot;sectionheading&quot;&gt;$s&lt;/div&gt;\n$content&lt;/div&gt;\n';
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>nodeletsection</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1946454</node_id>
+  <title>kick</title>
   <code>#Kicks the user into another room and locks them there. We could just add a 'lock in' parameter to E2 Bouncer, but I figure it might be nice to have a command for it, and I'm inclined to tie it in with borg-handling anyway...
 #N-Wing, Friday, May 24, 2002
 
@@ -34,6 +36,4 @@ $$OTHERUSERS{nltext} = Everything::HTML::parseCode($$OTHERUSERS{nlcode},$OTHERUS
 updateNode($OTHERUSERS,-1);
 
 return;</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>kick</title>
 </node>

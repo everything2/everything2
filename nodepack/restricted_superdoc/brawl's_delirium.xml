@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[{changeroom}]
 [%
 
@@ -207,6 +208,5 @@ return $topic . $intro . $str;
 Quick Reference Test is Brawl's nodelet sandbox. Use at own risk.
 </doctext>
   <node_id>1080591</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Brawl's Delirium</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1689386</node_id>
+  <title>externalLinkDisplay</title>
   <code>#
 # possibly forms a link to external web site
 # URL must start with the protocol, http:// or https://
@@ -51,6 +53,4 @@ my $str = '&lt;a href=&quot;' . $fullURL . '&quot; class=&quot;external&quot;&gt
 
 return $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>externalLinkDisplay</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p align=&quot;right&quot;&gt;&lt;small&gt;Bugs to to [rootbeer277]&lt;/small&gt;&lt;/p&gt;
 
 [%
@@ -345,6 +346,5 @@ return($inputs_string
 %]
 </doctext>
   <node_id>1138488</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Magical Writeup Reparenter</title>
 </node>

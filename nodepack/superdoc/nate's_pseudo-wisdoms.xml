@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 my $header = '&lt;table align=center width=90%&gt;';
@@ -39,6 +40,5 @@ $header. $str. $footer .
 [Nate's Pseudo-Wisdoms|more wisdom]&quot;;
 %]</doctext>
   <node_id>167151</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Nate's Pseudo-Wisdoms</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>259</node_id>
+  <title>displaywriteuptitle</title>
   <code>#displaywriteuptitle - pass the writeup's node_id and timestamp
 
 my ($num, $timestamp) = @_;
@@ -47,6 +49,4 @@ return htmlcode('displayWriteupInfo',$votenum);
 #}
 #
 #$str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>displaywriteuptitle</title>
 </node>

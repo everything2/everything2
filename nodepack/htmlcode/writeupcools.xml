@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1163178</node_id>
+  <title>writeupcools</title>
   <code>my ( $N ) = @_ ;
 $N = $NODE unless $N ;
 getRef( $N );
@@ -88,6 +90,4 @@ return '&lt;span id=&quot;cools'.$$N{node_id}.'&quot; class=&quot;cools&quot;&gt
 	{ showwidget =&gt; 'showCs'.$$N{ node_id } , -title =&gt; 'show who gave the C!s' , -closetitle =&gt; 'hide cools' } ) .
 $coollink.'&lt;/span&gt;' ;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>writeupcools</title>
 </node>

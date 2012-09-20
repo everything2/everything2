@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;Your merit is: &lt;tt&gt;[% $$USER{merit}; %]&lt;/tt&gt;&lt;br&gt;
 Your Level-Up Factor is: &lt;tt&gt;[% use Everything::Experience;  return sprintf &quot;%.4f&quot;,getHRLF($USER); %]&lt;/tt&gt; &lt;small&gt;(leveling-up [% use Everything::Experience;  return sprintf &quot;%.4f&quot;,(1/getHRLF($USER)); %]&amp;times; faster than without the [Honor Roll])&lt;/small&gt;
 
@@ -27,6 +28,5 @@ The corresponding [standard deviation] is: &lt;tt&gt;[% my $hrstats = getVars(ge
 
 &lt;hr&gt;</doctext>
   <node_id>1266694</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Honor Roll and you</title>
 </node>

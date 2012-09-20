@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>DJ [nate] presents:
 &lt;p&gt;
 Herb is Pumpin -- [Slick Rick]/[Keith Murray]&lt;br&gt;
@@ -25,6 +26,5 @@ return unless isGod($USER) or $$USER{title} eq 'flamingweasel';
 
 %]</doctext>
   <node_id>1096837</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Neat Flows</title>
 </node>

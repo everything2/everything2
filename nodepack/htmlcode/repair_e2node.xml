@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2009159</node_id>
+  <title>repair e2node</title>
   <code>return &quot;&quot; unless exists($HTMLVARS{'group_gods'}{$$USER{user_id}}) or
 	exists($HTMLVARS{'group_content editors'}{$$USER{user_id}});
 
@@ -59,6 +61,4 @@ if ($update_group){ # condition avoids infinite recursion through updateNode ...
 return &quot;repaired and reordered&quot; unless $no_order;
 return &quot;repaired&quot;;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>repair e2node</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;Note: &lt;a href=[%
 urlGen({'node'=&gt;'List Nodes of Type', 'type'=&gt;'superdoc', 'setvars_ListNodesOfType_Type'=&gt;'4'})
 %]&gt;List Nodes of Type&lt;/a&gt; is more powerful. -- N-Wing&lt;/p&gt;
@@ -14,6 +15,5 @@ return $str;
 %]
 </doctext>
   <node_id>858813</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Everything Htmlpage Directory</title>
 </node>

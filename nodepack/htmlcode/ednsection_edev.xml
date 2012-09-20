@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>908369</node_id>
+  <title>ednsection_edev</title>
   <code>my $csr = $DB-&gt;sqlSelectMany(&quot;to_node&quot;, &quot;weblog&quot;, &quot;weblog_id=&quot;.getNode('edev','usergroup')-&gt;{node_id}.&quot; and removedby_user=0&quot;, &quot;order by tstamp DESC limit 5&quot; );
 
 my $str;
@@ -7,6 +9,4 @@ while (my $W = $csr-&gt;fetchrow_hashref) {
   $str.= linkNode($$W{to_node}, undef, {lastnode_id =&gt; undef}).&quot;&lt;br&gt;&quot;;
 }
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>ednsection_edev</title>
 </node>

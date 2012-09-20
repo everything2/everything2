@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $nlid = getNode( 'Notifications' , 'nodelet' ) -&gt; { node_id } ;
 $HTMLVARS{ pagenodelets } = &quot;$nlid,&quot; if $$VARS{ nodelets } =~ /\b$nlid\b/ ;
@@ -13,6 +14,5 @@ insertNodelet( getNode( 'Chatterbox', 'nodelet' ) );
 &lt;/div&gt;
 </doctext>
   <node_id>2007476</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Chatterlighter</title>
 </node>

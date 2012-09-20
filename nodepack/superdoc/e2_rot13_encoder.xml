@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;
 This is the E2 Rot13 Encoder.  It also does decoding.  You can just paste the stuff you want swapped around in the little box and click the buttons. It's really quite simple.  Enjoy!
 &lt;/p&gt;
@@ -42,6 +43,5 @@ function rot13(str){
 
 </doctext>
   <node_id>1271440</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>E2 Rot13 Encoder</title>
 </node>

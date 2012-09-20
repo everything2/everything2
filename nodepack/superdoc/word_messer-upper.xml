@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 
@@ -45,6 +46,5 @@ $str.$text;
 
 %]</doctext>
   <node_id>366659</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>word messer-upper</title>
 </node>

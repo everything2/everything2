@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2048927</node_id>
+  <title>getGravatarMD5</title>
   <code>use Digest::MD5('md5_hex');
 
 my $gravatarUser = shift;
@@ -20,6 +22,4 @@ $email =~ s/^\s+|\s+$//g;
 
 return md5_hex($email);
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>getGravatarMD5</title>
 </node>

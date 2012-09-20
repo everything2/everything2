@@ -1,8 +1,8 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1871713</node_id>
+  <title>isEditor</title>
   <code>my $userID = $$USER{user_id};
 
 return ($HTMLVARS{group_gods}{$userID}) || ($HTMLVARS{'group_content editors'}{$userID});</code>
-  <type_nodetype>4</type_nodetype>
-  <title>isEditor</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1252150</node_id>
+  <title>formxml_e2node</title>
   <code>my $grp = $$NODE{group};
 my $str = &quot;&quot;;
 $str.= htmlcode(&quot;xmlfirmlinks&quot;, &quot;$$NODE{node_id}&quot;);
@@ -8,6 +10,4 @@ $str.= &quot;&lt;softlinks&gt;\n&quot;.htmlcode(&quot;softlink&quot;, &quot;xml&
 $str.= &quot;&lt;nodelock&gt;&quot;.encodeHTML(htmlcode(&quot;nodelockreason&quot;, 0)).&quot;&lt;/nodelock&gt;&quot;;
 $str.= htmlcode(&quot;xmlnodesuggest&quot;);
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>formxml_e2node</title>
 </node>

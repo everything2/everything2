@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $poweruser = 0;
 $poweruser = 1 if(exists($HTMLVARS{'group_gods'}{$$USER{user_id}}) || exists($HTMLVARS{'group_content editors'}{$$USER{user_id}}));
@@ -92,6 +93,5 @@ $str.='&lt;/tr&gt;&lt;/table&gt;&lt;/form&gt;';
 return $str;
 %]</doctext>
   <node_id>1157630</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Blind Voting Booth</title>
 </node>

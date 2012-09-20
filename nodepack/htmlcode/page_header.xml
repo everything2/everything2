@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2002477</node_id>
+  <title>page header</title>
   <code># let page inject stuff into the header:
 my ($str,$after) = split /&lt;!--.*?--&gt;/, (delete $HTMLVARS{pageheader})
 	if $HTMLVARS{pageheader};
@@ -33,6 +35,4 @@ return qq'&lt;div id=&quot;pageheader&quot;&gt;
 	$after
 &lt;/div&gt;&quot; ;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>page header</title>
 </node>

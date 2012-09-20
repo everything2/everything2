@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1930061</node_id>
+  <title>zenDisplayWriteupInfo</title>
   <code>my ($wuID) = @_;
 my $wu = getNodeById($wuID);
 
@@ -49,6 +51,4 @@ Deferrer.defer(function() {WU'.$wuID.' = new WriteupAJAX($(&quot;writeup_'.$wuID
 ';
 
 $wuHeader;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>zenDisplayWriteupInfo</title>
 </node>

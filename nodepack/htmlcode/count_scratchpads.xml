@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2053447</node_id>
+  <title>count scratchpads</title>
   <code>my ($user_id) = shift;
 
 $user_id = int(getId $user_id);
@@ -23,6 +25,4 @@ my ($scratch_count) =
   );
 
 return $scratch_count;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>count scratchpads</title>
 </node>

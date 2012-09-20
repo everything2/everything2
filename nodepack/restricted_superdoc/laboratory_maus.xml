@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;&lt;small&gt;Just a little holding cell for scripting experiments. Nothing to see here.&lt;/small&gt;&lt;/p&gt;
 
 
@@ -457,6 +458,5 @@ Re-released on CD, with [Radio City], in [1992] by [Stax]&lt;br&gt;
 
 --&gt;</doctext>
   <node_id>1751411</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>laboratory maus</title>
 </node>

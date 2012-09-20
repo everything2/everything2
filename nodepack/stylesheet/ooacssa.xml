@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/*= autofix added rules. adjust to taste: */
 .actions , .actions li {display:inline;margin:0;padding:0 0.5em 0 0;}
 .actions { display: block ; }
@@ -568,6 +569,5 @@ div #epicenter_zen {
 
 </doctext>
   <node_id>1993776</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Ooacssa</title>
 </node>

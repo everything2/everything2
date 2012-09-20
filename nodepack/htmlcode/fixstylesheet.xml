@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1995928</node_id>
+  <title>fixstylesheet</title>
   <code>my $VARSNODE = getNode( 'fixed stylesheets' ,'setting' ) ;
 my $fixed = getVars( $VARSNODE ) ;
 my $howfixed = $$fixed{ $$NODE{ node_id } } ;
@@ -105,6 +107,4 @@ unless ( $fixwasneeded ) {
 $output = $addstyles.$output if $fixwasneeded ;
 
 $output ;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>fixstylesheet</title>
 </node>

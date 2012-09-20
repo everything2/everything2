@@ -1,5 +1,4 @@
 <node>
-  <node_id>444403</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>68500</value>
@@ -405,5 +404,6 @@
     <value>3300</value>
     <key>5</key>
   </vars>
+  <node_id>444403</node_id>
   <title>level experience</title>
 </node>

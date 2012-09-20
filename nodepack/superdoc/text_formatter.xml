@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[% return '&lt;p&gt;Note: this is from [Magical Text Formatter]&lt;/p&gt;' if exists $HTMLVARS{'group_edev'}{getId($USER)}; %]
 &lt;p align=&quot;right&quot;&gt;Last updated Thursday March 21, 2002&lt;/p&gt;
 &lt;!-- 
@@ -424,6 +425,5 @@ function addStyles(mark,tag,str) {
 // --&gt;
 &lt;/script&gt;</doctext>
   <node_id>1133419</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Text Formatter</title>
 </node>

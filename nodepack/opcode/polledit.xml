@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1857921</node_id>
+  <title>polledit</title>
   <code>my $POLL = $query-&gt;param(&quot;e2poll_id&quot;);
 
 getRef( $POLL );
@@ -81,6 +83,4 @@ $$POLL{e2poll_results}=$optstr;
 $$POLL{doctext}=$str;
 updateNode( $POLL, -1 );
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>polledit</title>
 </node>

@@ -1,10 +1,10 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1979756</node_id>
+  <title>verifyRequest</title>
   <code>#checks that the form was a real e2 one
 my ($prefix) = @_;
 use Digest::MD5 qw(md5_hex);
 my $test = md5_hex($$USER{passwd} . ' ' . $$USER{email} . $query-&gt;param($prefix . '_seed'));
 return ($test eq $query-&gt;param($prefix . '_nonce')) ? 1 : 0;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>verifyRequest</title>
 </node>

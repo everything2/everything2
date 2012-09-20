@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1122166</node_id>
+  <title>swatchlaunchlink</title>
   <code>#   This generates a link which launches a little window with a &quot;color swatch&quot; in it; 
 #   see [color_swatch] for that. You'll need to include [popwindow] somewhere, for 
 #   the pop_small() JavaScript function.
@@ -15,6 +17,4 @@ $str .= 'document.forms.' . $formname . '.' . $fieldname . '.value ), \'color_sw
 
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>swatchlaunchlink</title>
 </node>

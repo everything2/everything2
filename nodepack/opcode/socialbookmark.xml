@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1936578</node_id>
+  <title>socialBookmark</title>
   <code>my $node_id = $query-&gt;param('node_id');
 my $bookmark_site = $query-&gt;param('bookmark_site');
 
@@ -76,6 +78,4 @@ my $sendResult = htmlcode('sendPrivateMessage','');
 1;
 
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>socialBookmark</title>
 </node>

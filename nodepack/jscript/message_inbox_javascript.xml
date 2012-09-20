@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>function replyTo(s, c) {
        if (c || document.message_inbox_form.setvar_autofillInbox.checked) {
           document.message_inbox_form.message.value = &quot;/msg &quot;+s+&quot; &quot;;
@@ -68,6 +69,5 @@ function shrinkTextbox(textbox) {
 
 }</doctext>
   <node_id>2069795</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>message inbox javascript</title>
 </node>

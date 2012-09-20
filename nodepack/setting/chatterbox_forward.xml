@@ -1,5 +1,4 @@
 <node>
-  <node_id>651598</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>devon</value>
@@ -665,5 +664,6 @@
     <value>^Davion^</value>
     <key>davion</key>
   </vars>
+  <node_id>651598</node_id>
   <title>chatterbox forward</title>
 </node>

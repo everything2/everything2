@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;style type=&quot;text/css&quot;&gt;
 &lt;!--
 th {
@@ -199,6 +200,5 @@ return $str; # added 7/6/2006 by Gorgonzola
 &lt;/p&gt;
 </doctext>
   <node_id>1009343</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Everything Document Directory</title>
 </node>

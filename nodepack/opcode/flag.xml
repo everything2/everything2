@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1920369</node_id>
+  <title>flag</title>
   <code>return unless (exists($HTMLVARS{'group_gods'}{$$USER{user_id}}) ) || (exists($HTMLVARS{'group_content editors'}{$$USER{user_id}}));
 return unless htmlcode('verifyRequest', 'flag');
 
@@ -30,6 +32,4 @@ $DB-&gt;sqlInsert(&quot;links&quot;,{linktype =&gt; $fLink, from_node =&gt; $fla
 
 
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>flag</title>
 </node>

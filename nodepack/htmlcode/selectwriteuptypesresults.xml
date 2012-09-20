@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1895704</node_id>
+  <title>selectWriteupTypesResults</title>
   <code>my ($listName, $bitOptions, $returnType) = @_;
 $listName = 'multiplewriteuptypes' unless $listName;
 $bitOptions |= 0;
@@ -72,6 +74,4 @@ $s .= '&lt;/ul&gt;';
 
 $s;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>selectWriteupTypesResults</title>
 </node>

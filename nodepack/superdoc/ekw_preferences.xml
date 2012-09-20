@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 # 2/10/2002
 # Gods: If you want to add &quot;canned schemes&quot;, they go in the 
@@ -245,6 +246,5 @@ $str;
 
 </doctext>
   <node_id>1118951</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>ekw Preferences</title>
 </node>

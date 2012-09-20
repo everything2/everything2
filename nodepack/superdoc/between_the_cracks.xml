@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $isGuest = ($$USER{node_id}==$HTMLVARS{'guest_user'});
 return &quot;&lt;p&gt;Undifferentiated from the masses of the streets, you fall between the cracks yourself.&lt;/p&gt;&quot; if $isGuest;
@@ -137,6 +138,5 @@ return $str;
 %]
 </doctext>
   <node_id>1927770</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Between the Cracks</title>
 </node>

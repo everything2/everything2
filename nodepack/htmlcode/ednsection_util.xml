@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1118512</node_id>
+  <title>ednsection_util</title>
   <code>#Useful nodelet section in EDev Nodelet
 
 my $nl = &quot;&lt;br /&gt;\n&quot;;
@@ -19,6 +21,4 @@ $s .= linkNodeTitle('Gigantic Code Lister').$nl;
 
 return $s;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>ednsection_util</title>
 </node>

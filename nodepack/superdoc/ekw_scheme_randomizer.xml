@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return '&lt;p align=&quot;right&quot;&gt;'.linkNode($NODE, &quot;Hit me baby, one more time&quot;).'&lt;/p&gt;';
 %]
@@ -17,6 +18,5 @@ return '&lt;p align=&quot;right&quot;&gt;'.linkNode($NODE, &quot;Hit me baby, on
 &lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
 &lt;small&gt;idea originally by [ocelotbob]&lt;/small&gt;</doctext>
   <node_id>1313691</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>EKW Scheme randomizer</title>
 </node>

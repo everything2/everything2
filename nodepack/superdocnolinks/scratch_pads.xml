@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1065266</type_nodetype>
   <doctext>[%
 ####
 #### T  H  I  S     I  S     N  O  T     Y  O  U  R     S  C  R  A  T  C  H     P  A  D.
@@ -766,6 +767,5 @@ else {
 %]
 </doctext>
   <node_id>1797151</node_id>
-  <type_nodetype>1065266</type_nodetype>
   <title>Scratch Pads</title>
 </node>

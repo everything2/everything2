@@ -1,5 +1,4 @@
 <node>
-  <node_id>1986741</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>Not currently a nodeshell, but easily could be.&lt;br&gt;&lt;small&gt;It's a sort of a threat, you see[Slartibartfast|.]&lt;/small&gt;  &lt;br&gt;&lt;br&gt;bad writeup - A good ol'-fashioned sweater-over-head [goon]ing&lt;br&gt; good writeup - weblogged to the [e2hockey] page&lt;br&gt; amazing writeup - upvotes &amp;amp; C!s from the user group&lt;br&gt;&lt;br&gt;(Contact [Lord Brawl])</value>
@@ -185,5 +184,6 @@
     <value>This team ought to have a better writeup by now. Give it a go!&lt;br&gt;&lt;br&gt;Reward: A C! for each deserving writeup and a maximum of fifty (50) upvotes of your other stuff. If I've already voted on all of your writeups, I'll give you 200 GP and a special bonus, to be determined based on your level.</value>
     <key>avalyn</key>
   </vars>
+  <node_id>1986741</node_id>
   <title>bounty comments</title>
 </node>

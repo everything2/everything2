@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2005858</node_id>
+  <title>canseewriteup</title>
   <code>my ($N) = @_ ;
 $N ||= $NODE ;
 
@@ -49,6 +51,4 @@ foreach ( @checks ) { # not keys because priority order is important
 }
 
 return 1 ;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>canseewriteup</title>
 </node>

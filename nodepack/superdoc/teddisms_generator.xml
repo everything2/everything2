@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>
 &lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;p align=center&gt;
 [%
@@ -46,6 +47,5 @@ return $str;
 %]&lt;br&gt;&lt;br&gt;&lt;br&gt;
 </doctext>
   <node_id>1250804</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Teddisms Generator</title>
 </node>

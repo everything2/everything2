@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>837929</node_id>
+  <title>ednsection</title>
   <code>my ($field) = @_;
 
 #this has been deprecated by {nodeletsection} as described in {edev: nodeletsection}
@@ -21,6 +23,4 @@ if($$VARS{$param}) {
 } else { 
 	return '('.linkNode($NODE,'hide',{$param =&gt; 1}).&quot;) &lt;strong&gt;$field&lt;/strong&gt;&lt;br /&gt;&quot;.htmlcode(&quot;ednsection_$field&quot;,'');
 }</code>
-  <type_nodetype>4</type_nodetype>
-  <title>ednsection</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return '';
     delete $$VARS{ 'themebodyBgcolor' };
@@ -331,6 +332,5 @@ what might cause this, [wharfinger|I]'d love to hear from you. &lt;/i&gt;&lt;/p&
 complaints and/or suggestions to [wharfinger]. He'll know what to do with them. &lt;/p&gt;
 </doctext>
   <node_id>1178852</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Theme Preferences</title>
 </node>

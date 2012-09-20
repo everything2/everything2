@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1917862</node_id>
+  <title>hasAchieved</title>
   <code>my ($ACH, $user_id, $force) = @_;
 
 getRef $ACH;
@@ -35,6 +37,4 @@ if ($result == 1) {
 
 return $result;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>hasAchieved</title>
 </node>

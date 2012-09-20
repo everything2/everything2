@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>body,
 th,
 td {
@@ -576,6 +577,5 @@ td {
 			display: inline;
 		}</doctext>
   <node_id>1903725</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Maroon</title>
 </node>

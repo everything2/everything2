@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
   my @grp = (keys %{$HTMLVARS{group_gods}},keys %{$HTMLVARS{&quot;group_content editors&quot;}}, @{getNode(&quot;exeds&quot;,&quot;nodegroup&quot;)-&gt;{group}});
   my %except = map {getNode($_,&quot;user&quot;)-&gt;{node_id} =&gt; 1} (&quot;Cool Man Eddie&quot;,&quot;EDB&quot;,&quot;Webster 1913&quot;,&quot;Klaproth&quot;,&quot;PadLock&quot;);
@@ -38,6 +39,5 @@
   return $str;
 %]</doctext>
   <node_id>1258885</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Editor Endorsements</title>
 </node>

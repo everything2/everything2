@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1159162</node_id>
+  <title>synctitles</title>
   <code>return unless exists($HTMLVARS{'group_gods'}{$$USER{user_id}});
 return unless($query-&gt;param('sync_id'));
 
@@ -25,6 +27,4 @@ return unless($query-&gt;param('sync_id'));
  }
 
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>synctitles</title>
 </node>

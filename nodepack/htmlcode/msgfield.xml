@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1328032</node_id>
+  <title>msgField</title>
   <code>#message field: provides a text field to send a message to a user(group)
 #
 #arguments:
@@ -175,6 +177,4 @@ $str .= $query-&gt;textfield(-name=&gt;$nameTxt, value=&gt;'', size=&gt;24, clas
 
 return $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>msgField</title>
 </node>

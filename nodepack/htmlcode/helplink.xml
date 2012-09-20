@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1265536</node_id>
+  <title>helplink</title>
   <code>my ($suppress) = @_; 
 my $noHelp = $suppress ? '' : '&lt;p&gt;&amp;nbsp;&lt;/p&gt;';
 
@@ -13,6 +15,4 @@ return $noHelp;
 #already done in line 2
 #return $str unless $suppress;
 #return '';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>helplink</title>
 </node>

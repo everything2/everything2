@@ -1,10 +1,10 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>657441</node_id>
+  <title>supercloak</title>
   <code>return unless getId($NODE) eq getId($USER);
 return unless $$VARS{cansupercloak};
 
 linkNode($NODE, &quot;sc&quot;, {op =&gt; 'supercloak'});
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>supercloak</title>
 </node>

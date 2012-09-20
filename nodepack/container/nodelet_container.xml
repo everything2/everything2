@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>2</type_nodetype>
   <parent_container>21</parent_container>
   <node_id>20</node_id>
   <context>&lt;tr[%
@@ -24,6 +25,5 @@ return ' background=&quot;'.$bk.'&quot;' if $bk;
 &lt;/font&gt;
 &lt;/td&gt;
 &lt;/tr&gt;</context>
-  <type_nodetype>2</type_nodetype>
   <title>nodelet container</title>
 </node>

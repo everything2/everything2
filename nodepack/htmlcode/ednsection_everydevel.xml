@@ -1,7 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>837963</node_id>
+  <title>ednsection_everydevel</title>
   <code>#return &quot;&lt;small&gt;&lt;small&gt;Offline pending server problem fixes&lt;/small&gt;&lt;/small&gt;&quot;;
 return getNode('Everything Developer Data','nodelet')-&gt;{nltext};</code>
-  <type_nodetype>4</type_nodetype>
-  <title>ednsection_everydevel</title>
 </node>

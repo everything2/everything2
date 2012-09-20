@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>260</node_id>
+  <title>displaywriteuptext</title>
   <code>#displaywriteuptext - pass writeup's node_id
 
 my ($num) = @_;
@@ -24,6 +26,4 @@ my $TAGS=getVars($TAGNODE);
 my $text = htmlcode('standard html screen', $$WRITEUP{doctext}, $LNODE);
 my $wuid = getId($WRITEUP);
 '&lt;!-- google_ad_section_start --&gt;&lt;!-- '.$wuid.'{ --&gt;'.$text.'&lt;!-- }'.$wuid.' --&gt;&lt;!-- google_ad_section_end --&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>displaywriteuptext</title>
 </node>

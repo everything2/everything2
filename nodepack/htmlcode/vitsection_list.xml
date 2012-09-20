@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1116978</node_id>
+  <title>vitsection_list</title>
   <code>my $str=&quot;&lt;ul&gt;&quot;;
 
 $str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Writeups by Type').&quot;&lt;/li&gt;&quot;;
@@ -15,6 +17,4 @@ $str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Random nodeshells').&quot;&lt;/li&gt
 $str.=&quot;&lt;/ul&gt;&quot;;
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>vitsection_list</title>
 </node>

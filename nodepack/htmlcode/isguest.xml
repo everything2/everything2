@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2002034</node_id>
+  <title>isGuest</title>
   <code>if ($$USER{user_id} == $HTMLVARS{guest_user}) {
   return 1 ;
 }
@@ -7,6 +9,4 @@ else {
   return 0;
 }
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>isGuest</title>
 </node>

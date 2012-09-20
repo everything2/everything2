@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1300516</node_id>
+  <title>varsComboBox</title>
   <code>#VARS combo box
 #safely allows a user to set a value in their $VARS via an uneditable combo box
 #
@@ -120,6 +122,4 @@ if(!exists $labels{$curSel}) {
 $labels{$curSel} = '* '.$labels{$curSel};
 
 return $query-&gt;popup_menu($qp, \@values, $curSel, \%labels);</code>
-  <type_nodetype>4</type_nodetype>
-  <title>varsComboBox</title>
 </node>

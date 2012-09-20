@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/*autofixed*/
 /*= autofix added rules. adjust to taste: */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
@@ -584,6 +585,5 @@ td {
 			display: none;
 		}</doctext>
   <node_id>2006294</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>kohl16</title>
 </node>

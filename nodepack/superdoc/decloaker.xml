@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;
 &lt;em&gt;Or to drown my clothes, and say I was stripped.&lt;/em&gt; --- [Parolles]
 &lt;/p&gt;
@@ -15,6 +16,5 @@
 %]
 </doctext>
   <node_id>1682950</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Decloaker</title>
 </node>

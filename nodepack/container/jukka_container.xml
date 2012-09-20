@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>2</type_nodetype>
   <parent_container>0</parent_container>
   <node_id>415063</node_id>
   <context>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0 Transitional//EN&quot;
@@ -29,9 +30,6 @@ marginheight=&quot;0&quot;
 marginwidth=&quot;0&quot;
 marginleft=&quot;2&quot; leftmargin=&quot;2&quot; marginright=&quot;2&quot; rightmargin=&quot;2&quot;
 &gt;
-
-&lt;!-- hey kids!  Time to pay the bills --&gt;
-[{adheader}]
 
 &lt;!-- TABLE #1 Creates the header --&gt;
 
@@ -118,6 +116,5 @@ $str;
 &lt;!-- current node_id [% $$NODE{node_id} %] --&gt;
 &lt;/body&gt;
 &lt;/html&gt;</context>
-  <type_nodetype>2</type_nodetype>
   <title>jukka container</title>
 </node>

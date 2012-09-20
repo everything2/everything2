@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1375509</node_id>
+  <title>statsection_advancement</title>
   <code>use Everything::Experience;
 my $str;
 
@@ -20,6 +22,4 @@ $str .= genRow(&quot;Merit stddev&quot;, $$hv{stddev});
 
 
 return &quot;&lt;div&gt;&quot;.$str.&quot;&lt;/div&gt;&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>statsection_advancement</title>
 </node>

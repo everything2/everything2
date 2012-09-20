@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1252154</node_id>
+  <title>xmlwriteup</title>
   <code>my ($WRITEUPID) = @_;
 use Everything::Experience;
 
@@ -53,6 +55,4 @@ $str.=&quot;&lt;/doctext&gt;\n&quot;;
 $str.=&quot;&lt;/writeup&gt;\n&quot;;
 return $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>xmlwriteup</title>
 </node>

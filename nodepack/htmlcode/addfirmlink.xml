@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1150391</node_id>
+  <title>addfirmlink</title>
   <code>my $RECURSE = 1;
 return unless htmlcode('isinUsergroup', $USER, 'SIGTITLE', $RECURSE)
   or htmlcode('isEditor');
@@ -24,6 +26,4 @@ return htmlcode('openform')
    .'&lt;/form&gt;'
    ;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>addfirmlink</title>
 </node>

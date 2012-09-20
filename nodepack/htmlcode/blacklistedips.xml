@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2008106</node_id>
+  <title>blacklistedIPs</title>
   <code>my $str;
 my $offset = int($query-&gt;param('offset')) || 0;
 my $pageSize = 200;
@@ -220,6 +222,4 @@ $str .= &quot;&lt;/table&gt;&quot;;
 
 return $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>blacklistedIPs</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/****** COLORS ******/
 
 body,
@@ -706,6 +707,5 @@ td {
    margin-bottom: -65px !important;
 }</doctext>
   <node_id>1854393</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>default zen stylesheet</title>
 </node>

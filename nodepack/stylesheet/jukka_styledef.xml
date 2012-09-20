@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* This dummy is here because IE3 sometimes ignores the first style, not
    used any where, but needed to make this css-def function properly */
 .DUMMY {
@@ -88,6 +89,5 @@ big {
 	font-size: 110%;
 }</doctext>
   <node_id>2069743</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>jukka styledef</title>
 </node>

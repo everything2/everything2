@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2002583</node_id>
+  <title>page actions</title>
   <code>my $disabled = shift || htmlcode('getdisabledactions');
 
 my $b ;
@@ -47,6 +49,4 @@ return '&lt;ul class=&quot;topic actions&quot;&gt;
 	&lt;li&gt;' . $disable . join( &quot;&lt;/li&gt;\n&lt;li&gt;&quot; , @actions ) . &quot;&lt;/li&gt;\n&lt;/ul&gt;\n&quot; if @actions ;
 return '' ;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>page actions</title>
 </node>

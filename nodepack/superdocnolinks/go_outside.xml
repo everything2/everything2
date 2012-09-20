@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1065266</type_nodetype>
   <doctext>[%
 
 use Everything::Room;
@@ -23,6 +24,5 @@ changeRoom($USER,0);
 %]
 </doctext>
   <node_id>1102338</node_id>
-  <type_nodetype>1065266</type_nodetype>
   <title>go outside</title>
 </node>

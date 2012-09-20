@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2006837</node_id>
+  <title>static javascript</title>
   <code>use JSON;
 
 $$VARS{fxDuration} = '1' if (delete $$VARS{notransitions});
@@ -57,6 +59,4 @@ return &lt;&lt;ENDJS;
         $js_decisions
         $GUjs
 ENDJS</code>
-  <type_nodetype>4</type_nodetype>
-  <title>static javascript</title>
 </node>

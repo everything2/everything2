@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;&lt;strong&gt;&lt;big&gt;HOWTO: create a new nodetype&lt;/big&gt;&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;
 Note: if you don't know these terms, you can skip this node: 'nodetype', 'dbtable', 'htmlcode', and 'Perl' &lt;small&gt;&lt;tt&gt;:)&lt;/tt&gt;&lt;/small&gt;.
@@ -54,6 +55,5 @@ Everybody, feel free to update this, it is rather bare right now.&lt;br /&gt;
 -- [N-Wing]
 &lt;/p&gt;</doctext>
   <node_id>1158547</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>HOWTO nodetype creation</title>
 </node>

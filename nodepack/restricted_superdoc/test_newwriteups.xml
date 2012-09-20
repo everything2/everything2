@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[%
 my $limit = 15;
 
@@ -49,6 +50,5 @@ $str;
 
 %]</doctext>
   <node_id>469990</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>test newwriteups</title>
 </node>

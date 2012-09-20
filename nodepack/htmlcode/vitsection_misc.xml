@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1116980</node_id>
+  <title>vitsection_misc</title>
   <code>my $str=&quot;&lt;ul&gt;&quot;;
 
 $str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Everything User Poll').&quot;&lt;/li&gt;&quot;;
@@ -19,6 +21,4 @@ $str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('The Recommender').&quot;&lt;/li&gt;&
 $str.=&quot;&lt;/ul&gt;&quot;;
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>vitsection_misc</title>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <node_id>261</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>align,valign</value>
@@ -193,5 +192,6 @@
     <value>align</value>
     <key>h3</key>
   </vars>
+  <node_id>261</node_id>
   <title>approved html tags</title>
 </node>

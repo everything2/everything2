@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2033901</node_id>
+  <title>standard html screen</title>
   <code>my ($text, $lastnode_id) = @_;
 
 my $TAGNODE = getNode('approved html tags', 'setting');
@@ -13,6 +15,4 @@ $text = parseLinks($text, $lastnode_id);
 $text = breakTags($text);
 return $text;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>standard html screen</title>
 </node>

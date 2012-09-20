@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[{openform}]
 
 [%
@@ -237,6 +238,5 @@ if ($israw) {
 $str;
 %]</doctext>
   <node_id>1472293</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Big Writeup Lists</title>
 </node>

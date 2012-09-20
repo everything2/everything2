@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;[wharfinger] wonders: Am I saying anything that needs to be said here, or 
 am I just [shitting on the floor|throwing a fit]? Should I &quot;node&quot; it? &lt;/p&gt;
 
@@ -71,6 +72,5 @@ deli are strong and [open-minded] enough to welcome a real challenge to their
 views.&lt;/p&gt;
 </doctext>
   <node_id>1128377</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>The supermarket is there for everybody</title>
 </node>

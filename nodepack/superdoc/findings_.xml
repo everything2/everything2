@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 use Time::HiRes;
@@ -91,6 +92,5 @@ $str
 [{e2createnewnode}]
 </doctext>
   <node_id>1140332</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Findings:</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;style type=&quot;text/css&quot;&gt;
 .mytable th, .mytable td
 {
@@ -318,6 +319,5 @@ Remember that each system would have its own XP/Renown requirements to achieve t
 return $str;
 %]</doctext>
   <node_id>1928939</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>tfxp: Compare Stats</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p align=&quot;center&quot;&gt;[{settingsDocs}]&lt;/p&gt;
 
 [{UnderConstruction:N-Wing}]
@@ -223,6 +224,5 @@ $str;
 
 [{closeform}]</doctext>
   <node_id>1333632</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Message Settings</title>
 </node>

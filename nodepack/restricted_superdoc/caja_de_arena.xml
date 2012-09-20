@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[%
 my $review = getId(getNode('review', 'publication_status'));
 my @noteResponse = (
@@ -57,6 +58,5 @@ my %funx = (
 %]
 </doctext>
   <node_id>2000674</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>caja de arena</title>
 </node>

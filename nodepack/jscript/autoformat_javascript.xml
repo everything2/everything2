@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>function autoFormat (id)
 {
   var elem = document.getElementsByName(id).item(0);
@@ -28,6 +29,5 @@
 }
 </doctext>
   <node_id>2069739</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>Autoformat javascript</title>
 </node>

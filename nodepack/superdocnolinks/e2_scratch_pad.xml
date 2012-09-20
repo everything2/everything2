@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1065266</type_nodetype>
   <doctext>[%
 parseLinks '&lt;p&gt;This page is so obsolete, even its [Scratch Pads[superdocnolinks]|replacement] is
 obsolete. &lt;strong&gt;[Drafts[superdoc]]&lt;/strong&gt; is the place to go now.
@@ -153,6 +154,5 @@ return $str.'&lt;textarea name=&quot;skratch&quot; '.htmlcode('customtextarea','
 %]
 </doctext>
   <node_id>1065273</node_id>
-  <type_nodetype>1065266</type_nodetype>
   <title>E2 Scratch Pad</title>
 </node>

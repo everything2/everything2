@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return &quot;[Swap] at work. If you're a coder type, click on viewcode to see what I'm up to.&quot; unless $$USER{title} eq 'Swap';
 
@@ -80,6 +81,5 @@ return $str;
 %]
 </doctext>
   <node_id>1981468</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Uncount maintenance writeups</title>
 </node>

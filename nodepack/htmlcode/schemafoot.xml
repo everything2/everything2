@@ -1,6 +1,6 @@
 <node>
-  <node_id>1259822</node_id>
-  <code>return &quot;&lt;/xs:schema&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
+  <node_id>1259822</node_id>
   <title>schemafoot</title>
+  <code>return &quot;&lt;/xs:schema&gt;&quot;;</code>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1916947</node_id>
+  <title>nodeHeavenStr</title>
   <code>my ($e2node) = @_;
 
 return '' unless isGod($USER);
@@ -13,6 +15,4 @@ my $N = $DB-&gt;sqlSelect('count(*)', 'heaven', &quot;type_nodetype=117 and titl
 $N ||= 'no';
 
 return &quot;This node has &quot;.linkNode(getNode('Node Heaven Title Search','restricted_superdoc'),$N, {heaventitle =&gt; $$NODE{title}}).&quot; writeup&quot;.( $N != 1 ? &quot;s&quot; : &quot;&quot;).&quot; in Node Heaven.&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>nodeHeavenStr</title>
 </node>

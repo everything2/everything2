@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>body {
   background-color: #ffffff;
   font-family: Arial, Helvetica, Tahoma, sans-serif;
@@ -110,6 +111,5 @@ div#softlinks {
   width: 97%;
 }</doctext>
   <node_id>1883058</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>test_ReiToei</title>
 </node>

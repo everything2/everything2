@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* autofix added basic compatibility rules */
 .weblog .title,
 .weblog .date,
@@ -922,6 +923,5 @@ p.patch_invalid { background: darkred !important; }
 .patch_later {background: navy!important; }
 .patch_undone {background : olive !important;}</doctext>
   <node_id>1976666</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Blue Steel</title>
 </node>

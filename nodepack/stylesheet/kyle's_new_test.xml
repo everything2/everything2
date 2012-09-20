@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>.nodelet { display: none;}
 #header { display: none;}
 #msgnum {display: none;}
@@ -9,6 +10,5 @@
 #nodelet_170070 {display: block;}
 </doctext>
   <node_id>1934600</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>kyle's new test</title>
 </node>

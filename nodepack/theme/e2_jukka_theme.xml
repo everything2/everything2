@@ -1,5 +1,4 @@
 <node>
-  <node_id>415073</node_id>
   <type_nodetype>175989</type_nodetype>
   <vars>
     <value>#003366</value>
@@ -69,5 +68,6 @@
     <value>&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</value>
     <key>thinOutlineFooter</key>
   </vars>
+  <node_id>415073</node_id>
   <title>e2 jukka theme</title>
 </node>

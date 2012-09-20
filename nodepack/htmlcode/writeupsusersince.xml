@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1975768</node_id>
+  <title>writeupsusersince</title>
   <code>my ($userID, $since) = @_;
 
 $since = htmlcode('convertepochtodate',$since);
@@ -13,6 +15,4 @@ my ($numwriteups) = $qh -&gt; fetchrow();
 $qh -&gt; finish();
 
 return $numwriteups;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>writeupsusersince</title>
 </node>

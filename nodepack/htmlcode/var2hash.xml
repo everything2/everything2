@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1873971</node_id>
+  <title>var2hash</title>
   <code>
 my $str = '
 local * var2hash = sub {
@@ -16,6 +18,4 @@ return $hash;}
 ;';
 
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>var2hash</title>
 </node>

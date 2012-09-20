@@ -1,5 +1,4 @@
 <node>
-  <node_id>1372676</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>1</value>
@@ -121,5 +120,6 @@
     <value>1</value>
     <key>pmsgDate</key>
   </vars>
+  <node_id>1372676</node_id>
   <title>exportable vars</title>
 </node>

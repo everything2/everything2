@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2007395</node_id>
+  <title>ip lookup tools</title>
   <code># encodeHTML should be a no-op here, but just in case...
 my $ip = encodeHTML(shift);
 
@@ -11,6 +13,4 @@ return
   . &quot; - &lt;a href='http://www.stopforumspam.com/ipcheck/$ip' target=\&quot;_blank\&quot;&gt;SFS&lt;/a&gt;&quot;
   . &quot; - &lt;a href='http://www.botscout.com/ipcheck.htm?ip=$ip' target=\&quot;_blank\&quot;&gt;BS&lt;/a&gt;&quot;
   ;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>ip lookup tools</title>
 </node>

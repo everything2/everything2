@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1251621</node_id>
+  <title>formxml_user</title>
   <code>my $str = &quot;&quot;;
 
 use Everything::Experience;
@@ -78,6 +80,4 @@ $str.=&quot;&lt;bookmarks&gt;\n&quot;;
 $str.=&quot;&lt;/bookmarks&gt;\n&quot;;
 
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>formxml_user</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>451267</type_nodetype>
   <doctext>&lt;html&gt;
 &lt;head&gt;
 &lt;script language=&quot;JavaScript&quot;&gt;
@@ -44,6 +45,5 @@ $bgcolor;
 &lt;/body&gt;
 </doctext>
   <node_id>1121567</node_id>
-  <type_nodetype>451267</type_nodetype>
   <title>color_swatch</title>
 </node>

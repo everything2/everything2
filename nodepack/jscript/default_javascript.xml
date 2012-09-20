@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>$(function(){
 	// full text search
 
@@ -627,6 +628,5 @@ e2('.wuformaction', 'click', function(){
 
 })();</doctext>
   <node_id>1874924</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>default javascript</title>
 </node>

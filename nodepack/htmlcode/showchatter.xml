@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>973519</node_id>
+  <title>showchatter</title>
   <code>my $json = {};
 my $jsoncount = 1 if shift;
 my $nochat;
@@ -213,6 +215,4 @@ utf8::decode($text);
 return $str unless $jsoncount;
 return $json;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>showchatter</title>
 </node>

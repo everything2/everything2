@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2034108</node_id>
+  <title>homenodeinfectedinfo</title>
   <code>return &quot;&quot; unless htmlcode('isEditor');
 
 my $infectedHTML = &quot;&quot;;
@@ -51,6 +53,4 @@ ENDHTML
 }
 
 return '&lt;div id=&quot;homenode_infection&quot; class=&quot;warning&quot;&gt;' . $infectedHTML . '&lt;/div&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>homenodeinfectedinfo</title>
 </node>

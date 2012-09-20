@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;ul&gt;
 &lt;li&gt;all &lt;i&gt;known&lt;/i&gt; UT WUs have been destroyed, now to search the heavens&lt;/li&gt;
 &lt;li&gt;place text here scattershot&lt;/li&gt;
@@ -183,6 +184,5 @@ Underground Tokyo is no more. Slowly, she sinks.&lt;br&gt;&lt;br&gt;
 
 </doctext>
   <node_id>1422494</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Underground Tokyo Anthology</title>
 </node>

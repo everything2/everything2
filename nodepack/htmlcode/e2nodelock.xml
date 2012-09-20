@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1169728</node_id>
+  <title>e2nodelock</title>
   <code>return if(!exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) &amp;&amp; !exists($HTMLVARS{'group_content editors'}{$$USER{node_id}}));
    
 my $defaultreason=&quot;&quot;;
@@ -38,6 +40,4 @@ else
 $str .='&lt;/p&gt;';
 
 return parseLinks($str);</code>
-  <type_nodetype>4</type_nodetype>
-  <title>e2nodelock</title>
 </node>

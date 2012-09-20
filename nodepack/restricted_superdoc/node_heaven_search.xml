@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;
 Welcome to Node Heaven, where you may sit and 
 reconcile with your dear departed writeups.
@@ -101,6 +102,5 @@ reconcile with your dear departed writeups.
 %]
 </doctext>
   <node_id>1103202</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Node Heaven Search</title>
 </node>

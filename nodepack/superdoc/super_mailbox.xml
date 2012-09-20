@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 # A simple tool made by Lord Brawl and improvified by an anonymous coder
@@ -36,6 +37,5 @@ return $query -&gt; h3(&quot;The 'bot super mailbox&quot;)
 
 %]</doctext>
   <node_id>1527016</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>super mailbox</title>
 </node>

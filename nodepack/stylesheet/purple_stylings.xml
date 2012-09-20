@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/****** COLORS ******/
 
 body,
@@ -753,6 +754,5 @@ th.oddrow {
 			display: none;
 		}</doctext>
   <node_id>1933589</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Purple Stylings</title>
 </node>

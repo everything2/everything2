@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1879633</node_id>
+  <title>frontpagediv</title>
   <code>my ($end) = @_;
 
 $end = $end || 0;
@@ -8,6 +10,4 @@ if ($end) {
 return &quot;&lt;/div&gt;&quot;;
 }
 return &quot;&lt;div id='frontpage'&gt;&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>frontpagediv</title>
 </node>

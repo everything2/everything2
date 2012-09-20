@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;[N-Wing|I]'ve done a few things in code for April Fool's Day before. I thought it may be of interest to [edev]ers and other Perl programmers what some of the things were. This superdoc explains some of code of the things done before.&lt;/p&gt;
 &lt;p&gt;&lt;small&gt;(If I already have this somewhere else, er, oops! Please let me know. &amp;mdash; [N-Wing])&lt;/small&gt;&lt;/p&gt;
 
@@ -52,6 +53,5 @@ $text = $otherSayings[int(rand(@otherSayings))];
 &lt;/p&gt;
 </doctext>
   <node_id>1796239</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>AFD code</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/*
 ---------------------------------------
 BASIC HTML STYLING 
@@ -829,6 +830,5 @@ color: #aaa;
 font-size: 80%;
 }</doctext>
   <node_id>1934436</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>HipsterDufus</title>
 </node>

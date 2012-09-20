@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1522371</node_id>
+  <title>switch_text</title>
   <code>my $str;
 #	$str .=&lt;&lt;EOD;
 #	&lt;b&gt;&lt;a #href=&quot;index.pl?tree=personal&amp;node_id=$$NODE{node_id}&amp;lastnode_id=$$NODE{node_id}&quot;&gt;personal&lt;/a&gt;&lt;/b&gt; 
@@ -7,6 +9,4 @@
 $str.= htmlcode(&quot;personal_cat&quot;);	
 
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>switch_text</title>
 </node>

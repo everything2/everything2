@@ -1,5 +1,4 @@
 <node>
-  <node_id>1415665</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>1</value>
@@ -33,5 +32,6 @@
     <value>1</value>
     <key>code</key>
   </vars>
+  <node_id>1415665</node_id>
   <title>patchable fields</title>
 </node>

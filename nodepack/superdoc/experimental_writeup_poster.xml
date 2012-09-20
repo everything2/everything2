@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return '';
 
@@ -133,6 +134,5 @@ $str.=$query-&gt;end_form;
 
 %]</doctext>
   <node_id>1874525</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Experimental Writeup Poster</title>
 </node>

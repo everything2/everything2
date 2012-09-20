@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>this is the clean everything.&lt;br&gt;
 this is the master everything.&lt;br&gt;
 New Everythings are merely a shadow of this...
@@ -6,6 +7,5 @@ New Everythings are merely a shadow of this...
 
 &lt;p align=right&gt;--[nate]</doctext>
   <node_id>106</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>The Default Node</title>
 </node>

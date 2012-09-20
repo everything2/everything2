@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $currentYear = '2011';
 my $dateMinInc = '' . $currentYear . '-11-01';
@@ -304,6 +305,5 @@ return $str;
 %]
 </doctext>
   <node_id>2000213</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>iron noder progress</title>
 </node>

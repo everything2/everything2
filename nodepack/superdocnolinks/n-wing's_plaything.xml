@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1065266</type_nodetype>
   <doctext>&lt;div style=&quot;border: solid black 1px; padding: 5px;&quot;&gt;
 
 
@@ -611,6 +612,5 @@ return ('couldn\'t find ' . $module) unless scalar(@allLines);
 
 &lt;/div&gt;</doctext>
   <node_id>950586</node_id>
-  <type_nodetype>1065266</type_nodetype>
   <title>N-Wing's plaything</title>
 </node>

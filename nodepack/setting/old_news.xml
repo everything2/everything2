@@ -1,5 +1,4 @@
 <node>
-  <node_id>1838063</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>&lt;p&gt;&lt;b&gt;[November 3, 2004|2004]: [George W. Bush] wins second term&lt;/b&gt;&lt;br&gt;George W Bush is elected president of the United States for the second time, beating his Democratic rival by a comfortable margin.&lt;/p&gt;&lt;p&gt;&lt;b&gt;1957: Russians launch dog into space&lt;/b&gt;&lt;br&gt;The Soviet Union sends [Laika], the first ever living creature into the cosmos aboard Sputnik II.&lt;/p&gt;&lt;p&gt;&lt;b&gt;1975: [North Sea oil] begins to flow&lt;/b&gt;&lt;br&gt;The Queen has formally begun the operation of the UK's first oil pipeline at a &#163;500,000 ceremony in Scotland.&lt;/p&gt;&lt;p&gt;&lt;b&gt;1964: Election triumph for [Lyndon Johnson]&lt;/b&gt;&lt;br&gt;Lyndon B Johnson, who took over after  President Kennedy's assassination, wins the White House race.&lt;/p&gt;&lt;p&gt;&lt;b&gt;1985: Agents plead guilty in [Rainbow Warrior] trial&lt;/b&gt;&lt;br&gt;Two French secret service agents  change pleas to guilty over the bombing of the Rainbow Warrior.&lt;/p&gt;&lt;p&gt;&lt;b&gt;1997: Angry truckers blockade French ports&lt;/b&gt;&lt;br&gt;Thousands of lorries are at a standstill in France as striking drivers form roadblocks around the country.&lt;/p&gt;</value>
@@ -521,5 +520,6 @@ $str;
 </value>
     <key>325</key>
   </vars>
+  <node_id>1838063</node_id>
   <title>Old News</title>
 </node>

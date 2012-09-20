@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return 'Only [Create a new user|logged-in users] can see drafts.'
 	if $$USER{node_id} == $HTMLVARS{guest_user};
@@ -60,6 +61,5 @@ my %funx = (
 %]
 </doctext>
   <node_id>2045844</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Drafts for review</title>
 </node>

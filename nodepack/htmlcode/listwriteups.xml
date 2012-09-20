@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>166292</node_id>
+  <title>listwriteups</title>
   <code>my ($index) = @_;
 
 $index or return;
@@ -19,6 +21,4 @@ while ($index &lt; @group) {
 }
 $str.=&quot;&lt;/multicol&gt;&quot;;
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>listwriteups</title>
 </node>

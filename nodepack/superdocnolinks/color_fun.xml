@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1065266</type_nodetype>
   <doctext>&lt;p&gt;&lt;small&gt;This will eventually have some things in which you can play with colors. But it is still being created, so don't go complaining to [% linkNodeTitle('N-Wing'); %] if you see Server Error!s.&lt;/small&gt;&lt;/p&gt;
 
 [%
@@ -227,6 +228,5 @@ wharf's stuff:&lt;br /&gt;
 [{popwindow}]
 &lt;/p&gt;</doctext>
   <node_id>1121058</node_id>
-  <type_nodetype>1065266</type_nodetype>
   <title>color fun</title>
 </node>

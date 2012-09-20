@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>45</node_id>
+  <title>parsetime</title>
   <code># [{parsetime:FIELD}]
 # Parses out a datetime field into a more human-readable form
 #
@@ -20,6 +22,4 @@ my $nicedate =localtime ($epoch_secs);
 
 $nicedate =~ s/(\d\d):(\d\d):(\d\d).*$/$yy at $1:$2:$3/;
 $nicedate;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>parsetime</title>
 </node>

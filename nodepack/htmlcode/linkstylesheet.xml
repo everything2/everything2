@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2021903</node_id>
+  <title>linkStylesheet</title>
   <code># Generate a link to a stylesheet, incorporating the version 
 # number of the node into the URL. This can be used in conjunction
 # with a far-future expiry time to ensure that a stylesheet is
@@ -37,6 +39,4 @@ if ($n) {
   return $n;
 }
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>linkStylesheet</title>
 </node>

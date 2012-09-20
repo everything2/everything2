@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1920135</node_id>
+  <title>ilikeit</title>
   <code>return if htmlcode('isSpider');
 
 
@@ -77,6 +79,4 @@ my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR} || undef;
 #$DB-&gt;sqlDelete('likedit','1=1 order by likedit_id limit 1');
 $DB-&gt;sqlInsert('likedit',{likedit_ip =&gt; $addr, likedit_node =&gt; $$LIKE{node_id}});
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>ilikeit</title>
 </node>

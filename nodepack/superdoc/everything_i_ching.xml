@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 my %figures = (
@@ -125,6 +126,5 @@ $str;
 &lt;i&gt;The [Everything I Ching] is brought to you by [The Gilded Frame] and [nate]&lt;/i&gt;
 &lt;p align=center&gt;&lt;font size=5&gt;[% linkNode($NODE, 're-divine') %]&lt;/font&gt;</doctext>
   <node_id>674792</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Everything I Ching</title>
 </node>

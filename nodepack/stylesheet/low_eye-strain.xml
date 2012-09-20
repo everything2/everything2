@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/*= autofix added basic compatibility rules */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {}
 .weblog .title {margin-bottom:0em;font-weight:bold;font-size:107%;}
@@ -782,6 +783,5 @@ body div#surveymessage {
 margin-top: 55px !important;
 }</doctext>
   <node_id>1931383</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Low eye-strain</title>
 </node>

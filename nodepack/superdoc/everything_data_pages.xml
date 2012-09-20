@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;A note to client developers:
 The following are Everything Data Pages (nodetype=&lt;code&gt;fullpage&lt;/code&gt;) -- you may write scripts to parse them and provide you with entertaining
 server-side data.  With the [New Nodes XML Ticker] and the [User Search XML Ticker] please don't hit it 
@@ -71,6 +72,5 @@ $str;
 
 </doctext>
   <node_id>781552</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Everything Data Pages</title>
 </node>

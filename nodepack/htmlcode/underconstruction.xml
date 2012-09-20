@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1300727</node_id>
+  <title>UnderConstruction</title>
   <code>#this just gives an &quot;under construction&quot; notice
 #first parameter is user that is making change, so we know who to blame :)
 #other parameters are additional text to display
@@ -23,6 +25,4 @@ $str .= '&lt;/p&gt;
 &lt;/span&gt;';
 
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>UnderConstruction</title>
 </node>

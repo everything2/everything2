@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;This thing adds a list of users to a given usergroup. It's a &lt;strike&gt;little bit &lt;/strike&gt;&lt;ins&gt;lot&lt;/ins&gt; more convenient than the node bucket. &lt;/p&gt;
 
 [{openform2:pressgang}]
@@ -86,6 +87,5 @@ if ( defined $query-&gt;param( 'usernames' ) &amp;&amp; defined $query-&gt;param
 &lt;p&gt;&lt;i&gt;Bug reports go to [JayBonci]. &lt;/i&gt;&lt;/p&gt;
 </doctext>
   <node_id>1176730</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Usergroup Press Gang</title>
 </node>

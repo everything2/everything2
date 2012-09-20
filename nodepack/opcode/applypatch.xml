@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1353244</node_id>
+  <title>applypatch</title>
   <code>return -1 unless isGod($USER);
 my $patchid = $query-&gt;param(&quot;patch_id&quot;);
 return -2 unless $patchid;
@@ -48,6 +50,4 @@ $DB-&gt;sqlInsert(&quot;message&quot;, {author_user=&gt;getId(getNode(&quot;root
 
 return updateNode($TOPATCH, $USER);
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>applypatch</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 delete $$VARS{aug2011survey};
@@ -26,6 +27,5 @@ Participate in a Michigan State University research project about how people use
 
 %]</doctext>
   <node_id>700295</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>vttest</title>
 </node>

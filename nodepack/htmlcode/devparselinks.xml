@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1135571</node_id>
+  <title>devparselinks</title>
   <code>  my ($field) = @_;
  my $text = $$NODE{$field};
  #$text =~ s/\[(.*?)\]/linkNodeTitle ($1, $NODE)/egs;
@@ -7,6 +9,4 @@ $text=~s/(?&lt;!\[)\[(?!\[)(.*?)(?&lt;!\])\](?!\])/linkNodeTitle ($1, $NODE)/egs
         $text=~s/\[{2,}/[/gs; 
         $text=~s/\]{2,}/]/gs; 
  unMSify($text);  #take out microsoft chars</code>
-  <type_nodetype>4</type_nodetype>
-  <title>devparselinks</title>
 </node>

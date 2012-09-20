@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;!-- This doc contains perl code. Please leave it as a superdoc. love, maus --&gt;
 
 &lt;p&gt;There are four communication channels for members of the Everything2 community:&lt;/p&gt;
@@ -157,6 +158,5 @@ which would send the message to everybody in the [edev] group, and make them all
 &lt;p align=center&gt;&lt;em&gt;back to&lt;/em&gt;&lt;br /&gt;
 &lt;strong&gt;[Everything FAQ]&lt;/strong&gt;&lt;/p&gt;</doctext>
   <node_id>747657</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Archived E2 FAQ: Chatterbox</title>
 </node>

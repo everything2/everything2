@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;
 Wow! Look at all those bugs! (Many more are on SourceForge.net under the project &lt;a href=&quot;https://sourceforge.net/projects/everything2&quot;&gt;everything2&lt;/a&gt; &lt;small&gt;(external link)&lt;/small&gt;.)
 &lt;/p&gt;
@@ -95,6 +96,5 @@ $str .= '&lt;/table&gt;'.$pC;
 $str;
 %]</doctext>
   <node_id>1167437</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Browse Bugs</title>
 </node>

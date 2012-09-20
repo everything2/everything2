@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;h4&gt;What It Does&lt;/h4&gt;
 
 &lt;ul&gt;
@@ -106,6 +107,5 @@ return $str;
 
 </doctext>
   <node_id>1957344</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>The Recommender</title>
 </node>

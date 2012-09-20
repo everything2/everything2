@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;&lt;b&gt;To Do&lt;/b&gt;&lt;/p&gt;
 
 &lt;ul&gt;
@@ -12,6 +13,5 @@
 &lt;li&gt;&lt;s&gt;Full Text Search&lt;/s&gt;&lt;/li&gt;
 &lt;/ul&gt;</doctext>
   <node_id>1919409</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Fixing The Guest User Experience</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>if (typeof($) == 'undefined') {
   var $ = function (o) {
 	  return document.getElementById(o);
@@ -272,6 +273,5 @@ var checkInterval = function () {
 var interval = window.setInterval(checkInterval, 1000);
 </doctext>
   <node_id>1984562</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>Swap's async voting</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>451267</type_nodetype>
   <doctext>[%
 #generates messages for a given user
 #optional query parameters:
@@ -73,6 +74,5 @@ $nl.$XG-&gt;PRIVATE_MESSAGES($str.$nl);
 
 %]</doctext>
   <node_id>600299</node_id>
-  <type_nodetype>451267</type_nodetype>
   <title>private message XML ticker</title>
 </node>

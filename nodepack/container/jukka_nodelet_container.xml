@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>2</type_nodetype>
   <parent_container>0</parent_container>
   <node_id>415064</node_id>
   <context>[%
@@ -15,6 +16,5 @@ else {
 $str;
 %]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;span&gt;CONTAINED_STUFF&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;</context>
-  <type_nodetype>2</type_nodetype>
   <title>jukka nodelet container</title>
 </node>

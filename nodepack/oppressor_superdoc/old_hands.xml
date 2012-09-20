@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>[%
 
 my $start = int($query-&gt;param('start'));
@@ -51,6 +52,5 @@ $str .= '&lt;/table&gt;' . $nav;
 $str;
 %]</doctext>
   <node_id>1998761</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>Old hands</title>
 </node>

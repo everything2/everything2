@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>485617</node_id>
+  <title>removeweblog</title>
   <code># This removes one item from a weblog
 my $src = int($query-&gt;param(&quot;source&quot;));
 my $to_node = int($query-&gt;param(&quot;to_node&quot;));
@@ -15,6 +17,4 @@ return unless $src &amp;&amp; $to_node ;
 $DB-&gt;getDatabaseHandle()-&gt;do(&quot;update weblog set removedby_user=$$USER{ user_id } where weblog_id=$src &amp;&amp; to_node=$to_node&quot;);
 
 htmlcode('update New Writeups data') if $src == 855769; # evil magic number for Node Row: this won't be needed for long</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>removeweblog</title>
 </node>

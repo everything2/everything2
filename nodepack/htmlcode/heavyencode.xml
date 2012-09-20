@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1394533</node_id>
+  <title>heavyencode</title>
   <code>my ($html) = @_;
                my $outstr = &quot;&quot;;
                 foreach my $char(split(&quot;&quot;,$html))
@@ -15,6 +17,4 @@
                 }
                 return $outstr;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>heavyencode</title>
 </node>

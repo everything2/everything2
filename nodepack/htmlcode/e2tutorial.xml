@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1177302</node_id>
+  <title>e2tutorial</title>
   <code>#return unless ($$USER{user_id} == 459692);
 return unless exists($$VARS{tutorial});
 
@@ -23,6 +25,4 @@ $str .= parseLinks(parseCode($$tutorialnode{doctext}));
 $str .= &quot;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/center&gt;&quot;;
 
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>e2tutorial</title>
 </node>

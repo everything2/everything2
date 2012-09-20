@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2052743</node_id>
+  <title>showpoll</title>
   <code>my ($POLL, $showStatus) = @_;
 getRef $POLL;
 $POLL ||= $NODE;
@@ -83,6 +85,4 @@ unless ($vote &gt; -1 or $$POLL{poll_status} eq 'closed'){
 
 return $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>showpoll</title>
 </node>

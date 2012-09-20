@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>47</node_id>
+  <title>searchform</title>
   <code> 	my ($PARAM) = @_;
  
  	my $str = $query-&gt;start_form(&quot;GET&quot;,$query-&gt;script_name).
@@ -17,6 +19,4 @@
 
 $str;
  </code>
-  <type_nodetype>4</type_nodetype>
-  <title>searchform</title>
 </node>

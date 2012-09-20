@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>function replyTo(f, s, c) {
        if (c || document.forms[f].setvar_autofillInbox.checked) {
           document.forms[f].message.value = &quot;/msg &quot;+s+&quot; &quot;;
@@ -22,6 +23,5 @@ function checkAll(f){
 }
 </doctext>
   <node_id>2069769</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>gab central javascript</title>
 </node>

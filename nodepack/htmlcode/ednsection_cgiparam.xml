@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>837958</node_id>
+  <title>ednsection_cgiparam</title>
   <code>my $str = '';
 $str = '[&lt;i&gt;Ajax call parameters, not original page parameters&lt;/i&gt;]&lt;br&gt;' if $query-&gt;param('displaytype')eq 'ajaxupdate';
 my $c=0;
@@ -34,6 +36,4 @@ foreach my $var ($query-&gt;param) {
 }
 $str = &quot;&lt;small&gt;$c&lt;br&gt;&lt;/small&gt;\n&quot;.$str if $c;
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>ednsection_cgiparam</title>
 </node>

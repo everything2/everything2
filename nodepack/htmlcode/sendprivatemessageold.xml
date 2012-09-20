@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1319377</node_id>
+  <title>sendPrivateMessageOld</title>
   <code>#sends a private message
 #
 #usage, examples, etc. in this node's &quot;help&quot; view:
@@ -1070,6 +1072,4 @@ $query-&gt;param($qpm,$m);	#inform in chatterbox
 delete $HTMLVARS{msgparams} unless $keepParams;	#this htmlcode's parameters no longer needed
 
 return $showWhatSaid ? $m : undef;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>sendPrivateMessageOld</title>
 </node>

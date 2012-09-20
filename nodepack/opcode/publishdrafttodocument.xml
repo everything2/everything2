@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>2037809</node_id>
+  <title>publishdrafttodocument</title>
   <code>my $TYPE = getType('document');
 return unless canCreateNode($USER, $TYPE);
 
@@ -21,6 +23,4 @@ $DB -&gt; {cache} -&gt; removeNode($draft); # and it's in the wrong typecache, s
 
 $query -&gt; delete('node');
 $query -&gt; param('node_id', $nid);</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>publishdrafttodocument</title>
 </node>

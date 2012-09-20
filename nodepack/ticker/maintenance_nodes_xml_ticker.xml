@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1252389</type_nodetype>
   <doctext>[%
   my $V = getVars(getNode(&quot;boring heaven nodes&quot;, &quot;setting&quot;));
   my $nodelist;
@@ -18,6 +19,5 @@
 
 %]</doctext>
   <node_id>1298521</node_id>
-  <type_nodetype>1252389</type_nodetype>
   <title>Maintenance Nodes XML Ticker</title>
 </node>

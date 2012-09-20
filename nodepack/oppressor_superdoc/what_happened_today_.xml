@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;p&gt;This is the contents of today's [On This Day] nodelet. It is populated by default using the feed from &lt;a href=&quot;http://news.bbc.co.uk/onthisday/&quot;&gt;the BBC&lt;/a&gt;. However, we probably want to edit this to add or remove items and to add links. Any changes made here will show up again every year.&lt;/p&gt;
 &lt;form method=&quot;post&quot; enctype=&quot;application/x-www-form-urlencoded&quot;&gt;
 [%
@@ -30,6 +31,5 @@ $str;
 %]
 &lt;input type='submit' name='submit' value='Save'&gt;&lt;/form&gt;</doctext>
   <node_id>1838080</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>What happened today?</title>
 </node>

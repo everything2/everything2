@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1186040</node_id>
+  <title>logWarning</title>
   <code>#call this when there is something strange happening, but it isn't
 #  a full blown Server Error!
 #
@@ -73,6 +75,4 @@ if(exists $HTMLVARS{group_gods}{$UID}) {
 	}
 }
 '&lt;small&gt;( &lt;span style=&quot;color: blue;&quot;&gt;Server Warning!&lt;/span&gt; &lt;small&gt;(don\'t worry about this)&lt;/small&gt; '.$info.' )&lt;/small&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>logWarning</title>
 </node>

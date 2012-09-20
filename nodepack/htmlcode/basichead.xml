@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>27</node_id>
+  <title>basichead</title>
   <code>&quot;&lt;head&gt;
 &lt;title&gt;$$NODE{title}&lt;/title&gt;&quot; . 
 ( ( $$THEME{ 'oddRowColor' } )
@@ -19,6 +21,4 @@
 . htmlcode('static javascript')
 . htmlcode('googleanalytics')
 . &quot;&lt;/head&gt;&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>basichead</title>
 </node>

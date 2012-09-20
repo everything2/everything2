@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1175807</node_id>
+  <title>rtnsection_edc</title>
   <code>#ed Cools - See [ReadThis]
 
   my $str = '&lt;ul class=&quot;linklist&quot;&gt;';
@@ -32,6 +34,4 @@
 $str.='&lt;/ul&gt;';
 
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>rtnsection_edc</title>
 </node>

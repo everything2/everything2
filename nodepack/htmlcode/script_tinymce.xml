@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1920625</node_id>
+  <title>script_tinyMCE</title>
   <code>my ($elements, $textarea) = @_;
 my $mode = 'none';
 my ($hideCSS, $hideJS, $preamble) = ('', '', '');
@@ -107,6 +109,4 @@ function toggleEditor(id) {
 
 &lt;/script&gt;');
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>script_tinyMCE</title>
 </node>

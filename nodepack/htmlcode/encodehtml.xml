@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>34</node_id>
+  <title>encodehtml</title>
   <code>my ($field) = @_;
 my $text = $$NODE{field};
 
@@ -9,6 +11,4 @@ $text =~ s/\&quot;/\&amp;quot\;/g;
 
 $text;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>encodehtml</title>
 </node>

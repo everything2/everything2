@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;h2&gt;CST review archive 15&lt;/h2&gt;
 &lt;p&gt;
 This is a storage node for CST reviews. Contents are moved her from [CST_Chat].
@@ -896,6 +897,5 @@ See also Quest Storage collabs [CST_Storage_1|1], [CST_Storage_2|2], [CST_Storag
 
 </doctext>
   <node_id>1695303</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>CST_Storage_15</title>
 </node>

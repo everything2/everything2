@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>296</node_id>
+  <title>classic iconbar</title>
   <code>  my $str;
   $str.= linkNode($query-&gt;param(&quot;lastnode_id&quot;), '&lt;img src=&quot;http://static.everything2.com/e2back.gif&quot; border=0 
 	height=22 width=22 alt=&quot;last node&quot;&gt;') if $query-&gt;param(&quot;lastnode_id&quot;); 
@@ -8,6 +10,4 @@
   $str.= linkNodeTitle(&quot;\&quot;Everything University\&quot;|&lt;img src=&quot;http://static.everything2.com/e2help.gif&quot; border=0 
 	height=22 width=22 alt=\&quot;help\&quot;&gt;&quot;);
   $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>classic iconbar</title>
 </node>

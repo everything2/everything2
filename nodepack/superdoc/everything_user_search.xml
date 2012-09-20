@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;Here you can list all the writeups contributed by any user.
 &lt;/p&gt;
 
@@ -325,6 +326,5 @@ return &quot;$head
 %]
 </doctext>
   <node_id>1223826</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Everything User Search</title>
 </node>

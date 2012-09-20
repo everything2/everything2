@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1116961</node_id>
+  <title>vitsection_maintenance</title>
   <code>use Everything::Experience;
 
 my $str =&quot;&lt;ul&gt;&quot;;
@@ -16,6 +18,4 @@ $str.=&quot;&lt;/ul&gt;&quot;;
 
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>vitsection_maintenance</title>
 </node>

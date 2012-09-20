@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>444246</node_id>
+  <title>votefoot</title>
   <code>my $uid = $$USER{user_id}||$HTMLVARS{guest_user};
 return $query-&gt;end_form if $$NODE{type}{title} eq &quot;e2node&quot; &amp;&amp; not $$NODE{group} || $uid==$HTMLVARS{guest_user} ;
 my $isKiller = (exists $HTMLVARS{'group_content editors'}{$uid} || exists $HTMLVARS{group_gods}{$uid});
@@ -19,6 +21,4 @@ $killButton = $isKiller &amp;&amp; $$NODE{type}{title} ne 'draft' ? &quot;&lt;p&
 
 return sprintf($rowFormat,
 	$voteButton, $killButton) . $query-&gt;end_form;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>votefoot</title>
 </node>

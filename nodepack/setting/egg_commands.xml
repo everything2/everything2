@@ -1,12 +1,11 @@
 <node>
-  <node_id>1922142</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>pies</value>
     <key>pie</key>
   </vars>
   <vars>
-    <value>tomatoes</value>
+    <value>throws tomatoes at</value>
     <key>tomato</key>
   </vars>
   <vars>
@@ -22,7 +21,7 @@
     <key>beer</key>
   </vars>
   <vars>
-    <value>defenestrates</value>
+    <value>flies the Jolly Roger, and boards</value>
     <key>special</key>
   </vars>
   <vars>
@@ -81,5 +80,6 @@
     <value>makes a nice cup of tea for</value>
     <key>tea</key>
   </vars>
+  <node_id>1922142</node_id>
   <title>egg commands</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;style type=&quot;text/css&quot;&gt;
 .mytable th, .mytable td
 {
@@ -55,6 +56,5 @@ $str;
 
 &lt;p&gt;&amp;nbsp;&lt;/p&gt;</doctext>
   <node_id>1986939</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Bounty Hunters Wanted</title>
 </node>

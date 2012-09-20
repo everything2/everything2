@@ -1,5 +1,4 @@
 <node>
-  <node_id>314</node_id>
   <type_nodetype>152</type_nodetype>
   <vars>
     <value>0.5.1.3</value>
@@ -13,5 +12,6 @@
     <value>Nodeball to keep track of the Everything 2 site functionality   </value>
     <key>description</key>
   </vars>
+  <node_id>314</node_id>
   <title>eclone nodeball</title>
 </node>

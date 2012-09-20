@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1873508</node_id>
+  <title>ajaxVar</title>
   <code>my ($name, $value) = @_;
 
 my $idList = '[,\\d]*' ;
@@ -30,6 +32,4 @@ my $retval = $$VARS{$name}||'0';
 
 return &quot;{name: '$name', value: '$retval', oldval: '$oldVal'}&quot;;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>ajaxVar</title>
 </node>

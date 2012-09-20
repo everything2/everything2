@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;p&gt;
 [Simulacron3[user]] pointed out to me that most of the writeups in his list of [Between the Cracks] were either unvoteable or appeared to already have been voted on by him.  [Tem42[user]] had previously pointed a few writeups in similar states out to me, but I had figured there weren't many then.  I went looking for all writeups which were unparented.  This is a list of the 61 writeups which I found in that process.  Except for some Webby writeups, [Fixing unparented writeups[scratch by OldMiner]|these have been fixed and should be visible in their parent e2nodes now].  In most cases, there are duplicate writeups by the same author, and I need to compare the two, [Vote Copying Code for Duplicate Writeups[scratch by OldMiner]|consolidate the vote records], and delete the older one, if they differ.  (Or just blow away one if their text is identical.)  Please don't nuke any of these without checking with somebody in [e2gods[usergroup]] first.
 &lt;br&gt;
@@ -51,6 +52,5 @@ $str .= &quot;&lt;/ol&gt;\n&quot;;
 return $str;
 %]</doctext>
   <node_id>2007050</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>repairing writeups</title>
 </node>

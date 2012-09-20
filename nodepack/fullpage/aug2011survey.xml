@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>451267</type_nodetype>
   <doctext>[%
 
 return if $$USER{ user_id } == $HTMLVARS{ guest_user };
@@ -17,6 +18,5 @@ One sec, while we send you to the survey
 &lt;/html&gt;'
 %]</doctext>
   <node_id>2050044</node_id>
-  <type_nodetype>451267</type_nodetype>
   <title>aug2011survey</title>
 </node>

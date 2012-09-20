@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/****** COLORS ******/
 
 body,
@@ -834,6 +835,5 @@ td {
 #chatterlight_hints { display: none; }
 </doctext>
   <node_id>1947443</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Kernel blue mod-test</title>
 </node>

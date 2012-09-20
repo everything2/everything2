@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>@import url(&quot;http://everything2.com/node/stylesheet/understatement?displaytype=view&quot;) ;
 /* LINKS */
 
@@ -64,6 +65,5 @@ td , th {
 	}
 </doctext>
   <node_id>1965286</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Bare Understatement</title>
 </node>

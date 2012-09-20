@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;this contains my working version version of [Everything User Search], originally copied Saturday, June 30, 2007&lt;/p&gt;
 
 &lt;p&gt;the new feature I'm working on adding is to allow the user to filter by writeup type; the new htmlcodes do most of the work: [selectWriteupTypes] creates the HTML form elements, and [selectWriteupTypesResults] converts the user selection into something easy for the code to use&lt;/p&gt;
@@ -376,6 +377,5 @@ $str .= &quot;&lt;/tr&gt;&lt;/table&gt;\n&quot;;
 $str;
 %]</doctext>
   <node_id>1375941</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>N-Wing scratch</title>
 </node>

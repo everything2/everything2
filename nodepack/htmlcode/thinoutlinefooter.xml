@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>539986</node_id>
+  <title>thinoutlinefooter</title>
   <code>
 return $$THEME{thinOutlineFooter} if exists $$THEME{thinOutlineFooter};
 my $str;
@@ -11,6 +13,4 @@ $str.=
 &lt;/tr&gt;
 &lt;/table&gt;&quot;;
 $str; </code>
-  <type_nodetype>4</type_nodetype>
-  <title>thinoutlinefooter</title>
 </node>

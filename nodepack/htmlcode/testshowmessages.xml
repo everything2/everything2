@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2044454</node_id>
+  <title>testshowmessages</title>
   <code>my ($maxmsgs,$showOpts) = @_;
 my $json = {};
 my $jsoncount = 1 if $showOpts =~ /j/;
@@ -259,6 +261,4 @@ if($totalMsg) {
 return $string unless $jsoncount;
 return $json;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>testshowmessages</title>
 </node>

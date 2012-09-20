@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>444704</node_id>
+  <title>bless</title>
   <code>return unless isGod($USER);
 my $U = $query-&gt;param('bless_id');
 $U = getNode($query-&gt;param(&quot;node&quot;), 'user') if ($query-&gt;param('node'));
@@ -30,6 +32,4 @@ $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' 
 updateNode($U, -1);
 
 adjustGP($U, $gp);</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>bless</title>
 </node>

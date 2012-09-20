@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;You walk up to the Everything Oracle, insert your coin, and ask the question that's most on your mind: DO I HAVE [SWINE FLU]???&lt;/p&gt;
 &lt;br&gt;The answer instantly flashes on the screen:&lt;br&gt;&lt;br&gt;
 &lt;p align=center&gt;
@@ -71,6 +72,5 @@ my @flu = (
 %]
 &lt;/p&gt;</doctext>
   <node_id>1984497</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Ask Everything: Do I have the Swine Flu?</title>
 </node>

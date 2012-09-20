@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1216679</node_id>
+  <title>newwriteups2</title>
   <code>my ($limit) = @_;
 $limit ||= 15;
 if($$USER{user_id} eq $HTMLVARS{guest_user}){
@@ -103,6 +105,4 @@ return $str;
 
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>newwriteups2</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>133</node_id>
+  <title>usersearchform</title>
   <code>my ($PARAM) = @_;
 
 my $default ='';
@@ -133,6 +135,4 @@ $str.=&quot;&lt;small&gt;&lt;small&gt;Full Text&lt;/small&gt;&lt;/small&gt;&quot
 
 #$str . '&lt;/small&gt;&lt;/small&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';
 $str . '&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>usersearchform</title>
 </node>

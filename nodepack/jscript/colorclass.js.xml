@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>//  JavaScript class for handling colors
 //  1/24/02
 
@@ -474,6 +475,5 @@ function initNamedColors() {
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------</doctext>
   <node_id>2069767</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>colorclass.js</title>
 </node>

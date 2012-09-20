@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>body{
 	background-color:#eef1ee;
 
@@ -427,6 +428,5 @@ big big big {
 	display:none;
 }</doctext>
   <node_id>1951996</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>STYLESHEET?!?!?!?!</title>
 </node>

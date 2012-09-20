@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1930136</node_id>
+  <title>testDisplayWriteupInfo</title>
   <code>#customized display of writeup information
 #pass (optional) writeup ID, (optional) things to show
 #updated: Wednesday, February 26, 2003 to prepare for making this work for header and/or footer (right now, this seems to do much unneeded caching, but it will serve a useful purpose later)
@@ -438,6 +440,4 @@ if($inHeader) {
 
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>testDisplayWriteupInfo</title>
 </node>

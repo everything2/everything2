@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 return &quot;This page will allow you to customise your view of the site if you sign up for an account.&quot; if (getId($USER) == $HTMLVARS{guest_user});
@@ -161,6 +162,5 @@ $str .= qq|&lt;p align=&quot;right&quot;&gt;$nextprev&lt;/p&gt;| if length($next
 return $str;
 %]</doctext>
   <node_id>1854411</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>The Catwalk</title>
 </node>

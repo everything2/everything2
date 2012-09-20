@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;div id=&quot;pagebody&quot;&gt;
 [%
 my $user = $query -&gt; param('other_user');
@@ -140,6 +141,5 @@ return htmlcode('editwriteup') unless $query -&gt; param('other_user');
 &lt;/form&gt;
 </doctext>
   <node_id>2035516</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Drafts</title>
 </node>

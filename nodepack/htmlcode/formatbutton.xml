@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1698043</node_id>
+  <title>formatButton</title>
   <code>#return '';
 
 # Create a 'format' button for a named element.
@@ -18,6 +20,4 @@ document.write(&quot;&lt;input type=\'button\' onClick=\'autoFormat(\&quot;'.$na
 // --&gt;&lt;/script&gt;';
 
 return $finalstr;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>formatButton</title>
 </node>

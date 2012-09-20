@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/*The basics*/
 body, table, td, th {
 	font-family: Georgia,&quot;Hoefler Text&quot;,&quot;Times New Roman&quot;,Times,serif;
@@ -479,6 +480,5 @@ a:link { color: inherit; text-decoration: none}
 
 }</doctext>
   <node_id>1928497</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>bookworm</title>
 </node>

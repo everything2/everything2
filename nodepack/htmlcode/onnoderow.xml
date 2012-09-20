@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1875983</node_id>
+  <title>onNodeRow</title>
   <code>my ($nodeID) = @_;
 
 return 0 unless $nodeID;
@@ -7,6 +9,4 @@ return 0 unless $nodeID;
 my $nr = getId(getNode('node row', 'superdoc'));
 
 return $DB-&gt;sqlSelect('linkedby_user', 'weblog', &quot;weblog_id=$nr and to_node=$nodeID limit 1&quot;) || 0;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>onNodeRow</title>
 </node>

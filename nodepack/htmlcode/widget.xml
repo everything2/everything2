@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2005525</node_id>
+  <title>widget</title>
   <code># first two arguments for the widget, second two for the opener link
 # if no $linktext is provided, there will be no opener link
 # $parameters contains parameters for the link, including
@@ -41,6 +43,4 @@ return $str unless $linktext ;
 delete $$parameters{ -closetitle } ;
 $$parameters{ displaytype } = $query -&gt; param( 'displaytype' ) if $query -&gt; param( 'displaytype' ) ;
 return $str.linkNode( $N , $linktext , $parameters ) ;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>widget</title>
 </node>

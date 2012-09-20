@@ -1,9 +1,9 @@
 <node>
+  <type_nodetype>2</type_nodetype>
   <parent_container>0</parent_container>
   <node_id>269</node_id>
   <context>&lt;table cellspacing=0 cellpadding=0 border=0 width=100%&gt;
 &lt;tr&gt;&lt;td&gt;CONTAINED_STUFF&lt;/td&gt;&lt;td bgcolor=#333333 width=1&gt;[{onepix}]&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td bgcolor=#333333&gt;[{onepix}]&lt;/td&gt;&lt;td bgcolor=#333333&gt;[{onepix}]&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</context>
-  <type_nodetype>2</type_nodetype>
   <title>shadow container</title>
 </node>

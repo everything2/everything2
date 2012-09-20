@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1878244</node_id>
+  <title>hasJS</title>
   <code>my ($jsNode) = @_;
 
 my $JS;
@@ -15,6 +17,4 @@ return unless $JS;
 
 return ($$VARS{includedJS} =~ /$JS/);
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>hasJS</title>
 </node>

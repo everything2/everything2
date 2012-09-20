@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1963596</node_id>
+  <title>statsection_fun</title>
   <code>use Everything::Experience;
 my $str;
 
@@ -16,6 +18,4 @@ $str .= genRow('Easter Eggs',$$VARS{easter_eggs});
 $str .= genRow('Tokens',$$VARS{tokens});
 
 return '&lt;div&gt;'.$str.'&lt;/div&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>statsection_fun</title>
 </node>

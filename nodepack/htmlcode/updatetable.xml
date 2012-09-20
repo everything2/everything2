@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>183</node_id>
+  <title>updatetable</title>
   <code># This checks the CGI params to see what we need to do
 # to this table.
 my ($table) = @_;
@@ -39,6 +41,4 @@ if((defined $query-&gt;param(&quot;fieldname_new&quot;)) &amp;&amp;
 
 &quot;&quot;;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>updatetable</title>
 </node>

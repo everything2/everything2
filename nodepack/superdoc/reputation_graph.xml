@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 # Alright, so this might be a [lot|little] hacky to any of you perl gurus who are looking
@@ -213,6 +214,5 @@ $str .= '&lt;p style=&quot;text-align:right&quot;&gt;Bugs to [in10se]&lt;/p&gt;'
 return $str;
 %]</doctext>
   <node_id>1948812</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Reputation Graph</title>
 </node>

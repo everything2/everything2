@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 my @verbNouns=('Buffalo', 'buffalo', 'police', 'people', 'bream', 'perch', 'char', 'dice', 'cod', 'smelt', 'pants');
@@ -39,6 +40,5 @@ return $str;
 
 %]</doctext>
   <node_id>2069205</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Buffalo Haiku Generator</title>
 </node>

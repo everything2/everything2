@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* Thanks to ascorbic, of course, for the skeleton. */
 /* This is made for my own convenience only; there is little to no original work here. I'm just playing. My CSS skills aren't so abysmal that I couldn't make my own if I wanted to. */
 
@@ -325,6 +326,5 @@ font-size: inherit;
 }
 </doctext>
   <node_id>1917896</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Anything I put here is going to sound pretentious</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1975520</node_id>
+  <title>convertdatetoepoch</title>
   <code>my ($date) = @_;
 
 my ($d, $t) = split(' ', $date);
@@ -11,6 +13,4 @@ use Date::Calc qw(Mktime);
 my $epoch = Mktime($year,$month,$day, $hour,$min,$sec);
 
 return $epoch;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>convertdatetoepoch</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1882499</node_id>
+  <title>weblogify</title>
   <code>my $disp = $query-&gt;param(&quot;ify_display&quot;);
 
 my $nid =  $query-&gt;param(&quot;node_id&quot;);
@@ -40,6 +42,4 @@ else {
 
 $$N{doctext} = $$N{doctext} . &quot;[{weblog:3}]&quot;;
 updateNode($N,-1);</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>weblogify</title>
 </node>

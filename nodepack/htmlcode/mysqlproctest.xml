@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2069688</node_id>
+  <title>mysqlproctest</title>
   <code>my $procname = $NODE-&gt;{title};
 my $parameters = $NODE-&gt;{parameters};
 my $proctext = $NODE-&gt;{doctext};
@@ -20,6 +22,4 @@ if($value-&gt;[0] == 0)
 {
   return &quot;Mysql procedure creation failed: &quot;.$value-&gt;[1];
 }</code>
-  <type_nodetype>4</type_nodetype>
-  <title>mysqlproctest</title>
 </node>

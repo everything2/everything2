@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>// before moving stuff from here into production in [Everything2 Ajax] change references to it from E2AJAX to e2.ajax.
 
 E2AJAX = e2.ajax = jQuery.extend(e2.ajax,{
@@ -167,6 +168,5 @@ E2AJAX = e2.ajax = jQuery.extend(e2.ajax,{
 	}
 });</doctext>
   <node_id>2024790</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>Additional Everything2 Ajax</title>
 </node>

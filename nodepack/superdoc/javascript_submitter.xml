@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 # Replaced kthejoker's userid with mine  -ap
 return 'Nothing to see here.' unless ($$USER{user_id} == 1009226) || ($$USER{user_id} == 974148);
@@ -28,6 +29,5 @@ return $str;
 
 %]</doctext>
   <node_id>1872468</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Javascript Submitter</title>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <node_id>1468368</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>An [ENN]-style listing with 25 as the default</value>
@@ -137,5 +136,6 @@
     <value>Javascript utility to alphabetize items.</value>
     <key>1213001</key>
   </vars>
+  <node_id>1468368</node_id>
   <title>superdoc documentation</title>
 </node>

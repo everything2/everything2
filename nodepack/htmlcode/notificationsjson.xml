@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2003576</node_id>
+  <title>notificationsJSON</title>
   <code>my $limit = 10;
 my $wrap = shift;
 
@@ -109,6 +111,4 @@ foreach my $notify (@$db_notifieds) {
 
 return $notification_list;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>notificationsJSON</title>
 </node>

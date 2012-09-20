@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1168156</node_id>
+  <title>displayUserText</title>
   <code>my $txt;
 
 if($DB-&gt;isApproved($NODE, getNode('users with codehome', 'nodegroup')))
@@ -16,6 +18,4 @@ else
 
 $txt = parseLinks($txt) unless($query-&gt;param(&quot;links_noparse&quot;));
 return $txt;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>displayUserText</title>
 </node>

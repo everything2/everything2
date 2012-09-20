@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>e2.nodeletCollapser = {
 	save: (e2.ajax &amp;&amp; !e2.guest ?
 		function(id){
@@ -54,6 +55,5 @@ $(function(){
 	}
 });</doctext>
   <node_id>1872965</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>Zen Nodelet Collapser</title>
 </node>

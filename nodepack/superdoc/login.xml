@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $str = '';
 
@@ -38,6 +39,5 @@ $str .= &quot;&lt;form method=\&quot;POST\&quot; action=\&quot;&quot;.$ENV{SCRIP
 $str;
 %]</doctext>
   <node_id>109</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>login</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1522386</node_id>
+  <title>time_cat</title>
   <code>
 my $sept = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;type_nodetype=116 and createtime like '%2004-09%'&quot;,&quot;order by createtime&quot;);
 my $oct = $DB-&gt;sqlSelectMany (&quot;*&quot;,&quot;node&quot;,&quot;type_nodetype=116 and createtime like '%2004-10%'&quot;,&quot;order by createtime&quot;);
@@ -514,6 +516,4 @@ $str .= &quot;&lt;/script&gt;&quot;;
 return $str;
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>time_cat</title>
 </node>

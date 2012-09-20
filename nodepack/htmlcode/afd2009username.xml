@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1980352</node_id>
+  <title>afd2009Username</title>
   <code>##SWAP WUZ HERE LOL
 
 ##SWAPS DUM LOL
@@ -102,6 +104,4 @@ my $numdead = scalar @deadpeople;
 
 return $deadpeople[$uid % $numdead];
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>afd2009Username</title>
 </node>

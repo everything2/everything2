@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1173524</node_id>
+  <title>showdebate</title>
   <code>#!/bin/perl
 use strict;
 
@@ -57,6 +59,4 @@ if ( $$NODE{ 'root_debatecomment' } &amp;&amp; $$NODE{ 'root_debatecomment' } !=
 
 $str . htmlcode( 'displaydebatecomment', $NODE, $displaymode );
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>showdebate</title>
 </node>

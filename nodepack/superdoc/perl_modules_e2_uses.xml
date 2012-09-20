@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $introMsg = &lt;&lt;ENDINTRO;
 &lt;p&gt;2009 July 11&lt;/p&gt;
@@ -60,6 +61,5 @@ return $str;
 
 %]</doctext>
   <node_id>1992128</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Perl modules E2 uses</title>
 </node>

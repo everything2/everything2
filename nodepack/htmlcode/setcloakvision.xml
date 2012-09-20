@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1276614</node_id>
+  <title>setCloakVision</title>
   <code>#this sets HTMLVARS to the appropriate cloaking and infravision level for the current user
 
 #this discription should end up in a doc somewhere
@@ -57,6 +59,4 @@ $HTMLVARS{arg}{userCloak}=$lCloak;
 $query-&gt;param('setCloakVision','see'.$lSee.'.cloak'.$lCloak);
 
 return 'see'.$lSee.'.cloak'.$lCloak;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>setCloakVision</title>
 </node>

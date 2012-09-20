@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* This is the skeleton stylesheet for the zen theme, by ascorbic */
 /* You may use this file as a foundation for any new work, but you may find it easier to start from scratch. */
 /* Not all elements are defined in this file, so you'll most likely want to refer to the html as well. */
@@ -413,6 +414,5 @@ padding: 0 200px 0 100px;
 
 }</doctext>
   <node_id>1855833</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Balloon fiesta</title>
 </node>

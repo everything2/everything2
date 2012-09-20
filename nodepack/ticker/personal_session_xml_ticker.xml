@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1252389</type_nodetype>
   <doctext>&lt;?xml version=&quot;1.0&quot;?&gt; 
 &lt;e2session&gt;
 [%
@@ -77,6 +78,5 @@ $str.=&quot;&lt;/forbiddance&gt;&quot;;
 %]
 &lt;/e2session&gt;</doctext>
   <node_id>1262798</node_id>
-  <type_nodetype>1252389</type_nodetype>
   <title>Personal Session XML Ticker</title>
 </node>

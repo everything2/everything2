@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[{UnderConstruction:N-Wing,This can't be used by anyone yet, since it is still in development.}]
 
 &lt;p&gt;Use this &lt;strong&gt;Outside URLs nodelet editor&lt;/strong&gt; to change your links that appear in the &quot;Outside URLs&quot; nodelet.[%
@@ -133,6 +134,5 @@ $str .= '&lt;br /&gt;'.$query-&gt;submit('changeoutsideurls',$btns[rand(int(@btn
 return $str;
 %]&lt;/p&gt;</doctext>
   <node_id>1310129</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Outside URLs nodelet editor</title>
 </node>

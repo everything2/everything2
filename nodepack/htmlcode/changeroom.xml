@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>545563</node_id>
+  <title>changeroom</title>
   <code>return if getId($USER) == $HTMLVARS{guest_user};
 return if $$USER{title} eq 'everyone';
 return (&quot;You are locked in your current room for &quot; . ceil(($$VARS{lockedin} - time)/ 60) . &quot; minutes.&lt;br&gt;&lt;br&gt;&quot;) if ($$VARS{lockedin} &gt; time);
@@ -83,6 +85,4 @@ $str.=$query-&gt;submit('sexiscool','go');
 $str.='&lt;/form&gt;&lt;/div&gt;';
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>changeroom</title>
 </node>

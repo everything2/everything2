@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1991447</node_id>
+  <title>assign_patch</title>
   <code>#This should only be called from patch display page --[Swap]
 my ($patch_id) = @_;
 
@@ -41,6 +43,4 @@ $str .= $query -&gt; popup_menu(&quot;assigned_to&quot;, \@splat_ids,
 return $str;
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>assign_patch</title>
 </node>

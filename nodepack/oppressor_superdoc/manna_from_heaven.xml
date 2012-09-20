@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>[%
 
 my $str;
@@ -56,6 +57,5 @@ $str;
 
 %]</doctext>
   <node_id>1865723</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>Manna from heaven</title>
 </node>

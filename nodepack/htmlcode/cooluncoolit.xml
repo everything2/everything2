@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>987796</node_id>
+  <title>CoolUncoolIt</title>
   <code>my ($N) = @_;
 $N = $NODE unless $N;
 getRef($N);
@@ -34,6 +36,4 @@ my $op = $$VARS{coolsafety} ? 'confirmop' : 'op'  ;
 $str . ' &lt;b&gt;'.linkNode( $NODE , 'C?' , { $op=&gt;'cool', cool_id=&gt;$$N{ node_id }, lastnode_id =&gt; 0 ,
 	-title =&gt; &quot;C! $author&quot;.&quot;'s writeup&quot; , -class =&gt; &quot;action&quot; }).'&lt;/b&gt;';
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>CoolUncoolIt</title>
 </node>

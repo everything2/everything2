@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 return &quot;&lt;p&gt;Oh good, there's nothing there!&lt;/p&gt; &lt;p&gt;(It looks like you nuked it.)&lt;/p&gt;&quot;
@@ -49,6 +50,5 @@ return qq'&lt;p&gt;Sorry, but nothing matching &quot;$nt&quot; was found.$str'
 %]
 </doctext>
   <node_id>668164</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Nothing Found</title>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <node_id>1986569</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>N/A</value>
@@ -177,5 +176,6 @@
     <value></value>
     <key>avalyn</key>
   </vars>
+  <node_id>1986569</node_id>
   <title>bounties</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>954666</node_id>
+  <title>getBorderSize</title>
   <code>#returns the given border size
 #no borders (and hence sums) will be negative
 #global variable used:
@@ -23,6 +25,4 @@
 	$val = 0 if $val&lt;0;
 	return $val;
 #}</code>
-  <type_nodetype>4</type_nodetype>
-  <title>getBorderSize</title>
 </node>

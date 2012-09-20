@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my @stuff = (&quot;Yeah, yeah, get a room...&quot;, &quot;I'll take door number three...&quot;, &quot;Hey, that's a llama back there!&quot;, &quot;Three doors, down, on your right, just past [Political Asylum]&quot;, &quot;They can't ALL be locked!?&quot;, &quot;Why be so stuffed up in a room? [Go outside]!&quot;);
 
@@ -25,6 +26,5 @@ foreach(sort(keys %$rooms))
   return $str;
 %]</doctext>
   <node_id>1253993</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Available Rooms</title>
 </node>

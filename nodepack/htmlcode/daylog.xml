@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>401321</node_id>
+  <title>daylog</title>
   <code>my @months = qw(January February March April May June
 	July August September October November December);
 
@@ -22,6 +24,4 @@ parseLinks(qq'&lt;ul class=&quot;linklist&quot;&gt;
 	&lt;li class=&quot;loglink&quot;&gt;[Log Archive[superdoc]]&lt;/li&gt;
 &lt;/ul&gt;');
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>daylog</title>
 </node>

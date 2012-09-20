@@ -1,8 +1,8 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2003804</node_id>
+  <title>coolcount</title>
   <code>my $user_id = shift;
 
 return $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;coolwriteups JOIN node ON coolwriteups_id = node_id&quot;,&quot;author_user=$user_id and type_nodetype=117&quot;);</code>
-  <type_nodetype>4</type_nodetype>
-  <title>coolcount</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2027663</node_id>
+  <title>lock user account</title>
   <code>my ($uid) = @_;
 getRef $uid;
 return unless $uid;
@@ -31,6 +33,4 @@ delete $$V{skratchShare};
 setVars($uid, $V);
 updateNode($uid, -1);
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>lock user account</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>2</type_nodetype>
   <parent_container>0</parent_container>
   <node_id>22</node_id>
   <context>&lt;html&gt;
@@ -8,6 +9,5 @@
 CONTAINED_STUFF
 &lt;/body&gt;
 &lt;/html&gt;</context>
-  <type_nodetype>2</type_nodetype>
   <title>stdcontainer</title>
 </node>

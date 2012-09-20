@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[%
 my $str = &quot;&quot;;
 my $N = getNodeById(220);
@@ -8,6 +9,5 @@ foreach (keys %$N) {
 $str
 %]</doctext>
   <node_id>1797217</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>natetest</title>
 </node>

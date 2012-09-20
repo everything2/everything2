@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>@import url(http://everything2.com/node/stylesheet/ResponsiveBase?displaytype=view);
 
 #footer
@@ -199,6 +200,5 @@ display: none;
 }
 </doctext>
   <node_id>2047408</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Responsive</title>
 </node>

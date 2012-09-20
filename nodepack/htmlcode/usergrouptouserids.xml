@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1980272</node_id>
+  <title>usergroupToUserIds</title>
   <code>#Given a ug_id or a ug hash, convert it to a comma-separated string of user IDs
 my ($ug) = @_;
 
@@ -30,6 +32,4 @@ my $out = &quot;@uids&quot;;
 $out =~ s/ /,/g;
 
 return $out;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>usergroupToUserIds</title>
 </node>

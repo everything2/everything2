@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1266536</node_id>
+  <title>pseudoExec</title>
   <code>#this implements a new special [ ... ] link type,
 # [- ... -]
 #which only allow a few specific things; this is intended for user by any user
@@ -108,6 +110,4 @@ $text =~ s/\[-(.+?)-\]/expandIt($1)/ge;	#should we multi-line this?
 #$text =~ s/\[\&quot;(.+?)\&quot;\]/expandQuote($1)/ge;	#should we do multi-line here?
 
 return $text;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>pseudoExec</title>
 </node>

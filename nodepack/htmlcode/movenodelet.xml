@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2025219</node_id>
+  <title>movenodelet</title>
   <code># moves a nodelet to a position (top=0)
 # position=x removes nodelet (unless it's Master Control and the user is Godlike)
 # position=after&lt;nodelet number&gt; puts it after nodelet, if nodelet present
@@ -32,6 +34,4 @@ if ( $position =~ /^(before|after)(\d*)$/ ){
 
 $$VARS{nodelets} = &quot;$$VARS{nodelets},$nodelet&quot; unless $$VARS{nodelets} =~ /\b$nodelet\b/ ;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>movenodelet</title>
 </node>

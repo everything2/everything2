@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 my $str;
@@ -67,6 +68,5 @@ $intro.$str;
 
 %]</doctext>
   <node_id>553317</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Everything Finger</title>
 </node>

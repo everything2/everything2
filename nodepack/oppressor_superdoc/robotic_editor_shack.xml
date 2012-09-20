@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>So it occurs to me that you guys are editors, and your guys are editing a database, let's have some more powerful tools.  This will show you writeups in our database that either don't conform to what we'd like to see in a writeup, or could use to have an editor look at them (no votes, under 20, etc).  You may not want to deal with the broken items, but some of the other items such as the linkless ones, could use to be updated perhaps.&lt;br&gt;&lt;br&gt;
 &lt;p align=&quot;right&quot;&gt;Further documentation in [Editors: Node test automation]&lt;/p&gt;
 &lt;table&gt;&lt;tr bgcolor=&quot;#DDDDDD&quot;&gt;&lt;td&gt;&lt;b&gt;Test Name&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Applies to:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt; Pass/FAIL&lt;/b&gt;&lt;/td&gt;&lt;td width=&quot;200&quot;&gt;&lt;b&gt;Description&lt;/b&gt;&lt;/td&gt;&lt;td&gt;&lt;b&gt;Active?&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -35,6 +36,5 @@ return $str;
 %]
 &lt;/table&gt;</doctext>
   <node_id>1308790</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>Robotic Editor Shack</title>
 </node>

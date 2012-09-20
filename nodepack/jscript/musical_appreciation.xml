@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>bFlat.prototype.getTextContent = function(o) {
    if (typeof(o.textContent) != &quot;undefined&quot;)
       return o.textContent;
@@ -156,6 +157,5 @@ function flatify(buttonClicked) {
 
 </doctext>
   <node_id>2020854</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>musical appreciation</title>
 </node>

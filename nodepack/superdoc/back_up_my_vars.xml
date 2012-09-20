@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return 'You must be a logged-in user to use this tool.'
   if $$USER{title} eq 'Guest User';
@@ -166,6 +167,5 @@ return $backupInfo . $str;
 %]
 </doctext>
   <node_id>2021301</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Back Up My Vars</title>
 </node>

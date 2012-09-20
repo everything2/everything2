@@ -1,5 +1,4 @@
 <node>
-  <node_id>1884750</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>/help c</value>
@@ -441,5 +440,6 @@
     <value>An Editor Cool is an additional compliment &amp;lt;editor&amp;gt;s and &amp;lt;administrator&amp;gt;s can give to &amp;lt;node&amp;gt;s which are of exceptional quality.  The ed cool is applied to the entire node, meaning all of its &amp;lt;writeups&amp;gt; are praiseworthy.  See also &amp;lt;C!&amp;gt;.</value>
     <key>editor_cool</key>
   </vars>
+  <node_id>1884750</node_id>
   <title>help topics</title>
 </node>

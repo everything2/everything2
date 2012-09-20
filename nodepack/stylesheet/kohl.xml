@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>body,
 th,
 td {
@@ -575,6 +576,5 @@ td {
 			display: none;
 		}</doctext>
   <node_id>1886447</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>kohl</title>
 </node>

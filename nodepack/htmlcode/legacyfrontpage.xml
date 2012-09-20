@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1994259</node_id>
+  <title>legacyfrontpage</title>
   <code>my $intro ;
 
 if(length($$VARS{preferred_theme})&amp;&amp;($$VARS{preferred_theme}!=1854183)) {
@@ -142,6 +144,4 @@ $welcomeStr.='
 &lt;/table&gt;';
 
 return $welcomeStr;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>legacyfrontpage</title>
 </node>

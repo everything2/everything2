@@ -1,5 +1,4 @@
 <node>
-  <node_id>1986587</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>[Los Angeles Kings]</value>
@@ -185,5 +184,6 @@
     <value>[Chicago White Sox]</value>
     <key>avalyn</key>
   </vars>
+  <node_id>1986587</node_id>
   <title>outlaws</title>
 </node>

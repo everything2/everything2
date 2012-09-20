@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>180</node_id>
+  <title>settingList</title>
   <code># This constructs an HTML list menu using the FormMenu
 # package of Everything.  Values of the menu come from
 # the specified &quot;setting&quot; node.
@@ -17,6 +19,4 @@ $menu-&gt;addSettings($settings);
 $menu-&gt;writeScrollingListHTML($query,$name,$selected,
    $size, $multi);
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>settingList</title>
 </node>

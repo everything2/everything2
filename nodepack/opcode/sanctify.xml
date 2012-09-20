@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1960821</node_id>
+  <title>sanctify</title>
   <code>return if ($$VARS{GPoptout});
 
 my $minLevel = 11;
@@ -29,6 +31,4 @@ $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' 
 		'message' =&gt; &quot;Whoa! You&#146;ve been [Sanctify|sanctified]$from&quot;
 	};
 	htmlcode('sendPrivateMessage','');</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>sanctify</title>
 </node>

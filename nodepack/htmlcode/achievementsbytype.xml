@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1918037</node_id>
+  <title>achievementsByType</title>
   <code>my ($aType, $user_id, $debug) = @_;
 return unless $aType;
 
@@ -22,6 +24,4 @@ foreach my $a (@achList) {
 }
 
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>achievementsByType</title>
 </node>

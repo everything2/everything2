@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[%
 ######################################################################
 # encodeLinks
@@ -207,6 +208,5 @@ $result;
 %]
 </doctext>
   <node_id>1988606</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>test cleanupHTML</title>
 </node>

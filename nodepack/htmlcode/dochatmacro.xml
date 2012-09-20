@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1018297</node_id>
+  <title>doChatMacro</title>
   <code>#doChatMacro
 # pass which macro name to &quot;run&quot;
 # $$VARS{chatmacro} should contain the macro's text (yes, this is a bit clunky, but passing complex arguments via htmlcode is a pain)
@@ -87,6 +89,4 @@ $query-&gt;param(-name=&gt;'sendto', -value=&gt;$origSendTo);
 $query-&gt;param(-name=&gt;'message',-value=&gt;$origMessage);
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>doChatMacro</title>
 </node>

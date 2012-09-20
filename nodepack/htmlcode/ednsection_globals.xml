@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>956694</node_id>
+  <title>ednsection_globals</title>
   <code>my @globals = qw($USER $THEME $VARS $DB %HTMLVARS $query);
 my $ajax='ajax ednsection_globals:nodeletsection:edn,globals';
 
@@ -79,6 +81,4 @@ my %expand = (
 }
   use strict 'refs';
 $str.'&lt;/table&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>ednsection_globals</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;If you fill in the &lt;b&gt;Error number&lt;/b&gt; field, you will recieve a detailed description of the error.
 This field overrides the other two.&lt;br&gt;
 If you fill in the &lt;b&gt;Problem node&lt;/b&gt; or &lt;b&gt;User name&lt;/b&gt; field, you will get back a list 
@@ -120,6 +121,5 @@ return(&quot;&lt;p&gt;$totalCount total lines in file, $errorCount lines shown.&
 
 %]</doctext>
   <node_id>1982517</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Server Error Lookup</title>
 </node>

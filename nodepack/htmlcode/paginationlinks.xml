@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1977802</node_id>
+  <title>paginationlinks</title>
   <code>#Pass the starting page, number of things to show per page, how many
 #are there in this page.
 my ($offset,$limit,$numthispage) = @_;
@@ -30,6 +32,4 @@ if ($offset &gt; 0 or $numthispage == $limit) {
 
 return $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>paginationlinks</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 my $intro = &quot;Everything2 is a collection of user-submitted writings about, well, pretty much everything. Use the search box or follow the links to explore, or [Everything2 Help|click here to learn how you can contribute].&quot;;
@@ -170,6 +171,5 @@ $welcomeStr.='
 return $welcomeStr;
 %]</doctext>
   <node_id>1985715</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>New Frontpage</title>
 </node>

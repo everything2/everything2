@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>Eventually this will be all opcode-based action, but:
 [{openform}]
 &lt;input type=&quot;hidden&quot; name=&quot;tutorialon&quot; value=&quot;1177323&quot;&gt;
@@ -21,6 +22,5 @@ return &quot;Done.&quot;
 &lt;br&gt;&lt;br&gt;
 After you load it, you'll need to load a new page to see the item (it will be in an opcode later on)</doctext>
   <node_id>1177322</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>tutorial placebo page</title>
 </node>

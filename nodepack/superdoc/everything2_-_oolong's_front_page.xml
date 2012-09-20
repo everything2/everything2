@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 my $zenStr;
@@ -45,6 +46,5 @@ return $zenStr ;
 
 %]</doctext>
   <node_id>2027509</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Everything2 - Oolong's Front Page</title>
 </node>

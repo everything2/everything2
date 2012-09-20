@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;h1&gt;Phase 1 - Current Featureset documentation&lt;/h1&gt; 
 - We are here
 &lt;ul&gt;
@@ -42,6 +43,5 @@
 &lt;/ul&gt;
 </doctext>
   <node_id>1471753</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>The New E2 roadmap</title>
 </node>

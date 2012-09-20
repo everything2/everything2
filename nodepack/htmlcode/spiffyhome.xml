@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1252979</node_id>
+  <title>spiffyhome</title>
   <code>my ($txt) = @_;
 return unless $txt;
 #return $txt unless($HTMLVARS{'group_content editors'}{$$NODE{node_id}});
@@ -7,6 +9,4 @@ return $txt unless($HTMLVARS{'group_gods'}{$$USER{node_id}});
 $txt =~ s/\&amp;visitor\;/$$USER{title}/g;
 return $txt;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>spiffyhome</title>
 </node>

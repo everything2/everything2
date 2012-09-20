@@ -1,5 +1,4 @@
 <node>
-  <node_id>1995273</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>no thanks</value>
@@ -25,5 +24,6 @@
     <value>http://www.surveygizmo.com/s/148593/e2-users</value>
     <key>survey_target</key>
   </vars>
+  <node_id>1995273</node_id>
   <title>survey message settings</title>
 </node>

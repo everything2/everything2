@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2003655</node_id>
+  <title>show_node_forward</title>
   <code>return &quot;&quot; unless ($query &amp;&amp; defined $query-&gt;param('originalTitle'));
 
 my $originalTitle = $query-&gt;param('originalTitle');
@@ -20,6 +22,4 @@ return '&lt;div class=&quot;forward&quot;&gt;'
   . '&lt;/div&gt;'
   ;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>show_node_forward</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1293807</node_id>
+  <title>settype</title>
   <code>#Completely rewritten by Swap, since this thing was unnecessarily
 #general and optimised and therefore complicated, when it's in fact
 #only called from one place.
@@ -45,6 +47,4 @@ $str .= $query -&gt; popup_menu(&quot;patch_status&quot;, \@status_ids,
 
 return $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>settype</title>
 </node>

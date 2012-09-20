@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2052742</node_id>
+  <title>convertOldPoll</title>
   <code>my $POLL = shift;
 getRef $POLL;
 return 0 unless $POLL &amp;&amp; $$POLL{type}{title} eq 'e2poll';
@@ -18,6 +20,4 @@ $$POLL{multiple} = 0;
 
 updateNode($POLL, -1);
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>convertOldPoll</title>
 </node>

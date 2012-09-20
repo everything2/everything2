@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;table width=100% border=0&gt;
   &lt;tr valign=top&gt; 
     &lt;td width=30% rowspan=&quot;5&quot;&gt; 
@@ -148,6 +149,5 @@
   &lt;/tr&gt;
 &lt;/table&gt;</doctext>
   <node_id>618658</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>test front</title>
 </node>

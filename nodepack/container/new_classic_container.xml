@@ -1,8 +1,8 @@
 <node>
+  <type_nodetype>2</type_nodetype>
   <parent_container>22</parent_container>
   <node_id>166948</node_id>
-  <context>[{adheader}]
-&lt;table width=95% align=center&gt;
+  <context>&lt;table width=95% align=center&gt;
  &lt;tr&gt;
   &lt;td&gt;
    [{usersearchform}]&lt;/form&gt;
@@ -50,6 +50,5 @@ $str.=$R[int(rand(@R))];
 $str.=' &lt;a href=&quot;/node/usergroup/edev&quot;&gt;The Everything Development Company&lt;/a&gt;';
 $str;
 %]&lt;/font&gt;&lt;/center&gt;</context>
-  <type_nodetype>2</type_nodetype>
   <title>new classic container</title>
 </node>

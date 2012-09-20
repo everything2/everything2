@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return 'You\'ve got other things to snoop on, don\'t ya.' unless htmlcode('isEditor');
 
@@ -111,6 +112,5 @@ $str .= '&lt;form method=&quot;post&quot;&gt;
 return $str;
 %]</doctext>
   <node_id>1140925</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>The Nodeshell Hopper</title>
 </node>

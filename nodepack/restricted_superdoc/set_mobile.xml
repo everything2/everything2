@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;
 Set 'mobile' mode for this client. Sets a cookie. COOKIE!
 &lt;/p&gt;
@@ -36,6 +37,5 @@ $key;
 %];
 &lt;/p&gt;</doctext>
   <node_id>2021823</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>set_mobile</title>
 </node>

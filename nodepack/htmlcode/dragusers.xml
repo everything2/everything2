@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1981236</node_id>
+  <title>dragUsers</title>
   <code># This is code mostly by [rootbeer277], originally in the [messsage]
 # opcode. [Swap] just moved it to its own htmlcode and hacked on top 
 # of it a little.
@@ -92,6 +94,4 @@ foreach my $user(@users){
 }
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>dragUsers</title>
 </node>

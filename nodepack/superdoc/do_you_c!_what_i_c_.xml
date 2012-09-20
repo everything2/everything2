@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;h4&gt;What It Does&lt;/h4&gt;
 
 &lt;ul&gt;
@@ -75,6 +76,5 @@ return $str;
 
 %]</doctext>
   <node_id>1917476</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Do You C! What I C?</title>
 </node>

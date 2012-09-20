@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>123</node_id>
+  <title>classic titlebar</title>
   <code>my $str = &quot;&lt;p align=right&gt;
 &lt;img src=&quot;http://static.everything2.com/Everything.gif&quot;&gt;&lt;BR&gt;
 [ &quot;;
@@ -14,6 +16,4 @@ $str .= &quot; | &quot; . linkNodeTitle (&quot;user settings&quot;);
 $str .= &quot; | &quot; . linkNodeTitle (&quot;gigantic node lister&quot;, $NODE, &quot;GNL&quot;);
 $str .= &quot; | &quot; . linkNode ($HTMLVARS{default_node});
 $str . &quot; ] &lt;p&gt;&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>classic titlebar</title>
 </node>

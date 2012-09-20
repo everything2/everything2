@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* These are the basic colours and fonts */
 body, div, p, th, td, li, dd {
 	background-color: #4A4742;
@@ -48,6 +49,5 @@ pre, tt {
 }
 </doctext>
   <node_id>1908658</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>CharredTangerines</title>
 </node>

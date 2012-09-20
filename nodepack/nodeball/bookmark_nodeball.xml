@@ -1,5 +1,4 @@
 <node>
-  <node_id>419588</node_id>
   <type_nodetype>152</type_nodetype>
   <vars>
     <value>0.5</value>
@@ -13,5 +12,6 @@
     <value>Allows users to &quot;bookmark&quot; nodes from their home node and see them, edit them, and etc.  Bookmarking is implimented through a linktype.   </value>
     <key>description</key>
   </vars>
+  <node_id>419588</node_id>
   <title>bookmark nodeball</title>
 </node>

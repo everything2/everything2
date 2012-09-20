@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>182</node_id>
+  <title>showChoiceFunc</title>
   <code>no strict 'refs';
 use Everything::XML;
 use Everything::Experience; # may not be loaded -&gt; can't be listed
@@ -133,6 +135,4 @@ if (@lines) {
 }
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>showChoiceFunc</title>
 </node>

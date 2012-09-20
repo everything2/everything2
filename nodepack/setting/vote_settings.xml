@@ -1,5 +1,4 @@
 <node>
-  <node_id>444191</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>-</value>
@@ -41,5 +40,6 @@
     <value>&lt;/font&gt;&lt;br&gt;</value>
     <key>showExpFooter</key>
   </vars>
+  <node_id>444191</node_id>
   <title>vote settings</title>
 </node>

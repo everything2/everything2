@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 return &quot;Permission Denied&quot; unless htmlcode('isinUsergroup',&quot;$$USER{user_id},chanops,1&quot;);
@@ -144,6 +145,5 @@ else {
 %]
 </doctext>
   <node_id>1986790</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>E2 Bouncer</title>
 </node>

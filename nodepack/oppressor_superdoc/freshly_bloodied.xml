@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>[%
 
 my $usertype = getId(getType('user'));
@@ -88,6 +89,5 @@ $str;
 %]
 </doctext>
   <node_id>2011391</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>freshly bloodied</title>
 </node>

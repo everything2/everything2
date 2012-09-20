@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1685363</node_id>
+  <title>pollvote</title>
   <code>return if getId($USER) == $HTMLVARS{guest_user};
 
 my $pollId = $query -&gt; param('poll_id');
@@ -36,6 +38,4 @@ $DB-&gt;sqlUpdate(&quot;e2poll&quot;, {
 		e2poll_results =&gt; join(',', @result_array)
 		, totalvotes =&gt; $votesum}
 	, &quot;e2poll_id=$pollId&quot;);</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>pollvote</title>
 </node>

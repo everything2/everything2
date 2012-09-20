@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>51</node_id>
+  <title>shownote</title>
   <code>my @notes = getNodeWhere ({'parent_node' =&gt; getId ($NODE)}, $NODETYPES{note});
 
 my $str = &quot;&lt;font size=2&gt;&quot;;
@@ -9,6 +11,4 @@ foreach my $NOTE (@notes) {
 $str .= &quot;&lt;/font&gt;&quot;;
 return $str if @notes;
 &quot;&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>shownote</title>
 </node>

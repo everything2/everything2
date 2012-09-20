@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;style type=&quot;text/css&quot;&gt;
 .mytable th, .mytable td
 {
@@ -215,6 +216,5 @@ Gaining and losing XP for adding and deleting also applies to &quot;housekeeping
 &lt;/p&gt;
 </doctext>
   <node_id>1962893</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>The Everything2 Voting/Experience System</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;The following shows the number of active E2 users at each level (based on users logged in over the last month).&lt;/p&gt;
 [%
 my $queryText;
@@ -81,6 +82,5 @@ $str .= '&lt;/table&gt;
 return $str;
 %]</doctext>
   <node_id>1962430</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Level Distribution</title>
 </node>

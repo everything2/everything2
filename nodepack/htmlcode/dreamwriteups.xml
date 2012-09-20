@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1919556</node_id>
+  <title>dreamwriteups</title>
   <code>my $limit = $$VARS{num_dreamwus} || 15;
 
 #if(!exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) &amp;&amp; !exists($HTMLVARS{'group_content editors'}{$$USER{node_id}})){  my $blah = getNodeById(1217114); return $$blah{nltext};}
@@ -44,6 +46,4 @@ $str.='&lt;/ul&gt;';
 
 return $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>dreamwriteups</title>
 </node>

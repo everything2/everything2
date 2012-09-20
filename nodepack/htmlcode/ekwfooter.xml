@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1186946</node_id>
+  <title>ekwFooter</title>
   <code># displays footer information in its own table
 # originally in [jukka container], adapted for ekw theme
 
@@ -45,6 +47,4 @@ $str .= &quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
 $str .= &quot;\n&lt;/table&gt;\n&quot;;
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>ekwFooter</title>
 </node>

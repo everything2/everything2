@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>// text formatting aids
 e2.add(function(inElement){
 	// activate tinyMCE if preferred, otherwise JS QuickTags,
@@ -91,6 +92,5 @@ e2.add(function(inElement){
 });
 </doctext>
   <node_id>2031005</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>frommmage</title>
 </node>

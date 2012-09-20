@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1983550</type_nodetype>
   <doctext>&lt;p style=&quot;text-align:right&quot;&gt;See also: [http://everything2.org/hgweb.cgi|Mercurial]&lt;/p&gt;
 [{openform}]
 pick yer function: [%
@@ -9,6 +10,5 @@ $query-&gt;textfield('choicefunc').' '.htmlcode('varcheckboxinverse','scf_nohtml
 
 [{showChoiceFunc}]</doctext>
   <node_id>1983553</node_id>
-  <type_nodetype>1983550</type_nodetype>
   <title>Gigantic Code Lister</title>
 </node>

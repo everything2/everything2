@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>366162</node_id>
+  <title>randomnode</title>
   <code>my ($title) = @_;
 
 $title||='random';
@@ -7,6 +9,4 @@ my $rnd = int(rand(100000));
 
 '&lt;a href='.urlGen({op=&gt;'randomnode', garbage=&gt;$rnd}).&quot;&gt;$title&lt;/a&gt;&quot;;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>randomnode</title>
 </node>

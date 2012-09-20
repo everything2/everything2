@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2007364</node_id>
+  <title>editor homenode tools</title>
   <code>my $isRoot = htmlcode('isAdmin');
 my $isEditor = htmlcode('isEditor');
 my $targetVars = getVars $NODE;
@@ -45,6 +47,4 @@ if($isRoot){
 
 return $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>editor homenode tools</title>
 </node>

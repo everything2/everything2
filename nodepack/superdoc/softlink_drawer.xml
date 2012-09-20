@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
  my @junk=(&quot;Where did I put that?&quot;,&quot;I lost my mind in San Francisco&quot;,&quot;Shuffle shuffle&quot;, &quot;yclept wonders what this is&quot;, &quot;I smashed it into a million pieces, and cut myself on its beauty&quot;, &quot;It used to be full of stars, but now I'm full of scars.&quot;);
 
@@ -32,6 +33,5 @@
    return $str;
 %]</doctext>
   <node_id>1418963</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Softlink Drawer</title>
 </node>

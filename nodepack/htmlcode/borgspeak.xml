@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1930687</node_id>
+  <title>borgspeak</title>
   <code>my ($useBorg) = @_;
 my $EDB = 100;
 
@@ -41,6 +43,4 @@ if($EDB&lt;25) {
 
 return $response;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>borgspeak</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[%
 return 'You\'ve got other things to snoop on, don\'t ya.' unless(isGod($USER));
 
@@ -193,6 +194,5 @@ return $str;
 
 </doctext>
   <node_id>2015009</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>The Old Hooked Pole</title>
 </node>

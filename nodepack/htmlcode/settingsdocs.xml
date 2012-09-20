@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1358159</node_id>
+  <title>settingsDocs</title>
   <code>#
 #returns a navigation bar containing available settings superdocs
 #created: 2002.09.07.n6
@@ -55,6 +57,4 @@ foreach(@allSettings) {
 }
 
 return '&lt;div class=&quot;settingsdocs&quot;&gt;&amp;ndash; &amp;nbsp;' . join(' &amp;#183; ', @allSettings) . ' &amp;nbsp; &amp;ndash;&lt;/div&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>settingsDocs</title>
 </node>

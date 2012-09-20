@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1121226</node_id>
+  <title>popwindow</title>
   <code># Pop up a window, 300 x 400 pixels in size, scrollable but non-resizable.
 # It has no menu, nor has it a status bar. When it appears, we focus it. 
 # No two windows belonging to the same browser can have the same name: 
@@ -33,6 +35,4 @@ function pop_big( url, name ) {
 &lt;/script&gt;
 NOMORESCRIPT
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>popwindow</title>
 </node>

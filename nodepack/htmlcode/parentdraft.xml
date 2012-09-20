@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2036304</node_id>
+  <title>parentdraft</title>
   <code># choose an e2node to be the parent of a draft
 # optionally, publish the draft to it as a writeup
 
@@ -272,6 +274,4 @@ return &amp;$wrap(
 	.'&lt;/p&gt;&lt;/fieldset&gt;&lt;/form&gt;'
 );
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>parentdraft</title>
 </node>

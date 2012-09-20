@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>#header {position: absolute; top: 0; width: 100%; }
 	#e2logo {position: absolute; top: 0.2em; left: 0.6em;margin: 0; width: 30px; height: 30px;}
 	#searchform {margin-top: 0.5em; text-align: right;}
@@ -13,6 +14,5 @@
 
 #footer {clear: both;}			</doctext>
   <node_id>1908657</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>monochrome</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1923963</node_id>
+  <title>dreamwuamount</title>
   <code>return unless htmlcode('isEditor','');
 
 my @amount = (1, 10, 15, 20, 25, 30, 40);
@@ -20,6 +22,4 @@ $str.=&quot;\n\t&quot;.$query-&gt;submit(&quot;sexisgood&quot;,&quot;show&quot;)
 $str.=&quot;\n\t&quot;.$query-&gt;checkbox(&quot;nw_nojunk&quot;, $$VARS{nw_nojunk}, '', &quot;No junk&quot;);
 $str.=&quot;\n&quot;.$query-&gt;end_form;
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>dreamwuamount</title>
 </node>

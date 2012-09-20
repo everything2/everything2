@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1975837</node_id>
+  <title>writeupssincelastyear</title>
   <code>my ($userID) = @_;
 
 # Ignore maintenance writeups such as [Broken Nodes] and [Edit these E2 Titles]
@@ -39,6 +41,4 @@ $qh -&gt; finish();
 
 return $numwriteups;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>writeupssincelastyear</title>
 </node>

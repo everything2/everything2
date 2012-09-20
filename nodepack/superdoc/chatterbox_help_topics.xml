@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;The chatterbox help topics are a good way for new users to learn some of the basics of E2.  Simply type &quot;/help TOPIC&quot; in the chatterbox to get an automated message from [% return linkNode(getNode('Virgil','user')); %] about that topic.  Best results will be achieved by searching in lowercase and multi-word topics should use underscores rather_than_spaces.  If you notice errors, or think additional topics should be available, contact [rootbeer277].&lt;/p&gt;
 
 &lt;p&gt;Examples:  
@@ -28,6 +29,5 @@ return $str . &quot;\n&lt;/ol&gt;\n\n&quot;;
 
 %]</doctext>
   <node_id>1941643</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Chatterbox help topics</title>
 </node>

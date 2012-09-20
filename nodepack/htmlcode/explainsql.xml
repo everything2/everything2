@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1824306</node_id>
+  <title>explainsql</title>
   <code>my ($sql) = join(',', @_);
 my $res = $dbh-&gt;prepare('explain ' . $sql);
 $res-&gt;execute() or return 'Oops ' . $sql;
@@ -24,6 +26,4 @@ while (my $r = $res-&gt;fetchrow_hashref) {
 
 $str .= '&lt;/table&gt;';
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>explainsql</title>
 </node>

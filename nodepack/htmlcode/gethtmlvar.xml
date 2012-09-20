@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1872285</node_id>
+  <title>getHTMLVAR</title>
   <code>my ($varName) = @_;
 
 if  ( (exists $HTMLVARS{$varName}) &amp;&amp; (defined $HTMLVARS{$varName}) ) {
@@ -7,6 +9,4 @@ if  ( (exists $HTMLVARS{$varName}) &amp;&amp; (defined $HTMLVARS{$varName}) ) {
 }
 
 return 0;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>getHTMLVAR</title>
 </node>

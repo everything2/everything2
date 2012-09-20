@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* This is MyStyle. */
 
 /* You can put any comment you want between slash-asterisk and asterisk-slash */
@@ -62,6 +63,5 @@ a:link {color: blue;}
 a:visited {color: red}
 </doctext>
   <node_id>1903321</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>myStyle</title>
 </node>

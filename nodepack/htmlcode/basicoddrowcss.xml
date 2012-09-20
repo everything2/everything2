@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1259143</node_id>
+  <title>basicoddrowcss</title>
   <code># wharfinger 2/23/02
 # &quot;All things grand and unified,
 #  All colors bright and dull.&quot; -- Anon.
@@ -15,6 +17,4 @@ return '
 --&gt;
 &lt;/style&gt;
 ';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>basicoddrowcss</title>
 </node>

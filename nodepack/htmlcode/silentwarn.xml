@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1239083</node_id>
+  <title>silentWarn</title>
   <code>#(this is probably almost useless, but lets see how it goes...)
 #this &quot;logs&quot; a warning to a query parameter, so a nodelet hack can show multiple warnings, all in 1 place
 #this only works for admins
@@ -20,6 +22,4 @@ $query-&gt;param('silentwarn_'.$count,$msg);
 $query-&gt;param('silentwarn_count',$count+1);
 
 '';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>silentWarn</title>
 </node>

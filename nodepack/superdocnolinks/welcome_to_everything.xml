@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1065266</type_nodetype>
   <doctext>[%
 return parseLinks(htmlcode('legacyfrontpage')) unless $$THEME{isZen};
 
@@ -45,6 +46,5 @@ return $zenStr ;
 
 %]</doctext>
   <node_id>124</node_id>
-  <type_nodetype>1065266</type_nodetype>
   <title>Welcome to Everything</title>
 </node>

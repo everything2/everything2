@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1155127</node_id>
+  <title>displaydebatecomment</title>
   <code>#  $displaymode:
 #       0       Display first comment only, no children at all (used in edit page &amp; replyto page)
 #       1       Display full text of all comments (used in display page)
@@ -65,6 +67,4 @@ local *displaydebatecomment = sub{ # use local not lexical variable so it can be
 };
 
 &amp;displaydebatecomment;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>displaydebatecomment</title>
 </node>

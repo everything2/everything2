@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return if $$USER{node_id} == $HTMLVARS{guest_user};
 
@@ -77,6 +78,5 @@ $str.='&lt;/ul&gt;';
 return $str;
 %]</doctext>
   <node_id>1946238</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Your Nodeshells II</title>
 </node>

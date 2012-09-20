@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>720265</node_id>
+  <title>lockroom</title>
   <code>return unless isGod($USER);
 
 #my ($R) = @_;
@@ -22,6 +24,4 @@ if($$R{criteria} eq $open) {
 }
 
 linkNode($NODE, $title, {op=&gt;'lockroom', target =&gt; getId($R)});</code>
-  <type_nodetype>4</type_nodetype>
-  <title>lockroom</title>
 </node>

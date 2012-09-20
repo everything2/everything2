@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;&lt;b&gt;In brief:&lt;/b&gt; &lt;tt&gt;/drag user_name&lt;/tt&gt; will bring a user into [Debriefing Room] with you.  You will be expected to talk to him about why you pulled him away from outside.  He will be locked in the Debriefing Room for 30 minutes to cool down.&lt;/p&gt;
 
 &lt;p&gt;&lt;b&gt;Full version:&lt;/b&gt;&lt;/p&gt;
@@ -16,6 +17,5 @@
 &lt;p&gt;&lt;b&gt;Back to [God Powers and How to Use Them]&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;/p&gt;
 </doctext>
   <node_id>1963047</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Dragging users</title>
 </node>

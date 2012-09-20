@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1150188</node_id>
+  <title>firmlinks</title>
   <code>#displays firmlinks for this e2node or writeup
 #	for admins, also shows widgets to allow deleting of checked items
 
@@ -103,6 +105,4 @@ if ($str ne '') {
 }
 return &quot;$parentstr\n$str&quot; ;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>firmlinks</title>
 </node>

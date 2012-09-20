@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;p&gt;This page is deprecated. Please use [usergroup discussions] instead.&lt;/p&gt;
 
 &lt;!--
@@ -177,6 +178,5 @@ $str;
 &amp;lt;p&amp;gt;&amp;lt;em&amp;gt;Bug reports go to &amp;#91;kthejoker&amp;#93;.&amp;lt;/em&amp;gt;&amp;lt;/p&amp;gt;
 --&gt;</doctext>
   <node_id>1158427</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>Everything Discussion Directory</title>
 </node>

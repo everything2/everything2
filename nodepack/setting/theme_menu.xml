@@ -1,5 +1,4 @@
 <node>
-  <node_id>2024186</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>2</value>
@@ -69,5 +68,6 @@
     <value>2</value>
     <key>2029380</key>
   </vars>
+  <node_id>2024186</node_id>
   <title>theme menu</title>
 </node>

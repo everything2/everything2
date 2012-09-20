@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1065266</type_nodetype>
   <doctext>[%
 if ($ENV{HTTP_REFERER}) {
   return &quot;You came from &quot;.$ENV{HTTP_REFERER};
@@ -215,6 +216,5 @@ Playing with writeup headers...
 return htmlcode('testDisplayWriteupInfo','1842035');
 %]</doctext>
   <node_id>1923473</node_id>
-  <type_nodetype>1065266</type_nodetype>
   <title>Oolong's sandbox</title>
 </node>

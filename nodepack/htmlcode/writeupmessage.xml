@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2008911</node_id>
+  <title>writeupmessage</title>
   <code>my ($queryid, $N) = @_ ;
 getRef $N ;
 $N ||= $NODE ;
@@ -29,6 +31,4 @@ if( $msgreport ) {
 
 qq'&lt;p id=&quot;sent$queryid&quot; class=&quot;sentmessage&quot;&gt;$msgreport&lt;/p&gt;'
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>writeupmessage</title>
 </node>

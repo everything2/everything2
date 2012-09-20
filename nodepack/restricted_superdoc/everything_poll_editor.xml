@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[%
 return '&lt;p&gt;Old code never dies. But this is retired.&lt;/p&gt;';
 
@@ -104,6 +105,5 @@ $str.='&lt;input name=&quot;sexisgood&quot; type=&quot;submit&quot; value=&quot;
 $str;
 %]</doctext>
   <node_id>1836794</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Everything Poll Editor</title>
 </node>

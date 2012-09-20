@@ -1,5 +1,4 @@
 <node>
-  <node_id>1986585</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>ChristineWinter</value>
@@ -109,5 +108,6 @@
     <value>kthejoker</value>
     <key>5</key>
   </vars>
+  <node_id>1986585</node_id>
   <title>bounty order</title>
 </node>

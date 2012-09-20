@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>169637</node_id>
+  <title>coolit</title>
   <code>return unless exists $HTMLVARS{'group_content editors'}{$$USER{node_id}} || exists $HTMLVARS{group_gods}{$$USER{node_id}};
 my $ntypet = $$NODE{type}{title};
 return unless ($ntypet eq 'e2node' || $ntypet eq 'superdoc' || $ntypet eq 'superdocnolinks' || $ntypet eq 'document');
@@ -65,6 +67,4 @@ else {
 }
 
 &quot;$str&lt;/span&gt;&quot; ;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>coolit</title>
 </node>

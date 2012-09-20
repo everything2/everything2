@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;This page is so obsolete, even its [Scratch Pads[superdocnolinks]|replacement] is
 obsolete. &lt;strong&gt;[Drafts[superdoc]]&lt;/strong&gt; is the place to go now.
 &lt;/p&gt;
@@ -84,6 +85,5 @@ return $str.$skratchText;
 &lt;p class='small'&gt;[Bugs go to JayBonci]&lt;/p&gt;
 </doctext>
   <node_id>1147724</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Scratch Pad Viewer</title>
 </node>

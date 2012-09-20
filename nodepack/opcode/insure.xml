@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1179550</node_id>
+  <title>insure</title>
   <code>return unless htmlcode('isEditor');
 
 return unless($query-&gt;param('ins_id'));
@@ -34,6 +36,4 @@ else {
 
 $DB -&gt; updateNode($insnode, -1);
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>insure</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* This stylesheet is intended to provide visual reference for how */
 /*  the zen DIV structure is outlined.  Different DIVs are in different */
 /*  colors to provid reference.  In some cases padding has been added */
@@ -78,6 +79,5 @@ body { margin:0px; }
 
 textarea { width:95%; font-family: monospace; }</doctext>
   <node_id>1930556</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Zen Organization Visualizer</title>
 </node>

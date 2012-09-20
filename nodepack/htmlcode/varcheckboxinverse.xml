@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1140565</node_id>
+  <title>varcheckboxinverse</title>
   <code>my ($k, @title) = @_;
 
 #inverse of varcheckbox
@@ -17,6 +19,4 @@ if($query-&gt;param('unsetvar_'.$k)) {
 }
 
 $query-&gt;checkbox('unsetvar_'.$k, !$$VARS{$k}, '1', $title);</code>
-  <type_nodetype>4</type_nodetype>
-  <title>varcheckboxinverse</title>
 </node>

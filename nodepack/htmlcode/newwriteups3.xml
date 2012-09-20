@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1801440</node_id>
+  <title>newwriteups3</title>
   <code>my ($limit) = @_;
 $limit ||= 15;
 
@@ -105,6 +107,4 @@ while($found &lt; $limit) {
 	$str.= &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
 }
 $str.='&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>newwriteups3</title>
 </node>

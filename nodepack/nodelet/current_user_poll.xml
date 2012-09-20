@@ -4,8 +4,8 @@
   <icon>http://static.everything2.com/e2poll.gif</icon>
   <nlgoto>0</nlgoto>
   <node_id>1689202</node_id>
-  <iconHeight>31</iconHeight>
   <type_nodetype>9</type_nodetype>
+  <iconHeight>31</iconHeight>
   <iconWidth>38</iconWidth>
   <nlcode>[{showcurrentpoll:in nodelet}]
 </nlcode>

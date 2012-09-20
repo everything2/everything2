@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>447476</node_id>
+  <title>cool</title>
   <code>#single-writeup C!
 
 my ($cid) = $query-&gt;param('cool_id');
@@ -57,6 +59,4 @@ htmlcode('achievementsByType','cool,'.$uid);
 htmlcode('achievementsByType','cool,'.$$COOL{author_user});
 
 '';</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>cool</title>
 </node>

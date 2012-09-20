@@ -1,5 +1,4 @@
 <node>
-  <node_id>1467462</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>1</value>
@@ -77,5 +76,6 @@
     <value>1</value>
     <key>mo</key>
   </vars>
+  <node_id>1467462</node_id>
   <title>approved MathML tags</title>
 </node>

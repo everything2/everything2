@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>54</node_id>
+  <title>titlebar</title>
   <code>#frequently used links; used in default theme
 
 my $noPrevLink = {'lastnode_id'=&gt;0};
@@ -36,6 +38,4 @@ push @links, linkNode($HTMLVARS{default_node},0,$noPrevLink);
 '
 &lt;p&gt;&lt;small&gt;[ ' . join(' | ',@links) . ' ] &lt;/small&gt;&lt;/p&gt;
 ';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>titlebar</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>html {
  &lt;!--background-image: url(http://img97.imageshack.us/img97/2460/backgroundni.png);--&gt; 
  background-repeat: repeat-x;
@@ -675,6 +676,5 @@ td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;
 
 </doctext>
   <node_id>1997552</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>e2gle</title>
 </node>

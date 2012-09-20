@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>if (!document.createRange || Prototype.Browser.Opera) {
   Element.Methods.insert = function(element, insertions) {
     element = $(element);
@@ -2010,6 +2011,5 @@ Object.extend(Element.ClassNames.prototype, Enumerable);
 
 Element.addMethods();</doctext>
   <node_id>1872457</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>ProtoType 2</title>
 </node>

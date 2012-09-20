@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;Registries are places where people can share snippets of information about themselves, like their [email address] or [favourite vegetables].&lt;/p&gt;
 &lt;p&gt;Before you create any new registries, you should have a look at [the registries] we already have.&lt;/p&gt;
 [{openform}]
@@ -31,6 +32,5 @@ return &quot;You would need to be [The Everything2 Voting/Experience System|leve
 
 &lt;/form&gt;</doctext>
   <node_id>2064103</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Create a Registry</title>
 </node>

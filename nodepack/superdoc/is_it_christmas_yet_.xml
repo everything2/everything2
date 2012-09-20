@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $str;
 
@@ -13,6 +14,5 @@ return $str;
 %]
 </doctext>
   <node_id>1980679</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Is it Christmas yet?</title>
 </node>

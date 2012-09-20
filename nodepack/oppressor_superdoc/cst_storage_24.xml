@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;p&gt;
 This is a storage node for CST reviews. Reviews are moved here from our working area in [CST_Chat].
 &lt;/p&gt;&lt;p&gt;
@@ -256,6 +257,5 @@ See also CST Storage collabs [CST_Storage_1|1] - [CST_Storage_23|23].
 &lt;hr&gt;
 </doctext>
   <node_id>1841601</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>CST_Storage_24</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;h3&gt;Your Gravatar&lt;/h3&gt;
 &lt;p&gt;The following shows your gravatar in several different sizes. If you haven't actually uploaded an avatar to gravatar.com, they have the option of generating a dynamic avatar based on your email address (don't worry, we hash it first). These dynamic avatars can be generated on one of four 4 styles: default, identicon, monsterid, or wavatar.&lt;/p&gt;
 &lt;p&gt;&lt;small&gt;If you have an account at gravatar.com, but your avatar isn't showing up correctly below, be sure you are using the same email address on E2 that you registered with on gravatar. You can change your email address from your homenode.&lt;/small&gt;&lt;/p&gt;
@@ -19,6 +20,5 @@ $str .= '&lt;p style=&quot;text-align:center&quot;&gt;&lt;b&gt;'.$size.' pixels&
 return $str;
 %]</doctext>
   <node_id>1927589</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Your Gravatar</title>
 </node>

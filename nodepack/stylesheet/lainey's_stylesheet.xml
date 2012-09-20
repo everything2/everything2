@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* the goodnight star backdrop 
 problem: everthing faq sidebar falls to the bottom lefthand side
 unknown classes: nodelet headers for images, news for noders, e2 community development newsletter */
@@ -482,6 +483,5 @@ font-size: inherit;
         border: 1px ridge;
 }</doctext>
   <node_id>1892714</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Lainey's Stylesheet</title>
 </node>

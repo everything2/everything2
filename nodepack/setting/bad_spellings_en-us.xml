@@ -1,5 +1,4 @@
 <node>
-  <node_id>1353656</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>desp&lt;strong&gt;e&lt;/strong&gt;rate</value>
@@ -209,5 +208,6 @@
     <value>&lt;strong&gt;somehow&lt;/strong&gt; is one word</value>
     <key>some_how</key>
   </vars>
+  <node_id>1353656</node_id>
   <title>bad spellings en-US</title>
 </node>

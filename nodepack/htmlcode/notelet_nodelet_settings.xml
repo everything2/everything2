@@ -1,7 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2025089</node_id>
+  <title>Notelet nodelet settings</title>
   <code>'You can edit your &lt;strong&gt;Notelet Nodelet&lt;/strong&gt; at the '.
 linkNodeTitle('Notelet editor[superdoc]');</code>
-  <type_nodetype>4</type_nodetype>
-  <title>Notelet nodelet settings</title>
 </node>

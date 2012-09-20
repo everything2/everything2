@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>444690</node_id>
+  <title>episection_admins</title>
   <code>#previously called 'goduseroptions'
 
 my $str = &quot;\n\t\t&lt;ul&gt;&quot;;
@@ -31,6 +33,4 @@ $str.=
 $str.=&quot;\n\t\t&lt;/ul&gt;&quot;;
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>episection_admins</title>
 </node>

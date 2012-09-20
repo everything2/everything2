@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1832095</node_id>
+  <title>atomiseNode</title>
   <code>my $host = $ENV{HTTP_HOST} || $CONFIG{canonical_web_server} || &quot;everything2.com&quot;;
 my $host = &quot;http://$host&quot; ;
 
@@ -25,6 +27,4 @@ my $atominfo = sub {
 my ( $input , $length ) = @_ ;
 $length ||= 1024 ;
 return htmlcode( 'show content' , $input , &quot;xml &lt;entry&gt; atominfo, $length&quot; , ( atominfo =&gt; $atominfo) ) ;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>atomiseNode</title>
 </node>

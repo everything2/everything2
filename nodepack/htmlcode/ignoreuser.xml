@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1868881</node_id>
+  <title>ignoreUser</title>
   <code>my ($uname) = @_;
 
 my $U = getNode($uname, 'user');
@@ -19,6 +21,4 @@ if($U) {
 $query-&gt;param('DEBUGignoreUser', 'tried to ignore '.$$U{title});
 return &quot;$$U{title} ignored&quot;;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>ignoreUser</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1065266</type_nodetype>
   <doctext>&lt;p&gt;(not ready yet)&lt;/p&gt;
 &lt;script type=&quot;text/javascript&quot; language=&quot;javascript&quot;&gt; 
 &lt;!--
@@ -132,6 +133,5 @@ var traverseNode = function (startFresh) {
 &lt;button value=&quot;Add node&quot; name=&quot;set&quot; type=&quot;button&quot; onclick=&quot;traverseNode(false);&quot;&gt;Add node&lt;/button&gt;
 &lt;/form&gt;</doctext>
   <node_id>2029511</node_id>
-  <type_nodetype>1065266</type_nodetype>
   <title>Nodegraph Visualiser</title>
 </node>

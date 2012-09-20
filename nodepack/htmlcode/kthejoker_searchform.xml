@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1854188</node_id>
+  <title>kthejoker searchform</title>
   <code>my ($PARAM) = @_;
 
 my $default ='';
@@ -61,6 +63,4 @@ $str.=&quot;&quot;.$query-&gt;checkbox(
 $str.=&quot;&lt;label&gt;Ignore Exact&lt;/label&gt;&quot;;
 
 $str; </code>
-  <type_nodetype>4</type_nodetype>
-  <title>kthejoker searchform</title>
 </node>

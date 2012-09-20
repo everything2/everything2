@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1271429</node_id>
+  <title>sayings_nwing</title>
   <code>#picks a random stupid saying N-Wing would say/has said
 #created: 2002.03.19.n2
 #updated: 2002.11.23.n6
@@ -131,6 +133,4 @@ if($publicTalk) {
 } else {
 	return $saying;
 }</code>
-  <type_nodetype>4</type_nodetype>
-  <title>sayings_nwing</title>
 </node>

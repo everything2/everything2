@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>720242</node_id>
+  <title>lockroom</title>
   <code>return unless isGod($USER);
 
 my $R = $$USER{in_room};
@@ -15,6 +17,4 @@ unless ($$R{criteria} eq $denystr) {
   $$R{criteria} = &quot;1\;&quot;;
 }
 updateNode($R, $USER);</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>lockroom</title>
 </node>

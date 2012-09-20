@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>854225</node_id>
+  <title>viewcode</title>
   <code>return unless exists $HTMLVARS{group_edev}{$$USER{user_id}};
 
 my $ntt = $$NODE{type}{title};
@@ -10,6 +12,4 @@ return unless ($ntt eq 'superdoc') || ($ntt eq 'superdocnolinks') || ($ntt eq 'n
 #return unless grep /^$id$/, @{ $$GROUP{group} };
 
 '&lt;font size=&quot;1&quot;&gt;'.linkNode($NODE, 'viewcode', {'displaytype'=&gt;'viewcode', 'lastnode_id'=&gt;0}).'&lt;/font&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>viewcode</title>
 </node>

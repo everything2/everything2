@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1129970</node_id>
+  <title>episection_ces</title>
   <code>my $votable =
 	(
 		htmlcode('flagged', $$NODE{node_id}.',unvotable') ?
@@ -202,6 +204,4 @@ $str.=($oldway ? '&lt;small&gt;' : '&lt;li&gt;&lt;small&gt;').linkNodeTitle($sub
 #show nodelet part
 return $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>episection_ces</title>
 </node>

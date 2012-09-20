@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* ------------------------------------------------------------
  * HTML RESETS AND BASIC TAG STYLING
  * ------------------------------------------------------------
@@ -357,6 +358,5 @@ font-size: 85%;
 display: none;
 }</doctext>
   <node_id>2047469</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>ResponsiveBase</title>
 </node>

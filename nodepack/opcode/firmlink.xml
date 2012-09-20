@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1150387</node_id>
+  <title>firmlink</title>
   <code>my $RECURSE = 1;
 
 return unless htmlcode('isEditor')
@@ -41,6 +43,4 @@ $DB-&gt;sqlInsert(&quot;firmlink_note&quot;,
 
 return 1;
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>firmlink</title>
 </node>

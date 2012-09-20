@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1871715</node_id>
+  <title>voteit2</title>
   <code>#voteit - pass writeup's node_id
 
 my ($N,$showParts) = @_;
@@ -227,6 +229,4 @@ $str .= $$VSETTINGS{voteFooter};
 } #vote-only section
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>voteit2</title>
 </node>

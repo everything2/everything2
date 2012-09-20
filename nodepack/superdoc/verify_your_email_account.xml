@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;div style=&quot;width:600px&quot;&gt;
 [%
 use Digest::MD5 qw(md5_hex);
@@ -214,6 +215,5 @@ if($query-&gt;param(&quot;sendNewKey&quot;)){
 &lt;/div&gt;
 </doctext>
   <node_id>1948165</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Verify your email account</title>
 </node>

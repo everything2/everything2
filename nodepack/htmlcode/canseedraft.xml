@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2035530</node_id>
+  <title>canseedraft</title>
   <code>return 0 if $$USER{node_id} == $HTMLVARS{guest_user};
 
 my ($N, $editCheck) = @_;
@@ -59,6 +61,4 @@ foreach (@collab_names){
 }
 return 0;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>canseedraft</title>
 </node>

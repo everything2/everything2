@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>@import url(&quot;http://everything2.com/node/stylesheet/Bookwormier?displaytype=view&quot;);
 #wrapper {
 	padding-left: 280px; /* sidebar goes in this gap */
@@ -23,6 +24,5 @@
 	padding-left: 20px;
 }</doctext>
   <node_id>2001670</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>bookwormier, sinister</title>
 </node>

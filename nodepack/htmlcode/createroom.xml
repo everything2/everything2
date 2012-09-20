@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>720339</node_id>
+  <title>createroom</title>
   <code>use Everything::Experience;
 return unless getLevel($USER) &gt;= $HTMLVARS{roomCreateLevel};
 
@@ -10,6 +12,4 @@ my $cr = getId(getNode('create room','superdoc'));
 return '&lt;span title=&quot;create a new room to chat in&quot;&gt;'
 	. linkNode($cr,'create',{lastnode_id=&gt;0})
 	. '&lt;/span&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>createroom</title>
 </node>

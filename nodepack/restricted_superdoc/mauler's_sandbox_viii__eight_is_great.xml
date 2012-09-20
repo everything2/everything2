@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;style type=&quot;text/css&quot;&gt;
 .mytable th, .mytable td
 {
@@ -215,6 +216,5 @@ return $str;
 
 %]</doctext>
   <node_id>1961423</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>mauler's Sandbox VIII: Eight is Great</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;h3&gt;Notelet Castrator&lt;/h3&gt;
 
 &lt;p&gt;This is the Notelet Castrator.  Its purpose is to neuter your Notelet by
@@ -206,6 +207,5 @@ return '&lt;p&gt;&lt;br /&gt;&lt;br /&gt;Locking ain\'t working yet.&lt;br /&gt;
 %]
 </doctext>
   <node_id>1291365</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Notelet Editor</title>
 </node>

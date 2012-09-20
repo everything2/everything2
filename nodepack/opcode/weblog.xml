@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>458215</node_id>
+  <title>weblog</title>
   <code>my $SRC = $query-&gt;param(&quot;source&quot;);
 
 my $N = $query-&gt;param('target');
@@ -54,6 +56,4 @@ if ($$SRC{title} eq 'News for noders. Stuff that matters.') {
 }
 
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>weblog</title>
 </node>

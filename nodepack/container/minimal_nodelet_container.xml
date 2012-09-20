@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>2</type_nodetype>
   <parent_container>21</parent_container>
   <node_id>277</node_id>
   <context>&lt;TR&gt;&lt;TD bgcolor=[%
@@ -9,6 +10,5 @@ return $$VARS{nodelet_textclr} if $$VARS{nodelet_textclr};
 CONTAINED_STUFF
 &lt;/FONT&gt;
 &lt;/TD&gt;&lt;/TR&gt;</context>
-  <type_nodetype>2</type_nodetype>
   <title>minimal nodelet container</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>657429</node_id>
+  <title>supercloak</title>
   <code>return unless $$USER{title} eq 'nate';
 
 my $NODE = $query-&gt;param('node_id');
@@ -12,6 +14,4 @@ my $VARS = getVars($NODE);
 $$VARS{supercloak} = &quot;1&quot;;
 setVars($NODE, $VARS);
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>supercloak</title>
 </node>

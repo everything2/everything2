@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>var Debugger = {
 	log: function (str) {
 		if (!Debugger.enabled) {
@@ -28,6 +29,5 @@
 } ;
 </doctext>
   <node_id>2023560</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>javascript debugger</title>
 </node>

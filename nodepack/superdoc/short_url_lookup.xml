@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return unless $query;
 
@@ -35,6 +36,5 @@ $HEADER_PARAMS{-location} =
   ;
 %]</doctext>
   <node_id>2021986</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Short URL Lookup</title>
 </node>

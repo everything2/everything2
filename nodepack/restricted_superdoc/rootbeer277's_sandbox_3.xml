@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[%
 
 my $explaintest = 0;
@@ -204,6 +205,5 @@ else
 
 %]</doctext>
   <node_id>1957507</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>rootbeer277's sandbox 3</title>
 </node>

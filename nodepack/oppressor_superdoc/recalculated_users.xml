@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>[%
 sub mysort {
  lc($a) cmp lc($b);
@@ -41,6 +42,5 @@ $str .= '&lt;/ol&gt;';
 return $str;
 %]</doctext>
   <node_id>1960696</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>Recalculated Users</title>
 </node>

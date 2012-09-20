@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1298189</node_id>
+  <title>repair_e2node</title>
   <code>return unless exists($HTMLVARS{'group_gods'}{$$USER{user_id}}) or exists($HTMLVARS{'group_content editors'}{$$USER{user_id}});
 
 my $repair_id = $query-&gt;param('repair_id');
@@ -10,6 +12,4 @@ my $result = htmlcode('repair e2node', $repair_id, $no_order);
 return 1 if $result;
 return undef;
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>repair_e2node</title>
 </node>

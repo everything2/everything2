@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1068745</node_id>
+  <title>showFooter</title>
   <code>#displays footer information in its own table
 #originally in [jukka container]
 
@@ -37,6 +39,4 @@ $str .= '&gt;&lt;img src=&quot;http://static.everything2.com/clear.gif&quot; wid
 $str .= &quot;\n&lt;/table&gt;\n&quot;;
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>showFooter</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;style type=&quot;text/css&quot;&gt;
 #mainbody li {
 	margin: 1em;
@@ -576,6 +577,5 @@ their original author(s).&quot; will need to be displayed in the footer.&lt;/li&
 
 </doctext>
   <node_id>1919380</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Everything2 Fall 2007 Feature Set Developmental Specification</title>
 </node>

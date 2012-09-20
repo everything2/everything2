@@ -1,5 +1,4 @@
 <node>
-  <node_id>1854183</node_id>
   <type_nodetype>175989</type_nodetype>
   <vars>
     <value>2021824</value>
@@ -45,5 +44,6 @@
     <value>1</value>
     <key>isZen</key>
   </vars>
+  <node_id>1854183</node_id>
   <title>zen theme</title>
 </node>

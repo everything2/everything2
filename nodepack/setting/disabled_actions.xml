@@ -1,5 +1,4 @@
 <node>
-  <node_id>2002478</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>OL</value>
@@ -93,5 +92,6 @@
     <value>w</value>
     <key>1144104</key>
   </vars>
+  <node_id>2002478</node_id>
   <title>Disabled actions</title>
 </node>

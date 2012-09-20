@@ -1,7 +1,7 @@
 <node>
+  <type_nodetype>2</type_nodetype>
   <parent_container>269</parent_container>
   <node_id>268</node_id>
   <context>&lt;table cellpadding=2 cellspacing=0 border=0 width=100%&gt;&lt;tr&gt;&lt;td bgcolor=#CCCCFF&gt;CONTAINED_STUFF&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</context>
-  <type_nodetype>2</type_nodetype>
   <title>snippet container</title>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <node_id>444409</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>50</value>
@@ -405,5 +404,6 @@
     <value>50</value>
     <key>5</key>
   </vars>
+  <node_id>444409</node_id>
   <title>level votes</title>
 </node>

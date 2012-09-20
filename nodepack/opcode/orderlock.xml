@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1466528</node_id>
+  <title>orderlock</title>
   <code>return unless exists($HTMLVARS{'group_gods'}{$USER-&gt;{node_id}})
 	|| exists($HTMLVARS{'group_content editors'}{$USER-&gt;{node_id}});
 
@@ -16,6 +18,4 @@ if($query-&gt;param(&quot;unlock&quot;)){
 
 updateNode($N, -1);
 return;</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>orderlock</title>
 </node>

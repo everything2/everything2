@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* colours: #c9c9c9; #BCBCBC*/
 
 /*= autofix added basic compatibility rules */
@@ -480,6 +481,5 @@ textarea				{
 .action_fireball, .action_sanctify,
 .action_egg				{	font-variant: smallcaps;	}</doctext>
   <node_id>1983570</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>mikoyan25 light</title>
 </node>

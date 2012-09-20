@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/****** COLORS ******/
 
 body,
@@ -291,6 +292,5 @@ body {
 	}
 </doctext>
   <node_id>1904870</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>The Pretentious Theme</title>
 </node>

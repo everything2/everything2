@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1959548</node_id>
+  <title>showNewGP</title>
   <code>my ($shownumbers, $isxml, $newwuonly) = @_;
 use POSIX;
 #send TRUE if you want people to see how much GP they gained/lost
@@ -79,6 +81,4 @@ $xmlstr.='&lt;/gpinfo&gt;' if $isxml;
 return $xmlstr if $isxml;
 return $str.$footer;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>showNewGP</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2027673</node_id>
+  <title>isMarkedForDestruction</title>
   <code>my $check_wu = shift;
 my $wu_id = int(getId($check_wu));
 my $noderow = getId(getNode('node row', 'superdoc')) ;
@@ -15,6 +17,4 @@ $unkuid ||= 0;
 return 1 if ($kuid &amp;&amp; !$unkuid);
 return 0;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>isMarkedForDestruction</title>
 </node>

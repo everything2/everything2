@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 my $str = '$CONFIG{canonical_web_server} = '
@@ -318,6 +319,5 @@ return $str;
 
 %]</doctext>
   <node_id>1929198</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Oolong's Testing Ground</title>
 </node>

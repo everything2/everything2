@@ -1068,48 +1068,6 @@
     <rank>170</rank>
   </group>
   <group>
-    <node_id>211</node_id>
-    <orderby>5</orderby>
-    <nodegroup_id>200</nodegroup_id>
-    <rank>5</rank>
-  </group>
-  <group>
-    <node_id>212</node_id>
-    <orderby>6</orderby>
-    <nodegroup_id>200</nodegroup_id>
-    <rank>6</rank>
-  </group>
-  <group>
-    <node_id>213</node_id>
-    <orderby>7</orderby>
-    <nodegroup_id>200</nodegroup_id>
-    <rank>7</rank>
-  </group>
-  <group>
-    <node_id>214</node_id>
-    <orderby>8</orderby>
-    <nodegroup_id>200</nodegroup_id>
-    <rank>8</rank>
-  </group>
-  <group>
-    <node_id>204</node_id>
-    <orderby>9</orderby>
-    <nodegroup_id>200</nodegroup_id>
-    <rank>9</rank>
-  </group>
-  <group>
-    <node_id>206</node_id>
-    <orderby>11</orderby>
-    <nodegroup_id>200</nodegroup_id>
-    <rank>11</rank>
-  </group>
-  <group>
-    <node_id>207</node_id>
-    <orderby>12</orderby>
-    <nodegroup_id>200</nodegroup_id>
-    <rank>12</rank>
-  </group>
-  <group>
     <node_id>262</node_id>
     <orderby>0</orderby>
     <nodegroup_id>216</nodegroup_id>

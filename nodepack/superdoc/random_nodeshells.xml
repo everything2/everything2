@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 return if $$USER{node_id} == $HTMLVARS{guest_user};
@@ -44,6 +45,5 @@ return $str;
 %]
 </doctext>
   <node_id>1802702</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Random nodeshells</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1468740</node_id>
+  <title>mergeApprovedTags</title>
   <code>#merges multiple hash refs of allowed [HTML] tags into a new hash
 #a hash containing valid tags has:
 #	key (case sensitive) of the tag name
@@ -57,6 +59,4 @@ foreach my $h (@validRefs) {
 $HTMLVARS{'approvedTags'} = \%merged;
 
 return;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>mergeApprovedTags</title>
 </node>

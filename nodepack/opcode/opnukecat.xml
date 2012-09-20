@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1671491</node_id>
+  <title>opNukeCat</title>
   <code># First, we need the node object
 my $N = getNodeById($query-&gt;param('node_id'));
 
@@ -33,6 +35,4 @@ else
 {
   $query-&gt;param('result', 'Not-A-Category');
 }</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>opNukeCat</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1258917</node_id>
+  <title>schemalink</title>
   <code>my ($schemafor) = @_;
 
 my $noderef = getNodeById($schemafor);
@@ -10,6 +12,4 @@ $row = $DB-&gt;sqlSelect(&quot;schema_id&quot;, &quot;xmlschema&quot;, &quot;sch
 return &quot; xmlns=\&quot;http://www.everything2.com\&quot; xmlns:xsi=\&quot;http://www.w3.org/2001/XMLSchema-instance\&quot; xsi:schemaLocation=\&quot;http://www.everything2.com/?node_id=$row\&quot; &quot;;
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>schemalink</title>
 </node>

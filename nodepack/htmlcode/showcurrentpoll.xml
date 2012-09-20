@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2052561</node_id>
+  <title>showcurrentpoll</title>
   <code>my $inNodelet = shift;
 
 my @POLL = getNodeWhere({poll_status =&gt; 'current'}, 'e2poll');
@@ -22,6 +24,4 @@ $str .= $inNodelet
 
 return $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>showcurrentpoll</title>
 </node>

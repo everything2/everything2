@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $pollgod = 'wertperch';
 my $turnPollsOff=0;
@@ -71,6 +72,5 @@ return qq\$str
 \;
 %]</doctext>
   <node_id>1685243</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Everything Poll Creator</title>
 </node>

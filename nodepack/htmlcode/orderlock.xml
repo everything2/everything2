@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1466529</node_id>
+  <title>orderlock</title>
   <code>return unless(exists($HTMLVARS{'group_gods'}{$USER-&gt;{node_id}}));
 my $str = htmlcode('openform');
 $str.= &quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;op\&quot; value=\&quot;orderlock\&quot;&gt;&quot;;
@@ -25,6 +27,4 @@ return &quot;&lt;p align=\&quot;right\&quot;&gt;$str&lt;/p&gt;&quot;;
 
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>orderlock</title>
 </node>

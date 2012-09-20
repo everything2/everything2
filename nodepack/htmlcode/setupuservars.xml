@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>444740</node_id>
+  <title>setupuservars</title>
   <code>return if $$USER{user_id}==$HTMLVARS{guest_user};
 
 my $SETTINGS = getVars $NODE;
@@ -111,6 +113,4 @@ setVars($NODE, $SETTINGS);
    
 '';
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>setupuservars</title>
 </node>

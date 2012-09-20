@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1240793</node_id>
+  <title>linkGroupMessages</title>
   <code>#just call this in a usergroup page
 #optional argument: user name to /msg to join the group; this should already have any spaces converted into underlines
 #this will create a link to 'usergroup message archive' with the current group already selected
@@ -16,6 +18,4 @@ return 'Ack! Unable to find group ID!' unless $gid;
 my ($num)=$DB-&gt;sqlSelect('COUNT(*)','message','for_user='.$gid.' AND for_usergroup='.$gid);
 
 return '&lt;a href='.urlGen({'node'=&gt;'usergroup message archive', 'type'=&gt;'superdoc', 'viewgroup'=&gt;$$NODE{title}}).'&gt;'.$num.'&lt;/a&gt; message'.($num==1?' has':'s have').' been sent to this group.';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>linkGroupMessages</title>
 </node>

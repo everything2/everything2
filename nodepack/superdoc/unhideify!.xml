@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 ### 12.30.2002 by [dann]
 # $$VARS{hidden_weblog} is used only to tell Epicenter whether or not to show
@@ -49,6 +50,5 @@ $str.='&lt;/ul&gt;';
 &lt;p align='right'&gt;&lt;small&gt;Bugs go to [dann]&lt;/small&gt;&lt;/p&gt;
 </doctext>
   <node_id>1408528</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Unhideify!</title>
 </node>

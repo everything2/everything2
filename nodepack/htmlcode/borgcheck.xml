@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>500201</node_id>
+  <title>borgcheck</title>
   <code>return unless $$VARS{borged};
 my $t = time;
 my $str;
@@ -17,6 +19,4 @@ if ($t - $$VARS{borged} &lt; 300+60*$numborged) {
 }
 
 $str.'&lt;br /&gt;&lt;br /&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>borgcheck</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1928483</node_id>
+  <title>socialBookmarks</title>
   <code>#returns a series of social bookmarking links.
 
 my ($targetNode, $includeTitles, $asList, $full) = @_;
@@ -234,6 +236,4 @@ $str .= join '', map { &amp;$makeSocialLink($_, $url, $title, $includeTitles, $a
 $str = &quot;&lt;ul class=\&quot;bookmarkList\&quot;&gt;\n$str&lt;/ul&gt;\n&quot; if $asList;
 return $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>socialBookmarks</title>
 </node>

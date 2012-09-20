@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>.noprint , #printlink , #header , #footer , .topic , #displaytypelinks, .writeuppage .contentfooter , 
 #votefooter , #softlinks , .writeup_add , #sidebar , form , .writeuppage .writeup_add form , #skratch_form &gt; * {
 display: none ;
@@ -53,6 +54,5 @@ font-size: 110% ;
 
 </doctext>
   <node_id>2004473</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>print</title>
 </node>

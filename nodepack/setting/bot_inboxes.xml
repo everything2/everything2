@@ -1,5 +1,4 @@
 <node>
-  <node_id>2057733</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>Content Editors</value>
@@ -45,5 +44,6 @@
     <value>recipians</value>
     <key>recipe</key>
   </vars>
+  <node_id>2057733</node_id>
   <title>bot inboxes</title>
 </node>

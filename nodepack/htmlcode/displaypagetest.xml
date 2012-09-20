@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1982632</node_id>
+  <title>displayPageTest</title>
   <code>#############################################################################
 #	Sub
 #		displayPage
@@ -78,6 +80,4 @@ sub displayPage
 	$query-&gt;print($page);
 	$page = &quot;&quot;;
 }</code>
-  <type_nodetype>4</type_nodetype>
-  <title>displayPageTest</title>
 </node>

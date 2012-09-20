@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1118979</node_id>
+  <title>ekw titlebar</title>
   <code>my $str = &quot;
 
 &lt;font size=2&gt;
@@ -32,6 +34,4 @@ my ($ss) = getNode('system settings', getType('setting'));
 $str .= &quot; | &quot; . linkNode ($ss, undef, {lastnode_id =&gt; undef}) if ($USER eq $ROOT);
 #$str .= &quot; | &quot; . linkNode ($HTMLVARS{default_node}, undef, {lastnode_id =&gt; undef});
 $str . &quot; ]&lt;/font&gt;&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>ekw titlebar</title>
 </node>

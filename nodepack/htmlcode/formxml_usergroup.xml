@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1294803</node_id>
+  <title>formxml_usergroup</title>
   <code>my $txt = parseCode($$NODE{doctext});
 my $str = &quot;&quot;;
 $txt = parseLinks($txt) unless($query-&gt;param(&quot;links_noparse&quot;));
@@ -32,6 +34,4 @@ foreach(@{$$NODE{group}})
 
 $str.=&quot;&lt;/usergroup&gt;\n&quot;;
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>formxml_usergroup</title>
 </node>

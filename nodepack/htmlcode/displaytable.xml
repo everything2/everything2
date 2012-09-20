@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>175</node_id>
+  <title>displaytable</title>
   <code># This generates an HTML table that contains the fields
 # of a database table.  The output is similar to what
 # you get when 'show columns from $table' is executed.
@@ -72,6 +74,4 @@ if($edit)
 
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>displaytable</title>
 </node>

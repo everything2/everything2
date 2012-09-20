@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1877928</node_id>
+  <title>updateNodelet</title>
   <code>my ($nodelet) = @_;
 return unless $nodelet;
 
@@ -10,6 +12,4 @@ return insertNodelet($nodelet);
 
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>updateNodelet</title>
 </node>

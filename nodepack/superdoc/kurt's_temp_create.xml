@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return &quot;Nothing to see here&quot;;
 my $str = &quot;&quot;;
@@ -45,6 +46,5 @@ $str;
 %]
 </doctext>
   <node_id>1548498</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Kurt's_Temp_Create</title>
 </node>

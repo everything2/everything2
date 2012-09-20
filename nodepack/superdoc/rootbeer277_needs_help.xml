@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 my $querytext;
@@ -49,6 +50,5 @@ return $testexplainoutput . $querytextcopy;
 
 %]</doctext>
   <node_id>1961836</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>rootbeer277 needs help</title>
 </node>

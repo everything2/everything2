@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>57</node_id>
+  <title>windowview</title>
   <code>return &quot;&quot; unless $DB -&gt; canUpdateNode($USER, $NODE);
 my ($displaytype, $title, $width, $height) = @_;
 
@@ -17,6 +19,4 @@ $height||=400;
 	}
 &lt;/SCRIPT&gt;
 &lt;A href=\&quot;javascript:launchThaDamnWinda()\&quot;&gt;$title&lt;/a&gt;&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>windowview</title>
 </node>

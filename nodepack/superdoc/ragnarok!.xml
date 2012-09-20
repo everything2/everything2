@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 return &quot;The battlefield is quiet now.&quot;;
@@ -135,6 +136,5 @@ return $str . $strikeStr;
 
 %]</doctext>
   <node_id>1936034</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Ragnarok!</title>
 </node>

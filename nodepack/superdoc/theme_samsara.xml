@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 if(defined($query-&gt;param('switchToZen'))) {
@@ -106,6 +107,5 @@ $str .= '&lt;/table&gt;
 return $str;
 %]</doctext>
   <node_id>1953472</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Theme Samsara</title>
 </node>

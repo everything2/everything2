@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/*The basics*/
 body, div, p, th, td, li, dd {
 	font-family: &quot;Courier New&quot;, lucida, arial, sans-serif;
@@ -324,6 +325,5 @@ big big big {
 font-size: inherit;
 }</doctext>
   <node_id>1905962</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>etch a sketch</title>
 </node>

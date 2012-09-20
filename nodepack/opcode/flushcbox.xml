@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1328318</node_id>
+  <title>flushcbox</title>
   <code>return unless isGod($USER) || (exists $HTMLVARS{'group_e2contact'}{$$USER{node_id}}) || (exists $HTMLVARS{'group_chanops'}{$$USER{node_id}});
 my $currentRoomId = int($$USER{in_room});
 my $currentRoom = getNode($currentRoomId);
@@ -20,6 +22,4 @@ $DB-&gt;sqlInsert('seclog', {
 $DB-&gt;sqlDelete(&quot;message&quot;, &quot;for_user = 0 AND room = $currentRoomId&quot;);
 return 1;
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>flushcbox</title>
 </node>

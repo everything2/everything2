@@ -1,5 +1,4 @@
 <node>
-  <node_id>1378567</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>everything</value>
@@ -21,5 +20,6 @@
     <value>everyuser</value>
     <key>username</key>
   </vars>
+  <node_id>1378567</node_id>
   <title>fulltextdb settings</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;Welcome to the Everything2 Gift Shop!&lt;/p&gt;
 
 [%
@@ -727,6 +728,5 @@ return &quot;&quot;;
 
 </doctext>
   <node_id>1872678</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>E2 Gift Shop</title>
 </node>

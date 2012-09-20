@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1364410</node_id>
+  <title>simplenewsify</title>
   <code>my ($src_id, $name) = @_;
 
 return unless $$NODE{type}{sqltablelist} =~ /document/;
@@ -17,6 +19,4 @@ return '' if $DB-&gt;sqlSelect('weblog_id', 'weblog', 'weblog_id='.int($src_id).
 	' | ' . linkNode( $NODE , 'hide' , { '-title'=&gt;'hide this link' ,'hide_weblog'=&gt; $src_id } ).
 	')&lt;/small&gt;&amp;nbsp;';
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>simplenewsify</title>
 </node>

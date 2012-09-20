@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>176759</node_id>
+  <title>e2mottos</title>
   <code>my @mottos = (
   &quot;[Fee-Faw-Fum]&quot;,
   &quot;[Impossibly nifty]&quot;,
@@ -10,6 +12,4 @@ my $pick = int(rand(@mottos));
 
 $mottos[$pick];
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>e2mottos</title>
 </node>

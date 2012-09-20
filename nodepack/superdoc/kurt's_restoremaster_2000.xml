@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>It...  it...  it...  it...
 &lt;p&gt;
 [%
@@ -87,6 +88,5 @@
 return $str;
 %]</doctext>
   <node_id>1668580</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Kurt's RestoreMaster 2000</title>
 </node>

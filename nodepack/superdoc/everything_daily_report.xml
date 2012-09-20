@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>Now you can get grand ol' Everything2 info delivered 
 straight to your [inbox].  This daily [vivisection] of
 your favorite hypertext universe includes:
@@ -14,6 +15,5 @@ your favorite hypertext universe includes:
 &lt;p&gt;&lt;small&gt;&lt;b&gt;(UPDATE)&lt;/b&gt;&lt;/small&gt; -- [header]s and [mime type]s and [br|break tags], oh my!  Sorry if you
 got a munged html-mail.  I finally tried it with some other clients, and it seems to work now. </doctext>
   <node_id>582502</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Everything Daily Report</title>
 </node>

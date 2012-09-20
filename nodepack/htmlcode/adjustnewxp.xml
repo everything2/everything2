@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>958429</node_id>
+  <title>adjustNewXP</title>
   <code>#another ugly hack by N-Wing to try out the new XP system without messing up the old one
 #after the new XP system works, it should be moved into the Everything Perl module, and have the obvious changes made
 #NPB TODO - list method to map old XP into new XP fields
@@ -47,6 +49,4 @@ if(which eq 'misc') {
 #my $userVars = getVars($who);
 #NPB TODO transfer XP hash into user vars
 #setVars($who, $userVars);</code>
-  <type_nodetype>4</type_nodetype>
-  <title>adjustNewXP</title>
 </node>

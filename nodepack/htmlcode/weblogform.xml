@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2004985</node_id>
+  <title>weblogform</title>
   <code>my ( $N , $inwriteupform ) = @_ ;
 getRef $N ;
 $N ||= $NODE ;
@@ -69,6 +71,4 @@ return qq'&lt;fieldset id=&quot;weblogform$$N{node_id}&quot;&gt;&lt;legend&gt;Ad
 	&lt;/fieldset&gt;
 	&quot; ;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>weblogform</title>
 </node>

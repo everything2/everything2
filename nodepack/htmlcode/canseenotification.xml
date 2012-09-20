@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2027662</node_id>
+  <title>canseeNotification</title>
   <code>my $notification = shift;
 getRef $notification;
 
@@ -18,6 +20,4 @@ return 0 if ( !$isChanop &amp;&amp; ($$notification{description} =~ /chanop/) );
 
 return 1;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>canseeNotification</title>
 </node>

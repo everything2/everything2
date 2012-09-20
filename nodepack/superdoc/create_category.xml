@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;&lt;b&gt;&lt;big&gt;[Everything2 Help] &amp;gt; [Everything2 Categories]&lt;/big&gt;&lt;/b&gt;&lt;/p&gt;
 
 &lt;p&gt;A [category] is a way to group a list of related nodes. You can create a category that only you can edit, a category that anyone can edit, or a category that can be maintained by any [Everything2 Usergroups|usergroup] you are a member of.&lt;/p&gt;
@@ -106,6 +107,5 @@ $str .= $query-&gt;endform;
 %]
 </doctext>
   <node_id>1935419</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Create Category</title>
 </node>

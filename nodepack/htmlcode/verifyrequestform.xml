@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1979757</node_id>
+  <title>verifyRequestForm</title>
   <code>#Generates the form fields used to verify the form submission. Pass a prefix.
 my ($prefix) = @_;
 use Digest::MD5 qw(md5_hex);
@@ -7,6 +9,4 @@ my $rand = rand(999999999);
 my $nonce = md5_hex($$USER{passwd} . ' ' . $$USER{email} . $rand);
 
 return $query-&gt;hidden($prefix . '_nonce', $nonce) . $query-&gt;hidden($prefix . '_seed', $rand);</code>
-  <type_nodetype>4</type_nodetype>
-  <title>verifyRequestForm</title>
 </node>

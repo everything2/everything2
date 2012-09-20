@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[{ennchoice}]
 &lt;br&gt;
 (see also [Writeups by Type])&lt;br&gt;&lt;br&gt;
@@ -13,6 +14,5 @@
 [% linkNode($NODE, 'printable version', { displaytype =&gt; 'printable' } ) %]
 &lt;/p&gt;</doctext>
   <node_id>1148595</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>25</title>
 </node>

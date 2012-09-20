@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>279</node_id>
+  <title>displaySingleVar</title>
   <code>my ($varname, $title) = @_;
 my $SETTINGS = getVars $NODE;
 my $t = $title ? $title : $varname;
@@ -34,6 +36,4 @@ $val = '&lt;i&gt;n/a&lt;/i&gt;' unless $val;
 my $str = &quot;&lt;tr bgcolor=\&quot;$clr\&quot;&gt;&lt;td align=\&quot;left\&quot;&gt;$t&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td align=\&quot;right\&quot;&gt;$val&lt;/td&gt;&lt;/tr&gt;\n&quot;;
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>displaySingleVar</title>
 </node>

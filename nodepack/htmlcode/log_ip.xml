@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2007922</node_id>
+  <title>log ip</title>
   <code>return '' if $$USER{user_id} == $HTMLVARS{'guest_user'};
 
 my $isUsh = sub {
@@ -40,6 +42,4 @@ if ($ushed) {
 
 return '';
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>log ip</title>
 </node>

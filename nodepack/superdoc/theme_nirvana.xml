@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return &quot;This page will allow you to customise your view of the site if you sign up for an account.&quot; if (getId($USER) == $HTMLVARS{guest_user});
 
@@ -108,6 +109,5 @@ $str .= '&lt;/table&gt;
 return $str;
 %]</doctext>
   <node_id>1933698</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Theme Nirvana</title>
 </node>

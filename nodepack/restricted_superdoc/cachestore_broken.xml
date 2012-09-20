@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;CACHESTORE is broken somehow&lt;br&gt;- [N-Wing]&lt;br&gt;... but seems fine now&lt;/p&gt;
 
 
@@ -47,6 +48,5 @@ undef $cs;
 %]
 &lt;/pre&gt;&lt;/p&gt;</doctext>
   <node_id>1873627</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>CACHESTORE broken</title>
 </node>

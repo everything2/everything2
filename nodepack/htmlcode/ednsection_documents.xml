@@ -1,10 +1,10 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>837960</node_id>
+  <title>ednsection_documents</title>
   <code>my $nl = &quot;&lt;br /&gt;\n&quot;;
 linkNodeTitle('EDev FAQ').$nl.
 '&lt;a href=&quot;http://everydevel.everything2.com/?node=everything+documentation+index&quot; target=&quot;_blank&quot;&gt;Everything Documentation Index&lt;/a&gt;'.$nl.
 '&lt;a href=&quot;http://everydevel.everything2.com/?node=submit+an+everything+document&quot; target=&quot;_blank&quot;&gt;Submit an Everything Document&lt;/a&gt;'.$nl.
 '&lt;a href=&quot;http://everydevel.everything2.com/?node=the+everything+bible&quot; target=&quot;_blank&quot;&gt;Everything Bible&lt;/a&gt;'.$nl;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>ednsection_documents</title>
 </node>

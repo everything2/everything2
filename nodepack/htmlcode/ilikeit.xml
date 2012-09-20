@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1920424</node_id>
+  <title>ilikeit</title>
   <code>return if $$USER{user_id} != $HTMLVARS{guest_user} or htmlcode('isSpider');
 
 my ($WU) = @_;
@@ -15,6 +17,4 @@ linkNode($NODE,'I like it!', {confirmop =&gt; 'ilikeit', like_id =&gt; $$WU{node
 	-class =&gt; &quot;action ajax like$$WU{node_id}:ilikeit:$$WU{node_id}:&quot;,
 	-title =&gt; 'send a message to the author telling them someone likes their work'} );
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>ilikeit</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2069289</node_id>
+  <title>javascript_decider</title>
   <code># We never get here if we're Guest User
 return &quot;&quot; if ($$USER{title} eq 'Guest User' or $query -&gt; param('guest'));
 
@@ -33,6 +35,4 @@ foreach (@JS) {
 
 return $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>javascript_decider</title>
 </node>

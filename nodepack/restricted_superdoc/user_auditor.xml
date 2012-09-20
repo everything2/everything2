@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[{openform}]
 &lt;input type=&quot;text&quot; name=&quot;audituser&quot;&gt;
 [{closeform}]
@@ -58,6 +59,5 @@ return $str;
 
 %]</doctext>
   <node_id>1174077</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>user auditor</title>
 </node>

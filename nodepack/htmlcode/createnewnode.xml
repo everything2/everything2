@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>316</node_id>
+  <title>createnewnode</title>
   <code>my $str;
 my $title = $query-&gt;param('node');
 return '' unless $title;
@@ -56,6 +58,4 @@ foreach my $type (@aprtypes) {
 }
 
 $str.'&lt;/ul&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>createnewnode</title>
 </node>

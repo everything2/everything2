@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>49</node_id>
+  <title>set_htmlvars</title>
   <code>my ($SETTINGNODE) = getNode('system settings',  getType('setting'));
 my $SETTINGS = getVars $SETTINGNODE;
 my ($HTMLVARS) = getNode('htmlvars nodegroup', getType('nodegroup'));
@@ -27,6 +29,4 @@ $$SETTINGS{guest_link} = $GUEST_LINK if $GUEST_LINK;
 
 $SETTINGS;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>set_htmlvars</title>
 </node>

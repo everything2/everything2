@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1687850</node_id>
+  <title>isinUsergroup</title>
   <code># This htmlcode simply checks if for the given user_id $U, is it
 # in the usergroup $usergroup? The usergroup can be specified by
 # name or user id. Additionally, an optional third parameter is 
@@ -42,6 +44,4 @@ return 0 if ($$usergroup{type}-&gt;{title} ne 'usergroup');
 return &amp;$isMember($U -&gt; {'node_id'}, $recursion, $$usergroup{group});
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>isinUsergroup</title>
 </node>

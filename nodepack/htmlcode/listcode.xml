@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>37</node_id>
+  <title>listcode</title>
   <code>my ($field,$codenode) = @_;
 $codenode ||= $NODE ;
 my $code = listCode($$codenode{$field}, 1);
@@ -70,6 +72,4 @@ $text .= $query-&gt;end_form;
 
 $text;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>listcode</title>
 </node>

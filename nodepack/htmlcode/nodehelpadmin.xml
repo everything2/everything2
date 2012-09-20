@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1264746</node_id>
+  <title>nodehelpadmin</title>
   <code>#return &quot;&quot; unless($$USER{title} eq &quot;JayBonci&quot;);
 return &quot;&quot; unless(exists($HTMLVARS{'group_gods'}{$$USER{user_id}}));
 my $nhid = $DB-&gt;sqlSelect(&quot;nodehelp_id&quot;, &quot;nodehelp&quot;, &quot;nodehelp_id=$$NODE{node_id}&quot;);
@@ -9,6 +11,4 @@ $temp = &quot;(you are viewing help)&quot; if($query-&gt;param('displaytype') eq
 return &quot;&lt;p align=\&quot;right\&quot;&gt;&quot;.linkNode($NODE, $temp, {'displaytype'=&gt;'help'}).&quot;&lt;/p&gt;&quot;;
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>nodehelpadmin</title>
 </node>

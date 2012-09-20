@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2034110</node_id>
+  <title>isInfected</title>
   <code>my ($patient) = @_;
 
 getRef $patient;
@@ -7,6 +9,4 @@ getRef $patient;
 my $patientVars = getVars($patient);
 
 return ($$patientVars{infected} == 1);</code>
-  <type_nodetype>4</type_nodetype>
-  <title>isInfected</title>
 </node>

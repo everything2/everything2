@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2024571</node_id>
+  <title>listnodecategories</title>
   <code>my ($originalN, $isIncludedParent) = @_;
 my $N = $originalN || $NODE;
 getRef $N;
@@ -75,6 +77,4 @@ if (@items || $HTMLVARS{e2nodeCategories}) {
 return qq'&lt;div id=&quot;categories$nodeid&quot;&gt;&lt;/div&gt;' unless $isIncludedParent;
 '';
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>listnodecategories</title>
 </node>

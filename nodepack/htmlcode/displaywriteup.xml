@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>132</node_id>
+  <title>displaywriteup</title>
   <code># [{displaywriteup:WRITEUPNUMBER}]
 #
 # a function exclusively for e2nodes - to display writeups
@@ -30,6 +32,4 @@ $str .= htmlcode('displayWriteupFooter', getId($WRITEUP));
 
 containHtml('thin outline container', $str);
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>displaywriteup</title>
 </node>

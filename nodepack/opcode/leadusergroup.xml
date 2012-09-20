@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1887815</node_id>
+  <title>leadusergroup</title>
   <code>my $uName = $query-&gt;param(&quot;new_leader&quot;);
 my $userGroup = $query-&gt;param(&quot;node_id&quot;);
 
@@ -25,6 +27,4 @@ $$ugOwner{$userGroup} = $$recUser{node_id};
 setVars($ugOwners, $ugOwner);
 
 return 1;</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>leadusergroup</title>
 </node>

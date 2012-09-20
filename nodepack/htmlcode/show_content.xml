@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1995923</node_id>
+  <title>show content</title>
   <code># generic content/contentinfo display
 # arguments:
 # 0. single hashref or node id, arrayref of node ids or hashrefs, sql cursor for node(s) to show
@@ -213,6 +215,4 @@ foreach my $N ( @input ) {
 
 return $str ;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>show content</title>
 </node>

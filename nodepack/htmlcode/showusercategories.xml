@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2033009</node_id>
+  <title>showUserCategories</title>
   <code># pass a user object (or nothing to default to the current node, or current user if the current node is not a user), and the categories maintained by the user will be returned
 
 
@@ -24,6 +26,4 @@ push @categories, linkNode($$row{node_id}) while ($row = $query-&gt;fetchrow_has
 return if !scalar(@categories);
 return join(', ', @categories);
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>showUserCategories</title>
 </node>

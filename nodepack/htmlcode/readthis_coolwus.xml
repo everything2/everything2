@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1175803</node_id>
+  <title>ReadThis_coolwus</title>
   <code>#ReadThis - C! writeups
 
   my $str = '&lt;ul&gt;';
@@ -16,6 +18,4 @@
   $csr-&gt;finish();
 $str.='&lt;/ul&gt;';
   return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>ReadThis_coolwus</title>
 </node>

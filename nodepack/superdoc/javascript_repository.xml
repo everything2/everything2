@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;Here you can choose which experimental JavaScript modules you would like to enable. You probably shouldn't bother unless you know what you are doing: many of them do not do anything on their own, and some of them do not work at all.
 &lt;/p&gt;
 
@@ -112,6 +113,5 @@ $removeFormHeader.$removeForm.$str;
 
 %]</doctext>
   <node_id>1869414</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Javascript Repository</title>
 </node>

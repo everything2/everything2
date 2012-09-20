@@ -1,5 +1,4 @@
 <node>
-  <node_id>1100936</node_id>
   <type_nodetype>175989</type_nodetype>
   <vars>
     <value>#ffd000</value>
@@ -145,5 +144,6 @@
     <value>#d0d0d0</value>
     <key>oddRowColor</key>
   </vars>
+  <node_id>1100936</node_id>
   <title>ekw theme</title>
 </node>

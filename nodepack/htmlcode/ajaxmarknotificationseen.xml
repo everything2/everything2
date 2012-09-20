@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2028126</node_id>
+  <title>ajaxMarkNotificationSeen</title>
   <code>my $notified_id = shift;
 return 'invalid argument' unless $notified_id =~ /^\d+$/;
 
@@ -23,6 +25,4 @@ if ($isPersonalNotification) {
 	);
 }
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>ajaxMarkNotificationSeen</title>
 </node>

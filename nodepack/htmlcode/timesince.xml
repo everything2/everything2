@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1148378</node_id>
+  <title>timesince</title>
   <code>#originally by [|site=pm&amp;type=user|vroom] at [|site=pm&amp;type=htmlcode|timesince]
 #updated to include fractional resolution
 #last update: Wednesday, July 13, 2005
@@ -64,6 +66,4 @@ my $str = $lapse . ' ' . $params[$lapse==1 ? 1 : 2];
 $str .= ' ago ' unless $shortMode;
 
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>timesince</title>
 </node>

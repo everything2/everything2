@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1868932</node_id>
+  <title>zenwriteups</title>
   <code>my ($isLogs) = @_;
 
 my $UID = $$USER{user_id} || $HTMLVARS{guest_user} ;
@@ -104,6 +106,4 @@ if ($cansee &amp;&amp; !$isLogs){
 	htmlcode('show content' , \@wus , $instructions , %newwuspecials) .
 '&lt;/ul&gt;' ;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>zenwriteups</title>
 </node>

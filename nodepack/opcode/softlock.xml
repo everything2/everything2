@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1876426</node_id>
+  <title>softlock</title>
   <code>return unless $query-&gt;param(&quot;lockID&quot;);
 return unless htmlcode('isEditor','');
 
@@ -21,6 +23,4 @@ else {
 
 
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>softlock</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>@import url(&quot;http://everything2.com/node/stylesheet/bookworm&amp;displaytype=view&quot;);
 
 /* kuler: 1C1D21,31353D,445878, 92CDCF,EEEFF7 */
@@ -47,6 +48,5 @@ color: #92CDCF;
 }
 </doctext>
   <node_id>1933722</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>bookworm blue</title>
 </node>

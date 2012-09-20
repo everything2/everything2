@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[%
 $HTMLVARS{noparsecodelinks} = 1;
 
@@ -210,6 +211,5 @@ $str = $hdr.$str.$grandClose;
 $str;
 %]</doctext>
   <node_id>273242</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>SQL Prompt</title>
 </node>

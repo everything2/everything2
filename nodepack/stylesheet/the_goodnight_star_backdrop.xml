@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>body div, p, th, td, li, dd {
 	font-family: Verdana;
 	font-size: 8pt;
@@ -501,6 +502,5 @@ font-size: inherit;
         font-family: Verdana;
 } </doctext>
   <node_id>1904432</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>the goodnight star backdrop</title>
 </node>

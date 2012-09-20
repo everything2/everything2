@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1254097</node_id>
+  <title>msgdemo</title>
   <code>#demo/test of sendPrivateMessage (htmlcode), a replacement for /msg
 
 my $message = $query-&gt;param('message');
@@ -31,6 +33,4 @@ if($message =~ /^\/(msg\??|tell\??)\s+(\S+)\s+(.+)$/s) {
 	});
 
 }</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>msgdemo</title>
 </node>

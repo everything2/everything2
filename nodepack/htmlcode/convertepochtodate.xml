@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1975735</node_id>
+  <title>convertepochtodate</title>
   <code>my ($epoch) = @_;
 
 use Date::Calc qw(Time_to_Date);
@@ -13,6 +15,4 @@ $out .= sprintf(&quot;%02d&quot;,$minute).&quot;:&quot;;
 $out .= sprintf(&quot;%02d&quot;,$second);
 
 return $out;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>convertepochtodate</title>
 </node>

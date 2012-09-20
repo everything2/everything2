@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>451267</type_nodetype>
   <doctext>[%
 
 my $isGuest = getId($USER) == $HTMLVARS{guest_user};
@@ -217,6 +218,5 @@ if ($isGuest) {
 %]
 </doctext>
   <node_id>1983409</node_id>
-  <type_nodetype>451267</type_nodetype>
   <title>My Chatterlight</title>
 </node>

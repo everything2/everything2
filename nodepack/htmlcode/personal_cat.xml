@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1522372</node_id>
+  <title>personal_cat</title>
   <code>my ($ref,$subref,%display,$text,$temp_ref);
 my $node_id = $NODE-&gt;{node_id};
 
@@ -183,6 +185,4 @@ $text .=&lt;&lt;EOD;
 EOD
 
 return $text;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>personal_cat</title>
 </node>

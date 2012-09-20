@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>215</node_id>
+  <title>limitededitvars</title>
   <code>my (@fields) = @_;
 
 return &quot;&lt;i&gt;you can't update this node&lt;/i&gt;&quot; unless canUpdateNode($USER, $NODE);
@@ -32,6 +34,4 @@ $str.=&quot;&lt;/TABLE&gt;\n&quot;;
 
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>limitededitvars</title>
 </node>

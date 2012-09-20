@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1952207</node_id>
+  <title>message backup</title>
   <code>my $for_user = $query-&gt;param('sendto');
 my $message = $query-&gt;param('message');
 my $UID = getId($USER)||0;
@@ -563,6 +565,4 @@ return if (isSuspended($USER,&quot;chat&quot;));
 	}
 }
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>message backup</title>
 </node>

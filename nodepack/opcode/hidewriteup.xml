@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1216701</node_id>
+  <title>hidewriteup</title>
   <code>return unless (exists($HTMLVARS{'group_gods'}{$$USER{user_id}}) ||
 	exists($HTMLVARS{'group_content editors'}{$$USER{user_id}}));
 
@@ -13,6 +15,4 @@ if($query-&gt;param('hidewriteup'))
 	htmlcode('addNodenote', $writeup, &quot;Hidden by $$USER{title}&quot;);
 }
 return &quot;&quot;;</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>hidewriteup</title>
 </node>

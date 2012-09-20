@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>445058</node_id>
+  <title>message</title>
   <code>my $for_user = $query-&gt;param('sendto');
 my $message = $query-&gt;param('message');
 my $UID = getId($USER)||0;
@@ -703,6 +705,4 @@ if($message =~ /^\/(msg\??|tell\??)(\{.+?\}\??|\s+\S+)(\s+.+)?$/si) {
 
 	$DB-&gt;sqlInsert('message', {msgtext =&gt; $message, author_user =&gt; getId($USER), for_user =&gt; 0, room =&gt; $$USER{in_room}});
 }</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>message</title>
 </node>

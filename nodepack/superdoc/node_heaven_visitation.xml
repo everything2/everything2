@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>You and your node may visit together for a while.
 &lt;p&gt;
 [%
@@ -81,6 +82,5 @@ $str;
 %]
 &lt;p align=&quot;right&quot;&gt;&lt;i&gt;return to the gates of [Node Heaven]&lt;/i&gt;&lt;/p&gt;</doctext>
   <node_id>1968515</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Node Heaven Visitation</title>
 </node>

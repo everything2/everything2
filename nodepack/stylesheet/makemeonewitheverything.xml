@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/*= autofix added basic compatibility rules */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
 .weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
@@ -847,6 +848,5 @@ color: #aaa;
 font-size: 80%;
 }</doctext>
   <node_id>1933748</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>MakeMeOneWithEverything</title>
 </node>

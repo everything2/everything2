@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>// by Bruno Bornsztein - www.feedmarker.com or blog.feedmarker.com
 // You're free to use this however you want. You can even take this
 // attribution out if you like.
@@ -140,6 +141,5 @@ function ts_sort_numeric(a,b) {
   return bb-aa;
 }</doctext>
   <node_id>1985920</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>sortlist</title>
 </node>

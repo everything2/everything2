@@ -1,5 +1,4 @@
 <node>
-  <node_id>1995935</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>2</value>
@@ -245,5 +244,6 @@
     <value>1</value>
     <key>1933748</key>
   </vars>
+  <node_id>1995935</node_id>
   <title>fixed stylesheets</title>
 </node>

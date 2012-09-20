@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>955342</node_id>
+  <title>showNodelets</title>
   <code>#shows the left-side or right-side nodelets
 #parameter: 'left' or 'right' (default)
 
@@ -70,6 +72,4 @@ if ( ($$VARS{nodelet_tabs}) &amp;&amp; ($isZen) &amp;&amp; ($$VARS{userstyle}==1
 }
 
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>showNodelets</title>
 </node>

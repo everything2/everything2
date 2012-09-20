@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* -- 
 
 2007 - Paul McClean/ReiToei
@@ -341,6 +342,5 @@ h1.nodetitle {
 }
 </doctext>
   <node_id>1883067</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>test_ReiToei_2</title>
 </node>

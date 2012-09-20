@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>175616</node_id>
+  <title>e2createnewnode</title>
   <code>my $title = $query-&gt;param('node');
 
 #Don't allow creation of nodes that begin with http(s)://
@@ -68,6 +70,4 @@ $str .= '&lt;p&gt;Lucky you, you can &lt;strong&gt;'
 return $str
 		.'&lt;/fieldset&gt;&lt;/form&gt;';
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>e2createnewnode</title>
 </node>

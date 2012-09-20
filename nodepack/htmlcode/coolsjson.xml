@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2028177</node_id>
+  <title>coolsJSON</title>
   <code>my $csr = $DB-&gt;sqlSelectMany(&quot;
 	(select title from node where node_id=cooledby_user limit 1) as cooluser, coolwriteups_id,
 	(select title from node where node_id=(select author_user from node where node_id=coolwriteups_id limit 1) limit 1) as wu_author,
@@ -26,6 +28,4 @@ $cool_count++;
 
 return $coollist;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>coolsJSON</title>
 </node>

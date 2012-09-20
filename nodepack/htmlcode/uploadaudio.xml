@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1982602</node_id>
+  <title>uploadAudio</title>
   <code>my ($field) =@_;
 
 return if isSuspended($NODE,&quot;audio&quot;);
@@ -60,6 +62,4 @@ if ($fname = $query-&gt;upload($name)) { #recent change to CGI.pm
   $str.=$query-&gt;filefield($name);
 }
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>uploadAudio</title>
 </node>

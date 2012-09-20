@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2038291</node_id>
+  <title>messageBox</title>
   <code>my ($userID, $showCC, $messageID, $usergroupID, $failReasonRef) = @_;
 # This should probably be extended to include a possible topic
 
@@ -83,6 +85,4 @@ if ($usergroupID){
 $str .= $query-&gt;end_form() . '&lt;/div&gt;';
 return $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>messageBox</title>
 </node>

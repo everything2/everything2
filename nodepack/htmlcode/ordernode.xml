@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2037720</node_id>
+  <title>ordernode</title>
   <code>return unless  exists($HTMLVARS{'group_gods'}{$USER-&gt;{node_id}}) or
 	exists($HTMLVARS{'group_content editors'}{$$USER{node_id}});
 
@@ -40,6 +42,4 @@ $str .= '&lt;button name=&quot;op&quot; value=&quot;repair_e2node_noreorder&quot
 	);
 
 &quot;$str&lt;/fieldset&gt;&lt;/form&gt;&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>ordernode</title>
 </node>

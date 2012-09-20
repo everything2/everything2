@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>body {
     color: #073642;
     background-color: #eee8d5;
@@ -205,6 +206,5 @@ a:hover {
 
 </doctext>
   <node_id>2049229</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>rctest</title>
 </node>

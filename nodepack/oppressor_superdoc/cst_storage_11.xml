@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;h2&gt;CST review archive 11&lt;/h2&gt;
 &lt;p&gt;
 This is a storage node for CST reviews. Contents are moved her from [CST_Chat].
@@ -950,6 +951,5 @@ the total quotes are only 17% of the wu, and individually less than 250 words (t
 
 </doctext>
   <node_id>1695298</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>CST_Storage_11</title>
 </node>

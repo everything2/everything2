@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>2</type_nodetype>
   <parent_container>1100988</parent_container>
   <node_id>1100949</node_id>
   <context>&lt;!-- BEGIN ekw container --&gt;
@@ -75,6 +76,5 @@ $$VARS{ekw_logobackground} || $$THEME{logoBackground} || &quot;#305880&quot;;
 [{ekwFooter}]
 
 &lt;!-- END ekw container --&gt;</context>
-  <type_nodetype>2</type_nodetype>
   <title>ekw container</title>
 </node>

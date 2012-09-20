@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;table align=&quot;center&quot;&gt;
 &lt;th colspan=&quot;2&quot;&gt;Quick Godly reference&lt;/th&gt;
 &lt;tr&gt;&lt;td align=&quot;right&quot; width=&quot;50%&quot;&gt;Get yourself unborged&lt;/td&gt;&lt;td width=&quot;50%&quot;&gt;[nate's secret unborg doc]&lt;/td&gt;&lt;/tr&gt;
@@ -433,6 +434,5 @@ return '&lt;big&gt;&lt;strong&gt;TODO actual correct percentage&lt;/strong&gt;&l
 More to come. Gods, feel free to edit or add to this as you see fit.
 &lt;/p&gt;</doctext>
   <node_id>762439</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>God Powers and How to Use Them</title>
 </node>

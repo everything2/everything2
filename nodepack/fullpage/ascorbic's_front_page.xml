@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>451267</type_nodetype>
   <doctext>&lt;!DOCTYPE html&gt;
 
 &lt;html lang=&quot;en&quot;&gt;
@@ -242,6 +243,5 @@ cite {
 &lt;/html&gt;
 </doctext>
   <node_id>2029300</node_id>
-  <type_nodetype>451267</type_nodetype>
   <title>ascorbic's front page</title>
 </node>

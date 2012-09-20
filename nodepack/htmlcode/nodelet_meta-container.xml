@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>40</node_id>
+  <title>nodelet meta-container</title>
   <code>return 'you disabled nodelets' if $$VARS{nodelets_off};
 return '' if $query-&gt;param('nonodelets');
 
@@ -86,6 +88,4 @@ if ($useTable) {
 
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>nodelet meta-container</title>
 </node>

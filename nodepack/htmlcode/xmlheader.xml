@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1251623</node_id>
+  <title>xmlheader</title>
   <code>my $str.=&quot;&quot;;
 $str .= &quot;&lt;node node_id=\&quot;$$NODE{node_id}\&quot; createtime=\&quot;&quot;.
 	($$NODE{publishtime}||$$NODE{createtime})
@@ -11,6 +13,4 @@ my $crby = $$NODE{createdby_user} || $$NODE{author_user} || 0;
 $crby=getNodeById($crby);
 $str.=&quot;&lt;author user_id=\&quot;$$crby{node_id}\&quot;&gt;&quot;.encodeHTML($$crby{title}).&quot;&lt;/author&gt;\n&quot;;
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>xmlheader</title>
 </node>

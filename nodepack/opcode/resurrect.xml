@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>754045</node_id>
+  <title>resurrect</title>
   <code>return unless isGod($USER);
 
 my $node_id=$query-&gt;param('olde2nodeid');
@@ -57,6 +59,4 @@ return unless $N;
 my $id = reinsertCorpse($N);
 
 $query-&gt;param('node_id', $id);</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>resurrect</title>
 </node>

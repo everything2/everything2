@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>485587</node_id>
+  <title>askify</title>
   <code>my ($src_id) = @_;
 
 return unless isGod($USER);
@@ -17,6 +19,4 @@ $str .= &quot;}\n&lt;/script&gt;\n&quot;;
 
 $str .= &quot;&lt;font size=2&gt;&lt;a href=\&quot;javascript:confirmAskify();\&quot;&gt;Askify!&lt;/a&gt;&lt;/font&gt;\n&quot;;
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>askify</title>
 </node>

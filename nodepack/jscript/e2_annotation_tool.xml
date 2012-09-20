@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>var AnnotationTool = {
 
 	node_id: null,
@@ -332,6 +333,5 @@ alert(AnnotationTool.node_id);
 
 AnnotationTool.AnnotationTool();</doctext>
   <node_id>1884065</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>E2 Annotation Tool</title>
 </node>

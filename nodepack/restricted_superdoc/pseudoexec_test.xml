@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;This is a testing area (for admins only) to test/play with [pseudoExec] (htmlcode). Currently supported things:&lt;/p&gt;
 
 &lt;p style=&quot;margin-left: 15px;&quot;&gt;&lt;code&gt;&amp;#91;&quot;&lt;/code&gt; ... &lt;code&gt;&quot;&amp;#93;&lt;/code&gt;:&lt;/p&gt;
@@ -48,6 +49,5 @@ $str;
 %]
 &lt;/p&gt;</doctext>
   <node_id>1266555</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>pseudoExec test</title>
 </node>

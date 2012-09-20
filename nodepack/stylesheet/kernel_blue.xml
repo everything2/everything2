@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/****** COLORS ******/
 body,
 th,
@@ -762,6 +763,5 @@ hr.clear {
 	color: #ddF;
 }</doctext>
   <node_id>1882070</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Kernel Blue</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>// JS QuickTags version 1.3.1
 //
 // Copyright (c) 2002-2008 Alex King
@@ -801,6 +802,5 @@ function edShowExtraCookie() {
 	return false;
 }</doctext>
   <node_id>2069738</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>HTMLToolbar</title>
 </node>

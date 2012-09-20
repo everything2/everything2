@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return unless ($$USER{title}eq'Oolong');
 
@@ -37,6 +38,5 @@ return $str;
 
 %]</doctext>
   <node_id>1937035</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Clicky Thing</title>
 </node>

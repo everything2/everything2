@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2025092</node_id>
+  <title>Personal Links nodelet settings</title>
   <code>my $inwidget = shift;
 my $name = 'set_personalnode';
 my $delname = 'del_personalnode';
@@ -51,6 +53,4 @@ $str .= '&lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;' . $query-&gt;textf
 '.$str.'
 &lt;/table&gt;';
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>Personal Links nodelet settings</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>@import url(&quot;http://everything2.com/node/stylesheet/understatement?displaytype=view&quot;) ;
 
 /* LINKS */
@@ -77,6 +78,5 @@ body , div , span , p , li , dd , dt , tr , td , a , h1 , h2 , h3 , form ,
     border-color: #fffcf8 ;
     }</doctext>
   <node_id>1946242</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Warm understatement</title>
 </node>

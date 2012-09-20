@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>You have insured the following writeups (shown in something vaguely resembling but not quite matching chronological order):
 
 [%
@@ -25,6 +26,5 @@ return $str;
 
 &lt;p align=&quot;right&quot;&gt;&lt;small&gt;Bugs go to [% linkNode(1009226) %], who may or may not know what to do with them.&lt;/small&gt;&lt;/p&gt;</doctext>
   <node_id>1950299</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>Your insured writeups</title>
 </node>

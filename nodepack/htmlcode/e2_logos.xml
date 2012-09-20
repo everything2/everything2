@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>165959</node_id>
+  <title>e2 logos</title>
   <code>my @logos = (
  #&quot;elogo1.gif&quot;,
  &quot;elogo2.gif&quot;,
@@ -12,6 +14,4 @@ my $rand = $logos[int(rand(@logos))];
 linkNode ($HTMLVARS{default_node}, 
   &quot;&lt;IMG border=0 src=\&quot;http://static.everything2.com/\&quot; &gt;&quot;);
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>e2 logos</title>
 </node>

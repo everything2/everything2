@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 use Everything::Experience;
 
@@ -98,6 +99,5 @@ $str;
 
 %]</doctext>
   <node_id>453574</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Superbless</title>
 </node>

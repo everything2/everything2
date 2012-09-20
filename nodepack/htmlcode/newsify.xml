@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>461511</node_id>
+  <title>newsify</title>
   <code>my ($src_id, $name, $group) = @_;
 
 return unless $$NODE{type}{sqltablelist} =~ /document/;
@@ -30,6 +32,4 @@ $str .= &quot;}\n&lt;/script&gt;\n&quot;;
 
 $str .= &quot;&lt;a href=\&quot;javascript:confirm$name();\&quot;&gt;$name!&lt;/a&gt; &lt;a href=&quot;.urlGen({node_id=&gt;$src_id}).&quot;&gt;(view)&lt;/a&gt;\n&quot;;
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>newsify</title>
 </node>

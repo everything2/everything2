@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* structure */
 body {margin: 0;}
 #wrapper {padding: 50px 220px 0 15px;}
@@ -36,6 +37,5 @@ body {margin: 0;}
 #room_options input {margin-top: 0;} /* for Other Users */
 .ns_title {margin: 5px 0 0;}</doctext>
   <node_id>1918718</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Primitive</title>
 </node>

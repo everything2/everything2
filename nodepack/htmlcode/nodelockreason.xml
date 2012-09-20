@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1291038</node_id>
+  <title>nodelockreason</title>
   <code>my ($wuid) = @_;
 my $userwriteup;
 if(!$wuid || $wuid eq '0') {
@@ -39,6 +41,4 @@ return parseLinks($str).(
 (parseLinks($$nodelock{nodelock_reason}))
 ) . parseLinks($endstr);
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>nodelockreason</title>
 </node>

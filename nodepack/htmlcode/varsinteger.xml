@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1342337</node_id>
+  <title>varsInteger</title>
   <code>#VARS integer
 #safely allows a user to set an integer in their $VARS via a text field
 #
@@ -120,6 +122,4 @@ return
 	(($WRONGMSG &amp;&amp; length($problem)) ? ' ('.$problem.')' : '')
 ;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>varsInteger</title>
 </node>

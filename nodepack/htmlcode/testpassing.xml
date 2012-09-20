@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1192087</node_id>
+  <title>testPassing</title>
   <code>#working on this
 
 ##doesn't work
@@ -26,6 +28,4 @@ foreach my $thingy (@thingies) {
 	$str .= &quot;&lt;br /&gt;\n&quot;;
 }
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>testPassing</title>
 </node>

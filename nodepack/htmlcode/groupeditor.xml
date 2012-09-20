@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>35</node_id>
+  <title>groupeditor</title>
   <code>my $id = getId $NODE;
 
 my $str = &quot;
@@ -155,6 +157,4 @@ $str.='jb testing:&lt;br /&gt;';
 for(0..50){$str.=&quot;$_: &quot;.$query-&gt;param(&quot;$_&quot;).'&lt;br /&gt;' if $query-&gt;param(&quot;$_&quot;);}
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>groupeditor</title>
 </node>

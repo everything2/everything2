@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2036500</node_id>
+  <title>publishwriteup</title>
   <code>my ($WRITEUP, $E2NODE) = @_;
 
 # called from [publishdraft] or from [writeup maintenance create]
@@ -121,6 +123,4 @@ if ($$VARS{numwriteups} == 1 || $isYoungin) {
 $query -&gt; param('publish', 'OK');
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>publishwriteup</title>
 </node>

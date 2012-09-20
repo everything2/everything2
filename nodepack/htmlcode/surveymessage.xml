@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1995277</node_id>
+  <title>surveymessage</title>
   <code>my ($previewmode) = @_;
 #opt out if nodetype is not doc/superdoc/e2node/writeup
 
@@ -38,6 +40,4 @@ $hidethis
 
 MSGHTML
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>surveymessage</title>
 </node>

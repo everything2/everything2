@@ -1,6 +1,6 @@
 <node>
-  <node_id>1251628</node_id>
-  <code>return &quot;&lt;/node&gt;&quot;;</code>
   <type_nodetype>4</type_nodetype>
+  <node_id>1251628</node_id>
   <title>xmlfooter</title>
+  <code>return &quot;&lt;/node&gt;&quot;;</code>
 </node>

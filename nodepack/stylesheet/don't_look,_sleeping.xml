@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* thanks to Oolong's skeleton stylesheet */
 /* no, this isn't even remotely done yet.  as it says - don't look */
 
@@ -350,6 +351,5 @@ td.wu_social { float: right }
 #chatterlight_hints { display: none; }
 #chatterbox_nodelet .nodelet { width: 700px }</doctext>
   <node_id>1981109</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>don't look, sleeping</title>
 </node>

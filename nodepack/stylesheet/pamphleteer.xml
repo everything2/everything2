@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>@font-face {
 	font-family: 'Essays 1743';
 	src: url('http://diveintohtml5.org/f/essays1743-webfont.eot');
@@ -280,6 +281,5 @@ i {
 }
 </doctext>
   <node_id>2029380</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Pamphleteer</title>
 </node>

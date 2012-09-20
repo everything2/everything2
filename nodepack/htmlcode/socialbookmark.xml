@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1946647</node_id>
+  <title>socialBookmark</title>
   <code>my ($nodeID, $includeTitles, $asList, $myTitle, $sbURL, $sbTitle, $imgTitle)=@_;
 
 my $myurl=&quot;http://everything2.com/node/&quot;.$nodeID;
@@ -10,6 +12,4 @@ $str.=&quot; &lt;a href=\&quot;http://furl.net/storeIt.jsp?u=&quot;.$myurl.&quot
 $str.=&quot;&lt;/li&gt;&quot; if $asList;
 
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>socialBookmark</title>
 </node>

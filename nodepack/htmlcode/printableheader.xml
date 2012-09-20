@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>942345</node_id>
+  <title>printableheader</title>
   <code>my ($WRITEUP) = @_;
   getRef $WRITEUP;
   $WRITEUP ||= $NODE;
@@ -47,6 +49,4 @@ $str  .=&quot;&lt;/td&gt;&lt;td align=right&gt;&quot;
 $str;
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>printableheader</title>
 </node>

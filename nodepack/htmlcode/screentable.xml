@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1973836</node_id>
+  <title>screenTable</title>
   <code># By [call] - see [edev: Tables and HTML Validation]
 # Okay, in brief:
 # fast 'cause it's optimised to the 'common' cases:
@@ -69,6 +71,4 @@ my ($valid, $error) = tableWellFormed($text);
 $text = debugTable ($error, $text) if ! $valid;
 
 $text;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>screenTable</title>
 </node>

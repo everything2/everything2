@@ -1,11 +1,11 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1112300</node_id>
+  <title>episection_advice</title>
   <code>'&lt;ul&gt;'.
 '&lt;li&gt;'.linkNodeTitle('E2 Quick Start|Quick Start').'&lt;/li&gt;'.
 '&lt;li&gt;'.linkNodeTitle('Everything2 Help').'&lt;/li&gt;'.
 '&lt;li&gt;'.linkNodeTitle('E2 Mentoring Sign-Up').'&lt;/li&gt;'.
 
 '&lt;/ul&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>episection_advice</title>
 </node>

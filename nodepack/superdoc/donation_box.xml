@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;br /&gt;&lt;br /&gt;&lt;hr /&gt;&lt;br /&gt;&lt;br /&gt;
 
 &lt;h3&gt;&lt;i&gt;Notice:&lt;/i&gt;&lt;/h3&gt;  &lt;!-- Added by [katherine] 19-AUG-2007 --&gt;
@@ -823,6 +824,5 @@ $10.00 - 11/02/03 [Saidai]'s third tenner goes into the Blockstackers bank.&lt;b
 $5.00 - 11/04/03 Raffle me up! It's cold over here in the UK - I need that afghan!&lt;br&gt;
 </doctext>
   <node_id>1051765</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Donation Box</title>
 </node>

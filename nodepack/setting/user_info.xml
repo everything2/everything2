@@ -1,5 +1,4 @@
 <node>
-  <node_id>1177941</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value> is breaking things, so ignore any &lt;font color=&quot;#dd0000&quot;&gt;Server Error!&lt;/font&gt;s for now</value>
@@ -13,5 +12,6 @@
     <value>But anything goes here. In most cases, a space in front of your VALUE looks nicer.</value>
     <key>change_spaces_to_underscores_here</key>
   </vars>
+  <node_id>1177941</node_id>
   <title>User Info</title>
 </node>

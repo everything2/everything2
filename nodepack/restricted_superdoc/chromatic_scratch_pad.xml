@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[{openform}]
 
 [%
@@ -21,6 +22,5 @@ return $result;
 
 [{closeform}]</doctext>
   <node_id>1064942</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>chromatic scratch pad</title>
 </node>

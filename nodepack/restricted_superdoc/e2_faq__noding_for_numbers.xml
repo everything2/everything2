@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;br&gt;&lt;br&gt;&lt;br&gt;
 
 [Rancid_Pickle] - this was turned in for the FAQ by [mblase] but I think it needs some work first.  Firstly, it's a bit on the negative side instead of an objective instructor tone that's ideal.  Secondly, the examples it uses aren't the best nor are they real.  Third, it doesn't really instruct on how to node with quality so much as how to avoid downvotes... does that make sense?  It's really not the same thing.
@@ -73,6 +74,5 @@ And, of course, the usual guidelines as spelled out in [Everything University] a
 back to&lt;br&gt;[Everything FAQ]
 &lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</doctext>
   <node_id>1152509</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>E2 FAQ: Noding for Numbers</title>
 </node>

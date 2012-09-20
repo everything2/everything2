@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;
 Go ahead -- one entry per line:
 &lt;/p&gt;
@@ -79,6 +80,5 @@ foreach (@entries) {
 &lt;/p&gt;
 </doctext>
   <node_id>1213001</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>alphabetizer</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1930694</node_id>
+  <title>aprilfools_chatterbox_2006</title>
   <code>my ($text) = @_;
 
 my ($i,  $j,  $s);
@@ -45,6 +47,4 @@ for($i=0;$i&lt;@parts;++$i) {
 }
 
 return $text;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>aprilfools_chatterbox_2006</title>
 </node>

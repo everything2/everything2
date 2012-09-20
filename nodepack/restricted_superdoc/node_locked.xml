@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>this node is locked 
 [%
 return unless $query-&gt;param(&quot;node_id&quot;);
@@ -7,6 +8,5 @@ my $N = $DB-&gt;getNodeById($query-&gt;param('node_id'));
 %]
 &lt;p&gt;Better stay away.</doctext>
   <node_id>100</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>node locked</title>
 </node>

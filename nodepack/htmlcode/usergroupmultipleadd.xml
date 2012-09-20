@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1176810</node_id>
+  <title>usergroupmultipleadd</title>
   <code># update 5/15/02 by jaybonci: Removed specific node references. Code cleanup.
 # update 4/03/03 by jaybonci: ANother cleanup. Changed to simple usergroup 
 #    editor instead of usergroup press gang
@@ -16,6 +18,4 @@ if (exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) and not exists($$nomulti{$$
 
 '';
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>usergroupmultipleadd</title>
 </node>

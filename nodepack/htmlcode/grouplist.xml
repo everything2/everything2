@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>178</node_id>
+  <title>groupList</title>
   <code># This constructs an HTML list menu using the FormMenu
 # package of Everything.  Values of the menu come from
 # the specified group node.
@@ -15,6 +17,4 @@ $name = $$NODE{type}{title} . &quot;_$name&quot;;
 
 $menu-&gt;addGroup($group);
 $menu-&gt;writeScrollingListHTML($query,$name,$selected,$size,$multi);</code>
-  <type_nodetype>4</type_nodetype>
-  <title>groupList</title>
 </node>

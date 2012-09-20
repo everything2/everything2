@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1438180</node_id>
+  <title>ednsection_patches</title>
   <code>my $patches = $DB-&gt;sqlSelectMany(&quot;patch_id, (select author_user from node where node_id=patch.patch_id limit 1) as author_user, (select title from node where node_id=patch.patch_id limit 1) as title&quot;, &quot;patch&quot;, &quot;cur_status=1983892 order by patch_id desc limit 7&quot;);
 return 'No patches. Word.' unless $patches-&gt;rows;
 
@@ -16,6 +18,4 @@ while (my $patch = $patches-&gt;fetchrow_hashref){
 $str.= '&lt;/table&gt;&lt;p align=&quot;center&quot;&gt;'.linkNodeTitle(&quot;Patch Manager&quot;) ;
 $str .= '&lt;br&gt;&lt;a href=&quot;http://devel.everything2.com/ecore&quot;&gt;Mercurial Repository&lt;/a&gt;&lt;/p&gt;' if $HTMLVARS{isDevServer};
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>ednsection_patches</title>
 </node>

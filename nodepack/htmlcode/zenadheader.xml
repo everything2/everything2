@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1950676</node_id>
+  <title>zenadheader</title>
   <code>return &quot;&lt;!-- noad:vars --&gt;&quot; unless $$VARS{zenadinheader};
 my $SETTINGS = getVars(getNode('system settings','setting'));
 my $ad_text = '';
@@ -12,6 +14,4 @@ if ($$SETTINGS{ad_location} eq 'header' &amp;&amp; $$USER{user_id} == $HTMLVARS{
 return $ad_text;
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>zenadheader</title>
 </node>

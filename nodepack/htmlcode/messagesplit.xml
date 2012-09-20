@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1725680</node_id>
+  <title>messageSplit</title>
   <code># Split text up more intelligently. Text outside
 # tags or entities is the only text which will
 # impact formatting, so this will be
@@ -49,6 +51,4 @@ $text = join '', map {
 
 return $text;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>messageSplit</title>
 </node>

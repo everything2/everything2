@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>977694</node_id>
+  <title>linktrim</title>
   <code>return unless htmlcode('verifyRequest', 'linktrim');
 
 my $from_node = int $query-&gt;param('cutlinkfrom');
@@ -44,6 +46,4 @@ foreach ($query-&gt;param) {
 }
 1;
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>linktrim</title>
 </node>

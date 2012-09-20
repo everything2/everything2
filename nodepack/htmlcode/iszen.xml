@@ -1,6 +1,6 @@
 <node>
-  <node_id>1868935</node_id>
-  <code>!defined $THEME or $$THEME{isZen};</code>
   <type_nodetype>4</type_nodetype>
+  <node_id>1868935</node_id>
   <title>isZen</title>
+  <code>!defined $THEME or $$THEME{isZen};</code>
 </node>

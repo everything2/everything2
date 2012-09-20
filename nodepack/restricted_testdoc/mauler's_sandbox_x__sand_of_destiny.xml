@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1965649</type_nodetype>
   <doctext>[%
 my $dbh = $DB-&gt;getDatabaseHandle();
 return 'No database handle!' unless $dbh;
@@ -23,6 +24,5 @@ while($row = $rows-&gt;fetchrow_arrayref)
 $str .= '&lt;/ol&gt;';
 %]</doctext>
   <node_id>1986409</node_id>
-  <type_nodetype>1965649</type_nodetype>
   <title>mauler's Sandbox X: Sand of Destiny</title>
 </node>

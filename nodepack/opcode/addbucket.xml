@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>909985</node_id>
+  <title>addbucket</title>
   <code>foreach my $bnode ($query-&gt;param())
 {
   next unless($bnode =~ /^bnode_([0-9]*)$/);
@@ -10,6 +12,4 @@
   $$VARS{nodebucket} .= $1;
 }
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>addbucket</title>
 </node>

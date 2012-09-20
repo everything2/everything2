@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2053783</node_id>
+  <title>writeuptools</title>
   <code>my ($N, $open) = @_;
 getRef $N;
 
@@ -131,6 +133,4 @@ return $query -&gt; span({class =&gt; 'admin', id =&gt; $id},
 	)
 );
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>writeuptools</title>
 </node>

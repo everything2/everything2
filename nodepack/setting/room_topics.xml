@@ -1,5 +1,4 @@
 <node>
-  <node_id>1149799</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>If you feel alone in here, and need to ask questions, try any of the people in [E2gods] or [Content Editors] - they have &quot;@&quot; or &quot;$&quot; signs in [Everything Finger] or [Other Users]</value>
@@ -18,7 +17,7 @@
     <key>1995797</key>
   </vars>
   <vars>
-    <value>[http://i.imgur.com/44stf.jpg?1|Look at this kitten].</value>
+    <value>Once again, me hearties, [Talk Like A Pirate Day] is upon ye! Prepare to board!</value>
     <key>0</key>
   </vars>
   <vars>
@@ -37,5 +36,6 @@
     <value>A straight flush doesn't always beat a pair of deuces.</value>
     <key>553133</key>
   </vars>
+  <node_id>1149799</node_id>
   <title>Room Topics</title>
 </node>

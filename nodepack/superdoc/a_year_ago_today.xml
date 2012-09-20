@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p align=&quot;center&quot;&gt;Turn the clock back!&lt;/p&gt;
 &lt;br&gt;&lt;br&gt;
 [%
@@ -62,6 +63,5 @@
   $str;
 %]</doctext>
   <node_id>1372629</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>A Year Ago Today</title>
 </node>

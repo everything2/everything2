@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>539978</node_id>
+  <title>thinoutlineheader</title>
   <code>
 return $$THEME{thinOutlineHeader} if exists $$THEME{thinOutlineHeader};
 
@@ -18,6 +20,4 @@ $str.= &quot; bgcolor=$color&quot;;
 $str.=&quot;&gt;&lt;td&gt;&quot;;
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>thinoutlineheader</title>
 </node>

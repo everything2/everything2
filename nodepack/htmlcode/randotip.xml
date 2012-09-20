@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>672208</node_id>
+  <title>randotip</title>
   <code>use Everything::Experience;
 #return if getLevel($USER) &gt; 2;
 return unless $$USER{title} eq 'JayBonci';
@@ -21,6 +23,4 @@ my @tips = (
 
 &quot;&lt;hr width=40%&gt;&lt;p align=center&gt;&quot;.
 parseLinks($tips[rand(int(@tips))]);</code>
-  <type_nodetype>4</type_nodetype>
-  <title>randotip</title>
 </node>

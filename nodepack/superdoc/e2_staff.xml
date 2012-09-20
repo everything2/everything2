@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;!-- 2008-03-11 avalyn // Removed borgo, LaggedyAnne, Lometa and Lord Brawl and from the list of gods and put them in the commented-out section that lists exeds. Removed Lord Brawl from Documentation and Servo5678 from Documentation Editors. Added The Debutante to the list of active gods, and dem bones to the list of inactive gods. --&gt;
 &lt;!-- 2008-01-13 alex // Replaced handmade lists for e2policy, mch (mentoring), and SIGTITLE with automatic code --&gt;
 &lt;!-- 2007-12-15 mauler // I updated the automatic code for displaying the gods so that it would reflect current realities and so that it would actually work, and then activated it. There's no reason why we shouldn't use this tool if we have it! It will keep the list accurate at all times and save time and effort of people having to constantly make updates by hand, as listed below --&gt;
@@ -246,6 +247,5 @@ return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/
 &lt;p&gt;&lt;b&gt;That's it.&lt;/b&gt; If you've any questions about this or anything else (regarding E2) please [message] [alex] or e-mail him at &lt;strong&gt;alex /remove this junk and add an at sign/ staff.everything2.com&lt;/a&gt;&lt;/strong&gt;.&lt;/p&gt;
 </doctext>
   <node_id>743129</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>E2 staff</title>
 </node>

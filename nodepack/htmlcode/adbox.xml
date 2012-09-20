@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1931150</node_id>
+  <title>adbox</title>
   <code>return if $$VARS{noadinheader};
 my $node_id = $$NODE{node_id};
 return if $node_id == getNode('Nothing Found', 'superdoc')-&gt;{node_id};
@@ -31,6 +33,4 @@ urchinTracker();
 ADTEXT
 
 return $ad;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>adbox</title>
 </node>

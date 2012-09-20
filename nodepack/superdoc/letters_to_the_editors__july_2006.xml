@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $str=&quot;Sorry. Only account holders may view this page.&quot;;
 
@@ -148,6 +149,5 @@ Comments from [00100], [dann], [Lometa], [ascorbic], and [N-Wing] have been of h
 %]
 </doctext>
   <node_id>1822653</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Letters to the Editors: July 2006</title>
 </node>

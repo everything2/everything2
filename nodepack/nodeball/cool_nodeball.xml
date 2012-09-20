@@ -1,5 +1,4 @@
 <node>
-  <node_id>741062</node_id>
   <type_nodetype>152</type_nodetype>
   <vars>
     <value>0.1.1</value>
@@ -13,5 +12,6 @@
     <value>   </value>
     <key>description</key>
   </vars>
+  <node_id>741062</node_id>
   <title>cool nodeball</title>
 </node>

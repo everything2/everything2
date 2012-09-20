@@ -4,8 +4,8 @@
   <icon>http://static.everything2.com/personal_nodes.gif</icon>
   <nlgoto>0</nlgoto>
   <node_id>174581</node_id>
-  <iconHeight>24</iconHeight>
   <type_nodetype>9</type_nodetype>
+  <iconHeight>24</iconHeight>
   <iconWidth>170</iconWidth>
   <nlcode>[%
 return 'You must log in first.' if getId($USER) == $HTMLVARS{guest_user};
@@ -73,9 +73,11 @@ $str.= htmlcode('openform');
 $str.=$query-&gt;hidden(-name =&gt; &quot;op&quot;, -value =&gt; 'bucketop', force=&gt;1);
 
 my $ajax = '&amp;op=/';
+my @newbnodes;
 foreach my $id (@bnodes) {
   my $node=getNodeById($id);
-
+  next unless $node;
+  push @newbnodes, $id;
   # Can't use CGI::checkbox here because it insists on having a label...
   $str .= qq'&lt;input type=&quot;checkbox&quot; name=&quot;bnode_$$node{node_id}&quot; value=&quot;1&quot;&gt;'.
   	linkNode($node, undef, {lastnode_id =&gt; undef}) . &quot;&lt;br&gt;\n&quot;;
@@ -92,6 +94,8 @@ if($isGroup) {
 
 $str .= $query-&gt;submit( -name =&gt; 'bdrop', -value =&gt; 'Drop',
 		-class =&gt; &quot;ajax personallinks:updateNodelet?bdrop=1$ajax:Personal+Links&quot;) . &quot;\n&quot;;
+
+$VARS-&gt;{nodebucket} = join(&quot;,&quot;,@newbnodes);
 
 $str.'&lt;/form&gt;';
 %]

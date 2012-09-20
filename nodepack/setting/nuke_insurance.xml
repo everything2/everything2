@@ -1,5 +1,4 @@
 <node>
-  <node_id>1179494</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>282</value>
@@ -3229,5 +3228,6 @@
     <value>282</value>
     <key>1236500</key>
   </vars>
+  <node_id>1179494</node_id>
   <title>nuke insurance</title>
 </node>

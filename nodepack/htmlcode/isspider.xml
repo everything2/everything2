@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1920278</node_id>
+  <title>isSpider</title>
   <code>my $agent = $ENV{HTTP_USER_AGENT};
 
 #test using [test isSpider] (superdoc)
@@ -67,6 +69,4 @@ return 1 if ($addr =~ m/96\.228\.37\.192/); # (HTTP_USER_AGENT=Mozilla/5.0 (comp
 
 return 0;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>isSpider</title>
 </node>

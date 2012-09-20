@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;div style=&quot;width:600px&quot;&gt;
 &lt;p&gt;This page manages the IP addresses which are barred from &lt;strong&gt;creating new accounts&lt;/strong&gt;.  Except for very extreme circumstances, we don't block pageloads as [Guest User].&lt;/p&gt;
 
@@ -90,6 +91,5 @@ return $query-&gt;start_form(-method=&gt;'post')
 %]
 [{blacklistedIPs}]</doctext>
   <node_id>2007188</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Mass IP Blacklister</title>
 </node>

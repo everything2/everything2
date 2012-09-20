@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>	#header {position: absolute; top: 0; left: 0; right: 0; }
 
 	#wrapper {margin-top: 4em; padding-right: 206px;} 
@@ -17,6 +18,5 @@
 
 	#sidebar {position: relative; float: left;width: 200px; margin-right: -206px;}</doctext>
   <node_id>1921665</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Help</title>
 </node>

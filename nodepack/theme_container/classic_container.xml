@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>115</type_nodetype>
   <parent_container>0</parent_container>
   <node_id>126</node_id>
   <context>&lt;html&gt;
@@ -40,6 +41,5 @@
 &lt;/table&gt;
 &lt;/body&gt;
 &lt;/html&gt;</context>
-  <type_nodetype>115</type_nodetype>
   <title>classic container</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>298</node_id>
+  <title>setwriteuptype</title>
   <code>my ($N, $title) = @_;
 
 my $type;
@@ -72,6 +74,4 @@ $str.=$query-&gt;popup_menu('writeup_wrtype_writeuptype',
 
 $str . $hidebox;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>setwriteuptype</title>
 </node>

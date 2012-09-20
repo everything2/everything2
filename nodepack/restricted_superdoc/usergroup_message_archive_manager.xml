@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;
 This simple-minded doc just makes it easy to set if usergroups have their messages automatically archived. This is basically just an editor for the &lt;a href=[% urlGen({'node'=&gt;'allow message archive','type'=&gt;'setting'}); %]&quot;&gt;allow message archive&lt;/a&gt; setting. Users can read the messages at the &lt;a href=[% urlGen({'node'=&gt;'usergroup message archive','type'=&gt;'superdoc'}); %]&quot;&gt;usergroup message archive&lt;/a&gt; superdoc.
 &lt;br /&gt;&lt;small&gt;Complain to N-Wing about problems and/or error messages you get.&lt;/small&gt;
@@ -294,6 +295,5 @@ $stats . $str;
 &lt;/p&gt;
 </doctext>
   <node_id>1441832</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>usergroup message archive manager</title>
 </node>

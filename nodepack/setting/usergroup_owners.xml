@@ -1,5 +1,4 @@
 <node>
-  <node_id>1356457</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>748978</value>
@@ -717,5 +716,6 @@
     <value>1180901</value>
     <key>1386991</key>
   </vars>
+  <node_id>1356457</node_id>
   <title>usergroup owners</title>
 </node>

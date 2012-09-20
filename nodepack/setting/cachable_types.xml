@@ -1,5 +1,4 @@
 <node>
-  <node_id>1270879</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>1</value>
@@ -9,5 +8,6 @@
     <value>1</value>
     <key>117</key>
   </vars>
+  <node_id>1270879</node_id>
   <title>cachable_types</title>
 </node>

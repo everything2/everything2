@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>470044</node_id>
+  <title>writeuphints</title>
   <code>#displays hints on improving the writeup
 
 #parameters:
@@ -345,6 +347,4 @@ $str = containHtml('thin outline container', $str) unless $$THEME{ 'noThinOutlin
 
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>writeuphints</title>
 </node>

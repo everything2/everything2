@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* fonts */
 body {font-family: Arial, sans-serif; font-size: 12px;}
 table {font-size: 12px;}
@@ -91,6 +92,5 @@ hr.clear {clear: both;}
 textarea {width: 100%;}
 pre {display: block; overflow: auto;} /* to stop page-widening */</doctext>
   <node_id>1886668</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Two Sheds' theme</title>
 </node>

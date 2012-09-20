@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2035515</node_id>
+  <title>setdraftstatus</title>
   <code># set publication_status and collaborators
 # show parent node, option to change it, and option to publish
 
@@ -175,6 +177,4 @@ unless ($stash{removed} == $$N{publication_status}){
 
 $query -&gt; div({id =&gt; &quot;draftstatus$$N{node_id}&quot;, class =&gt; 'parentdraft'}, $str);
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>setdraftstatus</title>
 </node>

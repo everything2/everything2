@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2025090</node_id>
+  <title>Notifications nodelet settings</title>
   <code>use JSON;
 
 my $str = '&lt;p&gt;We will notify you when...
@@ -46,6 +48,4 @@ $str .= '&lt;br&gt;'.linkNode($NODE, 'Remove Notifications nodelet', {
 
 return $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>Notifications nodelet settings</title>
 </node>

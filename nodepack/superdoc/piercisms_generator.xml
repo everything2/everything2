@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;!--
 &lt;br&gt;&lt;br&gt;&lt;br&gt;
 &lt;big&gt;&lt;big&gt;&lt;big&gt;
@@ -123,6 +124,5 @@ $wit[int(rand(@wit))];
 &lt;br /&gt;&lt;br /&gt;&lt;br /&gt;
 &lt;/p&gt;</doctext>
   <node_id>502167</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Piercisms Generator</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2025272</node_id>
+  <title>getdisabledactions</title>
   <code># takes no arguments
 # returns a string containing letters to indicate disabled actions for the current node:
 # b(ookmark), c(ool), w(eblog), (c)a(tegory), O(verride), L(ink to disable page)
@@ -15,6 +17,4 @@ $disabled = $1 if $disabled =~ /O/ and $disabled =~ /(\w+)!/ ; # remove nodetype
 $disabled =~ s/[baw]//g if $query -&gt; param( 'addto' ) ;
 return $disabled;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>getdisabledactions</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>var Prototype = {
   Version: '1.6.0',
 
@@ -2164,6 +2165,5 @@ Element._attributeTranslations = {
   }
 };</doctext>
   <node_id>1872456</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>ProtoType 1</title>
 </node>

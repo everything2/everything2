@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;p align=&quot;right&quot;&gt;As announced on [September 2, 2001] in [root log: September 2001]&lt;/p&gt;&lt;br&gt;
 &lt;p&gt;&lt;b&gt;What are firmlinks?&lt;/b&gt;&lt;/p&gt;
 &lt;p&gt;&quot;Firmlinks&quot; are a new feature implemented to solve many of the content sorting problems here on E2. They are a mechanism that can point users in another direction within everything2.  This gives our database stronger cohesion, and will make it a more usable entity to find information in the future, rather than just softlinks. 
@@ -29,6 +30,5 @@ I strongly think that firmlinks are an important step towards the future of orga
 &lt;br&gt;&lt;br&gt;
 Please give me detailed info on bug reports, theme and client included.- JayBonci&lt;br&gt;&lt;br&gt;</doctext>
   <node_id>1150873</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>E2 Editing: Firmlinks</title>
 </node>

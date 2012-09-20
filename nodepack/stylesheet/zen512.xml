@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/****** COLORS ******/
 body {
  background-color: #f6f7f7;
@@ -649,6 +650,5 @@ body {
  width: 90%;
 }</doctext>
   <node_id>1903056</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Zen512</title>
 </node>

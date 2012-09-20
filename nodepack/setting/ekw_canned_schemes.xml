@@ -1,5 +1,4 @@
 <node>
-  <node_id>1251745</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>selected=&quot;true&quot;; title=&quot;The Lone and Level Sands Stretch Far Away&quot;; ekw_textcolor=&quot;#404040&quot;; ekw_bgcolor=&quot;#d5d1c1&quot;; ekw_alinkcolor=&quot;#e5deaa&quot;; ekw_oddrowcolor=&quot;#bab897&quot;; ekw_logoborder=&quot;#2a2a20&quot;; ekw_logomaintext=&quot;#f0f0f0&quot;; ekw_vlinkcolor=&quot;#838068&quot;; ekw_logoaccenttext=&quot;#e5deaa&quot;; ekw_linkcolor=&quot;#615e48&quot;; ekw_logobackground=&quot;#6e6d56&quot;;</value>
@@ -69,5 +68,6 @@
     <value>title=&quot;Guacamole Cucumber Divepattern&quot;; ekw_alinkcolor=&quot;#A52829&quot;; ekw_bgcolor=&quot;#DEDBB5&quot;; ekw_headingfont=&quot;Tahoma,Verdana,Helvetica,Arial&quot;; ekw_linkcolor=&quot;#330000&quot;; ekw_logoaccenttext=&quot;#FFFFFF&quot;; ekw_logobackground=&quot;#305880&quot;; ekw_logoborder=&quot;#000000&quot;; ekw_logofont=&quot;Tahoma,Verdana,Helvetica,Arial&quot;; ekw_logofontsize=&quot;17pt&quot;; ekw_logomaintext=&quot;#DEDBB5&quot;; ekw_monofontsize=&quot;9pt&quot;; ekw_oddrowcolor=&quot;#8CBE8C&quot;; ekw_textcolor=&quot;#000000&quot;; ekw_textfont=&quot;Arial, sans-serif&quot;; ekw_textfontsize=&quot;12px&quot;; ekw_vlinkcolor=&quot;#A52829&quot;; </value>
     <key>guacamole_cucumber_divepattern</key>
   </vars>
+  <node_id>1251745</node_id>
   <title>ekw canned schemes</title>
 </node>

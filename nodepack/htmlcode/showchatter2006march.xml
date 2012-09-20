@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1796238</node_id>
+  <title>showchatter2006March</title>
   <code>#this is showchatter (htmlcode) as it was on Friday, March 31, 2006
 #before N-Wing started messing with it for flag appearance (on the left) and AFD
 
@@ -214,6 +216,4 @@ if(not $lines) {
 }
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>showchatter2006March</title>
 </node>

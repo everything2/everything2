@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>451267</type_nodetype>
   <doctext>[%
 
 my $str;
@@ -48,6 +49,5 @@ $userID = $$N{member_user};
 
 %]</doctext>
   <node_id>597846</node_id>
-  <type_nodetype>451267</type_nodetype>
   <title>other users xml ticker</title>
 </node>

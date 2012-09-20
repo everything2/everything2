@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1930843</node_id>
+  <title>addNotification</title>
   <code>my ($notification_id, $user_id, $args) = @_;
 
 use JSON;
@@ -22,6 +24,4 @@ $DB-&gt;sqlInsert(
 	});
 
 return 1;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>addNotification</title>
 </node>

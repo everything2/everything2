@@ -1,10 +1,10 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>415066</node_id>
+  <title>clearimage</title>
   <code>my ($height, $width) = @_;
 
 $height ||= 1;
 $width ||= 1;
 &quot;&lt;img src=\&quot;http://static.everything2.com/clear.gif\&quot; border=\&quot;0\&quot; height=\&quot;$height\&quot; width=\&quot;$width\&quot; alt=\&quot;\&quot;&gt;&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>clearimage</title>
 </node>

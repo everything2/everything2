@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1991266</node_id>
+  <title>addnodeforward</title>
   <code>return unless exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) ||
 	exists($HTMLVARS{'group_content editors'}{$$USER{node_id}});
 
@@ -12,6 +14,4 @@ htmlcode('openform').'&lt;fieldset&gt;&lt;legend&gt;Add node forward&lt;/legend&
 	&lt;input type=&quot;submit&quot; value=&quot;Add forward&quot;&gt;
 	&lt;/fieldset&gt;
 	&lt;/form&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>addnodeforward</title>
 </node>

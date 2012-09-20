@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>31</node_id>
+  <title>create_nodes</title>
   <code>my $title = $query-&gt;param(&quot;node&quot;);
 return unless $title;
 
@@ -22,6 +24,4 @@ foreach my $type (keys %approvedtypes) {
 	$str .= &quot;&lt;LI&gt;&lt;A href=&quot; . urlGen ({node =&gt; $title, type =&gt; $type, op =&gt; 'new'}) .&quot;&gt;$type&lt;/A&gt;\n&quot;;
 }
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>create_nodes</title>
 </node>

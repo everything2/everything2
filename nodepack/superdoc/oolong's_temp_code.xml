@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 # linkNode(1017738,0,{lastnode_id=&gt;undef});
 
@@ -68,6 +69,5 @@ $str .= &quot;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;\n&quot;;
 return $str;
 %]</doctext>
   <node_id>1947629</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Oolong's temp code</title>
 </node>

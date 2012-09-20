@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* -- 
 
 A hack on test_ReiToei2 by Robin Clarke/fondue
@@ -416,6 +417,5 @@ margin-top: 0px;
         border-bottom: 2px solid #708259;
 }</doctext>
   <node_id>1887242</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>fondue test1</title>
 </node>

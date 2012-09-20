@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>
 /****** COLORS ******/
 body,
@@ -948,6 +949,5 @@ body, div, p, th, td, li, dd, .writeuppage .item .content, .nodelet, .nodetitle,
     background-color: #101010;
 }</doctext>
   <node_id>2016267</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Oh Four Hundred</title>
 </node>

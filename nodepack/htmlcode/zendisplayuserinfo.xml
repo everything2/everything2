@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1873630</node_id>
+  <title>zenDisplayUserInfo</title>
   <code>#this to deprecates displaySingleVar - instead of many calls to that, only 1 call is needed to this, displayUserInfo
 #updated: Thursday, June 13, 2002
 
@@ -277,6 +279,4 @@ $str .=  &quot;&lt;/dl&gt;\n&quot;;
 $str;
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>zenDisplayUserInfo</title>
 </node>

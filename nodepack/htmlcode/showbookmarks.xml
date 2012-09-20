@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>419587</node_id>
+  <title>showbookmarks</title>
   <code>my ($edit, $createform) = @_;
 #the maximum number to display
 
@@ -69,6 +71,4 @@ elsif ( $count) {
 
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>showbookmarks</title>
 </node>

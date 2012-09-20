@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2035511</node_id>
+  <title>display draft</title>
   <code>my $displaytype = shift;
 $displaytype ||= $query -&gt; param('displaytype') || 'display';
 
@@ -24,6 +26,4 @@ if ($$NODE{author_user} == $$USER{node_id}
 my $PAGE = getPageForType($displaylike, $displaytype);
 return parseCode($PAGE -&gt; {page}, $NODE);
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>display draft</title>
 </node>

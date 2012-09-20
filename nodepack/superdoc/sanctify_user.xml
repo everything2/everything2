@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 #Note that if you adjust these settings, you should also adjust them in the &quot;Epicenter&quot; nodelet and the &quot;sanctify&quot; opcode --mauler
@@ -68,6 +69,5 @@ return &quot;&quot;;
 
 %]</doctext>
   <node_id>1927889</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Sanctify user</title>
 </node>

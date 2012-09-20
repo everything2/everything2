@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2048103</node_id>
+  <title>ajax publishhere</title>
   <code>my $did = shift;
 
 my $nope = htmlcode('nopublishreason', $USER, $query -&gt; param('writeup_parent_e2node'));
@@ -18,6 +20,4 @@ return $query -&gt; hidden('writeup_parent_e2node')
 	&lt;button type=&quot;button&quot; name=&quot;publishbutton&quot; value=&quot;publishdraft&quot;
 		class=&quot;wuformaction&quot;&gt;Publish&lt;/button&gt;';
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>ajax publishhere</title>
 </node>

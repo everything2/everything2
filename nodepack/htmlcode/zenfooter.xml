@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1854205</node_id>
+  <title>zenFooter</title>
   <code>my $str;
 
 # Pseudorandom letter in range 'A'..'Z'
@@ -25,6 +27,4 @@ if ( rand() &lt; 0.1 ) {
 }
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>zenFooter</title>
 </node>

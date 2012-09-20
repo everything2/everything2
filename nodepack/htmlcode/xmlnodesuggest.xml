@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1289767</node_id>
+  <title>xmlnodesuggest</title>
   <code>my $cf = getVars(getNode(&quot;chatterbox forward&quot;, &quot;setting&quot;));
 my $retstr = &quot;&lt;sametitles&gt;&quot;;
 my @grp = getNodeWhere({ 'title' =&gt; $$NODE{title}});
@@ -37,6 +39,4 @@ foreach(@grp)
 
 $retstr.=&quot;&lt;/sametitles&gt;&quot;;
 return $retstr;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>xmlnodesuggest</title>
 </node>

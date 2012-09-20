@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2047887</node_id>
+  <title>angelToDraft</title>
   <code>my $tomb = shift;
 my $angel_id = $$tomb{node_id};
 
@@ -51,6 +53,4 @@ if ($N &amp;&amp; $$N{doctext} eq $$data{doctext}){
 
 return &quot;Reincarnation of angel id $angel_id failed!&quot;;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>angelToDraft</title>
 </node>

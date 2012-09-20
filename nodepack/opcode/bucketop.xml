@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>909984</node_id>
+  <title>bucketop</title>
   <code>return unless isGod($USER);
 if($query-&gt;param(&quot;bgroupadd&quot;))
 {
@@ -34,6 +36,4 @@ if($query-&gt;param(&quot;bdrop&quot;) or $query-&gt;param(&quot;dropexec&quot;)
   $$VARS{nodebucket} = $bucket;
   delete $$VARS{nodebucket} unless($bucket &amp;&amp; $bucket ne &quot;&quot;);
 }</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>bucketop</title>
 </node>

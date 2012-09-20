@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[{UnderConstruction}]
 &lt;p&gt;Yeah, lets see &lt;strong&gt;you&lt;/strong&gt; try to rewrite this thing in less than a year. :)&lt;/p&gt;
 &lt;p&gt;Note: this is restricted so I don't have to worry about potential security holes while I'm working on it. I'll rename and change the type of this once I'm closer to beta stage. -- [N-Wing]&lt;/p&gt;
@@ -62,6 +63,5 @@ $str;
 %]
 </doctext>
   <node_id>1438735</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>N-Wing tries a Message Inbox rewrite</title>
 </node>

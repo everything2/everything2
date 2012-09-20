@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>176</node_id>
+  <title>displayvars</title>
   <code>my $SETTINGS = getVars $NODE;
 my $str = '';
 my ($keyclr, $valclr) = ('#CCCCFF', '#DEDEFF');
@@ -36,6 +38,4 @@ foreach (@skeys) {
 }
 $str .=&quot;&lt;/table&gt;\n&quot;;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>displayvars</title>
 </node>

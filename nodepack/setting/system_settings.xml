@@ -1,5 +1,4 @@
 <node>
-  <node_id>198</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>3</value>
@@ -241,5 +240,6 @@
     <value>553317</value>
     <key>EverythingFinger</key>
   </vars>
+  <node_id>198</node_id>
   <title>system settings</title>
 </node>

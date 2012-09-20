@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>136</node_id>
+  <title>showwriteup</title>
   <code>#####################################################
 #  showwriteup
 #
@@ -44,6 +46,4 @@ foreach ($index..$max) {
 }
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>showwriteup</title>
 </node>

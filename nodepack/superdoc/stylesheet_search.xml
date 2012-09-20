@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $UID = $$USER{node_id};
 
@@ -55,6 +56,5 @@ return $str;
 
 </doctext>
   <node_id>1986856</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Stylesheet search</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1956253</node_id>
+  <title>showChoiceFunc test</title>
   <code>no strict;
 use Everything::XML;
 my @modules = (
@@ -142,6 +144,4 @@ if (@lines) {
 }
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>showChoiceFunc test</title>
 </node>

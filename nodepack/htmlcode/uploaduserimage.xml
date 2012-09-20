@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>539558</node_id>
+  <title>uploaduserimage</title>
   <code>use POSIX qw(strftime);
 use Net::Amazon::S3;
 use File::Copy;
@@ -111,6 +113,4 @@ if ($fname = $query-&gt;upload($name)) { #recent change to CGI.pm
   $str.=$query-&gt;filefield($name);
 }
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>uploaduserimage</title>
 </node>

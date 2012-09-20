@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1982638</node_id>
+  <title>printHeaderTest</title>
   <code>#############################################################################
 #	Sub
 #		printHeader
@@ -55,6 +57,4 @@ sub printHeader
 		}
 	}
 }</code>
-  <type_nodetype>4</type_nodetype>
-  <title>printHeaderTest</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1296245</node_id>
+  <title>formwap</title>
   <code>my $ntype = getNodeById($$NODE{type_nodetype});
 return &quot;&quot; unless $ntype;
 
@@ -9,6 +11,4 @@ return &quot;&lt;card&gt;&lt;p&gt;No valid specific conversion for this type&lt;
 return htmlcode($hcode);
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>formwap</title>
 </node>

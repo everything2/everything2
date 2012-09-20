@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return 'Disabled following XP/level changes. Burn your GP at the [Wheel of Surprise] or give it away.';
 return if ($$VARS{GPoptout});
@@ -28,6 +29,5 @@ if($query-&gt;param('punch')
 linkNode($NODE, 'Go ahead. Hit me in the face.', { punch =&gt; 1 });
 %]</doctext>
   <node_id>716619</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>punch thyself</title>
 </node>

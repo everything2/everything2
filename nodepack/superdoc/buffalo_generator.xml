@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 my @verbNouns=('Buffalo', 'buffalo', 'police', 'bream', 'perch', 'char', 'people', 'dice', 'cod', 'smelt', 'pants');
@@ -35,6 +36,5 @@ return $str;
 
 </doctext>
   <node_id>2062553</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Buffalo Generator</title>
 </node>

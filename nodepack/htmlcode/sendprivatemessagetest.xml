@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1270241</node_id>
+  <title>sendPrivateMessageTest</title>
   <code>#sends a private message
 #
 #usage, examples, etc. in this node's &quot;help&quot; view:
@@ -1052,6 +1054,4 @@ delete $HTMLVARS{msgparams} unless $keepParams;	#this htmlcode's parameters no l
 
 return $showWhatSaid ? $m : undef;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>sendPrivateMessageTest</title>
 </node>

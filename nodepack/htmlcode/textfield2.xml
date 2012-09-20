@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1168347</node_id>
+  <title>textfield2</title>
   <code>#like [textfield], but manually sets values from submitted form
 #precondition:
 #	%$NODE should be set to current node
@@ -28,6 +30,4 @@ if($query-&gt;param($formParam)) {
 }
 
 $query-&gt;textfield($formParam, $$NODE{$assignTo}, $lenDisp, $lenMax);</code>
-  <type_nodetype>4</type_nodetype>
-  <title>textfield2</title>
 </node>

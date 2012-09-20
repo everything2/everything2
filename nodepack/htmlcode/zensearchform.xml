@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1867798</node_id>
+  <title>zensearchform</title>
   <code>my $lastnodeId = $query-&gt;param(&quot;softlinkedFrom&quot;);
 $lastnodeId ||= $query -&gt; param('lastnode_id') unless $$USER{title} eq 'Guest User';
 
@@ -49,6 +51,4 @@ $str.=qq'\n&lt;span title=&quot;Show all results, even when there is a page matc
 
 return $str . &quot;\n&lt;/form&gt;&quot;;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>zensearchform</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[% return '{' . int('test') . '}'; %]
 
 [%
@@ -573,6 +574,5 @@ $str .= '&lt;h3&gt;DEBUGGING OUTPUT: You may ignore this&lt;/h3&gt;'.$strDebug;
 return $str;
 %]</doctext>
   <node_id>1924476</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>in10se's sandbox</title>
 </node>

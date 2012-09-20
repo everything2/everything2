@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* This is Eye-Eze, a Zen theme */
 /* It is based from the default stylesheet for the zen theme, by ascorbic */
 
@@ -735,6 +736,5 @@ td {
 			display: none;
 		}</doctext>
   <node_id>1907942</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Eye-Eze</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>55</node_id>
+  <title>userbody</title>
   <code>my $bgcolor ||= $$THEME{bodyBgcolor};
 $bgcolor ||= &quot;#FFFFFF&quot;;
 
@@ -13,6 +15,4 @@ my $vlinkcolor = $$THEME{bodyVlinkcolor};
 $vlinkcolor ||= &quot;#333399&quot;;
 
 &quot;&lt;body\ntext=\&quot;$textcolor\&quot; bgcolor=\&quot;$bgcolor\&quot; link=\&quot;$linkcolor\&quot; vlink=\&quot;$vlinkcolor\&quot;\nleftmargin=\&quot;2\&quot; marginleft=\&quot;2\&quot; rightmargin=\&quot;2\&quot; marginright=\&quot;2\&quot;\n&gt;&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>userbody</title>
 </node>

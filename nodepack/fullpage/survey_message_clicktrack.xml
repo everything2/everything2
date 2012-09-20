@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>451267</type_nodetype>
   <doctext>[%
 
 my $ip = $ENV{HTTP_X_FORWARDED_FOR};
@@ -33,6 +34,5 @@ $DB-&gt;sqlInsert(&quot;surveyclicks&quot;, { userip =&gt; $ip, -clicktime =&gt;
 %]&quot;&gt;Click here if your browser does not redirect&lt;/a&gt;&lt;/body&gt;
 &lt;/html&gt;</doctext>
   <node_id>1995283</node_id>
-  <type_nodetype>451267</type_nodetype>
   <title>survey message clicktrack</title>
 </node>

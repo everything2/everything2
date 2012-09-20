@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1854182</node_id>
+  <title>zen titlebar</title>
   <code>my $str = '';
 
 my ($GNL) = getNode('Gigantic Node Lister', getType('restricted_superdoc'));
@@ -15,6 +17,4 @@ $str .= '&lt;li&gt;' .  linkNode ($ss, undef, {lastnode_id =&gt; undef})  . '&lt
 #$str .= '&lt;li&gt;' .  linkNode ($HTMLVARS{default_node}, undef, {lastnode_id =&gt; undef}) . '&lt;/li&gt;';
 
 return '&lt;ul id=&quot;metalinks&quot;&gt;'.$str.'&lt;/ul&gt;' if $str ;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>zen titlebar</title>
 </node>

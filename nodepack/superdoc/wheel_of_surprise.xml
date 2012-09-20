@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 return '&lt;p&gt;You must be logged in to be suprised.&lt;/p&gt;' if( (getId($USER)==$HTMLVARS{guest_user}) || ($USER-&gt;{title} eq 'Guest User') );
@@ -287,6 +288,5 @@ return &quot;&quot;;
 %]
 </doctext>
   <node_id>1874886</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Wheel of Surprise</title>
 </node>

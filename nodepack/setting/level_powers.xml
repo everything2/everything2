@@ -1,5 +1,4 @@
 <node>
-  <node_id>1962878</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>Buy [token|tokens] at the [E2 Gift Shop]</value>
@@ -49,5 +48,6 @@
     <value>Homenode image; create rooms</value>
     <key>5</key>
   </vars>
+  <node_id>1962878</node_id>
   <title>level powers</title>
 </node>

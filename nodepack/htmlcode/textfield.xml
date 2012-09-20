@@ -1,9 +1,9 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>53</node_id>
+  <title>textfield</title>
   <code>my ($field, $length, $expandable) = @_;
 $length ||= 20;
 my @expandable = ( class =&gt; 'expandable' ) if $expandable ;
 $query-&gt;textfield(-name=&gt;$$NODE{type}{title} .'_'. $field, value=&gt;$$NODE{$field}, size=&gt;$length ,@expandable );</code>
-  <type_nodetype>4</type_nodetype>
-  <title>textfield</title>
 </node>

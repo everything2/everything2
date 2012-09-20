@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>Sometimes we need fire to fight fire... 
 &lt;p&gt;This allows you to edit a node and all its fields directly. 
 [{openform}] 
@@ -20,6 +21,5 @@
 %] 
 [{closeform}]</doctext>
   <node_id>366647</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>raw node editor</title>
 </node>

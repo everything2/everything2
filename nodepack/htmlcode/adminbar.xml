@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>26</node_id>
+  <title>adminbar</title>
   <code>return if $$USER{title} eq 'Guest User';
 
 my $disp = $query-&gt;param('displaytype');
@@ -108,6 +110,4 @@ $str.=&quot;\n&lt;SCRIPT language=\&quot;javascript\&quot;&gt;
 			if(canDeleteNode($USER, $NODE));                                                        
                                
 &quot;&lt;div id='adminbar'&gt;$str&lt;/div&gt;&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>adminbar</title>
 </node>

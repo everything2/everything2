@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;br&gt;&lt;br&gt;
 The answer to 99% of the questions you'll be asked over 
 the course of your [brief lives] is simple, honest and 
@@ -78,6 +79,5 @@ It depends.&lt;/i&gt;&lt;/b&gt;
 
 </doctext>
   <node_id>905370</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Why did my writeup get voted down??</title>
 </node>

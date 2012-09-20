@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>html, body {
  margin: 0;
  padding: 0;
@@ -335,6 +336,5 @@ hr {
  clear: both;
 }</doctext>
   <node_id>1907408</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>tentatively untitled</title>
 </node>

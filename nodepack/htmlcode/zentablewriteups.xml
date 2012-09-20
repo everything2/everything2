@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1932115</node_id>
+  <title>zenTableWriteups</title>
   <code>my ($limit) = @_;
 $limit ||= 15;
 
@@ -90,6 +92,4 @@ $str.='&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';
 $str .= parseLinks('&lt;p&gt;([ENN|Older stuff])&lt;/p&gt;');
 
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>zenTableWriteups</title>
 </node>

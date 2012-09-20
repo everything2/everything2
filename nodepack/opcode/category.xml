@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1935812</node_id>
+  <title>category</title>
   <code>use Everything::Experience;
 
 return if getId($USER) == $HTMLVARS{guest_user};
@@ -87,6 +89,4 @@ $DB-&gt;sqlInsert('links',
 );
 return 1;
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>category</title>
 </node>

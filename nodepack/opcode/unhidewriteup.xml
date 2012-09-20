@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1217041</node_id>
+  <title>unhidewriteup</title>
   <code>return unless (exists($HTMLVARS{'group_gods'}{$$USER{user_id}}) ||
 	exists($HTMLVARS{'group_content editors'}{$$USER{user_id}}));
 
@@ -14,6 +16,4 @@ if($query-&gt;param('hidewriteup'))
 }
 return &quot;&quot;;
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>unhidewriteup</title>
 </node>

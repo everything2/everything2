@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>444521</node_id>
+  <title>kill</title>
   <code>my ($N) = $query-&gt;param('node_id');
 getRef($N);
 
@@ -16,6 +18,4 @@ foreach (values %HTMLVARS) {
 Everything::Experience::adjustExp($$N{author_user}, -5) unless $nopain;
 
 nukeNode($N, $USER);</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>kill</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1961368</node_id>
+  <title>coolitNonEd</title>
   <code>my $ntypet = $$NODE{type}{title};
 return unless ($ntypet eq 'e2node' || $ntypet eq 'superdoc' || $ntypet eq 'superdocnolinks' || $ntypet eq 'document');
 
@@ -11,6 +13,4 @@ return '&lt;span id=&quot;editorcool&quot;&gt;&lt;strong&gt;cooled by&lt;/strong
 &lt;/span&gt;' if $link ;
 
 return '';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>coolitNonEd</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>167261</node_id>
+  <title>parsetimestamp</title>
   <code># [{parsetimestamp:time,flags}]
 # Parses out a datetime field into a more human-readable form
 # note: the expected time format in the parameter is: yyyy-mm-dd hh:mm:ss, although the year part works for any year after year 0
@@ -106,6 +108,4 @@ $niceDate .= ' UTC' if length($niceDate) &amp;&amp; ($flags &amp; 8);	#show UTC
 
 return $niceDate;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>parsetimestamp</title>
 </node>

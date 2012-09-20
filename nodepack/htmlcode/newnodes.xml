@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>505479</node_id>
+  <title>newnodes</title>
   <code>my ($limit) = @_;
 
 $limit ||= 50;
@@ -38,6 +40,4 @@ my $nids = $dbh -&gt; selectcol_arrayref($qry);
 htmlcode('show content', $nids ,
 	qq'&lt;tr class=&quot;&amp;oddrow&quot;&gt;$ed &quot;&lt;td&gt;&quot;, parenttitle, type, &quot;&lt;/td&gt;&lt;td&gt;&quot;, listdate, &quot;&lt;/td&gt;&lt;td&gt;&quot;, author, &quot;&lt;/td&gt;&quot;', 'ed' =&gt; $funk);
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>newnodes</title>
 </node>

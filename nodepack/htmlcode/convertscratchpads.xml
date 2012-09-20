@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2035639</node_id>
+  <title>convertscratchpads</title>
   <code>my $uid = shift;
 my $lookingAtSelf = (!$uid || $uid == $$USER{node_id});
 my $doConversion = ($query -&gt; param('converttodrafts') == 1 &amp;&amp; $lookingAtSelf);
@@ -100,6 +102,4 @@ $str&quot; unless $listOnly;
 $convertButton
 $str&quot;;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>convertscratchpads</title>
 </node>

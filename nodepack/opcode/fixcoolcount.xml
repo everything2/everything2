@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1185529</node_id>
+  <title>fixcoolcount</title>
   <code>return unless(exists($HTMLVARS{'group_gods'}{$$USER{node_id}}));
 return unless($query-&gt;param('fixwu'));
 
@@ -14,6 +16,4 @@ my $csr = $dbh-&gt;prepare(&quot;UPDATE writeup SET cooled=$cools WHERE writeup_
 $csr-&gt;execute();
 
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>fixcoolcount</title>
 </node>

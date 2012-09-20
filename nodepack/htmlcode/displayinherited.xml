@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>32</node_id>
+  <title>displayInherited</title>
   <code># This diplays inherited values for a nodetype.  This
 # checks to see if the given field has any inherited
 # values.
@@ -32,6 +34,4 @@ elsif($$NODE{$field} eq &quot;-1&quot;)
 }
 
 $str = &quot; ( Inherited value: $str )&quot; if ($str ne &quot;&quot;);</code>
-  <type_nodetype>4</type_nodetype>
-  <title>displayInherited</title>
 </node>

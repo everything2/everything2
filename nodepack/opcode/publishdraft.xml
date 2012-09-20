@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>2036399</node_id>
+  <title>publishdraft</title>
   <code># turn a draft into a writeup and pass it on for insertion into an e2node
 
 my $e2node = $query -&gt; param('writeup_parent_e2node');
@@ -69,6 +71,4 @@ $DB -&gt; transactionWrap(sub{
 	htmlcode('publishwriteup', $wu, $NODE);
 
 }); # end transactionWrap</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>publishdraft</title>
 </node>

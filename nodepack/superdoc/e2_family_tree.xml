@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
   return unless isGod($USER) || $$USER{user_id} == getId(getNode(&quot;WolfDaddy&quot;, &quot;user&quot;));
 
@@ -86,6 +87,5 @@
 %]
 </doctext>
   <node_id>1253668</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>E2 Family tree</title>
 </node>

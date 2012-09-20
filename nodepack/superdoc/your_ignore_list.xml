@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return if $$USER{node_id} == $HTMLVARS{guest_user};
 
@@ -74,6 +75,5 @@ return $str;
 &lt;p align=&quot;right&quot;&gt;&lt;small&gt;Bugs go to [alex[user]] and/or [Oolong[user]].&lt;/small&gt;&lt;/p&gt;
 </doctext>
   <node_id>1946328</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Your ignore list</title>
 </node>

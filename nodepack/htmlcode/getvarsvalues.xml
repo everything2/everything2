@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1257491</node_id>
+  <title>getvarsvalues</title>
   <code># Emit all appropriate $VARS values as a string formatted 
 # in a consistent and human-readable way. This is used by 
 # the [ekw Scheme Cannery]; the format is also used by 
@@ -26,6 +28,4 @@ for my $var ( @names ) {
 $str;
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>getvarsvalues</title>
 </node>

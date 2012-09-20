@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>451267</type_nodetype>
   <doctext>/* &lt;p&gt;NOTE: This node is [ekw active styledef]. It's a node of type [fullpage], which 
     is a bit weird in terms of viewing it. displaytype=edit is your best bet. &lt;/p&gt;
     &lt;p&gt;The reason we do this is that [rawdata] nodes won't execute embedded perl
@@ -211,6 +212,5 @@ big {
 }
 </doctext>
   <node_id>1118812</node_id>
-  <type_nodetype>451267</type_nodetype>
   <title>ekw active styledef</title>
 </node>

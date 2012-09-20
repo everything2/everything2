@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>279553</node_id>
+  <title>typeMenu</title>
   <code># This constructs an HTML popup menu using the FormMenu
 # package of Everything.  Values of the menu come from
 # the specified &quot;setting&quot; node.
@@ -24,6 +26,4 @@ while(@_ &gt; 0)
 
 $menu-&gt;writePopupHTML($query,$name,$selected);
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>typeMenu</title>
 </node>

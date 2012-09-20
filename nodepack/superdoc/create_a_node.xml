@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;This is where you can create a new node.  Just type in the title you want and click the button. Please make sure that you've searched for it a few times and a few different ways first. You might already find what you're looking for.  Check out the [Everything FAQ] if you're a little lost.&lt;/p&gt;
 [% 
 
@@ -25,6 +26,5 @@ $str .= $query-&gt;endform;
 $str;
 %]</doctext>
   <node_id>365128</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Create a node</title>
 </node>

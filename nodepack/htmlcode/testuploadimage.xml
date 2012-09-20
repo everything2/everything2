@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>846351</node_id>
+  <title>testuploadimage</title>
   <code># [{uploadimage:field}]
 #
 # generates an input file field, and sets the field to the URL 
@@ -43,6 +45,4 @@ $str .= &quot;NOTE: Image directory is hard-coded in &quot;
 $str .= $query-&gt;filefield($name);
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>testuploadimage</title>
 </node>

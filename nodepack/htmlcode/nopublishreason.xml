@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2036363</node_id>
+  <title>nopublishreason</title>
   <code># find any reasons for a user not being able to post a writeup (to an e2node)
 # second argument is optional.
 # returns text of reason, existing writeup, or ''
@@ -56,6 +58,4 @@ return 'This node is locked. '
 	[Drafts[superdoc]|draft] to it and request review by an
 	[Content Editors[usergroup]|editor].&lt;/p&gt;'));
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>nopublishreason</title>
 </node>

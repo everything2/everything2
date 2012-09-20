@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1101124</node_id>
+  <title>ekw userbody</title>
   <code>my $bgcolor ||= $$VARS{ ekw_bgcolor };
 $bgcolor ||= $$THEME{ bodyBgcolor };
 $bgcolor ||= &quot;#FFFFFF&quot;;
@@ -21,6 +23,4 @@ $alinkcolor ||= $$THEME{ bodyAlinkcolor };
 $alinkcolor ||= &quot;#660000&quot;;
 
 &quot;&lt;body\ntext=\&quot;$textcolor\&quot; bgcolor=\&quot;$bgcolor\&quot; link=\&quot;$linkcolor\&quot; alink=\&quot;$alinkcolor\&quot; vlink=\&quot;$vlinkcolor\&quot;\nleftmargin=\&quot;2\&quot; marginleft=\&quot;2\&quot; rightmargin=\&quot;2\&quot; marginright=\&quot;2\&quot;\n&gt;&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>ekw userbody</title>
 </node>

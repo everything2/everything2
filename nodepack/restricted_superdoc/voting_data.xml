@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[%
 
 my $str;
@@ -37,6 +38,5 @@ return $str;
 
 %]</doctext>
   <node_id>1877984</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Voting Data</title>
 </node>

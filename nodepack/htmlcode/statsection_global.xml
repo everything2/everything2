@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1265949</node_id>
+  <title>statsection_global</title>
   <code>#section of the Statistics nodelet that displays site global stats
 
 #puts commas into numbers
@@ -22,6 +24,4 @@ foreach(split(&quot;\n&quot;, $stats)) {
 
 
 return '&lt;div&gt;'.$str.'&lt;/div&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>statsection_global</title>
 </node>

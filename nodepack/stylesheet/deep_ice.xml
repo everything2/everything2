@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/*= autofix added rules. adjust to taste: */
 .actions , .actions li {display:inline;margin:0;padding:0 0.5em 0 0;}
 .actions { display: block ; }
@@ -846,6 +847,5 @@ dt {
 	font-weight: bold;
 }</doctext>
   <node_id>1996378</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Deep Ice</title>
 </node>

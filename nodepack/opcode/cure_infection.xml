@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>2034111</node_id>
+  <title>cure_infection</title>
   <code>return 0 unless htmlcode('isAdmin', $USER) || !htmlcode('verifyRequest', 'cure_infection');
 
 my $cureUserId = int($query-&gt;param(&quot;cure_user_id&quot;));
@@ -11,6 +13,4 @@ $$cureVars{infected} = 0;
 setVars($cureUser, $cureVars);
 
 return 1;</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>cure_infection</title>
 </node>

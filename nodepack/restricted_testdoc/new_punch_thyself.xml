@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1965649</type_nodetype>
   <doctext>[%
 return 'You don\'t look ready to punch anyone just yet, Little Mac.';
 return if ($$VARS{GPoptout});
@@ -44,6 +45,5 @@ if($query-&gt;param('punch')
 linkNode($NODE, 'Go ahead. Hit me in the face.', { punch =&gt; 1 });
 %]</doctext>
   <node_id>1967992</node_id>
-  <type_nodetype>1965649</type_nodetype>
   <title>New punch thyself</title>
 </node>

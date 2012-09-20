@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>972298</node_id>
+  <title>processMessage</title>
   <code>[%
 #[message] (opcode) gets uglier and uglier as more chatter commands are added
 #to help simplify things, this assumes that the command and parameters are already split on a space, and takes the appropriate action
@@ -52,6 +54,4 @@ return 0;
 
 ???? I don't want this run yet, so this line will cause a server error....
 %]</code>
-  <type_nodetype>4</type_nodetype>
-  <title>processMessage</title>
 </node>

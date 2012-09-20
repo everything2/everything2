@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1064708</node_id>
+  <title>AGnewnodes</title>
   <code>my ($limit) = @_;
 
 $limit ||= 50;
@@ -45,6 +47,4 @@ $csr-&gt;finish;
 
 $str;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>AGnewnodes</title>
 </node>

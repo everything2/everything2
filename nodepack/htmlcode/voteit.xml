@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>444186</node_id>
+  <title>voteit</title>
   <code>return if $$USER{user_id} == $HTMLVARS{guest_user} ;
 my ( $N , $showwhat ) = @_ ;
 $N ||= $NODE ;
@@ -123,6 +125,4 @@ unless ( $isMine ) {
 $votestr .='&lt;/span&gt;' ;
 return $edstr.$votestr ;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>voteit</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2009167</node_id>
+  <title>make node sane</title>
   <code># Expects single parameter, node_id or node ref
 # returns undef if unable to make node sane
 # returns node if successful
@@ -29,6 +31,4 @@ foreach my $table (@$tableArray)
 my $sane_node = getNodeById($crazy_node_id, 'force');
 $sane_node;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>make node sane</title>
 </node>

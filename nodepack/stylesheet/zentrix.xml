@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* based on DonJaime's Cool Understatement */
 
 table {
@@ -712,6 +713,5 @@ body , div, p , li , dd , dt , td , a , h1 , h2 , h3 {	/* should be every border
 	background-color: #f4f8ef ;
 	}</doctext>
   <node_id>1946088</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Zentrix</title>
 </node>

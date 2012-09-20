@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>38</node_id>
+  <title>listgroup</title>
   <code>my ($field) = @_;
 
 my $G = $$NODE{$field};
@@ -25,6 +27,4 @@ foreach my $item (@$groupref) {
 $str .= &quot;&lt;/ol&gt;\n&quot;;
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>listgroup</title>
 </node>

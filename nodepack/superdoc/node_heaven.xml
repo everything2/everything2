@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;
 Welcome to Node Heaven, monument to E2's blood-stained past. Before the silent revolution of 
 June 10, 2011, this is where writeups' remains were sent after they had been nuked.
@@ -276,6 +277,5 @@ $allCount . ' deleted writeups total, ' . $count . &quot; shown&lt;br /&gt;\n&qu
 %]
 </doctext>
   <node_id>790613</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Node Heaven</title>
 </node>

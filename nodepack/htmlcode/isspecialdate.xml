@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1002054</node_id>
+  <title>isSpecialDate</title>
   <code>#returns if current server time matches the given day
 #parameter: case insensitive string(s) of date(s) - if more than 1, then any matches counts as a success
 #if no date given, or date not found, returns 0
@@ -44,6 +46,4 @@ return '1' if ($mon==0 and $mday==1 and ($y?$y==$year:1));
 
 return 0;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>isSpecialDate</title>
 </node>

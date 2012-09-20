@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1372587</node_id>
+  <title>formxml_room</title>
   <code>use Everything::Room;
 my $entrance=&quot;0&quot;;
 if(eval($$NODE{criteria}) and not getId($USER) == $HTMLVARS{guest_user}){
@@ -9,6 +11,4 @@ if(eval($$NODE{criteria}) and not getId($USER) == $HTMLVARS{guest_user}){
 my $str = &quot;&lt;canenter&gt;&quot;.$entrance.&quot;&lt;/canenter&gt;\n&quot;;
 $str.=&quot;&lt;description&gt;&quot;.encodeHTML(($query-&gt;param(&quot;links_noparse&quot;))?($$NODE{doctext}):(parseLinks($$NODE{doctext}))).&quot;&lt;/description&gt;&quot;;
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>formxml_room</title>
 </node>

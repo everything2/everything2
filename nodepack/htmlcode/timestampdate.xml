@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1266514</node_id>
+  <title>timestampDate</title>
   <code># htmlcode('timestampDate',$NODETHINGY{createtime})
 # shows just the date, in a locale-dependant manner, dependant upon the user's setting
 # note: for now, we just use the USA way
@@ -19,6 +21,4 @@ my @DAY = qw(Sunday Monday Tuesday Wednesday Thursday Friday Saturday);
 my @D = qw(Sun Mon Tue Wed Thu Fri Sat);
 
 return </code>
-  <type_nodetype>4</type_nodetype>
-  <title>timestampDate</title>
 </node>

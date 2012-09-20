@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1976481</node_id>
+  <title>swapsvotehead</title>
   <code>my $uid=$$USER{node_id}||0;
 return if !$uid || ($uid eq $HTMLVARS{default_user});
 my $canDoStuff = $$USER{votesleft} || (exists $HTMLVARS{'group_content editors'}{$uid}) || (exists $HTMLVARS{group_gods}{$uid}) || (exists $HTMLVARS{group_edev}{$uid});
@@ -8,6 +10,4 @@ $str.=&quot;\n\t&quot;.htmlcode('openform');
 $str.=&quot;\n\t\t&quot;.'&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;swapvote&quot; /&gt;' if $canDoStuff;	#don't bother with vote opcode if user can't vote
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>swapsvotehead</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1278319</node_id>
+  <title>showchatterrand</title>
   <code>#originally in [chatterbox] (nodelet)
 
 return 'If you '.linkNode(getNode('Create A New User','superdoc'),'get a (&lt;strong&gt;free&lt;/strong&gt;) account',{lastnode_id=&gt;0}).', you can talk here.' if getId($USER) == $HTMLVARS{guest_user};
@@ -114,6 +116,4 @@ if(not $lines) {
 }
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>showchatterrand</title>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <node_id>415072</node_id>
   <type_nodetype>175989</type_nodetype>
   <vars>
     <value>&quot;&quot;</value>
@@ -81,5 +80,6 @@
     <value>#FFFFFF</value>
     <key>bodyBgcolor</key>
   </vars>
+  <node_id>415072</node_id>
   <title>classic theme</title>
 </node>

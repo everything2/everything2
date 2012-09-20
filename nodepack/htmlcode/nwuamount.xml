@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1217086</node_id>
+  <title>nwuamount</title>
   <code>return '' if ($$USER{user_id} == $HTMLVARS{guest_user});
 my ($nodelet,$noAdminNoJunkOption) = @_ ;
 $nodelet ||= 'New Writeups';
@@ -20,6 +22,4 @@ $str.=&quot;\n\t&quot;.$query-&gt;checkbox(-name=&gt;&quot;nw_nojunk&quot;, chec
 	if !$noAdminNoJunkOption and htmlcode('isEditor','');
 $str.=&quot;\n&quot;.$query-&gt;end_form;
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>nwuamount</title>
 </node>

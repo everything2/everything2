@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2002809</node_id>
+  <title>show writeups</title>
   <code>local $$VARS{wufoot} = &quot;l:kill,$$VARS{wufoot}&quot;
 	unless !$$VARS{wufoot} or $$VARS{wufoot} =~ /\bkill\b/ or $$VARS{wuhead} =~ /\bkill\b/;
 
@@ -28,6 +30,4 @@ htmlcode( 'show content' , shift || $$NODE{group} || $NODE
 	, oldinfo =&gt; $oldinfo
 );
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>show writeups</title>
 </node>

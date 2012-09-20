@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1876423</node_id>
+  <title>old admin toolset</title>
   <code>return unless exists $HTMLVARS{'group_gods'}{$$USER{node_id}};
 
 my $newStr = &quot;&lt;ul&gt;&quot;;
@@ -61,6 +63,4 @@ return &quot;&lt;div class='nodelet_section'&gt;&lt;h4 class='ns_title'&gt;Node 
 #}
 
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>old admin toolset</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>You probably have noticed a new &quot;node bucket&quot; section
 to your personal nodelet -- this has a couple new 
 features which you will be interested in:
@@ -34,6 +35,5 @@ puts it in the new one.
 &lt;/ol&gt;
 </doctext>
   <node_id>909990</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Node Bucket Usage</title>
 </node>

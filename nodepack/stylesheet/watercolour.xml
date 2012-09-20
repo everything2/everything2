@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* This a crappy version of a style sheet made up by apollyon*/
 /* You may use this file as a foundation for any new work, but you would be mad if you did.*/
 
@@ -417,6 +418,5 @@ top:-70px}
   -moz-opacity:0.6;
   }*/</doctext>
   <node_id>1909994</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Watercolour</title>
 </node>

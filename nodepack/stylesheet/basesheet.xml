@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* THIS STUFF should be moved from here to fixstylesheet on its next upgrade */
 .nodeletfoot{
 	font-size: 84% ;
@@ -311,6 +312,5 @@ table.registries {
    padding: 1px;
 }</doctext>
   <node_id>1973976</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>basesheet</title>
 </node>

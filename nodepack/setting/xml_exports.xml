@@ -1,5 +1,4 @@
 <node>
-  <node_id>1261450</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>1252400</value>
@@ -77,5 +76,6 @@
     <value>1291666 </value>
     <key>heaven</key>
   </vars>
+  <node_id>1261450</node_id>
   <title>XML exports</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1919370</node_id>
+  <title>achievementsLeft</title>
   <code>my $str = '';
 
 my $unAchieved = $DB-&gt;sqlSelectMany(
@@ -17,6 +19,4 @@ while (my $u = $unAchieved-&gt;fetchrow_hashref) {
 
 return $query -&gt; ul($str);
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>achievementsLeft</title>
 </node>

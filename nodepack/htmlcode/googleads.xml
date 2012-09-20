@@ -1,9 +1,11 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2008367</node_id>
+  <title>googleads</title>
   <code>my ($ad_location) = @_;
 my $node_id = $$NODE{node_id};
 
-my @badnodes = qw(1921577 1369958 2003596 29906 149007);
+my @badnodes = qw(1921577 1369958 2003596 29906 149007 1332646);
 
 foreach my $nid (@badnodes) {
    return &quot;&lt;!-- noad:badnode --&gt;&quot; if $node_id == $nid or $$NODE{type}{title} eq 'writeup' &amp;&amp; $$NODE{parent_e2node} == $nid;
@@ -67,8 +69,5 @@ google_ad_height = 90;
 &lt;/center&gt;
 ADTEXT
 
-return $ad;
-</code>
-  <type_nodetype>4</type_nodetype>
-  <title>googleads</title>
+return $ad;</code>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1956328</node_id>
+  <title>zenadsidebar</title>
   <code>return unless $$VARS{zenadinheader};
 my $node_id = $$NODE{node_id};
 return if $node_id == 1369958; #stupid pot node that got us busted
@@ -27,6 +29,4 @@ src=&quot;http://pagead2.googlesyndication.com/pagead/show_ads.js&quot;&gt;
 ADTEXT
 
 return '&lt;div class=&quot;headerads&quot;&gt;'.$ad.'&lt;/div&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>zenadsidebar</title>
 </node>

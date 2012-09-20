@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/*= autofix added rules. adjust to taste: */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
 .weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
@@ -1031,6 +1032,5 @@ p#servertime {
 }
 </doctext>
   <node_id>1963336</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>SharQ's Sharktank</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>942347</node_id>
+  <title>printablefooter</title>
   <code>my $str = '
 &lt;table width=&quot;100%&quot; border=&quot;0&quot;&gt;&lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;
 ';
@@ -20,6 +22,4 @@ $str.= $site. &quot;
 &quot;;
 
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>printablefooter</title>
 </node>

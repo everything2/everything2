@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>2045735</node_id>
+  <title>addNodenote</title>
   <code>my ($notefor, $notetext, $user) = @_;
 
 getRef $user;
@@ -26,6 +28,4 @@ htmlcode('addNotification', 'nodenote', 0, {
 }) if $user;
 
 return $nodenote_id;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>addNodenote</title>
 </node>

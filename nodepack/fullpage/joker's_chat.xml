@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>451267</type_nodetype>
   <doctext>[%
 
 my $isCE = exists $HTMLVARS{ 'group_content editors' }{ getId( $USER ) };
@@ -105,6 +106,5 @@ $str;
 
 </doctext>
   <node_id>1729073</node_id>
-  <type_nodetype>451267</type_nodetype>
   <title>joker's chat</title>
 </node>

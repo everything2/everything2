@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>$.extend(e2, {
 	fxDuration: (e2.fxDuration || 200) - 1, // fx off is stored as 1
 	isChatterlight: /^Chatterlight/i.test(document.title) &amp;&amp; (e2.autoChat = true),
@@ -35,6 +36,5 @@ jQuery.fx.interval = 40; // 25 frames/second: assume user is human. (Default = 1
 if (e2.fxDuration == 0) jQuery.fx.off = true;
 </doctext>
   <node_id>2069287</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>Boilerplate Javascript</title>
 </node>

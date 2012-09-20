@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>675041</node_id>
+  <title>rearrangenodelets</title>
   <code>#  allows users to select nodelets and their order
 #  usage: [{rearrangenodelets:nodelets,default nodelets}]
 #  first parameter:  user variable which stores the comma delimited list of selected node_id's ie $$VARS{nodelets}
@@ -48,6 +50,4 @@ my $str = $query-&gt;hidden(-name =&gt; $prefix, value=&gt;1).qq'&lt;ul id=&quot
 return $str if $formoff;
 return htmlcode('openform').$str.htmlcode('closeform');
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>rearrangenodelets</title>
 </node>

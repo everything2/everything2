@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>451267</type_nodetype>
   <doctext>[%
    use Everything::Search;
 
@@ -32,6 +33,5 @@
 %]
 </doctext>
   <node_id>1043278</node_id>
-  <type_nodetype>451267</type_nodetype>
   <title>rdf search</title>
 </node>

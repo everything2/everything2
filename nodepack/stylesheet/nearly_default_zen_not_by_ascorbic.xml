@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/****** COLORS ******/
 
 body,
@@ -692,6 +693,5 @@ td {
 			display: none;
 		}</doctext>
   <node_id>1938043</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>nearly default zen not by ascorbic</title>
 </node>

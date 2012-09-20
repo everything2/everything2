@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>1976465</node_id>
+  <title>swapvote</title>
   <code>return unless $$USER{votesleft};
 return if isSuspended($USER, &quot;vote&quot;);
 return if getId($USER) == $HTMLVARS{guest_user};
@@ -159,6 +161,4 @@ sub swapCastVote {
   1;
 }
 </code>
-  <type_nodetype>415056</type_nodetype>
-  <title>swapvote</title>
 </node>

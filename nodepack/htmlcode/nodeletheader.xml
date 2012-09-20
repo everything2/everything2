@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1238735</node_id>
+  <title>nodeletHeader</title>
   <code>#this displays the titles of nodelets, which can be just the text, or maybe an image
 #parts of the nodelet containers for various themes were moved and merged here: [nodelet container], [jukka nodelet container], [ekw nodelet container] (if I missed any, please tell me!)
 #new feature to add is ability to move up/down/collapse/close nodelets via the header
@@ -121,6 +123,4 @@ $str .= '&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';
 
 
 return $str.'&lt;/tr&gt;';</code>
-  <type_nodetype>4</type_nodetype>
-  <title>nodeletHeader</title>
 </node>

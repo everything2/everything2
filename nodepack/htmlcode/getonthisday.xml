@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1838064</node_id>
+  <title>getOnThisDay</title>
   <code>###########################################################################
 #
 #  Most of this is just the code from various CPAN modules that we don't have installed.
@@ -294,6 +296,4 @@ require LWP::Simple;
                 $str .= &quot;&lt;p&gt;&lt;b&gt;&quot; . $it-&gt;get('title') . &quot;&lt;/b&gt;&lt;br&gt;&quot; . $it-&gt;get('description') . &quot;&lt;/p&gt;\n&quot;;
         }
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>getOnThisDay</title>
 </node>

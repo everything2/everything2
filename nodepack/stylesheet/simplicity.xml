@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* LAYOUT */
 
 body {
@@ -476,6 +477,5 @@ border-left: 2px solid #e4d8b4;
 margin-left: -2px;
 }</doctext>
   <node_id>2041900</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Simplicity</title>
 </node>

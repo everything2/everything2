@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>840319</node_id>
+  <title>jsrearrangenodelets</title>
   <code>#######
 #  this function allows users to select which nodelets
 #  they want to see and then order them
@@ -146,6 +148,4 @@ foreach(keys %unselected){
 $str.=&quot;&lt;/TABLE&gt;&quot;;
 $str.=htmlcode('closeform') unless $formoff;
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>jsrearrangenodelets</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1180775</node_id>
+  <title>nodenote</title>
   <code>return unless htmlcode('isEditor','');
 return if($$VARS{hidenodenotes});
 
@@ -98,6 +100,4 @@ return '
 		&lt;/form&gt;
 	&lt;/div&gt;';
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>nodenote</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1164326</node_id>
+  <title>usercheck</title>
   <code>my ($givenTitle) = @_;
 
 return if($$NODE{type_nodetype} != getId(getType('e2node'))
@@ -53,6 +55,4 @@ my $id = &quot;isalso&quot;;
 $id .= &quot;forward&quot; if defined $givenTitle;
 return &quot;\t&quot;.'&lt;div class=&quot;topic&quot; id=&quot;' . $id . '&quot;&gt;'.$retstr.'.)&lt;/div&gt;';
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>usercheck</title>
 </node>

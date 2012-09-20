@@ -1,5 +1,4 @@
 <node>
-  <node_id>1869642</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>&lt;b&gt;[E2 Nodelet Collapser]&lt;/b&gt; by [Excalibre] &lt;br /&gt;Collapse your nodelets at the click of a mouse (for non-zen themes).&lt;br /&gt;</value>
@@ -43,5 +42,6 @@
     <value>&lt;b&gt;[musical appreciation]&lt;/b&gt; by [OldMiner]&lt;br /&gt;</value>
     <key>2020854</key>
   </vars>
+  <node_id>1869642</node_id>
   <title>Javascript Repository listings</title>
 </node>

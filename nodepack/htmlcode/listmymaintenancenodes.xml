@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1981645</node_id>
+  <title>listMyMaintenanceNodes</title>
   <code>my ($uid) = @_;
 
 $uid = $$NODE{node_id} unless $uid;
@@ -30,6 +32,4 @@ my @out = keys %maint_nodes;
 
 return &quot;@out&quot;;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>listMyMaintenanceNodes</title>
 </node>

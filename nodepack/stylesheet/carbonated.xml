@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* Customization section:                                             */
 /* Copy the section below into (Style Defacer) to customize the       */
 /*   colors, borders, text, and links.                                */
@@ -719,6 +720,5 @@ textarea { width:95%; font-family: monospace; }
 .chat_user :after { content:&quot;&gt;&quot;; }
 */</doctext>
   <node_id>1930840</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Carbonated</title>
 </node>

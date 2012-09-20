@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
   return 'Curiosity killed the cat, ya know.' if(!exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) &amp;&amp; !exists($HTMLVARS{'group_content editors'}{$$USER{node_id}}));
@@ -32,6 +33,5 @@
   return $str;
 %]</doctext>
   <node_id>1160917</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Everything's Best Writeups</title>
 </node>

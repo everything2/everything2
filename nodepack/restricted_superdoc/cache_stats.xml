@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>[%
 my $str;
 my $db = $CACHESTORE-&gt;{dbh};
@@ -43,6 +44,5 @@ To adjust expiration time check out [cache_settings]&lt;br&gt;
 To add static types use [cachable_types]&lt;br&gt;
 To add specific nodes use [cachable_nodes]</doctext>
   <node_id>1271036</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>cache_stats</title>
 </node>

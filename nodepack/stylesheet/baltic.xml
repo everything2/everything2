@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/*= Comments containing old/disabled rules start with = for easy finding */
 /*= autofix added rules. adjust to taste: */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
@@ -1027,6 +1028,5 @@ div#surveymessage {
 }
 </doctext>
   <node_id>1902801</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <title>Baltic</title>
 </node>

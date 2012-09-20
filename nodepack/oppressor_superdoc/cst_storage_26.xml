@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;p&gt;
 This is a storage node for CST reviews. Reviews are moved here from our working area in [CST_Chat].
 &lt;/p&gt;&lt;p&gt;
@@ -398,6 +399,5 @@ Per the WikiSource.org licensing terms, this is [CST Approved] via the original 
 
 </doctext>
   <node_id>1857772</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>CST_Storage_26</title>
 </node>

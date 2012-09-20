@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>415056</type_nodetype>
   <node_id>648516</node_id>
+  <title>massacre</title>
   <code>return unless (Everything::isApproved($USER, getNode('Content Editors', 'usergroup')) || isGod($USER));
 
 my @params = $query-&gt;param;
@@ -139,6 +141,4 @@ foreach $nid (@deathrow) {
 }	#foreach(@deathrow)
 
 htmlcode('update New Writeups data');</code>
-  <type_nodetype>415056</type_nodetype>
-  <title>massacre</title>
 </node>

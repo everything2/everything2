@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1936067</node_id>
+  <title>strikeUser</title>
   <code>my ($enemyID, $inChat) = @_;
 
 use JSON;
@@ -98,6 +100,4 @@ $message .= &quot;  &quot;.$$randVillain{title} .&quot; has fallen in battle!&qu
 $message .= &quot;  &quot;.$$randVillain{title} .&quot;'s health: &quot;.$vWarVars-&gt;{health} if ($vWarVars-&gt;{health} &gt; 0);
 return $message;
 }</code>
-  <type_nodetype>4</type_nodetype>
-  <title>strikeUser</title>
 </node>

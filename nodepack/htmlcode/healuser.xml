@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1936081</node_id>
+  <title>healuser</title>
   <code>my ($healID, $inChat) = @_;
 
 use JSON;
@@ -49,6 +51,4 @@ my $message = &quot;/me heals &quot;.$$randVillain{title}.&quot;.&quot;;
 $message .= &quot;  &quot;.$$randVillain{title} .&quot;'s health: &quot;.$vWarVars-&gt;{health} if ($vWarVars-&gt;{health} &gt; 0);
 return $message;
 }</code>
-  <type_nodetype>4</type_nodetype>
-  <title>healuser</title>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <node_id>444411</node_id>
   <type_nodetype>153</type_nodetype>
   <vars>
     <value>Optimate</value>
@@ -405,5 +404,6 @@
     <value>Crafter</value>
     <key>5</key>
   </vars>
+  <node_id>444411</node_id>
   <title>level titles</title>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1175801</node_id>
+  <title>ReadThis_edcools</title>
   <code>#ed Cools - See [ReadThis]
 
   my $str = '&lt;ul&gt;';
@@ -32,6 +34,4 @@
 $str.='&lt;/ul&gt;';
 
 return $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>ReadThis_edcools</title>
 </node>

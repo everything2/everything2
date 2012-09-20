@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1116973</node_id>
+  <title>vitsection_nodeinfo</title>
   <code>my $str=&quot;&lt;ul&gt;&quot;;
 
 $str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('E2 HTML Tags').&quot;&lt;/li&gt;&quot;;
@@ -9,6 +11,4 @@ $str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Reference Desk').&quot;&lt;/li&gt;&q
 
 $str.=&quot;&lt;/ul&gt;&quot;;
 $str;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>vitsection_nodeinfo</title>
 </node>

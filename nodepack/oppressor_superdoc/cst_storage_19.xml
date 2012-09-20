@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;p&gt;
 This is a storage node for CST reviews. Reviews are moved her from our working area in [CST_Chat].
 &lt;/p&gt;&lt;p&gt;
@@ -705,6 +706,5 @@ Tc = 536, Tq = 247, %q= 46%&lt;br&gt;
 
 </doctext>
   <node_id>1767044</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <title>CST_Storage_19</title>
 </node>

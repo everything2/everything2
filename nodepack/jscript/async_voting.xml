@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1786405</type_nodetype>
   <doctext>if (typeof($) == 'undefined') {
   var $ = function (o) {
 	  return document.getElementById(o);
@@ -321,6 +322,5 @@ XMLHTTP.prototype.send = function (uri) {
 }
 </doctext>
   <node_id>1842173</node_id>
-  <type_nodetype>1786405</type_nodetype>
   <title>async voting</title>
 </node>

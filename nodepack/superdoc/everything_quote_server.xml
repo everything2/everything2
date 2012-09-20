@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;br&gt;&lt;br&gt;
 &lt;p align=center&gt;
 [%
@@ -661,6 +662,5 @@ return ((rand(10) &lt; 5)?($str):($str2));
 %]
 &lt;br&gt;&lt;br&gt;&lt;br&gt;</doctext>
   <node_id>407437</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Everything Quote Server</title>
 </node>

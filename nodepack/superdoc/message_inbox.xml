@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 return &quot;&lt;p&gt;If you had an account, you could get messages.&lt;/p&gt;&quot;
@@ -288,6 +289,5 @@ $str.' '
 
 %]</doctext>
   <node_id>891793</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Message Inbox</title>
 </node>

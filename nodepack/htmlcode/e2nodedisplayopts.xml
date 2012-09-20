@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>165438</node_id>
+  <title>e2nodedisplayopts</title>
   <code>my ($align) =@_;
 
 my %displaytypes =(
@@ -16,6 +18,4 @@ foreach (keys %displaytypes) {
 }
 
 $str.=containHtml('thin outline container',$opts).&quot;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&quot;;</code>
-  <type_nodetype>4</type_nodetype>
-  <title>e2nodedisplayopts</title>
 </node>

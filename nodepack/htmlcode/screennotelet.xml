@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>4</type_nodetype>
   <node_id>1291361</node_id>
+  <title>screenNotelet</title>
   <code>#screens notelet text
 #reads &quot;raw&quot; and writes &quot;screened&quot;
 
@@ -71,6 +73,4 @@ if(length($work)) {
 
 return;
 </code>
-  <type_nodetype>4</type_nodetype>
-  <title>screenNotelet</title>
 </node>

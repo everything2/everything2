@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;
 [%
 my $UID = getId($USER);
@@ -44,6 +45,5 @@ if( (defined $query-&gt;param('numborgings')) &amp;&amp; defined($t=$query-&gt;p
 %]
 &lt;/p&gt;</doctext>
   <node_id>1262818</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>feed EDB</title>
 </node>

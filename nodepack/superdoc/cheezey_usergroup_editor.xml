@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 my $owners = getVars(getNode('usergroup owners','setting'));
@@ -107,6 +108,5 @@ return $str;
 
 %]</doctext>
   <node_id>1709932</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>cheezey usergroup editor</title>
 </node>
