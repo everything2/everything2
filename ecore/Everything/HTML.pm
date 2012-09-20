@@ -1137,7 +1137,7 @@ sub getPages
 sub getCompiledPage
 {
 	my ($NODE, $displaytype) = @_; 
-	return unless $CONFIG{use_compiled};
+	return unless $Everything::CONF->{use_compiled};
 	my $TYPE;
 
 	# Stolen from getPage	
@@ -2364,8 +2364,8 @@ sub loginUser
 	
         #jb 5-19-02: To support wap phones and maybe other clients/configs without cookies:
 
-        my $oldcookie = $query->cookie($CONFIG{cookiepass});
-        $oldcookie ||= $query->param($CONFIG{cookiepass});
+        my $oldcookie = $query->cookie($Everything::CONF->{cookiepass});
+        $oldcookie ||= $query->param($Everything::CONF->{cookiepass});
 
         if($oldcookie)                     
 	{
@@ -2696,7 +2696,7 @@ sub opLogin
 	
 	# If the user/passwd was correct, set a cookie on the users
 	# browser.
-	$cookie = $query->cookie(-name => $CONFIG{cookiepass}, 
+	$cookie = $query->cookie(-name => $Everything::CONF->{cookiepass}, 
 		-value => $query->escape($user . '|' . crypt ($passwd, $user)), 
 		-expires => $query->param("expires")) if $user_id;
 
@@ -2713,7 +2713,7 @@ sub opLogin
 sub opLogout
 {
 	# The user is logging out.  Nuke their cookie.
-	my $cookie = $query->cookie(-name => $CONFIG{cookiepass}, -value => "");
+	my $cookie = $query->cookie(-name => $Everything::CONF->{cookiepass}, -value => "");
 	my $user_id = $HTMLVARS{guest_user};	
 
 	$USER = getNodeById($user_id);

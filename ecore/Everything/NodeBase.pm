@@ -16,15 +16,12 @@ use Everything::NodeCache;
 use Clone qw(clone);
 use Test::Deep::NoTest;
 
-our %CONFIG;
-
 sub BEGIN
 {
 	use Exporter ();
 	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
-		%CONFIG
 		getCache
 		getDatabaseHandle
 		getAllTypes
@@ -113,9 +110,8 @@ sub new
 		my $db = {};
 		
 		# A connection to this database does not exist.  Create one.
-    my ($user,$pass) = ($CONFIG{'everyuser'}, $CONFIG{'everypass'});
-		$db->{dbh} = DBI ->
-      connect("DBI:mysql:$dbname:$CONFIG{everything_dbserv}", $user, $pass);
+		my ($user,$pass, $dbserv) = ($Everything::CONF->{'everyuser'}, $Everything::CONF->{'everypass'}, $Everything::CONF->{'everything_dbserv'});
+		$db->{dbh} = DBI->connect("DBI:mysql:$dbname:$dbserv", $user, $pass);
 
 		$this->{dbh} = $db->{dbh};
 		

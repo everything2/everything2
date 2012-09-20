@@ -41,11 +41,11 @@ sub node2mail {
 
 
 	my $transport = Email::Sender::Transport::SMTP->new(
-  	{ "host" => $Everything::CONFIG{smtp_host},
-    	  "port" => $Everything::CONFIG{smtp_port},
-    	  "ssl" => $Everything::CONFIG{smtp_use_ssl},
-    	  "sasl_username" => $Everything::CONFIG{smtp_user},
-    	  "sasl_password" => $Everything::CONFIG{smtp_pass},
+  	{ "host" => $Everything::CONF->{smtp_host},
+    	  "port" => $Everything::CONF->{smtp_port},
+    	  "ssl" => $Everything::CONF->{smtp_use_ssl},
+    	  "sasl_username" => $Everything::CONF->{smtp_user},
+    	  "sasl_password" => $Everything::CONF->{smtp_pass},
   	});
 
 	my $email = Email::Simple->create(
