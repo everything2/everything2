@@ -33,3 +33,6 @@ execute "database bootstrap" do
   creates "/etc/chef_setup/database_bootstrap"
 end
 
+service "mysql" do
+  action :start
+end
