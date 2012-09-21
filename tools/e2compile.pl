@@ -27,7 +27,6 @@ use Everything::Experience;
 use Everything::MAIL;
 use Everything::Search;
 use Everything::Room;
-use Everything::CacheStore;
 
 
 package Everything::Compiled::$current_type;
@@ -68,7 +67,6 @@ my $var_mapping =
 	'$TEST_CONDITION' => '::HTML::',
 	'$TEST_SESSION_ID' => '::HTML::',
 	'$THEME' => '::HTML::',
-	'$CACHESTORE' => '::HTML::',
 	'$NODELET' => '::HTML::',
 	'%HEADER_PARAMS' => '::HTML::',	
 };
