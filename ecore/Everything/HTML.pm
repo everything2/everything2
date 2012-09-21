@@ -14,7 +14,6 @@ use Everything::MAIL;
 use Everything::Search;
 use Everything::Experience;
 use Everything::Room;
-use Everything::CacheStore;
 #use StopWatch;
 use CGI;
 use CGI::Carp qw(set_die_handler);
@@ -88,7 +87,6 @@ use vars qw($TEST_CONDITION);
 use vars qw($TEST_SESSION_ID);
 use vars qw($THEME);
 use vars qw($NODELET);
-use vars qw($CACHESTORE);
 use vars qw(%HEADER_PARAMS);
 
 my $PAGELOAD = 0;
@@ -2038,18 +2036,6 @@ sub displayPage
         my $dsp = $query->param('displaytype');
         $dsp = "display" unless $dsp;
 
-	if($dsp eq "display"){
-		if ($isGuest and $CACHESTORE
-			and $CACHESTORE->canCache(($NODE, $query))
-			and $page = $CACHESTORE->retrievePage($$NODE{node_id})) {
-			printHeader($$NODE{datatype}, $$page, $lastnode);
-			$query->print($$page);
-			return "";
-		}
-	}
-
-	
-
 	if(my $compiledpage = getCompiledPage($NODE, $query->param('displaytype')))
 	{
 		no strict 'refs';
@@ -2080,9 +2066,6 @@ sub displayPage
 	setVars $USER, $VARS unless getId($USER) == $HTMLVARS{guest_user};
 	printHeader($$NODE{datatype}, $page, $lastnode);
 
-	if ($isGuest and $CACHESTORE and $CACHESTORE->canCache($NODE, $query)) { 
-       $CACHESTORE->cachePage($$NODE{node_id}, $page);	
-	}
 	$query->print($page);
 	$page = "";
 }
@@ -2937,7 +2920,6 @@ sub mod_perlInit
 	$USER = loginUser();
 
 	#assign_test_condition();
-	$CACHESTORE = undef;
 
        #only for Everything2.com
        if ($query->param("op") eq "randomnode") {
@@ -2998,7 +2980,6 @@ sub mod_perlpsuedoInit
     return if $query->user_agent =~ /WebStripper/;
 	$USER = loginUser();
 	#init the cache
-	$CACHESTORE = undef;
 
        #only for Everything2.com
        if ($query->param("op") eq "randomnode") {
