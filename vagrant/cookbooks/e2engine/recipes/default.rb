@@ -16,7 +16,6 @@ to_install = [
     'libcache-perl',
     'libcache-memcached-perl',
     'libcaptcha-recaptcha-perl',
-    'libconfig-simple-perl',
     'libdbi-perl',
     'libdate-calc-perl',
     'libdatetime-perl',
@@ -76,15 +75,6 @@ everything_conf_variables = {
     "smtp_user" => node["e2engine"]["smtp_user"],
     "smtp_pass" => node["e2engine"]["smtp_pass"],
     "environment" => node["e2engine"]["environment"] }
-
-template '/etc/everything/everything.conf' do
-  owner "www-data"
-  group "www-data"
-  source "everything.conf.erb"
-  action "create"
-  mode "0755"
-  variables(everything_conf_variables)
-end
 
 file '/etc/everything/everything.conf.json' do
   owner "www-data"
