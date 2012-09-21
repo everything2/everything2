@@ -25,11 +25,9 @@ use Config::Simple;
 sub BEGIN
 {
 	use Exporter ();
-	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS %CONFIG $CONF);
+	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $CONF);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
-              %CONFIG
-	      $CONF
               $DB
               $dbh
               getRef
@@ -87,11 +85,6 @@ sub BEGIN
 	}
 	close $json_handle;
 	$CONF = JSON::from_json($json_data);
-	foreach my $key(keys %$CONF)
-	{
-		$CONFIG{$key} = $CONF->{$key};
-	}
-
 }
 
 use vars qw($DB);
