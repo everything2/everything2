@@ -19,8 +19,6 @@ use DateTime;
 use Everything::NodeBase;
 use JSON;
 use Devel::Caller qw(caller_args);
-use Config::Simple;
-
 
 sub BEGIN
 {
