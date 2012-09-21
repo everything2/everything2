@@ -2892,7 +2892,7 @@ sub createMysqlProcedure
 	return unless defined($procname) and defined($procbody);
 	return unless $procname =~ /\S/ and $procbody =~ /\S/;
 
-	$type = "PROCEDURE" unless(defined $type and $type != "");
+	$type = "PROCEDURE" unless(defined $type and $type ne "");
 	$procbody =~ s/\r\n/\n/smg;
 	if(!$testonly)
 	{
@@ -2935,7 +2935,7 @@ sub dropMysqlProcedure
 	my ($this, $procname, $type) = @_;
 	
 	return unless defined($procname) and $procname =~ /\S/;
-	$type = "PROCEDURE" unless(defined $type and $type != "");	
+	$type = "PROCEDURE" unless(defined $type and $type ne "");
 
 	return $this->{dbh}->do("DROP $type IF EXISTS $procname");
 }
