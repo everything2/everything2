@@ -9,13 +9,13 @@ my @modules = (
 	'Everything::HTML',
 	'Everything::XML',
 	'Everything::NodeBase',
+        'Everything::NodeCache',
+        'Everything::CacheQueue',
+        'Everything::FormMenu',
 	'Everything::Experience',
 	'Everything::Room',
 	'Everything::Search',
 	'Everything::MAIL',
-	'Everything::CacheStore',
-	'CGI::Param',
-	'Everything::E2Custom',
 );
 
 foreach my $modname (@modules) {
