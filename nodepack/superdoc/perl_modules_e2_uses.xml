@@ -2,7 +2,7 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $introMsg = &lt;&lt;ENDINTRO;
-&lt;p&gt;2009 July 11&lt;/p&gt;
+&lt;p&gt;2012 September 20&lt;/p&gt;
 &lt;p&gt;
 As a result of the recent downtime and server shuffling, we've found that there isn't solid documentation of all of the Perl modules that we need for E2 to function properly.  To smooth out this process in the future, we're assembling a list of modules we know are required.  Please add to this if we are missing anything. -[OldMiner|om]
 &lt;/p&gt;
@@ -17,29 +17,33 @@ my @moduleTest = (
    qw/
       Algorithm::Diff
       Archive::Zip
+      Authen::SASL
       Cache::Memcached
       Cache
       Captcha::reCAPTCHA
-      Config::Simple
+      Clone
       CGI
       Date::Calc
       DateTime
       DateTime::Format::Strptime
       DBI
-      Digest::MD5
-      Digest::SHA1
+      DBD::mysql
+      Devel::Caller
       Heap
       HTML::Tiny
       IO::String
       Image::Magick
       JSON
-      Mail::Internet
-      Mail::Sender
+      Email::Sender
+      Net::Amazon::S3
+      Net::SMTP::SSL
       LWP::Simple
       Storable
+      Test::Deep
       Test::Simple
       XML::Simple
       XML::Generator
+      YAML
    /
 );
 my $str = '&lt;dl&gt;';
