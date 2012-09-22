@@ -570,7 +570,6 @@ my %allowed = (
 
 	'MAIL'=&gt;'Everything/MAIL.pm',
 	'Search'=&gt;'Everything/Search.pm',
-	'CacheStore'=&gt;'Everything/CacheStore.pm',
 
 );
 
