@@ -21,7 +21,7 @@
     <key>beer</key>
   </vars>
   <vars>
-    <value>flies the Jolly Roger, and boards</value>
+    <value>uses the Force on</value>
     <key>special</key>
   </vars>
   <vars>
@@ -63,6 +63,10 @@
   <vars>
     <value>hugs</value>
     <key>hug</key>
+  </vars>
+  <vars>
+    <value>hoists the Jolly Roger, and boards</value>
+    <key>pirate</key>
   </vars>
   <vars>
     <value>rubber chickens</value>
