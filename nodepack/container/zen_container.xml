@@ -24,6 +24,7 @@ return htmlcode('epicenterZen') if $$VARS{nodelets} &amp;&amp; $$VARS{nodelets} 
 &lt;div id='wrapper'&gt;
 
   &lt;div id='mainbody'&gt;
+[{guestuserbanner}]
 
 &lt;!-- google_ad_section_start --&gt;
 [{page header}]

@@ -5,7 +5,7 @@
   <code>my ($ad_location) = @_;
 my $node_id = $$NODE{node_id};
 
-my @badnodes = qw(1921577 1369958 2003596 29906 149007 1332646);
+my @badnodes = qw(1921577 1369958 2003596 29906 149007 1332646 1330152);
 
 foreach my $nid (@badnodes) {
    return &quot;&lt;!-- noad:badnode --&gt;&quot; if $node_id == $nid or $$NODE{type}{title} eq 'writeup' &amp;&amp; $$NODE{parent_e2node} == $nid;
