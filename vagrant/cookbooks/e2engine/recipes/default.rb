@@ -75,13 +75,7 @@ everything_conf_variables = {
     "smtp_user" => node["e2engine"]["smtp_user"],
     "smtp_pass" => node["e2engine"]["smtp_pass"],
     "environment" => node["e2engine"]["environment"],
-    "s3" => {
-	"homenodeimages" => {
-            "bucket" => node["e2engine"]["s3_homenodeimages_bucket"],
-            "secret_access_key" => node["e2engine"]["s3_homenodeimages_secret_access_key"],
-            "access_key_id" => node["e2engine"]["s3_homenodeimages_access_key_id"],
-        },
-    },
+    "s3" => node["e2engine"]["s3"].to_hash,
 }
 
 file '/etc/everything/everything.conf.json' do
