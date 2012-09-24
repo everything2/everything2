@@ -15,3 +15,6 @@ default["e2engine"]["smtp_port"] = "465"
 default["e2engine"]["smtp_user"] = ""
 default["e2engine"]["smtp_pass"] = ""
 default["e2engine"]["environment"] = "development"
+default["e2engine"]["s3_homenodeimages_bucket"] = ""
+default["e2engine"]["s3_homenodeimages_secret_access_key"] = default["e2engine"]["aws_e2media_access_key_id"]
+default["e2engine"]["s3_homenodeimages_access_key_id"] = default["e2engine"]["aws_e2media_secret_access_key"]
