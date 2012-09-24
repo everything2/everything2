@@ -7,10 +7,6 @@
 # You are free to use/modify these files under the same terms as the Everything Engine itself
 #
 
-file '/etc/cron.d/e2cron' do
-   action "delete"
-end
-
 cron 'updateNodelet.pl' do
   user "root"
   minute "0-59/5"
