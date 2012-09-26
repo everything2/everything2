@@ -38,7 +38,8 @@ to_install = [
     'libnet-amazon-s3-perl',
     'libemail-sender-perl',
     'libnet-smtp-ssl-perl',
-    'libauthen-sasl-perl'
+    'libauthen-sasl-perl',
+    'libxml-rss-perl',
 ]
 
 to_install.each do |p|
