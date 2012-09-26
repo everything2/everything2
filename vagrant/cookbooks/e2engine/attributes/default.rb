@@ -18,3 +18,6 @@ default["e2engine"]["s3"]["homenodeimages"] = {}
 default["e2engine"]["s3"]["homenodeimages"]["bucket"] = ""
 default["e2engine"]["s3"]["homenodeimages"]["secret_access_key"] = ""
 default["e2engine"]["s3"]["homenodeimages"]["access_key_id"] =  ""
+default["e2engine"]["s3"]["backup"]["bucket"] = ""
+default["e2engine"]["s3"]["backup"]["secret_access_key"] = ""
+default["e2engine"]["s3"]["backup"]["access_key_id"] =  ""
