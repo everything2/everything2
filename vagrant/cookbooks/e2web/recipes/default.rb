@@ -43,6 +43,11 @@ link '/etc/apache2/mods-enabled/rewrite.load' do
   group "root"
 end
 
+file '/etc/logrotate.d/apache2' do
+  action "delete"
+  notifies :reload, "service[apache2]", :delayed
+end
+
 service 'apache2' do
   supports :status => true, :restart => true, :reload => true
 end
