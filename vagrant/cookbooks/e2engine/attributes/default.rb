@@ -13,6 +13,7 @@ default["e2engine"]["smtp_port"] = "465"
 default["e2engine"]["smtp_user"] = ""
 default["e2engine"]["smtp_pass"] = ""
 default["e2engine"]["environment"] = "development"
+default["e2engine"]["notification_email"] = ""
 default["e2engine"]["s3"] = {}
 default["e2engine"]["s3"]["homenodeimages"] = {}
 default["e2engine"]["s3"]["homenodeimages"]["bucket"] = ""
