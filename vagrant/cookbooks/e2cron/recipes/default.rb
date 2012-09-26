@@ -7,7 +7,7 @@
 # You are free to use/modify these files under the same terms as the Everything Engine itself
 #
 
-cron 'database_backup_to_s3.pl'
+cron 'database_backup_to_s3.pl' do
   hour "0"
   minute "2"
   command "/var/everything/tools/database_backup_to_s3.pl"
