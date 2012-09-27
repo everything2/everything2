@@ -75,6 +75,7 @@ everything_conf_variables = {
     "smtp_pass" => node["e2engine"]["smtp_pass"],
     "environment" => node["e2engine"]["environment"],
     "notification_email" => node["e2engine"]["notification_email"],
+    "nodecache_size" => node["e2engine"]["nodecache_size"],
     "s3" => node["e2engine"]["s3"].to_hash,
 }
 
