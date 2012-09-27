@@ -115,7 +115,7 @@ sub new
 
 		$this->{dbh} = $db->{dbh};
 		
-		$db->{cache} = new Everything::NodeCache($this, 600, $memcache);
+		$db->{cache} = new Everything::NodeCache($this, $Everything::CONF->{nodecache_size}, $memcache);
 		$dbases->{$dbname} = $db;
 		
 		$setCacheSize = 1;
@@ -128,25 +128,6 @@ sub new
 	$this->{staticNodetypes} = $staticNodetypes;
 	$this->{sqlLog} = [ ];
 
-	if($setCacheSize && $this->getType("setting"))
-	{
-		#my $CACHE = $this->getNode("cache settings", "setting");
-		my $cacheSize = 600;
-
-		# Get the settings from the system
-		#if(defined $CACHE && (ref $CACHE eq "HASH"))
-		#{
-		#	my $vars;
-
-		#	$Everything::DB = $this; 
-		#		#we have to set this, or it crashes when it calls a getRef
-									
-		#	$vars = Everything::getVars($CACHE);
-		#	$cacheSize = $$vars{maxSize} if(exists $$vars{maxSize});
-		#}
-
-		$this->{cache}->setCacheSize($cacheSize);
-	}
 	$this->{cache}->clearSessionCache;
 
 	return $this;
