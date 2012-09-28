@@ -196,7 +196,7 @@ sub deconstructNode
 	my ($this, $node) = @_;
 
 	my $data = {};
-	my %expungefields = ( 'type' => 1, '_ORIGINAL_VALUES' => '1');
+	my %expungefields = ( 'type' => 1 );
 
 	foreach (keys %$node) {
 		$$data{$_} = $$node{$_} unless (exists $expungefields{$_} or ref($$node{$_}) eq 'CODE');
@@ -228,7 +228,6 @@ sub reconstructNode
 	} else {
 		$$data{type} = $this->{DB}->getType($$data{type_nodetype});
 	}
-	$this->{DB}->copyOriginalValues($data);
 	return $data; 
 }
 

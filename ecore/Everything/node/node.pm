@@ -76,7 +76,7 @@ sub xml_no_store
 {
 	my ($this) = @_;
 
-	return ["_ORIGINAL_VALUES", "core","hits","type","author_user","totalvotes","createtime",@{$this->node_id_equivs()}];
+	return ["core","hits","type","author_user","totalvotes","createtime",@{$this->node_id_equivs()}];
 }
 
 sub node_id_equivs

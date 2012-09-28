@@ -46,10 +46,6 @@ sub BEGIN
 		quote
 		genWhereString
 
-		copyOriginalValues
-		removeOriginalValues
-		isOriginalValue
-
 		closeTransaction
 		);
 }
@@ -464,21 +460,22 @@ sub getNode
 	}
 	
 	if(defined $TYPE)
-    {	
+	{	
 		$TYPE = $this->getType($TYPE) unless(ref $TYPE eq "HASH");
 	}
 
-	$NODE = $this->{cache}->getCachedNodeByName($title, $$TYPE{title});
-	return $NODE if (defined $NODE);
-	
-    #jb says: This was leaving a pile of warnings hanging around.
-    #Added this line to suppress them.
-    $selectop ||= "";
-    if ($selectop eq 'light') {
+	$selectop ||= '';
+
+	if($selectop ne 'nocache')
+	{
+		$NODE = $this->{cache}->getCachedNodeByName($title, $$TYPE{title});
+		return $NODE if (defined $NODE);
+	}
+
+	if ($selectop eq 'light') {
 		$NODE = $this->sqlSelectHashref('*', 'node', "title=".$this->{dbh}->quote($title). " and type_nodetype=$$TYPE{node_id}");
 		return $NODE;
 	}
-
 	
 	
 	# If it looks like there's a double encoded character, try looking up both this title and the title
@@ -489,11 +486,10 @@ sub getNode
 		($NODE) = $this->getNodeWhere({ "title" => [ $title, CGI::unescape($title) ] }, $TYPE);
 	}
 
-	if(defined $NODE)
+	if(defined $NODE and $selectop ne 'nocache')
 	{
 		my $perm = 0;
 		$perm = 1 if exists $$PERM{$$NODE{type}{title}};
-		$this->copyOriginalValues($NODE);
 		$this->{cache}->cacheNode($NODE, $perm);
 		$this->{cache}->memcacheNode($NODE);
 	}
@@ -538,10 +534,13 @@ sub getNodeById
 	$N = int($N);
 	return undef unless $N;
 	
-	# See if we have this node cached already
-	$cachedNode = $this->{cache}->getCachedNodeById($N);
-	return $cachedNode unless ($selectop eq 'force' or not $cachedNode);
-	
+	if($selectop ne 'nocache')
+	{
+		# See if we have this node cached already
+		$cachedNode = $this->{cache}->getCachedNodeById($N);
+		return $cachedNode unless ($selectop eq 'force' or not $cachedNode);
+	}
+
 	$NODE = $this->sqlSelectHashref('*', 'node', "node_id=$N");
 	return undef if(not defined $NODE);
 	
@@ -572,12 +571,14 @@ sub getNodeById
 
 	# Store this node in the cache.
 
-	my $perm = 0;
-	$perm = 1 if exists $$PERM{$$NODE{type}{title}};
+	if($selectop ne 'nocache')
+	{
+		my $perm = 0;
+		$perm = 1 if exists $$PERM{$$NODE{type}{title}};
 	
-	$this->copyOriginalValues($NODE);
-	$this->{cache}->cacheNode($NODE, $perm);
-	$this->{cache}->memcacheNode($NODE);
+		$this->{cache}->cacheNode($NODE, $perm);
+		$this->{cache}->memcacheNode($NODE);
+	}
 
 	return $NODE;
 }
@@ -854,66 +855,6 @@ sub constructNode
 
 #############################################################################
 #	Sub
-#		copyOriginalValues
-#
-#	Purpose
-#		Takes a node hashref and adds a member which is a deep copy
-#		of all values in the node.  We use this just after reading a fresh
-#		copy of the node so we can see what has changed in updateNode
-#
-#	Parameters
-#		$NODE - the node to add a member to, will be altered upon return
-#
-sub copyOriginalValues
-{
-	my ($this, $NODE) = @_;
-	$this->removeOriginalValues($NODE);
-	$$NODE{_ORIGINAL_VALUES} = clone($NODE);
-}
-
-#############################################################################
-#	Sub
-#		removeOriginalValues
-#
-#	Purpose
-#		Takes a node hashref and removes a member which is a deep copy
-#		of all values in the node when it was original read.
-#
-#	Parameters
-#		$NODE - the node to add a member to, will be altered upon return
-#
-sub removeOriginalValues
-{
-	my ($this, $NODE) = @_;
-	delete $$NODE{_ORIGINAL_VALUES} if defined $$NODE{_ORIGINAL_VALUES};
-}
-
-#############################################################################
-#	Sub
-#		isOriginalValue
-#
-#	Purpose
-#		Takes a node hashref which hopefully has its original values stored.
-#		If so, it checks if the given key has the same value in the original
-#		node as it does now.
-#
-#	Returns
-#		1 if the original value
-#		0 if not the original value or no original value stored
-#
-#	Parameters
-#		$NODE - the node to add a member to, will be altered upon return
-#
-sub isOriginalValue
-{
-	my ($this, $NODE, $keyName) = @_;
-	return eq_deeply($$NODE{_ORIGINAL_VALUES}->{$keyName}, $$NODE{$keyName})
-		if ref $$NODE{_ORIGINAL_VALUES} eq 'HASH';
-	return 0;
-}
-
-#############################################################################
-#	Sub
 #		updateLockedNode
 #
 #	Purpose
@@ -1068,6 +1009,10 @@ sub updateNode
 	$this->getRef($NODE);
 	return 0 unless ($this->canUpdateNode($USER, $NODE)); 
 
+	# We extract the values from the node for each table that it joins
+	# on and update each table individually.
+	my $ORIGINAL_NODE = $this->getNodeById($NODE->{node_id},'nocache');
+
 	$tableArray = $$NODE{type}{tableArray};
 
 	# The node table is assumed, so its not in the "joined" table array.
@@ -1077,8 +1022,7 @@ sub updateNode
 	my $fieldHash = $this->getFieldsHash($tableArray);
 	my %tableList = (); # So we only update tables as required
 
-	# We extract the values from the node for each table that it joins
-	# on and update each table individually.
+
 	foreach my $table (keys %$fieldHash)
 	{
 		next if $light and $table eq 'document';
@@ -1091,7 +1035,10 @@ sub updateNode
 			# we don't want to chance mucking with the primary key
 			next if $field eq $table . '_id';
 			# don't write a value if we haven't changed it since we read the node
-			next if $this->isOriginalValue($NODE, $field);
+			if(ref $ORIGINAL_NODE eq "HASH" and eq_deeply($ORIGINAL_NODE->{$field}, $NODE->{$field}))
+			{
+				next;
+			}
 
 			# don't allow prohibited duplicate titles, but do allow case changes
 			if ($field eq 'title' && $$NODE{type}{restrictdupes}
@@ -1099,7 +1046,7 @@ sub updateNode
 					'title='.$this->quote($$NODE{$field})
 					." AND type_nodetype=$$NODE{type_nodetype} AND node_id!=$$NODE{node_id}"))
 			{
-				$$NODE{title} = $NODE->{_ORIGINAL_VALUES}->{title};
+				$NODE->{title} = $ORIGINAL_NODE->{title};
 				next;
 			}
 
@@ -1149,12 +1096,12 @@ SQLEND
 
 		# Cache this node since it has been updated.  This way the cached
 		# version will be the same as the node in the db.
-		$this->copyOriginalValues($NODE);
 		$this->{cache}->incrementGlobalVersion($NODE);
 		$this->{cache}->cacheNode($NODE) if(defined $this->{cache});
 		$this->{cache}->memcacheNode($NODE);
 
 	}
+	$ORIGINAL_NODE = undef;
 
 	# This node has just been updated.  Do any maintenance if needed.
 	$this->nodeMaintenance($NODE, 'update');
@@ -1211,7 +1158,6 @@ sub getCompiledCode {
 #
 sub clearCompiledCode {
 	my ($this, $NODE) = @_;
-	delete $$NODE{compiledCode} if !$this->isOriginalValue($NODE, 'code');
 	delete $$NODE{compiledCode};
 }
 
