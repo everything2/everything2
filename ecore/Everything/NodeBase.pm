@@ -27,9 +27,6 @@ sub BEGIN
 		getAllTypes
 		getNodetypeTables
 
-		getSqlLog
-		clearSqlLog
-
 		sqlDelete
 		sqlInsert
 		sqlUpdate
@@ -126,7 +123,6 @@ sub new
 	$this->{cache} = $dbases->{$dbname}->{cache};
 	$this->{dbname} = $dbname;
 	$this->{staticNodetypes} = $staticNodetypes;
-	$this->{sqlLog} = [ ];
 
 	$this->{cache}->clearSessionCache;
 
@@ -189,72 +185,9 @@ sub executeQuery
 {
 	my ($this, $query) = @_;
 
-	$this->writeSqlLog($query);
 	my $result = $this->{dbh}->do($query);
 	return $result;
 }
-
-#############################################################################
-#	Sub
-#		writeSqlLog
-#
-#	Purpose
-#		Adds the given string to the log of SQL queries executed for this
-#		handle.
-#
-#	Returns
-#		Nothing
-#
-sub writeSqlLog
-{
-	my ($this, $query) = @_;
-
-	push @{$this->{sqlLog}}, $query;
-	return undef;
-}
-
-#############################################################################
-#	Sub
-#		getSqlLog
-#
-#	Purpose
-#		Returns a list of the SQL queries run for this database handle
-#		since its log was last cleared.
-#
-#	Returns
-#		List of strings of the SQL queries attempted (including failed queries)
-#
-sub getSqlLog
-{
-	my ($this, $logLevel) = @_;
-
-	my @logCopy = @{$this->{sqlLog}};
-	if ($logLevel ne 'verbose') {
-		@logCopy = grep {!/^SELECT \* FROM node/} @logCopy;
-		@logCopy = grep {!/^SELECT version FROM version WHERE version_id=/} @logCopy;
-		@logCopy = grep {!/^SELECT node_id FROM nodegroup WHERE nodegroup_id=/} @logCopy;
-	}
-	return @logCopy;
-}
-
-#############################################################################
-#	Sub
-#		clearSqlLog
-#
-#	Purpose
-#		Clears the SQL log for this database handle
-#
-#	Returns
-#		Nothing
-#
-sub clearSqlLog
-{
-	my ($this) = @_;
-
-	$this->{sqlLog} = [];
-	return undef;
-}
-
 
 #############################################################################
 #	Sub
@@ -346,7 +279,6 @@ sub sqlSelectMany
 	$sql .= "$other" if $other;
 	$sql .= " FOR UPDATE" if $this->{dbh}->{AutoCommit} == 0;
 
-	$this->writeSqlLog($sql);
 	my $cursor = $this->{dbh}->prepare($sql);
 	my $result = $cursor->execute();
 	
@@ -870,7 +802,6 @@ sub getNodeCursor
 		"About to do select:\n\t$select"
 	) if 0;
 
-	$this->writeSqlLog($select);
 	$cursor = $this->{dbh}->prepare($select);
 	my $result = $cursor->execute();
 #	$Everything::SQLTIME->stop();
@@ -1627,7 +1558,6 @@ sub getAllTypes
 	my $TYPE = $this->getType("nodetype");
 	
 	$sql = "SELECT node_id FROM node WHERE type_nodetype = " . $$TYPE{node_id};
-	$this->writeSqlLog($sql);
 	$cursor = $this->{dbh}->prepare($sql);
 	if($cursor && $cursor->execute())
 	{
@@ -1703,7 +1633,6 @@ SELECT table_name, ordinal_position, column_name
 		AND table_schema = ?
 SQLEND
 
-			$this->writeSqlLog($sqlQuery);
 			return $this->{dbh}->selectall_hashref(
 			  $sqlQuery
 			  , [ 'table_name', 'ordinal_position' ]

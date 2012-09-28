@@ -943,20 +943,12 @@ sub htmlErrorGods
 		}
 	}
 
-	my $sqlLog = '<pre>'
-		. encodeHTML(join("\n\n",$DB->getSqlLog('normal')))
-		. '</pre>'
-		;
-
 	my $str = "<dl>\n"
 		. "<dt>Error:</dt><dd>"
 		. encodeHTML($err)
 		. "</dd>\n"
 		. "<dt>Warning:</dt><dd>"
 		. encodeHTML($warn)
-		. "</dd>\n"
-		. "<dt>SQL Queries Run:</dt><dd>"
-		. $sqlLog
 		. "</dd>\n"
 		;
 
@@ -2903,9 +2895,6 @@ sub mod_perlInit
 		$query->print($SITE_UNAVAILABLE);
 		return;
 	}
-
-	# Refresh SQL log on each pageload so error messages are as relevant as possible
-	$DB->clearSqlLog();
 
 	# Get the HTML variables for the system.  These include what
 	# pages to show when a node is not found (404-ish), when the
