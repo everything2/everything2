@@ -56,22 +56,8 @@ NameVirtualHost *:80
 		allow from all
 		Include /var/everything/ecore/mod_rewrite.conf
 		AddOutputFilterByType DEFLATE text/javascript text/html text/xml text/css application/x-javascript
-
-	        # TOR BJORNRUD'S TRACKING MODULE CONFIG
-	        #CookieDomain .everything2.com
-	        #CookieExpires "2 years"
-	        #CookieName "e2_usertrack"
-	        #this is super important as usertrack is not turned on by default, even if the module is loaded.
-	        #CookieTracking on
-
 	</Directory>
 
-	<Location /perly-status>
-		SetHandler perl-script
-		PerlResponseHandler Apache2::Status
-		PerlSetVar StatusOptionsAll On
-		PerlSetVar StatusDeparseOptions "-p -sC"
-	</Location>
 	ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
 	<Directory "/usr/lib/cgi-bin">
 		AllowOverride None
@@ -80,10 +66,6 @@ NameVirtualHost *:80
 		Allow from all
 	</Directory>
 
-	# LOG FOR TOR BJORNRUD'S TRACKING MODULE
-	#CustomLog /var/log/apache2/clickstream "%{cookie}n %r %t|%{userpass}C" env=!dontlog
-
-	
 	#this was the old customlog before enabling joining login info with usertrack module
 	#CustomLog /var/log/apache2/clickstream "%{cookie}n %r %t" env=!dontlog
 	# NORMAL LOGS
