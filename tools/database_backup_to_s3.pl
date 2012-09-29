@@ -33,10 +33,19 @@ if($uploader->upload_file($filename, "$tmpdir/$filename"))
 	if($Everything::CONF->{notification_email} ne "")
 	{
 		my $email = getNode("backup ready mail", "mail");
-		$email->{doctext} =~ s/\<filename\>/$filename/g;
-		$email->{title} = "Backup ready on S3: $filename";
-		node2mail($Everything::CONF->{notification_email},$email,1);
+		if($email)
+		{
+			$email->{doctext} =~ s/\<filename\>/$filename/g;
+			$email->{title} = "Backup ready on S3: $filename";
+			node2mail($Everything::CONF->{notification_email},$email,1);
+		}else{
+			print "Could not find node 'backup ready mail' of type 'mail'\n";
+		}
+	}else{
+		print "Could not send email, notification_email not set!\n";
 	}
+}else{
+	print "File upload failed\n";
 }
 
 `rm -rf $tmpdir`;
