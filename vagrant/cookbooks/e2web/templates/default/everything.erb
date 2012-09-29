@@ -36,8 +36,8 @@ NameVirtualHost *:80
 	# Make sure that processes in production never stray above 300M
         <Perl>
         use Apache2::SizeLimit;
-        $Apache2::SizeLimit::MAX_PROCESS_SIZE  = 300000;
-        $Apache2::SizeLimit::CHECK_EVERY_N_REQUESTS = 5;
+        $Apache2::SizeLimit::MAX_PROCESS_SIZE  = 350000;
+        $Apache2::SizeLimit::CHECK_EVERY_N_REQUESTS = 20;
         </Perl>
 
         PerlCleanupHandler Apache2::SizeLimit
