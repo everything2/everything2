@@ -13,7 +13,6 @@ use strict;
 use DBI;
 use Everything;
 use Everything::NodeCache;
-use Clone qw(clone);
 use Test::Deep::NoTest;
 
 sub BEGIN
