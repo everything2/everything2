@@ -72,6 +72,8 @@ sub BEGIN
               getCallStack
               printErr
               printLog
+
+              commonLogLine
             );
 
 	my $json_config = "/etc/everything/everything.conf.json";
@@ -881,6 +883,15 @@ sub getTables
 	my @tmpArray = @{ $$NODE{type}{tableArray}};  # Make a copy
 
 	return @tmpArray;
+}
+
+sub commonLogLine
+{
+	my ($line) = @_;
+	chomp $line;
+	my $cmd = $0;
+	$cmd =~ s/.*\/(.*)/$1/g;
+	return "[".localtime()."][$$][$cmd] $line\n";
 }
 
 
