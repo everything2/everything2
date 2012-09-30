@@ -43,6 +43,22 @@ link '/etc/apache2/mods-enabled/rewrite.load' do
   group "root"
 end
 
+link '/etc/apache2/mods-enabled/proxy.load' do
+  action "create"
+  to "../mods-available/proxy.load"
+  link_type :symbolic
+  owner "root"
+  group "root"
+end
+
+link '/etc/apache2/mods-enabled/proxy_http.load' do
+  action "create"
+  to "../mods-available/proxy_http.load"
+  link_type :symbolic
+  owner "root"
+  group "root"
+end
+
 file '/etc/logrotate.d/apache2' do
   action "delete"
   notifies :reload, "service[apache2]", :delayed
