@@ -17,7 +17,6 @@ return &quot;y&quot; if exists($$types{$$WRITEUP{wrtype_writeuptype}});
 return &quot;n&quot;;</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
   <nodetest_description>This will catch writeups that aren't (person), (place), (thing), (idea), or (definition)</nodetest_description>
-  <title>nodetest: Writeups with non-standard types</title>
   <nlcode>my ($WRITEUP) = @_;
 
 my $types;
@@ -31,4 +30,5 @@ foreach(@correct)
  
 return &quot;y&quot; if exists($$types{$$WRITEUP{wrtype_writeuptype}});
 return &quot;n&quot;;</nlcode>
+  <title>nodetest: Writeups with non-standard types</title>
 </node>

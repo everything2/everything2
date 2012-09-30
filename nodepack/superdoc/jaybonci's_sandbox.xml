@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>[{guestuserbanner}]</doctext>
+  <doctext>[% return &quot;Hello there. This is a quick testing/debugging ground for me. Do not delete me, it is not worth the time&quot;; %]</doctext>
   <node_id>1146920</node_id>
   <title>jaybonci's sandbox</title>
 </node>

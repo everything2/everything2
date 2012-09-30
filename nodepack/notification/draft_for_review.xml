@@ -1,6 +1,12 @@
 <node>
+  <type_nodetype>1930710</type_nodetype>
+  <description>a user asks for review of a draft</description>
   <hourLimit>168</hourLimit>
+  <invalid_check>my $draft = getNodeById($$args{draft_id});
+my $status = getNodeById($$draft{publication_status});
+return ($$status{title} ne 'review');</invalid_check>
   <node_id>2045486</node_id>
+  <title>draft for review</title>
   <code>my $draft_id = $$args{draft_id} || 0;
 my $nodenote_id = $$args{nodenote_id} || 0;
 my $draft = getNodeById($draft_id);
@@ -54,10 +60,4 @@ return '&lt;cite&gt;'.linkNode($$draft{author_user})
 	.'&lt;/b&gt;'
 	.$numReviewText;
 </code>
-  <type_nodetype>1930710</type_nodetype>
-  <description>a user asks for review of a draft</description>
-  <invalid_check>my $draft = getNodeById($$args{draft_id});
-my $status = getNodeById($$draft{publication_status});
-return ($$status{title} ne 'review');</invalid_check>
-  <title>draft for review</title>
 </node>

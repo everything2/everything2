@@ -12,7 +12,6 @@ if(not exists($$NODE{title}) or $$NODE{title} eq &quot;&quot; or &quot;$$NODE{ti
   return &quot;y&quot;;</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
   <nodetest_description>Makes sure there aren't null node titles that trip us up. Applies to all nodes</nodetest_description>
-  <title>nodetest: null node titles</title>
   <nlcode>my ($NODE) = @_;
 
 if(not exists($$NODE{title}) or $$NODE{title} eq &quot;&quot; or &quot;$$NODE{title}&quot; eq &quot;0&quot; or &quot;$$NODE{title}&quot; eq &quot; &quot;)
@@ -22,4 +21,5 @@ if(not exists($$NODE{title}) or $$NODE{title} eq &quot;&quot; or &quot;$$NODE{ti
   return &quot;f&quot;;
 }
   return &quot;y&quot;;</nlcode>
+  <title>nodetest: null node titles</title>
 </node>

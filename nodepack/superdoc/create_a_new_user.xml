@@ -21,16 +21,12 @@ my $reCAPTCHAPublicKey = '';
 my $reCAPTCHAPrivateKey = '';
 my $server = $ENV{HTTP_HOST};
 
-if($server =~ m/everything2\.com$/){
-	$reCAPTCHAPublicKey = '6LfsXAIAAAAAABqYVncS2qc2o7P8rHoxOH_3QH2t';
-	$reCAPTCHAPrivateKey = '6LfsXAIAAAAAAM4PtmzdbhTmpiieSNJ2YUBnjPRd';
-}elsif($server =~ m/everything2\.net$/){
-	$reCAPTCHAPublicKey = '6LfuXAIAAAAAAIeVU24N_zB8Ez0kK9rzNeOKx8HX';
-	$reCAPTCHAPrivateKey = '6LfuXAIAAAAAAAA9bE5SO5c60BH69t6lT4B4ShY2';
-}elsif($server =~ m/everything2\.org$/){
-	$reCAPTCHAPublicKey = '6LfvXAIAAAAAAI2xn_O42yiTXbB_e-9gA6AfXVi8';
-	$reCAPTCHAPrivateKey = '6LfvXAIAAAAAAAOPw0yZVfmK4Nviw-KTiLfMdq_g';
+if(exists $Everything::CONF-&gt;{recaptcha})
+{
+  $reCAPTCHAPublicKey = $Everything::CONF-&gt;{recaptcha}-&gt;{publickey};
+  $reCAPTCHAPrivateKey = $Everything::CONF-&gt;{recaptcha}-&gt;{privatekey};
 }
+
 my $reCAPTCHA = $captcha-&gt;get_html( $reCAPTCHAPublicKey );
 
 
@@ -378,8 +374,7 @@ __HERE__
 
 	return $str;
 
-%]
-</doctext>
+%]</doctext>
   <node_id>101</node_id>
   <title>Create a New User</title>
 </node>

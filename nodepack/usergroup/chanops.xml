@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>16</type_nodetype>
   <doctext>&lt;!-- Special group. Not to be edited or deleted except by me, The Debutante, or TheDeadGuy. // alex 20081228 --&gt;
 &lt;p&gt;Chatterbox &quot;channel operators&quot;&lt;/p&gt;
 &lt;p&gt;This group lists users who have been granted certain powers related to the chatterbox. These users have a role similar to that of channel operators on IRC and assist the administration by responding to chatterbox incidents and issues that used to require the intervention of a senior staff member. Members of this group are not E2 staff in the traditional sense but have the confidence and backing of the administration. Complaints should be taken up with the chanop concerned and brought to the management's attention only if the matter cannot be resolved in that way.&lt;/p&gt;
 
 &lt;p&gt;Chanops is part of e2's user relations department. You can read more about what they do [Everything2 User Relations: e2contact and chanops|here].&lt;/p&gt;</doctext>
+  <type_nodetype>16</type_nodetype>
   <node_id>1969185</node_id>
   <title>chanops</title>
 </node>

@@ -9,10 +9,10 @@ return 'n' if(length($$WRITEUP{doctext}) &lt;= 20);
 return 'y';</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
   <nodetest_description>Under 20 character sweep. Many of these writeups can stay or are acting as placeholders.</nodetest_description>
-  <title>nodetest: Writeups under 20 characters</title>
   <nlcode>my ($WRITEUP) = @_;
 
 $$WRITEUP{doctext} ||= &quot;&quot;;
 return 'n' if(length($$WRITEUP{doctext}) &lt;= 20);
 return 'y';</nlcode>
+  <title>nodetest: Writeups under 20 characters</title>
 </node>

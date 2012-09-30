@@ -1,5 +1,4 @@
 <node>
-  <node_id>314235</node_id>
   <type_nodetype>175990</type_nodetype>
   <vars>
     <value>#99cccc</value>
@@ -29,6 +28,7 @@
     <value>#ccccff</value>
     <key>nodeletGradTop</key>
   </vars>
+  <node_id>314235</node_id>
   <parent_theme>415072</parent_theme>
   <title>classic theme water settings</title>
 </node>

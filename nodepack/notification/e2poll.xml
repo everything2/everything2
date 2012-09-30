@@ -1,9 +1,9 @@
 <node>
-  <hourLimit>720</hourLimit>
-  <node_id>1930854</node_id>
-  <code>return &quot;There's a new [Everything Poll Directory|E2 Poll] available to vote on...&quot;</code>
   <type_nodetype>1930710</type_nodetype>
   <description>a new [e2poll] is posted.</description>
+  <hourLimit>720</hourLimit>
   <invalid_check></invalid_check>
+  <node_id>1930854</node_id>
   <title>e2poll</title>
+  <code>return &quot;There's a new [Everything Poll Directory|E2 Poll] available to vote on...&quot;</code>
 </node>

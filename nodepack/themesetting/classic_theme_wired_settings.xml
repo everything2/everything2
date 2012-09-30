@@ -1,5 +1,4 @@
 <node>
-  <node_id>320307</node_id>
   <type_nodetype>175990</type_nodetype>
   <vars>
     <value>#ff0000</value>
@@ -21,6 +20,7 @@
     <value>#ffff00</value>
     <key>nodeletGradTop</key>
   </vars>
+  <node_id>320307</node_id>
   <parent_theme>415072</parent_theme>
   <title>classic theme wired settings</title>
 </node>

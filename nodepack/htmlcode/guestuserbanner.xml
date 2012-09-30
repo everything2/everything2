@@ -12,7 +12,7 @@ if($NODE-&gt;{type}-&gt;{title} eq &quot;e2node&quot; or $query-&gt;param('nodes
 {
   if(not defined $NODE-&gt;{group} or scalar(@{$NODE-&gt;{group}}) == 0)
   {
-    $nodeshell = &quot;&lt;br /&gt;&lt;br /&gt;&lt;em&gt;&lt;strong&gt;$$NODE{title}&lt;/strong&gt;&lt;/em&gt; is a topic without any content; merely an idea or a thought that someone found interesting. If you have an account, you add something here.&quot;;
+    $nodeshell = &quot;&lt;br /&gt;&lt;br /&gt;&lt;em&gt;&lt;strong&gt;$$NODE{title}&lt;/strong&gt;&lt;/em&gt; is a topic without any content; merely an idea or a thought that someone found interesting. If you sign up for an account, you can add something here.&quot;;
   }
 }
 

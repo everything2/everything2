@@ -1,6 +1,10 @@
 <node>
+  <type_nodetype>1930710</type_nodetype>
+  <description>you gain or lose [GP].</description>
   <hourLimit>108</hourLimit>
+  <invalid_check></invalid_check>
   <node_id>1959540</node_id>
+  <title>gp</title>
   <code>my $str;
 if ($$args{amount} &gt; 0) {
 $str .= &quot;You gained &quot;;
@@ -17,8 +21,4 @@ else {
 $str .= &quot;&lt;strong&gt;&quot;.$$args{amount}.&quot;&lt;/strong&gt; GP.&quot;;
 }
 return $str;</code>
-  <type_nodetype>1930710</type_nodetype>
-  <description>you gain or lose [GP].</description>
-  <invalid_check></invalid_check>
-  <title>gp</title>
 </node>

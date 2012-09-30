@@ -11,8 +11,8 @@ my ($field) = @_;
 
 return if isSuspended($NODE,&quot;homenodepic&quot;);
 
-my $aws_access_key_id = $Everything::CONF-&gt;{aws_e2media_access_key_id};
-my $aws_secret_access_key = $Everything::CONF-&gt;{aws_e2media_secret_access_key};
+my $aws_access_key_id = $Everything::CONF-&gt;{s3}-&gt;{homenodeimages}-&gt;{access_key_id};
+my $aws_secret_access_key = $Everything::CONF-&gt;{s3}-&gt;{homenodeimages}-&gt;{secret_access_key};
 
 my $s3 = Net::Amazon::S3-&gt;new(
       {   aws_access_key_id     =&gt; $aws_access_key_id,
@@ -20,7 +20,7 @@ my $s3 = Net::Amazon::S3-&gt;new(
           retry                 =&gt; 1,
       }
 );
-my $bucket = $s3-&gt;bucket(&quot;everything2hnimage&quot;);
+my $bucket = $s3-&gt;bucket($Everything::CONF-&gt;{s3}-&gt;{homenodeimages}-&gt;{bucket});
 
 my $str ='';
 my $image = Image::Magick -&gt; new(); 

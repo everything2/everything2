@@ -1,5 +1,9 @@
 <node>
+  <type_nodetype>1930710</type_nodetype>
+  <description>an [Content Editors|editor] edits one of your writeups.</description>
+  <invalid_check></invalid_check>
   <node_id>1981770</node_id>
+  <title>writeupedit</title>
   <code>my $ed_id = $$args{ed_id};
 my $wu_id = $$args{wu_id};
 my $explanation = $$args{explanation};
@@ -18,8 +22,4 @@ else{
 }
 
 return $out;</code>
-  <type_nodetype>1930710</type_nodetype>
-  <description>an [Content Editors|editor] edits one of your writeups.</description>
-  <invalid_check></invalid_check>
-  <title>writeupedit</title>
 </node>

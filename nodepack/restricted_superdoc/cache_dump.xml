@@ -12,13 +12,24 @@ my $item;
 
 $str .= &quot;&lt;ul&gt;\n&quot;;
 
+my $typestats;
+
 foreach $item (@$cache)
 {
+  $typestats-&gt;{$item-&gt;{type}-&gt;{title}} ||= 0;
+  $typestats-&gt;{$item-&gt;{type}-&gt;{title}}++;
+
   $str .= &quot;&lt;li&gt; $$item{title} (&quot; . $$item{type}{title} .
     &quot;)\n&quot;;
 }
 
-$str .= &quot;&lt;/ul&gt;\n&quot;;
+$str .= &quot;&lt;/ul&gt;&lt;br /&gt;&lt;br /&gt;Counts: &lt;ul&gt;&quot;;
+
+foreach my $key(keys %$typestats)
+{
+  $str .= &quot;&lt;li&gt;$key: &quot;.$typestats-&gt;{$key}
+}
+$str .= &quot;&lt;/ul&gt;&quot;;
 
 $str;
 %]</doctext>

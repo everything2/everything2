@@ -11,7 +11,6 @@ return &quot;y&quot; if $links &gt; 0;
 return &quot;n&quot;;</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
   <nodetest_description>Nodes that have no softlinks. They probably aren't well integrated. (Excludes nodeshells);</nodetest_description>
-  <title>nodetest: Nodes without softlinks</title>
   <nlcode>my ($E2NODE) = @_;
 return &quot;y&quot; unless exists($$E2NODE{group});
 return &quot;y&quot; if $$E2NODE{group} == 0;
@@ -19,4 +18,5 @@ return &quot;y&quot; if $$E2NODE{group} == 0;
 my $links = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;links&quot;,&quot;from_node=$$E2NODE{node_id}&quot;);
 return &quot;y&quot; if $links &gt; 0; 
 return &quot;n&quot;;</nlcode>
+  <title>nodetest: Nodes without softlinks</title>
 </node>

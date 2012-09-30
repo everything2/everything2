@@ -1,5 +1,4 @@
 <node>
-  <node_id>465140</node_id>
   <type_nodetype>175990</type_nodetype>
   <vars>
     <value>#ddddbb</value>
@@ -17,6 +16,7 @@
     <value>#b5b587</value>
     <key>writeupTitleColor</key>
   </vars>
+  <node_id>465140</node_id>
   <parent_theme>415073</parent_theme>
   <title>e2 jukka theme dim settings</title>
 </node>

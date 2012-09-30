@@ -1,0 +1,6 @@
+<node>
+  <type_nodetype>4</type_nodetype>
+  <node_id>2070302</node_id>
+  <title>metadescriptiontag</title>
+  <code>return '&lt;meta name=&quot;description&quot; content=&quot;Everything2 is a community for fiction, nonfiction, poetry, reviews, and more. Get writing help or enjoy nearly a half million pieces of original writing.&quot; /&gt;';</code>
+</node>

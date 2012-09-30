@@ -113,8 +113,8 @@ return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/
 
   my @gods = map {getNodeById($_)} @{getNode(&quot;gods&quot;, &quot;usergroup&quot;)-&gt;{group}};
   my @e2godsgrp = @{getNode(&quot;e2gods&quot;,&quot;usergroup&quot;)-&gt;{group}};
-  my @edcgrp = (&quot;dem bones&quot;, &quot;clampe&quot;, &quot;hemos&quot;, &quot;Kurt&quot;, &quot;nate&quot;, &quot;thefez&quot;);
-  my @closegrp = (&quot;dbrown&quot;, &quot;hemos&quot;, &quot;Kurt&quot;, &quot;robnotrob&quot;, &quot;robo&quot;);
+  my @edcgrp = (&quot;jaybonci&quot;);
+  my @closegrp = (&quot;dbrown&quot;, &quot;hemos&quot;, &quot;Kurt&quot;, &quot;robnotrob&quot;, &quot;robo&quot;, &quot;dem bones&quot;, &quot;clampe&quot;, &quot;hemos&quot;, &quot;Kurt&quot;, &quot;nate&quot;, &quot;thefez&quot;);
 
   my %e2gods = map { $_ =&gt; 1} @e2godsgrp;
   my %edc = map{ $_ =&gt; 1 } @edcgrp;
@@ -153,9 +153,9 @@ return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/
   return $str;
 %]
 
-&lt;p&gt;&lt;strong&gt;*&lt;/strong&gt;These users are only in [gods] because they are closely related to the [the everything development company|Everydevel] company -- they are rarely active on the E2 system and mainly are on the list only so that they have access to [source code] and certain documents.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;*&lt;/strong&gt;These users are only administrators because they were intimately involved in the creation of Everything2 -- they are rarely active on the E2 system and mainly are on the list only so that they have access to [source code] and certain documents.&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;#&lt;/strong&gt;These users are employees / owners of [the Everything Development Company].&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;#&lt;/strong&gt;These users are employees/owners of [Everything2 Media LLC].&lt;/p&gt;
 
 &lt;hr /&gt;
 &lt;h1&gt;Who does what?&lt;/h1&gt;
@@ -244,8 +244,7 @@ return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/
 
 &lt;/ul&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;b&gt;That's it.&lt;/b&gt; If you've any questions about this or anything else (regarding E2) please [message] [alex] or e-mail him at &lt;strong&gt;alex /remove this junk and add an at sign/ staff.everything2.com&lt;/a&gt;&lt;/strong&gt;.&lt;/p&gt;
-</doctext>
+&lt;p&gt;&lt;b&gt;That's it.&lt;/b&gt; If you've any questions about this or anything else (regarding E2) please [message] [alex] or e-mail him at &lt;strong&gt;alex /remove this junk and add an at sign/ staff.everything2.com&lt;/a&gt;&lt;/strong&gt;.&lt;/p&gt;</doctext>
   <node_id>743129</node_id>
   <title>E2 staff</title>
 </node>

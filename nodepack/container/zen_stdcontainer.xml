@@ -5,6 +5,7 @@
   <context>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot; &quot;http://www.w3.org/TR/html4/loose.dtd&quot;&gt;
 &lt;html&gt;
 &lt;head&gt;
+
 	&lt;title&gt;[% $$NODE{title}; %]@Everything2.com&lt;/title&gt;
 	&lt;link rel=&quot;stylesheet&quot; id=&quot;basesheet&quot; type=&quot;text/css&quot; href=&quot;[{linkStylesheet:basesheet}]&quot; media=&quot;all&quot;&gt;
 [%
@@ -45,6 +46,7 @@ return '
 	&lt;meta name=&quot;robots&quot; content=&quot;noindex, follow&quot;&gt;'; # Google still seems to index these pages.
 
 %]
+        [{metadescriptiontag}]
 	&lt;meta name=&quot;wisdom&quot; content=&quot;Monkey! Bat! Robot Hat!&quot;&gt;
 	&lt;link rel=&quot;icon&quot; href=&quot;/favicon.ico&quot; type=&quot;image/vnd.microsoft.icon&quot;&gt;
 	&lt;!--[if lt IE 8]&gt;&lt;link rel=&quot;shortcut icon&quot; href=&quot;/favicon.ico&quot; type=&quot;image/x-icon&quot;&gt;&lt;![endif]--&gt;

@@ -1,9 +1,9 @@
 <node>
+  <type_nodetype>1258942</type_nodetype>
   <doctext>&lt;?xml version=&quot;1.0&quot;?&gt;
 &lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
 I'm a totally blank schema!  (This text added by om to stop an XML error on this page.)
 &lt;/xs:schema&gt;</doctext>
   <node_id>1259759</node_id>
-  <type_nodetype>1258942</type_nodetype>
   <title>default xmltrue schema</title>
 </node>

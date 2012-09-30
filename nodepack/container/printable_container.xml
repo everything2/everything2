@@ -3,7 +3,9 @@
   <parent_container>0</parent_container>
   <node_id>926672</node_id>
   <context>&lt;html&gt;
-&lt;head&gt;&lt;style&gt;
+&lt;head&gt;
+&lt;META NAME=&quot;robots&quot; CONTENT=&quot;noindex&quot;&gt;
+&lt;style&gt;
 body {
   color:black;
   background:white;

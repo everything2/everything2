@@ -11,7 +11,6 @@ return &quot;n&quot; if $count == 0;
 return &quot;y&quot;;</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
   <nodetest_description>Writeups that have had zero votes cast on them. Webster writeups are excluded</nodetest_description>
-  <title>nodetest: Writeups that haven't been voted on</title>
   <nlcode>my ($WRITEUP) = @_;
 my $webby = getNode(&quot;Webster 1913&quot;, &quot;user&quot;);
 return &quot;y&quot; if($$WRITEUP{author_user} == $$webby{node_id});
@@ -19,4 +18,5 @@ return &quot;y&quot; if($$WRITEUP{author_user} == $$webby{node_id});
 my $count = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;vote_id=$$WRITEUP{node_id}&quot;);
 return &quot;n&quot; if $count == 0;
 return &quot;y&quot;;</nlcode>
+  <title>nodetest: Writeups that haven't been voted on</title>
 </node>

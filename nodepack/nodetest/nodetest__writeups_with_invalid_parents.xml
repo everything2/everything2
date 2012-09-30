@@ -9,10 +9,10 @@ return &quot;y&quot; if $e2n;
 return &quot;n&quot;;</nodetest_code>
   <type_nodetype>1308757</type_nodetype>
   <nodetest_description>Writeups that don't have a valid parent E2node</nodetest_description>
-  <title>nodetest: Writeups with invalid parents</title>
   <nlcode>my ($WRITEUP) = @_;
 
 my $e2n = getNodeById($$WRITEUP{parent_e2node});
 return &quot;y&quot; if $e2n;
 return &quot;n&quot;;</nlcode>
+  <title>nodetest: Writeups with invalid parents</title>
 </node>
