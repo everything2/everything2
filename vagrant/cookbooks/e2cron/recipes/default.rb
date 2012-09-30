@@ -23,6 +23,12 @@ cron 'database_backup_to_s3.pl' do
   command "/var/everything/tools/database_backup_to_s3.pl 2>&1 >> #{logdir}/e2cron.database_backup_to_s3.#{datelog}" 
 end
 
+cron 'generate_sitemap.pl' do
+  hour "1"
+  minute "0"
+  command "/var/everything/tools/generate_sitemap.pl 2>&1 >> #{logdir}/e2cron.generate_sitemap.#{datelog}"
+end
+
 cron 'updateNodelet.pl' do
   user "root"
   minute "0-59/5"
