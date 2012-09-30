@@ -22,6 +22,8 @@ my $sitemaphandle;
 
 $DB->{cache}->setCacheSize(50);
 
+print commonLogLine("Starting up");
+
 open_sitemapfile();
 foreach my $includetype(qw(e2node writeup user))
 {
@@ -81,6 +83,8 @@ foreach my $includetype(qw(e2node writeup user))
 close_sitemapfile();
 sleep(3);
 `gzip -f /$tmpdir/*.xml`;
+
+print commonLogLine("Writing to index");
 my $indexfile;
 open $indexfile, ">/$tmpdir/index.xml";
 print $indexfile '<?xml version="1.0" encoding="UTF-8"?>
@@ -99,7 +103,12 @@ my $s3 = Everything::S3->new("sitemap");
 
 foreach my $sitemapfile(@$sitemapfiles,"index.xml")
 {
-	$s3->upload_file($sitemapfile, "$tmpdir/$sitemapfile");
+	if($s3->upload_file($sitemapfile, "$tmpdir/$sitemapfile"))
+	{
+		print commonLogLine("Upload of '$sitemapfile' succeeded");
+	}else{
+		print commonLogLine("Upload of '$sitemapfile' failed");
+	}
 }
 
 sub close_sitemapfile
@@ -110,6 +119,7 @@ sub close_sitemapfile
 
 sub open_sitemapfile
 {
+	print commonLogLine("Writing to $sitemapnum.xml");
 	open $sitemaphandle, ">/$tmpdir/$sitemapnum.xml";
 	print $sitemaphandle '<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
