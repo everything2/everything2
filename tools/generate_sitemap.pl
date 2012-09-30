@@ -129,7 +129,8 @@ sub open_sitemapfile
 sub add_node_to_sitemap
 {
 	my ($N, $edittime) = @_;
-	
+
+	$edittime =~ s/ .+//g;	
 	print $sitemaphandle $xg->url(
 		$xg->loc("$e2".urlGenNoParams( $N , 'noQuotes' )),
 		defined($edittime)?($xg->lastmod($edittime)):(undef),
