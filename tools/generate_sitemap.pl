@@ -4,6 +4,8 @@ use strict;
 use lib qw(/var/everything/ecore);
 use Everything;
 use Everything::HTML;
+use Everything::S3;
+
 use XML::Generator;
 
 initEverything 'everything';
@@ -54,6 +56,11 @@ foreach my $includetype(qw(e2node writeup user))
 		}elsif($N->{type}{title} eq "user")
 		{
 			$edittime = $N->{lasttime};
+			if($edittime =~ /0000-00-00/)
+			{
+				# User never logged in
+				next;
+			}
 		}
 
 		next unless $edittime;
@@ -87,6 +94,13 @@ foreach my $sitemapfile (@$sitemapfiles)
 
 print $indexfile '</sitemapindex>';
 close $indexfile;
+
+my $s3 = Everything::S3->new("sitemap");
+
+foreach my $sitemapfile(@$sitemapfiles,"index.xml")
+{
+	$s3->upload_file($sitemapfile, "$tmpdir/$sitemapfile");
+}
 
 sub close_sitemapfile
 {
@@ -124,4 +138,4 @@ sub writeup_edittime
 	return $edittime;
 }
 
-#`rm -rf $tmpdir`;
+`rm -rf $tmpdir`;
