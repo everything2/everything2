@@ -51,22 +51,6 @@ sub BEGIN
 
 use vars qw($dbases);
 use vars qw($EDS);
-use vars qw($PERM);
-
-$PERM = {
-	usergroup => 1,
-	htmlpage => 1,
-	container => 1,
-	htmlcode => 1,
-	maintenance => 1,
-	setting => 1,
-	fullpage => 1,
-	nodetype => 1,
-	writeuptype => 1,
-	linktype => 1,
-	theme => 1,
-	themesetting => 1
-};
 
 #############################################################################
 #	Sub
@@ -488,7 +472,7 @@ sub getNode
 	if(defined $NODE and $selectop ne 'nocache')
 	{
 		my $perm = 0;
-		$perm = 1 if exists $$PERM{$$NODE{type}{title}};
+		$perm = 1 if exists $Everything::CONF->{permanent_cache}->{$$NODE{type}{title}};
 		$this->{cache}->cacheNode($NODE, $perm);
 		$this->{cache}->memcacheNode($NODE);
 	}
@@ -573,7 +557,7 @@ sub getNodeById
 	if($selectop ne 'nocache')
 	{
 		my $perm = 0;
-		$perm = 1 if exists $$PERM{$$NODE{type}{title}};
+		$perm = 1 if exists $Everything::CONF->{permanent_cache}->{$$NODE{type}{title}};
 	
 		$this->{cache}->cacheNode($NODE, $perm);
 		$this->{cache}->memcacheNode($NODE);
