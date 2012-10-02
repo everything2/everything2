@@ -1,0 +1,14 @@
+<node>
+  <type_nodetype>148</type_nodetype>
+  <node_id>2070554</node_id>
+  <_create_table_statement>CREATE TABLE `useractionlog` (
+  `useractionlog_id` int(11) NOT NULL AUTO_INCREMENT,
+  `useraction_id` int(11) NOT NULL,
+  `useraction_session_id` int(11) NOT NULL,
+  `useraction_source_node_id` int(11) DEFAULT NULL,
+  `useraction_target_node_id` int(11) DEFAULT NULL,
+  `useraction_condition` varchar(50) NOT NULL,
+  PRIMARY KEY (`useractionlog_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+  <title>useractionlog</title>
+</node>

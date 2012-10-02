@@ -1,0 +1,8 @@
+<node>
+  <type_nodetype>148</type_nodetype>
+  <node_id>2070599</node_id>
+  <_create_table_statement>CREATE TABLE `cachedeltaversion` (
+  `deltaversion` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+  <title>cachedeltaversion</title>
+</node>

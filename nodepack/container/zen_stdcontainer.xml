@@ -5,8 +5,17 @@
   <context>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot; &quot;http://www.w3.org/TR/html4/loose.dtd&quot;&gt;
 &lt;html&gt;
 &lt;head&gt;
+&lt;title&gt;[% return $NODE-&gt;{title} %][% 
 
-	&lt;title&gt;[% $$NODE{title}; %]@Everything2.com&lt;/title&gt;
+if($NODE-&gt;{type}-&gt;{title} eq &quot;writeup&quot;)
+{
+ my $author = getNodeById($NODE-&gt;{author_user});
+ if($author)
+ {
+   return &quot; by $$author{title}&quot;;
+ }
+}
+%] - Everything2.com&lt;/title&gt;
 	&lt;link rel=&quot;stylesheet&quot; id=&quot;basesheet&quot; type=&quot;text/css&quot; href=&quot;[{linkStylesheet:basesheet}]&quot; media=&quot;all&quot;&gt;
 [%
 '	&lt;link rel=&quot;stylesheet&quot; id=&quot;zensheet&quot; type=&quot;text/css&quot; href=&quot;'
