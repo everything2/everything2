@@ -42,6 +42,11 @@ sub BEGIN
 		addFieldToTable
 		dropFieldFromTable
 
+		getNodeParam
+		getNodeParams
+		setNodeParam
+		deleteNodeParam
+
 		quote
 		genWhereString
 
@@ -2779,6 +2784,59 @@ sub dropMysqlProcedure
 	return $this->{dbh}->do("DROP $type IF EXISTS $procname");
 }
 
+sub getNodeParam
+{
+	my ($this, $NODE, $paramname) = @_;
+
+	getRef($NODE);
+	return unless $NODE;
+
+	my $result = $this->{cache}->getCachedNodeParam($NODE, $paramname);
+
+	return $result if defined $result;
+	my ($paramvalue) = $this->sqlSelect("paramvalue","nodeparam","node_id=".$this->quote($$NODE{node_id})." and paramkey=".$this->quote($paramname));
+	$this->{cache}->setCachedNodeParam($NODE, $paramname, $paramvalue);
+
+	return $paramvalue;
+}
+
+sub getNodeParams
+{
+	my ($this, $NODE) = @_;
+	getRef($NODE);
+	return unless $NODE;
+	my $params;
+	my $csr = $this->sqlSelectMany("*","nodeparam","node_id=".$this->quote($$NODE{node_id}));
+	while(my $row = $csr->fetchrow_hashref())
+	{
+		$params->{$row->{paramkey}} = $row->{paramvalue};
+		$this->{cache}->setCachedNodeParam($NODE, $row->{paramkey}, $row->{paramvalue});
+	}
+	
+	return $params;
+}
+
+sub setNodeParam
+{
+	my ($this, $NODE, $paramname, $paramvalue) = @_;
+
+	getRef($NODE);
+	return unless $NODE;
+
+	$this->executeQuery("INSERT into nodeparam VALUES(".join(",",$this->quote($$NODE{node_id}),$this->quote($paramname),$this->quote($paramvalue)).") ON DUPLICATE KEY UPDATE paramvalue=".$this->quote($paramvalue));
+	$this->{cache}->setCachedNodeParam($NODE, $paramname, $paramvalue);
+}
+
+sub deleteNodeParam
+{
+	my ($this, $NODE, $paramname) = @_;
+	getRef($NODE);
+	return unless $NODE;
+
+	$this->sqlDelete("nodeparam","node_id=$$NODE{node_id}");
+	$this->{cache}->deleteCachedNodeParam($NODE,$paramname);
+}
+
 #############################################################################
 #	GroupCache code
 #############################################################################
@@ -2801,8 +2859,6 @@ sub groupCache {
 
 	my ($this, $NODE, $group, $type) = @_;
 	$group ||= $$NODE{group};
-	#$group ||= [1];
-
 
 	return 1 if !defined $$NODE{node_id};
 	return 1 if $this->hasGroupCache($NODE);

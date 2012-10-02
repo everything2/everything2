@@ -101,6 +101,8 @@ sub new
 	$this->{verified} = {};
 	$this->{typeVerified} = {};
 	$this->{typeVersion} = {};
+
+	$this->{paramcache} = {};
 	
 	if ($memcache) { 
         	$this->{memcache} = new Everything::Memcache $memcache, $nodeBase;
@@ -391,11 +393,13 @@ sub flushCache
 	undef $this->{typeCache};
 	undef $this->{idCache};
 	undef $this->{version};
+	undef $this->{paramcache};
 
 	$this->{nodeQueue} = new Everything::CacheQueue();
 	$this->{typeCache} = {};
 	$this->{idCache} = {};
 	$this->{version} = {};
+	$this->{paramcache} = {};
 }
 
 
@@ -447,6 +451,48 @@ sub dumpCache
 	return $queue;
 }
 
+sub getCachedNodeParam
+{
+	my ($this, $N, $param) = @_;
+
+	if(exists($this->{paramcache}->{$N->{node_id}}))
+	{
+		if(exists($this->{paramcache}->{$N->{node_id}}->{$param}))
+		{
+			$this->{paramcache}->{$N->{node_id}}->{$param};
+		}else{
+			return undef;
+		}
+	}else{
+		return undef;
+	}
+}
+
+sub setCachedNodeParam
+{
+	my ($this, $N, $param, $value) = @_;
+
+	if(!exists($this->{paramcache}->{$N->{node_id}}))
+	{
+		$this->{paramcache}->{$N->{node_id}} = {};
+	}
+
+	$this->{paramcache}->{$N->{node_id}}->{$param} = $value;
+
+	return $value;
+}
+
+sub deleteCachedNodeParam
+{
+	my ($this, $N, $param) = @_;
+
+	if(exists($this->{paramcache}->{$N->{node_id}}))
+	{
+		delete $this->{paramcache}->{$N->{node_id}}->{$param};
+	}
+
+	return $param;
+}
 
 #############################################################################
 # "Private" module subroutines - users of this module should never call these
@@ -517,6 +563,7 @@ sub removeNodeFromHash
 		delete ($this->{typeCache}{$type}{$title});
 		delete ($this->{idCache}{$$NODE{node_id}});
 		delete ($this->{version}{$$NODE{node_id}});
+		delete ($this->{paramcache}{$$NODE{node_id}});
 		return $data;
 	}
 
@@ -645,6 +692,7 @@ sub resetCache
 {
 	my ($this) = @_;
 
+	$this->{paramcache} = {};
 	$this->{verified} = {};
 	$this->{typeVerified} = {};
     my %newVersion;
