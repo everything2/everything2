@@ -78,6 +78,20 @@ everything_conf_variables = {
     "nodecache_size" => node["e2engine"]["nodecache_size"],
     "recaptcha" => node["e2engine"]["recaptcha"].to_hash,
     "s3" => node["e2engine"]["s3"].to_hash,
+    "permanent_cache" => {
+      "usergroup" => 1,
+      "htmlpage" => 1,
+      "container" => 1,
+      "htmlcode" => 1,
+      "maintenance" => 1,
+      "setting" => 1,
+      "fullpage" => 1,
+      "nodetype" => 1,
+      "writeuptype" => 1,
+      "linktype" => 1,
+      "theme" => 1,
+      "themesetting" => 1
+   }
 }
 
 file '/etc/everything/everything.conf.json' do
