@@ -27,7 +27,11 @@ if($pass ne "")
 
 my $filename = "everything.$year$mon$day.sql.gz";
 
+commonLogLine("Starting mysqldump to tmpdir: '$tmpdir'");
+
 `mysqldump -u$user --single-transaction --routines --triggers $pass -h$host $db | gzip --best > "$tmpdir/$filename"`;
+commonLogLine("Completed mysqldump, starting upload");
+
 if($uploader->upload_file($filename, "$tmpdir/$filename"))
 {
 	if($Everything::CONF->{notification_email} ne "")
@@ -38,14 +42,15 @@ if($uploader->upload_file($filename, "$tmpdir/$filename"))
 			$email->{doctext} =~ s/\<filename\>/$filename/g;
 			$email->{title} = "Backup ready on S3: $filename";
 			node2mail($Everything::CONF->{notification_email},$email,1);
+			commonLogLine("Sent email to: ".$Everything::CONF->{notification_email});
 		}else{
-			print "Could not find node 'backup ready mail' of type 'mail'\n";
+			commonLogLine("Could not find node 'backup ready mail' of type 'mail'");
 		}
 	}else{
-		print "Could not send email, notification_email not set!\n";
+		commonLogLine("Could not send email, notification_email not set");
 	}
 }else{
-	print "File upload failed\n";
+	commonLogLine("File upload failed!");
 }
 
-`rm -rf $tmpdir`;
+`rm -rf $tmpdir 2>&1`;
