@@ -85,7 +85,13 @@ sub BEGIN {
               getLevel
               getHRLF
               calculateBonus
-		);
+
+              changeRoom
+              insertIntoRoom
+              canCloak
+              cloak
+              uncloak
+              );
 }
 
 use vars qw($HTTP_ERROR_CODE $ERROR_HTML $SITE_UNAVAILABLE $query);
@@ -2263,7 +2269,7 @@ sub confirmUser {
 				");
 			$sth->execute();
 			($seconds_since_last) = $sth->fetchrow_array();
-			Everything::Room::insertIntoRoom($$USER{in_room}, $USER, $VARS)
+			insertIntoRoom($$USER{in_room}, $USER, $VARS)
 				if $seconds_since_last > $TIMEOUT_SECONDS;
 		}
 
@@ -3399,7 +3405,7 @@ sub processVarsSet {
 }
 
 
-
+# Former inhabitants of Everything::Experience
 
 #######################################################################
 #
@@ -3713,6 +3719,93 @@ $repStep2 and ".($repStep3-1)." then 2 else 3 end) as repBonus", "node","author_
 return $totalBonus;
 
 }
+
+
+# Former inhabitants of Everything::Room
+sub insertIntoRoom {
+  my ($ROOM, $U, $V) = @_;
+
+  getRef $U;
+  $V ||= getVars($U);
+  my $user_id=getId($U);
+  my $room_id=getId($ROOM);
+  $room_id = 0 unless $ROOM;
+  my $vis = $$V{visible} if exists $$V{visible};
+  $vis ||= 0;
+  my $borgd = 0;
+  $borgd = 1 if $$V{borged};
+
+  $DB->sqlInsert("room"
+    , {
+            room_id => $room_id,
+            member_user => $user_id,
+            nick => $$U{title},
+            borgd => $borgd,
+            experience => $$U{experience},
+            visible => $vis,
+            op => isGod($U)
+    }
+    , {
+            nick => $$U{title},
+            borgd => $borgd,
+            experience => $$U{experience},
+            visible => $vis,
+            op => isGod($U)
+    }
+  );
+
+}
+
+
+sub changeRoom {
+  my ($user, $ROOM) = @_;
+  getRef $user;
+  my $room_id=getId($ROOM);
+  $room_id=0 unless $ROOM;
+
+  unless ($$user{in_room} == $room_id) {
+    $$user{in_room} = $room_id;
+    updateNode($user, -1);
+  }
+  $DB->sqlDelete("room", "member_user=".getId($user));
+    
+  insertIntoRoom($ROOM, $user);
+}
+
+sub canCloak {
+  my ($user) = @_;
+  my $C = getVars(getNode('cloakers','setting'));
+  return (getLevel($user) >= 10 or isGod($user) or exists $$C{lc($$user{title})});
+}
+
+sub cloak {
+  my ($user, $vars) = @_;
+  my $setvarflag;
+  $setvarflag = 1 unless $vars; 
+  $vars ||= getVars $user;
+  
+  $$vars{visible}=1;
+  setVars($user, $vars) if $setvarflag;
+  $DB->sqlUpdate('room', {visible => 1}, "member_user=".getId($user));
+}
+
+sub uncloak {
+  my ($user, $vars) = @_;
+  my $setvarflag;
+  $setvarflag = 1 unless $vars; 
+  $vars ||= getVars $user;
+  
+  $$vars{visible}=0;
+  setVars($user, $vars) if $setvarflag;
+  $DB->sqlUpdate('room', {visible => 0}, "member_user=".getId($user));
+}
+
+
+
+
+
+1;
+
 
 #############################################################################
 # End of package
