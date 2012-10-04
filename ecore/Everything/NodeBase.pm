@@ -79,12 +79,10 @@ use vars qw($EDS);
 #
 sub new
 {
-	my ($className, $dbname, $staticNodetypes, $memcache) = @_;
+	my ($className, $dbname) = @_;
 	my $this = {};
-	my $setCacheSize = 0;
 	
 	bless $this;
-	$staticNodetypes ||= 0;
 
 	if(not exists $dbases->{$dbname})
 	{
@@ -96,17 +94,15 @@ sub new
 
 		$this->{dbh} = $db->{dbh};
 		
-		$db->{cache} = new Everything::NodeCache($this, $Everything::CONF->{nodecache_size}, $memcache);
+		$db->{cache} = new Everything::NodeCache($this);
 		$dbases->{$dbname} = $db;
-		
-		$setCacheSize = 1;
 	}
 
 
 	$this->{dbh} = $dbases->{$dbname}->{dbh};
 	$this->{cache} = $dbases->{$dbname}->{cache};
 	$this->{dbname} = $dbname;
-	$this->{staticNodetypes} = $staticNodetypes;
+	$this->{staticNodetypes} = $Everything::CONF->{static_nodetypes};
 
 	$this->{cache}->clearSessionCache;
 

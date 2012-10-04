@@ -41,6 +41,7 @@ package Everything::NodeCache;
 #############################################################################
 
 use strict;
+use Everything;
 use Everything::CacheQueue;
 use Everything::NodeBase;
 use Everything::Memcache;
@@ -82,12 +83,12 @@ sub BEGIN
 #
 sub new
 {
-	my ($packageName, $nodeBase, $maxSize, $memcache) = @_;
+	my ($packageName, $nodeBase) = @_;
 	my $this = {};
 	
 	bless $this;  # oh, my lord
 
-	$this->{maxSize} = $maxSize;
+	$this->{maxSize} = $Everything::CONF->{nodecache_size};
 	$this->{nodeBase} = $nodeBase;
 	
 	$this->{nodeQueue} = new Everything::CacheQueue();
@@ -104,8 +105,8 @@ sub new
 
 	$this->{paramcache} = {};
 	
-	if ($memcache) { 
-        	$this->{memcache} = new Everything::Memcache $memcache, $nodeBase;
+	if ($Everything::CONF->{memcache}) { 
+        	$this->{memcache} = new Everything::Memcache($Everything::CONF->{memcache}, $nodeBase);
     	}
 	
 	return $this;
