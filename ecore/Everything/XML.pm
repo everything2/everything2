@@ -19,7 +19,6 @@ sub BEGIN
    @ISA=qw(Exporter);
    @EXPORT=qw(
       xml2node
-      xmlfile2node
       node2xml
 	  initXmlParse
 	  fixNodes 
@@ -386,25 +385,6 @@ sub xml2node{
 
 		$node_id;
 };
-
-####################################################################
-#
-#	Sub
-#		xmlfile2node
-#
-#	purpose
-#		wrapper for xml2node that takes a filename as a parameter
-#		rather than a string of XML
-#
-#
-sub xmlfile2node {
-    my ($filename) = @_;
-	
-	open MYXML, $filename or die "could not access file $filename";
-	my $file = join "", <MYXML>;
-	close MYXML;
-	xml2node($file);	
-}
 
 ####################################################################
 #
