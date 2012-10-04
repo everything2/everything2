@@ -32,7 +32,7 @@ end
 cron 'updateNodelet.pl' do
   user "root"
   minute "0-59/5"
-  command "/var/everything/ecore/bin/updateNodelet.pl 2>&1 >> #{logdir}/e2cron.updateNodelet.#{datelog}"
+  command "/var/everything/tools/updateNodelet.pl 2>&1 >> #{logdir}/e2cron.updateNodelet.#{datelog}"
 end
 
 cron 'refreshRoom.pl' do
