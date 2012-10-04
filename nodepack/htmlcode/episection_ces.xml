@@ -41,6 +41,9 @@ if ($$THEME{isZen}) {
 	\t\t\t&lt;li&gt;&quot;.
 		linkNode($NODE, &quot;Make $votable&quot;, $flagHash)
 		.&quot;&lt;/li&gt;
+        \t\t\t&lt;li&gt;&quot;.
+                linkNode(getNode(&quot;Node Parameter Editor&quot;,&quot;oppressor_superdoc&quot;),&quot;Parameter Editor&quot;, {for_node =&gt; $$NODE{node_id}})
+                .&quot;&lt;/li&gt;
 	\t\t\t&lt;li&gt;[Blind Voting Booth]&lt;/li&gt;
 	\t\t\t&lt;li&gt;[usergroup discussions|Group discussions]&lt;/li&gt;
 	\t\t\t&lt;li&gt;$curLog&lt;/li&gt;

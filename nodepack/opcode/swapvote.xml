@@ -104,7 +104,7 @@ sub swapCastVote {
   #if no types are specified, the user can vote on anything
   #otherwise, they can only vote on &quot;validTypes&quot;
 
-  my $alreadyvoted = !(Everything::Experience::insertVote($NODE, $USER, $weight));
+  my $alreadyvoted = !(insertVote($NODE, $USER, $weight));
   #if insertVote succeeded, the vote has been inserted and approved.
   #now we assign points
 

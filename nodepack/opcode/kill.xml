@@ -7,7 +7,7 @@ getRef($N);
 
 return;
 return unless $DB-&gt;canDeleteNode($USER, $N);
-
+use Everything::Experience;
 
 #decide if we need to take exp away
 my $nopain = 0;
@@ -15,7 +15,7 @@ foreach (values %HTMLVARS) {
   $nopain = 1 if getId($N) eq $_;
 }
 
-Everything::Experience::adjustExp($$N{author_user}, -5) unless $nopain;
+adjustExp($$N{author_user}, -5) unless $nopain;
 
 nukeNode($N, $USER);</code>
 </node>

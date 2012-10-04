@@ -73,9 +73,9 @@ Bookmarklet to discover geographical location from IP address...
 Now this is a noding speedometer for L2+ noders...
 
 [%
-return &quot;You're still quite young yet.  There is still much to be [Everything University|learned].&quot; unless(Everything::Experience::getLevel($USER) &gt; 1);
-
 use Everything::Experience;
+
+return &quot;You're still quite young yet.  There is still much to be [Everything University|learned].&quot; unless(getLevel($USER) &gt; 1);
 
 my $user_in = $query-&gt;param('speedyuser');
 my $user_scratch = $user_in || $$USER{title};
@@ -106,7 +106,7 @@ if ($lastcnt &lt; 1) {
   $str .= &quot;&lt;br&gt;&lt;b&gt;Noding Speed&lt;/b&gt;:&lt;br&gt;  To write $cnt nodes, it took the user $lastcnt days.   This is approximately &lt;b&gt;&quot;.sprintf(&quot;%.4f&quot;, $cnt/$lastcnt).&quot;&lt;/b&gt; nodes per day.&lt;br&gt;&lt;br&gt;&quot;;
 
   my $lvwu = getVars(getNode(&quot;level writeups&quot;, &quot;setting&quot;));
-  my $curlvl = Everything::Experience::getLevel($u);
+  my $curlvl = getLevel($u);
 
   # I moved this line up because it doesn't depend on
   # prediction calculation so it will be faster here.
@@ -421,7 +421,6 @@ updateNode($nodeshellh, -1);
 $str .= 'Okay, reassigned '.linkNodeTitle($nodeshell).' from '.$oldcreator.' to '.$newcreator;
 return $str;
 %]
-
 </doctext>
   <node_id>1723170</node_id>
   <title>the wertperch occasional playground</title>

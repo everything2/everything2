@@ -9,16 +9,12 @@
     <key>near_matches</key>
   </vars>
   <vars>
-    <value>Every article on &amp;lt;Everything2&amp;gt; must have links to other articles on the site.  This is accomplished by placing &amp;#91;square brackets&amp;#93; around key words and phrases relevant to your topic.  You can use [link view] to make sure your links actually go to existing places, but it's okay if a few of them don't exist yet, especially if you'd like to write those new articles yourself.  Also see: [hard link], [soft link], [pipe link], [firm link].</value>
-    <key>hard_link</key>
-  </vars>
-  <vars>
     <value>/help everything2</value>
     <key>e2</key>
   </vars>
   <vars>
-    <value>/help help</value>
-    <key></key>
+    <value>Every article on &amp;lt;Everything2&amp;gt; must have links to other articles on the site.  This is accomplished by placing &amp;#91;square brackets&amp;#93; around key words and phrases relevant to your topic.  You can use [link view] to make sure your links actually go to existing places, but it's okay if a few of them don't exist yet, especially if you'd like to write those new articles yourself.  Also see: [hard link], [soft link], [pipe link], [firm link].</value>
+    <key>hard_link</key>
   </vars>
   <vars>
     <value>A &amp;lt;node&amp;gt; is a page on &amp;lt;Everything2&amp;gt;, and the writeups are the user-submitted articles that are in the node.</value>
@@ -117,12 +113,12 @@
     <key>smite</key>
   </vars>
   <vars>
-    <value>Hypertext Markup Language is the code used to format articles on &amp;lt;Everything2&amp;gt;.  At minimum, you are required to add &amp;lt;p&amp;gt; tags to the beginning of every paragraph to mark them as separate paragraphs so they will display properly.  The &quot;format&quot; button below the text input box can do this for you.  If you are not comfortable with HTML, you can use &amp;lt;tinyMCE&amp;gt; instead.</value>
-    <key>html</key>
-  </vars>
-  <vars>
     <value>Editors are users with additional site access privileges who can help you get started writing, offer help and suggestions, and if necessary &amp;lt;nuke&amp;gt; submissions that do not meet the site's &amp;lt;quality&amp;gt; standards.  They are chosen by the &amp;lt;administrator&amp;gt;s based on their record of service with the site.  Editors will have a $ symbol by their names in the Other Users list.</value>
     <key>editor</key>
+  </vars>
+  <vars>
+    <value>Hypertext Markup Language is the code used to format articles on &amp;lt;Everything2&amp;gt;.  At minimum, you are required to add &amp;lt;p&amp;gt; tags to the beginning of every paragraph to mark them as separate paragraphs so they will display properly.  The &quot;format&quot; button below the text input box can do this for you.  If you are not comfortable with HTML, you can use &amp;lt;tinyMCE&amp;gt; instead.</value>
+    <key>html</key>
   </vars>
   <vars>
     <value>[Chatterlight] is E2's full-page &amp;lt;chatterbox&amp;gt;, more useful than the chatterbox &amp;lt;nodelet&amp;gt; if you're going to be doing a lot of talking.</value>
@@ -135,6 +131,10 @@
   <vars>
     <value>/help zen_theme</value>
     <key>stylesheet</key>
+  </vars>
+  <vars>
+    <value>/help c</value>
+    <key>ching</key>
   </vars>
   <vars>
     <value>Articles submitted to E2 must meet certain quality guidelines or they may be &amp;lt;nuke&amp;gt;d.  You must include &amp;lt;link&amp;gt;s and &amp;lt;HTML&amp;gt; formatting, and the article must not be a reply or a short addition to content already in a &amp;lt;node&amp;gt;.  Articles should be spell checked before posting, and use proper grammar, punctuation, and capitalization.  Please note that &amp;lt;Everything2&amp;gt; is an English language website.</value>
@@ -161,7 +161,7 @@
     <key>faq</key>
   </vars>
   <vars>
-    <value>&amp;lt;Everything2&amp;gt;'s old user interface is called Jukka.  Zen is the new default interface you can select from [user settings].  Zen's main feature is that you can customize its look and behavior with stylesheets from [the catwalk] or [theme nirvana], and even customize an existing stylesheet with [style defacer].</value>
+    <value>Zen is the default interface you can select from [user settings].  Zen's main feature is that you can customize its look and behavior with stylesheets from [Theme Nirvana] or [the catwalk]. You can customize an existing stylesheet with [style defacer] (beware, some knowledge of [CSS] is required).</value>
     <key>zen_theme</key>
   </vars>
   <vars>
@@ -177,6 +177,10 @@
     <key>xp</key>
   </vars>
   <vars>
+    <value>/copyright</value>
+    <key>fair_use</key>
+  </vars>
+  <vars>
     <value>Everything2 has a search feature in the site header that searches for writeups by title.  If the title exists as you have typed it, you will be taken directly to that &amp;lt;node&amp;gt;.  Otherwise you will be taken to a Findings page.  See also &amp;lt;near matches&amp;gt;, &amp;lt;Ignore Exact&amp;gt;, and &amp;lt;Full text&amp;gt; </value>
     <key>search</key>
   </vars>
@@ -187,6 +191,10 @@
   <vars>
     <value>/help submit</value>
     <key>post</key>
+  </vars>
+  <vars>
+    <value>For full details, please refer to [Everything2 Copyright FAQ and advice on Fair Use]</value>
+    <key>copyright</key>
   </vars>
   <vars>
     <value>/help cme</value>
@@ -217,7 +225,7 @@
     <key>administrator</key>
   </vars>
   <vars>
-    <value>A homenode is where a user's profile can be found.  Homenodes are where you can keep your personal information, this does not belong posted to the main area.  A homenode picture can be added only when you have reached &lt;experience&gt; level 5.</value>
+    <value>Your homenode is your user profile, which you can reach (and edit) by clicking your username anywhere on E2.</value>
     <key>homenode</key>
   </vars>
   <vars>
@@ -257,6 +265,10 @@
     <key>everything_death_borg</key>
   </vars>
   <vars>
+    <value>/help homenode</value>
+    <key>me</key>
+  </vars>
+  <vars>
     <value>/help pipe_link</value>
     <key>pipelink</key>
   </vars>
@@ -265,7 +277,7 @@
     <key>hidden_writeup</key>
   </vars>
   <vars>
-    <value>C! is short for &quot;Cool!&quot;, and is a reward given to writeups by other users of the site for excellent work. They award the user 10 XP. </value>
+    <value>C! is short for &quot;Cool!&quot;, and is a reward given to writeups by other users of the site for excellent work. They award the user 20 XP. </value>
     <key>c</key>
   </vars>
   <vars>
@@ -277,7 +289,7 @@
     <key>private_message</key>
   </vars>
   <vars>
-    <value>299,792,458 m/s</value>
+    <value>299,792,458 m/s, or 1.8026175 &#215; 10^12 furlongs/fortnight. We believe that help should be comprehensive.</value>
     <key>speed_of_light</key>
   </vars>
   <vars>
@@ -345,20 +357,20 @@
     <key>token</key>
   </vars>
   <vars>
-    <value>/help html</value>
-    <key>HTML</key>
+    <value>/help tinymce</value>
+    <key>tinyMCE</key>
   </vars>
   <vars>
     <value>/help webster_1913</value>
     <key>webster</key>
   </vars>
   <vars>
-    <value>/help hard_link</value>
-    <key>link</key>
+    <value>/help html</value>
+    <key>HTML</key>
   </vars>
   <vars>
-    <value>/help tinymce</value>
-    <key>tinyMCE</key>
+    <value>/help hard_link</value>
+    <key>link</key>
   </vars>
   <vars>
     <value>[Asamoth] holds the distinction of the only noder on &amp;lt;Everything2&amp;gt; to become a verb.  Asamoth was the first noder who blanked all of his writeups when he quit and left out of spite, which left an inconvenient clean-up job for the &amp;lt;editor&amp;gt;s.  This practice has become known as asamothing, or pulling an asamoth.</value>
@@ -377,7 +389,7 @@
     <key>blab</key>
   </vars>
   <vars>
-    <value>Only [Voting/Experience System|Level 2] and above users are allowed to vote. Each user can only vote once per writeup.</value>
+    <value>Only [Voting/Experience System|Level 1] and above users are allowed to vote. Each user can only vote once per writeup. You can gain &lt;GP&gt; by voting.</value>
     <key>vote</key>
   </vars>
   <vars>
@@ -385,16 +397,16 @@
     <key>dice</key>
   </vars>
   <vars>
-    <value>/help msg</value>
-    <key>message</key>
+    <value>/help gp</value>
+    <key>GP</key>
   </vars>
   <vars>
     <value>A &quot;fireball&quot; is a special kind of [easter egg] command available to users who are Level 15 or higher.  To activate the fireball, type &quot;/fireball&quot; followed by a user's name. That user will then be &quot;fireballed&quot; in the chatterbox and will receive 5 GP and a silly message. Please note that it costs 1 [easter egg] to use the fireball power.</value>
     <key>fireball</key>
   </vars>
   <vars>
-    <value>/help gp</value>
-    <key>GP</key>
+    <value>/help msg</value>
+    <key>message</key>
   </vars>
   <vars>
     <value>A collaborator is another user who has access to edit your &amp;lt;scratch pad&amp;gt;.  You set up users as collaborators by putting their user names into the &quot;collaborator&quot; field of the scratch pad, separated by commas if you want more than one.  This can be very helpful if you need someone to show you how to format something, add &amp;lt;link&amp;gt;s, or assist your grammar and spelling.</value>
