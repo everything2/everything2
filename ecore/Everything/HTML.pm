@@ -73,7 +73,19 @@ sub BEGIN {
               recordUserAction
               unMSify
               mod_perlInit
-              mod_perlpsuedoInit);
+              mod_perlpsuedoInit
+
+              castVote
+              adjustExp
+              adjustRepAndVoteCount
+              adjustGP
+              allocateVotes
+              hasVoted
+              getVotes
+              getLevel
+              getHRLF
+              calculateBonus
+		);
 }
 
 use vars qw($HTTP_ERROR_CODE $ERROR_HTML $SITE_UNAVAILABLE $query);
@@ -3387,8 +3399,323 @@ sub processVarsSet {
 }
 
 
+
+
+#######################################################################
+#
+#	getLevel
+#
+#	given a user, return his level.  This info is stored in the
+#	"level settings" node
+#
+sub getLevel {
+	my ($user) = @_;
+	getRef($user);
+	return $$user{level} if $$user{level};
+	return 0 if $$user{title} eq "Guest User";
+
+	my $exp = $$user{experience};
+	my $V = getVars ($user);
+        my $numwriteups = $$V{numwriteups};
+
+        my $EXP = getVars(getNode('level experience','setting'));
+	my $WRP = getVars(getNode('level writeups', 'setting'));
+
+		my $maxlevel = 1;
+		while (exists $$EXP{$maxlevel}) { $maxlevel++ }
+	if ($$user{title} eq 'nate' or $$user{title} eq 'dbrown') {
+
+		return $maxlevel-1;
+        }
+        
+	$exp ||= 0;
+	$numwriteups ||= 0;
+        my $level = 0;
+        for (my $i = 1; $i < $maxlevel; $i++) {
+                if ($exp >= $$EXP{$i} and $numwriteups >= $$WRP{$i}) {
+                        $level = $i;
+                }
+        }
+
+        $level;
+}
+
+########################################################################
+#
+#	allocateVotes
+#
+#	give votes to a specific user.  it's assumed that at some point 
+#	at a given interval, each user is allocated their share of votes
+#
+sub allocateVotes {
+	my ($user, $numvotes) = @_;
+	getRef($user);
+
+	$$user{votesleft} = $numvotes;
+	updateNode($user, -1);
+}
+
+#########################################################################
+#
+#	adjustRepAndVoteCount
+#
+#	adjust reputation points for a node as well as vote count, potentially
+#
+sub adjustRepAndVoteCount {
+	my ($node, $pts, $voteChange) = @_;
+	getRef($node);
+
+	$$node{reputation} += $pts;
+	# Rely on updateNode to discard invalid hash entries since
+	#  not all voteable nodes may have a totalvotes column
+	$$node{totalvotes} += $voteChange;
+	updateNode($node, -1);
+}
+
+##########################################################################
+#
+#	adjustExp
+#
+#	adjust experience points
+#
+#	ideally we could optimize this, since its only inc one field.
+#
+sub adjustExp {
+	my ($user, $points) = @_;
+	getRef($user);
+
+	$$user{experience} += $points;
+
+	# Only update user immediately if we're not in a transaction
+	updateNode($user, -1) if $DB->{dbh}->{AutoCommit};
+	1;
+}
+
+###
+#
+#       adjust GP
+#
+#       ideally we could optimize this, since its only inc one field.
+#
+sub adjustGP {
+        my ($user, $points) = @_;
+        getRef($user);
+        my $V=getVars($user);
+        return if ((exists $$V{GPoptout})&&(defined $$V{GPoptout}));
+        $$user{GP} += $points;
+        updateNode($user,-1);
+        1;
+}
+
+###################################################################
+#
+#	getVotes
+#
+#	get votes for a certain node.  returns
+#	a list of vote hashes.  If you specify a user, it returns
+#	only the vote hash for the users vote (if exists)
+#
+sub getVotes {
+	my ($node, $user) = @_;
+
+	return hasVoted($node, $user) if $user;
+
+	my $csr = $DB->sqlSelectMany("*", "vote", "vote_id=".getId($node));
+	my @votes;
+
+	while (my $VOTE = $csr->fetchrow_hashref()) {
+		push @votes, $VOTE;
+	}
+	
+	@votes;
+}
+
+##########################################################################
+#	hasVoted -- checks to see if the user has already voted on this Node
+#
+#	this is a primary key lookup, so it should be very fast
+#
+sub hasVoted {
+	my ($node, $user) = @_;
+
+	my $VOTE = $DB->sqlSelect("*", 'vote', "vote_id=".getId($node)." 
+		and voter_user=".getId($user));
+
+	return 0 unless $VOTE;
+	$VOTE;
+}
+
+##########################################################################
+#	insertVote -- inserts a users vote into the vote table
+#
+#	note, since user and node are the primary keys, the insert will fail
+#	if the user has already voted on a given node.
+#
+sub insertVote {
+	my ($node, $user, $weight) = @_;
+	my $ret = $DB->sqlInsert('vote', { vote_id => getId($node),
+		voter_user => getId($user),
+		weight => $weight,
+		-votetime => 'now()'
+		});
+	return 0 unless $ret;
+	#the vote was unsucessful
+
+	1;
+}
+
+###########################################################################
+#
+#	castVote
+#
+#	this function does a number of things -- sees if the user is
+#	allowed to vote, inserts the vote, and allocates exp/rep points
+#
+sub castVote {
+  my ($node, $user, $weight, $noxp, $VSETTINGS) = @_;
+  getRef($node, $user);
+
+  my $voteWrap = sub {
+
+    my ($user, $node, $AUTHOR) = @_;
+
+    #return if they don't have any votes left today
+    return unless $$user{votesleft};
+
+    #jb says: Allow for $VSETTINGS to be specified. This will save
+    # us a few cycles in castVote
+    $VSETTINGS ||= getVars(getNode('vote settings', 'setting'));
+    my @votetypes = split /\s*\,\s*/, $$VSETTINGS{validTypes};
+
+    #if no types are specified, the user can vote on anything
+    #otherwise, they can only vote on "validTypes"
+    return if (@votetypes and not grep(/^$$node{type}{title}$/, @votetypes));
+
+    my $prevweight;
+    $prevweight  = $DB->sqlSelect('weight',
+                                  'vote',
+                                  'voter_user='.$$user{node_id}
+                                  .' AND vote_id='.$$node{node_id}
+                                  );
+
+    # If user had already voted, update the table manually, check that the vote is
+    # actually different.
+    my $alreadyvoted = (defined $prevweight && $prevweight != 0);
+    my $voteCountChange = 0;
+    my $action;
+
+    if (!$alreadyvoted) {
+
+      insertVote($node, $user, $weight);
+
+      if ($$node{type}{title} eq 'poll') {
+         $action = 'votepoll';
+      } elsif ($weight > 0) {
+         $action = 'voteup';
+      } else {
+         $action = 'votedown';
+      }
+
+      $voteCountChange = 1;
+
+    } else {
+
+        $DB->sqlUpdate("vote"
+                       , { -weight => $weight, -revotetime => "NOW()" }
+                       , "voter_user=$$user{node_id}
+                          AND vote_id=$$node{node_id}"
+                       )
+          unless $prevweight == $weight;
+
+        if ($weight > 0) {
+           $action = 'voteflipup';
+        } else {
+           $action = 'voteflipdown';
+        }
+
+    }
+
+    recordUserAction($action, $$node{node_id});
+    adjustRepAndVoteCount($node, $weight-$prevweight, $voteCountChange);
+
+    #the node's author gains 1 XP for an upvote or a flipped up
+    #downvote.
+    if ($weight>0 and $prevweight <= 0) {
+      adjustExp($AUTHOR, $weight);
+    }
+    #Revoting down, note the subtle difference with above condition
+    elsif($weight < 0 and $prevweight > 0){
+       adjustExp($AUTHOR, $weight);
+    }
+
+
+    #the voter has a chance of receiving a GP
+    if (rand(1.0) < $$VSETTINGS{voterExpChance} &&  !$alreadyvoted) {
+      adjustGP($user, 1) unless($noxp);
+      #jb says this is for decline vote XP option
+      #we pass this $noxp if we want to skip the XP option
+    }
+
+    $$user{votesleft}-- unless ($alreadyvoted and $weight==$prevweight);
+
+  };
+
+  my $superUser = -1;
+  updateLockedNode(
+    [ $$user{user_id}, $$node{node_id}, $$node{author_user} ]
+    , $superUser
+    , $voteWrap
+  );
+
+  1;
+}
+
+sub getHRLF
+{
+  my ($user) = @_;
+  $$user{numwriteups} ||= 0;
+  return 1 if $$user{numwriteups} < 25;
+  return $$user{HRLF} if $$user{HRLF};
+#  return 1 unless $$user{title} eq "JayBonci" or $$user{title} eq "Professor Pi";
+  my $hrstats = getVars(getNode("hrstats", "setting"));
+  
+  return 1 unless $$user{merit} > $$hrstats{mean};
+  #return 1/(2-exp(-(($$user{merit} - $$hrstats{mean})^2)/(2*($$hrstats{stddev}^2))));
+  return 1/(2-exp(-(($$user{merit}-$$hrstats{mean})**2)/(2*($$hrstats{stddev})**2)));
+};
+
+
+sub calculateBonus {
+
+	my ($user) = @_;
+	getRef($user);
+	return 0 if $$user{title} eq "Guest User";
+
+	my $repStep = 26;
+	my $repStep2 = 2 * $repStep;
+	my $repStep3 = 3 * $repStep;
+
+	my $user_id = $$user{user_id};
+return 0 unless $user_id;
+
+	my $coolBonus = $DB->sqlSelect("sum(case cooled when 3 then 1 when 4 then 2 else 3 end) as coolBonus", "writeup inner join node on
+ node_id=writeup_id","author_user=$user_id  and cooled>=3");
+
+	my $writeupBonus = $DB->sqlSelect("sum(case when reputation between $repStep and ".($repStep2-1)." then 1 when reputation between
+$repStep2 and ".($repStep3-1)." then 2 else 3 end) as repBonus", "node","author_user=$user_id  and reputation >=$repStep");
+
+	my $totalBonus = $coolBonus + $writeupBonus;
+
+	my $V = getVars($user);
+	$$V{writeupbonus} = $totalBonus;
+	setVars($user,$V);
+
+return $totalBonus;
+
+}
+
 #############################################################################
 # End of package
 #############################################################################
-
 1;
+
