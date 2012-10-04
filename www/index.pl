@@ -7,6 +7,4 @@ use Everything::HTML;
 
 $ENV{TZ} = '+0000';
 
-my $staticNodetypes = 1;
-
-mod_perlInit "everything", $staticNodetypes, {};
+mod_perlInit "everything";

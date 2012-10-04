@@ -2895,19 +2895,13 @@ sub isSuspended
 #
 sub mod_perlInit
 {
-	my ($db, $staticNodetypes, $memcache) = @_;
+	my ($db) = @_;
 
-	#$Everything::PERLTIME ||= new StopWatch();
-	#$Everything::SQLTIME ||= new StopWatch();
-
-	# Start the perl timer
-	#$Everything::PERLTIME->start();
-	
 	#blow away the globals
 	clearGlobals();
 
 	# Initialize our connection to the database
-	Everything::initEverything($db, 0, $memcache);
+	Everything::initEverything($db);
 
 	if (!defined $DB->getDatabaseHandle()) {
 		$query->print($SITE_UNAVAILABLE);
@@ -2943,32 +2937,9 @@ sub mod_perlInit
 	# Do the work.
 	handleUserRequest();
 
-	#$Everything::PERLTIME->stop();
 	$DB->closeTransaction();
 	$PAGELOAD++;
 	
-##	if($PAGELOAD > $NUMPAGELOADS)
-##	{
-##		my $totaltime = $Everything::PERLTIME->report();
-##		my $sqltime = $Everything::SQLTIME->report();
-##		my $perltime = $totaltime - $sqltime;
-#
-#		# Get the average time
-#		$perltime = $perltime / $NUMPAGELOADS;
-#		$sqltime = $sqltime / $NUMPAGELOADS;
-#
-#		if(open(TIMELOG, ">> /tmp/pagetime.log"))
-#		{
-#			my $time = Everything::getTime();
-#			print TIMELOG "$time: (loads: $NUMPAGELOADS) perl: $perltime, sql: $sqltime\n";
-#			close(TIMELOG);
-#		}
-#
-#		$PAGELOAD = 0;
-#
-#		#$Everything::PERLTIME->reset();
-#		#$Everything::SQLTIME->reset();
-#	}
 }
 
 
@@ -2976,7 +2947,7 @@ sub mod_perlInit
 
 sub mod_perlpsuedoInit
 {
-	my ($db, $staticNodetypes) = @_;
+	my ($db) = @_;
 
 	clearGlobals();
 
@@ -2984,7 +2955,7 @@ sub mod_perlpsuedoInit
 	%HTMLVARS = %{ eval (getCode('set_htmlvars')) };
 
 	$query = getCGI();
-    return if $query->user_agent =~ /WebStripper/;
+	return if $query->user_agent =~ /WebStripper/;
 	$USER = loginUser();
 	#init the cache
 
