@@ -18,10 +18,6 @@ sub BEGIN
 	use vars       qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
-    setAttribute
-    getAttribute
-    decrementAttribute
-    adjustAttribute
 		castVote
 		adjustExp
 		adjustRepAndVoteCount
@@ -33,76 +29,6 @@ sub BEGIN
 		getHRLF
 		calculateBonus
 	);
-}
-
-#######################################################################
-#
-#       setAttribute
-#               Atomically set a user attribute
-#
-sub setAttribute {
-  my ($USER, $attribute, $value) = @_;
-  my $uid = int($USER->{node_id});
-  my $up = $DB->sqlUpdate('user_attributes',
-                          { $attribute => $value},
-                          'user_id = '.$uid);
-  if ($up && int($up) == 0) {
-    # No row updated, so insert the row.
-    $DB->sqlInsert('user_attributes',
-                   { $attribute => $value,
-                     user_id => $uid});
-  }
-}
-
-#######################################################################
-#
-#       getAttribute
-#               Get a user attribute
-#
-sub getAttribute {
-  my ($USER, $attribute) = @_;
-  my $uid = int($USER->{node_id});
-  my $res = $DB->sqlSelect($attribute, 'user_attributes',
-                           'user_id = '.$uid);
-  return $res || 0;
-}
-
-#######################################################################
-#
-#       decrementAttribute
-#               Atomically conditionally decrement a user attribute if
-#               it is possible to do so.
-#
-sub decrementAttribute {
-  my ($USER, $attribute, $value) = @_;
-  my $up = $DB->sqlUpdate('user_attributes',
-                          { "-$attribute" => "$attribute - $value" },
-                          ('user_id = ' . int($USER->{node_id})
-                           . " and $attribute >= $value"));
-  return int($up) != 0;
-}
-
-#######################################################################
-#
-#       adjustAttribute
-#               Atomically (unconditionally) adjust a user attribute.
-#
-sub adjustAttribute {
-  my ($USER, $attribute, $value) = @_;
-  my $uid = int($USER->{node_id});
-  my $up = $DB->sqlUpdate('user_attributes',
-                          { "-$attribute" => "$attribute + ($value)" },
-                          'user_id = ' . $uid);
-  if ($up && int($up) == 0) {
-    # No row updated, so insert the row (acquiring the default value
-    # from the database) and then update it.
-    $DB->sqlInsert('user_attributes',
-                   { user_id => $uid});
-    $DB->sqlUpdate('user_attributes',
-		   { "-$attribute" => "$attribute + ($value)" },
-		   'user_id = ' . $uid);
-  }
-  return int($up) != 0;
 }
 
 #######################################################################
