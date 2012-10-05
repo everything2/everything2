@@ -23,10 +23,8 @@ print $handle <<"HEADING1";
 use strict;
 use Everything;
 use Everything::HTML;
-use Everything::Experience;
 use Everything::MAIL;
 use Everything::Search;
-use Everything::Room;
 
 
 package Everything::Compiled::$current_type;
