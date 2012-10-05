@@ -113,7 +113,7 @@
     <key>smite</key>
   </vars>
   <vars>
-    <value>Editors are users with additional site access privileges who can help you get started writing, offer help and suggestions, and if necessary &amp;lt;nuke&amp;gt; submissions that do not meet the site's &amp;lt;quality&amp;gt; standards.  They are chosen by the &amp;lt;administrator&amp;gt;s based on their record of service with the site.  Editors will have a $ symbol by their names in the Other Users list.</value>
+    <value>Editors are users with additional site access privileges who can help you get started writing, offer help and suggestions, and if necessary &amp;lt;nuke&amp;gt; submissions that do not meet the site's &amp;lt;quality&amp;gt; standards.  They are chosen by the &amp;lt;administrator&amp;gt;s based on their record of service with the site.  Editors will have a $ symbol by their names in the Other Users list. See [E2 Staff]</value>
     <key>editor</key>
   </vars>
   <vars>
@@ -151,6 +151,10 @@
   <vars>
     <value>Private messages are the best way to get in touch with a specific user, particularly the &amp;lt;editor&amp;gt;s ($) and &amp;lt;administrator&amp;gt;s (@) of the site.  You can send one by using the blab box in the user's &amp;lt;homenode&amp;gt;, or type &quot;/msg username message&quot; in the chatterbox.  Additionally, there is a blab box in each writeup header to send a message to the author.  This message will start with &quot;re: TITLE&quot; when sent to provide context.  You can send a message to multiple users with /msg{USER_1 USER_2} (no space before the curly brace and use underscores for spaces in usernames).</value>
     <key>msg</key>
+  </vars>
+  <vars>
+    <value>/help zen_theme</value>
+    <key>skin</key>
   </vars>
   <vars>
     <value>/help help</value>
@@ -341,7 +345,7 @@
     <key>easter_egg</key>
   </vars>
   <vars>
-    <value>The &amp;lt;chatterbox&amp;gt; help feature lets you access information about &amp;lt;Everything2&amp;gt;'s features quickly and easily using the format: &quot;/help topic&quot;.  Topics you can search for additional help on will be in &amp;lt;angle brackets&amp;gt; in help messages.  Multi-word help topics should use an underscore _ rather than a space.  A list of currently available help topics is available at [Chatterbox help topics].</value>
+    <value>The &amp;lt;chatterbox&amp;gt; help feature lets you access information about &amp;lt;Everything2&amp;gt;'s features quickly and easily using the format: &quot;/help topic&quot;.  Topics you can search for additional help on will be in &amp;lt;angle brackets&amp;gt; in help messages.  Multi-word help topics should use an underscore _ rather than a space.  A list of currently available help topics is available at [Chatterbox help topics]. If you need personal help, ask in the chatterbox, or see [E2 Staff].</value>
     <key>help</key>
   </vars>
   <vars>

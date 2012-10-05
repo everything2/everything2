@@ -81,7 +81,6 @@ for(my $count=0; $count &lt; @users; $count++) {
   updateNode($U, -1);
   htmlcode('achievementsByType','karma');
   $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; getId(getNode('Superbless', 'superdoc')), 'seclog_details' =&gt; &quot;$$USER{title} [Websterbless|Websterblessed] $$U{title} with $curGP GP.&quot;});
-  use Everything::Experience;
   adjustGP($U, $curGP);
   $str .= &quot;&lt;br /&gt;\n&quot;;
 }

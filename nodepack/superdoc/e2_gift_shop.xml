@@ -6,8 +6,6 @@
 
 return if ($$VARS{GPoptout});
 
-use Everything::Experience;
-
 my $str;
 my $minLevel = 1;
 my $userLev = getLevel($USER);
@@ -96,8 +94,6 @@ $str.=$query-&gt;end_form();
 [%
 
 return if ($$VARS{GPoptout});
-
-use Everything::Experience;
 
 my $minLevel = 11;
 my $Sanctificity = 10;
