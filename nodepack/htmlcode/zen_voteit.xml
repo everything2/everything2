@@ -98,9 +98,6 @@ foreach(values %HTMLVARS) {
 }
 }
 
-use Everything::Experience;
-
-
 #N-Wing, Tuesday, February 11, 2003 - cached vote label settings
 my $CACHE_NAME = 'cache_voteit_votesettings';
 unless( (exists $HTMLVARS{$CACHE_NAME}) &amp;&amp; (defined $HTMLVARS{$CACHE_NAME}) ) {

@@ -9,7 +9,7 @@
     <key>near_matches</key>
   </vars>
   <vars>
-    <value>/help everything2</value>
+    <value>/help Everything2</value>
     <key>e2</key>
   </vars>
   <vars>
@@ -61,7 +61,7 @@
     <key>catbox</key>
   </vars>
   <vars>
-    <value>Easter Eggs are special prizes that can be won from the &lt;[Wheel of Surprise]&gt;.  You can find out how many eggs you have at the &amp;lt;[E2 Gift Shop]&amp;gt;.  Eggs can be used to hug, smite, egg, omelet, or fireball another user in the chatterbox.  To use one, type &quot;/hug USER&quot; in the chatterbox.  This gives the user some &amp;lt;GP&amp;gt;.</value>
+    <value>Easter Eggs are special prizes that can be won from the &lt;[Wheel of Surprise]&gt; or bought from the &amp;lt;[E2 Gift Shop]&amp;gt;.  Eggs can be used to hug, smite, egg, omelet, or fireball another user in the chatterbox.  To use one, type &quot;/hug USER&quot; in the chatterbox.  This gives the user some &amp;lt;GP&amp;gt;.</value>
     <key>egg</key>
   </vars>
   <vars>
@@ -91,6 +91,10 @@
   <vars>
     <value>/help nodevertising</value>
     <key>nodevertise</key>
+  </vars>
+  <vars>
+    <value>/help speed_of_light</value>
+    <key>lightspeed</key>
   </vars>
   <vars>
     <value>/help speed_of_light</value>
@@ -161,7 +165,7 @@
     <key> </key>
   </vars>
   <vars>
-    <value>Hi! I'm glad you want to contribute, but I want to make sure you've read [E2 Quick Start] and seen [Everything2 Help] first. These contain a lot of information that will help get you started.</value>
+    <value>Ah, you want answers to questions? There's no FAQ as such, just [Everything2 Help] and [E2 Quick Start]. You may find [Everything2 Glossary] useful too.</value>
     <key>faq</key>
   </vars>
   <vars>
@@ -293,7 +297,7 @@
     <key>private_message</key>
   </vars>
   <vars>
-    <value>299,792,458 m/s, or 1.8026175 &#215; 10^12 furlongs/fortnight. We believe that help should be comprehensive.</value>
+    <value>299,792,458 m/s, or 1.8026175 &#215; 10^12 furlongs/fortnight. We at Everything2 believe that help should be comprehensive.</value>
     <key>speed_of_light</key>
   </vars>
   <vars>
@@ -343,6 +347,10 @@
   <vars>
     <value>/help egg</value>
     <key>easter_egg</key>
+  </vars>
+  <vars>
+    <value>In case of fire, please leave the chatterbox in an orderly fashion. Do not stop to collect your belongings. Walk, don't run. Dial 911 when you feel it is safe to do so.</value>
+    <key>fire</key>
   </vars>
   <vars>
     <value>The &amp;lt;chatterbox&amp;gt; help feature lets you access information about &amp;lt;Everything2&amp;gt;'s features quickly and easily using the format: &quot;/help topic&quot;.  Topics you can search for additional help on will be in &amp;lt;angle brackets&amp;gt; in help messages.  Multi-word help topics should use an underscore _ rather than a space.  A list of currently available help topics is available at [Chatterbox help topics]. If you need personal help, ask in the chatterbox, or see [E2 Staff].</value>

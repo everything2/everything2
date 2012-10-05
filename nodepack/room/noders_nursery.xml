@@ -8,14 +8,7 @@ and editors -- a place to ask questions outside of the public eye.&lt;/p&gt;
   <criteria>my $uid = getId($USER);
 return 1 if (exists $HTMLVARS{'group_content editors'}{$uid}) || (exists $HTMLVARS{'group_gods'}{$uid});
 
-use Everything::Experience;
 return 1 if getLevel($USER) &lt;= 3 or getLevel($USER) &gt;= 6;
-
-#my $ED = getNodeById(169670);
-#my $uid = getId($USER);
-#foreach (@{ $$ED{group} }) {
-#  return 1 if $uid == $_;
-#}
 
 0;</criteria>
   <type_nodetype>545241</type_nodetype>

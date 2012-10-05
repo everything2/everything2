@@ -1,0 +1,7 @@
+<node>
+  <type_nodetype>4</type_nodetype>
+  <node_id>673178</node_id>
+  <title>testhtmlcode</title>
+  <code>my ($blah,$bah)=@_;
+return &quot;$blah : $bah&quot;;</code>
+</node>

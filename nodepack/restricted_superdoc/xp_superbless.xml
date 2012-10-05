@@ -44,7 +44,6 @@ my $signum = ($curXP&gt;0) ? 1 : (($curXP&lt;0) ? -1 : 0);
   $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; $$NODE{node_id}, 'seclog_details' =&gt; &quot;$$U{title} was superblessed $curXP XP by $$USER{title}&quot;});
   if($signum!=0) {
     $$U{karma}+=$signum;
-    use Everything::Experience;
     adjustExp($U, $curXP);
 htmlcode('achievementsByType','karma');
 

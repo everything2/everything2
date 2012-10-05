@@ -1,9 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-
-use Everything::Experience;
-
 my $isChanop = exists($HTMLVARS{'group_chanops'}{$$USER{node_id}});
 
 if (getLevel($USER) &lt; $HTMLVARS{roomCreateLevel}

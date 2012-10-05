@@ -2,8 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1273299</node_id>
   <title>statsection_personal</title>
-  <code>use Everything::Experience;
-my $str;
+  <code>my $str;
 
 #pass 2 args: category and value
 local *genRow = sub {
@@ -13,8 +12,6 @@ local *genRow = sub {
 
 $str .= genRow('XP',$$USER{experience});
 $str .= genRow('Writeups',$$VARS{numwriteups});
-
-use Everything::Experience;
 
 my $lvl = getLevel($USER)+1;
 my $LVLS = getVars(getNode('level experience', 'setting'));

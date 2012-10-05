@@ -3,7 +3,6 @@
   <node_id>1252154</node_id>
   <title>xmlwriteup</title>
   <code>my ($WRITEUPID) = @_;
-use Everything::Experience;
 
 my $wu = getNodeById($WRITEUPID);
 return unless $wu;

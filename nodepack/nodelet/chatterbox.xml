@@ -67,10 +67,6 @@ if (isSuspended($USER,&quot;chat&quot;)){
 
 $str.=$query-&gt;end_form;
 
-
-#newbie help
-#$str .= htmlcode('chatterinfo','help');
-use Everything::Experience;
 $str .= &quot;\n\t\t&quot;.'&lt;div align=&quot;center&quot;&gt;&lt;small&gt;'.linkNodeTitle('Chatterbox|How does this work?').&quot; | &quot;.linkNodeTitle('Chatterlight').&quot;&lt;/small&gt;&lt;/div&gt;\n&quot; if getLevel($USER)&lt;2;
 
 #Jay's topic stuff

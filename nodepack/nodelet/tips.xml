@@ -7,9 +7,6 @@
   <nlcode>&lt;hr width=%70&gt;
 
 [%
-use Everything::Experience;
-#return if getLevel($USER) &gt; 2;
-
 
 my @tips = (&quot;[Avoid highly subjective writeups]
 &quot;,&quot;[Earn Your Bullshit]

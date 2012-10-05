@@ -175,7 +175,6 @@ my $ekwid = getId(getNode(&quot;ekw theme&quot;, &quot;theme&quot;));
 my $curr;
 my $lvlttl = getVars(getNode('level titles', 'setting'));
 my $lvl;
-use Everything::Experience;
 
 # Loop over the result set and display each row
 my $place=0;

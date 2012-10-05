@@ -16,7 +16,6 @@ Tuesday, November 16, 2004: Users with underscores or spaces in their names had 
 
 
 [%
-use Everything::Experience;
 return 'Log in first, please.' if getId($USER) == $HTMLVARS{guest_user};
 my $UID = getId($USER);
 

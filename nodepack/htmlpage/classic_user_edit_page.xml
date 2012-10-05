@@ -14,7 +14,7 @@ htmlcode('verifyRequestForm', 'edit_user')
 [%
 #TODO make this an htmlcode
 #TODO allow to chose from already uploaded images
-use Everything::Experience;
+
 return unless Everything::isApproved($NODE, getNode('users with image', 'nodegroup')) or getLevel($NODE) &gt;= 1;
 my $isMe = getId($NODE)==getId($USER);
 my $str =  '&lt;p&gt;Your coveted user image&lt;br /&gt;';

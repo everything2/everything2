@@ -1,8 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-use Everything::Experience;
-
 return ''
    unless htmlcode('isEditor',$USER) 
    and htmlcode('verifyRequest', 'superbless')

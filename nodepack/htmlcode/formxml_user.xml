@@ -4,8 +4,6 @@
   <title>formxml_user</title>
   <code>my $str = &quot;&quot;;
 
-use Everything::Experience;
-
 $str.=&quot;&lt;doctext&gt;&quot;;
 $str.=encodeHTML(htmlcode(&quot;displayUserText&quot;)) unless $query-&gt;param(&quot;no_doctext&quot;);
 $str.=&quot;&lt;/doctext&gt;\n&quot;;
