@@ -34,7 +34,6 @@ if(defined $query-&gt;param('sentmessage')) {
 
 } elsif($info eq 'help') {
 
-use Everything::Experience;
 $str .= '&lt;p align=&quot;center&quot;&gt;&lt;small&gt;'.linkNodeTitle('E2 FAQ: Chatterbox|what is this?').&quot;&lt;/small&gt;&lt;/p&gt;\n&quot; if getLevel($USER)&lt;2;
 
 }

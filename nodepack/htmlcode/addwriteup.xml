@@ -9,8 +9,6 @@ if (getVars(getNode('boring heaven nodes', 'setting')) -&gt; {$$NODE{title}}){
 	$canPublishDirectly = -1;
 }
 
-use Everything::Experience;
-
 # get existing wu or reason for no new posting:
 my $MINE = delete $HTMLVARS{my_writeup}; # saved by [canseewriteup]
 $MINE ||= htmlcode('nopublishreason', $USER, $NODE);

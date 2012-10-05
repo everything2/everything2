@@ -31,7 +31,6 @@ unless($VARS-&gt;{noteletKeepComments}) {
 }
 
 #length is limited based on level
-use Everything::Experience;
 my $maxLen = getLevel($USER) || 0;
 $maxLen *= 100;
 if($maxLen&gt;1000) {

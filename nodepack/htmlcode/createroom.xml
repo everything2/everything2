@@ -2,8 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>720339</node_id>
   <title>createroom</title>
-  <code>use Everything::Experience;
-return unless getLevel($USER) &gt;= $HTMLVARS{roomCreateLevel};
+  <code>return unless getLevel($USER) &gt;= $HTMLVARS{roomCreateLevel};
 
 my $cr = getId(getNode('create room','superdoc'));
 

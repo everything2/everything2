@@ -17,8 +17,6 @@ return 'Ack! displayWriteupInfo: Can\'t get writeup '.$WRITEUP unless getRef $WR
 my $nID = getId($NODE);
 my $wuID = getId $WRITEUP;
 
-use Everything::Experience;
-
 #constants
 my $UID = getId($USER)||$HTMLVARS{'guest_user'};
 my $isGuest = ($UID==$HTMLVARS{'guest_user'});

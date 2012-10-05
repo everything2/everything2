@@ -182,7 +182,6 @@ local *info_presents = sub {
 	my $c = $$VARS{cools} || 0;
 	my $VOTES = getVars(getNode('level votes', 'setting')) || 0;
 	my $COOLS = getVars(getNode('level cools', 'setting')) || 0;
-	use Everything::Experience;
 	my $lvl = getLevel($USER) || 0;
 	my $tV = $VOTES ? $$VOTES{$lvl} : 0; $tV = 0 if $tV eq 'NONE';
 	my $tC = $COOLS ? $$COOLS{$lvl} : 0; $tC = 0 if $tC eq 'NONE';

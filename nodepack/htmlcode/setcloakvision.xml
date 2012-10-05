@@ -44,7 +44,6 @@ if(($UID==0) || ($HTMLVARS{guest_user}==$UID)) {
 } elsif($$VARS{infravision}) {
 	$lSee=1;
 } else {
-	use Everything::Experience;
 	if(getLevel($USER)&gt;10) {
 		$lSee=1;
 		$lCloak=2;
