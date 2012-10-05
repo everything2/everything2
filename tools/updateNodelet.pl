@@ -8,7 +8,7 @@ use Everything::HTML;
 use POSIX qw(strftime);
 use Time::HiRes qw(gettimeofday tv_interval);
 
-initEverything "everything", 0, { servers => ["127.0.0.1:11211"] };
+initEverything "everything";
 %Everything::HTML::HTMLVARS = %{ eval (getCode('set_htmlvars')) };
 
 my $csr;
@@ -29,7 +29,6 @@ if (@title_list) {
 my $USER = getNode 'guest user', 'user';
 
 $Everything::HTML::USER = $USER;
-#Everything::HTML::getTheme; 
 $Everything::HTML::GNODE = $USER;
 
 my $forceUpdate = grep { /--force/ } @ARGV;
