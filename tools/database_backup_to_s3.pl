@@ -10,6 +10,8 @@ my $uploader = Everything::S3->new("backup");
 my $tmpdir = "/tmp/everything_backup_$$";
 `mkdir -p $tmpdir`;
 
+initEverything 'everything';
+
 my $user = $Everything::CONF->{'everyuser'};
 my $pass = $Everything::CONF->{'everypass'};
 my $host = $Everything::CONF->{'everything_dbserv'};
