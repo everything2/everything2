@@ -10,7 +10,6 @@
  if ($$USER{node_id} != $HTMLVARS{guest_user} 
   and (not exists $$VARS{votetime} or $$VARS{votetime} ne $time)) {
    
-   use Everything::Experience;
    my $VOTES = getVars(getNode('level votes', 'setting'));
    my $COOLS = getVars(getNode('level cools', 'setting'));
 

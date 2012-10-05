@@ -112,7 +112,6 @@ unless ( $isMine ) {
 			$query-&gt;param('numvoteit', 1);
 		}
 	}else{
-		use Everything::Experience;
 		$votestr.= '&lt;strong&gt;vote failed:&lt;/strong&gt; '
 			if $query-&gt;param(&quot;vote__$n&quot;) &amp;&amp; $query -&gt; param(&quot;vote__$n&quot;) != $prevvote;
 		my $level = getLevel($USER);

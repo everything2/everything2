@@ -4,13 +4,11 @@
   <title>showChoiceFunc</title>
   <code>no strict 'refs';
 use Everything::XML;
-use Everything::Experience; # may not be loaded -&gt; can't be listed
 
 my @modules = (
 	'Everything',
 	'Everything::XML',
 	'Everything::NodeBase',
-	'Everything::Experience',
 	'Everything::HTML'
 );
 my $str;
