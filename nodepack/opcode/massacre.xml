@@ -28,8 +28,6 @@ my $r; #reason
 my $nt; #node title
 my $z;
 
-use Everything::Experience;
-
 foreach $nid (@deathrow) {
 
 	my $N = getNodeById($nid);

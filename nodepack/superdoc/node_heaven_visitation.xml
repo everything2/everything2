@@ -13,7 +13,6 @@ return if $UID==$HTMLVARS{guest_user};
 my $isRoot = exists($HTMLVARS{'group_gods'}{$UID});
 my $isCE = $isRoot || exists($HTMLVARS{'group_content editors'}{$UID});
 
-use Everything::Experience;
 my $GUESTS = getVars(getNode('node heaven guests','setting'));
 my $visit_id = int($query-&gt;param('visit_id'));
 

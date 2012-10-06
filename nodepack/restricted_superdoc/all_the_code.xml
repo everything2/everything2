@@ -12,7 +12,6 @@ my @modules = (
         'Everything::NodeCache',
         'Everything::CacheQueue',
         'Everything::FormMenu',
-	'Everything::Experience',
 	'Everything::Room',
 	'Everything::Search',
 	'Everything::MAIL',

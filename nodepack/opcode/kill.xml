@@ -7,7 +7,6 @@ getRef($N);
 
 return;
 return unless $DB-&gt;canDeleteNode($USER, $N);
-use Everything::Experience;
 
 #decide if we need to take exp away
 my $nopain = 0;

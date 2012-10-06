@@ -18,8 +18,6 @@ padding: 3px;
 
 &lt;table&gt;
 [%
-use Everything::Experience; 
-
 my $str;
 
 $str.=&quot;&lt;p&gt;&lt;table class='mytable' align=center&gt;&lt;tr&gt;&lt;th&gt;Requesting Sheriff&lt;/th&gt;&lt;th&gt;Outlaw Nodeshell&lt;/th&gt;&lt;th&gt;GP Reward (if any)&lt;/th&gt;&lt;/tr&gt;&quot;;

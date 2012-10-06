@@ -9,7 +9,6 @@ return 'Sorry, poll creation has been temporarily disabled.' if ($turnPollsOff);
 my $UID = getId($USER);
 my $isRoot = exists $HTMLVARS{group_gods}{$UID};
 
-use Everything::Experience;
 my $userlevel=getLevel($USER);
 return 'You must be Level 3 to create polls. Sorry.' if (($userlevel&lt;3)&amp;&amp;(!$isRoot));
 

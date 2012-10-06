@@ -3,8 +3,6 @@
   <maintaintype>create</maintaintype>
   <code>my ($N) = @_;
 
-use Everything::Experience;
-
 my $canCreate = (getLevel($USER) &gt;= $HTMLVARS{roomCreateLevel} or isGod($USER));
 $canCreate = 0 if htmlcode('isSuspended', 'room', $USER);
 

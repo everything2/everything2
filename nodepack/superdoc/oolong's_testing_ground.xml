@@ -150,7 +150,6 @@ return $str;
 
 [%
 return;
-  use Everything::Experience;
   return &quot;Spirits flee!&quot; if $$USER{title} eq &quot;Guest User&quot;;
   my $cnt = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;voter_user=896205&quot;);
 # AND votetime LIKE '2008-11-%'
@@ -232,9 +231,6 @@ return strftime(&quot;%a, %d %b %Y %H:%M:%S %z&quot;, localtime(time())) . &quot
 [%
 
 return ; #$HTMLVARS{group_gods};
-
-
-use Everything::Experience;
 
 adjustGP($$USER{user_id}, 1);
 

@@ -39,7 +39,6 @@ return unless $query-&gt;param('isbetatester');
 my $UID = getId($USER);
 return unless $UID &amp;&amp; ($UID!=$HTMLVARS{guest_user});
 
-use Everything::Experience;
 my $numAllowed = getLevel($USER) || 0;
 return 'You need to be a higher level to use the Outside URLs nodelet.' if $numAllowed&lt;1;
 $numAllowed += 2;

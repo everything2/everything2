@@ -3,7 +3,6 @@
   <doctext>Look into thy past. Where hast thou judged?
 &lt;br&gt;&lt;br&gt;
 [%
-use Everything::Experience;
 return &quot;Spirits flee!&quot; if $$USER{title} eq &quot;Guest User&quot;;
 
 my $userVoteCount = $DB-&gt;sqlSelect(&quot;COUNT(*)&quot;, &quot;vote,writeup&quot;, &quot;vote.vote_id=writeup.writeup_id AND vote.voter_user=$$USER{node_id}&quot;);

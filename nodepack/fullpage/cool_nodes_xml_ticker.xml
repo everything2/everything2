@@ -1,6 +1,8 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Sat Oct  6 22:10:08 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Sat Oct  6 23:35:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Mouq&quot; node_id=&quot;2070495&quot; parent_e2node=&quot;2070728&quot; author_user=&quot;Chord&quot;&gt;World's Largest Ball of Processed Americana&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;decoy hunches&quot; node_id=&quot;1722746&quot; parent_e2node=&quot;161561&quot; author_user=&quot;Glowing Fish&quot;&gt;No Exit&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;NanceMuse&quot; node_id=&quot;2070754&quot; parent_e2node=&quot;1459175&quot; author_user=&quot;Zephronias&quot;&gt;This was then, and now I can't even find your grave&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2070745&quot; parent_e2node=&quot;1937504&quot; author_user=&quot;haqiqat&quot;&gt;I peer at the ball game, tired of Whitman, tired of wanting to be great.&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;IWhoSawTheFace&quot; node_id=&quot;2016290&quot; parent_e2node=&quot;2011224&quot; author_user=&quot;The Custodian&quot;&gt;iPad&lt;/cooled&gt;
@@ -14,8 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1306505&quot; parent_e2node=&quot;955518&quot; author_user=&quot;HexFailure&quot;&gt;ionization energy&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;380967&quot; parent_e2node=&quot;380954&quot; author_user=&quot;juliet&quot;&gt;The day I realized how sane I really am&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;bexxta&quot; node_id=&quot;2040180&quot; parent_e2node=&quot;2070703&quot; author_user=&quot;wertperch&quot;&gt;December 1, 2008&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1507375&quot; parent_e2node=&quot;1507374&quot; author_user=&quot;DWarrior&quot;&gt;marginal buying&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Auspice&quot; node_id=&quot;2069986&quot; parent_e2node=&quot;2070634&quot; author_user=&quot;StuartO)))&quot;&gt;The Life and Death of Stu ManChu (part 2)&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

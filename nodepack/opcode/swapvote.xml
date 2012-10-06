@@ -10,8 +10,6 @@ my $defID = getId(getNode('definition','writeuptype')) || 0;
 
 my $unVotable = getVars(getNode('boring heaven nodes', 'setting'));
 
-use Everything::Experience;
-
 #See [E2 Options: Declining vote XP]
 $$VARS{noVoteXP} ||= 0;
 

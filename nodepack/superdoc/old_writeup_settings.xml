@@ -19,7 +19,7 @@ return 'You may use this after you create an account.' if !$uid || ($HTMLVARS{gu
 my $isRoot = exists $HTMLVARS{group_gods}{$uid};
 my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$uid};
 my $isEDev = exists $HTMLVARS{group_edev}{$uid};
-use Everything::Experience;
+
 #return 'You need to be at least level 3 to use this.' unless $isCE || $isEDev || !(getLevel($USER)&lt;3);	#if level is changed, change votefoot also
 
 my $maxLen = 127;
@@ -121,7 +121,7 @@ return 'You may use this after you create an account.' if !$uid || ($HTMLVARS{gu
 my $isRoot = exists $HTMLVARS{group_gods}{$uid};
 my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$uid};
 my $isEDev = exists $HTMLVARS{group_edev}{$uid};
-use Everything::Experience;
+
 #return 'You need to be at least level 3 to use this.' unless $isCE || $isEDev || !(getLevel($USER)&lt;3);	#if level is changed, change votefoot also
 
 my $maxLen = 127;

@@ -9,8 +9,6 @@ padding: 3px;
 &lt;/style&gt;
 
 [%
-use Everything::Experience; 
-
 #return if $$USER{title} eq &quot;Guest User&quot;;
 
 my $str;

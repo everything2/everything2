@@ -24,7 +24,6 @@ return if ($DB-&gt;sqlSelect('cooledby_user', 'coolwriteups', 'coolwriteups_id='
 --$$VARS{cools} unless $forceAllow;
 setVars($USER, $VARS); #Discount chings right away before anything else.
 
-use Everything::Experience;
 adjustExp($$COOL{author_user}, 20);
 $DB-&gt;sqlInsert('coolwriteups', {coolwriteups_id =&gt; $cid, cooledby_user =&gt; $uid});
 $$COOL{cooled}++;

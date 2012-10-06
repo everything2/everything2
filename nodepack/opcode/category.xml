@@ -2,9 +2,7 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>1935812</node_id>
   <title>category</title>
-  <code>use Everything::Experience;
-
-return if getId($USER) == $HTMLVARS{guest_user};
+  <code>return if getId($USER) == $HTMLVARS{guest_user};
 my $isCE = htmlcode('isEditor', $$USER{user_id});
 return if (getLevel($USER) &lt;= 1) &amp;&amp; !$isCE;
 

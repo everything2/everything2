@@ -111,8 +111,6 @@ if ($message =~ /^\/(\S*)?\s+(.+?)\s*$/) {
 
 ### Fireball level power --mauler
 
-use Everything::Experience;
-
 if ($message =~ /^\/fireball\s+(.*)$/i) {
 	my $minLvl = 15;
 

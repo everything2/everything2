@@ -58,7 +58,6 @@ my $userStr = join(',',@userSet);
 
 my $recSet = $DB-&gt;sqlSelectMany(&quot;count(coolwriteups_id) as coolcount, coolwriteups_id&quot;, &quot;coolwriteups&quot;, &quot;(select count(*) from coolwriteups as c1 where c1.coolwriteups_id = coolwriteups.coolwriteups_id and c1.cooledby_user=$user_id)=0 and (select author_user from node where node_id=coolwriteups_id)!=$user_id and cooledby_user in (&quot;.$userStr.&quot;) group by coolwriteups_id having coolcount&gt;1 order by coolcount desc limit 300&quot;);
 
-use Everything::Experience;
 my $count;
 
 while (my $r = $recSet-&gt;fetchrow_hashref) {

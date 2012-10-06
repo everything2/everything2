@@ -239,7 +239,6 @@ if ($query-&gt;param('recalculate_XP')) {
    my $warnstr;
    if ($query-&gt;param('confirm') eq 'wakaru') {
       $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; $$NODE{node_id}, 'seclog_details' =&gt; &quot;$$USER{title} recalculated $$targetUser{title}'s XP&quot;});
-      use Everything::Experience;
       adjustExp($targetUser, (-$xp));
       adjustExp($targetUser, $newXP);
       $$targetVars{hasRecalculated} = 1;

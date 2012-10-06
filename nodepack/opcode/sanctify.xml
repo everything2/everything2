@@ -17,7 +17,6 @@ return unless $$U{type}{title} eq 'user';
         $$U{sanctity} += 1;
         updateNode($U, -1);
 
-        use Everything::Experience;
         adjustGP($U, $Sanctificity);
         adjustGP($USER, -$Sanctificity);
         $$VARS{oldGP} = $$USER{GP};

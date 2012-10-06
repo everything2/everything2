@@ -15,7 +15,6 @@ padding: 3px;
 
 [%
 
-use Everything::Experience;
 #return if ($$VARS{GPoptout});
 delete $$VARS{NoBounty};
 
@@ -352,8 +351,6 @@ $str.=&quot;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&quot;;
 &lt;p&gt;&lt;hr width=50&gt;&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;
 &lt;table&gt;
 [%
-use Everything::Experience; 
-
 my $str;
 
 $str.=&quot;&lt;p&gt;&lt;table class='mytable'&gt;&lt;tr&gt;&lt;th&gt;Requesting Sheriff&lt;/th&gt;&lt;th&gt;Outlaw Node&lt;/th&gt;&lt;th&gt;Details of the Crime&lt;/th&gt;&lt;th&gt;GP Reward (if any)&lt;/th&gt;&lt;/tr&gt;&quot;;
@@ -399,8 +396,6 @@ $str;
 
 &lt;ul&gt;
 [%
-use Everything::Experience; 
-
 my $str;
 
 my $JUST = getVars(getNode('justice served','setting'));

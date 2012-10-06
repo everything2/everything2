@@ -510,7 +510,6 @@ return $str;
 
 use Time::Local;
 use POSIX qw(ceil floor);
-use Everything::Experience;
 
 my $minLevel = 12;
 my $gpCost = 100;

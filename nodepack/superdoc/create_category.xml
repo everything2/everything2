@@ -25,7 +25,6 @@
 
 my $str;
 my $guestUser = $HTMLVARS{guest_user};
-use Everything::Experience;
 #
 # Filter people out who can't create categories
 #

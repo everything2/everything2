@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;Your merit is: &lt;tt&gt;[% $$USER{merit}; %]&lt;/tt&gt;&lt;br&gt;
-Your Level-Up Factor is: &lt;tt&gt;[% use Everything::Experience;  return sprintf &quot;%.4f&quot;,getHRLF($USER); %]&lt;/tt&gt; &lt;small&gt;(leveling-up [% use Everything::Experience;  return sprintf &quot;%.4f&quot;,(1/getHRLF($USER)); %]&amp;times; faster than without the [Honor Roll])&lt;/small&gt;
+Your Level-Up Factor is: &lt;tt&gt;[% return sprintf &quot;%.4f&quot;,getHRLF($USER); %]&lt;/tt&gt; &lt;small&gt;(leveling-up [% return sprintf &quot;%.4f&quot;,(1/getHRLF($USER)); %]&amp;times; faster than without the [Honor Roll])&lt;/small&gt;
 
 [{shownewexp:0,0,1}]
 

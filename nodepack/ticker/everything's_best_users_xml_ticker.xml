@@ -40,7 +40,6 @@ my $step = 0;
 my $lvlexp = getVars(getNode('level experience', 'setting'));
 my $lvlttl = getVars(getNode('level titles', 'setting'));
 my $lvl;
-use Everything::Experience;
 
 $str.=&quot;&lt;EBU ebu_noadmins=\&quot;$nogods\&quot;&gt;&quot;;
 

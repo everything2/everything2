@@ -55,8 +55,6 @@ Finally, you will have five [XP] for each [writeup] under your belt, and you wil
 
 [%
 
-use Everything::Experience; 
-
 my $TITLES = getVars(getNode('level titles', 'setting'));
 my $VOTES = getVars(getNode('level votes', 'setting'));
 my $EXP = getVars(getNode('level experience', 'setting'));

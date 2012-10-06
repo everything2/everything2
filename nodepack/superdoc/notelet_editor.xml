@@ -101,7 +101,6 @@ htmlcode('screenNotelet','');
 %]
 &lt;li&gt;&lt;code&gt;&amp;lt;!--&lt;/code&gt; You may enter comments here. Why would you want comments? Scripting! (But be sure to uncheck &quot;Remove comments&quot;.) &lt;code&gt;--&amp;gt;&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;The raw text you enter here is limited to 1000 characters. Anything longer than that will be lost. This raw text will not be changed in any way. As a slight reward for gaining levels, the higher your level, the more of your raw text is used. [%
-use Everything::Experience;
 my $curLevel = getLevel($USER) || 0;
 my $UID = getId($USER)||0;
 my $maxLen = $curLevel * 100;

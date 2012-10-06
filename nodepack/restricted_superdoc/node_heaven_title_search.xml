@@ -20,8 +20,6 @@
 
 return '&lt;p&gt;Where are you going so fast? You have not yet begun to live. Why not [Create A New User|take a crack at life]?&lt;/p&gt;' if getId($USER) == $HTMLVARS{guest_user};
 
-use Everything::Experience;
-
 my $GUESTS = getVars(getNode('node heaven guests','setting'));
 my $isRoot = isGod($USER);	#only call database once
 my ($filterTitle, $sqlStatement);

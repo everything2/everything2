@@ -27,7 +27,6 @@ if ($query-&gt;param('give_GP')) {
         $$user{sanctity} += 1;
         updateNode($user, -1);
 
-        use Everything::Experience;
         adjustGP($user, $Sanctificity);
         adjustGP($USER, -$Sanctificity);
 
