@@ -12,7 +12,6 @@ use strict;
 use Everything;
 use Everything::MAIL;
 use Everything::Search;
-use Everything::Experience;
 use Everything::Room;
 #use StopWatch;
 use CGI;
@@ -3376,7 +3375,7 @@ sub processVarsSet {
 }
 
 
-# Former inhabitants of Everything::Experience
+# Former inhabitants of the experience module
 
 #######################################################################
 #
