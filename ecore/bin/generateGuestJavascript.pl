@@ -8,7 +8,7 @@ use Everything::HTML;
 
 my $JAVASCRIPT_PATH = '/var/everything/www/js/';
 
-initEverything "everything", 0, { servers => ["127.0.0.1:11211"] };
+initEverything "everything";
 %Everything::HTML::HTMLVARS = %{ eval (getCode('set_htmlvars')) };
 
 my $USER = getNode('Guest User', 'user');

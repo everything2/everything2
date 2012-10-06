@@ -4,7 +4,7 @@ use strict;
 use Everything;
 use Everything::HTML;
 
-initEverything "everything", 0, { servers => ["127.0.0.1:11211"] };
+initEverything "everything";
 
 my $USER = getNode 'guest user', 'user';
 
