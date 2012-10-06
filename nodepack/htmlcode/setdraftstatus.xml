@@ -138,7 +138,6 @@ if ($query -&gt; param('advanced')){
 		title=&quot;publish this draft as a document&quot;&gt;Publish as document&lt;/button&gt;'
 		if htmlcode('isEditor');
 }else{
-	use Everything::Experience;
 	$advanced = $query -&gt; submit(
 		-name =&gt; 'advanced'
 		, value =&gt; 'Advanced option(s)...'

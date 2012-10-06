@@ -9,7 +9,6 @@ my @actions = () ;
 push @actions , $b if not $disabled =~ /c/ and $b = htmlcode('coolit','') ;
 
 if ($$NODE{type}{title} eq 'user'){
-	use Everything::Experience;
 	my $minLevel = 11;
 	my $Sanctificity = 10;
 	push @actions , linkNode($NODE, 'sanctify', {op=&gt;'sanctify', -title =&gt; &quot;Give 'em 10GP!&quot;,

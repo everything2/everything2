@@ -83,7 +83,6 @@ $DB-&gt;sqlInsert('seclog', {
 });
 
 unless($noexp){
-	use Everything::Experience;
 	adjustExp($$wu{author_user}, -5);
 
 	my $vars = getVars $author;
