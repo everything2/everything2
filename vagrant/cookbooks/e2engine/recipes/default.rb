@@ -81,6 +81,7 @@ everything_conf_variables = {
     "static_nodetypes" => node["e2engine"]["static_nodetypes"],
     "memcache" => node["e2engine"]["memcache"].to_hash,
     "clean_search_words_aggressively" => node["e2engine"]["clean_search_words_aggressively"],
+    "search_row_limit" => node["e2engine"]["search_row_limit"],
     "permanent_cache" => {
       "usergroup" => 1,
       "htmlpage" => 1,
