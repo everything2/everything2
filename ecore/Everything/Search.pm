@@ -35,10 +35,6 @@ sub BEGIN
         );
  }
 
-# Maximum number of rows to return on a search.
-my $searchRowLimit = 200;
-
-
 ######################################################################
 #	sub
 #		cleanWordAggressive
@@ -206,8 +202,8 @@ sub makeCleanWords
 #		better matches.
 #
 #	Package-global variables you should know about
-#		$cleanWordsAggressive	1=try to trim plural, 'ed' suffixes from words
-#		$searchRowLimit			maximum number of rows to return from a search.
+#		$Everything::CONF->{clean_search_words_aggressively}	1=try to trim plural, 'ed' suffixes from words
+#		$Everything::CONF->{search_row_limit}			maximum number of rows to return from a search.
 #
 #	Note
 # 		If you get 'not found' on search queries which should return something,
@@ -325,6 +321,7 @@ sub searchNodeName {
 	}	
    	
    	my @ret = ();
+	my $searchRowLimit = $Everything::CONF->{search_row_limit};
 
 #    my $sql =
 #    	"
