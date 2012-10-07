@@ -25,7 +25,6 @@ sub BEGIN
 	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
-		$cleanWordsAggressively
 		makeClean
 		makeCleanWords
 		cleanWordAggressive
@@ -35,13 +34,6 @@ sub BEGIN
 		removeSearchWord
         );
  }
-
-
-
-# Used by searching stuff to determine if we want to clean search terms
-# aggressively (try to drop plural, 'ed' suffixes). Note: If you change
-# this value you should probably hit the "regen searchwords" node.
-my $cleanWordsAggressively = 1;
 
 # Maximum number of rows to return on a search.
 my $searchRowLimit = 200;
@@ -153,7 +145,7 @@ sub makeClean
 #	Parameters
 #       $text   The text string to process.
 #		$harder	Aggressively clean each word with cleanWordAggressive,
-#				if $cleanWordsAggressively is also set.
+#				if $Everything::CONF->{clean_search_words_aggressively} is also set.
 #
 #	Returns
 #		The array of words extracted from $text.
@@ -163,7 +155,7 @@ sub makeCleanWords
 {
     my ($text, $harder) = @_;
     $text = makeClean $text;
-	$harder &&= $cleanWordsAggressively;
+	$harder &&= $Everything::CONF->{clean_search_words_aggressively};
 	
 	my @words = ();
 	if ($text) {
@@ -282,7 +274,7 @@ sub searchNodeName {
 	{
 		$typestr = "AND $typestr" if ($typestr);
 		
-		if ($cleanWordsAggressively)
+		if ($Everything::CONF->{clean_search_words_aggressively})
 		{
 			@words = map(cleanWordAggressive($_), @words);
 		}
@@ -446,7 +438,7 @@ sub regenSearchwords
 	print "Regenerating searchwords, this could take a while...<br><br>\n";
 
 	print 	"Will be cleaning words " .
-			(($cleanWordsAggressively) ? "" : "non-") .
+			(($Everything::CONF->{clean_search_words_aggressively}) ? "" : "non-") .
 			"aggressively.<br>\n";
 			
 	print "Clearing searchwords table<br>\n ";
