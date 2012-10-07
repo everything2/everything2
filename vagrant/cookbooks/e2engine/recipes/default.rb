@@ -80,6 +80,7 @@ everything_conf_variables = {
     "s3" => node["e2engine"]["s3"].to_hash,
     "static_nodetypes" => node["e2engine"]["static_nodetypes"],
     "memcache" => node["e2engine"]["memcache"].to_hash,
+    "clean_search_words_aggressively" => node["e2engine"]["clean_search_words_aggressively"],
     "permanent_cache" => {
       "usergroup" => 1,
       "htmlpage" => 1,
