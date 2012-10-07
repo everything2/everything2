@@ -17,8 +17,6 @@ function useroom( name )
 
 $header .= htmlcode('openform2','bouncer');
 
-use Everything::Room;
-
 #####
 # This goes at the bottom
 #  but it has stuff I use for the top

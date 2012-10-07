@@ -1,10 +1,6 @@
 <node>
   <type_nodetype>1065266</type_nodetype>
   <doctext>[%
-
-use Everything::Room;
-
-
 my $isCoolPerson = htmlcode('isinUsergroup',&quot;$$USER{node_id},gods,1&quot;) ||
                    htmlcode('isinUsergroup',&quot;$$USER{node_id},chanops,1&quot;);
 

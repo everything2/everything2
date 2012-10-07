@@ -6,8 +6,6 @@
 return if $$USER{title} eq 'everyone';
 return (&quot;You are locked in your current room for &quot; . ceil(($$VARS{lockedin} - time)/ 60) . &quot; minutes.&lt;br&gt;&lt;br&gt;&quot;) if ($$VARS{lockedin} &gt; time);
 
-use Everything::Room;
-
 my $str = ' instant ajax chatterbox_chatter:#' if $query and $query -&gt; param('ajaxTrigger') and
 	defined $query-&gt;param('changeroom')	and $query-&gt;param('changeroom') != $$USER{in_room};
 my $RM = getNode('e2 rooms', 'nodegroup');
@@ -50,7 +48,7 @@ if(defined $query-&gt;param('changeroom') and $query-&gt;param('changeroom') == 
 #FIXME: cloaked users should be able to uncloak, even if they can't cloak again
 #my $isCloaker = canCloak($USER);
 
-# This replaces Everything::room::canCloak so that c_es can cloak. This is obviously a kludge - asc
+# This replaces canCloak so that c_es can cloak. This is obviously a kludge - asc
 
 my $cloakers = getVars(getNode('cloakers','setting'));
 my $isCloaker = (getLevel($USER) &gt;= 10 or exists( $HTMLVARS{'group_content editors'}{$$USER{node_id}}) or isGod($USER) or exists($$cloakers{lc($$USER{title})}));

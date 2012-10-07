@@ -40,7 +40,6 @@ if ($$VARS{lockedin} &gt; time)
 	return $lockmessage;
 	}
 
-  use Everything::Room;
   changeRoom($USER, $NODE);
 
   # For room usage counting:

@@ -2,8 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1372587</node_id>
   <title>formxml_room</title>
-  <code>use Everything::Room;
-my $entrance=&quot;0&quot;;
+  <code>my $entrance=&quot;0&quot;;
 if(eval($$NODE{criteria}) and not getId($USER) == $HTMLVARS{guest_user}){
   $entrance=1;
   changeRoom($USER, $NODE);

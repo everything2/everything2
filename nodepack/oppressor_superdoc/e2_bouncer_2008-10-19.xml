@@ -25,7 +25,6 @@ function useroom( name ) {
 &lt;/table&gt;
 
 [%
-use Everything::Room;
 return unless (exists $HTMLVARS{group_gods}{$$USER{user_id}}) || (exists $HTMLVARS{'group_e2contact'}{$$USER{user_id}}); 
 
 #  my $UID == $$USER{node_id};
