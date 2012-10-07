@@ -12,8 +12,6 @@ use strict;
 use Everything;
 use Everything::MAIL;
 use Everything::Search;
-use Everything::Room;
-#use StopWatch;
 use CGI;
 use CGI::Carp qw(set_die_handler);
 use Carp qw(longmess);
@@ -3691,7 +3689,7 @@ return $totalBonus;
 }
 
 
-# Former inhabitants of Everything::Room
+# Former inhabitants of the room module
 sub insertIntoRoom {
   my ($ROOM, $U, $V) = @_;
 
