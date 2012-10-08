@@ -42,7 +42,7 @@ sub cleanWordAggressive
 
 sub makeClean
 {
-    return $APP->makeClean(@_);
+	return $APP->makeClean(@_);
 }
 
 sub makeCleanWords
