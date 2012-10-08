@@ -17,6 +17,7 @@ use strict;
 use DBI;
 use DateTime;
 use Everything::NodeBase;
+use Everything::Application;
 use JSON;
 use Devel::Caller qw(caller_args);
 
@@ -26,6 +27,7 @@ sub BEGIN
 	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $CONF);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
+              $APP
               $DB
               $dbh
               getRef
@@ -88,9 +90,7 @@ sub BEGIN
 }
 
 use vars qw($DB);
-use vars qw($PERLTIME);
-use vars qw($SQLTIME);
-
+use vars qw($APP);
 
 # $dbh is deprecated.  Use $DB->getDatabaseHandle() to get the DBI interface
 use vars qw($dbh);
@@ -786,6 +786,7 @@ sub initEverything
 
 	$DB = new Everything::NodeBase($db, $staticNodetypes, $memcache);
 	$DB->closeTransaction();
+	$APP = new Everything::Application($DB, $CONF);
 
 	# This is for legacy code.  You should not use $dbh!  Use
 	# $DB->getDatabaseHandle() going forward.
