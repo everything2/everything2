@@ -104,9 +104,6 @@ use vars qw($THEME);
 use vars qw($NODELET);
 use vars qw(%HEADER_PARAMS);
 
-my $PAGELOAD = 0;
-my $NUMPAGELOADS = 10;
-
 my $HTTP_ERROR_CODE = 400;
 my $SITE_UNAVAILABLE = <<ENDPAGE;
 <html>
@@ -270,7 +267,7 @@ sub htmlScreen {
 	my ($text, $APPROVED) = @_;
 	$APPROVED ||= {};
 
-  $text = cleanupHTML($text, $APPROVED);
+	$text = cleanupHTML($text, $APPROVED);
 	$text;
 }
 
@@ -2935,8 +2932,6 @@ sub mod_perlInit
 	handleUserRequest();
 
 	$DB->closeTransaction();
-	$PAGELOAD++;
-	
 }
 
 
@@ -3650,11 +3645,9 @@ sub getHRLF
   $$user{numwriteups} ||= 0;
   return 1 if $$user{numwriteups} < 25;
   return $$user{HRLF} if $$user{HRLF};
-#  return 1 unless $$user{title} eq "JayBonci" or $$user{title} eq "Professor Pi";
   my $hrstats = getVars(getNode("hrstats", "setting"));
   
   return 1 unless $$user{merit} > $$hrstats{mean};
-  #return 1/(2-exp(-(($$user{merit} - $$hrstats{mean})^2)/(2*($$hrstats{stddev}^2))));
   return 1/(2-exp(-(($$user{merit}-$$hrstats{mean})**2)/(2*($$hrstats{stddev})**2)));
 };
 
