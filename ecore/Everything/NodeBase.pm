@@ -221,10 +221,8 @@ sub sqlSelect
 	
 	return undef if(not defined $cursor);
 
-#	$Everything::SQLTIME->start();
 	@result = $cursor->fetchrow();
 	$cursor->finish();
-#	$Everything::SQLTIME->stop();
 	
 	return $result[0] if(scalar @result == 1);
 	return @result;
@@ -294,10 +292,8 @@ sub sqlSelectHashref
 	
 	if(defined $cursor)
 	{
-#		$Everything::SQLTIME->start();
 		$hash = $cursor->fetchrow_hashref();
 		$cursor->finish();
-#		$Everything::SQLTIME->stop();
 	}
 
 	return $hash;
@@ -772,7 +768,6 @@ sub getNodeCursor
 	}
 
 	$select .= " WHERE " . $wherestr if($wherestr);
-#	$Everything::SQLTIME->start();
 
 	if ($select eq "SELECT * FROM node")
 	{
@@ -789,7 +784,6 @@ sub getNodeCursor
 
 	$cursor = $this->{dbh}->prepare($select);
 	my $result = $cursor->execute();
-#	$Everything::SQLTIME->stop();
 
 	return $cursor if($result);
 	return undef;
@@ -1242,9 +1236,7 @@ sub insertNode
 
 	$NODE = $this->getNodeById($node_id, 'force');
 
-	
  	Everything::Search::insertSearchWord($title, $node_id);
-
 	
 	# This node has just been created.  Do any maintenance if needed.
 	# We do this here before calling updateNode below to make sure that
