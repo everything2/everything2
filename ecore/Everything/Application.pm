@@ -205,10 +205,10 @@ sub searchNodeName {
 	$TYPE=[$TYPE] if (ref($TYPE) eq 'HASH');
 
 	if(ref($TYPE) eq 'ARRAY' and @$TYPE) {
-		foreach(@$TYPE) { $cooltypes{getId($_)} = 1 }
-		$typestr .= $typePrefix . getId(shift @$TYPE);
+		foreach(@$TYPE) { $cooltypes{$this->{db}->getId($_)} = 1 }
+		$typestr .= $typePrefix . $this->{db}->getId(shift @$TYPE);
 		$typePrefix = ", ";
-		foreach(@$TYPE) { $typestr .= $typePrefix . getId($_); }
+		foreach(@$TYPE) { $typestr .= $typePrefix . $this->{db}->getId($_); }
 	}
 	
 	my $NOSEARCH = $this->{db}->getNode('nosearchwords', 'setting');
@@ -219,7 +219,7 @@ sub searchNodeName {
 	foreach (@prewords) {
 		if ($typeis)
 		{
-			my $type = getType $_;
+			my $type = $this->{db}->getType($_);
 			if ($type)
 			{
 				$typestr .= $typePrefix . $$type{node_id};
@@ -386,7 +386,7 @@ sub insertSearchWord {
 sub removeSearchWord {
 	my ($this, $NODE) = @_;
 
-	$this->{db}->sqlDelete("searchwords", "node_id=".getId($NODE));
+	$this->{db}->sqlDelete("searchwords", "node_id=".$this->{db}->getId($NODE));
 }
 
 
