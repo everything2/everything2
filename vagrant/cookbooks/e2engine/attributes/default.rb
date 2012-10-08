@@ -22,6 +22,7 @@ default["e2engine"]["static_nodetypes"] = 1
 default["e2engine"]["clean_search_words_aggressively"] = 1
 default["e2engine"]["search_row_limit"] = 200
 default["e2engine"]["memcache"] = {}
+default["e2engine"]["logdirectory"] = "/var/log/everything"
 default["e2engine"]["s3"] = {}
 default["e2engine"]["s3"]["homenodeimages"] = {}
 default["e2engine"]["s3"]["homenodeimages"]["bucket"] = ""

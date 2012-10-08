@@ -8,6 +8,17 @@
 
 require 'json'
 
+# Minor copy and paste from e2cron
+logdir = "/var/log/everything"
+datelog = "`date +\\%Y\\%m\\%d\\%H`.log"
+
+directory logdir do
+  owner "www-data"
+  group "root"
+  mode 0755
+  action :create
+end
+
 to_install = [
     'perl',
     'libalgorithm-diff-perl',
@@ -82,6 +93,7 @@ everything_conf_variables = {
     "memcache" => node["e2engine"]["memcache"].to_hash,
     "clean_search_words_aggressively" => node["e2engine"]["clean_search_words_aggressively"],
     "search_row_limit" => node["e2engine"]["search_row_limit"],
+    "logdirectory" => node["e2engine"]["logdirectory"],
     "permanent_cache" => {
       "usergroup" => 1,
       "htmlpage" => 1,
