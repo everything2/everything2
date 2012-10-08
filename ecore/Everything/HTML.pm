@@ -1572,7 +1572,7 @@ sub nodeName
 		# We did not find an exact match, so do a search thats a little
 		# more fuzzy.
 		$search_group =
-        	        searchNodeName($node, \@types, $soundex, 1);
+        	        $APP->searchNodeName($node, \@types, $soundex, 1);
 	
 		if($search_group && @$search_group > 0)
 		{

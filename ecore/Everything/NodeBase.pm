@@ -1232,10 +1232,6 @@ sub insertNode
 	#this is for the hits table
 	$this->sqlInsert('hits', {node_id => $node_id, hits => 0}); 
 
-	#this is for the newwriteup table
-#	$this->sqlInsert('newwriteup', {node_id => $node_id, notnew => 
-
-
 	# Now go and insert the appropriate rows in the other tables that
 	# make up this nodetype;
 	$tableArray = $$TYPE{tableArray};
@@ -1246,6 +1242,7 @@ sub insertNode
 
 	$NODE = $this->getNodeById($node_id, 'force');
 
+	
  	Everything::Search::insertSearchWord($title, $node_id);
 
 	
