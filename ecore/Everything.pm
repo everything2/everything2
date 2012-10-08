@@ -170,7 +170,7 @@ sub printLog
 	# prefix the date a time on the log entry.
 	$entry = "$time: $entry\n";
 
-	if(open(ELOG, ">> $everythingLog"))
+	if(open(ELOG, ">> ".getELogName()))
 	{
 		print ELOG $entry;
 		close(ELOG);
@@ -179,21 +179,17 @@ sub printLog
 	return 1;
 }
 
-
-#############################################################################
-#	Sub
-#		clearLog
-#
-#	Purpose
-#		Clear the gosh darn log!
-#
-sub clearLog
+sub getELogName
 {
-	my $time = getTime();
+	my $basedir = $Everything::CONF->{logdirectory};
+	my $thistime = [gmtime()];
+	my $datestr = $thistime->[5]+1900;
+	$datestr .= sprintf("%02d",$thistime->[4]+1);
+	$datestr .= sprintf("%02d",$thistime->[3]);
+	$datestr .= sprintf("%02d",$thistime->[2]);
 
-	`echo "$time: Everything log cleared" > $everythingLog`;
+	return "$basedir/e2app.$datestr.log";
 }
-
 
 #############################################################################
 #	Sub
