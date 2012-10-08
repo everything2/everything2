@@ -11,7 +11,7 @@ logdir = "/var/log/everything"
 datelog = "`date +\\%Y\\%m\\%d\\%H`.log"
 
 directory logdir do
-  owner "root"
+  owner "www-data"
   group "root"
   mode 0755
   action :create
