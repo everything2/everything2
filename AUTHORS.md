@@ -17,3 +17,5 @@ Originally by:
 * jpt@mindless.com (Old Everything::Search)
 * N-Wing
 * James Crompton
+
+... and dozens of others who have committed patches and looked after the well being of the code in various states
