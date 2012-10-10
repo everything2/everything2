@@ -8,8 +8,12 @@ padding: 3px;
 }
 &lt;/style&gt;
 
-&lt;h1&gt;An [Everything2 Help] Document&lt;/h1&gt;
-
+&lt;h2&gt;An [Everything2 Help] Document&lt;/h2&gt;
+&lt;p&gt;&lt;br /&gt;
+&lt;h1&gt;Why it's important to read this before you begin writing&lt;/h1&gt;
+&lt;p&gt;
+Everything2 may be unlike anything you have met before. Writers are rewarded for their writing, and gain certain privileges as they gain in experience.
+&lt;/p&gt;&lt;br /&gt;&lt;hr width=250&gt;&lt;br /&gt;&lt;p&gt;&lt;p&gt;
 &lt;p align=center&gt;&lt;big&gt;&lt;big&gt;
 XP is an [imaginary] number granted to you by an&lt;br&gt;
 [anonymous] stranger. Treat it as such.
@@ -17,9 +21,11 @@ XP is an [imaginary] number granted to you by an&lt;br&gt;
 
 &lt;h3&gt;Votes&lt;/strong&gt;&lt;/h3&gt;
 &lt;p&gt;
-Level 1 users and up can vote. To vote on any given [writeup], simply click on the + or - icons to the left of the [timestamp].  You can click + or - on each writeup of a node and vote on all them at once by then clicking the &lt;strong&gt;vote!&lt;/strong&gt; button located below the last writeup and before the [Links on Everything2|soft link] area near the bottom.  The '[Reputation]' number will then appear in the header of the writeup with a parenthetical breakdown of positive and negative votes.&lt;/p&gt;
+You begin as a Level 0 user. Level 1 users and up can vote on others' writeups. Once you have voted you will be the voting pattern of that writeup.&lt;/p&gt;
 &lt;p&gt;
-Use these votes wisely! The reputation of a writeup doesn't mean it will be deleted, nor does it mean it will &lt;em&gt;not&lt;/em&gt; be deleted, but it acts as one way to qualify written work and to help editors find what can often be a weak writeup. The editor will then usually try to suggest ways of improving the writeup, or delete it if it seems to be beyond redemption. If one of your writeups is deleted, you will lose &lt;strong&gt;five&lt;/strong&gt; [XP].&lt;/p&gt;
+Use these votes wisely! The reputation of a writeup doesn't mean it will be deleted, nor does it mean it will &lt;em&gt;not&lt;/em&gt; be deleted, but it acts as one way to qualify written work and to help editors find what can often be a weak writeup. If one of your writeups is deleted, you will lose the &lt;strong&gt;five&lt;/strong&gt; [XP] you gained when posting it.&lt;/p&gt;
+&lt;p&gt;
+Try to vote according to the standard of writing, not because you agree or disagree with what someone has written. 
 &lt;p&gt;
 Voting and deletion are two ways we try to keep quality [writeup|writeups] coming in - a hastily/poorly written writeup will often gain a negative reputation.  Conversely, if your writeups are voted up by your fellow users, you will gain XP. Details are below.&lt;/p&gt;
 
@@ -209,10 +215,19 @@ Gaining and losing XP for adding and deleting also applies to &quot;housekeeping
 &lt;p align=center&gt;&lt;br&gt;&lt;em&gt;[The Power Structure of Everything2|The administration] does not take the voting and experience point system too terribly seriously.&lt;/p&gt;
 &lt;p align=center&gt;&lt;u&gt;Woe to those who do.&lt;/u&gt;&lt;/em&gt;&lt;/p&gt;
 &lt;p align=center&gt;&lt;br&gt;&lt;br&gt;
-&lt;em&gt;back to&lt;/em&gt;&lt;br&gt;
-&lt;strong&gt;[Everything2 Help]&lt;/strong&gt;
-&lt;/p&gt;
-</doctext>
+&lt;/p&gt;&lt;br /&gt;&lt;hr width=250&gt;&lt;br /&gt;&lt;/p&gt;&lt;p&gt;
+
+
+&lt;p align=center&gt;
+If this is not clear, ask questions in the [Chatterbox] or approach the [E2 Staff]
+&lt;/p&gt;&lt;br /&gt;
+&lt;p align=&quot;center&quot;&gt;&lt;big&gt;&lt;em&gt;Back to&lt;/em&gt;&lt;br&gt;&lt;strong&gt;[Everything2 Help]&lt;/strong&gt;&lt;/big&gt;&lt;/p&gt;&lt;br /&gt;
+
+
+
+&lt;p align=right&gt;&lt;small&gt;
+If you believe that this document needs updating or correcting, /msg any member of [E2Docs]&lt;br /&gt;
+Last updated on October 9, 2012 by [wertperch] &lt;! Added header and footer, tidied up some language /!&gt;&lt;br /&gt;</doctext>
   <node_id>1962893</node_id>
   <title>The Everything2 Voting/Experience System</title>
 </node>

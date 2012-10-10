@@ -1,13 +1,11 @@
 <node>
   <type_nodetype>451267</type_nodetype>
   <doctext>[%
-   use Everything::Search;
-
    my $keywords = cleanNodeName($query-&gt;param('keywords'));
    my $e2ntype = getId(getNode(&quot;e2node&quot;,&quot;nodetype&quot;));
    
    return &quot;no keywords supplied&quot; unless $keywords;
-   my $nodes = Everything::Search::searchNodeName($keywords, [$e2ntype], 0, 1);
+   my $nodes = $APP-&gt;searchNodeName($keywords, [$e2ntype], 0, 1);
 
    use XML::Generator;
    my $XG = new XML::Generator;
@@ -17,7 +15,7 @@
    $xml .= &quot;\n\t&quot;.$XG-&gt;channel(&quot;\n\t\t&quot;
      .$XG-&gt;title(&quot;RDF Search&quot;).&quot;\n\t\t&quot;
      .$XG-&gt;link(&quot;http://everything2.com/?node_id=&quot;.getId($NODE)).&quot;\n\t\t&quot;
-     .$XG-&gt;description(&quot;RDF intergace to E2 Search.  \&quot;keywords\&quot; parameter should use + delimited words.&quot;).&quot;\n\t&quot;);
+     .$XG-&gt;description(&quot;RDF interface to E2 Search.  \&quot;keywords\&quot; parameter should use + delimited words.&quot;).&quot;\n\t&quot;);
    use Everything::XML;
    foreach (@$nodes) {
      $xml .= &quot;\n\t&quot;.$XG-&gt;item(&quot;\n\t\t&quot;

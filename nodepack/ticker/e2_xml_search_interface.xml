@@ -1,8 +1,6 @@
 <node>
   <type_nodetype>1252389</type_nodetype>
   <doctext>[%
-   use Everything::Search;
-
    my $keywords = cleanNodeName($query-&gt;param('keywords'));
    my $tr = $query-&gt;param(&quot;typerestrict&quot;);
    my $typerestrict; 
@@ -38,7 +36,7 @@ $str.=&quot;
    $str .= &quot;&lt;searchresults&gt;\n&quot;;
 
    if($keywords){
-   my $nodes = Everything::Search::searchNodeName($keywords, [$$e2ntype{node_id}], 0, 1); 
+   my $nodes = $APP-&gt;searchNodeName($keywords, [$$e2ntype{node_id}], 0, 1); 
 
    foreach my $n (@$nodes) {
      $str .= &quot;  &lt;e2link node_id=\&quot;$$n{node_id}\&quot;&gt;&quot;.encodeHTML($$n{title}).&quot;&lt;/e2link&gt;\n&quot; unless $$n{type_nodetype} != $$e2ntype{node_id};
