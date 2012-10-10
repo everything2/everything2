@@ -114,8 +114,8 @@ unless ($e2node){
 	if ($newoption or !$publish &amp;&amp; $parent){
 	# if no existing e2node with this title, or if changing existing parent, look for similar
 		my $e2type = getId(getType('e2node'));
-		my @findings = @{searchNodeName($title, [$e2type], 0, 1)}; # without soundex
-		@findings = @{searchNodeName($title, [$e2type], 1, 1)} unless @findings; # with soundex
+		my @findings = @{$APP-&gt;searchNodeName($title, [$e2type], 0, 1)}; # without soundex
+		@findings = @{$APP-&gt;searchNodeName($title, [$e2type], 1, 1)} unless @findings; # with soundex
 
 		push @existing, map($_ &amp;&amp; $$_{type_nodetype} == $e2type &amp;&amp;  # there's a bug in searchNodeName...
 			$$_{node_id} != $parent &amp;&amp; $$_{node_id} != $nameMatch ? $_: (), @findings);

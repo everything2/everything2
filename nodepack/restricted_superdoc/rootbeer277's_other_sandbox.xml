@@ -104,7 +104,7 @@ foreach my $ND (@nodearray) {
      my $em1 = &quot;&lt;i&gt;&quot;;
      my $em2 = &quot;&lt;/i&gt;&quot;;
      $em1 = $em2 = &quot;&quot; if ($$ND{'group'} || $curType ne 'e2node');
-#     $em1 = $em2 = &quot;&quot; if (searchNodeName($ND)) || $curType ne 'e2node');
+#     $em1 = $em2 = &quot;&quot; if ($APP-&gt;searchNodeName($ND)) || $curType ne 'e2node');
      $str .= &quot;&lt;br&gt;&quot; . $em1 . linkNode($ND) . $em2 . &quot; yay&quot;; }
 return $str;
 %]&lt;/p&gt;
