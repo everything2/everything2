@@ -14,5 +14,5 @@ Originally by:
 * Colin McEwan
 * Brian Orlick
 * Jordi Hermos
-* jpt@mindless.com
+* jpt@mindless.com (Old Everything::Search)
 * N-Wing
