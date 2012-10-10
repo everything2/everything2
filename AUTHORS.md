@@ -6,16 +6,17 @@ Originally by:
 * Derrick Brown
 * Chromatic
 
-# Contributors
+# Contributors (in alphabetical order)
 
-* Jay Bonci
-* Kyle Hale
+* Jay Bonci (jaybonci)
+* James Crompton (DonJaime)
+* Kyle Hale (kthejoker)
+* jpt@mindless.com (for the Everything::Search module)
+* Jordi Gutiérrez Hermosoi
 * Matt Kane
 * Colin McEwan
-* Brian Orlick
-* Jordi Hermos
-* jpt@mindless.com (Old Everything::Search)
+* Fergus Ray Murray (Oolong)
 * N-Wing
-* James Crompton
-
-... and dozens of others who have committed patches and looked after the well being of the code in various states
+* Brian Orlick
+ 
+... and dozens of others who have committed patches and looked after the well being of the code on the site
