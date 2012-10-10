@@ -12,6 +12,7 @@ package Everything::NodeBase;
 use strict;
 use DBI;
 use Everything;
+use Everything::Application;
 use Everything::NodeCache;
 use Test::Deep::NoTest;
 
@@ -1236,7 +1237,8 @@ sub insertNode
 
 	$NODE = $this->getNodeById($node_id, 'force');
 
- 	Everything::Search::insertSearchWord($title, $node_id);
+	my $app = Everything::Application->new($this, $Everything::CONF);
+ 	$app->insertSearchWord($title, $node_id);
 	
 	# This node has just been created.  Do any maintenance if needed.
 	# We do this here before calling updateNode below to make sure that
@@ -1348,7 +1350,8 @@ sub nukeNode
 	}
 
 	$this->executeQuery("DELETE FROM nodegroup WHERE node_id=$$NODE{node_id}");
-	Everything::Search::removeSearchWord($NODE);
+	my $app = Everything::Application->new($this, $Everything::CONF);
+	$app->removeSearchWord($NODE);
 	
 	# This will be zero if nothing was deleted from the tables.
 	return $result;
