@@ -12,7 +12,7 @@ Originally by:
 * James Crompton (DonJaime)
 * Kyle Hale (kthejoker)
 * jpt@mindless.com (for the Everything::Search module)
-* Jordi Gutiérrez Hermosoi
+* Jordi Gutiérrez Hermoso
 * Matt Kane
 * Colin McEwan
 * Fergus Ray Murray (Oolong)
