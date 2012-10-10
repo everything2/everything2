@@ -150,6 +150,10 @@
   </vars>
   <vars>
     <value>1</value>
+    <key>E2Docs</key>
+  </vars>
+  <vars>
+    <value>1</value>
     <key>ninjagirls</key>
   </vars>
   <vars>
@@ -262,23 +266,15 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>e2humour</key>
-  </vars>
-  <vars>
-    <value>1</value>
     <key>e^2</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>helpline</key>
+    <key>e2humour</key>
   </vars>
   <vars>
     <value>1</value>
     <key>karhukopla</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>e2wap</key>
   </vars>
   <vars>
     <value>1</value>
@@ -295,10 +291,6 @@
   <vars>
     <value>1</value>
     <key>nynvb</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>e2docs</key>
   </vars>
   <node_id>1199716</node_id>
   <title>allow message archive</title>

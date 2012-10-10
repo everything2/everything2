@@ -24,7 +24,6 @@ use strict;
 use Everything;
 use Everything::HTML;
 use Everything::MAIL;
-use Everything::Search;
 
 
 package Everything::Compiled::$current_type;
