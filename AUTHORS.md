@@ -9,14 +9,14 @@ Originally by:
 # Contributors (in alphabetical order)
 
 * Jay Bonci (jaybonci)
+* Nathan Bronecke (N-Wing)
 * James Crompton (DonJaime)
 * Kyle Hale (kthejoker)
 * jpt@mindless.com (for the Everything::Search module)
-* Jordi Gutiérrez Hermoso
-* Matt Kane
-* Colin McEwan
+* Jordi Gutiérrez Hermoso (Swap)
+* Matt Kane (ascerbic)
+* Colin McEwan (call)
 * Fergus Ray Murray (Oolong)
-* N-Wing
-* Brian Orlick
+* Brian Orlick (OldMiner)
  
 ... and dozens of others who have committed patches and looked after the well being of the code on the site
