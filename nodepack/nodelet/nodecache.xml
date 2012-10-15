@@ -14,6 +14,11 @@ my $str = &quot;&quot;;
 
 foreach $N (@$nodes)
 {
+  if(ref $N eq &quot;ARRAY&quot;)
+  {
+    $N = $N-&gt;[0];
+  }
+  
   $str .= &quot;$$N{title}:$$N{type}{title}&quot; . &quot;&lt;br&gt;\n&quot;;
 }
 

@@ -14,13 +14,32 @@ $str .= &quot;&lt;ul&gt;\n&quot;;
 
 my $typestats;
 
-foreach $item (@$cache)
+foreach my $cache_entry (@$cache)
 {
+  my $item;
+  if(ref $cache_entry eq &quot;ARRAY&quot;)
+  {
+    $item = $cache_entry-&gt;[0];
+  }else{
+    $item = $cache_entry;
+  }
+
   $typestats-&gt;{$item-&gt;{type}-&gt;{title}} ||= 0;
   $typestats-&gt;{$item-&gt;{type}-&gt;{title}}++;
+   
+  my $extrainfo = &quot;&quot;;
+  if($item-&gt;{type}-&gt;{title} eq &quot;htmlcode&quot;)
+  {
+     if(exists($item-&gt;{compiledCode}))
+     {
+        $extrainfo = &quot; - has compiled code&quot;;
+     }else{
+        $extrainfo = &quot; - no compiled code&quot;;
+     }
+  }
 
   $str .= &quot;&lt;li&gt; $$item{title} (&quot; . $$item{type}{title} .
-    &quot;)\n&quot;;
+    &quot;$extrainfo)\n&quot;;
 }
 
 $str .= &quot;&lt;/ul&gt;&lt;br /&gt;&lt;br /&gt;Counts: &lt;ul&gt;&quot;;
