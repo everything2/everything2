@@ -492,4 +492,40 @@ sub isEditor
 	return $this->{db}->isApproved('user',getNode('content editors','usergroup'));
 }
 
+sub getLevel {
+	my ($this, $user) = @_;
+	$this->{db}->getRef($user);
+	return $$user{level} if $$user{level};
+	return 0 if $$user{title} eq "Guest User";
+
+	my $exp = $$user{experience};
+	my $V = Everything::getVars($user);
+        my $numwriteups = $$V{numwriteups};
+
+        my $EXP = Everything::getVars($this->{db}->getNode('level experience','setting'));
+	my $WRP = Everything::getVars($this->{db}->getNode('level writeups', 'setting'));
+
+	my $maxlevel = 1;
+	while (exists $$EXP{$maxlevel}) { $maxlevel++ }
+
+	$exp ||= 0;
+	$numwriteups ||= 0;
+        my $level = 0;
+        for (my $i = 1; $i < $maxlevel; $i++) {
+                if ($exp >= $$EXP{$i} and $numwriteups >= $$WRP{$i}) {
+                        $level = $i;
+                }
+        }
+
+        $level;
+}
+
+########################################################################
+#
+
+sub userCanCloak
+{
+
+}
+
 1;
