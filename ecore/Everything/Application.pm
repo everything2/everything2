@@ -486,4 +486,10 @@ sub regenSearchwords
 	print "<br><b>Done. $nodecount nodes processed.</b><br>\n ";
 }
 
+sub isEditor
+{
+	my ($this,$user) = @_;
+	return $this->{db}->isApproved('user',getNode('content editors','usergroup'));
+}
+
 1;
