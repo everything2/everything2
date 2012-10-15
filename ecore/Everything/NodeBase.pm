@@ -2430,7 +2430,6 @@ sub isGod
 	my $user_id;
 	my $usergroup;
 	my $GODS;
-	my $godsgroup;
 	my $god;  # he's my god too...
 
 	return 1 if($USER == -1);
@@ -2441,18 +2440,9 @@ sub isGod
 	$usergroup = $this->getType("usergroup");
 
 	($GODS) = $this->getNode("gods", $usergroup);
-	$godsgroup = $$GODS{group}; 
 
 	$this->groupCache($GODS, $$GODS{group}, "plain");
 	return $this->existsInGroupCache($GODS, $user_id);
-
-	
-	#foreach $god (@$godsgroup)
-	#{
-	#	return 1 if ($user_id == $this->getId($god));
-	#}
-
-	#return 0;
 }
 
 
@@ -2831,36 +2821,20 @@ sub deleteNodeParam
 
 sub hasGroupCache {
 	my ($this, $NODE) = @_;
-
-	return 0 if !defined $$NODE{node_id};
-	return 1 if exists($this->{cache}->{groupCache}->{$$NODE{node_id}});
-	return 0;
+	return $this->{cache}->hasGroupCache($NODE);
 }
 
 sub getGroupCache {
 	my ($this, $NODE) = @_;
-	return undef if !defined $$NODE{node_id};
-	return $this->{cache}->{groupCache}->{$$NODE{node_id}};
+	return $this->{cache}->getGroupCache($NODE);
 }
 
 sub groupCache {
-
-	my ($this, $NODE, $group, $type) = @_;
-	$group ||= $$NODE{group};
-
-	return 1 if !defined $$NODE{node_id};
-	return 1 if $this->hasGroupCache($NODE);
-	if($type && $type eq "plain")
-	{
-		%{$this->{cache}->{groupCache}->{$$NODE{node_id}}} = map {$_ => 1} @{$group};
-	}else{
-		%{$this->{cache}->{groupCache}->{$$NODE{node_id}}} = map {$$_{node_id} => 1} @{$group};
-	}
-	return 1;
+	my $this = shift;
+	return $this->{cache}->groupCache(@_);
 }
 
 sub groupUncache {
-
 	my ($this, $NODE) = @_;
 	delete $this->{cache}->{groupCache}->{$$NODE{node_id}};
 	return 1;

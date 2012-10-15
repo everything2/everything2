@@ -102,6 +102,7 @@ sub new
 	$this->{verified} = {};
 	$this->{typeVerified} = {};
 	$this->{typeVersion} = {};
+        $this->{groupCache} = {};
 
 	$this->{paramcache} = {};
 	
@@ -365,13 +366,6 @@ sub removeNode
 {
 	my ($this, $NODE) = @_;
 	my $data = $this->removeNodeFromHash($NODE);
-
-	# Removing a node for any reason from the cache warrants a version
-	# increment.  Usually when a node is removed from the cache, it is
-	# being deleted.
-	# nate sez -- I think the IGV call in cacheNode takes care of this
-	#$this->incrementGlobalVersion($NODE);
-	
 	return $this->{nodeQueue}->removeItem($data);
 }
 
@@ -395,12 +389,14 @@ sub flushCache
 	undef $this->{idCache};
 	undef $this->{version};
 	undef $this->{paramcache};
+	undef $this->{groupCache};
 
 	$this->{nodeQueue} = new Everything::CacheQueue();
 	$this->{typeCache} = {};
 	$this->{idCache} = {};
 	$this->{version} = {};
 	$this->{paramcache} = {};
+	$this->{groupCache} = {};
 }
 
 
@@ -565,6 +561,8 @@ sub removeNodeFromHash
 		delete ($this->{idCache}{$$NODE{node_id}});
 		delete ($this->{version}{$$NODE{node_id}});
 		delete ($this->{paramcache}{$$NODE{node_id}});
+		delete ($this->{groupCache}{$$NODE{node_id}});
+
 		return $data;
 	}
 
@@ -738,6 +736,35 @@ sub resetCache
 	"";
 }
 
+
+sub hasGroupCache {
+	my ($this, $NODE) = @_;
+
+	return 0 if !defined $$NODE{node_id};
+	return 1 if exists($this->{groupCache}->{$$NODE{node_id}});
+	return 0;
+}
+
+sub getGroupCache {
+	my ($this, $NODE) = @_;
+	return undef if !defined $$NODE{node_id};
+	return $this->{groupCache}->{$$NODE{node_id}};
+}
+
+sub groupCache {
+	my ($this, $NODE, $group, $type) = @_;
+	$group ||= $$NODE{group};
+
+	return 1 if !defined $$NODE{node_id};
+	return 1 if $this->hasGroupCache($NODE);
+	if($type && $type eq "plain")
+	{
+		%{$this->{groupCache}->{$$NODE{node_id}}} = map {$_ => 1} @{$group};
+	}else{
+		%{$this->{groupCache}->{$$NODE{node_id}}} = map {$$_{node_id} => 1} @{$group};
+	}
+	return 1;
+}
 
 #############################################################################
 # End of package Everything::NodeCache
