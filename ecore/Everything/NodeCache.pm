@@ -766,6 +766,17 @@ sub groupCache {
 	return 1;
 }
 
+sub groupUncache {
+	my ($this, $NODE) = @_;
+	delete $this->{groupCache}->{$$NODE{node_id}};
+	return 1;
+}
+
+sub existsInGroupCache {
+	my ($this, $NODE, $nid) = @_;
+	return exists($this->{groupCache}->{$$NODE{node_id}}->{$nid});
+}
+
 #############################################################################
 # End of package Everything::NodeCache
 #############################################################################

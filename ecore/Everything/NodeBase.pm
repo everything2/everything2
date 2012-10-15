@@ -2820,13 +2820,13 @@ sub deleteNodeParam
 #############################################################################
 
 sub hasGroupCache {
-	my ($this, $NODE) = @_;
-	return $this->{cache}->hasGroupCache($NODE);
+	my $this = shift;
+	return $this->{cache}->hasGroupCache(@_);
 }
 
 sub getGroupCache {
-	my ($this, $NODE) = @_;
-	return $this->{cache}->getGroupCache($NODE);
+	my $this = shift;
+	return $this->{cache}->getGroupCache(@_);
 }
 
 sub groupCache {
@@ -2835,15 +2835,14 @@ sub groupCache {
 }
 
 sub groupUncache {
-	my ($this, $NODE) = @_;
-	delete $this->{cache}->{groupCache}->{$$NODE{node_id}};
+	my $this = shift;
+	return $this->{cache}->groupUncache(@_);
 	return 1;
 }
 
 sub existsInGroupCache {
-
-	my ($this, $NODE, $nid) = @_;
-	return exists($this->{cache}->{groupCache}->{$$NODE{node_id}}->{$nid});
+	my $this = shift;
+	return $this->{cache}->existsInGroupCache(@_);
 }
 
 
