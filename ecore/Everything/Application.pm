@@ -489,7 +489,7 @@ sub regenSearchwords
 sub isEditor
 {
 	my ($this,$user) = @_;
-	return $this->{db}->isApproved('user',getNode('content editors','usergroup'));
+	return $this->{db}->isApproved('user',$this->{db}->getNode('content editors','usergroup'));
 }
 
 sub getLevel {
