@@ -229,7 +229,7 @@ sub listItems
 
 	while($$data{item} ne "HEAD")
 	{
-		push @list, $$data{item};
+		push @list, [$$data{item}, {"permanent" => $$data{permanent}}];
 		$data = $$data{next};
 	}
 
