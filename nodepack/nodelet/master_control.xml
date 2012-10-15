@@ -13,7 +13,7 @@
 
 my $UID = $$USER{user_id};
 my $isAdmin = exists $HTMLVARS{'group_gods'}{$UID};
-my $isCE = $isAdmin || exists $HTMLVARS{'group_content editors'}{$UID};
+my $isCE = $APP-&gt;isEditor($USER);
 
 # 'nodelet meta-container' only calls this if user is at least
 # an editor, but someone might try to look at at on its own page, so:

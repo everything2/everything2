@@ -16,30 +16,42 @@ my $typestats;
 
 foreach my $cache_entry (@$cache)
 {
-  my $item;
-  if(ref $cache_entry eq &quot;ARRAY&quot;)
-  {
-    $item = $cache_entry-&gt;[0];
-  }else{
-    $item = $cache_entry;
-  }
+  next unless $cache_entry;
+
+  my $item = $cache_entry-&gt;[0];
+  my $extrainfo = [];
 
   $typestats-&gt;{$item-&gt;{type}-&gt;{title}} ||= 0;
   $typestats-&gt;{$item-&gt;{type}-&gt;{title}}++;
    
-  my $extrainfo = &quot;&quot;;
+  push @$extrainfo, $$item{type}{title};
   if($item-&gt;{type}-&gt;{title} eq &quot;htmlcode&quot;)
   {
      if(exists($item-&gt;{compiledCode}))
      {
-        $extrainfo = &quot; - has compiled code&quot;;
+        push @$extrainfo,&quot;has compiled code&quot;;
      }else{
-        $extrainfo = &quot; - no compiled code&quot;;
+        push @$extrainfo,&quot;no compiled code&quot;;
      }
   }
 
-  $str .= &quot;&lt;li&gt; $$item{title} (&quot; . $$item{type}{title} .
-    &quot;$extrainfo)\n&quot;;
+  if($cache_entry-&gt;[1]-&gt;{permanent})
+  {
+     push @$extrainfo, &quot;permanent&quot;;
+  }
+
+  if(exists($$item{group}))
+  {
+     push @$extrainfo, scalar(@{$$item{group}}). &quot; items in group&quot;;
+  }
+ 
+  if(exists($DB-&gt;{cache}-&gt;{groupCache}-&gt;{$$item{node_id}}))
+  {
+     push @$extrainfo, scalar(keys %{$DB-&gt;{cache}-&gt;{groupCache}-&gt;{$$item{node_id}}}).&quot; items in groupCache&quot;;
+  }
+
+
+  $str .= &quot;&lt;li&gt; $$item{title} (&quot;.join(&quot; , &quot;,@$extrainfo).&quot;)\n&quot;;
 }
 
 $str .= &quot;&lt;/ul&gt;&lt;br /&gt;&lt;br /&gt;Counts: &lt;ul&gt;&quot;;

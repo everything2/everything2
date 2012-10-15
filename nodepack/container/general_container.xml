@@ -14,10 +14,7 @@
    my $COOLS = getVars(getNode('level cools', 'setting'));
 
    $$USER{level} = undef;
-   #$$USER{HRLF} = undef;
-   #this is a dummy optimization thing for the honor roll;
-   #$$USER{HRLF} = getHRLF($USER);
-   my $lvl = getLevel $USER;
+   my $lvl = $APP-&gt;getLevel($USER);
    $$USER{level} = $lvl;
    if (exists $$VOTES{$lvl} and $$VOTES{$lvl} =~ /^\d+$/) {
      #$$VARS{votetest1} = &quot;hay&quot;;

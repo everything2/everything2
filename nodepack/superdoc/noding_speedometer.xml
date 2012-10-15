@@ -83,7 +83,7 @@ my $comment = &quot;&quot;;
 
   my $lvwu = getVars(getNode(&quot;level writeups&quot;, &quot;setting&quot;));
   my $lvxp = getVars(getNode(&quot;level experience&quot;, &quot;setting&quot;));
-  my $curlvl = getLevel($u);
+  my $curlvl = $APP-&gt;getLevel($u);
   my $curxp = $$u{experience};
   my $req_wu = ($$lvwu{$curlvl+1}) - $initcnt;
   my $req_xp = ($$lvxp{$curlvl+1}) - $curxp;
