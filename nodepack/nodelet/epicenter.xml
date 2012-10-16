@@ -28,7 +28,7 @@ $loginStr = &quot;
 	&lt;li title=\&quot;Learn what all those numbers mean\&quot;&gt;&quot;.linkNode(getNode('The Everything2 Voting/Experience System','superdoc'), 'Voting/XP System').&quot;&lt;/li&gt;
 	&lt;li title=\&quot;View a randomly selected node\&quot;&gt;&quot;.htmlcode('randomnode','Random Node').&quot;&lt;/li&gt;
 	&lt;li title=\&quot;Need help?\&quot;&gt;&quot;.linkNode(getNode(
-		(getLevel($USER) &lt; 2 ? 'E2 Quick Start' : 'Everything2 Help'),'e2node'), 'Help').&quot;&lt;/li&gt;
+		($APP-&gt;getLevel($USER) &lt; 2 ? 'E2 Quick Start' : 'Everything2 Help'),'e2node'), 'Help').&quot;&lt;/li&gt;
 &lt;/ul&gt;&quot;;
 
 ###VOTES LEFT, XP

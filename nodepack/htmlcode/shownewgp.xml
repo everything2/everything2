@@ -68,10 +68,7 @@ if ($shownumbers) {
 $$VARS{oldGP} = $$USER{GP};
 #reset the new GP flag
 
-my $lvl = getLevel($USER)+1;
-#my $LVLS = getVars(getNode('level experience', 'setting'));
-#my $WRPS = getVars(getNode('level writeups', 'setting'));
-
+my $lvl = $APP-&gt;getLevel($USER)+1;
 
 
 $xmlstr.='&lt;/gpinfo&gt;' if $isxml;

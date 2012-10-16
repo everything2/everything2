@@ -15,7 +15,7 @@ my $vars = getVars($NODE);
 
 $str.=&quot;&lt;experience&gt;&quot;.$$NODE{experience}.&quot;&lt;/experience&gt;\n&quot;;
 $str.=&quot;&lt;lasttime&gt;&quot;.$$NODE{lasttime}.&quot;&lt;/lasttime&gt;\n&quot;;
-$str.=&quot;&lt;level value=\&quot;&quot;.getLevel($NODE).&quot;\&quot;&gt;&quot;.$$vars{level}.&quot;&lt;/level&gt;\n&quot;;
+$str.=&quot;&lt;level value=\&quot;&quot;.$APP-&gt;getLevel($NODE).&quot;\&quot;&gt;&quot;.$$vars{level}.&quot;&lt;/level&gt;\n&quot;;
 
   $str.=&quot;&lt;writeups&gt;&quot;;
 if (defined $$vars{numwriteups}) {

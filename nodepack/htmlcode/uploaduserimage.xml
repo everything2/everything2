@@ -29,9 +29,9 @@ my $tmpfile = '/tmp/everythingimage' . int(rand(10000));
 
 my $sizelimit = 800000;
 my $maxWidth = 200;
-$maxWidth = 400 if ((getLevel($NODE)&gt;4)||(isGod($USER)));
+$maxWidth = 400 if (($APP-&gt;getLevel($NODE)&gt;4)||(isGod($USER)));
 my $maxHeight = 400;
-$maxHeight = 800 if ((getLevel($NODE)&gt;4)||(isGod($USER)));
+$maxHeight = 800 if (($APP-&gt;getLevel($NODE)&gt;4)||(isGod($USER)));
 
 
 $sizelimit = 1600000 if (isGod($USER));

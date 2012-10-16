@@ -38,7 +38,7 @@ if ($MINE){
 	$MINE = {type =&gt; {title=&gt;'writeup'}};
 
 	# restricted options and lecture for new users:
-	my $level = getLevel($USER);
+	my $level = $APP-&gt;getLevel($USER);
 	if ($level &lt;= $canPublishDirectly){
 		$$MINE{type}{title} = 'draft' if $level &lt; $canPublishDirectly;
 

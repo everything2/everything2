@@ -31,7 +31,7 @@ unless($VARS-&gt;{noteletKeepComments}) {
 }
 
 #length is limited based on level
-my $maxLen = getLevel($USER) || 0;
+my $maxLen = $APP-&gt;getLevel($USER) || 0;
 $maxLen *= 100;
 if($maxLen&gt;1000) {
 	$maxLen=1000;

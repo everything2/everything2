@@ -3,7 +3,7 @@
   <doctext>[%
 my $isChanop = exists($HTMLVARS{'group_chanops'}{$$USER{node_id}});
 
-if (getLevel($USER) &lt; $HTMLVARS{roomCreateLevel}
+if ($APP-&gt;getLevel($USER) &lt; $HTMLVARS{roomCreateLevel}
    and not isGod($USER)
    and not $isChanop) {
   return &quot;&lt;I&gt;Too young, my friend.&lt;/I&gt;&quot;;

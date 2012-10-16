@@ -63,7 +63,7 @@ for my $key ( keys %{$vWarVars-&gt;{inventory}} ) {
 	$bonus -= $vWarVars-&gt;{inventory}-&gt;{$key}-&gt;{shieldBonus};	
 }
 
-my $damage = int(rand(10))+getLevel($USER) + int($scalar-&gt;{kills} / 9) + $bonus;
+my $damage = int(rand(10))+$APP-&gt;getLevel($USER) + int($scalar-&gt;{kills} / 9) + $bonus;
 my $isCritical = (int(rand(99)) &lt; 2);
 $damage = $damage * 2 if $isCritical;
 $scalar-&gt;{damageDone} += $damage;

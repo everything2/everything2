@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1143107</node_id>
   <title>showuserimage</title>
-  <code>return unless $DB-&gt;isApproved($NODE, getNode('users with image', 'nodegroup')) or getLevel($NODE) &gt;= 1;
+  <code>return unless $DB-&gt;isApproved($NODE, getNode('users with image', 'nodegroup')) or $APP-&gt;getLevel($NODE) &gt;= 1;
 return if isSuspended($NODE,&quot;homenodepic&quot;);
 return unless $$NODE{imgsrc};
 my $imgsrc = $$NODE{imgsrc};

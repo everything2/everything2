@@ -96,7 +96,7 @@ if($$SETTINGS{numwriteups} !~ /^\d+$/) {
                                          .&quot; ORDER BY publishtime DESC LIMIT 1&quot;);
 }
 
-my $lvl = getLevel($NODE);
+my $lvl = $APP-&gt;getLevel($NODE);
 $$SETTINGS{level} = $lvl;
    
 my $TITLES= getVars(getNode('level titles','setting'));

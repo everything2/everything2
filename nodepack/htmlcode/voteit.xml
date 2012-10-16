@@ -114,7 +114,7 @@ unless ( $isMine ) {
 	}else{
 		$votestr.= '&lt;strong&gt;vote failed:&lt;/strong&gt; '
 			if $query-&gt;param(&quot;vote__$n&quot;) &amp;&amp; $query -&gt; param(&quot;vote__$n&quot;) != $prevvote;
-		my $level = getLevel($USER);
+		my $level = $APP-&gt;getLevel($USER);
 		$votestr.= '('.linkNodeTitle(&quot;Why Don't I Have Votes Today?|out of votes&quot;).')'
 			if $level &amp;&amp; htmlcode('displaySetting' , 'level votes', $level) ;
 	}

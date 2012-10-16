@@ -44,7 +44,7 @@ if(($UID==0) || ($HTMLVARS{guest_user}==$UID)) {
 } elsif($$VARS{infravision}) {
 	$lSee=1;
 } else {
-	if(getLevel($USER)&gt;10) {
+	if($APP-&gt;getLevel($USER)&gt;10) {
 		$lSee=1;
 		$lCloak=2;
 	} else {

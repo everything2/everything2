@@ -260,7 +260,7 @@ local *info_presents = sub {
 	my $v = $$USER{votesleft} || 0;
 	my $c = $$VARS{cools} || 0;
 
-	my $lvl = getLevel($USER) || 0;
+	my $lvl = $APP-&gt;getLevel($USER) || 0;
 	my $tV = getVars(getNode('level votes', 'setting'))-&gt;{$lvl} || 0;
 	$tV = 0 if $tV eq 'NONE';
 

@@ -13,7 +13,7 @@ local *genRow = sub {
 $str .= genRow('XP',$$USER{experience});
 $str .= genRow('Writeups',$$VARS{numwriteups});
 
-my $lvl = getLevel($USER)+1;
+my $lvl = $APP-&gt;getLevel($USER)+1;
 my $LVLS = getVars(getNode('level experience', 'setting'));
 my $WRPS = getVars(getNode('level writeups', 'setting'));
 
@@ -24,7 +24,7 @@ $$VARS{numwriteups} ||= 0;
 $numwu = $$VARS{numwriteups};
 $wrpleft = ($$WRPS{$lvl} - $numwu) if exists $$WRPS{$lvl};
 
-$str .= genRow('Level',getLevel($USER));
+$str .= genRow('Level',$APP-&gt;getLevel($USER));
 if ($expleft &gt; 0) {
 $str .= genRow('XP needed',$expleft);
 } else {

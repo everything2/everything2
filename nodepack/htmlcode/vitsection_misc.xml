@@ -10,10 +10,10 @@ $str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Chatterlight').&quot;&lt;/li&gt;&quo
 $str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('E2 Gift Shop').&quot;&lt;/li&gt;&quot;;
 $str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Everything Quote Server').&quot;&lt;/li&gt;&quot;;
 $str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('The Registries').&quot;&lt;/li&gt;&quot;;
-if (getId($USER) !=$HTMLVARS{guest_user} &amp;&amp; getLevel($USER)&gt;2) {
+if (getId($USER) !=$HTMLVARS{guest_user} &amp;&amp; $APP-&gt;getLevel($USER)&gt;2) {
 $str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Do You C! What I C?').&quot;&lt;/li&gt;&quot;;
 }
-if (getId($USER) !=$HTMLVARS{guest_user} &amp;&amp; getLevel($USER)&gt;2) {
+if (getId($USER) !=$HTMLVARS{guest_user} &amp;&amp; $APP-&gt;getLevel($USER)&gt;2) {
 $str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('The Recommender').&quot;&lt;/li&gt;&quot;;
 }
 
