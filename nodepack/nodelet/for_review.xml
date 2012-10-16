@@ -1,6 +1,6 @@
 <node>
   <nltext></nltext>
-  <parent_container></parent_container>
+  <parent_container>0</parent_container>
   <nlgoto></nlgoto>
   <node_id>2068913</node_id>
   <type_nodetype>9</type_nodetype>
@@ -19,8 +19,7 @@ my @noteResponse = (
 	, &quot;notecount &gt; 0,&quot;
 	, '&lt;th align=&quot;center&quot; title=&quot;node notes&quot;&gt;N?&lt;/th&gt;'
 	, 'notes'
-	)
-	if htmlcode('isEditor');
+	) if $APP-&gt;isEditor($USER);
 
 my $drafts = $DB -&gt; sqlSelectMany(
 	&quot;title, author_user, request.timestamp AS publishtime $noteResponse[0]&quot;

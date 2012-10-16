@@ -3,7 +3,7 @@
   <node_id>1876426</node_id>
   <title>softlock</title>
   <code>return unless $query-&gt;param(&quot;lockID&quot;);
-return unless htmlcode('isEditor','');
+return unless $APP-&gt;isEditor($USER);
 
 my $lockNode = getNodeById($query-&gt;param(&quot;lockID&quot;));
 return unless $lockNode;

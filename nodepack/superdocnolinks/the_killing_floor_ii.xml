@@ -3,7 +3,7 @@
   <doctext>[{openform}]
 [%
 my $UID = getId($USER);
-return ($$USER{title} . ' ain\'t allowed ta squash nuttin\'!') unless htmlcode('isEditor', $USER);
+return ($$USER{title} . ' ain\'t allowed ta squash nuttin\'!') unless $APP-&gt;isEditor($USER);
 my $NOPARENT = '&lt;p&gt;&lt;strong&gt;Nothing to remove!&lt;/strong&gt;
 	(Either the writeups had been removed by the time you got here,
 	or they were insured,

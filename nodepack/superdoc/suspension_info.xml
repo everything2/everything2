@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-my $isEd = htmlcode('isEditor');
+my $isEd = $APP-&gt;isEditor($USER);
 my $isChanop = htmlcode('isinUsergroup', $USER, 'chanops', 'recurse');
 my %chanopSuspensionTypes = (
   'room' =&gt; 1, 'topic' =&gt; 1, 'chat' =&gt; 1

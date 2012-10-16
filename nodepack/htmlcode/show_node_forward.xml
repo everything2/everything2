@@ -6,12 +6,11 @@
 
 my $originalTitle = $query-&gt;param('originalTitle');
 my $encodedTitle = encodeHTML($originalTitle);
-my $isEditor = htmlcode('isEditor');
 my $forwardNode = getNode($originalTitle, 'node_forward', 'light');
 my $alsoStr = htmlcode('usercheck', $originalTitle);
 my $editStr = &quot;&quot;;
 
-if ($isEditor &amp;&amp; $forwardNode) {
+if ($APP-&gt;isEditor($USER) &amp;&amp; $forwardNode) {
   $editStr = &quot; &quot;
     . linkNode($forwardNode, &quot;(edit forward)&quot;, {displaytype =&gt; 'edit'})
     ;

@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-return unless htmlcode('isEditor' ) ;
+return unless $APP-&gt;isEditor($USER);
 
 my $SETTINGSNODE = getNode( 'Disabled actions' , 'setting' ) ;
 my $disabled = getVars( $SETTINGSNODE ) ;

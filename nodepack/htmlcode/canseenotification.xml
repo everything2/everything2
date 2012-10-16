@@ -6,7 +6,7 @@
 getRef $notification;
 
 my $uid = $$USER{node_id};
-my $isCE = htmlcode('isEditor');
+my $isCE = $APP-&gt;isEditor($USER);
 my $isCoder = htmlcode('isinUsergroup', $uid, 'edev', 1) || 
               htmlcode('isinUsergroup', $uid, 'e2coders', 1);
 my $isChanop = htmlcode('isinUsergroup',$uid, 'chanops', 1);

@@ -2,7 +2,7 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 return ''
-   unless htmlcode('isEditor',$USER) 
+   unless $APP-&gt;isEditor($USER)
    and htmlcode('verifyRequest', 'superbless')
    ;
 
@@ -62,7 +62,7 @@ $str;
 
 [%
 return '&lt;p&gt;You have not yet learned that spell.&lt;/p&gt;'
-  unless htmlcode('isEditor',$USER);
+  unless $APP-&gt;isEditor($USER);
 my $count = 10;
 
 my $str;

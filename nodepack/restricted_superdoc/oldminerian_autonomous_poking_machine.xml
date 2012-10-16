@@ -423,7 +423,7 @@ use JSON;
 my $str;
 
 # hide node notes from non-editors
-my $isEditor = htmlcode('isEditor');
+my $isEditor = $APP-&gt;isEditor($USER);
 my %editorOnlyNotifications = ( 1930989 =&gt; 1, );
 my %excludeNotifications = ();
 
@@ -455,7 +455,7 @@ $otherNotifications;
 %]
 &lt;h3&gt;Are you an editor?&lt;/h3&gt;
 &lt;p&gt;
-[% htmlcode('isEditor') ? &quot;Yep&quot; : &quot;No.  How'd you get in here?&quot;; %]
+[% $APP-&gt;isEditor($USER) ? &quot;Yep&quot; : &quot;No.  How'd you get in here?&quot;; %]
 &lt;/p&gt;
 &lt;hr&gt;
 &lt;h3&gt;Message encoding check&lt;/h3&gt;

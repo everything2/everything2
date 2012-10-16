@@ -2,7 +2,7 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>1179550</node_id>
   <title>insure</title>
-  <code>return unless htmlcode('isEditor');
+  <code>return unless $APP-&gt;isEditor($USER);
 
 return unless($query-&gt;param('ins_id'));
 my $insnode = getNodeById($query-&gt;param('ins_id'));

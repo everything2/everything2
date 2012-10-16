@@ -10,7 +10,7 @@ my $draft = $query -&gt; param('draft_id');
 getRef $draft;
 
 return unless $draft and $$draft{doctext} and $$draft{type}{title} eq 'draft' and
-	$$USER{node_id} == $$draft{author_user} || htmlcode('isEditor');
+	$$USER{node_id} == $$draft{author_user} || $APP-&gt;isEditor($USER);
 
 my $publishAs = $query -&gt; param('publishas');
 if ($publishAs){

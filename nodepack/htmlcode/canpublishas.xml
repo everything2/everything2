@@ -16,7 +16,7 @@ my %accounts = (
 	, Virgil =&gt; 'e2docs'
 );
 
-@accounts{('Webster 1913', 'EDB', 'Klaproth', 'Cool Man Eddie')} = (1,1,1,1) if htmlcode('isEditor');
+@accounts{('Webster 1913', 'EDB', 'Klaproth', 'Cool Man Eddie')} = (1,1,1,1) if $APP-&gt;isEditor($USER);
 
 if ($target){
 	return '' unless $target;

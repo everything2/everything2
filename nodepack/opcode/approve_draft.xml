@@ -2,7 +2,7 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>2053841</node_id>
   <title>approve_draft</title>
-  <code>return unless htmlcode('isEditor');
+  <code>return unless $APP-&gt;isEditor($USER);
 
 my $draft = $query -&gt; param('draft');
 my $e2node = $query -&gt; param('e2node');

@@ -17,7 +17,7 @@ my @noteResponse = (
 	, '&lt;th align=&quot;center&quot; title=&quot;node notes&quot;&gt;N?&lt;/th&gt;'
 	, 'notes'
 	)
-	if htmlcode('isEditor');
+	if $APP-&gt;isEditor($USER);
 
 my $drafts = $DB -&gt; sqlSelectMany(
 	&quot;title, author_user, request.timestamp AS publishtime $noteResponse[0]&quot;

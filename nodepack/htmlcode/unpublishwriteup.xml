@@ -7,7 +7,7 @@
 getRef $wu;
 return unless $wu and $$wu{type}{title} eq 'writeup';
 
-return unless $$USER{node_id} == $$wu{author_user} or htmlcode('isEditor', $USER);
+return unless $$USER{node_id} == $$wu{author_user} or $APP-&gt;isEditor($USER);
 
 my $id = $$wu{node_id};
 my ($title, $noexp) = ($$wu{title}, 0);

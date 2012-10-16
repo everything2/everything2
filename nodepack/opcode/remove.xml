@@ -12,7 +12,7 @@
 	return htmlcode('update New Writeups data');
 }
 
-return unless htmlcode('isEditor');
+return unless $APP-&gt;isEditor($USER);
 
 my @list;
 unless ($query -&gt; param('removeauthor')){

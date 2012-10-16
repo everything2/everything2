@@ -1,6 +1,11 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Mon Oct 15 19:35:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Tue Oct 16 02:40:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;jessicaj&quot; node_id=&quot;1684328&quot; parent_e2node=&quot;1684326&quot; author_user=&quot;BlackPawn&quot;&gt;Tomato and Onion Omelette with Smoked Duck and Truffles&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;raincomplex&quot; node_id=&quot;2071106&quot; parent_e2node=&quot;2071099&quot; author_user=&quot;Montag&quot;&gt;You Ask, Montag Answers: Part One&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;1538673&quot; parent_e2node=&quot;151038&quot; author_user=&quot;teleny&quot;&gt;John Kenneth Galbraith&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1676237&quot; parent_e2node=&quot;1305162&quot; author_user=&quot;Harmony&quot;&gt;Schizoaffective disorder&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Auspice&quot; node_id=&quot;2036540&quot; parent_e2node=&quot;2036539&quot; author_user=&quot;haqiqat&quot;&gt;They call me Engineer-khan&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;CapSkippy&quot; node_id=&quot;865553&quot; parent_e2node=&quot;865494&quot; author_user=&quot;narzos&quot;&gt;Soulmates who will never ever meet again&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;jessicaj&quot; node_id=&quot;1999055&quot; parent_e2node=&quot;1999054&quot; author_user=&quot;tanktop&quot;&gt;split pea soup&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;decoy hunches&quot; node_id=&quot;593052&quot; parent_e2node=&quot;91716&quot; author_user=&quot;Romulus&quot;&gt;Sealand&lt;/cooled&gt;
@@ -11,11 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Uberbanana&quot; node_id=&quot;2036495&quot; parent_e2node=&quot;2036493&quot; author_user=&quot;Jet-Poop&quot;&gt;Winter Olympians&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Scaevola&quot; node_id=&quot;2070877&quot; parent_e2node=&quot;2070876&quot; author_user=&quot;Hazelnut&quot;&gt;People today are too easily butthurt&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;1684939&quot; parent_e2node=&quot;1684937&quot; author_user=&quot;teleny&quot;&gt;The Radioactive Boy Scout&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;1335118&quot; parent_e2node=&quot;928214&quot; author_user=&quot;ataraxia&quot;&gt;anosognosia&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Oolong&quot; node_id=&quot;2070978&quot; parent_e2node=&quot;2071012&quot; author_user=&quot;Zephronias&quot;&gt;I was pretty sure that wasn't how slasher films were supposed to end, but you won't see me complaining.&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2071009&quot; parent_e2node=&quot;1878868&quot; author_user=&quot;raincomplex&quot;&gt;Word begets image, and image is virus&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;739632&quot; parent_e2node=&quot;739614&quot; author_user=&quot;pfft&quot;&gt;blackboard bold&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;740403&quot; parent_e2node=&quot;740387&quot; author_user=&quot;siren&quot;&gt;Hertzsprung-Russell diagram&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

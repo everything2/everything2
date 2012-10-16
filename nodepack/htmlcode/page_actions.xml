@@ -42,7 +42,7 @@ unless ( $query -&gt; param( 'addto' ) ) {
 my $disable = linkNode( getNode( 'Disable actions' , 'superdoc' ) , '&lt;small&gt;x&lt;/small&gt;' ,
 	{ '-title' =&gt; 'Disable some/all actions for this node/nodetype&amp;hellip;' ,
 	donode =&gt; $$NODE{node_id} } ) . &quot;&lt;/li&gt;\n&lt;li&gt;&quot;
-		if htmlcode( 'isEditor' ) and not $disabled =~ /L/ ;
+		if $APP-&gt;isEditor($USER) and not $disabled =~ /L/ ;
 
 return '&lt;ul class=&quot;topic actions&quot;&gt;
 	&lt;li&gt;' . $disable . join( &quot;&lt;/li&gt;\n&lt;li&gt;&quot; , @actions ) . &quot;&lt;/li&gt;\n&lt;/ul&gt;\n&quot; if @actions ;

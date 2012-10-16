@@ -4,7 +4,7 @@
   <title>firmlink</title>
   <code>my $RECURSE = 1;
 
-return unless htmlcode('isEditor')
+return unless $APP-&gt;isEditor($USER)
   or htmlcode('isinUsergroup', $USER, 'SIGTITLE', $RECURSE)
   ;
 

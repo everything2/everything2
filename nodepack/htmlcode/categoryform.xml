@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>2005033</node_id>
   <title>categoryform</title>
-  <code>return if getLevel( $USER ) &lt;= 1 &amp;&amp; !htmlcode( 'isEditor', $USER );
+  <code>return if $APP-&gt;getLevel( $USER ) &lt;= 1 &amp;&amp; !$APP-&gt;isEditor($USER);
 
 my ( $N , $inwriteupform ) = @_ ;
 getRef $N ;

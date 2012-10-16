@@ -9,7 +9,7 @@ my @names = sort {lc($a) cmp lc($b)} keys(%$options);
 my ($str, @ok, %groups) = ('');
 
 my $inbox = getNode('Message Inbox', 'Superdoc');
-my $isEd = htmlcode('isEditor');
+my $isEd = $APP-&gt;isEditor($USER);
 
 foreach (@names){
 	my $ugName = $$options{$_};

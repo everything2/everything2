@@ -7,8 +7,7 @@ getRef $N;
 
 return htmlcode('writeuptools', @_) if $$N{type}{title} eq 'writeup';
 
-my $isEditor = exists $HTMLVARS{'group_gods'}{$$USER{node_id}}
-	|| exists $HTMLVARS{'group_content editors'}{$$USER{node_id}};
+my $isEditor = $APP-&gt;isEditor($USER);
 
 my $isMine = ($$N{author_user} == $$USER{node_id});
 

@@ -81,7 +81,7 @@ unless ( $str ){
 	if ( Everything::isApproved( $USER , getNode('edev', 'usergroup') ) ){
 		$str = parseLinks(&quot;[ajax update page[htmlpage]]: error running htmlcode
 			[${htmlcode}[htmlcode]]&lt;br&gt;$str&quot;);
-	} elsif ( htmlcode('isEditor') ) {
+	} elsif ( $APP-&gt;isEditor($USER) ) {
 		$str = 'ajax htmlcode/argument error' ;
 	} else {
 		$str = 'code error' ;

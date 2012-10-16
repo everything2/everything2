@@ -6,7 +6,7 @@
 [%
 # do admin stuff now so the node has been repaired if necessary before being displayed
 $HTMLVARS{admintools} = htmlcode('e2nodetools')
-	if isGod($USER) || exists ($HTMLVARS{&quot;group_content editors&quot;}{$$USER{node_id}});
+	if $APP-&gt;isEditor($USER);
 
 my $stuff = $$NODE{group} || [];
 
@@ -75,7 +75,7 @@ if ( my $count = scalar @{ $HTMLVARS{notshown}-&gt;{lowrep} } ){
 			'&lt;li&gt; type, byline, reputation, reveal',
 			reveal =&gt; $reveal,
 			reputation =&gt; sub {
-				return unless htmlcode( 'isEditor' ) ;
+				return unless $APP-&gt;isEditor($USER);
 				qq'&lt;span class=&quot;reputation&quot;&gt;(reputation: $_[0]{ reputation })&lt;/span&gt;' ;
 			}
 		)

@@ -11,9 +11,6 @@
 
 return '' if $$USER{user_id} == $HTMLVARS{guest_user};
 
-my $isRoot = htmlcode('isAdmin');
-my $isEd = $isRoot || htmlcode('isEditor');
-
 my ($loginStr, $votesLeftStr, $expStr, $serverTimeStr, $weblogStr);
 
 #####LOGIN STRING

@@ -3,7 +3,7 @@
   <doctext>&lt;p align=&quot;right&quot;&gt;&lt;small&gt;Bugs to to [rootbeer277]&lt;/small&gt;&lt;/p&gt;
 
 [%
-return 'No magic for you, I\'m afraid.' unless htmlcode('isEditor');
+return 'No magic for you, I\'m afraid.' unless $APP-&gt;isEditor($USER);
 
 ## Writeup reparenting tool
 ## This is called from e2node or writeup admin tools, or

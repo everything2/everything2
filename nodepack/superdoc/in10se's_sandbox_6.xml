@@ -2,9 +2,9 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $isGod = htmlcode('isGod', $USER);
-my $isEd = htmlcode('isEditor', $USER);
+my $isEd = $APP-&gt;isEditor($USER);
 my $isOp = htmlcode('isinUsergroup', $USER, 'chanops');
-if($isGod != 1 &amp;&amp; $isEd != 1 &amp;&amp; $isOp != 1)
+if($isEd != 1 &amp;&amp; $isOp != 1)
 {
    return 'My sandbox, my rules. Go build your sandcastles elsewhere.';
 }

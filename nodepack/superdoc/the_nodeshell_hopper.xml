@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-return 'You\'ve got other things to snoop on, don\'t ya.' unless htmlcode('isEditor');
+return 'You\'ve got other things to snoop on, don\'t ya.' unless $APP-&gt;isEditor($USER);
 
 my $str = 'A smarter nodeshell deletion implementation
 	&lt;br&gt;&lt;br&gt;Copy and paste off of the nodeshells marked for destructions lists.  
