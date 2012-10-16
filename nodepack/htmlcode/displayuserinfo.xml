@@ -151,7 +151,7 @@ local *info_skratchshare = sub {
 };
 
 local *info_manip = sub {
- 	return unless htmlcode('isEditor');
+ 	return unless $APP-&gt;isEditor($USER);
  	return htmlcode('editor homenode tools');
 };
 

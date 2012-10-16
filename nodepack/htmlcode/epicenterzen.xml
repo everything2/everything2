@@ -11,7 +11,7 @@ my @thingys = ();
 my $votesLeftStr = &quot;&quot;;
 
 my $isRoot = htmlcode('isAdmin');
-my $isEd = $isRoot || htmlcode('isEditor');
+my $isEd = $APP-&gt;isEditor($USER);
 
 
 my $c = $$VARS{cools} || 0;

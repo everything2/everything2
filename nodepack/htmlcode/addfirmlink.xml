@@ -4,7 +4,7 @@
   <title>addfirmlink</title>
   <code>my $RECURSE = 1;
 return unless htmlcode('isinUsergroup', $USER, 'SIGTITLE', $RECURSE)
-  or htmlcode('isEditor');
+  or $APP-&gt;isEditor($USER);
 
 $query-&gt;delete('op');
 

@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1180775</node_id>
   <title>nodenote</title>
-  <code>return unless htmlcode('isEditor','');
+  <code>return unless $APP-&gt;isEditor($USER);
 return if($$VARS{hidenodenotes});
 
 my $N = my $onlyMe = shift;

@@ -20,7 +20,7 @@ my $showNotArc = index($showOpts,'A')==-1;   #show non-archive messages (usually
 return unless $showArc || $showNotArc;
 my $showGroup = index($showOpts,'g')==-1;    #show group messages (usually do)
 my $showNotGroup = index($showOpts,'G')==-1; #show group messages (usually do)
-my $canSeeHidden = htmlcode('isEditor');
+my $canSeeHidden = $APP-&gt;isEditor($USER);
 return unless $showGroup || $showNotGroup;
 
 return if getId($USER) == $HTMLVARS{guest_user};

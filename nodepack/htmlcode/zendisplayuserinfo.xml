@@ -41,7 +41,7 @@ my $isGuest = ($UID==$HTMLVARS{'guest_user'});
 my $nid = getId($NODE);
 my $isRoot = exists($HTMLVARS{'group_gods'}{$$USER{user_id}});
 my $isMe = (!$isGuest) &amp;&amp; ($nid==$UID);
-my $isEd = htmlcode('isEditor');
+my $isEd = $APP-&gt;isEditor($USER);
 my $isChanop = htmlcode('isinUsergroup', $USER, 'chanops', 'recurse');
 my $SETTINGS = getVars $NODE;
 

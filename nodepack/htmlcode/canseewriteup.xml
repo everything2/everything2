@@ -26,7 +26,7 @@ return 1 if $$NODE{node_id} == $$N{node_id} or $isTarget or
 
 my %tests = (
 	unpublished =&gt; sub{
-		getNodeById($$N{publication_status}) -&gt; {title} eq 'review' &amp;&amp; htmlcode('isEditor');
+		getNodeById($$N{publication_status}) -&gt; {title} eq 'review' &amp;&amp; $APP-&gt;isEditor($USER);
 	},
 
 	unfavorite =&gt; sub{ # disliked authors

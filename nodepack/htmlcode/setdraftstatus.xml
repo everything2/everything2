@@ -136,7 +136,7 @@ if ($query -&gt; param('advanced')){
 
 	$advanced = '&lt;button type=&quot;submit&quot; name=&quot;confirmop&quot; value=&quot;publishdrafttodocument&quot;
 		title=&quot;publish this draft as a document&quot;&gt;Publish as document&lt;/button&gt;'
-		if htmlcode('isEditor');
+		if $APP-&gt;isEditor($USER);
 }else{
 	$advanced = $query -&gt; submit(
 		-name =&gt; 'advanced'

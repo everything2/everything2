@@ -19,7 +19,7 @@ if($$NODE{type}{title} eq 'e2node') {
 	unless($currentnode and $$currentnode{group} and
 		$nwriteups = @{$currentnode-&gt;{group}}){
 		$parentstr .= 'This node is unparented. ';
-		$parentstr .= htmlcode('isEditor')
+		$parentstr .= $APP-&gt;isEditor($USER)
 			? linkNode(
 				getNode('Magical Writeup Reparenter', 'superdoc')
 				, 'Reparent it.'

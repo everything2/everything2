@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1923963</node_id>
   <title>dreamwuamount</title>
-  <code>return unless htmlcode('isEditor','');
+  <code>return unless $APP-&gt;isEditor($USER);
 
 my @amount = (1, 10, 15, 20, 25, 30, 40);
 $$VARS{num_dreamwus} = 25 unless $$VARS{num_dreamwus};

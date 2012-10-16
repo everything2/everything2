@@ -7,7 +7,7 @@ my ( $N , $showwhat ) = @_ ;
 $N ||= $NODE ;
 getRef( $N ) ;
 
-my $isEditor = htmlcode( 'isEditor' ) ;
+my $isEditor = $APP-&gt;isEditor($USER) ;
 return $isEditor ? 'no writeup' : '' unless $N and $$N{writeup_id} || $$N{draft_id};
 
 $showwhat ||= 7 ; #1: kill only; 2: vote only; 3: both

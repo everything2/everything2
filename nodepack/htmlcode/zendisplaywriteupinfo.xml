@@ -30,8 +30,7 @@ $wuHeader .= &quot;
 &lt;a href='javascript:WU&quot;.$wuID.&quot;.vote(-1)'&gt;&lt;img src='http://24.174.47.208:8080/e2icons/downvote.png' alt='downvote writeup' /&gt;&lt;/a&gt;&quot;) .&quot;&lt;/span&gt;
 &lt;span class='writeup_cool'&gt;&quot;.( 0 == 1? &quot;C!ed&quot; : &quot;&lt;a href='javascript:WU&quot;.$wuID.&quot;.cool()'&gt;C?&lt;/a&gt;&quot;) .&quot;&lt;/span&gt;&quot;;
 
-my $isEditor = htmlcode('isEditor');
-if ($isEditor) {
+if ($APP-&gt;isEditor($USER)) {
 $wuHeader .= &quot;
 &lt;span class='writeup_kill'&gt;&quot;.( 0 == 1? &quot;killed&quot; : &quot;&lt;a href='javascript:WU&quot;.$wuID.&quot;.killBox()'&gt;&lt;img src='http://24.174.47.208:8080/e2icons/kill.gif' alt='mark for destruction'/&gt;&lt;/a&gt;&quot;).&quot;&lt;/span&gt;
 &lt;span class='writeup_toolset small_text'&gt;&lt;a href='javascript:WU&quot;.$wuID.&quot;.toolSet()'&gt;Admin Toolset&lt;/a&gt;&lt;/span&gt;
