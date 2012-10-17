@@ -814,9 +814,9 @@ th.oddrow {
 		#metalinks {
 			display: none;
 		}</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1965240</node_id>
   <title>Azurian Rhapsody</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1965240</s3content_id>
 </node>

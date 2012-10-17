@@ -205,9 +205,9 @@ a:hover {
 #chatterlight_hints { display: none; }
 
 </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>2049229</node_id>
   <title>rctest</title>
-  <s3content_id></s3content_id>
+  <s3content_id>2049229</s3content_id>
 </node>

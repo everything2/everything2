@@ -99,9 +99,9 @@ return &quot;e2.guest=true;\n$str&quot; if ($$USER{title} eq 'Guest User' or $qu
 return $str;
 %]
 </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1869865</node_id>
   <title>Javascript Compiler</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1869865</s3content_id>
 </node>

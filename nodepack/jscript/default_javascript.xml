@@ -627,9 +627,9 @@ e2('.wuformaction', 'click', function(){
 	);
 
 })();</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1874924</node_id>
   <title>default javascript</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1874924</s3content_id>
 </node>

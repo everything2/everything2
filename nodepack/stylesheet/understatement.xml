@@ -798,9 +798,9 @@ table , tr , td {
 	}
 }
 </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1965235</node_id>
   <title>Understatement</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1965235</s3content_id>
 </node>

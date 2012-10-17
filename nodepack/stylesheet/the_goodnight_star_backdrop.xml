@@ -501,9 +501,9 @@ font-size: inherit;
 #staff_picks {
         font-family: Verdana;
 } </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1904432</node_id>
   <title>the goodnight star backdrop</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1904432</s3content_id>
 </node>

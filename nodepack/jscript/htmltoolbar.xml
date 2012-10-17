@@ -801,9 +801,9 @@ function edShowExtraCookie() {
 	}
 	return false;
 }</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>2069738</node_id>
   <title>HTMLToolbar</title>
-  <s3content_id></s3content_id>
+  <s3content_id>2069738</s3content_id>
 </node>

@@ -156,9 +156,9 @@ function flatify(buttonClicked) {
 
 
 </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>2020854</node_id>
   <title>musical appreciation</title>
-  <s3content_id></s3content_id>
+  <s3content_id>2020854</s3content_id>
 </node>

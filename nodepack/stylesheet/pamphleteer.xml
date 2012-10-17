@@ -280,9 +280,9 @@ i {
 	font-style: oblique
 }
 </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>2029380</node_id>
   <title>Pamphleteer</title>
-  <s3content_id></s3content_id>
+  <s3content_id>2029380</s3content_id>
 </node>

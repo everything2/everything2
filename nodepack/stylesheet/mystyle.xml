@@ -62,9 +62,9 @@
 a:link {color: blue;}
 a:visited {color: red}
 </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1903321</node_id>
   <title>myStyle</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1903321</s3content_id>
 </node>

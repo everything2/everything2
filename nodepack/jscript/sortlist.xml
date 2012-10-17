@@ -140,9 +140,9 @@ function ts_sort_numeric(a,b) {
   if (isNaN(bb)) bb = 0;
   return bb-aa;
 }</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1985920</node_id>
   <title>sortlist</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1985920</s3content_id>
 </node>

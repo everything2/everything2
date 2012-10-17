@@ -347,9 +347,9 @@ font-size: 90%;
 	width: 60%;
 }
 </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1931418</node_id>
   <title>Skeleton stylesheet</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1931418</s3content_id>
 </node>

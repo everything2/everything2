@@ -324,9 +324,9 @@ left: 300px;
 	font-size: 85%;
 	margin-left: 3px;
 }</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1889293</node_id>
   <title>skellie</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1889293</s3content_id>
 </node>

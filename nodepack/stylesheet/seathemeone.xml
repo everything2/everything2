@@ -18,9 +18,9 @@
 	#wrapper {margin-top: 4em; padding-right: 206px;
 		width: 200px; margin-right: -206px;}
 	#footer {clear: both;}</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1934602</node_id>
   <title>seathemeone</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1934602</s3content_id>
 </node>

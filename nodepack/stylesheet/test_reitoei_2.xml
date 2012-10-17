@@ -341,9 +341,9 @@ h1.nodetitle {
 	padding-left: 20px;
 }
 </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1883067</node_id>
   <title>test_ReiToei_2</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1883067</s3content_id>
 </node>

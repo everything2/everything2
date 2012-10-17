@@ -335,9 +335,9 @@ hr {
 .clear {
  clear: both;
 }</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1907408</node_id>
   <title>tentatively untitled</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1907408</s3content_id>
 </node>

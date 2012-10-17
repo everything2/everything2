@@ -1,0 +1,14 @@
+<node>
+  <node_id>2071171</node_id>
+  <maintaintype>update</maintaintype>
+  <code>my ($NODE) = @_;
+
+getRef($NODE);
+return unless $NODE;
+
+#$NODE-&gt;{contentversion}++;
+</code>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>1786405</maintain_nodetype>
+  <title>jscript maintenance update</title>
+</node>

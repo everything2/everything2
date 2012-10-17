@@ -64,9 +64,9 @@ td , th {
 	border-color: white ;
 	}
 </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1965286</node_id>
   <title>Bare Understatement</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1965286</s3content_id>
 </node>

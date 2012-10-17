@@ -72,9 +72,9 @@ if (window.onload) {
 } else {
   window.onload = menuCollapser.init;
 }</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1786409</node_id>
   <title>E2 Nodelet Collapser</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1786409</s3content_id>
 </node>

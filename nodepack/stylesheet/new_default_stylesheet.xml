@@ -847,9 +847,9 @@ td {
 			width: auto;
 			padding: 0;
 		}</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1947527</node_id>
   <title>New Default Stylesheet</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1947527</s3content_id>
 </node>

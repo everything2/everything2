@@ -457,9 +457,9 @@ textarea {
 #loglinks td {
 	text-align:center;
 }</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1905818</node_id>
   <title>Gunpowder Green</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1905818</s3content_id>
 </node>

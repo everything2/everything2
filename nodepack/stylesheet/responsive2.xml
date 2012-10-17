@@ -449,9 +449,9 @@ display: none;
    width: 99%;
    }
 }</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>2047530</node_id>
   <title>Responsive2</title>
-  <s3content_id></s3content_id>
+  <s3content_id>2047530</s3content_id>
 </node>

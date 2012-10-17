@@ -77,9 +77,9 @@ body , div , span , p , li , dd , dt , tr , td , a , h1 , h2 , h3 , form ,
     border-style: solid ;
     border-color: #fffcf8 ;
     }</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1946242</node_id>
   <title>Warm understatement</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1946242</s3content_id>
 </node>

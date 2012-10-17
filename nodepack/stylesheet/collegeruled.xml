@@ -293,9 +293,9 @@ margin-bottom: 25px;
 }
 
 </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>2022033</node_id>
   <title>CollegeRuled</title>
-  <s3content_id></s3content_id>
+  <s3content_id>2022033</s3content_id>
 </node>

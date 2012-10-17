@@ -134,9 +134,9 @@ h1.nodetitle {
 .createdby {
 	margin-bottom: 5px;
 }</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>2002625</node_id>
   <title>Paul Test</title>
-  <s3content_id></s3content_id>
+  <s3content_id>2002625</s3content_id>
 </node>

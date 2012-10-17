@@ -324,9 +324,9 @@ left: 300px;
 big big big {
 font-size: inherit;
 }</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1905962</node_id>
   <title>etch a sketch</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1905962</s3content_id>
 </node>

@@ -11,9 +11,9 @@
 	#sidebar {position: relative; float: left;width: 200px; margin-right: -206px;}
 body {background-color: pink;}
 </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1919216</node_id>
   <title>zen 1</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1919216</s3content_id>
 </node>

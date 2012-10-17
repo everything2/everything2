@@ -744,9 +744,9 @@ div#surveymessage {
 }
 
 </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1907213</node_id>
   <title>Groovy</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1907213</s3content_id>
 </node>

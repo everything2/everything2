@@ -584,9 +584,9 @@ td {
 		#metalinks {
 			display: none;
 		}</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>2006294</node_id>
   <title>kohl16</title>
-  <s3content_id></s3content_id>
+  <s3content_id>2006294</s3content_id>
 </node>

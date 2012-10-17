@@ -413,9 +413,9 @@ padding: 0 200px 0 100px;
  color: inherit;
 
 }</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1855833</node_id>
   <title>Balloon fiesta</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1855833</s3content_id>
 </node>

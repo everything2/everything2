@@ -91,9 +91,9 @@ e2.add(function(inElement){
  	});
 });
 </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>2031005</node_id>
   <title>frommmage</title>
-  <s3content_id></s3content_id>
+  <s3content_id>2031005</s3content_id>
 </node>

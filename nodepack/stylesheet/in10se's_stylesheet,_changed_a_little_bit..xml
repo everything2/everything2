@@ -642,9 +642,9 @@ display: none;
 #softlinks td[bgcolor=&quot;#afafaf&quot;] { background-color: #3F6F9F; }
 #softlinks td[bgcolor=&quot;#adadad&quot;] { background-color: #3B6C9D; }
 #softlinks td[bgcolor=&quot;#ababab&quot;] { background-color: #37699B; }</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1908210</node_id>
   <title>in10se's stylesheet, changed a little bit.</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1908210</s3content_id>
 </node>

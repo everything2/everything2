@@ -68,9 +68,9 @@ this.getItem(&quot;box&quot;).update(&quot;Publish   Hide&quot;);
 
 });
  writeupAjaxExists = 1;},&quot;Prototype&quot;);</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1930065</node_id>
   <title>Writeup AJAX</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1930065</s3content_id>
 </node>

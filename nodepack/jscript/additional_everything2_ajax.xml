@@ -167,9 +167,9 @@ E2AJAX = e2.ajax = jQuery.extend(e2.ajax,{
 		
 	}
 });</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>2024790</node_id>
   <title>Additional Everything2 Ajax</title>
-  <s3content_id></s3content_id>
+  <s3content_id>2024790</s3content_id>
 </node>

@@ -505,9 +505,9 @@ background-color: #CACEE0;
 border-right: 1px solid #51546A;
 border-bottom: 2px solid #51546A;
 }</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1901810</node_id>
   <title>fondue test2 (blue)</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1901810</s3content_id>
 </node>

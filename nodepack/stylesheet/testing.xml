@@ -373,9 +373,9 @@ border-top: 1px solid #333;
 	color: black;
 	border:1px;
 }</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1926953</node_id>
   <title>Testing</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1926953</s3content_id>
 </node>

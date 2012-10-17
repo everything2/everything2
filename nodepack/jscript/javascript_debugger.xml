@@ -28,9 +28,9 @@
 	enabled: false	
 } ;
 </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>2023560</node_id>
   <title>javascript debugger</title>
-  <s3content_id></s3content_id>
+  <s3content_id>2023560</s3content_id>
 </node>

@@ -847,9 +847,9 @@ text-decoration: line-through;
 color: #aaa;
 font-size: 80%;
 }</doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1933748</node_id>
   <title>MakeMeOneWithEverything</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1933748</s3content_id>
 </node>

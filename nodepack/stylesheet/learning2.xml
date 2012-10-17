@@ -511,9 +511,9 @@ textarea {
 /*=.writeupmeta*/
 .infolist .contentinfo {color: brown}
  </doctext>
-  <contentversion></contentversion>
+  <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1883091</node_id>
   <title>Learning2</title>
-  <s3content_id></s3content_id>
+  <s3content_id>1883091</s3content_id>
 </node>
