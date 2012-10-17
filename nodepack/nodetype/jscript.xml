@@ -1,7 +1,7 @@
 <node>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>14</extends_nodetype>
-  <sqltable></sqltable>
+  <sqltable>s3content</sqltable>
   <node_id>1786405</node_id>
   <type_nodetype>1</type_nodetype>
   <writers_user>114</writers_user>

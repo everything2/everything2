@@ -13,6 +13,9 @@
 			 width: 200px; margin-right: -206px;}	
 
 #footer {clear: both;}			</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1908657</node_id>
   <title>monochrome</title>
+  <s3content_id></s3content_id>
 </node>

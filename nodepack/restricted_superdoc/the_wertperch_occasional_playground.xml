@@ -74,7 +74,7 @@ Now this is a noding speedometer for L2+ noders...
 
 [%
 
-return &quot;You're still quite young yet.  There is still much to be [Everything University|learned].&quot; unless(getLevel($USER) &gt; 1);
+return &quot;You're still quite young yet.  There is still much to be [Everything University|learned].&quot; unless($APP-&gt;getLevel($USER) &gt; 1);
 
 my $user_in = $query-&gt;param('speedyuser');
 my $user_scratch = $user_in || $$USER{title};
@@ -105,7 +105,7 @@ if ($lastcnt &lt; 1) {
   $str .= &quot;&lt;br&gt;&lt;b&gt;Noding Speed&lt;/b&gt;:&lt;br&gt;  To write $cnt nodes, it took the user $lastcnt days.   This is approximately &lt;b&gt;&quot;.sprintf(&quot;%.4f&quot;, $cnt/$lastcnt).&quot;&lt;/b&gt; nodes per day.&lt;br&gt;&lt;br&gt;&quot;;
 
   my $lvwu = getVars(getNode(&quot;level writeups&quot;, &quot;setting&quot;));
-  my $curlvl = getLevel($u);
+  my $curlvl = $APP-&gt;getLevel($u);
 
   # I moved this line up because it doesn't depend on
   # prediction calculation so it will be faster here.

@@ -852,6 +852,9 @@ left: 300px;
 
 .nodeshell { font-style: italic; }
 </doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1876637</node_id>
   <title>maxClimb_zenTheme</title>
+  <s3content_id></s3content_id>
 </node>

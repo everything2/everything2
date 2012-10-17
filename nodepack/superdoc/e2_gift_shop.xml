@@ -8,7 +8,7 @@ return if ($$VARS{GPoptout});
 
 my $str;
 my $minLevel = 1;
-my $userLev = getLevel($USER);
+my $userLev = $APP-&gt;getLevel($USER);
 my $userGP = $$USER{GP};
 my $StarMax = 75;
 my $StarMin = 25;
@@ -98,7 +98,7 @@ return if ($$VARS{GPoptout});
 my $minLevel = 11;
 my $Sanctificity = 10;
 
-return unless getLevel($USER)&gt;= $minLevel;
+return unless $APP-&gt;getLevel($USER)&gt;= $minLevel;
 
 my $str = &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Sanctity&lt;/b&gt;&lt;/p&gt;&lt;p&gt;You are at least [The Everything2 Voting/Experience System|Level $minLevel], so you have the power to [Sanctify user|Sanctify] other users with GP. Would you like to [Sanctify user|sanctify someone]?&lt;/p&gt;&lt;p&gt;NEW! You can now also sanctify users directly when you visit their homenodes by using the link in your Epicenter nodelet. Note that if you do it this way your sanctification will be anonymous.&quot;;
 
@@ -113,7 +113,7 @@ return $str;
 my $voteCost = 1;
 
 my $minlevel = 2;
-my $lvl = getLevel($USER);
+my $lvl = $APP-&gt;getLevel($USER);
 my $CurGP = $$USER{GP};
 
 my $str = &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Votes&lt;/b&gt;&lt;/p&gt;&quot;;
@@ -171,7 +171,7 @@ return $str;
 
 my $minLev = 9;
 my $votesLev = 1;
-my $lvl = getLevel($USER);
+my $lvl = $APP-&gt;getLevel($USER);
 my $vts = $$USER{votesleft};
 
 return if (($lvl &lt; $votesLev) || ($lvl &lt; $minLev));
@@ -228,7 +228,7 @@ $str.=$query-&gt;end_form();
 [%
 
 my $ChingLev = 4;
-my $lvl = getLevel($USER);
+my $lvl = $APP-&gt;getLevel($USER);
 
 my $str = &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Ching&lt;/b&gt;&lt;/p&gt;&quot;;
 
@@ -242,7 +242,7 @@ return $str;
 #return &quot;&lt;p&gt;Hold your horses!&lt;/p&gt;&quot; unless $$USER{title} eq 'ascorbic';
 
 my $ChingLev = 4;
-my $lvl = getLevel($USER);
+my $lvl = $APP-&gt;getLevel($USER);
 
 return &quot;&lt;p&gt;Sorry, you must be [The Everything2 Voting/Experience System|Level $ChingLev] to give away C!s&lt;/p&gt;&quot; unless ($lvl &gt;= $ChingLev);
 
@@ -256,7 +256,7 @@ if ($query-&gt;param('give_cool')) {
 
 	my $user = getNode($recipient, 'user');
 
-my $lvl = getLevel($user);
+my $lvl = $APP-&gt;getLevel($user);
 	return &quot;&lt;p&gt;Sorry, users must be Level 1 or higher to receive a C!.&lt;/p&gt;&quot; unless $lvl &gt; 0;
 
 	return &quot;&lt;p&gt;The user '$recipient' doesn't exist! Please [E2 Gift Shop|try again].&lt;/p&gt;&quot; unless $user;
@@ -314,7 +314,7 @@ use POSIX qw(ceil floor);
 my $minLevel = 12;
 my $gpCost = 100;
 my $ChingLevel = 4;
-my $lvl = getLevel($USER);
+my $lvl = $APP-&gt;getLevel($USER);
 
 #return unless $lvl &gt;= $ChingLevel;
 return if ($$VARS{GPoptout});
@@ -401,7 +401,7 @@ return $msg.$str;
 
 my $minlevel = 6;
 
-my $lvl = getLevel($USER);
+my $lvl = $APP-&gt;getLevel($USER);
 
 my $tokenCost = 25;
 my $canBuy = (($$USER{GP} &gt;= $tokenCost) &amp;&amp; ($lvl &gt;= $minlevel));
@@ -517,7 +517,7 @@ return $str.$resultStr;
 
 my $minlevel = 7;
 
-my $lvl = getLevel($USER);
+my $lvl = $APP-&gt;getLevel($USER);
 
 #return unless $lvl &gt;= $minlevel;
 #return unless exists($$USER{GP});
@@ -585,7 +585,7 @@ return $str.$resultStr;
 [%
 
 my $buyEggsLev = 7;
-my $lvl = getLevel($USER);
+my $lvl = $APP-&gt;getLevel($USER);
 my $eggs = $$VARS{easter_eggs};
 
 return if ($lvl &lt; $buyEggsLev);

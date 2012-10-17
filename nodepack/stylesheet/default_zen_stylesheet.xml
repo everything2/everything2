@@ -706,6 +706,9 @@ td {
    margin-top: 65px !important;
    margin-bottom: -65px !important;
 }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1854393</node_id>
   <title>default zen stylesheet</title>
+  <s3content_id></s3content_id>
 </node>

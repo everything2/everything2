@@ -91,6 +91,9 @@ e2.add(function(inElement){
  	});
 });
 </doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>2031005</node_id>
   <title>frommmage</title>
+  <s3content_id></s3content_id>
 </node>

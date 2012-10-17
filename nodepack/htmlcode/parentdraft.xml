@@ -32,7 +32,7 @@ if ($publish){
 	return &amp;$wrap(&quot;&lt;h3&gt;Draft cannot be published&lt;/h3&gt;&lt;p&gt;$str&lt;/p&gt;&quot;) if $str;
 
 	# check if the draft meets minimal formal requirements
-	my $userLevel = getLevel($USER);
+	my $userLevel = $APP-&gt;getLevel($USER);
 
 	unless ($$N{doctext} =~ /\S/){
 		$str = '&lt;p&gt;No content.&lt;/p&gt;';

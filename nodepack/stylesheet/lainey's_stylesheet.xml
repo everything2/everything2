@@ -482,6 +482,9 @@ font-size: inherit;
         font-family: Palatino Linotype;
         border: 1px ridge;
 }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1892714</node_id>
   <title>Lainey's Stylesheet</title>
+  <s3content_id></s3content_id>
 </node>

@@ -1399,6 +1399,9 @@ td {
 			display: none;
 
 		}</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1933700</node_id>
   <title>Abe Vigoda</title>
+  <s3content_id></s3content_id>
 </node>

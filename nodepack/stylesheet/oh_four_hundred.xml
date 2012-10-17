@@ -948,6 +948,9 @@ body, div, p, th, td, li, dd, .writeuppage .item .content, .nodelet, .nodetitle,
 #softlinks td {
     background-color: #101010;
 }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>2016267</node_id>
   <title>Oh Four Hundred</title>
+  <s3content_id></s3content_id>
 </node>

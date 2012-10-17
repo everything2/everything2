@@ -331,6 +331,9 @@ font-size: inherit;
 
 
 </doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1907554</node_id>
   <title>ccunning</title>
+  <s3content_id></s3content_id>
 </node>

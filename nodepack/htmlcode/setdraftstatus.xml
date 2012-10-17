@@ -142,7 +142,7 @@ if ($query -&gt; param('advanced')){
 		-name =&gt; 'advanced'
 		, value =&gt; 'Advanced option(s)...'
 		, class =&gt; &quot;ajax draftstatus$$N{node_id}:setdraftstatus?advanced=1:$$N{node_id}&quot;
-	) if getLevel($USER);
+	) if $APP-&gt;getLevel($USER);
 }
 
 $advanced = $query -&gt; p($advanced) if $advanced;

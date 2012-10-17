@@ -39,6 +39,9 @@
 	}
 } ;
 </doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>2024791</node_id>
   <title>Deferrer</title>
+  <s3content_id></s3content_id>
 </node>

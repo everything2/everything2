@@ -479,6 +479,9 @@ a:link { color: inherit; text-decoration: none}
 #wrapper {padding: 0}
 
 }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1928497</node_id>
   <title>bookworm</title>
+  <s3content_id></s3content_id>
 </node>

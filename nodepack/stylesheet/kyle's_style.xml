@@ -251,6 +251,9 @@ text-align: left;
 #admintools {
  display: none;
 }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1854354</node_id>
   <title>Kyle's Style</title>
+  <s3content_id></s3content_id>
 </node>

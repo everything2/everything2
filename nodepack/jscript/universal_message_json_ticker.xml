@@ -156,6 +156,9 @@ my $json = encode_json({&quot;messages&quot; =&gt; $messages});
 return $json;
 %]
 </doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>2033914</node_id>
   <title>universal message json ticker</title>
+  <s3content_id></s3content_id>
 </node>

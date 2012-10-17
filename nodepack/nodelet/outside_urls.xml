@@ -11,7 +11,7 @@ if((exists $VARS-&gt;{lockCustomHTML})) { 	#may later say why locked? or give a 
 
 #note: this assumes all the URLs and display text have already been properly screened
 
-my $numAllowed = getLevel($USER) || 0;
+my $numAllowed = $APP-&gt;getLevel($USER) || 0;
 return '&lt;p&gt;You need to be a higher level to use the Outside URLs nodelet.&lt;/p&gt;' if $numAllowed&lt;1;
 $numAllowed += 2;
 $numAllowed = 20 if $numAllowed&gt;20;

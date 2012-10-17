@@ -922,6 +922,9 @@ font-size: 100%;
 p.patch_invalid { background: darkred !important; }
 .patch_later {background: navy!important; }
 .patch_undone {background : olive !important;}</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1976666</node_id>
   <title>Blue Steel</title>
+  <s3content_id></s3content_id>
 </node>

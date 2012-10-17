@@ -886,6 +886,9 @@ div #epicenter_zen {
 	width: 100%;
 	display:block;
 }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1902249</node_id>
   <title>Plain Blue-Grey Nonsense</title>
+  <s3content_id></s3content_id>
 </node>

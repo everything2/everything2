@@ -1,6 +1,9 @@
 <node>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/*Nothing!*/</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1952474</node_id>
   <title>Blank sheet</title>
+  <s3content_id></s3content_id>
 </node>

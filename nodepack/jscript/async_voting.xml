@@ -321,6 +321,9 @@ XMLHTTP.prototype.send = function (uri) {
   Event.observe(window, 'load', voteOnLoadActions);
 }
 </doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1842173</node_id>
   <title>async voting</title>
+  <s3content_id></s3content_id>
 </node>

@@ -744,6 +744,9 @@ hr.clear {
 #metalinks {
 	display: none;
 }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1948364</node_id>
   <title>Wonton Soup</title>
+  <s3content_id></s3content_id>
 </node>

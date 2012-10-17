@@ -110,6 +110,9 @@ div#softlinks {
   padding: 0px;
   width: 97%;
 }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1883058</node_id>
   <title>test_ReiToei</title>
+  <s3content_id></s3content_id>
 </node>

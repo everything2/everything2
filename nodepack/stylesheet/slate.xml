@@ -103,6 +103,9 @@ pre {display: block; overflow: auto;} /* to stop page-widening */
 
 /* survey */
 #surveymessage { margin-right: 20em !important; margin-top: 50px !important; margin-bottom: -20px !important; }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1876222</node_id>
   <title>slate</title>
+  <s3content_id></s3content_id>
 </node>

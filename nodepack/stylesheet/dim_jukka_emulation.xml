@@ -530,6 +530,9 @@ td#sl8{background:#dbdbb7;}td#sl7{background:#dbdbb7;}td#sl6{background:#dbdbb8;
 td#sl4{background:#dcdcb9;}td#sl3{background:#dcdcb9;}td#sl2{background:#dcdcba;}td#sl1{background:#ddddbb;}
 
 </doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1997697</node_id>
   <title>dim jukka emulation</title>
+  <s3content_id></s3content_id>
 </node>

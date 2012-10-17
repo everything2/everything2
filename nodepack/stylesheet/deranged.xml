@@ -325,6 +325,9 @@ left: 300px;
 big big big {
 font-size: inherit;
 }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1903041</node_id>
   <title>Deranged</title>
+  <s3content_id></s3content_id>
 </node>

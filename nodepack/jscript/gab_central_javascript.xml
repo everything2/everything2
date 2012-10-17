@@ -22,6 +22,9 @@ function checkAll(f){
     }
 }
 </doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>2069769</node_id>
   <title>gab central javascript</title>
+  <s3content_id></s3content_id>
 </node>

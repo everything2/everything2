@@ -700,6 +700,9 @@ text-decoration: line-through;
 color: #aaa;
 font-size: 80%;
 }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>2007742</node_id>
   <title>X2</title>
+  <s3content_id></s3content_id>
 </node>

@@ -91,6 +91,9 @@ hr.clear {clear: both;}
 /* layout */
 textarea {width: 100%;}
 pre {display: block; overflow: auto;} /* to stop page-widening */</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1886668</node_id>
   <title>Two Sheds' theme</title>
+  <s3content_id></s3content_id>
 </node>

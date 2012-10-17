@@ -67,7 +67,7 @@ if (isSuspended($USER,&quot;chat&quot;)){
 
 $str.=$query-&gt;end_form;
 
-$str .= &quot;\n\t\t&quot;.'&lt;div align=&quot;center&quot;&gt;&lt;small&gt;'.linkNodeTitle('Chatterbox|How does this work?').&quot; | &quot;.linkNodeTitle('Chatterlight').&quot;&lt;/small&gt;&lt;/div&gt;\n&quot; if getLevel($USER)&lt;2;
+$str .= &quot;\n\t\t&quot;.'&lt;div align=&quot;center&quot;&gt;&lt;small&gt;'.linkNodeTitle('Chatterbox|How does this work?').&quot; | &quot;.linkNodeTitle('Chatterlight').&quot;&lt;/small&gt;&lt;/div&gt;\n&quot; if $APP-&gt;getLevel($USER)&lt;2;
 
 #Jay's topic stuff
 

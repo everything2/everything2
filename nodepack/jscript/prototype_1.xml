@@ -2164,6 +2164,9 @@ Element._attributeTranslations = {
     values: { }
   }
 };</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1872456</node_id>
   <title>ProtoType 1</title>
+  <s3content_id></s3content_id>
 </node>

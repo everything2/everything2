@@ -480,6 +480,9 @@ textarea				{
 .action_whisper .text, .action_roll,
 .action_fireball, .action_sanctify,
 .action_egg				{	font-variant: smallcaps;	}</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1926437</node_id>
   <title>mikoyan25</title>
+  <s3content_id></s3content_id>
 </node>

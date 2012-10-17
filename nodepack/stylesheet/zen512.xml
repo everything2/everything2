@@ -649,6 +649,9 @@ body {
 #message {
  width: 90%;
 }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1903056</node_id>
   <title>Zen512</title>
+  <s3content_id></s3content_id>
 </node>

@@ -897,6 +897,9 @@ color:#FFF;
 		#metalinks {
 			display: none;
 		}</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1934999</node_id>
   <title>ush's real stylesheet, in progress ;)</title>
+  <s3content_id></s3content_id>
 </node>

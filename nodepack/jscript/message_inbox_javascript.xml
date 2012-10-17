@@ -68,6 +68,9 @@ function shrinkTextbox(textbox) {
    }
 
 }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>2069795</node_id>
   <title>message inbox javascript</title>
+  <s3content_id></s3content_id>
 </node>

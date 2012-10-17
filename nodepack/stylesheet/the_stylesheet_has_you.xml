@@ -613,6 +613,9 @@ td {
 			display: none;
 		}
 </doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1938878</node_id>
   <title>The stylesheet has you</title>
+  <s3content_id></s3content_id>
 </node>

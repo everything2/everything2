@@ -3,6 +3,9 @@
   <doctext>body {
  background-color: #ff0000;
 }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1854394</node_id>
   <title>A test Sheet 1</title>
+  <s3content_id></s3content_id>
 </node>

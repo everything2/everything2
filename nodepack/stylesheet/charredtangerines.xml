@@ -48,6 +48,9 @@ pre, tt {
 	background-color: #4A4742;
 }
 </doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1908658</node_id>
   <title>CharredTangerines</title>
+  <s3content_id></s3content_id>
 </node>

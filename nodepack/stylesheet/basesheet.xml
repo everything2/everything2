@@ -311,6 +311,9 @@ table.registries {
    margin: 0;
    padding: 1px;
 }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1973976</node_id>
   <title>basesheet</title>
+  <s3content_id></s3content_id>
 </node>

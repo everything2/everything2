@@ -54,6 +54,9 @@ $(function(){
 		e2.nodeletCollapser.save();
 	}
 });</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1872965</node_id>
   <title>Zen Nodelet Collapser</title>
+  <s3content_id></s3content_id>
 </node>

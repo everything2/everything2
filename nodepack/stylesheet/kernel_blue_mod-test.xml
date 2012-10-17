@@ -834,6 +834,9 @@ td {
 #chatterlight_NW { float: left; width: 190px; }
 #chatterlight_hints { display: none; }
 </doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1947443</node_id>
   <title>Kernel blue mod-test</title>
+  <s3content_id></s3content_id>
 </node>

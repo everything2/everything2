@@ -131,6 +131,9 @@ pre, tt {
 .oddrow, #homenodeheader dt
 {background-color: #8AA37B;
 font-family: bookman old style; }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1926288</node_id>
   <title>Green &amp; Purple</title>
+  <s3content_id></s3content_id>
 </node>

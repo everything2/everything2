@@ -653,6 +653,9 @@ if (e2.isChatterlight) e2('#message', e2(function(){
 	$(this).css('width','').focus();
 }).defer); // defer for IE
 </doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1878034</node_id>
   <title>Everything2 Ajax</title>
+  <s3content_id></s3content_id>
 </node>

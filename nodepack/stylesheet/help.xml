@@ -17,6 +17,9 @@
 	#mainbody {position: relative; float: left; width: 100%;}
 
 	#sidebar {position: relative; float: left;width: 200px; margin-right: -206px;}</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1921665</node_id>
   <title>Help</title>
+  <s3content_id></s3content_id>
 </node>

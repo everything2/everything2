@@ -327,6 +327,9 @@ left: 300px;
 }
 
 </doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1884212</node_id>
   <title>Skeleton</title>
+  <s3content_id></s3content_id>
 </node>

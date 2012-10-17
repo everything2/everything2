@@ -78,6 +78,9 @@ body { margin:0px; }
 #footer { background: black; color:white; }
 
 textarea { width:95%; font-family: monospace; }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1930556</node_id>
   <title>Zen Organization Visualizer</title>
+  <s3content_id></s3content_id>
 </node>

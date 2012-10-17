@@ -719,6 +719,9 @@ textarea { width:95%; font-family: monospace; }
 .chat_user :before { content:&quot;&lt;&quot;; }
 .chat_user :after { content:&quot;&gt;&quot;; }
 */</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>1930840</node_id>
   <title>Carbonated</title>
+  <s3content_id></s3content_id>
 </node>

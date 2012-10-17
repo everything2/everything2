@@ -23,6 +23,9 @@
 #creamofthecool, #frontpage_news  {
 	padding-left: 20px;
 }</doctext>
+  <contentversion></contentversion>
+  <s3bucket></s3bucket>
   <node_id>2001670</node_id>
   <title>bookwormier, sinister</title>
+  <s3content_id></s3content_id>
 </node>
