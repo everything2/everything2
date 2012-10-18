@@ -78,7 +78,6 @@ sub BEGIN {
               allocateVotes
               hasVoted
               getVotes
-              getLevel
               getHRLF
               calculateBonus
 
@@ -3369,18 +3368,6 @@ sub processVarsSet {
 
 # Former inhabitants of the experience module
 
-#######################################################################
-#
-#	getLevel
-#
-#	given a user, return his level.  This info is stored in the
-#	"level settings" node
-#
-sub getLevel {
-	my ($user) = @_;
-	return $APP->getLevel($user);
-}
-
 ########################################################################
 #
 #	allocateVotes
@@ -3706,9 +3693,7 @@ sub changeRoom {
 }
 
 sub canCloak {
-  my ($user) = @_;
-  my $C = getVars(getNode('cloakers','setting'));
-  return (getLevel($user) >= 10 or isGod($user) or exists $$C{lc($$user{title})});
+  return $APP->userCanCloak(@_);
 }
 
 sub cloak {

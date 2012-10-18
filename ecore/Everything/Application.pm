@@ -4,6 +4,63 @@ use strict;
 package Everything::Application;
 use Everything;
 
+use vars qw($PARAMS $PARAMSBYTYPE);
+BEGIN {
+	$PARAMS = 
+	{
+		"cancloak" => 
+		{
+			"on" => ["user"],
+			"description" => "Grants the user a courtesy chatterbox cloaking utility",
+			"assignable" => ["admin"],
+			"validate" => "set_only",
+		},
+		"level_override" => 
+		{
+			"on" => ["user"],
+			"description" => "Hard sets a level on a user",
+			"assignable" => ["admin"],
+		},
+	};
+
+	foreach my $param(keys %$PARAMS)
+	{
+		foreach my $type (@{$PARAMS->{$param}->{on}})
+		{
+			$PARAMSBYTYPE->{$type}->{$param} = $PARAMS->{$param};
+		}
+	}
+}
+
+use vars qw($PARAMVALIDATE);
+
+$PARAMVALIDATE = 
+{
+	"set_only" => sub 
+	{
+		my ($this, $val) = @_;
+		return($val == 1);	
+	},
+	"integer" => sub
+	{
+		my ($this, $val) = @_;
+		return($val eq int($val));
+	},
+        "admin" => sub
+        {
+		my ($this, $user) = @_;
+		return 1 if defined($user) and $user eq '-1';
+                return 1 if defined($user) and $this->{db}->isGod($user);
+        	return 0;
+	},
+        "system" => sub
+        {
+                my ($this, $user) = @_;
+		return 1 if defined($user) and $user eq '-1';
+        	return 0;
+	},
+};
+
 sub new
 {
 	my ($class, $db, $conf) = @_;
@@ -525,7 +582,91 @@ sub getLevel {
 
 sub userCanCloak
 {
+  my ($this, $user) = @_;
+  my $C = Everything::getVars($this->{db}->getNode('cloakers','setting'));
+  return ($this->getLevel($user) >= 10 or $this->isEditor($user) or exists $$C{lc($$user{title})});
+}
 
+sub setParameter
+{
+  my ($this, $node, $user, $param, $paramvalue) = @_;
+  $this->{db}->getRef($node);
+  return unless $node;
+  my $paramdata = $this->getParameterForType($node->{type}, $param);  
+  
+  return if !$this->canSetParameter($node,$user,$param);
+
+  if(exists($paramdata->{validate}))
+  {
+    return if not exists($Everything::Application::PARAMVALIDATE->{$paramdata->{validate}});
+    return if not $Everything::Application::PARAMVALIDATE->{$paramdata->{validate}}->($this, $paramvalue);
+  }
+  
+  $this->{db}->setNodeParam($node, $param, $paramvalue);
+  return 1;
+}
+
+sub delParameter
+{
+  my ($this, $node, $user, $param) = @_;
+  
+  $this->{db}->getRef($node);
+  return unless $node;
+ 
+  return if !$this->canSetParameter($node,$user,$param);
+  $this->{db}->deleteNodeParam($node, $param);
+  return 1; 
+}
+
+sub canSetParameter
+{
+  my ($this, $node, $user, $param) = @_;
+
+  $this->{db}->getRef($node);
+  return unless $node;
+  my $paramdata = $this->getParameterForType($node->{type}, $param);  
+  if(not defined($paramdata))
+  {
+    return;
+  }
+  my $can_assign = 0;
+  foreach my $assignable (@{$paramdata->{assignable}})
+  {
+    if(not exists($Everything::Application::PARAMVALIDATE->{$assignable}))
+    {
+      return;
+    }
+
+    $can_assign = $Everything::Application::PARAMVALIDATE->{$assignable}->($this, $user);
+    last if $can_assign;
+  }
+  return $can_assign;
+
+}
+
+sub getParametersForType
+{
+  my ($this, $type) = @_;
+  if(ref $type eq "")
+  {
+    if($type =~ /^\d+$/)
+    {
+      $this->{db}->getRef($type);
+    }else{
+      $type = $this->{db}->getType($type);
+    }
+  }
+  return unless $type;
+
+  return $Everything::Application::PARAMSBYTYPE->{$type->{title}};
+}
+
+sub getParameterForType
+{
+  my ($this, $type, $param) = @_;
+  return unless defined($param);
+  my $all_params_for_type = $this->getParametersForType($type);
+  return $all_params_for_type->{$param};
 }
 
 1;
