@@ -583,8 +583,9 @@ sub getLevel {
 sub userCanCloak
 {
   my ($this, $user) = @_;
+  $this->{db}->getRef($user);
   my $C = Everything::getVars($this->{db}->getNode('cloakers','setting'));
-  return ($this->getLevel($user) >= 10 or $this->isEditor($user) or exists $$C{lc($$user{title})});
+  return ($this->getLevel($user) >= 10 or $this->isEditor($user) or exists $$C{lc($$user{title})} or $this->{db}->getNodeParam($user, "cancloak"));
 }
 
 sub setParameter
