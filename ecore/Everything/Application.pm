@@ -604,6 +604,10 @@ sub setParameter
   }
   
   $this->{db}->setNodeParam($node, $param, $paramvalue);
+
+  # The security log needs a node to map to an action, so we need to use the parameter opcode
+  # I don't love the way this works, but I can fix it later pretty easily.
+  $this->securityLog($this->{db}->getNode("parameter","opcode"), $user, "Set parameter '$param' as '$paramvalue' on '$$node{title}'");
   return 1;
 }
 
@@ -616,6 +620,10 @@ sub delParameter
  
   return if !$this->canSetParameter($node,$user,$param);
   $this->{db}->deleteNodeParam($node, $param);
+
+  # The security log needs a node to map to an action, so we need to use the parameter opcode
+  # I don't love the way this works, but I can fix it later pretty easily.
+  $this->securityLog($this->{db}->getNode("parameter","opcode"), $user, "Deleted parameter '$param' from '$$node{title}'");
   return 1; 
 }
 
@@ -668,6 +676,21 @@ sub getParameterForType
   return unless defined($param);
   my $all_params_for_type = $this->getParametersForType($type);
   return $all_params_for_type->{$param};
+}
+
+sub securityLog
+{
+  my ($this, $node, $user, $details) = @_;
+  $this->{db}->getRef($node);
+
+  if(defined($user) and $user eq "-1")
+  {
+    $user = $this->{db}->getNode("root","user");
+  }else{
+    $this->{db}->getRef($user);
+  }
+  return unless defined($node) and defined($user);
+  $this->{db}->sqlInsert('seclog', { 'seclog_node' => $$node{node_id}, 'seclog_user'=>$$user{node_id}, 'seclog_details'=>$details});
 }
 
 1;
