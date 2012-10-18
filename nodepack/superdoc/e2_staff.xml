@@ -158,12 +158,12 @@ Everything User Search|the user search]).&lt;/li&gt;
 &lt;p&gt;&lt;strong&gt;#&lt;/strong&gt;These users are employees/owners of [Everything2 Media LLC].&lt;/p&gt;
 
 &lt;hr /&gt;
-&lt;h1&gt;Who does what?&lt;/h1&gt;
+&lt;h2&gt;Who does what?&lt;/h2&gt;
 
 &lt;p&gt;These people are in charge of things:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;[jaybonci]: Site owner&lt;/li&gt;
-&lt;li&gt;[clampe]: E2 researcher and bandwidth provider&lt;/li&gt;
+&lt;li&gt;[clampe]: E2 researcher&lt;/li&gt;
 &lt;li&gt;[alex]: Director of Operations and site administrator&lt;/li&gt;
 &lt;li&gt;[wertperch]: Deputy Director of Operations&lt;/li&gt;
 &lt;li&gt;[Oolong]: Lead Developer&lt;/li&gt;
@@ -223,7 +223,7 @@ return $intro . $userList . $outro;
 
 &lt;p&gt;Documentation, FAQs, staff docs, [superdocs|sekrits]&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;[Aerobe]&lt;/li&gt;
+&lt;li&gt;[wertperch]&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;hr /&gt;

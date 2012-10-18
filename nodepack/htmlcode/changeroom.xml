@@ -43,17 +43,7 @@ if(defined $query-&gt;param('changeroom') and $query-&gt;param('changeroom') == 
 	#we should also edit the rooms table
 }
 
-
-#old way
-#FIXME: cloaked users should be able to uncloak, even if they can't cloak again
-#my $isCloaker = canCloak($USER);
-
-# This replaces canCloak so that c_es can cloak. This is obviously a kludge - asc
-
-my $cloakers = getVars(getNode('cloakers','setting'));
-my $isCloaker = ($APP-&gt;getLevel($USER) &gt;= 10 or $APP-&gt;isEditor($USER) or exists($$cloakers{lc($$USER{title})}));
-
-
+my $isCloaker = $APP-&gt;userCanCloak($USER);
 if($query-&gt;param('sexiscool') and $isCloaker) {
 	if($query-&gt;param('cloaked')) {
 		cloak($USER, $VARS);

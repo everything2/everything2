@@ -50,6 +50,7 @@
 #               &quot;SQL Queries&quot; =&gt; getId(getNode(&quot;SQL Prompt&quot;,&quot;restricted_superdoc&quot;)),
 #               &quot;User Deletions&quot; =&gt; getId(getNode(&quot;The Old Hooked Pole&quot;,&quot;restricted_superdoc&quot;))
                 &quot;Catbox flushes&quot; =&gt; getId(getNode(&quot;flushcbox&quot;,&quot;opcode&quot;)),
+                &quot;Parameter changes&quot; =&gt; getId(getNode(&quot;parameter&quot;,&quot;opcode&quot;)),
 	};
 
 
