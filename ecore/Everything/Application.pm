@@ -555,6 +555,9 @@ sub getLevel {
 	return $$user{level} if $$user{level};
 	return 0 if $$user{title} eq "Guest User";
 
+	my $level_override = $this->{db}->getNodeParam($user, "level_override");
+	return $level_override if $level_override;
+
 	my $exp = $$user{experience};
 	my $V = Everything::getVars($user);
         my $numwriteups = $$V{numwriteups};
