@@ -83,7 +83,6 @@ sub BEGIN {
 
               changeRoom
               insertIntoRoom
-              canCloak
               cloak
               uncloak
               );
@@ -3690,10 +3689,6 @@ sub changeRoom {
   $DB->sqlDelete("room", "member_user=".getId($user));
     
   insertIntoRoom($ROOM, $user);
-}
-
-sub canCloak {
-  return $APP->userCanCloak(@_);
 }
 
 sub cloak {
