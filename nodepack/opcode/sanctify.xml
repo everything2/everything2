@@ -6,7 +6,7 @@
 
 my $minLevel = 11;
 my $Sanctificity = 10;
-return unless getLevel($USER)&gt;= $minLevel;
+return unless $APP-&gt;getLevel($USER)&gt;= $minLevel;
 
 my $U = $query-&gt;param('node_id');
 $U = getNode($query-&gt;param(&quot;node&quot;), 'user') if ($query-&gt;param('node'));

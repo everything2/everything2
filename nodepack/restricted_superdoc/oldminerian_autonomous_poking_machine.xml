@@ -514,7 +514,7 @@ use POSIX qw(ceil floor);
 my $minLevel = 12;
 my $gpCost = 100;
 my $ChingLevel = 4;
-my $lvl = getLevel($USER);
+my $lvl = $APP-&gt;getLevel($USER);
 
 #return unless $lvl &gt;= $ChingLevel;
 return if ($$VARS{GPoptout});

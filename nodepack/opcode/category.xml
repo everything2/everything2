@@ -4,7 +4,7 @@
   <title>category</title>
   <code>return if getId($USER) == $HTMLVARS{guest_user};
 my $isCE = $APP-&gt;isEditor($USER);
-return if (getLevel($USER) &lt;= 1) &amp;&amp; !$isCE;
+return if ($APP-&gt;getLevel($USER) &lt;= 1) &amp;&amp; !$isCE;
 
 my $cid = $query-&gt;param('cid');
 if ($cid eq 'new' and my $title = $query -&gt; param('categorytitle')){

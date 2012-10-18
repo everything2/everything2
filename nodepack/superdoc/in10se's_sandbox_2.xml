@@ -10,7 +10,7 @@ my $userUpvoteCount = $DB-&gt;sqlSelect(&quot;COUNT(*)&quot;, &quot;vote,writeup
 
 if ($userVoteCount == 0)
 {
-  return &quot;..thou art too young yet. Come back soon.&quot; if getLevel($USER) == 0;
+  return &quot;..thou art too young yet. Come back soon.&quot; if $APP-&gt;getLevel($USER) == 0;
   return &quot;Thou hast grown, but are still yet a man. Prove thy judgment!&quot;;
 }
 

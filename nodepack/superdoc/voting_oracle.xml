@@ -8,7 +8,7 @@
   my $upcnt = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;voter_user=$$USER{node_id} and weight=1&quot;);
 
 if ($cnt == 0) {
-  return &quot;..thou art too young yet. Come back soon.&quot; if getLevel($USER) == 0;
+  return &quot;..thou art too young yet. Come back soon.&quot; if $APP-&gt;getLevel($USER) == 0;
   return &quot;Thou hast grown, but are still yet a man. Prove thy judgment!&quot;;
   }
   #my $up = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;voter_user=$$USER{node_id} and weight=1&quot;);

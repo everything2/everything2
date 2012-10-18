@@ -49,14 +49,14 @@ while($node = $csr-&gt;fetchrow_hashref) {
         next if(exists $HTMLVARS{'group_gods'}{$$node{node_id}} &amp;&amp; $$VARS{ebu_noadmins});
         next if($step &gt;= 50);
 
-	$lvl = getLevel($node);
+	$lvl = $APP-&gt;getLevel($node);
 	my $V = getVars($node);
 
         $str.= &quot;&lt;bestuser&gt;\n&quot;;
         $str.= &quot; &lt;experience&gt;$$node{experience}&lt;/experience&gt;&quot;;
         $str.= &quot; &lt;writeups&gt;$$V{numwriteups}&lt;/writeups&gt;\n&quot;; 
         $str.= &quot; &lt;e2link node_id=\&quot;$$node{node_id}\&quot;&gt;$$node{title}&lt;/e2link&gt;\n&quot;;
-        $str.= &quot; &lt;level value=\&quot;&quot;.getLevel($node).&quot;\&quot;&gt;&quot;.$$V{level}.&quot;&lt;/level&gt;\n&quot;;
+        $str.= &quot; &lt;level value=\&quot;&quot;.$APP-&gt;getLevel($node).&quot;\&quot;&gt;&quot;.$$V{level}.&quot;&lt;/level&gt;\n&quot;;
         $str.= &quot;&lt;/bestuser&gt;\n&quot;;
 
 	++$step;

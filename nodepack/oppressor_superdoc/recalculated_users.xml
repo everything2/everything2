@@ -28,7 +28,7 @@ $rows-&gt;execute()
 
 while($dbrow = $rows-&gt;fetchrow_arrayref)
 {
-   push(@list, linkNode($$dbrow[0]) . ' - Level: ' . getLevel($$dbrow[0]) . ' - XP: ' . $$dbrow[1]);
+   push(@list, linkNode($$dbrow[0]) . ' - Level: ' . $APP-&gt;getLevel($$dbrow[0]) . ' - XP: ' . $$dbrow[1]);
 }
 
 $str .= '&lt;h3&gt;Users who have run [Recalculate XP]&lt;/h3&gt;';

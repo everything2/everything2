@@ -114,7 +114,7 @@ if ($message =~ /^\/(\S*)?\s+(.+?)\s*$/) {
 if ($message =~ /^\/fireball\s+(.*)$/i) {
 	my $minLvl = 15;
 
-	if ((getLevel($USER) &gt;= $minLvl) || ($isRoot)) {
+	if (($APP-&gt;getLevel($USER) &gt;= $minLvl) || ($isRoot)) {
 
 		if ($$VARS{easter_eggs} &gt; 0) {
 
@@ -179,7 +179,7 @@ if (($message =~ /^\/sanctify\s+(.*)$/i)) {
 	return if ($$VARS{GPoptout});
 	my $minLvl = 11;
 	my $Sanctificity = 10;
-	if ((getLevel($USER) &gt;= $minLvl) || ($isRoot)) {
+	if (($APP-&gt;getLevel($USER) &gt;= $minLvl) || ($isRoot)) {
 		my $sanctifyer = $$USER{title};
 		my $uName = $1;
 		my $recUser = getNode($uName,&quot;user&quot;);

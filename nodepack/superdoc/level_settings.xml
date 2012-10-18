@@ -1,13 +1,12 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>&lt;style type=&quot;text/css&quot;&gt;
+  <doctext>&lt;!-- &lt;style type=&quot;text/css&quot;&gt;
 .mytable th, .mytable td
 {
 border: 1px solid silver;
 padding: 3px;
 }
-&lt;/style&gt;
-
+&lt;/style&gt; --&gt;
 [%
 #return if $$USER{title} eq &quot;Guest User&quot;;
 
@@ -26,8 +25,15 @@ return $warnStr;
 
 }
 
-$str.=&quot;&lt;p&gt;&lt;table class='mytable'&gt;&lt;tr&gt;&lt;th&gt;Level&lt;/th&gt;&lt;th&gt;Level Title&lt;/th&gt;&lt;th&gt;XP Req&lt;/th&gt;&lt;th&gt;Writeups Req&lt;/th&gt;&lt;th&gt;Votes per Day&lt;/th&gt;&lt;th&gt;[C!]s per Day&lt;/th&gt;&lt;/tr&gt;&quot;;
-
+$str.=&quot;&lt;table&gt;&lt;tr&gt;
+&lt;td&gt;Level&lt;/td&gt;
+&lt;td&gt;Level Title&lt;/td&gt;
+&lt;td&gt;XP Req&lt;/td&gt;
+&lt;td&gt;Writeups Req&lt;/td&gt;
+&lt;td&gt;Votes per Day&lt;/td&gt;
+&lt;td&gt;C!s per Day&lt;/td&gt;
+&lt;/tr&gt;&quot;;
+$str = &quot;&quot;;
 my $EXP = getVars(getNode('level experience','setting'));
 my $WRP = getVars(getNode('level writeups', 'setting'));
 my $VTS = getVars(getNode('level votes', 'setting'));
@@ -47,7 +53,7 @@ if (getId($USER) == $HTMLVARS{guest_user}) {
 $userLevel = 0;
 }
 else {
-$userLevel = getLevel($USER) || 0;
+$userLevel = $APP-&gt;getLevel($USER) || 0;
 }
 
 for(my $i = $fstLvl; $i &lt;= $sndLvl; $i++) {
@@ -106,11 +112,10 @@ $str.=&quot;&lt;tr &quot;.($i == $userLevel ? &quot;style='font-weight:bold'&quo
 }
 
 }
+$str.-&quot;&lt;/table&gt;&quot;;
+#$str.= htmlcode('openform') . '&lt;p&gt;Show me all levels from Level ' . $query-&gt;textfield('fstlevel','0', '', 20) . ' to Level ' . $query-#&gt;textfield('sndlevel','12', '', 20) . $query-&gt;submit('show','Show Levels!') . $query-&gt;end_form() . '&lt;/p&gt;';
 
-$str.= htmlcode('openform') . '&lt;p&gt;Show me all levels from Level ' . $query-&gt;textfield('fstlevel','0', '', 20) . ' to Level ' . $query-&gt;textfield('sndlevel','12', '', 20) . $query-&gt;submit('show','Show Levels!') . $query-&gt;end_form() . '&lt;/p&gt;';
-
-$str;
-
+return $str;
 %]</doctext>
   <node_id>1962858</node_id>
   <title>Level settings</title>

@@ -95,7 +95,7 @@ if (getId($USER) == $HTMLVARS{guest_user}) {
 $userLevel = 0;
 }
 else {
-$userLevel = getLevel($USER) || 0;
+$userLevel = $APP-&gt;getLevel($USER) || 0;
 }
 
 for(my $i = $fstLvl; $i &lt;= $sndLvl; $i++) {

@@ -5,7 +5,7 @@
 [{openform}]
 [%
 return if $query-&gt;param('sexisgood');
-return &quot;You would need to be [The Everything2 Voting/Experience System|level 8] to create a registry.&quot; unless getLevel($USER) &gt;= 8;
+return &quot;You would need to be [The Everything2 Voting/Experience System|level 8] to create a registry.&quot; unless $APP-&gt;getLevel($USER) &gt;= 8;
 
 
   my $labels = ['key','value'];

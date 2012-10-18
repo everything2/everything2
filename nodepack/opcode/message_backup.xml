@@ -67,7 +67,7 @@ if ($message =~ /^\/(\S*)?\s+(\S*)/) {
 		if ($isRagnarok) {
 			return if (($$recUser{user_id} == $$USER{user_id}) and ($phrase ne 'heal'));
 			if ($phrase eq 'fireball') {
-				return unless getLevel($USER) &gt;= 7;
+				return unless $APP-&gt;getLevel($USER) &gt;= 7;
 			}
 			elsif($phrase eq 'heal') {
 				my $healid = $$recUser{user_id};

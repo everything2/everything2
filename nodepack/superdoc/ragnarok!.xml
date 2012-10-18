@@ -98,7 +98,7 @@ if ($query-&gt;param(&quot;strike&quot;)) {
 	for my $key ( keys %{$scalar-&gt;{inventory}} ) {
 		$bonus += $scalar-&gt;{inventory}-&gt;{$key}-&gt;{damageBonus};	
 	}
-	my $damage = int(rand(6))+getLevel($USER) + $bonus;
+	my $damage = int(rand(6))+$APP-&gt;getLevel($USER) + $bonus;
 	$scalar-&gt;{damageDone} += $damage;
 	$vWarVars-&gt;{health} -= $damage;
 	if ($vWarVars-&gt;{health} &lt;= 0) {

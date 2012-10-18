@@ -19,7 +19,7 @@ padding: 3px;
 delete $$VARS{NoBounty};
 
 my $minlevel = 3;
-my $lvl = getLevel($USER);
+my $lvl = $APP-&gt;getLevel($USER);
 my $UID = getId($USER)||0;
 my $isSheriff = htmlcode('isinUsergroup',&quot;$UID,sheriffs,1&quot;);
 

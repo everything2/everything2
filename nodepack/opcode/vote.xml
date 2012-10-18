@@ -24,7 +24,7 @@ my $countPlus=0;
 my $countMinus=0;
 
 my $VOTES = getVars(getNode('level votes','setting'));
-my $numVotes = $$VOTES{getLevel($USER)};
+my $numVotes = $$VOTES{$APP-&gt;getLevel($USER)};
 
 
 foreach (@params) {
