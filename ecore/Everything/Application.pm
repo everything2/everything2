@@ -50,7 +50,7 @@ $PARAMVALIDATE =
         {
 		my ($this, $user) = @_;
 		return 1 if defined($user) and $user eq '-1';
-                return 1 if defined($user) and $this->{db}->isGod($user);
+                return 1 if defined($user) and $this->isEditor($user);
         	return 0;
 	},
         "system" => sub
