@@ -20,6 +20,14 @@ BEGIN {
 			"on" => ["user"],
 			"description" => "Hard sets a level on a user",
 			"assignable" => ["admin"],
+			"validate" => "integer",
+		},
+		"hide_chatterbox_staff_symbol" =>
+		{
+			"on" => ["user"],
+			"description" => "Hides the '\@' or '\$' symbol in the Other Users nodelet",
+			"assignable" => ["admin"],
+			"validate" => "set_only",
 		},
 	};
 
