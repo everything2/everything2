@@ -94,6 +94,7 @@ everything_conf_variables = {
     "clean_search_words_aggressively" => node["e2engine"]["clean_search_words_aggressively"],
     "search_row_limit" => node["e2engine"]["search_row_limit"],
     "logdirectory" => node["e2engine"]["logdirectory"],
+    "system" => node["e2engine"]["system"].to_hash,
     "permanent_cache" => {
       "usergroup" => 1,
       "htmlpage" => 1,
