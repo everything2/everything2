@@ -17,7 +17,7 @@ node_locked =&gt; $$SETTINGS{nodeLocked_node}} ;
 
 @$SETTINGS{keys %$OLDSETTINGS}= values %$OLDSETTINGS;
 
-my @groups = (&quot;gods&quot;, &quot;content editors&quot;, &quot;everything editors&quot;, &quot;users with cool&quot;, &quot;edev&quot;, &quot;e2contact&quot;, &quot;chanops&quot;, &quot;sigtitle&quot;);
+my @groups = (&quot;gods&quot;, &quot;content editors&quot;, &quot;everything editors&quot;, &quot;users with cool&quot;, &quot;edev&quot;, &quot;chanops&quot;, &quot;sigtitle&quot;);
 
 foreach my $usergroup (@groups) {
   my $G = getNode($usergroup, 'usergroup');

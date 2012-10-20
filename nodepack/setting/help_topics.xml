@@ -49,6 +49,10 @@
     <key>ed_cool</key>
   </vars>
   <vars>
+    <value>/help scratch_pad</value>
+    <key>drafts</key>
+  </vars>
+  <vars>
     <value>/help tinymce</value>
     <key>WYSIWYG</key>
   </vars>
@@ -75,6 +79,10 @@
   <vars>
     <value>/help egg</value>
     <key>anvil</key>
+  </vars>
+  <vars>
+    <value>/help e2</value>
+    <key>E2</key>
   </vars>
   <vars>
     <value>/help nuke</value>
@@ -187,6 +195,10 @@
   <vars>
     <value>/copyright</value>
     <key>fair_use</key>
+  </vars>
+  <vars>
+    <value>The bookmark button saves a node into a list at the bottom of your &lt;homenode&gt;.</value>
+    <key>bookmark</key>
   </vars>
   <vars>
     <value>Everything2 has a search feature in the site header that searches for writeups by title.  If the title exists as you have typed it, you will be taken directly to that &amp;lt;node&amp;gt;.  Otherwise you will be taken to a Findings page.  See also &amp;lt;near matches&amp;gt;, &amp;lt;Ignore Exact&amp;gt;, and &amp;lt;Full text&amp;gt; </value>
@@ -321,7 +333,7 @@
     <key>send</key>
   </vars>
   <vars>
-    <value>/help homenode</value>
+    <value>Users of Level1 and above may display a picture on their &lt;homenode&gt;</value>
     <key>homenode_pic</key>
   </vars>
   <vars>
@@ -343,6 +355,10 @@
   <vars>
     <value>/help xp</value>
     <key>XP</key>
+  </vars>
+  <vars>
+    <value>42 is the supposed answer to the question of Life, the Universe and Everything. But then, this site would be called &quot;Everything42&quot;, so that can't be right.</value>
+    <key>42</key>
   </vars>
   <vars>
     <value>/help egg</value>
@@ -427,6 +443,10 @@
   <vars>
     <value>A [troll] is someone who is sending abusive or inflammatory comments to the &amp;lt;chatterbox&amp;gt; or sometimes via &amp;lt;private message&amp;gt;.  Trolls just want attention, good or bad, and giving it to them just gives them what they want.  Do not fight, argue with, or attempt to mock a troll as it will only encourage them, even if you &quot;win&quot;.  If you ignore them they go away eventually.</value>
     <key>troll</key>
+  </vars>
+  <vars>
+    <value>/help scratch_pad</value>
+    <key>draft</key>
   </vars>
   <vars>
     <value>/help egg</value>

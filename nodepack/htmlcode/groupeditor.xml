@@ -153,8 +153,5 @@ $str .= '
 
 $str .= '&lt;/form&gt;';
 
-$str.='jb testing:&lt;br /&gt;';
-for(0..50){$str.=&quot;$_: &quot;.$query-&gt;param(&quot;$_&quot;).'&lt;br /&gt;' if $query-&gt;param(&quot;$_&quot;);}
-
 $str;</code>
 </node>

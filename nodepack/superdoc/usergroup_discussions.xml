@@ -46,9 +46,6 @@ foreach my $ug_id(@ug_ids){
     if($ug_id == 114){ #If an admin, also an ed
       push @thisnoder_ug_ids, 923653;
     }
-    if($ug_id == 1944011) { #if in e2contact, also a chanop
-      push @thisnoder_ug_ids, 1969185;
-    }
   }
 }
 

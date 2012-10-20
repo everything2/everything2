@@ -2,7 +2,7 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>1328318</node_id>
   <title>flushcbox</title>
-  <code>return unless isGod($USER) || (exists $HTMLVARS{'group_e2contact'}{$$USER{node_id}}) || (exists $HTMLVARS{'group_chanops'}{$$USER{node_id}});
+  <code>return unless isGod($USER) || (exists $HTMLVARS{'group_chanops'}{$$USER{node_id}});
 my $currentRoomId = int($$USER{in_room});
 my $currentRoom = getNode($currentRoomId);
 my $currentRoomName;
@@ -13,13 +13,9 @@ if (!$currentRoom &amp;&amp; $currentRoomId) {
 } else {
   $currentRoomName = &quot;in room '$$currentRoom{title}'&quot;;
 }
-my $flushNode = getNode('flushcbox', 'opcode');
-$DB-&gt;sqlInsert('seclog', {
-   'seclog_node' =&gt; $$flushNode{node_id},
-   'seclog_user' =&gt; $$USER{user_id},
-   'seclog_details' =&gt; &quot;Chat $currentRoomName flushed.&quot;
-});
+
+$APP-&gt;securityLog(getNode('flushcbox', 'opcode'), $USER, &quot;Chat $currentRoomName flushed.&quot;);
+
 $DB-&gt;sqlDelete(&quot;message&quot;, &quot;for_user = 0 AND room = $currentRoomId&quot;);
-return 1;
-</code>
+return 1;</code>
 </node>

@@ -21,7 +21,7 @@
     <key>beer</key>
   </vars>
   <vars>
-    <value>defenestrates</value>
+    <value>tugs his forelock to</value>
     <key>special</key>
   </vars>
   <vars>
@@ -57,8 +57,8 @@
     <key>highfive</key>
   </vars>
   <vars>
-    <value>empurples</value>
-    <key>empurple</key>
+    <value>defenestrates</value>
+    <key>defenestrate</key>
   </vars>
   <vars>
     <value>hugs</value>
@@ -73,12 +73,12 @@
     <key>rubberchicken</key>
   </vars>
   <vars>
-    <value>mauls</value>
-    <key>maul</key>
-  </vars>
-  <vars>
     <value>omelets</value>
     <key>omelet</key>
+  </vars>
+  <vars>
+    <value>mauls</value>
+    <key>maul</key>
   </vars>
   <vars>
     <value>makes a nice cup of tea for</value>

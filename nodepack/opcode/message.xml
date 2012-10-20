@@ -6,7 +6,6 @@
 my $message = $query-&gt;param('message');
 my $UID = getId($USER)||0;
 my $isRoot = exists($HTMLVARS{'group_gods'}{$UID});
-my $isContact = exists($HTMLVARS{'group_e2contact'}{$UID});
 my $isChanop = htmlcode('isinUsergroup',&quot;$UID,chanops,1&quot;);
 
 foreach($query-&gt;param) {

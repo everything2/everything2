@@ -35,7 +35,7 @@ if (exists $HTMLVARS{'group_gods'}{$UID}) {
 
 #this sets the ordering of items in the combo box
 my $choices = [
-	'title ASC', 'wrtype_writeuptype ASC,title ASC', 'cooled DESC,title ASC', 'cooled DESC,node.reputation DESC,title ASC', 'node.reputation DESC,title ASC'
+	'title ASC', 'wrtype_writeuptype ASC,title ASC', 'cooled DESC,title ASC', 'cooled DESC,node.reputation DESC,title ASC', 'node.reputation DESC,title ASC', 'writeup.publishtime DESC', 'writeup.publishtime ASC'
 ];
 
 my $labels = {
@@ -43,7 +43,9 @@ my $labels = {
 	&quot;wrtype_writeuptype ASC,title ASC&quot;=&gt;&quot;Writeup type, then title&quot;,
         &quot;cooled DESC,title ASC&quot;=&gt;&quot;C!, then title&quot;,
         'cooled DESC,node.reputation DESC,title ASC'=&gt;'C!, then reputation',
-        'node.reputation DESC,title ASC'=&gt;'Reputation'
+        'node.reputation DESC,title ASC'=&gt;'Reputation',
+        'writeup.publishtime DESC'=&gt;'Date, most recent first',
+        'writeup.publishtime ASC'=&gt;'Date,most recent last'
 };
 
 my $raw = $query-&gt;param('raw');
@@ -88,7 +90,9 @@ my $orderdata = {
 	'wrtype_writeuptype ASC,title ASC'=&gt;1,     # Writeup type, then title
         'cooled DESC,title ASC'=&gt;'Number C!',      # Number of C!
         'cooled DESC,node.reputation DESC,title ASC'=&gt;'C! then rep',   # Number of C!, then rep, title
-        'node.reputation DESC,title ASC'=&gt;'Reputation'           # Reputation
+        'node.reputation DESC,title ASC'=&gt;'Reputation',           # Reputation
+        'writeup.publishtime DESC'=&gt;'Date, most recent first',
+        'writeup.publishtime ASC'=&gt;'Date, most recent last'
 };
 $orderby = '' unless exists $$orderdata{$orderby};
 

@@ -96,7 +96,7 @@ $str.$topic;
 %]
 &lt;div class=&quot;nodeletfoot&quot;&gt;
 [%
-return unless (exists $HTMLVARS{'group_gods'}{$$USER{node_id}}) || (exists $HTMLVARS{'group_e2contact'}{$$USER{node_id}}) || (exists $HTMLVARS{'group_chanops'}{$$USER{node_id}});
+return unless (exists $HTMLVARS{'group_gods'}{$$USER{node_id}}) || (exists $HTMLVARS{'group_chanops'}{$$USER{node_id}});
 return linkNode($NODE, 'silence', {'confirmop' =&gt; 'flushcbox',
 	-class=&gt;&quot;action ajax chatterbox:updateNodelet:Chatterbox&quot;}).'&lt;br&gt;';
 %]

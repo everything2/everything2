@@ -19,9 +19,6 @@ if ($$USER{in_room}) {
    $wherestr = &quot;room_id=$$USER{in_room} OR room_id=0&quot;;
 }
 
-my $untrueGods = getVars(getNode(&quot;Untrue Gods&quot;,&quot;setting&quot;));
-
-
 my $UID = $$USER{node_id};
 my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
 my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$UID};
@@ -61,9 +58,6 @@ if ($showActions)
               'Butterfinger McFlurry'
   );
 }
-
-my $showRoots = 1;
-my $showContentEds = 1;
 
 my $newbielook = $isRoot || $isCE;
 
@@ -129,10 +123,6 @@ while(my $U = $csr-&gt;fetchrow_hashref())
 
   my $thisChanop = htmlcode('isinUsergroup', $userID, 'chanops' , 'recurse');
 
-  # Separating mere coders from the gods...
-
-  my $notReallyRoot = exists $$untrueGods{$userID};
-
   $sameUser = $UID==$userID;
   next if $ignore{$userID} &amp;&amp; !$isRoot;
   $n = $$U{nick};
@@ -146,15 +136,14 @@ while(my $U = $csr-&gt;fetchrow_hashref())
       $nameLink = linkNode($userID, $costume);
     }
   }
-  $nameLink = '&lt;strong&gt;'.$nameLink.'&lt;/strong&gt;' if $sameUser || $is1337;
+  $nameLink = '&lt;strong&gt;'.$nameLink.'&lt;/strong&gt;' if $sameUser;
 
   my $flags='';
-  if ($showRoots &amp;&amp; exists $HTMLVARS{'group_gods'}{$userID}
-      &amp;&amp; !$notReallyRoot) {
+  if (exists $HTMLVARS{'group_gods'}{$userID} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($userID),&quot;hide_chatterbox_staff_symbol&quot;) ) {
     $flags .= $linkRoots;
   }
 
-  if ($newbielook &amp;&amp; !$is1337) {
+  if ($newbielook) {
     my $getTime = $DB-&gt;sqlSelect(&quot;datediff(now(),createtime)+1 as &quot;
                                  .&quot;difftime&quot;,&quot;node&quot;,&quot;node_id=&quot;
                                  .$userID.&quot; having difftime&lt;31&quot;);
@@ -169,7 +158,7 @@ while(my $U = $csr-&gt;fetchrow_hashref())
     }
   }
 
-  if ($showContentEds &amp;&amp; exists $HTMLVARS{'group_content editors'}{$userID}) {
+  if (exists $HTMLVARS{'group_content editors'}{$userID} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($userID),&quot;hide_chatterbox_staff_symbol&quot;) ) {
     $flags .= $linkCEs;
   }
 
@@ -271,7 +260,6 @@ my $intro = '&lt;h4&gt;Your fellow users ('.$num.'):&lt;/h4&gt;';
 $intro .= '&lt;div&gt;in '.linkNode($$USER{in_room}). ':&lt;/div&gt;' if $$USER{in_room};
 
 return $intro . $str;
-%]
-</nlcode>
+%]</nlcode>
   <title>Other Users</title>
 </node>
