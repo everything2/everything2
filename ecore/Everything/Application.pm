@@ -561,7 +561,7 @@ sub getLevel {
 	my ($this, $user) = @_;
 	$this->{db}->getRef($user);
 	return $$user{level} if $$user{level};
-	return 0 if $$user{title} eq "Guest User";
+	return 0 if $this->isGuest($user);
 
 	my $level_override = $this->{db}->getNodeParam($user, "level_override");
 	return $level_override if $level_override;
@@ -701,6 +701,21 @@ sub securityLog
   }
   return unless defined($node) and defined($user);
   $this->{db}->sqlInsert('seclog', { 'seclog_node' => $$node{node_id}, 'seclog_user'=>$$user{node_id}, 'seclog_details'=>$details});
+}
+
+sub isGuest
+{
+  my ($this, $user) = @_;
+  return unless defined $user;
+  my $userid;
+  if(ref $user eq "")
+  {
+    $userid = $user; 
+  }else{
+    $userid = $user->{node_id};
+  }
+
+  return ($this->{conf}->{system}->{guest_user} == $userid);
 }
 
 1;
