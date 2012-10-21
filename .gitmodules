@@ -1,3 +1,6 @@
 [submodule "ecoretool"]
 	path = ecoretool
 	url = git://github.com/everything2/ecoretool.git
+[submodule "vagrant/cookbooks/ntp"]
+	path = vagrant/cookbooks/ntp
+	url = https://github.com/opscode-cookbooks/ntp.git
