@@ -82,8 +82,6 @@ my @memberIDs=();
 my $flags;
 my $curID;
 
-my $untrueGods = getVars(getNode(&quot;Untrue Gods&quot;,&quot;setting&quot;));
-
 #don't show standard groups when actually viewing that page
 #FIXME? is there a better way to tell if on that group page?
 my $showMemberAdmin = ($$NODE{title} ne 'gods');
@@ -128,14 +126,13 @@ if($$NODE{group}) {
 			$s = '&lt;strong&gt;'.$s.'&lt;/strong&gt;';
 		}
 
-    my $notReallyRoot = exists $$untrueGods{$curID};
     my $isChanop = htmlcode('isinUsergroup',&quot;$curID,chanops,1&quot;);
 
 		#show normal groups user is in
 		$flags = '';
-		$flags .= '@' if $showMemberAdmin and (exists	$HTMLVARS{'group_gods'}{$curID} &amp;&amp; !$notReallyRoot);
+		$flags .= '@' if $showMemberAdmin and (exists	$HTMLVARS{'group_gods'}{$curID} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($curID),&quot;hide_chatterbox_staff_symbol&quot;));
 
-		$flags .= '$' if $showMemberCE and exists $HTMLVARS{'group_content editors'}{$curID};
+		$flags .= '$' if $showMemberCE and (exists $HTMLVARS{'group_content editors'}{$curID} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($curID),&quot;hide_chatterbox_staff_symbol&quot;) );
     $flags .= '+' if $showMemberAdmin &amp;&amp; $isChanop;
 
 		if(length($flags)) {
@@ -216,8 +213,7 @@ $str .= 'other /msgs: '.$andTheRest.'&lt;br /&gt;
 ' if length($andTheRest);
 $str .= htmlcode('closeform').'&lt;/p&gt;';
 $str;
-%]
-</page>
+%]</page>
   <node_id>846440</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

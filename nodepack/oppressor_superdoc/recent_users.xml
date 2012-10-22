@@ -18,7 +18,6 @@ my $powStructLink = '&lt;a href='.urlGen({'node'=&gt;'E2 staff', 'nodetype'=&gt;
 my $linkRoots = $powStructLink . ' title=&quot;e2gods&quot;&gt;@&lt;/a&gt;';
 my $linkCEs = $powStructLink . ' title=&quot;Content Editors&quot;&gt;$&lt;/a&gt;';
 my $linkChanops = $powStructLink.' title=&quot;chanops&quot;&gt;+&lt;/a&gt;';
-my $untrueGods = getVars(getNode(&quot;Untrue Gods&quot;,&quot;setting&quot;));
 
 $queryText = &quot;SELECT user_id FROM user,node WHERE user.user_id=node.node_id AND lasttime&gt;=ADDDATE(NOW(), INTERVAL -1 DAY) ORDER BY node.title&quot;;
 $rows = $dbh-&gt;prepare($queryText)
@@ -38,14 +37,13 @@ while($dbrow = $rows-&gt;fetchrow_arrayref)
    $uid = $$dbrow[0];
    $U = getNodeById($uid);
 
-   my $notReallyRoot = exists $$untrueGods{$uid};
    my $thisChanop = htmlcode('isinUsergroup', $uid, 'chanops' , 'recurse');
    
    $flags = '';
-   if (exists $HTMLVARS{'group_gods'}{$$U{user_id}} &amp;&amp; !$notReallyRoot) {
+   if (exists $HTMLVARS{'group_gods'}{$$U{user_id}} &amp;&amp; !$DB-&gt;getNodeParam($U,&quot;hide_chatterbox_staff_symbol&quot;) ) {
       $flags .= $linkRoots;
    }
-   if (exists $HTMLVARS{'group_content editors'}{$uid}) {
+   if (exists $HTMLVARS{'group_content editors'}{$uid} &amp;&amp; !$DB-&gt;getNodeParam($U,&quot;hide_chatterbox_staff_symbol&quot;) ) {
       $flags .= $linkCEs;
    }
    $flags .= $linkChanops if $thisChanop;

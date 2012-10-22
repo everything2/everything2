@@ -5,7 +5,7 @@
 [{show writeups}]
 
 &lt;div id='displaytypelinks'&gt;
-&lt;p&gt;[% linkNode($NODE, 'link view', { displaytype =&gt; 'linkview' } ) %] &lt;/p&gt;
+&lt;p&gt;[% return if $APP-&gt;isGuest($USER); linkNode($NODE, 'link view', { displaytype =&gt; 'linkview' } ) %] &lt;/p&gt;
 &lt;/div&gt;
 
 [{votefoot}]

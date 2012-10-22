@@ -6,8 +6,6 @@
 my $json = {};
 my $jsoncount = 1 if $showOpts =~ /j/;
 
-my $untrueGods = getVars(getNode(&quot;Untrue Gods&quot;,&quot;setting&quot;));
-
 #display options
 $showOpts ||= '';
 my $noreplylink = {$HTMLVARS{klaproth} =&gt; 1};
@@ -164,14 +162,13 @@ foreach my $MSG (@msgs) {
   if($$VARS{powersMsg}) {
     # Separating mere coders from the gods...
     my $isCommitter = htmlcode('isinUsergroup',&quot;$aid,%%&quot;);
-    my $notReallyRoot = exists $$untrueGods{$aid};
 
     my $isChanop = htmlcode('isinUsergroup',&quot;$aid,chanops,1&quot;);
 
     $flags = '';
-    if(exists $HTMLVARS{group_gods}{$aid} &amp;&amp; !$notReallyRoot) {
+    if(exists $HTMLVARS{group_gods}{$aid} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($aid),&quot;hide_chatterbox_staff_symbol&quot;)) {
       $flags .= '@';
-    } elsif(exists $HTMLVARS{'group_content editors'}{$aid}) {
+    } elsif(exists $HTMLVARS{'group_content editors'}{$aid} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($aid),&quot;hide_chatterbox_staff_symbol&quot;)) {
       $flags .= '$';
     }
 
@@ -259,6 +256,5 @@ if($totalMsg) {
 }
 
 return $string unless $jsoncount;
-return $json;
-</code>
+return $json;</code>
 </node>

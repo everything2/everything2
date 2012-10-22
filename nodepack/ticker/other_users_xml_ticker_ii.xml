@@ -18,16 +18,13 @@ if ($roomfor) {
 
 my $csr = $DB-&gt;sqlSelectMany('*', 'room', $wherestr, $sortstr);
 
-my $untrueGods = getVars(getNode(&quot;Untrue Gods&quot;,&quot;setting&quot;));
-
 while (my $row = $csr-&gt;fetchrow_hashref) {
   my @props;
   my $member = $$row{member_user};
   my $u = getNodeById($$row{member_user});
-  my $notReallyRoot = exists $$untrueGods{$member};
 
-  my $e2god = ((exists($HTMLVARS{'group_gods'}{$member}))
-               &amp;&amp; !$notReallyRoot ?(1):(0));
+  my $e2god = (exists($HTMLVARS{'group_gods'}{$member})
+               &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($member),&quot;hide_chatterbox_staff_symbol&quot;) )?(1):(0);
   push @props, qq-e2god=&quot;$e2god&quot;-;
 
   my $committer = htmlcode('isinUsergroup', $member, '%%');
@@ -36,7 +33,7 @@ while (my $row = $csr-&gt;fetchrow_hashref) {
   my $chanop = htmlcode('isinUsergroup', $member, 'chanops', 'recruse');
   push @props, qq-chanop=&quot;$chanop&quot;-;
 
-  my $ce = ((exists($HTMLVARS{'group_content editors'}{$member}))?(1):(0));
+  my $ce = (exists($HTMLVARS{'group_content editors'}{$member}) &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($member),&quot;hide_chatterbox_staff_symbol&quot;) )?(1):(0);
   push @props, qq-ce=&quot;$ce&quot;-;
 
   my $edev = ((exists($HTMLVARS{'group_edev'}{$member}))?(1):(0));
@@ -64,8 +61,7 @@ while (my $row = $csr-&gt;fetchrow_hashref) {
 
 $str .= &quot;&lt;/otherusers&gt;\n&quot;;
 return $str;
-%]
-</doctext>
+%]</doctext>
   <node_id>1291746</node_id>
   <title>Other Users XML Ticker II</title>
 </node>

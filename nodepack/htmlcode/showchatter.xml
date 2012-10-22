@@ -34,8 +34,6 @@ if ($nochat){
 	return { '1' =&gt; {value =&gt; $nochat, id =&gt; 'nochat'} };
 }
 
-my $untrueGods = getVars(getNode(&quot;Untrue Gods&quot;,&quot;setting&quot;));
-
 my $useBorgSpeak = 0;
 my $messagesToShow = 25;
 my $messageInterval = 360; #in seconds, how long room messages remain
@@ -134,14 +132,12 @@ utf8::decode($text);
 	}
 
 	if($$VARS{powersChatter}) {
-
-		my $notReallyRoot = exists $$untrueGods{$aid};
 		my $isChanop = htmlcode('isinUsergroup', $aid , &quot;chanops&quot;, &quot;recurse&quot;);
 
 		$flags = '';
-		if(exists $HTMLVARS{group_gods}{$aid} &amp;&amp; !$notReallyRoot) {
+		if(exists $HTMLVARS{group_gods}{$aid} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($aid),&quot;hide_chatterbox_staff_symbol&quot;) ) {
 			$flags .= '@';
-		} elsif(exists $HTMLVARS{'group_content editors'}{$aid}) {
+		} elsif(exists $HTMLVARS{'group_content editors'}{$aid} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($aid),&quot;hide_chatterbox_staff_symbol&quot;)) {
 			$flags .= '$';
 		}
 
@@ -213,6 +209,5 @@ utf8::decode($text);
 }
 
 return $str unless $jsoncount;
-return $json;
-</code>
+return $json;</code>
 </node>

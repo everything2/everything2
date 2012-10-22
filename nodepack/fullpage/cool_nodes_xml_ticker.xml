@@ -1,6 +1,8 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Mon Oct 22 03:50:07 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Mon Oct 22 05:50:08 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Intentions&quot; node_id=&quot;1068610&quot; parent_e2node=&quot;1068562&quot; author_user=&quot;deep thought&quot;&gt;The last innocent pillow fight&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;etouffee&quot; node_id=&quot;761064&quot; parent_e2node=&quot;761057&quot; author_user=&quot;blowdart&quot;&gt;Thoughts on sleep&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Auspice&quot; node_id=&quot;1427817&quot; parent_e2node=&quot;1427434&quot; author_user=&quot;JediBix783&quot;&gt;Hiking to see an alpine lake untouched by human hand&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;793562&quot; parent_e2node=&quot;793503&quot; author_user=&quot;Rancid_Pickle&quot;&gt;Comma Splices and Run-on Sentences&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2071212&quot; parent_e2node=&quot;2071214&quot; author_user=&quot;borgo&quot;&gt;Never Ending Tour&lt;/cooled&gt;
@@ -14,8 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2071323&quot; parent_e2node=&quot;2071320&quot; author_user=&quot;Montag&quot;&gt;You Ask, Montag Answers: Part Two&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;RACECAR&quot; node_id=&quot;2071277&quot; parent_e2node=&quot;2071285&quot; author_user=&quot;iceowl&quot;&gt;Stuff I Remember About Dad&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1688367&quot; parent_e2node=&quot;706485&quot; author_user=&quot;iamkaym&quot;&gt;tough love&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;etouffee&quot; node_id=&quot;1669463&quot; parent_e2node=&quot;833346&quot; author_user=&quot;iceowl&quot;&gt;snowlight&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;raincomplex&quot; node_id=&quot;2071319&quot; parent_e2node=&quot;1878482&quot; author_user=&quot;Montag&quot;&gt;oh, aren't we tough in the morning&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

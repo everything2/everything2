@@ -7,7 +7,6 @@ return if getId($USER) == $HTMLVARS{guest_user};
 
 my ($maxmsgs, $showOpts) = @_;
 
-my $untrueGods = getVars(getNode(&quot;Untrue Gods&quot;,&quot;setting&quot;));
 my $isEDev = exists $HTMLVARS{group_edev}{$$USER{user_id}};
 
 #display options
@@ -136,13 +135,12 @@ my $getFlags = sub {
   my $flagid = shift;
   # Separating mere coders from the gods...
   my $isCommitter = htmlcode('isinUsergroup', $flagid, &quot;%%&quot;);
-  my $notReallyRoot = exists $$untrueGods{$flagid};
   my $isChanop = htmlcode('isinUsergroup', $flagid, &quot;chanops&quot;, 1);
   my $flags = '';
 
-  if(exists $HTMLVARS{group_gods}{$flagid} &amp;&amp; !$notReallyRoot) {
+  if(exists $HTMLVARS{group_gods}{$flagid} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($flagid),&quot;hide_chatterbox_staff_symbol&quot;)) {
     $flags .= '@';
-  } elsif(exists $HTMLVARS{'group_content editors'}{$flagid}) {
+  } elsif(exists $HTMLVARS{'group_content editors'}{$flagid} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($flagid),&quot;hide_chatterbox_staff_symbol&quot;)) {
     $flags .= '$';
   }
 
@@ -289,6 +287,5 @@ if ($totalMsg) {
   $moreMsgStr .= linkNode($MI_node,&quot;$totalMsg private messages&quot;);
 }
 $str .= '&lt;br /&gt;(you have ' . $moreMsgStr . ')' if length($moreMsgStr);
-$str;
-</code>
+$str;</code>
 </node>
