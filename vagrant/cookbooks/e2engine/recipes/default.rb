@@ -70,6 +70,10 @@ directory '/etc/everything' do
   action "create"
 end
 
+nosearch_words = ['a','an','and','are','at','definition','everything','for','if','in','is','it','my','new','node','not','of','on','that','the','thing','this','to','we','what','why','with','writeup','you','your']
+nosearch_words_hash = {}
+nosearch_words.each { |x| nosearch_words_hash[x] = 1 }
+
 everything_conf_variables = {
     "everyuser" => node["e2engine"]["everyuser"],
     "everypass" => node["e2engine"]["everypass"],
@@ -109,7 +113,8 @@ everything_conf_variables = {
       "linktype" => 1,
       "theme" => 1,
       "themesetting" => 1
-   }
+    },
+    "nosearch_words" => nosearch_words_hash
 }
 
 file '/etc/everything/everything.conf.json' do
