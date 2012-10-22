@@ -75,9 +75,6 @@ my $linkBorged = '&lt;a href='.urlGen({'node'=&gt;'E2 FAQ: Chatterbox',
 # no ordering from databse - sorting done entirely in perl, below
 my $csr = $DB-&gt;sqlSelectMany('*', 'room', $wherestr);
 
-# N-Wing steals JB's room topic thing, and uses it for users
-my $userInfo = getVars(getNode('User Info', 'setting')) || 0;
-
 my $num = 0;
 my $sameUser;   # if the user to show is the user that is loading the page
 my $userID;     # only get member_user from hash once
@@ -202,9 +199,6 @@ while(my $U = $csr-&gt;fetchrow_hashref())
   $nameLink .= $nameLinkAppend;
 
   $n =~ tr/ /_/;
-  if ($userInfo &amp;&amp; exists $$userInfo{$n}) {
-    $nameLink .= '&lt;small&gt;'.$$userInfo{$n}.'&lt;/small&gt;';
-  }
 
   my $thisnoder .= $nameLink . $flags;
 

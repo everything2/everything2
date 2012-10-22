@@ -130,8 +130,7 @@ $str.= '&lt;td&gt;'.
   -default =&gt; $default,
   -size =&gt; 28,
   -maxlength =&gt; 80);
-my $types = getVars(getNode(&quot;default searchtypes&quot;, &quot;setting&quot;));
-#$str.=&quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;type\&quot; value=\&quot;$_\&quot; /&gt;&quot; foreach(keys %$types);
+
 $str.='&lt;input type=&quot;hidden&quot; name=&quot;lastnode_id&quot; value=&quot;'.$lnid.'&quot; /&gt;';
 
 $str.='&lt;/td&gt;&lt;td&gt;';

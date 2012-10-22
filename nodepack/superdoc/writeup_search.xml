@@ -22,7 +22,7 @@ $str.= $query-&gt;textfield(-name =&gt; 'node',
   -default =&gt; $default,
   -size =&gt; 28,
   -maxlength =&gt; 80);
-my $types = getVars(getNode(&quot;default searchtypes&quot;, &quot;setting&quot;));
+
 $str.='&lt;input type=&quot;submit&quot; name=&quot;searchy&quot; value=&quot;search&quot; /&gt;';
 $str.='&lt;input type=&quot;hidden&quot; name=&quot;lastnode_id&quot; value=&quot;'.$lnid.'&quot; /&gt;';
 $str.=$query-&gt;end_form;

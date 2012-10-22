@@ -1,6 +1,8 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Mon Oct 22 16:25:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Mon Oct 22 19:25:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;raincomplex&quot; node_id=&quot;2071422&quot; parent_e2node=&quot;2071421&quot; author_user=&quot;Jet-Poop&quot;&gt;A Simple Method for Enchanting a Magic Whistle&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;JD&quot; node_id=&quot;2071413&quot; parent_e2node=&quot;1503753&quot; author_user=&quot;borgo&quot;&gt;cap gun&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;2071398&quot; parent_e2node=&quot;2071394&quot; author_user=&quot;Montag&quot;&gt;You Ask, Montag Answers: Part Three&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;wertperch&quot; node_id=&quot;2068052&quot; parent_e2node=&quot;224268&quot; author_user=&quot;Tempestas&quot;&gt;Dishcloth&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;wertperch&quot; node_id=&quot;2066327&quot; parent_e2node=&quot;2070659&quot; author_user=&quot;borgo&quot;&gt;There's something inherently sad about a park with no kids in it&lt;/cooled&gt;
@@ -14,8 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Intentions&quot; node_id=&quot;1068610&quot; parent_e2node=&quot;1068562&quot; author_user=&quot;deep thought&quot;&gt;The last innocent pillow fight&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;etouffee&quot; node_id=&quot;761064&quot; parent_e2node=&quot;761057&quot; author_user=&quot;blowdart&quot;&gt;Thoughts on sleep&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Auspice&quot; node_id=&quot;1427817&quot; parent_e2node=&quot;1427434&quot; author_user=&quot;JediBix783&quot;&gt;Hiking to see an alpine lake untouched by human hand&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;793562&quot; parent_e2node=&quot;793503&quot; author_user=&quot;Rancid_Pickle&quot;&gt;Comma Splices and Run-on Sentences&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2071212&quot; parent_e2node=&quot;2071214&quot; author_user=&quot;borgo&quot;&gt;Never Ending Tour&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>
