@@ -276,9 +276,6 @@ sub searchNodeName {
 		foreach(@$TYPE) { $typestr .= $typePrefix . $this->{db}->getId($_); }
 	}
 	
-	my $NOSEARCH = $this->{db}->getNode('nosearchwords', 'setting');
-	my $NOWORDS = Everything::getVars($NOSEARCH) if $NOSEARCH;
-
 	my @words;
 	my $typeis = 0;
 	foreach (@prewords) {
@@ -298,7 +295,7 @@ sub searchNodeName {
 		}
 		else
 		{
-			push(@words, $_) unless (exists $$NOWORDS{$_} or length($_) < 2);
+			push(@words, $_) unless (exists $this->{conf}->{nosearch_words}->{$_} or length($_) < 2);
 		}
 	}
 	
