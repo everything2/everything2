@@ -207,7 +207,7 @@ local *info_c_short = sub {
 };
 
 local *info_dt_create = sub {
-	return '&lt;small class=&quot;date&quot;&gt;'.htmlcode('parsetimestamp', $$WRITEUP{publishtime} || $$WRITEUP{createtime}).'&lt;/small&gt;';
+	return '&lt;small class=&quot;date&quot; title=&quot;'.htmlcode('parsetimestamp', $$WRITEUP{publishtime} || $$WRITEUP{createtime}, 4).'&quot; &gt;'.htmlcode('parsetimestamp', $$WRITEUP{publishtime} || $$WRITEUP{createtime}).'&lt;/small&gt;';
 };
 
 local *info_author = sub {

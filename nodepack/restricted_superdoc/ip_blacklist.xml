@@ -115,12 +115,7 @@ SQLEND
 			. $dbh-&gt;errstr()
 			;
 	}else{
-		$DB-&gt;sqlInsert(&quot;seclog&quot;, {
-			'seclog_node'=&gt;$$NODE{node_id}, 
-			'seclog_user' =&gt; $$USER{node_id}, 
-			'seclog_details'=&gt; &quot;$$USER{title} removed $blAddress} from the IP blacklist.&quot;
-		});
-
+                $APP-&gt;securityLog($NODE, $USER, &quot;$$USER{title} removed $blAddress} from the IP blacklist.&quot;);
 		return &quot;The IP \&quot;$blAddress\&quot; was successfully removed from the blacklist.&quot;;
 	}
 
@@ -175,11 +170,7 @@ SQLEND
 			;
 	}else{
 		$ipToAdd = encodeHTML($ipToAdd);
-		$DB-&gt;sqlInsert(&quot;seclog&quot;, {
-			'seclog_node'=&gt;$$NODE{node_id}, 
-			'seclog_user' =&gt; $$USER{node_id}, 
-			'seclog_details'=&gt; &quot;$$USER{title} added $ipToAdd to the IP blacklist: \&quot;$blockReason.\&quot;&quot;
-		});
+                $APP-&gt;securityLog($NODE, $USER, &quot;$$USER{title} added $ipToAdd to the IP blacklist: \&quot;$blockReason.\&quot;&quot;);
 
 		return &quot;The IP \&quot;$ipToAdd\&quot; was successfully added to the blacklist.&quot;;
 	}
@@ -230,8 +221,7 @@ $query-&gt;start_form
 return $str;
 %]
 
-[{blacklistedIPs}]
-</doctext>
+[{blacklistedIPs}]</doctext>
   <node_id>1948146</node_id>
   <title>IP Blacklist</title>
 </node>

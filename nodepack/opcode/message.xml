@@ -199,15 +199,7 @@ if (($message =~ /^\/sanctify\s+(.*)$/i)) {
 
 		adjustGP($recUser, $Sanctificity);
 		adjustGP($USER, -$Sanctificity);
-
-		$DB-&gt;sqlInsert(
-			'seclog'
-			, {
-				'seclog_user' =&gt; $$USER{node_id}
-				, 'seclog_node' =&gt; getId(getNode('Sanctify user', 'superdoc'))
-				, 'seclog_details' =&gt; &quot;$$USER{title} sanctified $sanctee with $Sanctificity GP.&quot;
-			}
-			);
+                $APP-&gt;securityLog(getNode('Sanctify user', 'superdoc'), $USER, &quot;$$USER{title} sanctified $sanctee with $Sanctificity GP.&quot;);
 
 		htmlcode(
 			'sendPrivateMessage'
@@ -583,14 +575,7 @@ if($message =~ /^\/(msg\??|tell\??)(\{.+?\}\??|\s+\S+)(\s+.+)?$/si) {
   my $roomName = $$USER{in_room} == 0 ?
                   &quot;outside&quot; :
                   ($room ? $$room{title} : &quot;missing room ($$USER{in_room})&quot;);
-  $DB-&gt;sqlInsert(
-    &quot;seclog&quot;
-    , {
-      'seclog_node'      =&gt; $$msgOp{node_id}
-      , 'seclog_user'    =&gt; $$USER{node_id}
-      , 'seclog_details' =&gt; &quot;\[$$USER{title}\[user\]\] changed $roomName topic to '$message'&quot;
-    }
-  );
+  $APP-&gt;securityLog(getNode('E2 Gift Shop', 'superdoc'), $USER, &quot;\[$$USER{title}\[user\]\] changed $roomName topic to '$message'&quot;);
 
 ######### End Jay Messing around
 ######### More Jay Messing around

@@ -23,12 +23,7 @@ if(my $idToRemove = $query-&gt;param(&quot;remove_ip_block&quot;)){
 		return &quot;There was an error adding this block to the database: &quot;
 		.$dbh-&gt;errstr();
 	}else{
-		$DB-&gt;sqlInsert(&quot;seclog&quot;, {
-			'seclog_node'=&gt;$$NODE{node_id}, 
-			'seclog_user' =&gt; $$USER{node_id}, 
-			'seclog_details'=&gt; &quot;$$USER{title} removed $$blacklistHash{ipblacklist_ipaddress} from the IP blacklist.&quot;
-		});
-
+                $APP-&gt;securityLog($NODE, $USER, &quot;$$USER{title} removed $$blacklistHash{ipblacklist_ipaddress} from the IP blacklist.&quot;);
 		return &quot;The IP \&quot;$$blacklistHash{ipblacklist_ipaddress}\&quot; was successfully removed from the blacklist.&quot;;
 	}
 
@@ -56,12 +51,7 @@ if($query-&gt;param(&quot;add_ip_block&quot;)){
 			$str.= &quot;&lt;li&gt;There was an error adding this block to the database: &quot;
 			.$dbh-&gt;errstr().&quot;&lt;/li&gt;&quot;;
 		}else{
-			$DB-&gt;sqlInsert(&quot;seclog&quot;, {
-				'seclog_node'=&gt;$$NODE{node_id}, 
-				'seclog_user' =&gt; $$USER{node_id}, 
-				'seclog_details'=&gt; &quot;$$USER{title} added $ipToAdd to the IP blacklist: \&quot;$blockReason.\&quot;&quot;
-			});
-
+                        $APP-&gt;securityLog($NODE, $USER, &quot;$$USER{title} added $ipToAdd to the IP blacklist: \&quot;$blockReason.\&quot;&quot;);
 			$str.= &quot;&lt;li&gt;The IP \&quot;$ipToAdd\&quot; was successfully added to the blacklist.&lt;/li&gt;\n&quot;;
 		}
 	}

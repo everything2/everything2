@@ -77,11 +77,7 @@ local *debugLog = sub {
 	$msg .= ' IP '.$addr;
 	$msg .= ' (testing only)' if $testCreateOnly;
 	$msg = $dbh-&gt;quote($msg);
-	$DB-&gt;sqlInsert('seclog', {
-		'seclog_node'=&gt;$$NODE{node_id},
-		'seclog_user'=&gt;$$USER{user_id},	#probably just guest user
-		'seclog_details'=&gt;$msg,
-	});
+        $APP-&gt;securityLog($NODE, $USER, $msg);
 };
 
 my $errorMessage = '';

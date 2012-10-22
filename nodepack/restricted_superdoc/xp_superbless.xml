@@ -41,7 +41,7 @@ for(my $count=0; $count &lt; @users; $count++) {
 my $signum = ($curXP&gt;0) ? 1 : (($curXP&lt;0) ? -1 : 0);
 
   $str .= &quot;user $$U{title} was given $curXP XP&quot;;
-  $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; $$NODE{node_id}, 'seclog_details' =&gt; &quot;$$U{title} was superblessed $curXP XP by $$USER{title}&quot;});
+  $APP-&gt;securityLog($NODE, $USER, &quot;$$U{title} was superblessed $curXP XP by $$USER{title}&quot;);
   if($signum!=0) {
     $$U{karma}+=$signum;
     adjustExp($U, $curXP);
@@ -82,8 +82,7 @@ $str;
 
 %]
 &lt;/table&gt;
-[{closeform}]
-</doctext>
+[{closeform}]</doctext>
   <node_id>1959718</node_id>
   <title>XP Superbless</title>
 </node>

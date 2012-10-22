@@ -12,7 +12,6 @@ return unless($$uid{type_nodetype} == getId(getType('user')));
 $$uid{acctlock} = 0;
 updateNode($uid, -1);
 
-my $OP = getId(getNode(&quot;unlockaccount&quot;,&quot;opcode&quot;));
-
-$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; $OP, 'seclog_details' =&gt; &quot;$$uid{title}'s account was unlocked by $$USER{title}&quot;});</code>
+$APP-&gt;securityLog(getNode(&quot;unlockaccount&quot;,&quot;opcode&quot;), $USER, &quot;$$uid{title}'s account was unlocked by $$USER{title}&quot;);
+</code>
 </node>

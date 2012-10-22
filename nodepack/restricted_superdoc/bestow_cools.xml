@@ -26,13 +26,12 @@ my $V = getVars $U;
 $$V{cools} = $cools;
 setVars($U, $V);
 &quot;&lt;i&gt;$cools cools were bestowed to &quot;.linkNode($U).&quot;&lt;/i&gt;&quot;;
-  $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; $$NODE{node_id}, 'seclog_details' =&gt; &quot;$$U{title} was given $cools cools by $$USER{title}&quot;});
+$APP-&gt;securityLog($NODE, $USER, &quot;$$U{title} was given $cools cools by $$USER{title}&quot;);
 $$U{karma}+=1;
 updateNode($U, -1);
 
 return 'Success!';
 %]
-
 </doctext>
   <node_id>605785</node_id>
   <title>bestow cools</title>

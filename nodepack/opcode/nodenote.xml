@@ -14,17 +14,12 @@ return unless $NOTEFOR;
 #Strip dynamic URLs
 $notetext =~ s/\&lt;.*?img.*?src[\s\&quot;\']*?\=[\s\&quot;\']*?.*?\?.*?\&gt;//g;
 
-my $recentNotes_id = getId(getNode(&quot;Recent Node Notes&quot;,&quot;oppressor_superdoc&quot;));
-
 foreach($query-&gt;param) {
 	if($_ =~ /^deletenote\_(\d+)$/) {
 		$DB-&gt;sqlDelete('nodenote', &quot;nodenote_id=$1&quot;);
-		$DB-&gt;sqlInsert(&quot;seclog&quot;, {
-	   'seclog_node'=&gt;&quot;$recentNotes_id&quot;,'seclog_user'=&gt;$$USER{user_id},
-	   'seclog_details'=&gt;&quot;removed note on [$$NOTEFOR{title}]&quot;});
+                $APP-&gt;securityLog(getNode(&quot;Recent Node Notes&quot;,&quot;oppressor_superdoc&quot;), $USER, &quot;removed note on [$$NOTEFOR{title}]&quot;);
 	}
 }
 
-htmlcode('addNodenote', $notefor, $notetext, $USER) if $notetext;
-</code>
+htmlcode('addNodenote', $notefor, $notetext, $USER) if $notetext;</code>
 </node>

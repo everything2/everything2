@@ -99,8 +99,7 @@ if ($isHalloween) {
 }
 
 if (!$isHalloween) {
-
-$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; $$NODE{node_id}, 'seclog_details' =&gt; &quot;[$$USER{title}] spun the [Wheel of Surprise].&quot;});
+        $APP-&gt;securityLog($NODE, $USER, &quot;[$$USER{title}] spun the [Wheel of Surprise].&quot;);
 	if ($rnd&lt;3800) {
 		$resultStr .= &quot;&lt;b&gt;nothing!&lt;/b&gt; Too bad ...&quot;;
 	}
@@ -283,8 +282,7 @@ $$VARS{oldGP} = $$USER{GP};
 
 return &quot;&quot;;
 
-%]
-</doctext>
+%]</doctext>
   <node_id>1874886</node_id>
   <title>Wheel of Surprise</title>
 </node>

@@ -17,8 +17,25 @@ return htmlcode('epicenterZen') if $$VARS{nodelets} &amp;&amp; $$VARS{nodelets} 
 &lt;div id='searchform'&gt;
    [{zensearchform}]
 &lt;/div&gt;
-
-&lt;h1 id='e2logo'&gt;&lt;a href=&quot;/&quot;&gt;Everything&lt;span id=&quot;e2logo2&quot;&gt;2&lt;/span&gt;&lt;/a&gt;&lt;/h1&gt;
+[% 
+  if($USER-&gt;{title} eq &quot;Guest User&quot;){
+    return qq|&lt;style&gt;div#e2logo {
+margin: 5px 2px 5px 20px;
+width: 300px; height: 50px; /* these are the exact dimensions of the background image */
+overflow: hidden; /* sets a window big enough to show the background image and nothing else */
+background-repeat: no-repeat;
+background-position: 0 0;
+background-image: url(http://static.everything2.com/e2_tight.gif);
+}
+div#e2logo a {
+display: block;
+padding: 50px 300px; /* means the text doesn't show in the 300x50 window */
+}&lt;/style&gt;
+&lt;div id='e2logo'&gt;&lt;a href=&quot;/&quot;&gt;Everything&lt;span id=&quot;e2logo2&quot;&gt;2&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;|;
+  }else{
+    return qq|&lt;h1 id='e2logo'&gt;&lt;a href=&quot;/&quot;&gt;Everything&lt;span id=&quot;e2logo2&quot;&gt;2&lt;/span&gt;&lt;/a&gt;&lt;/h1&gt;|;
+  }
+%]
 &lt;/div&gt;
 
 &lt;div id='wrapper'&gt;

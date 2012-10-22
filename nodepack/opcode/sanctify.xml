@@ -21,7 +21,7 @@ return unless $$U{type}{title} eq 'user';
         adjustGP($USER, -$Sanctificity);
         $$VARS{oldGP} = $$USER{GP};
 
-$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; getId(getNode('Sanctify user', 'superdoc')), 'seclog_details' =&gt; &quot;$$USER{title} sanctified $$U{title} with $Sanctificity GP.&quot;});
+$APP-&gt;securityLog(getNode('Sanctify user', 'superdoc'), $USER, &quot;$$USER{title} sanctified $$U{title} with $Sanctificity GP.&quot;);
         
 	my $from =  &quot;!&quot;;
 	$HTMLVARS{msgparams} = {

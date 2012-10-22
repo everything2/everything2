@@ -76,11 +76,7 @@ htmlcode('addNodenote', $wu, &quot;Removed by $remover$reason&quot;);
 my $author = getNodeById($$wu{author_user});
 my $mass = getNode('massacre', 'opcode');
 
-$DB-&gt;sqlInsert('seclog', {
-	seclog_user =&gt; $$USER{node_id}
-	, seclog_node =&gt; $$mass{node_id}
-	, seclog_details =&gt; &quot;[$title] by [$$author{title}] was removed$reason&quot;
-});
+$APP-&gt;securityLog(getNode('massacre', 'opcode'), $USER, &quot;[$title] by [$$author{title}] was removed$reason&quot;);
 
 unless($noexp){
 	adjustExp($$wu{author_user}, -5);

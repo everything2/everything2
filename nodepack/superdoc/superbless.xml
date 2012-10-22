@@ -38,14 +38,8 @@ for(my $count=0; $count &lt; @users; $count++) {
 my $signum = ($curGP&gt;0) ? 1 : (($curGP&lt;0) ? -1 : 0);
 
   $str .= &quot;User $$U{title} was given $curGP GP.&quot;;
-  $DB-&gt;sqlInsert(
-    'seclog'
-    , {
-       'seclog_user' =&gt; $$USER{node_id}
-       , 'seclog_node' =&gt; $$NODE{node_id}
-       , 'seclog_details' =&gt; &quot;$$U{title} was superblessed $curGP GP by $$USER{title}&quot;
-    }
-    );
+  $APP-&gt;securityLog($NODE, $USER, &quot;$$U{title} was superblessed $curGP GP by $$USER{title}&quot;);
+
   if($signum!=0) {
     $$U{karma}+=$signum;
     updateNode($U, -1);

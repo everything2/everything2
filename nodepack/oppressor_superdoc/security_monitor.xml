@@ -5,12 +5,7 @@
 	### TO BEGIN TRACKING A NEW ACTIVITY IN THE SECURITY LOG:
 	###
 	###		1) Add the following code where something happens that you want to track:
-	###			$DB-&gt;sqlInsert('seclog', {
-	###				'seclog_node'=&gt;$$NODE{node_id},
-	###				'seclog_user'=&gt;$$USER{user_id},
-	###				'seclog_details'=&gt;&quot;Details of whatever you want to log go here&quot;,
-	###			});
-	###
+	###			$APP-&gt;securityLog($NODE, $USER, &quot;Details&quot;);
 	###		2) Add a line to the $sec hashref below in the format:
 	###			&quot;Label for section&quot; =&gt; getId(getNode(&quot;where the event occurs&quot;,&quot;the node type of that location&quot;))
 	###
@@ -19,7 +14,6 @@
 
 	my $sec = {
 		&quot;Kill reasons&quot; =&gt; getId(getNode(&quot;massacre&quot;,&quot;opcode&quot;)), 
-		&quot;Punch Thyself&quot; =&gt; getId(getNode(&quot;punch thyself&quot;, &quot;superdoc&quot;)), 
 		&quot;Password requests&quot; =&gt; getId(getNode(&quot;What's my password?&quot;, &quot;superdoc&quot;)),
 		&quot;Suspensions&quot; =&gt; getId(getNode(&quot;Suspension Info&quot;, &quot;superdoc&quot;)),
 		&quot;Resurrections&quot; =&gt; getId(getNode(&quot;Dr. Nate's Secret Lab&quot;, &quot;restricted_superdoc&quot;)),
@@ -48,7 +42,7 @@
 #               &quot;Wheel of Surprise&quot; =&gt; getId(getNode(&quot;Wheel of Surprise&quot;,&quot;superdoc&quot;)),
                 &quot;Sanctifications&quot; =&gt; getId(getNode(&quot;Sanctify user&quot;,&quot;superdoc&quot;)),
 #               &quot;SQL Queries&quot; =&gt; getId(getNode(&quot;SQL Prompt&quot;,&quot;restricted_superdoc&quot;)),
-#               &quot;User Deletions&quot; =&gt; getId(getNode(&quot;The Old Hooked Pole&quot;,&quot;restricted_superdoc&quot;))
+                &quot;User Deletions&quot; =&gt; getId(getNode(&quot;The Old Hooked Pole&quot;,&quot;restricted_superdoc&quot;)),
                 &quot;Catbox flushes&quot; =&gt; getId(getNode(&quot;flushcbox&quot;,&quot;opcode&quot;)),
                 &quot;Parameter changes&quot; =&gt; getId(getNode(&quot;parameter&quot;,&quot;opcode&quot;)),
 	};

@@ -238,7 +238,7 @@ $str.=$query-&gt;end_form();
 if ($query-&gt;param('recalculate_XP')) {
    my $warnstr;
    if ($query-&gt;param('confirm') eq 'wakaru') {
-      $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; $$NODE{node_id}, 'seclog_details' =&gt; &quot;$$USER{title} recalculated $$targetUser{title}'s XP&quot;});
+      $APP-&gt;securityLog($NODE, $USER, &quot;$$USER{title} recalculated $$targetUser{title}'s XP&quot;);
       adjustExp($targetUser, (-$xp));
       adjustExp($targetUser, $newXP);
       $$targetVars{hasRecalculated} = 1;
@@ -260,8 +260,7 @@ if ($query-&gt;param('recalculate_XP')) {
 } else {
   return $str;
 }
-%]
-</doctext>
+%]</doctext>
   <node_id>1959368</node_id>
   <title>Recalculate XP</title>
 </node>

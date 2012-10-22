@@ -9,9 +9,7 @@ getRef $U;
 $$U{votesleft} += 25;
 $$U{karma} += 1;
 
-my $bestow = getNode(&quot;bestow&quot;,&quot;opcode&quot;);
-
-$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; $$bestow{node_id}, 'seclog_details' =&gt; &quot;$$U{title} was given 25 votes by $$USER{title}&quot;});
+$APP-&gt;securityLog(getNode(&quot;bestow&quot;,&quot;opcode&quot;), $USER, &quot;$$U{title} was given 25 votes by $$USER{title}&quot;);
 
 updateNode($U, -1);
 $U = getNodeById(getId($U), 'force');

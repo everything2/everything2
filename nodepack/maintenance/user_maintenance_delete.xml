@@ -4,18 +4,10 @@
   <code>my ($DELETED_USER) = @_;
 getRef $DELETED_USER;
 
-my $deleteNode = getNode('The Old Hooked Pole', 'restricted_superdoc');
-if ($deleteNode) {
-      $DB-&gt;sqlInsert('seclog', {
-        'seclog_node'    =&gt; $$deleteNode{node_id},
-        'seclog_user'    =&gt; $$USER{user_id},
-        'seclog_details' =&gt; &quot;Deleted user $$DELETED_USER{title} (node_id $$DELETED_USER{node_id})&quot;
-      });
-}
+$APP-&gt;securityLog(getNode('The Old Hooked Pole', 'restricted_superdoc'), $USER, &quot;Deleted user $$DELETED_USER{title} (node_id $$DELETED_USER{node_id})&quot;);
 
 # Remove user from room lists so [Other Users[nodelet]] doesn't bug out
 $DB-&gt;sqlDelete('room', &quot;member_user = $$DELETED_USER{node_id}&quot;);
-
 </code>
   <type_nodetype>150</type_nodetype>
   <maintain_nodetype>15</maintain_nodetype>

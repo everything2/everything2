@@ -116,7 +116,7 @@ if ( defined $new_e2node_id )
 ##     Set writeup's parent node
 ##     Insert writeup into node nodegroup
 ##     Update writeup
-##     Add seclog entry
+##     Add security log entry
 ##     /msg writeup author
 ##     Generate onscreen feedback
 
@@ -153,14 +153,8 @@ if ( ($old_e2node || $writeup) &amp;&amp; $new_e2node )
 		insertIntoNodegroup($new_e2node, -1, $move_writeup)
 			unless ($alreadyinnodegroup);
 		updateNode($move_writeup, -1);
-
-		$DB-&gt;sqlInsert('seclog'
-			, { 'seclog_details' =&gt; $oldtitle
-				. &quot; by [&quot;.encodeHTML($authortitle).&quot;]&quot;
-				. &quot; was moved to [&quot;.encodeHTML($move_writeup-&gt;{'title'}).&quot;]&quot;
-				, seclog_user =&gt; $USER-&gt;{'node_id'}
-				, seclog_node =&gt; $NODE-&gt;{'node_id'}
-			} );
+                
+                $APP-&gt;securityLog($NODE, $USER, $oldtitle. &quot; by [&quot;.encodeHTML($authortitle).&quot;]&quot;. &quot; was moved to [&quot;.encodeHTML($move_writeup-&gt;{'title'}).&quot;]&quot;);
 		$DB-&gt;sqlInsert('message'
 			, {msgtext=&gt;'I moved your writeup &quot;['.encodeHTML($oldtitle).']&quot;'
 			.' You can now find it at &quot;['.$new_e2node-&gt;{'title'}.']&quot;'
@@ -343,8 +337,7 @@ return($inputs_string
 	. $selection_string 
 	. $feedback_string 
 	. &quot;&lt;p&gt;[Lord Brawl] says: Try [Klaproth Van Lines] for bulk moves. Certain conditions apply.&lt;/p&gt;&quot;);
-%]
-</doctext>
+%]</doctext>
   <node_id>1138488</node_id>
   <title>Magical Writeup Reparenter</title>
 </node>

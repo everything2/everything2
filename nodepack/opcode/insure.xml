@@ -17,23 +17,14 @@ if ($$insnode{publication_status} == $insured) {
 	$$insnode{publication_status} = 0;
 	htmlcode('addNodenote', $insnode, &quot;Uninsured by [$$USER{title}\[user]]&quot;);
 	$DB-&gt;sqlDelete(&quot;publish&quot;, &quot;publish_id = $$insnode{node_id}&quot;);
-   $DB-&gt;sqlInsert('seclog', {
-      'seclog_user' =&gt; $$USER{node_id}, 
-      'seclog_node' =&gt; $$insure{node_id},
-      'seclog_details' =&gt; &quot;$$USER{title} uninsured \&quot;$$insnode{title}\&quot; by $$AUTHOR{title}&quot;
-   });
+        $APP-&gt;securityLog(getNode(&quot;insure&quot;,&quot;opcode&quot;), $USER, &quot;$$USER{title} uninsured \&quot;$$insnode{title}\&quot; by $$AUTHOR{title}&quot;);
 }
 else {
 	$$insnode{publication_status} = $insured;
 	htmlcode('addNodenote', $insnode, &quot;Insured by [$$USER{title}\[user]]&quot;);
 	$DB-&gt;sqlInsert(&quot;publish&quot;,{publish_id =&gt; $$insnode{node_id}, publisher =&gt; $$USER{user_id}});
-   $DB-&gt;sqlInsert('seclog', {
-      'seclog_user' =&gt; $$USER{node_id},
-      'seclog_node' =&gt; $$insure{node_id}, 
-      'seclog_details' =&gt; &quot;$$USER{title} insured \&quot;$$insnode{title}\&quot; by $$AUTHOR{title}&quot;
-   });
+        $APP-&gt;securityLog(getNode(&quot;insure&quot;,&quot;opcode&quot;), $USER, &quot;$$USER{title} insured \&quot;$$insnode{title}\&quot; by $$AUTHOR{title}&quot;);
 }
 
-$DB -&gt; updateNode($insnode, -1);
-</code>
+$DB -&gt; updateNode($insnode, -1);</code>
 </node>

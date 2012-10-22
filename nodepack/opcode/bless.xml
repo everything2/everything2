@@ -18,8 +18,7 @@ $$U{karma} += 1;
 htmlcode('achievementsByType','karma');
 # htmlcode('achievementsByType','experience');
 
-my $bless = getNode(&quot;bless&quot;,&quot;opcode&quot;);
-$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; $$bless{node_id}, 'seclog_details' =&gt; &quot;$$U{title} was blessed 10GP by $$USER{title}&quot;});
+$APP-&gt;securityLog(getNode(&quot;bless&quot;,&quot;opcode&quot;), $USER, &quot;$$U{title} was blessed 10GP by $$USER{title}&quot;);
 
 	my $from =  &quot;!&quot;;
 	$HTMLVARS{msgparams} = {

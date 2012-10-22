@@ -2,7 +2,7 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>648516</node_id>
   <title>massacre</title>
-  <code>return unless (Everything::isApproved($USER, getNode('Content Editors', 'usergroup')) || isGod($USER));
+  <code>return unless $APP-&gt;isEditor($USER);
 
 my @params = $query-&gt;param;
 my @deathrow;
@@ -16,7 +16,6 @@ foreach(@params) {
 
 return unless @deathrow;
 
-my $mass = getNode('massacre', 'opcode');
 my $UID = $$USER{node_id}||0;	#ID of person that is deleting
 return if !$UID;
 my $aid; #ID of user whose WU is killed
@@ -121,19 +120,7 @@ foreach $nid (@deathrow) {
 #old way:
 #	my $isAnon = defined $$msgHash{for_usergroup} ? '' : ' anonymously';
 	my $aut = getNodeById($aid);
-	$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $UID, 'seclog_node' =&gt; $$mass{node_id}, 'seclog_details' =&gt; &quot;[$nt] by [$$aut{title}] was killed: $m&quot;});
-
-
-##new way: (for testing only, so far; have to fix some things)
-#if($$USER{node_id}==9740) {	#making sure the msg is breaking properly
-#	my $wuAuthor = getNodeById($aid);
-#	$m = '['.$nt.'] by ['.$wuAuthor-&gt;{title}.'] was killed: '.$m;
-#	$m = $m . ' --------- ' . $m;	#DELETE ME DELETE ME DELETE ME
-#	foreach( split(/(.{254})/, $m) ) {
-#		next unless length($_);
-#		$DB-&gt;sqlInsert('message', {'for_user'=&gt;9740, 'msgtext'=&gt;$_, 'author_user'=&gt;9740} );
-#	}	#CHANGEME be like old way
-#}
+        $APP-&gt;securityLog(getNode('massacre', 'opcode'), $UID, &quot;[$nt] by [$$aut{title}] was killed: $m&quot;);
 
 
 }	#foreach(@deathrow)

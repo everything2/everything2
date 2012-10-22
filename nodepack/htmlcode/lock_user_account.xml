@@ -8,14 +8,7 @@ return unless $uid;
 return unless($$uid{type_nodetype} == getId(getType('user')));
 $$uid{acctlock} = $$USER{user_id};
 
-my $OP = getId(getNode(&quot;lockaccount&quot;,&quot;opcode&quot;));
-
-$DB-&gt;sqlInsert('seclog',
-  {
-    'seclog_user' =&gt; $$USER{node_id}
-    , 'seclog_node' =&gt; $OP
-    , 'seclog_details' =&gt; &quot;$$uid{title}'s account was locked by $$USER{title}&quot;}
-  );
+$APP-&gt;securityLog(getNode(&quot;lockaccount&quot;,&quot;opcode&quot;), $USER, &quot;$$uid{title}'s account was locked by $$USER{title}&quot;);
 
 # Delete all public messages from locked user
 $DB-&gt;sqlDelete('message', &quot;for_user = 0 AND author_user = $$uid{user_id}&quot;);
@@ -31,6 +24,5 @@ $DB -&gt; sqlUpdate('draft JOIN node ON draft_id=node_id'
 my $V = getVars($uid);
 delete $$V{skratchShare};
 setVars($uid, $V);
-updateNode($uid, -1);
-</code>
+updateNode($uid, -1);</code>
 </node>

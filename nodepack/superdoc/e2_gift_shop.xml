@@ -64,8 +64,7 @@ if ($query-&gt;param('give_star')) {
         $$U{stars} += 1;
 	updateNode($U,-1);
         adjustGP($USER, -$StarCost);
-
-$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; getId(getNode('The Gift of Star', 'node_forward')), 'seclog_details' =&gt; &quot;[$$USER{title}] gave $article $Color Star to [$$U{title}] at the [E2 Gift Shop].&quot;});
+        $APP-&gt;securityLog(getNode('The Gift of Star', 'node_forward'), $USER, &quot;[$$USER{title}] gave $article $Color Star to [$$U{title}] at the [E2 Gift Shop].&quot;);
 
 	my $from = $$USER{title};
 	$HTMLVARS{msgparams} = {
@@ -136,7 +135,7 @@ if (($lvl &gt;= $minlevel) &amp;&amp; ($CurGP &gt;= $voteCost)) {
 
                $$USER{votesleft} += $voteIncrease;
                $$USER{GP} -= ($voteIncrease*$voteCost);
-              $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; getId(getNode('Buy Votes', 'node_forward')), 'seclog_details' =&gt; &quot;$$USER{title} purchased $voteIncrease votes at the [E2 Gift Shop].&quot;});
+               $APP-&gt;securityLog(getNode('Buy Votes', 'node_forward'), $USER, &quot;$$USER{title} purchased $voteIncrease votes at the [E2 Gift Shop].&quot;);
               updateNode($USER, -1);
 
                $str= &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Votes&lt;/b&gt;&lt;/p&gt;&lt;p&gt;You now have &lt;b&gt;$$USER{votesleft}&lt;/b&gt; total votes. Happy voting!&lt;/p&gt;&quot;; 
@@ -194,8 +193,8 @@ if ($query-&gt;param('give_votes')) {
 	updateNode($U,-1);
 	$$USER{votesleft}-=$amt;
 	updateNode($USER, -1);
-
-$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; getId(getNode('The Gift of Votes', 'node_forward')), 'seclog_details' =&gt; &quot;$$USER{title} gave $amt of their votes to $$U{title} at the [E2 Gift Shop].&quot;});
+        
+        $APP-&gt;securityLog(getNode('The Gift of Votes', 'node_forward'), $USER, &quot;$$USER{title} gave $amt of their votes to $$U{title} at the [E2 Gift Shop].&quot;);
 
 	my $from =  ($query-&gt;param('anon') eq 'sssh') ? &quot;someone mysterious&quot; : ('[' . $$USER{title} . ']');
 	$HTMLVARS{msgparams} = {
@@ -267,8 +266,7 @@ my $lvl = $APP-&gt;getLevel($user);
         $$user{sanctity} += 1;
 	updateNode($user,-1);
 	$$VARS{cools}--;
-
-$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; getId(getNode('The Gift of Ching', 'node_forward')), 'seclog_details' =&gt; &quot;$$USER{title} gave a C! to $$user{title} at the [E2 Gift Shop].&quot;});
+        $APP-&gt;securityLog( getNode('The Gift of Ching', 'node_forward'), $USER, &quot;$$USER{title} gave a C! to $$user{title} at the [E2 Gift Shop].&quot;);
 
 	my $from =  ($query-&gt;param('anon') eq 'sssh') ? &quot;someone mysterious&quot; : ('[' . $$USER{title} . ']');
 	$HTMLVARS{msgparams} = {
@@ -372,8 +370,7 @@ $$VARS{cools} ||= 0;
 $$VARS{cools}++;
 $$VARS{chingbought} = $curTime;
 setVars($USER, $VARS);
-
-$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; getId(getNode('Buy Chings', 'node_forward')), 'seclog_details' =&gt; &quot;$$USER{title} purchased a C! at the [E2 Gift Shop] for $gpCost GP.&quot;});
+$APP-&gt;securityLog(getNode('Buy Chings', 'node_forward'), $USER, &quot;$$USER{title} purchased a C! at the [E2 Gift Shop] for $gpCost GP.&quot;);
 
 $$USER{GP} += (-1*$gpCost);
  return &quot;&lt;p&gt;Transaction complete. You have $$VARS{cools} cools now.  Thank you, come again!&lt;/p&gt;&quot;;
@@ -453,9 +450,7 @@ if ($query-&gt;param(&quot;setTopic&quot;)) {
 	$$topics{$room} = $utf8topic;
 	$$topics{$room} = $oldtopic if $utf8topic eq '' || $utf8topic =~ /^No information/i;
 	setVars($settingsnode, $topics);
-
-	$DB-&gt;sqlInsert(&quot;seclog&quot;, {'seclog_node'=&gt;$$NODE{node_id}, 'seclog_user' =&gt; $$USER{node_id}, 'seclog_details'=&gt; &quot;$$USER{title} changed room topic to '&quot;.$utf8topic.&quot;'&quot;});
-
+        $APP-&gt;securityLog($NODE, $USER, &quot;$$USER{title} changed room topic to '&quot;.$utf8topic.&quot;'&quot;);
 	return &quot;The topic has been updated. Go now and enjoy the fruits of your labor.&quot;;
 }
 
@@ -603,7 +598,7 @@ if ($query-&gt;param('give_egg')) {
 	setVars($U, $v);
 	$$VARS{easter_eggs}--;
 
-#$DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' =&gt; getId(getNode('The Gift of Eggs', 'node_forward')), 'seclog_details' =&gt; &quot;$$USER{title} gave an easter egg to $$U{title} at the [E2 Gift Shop].&quot;});
+        $APP-&gt;securityLog(getNode('The Gift of Eggs', 'node_forward'), $USER, &quot;$$USER{title} gave an easter egg to $$U{title} at the [E2 Gift Shop].&quot;);
 
 	my $from =  ($query-&gt;param('anon') eq 'sssh') ? &quot;someone mysterious&quot; : ('[' . $$USER{title} . ']');
 	$HTMLVARS{msgparams} = {
@@ -720,9 +715,7 @@ $$VARS{oldGP} = $$USER{GP};
 
 return &quot;&quot;;
 
-%]
-
-</doctext>
+%]</doctext>
   <node_id>1872678</node_id>
   <title>E2 Gift Shop</title>
 </node>

@@ -123,12 +123,9 @@ if ($U &amp;&amp; $uidGiven &amp;&amp; $validationKeyGiven){
 		$$U{validemail} = 1;
 		$DB-&gt;updateNode($U,-1);
 		$DB-&gt;sqlDelete(&quot;suspension&quot;, &quot;suspension_user=$$U{node_id} and suspension_sustype='1948205'&quot;);
+                
+                $APP-&gt;securityLog($NODE, $U, &quot;$$U{title} verified his or her email address!&quot;);
 
-		$DB-&gt;sqlInsert(&quot;seclog&quot;, {
-			'seclog_node'=&gt;$$NODE{node_id}, 
-			'seclog_user' =&gt; $$U{node_id}, 
-			'seclog_details'=&gt; &quot;$$U{title} verified his or her email address!&quot;}
-		);
 		$str .= &quot;Congratulations!  You have successfully validated your email address.&quot;;
 		return $str;
 	}else{
@@ -212,8 +209,7 @@ if($query-&gt;param(&quot;sendNewKey&quot;)){
 }
 
 %]
-&lt;/div&gt;
-</doctext>
+&lt;/div&gt;</doctext>
   <node_id>1948165</node_id>
   <title>Verify your email account</title>
 </node>

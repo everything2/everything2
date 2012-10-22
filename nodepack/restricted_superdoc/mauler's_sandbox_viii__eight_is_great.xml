@@ -187,7 +187,6 @@ $str.= '&lt;table class=&quot;mytable&quot;&gt;
 #if ($query-&gt;param('recalculate_XP')) {
 #   my $warnstr;
 #   if ($query-&gt;param('confirm') eq 'wakaru') {
-#      $DB-&gt;sqlInsert('seclog', {'seclog_user' =&gt; $$USER{node_id}, 'seclog_node' #=&gt; $$NODE{node_id}, 'seclog_details' =&gt; &quot;$$USER{title} recalculated $$U{title}\'s XP&quot;});
 #      adjustExp($U, (-$xp));
 #      adjustExp($U, $newXP);
 #      $$V{hasRecalculated} = 1;

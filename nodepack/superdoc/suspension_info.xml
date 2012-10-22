@@ -43,13 +43,13 @@ if (htmlcode('verifyRequest', 'suspension')
   if($query-&gt;param(&quot;unsuspend&quot;))
   {
       $DB-&gt;sqlDelete(&quot;suspension&quot;, &quot;suspension_user=$$lookupUser{node_id} and suspension_sustype=$$sustype{node_id}&quot;);
-      $DB-&gt;sqlInsert(&quot;seclog&quot;, {'seclog_node'=&gt;$$NODE{node_id}, 'seclog_user' =&gt; $$USER{node_id}, 'seclog_details'=&gt; &quot;$$lookupUser{title} was unsuspended from $$sustype{title} by $$USER{title}&quot;});
+      $APP-&gt;securityLog($NODE, $USER, &quot;$$lookupUser{title} was unsuspended from $$sustype{title} by $$USER{title}&quot;);
       $outstr = &quot;Suspension repealed&quot;;
 
   } else {
 
       $DB-&gt;sqlInsert(&quot;suspension&quot;, {&quot;suspension_user&quot; =&gt; $$lookupUser{node_id},  &quot;suspension_sustype&quot; =&gt; $$sustype{node_id}, &quot;suspendedby_user&quot; =&gt; $$USER{node_id}});
-      $DB-&gt;sqlInsert(&quot;seclog&quot;, {'seclog_node'=&gt;$$NODE{node_id}, 'seclog_user' =&gt; $$USER{node_id}, 'seclog_details'=&gt; &quot;$$lookupUser{title} was suspended from $$sustype{title} by $$USER{title}&quot;});
+      $APP-&gt;securityLog($NODE, $USER, &quot;$$lookupUser{title} was suspended from $$sustype{title} by $$USER{title}&quot;);
       $outstr = &quot;Suspension imposed&quot;;
   }
 
@@ -175,8 +175,7 @@ FOOTER
 
 return $str;
 
-%]
-</doctext>
+%]</doctext>
   <node_id>1399999</node_id>
   <title>Suspension Info</title>
 </node>
