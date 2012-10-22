@@ -1,9 +1,0 @@
-<node>
-  <type_nodetype>153</type_nodetype>
-  <vars>
-    <value>/usr/local/everything</value>
-    <key>installdir</key>
-  </vars>
-  <node_id>363831</node_id>
-  <title>installDir</title>
-</node>
