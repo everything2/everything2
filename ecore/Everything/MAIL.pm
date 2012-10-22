@@ -30,16 +30,7 @@ sub node2mail {
 	my $subject = $$node{title};
 	my $body = $$node{doctext};
 
-	my $SETTING = getNode('mail settings', 'setting');
-	my ($from);
-	if ($SETTING) {
-		my $MAILSTUFF = getVars $SETTING;
-		$from = $$MAILSTUFF{systemMailFrom};
-	}
-	# Make sure we gots some defaults
-	$from ||= "root\@localhost";
-
-
+	my $from = $Everything::CONF->{mail_from};
 	my $transport = Email::Sender::Transport::SMTP->new(
   	{ "host" => $Everything::CONF->{smtp_host},
     	  "port" => $Everything::CONF->{smtp_port},
