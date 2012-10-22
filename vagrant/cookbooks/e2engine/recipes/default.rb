@@ -84,6 +84,7 @@ everything_conf_variables = {
     "smtp_port" => node["e2engine"]["smtp_port"],
     "smtp_user" => node["e2engine"]["smtp_user"],
     "smtp_pass" => node["e2engine"]["smtp_pass"],
+    "mail_from" => node["e2engine"]["mail_from"],
     "environment" => node["e2engine"]["environment"],
     "notification_email" => node["e2engine"]["notification_email"],
     "nodecache_size" => node["e2engine"]["nodecache_size"],
