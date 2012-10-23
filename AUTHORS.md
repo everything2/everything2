@@ -1,10 +1,10 @@
 # Authors
 
 Originally by:
-* Nate Oostendorp
+* Nate Oostendorp (nate)
 * Tim Vroom
-* Derrick Brown
-* Chromatic
+* Derrick Brown (dbrown)
+* Chromatic (chromatic)
 
 # Contributors (in alphabetical order)
 
@@ -14,7 +14,7 @@ Originally by:
 * Kyle Hale (kthejoker)
 * jpt@mindless.com (for the Everything::Search module)
 * Jordi Gutiérrez Hermoso (Swap)
-* Matt Kane (ascerbic)
+* Matt Kane (ascorbic)
 * Colin McEwan (call)
 * Fergus Ray Murray (Oolong)
 * Brian Orlick (OldMiner)
