@@ -7,13 +7,12 @@
 my $UID = getId($USER) || 0;
 
 return if !$UID;
-return if $UID==$HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 
 
 my $isRoot = exists($HTMLVARS{'group_gods'}{$UID});
 my $isCE = $isRoot || exists($HTMLVARS{'group_content editors'}{$UID});
 
-my $GUESTS = getVars(getNode('node heaven guests','setting'));
 my $visit_id = int($query-&gt;param('visit_id'));
 
 return '&lt;i&gt;You cannot come to heaven alone, you must [Node Heaven|visit] someone...&lt;/i&gt;&lt;br /&gt;' unless $visit_id;

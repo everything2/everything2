@@ -20,7 +20,6 @@
 
 return '&lt;p&gt;Where are you going so fast? You have not yet begun to live. Why not [Create A New User|take a crack at life]?&lt;/p&gt;' if getId($USER) == $HTMLVARS{guest_user};
 
-my $GUESTS = getVars(getNode('node heaven guests','setting'));
 my $isRoot = isGod($USER);	#only call database once
 my ($filterTitle, $sqlStatement);
 
@@ -31,7 +30,7 @@ if($query-&gt;param('heaventitle') and $isRoot) {
 
 return unless $filterTitle;
 
-return '&lt;em&gt;not yet, you\'re not ready&lt;/em&gt;' unless $APP-&gt;getLevel($USER) &gt;=1 or exists $$GUESTS{lc($$USER{title})} or $isRoot;
+return '&lt;em&gt;not yet, you\'re not ready&lt;/em&gt;' unless $APP-&gt;getLevel($USER) &gt;=1 or $DB-&gt;getNodeParam($USER, &quot;node_heaven_guest&quot;) or $isRoot;
 
 my $str = &quot;&lt;table width=\&quot;100%\&quot;&gt;\n&quot;;
 

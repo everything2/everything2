@@ -9,6 +9,8 @@ my @modules = (
 	'Everything',
 	'Everything::XML',
 	'Everything::NodeBase',
+        'Everything::Application',
+        'Everything::MAIL',
 	'Everything::HTML'
 );
 my $str;

@@ -1536,12 +1536,6 @@
     <rank>56</rank>
   </group>
   <group>
-    <node_id>167216</node_id>
-    <orderby>57</orderby>
-    <nodegroup_id>314</nodegroup_id>
-    <rank>57</rank>
-  </group>
-  <group>
     <node_id>169632</node_id>
     <orderby>59</orderby>
     <nodegroup_id>314</nodegroup_id>
@@ -2254,12 +2248,6 @@
     <orderby>21</orderby>
     <nodegroup_id>452113</nodegroup_id>
     <rank>21</rank>
-  </group>
-  <group>
-    <node_id>167216</node_id>
-    <orderby>22</orderby>
-    <nodegroup_id>452113</nodegroup_id>
-    <rank>22</rank>
   </group>
   <group>
     <node_id>174649</node_id>
