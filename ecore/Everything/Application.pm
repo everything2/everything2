@@ -29,6 +29,13 @@ BEGIN {
 			"assignable" => ["admin"],
 			"validate" => "set_only",
 		},
+		"node_heaven_guest" => 
+		{
+			"on" => ["user"],
+			"description" => "This user can always visit node heaven, regardless of level",
+			"assignable" => ["admin"],
+			"validate" => "set_only",
+		},
 	};
 
 	foreach my $param(keys %$PARAMS)
