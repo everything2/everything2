@@ -722,4 +722,73 @@ sub isGuest
   return ($this->{conf}->{system}->{guest_user} == $userid);
 }
 
+sub metaDescription
+{
+  my ($this, $node) = @_;
+
+  my $writeuptext;
+  if($node->{type}->{title} eq "writeup")
+  {
+    $writeuptext = $node->{doctext};
+  }elsif($node->{type}->{title} eq "e2node")
+  {
+    my $WUs;
+    my $lede = $this->{db}->getNode("lede","writeuptype");
+    foreach my $writeup(@{$node->{group}})
+    {
+      my $thisWU = $this->{db}->getNodeById($writeup);
+      if($thisWU->{wrtype_writeuptype} == $lede->{node_id})
+      {
+        $writeuptext = $thisWU->{doctext};
+	last;
+      }
+      push @$WUs,$thisWU;
+    }
+    if(not defined($writeuptext))
+    {
+      $WUs = [sort {$b->{reputation} <=> $a->{reputation}} @$WUs];
+      $writeuptext = $WUs->[0]->{doctext};
+    }
+  }
+  if($writeuptext)
+  {
+    study($writeuptext);
+    $writeuptext =~ s/\[//g;
+    $writeuptext =~ s/\]//g;  
+    $writeuptext =~ s/\<.*?\>//g;
+    $writeuptext =~ s/\s+/ /g;
+    $writeuptext = $this->encodeHTML($writeuptext);
+
+    $writeuptext = substr($writeuptext,0,155);
+    $writeuptext =~ s/.{3}$/.../;
+  }else{
+    $writeuptext = "Everything2 is a community for fiction, nonfiction, poetry, reviews, and more. Get writing help or enjoy nearly a half million pieces of original writing.";
+  } 
+  return qq|<meta name="description" content="$writeuptext">|;
+}
+
+sub encodeHTML
+{
+	my ($this, $html, $adv) = @_;
+
+	# Moved from Everything::HTML;
+	# Formerly the '&amp;' *had* to be done first.  Otherwise, it would convert
+	# the '&' of the other encodings. However, it is now designed not to encode &s that are part of entities.
+        #$html =~ s/&(?!\#(?>x[0-9a-fA-F]+|[0-9]+);)/&amp;/g;
+
+	$html ||= "";
+	$html =~ s/\&/\&amp\;/g;
+	$html =~ s/\</\&lt\;/g;
+	$html =~ s/\>/\&gt\;/g;
+	$html =~ s/\"/\&quot\;/g;
+
+	if($adv)
+	{
+		$html =~ s/\[/\&\#91\;/g;
+		$html =~ s/\]/\&\#93\;/g;
+	}
+
+	return $html;
+}
+
 1;
