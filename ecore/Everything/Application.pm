@@ -744,7 +744,7 @@ sub metaDescription
       }
       push @$WUs,$thisWU;
     }
-    if(not defined($writeuptext))
+    if($WUs and not defined($writeuptext))
     {
       $WUs = [sort {$b->{reputation} <=> $a->{reputation}} @$WUs];
       $writeuptext = $WUs->[0]->{doctext};
