@@ -2383,12 +2383,12 @@ sub canReadNode {
 #
 sub isApproved
 {
-	my ($this, $USER, $NODE) = @_;	
+	my ($this, $USER, $NODE, $NOGODS) = @_;	
 
 	return 0 if(not defined $USER);
 	return 0 if(not defined $NODE);
 
-	return 1 if($this->isGod($USER));
+	return 1 if(not defined($NOGODS) and $this->isGod($USER));
 
 	my $user_id = $this->getId($USER);
 	return 1 if ($user_id == $this->getId($NODE));
@@ -2397,15 +2397,9 @@ sub isApproved
 
 	$this->getRef($NODE);
 
-	$this->groupCache($NODE, $this->selectNodegroupFlat($NODE));
+	# If we short circuit out the flattening, it's a performance gain
+	$this->groupCache($NODE, $this->selectNodegroupFlat($NODE)) unless $this->hasGroupCache($NODE);
 	return $this->existsInGroupCache($NODE, $user_id);	
-
-#	foreach my $approveduser (@{ $this->selectNodegroupFlat($NODE) })
-#	{
-#		return 1 if ($user_id == $this->getId($approveduser)); 
-#	}
-	
-#	return 0;
 }
 
 
@@ -2441,7 +2435,7 @@ sub isGod
 
 	($GODS) = $this->getNode("gods", $usergroup);
 
-	$this->groupCache($GODS, $$GODS{group}, "plain");
+	$this->groupCache($GODS, $$GODS{group}, "plain") unless $this->hasGroupCache($GODS);
 	return $this->existsInGroupCache($GODS, $user_id);
 }
 

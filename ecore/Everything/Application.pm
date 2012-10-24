@@ -557,8 +557,8 @@ sub regenSearchwords
 
 sub isEditor
 {
-	my ($this,$user) = @_;
-	return $this->{db}->isApproved($user,$this->{db}->getNode('content editors','usergroup'));
+	my ($this,$user,$nogods) = @_;
+	return $this->{db}->isApproved($user,$this->{db}->getNode('content editors','usergroup'), $nogods);
 }
 
 sub getLevel {
