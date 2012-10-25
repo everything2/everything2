@@ -40,9 +40,20 @@ my $sheets = getVars( getNode( 'theme menu' ,'setting' ) ) ;
 foreach ( keys %$sheets ){
 	if ( $$sheets{$_} &gt;= $HTMLVARS{stylesheetFixLevel} ){
 		my $sh = getNodeById($_) ;
+                if(not defined $sh)
+                {
+                   delete $$sheets{$_};
+                   next;
+                }
+                my $auth = getNodeById($$sh{author_user}); 
+                my $author_string = &quot;&quot;;
+                if($auth)
+                {
+                    $author_string = &quot; by &quot;.$auth-&gt;{title};
+                }
 		$$sheets{$_} = $$sh{title}.(
 			$$sh{title} ne $$THEME{default_style} ?
-			' by '.getNodeById($$sh{author_user})-&gt;{title} : ' (default)');
+			$author_string : ' (default)');
 	}else{
 		delete $$sheets{$_} ;
 	}

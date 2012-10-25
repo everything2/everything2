@@ -2,20 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1854205</node_id>
   <title>zenFooter</title>
-  <code>my $str;
-
-# Pseudorandom letter in range 'A'..'Z'
-my $letter = chr( int( 65 + rand( 26 ) ) );
-
-my @R = (
-	'This affordable entertainment brought to you by',
-	'E2 is a by-product of the existence of',
-	&quot;Everything 2 is brought to you by the letter $letter and&quot;,
-	'This page courtesy of',
-);
-
-$str.=$R[int(rand(@R))];
-$str.=' Everything2 Media, LLC. All content copyright &amp;#169; original author unless stated otherwise.';
+  <code>my $str.=' Everything2 &amp;trade; is brought to you by Everything2 Media, LLC. All content copyright &amp;#169; original author unless stated otherwise.';
 
 if ( rand() &lt; 0.1 ) {
     my @gibberish = (

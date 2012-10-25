@@ -6,39 +6,15 @@ my $isGuest = !$UID || ($UID==$HTMLVARS{'guest_user'});
 my $isEdev = !$isGuest &amp;&amp; exists($HTMLVARS{'group_edev'}{$UID});
 return &quot;edev is the 'Everything Developer' usergroup, for people interested in contributing to the development of this site, or just learning about how it works. Please /msg [Oolong] if you want to be added.&quot; if !$isEdev;
 
-#my $str = '';
 my $str = '&lt;h2&gt;[Patch Manager]&lt;/h2&gt;&lt;p&gt;';
-#my @patches = getNodeWhere({}, 'patch', 'createtime');
-#return '&lt;p&gt;No patches. Word.&lt;/p&gt;' unless @patches;
 
-
-#my $t;
-
-#foreach(reverse(@patches)) {
-#	$t = $$_{title};
-#	if($t =~ /^(.*) \(patch\)$/) { $t=$1; }
-#	$str .= '&lt;tr&gt;&lt;td valign=&quot;top&quot;&gt;'.linkNode($_,$t,{lastnode_id=&gt;0}).'&lt;/td&gt;&lt;td valign=&quot;top&quot;&gt;'.linkNode($$_{author_user}).'&lt;/td&gt;&lt;td valign=&quot;top&quot;&gt;';
-#	$str .= $$_{purpose} ? '&lt;small&gt;'.htmlScreen($$_{purpose},0).'&lt;/small&gt;' : '&lt;em&gt;unknown&lt;/em&gt;';
-#	$str .= '&lt;/td&gt;&lt;td valign=&quot;top&quot; align=&quot;center&quot;&gt;';
-#        $str .= htmlcode('parsetimestamp',$$_{createtime}.',1');
-#        $str .= '&lt;/td&gt;&lt;td valign=&quot;top&quot;&gt;';
-#	$str .= htmlcode('settype',$$_{node_id}.',status,cur_status');
-#	$str .= &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
-#}
-
-#'&lt;table border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;2&quot; cols=&quot;4&quot;&gt;
-#&lt;tr&gt;&lt;th&gt;Patchee&lt;/th&gt;&lt;th&gt;Patcher&lt;/th&gt;&lt;th&gt;Purpose&lt;/th&gt;
-#    &lt;th&gt;Patch Time&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;/tr&gt;
-#'.$str.'
-#&lt;/table&gt;';
-#
 %]
 &lt;/p&gt;
 
 [%
 
 my $UID = getId($USER);
-my $isGuest = !$UID || ($UID==$HTMLVARS{'guest_user'});
+my $isGuest = $APP-&gt;isGuest($USER);
 my $isEdev = !$isGuest &amp;&amp; exists($HTMLVARS{'group_edev'}{$UID});
 return if !$isEdev;
 my $str = '&lt;h2&gt;Edev Documents!&lt;/h2&gt;&lt;p&gt;';
@@ -48,8 +24,6 @@ foreach (@edoc) {
 	$str.= linkNode($_) .&quot;&lt;br /&gt;\n&quot;;
 }
 
-#there are more than 10 now -- N-Wing
-# $str.='&lt;p&gt;&lt;i&gt;Looks pretty lonely...&lt;/i&gt;' if @edoc &lt; 10;
 return $str unless exists $HTMLVARS{group_edev}{getId($USER)}; 
 
 $str.=htmlcode('openform');
@@ -68,8 +42,7 @@ $str;
 &lt;p&gt;
 
 [%
-return unless ($$USER{title} eq 'nate') || ($$USER{node_id}==9740) || ($$USER{node_id} == 459692); 
-#N-Wing==9740, JayBonci==459692;
+return unless isGod($USER); 
 
 my $str=htmlcode('openform') . 'bestow devpoint on ' . $query-&gt;textfield('luckyuser') . htmlcode('closeform');
 

@@ -2,7 +2,9 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>445058</node_id>
   <title>message</title>
-  <code>my $for_user = $query-&gt;param('sendto');
+  <code>return if $APP-&gt;isGuest($USER);
+
+my $for_user = $query-&gt;param('sendto');
 my $message = $query-&gt;param('message');
 my $UID = getId($USER)||0;
 my $isRoot = exists($HTMLVARS{'group_gods'}{$UID});
@@ -29,8 +31,6 @@ next unless $MSG;
 		$DB-&gt;sqlUpdate('message', {archive=&gt;0, tstamp=&gt;$realTime}, 'message_id='.$$MSG{message_id});
 	}
 }
-
-return if $UID==$HTMLVARS{guest_user};
 return if $$VARS{borged} or ($$USER{title} eq 'everyone');
 
 my $sushash = $DB-&gt;sqlSelectHashref(&quot;suspension_sustype&quot;, &quot;suspension&quot;,&quot;suspension_user=$$USER{node_id} and suspension_sustype='1948205'&quot;); # Check for unverified email
