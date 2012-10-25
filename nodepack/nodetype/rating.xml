@@ -1,8 +1,0 @@
-<node>
-  <restrictdupes>1</restrictdupes>
-  <sqltable>rating</sqltable>
-  <node_id>12</node_id>
-  <type_nodetype>1</type_nodetype>
-  <title>rating</title>
-  <deleters_user>114</deleters_user>
-</node>
