@@ -5,9 +5,8 @@
   <code>my ($isLogs) = @_;
 
 my $UID = $$USER{user_id} || $HTMLVARS{guest_user} ;
-my $limit = $$VARS{ num_newwus } || ($UID != $HTMLVARS{guest_user} ? 15 : 12);
-my $cansee = ( exists($HTMLVARS{'group_gods'}{$UID} )
-	|| exists($HTMLVARS{'group_content editors'}{$UID}) ) ;
+my $limit = $$VARS{ num_newwus } || ($APP-&gt;isGuest($USER) ? 15 : 12);
+my $cansee = $APP-&gt;isEditor($USER);
 
 use JSON;
 
@@ -44,7 +43,7 @@ foreach (@newwus){
 my $instructions = '&lt;li' ;
 my %newwuspecials = () ;
 
-unless($$USER{'title'} eq 'Guest User'){
+unless($APP-&gt;isGuest($USER)){
 
 	my $sql = &quot;SELECT vote_id
 		FROM vote

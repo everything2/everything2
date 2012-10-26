@@ -41,7 +41,7 @@ my $isSIGTITLE = htmlcode('isinUsergroup',$$USER{node_id}.','.$SIGTITLE_id);
 return unless $isSIGTITLE;
 
 # Not sure why this check exists in adminbar, but it can't hurt.
-return if $$USER{title} eq 'Guest User';
+return if $APP-&gt;isGuest($USER);
 
 my $disp = $query-&gt;param('displaytype');
 my @nodes;

@@ -17,7 +17,7 @@ my $param = $query ? $query -&gt; param( 'showhidden' ) : undef;
 my @checks = ('unfavorite', 'lowrep');
 
 if ($$N{type}{title} eq 'draft'){
-	return 0 if $$USER{title} eq 'Guest User' or !htmlcode('canseedraft', $N);
+	return 0 if $APP-&gt;isGuest($USER) or !htmlcode('canseedraft', $N);
 	unshift @checks, 'unpublished';
 }
 

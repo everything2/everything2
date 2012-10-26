@@ -3,7 +3,7 @@
   <node_id>2069289</node_id>
   <title>javascript_decider</title>
   <code># We never get here if we're Guest User
-return &quot;&quot; if ($$USER{title} eq 'Guest User' or $query -&gt; param('guest'));
+return &quot;&quot; if ($APP-&gt;isGuest($USER) or $query -&gt; param('guest'));
 
 while ($$VARS{includedJS} =~ s/(^|,)(?:
 	(1878034)| # Everything2 Ajax

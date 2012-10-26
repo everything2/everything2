@@ -54,8 +54,6 @@ Each of your writeups earns you 5 [XP] in addition to all the XP you get when pe
 
 &lt;table&gt;
 [%
-#return if $$USER{title} eq &quot;Guest User&quot;;
-
 my $str;
 
 my $fstLvl = $query-&gt;param('fstlevel') || 0;

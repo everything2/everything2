@@ -19,7 +19,7 @@ $e2-&gt;{ignoreMissingLibraries} = 1 if $HTMLVARS{ignoreMissingJsLibraries};
 
 my $cookie;
 foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
-	if ($$USER{title} ne 'Guest User'){
+	if (!$APP-&gt;isGuest($USER)){
 		$$VARS{$_} = $cookie if $cookie = $query -&gt; cookie($_);
 		delete $$VARS{$_} if $cookie eq '0';
 	}
@@ -36,7 +36,7 @@ my $libraries = qq'&lt;script src=&quot;http://code.jquery.com/jquery-1.4.4$min.
 my $GUjs = &quot;&lt;script src='http://jscss.everything2.com/GuestJavascript.js' type='text/javascript'&gt;&lt;/script&gt;&quot;;
 my $js_decisions = htmlcode('javascript_decider');
 
-unless ($$USER{title} eq 'Guest User'){
+unless ($APP-&gt;isGuest($USER)){
 	$libraries .= '
 	&lt;script src=&quot;http://jscss.everything2.com/jquery-ui.min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
 	$GUjs = &quot;&quot;;

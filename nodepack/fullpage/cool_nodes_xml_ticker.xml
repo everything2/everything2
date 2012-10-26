@@ -1,11 +1,12 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Fri Oct 26 01:35:11 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
-	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1512974&quot; parent_e2node=&quot;1512973&quot; author_user=&quot;sam512&quot;&gt;Snorlax&lt;/cooled&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Fri Oct 26 02:55:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Serjeant's Muse&quot; node_id=&quot;1467889&quot; parent_e2node=&quot;1455538&quot; author_user=&quot;DejaMorgana&quot;&gt;Coins slip from my fingers&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;1512974&quot; parent_e2node=&quot;1512973&quot; author_user=&quot;sam512&quot;&gt;Snorlax&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;StuartO)))&quot; node_id=&quot;2071583&quot; parent_e2node=&quot;2071581&quot; author_user=&quot;Glowing Fish&quot;&gt;The Lie-Detecting Beasts of the Great Stalingrad Tractor Factory&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2065652&quot; parent_e2node=&quot;2071522&quot; author_user=&quot;Zephronias&quot;&gt;Fire's attention&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;2032441&quot; parent_e2node=&quot;2032375&quot; author_user=&quot;iceowl&quot;&gt;December 22, 2010&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1671379&quot; parent_e2node=&quot;53458&quot; author_user=&quot;anthropod&quot;&gt;Bangkok&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;1467889&quot; parent_e2node=&quot;1455538&quot; author_user=&quot;DejaMorgana&quot;&gt;Coins slip from my fingers&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Auspice&quot; node_id=&quot;2071156&quot; parent_e2node=&quot;2071528&quot; author_user=&quot;rajani&quot;&gt;October 25, 2012&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;montecarlo&quot; node_id=&quot;2071485&quot; parent_e2node=&quot;2071489&quot; author_user=&quot;Pandeism Fish&quot;&gt;The October 24, 2012 Presidential Debate&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;1152642&quot; parent_e2node=&quot;1152636&quot; author_user=&quot;teleny&quot;&gt;Mr. Boddy&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;tanktop&quot; node_id=&quot;2071400&quot; parent_e2node=&quot;21056&quot; author_user=&quot;Zed_Alpha&quot;&gt;Lunacy&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Serjeant's Muse&quot; node_id=&quot;2071168&quot; parent_e2node=&quot;1963321&quot; author_user=&quot;Uberbanana&quot;&gt;World War Z&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;2071502&quot; parent_e2node=&quot;2071503&quot; author_user=&quot;borgo&quot;&gt;The Robot Hall of Fame&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1378301&quot; parent_e2node=&quot;1378300&quot; author_user=&quot;alisdair&quot;&gt;Path MTU discovery&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

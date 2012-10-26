@@ -7,7 +7,7 @@ my $pathprefix = '/var/everything/www/';
 my $directory = 'writeup-backups/';
 
 return &quot;&lt;p&gt;If you logged in, you'd be able to create a backup of your &quot;
-	.&quot;writeups here.&lt;/p&gt;&quot; if $USER -&gt; {title} eq &quot;Guest User&quot;;
+	.&quot;writeups here.&lt;/p&gt;&quot; if $APP-&gt;isGuest($USER);
 
 my $str;
 

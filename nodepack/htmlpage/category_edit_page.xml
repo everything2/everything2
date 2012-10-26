@@ -7,7 +7,7 @@
 
 [%#/
 return 'You cannot edit this category.'
-	unless $$USER{title} ne 'Guest User' and canUpdateNode($USER, $NODE);
+	unless !$APP-&gt;isGuest($USER) and canUpdateNode($USER, $NODE);
 
 if ($query -&gt; param('op') eq 'nuke'
 	&amp;&amp; $query -&gt; param('node_id') == $$NODE{node_id}

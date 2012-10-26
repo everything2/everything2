@@ -8,7 +8,7 @@ padding: 3px;
 }
 &lt;/style&gt; --&gt;
 [%
-#return if $$USER{title} eq &quot;Guest User&quot;;
+#return if $APP-&gt;isGuest($USER);
 
 my $str;
 

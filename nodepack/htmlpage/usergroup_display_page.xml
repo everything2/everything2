@@ -75,7 +75,7 @@ my $str;
 my $UID = getId($USER);
 my $NID = $$NODE{node_id};
 my $isRoot = exists $HTMLVARS{group_gods}{$UID};
-my $isGuest = (!$UID) || ($UID==$HTMLVARS{guest_user}) || ($USER-&gt;{title} eq 'Guest User');
+my $isGuest = $APP-&gt;isGuest($USER);
 my $isInGroup=0;
 my @users = ();
 my @memberIDs=();
