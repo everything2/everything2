@@ -7,8 +7,7 @@
 my $str = '&lt;p align=&quot;right&quot;&gt;&lt;small&gt;See also [usergroup message archive]&lt;/small&gt;&lt;/p&gt;'.&quot;\n&quot;;
 
 return $str.&quot;If you logged in, you would be able to strike up long-winded
-conversations with [usergroup lineup|your buddies]&quot; if $$USER{title}
- eq &quot;Guest User&quot;;
+conversations with [usergroup lineup|your buddies]&quot; if $APP-&gt;isGuest($USER);
 
 #N-Wing loves sticking this function all over the place -- Swap
 local *in_an_array = sub {

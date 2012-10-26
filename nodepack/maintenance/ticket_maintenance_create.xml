@@ -3,7 +3,7 @@
   <maintaintype>create</maintaintype>
   <code>my ($N) = @_;
 
-if ($USER-&gt;{'title'} eq &quot;Guest User&quot;)
+if ($APP-&gt;isGuest($USER))
 	{ nukeNode($N, -1); return; }
 
 getRef($N);

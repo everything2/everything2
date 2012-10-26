@@ -35,14 +35,14 @@ if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
 
 if ($ENV{HTTP_HOST} !~ /^m\.everything2/i) {
   return '
-	&lt;base href=&quot;http://' . $Everything::CONF-&gt;{canonical_web_server} . '&quot;&gt;' if $$USER{ user_id } == $HTMLVARS{ guest_user } ;
+	&lt;base href=&quot;http://' . $Everything::CONF-&gt;{canonical_web_server} . '&quot;&gt;' if $APP-&gt;isGuest($USER) ;
 }
 
 %]
 [%
 my $canonical_web_server = $Everything::CONF-&gt;{canonical_web_server};
 my $url = &quot;&quot;;
-$url = 'http://'.$canonical_web_server if $$USER{title} eq 'Guest User';
+$url = 'http://'.$canonical_web_server if $APP-&gt;isGuest($USER);
 $url .= urlGenNoParams( $NODE , 'noQuotes' ) unless $$NODE{ node_id } eq $HTMLVARS{ default_node } ;
 $url ||= '/' ;
 return '	&lt;link rel=&quot;canonical&quot; href=&quot;' . $url . '&quot;&gt;' ;

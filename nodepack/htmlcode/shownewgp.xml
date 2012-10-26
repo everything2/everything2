@@ -3,9 +3,10 @@
   <node_id>1959548</node_id>
   <title>showNewGP</title>
   <code>my ($shownumbers, $isxml, $newwuonly) = @_;
+return if $APP-&gt;isGuest($USER);
 use POSIX;
+
 #send TRUE if you want people to see how much GP they gained/lost
-return if $$USER{user_id} == $HTMLVARS{guest_user};
 unless($$VARS{oldGP}) {
 	$$VARS{oldGP} = $$USER{GP};
 }

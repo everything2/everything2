@@ -5,7 +5,7 @@
 [%
 ### This measures the number of times a user has been sanctified by another user. It does not measure how many times other users have given them votes or eggs, or how many times they have been egged by another user. -m
 
-return 'Nobody knows how blessed you are, since you\'re hiding. Try logging in.' if $$USER{title} eq 'Guest User';
+return 'Nobody knows how blessed you are, since you\'re hiding. Try logging in.' if $APP-&gt;isGuest($USER);
 return '&lt;em&gt;You are not feeling very special right now.&lt;/em&gt;' if $$USER{sanctity} &lt; 0;
 
 &quot;You feel validated -- every day, your fellow users look upon you and approve -- you have collected $$USER{sanctity} of their &quot; . linkNodeTitle('sanctify|Silver Trinkets');

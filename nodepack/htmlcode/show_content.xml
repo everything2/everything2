@@ -132,7 +132,7 @@ my @infowrap = ('&lt;div class=&quot;contentinfo contentheader&quot;&gt;', '', '
 
 if ( $content ) {
 	my $lastnodeid ;
-	if ( $$USER{node_id} != $HTMLVARS{guest_user} ) {
+	if ( !$APP-&gt;isGuest($USER) ) {
 		$lastnodeid = $$NODE{ parent_e2node } if $$NODE{ type }{ title } eq 'writeup' ;
 		$lastnodeid = $$NODE{ node_id } if $$NODE{ type }{ title } eq 'e2node' ;
 	}

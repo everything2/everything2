@@ -92,8 +92,8 @@ $modifiedDt = $prefsModified if $prefsModified &amp;&amp; $prefsModified &gt; $m
 my $modifiedDateStr = $dateOutputer-&gt;format_datetime($modifiedDt);
 $HEADER_PARAMS{'-Last-Modified'} = $modifiedDateStr;
 
-return &quot;e2.guest=true;\n$str&quot; if ($$USER{title} eq 'Guest User' or $query -&gt; param('guest'));
-# $$USER{title} eq 'Guest User' is not enough for testing because of the base element in html head,
+return &quot;e2.guest=true;\n$str&quot; if ($APP-&gt;isGuest($USER) or $query -&gt; param('guest'));
+# $APP-&gt;isGuest($USER) is not enough for testing because of the base element in html head,
 # but don't rely on param check alone because Javascript Compiler may get cached
 
 return $str;

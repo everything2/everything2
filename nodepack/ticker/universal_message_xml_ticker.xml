@@ -36,7 +36,7 @@ my $messages = {};
 if ($$recip{type_nodetype} == getId(getType('room')))
 {
   if (eval($$recip{criteria}) 
-      and ($$USER{node_id} != $HTMLVARS{guest_user} 
+      and (!$APP-&gt;isGuest($USER)
       or getVars(getNode(&quot;public rooms&quot;, &quot;setting&quot;))-&gt;{$$recip{node_id}})
       )
   {

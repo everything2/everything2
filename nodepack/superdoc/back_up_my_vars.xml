@@ -2,7 +2,7 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 return 'You must be a logged-in user to use this tool.'
-  if $$USER{title} eq 'Guest User';
+  if $APP-&gt;isGuest($USER);
 
 my $isAdmin = htmlcode('isAdmin', $USER);
 

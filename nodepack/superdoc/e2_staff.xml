@@ -24,11 +24,11 @@
 &lt;li&gt;The &lt;big&gt;&lt;strong&gt;+&lt;/strong&gt;&lt;/big&gt; symbol indicates that its bearer is a member of the [chanops] group, which manages the [chatterbox].&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;hr /&gt;
+&lt;hr width=250/&gt;
 
 &lt;p&gt;If you're interested in being an Everything2 editor please sit tight and wait for a call. [alex|I'm] trying to keep the number of staff at 40 or less by rotating new blood in now and then based on activity, merit, &lt;i&gt;writing&lt;/i&gt; skill, and ability to function in whichever role is needed at a given time. Also, I'll probably tap you on the shoulder quicker if you &lt;i&gt;don't&lt;/i&gt; msg me about it. The [gods] group is always watching and suggestions for new editorial staff are passed around based on their observations.&lt;/p&gt;
 
-&lt;hr /&gt;
+&lt;hr width=250/&gt;
 
 &lt;h3&gt;The [content editors|Content Editor] Usergroup:&lt;/h3&gt;
 
@@ -77,7 +77,7 @@ return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/
 %]
 
 &lt;/ol&gt;
-&lt;br /&gt;&lt;br /&gt;&lt;hr /&gt;&lt;br /&gt;&lt;br /&gt;
+&lt;br /&gt;&lt;br /&gt;&lt;hr width=250/&gt;&lt;br /&gt;&lt;br /&gt;
 &lt;h3&gt;The [e2gods|gods] usergroup:&lt;/h3&gt;
 
 &lt;p&gt;Okay, now these users have got some [action].  The group has the following abilities:&lt;/p&gt;
@@ -157,7 +157,7 @@ Everything User Search|the user search]).&lt;/li&gt;
 
 &lt;p&gt;&lt;strong&gt;#&lt;/strong&gt;These users are employees/owners of [Everything2 Media LLC].&lt;/p&gt;
 
-&lt;hr /&gt;
+&lt;hr width=250/&gt;
 &lt;h2&gt;Who does what?&lt;/h2&gt;
 
 &lt;p&gt;These people are in charge of things:&lt;/p&gt;
@@ -219,14 +219,13 @@ return $intro . $userList . $outro;
 &lt;ul&gt;
 &lt;li&gt;[avalyn]&lt;/li&gt;
 &lt;/ul&gt;
-&lt;hr /&gt;
 
 &lt;p&gt;Documentation, FAQs, staff docs, [superdocs|sekrits]&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;[wertperch]&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;hr /&gt;
+&lt;hr width=250/&gt;
 
 &lt;p&gt;[SIGTITLE] user group: [Edit These E2 Titles|Node Titles]&lt;/p&gt;
 &lt;ul&gt;
@@ -243,6 +242,26 @@ return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/
 %]
 
 &lt;/ul&gt;&lt;/p&gt;
+
+&lt;br /&gt;
+&lt;p&gt;&lt;hr width=250&gt;&lt;/p&gt;
+
+&lt;h2&gt;Chanops&lt;/h2&gt;
+People in this group are responsible for maintaining good order in the [Chatterbox]. Think of them as the moderators.
+
+[%
+my @chanppl;
+foreach(@{getNode(&quot;chanops&quot;, &quot;usergroup&quot;)-&gt;{group}})
+{
+  my $N = getNodeById($_);
+  next unless($N and $N-&gt;{type}{title} eq &quot;user&quot;);
+  push @chanppl, $N;
+}
+
+return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/li&gt;&quot;} sort {lc($a-&gt;{title}) cmp lc($b-&gt;{title})} @chanppl);
+%]
+
+&lt;p&gt;&lt;hr width=250&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;b&gt;That's it.&lt;/b&gt; If you've any questions about this or anything else (regarding E2) please [message] [alex] or e-mail him at &lt;strong&gt;alex /remove this junk and add an at sign/ staff.everything2.com&lt;/a&gt;&lt;/strong&gt;.&lt;/p&gt;</doctext>
   <node_id>743129</node_id>

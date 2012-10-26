@@ -19,7 +19,7 @@ $share ||= 0;
 
 my $skratch = $DB-&gt;sqlSelect(&quot;scratch_text&quot;, &quot;scratch&quot;, &quot;scratch_id='$$scratchview{node_id}'&quot;);
 
-$skratch = &quot;&quot; if $$USER{title} eq &quot;Guest User&quot;;
+$skratch = &quot;&quot; if $APP-&gt;isGuest($USER);
 $skratch = &quot;&quot; if $share == 0 and $$scratchview{node_id} != $$USER{user_id};
 $skratch = parseLinks($skratch) unless($query-&gt;param('links_noparse'));
 

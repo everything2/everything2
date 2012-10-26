@@ -38,7 +38,7 @@ my $messages = {};
 if ($$recip{type_nodetype} == getId(getType('room')))
 {
   if (eval($$recip{criteria}) 
-      and ($$USER{node_id} != $HTMLVARS{guest_user} 
+      and (!$APP-&gt;isGuest($USER) 
       or getVars(getNode(&quot;public rooms&quot;, &quot;setting&quot;))-&gt;{$$recip{node_id}})
       )
   {
@@ -66,7 +66,7 @@ if ($$recip{type_nodetype} == getId(getType('room')))
 
     $secs = $backtime * 60;
 
-    if ($$USER{in_room} == $$recip{node_id} || $$USER{user_id} == getId(getNode(&quot;Guest User&quot;, &quot;user&quot;)))
+    if ($$USER{in_room} == $$recip{node_id} || $APP-&gt;isGuest($USER))
     {
       # Use interval here to avoid a table scan -- [call]
       $limits = &quot;message_id &gt; $msglimit AND room='$$recip{node_id}' AND for_user='0'&quot;
@@ -98,12 +98,11 @@ $limits .=&quot; ORDER BY message_id&quot; unless($nosort == 1 || $limits eq &qu
 $limits = &quot; message_id is NULL LIMIT 0&quot; if($limits eq &quot;&quot;);
 my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;, &quot;message use index(foruser_tstamp)&quot;, $limits);
 
-my $gu = getNode(&quot;Guest User&quot;, &quot;user&quot;);
 my $username;
 my $costume;
 my $msglist = [];
 
-unless ($$recip{node_id} == $$gu{node_id})
+unless ($APP-&gt;isGuest($$recip{node_id}))
 {
   while (my $row = $csr-&gt;fetchrow_hashref())
   { 

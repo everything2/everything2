@@ -9,7 +9,7 @@ my $NODE = getNodeById($node_id);
 return unless $NODE;
 
 return if $NODE -&gt; {type_nodetype} != getType(&quot;user&quot;) -&gt; {node_id};
-return if $USER -&gt; {title} eq &quot;Guest User&quot;;
+return if $APP-&gt;isGuest($USER);
 my $LINKTYPE = getNode('favorite', 'linktype');
 
 $DB-&gt;sqlInsert('links', {-from_node =&gt; getId($USER), -to_node =&gt; $node_id, -linktype =&gt; getId($LINKTYPE)});</code>

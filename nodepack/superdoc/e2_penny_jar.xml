@@ -2,7 +2,7 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
-return '&lt;p&gt;You must be logged in to [touch the puppy|touch the pennies].&lt;/p&gt;' if( (getId($USER)==$HTMLVARS{guest_user}) || ($USER-&gt;{title} eq 'Guest User') );
+return '&lt;p&gt;You must be logged in to [touch the puppy|touch the pennies].&lt;/p&gt;' if($APP-&gt;isGuest($USER));
 return &quot;Sorry, it seems you are not interested in [GP|pennies] right now.&quot; if ($$VARS{GPoptout});
 
 my $userGP = $$USER{GP};
