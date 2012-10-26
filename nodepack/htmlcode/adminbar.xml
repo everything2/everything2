@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>26</node_id>
   <title>adminbar</title>
-  <code>return if $$USER{title} eq 'Guest User';
+  <code>return if $APP-&gt;isGuest($USER);
 
 my $disp = $query-&gt;param('displaytype');
 my @nodes;

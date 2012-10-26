@@ -8,7 +8,7 @@
 my $dummyReason;
 $failReasonRef = \$dummyReason unless $failReasonRef;
 
-if ($$USER{title} eq 'Guest User') {
+if ($APP-&gt;isGuest($USER)) {
    $$failReasonRef = &quot;You are not logged in.&quot;;
    return;
 } elsif ($VARS-&gt;{borged}) {

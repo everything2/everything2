@@ -1,6 +1,7 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Fri Oct 26 00:45:09 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Fri Oct 26 01:35:11 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1512974&quot; parent_e2node=&quot;1512973&quot; author_user=&quot;sam512&quot;&gt;Snorlax&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2065652&quot; parent_e2node=&quot;2071522&quot; author_user=&quot;Zephronias&quot;&gt;Fire's attention&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;2032441&quot; parent_e2node=&quot;2032375&quot; author_user=&quot;iceowl&quot;&gt;December 22, 2010&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1671379&quot; parent_e2node=&quot;53458&quot; author_user=&quot;anthropod&quot;&gt;Bangkok&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Serjeant's Muse&quot; node_id=&quot;2071168&quot; parent_e2node=&quot;1963321&quot; author_user=&quot;Uberbanana&quot;&gt;World War Z&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;2071502&quot; parent_e2node=&quot;2071503&quot; author_user=&quot;borgo&quot;&gt;The Robot Hall of Fame&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1378301&quot; parent_e2node=&quot;1378300&quot; author_user=&quot;alisdair&quot;&gt;Path MTU discovery&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;2071520&quot; parent_e2node=&quot;2071521&quot; author_user=&quot;Rumpelstiltskin&quot;&gt;Somewhere Along the Highway&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

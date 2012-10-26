@@ -4,13 +4,13 @@
 my $str = '';
 
 
-if($query-&gt;param('op') eq 'login' &amp;&amp; getId($USER) != $HTMLVARS{guest_user}) {
+if($query-&gt;param('op') eq 'login' &amp;&amp; !$APP-&gt;isGuest($USER)) {
 	$str.= &quot;Hey.  Glad you're back.  Would you like to go to your &quot;.linkNode($USER, &quot;home node&quot;).' or to '.linkNode($HTMLVARS{default_node}).'?&lt;br /&gt;';
 	$str .= '...or back to '.linkNode($query-&gt;param('lastnode_id')).'?&lt;br /&gt;' if ($query-&gt;param('lastnode_id'));
 	return $str;
 } elsif ($query-&gt;param('op') eq 'login') { 
 	$str .=&quot;Oops.  You must have the wrong login or password or something:\n&lt;p&gt;\n&quot;;
-} elsif ($$USER{title} ne 'Guest User') {
+} elsif (!$APP-&gt;isGuest($USER)) {
 	$str.=&quot;Hey, &quot;.linkNode($USER).&quot;...  this is where you log in:&lt;p&gt;\n&quot;;
 }else {
 	$str .=&quot;Welcome to $HTMLVARS{site_name}.  Authenticate yourself:\n&lt;p&gt;\n&quot;;

@@ -14,7 +14,7 @@ my $timeCount = 1;
 my $UID = $$USER{node_id}||0;
 my $isRoot = exists $HTMLVARS{group_gods}{$UID};
 
-return 'If you had an account, we\'d let you gab.' if !$UID || ($UID == $HTMLVARS{guest_user});
+return 'If you had an account, we\'d let you gab.' if $APP-&gt;isGuest($USER);
 
 #
 # Initialize squawkbox stuff

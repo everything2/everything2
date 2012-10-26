@@ -9,7 +9,7 @@ my ($nlAbbrev, $nlSection, $altTitle, $linkTo, $styleTitle, $styleContent) = @_;
 $altTitle ||= $nlSection;
 $altTitle = linkNodeTitle($linkTo.'|'.$altTitle) if($linkTo);
 
-my $isGuest = ($$USER{title} eq 'Guest User');
+my $isGuest = $APP-&gt;isGuest($USER);
 my $param = $nlAbbrev.'_hide'.$nlSection;
 
 my $v;

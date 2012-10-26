@@ -34,7 +34,7 @@ my $U = getNodeById($uidGiven);
 ### Generate the verification HTML form
 my $uidForForm = $uidGiven || '';
 ### If they're logged in, be nice and fill in their UID for them
-$uidForForm = $$USER{user_id} unless $$USER{user_id} ==  $HTMLVARS{guest_user};
+$uidForForm = $$USER{user_id} unless $APP-&gt;isGuest($USER);
 my $keyVerificationForm = $query-&gt;start_form
 .$query-&gt;hidden('node_id', getId($NODE))
 .'&lt;div&gt;&lt;strong&gt;User ID&lt;/strong&gt;&lt;br /&gt;'
@@ -108,7 +108,7 @@ if ($U &amp;&amp; $uidGiven &amp;&amp; $validationKeyGiven){
 
 		# If logged in now as a currently infected user,
 		#  infect the one trying to validate
-		if ($$USER{title} ne 'Guest User') {
+		if (!$APP-&gt;isGuest($USER)) {
 			$infected = 1 if $$VARS{infected};
 		}
 

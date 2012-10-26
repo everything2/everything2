@@ -2,7 +2,7 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
-return &quot;If you logged in, you could see what achievements you've earned here.&quot; if $$USER{'title'} eq 'Guest User';
+return &quot;If you logged in, you could see what achievements you've earned here.&quot; if $APP-&gt;isGuest($USER);
 
 my $debugStr = '';
 my @debug = ($$USER{node_id}, 1) if $query -&gt; param('debug');

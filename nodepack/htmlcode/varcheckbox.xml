@@ -8,7 +8,7 @@
 #	checked   : $$VARS is 1
 #	unchecked : $$VARS doesn't exist
 
-return if (getId($USER)==$HTMLVARS{guest_user}) || ($$USER{title} eq 'everyone') || ($$USER{title} eq 'Guest User');
+return if ($APP-&gt;isGuest($USER)) || ($$USER{title} eq 'everyone');
 my $title = join ', ', @title;
 $title ||= $k;
 

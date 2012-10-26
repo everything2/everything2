@@ -3,7 +3,7 @@
   <doctext>&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;p align=center&gt;
 &lt;font size=4&gt;
 [%
-return 'Nobody knows how blessed you are, since you\'re hiding. Try logging in.' if $$USER{title} eq 'Guest User';
+return 'Nobody knows how blessed you are, since you\'re hiding. Try logging in.' if $APP-&gt;isGuest($USER);
 return '&lt;em&gt;You are not feeling very special.&lt;/em&gt;' if $$USER{karma} == 0;
 return '&lt;strong&gt;You feel a burning sensation...&lt;/strong&gt;' if $$USER{karma} &lt; 0;
 
