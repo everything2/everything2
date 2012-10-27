@@ -91,7 +91,7 @@ sub new
 		
 		# A connection to this database does not exist.  Create one.
 		my ($user,$pass, $dbserv) = ($Everything::CONF->{'everyuser'}, $Everything::CONF->{'everypass'}, $Everything::CONF->{'everything_dbserv'});
-		$db->{dbh} = DBI->connect("DBI:mysql:$dbname:$dbserv", $user, $pass);
+		$db->{dbh} = DBI->connect("DBI:mysql:$dbname:$dbserv", $user, $pass, {AutoCommit => 1});
 
 		$this->{dbh} = $db->{dbh};
 		
