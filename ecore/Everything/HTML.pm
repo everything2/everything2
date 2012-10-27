@@ -3389,7 +3389,7 @@ sub adjustExp {
 	$$user{experience} += $points;
 
 	# Only update user immediately if we're not in a transaction
-	updateNode($user, -1) if $DB->{dbh}->{AutoCommit};
+	updateNode($user, -1);
 	1;
 }
 
