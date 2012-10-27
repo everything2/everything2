@@ -105,6 +105,8 @@ sub new
         $this->{groupCache} = {};
 
 	$this->{paramcache} = {};
+
+	$this->{pagecache} = {};
 	
 	if ($Everything::CONF->{memcache}) { 
         	$this->{memcache} = new Everything::Memcache($Everything::CONF->{memcache}, $nodeBase);
@@ -112,7 +114,6 @@ sub new
 	
 	return $this;
 }
-
 
 #############################################################################
 #	Sub
@@ -692,6 +693,7 @@ sub resetCache
 	my ($this) = @_;
 
 	$this->{paramcache} = {};
+	$this->{pagecache} = {};
 	$this->{verified} = {};
 	$this->{typeVerified} = {};
     my %newVersion;
@@ -775,6 +777,16 @@ sub groupUncache {
 sub existsInGroupCache {
 	my ($this, $NODE, $nid) = @_;
 	return exists($this->{groupCache}->{$$NODE{node_id}}->{$nid});
+}
+
+sub pageCacheSet {
+	my ($this, $key, $value) = @_;
+	$this->{pagecache}->{$key} = $value;
+}
+
+sub pageCacheGet {
+	my ($this, $key) = @_;
+	return $this->{pagecache}->{$key};
 }
 
 #############################################################################

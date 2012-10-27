@@ -557,7 +557,7 @@ sub updateLinks
 	
 	return undef unless $TONODE && $FROMNODE;
 	return undef unless ($$TONODE{type}{title} eq 'e2node' and $$FROMNODE{type}{title} eq 'e2node') or !$isSoftlink;
-	return undef if Everything::HTML::isSpider();
+	return undef if $APP->isSpider();
 
 	$type ||= 0;
 	$type = getId $type;
@@ -610,7 +610,7 @@ sub updateHits
 	my ($NODE, $USER) = @_;
 	my $id = $$NODE{node_id};
 
-	return if Everything::HTML::isSpider();
+	return if $APP->isSpider();
 	my $author_restrict = "AND author_user != $$USER{node_id}";
 	$DB->sqlUpdate('hits', { -hits => 'hits+1' }, "node_id=$id");
 

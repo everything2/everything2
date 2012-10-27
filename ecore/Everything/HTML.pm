@@ -93,7 +93,6 @@ use vars qw(%HTMLVARS);
 use vars qw($VARS);
 use vars qw($GNODE);
 use vars qw($USER);
-use vars qw($IS_SPIDER);
 use vars qw($TEST);
 use vars qw($TEST_CONDITION);
 use vars qw($TEST_SESSION_ID);
@@ -756,24 +755,7 @@ sub unMSify {
 sub encodeHTML
 {
 	my ($html, $adv) = @_;
-
-	# Formerly the '&amp;' *had* to be done first.  Otherwise, it would convert
-	# the '&' of the other encodings. However, it is now designed not to encode &s that are part of entities.
-        #$html =~ s/&(?!\#(?>x[0-9a-fA-F]+|[0-9]+);)/&amp;/g;
-
-	$html ||= "";
-	$html =~ s/\&/\&amp\;/g;
-	$html =~ s/\</\&lt\;/g;
-	$html =~ s/\>/\&gt\;/g;
-	$html =~ s/\"/\&quot\;/g;
-
-	if($adv)
-	{
-		$html =~ s/\[/\&\#91\;/g;
-		$html =~ s/\]/\&\#93\;/g;
-	}
-
-	return $html;
+	return $APP->encodeHTML($html, $adv);
 }
 
 
@@ -2923,7 +2905,6 @@ sub mod_perlInit
 	
 	# Fill out the THEME hash
 	getTheme();
-	findIsSpider();
 
 	# Do the work.
 	handleUserRequest();
@@ -3008,14 +2989,8 @@ sub escapeAngleBrackets{
 
 sub isSpider()
 {
-	return $IS_SPIDER;
+	return $APP->isSpider();
 }
-
-sub findIsSpider()
-{
-	$IS_SPIDER = htmlcode('isSpider');
-}
-
 
 #############################################################################
 # Sub
