@@ -82,8 +82,7 @@ Your &lt;code&gt;VARS&lt;/code&gt;:
 [%
 my $uid = getId($USER);
 my $str = '&lt;tr&gt;&lt;td colspan=&quot;2&quot;&gt;How can you see &lt;strong&gt;your&lt;/strong&gt; variables if you aren\'t logged in?&lt;/td&gt;&lt;/tr&gt;';
-return $str if $HTMLVARS{guest_user} == $uid;
-return $str if $$USER{title} eq 'Guest User';
+return $str if $APP-&gt;isGuest($USER);
 
 $str = '';
 foreach my $k (sort {lc($a) cmp lc($b)} (keys(%$VARS))) {

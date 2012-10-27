@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-return if $$USER{node_id} == $HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 
 my $csr = $DB-&gt;sqlSelectMany('title'
 	, &quot;(Select title, e2node_id,

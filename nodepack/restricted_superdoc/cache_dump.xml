@@ -63,7 +63,19 @@ foreach my $key(keys %$typestats)
 $str .= &quot;&lt;/ul&gt;&quot;;
 
 $str;
-%]</doctext>
+%]
+
+Pagecache:
+&lt;ul&gt;
+[%
+  my $str;
+  foreach my $key (keys %{$DB-&gt;{cache}-&gt;{pagecache}})
+  {
+    $str .= &quot;&lt;li&gt;$key: &quot;.$DB-&gt;{cache}-&gt;{pagecache}-&gt;{$key};
+  }
+  return $str;
+%]
+&lt;/ul&gt;</doctext>
   <node_id>372563</node_id>
   <title>cache dump</title>
 </node>

@@ -150,7 +150,7 @@ return $str;
 
 [%
 return;
-  return &quot;Spirits flee!&quot; if $$USER{title} eq &quot;Guest User&quot;;
+  return &quot;Spirits flee!&quot; if $APP-&gt;isGuest($USER);
   my $cnt = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;voter_user=896205&quot;);
 # AND votetime LIKE '2008-11-%'
 #1118012

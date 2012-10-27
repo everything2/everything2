@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>2035530</node_id>
   <title>canseedraft</title>
-  <code>return 0 if $$USER{node_id} == $HTMLVARS{guest_user};
+  <code>return 0 if $APP-&gt;isGuest($USER);
 
 my ($N, $editCheck) = @_;
 getRef $N;

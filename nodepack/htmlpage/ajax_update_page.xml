@@ -98,5 +98,5 @@ return to_json($str);
   <type_nodetype>5</type_nodetype>
   <displaytype>ajaxupdate</displaytype>
   <title>ajax update page</title>
-  <mimetype>text/plain</mimetype>
+  <mimetype>application/json</mimetype>
 </node>

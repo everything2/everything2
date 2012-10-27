@@ -3,7 +3,7 @@
   <doctext>Look into thy past. Where hast thou judged?
 &lt;br&gt;&lt;br&gt;
 [%
-  return &quot;Spirits flee!&quot; if $$USER{title} eq &quot;Guest User&quot;;
+  return $APP-&gt;isGuest($USER);
   my $cnt = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;voter_user=$$USER{node_id} and weight between -1 and 1&quot;);
   my $upcnt = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;voter_user=$$USER{node_id} and weight=1&quot;);
 

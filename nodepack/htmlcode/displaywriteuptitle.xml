@@ -19,8 +19,8 @@ if (not $num) {
 	$votenum = getId($WRITEUP);
 }
 
-unless ($$WRITEUP{author_user}==$$USER{node_id}||htmlcode('isSpider')||$query-&gt;param('op'))
-	{ $DB-&gt;sqlUpdate (&quot;node&quot;, { -hits =&gt; 'hits+1' }, &quot;node.node_id=$$WRITEUP{node_id}&quot;); } 
+unless ($$WRITEUP{author_user}==$$USER{node_id} || $query-&gt;param('op') || $APP-&gt;isSpider() )
+	{ 0 &amp;&amp; $DB-&gt;sqlUpdate (&quot;node&quot;, { -hits =&gt; 'hits+1' }, &quot;node.node_id=$$WRITEUP{node_id}&quot;); } 
 
 return htmlcode('displayWriteupInfo',$votenum);
 #return htmlcode('displayWriteupInfo',$votenum.','.$$VARS{wuhead});

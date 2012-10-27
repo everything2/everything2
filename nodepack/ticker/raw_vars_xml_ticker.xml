@@ -3,7 +3,7 @@
   <doctext>[%
 my $str.=&quot;&lt;vars&gt;&quot;;
 
-unless($HTMLVARS{guest_user} == $$NODE{node_id} ){
+unless($APP-&gt;isGuest($USER) ){
   my $ev = getVars(getNode(&quot;exportable vars&quot;,&quot;setting&quot;));
 
   foreach(keys %$ev)

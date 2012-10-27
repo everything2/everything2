@@ -48,7 +48,7 @@ linkNode($USER,'you',{lastnode_id=&gt;0});
 
 [%
 
-return if getId($USER) == $HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 
 my $str = htmlcode('varcheckboxinverse','skratchShare,Private'); #have this first, so display says correct thing
 
@@ -60,7 +60,7 @@ my $str = htmlcode('varcheckboxinverse','skratchShare,Private'); #have this firs
 
 [%
 
-return if getId($USER) == $HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 
 my $skratch = $DB-&gt;sqlSelect('scratch_text', 'scratch', &quot;scratch_id = $$USER{node_id}&quot;);
 

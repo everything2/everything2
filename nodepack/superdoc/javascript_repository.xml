@@ -5,7 +5,7 @@
 
 [%
 
-return &quot;If you logged in, you'd be able to choose which javascripts to enable and disable.&quot; if $$USER{title} eq 'Guest User';
+return &quot;If you logged in, you'd be able to choose which javascripts to enable and disable.&quot; if $APP-&gt;isGuest($USER);
 
 my $jsettings = getNode('Javascript Repository listings', 'setting');
 return 'Sorry; unable to get script list.' if !defined $jsettings;

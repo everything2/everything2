@@ -7,7 +7,7 @@
  #$$VARS{votetime} = &quot;&quot; if not $$VARS{votetest1};
  my ($time) = split &quot; &quot;,$$USER{lasttime};
 
- if ($$USER{node_id} != $HTMLVARS{guest_user} 
+ if (!$APP-&gt;isGuest($USER)
   and (not exists $$VARS{votetime} or $$VARS{votetime} ne $time)) {
    
    my $VOTES = getVars(getNode('level votes', 'setting'));

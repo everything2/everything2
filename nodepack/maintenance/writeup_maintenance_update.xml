@@ -20,7 +20,7 @@ use JSON;
 
 $DB-&gt;{cache}-&gt;incrementGlobalVersion($E2NODE);
 
-htmlcode('update New Writeups data');
+#htmlcode('update New Writeups data');
 
 # Make a notification if someone's about to blank a writeup
 if(defined $query-&gt;param('writeup_doctext')) {

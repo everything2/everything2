@@ -61,7 +61,7 @@ foreach my $ND (@{ $$NODE{group} }) {
 	next unless $curType eq 'writeup';
 	next unless $$ND{wrtype_writeuptype} == 1871559;
 	#next if $curType eq 'debatecomment';	
-	if ($$USER{user_id} == $HTMLVARS{guest_user}){
+	if ( $APP-&gt;isGuest($USER) ){
 		$str .= '&lt;li&gt;' . linkNode($ND, '', {lastnode_id=&gt;0} );
 	}
 	else {

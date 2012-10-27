@@ -5,7 +5,7 @@
   <code>my ($shownumbers, $isxml, $newwuonly) = @_;
 use POSIX;
 #send TRUE if you want people to see how much exp they gained/lost
-return if $$USER{user_id} == $HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 unless($$VARS{oldexp}) {
 	$$VARS{oldexp} = $$USER{experience};
 }

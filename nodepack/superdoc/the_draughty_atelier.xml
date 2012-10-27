@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-return &quot;If you logged in, you could create a custom stylesheet here.&quot; if $$USER{title} eq 'Guest User';
+return &quot;If you logged in, you could create a custom stylesheet here.&quot; if $APP-&gt;isGuest($USER);
 my $str = '';
 
 $str .= '

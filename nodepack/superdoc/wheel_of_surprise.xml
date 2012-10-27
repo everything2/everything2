@@ -2,7 +2,7 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
-return '&lt;p&gt;You must be logged in to be suprised.&lt;/p&gt;' if( (getId($USER)==$HTMLVARS{guest_user}) || ($USER-&gt;{title} eq 'Guest User') );
+return '&lt;p&gt;You must be logged in to be suprised.&lt;/p&gt;' if( $APP-&gt;isGuest($USER) );
 
 my $isHalloween = htmlcode('isSpecialDate','halloween');
 

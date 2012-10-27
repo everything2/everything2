@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1920424</node_id>
   <title>ilikeit</title>
-  <code>return if $$USER{user_id} != $HTMLVARS{guest_user} or htmlcode('isSpider');
+  <code>return if !$APP-&gt;isGuest($USER) or $APP-&gt;isSpider();
 
 my ($WU) = @_;
 return unless getRef($WU) &amp;&amp; $$WU{type}{title} eq 'writeup' ;

@@ -10,12 +10,7 @@
         my $str = &quot;&lt;p align=\&quot;right\&quot;&gt;&quot;;
 $str .= &quot;&lt;small&gt;If you miss the merit display, you can go and complain to [ascorbic], but try getting some perspective first.&lt;/small&gt;&quot; if $$VARS{ebu_showmerit};
 
-
-    # We break if Guest User tries to ignore gods. Is this a Sign? In fact, we
-    # break if Guest User clicks the button without the checkbox checked, too:
-    #   Died at /usr/lib/perl5/5.005/Everything/HTML.pm line 1180.
-    # Total collapse. So, hmmm... So don't do that! Ha ha.
-    if ( $$USER{ 'node_id' } != $HTMLVARS{ 'guest_user' } ) {
+    if ( !$APP-&gt;isGuest($USER) ) {
         # Clear/reset the form control variables
         delete $$VARS{ebu_noadmins} if($query-&gt;param(&quot;gochange&quot;));
         delete $$VARS{ebu_showmerit}; # if($query-&gt;param(&quot;gochange&quot;));

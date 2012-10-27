@@ -2,7 +2,7 @@
   <doctext>&lt;p style=&quot;text-align:right&quot;&gt;&lt;a href=&quot;http://webchat.freenode.net/?channels=everything2&quot;&gt;Join us on IRC&lt;/a&gt; | [{linkGroupMessages}] | [edev FAQ]&lt;/p&gt;
 [%
 my $UID = getId($USER);
-my $isGuest = !$UID || ($UID==$HTMLVARS{'guest_user'});
+my $isGuest = $APP-&gt;isGuest($USER);
 my $isEdev = !$isGuest &amp;&amp; exists($HTMLVARS{'group_edev'}{$UID});
 return &quot;edev is the 'Everything Developer' usergroup, for people interested in contributing to the development of this site, or just learning about how it works. Please /msg [Oolong] if you want to be added.&quot; if !$isEdev;
 
