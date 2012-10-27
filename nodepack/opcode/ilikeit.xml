@@ -2,7 +2,7 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>1920135</node_id>
   <title>ilikeit</title>
-  <code>return if htmlcode('isSpider');
+  <code>return if $APP-&gt;isSpider();
 
 
 my $nid = $query-&gt;param(&quot;like_id&quot;);
