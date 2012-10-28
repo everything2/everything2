@@ -5,7 +5,7 @@
   <code>my $node_id = $query-&gt;param('bookmark_id');
 
 $node_id or return;
-return if getId($USER) == $HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 return unless htmlcode('verifyRequest', 'bookmark');
 my $LINKTYPE = getNode('bookmark', 'linktype');
 

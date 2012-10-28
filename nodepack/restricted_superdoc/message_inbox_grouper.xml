@@ -26,7 +26,7 @@
 
 my $UID = getId($USER)||0;
 
-return 'If you had an account, we\'d let you gab.' if !$UID || ($UID == $HTMLVARS{guest_user});
+return 'If you had an account, we\'d let you gab.' if $APP-&gt;isGuest($USER);
 
 #
 # Initialize squawkbox stuff

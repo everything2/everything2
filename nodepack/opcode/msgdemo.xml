@@ -8,7 +8,7 @@ my $message = $query-&gt;param('message');
 my $UID = getId($USER)||0;
 return unless $UID==9740;	#N-Wing is testing this
 
-return if $UID==$HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 return if $$VARS{borged} or ($$USER{title} eq 'everyone');
 return unless length($message);
 return if $message=~/^\s+$/;

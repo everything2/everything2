@@ -2,7 +2,7 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>1685363</node_id>
   <title>pollvote</title>
-  <code>return if getId($USER) == $HTMLVARS{guest_user};
+  <code>return if $APP-&gt;isGuest($USER);
 
 my $pollId = $query -&gt; param('poll_id');
 my $vote = $query-&gt;param('vote');

@@ -4,7 +4,7 @@
 return '&lt;p&gt;You need to sign in or '
 	.linkNode(getNode('Create a New User','superdoc'), 'register')
 	.' to use this page.&lt;/p&gt;
-	&lt;!-- ' if ($$USER{node_id} == $HTMLVARS{guest_user});
+	&lt;!-- ' if ($APP-&gt;isGuest($USER));
 $HTMLVARS{pageheader} = '&lt;!-- at end --&gt;'.htmlcode('settingsDocs');
 
 htmlcode('openform', -id =&gt; 'pagebody');
@@ -89,7 +89,7 @@ $str;
 
 [{closeform}]
 [%
-return ' --&gt;' if $$USER{node_id} == $HTMLVARS{guest_user};
+return ' --&gt;' if $APP-&gt;isGuest($USER);
 %]</doctext>
   <node_id>1022032</node_id>
   <title>Admin Settings</title>

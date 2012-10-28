@@ -12,12 +12,13 @@ my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR} || undef;
 return if $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;likedit&quot;,&quot;likedit_ip = '$addr' and likedit_node=$nid&quot;);
 
 my $LIKE = getNodeById($nid);
+my $GU = $Everything::CONF-&gt;{system}-&gt;{guest_user};
 
 my $lType = getNode(&quot;ilikeit&quot;,&quot;linktype&quot;)-&gt;{node_id};
 
-my $linkExists = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;links&quot;,&quot;from_node = &quot;.$HTMLVARS{guest_user}.&quot; and to_node =$nid and linkType = $lType&quot;);
+my $linkExists = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;links&quot;,&quot;from_node=$GU and to_node=$nid and linkType = $lType&quot;);
 if ($linkExists) {
-$DB-&gt;sqlUpdate(&quot;links&quot;,{-hits =&gt; 'hits + 1'},&quot;from_node = &quot;.$HTMLVARS{guest_user}.&quot; and to_node =$nid and linkType = $lType&quot;);
+$DB-&gt;sqlUpdate(&quot;links&quot;,{-hits =&gt; 'hits + 1'},&quot;from_node=$GU and to_node=$nid and linkType = $lType&quot;);
 }
 else {
 $DB-&gt;sqlInsert(&quot;links&quot;,{from_node =&gt; $$USER{user_id}, to_node =&gt; $nid, linktype =&gt; $lType});

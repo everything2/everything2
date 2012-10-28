@@ -9,7 +9,7 @@
   <iconWidth>170</iconWidth>
   <nlcode>[{borgcheck}][%
 
-return '' if $$USER{user_id} == $HTMLVARS{guest_user};
+return '' if $APP-&gt;isGuest($USER);
 
 my ($loginStr, $votesLeftStr, $expStr, $serverTimeStr, $weblogStr);
 

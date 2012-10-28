@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-my $isGuest = ($$USER{node_id}==$HTMLVARS{'guest_user'});
+my $isGuest = $APP-&gt;isGuest($USER);
 return &quot;&lt;p&gt;Undifferentiated from the masses of the streets, you fall between the cracks yourself.&lt;/p&gt;&quot; if $isGuest;
 
 my $rowCtr = 0;

@@ -2,7 +2,7 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>1217094</node_id>
   <title>changewucount</title>
-  <code>return '' if ($$USER{user_id} == $HTMLVARS{guest_user});
+  <code>return '' if ( $APP-&gt;isGuest($USER) );
 
 if($query-&gt;param('amount')) {
 	my $amount = $query-&gt;param('amount');

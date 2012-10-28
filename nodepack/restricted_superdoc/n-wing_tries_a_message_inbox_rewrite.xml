@@ -8,7 +8,7 @@
 #updated: 2003.03.06.n4
 
 my $UID = getId($USER) || 0;
-return 'Maybe you\'d get messages if you had an account.' if !$UID || ($UID==$HTMLVARS{guest_user});
+return 'Maybe you\'d get messages if you had an account.' if $APP-&gt;isGuest($USER);
 
 my $isRoot = exists $HTMLVARS{group_gods}{$UID};
 my $NL = &quot;\n&quot;;

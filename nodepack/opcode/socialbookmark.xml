@@ -8,7 +8,7 @@ my $bookmark_site = $query-&gt;param('bookmark_site');
 $node_id or return;
 $bookmark_site or return;
 
-return if getId($USER) == $HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 #my $LINKTYPE = getNode('bookmark', 'linktype');
 
 #$DB-&gt;sqlInsert('links', {from_node =&gt; getId($USER), to_node =&gt; $node_id, linktype =&gt; getId($LINKTYPE)});

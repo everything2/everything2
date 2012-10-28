@@ -10,7 +10,7 @@
   <nlcode>[%
 # cached version for Guest User
 return htmlcode('displaynltext', 'New Writeups (Guest User)' )
-	if $$USER{ user_id } == $HTMLVARS{ guest_user } ;
+	if $APP-&gt;isGuest($USER) ;
 
 # live version with options for logged-in user
 htmlcode('nwuamount').htmlcode($$THEME{isZen} ? 'zenwriteups' : 'newwriteups2');

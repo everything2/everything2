@@ -73,7 +73,7 @@ return if $$USER{title} eq 'ascorbic';
 
 
 
-return 'Only logged in users can use this.' if $$USER{node_id}==$HTMLVARS{guest_user};
+return 'Only logged in users can use this.' if $APP-&gt;isGuest($USER);
 return ' (Note: you currently don\'t have your Notelet on, so changing things here is rather pointless. You can turn on the Notelet nodelet by visiting your [user settings].)' unless $VARS-&gt;{nodelets} =~ /1290534/;	#kind of a hack, but it is quick
 #FIXME getId(getNode('Notelet','nodelet','light'))
 '';

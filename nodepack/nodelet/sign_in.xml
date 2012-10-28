@@ -5,22 +5,11 @@
   <node_id>2029388</node_id>
   <type_nodetype>9</type_nodetype>
   <nlcode>[%
-
-my $isGuest = $$USER{user_id} == $HTMLVARS{guest_user};
-
-my $loginStr;
-
-#####LOGIN STRING
-
-if ($isGuest) {
-  $loginStr = htmlcode('minilogin');
+if ($APP-&gt;isGuest($USER)) {
+  return htmlcode('minilogin');
 }
 
-else {
-  $loginStr = &quot;You are logged in.&quot;;
-}
-
-return $loginStr;
+return &quot;You are logged in.&quot;;
 
 %]</nlcode>
   <title>Sign in</title>

@@ -4,7 +4,7 @@
 return '&lt;p&gt;You need to sign in or '
 	.linkNode(getNode('Create a New User','superdoc'), 'register')
 	.' to use this page.&lt;/p&gt;
-	&lt;!-- ' if ($$USER{node_id} == $HTMLVARS{guest_user});
+	&lt;!-- ' if ($APP-&gt;isGuest($USER));
 
 # Save the last updated time so we can timestamp external documents which are affected
 #  by preferences for caching purposes.  Epoch is Unix time() seconds for easy comparison.
@@ -331,7 +331,7 @@ return htmlcode('varsComboBox', 'localTimeOffset,0'.$params);
 
 &lt;fieldset&gt;&lt;legend&gt;Deprecated/Obsolete&lt;/legend&gt;
 Theme:[%
-return if ($$USER{node_id} == $HTMLVARS{guest_user});
+return if ($APP-&gt;isGuest($USER));
 
 if($query-&gt;param('chosentheme')) {
 	my $theme = getNodeById($query-&gt;param('chosentheme'));
@@ -351,7 +351,7 @@ Node Display (has no effect in Zen theme): [{varMenu: displaypref_e2node,display
 &lt;/fieldset&gt;
 [{closeform}]
 [%
-return ' --&gt;' if $$USER{node_id} == $HTMLVARS{guest_user};
+return ' --&gt;' if $APP-&gt;isGuest($USER);
 %]</doctext>
   <node_id>1163528</node_id>
   <title>Advanced Settings</title>

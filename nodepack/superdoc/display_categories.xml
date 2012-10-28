@@ -2,7 +2,7 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $canContributePublicCategory = ($APP-&gt;getLevel($USER) &gt;= 1);
-my $guestUser = $HTMLVARS{guest_user};
+my $guestUser = $Everything::CONF-&gt;{system}-&gt;{guest_user};
 my $uid = $$USER{user_id};
 my $isCategory = 0;
 my $linktype = getId(getNode('category', 'linktype'));

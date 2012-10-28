@@ -9,7 +9,7 @@
   <iconWidth>170</iconWidth>
   <nlcode>[%
 
-if (getId($USER) != $HTMLVARS{guest_user}) {
+if (!$APP-&gt;isGuest($USER) ) {
 return htmlcode('nodeletsection','vit','maintenance','Maintenance');
 }
 

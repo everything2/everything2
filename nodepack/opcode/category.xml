@@ -2,7 +2,7 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>1935812</node_id>
   <title>category</title>
-  <code>return if getId($USER) == $HTMLVARS{guest_user};
+  <code>return if $APP-&gt;isGuest($USER);
 my $isCE = $APP-&gt;isEditor($USER);
 return if ($APP-&gt;getLevel($USER) &lt;= 1) &amp;&amp; !$isCE;
 
@@ -34,7 +34,7 @@ if ($$maintainer{type}{title} eq 'user')
   # if category author is not current user or guest user
   # and the user is not an admin or CE, quit
   if($$maintainer{node_id} != $$USER{user_id}
-     &amp;&amp; $$maintainer{node_id} != $HTMLVARS{guest_user}
+     &amp;&amp; !$APP-&gt;isGuest($$maintainer{node_id})
      &amp;&amp; !$isCE)
   {
     return 0;

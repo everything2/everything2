@@ -2,8 +2,7 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>1239467</node_id>
   <title>nodeletwidget</title>
-  <code>
-#performs operations on a single nodelet for the user, such as move, insert, remove
+  <code>#performs operations on a single nodelet for the user, such as move, insert, remove
 #	this messes with the current user $VARS-&gt;{nodelets}
 #
 #usage: (CGI parameters)
@@ -25,7 +24,7 @@
 
 #permissions
 my $UID = $USER-&gt;{node_id} || 0;
-if(!$UID || ($HTMLVARS{guest_user}==$UID)) {	#FIXME is this the correct thing to check?
+if( $APP-&gt;isGuest($USER) ) {	#FIXME is this the correct thing to check?
 	return;
 }
 if($USER-&gt;{title} eq 'everyone') {

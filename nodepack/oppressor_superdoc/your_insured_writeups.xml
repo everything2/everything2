@@ -3,7 +3,7 @@
   <doctext>You have insured the following writeups (shown in something vaguely resembling but not quite matching chronological order):
 
 [%
-return if $$USER{node_id} == $HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 my $str='&lt;p&gt;&lt;ul&gt;';
 
 my $csr = $DB-&gt;sqlSelectMany('publish_id', 'publish', 'publisher='.$$USER{node_id});
@@ -22,9 +22,7 @@ foreach(sort {lc($a) cmp lc($b)} @insured) {
 $str.='&lt;/ul&gt;';
 
 return $str;
-%]
-
-&lt;p align=&quot;right&quot;&gt;&lt;small&gt;Bugs go to [% linkNode(1009226) %], who may or may not know what to do with them.&lt;/small&gt;&lt;/p&gt;</doctext>
+%]</doctext>
   <node_id>1950299</node_id>
   <title>Your insured writeups</title>
 </node>

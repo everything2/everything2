@@ -8,7 +8,7 @@
   <iconHeight>24</iconHeight>
   <iconWidth>170</iconWidth>
   <nlcode>[%
-return 'You must log in first.' if getId($USER) == $HTMLVARS{guest_user};
+return 'You must log in first.' if $APP-&gt;isGuest($USER);
 
 # do this here to update settings before showing nodelet:
 my $settingslink = htmlcode('nodeletsettingswidget','Personal Links', 'Edit link list');
