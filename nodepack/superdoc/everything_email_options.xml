@@ -5,7 +5,7 @@
 &lt;p&gt;Here's where you can configure your [Everything Daily Report]...
  
 [%
-return 'but only if you are [login|logged in]...' if $$USER{title} eq 'Guest User' or $$USER{title} eq 'everyone' or (getId($USER) == $HTMLVARS{guest_user});
+return 'but only if you are [login|logged in]...' if $APP-&gt;isGuest($USER) or $USER-&gt;{title} eq &quot;everyone&quot;;
 
 if(defined ($query-&gt;param('set_wantsreport'))) {
 	my $val = $query-&gt;param('set_wantsreport');
@@ -31,7 +31,7 @@ $str.'&lt;p&gt;'.$query-&gt;radio_group('set_wantsreport', ['0','1'],
 &lt;p&gt;&quot;;
 %]
 [%
-return if getId($USER) == $HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 
   my $str;
 
@@ -54,7 +54,7 @@ return if getId($USER) == $HTMLVARS{guest_user};
 &lt;p&gt;&quot;;
 
 # $$VARS{emailSubscribedusers} = &quot;&quot;;
-  return if ($$USER{title} eq 'everyone' or getId($USER)==$HTMLVARS{guest_user});
+  return if ($$USER{title} eq 'everyone' or $APP-&gt;isGuest($USER));
   my @users = split (',', $$VARS{emailSubscribedusers});
   my $maxusers = 25;
 

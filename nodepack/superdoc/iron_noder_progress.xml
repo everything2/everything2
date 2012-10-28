@@ -7,10 +7,10 @@ my $dateMaxExc = '' . $currentYear . '-12-01';
 my $triggerAchievement = $query -&gt; param('ironise'); # option to activate achievement if iron noder period is not one calendar month
 
 #constants
-my $UID = getId($USER)||$HTMLVARS{'guest_user'}||0;
-my $isGuest = ($UID==$HTMLVARS{'guest_user'} or !$UID);
-my $isRoot = !$isGuest &amp;&amp; exists $HTMLVARS{group_gods}{$UID};
-my $isCE = !$isGuest &amp;&amp; ($isRoot || exists $HTMLVARS{'group_content editors'}{$UID});
+my $UID = getId($USER);
+my $isGuest = $APP-&gt;isGuest($USER);
+my $isRoot = exists $HTMLVARS{group_gods}{$UID};
+my $isCE = $APP-&gt;isEditor($USER);
 my $ironLeader;
 my $isIronLeader = 0;
 my $isIronNoder = 0;

@@ -69,7 +69,7 @@ $str .= $query-&gt;endform;
 
 my $contribute =
  &quot;&lt;th&gt;Can I Contribute?&lt;/th&gt;&quot;
- if $uid != $guestUser;
+ if !$APP-&gt;isGuest($USER);
 
 $str .= qq'&lt;table width=&quot;100%&quot;&gt;
          &lt;tr&gt;
@@ -126,7 +126,7 @@ while(my $n = $ds-&gt;fetchrow_hashref)
 
   $str .= qq'&lt;td style=&quot;text-align:center&quot;&gt;$authorLink&lt;/td&gt;\n';
 
-  if ($uid != $guestUser)
+  if (!$APP-&gt;isGuest($USER))
   {
     $str .= '&lt;td style=&quot;text-align:center&quot;&gt;';
     if ($isPublicCategory &amp;&amp; $canContributePublicCategory or $maintId == $uid)

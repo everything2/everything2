@@ -5,7 +5,7 @@
 
 my $str;
 return &quot;Sorry, in order to create a node you have to [login]
-or [create a new user]&quot; if getId($USER) == $HTMLVARS{guest_user};
+or [create a new user]&quot; if $APP-&gt;isGuest($USER);
 
 my $newNodeName = $query-&gt;param(&quot;newNodeName&quot;);
 

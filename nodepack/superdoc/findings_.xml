@@ -63,7 +63,7 @@ foreach my $ND (@{ $$NODE{group} }) {
 			$openli = '&lt;li class=&quot;nodeshell&quot;&gt;' 
         unless exists $fillednode_ids{$$ND{node_id}};
 	}
-	if ($$USER{user_id} == $HTMLVARS{guest_user}){
+	if ($APP-&gt;isGuest($USER)){
 		$str .= $openli . linkNode($ND, '', {lastnode_id=&gt;0}) ;
 	}
 	else {
@@ -74,20 +74,11 @@ foreach my $ND (@{ $$NODE{group} }) {
 	}
 	#$str .= &quot;($ND-&gt;{node_id})&quot; if $HTMLVARS{'group_gods'}{$USER-&gt;{node_id}};
 	$str .= &quot;&lt;/li&gt;\n&quot;;
-
-#	$str .= '&lt;tr&gt;&lt;td&gt;';
-#	$str .= linkNode($ND, '', {lastnode_id=&gt;$lnode}) . '&lt;/td&gt;&lt;td&gt;';
-#	$str .= ($curType eq 'e2node' ? '' : '('.$curType.')') . '&lt;/td&gt;&lt;td&gt;';
-#	$str .= htmlcode('parsetimestamp',$$ND{createtime}); #this may be too much; maybe just the date? or even just month and year?
-#	$str .= &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
-
 }
 
 $str .= &quot;&lt;/ul&gt;\n&quot;;
 
-$str
-#.'&lt;/table&gt;'
-;
+$str;
 %]
 [{e2createnewnode}]
 </doctext>

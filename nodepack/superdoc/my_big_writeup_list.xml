@@ -9,7 +9,7 @@
 
 my $UID = $$USER{node_id} || 0; 
 
-if (!$UID || ($UID == $HTMLVARS{guest_user}))
+if ( $APP-&gt;isGuest($USER) )
 {
  return 'You need an account to access this node.&lt;br /&gt;&lt;br /&gt;.'
    . 'Why not '
@@ -66,7 +66,7 @@ return $str;
 my $UID = $$USER{node_id} || 0; 
 
 
-if (!$UID || ($UID == $HTMLVARS{guest_user}))
+if ( $APP-&gt;isGuest($USER) )
 {
  return;
 } 

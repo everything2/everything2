@@ -3,7 +3,7 @@
   <doctext>[%
 
 return &quot;&lt;p&gt;If you had an account, you could get messages.&lt;/p&gt;&quot;
-	if $$USER{node_id} == $HTMLVARS{guest_user};
+	if $APP-&gt;isGuest($USER);
 
 # options
 my $str = htmlcode('openform', 'message_inbox_form')

@@ -24,15 +24,15 @@
 [%
 
 my $str;
-my $guestUser = $HTMLVARS{guest_user};
+my $guestUser = $Everything::CONF-&gt;{system}-&gt;{guest_user};
 #
 # Filter people out who can't create categories
 #
-if ($$USER{node_id} == $guestUser)
+if ( $APP-&gt;isGuest($USER) )
 {
    return 'You must be [login|logged in] to create a category.';
 }
-if ($APP-&gt;getLevel($USER) &lt;= 1)
+if ( $APP-&gt;getLevel($USER) &lt;= 1 )
 {
    $str.='Note that until you are at least Level 2, you can only add your own writeups to categories.';
 }

@@ -59,7 +59,7 @@ if any rule is set to ignore your own message, then you won't get a copy.
 &lt;p&gt;
 
 [%
-return if $$USER{node_id}==$HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 return unless $$USER{node_id}==9740;	#N-Wing testing
 
 #updated: Friday, November 15, 2002

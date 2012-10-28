@@ -13,10 +13,10 @@ th {
 [% 
 my $UID = getId($USER);
 
-return '&lt;p&gt;Please log in first.&lt;/p&gt;' if !$UID || ($UID == $HTMLVARS{guest_user});
+return '&lt;p&gt;Please log in first.&lt;/p&gt;' if $APP-&gt;isGuest($USER);
 
 my $isRoot = exists $HTMLVARS{group_gods}{$UID};
-my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$UID};
+my $isCE = $APP-&gt;isEditor($USER);
 my $isEDev = exists $HTMLVARS{group_edev}{$UID};
 
 my $showLinkViewcode = $isEDev || $isRoot;

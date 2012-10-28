@@ -47,14 +47,7 @@ my $vts = 0;
 my $c = 0;
 my $ttl = 0;
 
-my $userLevel;
-
-if (getId($USER) == $HTMLVARS{guest_user}) {
-$userLevel = 0;
-}
-else {
-$userLevel = $APP-&gt;getLevel($USER) || 0;
-}
+my $userLevel= $APP-&gt;getLevel($USER);
 
 for(my $i = $fstLvl; $i &lt;= $sndLvl; $i++) {
 

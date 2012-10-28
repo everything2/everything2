@@ -5,7 +5,7 @@
 # wharfinger
 
 return '&lt;p&gt;&lt;b&gt;This does not work for the Guest User account.&lt;/b&gt;&lt;/p&gt;'
-    if ( $$USER{'node_id'} == $HTMLVARS{'guest_user'} );
+    if ( $APP-&gt;isGuest($USER) );
 
 # This getting and setting of $VARS values could stand 
 # to be generalized off into htmlcodes. 
@@ -104,7 +104,7 @@ $str . &quot;&lt;/p&gt;\n&quot;;
 [{openform}]
 &lt;textarea wrap=&quot;virtual&quot; name=&quot;input&quot; cols=&quot;40&quot; rows=&quot;16&quot;&gt;[%
 
-return '' if ( $$USER{'node_id'} == $HTMLVARS{'guest_user'} );
+return '' if ( $APP-&gt;isGuest($USER) );
 
 if ( defined $query-&gt;param( 'input' ) ) {
     $query-&gt;param( 'input' );

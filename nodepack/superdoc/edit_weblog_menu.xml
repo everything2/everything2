@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-return unless $$USER{ user_id } and $$USER{ user_id } != $HTMLVARS{ guest_user } ;
+return if $APP-&gt;isGuest($USER) ;
 
 my $str = htmlcode( 'openform' ).'
 &lt;fieldset&gt;&lt;legend&gt;Display:&lt;/legend&gt;' ;

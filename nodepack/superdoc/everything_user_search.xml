@@ -106,7 +106,7 @@ my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
 my $isEd = $isRoot || (exists $HTMLVARS{'group_content editors'}{$UID});
 my $isMe = ($uid == $UID) &amp;&amp; ($uid!=0);
 my $rep = $isMe || $isEd;
-my $isGuest = $$USER{user_id} == $HTMLVARS{guest_user};
+my $isGuest = $APP-&gt;isGuest($USER);
 
 # remove url-derived and other superfluous parameters, include defaults
 delete @params{qw(node node_id type op submit)};

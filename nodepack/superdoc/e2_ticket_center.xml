@@ -19,7 +19,7 @@ my $isGod = isGod($USER);
 my $isCE = exists($HTMLVARS{'group_content editors'}{$$USER{node_id}});
 
 ## Don't display conditions
-return &quot;&lt;p&gt;You must be logged in to view service tickets.&lt;/p&gt;&quot; if getId($USER) == $HTMLVARS{guest_user};
+return &quot;&lt;p&gt;You must be logged in to view service tickets.&lt;/p&gt;&quot; if $APP-&gt;isGuest($USER);
 return unless($isGod); ## temp until system is ready
 
 ## Define variables

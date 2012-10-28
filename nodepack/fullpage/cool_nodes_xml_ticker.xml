@@ -1,6 +1,7 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Sun Oct 28 02:35:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Sun Oct 28 03:50:10 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2070135&quot; parent_e2node=&quot;2071665&quot; author_user=&quot;etouffee&quot;&gt;Pauses, overtakes the sky&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;wertperch&quot; node_id=&quot;1682410&quot; parent_e2node=&quot;713984&quot; author_user=&quot;Chras4&quot;&gt;The healing power of touch&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2071703&quot; parent_e2node=&quot;448482&quot; author_user=&quot;BookReader&quot;&gt;rain dance&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;schizophasic&quot; node_id=&quot;2071631&quot; parent_e2node=&quot;2071626&quot; author_user=&quot;Lucy-S&quot;&gt;polyfidelity&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;1702232&quot; parent_e2node=&quot;1702228&quot; author_user=&quot;allseeingeye&quot;&gt;How to dispose of a Bible&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1298571&quot; parent_e2node=&quot;13531&quot; author_user=&quot;Great Neb&quot;&gt;Drum and Bass&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;tanktop&quot; node_id=&quot;2071597&quot; parent_e2node=&quot;2071596&quot; author_user=&quot;Demeter&quot;&gt;Kite, 2012&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Morwen&quot; node_id=&quot;141255&quot; parent_e2node=&quot;1343513&quot; author_user=&quot;zhaus&quot;&gt;dead rat game&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

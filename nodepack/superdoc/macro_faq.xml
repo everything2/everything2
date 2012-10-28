@@ -70,7 +70,7 @@ Here are all your currently defined macros. You can edit them at [user settings 
 &lt;table cellspacing=&quot;1&quot; cellpadding=&quot;3&quot; border=&quot;1&quot;&gt;
 &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Text&lt;/th&gt;&lt;/tr&gt;
 [%
-return if $$USER{'node_id'} == $HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 my $str = '';
 my $k; my $v;
 foreach(sort(keys(%$VARS))) {

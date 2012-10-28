@@ -4,7 +4,7 @@
 
 my $zenStr;
 
-if ($$USER{user_id} == $HTMLVARS{guest_user}) {
+if ( $APP-&gt;isGuest($USER) ) {
     $HTMLVARS{ pagenodelets } = getNode( 'Sign in' , 'nodelet' ) -&gt; { node_id };
    $HTMLVARS{ pagenodelets } .= ','.getNode( 'Recommended Reading' , 'nodelet' ) -&gt; { node_id } ;
     $HTMLVARS{ pagenodelets } .= ','.getNode( 'New Writeups' , 'nodelet' ) -&gt; { node_id } ;
@@ -35,7 +35,7 @@ $zenStr.='
         '.htmlcode('displaynltext','New Cool Stuff').'
       &lt;/div&gt;';
 
-if ($$USER{user_id} != $HTMLVARS{guest_user}) {
+if ( !$APP-&gt;isGuest($USER) ) {
   $zenStr.='
   &lt;div id=&quot;frontpage_news&quot;&gt;
         &lt;h2 id=&quot;frontpage_news_title&quot;&gt;[News for Noders. Stuff that matters.|News for Noders]&lt;/h2&gt;

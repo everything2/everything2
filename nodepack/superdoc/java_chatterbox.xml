@@ -10,7 +10,7 @@ archive=&quot;chatterclient.zip&quot;
 width=&quot;250&quot; height=&quot;200&quot;
 &gt;
 [%
-return if getId($USER)==$HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 return '&lt;param name=&quot;user.name&quot; value=&quot;' . encodeHTML($$USER{title}) . '&quot; /&gt;';
 %]
 &lt;param name=&quot;autolaunch&quot; value=&quot;true&quot; /&gt;
