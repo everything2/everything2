@@ -19,7 +19,7 @@ return if(!$U);
 
 my @groups = ();
 
-if ((($$VARS{hidehomenodeUG}) &amp;&amp; (!($HTMLVARS{'group_gods'}{getId($USER)}))) || ($userID==$HTMLVARS{guest_user})) {
+if ((($$VARS{hidehomenodeUG}) &amp;&amp; (!($HTMLVARS{'group_gods'}{getId($USER)}))) || ( $APP-&gt;isGuest($USER) )) {
 return unless($HTMLVARS{'group_gods'}{$U} || $HTMLVARS{'group_content editors'}{$U});
 push( @groups, linkNode(getNode('gods', 'usergroup'),0,{lastnode_id=&gt;0})) if exists $HTMLVARS{'group_gods'}{$U};
 push( @groups, linkNode(getNode('Content Editors', 'usergroup'),0,{lastnode_id=&gt;0})) if exists $HTMLVARS{'group_content editors'}{$U};

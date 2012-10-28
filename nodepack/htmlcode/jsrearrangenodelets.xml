@@ -12,7 +12,7 @@
 #        open and close the form by default.
 #######
 my($varsfield,$nodeletgroup,$formoff)=@_;
-return if(getId($USER)==$HTMLVARS{guest_user});
+return if( $APP-&gt;isGuest($USER) );
 return &quot;You need to pass me a varsfield&quot; unless $varsfield;
 my $NG=getNode $nodeletgroup,&quot;nodeletgroup&quot;;
 my $GROUP=$$NG{group};

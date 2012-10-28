@@ -32,7 +32,7 @@
 
 my ($key, $flags, @elements) = @_;
 
-return if $HTMLVARS{guest_user}==$$USER{node_id};
+return if $APP-&gt;isGuest($USER);
 
 local *oops = sub {
 	return '&lt;span border=&quot;solid black 1px;&quot; title=&quot;varsComboBox&quot;&gt;!!! '.$_[0].' !!!&lt;/span&gt;';

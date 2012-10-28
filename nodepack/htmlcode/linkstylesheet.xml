@@ -31,7 +31,7 @@ if ($n) {
   my $autofixText = &quot;&quot;;
   $autofixText = &quot;_autofix&quot;
     if $$USER{ user_id } != $$n{ author_user }
-    &amp;&amp; $$USER{ user_id } != $HTMLVARS{ guest_user };
+    &amp;&amp; !$APP-&gt;isGuest($USER);
   $escapeTitle =~ s/%[0-9A-F]{2}|_//g;
   my $stylesheetFilename = &quot;${escapeTitle}_v$v$autofixText.css&quot;; 
   return &quot;http://jscss.everything2.com/$stylesheetFilename&quot;;

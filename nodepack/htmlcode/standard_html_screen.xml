@@ -7,7 +7,7 @@
 my $TAGNODE = getNode('approved html tags', 'setting');
 my $TAGS = getVars($TAGNODE);
 
-$lastnode_id = undef if ($$USER{node_id} == $HTMLVARS{guest_user});
+$lastnode_id = undef if ($APP-&gt;isGuest($USER));
 
 $text = htmlScreen($text, $TAGS);
 $text = screenTable ($text);

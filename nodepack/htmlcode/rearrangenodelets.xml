@@ -8,7 +8,7 @@
 #  second parameter: nodeletgroup which contains nodelets a user can choose from
 #  optional third parameter: send form controls only, not an entire form
 
-return if(getId($USER)==$HTMLVARS{guest_user});
+return if( $APP-&gt;isGuest($USER) );
 my($varsfield,$nodeletgroup,$formoff)=@_;
 return 'Missing parameter.' unless $varsfield &amp;&amp; $nodeletgroup;
 

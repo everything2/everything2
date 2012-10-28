@@ -19,10 +19,10 @@ my $WRITEUP = getNodeById($wuID) || 0;
 return 'Ack! displayWriteupInfo: No node with node_id '.$wuID unless $WRITEUP;
 
 #constants
-my $UID = getId($USER)||$HTMLVARS{'guest_user'};
-my $isGuest = ($UID==$HTMLVARS{'guest_user'});
+my $UID = getId($USER);
+my $isGuest = $APP-&gt;isGuest($USER);
 my $isRoot = !$isGuest &amp;&amp; exists $HTMLVARS{group_gods}{$UID};
-my $isCE = !$isGuest &amp;&amp; ($isRoot || exists $HTMLVARS{'group_content editors'}{$UID});
+my $isCE = $APP-&gt;isEditor($USER);
 my $aid = $$WRITEUP{author_user} || 0;
 my $wuAuthor = getNodeById($aid) || undef;
 my $isMine = (!$isGuest) &amp;&amp; ($aid==$UID);
@@ -101,7 +101,7 @@ if($inPrintMode) {
 		} else {
 			#no settings given, so use default header, which is mostly &quot;classic&quot;
 			@showThings = ('l:typeauthorprint');
-			push(@showThings, 'l:sendmsg');# unless $HTMLVARS{guest_user};
+			push(@showThings, 'l:sendmsg');
 			push @showThings,('c:kill','c:vote');
 			if($wuID==$nID) {
 				push @showThings, ('r:dtcreate','\n','l:cfull');
@@ -215,7 +215,6 @@ local *info_c_short = sub {
 	#$specialDisplays-&gt;{'!'.$fnName} = '';	#2007-12-05 for kthejoker
 	my $ret = htmlcode('CoolUncoolIt',$wuID);
 
-#	if ($$USER{user_id} == $HTMLVARS{guest_user}) {
 	if ($isGuest) {
 		my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR} || undef;
 		#return '}'.$addr.'{';

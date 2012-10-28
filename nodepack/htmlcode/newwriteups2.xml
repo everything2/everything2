@@ -4,7 +4,7 @@
   <title>newwriteups2</title>
   <code>my ($limit) = @_;
 $limit ||= 15;
-if($$USER{user_id} eq $HTMLVARS{guest_user}){
+if( $APP-&gt;isGuest($USER) ){
 	my $blah = getNode('New Writeups Normal', 'nodelet');
 	return $$blah{nltext};
 }

@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1217086</node_id>
   <title>nwuamount</title>
-  <code>return '' if ($$USER{user_id} == $HTMLVARS{guest_user});
+  <code>return '' if ( $APP-&gt;isGuest($USER) );
 my ($nodelet,$noAdminNoJunkOption) = @_ ;
 $nodelet ||= 'New Writeups';
 $nodelet =~ s/\s/+/g;

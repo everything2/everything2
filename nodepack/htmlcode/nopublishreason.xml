@@ -11,7 +11,7 @@ $user ||= $USER;
 getRef $user;
 getRef $E2N if $E2N;
 
-if($$user{user_id} == $HTMLVARS{guest_user}){
+if( $APP-&gt;isGuest($USER) ){
 	return parseLinks('[login[superdoc]|Log in] or [create a new user[superdoc]|register]
 		to write something here or to contact authors.');
 }

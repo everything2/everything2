@@ -7,7 +7,7 @@
 my $noPrevLink = {'lastnode_id'=&gt;0};
 my @links;
 
-if (getId($USER) == $HTMLVARS{guest_user}) {
+if ( $APP-&gt;isGuest($USER) ) {
 	push @links, linkNodeTitle('login', $NODE, 'Log in');
 	push @links, linkNodeTitle('Create a new user');
 #	$str .= linkNodeTitle('login', $NODE, 'Log in'). ' | ' . linkNodeTitle('Create a new user');

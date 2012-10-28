@@ -21,7 +21,7 @@ my $showNotGroup = index($showOpts,'G')==-1; #show group messages (usually do)
 my $canSeeHidden = $APP-&gt;isEditor($USER);
 return unless $showGroup || $showNotGroup;
 
-return if getId($USER) == $HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 
 my $showLastOnes = ! ($$VARS{chatterbox_msgs_ascend} || 0); 
 

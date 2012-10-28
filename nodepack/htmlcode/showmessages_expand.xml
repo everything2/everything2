@@ -3,7 +3,7 @@
   <node_id>2015407</node_id>
   <title>showmessages_expand</title>
   <code>#originally in [chatterbox] (nodelet)
-return if getId($USER) == $HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 
 my ($maxmsgs, $showOpts) = @_;
 

@@ -7,7 +7,7 @@
 my $default ='';
 my $lnid = getId($NODE);
 my $ParentNODE = $NODE;
-if(getId($USER) != $HTMLVARS{guest_user} and my $ln = $query-&gt;param('lastnode_id')  and ($query-&gt;param('lastnode_id') =~ /^\d+$/)) {
+if(!$APP-&gt;isGuest($USER) and my $ln = $query-&gt;param('lastnode_id')  and ($query-&gt;param('lastnode_id') =~ /^\d+$/)) {
  my $LN = getNode $ln;
  if($$LN{type}{title} eq 'writeup') {
   $LN = getNodeById($$LN{parent_e2node});
@@ -123,13 +123,6 @@ $str.=&quot;&lt;br /&gt;\n&quot;.$query-&gt;checkbox(
  -label =&gt; ''
 );
 $str.=&quot;&lt;small&gt;&lt;small&gt;Full Text&lt;/small&gt;&lt;/small&gt;&quot;;
-
-#$str.=&quot;&lt;br /&gt;\n&quot;.$query-&gt;checkbox(
-# -name =&gt; 'nosoftlink',
-# -default =&gt; '0',
-# -value =&gt; '1',
-# -label =&gt; 'No Softlink'
-#);
 
 #$str . '&lt;/small&gt;&lt;/small&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';
 $str . '&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';</code>

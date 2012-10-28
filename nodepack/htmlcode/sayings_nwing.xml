@@ -13,10 +13,10 @@ my ($plainText, $publicTalk) = @_;
 $publicTalk = ((defined $publicTalk) &amp;&amp; ($publicTalk)) ? 1 : 0;
 $plainText = $publicTalk || (((defined $plainText) &amp;&amp; ($plainText)) ? 1 : 0);
 
-my $UID = $USER-&gt;{node_id}||0;
-my $isGuest = !$UID || $HTMLVARS{guest_user}==$UID;
+my $UID = $USER-&gt;{node_id};
+my $isGuest = $APP&gt;-isGuest($USER);
 my $isRoot = !$isGuest &amp;&amp; exists $HTMLVARS{'group_gods'}{$UID};
-my $isCE = !$isGuest &amp;&amp; ($isRoot || exists $HTMLVARS{'group_content editors'}{$UID});
+my $isCE = $APP-&gt;isEditor($USER);
 my $isEDev = !$isGuest &amp;&amp; exists $HTMLVARS{'group_edev'}{$UID};
 
 my $uName;	#user's name (FIXME: should this be escaped?)

@@ -59,7 +59,7 @@ my $showWhatSaid = $flags &amp; 4;
 
 my $UID = $USER-&gt;{node_id} || 0;
 
-return '' if !$UID || ($HTMLVARS{guest_user}==$UID);	#FIXME is this the correct thing to check?
+return '' if $APP-&gt;isGuest($USER);
 #return 'Public accounts such as '.linkNode($USER).' may not send messages.' if $USER-&gt;{title} eq 'everyone';	#TODO use bot thing or group account setting instead?
 return '' if $USER-&gt;{title} eq 'everyone';
 

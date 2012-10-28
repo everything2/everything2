@@ -10,7 +10,7 @@
 my (@parts) = @_;
 my $n = scalar(@parts);
 
-return if $$VARS{borgd} || ($$USER{title} eq 'everyone') || ($$HTMLVARS{guest_user}==$$USER{node_id}) || !$n;
+return if $$VARS{borgd} || ($$USER{title} eq 'everyone') || ( $APP-&gt;isGuest($USER) ) || !$n;
 
 #set up defaults
 my $m = @parts[0];

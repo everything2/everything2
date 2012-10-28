@@ -35,7 +35,7 @@ $$VARS{nodelets} =~ s/(\b263\b.*),263\b/\1/g;
 my $nodelets = $HTMLVARS{ pagenodelets } || $$VARS{nodelets} ;
 my @nodelets = split(',',$nodelets) if $nodelets ;
 
-if ($$SETTINGS{ad_location} eq 'nodelet' &amp;&amp; $$USER{user_id} == $HTMLVARS{guest_user}) {
+if ($$SETTINGS{ad_location} eq 'nodelet' &amp;&amp; $APP-&gt;isGuest($USER) ) {
     my $ADS = getNode('Ads', 'nodelet');
     @nodelets = ($$ADS{node_id}, @nodelets) if $ADS;
 }
@@ -45,7 +45,7 @@ my $useTable = $$THEME{noTable} ? 0 : 1;
 return '' unless @nodelets;
 
 my $CB = getNode('chatterbox','nodelet') -&gt; {node_id} ;
-if ($HTMLVARS{guest_user} != $$USER{user_id} and
+if (!$APP-&gt;isGuest($USER) and
 	($$VARS{hideprivmessages} or (not $$VARS{nodelets} =~ /\b$CB\b/)) and
 	my $count = $DB-&gt;sqlSelect('count(*)', 'message', 'for_user='.getId($USER))) {
 		my $unArcCount = $DB-&gt;sqlSelect('count(*)', 'message', 'for_user='.getId($USER).' AND archive=0');

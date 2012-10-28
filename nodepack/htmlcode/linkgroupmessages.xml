@@ -9,7 +9,7 @@
 my $msgJoin = $_[0];
 
 unless( Everything::isApproved($USER, $NODE) ) {
-	return 'How about logging in?' if $$USER{node_id}==$HTMLVARS{guest_user};
+	return 'How about logging in?' if $APP-&gt;isGuest($USER);
 	return 'You aren\'t a member of this usergroup.'.($msgJoin &amp;&amp; length($msgJoin) ? ' To join, &lt;tt&gt;/msg '.$msgJoin.'&lt;/tt&gt; .' : '');
 }
 

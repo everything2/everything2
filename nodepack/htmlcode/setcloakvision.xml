@@ -33,7 +33,7 @@ my $UID = $$USER{node_id}||0;
 my $lSee=0;	#see level
 my $lCloak=0;	#cloaking level
 
-if(($UID==0) || ($HTMLVARS{guest_user}==$UID)) {
+if(($UID==0) || ( $APP-&gt;isGuest($USER) ) {
 	#nothing to do
 } elsif(exists $HTMLVARS{'group_gods'}{$UID}) {
 	$lSee=5;

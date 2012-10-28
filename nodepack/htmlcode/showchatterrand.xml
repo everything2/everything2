@@ -4,7 +4,7 @@
   <title>showchatterrand</title>
   <code>#originally in [chatterbox] (nodelet)
 
-return 'If you '.linkNode(getNode('Create A New User','superdoc'),'get a (&lt;strong&gt;free&lt;/strong&gt;) account',{lastnode_id=&gt;0}).', you can talk here.' if getId($USER) == $HTMLVARS{guest_user};
+return 'If you '.linkNode(getNode('Create A New User','superdoc'),'get a (&lt;strong&gt;free&lt;/strong&gt;) account',{lastnode_id=&gt;0}).', you can talk here.' if $APP-&gt;isGuest($USER);
 return '&lt;p&gt;&lt;em&gt;your earplugs are in&lt;/em&gt;&lt;/p&gt;' if $$VARS{publicchatteroff};
 #we need to delete old stuff too
 my $str;

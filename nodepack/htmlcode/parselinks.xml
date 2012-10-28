@@ -3,7 +3,7 @@
   <node_id>44</node_id>
   <title>parselinks</title>
   <code>my ($field) = @_;
-my $n = (($$USER{node_id} == $HTMLVARS{guest_user})?(undef):($NODE));
+my $n = (( $APP-&gt;isGuest($USER) )?(undef):($NODE));
 parseLinks( $$NODE{$field} , $n ) ;
 </code>
 </node>

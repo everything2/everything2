@@ -40,7 +40,7 @@ my $welcomeStr.= '
     &lt;td width=&quot;1%&quot; rowspan=&quot;5&quot;&gt;
       &lt;h2&gt;&amp;nbsp;&lt;/h2&gt;
     &lt;/td&gt;
-    &lt;td colspan=&quot;2&quot; align=&quot;center&quot;&gt;'.( $$USER{user_id} == $HTMLVARS{guest_user} ? &quot;&quot; : htmlcode('daylog')).htmlcode('displaynltext', 'Staff Picks').'&lt;/td&gt;
+    &lt;td colspan=&quot;2&quot; align=&quot;center&quot;&gt;'.( $APP-&gt;isGuest($USER) ? &quot;&quot; : htmlcode('daylog')).htmlcode('displaynltext', 'Staff Picks').'&lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr valign=&quot;top&quot;&gt;
     &lt;td width=&quot;94%&quot; colspan=&quot;2&quot;&gt;&lt;/td&gt;
@@ -129,7 +129,7 @@ $welcomeStr.='
     &lt;/td&gt;
   &lt;/tr&gt;';
 
-if ($$USER{user_id} != $HTMLVARS{guest_user}) {
+if ( !$APP-&gt;isGuest($USER) ) {
 $welcomeStr.='
   &lt;tr valign=&quot;top&quot;&gt; 
     &lt;td colspan=&quot;4&quot;&gt;

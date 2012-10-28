@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1175805</node_id>
   <title>rtnsection_nws</title>
-  <code>return if ($$USER{user_id} == $HTMLVARS{guest_user});
+  <code>return if ( $APP-&gt;isGuest($USER) );
   my $str = '&lt;ul class=&quot;linklist&quot;&gt;';
   my $csr = $DB-&gt;sqlSelectMany('*', 'weblog, node', 'weblog_id=165580 &amp;&amp; removedby_user=0 and to_node = node_id', 'ORDER BY linkedtime DESC LIMIT 4');
   

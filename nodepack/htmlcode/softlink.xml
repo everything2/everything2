@@ -12,7 +12,7 @@ return if($query-&gt;param('no_softlinks'));
 my $N = getNodeById($$NODE{parent_e2node},'light') if $$NODE{type}{title} eq 'writeup' ;
 $N ||= $NODE;
 my $lnid;
-if ($$USER{user_id} == $HTMLVARS{guest_user}) {
+if ($APP-&gt;isGuest($USER) ) {
 	$lnid=0;
 }
 else {
@@ -29,7 +29,7 @@ my $isRoot = exists $HTMLVARS{group_gods}{ $$USER{user_id} };
 my $cantrim = $isRoot;
 
 my $limit;
-if($$USER{user_id} == $HTMLVARS{guest_user}) {
+if( $APP-&gt;isGuest($USER) ) {
 	$limit = 24;
 } elsif($isRoot) {
 	$limit = 64;
@@ -126,7 +126,7 @@ my $thisnode = $$N{node_id};
 foreach my $l (@nodelinks) {
 
         my @badwords = qw(boob breast butt ass lesbian cock dick penis sex oral anal drug pot weed crack cocaine fuck wank whore vagina vag cunt tits titty twat shit slut snatch queef queer poon prick puss orgasm nigg nuts muff motherfuck jizz hell homo handjob fag dildo dick clit cum bitch rape ejaculate bsdm fisting balling);
-        if($$USER{user_id} == $HTMLVARS{guest_user})
+        if( $APP-&gt;isGuest($USER) )
         {
           my $isbad = 0;
           foreach my $word (@badwords) {

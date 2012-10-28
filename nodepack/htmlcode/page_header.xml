@@ -22,7 +22,7 @@ if ($ntypet eq 'e2node' || $ntypet eq 'superdoc' || $ntypet eq 'superdocnolinks'
 
 $str .= htmlcode( 'confirmop' ) if $query -&gt; param( 'confirmop' ) ;
 my $disabled = htmlcode('getdisabledactions');
-$str .= htmlcode('page actions', $disabled) unless $$USER{user_id} == $HTMLVARS{guest_user} ;
+$str .= htmlcode('page actions', $disabled) unless $APP-&gt;isGuest($USER) ;
 
 unless ($disabled =~ /a/) {
     $str .= htmlcode('listnodecategories') unless defined delete $HTMLVARS{e2nodeCategories}; # i.e. unless writeups have already listed any page categories
