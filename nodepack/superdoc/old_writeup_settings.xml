@@ -15,7 +15,7 @@ return '&lt;p&gt;edev note: this information is derived from [displayWriteupInfo
 
 [%
 my $uid = getId($USER) || 0;
-return 'You may use this after you create an account.' if !$uid || ($HTMLVARS{guest_user} eq $uid);
+return 'You may use this after you create an account.' if $APP-&gt;isGuest($USER);
 my $isRoot = exists $HTMLVARS{group_gods}{$uid};
 my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$uid};
 my $isEDev = exists $HTMLVARS{group_edev}{$uid};
@@ -117,9 +117,9 @@ $str;
 
 [%
 my $uid = getId($USER) || 0;
-return 'You may use this after you create an account.' if !$uid || ($HTMLVARS{guest_user} eq $uid);
+return 'You may use this after you create an account.' if $APP-&gt;isGuest($USER);
 my $isRoot = exists $HTMLVARS{group_gods}{$uid};
-my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$uid};
+my $isCE = $APP-&gt;isEditor($USER);
 my $isEDev = exists $HTMLVARS{group_edev}{$uid};
 
 #return 'You need to be at least level 3 to use this.' unless $isCE || $isEDev || !($APP-&gt;getLevel($USER)&lt;3);	#if level is changed, change votefoot also

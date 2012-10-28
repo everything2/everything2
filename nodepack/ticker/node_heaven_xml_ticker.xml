@@ -4,7 +4,7 @@
 my $str = &quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; standalone=\&quot;yes\&quot; ?&gt;\n&quot;;
 $str.=&quot;&lt;nodeheaven&gt;\n&quot;;
 my $UID = getId($USER) || 0;
-if( $UID &amp;&amp; ($UID != $HTMLVARS{'guest_user'}) ) {
+if( !$APP-&gt;isGuest($USER) ) {
 
 
 my $wherestr = 'author_user='.$UID.' and type_nodetype='.getId(getType('writeup'));

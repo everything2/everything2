@@ -70,7 +70,7 @@ my ($PARAM) = @_;
 my $default ='';
 my $lnid = getId($NODE);
 my $ParentNODE = $NODE;
-if(getId($USER) != $HTMLVARS{guest_user} and my $ln = $query-&gt;param('lastnode_id')) {
+if(!$APP-&gt;isGuest($USER) and my $ln = $query-&gt;param('lastnode_id')) {
  my $LN = getNode $ln;
  if($$LN{type}{title} eq 'writeup') {
   $LN = getNodeById($$LN{parent_e2node});

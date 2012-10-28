@@ -19,7 +19,7 @@ hit &quot;update&quot; to save the new data, and then head back out into the nod
 
 [%
 
-return &quot;Sorry, for logged in users only&quot; if ($$USER{user_id} == $HTMLVARS{guest_user});
+return &quot;Sorry, for logged in users only&quot; if ($APP-&gt;isGuest($USER));
 
 my $str;
 my $trackerStr;

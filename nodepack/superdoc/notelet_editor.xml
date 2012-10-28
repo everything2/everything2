@@ -45,7 +45,7 @@ return $str;
 
 
 
-return 'Only logged in users can use this.' if $$USER{node_id}==$HTMLVARS{guest_user};
+return 'Only logged in users can use this.' if $APP-&gt;isGuest($USER);
 return ' (Note: you currently don\'t have your Notelet on, so changing things here is rather pointless. You can turn on the Notelet nodelet by visiting your [user settings].)' unless $VARS-&gt;{nodelets} =~ /1290534/;	#kind of a hack, but it is quick
 #FIXME getId(getNode('Notelet','nodelet','light'))
 '';
@@ -69,7 +69,7 @@ return ' (Note: you currently don\'t have your Notelet on, so changing things he
 [%
 #return 'still in beta' unless $query-&gt;param('isbetatester');
 return unless $query-&gt;param('makethechange');
-return '' if $$USER{node_id}==$HTMLVARS{guest_user};
+return '' if $APP-&gt;isGuest($USER);
 
 # Ascorbic's Security checking
 use Digest::MD5 qw(md5_hex);

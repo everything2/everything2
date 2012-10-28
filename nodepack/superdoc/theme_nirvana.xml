@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-return &quot;This page will allow you to customise your view of the site if you sign up for an account.&quot; if (getId($USER) == $HTMLVARS{guest_user});
+return &quot;This page will allow you to customise your view of the site if you sign up for an account.&quot; if ($APP-&gt;isGuest($USER));
 
 if(defined($query-&gt;param('switchToZen'))) {
 	delete $$VARS{preferred_theme};
@@ -97,7 +97,7 @@ foreach (@keys) {
 		&lt;td style=&quot;text-align:center&quot;&gt;'.linkNode($$n{author_user}, '', {lastnode_id=&gt;0}).'&lt;/td&gt;
 		&lt;td style=&quot;text-align:right&quot;&gt;'.$styles{$_}.'&lt;/td&gt;
 		&lt;td&gt;'.
-		( $$USER{ user_id } eq $HTMLVARS{ guest_user } ? '&amp;nbsp;' :
+		( $APP-&gt;isGuest($USER) ? '&amp;nbsp;' :
 			'&amp;#91; &lt;a href=&quot;/?displaytype=choosetheme&amp;theme='.$_.'&amp;noscript=1&quot;
 				onfocus=&quot;this.href = this.href.replace( \'&amp;noscript=1\' , \'\' ) ;&quot;&gt;test&lt;/a&gt; ]' ).'
 		&lt;/td&gt;

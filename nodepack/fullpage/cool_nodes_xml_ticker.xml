@@ -1,8 +1,12 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Sat Oct 27 17:10:44 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Sun Oct 28 02:35:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;wertperch&quot; node_id=&quot;1682410&quot; parent_e2node=&quot;713984&quot; author_user=&quot;Chras4&quot;&gt;The healing power of touch&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2071703&quot; parent_e2node=&quot;448482&quot; author_user=&quot;BookReader&quot;&gt;rain dance&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;schizophasic&quot; node_id=&quot;2071631&quot; parent_e2node=&quot;2071626&quot; author_user=&quot;Lucy-S&quot;&gt;polyfidelity&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Lucy-S&quot; node_id=&quot;2071662&quot; parent_e2node=&quot;2071661&quot; author_user=&quot;wertperch&quot;&gt;October 27, 2012&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;legbagede&quot; node_id=&quot;959744&quot; parent_e2node=&quot;959740&quot; author_user=&quot;Torque&quot;&gt;Communications Security Establishment&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;2071684&quot; parent_e2node=&quot;2071690&quot; author_user=&quot;decoy hunches&quot;&gt;The Particular Sadness of Lemon Cake&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;montecarlo&quot; node_id=&quot;2071662&quot; parent_e2node=&quot;2071661&quot; author_user=&quot;wertperch&quot;&gt;October 27, 2012&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2070593&quot; parent_e2node=&quot;2070571&quot; author_user=&quot;jaybonci&quot;&gt;root log: October 2012&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2071612&quot; parent_e2node=&quot;2071611&quot; author_user=&quot;Pandeism Fish&quot;&gt;2012 ballot initiatives: gay marriage and marijuana&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2071560&quot; parent_e2node=&quot;2071588&quot; author_user=&quot;iceowl&quot;&gt;October 26, 2012&lt;/cooled&gt;
@@ -10,12 +14,8 @@
 	&lt;cooled cooledby_user=&quot;decoy hunches&quot; node_id=&quot;1502812&quot; parent_e2node=&quot;1502791&quot; author_user=&quot;lovejoyman&quot;&gt;I want you in my mouth&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;1702232&quot; parent_e2node=&quot;1702228&quot; author_user=&quot;allseeingeye&quot;&gt;How to dispose of a Bible&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1298571&quot; parent_e2node=&quot;13531&quot; author_user=&quot;Great Neb&quot;&gt;Drum and Bass&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Transitional Man&quot; node_id=&quot;2071631&quot; parent_e2node=&quot;2071626&quot; author_user=&quot;Lucy-S&quot;&gt;polyfidelity&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;tanktop&quot; node_id=&quot;2071597&quot; parent_e2node=&quot;2071596&quot; author_user=&quot;Demeter&quot;&gt;Kite, 2012&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Morwen&quot; node_id=&quot;141255&quot; parent_e2node=&quot;1343513&quot; author_user=&quot;zhaus&quot;&gt;dead rat game&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Uberbanana&quot; node_id=&quot;2071583&quot; parent_e2node=&quot;2071581&quot; author_user=&quot;Glowing Fish&quot;&gt;The Lie-Detecting Beasts of the Great Stalingrad Tractor Factory&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Oolong&quot; node_id=&quot;1839051&quot; parent_e2node=&quot;56648&quot; author_user=&quot;rajani&quot;&gt;Short hair on women&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2067740&quot; parent_e2node=&quot;1793717&quot; author_user=&quot;moeyz&quot;&gt;I have been enslaved to imaginary Berlins my whole life.&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

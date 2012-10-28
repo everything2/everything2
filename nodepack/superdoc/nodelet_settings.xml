@@ -4,7 +4,7 @@
 return '&lt;p&gt;You need to sign in or '
 	.linkNode(getNode('Create a New User','superdoc'), 'register')
 	.' to use this page.&lt;/p&gt;
-	&lt;!-- ' if ($$USER{node_id} == $HTMLVARS{guest_user});
+	&lt;!-- ' if ($APP-&gt;isGuest($USER));
 
 htmlcode('movenodelet', getNode('Epicenter','nodelet')-&gt;{node_id}, 'x') if $$VARS{settings_useEpicenterZen};
 $HTMLVARS{pageheader} = '&lt;!-- bottom --&gt;'.htmlcode('settingsDocs');
@@ -41,7 +41,7 @@ return &quot;&lt;h2&gt;Settings\n&lt;/h2&gt;\n$str&quot; if $str;
 [{closeform:Save settings}]
 &lt;script type=&quot;text/javascript&quot; src=&quot;/node/jscript/settings+script&quot;&gt;&lt;/script&gt;
 [%
-return '--&gt;' if $$USER{node_id} == $HTMLVARS{guest_user};
+return '--&gt;' if $APP-&gt;isGuest($USER);
 '';
 %]
 </doctext>

@@ -6,7 +6,7 @@
     #   Died at /usr/lib/perl5/5.005/Everything/HTML.pm line 1180.
     # Total collapse. So, hmmm... So don't do that! Ha ha.
     my $nogods = (($query-&gt;param(&quot;ebu_noadmins&quot;) == 1)?(1):(0));
-    if ( $$USER{ 'node_id' } != $HTMLVARS{ 'guest_user' } ) {
+    if ( !$APP-&gt;isGuest($USER) ) {
         #jb says: I soo can't get this to work.
         #$$VARS{ebu_noadmins} = $nogods if $nogods;
         #$$VARS{ebu_noadmins} = 0 if($query-&gt;param(&quot;ebu_noadmins&quot;) == 0);

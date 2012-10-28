@@ -4,7 +4,7 @@
 return '&lt;p&gt;You need to sign in or '
 	.linkNode(getNode('Create a New User','superdoc'), 'register')
 	.' to use this page.&lt;/p&gt;
-	&lt;!-- ' if ($$USER{node_id} == $HTMLVARS{guest_user});
+	&lt;!-- ' if $APP-&gt;isGuest($USER);
 # Save the last updated time so we can timestamp external documents which are affected
 #  by preferences for caching purposes.  Epoch is Unix time() seconds for easy comparison.
 use DateTime;
@@ -18,7 +18,7 @@ htmlcode('openform',-id=&gt;'pagebody');
 &lt;h2 id=&quot;appearance&quot;&gt;Look and feel&lt;/h2&gt;
 &lt;fieldset&gt;&lt;legend&gt;Theme&lt;/legend&gt;
 [%
-return if ($$USER{node_id} == $HTMLVARS{guest_user});
+return if $APP-&gt;isGuest($USER);
 
 delete $$VARS{preferred_theme} if $$VARS{preferred_theme} == $HTMLVARS{default_theme} ;
 
@@ -135,7 +135,7 @@ Check for some common mistakes made in creating or editing writeups.&lt;br&gt;
 &lt;/label&gt;
 &lt;/fieldset&gt;
 [%
-return if (getId($USER) == $HTMLVARS{guest_user});
+return if $APP-&gt;isGuest($USER);
 my $favoritelinktype = getId(getNode(&quot;favorite&quot;,&quot;linktype&quot;));
 
 my $csr = $DB -&gt; sqlSelectMany(&quot;*&quot;,&quot;links&quot;, &quot;from_node = $$USER{'node_id'} AND
@@ -197,7 +197,7 @@ $str.'&lt;br&gt;';
 &lt;script type=&quot;text/javascript&quot; src=&quot;/node/jscript/settings+script&quot;&gt;&lt;/script&gt;
 [{closeform:Save Settings}]
 [%
-return ' --&gt;' if $$USER{node_id} == $HTMLVARS{guest_user};
+return ' --&gt;' if $APP-&gt;isGuest($USER);
 %]</doctext>
   <node_id>108</node_id>
   <title>Settings</title>

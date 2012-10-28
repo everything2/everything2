@@ -87,7 +87,7 @@ my $isPrintableView = $query-&gt;param('displaytype') eq 'printable';
 #return if isGuest
 
 return &quot;&lt;p&gt;You must be logged in to view scratch pads.&lt;/p&gt;&quot;
-  if getId($USER) == $HTMLVARS{guest_user};
+  if $APP-&gt;isGuest($USER);
 
 ####################
 #declaring variables

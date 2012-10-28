@@ -54,7 +54,7 @@ my $newKeyForm = &quot;&lt;p&gt;The email will go to &lt;strong&gt;$$USER{email}
 	.$query-&gt;hidden('node_id', getId($NODE))
 	.$query-&gt;submit('sendNewKey', 'Send me a new key!')
 	.$query-&gt;end_form;
-$newKeyForm = &quot;&lt;p&gt;Please login if you'd like us to email you a new key.&lt;/p&gt;&quot; if $$USER{user_id} ==  $HTMLVARS{guest_user};
+$newKeyForm = &quot;&lt;p&gt;Please login if you'd like us to email you a new key.&lt;/p&gt;&quot; if $APP-&gt;isGuest($USER);
 
 my $defaultFailMessage = 
 	&quot;&lt;p&gt;The User ID and Verification Key combination you gave doesn't appear to be valid. &quot;
@@ -148,7 +148,7 @@ if ($U &amp;&amp; $uidGiven &amp;&amp; $validationKeyGiven){
 }else{
 
 	### Before we ask for a UID and VKey, check and see if they're logged in...
-	if($$USER{user_id} !=  $HTMLVARS{guest_user}){
+	if(!$APP-&gt;isGuest($USER)){
 		### ... and if we need a UID and key from them.
 		my $sushash = $DB-&gt;sqlSelectHashref(&quot;suspension_sustype&quot;,
 			&quot;suspension&quot;,&quot;suspension_user=$$USER{node_id} and suspension_sustype='1948205'&quot;

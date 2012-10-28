@@ -8,7 +8,7 @@
          &quot;&lt;servertime time=\&quot;&quot;.scalar(time).&quot;\&quot;&gt;&quot;.asctime(localtime).&quot;&lt;/servertime&gt;&quot;;
 %]
 [%
-  return &quot;&quot; if ($$USER{user_id} == $HTMLVARS{guest_user});
+  return &quot;&quot; if $APP-&gt;isGuest($USER);
 
   my $str;
   my $catch = htmlcode('borgcheck');
@@ -30,12 +30,12 @@
 
 #####Stolen from general container
 
-$DB-&gt;sqlInsert(&quot;iplog&quot;, {iplog_user =&gt; $$USER{user_id}, iplog_ipaddy =&gt;$ENV{REMOTE_ADDR}}) unless ($$VARS{ipaddy} eq $ENV{REMOTE_ADDR} || $$USER{user_id} == $HTMLVARS{'guest_user'});
+$DB-&gt;sqlInsert(&quot;iplog&quot;, {iplog_user =&gt; $$USER{user_id}, iplog_ipaddy =&gt;$ENV{REMOTE_ADDR}}) unless ($$VARS{ipaddy} eq $ENV{REMOTE_ADDR} || $APP-&gt;isGuest($USER));
  $$VARS{ipaddy} = $ENV{REMOTE_ADDR};
  #$$VARS{votetime} = &quot;&quot; if not $$VARS{votetest1};
  my ($time) = split &quot; &quot;,$$USER{lasttime};
 
- if ($$USER{node_id} != $HTMLVARS{guest_user} 
+ if (!$APP-&gt;isGuest($USER)
   and (not exists $$VARS{votetime} or $$VARS{votetime} ne $time)) {
    
    my $VOTES = getVars(getNode('level votes', 'setting'));

@@ -13,7 +13,7 @@ $zenStr .= &quot;&lt;div id='loglinks'&gt;&quot;.htmlcode('daylog').&quot;&lt;/d
 
 $zenStr .= htmlcode('displaynltext', 'tfcool nodelet - zen');
 
-$zenStr .= htmlcode('displaynltext', 'Staff Picks') unless ($$USER{user_id} == $HTMLVARS{guest_user});
+$zenStr .= htmlcode('displaynltext', 'Staff Picks') unless ($APP-&gt;isGuest($USER));
 
 $zenStr.='
      &lt;div id=&quot;creamofthecool&quot;&gt;
@@ -21,7 +21,7 @@ $zenStr.='
         '.htmlcode('displaynltext','reallycool nodelet - zen').'
       &lt;/div&gt;';
 
-if ($$USER{user_id} != $HTMLVARS{guest_user}) {
+if (!$APP-&gt;isGuest($USER)) {
   $zenStr.='
   &lt;div id=&quot;frontpage_news&quot;&gt;
         &lt;h2 id=&quot;frontpage_news_title&quot;&gt;[News for Noders. Stuff that matters.|News for Noders]&lt;/h2&gt;
@@ -66,7 +66,7 @@ $welcomeStr.= '
     &lt;td width=&quot;1%&quot; rowspan=&quot;5&quot;&gt;
       &lt;h2&gt;&amp;nbsp;&lt;/h2&gt;
     &lt;/td&gt;
-    &lt;td colspan=&quot;2&quot; align=&quot;center&quot;&gt;'.( $$USER{user_id} == $HTMLVARS{guest_user} ? &quot;&quot; : htmlcode('daylog')).htmlcode('displaynltext', 'Staff Picks').'&lt;/td&gt;
+    &lt;td colspan=&quot;2&quot; align=&quot;center&quot;&gt;'.( $APP-&gt;isGuest($USER) ? &quot;&quot; : htmlcode('daylog')).htmlcode('displaynltext', 'Staff Picks').'&lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr valign=&quot;top&quot;&gt;
     &lt;td width=&quot;94%&quot; colspan=&quot;2&quot;&gt;&lt;/td&gt;
@@ -154,7 +154,7 @@ $welcomeStr.='
     &lt;/td&gt;
   &lt;/tr&gt;';
 
-if ($$USER{user_id} != $HTMLVARS{guest_user}) {
+if ( !$APP-&gt;isGuest($USER) ) {
 $welcomeStr.='
   &lt;tr valign=&quot;top&quot;&gt; 
     &lt;td colspan=&quot;4&quot;&gt;

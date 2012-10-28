@@ -14,7 +14,7 @@ if ($$VARS{lockedin} &gt; time &amp;&amp; !$isCoolPerson)
 	return $lockmessage;
 	}
 
-return if getId($USER) == $HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 changeRoom($USER,0);
 'You step outside. You see many noders here.';
 %]

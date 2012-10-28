@@ -23,7 +23,7 @@ $zenStr .= '
 	&lt;div id=&quot;staff_picks&quot;&gt;
 	&lt;h3&gt;Staff Picks&lt;/h3&gt;
 '.htmlcode('displaynltext', 'Staff Picks')
-.'&lt;/div&gt;' unless ($$USER{user_id} == $HTMLVARS{guest_user});
+.'&lt;/div&gt;' unless ($APP-&gt;isGuest($USER));
 
 $zenStr.='
      &lt;div id=&quot;creamofthecool&quot;&gt;
@@ -33,7 +33,7 @@ $zenStr.='
         '.htmlcode('displaynltext','Cream of the Cool').'
       &lt;/div&gt;';
 
-if ($$USER{user_id} != $HTMLVARS{guest_user}) {
+if (!$APP-&gt;isGuest($USER)) {
   $zenStr.='
   &lt;div id=&quot;frontpage_news&quot;&gt;
         &lt;h2 id=&quot;frontpage_news_title&quot;&gt;'

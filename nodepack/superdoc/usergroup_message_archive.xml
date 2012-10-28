@@ -7,8 +7,7 @@
 &lt;p&gt;
 [%
 my $uID = getId($USER);
-return 'Ack! You don\'t exist!' unless $uID;
-return 'You must login to use this feature.' if $uID==$HTMLVARS{guest_user};
+return 'You must login to use this feature.' if $APP-&gt;isGuest($USER);
 my $isRoot = ($HTMLVARS{group_gods}{$uID})?1:0;
 
 my $str = '';

@@ -6,7 +6,7 @@
   my $isCoolPerson = htmlcode('isinUsergroup',&quot;$uid,gods,1&quot;)||
                      htmlcode('isinUsergroup',&quot;$uid,chanops,1&quot;);
 
-  return &quot;um, no&quot; if $USER-&gt;{node_id} == $HTMLVARS{'guest_user'};
+  return &quot;um, no&quot; if $APP-&gt;isGuest($USER);
 
   return &quot;Sorry, this is now locked except for [gods|admins] and [chanops].&quot; unless $isCoolPerson;
 

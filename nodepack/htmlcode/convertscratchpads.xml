@@ -3,6 +3,7 @@
   <node_id>2035639</node_id>
   <title>convertscratchpads</title>
   <code>my $uid = shift;
+$uid ||= $USER-&gt;{node_id};
 my $lookingAtSelf = (!$uid || $uid == $$USER{node_id});
 my $doConversion = ($query -&gt; param('converttodrafts') == 1 &amp;&amp; $lookingAtSelf);
 my $listOnly = !$doConversion;

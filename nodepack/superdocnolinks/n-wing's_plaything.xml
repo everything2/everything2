@@ -332,7 +332,7 @@ $str;
 %]
 
 [%
-return if $$USER{node_id}==$HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 my $numFirst = 0;
 my $numLast = 75;
 

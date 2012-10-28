@@ -37,7 +37,7 @@ This is very liberal with allowed links, so you could, for example, have an emai
 return unless $query-&gt;param('isbetatester');
 
 my $UID = getId($USER);
-return unless $UID &amp;&amp; ($UID!=$HTMLVARS{guest_user});
+return unless !$APP-&gt;isGuest($USER);
 
 my $numAllowed = $APP-&gt;getLevel($USER) || 0;
 return 'You need to be a higher level to use the Outside URLs nodelet.' if $numAllowed&lt;1;

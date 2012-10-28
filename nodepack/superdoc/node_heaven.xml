@@ -98,7 +98,7 @@ $str;
 [%#/
 my $UID = $$USER{node_id} || 0;
 return '&lt;p&gt;Where are you going so fast? You have not yet begun to live.
-Why not [Create A New User|take a crack at life]?&lt;/p&gt;' if $UID == $HTMLVARS{guest_user};
+Why not [Create A New User|take a crack at life]?&lt;/p&gt;' if $APP-&gt;isGuest($USER);
 
 my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
 my $isCE = $isRoot || (exists $HTMLVARS{'group_content editors'}{$UID});

@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-return if $$USER{node_id} == $HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 
 my $str = '&lt;form method=&quot;post&quot;&gt;
 &lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;'.$$NODE{node_id}.'&quot; /&gt;';

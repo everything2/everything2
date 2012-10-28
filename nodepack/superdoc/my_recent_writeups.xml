@@ -1,10 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-my $UID = getId($USER);
-my $isGuest = ($UID==$HTMLVARS{'guest_user'});
-
-return &quot;If you logged in, you would know how many writeups you've published recently.&quot; if($isGuest);
+return &quot;If you logged in, you would know how many writeups you've published recently.&quot; if( $APP-&gt;isGuest($USER) );
 
 my $oneyearago = time() - 31536000; 
 $oneyearago = htmlcode('DateTimeLocal',$oneyearago);

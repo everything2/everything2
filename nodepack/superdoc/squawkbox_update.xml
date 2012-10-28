@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-  return &quot;um, no&quot; if $USER-&gt;{node_id} == $HTMLVARS{'guest_user'};
+  return &quot;um, no&quot; if $APP-&gt;isGuest($USER);
 
   $VARS-&gt;{squawk_rooms} ||= &quot;0&quot;;
   $VARS-&gt;{squawk_talk} ||= &quot;0&quot;;

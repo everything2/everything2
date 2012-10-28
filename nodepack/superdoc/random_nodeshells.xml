@@ -2,7 +2,7 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
-return if $$USER{node_id} == $HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 
 my $maxId = $DB-&gt;sqlSelect(&quot;max(node_id)&quot;,&quot;node&quot;);
 my @rand;

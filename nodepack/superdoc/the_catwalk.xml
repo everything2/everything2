@@ -2,7 +2,7 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
-return &quot;This page will allow you to customise your view of the site if you sign up for an account.&quot; if (getId($USER) == $HTMLVARS{guest_user});
+return &quot;This page will allow you to customise your view of the site if you sign up for an account.&quot; if ($APP-&gt;isGuest($USER));
 
 
 my $str;
@@ -118,7 +118,7 @@ while(my $item = $sth-&gt;fetchrow_arrayref) {
 	$listedItems .= '&lt;td&gt;'.linkNode($aID,0,{lastnode_id=&gt;0}).'&lt;/td&gt;';
 	my $createTime = @$item[3];
 	$listedItems .= '&lt;td&gt;' . htmlcode('parsetimestamp',$createTime.',1') . '&lt;/td&gt;&lt;td&gt;' . htmlcode('timesince',$createTime.',1,100') . '&lt;/td&gt;';
-	$listedItems .= '&lt;td&gt;' . ( $$USER{ user_id } eq $HTMLVARS{ guest_user } ? '&amp;nbsp;' :
+	$listedItems .= '&lt;td&gt;' . ( $APP-&gt;isGuest($USER) ? '&amp;nbsp;' :
 		'&amp;#91;&amp;nbsp;&lt;a href=&quot;/?displaytype=choosetheme&amp;theme='.$$item[0].'&amp;noscript=1&quot;
  			onfocus=&quot;this.href = this.href.replace( \'&amp;noscript=1\' , \'\' ) ;&quot;&gt;test&lt;/a&gt;&amp;nbsp;]' ) . '&lt;/td&gt;';
 	$listedItems .= &quot;&lt;/tr&gt;\n&quot;;

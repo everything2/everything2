@@ -9,14 +9,8 @@ obsolete. &lt;strong&gt;[Drafts[superdoc]]&lt;/strong&gt; is the place to go now
 This is where you view (read-only) the Scratch Pad of another person.  You of course can view and edit your own Scratch Pads at [Scratch Pads].  Questions about this feature are answered at [E2 Options: Sharing your scratch pad].
 &lt;/p&gt;
 
-&lt;!--
-Saturday, November 13, 2004: SPV got nuked. [Lord Brawl] restored it from an old patch. Please report any wonkiness.
-Tuesday, November 16, 2004: Users with underscores or spaces in their names had problems. This should be fixed now.
---&gt;
-
-
 [%
-return 'Log in first, please.' if getId($USER) == $HTMLVARS{guest_user};
+return 'Log in first, please.' if $APP-&gt;isGuest($USER);
 my $UID = getId($USER);
 
 my $str = '&lt;form method=&quot;post&quot;&gt;
@@ -79,10 +73,7 @@ $skratchText.='
 
 return $str.$skratchText;
 
-%]
-
-&lt;p class='small'&gt;[Bugs go to JayBonci]&lt;/p&gt;
-</doctext>
+%]</doctext>
   <node_id>1147724</node_id>
   <title>Scratch Pad Viewer</title>
 </node>
