@@ -2,8 +2,8 @@
   <type_nodetype>4</type_nodetype>
   <node_id>444246</node_id>
   <title>votefoot</title>
-  <code>my $uid = $$USER{user_id}||$HTMLVARS{guest_user};
-return $query-&gt;end_form if $$NODE{type}{title} eq &quot;e2node&quot; &amp;&amp; not $$NODE{group} || $uid==$HTMLVARS{guest_user} ;
+  <code>my $uid = $$USER{user_id};
+return $query-&gt;end_form if $$NODE{type}{title} eq &quot;e2node&quot; &amp;&amp; not $$NODE{group} || $APP-&gt;isGuest($USER) ;
 my $isKiller = (exists $HTMLVARS{'group_content editors'}{$uid} || exists $HTMLVARS{group_gods}{$uid});
 
 my $voteButton;
@@ -13,7 +13,7 @@ my $rowFormat =  $$THEME{noTable} ? '&lt;div id=&quot;votefooter&quot;&gt;%s%s&l
 
 if( $query-&gt;param('numvoteit') &amp;&amp; $$USER{votesleft} ) {
 	$voteButton = &quot;&lt;input type='submit' name='sexisgreat' id='votebutton' value='vote!'&gt;&quot;;
-} elsif ( $$USER{user_id} != $HTMLVARS{guest_user} ) {
+} elsif ( !$APP-&gt;isGuest($USER) ) {
 	$voteButton = &quot;&lt;input type='submit' name='sexisgreat' id='blabbutton' value='blab!' title='send writeup messages'&gt;&quot;;
 }
 

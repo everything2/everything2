@@ -2,8 +2,8 @@
   <type_nodetype>4</type_nodetype>
   <node_id>444234</node_id>
   <title>votehead</title>
-  <code>my $uid=$$USER{node_id}||$HTMLVARS{guest_user};
-my $canDoStuff = $$USER{votesleft} || (exists $HTMLVARS{'group_content editors'}{$uid}) || (exists $HTMLVARS{group_gods}{$uid}) || (exists $HTMLVARS{group_edev}{$uid}) unless $uid == $HTMLVARS{guest_user};
+  <code>my $uid=$$USER{node_id};
+my $canDoStuff = $$USER{votesleft} || $APP-&gt;isEditor($USER) || (exists $HTMLVARS{group_edev}{$uid}) unless $APP-&gt;isGuest($USER);
 my $str;
 $str.=&quot;\n\t&quot;.htmlcode('openform2','pagebody');
 $str.=&quot;\n\t\t&quot;.'&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;vote&quot; /&gt;' if $canDoStuff;	#don't bother with vote opcode if user can't vote

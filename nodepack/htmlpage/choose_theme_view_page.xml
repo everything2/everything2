@@ -10,7 +10,7 @@ my $theme = $query -&gt; param('theme');
 $theme = &quot;&quot; if $theme and getNode( $theme )-&gt;{ type }{ title } ne 'stylesheet' ;
 $theme ||= $currentStyle;
 
-if ( $query -&gt; param( 'usetheme' ) and $$USER{ user_id } != $HTMLVARS{ guest_user } ) {
+if ( $query -&gt; param( 'usetheme' ) and !$APP-&gt;isGuest($USER) ) {
 	$$VARS{ userstyle } = $theme  ;
 	return &quot;OK&quot; if $query -&gt; param('usetheme') eq 'ajax' ;
 }
@@ -77,7 +77,7 @@ unshift( @keys , $defaultStyle ) ;
 unshift( @keys , $theme ) unless $styles{ $theme } or $theme eq $defaultStyle ;
 
 my $widget = '' ;
-if($$USER{ user_id } != $HTMLVARS{ guest_user } ){
+if(! $APP-&gt;isGuest($USER) ){
 	foreach ( @keys ) {
 		my $n = getNodeById( $_ );
 		next unless $n ;

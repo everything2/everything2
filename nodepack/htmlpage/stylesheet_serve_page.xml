@@ -12,7 +12,7 @@ if ($query-&gt;param('version')) {
 
 my $out = $$NODE{doctext};
 my $autofix = $query -&gt; param( 'autofix' );
-if ( $autofix or $$USER{ user_id } != $HTMLVARS{ guest_user } ) {
+if ( $autofix or !$APP-&gt;isGuest($USER) ) {
 	unless ( htmlcode( 'displaySetting' , 'fixed stylesheets', $$NODE{ node_id } ) &gt;= $HTMLVARS{stylesheetFixLevel} ) {
 		$out = &quot;/*autofixed*/\n&quot;.htmlcode( 'fixstylesheet' , 0 ) if
 			$$USER{ user_id } != $$NODE{ author_user } or

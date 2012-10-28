@@ -20,7 +20,7 @@ if ($canEdit) {
   }
 }
 
-if ($USER-&gt;{user_id} != $HTMLVARS{guest_user}) {
+if ( !$APP-&gt;isGuest($USER) ) {
   my $cb = getNode('chatterbox', 'nodelet');
   if (   $cb
       &amp;&amp; $dt eq 'shownodelet'
@@ -34,7 +34,7 @@ if ($USER-&gt;{user_id} != $HTMLVARS{guest_user}) {
   }
 }
 
-if ($USER-&gt;{user_id} != $HTMLVARS{guest_user}) {
+if ( !$APP-&gt;isGuest($USER) ) {
   my $ou = getNode('other users', 'nodelet');
   if (   $ou
       &amp;&amp; $dt eq 'shownodelet'
@@ -59,6 +59,5 @@ return ('&lt;div id=&quot;zen_mobiletabs&quot;&gt;'
           my ($selected, $str) = @$_;
           '&lt;span class=&quot;'.($selected?'zen_mobiletab_selected' : 'zen_mobiletab').'&quot;&gt;'.$str.'&lt;/span&gt;'
         } @tabs)
-        . '&lt;/div&gt;');
-</code>
+        . '&lt;/div&gt;');</code>
 </node>

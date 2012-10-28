@@ -10,7 +10,7 @@ $HTMLVARS{admintools} = htmlcode('e2nodetools')
 
 my $stuff = $$NODE{group} || [];
 
-unless ($$USER{user_id} == $HTMLVARS{guest_user}){
+unless ( $APP-&gt;isGuest($USER) ){
 	# find attached drafts:
 	my $linktype = getId(getNode 'parent_node', 'linktype');
 	my $drafts = $dbh -&gt; selectcol_arrayref(&quot;

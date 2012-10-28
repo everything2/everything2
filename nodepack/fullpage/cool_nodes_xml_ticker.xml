@@ -1,6 +1,11 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Sun Oct 28 10:00:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Sun Oct 28 17:45:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;The Custodian&quot; node_id=&quot;2071761&quot; parent_e2node=&quot;385889&quot; author_user=&quot;Noung&quot;&gt;The Great Wall of China&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Auduster&quot; node_id=&quot;1638805&quot; parent_e2node=&quot;1396497&quot; author_user=&quot;Halspal&quot;&gt;Editor Log: August 2004&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2050734&quot; parent_e2node=&quot;583766&quot; author_user=&quot;haqiqat&quot;&gt;I will howl in a deep lagoon&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;The Custodian&quot; node_id=&quot;1185996&quot; parent_e2node=&quot;1185995&quot; author_user=&quot;BlueDragon&quot;&gt;sugar boiling&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;haqiqat&quot; node_id=&quot;2052112&quot; parent_e2node=&quot;2071146&quot; author_user=&quot;iceowl&quot;&gt;Camping in America&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;riverrun&quot; node_id=&quot;2070593&quot; parent_e2node=&quot;2070571&quot; author_user=&quot;jaybonci&quot;&gt;root log: October 2012&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;bexxta&quot; node_id=&quot;2071631&quot; parent_e2node=&quot;2071626&quot; author_user=&quot;Lucy-S&quot;&gt;polyfidelity&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2070135&quot; parent_e2node=&quot;2071665&quot; author_user=&quot;etouffee&quot;&gt;Pauses, overtakes the sky&lt;/cooled&gt;
@@ -11,11 +16,6 @@
 	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;2071684&quot; parent_e2node=&quot;2071690&quot; author_user=&quot;decoy hunches&quot;&gt;The Particular Sadness of Lemon Cake&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2071612&quot; parent_e2node=&quot;2071611&quot; author_user=&quot;Pandeism Fish&quot;&gt;2012 ballot initiatives: gay marriage and marijuana&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2071560&quot; parent_e2node=&quot;2071588&quot; author_user=&quot;iceowl&quot;&gt;October 26, 2012&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2071668&quot; parent_e2node=&quot;2071673&quot; author_user=&quot;Transitional Man&quot;&gt;American Flagg&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;decoy hunches&quot; node_id=&quot;1502812&quot; parent_e2node=&quot;1502791&quot; author_user=&quot;lovejoyman&quot;&gt;I want you in my mouth&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;1702232&quot; parent_e2node=&quot;1702228&quot; author_user=&quot;allseeingeye&quot;&gt;How to dispose of a Bible&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1298571&quot; parent_e2node=&quot;13531&quot; author_user=&quot;Great Neb&quot;&gt;Drum and Bass&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;tanktop&quot; node_id=&quot;2071597&quot; parent_e2node=&quot;2071596&quot; author_user=&quot;Demeter&quot;&gt;Kite, 2012&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

@@ -20,7 +20,7 @@
 #my ($key, $flags, $min, $max, $txtLen) = @_;
 my ($key, $flags, $min, $max) = @_;
 
-return if $HTMLVARS{guest_user}==$$USER{node_id};
+return if $APP-&gt;isGuest($USER);
 
 #returns information about a severe error; means that somebody called this routine incorrectly
 local *oops = sub {

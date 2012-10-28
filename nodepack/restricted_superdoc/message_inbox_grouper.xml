@@ -32,8 +32,6 @@ return 'If you had an account, we\'d let you gab.' if $APP-&gt;isGuest($USER);
 # Initialize squawkbox stuff
 #
 
-  #return &quot;um, no&quot; if $USER-&gt;{node_id} == $HTMLVARS{'guest_user'};  # just did that.
-
   $VARS-&gt;{squawk_rooms} ||= &quot;0&quot;;
   $VARS-&gt;{squawk_talk} ||= &quot;0&quot;;
   $VARS-&gt;{squawk_talk} = $query-&gt;param(&quot;talkin&quot;) if($query-&gt;param(&quot;talkin&quot;) or $query-&gt;param(&quot;talkin&quot;) == &quot;0&quot;);

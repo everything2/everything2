@@ -18,7 +18,7 @@ if($$VARS{preferred_theme}and $$VARS{preferred_theme}!=1854183) {
 my $str = '&lt;p&gt;&lt;cite&gt;by&amp;nbsp;' . linkNode ($$NODE{author_user}) . '&lt;/cite&gt;&lt;/p&gt;';
 $str .= '&lt;p&gt;'.linkNode($NODE, &quot;View this stylesheet&quot;, {displaytype =&gt; 'view'}).'&lt;/p&gt;';
 
-return $str if $$USER{ user_id } == $HTMLVARS{ guest_user } ;
+return $str if $APP-&gt;isGuest($USER) ;
 if ($query-&gt;param('userstyle')) {
   $$VARS{userstyle} = $$NODE{node_id};
 }

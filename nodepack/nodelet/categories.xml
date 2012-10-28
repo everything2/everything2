@@ -5,15 +5,8 @@
   <node_id>1935779</node_id>
   <type_nodetype>9</type_nodetype>
   <nlcode>[%
+my $GU = $Everything::CONF-&gt;{system}-&gt;{guest_user};
 my $uid = $$USER{user_id};
-my $isRoot = exists($HTMLVARS{'group_gods'}{$uid});
-my $isCE = exists($HTMLVARS{'group_content editors'}{$uid});
-my $cansee = ($isRoot || $isCE);
-
-#if (!$cansee)
-#{
-#  return 'This nodelet is currently limited to admins and content editors. Please try back again soon!';
-#}
 
 my $str;
 
@@ -29,7 +22,7 @@ my $sql = &quot;SELECT DISTINCT ug.node_id
           WHERE ng.nodegroup_id=ug.node_id AND ng.node_id=$uid&quot;;
 my $ds = $dbh-&gt;prepare($sql);
 $ds-&gt;execute() or return $ds-&gt;errstr;
-my $inClause = $uid.','.$HTMLVARS{guest_user};
+my $inClause = $uid.','.$GU;
 while(my $n = $ds-&gt;fetchrow_hashref)
 {
   $inClause .= ','.$$n{node_id};

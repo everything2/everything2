@@ -27,7 +27,7 @@ $str;
 
 &lt;a name='chatbox'&gt;&lt;/a&gt;
 [%
-return if getId($USER) == $HTMLVARS{guest_user};
+return if $APP-&gt;isGuest($USER);
 my $str;
 $str = '&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;message&quot; /&gt;&lt;br /&gt;';
 

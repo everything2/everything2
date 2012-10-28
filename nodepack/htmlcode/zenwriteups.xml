@@ -4,7 +4,7 @@
   <title>zenwriteups</title>
   <code>my ($isLogs) = @_;
 
-my $UID = $$USER{user_id} || $HTMLVARS{guest_user} ;
+my $UID = $$USER{user_id} || $Everything::CONF-&gt;{system}-&gt;{guest_user} ;
 my $limit = $$VARS{ num_newwus } || ($APP-&gt;isGuest($USER) ? 15 : 12);
 my $cansee = $APP-&gt;isEditor($USER);
 

@@ -29,7 +29,7 @@ if ($$NODE{criteria} eq $open) {
 
 [%
   
-  return &quot;You cannot go into $$NODE{title}, I'm sorry.&quot; unless eval($$NODE{criteria}) and not getId($USER) == $HTMLVARS{guest_user};
+  return &quot;You cannot go into $$NODE{title}, I'm sorry.&quot; unless eval($$NODE{criteria}) and not $APP-&gt;isGuest($USER);
 if ($$VARS{lockedin} &gt; time)
 	{
 	my $remainingtime = ceil(($$VARS{lockedin} - time)/ 60);

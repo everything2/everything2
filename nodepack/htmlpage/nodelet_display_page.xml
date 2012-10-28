@@ -32,7 +32,7 @@ $str.'&lt;/p&gt;&lt;/fieldset&gt;&lt;/form&gt;';
 
 %]
 [%
-return '' unless $$USER{node_id} &amp;&amp; $$USER{node_id} != $HTMLVARS{guest_user};
+return '' if $APP-&gt;isGuest($USER);
 $HTMLVARS{ pagenodelets } = $$VARS{ nodelets } ;
 $HTMLVARS{ pagenodelets } =~ s/\b$$NODE{node_id}\b,?//;
 delete $HTMLVARS{pagenodelets} if $HTMLVARS{pagenodelets} eq $$VARS{nodelets};
