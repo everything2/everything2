@@ -2000,7 +2000,7 @@ sub displayPage
 	$GNODE = $NODE;
 	my $isGuest = 0;
 	my $page = "";
-	$isGuest = 1 if ($user_id == $HTMLVARS{guest_user});
+	$isGuest = 1 if $APP->isGuest($user_id);
 
 	my $lastnode;
 	if ($$NODE{type}{title} eq 'e2node') {
@@ -2046,7 +2046,7 @@ sub displayPage
 			}
 		}
 	}
-	setVars $USER, $VARS unless getId($USER) == $HTMLVARS{guest_user};
+	setVars $USER, $VARS unless $APP->isGuest($USER);
 	printHeader($$NODE{datatype}, $page, $lastnode);
 
 	$query->print($page);
@@ -2142,7 +2142,7 @@ sub gotoNode
 	# Create softlinks -- a linktype of 0 is the default
 	my $linktype = 0;
 	$linktype = getNodeById($HTMLVARS{guest_link})
-		if getId($USER) == $HTMLVARS{guest_user};
+		if $APP->isGuest($USER);
 
 	my $lastnode = $query->param('lastnode_id');
 	my ($fromNodeLinked, $toNodeLinked) =
@@ -2185,7 +2185,7 @@ sub gotoNode
 
 	# So we can cache even linked pages, remove lastnode_id
 	# unless it's a superdoc (so Findings: still gets the param)
-	if (getId($USER) == $HTMLVARS{guest_user} && $$NODE{type}{title} ne 'superdoc') {
+	if ($APP->isGuest($USER) && $$NODE{type}{title} ne 'superdoc') {
 		$query->delete('lastnode_id');
 	}
 
@@ -2338,8 +2338,8 @@ sub loginUser
 		$user_id = confirmUser (split (/\|/, urlDecode ($oldcookie)));
 	}
 	
-	# If all else fails, use the guest_user
-	$user_id ||= $HTMLVARS{guest_user};				
+	# If all else fails, use the guest user
+	$user_id ||= $Everything::CONF->{system}->{guest_user};
 
 	# Get the user node
 	$USER_HASH = getNodeById($user_id);	
@@ -2349,7 +2349,7 @@ sub loginUser
         #jb: [root log: november 2001]. This is to prevent locked
         #users from coming back online.  Stops their authentication
 
-        $USER_HASH = getNodeById($HTMLVARS{guest_user}) unless($$USER_HASH{acctlock} == 0);
+        $USER_HASH = getNodeById($Everything::CONF->{system}->{guest_user}) unless($$USER_HASH{acctlock} == 0);
 
 	# Assign the user vars to the global.
 	$VARS = getVars($USER_HASH);
@@ -2666,7 +2666,7 @@ sub opLogin
 		-value => $query->escape($user . '|' . crypt ($passwd, $user)), 
 		-expires => $query->param("expires")) if $user_id;
 
-	$user_id ||= $HTMLVARS{guest_user};
+	$user_id ||= $Everything::CONF->{system}->{guest_user};
 
 	$USER = getNodeById($user_id);
 	$VARS = getVars($USER);
@@ -2680,7 +2680,7 @@ sub opLogout
 {
 	# The user is logging out.  Nuke their cookie.
 	my $cookie = $query->cookie(-name => $Everything::CONF->{cookiepass}, -value => "");
-	my $user_id = $HTMLVARS{guest_user};	
+	my $user_id = $Everything::CONF->{system}->{guest_user};	
 
 	$USER = getNodeById($user_id);
 	$VARS = getVars($USER);
@@ -2699,7 +2699,7 @@ sub opNew
 	my $removeSpaces = 1;
 	my $nodename = cleanNodeName($query->param('node'), $removeSpaces);
 
-	if (canCreateNode($user_id, $DB->getType($type)) and $user_id != $HTMLVARS{guest_user})
+	if (canCreateNode($user_id, $DB->getType($type)) and !$APP->isGuest($USER))
 	{
 		$node_id = insertNode($nodename,$TYPE, $user_id);
 
@@ -3202,7 +3202,7 @@ sub assign_test_condition {
 
   #if a user has logged in and been assigned a test, the users own vars
   #trump anything the cookie says (except for optout)
-  if (getId($USER) != $HTMLVARS{guest_user} and exists $$VARS{mvtest_condition} and $$VARS{mvtest_condition} != $current_condition) {
+  if (!$APP->isGuest($USER) and exists $$VARS{mvtest_condition} and $$VARS{mvtest_condition} != $current_condition) {
      if ($$VARS{mvtest_condition} eq 'optout') {
         $TEST_CONDITION = 'optout';
         return;
@@ -3231,7 +3231,7 @@ sub assign_test_condition {
 
   #if a user is logged in, make sure that the condition info is written to their
   #user vars
-  if (getId($USER) != $HTMLVARS{guest_user}) {
+  if ( !$APP->isGuest($USER) ) {
     $$VARS{mvtest_condition} = join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION, $TEST_SESSION_ID)); 
   } 
 
