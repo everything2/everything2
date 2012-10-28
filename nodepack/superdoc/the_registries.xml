@@ -5,7 +5,7 @@
 &lt;/p&gt;
 
 [%
-  return &quot;...first, you'd better log in.&quot; if (htmlcode(&quot;isGuest&quot;));
+  return &quot;...first, you'd better log in.&quot; if $APP-&gt;isGuest($USER);
 
   my $csr = $DB-&gt;sqlSelectMany('registry.registry_id','registry, registration WHERE registry.registry_id = registration.for_registry GROUP BY registration.for_registry',
      '','ORDER BY registration.tstamp DESC LIMIT 100')

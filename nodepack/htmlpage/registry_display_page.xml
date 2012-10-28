@@ -1,12 +1,12 @@
 <node>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1876758</pagetype_nodetype>
-  <page>[%     return if (htmlcode(&quot;isGuest&quot;));
+  <page>[%     return if ($APP-&gt;isGuest($USER));
 '&lt;div style=&quot;margin:20px;text-align:center;font-weight:bold;&quot;&gt;( back to '.linkNodeTitle('Registry Information').' )&lt;/div&gt;' %]
 
 
 [%
-    return if (htmlcode(&quot;isGuest&quot;));
+    return if ($APP-&gt;isGuest($USER));
     return htmlcode('openform')
            .'&lt;div style=&quot;margin:20px;text-align:center;&quot;&gt;'
            .' (this registry created by '.linkNode($$NODE{author_user}).')'
@@ -16,7 +16,7 @@
 %]
 [%
   
-  return &quot;Registries are only available to logged in users at this time.&quot; if (htmlcode(&quot;isGuest&quot;));
+  return &quot;Registries are only available to logged in users at this time.&quot; if ($APP-&gt;isGuest($USER));
 
   my $entry = $DB-&gt;sqlSelectHashref('data,comments,in_user_profile',
     'registration','from_user='.$$USER{user_id}.' &amp;&amp; for_registry='.$$NODE{node_id});
@@ -120,7 +120,7 @@
 %]
 
 [%
-    return if (htmlcode(&quot;isGuest&quot;));
+    return if ($APP-&gt;isGuest($USER));
 
 # my $SQL = 'select r.*, n.title from registration as r left join node as n on'.
 #           ' n.node_id=r.from_user where for_registry='.$$NODE{node_id}.
@@ -159,10 +159,9 @@
 %]
 
 &lt;div style=&quot;margin:20px;text-align:center;font-weight:bold;&quot;&gt;
-[%    return if (htmlcode(&quot;isGuest&quot;));
+[%    return if ($APP-&gt;isGuest($USER));
 '( '.linkNodeTitle('Recent Registry Entries|What are other people saying?').' )'%]
-&lt;/div&gt;
-</page>
+&lt;/div&gt;</page>
   <node_id>2001833</node_id>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>

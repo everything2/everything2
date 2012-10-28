@@ -5,7 +5,7 @@
 &lt;/p&gt;
 
 [%
-  return &quot;...would be shown here if you logged in.&quot; if (htmlcode(&quot;isGuest&quot;));
+  return &quot;...would be shown here if you logged in.&quot; if $APP-&gt;isGuest($USER);
   my $csr = $DB-&gt;sqlSelectMany('*','registration',
      '','ORDER BY tstamp DESC LIMIT 100')
     || return 'SQL Error (prepare).  Please notify a [coder]';

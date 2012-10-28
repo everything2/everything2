@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
- return &quot;You'd see something here if you had an account.&quot; if (htmlcode(&quot;isGuest&quot;));
+ return &quot;You'd see something here if you had an account.&quot; if $APP-&gt;isGuest($USER);
 
   my $csr = $DB-&gt;sqlSelectMany('*','registration',&quot;from_user=$$USER{user_id}&quot;)
     ||return &quot;SQL Problem.  Please notify a [coder].&quot;;

@@ -19,7 +19,7 @@ return if getId($USER) != getId($NODE);
 &lt;table width=&quot;100%&quot; id='homenodetext'&gt;&lt;tr&gt;&lt;td&gt;
 [%  
 
-  return if (htmlcode(&quot;isGuest&quot;));
+  return if ( $APP-&gt;isGuest($USER) );
   my $csr = $DB-&gt;sqlSelectMany('*','registration',
     'from_user='.$$NODE{user_id}.' &amp;&amp; in_user_profile=1')
       ||return 'SQL Problem.  Please notify a [coder].';

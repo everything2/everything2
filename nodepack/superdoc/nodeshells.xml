@@ -31,12 +31,12 @@ return $str;
 They exist to be filled with writing. If you feel like writing, but you don't know what,
 you might also like to visit [Everything's Most Wanted].
 [%
-return if (htmlcode('isGuest'));
+return if $APP-&gt;isGuest($USER);
 return &quot;[Advanced Settings] allows you to hide your own nodeshells from prying eyes.&quot;;
 %]
 See also [Random Nodeshells].
 [%
-return if (htmlcode('isGuest'));
+return if $APP-&gt;isGuest($USER);
 return 'And [Your Nodeshells], and [Your Filled Nodeshells].'; 
 %])&lt;/small&gt;&lt;/p&gt;
 </doctext>
