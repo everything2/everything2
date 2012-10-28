@@ -13,7 +13,7 @@ my ($categoryid, $options, $choose, $createcategory, $notification);
 unless ( $HTMLVARS{ cachedcategoryoptions } ) {
 	# get user, guest user, and user's usergroups. No huge list for admins and CEs
 	my $dbh = $DB-&gt;getDatabaseHandle();
-	my $inClause = join( ',' , $$USER{ user_id } , $HTMLVARS{ guest_user } , @{
+	my $inClause = join( ',' , $$USER{ user_id } , $Everything::CONF-&gt;{system}-&gt;{guest_user} , @{
 		$dbh -&gt; selectcol_arrayref( &quot;SELECT DISTINCT ug.node_id
 			FROM node ug,nodegroup ng
 			WHERE ng.nodegroup_id=ug.node_id AND ng.node_id=$$USER{ user_id }&quot; ) } );

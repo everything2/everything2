@@ -7,15 +7,6 @@
 &lt;font size=2&gt;
 [&amp;nbsp;&quot;;
 
-#if (getId($USER) == $HTMLVARS{guest_user}) {
-#	$str .= linkNodeTitle (&quot;login&quot;, $NODE, &quot;Log in&quot;) 	
-#	  . &quot; | &quot; . linkNodeTitle(&quot;Create a new user&quot;);
-#} else {
-#	$str .= linkNode ($HTMLVARS{default_node}, &quot;log $$USER{title} out&quot;, {op =&gt; 'logout'})
-#		. &quot; | &quot; . linkNode ($USER);
-#	$str .= &quot; | &quot; . linkNodeTitle (&quot;user settings&quot;);
-#}
-
 my ($ABOUT) = getNode( 'About ekw theme', getType('document') );
 $str .= linkNode( $ABOUT, 'ekw About/FAQ' , {lastnode_id =&gt; undef});
 

@@ -15,7 +15,7 @@ return '&lt;p&gt;If you '
 	.$query -&gt; escapeHTML($title)
 	.&quot;\&quot; node.	If you don't already have an account, you can &quot;
 	. linkNode($HTMLVARS{createNewUser_node}, 'register here')
-	.'.' if getId($USER) eq $HTMLVARS{guest_user};
+	.'.' if $APP-&gt;isGuest($USER);
 
 my $n = getNode($title, 'e2node');
 return '&lt;p&gt;'.linkNode($n).' already exists.&lt;/p&gt;' if $n;

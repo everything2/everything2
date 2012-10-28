@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>753955</node_id>
   <title>createdby</title>
-  <code>return if getId($USER) == $HTMLVARS{guest_user};
+  <code>return if $APP-&gt;isGuest($USER);
 return unless $$NODE{type}{title} eq 'e2node';
 
 my $crby = $$NODE{createdby_user} || $$NODE{author_user} || 0;

@@ -6,7 +6,7 @@
 &lt;img src=&quot;http://static.everything2.com/Everything.gif&quot;&gt;&lt;BR&gt;
 [ &quot;;
 
-if ($USER == -1 or getId($USER) == $HTMLVARS{guest_user}) {
+if ($APP-&gt;isGuest($USER) ) {
 	$str .= linkNodeTitle (&quot;login&quot;, $NODE, &quot;Log in&quot;); 	
 } else {
 	$str .= linkNode ($HTMLVARS{default_node}, &quot;log $$USER{title} out&quot;, {op =&gt; 'logout'})

@@ -58,9 +58,9 @@ return unless ($$NODE{type_nodetype}==getId(getType('user')));
 
 #constants
 my $UID = getId($USER);
-my $isGuest = !$UID || ($UID==$HTMLVARS{'guest_user'});
+my $isGuest = $APP-&gt;isGuest($USER);
 my $isRoot = !$isGuest &amp;&amp; exists($HTMLVARS{'group_gods'}{$UID});
-my $isCE = !$isGuest &amp;&amp; ( $isRoot || exists($HTMLVARS{'group_content editors'}{$UID}) );
+my $isCE = $APP-&gt;isEditor($USER);
 my $nid = getId($NODE);
 my $isMe = (!$isGuest) &amp;&amp; ($nid==$UID);
 my $SETTINGS = getVars $NODE;

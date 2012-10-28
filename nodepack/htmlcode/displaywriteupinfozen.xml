@@ -20,10 +20,10 @@ return 'Ack! displayWriteupInfo: No node with node_id '.$wuID unless $WRITEUP;
 
 
 #constants
-my $UID = getId($USER)||$HTMLVARS{'guest_user'};
-my $isGuest = ($UID==$HTMLVARS{'guest_user'});
+my $UID = getId($USER);
+my $isGuest = $APP-&gt;isGuest($USER);
 my $isRoot = !$isGuest &amp;&amp; exists $HTMLVARS{group_gods}{$UID};
-my $isCE = !$isGuest &amp;&amp; ($isRoot || exists $HTMLVARS{'group_content editors'}{$UID});
+my $isCE = $APP-&gt;isEditor($USER);
 my $aid = $$WRITEUP{author_user} || 0;
 my $wuAuthor = getNodeById($aid) || undef;
 my $isMine = (!$isGuest) &amp;&amp; ($aid==$UID);

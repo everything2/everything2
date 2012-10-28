@@ -6,7 +6,7 @@
 #	fromuser = username of person to filter msgs from
 #	messageidstart = digits
 
-return '' if $$USER{user_id} == $HTMLVARS{'guest_user'};
+return '' if $APP-&gt;isGuest($USER);
 my $str;
 use XML::Generator;
 use Everything::XML;

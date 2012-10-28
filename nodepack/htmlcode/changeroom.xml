@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>545563</node_id>
   <title>changeroom</title>
-  <code>return if getId($USER) == $HTMLVARS{guest_user};
+  <code>return if $APP-&gt;isGuest($USER);
 return if $$USER{title} eq 'everyone';
 return (&quot;You are locked in your current room for &quot; . ceil(($$VARS{lockedin} - time)/ 60) . &quot; minutes.&lt;br&gt;&lt;br&gt;&quot;) if ($$VARS{lockedin} &gt; time);
 

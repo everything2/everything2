@@ -18,10 +18,10 @@ my $nID = getId($NODE);
 my $wuID = getId $WRITEUP;
 
 #constants
-my $UID = getId($USER)||$HTMLVARS{'guest_user'};
-my $isGuest = ($UID==$HTMLVARS{'guest_user'});
+my $UID = getId($USER);
+my $isGuest = $APP-&gt;isGuest($USER);
 my $isRoot = !$isGuest &amp;&amp; exists $HTMLVARS{group_gods}{$UID};
-my $isCE = !$isGuest &amp;&amp; ($isRoot || exists $HTMLVARS{'group_content editors'}{$UID});
+my $isCE = $APP-&gt;isEditor($USER);
 my $aid = $$WRITEUP{author_user} || 0;
 my $wuAuthor = getNodeById($aid) || undef;
 my $isMine = (!$isGuest) &amp;&amp; ($aid==$UID);
@@ -179,7 +179,7 @@ local *info_kill = sub {
 };
 
 local *info_vote = sub {
-	return htmlcode('ilikeit',$wuID) if $$USER{user_id} == $HTMLVARS{guest_user};
+	return htmlcode('ilikeit',$wuID) if $APP-&gt;isGuest($USER);
 	$t = htmlcode('voteit',$wuID,2);
 	return '' unless $t;
 	$infofunctions-&gt;{$fnName} = '';
@@ -187,7 +187,7 @@ local *info_vote = sub {
 };
 
 local *info_c_full = sub {
-	unless ( $$USER{node_id}!=$HTMLVARS{guest_user} ||
+	unless ( !$APP-&gt;isGuest($USER) ||
 			$query-&gt;param('showwidget') eq 'showCs'.$$WRITEUP{node_id} ){
 		return '' unless $$WRITEUP{cooled} ;
 		return linkNode($NODE,

@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>419639</node_id>
   <title>bookmarkit</title>
-  <code>return if $$USER{user_id} == $HTMLVARS{guest_user};
+  <code>return if $APP-&gt;isGuest($USER);
 
 my ( $N , $text , $title ) = @_ ;
 $N ||= $NODE ;

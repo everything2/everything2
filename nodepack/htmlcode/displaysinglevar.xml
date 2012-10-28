@@ -15,7 +15,7 @@ if($varname eq 'groups') {
 } elsif($varname eq 'msgme') {
 	return if $$VARS{'borged'};
 	return if $$VARS{'hidemsgme'};
-	return if getId($USER)==$HTMLVARS{'guest_user'};
+	return if $APP-&gt;isGuest($USER);
 	return unless $$NODE{type_nodetype}==getId(getNode('user', 'nodetype'));
 	#FIXME make specific so sends /msg to this user without needing the &quot;/msg UserName&quot; junk
 	my $n = $$NODE{title};

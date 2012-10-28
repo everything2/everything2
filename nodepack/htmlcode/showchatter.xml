@@ -8,7 +8,7 @@ my $nochat;
 
 $nochat = 'If you '.linkNode(getNode('Create A New User','superdoc'),
 	'register',{lastnode_id=&gt;0}).', you can talk here.'
-		if getId($USER) == $HTMLVARS{guest_user};
+		if $APP-&gt;isGuest($USER);
 
 ### Check to see if they're suspended for having an unverified email address
 

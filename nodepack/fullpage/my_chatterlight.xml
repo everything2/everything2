@@ -2,7 +2,7 @@
   <type_nodetype>451267</type_nodetype>
   <doctext>[%
 
-my $isGuest = getId($USER) == $HTMLVARS{guest_user};
+my $isGuest = $APP-&gt;isGuest($USER);
  
 my $pageSource = &lt;&lt;'CODEEND';
 &lt;script type=&quot;text/javascript&quot; src=&quot;http://code.jquery.com/jquery-1.4.2.js&quot;&gt;&lt;/script&gt;

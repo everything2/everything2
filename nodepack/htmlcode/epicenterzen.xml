@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1930072</node_id>
   <title>epicenterZen</title>
-  <code>return if ($$USER{user_id}==$HTMLVARS{guest_user});
+  <code>return if ( $APP-&gt;isGuest($USER) );
 # Upon successful log-in, write current browser to VARS
 if ($query-&gt;param(&quot;op&quot;) eq &quot;login&quot;)
 	{ $$VARS{browser} = $ENV{HTTP_USER_AGENT}; }
