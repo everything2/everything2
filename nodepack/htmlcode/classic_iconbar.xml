@@ -6,7 +6,7 @@
   $str.= linkNode($query-&gt;param(&quot;lastnode_id&quot;), '&lt;img src=&quot;http://static.everything2.com/e2back.gif&quot; border=0 
 	height=22 width=22 alt=&quot;last node&quot;&gt;') if $query-&gt;param(&quot;lastnode_id&quot;); 
   $str.= linkNode($USER,&quot;&lt;img src=&quot;http://static.everything2.com/e2home.gif&quot; border=0 
-	height=22 width=22 alt=\&quot;go home\&quot;&gt;&quot;) if getId($USER) != $HTMLVARS{guest_user};
+	height=22 width=22 alt=\&quot;go home\&quot;&gt;&quot;) if !$APP-&gt;isGuest($USER);
   $str.= linkNodeTitle(&quot;\&quot;Everything University\&quot;|&lt;img src=&quot;http://static.everything2.com/e2help.gif&quot; border=0 
 	height=22 width=22 alt=\&quot;help\&quot;&gt;&quot;);
   $str;</code>
