@@ -23,10 +23,20 @@ ok($APP->delParameter($htmlcode, -1, "prevent_nuke") == 1, "Can delete prevent_n
 my $user = getNode("root", "user");
 ok(defined($user->{node_id}), "Able to get 'root','user'");
 
-ok($available_parameters = $APP->getParametersForType("user"), "Get available parameters for user");
-ok(exists($available_parameters->{cancloak}), "cancloak exists on user");
-ok(exists($available_parameters->{prevent_nuke}), "prevent_nuke exists on user");
-ok($APP->setParameter($user, -1, "prevent_nuke", 1), "Can set prevent_nuke on a user");
-ok($APP->getParameter($user, "prevent_nuke") == 1, "Can get prevent_nuke on a user");
-ok($APP->delParameter($user, -1, "prevent_nuke") == 1, "Can delete prevent_nuke from user");
+my $refinfo = sub {my $i = shift; return (ref $i ne "")?(", by type hash"):(", by integer")}; 
 
+foreach my $type("user", getType("user"))
+{
+	ok($available_parameters = $APP->getParametersForType($type), "Get available parameters for user".$refinfo->($type));
+	ok(exists($available_parameters->{cancloak}), "cancloak exists on user".$refinfo->($type));
+	ok(exists($available_parameters->{prevent_nuke}), "prevent_nuke exists on user".$refinfo->($type));
+}
+
+foreach my $item($user, $user->{node_id})
+{
+	ok($APP->setParameter($item, -1, "prevent_nuke", 1), "Can set prevent_nuke on a user".$refinfo->($item));
+	ok($APP->getParameter($item, "prevent_nuke") == 1, "Can get prevent_nuke on a user".$refinfo->($item));
+	ok($APP->delParameter($item, -1, "prevent_nuke") == 1, "Can delete prevent_nuke from user".$refinfo->($item));
+	ok($APP->delParameter($item, -1, "cancloak"), "Delete cancloak, even when not set".$refinfo->($item));
+	ok((not defined($APP->getParameter($item, "cancloak"))), "Cancloak is not set on the user".$refinfo->($item));
+}
