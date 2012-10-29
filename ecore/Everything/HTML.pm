@@ -2641,6 +2641,7 @@ sub opNuke
 	my $node_id = $query->param("node_id");
 
 
+	return if $APP->getParameter($node_id, "prevent_nuke");
 	return if grep(/^$node_id$/, values(%HTMLVARS)) ;
 	
 	nukeNode($node_id, $user_id);
