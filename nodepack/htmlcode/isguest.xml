@@ -1,6 +1,0 @@
-<node>
-  <type_nodetype>4</type_nodetype>
-  <node_id>2002034</node_id>
-  <title>isGuest</title>
-  <code>return $APP-&gt;isGuest($USER);</code>
-</node>
