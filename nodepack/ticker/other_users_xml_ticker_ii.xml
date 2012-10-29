@@ -24,7 +24,7 @@ while (my $row = $csr-&gt;fetchrow_hashref) {
   my $u = getNodeById($$row{member_user});
 
   my $e2god = (exists($HTMLVARS{'group_gods'}{$member})
-               &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($member),&quot;hide_chatterbox_staff_symbol&quot;) )?(1):(0);
+               &amp;&amp; !$APP-&gt;getParameter($member,&quot;hide_chatterbox_staff_symbol&quot;) )?(1):(0);
   push @props, qq-e2god=&quot;$e2god&quot;-;
 
   my $committer = htmlcode('isinUsergroup', $member, '%%');
@@ -33,7 +33,7 @@ while (my $row = $csr-&gt;fetchrow_hashref) {
   my $chanop = htmlcode('isinUsergroup', $member, 'chanops', 'recruse');
   push @props, qq-chanop=&quot;$chanop&quot;-;
 
-  my $ce = (exists($HTMLVARS{'group_content editors'}{$member}) &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($member),&quot;hide_chatterbox_staff_symbol&quot;) )?(1):(0);
+  my $ce = ($APP-&gt;isEditor($member,&quot;nogods&quot;) &amp;&amp; !$APP-&gt;getParameter($member,&quot;hide_chatterbox_staff_symbol&quot;) )?(1):(0);
   push @props, qq-ce=&quot;$ce&quot;-;
 
   my $edev = ((exists($HTMLVARS{'group_edev'}{$member}))?(1):(0));

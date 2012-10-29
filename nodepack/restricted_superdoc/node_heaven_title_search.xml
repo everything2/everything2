@@ -30,7 +30,7 @@ if($query-&gt;param('heaventitle') and $isRoot) {
 
 return unless $filterTitle;
 
-return '&lt;em&gt;not yet, you\'re not ready&lt;/em&gt;' unless $APP-&gt;getLevel($USER) &gt;=1 or $DB-&gt;getNodeParam($USER, &quot;node_heaven_guest&quot;) or $isRoot;
+return '&lt;em&gt;not yet, you\'re not ready&lt;/em&gt;' unless $APP-&gt;getLevel($USER) &gt;=1 or $APP-&gt;getParameter($USER, &quot;node_heaven_guest&quot;) or $isRoot;
 
 my $str = &quot;&lt;table width=\&quot;100%\&quot;&gt;\n&quot;;
 

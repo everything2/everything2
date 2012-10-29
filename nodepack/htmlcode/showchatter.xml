@@ -115,7 +115,7 @@ utf8::decode($text);
 		}
 	}
 
-	my $userTitle = getNodeById($aid)-&gt;{'title'};
+	my $userTitle = getNodeById($aid, 'light')-&gt;{'title'};
 	$userTitle =~ s/ /_/g; # replace spaces with underscores in username
 	$userLink = &quot;&lt;span class='chat_user chat_$userTitle'&gt;&quot;
 		. linkNode($aid) . &quot;&lt;/span&gt;&quot;;
@@ -135,9 +135,9 @@ utf8::decode($text);
 		my $isChanop = htmlcode('isinUsergroup', $aid , &quot;chanops&quot;, &quot;recurse&quot;);
 
 		$flags = '';
-		if(exists $HTMLVARS{group_gods}{$aid} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($aid),&quot;hide_chatterbox_staff_symbol&quot;) ) {
+		if(exists $HTMLVARS{group_gods}{$aid} &amp;&amp; !$APP-&gt;getParameter($aid,&quot;hide_chatterbox_staff_symbol&quot;) ) {
 			$flags .= '@';
-		} elsif(exists $HTMLVARS{'group_content editors'}{$aid} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($aid),&quot;hide_chatterbox_staff_symbol&quot;)) {
+		} elsif($APP-&gt;isEditor($aid, &quot;nogods&quot;) &amp;&amp; !$APP-&gt;getParameter($aid,&quot;hide_chatterbox_staff_symbol&quot;)) {
 			$flags .= '$';
 		}
 

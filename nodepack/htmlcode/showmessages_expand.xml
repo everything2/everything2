@@ -138,9 +138,9 @@ my $getFlags = sub {
   my $isChanop = htmlcode('isinUsergroup', $flagid, &quot;chanops&quot;, 1);
   my $flags = '';
 
-  if(exists $HTMLVARS{group_gods}{$flagid} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($flagid),&quot;hide_chatterbox_staff_symbol&quot;)) {
+  if(exists $HTMLVARS{group_gods}{$flagid} &amp;&amp; !$APP-&gt;getParameter($flagid,&quot;hide_chatterbox_staff_symbol&quot;)) {
     $flags .= '@';
-  } elsif(exists $HTMLVARS{'group_content editors'}{$flagid} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($flagid),&quot;hide_chatterbox_staff_symbol&quot;)) {
+  } elsif($APP-&gt;isEditor($USER, &quot;nogods&quot;) &amp;&amp; !$APP-&gt;getParameter($flagid,&quot;hide_chatterbox_staff_symbol&quot;)) {
     $flags .= '$';
   }
 

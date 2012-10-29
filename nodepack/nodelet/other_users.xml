@@ -136,7 +136,7 @@ while(my $U = $csr-&gt;fetchrow_hashref())
   $nameLink = '&lt;strong&gt;'.$nameLink.'&lt;/strong&gt;' if $sameUser;
 
   my $flags='';
-  if (exists $HTMLVARS{'group_gods'}{$userID} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($userID),&quot;hide_chatterbox_staff_symbol&quot;) ) {
+  if (exists $HTMLVARS{'group_gods'}{$userID} &amp;&amp; !$APP-&gt;getParameter($userID,&quot;hide_chatterbox_staff_symbol&quot;) ) {
     $flags .= $linkRoots;
   }
 
@@ -155,7 +155,7 @@ while(my $U = $csr-&gt;fetchrow_hashref())
     }
   }
 
-  if (exists $HTMLVARS{'group_content editors'}{$userID} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($userID),&quot;hide_chatterbox_staff_symbol&quot;) ) {
+  if ($APP-&gt;isEditor($userID, &quot;nogods&quot;) &amp;&amp; !$APP-&gt;getParameter($userID,&quot;hide_chatterbox_staff_symbol&quot;) ) {
     $flags .= $linkCEs;
   }
 

@@ -122,7 +122,6 @@ if($$NODE{group}) {
 			$s = '&lt;em&gt;'.$s.'&lt;/em&gt;';
 		}
 		if($curID==$UID) {
-		#if($$USER{author_user}==$$N{author_user}) {
 			$s = '&lt;strong&gt;'.$s.'&lt;/strong&gt;';
 		}
 
@@ -130,9 +129,9 @@ if($$NODE{group}) {
 
 		#show normal groups user is in
 		$flags = '';
-		$flags .= '@' if $showMemberAdmin and (exists	$HTMLVARS{'group_gods'}{$curID} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($curID),&quot;hide_chatterbox_staff_symbol&quot;));
+		$flags .= '@' if $showMemberAdmin and exists $HTMLVARS{'group_gods'}{$curID} and !$APP-&gt;getParameter($curID,&quot;hide_chatterbox_staff_symbol&quot;);
 
-		$flags .= '$' if $showMemberCE and (exists $HTMLVARS{'group_content editors'}{$curID} &amp;&amp; !$DB-&gt;getNodeParam(getNodeById($curID),&quot;hide_chatterbox_staff_symbol&quot;) );
+		$flags .= '$' if $showMemberCE and $APP-&gt;isEditor($curID, &quot;nogods&quot;) and !$APP-&gt;getParameter($curID,&quot;hide_chatterbox_staff_symbol&quot;);
     $flags .= '+' if $showMemberAdmin &amp;&amp; $isChanop;
 
 		if(length($flags)) {
