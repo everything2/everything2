@@ -2759,15 +2759,26 @@ sub dropMysqlProcedure
 sub getNodeParam
 {
 	my ($this, $NODE, $paramname) = @_;
+	return unless defined($NODE);
+	return unless defined($paramname);	
 
-	getRef($NODE);
-	return unless $NODE;
+	my $node_id;
+	# We want to avoid using getNode here, just go with the node_id if we have it;
 
-	my $result = $this->{cache}->getCachedNodeParam($NODE, $paramname);
+	if(ref $NODE eq "")
+	{
+		$node_id = $NODE;
+	}else{
+		$node_id = $NODE->{node_id};
+	}
+
+	return unless $node_id;
+
+	my $result = $this->{cache}->getCachedNodeParam($node_id, $paramname);
 
 	return $result if defined $result;
-	my ($paramvalue) = $this->sqlSelect("paramvalue","nodeparam","node_id=".$this->quote($$NODE{node_id})." and paramkey=".$this->quote($paramname));
-	$this->{cache}->setCachedNodeParam($NODE, $paramname, $paramvalue);
+	my ($paramvalue) = $this->sqlSelect("paramvalue","nodeparam","node_id=".$this->quote($node_id)." and paramkey=".$this->quote($paramname));
+	$this->{cache}->setCachedNodeParam($node_id, $paramname, $paramvalue);
 
 	return $paramvalue;
 }
@@ -2775,14 +2786,26 @@ sub getNodeParam
 sub getNodeParams
 {
 	my ($this, $NODE) = @_;
-	getRef($NODE);
-	return unless $NODE;
+	return unless defined($NODE);
+
+	my $node_id;
+	# We want to avoid using getNode here, just go with the node_id if we have it;
+
+	if(ref $NODE eq "")
+	{
+		$node_id = $NODE;
+	}else{
+		$node_id = $NODE->{node_id};
+	}
+
+	return unless $node_id;
+
 	my $params;
-	my $csr = $this->sqlSelectMany("*","nodeparam","node_id=".$this->quote($$NODE{node_id}));
+	my $csr = $this->sqlSelectMany("*","nodeparam","node_id=".$this->quote($node_id));
 	while(my $row = $csr->fetchrow_hashref())
 	{
 		$params->{$row->{paramkey}} = $row->{paramvalue};
-		$this->{cache}->setCachedNodeParam($NODE, $row->{paramkey}, $row->{paramvalue});
+		$this->{cache}->setCachedNodeParam($node_id, $row->{paramkey}, $row->{paramvalue});
 	}
 	
 	return $params;
@@ -2791,22 +2814,44 @@ sub getNodeParams
 sub setNodeParam
 {
 	my ($this, $NODE, $paramname, $paramvalue) = @_;
+	return unless defined($NODE);
+	return unless defined($paramname);	
 
-	getRef($NODE);
-	return unless $NODE;
+	my $node_id;
+	# We want to avoid using getNode here, just go with the node_id if we have it;
 
-	$this->executeQuery("INSERT into nodeparam VALUES(".join(",",$this->quote($$NODE{node_id}),$this->quote($paramname),$this->quote($paramvalue)).") ON DUPLICATE KEY UPDATE paramvalue=".$this->quote($paramvalue));
-	$this->{cache}->setCachedNodeParam($NODE, $paramname, $paramvalue);
+	if(ref $NODE eq "")
+	{
+		$node_id = $NODE;
+	}else{
+		$node_id = $NODE->{node_id};
+	}
+
+	return unless $node_id;
+	$this->executeQuery("INSERT into nodeparam VALUES(".join(",",$this->quote($node_id),$this->quote($paramname),$this->quote($paramvalue)).") ON DUPLICATE KEY UPDATE paramvalue=".$this->quote($paramvalue));
+	$this->{cache}->setCachedNodeParam($node_id, $paramname, $paramvalue);
 }
 
 sub deleteNodeParam
 {
 	my ($this, $NODE, $paramname) = @_;
-	getRef($NODE);
-	return unless $NODE;
+	return unless defined($NODE);
+	return unless defined($paramname);	
 
-	$this->sqlDelete("nodeparam","node_id=$$NODE{node_id}");
-	$this->{cache}->deleteCachedNodeParam($NODE,$paramname);
+	my $node_id;
+	# We want to avoid using getNode here, just go with the node_id if we have it;
+
+	if(ref $NODE eq "")
+	{
+		$node_id = $NODE;
+	}else{
+		$node_id = $NODE->{node_id};
+	}
+
+	return unless $node_id;
+
+	$this->sqlDelete("nodeparam","node_id=".$this->quote($node_id));
+	$this->{cache}->deleteCachedNodeParam($node_id,$paramname);
 }
 
 #############################################################################

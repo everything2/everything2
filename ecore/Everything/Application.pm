@@ -8,6 +8,7 @@ use vars qw($PARAMS $PARAMSBYTYPE);
 BEGIN {
 	$PARAMS = 
 	{
+		# Tested in 000_test_cloaking.t
 		"cancloak" => 
 		{
 			"on" => ["user"],
@@ -15,6 +16,8 @@ BEGIN {
 			"assignable" => ["admin"],
 			"validate" => "set_only",
 		},
+		
+		# Tested in 000_test_cloaking.t
 		"level_override" => 
 		{
 			"on" => ["user"],
@@ -22,6 +25,8 @@ BEGIN {
 			"assignable" => ["admin"],
 			"validate" => "integer",
 		},
+
+		# TODO: Add test
 		"hide_chatterbox_staff_symbol" =>
 		{
 			"on" => ["user"],
@@ -29,6 +34,8 @@ BEGIN {
 			"assignable" => ["admin"],
 			"validate" => "set_only",
 		},
+
+		#TODO: Add test
 		"node_heaven_guest" => 
 		{
 			"on" => ["user"],
@@ -36,13 +43,25 @@ BEGIN {
 			"assignable" => ["admin"],
 			"validate" => "set_only",
 		},
+
+		"prevent_nuke" => 
+		{
+			"description" => "Prevent the node from being nuked, via the Nuke node key",
+			"assignable" => ["admin"],
+			"validate" => "set_only",
+		},
 	};
 
 	foreach my $param(keys %$PARAMS)
 	{
-		foreach my $type (@{$PARAMS->{$param}->{on}})
+		if(exists($PARAMS->{$param}->{on}))
 		{
-			$PARAMSBYTYPE->{$type}->{$param} = $PARAMS->{$param};
+			foreach my $type (@{$PARAMS->{$param}->{on}})
+			{
+				$PARAMSBYTYPE->{$type}->{$param} = $PARAMS->{$param};
+			}
+		}else{
+			$PARAMSBYTYPE->{_ALLTYPES}->{$param} = $PARAMS->{$param};
 		}
 	}
 }
@@ -54,6 +73,7 @@ $PARAMVALIDATE =
 	"set_only" => sub 
 	{
 		my ($this, $val) = @_;
+		return if not defined $val;
 		return($val == 1);	
 	},
 	"integer" => sub
@@ -599,13 +619,22 @@ sub userCanCloak
 {
   my ($this, $user) = @_;
   $this->{db}->getRef($user);
-  return ($this->getLevel($user) >= 10 or $this->isEditor($user) or $this->{db}->getNodeParam($user, "cancloak"));
+  return ($this->getLevel($user) >= 10 or $this->isEditor($user) or $this->{db}->getNodeParam($user, "cancloak")) || "0";
 }
 
 sub setParameter
 {
   my ($this, $node, $user, $param, $paramvalue) = @_;
-  $this->{db}->getRef($node);
+  
+  return unless defined($node);
+  return unless defined($user);
+  return unless defined($param);
+
+  if(ref $node eq "")
+  {
+    $node = $this->{db}->getNodeById($node);
+  }
+
   return unless $node;
   my $paramdata = $this->getParameterForType($node->{type}, $param);  
   
@@ -629,9 +658,16 @@ sub delParameter
 {
   my ($this, $node, $user, $param) = @_;
   
-  $this->{db}->getRef($node);
+  return unless defined($node);
+  return unless defined($user);
+  return unless defined($param);
+
+  if(ref $node eq "")
+  {
+    $node = $this->{db}->getNodeById($node);
+  }
+
   return unless $node;
- 
   return if !$this->canSetParameter($node,$user,$param);
   $this->{db}->deleteNodeParam($node, $param);
 
@@ -639,6 +675,16 @@ sub delParameter
   # I don't love the way this works, but I can fix it later pretty easily.
   $this->securityLog($this->{db}->getNode("parameter","opcode"), $user, "Deleted parameter '$param' from '$$node{title}'");
   return 1; 
+}
+
+sub getParameter
+{
+  my ($this, $node, $param) = @_;
+  return unless defined($node);
+  return unless defined($param);
+
+  # Avoid getNode for speed. This is important
+  return $this->{db}->getNodeParam($node, $param);
 }
 
 sub canSetParameter
@@ -681,7 +727,9 @@ sub getParametersForType
   }
   return unless $type;
 
-  return $Everything::Application::PARAMSBYTYPE->{$type->{title}};
+  my $paramsbytype = $Everything::Application::PARAMSBYTYPE->{$type->{title}};
+  @{$paramsbytype}{keys %{$Everything::Application::PARAMSBYTYPE->{_ALLTYPES}}} = values %{$Everything::Application::PARAMSBYTYPE->{_ALLTYPES}};
+  return $paramsbytype;
 }
 
 sub getParameterForType
@@ -874,6 +922,12 @@ sub _isSpiderCheck
 	return 1 if ($addr =~ m/96\.228\.37\.192/); # (HTTP_USER_AGENT=Mozilla/5.0 (compatible; FSC/1.0 +http://fscals.com), IP forwarded 96.228.37.192
 
 	return 0;
+}
+
+sub inDevEnvironment
+{
+	my ($this) = @_;
+	return $this->{conf}->{environment} eq "development";
 }
 
 1;

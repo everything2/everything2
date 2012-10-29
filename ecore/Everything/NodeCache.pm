@@ -452,12 +452,26 @@ sub dumpCache
 sub getCachedNodeParam
 {
 	my ($this, $N, $param) = @_;
+	return unless defined($N);
+	return unless defined($param);	
 
-	if(exists($this->{paramcache}->{$N->{node_id}}))
+	my $node_id;
+	# We want to avoid using getNode here, just go with the node_id if we have it;
+
+	if(ref $N eq "")
 	{
-		if(exists($this->{paramcache}->{$N->{node_id}}->{$param}))
+		$node_id = $N;
+	}else{
+		$node_id = $N->{node_id};
+	}
+	return unless $node_id;
+
+
+	if(exists($this->{paramcache}->{$node_id}))
+	{
+		if(exists($this->{paramcache}->{$node_id}->{$param}))
 		{
-			$this->{paramcache}->{$N->{node_id}}->{$param};
+			$this->{paramcache}->{$node_id}->{$param};
 		}else{
 			return undef;
 		}
@@ -469,13 +483,27 @@ sub getCachedNodeParam
 sub setCachedNodeParam
 {
 	my ($this, $N, $param, $value) = @_;
+	return unless defined($N);
+	return unless defined($param);	
+	return unless defined($value);
 
-	if(!exists($this->{paramcache}->{$N->{node_id}}))
+	my $node_id;
+	# We want to avoid using getNode here, just go with the node_id if we have it;
+
+	if(ref $N eq "")
 	{
-		$this->{paramcache}->{$N->{node_id}} = {};
+		$node_id = $N;
+	}else{
+		$node_id = $N->{node_id};
+	}
+	return unless $node_id;
+
+	if(!exists($this->{paramcache}->{$node_id}))
+	{
+		$this->{paramcache}->{$node_id} = {};
 	}
 
-	$this->{paramcache}->{$N->{node_id}}->{$param} = $value;
+	$this->{paramcache}->{$node_id}->{$param} = $value;
 
 	return $value;
 }
@@ -483,10 +511,24 @@ sub setCachedNodeParam
 sub deleteCachedNodeParam
 {
 	my ($this, $N, $param) = @_;
+	return unless defined($N);
+	return unless defined($param);	
 
-	if(exists($this->{paramcache}->{$N->{node_id}}))
+	my $node_id;
+	# We want to avoid using getNode here, just go with the node_id if we have it;
+
+	if(ref $N eq "")
 	{
-		delete $this->{paramcache}->{$N->{node_id}}->{$param};
+		$node_id = $N;
+	}else{
+		$node_id = $N->{node_id};
+	}
+	return unless $node_id;
+
+
+	if(exists($this->{paramcache}->{$node_id}))
+	{
+		delete $this->{paramcache}->{$node_id}->{$param};
 	}
 
 	return $param;
