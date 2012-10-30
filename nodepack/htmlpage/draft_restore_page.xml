@@ -92,16 +92,16 @@ if ($$USER{node_id} == $$NODE{author_user}){
 		if ($query -&gt; param('parentdraft')){
 			$str .= htmlcode('parentdraft', $NODE);
 		}else{
-			$str .= $query -&gt; div({-id =&gt; 'republish'},'');
+		$str .= $query -&gt; div({-id =&gt; 'republish'},'');
 		}
 	}
 }
 
 $str;
 %]</page>
-  <node_id>2035519</node_id>
+  <node_id>2071862</node_id>
   <type_nodetype>5</type_nodetype>
-  <displaytype>display</displaytype>
-  <title>draft display page</title>
+  <displaytype>restore</displaytype>
+  <title>draft restore page</title>
   <mimetype></mimetype>
 </node>

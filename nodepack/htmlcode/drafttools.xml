@@ -59,7 +59,7 @@ if ($isMine and $$NODE{node_id} != $n){
 
 if ($isEditor){
 	my $linktype = getId(getNode 'parent_node', 'linktype');
-	my ($parent, $editor) = $DB -&gt; sqlSelect( # editor approval is flagged by feeding the link
+	my ($parent, $approver) = $DB -&gt; sqlSelect( # editor approval is flagged by feeding the link
 		'to_node, food', 'links', &quot;from_node=$$N{node_id} AND linktype=$linktype&quot;);
 
 	unless ($status eq 'private' || $status eq 'removed' || $isMine){
@@ -67,23 +67,30 @@ if ($isEditor){
 			$$N{publication_status} = getId(getNode('private', 'publication_status'));
 			updateNode($N, -1);
 			$text = $status = $linktitle = 'Made Private';
-			$DB -&gt; sqlUpdate('links', {food =&gt; ($editor = 0)},
-				&quot;from_node=$$N{node_id} AND linktype=$linktype&quot;) if $editor;
+			$DB -&gt; sqlUpdate('links', {food =&gt; ($approver = 0)},
+				&quot;from_node=$$N{node_id} AND linktype=$linktype&quot;) if $approver;
 		}else{
 			push @tools, linkNode($N, 'Make private', {
 				makeprivate =&gt; 1
 				, -class =&gt; &quot;action ajax $id:drafttools:$n,1&quot;
 			});
 		}
+
+	}elsif($status eq 'removed'){
+		$attachment = linkNode($N, 'Unremove', {
+			parentdraft =&gt; 'publish'
+			, -class =&gt; &quot;ajax republish:parentdraft&quot;
+			, -title =&gt; 'republish this because someone goofed'
+		});
 	}
 
-	if ($parent and $editor || $status eq 'review'){
+	if ($parent and $approver || $status eq 'review'){
 		$attachment ||= 'Attached to '
 			.$query -&gt; b(linkNode($parent, $$NODE{node_id} == $parent ? 'this node' :''));
 
 		my $approve = '';
-		if ($editor){
-			$attachment .= '&lt;br&gt;&lt;br&gt;Approved for publication by '.linkNode($editor);
+		if ($approver){
+			$attachment .= '&lt;br&gt;&lt;br&gt;Approved for publication by '.linkNode($approver);
 			$linktitle .= '. Approved';
 			$approve = 'Revoke approval';
 		}else{
@@ -98,7 +105,7 @@ if ($isEditor){
 
 		$attachment .= '&lt;br&gt;&lt;br&gt;'.linkNode($N, &quot;&lt;b&gt;$approve&lt;/b&gt;&quot;, {
 			op =&gt; 'approve_draft'
-			, revoke =&gt; $editor
+			, revoke =&gt; $approver
 			, draft =&gt; $$N{node_id}
 			, e2node =&gt; $parent
 			, -class =&gt; &quot;action ajax $id:drafttools:$n,1&quot;
