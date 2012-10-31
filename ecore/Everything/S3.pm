@@ -42,6 +42,7 @@ sub new
 sub upload_data
 {
 	my ($this, $name, $data, $properties) = @_;
+	return $this->{bucket}->add_key($name, $data);
 }
 
 sub upload_file
