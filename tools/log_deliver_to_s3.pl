@@ -6,6 +6,7 @@ use Everything;
 use Everything::S3;
 
 my $s3 = Everything::S3->new("backup");
+die "Could not connect to s3" unless $s3;
 
 my $data = "123";
 my $hostname = `hostname`; chomp $hostname;
