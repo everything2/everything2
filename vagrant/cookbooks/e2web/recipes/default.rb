@@ -64,6 +64,22 @@ file '/etc/logrotate.d/apache2' do
   notifies :reload, "service[apache2]", :delayed
 end
 
+# Also in e2cron, e2web
+logdir = "/var/log/everything"
+datelog = "`date +\\%Y\\%m\\%d\\%H`.log"
+
+directory logdir do
+  owner "www-data"
+  group "root"
+  mode 0755
+  action :create
+end
+
+cron 'log_deliver_to_s3.pl' do
+  minute '5'
+  command "/var/everything/tools/log_deliver_to_s3.pl 2>&1 >> #{logdir}/e2cron.log_deliver_to_s3.#{datelog}"
+end
+
 service 'apache2' do
   supports :status => true, :restart => true, :reload => true
 end

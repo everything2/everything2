@@ -7,7 +7,7 @@
 # You are free to use/modify these files under the same terms as the Everything Engine itself
 #
 
-# Also in e2engine
+# Also in e2engine,e2web
 logdir = "/var/log/everything"
 datelog = "`date +\\%Y\\%m\\%d\\%H`.log"
 
@@ -16,6 +16,11 @@ directory logdir do
   group "root"
   mode 0755
   action :create
+end
+
+cron 'log_deliver_to_s3.pl' do
+  minute '5'
+  command "/var/everything/tools/log_deliver_to_s3.pl 2>&1 >> #{logdir}/e2cron.log_deliver_to_s3.#{datelog}"
 end
 
 cron 'database_backup_to_s3.pl' do
