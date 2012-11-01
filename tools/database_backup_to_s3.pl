@@ -4,7 +4,6 @@ use strict;
 use lib qw(/var/everything/ecore);
 use Everything;
 use Everything::S3;
-use Everything::MAIL;
 
 my $uploader = Everything::S3->new("backup");
 my $tmpdir = "/tmp/everything_backup_$$";
@@ -43,7 +42,7 @@ if($uploader->upload_file($filename, "$tmpdir/$filename"))
 		{
 			$email->{doctext} =~ s/\<filename\>/$filename/g;
 			$email->{title} = "Backup ready on S3: $filename";
-			node2mail($Everything::CONF->{notification_email},$email,1);
+			$APP->node2mail($Everything::CONF->{notification_email},$email,1);
 			print commonLogLine("Sent email to: ".$Everything::CONF->{notification_email});
 		}else{
 			print commonLogLine("Could not find node 'backup ready mail' of type 'mail'");

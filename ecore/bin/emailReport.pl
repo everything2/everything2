@@ -2,7 +2,6 @@
 
 use Everything;
 initEverything 'everything';
-use Everything::MAIL;
 use Everything::HTML;
 use CGI;
 use strict;
@@ -342,7 +341,7 @@ sub generateMail {
   
   my $html = 1 unless $$VARS{emailNohtml};
 
-  node2mail($$USER{email}, \%MAIL, $html);  
+  $APP->node2mail($$USER{email}, \%MAIL, $html);  
   sleep(5);
 #  print "mail for $$USER{title} generated\n"; 
 }
