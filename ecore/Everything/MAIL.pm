@@ -42,8 +42,9 @@ sub node2mail {
 	my $email = Email::Simple->create(
   	"header" => [
      		"To"		=> $addr,
-     		"From"		=>  $from,
-     		"Subject"		=> $subject,
+     		"From"		=> $from,
+     		"Subject"	=> $subject,
+		"Content-Type"	=> 'text/html; charset="utf-8"',
   	],
   	"body" => $body
 	);
