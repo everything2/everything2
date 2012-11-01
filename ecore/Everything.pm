@@ -405,7 +405,10 @@ sub setVars
 	};
 
 	transactionWrap($updateSub);
-	Everything::HTML::processVarsSet($NODE);
+	if(UNIVERSAL::can('Everything::HTML','processVarsSet'))
+	{
+		Everything::HTML::processVarsSet($NODE);
+	}
 }
 
 

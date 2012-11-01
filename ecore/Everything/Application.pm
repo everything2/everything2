@@ -997,4 +997,30 @@ sub node2mail {
 	try_to_sendmail($email, { "transport" => $transport });
 }
 
+sub stripNodelet {
+	my ($this, $user, $nodelet) = @_;
+
+	my $nodelet_id;
+	if(ref $nodelet ne "") 
+	{
+		$nodelet_id = $nodelet->{node_id};
+	}else{
+		$nodelet_id = $nodelet;
+	}
+
+	my $vars = Everything::getVars($user);
+	my $nodeletstring = $vars->{nodelets};
+	return unless defined($nodeletstring) and $nodeletstring =~ /\S/;
+	my $nodelets = [split(",",$nodeletstring)];
+	$nodelets = [grep {$_ != $nodelet_id} @$nodelets];
+	$nodeletstring = join(",",@$nodelets);
+	if($nodeletstring ne $vars->{nodelets})
+	{
+		$vars->{nodelets} = $nodeletstring;
+		Everything::setVars($user, $vars);
+		$this->{db}->updateNode($user, -1);
+		return $nodelet_id;
+	}
+}
+
 1;
