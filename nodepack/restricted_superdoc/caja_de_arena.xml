@@ -158,7 +158,6 @@ $$uservars{infected} = 1 if htmlcode('checkInfected') == 1;
 setVars($user, $uservars);
 
 # send activation email
-use Everything::MAIL;
 my $mail = getNode('Activate account', 'mail');
 
 $$mail{doctext} =~ s/&#171;name&#187;/$$NEWUSER{realname}/;
@@ -167,7 +166,7 @@ $$mail{doctext} =~ s/&#171;activatelink&#187;/$link/;
 $$mail{doctext} =~ s!&#171;profile&#187;!http://$ENV{SERVER_NAME}/user/$$NEWUSER{title}!g;
 $$mail{doctext} =~ s!&#171;site_url&#187;!http://$ENV{SERVER_NAME}/!g;
 
-node2mail($email, $mail, 1);
+$APP-&gt;node2mail($email, $mail, 1);
 
 # tell them we're wonderful
 $name ||= $username;

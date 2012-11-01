@@ -1,10 +1,10 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Thu Nov  1 18:30:10 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Thu Nov  1 19:00:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;riverrun&quot; node_id=&quot;2071993&quot; parent_e2node=&quot;2071987&quot; author_user=&quot;jaybonci&quot;&gt;root log: November 2012&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Oolong&quot; node_id=&quot;1444558&quot; parent_e2node=&quot;1444519&quot; author_user=&quot;ravy&quot;&gt;giallo&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;2072068&quot; parent_e2node=&quot;2072069&quot; author_user=&quot;gnarl&quot;&gt;Berberian Sound Studio&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;sam512&quot; node_id=&quot;2072055&quot; parent_e2node=&quot;2072056&quot; author_user=&quot;Andrew Aguecheek&quot;&gt;Skyfall&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;2071993&quot; parent_e2node=&quot;2071987&quot; author_user=&quot;jaybonci&quot;&gt;root log: November 2012&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;tanktop&quot; node_id=&quot;2072046&quot; parent_e2node=&quot;2072045&quot; author_user=&quot;erland&quot;&gt;Juan S&#225;nchez Cot&#225;n&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;montecarlo&quot; node_id=&quot;2072031&quot; parent_e2node=&quot;2068629&quot; author_user=&quot;Montag&quot;&gt;Dulwich College&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;locke baron&quot; node_id=&quot;2072016&quot; parent_e2node=&quot;2072025&quot; author_user=&quot;rootbeer277&quot;&gt;The Tanzanian Devil 3 2/2&lt;/cooled&gt;

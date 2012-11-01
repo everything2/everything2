@@ -12,8 +12,7 @@ my @modules = (
         'Everything::NodeCache',
         'Everything::CacheQueue',
         'Everything::FormMenu',
-	'Everything::Application',
-	'Everything::MAIL',
+	'Everything::Application'
 );
 
 foreach my $modname (@modules) {
