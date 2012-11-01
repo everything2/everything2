@@ -577,8 +577,40 @@ sub regenSearchwords
 
 sub isEditor
 {
-	my ($this,$user,$nogods) = @_;
+	my ($this, $user, $nogods) = @_;
 	return $this->{db}->isApproved($user,$this->{db}->getNode('content editors','usergroup'), $nogods);
+}
+
+sub isDeveloper
+{
+	my ($this, $user, $nogods) = @_;
+	return $this->{db}->isApproved($user,$this->{db}->getNode('edev','usergroup'), $nogods);
+}
+
+sub isAdmin
+{
+	my ($this, $user) = @_;
+	return $this->{db}->isGod($user);
+}
+
+sub isChanop
+{
+	my ($this, $user, $nogods) = @_;
+	return $this->{db}->isApproved($user, $this->{db}->getNode('chanops','usergroup'),$nogods);
+}
+
+#TODO: Work on me some, not sure how I'm going to use this
+sub chatSigils
+{
+	my ($this, $user, $exclude, $nolinks) = @_;
+	
+	my $sigils = "";
+	$sigils .= '@' if $this->isAdmin($user) and !$this->getParameter($user,"hide_chatterbox_staff_symbol");
+	$sigils .= '$' if !$this->isAdmin($user) and $this->isEditor($user, "nogods") and !$this->getParameter($user,"hide_chatterbox_staff_symbol");
+	$sigils .= '+' if $this->isChanop($user, "nogods") and !$this->getParameter($user,"hide_chatterbox_staff_symbol");
+	$sigils .= '%' if $this->isDeveloper($user, "nogods");
+
+	return $sigils;
 }
 
 sub getLevel {
