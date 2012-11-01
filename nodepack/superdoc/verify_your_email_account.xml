@@ -190,7 +190,6 @@ if($query-&gt;param(&quot;sendNewKey&quot;)){
 
 
 	### Email them the new validation key
-	use Everything::MAIL;
 	my ($n) = getNodeWhere({title=&gt;'Email address verification for Everything2'},
 	 						$DB-&gt;getType('mail')
 	);
@@ -202,7 +201,7 @@ if($query-&gt;param(&quot;sendNewKey&quot;)){
 	$$n{doctext} =~ s/\&lt;site_url\&gt;/http:\/\/$ENV{SERVER_NAME}\//g;
 	$$n{doctext} =~ s/\&lt;verify_email_url\&gt;/http:\/\/$ENV{SERVER_NAME}\/index\.pl\?node_id=$HTMLVARS{verifyEmailAccount_node}/g;
 	$$n{doctext} =~ s/\&lt;servername\&gt;/$ENV{SERVER_NAME}/g;
-	node2mail($$USER{email},$n, 1);
+	$APP-&gt;node2mail($$USER{email},$n, 1);
 
 	return &quot;&lt;p style=\&quot;width:600px; margin-left:50px;\&quot;&gt;A new verification key has been sent to $$USER{email}.  Please check your email and click the enclosed link to finish verifying your account.&lt;/p&gt;&quot;;
 	

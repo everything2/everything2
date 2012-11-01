@@ -1,99 +1,187 @@
 <node>
   <type_nodetype>13</type_nodetype>
-  <doctext>[%
-my $str;
+  <doctext>use strict;
+#[%
+# how many days should an account activation link be valid for?
+my $validForDays = 10;
+# which nodetypes may usernames not clash with?
+my @nameBlockers = ('user', 'usergroup', 'superdoc', 'restricted_superdoc', 'nodetype', 'document', 'superdocnolinks', 'fullpage');
 
-if ($query -&gt; param('nukedraft') eq 'Delete draft' &amp;&amp; htmlcode('verifyRequest', 'nukedraft')){
-	my @fields = $DB -&gt; getFieldsHash('draft', 0);
-	my $linktype = getId(getNode 'parent_node', 'linktype');
-	my $parent = $DB -&gt; sqlSelect(
-		'to_node', 'links', &quot;from_node=$$NODE{node_id} AND linktype=$linktype&quot;);
+my $prompt = '';
+my $username = $query -&gt; param('hatstand');
+my $email = $query -&gt; param('raddish');
+my $pass = $query -&gt; param('frog');
+my $spambot = $query -&gt; param('email');
 
-	$str = '&lt;p&gt;&lt;strong&gt;Draft permanently deleted&lt;/strong&gt;&lt;/p&gt;'
+my $nameTaken = sub{
+	my $name = shift;
+	map { return 1 if getNode($name, $_); } @nameBlockers;
+	return 0 unless $name =~ /( |_)/;
 
-	.htmlcode('openform')
-		.'&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;new&quot;&gt;'
-		.$query -&gt; hidden('type', 'draft')
-		.$query -&gt; hidden('node', $$NODE{title})
-		.$query -&gt; hidden('draft_doctext', $$NODE{doctext})
-		.$query -&gt; hidden('writeup_parent_e2node', $parent)
-		.join (&quot;\n&quot;, map {$_ ne 'draft_id' &amp;&amp; $query -&gt; hidden(&quot;draft_$_&quot;, $$NODE{$_})} @fields)
-	.htmlcode('closeform', 'Undo')
-	.$query -&gt; small('(create a new draft with the same content and status as the one you just deleted,
-		using information stored in this page on your browser.)')
+	my $other = $1 eq ' ' ? '_' : ' ';
+	$name =~ s/[ _]/$other/g;
+	map { return 1 if getNode($name, $_); } @nameBlockers;
+	return 0;
+};
 
-	.$query -&gt; hr()
-	.$query -&gt; h2('What next?')
+# ask them nicely...
+if (!$query -&gt; param('cancel')){
+	$prompt = 'Please fill in your user name, real name (optional),
+		email address and password';
 
-	.$query -&gt; h3('Write:')
-	.$query -&gt; ul(
-		$query -&gt; li(linkNodeTitle('Drafts[superdoc]|Your other drafts'))
-		.$query -&gt; li(
-			$query -&gt; h4('Pages thirsting for content')
-			.$query -&gt; ul(
-				$query -&gt; li(linkNodeTitle('Your nodeshells[superdoc]|Created by you'))
-				.$query -&gt; li(linkNodeTitle('Random nodeshells[superdoc]|Created by anyone'))
-			)
+# then make them jump through hoops:
+}elsif(!$pass || !$username || !$email){
+	$prompt = 'Please fill in nearly all fields (real name is still optional)';
+
+}elsif($pass ne $query -&gt; param('toad')){
+	$prompt = &quot;Passwords don't match&quot;;
+
+}elsif($email ne $query -&gt; param('celery')){
+	$prompt = &quot;Email addresses don't match&quot;;
+
+# RFC 5231 &amp; 5232 are not regexp friendly. Only validate host part:
+}elsif($email !~ /.+@[\w\d.-]+\.[\w]+$/){
+	$prompt = &quot;Please enter a valid email address&quot;;
+
+}elsif($username =~ /^\W+$|[\[\]\&lt;\&gt;\&amp;\{\}\|\/\\]| .*_|_.* |\s\s|^\s|\s$/){
+	$prompt = &quot;Valid user names contain at least one letter or number, and none of
+		&amp;#91; &amp;#93; &amp;lt; &amp;gt; &amp;amp; { } | / or \\. They may contain either spaces or underscores
+		but not both, may not contain multiple spaces in a row and may not start or end with a space.
+		Please enter a valid user name&quot;;
+
+}elsif(&amp;$nameTaken($username)){
+	$prompt = 'Sorry, that username is already taken. Please try a different one';
+
+}elsif($spambot){
+	$prompt = 'We regret that only human beings or entities claiming
+		human status are permitted to sign up for an account.
+		Please assert your humanity';
+}
+
+$query -&gt; delete('frog', 'toad');
+
+return htmlcode('openform')
+	.$query -&gt; fieldset({style =&gt; 'width: 30em; max-width: 100%; margin: 3em auto 0'},
+		$query -&gt; legend('Enter new account details')
+		.$query -&gt; p($prompt.':')
+		.$query -&gt; p({style =&gt; 'text-align: right'},
+			$query -&gt; label('Username:'
+				.$query -&gt; textfield('hatstand', '', 30, 240))
+			.'&lt;br&gt;'
+			.$query -&gt; label('Real name:'
+				.$query -&gt; textfield('wotnot', '', 30, 240))
+			.'&lt;br&gt;'
+			.$query -&gt; label('Email address:'
+				.$query -&gt; textfield('raddish', '', 30, 240))
+			.'&lt;br&gt;'
+			.$query -&gt; label('Confirm email:'
+				.$query -&gt; textfield('celery', '', 30, 240))
+			.'&lt;br&gt;'
+			.$query -&gt; label('Password:'
+				.$query -&gt; password_field('frog', '', 30, 240))
+			.'&lt;br&gt;'
+			.$query -&gt; label('Repeat new password:'
+				.$query -&gt; password_field('toad', '', 30, 240))
+			.'&lt;br&gt;'
+			.$query -&gt; checkbox(
+				-name =&gt; 'email'
+				, value =&gt; 1
+				, checked =&gt; 1
+				, label =&gt; 'I am an evil robot spammer')
+			.'&lt;br&gt;'
+			.$query -&gt; submit('cancel', 'Submit')
 		)
 	)
-	.$query -&gt; h3('Read:')
-	.$query -&gt; ul(
-		$query -&gt; li(
-			$query -&gt; h4('Cool inspiration')
-			.htmlcode('displaynltext', 'Cool User Picks')
-		)
-		.$query -&gt; li(
-			$query -&gt; h4('What Inspired the Editors')
-			.htmlcode('displaynltext', 'Staff Picks')
-		)
+.'&lt;/form&gt;' if $prompt;
+
+my $name = $query -&gt; param('wotnot') || '';
+# real real names only have letters and spaces
+$name =~ s/[^\w ]//g;
+
+# construct new user
+my ($pwhash, $salt) = $APP -&gt; saltNewPassword($pass);
+
+my $user = {
+	nick =&gt; $username
+	, email =&gt; $email
+	, realname =&gt; $name
+	, user_salt =&gt; $salt
+};
+
+# get activation link
+my $params = $APP -&gt; getTokenLinkParameters($user, $pass, 'activate', time() + $validForDays * 86400);
+my $link = urlGen($params, 'no quotes', getNode('Confirm password', 'superdoc'));
+
+# save link in case we need to (re)send it later, and don't let user log on yet
+$user -&gt; {passwd} = $link;
+
+my @addrs = htmlcode('get ips');
+
+# check for blacklisted IP
+my $blacklistedIp;
+foreach (@addrs){
+	last if $blacklistedIp = $DB-&gt;sqlSelect(
+		'ipblacklist_id'
+		, 'ipblacklist'
+		, &quot;ipblacklist_ipaddress = '$_'&quot;
 	);
-
-	nukeNode($NODE, -1, 1); # no user check, gone forever
-
-	return $str;
 }
 
-if ($$NODE{author_user} != $$USER{node_id} and
-	$query -&gt; param('draft_title') || $query -&gt; param('draft_doctext') and
-	htmlcode('canseedraft', $NODE, 'edit') == 1
-){
-	my ($tt, $tx);
-	$$NODE{title} = $tt if $tt = $query -&gt; param('draft_title');
-	$$NODE{doctext} = $tx if $tx = $query -&gt; param('draft_doctext');
-	
-	updateNode($NODE, -1);
+if ($blacklistedIp){
+	# create user in locked state, and only send working activation link after human intervention
+	$user -&gt; {acctlock} = getNode('Klaproth', 'user') -&gt; {node_id};
+	$link =~ s/activate=/validate=/;
+	$link =~ s/token=.{12}/token=/g;
 }
 
-#$str = htmlcode('display draft');
+$user = $DB -&gt; insertNode($username, 'user', -1, $user);
+getRef $user;
 
-if ($$USER{node_id} == $$NODE{author_user}){
-	$str .= htmlcode('setdraftstatus', $NODE)
-		.htmlcode('openform')
-		.htmlcode('verifyRequestForm', 'nukedraft')
-		.'&lt;br&gt;
-		&lt;input type=&quot;submit&quot; name=&quot;confirmop&quot; value=&quot;Delete draft&quot; title=&quot;delete this draft&quot;&gt;
-		&lt;input type=&quot;hidden&quot; name=&quot;notanop&quot; value=&quot;nukedraft&quot;&gt;
-	&lt;/form&gt;';
+$user -&gt; {author_user} = $user -&gt; {node_id};
+$DB -&gt; updateNode($user, -1);
 
-}elsif($APP-&gt;isEditor($USER)){
-	my $status = getNodeById($$NODE{publication_status}) -&gt; {title};
+# log ip addresses
+map {
+	$DB-&gt;sqlInsert(
+		&quot;iplog&quot;
+		, {iplog_user =&gt; $$user{user_id}
+		, iplog_ipaddy =&gt; $_}
+	)
+} @addrs;
 
-	if ($status eq 'review' &amp;&amp; htmlcode('canseedraft', $NODE, 'edit') != 1){
-		# let editors see the HTML
-		$str .= '&lt;form class=&quot;writeup_add&quot;&gt;&lt;fieldset&gt;&lt;legend&gt;HTML source (not editable)&lt;/legend&gt;
-		&lt;textarea id=&quot;writeup_doctext&quot; class=&quot;readonly&quot;'
-			.htmlcode('customtextarea', '1')
-			.'&gt;'
-			.encodeHTML($$NODE{doctext})
-			.'&lt;/textarea&gt;&lt;/fieldset&gt;&lt;/form&gt;';
-	}elsif($status eq 'removed'){
-		# let editors restore if removed by mistake
-		$str .= htmlcode('parentdraft', $NODE)
-	}
-}
+### Save a few initial settings
+my $uservars = getVars($user);
+$$uservars{'showmessages_replylink'} = 1;
+$$uservars{ipaddy} = join ',', @addrs;
+$$uservars{preference_last_update_time} = time();
+$$uservars{infected} = 1 if htmlcode('checkInfected') == 1;
+setVars($user, $uservars);
 
-$str;
-%]</doctext>
+# send activation email
+use Everything::MAIL;
+my $mail = getNode('Activate account', 'mail');
+
+$$mail{doctext} =~ s/&#171;name&#187;/$$NEWUSER{realname}/;
+$$mail{doctext} =~ s/&#171;user&#187;/$$NEWUSER{title}/;
+$$mail{doctext} =~ s/&#171;activatelink&#187;/$link/;
+$$mail{doctext} =~ s!&#171;profile&#187;!http://$ENV{SERVER_NAME}/user/$$NEWUSER{title}!g;
+$$mail{doctext} =~ s!&#171;site_url&#187;!http://$ENV{SERVER_NAME}/!g;
+
+node2mail($email, $mail, 1);
+
+# tell them we're wonderful
+$name ||= $username;
+return &quot;&lt;h3&gt;Welcome to Everything2, $name!&lt;/h3&gt;
+
+	&lt;p&gt;Your new user account has been created, and an email has been sent to the address you provided. 
+	You cannot use your new account until you have followed the link in the email to activate your account.
+	This link will expire in $validForDays days, so you can take your time but not too much.
+	&lt;/p&gt;
+	&lt;p&gt;The email contains some useful information, so please read it carefully, print it
+	out on high-quality paper, and hang it on your wall in a robust frame.
+	&lt;/p&gt;&quot;;
+#%]
+</doctext>
   <node_id>2000674</node_id>
   <title>caja de arena</title>
 </node>

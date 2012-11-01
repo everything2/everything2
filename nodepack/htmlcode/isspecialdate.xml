@@ -11,7 +11,7 @@
 use DateTime;
 
 my ($d) = @_;
-my $dt = DateTime-&gt;now( time_zone =&gt; &quot;America/Los_Angeles&quot; );
+my $dt = DateTime-&gt;now( time_zone =&gt; &quot;UTC&quot; );
 my $year = $dt-&gt;year();
 my $mday = $dt-&gt;mday();
 my $mon = $dt-&gt;month();

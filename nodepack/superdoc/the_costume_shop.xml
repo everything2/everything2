@@ -3,6 +3,7 @@
   <doctext>[%
 
 my $isHalloween = htmlcode('isSpecialDate','halloween');
+#my $isHalloween = 1;
 my $costume;
 my $costumeCost = 5;
 

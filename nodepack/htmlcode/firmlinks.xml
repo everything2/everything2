@@ -44,9 +44,7 @@ return unless($firmlink);
 
 my $firmlinkId = $$firmlink{node_id};
 my $RECURSE = 1;
-my $cantrim = $DB -&gt; canUpdateNode($USER, $currentnode)
-	|| htmlcode('isinUsergroup', $USER, 'SIGTITLE', $RECURSE)
-  ;
+my $cantrim = $DB -&gt; canUpdateNode($USER, $currentnode) || $APP-&gt;isEditor($USER);
 
 my $sqlQuery = &lt;&lt;SQLEND;
 SELECT links.to_node, note.firmlink_note_text

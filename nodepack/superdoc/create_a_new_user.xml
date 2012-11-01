@@ -295,7 +295,6 @@ for my $address (@addrs) {
 		my $sendResult = htmlcode('sendPrivateMessage','');
 
 		### Send the User a Welcome Email
-		use Everything::MAIL;
 		my ($n) = getNodeWhere({title=&gt;'Welcome to the Everything2 community!'},
 		 						$DB-&gt;getType('mail')
 		);
@@ -310,7 +309,7 @@ for my $address (@addrs) {
 		$$n{doctext} =~ s/\&lt;login\&gt;/http:\/\/$ENV{SERVER_NAME}\/index\.pl\?node_id=$HTMLVARS{login_node}/g;
 		$$n{doctext} =~ s/\&lt;verify_email_url\&gt;/http:\/\/$ENV{SERVER_NAME}\/index\.pl\?node_id=$HTMLVARS{verifyEmailAccount_node}/g;
 		$$n{doctext} =~ s/\&lt;servername\&gt;/$ENV{SERVER_NAME}/g;
-		node2mail($$NEWUSER{email},$n, 1);
+		$APP-&gt;node2mail($$NEWUSER{email},$n, 1);
 
 		my $homenodeLink = linkNode($NEWUSER,&quot;your homenode&quot;);
 		$str.= &lt;&lt;__HERE__

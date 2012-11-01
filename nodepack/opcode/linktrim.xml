@@ -28,9 +28,7 @@ return unless $trimmable{$linkName};
 if ($linkName eq 'softlink' || $linkName eq 'firmlink') {
 
    my $recurseGroups = 1;
-   return unless $APP-&gt;isEditor($USER)
-       or htmlcode('isinUsergroup', $USER, 'SIGTITLE', $recurseGroups)
-       ;
+   return unless $APP-&gt;isEditor($USER);
 
 } elsif ($linkName eq 'favorite') {
 

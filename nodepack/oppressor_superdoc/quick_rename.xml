@@ -3,11 +3,6 @@
   <doctext>[{openform}]
 [%
 
-my $UID = getId($USER)||0;
-my $isRoot = exists($HTMLVARS{'group_gods'}{$UID});
-my $isSigtitle = exists($HTMLVARS{'group_sigtitle'}{$UID});
-
-return &quot;&lt;p&gt;Access denied.&lt;/p&gt;&quot; unless ($isRoot || $isSigtitle);
 my $str = &quot;&lt;p align=\&quot;right\&quot;&gt;&lt;small&gt;This will allow you to retitle a lot of e2nodes in mass. Enter the title of the node originally on the left, and the new title on the right.  It will retitle the node and repair it, all in one fell swoop&lt;/small&gt;&lt;/p&gt;&quot;;
 
 foreach(1..30)

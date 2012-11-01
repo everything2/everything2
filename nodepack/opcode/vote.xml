@@ -23,10 +23,6 @@ my $VSETTINGS = getVars(getNode('vote settings', 'setting'));
 my $countPlus=0;
 my $countMinus=0;
 
-my $VOTES = getVars(getNode('level votes','setting'));
-my $numVotes = $$VOTES{$APP-&gt;getLevel($USER)};
-
-
 foreach (@params) {
   next unless /^vote\_\_(\d+)$/;
 
