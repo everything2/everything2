@@ -4,6 +4,12 @@ use strict;
 package Everything::Application;
 use Everything;
 
+# For node2mail
+use Email::Sender::Simple qw(try_to_sendmail);
+use Email::Simple;
+use Email::Simple::Creator;
+use Email::Sender::Transport::SMTP;
+
 use vars qw($PARAMS $PARAMSBYTYPE);
 BEGIN {
 	$PARAMS = 
@@ -960,6 +966,35 @@ sub inDevEnvironment
 {
 	my ($this) = @_;
 	return $this->{conf}->{environment} eq "development";
+}
+
+sub node2mail {
+	my ($this, $addr, $node, $html) = @_;
+	my @addresses = (ref $addr eq "ARRAY") ? @$addr:($addr);
+	my ($user) = $this->{db}->getNodeWhere({node_id => $$node{author_user}},$this->{db}->getType("user"));
+	my $subject = $$node{title};
+	my $body = $$node{doctext};
+
+	my $from = $this->{conf}->{mail_from};
+	my $transport = Email::Sender::Transport::SMTP->new(
+  	{ "host" => $this->{conf}->{smtp_host},
+    	  "port" => $this->{conf}->{smtp_port},
+    	  "ssl" => $this->{conf}->{smtp_use_ssl},
+    	  "sasl_username" => $this->{conf}->{smtp_user},
+    	  "sasl_password" => $this->{conf}->{smtp_pass},
+  	});
+
+	my $email = Email::Simple->create(
+  	"header" => [
+     		"To"		=> $addr,
+     		"From"		=> $from,
+     		"Subject"	=> $subject,
+		"Content-Type"	=> 'text/html; charset="utf-8"',
+  	],
+  	"body" => $body
+	);
+
+	try_to_sendmail($email, { "transport" => $transport });
 }
 
 1;
