@@ -10,7 +10,6 @@ package Everything::HTML;
 
 use strict;
 use Everything;
-use Everything::MAIL;
 use CGI;
 use CGI::Carp qw(set_die_handler);
 use Carp qw(longmess);
