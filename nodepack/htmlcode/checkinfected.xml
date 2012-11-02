@@ -2,25 +2,21 @@
   <type_nodetype>4</type_nodetype>
   <node_id>2008093</node_id>
   <title>checkInfected</title>
-  <code># Code taken from confirmUser() and loginUser() in HTML.pm
-return -5 unless $query;
+  <code># infection arises if user has an old login cookie belonging to a locked account
+
+return 1 if $$VARS{infected};
+
+# if logged on, no old cookie
+return 0 unless $APP -&gt; isGuest($USER) &amp;&amp; $query;
 
 my $loginCookie = $query-&gt;cookie($Everything::CONF-&gt;{cookiepass});
 
-return -1 unless $loginCookie;
+return 0 unless $loginCookie;
 
-my ($user_name, $cr_password) = split(/\|/, urlDecode($loginCookie));
+my ($user_name) = split(/\|/, $loginCookie);
 my $check_user = getNode($user_name, 'user');
 
-return -2 if !$check_user;
-return -3 if crypt($$check_user{passwd}, $$check_user{title}) ne $cr_password;
-return -4 if !$$check_user{acctlock};
-
-return 1
-  if ($check_user
-    &amp;&amp; crypt($$check_user{passwd}, $$check_user{title}) eq $cr_password
-    &amp;&amp; $$check_user{acctlock}
-  );
+return 1 if $check_user &amp;&amp; $$check_user{acctlock};
 
 return 0;
 </code>

@@ -21,24 +21,16 @@
     <key>coolmaneddie</key>
   </vars>
   <vars>
-    <value>404539</value>
-    <key>definitionsthatneedwork</key>
-  </vars>
-  <vars>
-    <value>407514</value>
-    <key>submissionsforquoteserver</key>
-  </vars>
-  <vars>
     <value>-8</value>
     <key>writeuplowrepthreshold</key>
   </vars>
   <vars>
-    <value>124</value>
-    <key>default_node</key>
-  </vars>
-  <vars>
     <value>recently c!ed nodes from Everything2.com</value>
     <key>headlines_description</key>
+  </vars>
+  <vars>
+    <value>124</value>
+    <key>default_node</key>
   </vars>
   <vars>
     <value>837990</value>
@@ -69,20 +61,16 @@
     <key>stylesheetFixLevel</key>
   </vars>
   <vars>
-    <value>198</value>
-    <key>systemsettings</key>
-  </vars>
-  <vars>
-    <value>407437</value>
-    <key>EverythingQuoteServer</key>
-  </vars>
-  <vars>
     <value>444250</value>
     <key>UserSearch</key>
   </vars>
   <vars>
     <value>http://everything2.com/</value>
     <key>site_url</key>
+  </vars>
+  <vars>
+    <value>407437</value>
+    <key>EverythingQuoteServer</key>
   </vars>
   <vars>
     <value>165580</value>
@@ -125,12 +113,12 @@
     <key>Broken_nodes</key>
   </vars>
   <vars>
-    <value>668164</value>
-    <key>notFound_node</key>
-  </vars>
-  <vars>
     <value>1428471</value>
     <key>title_edit_longterm</key>
+  </vars>
+  <vars>
+    <value>668164</value>
+    <key>notFound_node</key>
   </vars>
   <vars>
     <value>1948165</value>
@@ -141,16 +129,12 @@
     <key>default_theme</key>
   </vars>
   <vars>
-    <value>166948</value>
-    <key>generalParent_container</key>
-  </vars>
-  <vars>
     <value>216</value>
     <key>nodelet_group</key>
   </vars>
   <vars>
-    <value>502167</value>
-    <key>PiercismsGenerator</key>
+    <value>166948</value>
+    <key>generalParent_container</key>
   </vars>
   <vars>
     <value>529746</value>
@@ -159,10 +143,6 @@
   <vars>
     <value>100</value>
     <key>nodeLocked_node</key>
-  </vars>
-  <vars>
-    <value>365025</value>
-    <key>Definitions_that_need_work</key>
   </vars>
   <vars>
     <value>104</value>

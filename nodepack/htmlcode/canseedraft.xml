@@ -20,8 +20,8 @@ unless ($$N{publication_status}){
 
 return 0 if $editCheck &amp;&amp; !$$N{collaborators};
 
-my $status = getNodeById($$N{publication_status});
-return 0 if !$status || $$status{type}{title} ne 'publication_status';
+my $STATUS = getNodeById($$N{publication_status});
+return 0 if !$STATUS || $$STATUS{type}{title} ne 'publication_status';
 
 my $isEditor = $APP-&gt;isEditor($USER);
 
@@ -31,12 +31,14 @@ my %equivalents = (
 	, review =&gt; 'findable'
 );
 
-$status = $equivalents{$$status{title}} || $$status{title};
+my $status = $equivalents{$$STATUS{title}} || $$STATUS{title};
 
 return 0 if $status eq 'private' and
 	!$$N{collaborators} || $editCheck;
 
-return 0 if $DB -&gt; sqlSelect('acctlock', 'user', &quot;user_id=$$N{author_user}&quot;);
+# locked users' drafts are private, except removed drafts for editors
+return 0 if (!$isEditor || $$STATUS{title} ne 'removed')
+	and $DB -&gt; sqlSelect('acctlock', 'user', &quot;user_id=$$N{author_user}&quot;);
 
 unless ($editCheck){
 	return 1 if $status eq 'public' and

@@ -4,7 +4,7 @@
   <_create_table_statement>CREATE TABLE `user` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `nick` varchar(20) DEFAULT NULL,
-  `passwd` varchar(10) DEFAULT NULL,
+  `passwd` varchar(127) DEFAULT NULL,
   `realname` varchar(40) DEFAULT NULL,
   `email` varchar(40) DEFAULT NULL,
   `lasttime` datetime DEFAULT NULL,
@@ -25,7 +25,7 @@
   `sanctity` int(11) NOT NULL DEFAULT '0',
   `stars` int(11) NOT NULL DEFAULT '0',
   `session_id` int(11) DEFAULT NULL,
-  `user_salt` int(11) DEFAULT NULL,
+  `user_salt` varchar(23) DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   KEY `email` (`email`),
   KEY `lasttime` (`lasttime`),

@@ -1,21 +1,21 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Thu Nov  1 19:00:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
-	&lt;cooled cooledby_user=&quot;riverrun&quot; node_id=&quot;2071993&quot; parent_e2node=&quot;2071987&quot; author_user=&quot;jaybonci&quot;&gt;root log: November 2012&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Oolong&quot; node_id=&quot;1444558&quot; parent_e2node=&quot;1444519&quot; author_user=&quot;ravy&quot;&gt;giallo&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;2072068&quot; parent_e2node=&quot;2072069&quot; author_user=&quot;gnarl&quot;&gt;Berberian Sound Studio&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;sam512&quot; node_id=&quot;2072055&quot; parent_e2node=&quot;2072056&quot; author_user=&quot;Andrew Aguecheek&quot;&gt;Skyfall&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;tanktop&quot; node_id=&quot;2072046&quot; parent_e2node=&quot;2072045&quot; author_user=&quot;erland&quot;&gt;Juan S&#225;nchez Cot&#225;n&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;montecarlo&quot; node_id=&quot;2072031&quot; parent_e2node=&quot;2068629&quot; author_user=&quot;Montag&quot;&gt;Dulwich College&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;locke baron&quot; node_id=&quot;2072016&quot; parent_e2node=&quot;2072025&quot; author_user=&quot;rootbeer277&quot;&gt;The Tanzanian Devil 3 2/2&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;sloebertje&quot; node_id=&quot;2071858&quot; parent_e2node=&quot;2067543&quot; author_user=&quot;Oolong&quot;&gt;Exoticization&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Uberbanana&quot; node_id=&quot;627447&quot; parent_e2node=&quot;565742&quot; author_user=&quot;legbagede&quot;&gt;Library of Alexandria&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;JD&quot; node_id=&quot;2072038&quot; parent_e2node=&quot;2072037&quot; author_user=&quot;Demeter&quot;&gt;Anatomy 101&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2071830&quot; parent_e2node=&quot;1829838&quot; author_user=&quot;tubular&quot;&gt;xkcd&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2071997&quot; parent_e2node=&quot;2071994&quot; author_user=&quot;Glowing Fish&quot;&gt;US Election Atlas&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;decoy hunches&quot; node_id=&quot;2067994&quot; parent_e2node=&quot;2072041&quot; author_user=&quot;Uberbanana&quot;&gt;I Move The Stones Beneath Your Feet&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;gnarl&quot; node_id=&quot;2070593&quot; parent_e2node=&quot;2070571&quot; author_user=&quot;jaybonci&quot;&gt;root log: October 2012&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Glowing Fish&quot; node_id=&quot;1333542&quot; parent_e2node=&quot;1333522&quot; author_user=&quot;Jurph&quot;&gt;Don't Follow&lt;/cooled&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Fri Nov  2 15:05:09 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;wertperch&quot; node_id=&quot;2072070&quot; parent_e2node=&quot;2071983&quot; author_user=&quot;jessicaj&quot;&gt;November 1, 2012&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;wertperch&quot; node_id=&quot;1480149&quot; parent_e2node=&quot;958056&quot; author_user=&quot;in10se&quot;&gt;dead pool&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Auspice&quot; node_id=&quot;2070874&quot; parent_e2node=&quot;2072152&quot; author_user=&quot;Zephronias&quot;&gt;Valencia Street&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;locke baron&quot; node_id=&quot;2072124&quot; parent_e2node=&quot;2072123&quot; author_user=&quot;Decaversal Studios&quot;&gt;Everything2 Decaversary Interviews: Tempestas&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Oolong&quot; node_id=&quot;1474005&quot; parent_e2node=&quot;1298153&quot; author_user=&quot;Freddo&quot;&gt;Bob Dylan's Greatest Hits Vol. II&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Glowing Fish&quot; node_id=&quot;2071947&quot; parent_e2node=&quot;118924&quot; author_user=&quot;Oolong&quot;&gt;order of magnitude&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2041535&quot; parent_e2node=&quot;2072083&quot; author_user=&quot;BookReader&quot;&gt;This Won't Cause Trouble Later&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Uberbanana&quot; node_id=&quot;2071830&quot; parent_e2node=&quot;1829838&quot; author_user=&quot;tubular&quot;&gt;xkcd&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;1194896&quot; parent_e2node=&quot;846359&quot; author_user=&quot;hesby&quot;&gt;sourdough starter&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;momomom&quot; node_id=&quot;2072062&quot; parent_e2node=&quot;2072059&quot; author_user=&quot;mauler&quot;&gt;island fox&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;2072106&quot; parent_e2node=&quot;1032300&quot; author_user=&quot;alex&quot;&gt;The Garden of Earthly Delights&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;futilelord&quot; node_id=&quot;459259&quot; parent_e2node=&quot;459244&quot; author_user=&quot;jessicapierce&quot;&gt;Tits on a keyboard&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Glowing Fish&quot; node_id=&quot;2072102&quot; parent_e2node=&quot;1151992&quot; author_user=&quot;Hazelnut&quot;&gt;Milkybar&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2067994&quot; parent_e2node=&quot;2072041&quot; author_user=&quot;Uberbanana&quot;&gt;I Move The Stones Beneath Your Feet&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2072016&quot; parent_e2node=&quot;2072025&quot; author_user=&quot;rootbeer277&quot;&gt;The Tanzanian Devil 3 2/2&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>
