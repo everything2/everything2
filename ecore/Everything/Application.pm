@@ -109,6 +109,192 @@ sub new
 }
 
 
+#############################################################################
+#	Sub
+#		updatePassword
+#
+#	purpose
+#		create a new salt, update user with new salt and new hashed password,
+#		(optionally) unlock user account
+#
+#	arguments
+#		(hashref) user, new password, [(boolean) unlock]
+#
+#	returns
+#		result of DB update
+#
+
+sub updatePassword
+{
+	my ($this, $user, $pass, $unlock) = @_;
+
+	($user -> {passwd}, $user -> {user_salt}) = $this -> saltNewPassword($pass);
+	$user -> {acctlock} = 0 if $unlock;
+
+	return $this -> {db} -> updateNode($user, $user);
+}
+
+#############################################################################
+#	Sub
+#		saltNewPassword
+#
+#	purpose
+#		create a new salt and use it to hash a given password
+#
+#	parameter
+#		cleartext password
+#
+#	returns
+#		array containing salt and hash
+#
+
+sub saltNewPassword
+{
+	my ($this, $pass) = @_;
+
+	my $shaPrefix = '$6$';
+	my $saltLength = 20;
+
+	my @base64 = ('A' .. 'Z', 'a' .. 'z', 0 .. 9, '.', '/');
+	my $salt = $shaPrefix.join('', @base64[ map { rand 64 } ( 1 .. $saltLength ) ]);
+
+	my $pwhash = $this -> hashString($pass, $salt);
+	return ($pwhash, $salt);
+}
+
+#############################################################################
+#	Sub
+#		hashString
+#
+#	Purpose
+#		hash a password/string using a salt.
+#
+#	Parameters
+#		cleartext password/string, salt
+#
+#	Returns
+#		hashed password
+#
+
+sub hashString
+{
+	my ($this, $pass, $salt) = @_;
+
+	$pass = crypt($pass, $salt);
+	# Salt prefix reveals algorithm, and we store the salt separately anyway
+	$pass =~ s/^.*\$//;
+
+	return $pass;
+}
+
+#############################################################################
+#	Sub
+#		getToken
+#
+#	Purpose
+#		generate a token to activate a new account
+#		or reset a lost password
+#
+#	Parameters
+#		a user (NODE), password, action,
+#		(optional) token expiry timestamp
+#
+#	Returns
+#		a new token, or (boolean) passed check
+#
+
+sub getToken
+{
+	my ($this, $user, $pass, $action, $expiry) = @_;
+
+	my $token = $this -> hashString("$action$pass$expiry", $user -> {user_salt});
+	# email clients may parse dots at end of links as outside link
+	$token =~ s/\.+$//;
+	return $token;
+}
+
+#############################################################################
+#	Sub
+#		getTokenLinkParameters
+#
+#	purpose
+#		provide parameters for a link to allow a user to activate a new
+#		account or reset their password
+#
+#	Parameters
+#		(hashref) user, (string) what action the link is for,
+#		password, (optional) expiry timestamp, (optional) page url
+#
+
+sub getTokenLinkParameters
+{
+	my ($this, $user, $pass, $action, $expiry) = @_;
+
+	my $token = $this -> getToken($user, $pass, $action, $expiry);
+
+	return {
+		user => $$user{title} || $$user{nick}
+		, token => $token
+		, action => $action
+		, expiry => $expiry
+	};
+}
+
+#############################################################################
+#	Sub
+#		checkToken
+#
+#	purpose
+#		check validity of token presented to activate or reset an account
+#		and update account appropriately
+#
+#	parameter
+#		(hashref) user, CGI object
+#
+sub checkToken
+{
+	my ($this, $user, $query) = @_;
+
+	my $action = $query -> param('action');
+	my $expiry = $query -> param('expiry');
+
+	return if ($expiry && time() > $expiry)
+		or ($action ne 'activate' && $action ne 'reset')
+		or $this -> getToken($user, $query -> param('passwd')
+			, $action, $expiry) ne $query -> param('token');
+
+	$this -> updatePassword($user, $query -> param('passwd'));
+}
+
+#############################################################################
+#	Sub
+#		updateLogin
+#
+#	purpose
+#		log in a user whose password has not yet been hashed,
+#		and hash it
+#
+#	parameter
+#		(hashref) user, CGI object, old login cookie
+#
+#	returns
+#		user hashref if user was logged in and updated, 0 if not
+#
+
+sub updateLogin
+{
+	my ($this, $user, $query, $cookie) = @_;
+
+	return 0 if $query -> param('passwd') ne $user -> {passwd}
+		&& $cookie ne $user -> {title}.'|'.crypt($user -> {passwd}, $user -> {title});
+
+	$this -> updatePassword($user, $user -> {passwd});
+
+	# set new login cookie, unless we're going to anyway (and avoid infinte loop)
+	Everything::HTML::oplogin() unless $query -> param('op') eq 'login';
+	return $user;
+}
+
 ######################################################################
 #	sub
 #		cleanWordAggressive
