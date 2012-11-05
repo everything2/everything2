@@ -2664,15 +2664,16 @@ sub confirmUser
 	{
 		# login with plaintext password. May reset password or activate account first:
 		$APP -> checkToken($user, $query) if $query -> param('token');
-		$pass = $APP -> hashString($pass, $user -> {user_salt});
+		$pass = $APP -> hashString($pass, $user -> {salt});
 	}
 
 	return $user if $pass eq $user -> {passwd};
 	# legacy user with unsalted password?
-	$user = $APP -> updateLogin($user, $query, $cookie) unless $user -> {user_salt} =~ /^\$/;
+	$user = $APP -> updateLogin($user, $query, $cookie) unless $user -> {salt};
 
 	return $user || 0;
 }
+
 
 #############################################################################
 sub opLogout
