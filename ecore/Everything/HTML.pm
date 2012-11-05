@@ -2668,12 +2668,11 @@ sub confirmUser
 	}
 
 	return $user if $pass eq $user -> {passwd};
-	# legacy user with unsalted password?
-	$user = $APP -> updateLogin($user, $query, $cookie) unless $user -> {salt};
+	return 0 if $user -> {salt};
 
-	return $user || 0;
+	# legacy user with unsalted password
+	return $APP -> updateLogin($user, $query, $cookie);
 }
-
 
 #############################################################################
 sub opLogout
