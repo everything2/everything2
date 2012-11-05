@@ -126,11 +126,9 @@ sub new
 
 sub updatePassword
 {
-	my ($this, $user, $pass, $unlock) = @_;
+	my ($this, $user, $pass) = @_;
 
-	($user -> {passwd}, $user -> {user_salt}) = $this -> saltNewPassword($pass);
-	$user -> {acctlock} = 0 if $unlock;
-
+	($user -> {passwd}, $user -> {salt}) = $this -> saltNewPassword($pass);
 	return $this -> {db} -> updateNode($user, $user);
 }
 
@@ -207,7 +205,7 @@ sub getToken
 {
 	my ($this, $user, $pass, $action, $expiry) = @_;
 
-	my $token = $this -> hashString("$action$pass$expiry", $user -> {user_salt});
+	my $token = $this -> hashString("$action$pass$expiry", $user -> {salt});
 	# email clients may parse dots at end of links as outside link
 	$token =~ s/\.+$//;
 	return $token;
@@ -264,6 +262,7 @@ sub checkToken
 			, $action, $expiry) ne $query -> param('token');
 
 	$this -> updatePassword($user, $query -> param('passwd'));
+	$this -> securityLog($Everything::GNODE, $user, "$$user{title} account $action");
 }
 
 #############################################################################
@@ -290,7 +289,7 @@ sub updateLogin
 
 	$this -> updatePassword($user, $user -> {passwd});
 
-	# set new login cookie, unless we're going to anyway (and avoid infinte loop)
+	# set new login cookie, unless we're going to anyway (and avoid infinite loop)
 	Everything::HTML::oplogin() unless $query -> param('op') eq 'login';
 	return $user;
 }
