@@ -2222,37 +2222,6 @@ sub gotoNode
 
 
 #############################################################################
-sub confirmUser {
-	my ($nick, $crpasswd) = @_;
-
-	my $USER = getNode($nick, getType('user'));
-
-        #jb says: added this line
-        return 0 unless($$USER{acctlock} == 0);
-
-	if (crypt ($$USER{passwd}, $$USER{title}) eq $crpasswd) {
-		my $TIMEOUT_SECONDS = 4 * 60;
-		my $updateTime = 1;
-		$updateTime = 0 if $query and $query->param('ajaxIdle');
-		if ($updateTime) {
-			my $seconds_since_last;
-			my $sth = $DB->getDatabaseHandle()->prepare("
-				CALL update_time($$USER{node_id});
-				");
-			$sth->execute();
-			($seconds_since_last) = $sth->fetchrow_array();
-			insertIntoRoom($$USER{in_room}, $USER, $VARS)
-				if $seconds_since_last > $TIMEOUT_SECONDS;
-		}
-
-		 #'Force' it to make sure we don't get a cached version
-	 	 return getNodeById($USER, 'force');
-	} 
-	return 0;
-}
-
-
-#############################################################################
 sub parseLinks {
        my ($text, $NODE, $escapeTags) = @_;
 
@@ -2302,61 +2271,6 @@ sub urlDecode {
 	}
 
 	$_[0];
-}
-
-
-#############################################################################
-#	Sub
-#		loginUser
-#
-#	Purpose
-#		For each page request, we need to know the user trying to view
-#		the page.  This logs in a user if they are logging in and stores
-#		the info in a cookie.  If they have already logged in, we use
-#		their cookie information.
-#
-#	Parameters
-#		None.  Uses global package vars.
-#
-#	Returns
-#		The USER node hash reference
-#
-sub loginUser
-{
-	my ($user_id, $cookie, $user, $passwd);
-	my $USER_HASH;
-	
-	
-        #jb 5-19-02: To support wap phones and maybe other clients/configs without cookies:
-
-        my $oldcookie = $query->cookie($Everything::CONF->{cookiepass});
-        $oldcookie ||= $query->param($Everything::CONF->{cookiepass});
-
-        if($oldcookie)                     
-	{
-		$user_id = confirmUser (split (/\|/, urlDecode ($oldcookie)));
-	}
-	
-	# If all else fails, use the guest user
-	$user_id ||= $Everything::CONF->{system}->{guest_user};
-
-	# Get the user node
-	$USER_HASH = getNodeById($user_id);	
-
-	die "Unable to get user!" unless ($USER_HASH);
-
-        #jb: [root log: november 2001]. This is to prevent locked
-        #users from coming back online.  Stops their authentication
-
-        $USER_HASH = getNodeById($Everything::CONF->{system}->{guest_user}) unless($$USER_HASH{acctlock} == 0);
-
-	# Assign the user vars to the global.
-	$VARS = getVars($USER_HASH);
-	
-	# Store this user's cookie!
-	$$USER_HASH{cookie} = $cookie if $cookie; 
-
-	return $USER_HASH;
 }
 
 
@@ -2648,32 +2562,117 @@ sub opNuke
 
 
 #############################################################################
+#	Sub
+#		opLogin
+#
+#	Purpose
+#		log in user with plain text password and set login cookie
+#		with username and hashed password
+#
+
 sub opLogin
 {
 	my $user = $query->param("user");
 	my $passwd = $query->param("passwd");
-	my $user_id;
-	my $cookie;
+	$USER = loginUser($user, $passwd) if $user && $passwd;
 
-	my $U = getNode($user,'user');
-    $user = $$U{title} if $U;
+	return if !$USER || $$USER{user_id} == $HTMLVARS{guest_user};
 
-	$user_id = confirmUser ($user, crypt ($passwd, $user));
-	
-	# If the user/passwd was correct, set a cookie on the users
-	# browser.
-	$cookie = $query->cookie(-name => $Everything::CONF->{cookiepass}, 
-		-value => $query->escape($user . '|' . crypt ($passwd, $user)), 
-		-expires => $query->param("expires")) if $user_id;
+	$user = $USER -> {title};
+	$passwd = $USER -> {passwd};
 
-	$user_id ||= $Everything::CONF->{system}->{guest_user};
-
-	$USER = getNodeById($user_id);
-	$VARS = getVars($USER);
-
-	$$USER{cookie} = $cookie if($cookie);
+	$USER -> {cookie} = $query -> cookie(
+		-name => $Everything::CONF -> {cookiepass}
+		, -value => "$user|$passwd"
+		, -expires => $query->param('expires'));
 }
 
+#############################################################################
+#	Sub
+#		loginUser
+#
+#	Purpose
+#		log in user or set Guest User. Set $VARS. Update last seen
+#		time and room for logged in user
+#
+#	Parameters
+#		user name and plain text password, or none to use cookie
+#
+#	Returns
+#		user hashref
+#
+
+sub loginUser
+{
+	my ($username, $pass, $cookie) = @_;
+
+	unless ($username && $pass or !$query)
+	{
+		$cookie = $query->cookie($Everything::CONF->{cookiepass})
+			#jb 5-19-02: To support wap phones and maybe other clients/configs without cookies:
+			|| $query->param($Everything::CONF->{cookiepass});
+	
+		($username, $pass) = split(/\|/, $cookie) if $cookie;
+	}
+
+	my $user = confirmUser($username, $pass, $cookie) if $username && $pass;
+	$user ||= getNodeById($HTMLVARS{guest_user});
+
+	$VARS = getVars($user);
+
+	return $user if !$user
+		|| $user -> {user_id} == $HTMLVARS{guest_user}
+		|| $query -> param('ajaxIdle');
+
+	my $TIMEOUT_SECONDS = 4 * 60;
+
+	my $sth = $DB->getDatabaseHandle()->prepare("
+		CALL update_lastseen($$user{node_id});
+		");
+	$sth->execute();
+	my ($seconds_since_last, $now) = $sth->fetchrow_array();
+	$user -> {lastseen} = $now;
+
+	insertIntoRoom($$user{in_room}, $user, $VARS)
+		if $seconds_since_last > $TIMEOUT_SECONDS;
+
+	return $user;
+}
+
+#############################################################################
+#	Sub
+#		confirmUser
+#
+#	Purpose
+#		Check user credentials if presented.
+#
+#	Parameters
+#		user name, password, cookie
+#
+#	Returns
+#		The USER node hash reference if credentials are accepted,
+#		otherwise 0
+
+sub confirmUser
+{
+	my ($username, $pass, $cookie) = @_;
+
+	my $user = getNode($username, 'user');
+	return 0 unless $user && $user -> {acctlock} == 0;
+
+	unless ($cookie)
+	{
+		# login with plaintext password. May reset password or activate account first:
+		$APP -> checkToken($user, $query) if $query -> param('token');
+		$pass = $APP -> hashString($pass, $user -> {salt});
+	}
+
+	return $user if $pass eq $user -> {passwd};
+	return 0 if $user -> {salt};
+
+	# legacy user with unsalted password
+	return $APP -> updateLogin($user, $query, $cookie);
+}
 
 #############################################################################
 sub opLogout
