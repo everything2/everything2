@@ -154,12 +154,8 @@ if ($U &amp;&amp; $uidGiven &amp;&amp; $validationKeyGiven){
 			&quot;suspension&quot;,&quot;suspension_user=$$USER{node_id} and suspension_sustype='1948205'&quot;
 		);
 		### (that is, they're not suspended)
-		if($$USER{validemail} &amp;&amp; !$$sushash{suspension_sustype}){
-			$str .= &quot;You appear to have a valid email address on file with us.  &quot;
-			.&quot;Nothing to see here, move on!&quot;;
-			return $str;
-		}elsif(!$$USER{validemail} &amp;&amp; !$$sushash{suspension_sustype}){
-			$str .= &quot;&lt;p&gt;Your email address on file predates our validation procedures.  If you'd like to validate your email anyhow, feel free to do so.&lt;/p&gt;\n $newKeyForm&quot;;
+		if(!$$sushash{suspension_sustype}){
+			$str .= &quot;This page will soon be obsolete. You already don't need it.&quot;;
 			return $str;
 		}
 	}

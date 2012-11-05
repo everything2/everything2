@@ -97,7 +97,7 @@ return qq'&lt;fieldset id=&quot;categoryform$$N{node_id}&quot;&gt;&lt;legend&gt;
 		$createcategory
 		&lt;button value=&quot;category&quot; name=&quot;'
 		.( $inwriteupform ? qq'cat$addnid&quot; type=&quot;button&quot;' : 'op&quot; type=&quot;submit&quot;' )
-		.qq'class=&quot;$class&quot;&gt;Add&lt;/button&gt;
+		.qq' class=&quot;$class&quot;&gt;Add&lt;/button&gt;
 		$notification
 	&lt;/fieldset&gt;
 	';

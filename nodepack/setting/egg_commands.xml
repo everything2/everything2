@@ -21,7 +21,7 @@
     <key>beer</key>
   </vars>
   <vars>
-    <value>throws toilet paper over</value>
+    <value>lavishes attention upon</value>
     <key>special</key>
   </vars>
   <vars>
@@ -37,8 +37,12 @@
     <key>nudge</key>
   </vars>
   <vars>
-    <value>throws an egg at</value>
+    <value>eggs</value>
     <key>egg</key>
+  </vars>
+  <vars>
+    <value>hands an ice-cold gin and tonic to</value>
+    <key>gin</key>
   </vars>
   <vars>
     <value>offers cookies to</value>
@@ -65,10 +69,6 @@
     <key>hug</key>
   </vars>
   <vars>
-    <value>hoists the Jolly Roger, and boards</value>
-    <key>pirate</key>
-  </vars>
-  <vars>
     <value>rubber chickens</value>
     <key>rubberchicken</key>
   </vars>
@@ -83,6 +83,10 @@
   <vars>
     <value>makes a nice cup of tea for</value>
     <key>tea</key>
+  </vars>
+  <vars>
+    <value>drops a piano on</value>
+    <key>piano</key>
   </vars>
   <node_id>1922142</node_id>
   <title>egg commands</title>

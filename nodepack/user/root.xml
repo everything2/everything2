@@ -2,6 +2,7 @@
   <nick></nick>
   <email>root@localhost</email>
   <realname>Super user</realname>
+  <salt></salt>
   <type_nodetype>15</type_nodetype>
   <vars>
     <value></value>

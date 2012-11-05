@@ -3,6 +3,7 @@
   <email>e2bones@yahoo.com</email>
   <realname>Master Klaproth</realname>
   <imgsrc>images/userincoming/Klaproth.jpeg</imgsrc>
+  <salt></salt>
   <type_nodetype>15</type_nodetype>
   <vars>
     <value></value>
