@@ -3,8 +3,7 @@
   <node_id>1150391</node_id>
   <title>addfirmlink</title>
   <code>my $RECURSE = 1;
-return unless htmlcode('isinUsergroup', $USER, 'SIGTITLE', $RECURSE)
-  or $APP-&gt;isEditor($USER);
+return unless $APP-&gt;isEditor($USER);
 
 $query-&gt;delete('op');
 

@@ -2,7 +2,7 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
-return &quot;Permission Denied&quot; unless htmlcode('isinUsergroup',&quot;$$USER{user_id},chanops,1&quot;);
+return &quot;Permission Denied&quot; unless $APP-&gt;isChanop($USER);
 
 my $header ='
 

@@ -79,18 +79,9 @@ my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
 
 #determine message - quick checks for failure before we do database access
 return 'Nothing to send: no message was given.' unless $params-&gt;{message};
-my $msg = $params-&gt;{message};
-#ensure message doesn't have any embeded newlines, which cause headaches
-if($msg =~ /^\s*(.*?)$/) {
-	$msg=$1;
-}
-if($msg =~ /^(.*?)\s*$/) {
-	$msg=$1;
-}
-$msg =~ s/\s+/ /g;	#only need 1 space between things
+my $msg = $APP-&gt;messageCleanWhitespace($params-&gt;{message});
 return 'Nothing to send: message only consists of &quot;whitespace&quot; characters (for example, a space).' unless length($msg);
 #note: do NOT escape &lt; and &gt; since they are escaped upon recipient view
-
 
 #
 #constants and global vars setup, part 2 of 2
@@ -100,8 +91,6 @@ my $cachedTitles;
 my $cachedIDs;
 my $NT_U_ID = getNode('user','nodetype','light')-&gt;{node_id};
 my $NT_UG_ID = getNode('usergroup','nodetype','light')-&gt;{node_id};
-my $sqlTypes = '(' . join(' OR ',map { 'type_nodetype=' . $_ } ($NT_U_ID, $NT_UG_ID) ) . ')';
-
 
 #failure warning messages
 #these are always sent to the current user (which is not neccessarily the author we say the message is from)
@@ -138,20 +127,6 @@ local *getNodeType = sub {
 	;
 };
 
-#returns if given thing is a usergroup
-#updated: 2002.07.08.n1
-local *isUserGroup = sub {
-	my $curType = getNodeType($_[0]);
-	return $curType &amp;&amp; ($curType==$NT_UG_ID);
-};
-
-#returns if given thing is a user or usergroup
-#updated: 2002.07.08.n1
-local *isUserOrGroup = sub {
-	my $curType = getNodeType($_[0]);
-	return $curType &amp;&amp; (($curType==$NT_U_ID) || ($curType==$NT_UG_ID));
-};
-
 #gets a user or usergroup
 #pass ($title) to get based on title (respecting chatterbox forwards)
 #pass ($id, 1) to get based on node ID
@@ -171,7 +146,7 @@ local *getCached = sub {
 		$ident=$1;
 		return $cachedIDs-&gt;{$ident} if exists $cachedIDs-&gt;{$ident};
 		$N=getNodeById($ident);
-		if(!isUserOrGroup($N)) { undef $N; }
+		if(!$APP-&gt;isUserOrUsergroup($N)) { undef $N; }
 		if((defined $N) &amp;&amp; (exists $N-&gt;{title}) &amp;&amp; length($N-&gt;{title})) {
 			$cachedTitles-&gt;{$N-&gt;{title}} = $N;
 		}
@@ -277,14 +252,6 @@ unless(defined $aboutNode) {
 		undef $aboutNode;
 	}
 }
-
-#if (($aboutNode) &amp;&amp; ($params-&gt;{recipient_id}) &amp;&amp; ($params-&gt;{recipient_id} != $$USER{user_id})) {
-#my $message_xp_bonus = 1;
-#my $rnd = int(rand(100));
-#if ($rnd &gt; 0) {
-#adjustExp(getNode($aid), $message_xp_bonus);
-#}
-#}
 
 #determine time to say message was sent
 my $sendTime = $params-&gt;{renode_id};
@@ -572,7 +539,7 @@ local *addRecipient = sub {
 	return unless defined $u;
 	my $i=$u-&gt;{node_id};
 
-	if( isUserGroup($u) ) {
+	if( $APP-&gt;isUsergroup($u) ) {
 
 		if(exists $groups{$i}) {
 			#already did this group, don't bother with again
@@ -971,6 +938,5 @@ $query-&gt;param($qpm,$m);	#inform in chatterbox
 #this htmlcode's parameters no longer needed
 delete $HTMLVARS{msgparams} unless $keepParams;	
 
-return $showWhatSaid ? $m : undef;
-</code>
+return $showWhatSaid ? $m : undef;</code>
 </node>

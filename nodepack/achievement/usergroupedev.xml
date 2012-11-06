@@ -3,7 +3,7 @@
   <achievement_type>usergroup</achievement_type>
   <subtype></subtype>
   <node_id>1920603</node_id>
-  <code>return htmlcode('isinUsergroup',$user_id.',edev');</code>
+  <code>return $APP-&gt;isDeveloper($user_id, &quot;nogods&quot;);</code>
   <type_nodetype>1917847</type_nodetype>
   <title>usergroupEdev</title>
 </node>
