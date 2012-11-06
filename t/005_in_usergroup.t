@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use lib qw(/root/everything2/ecore);
+use lib qw(/var/everything/ecore);
 use Test::More;
 use Everything;
 
