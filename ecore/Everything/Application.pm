@@ -1263,4 +1263,15 @@ sub isUserOrUsergroup
 	return ($this->isUser($user_or_usergroup) or $this->isUsergroup($user_or_usergroup));
 }
 
+sub inUsergroup
+{
+	my ($this, $user, $usergroup, $nogods) = @_;
+	if(ref $usergroup eq "")
+	{
+		$usergroup = $this->{db}->getNode($usergroup, "usergroup");
+	}
+
+	return $this->{db}->isApproved($user,$usergroup,$nogods);
+}
+
 1;
