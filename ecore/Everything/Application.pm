@@ -287,8 +287,8 @@ sub updateLogin
 {
 	my ($this, $user, $query, $cookie) = @_;
 
-	return 0 if $query -> param('passwd') ne $user -> {passwd}
-		&& $cookie ne $user -> {title}.'|'.crypt($user -> {passwd}, $user -> {title});
+	return 0 if substr($query -> param('passwd'), 0, 10) ne $user -> {passwd}
+		&& urlDecode($cookie) ne $user -> {title}.'|'.crypt($user -> {passwd}, $user -> {title});
 
 	$this -> updatePassword($user, $user -> {passwd});
 
