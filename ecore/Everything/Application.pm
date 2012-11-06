@@ -1212,6 +1212,7 @@ sub stripNodelet {
 }
 
 # Replaces the htmlcode of the same name
+# Tested in 002
 sub convertDateToEpoch
 {
 	my ($this, $date) = @_;
@@ -1227,6 +1228,20 @@ sub convertDateToEpoch
 	my ($hour,$min,$sec) = split(':', $t);
 	my $epoch = Date::Calc::Mktime($year,$month,$day, $hour,$min,$sec);
 	return $epoch;
+}
+
+# used as a part of the sendPrivateMessage htmlcode refactor, possibly other places
+# Tested in 003
+sub messageCleanWhitespace
+{
+	my ($this, $message) = @_;
+
+	#ensure message doesn't have any embeded newlines, which cause headaches
+	$message =~ s/\n/ /g; #Strip newlines
+	if($message =~ /^\s*(.*?)$/) { $message=$1; } # Strip starts with spaces
+	if($message =~ /^(.*?)\s*$/) { $message=$1; } # Strip ends with spaces
+	$message =~ s/\s+/ /g;	#only need 1 space between things	
+	return $message;
 }
 
 1;
