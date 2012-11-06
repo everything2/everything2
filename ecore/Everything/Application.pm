@@ -1244,4 +1244,23 @@ sub messageCleanWhitespace
 	return $message;
 }
 
+# used as a part of the sendPrivateMessage htmlcode refactor
+sub isUsergroup
+{
+	my ($this, $usergroup) = @_;
+	return $usergroup->{type}->{title} eq "usergroup";	
+}
+
+sub isUser
+{
+	my ($this, $user) = @_;
+	return $user->{type}->{title} eq "user";
+}
+
+sub isUserOrUsergroup
+{
+	my ($this, $user_or_usergroup) = @_;
+	return ($this->isUser($user_or_usergroup) or $this->isUsergroup($user_or_usergroup));
+}
+
 1;
