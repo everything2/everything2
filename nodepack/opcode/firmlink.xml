@@ -2,11 +2,7 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>1150387</node_id>
   <title>firmlink</title>
-  <code>my $RECURSE = 1;
-
-return unless $APP-&gt;isEditor($USER)
-  or htmlcode('isinUsergroup', $USER, 'SIGTITLE', $RECURSE)
-  ;
+  <code>return unless $APP-&gt;isEditor($USER);
 
 return unless($query-&gt;param('firmlink_to_node'));
 return unless htmlcode('verifyRequestHash', 'firmlink');

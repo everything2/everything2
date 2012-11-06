@@ -21,8 +21,8 @@ if ($$USER{in_room}) {
 
 my $UID = $$USER{node_id};
 my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
-my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$UID};
-my $isChanop = exists $HTMLVARS{'group_chanops'}{$UID};
+my $isCE = $APP-&gt;isEditor($USER);
+my $isChanop = $APP-&gt;isChanop($USER);
 
 unless ($isCE || $$VARS{infravision}) {
   $wherestr.=' AND ' if $wherestr;
@@ -115,7 +115,7 @@ while(my $U = $csr-&gt;fetchrow_hashref())
     $lastnodetime = 0;
   }
 
-  my $thisChanop = htmlcode('isinUsergroup', $userID, 'chanops' , 'recurse');
+  my $thisChanop = $APP-&gt;isChanop($userID,&quot;nogods&quot;);
 
   $sameUser = $UID==$userID;
   next if $ignore{$userID} &amp;&amp; !$isRoot;

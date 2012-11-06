@@ -1,6 +1,7 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Tue Nov  6 04:05:12 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Tue Nov  6 04:40:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Auspice&quot; node_id=&quot;2039503&quot; parent_e2node=&quot;2072577&quot; author_user=&quot;The Custodian&quot;&gt;SCP-916&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;871095&quot; parent_e2node=&quot;859906&quot; author_user=&quot;humbabba&quot;&gt;London's calling, and it's calling you gay&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1225425&quot; parent_e2node=&quot;1225424&quot; author_user=&quot;Purvis&quot;&gt;Southfield, Michigan&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Transitional Man&quot; node_id=&quot;2069171&quot; parent_e2node=&quot;2068171&quot; author_user=&quot;Hazelnut&quot;&gt;Bared to You&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;artman2003&quot; node_id=&quot;2072483&quot; parent_e2node=&quot;385884&quot; author_user=&quot;Glowing Fish&quot;&gt;animated GIF&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;lawnjart&quot; node_id=&quot;2072425&quot; parent_e2node=&quot;2072423&quot; author_user=&quot;GIANT SQUID&quot;&gt;Giant Squid 2012&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;1776095&quot; parent_e2node=&quot;1776094&quot; author_user=&quot;Webster 1913&quot;&gt;Interferometer&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Girldoll&quot; node_id=&quot;2068796&quot; parent_e2node=&quot;2068795&quot; author_user=&quot;etouffee&quot;&gt;Ruby Sparks&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

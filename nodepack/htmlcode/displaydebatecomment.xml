@@ -19,7 +19,7 @@ my $rootnode = getNodeById( $_[0]-&gt;{ 'root_debatecomment' } );
 unless(isGod($USER)) {
 	my $restrictGroup = $$rootnode{restricted} || 923653; # legacy magic number for old CE discussions
 	return '&lt;p&gt;&lt;strong&gt;Permission Denied&lt;/strong&gt;&lt;/p&gt;'
-		unless htmlcode('isinUsergroup',$$USER{user_id},$restrictGroup,1);
+		unless $APP-&gt;inUsergroup($USER,getNodeById($restrictGroup));
 }
 
 my $showcontent = evalCode( 'sub{'.getCode('show content').&quot;\n}&quot; ); # compile only once
