@@ -1,6 +1,10 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Tue Nov  6 01:05:11 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Tue Nov  6 02:20:08 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Rainey&quot; node_id=&quot;842729&quot; parent_e2node=&quot;842719&quot; author_user=&quot;Geekachu&quot;&gt;We journal only when we hurt&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;StuartO)))&quot; node_id=&quot;2065208&quot; parent_e2node=&quot;2072474&quot; author_user=&quot;Zephronias&quot;&gt;Once upon a time in Little Pandemonium&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;decoy hunches&quot; node_id=&quot;1487927&quot; parent_e2node=&quot;1487915&quot; author_user=&quot;TheDeadGuy&quot;&gt;Your facts peel away from your own fiction&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2072539&quot; parent_e2node=&quot;2072543&quot; author_user=&quot;Pandeism Fish&quot;&gt;2012 Puerto Rico statehood vote&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;e2reneta&quot; node_id=&quot;2072540&quot; parent_e2node=&quot;2071575&quot; author_user=&quot;Hazelnut&quot;&gt;The Dark Heroine&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;WaldemarExkul&quot; node_id=&quot;246040&quot; parent_e2node=&quot;45892&quot; author_user=&quot;Webster 1913&quot;&gt;GIF&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;JD&quot; node_id=&quot;2072518&quot; parent_e2node=&quot;2072541&quot; author_user=&quot;ZorroBandito&quot;&gt;Love only me until we die: marriage among the flatworms&lt;/cooled&gt;
@@ -12,10 +16,6 @@
 	&lt;cooled cooledby_user=&quot;wertperch&quot; node_id=&quot;2072102&quot; parent_e2node=&quot;1151992&quot; author_user=&quot;Hazelnut&quot;&gt;Milkybar&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;StuartO)))&quot; node_id=&quot;2072286&quot; parent_e2node=&quot;2072288&quot; author_user=&quot;Andrew Aguecheek&quot;&gt;Tom Long's Post&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;legbagede&quot; node_id=&quot;2072514&quot; parent_e2node=&quot;2072516&quot; author_user=&quot;Andrew Aguecheek&quot;&gt;The Sandbaggers&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;983884&quot; parent_e2node=&quot;983861&quot; author_user=&quot;mills&quot;&gt;The Moviegoer&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;raincomplex&quot; node_id=&quot;2063420&quot; parent_e2node=&quot;2072223&quot; author_user=&quot;Zephronias&quot;&gt;Alice and the Real World&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;haqiqat&quot; node_id=&quot;2072279&quot; parent_e2node=&quot;2072284&quot; author_user=&quot;The Custodian&quot;&gt;Operation Credible Sport&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;decoy hunches&quot; node_id=&quot;2070838&quot; parent_e2node=&quot;24955&quot; author_user=&quot;tubular&quot;&gt;ism&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

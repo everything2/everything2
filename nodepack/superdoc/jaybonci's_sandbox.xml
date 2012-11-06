@@ -2,42 +2,17 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[% return &quot;Hello there. This is a quick testing/debugging ground for me. Do not delete me, it is not worth the time&quot;; %]
 
+
 [%
-my $howMany = 100;
-
-use JSON;
-
-my $csr = $DB-&gt;sqlSelectMany('
-	writeup_id, parent_e2node, notnew,
-	node.author_user, node.reputation,
-	type.title AS type_title,
-        node.title AS node_title
-','
-	writeup
-	JOIN node ON writeup_id = node.node_id
-	JOIN node type ON type.node_id = writeup.wrtype_writeuptype'
-,
-	'node.author_user != ' .getNode('Webster 1913' , 'user') -&gt; {node_id}
-,
-&quot;
-	ORDER BY publishtime DESC LIMIT $howMany&quot;
-);
-
-my $outdata = $csr-&gt;fetchall_arrayref({});
-
-foreach my $row (@$outdata)
-{
-   my $title = $row-&gt;{node_title};
-   delete $row-&gt;{node_title};
-   if($title =~ /(dream|editor|root) Log: /i)
-   {
-     $row-&gt;{islog} = 1;
-   }else{
-     $row-&gt;{islog} = 0;
-   }
-}
-
-to_json($outdata);
+  return unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
+  # Send an automated thank-you.
+  $HTMLVARS{msgparams} = {
+    'recipient_id'=&gt;getId($USER),
+    'message'=&gt;'Thank you! My servants have attended to any errors.',
+    'author'=&gt;'Webster 1913',
+  };
+  my $failMessage = htmlcode('sendPrivateMessage','');
+  
 %]</doctext>
   <node_id>1146920</node_id>
   <title>jaybonci's sandbox</title>

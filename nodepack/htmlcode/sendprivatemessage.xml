@@ -96,20 +96,8 @@ return 'Nothing to send: message only consists of &quot;whitespace&quot; charact
 #constants and global vars setup, part 2 of 2
 #
 
-#sets up a hash that is stored in HTMLVARS, things can be cached between calls to this htmlcode
-#	creates a cached hash, if one with the given key does not already exists
-#	returns a ref to that hash
-#	note: since this returns a ref, nothing needs to be done later to update HTMLVARS
-local *getCachedHash = sub {
-	my $k = $_[0];
-	return undef unless (defined $k) &amp;&amp; length($k);
-	$k='sPMc_'.$k;
-	$HTMLVARS{$k}={} unless (exists $HTMLVARS{$k}) &amp;&amp; (defined $HTMLVARS{$k});
-	return $HTMLVARS{$k};
-};
-
-my $cachedTitles = getCachedHash('ug_title');
-my $cachedIDs = getCachedHash('ug_id');
+my $cachedTitles;
+my $cachedIDs;
 my $NT_U_ID = getNode('user','nodetype','light')-&gt;{node_id};
 my $NT_UG_ID = getNode('usergroup','nodetype','light')-&gt;{node_id};
 my $sqlTypes = '(' . join(' OR ',map { 'type_nodetype=' . $_ } ($NT_U_ID, $NT_UG_ID) ) . ')';
@@ -196,7 +184,6 @@ local *getCached = sub {
 		#given title isn't cached, so find it
 		#a forward address takes precedence over a real user
 		if(!defined $FORWARDS) {
-			$FORWARDS = getCachedHash('forwards');
 			$FORWARDS = getVars(getNode('chatterbox forward','setting'));
 		}
 		my $forwarded = (exists $FORWARDS-&gt;{lc $ident}) ? $FORWARDS-&gt;{lc $ident} : $ident;
@@ -340,7 +327,7 @@ unless($fromGroup) {
 #	value is hash ref:
 #		key is ID of user ignoring the ignoree
 #		value is, itself, ignored :)  (value is always just 1)
-my $ignored = getCachedHash('ignore');
+my $ignored;
 
 #my $skipIgnores = boolParam('skipignore');	#TODO use this
 
