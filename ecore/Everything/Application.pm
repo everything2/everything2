@@ -10,6 +10,9 @@ use Email::Simple;
 use Email::Simple::Creator;
 use Email::Sender::Transport::SMTP;
 
+# For convertDateToEpoch
+use Date::Calc;
+
 use vars qw($PARAMS $PARAMSBYTYPE);
 BEGIN {
 	$PARAMS = 
@@ -1206,6 +1209,24 @@ sub stripNodelet {
 		$this->{db}->updateNode($user, -1);
 		return $nodelet_id;
 	}
+}
+
+# Replaces the htmlcode of the same name
+sub convertDateToEpoch
+{
+	my ($this, $date) = @_;
+
+	my ($d, $t) = split(' ', $date);
+	my ($year,$month,$day) = split('-',$d);
+
+	# In the QA environment, lots of dates are 0
+	if($year eq "0000")
+	{
+		return 0;
+	}
+	my ($hour,$min,$sec) = split(':', $t);
+	my $epoch = Date::Calc::Mktime($year,$month,$day, $hour,$min,$sec);
+	return $epoch;
 }
 
 1;
