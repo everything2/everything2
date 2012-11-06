@@ -117,7 +117,7 @@ while (my $temprow = $csr-&gt;fetchrow_hashref) {
                                                &quot;debatecomment&quot;,
                                                &quot;root_debatecomment=$$N{node_id}&quot;));
        my $latesttime = $$latest{'createtime'};
-       my $latesttime = htmlcode('convertdatetoepoch',&quot;$latesttime&quot;);
+       $latesttime = $APP-&gt;convertDateToEpoch($latesttime);
        push @nodes, [$N,$latest,$latesttime];
 }
 @nodes = sort {my (@a,@b); return @$b[2] &lt;=&gt; @$a[2];} @nodes;
@@ -171,8 +171,7 @@ my $thispage = ($limit &lt; $nodesleft ? $limit : $nodesleft);
      $latesttime ||= &quot;&lt;em&gt;(none)&lt;/em&gt;&quot;;
 
      my $latesttime_e = @$nodestuff[2];
-     my $latestreadtime_e = htmlcode('convertdatetoepoch',
-                                     &quot;$latestreadtime&quot;) if $latestreadtime;
+     my $latestreadtime_e = $APP-&gt;convertDateToEpoch($latestreadtime) if $latestreadtime;
 
      my $unread = ($latestreadtime_e &lt; $latesttime_e);
 

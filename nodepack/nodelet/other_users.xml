@@ -94,9 +94,7 @@ while(my $U = $csr-&gt;fetchrow_hashref())
   $num++;
   $userID = $$U{member_user};
 
-  my $jointime = htmlcode('convertdatetoepoch',
-                          getNodeById($userID) -&gt; {createtime});
-
+  my $jointime = $APP-&gt;convertDateToEpoch(getNodeById($userID)-&gt;{createtime});
 
   my $userVars = getVars(getNodeById($userID));
 
@@ -109,8 +107,7 @@ while(my $U = $csr-&gt;fetchrow_hashref())
 
     # Nuked writeups can mess this up, so have to check there really
     # is a lastnodetime.
-    $lastnodetime = htmlcode('convertdatetoepoch',$lastnodetime)
-      if $lastnodetime;
+    $lastnodetime = $APP-&gt;convertDateToEpoch($lastnodetime) if $lastnodetime;
   }
 
   #Haven't been here for a month or haven't noded?

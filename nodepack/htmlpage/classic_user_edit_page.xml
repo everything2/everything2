@@ -3,9 +3,7 @@
   <pagetype_nodetype>15</pagetype_nodetype>
   <page>[%
 $HTMLVARS{pageheader} = '&lt;!-- put at end --&gt;'.htmlcode('settingsDocs');
-$query-&gt;start_multipart_form(-method=&gt;'POST', action=&gt;$ENV{script_name}.'?usereditpage=1', id=&gt;'pagebody') .
-$query-&gt;hidden('displaytype') .
-$query-&gt;hidden('node_id', getId $NODE).
+htmlcode('openform').
 htmlcode('verifyRequestForm', 'edit_user')
 ;
 
