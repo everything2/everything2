@@ -7,9 +7,8 @@ getRef $notification;
 
 my $uid = $$USER{node_id};
 my $isCE = $APP-&gt;isEditor($USER);
-my $isCoder = htmlcode('isinUsergroup', $uid, 'edev', 1) || 
-              htmlcode('isinUsergroup', $uid, 'e2coders', 1);
-my $isChanop = htmlcode('isinUsergroup',$uid, 'chanops', 1);
+my $isCoder = $APP-&gt;inUsergroup($uid,&quot;edev&quot;,&quot;nogods&quot;) || $APP-&gt;inUsergroup($uid, 'e2coders', &quot;nogods&quot;);
+my $isChanop = $APP-&gt;isChanop($uid, &quot;nogods&quot;);
 
 return 0 if ( !$isCE &amp;&amp; ($$notification{description} =~ /node note/) );
 return 0 if ( !$isCoder &amp;&amp; ($$notification{description} =~ /patch/) );

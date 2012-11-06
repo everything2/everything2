@@ -21,8 +21,8 @@ if ($$USER{in_room}) {
 
 my $UID = $$USER{node_id};
 my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
-my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$UID};
-my $isChanop = exists $HTMLVARS{'group_chanops'}{$UID};
+my $isCE = $APP-&gt;isEditor($USER);
+my $isChanop = $APP-&gt;isChanop($USER);
 
 unless ($isCE || $$VARS{infravision}) {
   $wherestr.=' AND ' if $wherestr;
@@ -94,9 +94,7 @@ while(my $U = $csr-&gt;fetchrow_hashref())
   $num++;
   $userID = $$U{member_user};
 
-  my $jointime = htmlcode('convertdatetoepoch',
-                          getNodeById($userID) -&gt; {createtime});
-
+  my $jointime = $APP-&gt;convertDateToEpoch(getNodeById($userID)-&gt;{createtime});
 
   my $userVars = getVars(getNodeById($userID));
 
@@ -109,8 +107,7 @@ while(my $U = $csr-&gt;fetchrow_hashref())
 
     # Nuked writeups can mess this up, so have to check there really
     # is a lastnodetime.
-    $lastnodetime = htmlcode('convertdatetoepoch',$lastnodetime)
-      if $lastnodetime;
+    $lastnodetime = $APP-&gt;convertDateToEpoch($lastnodetime) if $lastnodetime;
   }
 
   #Haven't been here for a month or haven't noded?
@@ -118,7 +115,7 @@ while(my $U = $csr-&gt;fetchrow_hashref())
     $lastnodetime = 0;
   }
 
-  my $thisChanop = htmlcode('isinUsergroup', $userID, 'chanops' , 'recurse');
+  my $thisChanop = $APP-&gt;isChanop($userID,&quot;nogods&quot;);
 
   $sameUser = $UID==$userID;
   next if $ignore{$userID} &amp;&amp; !$isRoot;

@@ -14,7 +14,7 @@ $publicTalk = ((defined $publicTalk) &amp;&amp; ($publicTalk)) ? 1 : 0;
 $plainText = $publicTalk || (((defined $plainText) &amp;&amp; ($plainText)) ? 1 : 0);
 
 my $UID = $USER-&gt;{node_id};
-my $isGuest = $APP&gt;-isGuest($USER);
+my $isGuest = $APP-&gt;isGuest($USER);
 my $isRoot = !$isGuest &amp;&amp; exists $HTMLVARS{'group_gods'}{$UID};
 my $isCE = $APP-&gt;isEditor($USER);
 my $isEDev = !$isGuest &amp;&amp; exists $HTMLVARS{'group_edev'}{$UID};

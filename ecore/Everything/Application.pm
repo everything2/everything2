@@ -10,6 +10,9 @@ use Email::Simple;
 use Email::Simple::Creator;
 use Email::Sender::Transport::SMTP;
 
+# For convertDateToEpoch
+use Date::Calc;
+
 use vars qw($PARAMS $PARAMSBYTYPE);
 BEGIN {
 	$PARAMS = 
@@ -1206,6 +1209,69 @@ sub stripNodelet {
 		$this->{db}->updateNode($user, -1);
 		return $nodelet_id;
 	}
+}
+
+# Replaces the htmlcode of the same name
+# Tested in 002
+sub convertDateToEpoch
+{
+	my ($this, $date) = @_;
+
+	my ($d, $t) = split(' ', $date);
+	my ($year,$month,$day) = split('-',$d);
+
+	# In the QA environment, lots of dates are 0
+	if($year eq "0000")
+	{
+		return 0;
+	}
+	my ($hour,$min,$sec) = split(':', $t);
+	my $epoch = Date::Calc::Mktime($year,$month,$day, $hour,$min,$sec);
+	return $epoch;
+}
+
+# used as a part of the sendPrivateMessage htmlcode refactor, possibly other places
+# Tested in 003
+sub messageCleanWhitespace
+{
+	my ($this, $message) = @_;
+
+	#ensure message doesn't have any embeded newlines, which cause headaches
+	$message =~ s/\n/ /g; #Strip newlines
+	if($message =~ /^\s*(.*?)$/) { $message=$1; } # Strip starts with spaces
+	if($message =~ /^(.*?)\s*$/) { $message=$1; } # Strip ends with spaces
+	$message =~ s/\s+/ /g;	#only need 1 space between things	
+	return $message;
+}
+
+# used as a part of the sendPrivateMessage htmlcode refactor
+sub isUsergroup
+{
+	my ($this, $usergroup) = @_;
+	return $usergroup->{type}->{title} eq "usergroup";	
+}
+
+sub isUser
+{
+	my ($this, $user) = @_;
+	return $user->{type}->{title} eq "user";
+}
+
+sub isUserOrUsergroup
+{
+	my ($this, $user_or_usergroup) = @_;
+	return ($this->isUser($user_or_usergroup) or $this->isUsergroup($user_or_usergroup));
+}
+
+sub inUsergroup
+{
+	my ($this, $user, $usergroup, $nogods) = @_;
+	if(ref $usergroup eq "")
+	{
+		$usergroup = $this->{db}->getNode($usergroup, "usergroup");
+	}
+
+	return $this->{db}->isApproved($user,$usergroup,$nogods);
 }
 
 1;

@@ -18,12 +18,6 @@ return 1 if $$VARS{no_socialbookmarkinformer};
 my $tempnode = getNodeById($node_id);
 return 1 if (($$tempnode{type}{title} ne &quot;writeup&quot;) &amp;&amp; ($$tempnode{type}{title} ne &quot;e2node&quot;)); #only send CME for writeups &amp; e2nodes
 
-#my $sysNodes = getVars(getNode(&quot;system settings&quot;, &quot;setting&quot;));
-#while( my ($k, $v) = each %$sysNodes ) {
-#  $v =~ s/[A-Za-z\@\-\_\s]//g;
-#  return 1 if (eval($v)==$node_id);
-#}
-
 my $eddie = getId(getNode('Cool Man Eddie','user'));
 my @tempgroup = @{ $$tempnode{group} } if $$tempnode{group};
 my @group;
