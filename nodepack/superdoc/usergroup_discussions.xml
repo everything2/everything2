@@ -39,9 +39,6 @@ foreach my $ug_id(@ug_ids){
   if( in_an_array($uid,@$ids) ){
     push @thisnoder_ug_ids, $ug_id unless in_an_array($ug_id,@exclude_ug_ids);
 
-    #next two special cases hardcoded for speed, [{isinUsergroup}] is too
-    #slow here!
-
     if($ug_id == 114){ #If an admin, also an ed
       push @thisnoder_ug_ids, 923653;
     }

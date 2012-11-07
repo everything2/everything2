@@ -3,7 +3,7 @@
   <doctext>[%
 my $isGod = htmlcode('isGod', $USER);
 my $isEd = $APP-&gt;isEditor($USER);
-my $isOp = htmlcode('isinUsergroup', $USER, 'chanops');
+my $isOp = $APP-&gt;isChanop($USER, 'nogods');
 if($isEd != 1 &amp;&amp; $isOp != 1)
 {
    return 'My sandbox, my rules. Go build your sandcastles elsewhere.';

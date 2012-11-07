@@ -70,8 +70,6 @@ return '' if $APP-&gt;isGuest($USER);
 return '' if $USER-&gt;{title} eq 'everyone';
 
 my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
-#my $isCE = $isRoot || (exists $HTMLVARS{'group_content editors'}{$UID});
-
 
 #
 #parameters setup, part 2 of 2
@@ -89,8 +87,6 @@ return 'Nothing to send: message only consists of &quot;whitespace&quot; charact
 
 my $cachedTitles;
 my $cachedIDs;
-my $NT_U_ID = getNode('user','nodetype','light')-&gt;{node_id};
-my $NT_UG_ID = getNode('usergroup','nodetype','light')-&gt;{node_id};
 
 #failure warning messages
 #these are always sent to the current user (which is not neccessarily the author we say the message is from)
@@ -164,11 +160,11 @@ local *getCached = sub {
 		my $forwarded = (exists $FORWARDS-&gt;{lc $ident}) ? $FORWARDS-&gt;{lc $ident} : $ident;
 		my $escaped = $DB-&gt;quote($forwarded);
 
-		$N = getNode($forwarded,$NT_UG_ID) || getNode($forwarded,$NT_U_ID) || undef;
+		$N = getNode($forwarded,&quot;usergroup&quot;) || getNode($forwarded,&quot;user&quot;) || undef;
 		if(!defined $N) {
 			#try getting, underscores converted to spaces
 			$forwarded =~ tr/_/ /;
-			$N = getNode($forwarded,$NT_UG_ID) || getNode($forwarded,$NT_U_ID) || undef;
+			$N = getNode($forwarded,&quot;usergroup&quot;) || getNode($forwarded,&quot;user&quot;) || undef;
 		}
 
 		#on 2002.11.09.n5, removed space-and-underscore-in-name code; see displaytype=help for more information

@@ -7,9 +7,7 @@ A simple tool used to reward users who suggest writeup corrections to [Webster 1
 &lt;/P&gt;
 
 [%
-# Change the name to the current Webby secretary.
-# TODO: Implement a &quot;webby admin&quot; bit somewhere, do an isGod() variant.
-return unless isGod($USER) || (($USER == getNode('rootbeer277', 'user')) || ($USER == getNode('Webster 1913', 'user')));
+return unless $APP-&gt;isEditor($USER);
 
 # Display explanatory text to the gods group and designated Webby secretaries.
 my $notestr = 'Users are blessed with 3 GP and receive an automated thank-you note from Webster 1913:&lt;br /&gt;&lt;br /&gt;';
@@ -36,8 +34,7 @@ $notestr .= $str2;
 %]
 
 [%
-# Change the name to the current Webby secretary.
-return unless isGod($USER) || (($USER == getNode('rootbeer277', 'user')) || ($USER == getNode('Webster 1913', 'user')));
+return unless $APP-&gt;isEditor($USER);
 
 #Adapted from superbless
 my @params = $query-&gt;param;
@@ -68,13 +65,12 @@ for(my $count=0; $count &lt; @users; $count++) {
   }
 
   # Send an automated thank-you.
-  $HTMLVARS{msgparams} = {
+  htmlcode('sendPrivateMessage',{
     'recipient_id'=&gt;getId($U),
     'message'=&gt;'Thank you! My servants have attended to any errors.',
     'author'=&gt;'Webster 1913',
     'renode'=&gt;$thenodes[$count],
-  };
-  my $failMessage = htmlcode('sendPrivateMessage','');
+  });
 
   $str .= &quot;User $$U{title} was given $curGP GP&quot;;
   $$U{karma}+=1;
@@ -91,8 +87,7 @@ $str;
 [{openform}]
 &lt;table border=&quot;1&quot;&gt;
 [%
-# Change the name to the current Webby secretary.
-return '&lt;tr&gt;&lt;th&gt;[Webster 1913] does not look in your closets. Do not poke about in his.&lt;/th&gt;&lt;/tr&gt;' unless isGod($USER) || ($USER == getNode('rootbeer277', 'user')) || ($USER == getNode('Webster 1913', 'user'));
+return unless $APP-&gt;isEditor($USER);
 
 # Build the table rows for inputting user names
 my $count = 5;

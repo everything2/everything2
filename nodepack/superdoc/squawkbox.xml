@@ -3,9 +3,7 @@
   <doctext>[%
 
   my $uid = $$USER{node_id};
-  my $isCoolPerson = htmlcode('isinUsergroup',&quot;$uid,gods,1&quot;)||
-                     htmlcode('isinUsergroup',&quot;$uid,chanops,1&quot;);
-
+  my $isCoolPerson = $APP-&gt;isChanop($USER);
   return &quot;um, no&quot; if $APP-&gt;isGuest($USER);
 
   return &quot;Sorry, this is now locked except for [gods|admins] and [chanops].&quot; unless $isCoolPerson;

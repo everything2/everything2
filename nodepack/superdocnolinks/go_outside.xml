@@ -1,8 +1,7 @@
 <node>
   <type_nodetype>1065266</type_nodetype>
   <doctext>[%
-my $isCoolPerson = htmlcode('isinUsergroup',&quot;$$USER{node_id},gods,1&quot;) ||
-                   htmlcode('isinUsergroup',&quot;$$USER{node_id},chanops,1&quot;);
+my $isCoolPerson = $APP-&gt;isEditor($USER) || $APP-&gt;isChanop($USER);
 
 if ($$VARS{lockedin} &gt; time &amp;&amp; !$isCoolPerson)
 	{

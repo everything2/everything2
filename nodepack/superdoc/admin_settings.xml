@@ -2,7 +2,7 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 return '&lt;p&gt;You need to sign in or '
-	.linkNode(getNode('Create a New User','superdoc'), 'register')
+	.linkNode(getNode('Sign up','superdoc'), 'register')
 	.' to use this page.&lt;/p&gt;
 	&lt;!-- ' if ($APP-&gt;isGuest($USER));
 $HTMLVARS{pageheader} = '&lt;!-- at end --&gt;'.htmlcode('settingsDocs');

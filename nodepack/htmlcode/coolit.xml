@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>169637</node_id>
   <title>coolit</title>
-  <code>return unless exists $HTMLVARS{'group_content editors'}{$$USER{node_id}} || exists $HTMLVARS{group_gods}{$$USER{node_id}};
+  <code>return unless $APP-&gt;isEditor($USER);
 my $ntypet = $$NODE{type}{title};
 return unless ($ntypet eq 'e2node' || $ntypet eq 'superdoc' || $ntypet eq 'superdocnolinks' || $ntypet eq 'document');
 
@@ -54,13 +54,12 @@ else {
 	
 		if(scalar(@group)) {
 			my @authors = map { getNodeById($_)-&gt;{author_user} } @group;
-			$HTMLVARS{msgparams} = {
+			htmlcode('sendPrivateMessage',{
 				'author_id' =&gt; $eddie,
 				'recipient_id' =&gt; \@authors,
 				'message' =&gt; 'Yo, the entire node ['.$nt.'], in which you have a writeup, was editor cooled. Your reward is knowing you\'re cooler than liquid nitrogen.',
 				'fromgroup_id' =&gt; $$USER{node_id},	#group is editor that did cool
-			};
-			htmlcode('sendPrivateMessage','');
+			});
 		}
 
 	}	#if e2node

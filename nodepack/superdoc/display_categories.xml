@@ -133,7 +133,7 @@ while(my $n = $ds-&gt;fetchrow_hashref)
     {
       $str .= '&lt;b&gt;Yes!&lt;/b&gt;';
     }
-    elsif ($$n{maintainerType} == $usergroupType &amp;&amp; htmlcode('isinUsergroup', $uid, $maintName))
+    elsif ($$n{maintainerType} == $usergroupType &amp;&amp; $APP-&gt;inUsergroup($uid, $maintName))
     {
       $str .= '&lt;b&gt;Yes!&lt;/b&gt;';
     }

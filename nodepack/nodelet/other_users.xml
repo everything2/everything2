@@ -152,7 +152,7 @@ while(my $U = $csr-&gt;fetchrow_hashref())
     }
   }
 
-  if ($APP-&gt;isEditor($userID, &quot;nogods&quot;) &amp;&amp; !$APP-&gt;getParameter($userID,&quot;hide_chatterbox_staff_symbol&quot;) ) {
+  if ($APP-&gt;isEditor($userID, &quot;nogods&quot;) &amp;&amp; !$APP-&gt;isAdmin($userID) &amp;&amp; !$APP-&gt;getParameter($userID,&quot;hide_chatterbox_staff_symbol&quot;) ) {
     $flags .= $linkCEs;
   }
 

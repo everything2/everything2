@@ -27,16 +27,16 @@ while (my $row = $csr-&gt;fetchrow_hashref) {
                &amp;&amp; !$APP-&gt;getParameter($member,&quot;hide_chatterbox_staff_symbol&quot;) )?(1):(0);
   push @props, qq-e2god=&quot;$e2god&quot;-;
 
-  my $committer = htmlcode('isinUsergroup', $member, '%%');
+  my $committer = $APP-&gt;inUsergroup($member, '%%', 'nogods');
   push @props, qq-committer=&quot;$committer&quot;-;
 
-  my $chanop = htmlcode('isinUsergroup', $member, 'chanops', 'recruse');
+  my $chanop = $APP-&gt;isChanop($member, 'nogods');
   push @props, qq-chanop=&quot;$chanop&quot;-;
 
-  my $ce = ($APP-&gt;isEditor($member,&quot;nogods&quot;) &amp;&amp; !$APP-&gt;getParameter($member,&quot;hide_chatterbox_staff_symbol&quot;) )?(1):(0);
+  my $ce = ($APP-&gt;isEditor($member,&quot;nogods&quot;) &amp;&amp; !$DB-&gt;isGod($USER) &amp;&amp; !$APP-&gt;getParameter($member,&quot;hide_chatterbox_staff_symbol&quot;) )?(1):(0);
   push @props, qq-ce=&quot;$ce&quot;-;
 
-  my $edev = ((exists($HTMLVARS{'group_edev'}{$member}))?(1):(0));
+  my $edev = ($APP-&gt;isDeveloper($member,&quot;nogods&quot;)?(1):(0));
   push @props, qq-edev=&quot;$edev&quot;-;
 
   my $xp = $$u{experience};

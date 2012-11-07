@@ -6,7 +6,7 @@ return if $APP-&gt;isGuest($USER);
 my $str;
 my $userId=$$USER{node_id};
 
-if ($APP-&gt;isEditor($USER) || htmlcode('isinUsergroup',&quot;$userId,chanops,1&quot;)) {
+if ($APP-&gt;isEditor($USER) || $APP-&gt;isChanop($USER) ) {
   $str.=htmlcode(&quot;openform&quot;).&quot;&lt;p&gt;Check on user: &quot;;
   $str.=$query-&gt;textfield(-name =&gt; &quot;username&quot;,
                  -default =&gt; &quot;&quot;,

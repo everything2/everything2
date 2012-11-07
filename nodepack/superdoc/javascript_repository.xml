@@ -82,8 +82,7 @@ $str.=htmlcode(&quot;openform&quot;);
 
 my $uid = $$USER{node_id};
 
-my $isCoder = htmlcode('isinUsergroup',&quot;$uid, edev,1&quot;) || 
-              htmlcode('isinUsergroup',&quot;$uid,e2coders,1&quot;);
+my $isCoder = $APP-&gt;isDeveloper($uid, &quot;nogods&quot;) || $APP-&gt;inUsergroup($uid, &quot;e2coders&quot;, &quot;nogods&quot;); 
 
 foreach (@jskeys) {
 	$count++;

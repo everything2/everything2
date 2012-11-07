@@ -2,11 +2,8 @@
   <type_nodetype>4</type_nodetype>
   <node_id>748856</node_id>
   <title>minilogin</title>
-  <code>#jb says: security fixes
-my $pass = $query-&gt;param(&quot;passwd&quot;);
-$pass =~ s/./\*/g;
-$query-&gt;param(&quot;passwd&quot;, $pass);
-$query-&gt;delete('op');
+  <code>my $op = $query-&gt;param(&quot;op&quot;);
+$query-&gt;delete('op', 'passwd');
 
 my $goto = getId($NODE);
 $goto = $HTMLVARS{default_node} if $goto == $HTMLVARS{default_guest_node};
@@ -26,9 +23,8 @@ $query-&gt;hidden(&quot;op&quot;, &quot;login&quot;) . &quot;\n&quot; .
 &lt;/tr&gt;
 &lt;tr&gt;
  &lt;td&gt;&lt;strong&gt;Password&lt;/strong&gt;&lt;/td&gt;
- &lt;td&gt;'.$query-&gt;password_field(-name =&gt; &quot;passwd&quot;, -size =&gt; 10, -maxlength =&gt; 10, -tabindex =&gt; 2) .' &lt;/td&gt;
-&lt;/tr&gt;'.
-($query-&gt;param(&quot;op&quot;) eq &quot;login&quot; ? &quot;&lt;tr&gt;&lt;td colspan='2'&gt;&lt;i&gt;Login incorrect.&lt;/i&gt;&lt;/td&gt;&lt;/tr&gt;&quot; : &quot;&quot;)
+ &lt;td&gt;'.$query-&gt;password_field(-name =&gt; &quot;passwd&quot;, -size =&gt; 10, -maxlength =&gt; 240, -tabindex =&gt; 2) .' &lt;/td&gt;
+&lt;/tr&gt;'
 .'
 &lt;/table&gt;
 &lt;font size=&quot;2&quot;&gt;'.
@@ -38,14 +34,15 @@ $query-&gt;checkbox(
   , -value =&gt; &quot;+10y&quot;
   , -label =&gt; &quot;remember me&quot;
   , -tabindex =&gt; 3
-  ) . 
-&quot;&lt;/font&gt;&quot; .
+  ).
+($op eq &quot;login&quot; ? '&lt;p&gt;&lt;i&gt;Login incorrect.&lt;/i&gt;&lt;br&gt;If you are unable to login, try resetting your password. We recently changed our login system, so some passwords need to be reset. If you don\'t have access to the email attached to your account or are otherwise stuck, email &lt;a href=&quot;mailto:accounthelp@everything2.com&quot;&gt;accounthelp@everything2.com&lt;/a&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;' : &quot;&quot;)
+.&quot;&lt;/font&gt;&quot; .
 $query-&gt;submit(
   -name =&gt; &quot;login&quot;
   , -value =&gt; &quot;Login&quot;
   , -tabindex =&gt; 4
 ).&quot;&lt;br /&gt;&quot;.
-linkNodeTitle(&quot;What's my password?|password reminder&quot;).&quot;
+linkNodeTitle(&quot;Reset password[superdoc]|Lost password&quot;).&quot;
 &lt;p&gt;&lt;strong&gt;&quot;.linkNode($HTMLVARS{createNewUser_node},'Sign up').&quot;&lt;/strong&gt;&lt;/p&gt;\n&quot; .
 $query-&gt;end_form;
 </code>

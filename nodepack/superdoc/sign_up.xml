@@ -1,6 +1,274 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext></doctext>
+  <doctext>[%
+
+# for how many days should an account activation link be valid?
+my $validForDays = 10;
+
+# with which nodetypes may usernames not clash?
+my @nameBlockers = (
+	'user', 'usergroup' , 'nodetype', 'fullpage'
+	, 'document', 'superdoc', 'superdocnolinks', 'restricted_superdoc'
+);
+
+my $prompt = '';
+my $formPage = sub{
+	my $obfuscate = sub{
+		my $x = shift;
+		$x =~ s/([aeiounp])/'&amp;#'.ord($1).';'/eg;
+		$x;
+	};
+
+	return htmlcode('openform')
+		.$query -&gt; fieldset({style =&gt; 'width: 30em; max-width: 100%; margin: 3em auto 0'},
+			$query -&gt; legend('Enter new account details')
+			.$query -&gt; p($prompt.':')
+			.$query -&gt; p({style =&gt; 'text-align: right'},
+				# use silly field names and mess up labels to confuse bots
+				$query -&gt; label(&amp;$obfuscate('Username:')
+					.$query -&gt; textfield('hatstand', '', 30, 20))
+				.'&lt;br&gt;'
+				.$query -&gt; label('Real name:'
+					.$query -&gt; textfield('wotnot', '', 30, 240))
+				.'&lt;br&gt;'
+				.$query -&gt; label(&amp;$obfuscate('Email address:')
+					.$query -&gt; textfield('raddish', '', 30, 240))
+				.'&lt;br&gt;'
+				.$query -&gt; label(&amp;$obfuscate('Confirm email:')
+					.$query -&gt; textfield('celery', '', 30, 240))
+				.'&lt;br&gt;'
+				.$query -&gt; label(&amp;$obfuscate('Password:')
+					.$query -&gt; password_field('frog', '', 30, 240))
+				.'&lt;br&gt;'
+				.$query -&gt; label(&amp;$obfuscate('Confirm password:')
+					.$query -&gt; password_field('toad', '', 30, 240))
+				.'&lt;br&gt;'
+				.$query -&gt; checkbox(
+					-name =&gt; 'email'
+					, value =&gt; 1
+					, checked =&gt; 1
+					, label =&gt; 'I am an evil robot spammer')
+				.'&lt;br&gt;'
+				.$query -&gt; submit('beseech', 'Submit')
+			)
+		)
+	.&lt;&lt;END
+	&lt;/form&gt;
+	
+	&lt;h4&gt;Email Privacy Policy&lt;/h4&gt;
+	
+	&lt;p&gt;We will not send you junk email &quot;member updates&quot;, sell your address to spammers, or show other people
+	your email address. We use it to send you an account activation email and for any other email services
+	that you request.&lt;/p&gt;
+	
+	&lt;h4&gt;Spam Policy&lt;/h4&gt;
+	
+	&lt;p&gt;We neither perpetrate nor tolerate spam.
+	&lt;/p&gt;
+	
+	&lt;p&gt;If you plan to use our site to promote your web site, business, or what-have-you free of charge,
+	please don't. It's not worth your time and it wastes ours, too. All it does is annoy the few people
+	who see your post during the five minutes that it takes our staff to notice it and delete it. We will
+	also not hesitate to ban you for plugging your goods on our site.
+	&lt;strong&gt;New accounts advertizing any product, service or web site (including &quot;personal&quot; sites and blogs)
+	in their profile are subject to immediate deletion. Their details will be submitted to public blacklists
+	for the use of other web sites.&lt;/strong&gt;
+	&lt;/p&gt;
+	
+	&lt;h4&gt;Underage users&lt;/h4&gt;
+	
+	&lt;p&gt;Everything2 may include member-created content designed for an adult audience. Viewing this content does not require
+	an account. For logged-in account holders, Everything2 may display text conversations conducted by adults and intended for
+	an adult audience. On-site communications are not censored or restricted by default. Users under the age of 18 are advised
+	that they should expect to be interacting primarily with adults and that the site may not be considered appropriate by their
+	parents, guardians, or other powers-that-be. Everything2 is not intended for use by children under the age of 13 and does not
+	include any features or content designed to appeal to children of that age.
+	&lt;/p&gt;
+END
+};
+	
+my $nameTaken = sub{
+	my $name = shift;
+	my $x;
+	map { return $x if $x = getNode($name, $_); } @nameBlockers;
+	return 0 unless $name =~ /( |_)/;
+
+	my $other = $1 eq ' ' ? '_' : ' ';
+	$name =~ s/[ _]/$other/g;
+	map { return $x if $x = getNode($name, $_); } @nameBlockers;
+	return 0;
+};
+
+my @addrs = htmlcode('get ips');
+my $secLog = sub{
+	my $msg = shift;
+	$APP -&gt; securityLog($NODE, $USER, $msg.'; IP: '.join('-', @addrs));
+};
+
+#######
+# get/check user info
+
+my $username = $query -&gt; param('hatstand');
+my $email = $query -&gt; param('raddish');
+my $pass = $query -&gt; param('frog');
+my $spambot = $query -&gt; param('email');
+
+# ask them nicely...
+if (!$query -&gt; param('beseech')){
+	$prompt = 'Please fill in your user name, real name (optional),
+		email address and password';
+
+# then make them jump through hoops:
+}elsif(!$pass || !$username || !$email){
+	$prompt = 'Please fill in nearly all fields (real name is still optional)';
+
+}elsif($pass ne $query -&gt; param('toad')){
+	$prompt = &quot;Passwords don't match&quot;;
+
+}elsif($email ne $query -&gt; param('celery')){
+	$prompt = &quot;Email addresses don't match&quot;;
+
+# RFC 5231 &amp; 5232 are not regexp friendly. Only validate host part:
+}elsif($email !~ /.+@[\w\d.-]+\.[\w]+$/){
+	$prompt = &quot;Please enter a valid email address&quot;;
+
+}elsif($username =~ /^\W+$|[\[\]\&lt;\&gt;\&amp;\{\}\|\/\\]| .*_|_.* |\s\s|^\s|\s$/){
+	$prompt = &quot;Valid user names contain at least one letter or number, and none of
+		&amp;#91; &amp;#93; &amp;lt; &amp;gt; &amp;amp; { } | / or \\. They may contain either spaces or underscores
+		but not both, may not contain multiple spaces in a row and may not start or end with a space.
+		Please enter a valid user name&quot;;
+
+}elsif(my $old = &amp;$nameTaken($username)){
+	$prompt = 'Sorry, that username is already taken. Please try a different one';
+	&amp;$secLog(&quot;Rejected username $username: matches &quot;.linkNode($old));
+
+}elsif($spambot){
+	$prompt = 'We regret that only human beings or entities claiming
+		human status are permitted to sign up for an account.
+		Please assert your humanity';
+	my $value = ' (parameter value &quot;'.encodeHTML($spambot).'&quot;)' unless $spambot eq '1';
+	&amp;$secLog(&quot;Rejected new user claiming to be a spambot$value&quot;);
+}
+
+$query -&gt; delete('frog', 'toad');
+
+return &amp;$formPage if $prompt;
+
+#######
+# all tests passed: create account
+
+my $name = $query -&gt; param('wotnot') || '';
+# real real names only have letters and spaces
+$name =~ s/[^\w ]//g;
+
+# construct new user
+my ($pwhash, $salt) = $APP -&gt; saltNewPassword($pass);
+
+my $user = {
+	nick =&gt; $username
+	, email =&gt; $email
+	, realname =&gt; $name
+	, salt =&gt; $salt
+};
+
+# get activation link
+my $params = $APP -&gt; getTokenLinkParameters($user, $pass, 'activate', time() + $validForDays * 86400);
+my $link = urlGen($params, 'no quotes', getNode('Confirm password', 'superdoc'));
+
+# save token &amp; expiry time in case we want to resend link later, and don't let user log on yet
+$user -&gt; {passwd} = $$params{token}.'|'.$$params{expiry};
+
+# create user
+$user = $DB -&gt; insertNode($username, 'user', -1, $user);
+
+unless ($user){
+	&amp;$secLog('Failed to create new user: username '.encodeHTML($username, 1));
+	return $query -&gt; p('Sorry, something just went horribly wrong. Your account has
+		not been created. Please try again.');
+}
+
+getRef $user;
+my $log = 'Created user '.linkNode($user);
+$user -&gt; {author_user} = $user -&gt; {node_id};
+
+# check for blacklisted IP
+my $blacklisted;
+foreach (@addrs){
+	last if $blacklisted = $DB-&gt;sqlSelect(
+		'ipblacklist_ipaddress'
+		, 'ipblacklist'
+		, &quot;ipblacklist_ipaddress = '$_'&quot;
+	);
+}
+
+# check if email address belongs to a locked account
+my $lockedUser = $DB-&gt;sqlSelect(
+	&quot;user_id&quot;
+	, &quot;user&quot;
+	, &quot;email = &quot; . $DB-&gt;quote($email) . &quot; AND acctlock != ''&quot;
+);
+
+# check for locked user infection
+my $infected = htmlcode('checkInfected');
+
+# break things if necessary
+if ($blacklisted || $lockedUser || $infected){
+	my $klaproth = getNode('Klaproth', 'user');
+	# lock account
+	$user -&gt; {acctlock} = $klaproth -&gt; {node_id};
+
+	# note reason
+	my $note = $blacklisted
+		? &quot;Created from blacklisted IP: $blacklisted&quot;
+		: 'Same email address as locked user: '.linkNode($lockedUser);
+	$note .= ' (infected)' if $infected;
+	htmlcode('addNodenote', $user, $note, $klaproth);
+	$log .= &quot;. $note -&gt; locked&quot;;
+}
+
+&amp;$secLog($log);
+$DB -&gt; updateNode($user, -1);
+
+# log ip addresses
+map {
+	$DB-&gt;sqlInsert(
+		&quot;iplog&quot;
+		, {iplog_user =&gt; $$user{user_id}
+		, iplog_ipaddy =&gt; $_}
+	)
+} @addrs;
+
+### Save a few initial settings
+my $uservars = getVars($user);
+$$uservars{'showmessages_replylink'} = 1;
+$$uservars{ipaddy} = join ',', @addrs;
+$$uservars{preference_last_update_time} = 1;
+$$uservars{infected} = 1 if $infected;
+setVars($user, $uservars);
+
+# send activation email
+my %mail = %{getNode('Welcome to Everything2', 'mail')};
+
+$name ||= $username;
+$mail{doctext} =~ s/&#171;name&#187;/$name/;
+$mail{doctext} =~ s/&#171;link&#187;/$link/g;
+$mail{doctext} =~ s/&#171;servername&#187;/$ENV{SERVER_NAME}/g;
+
+$APP -&gt; node2mail($email, \%mail, 1);
+
+# tell them we're wonderful
+$name ||= $username;
+return &quot;&lt;h3&gt;Welcome to Everything2, $name!
+	&lt;/h3&gt;
+	&lt;p&gt;Your new user account has been created, and an email has been sent to the address you provided. 
+	You cannot use your account until you have followed the link in the email to activate it.
+	This link will expire in $validForDays days.
+	&lt;/p&gt;
+	&lt;p&gt;The email contains some useful information, so please read it carefully, print it
+	out on high-quality paper, and hang it on your wall in a tasteful frame.
+	&lt;/p&gt;&quot;;
+#%]
+</doctext>
   <node_id>2072173</node_id>
   <title>Sign up</title>
 </node>
