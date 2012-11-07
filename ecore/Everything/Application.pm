@@ -252,6 +252,8 @@ sub getTokenLinkParameters
 #	parameter
 #		(hashref) user, CGI object
 #
+
+
 sub checkToken
 {
 	my ($this, $user, $query) = @_;
@@ -265,7 +267,8 @@ sub checkToken
 			, $action, $expiry) ne $query -> param('token');
 
 	$this -> updatePassword($user, $query -> param('passwd'));
-	$this -> securityLog($Everything::GNODE, $user, "$$user{title} account $action");
+	$this -> securityLog(Everything::getNode($action eq 'activate' ? 'Sign up' : 'Reset password', 'superdoc')
+		, $user, "$$user{title} account $action");
 }
 
 #############################################################################
