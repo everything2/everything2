@@ -2200,21 +2200,12 @@ sub gotoNode
 
 	$query->param('softlinkedFrom', $fromNodeLinked);
 
-	#if we are accessing an edit page, we want to make sure user
-	#has rights -- also, lock the page
-	#we unlock the page on command as well...
+	# make sure editing user is allowed to edit
 	if ($displaytype and $displaytype eq "edit") {
-		if (canUpdateNode ($USER, $NODE)) {
-			if (not lockNode($NODE, $USER)) {
-				$NODE = getNodeById($HTMLVARS{node_locked});
-				$query->param('displaytype', 'display');
-			} 
-		} else {
+		unless (canUpdateNode ($USER, $NODE)) {
 			$NODE = getNodeById($HTMLVARS{permission_denied});
 			$query->param('displaytype', 'display');
 		}
-	} elsif ($query->param('op') eq "unlock") {
-		unlockNode ($USER, $NODE);
 	}
 
 	displayPage($NODE, $user_id);
