@@ -3,7 +3,7 @@
   <node_id>748856</node_id>
   <title>minilogin</title>
   <code>my $op = $query-&gt;param(&quot;op&quot;);
-$query-&gt;delete('op', 'passwd');
+$query-&gt;delete('passwd');
 
 my $goto = getId($NODE);
 $goto = $HTMLVARS{default_node} if $goto == $HTMLVARS{default_guest_node};
@@ -14,7 +14,7 @@ $query-&gt;start_form(-method =&gt; &quot;POST&quot;
   ) .
 $query-&gt;hidden(&quot;node_id&quot;, $goto) . &quot;\n&quot; .
 $query-&gt;hidden(&quot;lastnode_id&quot;) . &quot;\n&quot; .
-$query-&gt;hidden(&quot;op&quot;, &quot;login&quot;) . &quot;\n&quot; .
+$query-&gt;hidden(-name =&gt; &quot;op&quot;, value =&gt; &quot;login&quot;, force =&gt; 1) . &quot;\n&quot; .
 '
 &lt;table border=&quot;0&quot;&gt;
 &lt;tr&gt;

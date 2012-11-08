@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1957956</pagetype_nodetype>
   <page>[%
@@ -85,9 +86,8 @@ $str;
 
 
 </page>
-  <node_id>1958059</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>1958059</node_id>
   <title>podcast edit page</title>
   <mimetype></mimetype>
 </node>

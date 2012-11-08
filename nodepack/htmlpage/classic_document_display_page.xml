@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>3</pagetype_nodetype>
   <page>&lt;p align=&quot;right&quot;&gt;&lt;font size=-1&gt;[% linkNode($NODE, 'printable version', { displaytype =&gt; 'printable' } ) %] &lt;/font&gt;&lt;/p&gt;
@@ -11,10 +12,9 @@
     $str);
 
 %]</page>
-  <node_id>1468870</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <ownedby_theme>415072</ownedby_theme>
+  <node_id>1468870</node_id>
   <title>classic document display page</title>
   <mimetype></mimetype>
 </node>

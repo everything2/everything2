@@ -181,12 +181,12 @@ local *info_msgme = sub {
 		my $msg = $query-&gt;param($qp);
 		my $ccMe = (defined $query-&gt;param('cc'.$qp)) &amp;&amp; ($query-&gt;param('cc'.$qp) eq '1') ? 1 : 0;
 
-		$HTMLVARS{msgparams} = {
+		my $failMessage = htmlcode('sendPrivateMessage',{
 			'recipient_id'=&gt;$nid,
 			'message'=&gt;$msg,
 			'ccself'=&gt;$ccMe,
-		};
-		my $failMessage = htmlcode('sendPrivateMessage','');
+		});
+
 		undef $failMessage unless (defined $failMessage) &amp;&amp; (length($failMessage));
 
 		if(defined $failMessage) {

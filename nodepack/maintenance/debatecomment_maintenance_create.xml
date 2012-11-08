@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>1156105</maintain_nodetype>
   <node_id>1156290</node_id>
+  <title>debatecomment maintenance create</title>
   <maintaintype>create</maintaintype>
   <code>my ( $COMMENT ) = @_;
 getRef( $COMMENT );
@@ -124,7 +127,4 @@ insertIntoNodegroup( $PARENT, -1, [getId( $COMMENT )] );
 
 #$DB-&gt;sqlUpdate( 'debatecomment', {-updated =&gt; 'now()'}, &quot;debatecomment_id=&quot; . getId( $PARENT ) );
 </code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>1156105</maintain_nodetype>
-  <title>debatecomment maintenance create</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>6</pagetype_nodetype>
   <page>[%
@@ -9,9 +10,8 @@ $query-&gt;hidden(&quot;node_id&quot;, getId $NODE);
 %]
 
 [{testuploadimage:src}][{closeform}]</page>
-  <node_id>187</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>upload</displaytype>
+  <node_id>187</node_id>
   <title>image upload page</title>
   <mimetype></mimetype>
 </node>

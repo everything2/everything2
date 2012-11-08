@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>152</maintain_nodetype>
   <node_id>158</node_id>
+  <title>nodeball maintenance create</title>
   <maintaintype>create</maintaintype>
   <code>my ($NODE) = @_;
 
@@ -8,7 +11,4 @@ my $VARS= {
 	version=&gt;&quot;0.1.1&quot;,
 	description=&gt;&quot;   &quot;};
 setVars $NODE, $VARS;</code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>152</maintain_nodetype>
-  <title>nodeball maintenance create</title>
 </node>

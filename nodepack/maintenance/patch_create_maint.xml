@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>1151141</maintain_nodetype>
   <node_id>1414809</node_id>
+  <title>patch create maint</title>
   <maintaintype>create</maintaintype>
   <code>my ($PATCH) = @_;
 getRef($PATCH);
@@ -25,7 +28,4 @@ my $argSet = { patch_id =&gt; $$PATCH{node_id}};
 my $argStr = to_json($argSet);
 my $addNotifier = htmlcode('addNotification', $notification_id, $user_id, $argStr);
 </code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>1151141</maintain_nodetype>
-  <title>patch create maint</title>
 </node>

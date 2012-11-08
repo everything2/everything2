@@ -297,12 +297,11 @@ my $str=&quot;user_id &quot;.$$USER{user_id}.&quot; node_id &quot;.$$USER{node_i
 	my $parentOwner=getNode(1957092)-&gt;{author_user};
 	my $str.=$$parent{title}.$parentOwner;
 if ($$USER{title}eq'Oolong'){
-	$HTMLVARS{msgparams} = {
+	htmlcode('sendPrivateMessage',{
 		'author_id' =&gt; $$USER{user_id},
 		'recipient_id' =&gt; $parentOwner,
 		'message' =&gt; 'Hey, [' . $$USER{title} . '] just replied to [' . getNode(1957092)-&gt;{title} . ']',
-	};
-	htmlcode('sendPrivateMessage','');
+	});
 }
 
 #if ($$USER{title} eq 'Oolong'){

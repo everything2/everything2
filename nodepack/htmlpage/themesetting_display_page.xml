@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>175990</pagetype_nodetype>
   <page>[%
@@ -8,9 +9,8 @@ if ($$NODE{parent_theme}) {
 &quot;&lt;i&gt;these settings don't have a theme yet&lt;/i&gt;&quot;;
 %]&lt;br&gt;
 [{displayvars}]</page>
-  <node_id>175995</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>175995</node_id>
   <title>themesetting display page</title>
   <mimetype></mimetype>
 </node>

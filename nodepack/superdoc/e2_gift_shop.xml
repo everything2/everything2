@@ -67,12 +67,11 @@ if ($query-&gt;param('give_star')) {
         $APP-&gt;securityLog(getNode('The Gift of Star', 'node_forward'), $USER, &quot;[$$USER{title}] gave $article $Color Star to [$$U{title}] at the [E2 Gift Shop].&quot;);
 
 	my $from = $$USER{title};
-	$HTMLVARS{msgparams} = {
+	htmlcode('sendPrivateMessage',{
 		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
 		'recipient_id' =&gt; $$U{user_id},
 		'message' =&gt; &quot;Sweet! [$from] just awarded you $article [Star|$Color Star], because &lt;i&gt;$reason&lt;/i&gt;&quot;
-	};
-	htmlcode('sendPrivateMessage','');
+	});
 	$str = &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Star&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Okay, $article $Color Star has been awarded to [&quot; . $$U{title} .&quot;]. &quot;;
 	if ($$USER{GP} &gt;= $StarCost) {
 		return $str . &quot;You have &lt;b&gt;&quot; . $$USER{GP} . &quot;&lt;/b&gt; GP left. Would you like to [E2 Gift Shop|give another Star]?&lt;/p&gt;&quot;;
@@ -197,12 +196,11 @@ if ($query-&gt;param('give_votes')) {
         $APP-&gt;securityLog(getNode('The Gift of Votes', 'node_forward'), $USER, &quot;$$USER{title} gave $amt of their votes to $$U{title} at the [E2 Gift Shop].&quot;);
 
 	my $from =  ($query-&gt;param('anon') eq 'sssh') ? &quot;someone mysterious&quot; : ('[' . $$USER{title} . ']');
-	$HTMLVARS{msgparams} = {
+	htmlcode('sendPrivateMessage',{
 		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
 		'recipient_id' =&gt; $$U{user_id},
 		'message' =&gt; &quot;Whoa! $from just [E2 Gift Shop|gave you] &quot;.($amt||&quot;0&quot;).&quot; vote&quot;.($amt == 1 ? &quot;&quot; :&quot;s&quot;).&quot; to spend. You'd better use 'em by midnight, baby!&quot;
-	};
-	htmlcode('sendPrivateMessage','');
+	});
 	$str = &quot;&lt;p&gt;Okay, &quot;.($amt||&quot;0&quot;).&quot; vote&quot;.($amt == 1 ? &quot; is&quot; :&quot;s are&quot;).&quot; waiting for [&quot; . $$U{title} .&quot;]. &quot;;
 	if ($$USER{votesleft} != 0) {
 		return $str . &quot;You have &lt;b&gt;&quot; . $$USER{votesleft} . &quot;&lt;/b&gt; votes left. Would you like to [E2 Gift Shop|give some more]?&lt;/p&gt;&quot;;
@@ -269,13 +267,11 @@ my $lvl = $APP-&gt;getLevel($user);
         $APP-&gt;securityLog( getNode('The Gift of Ching', 'node_forward'), $USER, &quot;$$USER{title} gave a C! to $$user{title} at the [E2 Gift Shop].&quot;);
 
 	my $from =  ($query-&gt;param('anon') eq 'sssh') ? &quot;someone mysterious&quot; : ('[' . $$USER{title} . ']');
-	$HTMLVARS{msgparams} = {
+	htmlcode('sendPrivateMessage',{
 		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
 		'recipient_id' =&gt; $$user{user_id},
-#		'message' =&gt; 'Hey '.$$user{title}.&quot;, $from just [E2 Gift Shop|gave you] a C! to spend. You\'d better use it by midnight, baby!&quot;
 		'message' =&gt; &quot;Hey, $from just [E2 Gift Shop|gave you] a C! to spend. Use it to rock someone's world!&quot;
-	};
-	htmlcode('sendPrivateMessage','');
+	});
 	$str = &quot;&lt;p&gt;A neatly-wrapped C! is waiting for [&quot; . $$user{title} .&quot;]. &quot;;
 	if ($$VARS{cools} != 0) {
 		return $str . &quot;You have &lt;b&gt;&quot; . $$VARS{cools} . &quot;&lt;/b&gt; C!s left. Would you like to [E2 Gift Shop|give another]?&lt;/p&gt;&quot;;
@@ -601,12 +597,11 @@ if ($query-&gt;param('give_egg')) {
         $APP-&gt;securityLog(getNode('The Gift of Eggs', 'node_forward'), $USER, &quot;$$USER{title} gave an easter egg to $$U{title} at the [E2 Gift Shop].&quot;);
 
 	my $from =  ($query-&gt;param('anon') eq 'sssh') ? &quot;someone mysterious&quot; : ('[' . $$USER{title} . ']');
-	$HTMLVARS{msgparams} = {
+	htmlcode('sendPrivateMessage',{
 		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
 		'recipient_id' =&gt; $$U{user_id},
 		'message' =&gt; &quot;Hey, $from just gave you an [easter egg]! That means you are tastier than an omelette!&quot;
-	};
-	htmlcode('sendPrivateMessage','');
+	});
 	$str = &quot;&lt;p&gt;Okay, the Easter Bunny just paid a visit to [&quot; . $$U{title} .&quot;]. &quot;;
 	if ($$USER{votesleft} != 0) {
 		return $str . &quot;You have &lt;b&gt;&quot;.($$VARS{easter_eggs}||&quot;0&quot;).&quot;&lt;/b&gt; easter egg&quot;.($$VARS{easter_eggs} == 1 ? &quot;&quot; :&quot;s&quot;).&quot; left. Would you like to [E2 Gift Shop|give another]?&lt;/p&gt;&quot;;
@@ -666,12 +661,11 @@ if ($query-&gt;param(&quot;suggest_title&quot;)) {
    $$USER{GP} -= ($titleCost);
    updateNode($USER, -1);
 
-   $HTMLVARS{msgparams} = {
+   htmlcode('sendPrivateMessage',{
 	'author_id' =&gt; getId(getNode('root', 'user')),
 	'recipient_id' =&gt; getId(getNode('Bank of Everything', 'usergroup')),
 	'message' =&gt; &quot;Hey, [$suggester] just purchased the right to suggest the title $SugTitle for Level $SugLevel. Approve or disapprove?&quot;
-   };
-   htmlcode('sendPrivateMessage','');
+   });
 
    $str= &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Level Title&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Your suggestion of level title &lt;b&gt;$SugTitle&lt;/b&gt; for Level &lt;b&gt;$SugLevel&lt;/b&gt; has been successfully submitted!&lt;/p&gt;&lt;p&gt;Your account has been deducted &lt;b&gt;$titleCost GP&lt;/b&gt;&lt;/p&gt;&quot;;
    return $str;

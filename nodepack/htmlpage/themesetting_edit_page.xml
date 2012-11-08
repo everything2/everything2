@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>175990</pagetype_nodetype>
   <page>title:[{textfield:title}]
@@ -6,9 +7,8 @@ maintained by:[{node_menu:author_user,user,usergroup}]&lt;br&gt;
 &lt;b&gt;Replacement settings for&lt;/b&gt;:[{node_menu:parent_theme}]&lt;br&gt;
 
 [{editvars}]</page>
-  <node_id>175996</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>175996</node_id>
   <title>themesetting edit page</title>
   <mimetype></mimetype>
 </node>

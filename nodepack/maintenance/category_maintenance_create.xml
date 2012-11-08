@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>1522375</maintain_nodetype>
   <node_id>1935675</node_id>
+  <title>category maintenance create</title>
   <maintaintype>create</maintaintype>
   <code>my ($CATEGORY) = @_;
 getRef $CATEGORY;
@@ -43,7 +46,4 @@ if ($maintType eq 'usergroup'
 $$CATEGORY{author_user} = $$MAINTAINER{node_id};
 updateNode($CATEGORY, -1);
 </code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>1522375</maintain_nodetype>
-  <title>category maintenance create</title>
 </node>

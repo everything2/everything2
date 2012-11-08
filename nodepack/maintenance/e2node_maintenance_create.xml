@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>116</maintain_nodetype>
   <node_id>527249</node_id>
+  <title>e2node maintenance create</title>
   <maintaintype>create</maintaintype>
   <code>my ($E2NODE) = @_;
 getRef $E2NODE;
@@ -8,7 +11,4 @@ $$E2NODE{createdby_user} = $$E2NODE{author_user} || getId($USER);
 $$E2NODE{author_user} = getId(getNode('Content Editors', 'usergroup')); # Content Editors can update it; author can't
 
 updateNode($E2NODE, -1);</code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>116</maintain_nodetype>
-  <title>e2node maintenance create</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>0</parent_container>
   <pagetype_nodetype>451267</pagetype_nodetype>
   <page>[%
@@ -7,9 +8,8 @@
   $out =~ s/^\s+//g;
   return $out;
 %]</page>
-  <node_id>451268</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>451268</node_id>
   <title>fullpage display page</title>
   <mimetype></mimetype>
 </node>

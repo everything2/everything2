@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1147470</pagetype_nodetype>
   <page>&lt;p&gt;&lt;strong&gt;([%linkNode( 1147470 )%])&lt;/strong&gt;&lt;/p&gt;
@@ -51,9 +52,8 @@ return $str;
 %]
 
 </page>
-  <node_id>1147524</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>1147524</node_id>
   <title>node_forward edit page</title>
   <mimetype></mimetype>
 </node>

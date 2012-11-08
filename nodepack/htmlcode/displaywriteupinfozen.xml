@@ -312,14 +312,12 @@ local *sendMessage = sub {
 
 		my $ccMe = (defined $query-&gt;param('cc'.$qp)) &amp;&amp; ($query-&gt;param('cc'.$qp) eq '1') ? 1 : 0;
 
-		$HTMLVARS{msgparams} = {
+		my $failMessage = htmlcode('sendPrivateMessage',{
 			'recipient_id'=&gt;$aid,
 			'message'=&gt;$msg,
 			'ccself'=&gt;$ccMe,
 			'renode'=&gt;$wut,
-#			'renode_id'=&gt;$wuID,	#do this instead of 'renode' if and when message table gets its own field for this
-		};
-		my $failMessage = htmlcode('sendPrivateMessage','');
+		});
 		$failMessage = undef unless (defined $failMessage) &amp;&amp; (length($failMessage));
 		if(defined $failMessage) {
 			$t = ' &lt;strong&gt;Error&lt;/strong&gt;: unable to send writeup message &quot;'.$msg.'&quot;: '.$failMessage;

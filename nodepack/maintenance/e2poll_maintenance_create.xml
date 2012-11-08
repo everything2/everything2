@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>1685242</maintain_nodetype>
   <node_id>1685267</node_id>
+  <title>e2poll maintenance create</title>
   <maintaintype>create</maintaintype>
   <code>my ( $POLL ) = @_;
 
@@ -29,7 +32,4 @@ $$POLL{doctext} = join &quot;\n\n&quot;, @doctext;
 
 updateNode( $POLL, -1 );
 </code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>1685242</maintain_nodetype>
-  <title>e2poll maintenance create</title>
 </node>

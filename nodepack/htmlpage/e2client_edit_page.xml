@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1261857</pagetype_nodetype>
   <page>&lt;table&gt;
@@ -13,9 +14,8 @@
 [{textarea:doctext,30,60}]
 
 </page>
-  <node_id>1261885</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>1261885</node_id>
   <title>e2client edit page</title>
   <mimetype></mimetype>
 </node>

@@ -23,12 +23,11 @@ for(my $count=0; $count &lt; @users; $count++) {
   }
 
   # Send an automated notification.
-  $HTMLVARS{msgparams} = {
+  my $failMessage = htmlcode('sendPrivateMessage',{
     'recipient_id'=&gt;getId($U),
     'message'=&gt;'Whoa! Somebody has given you a [token]! Use it to [E2 Gift Shop|reset the chatterbox topic].',
     'author'=&gt;'Cool Man Eddie',
-  };
-  my $failMessage = htmlcode('sendPrivateMessage','');
+  });
 
   $str .= &quot;User $$U{title} was given one token&quot;;
   

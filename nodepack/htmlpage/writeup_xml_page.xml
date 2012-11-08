@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>0</parent_container>
   <pagetype_nodetype>117</pagetype_nodetype>
   <page>[%
@@ -13,9 +14,8 @@ node2xml($NODE, []);
 #&quot;Can't use an undefined value as an ARRAY reference at /usr/local/lib/perl5/site_perl/Everything/XML.pm line 594&quot;
 %]
 </page>
-  <node_id>266</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>xml</displaytype>
+  <node_id>266</node_id>
   <title>writeup xml page</title>
   <mimetype>text/xml</mimetype>
 </node>

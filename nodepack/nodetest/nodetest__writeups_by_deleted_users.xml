@@ -1,5 +1,7 @@
 <node>
+  <type_nodetype>1308757</type_nodetype>
   <nodetest_appliesto>117</nodetest_appliesto>
+  <nodetest_description>Writeups that don't have valid authors.</nodetest_description>
   <node_id>1308803</node_id>
   <nodetest_active>1</nodetest_active>
   <nodetest_code>my ($WRITEUP) = @_;
@@ -7,12 +9,10 @@
 my $aut = getNodeById($$WRITEUP{author_user});
 return &quot;y&quot; if $aut;
 return &quot;n&quot;;</nodetest_code>
-  <type_nodetype>1308757</type_nodetype>
-  <nodetest_description>Writeups that don't have valid authors.</nodetest_description>
+  <title>nodetest: Writeups by deleted users</title>
   <nlcode>my ($WRITEUP) = @_;
 
 my $aut = getNodeById($$WRITEUP{author_user});
 return &quot;y&quot; if $aut;
 return &quot;n&quot;;</nlcode>
-  <title>nodetest: Writeups by deleted users</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>117</pagetype_nodetype>
   <page>[%
@@ -43,9 +44,8 @@ $str.$query-&gt;textfield('parentnodename', $$E2NODE{title});
 Writeuptype:[{node_menu:wrtype_writeuptype}]
 &lt;p&gt;
 [{textarea:doctext}]</page>
-  <node_id>170046</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>170046</node_id>
   <title>writeup edit page</title>
   <mimetype></mimetype>
 </node>

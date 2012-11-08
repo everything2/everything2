@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>1156105</maintain_nodetype>
   <node_id>1157506</node_id>
+  <title>debatecomment maintenance delete</title>
   <maintaintype>delete</maintaintype>
   <code>my ( $NODE ) = @_;
 getRef $NODE;
@@ -15,7 +18,4 @@ if ( $GROUP ) {
     }
 }
 </code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>1156105</maintain_nodetype>
-  <title>debatecomment maintenance delete</title>
 </node>

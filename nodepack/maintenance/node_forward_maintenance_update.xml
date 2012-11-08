@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>1147470</maintain_nodetype>
   <node_id>2051617</node_id>
+  <title>node_forward maintenance update</title>
   <maintaintype>update</maintaintype>
   <code>my ($FORWARD) = @_;
 getRef $FORWARD;
@@ -14,7 +17,4 @@ if ($forwardTitle) {
   $query -&gt; param('node_forward_doctext', $forwardId) if $query -&gt; param('node_forward_doctext');
   updateNode($FORWARD, -1);
 }</code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>1147470</maintain_nodetype>
-  <title>node_forward maintenance update</title>
 </node>

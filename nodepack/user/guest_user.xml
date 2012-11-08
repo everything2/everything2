@@ -2,8 +2,8 @@
   <nick></nick>
   <email>root@localhost</email>
   <realname>Guest User</realname>
-  <salt></salt>
   <type_nodetype>15</type_nodetype>
+  <salt></salt>
   <vars>
     <value>1</value>
     <key>zenadinheader</key>

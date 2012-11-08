@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>117</maintain_nodetype>
   <node_id>221</node_id>
+  <title>writeup maintenance create</title>
   <maintaintype>create</maintaintype>
   <code>my ($WRITEUP) = @_;
 getRef $WRITEUP;
@@ -33,7 +36,4 @@ updateNode $problem, $USER;
 $HEADER_PARAMS{-status} = 303;
 $HEADER_PARAMS{-location} = htmlcode('urlToNode', $problem);
 </code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>117</maintain_nodetype>
-  <title>writeup maintenance create</title>
 </node>

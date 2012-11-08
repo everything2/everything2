@@ -26,6 +26,7 @@ foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', '
         $e2-&gt;{$_} = $$VARS{$_} if ($$VARS{$_});
 }
 
+$e2 -&gt; {collapsedNodelets} =~ s/\bsignin\b// if $query -&gt; param('op') eq 'login';
 $e2 = encode_json($e2);
 
 my $min = '.min' unless $HTMLVARS{isDevServer};

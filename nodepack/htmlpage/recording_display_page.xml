@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1957954</pagetype_nodetype>
   <page>[%
@@ -24,9 +25,8 @@ return $str;
 
 
 %]</page>
-  <node_id>1958977</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>1958977</node_id>
   <title>recording display page</title>
   <mimetype></mimetype>
 </node>

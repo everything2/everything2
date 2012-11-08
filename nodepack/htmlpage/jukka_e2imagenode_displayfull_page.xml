@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1227031</pagetype_nodetype>
   <page>[{firmlinks}]
@@ -51,10 +52,9 @@ htmlcode('windowview', 'editor,launch editor');
 &lt;tr&gt;&lt;td&gt;
 	[{addwriteup}]
 &lt;/tr&gt;&lt;/td&gt;&lt;/table&gt;</page>
-  <node_id>1227043</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <ownedby_theme>415073</ownedby_theme>
+  <node_id>1227043</node_id>
   <title>jukka e2imagenode displayfull page</title>
   <mimetype></mimetype>
 </node>

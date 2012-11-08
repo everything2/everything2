@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>1151141</maintain_nodetype>
   <node_id>1415704</node_id>
+  <title>patch update maint</title>
   <maintaintype>update</maintaintype>
   <code>my ($PATCH) = @_;
 getRef($PATCH);
@@ -13,7 +16,4 @@ my $pf = getVars(getNode(&quot;patchable fields&quot;, &quot;setting&quot;));
 #  nukeNode($PATCH, -1, 1);
 #  return;
 #}</code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>1151141</maintain_nodetype>
-  <title>patch update maint</title>
 </node>

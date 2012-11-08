@@ -31,12 +31,11 @@ if ($query-&gt;param('give_GP')) {
         $APP-&gt;securityLog($NODE, $USER, &quot;$$USER{title} sanctified $$user{title} with $Sanctificity GP.&quot;);
         
 	my $from =  ($query-&gt;param('anon') eq 'sssh') ? &quot;!&quot; : (' by [' . $$USER{title} . ']!');
-	$HTMLVARS{msgparams} = {
+	htmlcode('sendPrivateMessage',{
 		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
 		'recipient_id' =&gt; $$user{user_id},
 		'message' =&gt; &quot;Whoa! You&#146;ve been [Sanctify|sanctified]$from&quot;
-	};
-	htmlcode('sendPrivateMessage','');
+	});
 	$str = &quot;&lt;p&gt;User [&quot; . $$user{title} .&quot;] has been given 10 GP. &quot;;
 	return $str . &quot;&lt;/p&gt;You have &lt;b&gt;&quot; . $$USER{GP} . &quot; GP&lt;/b&gt; left. Would you like to [Sanctify user|sanctify someone else]?&lt;/p&gt;&lt;p&gt;Or, return to the [E2 Gift Shop].&lt;/p&gt;&quot;;
 }

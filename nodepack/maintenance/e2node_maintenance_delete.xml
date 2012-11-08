@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>116</maintain_nodetype>
   <node_id>174649</node_id>
+  <title>e2node maintenance delete</title>
   <maintaintype>delete</maintaintype>
   <code>my ($NODE) = @_;
 
@@ -13,7 +16,4 @@ foreach(@$group) {
 }
 
 1;</code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>116</maintain_nodetype>
-  <title>e2node maintenance delete</title>
 </node>

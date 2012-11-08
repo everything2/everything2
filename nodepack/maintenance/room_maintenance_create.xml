@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>545241</maintain_nodetype>
   <node_id>719776</node_id>
+  <title>room maintenance create</title>
   <maintaintype>create</maintaintype>
   <code>my ($N) = @_;
 
@@ -17,7 +20,4 @@ $$N{author_user} = getId(getNode('gods', 'usergroup'));
 $$N{doctext} = $query-&gt;param('room_doctext') if defined $query-&gt;param('room_doctext');
 
 updateNode($N, -1);</code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>545241</maintain_nodetype>
-  <title>room maintenance create</title>
 </node>

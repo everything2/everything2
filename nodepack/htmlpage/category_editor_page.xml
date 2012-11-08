@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>17</parent_container>
   <pagetype_nodetype>1522375</pagetype_nodetype>
   <page>&lt;p align=right&gt;
@@ -13,9 +14,8 @@ linkNode $NODE, &quot;close&quot;, {displaytype=&gt; $query-&gt;param('displayty
 %]
 [{groupeditor}]
 &lt;/FORM&gt;</page>
-  <node_id>1522378</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>editor</displaytype>
+  <node_id>1522378</node_id>
   <title>category editor page</title>
   <mimetype></mimetype>
 </node>

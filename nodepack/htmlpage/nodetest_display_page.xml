@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1308757</pagetype_nodetype>
   <page>[%
@@ -57,9 +58,8 @@ $str.=&quot;FAIL: $fail&lt;br&gt;&quot;;
   return $str;
 
 %]</page>
-  <node_id>1308771</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>1308771</node_id>
   <title>nodetest display page</title>
   <mimetype></mimetype>
 </node>

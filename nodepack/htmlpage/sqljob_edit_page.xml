@@ -1,13 +1,13 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1159647</pagetype_nodetype>
   <page>&lt;H4&gt;Title:&lt;/H4&gt;[{textfield:title}]&lt;br&gt;
 &lt;H4&gt;Description:&lt;/h4&gt;[{textarea:doctext,15,45}]&lt;br&gt;
 &lt;H4&gt;SQL Query:&lt;/h4&gt;[{textarea:sqltext,15,45}]&lt;br&gt;
 &lt;h4&gt;run:&lt;/h4&gt;[{yesno_field:goexec}]&lt;br&gt;&lt;br&gt;</page>
-  <node_id>1159667</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>1159667</node_id>
   <title>sqljob edit page</title>
   <mimetype></mimetype>
 </node>

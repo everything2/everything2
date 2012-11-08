@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>15</maintain_nodetype>
   <node_id>2011636</node_id>
+  <title>user maintenance delete</title>
   <maintaintype>delete</maintaintype>
   <code>my ($DELETED_USER) = @_;
 getRef $DELETED_USER;
@@ -9,7 +12,4 @@ $APP-&gt;securityLog(getNode('The Old Hooked Pole', 'restricted_superdoc'), $USE
 # Remove user from room lists so [Other Users[nodelet]] doesn't bug out
 $DB-&gt;sqlDelete('room', &quot;member_user = $$DELETED_USER{node_id}&quot;);
 </code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>15</maintain_nodetype>
-  <title>user maintenance delete</title>
 </node>

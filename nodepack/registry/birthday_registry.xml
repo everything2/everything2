@@ -1,10 +1,10 @@
 <node>
+  <type_nodetype>1876758</type_nodetype>
   <doctext>Keep your age a secret, if you must.
 
 Also, note that this runs in Year-Month-Day order.</doctext>
-  <node_id>2033732</node_id>
-  <type_nodetype>1876758</type_nodetype>
   <question></question>
-  <input_style>date</input_style>
+  <node_id>2033732</node_id>
   <title>Birthday Registry</title>
+  <input_style>date</input_style>
 </node>

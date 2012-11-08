@@ -107,20 +107,18 @@ $notes .= &quot;&lt;li&gt;Got here too&lt;/li&gt;&quot;;
 		my $writeuptitle = getNodeById($current_node_id)-&gt;{title};
 		my $messagetext = &quot;[$$USER{title}] fixed your writeup [$writeuptitle], &quot;
 				. &quot;all instances of \&quot;$findword\&quot; have been replaced with \&quot;$replaceword\&quot;.&quot;;
-		$HTMLVARS{msgparams} = 
-			{
+
+		htmlcode('sendPrivateMessage',{
 			'author_id' =&gt; getId(getNode('Klaproth', 'user')),
 			'recipient_id' =&gt; $$USER{author_user},
 			'message' =&gt; $messagetext,
-			};
-		htmlcode('sendPrivateMessage','');
-	#	$HTMLVARS{msgparams} = 
-	#		{
-	#		'author_id' =&gt; getId(getNode('Klaproth', 'user')),
+			});
+
+	#	htmlcode('sendPrivateMessage',{
+        #		'author_id' =&gt; getId(getNode('Klaproth', 'user')),
 	#		'recipient_id' =&gt; $$current_node{author_user},
 	#		'message' =&gt; $messagetext,
-	#		};
-	#	htmlcode('sendPrivateMessage','');
+	#		});
 		}
 	
 	#####

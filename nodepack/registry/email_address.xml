@@ -1,7 +1,7 @@
 <node>
-  <doctext>Sometimes it's very useful to be able to contact people off-site, especially if you end up not logging in so much. The email you give us when you first sign up is never made public or used to send personal messages, so listing one here is probably the best way to make sure it's possible. Note that like all registries, this is not visible to people who aren't logged into the site, so the odds are against it getting harvested by spambots.</doctext>
-  <node_id>2017532</node_id>
   <type_nodetype>1876758</type_nodetype>
+  <doctext>Sometimes it's very useful to be able to contact people off-site, especially if you end up not logging in so much. The email you give us when you first sign up is never made public or used to send personal messages, so listing one here is probably the best way to make sure it's possible. Note that like all registries, this is not visible to people who aren't logged into the site, so the odds are against it getting harvested by spambots.</doctext>
   <question></question>
+  <node_id>2017532</node_id>
   <title>Email address</title>
 </node>

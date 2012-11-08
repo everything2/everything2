@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1177317</type_nodetype>
   <doctext>Welcome to the tutorial demonstration. This is merely to show you exactly how smart we can be when doing these sorts of things.
 
 [%
@@ -22,8 +23,7 @@ We can have a list of steps that require completion, using their $VARS to store 
 &lt;Br&gt;&lt;br&gt;
 Also, keep in mind that we can be sneaky and write down what the users are going to, for our records, and use that data to improve this tutorial.
 &lt;/small&gt;</doctext>
-  <node_id>1177325</node_id>
-  <type_nodetype>1177317</type_nodetype>
   <parent_tutorial></parent_tutorial>
+  <node_id>1177325</node_id>
   <title>Welcome to the test tutorial</title>
 </node>

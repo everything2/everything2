@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1151141</pagetype_nodetype>
   <page>&lt;p&gt;
@@ -31,9 +32,8 @@ $str .= $query -&gt; checkbox( -name=&gt;'op' , value=&gt;'applypatch' , selecte
 $query -&gt; hidden( 'patch_id' , $$NODE{node_id} ) if $HTMLVARS{isDevServer} ;
 return $str;
 %]</page>
-  <node_id>1977053</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>1977053</node_id>
   <title>patch edit page</title>
   <mimetype></mimetype>
 </node>

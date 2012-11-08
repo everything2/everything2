@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>152</pagetype_nodetype>
   <page>[% unless ($$NODE{group}) {
@@ -15,9 +16,8 @@
 %]
 &lt;p&gt;[{windowview:editor,launch editor}]
 &lt;p&gt;[{displayvars}]</page>
-  <node_id>191</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>191</node_id>
   <title>nodeball display page</title>
   <mimetype></mimetype>
 </node>

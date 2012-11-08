@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>116</pagetype_nodetype>
   <page>[{votehead}]
@@ -77,9 +78,8 @@ $str;
 %]
 
 </page>
-  <node_id>267</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>cylinder</displaytype>
+  <node_id>267</node_id>
   <title>e2node cylinder page</title>
   <mimetype></mimetype>
 </node>

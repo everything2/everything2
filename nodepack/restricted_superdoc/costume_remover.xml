@@ -24,12 +24,11 @@ for(my $count=0; $count &lt; @users; $count++) {
   }
 
   # Send an automated notification.
-  $HTMLVARS{msgparams} = {
+  my $failMessage = htmlcode('sendPrivateMessage',{
     'recipient_id'=&gt;getId($U),
     'message'=&gt;'Hey, your costume has been removed because it was deemed abusive. Please choose your costume more carefully next time, or you will lose costume-wearing privileges.',
     'author'=&gt;'Klaproth',
-  };
-  my $failMessage = htmlcode('sendPrivateMessage','');
+  });
 
   $str .= &quot;User $$U{title} was stripped of their costume.&quot;;
   

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1159647</pagetype_nodetype>
   <page>[%
@@ -70,9 +71,8 @@ $str.='&lt;/ul&gt;';
 
 return $str;
 %]</page>
-  <node_id>1159659</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>1159659</node_id>
   <title>sqljob display page</title>
   <mimetype></mimetype>
 </node>

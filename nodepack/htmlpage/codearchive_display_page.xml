@@ -1,12 +1,12 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1382262</pagetype_nodetype>
   <page>[{parselinks:doctext}]
 [{listcode:code}]
 </page>
-  <node_id>1385530</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>1385530</node_id>
   <title>codearchive display page</title>
   <mimetype></mimetype>
 </node>

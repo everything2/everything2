@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>0</parent_container>
   <pagetype_nodetype>1786405</pagetype_nodetype>
   <page>[%
@@ -6,9 +7,8 @@ my $out = parseCode($$NODE{doctext});
 $out =~ s/^\s+//mg unless exists($HTMLVARS{'group_edev'}{$$USER{node_id}});
 return $out;
 %]</page>
-  <node_id>1786408</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>1786408</node_id>
   <title>jscript display page</title>
   <mimetype>text/javascript</mimetype>
 </node>

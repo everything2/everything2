@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>1156105</pagetype_nodetype>
   <page>&lt;form method=&quot;post&quot; id=&quot;pagebody&quot;&gt;
@@ -47,9 +48,8 @@ $newtitle =~ s/&quot;/&amp;quot;/g;
 &lt;input type=&quot;submit&quot; name=&quot;sexisgood&quot; value=&quot;sumbit&quot;&gt;';
 %]
 &lt;/form&gt;</page>
-  <node_id>1156529</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>replyto</displaytype>
+  <node_id>1156529</node_id>
   <title>debatecomment replyto page</title>
   <mimetype></mimetype>
 </node>

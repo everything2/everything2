@@ -1,7 +1,7 @@
 <node>
-  <doctext>Enter your MySpace profile URL. Don't forget to hardlink it.</doctext>
-  <node_id>2004321</node_id>
   <type_nodetype>1876758</type_nodetype>
+  <doctext>Enter your MySpace profile URL. Don't forget to hardlink it.</doctext>
   <question></question>
+  <node_id>2004321</node_id>
   <title>MySpace</title>
 </node>

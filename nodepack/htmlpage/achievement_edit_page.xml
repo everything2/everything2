@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1917847</pagetype_nodetype>
   <page>&lt;p&gt;title:[{textfield:title}] maintained by:[{node_menu:author_user,user,usergroup}]&lt;br&gt;
@@ -11,9 +12,8 @@ subtype:[{textfield:subtype}]&lt;br&gt;
 &lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the code:&lt;/strong&gt;&lt;/small&gt;&lt;br&gt;
 
 [{textarea:code,30,80}]</page>
-  <node_id>1917859</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>1917859</node_id>
   <title>achievement edit page</title>
   <mimetype></mimetype>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>116</pagetype_nodetype>
   <page>[{repaire2node}]
@@ -31,9 +32,8 @@
 [{addfirmlink}]
 [{e2nodelock}]
 [{addwriteup}]</page>
-  <node_id>125</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>125</node_id>
   <title>e2node display page</title>
   <mimetype></mimetype>
 </node>

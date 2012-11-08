@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>117</pagetype_nodetype>
   <page>&lt;p&gt;&lt;small&gt;[% 
@@ -59,9 +60,8 @@ $str;
 #special parselinks for writeups (link to e2nodes only)
 #edit capabilities (N-Wing says: isn't this part done?)
 %]</page>
-  <node_id>219</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>219</node_id>
   <title>writeup display page</title>
   <mimetype></mimetype>
 </node>

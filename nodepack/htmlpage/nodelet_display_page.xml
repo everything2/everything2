@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>9</pagetype_nodetype>
   <page>[%
@@ -40,9 +41,8 @@ delete $HTMLVARS{pagenodelets} if $HTMLVARS{pagenodelets} eq $$VARS{nodelets};
 return insertNodelet($NODE);
 %]
 </page>
-  <node_id>73</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>73</node_id>
   <title>nodelet display page</title>
   <mimetype></mimetype>
 </node>

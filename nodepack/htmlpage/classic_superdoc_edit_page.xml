@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>14</pagetype_nodetype>
   <page>&lt;h4&gt;title&lt;/h4&gt;[{textfield:title}]
@@ -8,9 +9,8 @@
 
 [{textarea:doctext,,,virtual}]
 &lt;br /&gt;</page>
-  <node_id>415067</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>415067</node_id>
   <title>classic superdoc edit page</title>
   <mimetype></mimetype>
 </node>

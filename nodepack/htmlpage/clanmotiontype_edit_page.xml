@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>652211</pagetype_nodetype>
   <page>title:[{textfield:title}]&lt;p&gt;
@@ -8,9 +9,8 @@ motion code (will execute if passed):&lt;p&gt;
 &lt;p&gt;
 [{textarea:motioncode}]
 </page>
-  <node_id>652226</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>652226</node_id>
   <title>clanmotiontype edit page</title>
   <mimetype></mimetype>
 </node>

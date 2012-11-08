@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1943469</pagetype_nodetype>
   <page>&lt;p&gt;&lt;strong&gt;([%linkNode( 1943469 )%])&lt;/strong&gt;&lt;/p&gt;
@@ -16,9 +17,8 @@
     &lt;td&gt;[{textfield:doctext}]&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/table&gt;</page>
-  <node_id>1943473</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>1943473</node_id>
   <title>url_forward edit page</title>
   <mimetype></mimetype>
 </node>

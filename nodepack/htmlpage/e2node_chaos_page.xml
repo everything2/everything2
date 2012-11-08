@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>116</pagetype_nodetype>
   <page>[%
@@ -60,9 +61,8 @@ return qq-&lt;small&gt;&lt;p align=&quot;right&quot;&gt;&lt;strong&gt;$junk[rand
   return $str;
 %]
 </page>
-  <node_id>1418973</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>chaos</displaytype>
+  <node_id>1418973</node_id>
   <title>e2node chaos page</title>
   <mimetype></mimetype>
 </node>

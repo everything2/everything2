@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>1949335</maintain_nodetype>
   <node_id>1966909</node_id>
+  <title>ticket maintenance create</title>
   <maintaintype>create</maintaintype>
   <code>my ($N) = @_;
 
@@ -19,7 +22,4 @@ $$N{'locked_comment'} = &quot;Not locked&quot;;
 $$N{'title'}          = &quot;test title&quot;;
 
 updateNode($N, -1);</code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>1949335</maintain_nodetype>
-  <title>ticket maintenance create</title>
 </node>

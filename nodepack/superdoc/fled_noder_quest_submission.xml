@@ -30,13 +30,12 @@ if (length($username) &gt; 0)
       # having the fromgroup_id set allow me to make sure that the user isn't sending 
       # me a fake quest submission
       my $in10seId = getId(getNode('in10se', 'user'));
-      $HTMLVARS{msgparams} = {
+      htmlcode('sendPrivateMessage',{
                               'author_id' =&gt; $$USER{node_id},
 		              'recipient_id' =&gt; $in10seId,
 			      'message' =&gt; '['.$$USER{username}.'] has submitted ['.$username.'] (last seen '.$$questUser{lasttime}.') for the [Fled Noder Quest]',
 			      'fromgroup_id' =&gt; $in10seId
-                             };
-      htmlcode('sendPrivateMessage','');
+                             });
       $str .= ' (your submission has been received)';
     }
     else

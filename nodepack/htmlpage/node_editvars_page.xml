@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>7</pagetype_nodetype>
   <page>[%
@@ -6,9 +7,8 @@ $NODE = $GNODE = getNodeById($HTMLVARS{not_found}) unless $$NODE{type}{title} ne
 '';
 %]
 [{editvars}]</page>
-  <node_id>2024261</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>editvars</displaytype>
+  <node_id>2024261</node_id>
   <title>node editvars page</title>
   <mimetype></mimetype>
 </node>

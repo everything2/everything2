@@ -1,11 +1,11 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>2061807</maintain_nodetype>
   <node_id>2069692</node_id>
+  <title>mysqlproc maintenance delete</title>
   <maintaintype>delete</maintaintype>
   <code>my ($N) = @_;
 getRef($N);
 
 $DB-&gt;dropMysqlProcedure($N-&gt;{title});</code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>2061807</maintain_nodetype>
-  <title>mysqlproc maintenance delete</title>
 </node>

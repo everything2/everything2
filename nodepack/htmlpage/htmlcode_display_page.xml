@@ -1,11 +1,11 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>4</pagetype_nodetype>
   <page>[{listcode:code}]
 </page>
-  <node_id>63</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>63</node_id>
   <title>htmlcode display page</title>
   <mimetype></mimetype>
 </node>

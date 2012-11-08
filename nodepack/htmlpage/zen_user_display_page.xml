@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>15</pagetype_nodetype>
   <page>[{setupuservars}]
@@ -46,10 +47,9 @@ return if getId($USER) != getId($NODE);
  
 
 [{showbookmarks}]</page>
-  <node_id>1854179</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <ownedby_theme>1854183</ownedby_theme>
+  <node_id>1854179</node_id>
   <title>zen user display page</title>
   <mimetype></mimetype>
 </node>

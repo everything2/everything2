@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>8</pagetype_nodetype>
   <page>[% unless ($$NODE{group}) {
@@ -10,9 +11,8 @@
 %]
 &lt;div id=&quot;pagefooter&quot;&gt;[{windowview:editor,launch editor}]&lt;/div&gt;
 </page>
-  <node_id>70</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>70</node_id>
   <title>nodegroup display page</title>
   <mimetype></mimetype>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>117</pagetype_nodetype>
   <page>&lt;h2 class=&quot;topic&quot;&gt;[% 
@@ -79,10 +80,9 @@ $str;
 
 &quot;&quot;;
 %]</page>
-  <node_id>415070</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <ownedby_theme>415073</ownedby_theme>
+  <node_id>415070</node_id>
   <title>jukka writeup display page</title>
   <mimetype></mimetype>
 </node>

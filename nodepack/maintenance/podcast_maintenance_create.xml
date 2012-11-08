@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>1957956</maintain_nodetype>
   <node_id>2067940</node_id>
+  <title>podcast maintenance create</title>
   <maintaintype>create</maintaintype>
   <code>my ($PODCAST) = @_;
 getRef $PODCAST;
@@ -9,7 +12,4 @@ $$PODCAST{author_user} = getId(getNode('podpeople', 'usergroup')); # so all podp
 
 updateNode($PODCAST, -1);
 </code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>1957956</maintain_nodetype>
-  <title>podcast maintenance create</title>
 </node>

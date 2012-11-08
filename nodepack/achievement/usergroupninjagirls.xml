@@ -1,9 +1,9 @@
 <node>
+  <type_nodetype>1917847</type_nodetype>
   <display>&lt;b&gt;Ninja Girl&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Member of Ninjagirls usergroup&lt;/i&gt;</display>
   <achievement_type>usergroup</achievement_type>
   <subtype></subtype>
   <node_id>1920606</node_id>
-  <code>return $APP-&gt;inUsergroup($user_id,'ninjagirls','nogods');</code>
-  <type_nodetype>1917847</type_nodetype>
   <title>usergroupNinjagirls</title>
+  <code>return $APP-&gt;inUsergroup($user_id,'ninjagirls','nogods');</code>
 </node>

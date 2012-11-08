@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>2035430</maintain_nodetype>
   <node_id>2036686</node_id>
+  <title>draft maintenance update</title>
   <maintaintype>update</maintaintype>
   <code>my ($N) = @_;
 getRef $N;
@@ -70,7 +73,4 @@ return if $title eq $$N{title};
 $$N{title} = $title;
 updateNode($N, $USER);
 </code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>2035430</maintain_nodetype>
-  <title>draft maintenance update</title>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>148</pagetype_nodetype>
   <page>&lt;p&gt;
@@ -91,9 +92,8 @@ return $strRowCount;
 &lt;p align=&quot;right&quot;&gt;[% linkNode($NODE, &quot;indexes&quot;, {displaytype =&gt; &quot;index&quot;}) %]&lt;/p&gt;
 [{displaytable:$$NODE{title}}]
 </page>
-  <node_id>185</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>185</node_id>
   <title>dbtable display page</title>
   <mimetype></mimetype>
 </node>

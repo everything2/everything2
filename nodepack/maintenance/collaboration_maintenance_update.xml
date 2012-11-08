@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>1254859</maintain_nodetype>
   <node_id>1926166</node_id>
+  <title>collaboration maintenance update</title>
   <maintaintype>update</maintaintype>
   <code>my ($NODE) = @_;
 getRef $NODE;
@@ -16,7 +19,4 @@ return unless $NODE;
   updateNode $NODE, -1;
 
 </code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>1254859</maintain_nodetype>
-  <title>collaboration maintenance update</title>
 </node>

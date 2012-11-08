@@ -1,8 +1,10 @@
 <node>
+  <type_nodetype>1917847</type_nodetype>
   <display>&lt;b&gt;Open Window Award&lt;/b&gt; &lt;br/&gt; &lt;i&gt;Have used the word &quot;defenestrate&quot; in at least 15 writeups.&lt;/i&gt;</display>
   <achievement_type>writeup</achievement_type>
   <subtype></subtype>
   <node_id>1980775</node_id>
+  <title>openwindow</title>
   <code>my $uid = $$USER{'node_id'};
 
 
@@ -16,6 +18,4 @@ my $windowCount = $DB-&gt;sqlSelect(&quot;count(doctext)&quot;,
 
 return 1 if $windowCount &gt;= 15;
 return 0;</code>
-  <type_nodetype>1917847</type_nodetype>
-  <title>openwindow</title>
 </node>

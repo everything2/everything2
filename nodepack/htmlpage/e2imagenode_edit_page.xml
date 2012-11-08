@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1227031</pagetype_nodetype>
   <page>[%
@@ -8,9 +9,8 @@ my $str = htmlcode('textfield','title').&quot; (title)&lt;br&gt;&lt;br&gt;&quot;
 $str.=htmlcode('textfield','e2imagenode_copyright').&quot; (copyright) &lt;br&gt;&quot;;
 $str.=htmlcode('textfield','e2imagenode_imgpath').&quot; (img src)&lt;br&gt;&quot;;
 %]</page>
-  <node_id>1227041</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>1227041</node_id>
   <title>e2imagenode edit page</title>
   <mimetype></mimetype>
 </node>

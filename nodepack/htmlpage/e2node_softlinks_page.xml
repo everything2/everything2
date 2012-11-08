@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>0</parent_container>
   <pagetype_nodetype>116</pagetype_nodetype>
   <page>[%
@@ -8,9 +9,8 @@ return $str;
 %]
 
 </page>
-  <node_id>2025224</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>softlinks</displaytype>
+  <node_id>2025224</node_id>
   <title>e2node softlinks page</title>
   <mimetype>text/xml</mimetype>
 </node>

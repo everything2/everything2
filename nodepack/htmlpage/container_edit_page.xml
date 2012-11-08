@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>2</pagetype_nodetype>
   <page>title:[{textfield:title}]
@@ -8,9 +9,8 @@ Parent container:[{node_menu:parent_container}]&lt;br&gt;
 
 
 container html:&lt;br&gt;[{textarea:context}]</page>
-  <node_id>60</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>60</node_id>
   <title>container edit page</title>
   <mimetype></mimetype>
 </node>

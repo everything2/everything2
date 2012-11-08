@@ -1,5 +1,8 @@
 <node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>1157413</maintain_nodetype>
   <node_id>1157507</node_id>
+  <title>debate maintenance create</title>
   <maintaintype>create</maintaintype>
   <code>my ( $COMMENT ) = @_;
 getRef( $COMMENT );
@@ -78,7 +81,4 @@ updateNode( $COMMENT, $USER );
 # $$NODE{ 'root_debatecomment' } = $$NODE{ 'node_id' };
 # updateNode( $NODE, $USER );
 </code>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>1157413</maintain_nodetype>
-  <title>debate maintenance create</title>
 </node>

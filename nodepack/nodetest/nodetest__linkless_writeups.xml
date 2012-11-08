@@ -1,16 +1,16 @@
 <node>
+  <type_nodetype>1308757</type_nodetype>
   <nodetest_appliesto>117</nodetest_appliesto>
+  <nodetest_description>Writeups that don't have links. Will need to be weeded through by hand.</nodetest_description>
   <node_id>1308797</node_id>
   <nodetest_active>1</nodetest_active>
   <nodetest_code>my ($WRITEUP) = @_;
 
 return &quot;y&quot; if($$WRITEUP{doctext} =~ /\[/);
 return &quot;n&quot;;</nodetest_code>
-  <type_nodetype>1308757</type_nodetype>
-  <nodetest_description>Writeups that don't have links. Will need to be weeded through by hand.</nodetest_description>
+  <title>nodetest: Linkless writeups</title>
   <nlcode>my ($WRITEUP) = @_;
 
 return &quot;y&quot; if($$WRITEUP{doctext} =~ /\[/);
 return &quot;n&quot;;</nlcode>
-  <title>nodetest: Linkless writeups</title>
 </node>

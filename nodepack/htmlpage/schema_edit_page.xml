@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1258942</pagetype_nodetype>
   <page>&lt;h4&gt;title:&lt;/h4&gt;[{textfield:title}]
@@ -6,9 +7,8 @@
 &lt;h4&gt;schema_extends:&lt;/h4&gt;[{node_menu:schema_extends,ticker,nodetype}]
 &lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the document text:&lt;/strong&gt;&lt;/small&gt;&lt;br /&gt;
 [{textarea:doctext,30,80}]</page>
-  <node_id>1258952</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>1258952</node_id>
   <title>schema edit page</title>
   <mimetype></mimetype>
 </node>

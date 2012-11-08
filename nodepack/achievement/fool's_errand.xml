@@ -1,9 +1,9 @@
 <node>
+  <type_nodetype>1917847</type_nodetype>
   <display>&lt;strong&gt;Fool's Errand&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;You broke the code! Happy April Fool's Day!&lt;/i&gt;</display>
   <achievement_type>hunt</achievement_type>
   <subtype></subtype>
   <node_id>2010055</node_id>
-  <code>return 1;</code>
-  <type_nodetype>1917847</type_nodetype>
   <title>Fool's Errand</title>
+  <code>return 1;</code>
 </node>

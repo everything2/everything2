@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>652211</pagetype_nodetype>
   <page>&lt;i&gt;This motion's title will appear as:&lt;/i&gt;
@@ -6,9 +7,8 @@
 &lt;p&gt;
 &lt;i&gt;The code that executes this motion:&lt;/i&gt;
 &lt;p&gt;[{listcode:motioncode}]</page>
-  <node_id>652215</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>652215</node_id>
   <title>clanmotiontype display page</title>
   <mimetype></mimetype>
 </node>
