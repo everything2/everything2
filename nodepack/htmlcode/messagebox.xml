@@ -42,12 +42,11 @@ if(!$isMe &amp;&amp; $$VARS{borged}) {
         $recipient=$usergroupID;
     }
 
-    $HTMLVARS{msgparams} = {
+    my $failMessage = htmlcode('sendPrivateMessage',{
         'recipient_id'=&gt;$recipient,
         'message'=&gt;$msg,
         'ccself'=&gt;$ccMe,
-    };
-    my $failMessage = htmlcode('sendPrivateMessage','');
+    });
     undef $failMessage unless (defined $failMessage) &amp;&amp; (length($failMessage));
 
     if(defined $failMessage) {

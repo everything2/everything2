@@ -36,7 +36,7 @@ my $rootnode = getNodeById( $$NODE{ 'root_debatecomment' } );
 my $restrict = $$NODE{restricted};
 
 # If the user's not in the usergroup, deny access
-if ( ! htmlcode('isinUsergroup', &quot;$$USER{node_id}, $$rootnode{ restricted }, 1&quot; ) &amp;&amp; 
+if ( ! $APP-&gt;inUsergroup($USER, getNodeById($$rootnode{ restricted })) &amp;&amp; 
      ! Everything::isApproved($USER,$rootnode) ) {
     return '';
 }

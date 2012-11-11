@@ -18,16 +18,14 @@ if ($$maintainer{type_nodetype} == getId(getType('user')))
 }
 elsif($$maintainer{type_nodetype} == getId(getType('usergroup')))
 {
-  if (htmlcode('isinUsergroup', $$USER{user_id}.','.$$maintainer{node_id}))
+  if ($APP-&gt;inUsergroup($USER, getNodeById($$maintainer{node_id})))
   {
     $isCategoryEditor = 1;
   }
 }
 if (!$isCategoryEditor)
 {
-  my $isCE = exists($HTMLVARS{'group_content editors'}{$$USER{user_id}});
-  my $isRoot = exists($HTMLVARS{'group_gods'}{$$USER{user_id}});
-  if ($isCE || $isRoot)
+  if ($APP-&gt;isEditor($USER))
   {
     $isCategoryEditor = 1;
   }

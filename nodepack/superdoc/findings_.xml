@@ -18,7 +18,7 @@ $str .= 'Here\'s the stuff we found when you searched for &quot;'.$title.'&quot;
 $str .= qq'\n\t&lt;ul class=&quot;findings&quot;&gt;';
 
 
-my $isRoot = exists $HTMLVARS{'group_gods'}{$$USER{node_id}};
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $curType;
 
 my @nodes;
@@ -54,7 +54,7 @@ foreach my $ND (@{ $$NODE{group} }) {
 
 	next if $curType eq 'draft' and htmlcode('canseedraft', $ND) != 1;
 	if ($curType eq 'debate' and not $isRoot) {
-		next unless htmlcode('isinUsergroup',&quot;$$USER{node_id},$$ND{restricted}&quot;);
+		next unless $APP-&gt;inUsergroup($USER, getNodeById($$ND{restricted}));
 	}
 
 	my $openli = &quot;&lt;li&gt;&quot;;

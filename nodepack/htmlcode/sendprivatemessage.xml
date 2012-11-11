@@ -541,10 +541,8 @@ local *addRecipient = sub {
 			#already did this group, don't bother with again
 			next;
 		}
-    #Leave both checks in, because isApproved also checks for godhood
-    #but doesn't check for recursive usergroups very well. --Swap
-		unless(Everything::isApproved($USER, $u) or
-           htmlcode('isinUsergroup',&quot;$$USER{node_id},$i,1&quot;) ) { 
+
+		unless($APP-&gt;inUsergroup($USER, $u) ) { 
 			push @problems, 'You are not allowed to message the ['.$u-&gt;{title}.'] usergroup.';
 			$groups{$i}=-1;
 			return;

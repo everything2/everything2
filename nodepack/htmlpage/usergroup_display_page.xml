@@ -57,7 +57,7 @@ $str.=$query-&gt;end_form;
 
 [%
 my $str;
-$str .= &quot;&lt;p align=\&quot;right\&quot;&gt;&quot;.linkNode(1977025,&quot;Discussions for $$NODE{title}.&quot;,{show_ug =&gt; $$NODE{node_id}}).&quot;&lt;/p&gt;&quot; if htmlcode('isinUsergroup',&quot;$$USER{node_id},$$NODE{node_id},0&quot;);
+$str .= &quot;&lt;p align=\&quot;right\&quot;&gt;&quot;.linkNode(1977025,&quot;Discussions for $$NODE{title}.&quot;,{show_ug =&gt; $$NODE{node_id}}).&quot;&lt;/p&gt;&quot; if $APP-&gt;inUsergroup($USER,$NODE);
 return $str;
 %]
 
@@ -109,7 +109,7 @@ if($$NODE{group}) {
 	my $GROUP = $$NODE{group};
 	@memberIDs = @$GROUP;
 
-        $isInGroup = htmlcode('isinUsergroup',&quot;$UID,$$NODE{'node_id'},1&quot;);
+        $isInGroup = $APP-&gt;inUsergroup($UID, $NODE);
 
 	my $s;
 	my $i=0;
@@ -126,7 +126,7 @@ if($$NODE{group}) {
 			$s = '&lt;strong&gt;'.$s.'&lt;/strong&gt;';
 		}
 
-    my $isChanop = htmlcode('isinUsergroup',&quot;$curID,chanops,1&quot;);
+    my $isChanop = $APP-&gt;isChanop($curID);
 
 		#show normal groups user is in
 		$flags = '';

@@ -1,9 +1,11 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Sun Nov 11 21:40:10 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Sun Nov 11 23:05:09 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;riverrun&quot; node_id=&quot;2069474&quot; parent_e2node=&quot;2072935&quot; author_user=&quot;The Custodian&quot;&gt;E6B flight computer&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;riverrun&quot; node_id=&quot;2072841&quot; parent_e2node=&quot;2072295&quot; author_user=&quot;Tem42&quot;&gt;Sensorineural hearing loss&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1932718&quot; parent_e2node=&quot;1932717&quot; author_user=&quot;Poot&quot;&gt;Cool Earth&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;2072921&quot; parent_e2node=&quot;2072920&quot; author_user=&quot;mauler&quot;&gt;rape philosopher&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;2070615&quot; parent_e2node=&quot;2070639&quot; author_user=&quot;liquidwords&quot;&gt;Abortion from a man's perspective&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;2072841&quot; parent_e2node=&quot;2072295&quot; author_user=&quot;Tem42&quot;&gt;Sensorineural hearing loss&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;tanktop&quot; node_id=&quot;2060896&quot; parent_e2node=&quot;349883&quot; author_user=&quot;Oolong&quot;&gt;Turmeric&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;2072872&quot; parent_e2node=&quot;341792&quot; author_user=&quot;ZorroBandito&quot;&gt;Tardigrade&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2005830&quot; parent_e2node=&quot;2005823&quot; author_user=&quot;briggs&quot;&gt;you realize death means nothing&lt;/cooled&gt;
@@ -14,8 +16,6 @@
 	&lt;cooled cooledby_user=&quot;gnarl&quot; node_id=&quot;1425053&quot; parent_e2node=&quot;1198262&quot; author_user=&quot;cantdance&quot;&gt;Remembrance Sunday&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;jessicaj&quot; node_id=&quot;2072592&quot; parent_e2node=&quot;2072729&quot; author_user=&quot;Oolong&quot;&gt;Arthur's Seat&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Ysardo&quot; node_id=&quot;2072533&quot; parent_e2node=&quot;2072442&quot; author_user=&quot;wertperch&quot;&gt;November 5, 2012&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;532959&quot; parent_e2node=&quot;44351&quot; author_user=&quot;adoxograph&quot;&gt;toilet paper&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;2014774&quot; parent_e2node=&quot;2010926&quot; author_user=&quot;hapax&quot;&gt;mansplaining&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

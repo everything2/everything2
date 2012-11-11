@@ -21,7 +21,7 @@ unless($restrictNode) {
 	return 'Ack! Parent has no group!';
 }
 
-unless(htmlcode('isinUsergroup',&quot;$$USER{node_id},$restrict,1&quot;) ||
+unless( $APP-&gt;inUsergroup($USER,getNodeById($restrict)) ||
        Everything::isApproved($USER,$restrictNode) ) {
 	return 'You are not allowed to add a comment to this debate.';
 }

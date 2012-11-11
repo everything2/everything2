@@ -22,12 +22,11 @@ my $dragmsg;
 # tell dragger if room does not exist
 if (!$dragroom) {
   $dragmsg = &quot;$dragroomname does not exist, that's odd.&quot;;
-  $HTMLVARS {msgparams} = {
+  htmlcode('sendPrivateMessage',{
                            'author_id' =&gt; getId(getNode('Klaproth', 'user')),
                            'recipient_id' =&gt; $UID,
                            'message' =&gt; $dragmsg,
-                           };
-  htmlcode('sendPrivateMessage','');
+                           });
   return;
 }
 
@@ -46,12 +45,11 @@ local *dragThem = sub{
   # if still not found, tell dragger user does not exist
   if (!$draguser) {
     $dragmsg = &quot;$dragusername does not exist.&quot;;
-    $HTMLVARS {msgparams} = {
+    htmlcode('sendPrivateMessage',{
                              'author_id' =&gt; getId(getNode('Klaproth', 'user')),
                              'recipient_id' =&gt; $UID,
                              'message' =&gt; $dragmsg,
-                             };
-    htmlcode('sendPrivateMessage','');
+                             });
     return;
   }
 
@@ -64,13 +62,12 @@ local *dragThem = sub{
     changeRoom( $USER, $dragroom );
 #    $dragmsg = &quot;You have been dragged into $dragroomname.&quot;; ## old message
     $dragmsg = &quot;You are being taken to $dragroomname by &quot;.linkNode($UID).&quot;, who will join you there.&quot;;
-    $HTMLVARS {msgparams} =
-      {
+
+    htmlcode('sendPrivateMessage',{
        'author_id' =&gt; getId(getNode('Klaproth', 'user')),
        'recipient_id' =&gt; $draguserid,
        'message' =&gt; $dragmsg,
-       };
-    htmlcode('sendPrivateMessage','');
+       });
 
     htmlcode('addNotification', 'chanop dragged user', 0, {
       chanop_id =&gt; $USER-&gt;{node_id},

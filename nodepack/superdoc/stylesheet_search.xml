@@ -4,7 +4,7 @@
 my $UID = $$USER{node_id};
 
 return &quot;Shoo, this is only meant for [zenmasters&lt;usergroup&gt;].&quot;
-  unless htmlcode('isinUsergroup',&quot;$UID,zenmasters&quot;);
+  unless $APP-&gt;inUsergroup($USER, 'zenmasters', 'nogods');
 
 my $str;
 
