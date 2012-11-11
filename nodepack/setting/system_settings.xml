@@ -141,10 +141,6 @@
     <key>CoolArchive</key>
   </vars>
   <vars>
-    <value>100</value>
-    <key>nodeLocked_node</key>
-  </vars>
-  <vars>
     <value>104</value>
     <key>permissionDenied_node</key>
   </vars>

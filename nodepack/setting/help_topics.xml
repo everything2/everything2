@@ -205,15 +205,11 @@
     <key>search</key>
   </vars>
   <vars>
-    <value>/help edb</value>
-    <key>death_borg</key>
-  </vars>
-  <vars>
     <value>/help submit</value>
     <key>post</key>
   </vars>
   <vars>
-    <value>For full details, please refer to [Everything2 Copyright FAQ and advice on Fair Use]</value>
+    <value>For full details, please refer to [Everything2 Copyright and Fair Use FAQ]</value>
     <key>copyright</key>
   </vars>
   <vars>
