@@ -1298,4 +1298,23 @@ sub inUsergroup
 	return $this->{db}->isApproved($user,$usergroup,$nogods);
 }
 
+sub userIgnoresMessagesFrom
+{
+	my ($this, $user, $nodefrom) = @_;
+	my $user_id = $user;
+	if(ref $user ne "")
+	{
+		$user_id = $user->{node_id};
+	}
+	
+	my $nodefrom_id = $nodefrom;
+	if(ref $nodefrom ne "")
+	{
+		$nodefrom_id = $nodefrom->{node_id};
+	}
+
+	my $result = $this->{db}->sqlSelect("messageignore_id","messageignore","messageignore_id=".$this->{db}->quote($user_id)." and ignore_node=".$this->{db}->quote($nodefrom_id));
+	return $result;
+}
+
 1;
