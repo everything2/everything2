@@ -1,11 +1,8 @@
 <node>
   <type_nodetype>1144104</type_nodetype>
   <doctext>[%
-
-my $uGroup = getNode('thepub','usergroup');
-
-return &quot;go away&quot; unless htmlcode('isinUsergroup', $$USER{node_id}.','.$$uGroup{node_id});
-
+return &quot;go away&quot; unless $APP-&gt;inUsergroup($USER, 'thepub');
+return &quot;&quot;;
 %]
 
 &lt;p&gt;Discussions on E2 Publications, most recently commented listed first.&lt;/p&gt;

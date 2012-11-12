@@ -20,8 +20,7 @@ delete $$VARS{NoBounty};
 
 my $minlevel = 3;
 my $lvl = $APP-&gt;getLevel($USER);
-my $UID = getId($USER)||0;
-my $isSheriff = htmlcode('isinUsergroup',&quot;$UID,sheriffs,1&quot;);
+my $isSheriff = $APP-&gt;inUsergroup($USER, &quot;sheriffs&quot;);
 
 my $userGP = $$USER{GP};
 my $sheriff = $$USER{title};
@@ -323,8 +322,7 @@ return $str;
 %]
 
 [%
-my $UID = getId($USER)||0;
-my $isSheriff = htmlcode('isinUsergroup',&quot;$UID,sheriffs,1&quot;);
+my $isSheriff = $APP-&gt;inUsergroup($USER, &quot;sheriffs&quot;);
 
 return unless ((isGod($USER)) || ($isSheriff));
 return if ($query-&gt;param(&quot;yankify&quot;));

@@ -42,8 +42,7 @@ if ($$maintainer{type}{title} eq 'user')
 }
 elsif ($$maintainer{type}{title} eq 'usergroup')
 {
-  if(htmlcode('isinUsergroup', $$USER{user_id}, $$maintainer{node_id}) == 0
-     &amp;&amp; !$isCE)
+  if(!$APP-&gt;inUsergroup($USER, $maintainer) &amp;&amp; !$isCE)
   {
     return 0;
   }

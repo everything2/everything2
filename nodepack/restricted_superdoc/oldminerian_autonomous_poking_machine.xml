@@ -268,7 +268,7 @@ local *htmlcode = sub { return undef; } if !$isDefinedAtFirst;
 my $isDefinedAtSecond = defined &amp;{ $testingFunction};
 $str .= &quot;  Isn't defined after attempt to define.&quot; if !$isDefinedAtSecond;
 
-$str .= htmlcode('isinUsergroup', $$USER{user_id}, &quot;edev&quot;, 1);
+$str .= $APP-&gt;isDeveloper($USER); 
 
 $str .= &quot;&lt;/p&gt;&quot;;
 return $str;
@@ -376,10 +376,9 @@ my $uid = $$USER{user_id};
 
 my $settingsHash = from_json($$VARS{settings});;
 
-my $isCE = htmlcode('isinUsergroup',&quot;$uid,Content Editors,1&quot;);
+my $isCE = $APP-&gt;isEditor($USER);
 
-my $isCoder = htmlcode('isinUsergroup',&quot;$uid, edev,1&quot;) || 
-              htmlcode('isinUsergroup',&quot;$uid,e2coders,1&quot;);
+my $isCoder = $APP-&gt;isDeveloper($USER) || $APP-&gt;inUsergroup($USER, &quot;e2coders&quot;);
 
 $str .= &quot;&lt;p&gt;&quot;;
 $str .= &quot;For notification check you &quot; .

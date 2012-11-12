@@ -36,7 +36,7 @@ if ($maintType eq 'user'
 # if someone is trying to create a usergroup-maintained node, and the 
 # current user does not belong to that usergroup, remove it
 if ($maintType eq 'usergroup'
-    &amp;&amp; !htmlcode('isinUsergroup', $$USER{user_id}, $$MAINTAINER{node_id})
+    &amp;&amp; ! $APP-&gt;inUsergroup($USER, $MAINTAINER)
    )
 {
   nukeNode $CATEGORY, -1, 1;

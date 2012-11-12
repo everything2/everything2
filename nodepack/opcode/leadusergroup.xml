@@ -16,7 +16,7 @@ if (!$recUser) {
 
 return unless $recUser;
 
-return unless htmlcode('isinUsergroup', &quot;$$recUser{node_id},$userGroup&quot;);
+return unless $APP-&gt;inUsergroup($recUser,getNodeById($userGroup));
 
 my $ugOwners = getNode('usergroup owners','setting');
 

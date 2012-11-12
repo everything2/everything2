@@ -37,7 +37,7 @@ while($dbrow = $rows-&gt;fetchrow_arrayref)
    $uid = $$dbrow[0];
    $U = getNodeById($uid);
 
-   my $thisChanop = htmlcode('isinUsergroup', $uid, 'chanops' , 'recurse');
+   my $thisChanop = $APP-&gt;isChanop($U,&quot;nogods&quot;);
    
    $flags = '';
    if (exists $HTMLVARS{'group_gods'}{$$U{user_id}} &amp;&amp; !$APP-&gt;getParameter($U,&quot;hide_chatterbox_staff_symbol&quot;) ) {
