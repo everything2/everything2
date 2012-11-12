@@ -413,13 +413,8 @@ if($message =~ /^\/(msg\??|tell\??)(\{.+?\}\??|\s+\S+)(\s+.+)?$/si) {
 	}
 
 	#group archive - have to do this after online only check
-	if($ugID) {
-
-
-		my $allowArchives = getVars(getNode('allow message archive','setting'));
-		if($allowArchives &amp;&amp; exists $$allowArchives{$$U{title}}) {
-			push @rec, $$U{node_id};
-		}
+	if($ugID and $APP-&gt;getParameter($ugID, 'allow_message_archive') ) {
+		push @rec, $$U{node_id};
 	}
 
 	#add message to table for each user
