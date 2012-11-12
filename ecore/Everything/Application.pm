@@ -969,12 +969,25 @@ sub getParametersForType
   return $paramsbytype;
 }
 
+sub getAllNodesWithParameter
+{
+  my ($this, $parameter, $value) = @_;
+  
+}
+
 sub getParameterForType
 {
   my ($this, $type, $param) = @_;
   return unless defined($param);
   my $all_params_for_type = $this->getParametersForType($type);
   return $all_params_for_type->{$param};
+}
+
+sub getNodesWithParameter
+{
+  my ($this, $param, $value) = @_;
+  return unless exists($PARAMS->{$param});
+  return $this->{db}->getNodesWithParam($param, $value);
 }
 
 sub securityLog

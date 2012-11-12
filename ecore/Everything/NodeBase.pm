@@ -47,6 +47,7 @@ sub BEGIN
 		getNodeParams
 		setNodeParam
 		deleteNodeParam
+		getNodesWithParam
 
 		quote
 		genWhereString
@@ -2830,6 +2831,26 @@ sub setNodeParam
 	return unless $node_id;
 	$this->executeQuery("INSERT into nodeparam VALUES(".join(",",$this->quote($node_id),$this->quote($paramname),$this->quote($paramvalue)).") ON DUPLICATE KEY UPDATE paramvalue=".$this->quote($paramvalue));
 	$this->{cache}->setCachedNodeParam($node_id, $paramname, $paramvalue);
+}
+
+sub getNodesWithParam
+{
+	my ($this, $paramname, $paramvalue) = @_;
+	return unless defined($paramname);
+
+	my $select_param_value = "";
+	if(defined $paramvalue)
+	{
+		$select_param_value = " and paramvalue=".$this->quote($paramvalue);
+	}
+
+	my $csr = $this->sqlSelectMany("node_id","nodeparam","paramkey=".$this->quote($paramname).$select_param_value);
+	my $output;
+	while(my $row = $csr->fetchrow_arrayref())
+	{
+		push @$output, $row->[0];
+	}
+	return $output;
 }
 
 sub deleteNodeParam
