@@ -22,12 +22,10 @@ return unless $$U{type}{title} eq 'user';
         $$VARS{oldGP} = $$USER{GP};
 
 $APP-&gt;securityLog(getNode('Sanctify user', 'superdoc'), $USER, &quot;$$USER{title} sanctified $$U{title} with $Sanctificity GP.&quot;);
-        
-	my $from =  &quot;!&quot;;
-	$HTMLVARS{msgparams} = {
+
+	htmlcode('sendPrivateMessage',{
 		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
 		'recipient_id' =&gt; $$U{user_id},
-		'message' =&gt; &quot;Whoa! You&#146;ve been [Sanctify|sanctified]$from&quot;
-	};
-	htmlcode('sendPrivateMessage','');</code>
+		'message' =&gt; &quot;Whoa! You&#146;ve been [Sanctify|sanctified]!&quot;
+	});</code>
 </node>

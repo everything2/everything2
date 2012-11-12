@@ -20,13 +20,11 @@ htmlcode('achievementsByType','karma');
 
 $APP-&gt;securityLog(getNode(&quot;bless&quot;,&quot;opcode&quot;), $USER, &quot;$$U{title} was blessed 10GP by $$USER{title}&quot;);
 
-	my $from =  &quot;!&quot;;
-	$HTMLVARS{msgparams} = {
+	htmlcode('sendPrivateMessage',{
 		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
 		'recipient_id' =&gt; $$U{user_id},
-		'message' =&gt; &quot;Whoa, you&amp;rsquo;ve just been [bless|blessed]$from&quot;
-	};
-	htmlcode('sendPrivateMessage','');
+		'message' =&gt; &quot;Whoa, you&amp;rsquo;ve just been [bless|blessed]!&quot;
+	});
 
 updateNode($U, -1);
 

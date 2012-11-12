@@ -118,13 +118,14 @@ local *trySend = sub {
   }
 
 	my $doCC = (defined $query-&gt;param($nameCC)) &amp;&amp; ($query-&gt;param($nameCC) eq '1') ? 1 : 0;
-	$HTMLVARS{msgparams} = {
+
+	$t = htmlcode('sendPrivateMessage', {
 		'recipient_id' =&gt; \@getters,
 		'message' =&gt; $t,
 		'ccself' =&gt; $doCC,
 		'renode_id' =&gt; $aboutNode,
-	};
-	$t = htmlcode('sendPrivateMessage', $showSaid);
+                'flags' =&gt; $showSaid,
+	});
 	$str .= $t . &quot;&lt;br /&gt;\n&quot; if (defined $t) &amp;&amp; length($t);
 
 	$query-&gt;delete($nameTxt);

@@ -134,19 +134,16 @@ if ($message =~ /^\/fireball\s+(.*)$/i) {
 			updateNode($recUser, -1);
 			adjustGP($recUser, 5);
 
-			htmlcode(
-				'sendPrivateMessage'
-				, {
-					'recipient_id' =&gt; getId($recUser),
-					, 'message' =&gt; &quot;WHOOSH! You feel yourself engulfed in flames! &quot;
-						. &quot;It burns! It burns! Or does it? After a moment, you feel &quot;
-						. &quot;a pleasant sensation. Like a warm embrace. And you &quot;
-						. &quot;realize that this is not fire after all, but [5 GP|love].&quot;
-						. &quot; The kind of love that could only have come from user &quot;
-						. &quot;[$fireballer].&quot;
-					, 'author' =&gt; 'fireball',
-				}
-				);
+			htmlcode('sendPrivateMessage',{
+				'recipient_id' =&gt; getId($recUser),
+				'message' =&gt; &quot;WHOOSH! You feel yourself engulfed in flames! &quot;
+					. &quot;It burns! It burns! Or does it? After a moment, you feel &quot;
+					. &quot;a pleasant sensation. Like a warm embrace. And you &quot;
+					. &quot;realize that this is not fire after all, but [5 GP|love].&quot;
+					. &quot; The kind of love that could only have come from user &quot;
+					. &quot;[$fireballer].&quot;,
+				'author' =&gt; 'fireball',
+			});
 
 			my $rnd = int(rand(10));
 
@@ -201,14 +198,11 @@ if (($message =~ /^\/sanctify\s+(.*)$/i)) {
 		adjustGP($USER, -$Sanctificity);
                 $APP-&gt;securityLog(getNode('Sanctify user', 'superdoc'), $USER, &quot;$$USER{title} sanctified $sanctee with $Sanctificity GP.&quot;);
 
-		htmlcode(
-			'sendPrivateMessage'
-			, {
-				'recipient_id' =&gt; getId($recUser)
-				, 'message' =&gt; &quot;Whoa! You've been [sanctify|sanctified] in the catbox by [$sanctifyer]!&quot;
-				, 'author' =&gt; 'Cool Man Eddie'
-			}
-			);
+		htmlcode('sendPrivateMessage',{
+				'recipient_id' =&gt; getId($recUser),
+				'message' =&gt; &quot;Whoa! You've been [sanctify|sanctified] in the catbox by [$sanctifyer]!&quot;,
+				'author' =&gt; 'Cool Man Eddie'
+			});
 
 		$message = &quot;/sanctify $sanctee&quot;;
 	} else {
@@ -299,12 +293,11 @@ while ($helpTopics =~ /^\/help\s+(.*)$/i) {
 }
 
 if ($sendHelp) {
-	$HTMLVARS{msgparams} = {
+	htmlcode('sendPrivateMessage',{
 		'author_id' =&gt; getId(getNode('Virgil', 'user')),
 		'recipient_id' =&gt; $recipient,
 		'message' =&gt; $helpTopics,
-	};
-	htmlcode('sendPrivateMessage','');
+	});
 
 	return $helpTopics;
 }
@@ -337,12 +330,11 @@ if($message =~ /^\/(msg\??|tell\??)(\{.+?\}\??|\s+\S+)(\s+.+)?$/si) {
 		$message = 'The format of your private message was unrecognized. You tried to send &quot;'.$message.'&quot;.';
 		@recipients = ($USER-&gt;{title});
 	}
-	$HTMLVARS{msgparams} = {
+	htmlcode('sendPrivateMessage',{
 		'recipient' =&gt; \@recipients,
 		'message' =&gt; $message,
 		'ono' =&gt; $isONO,
-	};
-	htmlcode('sendPrivateMessage','0');
+	});
 
 } elsif($message =~ /^\/old(msg\??|tell\??)\s+(\S+)\s+(.+)$/si) {
 	#for msg typo-N-Wing changed \S* and .* into \S+ and .+

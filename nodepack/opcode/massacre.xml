@@ -94,17 +94,6 @@ foreach $nid (@deathrow) {
 	: ''
 	);
 
-#new way:
-#	$HTMLVARS{msgparams} = {
-#		'author_id'=&gt;$Kid,
-#		'recipient_id'=&gt;$aid,
-#		'message'=&gt; '[Node Heaven] will become the new residence of your writeup I ate, ['.$nt.']. '.$m,
-#	};
-#	$HTMLVARS{msgparams}{fromgroup_id} = $UID if ( (defined $query-&gt;param('publickiller'.$nid)) &amp;&amp; ($query-&gt;param('publickiller'.$nid)) );
-#	$HTMLVARS{msgparams}{ccself} = 1 if ( (defined $query-&gt;param('ccmeklap'.$nid)) &amp;&amp; ($query-&gt;param('ccmeklap'.$nid)) );
-#	htmlcode('sendPrivateMessage','');
-
-
 #old way:
 #2007-11-21: removed klaproth -- ascorbic
 	my $msgHash = {

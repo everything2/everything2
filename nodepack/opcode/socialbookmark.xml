@@ -59,15 +59,12 @@ foreach (@writeupAuthors) {
 	}
 }
 
-
-$HTMLVARS{msgparams} = {
+my $sendResult = htmlcode('sendPrivateMessage',{
 	'author_id' =&gt; $eddie,
 	'recipient_id' =&gt; \@writeupAuthors,
 	'message' =&gt; 'Yo, '.$eddiemessage.' was bookmarked on '.$bookmark_site.'. Dig it, baby.',
-};
-
-$HTMLVARS{msgparams}{'fromgroup_id'} = $$USER{node_id};
-my $sendResult = htmlcode('sendPrivateMessage','');
+        'fromgroup_id' =&gt; $$USER{node_id}
+});
 
 1;
 

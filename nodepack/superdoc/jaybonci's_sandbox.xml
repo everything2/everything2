@@ -6,12 +6,11 @@
 [%
   return unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
   # Send an automated thank-you.
-  $HTMLVARS{msgparams} = {
+  my $failMessage = htmlcode('sendPrivateMessage',{
     'recipient_id'=&gt;getId($USER),
     'message'=&gt;'Thank you! My servants have attended to any errors.',
     'author'=&gt;'Webster 1913',
-  };
-  my $failMessage = htmlcode('sendPrivateMessage','');
+  });
   
 %]</doctext>
   <node_id>1146920</node_id>

@@ -45,13 +45,11 @@ if ($$coolVars{settings}) {
 
 unless ($coolVars-&gt;{no_coolnotification}) {
 
-	$HTMLVARS{msgparams} = {
+	htmlcode('sendPrivateMessage',{
 		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
 		'recipient_id' =&gt; $$COOL{author_user},
-		#'message' =&gt; 'Hey, '.getNodeById($$COOL{author_user})-&gt;{title}.', [' . $$USER{title} . '] just cooled [' . $$P{title} . '], baby!',
 		'message' =&gt; 'Hey, [' . $$USER{title} . '[user]] just cooled [' . getNode($$COOL{parent_e2node})-&gt;{title} . '], baby!',
-	};
-	htmlcode('sendPrivateMessage','');
+	});
 }
 
 htmlcode('achievementsByType','cool,'.$uid);

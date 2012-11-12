@@ -101,11 +101,11 @@ if ($$USER{user_id} == $$NODE{author_user} or exists($HTMLVARS{'group_gods'}{$$U
         my $user = getNodeById($uid) -&gt; {'title'};
         push @stylesheet_users,$user;
       }
-      $HTMLVARS{msgparams} ={
+      htmlcode('sendPrivateMessage',{
                              'recipient' =&gt; \@stylesheet_users,
                              'message' =&gt; $msg,
-                             };
-      htmlcode('sendPrivateMessage','0');
+                             'flags' =&gt; 0,
+                             });
 
       #No XSS!
       $msg =~ s/\&lt;/\&amp;lt\;/g;

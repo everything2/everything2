@@ -90,62 +90,6 @@ setVars($sp,$spv);
 return '&lt;p&gt;did it&lt;/p&gt;';
 %]
 
-[%
-#test sendPrivateMessageTest
-return '' unless $$USER{node_id}==9740;
-return 'you need to testmsg=1 or 2' unless $query-&gt;param('testmsg');
-my $whichTest = $query-&gt;param('testmsg');
-return 'testmsg=1 or 2' unless ($whichTest eq '1') || ($whichTest eq '2');
-my $msg = '';
-
-# $msg = 'test at '.localtime().' \n if you got this message, something went really wrong \n Sorry.';
-
-#my $MSGMAXLEN = 255;
-##$msg = ('}'.('*' x ($MSGMAXLEN-2)).'{') x 5;	#check auto-break
-#my $ABC = 'abcdefghijklmnopqrstuvwxyz';
-#my $ABCs = $ABC x 100;
-#my $z=0;
-#for(my $i=100;$i&lt;=length($ABCs);$i += 50) {
-#	$msg .= $z?'}':'[';
-#	$msg .= substr($ABCs,0,$i);
-#	$msg .= $z?'{':']';
-#	$msg .= ' ';
-#	$z=!$z;
-#}
-
-#$msg = '(Hopefully, this goes to edev and editors...) New toy: a custom nodelet, that lets you have (almost) any text you want in it. Edit it at [Custom Nodelet Editor]. (You currently have to click the link to add it, but once it is out of beta, it will be added like a normal nodelet.) The length limit is pretty short (depending on your level), but it is easier to raise the limit than lower it. Also, I\'m taking suggestions for a better name than \'Custom Nodelet\'. Note: this is beta, so only you (plural) can use this. Your mission is to try to break it (and tell me if you do).';
-
-$msg = 'Test message generated on '.scalar(localtime).'. You should NOT have gotten this. /msg N-Wing if you did. Sorry.';
-my $ONO=0;
-$ONO=1 if $query-&gt;param('ono') &amp;&amp; ($query-&gt;param('ono') eq '1');
-
-my $DODEBUG = 2;
-
-#build parameters
-if($whichTest eq '1') {
-	$HTMLVARS{msgparams} = {
-	#	'author'=&gt;'EDB',
-		'recipient'=&gt;['Content Editors','e2gods'],
-		'message'=&gt;$msg,
-		'ono'=&gt;$ONO,
-	};
-} else {	#2
-	$HTMLVARS{msgparams} = {
-		'recipient_id'=&gt;$$USER{node_id},
-		'message'=&gt;$msg,
-	};
-	$DODEBUG=0;
-}
-
-#do it
-#param 0:
-#	1: don't delete params
-#	2: debug mode (leave this on for testing!)
-#	4: inline what said
-&quot;&lt;p&gt;did it:&lt;br /&gt;\n&quot;.
-#htmlcode('sendPrivateMessageTest', (4 + $DODEBUG)).'&lt;/p&gt;';
-%]
-
 &lt;p&gt;
 [%
 #test msgField
@@ -370,19 +314,6 @@ $str .= $query-&gt;endform;
 
 $str.'&lt;/p&gt;';
 %]
-
-&lt;!--
-&lt;p&gt;
-test private message area for N-Wing only: must start message with /msg :&lt;br /&gt;
-[ { openform } ]
-&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;msgdemo&quot;&gt;
-[ %
-$query-&gt;textfield('message','',50,270) . ' ' .
-$query-&gt;submit('test me') .
-$query-&gt;endform;
-% ]
-&lt;/p&gt;
---&gt;
 
 [%
 return; # unless $$USER{node_id}==9740;

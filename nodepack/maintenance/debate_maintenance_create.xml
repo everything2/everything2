@@ -29,16 +29,14 @@ my $notify_ug_id = $ug_id;
 $notify_ug_id = 829913 if $notify_ug_id == 114;
 
 if ($announce) {
-  $HTMLVARS{msgparams} = {
+  htmlcode('sendPrivateMessage',{
                           'author_id' =&gt; getId(getNode(&quot;Virgil&quot;,&quot;user&quot;)),
                           'recipient_id' =&gt; $notify_ug_id,
                           'message' =&gt; 'Make it known, [' .
                           $$USER{title} .
                           '] just started a new discussion: [' .
                           $$ug{title}.': '.$$COMMENT{title} . '].'
-                          };
-
-  htmlcode('sendPrivateMessage','');
+                          });
 }
 
 #Have to notify each group member, unless they don't want to be notified

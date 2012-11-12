@@ -59,14 +59,13 @@ my $msg = &quot;Attention, &lt;a href=\&quot;/user/$replyer\&quot;&gt;$replyer&l
    $msg .= '&lt;a href=&quot;'. urlGenNoParams($root_debatecomment,1) .
             '#debatecomment_'.$$COMMENT{ 'node_id' }.'&quot;&gt;'.$$PARENT{ 'title' }.'&lt;/a&gt;.';
 
-$HTMLVARS{msgparams} = {
+unless ($$parentVars{&quot;no_discussionreplynotify&quot;} 
+        or $$COMMENT{ 'author_user' } == $$PARENT{ 'author_user'}) {
+     htmlcode('sendPrivateMessage',{
 	'author_id' =&gt; getId(getNode(&quot;Virgil&quot;,&quot;user&quot;)),
 	'recipient_id' =&gt; $parentOwner,
 	'message' =&gt; $msg
-};
-unless ($$parentVars{&quot;no_discussionreplynotify&quot;} 
-        or $$COMMENT{ 'author_user' } == $$PARENT{ 'author_user'}) {
-     htmlcode('sendPrivateMessage','');
+});
 }
 
 ## BEGIN notification code
