@@ -36,7 +36,7 @@ unless($restrictNode) {
 	return;
 }
 unless(Everything::isApproved($USER, $restrictNode) ||
-       htmlcode('isinUsergroup',&quot;$$USER{node_id},$restrict,1&quot;) ) {
+       $APP-&gt;inUsergroup($USER,$restrictNode) ) {
 	#not allowed to view parent, so can't post child
 	nukeNode($COMMENT, -1);
 	return;
