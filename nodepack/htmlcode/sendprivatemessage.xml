@@ -79,8 +79,6 @@ my @problems;
 
 #borg check - maybe [a] boolean param[s] to skip this?
 my $isBorgedFull = 0 &amp;&amp; !$isRoot;	#FIXME something else in VARS should be set	#fully borged, may not speak to anybody but self
-my $isBorged = $isBorgedFull || $VARS-&gt;{borged};	#partially borged, not allowed to speak publically
-
 
 #
 #subroutines
@@ -305,16 +303,6 @@ if($onlineOnly) {
 
 #determine which groups get a copy sent to themselves
 my $ccGroups = boolParam('ccgroup');
-my $copyGroups = undef;	#titles of groups that archive messages sent to them
-if(!$ccGroups) {
-	$copyGroups = getNode('allow message archive','setting');
-	if(defined $copyGroups) {
-		$copyGroups = getVars($copyGroups);
-	} else {
-		$query-&gt;param('DEBUGsendPrivateMessage'.int(rand(99)),'unable to get &quot;allow message archive&quot; setting');
-	}
-}
-
 
 my $countUserAll = 0;	#count of users we tried to /msg, including those ignoring us
 my $countUserGot = 0;	#count of users that got our message
@@ -509,7 +497,7 @@ local *addRecipient = sub {
 			#already did this group, don't bother with again
 			next;
 		}
-
+         
 		unless($APP-&gt;inUsergroup($USER, $u) ) { 
 			push @problems, 'You are not allowed to message the ['.$u-&gt;{title}.'] usergroup.';
 			$groups{$i}=-1;
@@ -524,11 +512,9 @@ local *addRecipient = sub {
 		if($ccGroups) {
 			#htmlcode caller forced groups to get
 			$groups{$i} = $i;
-		} elsif(defined $copyGroups) {
-			$groups{$i} = (exists $copyGroups-&gt;{$u-&gt;{title}}) ? $i : 0;	#see if group gets a copy
 		} else {
-			#usergroup not getting
-			$groups{$i} = 0;
+                        
+			$groups{$i} = ($APP-&gt;getParameter($i, 'allow_message_archive') ) ? $i : 0;	#see if group gets a copy
 		}
 
 		#loop though all users
@@ -708,24 +694,21 @@ my $i;
 my @getters;	#groups and users that got message
 
 #send to groups archive
-unless($isBorgedFull) {	#borged users may only speak to themselves
-    foreach $i (keys(%groups)) {
-	    next if $groups{$i}&lt;0;	#negative indicates user isn't allowed to send to group
-	    push(@getters, $i);	#count as 1 for group
-	    next if $groups{$i}==0;
+foreach $i (keys(%groups)) {
+	 next if $groups{$i}&lt;0;	#negative indicates user isn't allowed to send to group
+	 push(@getters, $i);	#count as 1 for group
+	 next if $groups{$i}==0;
 
-	    $DB-&gt;sqlInsert('message',{
+	 $DB-&gt;sqlInsert('message',{
 		    'msgtext' =&gt; $msg,
 		    'author_user' =&gt; $aid,
 		    'tstamp' =&gt; $sendTime,
 		    'for_user' =&gt; $i,
 		    'for_usergroup' =&gt; $i,	#don't bother with ($i || $fromGroup) since $i is never going to be 0
-	    });
-    }
+	});
 }
 
 #send to users
-my $triedSendWhileBorged=0;
 my $forUG;
 my $isArchived;
 foreach $i (keys(%users)) {
@@ -740,11 +723,6 @@ foreach $i (keys(%users)) {
 		$forUG ||= pickRandomForGroup();
 		$isArchived=$selfArchive;
 	} else {
-		if($isBorgedFull) {
-			#fully borged users may only speak to themselves
-			$triedSendWhileBorged=1;
-			next;
-		}
 		$isArchived=0;
 		
 	}
@@ -765,8 +743,6 @@ foreach $i (keys(%users)) {
 	#fullmessage_id was never implemented (thank christ)
 
 }
-push(@problems, 'It feels lonely in the deepest depth of EDB\'s massive stomach. (Since you are currently fully borged, you may only send messages to yourself.)') if $isBorgedFull &amp;&amp; $triedSendWhileBorged;
-
 
 #inform user of any problems
 #	since these are sent back to the sending user, increase the maximum message length

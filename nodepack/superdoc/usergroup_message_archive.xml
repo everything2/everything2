@@ -8,28 +8,28 @@
 [%
 my $uID = getId($USER);
 return 'You must login to use this feature.' if $APP-&gt;isGuest($USER);
-my $isRoot = ($HTMLVARS{group_gods}{$uID})?1:0;
+my $isRoot = $APP-&gt;isAdmin($USER);
 
 my $str = '';
-$str .= 'You can edit the usergroups that have messages archived at &lt;a href='.urlGen({'node'=&gt;'usergroup message archive manager','type'=&gt;'restricted_superdoc'}).'&gt;usergroup message archive manager&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;' if $isRoot;
+$str .= 'You can edit the usergroups that have messages archived at &lt;a href='.urlGen({'node'=&gt;'usergroup message archive manager','type'=&gt;'restricted_superdoc'}).'&gt;usergroup message archive manager&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;' if $APP-&gt;isAdmin($USER);
 my $NL = &quot;\n&quot;;
 my $BRN = &quot;&lt;br /&gt;\n&quot;;
 
 #groups that archive
-my $allowedGroups = getNode('allow message archive','setting');
-return $str.'Ack! Unable to get setting!' unless $allowedGroups;
-$allowedGroups = getVars($allowedGroups);
-return $str.'Ack! Unable to get vars!' unless $allowedGroups;
 $str .= 'To view messages sent to a group, choose one of the following groups. You can only see the messages if the group has the feature enabled, and you\'re a member of the group.'.$BRN.'choose from: ';
 {
 my @G;
 #groups sorted case insensitive
-my @ks = keys(%$allowedGroups);
-my %sortOrder;
-foreach(@ks) { $sortOrder{$_}=lc($_); }
-foreach(sort { $sortOrder{$a} cmp $sortOrder{$b} } @ks) {
-	push @G, linkNode($NODE,$_,{viewgroup=&gt;$_});
+
+my $ks = $APP-&gt;getNodesWithParameter('allow_message_archive');
+
+foreach my $ug (@$ks)
+{
+        $ug = getNodeById($ug);
+        next unless $ug;
+        push @G, linkNode($NODE,$ug-&gt;{title},{viewgroup =&gt; $ug-&gt;{title} });
 }
+
 $str .= join(', ',@G).'&lt;/p&gt;&lt;p&gt;'.$NL;
 }
 
@@ -46,8 +46,7 @@ my $ugID = getId($UG);
 return $str.'Ack! Unable to find group ID!' unless $ugID;
 
 #archiving allowed?
-#return $str.'This group doesn\'t archive messages.'.($isRoot?' Note: this is #case sensitive, so if you think the group should allow messages, check the #capitalization in [allow mesasge archive] (setting).':'') unless exists #$$allowedGroups{$$UG{title}};
-return $str.'This group doesn\'t archive messages.' unless exists $$allowedGroups{$$UG{title}};
+return $str.'This group doesn\'t archive messages.' unless $APP-&gt;getParameter($UG, &quot;allow_message_archive&quot;);
 
 
 #misc. variable/database setup

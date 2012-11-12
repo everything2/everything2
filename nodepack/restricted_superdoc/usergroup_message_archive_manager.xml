@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;
-This simple-minded doc just makes it easy to set if usergroups have their messages automatically archived. This is basically just an editor for the &lt;a href=[% urlGen({'node'=&gt;'allow message archive','type'=&gt;'setting'}); %]&quot;&gt;allow message archive&lt;/a&gt; setting. Users can read the messages at the &lt;a href=[% urlGen({'node'=&gt;'usergroup message archive','type'=&gt;'superdoc'}); %]&quot;&gt;usergroup message archive&lt;/a&gt; superdoc.
+This simple-minded doc just makes it easy to set if usergroups have their messages automatically archived. Users can read the messages at the &lt;a href=[% urlGen({'node'=&gt;'usergroup message archive','type'=&gt;'superdoc'}); %]&quot;&gt;usergroup message archive&lt;/a&gt; superdoc.
 &lt;br /&gt;&lt;small&gt;Complain to N-Wing about problems and/or error messages you get.&lt;/small&gt;
 &lt;/p&gt;
 &lt;p&gt;Note: to make a change, you must choose what you want from the dropdown menu &lt;strong&gt;&lt;big&gt;and&lt;/big&gt; check the checkbox next to it&lt;/strong&gt;. (This is to help reduce accidental changes.)&lt;/p&gt;
@@ -9,82 +9,14 @@ This simple-minded doc just makes it easy to set if usergroups have their messag
 [%
 my $uID = getId($USER);
 return 'Ack! You don\'t exist!' unless $uID;
-return 'Ack! You shouldn\'t see this!' unless $HTMLVARS{group_gods}{$uID};
+return 'Ack! You shouldn\'t see this!' unless $APP-&gt;isAdmin($USER);
 
+my $usergroup_list;
 
-#if the superdoc is changed, reject all old submissions
-my $DOCVERSION = '1.0';
-if( $query-&gt;param('docversion') &amp;&amp; ($query-&gt;param('docversion') ne $DOCVERSION) ) {
-	return '&lt;big&gt;&lt;strong&gt;Sorry, but the code for this page has changed since you last loaded it.&lt;br /&gt;Try going ' . linkNode($NODE, 'here', {'garbage'=&gt;int(rand(99999)).int(rand(99999)),'lastnode_id'=&gt;0}) . ' and reloading the page.&lt;/strong&gt;&lt;/big&gt;';
+my $csr = $DB-&gt;sqlSelectMany(&quot;node_id&quot;,&quot;node&quot;,&quot;type_nodetype=&quot;.getId(getType('usergroup')));
+while(my $ug = $csr-&gt;fetchrow_arrayref) {
+        push @$usergroup_list, $ug-&gt;[0];
 }
-
-#my $isPP=0; #PP stands for percent-percent, stands for %% group
-#my $PP = getNode('%%','usergroup');
-#if(defined $PP) {
-#my @members = @{$$P{group}};
-#foreach(@members) {
-#if($_==$uID) {
-#$isPP=1;
-#last;
-#}
-#}
-#}
-
-#random thought: ooh, ooh, ooh, it could be neat to allow settings to have constraint code run on them to reject/fix bad entries
-
-
-#goals:
-#
-#	non-destructivly edit 'allow message archive' setting
-#		(bad entries are only shown, not auto-fixed (in case
-#		something is added later elsewhere but this superdoc
-#		isn't updated)
-#
-#	mark invalid usergroups and settings
-#
-#	display all usergroups
-#
-#because of those goals, there needs to be a combined
-#list of setting and actual usergroup nodes
-
-#invalid usergroups = {setting} - {actual_usergroups}
-#key is proper case, value is proper case
-my %ugInvalid;
-
-
-#get setting information
-my $amaSetting = getNode('allow message archive','setting');
-return 'Ack! Unable get settings node!' unless $amaSetting;
-my $amaVars = getVars($amaSetting);
-return 'Ack! Unable to get settings VARS!' unless $amaVars;
-foreach(keys(%$amaVars)) {
-	$ugInvalid{$_}=$_;
-}
-
-
-#get usergroup list
-my $ntUserGroup = getType('usergroup');
-return 'Ack! Unable to get usergroup nodetype!' unless $ntUserGroup;
-my $ugSQL = 'SELECT node_id,title FROM node WHERE type_nodetype='.getId($ntUserGroup);
-my %ugValid;	#valid usergroups; key is lowercase, value is proper case
-my %ugNameID;	#valid usergroups; key is lowercase, value is node_id
-my %ugIDName;	#valid usergroups; key is node_id, value is proper case
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'Ack! Unable to get a handle on the database!' unless $dbh;
-my $sth = $dbh-&gt;prepare($ugSQL);
-return 'Ack! Not prepared!' unless $sth;
-$sth-&gt;execute() or return 'Ack! Not really prepared!';
-while(my $ug = $sth-&gt;fetchrow_arrayref) {
-	my ($curID, $curTitle) = @$ug[0,1];
-	my $lctitle = lc($curTitle);
-	$ugValid{$lctitle} = $curTitle;
-	$ugNameID{$lctitle} = $curID;
-	$ugIDName{$curID} = $curTitle;
-	delete $ugInvalid{$curTitle};
-}
-#TODO close $sth
-#TODO close $dbh
-
 
 my $str;
 
@@ -94,13 +26,13 @@ my $str;
 #	0 = nothing
 #	1 = delete key
 #	2 = add key with value 1
-##	3 = fix invalid key to 1 (not needed - would do same thing as case 2)
+
 my @whatDid;
-#my @didNotDo;	#maybe set for the 'next' conditions
 my @origQueryParams = $query-&gt;param;
 foreach(@origQueryParams) {
-	next unless /^umam_sure_(id|title)_(.+)$/ &amp;&amp; ($query-&gt;param($_) eq '1');
-	my $valName = 'umam_what_'.$1.'_'.$2;
+	next unless /^umam_sure_id_(.+)$/ &amp;&amp; ($query-&gt;param($_) eq '1');
+	my $ug_id = $1;
+	my $valName = 'umam_what_id_'.$ug_id;
 	my $parm = $query-&gt;param($valName);
 
 	$query-&gt;delete($_);	#don't want sticky settings
@@ -110,35 +42,16 @@ foreach(@origQueryParams) {
 		#don't do anything if user doesn't want a change
 		next;
 	}
-	if($1 eq 'id') {
-		next unless (exists $ugIDName{$2}) &amp;&amp; (defined $ugIDName{$2});	#only allow valid IDs
-		$str = $ugIDName{$2};
-		if($parm eq '1') {
-			#disable archiving for a usergroup
-			next unless exists $amaVars-&gt;{$str};	#UG is already not getting archived
-			delete $amaVars-&gt;{$str};
-			push(@whatDid, 'Disabled auto-archive for &lt;a href='.urlGen({'node_id'=&gt;$2}).'&gt;'.encodeHTML($str,1).'&lt;/a&gt;.');
-		} elsif($parm eq '2') {
-			#enable archiving for a usergroup
-			if( (exists $amaVars-&gt;{$str}) &amp;&amp; (defined $amaVars-&gt;{$str}) &amp;&amp; ($amaVars-&gt;{$str} eq '1') ) {
-				#already getting archived
-				#push(@didNotDo, 'Auto-archive already enabled for &lt;a href='.urlGen({'node_id'=&gt;$2}).'&gt;'.encodeHTML($str,1).'&lt;/a&gt;.');
-				next;
-			}
-			$amaVars-&gt;{$str} = 1;
-			push(@whatDid, 'Enabled auto-archive for &lt;a href='.urlGen({'node_id'=&gt;$2}).'&gt;'.encodeHTML($str,1).'&lt;/a&gt;.');
-		}
-	} elsif($1 eq 'title') {
-		if($parm eq '1') {
-			#delete invalid setting
-			next unless exists $amaVars-&gt;{$2};
-			$str = $amaVars-&gt;{$2};
-			delete $amaVars-&gt;{$2};
-			delete $ugInvalid{$2};	#so display is correct
-			push(@whatDid, 'Deleted bad setting (key='.encodeHTML($2,1).', value='.encodeHTML($str,1).').');
-		}
-	} else {
-		return 'Ack! RE matched, but &lt;code&gt;eq&lt;/code&gt;s didn\'t! ($1=&quot;&lt;code&gt;' . encodeHTML($1,1) . '&lt;/code&gt;&quot;)';
+        my $ug = getNodeById($ug_id);
+
+	if($parm eq '1') {
+		#disable archiving for a usergroup
+		$APP-&gt;delParameter($ug_id, $USER, 'allow_message_archive');
+		push(@whatDid, 'Disabled auto-archive for &lt;a href='.urlGen({'node_id'=&gt;$ug_id}).'&gt;'.encodeHTML($ug-&gt;{title},1).'&lt;/a&gt;.');
+	} elsif($parm eq '2') {
+		#enable archiving for a usergroup
+		$APP-&gt;setParameter($ug_id, $USER, 'allow_message_archive', 1);
+		push(@whatDid, 'Enabled auto-archive for &lt;a href='.urlGen({'node_id'=&gt;$ug_id}).'&gt;'.encodeHTML($ug-&gt;{title},1).'&lt;/a&gt;.');
 	}
 }
 
@@ -151,68 +64,32 @@ if(scalar(@whatDid)) {
 &lt;/ul&gt;&lt;p&gt;
 ';
 
-	#write out new setting
-	setVars($amaSetting, $amaVars);
 }
-#if(scalar(@didNotDo)) {
-#	$str = 'Change'.(scalar(@didNotDo)==1?'':'s').' &lt;strong&gt;not&lt;/strong&gt; made:&lt;/p&gt;&lt;ul&gt;
-#&lt;li&gt;' . join('&lt;/li&gt;
-#&lt;li&gt;', @didNotDo) . '&lt;/li&gt;
-#&lt;/ul&gt;&lt;p&gt;
-#';
-#}
 
 
 #table header
 $str .= htmlcode('openform') . '
-&lt;input type=&quot;hidden&quot; name=&quot;docversion&quot; value=&quot;' . $DOCVERSION . '&quot; /&gt;
 &lt;table border=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;0&quot;&gt;
 ';
 $str .= '&lt;tr&gt;&lt;th&gt;change this&lt;/th&gt;&lt;th&gt;usergroup&lt;/th&gt;&lt;th&gt;current status&lt;/th&gt;&lt;th&gt;&lt;code&gt;/msg&lt;/code&gt;s&lt;/th&gt;&lt;/tr&gt;
 ';
 
 my $titleLower;
-my $titleCorrect;
 
-
-#generates a drowndown menu of what can be done
-#	precondition: $titleCorrect set
 local *genDoWhat = sub {
-	my $curProper = $titleCorrect;
-	my $curLower = lc($curProper);
+	my $ug_id = shift;
 	my %disps;
 	my $formName;
+        my $ug_archiving = $APP-&gt;getParameter($ug_id, 'allow_message_archive');
 
-	if( (exists $ugValid{$curLower}) &amp;&amp; ($ugValid{$curLower} eq $curProper) ) {
-		#valid usergroup
-		if( (exists $$amaVars{$curProper}) ) {
-			if( ($$amaVars{$curProper} eq '1') ) {
-				$disps{0} = '(stay archiving)';
-			} else {
-				$disps{0} = '(keep invalid setting value)';
-#				$disps{3} = 'fix invalid setting value to archiving';
-			}
-		} else {
-			$disps{0} = '(stay not archiving)';
-		}
-		$disps{1} = 'no archiving';
-		$disps{2} = 'start archiving';
-		$formName = 'id_'.$ugNameID{$curLower};
-
+	if( $ug_archiving ) {
+		$disps{0} = '(stay archiving)';
 	} else {
-		#not valid usergroup
-		$disps{0} = '(keep invalid setting)';
-		$disps{1} = 'delete invalid setting';
-		$formName = 'title_'.$curProper;	#maybe TODO Everything-&gt;escape this (have to do unescape when checking params then
-
+		$disps{0} = '(stay not archiving)';
 	}
-	unless($formName =~ /^([0-9A-Za-z_, ]*)$/) {
-		return '&lt;small&gt;(Sorry, &quot;&lt;code&gt;'.encodeHTML($curProper,1).'&lt;/code&gt;&quot; has some characters I don\'t know how to deal with.)&lt;/small&gt;';
-	}
-	$formName = $1;
-	unless(length($formName)) {
-		return '&lt;small&gt;(Somehow the length of this is zero. &lt;small&gt;(How did that happen?)&lt;/small&gt; In any case, I\'m ignoring this one.)&lt;/small&gt;';
-	}
+	$disps{1} = 'no archiving';
+	$disps{2} = 'start archiving';
+	$formName = 'id_'.$ug_id;
 
 	my @vals = sort(keys(%disps));
 	return '&lt;input type=&quot;checkbox&quot; name=&quot;umam_sure_'.$formName.'&quot; value=&quot;1&quot; /&gt;' . $query-&gt;popup_menu('umam_what_'.$formName, \@vals, 0, \%disps);
@@ -221,51 +98,26 @@ local *genDoWhat = sub {
 
 my $s;
 
-
-#show invalid setting values
-my $numBadPairs = scalar(keys(%ugInvalid));
-if($numBadPairs) {
-$str .= '&lt;tr&gt;&lt;th colspan=&quot;4&quot;&gt;i n v a l i d &amp;nbsp; s e t t i n g s&lt;/th&gt;&lt;/tr&gt;';
-foreach $s (sort(keys(%ugInvalid))) {
-	$str .= '&lt;tr&gt;&lt;td&gt;' . genDoWhat($titleCorrect = $s);
-	$str .= '&lt;/td&gt;&lt;td&gt;try node titled ' . linkNodeTitle(encodeHTML($titleCorrect,1));
-	$str .= '&lt;/td&gt;&lt;td colspan=&quot;2&quot;&gt;no usergroup exists with this title';
-
-	$titleLower = lc($titleCorrect);
-	if(exists $ugValid{$titleLower}) {
-		$str .= '; maybe you meant &quot;&lt;a href=' . urlGen({'node_id'=&gt;$ugNameID{$titleLower}}) . '&gt;' . $ugValid{$titleLower} . '&lt;/a&gt;&quot;';
-	}
-
-	$str .= '&lt;/td&gt;&lt;/tr&gt;
-';
-}
-}
-
-
 #show valid usergroups
-$str .= '&lt;tr&gt;&lt;th colspan=&quot;4&quot;&gt;u s e r g r o u p s&lt;/th&gt;&lt;/tr&gt;' if scalar(keys(%ugValid));
-my $numArchiveCorrect=0;
-my $numArchiveWrong=0;
+$str .= '&lt;tr&gt;&lt;th colspan=&quot;4&quot;&gt;u s e r g r o u p s&lt;/th&gt;&lt;/tr&gt;';
+my $numArchive=0;
 my $numNotArchive=0;
-foreach $s (sort(keys(%ugValid))) {
-	$titleCorrect = $ugValid{$titleLower = $s};
-	$str .= '&lt;tr&gt;&lt;td&gt;' . genDoWhat($titleCorrect);
-	$str .= '&lt;/td&gt;&lt;td&gt;&lt;a href=' . urlGen({'node_id'=&gt;$ugNameID{$titleLower}}) . '&gt;' . $ugValid{$titleLower} . '&lt;/a&gt;&lt;/td&gt;&lt;td&gt;';
-	if(exists $$amaVars{$titleCorrect}) {
-		if( (defined $$amaVars{$titleCorrect}) &amp;&amp; ($$amaVars{$titleCorrect} eq '1') ) {
-			++$numArchiveCorrect;
-			$str .= 'archiving';
-		} else {
-			++$numArchiveWrong;
-			$str .= 'archiving, but has invalid value of &quot;&lt;code&gt;';
-			$str .= encodeHTML($$amaVars{$titleCorrect}, 1);
-			$str .= '&lt;/code&gt;&quot; (instead of 1)';
-		}
+foreach $s (@$usergroup_list) {
+
+        my $ug = getNodeById($s);
+        my $title = $ug-&gt;{title};
+
+	$str .= '&lt;tr&gt;&lt;td&gt;' . genDoWhat($ug-&gt;{node_id});
+	$str .= '&lt;/td&gt;&lt;td&gt;&lt;a href=' . urlGen({'node_id'=&gt;$ug-&gt;{node_id} }) . '&gt;' . $title . '&lt;/a&gt;&lt;/td&gt;&lt;td&gt;';
+	if($APP-&gt;getParameter($ug-&gt;{node_id}, &quot;allow_message_archive&quot;))
+	{
+		++$numArchive;
+		$str .= 'archiving';
 	} else {
 		++$numNotArchive;
 		$str .= 'not archiving';
 	}
-	$str .= '&lt;/td&gt;&lt;td&gt;&lt;a href=' . urlGen({'node'=&gt;'usergroup message archive','type'=&gt;'superdoc','viewgroup'=&gt;$titleCorrect}) . '&gt;(view)&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+	$str .= '&lt;/td&gt;&lt;td&gt;&lt;a href=' . urlGen({'node'=&gt;'usergroup message archive','type'=&gt;'superdoc','viewgroup'=&gt;$title}) . '&gt;(view)&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
 ';
 }
 
@@ -276,24 +128,17 @@ $str .= '&lt;/table&gt;
 
 #stats
 my $stats = 'Stats:&lt;/p&gt;&lt;ul&gt;';
-$stats .= '&lt;li&gt;'.encodeHTML($$NODE{title},1).' version: '.$DOCVERSION.'&lt;/li&gt;
-';
 $stats .= '&lt;li&gt;'.$numNotArchive.' usergroup'.($numNotArchive==1?'':'s').' not archiving&lt;/li&gt;
 ' if $numNotArchive;
-$stats .= '&lt;li&gt;'.$numArchiveCorrect.' usergroup'.($numArchiveCorrect==1?'':'s').' archiving (with correct value)&lt;/li&gt;
-' if $numArchiveCorrect;
-$stats .= '&lt;li&gt;'.$numArchiveWrong.' usergroup'.($numArchiveWrong==1?'':'s').' archiving (but with incorrect value)&lt;/li&gt;
-' if $numArchiveWrong;
-$stats .= '&lt;li&gt;'.$numBadPairs.' bad pair'.($numBadPairs==1?'':'s').'&lt;/li&gt;
-' if $numBadPairs;
+$stats .= '&lt;li&gt;'.$numArchive.' usergroup'.($numArchive==1?'':'s').' archiving&lt;/li&gt;
+' if $numArchive;
 $stats .= '&lt;/ul&gt;&lt;p&gt;
 ';
 
 
 $stats . $str;
 %]
-&lt;/p&gt;
-</doctext>
+&lt;/p&gt;</doctext>
   <node_id>1441832</node_id>
   <title>usergroup message archive manager</title>
 </node>
