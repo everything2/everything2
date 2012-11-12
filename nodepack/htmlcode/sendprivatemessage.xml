@@ -429,60 +429,6 @@ local *addUser = sub {
 	}
 };
 
-
-#auto-filtering: depending on recipients, sender may want to get/not get/archive/etc. the message for themselves
-my $FLAGAUTO_NEEDTEST = 1;	#if not present, assume value corrupt
-my $FLAGAUTO_ARCHIVE = 8;
-my $FLAGAUTO_DEFAULT = 0;
-my $FLAGAUTO_CC = 2;
-my $FLAGAUTO_NOGET = 4;
-my $FLAGAUTOMASK_GET = $FLAGAUTO_DEFAULT | $FLAGAUTO_CC | $FLAGAUTO_NOGET;
-my $selfShouldGet=boolParam('ccself') ? $FLAGAUTO_CC : 0;	#if should get message when normally wouldn't, or should NOT get message when normally would, or normal
-my $selfArchive=0;	#if should set own copy of msg to archived; value that is inserted into DB
-
-#updates the current auto-filtering options
-#stuff copied from top of this file, that I should later move to the displaytype=help view:
-#	thought #2: instead of making another table, since this is all user-based, we can just throw things into VARS
-#		maybe: 'automsgsend_###' where ### is node_id of recipient (group or usergroup)
-#		if multiple cases match, do one that keeps the most
-#		bits:
-#			0    1      if NOT set, ignore everything else, and use default settings
-#			1-2  2,4,6  0=default, 2=always CC self, 4=never get self, 6=reserved
-#			4    8      set archived flag, if happens to get message
-#parameter: node_id of recipient group or user
-#created: 2002.07.18.n4
-#updated: 2002.12.01.n0
-local *updateAutoFilter = sub {
-	my $id=$_[0];
-	return unless defined($id) &amp;&amp; length($id);
-	my $varKey = 'automsgsend_'.$id;
-	return unless (exists $VARS-&gt;{$varKey}) &amp;&amp; (defined $VARS-&gt;{$varKey}) &amp;&amp; length($id=$VARS-&gt;{$varKey}) &amp;&amp; $id;
-	unless(($id &amp; $FLAGAUTO_NEEDTEST)==$FLAGAUTO_NEEDTEST) {
-		#value somehow corrupt, so wipe it out and return
-		delete $VARS-&gt;{$varKey};
-		return;
-	}
-	$id -= $FLAGAUTO_NEEDTEST;
-
-	#check archiving
-	if(!$selfArchive) {
-		$selfArchive = (($id &amp; $FLAGAUTO_ARCHIVE)==$FLAGAUTO_ARCHIVE) ? 1 : 0;
-	}
-
-	#check getting/not getting
-	$id = $id &amp; $FLAGAUTOMASK_GET;
-	return unless $id;	#if 0, then using default setting, so don't bother with more testing
-	if( $id==$FLAGAUTO_CC ) {
-		$selfShouldGet = $FLAGAUTO_CC;	#CC self has highest precedence
-	} elsif( ($id==$FLAGAUTO_NOGET) &amp;&amp; ($selfShouldGet!=$FLAGAUTO_CC) ) {	#block /msg, but only if not already force getting
-		$selfShouldGet = $FLAGAUTO_NOGET;
-	}
-	#else, keep current setting
-
-	return;
-};
-
-
 #adds a user or usergroup to get a message (or not get the message)
 #pass user or usergroup object
 #updated: 2004.12.12.n0 (Sunday, December 12, 2004)
@@ -526,7 +472,6 @@ local *addRecipient = sub {
 		addUser($u);
 
 	}
-	updateAutoFilter($i);
 };
 
 
@@ -562,19 +507,6 @@ foreach( @{getParamList('recipient')} ) {
 		$invalidNames{$n}=1;
 	}
 }
-
-updateAutoFilter('default');
-##special case author: delete it now? (or not) (maybe just see if not sent, and add changed message)
-
-
-
-
-##determine if message author is getting a copy
-#my $ccSelf =
-#	!( (exists $users{$aid}) &amp;&amp; ($users{$aid}&gt;0) ) &amp;&amp;	#don't copy self if already getting a copy
-#	(boolParam('ccself') || $VARS-&gt;{msgCCalways})	#copy self if says to this time, or user always wants CC (is this even settable anywhere? I don't think it is)
-#;
-
 
 #deal with people who blocked
 my @whoBlocked;	#users who blocked sender, and not because blocking the group (listing all the group blockers could get large fast)
@@ -634,7 +566,7 @@ local *pickRandomForGroup = sub {
 
 
 #special case sender getting msg
-if($selfShouldGet==$FLAGAUTO_CC) {
+if(boolParam('ccself')) {
 	#set the for-group as just a random recipient of the message
 	#this is far from perfect, but there isn't a way to store all recipients, so this will have to do
 	#done here, and not relied upon at the actual msg-send part so we try to not get ourselves as the for-group we're sending to
@@ -645,10 +577,7 @@ if($selfShouldGet==$FLAGAUTO_CC) {
 	unless(exists $users{$UID}) {
 		$users{$UID} = pickRandomForGroup() || $UID;	#extra OR is for very rare case so user still gets CC-to-self message when nobody gets message (such as everybody is blocking sender)
 	}
-} elsif($selfShouldGet==$FLAGAUTO_NOGET) {
-	delete $users{$UID} if exists $users{$UID};
 }
-
 
 #add things to message
 if($onlineOnly) {
@@ -659,9 +588,6 @@ if(defined $aboutNode) {
 	#maybe FIXME: add another field to message table, although this wouldn't be used much (just for WU title area)
 	$msg = 're ['.$aboutNode.']: '.$msg;
 }
-#$ccSelf = $ccSelf ? $msg : undef;
-
-
 
 #construct invalid recipients message
 my $s = '';
@@ -721,11 +647,8 @@ foreach $i (keys(%users)) {
 		#this is far from perfect, but there isn't a way to store all recipients, so this will have to do
 		#if the msg was forced-gotten, then this was already done; but this is for the normal case
 		$forUG ||= pickRandomForGroup();
-		$isArchived=$selfArchive;
-	} else {
-		$isArchived=0;
-		
 	}
+	$isArchived=0;
 	$forUG ||= $fromGroup;
 
 	push(@getters, $i) if $users{$i}==0;	#only list people that aren't in a UG (otherwise, UG recipient list would be quite large)

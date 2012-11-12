@@ -1,6 +1,8 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Mon Nov 12 04:35:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Mon Nov 12 05:45:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;1707032&quot; parent_e2node=&quot;1707031&quot; author_user=&quot;Webster 1913&quot;&gt;Fair catch&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;jaybonci&quot; node_id=&quot;2072955&quot; parent_e2node=&quot;2072605&quot; author_user=&quot;The Custodian&quot;&gt;Editor Log: November 2012&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;The Custodian&quot; node_id=&quot;1282877&quot; parent_e2node=&quot;122829&quot; author_user=&quot;Simpleton&quot;&gt;The Rum Diary&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1379768&quot; parent_e2node=&quot;267643&quot; author_user=&quot;mauler&quot;&gt;Kenning&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Transitional Man&quot; node_id=&quot;2072829&quot; parent_e2node=&quot;2072827&quot; author_user=&quot;Hazelnut&quot;&gt;Kajira of Gor&lt;/cooled&gt;
@@ -14,8 +16,6 @@
 	&lt;cooled cooledby_user=&quot;tanktop&quot; node_id=&quot;2060896&quot; parent_e2node=&quot;349883&quot; author_user=&quot;Oolong&quot;&gt;Turmeric&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;2072872&quot; parent_e2node=&quot;341792&quot; author_user=&quot;ZorroBandito&quot;&gt;Tardigrade&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2005830&quot; parent_e2node=&quot;2005823&quot; author_user=&quot;briggs&quot;&gt;you realize death means nothing&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;corvus&quot; node_id=&quot;2071104&quot; parent_e2node=&quot;2071101&quot; author_user=&quot;mauler&quot;&gt;THE IRON NODER CHALLENGE 5: THE FERROUS FRONTIER&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2064216&quot; parent_e2node=&quot;69390&quot; author_user=&quot;Zephronias&quot;&gt;Staring at the floor pattern in the kitchen&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

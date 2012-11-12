@@ -49,7 +49,7 @@ my @skips;
 # If you are a god, you can see all usergroups, even skipped ones. This is so 
 # fled users can easily be removed from usergroups.
 if (!($HTMLVARS{'group_gods'}{getId($USER)})) {
-@skips= ('HD2','Eurohostages','PDXCB','nodahs','weeklings','Horace Phair','SIGTITLE','everything email forwarders','e2gods');
+@skips= ('HD2','Eurohostages','PDXCB','nodahs','weeklings','Horace Phair','SIGTITLE','e2gods');
 }
 
 
