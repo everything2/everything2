@@ -41,24 +41,9 @@
 #parameters setup, part 1 of 2
 #
 
-# parameters fed in through $HTMLVARS{msgparams} ('old way') or in first argument
-# in old way, first argument may contain flags
-
 my $params = shift;
-my $flags;
 
-if (ref $params){
-	$flags = $$params{flags};
-}else{
-	$flags = $params;
-	$params = $HTMLVARS{msgparams};
-	return 'No message parameters.' unless ref $params;
-
-}
-
-my $keepParams = $flags &amp; 1;
-my $debug = $flags &amp; 2;
-my $showWhatSaid = $flags &amp; 4;
+my $showWhatSaid = $params-&gt;{show_said};
 
 #
 #constants and global vars setup, part 1 of 2
@@ -106,21 +91,6 @@ my $isBorged = $isBorgedFull || $VARS-&gt;{borged};	#partially borged, not allow
 #any other condition will return false
 local *boolParam = sub {
 	return (defined $_[0]) &amp;&amp; (exists $params-&gt;{$_[0]}) &amp;&amp; (defined $params-&gt;{$_[0]}) &amp;&amp; ($params-&gt;{$_[0]} eq '1');
-};
-
-
-#returns the given thing's nodetype, or undef if unknown
-#created: 2002.07.08.n1
-#updated: 2002.07.08.n1
-local *getNodeType = sub {
-	my $testNode = $_[0];
-	return
-		(defined $testNode) &amp;&amp;
-		(ref $testNode eq 'HASH') &amp;&amp; #note: should always be true, but just in case
-		(exists $testNode-&gt;{type_nodetype})
-		? $testNode-&gt;{type_nodetype}
-		: undef
-	;
 };
 
 #gets a user or usergroup
@@ -291,8 +261,6 @@ unless($fromGroup) {
 #		key is ID of user ignoring the ignoree
 #		value is, itself, ignored :)  (value is always just 1)
 my $ignored;
-
-#my $skipIgnores = boolParam('skipignore');	#TODO use this
 
 #stores who is ignoring the given user/usergroup
 #stored in $ignored
@@ -745,9 +713,7 @@ unless($isBorgedFull) {	#borged users may only speak to themselves
 	    next if $groups{$i}&lt;0;	#negative indicates user isn't allowed to send to group
 	    push(@getters, $i);	#count as 1 for group
 	    next if $groups{$i}==0;
-	    if($debug) {
-		    next;
-	    }
+
 	    $DB-&gt;sqlInsert('message',{
 		    'msgtext' =&gt; $msg,
 		    'author_user' =&gt; $aid,
@@ -785,10 +751,6 @@ foreach $i (keys(%users)) {
 	$forUG ||= $fromGroup;
 
 	push(@getters, $i) if $users{$i}==0;	#only list people that aren't in a UG (otherwise, UG recipient list would be quite large)
-
-	if($debug) {
-		next;
-	}
 
 	$DB-&gt;sqlInsert('message',{
 		'msgtext' =&gt; $msg,
@@ -912,8 +874,6 @@ if ( $aid==$UID) {
     $m .= '.)';
   }
   $m .= ')';                    # Dear sweet christ
-  $m .= ' (Note: no message was actually sent, since debug mode was
-	enabled.)' if $debug;
 
 }
 else {
@@ -923,14 +883,6 @@ else {
 }
 
 $query-&gt;param($qpm,$m);	#inform in chatterbox
-
-
-#
-#finalize
-#
-
-#this htmlcode's parameters no longer needed
-delete $HTMLVARS{msgparams} unless $keepParams;	
 
 return $showWhatSaid ? $m : undef;</code>
 </node>

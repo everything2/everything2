@@ -124,7 +124,7 @@ local *trySend = sub {
 		'message' =&gt; $t,
 		'ccself' =&gt; $doCC,
 		'renode_id' =&gt; $aboutNode,
-                'flags' =&gt; $showSaid,
+                'show_said' =&gt; $showSaid,
 	});
 	$str .= $t . &quot;&lt;br /&gt;\n&quot; if (defined $t) &amp;&amp; length($t);
 

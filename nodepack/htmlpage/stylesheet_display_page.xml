@@ -104,7 +104,6 @@ if ($$USER{user_id} == $$NODE{author_user} or exists($HTMLVARS{'group_gods'}{$$U
       htmlcode('sendPrivateMessage',{
                              'recipient' =&gt; \@stylesheet_users,
                              'message' =&gt; $msg,
-                             'flags' =&gt; 0,
                              });
 
       #No XSS!

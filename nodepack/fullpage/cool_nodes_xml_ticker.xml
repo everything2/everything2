@@ -1,6 +1,8 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Mon Nov 12 01:40:08 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Mon Nov 12 02:05:16 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2072936&quot; parent_e2node=&quot;2072938&quot; author_user=&quot;raincomplex&quot;&gt;a sky as it is&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1866958&quot; parent_e2node=&quot;253381&quot; author_user=&quot;Tem42&quot;&gt;Highfaluting&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;2072829&quot; parent_e2node=&quot;2072827&quot; author_user=&quot;Hazelnut&quot;&gt;Kajira of Gor&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;IWhoSawTheFace&quot; node_id=&quot;2069474&quot; parent_e2node=&quot;2072935&quot; author_user=&quot;The Custodian&quot;&gt;E6B flight computer&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;riverrun&quot; node_id=&quot;2072841&quot; parent_e2node=&quot;2072295&quot; author_user=&quot;Tem42&quot;&gt;Sensorineural hearing loss&lt;/cooled&gt;
@@ -14,8 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2064216&quot; parent_e2node=&quot;69390&quot; author_user=&quot;Zephronias&quot;&gt;Staring at the floor pattern in the kitchen&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2039503&quot; parent_e2node=&quot;2072577&quot; author_user=&quot;The Custodian&quot;&gt;SCP-916&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2072559&quot; parent_e2node=&quot;2072618&quot; author_user=&quot;tubular&quot;&gt;Robot Unicorn Attack&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;gnarl&quot; node_id=&quot;1425053&quot; parent_e2node=&quot;1198262&quot; author_user=&quot;cantdance&quot;&gt;Remembrance Sunday&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;jessicaj&quot; node_id=&quot;2072592&quot; parent_e2node=&quot;2072729&quot; author_user=&quot;Oolong&quot;&gt;Arthur's Seat&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>
