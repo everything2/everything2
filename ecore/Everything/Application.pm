@@ -59,6 +59,14 @@ BEGIN {
 			"assignable" => ["admin"],
 			"validate" => "set_only",
 		},
+
+		#TODO: Add test
+		"allow_message_archive" =>
+		{
+			"description" => "On usergroups, allow the messages to be archived",
+			"assignable" => ["admin"],
+			"validate" => "set_only",
+		},
 	};
 
 	foreach my $param(keys %$PARAMS)
