@@ -47,6 +47,8 @@ NameVirtualHost *:80
 	PerlResponseHandler ModPerl::Registry
 	PerlOptions +ParseHeaders
 
+	SetEnvIf X-FORWARDED-FOR "37.0.121.104" denyip
+
 	<Directory /var/everything/www/>
 		DirectoryIndex index.pl
 		AddHandler perl-script .pl
@@ -54,6 +56,9 @@ NameVirtualHost *:80
 		AllowOverride None
 		Order allow,deny
 		allow from all
+
+		deny from env=denyip
+
 		Include /var/everything/ecore/mod_rewrite.conf
 		AddOutputFilterByType DEFLATE text/javascript text/html text/xml text/css application/x-javascript
 	</Directory>
