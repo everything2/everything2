@@ -46,10 +46,6 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>topicSeparator</key>
-  </vars>
-  <vars>
-    <value>1</value>
     <key>nullvote</key>
   </vars>
   <vars>
@@ -114,11 +110,11 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>noTypoCheck</key>
+    <key>pmsgDate</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>pmsgDate</key>
+    <key>noTypoCheck</key>
   </vars>
   <node_id>1372676</node_id>
   <title>exportable vars</title>

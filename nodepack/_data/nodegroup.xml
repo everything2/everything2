@@ -1206,12 +1206,6 @@
     <rank>4</rank>
   </group>
   <group>
-    <node_id>277</node_id>
-    <orderby>5</orderby>
-    <nodegroup_id>314</nodegroup_id>
-    <rank>5</rank>
-  </group>
-  <group>
     <node_id>283</node_id>
     <orderby>6</orderby>
     <nodegroup_id>314</nodegroup_id>

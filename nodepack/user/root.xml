@@ -29,10 +29,6 @@
     <key>nodelet_group</key>
   </vars>
   <vars>
-    <value>#ffcccc</value>
-    <key>nodelet_textclr</key>
-  </vars>
-  <vars>
     <value></value>
     <key>group</key>
   </vars>

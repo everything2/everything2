@@ -44,9 +44,8 @@ $DB-&gt;sqlInsert(&quot;iplog&quot;, {iplog_user =&gt; $$USER{user_id}, iplog_ip
    if (exists $$VOTES{$lvl} and $$VOTES{$lvl} =~ /^\d+$/) {
      $$USER{votesleft} = $$VOTES{$lvl};
    }
-   #$$USER{votesleft} = $$VOTES{$lvl};
+
    if (exists $$COOLS{$lvl} and $$COOLS{$lvl} =~ /^\d+$/) {
-     #$$VARS{votetest2} = &quot;nay&quot;;
      $$VARS{cools} = $$COOLS{$lvl};
    }
    $$VARS{votesrefreshed} ||= 0;
