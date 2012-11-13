@@ -42,7 +42,6 @@
 #
 
 my $params = shift;
-
 my $showWhatSaid = $params-&gt;{show_said};
 
 #
@@ -53,22 +52,10 @@ my $UID = $USER-&gt;{node_id} || 0;
 
 return '' if $APP-&gt;isGuest($USER);
 return '' if $USER-&gt;{title} eq 'everyone';
-
-my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
-
-#
-#parameters setup, part 2 of 2
-#
-
-#determine message - quick checks for failure before we do database access
 return 'Nothing to send: no message was given.' unless $params-&gt;{message};
 my $msg = $APP-&gt;messageCleanWhitespace($params-&gt;{message});
 return 'Nothing to send: message only consists of &quot;whitespace&quot; characters (for example, a space).' unless length($msg);
-#note: do NOT escape &lt; and &gt; since they are escaped upon recipient view
 
-#
-#constants and global vars setup, part 2 of 2
-#
 
 my $cachedTitles;
 my $cachedIDs;
@@ -76,10 +63,6 @@ my $cachedIDs;
 #failure warning messages
 #these are always sent to the current user (which is not neccessarily the author we say the message is from)
 my @problems;
-
-#borg check - maybe [a] boolean param[s] to skip this?
-my $isBorgedFull = 0 &amp;&amp; !$isRoot;	#FIXME something else in VARS should be set	#fully borged, may not speak to anybody but self
-
 #
 #subroutines
 #
@@ -252,43 +235,6 @@ unless($fromGroup) {
 #determine recipient(s)
 #
 
-#keeps track of who is ignoring a user/usergroup
-#meaning:
-#	key is ID of user(group) being ignored (&quot;ignoree&quot;)
-#	value is hash ref:
-#		key is ID of user ignoring the ignoree
-#		value is, itself, ignored :)  (value is always just 1)
-my $ignored;
-
-#stores who is ignoring the given user/usergroup
-#stored in $ignored
-#parameter: node_id of user(group) to ignore (if omitted, defaults to message's claimed author)
-#created: 2002.06.13.n4
-#updated: 2002.07.08.n1
-local *loadIgnores = sub {
-	my $whoIgnore = (defined $_[0]) &amp;&amp; $_[0] ? $_[0] : $aid;
-	return unless $whoIgnore =~ /^([1-9]\d*)$/;
-	$whoIgnore = $1;
-	if(exists $ignored-&gt;{$whoIgnore}) {
-		#already loaded, so don't bother getting again
-		return;
-	}
-
-	#get everybody that is ignoring the given user(group), and save it for later
-	my %curIgnore;
-	#from message (opcode)
-	my $csr = $DB-&gt;sqlSelectMany('messageignore_id', 'messageignore', 'ignore_node='.$whoIgnore);
-	return 'Ack! Unable to determine who is ignoring you!' unless defined $csr;
-	while(my ($ig) = $csr-&gt;fetchrow) {
-		$curIgnore{$ig}=1;
-	}
-	$csr-&gt;finish;
-
-	$ignored-&gt;{$whoIgnore} = \%curIgnore;
-};
-
-loadIgnores($aid);
-
 #determine who is online
 my %onlines;
 my $onlineOnly = boolParam('ono');
@@ -384,7 +330,7 @@ local *addUser = sub {
 		#user isn't set to get/not get a message
 
 		#check for ignoring author
-		if( (exists $ignored-&gt;{$aid}) &amp;&amp; (exists $ignored-&gt;{$aid}-&gt;{$uid}) ) {
+		if( $APP-&gt;userIgnoresMessagesFrom($uid, $aid) ) {
 			$users{$uid}=-1;
 			$blockers{$uid}=0;
 			++$countUserAll;
@@ -417,7 +363,7 @@ local *addUser = sub {
 		if($groupID) {
 			$blockers{$uid}=$groupID;	#non-zero means may still get message
 			#don't mark as send-message, but also don't mark as do-not-send-at-all
-			return if( (exists $ignored-&gt;{$groupID}) &amp;&amp; (exists $ignored-&gt;{$groupID}-&gt;{$uid}) );
+			return if( $APP-&gt;userIgnoresMessagesFrom($uid, $groupID) );
 			#note: countUsersAll is not adjusted here, so it doesn't count the same recipient twice; it is added later (&quot;deal with people who blocked&quot;)
 		}
 
@@ -449,7 +395,6 @@ local *addRecipient = sub {
 			$groups{$i}=-1;
 			return;
 		}
-		loadIgnores($i);
 
 		#all checks pass, so send /msg to group and members
 		++$countGroupGot;

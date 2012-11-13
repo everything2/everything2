@@ -1,0 +1,22 @@
+<node>
+  <type_nodetype>4</type_nodetype>
+  <node_id>2072959</node_id>
+  <title>paramsetbox</title>
+  <code>my ($k, @title) = @_;
+
+# Similar to varcheckbox
+
+return if ($APP-&gt;isGuest($USER)) || ($$USER{title} eq 'everyone');
+my $title = join ', ', @title;
+$title ||= $k;
+
+my $value = 0;
+if($query-&gt;param('setparam_'.$k)) {
+	$APP-&gt;setParameter($USER, $USER, $k, 1);
+        $value = 1;
+} elsif($query-&gt;param('sexisgood')) {
+	$APP-&gt;delParameter($USER, $USER, $k);
+}
+
+$query-&gt;checkbox('setparam_'.$k, $value, '1', $title);</code>
+</node>

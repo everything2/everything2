@@ -593,7 +593,6 @@ if($message =~ /^\/(msg\??|tell\??)(\{.+?\}\??|\s+\S+)(\s+.+)?$/si) {
 	if($fromref) {
 		$DB-&gt;sqlInsert('message', {msgtext =&gt; $message , author_user =&gt; getId($fromref), for_user =&gt; 0, room =&gt; $$USER{in_room}});
 	} else {
-		$$VARS{barf} = 'nay!';
 		$DB-&gt;sqlInsert('message', {msgtext =&gt; 'To sayas, you need to give me a user, choices are: EDB, eddie, virgil, Bear, Klaproth, or Webster', author_user =&gt; getId(getNode('root', 'user')), for_user =&gt; getId($USER), room =&gt; $$USER{in_room}});
 	}
 

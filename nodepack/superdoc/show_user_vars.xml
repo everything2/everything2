@@ -99,7 +99,7 @@ if($isRoot) {
 	'mission','motto',
 	'nick','nodelets','nohints','nowhynovotes',
 	'nullvote','numborged','numwriteups','nwriteups',
-	'personal_nodelet','preferred_theme','punched',
+	'personal_nodelet','preferred_theme',
 	'specialties'
 );
 }

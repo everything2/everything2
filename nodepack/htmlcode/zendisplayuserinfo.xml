@@ -190,18 +190,6 @@ local *info_presents = sub {
 
 local *infoDefault = sub {
 	my $k = $_[0] || '';
-#	if ($$USER{user_id} == 1312198) {
-#		my $var = getVars $NODE;
-#		my $hn = var2hash($$var{homenode});
-#		if (!$$hn{$k}) {
-#			 $$hn{$k} = $$SETTINGS{$k} ? $$SETTINGS{$k} : $$NODE{$k};
-#		}
-##		$$var{homenode} = hash2var($hn);
-#		setVars($NODE, $var);
-#
-#		my $v = htmlScreen($$hn{$k}) unless grep /$k/, @noHTMLSCREEN;
-#		return parseLinks($v);
-#	}
 	my $v = $$SETTINGS{$k} ? $$SETTINGS{$k} : $$NODE{$k};
 	$v = htmlScreen($v) unless grep /$k/, @noHTMLSCREEN;
 	return parseLinks($v);

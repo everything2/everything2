@@ -17,6 +17,10 @@
     <key>giantsquid</key>
   </vars>
   <vars>
+    <value>*ZZZAPS*</value>
+    <key>zap</key>
+  </vars>
+  <vars>
     <value>pours a fine cold beer for</value>
     <key>beer</key>
   </vars>
@@ -27,6 +31,10 @@
   <vars>
     <value>smites</value>
     <key>smite</key>
+  </vars>
+  <vars>
+    <value>hands a bowl of split pea soup to</value>
+    <key>peasoup</key>
   </vars>
   <vars>
     <value>French-omelets</value>
@@ -53,6 +61,10 @@
     <key>anvil</key>
   </vars>
   <vars>
+    <value>plays the world's tiniest violin for</value>
+    <key>violin</key>
+  </vars>
+  <vars>
     <value>lights a candle for</value>
     <key>candle</key>
   </vars>
@@ -71,6 +83,10 @@
   <vars>
     <value>rubber chickens</value>
     <key>rubberchicken</key>
+  </vars>
+  <vars>
+    <value>hands a jello shot to</value>
+    <key>jelloshot</key>
   </vars>
   <vars>
     <value>omelets</value>

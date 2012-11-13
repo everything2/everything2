@@ -14,10 +14,6 @@ padding: 3px;
 
 
 [%
-
-#return if ($$VARS{GPoptout});
-delete $$VARS{NoBounty};
-
 my $minlevel = 3;
 my $lvl = $APP-&gt;getLevel($USER);
 my $isSheriff = $APP-&gt;inUsergroup($USER, &quot;sheriffs&quot;);
