@@ -53,10 +53,6 @@
     <key>num_newwus</key>
   </vars>
   <vars>
-    <value>good</value>
-    <key>barf</key>
-  </vars>
-  <vars>
     <value>(default)</value>
     <key>displaypref_e2node</key>
   </vars>

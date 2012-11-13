@@ -4,7 +4,6 @@
   <node_id>19</node_id>
   <context>[% 
  htmlcode('log ip');
- #$$VARS{votetime} = &quot;&quot; if not $$VARS{votetest1};
  my ($time) = split &quot; &quot;,$$USER{lasttime};
 
  if (!$APP-&gt;isGuest($USER)
@@ -17,7 +16,6 @@
    my $lvl = $APP-&gt;getLevel($USER);
    $$USER{level} = $lvl;
    if (exists $$VOTES{$lvl} and $$VOTES{$lvl} =~ /^\d+$/) {
-     #$$VARS{votetest1} = &quot;hay&quot;;
      $$USER{votesleft} = $$VOTES{$lvl};
    }
    #$$USER{votesleft} = $$VOTES{$lvl};

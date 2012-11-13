@@ -62,7 +62,6 @@ This will explain what the different things in the &lt;code&gt;VARS&lt;/code&gt;
 &lt;tr&gt;&lt;td&gt;themebodyBgColor&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;visible&lt;/td&gt;&lt;td&gt;&lt;var&gt;empty&lt;/var&gt;, 1&lt;/td&gt;&lt;td&gt;if set, the user is cloaked in the [% linkNodeTitle('Other Users'); %] nodelet&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;votesrefreshed&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;votetest1&lt;/td&gt;&lt;td&gt;hay&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;votetest2&lt;/td&gt;&lt;td&gt;nay&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;votetime&lt;/td&gt;&lt;td&gt;&lt;var&gt;yyyy&lt;/var&gt;-&lt;var&gt;mm&lt;/var&gt;-&lt;var&gt;dd&lt;/var&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 &lt;!--
