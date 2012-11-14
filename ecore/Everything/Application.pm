@@ -70,7 +70,7 @@ BEGIN {
 
 		"prevent_vote" =>
 		{
-			"on" => ["e2node"],
+			"on" => ["e2node", "writeup"],
 			"description" => "On e2nodes, writeups contained therein are no longer votable",
 			"assignable" => ["admin"],
 			"validate" => "set_only",
@@ -1339,7 +1339,10 @@ sub isUnvotable
 
 	if($node->{type}->{title} eq "writeup")
 	{
-		return $this->isUnvotable($node->{parent_e2node});
+		if(! $this->getParameter($node, "prevent_vote") )
+		{
+			return $this->isUnvotable($node->{parent_e2node});
+		}
 	}else{
 		return $this->getParameter($node, "prevent_vote");
 	}
