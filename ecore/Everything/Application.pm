@@ -67,6 +67,14 @@ BEGIN {
 			"assignable" => ["admin"],
 			"validate" => "set_only",
 		},
+
+		"prevent_vote" =>
+		{
+			"on" => ["e2node"],
+			"description" => "On e2nodes, writeups contained therein are no longer votable",
+			"assignable" => ["admin"],
+			"validate" => "set_only",
+		},
 	};
 
 	foreach my $param(keys %$PARAMS)
@@ -1315,6 +1323,26 @@ sub userIgnoresMessagesFrom
 
 	my $result = $this->{db}->sqlSelect("messageignore_id","messageignore","messageignore_id=".$this->{db}->quote($user_id)." and ignore_node=".$this->{db}->quote($nodefrom_id));
 	return $result;
+}
+
+sub isUnvotable
+{
+	my ($this, $node) = @_;
+	
+	if(ref $node eq "")
+	{
+		$node = $this->{db}->getNodeById($node);
+	}
+
+	return unless $node;
+	return unless $node->{type}->{title} eq "e2node" or $node->{type}->{title} eq "writeup";
+
+	if($node->{type}->{title} eq "writeup")
+	{
+		return $this->isUnvotable($node->{parent_e2node});
+	}else{
+		return $this->getParameter($node, "prevent_vote");
+	}
 }
 
 1;
