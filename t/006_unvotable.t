@@ -16,6 +16,12 @@ if(!$APP->inDevEnvironment())
 	ok(my $rootlog = getNode("root log: November 2012","e2node"));
 	ok(!$APP->isUnvotable($rootlog));
 	ok(!$APP->isUnvotable($rootlog->{group}[0]));
+
+	my $testwriteup = getNodeById(1970029);
+	ok($APP->isUnvotable($testwriteup));
+
+	# Sister writeup to testwriteup
+	ok(!$APP->isUnvotable(689897));
 }
 
 

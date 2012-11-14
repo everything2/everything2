@@ -1339,8 +1339,10 @@ sub isUnvotable
 
 	if($node->{type}->{title} eq "writeup")
 	{
-		if(! $this->getParameter($node, "prevent_vote") )
+		if($this->getParameter($node, "prevent_vote") )
 		{
+			return 1;
+		}else{
 			return $this->isUnvotable($node->{parent_e2node});
 		}
 	}else{
