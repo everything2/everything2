@@ -71,7 +71,7 @@ BEGIN {
 		"prevent_vote" =>
 		{
 			"on" => ["e2node", "writeup"],
-			"description" => "On e2nodes, writeups contained therein are no longer votable",
+			"description" => "On e2nodes, writeups contained therein are no longer votable. On writeups, that writeup is unvotable",
 			"assignable" => ["admin"],
 			"validate" => "set_only",
 		},
