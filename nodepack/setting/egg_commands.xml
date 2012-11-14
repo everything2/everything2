@@ -1,6 +1,10 @@
 <node>
   <type_nodetype>153</type_nodetype>
   <vars>
+    <value>pelts ~ with snowballs</value>
+    <key>snowballs</key>
+  </vars>
+  <vars>
     <value>pies</value>
     <key>pie</key>
   </vars>
@@ -21,12 +25,16 @@
     <key>zap</key>
   </vars>
   <vars>
-    <value>pours a fine cold beer for</value>
+    <value>pours ~ a fine cold beer</value>
     <key>beer</key>
   </vars>
   <vars>
     <value>lavishes attention upon</value>
     <key>special</key>
+  </vars>
+  <vars>
+    <value>places a fine chapeau on</value>
+    <key>hat</key>
   </vars>
   <vars>
     <value>smites</value>
@@ -49,7 +57,7 @@
     <key>egg</key>
   </vars>
   <vars>
-    <value>hands an ice-cold gin and tonic to</value>
+    <value>hands ~ an ice-cold gin and tonic</value>
     <key>gin</key>
   </vars>
   <vars>
@@ -63,6 +71,10 @@
   <vars>
     <value>plays the world's tiniest violin for</value>
     <key>violin</key>
+  </vars>
+  <vars>
+    <value>heaves a bunch of asparagus at</value>
+    <key>asparagus</key>
   </vars>
   <vars>
     <value>lights a candle for</value>
@@ -89,15 +101,15 @@
     <key>jelloshot</key>
   </vars>
   <vars>
-    <value>omelets</value>
-    <key>omelet</key>
-  </vars>
-  <vars>
     <value>mauls</value>
     <key>maul</key>
   </vars>
   <vars>
-    <value>makes a nice cup of tea for</value>
+    <value>omelets</value>
+    <key>omelet</key>
+  </vars>
+  <vars>
+    <value>makes ~ a nice cup of tea</value>
     <key>tea</key>
   </vars>
   <vars>

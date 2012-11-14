@@ -1,0 +1,263 @@
+<node>
+  <nick></nick>
+  <email></email>
+  <realname>e2docs shared user account</realname>
+  <imgsrc>images/userincoming/Virgil.jpeg</imgsrc>
+  <type_nodetype>15</type_nodetype>
+  <salt>$6$R8YmDv863/6H9LN9wSfz</salt>
+  <vars>
+    <value>1</value>
+    <key>nohintHTML</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>personal_nodelet</key>
+  </vars>
+  <vars>
+    <value>2072798</value>
+    <key>lastnoded</key>
+  </vars>
+  <vars>
+    <value>c:vote,c:cfull,c:sendmsg</value>
+    <key>wufoot</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>no_bookmarknotification</key>
+  </vars>
+  <vars>
+    <value>Documentation</value>
+    <key>specialties</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>GPoptout</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>oldGP</key>
+  </vars>
+  <vars>
+    <value>[e2docs] usergroup</value>
+    <key>employment</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>no_likeitnotification</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>autoChat</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>cools</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>youtube_link</key>
+  </vars>
+  <vars>
+    <value>54 - &lt;a href=&quot;/user/Virgil/writeups&quot;&gt;View Virgil's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Virgil&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
+    <key>nwriteups</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>showmessages_replylink</key>
+  </vars>
+  <vars>
+    <value>1301478369</value>
+    <key>preference_last_update_time</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>hidemsgme</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>collapsedNodelets</key>
+  </vars>
+  <vars>
+    <value>1039</value>
+    <key>oldexp</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>getofflinemsgs</key>
+  </vars>
+  <vars>
+    <value>262,170070,91,457857,263,165437,174581</value>
+    <key>nodelets</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>no_coolnotification</key>
+  </vars>
+  <vars>
+    <value>54</value>
+    <key>numwriteups</key>
+  </vars>
+  <vars>
+    <value>[Desine fata deum flecti sperare precando]</value>
+    <key>motto</key>
+  </vars>
+  <vars>
+    <value>29</value>
+    <key>writeupbonus</key>
+  </vars>
+  <vars>
+    <value>c:type,c:author,c:dtcreate,c:length,c:hits</value>
+    <key>wuhead</key>
+  </vars>
+  <vars>
+    <value>Guiding poets through Hell</value>
+    <key>mission</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>nullvote</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>no_bookmarkinformer</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>IQM</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>chatterbox_msgs_descend</key>
+  </vars>
+  <vars>
+    <value>25</value>
+    <key>num_newwus</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>nohints</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>mitextarea</key>
+  </vars>
+  <vars>
+    <value>1882070</value>
+    <key>userstyle</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>nohintSpelling</key>
+  </vars>
+  <vars>
+    <value>{&quot;notifications&quot;:{&quot;1980269&quot;:1,&quot;1936586&quot;:1,&quot;1981770&quot;:1,&quot;1930850&quot;:1,&quot;1930993&quot;:1}}</value>
+    <key>settings</key>
+  </vars>
+  <vars>
+    <value>1882128</value>
+    <key>can_weblog</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>pmsgDate</key>
+  </vars>
+  <title>Virgil</title>
+  <doctext>&lt;p&gt;This is a shared user account under the control of the [e2docs] usergroup. This account is responsible for the [Everything2 Help] files.&lt;/p&gt;
+&lt;hr&gt;
+
+&lt;h2&gt;[Everything2 Help]&lt;/h2&gt;
+&lt;h3&gt;This is the official guide to enjoying and contributing to Everything2.&lt;/h3&gt;
+
+&lt;ul&gt;
+ &lt;li&gt;[An Introduction to Everything2] &amp;mdash; What is Everything2?&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Writing for Publication on Everything2&lt;/h3&gt;
+
+&lt;h4&gt;Basics&lt;/h4&gt;
+
+&lt;ul&gt;
+ &lt;li&gt;[Everything2 FAQ] &amp;mdash; A few simple questions answered.&lt;/li&gt;
+ &lt;li&gt;[E2 Quick Start] &amp;mdash;  the lowdown on how to contribute your writing.&lt;/li&gt;
+ &lt;li&gt;[How do I submit a writeup of my own?] &amp;mdash; step-by-step technical instructions with necessary concepts explained.&lt;/li&gt;
+ &lt;li&gt;[Links on Everything2]  &amp;mdash; the culture and practicalities of linking here.&lt;/li&gt;
+ &lt;li&gt;[Everything2 Glossary] &amp;mdash; 'noding'? 'Daylogs'? You may occasionally need to look up site jargon.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4&gt;How to avoid negative feedback (downvotes, deleted writeups and so on):&lt;/h4&gt;
+
+&lt;ul&gt;
+ &lt;li&gt;[Writeup Deletion]&lt;/li&gt;
+ &lt;li&gt;[What writings are accepted on Everything2?] &amp;mdash; advice you should have read before your first writeup was deleted. &lt;/li&gt; 
+ &lt;li&gt;[What should I node?] &amp;mdash; What kinds of topics are successful?&lt;/li&gt;
+ &lt;li&gt;[What NOT to do on Everything2] &amp;mdash; things the regular users are tired of seeing.&lt;/li&gt;
+ &lt;li&gt;[When is it ok to node about noding?] &amp;mdash; generally speaking, keep it to the day logs.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4&gt;More&lt;/h4&gt;
+
+&lt;ul&gt;
+ &lt;li&gt;[Everything2 Staff]&lt;/li&gt;
+ &lt;li&gt;[Pick Titles Carefully]&lt;/li&gt;
+ &lt;li&gt;[Using Special HTML Characters]&lt;/li&gt;
+ &lt;li&gt;[Everything2 Copyright and Fair Use FAQ] &lt;/li&gt;
+ &lt;li&gt;[Adding Public Domain Materials to Everything2]&lt;/li&gt;
+ &lt;li&gt;[Uses for Empty Nodes or Nodeshells]&lt;/li&gt;
+ &lt;li&gt;[Assimilating old writeups] &lt;/li&gt;
+ &lt;li&gt;[Using languages other than English on Everything2]&lt;/li&gt;
+ &lt;li&gt;[Back up your work on Everything2]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;The User Interface&lt;/h3&gt;
+
+&lt;ul&gt;
+ &lt;li&gt;[Home Node] &amp;mdash; Your profile and account name.&lt;/li&gt;
+ &lt;li&gt;[Nodelet|Nodelets]&lt;/li&gt;
+ &lt;li&gt;[Chatterbox]&lt;/li&gt;
+ &lt;li&gt;[Polls]&lt;/li&gt;
+ &lt;li&gt;[Zen Theme]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Levels and Experience&lt;/h3&gt;
+
+&lt;ul&gt;
+ &lt;li&gt;[The Everything2 Voting/Experience System] &lt;!-- * --&gt;&lt;/li&gt;
+ &lt;li&gt;[Eggs, Tokens, E2 Gift Shop and Wheel of Surprise]&lt;/li&gt;
+ &lt;li&gt;[Why don't I have votes today?]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Getting more help&lt;/h3&gt;
+
+&lt;ul&gt;
+ &lt;li&gt;[usergroup[by Virgil]|Everything2 Usergroups]&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Special Node Topics&lt;/h3&gt;
+
+&lt;ul&gt;
+ &lt;li&gt;[Day Logs]&lt;/li&gt;
+ &lt;li&gt;[Everything2 Quests and Contests]&lt;/li&gt;
+ &lt;li&gt;[Everything2 Gathering and Aftermath nodes]&lt;/li&gt;
+ &lt;li&gt;[The Webster1913 Dictionary on Everything2] (Public Domain Dictionary)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Further Reading (not by Virgil)&lt;/h3&gt;
+
+&lt;ul&gt;
+ &lt;li&gt;[The Newbie's Guide to Your Home Node] &lt;em&gt;by [Rancid_Pickle]&lt;/em&gt;&lt;/li&gt;
+ &lt;li&gt;[Everything2 Chatterbox Commands] &lt;em&gt;by [mauler]&lt;/em&gt;&lt;/li&gt;
+ &lt;li&gt;[E2 FAQ: Bookmarks / Personal Nodelet]&lt;em&gt; by [/dev/joe]&lt;/em&gt;&lt;/li&gt;
+ &lt;li&gt;[E2 HTML tags : Quick Start] &lt;em&gt;by [N-Wing]&lt;/em&gt;&lt;/li&gt;
+ &lt;li&gt;[E2 HTML] &amp;mdash; Guide to using HTML on E2&lt;em&gt; by [themanwho]&lt;/em&gt;&lt;/li&gt;
+ &lt;li&gt;[HTML symbol reference] &lt;em&gt;by [mcc] and [Accipiter]&lt;/em&gt;&lt;/li&gt;
+ &lt;li&gt;[Everything Style Guide]&lt;em&gt; by [Wharfinger]&lt;/em&gt;&lt;/li&gt;
+ &lt;li&gt;[E2 Bugs]&lt;em&gt; by [JayBonci]&lt;/em&gt;&lt;/li&gt;
+ &lt;li&gt;[Online Community Dynamics]&lt;em&gt; by Clay Shirky&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;The results of the latest E2 Research Survey conducted by [clampe]'s students, available [https://www.msu.edu/~lampecli/papers/pap1604_lampe.pdf|here].&lt;/li&gt;
+&lt;/ul&gt;
+
+
+</doctext>
+  <node_id>1080927</node_id>
+  <passwd></passwd>
+</node>

@@ -160,9 +160,12 @@ utf8::decode($text);
 		$usermessage = &quot;&amp;lt;$userLink&amp;gt; &lt;i&gt; $notesarray[int(rand(4))] $1 $notesarray[int(rand(4))]&lt;/i&gt;&quot;;
 	}
 	##any other names by which you should whisper?
-	elsif ($text =~ /(^\/small|^\/aside|^\/whispers?|^\/monologue)(.*)/i){ 
+	elsif ($text =~ /(^\/whisper)(.*)/i){ 
  	    $usermessage = '&lt;small&gt;&amp;lt;' . $userLink .'&amp;gt; ' . $2 . '&lt;/small&gt;'
 	}
+	elsif ($text =~ /(^\/death)(.*)/i){ 
+ 	    $usermessage = '&amp;lt;' . $userLink .'&amp;gt; ' . &amp;$sc($2);
+ 	}
 
 ### dice rolling
  	elsif ( $text =~ /^\/rolls(.*)/i ) {
@@ -191,8 +194,9 @@ utf8::decode($text);
 ### normal egg message
 
 	elsif ( $text =~ /^\/(\S*)\s+(.*)/ &amp;&amp; $$valid{lc($1)}) { #Case insensitive match
-			my $eggStr = $$valid{$1}.&quot; &quot;.$2.&quot;!&quot;;
-			$usermessage = &amp;$sc( $userLink . ' ' . $eggStr );
+			my $target = $2;
+			(my $eggStr = $$valid{$1}) =~ s/( ~|$)/ $target/;
+			$usermessage = &amp;$sc( $userLink . ' ' . $eggStr ).'!';
 		}
 
 	$usermessage ||= '&amp;lt;' . $userLink . '&amp;gt; ' . $text;

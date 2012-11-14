@@ -45,6 +45,9 @@ $message =~ s/^\/(small|aside|ooc|whispers?|monologue)\b/\/whisper/i;
 #Frivolous synonyms for singing
 $message =~ s/^\/(aria|chant|song|rap|gregorianchant)\b/\/sing/i;
 
+#Frivolous synonyms for death
+$message =~ s/^\/(tomb|sepulchral|doom|reaper)\b/\/death/i;
+
 #Synonym for /me's
 $message =~ s/^\/my/\/me\'s/i;
 
@@ -56,7 +59,7 @@ if ($message =~ /^\/(flip|coinflip)\s*$/i) { $message = &quot;/rolls 1d2&quot;; 
 #  are parsed by [showchatter]) need to be in this list.
 my $validCommand = 0;
 my @validCommands = qw/
-	small aside whisper whispers monologue
+	small aside whisper whispers death monologue
 	sing sings me me's roll rolls
 	fireball sanctify
 /;
