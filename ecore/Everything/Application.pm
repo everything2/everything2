@@ -63,6 +63,7 @@ BEGIN {
 		#TODO: Add test
 		"allow_message_archive" =>
 		{
+			"on" => ["usergroup"],
 			"description" => "On usergroups, allow the messages to be archived",
 			"assignable" => ["admin"],
 			"validate" => "set_only",
