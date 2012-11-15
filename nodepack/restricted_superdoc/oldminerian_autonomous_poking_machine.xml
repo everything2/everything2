@@ -555,23 +555,6 @@ return &quot;ceil of 5.4 is &quot; . ceil(5.4);
 
 &lt;hr&gt;
 
-&lt;h3&gt;Flag testing&lt;/h3&gt;
-
-[%
-my @node_tests = (74063, 1961907, 1926209, 1926211);
-
-my $str = &quot;&quot;;
-
-for my $node_test (@node_tests) {
-  $str .= &quot;Flag test for &quot; . linkNode($node_test) . &quot; ($node_test) : &quot;
-       . htmlcode('flagged', getId($node_test), 'unvotable')
-       . &quot;&lt;br&gt;&quot;
-       ;
-}
-
-return $str;
-%]
-
 &lt;h3&gt;URL Escaping Tests&lt;/h3&gt;
 
 [%

@@ -37,8 +37,6 @@ if ($nochat){
 my $useBorgSpeak = 0;
 my $messagesToShow = 25;
 my $messageInterval = 360; #in seconds, how long room messages remain
-my $doAFD2006 = 0 ;
-my $frequencyAFD2006 = 5;
 
 my $ignorelist = $DB-&gt;sqlSelectMany('ignore_node', 'messageignore', 'messageignore_id='.$$USER{user_id});
 my @list;
@@ -108,12 +106,6 @@ utf8::decode($text);
  	}
 
 	$text = parseLinks($text,0,1);
-
-	if($doAFD2006) {
-		if ($$MSG{message_id} % $frequencyAFD2006 == 0) {
-			$text = htmlcode('aprilfools_chatterbox_2006', $text);
-		}
-	}
 
 	my $userTitle = getNodeById($aid, 'light')-&gt;{'title'};
 	$userTitle =~ s/ /_/g; # replace spaces with underscores in username
