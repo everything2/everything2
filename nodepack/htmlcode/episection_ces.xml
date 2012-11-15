@@ -2,21 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1129970</node_id>
   <title>episection_ces</title>
-  <code>my $votable =
-	(
-		htmlcode('flagged', $$NODE{node_id}.',unvotable') ?
-			&quot;V&quot; : &quot;Unv&quot;
-	)
-	. 'otable'
-	;
-my $flagHash = {
-	op =&gt; &quot;flag&quot;
-	, flag_id =&gt; $$NODE{node_id}
-	, flag =&gt; &quot;unvotable&quot;
-	, %{htmlcode('verifyRequestHash', 'flag')}
-	};
-
-if ($$THEME{isZen}) {
+  <code>if ($$THEME{isZen}) {
 
 	my (undef,undef,undef,$mday,$mon,$year) = localtime(time);
 	$year += 1900; #stupid Perl
@@ -38,9 +24,6 @@ if ($$THEME{isZen}) {
 	\t\t\t&lt;li&gt;[Nodeshells Marked For Destruction|Nodeshells]&lt;/li&gt;
 	\t\t\t&lt;li&gt;[Recent Node Notes]&lt;/li&gt;
 	\t\t\t&lt;li&gt;[Your insured writeups]&lt;/li&gt;
-	\t\t\t&lt;li&gt;&quot;.
-		linkNode($NODE, &quot;Make $votable&quot;, $flagHash)
-		.&quot;&lt;/li&gt;
         \t\t\t&lt;li&gt;&quot;.
                 linkNode(getNode(&quot;Node Parameter Editor&quot;,&quot;oppressor_superdoc&quot;),&quot;Parameter Editor&quot;, {for_node =&gt; $$NODE{node_id}})
                 .&quot;&lt;/li&gt;
@@ -182,11 +165,6 @@ $str.='&amp;#91;&lt;tt&gt; '.linkNode($NODE,$plusMinus,{$param =&gt;$switchModes
 			else { #prepare for submenu
 				$str.=' &lt;b&gt;'.$subvalue.'&lt;/b&gt; ';
 				if (!$oldway) { $str.='&lt;ul style=&quot;margin:0;padding:0 0 0 25px&quot;&gt;';}
-				if (($subvalue eq 'Of Nodes')&amp;&amp;($$NODE{type}{title} eq 'writeup')) {
-					$str .= &quot;&lt;li&gt;&lt;small&gt;&quot;
-						. linkNode($NODE,&quot;Make $votable&quot;,$flagHash)
-						. &quot;&lt;/small&gt;&lt;/li&gt;&quot;;
-				}
 			}
 		}
 		else {

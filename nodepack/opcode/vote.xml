@@ -8,15 +8,12 @@ return if $APP-&gt;isGuest($USER);
 my @params = $query-&gt;param;
 my $defID = getId(getNode('definition','writeuptype')) || 0;
 
-my $unVotable = getVars(getNode('boring heaven nodes', 'setting'));
-
 #See [E2 Options: Declining vote XP]
 $$VARS{noVoteXP} ||= 0;
 
 my $UID = getId($USER) || 0;
 
 my $oldXP = $$USER{experience};
-my $t;
 my $prev_uid = 0;
 my $numTimes=0;
 my $VSETTINGS = getVars(getNode('vote settings', 'setting'));
@@ -36,16 +33,9 @@ foreach (@params) {
   next unless $$N{type}{title} eq 'writeup' ;
   next if $$N{author_user} == $UID;
   next if $$N{wrtype_writeuptype}==$defID;
-  #next if hasVoted($N, $USER);
 
-  #don't allow voting on maintenance WUs
-  $t=$$N{title};
-  if ($t =~ /^(.*?) \(\w+\)$/) {
-    $t=$1;
-  }
-  $t =~ s/\s/_/g;
-  if ($$unVotable{lc($t)}) {
-    htmlcode('logWarning',getId($N).',vote: attempt on maintenance: '.$val.' from '.$UID);
+  if ( $APP-&gt;isUnvotable($N) ) {
+    htmlcode('logWarning',getId($N).',vote: attempt on disallowed node: '.$val.' from '.$UID);
     next;
   }
 

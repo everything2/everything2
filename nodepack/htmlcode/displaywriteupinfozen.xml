@@ -143,22 +143,6 @@ my $tRowClose = &quot;&lt;/tr&gt;&lt;/table&gt;\n&quot;;
 # subs
 #
 
-#update: only used 1 place, so rather pointless - N-Wing
-##test for WU being votable or C!able
-#my $mayVote=undef;
-local *isVotable = sub {
-	return 1;
-#	return $mayVote if defined $mayVote;	#already known, use cached value
-#	my $unVotable = getVars(getNode('boring heaven nodes','setting'));
-#	$t = $$WRITEUP{title};
-#	$t =~ s/\s/_/g;
-#	$t =~ s/_\(.*?\)^//;	#get rid of &quot; (thing)&quot;
-#	$mayVote = (exists $$unVotable{$t}) &amp;&amp; $$unVotable{$t};
-#	return $mayVote;
-};
-
-
-
 #links to the current WU, showing the given text
 #does NOT create softlink, since they are useless between e2node and writeup
 local *linkWU = sub {
@@ -198,7 +182,6 @@ local *info_kill = sub {
 };
 
 local *info_vote = sub {
-	return unless isVotable();
 	$t = htmlcode('voteit',$wuID.',2');
 	return unless((defined $t) &amp;&amp; length($t));
 	$specialDisplays-&gt;{$fnName} = '';

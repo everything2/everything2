@@ -33,14 +33,7 @@ my $nolbl = $$votesettings{nullLabel} || 'none';
 
 my $novotereason = '';
 $novotereason = 'this writeup is a definition' if $$N{wrtype_writeuptype} eq getId(getNode('definition', 'writeuptype')) ;
-$novotereason = 'voting has been disabled for this writeup' if htmlcode('flagged',$n.',unvotable');
-
-foreach (values %HTMLVARS) {
-	if ($$N{parent_e2node} eq $_) {
-		$novotereason = 'this is a maintenance node' ;
-		last ;
-	}
-}
+$novotereason = 'voting has been disabled for this writeup' if $APP-&gt;isUnvotable($N);
 
 my $votestr = '';
 $votestr = '&amp;nbsp; ' if $edstr ;

@@ -5,7 +5,7 @@ my $isGuest = $APP-&gt;isGuest($USER);
 return &quot;&lt;p&gt;Undifferentiated from the masses of the streets, you fall between the cracks yourself.&lt;/p&gt;&quot; if $isGuest;
 
 my $rowCtr = 0;
-my $unVotable = getVars(getNode('boring heaven nodes', 'setting'));
+
 my ($title, $queryText, $rows);
 my $count = 1000;
 my $maxVotes = int($query-&gt;param(&quot;mv&quot;));
@@ -106,7 +106,7 @@ while(my $wu = $rows-&gt;fetchrow_hashref)
    $title = $$wu{title};
    if($title =~ /^(.*?) \([\w-]+\)$/) { $title = $1; }
    $title =~ s/\s/_/g;
-   if (!$$unVotable{lc($title)} &amp;&amp; !htmlcode('flagged', $$wu{writeup_id}, 'unvotable'))
+   if ( !$APP-&gt;isUnvotable($$wu{writeup_id}) )
    {
       $rowCtr++;
       if ($rowCtr % 2 == 0)
@@ -135,8 +135,7 @@ $str .= '&lt;/table&gt;
    &lt;p style=&quot;text-align:right&quot;&gt;Bugs to [in10se]&lt;/p&gt;';
 
 return $str;
-%]
-</doctext>
+%]</doctext>
   <node_id>1927770</node_id>
   <title>Between the Cracks</title>
 </node>
