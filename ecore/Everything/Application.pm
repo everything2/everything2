@@ -1378,4 +1378,32 @@ sub isMaintenanceNode
 	}
 }
 
+sub getMaintenanceNodesForUser
+{
+	my ($this, $user) = @_;
+
+	my $uid = $user;
+	if(ref $user ne "")
+	{
+		$uid = $user->{node_id};
+	}
+
+	my $maint_nodes;
+	foreach my $val (values %{$Everything::CONF->{system}->{maintenance_nodes}} )
+	{
+		my $node = $this->{db}->getNodeById($val);
+		next unless $$node{'group'};
+
+		my $wu_ids = $$node{'group'};
+
+		my $numwus = scalar @$wu_ids;
+		foreach my $wu_id (@$wu_ids) {
+			my $wu = $this->{db}->getNodeById($wu_id);
+			$maint_nodes->{$wu_id} = 1 if defined($wu->{author_user}) and $uid == $$wu{'author_user'};
+		}
+	}
+
+	return [keys %$maint_nodes];
+}
+
 1;
