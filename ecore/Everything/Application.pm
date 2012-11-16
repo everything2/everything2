@@ -1351,4 +1351,31 @@ sub isUnvotable
 	}
 }
 
+sub isMaintenanceNode
+{
+	my ($this, $node) = @_;
+
+	if(ref $node eq "")
+	{
+		$node = $this->{db}->getNodeById($node);
+	}
+
+	return unless $node;
+	return unless $node->{type}->{title} eq "e2node" or $node->{type}->{title} eq "writeup";
+
+	my $maintenance_nodes = [values %{$this->{conf}->{system}->{maintenance_nodes}}];
+
+	if($node->{type}->{title} eq "writeup")
+	{
+		if(grep {$_ == $node->{node_id}} @$maintenance_nodes)
+		{
+			return 1;
+		}else{
+			return $this->isMaintenanceNode($node->{parent_e2node});
+		}
+	}else{
+		return (grep {$_ == $node->{node_id}} @$maintenance_nodes);
+	}
+}
+
 1;
