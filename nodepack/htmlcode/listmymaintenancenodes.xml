@@ -7,10 +7,9 @@
 $uid = $$NODE{node_id} unless $uid;
 
 my %maint_nodes;
-foreach my $val (values %HTMLVARS) {
+foreach my $val (values %{$Everything::CONF-&gt;{system}-&gt;{maintenance_nodes}} ) {
 
   #Gotta run some checks to see that it really is a maintenance node.
-  next unless $val =~ /^\d*$/;
   my $node = getNodeById($val);
   next unless ($$node{'type'} -&gt; {'title'}) eq 'e2node';
   next unless $$node{'group'};

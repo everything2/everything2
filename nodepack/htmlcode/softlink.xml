@@ -20,8 +20,8 @@ else {
 }
 
 my %unlinkables;
-foreach(keys %HTMLVARS) {
-	$unlinkables{$HTMLVARS{$_}} = 1;
+foreach( values %{$Everything::CONF-&gt;{system}-&gt;{maintenance_nodes}} ) {
+	$unlinkables{$_} = 1;
 }
 return if $unlinkables{ $$N{node_id} };
 
@@ -203,6 +203,5 @@ if($cantrim) {
 }
 
 return $str if exists $$THEME{noThinOutline};
-containHtml('thin outline container', $str);
-</code>
+containHtml('thin outline container', $str);</code>
 </node>
