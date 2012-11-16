@@ -31,7 +31,7 @@ unless ($query-&gt;param('fall')){
 }
 
 my $noBoring = $query -&gt; param('noBoring');
-my $boring = getVars(getNode('boring heaven nodes', 'setting'));
+my $boring = $Everything::CONF-&gt;{system}-&gt;{maintenance_nodes};
 
 my $host = $DB-&gt;sqlSelectMany('*', 'heaven',
 	&quot;author_user=$$USER{node_id} AND type_nodetype=117&quot;);
@@ -241,7 +241,7 @@ $str .= &quot;&lt;/tr&gt;\n&quot;;
 
 my $count;
 my $T = getNode('Node Heaven Visitation', 'superdoc');
-my $boring = getVars(getNode('boring heaven nodes', 'setting'));
+my $boring = $Everything::CONF-&gt;{system}-&gt;{maintenance_nodes};
 
 
 
@@ -274,8 +274,7 @@ $str .= &quot;&lt;/table&gt;\n&quot;;
 $count ||= &quot;0&quot;;
 
 $allCount . ' deleted writeups total, ' . $count . &quot; shown&lt;br /&gt;\n&quot; . $str;
-%]
-</doctext>
+%]</doctext>
   <node_id>790613</node_id>
   <title>Node Heaven</title>
 </node>

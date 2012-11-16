@@ -53,9 +53,7 @@ foreach $nid (@list){
 	next if getVars($aid) -&gt; {no_notify_kill}; # author doesn't want msg
 
 	unless ($reason){# no msg for maintenance stuff, unless there is a reason
-		my $t = lc $title;
-		$t =~ s/ /_/g;
-		next if getVars(getNode('boring heaven nodes', 'setting')) -&gt; {$t};
+		next if $APP-&gt;isMaintenanceNode($N);
 	}
 
 	$reason = &quot;: $reason&quot; if $reason;
