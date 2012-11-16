@@ -53,9 +53,7 @@ unless ($$WRTYPE{title} eq 'lede'){
 }
 
 # No XP, writeup count, notifications or achievement for maintenance nodes
-my $t = lc($$E2NODE{title});
-$t =~ s/\s/_/g;
-if (getVars(getNode('boring heaven nodes', 'setting')) -&gt; {$t}){
+if ( $APP-&gt;isMaintenanceNode($E2NODE) ){
 	recordUserAction('createwriteupemaintenance', $$WRITEUP{node_id}, $$E2NODE{node_id});
 	return;
 }

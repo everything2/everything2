@@ -5,10 +5,6 @@
     <key>roomTextboxLevel</key>
   </vars>
   <vars>
-    <value>365128</value>
-    <key>Createanode</key>
-  </vars>
-  <vars>
     <value>197</value>
     <key>create_node</key>
   </vars>
@@ -25,10 +21,6 @@
     <key>writeuplowrepthreshold</key>
   </vars>
   <vars>
-    <value>recently c!ed nodes from Everything2.com</value>
-    <key>headlines_description</key>
-  </vars>
-  <vars>
     <value>124</value>
     <key>default_node</key>
   </vars>
@@ -37,12 +29,12 @@
     <key>default_nodeletgroup</key>
   </vars>
   <vars>
-    <value>855769</value>
-    <key>NodeRow</key>
-  </vars>
-  <vars>
     <value>884776</value>
     <key>killing_floor</key>
+  </vars>
+  <vars>
+    <value>855769</value>
+    <key>NodeRow</key>
   </vars>
   <vars>
     <value>993891</value>
@@ -61,16 +53,16 @@
     <key>stylesheetFixLevel</key>
   </vars>
   <vars>
-    <value>444250</value>
-    <key>UserSearch</key>
-  </vars>
-  <vars>
     <value>http://everything2.com/</value>
     <key>site_url</key>
   </vars>
   <vars>
     <value>407437</value>
     <key>EverythingQuoteServer</key>
+  </vars>
+  <vars>
+    <value>444250</value>
+    <key>UserSearch</key>
   </vars>
   <vars>
     <value>165580</value>
@@ -109,10 +101,6 @@
     <key>E2_Bugs</key>
   </vars>
   <vars>
-    <value>379710</value>
-    <key>Broken_nodes</key>
-  </vars>
-  <vars>
     <value>1428471</value>
     <key>title_edit_longterm</key>
   </vars>
@@ -135,10 +123,6 @@
   <vars>
     <value>166948</value>
     <key>generalParent_container</key>
-  </vars>
-  <vars>
-    <value>529746</value>
-    <key>CoolArchive</key>
   </vars>
   <vars>
     <value>104</value>

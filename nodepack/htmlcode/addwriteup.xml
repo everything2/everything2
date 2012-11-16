@@ -4,8 +4,7 @@
   <title>addwriteup</title>
   <code>my $canPublishDirectly = 2; # this level doesn't have to create draft first
 
-if (getVars(getNode('boring heaven nodes', 'setting')) -&gt; {$$NODE{title}}){
-	$HTMLVARS{isMaintenance} = 1;
+if ( $APP-&gt;isMaintenanceNode($NODE) ){
 	$canPublishDirectly = -1;
 }
 

@@ -15,11 +15,7 @@ my ($title, $noexp) = ($$wu{title}, 0);
 my $E2NODE = getNodeById($$wu{parent_e2node});
 
 if ($E2NODE){
-	$title = $$E2NODE{title};
-
-	my $t = lc($title);
-	$t =~ s/\s/_/g;
-	$noexp = getVars(getNode('boring heaven nodes', 'setting')) -&gt; {$t};
+	$noexp = $APP-&gt;isMaintenanceNode($E2NODE);
 }elsif ($title =~ / \((\w+)\)$/ and getNode($1, 'writeuptype')){
 	$title =~ s/ \((\w+)\)$//;
 }

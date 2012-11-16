@@ -20,7 +20,7 @@ unless ($type){
 	$title ||= $$NODE{title};
 	return $query -&gt; hidden('writeup_notnew', 1)
 		.'Writeup type: thing; don\'t show in New Writeups nodelet'
-		if getVars(getNode('boring heaven nodes', 'setting')) -&gt; {$title};
+		if $APP-&gt;isMaintenanceNode($NODE);
 
 	if (
 		$title =~ /^(January|February|March|April|May|June|July|August|September|October|November|December) [1-9]\d?, \d+/i ||
@@ -55,8 +55,7 @@ my (@WRTYPE) = getNodeWhere({type_nodetype =&gt; getId(getType('writeuptype'))})
 
 my %items;
 
-my $isEd = exists $HTMLVARS{'group_content editors'}{getId($USER)} ||
-	exists $HTMLVARS{'group_gods'}{getId($USER)} ||
+my $isEd = $APP-&gt;isEditor($USER) ||
 	$$USER{title} eq 'Webster 1913' ||
 	$$USER{title} eq 'Virgil';
 

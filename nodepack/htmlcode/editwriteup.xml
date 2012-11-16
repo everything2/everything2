@@ -46,7 +46,7 @@ $str .= qq'&lt;textarea name=&quot;${type}_doctext&quot; id=&quot;writeup_doctex
 	.$message;
 
 my $setType = &quot;\n&lt;p&gt;&quot;.htmlcode('setwriteuptype', $$N{wrtype_writeuptype}).&quot;&lt;/p&gt;&quot;
-	if $type eq 'writeup' &amp;&amp; !$HTMLVARS{isMaintenance};
+	if $type eq 'writeup' &amp;&amp; !$APP-&gt;isMaintenanceNode($N);
 
 unless ($new){
 	$str .= $setType.$query -&gt; submit('sexisgood', &quot;Update $type&quot;);
@@ -61,7 +61,7 @@ unless ($new){
 	}else{
 		$str .= $query -&gt;submit('sexisgood', 'submit')
 		.' '.(
-		$HTMLVARS{isMaintenance}
+		$APP-&gt;isMaintenanceNode($N)
 		? '(post immediately as maintenance writeup)'
 			.$query -&gt; hidden('type', 'writeup')
 			.$query -&gt; hidden('writeup_notnew', '1')
