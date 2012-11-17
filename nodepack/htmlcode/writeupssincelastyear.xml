@@ -8,7 +8,7 @@
 my $notIn = &quot; AND node.node_id NOT IN (&quot;;
 my $firstIn = 1;
 
-foreach (values %{$Everything::CONF-&gt;{system}-&gt;{maintenance_nodes} ) {
+foreach (values %{$Everything::CONF-&gt;{system}-&gt;{maintenance_nodes}} ) {
 
   # Look for numbers, and presume all numbers are node IDs
   next unless /^\d+$/;

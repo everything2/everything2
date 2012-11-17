@@ -10,7 +10,7 @@ if ($query-&gt;param(&quot;op&quot;) eq &quot;login&quot;)
 my @thingys = ();
 my $votesLeftStr = &quot;&quot;;
 
-my $isRoot = htmlcode('isAdmin');
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $isEd = $APP-&gt;isEditor($USER);
 
 

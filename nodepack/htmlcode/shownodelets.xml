@@ -42,15 +42,11 @@ my $isZen = htmlcode('isZen','');
 if ( ($$VARS{nodelet_tabs}) &amp;&amp; ($isZen) &amp;&amp; ($$VARS{userstyle}==1854354) ) {
 	my $specialStr;
 
-	my $UID = $$USER{user_id};
-	my $isAdmin = exists $HTMLVARS{'group_gods'}{$UID};
-	my $isCE = $isAdmin || exists $HTMLVARS{'group_content editors'}{$UID};
-
 	my $curr = $$VARS{current_nodelet};
 	my $currNodelet;
 
 	my @nodelets = split(',',$$VARS{nodelets});
-	if ($isCE) {
+	if ($APP-&gt;isEditor($USER) ) {
 		my $nl = getNode('Master Control','nodelet');
 		unshift(@nodelets, getId($nl));
 	}

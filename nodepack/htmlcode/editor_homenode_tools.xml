@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>2007364</node_id>
   <title>editor homenode tools</title>
-  <code>my $isRoot = htmlcode('isAdmin');
+  <code>my $isRoot = $APP-&gt;isAdmin;
 my $isEditor = $APP-&gt;isEditor($USER);
 my $targetVars = getVars $NODE;
 my $iph = getNode('IP Hunter', 'restricted_superdoc');

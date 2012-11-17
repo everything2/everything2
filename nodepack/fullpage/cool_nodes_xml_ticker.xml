@@ -1,7 +1,8 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Sat Nov 17 19:20:08 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
-	&lt;cooled cooledby_user=&quot;Demeter&quot; node_id=&quot;2071951&quot; parent_e2node=&quot;134117&quot; author_user=&quot;Oolong&quot;&gt;privilege&lt;/cooled&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Sat Nov 17 19:40:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Auspice&quot; node_id=&quot;2071951&quot; parent_e2node=&quot;134117&quot; author_user=&quot;Oolong&quot;&gt;privilege&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;gnarl&quot; node_id=&quot;2073266&quot; parent_e2node=&quot;2073257&quot; author_user=&quot;Hazelnut&quot;&gt;Police &amp; Crime Commissioners Election, 2012&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Hazelnut&quot; node_id=&quot;2048759&quot; parent_e2node=&quot;2048752&quot; author_user=&quot;Glowing Fish&quot;&gt;Magic: The Gathering: Shattered Chains&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;1077198&quot; parent_e2node=&quot;1077187&quot; author_user=&quot;JyZude&quot;&gt;Cosmic Insignificance and You&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2057885&quot; parent_e2node=&quot;1439849&quot; author_user=&quot;borgo&quot;&gt;Iraq War&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;kanoodle&quot; node_id=&quot;1281337&quot; parent_e2node=&quot;1281301&quot; author_user=&quot;iceowl&quot;&gt;You are not special. You will die here, too.&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;2073086&quot; parent_e2node=&quot;2073085&quot; author_user=&quot;Auspice&quot;&gt;The ribs of a seagull and the eastern view&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Chras4&quot; node_id=&quot;1217888&quot; parent_e2node=&quot;1217885&quot; author_user=&quot;junkpile&quot;&gt;Around nine PM my heart was breaking so I went to bed early to listen to it happen.&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Transitional Man&quot; node_id=&quot;2073211&quot; parent_e2node=&quot;15121&quot; author_user=&quot;riverrun&quot;&gt;Lincoln&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>
