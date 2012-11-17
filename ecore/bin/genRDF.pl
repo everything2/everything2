@@ -16,9 +16,6 @@ my $numnodes = 12;
 
 initEverything 'everything';
 my $XMLGEN = new XML::Generator;
-my $SNODE = getNode 'system settings', 'setting';
-my $SETTINGS = getVars $SNODE;
-
 
 sub genTag { Everything::XML::genTag(@_); }
 
@@ -26,14 +23,14 @@ sub genTag { Everything::XML::genTag(@_); }
 #first the channel tag
 my $doc = ""; 
 
-my $url = $$SETTINGS{site_url};
+my $url = $Everything::CONF->{system}->{site_url};
 
 $url .= "/" unless $url =~ /\/$/;
 
 $doc .= $XMLGEN->channel(
-	"\n\t".genTag("title", $$SETTINGS{site_name}) .
+	"\n\t".genTag("title", $Everything::CONF->{system}->{site_name}) .
 	"\t".genTag("link", $url) .
-	"\t".genTag("description", $$SETTINGS{site_description})
+	"\t".genTag("description", $Everything::CONF->{system}->{site_description})
 	)."\n";
 
 foreach (@types) {
@@ -61,11 +58,4 @@ xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 xmlns="http://my.netscape.com/rdf/simple/0.9/">';
 print "\n".$doc."\n";
 print '</rdf:RDF>';
-
-
-
-
-
-
-
 
