@@ -37,13 +37,7 @@ foreach $nid (@deathrow) {
          my $parentID = $$N{parent_e2node};
 	my $amount = -5;
          my $noexp = 0;
-
-         foreach (values %HTMLVARS) {
-            if ($parentID eq $_) {
-               $noexp = 1;
-               last;
-            }
-         }
+         $noexp = 1 if $APP-&gt;isMaintenanceNode($N);
 
          unless($noexp)
          {
