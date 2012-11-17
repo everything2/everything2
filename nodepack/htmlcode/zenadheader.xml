@@ -2,10 +2,10 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1950676</node_id>
   <title>zenadheader</title>
-  <code>return &quot;&lt;!-- noad:vars --&gt;&quot; unless $$VARS{zenadinheader};
-my $SETTINGS = getVars(getNode('system settings','setting'));
-my $ad_text = '';
-if ($$SETTINGS{ad_location} eq 'header' &amp;&amp; $APP-&gt;isGuest($USER) ) {
+  <code>my $ad_text;
+
+if($APP-&gt;isGuest($USER)) 
+{
   $ad_text = htmlcode( 'googleads' );
   $ad_text = '&lt;div class=&quot;headerads&quot;&gt;'.$ad_text.'&lt;/div&gt;' if $ad_text;
 }else{

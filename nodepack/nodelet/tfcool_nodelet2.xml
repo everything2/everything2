@@ -43,9 +43,9 @@ while (my $CW = $csr-&gt;fetchrow_hashref()) {
        ;
   $count++;
 }
-my $SETTINGS = getVars(getNode('system settings','setting'));
+
 $xml = $XG-&gt;COOLEDNODES(
-   $XG-&gt;INFO({site =&gt; $$SETTINGS{site_url}, sitename =&gt; $$SETTINGS{site_name},  servertime =&gt; scalar(localtime(time))}, 'Rendered by the Cool Nodes XML Ticker')
+   $XG-&gt;INFO({site =&gt; $Everything::CONF-&gt;{system}-&gt;{site_url}, sitename =&gt; $Everything::CONF-&gt;{system}-&gt;{site_name},  servertime =&gt; scalar(localtime(time))}, 'Rendered by the Cool Nodes XML Ticker')
    . &quot;\n&quot;.$xml . &quot;\n&quot;);
 
 my $XNODE = getNode('cool nodes XML ticker', 'fullpage');
