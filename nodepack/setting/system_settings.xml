@@ -13,10 +13,6 @@
     <key>imageroot</key>
   </vars>
   <vars>
-    <value>839239</value>
-    <key>coolmaneddie</key>
-  </vars>
-  <vars>
     <value>-8</value>
     <key>writeuplowrepthreshold</key>
   </vars>
@@ -31,10 +27,6 @@
   <vars>
     <value>884776</value>
     <key>killing_floor</key>
-  </vars>
-  <vars>
-    <value>855769</value>
-    <key>NodeRow</key>
   </vars>
   <vars>
     <value>993891</value>
@@ -53,22 +45,6 @@
     <key>site_url</key>
   </vars>
   <vars>
-    <value>407437</value>
-    <key>EverythingQuoteServer</key>
-  </vars>
-  <vars>
-    <value>444250</value>
-    <key>UserSearch</key>
-  </vars>
-  <vars>
-    <value>165580</value>
-    <key>NewsForNoders</key>
-  </vars>
-  <vars>
-    <value>171917</value>
-    <key>Nuke_a_Node</key>
-  </vars>
-  <vars>
     <value>382987</value>
     <key>duplicatesFound_node</key>
   </vars>
@@ -77,28 +53,20 @@
     <key>title_edit</key>
   </vars>
   <vars>
-    <value>779713</value>
-    <key>guest_user</key>
-  </vars>
-  <vars>
     <value>1140332</value>
     <key>searchResults_node</key>
   </vars>
   <vars>
-    <value>368049</value>
-    <key>SuggestionsforE2</key>
-  </vars>
-  <vars>
-    <value>596824</value>
-    <key>NodeshellsMarkedForDestruction</key>
-  </vars>
-  <vars>
-    <value>1428471</value>
-    <key>title_edit_longterm</key>
+    <value>779713</value>
+    <key>guest_user</key>
   </vars>
   <vars>
     <value>668164</value>
     <key>notFound_node</key>
+  </vars>
+  <vars>
+    <value>1428471</value>
+    <key>title_edit_longterm</key>
   </vars>
   <vars>
     <value>1948165</value>
@@ -125,14 +93,6 @@
     <key>gods</key>
   </vars>
   <vars>
-    <value>790613</value>
-    <key>NodeHeaven</key>
-  </vars>
-  <vars>
-    <value>891793</value>
-    <key>MessageInbox</key>
-  </vars>
-  <vars>
     <value>169667</value>
     <key>pageOfCool_node</key>
   </vars>
@@ -147,14 +107,6 @@
   <vars>
     <value>635063</value>
     <key>e2n</key>
-  </vars>
-  <vars>
-    <value>141</value>
-    <key>Everythings_Best_Users</key>
-  </vars>
-  <vars>
-    <value>header</value>
-    <key>ad_location</key>
   </vars>
   <vars>
     <value>5</value>

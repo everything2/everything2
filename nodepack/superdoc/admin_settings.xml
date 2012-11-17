@@ -13,8 +13,7 @@ htmlcode('openform', -id =&gt; 'pagebody');
 
 #editor options
 
-my $UID = getId($USER);
-return unless ((exists $HTMLVARS{'group_content editors'}{$UID}) || (exists $HTMLVARS{'group_gods'}{$UID}));
+return unless $APP-&gt;isEditor($USER);
 my $nl = &quot;&lt;br /&gt;\n&quot;;
 my $str = &quot;&lt;p&gt;&lt;strong&gt;Editor Stuff&lt;/strong&gt;\n&quot;;
 
@@ -22,17 +21,13 @@ $str .= $nl . htmlcode('varcheckbox','killfloor_showlinks,Add HTML in the killin
 
 $str .= $nl . htmlcode('varcheckbox','hidenodenotes,Hide Node Notes');
 
-$str .= $nl . htmlcode('varcheckbox', 'episection_classic,Use classic (i.e. non-collapsible) editor nodelet section.') unless htmlcode('isZen');
-
 $str . '&lt;/p&gt;';
 %]
 
 
 [%
 #macro setup
-
-my $uid = getId($USER);
-return unless ((exists $HTMLVARS{'group_content editors'}{$uid}) || (exists $HTMLVARS{'group_gods'}{$uid}));
+return unless $APP-&gt;isEditor($USER);
 my $f = $query-&gt;param('sexisgood'); #end of form indicator
 my $l=768; #max length of each macro
 

@@ -2,187 +2,32 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1129970</node_id>
   <title>episection_ces</title>
-  <code>if ($$THEME{isZen}) {
-
-	my (undef,undef,undef,$mday,$mon,$year) = localtime(time);
-	$year += 1900; #stupid Perl
-	my @months = qw(January February March April May June July August September October November December);
-	my $curLog = '[Editor Log: '.$months[$mon].&quot; $year]&quot;;
-
-	# Link The Oracle sent with the username iff displaying a homenode
-	my $oraclecode .= $query -&gt; li(
-		linkNode(getNode('The Oracle', 'oppressor_superdoc')
-			, &quot;The Oracle&quot;
-			, {the_oracle_subject =&gt; $$NODE{title}}
-		))
-		if $$NODE{type}{title} eq 'user';
-
-	return parseLinks(&quot;\t\t&lt;ul&gt;
-	\t\t\t&lt;li&gt;[Drafts for review[superdoc]]&lt;/li&gt;
-	\t\t\t&lt;li&gt;[25] | [Everything New Nodes]&lt;/li&gt;
-	\t\t\t&lt;li&gt;[E2 Nuke Request]&lt;/li&gt;
-	\t\t\t&lt;li&gt;[Nodeshells Marked For Destruction|Nodeshells]&lt;/li&gt;
-	\t\t\t&lt;li&gt;[Recent Node Notes]&lt;/li&gt;
-	\t\t\t&lt;li&gt;[Your insured writeups]&lt;/li&gt;
-        \t\t\t&lt;li&gt;&quot;.
-                linkNode(getNode(&quot;Node Parameter Editor&quot;,&quot;oppressor_superdoc&quot;),&quot;Parameter Editor&quot;, {for_node =&gt; $$NODE{node_id}})
-                .&quot;&lt;/li&gt;
-	\t\t\t&lt;li&gt;[Blind Voting Booth]&lt;/li&gt;
-	\t\t\t&lt;li&gt;[usergroup discussions|Group discussions]&lt;/li&gt;
-	\t\t\t&lt;li&gt;$curLog&lt;/li&gt;
-	$oraclecode
-	\t\t&lt;/ul&gt;&quot;);
-
-}
-
-
-
-my $oldway = $$VARS{episection_classic};
-
-# linkgroups is an array of hashes for the collapsible menu. There are two
-# different possible menu headers: titles with sublinks, or links in and of 
-# themselves. For titles with sublinks, you must lead with a hash containing a
-# -varname- key (for the $$VARS variable indicating whether to show the dropdown 
-# menu or not) and the -title- itself, followed by a hash containing the links.
-
-# To link to a node TITLE, the key should be the actual link itself (i.e. what 
-# shows up on the user's screen) and the value should be the node title to be 
-# linked. To link to a node ID, the  method is the same. In the unlikely event 
-# you want to link to a node TITLE that is also a number, simply put a space in 
-# front of the number, and let E2's searching parser do the work.
-
-# For standalone link headers, simply include a -title- key and value (if you 
-# want a pipelink, make the title like so: 'Destination|Pipe'.) and another key, # -link-, set to 1.
-
-# The Editor Logs must be &quot;calculated&quot; and therefore are put into their own 
-# array called MYLOGHASH, which is then tacked on inside the actual Linkgroups 
-# array later.
-
-my $nl = &quot;&lt;br /&gt;\n&quot;;
-
-my @myloghash = ({varname=&gt; 'celogs', title =&gt; 'CE Logs'});
-
+  <code>my (undef,undef,undef,$mday,$mon,$year) = localtime(time);
+$year += 1900; #stupid Perl
 my @months = qw(January February March April May June July August September October November December);
-my @mnths = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
-my ($mday,$mon,$year);
+my $curLog = '[Editor Log: '.$months[$mon].&quot; $year]&quot;;
 
-# USAGE: otherMonth(x) where x is number of months away from current month. X 
-# must be integer; can be negative, positive, or 0.
-local *otherMonth = sub {
-	(undef,undef,undef,$mday,$mon,$year) = localtime(time);
-	$year+=1900; #stupid Perl
-	local $a = $_[0];
-	$mon=$mon+$a;
-	if ($mon&gt;11) {
-		$mon=$mon-12;
-		$year++;
-	}
-	if ($mon&lt;0) {
-		$mon=$mon+12;
-		$year--;
-	}
-	push @myloghash, {$mnths[$mon] , 'Editor Log: '.$months[$mon].' '.
-$year};
-};
+# Link The Oracle sent with the username iff displaying a homenode
+my $oraclecode .= $query -&gt; li(
+	linkNode(getNode('The Oracle', 'oppressor_superdoc')
+		, &quot;The Oracle&quot;
+		, {the_oracle_subject =&gt; $$NODE{title}}
+	))
+	if $$NODE{type}{title} eq 'user';
 
-otherMonth(-1); #last month's ed log
-otherMonth(0); # this month's ed log
-otherMonth(1); # next month's ed log
-
-my @linkgroups = (
-	{varname=&gt; 'newwu', title =&gt;'New Writeups'},
-	{25 =&gt; ' 25',   # note space at beginning of value to link title, not ID
-	 '100' =&gt; 'Everything New Nodes',
-	 '200' =&gt; 'E2N',
-	 '300' =&gt; 'ENN'},
-
-	{varname=&gt; 'nukeedit', title =&gt; 'Nuke/Edit'},
-	{'WUs' =&gt; 'E2 Nuke Request',
-	 nodeshells =&gt; getNodeById($HTMLVARS{'NodeshellsMarkedForDestruction'})-&gt;{group}[0],
-	 titles =&gt; getNodeById($HTMLVARS{'title_edit'})-&gt;{group}[1]},
-
-	{varname=&gt; 'ofnodes', title =&gt; &quot;Of Nodes&quot;},
-	{'Node Row' =&gt; 'Node Row',
-	 'Broken' =&gt; 'Broken Nodes',
-	 'Notes' =&gt; 'Recent Node Notes',
-	 'Insured' =&gt; 'Your insured writeups',
-	 Collab =&gt; 'E2 Collaboration Nodes'},
-
-@myloghash, # Editor Logs
-
-	{varname=&gt; 'voting', title =&gt; 'Voting'},
-	{'Blind Voting' =&gt; 'Blind Voting Booth'},
-
-	{title =&gt; 'usergroup discussions|Group discussions', link =&gt;1},
-	{title =&gt; 'E2 Editor Doc|CE HOWTO', link =&gt;1},
-	{title =&gt; 'The Oracle', link =&gt;1}
-	
-);
-
-local *isnumeric = sub {    
-    my ($tempnum) = @_;    
-    my $isnum = 0;    
-    if (!($tempnum =~ /[^eE0-9\-\+\.]/))    
-    {        
-	$isnum = 1;    
-    }    
-    return $isnum;
-};
-
-my ($param, $v);
-my $str;
-my $showContent = $oldway;
-foreach my $tempref (@linkgroups) {
-	while ( my ($subkey, $subvalue) = each(%{$tempref}) ) {
-		next if ($subkey eq &quot;link&quot;);
-		$str.=$nl, next if ($subkey eq &quot;varname&quot;)&amp;&amp;($oldway);
-		if ($subkey eq &quot;varname&quot;) { #create expand-o-link
-			if (!exists($tempref-&gt;{link})&amp;&amp;(defined($param))) {
-				$str.='&lt;/ul&gt;';
-			}
-			$param='ce_hide'.$subvalue;
-			if((defined ($v=$query-&gt;param($param)))) {
-				if($v) {$$VARS{$param}=1;}
-				else   {delete $$VARS{$param};}
-			}
-
-			$showContent = !((defined $VARS-&gt;{$param}) &amp;&amp; $VARS-&gt;{$param});
-my $switchModes = $showContent ? '1' : '0';
-			my $plusMinus = ($showContent ? '-' : '+');
-			my $expandCollapse = ($showContent ? 'collapse' : 'expand');
-$str.='&amp;#91;&lt;tt&gt; '.linkNode($NODE,$plusMinus,{$param =&gt;$switchModes, lastnode_id =&gt; 0}).' &lt;/tt&gt;]';
-		}
-		elsif ($subkey eq &quot;title&quot;) {
-			if (exists($tempref-&gt;{link})) { # no submenu
-				if (defined($param)) {
-					$str.='&lt;/ul&gt;';
-					undef($param);
-				}
-				$str.=$nl if $oldway;
-				$str.='&lt;b&gt;'.linkNodeTitle($subvalue).'&lt;/b&gt;';
-				$str.=$nl if (!$oldway);
-			}
-			else { #prepare for submenu
-				$str.=' &lt;b&gt;'.$subvalue.'&lt;/b&gt; ';
-				if (!$oldway) { $str.='&lt;ul style=&quot;margin:0;padding:0 0 0 25px&quot;&gt;';}
-			}
-		}
-		else {
-if ($showContent) { #show submenu
-
-			if (isnumeric($subvalue))  { #link to node ID
-				$str.=($oldway ? &quot;&lt;small&gt;&quot; : '&lt;li&gt;&lt;small&gt;').linkNode($subvalue, $subkey, {lastnode_id =&gt;0}).($oldway ? '&lt;/small&gt; ' : '&lt;/small&gt;&lt;/li&gt;');
-			}
-			else { #link to node TITLE
-
-$str.=($oldway ? '&lt;small&gt;' : '&lt;li&gt;&lt;small&gt;').linkNodeTitle($subvalue.'|'.$subkey).($oldway ? '&lt;/small&gt; ' : '&lt;/small&gt;&lt;/li&gt;');
-			}	
-		}
-}
-	}
-}
-	
-#show nodelet part
-return $str;
-</code>
+return parseLinks(&quot;\t\t&lt;ul&gt;
+\t\t\t&lt;li&gt;[Drafts for review[superdoc]]&lt;/li&gt;
+\t\t\t&lt;li&gt;[25] | [Everything New Nodes]&lt;/li&gt;
+\t\t\t&lt;li&gt;[E2 Nuke Request]&lt;/li&gt;
+\t\t\t&lt;li&gt;[Nodeshells Marked For Destruction|Nodeshells]&lt;/li&gt;
+\t\t\t&lt;li&gt;[Recent Node Notes]&lt;/li&gt;
+\t\t\t&lt;li&gt;[Your insured writeups]&lt;/li&gt;
+\t\t\t&lt;li&gt;&quot;.
+	linkNode(getNode(&quot;Node Parameter Editor&quot;,&quot;oppressor_superdoc&quot;),&quot;Parameter Editor&quot;, {for_node =&gt; $$NODE{node_id}})
+		.&quot;&lt;/li&gt;
+\t\t\t&lt;li&gt;[Blind Voting Booth]&lt;/li&gt;
+\t\t\t&lt;li&gt;[usergroup discussions|Group discussions]&lt;/li&gt;
+\t\t\t&lt;li&gt;$curLog&lt;/li&gt;
+$oraclecode
+\t\t&lt;/ul&gt;&quot;);</code>
 </node>

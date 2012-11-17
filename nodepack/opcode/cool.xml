@@ -14,7 +14,6 @@ return unless $COOL;
 return unless $$COOL{type}{title} eq 'writeup';
 return if $$COOL{author_user} == $uid;
 return if isSuspended($USER, &quot;cool&quot;);
-return if htmlcode('onNodeRow',$cid);
 
 my $forceAllow = 0;
 return unless $forceAllow || ($$VARS{cools} &gt; 0);
