@@ -42,6 +42,7 @@ default["e2engine"]["system"]["guest_user"] = '779713'
 default["e2engine"]["system"]["site_url"] = 'http://everything2.com'
 default["e2engine"]["system"]["site_description"] = 'Everything2 is a collection of user-submitted writings about more or less everything'
 default["e2engine"]["system"]["site_name"] = 'Everything2'
+default["e2engine"]["system"]["create_new_user"] = '2072173'
 default["e2engine"]["system"]["maintenance_nodes"] = {}
 default["e2engine"]["system"]["maintenance_nodes"]["broken_nodes"] = 379710
 default["e2engine"]["system"]["maintenance_nodes"]["e2_bugs"] = 364471
