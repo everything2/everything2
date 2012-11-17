@@ -12,7 +12,7 @@ padding: 3px;
 my $targetStr = '';
 my ($targetUser, $targetVars);
 
-if (htmlcode('isAdmin', $USER)) {
+if ( $APP-&gt;isAdmin($USER) ) {
    $targetStr .= &quot;&lt;label&gt;Target user:&quot;
       . $query-&gt;textfield(-name =&gt; 'targetUser')
       . &quot;&lt;/label&gt;&lt;br&gt;&quot;

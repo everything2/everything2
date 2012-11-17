@@ -2,7 +2,7 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>2034111</node_id>
   <title>cure_infection</title>
-  <code>return 0 unless htmlcode('isAdmin', $USER) || !htmlcode('verifyRequest', 'cure_infection');
+  <code>return 0 unless $APP-&gt;isAdmin($USER) || !htmlcode('verifyRequest', 'cure_infection');
 
 my $cureUserId = int($query-&gt;param(&quot;cure_user_id&quot;));
 my $cureUser = getNodeById($cureUserId);

@@ -4,7 +4,7 @@
 return 'You must be a logged-in user to use this tool.'
   if $APP-&gt;isGuest($USER);
 
-my $isAdmin = htmlcode('isAdmin', $USER);
+my $isAdmin = $APP-&gt;isAdmin($USER);
 
 my $getRecentBackup = sub {
   my $forUser = shift;

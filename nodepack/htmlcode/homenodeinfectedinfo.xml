@@ -20,7 +20,7 @@ if (htmlcode('isInfected', $NODE)) {
    &lt;/div&gt;
 ENDHTML
 
-   if (htmlcode('isAdmin')) {
+   if ( $APP-&gt;isAdmin($USER) ) {
 
       my $cureHTML = &quot;
         &lt;div&gt;\n&quot;

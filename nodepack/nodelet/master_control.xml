@@ -12,7 +12,7 @@
 # -- N-Wing  Thursday, December 2, 2004
 
 my $UID = $$USER{user_id};
-my $isAdmin = exists $HTMLVARS{'group_gods'}{$UID};
+my $isAdmin = $APP-&gt;isAdmin($USER);
 my $isCE = $APP-&gt;isEditor($USER);
 
 # 'nodelet meta-container' only calls this if user is at least

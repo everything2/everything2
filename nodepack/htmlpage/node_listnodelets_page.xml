@@ -16,9 +16,6 @@ Nodelets
 # Duplicated wholesale from [nodelet meta-container]. This should be refactored,
 # probably much the way it is in pre-1.0
 #
-my $UID = $$USER{user_id};
-my $isAdmin = exists $HTMLVARS{'group_gods'}{$UID};
-my $isCE = $isAdmin || exists $HTMLVARS{'group_content editors'}{$UID};
 
 unless ( $$VARS{nodelets} ) {
 #
@@ -33,7 +30,7 @@ unless ( $$VARS{nodelets} ) {
 }
 
 my $required = getNode('Master Control', 'nodelet') -&gt; { node_id } ;
-if( $isCE ) {
+if( $APP-&gt;isEditor($USER) ) {
   # If Master Control is not in the list of nodelets, add it right at the beginning. 
 	$$VARS{ nodelets } = &quot;$required,&quot;.$$VARS{ nodelets } unless $$VARS{ nodelets } =~ /\b$required\b/ ;
 }else{
