@@ -49,14 +49,8 @@ if($textInHV) {
 	delete $HTMLVARS{writeuphints_text};
 	return unless length($writeup);
 } else {
-	my $N = $NODE;
-	$writeup = $$N{doctext};
-
-	#no hints on maintenance
-	my $pID = $$N{parent_e2node};
-	foreach(values(%HTMLVARS)) {
-		return if $pID eq $_;
-	}
+        return if $APP-&gt;isMaintenanceNode($NODE);
+	$writeup = $$NODE{doctext};
 }
 
 my $c;

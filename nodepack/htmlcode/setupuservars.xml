@@ -18,9 +18,7 @@ unless (exists $$SETTINGS{nwriteupsupdate} and
   my $wherestr = &quot;type_nodetype=$type1
                   AND author_user=$user &quot;;
 
-  $maint_nodes = htmlcode('listMyMaintenanceNodes',$user);
-
-  $maint_nodes =~ s/ /, /g;
+  $maint_nodes = join(&quot;, &quot;, @{$APP-&gt;getMaintenanceNodesForUser($user)} ); 
 
   $wherestr .= &quot; AND node_id NOT IN ($maint_nodes)&quot; if $maint_nodes;
 
@@ -46,20 +44,20 @@ if($$USER{user_id} == $$NODE{user_id})
       next unless $n;
       unless($$n{type}{title} eq &quot;usergroup&quot;)
       {
-          if(exists($HTMLVARS{group_gods}{$$USER{node_id}})){
+          if($APP-&gt;isAdmin($USER) ){
              push @canwl, $_;
           }
 
           next;
       }
  
-      if( exists($HTMLVARS{group_gods}{$$USER{node_id}}) || $DB-&gt;isApproved($USER, $n)){
+      if( $APP-&gt;isAdmin($USER) || $DB-&gt;isApproved($USER, $n) ){
         push @canwl, $_;
         next;
       }  
   }
   push @canwl, getId(getNode('News for noders. Stuff that matters.', 'superdoc'))
-  	if exists($HTMLVARS{'group_content editors'}{$$USER{node_id}});
+  	if $APP-&gt;isEditor($USER);
 
   $$VARS{can_weblog} = join &quot;,&quot;, sort{$a &lt;=&gt; $b} @canwl;
 
@@ -82,8 +80,7 @@ if($$SETTINGS{numwriteups} !~ /^\d+$/) {
 
   my $maintStr;
   unless($maint_nodes){
-    $maint_nodes = htmlcode('listMyMaintenanceNodes',getId($NODE) );
-    $maint_nodes =~ s/ /, /g;
+    $maint_nodes = join(&quot;, &quot;, @{$APP-&gt;getMaintenanceNodesForUser($NODE)} );
     $maintStr = &quot; AND node_id NOT IN ($maint_nodes) &quot; if $maint_nodes;
   }
 
@@ -109,6 +106,5 @@ $$SETTINGS{level} .= &quot; \/ $$NODE{experience}&quot;;
 
 setVars($NODE, $SETTINGS);
    
-'';
-</code>
+'';</code>
 </node>

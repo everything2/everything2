@@ -9,7 +9,7 @@ my $triggerAchievement = $query -&gt; param('ironise'); # option to activate ach
 #constants
 my $UID = getId($USER);
 my $isGuest = $APP-&gt;isGuest($USER);
-my $isRoot = exists $HTMLVARS{group_gods}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $isCE = $APP-&gt;isEditor($USER);
 my $ironLeader;
 my $isIronLeader = 0;
@@ -23,17 +23,6 @@ my @groupTypes = ('usergroup');
 my %maintenanceNodeSet = 
 	map { $_ =&gt; 1 }
 		grep { /^\d+$/ } values %HTMLVARS;
-
-my $isMaintenanceNode = sub {
-
-	my $checkNode = shift;
-	my $parentNode = $$checkNode{parent_e2node} if $checkNode and ref $checkNode;
-
-	return 0 unless $parentNode;
-	return 0 unless $maintenanceNodeSet{$parentNode};
-	return 1;
-
-};
 
 my $isDaylogNode = sub {
 
@@ -206,7 +195,7 @@ foreach $sortKey (@displayOrder) {
 		}
 		$qh-&gt;finish();
 		my $daylogCount = 0;
-		my @validWUs = grep { !&amp;$isMaintenanceNode($_) } @userWUs;
+		my @validWUs = grep { !$APP-&gt;$isMaintenanceNode($_) } @userWUs;
 		@validWUs = grep { !&amp;$isDaylogNode($_) || ++$daylogCount &lt;= $MAXDAYLOGCOUNT } @validWUs;
 			
 		$statUserWU = scalar(@validWUs);

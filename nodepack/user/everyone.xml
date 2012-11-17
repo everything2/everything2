@@ -66,7 +66,7 @@
     <key>epi_hideadvice</key>
   </vars>
   <vars>
-    <value>2683 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
+    <value>2684 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
     <key>nwriteups</key>
   </vars>
   <vars>
@@ -128,7 +128,7 @@ ekw_vlinkcolor=&quot;#666633&quot;;
     <key>nodetrail</key>
   </vars>
   <vars>
-    <value>2683</value>
+    <value>2684</value>
     <key>numwriteups</key>
   </vars>
   <vars>
