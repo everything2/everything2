@@ -10,29 +10,18 @@ my @links;
 if ( $APP-&gt;isGuest($USER) ) {
 	push @links, linkNodeTitle('login', $NODE, 'Log in');
 	push @links, linkNodeTitle('Create a new user');
-#	$str .= linkNodeTitle('login', $NODE, 'Log in'). ' | ' . linkNodeTitle('Create a new user');
 } else {
 	push @links, linkNode($HTMLVARS{default_node}, &quot;log $$USER{title} out&quot;, {op =&gt; 'logout'});
 	push @links, linkNodeTitle('user settings');
-#	$str .= linkNode($HTMLVARS{default_node}, &quot;log $$USER{title} out&quot;, {op =&gt; 'logout'}) . ' | ' . linkNode($USER);
-#	$str .= ' | ' . linkNodeTitle('user settings');
 }
 
 
 my ($GNL) = getNode('Gigantic Node Lister', getType('restricted_superdoc'));
 push(@links,linkNode($GNL,0,$noPrevLink)) if canReadNode($USER, $GNL);
-#$str .= ' | ' . linkNode($GNL,0,$noPrevLink) if canReadNode($USER, $GNL);
 
 my ($GCL) = getNode('Gigantic Code Lister', getType('restricted_superdoc'));
 push(@links,linkNode($GCL,0,$noPrevLink)) if canReadNode($USER, $GCL);
-#$str .= ' | ' . linkNode($GCL,0,$noPrevLink) if canReadNode($USER, $GCL);
 
-my ($ROOT) = getNode('root', getType('user'));
-my ($ss) = getNode('system settings', getType('setting'));
-
-#$str .= ' | ' . linkNode($ss) if ($USER eq $ROOT);
-push(@links,linkNode($ss)) if ($USER eq $ROOT);
-#$str .= ' | ' . linkNode($HTMLVARS{default_node});
 push @links, linkNode($HTMLVARS{default_node},0,$noPrevLink);
 
 '

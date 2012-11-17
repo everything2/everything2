@@ -45,10 +45,6 @@
     <key>everythingNewNodes_node</key>
   </vars>
   <vars>
-    <value>523351</value>
-    <key>Enn2</key>
-  </vars>
-  <vars>
     <value>2</value>
     <key>stylesheetFixLevel</key>
   </vars>
@@ -97,10 +93,6 @@
     <key>NodeshellsMarkedForDestruction</key>
   </vars>
   <vars>
-    <value>364471</value>
-    <key>E2_Bugs</key>
-  </vars>
-  <vars>
     <value>1428471</value>
     <key>title_edit_longterm</key>
   </vars>
@@ -117,12 +109,12 @@
     <key>default_theme</key>
   </vars>
   <vars>
-    <value>216</value>
-    <key>nodelet_group</key>
-  </vars>
-  <vars>
     <value>166948</value>
     <key>generalParent_container</key>
+  </vars>
+  <vars>
+    <value>216</value>
+    <key>nodelet_group</key>
   </vars>
   <vars>
     <value>104</value>
@@ -157,10 +149,6 @@
     <key>e2n</key>
   </vars>
   <vars>
-    <value>165594</value>
-    <key>ENN</key>
-  </vars>
-  <vars>
     <value>141</value>
     <key>Everythings_Best_Users</key>
   </vars>
@@ -191,10 +179,6 @@
   <vars>
     <value>952215</value>
     <key>klaproth</key>
-  </vars>
-  <vars>
-    <value>553317</value>
-    <key>EverythingFinger</key>
   </vars>
   <node_id>198</node_id>
   <title>system settings</title>
