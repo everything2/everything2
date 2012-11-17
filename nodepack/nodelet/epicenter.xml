@@ -49,18 +49,6 @@ if (scalar(@thingys)) {
 
 $expStr = &quot;\n\n\t&quot;.'&lt;p id=&quot;experience&quot;&gt;'.htmlcode('shownewexp','TRUE').'&lt;/p&gt;';
 
-if ( $$NODE{type}{title} eq 'writeup' ||  $$NODE{type}{title} eq 'e2node' ) {
-	$weblogStr = '&quot;Add to&amp;hellip;&quot; in writeup ' ;
-	if ( $$VARS{ wufoot } =~ /addto/ ) {
-		$weblogStr .= 'foot' ;
-	} elsif ( $$VARS{ wuhead } =~ /addto/ ) {
-		$weblogStr .= 'head' ;
-	} else {
-		$weblogStr = linkNodeTitle( 'Advanced Settings' ).' and add them to your writeup foot' ;
-	}
-	$weblogStr = '&lt;p&gt;&lt;small&gt;For bookmark and weblog links see '.$weblogStr.'ers.&lt;/small&gt;&lt;/p&gt;' ;
-}
-
 unless 	($$VARS{GPoptout}) {
 	$expStr .= &quot;\n\n\t&quot;.'&lt;p id=&quot;gp&quot;&gt;'.htmlcode('showNewGP','TRUE').'&lt;/p&gt;';
 }

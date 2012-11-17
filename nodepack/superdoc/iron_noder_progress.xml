@@ -20,10 +20,6 @@ my $isIronNoder = 0;
 my $groupTitle = 'ironnoders';
 my @groupTypes = ('usergroup');
 
-my %maintenanceNodeSet = 
-	map { $_ =&gt; 1 }
-		grep { /^\d+$/ } values %HTMLVARS;
-
 my $isDaylogNode = sub {
 
 	my $checkNode = shift;
@@ -195,7 +191,7 @@ foreach $sortKey (@displayOrder) {
 		}
 		$qh-&gt;finish();
 		my $daylogCount = 0;
-		my @validWUs = grep { !$APP-&gt;$isMaintenanceNode($_) } @userWUs;
+		my @validWUs = grep { !$APP-&gt;isMaintenanceNode($_) } @userWUs;
 		@validWUs = grep { !&amp;$isDaylogNode($_) || ++$daylogCount &lt;= $MAXDAYLOGCOUNT } @validWUs;
 			
 		$statUserWU = scalar(@validWUs);
