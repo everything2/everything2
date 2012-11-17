@@ -10,11 +10,5 @@ $str .= '&lt;li&gt;' .  linkNode ($GNL, undef, {lastnode_id =&gt; undef}) . '&lt
 my ($GCL) = getNode('Gigantic Code Lister', getType('restricted_superdoc'));
 $str .= '&lt;li&gt;' .  linkNode ($GCL, undef, {lastnode_id =&gt; undef}) . '&lt;/li&gt;' if canReadNode ($USER, $GCL) ;
 
-my ($ROOT) = getNode('root', getType('user'));
-my ($ss) = getNode('system settings', getType('setting'));
-
-$str .= '&lt;li&gt;' .  linkNode ($ss, undef, {lastnode_id =&gt; undef})  . '&lt;/li&gt;' if ($USER eq $ROOT);
-#$str .= '&lt;li&gt;' .  linkNode ($HTMLVARS{default_node}, undef, {lastnode_id =&gt; undef}) . '&lt;/li&gt;';
-
 return '&lt;ul id=&quot;metalinks&quot;&gt;'.$str.'&lt;/ul&gt;' if $str ;</code>
 </node>

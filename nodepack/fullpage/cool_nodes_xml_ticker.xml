@@ -1,6 +1,8 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Sat Nov 17 20:20:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything&quot; site=&quot;http://everything2.com/&quot; servertime=&quot;Sat Nov 17 21:45:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Ashigaru&quot; node_id=&quot;2071104&quot; parent_e2node=&quot;2071101&quot; author_user=&quot;mauler&quot;&gt;THE IRON NODER CHALLENGE 5: THE FERROUS FRONTIER&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;C-Dawg&quot; node_id=&quot;1506832&quot; parent_e2node=&quot;1506811&quot; author_user=&quot;evilkalla&quot;&gt;hairpin match&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Auspice&quot; node_id=&quot;2071951&quot; parent_e2node=&quot;134117&quot; author_user=&quot;Oolong&quot;&gt;privilege&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;gnarl&quot; node_id=&quot;2073266&quot; parent_e2node=&quot;2073257&quot; author_user=&quot;Hazelnut&quot;&gt;Police &amp; Crime Commissioners Election, 2012&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Hazelnut&quot; node_id=&quot;2048759&quot; parent_e2node=&quot;2048752&quot; author_user=&quot;Glowing Fish&quot;&gt;Magic: The Gathering: Shattered Chains&lt;/cooled&gt;
@@ -14,8 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;2073223&quot; parent_e2node=&quot;162417&quot; author_user=&quot;k9design&quot;&gt;Boo!&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1043397&quot; parent_e2node=&quot;1035746&quot; author_user=&quot;Jet-Poop&quot;&gt;gunsel&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;kanoodle&quot; node_id=&quot;1281337&quot; parent_e2node=&quot;1281301&quot; author_user=&quot;iceowl&quot;&gt;You are not special. You will die here, too.&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;2073086&quot; parent_e2node=&quot;2073085&quot; author_user=&quot;Auspice&quot;&gt;The ribs of a seagull and the eastern view&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Chras4&quot; node_id=&quot;1217888&quot; parent_e2node=&quot;1217885&quot; author_user=&quot;junkpile&quot;&gt;Around nine PM my heart was breaking so I went to bed early to listen to it happen.&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

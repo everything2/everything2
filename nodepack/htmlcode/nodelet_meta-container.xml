@@ -7,8 +7,6 @@ return '' if $query-&gt;param('nonodelets');
 
 my $str;
 
-my $SETTINGS = getVars(getNode('system settings','setting'));
-
 unless ( $$VARS{nodelets} ) {
     #push default nodelets on
     my ($DEFAULT) = $DB-&gt;getNodeById($HTMLVARS{'default_nodeletgroup'});
@@ -31,11 +29,6 @@ $$VARS{nodelets} =~ s/(\b263\b.*),263\b/\1/g;
 
 my $nodelets = $HTMLVARS{ pagenodelets } || $$VARS{nodelets} ;
 my @nodelets = split(',',$nodelets) if $nodelets ;
-
-if ($$SETTINGS{ad_location} eq 'nodelet' &amp;&amp; $APP-&gt;isGuest($USER) ) {
-    my $ADS = getNode('Ads', 'nodelet');
-    @nodelets = ($$ADS{node_id}, @nodelets) if $ADS;
-}
 
 my $useTable = $$THEME{noTable} ? 0 : 1;
 
