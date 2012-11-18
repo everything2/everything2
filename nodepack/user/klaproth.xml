@@ -42,10 +42,6 @@
     <key>cools</key>
   </vars>
   <vars>
-    <value></value>
-    <key>youtube_link</key>
-  </vars>
-  <vars>
     <value>1 - &lt;a href=&quot;/user/Klaproth/writeups&quot;&gt;View Klaproth's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Klaproth&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
     <key>nwriteups</key>
   </vars>
@@ -126,12 +122,12 @@
     <key>displaypref_e2node</key>
   </vars>
   <vars>
-    <value></value>
-    <key>lastnode</key>
-  </vars>
-  <vars>
     <value>1</value>
     <key>hide_weblog_165580</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>lastnode</key>
   </vars>
   <vars>
     <value>1</value>

@@ -1,6 +1,7 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Nov 18 18:15:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Nov 18 19:10:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1373929&quot; parent_e2node=&quot;1373902&quot; author_user=&quot;Lord Brawl&quot;&gt;'Twelve Foot' Davis&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2073060&quot; parent_e2node=&quot;1222036&quot; author_user=&quot;ZorroBandito&quot;&gt;Przewalski horse&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Hazelnut&quot; node_id=&quot;1325310&quot; parent_e2node=&quot;137505&quot; author_user=&quot;Elrac&quot;&gt;What men want in a woman&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;angel&quot; node_id=&quot;2050906&quot; parent_e2node=&quot;2037034&quot; author_user=&quot;haqiqat&quot;&gt;He's milking the apples&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;2073013&quot; parent_e2node=&quot;2073010&quot; author_user=&quot;Transitional Man&quot;&gt;November 13, 2012&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;631711&quot; parent_e2node=&quot;631704&quot; author_user=&quot;psydereal&quot;&gt;tornado warning&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Ashigaru&quot; node_id=&quot;2071104&quot; parent_e2node=&quot;2071101&quot; author_user=&quot;mauler&quot;&gt;THE IRON NODER CHALLENGE 5: THE FERROUS FRONTIER&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;C-Dawg&quot; node_id=&quot;1506832&quot; parent_e2node=&quot;1506811&quot; author_user=&quot;evilkalla&quot;&gt;hairpin match&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

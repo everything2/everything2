@@ -71,14 +71,6 @@ return $email;
 &lt;p&gt;[{editSingleVar:specialties}]&lt;/p&gt;
 &lt;p&gt;[{editSingleVar:employment,school/company}]&lt;/p&gt;
 &lt;p&gt;[{editSingleVar:motto}]&lt;/p&gt;
-[%
-
-if ($DB-&gt;isApproved($NODE,getNode('users with youtube','nodegroup'))) {
-return &quot;&lt;p&gt;&quot;.htmlcode('editSingleVar','youtube_link').&quot;&lt;/p&gt;&quot;;
-}
-
-'';
-%]
 &lt;p&gt;You can remove your bookmarks:&lt;/p&gt;
 &lt;input type=&quot;button&quot; value=&quot;Check All&quot; id=&quot;checkall&quot; style=&quot;display:none&quot;&gt;
 [{showbookmarks:edit}]
