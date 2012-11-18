@@ -9,7 +9,7 @@ my $str;
 
 unless ( $$VARS{nodelets} ) {
     #push default nodelets on
-    my ($DEFAULT) = $DB-&gt;getNodeById($HTMLVARS{'default_nodeletgroup'});
+    my ($DEFAULT) = $DB-&gt;getNodeById( $Everything::CONF-&gt;{system}-&gt;{default_nodeletgroup} );
     $$VARS{nodelets} = join ',', @{ $$DEFAULT{group} } ;
 }
 

@@ -37,10 +37,6 @@
     <key>writeuplowrepthreshold</key>
   </vars>
   <vars>
-    <value>124</value>
-    <key>default_node</key>
-  </vars>
-  <vars>
     <value>837990</value>
     <key>default_nodeletgroup</key>
   </vars>

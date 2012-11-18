@@ -1,6 +1,7 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Nov 18 21:10:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Nov 18 21:30:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;HerMan&quot; node_id=&quot;2073266&quot; parent_e2node=&quot;2073257&quot; author_user=&quot;Hazelnut&quot;&gt;Police &amp; Crime Commissioners Election, 2012&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;schizophasic&quot; node_id=&quot;2073132&quot; parent_e2node=&quot;1200711&quot; author_user=&quot;Tem42&quot;&gt;Sideways Stories from Wayside School&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;1685398&quot; parent_e2node=&quot;1685390&quot; author_user=&quot;JoeBaldwin&quot;&gt;Bullet Proof...I Wish I Was&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;wombat-socho&quot; node_id=&quot;2073215&quot; parent_e2node=&quot;2073214&quot; author_user=&quot;Auspice&quot;&gt;Hard-boiled NOC with the rednecks&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2072928&quot; parent_e2node=&quot;1372693&quot; author_user=&quot;e2reneta&quot;&gt;That's Entertainment&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;sloebertje&quot; node_id=&quot;2071951&quot; parent_e2node=&quot;134117&quot; author_user=&quot;Oolong&quot;&gt;privilege&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2072813&quot; parent_e2node=&quot;2073261&quot; author_user=&quot;GaleCrater&quot;&gt;causality wave&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Aerobe&quot; node_id=&quot;2072017&quot; parent_e2node=&quot;226155&quot; author_user=&quot;alex&quot;&gt;Dogtooth&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>
