@@ -1,8 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;&lt;big&gt;&lt;strong&gt;Macro FAQ&lt;/strong&gt;&lt;/big&gt;[%
-my $uid = getId($USER);
-((exists $HTMLVARS{'group_content editors'}{$uid}) || (exists $HTMLVARS{'group_gods'}{$uid})) ? '' : ' (note: you are not allowed to use macros yet)';
+( $APP-&gt;isEditor($USER) ) ? '' : ' (note: you are not allowed to use macros yet)';
 %]&lt;/p&gt;
 &lt;p&gt;Okay, okay, this isn't really a FAQ, more like a mini-lesson on how to use the &lt;code&gt;/macro&lt;/code&gt; command. But isn't &quot;macro FAQ&quot; easier to remember than &quot;macro mini-lesson-and-possibly-later-even-some-frequently-asked-questions&quot;?&lt;/p&gt;
 
