@@ -2311,7 +2311,7 @@ sub getCGI
 sub getTheme {
 	my $theme_id;
 	$theme_id = $$VARS{preferred_theme} if $$VARS{preferred_theme};
-	$theme_id ||= $HTMLVARS{default_theme};
+	$theme_id ||= $Everything::CONF->{system}->{default_theme};
 	my $TS = getNodeById $theme_id;
 
 	if ($$TS{type}{title} eq 'themesetting') {
