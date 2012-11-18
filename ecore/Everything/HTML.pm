@@ -68,7 +68,6 @@ sub BEGIN {
               recordUserAction
               unMSify
               mod_perlInit
-              mod_perlpsuedoInit
 
               castVote
               adjustExp
@@ -2900,39 +2899,6 @@ sub mod_perlInit
 	handleUserRequest();
 
 	$DB->closeTransaction();
-}
-
-
-
-
-sub mod_perlpsuedoInit
-{
-	my ($db) = @_;
-
-	clearGlobals();
-
-	Everything::initEverything($db);
-	%HTMLVARS = %{ eval (getCode('set_htmlvars')) };
-
-	$query = getCGI();
-	return if $query->user_agent =~ /WebStripper/;
-	$USER = loginUser();
-	#init the cache
-
-       #only for Everything2.com
-       if ($query->param("op") eq "randomnode") {
-               $query->param("node_id", getRandomNode());
-       }
-
-
-	# Execute any operations that we may have
-	execOpCode();
-	
-	# Fill out the THEME hash
-	getTheme();
-
-	# Do the work.
-	#handleUserRequest();
 }
 
 #############################################################################

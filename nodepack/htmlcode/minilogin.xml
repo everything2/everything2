@@ -43,7 +43,6 @@ $query-&gt;submit(
   , -tabindex =&gt; 4
 ).&quot;&lt;br /&gt;&quot;.
 linkNodeTitle(&quot;Reset password[superdoc]|Lost password&quot;).&quot;
-&lt;p&gt;&lt;strong&gt;&quot;.linkNode($HTMLVARS{createNewUser_node},'Sign up').&quot;&lt;/strong&gt;&lt;/p&gt;\n&quot; .
-$query-&gt;end_form;
-</code>
+&lt;p&gt;&lt;strong&gt;&quot;.linkNode($Everything::CONF-&gt;{system}-&gt;{create_new_user},'Sign up').&quot;&lt;/strong&gt;&lt;/p&gt;\n&quot; .
+$query-&gt;end_form;</code>
 </node>

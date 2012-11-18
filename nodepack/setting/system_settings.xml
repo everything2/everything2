@@ -5,60 +5,8 @@
     <key>roomTextboxLevel</key>
   </vars>
   <vars>
-    <value>197</value>
-    <key>create_node</key>
-  </vars>
-  <vars>
     <value></value>
     <key>imageroot</key>
-  </vars>
-  <vars>
-    <value>-8</value>
-    <key>writeuplowrepthreshold</key>
-  </vars>
-  <vars>
-    <value>124</value>
-    <key>default_node</key>
-  </vars>
-  <vars>
-    <value>837990</value>
-    <key>default_nodeletgroup</key>
-  </vars>
-  <vars>
-    <value>884776</value>
-    <key>killing_floor</key>
-  </vars>
-  <vars>
-    <value>993891</value>
-    <key>thekillingfloor2</key>
-  </vars>
-  <vars>
-    <value>147</value>
-    <key>everythingNewNodes_node</key>
-  </vars>
-  <vars>
-    <value>2</value>
-    <key>stylesheetFixLevel</key>
-  </vars>
-  <vars>
-    <value>http://everything2.com/</value>
-    <key>site_url</key>
-  </vars>
-  <vars>
-    <value>382987</value>
-    <key>duplicatesFound_node</key>
-  </vars>
-  <vars>
-    <value>174079</value>
-    <key>title_edit</key>
-  </vars>
-  <vars>
-    <value>1140332</value>
-    <key>searchResults_node</key>
-  </vars>
-  <vars>
-    <value>779713</value>
-    <key>guest_user</key>
   </vars>
   <vars>
     <value>668164</value>
@@ -85,12 +33,28 @@
     <key>nodelet_group</key>
   </vars>
   <vars>
+    <value>-8</value>
+    <key>writeuplowrepthreshold</key>
+  </vars>
+  <vars>
+    <value>124</value>
+    <key>default_node</key>
+  </vars>
+  <vars>
+    <value>837990</value>
+    <key>default_nodeletgroup</key>
+  </vars>
+  <vars>
     <value>104</value>
     <key>permissionDenied_node</key>
   </vars>
   <vars>
     <value>114</value>
     <key>gods</key>
+  </vars>
+  <vars>
+    <value>884776</value>
+    <key>killing_floor</key>
   </vars>
   <vars>
     <value>169667</value>
@@ -105,28 +69,56 @@
     <key>default_guest_node</key>
   </vars>
   <vars>
+    <value>993891</value>
+    <key>thekillingfloor2</key>
+  </vars>
+  <vars>
+    <value>147</value>
+    <key>everythingNewNodes_node</key>
+  </vars>
+  <vars>
     <value>635063</value>
     <key>e2n</key>
+  </vars>
+  <vars>
+    <value>2</value>
+    <key>stylesheetFixLevel</key>
   </vars>
   <vars>
     <value>5</value>
     <key>roomCreateLevel</key>
   </vars>
   <vars>
-    <value>2072173</value>
-    <key>createNewUser_node</key>
-  </vars>
-  <vars>
     <value>108</value>
     <key>userSettings_node</key>
+  </vars>
+  <vars>
+    <value>http://everything2.com/</value>
+    <key>site_url</key>
   </vars>
   <vars>
     <value>109</value>
     <key>login_node</key>
   </vars>
   <vars>
+    <value>382987</value>
+    <key>duplicatesFound_node</key>
+  </vars>
+  <vars>
+    <value>174079</value>
+    <key>title_edit</key>
+  </vars>
+  <vars>
     <value>1152424</value>
     <key>writeup_deletion_request</key>
+  </vars>
+  <vars>
+    <value>779713</value>
+    <key>guest_user</key>
+  </vars>
+  <vars>
+    <value>1140332</value>
+    <key>searchResults_node</key>
   </vars>
   <vars>
     <value>952215</value>
