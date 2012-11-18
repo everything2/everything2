@@ -37,10 +37,6 @@
     <key>writeuplowrepthreshold</key>
   </vars>
   <vars>
-    <value>837990</value>
-    <key>default_nodeletgroup</key>
-  </vars>
-  <vars>
     <value>104</value>
     <key>permissionDenied_node</key>
   </vars>
@@ -65,12 +61,12 @@
     <key>thekillingfloor2</key>
   </vars>
   <vars>
-    <value>147</value>
-    <key>everythingNewNodes_node</key>
-  </vars>
-  <vars>
     <value>635063</value>
     <key>e2n</key>
+  </vars>
+  <vars>
+    <value>147</value>
+    <key>everythingNewNodes_node</key>
   </vars>
   <vars>
     <value>2</value>

@@ -20,7 +20,7 @@ htmlcode('openform',-id=&gt;'pagebody');
 [%
 return if $APP-&gt;isGuest($USER);
 
-delete $$VARS{preferred_theme} if $$VARS{preferred_theme} == $HTMLVARS{default_theme} ;
+delete $$VARS{preferred_theme} if $$VARS{preferred_theme} == $Everything::CONF-&gt;{system}-&gt;{default_theme};
 
 if($query-&gt;param('chosentheme')) {
 	my $theme = getNodeById($query-&gt;param('chosentheme'));
@@ -34,7 +34,7 @@ if($query-&gt;param('chosentheme')) {
 	}
 	getTheme();
 }
-local $$THEME{default_style} = getVars(getNodeById($HTMLVARS{default_theme}))-&gt;{default_style} if $$VARS{preferred_theme};
+local $$THEME{default_style} = getVars(getNodeById( $Everything::CONF-&gt;{system}-&gt;{default_theme} ))-&gt;{default_style} if $$VARS{preferred_theme};
 
 my $sheets = getVars( getNode( 'theme menu' ,'setting' ) ) ;
 foreach ( keys %$sheets ){
@@ -67,8 +67,9 @@ $$sheets{ $$VARS{userstyle} } .= '*' if $$VARS{userstyle} ;
 my $str = 'Choose a theme: ' . $query -&gt; popup_menu( -name =&gt; 'chosentheme', values=&gt; \@values ,
 	labels=&gt;$sheets , default=&gt;$$VARS{userstyle}||'default') ;
 if ( $$VARS{preferred_theme} ){
+        my $default_theme = $Everything::CONF-&gt;{system}-&gt;{default_theme};
 	$str .= htmlcode('typeMenu', 'chosentheme', $$VARS{preferred_theme}, 'theme', 'themesetting');
-	$str =~ s&quot;&lt;option.*$HTMLVARS{default_theme}.*&lt;/option&gt;&quot;&quot; ;
+	$str =~ s&quot;&lt;option.*$default_theme.*&lt;/option&gt;&quot;&quot; ;
 	$str =~ s/(&lt;select.*&gt;)/$1&lt;optgroup label=&quot;Zen theme styles&quot;&gt;/ ;
 	$str =~ s'&lt;/select&gt;.*&lt;select.*&gt;'&lt;/optgroup&gt;&lt;optgroup label=&quot;Unsupported themes&quot;&gt;' ;
 	$str =~ s'&lt;/select&gt;'&lt;/optgroup&gt;&lt;/select&gt;' ;

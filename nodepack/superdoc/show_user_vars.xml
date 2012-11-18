@@ -34,7 +34,7 @@ if ($isRoot) {
 		$str .= $$inspectUser{title} . '&lt;br /&gt;';
 }
 
-my $theme = getNodeById($$inspectVars{'preferred_theme'}||$HTMLVARS{default_theme});
+my $theme = getNodeById($$inspectVars{'preferred_theme'}||$Everything::CONF-&gt;{system}-&gt;{default_theme});
 $str .= &quot;&lt;h3&gt;Theme&lt;/h3&gt;&quot;;
 $str .= &quot;&lt;p&gt;&quot; . linkNode($theme) . &quot;&lt;/p&gt;&quot;;
 
@@ -185,8 +185,7 @@ $str.=$tClose;
 
 
 return $str;
-%]
-</doctext>
+%]</doctext>
   <node_id>945284</node_id>
   <title>show user vars</title>
 </node>

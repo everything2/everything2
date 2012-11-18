@@ -40,7 +40,7 @@ else {
 my ($sec,$min,$hour,$mday,$mon,$year) = gmtime(time - 15778800); # 365.25*24*3600/2
 my $cutoffDate = ($year+1900).'-'.($mon+1).&quot;-$mday&quot;;
 my $defaultStyle = getNode(
-	getVars(getNodeById($HTMLVARS{default_theme}))-&gt;{default_style},
+	getVars(getNodeById( $Everything::CONF-&gt;{system}-&gt;{default_theme} ))-&gt;{default_style},
 	'stylesheet') -&gt; {node_id};
 
 my $rows = $DB-&gt;sqlSelectMany( 'setting.setting_id,setting.vars' ,

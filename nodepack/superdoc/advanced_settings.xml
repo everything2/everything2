@@ -342,8 +342,8 @@ if($query-&gt;param('chosentheme')) {
 		getTheme();
 	}
 }
-delete $$VARS{preferred_theme} if $$VARS{preferred_theme} == $HTMLVARS{default_theme} ;
-htmlcode('typeMenu','chosentheme',$$VARS{preferred_theme}||$HTMLVARS{default_theme},'theme','themesetting');
+delete $$VARS{preferred_theme} if $$VARS{preferred_theme} == $Everything::CONF-&gt;{system}-&gt;{default_theme} ;
+htmlcode('typeMenu','chosentheme',$$VARS{preferred_theme}||$Everything::CONF-&gt;{system}-&gt;{default_theme},'theme','themesetting');
 %]
 (Only Zen theme is supported)&lt;br&gt;
 Node Display (has no effect in Zen theme): [{varMenu: displaypref_e2node,displayfull|full, display|classic}] (recommended: full)

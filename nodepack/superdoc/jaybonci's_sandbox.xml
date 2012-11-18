@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[% return &quot;Hello there. This is a quick testing/debugging ground for me. Do not delete me, it is not worth the time&quot;; %]
-[% return $Everything::CONF-&gt;{system}-&gt;{default_nodeletgroup} %]
+[% return $Everything::CONF-&gt;{system}-&gt;{default_theme} %]
 
 [%
   return &quot;&quot;;
