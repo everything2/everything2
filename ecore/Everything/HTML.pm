@@ -2411,7 +2411,7 @@ sub handleUserRequest{
   my $handled = 0;
   my $noRemoveSpaces = 0;
 
-  my $defaultNode = $HTMLVARS{default_node};
+  my $defaultNode = $Everything::CONF->{system}->{default_node};
 
   if ( $APP->isGuest($USER) ){
     $defaultNode = $Everything::CONF->{system}->{default_guest_node};
