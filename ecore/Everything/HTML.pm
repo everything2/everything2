@@ -2413,8 +2413,8 @@ sub handleUserRequest{
 
   my $defaultNode = $HTMLVARS{default_node};
 
-  if ($$USER{title} eq 'Guest User'){
-    $defaultNode = $HTMLVARS{default_guest_node};
+  if ( $APP->isGuest($USER) ){
+    $defaultNode = $Everything::CONF->{system}->{default_guest_node};
   }
 
   if ($query->param('node')) {
