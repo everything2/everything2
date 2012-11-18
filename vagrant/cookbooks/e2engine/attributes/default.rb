@@ -46,6 +46,7 @@ default["e2engine"]["system"]["create_new_user"] = '2072173'
 default["e2engine"]["system"]["default_guest_node"] = '2030780'
 default["e2engine"]["system"]["default_node"] = '124'
 default["e2engine"]["system"]["default_nodeletgroup"] = '837990'
+default["e2engine"]["system"]["default_theme"] = '1854183'
 default["e2engine"]["system"]["maintenance_nodes"] = {}
 default["e2engine"]["system"]["maintenance_nodes"]["broken_nodes"] = 379710
 default["e2engine"]["system"]["maintenance_nodes"]["e2_bugs"] = 364471
