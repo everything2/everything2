@@ -11,7 +11,7 @@ if ( $APP-&gt;isGuest($USER) ) {
 	push @links, linkNodeTitle('login', $NODE, 'Log in');
 	push @links, linkNodeTitle('Create a new user');
 } else {
-	push @links, linkNode($HTMLVARS{default_node}, &quot;log $$USER{title} out&quot;, {op =&gt; 'logout'});
+	push @links, linkNode($Everything::CONF-&gt;{system}-&gt;{default_node}, &quot;log $$USER{title} out&quot;, {op =&gt; 'logout'});
 	push @links, linkNodeTitle('user settings');
 }
 
@@ -22,7 +22,7 @@ push(@links,linkNode($GNL,0,$noPrevLink)) if canReadNode($USER, $GNL);
 my ($GCL) = getNode('Gigantic Code Lister', getType('restricted_superdoc'));
 push(@links,linkNode($GCL,0,$noPrevLink)) if canReadNode($USER, $GCL);
 
-push @links, linkNode($HTMLVARS{default_node},0,$noPrevLink);
+push @links, linkNode($Everything::CONF-&gt;{system}-&gt;{default_node},0,$noPrevLink);
 
 '
 &lt;p&gt;&lt;small&gt;[ ' . join(' | ',@links) . ' ] &lt;/small&gt;&lt;/p&gt;

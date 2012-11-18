@@ -6,7 +6,7 @@
 $query-&gt;delete('passwd');
 
 my $goto = getId($NODE);
-$goto = $HTMLVARS{default_node} if $goto == $HTMLVARS{default_guest_node};
+$goto = $Everything::CONF-&gt;{system}-&gt;{default_node} if $goto == $Everything::CONF-&gt;{system}-&gt;{default_guest_node};
 $query-&gt;start_form(-method =&gt; &quot;POST&quot;
   , -action =&gt; $query-&gt;script_name
   , -name =&gt; &quot;loginform&quot;

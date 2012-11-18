@@ -4,8 +4,7 @@
   <title>set_htmlvars</title>
   <code>my ($SETTINGNODE) = getNode('system settings',  getType('setting'));
 my $SETTINGS = getVars $SETTINGNODE;
-my ($HTMLVARS) = getNode('htmlvars nodegroup', getType('nodegroup'));
-my (@htvars) = @{ $$HTMLVARS{group} };
+
 my $OLDSETTINGS =
 {
 not_found =&gt; $$SETTINGS{notFound_node},

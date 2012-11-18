@@ -5,7 +5,7 @@ my $str = '';
 
 
 if($query-&gt;param('op') eq 'login' &amp;&amp; !$APP-&gt;isGuest($USER)) {
-	$str.= &quot;Hey.  Glad you're back.  Would you like to go to your &quot;.linkNode($USER, &quot;home node&quot;).' or to '.linkNode($HTMLVARS{default_node}).'?&lt;br /&gt;';
+	$str.= &quot;Hey.  Glad you're back.  Would you like to go to your &quot;.linkNode($USER, &quot;home node&quot;).' or to '.linkNode($Everything::CONF-&gt;{system}-&gt;{default_node}).'?&lt;br /&gt;';
 	$str .= '...or back to '.linkNode($query-&gt;param('lastnode_id')).'?&lt;br /&gt;' if ($query-&gt;param('lastnode_id'));
 	return $str;
 } elsif ($query-&gt;param('op') eq 'login') { 

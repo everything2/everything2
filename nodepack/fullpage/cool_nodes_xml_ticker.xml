@@ -1,6 +1,10 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Nov 18 19:10:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Nov 18 21:10:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;schizophasic&quot; node_id=&quot;2073132&quot; parent_e2node=&quot;1200711&quot; author_user=&quot;Tem42&quot;&gt;Sideways Stories from Wayside School&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;1685398&quot; parent_e2node=&quot;1685390&quot; author_user=&quot;JoeBaldwin&quot;&gt;Bullet Proof...I Wish I Was&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;wombat-socho&quot; node_id=&quot;2073215&quot; parent_e2node=&quot;2073214&quot; author_user=&quot;Auspice&quot;&gt;Hard-boiled NOC with the rednecks&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;2073288&quot; parent_e2node=&quot;2073295&quot; author_user=&quot;moeyz&quot;&gt;The Basket of Apples&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1373929&quot; parent_e2node=&quot;1373902&quot; author_user=&quot;Lord Brawl&quot;&gt;'Twelve Foot' Davis&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2073060&quot; parent_e2node=&quot;1222036&quot; author_user=&quot;ZorroBandito&quot;&gt;Przewalski horse&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Hazelnut&quot; node_id=&quot;1325310&quot; parent_e2node=&quot;137505&quot; author_user=&quot;Elrac&quot;&gt;What men want in a woman&lt;/cooled&gt;
@@ -10,12 +14,8 @@
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2072982&quot; parent_e2node=&quot;386674&quot; author_user=&quot;borgo&quot;&gt;black eye&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2072928&quot; parent_e2node=&quot;1372693&quot; author_user=&quot;e2reneta&quot;&gt;That's Entertainment&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;sloebertje&quot; node_id=&quot;2071951&quot; parent_e2node=&quot;134117&quot; author_user=&quot;Oolong&quot;&gt;privilege&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;kozmund&quot; node_id=&quot;2073215&quot; parent_e2node=&quot;2073214&quot; author_user=&quot;Auspice&quot;&gt;Hard-boiled NOC with the rednecks&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2072813&quot; parent_e2node=&quot;2073261&quot; author_user=&quot;GaleCrater&quot;&gt;causality wave&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Aerobe&quot; node_id=&quot;2072017&quot; parent_e2node=&quot;226155&quot; author_user=&quot;alex&quot;&gt;Dogtooth&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;2073013&quot; parent_e2node=&quot;2073010&quot; author_user=&quot;Transitional Man&quot;&gt;November 13, 2012&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;631711&quot; parent_e2node=&quot;631704&quot; author_user=&quot;psydereal&quot;&gt;tornado warning&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Ashigaru&quot; node_id=&quot;2071104&quot; parent_e2node=&quot;2071101&quot; author_user=&quot;mauler&quot;&gt;THE IRON NODER CHALLENGE 5: THE FERROUS FRONTIER&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

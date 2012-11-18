@@ -38,7 +38,7 @@ marginleft=&quot;2&quot; leftmargin=&quot;2&quot; marginright=&quot;2&quot; righ
       &lt;td bgcolor=&quot;#003366&quot; colspan='2'&gt;&lt;img src=&quot;http://static.everything2.com/clear.gif&quot; width='1' height='5' border='0' alt=&quot; &quot; /&gt;&lt;/td&gt;
     &lt;/tr&gt;
     &lt;tr bgcolor=&quot;[&quot;$$THEME{titleColor}&quot;]&quot;&gt;
-      &lt;td valign='bottom'&gt;[% linkNode($HTMLVARS{default_node}, '&lt;img src=&quot;http://static.everything2.com/e2_others_01.gif&quot; width=&quot;350&quot; height=&quot;42&quot; alt=&quot;Everything2&quot; border=&quot;0&quot; /&gt;', {lastnode_id =&gt; undef}); %]&lt;/td&gt;
+      &lt;td valign='bottom'&gt;[% linkNode($Everything::CONF-&gt;{system}-&gt;{default_node}, '&lt;img src=&quot;http://static.everything2.com/e2_others_01.gif&quot; width=&quot;350&quot; height=&quot;42&quot; alt=&quot;Everything2&quot; border=&quot;0&quot; /&gt;', {lastnode_id =&gt; undef}); %]&lt;/td&gt;
       &lt;td valign='middle'&gt;
         &lt;!-- This font size will make the search box smaller on linux, does
              not affect win/mac machines --&gt;
@@ -48,7 +48,7 @@ marginleft=&quot;2&quot; leftmargin=&quot;2&quot; marginright=&quot;2&quot; righ
       &lt;/td&gt;
     &lt;/tr&gt;
     &lt;tr bgcolor=&quot;[&quot;$$THEME{bodyBgColor}&quot;]&quot;&gt;
-      &lt;td colspan=2&gt;[% linkNode($HTMLVARS{default_node}, '&lt;img src=&quot;http://static.everything2.com/e2_others_02.gif&quot; height=&quot;8&quot; width=&quot;350&quot; border=&quot;0&quot; alt=&quot;Everything2&quot; /&gt;', {lastnode_id =&gt; undef}); %]&lt;/td&gt;
+      &lt;td colspan=2&gt;[% linkNode($Everything::CONF-&gt;{system}-&gt;{default_node}, '&lt;img src=&quot;http://static.everything2.com/e2_others_02.gif&quot; height=&quot;8&quot; width=&quot;350&quot; border=&quot;0&quot; alt=&quot;Everything2&quot; /&gt;', {lastnode_id =&gt; undef}); %]&lt;/td&gt;
     &lt;/tr&gt;
   &lt;/table&gt;
   &lt;/form&gt;

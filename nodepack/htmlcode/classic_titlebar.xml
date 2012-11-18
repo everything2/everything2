@@ -9,11 +9,11 @@
 if ($APP-&gt;isGuest($USER) ) {
 	$str .= linkNodeTitle (&quot;login&quot;, $NODE, &quot;Log in&quot;); 	
 } else {
-	$str .= linkNode ($HTMLVARS{default_node}, &quot;log $$USER{title} out&quot;, {op =&gt; 'logout'})
+	$str .= linkNode ($Everything::CONF-&gt;{system}-&gt;{default_node}, &quot;log $$USER{title} out&quot;, {op =&gt; 'logout'})
 		. &quot; | &quot; . linkNode ($USER);
 }
 $str .= &quot; | &quot; . linkNodeTitle (&quot;user settings&quot;);
 $str .= &quot; | &quot; . linkNodeTitle (&quot;gigantic node lister&quot;, $NODE, &quot;GNL&quot;);
-$str .= &quot; | &quot; . linkNode ($HTMLVARS{default_node});
+$str .= &quot; | &quot; . linkNode ($Everything::CONF-&gt;{system}-&gt;{default_node});
 $str . &quot; ] &lt;p&gt;&quot;;</code>
 </node>
