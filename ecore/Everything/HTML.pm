@@ -1609,7 +1609,7 @@ sub nodeName
 		}
 
 		#we found multiple nodes with that name.  ick
-		my $NODE = getNodeById($HTMLVARS{duplicate_group});
+		my $NODE = getNodeById( $Everything::CONF->{system}->{default_duplicates_node} );
 		
 		$$NODE{group} = \@canread;
 		displayPage($NODE, $user_id);
