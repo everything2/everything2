@@ -13,7 +13,7 @@ if($query-&gt;param('op') eq 'login' &amp;&amp; !$APP-&gt;isGuest($USER)) {
 } elsif (!$APP-&gt;isGuest($USER)) {
 	$str.=&quot;Hey, &quot;.linkNode($USER).&quot;...  this is where you log in:&lt;p&gt;\n&quot;;
 }else {
-	$str .=&quot;Welcome to $HTMLVARS{site_name}.  Authenticate yourself:\n&lt;p&gt;\n&quot;;
+	$str .=&quot;Welcome to $Everything::CONF-&gt;{system}-&gt;{site_name}.  Authenticate yourself:\n&lt;p&gt;\n&quot;;
 }
 #jb says: security fixes
 my $pass = $query-&gt;param(&quot;passwd&quot;);

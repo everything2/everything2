@@ -11,17 +11,17 @@ my $XG = new XML::Generator;
 my $nl = &quot;\n&quot;;
 
 my $str=$XG-&gt;info({
-	'site'=&gt;$HTMLVARS{site_url},
-	'sitename'=&gt;$HTMLVARS{site_name},
+	'site'=&gt;$Everything::CONF-&gt;{system}-&gt;{site_url},
+	'sitename'=&gt;$Everything::CONF-&gt;{system}-&gt;{site_name},
 	'servertime'=&gt;scalar(localtime(time)),
 	'node_id'=&gt;$$NODE{node_id},
 },'rendered by '.$$NODE{title}).$nl;
 
 my $TYPE_USER = 15; #getNode('user','nodetype');
 my $UID = getId($USER);
-my $isRoot = exists $HTMLVARS{group_gods}{$UID};
-my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$UID};
-my $isEDev = $isRoot || exists $HTMLVARS{group_edev}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
+my $isCE = $APP-&gt;isEditor($USER);
+my $isEDev = $APP-&gt;isDeveloper($USER);
 my $fingerID;	#the ID (numeric string) of the user we're fingering
 my $fingerTitle;	#the title (string) of the user we're fingering
 my $fingerUser=undef;	#the user (object) we fingered
@@ -83,19 +83,11 @@ $str .= $XG-&gt;in_room($fingerUser-&gt;{in_room}).$nl if $isMe || $isRoot;
 
 $str .= $XG-&gt;imgsrc(Everything::XML::makeXmlSafe($fingerUser-&gt;{imgsrc})).$nl if (exists $fingerUser-&gt;{imgsrc}) and length($fingerUser-&gt;{imgsrc});
 
-local *doUserGroup = sub {
-	my $groupName = $_[0];
-	if(exists $HTMLVARS{'group_'.$groupName}) {
-		return 
-	} else {
-	}
-};
-
 #usergroups (not all of them, just some common ones)
 my $ug = '';
-if(exists $HTMLVARS{group_gods}{$fingerID}) { $ug .= $XG-&gt;group({node_id=&gt;114,title=&gt;'gods'}).$nl; }
-if(exists $HTMLVARS{'group_content editors'}{$fingerID}) { $ug .= $XG-&gt;group({node_id=&gt;923653,title=&gt;'Content Editors'}).$nl; }
-if(exists $HTMLVARS{group_edev}{$fingerID}) { $ug .= $XG-&gt;group({node_id=&gt;838015,title=&gt;'edev'}).$nl; }
+if($APP-&gt;isAdmin($fingerID) ) { $ug .= $XG-&gt;group({node_id=&gt;114,title=&gt;'gods'}).$nl; }
+if($APP-&gt;isEditor($fingerID) ) { $ug .= $XG-&gt;group({node_id=&gt;923653,title=&gt;'Content Editors'}).$nl; }
+if($APP-&gt;isDeveloper($fingerID) ) { $ug .= $XG-&gt;group({node_id=&gt;838015,title=&gt;'edev'}).$nl; }
 my $N=getNode('clientdev','usergroup');
 if(defined $N) {
 	#there has got to be a better way of doing this

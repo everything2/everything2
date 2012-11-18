@@ -10,7 +10,6 @@ my $OLDSETTINGS =
 not_found =&gt; $$SETTINGS{notFound_node},
 permission_denied =&gt; $$SETTINGS{permissionDenied_node},
 search_group =&gt; $$SETTINGS{searchResults_node},
-duplicate_group =&gt; $$SETTINGS{duplicatesFound_node},
 } ;
 
 @$SETTINGS{keys %$OLDSETTINGS}= values %$OLDSETTINGS;
