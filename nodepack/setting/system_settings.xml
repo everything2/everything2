@@ -49,10 +49,6 @@
     <key>pageOfCool_node</key>
   </vars>
   <vars>
-    <value>Everything</value>
-    <key>site_name</key>
-  </vars>
-  <vars>
     <value>993891</value>
     <key>thekillingfloor2</key>
   </vars>
@@ -67,10 +63,6 @@
   <vars>
     <value>108</value>
     <key>userSettings_node</key>
-  </vars>
-  <vars>
-    <value>http://everything2.com/</value>
-    <key>site_url</key>
   </vars>
   <vars>
     <value>109</value>

@@ -1,6 +1,9 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Nov 18 23:00:05 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Mon Nov 19 02:35:12 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;944517&quot; parent_e2node=&quot;740387&quot; author_user=&quot;madvid&quot;&gt;Hertzsprung-Russell diagram&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;jessicaj&quot; node_id=&quot;1331571&quot; parent_e2node=&quot;1331569&quot; author_user=&quot;sneff&quot;&gt;Rice and lentil pancakes with feta and balsamic grapes&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;645855&quot; parent_e2node=&quot;108671&quot; author_user=&quot;DMan&quot;&gt;Chinese Communist party&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Auspice&quot; node_id=&quot;2073132&quot; parent_e2node=&quot;1200711&quot; author_user=&quot;Tem42&quot;&gt;Sideways Stories from Wayside School&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;HerMan&quot; node_id=&quot;2073266&quot; parent_e2node=&quot;2073257&quot; author_user=&quot;Hazelnut&quot;&gt;Police &amp; Crime Commissioners Election, 2012&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;1685398&quot; parent_e2node=&quot;1685390&quot; author_user=&quot;JoeBaldwin&quot;&gt;Bullet Proof...I Wish I Was&lt;/cooled&gt;
@@ -13,9 +16,6 @@
 	&lt;cooled cooledby_user=&quot;jessicaj&quot; node_id=&quot;2021460&quot; parent_e2node=&quot;2017067&quot; author_user=&quot;TerribleAspect&quot;&gt;The Apples and Bananas Song&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2064872&quot; parent_e2node=&quot;2072958&quot; author_user=&quot;Pandeism Fish&quot;&gt;Technologolem&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2072982&quot; parent_e2node=&quot;386674&quot; author_user=&quot;borgo&quot;&gt;black eye&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2072928&quot; parent_e2node=&quot;1372693&quot; author_user=&quot;e2reneta&quot;&gt;That's Entertainment&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;sloebertje&quot; node_id=&quot;2071951&quot; parent_e2node=&quot;134117&quot; author_user=&quot;Oolong&quot;&gt;privilege&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2072813&quot; parent_e2node=&quot;2073261&quot; author_user=&quot;GaleCrater&quot;&gt;causality wave&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

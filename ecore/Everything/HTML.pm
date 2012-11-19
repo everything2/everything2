@@ -2566,7 +2566,7 @@ sub opLogin
 	my $passwd = $query->param("passwd");
 	$USER = loginUser($user, $passwd) if $user && $passwd;
 
-	return if !$USER || $$USER{user_id} == $HTMLVARS{guest_user};
+	return if !$USER || $APP->isGuest($USER); 
 
 	$user = $USER -> {title};
 	$passwd = $USER -> {passwd};
@@ -2606,12 +2606,12 @@ sub loginUser
 	}
 
 	my $user = confirmUser($username, $pass, $cookie) if $username && $pass;
-	$user ||= getNodeById($HTMLVARS{guest_user});
+	$user ||= getNodeById($Everything::CONF->{system}->{guest_user});
 
 	$VARS = getVars($user);
 
 	return $user if !$user
-		|| $user -> {user_id} == $HTMLVARS{guest_user}
+		|| $APP->isGuest($user)
 		|| $query -> param('ajaxIdle');
 
 	my $TIMEOUT_SECONDS = 4 * 60;

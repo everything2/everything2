@@ -10,7 +10,7 @@ my $E2NODE;
 
 $E2NODE=getNode $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
 $E2NODE ||= $NODE;
-my $site = $HTMLVARS{site_url};
+my $site = $Everything::CONF-&gt;{system}-&gt;{site_url};
  $site =~ s/\/$//;
  $site.= &quot;/title/$$E2NODE{title}&quot;;
  $site =~ s/ /\+/g;
