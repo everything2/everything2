@@ -5,12 +5,9 @@
 You can also keep tabs on these using the Usergroup Writeups [nodelet settings|nodelet]. Find out more about these and other usergroups at [Usergroup Lineup].&lt;/p&gt;
 
 [%
-  my $UID = $$USER{node_id};
-#  return &quot;not ready yet&quot; unless $UID == 650043 || $UID == 1249142; 
-    ## dann or dann-o-matic
+  my $isGod = $APP-&gt;isAdmin($USER); 
+  my $isEd = $APP-&gt;isEditor($USER);
 
-  my $isGod = exists $HTMLVARS{'group_gods'}{$UID};
-  my $isEd = $isGod || exists $HTMLVARS{'group_content editors'}{$UID};
   my $webloggables = getVars(getNode(&quot;webloggables&quot;, &quot;setting&quot;));
   my $view_weblog = $query-&gt;param('view_weblog');
   my $skipped = 0;

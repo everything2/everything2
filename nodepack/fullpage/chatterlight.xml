@@ -55,7 +55,7 @@ unless ( !$$VARS{preferred_theme} || $$VARS{preferred_theme} == 1854183 ) { #unl
 
 		&lt;div id=&quot;links&quot;&gt;
 			&lt;p&gt;
-[% return unless exists($HTMLVARS{'group_gods'}{$$USER{user_id}}); return (&quot; [E2 Bouncer] | &quot;); %]
+[% return unless $APP-&gt;isAdmin($USER); return (&quot; [E2 Bouncer] | &quot;); %]
 [% #			&lt;a href=&quot;javascript:replyToCB(\'jaybonci\')&quot; title=&quot;Send a bug report to jaybonci&quot;&gt;Comments/Suggestions?&lt;/a&gt; | %]
 				&lt;a href=&quot;/node/superdoc/Drafts&quot; title=&quot;Your drafts&quot;&gt;Drafts&lt;/a&gt; |
 				[% linkNode($USER,0,{lastnode_id=&gt;0}) %] |

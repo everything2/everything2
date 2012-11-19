@@ -23,7 +23,7 @@ while (my $row = $csr-&gt;fetchrow_hashref) {
   my $member = $$row{member_user};
   my $u = getNodeById($$row{member_user});
 
-  my $e2god = (exists($HTMLVARS{'group_gods'}{$member})
+  my $e2god = ( $APP-&gt;isAdmin($member)
                &amp;&amp; !$APP-&gt;getParameter($member,&quot;hide_chatterbox_staff_symbol&quot;) )?(1):(0);
   push @props, qq-e2god=&quot;$e2god&quot;-;
 

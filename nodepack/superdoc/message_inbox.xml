@@ -31,7 +31,7 @@ my $filterUser = $query -&gt; param('fromuser');
 my $filterGroup = $query -&gt; param('fromgroup');
 my $spyon = $query -&gt; param('spy_user');
 
-my $isRoot = exists $HTMLVARS{group_gods}{$$USER{node_id}};
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $bots = getVars(getNode('bot inboxes', 'setting')) if $isRoot or $spyon;
 my $grandtotal;
 

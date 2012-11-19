@@ -71,9 +71,7 @@ my $usertitle = 'None';
 ##################################################
 #INITIALIZATION
 
-my $UID = $$USER{node_id};
-my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
-my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$UID};
+my $isCE = $APP-&gt;isEditor($USER);
 
 #Since this variable is needed by both Perl and SQL below, it
 #must be set to 0. Just undefining it isn't enough, since SQL will

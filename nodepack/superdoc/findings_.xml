@@ -72,7 +72,6 @@ foreach my $ND (@{ $$NODE{group} }) {
 	if($curType ne 'e2node'){
 		$str .= &quot; ($curType)&quot;;
 	}
-	#$str .= &quot;($ND-&gt;{node_id})&quot; if $HTMLVARS{'group_gods'}{$USER-&gt;{node_id}};
 	$str .= &quot;&lt;/li&gt;\n&quot;;
 }
 

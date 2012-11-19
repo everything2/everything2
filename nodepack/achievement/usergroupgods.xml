@@ -5,6 +5,6 @@
   <subtype></subtype>
   <node_id>1920602</node_id>
   <title>usergroupGods</title>
-  <code>return 1 if $HTMLVARS{group_gods}{$user_id};
+  <code>return 1 if $APP-&gt;isAdmin($user_id});
 return 0;</code>
 </node>

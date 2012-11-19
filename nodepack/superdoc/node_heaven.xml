@@ -66,9 +66,8 @@ return &quot;&lt;h2&gt;Convert to drafts:
 %]
 
 [%
-my $UID = $$USER{node_id};
-my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
-my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
+my $isCE = $APP-&gt;isEditor($USER);
 return unless $isCE;
 
 my $str = '&lt;br&gt;'.htmlcode('openform');
@@ -96,12 +95,11 @@ $str;
 &lt;p align=&quot;center&quot;&gt;Here are the little Angels:&lt;/p&gt;
 &lt;p&gt;
 [%#/
-my $UID = $$USER{node_id} || 0;
 return '&lt;p&gt;Where are you going so fast? You have not yet begun to live.
 Why not [Create A New User|take a crack at life]?&lt;/p&gt;' if $APP-&gt;isGuest($USER);
 
-my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
-my $isCE = $isRoot || (exists $HTMLVARS{'group_content editors'}{$UID});
+my $isRoot = $APP-&gt;isAdmin($USER);
+my $isCE = $APP-&gt;isEditor($USER);
 
 #determine who to showing information for
 my $U = $USER;
@@ -187,7 +185,7 @@ local *genSortLink = sub {
                 orderby=&gt;$orderBy,
         };
         $$linkOpts{showall}=1 if $showState;
-        $$linkOpts{heavenuser} = $filterUserTitle if ($isRoot || $isCE) &amp;&amp; ($filterUserID!=$UID);
+        $$linkOpts{heavenuser} = $filterUserTitle if ($isRoot || $isCE) &amp;&amp; ($filterUserID!=$$USER{user_id});
         $$linkOpts{heaventitle} = $query-&gt;param('heaventitle') if ($isRoot &amp;&amp; $filterTitle);
         $$linkOpts{wukiller} = $query-&gt;param('wukiller') if ( $query-&gt;param('wukiller') );
         $$linkOpts{wukillerself} = $query-&gt;param('wukillerself') if ( $query-&gt;param('wukillerself') );

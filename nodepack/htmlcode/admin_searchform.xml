@@ -5,7 +5,7 @@
   <code>my ($PARAM) = @_;
 
 my $nid = getId($NODE) || '';
-return unless exists $HTMLVARS{group_gods}{$$USER{node_id}} || exists $HTMLVARS{'group_content editors'}{$$USER{node_id}};
+return unless $APP-&gt;isEditor($USER); 
 
 my $servername = `hostname`;
 chomp $servername;

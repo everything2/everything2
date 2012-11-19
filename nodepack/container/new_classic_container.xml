@@ -27,17 +27,9 @@
    CONTAINED_STUFF
   &lt;/td&gt;
 [{showNodelets:right}]
-[%
-#  &lt;td width=&quot;15%&quot; valign=&quot;top&quot; align=&quot;right&quot;&gt;
-#   [{admin searchform}]
-#   &lt;!-- nodelets start here --&gt;
-#   [{nodelet meta-container}]
-%]
   &lt;/td&gt;
  &lt;/tr&gt;
 &lt;/table&gt;
-
-&lt;!-- &lt;LAYER src=&quot;http://adfu.blockstackers.com/servfu.pl?l,everything2&quot; top=15 left=10&gt;&lt;/ILAYER&gt; --&gt;
 
 &lt;center&gt;&lt;font size=2&gt;[%
 my @R = (&quot;This affordable entertainment brought to you by&quot;,
