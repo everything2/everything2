@@ -5,10 +5,6 @@
     <key>roomTextboxLevel</key>
   </vars>
   <vars>
-    <value></value>
-    <key>imageroot</key>
-  </vars>
-  <vars>
     <value>668164</value>
     <key>notFound_node</key>
   </vars>
@@ -25,10 +21,6 @@
     <key>generalParent_container</key>
   </vars>
   <vars>
-    <value>216</value>
-    <key>nodelet_group</key>
-  </vars>
-  <vars>
     <value>-8</value>
     <key>writeuplowrepthreshold</key>
   </vars>
@@ -37,20 +29,12 @@
     <key>permissionDenied_node</key>
   </vars>
   <vars>
-    <value>884776</value>
-    <key>killing_floor</key>
-  </vars>
-  <vars>
     <value>114</value>
     <key>gods</key>
   </vars>
   <vars>
     <value>169667</value>
     <key>pageOfCool_node</key>
-  </vars>
-  <vars>
-    <value>993891</value>
-    <key>thekillingfloor2</key>
   </vars>
   <vars>
     <value>2</value>
@@ -79,10 +63,6 @@
   <vars>
     <value>1140332</value>
     <key>searchResults_node</key>
-  </vars>
-  <vars>
-    <value>779713</value>
-    <key>guest_user</key>
   </vars>
   <vars>
     <value>952215</value>

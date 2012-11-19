@@ -1,6 +1,7 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Mon Nov 19 02:35:12 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Mon Nov 19 03:15:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Glowing Fish&quot; node_id=&quot;2073286&quot; parent_e2node=&quot;2073285&quot; author_user=&quot;Hazelnut&quot;&gt;Passion Model&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;944517&quot; parent_e2node=&quot;740387&quot; author_user=&quot;madvid&quot;&gt;Hertzsprung-Russell diagram&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;jessicaj&quot; node_id=&quot;1331571&quot; parent_e2node=&quot;1331569&quot; author_user=&quot;sneff&quot;&gt;Rice and lentil pancakes with feta and balsamic grapes&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;645855&quot; parent_e2node=&quot;108671&quot; author_user=&quot;DMan&quot;&gt;Chinese Communist party&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;angel&quot; node_id=&quot;2050906&quot; parent_e2node=&quot;2037034&quot; author_user=&quot;haqiqat&quot;&gt;He's milking the apples&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;jessicaj&quot; node_id=&quot;2021460&quot; parent_e2node=&quot;2017067&quot; author_user=&quot;TerribleAspect&quot;&gt;The Apples and Bananas Song&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2064872&quot; parent_e2node=&quot;2072958&quot; author_user=&quot;Pandeism Fish&quot;&gt;Technologolem&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2072982&quot; parent_e2node=&quot;386674&quot; author_user=&quot;borgo&quot;&gt;black eye&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

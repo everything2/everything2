@@ -79,7 +79,7 @@ $str.='&lt;input type=&quot;hidden&quot; name=&quot;lastnode_id&quot; value=&quo
 
 $str.='&lt;/td&gt;&lt;td&gt;';
 if (exists $$THEME{searchIcon}) {
-  my $iconsrc = &quot;$HTMLVARS{imageroot}.$$THEME{searchIcon}&quot;;
+  my $iconsrc = $$THEME{searchIcon};
   if($$THEME{searchIcon} =~ m|^http://|)
   { 
     $iconsrc = $$THEME{searchIcon};

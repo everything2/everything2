@@ -135,7 +135,7 @@ $str.='&lt;input type=&quot;hidden&quot; name=&quot;lastnode_id&quot; value=&quo
 
 $str.='&lt;/td&gt;&lt;td&gt;';
 if (exists $$THEME{searchIcon}) {
-  $str.= '&lt;input type=&quot;image&quot; name=&quot;searchy&quot; alt=&quot;search&quot; align=&quot;middle&quot; src=&quot;'.$HTMLVARS{imageroot}.$$THEME{searchIcon}.'&quot;';
+  $str.= '&lt;input type=&quot;image&quot; name=&quot;searchy&quot; alt=&quot;search&quot; align=&quot;middle&quot; src=&quot;'.$$THEME{searchIcon}.'&quot;';
   $str.= ' width=&quot;'.$$THEME{searchIconWidth}.'&quot;' if exists $$THEME{searchIconWidth};
   $str.= ' height=&quot;'.$$THEME{searchIconHeight}.'&quot;' if exists $$THEME{searchIconHeight};
   $str.=' /&gt;';
