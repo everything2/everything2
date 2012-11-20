@@ -35,6 +35,7 @@ function confirmSubmit() {
 
 
 [%
+return &quot;&quot; unless $$USER{title} eq &quot;jaybonci&quot;;
 #/
 #Function to check if user is allowed to be collab on given scratch
 #pad.

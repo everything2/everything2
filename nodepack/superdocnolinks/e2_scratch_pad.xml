@@ -8,6 +8,7 @@ obsolete. &lt;strong&gt;[Drafts[superdoc]]&lt;/strong&gt; is the place to go now
 &lt;hr&gt;
 
 [%
+return &quot;&quot;;
 
 if ($$VARS{settings_useTinyMCE}) {
 return '&lt;script type=&quot;text/javascript&quot;&gt;
@@ -29,7 +30,7 @@ extended_valid_elements: &quot;big,small&quot;
 &lt;p&gt;This is a private area (unless you say otherwise) for
 
 [% 
-
+return &quot;&quot;;
 
 ###
 ###   THIS IS NOT YOUR SCRATCHPAD.  THIS IS THE CODE THAT RUNS THE SCRATCHPADS.
@@ -47,6 +48,7 @@ linkNode($USER,'you',{lastnode_id=&gt;0});
 &lt;p&gt;
 
 [%
+return &quot;&quot;;
 
 return if $APP-&gt;isGuest($USER);
 
@@ -59,7 +61,7 @@ my $str = htmlcode('varcheckboxinverse','skratchShare,Private'); #have this firs
 [{varcheckboxinverse:noScratchHints,Show writeup hints here}]&lt;br /&gt;&lt;br /&gt;
 
 [%
-
+return &quot;&quot;;
 return if $APP-&gt;isGuest($USER);
 
 my $skratch = $DB-&gt;sqlSelect('scratch_text', 'scratch', &quot;scratch_id = $$USER{node_id}&quot;);

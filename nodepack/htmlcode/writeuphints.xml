@@ -14,6 +14,12 @@
 #		the hash, to keep things clean.
 
 #updated 2005-01-04(2) by N-Wing to add in spelling
+my $writeup;
+
+if(ref $_[0] eq &quot;ARRAY&quot;)
+{
+  $writeup = $_[0]-&gt;[0];
+}
 
 my $textInHV = ((defined $_[0]) &amp;&amp; length($_[0]) &amp;&amp; $_[0]) ? 1 : 0;
 
@@ -42,8 +48,8 @@ return unless $showDefault || $showHTML || $showXHTML || $showSilly || $showSpel
 my $showCat = 1;	#1 to show hint categories, 0 to hide
 my $curCat;
 
-my $writeup;
-if($textInHV) {
+
+if($textInHV and !$writeup) {
 	return unless exists $HTMLVARS{writeuphints_text};
 	$writeup = $HTMLVARS{writeuphints_text};
 	delete $HTMLVARS{writeuphints_text};
@@ -74,11 +80,6 @@ foreach(@allParts) {
 
 #Count paragraphs, accounting for both &lt;p...&gt; and &lt;BR&gt;&lt;BR&gt;
 my @allParagraphs = split(/\&lt;\w*?p|&lt;br&gt;\w*?&lt;br&gt;/si, $writeup);
-
-#while(scalar(@allParts)) {
-#	push(@wuPartText, shift @allParts);
-#	push(@wuPartLink, shift @allParts) if scalar(@allParts);
-#}
 
 $writeup = ' '.$writeup.' ';	#cheap hack - stylewise :( and speedwise :) - to make \s match at start and end
 

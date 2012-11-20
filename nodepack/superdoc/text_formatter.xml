@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>[% return '&lt;p&gt;Note: this is from [Magical Text Formatter]&lt;/p&gt;' if exists $HTMLVARS{'group_edev'}{getId($USER)}; %]
+  <doctext>[% return '&lt;p&gt;Note: this is from [Magical Text Formatter]&lt;/p&gt;' if $APP-&gt;isDeveloper($USER); %]
 &lt;p align=&quot;right&quot;&gt;Last updated Thursday March 21, 2002&lt;/p&gt;
 &lt;!-- 
   This is mblase's edevdoc. Howdy.

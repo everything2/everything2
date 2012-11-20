@@ -3,7 +3,7 @@
 [%
 my $UID = getId($USER);
 my $isGuest = $APP-&gt;isGuest($USER);
-my $isEdev = !$isGuest &amp;&amp; exists($HTMLVARS{'group_edev'}{$UID});
+my $isEdev = $APP-&gt;isDeveloper($USER);
 return &quot;edev is the 'Everything Developer' usergroup, for people interested in contributing to the development of this site, or just learning about how it works. Please /msg [Oolong] if you want to be added.&quot; if !$isEdev;
 
 my $str = '&lt;h2&gt;[Patch Manager]&lt;/h2&gt;&lt;p&gt;';
@@ -15,7 +15,7 @@ my $str = '&lt;h2&gt;[Patch Manager]&lt;/h2&gt;&lt;p&gt;';
 
 my $UID = getId($USER);
 my $isGuest = $APP-&gt;isGuest($USER);
-my $isEdev = !$isGuest &amp;&amp; exists($HTMLVARS{'group_edev'}{$UID});
+my $isEdev = $APP-&gt;isDeveloper($USER);
 return if !$isEdev;
 my $str = '&lt;h2&gt;Edev Documents!&lt;/h2&gt;&lt;p&gt;';
 
@@ -24,7 +24,7 @@ foreach (@edoc) {
 	$str.= linkNode($_) .&quot;&lt;br /&gt;\n&quot;;
 }
 
-return $str unless exists $HTMLVARS{group_edev}{getId($USER)}; 
+return $str unless $APP-&gt;isDeveloper($USER); 
 
 $str.=htmlcode('openform');
 $str.=&quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;op\&quot; value=\&quot;new\&quot;&gt;\n&quot;;

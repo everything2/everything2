@@ -5,13 +5,6 @@
 my $str;
 my $wherestr;
 
-#new way
-#htmlcode('setCloakVision','') unless exists $HTMLVARS{arg}{userVision};
-#
-#
-#
-#
-
 #old way
 unless($$VARS{infravision}) {
 	$wherestr.=' and ' if $wherestr;
