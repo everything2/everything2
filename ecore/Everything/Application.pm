@@ -1406,4 +1406,71 @@ sub getMaintenanceNodesForUser
 	return [keys %$maint_nodes];
 }
 
+sub canSeeDraft
+{
+	my ($this, $user, $draft, $disposition) = @_;
+
+	# disposition can either be "edit" or "find"
+	$disposition ||= "";
+
+	return 0 if $this->isGuest($user);
+
+	if(ref $user eq "")
+	{
+		$user = $this->{db}->getNodeById($user);
+	}
+
+	if(ref $draft eq "")
+	{
+		$draft = $this->{db}->getNodeById($draft);
+	}
+
+	return 1 if $user->{node_id} == $draft->{author_user};
+
+	# we may not have a complete node. Get needed info
+	# jb notes: this is pretty unlikely, I think, but I'll leave it in
+
+	unless ($draft->{publication_status}){
+		($draft->{publication_status}, $draft->{collaborators}) = $this->{db}->sqlSelect('publication_status, collaborators', 'draft',"draft_id = $$draft{node_id}");
+	}
+
+	return 0 if $disposition eq "edit" && !$draft->{collaborators};
+
+	my $STATUS = $this->{db}->getNodeById($$draft{publication_status});
+	return 0 if !$STATUS || $$STATUS{type}{title} ne 'publication_status';
+
+	my $isEditor = $this->isEditor($user);
+
+	my %equivalents = (
+		nuked => 'private',
+		removed => $isEditor ? 'public' : 'private',
+		review => 'findable',
+	);
+
+	my $status = $equivalents{$$STATUS{title}} || $$STATUS{title};
+	return 0 if $status eq 'private' and !$$draft{collaborators} || $disposition eq "edit";
+
+	# locked users' drafts are private, except removed drafts for editors
+	return 0 if (!$isEditor || $$STATUS{title} ne 'removed') and $this->{db}->sqlSelect('acctlock', 'user', "user_id=$$draft{author_user}");
+
+	return 1 if($status eq 'public' and $disposition ne "edit");
+	return 1 if($status eq 'findable' and $disposition eq "find");;
+
+	# shared draft or edit check. Check if this user can see/edit
+	my @collab_names = split ',', $$draft{collaborators};
+	my $UG;
+
+	foreach (@collab_names){
+		$_ =~ s/^\s*|\s*$//g;
+		return 1 if lc($_) eq lc($$user{title}) or lc($_) eq 'everybody';
+		if ($UG = $this->{db}->getNode($_, 'usergroup')){
+			my $collab_ids = { map $_->{node_id}, @{$this->{db}->selectNodegroupFlat($UG)} };
+ 				return 1 if exists $collab_ids->{$$user{node_id}};
+		}
+	}
+
+	return 0;
+
+
+}
 1;
