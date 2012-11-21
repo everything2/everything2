@@ -54,7 +54,7 @@
     <key>cools</key>
   </vars>
   <vars>
-    <value>54 - &lt;a href=&quot;/user/Virgil/writeups&quot;&gt;View Virgil's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Virgil&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
+    <value>48 - &lt;a href=&quot;/user/Virgil/writeups&quot;&gt;View Virgil's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Virgil&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
     <key>nwriteups</key>
   </vars>
   <vars>
@@ -90,7 +90,7 @@
     <key>no_coolnotification</key>
   </vars>
   <vars>
-    <value>54</value>
+    <value>48</value>
     <key>numwriteups</key>
   </vars>
   <vars>
