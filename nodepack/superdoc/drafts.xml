@@ -71,7 +71,7 @@ unless ($username){
 
 }else{
 	$title = &quot;${username}'s drafts (visible to you)&quot;;
-	$cansee = getCompiledCode( getNode('canseedraft', 'htmlcode'), \&amp;evalCode);
+	$cansee = sub { my $draft = shift; return $APP-&gt;canSeeDraft($USER, $draft, &quot;find&quot;) };
 
 	$cs = '&lt;th title=&quot;shows whether you or a usergroup you are in is a collaborator on this draft&quot;&gt;Collaborator?';
 	$collaborators = sub{
@@ -79,7 +79,7 @@ unless ($username){
 		if ($_[0]-&gt;{collaborators}){
 			if ($_[0]-&gt;{collaborators} =~ qr/(?:^|,)\s*$$USER{title}\s*(?:$|,)/i){
 				$yes = 'you';
-			}elsif ($ps = 'private' || htmlcode('canseedraft', $_[0], 'edit')){
+			}elsif ($ps = 'private' || $APP-&gt;canSeeDraft($USER, $_[0], 'edit') ){
 				$yes = 'group';
 			}
 		}
@@ -138,8 +138,7 @@ return $str;
 return htmlcode('editwriteup') unless $query -&gt; param('other_user');
 '';
 %]
-&lt;/form&gt;
-</doctext>
+&lt;/form&gt;</doctext>
   <node_id>2035516</node_id>
   <title>Drafts</title>
 </node>

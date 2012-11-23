@@ -220,7 +220,7 @@ if ($blacklisted || $lockedUser || $infected){
 	# note reason
 	my $note = $blacklisted
 		? &quot;Created from blacklisted IP: $blacklisted&quot;
-		: 'Same email address as locked user: '.linkNode($lockedUser);
+		: ($lockedUser ? 'Same email address as locked user: '.linkNode($lockedUser) : '');
 	$note .= ' (infected)' if $infected;
 	htmlcode('addNodenote', $user, $note, $klaproth);
 	$log .= &quot;. $note -&gt; locked&quot;;
