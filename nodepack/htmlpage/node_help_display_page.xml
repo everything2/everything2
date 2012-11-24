@@ -3,11 +3,11 @@
   <parent_container>19</parent_container>
   <pagetype_nodetype>7</pagetype_nodetype>
   <page>[%
-$NODE = $GNODE = getNodeById($HTMLVARS{not_found}) unless $$NODE{type}{title} ne 'draft' or htmlcode('canseedraft',$NODE);
+$NODE = $GNODE = getNodeById($HTMLVARS{not_found}) unless $$NODE{type}{title} ne 'draft' or $APP-&gt;canSeeDraft($USER, $NODE);
 '';
 %][%
 
-  return unless(exists($HTMLVARS{'group_gods'}{$$USER{node_id}}));
+  return unless $APP-&gt;isAdmin($USER);
   my $dohelp = $query-&gt;param(&quot;dohelp&quot;);  
   my $txt = $query-&gt;param(&quot;helptext&quot;);
 
@@ -53,7 +53,7 @@ $NODE = $GNODE = getNodeById($HTMLVARS{not_found}) unless $$NODE{type}{title} ne
 %]
 
 [%
-  return unless(exists($HTMLVARS{'group_gods'}{$$USER{node_id}}));
+  return unless $APP-&gt;isAdmin($USER);;
 
   my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;, &quot;nodehelp&quot;, &quot;nodehelp_id=$$NODE{node_id}&quot;);
   my $row;

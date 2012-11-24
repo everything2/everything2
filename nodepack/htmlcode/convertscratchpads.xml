@@ -68,7 +68,7 @@ while (my $P = $cuss -&gt; fetchrow_hashref()){
 
 	if ($listOnly){
 		$str .= '&lt;li&gt;'.linkNode($SP, $$P{title}, {scratch_id =&gt; $$P{scratch_id}, other_user =&gt; $uname}).'&lt;/li&gt;'
-			if htmlcode('canseedraft', $P) == 1;
+			if $APP-&gt;canSeeDraft($USER, $P, &quot;find&quot;);
 	}elsif ($d = $DB -&gt; insertNode($$P{title}, 'draft', $USER, $P)){
 		$str .= '&lt;li&gt;'.linkNode($d)
 			.&quot;&lt;em&gt; ($statusTitle)&lt;/em&gt; - OK&lt;/li&gt;&quot;;

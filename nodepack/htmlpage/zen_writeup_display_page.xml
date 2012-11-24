@@ -41,7 +41,7 @@ return unless $$NODE{parent_e2node};
 
 [%
 return unless $$NODE{type}{title} ne 'draft' &amp;&amp; canUpdateNode($USER, $NODE) or
-	$$NODE{type}{title} eq 'draft' &amp;&amp; htmlcode('canseedraft', $NODE, 'edit') == 1;
+	$$NODE{type}{title} eq 'draft' &amp;&amp; $APP-&gt;canSeeDraft($USER, $NODE, 'edit');
 
 htmlcode('openform', -class=&gt;'writeup_add')
 	.htmlcode('editwriteup', $NODE)

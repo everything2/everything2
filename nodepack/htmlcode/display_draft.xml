@@ -7,13 +7,13 @@ $displaytype ||= $query -&gt; param('displaytype') || 'display';
 
 my $displaylike;
 
-my $tinopener = (isGod($USER) and $query -&gt; param('tinopener') and !htmlcode('canseedraft', $NODE));
+my $tinopener = (isGod($USER) and $query -&gt; param('tinopener') and !$APP-&gt;canSeeDraft($USER, $NODE));
 local ($$NODE{doctext}, $$NODE{collaborators})
 	= (&quot;&lt;p&gt;&lt;b&gt;&amp;#91;DOCTEXT REDACTED&amp;#93;&lt;/b&gt;&lt;/p&gt;
 		&lt;p&gt;You do not have permission to see this draft.&lt;/p&gt;&quot; , $$USER{title}) if $tinopener;
 
 if ($$NODE{author_user} == $$USER{node_id}
-		|| htmlcode('canseedraft', $NODE)
+		|| $APP-&gt;canSeeDraft($USER, $NODE)
 		|| $$NODE{type}{title} eq 'writeup'){
 	$displaylike = getType(
 		getNodeWhere({pagetype_nodetype =&gt; 117, displaytype =&gt; $displaytype}, 'htmlpage') ?

@@ -52,7 +52,7 @@ foreach my $ND (@{ $$NODE{group} }) {
 	next if $curType eq 'writeup';
 	next if $curType eq 'debatecomment';
 
-	next if $curType eq 'draft' and htmlcode('canseedraft', $ND) != 1;
+	next if $curType eq 'draft' and !$APP-&gt;canSeeDraft($USER, $ND, 'find');
 	if ($curType eq 'debate' and not $isRoot) {
 		next unless $APP-&gt;inUsergroup($USER, getNodeById($$ND{restricted}));
 	}

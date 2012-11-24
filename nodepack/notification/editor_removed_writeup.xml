@@ -10,7 +10,7 @@ return ($draft &amp;&amp; $$draft{type}{title} ne 'draft');</invalid_check>
   <code>my $reason = &quot;: $$args{reason}&quot; if $$args{reason};
 my $titleLink = (
 	getRef($$args{writeup_id})
-		&amp;&amp; htmlcode('canseedraft', $$args{writeup_id}))
+		&amp;&amp; $APP-&gt;canSeeDraft($USER, $$args{writeup_id}))
 	? linkNode($$args{writeup_id})
 	: linkNodeTitle($$args{title});
 
