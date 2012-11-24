@@ -8,7 +8,7 @@
 
 &lt;p&gt;Simple, right?  &lt;/p&gt;
 
-&lt;p&gt;Read it all two or three times before msg'ing me with all the questions, comments, warnings and threats.  Actually, scratch that - you can start a new discussion if you want to comment/talk it out.  I wasn't planning on putting this up for discussion for several more months.  I'll do it now as long as one thing is clear:  Jay and I aren't done thinking about this and the code isn't even close to ready.  These changes will coincide with some major hardware changes and the introduction of the newest version of our ecode (what C2 is running on).  The soonest we can hope for is Spring of next year.  You know how that goes, so it'll probably be later.  Jay and nate are both extremely busy with their dayjobs now, too.  [dem bones|I'm] totally shiftless but all I'm good for is writing down what I want.&lt;/p&gt;
+&lt;p&gt;Read it all two or three times before msg'ing me with all the questions, comments, warnings and threats or start a new discussion if you want to comment/talk it out.  I wasn't planning on putting this up for discussion for several more months.  I'll do it now as long as one thing is clear:  Jay and I aren't done thinking about this and the code isn't even close to ready.  These changes will coincide with some major hardware changes and the introduction of the newest version of our ecode (what C2 is running on).  The soonest we can hope for is Spring of next year.  You know how that goes, so it'll probably be later.  Jay and nate are both extremely busy with their dayjobs now, too.  [dem bones|I'm] totally shiftless but all I'm good for is writing down what I want.&lt;/p&gt;
 
 &lt;p&gt;So, here's a thumbnail sketch of the Big Changes.  These are the broad strokes.  You'll see some chinks in the armor - we've got many of them solved and many we're still thinking on.  Overall this will be a vastly more professional website while simultaneously improving community and reducing editorial/user stress.  &lt;/p&gt;
 
@@ -39,7 +39,7 @@
 &lt;li&gt; Not votable.&lt;/li&gt;
 &lt;li&gt; Won't create softlinks.&lt;/li&gt;
 &lt;li&gt; No editorial standard for content - like daylogs.&lt;/li&gt;
-&lt;li&gt; These nodes can be private or public (like a scratch pad) or available only to users the author has specified.  
+&lt;li&gt; These nodes can be private or public or available only to users the author has specified.  
 &lt;/ul&gt;
 
 &lt;li&gt; &lt;b&gt;Daylogs and dreamlogs:&lt;/b&gt;&lt;/li&gt;

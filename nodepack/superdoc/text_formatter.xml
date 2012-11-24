@@ -35,8 +35,7 @@ If you have any problems, comments, or whatnot, send a [/msg] to [mblase].
 
 &lt;hr /&gt;
 
-&lt;form action=&quot;/index.pl&quot; name=&quot;skratchform&quot; method=&quot;post&quot; 
-onSubmit=&quot;return confirm('WARNING: This will OVERWRITE any text currently in your Scratch Pad. Are you sure you want to do this?')&quot;&gt;
+&lt;form action=&quot;/index.pl&quot; name=&quot;dummyform&quot; method=&quot;post&quot;&gt;
 
 Enter the text to format below. 
 &lt;a href=&quot;#&quot; onClick=&quot;return clearBox()&quot;&gt;Clear the box&lt;/a&gt;

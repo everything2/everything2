@@ -1,6 +1,8 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sat Nov 24 20:40:07 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sat Nov 24 22:15:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;2098144&quot; parent_e2node=&quot;631466&quot; author_user=&quot;dannye&quot;&gt;Bear Bryant&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Demeter&quot; node_id=&quot;1393952&quot; parent_e2node=&quot;1393943&quot; author_user=&quot;Oolong&quot;&gt;Vegan ingredients&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;avalyn&quot; node_id=&quot;2072975&quot; parent_e2node=&quot;1964040&quot; author_user=&quot;tubular&quot;&gt;I Wanna Be The Guy&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;The Custodian&quot; node_id=&quot;2040855&quot; parent_e2node=&quot;2040863&quot; author_user=&quot;archiewood&quot;&gt;IMC. Split. GO.&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;2098132&quot; parent_e2node=&quot;2072056&quot; author_user=&quot;waverider37&quot;&gt;Skyfall&lt;/cooled&gt;
@@ -14,8 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2073129&quot; parent_e2node=&quot;2073122&quot; author_user=&quot;Oolong&quot;&gt;Friern Barnet People's Library&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;2073579&quot; parent_e2node=&quot;2073578&quot; author_user=&quot;The Custodian&quot;&gt;deorbit&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;1757520&quot; parent_e2node=&quot;166407&quot; author_user=&quot;passport&quot;&gt;What are little girls made of?&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1279370&quot; parent_e2node=&quot;113325&quot; author_user=&quot;bigmouth_strikes&quot;&gt;Beijing&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Lucy-S&quot; node_id=&quot;2063512&quot; parent_e2node=&quot;2063514&quot; author_user=&quot;lizardinlaw&quot;&gt;like a good girl&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

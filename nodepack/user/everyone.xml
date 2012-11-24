@@ -10,10 +10,6 @@
     <key>ekw_headingfont</key>
   </vars>
   <vars>
-    <value>E2 Scratch Pad&lt;br&gt;</value>
-    <key>personal_nodelet</key>
-  </vars>
-  <vars>
     <value>1</value>
     <key>no_socialbookmarkinformer</key>
   </vars>
@@ -86,12 +82,12 @@
     <key>collapsedNodelets</key>
   </vars>
   <vars>
-    <value>Tahoma,Verdana,Helvetica,Arial</value>
-    <key>ekw_logofont</key>
-  </vars>
-  <vars>
     <value>-9484</value>
     <key>oldexp</key>
+  </vars>
+  <vars>
+    <value>Tahoma,Verdana,Helvetica,Arial</value>
+    <key>ekw_logofont</key>
   </vars>
   <vars>
     <value>262,174581,170070,165437,91</value>
