@@ -106,17 +106,6 @@ local *trySend = sub {
 	return unless length($t=$query-&gt;param($nameTxt));
 	if(length($t)&gt;$MAXLEN) { $t=substr($t,0,$MAXLEN); }
 
-  #Deal with [scratch pads] --Swap
-  if ($nameTxt =~ /skratchMsg/){
-    my $getter_id = $getters[0];
-    my $getter_name = getNodeById($getter_id) -&gt; {title};
-    my $scratchTitle = $query -&gt; param('scratch_title');
-    $scratchTitle ||= &quot;unknown&quot;;
-    $aboutNode = 0;
-    $t = &quot;Re [$scratchTitle&quot;.&quot;[scratch by $getter_name]&quot;.&quot;|your scratch pad titled &quot;
-         .&quot;\&quot;$scratchTitle\&quot;]: &quot;.$t;
-  }
-
 	my $doCC = (defined $query-&gt;param($nameCC)) &amp;&amp; ($query-&gt;param($nameCC) eq '1') ? 1 : 0;
 
 	$t = htmlcode('sendPrivateMessage', {

@@ -69,10 +69,6 @@ if (navigator.userAgent.indexOf('Opera') == -1) {
 }
 &lt;/script&gt;
 
-&lt;input type=&quot;submit&quot; value=&quot;Send to Scratch Pad&quot;&gt;
-&lt;input type=&quot;hidden&quot; name=&quot;skratchsubmit&quot; value=&quot;1&quot;&gt;
-&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;1065273&quot;&gt;
-
 &lt;hr&gt;
 Format new lines using:&lt;br /&gt;
 &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; 

@@ -38,7 +38,7 @@ return unless $UID==9740;	#N-Wing is testing
 my $msg = 'DEBUG_opcode_nodeletorder';
 
 #variable
-my $s;	#scratch
+my $s;
 my @allNodelets;
 #my $num;	#number of nodelets before doing anything
 

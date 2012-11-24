@@ -16,13 +16,6 @@ if ($$NODE{type}{title} eq &quot;user&quot;) {
 
   $textareaId = 'user_doctext';
 
-} # if scratch pad editing, nodetype (superdocnolinks) is not unique.
-  # look in title, see if it's &quot;scratch pads&quot;
-elsif ($$NODE{type}{title} eq 'superdocnolinks'
-  &amp;&amp; $$NODE{title} eq 'Scratch Pads') {
-
-  $textareaId = 'skratch_doctext';
-
 } # otherwise we're using writeup_doctext
 else  {
 

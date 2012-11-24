@@ -12,21 +12,8 @@ my $regex = qr/\[(.*?)[\]\[\|]/;
 my $ntt = $NODE-&gt;{type}-&gt;{title};
 my $codeDoc = ($ntt eq 'superdoc') || ($ntt eq 'superdocnolinks') || ($ntt eq 'restricted_superdoc') || ($ntt eq 'oppressor_superdoc'); #FIXME better way of checking for code
 $regex = qr/\[([^%{].*?)[\]\[\|]/ if $codeDoc;
-my $text;
+my $text = $$NODE{doctext}
 my $scratchID;
-
-if ($$NODE{node_id}==1797151|$$NODE{node_id}==1065273) # i.e. if it's [Scratch Pads] or [E2 Scratch Pad]
-  {
-    my $scratchTable=&quot;scratch2&quot;;
-    $scratchID = $query-&gt;param('scratch_id') || 0;
-    $scratchTable=&quot;scratch&quot; if ($scratchID==getId($USER));
-    $text = $DB-&gt;sqlSelect(&quot;scratch_text&quot;, $scratchTable, &quot;scratch_id=$scratchID&quot;); 
-    $codeDoc = 0;
-  }
-
-else {
-  $text = $$NODE{doctext}
-}
 
 my @link_ids;
 while ($text =~ /$regex/g) {

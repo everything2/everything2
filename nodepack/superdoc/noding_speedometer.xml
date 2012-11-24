@@ -10,15 +10,15 @@ my $isRoot = !$isGuest &amp;&amp; exists $HTMLVARS{group_gods}{$UID};
 return 'Sorry, but only registered members can use the Noding Speedometer.' if $isGuest;
 
 my $user_in = $query-&gt;param('speedyuser');
-my $user_scratch = $user_in || $$USER{title};
-$user_scratch = encodeHTML($user_scratch);
+my $username = $user_in || $$USER{title};
+$username = encodeHTML($username);
 # A non-number will break the page, so:
 my $clock_nodes = $query-&gt;param('clocknodes');
 unless ($clock_nodes) {$clock_nodes=50};
 unless ($clock_nodes =~ /^[0-9]+$/) {
   return &quot;Please enter a number of nodes greater than 0.&quot;;
 }
-my $str = htmlcode('openform').&quot;&lt;table&gt;&lt;tr&gt;&lt;td&gt;Username: &lt;/td&gt;&lt;td&gt;&lt;input type=\&quot;text\&quot; name=\&quot;speedyuser\&quot; value=\&quot;$user_scratch\&quot;&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Nodes to clock: &lt;/td&gt;&lt;td&gt;&lt;input type=\&quot;text\&quot; name=\&quot;clocknodes\&quot; value=\&quot;&quot;.$clock_nodes.&quot;\&quot;&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&quot;.htmlcode('closeform').&quot;&lt;br&gt;&quot;;
+my $str = htmlcode('openform').&quot;&lt;table&gt;&lt;tr&gt;&lt;td&gt;Username: &lt;/td&gt;&lt;td&gt;&lt;input type=\&quot;text\&quot; name=\&quot;speedyuser\&quot; value=\&quot;$username\&quot;&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Nodes to clock: &lt;/td&gt;&lt;td&gt;&lt;input type=\&quot;text\&quot; name=\&quot;clocknodes\&quot; value=\&quot;&quot;.$clock_nodes.&quot;\&quot;&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&quot;.htmlcode('closeform').&quot;&lt;br&gt;&quot;;
 
   return $str.=&quot;Okay, the radar gun's ready.  Who should we clock?&quot; unless($user_in);
 
