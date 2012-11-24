@@ -26,7 +26,7 @@ return parseLinks('You need to [verify your email account[superdoc]] before you 
 my @group = @{ $$E2N{group} } if $E2N and $$E2N{group};
 foreach (@group){
 	getRef($_);
-	return $_ if $$_{author_user} == $$user{node_id};
+	return if $$_{author_user} == $$user{node_id};
 }
 
 # no more checks if author has an editor-approved a draft for this node:
