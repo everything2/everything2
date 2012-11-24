@@ -23,7 +23,7 @@ my @showThings = (
 	'categories',
 	'lastnoded',
 	'presents',
-	'skratchshare',
+	'draftshare',
 	'manip',
 	'msgme',
 	'msgyou',
@@ -121,7 +121,7 @@ local *info_lastnoded = sub {
 
 };
 
-local *info_skratchshare = sub {
+local *info_draftshare = sub {
 	return if $isGuest;
 	return linkNode(getNode('Drafts', 'superdoc'), 'Your drafts')
 		if ($$USER{node_id} == $$NODE{node_id});
@@ -212,7 +212,7 @@ my %prettyTitles = (
 	lastnoded=&gt;'most recent writeup',
 #	msgme=&gt;'/msg me',	#set for each user, below
 	msgyou=&gt;'/msgs from me',
-	skratchshare=&gt;'notes to self',
+	draftshare=&gt;'things in progress',
 	msgalias=&gt;'is a chatterbox forward for',
 	manip=&gt;'manipulation',
 	coolsspent=&gt;'C!s spent',
@@ -238,7 +238,7 @@ my %specialDisplays = (
 	msgyou=&gt;,\&amp;info_msgyou,
 	presents=&gt;\&amp;info_presents,
 	lastnoded=&gt;\&amp;info_lastnoded,
-	skratchshare=&gt;\&amp;info_skratchshare,
+	draftshare=&gt;\&amp;info_draftshare,
 	manip=&gt;\&amp;info_manip,
 );
 unless(($nid==220) ||($nid==322)) {	#hack around nate and hemos

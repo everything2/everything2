@@ -141,9 +141,8 @@ local *info_lastnoded = sub {
 
 };
 
-local *info_skratchshare = sub {
+local *info_draftshare = sub {
 	return if $isGuest;
-	return if $$VARS{hideskratchlink};
 	return linkNode(getNode('Drafts', 'superdoc'), 'Your drafts')
 		if ($$USER{node_id} == $$NODE{node_id});
 	return linkNode(getNode('Drafts', 'superdoc'), &quot;$$NODE{title}'s drafts&quot;,
@@ -333,7 +332,7 @@ my %specialDisplays = (
         gp=&gt;\&amp;info_gp,
 	presents=&gt;\&amp;info_presents,
 	lastnoded=&gt;\&amp;info_lastnoded,
-	skratchshare=&gt;\&amp;info_skratchshare,
+	draftshare=&gt;\&amp;info_draftshare,
 	manip=&gt;\&amp;info_manip,
 	settingssome=&gt;\&amp;info_settingssome,
 );
