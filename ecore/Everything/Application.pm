@@ -1474,65 +1474,6 @@ sub canSeeDraft
 
 }
 
-sub convertScratchPadsForUser
-{
-	my ($this, $user) = @_;
-
-	if(ref $user eq "")
-	{
-		$user = $this->{db}->getNodeById($user);
-	}
-
-	return unless $user;
-	my $converted;
-
-	my $select = "scratch_private as publication_status,
-		scratch_collab as collaborators,
-		scratch_text as doctext,
-		scratch_id,
-		scratch_user as author_user";
-
-	my $uname = $user->{title};
-
-	my $cuss = $this->{db}->{dbh}->prepare(
-		"SELECT $select, ".$this->{db}->quote("$$user{title}'s default scratch pad")." as title FROM scratch WHERE scratch_id = $$user{node_id} UNION SELECT $select, scratch_title as title FROM scratch2 WHERE scratch_user = $$user{node_id} ORDER BY title"
-	);
-
-	$cuss->execute();
-
-	my $status = {
-		private => $this->{db}->getNode('private', 'publication_status') -> {node_id},
-		public => $this->{db}->getNode('public', 'publication_status') -> {node_id},
-		shared => $this->{db}->getNode('shared', 'publication_status') -> {node_id},
-	};
-
-	my $d;
-
-	while (my $P = $cuss -> fetchrow_hashref()){
-		my $statusTitle = 'public';
-		if ($$P{publication_status}){ # was private
-			$statusTitle = ($$P{collaborators} ? 'shared' : 'private');
-		}
-		$$P{author_user} ||= $$user{node_id};
-
-		$$P{publication_status} = $$status{$statusTitle};
-		$$P{title} = $this->cleanNodeName($$P{title});
-
-		if ($d = $this->{db}->insertNode($$P{title}, 'draft', $user, $P)){
-			unless ($$P{scratch_id} == $$user{node_id}){
-				$this->{db}->sqlDelete('scratch2',
-					"scratch_id = $$P{scratch_id} AND
-					scratch_user = $$user{node_id}");
-			}else{
-				$this->{db}->sqlDelete('scratch', "scratch_id = $$user{node_id}");
-			}
-			push @$converted, $d; 
-		}
-	}
-
-	return $converted;
-}
-
 #############################################################################
 #	Sub
 #		cleanNodeName
