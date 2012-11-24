@@ -2488,37 +2488,9 @@ sub handleUserRequest{
 
 }
 
-
-#############################################################################
-#	Sub
-#		cleanNodeName
-#
-#	Purpose
-#		We limit names of nodes so that they cannot contain certain
-#		characters.  This is so users can't play games with the names
-#		of their nodes.
-#
-#	Parameters
-#		$nodename - the raw name that the user has given
-#
-#	Returns
-#		The name after we have cleaned it up a bit
-#
 sub cleanNodeName
 {
-	my ($nodename, $removeSpaces) = @_;
-
-	$removeSpaces = 1 if !defined $removeSpaces;
-
-	# For some reason, searching for ? hoses the search engine.
-	$nodename = "" if($nodename eq "?");
-
-	$nodename =~ tr/[]|<>//d;
-	$nodename =~ s/&quot;/"/g;
-	$nodename =~ s/^\s*|\s*$//g if $removeSpaces;
-	$nodename =~ s/\s+/ /g if $removeSpaces;
-
-	return $nodename;
+	return $APP->cleanNodeName(@_);
 }
 
 #############################################################################
