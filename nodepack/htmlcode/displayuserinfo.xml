@@ -43,7 +43,7 @@ my @showThings = @_;
 	'groups',
 	'lastnoded',
 	'presents',
-	'skratchshare',
+	'draftshare',
 	'manip',
 	'msgme',
 	'msgyou',
@@ -305,7 +305,7 @@ my %prettyTitles = (
 	lastnoded=&gt;'most recent writeup',
 #	msgme=&gt;'/msg me',	#set for each user, below
 	msgyou=&gt;'/msgs from me',
-	skratchshare=&gt;'notes to self',
+	draftshare=&gt;'works in progress',
 	msgalias=&gt;'is a chatterbox forward for',
 	manip=&gt;'manipulation',
 	coolsspent=&gt;'C!s spent',

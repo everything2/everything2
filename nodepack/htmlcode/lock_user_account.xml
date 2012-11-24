@@ -20,9 +20,5 @@ $DB -&gt; sqlUpdate('draft JOIN node ON draft_id=node_id'
 	, &quot;node.author_user = $$uid{node_id} AND
 		draft.publication_status = &quot; . getId(getNode('review', 'publication_status')));
 
-# hide the locked user's scratch pad.
-my $V = getVars($uid);
-delete $$V{skratchShare};
-setVars($uid, $V);
 updateNode($uid, -1);</code>
 </node>
