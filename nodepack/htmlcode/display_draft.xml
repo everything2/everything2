@@ -13,7 +13,7 @@ local ($$NODE{doctext}, $$NODE{collaborators})
 		&lt;p&gt;You do not have permission to see this draft.&lt;/p&gt;&quot; , $$USER{title}) if $tinopener;
 
 if ($$NODE{author_user} == $$USER{node_id}
-		|| $APP-&gt;canSeeDraft($USER, $NODE)
+		|| $APP-&gt;canSeeDraft($USER, $NODE ,&quot;find&quot;)
 		|| $$NODE{type}{title} eq 'writeup'){
 	$displaylike = getType(
 		getNodeWhere({pagetype_nodetype =&gt; 117, displaytype =&gt; $displaytype}, 'htmlpage') ?

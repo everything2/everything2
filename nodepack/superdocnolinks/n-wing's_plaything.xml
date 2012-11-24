@@ -30,24 +30,6 @@ Finally, the &lt;code&gt;i&lt;/code&gt; at the end of the regular expression, &l
 &lt;/p&gt;
 &lt;/div&gt;
 
-&lt;p&gt;merge test:&lt;br /&gt;
-[%
-return unless $$USER{node_id}==9740;
-return 'mAT=1' unless $query-&gt;param('mAT') eq '1';
-my $theHTML = getVars(getNode('approved HTML tags',getType('setting')));
-my $theMathML = getVars(getNode('approved MathML tags',getType('setting')));
-$HTMLVARS{'approvedTagsListRef'} = [$theHTML, $theMathML];
-htmlcode('mergeApprovedTags','');
-my $theCombined = $HTMLVARS{'approvedTags'};
-my $s='';
-foreach(sort(keys(%$theCombined))) {
-$s.=$_.' - '.$theCombined-&gt;{$_}.'&lt;br /&gt;
-';
-}
-$s;
-%]
-&lt;br /&gt;:end merge test&lt;/p&gt;
-
 &lt;p&gt;&lt;small&gt;Your browser: [%
 my $ua = $query-&gt;user_agent();
 return '(not given)' unless (defined $ua) &amp;&amp; length($ua);

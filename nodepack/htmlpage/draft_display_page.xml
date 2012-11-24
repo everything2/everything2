@@ -80,7 +80,7 @@ if ($$USER{node_id} == $$NODE{author_user}){
 }elsif($APP-&gt;isEditor($USER)){
 	my $status = getNodeById($$NODE{publication_status}) -&gt; {title};
 
-	if ($status eq 'review' &amp;&amp; $APP-&gt;canSeeDraft($USER, $NODE, 'edit') ){
+	if ($status eq 'review' &amp;&amp; $APP-&gt;canSeeDraft($USER, $NODE, 'find') ){
 		# let editors see the HTML
 		$str .= '&lt;form class=&quot;writeup_add&quot;&gt;&lt;fieldset&gt;&lt;legend&gt;HTML source (not editable)&lt;/legend&gt;
 		&lt;textarea id=&quot;writeup_doctext&quot; class=&quot;readonly&quot;'

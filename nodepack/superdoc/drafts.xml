@@ -93,17 +93,12 @@ my ($drafts, $navigation, $count) = htmlcode(
 	@showit
 	, '&lt;tr class=&quot;&amp;oddrow&quot;&gt; status, &quot;&lt;td&gt;&quot;, title, &quot;&lt;/td&gt;&quot;, coll'
 	, cansee =&gt; $cansee, status =&gt; $statu, coll =&gt; $collaborators);
-my $scr = '';
 
-unless (htmlcode('count scratchpads', $user) == 0){
-	$scr = htmlcode('convertscratchpads', $user); # only list, no conversion for other user
-}
-
-if ($scr eq '' and $drafts eq '') {
+if ($drafts eq '') {
 	if (!$username) {
 		return '&lt;p&gt;You have no drafts.&lt;/p&gt;';
 	} else {
-		return &quot;&lt;p&gt;[${username}[user]] has no drafts or scratch pads visible to you.&lt;/p&gt;&quot;;
+		return &quot;&lt;p&gt;[${username}[user]] has no drafts visible to you.&lt;/p&gt;&quot;;
 	}
 }
 
@@ -116,10 +111,7 @@ if ($$status{nuked} # user has at least one 'nuked' draft shown on this page
 			: 'Sort nuked drafts last');
 }
 
-my $str = '';
-
-$str .= $scr if $scr ne '';
-$str .=
+my $str =
 	&quot;&lt;h2&gt;$title&lt;/h2&gt;
 	$showcount
 	&lt;table&gt;&lt;tr&gt;&lt;th&gt;status&lt;/th&gt;&lt;th&gt;title&lt;/th&gt;$cs&lt;/th&gt;&lt;/tr&gt;
