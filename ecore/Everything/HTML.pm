@@ -1462,12 +1462,6 @@ sub linkNodeTitle {
 
       }
 
-      #Or maybe a scratch pad?
-      elsif($nodetype =~ /^scratch/){
-        $user = rewriteCleanEscape($user);
-        $href = "/user/$user/scratchpads/$nodename";
-      }
-
       #Else, direct link to nodetype. Let's hope the users know what
       #they're doing.
       else {

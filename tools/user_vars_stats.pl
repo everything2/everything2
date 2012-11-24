@@ -52,9 +52,9 @@ foreach my $key (sort {$varstats->{$b} <=> $varstats->{$a}} keys %$varstats)
 	print "$key: ".$varstats->{$key}."\n";
 }
 
-print "Special stats:\n";
-
-foreach my $key (keys %$specialstats)
-{
-	print "$key: ".$specialstats->{$key}."\n";
-}
+#print "Special stats:\n";
+#
+#foreach my $key (keys %$specialstats)
+#{
+#	print "$key: ".$specialstats->{$key}."\n";
+#}
