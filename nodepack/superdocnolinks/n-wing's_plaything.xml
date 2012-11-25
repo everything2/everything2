@@ -313,7 +313,7 @@ $$thingy{node_id};
 
 [%
 return;
-return unless (exists $HTMLVARS{'group_gods'}{$$USER{node_id}} or exists $HTMLVARS{'group_content editors'}{$$USER{node_id}});
+return unless $APP-&gt;isEditor($USER);
 
 my $fullstr = '';
 
@@ -398,7 +398,7 @@ return $count . ' changes';
 
 
 [%
-return '&lt;!--' unless exists $HTMLVARS{'group_gods'}{$$USER{node_id}};
+return '&lt;!--' unless $APP-&gt;isAdmin($USER);
 #yes, this is completely non-secret, but it doesn't matter
 return;
 %]
@@ -410,7 +410,7 @@ method 1 (easier) - make the database generate all text-nodes into static HTML p
 method 2 (harder) - generate a node information file for each node that has more information. (If this goes over well, later versions could generate a version for each user.) A client would be run on the user's computer - it could be a program that acts like a web browser (this idea has come up before), and/or a proxy which intercepts web browser calls and servers up a generated page. The user would probably have to specially configure the browser to use the proxy, which would be a pain, though. Updates would be easy to deal with - the special program/proxy could read a file that lists the updates, and show a different file instead.&lt;br /&gt;
 &lt;/p&gt;
 [%
-return '--!&gt;' unless exists $HTMLVARS{'group_gods'}{$$USER{node_id}};
+return '--!&gt;' unless $APP-&gt;isAdmin($USER);
 return;
 %]
 
@@ -455,16 +455,6 @@ my $str='';
 
 $str;
 %]
-
-[%
-# %HTMLVARS is hash
-# $HTMLVARS{group_*} is hash ref
-# %{$HTMLVARS{group_*}} is hash
-# $HTMLVARS{group_*}{id} is scalar (1)
-# $HTMLVARS{group_*}-&gt;{id} is scalar (1)
-'';
-%]
-
 
 
 &lt;p&gt;

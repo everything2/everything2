@@ -1,19 +1,6 @@
 <node>
   <type_nodetype>1252389</type_nodetype>
   <doctext>[%
-    # We break if Guest User tries to ignore gods. Is this a Sign? In fact, we
-    # break if Guest User clicks the button without the checkbox checked, too:
-    #   Died at /usr/lib/perl5/5.005/Everything/HTML.pm line 1180.
-    # Total collapse. So, hmmm... So don't do that! Ha ha.
-    my $nogods = (($query-&gt;param(&quot;ebu_noadmins&quot;) == 1)?(1):(0));
-    if ( !$APP-&gt;isGuest($USER) ) {
-        #jb says: I soo can't get this to work.
-        #$$VARS{ebu_noadmins} = $nogods if $nogods;
-        #$$VARS{ebu_noadmins} = 0 if($query-&gt;param(&quot;ebu_noadmins&quot;) == 0);
-        #$$VARS{ebu_noadmins} = 1 if($query-&gt;param(&quot;ebu_noadmins&quot;) == 1);
-        #$$VARS{ebu_noadmins} = 0 unless($$VARS{ebu_noadmins});
-        }
-
 my $skip = {
 	'dbrown'=&gt;1,
 	'nate'=&gt;1,
@@ -25,7 +12,6 @@ my $skip = {
 my $limit = 50;
 
 $limit += (keys %$skip);
-$limit += (keys %{ $HTMLVARS{'group_gods'}}) if($nogods == 1);
 
 my $csr = $Everything::dbh-&gt;prepare('select node_id,title,experience,vars from user left join node on node_id=user_id left join setting on setting_id=user_id order by experience DESC limit '.$limit);
 
@@ -41,12 +27,11 @@ my $lvlexp = getVars(getNode('level experience', 'setting'));
 my $lvlttl = getVars(getNode('level titles', 'setting'));
 my $lvl;
 
-$str.=&quot;&lt;EBU ebu_noadmins=\&quot;$nogods\&quot;&gt;&quot;;
+$str.=&quot;&lt;EBU&gt;&quot;;
 
 while($node = $csr-&gt;fetchrow_hashref) {
   
 	next if(exists $$skip{$$node{title}});
-        next if(exists $HTMLVARS{'group_gods'}{$$node{node_id}} &amp;&amp; $$VARS{ebu_noadmins});
         next if($step &gt;= 50);
 
 	$lvl = $APP-&gt;getLevel($node);

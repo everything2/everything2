@@ -12,13 +12,11 @@ $str .= &quot;&lt;small&gt;If you miss the merit display, you can go and complai
 
     if ( !$APP-&gt;isGuest($USER) ) {
         # Clear/reset the form control variables
-        delete $$VARS{ebu_noadmins} if($query-&gt;param(&quot;gochange&quot;));
         delete $$VARS{ebu_showmerit}; # if($query-&gt;param(&quot;gochange&quot;));
         delete $$VARS{ebu_showdevotion} if($query-&gt;param(&quot;gochange&quot;));
         delete $$VARS{ebu_showaddiction} if($query-&gt;param(&quot;gochange&quot;));
         delete $$VARS{ebu_newusers} if($query-&gt;param(&quot;gochange&quot;));
         delete $$VARS{ebu_showrecent} if($query-&gt;param(&quot;gochange&quot;));
-        $$VARS{ebu_noadmins}  = 1 if($query-&gt;param(&quot;ebu_noadmins&quot;) eq &quot;on&quot;);
         # $$VARS{ebu_showmerit} = 1 if($query-&gt;param(&quot;ebu_showmerit&quot;) eq &quot;on&quot;);
         $$VARS{ebu_showdevotion} = 1 if($query-&gt;param(&quot;ebu_showdevotion&quot;) eq &quot;on&quot;);
         $$VARS{ebu_newusers} = 1 if($query-&gt;param(&quot;ebu_newusers&quot;) eq &quot;on&quot;);
@@ -36,9 +34,6 @@ $str .= &quot;&lt;small&gt;If you miss the merit display, you can go and complai
                     . &quot;&lt;input type=\&quot;checkbox\&quot; name=\&quot;ebu_showaddiction\&quot; &quot;
                     . ($$VARS{ebu_showaddiction}?' CHECKED ':'')
                     . &quot;&gt;Display by [addiction] &quot;
-                    . &quot;&lt;input type=\&quot;checkbox\&quot; name=\&quot;ebu_noadmins\&quot; &quot;
-                    . ($$VARS{ebu_noadmins}?' CHECKED ':'')
-                    . &quot;&gt;Don't show [admins|monkeys]  &quot;
                     . &quot;&lt;input type=\&quot;checkbox\&quot; name=\&quot;ebu_newusers\&quot; &quot;
                     . ($$VARS{ebu_newusers}?' CHECKED ':'')
                     . &quot;&gt;Show New users  &quot;
@@ -121,7 +116,6 @@ my $maxShow = 60;
 my $limit = $maxShow;
 
 $limit += (keys %$skip);
-$limit += (keys %{ $HTMLVARS{'group_gods'}}) if $$VARS{ebu_noadmins};
 
 my $recent = '';
 if ($$VARS{ebu_newusers}) {
@@ -176,7 +170,6 @@ my $place=0;
 while(my $nid = $csr-&gt;fetchrow_hashref) {
         my $node = getNodeById($nid-&gt;{user_id});
 	next if(exists $$skip{$$node{title}});
-	next if($$VARS{ebu_noadmins} &amp;&amp; exists $HTMLVARS{'group_gods'}{$$node{node_id}});
 	next if($step &gt;= $maxShow);
 
 	# This record is for the person who is logged in
