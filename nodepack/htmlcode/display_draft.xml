@@ -7,7 +7,7 @@ $displaytype ||= $query -&gt; param('displaytype') || 'display';
 
 my $displaylike;
 
-my $tinopener = (isGod($USER) and $query -&gt; param('tinopener') and !$APP-&gt;canSeeDraft($USER, $NODE));
+my $tinopener = ($APP-&gt;isAdmin($USER) and $query -&gt; param('tinopener') and !$APP-&gt;canSeeDraft($USER, $NODE, 'find'));
 local ($$NODE{doctext}, $$NODE{collaborators})
 	= (&quot;&lt;p&gt;&lt;b&gt;&amp;#91;DOCTEXT REDACTED&amp;#93;&lt;/b&gt;&lt;/p&gt;
 		&lt;p&gt;You do not have permission to see this draft.&lt;/p&gt;&quot; , $$USER{title}) if $tinopener;

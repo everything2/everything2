@@ -1,6 +1,14 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sat Nov 24 23:50:11 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Nov 25 03:40:07 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;decoy hunches&quot; node_id=&quot;958779&quot; parent_e2node=&quot;958652&quot; author_user=&quot;stash&quot;&gt;Morphogenetic Fields&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;RedOmega&quot; node_id=&quot;1246001&quot; parent_e2node=&quot;1245997&quot; author_user=&quot;BrooksMarlin&quot;&gt;Therapist's waiting room&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Transitional Man&quot; node_id=&quot;2098154&quot; parent_e2node=&quot;1965637&quot; author_user=&quot;The Custodian&quot;&gt;The Vela Incident&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;IWhoSawTheFace&quot; node_id=&quot;2098136&quot; parent_e2node=&quot;2098170&quot; author_user=&quot;moeyz&quot;&gt;The waitress and the lottery ticket&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;2098160&quot; parent_e2node=&quot;2098159&quot; author_user=&quot;mauler&quot;&gt;Batting average on balls in play&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1099014&quot; parent_e2node=&quot;48509&quot; author_user=&quot;The Alchemist&quot;&gt;photosynthesis&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2098145&quot; parent_e2node=&quot;1962825&quot; author_user=&quot;Zephronias&quot;&gt;You Have To Burn The Rope&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;2073430&quot; parent_e2node=&quot;1014756&quot; author_user=&quot;borgo&quot;&gt;World Bank&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Glowing Fish&quot; node_id=&quot;2072559&quot; parent_e2node=&quot;2072618&quot; author_user=&quot;tubular&quot;&gt;Robot Unicorn Attack&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;2098144&quot; parent_e2node=&quot;631466&quot; author_user=&quot;dannye&quot;&gt;Bear Bryant&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Demeter&quot; node_id=&quot;1393952&quot; parent_e2node=&quot;1393943&quot; author_user=&quot;Oolong&quot;&gt;Vegan ingredients&lt;/cooled&gt;
@@ -8,14 +16,6 @@
 	&lt;cooled cooledby_user=&quot;The Custodian&quot; node_id=&quot;2040855&quot; parent_e2node=&quot;2040863&quot; author_user=&quot;archiewood&quot;&gt;IMC. Split. GO.&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;dannye&quot; node_id=&quot;2098132&quot; parent_e2node=&quot;2072056&quot; author_user=&quot;waverider37&quot;&gt;Skyfall&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;CamTarn&quot; node_id=&quot;2073434&quot; parent_e2node=&quot;243030&quot; author_user=&quot;Oolong&quot;&gt;Fritter&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Ashigaru&quot; node_id=&quot;2073463&quot; parent_e2node=&quot;963406&quot; author_user=&quot;The Custodian&quot;&gt;Doolittle Raid&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Oolong&quot; node_id=&quot;1533751&quot; parent_e2node=&quot;1532833&quot; author_user=&quot;oakling&quot;&gt;Cumin and orange glazed carrots&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;sid&quot; node_id=&quot;2073499&quot; parent_e2node=&quot;389535&quot; author_user=&quot;Tem42&quot;&gt;Emmett Williams&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;montecarlo&quot; node_id=&quot;2073520&quot; parent_e2node=&quot;2073519&quot; author_user=&quot;Tem42&quot;&gt;Codes for transcribing historical documents&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2073179&quot; parent_e2node=&quot;2073196&quot; author_user=&quot;Pandeism Fish&quot;&gt;If you're insane, how do you know you're insane?&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2073170&quot; parent_e2node=&quot;1129327&quot; author_user=&quot;borgo&quot;&gt;National Toy Hall of Fame&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2073129&quot; parent_e2node=&quot;2073122&quot; author_user=&quot;Oolong&quot;&gt;Friern Barnet People's Library&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;2073579&quot; parent_e2node=&quot;2073578&quot; author_user=&quot;The Custodian&quot;&gt;deorbit&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

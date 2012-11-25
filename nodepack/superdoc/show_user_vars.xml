@@ -8,7 +8,7 @@ my $str = '';
 my $uid = getId($USER);
 return 'Try logging in.' if $APP-&gt;isGuest($USER);
 my $isRoot = isGod($USER);
-my $isEDev = exists $HTMLVARS{'group_edev'}{$uid};
+my $isEDev = $APP-&gt;isDeveloper($USER);
 return ($str . ' Ummmm... no.') unless $isRoot || $isEDev;
 
 my $username = $query-&gt;param('username') if $isRoot;
@@ -168,21 +168,6 @@ foreach $key (@validKeys) {
 	}
 }
 $str.=$tClose;
-
-
-@validKeys = keys(%HTMLVARS);
-@validKeys = sort(@validKeys);
-$str .= '&lt;h3&gt;&lt;code&gt;%HTMLVARS&lt;/code&gt;&lt;/h3&gt;'.$tOpen;
-foreach $key (@validKeys) {
-	if($key ne '') {
-		$val = $HTMLVARS{$key};
-		$val='(&lt;em&gt;null&lt;/em&gt;)' unless defined $val;
-		$str.='&lt;tr&gt;&lt;td&gt;' . encodeHTML($key)
-			. '&lt;/td&gt;&lt;td&gt;' . encodeHTML($val) . &quot;&lt;/td&gt;\n&quot;;
-	}
-}
-$str.=$tClose;
-
 
 return $str;
 %]</doctext>

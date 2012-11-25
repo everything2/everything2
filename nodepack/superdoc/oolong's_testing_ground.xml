@@ -205,32 +205,13 @@ return strftime(&quot;%a, %d %b %Y %H:%M:%S %z&quot;, localtime(time())) . &quot
 
 	return $hitStr.&quot;&lt;/span&gt;&quot;;
 
-#(my $y,my $m,my $d) = split /-/, $$NODE{createtime};
-#my $dv1 = $d+31*$m+365*$y;
-#($y,$m,$d) = split /-/, &quot;2008-10-23&quot;;
-#my $dv2 = $d+31*$m+365*$y;
-
-#if ($dv1 &lt; $dv2) {
-#return $dv1.&quot; dv2: $dv2 &quot;.$$NODE{createtime};
-#}
-#else {
-#return &quot;later&quot;;
-#}
-# if ($$NODE{createtime}&lt;&quot;2008-03-08 10:08:33&quot;);
-#    my @keys = keys $HTMLVARS;
- #   my @values = values $HTMLVARS;
-  #  while ($#keys &gt;= 0) {
-   #     print pop(@keys), '=', pop(@values), &quot;\n&quot;;
-    #}
-
-
 %]
 
 
 &lt;hr&gt;
 [%
 
-return ; #$HTMLVARS{group_gods};
+return ;
 
 adjustGP($$USER{user_id}, 1);
 

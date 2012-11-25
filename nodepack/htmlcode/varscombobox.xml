@@ -50,6 +50,11 @@ $key = $1;
 $flags = (defined $flags) ? $flags+0 : 0;
 my $separate0 = $flags &amp; 1;
 
+#if($elements[0] and ref $elements[0] eq &quot;ARRAY&quot;)
+#{
+#        @elements = @$elements[0];
+#}
+
 unless(scalar(@elements)) {
 	if( (exists $HTMLVARS{choicelist}) &amp;&amp; (defined $HTMLVARS{choicelist}) ) {
 		@elements = @{ $HTMLVARS{choicelist} };

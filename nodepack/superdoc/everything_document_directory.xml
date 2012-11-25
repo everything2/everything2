@@ -72,7 +72,7 @@ local *getNodeFromID = sub {
 my $opt;
 my $str = '';
 
-$HTMLVARS{choicelist} = [
+my $choicelist = [
 	'0','whatever the database feels like',
 	'idA','node_id, ascending (lowest first)',
 	'idD','node_id, descending (highest first)',
@@ -82,10 +82,9 @@ $HTMLVARS{choicelist} = [
 	'authorD','author\'s ID, descending (highest ID first)',
 	'createA','create time, ascending (oldest first)',
 	'createD','create time, descending (newest first)',
-#	'A',', ascending ()',
-#	'D',', descending ()',
+
 ];
-$opt .= 'sort order: ' . htmlcode('varsComboBox','EDD_Sort') . &quot;&lt;br /&gt;\n&quot;;
+$opt .= 'sort order: ' . htmlcode('varsComboBox','EDD_Sort', 0, @$choicelist) . &quot;&lt;br /&gt;\n&quot;;
 
 #$opt .= $query-&gt;checkbox('sort_node_id',0,1,'sort by node_id').$query-&gt;checkbox('sort_reverse',0,1,'backwards (highest first)').&quot;&lt;br /&gt;\n&quot;;
 

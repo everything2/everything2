@@ -190,20 +190,26 @@ while (my $MSG = $csr-&gt;fetchrow_hashref){
 
 	# reply links
 	my $a = '';
-	foreach (encodeHTML($$from{title}), $ug &amp;&amp; $$ug{title}){
+
+        my $responses = [encodeHTML($$from{title})];
+        push @$responses,$$ug{title} if $ug;
+
+	foreach (@$responses){
+                my $respondto = $_;
 		# make names safe and find user if it's from Eddie.
 		# (To find more users, patch the messages, not this)
-		$text =~ /\[([^\[\]]*)\[user]/ + ($_ = $1) if $_ eq 'Cool Man Eddie'; # (sic)
-		next unless $_;
-		$_ =~ s/'/&amp;\#39;/g;
-		$_ =~ s/&quot;/&amp;\#34;/g;
-		$_ =~ s/ /_/g;
+
+		$text =~ /\[([^\[\]]*)\[user]/ + ($respondto = $1) if $respondto eq 'Cool Man Eddie'; # (sic)
+		next unless $respondto;
+		$respondto =~ s/'/&amp;\#39;/g;
+		$respondto =~ s/&quot;/&amp;\#34;/g;
+		$respondto =~ s/ /_/g;
 
 		$str .= '('
 			.$query -&gt; a({
 				class =&gt; 'action reply'
-#				, onmouseover =&gt; 'if(e2.autofillInbox){e2.startText('zetextbox','/msg $_ ', 1);}'
-				, href =&gt; &quot;javascript:e2.startText('zetextbox','/msg $_ ')&quot;
+#				, onmouseover =&gt; 'if(e2.autofillInbox){e2.startText('zetextbox','/msg $respondto ', 1);}'
+				, href =&gt; &quot;javascript:e2.startText('zetextbox','/msg $respondto ')&quot;
 			}, &quot;r$a&quot;).')';
 		$a = 'a';
 	}

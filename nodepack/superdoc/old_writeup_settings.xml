@@ -10,17 +10,15 @@ This is where you can choose exactly what information to display in writeup head
 &lt;/p&gt;
 
 [%
-return '&lt;p&gt;edev note: this information is derived from [displayWriteupInfo].&lt;/p&gt;' if exists $HTMLVARS{group_edev}{getId($USER)||0};
+return '&lt;p&gt;edev note: this information is derived from [displayWriteupInfo].&lt;/p&gt;' if $APP-&gt;isDeveloper($USER);
 %]
 
 [%
 my $uid = getId($USER) || 0;
 return 'You may use this after you create an account.' if $APP-&gt;isGuest($USER);
-my $isRoot = exists $HTMLVARS{group_gods}{$uid};
-my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$uid};
-my $isEDev = exists $HTMLVARS{group_edev}{$uid};
-
-#return 'You need to be at least level 3 to use this.' unless $isCE || $isEDev || !($APP-&gt;getLevel($USER)&lt;3);	#if level is changed, change votefoot also
+my $isRoot = $APP-&gt;isAdmin($USER);
+my $isCE = $APP-&gt;isEditor($USER);
+my $isEDev = $APP-&gt;isDeveloper($USER);
 
 my $maxLen = 127;
 
@@ -118,9 +116,9 @@ $str;
 [%
 my $uid = getId($USER) || 0;
 return 'You may use this after you create an account.' if $APP-&gt;isGuest($USER);
-my $isRoot = exists $HTMLVARS{group_gods}{$uid};
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $isCE = $APP-&gt;isEditor($USER);
-my $isEDev = exists $HTMLVARS{group_edev}{$uid};
+my $isEDev = $APP-&gt;isDeveloper($USER);
 
 #return 'You need to be at least level 3 to use this.' unless $isCE || $isEDev || !($APP-&gt;getLevel($USER)&lt;3);	#if level is changed, change votefoot also
 
@@ -270,9 +268,9 @@ then at the top of every writeup you view will display the writeup's author to t
 &lt;tr&gt;&lt;td&gt;&lt;code&gt;cshort&lt;/code&gt;&lt;/td&gt;&lt;td&gt;This shows short C! information, which is the number of C!s. This is close to the original way C! information was shown.&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;code&gt;dtcreate&lt;/code&gt;&lt;/td&gt;&lt;td&gt;shows date and time writeup was created&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;code&gt;hits&lt;/code&gt;&lt;/td&gt;&lt;td&gt;shows the number of hits received since November, 2008&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;code&gt;kill&lt;/code&gt;&lt;/td&gt;&lt;td&gt;shows if a writeup is marked for destruction[% return ((exists $HTMLVARS{'group_content editors'}{getId($USER)}) || (exists $HTMLVARS{group_gods}{getId($USER)})) ? '; editor note: this also shows deletion checkboxes' : ''; %]&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;kill&lt;/code&gt;&lt;/td&gt;&lt;td&gt;shows if a writeup is marked for destruction[% return ($APP-&gt;isEditor($USER) ) ? '; editor note: this also shows deletion checkboxes' : ''; %]&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;code&gt;length&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Shows the number of characters, and approximate number of words, in the writeup.&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;code&gt;notnew&lt;/code&gt;&lt;/td&gt;&lt;td&gt;shows if the writeup was created hidden[% return ((exists $HTMLVARS{'group_content editors'}{getId($USER)}) || (exists $HTMLVARS{group_gods}{getId($USER)})) ? '' : '; note: this will only display if it is your writeup'; %]&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;notnew&lt;/code&gt;&lt;/td&gt;&lt;td&gt;shows if the writeup was created hidden[% return ($APP-&gt;isEditor($USER) ) ? '' : '; note: this will only display if it is your writeup'; %]&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;code&gt;print&lt;/code&gt;&lt;/td&gt;&lt;td&gt;links to printable version&lt;/td&gt;&lt;/th&gt;
 &lt;tr&gt;&lt;td&gt;&lt;code&gt;pseudoanon&lt;/code&gt;&lt;/td&gt;&lt;td&gt;like &lt;code&gt;authoranon&lt;/code&gt; (only shows writeup's author if it is yours, or you have voted on it), but anonymous text links to author's homenode, and the user's name appears if you hover the mouse cursor over the link; see also: &lt;code&gt;author&lt;/code&gt; and &lt;code&gt;authoranon&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;code&gt;sendmsg&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Provides a text area where you can send the writeup's author a message. The area acts just like a normal private message (&lt;tt&gt;/msg&lt;/tt&gt;), except you don't need to enter the /msg part, and the writeup's title is automatically prepended to your message. (This is mainly provided as an easier way to send the author a message, without having to bother with copying their name and writeup title.)&lt;/td&gt;&lt;/tr&gt;

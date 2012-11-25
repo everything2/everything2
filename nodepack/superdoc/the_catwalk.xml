@@ -20,7 +20,8 @@ if($$VARS{preferred_theme} &amp;&amp; $$VARS{preferred_theme}!=1854183) {
 my $nodeType = 1854352; #Stylesheet nodetype
 my $dbh = $DB-&gt;getDatabaseHandle();
 
-$HTMLVARS{choicelist} = [
+#$HTMLVARS{choicelist} = [
+my $choicelist = [
 	'0','(no sorting)',
 	'nameA','title, ascending (ABC)',
 	'nameD','title, descending (ZYX)',
@@ -28,7 +29,7 @@ $HTMLVARS{choicelist} = [
 	'createD','create time, descending (newest first)',
 ];
 my $opt = 'sort order: ';
-$opt .= htmlcode('varsComboBox','ListNodesOfType_Sort');
+$opt .= htmlcode('varsComboBox','ListNodesOfType_Sort',0,@$choicelist);
 
 $opt .= 'only show things (' . $query-&gt;checkbox('filter_user_not',0,1,'not') . ') written by ' . $query-&gt;textfield('filter_user') . '&lt;br&gt;';
 

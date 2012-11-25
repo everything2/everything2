@@ -12,7 +12,7 @@ $query-&gt;delete('isbetatester');
 #adds Notelet to current nodelet display
 #this will be removed once Outside URLs nodelet is part of standard nodelet group
 my $UID = getId($USER);
-return 'This feature is still in beta testing, so you can\'t use it yet.' unless $UID==9740; #$HTMLVARS{group_edev}{$UID} || $HTMLVARS{group_gods}{$UID} || $HTMLVARS{'group_content editors'}{$UID};
+return 'This feature is still in beta testing, so you can\'t use it yet.' unless $UID==9740; 
 $query-&gt;param('isbetatester',1);
 return '' if $VARS-&gt;{nodelets} =~ /1313146/;	#don't add multiple times
 return linkNode($NODE,'&lt;strong&gt;add Outside URLs nodelet (you can move or remove this at your user settings)&lt;/strong&gt;',{'addit'=&gt;'1'}) unless $query-&gt;param('addit');

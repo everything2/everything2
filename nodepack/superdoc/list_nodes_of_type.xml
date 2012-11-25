@@ -8,9 +8,9 @@
 #	modified by N-Wing
 
 my $UID = $$USER{node_id};
-my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
-my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$UID};
-my $isEDev = $isRoot || exists $HTMLVARS{'group_edev'}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
+my $isCE = $APP-&gt;isEditor($USER);
+my $isEDev = $APP-&gt;isDeveloper($USER);
 return 'Sorry, cowboy. You must be at least [edev|this tall] to ride the Node Type Lister!' unless $isCE || $isEDev;
 my $str;
 my $dbh = $DB-&gt;getDatabaseHandle();
@@ -66,10 +66,9 @@ while(my $item = $sth-&gt;fetchrow_arrayref) {
 	push(@choiceNodeTypes, $nid, $t);
 	$validTypeIDs{$nid} = $t;
 }
-$HTMLVARS{choicelist} = \@choiceNodeTypes;
-$opt .= 'nodetype: ' . htmlcode('varsComboBox','ListNodesOfType_Type') . &quot;&lt;br /&gt;\n&quot;;
+$opt .= 'nodetype: ' . htmlcode('varsComboBox','ListNodesOfType_Type', 0, @choiceNodeTypes) . &quot;&lt;br /&gt;\n&quot;;
 
-$HTMLVARS{choicelist} = [
+my $choicelist = [
 	'0','(no sorting)',
 	'idA','node_id, ascending (lowest first)',
 	'idD','node_id, descending (highest first)',
@@ -81,8 +80,8 @@ $HTMLVARS{choicelist} = [
 	'createD','create time, descending (newest first)',
 ];
 $opt .= 'sort order: ';
-$opt .= ' &lt;small&gt;1:&lt;/small&gt; '.htmlcode('varsComboBox','ListNodesOfType_Sort');
-$opt .= ' &lt;small&gt;2:&lt;/small&gt; '.htmlcode('varsComboBox','ListNodesOfType_Sort2');
+$opt .= ' &lt;small&gt;1:&lt;/small&gt; '.htmlcode('varsComboBox','ListNodesOfType_Sort', 0, @$choicelist);
+$opt .= ' &lt;small&gt;2:&lt;/small&gt; '.htmlcode('varsComboBox','ListNodesOfType_Sort2', 0, @$choicelist);
 $opt .= '&lt;br /&gt;
 ';
 
