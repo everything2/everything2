@@ -195,7 +195,7 @@ if($query-&gt;param(&quot;sendNewKey&quot;)){
 	$$n{doctext} =~ s/\&lt;validationkey\&gt;/$$USER{validationkey}/g;
 	$$n{doctext} =~ s/\&lt;site_name\&gt;/$Everything::CONF-&gt;{system}-&gt;{site_name}/g;
 	$$n{doctext} =~ s/\&lt;site_url\&gt;/http:\/\/$ENV{SERVER_NAME}\//g;
-	$$n{doctext} =~ s/\&lt;verify_email_url\&gt;/http:\/\/$ENV{SERVER_NAME}\/index\.pl\?node_id=$HTMLVARS{verifyEmailAccount_node}/g;
+	$$n{doctext} =~ s/\&lt;verify_email_url\&gt;/http:\/\/$ENV{SERVER_NAME}\/index\.pl\?node_id=$$NODE{node_id}/g;
 	$$n{doctext} =~ s/\&lt;servername\&gt;/$ENV{SERVER_NAME}/g;
 	$APP-&gt;node2mail($$USER{email},$n, 1);
 

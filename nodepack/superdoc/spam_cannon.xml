@@ -9,8 +9,7 @@ my $level  = $$VARS{ 'level' };
 
 $level =~ s/([0-9]+).*$/$1/;
 
-return $foad unless ( isGod( $USER ) ) || exists $HTMLVARS{ 'group_content editors' }{ $uid };
-return $foad if ( $$VARS{ 'no_goodies' } );
+return $foad unless $APP-&gt;isEditor($USER);
 
 # return '&lt;p style=&quot;color: #c00000; font-weight: bold;&quot;&gt;Closed for renovations.&lt;/p&gt;' if ( $uid != 470183 );
 

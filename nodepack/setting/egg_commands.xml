@@ -17,6 +17,14 @@
     <key>pizza</key>
   </vars>
   <vars>
+    <value>buys a round of beer for ~ and all their friends</value>
+    <key>round</key>
+  </vars>
+  <vars>
+    <value>muzzles</value>
+    <key>muzzle</key>
+  </vars>
+  <vars>
     <value>giant squids</value>
     <key>giantsquid</key>
   </vars>

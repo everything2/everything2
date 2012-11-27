@@ -20,7 +20,6 @@ if($$VARS{preferred_theme} &amp;&amp; $$VARS{preferred_theme}!=1854183) {
 my $nodeType = 1854352; #Stylesheet nodetype
 my $dbh = $DB-&gt;getDatabaseHandle();
 
-#$HTMLVARS{choicelist} = [
 my $choicelist = [
 	'0','(no sorting)',
 	'nameA','title, ascending (ABC)',
