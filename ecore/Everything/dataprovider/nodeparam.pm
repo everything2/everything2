@@ -17,7 +17,7 @@ sub data_out
 	my $data;
 	while(my $row = $csr->fetchrow_hashref())
 	{
-		push @{$data->{nodeparams}}, $row;
+		push @{$data->{nodeparam}}, $row;
 	}
 	
 	return $this->SUPER::xml_out($data);
@@ -27,7 +27,7 @@ sub data_in
 {
 	my ($this, $xml) = @_;
 	my $data = $this->{xs}->XMLin($xml);
-	foreach my $nodeparam (@{$data->{nodeparams}->{nodeparam}})
+	foreach my $nodeparam (@{$data->{nodeparam}->{nodeparam}})
 	{
 		$this->_hash_insert("nodeparam",$nodeparam);
 	}
