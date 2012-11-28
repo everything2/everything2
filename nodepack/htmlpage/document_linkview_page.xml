@@ -12,7 +12,7 @@ my $regex = qr/\[(.*?)[\]\[\|]/;
 my $ntt = $NODE-&gt;{type}-&gt;{title};
 my $codeDoc = ($ntt eq 'superdoc') || ($ntt eq 'superdocnolinks') || ($ntt eq 'restricted_superdoc') || ($ntt eq 'oppressor_superdoc'); #FIXME better way of checking for code
 $regex = qr/\[([^%{].*?)[\]\[\|]/ if $codeDoc;
-my $text = $$NODE{doctext}
+my $text = $$NODE{doctext};
 my $scratchID;
 
 my @link_ids;

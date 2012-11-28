@@ -24,8 +24,6 @@ my @R = (
 $str.=$R[int(rand(@R))];
 $str.=' &lt;a href=&quot;/node/usergroup/edev&quot;&gt;The Everything Development Company&lt;/a&gt;';
 
-
-$str.= htmlcode('begheader');
 if ( rand() &lt; 0.1 ) {
     my @gibberish = (
         &quot;We are the bat people.&quot;, &quot;Let sleeping demons lie.&quot;,
