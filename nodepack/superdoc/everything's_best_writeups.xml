@@ -2,7 +2,7 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
-  return 'Curiosity killed the cat, ya know.' if(!exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) &amp;&amp; !exists($HTMLVARS{'group_content editors'}{$$USER{node_id}}));
+  return 'Curiosity killed the cat, ya know.' unless( $APP-&gt;isEditor($USER) );
 
   my $str = 'Everything\'s 50 &quot;Most Cooled&quot; Writeups (visible only to staff members):';
 

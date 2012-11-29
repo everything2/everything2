@@ -25,7 +25,7 @@ my $csr;
 my $row;
 
 # let logged in admins see graph even if they haven't voted
-my $isRoot = exists $HTMLVARS{group_gods}{getId($USER)};
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $canView = $isRoot;
 # users can view the graphs of their own writeups
 if (!$canView)

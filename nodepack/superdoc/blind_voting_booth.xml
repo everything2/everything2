@@ -1,11 +1,8 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-my $poweruser = 0;
-$poweruser = 1 if(exists($HTMLVARS{'group_gods'}{$$USER{user_id}}) || exists($HTMLVARS{'group_content editors'}{$$USER{user_id}}));
+my $poweruser = $APP-&gt;isEditor($USER);
 
-   #return 'Not ready yet' if(!$poweruser &amp;&amp; $$USER{user_id} != 457008 &amp;&amp; $$USER{user_id} != 526340);
-   
 my $wu;
 my $hasvoted = 0;
 

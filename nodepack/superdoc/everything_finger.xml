@@ -18,7 +18,7 @@ $str.= '&lt;table align=&quot;center&quot; width=&quot;75%&quot; cellpadding=&qu
 my $UID = getId($USER);	#logged on user's ID
 my $uid;	#current display user's ID
 
-my $newbielook = 1 if(exists($HTMLVARS{'group_gods'}{$UID}) || exists($HTMLVARS{'group_content editors'}{$UID}));
+my $newbielook = $APP-&gt;isEditor($USER);
 
 my $flags;
 my $num = 0;
@@ -32,9 +32,9 @@ while (my $U = $csr-&gt;fetchrow_hashref) {
 
 	$flags .= '&lt;font color=&quot;#ff0000&quot;&gt;invis&lt;/font&gt;' if $$U{visible};
 
-	$flags .= '@' if exists $HTMLVARS{group_gods}{$uid};
-	$flags .= '$' if exists $HTMLVARS{'group_content editors'}{$uid};
-	$flags .= '%' if exists $HTMLVARS{group_edev}{$uid};
+	$flags .= '@' if $APP-&gt;isAdmin($uid);
+	$flags .= '$' if $APP-&gt;isEditor($uid, &quot;nogods&quot;) and not $APP-&gt;isAdmin($uid);
+	$flags .= '%' if $APP-&gt;isDeveloper($uid, &quot;nogods&quot;);
 
         my $difftime = time()-$U-&gt;{unixcreatetime};
 	if($newbielook and $difftime &lt; 60*60*24*30) {

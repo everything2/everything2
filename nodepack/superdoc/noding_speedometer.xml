@@ -5,7 +5,7 @@
 #constants
 my $UID = getId($USER);
 my $isGuest = $APP-&gt;isGuest($USER);
-my $isRoot = !$isGuest &amp;&amp; exists $HTMLVARS{group_gods}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
 
 return 'Sorry, but only registered members can use the Noding Speedometer.' if $isGuest;
 

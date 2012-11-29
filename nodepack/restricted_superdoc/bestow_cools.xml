@@ -10,10 +10,7 @@ cools.
 my $user = $query-&gt;param(&quot;myuser&quot;);
 my $cools = $query-&gt;param(&quot;mycools&quot;);
 
-my $UID = getId($USER)||0;
-my $isRoot = exists $HTMLVARS{group_gods}{$UID};
-
-return unless $isRoot;
+return unless $APP-&gt;isAdmin($USER);
 
 return unless $user and $cools;
 return &quot;invalid cools&quot; unless $cools =~ /^\d+$/;

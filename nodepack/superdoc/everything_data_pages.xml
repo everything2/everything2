@@ -10,9 +10,8 @@ than every 30 seconds -- although you may offer a &quot;refresh&quot; button to 
 &lt;p&gt;
 [%
 my $str='&lt;table&gt;&lt;tr&gt;&lt;th&gt;title&lt;/th&gt;&lt;th&gt;node_id&lt;/th&gt;';
-my $u = getId($USER);
-my $isRoot = defined $HTMLVARS{'group_gods'}{$u};
-my $isDev = $isRoot || defined $HTMLVARS{'group_edev'}{$u};
+my $isRoot = $APP-&gt;isAdmin($USER);
+my $isDev = $isRoot || $APP-&gt;isDeveloper($USER);
 
 $str .= '&lt;th&gt;viewcode&lt;/th&gt;' if $isDev;
 $str .= '&lt;th&gt;edit&lt;/th&gt;' if $isRoot;
@@ -34,9 +33,9 @@ $str.'&lt;/table&gt;';
 &lt;br&gt;&lt;br&gt;&lt;hr&gt;&lt;br&gt;
 &lt;table&gt;
 [%
-my $u = getId($USER);
-my $isRoot = defined $HTMLVARS{'group_gods'}{$u};
-my $isDev = $isRoot || defined $HTMLVARS{'group_edev'}{$u};
+
+my $isRoot = $APP-&gt;isAdmin($USER);
+my $isDev = $APP-&gt;isDeveloper($USER);
 
 my $str=&quot;These are the second generation tickers, using a more unified XML base, and also exporting information more fully. These are of type [ticker].&quot;;
 my @nodes = getNodeWhere({type_nodetype =&gt; getId(getType('ticker'))});
@@ -50,26 +49,6 @@ foreach (@nodes) {
 $str;
 %]
 &lt;/table&gt;
-&lt;br&gt;&lt;br&gt;&lt;hr&gt;&lt;br&gt;
-&lt;table&gt;
-[%
-my $u = getId($USER);
-my $isRoot = defined $HTMLVARS{'group_gods'}{$u};
-my $isDev = $isRoot || defined $HTMLVARS{'group_edev'}{$u};
-
-my $str=&quot;These documents are the basis for our WAP exports. They are of type [wapdoc].&quot;;
-my @nodes = getNodeWhere({type_nodetype =&gt; getId(getType('wapdoc'))});
-foreach (@nodes) {
-	$str.= '&lt;tr&gt;&lt;td&gt;'.linkNode($_).'&lt;/td&gt;&lt;td&gt;'.$$_{node_id};
-	$str.= '&lt;/td&gt;&lt;td&gt;'.linkNode($_, 'viewcode', {displaytype =&gt; 'viewcode'}) if $isDev;
-	$str.= '&lt;/td&gt;&lt;td&gt;'.linkNode($_, 'edit', {displaytype =&gt; 'edit'}) if $isRoot;
-	$str .= &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
-}
-
-$str;
-%]
-&lt;/table&gt;
-
 </doctext>
   <node_id>781552</node_id>
   <title>Everything Data Pages</title>

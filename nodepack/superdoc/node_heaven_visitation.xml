@@ -10,8 +10,8 @@ return if !$UID;
 return if $APP-&gt;isGuest($USER);
 
 
-my $isRoot = exists($HTMLVARS{'group_gods'}{$UID});
-my $isCE = $isRoot || exists($HTMLVARS{'group_content editors'}{$UID});
+my $isRoot = $APP-&gt;isAdmin($USER);
+my $isCE = $APP-&gt;isEditor($USER);
 
 my $visit_id = int($query-&gt;param('visit_id'));
 

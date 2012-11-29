@@ -1,12 +1,8 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-  my $UID = $$USER{node_id};
-#  return &quot;not ready yet&quot; unless $UID == 650043 || $UID == 1249142; 
-    ## dann or dann-o-matic
-
-  my $isGod = exists $HTMLVARS{'group_gods'}{$UID};
-  my $isEd = $isGod || exists $HTMLVARS{'group_content editors'}{$UID};
+  my $isGod = $APP-&gt;isAdmin( $USER );
+  my $isEd = $APP-&gt;isEditor( $USER );
   my $webloggables = getVars(getNode(&quot;webloggables&quot;, &quot;setting&quot;));
   my $view_weblog = $query-&gt;param('view_weblog');
   my $skipped = 0;

@@ -24,7 +24,7 @@ my $str = htmlcode('openform');
 my $victim = $query-&gt;param('usersearch');
 $victim = $$USER{title} unless ($victim);
 
-if (exists $HTMLVARS{'group_gods'}{$UID}) {
+if ( $APP-&gt;isAdmin($USER) ) {
     		$str .= $query-&gt;textfield('usersearch', $victim);
 	} else { 
 		$str .= $query-&gt;hidden('usersearch',$victim);
@@ -72,7 +72,7 @@ if ( $APP-&gt;isGuest($USER) )
 } 
 
 
-my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $us;
 my $israw = $query-&gt;param('raw');
 
@@ -124,7 +124,7 @@ my $rep = $isMe || $isRoot;
 
 my $str = '';
 
-my $isEd = $rep || (exists $HTMLVARS{'group_content editors'}{$UID});
+my $isEd = $rep || ( $APP-&gt;isEditor($USER) );
 
 #quit for special bots
 

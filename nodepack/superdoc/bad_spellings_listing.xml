@@ -17,9 +17,9 @@ return '&lt;strong&gt;Error&lt;/strong&gt;: unable to get spelling setting.' unl
 my $str = '';
 
 
-my $uid = getId($USER) || 0;
-my $isRoot = exists $HTMLVARS{group_gods}{$uid};
-my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$uid};
+
+my $isRoot = $APP-&gt;isAdmin($USER);
+my $isCE = $APP-&gt;isEditor($USER);
 if($isRoot) {
 	$str .= '&lt;p&gt;(Site administrators can edit this setting at '.linkNode($spellInfo,0,{lastnode_id=&gt;0}).'.)&lt;/p&gt;&lt;p&gt;
 ';

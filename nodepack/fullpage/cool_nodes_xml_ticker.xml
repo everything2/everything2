@@ -1,6 +1,10 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Thu Nov 29 00:10:12 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Thu Nov 29 03:20:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Transitional Man&quot; node_id=&quot;1189031&quot; parent_e2node=&quot;1953650&quot; author_user=&quot;Lucy-S&quot;&gt;Forgetting&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;tubular&quot; node_id=&quot;2098399&quot; parent_e2node=&quot;1078731&quot; author_user=&quot;Zephronias&quot;&gt;Into each life some rain must fall&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;NanceMuse&quot; node_id=&quot;2098341&quot; parent_e2node=&quot;2098348&quot; author_user=&quot;Oolong&quot;&gt;faff&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Albert Herring&quot; node_id=&quot;2098148&quot; parent_e2node=&quot;113783&quot; author_user=&quot;Oolong&quot;&gt;employment&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;2073543&quot; parent_e2node=&quot;2073544&quot; author_user=&quot;Girldoll&quot;&gt;I miss the way you do the dishes&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;drownzsurf&quot; node_id=&quot;2098431&quot; parent_e2node=&quot;2098429&quot; author_user=&quot;Noung&quot;&gt;Battle of Hamburger Hill&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;kozmund&quot; node_id=&quot;2073555&quot; parent_e2node=&quot;2073554&quot; author_user=&quot;Lucy-S&quot;&gt;computer operator&lt;/cooled&gt;
@@ -12,10 +16,6 @@
 	&lt;cooled cooledby_user=&quot;smartalix&quot; node_id=&quot;2073604&quot; parent_e2node=&quot;2073590&quot; author_user=&quot;mauler&quot;&gt;Dagger of the Mind&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;1441383&quot; parent_e2node=&quot;16123&quot; author_user=&quot;OberonDarksoul&quot;&gt;Amen&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;locke baron&quot; node_id=&quot;2071882&quot; parent_e2node=&quot;1914081&quot; author_user=&quot;wertperch&quot;&gt;monkey picked tea&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2098154&quot; parent_e2node=&quot;1965637&quot; author_user=&quot;The Custodian&quot;&gt;The Vela Incident&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2098345&quot; parent_e2node=&quot;2098344&quot; author_user=&quot;Demeter&quot;&gt;The Anatomy Project&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;2098399&quot; parent_e2node=&quot;1078731&quot; author_user=&quot;Zephronias&quot;&gt;Into each life some rain must fall&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Milen&quot; node_id=&quot;2098152&quot; parent_e2node=&quot;2098388&quot; author_user=&quot;tubular&quot;&gt;Kaizo Mario World&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

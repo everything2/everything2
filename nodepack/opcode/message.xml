@@ -7,7 +7,7 @@
 my $for_user = $query-&gt;param('sendto');
 my $message = $query-&gt;param('message');
 my $UID = getId($USER)||0;
-my $isRoot = exists($HTMLVARS{'group_gods'}{$UID});
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $isChanop = $APP-&gt;isChanop($USER, &quot;nogods&quot;);
 
 foreach($query-&gt;param) {

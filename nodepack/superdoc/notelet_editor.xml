@@ -52,21 +52,6 @@ return ' (Note: you currently don\'t have your Notelet on, so changing things he
 %] What is the notelet? It lets you put notes (or anything, really) into a nodelet. (Other nodelet settings are available at [Nodelet Settings].)&lt;/p&gt;
 
 [%
-#FIXME FIXME FIXME have to move this stuff later
-#$query-&gt;delete('isbetatester');
-##adds Notelet to current nodelet display
-##this will be removed once Notelet is part of standard nodelet group
-#my $UID = getId($USER);
-#return 'This feature is still in beta testing, so you can\'t use it yet.' unless $HTMLVARS{group_edev}{$UID} || $HTMLVARS{group_gods}{$UID} || $HTMLVARS{'group_content editors'}{$UID};
-#$query-&gt;param('isbetatester',1);
-#return if $VARS-&gt;{nodelets} =~ /1290534/;	#don't add multiple times
-#return linkNode($NODE,'&lt;strong&gt;add Notelet nodelet (you can move or remove this at your user settings)&lt;/strong&gt;',{'addit'=&gt;'1'}) unless $query-&gt;param('addit');
-#$VARS-&gt;{nodelets} = '1290534,'.$VARS-&gt;{nodelets};
-#return 'your nodelets are now:'.$VARS-&gt;{nodelets};
-'';
-%]
-
-[%
 #return 'still in beta' unless $query-&gt;param('isbetatester');
 return unless $query-&gt;param('makethechange');
 return '' if $APP-&gt;isGuest($USER);
@@ -102,17 +87,17 @@ htmlcode('screenNotelet','');
 &lt;li&gt;&lt;code&gt;&amp;lt;!--&lt;/code&gt; You may enter comments here. Why would you want comments? Scripting! (But be sure to uncheck &quot;Remove comments&quot;.) &lt;code&gt;--&amp;gt;&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;The raw text you enter here is limited to 1000 characters. Anything longer than that will be lost. This raw text will not be changed in any way. As a slight reward for gaining levels, the higher your level, the more of your raw text is used. [%
 my $curLevel = $APP-&gt;getLevel($USER) || 0;
-my $UID = getId($USER)||0;
+
 my $maxLen = $curLevel * 100;
 if($maxLen&gt;1000) { $maxLen=1000; } elsif($maxLen&lt;500) { $maxLen=500; }
 
 #power has its privileges
 #this is in [Notelet Editor] (superdoc) and [screenNotelet] (htmlcode)
-if(exists $HTMLVARS{'group_gods'}{$UID}) {
+if( $APP-&gt;isAdmin($USER) ) {
 	$maxLen = 32768;
-} elsif(exists $HTMLVARS{'group_content editors'}{$UID}) {
+} elsif( $APP-&gt;isEditor($USER) ) {
 	$maxLen += 100;
-} elsif(exists $HTMLVARS{'group_edev'}{$UID}) {
+} elsif( $APP-&gt;isDeveloper($USER) ) {
 	$maxLen = 16384; #16k ought to be enough for everyone. --[Swap]
 }
 
@@ -179,7 +164,7 @@ htmlcode('verifyRequestForm', 'noteletedit');
 [%
 delete $VARS-&gt;{'noteletScreened'}; #FIXME FIXME FIXME hack
 return ''; #TODO
-return unless $HTMLVARS{group_gods}{getId($USER)};
+return unless $APP-&gt;isAdmin($USER);
 #lets admins lock a user's Notelet for displaying
 #this should only be used for extreme circumstances
 
