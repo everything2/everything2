@@ -989,6 +989,13 @@ sub updateNode
 	$this->getRef($NODE);
 	return 0 unless ($this->canUpdateNode($USER, $NODE)); 
 
+	# TODO: This only works because we have a controlled poisoning of the nodecache
+	# We should be operating on a ref of the node hash, but we assume that we will 
+	# be getting the same hash as $NODE from the cache. This is because evalCode
+	# is pretty dumb, but I'm stuck with it for right now
+
+	$this->nodeMaintenance($NODE, "preupdate");
+
 	# We extract the values from the node for each table that it joins
 	# on and update each table individually.
 	my $ORIGINAL_NODE = $this->getNodeById($NODE->{node_id},'nocache');
