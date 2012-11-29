@@ -12,7 +12,7 @@ my $timeStr;
 my $timeCount = 1;
 
 my $UID = $$USER{node_id}||0;
-my $isRoot = exists $HTMLVARS{group_gods}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
 
 return 'If you had an account, we\'d let you gab.' if $APP-&gt;isGuest($USER);
 

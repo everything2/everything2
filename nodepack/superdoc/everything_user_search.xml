@@ -102,8 +102,8 @@ my $perpage = 50;	# number to show at a time
 
 my $uid = getId($user);	# lowercase = user searching on
 my $UID = $$USER{node_id}; # uppercase = user that is viewing
-my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
-my $isEd = $isRoot || (exists $HTMLVARS{'group_content editors'}{$UID});
+my $isRoot = $APP-&gt;isAdmin($USER);
+my $isEd = $APP-&gt;isEditor($USER);
 my $isMe = ($uid == $UID) &amp;&amp; ($uid!=0);
 my $rep = $isMe || $isEd;
 my $isGuest = $APP-&gt;isGuest($USER);

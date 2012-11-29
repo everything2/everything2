@@ -15,9 +15,9 @@ my $UID = getId($USER);
 
 return '&lt;p&gt;Please log in first.&lt;/p&gt;' if $APP-&gt;isGuest($USER);
 
-my $isRoot = exists $HTMLVARS{group_gods}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $isCE = $APP-&gt;isEditor($USER);
-my $isEDev = exists $HTMLVARS{group_edev}{$UID};
+my $isEDev = $APP-&gt;isDeveloper($USER);
 
 my $showLinkViewcode = $isEDev || $isRoot;
 my $showNodeId = $isEDev || $isRoot;

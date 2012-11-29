@@ -11,8 +11,7 @@ foreach (@edoc) {
 
 $str.=&quot;&lt;p&gt;&lt;i&gt;Looks pretty lonely...&lt;/i&gt;&quot; if @edoc &lt; 10;
 
-return $str 
-  unless exists $HTMLVARS{group_edev}{getId($USER)}; 
+return $str unless $APP-&gt;isDeveloper($USER);
 
 $str.=htmlcode('openform');
 $str.=&quot;&lt;INPUT type=hidden name=op value=new&gt;\n&quot;;

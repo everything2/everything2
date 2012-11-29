@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-my $isChanop = exists($HTMLVARS{'group_chanops'}{$$USER{node_id}});
+my $isChanop = $APP-&gt;isChanop($USER);
 
 if ($APP-&gt;getLevel($USER) &lt; $HTMLVARS{roomCreateLevel}
    and not isGod($USER)

@@ -1,10 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-
-#my $isEdev = exists($HTMLVARS{'group_edev'}{$$USER{node_id}});
-#return (&quot;&lt;p&gt;Sorry, you are not in edev&lt;/p&gt;&quot;) unless (isGod($USER) or $isEdev);
-
 my $str = &quot;&lt;p&gt;This is the list of HTML tags that have been approved for use in writeups.  &quot;;
 $str .= &quot;Allowed attributes for the tags are listed below the tag name.  &lt;/p&gt;&quot;;
 $str .= &quot;\n\n&lt;dl&gt;&quot;;

@@ -3,7 +3,7 @@
   <doctext>&lt;!-- NPB TODO make in-page style sheets --&gt;
 
 &lt;p&gt;Okey-dokey, here are some FAQs for those in the [% linkNode(getNode('edev','usergroup')); %] usergroup.
-You, [% linkNode($USER,0,{lastnode_id=&gt;0}) . ', ' . ((exists $HTMLVARS{'group_edev'}{$$USER{node_id}}) ? '&lt;strong&gt;are&lt;/strong&gt; a respected &lt;small&gt;(haha, yeah, right!)&lt;/small&gt;' : 'are &lt;strong&gt;not&lt;/strong&gt; a'); %] member of the edev group here, on E2. In this FAQ, &quot;I&quot; is [N-Wing].
+You, [% linkNode($USER,0,{lastnode_id=&gt;0}) . ', ' . ( $APP-&gt;isDeveloper($USER,&quot;nogods&quot;) ? '&lt;strong&gt;are&lt;/strong&gt; a respected &lt;small&gt;(haha, yeah, right!)&lt;/small&gt;' : 'are &lt;strong&gt;not&lt;/strong&gt; a'); %] member of the edev group here, on E2. In this FAQ, &quot;I&quot; is [N-Wing].
 &lt;/p&gt;
 
 &lt;p&gt;Questions:&lt;/p&gt;&lt;ol&gt;

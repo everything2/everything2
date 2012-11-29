@@ -1,8 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-my $uid = getId($USER);
-my $isRoot = exists $HTMLVARS{group_gods}{$uid};
+my $isRoot = $APP-&gt;isAdmin($USER);
 
 my $dailypoll = $query-&gt;param('dailypoll') if $isRoot;
 my $poll_id = $query-&gt;param(&quot;poll_id&quot;);

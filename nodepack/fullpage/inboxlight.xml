@@ -17,11 +17,7 @@
 # fine. 
 # -- w
 
-my $isCE = exists $HTMLVARS{ 'group_content editors' }{ getId( $USER ) };
-
-#return '&lt;p&gt;Closed for reconceptualization. &lt;a href=&quot;?#node=everything+user+search&quot;&gt;Back to work!&lt;/a&gt;&lt;/p&gt;' 
-#    unless ( $isCE || isGod( $USER ) );
-
+my $isCE = $APP-&gt;isEditor($USER);
 
 # Theme misery. This really is necessary, because most themes
 # will give us a background color for the nodelet. All this crap 

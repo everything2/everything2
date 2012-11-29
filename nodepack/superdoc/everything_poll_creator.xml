@@ -6,8 +6,7 @@ my $turnPollsOff=0;
 return 'Sorry, poll creation has been temporarily disabled.' if ($turnPollsOff);
 
 #new restrict check for any usergroup
-my $UID = getId($USER);
-my $isRoot = exists $HTMLVARS{group_gods}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
 
 my $userlevel=$APP-&gt;getLevel($USER);
 return 'You must be Level 3 to create polls. Sorry.' if (($userlevel&lt;3)&amp;&amp;(!$isRoot));
