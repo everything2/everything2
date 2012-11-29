@@ -48,6 +48,7 @@ default["e2engine"]["system"]["default_node"] = '124'
 default["e2engine"]["system"]["default_nodeletgroup"] = '837990'
 default["e2engine"]["system"]["default_theme"] = '1854183'
 default["e2engine"]["system"]["default_duplicates_node"] = '382987'
+default["e2engine"]["system"]["not_found_node"] = '668164'
 default["e2engine"]["system"]["maintenance_nodes"] = {}
 default["e2engine"]["system"]["maintenance_nodes"]["broken_nodes"] = 379710
 default["e2engine"]["system"]["maintenance_nodes"]["e2_bugs"] = 364471
