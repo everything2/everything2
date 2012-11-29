@@ -5,7 +5,7 @@
   <page>[%
 use POSIX qw(ceil floor);
 
-return unless isGod($USER);
+return unless $APP-&gt;isAdmin($USER);
 
 my $open = &quot;1\;&quot;;
 my $locked = &quot;0\;&quot;;
@@ -31,15 +31,6 @@ if ($$NODE{criteria} eq $open) {
 [%
   
   return &quot;You cannot go into $$NODE{title}, I'm sorry.&quot; unless eval($$NODE{criteria}) and not $APP-&gt;isGuest($USER);
-if ($$VARS{lockedin} &gt; time)
-	{
-	my $remainingtime = ceil(($$VARS{lockedin} - time)/ 60);
-	my $lockmessage = &quot;&lt;p&gt;&lt;strong style='color:red;'&gt;&quot;
-		. &quot;You cannot change rooms for $remainingtime minutes.  &quot;
-		. &quot;You can still send private messages, however, or talk to people in your current room.  &quot;
-		. &quot;&lt;/strong&gt;&lt;/p&gt;&quot;;
-	return $lockmessage;
-	}
 
   changeRoom($USER, $NODE);
 

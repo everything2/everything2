@@ -508,14 +508,8 @@ return linkNode(getNode($badnodetitle, &quot;e2node&quot;)-&gt;{node_id}, 'Bad n
 %]
 
 &lt;hr&gt;&lt;hr&gt;
-&lt;p&gt;/drag command testing&lt;/p&gt;
 
 [%
-
-if ($$USER{lockedin} &gt; time)
-{
-return (&quot;current time : &quot; . time . &quot; lockedin: $$USER{lockedin} remaining: &quot; . ceil(($$USER{lockedin} - time)/60));
-}
 
 unless ($$USER{title} == 'rootbeer277' ||
 	$$USER{title} == 'other_admin')

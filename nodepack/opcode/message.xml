@@ -216,21 +216,6 @@ if (($message =~ /^\/sanctify\s+(.*)$/i)) {
 
 ## End Sanctify command
 
-
-## drag disruptive users into another room - admin function
-## drag multiple users separated by spaces, e.g.
-##
-## /drag ushdfgakjasgh Swap
-
-if (($message =~ /^\/drag\s+(.*)$/i) &amp;&amp; $isChanop) {
-  my $twits = $1;
-
-  htmlcode('dragUsers',$twits);
-  return;
-}
-
-## end /drag command code
-
 ## dice rolling command code
 if ($message =~ /^\/roll\s?(.*)$/i)
 	{
