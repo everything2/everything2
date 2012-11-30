@@ -19,7 +19,7 @@ if ($$NODE{author_user} == $$USER{node_id}
 		getNodeWhere({pagetype_nodetype =&gt; 117, displaytype =&gt; $displaytype}, 'htmlpage') ?
 			'writeup' : 'document');
 }else{
-	$NODE = $GNODE = getNodeById($HTMLVARS{not_found});
+	$NODE = $GNODE = getNodeById($Everything::CONF-&gt;{system}-&gt;{not_found_node});
 	$displaylike = getType($$NODE{type_nodetype});
 }
 
