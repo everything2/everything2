@@ -1552,7 +1552,7 @@ sub nodeName
 		}
 		else
 		{
-			$NODE = getNodeById($Everything::CONF->{system}->{not_found_node};
+			$NODE = getNodeById($Everything::CONF->{system}->{not_found_node});
 		}
 
 		displayPage ($NODE, $user_id);
