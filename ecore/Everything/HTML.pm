@@ -1552,7 +1552,7 @@ sub nodeName
 		}
 		else
 		{
-			$NODE = getNodeById($HTMLVARS{not_found});	
+			$NODE = getNodeById($Everything::CONF->{system}->{not_found_node};
 		}
 
 		displayPage ($NODE, $user_id);
@@ -1584,7 +1584,7 @@ sub nodeName
 		#jb says: 5/02/2002 - Fixes here to use gotoNode instead of displayPage
 		#see [root log: May 2002] for the long reason
 
-		return gotoNode($HTMLVARS{not_found}, $user_id, 1) unless @canread;
+		return gotoNode($Everything::CONF->{system}->{not_found_node}, $user_id, 1) unless @canread;
 		return gotoNode($canread[0], $user_id, 1) if @canread == 1;
 
 		# Allow a node_forward to bypass an e2node if we're clicking through from
@@ -2068,7 +2068,7 @@ sub gotoNode
 		$$NODE{group} = $node_id;
 	}
 
-	unless ($NODE) { $NODE = getNodeById($HTMLVARS{not_found}); }	
+	unless ($NODE) { $NODE = getNodeById($Everything::CONF->{system}->{not_found_node}); }	
 	
 	unless (canReadNode($user_id, $NODE)) {
 		$NODE = getNodeById($HTMLVARS{permission_denied});
