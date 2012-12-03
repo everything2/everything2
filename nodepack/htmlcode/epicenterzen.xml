@@ -57,7 +57,7 @@ my $opStr = join(&quot; | &quot;,@ifys);
 return &quot;&lt;div id='epicenter_zen'&gt;&lt;span id='epicenter_zen_info'&gt;
 &quot;.linkNode($USER,0,{lastnode_id=&gt;0}).&quot;
  | &quot;.linkNode($NODE, 'Log Out', {op=&gt;'logout'}).&quot;
- | &quot;.linkNode($HTMLVARS{userSettings_node}, 'Preferences',{lastnode_id=&gt;0}).&quot;
+ | &quot;.linkNode($Everything::CONF-&gt;{system}-&gt;{user_settings}, 'Preferences',{lastnode_id=&gt;0}).&quot;
  | &quot;.linkNode(getNode('Drafts','superdoc')).&quot;
  | &quot;.linkNode(getNode('Everything2 Help','e2node'), 'Help').&quot;
  | &quot;.htmlcode('randomnode','Random').&quot;
@@ -68,6 +68,5 @@ $expStr&lt;br /&gt;
 &lt;span id='epicenter_zen_commands'&gt;
 $opStr
 &lt;/span&gt;
-&lt;/div&gt;&quot;;
-</code>
+&lt;/div&gt;&quot;;</code>
 </node>

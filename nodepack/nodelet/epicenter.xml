@@ -22,7 +22,7 @@ if ($query-&gt;param(&quot;op&quot;) eq &quot;login&quot;)
 $loginStr = &quot;
 &lt;ul&gt;
 	&lt;li&gt;&quot;.linkNode($NODE, 'Log Out', {op=&gt;'logout'}).&quot;&lt;/li&gt;
-	&lt;li title=\&quot;User Settings\&quot;&gt;&quot;.linkNode($HTMLVARS{userSettings_node}, '',{lastnode_id=&gt;0}).&quot;&lt;/li&gt;
+	&lt;li title=\&quot;User Settings\&quot;&gt;&quot;.linkNode($Everything::CONF-&gt;{system}-&gt;{user_settings}, '',{lastnode_id=&gt;0}).&quot;&lt;/li&gt;
 	&lt;li title=\&quot;Your profile\&quot;&gt;&quot;.linkNode($USER,0,{lastnode_id=&gt;0}).' '.linkNode($USER,'&lt;small&gt;(edit)&lt;/small&gt;',{displaytype=&gt;'edit',lastnode_id=&gt;0}).&quot;&lt;/li&gt;
 	&lt;li title=\&quot;Draft, format, and organize your works in progress\&quot;&gt;&quot;.linkNode(getNode('Drafts','superdoc')).&quot;&lt;/li&gt;
 	&lt;li title=\&quot;Learn what all those numbers mean\&quot;&gt;&quot;.linkNode(getNode('The Everything2 Voting/Experience System','superdoc'), 'Voting/XP System').&quot;&lt;/li&gt;

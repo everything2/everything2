@@ -5,10 +5,6 @@
     <key>stylesheetFixLevel</key>
   </vars>
   <vars>
-    <value>5</value>
-    <key>roomCreateLevel</key>
-  </vars>
-  <vars>
     <value>166948</value>
     <key>generalParent_container</key>
   </vars>
@@ -17,12 +13,12 @@
     <key>userSettings_node</key>
   </vars>
   <vars>
-    <value>-8</value>
-    <key>writeuplowrepthreshold</key>
-  </vars>
-  <vars>
     <value>109</value>
     <key>login_node</key>
+  </vars>
+  <vars>
+    <value>-8</value>
+    <key>writeuplowrepthreshold</key>
   </vars>
   <vars>
     <value>1152424</value>
