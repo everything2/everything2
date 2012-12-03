@@ -115,7 +115,8 @@ everything_conf_variables = {
       "themesetting" => 1
     },
     "nosearch_words" => nosearch_words_hash,
-    "create_room_level" => node["e2engine"]["create_room_level"]
+    "create_room_level" => node["e2engine"]["create_room_level"],
+    "stylesheet_fix_level" => node["e2engine"]["stylesheet_fix_level"]
 }
 
 file '/etc/everything/everything.conf.json' do
