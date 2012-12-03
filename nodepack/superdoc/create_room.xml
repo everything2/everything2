@@ -3,7 +3,7 @@
   <doctext>[%
 my $isChanop = $APP-&gt;isChanop($USER);
 
-if ($APP-&gt;getLevel($USER) &lt; $HTMLVARS{roomCreateLevel}
+if ($APP-&gt;getLevel($USER) &lt; $Everything::CONF-&gt;{create_room_level}
    and not isGod($USER)
    and not $isChanop) {
   return &quot;&lt;I&gt;Too young, my friend.&lt;/I&gt;&quot;;
@@ -26,8 +26,7 @@ $str.=&quot;&lt;P&gt;And a few words of description: &quot;
 $str.=$query-&gt;submit(&quot;enter&quot;);
 $str.=$query-&gt;end_form;
 
-%]
-</doctext>
+%]</doctext>
   <node_id>719799</node_id>
   <title>Create Room</title>
 </node>

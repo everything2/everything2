@@ -33,7 +33,7 @@ foreach my $N (@{ $$NODE{group} }) {
 }
 
 unless ($list){
-	$NODE = $GNODE = getNodeById($HTMLVARS{not_found});
+	$NODE = $GNODE = getNodeById($Everything::CONF-&gt;{system}-&gt;{not_found_node});
 	return parseCode($$NODE{doctext});
 }elsif($ONE){
 	$HEADER_PARAMS{-status} = 303;

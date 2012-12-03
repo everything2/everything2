@@ -1,18 +1,6 @@
 <node>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <value>3</value>
-    <key>roomTextboxLevel</key>
-  </vars>
-  <vars>
-    <value>668164</value>
-    <key>notFound_node</key>
-  </vars>
-  <vars>
-    <value>1428471</value>
-    <key>title_edit_longterm</key>
-  </vars>
-  <vars>
     <value>2</value>
     <key>stylesheetFixLevel</key>
   </vars>
@@ -21,36 +9,24 @@
     <key>roomCreateLevel</key>
   </vars>
   <vars>
-    <value>108</value>
-    <key>userSettings_node</key>
-  </vars>
-  <vars>
     <value>166948</value>
     <key>generalParent_container</key>
   </vars>
   <vars>
-    <value>109</value>
-    <key>login_node</key>
+    <value>108</value>
+    <key>userSettings_node</key>
   </vars>
   <vars>
     <value>-8</value>
     <key>writeuplowrepthreshold</key>
   </vars>
   <vars>
+    <value>109</value>
+    <key>login_node</key>
+  </vars>
+  <vars>
     <value>1152424</value>
     <key>writeup_deletion_request</key>
-  </vars>
-  <vars>
-    <value>174079</value>
-    <key>title_edit</key>
-  </vars>
-  <vars>
-    <value>104</value>
-    <key>permissionDenied_node</key>
-  </vars>
-  <vars>
-    <value>1140332</value>
-    <key>searchResults_node</key>
   </vars>
   <vars>
     <value>114</value>

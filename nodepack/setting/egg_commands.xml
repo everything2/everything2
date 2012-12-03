@@ -37,6 +37,10 @@
     <key>beer</key>
   </vars>
   <vars>
+    <value>Pours a glass of champagne for ~, but drops the glass</value>
+    <key>champagne</key>
+  </vars>
+  <vars>
     <value>lavishes attention upon</value>
     <key>special</key>
   </vars>

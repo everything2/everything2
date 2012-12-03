@@ -2,8 +2,8 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1169728</node_id>
   <title>e2nodelock</title>
-  <code>return if(!exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) &amp;&amp; !exists($HTMLVARS{'group_content editors'}{$$USER{node_id}}));
-   
+  <code>return unless $APP-&gt;isEditor($USER);
+ 
 my $defaultreason=&quot;&quot;;
 
 if($query-&gt;param('nodeunlock'))

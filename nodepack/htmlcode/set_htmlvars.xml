@@ -5,15 +5,6 @@
   <code>my ($SETTINGNODE) = getNode('system settings',  getType('setting'));
 my $SETTINGS = getVars $SETTINGNODE;
 
-my $OLDSETTINGS =
-{
-not_found =&gt; $$SETTINGS{notFound_node},
-permission_denied =&gt; $$SETTINGS{permissionDenied_node},
-search_group =&gt; $$SETTINGS{searchResults_node},
-} ;
-
-@$SETTINGS{keys %$OLDSETTINGS}= values %$OLDSETTINGS;
-
 my @groups = (&quot;gods&quot;, &quot;content editors&quot;, &quot;everything editors&quot;, &quot;users with cool&quot;, &quot;edev&quot;, &quot;chanops&quot;, &quot;sigtitle&quot;);
 
 foreach my $usergroup (@groups) {
