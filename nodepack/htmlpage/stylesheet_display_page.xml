@@ -37,12 +37,12 @@ if ($$USER{user_id} == $$NODE{author_user} or exists($HTMLVARS{'group_gods'}{$$U
   }
   else {
 	# update fixed setting if doesn't need fixing:
-  	htmlcode( 'fixstylesheet' , 0 ) unless $$settings{ $$NODE{ node_id } } &gt;= $HTMLVARS{stylesheetFixLevel} ;
+  	htmlcode( 'fixstylesheet' , 0 ) unless $$settings{ $$NODE{ node_id } } &gt;= $Everything::CONF-&gt;{stylesheet_fix_level} ;
 	$str .= &quot;&lt;p&gt;&lt;strong&gt;Edit the stylesheet:&lt;/strong&gt;&lt;/p&gt;&quot;.
 		htmlcode(&quot;textarea&quot;,&quot;doctext,30,60&quot;);
   }
 
-	if ( $$settings{ $$NODE{ node_id } } &lt; $HTMLVARS{stylesheetFixLevel} and
+	if ( $$settings{ $$NODE{ node_id } } &lt; $Everything::CONF-&gt;{stylesheet_fix_level} and
 			!$query -&gt; param( 'fixstylesheet') ){
 		$str .= '&lt;p&gt;You can automatically fix this stylesheet to adapt it to many of the recent changes in the E2 code.
 		Changes will not become permanent until you stumbit again.&lt;/p&gt;
@@ -52,7 +52,7 @@ if ($$USER{user_id} == $$NODE{author_user} or exists($HTMLVARS{'group_gods'}{$$U
 	} else {
 		my $MENUNODE = getNode('theme menu', 'setting');
 		my $menu = getVars($MENUNODE);
-		$str .= $query -&gt; checkbox(-name =&gt; 'inmenu', value =&gt; $HTMLVARS{stylesheetFixLevel} ,
+		$str .= $query -&gt; checkbox(-name =&gt; 'inmenu', value =&gt; $Everything::CONF-&gt;{stylesheet_fix_level} ,
 			checked =&gt; $$menu{$$NODE{node_id}}, label =&gt; 'Include in theme menu' );
 		if ($query -&gt; param('sexisgood') &amp;&amp;
 			$query -&gt; param('inmenu') != $$menu{$$NODE{node_id}}){
@@ -160,8 +160,7 @@ document.getElementById('previewstyle').onclick = function () {
 	zenSheet.disabled = ( ! zenSheet.disabled ) ;
 	newStyle.disabled = ( ! newStyle.disabled ) ;
 }
-&lt;/script&gt;
-</page>
+&lt;/script&gt;</page>
   <displaytype>display</displaytype>
   <node_id>1854353</node_id>
   <title>stylesheet display page</title>

@@ -38,7 +38,7 @@ local $$THEME{default_style} = getVars(getNodeById( $Everything::CONF-&gt;{syste
 
 my $sheets = getVars( getNode( 'theme menu' ,'setting' ) ) ;
 foreach ( keys %$sheets ){
-	if ( $$sheets{$_} &gt;= $HTMLVARS{stylesheetFixLevel} ){
+	if ( $$sheets{$_} &gt;= $Everything::CONF-&gt;{stylesheet_fix_level} ){
 		my $sh = getNodeById($_) ;
                 if(not defined $sh)
                 {

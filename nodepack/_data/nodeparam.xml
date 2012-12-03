@@ -41,6 +41,11 @@
   </nodeparam>
   <nodeparam>
     <paramvalue>1</paramvalue>
+    <node_id>169667</node_id>
+    <paramkey>prevent_nuke</paramkey>
+  </nodeparam>
+  <nodeparam>
+    <paramvalue>1</paramvalue>
     <node_id>365128</node_id>
     <paramkey>prevent_nuke</paramkey>
   </nodeparam>

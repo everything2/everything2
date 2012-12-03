@@ -1,6 +1,8 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Mon Dec  3 02:50:07 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Mon Dec  3 03:45:10 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1149704&quot; parent_e2node=&quot;1149700&quot; author_user=&quot;oakling&quot;&gt;Camp Trans&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2098705&quot; parent_e2node=&quot;670316&quot; author_user=&quot;mauler&quot;&gt;&amp;#9792;&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;StuartO)))&quot; node_id=&quot;2098716&quot; parent_e2node=&quot;2098715&quot; author_user=&quot;Auspice&quot;&gt;Angry Bear in the NOC&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2098698&quot; parent_e2node=&quot;2098697&quot; author_user=&quot;BookReader&quot;&gt;Alwahiduddin on the Moon&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;766635&quot; parent_e2node=&quot;766634&quot; author_user=&quot;sabby&quot;&gt;How do you know the fishes are enjoying themselves?&lt;/cooled&gt;
@@ -14,8 +16,6 @@
 	&lt;cooled cooledby_user=&quot;decoy hunches&quot; node_id=&quot;2063266&quot; parent_e2node=&quot;1900125&quot; author_user=&quot;rosetinted&quot;&gt;But if life were only moments, then you'd never know you had one&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2098657&quot; parent_e2node=&quot;2068002&quot; author_user=&quot;moeyz&quot;&gt;as if it longs to be free, in a Chinese sky&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Oolong&quot; node_id=&quot;2066829&quot; parent_e2node=&quot;2066804&quot; author_user=&quot;Tempestas&quot;&gt;The Idler Wheel Is Wiser Than the Driver of the Screw and Whipping Cords Will Serve You More Than Ropes Will Ever Do&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2098343&quot; parent_e2node=&quot;1758580&quot; author_user=&quot;Uberbanana&quot;&gt;The Walking Dead&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2098307&quot; parent_e2node=&quot;1378471&quot; author_user=&quot;Hazelnut&quot;&gt;Adventureland&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

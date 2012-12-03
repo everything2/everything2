@@ -14,7 +14,7 @@ if ($query-&gt;param('version')) {
 my $out = $$NODE{doctext};
 my $autofix = $query -&gt; param( 'autofix' );
 if ( $autofix or !$APP-&gt;isGuest($USER) ) {
-	unless ( htmlcode( 'displaySetting' , 'fixed stylesheets', $$NODE{ node_id } ) &gt;= $HTMLVARS{stylesheetFixLevel} ) {
+	unless ( htmlcode( 'displaySetting' , 'fixed stylesheets', $$NODE{ node_id } ) &gt;= $Everything::CONF-&gt;{stylesheet_fix_level} ) {
 		$out = &quot;/*autofixed*/\n&quot;.htmlcode( 'fixstylesheet' , 0 ) if
 			$$USER{ user_id } != $$NODE{ author_user } or
 			$autofix ;
@@ -45,8 +45,7 @@ for (my $i=64; $i; $i--){
 }
 
 return $out;
-%]
-</page>
+%]</page>
   <displaytype>serve</displaytype>
   <node_id>2024235</node_id>
   <title>stylesheet serve page</title>

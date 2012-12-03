@@ -94,12 +94,12 @@ foreach ( @input ) {
 }
 
 unless ( $fixwasneeded ) {
-	$$fixed{ $$NODE{ node_id } } = $HTMLVARS{stylesheetFixLevel} ;
+	$$fixed{ $$NODE{ node_id } } = $Everything::CONF-&gt;{stylesheet_fix_level} ;
 	setVars( $VARSNODE , $fixed ) ;
 	my $MENUNODE = getNode('theme menu', 'setting');
 	my $menu = getVars($MENUNODE);
 	if ( $$menu{ $$NODE{node_id} } ){ # theme menu only shows up-to-date stylesheets
-		$$menu{ $$NODE{node_id} } = $HTMLVARS{stylesheetFixLevel} ;
+		$$menu{ $$NODE{node_id} } = $Everything::CONF-&gt;{stylesheet_fix_level} ;
 		setVars( $MENUNODE , $menu ) ;
 	}
 }
