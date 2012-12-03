@@ -1,6 +1,9 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Mon Dec  3 00:05:18 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Mon Dec  3 02:50:07 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;StuartO)))&quot; node_id=&quot;2098716&quot; parent_e2node=&quot;2098715&quot; author_user=&quot;Auspice&quot;&gt;Angry Bear in the NOC&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2098698&quot; parent_e2node=&quot;2098697&quot; author_user=&quot;BookReader&quot;&gt;Alwahiduddin on the Moon&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;766635&quot; parent_e2node=&quot;766634&quot; author_user=&quot;sabby&quot;&gt;How do you know the fishes are enjoying themselves?&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tempestas&quot; node_id=&quot;2098696&quot; parent_e2node=&quot;1394599&quot; author_user=&quot;oakling&quot;&gt;December 1, 2002&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;oakling&quot; node_id=&quot;2098680&quot; parent_e2node=&quot;2023638&quot; author_user=&quot;Zephronias&quot;&gt;Sandra will do as Sandra always does, that is, whatever she wants&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;1372105&quot; parent_e2node=&quot;1372102&quot; author_user=&quot;Lucy-S&quot;&gt;Shooting yourself in the head for fun and profit&lt;/cooled&gt;
@@ -13,9 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Oolong&quot; node_id=&quot;2066829&quot; parent_e2node=&quot;2066804&quot; author_user=&quot;Tempestas&quot;&gt;The Idler Wheel Is Wiser Than the Driver of the Screw and Whipping Cords Will Serve You More Than Ropes Will Ever Do&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2098343&quot; parent_e2node=&quot;1758580&quot; author_user=&quot;Uberbanana&quot;&gt;The Walking Dead&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2098307&quot; parent_e2node=&quot;1378471&quot; author_user=&quot;Hazelnut&quot;&gt;Adventureland&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;1236789&quot; parent_e2node=&quot;2098234&quot; author_user=&quot;Lucy-S&quot;&gt;Darwin's Children&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2098342&quot; parent_e2node=&quot;122476&quot; author_user=&quot;Demeter&quot;&gt;abdomen&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Hazelnut&quot; node_id=&quot;1532844&quot; parent_e2node=&quot;1532839&quot; author_user=&quot;RMSzero&quot;&gt;Geeks make good lovers&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

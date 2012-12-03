@@ -17,7 +17,7 @@ my ($loginStr, $votesLeftStr, $expStr);
 #####LOGIN STRING
 
 $loginStr .= linkNode($USER,'My Homenode',{displaytype=&gt;'edit',lastnode_id=&gt;0}).&quot;&lt;br /&gt;&quot;;
-$loginStr.= linkNode($HTMLVARS{userSettings_node}, 'My Preferences',{lastnode_id=&gt;0}) .&quot;&lt;br /&gt;&quot;;
+$loginStr.= linkNode($Everything::CONF-&gt;{system}-&gt;{user_settings}, 'My Preferences',{lastnode_id=&gt;0}) .&quot;&lt;br /&gt;&quot;;
 
 ###VOTES LEFT, XP
 
