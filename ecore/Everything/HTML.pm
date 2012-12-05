@@ -29,6 +29,7 @@ sub BEGIN {
               %HTMLVARS
               $NODE
               $VARS
+              $PAGELOAD
               $query
               jsWindow
               createNodeLinks
@@ -96,6 +97,7 @@ use vars qw($TEST_CONDITION);
 use vars qw($TEST_SESSION_ID);
 use vars qw($THEME);
 use vars qw($NODELET);
+use vars qw($PAGELOAD);
 use vars qw(%HEADER_PARAMS);
 
 my $HTTP_ERROR_CODE = 400;
@@ -2495,6 +2497,7 @@ sub clearGlobals
 	$VARS = "";
 	$NODELET = "";
 	$THEME = "";
+        $PAGELOAD = "";
         $TEST = "";
 	$TEST_CONDITION = "";
         $TEST_SESSION_ID = "";
