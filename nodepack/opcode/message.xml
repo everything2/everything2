@@ -593,7 +593,7 @@ if($message =~ /^\/(msg\??|tell\??)(\{.+?\}\??|\s+\S+)(\s+.+)?$/si) {
 } elsif($message =~ /^\/macro\s+(.*?)$/i) {
 	$message = $1;
 	my $rootID = getId(getNode('root','user'));
-	if($isRoot || (exists $HTMLVARS{'group_content editors'}{$UID})) {
+	if( $APP-&gt;isEditor($USER) ) {
 		if($message =~ /^(\S+)\s+(.+?)$/) {
 			$message = $1;
 			$$VARS{'chatmacro'}=$2;

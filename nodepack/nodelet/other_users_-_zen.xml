@@ -15,9 +15,8 @@ my $wherestr;
 $USER-&gt;{in_room} = 0;
 
 my $UID = $$USER{node_id};
-my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
-my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$UID};
-my $isEdev = exists $HTMLVARS{'group_edev'}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
+my $isCE = $APP-&gt;isEditor($USER);
 
 unless($isRoot || $$VARS{infravision}) {
 	$wherestr.=' AND ' if $wherestr;
@@ -108,7 +107,7 @@ while(my $U = $csr-&gt;fetchrow_hashref()) {
 	$nameLink = '&lt;strong&gt;'.$nameLink.'&lt;/strong&gt;' if $sameUser || $is1337;
 
 	my $flags='';
-	if (exists $HTMLVARS{'group_gods'}{$userID}) {
+	if ($APP-&gt;isAdmin($userID) ) {
     		$flags .= 'Admin';
 	}
 
@@ -124,7 +123,7 @@ while(my $U = $csr-&gt;fetchrow_hashref()) {
 		}
   	}
 
-	if (exists $HTMLVARS{'group_content editors'}{$userID}) {
+	if ($APP-&gt;isEditor($userID, &quot;nogods&quot;) and not $APP-&gt;isAdmin($userID) ) {
 		$flags .=  'Editor';
 	}
 

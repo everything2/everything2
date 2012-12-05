@@ -4,11 +4,8 @@
   <title>changeusergroup</title>
   <code># Changes which usergroup is selected for the Usergroup Writeups nodelet.
 
-#return unless (exists $HTMLVARS{'group_gods'}{$$USER{node_id}}) || (exists $HTMLVARS{'group_content editors'}{$$USER{node_id}});
-
 if($query-&gt;param('newusergroup')) {
 	my $newUsergroup = $query-&gt;param('newusergroup');
-#	$group=$1;
 	$$VARS{nodeletusergroup}=$newUsergroup;
 }
 

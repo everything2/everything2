@@ -2,8 +2,7 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>1466528</node_id>
   <title>orderlock</title>
-  <code>return unless exists($HTMLVARS{'group_gods'}{$USER-&gt;{node_id}})
-	|| exists($HTMLVARS{'group_content editors'}{$USER-&gt;{node_id}});
+  <code>return $APP-&gt;isEditor($USER);
 
 my $N = getNodeById($query-&gt;param('node_id'));
 

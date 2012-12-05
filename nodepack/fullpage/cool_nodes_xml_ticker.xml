@@ -1,6 +1,8 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Wed Dec  5 02:20:13 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Wed Dec  5 03:15:10 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Transitional Man&quot; node_id=&quot;1501907&quot; parent_e2node=&quot;1501905&quot; author_user=&quot;Lucy-S&quot;&gt;Fall of Darkness&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;836282&quot; parent_e2node=&quot;613688&quot; author_user=&quot;Pocket Mouse&quot;&gt;For Emily, Whenever I May Find Her&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1331681&quot; parent_e2node=&quot;1326806&quot; author_user=&quot;kto9&quot;&gt;Harken Energy&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2098726&quot; parent_e2node=&quot;1062163&quot; author_user=&quot;mauler&quot;&gt;within this robot, your best poetry&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;teleny&quot; node_id=&quot;1704015&quot; parent_e2node=&quot;553987&quot; author_user=&quot;Lucy-S&quot;&gt;Declawing your cat&lt;/cooled&gt;
@@ -14,8 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2098415&quot; parent_e2node=&quot;2098414&quot; author_user=&quot;mauler&quot;&gt;Kitty Litter Cake&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2098347&quot; parent_e2node=&quot;144252&quot; author_user=&quot;Demeter&quot;&gt;larynx&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;kozmund&quot; node_id=&quot;1507166&quot; parent_e2node=&quot;1507165&quot; author_user=&quot;Lucy-S&quot;&gt;Who Moved My Cheese?&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;vonCube&quot; node_id=&quot;2098759&quot; parent_e2node=&quot;2053845&quot; author_user=&quot;moeyz&quot;&gt;Federally Protected&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;tanktop&quot; node_id=&quot;618821&quot; parent_e2node=&quot;10185&quot; author_user=&quot;dimpster&quot;&gt;Frank Zappa&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

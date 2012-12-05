@@ -9,7 +9,7 @@ library of especially worthwhile content in the mess of Everything history.  Enj
 [{openform}]
 [%
 
-my $isEDev = exists $HTMLVARS{'group_edev'}{getId($USER)};
+my $isEDev = $APP-&gt;isDeveloper($USER);
 my $isDevServer = 0;
 my $orderby = $query-&gt;param('orderby');
 my $useraction = $query-&gt;param('useraction');

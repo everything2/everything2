@@ -180,9 +180,7 @@ return $str ;
 %]
 &lt;br&gt;
 [{varcheckbox:noSoftLinks,Hide softlinks}]&lt;br&gt;
-[{varcheckbox:noadinheader,No adfu ad in page header}]
-	(Turn this on if adfu problems are affecting your page loads).&lt;br&gt;
-[% if  (exists($HTMLVARS{'group_edev'}{$$USER{node_id}})) {
+[% if  ( $APP-&gt;isDeveloper($USER) ) {
 htmlcode('varcheckbox','zenadinheader,Show ads in Zen page header');
 } %]
 &lt;/fieldset&gt;

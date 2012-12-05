@@ -4,8 +4,7 @@
 ##########
 # This section creates the user search field - always displayed
 
-my $isCE = exists($HTMLVARS{'group_content editors'}{$$USER{node_id}});
-return unless(isGod($USER) || $isCE);
+return unless $APP-&gt;isEditor($USER);
 return if $query-&gt;param(&quot;userEdit&quot;);
 
 my($welcome) = qq(Welcome to the User Oracle. Please enter a user name&lt;br&gt;);
@@ -20,7 +19,7 @@ $welcome;
 # This section lists the variables if a username is given and we're not editing a variable
 
 # The below is for allowing gods to check what CEs are allowed to see
-my $isCE = exists($HTMLVARS{'group_content editors'}{$$USER{node_id}});
+my $isCE = $APP-&gt;isEditor($USER, &quot;nogods&quot;);
 return unless (isGod($USER) || $isCE);
 my $orasubj = $query-&gt;param('the_oracle_subject');
 return unless($orasubj);
