@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-  my @grp = (keys %{$HTMLVARS{group_gods}},keys %{$HTMLVARS{&quot;group_content editors&quot;}}, @{getNode(&quot;exeds&quot;,&quot;nodegroup&quot;)-&gt;{group}});
+  my @grp = (@{getNode(&quot;gods&quot;,&quot;usergroup&quot;)-&gt;{group}},@{getNode(&quot;Content Editors&quot;,&quot;usergroup&quot;)-&gt;{group}}, @{getNode(&quot;exeds&quot;,&quot;nodegroup&quot;)-&gt;{group}});
   my %except = map {getNode($_,&quot;user&quot;)-&gt;{node_id} =&gt; 1} (&quot;Cool Man Eddie&quot;,&quot;EDB&quot;,&quot;Webster 1913&quot;,&quot;Klaproth&quot;,&quot;PadLock&quot;);
   @grp = sort {lc(getNodeById($a)-&gt;{title}) cmp lc(getNodeById($b)-&gt;{title})} @grp;
   my $str = &quot;Select your &lt;b&gt;favorite&lt;/b&gt; editor to see what they've [Page of Cool|endorsed]:&quot;;

@@ -10,7 +10,7 @@
 &lt;p&gt;
 [%
 return 'Notty yetty.' unless $$USER{node_id}==9740;
-return 'Nopey dopey.' unless exists $HTMLVARS{group_gods}{$USER-&gt;{node_id}};
+return 'Nopey dopey.' unless exists $APP-&gt;isAdmin($USER);
 
 my $str = htmlcode('openform','');
 

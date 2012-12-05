@@ -4,8 +4,8 @@
 my $str;
 
 my $uid = $$USER{node_id};
-my $isRoot = exists $HTMLVARS{'group_gods'}{$uid};
-my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$uid};
+my $isRoot = $APP-&gt;isAdmin($USER);
+my $isCE = $APP-&gt;isEditor($USER);
 
 #ug ids
 my ($ce_id, $gods_id) = (923653, 114);

@@ -31,26 +31,10 @@ $str .= '&lt;a href='.urlGen({node=&gt;'edev',type=&gt;'usergroup'}).'&gt;edev u
 '&lt;br /&gt;'.
 htmlcode('nodeletsection','edn,cgiparam').
 htmlcode('nodeletsection','edn,edev').
-
-#commenting out everydevel, it hasn't been updated since ... forever. - ktj
-#htmlcode('nodeletsection','edn,everydevel').  
-
-#htmlcode('nodeletsection','edn,documents').
 htmlcode('nodeletsection','edn,util').
 htmlcode('nodeletsection','edn,globals').
 htmlcode('nodeletsection','edn,patches');
 #;
-
-# commenting this out as a speed test - ktj 4.19.06
-
-#$str.='&lt;small&gt;&lt;br /&gt;Quick! You can /msg nate if you want to join edev&lt;/small&gt;' #unless exists $HTMLVARS{group_edev}{$$USER{node_id}}; #grep # /^$$USER{node_id}$/, @{ $$EDEV{group} };
-#$str.= '&lt;table width=&quot;100%&quot; bgcolor=&quot;#cccc99&quot;&gt;&lt;tr&gt;&lt;td class=&quot;oddrow&quot; align=&quot;right&quot; title=&quot;accrued devpoints&quot;&gt;&lt;small&gt;';
-#$str.= $$USER{title} eq 'nate'
-#	? 'Ya still be chillin\', yo!' :
-#	'Devpoints accrued: &lt;strong&gt;'.int($$VARS{devpoints}).'&lt;/strong&gt;'
-#	'&lt;code&gt;$VARS-&gt;{devpoints} == &lt;/code&gt;&lt;strong&gt;'.int($VARS-&gt;{devpoints}) .'&lt;/strong&gt;'
-#;
-#$str.='&lt;/small&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';
 
 $str;
 %]</nlcode>

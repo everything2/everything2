@@ -56,7 +56,7 @@
 
 &lt;li&gt;Weed out writeups, new and old, that just &lt;i&gt;don't make the grade&lt;/i&gt;.  It's semantically impossible to draw a line in the sand that everyone is going to understand and, inevitably, a user will be upset that they've lost a writeup. If they want to know why, advice is located at [Writeup Deletion].  
 &lt;p&gt;
-If this has heppened to you, take some time to peruse the nodes on [Page of Cool] and just observe E2 by clicking around for a few days before beginning to add your own content.&lt;/li&gt;
+If this has happened to you, take some time to peruse the nodes on [Page of Cool] and just observe E2 by clicking around for a few days before beginning to add your own content.&lt;/li&gt;
 
 &lt;li&gt;Editors are constantly [msg]ing new users to help them with their writing and noding skills. They also provide advice on how to integrate your writing into the site. Editors are always happy to answer a serious question  and a quick [Chatterbox|private msg] to them can often save a lot of frustration and time. &lt;i&gt;Let them help you.&lt;/i&gt;&lt;/li&gt;
 &lt;/ul&gt;
@@ -152,8 +152,6 @@ Everything User Search|the user search]).&lt;/li&gt;
   $str.=&quot;&lt;/ol&gt;&quot;;
   return $str;
 %]
-
-&lt;p&gt;&lt;strong&gt;*&lt;/strong&gt;These users are only administrators because they were intimately involved in the creation of Everything2 -- they are rarely active on the E2 system and mainly are on the list only so that they have access to [source code] and certain documents.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;#&lt;/strong&gt;These users are employees/owners of [Everything2 Media LLC].&lt;/p&gt;
 

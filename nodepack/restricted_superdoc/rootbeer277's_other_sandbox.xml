@@ -119,7 +119,7 @@ my (@WRTYPE) = getNodeWhere({type_nodetype =&gt; getId(getType('writeuptype'))})
 
 my %items;
 
-my $isEd = exists $HTMLVARS{'group_content editors'}{getId($USER)} || exists $HTMLVARS{'group_gods'}{getId($USER)};
+my $isEd = $APP-&gt;isEditor($USER);
 
 foreach (@WRTYPE) {
 	next if (!$isEd &amp;&amp; (lc($$_{title}) eq 'definition'));

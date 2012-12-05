@@ -8,7 +8,7 @@ my $jsoncount = 1 if $showOpts =~ /j/;
 
 #display options
 $showOpts ||= '';
-my $noreplylink = {$HTMLVARS{klaproth} =&gt; 1};
+my $noreplylink = {getId(getNode(&quot;klaproth&quot;,&quot;user&quot;)) =&gt; 1};
 
 my $showD = $$VARS{pmsgDate} || (index($showOpts,'d')!=-1); #show date
 my $showT = $$VARS{pmsgTime} || (index($showOpts,'t')!=-1); #show time

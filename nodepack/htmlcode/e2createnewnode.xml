@@ -10,7 +10,7 @@ $title =~ s/^\s*https?:\/\///;
 return '' unless $title;
 
 return '&lt;p&gt;If you '
-	.linkNode($HTMLVARS{login_node}, 'Log in')
+	.linkNode(getNode(&quot;login&quot;,&quot;superdoc&quot;), 'Log in')
 	.' you could create a &quot;'
 	.$query -&gt; escapeHTML($title)
 	.&quot;\&quot; node.	If you don't already have an account, you can &quot;

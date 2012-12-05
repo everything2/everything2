@@ -22,15 +22,8 @@ my $str .= '';
 
 #---------------------------------------------------------
 # Is the user allowed in?
-my $uid     = getId( $USER );
-my $isRoot  = exists $HTMLVARS{ 'group_gods' }{ $uid };
-my $isCE    = exists $HTMLVARS{ 'group_content editors' }{ $uid };
 
-my $allowed = $isRoot || $isCE;
-
-$allowed ||= Everything::isApproved( $USER, getNode( 'crtleads', 'usergroup' ) );
-
-return &quot;&lt;p&gt;Permission denied.&lt;/p&gt;&quot; unless ( $allowed );
+return &quot;&lt;p&gt;Permission denied.&lt;/p&gt;&quot; unless ( $APP-&gt;isEditor($USER) );
 
 $str .= '
 &lt;p&gt;&lt;b&gt;Here\'s how these puppies operate:&lt;/b&gt;&lt;/p&gt;

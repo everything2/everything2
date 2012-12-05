@@ -45,7 +45,7 @@ my $ignoreStr = join(&quot;, &quot;,@list);
 
 my $wherestr = &quot;for_user=0 &quot; ;
 $wherestr .= &quot;and tstamp &gt;= date_sub(now(), interval $messageInterval second)&quot;
-	unless $HTMLVARS{isDevServer} &amp;&amp; !$$USER{in_room};
+	unless $Everything::CONF-&gt;{environment} ne &quot;production&quot; &amp;&amp; !$$USER{in_room};
 $wherestr .= ' and room='.$$USER{in_room} unless ($$VARS{omniphonic});
 $wherestr .= &quot; and author_user not in ($ignoreStr)&quot; if $ignoreStr;
 
@@ -60,7 +60,7 @@ if($csr-&gt;rows == 0) {
 
 my $valid = getVars(getNode('egg commands','setting'));
 my $UID = getId($USER) || 0;
-my $isEDev = exists $HTMLVARS{group_edev}{$$USER{user_id}};
+my $isEDev = $APP-&gt;isDeveloper($USER, &quot;nogods&quot;);
 
 my ($str, $aid, $flags, $userLink, $userLinkApostrophe, $text);
 
@@ -134,7 +134,7 @@ utf8::decode($text);
 		}
 
 		$flags .= &quot;+&quot; if $isChanop;
-		$flags .= '%' if $isEDev &amp;&amp; exists $HTMLVARS{group_edev}{$aid};
+		$flags .= '%' if $isEDev;
 		if(length($flags)) {
 			$flags = '&lt;small&gt;'.$flags.'&lt;/small&gt; ';
 		}

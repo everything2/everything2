@@ -2,7 +2,7 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>1328318</node_id>
   <title>flushcbox</title>
-  <code>return unless isGod($USER) || (exists $HTMLVARS{'group_chanops'}{$$USER{node_id}});
+  <code>return unless $APP-&gt;isChanop($USER); # Specifically include gods
 my $currentRoomId = int($$USER{in_room});
 my $currentRoom = getNode($currentRoomId);
 my $currentRoomName;

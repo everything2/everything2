@@ -15,9 +15,9 @@ $plainText = $publicTalk || (((defined $plainText) &amp;&amp; ($plainText)) ? 1 
 
 my $UID = $USER-&gt;{node_id};
 my $isGuest = $APP-&gt;isGuest($USER);
-my $isRoot = !$isGuest &amp;&amp; exists $HTMLVARS{'group_gods'}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $isCE = $APP-&gt;isEditor($USER);
-my $isEDev = !$isGuest &amp;&amp; exists $HTMLVARS{'group_edev'}{$UID};
+my $isEDev = $APP-&gt;isDeveloper($USER);
 
 my $uName;	#user's name (FIXME: should this be escaped?)
 my $uLink;	#start of link to user

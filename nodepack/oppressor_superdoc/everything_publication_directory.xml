@@ -35,9 +35,6 @@ The &quot;restricted&quot; column shows who may view/add to a discussion.
 &lt;!--th width=&quot;100&quot;&gt;type&lt;/th--&gt;
 &lt;/tr&gt;
 [% 
-my $uid = getId($USER);
-my $isRoot = exists $HTMLVARS{group_gods}{$uid};
-my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$uid};
 my @types = qw( debate );
 foreach(@types) {
 	$_ = getId(getType($_));
@@ -106,29 +103,22 @@ foreach my $n (@nodes) {
 
 	next unless Everything::isApproved($USER, $restrictGroup);
 
-	$str .= # (
+	$str .= 
 		'&lt;tr&gt;&lt;td&gt;' .
 		linkNode( $n, 0, { lastnode_id=&gt;0 } ) .
 		'&lt;/td&gt;&lt;td&gt;&lt;small&gt;(' .
-#		'(&lt;a href=&quot;/index.pl?node_id=' . $$n{ 'node_id' } . '&amp;displaytype=compact&quot;&gt;compact&lt;/a&gt;) ' .
 		linkNode($n,'compact',{lastnode_id=&gt;0,displaytype=&gt;'compact'}).
 		')&lt;/small&gt;&lt;/td&gt;&lt;td&gt;&lt;small&gt;' .
-#		# I always hate people who use nested ternaries, especially without 
-#		# indenting. I'm a bad boy...
-#		( $isRoot ? ( ( $$n{ 'restricted' } ) ? '&lt;td&gt;super-duper power people&lt;/td&gt;' : '&lt;td&gt;wimps&lt;/td&gt;' ) : '' ) .
+
 		linkNode($restrictGroup,0,{lastnode_id=&gt;0}) .
 		'&lt;/small&gt;&lt;/td&gt;&lt;td&gt;' .
 		linkNode( $$user{ 'node_id' },0,{lastnode_id=&gt;0}) .
 		'&lt;/td&gt;&lt;td&gt;' .
-		#$$n{ createtime } .
 		$created .
 		'&lt;/td&gt;' .
                 '&lt;td&gt;'.$latesttime.'&lt;/td&gt;'.
-		# '&lt;td&gt;&lt;small&gt;' . $$n{type}{title} .
-		# '&lt;/small&gt;&lt;/td&gt;' .
 		'&lt;/tr&gt;'
 	;
-#	); # unless ( $$n{ 'restricted' } &amp;&amp; !$isRoot );
 }
 $str;
 %]

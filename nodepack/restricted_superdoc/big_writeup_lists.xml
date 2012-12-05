@@ -8,7 +8,7 @@ my $SUID = getId($USER)||0;
 my $victim = $query-&gt;param('usersearch');
 $victim = $$USER{title} unless ($victim);
 
-if (exists $HTMLVARS{'group_gods'}{$SUID}) {
+if ( $APP-&gt;isAdmin($USER) ) {
     		$query-&gt;textfield('usersearch', $victim);
 	} else { 
 		$query-&gt;hidden('usersearch',$victim);  
@@ -52,7 +52,7 @@ return $fstr;
 [%
 
 my $UID = $$USER{node_id} || 0; #uppercase = user that is viewing
-my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $us;
 my $israw = $query-&gt;param('raw');
 
@@ -99,7 +99,7 @@ my $rep = $isMe || $isRoot;
 
 my $str = '';
 
-my $isEd = $rep || (exists $HTMLVARS{'group_content editors'}{$UID});
+my $isEd = $rep || $APP-&gt;isEditor($USER);
 
 #quit for special bots
 

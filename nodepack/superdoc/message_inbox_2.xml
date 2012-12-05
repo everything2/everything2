@@ -10,7 +10,7 @@ my $UID = getId($USER)||0;
 
 return '&lt;tr&gt;&lt;td&gt;If you had an account, you\'d get messages.&lt;/td&gt;&lt;/tr&gt;' if $APP-&gt;isGuest($USER);
 
-my $isRoot = exists $HTMLVARS{group_gods}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
 
 #N-Wing converted to using varcheckbox, and moved to options part
 ## if this page has been submitted...

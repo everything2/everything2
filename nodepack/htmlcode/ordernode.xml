@@ -2,8 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>2037720</node_id>
   <title>ordernode</title>
-  <code>return unless  exists($HTMLVARS{'group_gods'}{$USER-&gt;{node_id}}) or
-	exists($HTMLVARS{'group_content editors'}{$$USER{node_id}});
+  <code>return unless $APP-&gt;isEditor($USER);
 
 
 my $str = htmlcode('openform', 'adminordernode')

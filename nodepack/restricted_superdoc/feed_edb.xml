@@ -3,7 +3,7 @@
   <doctext>&lt;p&gt;
 [%
 my $UID = getId($USER);
-my $isRoot = exists $HTMLVARS{group_gods}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
 return 'You narrowly escape EDB\'s mouth.' unless $isRoot;
 
 my $t;

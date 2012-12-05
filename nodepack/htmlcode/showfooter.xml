@@ -20,16 +20,7 @@ my @R = (
 );
 
 $str.=$R[int(rand(@R))];
-$str.=' &lt;a href=&quot;http://everydevel.com/&quot;&gt;The Everything Development Company&lt;/a&gt;';
-
-
-#$str.='&lt;br /&gt;Interested in &lt;a href=&quot;http://everydevel.com/?node=ad+rates&quot;&gt;Advertising&lt;/a&gt;? Contact our ';
-#my @S = ('ad-meister', 'ad-monkey', 'ad-samurai', 'internal ad-genius');
-#$str.= $S[int(rand(@S))];
-#$str.= ', &lt;a href=&quot;mailto:robo@blockstackers.com&quot;&gt;Robo&lt;/a&gt;';
-
-#my $NL = getNode('tagline grab', 'nodelet');
-#$str.= '&lt;br /&gt;'.$$NL{nltext};
+$str.=' &lt;a href=&quot;http://everything2.com/&quot;&gt;Everything2 Media LLC&lt;/a&gt;';
 
 $str.=&quot;&lt;br /&gt;&quot;;
 

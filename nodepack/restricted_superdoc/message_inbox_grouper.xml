@@ -46,7 +46,7 @@ return 'If you had an account, we\'d let you gab.' if $APP-&gt;isGuest($USER);
 #  $query-&gt;param(&quot;message&quot;, &quot;&quot;);
   $str.=&quot;$@&quot; if $@ and isGod($USER);
 
-my $isRoot = exists $HTMLVARS{group_gods}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
 
 #
 # Everything goes in one big table, begin it here

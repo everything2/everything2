@@ -5,10 +5,7 @@
   <node_id>1924754</node_id>
   <type_nodetype>9</type_nodetype>
   <nlcode>[%
-  my $UID = $$USER{node_id};
-
-  my $isGod = exists $HTMLVARS{'group_gods'}{$UID};
-  my $isEd = $isGod || exists $HTMLVARS{'group_content editors'}{$UID};
+  my $isEd = $APP-&gt;isEditor($USER);
   my $webloggables = getVars(getNode(&quot;webloggables&quot;, &quot;setting&quot;));
   my $view_weblog =&quot;&quot;;
   # It might be more efficient to use a node_id for the VARS, but I'm not sure it'd make enough difference to be worth changing.

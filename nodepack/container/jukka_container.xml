@@ -91,16 +91,6 @@ my @R = (&quot;This affordable entertainment brought to you by&quot;,
 my $str;
 $str.=$R[int(rand(@R))];
 $str.=' &lt;a href=&quot;/node/usergroup/edev&quot;&gt;The Everything Development Company&lt;/a&gt;';
-
-
-#$str.=&quot;&lt;br /&gt;Interested in &lt;a href=http://everydevel.com/?node=ad+rates&gt;Advertising&lt;/a&gt;? Contact our &quot;;
-#my @S = (&quot;ad-meister&quot;, &quot;ad-monkey&quot;, &quot;ad-samurai&quot;, &quot;internal ad-genius&quot;);
-#$str.= $S[int(rand(@S))];
-#$str.= &quot;, &lt;a href='mailto:robo\@blockstackers.com'&gt;Robo&lt;/a&gt;&quot;;
-
-#my $NL = getNode('tagline grab', 'nodelet');
-#$str.= &quot;&lt;br \&gt;&quot;.$$NL{nltext};
-
 $str.=&quot;&lt;br \&gt;&quot;;
 $str;
 %]

@@ -1,24 +1,12 @@
 <node>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <value>109</value>
-    <key>login_node</key>
-  </vars>
-  <vars>
     <value>-8</value>
     <key>writeuplowrepthreshold</key>
   </vars>
   <vars>
     <value>114</value>
     <key>gods</key>
-  </vars>
-  <vars>
-    <value>952215</value>
-    <key>klaproth</key>
-  </vars>
-  <vars>
-    <value>2</value>
-    <key>stylesheetFixLevel</key>
   </vars>
   <vars>
     <value>166948</value>

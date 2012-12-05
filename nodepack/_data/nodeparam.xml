@@ -11,6 +11,11 @@
   </nodeparam>
   <nodeparam>
     <paramvalue>1</paramvalue>
+    <node_id>109</node_id>
+    <paramkey>prevent_nuke</paramkey>
+  </nodeparam>
+  <nodeparam>
+    <paramvalue>1</paramvalue>
     <node_id>124</node_id>
     <paramkey>prevent_nuke</paramkey>
   </nodeparam>
@@ -133,6 +138,11 @@
     <paramvalue>1</paramvalue>
     <node_id>923653</node_id>
     <paramkey>allow_message_archive</paramkey>
+  </nodeparam>
+  <nodeparam>
+    <paramvalue>1</paramvalue>
+    <node_id>952215</node_id>
+    <paramkey>prevent_nuke</paramkey>
   </nodeparam>
   <nodeparam>
     <paramvalue>1</paramvalue>

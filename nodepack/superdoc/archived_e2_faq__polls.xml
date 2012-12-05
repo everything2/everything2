@@ -44,9 +44,7 @@
 
 [%
 
-my $uid = getId($USER);
-my $isRoot = exists $HTMLVARS{group_gods}{$uid};
-return unless $isRoot;
+return unless $APP-&gt;isAdmin($USER);
 
 my $str=&quot;&lt;P&gt;&lt;hr width=220&gt;
 

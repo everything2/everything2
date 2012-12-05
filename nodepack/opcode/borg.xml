@@ -7,7 +7,7 @@
 
 my $UID = $$USER{node_id};
 
-return unless $HTMLVARS{group_gods}{$UID};
+return unless $APP-&gt;isAdmin($USER);
 return unless $query-&gt;param('borgvictim');
 my $victimID = $query-&gt;param('borgvictim') || 0;
 return unless $victimID =~ /^(\d+)$/;
