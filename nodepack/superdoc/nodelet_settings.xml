@@ -7,7 +7,7 @@ return '&lt;p&gt;You need to sign in or '
 	&lt;!-- ' if ($APP-&gt;isGuest($USER));
 
 htmlcode('movenodelet', getNode('Epicenter','nodelet')-&gt;{node_id}, 'x') if $$VARS{settings_useEpicenterZen};
-$HTMLVARS{pageheader} = '&lt;!-- bottom --&gt;'.htmlcode('settingsDocs');
+$PAGELOAD-&gt;{pageheader} = '&lt;!-- bottom --&gt;'.htmlcode('settingsDocs');
 htmlcode('openform',-id=&gt;'pagebody');
 %]
 

@@ -3,7 +3,7 @@
   <parent_container>19</parent_container>
   <pagetype_nodetype>15</pagetype_nodetype>
   <page>[%
-$HTMLVARS{pageheader} = '&lt;!-- put at end --&gt;'.htmlcode('settingsDocs');
+$PAGELOAD-&gt;{pageheader} = '&lt;!-- put at end --&gt;'.htmlcode('settingsDocs');
 htmlcode('openform').
 htmlcode('verifyRequestForm', 'edit_user')
 ;

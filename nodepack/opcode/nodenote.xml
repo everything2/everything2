@@ -2,8 +2,7 @@
   <type_nodetype>415056</type_nodetype>
   <node_id>1180774</node_id>
   <title>nodenote</title>
-  <code>return if(!exists($HTMLVARS{'group_gods'}{$$USER{node_id}})
-&amp;&amp; !exists($HTMLVARS{'group_content editors'}{$$USER{node_id}}));
+  <code>return unless $APP-&gt;isEditor($USER);
 
 my $notetext = $query-&gt;param('notetext'); 
 my $notefor = int($query-&gt;param('notefor'));

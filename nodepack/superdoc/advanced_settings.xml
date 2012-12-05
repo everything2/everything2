@@ -12,7 +12,7 @@ use DateTime;
 if (defined $query-&gt;param('sexisgood')) {
 	$$VARS{'preference_last_update_time'} = DateTime-&gt;now()-&gt;epoch()-60;
 }
-$HTMLVARS{pageheader} = '&lt;!-- put at end --&gt;'.htmlcode('settingsDocs');
+$PAGELOAD-&gt;{pageheader} = '&lt;!-- put at end --&gt;'.htmlcode('settingsDocs');
 return htmlcode('openform', -id=&gt;'pagebody');
 %]
 &lt;h2&gt;Page display&lt;/h2&gt;

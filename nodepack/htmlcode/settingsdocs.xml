@@ -18,8 +18,7 @@ my @allSettings = (
 	) ;
 push @allSettings,
 	'Admin Settings'
-	if exists $HTMLVARS{'group_content editors'}{$$USER{node_id}} ||
-	exists $HTMLVARS{'group_gods'}{$$USER{node_id}} ;
+	if $APP-&gt;isEditor($USER);
 push @allSettings ,	(
 	'Nodelet Settings',
 	{$DISP=&gt;'Profile', 'node_id'=&gt;$$USER{node_id}, 'displaytype'=&gt;'edit'}

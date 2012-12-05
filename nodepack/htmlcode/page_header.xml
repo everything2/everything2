@@ -6,6 +6,11 @@
 my ($str,$after) = split /&lt;!--.*?--&gt;/, (delete $HTMLVARS{pageheader})
 	if $HTMLVARS{pageheader};
 
+if($PAGELOAD-&gt;{pageheader})
+{
+  ($str,$after) = split /&lt;!--.*?--&gt;/, $PAGELOAD-&gt;{pageheader};
+}
+
 my $ntypet = $$NODE{type}{title};
 if ( $ntypet eq 'e2node' or $ntypet eq 'writeup' ) {
 	$str .= htmlcode( 'createdby' ).&quot;\n&quot; if $ntypet eq 'e2node' ;
@@ -33,6 +38,5 @@ return qq'&lt;div id=&quot;pageheader&quot;&gt;
 	htmlcode( 'show_node_forward' ) . &quot;
 	$str
 	$after
-&lt;/div&gt;&quot; ;
-</code>
+&lt;/div&gt;&quot; ;</code>
 </node>
