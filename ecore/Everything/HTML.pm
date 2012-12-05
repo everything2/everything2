@@ -2497,7 +2497,7 @@ sub clearGlobals
 	$VARS = "";
 	$NODELET = "";
 	$THEME = "";
-        $PAGELOAD = "";
+        $PAGELOAD = {};
         $TEST = "";
 	$TEST_CONDITION = "";
         $TEST_SESSION_ID = "";
