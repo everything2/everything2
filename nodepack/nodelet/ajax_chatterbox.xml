@@ -61,10 +61,6 @@ $topicsetting = getVars(getNode('Room Topics', 'setting'));
 
 if(exists($$topicsetting{$$USER{in_room}})) {
 	$topic = $$topicsetting{$$USER{in_room}};
-
-	$HTMLVARS{pseudoExec}=$topic;
-	$topic = htmlcode('pseudoExec','');
-
 	$topic = '&lt;div id=&quot;chat_topic&quot;&gt;'.parseLinks($topic).'&lt;/div&gt;'; #slighly different
 }
 

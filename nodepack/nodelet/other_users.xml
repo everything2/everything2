@@ -20,7 +20,7 @@ if ($$USER{in_room}) {
 }
 
 my $UID = $$USER{node_id};
-my $isRoot = exists $HTMLVARS{'group_gods'}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $isCE = $APP-&gt;isEditor($USER);
 my $isChanop = $APP-&gt;isChanop($USER);
 
@@ -133,7 +133,7 @@ while(my $U = $csr-&gt;fetchrow_hashref())
   $nameLink = '&lt;strong&gt;'.$nameLink.'&lt;/strong&gt;' if $sameUser;
 
   my $flags='';
-  if (exists $HTMLVARS{'group_gods'}{$userID} &amp;&amp; !$APP-&gt;getParameter($userID,&quot;hide_chatterbox_staff_symbol&quot;) ) {
+  if ($APP-&gt;isAdmin($userID) &amp;&amp; !$APP-&gt;getParameter($userID,&quot;hide_chatterbox_staff_symbol&quot;) ) {
     $flags .= $linkRoots;
   }
 

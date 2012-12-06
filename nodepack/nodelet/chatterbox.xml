@@ -81,12 +81,6 @@ unless($$VARS{hideTopic} ) {
 		$topic = $$topicsetting{$$USER{in_room}};
 
 		utf8::decode($topic);
-
-		#new pseudo-exec thingy
-		#comment out next 2 lines to restore original way (but also get it in [Other Users] (nodelet))
-		$HTMLVARS{pseudoExec}=$topic;
-		$topic = htmlcode('pseudoExec','');
-
 		$topic = &quot;\n\t\t&quot;.'&lt;small&gt;'.parseLinks($topic).'&lt;/small&gt;'; #slighly different
 	}
 

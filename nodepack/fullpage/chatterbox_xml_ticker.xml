@@ -43,12 +43,6 @@ my $V = getVars(getNode('room topics','setting'));
 my $topic = '';
 if(exists $$V{$room}) {
 	$topic = $$V{$room};
-
-	#new pseudo-exec thingy
-	#comment out next 2 lines to restore original way
-	$HTMLVARS{pseudoExec}=$topic;
-	$topic = htmlcode('pseudoExec','');
-
 	$topic = $query-&gt;escape($topic);
 }
 
