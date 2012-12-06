@@ -36,7 +36,7 @@ $$VARS{nodelets} =~ s/\b1868940\b/263/g;
 # Ensure we didn't just cause New Writeups to occur twice
 $$VARS{nodelets} =~ s/(\b263\b.*),263\b/\1/g;
 
-my $nodelets = $HTMLVARS{ pagenodelets } || $PAGELOAD-&gt;{pagenodelets} || $$VARS{nodelets} ;
+my $nodelets = $PAGELOAD-&gt;{pagenodelets} || $$VARS{nodelets} ;
 my @nodelets = split(',',$nodelets) if $nodelets ;
 
 # Now, list them.

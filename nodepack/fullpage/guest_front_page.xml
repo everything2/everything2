@@ -10,7 +10,7 @@
     &lt;title&gt;Everything2&lt;/title&gt;
 
 	&lt;link rel=&quot;stylesheet&quot; id=&quot;basesheet&quot; type=&quot;text/css&quot; href=&quot;[{linkStylesheet:basesheet}]&quot; media=&quot;all&quot;&gt;
-[% $HTMLVARS{noparsecodelinks} = 1; &quot;&quot;; %]
+[% $PAGELOAD-&gt;{noparsecodelinks} = 1; &quot;&quot;; %]
 [%
 '	&lt;link rel=&quot;stylesheet&quot; id=&quot;zensheet&quot; type=&quot;text/css&quot; href=&quot;'
                  . htmlcode('linkStylesheet', $$VARS{userstyle}||$$THEME{default_style}, 'serve')

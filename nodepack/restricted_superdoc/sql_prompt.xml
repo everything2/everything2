@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>13</type_nodetype>
   <doctext>[%
-$HTMLVARS{noparsecodelinks} = 1;
+$PAGELOAD-&gt;{noparsecodelinks} = 1;
 
 my $ut = $USER-&gt;{title};
 my $codePerson = 0;

@@ -2,10 +2,12 @@
   <type_nodetype>4</type_nodetype>
   <node_id>43</node_id>
   <title>parsecode</title>
-  <code> 	my ($field, $nolinks) = @_;
-	my $text = $$NODE{$field};
-	$text = parseCode ($text);
-	$nolinks ||= $HTMLVARS{noparsecodelinks};
-	$text = parseLinks($text) unless $nolinks;
-	$text;</code>
+  <code>my ($field, $nolinks) = @_;
+my $text = $$NODE{$field};
+$text = parseCode ($text);
+$nolinks ||= $HTMLVARS{noparsecodelinks};
+$nolinks ||= $PAGELOAD-&gt;{noparsecodelinks};
+
+$text = parseLinks($text) unless $nolinks;
+$text;</code>
 </node>

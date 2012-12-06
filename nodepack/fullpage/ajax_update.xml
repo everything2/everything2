@@ -4,7 +4,7 @@
 
 use JSON;
 my $mode = $query-&gt;param(&quot;mode&quot;) || &quot;var&quot;;
-$HTMLVARS{noparsecodelinks} = 'nolinks' ;
+$PAGELOAD-&gt;{noparsecodelinks} = 'nolinks' ;
 
 my $from_json_catch = sub {
 

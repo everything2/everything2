@@ -172,7 +172,7 @@ $copylist .=
   &quot;\n&lt;/dl&gt;&quot;
   ;
 
-$HTMLVARS{noparsecodelinks} = 1;
+$PAGELOAD-&gt;{noparsecodelinks} = 1;
 
 $str =
   parseLinks($str)
