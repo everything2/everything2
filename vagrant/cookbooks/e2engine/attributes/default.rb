@@ -26,6 +26,7 @@ default["e2engine"]["memcache"] = {}
 default["e2engine"]["logdirectory"] = "/var/log/everything"
 default["e2engine"]["create_room_level"] = 5
 default["e2engine"]["stylesheet_fix_level"] = 2
+default["e2engine"]["writeuplowrepthreshold"] = -8
 default["e2engine"]["s3"] = {}
 default["e2engine"]["s3"]["homenodeimages"]["bucket"] = ""
 default["e2engine"]["s3"]["homenodeimages"]["secret_access_key"] = ""
