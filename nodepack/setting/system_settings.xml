@@ -1,10 +1,6 @@
 <node>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <value>-8</value>
-    <key>writeuplowrepthreshold</key>
-  </vars>
-  <vars>
     <value>114</value>
     <key>gods</key>
   </vars>

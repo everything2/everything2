@@ -6,8 +6,7 @@
 
 [%
 # do admin stuff now so the node has been repaired if necessary before being displayed
-$HTMLVARS{admintools} = htmlcode('e2nodetools')
-	if $APP-&gt;isEditor($USER);
+$PAGELOAD-&gt;{admintools} = htmlcode('e2nodetools') if $APP-&gt;isEditor($USER);
 
 my $stuff = $$NODE{group} || [];
 
@@ -133,9 +132,7 @@ $str;
 
 &lt;/div&gt;
 
-[%
-delete $HTMLVARS{admintools};
-%]
+[% $PAGELOAD-&gt;{admintools}; %]
 [{addwriteup}]
 [{nagbox}]
 </page>

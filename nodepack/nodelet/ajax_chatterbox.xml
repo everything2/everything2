@@ -67,7 +67,7 @@ if(exists($$topicsetting{$$USER{in_room}})) {
 $str.$topic;
 %]
 [%
-return unless exists $HTMLVARS{'group_gods'}{$$USER{node_id}};
+return unless $APP-&gt;isChanop($USER);
 return '&lt;p align=&quot;right&quot;&gt;&lt;small&gt;'.linkNode($NODE, 'silence', {'op' =&gt; 'flushcbox'}).'&lt;/small&gt;&lt;/p&gt;';
 %]
 </nlcode>

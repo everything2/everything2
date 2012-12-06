@@ -11,7 +11,7 @@
 
 [%
 # get settings here in case they are being updated. Slight kludge to remember them...
-$HTMLVARS{chatterboxsettingswidgetlink} = htmlcode('nodeletsettingswidget','Chatterbox', 'Chatterbox settings');
+$PAGELOAD-&gt;{chatterboxsettingswidgetlink} = htmlcode('nodeletsettingswidget','Chatterbox', 'Chatterbox settings');
 return '' if $$VARS{hideprivmessages};
 
 my $messagesID = getNode('Messages', 'nodelet') -&gt; { node_id } ;
@@ -90,7 +90,7 @@ $str.$topic;
 %]
 &lt;div class=&quot;nodeletfoot&quot;&gt;
 [%
-return unless (exists $HTMLVARS{'group_gods'}{$$USER{node_id}}) || (exists $HTMLVARS{'group_chanops'}{$$USER{node_id}});
+return unless $APP-&gt;isChanop($USER);
 return linkNode($NODE, 'silence', {'confirmop' =&gt; 'flushcbox',
 	-class=&gt;&quot;action ajax chatterbox:updateNodelet:Chatterbox&quot;}).'&lt;br&gt;';
 %]
@@ -99,7 +99,7 @@ return unless $USER-&gt;{in_room};
 return linkNodeTitle('go outside[superdocnolinks]').'&lt;br&gt;';
 %]
 [%
-delete $HTMLVARS{chatterboxsettingswidgetlink};
+$PAGELOAD-&gt;{chatterboxsettingswidgetlink};
 %]
 &lt;/div&gt;
 </nlcode>
