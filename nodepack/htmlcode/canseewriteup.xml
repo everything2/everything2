@@ -35,7 +35,7 @@ my %tests = (
 	},
 
 	lowrep =&gt; sub{ # reputation threshold
-		my $threshold = $HTMLVARS{ writeuplowrepthreshold } || 'none' ;
+		my $threshold = $Everything::CONF-&gt;{writeuplowrepthreshold} || 'none' ;
 		$threshold = $$VARS{ repThreshold } || '0' if exists $$VARS{ repThreshold } ; # ecore stores 0 as ''
 		$threshold eq 'none' or $$N{reputation} &gt; $threshold;
  	}

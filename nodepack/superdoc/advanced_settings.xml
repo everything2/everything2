@@ -175,7 +175,7 @@ $str.= $query -&gt; checkbox( -name=&gt;'activateThreshold' , -value =&gt; 1 ,
 	-label=&gt;'Hide low-reputation writeups in New Writeups and e2nodes.' ) ;
 $str.=' &lt;label&gt;Reputation threshold: '.
 	$query-&gt; textfield( 'repThreshold' , $$VARS{repThreshold} , 3 , 3 ) .
-	&quot;&lt;/label&gt; (default is $HTMLVARS{writeuplowrepthreshold})&quot; ;
+	&quot;&lt;/label&gt; (default is &quot;.$Everything::CONF-&gt;{writeuplowrepthreshold}.&quot;)&quot; ;
 return $str ;
 %]
 &lt;br&gt;

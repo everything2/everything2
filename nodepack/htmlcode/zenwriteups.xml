@@ -22,8 +22,8 @@ my ($repthreshold, %abominations) = ('none');
 if (!$cansee or $$VARS{nw_nojunk} or $isLogs){
 	if (exists $$VARS{repThreshold}) {
 		$repthreshold = $$VARS{repThreshold} || 0; # ecore stores 0 as ''
-	} elsif (exists $HTMLVARS{writeuplowrepthreshold}) {
-		$repthreshold = $HTMLVARS{writeuplowrepthreshold} || 0;
+	} elsif (exists $Everything::CONF-&gt;{writeuplowrepthreshold}) {
+		$repthreshold = $Everything::CONF-&gt;{writeuplowrepthreshold} || 0;
 	}
 	
 	\@abominations{ split(',', $$VARS{unfavoriteusers}) }
@@ -103,6 +103,5 @@ if ($cansee &amp;&amp; !$isLogs){
 
 '&lt;ul class=&quot;infolist&quot;&gt;' .
 	htmlcode('show content' , \@wus , $instructions , %newwuspecials) .
-'&lt;/ul&gt;' ;
-</code>
+'&lt;/ul&gt;' ;</code>
 </node>
