@@ -29,7 +29,7 @@ $str .= &quot;&lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the code:&lt;/strong&gt;&
 $str .= htmlcode('textarea',&quot;code,30,80&quot;);
 $str .= $query -&gt; checkbox( -name=&gt;'op' , value=&gt;'applypatch' , selected=&gt;0 , force=&gt;1 ,label=&gt;'apply this patch immediately' ).
 '&lt;br&gt;'.
-$query -&gt; hidden( 'patch_id' , $$NODE{node_id} ) if $HTMLVARS{isDevServer} ;
+$query -&gt; hidden( 'patch_id' , $$NODE{node_id} ) if $APP-&gt;inDevEnvironment();
 return $str;
 %]</page>
   <displaytype>edit</displaytype>

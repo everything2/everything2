@@ -7,7 +7,9 @@ use XML::Simple;
 use LWP::Simple;
 use Digest::MD5 qw(md5_hex);
 
-my ($sourceDomain, $sourceName) = $HTMLVARS{isDevServer}
+return &quot;Not currently functional&quot;;
+
+my ($sourceDomain, $sourceName) = $APP-&gt;inDevEnvironment()
 	? ('everything2.com', 'the production server')
 	: ('dev1.everything2.com', 'the development server');
 
@@ -366,8 +368,7 @@ sub listPatches{
   }
 };
 
-%]
-</doctext>
+%]</doctext>
   <node_id>1991441</node_id>
   <title>Patch importer</title>
 </node>

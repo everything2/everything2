@@ -12,7 +12,7 @@ return -4 unless $$PATCH{type_nodetype} == getId(getType(&quot;patch&quot;));
 my $action;
 my $cur_status = getNodeById($PATCH -&gt; {cur_status});
 my $undone_status = getNode(&quot;undone&quot;,&quot;status&quot;);
-my $implemented_status = getNode( ( $HTMLVARS{isDevServer} ? 'implemented' : 'production-implemented' ),'status');
+my $implemented_status = getNode( ( $APP-&gt;inDevEnvironment() ? 'implemented' : 'production-implemented' ),'status');
 
 if ($cur_status -&gt; {applied}) {
   if ($cur_status -&gt; {title} eq 'imported-implemented') {
@@ -28,7 +28,7 @@ else {
   }
   $$PATCH{cur_status} = $implemented_status -&gt; {status_id};
   $$PATCH{assigned_to} = $$USER{node_id};
-  if ( $HTMLVARS{isDevServer} ){
+  if ( $APP-&gt;inDevEnvironment() ){
 	  foreach ( 'title' , 'author_user' , 'purpose' , 'instructions' , 'code' ) {
 		$$PATCH{$_} = $query -&gt; param( &quot;patch_$_&quot; ) if $query -&gt; param( &quot;patch_$_&quot; ) ;
 		$query -&gt; delete( &quot;patch_$_&quot; ) ; 
@@ -48,6 +48,5 @@ updateNode($PATCH, $USER);
 
 $DB-&gt;sqlInsert(&quot;message&quot;, {author_user=&gt;getId(getNode(&quot;root&quot;,&quot;user&quot;)), for_user=&gt;$$PATCH{author_user}, msgtext=&gt;&quot;Your patch ([$$PATCH{title}]) was just $action by $$USER{title}. Thank you.&quot;}) unless ($$PATCH{author_user}==$$USER{node_id});
 
-return updateNode($TOPATCH, $USER);
-</code>
+return updateNode($TOPATCH, $USER);</code>
 </node>

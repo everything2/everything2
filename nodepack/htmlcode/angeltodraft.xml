@@ -41,7 +41,7 @@ updateNode($N, -1); # avoid duplicate names
 
 if ($N &amp;&amp; $$N{doctext} eq $$data{doctext}){
 	$DB -&gt; sqlDelete('heaven', &quot;node_id=$angel_id&quot;)
-		unless $HTMLVARS{isDevServer};
+		unless $APP-&gt;inDevEnvironment();
 
 	my $killa = getNodeById($$tomb{killa_user}) unless $$tomb{killa_user} == -1;
 	$killa = ref $killa ? &quot;[$$killa{title}\[user]]&quot; : 'unknown editor';
@@ -51,6 +51,5 @@ if ($N &amp;&amp; $$N{doctext} eq $$data{doctext}){
 	return $N;
 }
 
-return &quot;Reincarnation of angel id $angel_id failed!&quot;;
-</code>
+return &quot;Reincarnation of angel id $angel_id failed!&quot;;</code>
 </node>

@@ -16,6 +16,5 @@ while (my $patch = $patches-&gt;fetchrow_hashref){
 }
 
 $str.= '&lt;/table&gt;&lt;p align=&quot;center&quot;&gt;'.linkNodeTitle(&quot;Patch Manager&quot;) ;
-$str .= '&lt;br&gt;&lt;a href=&quot;http://devel.everything2.com/ecore&quot;&gt;Mercurial Repository&lt;/a&gt;&lt;/p&gt;' if $HTMLVARS{isDevServer};
 $str;</code>
 </node>

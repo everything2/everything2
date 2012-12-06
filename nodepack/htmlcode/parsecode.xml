@@ -5,7 +5,6 @@
   <code>my ($field, $nolinks) = @_;
 my $text = $$NODE{$field};
 $text = parseCode ($text);
-$nolinks ||= $HTMLVARS{noparsecodelinks};
 $nolinks ||= $PAGELOAD-&gt;{noparsecodelinks};
 
 $text = parseLinks($text) unless $nolinks;

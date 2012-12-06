@@ -15,7 +15,7 @@ my $e2;
 $e2-&gt;{node_id} = $$NODE{node_id};
 $e2-&gt;{lastnode_id} = $lastnode;
 $e2-&gt;{title} = $$NODE{title};
-$e2-&gt;{ignoreMissingLibraries} = 1 if $HTMLVARS{ignoreMissingJsLibraries};
+#$e2-&gt;{ignoreMissingLibraries} = 1;
 
 my $cookie;
 foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
@@ -29,7 +29,7 @@ foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', '
 $e2 -&gt; {collapsedNodelets} =~ s/\bsignin\b// if $query -&gt; param('op') eq 'login';
 $e2 = encode_json($e2);
 
-my $min = '.min' unless $HTMLVARS{isDevServer};
+my $min = '.min' unless $APP-&gt;inDevEnvironment();
 my $libraries = qq'&lt;script src=&quot;http://code.jquery.com/jquery-1.4.4$min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
 # mark as guest but only in non-canonical domain so testing and caching both work
 
@@ -47,7 +47,7 @@ $libraries .= &lt;&lt;LIBS;
 	&lt;script src=&quot;http://jscss.everything2.com/jquery.ba-bbq$min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
 LIBS
 
-$libraries .= &lt;&lt;DEVLIBS . htmlcode('nagger') if $HTMLVARS{isDevServer};
+$libraries .= &lt;&lt;DEVLIBS . htmlcode('nagger') if $APP-&gt;inDevEnvironment();
 	&lt;script src=&quot;http://jscss.everything2.com/stars/jquery.MetaData.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
 	&lt;script src=&quot;/node/jscript/star+script&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
 DEVLIBS

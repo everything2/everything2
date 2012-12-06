@@ -12,7 +12,7 @@
 [{votefoot}]
 
 [%
-return '' unless $HTMLVARS{isDevServer};
+return '' unless $APP-&gt;inDevEnvironment();
 return '' unless $$NODE{type}{title} eq 'writeup' and $$NODE{parent_e2node};
 my $str;
 # Stars for the parent e2node:
@@ -46,8 +46,7 @@ return unless $$NODE{type}{title} ne 'draft' &amp;&amp; canUpdateNode($USER, $NO
 htmlcode('openform', -class=&gt;'writeup_add')
 	.htmlcode('editwriteup', $NODE)
 	.'&lt;/form&gt;';
-%]
-</page>
+%]</page>
   <displaytype>display</displaytype>
   <ownedby_theme>1854183</ownedby_theme>
   <node_id>1854180</node_id>
