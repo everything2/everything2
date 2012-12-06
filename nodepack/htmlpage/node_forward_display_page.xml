@@ -4,7 +4,7 @@
   <pagetype_nodetype>1147470</pagetype_nodetype>
   <page>[%
 my $origTitle = $query-&gt;param(&quot;originalTitle&quot;);
-$HTMLVARS{circularLink} = ($origTitle eq $$NODE{title});
+my $circularLink = ($origTitle eq $$NODE{title});
 
 my $targetNodeId = $$NODE{doctext};
 my $targetNode;
@@ -12,7 +12,7 @@ if ($targetNodeId ne '') {
    $targetNode = getNodeById($targetNodeId, 'light');
 }
 
-my $badLink = ($HTMLVARS{circularLink} || !$targetNode);
+my $badLink = ($circularLink || !$targetNode);
 $origTitle ||= $$NODE{title};
 
 my $urlParams = { };
@@ -43,52 +43,39 @@ unless (isGod($USER) &amp;&amp; $badLink) {
     $targetNode = $NODE;
     $urlParams = {
       'displaytype' =&gt; 'edit'
-      , 'circularLink' =&gt; $HTMLVARS{circularLink}
+      , 'circularLink' =&gt; $circularLink
     };
 
 }
 
 my $redirect_url = urlGen($urlParams, 'no escape', $targetNode);
-$HTMLVARS{redirect_url} = urlGen($urlParams, 'no quotes', $targetNode);
 
 $HEADER_PARAMS{-status} = 303;
 $HEADER_PARAMS{-location} =
   'http://' . $ENV{HTTP_HOST} . $redirect_url
   ;
 
-return '';
-%]
-
-&lt;html&gt;
+my $str = qq|&lt;html&gt;
 &lt;head&gt;
-    &lt;title&gt;[% $$NODE{title} %]@everything2.com&lt;/title&gt;
+    &lt;title&gt;$$NODE{title}\@everything2.com&lt;/title&gt;
 
     &lt;script language=&quot;JavaScript&quot;&gt;
     &lt;!--
-[%
-            return 'location.href = &quot;' . $HTMLVARS{redirect_url} . '&quot;;';
-%]
-    //--&gt;
+      location.href = &quot;$redirect_url&quot;;
+    --&gt;
     &lt;/script&gt;
     &lt;noscript&gt;
-[%
-            return
-              '&lt;meta http-equiv=&quot;refresh&quot; content=&quot;0; URL='
-              . $HTMLVARS{redirect_url}
-              . '&quot;&gt;'
-              ;
-%]
+    &lt;meta http-equiv=&quot;refresh&quot; content=&quot;0; URL='$redirect_url'&quot;&gt;
     &lt;/noscript&gt;
 &lt;/head&gt;
 
-&lt;body&gt;
-[%
+&lt;body&gt;|;
+
 # The following is a simple informative display for gods only.
 # It shoudl never appear unless someone has disabled HTTP,
 #  META, *and* javascript redirects.
-my $str = '';
 
-return $str unless isGod($USER);
+return $str unless $APP-&gt;isAdmin($USER);
 
 $str .=
   '&lt;p&gt;'
@@ -108,7 +95,7 @@ if ($$NODE{doctext} ne '') {
 
 }
 
-if ($HTMLVARS{circularLink}) {
+if ($circularLink) {
 
   $str .= '&lt;p&gt;&lt;strong&gt;This is a circular link!&lt;/srong&gt;&lt;/p&gt;';
 

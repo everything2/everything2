@@ -3,13 +3,7 @@
   <node_id>2002477</node_id>
   <title>page header</title>
   <code># let page inject stuff into the header:
-my ($str,$after) = split /&lt;!--.*?--&gt;/, (delete $HTMLVARS{pageheader})
-	if $HTMLVARS{pageheader};
-
-if($PAGELOAD-&gt;{pageheader})
-{
-  ($str,$after) = split /&lt;!--.*?--&gt;/, $PAGELOAD-&gt;{pageheader};
-}
+my ($str,$after) = split /&lt;!--.*?--&gt;/, $PAGELOAD-&gt;{pageheader} if($PAGELOAD-&gt;{pageheader});
 
 my $ntypet = $$NODE{type}{title};
 if ( $ntypet eq 'e2node' or $ntypet eq 'writeup' ) {

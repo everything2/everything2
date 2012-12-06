@@ -29,10 +29,10 @@ if (!defined $redirectNode) {
 my $urlParams = { };
 my $bNoQuoteUrl = 1;
 
-$HTMLVARS{redirect_url} = urlGen($urlParams, $bNoQuoteUrl, $redirectNode);
+my $redirect_url = urlGen($urlParams, $bNoQuoteUrl, $redirectNode);
 $HEADER_PARAMS{-status} = 303;
 $HEADER_PARAMS{-location} =
-  'http://' . $ENV{HTTP_HOST} . $HTMLVARS{redirect_url}
+  'http://' . $ENV{HTTP_HOST} . $redirect_url
   ;
 %]</doctext>
   <node_id>2021986</node_id>
