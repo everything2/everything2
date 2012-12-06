@@ -34,9 +34,9 @@ $str.'&lt;/p&gt;&lt;/fieldset&gt;&lt;/form&gt;';
 %]
 [%
 return '' if $APP-&gt;isGuest($USER);
-$HTMLVARS{ pagenodelets } = $$VARS{ nodelets } ;
-$HTMLVARS{ pagenodelets } =~ s/\b$$NODE{node_id}\b,?//;
-delete $HTMLVARS{pagenodelets} if $HTMLVARS{pagenodelets} eq $$VARS{nodelets};
+$PAGELOAD-&gt;{ pagenodelets } = $$VARS{ nodelets } ;
+$PAGELOAD-&gt;{ pagenodelets } =~ s/\b$$NODE{node_id}\b,?//;
+delete $PAGELOAD-&gt;{pagenodelets} if $PAGELOAD-&gt;{pagenodelets} eq $$VARS{nodelets};
 
 return insertNodelet($NODE);
 %]

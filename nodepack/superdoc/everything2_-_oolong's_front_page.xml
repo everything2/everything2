@@ -5,9 +5,9 @@
 my $zenStr;
 
 if ( $APP-&gt;isGuest($USER) ) {
-    $HTMLVARS{ pagenodelets } = getNode( 'Sign in' , 'nodelet' ) -&gt; { node_id };
-   $HTMLVARS{ pagenodelets } .= ','.getNode( 'Recommended Reading' , 'nodelet' ) -&gt; { node_id } ;
-    $HTMLVARS{ pagenodelets } .= ','.getNode( 'New Writeups' , 'nodelet' ) -&gt; { node_id } ;
+    $PAGELOAD-&gt;{ pagenodelets } = getNode( 'Sign in' , 'nodelet' ) -&gt; { node_id };
+   $PAGELOAD-&gt;{ pagenodelets } .= ','.getNode( 'Recommended Reading' , 'nodelet' ) -&gt; { node_id } ;
+    $PAGELOAD-&gt;{ pagenodelets } .= ','.getNode( 'New Writeups' , 'nodelet' ) -&gt; { node_id } ;
 }
 
 $zenStr .= &quot;&lt;div id='welcome_message'&gt;&lt;h2 id='tagline'&gt;[Everything2 Help|Read with us. Write for us.]&lt;/h2&gt;&quot;;

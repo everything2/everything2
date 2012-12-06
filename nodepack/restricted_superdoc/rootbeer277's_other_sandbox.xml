@@ -228,8 +228,8 @@ return $nodegrouponeline;
 &lt;p&gt;[% $ENV{SCRIPT_NAME}; %]
 
 &lt;p&gt;Create room level is [% $Everything::CONF-&gt;{create_room_level} %]
-&lt;p&gt;GhettoAardvark chanops test: [% my $isChanop = exists($HTMLVARS{'group_chanops'}{1318017}); %]
-&lt;p&gt;Arthur Conan Doyle chanops test: [% my $isChanop = exists($HTMLVARS{'group_chanops'}{1791357}); %]
+&lt;p&gt;GhettoAardvark chanops test: [% $APP-&gt;isChanop(1318017); %]
+&lt;p&gt;Arthur Conan Doyle chanops test: [% $APP-&gt;isChanop(1791357); %]
 
 [{openform}]
 &lt;p&gt;Randomly generate a floating point number between 0 and 180 (pi/2).  Take the sine.  Multiply by the span of xdy (x times y minus x).  Round up.  Add x. (wait something's not right, rethink this)&lt;/p&gt;

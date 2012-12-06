@@ -2,8 +2,8 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $nlid = getNode( 'Notifications' , 'nodelet' ) -&gt; { node_id } ;
-$HTMLVARS{ pagenodelets } = &quot;$nlid,&quot; if $$VARS{ nodelets } =~ /\b$nlid\b/ ;
-$HTMLVARS{ pagenodelets } .= getNode( 'New Writeups' , 'nodelet' ) -&gt; { node_id } ;
+$PAGELOAD-&gt;{ pagenodelets } = &quot;$nlid,&quot; if $$VARS{ nodelets } =~ /\b$nlid\b/ ;
+$PAGELOAD-&gt;{ pagenodelets } .= getNode( 'New Writeups' , 'nodelet' ) -&gt; { node_id } ;
 
 insertNodelet( getNode( 'Chatterbox', 'nodelet' ) );
 #below: you only get the real deal if you have AJAX

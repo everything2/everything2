@@ -49,7 +49,7 @@ padding: 50px 300px; /* means the text doesn't show in the 300x50 window */
 &lt;!-- google_ad_section_end --&gt;
 &lt;/div&gt;
 &lt;div id='sidebar'[%
-    return ' class=&quot;pagenodelets&quot;' if $HTMLVARS{pagenodelets};
+    return ' class=&quot;pagenodelets&quot;' if $PAGELOAD-&gt;{pagenodelets};
 %]&gt;
 
 [{nodelet meta-container}]
