@@ -8,9 +8,6 @@ $POLL ||= $NODE;
 
 return &quot;Ack! Can't find poll!&quot; unless $POLL &amp;&amp; $$POLL{type}{title} eq 'e2poll';
 
-return 'Poll update conversion failed' if $$POLL{doctext} =~ /\[%/
-	and htmlcode('convertOldPoll', $POLL) != 1;
-
 my $vote = ($DB-&gt;sqlSelect(
 	'choice'
 	, 'pollvote'
