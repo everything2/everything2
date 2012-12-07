@@ -11,21 +11,10 @@
 #		1 = separate 0 and undef - by default, a value of 0 will delete $VARS-&gt;{$key}; if this is set, the actual value of 0 will be stored; also note that there isn't a way to delete the key if changed
 #	@elements - elements of list:
 #		even indices is value, odd indices is what to display
-#		if this is not defined, values are taken from $HTMLVARS{choicelist} instead
-#		note: a 0 value must be defined, or one will be given to you
 #
 #examples:
 #	show small, medium, large, which will be set in $VARS-&gt;{editsize}
 #	[{varsComboBox:editsize,0, 0,small (default),1,medium,2,large}]
-#
-#	shows sizes with a comma in the labels
-#	note: use square brackets, and not curly braces
-#	$HTMLVARS{choicelist} = [
-#		'0', 'small, the default size',
-#		'1', 'medium, an actual useful size',
-#		'2', 'large, for high res displays',
-#	];
-#	htmlcode('varsComboBox', 'editsize,0');
 #
 #created: 2002.05.10.n5
 #updated: 2002.06.20.n4 by N-Wing
@@ -56,11 +45,7 @@ my $separate0 = $flags &amp; 1;
 #}
 
 unless(scalar(@elements)) {
-	if( (exists $HTMLVARS{choicelist}) &amp;&amp; (defined $HTMLVARS{choicelist}) ) {
-		@elements = @{ $HTMLVARS{choicelist} };
-	} else {
-		return oops('no values given');
-	}
+	return oops('no values given');
 }
 return oops('no elements given') if scalar(@elements)==0;
 return oops('missing final value') if (scalar(@elements)%2)==1;

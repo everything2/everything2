@@ -24,7 +24,7 @@ if ($query-&gt;param('userstyle')) {
   $$VARS{userstyle} = $$NODE{node_id};
 }
 
-if ($$USER{user_id} == $$NODE{author_user} or exists($HTMLVARS{'group_gods'}{$$USER{'node_id'}}) ) {
+if ($$USER{user_id} == $$NODE{author_user} or $APP-&gt;isAdmin($USER) ) {
 	my $VARSNODE = getNode( 'fixed stylesheets' ,'setting' ) ;
 	my $settings = getVars( $VARSNODE ) ;
 

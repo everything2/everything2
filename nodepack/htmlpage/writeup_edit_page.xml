@@ -6,7 +6,7 @@
 
 my $uid = getId($USER);
 
-return ('If you need a writeup renamed or moved, please submit a request at '.linkNodeTitle('Edit These E2 Titles').'.') unless (exists $HTMLVARS{'group_gods'}{$uid}); # -ap 20080808
+return 'If you need a writeup removed, revert it to draft' unless ( $APP-&gt;isEditor($USER) ); 
 
 my $str;
 my $pname = $query-&gt;param('parentnodename');

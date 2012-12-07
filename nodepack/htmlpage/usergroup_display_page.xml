@@ -75,7 +75,7 @@ return $str;
 my $str;
 my $UID = getId($USER);
 my $NID = $$NODE{node_id};
-my $isRoot = exists $HTMLVARS{group_gods}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $isGuest = $APP-&gt;isGuest($USER);
 my $isInGroup=0;
 my @users = ();
@@ -126,13 +126,13 @@ if($$NODE{group}) {
 			$s = '&lt;strong&gt;'.$s.'&lt;/strong&gt;';
 		}
 
-    my $isChanop = $APP-&gt;isChanop($curID);
+    my $isChanop = $APP-&gt;isChanop($curID, &quot;nogods&quot;);
 
 		#show normal groups user is in
 		$flags = '';
-		$flags .= '@' if $showMemberAdmin and exists $HTMLVARS{'group_gods'}{$curID} and !$APP-&gt;getParameter($curID,&quot;hide_chatterbox_staff_symbol&quot;);
+		$flags .= '@' if $showMemberAdmin and $APP-&gt;isAdmin($curID) and !$APP-&gt;getParameter($curID,&quot;hide_chatterbox_staff_symbol&quot;);
 
-		$flags .= '$' if $showMemberCE and $APP-&gt;isEditor($curID, &quot;nogods&quot;) and !$APP-&gt;getParameter($curID,&quot;hide_chatterbox_staff_symbol&quot;);
+		$flags .= '$' if $showMemberCE and $APP-&gt;isEditor($curID, &quot;nogods&quot;) and !$APP-&gt;isAdmin($curID) and !$APP-&gt;getParameter($curID,&quot;hide_chatterbox_staff_symbol&quot;);
     $flags .= '+' if $showMemberAdmin &amp;&amp; $isChanop;
 
 		if(length($flags)) {
