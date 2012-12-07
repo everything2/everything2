@@ -2,10 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
   <pagetype_nodetype>3</pagetype_nodetype>
-  <page>&lt;p align=&quot;right&quot;&gt;[% linkNode($NODE, 
-                             'edit', 
-                             {displaytype=&gt;&quot;edit&quot;}) 
-                     if exists $HTMLVARS{'group_content editors'}{$$USER{node_id}}; %]&lt;/p&gt;
+  <page>&lt;p align=&quot;right&quot;&gt;[% linkNode($NODE, 'edit', {displaytype=&gt;&quot;edit&quot;}) if $APP-&gt;isEditor($USER); %]&lt;/p&gt;
 &lt;div class=&quot;content&quot;&gt;
 [{parselinks:doctext}]
 &lt;/div&gt;

@@ -4,7 +4,7 @@
   <pagetype_nodetype>1786405</pagetype_nodetype>
   <page>[%
 my $out = parseCode($$NODE{doctext});
-$out =~ s/^\s+//mg unless exists($HTMLVARS{'group_edev'}{$$USER{node_id}});
+$out =~ s/^\s+//mg unless $APP-&gt;isAdmin($USER);
 return $out;
 %]</page>
   <displaytype>display</displaytype>

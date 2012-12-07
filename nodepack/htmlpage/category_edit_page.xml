@@ -19,8 +19,7 @@ if ($query -&gt; param('op') eq 'nuke'
 }
 
 
-my $isCE = exists($HTMLVARS{'group_gods'}{$$USER{user_id}})
-	|| exists($HTMLVARS{'group_content editors'}{$$USER{user_id}});
+my $isCE = $APP-&gt;isEditor($USER);
 
 my $dbh = $DB-&gt;getDatabaseHandle();
 return 'No database handle!' unless $dbh;

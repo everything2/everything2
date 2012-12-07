@@ -21,8 +21,8 @@ my $str = '';
 # Is the user allowed in?
 my $GROUP   = $$NODE{ 'group' } || [];
 my $UID     = getId( $USER );
-my $isRoot  = exists $HTMLVARS{ 'group_gods' }{ $UID };
-my $isCE    = exists $HTMLVARS{ 'group_content editors' }{ $UID };
+my $isRoot  = $APP-&gt;isAdmin($USER);
+my $isCE    = $APP-&gt;isEditor($USER);
 my $allowed = 0;
 
 my $AUTOLOCKEXPIRE_SEC = 15*60;

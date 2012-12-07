@@ -80,8 +80,7 @@ return $hash;}
 
 local *info_groups = sub {
 	return if $$VARS{hidehomenodeUG} ;
-#        return unless($HTMLVARS{'group_gods'}{$$NODE{node_id}} || $HTMLVARS{'group_content editors'}{$$NODE{node_id}});
-	return htmlcode('showUserGroups','').(($HTMLVARS{'group_gods'}{$$NODE{node_id}} || $HTMLVARS{'group_content editors'}{$$NODE{node_id}})?(&quot; - &quot;.linkNode(getNode(&quot;Editor Endorsements&quot;,&quot;superdoc&quot;),&quot;My Endorsements&quot;,{editor=&gt;$$NODE{node_id}})):(''));
+	return htmlcode('showUserGroups','').(( $APP-&gt;isEditor($NODE) )?(&quot; - &quot;.linkNode(getNode(&quot;Editor Endorsements&quot;,&quot;superdoc&quot;),&quot;My Endorsements&quot;,{editor=&gt;$$NODE{node_id}})):(''));
 #return &quot;&quot;;
 };
 
@@ -248,7 +247,7 @@ unless(($nid==220) ||($nid==322)) {	#hack around nate and hemos
 #build result
 my $str = '';
 my $locker = getNodeById($$NODE{acctlock});
-$str .= '&lt;big&gt;&lt;strong&gt;Account locked&lt;/strong&gt;&lt;/big&gt; by '.linkNode($locker).'&lt;br&gt;' if((exists($HTMLVARS{'group_content editors'}{$UID}) || exists($HTMLVARS{'group_gods'}{$UID})) &amp;&amp; $$NODE{acctlock} != 0);
+$str .= '&lt;big&gt;&lt;strong&gt;Account locked&lt;/strong&gt;&lt;/big&gt; by '.linkNode($locker).'&lt;br&gt;' if($APP-&gt;isEditor($USER) &amp;&amp; $$NODE{acctlock} != 0);
 my $t; #nice Title
 my $s; #which Sub to call
 my $r; #Result of sub call

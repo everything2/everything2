@@ -6,12 +6,12 @@
 my $N = getNodeById($$NODE{ 'root_debatecomment' });
 
 my $UID = getId($USER);
-unless(exists $HTMLVARS{group_gods}{$UID}) {
+unless( $APP-&gt;isAdmin($USER) ) {
 	my $gID_CE = 923653;
 	my $restrictGroup = $$N{restricted} || $gID_CE;	#old way of indicating CEs only was 0
 	return if $restrictGroup==114;	#quick check for admins (they were already checked for, so don't bother checking again)
-	return if ($restrictGroup==$gID_CE) &amp;&amp; !(exists $HTMLVARS{'group_content editors'}{$UID});	#quick check for editors
-	return if ($restrictGroup==838015) &amp;&amp; !(exists $HTMLVARS{'group_edev'}{$UID});	#quick check for edev
+	return if ($restrictGroup==$gID_CE) &amp;&amp; !$APP-&gt;isEditor($USER);	#quick check for editors
+	return if ($restrictGroup==838015) &amp;&amp; !$APP-&gt;isDeveloper($USER);	#quick check for edev
 
 	$restrictGroup = getNodeById($restrictGroup);
 	return unless $restrictGroup;

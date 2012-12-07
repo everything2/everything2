@@ -21,16 +21,14 @@ my $str = '';
 # Is the user allowed in?
 my $GROUP   = $$NODE{ 'group' };
 my $UID     = getId( $USER );
-my $isRoot  = exists $HTMLVARS{ 'group_gods' }{ $UID };
-my $isCE    = $isRoot || exists $HTMLVARS{ 'group_content editors' }{ $UID };
+my $isRoot  = $APP-&gt;isAdmin($USER);
+my $isCE    = $APP-&gt;isEditor($USER);
 my $allowed = 0;
 # my $NL = &quot;&lt;br /&gt;\n&quot;; 
 $NL = &quot;&lt;br /&gt;\n&quot;; # this is defined earlier, and for some reason I'm now
                   # getting a stacktrace because of it, Aug 9, 2002. - jk.
 
 $allowed = $isRoot || $isCE;
-# Thoughts?
-#$allowed ||= exists $HTMLVARS{ 'group_crtleads' }{ $UID };
 
 $allowed ||= Everything::isApproved( $USER, getNode( 'crtleads', 'usergroup' ) );
 $allowed ||= Everything::isApproved( $USER, $NODE );
