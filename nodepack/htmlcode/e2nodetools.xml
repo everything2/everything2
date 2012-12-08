@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>2051203</node_id>
   <title>e2nodetools</title>
-  <code>if (isGod($USER) || exists ($HTMLVARS{&quot;group_content editors&quot;}{$$USER{node_id}})){
+  <code>if ( $APP-&gt;isEditor($USER) ){
 	my $str =&quot;
 	&lt;div id='admintools'&gt;
 	&lt;h3&gt;Admin Tools&lt;/h3&gt;&quot;;

@@ -59,7 +59,7 @@ return unless ($$NODE{type_nodetype}==getId(getType('user')));
 #constants
 my $UID = getId($USER);
 my $isGuest = $APP-&gt;isGuest($USER);
-my $isRoot = !$isGuest &amp;&amp; exists($HTMLVARS{'group_gods'}{$UID});
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $isCE = $APP-&gt;isEditor($USER);
 my $nid = getId($NODE);
 my $isMe = (!$isGuest) &amp;&amp; ($nid==$UID);
@@ -98,8 +98,8 @@ if ($$THEME{noTable}) {
 }
 
 local *info_groups = sub {
-#	return unless($HTMLVARS{'group_gods'}{$$NODE{node_id}} || $HTMLVARS{'group_content editors'}{$$NODE{node_id}});
-	return htmlcode('showUserGroups','').(($HTMLVARS{'group_gods'}{$$NODE{node_id}} || $HTMLVARS{'group_content editors'}{$$NODE{node_id}})?(&quot; - &quot;.linkNode(getNode(&quot;Editor Endorsements&quot;,&quot;superdoc&quot;),&quot;My Endorsements&quot;,{editor=&gt;$$NODE{node_id}})):(''));
+
+	return htmlcode('showUserGroups','').(($APP-&gt;isEditor($USER) )?(&quot; - &quot;.linkNode(getNode(&quot;Editor Endorsements&quot;,&quot;superdoc&quot;),&quot;My Endorsements&quot;,{editor=&gt;$$NODE{node_id}})):(''));
 #return &quot;&quot;;
 };
 
@@ -156,7 +156,7 @@ local *info_manip = sub {
 
 local *info_gp = sub {
         return if $isGuest;
-        my $isRoot = exists($HTMLVARS{'group_gods'}{$$USER{user_id}});
+        my $isRoot = $APP-&gt;isAdmin($USER);
         return unless($isMe or $isRoot);
         return if ((exists $$VARS{GPoptout})&amp;&amp;(defined $$VARS{GPoptout}));
         return $$NODE{GP};
@@ -344,7 +344,6 @@ unless(($nid==220) ||($nid==322)) {	#hack around nate and hemos
 my $str = '';
 my $locker = getNodeById($$NODE{acctlock});
 $str .= '&lt;big&gt;&lt;strong&gt;Account locked&lt;/strong&gt;&lt;/big&gt; by '.linkNode($locker).'&lt;br&gt;' if(($isCE || $isRoot) &amp;&amp; $$NODE{acctlock} != 0);
-#$str .= '&lt;big&gt;&lt;strong&gt;Account locked&lt;/strong&gt;&lt;/big&gt; by '.linkNode($locker).'&lt;br&gt;' if((exists($HTMLVARS{'group_content editors'}{$UID}) || exists($HTMLVARS{'group_gods'}{$UID})) &amp;&amp; $$NODE{acctlock} != 0);
 my $t; #nice Title
 my $s; #which Sub to call
 my $r; #Result of sub call

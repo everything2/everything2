@@ -4,7 +4,7 @@
   <title>formxml_superdoc</title>
   <code>#patch from fuzzie.. sorta
 #applied so that you can choose not to get the findings doc.
-return &quot;&quot; if (($query-&gt;param(&quot;no_superdocs&quot;) == 1) || ($query-&gt;param(&quot;no_findings&quot;) == 1 &amp;&amp; $$NODE{node_id} == $HTMLVARS{searchResults_node}));
+return &quot;&quot; if (($query-&gt;param(&quot;no_superdocs&quot;) == 1) || ($query-&gt;param(&quot;no_findings&quot;) == 1 &amp;&amp; $$NODE{node_id} == $Everything::CONF-&gt;{system}-&gt;{search_results} ));
 
 my $grp = $$NODE{group};
 my $str = &quot;&quot;;

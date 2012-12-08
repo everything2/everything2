@@ -58,9 +58,9 @@ $str.=&quot;&lt;/userstrings&gt;\n&quot;;
 $str.=&quot;&lt;groupmembership&gt;\n&quot;;
 my @groups = ();
 my $U = getId($NODE);
-push( @groups, getNode('gods', 'usergroup')) if exists $HTMLVARS{'group_gods'}{$U};
-push( @groups, getNode('Content Editors', 'usergroup')) if exists $HTMLVARS{'group_content editors'}{$U};
-push( @groups, getNode('edev', 'usergroup')) if exists $HTMLVARS{'group_edev'}{$U};
+push( @groups, getNode('gods', 'usergroup')) if $APP-&gt;isAdmin($U);
+push( @groups, getNode('Content Editors', 'usergroup')) if $APP-&gt;isEditor($U,&quot;nogods&quot;) and !$APP-&gt;isAdmin($U);
+push( @groups, getNode('edev', 'usergroup')) if $APP-&gt;isDeveloper($U);
 
 # There probably aren't too many usergroups with names that need to be encoded, but this will stop the errors before they occur.
 $str.= &quot;&lt;e2link node_id=\&quot;$$_{node_id}\&quot;&gt;&quot;.encodeHTML($$_{title}).&quot;&lt;/e2link&gt;\n&quot; 
