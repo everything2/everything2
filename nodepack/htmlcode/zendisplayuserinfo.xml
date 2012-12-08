@@ -39,7 +39,7 @@ return unless ($$NODE{type_nodetype}==getId(getType('user')));
 my $UID = getId($USER);
 my $isGuest = $APP-&gt;isGuest($USER);
 my $nid = getId($NODE);
-my $isRoot = exists($HTMLVARS{'group_gods'}{$$USER{user_id}});
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $isMe = (!$isGuest) &amp;&amp; ($nid==$UID);
 my $isEd = $APP-&gt;isEditor($USER);
 my $isChanop = $APP-&gt;isChanop($USER);

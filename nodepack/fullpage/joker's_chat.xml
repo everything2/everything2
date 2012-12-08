@@ -1,12 +1,6 @@
 <node>
   <type_nodetype>451267</type_nodetype>
   <doctext>[%
-
-my $isCE = exists $HTMLVARS{ 'group_content editors' }{ getId( $USER ) };
-
-#return '&lt;p&gt;Closed for reconceptualization. &lt;a #href=&quot;?#node=everything+user+search&quot;&gt;Back to work!&lt;/a&gt;&lt;/p&gt;' 
-#    unless ( $isCE || isGod( $USER ) );
-
 my $txtclr  = '#202020';
 my $vlnkclr = 'purple';
 my $lnkclr  = 'blue';

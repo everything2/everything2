@@ -8,8 +8,7 @@ $limit ||= 50;
 
 my $qry = 'SELECT writeup_id FROM writeup';
 
-my $uid = getId($USER);
-my $isEd = (exists $HTMLVARS{'group_content editors'}{$uid}) || (exists $HTMLVARS{'group_gods'}{$uid});
+my $isEd = $APP-&gt;isEditor($USER);
 
 $qry.= ' WHERE notnew=0 ' unless $isEd;
 $qry.= &quot; ORDER BY publishtime DESC LIMIT $limit&quot;;

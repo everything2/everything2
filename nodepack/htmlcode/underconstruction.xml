@@ -13,9 +13,8 @@ my $UID = getId($USER);
 my $str = '&lt;p align=&quot;center&quot; style=&quot;border:solid black 1px; margin:5px; padding:5px; font-family:sans-serif;&quot;&gt;&lt;big&gt;&lt;big&gt;&lt;big&gt;&lt;strong&gt;Under Construction&lt;/strong&gt;&lt;/big&gt;&lt;/big&gt;&lt;/big&gt;&lt;/p&gt;
 &lt;p style=&quot;font-family:sans-serif;&quot;&gt;This feature is currently under construction';
 
-if((defined $whoMaking) &amp;&amp; length($whoMaking) &amp;&amp; (
-($HTMLVARS{group_gods}{$UID}) || ($HTMLVARS{group_edev}{$UID}) || ($HTMLVARS{'group_content editors'}{$UID})
-)) {
+if(defined($whoMaking) &amp;&amp; length($whoMaking) &amp;&amp; 
+($APP-&gt;isEditor($USER) || $APP-&gt;isDeveloper($USER) ) ) {
 	$str .= ' by ['.$whoMaking.']';
 }
 

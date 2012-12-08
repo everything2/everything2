@@ -10,8 +10,7 @@ my $maintainer = getNodeById($$NODE{author_user});
 my $guestuserId = getId(getNode('guest user', 'user'));
 if ($$maintainer{type_nodetype} == getId(getType('user')))
 {
-  if(($$maintainer{node_id} == $$USER{user_id} || $APP-&gt;isGuest($$NODE{author_user}) )
-     &amp;&amp; !$APP-&gt;isGuest($USER) )
+  if($$maintainer{node_id} == $$USER{user_id} &amp;&amp; !$APP-&gt;isGuest($USER) )
   {
     $isCategoryEditor = 1;
   }
@@ -35,7 +34,7 @@ my $str;
 if ($isCategoryEditor == 1)
 {
   $str .= '&lt;p style=&quot;text-align:right&quot;&gt;'.linkNode($NODE, 'edit', {displaytype =&gt; 'edit'}).'&lt;/p&gt;';
-} else {
+} elsif(!$APP-&gt;isGuest($$NODE{author_user})) {
   $str .= '&lt;p&gt;If you find any nodes you think should be in this category, message the maintainer (or an editor) with your suggestion.&lt;/p&gt;';
 }
 
