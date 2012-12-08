@@ -50,7 +50,7 @@ $code = '&lt;div style=&quot;font-size: smaller;&quot;&gt;'.$code.'&lt;/div&gt;'
 return $text.$code if ($query-&gt;param('displaytype') eq 'edit' or $$codenode{type}{title} eq 'patch');
 
 my $UID = getId($USER)||0;
-return $text unless (exists $HTMLVARS{group_gods}{$UID}) || (exists $HTMLVARS{group_edev}{$UID});
+return $text unless $APP-&gt;isEditor($USER);
 $text = htmlcode('openform') . $text . '
 &lt;input type=&quot;submit&quot; name=&quot;sexisgood&quot; value=&quot;resize&quot;&gt;&lt;/form&gt;'.$code ;
 
@@ -66,7 +66,7 @@ $text .= $query-&gt;start_form('POST',$ENV{script_name}) .
 $text .= 'patch\'s purpose: '.$query-&gt;textfield('patch_purpose','',55,240).&quot;&lt;br /&gt;\n&quot;;
 $text .= $query-&gt;textarea('patch_code', $$codenode{$field}, 20, 60);
 $text .= &quot;&lt;br /&gt;\n&quot;;
-$text .= 'You are creating a patch here. It is possible to '.linkNode($codenode,'edit code directly',{displaytype =&gt; 'edit'}).', but don\'t do that with live code.&lt;br /&gt;' if exists $HTMLVARS{group_gods}{$UID};
+$text .= 'You are creating a patch here. It is possible to '.linkNode($codenode,'edit code directly',{displaytype =&gt; 'edit'}).', but don\'t do that with live code.&lt;br /&gt;' if $APP-&gt;isAdmin($USER);
 $text .= $query-&gt;submit();
 $text .= $query-&gt;end_form;
 

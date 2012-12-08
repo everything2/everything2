@@ -19,11 +19,11 @@ return if(!$U);
 
 my @groups = ();
 
-if ((($$VARS{hidehomenodeUG}) &amp;&amp; (!($HTMLVARS{'group_gods'}{getId($USER)}))) || ( $APP-&gt;isGuest($USER) )) {
-return unless($HTMLVARS{'group_gods'}{$U} || $HTMLVARS{'group_content editors'}{$U});
-push( @groups, linkNode(getNode('gods', 'usergroup'),0,{lastnode_id=&gt;0})) if exists $HTMLVARS{'group_gods'}{$U};
-push( @groups, linkNode(getNode('Content Editors', 'usergroup'),0,{lastnode_id=&gt;0})) if exists $HTMLVARS{'group_content editors'}{$U};
-push( @groups, linkNode(getNode('edev', 'usergroup'),0,{lastnode_id=&gt;0})) if exists $HTMLVARS{'group_edev'}{$U};
+if (($$VARS{hidehomenodeUG} &amp;&amp; !$APP-&gt;isAdmin($USER) ) || $APP-&gt;isGuest($USER) ) {
+return unless $APP-&gt;isEditor($U);
+push( @groups, linkNode(getNode('gods', 'usergroup'),0,{lastnode_id=&gt;0})) if $APP-&gt;isAdmin($U);
+push( @groups, linkNode(getNode('Content Editors', 'usergroup'),0,{lastnode_id=&gt;0})) if $APP-&gt;isEditor($U,&quot;nogods&quot;);
+push( @groups, linkNode(getNode('edev', 'usergroup'),0,{lastnode_id=&gt;0})) if $APP-&gt;isDeveloper($U,&quot;nogods&quot;);
 }
 else {
 

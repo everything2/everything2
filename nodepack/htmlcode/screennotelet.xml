@@ -42,11 +42,11 @@ if($maxLen&gt;1000) {
 
 #power has its privileges
 #this is in [Notelet Editor] (superdoc) and [screenNotelet] (htmlcode)
-if(exists $HTMLVARS{'group_gods'}{$UID}) {
+if($APP-&gt;isAdmin($USER)) {
 	$maxLen = 32768;
-} elsif(exists $HTMLVARS{'group_content editors'}{$UID}) {
+} elsif( $APP-&gt;isEditor($USER) ) {
 	$maxLen += 100;
-} elsif(exists $HTMLVARS{'group_edev'}{$UID}) {
+} elsif($APP-&gt;isDeveloper($USER) ) {
 	$maxLen = 16384; #16k ought to be enough for everyone. --[Swap]
 }
 

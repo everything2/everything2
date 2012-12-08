@@ -13,7 +13,7 @@ my $PATCH = getNodeById($patch_id);
 my $patch_status = getNodeById($PATCH -&gt; {cur_status});
 
 #Process changes, if any
-if(exists $HTMLVARS{group_gods}{$USER -&gt;{node_id} }){
+if( $APP-&gt;isAdmin($USER) ){
   my $new_status = $query -&gt; param('patch_status');
   if( $new_status and $new_status != $patch_status -&gt; {status_id}){
     $NODE -&gt; {cur_status} = $new_status;

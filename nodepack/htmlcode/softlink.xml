@@ -25,7 +25,7 @@ foreach( values %{$Everything::CONF-&gt;{system}-&gt;{maintenance_nodes}} ) {
 }
 return if $unlinkables{ $$N{node_id} };
 
-my $isRoot = exists $HTMLVARS{group_gods}{ $$USER{user_id} };
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $cantrim = $isRoot;
 
 my $limit;

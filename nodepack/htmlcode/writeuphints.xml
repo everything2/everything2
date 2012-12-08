@@ -18,7 +18,7 @@ if(ref $_[0] eq &quot;ARRAY&quot;)
 }
 
 my $UID = getId($USER);
-my $isCE = (exists $HTMLVARS{group_gods}{$UID}) || (exists $HTMLVARS{'group_content editors'}{$UID});
+my $isCE = $APP-&gt;isEditor($USER);
 my $isMyWU = ($$NODE{author_user}==$UID);
 my @problems;	#all problems found
 
