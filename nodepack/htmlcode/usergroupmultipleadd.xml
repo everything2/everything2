@@ -10,7 +10,7 @@
 my $nomulti;
 %$nomulti = map{ getNode($_, &quot;usergroup&quot;)-&gt;{node_id} =&gt; 1 } qw/gods e2gods/;
 
-if (exists($HTMLVARS{'group_gods'}{$$USER{node_id}}) and not exists($$nomulti{$$NODE{node_id}})) {
+if ($APP-&gt;isAdmin($USER) and not exists($$nomulti{$$NODE{node_id}})) {
     my $adder = getNode(&quot;simple usergroup editor&quot;, &quot;superdoc&quot;);
 
     return linkNode($adder, &quot;Add/drop multiple users&quot;, {'for_usergroup' =&gt; $$NODE{node_id}});

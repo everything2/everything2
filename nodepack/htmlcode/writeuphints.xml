@@ -6,12 +6,6 @@
 
 #parameters:
 #(use no parameters when in a writeup display page)
-#
-#	$textInHV
-#		If set, this htmlcode can be called from a non-writeup
-#		by setting $HTMLVARS{writeuphints_text} to the text to
-#		check instead. This will also delete that value from
-#		the hash, to keep things clean.
 
 #updated 2005-01-04(2) by N-Wing to add in spelling
 my $writeup;
@@ -19,13 +13,13 @@ my $writeup;
 if(ref $_[0] eq &quot;ARRAY&quot;)
 {
   $writeup = $_[0]-&gt;[0];
+}else{
+  $writeup = $$NODE{doctext};
 }
-
-my $textInHV = ((defined $_[0]) &amp;&amp; length($_[0]) &amp;&amp; $_[0]) ? 1 : 0;
 
 my $UID = getId($USER);
 my $isCE = (exists $HTMLVARS{group_gods}{$UID}) || (exists $HTMLVARS{'group_content editors'}{$UID});
-my $isMyWU = $textInHV || ($$NODE{author_user}==$UID);
+my $isMyWU = ($$NODE{author_user}==$UID);
 my @problems;	#all problems found
 
 #don't show unless it is your own writeup, or you are an editor
@@ -48,16 +42,8 @@ return unless $showDefault || $showHTML || $showXHTML || $showSilly || $showSpel
 my $showCat = 1;	#1 to show hint categories, 0 to hide
 my $curCat;
 
+return if $APP-&gt;isMaintenanceNode($NODE);
 
-if($textInHV and !$writeup) {
-	return unless exists $HTMLVARS{writeuphints_text};
-	$writeup = $HTMLVARS{writeuphints_text};
-	delete $HTMLVARS{writeuphints_text};
-	return unless length($writeup);
-} else {
-        return if $APP-&gt;isMaintenanceNode($NODE);
-	$writeup = $$NODE{doctext};
-}
 
 my $c;
 my $i;
@@ -335,11 +321,10 @@ if($writeup =~ /server error/i) {
 return if !scalar(@problems) || (!$isMyWU &amp;&amp; $isCE &amp;&amp; (scalar(@problems)==1));
 my $str = join('&lt;/p&gt;&lt;p&gt;',@problems);
 return unless $str;
-$str = parseLinks($str, ($textInHV ? 0 : $$NODE{parent_e2node}));
+$str = parseLinks($str, $$NODE{parent_e2node});
 
 $str = '&lt;p&gt;&lt;big&gt;&lt;strong&gt;Hints!&lt;/strong&gt;&lt;/big&gt; (choose which writeup hints display at &lt;a href='.urlGen({'node'=&gt;'Writeup Settings','type'=&gt;'superdoc'}).'&quot;&gt;Writeup Settings&lt;/a&gt;)&lt;/p&gt;&lt;p&gt;'.$str.'&lt;/p&gt;';
 $str = containHtml('thin outline container', $str) unless $$THEME{ 'noThinOutline' } ;
 
-$str;
-</code>
+$str;</code>
 </node>

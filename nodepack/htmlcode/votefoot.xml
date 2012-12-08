@@ -4,7 +4,7 @@
   <title>votefoot</title>
   <code>my $uid = $$USER{user_id};
 return $query-&gt;end_form if $$NODE{type}{title} eq &quot;e2node&quot; &amp;&amp; not $$NODE{group} || $APP-&gt;isGuest($USER) ;
-my $isKiller = (exists $HTMLVARS{'group_content editors'}{$uid} || exists $HTMLVARS{group_gods}{$uid});
+my $isKiller = $APP-&gt;isEditor($USER);
 
 my $voteButton;
 my $killButton;

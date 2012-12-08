@@ -3,7 +3,7 @@
   <node_id>444234</node_id>
   <title>votehead</title>
   <code>my $uid=$$USER{node_id};
-my $canDoStuff = $$USER{votesleft} || $APP-&gt;isEditor($USER) || (exists $HTMLVARS{group_edev}{$uid}) unless $APP-&gt;isGuest($USER);
+my $canDoStuff = $$USER{votesleft} || $APP-&gt;isEditor($USER) unless $APP-&gt;isGuest($USER);
 my $str;
 $str.=&quot;\n\t&quot;.htmlcode('openform2','pagebody');
 $str.=&quot;\n\t\t&quot;.'&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;vote&quot; /&gt;' if $canDoStuff;	#don't bother with vote opcode if user can't vote

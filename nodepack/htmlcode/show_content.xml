@@ -213,6 +213,5 @@ foreach my $N ( @input ) {
 	$str .= &quot;&lt;/$wrapTag&gt;&quot;;
 }
 
-return $str ;
-</code>
+return $str ;</code>
 </node>

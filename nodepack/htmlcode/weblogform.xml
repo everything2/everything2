@@ -9,7 +9,7 @@ $N ||= $NODE ;
 my $options = '' ;
 my $notification ;
 
-unless ( $HTMLVARS{ cachedweblogoptions } ) {
+unless ( $PAGELOAD-&gt;{ cachedweblogoptions } ) {
 	my $wls = getVars( getNode( 'webloggables' , 'setting' ) ) ;
 	foreach( split ',' , $$VARS{ can_weblog } ){
 		next if $$VARS{ 'hide_weblog_'.$_ };
@@ -21,11 +21,11 @@ unless ( $HTMLVARS{ cachedweblogoptions } ) {
 		}
 		$options.=&quot;\n\t\t\t&lt;option value=\&quot;$_\&quot;&gt;$groupTitle&lt;/option&gt;&quot;;
 	}
-	$HTMLVARS{ cachedweblogoptions } = $options
+	$PAGELOAD-&gt;{ cachedweblogoptions } = $options
 		if $$NODE{type}{title} eq 'e2node' &amp;&amp; scalar @{ $$NODE{ group } } &gt; 1 ;
 } else {
-	$options = $HTMLVARS{ cachedweblogoptions } ;
-	delete $HTMLVARS{ cachedweblogoptions } if $$N{ node_id } == ${ $$NODE{ group } }[-1] ;
+	$options = $PAGELOAD-&gt;{ cachedweblogoptions } ;
+	delete $PAGELOAD-&gt;{ cachedweblogoptions } if $$N{ node_id } == ${ $$NODE{ group } }[-1] ;
 }
 
 my $sourceid ;

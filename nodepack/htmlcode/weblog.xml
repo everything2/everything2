@@ -37,8 +37,8 @@ return &quot;&lt;ul&gt;\n&quot;.htmlcode( 'show content' , $csr , '&lt;li&gt; ge
 
 my $instructions = 'getloggeditem, title, byline, date' ;
 my $uid = getId( $USER ) ;
-my $canRemove = exists $HTMLVARS{ group_gods }{ $uid } ;
-my $isCE = $canRemove || exists $HTMLVARS{ 'group_content editors' }{ $uid } ;
+my $canRemove = $APP-&gt;isAdmin($USER) ;
+my $isCE = $canRemove || $APP-&gt;isEditor($USER) ;
 $canRemove ||= ( $$USER{ node_id } ==
 	getVars( getNode( 'usergroup owners' , 'setting' ) ) -&gt; { $$NODE{ node_id } } ) ;
 
@@ -62,16 +62,16 @@ unless ( $hideLinker &gt; 0 ) {
 	} ;
 }
 
-local $HTMLVARS{ removewebloglabel } = $remlabel || 'remove' ; # mildly evil hack
+$remlabel ||= &quot;remove&quot;;
 if ( $canRemove ) {
 	$instructions .= ', remove' ;
-	$weblogspecials{ remove } = sub {
+	eval( q|$weblogspecials{ remove } = sub {
 		my $N = shift ;
 		return '&lt;a class=&quot;remove&quot; href='
 		. urlGen( { node_id =&gt; $$N{ weblog_id }, source =&gt; $$N{ weblog_id } , to_node =&gt; $$N{ to_node } ,
 			op =&gt; 'removeweblog' } )
-			. '&gt;'.$HTMLVARS{ removewebloglabel }.'&lt;/a&gt;' ;
-	} ;
+			. '&gt;'.'|.$remlabel.q|'.'&lt;/a&gt;' ;
+	}|);
 }
 $instructions .= ( $skipFilterHTML ne '1' ? ', content' : ', unfiltered' ) ;
 
@@ -87,6 +87,5 @@ if ( $offset or $isolder ) {
 	$str .= '&lt;/div&gt;' ;
 }
 
-&quot;&lt;div class=\&quot;weblog\&quot;&gt;\n$str\n&lt;/div&gt;&quot; ;
-</code>
+&quot;&lt;div class=\&quot;weblog\&quot;&gt;\n$str\n&lt;/div&gt;&quot; ;</code>
 </node>
