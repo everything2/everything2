@@ -23,7 +23,6 @@
  &lt;tr&gt;
 [{showNodelets:left}]
   &lt;td width=&quot;85%&quot; valign=&quot;top&quot;&gt;
-  [{helplink:1}]
    CONTAINED_STUFF
   &lt;/td&gt;
 [{showNodelets:right}]
@@ -39,7 +38,7 @@ my @R = (&quot;This affordable entertainment brought to you by&quot;,
 
 my $str;
 $str.=$R[int(rand(@R))];
-$str.=' &lt;a href=&quot;/node/usergroup/edev&quot;&gt;The Everything Development Company&lt;/a&gt;';
+$str.=' &lt;a href=&quot;/node/usergroup/edev&quot;&gt;Everything2 Media LLC&lt;/a&gt;';
 $str;
 %]&lt;/font&gt;&lt;/center&gt;</context>
   <title>new classic container</title>

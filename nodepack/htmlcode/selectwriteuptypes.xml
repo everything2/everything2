@@ -28,11 +28,7 @@ my (@WRTYPE) = getNodeWhere({type_nodetype =&gt; getId(getType('writeuptype'))})
 
 my %items;
 
-#my $isEd = exists $HTMLVARS{'group_content editors'}{getId($USER)} || exists $HTMLVARS{'group_gods'}{getId($USER)};
-
 foreach (@WRTYPE) {
-#	next if (!$isEd &amp;&amp; (lc($$_{title}) eq 'definition'));
-#	next if (!$isEd &amp;&amp; (lc($$_{title}) eq 'lede'));
 	$items{getId($_)} = $$_{title};
 }
 # $items{$type} = '('.$type.')' if !defined($items{$type});

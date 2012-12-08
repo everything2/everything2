@@ -13,7 +13,7 @@ push @choices, &quot;&lt;i&gt;Writeup ordering locked by &quot;.linkNode(getNode
 }else{
 
 
-if(exists($HTMLVARS{'group_gods'}{$$USER{node_id}})){
+if( $APP-&gt;isAdmin($USER) ){
  push @choices, htmlcode(&quot;windowview&quot;, &quot;editor,launch editor&quot;);
 
 }

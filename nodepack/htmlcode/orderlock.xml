@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1466529</node_id>
   <title>orderlock</title>
-  <code>return unless(exists($HTMLVARS{'group_gods'}{$USER-&gt;{node_id}}));
+  <code>return unless $APP-&gt;isAdmin($USER);
 my $str = htmlcode('openform');
 $str.= &quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;op\&quot; value=\&quot;orderlock\&quot;&gt;&quot;;
 

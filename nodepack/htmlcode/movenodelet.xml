@@ -11,12 +11,11 @@
 my ($nodelet, $position) = @_;
 $nodelet = getNode($nodelet, 'nodelet')-&gt;{node_id} if $nodelet =~ /\D/;
 
-my $UID = $USER-&gt;{node_id};
 return unless $nodelet and getNodeById($nodelet)-&gt;{type}-&gt;{title} eq 'nodelet' and
 	!$APP-&gt;isGuest($USER) and $USER-&gt;{title} ne 'everyone' ;
 
 return if $position eq 'x' and
-	( exists $HTMLVARS{'group_gods'}{$UID} || exists $HTMLVARS{'group_content editors'}{$UID} ) &amp;&amp;
+	( $APP-&gt;isEditor($USER) ) &amp;&amp;
 	$nodelet == getNode('Master Control', 'nodelet')-&gt;{node_id};
 
 $$VARS{nodelets} =~ s/(?:(^|,),+)|(?:\b$nodelet\b,*)|(?:,*$)/$1/g ;

@@ -12,8 +12,8 @@ $listOnly = ($listOnly eq '1') ? 1 : 0;
 my $skip = 0;
 my $interval = $limit;
 my $uid = getId($USER);
-my $isRoot = exists $HTMLVARS{group_gods}{$uid};
-my $isCE = $isRoot || exists $HTMLVARS{'group_content editors'}{$uid};
+my $isRoot = $APP-&gt;isAdmin($USER);
+my $isCE = $APP-&gt;isEditor($USER);
 my $colspan = 2;
 # usergroup owner
 my $isOwner = 0;

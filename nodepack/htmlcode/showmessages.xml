@@ -61,7 +61,7 @@ unless($showArc &amp;&amp; $showNotArc) {
 
 my $csr = $DB-&gt;sqlSelectMany('*', 'message', $limits . $filterMinor, &quot;ORDER BY  message_id $order LIMIT $maxmsgs&quot;);
 my $UID = getId($USER) || 0;
-my $isEDev = exists $HTMLVARS{group_edev}{$UID};
+my $isEDev = $APP-&gt;isDeveloper($USER);
 
 my $aid;  #message's author's ID
 my $a; #message's author; have to do this in case sender has been deleted (!)
@@ -178,9 +178,9 @@ foreach my $MSG (@msgs) {
     my $isChanop = $APP-&gt;isChanop($aid,&quot;nogods&quot;);
 
     $flags = '';
-    if(exists $HTMLVARS{group_gods}{$aid} &amp;&amp; !$APP-&gt;getParameter($aid,&quot;hide_chatterbox_staff_symbol&quot;)) {
+    if($APP-&gt;isAdmin($aid) &amp;&amp; !$APP-&gt;getParameter($aid,&quot;hide_chatterbox_staff_symbol&quot;)) {
       $flags .= '@';
-    } elsif($APP-&gt;isEditor($aid, &quot;nogods&quot;) &amp;&amp; !$APP-&gt;getParameter($aid,&quot;hide_chatterbox_staff_symbol&quot;)) {
+    } elsif($APP-&gt;isEditor($aid, &quot;nogods&quot;) &amp;&amp; !$APP-&gt;isAdmin($aid) &amp;&amp; !$APP-&gt;getParameter($aid,&quot;hide_chatterbox_staff_symbol&quot;)) {
       $flags .= '$';
     }
 
@@ -188,7 +188,7 @@ foreach my $MSG (@msgs) {
 
     $flags .= '+' if $isChanop;
 
-    $flags .= '%' if $isEDev &amp;&amp; exists $HTMLVARS{group_edev}{$aid};
+    $flags .= '%' if $isEDev &amp;&amp; $APP-&gt;isDeveloper($aid);
     if(length($flags)) {
       $flags = '&lt;small&gt;'.$flags.'&lt;/small&gt; ';
       $str .= $flags;
