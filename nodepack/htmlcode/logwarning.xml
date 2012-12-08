@@ -17,11 +17,6 @@
 #	htmlcode('logWarning',',I got a weird number. It was: '.$num);
 #	htmlcode('logWarning',$$WRITEUP{node_id}.',saw:'.$s.' expected:'.$e);
 #
-#since htmlcode can't pass commas, special HTMLVARS may be used to override parameters; if any of these exist, they will be deleted after their use
-#	$HTMLVARS{warn_nodeid} - node's ID; this probably isn't too useful
-#	$HTMLVARS{warn_reason} - reason; use this if you want to include commas in the reason
-#	$HTMLVARS{warn_user} - user ID that caused the problem; I can't think of a reason you would want to override this, but here it is anyway
-
 my @allParams = @_;
 
 my $nodeID;
@@ -29,24 +24,10 @@ my $description;
 my $uid;
 my $UID = getId($USER);
 
-if(defined $HTMLVARS{warn_nodeid}) {
-	$nodeID = &quot;$HTMLVARS{warn_nodeid}&quot;;
-	delete $HTMLVARS{warn_nodeid};
-} else {
-	$nodeID = $allParams[0] || getId($NODE) || 0;
-}
-if(defined $HTMLVARS{warn_reason}) {
-	$description = &quot;$HTMLVARS{warn_reason}&quot;;
-	delete $HTMLVARS{warn_reason};
-} else {
-	$description = $allParams[1] || '';
-}
-if(defined $HTMLVARS{warn_user}) {
-	$uid = &quot;$HTMLVARS{warn_user}&quot;;
-	delete $HTMLVARS{warn_user};
-} else {
-	$uid = $UID || 0
-}
+
+$nodeID = $allParams[0] || getId($NODE) || 0;
+$description = $allParams[1] || '';
+$uid = $UID || 0;
 
 my $info = '';
 
@@ -54,8 +35,7 @@ local *createInfoString = sub {
 	$info='(node_id, user_id) = (' . $nodeID . ', ' . $uid . '); description = ' . $description;
 };
 
-if(exists $HTMLVARS{group_gods}{$UID}) {
-#if($UID == 9740) { #N-Wing
+if( $APP-&gt;isAdmin($USER) ) {
 	$info = createInfoString();
 } else {
 	my $dbh = $DB-&gt;getDatabaseHandle();
