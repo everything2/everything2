@@ -9,7 +9,7 @@ my $isTarget = delete $PAGELOAD-&gt;{notshown}-&gt;{targetauthor}
 	if defined $PAGELOAD-&gt;{notshown} and $PAGELOAD-&gt;{notshown}-&gt;{targetauthor} == $$N{author_user};
 
 if ($$N{author_user} == $$USER{user_id}){
-	$HTMLVARS{my_writeup} ||= $N if $$NODE{type}{title} eq 'e2node'; # used by [addwriteup]
+	$PAGELOAD-&gt;{my_writeup} ||= $N if $$NODE{type}{title} eq 'e2node'; # used by [addwriteup]
 	return 1;
 }
 

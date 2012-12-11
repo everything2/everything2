@@ -1,17 +1,5 @@
 <nodegroup>
   <group>
-    <node_id>106</node_id>
-    <orderby>0</orderby>
-    <nodegroup_id>84</nodegroup_id>
-    <rank>0</rank>
-  </group>
-  <group>
-    <node_id>104</node_id>
-    <orderby>2</orderby>
-    <nodegroup_id>84</nodegroup_id>
-    <rank>2</rank>
-  </group>
-  <group>
     <node_id>87</node_id>
     <orderby>1</orderby>
     <nodegroup_id>96</nodegroup_id>
@@ -814,12 +802,6 @@
     <orderby>120</orderby>
     <nodegroup_id>155</nodegroup_id>
     <rank>120</rank>
-  </group>
-  <group>
-    <node_id>84</node_id>
-    <orderby>121</orderby>
-    <nodegroup_id>155</nodegroup_id>
-    <rank>121</rank>
   </group>
   <group>
     <node_id>85</node_id>

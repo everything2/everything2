@@ -9,7 +9,7 @@ if ( $APP-&gt;isMaintenanceNode($NODE) ){
 }
 
 # get existing wu or reason for no new posting:
-my $MINE = delete $HTMLVARS{my_writeup}; # saved by [canseewriteup]
+my $MINE = delete $PAGELOAD-&gt;{my_writeup}; # saved by [canseewriteup]
 $MINE ||= htmlcode('nopublishreason', $USER, $NODE);
 return '&lt;div class=&quot;nodelock&quot;&gt;&lt;p&gt;'.$MINE.'&lt;/p&gt;&lt;/div&gt;' if $MINE and ref $MINE ne 'HASH';
 
