@@ -5,8 +5,8 @@
   <code>my ($N) = @_ ;
 $N ||= $NODE ;
 
-my $isTarget = delete $HTMLVARS{notshown}-&gt;{targetauthor}
-	if defined $HTMLVARS{notshown} and $HTMLVARS{notshown}-&gt;{targetauthor} == $$N{author_user};
+my $isTarget = delete $PAGELOAD-&gt;{notshown}-&gt;{targetauthor}
+	if defined $PAGELOAD-&gt;{notshown} and $PAGELOAD-&gt;{notshown}-&gt;{targetauthor} == $$N{author_user};
 
 if ($$N{author_user} == $$USER{user_id}){
 	$HTMLVARS{my_writeup} ||= $N if $$NODE{type}{title} eq 'e2node'; # used by [addwriteup]
@@ -44,8 +44,8 @@ my %tests = (
 foreach ( @checks ) { # not keys because priority order is important
 	unless ( &amp;{ $tests{$_} } ) {
 		return 1 if $param eq $_ ; # this is the reason it was hidden; we want it shown
- 		push @{ $HTMLVARS{notshown}-&gt;{$_} }, $N
-		 	if defined $HTMLVARS{notshown} and defined $HTMLVARS{notshown}-&gt;{$_} ;
+ 		push @{ $PAGELOAD-&gt;{notshown}-&gt;{$_} }, $N
+		 	if defined $PAGELOAD-&gt;{notshown} and defined $PAGELOAD-&gt;{notshown}-&gt;{$_} ;
 		return 0 ;
 	}
 }

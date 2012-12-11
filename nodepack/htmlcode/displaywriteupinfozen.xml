@@ -22,7 +22,7 @@ return 'Ack! displayWriteupInfo: No node with node_id '.$wuID unless $WRITEUP;
 #constants
 my $UID = getId($USER);
 my $isGuest = $APP-&gt;isGuest($USER);
-my $isRoot = !$isGuest &amp;&amp; exists $HTMLVARS{group_gods}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $isCE = $APP-&gt;isEditor($USER);
 my $aid = $$WRITEUP{author_user} || 0;
 my $wuAuthor = getNodeById($aid) || undef;
@@ -48,9 +48,9 @@ my $fnName;	#name of current function
 #	a function may override the default caching by setting $specialDisplays-&gt;{$fnName} to the string that should be used for future calls instead
 my $specialDisplays;
 my $CACHE_NAME = 'cache_displayWriteupInfo_'.$wuID;
-if( (exists $HTMLVARS{$CACHE_NAME}) &amp;&amp; (defined $HTMLVARS{$CACHE_NAME}) ) {
+if( (exists $PAGELOAD-&gt;{$CACHE_NAME}) &amp;&amp; (defined $PAGELOAD-&gt;{$CACHE_NAME}) ) {
 	$inHeader=0;
-	$specialDisplays = $HTMLVARS{$CACHE_NAME};
+	$specialDisplays = $PAGELOAD-&gt;{$CACHE_NAME};
 
 	#this next part is temporary - N-Wing - September 2004
 	my $errMsg = 'Possible duplicate writeup detected! (This is not the fault of the writeup author.)';
@@ -78,7 +78,7 @@ if( (exists $HTMLVARS{$CACHE_NAME}) &amp;&amp; (defined $HTMLVARS{$CACHE_NAME}) 
 		'length'=&gt;\&amp;info_length,
 		'sendmsg'=&gt;\&amp;sendMessage,
 	};
-	$HTMLVARS{$CACHE_NAME} = $specialDisplays;
+	$PAGELOAD-&gt;{$CACHE_NAME} = $specialDisplays;
 }
 
 
@@ -395,7 +395,7 @@ if($inHeader) {
 	$str = '&lt;a name=&quot;author_'.$aid.'&quot;&gt;&lt;a name=&quot;node_id_'.$wuID.'&quot;&gt;' . $str . '&lt;/a&gt;&lt;/a&gt;';
 } else {
 	#not showing anything about this writeup anymore, so delete cache
-	delete $HTMLVARS{$CACHE_NAME};
+	delete $PAGELOAD-&gt;{$CACHE_NAME};
 }
 
 

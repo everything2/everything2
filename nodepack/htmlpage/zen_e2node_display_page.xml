@@ -23,20 +23,20 @@ unless ( $APP-&gt;isGuest($USER) ){
 	$stuff = [@$stuff, @$drafts] if @$drafts;
 
 	# [show writeups] passes [canseewriteup] to [show content] to decide what to show
-	# canseewriteup stores hidden writeups/drafts in $HTMLVARS{notshown} if the appropriate key exists
+	# canseewriteup stores hidden writeups/drafts in $PAGELOAD-&gt;{notshown} if the appropriate key exists
 	# and removes targetauthor if it processes a writeup or draft by that author:
 
-	$HTMLVARS{notshown} = {lowrep =&gt; [], unfavorite =&gt; [],  unpublished =&gt; [],
+	$PAGELOAD-&gt;{notshown} = {lowrep =&gt; [], unfavorite =&gt; [],  unpublished =&gt; [],
 		targetauthor =&gt; $query -&gt; param('author_id')};
 }
 
 my $str = $stuff -&gt; [0] ? htmlcode('show writeups', $stuff) : '';
-return $str unless $HTMLVARS{notshown};
+return $str unless $PAGELOAD-&gt;{notshown};
 
 # add missing matching draft if requested
-if ($HTMLVARS{notshown} -&gt; {targetauthor}){
+if ($PAGELOAD-&gt;{notshown} -&gt; {targetauthor}){
 	my @dropin = getNodeWhere({
-		author_user =&gt; $HTMLVARS{notshown} -&gt; {targetauthor},
+		author_user =&gt; $PAGELOAD-&gt;{notshown} -&gt; {targetauthor},
 		title =&gt; $$NODE{title}
 	}, 'draft');
 	my $addition = htmlcode('show writeups', \@dropin);
@@ -67,11 +67,11 @@ my $reveal = sub {
 	.' ]';
 };
 
-if ( my $count = scalar @{ $HTMLVARS{notshown}-&gt;{lowrep} } ){
+if ( my $count = scalar @{ $PAGELOAD-&gt;{notshown}-&gt;{lowrep} } ){
 	$reasoncount++;
 	$hidden .= '&lt;h3&gt;Low reputation writeup'.($count == 1 ? '' : 's')
 		.qq'&lt;/h3&gt;\n&lt;ul class=&quot;infolist&quot;&gt;\n'.
-		htmlcode('show content', $HTMLVARS{notshown}{lowrep},
+		htmlcode('show content', $PAGELOAD-&gt;{notshown}{lowrep},
 			'&lt;li&gt; type, byline, reputation, reveal',
 			reveal =&gt; $reveal,
 			reputation =&gt; sub {
@@ -84,10 +84,10 @@ if ( my $count = scalar @{ $HTMLVARS{notshown}-&gt;{lowrep} } ){
 		{-class=&gt;'action', showhidden=&gt;'lowrep'}).&quot;&lt;/p&gt;\n&quot; if $count &gt; 1 ;
 }
 
-if (my $count = scalar @{ $HTMLVARS{notshown}-&gt;{unpublished} }){
+if (my $count = scalar @{ $PAGELOAD-&gt;{notshown}-&gt;{unpublished} }){
 	$reasoncount++;
 	$hidden .= qq'&lt;h3&gt;Drafts&lt;/h3&gt;\n&lt;ul class=&quot;infolist&quot;&gt;\n'
-		.htmlcode('show content', $HTMLVARS{notshown}{unpublished},
+		.htmlcode('show content', $PAGELOAD-&gt;{notshown}{unpublished},
 			'&lt;li&gt;type,byline,date,reveal',
 			reveal =&gt; $reveal
 		)
@@ -96,7 +96,7 @@ if (my $count = scalar @{ $HTMLVARS{notshown}-&gt;{unpublished} }){
 		{-class=&gt;'action', showhidden=&gt;'unpublished'}).&quot;&lt;/p&gt;\n&quot; if $count &gt; 1 ;
 }
 
-if ( my $count = scalar @{ $HTMLVARS{notshown}-&gt;{unfavorite} } ){
+if ( my $count = scalar @{ $PAGELOAD-&gt;{notshown}-&gt;{unfavorite} } ){
 	$reasoncount++;
 	$hidden.=qq'&lt;h3&gt;Unfavorites&lt;/h3&gt;\n&lt;ul class=&quot;infolist&quot;&gt;
 		&lt;li&gt;There is something here by at least one of your '
@@ -105,7 +105,7 @@ if ( my $count = scalar @{ $HTMLVARS{notshown}-&gt;{unfavorite} } ){
 		.linkNode($NODE, 'show', {-class=&gt;'action', showhidden=&gt;'unfavorite'}).&quot; ]&lt;/li&gt;&lt;/ul&gt;\n&quot; ;
 }
 
-delete $HTMLVARS{ notshown } ;
+delete $PAGELOAD-&gt;{ notshown } ;
 $query -&gt; delete('showhidden') ;
 
 $hidden .= &quot;\n&lt;p&gt;&lt;strong&gt;[&quot;

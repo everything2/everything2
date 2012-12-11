@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>1186576</node_id>
   <title>admin toolset</title>
-  <code>return unless exists $HTMLVARS{'group_gods'}{$$USER{node_id}};
+  <code>return unless $APP-&gt;isAdmin($USER);
 
 my $currentDisplay = $query-&gt;param(&quot;displaytype&quot;) || &quot;display&quot;;
 my $nt = $$NODE{type}{title};

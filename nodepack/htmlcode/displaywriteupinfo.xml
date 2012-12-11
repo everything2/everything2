@@ -20,7 +20,7 @@ my $wuID = getId $WRITEUP;
 #constants
 my $UID = getId($USER);
 my $isGuest = $APP-&gt;isGuest($USER);
-my $isRoot = !$isGuest &amp;&amp; exists $HTMLVARS{group_gods}{$UID};
+my $isRoot = $APP-&gt;isAdmin($USER);
 my $isCE = $APP-&gt;isEditor($USER);
 my $aid = $$WRITEUP{author_user} || 0;
 my $wuAuthor = getNodeById($aid) || undef;
@@ -45,9 +45,9 @@ my $fnName;	#name of current function
 #	a function may override the default caching by setting $infofunctions-&gt;{$fnName} to the string that should be used for future calls instead
 my $infofunctions;
 my $CACHE_NAME = 'cache_displayWriteupInfo_'.$wuID;
-if( (exists $HTMLVARS{$CACHE_NAME}) &amp;&amp; (defined $HTMLVARS{$CACHE_NAME}) ) {
+if( (exists $PAGELOAD-&gt;{$CACHE_NAME}) &amp;&amp; (defined $PAGELOAD-&gt;{$CACHE_NAME}) ) {
 	$inHeader=0;
-	$infofunctions = $HTMLVARS{$CACHE_NAME};
+	$infofunctions = $PAGELOAD-&gt;{$CACHE_NAME};
 
 } else {
 	$inHeader=1;
@@ -76,7 +76,7 @@ if( (exists $HTMLVARS{$CACHE_NAME}) &amp;&amp; (defined $HTMLVARS{$CACHE_NAME}) 
 		'music'=&gt;\&amp;music,
 		'nothing'=&gt;\&amp;info_nothing,
 	};
-	$HTMLVARS{$CACHE_NAME} = $infofunctions;
+	$PAGELOAD-&gt;{$CACHE_NAME} = $infofunctions;
 }
 
 
@@ -479,7 +479,7 @@ $str .= $msgreport ;
 
 unless ($inHeader) {
 	#not showing anything about this writeup anymore, so delete cache
-	delete $HTMLVARS{$CACHE_NAME};
+	delete $PAGELOAD-&gt;{$CACHE_NAME};
 }
 
 $str;</code>

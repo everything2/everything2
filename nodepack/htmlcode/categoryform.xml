@@ -10,7 +10,7 @@ $N ||= $NODE ;
 
 my ($categoryid, $options, $choose, $createcategory, $notification);
 
-unless ( $HTMLVARS{ cachedcategoryoptions } ) {
+unless ( $PAGELOAD-&gt;{ cachedcategoryoptions } ) {
 	# get user, guest user, and user's usergroups. No huge list for admins and CEs
 	my $dbh = $DB-&gt;getDatabaseHandle();
 	my $inClause = join( ',' , $$USER{ user_id } , $Everything::CONF-&gt;{system}-&gt;{guest_user} , @{
@@ -32,10 +32,10 @@ unless ( $HTMLVARS{ cachedcategoryoptions } ) {
 	while( my $c = $csr -&gt; fetchrow_hashref ) {
 		$options .= '&lt;option value=&quot;'.$$c{ node_id }.'&quot;&gt;'.$$c{ title }.&quot; ($$c{ authorname })&lt;/option&gt;\n&quot; ;
 	}
-	$HTMLVARS{ cachedcategoryoptions } = $options if $$NODE{type}{title} eq 'e2node' ;
+	$PAGELOAD-&gt;{ cachedcategoryoptions } = $options if $$NODE{type}{title} eq 'e2node' ;
 } else {
-	$options = $HTMLVARS{ cachedcategoryoptions } ;
-	delete $HTMLVARS{ cachedcategoryoptions } if $$N{ node_id } eq $$NODE{ node_id } ; # last call is for page header
+	$options = $PAGELOAD-&gt;{ cachedcategoryoptions } ;
+	delete $PAGELOAD-&gt;{ cachedcategoryoptions } if $$N{ node_id } eq $$NODE{ node_id } ; # last call is for page header
 }
 
 $categoryid = $query -&gt; param( 'cid' );
