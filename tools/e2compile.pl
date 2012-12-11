@@ -50,7 +50,6 @@ my $var_mapping =
 	'$dbh' => '::',
 	'$USER' => '::HTML::',
 	'$GNODE' => '::HTML::',
-	'%HTMLVARS' => '::HTML::',
 	'$DB' => '::',
 	'$VARS' => '::HTML::',
 	'$query' => '::HTML::',

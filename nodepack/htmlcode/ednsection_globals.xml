@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>956694</node_id>
   <title>ednsection_globals</title>
-  <code>my @globals = qw($USER $THEME $VARS $DB %HTMLVARS $PAGELOAD $query);
+  <code>my @globals = qw($USER $THEME $VARS $DB $PAGELOAD $query);
 my $ajax='ajax ednsection_globals:nodeletsection:edn,globals';
 
 my $str = '&lt;table cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; border=&quot;0&quot;&gt;';

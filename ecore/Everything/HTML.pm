@@ -26,7 +26,6 @@ sub BEGIN {
 	@EXPORT=qw(
               %HEADER_PARAMS
               $DB
-              %HTMLVARS
               $NODE
               $VARS
               $PAGELOAD
@@ -78,7 +77,6 @@ sub BEGIN {
               hasVoted
               getVotes
               getHRLF
-              calculateBonus
 
               changeRoom
               insertIntoRoom
@@ -88,7 +86,6 @@ sub BEGIN {
 }
 
 use vars qw($HTTP_ERROR_CODE $ERROR_HTML $SITE_UNAVAILABLE $query);
-use vars qw(%HTMLVARS);
 use vars qw($VARS);
 use vars qw($GNODE);
 use vars qw($USER);
@@ -2135,7 +2132,7 @@ sub gotoNode
 
 	# Create softlinks -- a linktype of 0 is the default
 	my $linktype = 0;
-	$linktype = getNodeById($HTMLVARS{guest_link})
+	$linktype = getNodeById($Everything::CONF->{system}->{guest_link})
 		if $APP->isGuest($USER);
 
 	my $lastnode = $query->param('lastnode_id');
@@ -2512,10 +2509,7 @@ sub opNuke
 	my $user_id = $$USER{node_id};
 	my $node_id = $query->param("node_id");
 
-
 	return if $APP->getParameter($node_id, "prevent_nuke");
-	return if grep(/^$node_id$/, values(%HTMLVARS)) ;
-	
 	nukeNode($node_id, $user_id);
 }
 
@@ -2843,7 +2837,6 @@ sub mod_perlInit
 	# pages to show when a node is not found (404-ish), when the
 	# user is not allowed to view/edit a node, etc.  These are stored
 	# in the dbase to make changing these values easy.	
-	%HTMLVARS = %{ eval (getCode('set_htmlvars')) };
 	%HEADER_PARAMS = ( );
 
 	$query = getCGI();
@@ -3508,37 +3501,6 @@ sub getHRLF
   return 1 unless $$user{merit} > $$hrstats{mean};
   return 1/(2-exp(-(($$user{merit}-$$hrstats{mean})**2)/(2*($$hrstats{stddev})**2)));
 };
-
-
-sub calculateBonus {
-
-	my ($user) = @_;
-	getRef($user);
-	return 0 if $$user{title} eq "Guest User";
-
-	my $repStep = 26;
-	my $repStep2 = 2 * $repStep;
-	my $repStep3 = 3 * $repStep;
-
-	my $user_id = $$user{user_id};
-return 0 unless $user_id;
-
-	my $coolBonus = $DB->sqlSelect("sum(case cooled when 3 then 1 when 4 then 2 else 3 end) as coolBonus", "writeup inner join node on
- node_id=writeup_id","author_user=$user_id  and cooled>=3");
-
-	my $writeupBonus = $DB->sqlSelect("sum(case when reputation between $repStep and ".($repStep2-1)." then 1 when reputation between
-$repStep2 and ".($repStep3-1)." then 2 else 3 end) as repBonus", "node","author_user=$user_id  and reputation >=$repStep");
-
-	my $totalBonus = $coolBonus + $writeupBonus;
-
-	my $V = getVars($user);
-	$$V{writeupbonus} = $totalBonus;
-	setVars($user,$V);
-
-return $totalBonus;
-
-}
-
 
 # Former inhabitants of the room module
 sub insertIntoRoom {

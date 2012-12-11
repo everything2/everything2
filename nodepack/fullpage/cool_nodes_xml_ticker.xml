@@ -1,6 +1,7 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Tue Dec 11 04:25:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Tue Dec 11 05:20:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2099070&quot; parent_e2node=&quot;2002654&quot; author_user=&quot;raincomplex&quot;&gt;THE FISH INVITE THEM IN&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;1345308&quot; parent_e2node=&quot;171367&quot; author_user=&quot;TheDeadGuy&quot;&gt;Ralph&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;decoy hunches&quot; node_id=&quot;1120980&quot; parent_e2node=&quot;783873&quot; author_user=&quot;DataJunkie&quot;&gt;fleur de lis&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;jessicaj&quot; node_id=&quot;2099060&quot; parent_e2node=&quot;1926149&quot; author_user=&quot;decoy hunches&quot;&gt;crocs&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;smartalix&quot; node_id=&quot;2051896&quot; parent_e2node=&quot;1928100&quot; author_user=&quot;Tem42&quot;&gt;Overgrazing&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;locke baron&quot; node_id=&quot;2098873&quot; parent_e2node=&quot;390044&quot; author_user=&quot;Tem42&quot;&gt;Genderqueer&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;ebbixx&quot; node_id=&quot;1875596&quot; parent_e2node=&quot;1270245&quot; author_user=&quot;LaggedyAnne&quot;&gt;Waiting To Be Opened&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Uberbanana&quot; node_id=&quot;2098799&quot; parent_e2node=&quot;2098684&quot; author_user=&quot;rootbeer277&quot;&gt;Phineas and Ferb&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>
