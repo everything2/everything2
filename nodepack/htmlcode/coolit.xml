@@ -13,16 +13,15 @@ my $COOLLINK = getNode('coollink','linktype') -&gt; {node_id};
 my $COOLNODE = getNode('coolnodes','nodegroup');
 my $link ;
 
-if ( exists $HTMLVARS{edcoollink} ){
-	$link = $HTMLVARS{edcoollink} ; # cached by [page header]
+if ( exists $PAGELOAD-&gt;{edcoollink} ){
+	$link = $PAGELOAD-&gt;{edcoollink} ; # cached by [page header]
 } else {
 	$link = $DB-&gt;sqlSelectHashref('to_node', 'links', 'from_node='.$$NODE{node_id}.' and linktype='.$COOLLINK.' limit 1');
 }
 
 return '' if $link
 	and $ntypet ne 'e2node' || ($$NODE{group} &amp;&amp; @$NODE{group}) # let anyone uncool a nodeshell
-	and (exists $HTMLVARS{'group_content editors'}{$$link{to_node}} ||
-		exists $HTMLVARS{group_gods}{$$link{to_node}})
+	and ( $APP-&gt;isEditor($$link{to_node}) )
 	and $$link{to_node}!=$$USER{node_id} ;
 
 if ($query-&gt;param('uncoolme')) {

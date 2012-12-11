@@ -2,7 +2,7 @@
   <type_nodetype>4</type_nodetype>
   <node_id>956694</node_id>
   <title>ednsection_globals</title>
-  <code>my @globals = qw($USER $THEME $VARS $DB %HTMLVARS $query);
+  <code>my @globals = qw($USER $THEME $VARS $DB %HTMLVARS $PAGELOAD $query);
 my $ajax='ajax ednsection_globals:nodeletsection:edn,globals';
 
 my $str = '&lt;table cellpadding=&quot;0&quot; cellspacing=&quot;1&quot; border=&quot;0&quot;&gt;';
@@ -63,7 +63,7 @@ my %expand = (
   $reftype = &quot;HASH&quot; if not $reftype and $firstchar eq '%'; 
   $reftype = &quot;Everything::Node&quot; if $reftype eq 'HASHREF' and eval (&quot;exists \$$_&quot;.'{node_id}');
 
-  if (defined $query-&gt;param(&quot;show$_&quot;) and exists $expand{$reftype}) {
+  if ($_ eq '$PAGELOAD' or (defined $query-&gt;param(&quot;show$_&quot;) and exists $expand{$reftype})) {
     my $ref;
     $ref = $expand{$reftype};
     $str.='&lt;table&gt;';

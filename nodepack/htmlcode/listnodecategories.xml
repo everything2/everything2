@@ -60,21 +60,19 @@ my $parentNodeId = $$N{parent_e2node};
 
 # prevent recursion from missing or self-referencing parent e2node
 if ($parentNodeId &amp;&amp; $parentNodeId != $originalN
-	&amp;&amp; $$N{type}{title} eq 'writeup' &amp;&amp; !exists $HTMLVARS{e2nodeCategories}
+	&amp;&amp; $$N{type}{title} eq 'writeup' &amp;&amp; !exists $PAGELOAD-&gt;{e2nodeCategories}
    ) {
-	$HTMLVARS{e2nodeCategories} =
-		htmlcode('listnodecategories', $parentNodeId, 'is parent');
+	$PAGELOAD-&gt;{e2nodeCategories} = htmlcode('listnodecategories', $parentNodeId, 'is parent');
 }
 
-if (@items || $HTMLVARS{e2nodeCategories}) {
+if (@items || $PAGELOAD-&gt;{e2nodeCategories}) {
 	my $ies = (@items != 1 ? 'ies' : 'y');
 	my ($c, $addId) = !$isIncludedParent ? ('C', qq' id=&quot;categories$nodeid&quot;') : ('Page c', '');
 	my $moggies = qq'&lt;h4&gt;${c}ategor$ies:&lt;/h4&gt; &lt;ul&gt;&lt;li&gt;'.(join '&lt;/li&gt;&lt;li&gt;', @items).'&lt;/li&gt;&lt;/ul&gt;' if @items;
-	return qq'&lt;div class=&quot;categories&quot;$addId&quot;&gt;$moggies\n$HTMLVARS{e2nodeCategories}\n&lt;/div&gt;';
+	return qq'&lt;div class=&quot;categories&quot;$addId&quot;&gt;$moggies\n$$PAGELOAD{e2nodeCategories}\n&lt;/div&gt;';
 }
 
 #id so content can be ajaxed in, but no class so no styling that makes it take up space:
 return qq'&lt;div id=&quot;categories$nodeid&quot;&gt;&lt;/div&gt;' unless $isIncludedParent;
-'';
-</code>
+'';</code>
 </node>

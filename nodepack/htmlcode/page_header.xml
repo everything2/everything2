@@ -14,9 +14,9 @@ if ( $ntypet eq 'e2node' or $ntypet eq 'writeup' ) {
 
 if ($ntypet eq 'e2node' || $ntypet eq 'superdoc' || $ntypet eq 'superdocnolinks' || $ntypet eq 'document') {
 	my $COOLLINK = getNode('coollink','linktype') -&gt; {node_id};
-	$HTMLVARS{edcoollink} = $DB-&gt;sqlSelectHashref('to_node', 'links', 'from_node='.$$NODE{node_id}.' and linktype='.$COOLLINK.' limit 1') ;
-	$str .= '&lt;div id=&quot;cooledby&quot;&gt;&lt;strong&gt;cooled by&lt;/strong&gt; '.linkNode($HTMLVARS{edcoollink}-&gt;{to_node}).&quot;&lt;/div&gt;\n&quot;
-		if $HTMLVARS{edcoollink} ;
+	$PAGELOAD-&gt;{edcoollink} = $DB-&gt;sqlSelectHashref('to_node', 'links', 'from_node='.$$NODE{node_id}.' and linktype='.$COOLLINK.' limit 1') ;
+	$str .= '&lt;div id=&quot;cooledby&quot;&gt;&lt;strong&gt;cooled by&lt;/strong&gt; '.linkNode($PAGELOAD-&gt;{edcoollink}-&gt;{to_node}).&quot;&lt;/div&gt;\n&quot;
+		if $PAGELOAD-&gt;{edcoollink} ;
 }
 
 $str .= htmlcode( 'confirmop' ) if $query -&gt; param( 'confirmop' ) ;
@@ -24,7 +24,7 @@ my $disabled = htmlcode('getdisabledactions');
 $str .= htmlcode('page actions', $disabled) unless $APP-&gt;isGuest($USER) ;
 
 unless ($disabled =~ /a/) {
-    $str .= htmlcode('listnodecategories') unless defined delete $HTMLVARS{e2nodeCategories}; # i.e. unless writeups have already listed any page categories
+    $str .= htmlcode('listnodecategories') unless defined $PAGELOAD-&gt;{e2nodeCategories}; # i.e. unless writeups have already listed any page categories
 }
 
 return qq'&lt;div id=&quot;pageheader&quot;&gt;

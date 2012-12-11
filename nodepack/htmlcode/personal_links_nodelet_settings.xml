@@ -6,9 +6,8 @@
 my $name = 'set_personalnode';
 my $delname = 'del_personalnode';
 my $i =0;
-my $limit = $HTMLVARS{personalNodeletLimit};
-$limit||=50;
-$limit=100 if ($limit&lt;50) &amp;&amp; isGod($USER);
+my $limit = 50;
+$limit=100 if isGod($USER);
 
 my @newnodes;
 my $updateflag=0;
