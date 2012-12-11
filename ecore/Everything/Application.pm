@@ -76,6 +76,44 @@ BEGIN {
 			"assignable" => ["admin"],
 			"validate" => "set_only",
 		},
+
+		"allow_book_parameters" =>
+		{
+			"on" => ["writeup"],
+			"description" => "Mark this writeup as being about a book, allowing other parameters",
+			"assignable" => ["admin"],
+			"validate" => "set_only", 
+		},
+
+		# TODO: Write a validator for book isbns
+		"book_isbn" =>
+		{
+			"on" => ["writeup"],
+			"description" => "Mark this writeup as referring to a particular book isbn",
+			"assignable" => ["admin"],
+		},
+
+		"book_edition" =>
+		{
+			"on" => ["writeup"],
+			"description" => "Mark this as being about a book of a particular edition",
+			"assignable" => ["admin"],
+		},
+	
+		"book_numpages" =>
+		{
+			"on" => ["writeup"],
+			"description" => "Mark this as being about a book with a particular number of pages",
+			"assignable" => ["admin"],
+			"validate" => "integer",
+		},
+
+		"book_author" =>
+		{
+			"on" => ["writeup"],
+			"description" => "Mark this as being about a book with this author",
+			"assignable" => ["admin"],
+		},
 	};
 
 	foreach my $param(keys %$PARAMS)
@@ -98,25 +136,30 @@ $PARAMVALIDATE =
 {
 	"set_only" => sub 
 	{
-		my ($this, $val) = @_;
+		my ($this, $node, $user, $val) = @_;
 		return if not defined $val;
 		return($val == 1);	
 	},
 	"integer" => sub
 	{
-		my ($this, $val) = @_;
+		my ($this, $node, $user, $val) = @_;
 		return($val eq int($val));
 	},
         "admin" => sub
         {
-		my ($this, $user) = @_;
+		my ($this, $node, $user, $val) = @_;
 		return 1 if defined($user) and $user eq '-1';
                 return 1 if defined($user) and $this->isEditor($user);
         	return 0;
 	},
+	"self" => sub
+	{
+		my ($this, $node, $user, $val) = @_;
+		return $node->{node_id} == $user->{node_id};
+	},
         "system" => sub
         {
-                my ($this, $user) = @_;
+                my ($this, $node, $user, $val) = @_;
 		return 1 if defined($user) and $user eq '-1';
         	return 0;
 	},
@@ -889,7 +932,7 @@ sub setParameter
   if(exists($paramdata->{validate}))
   {
     return if not exists($Everything::Application::PARAMVALIDATE->{$paramdata->{validate}});
-    return if not $Everything::Application::PARAMVALIDATE->{$paramdata->{validate}}->($this, $paramvalue);
+    return if not $Everything::Application::PARAMVALIDATE->{$paramdata->{validate}}->($this, $node, $user, $paramvalue);
   }
   
   $this->{db}->setNodeParam($node, $param, $paramvalue);
@@ -952,7 +995,7 @@ sub canSetParameter
       return;
     }
 
-    $can_assign = $Everything::Application::PARAMVALIDATE->{$assignable}->($this, $user);
+    $can_assign = $Everything::Application::PARAMVALIDATE->{$assignable}->($this, $node, $user, undef);
     last if $can_assign;
   }
   return $can_assign;
