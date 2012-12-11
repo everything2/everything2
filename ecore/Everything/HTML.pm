@@ -26,7 +26,6 @@ sub BEGIN {
 	@EXPORT=qw(
               %HEADER_PARAMS
               $DB
-              %HTMLVARS
               $NODE
               $VARS
               $PAGELOAD
@@ -88,7 +87,6 @@ sub BEGIN {
 }
 
 use vars qw($HTTP_ERROR_CODE $ERROR_HTML $SITE_UNAVAILABLE $query);
-use vars qw(%HTMLVARS);
 use vars qw($VARS);
 use vars qw($GNODE);
 use vars qw($USER);
@@ -2840,7 +2838,6 @@ sub mod_perlInit
 	# pages to show when a node is not found (404-ish), when the
 	# user is not allowed to view/edit a node, etc.  These are stored
 	# in the dbase to make changing these values easy.	
-	%HTMLVARS = %{ eval (getCode('set_htmlvars')) };
 	%HEADER_PARAMS = ( );
 
 	$query = getCGI();

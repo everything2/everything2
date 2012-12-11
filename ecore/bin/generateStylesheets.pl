@@ -10,7 +10,6 @@ require CGI;
 my $STYLESHEET_PATH = '/var/everything/www/stylesheet/';
 
 initEverything "everything";
-%Everything::HTML::HTMLVARS = %{ eval (getCode('set_htmlvars')) };
 $Everything::HTML::USER = getNode('Guest User', 'user');
 $query = new CGI();
 
