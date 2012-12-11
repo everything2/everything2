@@ -33,7 +33,7 @@
  {
    $$CURRENTNODE{parent_container} = $$THEME{$key};
  } else {
-   if (my $parent = $HTMLVARS{$key}) {
+   if (my $parent = $Everything::CONF-&gt;{system}-&gt;{lc($key)} ) {
      $$CURRENTNODE{parent_container} = $parent;
    }
  }

@@ -2135,7 +2135,7 @@ sub gotoNode
 
 	# Create softlinks -- a linktype of 0 is the default
 	my $linktype = 0;
-	$linktype = getNodeById($HTMLVARS{guest_link})
+	$linktype = getNodeById($Everything::CONF->{system}->{guest_link})
 		if $APP->isGuest($USER);
 
 	my $lastnode = $query->param('lastnode_id');
@@ -2512,10 +2512,7 @@ sub opNuke
 	my $user_id = $$USER{node_id};
 	my $node_id = $query->param("node_id");
 
-
 	return if $APP->getParameter($node_id, "prevent_nuke");
-	return if grep(/^$node_id$/, values(%HTMLVARS)) ;
-	
 	nukeNode($node_id, $user_id);
 }
 
