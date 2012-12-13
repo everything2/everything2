@@ -2,7 +2,7 @@
   <type_nodetype>1786405</type_nodetype>
   <doctext>$.ajaxSetup({
 	type: 'POST',
-	url: 'http://'+window.location.hostname+&quot;/index.pl&quot;,
+	url: 'http://'+window.location.hostname+((window.location.port != &quot;&quot;)?(&quot;:&quot;):(&quot;&quot;))+window.location.port+&quot;/index.pl&quot;,
 	// hostname included for Guest User on non-canonical domain with canonical base element in html head
 	cache: false,
 	dataType: 'text',
@@ -651,8 +651,7 @@ e2('#chatterbox:not(.pending)', function(){
 
 if (e2.isChatterlight) e2('#message', e2(function(){
 	$(this).css('width','').focus();
-}).defer); // defer for IE
-</doctext>
+}).defer); // defer for IE</doctext>
   <contentversion>100</contentversion>
   <s3bucket></s3bucket>
   <node_id>1878034</node_id>
