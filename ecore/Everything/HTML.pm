@@ -39,7 +39,6 @@ sub BEGIN {
               cleanupHTML
               breakTags
               htmlFormatErr
-              isSpider
               quote
               urlGen
               urlGenNoParams
@@ -2889,25 +2888,6 @@ sub escapeAngleBrackets{
   $text =~ s/((?:\[(.*?)\])|<)/$1 eq "<" ? "&lt;" : "$1"/egs;
 
   return $text;
-}
-
-#############################################################################
-# Sub
-#   isSpider
-#
-# Purpose
-#   Determines if the request is likely from an automatic spider
-#   rather than a human.
-#
-# Parameters
-#   None
-#
-# Returns
-#   1 if is a spider, 0 otherwise
-
-sub isSpider()
-{
-	return $APP->isSpider();
 }
 
 #############################################################################
