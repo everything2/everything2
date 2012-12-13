@@ -89,8 +89,9 @@ BEGIN {
 		"book_isbn" =>
 		{
 			"on" => ["writeup"],
-			"description" => "Mark this writeup as referring to a particular book isbn",
+			"description" => "Mark this writeup as referring to a particular book isbn-10 or isbn-13",
 			"assignable" => ["admin"],
+			"validate" => "isbn",
 		},
 
 		"book_edition" =>
@@ -144,6 +145,11 @@ $PARAMVALIDATE =
 	{
 		my ($this, $node, $user, $val) = @_;
 		return($val eq int($val));
+	},
+	"isbn" => sub
+	{
+		my ($this, $node, $user, $val) = @_;
+		return ($val =~ /^\d{10}$/ or $val =~ /^\d{3}\-\d{10}$/);
 	},
         "admin" => sub
         {
