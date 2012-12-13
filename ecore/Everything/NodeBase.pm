@@ -2878,7 +2878,7 @@ sub deleteNodeParam
 
 	return unless $node_id;
 
-	$this->sqlDelete("nodeparam","node_id=".$this->quote($node_id));
+	$this->sqlDelete("nodeparam","node_id=".$this->quote($node_id)." and paramkey=".$this->quote($paramname));
 	$this->{cache}->deleteCachedNodeParam($node_id,$paramname);
 }
 
