@@ -14,11 +14,6 @@ use CGI;
 use CGI::Carp qw(set_die_handler);
 use Carp qw(longmess);
 
-#use Everything::Compiled::htmlcode;
-#use Everything::Compiled::container;
-#use Everything::Compiled::htmlpage;
-#use Everything::Compiled::superdoc;
-
 sub BEGIN {
 	use Exporter ();
 	use vars qw($DB $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
@@ -1105,62 +1100,6 @@ sub getPages
 	return @pages;
 }
 
-
-#############################################################################
-#	Sub
-#		getCompiledPage
-#
-
-sub getCompiledPage
-{
-	my ($NODE, $displaytype) = @_; 
-	return unless $Everything::CONF->{use_compiled};
-	my $TYPE;
-
-	# Stolen from getPage	
-	getRef $NODE;
-
-	$TYPE = getType($$NODE{type_nodetype});
-	$displaytype ||= $$VARS{'displaypref_'.$$TYPE{title}}
-	  if exists $$VARS{'displaypref_'.$$TYPE{title}};
-	$displaytype ||= $$THEME{'displaypref_'.$$TYPE{title}}
-	  if exists $$THEME{'displaypref_'.$$TYPE{title}};
-	$displaytype = 'display' unless $displaytype;
-	
-	my $prefix = "__htmlpage";
-	my $typeid = $$NODE{type_nodetype};
-
-	my $themechoices;
-	push @$themechoices, $THEME->{theme_id} if($THEME);
-	push @$themechoices, 0;
-
-
-	# Don't check display twice - JAYBONCI
-	foreach my $thisdisplay ($displaytype, "display")
-	{
-		my $thistypeid = $typeid;
-		while($thistypeid)
-		{
-			foreach my $themer (@$themechoices)
-			{
-				if(Everything::Compiled::htmlpage->can(join("_",$prefix,$themer,$typeid,$thisdisplay)))
-				{
-					no strict 'refs';
-					my $subname = "Everything::Compiled::htmlpage::".join("_",$prefix,$themer,$typeid,$thisdisplay);
-					my $mimetype = "$subname"."_mimetype";
-					return [$subname,&$mimetype()];
-				}
-			}
-			
-			# Will work in most, if not all real-world cases:
-			my $quicktype = getNodeById($thistypeid);
-			$thistypeid = $quicktype->{extends_nodetype};
-		}
-	}
-
-	return;
-}
-
 #############################################################################
 #	Sub
 #		getPageForType
@@ -1655,25 +1594,6 @@ sub htmlcode {
 	my $encodedArgs = "(no arguments)";
 	my $htmlcodeName = shift;
 
-	my $htmlcodelocalname = $htmlcodeName;
-	$htmlcodelocalname =~ s/[\s-]/_/g;
-	$htmlcodelocalname = "__htmlcode_$htmlcodelocalname";
-
-	if(Everything::Compiled::htmlcode->can($htmlcodelocalname))
-	{
-		my $passedargs;
-		if(scalar @_ == 1 and !ref $_[0])
-		{
-			$passedargs = [split(/\s*,\s*/, shift)];
-		}elsif(scalar @_ > 0){
-			$passedargs = [@_];
-		}
-
-		no strict 'refs';
-		$htmlcodelocalname = "Everything::Compiled::htmlcode::$htmlcodelocalname";
-		return &$htmlcodelocalname(@$passedargs);
-	}
-
 	my ($htmlcodeCode, $codeNode) = getCode($htmlcodeName);
 
 	if (scalar @_ == 1 and !ref $_[0]) {
@@ -2009,32 +1929,17 @@ sub displayPage
         my $dsp = $query->param('displaytype');
         $dsp = "display" unless $dsp;
 
-	if(my $compiledpage = getCompiledPage($NODE, $query->param('displaytype')))
-	{
-		no strict 'refs';
-		my $compiledpagesub = $compiledpage->[0];
-		$page = &$compiledpagesub();
-		$$NODE{datatype} = $compiledpage->[1];
-	}else{
-		my $PAGE = getPage($NODE, $query->param('displaytype'));
-		$$NODE{datatype} = $$PAGE{mimetype};
-		$page = $$PAGE{page};
+	my $PAGE = getPage($NODE, $query->param('displaytype'));
+	$$NODE{datatype} = $$PAGE{mimetype};
+	$page = $$PAGE{page};
 
-		die "NO PAGE!" unless $page;
+	die "NO PAGE!" unless $page;
 
-		$page = parseCode($page, $NODE);
+	$page = parseCode($page, $NODE);
 	
-		if ($$PAGE{parent_container}) {
-			if(Everything::Compiled::container->can("__container_id_$$PAGE{parent_container}"))
-			{
-				no strict 'refs';
-				my $containersub = "Everything::Compiled::container::__container_id_$$PAGE{parent_container}";
-				$page = &$containersub($page);
-			}else{
-				my ($pre, $post) = genContainer($$PAGE{parent_container});
-				$page = $pre.$page.$post;
-			}
-		}
+	if ($$PAGE{parent_container}) {
+		my ($pre, $post) = genContainer($$PAGE{parent_container});
+		$page = $pre.$page.$post;
 	}
 	setVars $USER, $VARS unless $APP->isGuest($USER);
 	printHeader($$NODE{datatype}, $page, $lastnode);
