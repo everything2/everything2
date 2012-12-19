@@ -61,7 +61,6 @@ my $var_mapping =
 	'$TEST_CONDITION' => '::HTML::',
 	'$TEST_SESSION_ID' => '::HTML::',
 	'$THEME' => '::HTML::',
-	'$NODELET' => '::HTML::',
 	'%HEADER_PARAMS' => '::HTML::',	
 };
 
