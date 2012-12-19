@@ -87,7 +87,6 @@ use vars qw($TEST);
 use vars qw($TEST_CONDITION);
 use vars qw($TEST_SESSION_ID);
 use vars qw($THEME);
-use vars qw($NODELET);
 use vars qw($PAGELOAD);
 use vars qw(%HEADER_PARAMS);
 
@@ -1772,7 +1771,7 @@ sub quote {
 #############################################################################
 sub insertNodelet
 {
-	($NODELET) = @_;
+	my ($NODELET) = @_;
 	getRef $NODELET;
 
 	# I'm going to forget about this later, so I need to write this down here
@@ -2404,7 +2403,6 @@ sub clearGlobals
 	$GNODE = "";
 	$USER = "";
 	$VARS = "";
-	$NODELET = "";
 	$THEME = "";
         $PAGELOAD = {};
         $TEST = "";
