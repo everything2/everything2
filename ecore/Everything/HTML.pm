@@ -1774,6 +1774,13 @@ sub insertNodelet
 {
 	($NODELET) = @_;
 	getRef $NODELET;
+
+	# I'm going to forget about this later, so I need to write this down here
+	# Basically the nodelet containers want a global nodelet object so they know what they are 
+	# talking about, rather than using a display subroutine of some sort. By localizing it
+	# to $PAGELOAD, we prevent a whole class of memory corruption bugs in nodelets
+
+	$PAGELOAD->{current_nodelet} = $NODELET;
 	my ($pre, $post) = ('', '');
 
         #my $html = genContainer($$NODELET{parent_container})
@@ -1786,7 +1793,8 @@ sub insertNodelet
 	# Make sure the nltext is up to date
 	updateNodelet($NODELET);
 	return "" unless ($$NODELET{nltext} =~ /\S/);
-	
+
+	delete $PAGELOAD->{current_nodelet};	
 	# now that we are guaranteed that nltext is up to date, sub it in.
 	return $pre.$NODELET->{nltext}.$post;
 }
