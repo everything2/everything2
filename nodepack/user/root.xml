@@ -45,10 +45,6 @@
     <key>num_newwus</key>
   </vars>
   <vars>
-    <value>(default)</value>
-    <key>displaypref_e2node</key>
-  </vars>
-  <vars>
     <value>-160</value>
     <key>oldexp</key>
   </vars>
@@ -67,10 +63,6 @@
   <vars>
     <value></value>
     <key>numwriteups</key>
-  </vars>
-  <vars>
-    <value>#ff0000</value>
-    <key>nodelet_headerclr</key>
   </vars>
   <vars>
     <value></value>

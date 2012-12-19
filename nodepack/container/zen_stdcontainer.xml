@@ -81,7 +81,7 @@ return $str unless $str =~ /superdoc/ ;
 my $id .= ( $$NODE{ node_id } != 124 ? lc( $$NODE{ 'title' } ) : 'frontpage' ) ;
 $id =~ s/\W//g ;
 $str.'&quot; id=&quot;'.$id ;
-%]&quot;&gt;
+%]&quot; itemscope itemtype=&quot;http://schema.org/WebPage&quot;&gt;
 CONTAINED_STUFF
 &lt;/body&gt;
 &lt;/html&gt;</context>

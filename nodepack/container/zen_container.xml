@@ -39,9 +39,9 @@ padding: 50px 300px; /* means the text doesn't show in the 300x50 window */
 &lt;/div&gt;
 
 &lt;div id='wrapper'&gt;
-
-  &lt;div id='mainbody'&gt;
 [{guestuserbanner}]
+  &lt;div id='mainbody' itemprop=&quot;mainContentOfPage&quot;&gt;
+
 
 &lt;!-- google_ad_section_start --&gt;
 [{page header}]
