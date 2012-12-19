@@ -48,6 +48,7 @@ NameVirtualHost *:80
 	PerlOptions +ParseHeaders
 
 	SetEnvIf X-FORWARDED-FOR "37.0.121.104" denyip
+	SetEnvIf X-FORWARDED-FOR "183.38.89.8" denyip
 
 	<Directory /var/everything/www/>
 		DirectoryIndex index.pl
