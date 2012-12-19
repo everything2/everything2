@@ -7,11 +7,11 @@ $NODE = $GNODE = getNodeById($Everything::CONF-&gt;{system}-&gt;{not_found_node}
 '';
 %][%
   my $nodelet_id = $query-&gt;param('nodelet_id');
-  my $NODELET = getNode($nodelet_id);
-  if (!$NODELET) {
+  my $current_nodelet = getNode($nodelet_id);
+  if (!$current_nodelet) {
     return 'no nodelet to show';
   }
-  my $nl = insertNodelet($NODELET);
+  my $nl = insertNodelet($current_nodelet);
 
   # Nasty hack: if a nodelet links back to the same node preserving
   # the displaytype, the 'shownodelet' display type will be

@@ -4,18 +4,18 @@
   <node_id>1101195</node_id>
   <context>&lt;!-- BEGIN ekw nodelet container --&gt;
 &lt;tr&gt;
-  &lt;td class=&quot;nodelet_title&quot; id=&quot;nl_title_[% return $$NODELET{title}; %]&quot; bgcolor=&quot;[%
+  &lt;td class=&quot;nodelet_title&quot; id=&quot;nl_title_[% return $PAGELOAD-&gt;{current_nodelet}-&gt;{title}; %]&quot; bgcolor=&quot;[%
     $$VARS{ 'ekw_logobackground' } || $$THEME{ 'logoBackground' } || '#305880';
   %]&quot;&gt;
     &lt;b&gt;&lt;font color=&quot;[%
       return $$VARS{ 'ekw_logomaintext' } || $$THEME{ 'logoMainText' } || '#f0f0f0';
-    %]&quot;&gt;&amp;nbsp;[&quot;$$NODELET{title}&quot;]
+    %]&quot;&gt;&amp;nbsp;[&quot;$PAGELOAD-&gt;{current_nodelet}-&gt;{title}&quot;]
     &lt;/font&gt;&lt;/b&gt;
   &lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr&gt;
-  &lt;td colspan=&quot;2&quot; class=&quot;nodelet_content&quot; id=&quot;nl_content_[% return $$NODELET{title}; %]&quot; bgcolor=&quot;[%
+  &lt;td colspan=&quot;2&quot; class=&quot;nodelet_content&quot; id=&quot;nl_content_[% return $PAGELOAD-&gt;{current_nodelet}-&gt;{title}; %]&quot; bgcolor=&quot;[%
       return $$VARS{ 'ekw_bgcolor' } || $$THEME{ 'bodyBgcolor' } || '#f8f8f8';
   %]&quot;&gt;
    &lt;font [%
@@ -28,7 +28,6 @@
    &lt;/font&gt;
   &lt;/td&gt;
 &lt;/tr&gt;
-&lt;!-- END ekw nodelet container --&gt;
-</context>
+&lt;!-- END ekw nodelet container --&gt;</context>
   <title>ekw nodelet container</title>
 </node>

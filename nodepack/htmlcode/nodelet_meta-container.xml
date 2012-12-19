@@ -58,13 +58,13 @@ my $errWrapper = $useTable ? '&lt;tr&gt;&lt;td title=&quot;nodelet meta-containe
 my $nodeletNum=0;
 
 foreach(@nodelets) {
-	my $NODELET = $DB-&gt;getNodeById($_);
+	my $current_nodelet = $DB-&gt;getNodeById($_);
 	$nodeletNum++;
-	unless(defined $NODELET) {
+	unless(defined $current_nodelet) {
 		$str .= sprintf($errWrapper, 'Ack! Unable to get nodelet '.$_.'.&lt;/td&gt;&lt;/tr&gt;');
 		next;
 	}
-	my $nl = insertNodelet($NODELET);
+	my $nl = insertNodelet($current_nodelet);
 	unless(defined $nl) {
 		$str .= sprintf($errWrapper, 'Ack! Result of nodelet '.$_.' undefined.&lt;/td&gt;&lt;/tr&gt;');
 		next;

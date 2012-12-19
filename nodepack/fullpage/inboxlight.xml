@@ -74,41 +74,9 @@ $str .= $$VARS{borged}
 
 $str .= $query-&gt;end_form;
 
-
-#my $NODELET = getNode( 'chatterbox', 'nodelet' );
-
-#my $cbox = insertNodelet( $NODELET );
-
-# Yeah, this is pretty gruesome.
-#$cbox =~ s/NAME=&quot;message&quot;\s+SIZE=15/name=&quot;message&quot; size=&quot;70&quot;/i;
-
-#$str .= $cbox;
-
-# I'd like to throw in New Writeups along the right margin,
-# but it slows loads down noticeably (or else I'm on codeine). 
-# It's probably not so bad if you're not a god (or not on 
-# codeine).
-
-# ** BEGIN new writeups fuckulation
-#$str .= &quot;&lt;table width=\&quot;100%\&quot;&gt;\n&lt;tr valign=\&quot;top\&quot;&gt;&quot;;
-#$str .= &quot;&lt;td&gt;&lt;table&gt;\n$cbox\n&lt;/table&gt;\n&quot;;
-# ** END new writeups fuckulation
-
 my $name = $$USER{title};
 $name =~ s/ /_/g;
 $name =~ s/'/\\'/g;
-
-#$str .= '&lt;br /&gt;&lt;a href=&quot;javascript:replyToCB(\'' . $name . '\')&quot;&gt;';
-#$str .= '&lt;font size=&quot;2&quot;&gt;Talk to yourself&lt;/font&gt;&lt;/a&gt;';
-
-# ** BEGIN new writeups fuckulation
-#$str .= &quot;\n&lt;/td&gt;\n\n&lt;td width=\&quot;200\&quot;&gt;&lt;table&gt;\n&quot;;
-
-#$NODELET = getNode( 'New Writeups', 'nodelet' );
-#$str .= insertNodelet( $NODELET );
-
-#$str .= &quot;\n&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;\n&lt;/table&gt;&quot;;
-# ** END new writeups fuckulation
 
 $str .= '
 &lt;script language=&quot;JavaScript&quot;&gt;

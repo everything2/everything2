@@ -4,14 +4,14 @@
   <node_id>415064</node_id>
   <context>[%
 my $str;
-if($$NODELET{icon}) {
-	$str .= '&lt;img src=&quot;'.$$NODELET{icon}.'&quot; ';
-	$str .= 'height=&quot;'.$$NODELET{iconHeight}.'&quot; ' if $$NODELET{iconHeight};
-	$str .= 'width=&quot;'.$$NODELET{iconWidth}.'&quot; ' if $$NODELET{iconWidth};
-	$str .= 'border=&quot;0&quot; alt=&quot;'.$$NODELET{title}.'&quot;&gt;';
+if($PAGELOAD-&gt;{current_nodelet}-&gt;{icon}) {
+	$str .= '&lt;img src=&quot;'.$PAGELOAD-&gt;{current_nodelet}-&gt;{icon}.'&quot; ';
+	$str .= 'height=&quot;'.$PAGELOAD-&gt;{current_nodelet}-&gt;{iconHeight}.'&quot; ' if $PAGELOAD-&gt;{current_nodelet}-&gt;{iconHeight};
+	$str .= 'width=&quot;'.$PAGELOAD-&gt;{current_nodelet}-&gt;{iconWidth}.'&quot; ' if $PAGELOAD-&gt;{current_nodelet}-&gt;{iconWidth};
+	$str .= 'border=&quot;0&quot; alt=&quot;'.$PAGELOAD-&gt;{current_nodelet}-&gt;{title}.'&quot;&gt;';
 } 
 else {
-	$str = '&lt;font color=&quot;ltbrown&quot;&gt;'.$$NODELET{title}.'&lt;/font&gt;';
+	$str = '&lt;font color=&quot;ltbrown&quot;&gt;'.$PAGELOAD-&gt;{current_nodelet}-&gt;{title}.'&lt;/font&gt;';
 }  
 $str;
 %]&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;span&gt;CONTAINED_STUFF&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;

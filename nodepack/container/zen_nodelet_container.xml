@@ -3,11 +3,11 @@
   <parent_container>0</parent_container>
   <node_id>1854181</node_id>
   <context>&lt;div class='nodelet' id='[%
-my $id = lc( $$NODELET{ 'title' } ) ;
+my $id = lc( $PAGELOAD-&gt;{current_nodelet}-&gt;{title} ) ;
 $id =~ s/\W//g ;
 $id ;
 %]'&gt;
-	&lt;h2 class=&quot;nodelet_title&quot;&gt;[&quot;$$NODELET{title}&quot;]&lt;/h2&gt;
+	&lt;h2 class=&quot;nodelet_title&quot;&gt;[&quot;$PAGELOAD-&gt;{current_nodelet}-&gt;{title}&quot;]&lt;/h2&gt;
 &lt;div class='nodelet_content'&gt;
 	CONTAINED_STUFF
 &lt;/div&gt;

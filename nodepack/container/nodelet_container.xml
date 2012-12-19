@@ -14,7 +14,7 @@ return ' background=&quot;'.$bk.'&quot;' if $bk;
 %]&quot;&gt;&lt;strong&gt;&lt;font [%
 	my $attr=$$THEME{nodeletTitleFontAttr};
 	return $attr ? $attr : 'color=&quot;white&quot;';
-%]&gt;[&quot;$$NODELET{title}&quot;]&lt;/font&gt;&lt;/strong&gt;&lt;/td&gt;
+%]&gt;[&quot;$PAGELOAD-&gt;{current_nodelet}-&gt;{title}&quot;]&lt;/font&gt;&lt;/strong&gt;&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr&gt;&lt;td bgcolor=&quot;[%

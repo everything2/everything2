@@ -39,17 +39,9 @@ $$VARS{nodelets} =~ s/(\b263\b.*),263\b/\1/g;
 my $nodelets = $PAGELOAD-&gt;{pagenodelets} || $$VARS{nodelets} ;
 my @nodelets = split(',',$nodelets) if $nodelets ;
 
-# Now, list them.
-#'&lt;ul&gt;' . ( join '', map {
-#  my $NODELET = getNode($_);
-#  '&lt;li&gt;'.linkNode($NODE, $NODELET-&gt;{title},
-#                  { displaytype =&gt; 'shownodelet',
-#                    nodelet_id =&gt; $_});
-#} @nodelets ) . '&lt;/ul&gt;';
-
 my $n = 1;
 '&lt;table width=&quot;100%&quot;&gt;' . ( join '', map {
-  my $NODELET = getNode($_);
+  my $current_nodelet = getNode($_);
   $n = 1 - $n;
   my $str;
   if ($n) {
@@ -57,7 +49,7 @@ my $n = 1;
   } else {
     $str = '&lt;tr class=&quot;evenrow&quot;&gt;&lt;td&gt;';
   }
-  $str .= linkNode($NODE, $NODELET-&gt;{title},
+  $str .= linkNode($NODE, $current_nodelet-&gt;{title},
                    { displaytype =&gt; 'shownodelet',
                      nodelet_id =&gt; $_}).'&lt;/t&gt;&lt;/tr&gt;';
   } @nodelets) . '&lt;/table&gt;';

@@ -48,9 +48,9 @@ around talking all day instead of writing.&lt;/i&gt;&lt;br /&gt;
 &lt;/font&gt;&lt;/p&gt;
 ';
 
-my $NODELET = getNode( 'chatterbox', 'nodelet' );
+my $nl = getNode( 'chatterbox', 'nodelet' );
 
-my $cbox = insertNodelet( $NODELET );
+my $cbox = insertNodelet( $nl );
 
 # Yeah, this is pretty gruesome.
 $cbox =~ s/NAME=&quot;message&quot;\s+SIZE=15/name=&quot;message&quot; size=&quot;70&quot;/i;
@@ -74,14 +74,14 @@ $str .= '&lt;font size=&quot;2&quot;&gt;Talk to yourself&lt;/font&gt;&lt;/a&gt;'
 
 $str .= &quot;\n&lt;/td&gt;\n\n&lt;td width=\&quot;200\&quot;&gt;&lt;table&gt;\n&quot;;
 
-$NODELET = getNode( 'New Writeups', 'nodelet' );
+$nl = getNode( 'New Writeups', 'nodelet' );
 
 my $room = linkNode($$USER{in_room});
 $room ||= &quot;outside&quot;;
 
 $str.=&quot;&lt;small&gt;Now talking in: $room &lt;br&gt;&quot;;
 $str.=&quot;(&quot;.linkNode(getNode(&quot;Available Rooms&quot;, &quot;superdoc&quot;), &quot;change room&quot;).&quot;)&lt;/small&gt;&quot;;
-$str .= insertNodelet( $NODELET );
+$str .= insertNodelet( $nl );
 
 $str .= &quot;\n&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;\n&lt;/table&gt;&quot;;
 
