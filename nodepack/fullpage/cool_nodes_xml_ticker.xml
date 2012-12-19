@@ -1,6 +1,7 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Wed Dec 19 20:05:09 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Wed Dec 19 21:40:06 2012&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;1080343&quot; parent_e2node=&quot;1080300&quot; author_user=&quot;riverrun&quot;&gt;a nice cool glass of Joyce&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;avalyn&quot; node_id=&quot;1683062&quot; parent_e2node=&quot;47834&quot; author_user=&quot;rootbeer277&quot;&gt;Krang&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Aerobe&quot; node_id=&quot;2099205&quot; parent_e2node=&quot;2099203&quot; author_user=&quot;Lucy-S&quot;&gt;Master of Fine Arts in Writing Popular Fiction at Seton Hill University&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2099387&quot; parent_e2node=&quot;2099388&quot; author_user=&quot;borgo&quot;&gt;beached whale&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;lawnjart&quot; node_id=&quot;1470590&quot; parent_e2node=&quot;1470584&quot; author_user=&quot;JohnnyGoodyear&quot;&gt;How the heart really works&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1237977&quot; parent_e2node=&quot;101983&quot; author_user=&quot;jmc&quot;&gt;ye&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;2099070&quot; parent_e2node=&quot;2002654&quot; author_user=&quot;raincomplex&quot;&gt;THE FISH INVITE THEM IN&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2099343&quot; parent_e2node=&quot;2099336&quot; author_user=&quot;tubular&quot;&gt;Let's Potato Chips&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

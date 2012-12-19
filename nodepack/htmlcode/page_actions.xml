@@ -4,9 +4,9 @@
   <title>page actions</title>
   <code>my $disabled = shift || htmlcode('getdisabledactions');
 
-my $b ;
+my $c ;
 my @actions = () ;
-push @actions , $b if not $disabled =~ /c/ and $b = htmlcode('coolit','') ;
+push @actions , $c if not $disabled =~ /c/ and $c = htmlcode('coolit','') ;
 
 if ($$NODE{type}{title} eq 'user'){
 	my $minLevel = 11;
