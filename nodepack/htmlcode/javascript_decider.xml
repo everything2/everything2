@@ -23,7 +23,7 @@ push @JS, getNode('Zen Nodelet Collapser', 'jscript') unless $$VARS{nonodeletcol
 push @JS , split(',', $$VARS{includedJS}) if $$VARS{includedJS};
 
 my $jscss = &quot;http://jscss.everything2.com&quot;;
-my $str = &quot;&quot;;
+$str = &quot;&quot;;
 
 my $jsType = getId(getType('jscript'));
 foreach (@JS) {
