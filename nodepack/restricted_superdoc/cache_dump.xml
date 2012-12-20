@@ -30,6 +30,7 @@ foreach my $cache_entry (@$cache)
      if(exists($item-&gt;{compiledCode}))
      {
         push @$extrainfo,&quot;has compiled code&quot;;
+        push @$extrainfo,ref $item-&gt;{compiledCode};
      }else{
         push @$extrainfo,&quot;no compiled code&quot;;
      }

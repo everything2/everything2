@@ -4,6 +4,7 @@
   <_create_table_statement>CREATE TABLE `htmlcode` (
   `htmlcode_id` int(11) NOT NULL AUTO_INCREMENT,
   `code` text,
+  `modperlsafe` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`htmlcode_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <title>htmlcode</title>

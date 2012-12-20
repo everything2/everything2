@@ -1,6 +1,14 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>[% return &quot;Hello there. This is a quick testing/debugging ground for me. Do not delete me, it is not worth the time&quot;; %]
+  <doctext>[%
+my $oldinfo = getCompiledCode(
+		getNode('displayWriteupInfo', 'htmlcode')
+	, \&amp;evalCode);
+use Data::Dumper;
+return Data::Dumper-&gt;Dump([getNode('displayWriteupInfo','htmlcode')]);
+%]
+
+[% return &quot;Hello there. This is a quick testing/debugging ground for me. Do not delete me, it is not worth the time&quot;; %]
 &lt;br /&gt;&lt;br /&gt;
 [% return $Everything::CONF-&gt;{writeuplowrepthreshold} %]
 

@@ -1,12 +1,14 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>545563</node_id>
   <title>changeroom</title>
   <code>return if $APP-&gt;isGuest($USER);
 return if $$USER{title} eq 'everyone';
 return (&quot;You are locked in your current room for &quot; . ceil(($$VARS{lockedin} - time)/ 60) . &quot; minutes.&lt;br&gt;&lt;br&gt;&quot;) if ($$VARS{lockedin} &gt; time);
 
-my $str = ' instant ajax chatterbox_chatter:#' if $query and $query -&gt; param('ajaxTrigger') and
+my $str = &quot;&quot;; #Blank this out for mod_perl
+$str = ' instant ajax chatterbox_chatter:#' if $query and $query -&gt; param('ajaxTrigger') and
 	defined $query-&gt;param('changeroom')	and $query-&gt;param('changeroom') != $$USER{in_room};
 my $RM = getNode('e2 rooms', 'nodegroup');
 my @rooms = @{ $$RM{group}  };

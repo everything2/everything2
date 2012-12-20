@@ -18,10 +18,9 @@ if ($$NODE{type}{title} eq 'user'){
 	push @actions , $b if $b = htmlcode('favorite_noder');
 }
 
-my $b = htmlcode('bookmarkit' , $NODE , 'Add to bookmarks' ) unless $disabled =~ /b/ ;
-my $a = htmlcode( 'categoryform' ) unless $disabled =~ /a/ ;
-my $w = htmlcode( 'weblogform' )
-	if $$NODE{type}{sqltablelist} =~ /document/ &amp;&amp; $$VARS{can_weblog} and not $disabled =~ /w/ ;
+my $b = &quot;&quot;; $b = htmlcode('bookmarkit' , $NODE , 'Add to bookmarks' ) unless $disabled =~ /b/ ;
+my $a = &quot;&quot;; $a = htmlcode( 'categoryform' ) unless $disabled =~ /a/ ;
+my $w = &quot;&quot;; $w = htmlcode( 'weblogform' ) if $$NODE{type}{sqltablelist} =~ /document/ &amp;&amp; $$VARS{can_weblog} and not $disabled =~ /w/ ;
 
 my $title = 'Add this '.( $$NODE{ type }{ title } eq 'e2node' ? 'entire page' :
 		$$NODE{ type }{ title } ).' to a ' ;
@@ -39,7 +38,7 @@ unless ( $query -&gt; param( 'addto' ) ) {
 		{ showwidget =&gt; 'addto'.$$NODE{ node_id } , -title =&gt; $title.'category or usergroup page' } ) ;
 }
 
-my $disable = linkNode( getNode( 'Disable actions' , 'superdoc' ) , '&lt;small&gt;x&lt;/small&gt;' ,
+my $disable = &quot;&quot;; $disable = linkNode( getNode( 'Disable actions' , 'superdoc' ) , '&lt;small&gt;x&lt;/small&gt;' ,
 	{ '-title' =&gt; 'Disable some/all actions for this node/nodetype&amp;hellip;' ,
 	donode =&gt; $$NODE{node_id} } ) . &quot;&lt;/li&gt;\n&lt;li&gt;&quot;
 		if $APP-&gt;isEditor($USER) and not $disabled =~ /L/ ;

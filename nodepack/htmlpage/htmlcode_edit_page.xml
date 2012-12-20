@@ -13,7 +13,10 @@
 [{listcode:code}]
 &lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the code:&lt;/strong&gt;&lt;/small&gt;&lt;br /&gt;
 
-[{textarea:code,30,80}]</page>
+[{textarea:code,30,80}]
+
+&lt;p&gt;&lt;small&gt;&lt;strong&gt;mod_perl safe?&lt;/strong&gt;&lt;/small&gt;[{textfield:modperlsafe,1,0}]&lt;br /&gt;
+</page>
   <displaytype>edit</displaytype>
   <node_id>64</node_id>
   <title>htmlcode edit page</title>
