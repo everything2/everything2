@@ -18,7 +18,7 @@ my @newwus = @{from_json($nltext)};
 my $noHidden = !$isLogs;
 $noHidden = $noHidden &amp;&amp; $$VARS{nw_nojunk} if $cansee;
 
-my ($repthreshold, %abominations) = ('none');
+my ($repthreshold, $abominations) = ('none');
 if (!$cansee or $$VARS{nw_nojunk} or $isLogs){
 	if (exists $$VARS{repThreshold}) {
 		$repthreshold = $$VARS{repThreshold} || 0; # ecore stores 0 as ''
@@ -26,15 +26,14 @@ if (!$cansee or $$VARS{nw_nojunk} or $isLogs){
 		$repthreshold = $Everything::CONF-&gt;{writeuplowrepthreshold} || 0;
 	}
 	
-	\@abominations{ split(',', $$VARS{unfavoriteusers}) }
-		if $$VARS{unfavoriteusers};
+        $abominations-&gt;{$_} = 1 foreach(split(',', $$VARS{unfavoriteusers}));
 }
 
 my ($count, @wus);
 foreach (@newwus){
 	next if $noHidden &amp;&amp; $$_{notnew} or
 		$repthreshold ne 'none' &amp;&amp; $$_{reputation} &lt; $repthreshold or
-		exists $abominations{$$_{author_user}} or
+		exists $abominations-&gt;{$$_{author_user}} or
 		$isLogs &amp;&amp; !$$_{islog};
 	push @wus, $_;
 	last if !$$_{notnew} || $isLogs and ++$count &gt;= $limit;
@@ -52,16 +51,14 @@ unless($APP-&gt;isGuest($USER)){
 		.join(',', map($_-&gt;{writeup_id}, @wus))
 		.')';
 
-	#Put the votes into a ref, uses autovivication to populate the hash
-	#(man perlglossary) --[Swap]
-	my %votes;
-	\@votes{ @{$dbh -&gt; selectcol_arrayref($sql)} };
+	my $votes;
+	$votes-&gt;{$_} = 1 foreach(@{$dbh -&gt; selectcol_arrayref($sql)});
 
 	$instructions .= ' class=&quot;&amp;extraclasses&quot;' ;
 	$newwuspecials{extraclasses} = sub{
 		my $N = shift ;
 		my $str = ''; # it remembers if you don't do this
-		$str .= ' hasvoted' if exists $votes{$$N{writeup_id}} ;
+		$str .= ' hasvoted' if exists $votes-&gt;{$$N{writeup_id}} ;
 		$str .= ' mine' if $$N{author_user} == $UID ;
 		$str .= ' wu_hide' if $$N{notnew} ;
 		$str ;

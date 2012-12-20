@@ -13,12 +13,12 @@ $safetext =~ s/ /\+/g;
 $id =~ s/\W//g ;
 $id =lc($id);
 return linkNode(getNode('Nodelet Settings', 'superdoc'), $text,
-		{'#'=&gt;$id.'nodeletsettings', -id=&gt;&quot;$id\settingswidget&quot;,
-		-class=&gt;&quot;ajax $id\settingswidget:nodeletsettingswidget?showwidget=$id\settings:$safename,$safetext&quot;
-	}) unless $query -&gt; param('showwidget') eq &quot;$id\settings&quot; ;
+		{'#'=&gt;$id.'nodeletsettings', -id=&gt;$id.&quot;settingswidget&quot;,
+		-class=&gt;&quot;ajax $id&quot;.&quot;settingswidget:nodeletsettingswidget?showwidget=$id&quot;.&quot;settings:$safename,$safetext&quot;
+	}) unless $query -&gt; param('showwidget') eq &quot;$id&quot;.&quot;settings&quot; ;
 
 my $content = parseLinks(htmlcode($name.' nodelet settings', 'inwidget'))||&quot;(no settings for $name)&quot;;
-return qq'&lt;div id=&quot;$id\settingswidget&quot;&gt;'.
+return qq'&lt;div id=&quot;$id'.qq'settingswidget&quot;&gt;'.
 # wrap in div because the script function activation stuff works on one element
 # and to provide an offset parent to put the widget in the right place
 	htmlcode('widget', &quot;&lt;fieldset&gt;&lt;legend&gt;$text&lt;/legend&gt;\n$content&lt;br&gt;\n&quot;.
@@ -27,6 +27,6 @@ return qq'&lt;div id=&quot;$id\settingswidget&quot;&gt;'.
 	$query -&gt; hidden(-name =&gt; 'ajaxTrigger', value=&gt;1,
 		class=&gt;&quot;ajax $id:updateNodelet:$safename&quot;).
 	$query -&gt; submit(&quot;submit$id&quot;,'Save').&quot;\n&lt;/fieldset&gt;\n&quot;,
-	'form', $text , {showwidget=&gt;&quot;$id\settings&quot;}).'&lt;/div&gt;';
+	'form', $text , {showwidget=&gt;&quot;$id&quot;.&quot;settings&quot;}).'&lt;/div&gt;';
 </code>
 </node>

@@ -44,7 +44,7 @@ $return .= '&lt;p&gt;As a content editor, you can view an abbreviated list of us
 &lt;dt&gt;settings_useTinyMCE&lt;/dt&gt;&lt;dd&gt;whether or not the noder has tinyMCE turned on.&lt;/dd&gt;
 &lt;dt&gt;userstyle&lt;/dt&gt;&lt;dd&gt;the Zen stylesheet the noder has active&lt;/dd&gt;
 &lt;dt&gt;wuhead&lt;/dt&gt;&lt;dd&gt;the code for displaying the writeupheader&lt;/dd&gt;
-&lt;/dl&gt;' if $isCE;
+&lt;/dl&gt;' if $isCE and !isGod($USER);
 
 my $oddeven = 0; # tracks odd rows for .oddrow class color
 my $oddrowclass = &quot;&quot;; # blank if even row, contains .oddrow class color if odd row
@@ -61,7 +61,7 @@ foreach(sort(keys(%{$hash}))) {
 			|| $_ eq &quot;userstyle&quot; 
 			|| $_ eq &quot;wuhead&quot; 
 			|| $_ eq &quot;browser&quot;) {
-		next if $isCE; 
+		next if $isCE and !isGod($USER); 
 	}
 	# replace undefined values with a blank
 	${$hash}{$_} = &quot;&amp;nbsp;&quot; if(!${$hash}{$_}); 

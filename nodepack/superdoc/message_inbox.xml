@@ -199,7 +199,7 @@ while (my $MSG = $csr-&gt;fetchrow_hashref){
 		# make names safe and find user if it's from Eddie.
 		# (To find more users, patch the messages, not this)
 
-		$text =~ /\[([^\[\]]*)\[user]/ + ($respondto = $1) if $respondto eq 'Cool Man Eddie'; # (sic)
+		$text =~ /\[([^\[\]]*)\[user]/ and ($respondto = $1) if $respondto eq 'Cool Man Eddie'; # (sic)
 		next unless $respondto;
 		$respondto =~ s/'/&amp;\#39;/g;
 		$respondto =~ s/&quot;/&amp;\#34;/g;

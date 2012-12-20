@@ -26,8 +26,8 @@ unless ( $APP-&gt;isGuest($USER) ){
 	# canseewriteup stores hidden writeups/drafts in $PAGELOAD-&gt;{notshown} if the appropriate key exists
 	# and removes targetauthor if it processes a writeup or draft by that author:
 
-	$PAGELOAD-&gt;{notshown} = {lowrep =&gt; [], unfavorite =&gt; [],  unpublished =&gt; [],
-		targetauthor =&gt; $query -&gt; param('author_id')};
+	$PAGELOAD-&gt;{notshown} = {&quot;lowrep&quot; =&gt; [], &quot;unfavorite&quot; =&gt; [],  &quot;unpublished&quot; =&gt; []};
+	$PAGELOAD-&gt;{notshown}-&gt;{targetauthor} = $query-&gt;param('author_id');
 }
 
 my $str = $stuff -&gt; [0] ? htmlcode('show writeups', $stuff) : '';
@@ -134,8 +134,7 @@ $str;
 
 [% $PAGELOAD-&gt;{admintools}; %]
 [{addwriteup}]
-[{nagbox}]
-</page>
+[{nagbox}]</page>
   <displaytype>display</displaytype>
   <ownedby_theme>1854183</ownedby_theme>
   <node_id>2023717</node_id>
