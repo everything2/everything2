@@ -1,14 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>[%
-my $oldinfo = getCompiledCode(
-		getNode('displayWriteupInfo', 'htmlcode')
-	, \&amp;evalCode);
-use Data::Dumper;
-return Data::Dumper-&gt;Dump([getNode('displayWriteupInfo','htmlcode')]);
-%]
-
-[% return &quot;Hello there. This is a quick testing/debugging ground for me. Do not delete me, it is not worth the time&quot;; %]
+  <doctext>[% return &quot;Hello there. This is a quick testing/debugging ground for me. Do not delete me, it is not worth the time&quot;; %]
 &lt;br /&gt;&lt;br /&gt;
 [% return $Everything::CONF-&gt;{writeuplowrepthreshold} %]
 
@@ -22,6 +14,27 @@ return Data::Dumper-&gt;Dump([getNode('displayWriteupInfo','htmlcode')]);
     'author'=&gt;'Webster 1913',
   });
   
+%]
+
+[%
+  return unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
+  my $str = &quot;&quot;;
+  my $htmlcode = getType('htmlcode');
+  my $csr = $DB-&gt;sqlSelectMany(&quot;htmlcode_id&quot;,&quot;htmlcode&quot;,&quot;modperlsafe=0&quot;);
+  while(my $row = $csr-&gt;fetchrow_arrayref())
+  {
+    my $node = getNodeById($row-&gt;[0]);
+    unless($node)
+    {
+       $str.=&quot;&lt;li&gt;Bad data in htmlcode table: &quot;.$row-&gt;[0];
+       next;
+    }
+    if($node-&gt;{type_nodetype} == $htmlcode-&gt;{type_nodetype})
+    {
+       $str.=&quot;&lt;li&gt;&quot;.linkNode($node)
+    }
+  }
+  return $str;
 %]</doctext>
   <node_id>1146920</node_id>
   <title>jaybonci's sandbox</title>
