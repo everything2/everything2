@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>176</node_id>
   <title>displayvars</title>
   <code>my $SETTINGS = getVars $NODE;
@@ -18,18 +19,6 @@ $str .= ':
 ';
 
 @skeys = sort {$a cmp $b} @skeys;
-
-# wharfinger 9/29/01: Make the text in the table readable
-# even if the theme's body text color doesn't contrast well
-# with the tasteful lavender cell backgrounds.
-#$str.='&lt;style type=&quot;text/css&quot;&gt;
-#&lt;!--
-#td.setting {
-#	color: #101010;
-#}
-#--&gt;
-#&lt;/style&gt;
-#';
 
 $str.=&quot;&lt;table width=\&quot;100%\&quot; cellpadding=\&quot;1\&quot; cellspacing=\&quot;1\&quot; border=\&quot;0\&quot;&gt;\n&quot;;
 $str.=&quot;&lt;TR&gt;&lt;TH&gt;Setting&lt;/TH&gt;&lt;TH&gt;Value&lt;/TH&gt;&lt;/TR&gt;\n&quot;;

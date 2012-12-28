@@ -9,10 +9,10 @@ my @modules = (
 	'Everything',
 	'Everything::XML',
 	'Everything::NodeBase',
-        'Everything::Application',
+	'Everything::Application',
 	'Everything::HTML'
 );
-my $str;
+my $str = &quot;&quot;;
 
 my $showHTMLCODE = $$VARS{scf_nohtmlcode} ? 0 : 1;	#must be 0 or 1
 
@@ -132,6 +132,5 @@ if (@lines) {
 } else {
 	$str = listCode($fullText);
 }
-$str;
-</code>
+$str;</code>
 </node>

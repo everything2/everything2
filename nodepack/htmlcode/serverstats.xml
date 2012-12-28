@@ -1,11 +1,12 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>48</node_id>
   <title>serverstats</title>
   <code>my $date = `date`;
 my $uptime = `uptime`;
-my @uptime;
-my $str;
+my @uptime = ();
+my $str = undef;
 
 $uptime =~ s/^\s*(.*?)\s*$/$1/;
 @uptime = split /,?\s+/, $uptime;

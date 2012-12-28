@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>132</node_id>
   <title>displaywriteup</title>
   <code># [{displaywriteup:WRITEUPNUMBER}]
@@ -19,7 +20,7 @@ if (not $num) {
 #return @group;
 
 return unless $WRITEUP;
-my $str;
+my $str = &quot;&quot;;
 
 
 $str .= htmlcode('displaywriteuptitle',&quot;$num, timestamp&quot;);

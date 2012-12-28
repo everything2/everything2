@@ -1,14 +1,15 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>37</node_id>
   <title>listcode</title>
   <code>my ($field,$codenode) = @_;
 $codenode ||= $NODE ;
 my $code = listCode($$codenode{$field}, 1);
 
-my $patchTitle;
-my $patchID;
-my $patchNode;
+my $patchTitle = undef;
+my $patchID = undef;
+my $patchNode = undef;
 
 if ($field eq 'script_text') {
 $patchID = $$codenode{script_id};
@@ -49,7 +50,6 @@ $code = '&lt;div style=&quot;font-size: smaller;&quot;&gt;'.$code.'&lt;/div&gt;'
 #breaks the form on code edit pages an' patching a patch may get confusing.
 return $text.$code if ($query-&gt;param('displaytype') eq 'edit' or $$codenode{type}{title} eq 'patch');
 
-my $UID = getId($USER)||0;
 return $text unless $APP-&gt;isEditor($USER);
 $text = htmlcode('openform') . $text . '
 &lt;input type=&quot;submit&quot; name=&quot;sexisgood&quot; value=&quot;resize&quot;&gt;&lt;/form&gt;'.$code ;

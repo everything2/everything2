@@ -1,11 +1,12 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>54</node_id>
   <title>titlebar</title>
   <code>#frequently used links; used in default theme
 
 my $noPrevLink = {'lastnode_id'=&gt;0};
-my @links;
+my @links = ();
 
 if ( $APP-&gt;isGuest($USER) ) {
 	push @links, linkNodeTitle('login', $NODE, 'Log in');

@@ -1,10 +1,11 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>42</node_id>
   <title>openform</title>
   <code>my ($name, $method) = @_;
 
-my %params ;
+my %params = {};
 
 unless ( $name =~ /^-/ ) {
    $params{ -method } = $method if $method ;

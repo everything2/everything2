@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>56</node_id>
   <title>varMenu</title>
   <code>my ($var, @itemlist) = @_;
@@ -10,9 +11,9 @@ my ($name) = &quot;set$var&quot;;
 
 @itemlist or return;  #if no explicit types, quit
 
-my $str;
+my @titlelist = ();
+my %items = {};
 
-my (@titlelist, %items);
 #$items{&quot;mr ed&quot;} = &quot;(default)&quot;;
 push @itemlist, &quot;0|(default)&quot;;
 

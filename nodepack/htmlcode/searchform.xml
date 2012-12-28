@@ -1,22 +1,18 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>47</node_id>
   <title>searchform</title>
-  <code> 	my ($PARAM) = @_;
- 
- 	my $str = $query-&gt;start_form(&quot;GET&quot;,$query-&gt;script_name).
- 	$query-&gt;textfield(-name =&gt; &quot;node&quot;,
-                 -default =&gt; &quot;&quot;,
-                 -size =&gt; 50,
-                 -maxlength =&gt; 230) .
- 	$query-&gt;submit(&quot;go_button&quot;, &quot;go&quot;);
+  <code>my ($PARAM) = @_; 
+my $str = $query-&gt;start_form(&quot;GET&quot;,$query-&gt;script_name).
+  $query-&gt;textfield(-name =&gt; &quot;node&quot;,
+    -default =&gt; &quot;&quot;,
+    -size =&gt; 50,
+    -maxlength =&gt; 230) .
+  $query-&gt;submit(&quot;go_button&quot;, &quot;go&quot;);
 
-        $str.='&lt;input type=&quot;hidden&quot; name=&quot;lastnode_id&quot; value=&quot;'.$$NODE{node_id}.'&quot;&gt;'; 
-
- #	foreach (keys %$PARAM) {  $str .= $query-&gt;hidden($_, $$PARAM{$_}); } 
- 
- 	$str.= $query-&gt;end_form unless $PARAM eq 'noendform';
-
+$str.='&lt;input type=&quot;hidden&quot; name=&quot;lastnode_id&quot; value=&quot;'.$$NODE{node_id}.'&quot;&gt;'; 
+$str.= $query-&gt;end_form unless $PARAM eq 'noendform';
 $str;
  </code>
 </node>

@@ -1,8 +1,9 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>35</node_id>
   <title>groupeditor</title>
-  <code>my $id = getId $NODE;
+  <code>my $id = getId($NODE);
 
 my $str = &quot;
 

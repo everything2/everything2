@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>41</node_id>
   <title>onepix</title>
   <code>&quot;&lt;img width=1 height=2&gt;&quot;;</code>

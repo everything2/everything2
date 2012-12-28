@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>136</node_id>
   <title>showwriteup</title>
   <code>#####################################################
@@ -11,13 +12,13 @@ my ($index, $max) = @_;
 return unless $index;
 $max ||= $index;
 
-my @group = @{ $$NODE{group} } if $$NODE{group};
+my @group = (); @group = @{ $$NODE{group} } if $$NODE{group};
 @group or return;
 return if $index &gt; @group;
 $max = int(@group) if $max &gt; @group;
 
 
-my $str;
+my $str = &quot;&quot;;
 foreach ($index..$max) {
 	my $WRITEUP = $group[$_-1];
 	getRef $WRITEUP;

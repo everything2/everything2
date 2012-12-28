@@ -1,11 +1,12 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>40</node_id>
   <title>nodelet meta-container</title>
   <code>return 'you disabled nodelets' if $$VARS{nodelets_off};
 return '' if $query-&gt;param('nonodelets');
 
-my $str;
+my $str = undef;
 
 unless ( $$VARS{nodelets} ) {
     #push default nodelets on
@@ -28,7 +29,7 @@ $$VARS{nodelets} =~ s/\b1868940\b/263/g;
 $$VARS{nodelets} =~ s/(\b263\b.*),263\b/$1/g;
 
 my $nodelets = $PAGELOAD-&gt;{pagenodelets} || $$VARS{nodelets} ;
-my @nodelets = split(',',$nodelets) if $nodelets ;
+my @nodelets = (undef); @nodelets = split(',',$nodelets) if $nodelets ;
 
 my $useTable = $$THEME{noTable} ? 0 : 1;
 

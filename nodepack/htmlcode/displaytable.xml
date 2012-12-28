@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>175</node_id>
   <title>displaytable</title>
   <code># This generates an HTML table that contains the fields
@@ -8,8 +9,6 @@
 my ($table, $edit) = @_;
 my @fields = $DB-&gt;getFieldsHash($table);
 my $field;
-my $fieldname;
-my $value;
 my $str = &quot;&quot;;
 
 $edit = 0 if(not defined $edit);
@@ -19,7 +18,7 @@ $str .= &quot;&lt;table border=1 width=400&gt;\n&quot;;
 $field = $fields[0];
 
   $str .= &quot; &lt;tr&gt;\n&quot;;
-foreach $fieldname (keys %$field)
+foreach my $fieldname (keys %$field)
 {
   $str .= &quot;  &lt;td bgcolor=\&quot;#cccccc\&quot;&gt;$fieldname&lt;/td&gt;\n&quot;;
 }
@@ -30,7 +29,7 @@ $str .= &quot; &lt;/tr&gt;\n&quot;;
 foreach $field (@fields)
 {
   $str .= &quot; &lt;tr&gt;\n&quot;;
-  foreach $value (values %$field)
+  foreach my $value (values %$field)
   {
     $value = &quot;&amp;nbsp;&quot; if($value eq &quot;&quot;); # fill in the blanks
     $str .= &quot;  &lt;td&gt;$value&lt;/td&gt;\n&quot;;

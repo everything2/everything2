@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>177</node_id>
   <title>editvars</title>
   <code>return &quot;&lt;i&gt;you can't update this node&lt;/i&gt;&quot; unless canUpdateNode($USER, $NODE);
@@ -14,7 +15,6 @@ foreach (@params) {
 }
 
 foreach (@params) {
-#  if(/delsetting_(\w*)$/) {
   if(/delsetting_(.*)$/) { #for s/a/b in 'cloakers'
     delete $$SETTINGS{$1};
   }

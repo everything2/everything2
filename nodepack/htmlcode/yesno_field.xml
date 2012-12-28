@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>58</node_id>
   <title>yesno_field</title>
   <code>my ($field) = @_;

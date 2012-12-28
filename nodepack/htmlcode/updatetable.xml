@@ -1,14 +1,14 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>183</node_id>
   <title>updatetable</title>
   <code># This checks the CGI params to see what we need to do
 # to this table.
 my ($table) = @_;
-my $param;
 
 # Check to see if we need to remove a column
-foreach $param ($query-&gt;param)
+foreach my $param ($query-&gt;param)
 {
   if(($param =~ /REMOVE$/) &amp;&amp;
      ($query-&gt;param($param) eq &quot;REMOVE&quot;))
