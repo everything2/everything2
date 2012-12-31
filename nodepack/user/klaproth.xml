@@ -4,7 +4,6 @@
   <realname>Master Klaproth</realname>
   <imgsrc>images/userincoming/Klaproth.jpeg</imgsrc>
   <type_nodetype>15</type_nodetype>
-  <salt></salt>
   <vars>
     <value></value>
     <key>personal_nodelet</key>

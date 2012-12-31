@@ -4,7 +4,6 @@
   <realname>e2docs shared user account</realname>
   <imgsrc>images/userincoming/Virgil.jpeg</imgsrc>
   <type_nodetype>15</type_nodetype>
-  <salt>$6$R8YmDv863/6H9LN9wSfz</salt>
   <vars>
     <value>1</value>
     <key>nohintHTML</key>
