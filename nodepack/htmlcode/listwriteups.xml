@@ -1,12 +1,14 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>166292</node_id>
   <title>listwriteups</title>
   <code>my ($index) = @_;
 
 $index or return;
 
-my @group = @{ $$NODE{group} } if $$NODE{group};
+my @group = ();
+@group = @{ $$NODE{group} } if $$NODE{group};
 @group or return;
 $index--;
 $index &lt; @group or return;

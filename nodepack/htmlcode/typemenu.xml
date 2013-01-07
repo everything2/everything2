@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>279553</node_id>
   <title>typeMenu</title>
   <code># This constructs an HTML popup menu using the FormMenu
@@ -16,7 +17,7 @@ my $name = shift @_;
 my $selected = shift @_;
 
 my $menu = new Everything::FormMenu;
-my $typename;
+my $typename = undef;
 
 while(@_ &gt; 0)
 {

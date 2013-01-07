@@ -1,19 +1,21 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>260</node_id>
   <title>displaywriteuptext</title>
   <code>#displaywriteuptext - pass writeup's node_id
 
 my ($num) = @_;
 
-my $WRITEUP;
-my $LNODE;
+my $WRITEUP = undef;
+my $LNODE = undef;
 if (not $num) {
 	$LNODE = $$NODE{parent_e2node}; 
 	$WRITEUP=$NODE;
 } else {
 	$LNODE = getId($NODE);
-	my @group = @{$$NODE{group}} if $$NODE{group};
+	my @group = ();
+        @group = @{$$NODE{group}} if $$NODE{group};
 	return unless @group;
 	$WRITEUP = getNodeById $group[$num-1];
 }

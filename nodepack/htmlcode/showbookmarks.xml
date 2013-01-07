@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>419587</node_id>
   <title>showbookmarks</title>
   <code>my ($edit, $createform) = @_;
@@ -11,7 +12,7 @@ return unless $$NODE{type}{title} eq 'user';
 my $user_id =getId($NODE);
 my $linktype=getId(getNode('bookmark', 'linktype'));
 
-my $str;
+my $str = &quot;&quot;;
 if ($edit and $createform) {
   $str.=htmlcode('openform');
 }

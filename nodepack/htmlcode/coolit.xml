@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>169637</node_id>
   <title>coolit</title>
   <code>return unless $APP-&gt;isEditor($USER);
@@ -11,7 +12,7 @@ my $class = &quot;action ajax editorcool:coolit&quot; ;
 
 my $COOLLINK = getNode('coollink','linktype') -&gt; {node_id};
 my $COOLNODE = getNode('coolnodes','nodegroup');
-my $link ;
+my $link = undef;
 
 if ( exists $PAGELOAD-&gt;{edcoollink} ){
 	$link = $PAGELOAD-&gt;{edcoollink} ; # cached by [page header]
@@ -48,7 +49,7 @@ else {
 
 		my $eddie = getId(getNode('Cool Man Eddie','user'));
 		my @group = @{ $$NODE{group} } if $$NODE{group};
-		my $WRITEUP;
+		my $WRITEUP = undef;
 		my $nt = $$NODE{title};
 	
 		if(scalar(@group)) {

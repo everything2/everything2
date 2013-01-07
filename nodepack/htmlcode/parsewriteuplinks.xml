@@ -1,9 +1,0 @@
-<node>
-  <type_nodetype>4</type_nodetype>
-  <node_id>293</node_id>
-  <title>parsewriteuplinks</title>
-  <code> 	my ($field) = @_;
-	my $text = $$NODE{$field};
-	$text =~ s/\[(.*?)\]/linkNodeTitle ($1, $NODE)/egs;
-	$text;</code>
-</node>

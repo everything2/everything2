@@ -1,11 +1,12 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>176006</node_id>
   <title>node_menu</title>
   <code>my ($field, @VALUES) = @_;
-my @idlist;
-my %items;
-my @TYPES;
+my @idlist = ();
+my %items = {};
+my @TYPES = ();
 
 
 $field or return;
@@ -23,7 +24,7 @@ foreach (@VALUES)
 		# If one of the types is in the form of
 		# -name_value, we need to split it apart
 		# and store it.	
-		my ($name, $value);
+		my ($name, $value) = (undef,undef);
 		$_ =~ s/^-//;
 		
 		($name, $value) = split '_', $_;

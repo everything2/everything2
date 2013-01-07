@@ -1,11 +1,11 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>539978</node_id>
   <title>thinoutlineheader</title>
-  <code>
-return $$THEME{thinOutlineHeader} if exists $$THEME{thinOutlineHeader};
+  <code>return $$THEME{thinOutlineHeader} if exists $$THEME{thinOutlineHeader};
 
-my $str;
+my $str = &quot;&quot;;
 $str.=
 '&lt;table width=100% border=&quot;0&quot; bgcolor=&quot;#000000&quot; cellpadding=&quot;0&quot; cellspacing=&quot;1&quot;&gt;
   &lt;tr&gt;

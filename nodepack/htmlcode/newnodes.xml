@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>505479</node_id>
   <title>newnodes</title>
   <code>my ($limit) = @_;
@@ -13,7 +14,8 @@ my $isEd = $APP-&gt;isEditor($USER);
 $qry.= ' WHERE notnew=0 ' unless $isEd;
 $qry.= &quot; ORDER BY publishtime DESC LIMIT $limit&quot;;
 
-my $ed = 'ed,' if $isEd;
+my $ed = undef;
+$ed = 'ed,' if $isEd;
 my $funk = sub{
 		my $N = shift; # $N is a full node by now
 		my $str.='&lt;td&gt;';

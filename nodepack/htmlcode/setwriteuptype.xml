@@ -1,21 +1,22 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>298</node_id>
   <title>setwriteuptype</title>
   <code>my ($N, $title) = @_;
 
-my $type;
+my $type = undef;
 if (ref $N){
 	$type = $$N{wrtype_writeuptype};
 }else{
 	$type = $N;
 }
 
-my $hidebox;
+my $hidebox = undef;
 
 unless ($type){
 	# no old type: new writeup/draft for publication
-	my $checked;
+	my $checked = undef;
 
 	$title ||= $$NODE{title};
 	return $query -&gt; hidden('writeup_notnew', 1)
@@ -53,7 +54,7 @@ my $str = '&lt;label title=&quot;Set the general category of your writeup,
 
 my (@WRTYPE) = getNodeWhere({type_nodetype =&gt; getId(getType('writeuptype'))});
 
-my %items;
+my %items = {};
 
 my $isEd = $APP-&gt;isEditor($USER) ||
 	$$USER{title} eq 'Webster 1913' ||

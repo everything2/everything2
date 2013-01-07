@@ -1,10 +1,10 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>539986</node_id>
   <title>thinoutlinefooter</title>
-  <code>
-return $$THEME{thinOutlineFooter} if exists $$THEME{thinOutlineFooter};
-my $str;
+  <code>return $$THEME{thinOutlineFooter} if exists $$THEME{thinOutlineFooter};
+my $str = &quot;&quot;;
 $str.=
 &quot;&lt;/td&gt;
 &lt;/tr&gt;

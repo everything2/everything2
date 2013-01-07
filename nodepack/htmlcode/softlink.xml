@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>166222</node_id>
   <title>softlink</title>
   <code>my ($softserve) = @_; #parameter used by formxml_writeup and formxml_e2node
@@ -11,7 +12,7 @@ return if($query-&gt;param('no_softlinks'));
 
 my $N = getNodeById($$NODE{parent_e2node},'light') if $$NODE{type}{title} eq 'writeup' ;
 $N ||= $NODE;
-my $lnid;
+my $lnid = undef;
 if ($APP-&gt;isGuest($USER) ) {
 	$lnid=0;
 }
@@ -19,7 +20,7 @@ else {
 	$lnid=$$N{node_id};
 }
 
-my %unlinkables;
+my %unlinkables = {};
 foreach( values %{$Everything::CONF-&gt;{system}-&gt;{maintenance_nodes}} ) {
 	$unlinkables{$_} = 1;
 }
@@ -28,7 +29,7 @@ return if $unlinkables{ $$N{node_id} };
 my $isRoot = $APP-&gt;isAdmin($USER);
 my $cantrim = $isRoot;
 
-my $limit;
+my $limit = undef;
 if( $APP-&gt;isGuest($USER) ) {
 	$limit = 24;
 } elsif($isRoot) {
@@ -48,7 +49,7 @@ my $csr = $dbh-&gt;prepare(
 	);
 
 $csr-&gt;execute;
-my @nodelinks;
+my @nodelinks = ();
 while (my $link = $csr-&gt;fetchrow_hashref) {
 	push @nodelinks, $link;
 }
@@ -57,7 +58,7 @@ $csr-&gt;finish;
 #Look for the non-nodeshells --[Swap]
 my @e2node_ids = map $_ -&gt; {to_node}, @nodelinks;
 
-my %fillednode_ids;
+my %fillednode_ids = {};
 
 if(@e2node_ids){
   my $sql = &quot;SELECT DISTINCT nodegroup_id
@@ -92,6 +93,11 @@ my $str = &quot;\n&quot;
 my $n=0;
 
 my (@maxval, @minval, $gradeattstart, $format);
+@maxval = ();
+@minval = ();
+$gradeattstart = undef;
+$format = undef;
+
 unless ($$VARS{preferred_theme} &amp;&amp; $$VARS{preferred_theme} != $Everything::CONF-&gt;{system}-&gt;{default_theme}
 	or $$VARS{nogradekw}){
 		@maxval = (1) ;
@@ -106,7 +112,7 @@ unless ($$VARS{preferred_theme} &amp;&amp; $$VARS{preferred_theme} != $Everythin
 		{ @minval = (hex($1),hex($2),hex($3)); }
 }
 
-my $showTitle;
+my $showTitle = undef;
 
 $gradeattstart ||= 'bgcolor=&quot;#';
 @maxval = (255,255,255) unless @maxval;
@@ -116,9 +122,9 @@ my $dimensions = scalar @maxval - 1;
 my $steps = scalar @nodelinks;
 
 my $e2nodetype = getId(getType('e2node'));
-my $grade ;
-my $nid;
-my @badOnes;	#auto-clean bad links
+my $grade = undef;
+my $nid = undef;
+my @badOnes = undef;	#auto-clean bad links
 my $numCols = 4;
 
 my $thisnode = $$N{node_id};

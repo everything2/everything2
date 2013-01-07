@@ -1,14 +1,17 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>753955</node_id>
   <title>createdby</title>
   <code>return if $APP-&gt;isGuest($USER);
 return unless $$NODE{type}{title} eq 'e2node';
 
-my $crby = $$NODE{createdby_user} || $$NODE{author_user} || 0;
+my $crby = undef;
+$crby = $$NODE{createdby_user} || $$NODE{author_user} || 0;
 $crby=getNodeById($crby);
 
-my $text = $$VARS{hideauthore2node} ? 'anonymous' : '' ;
+my $text = &quot;&quot;;
+$text = $$VARS{hideauthore2node} ? 'anonymous' : '' ;
 '&lt;div class=&quot;createdby&quot;  title=&quot;Created on '.htmlcode('parsetimestamp', $$NODE{createtime}, 4).'&quot;&gt;'.(
 $crby ? 'created by '.linkNode($crby,$text,{lastnode_id=&gt;0}) : '(creator unknown)'
 ).'&lt;/div&gt;';</code>

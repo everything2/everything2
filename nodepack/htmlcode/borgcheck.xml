@@ -1,10 +1,11 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>500201</node_id>
   <title>borgcheck</title>
   <code>return unless $$VARS{borged};
 my $t = time;
-my $str;
+my $str = &quot;&quot;;
 my $numborged = $$VARS{numborged};
 $numborged ||= 1;
 $numborged *=2;

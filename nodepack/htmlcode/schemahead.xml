@@ -1,9 +1,0 @@
-<node>
-  <type_nodetype>4</type_nodetype>
-  <node_id>1259771</node_id>
-  <title>schemahead</title>
-  <code>return &quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;\n
-&lt;xs:schema xmlns:xs=\&quot;http://www.w3.org/2001/XMLSchema\&quot; targetNamespace=\&quot;http://www.everything2.com\&quot;
-            xmlns=\&quot;http://www.everything2.com\&quot;
-            elementFormDefault=\&quot;qualified\&quot;&gt;&quot;;</code>
-</node>

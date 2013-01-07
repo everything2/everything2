@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>470044</node_id>
   <title>writeuphints</title>
   <code>#displays hints on improving the writeup
@@ -8,7 +9,7 @@
 #(use no parameters when in a writeup display page)
 
 #updated 2005-01-04(2) by N-Wing to add in spelling
-my $writeup;
+my $writeup = undef;
 
 if(ref $_[0] eq &quot;ARRAY&quot;)
 {
@@ -40,19 +41,19 @@ my $showSpelling = !$$VARS{nohintSpelling};
 return unless $showDefault || $showHTML || $showXHTML || $showSilly || $showSpelling;
 
 my $showCat = 1;	#1 to show hint categories, 0 to hide
-my $curCat;
+my $curCat = undef;
 
 return if $APP-&gt;isMaintenanceNode($NODE);
 
 
-my $c;
-my $i;
+my $c = undef;
+my $i = undef;
 
 #several tests are done on links, so may as well just find all links only once
 #note: scalar(@wuPartText) == scalar(@wuPartLink)+1
 #note: $wuPartText[$n] before $wuPartLink[$n] before $wuPartText[$n+1]
-my @wuPartText;
-my @wuPartLink;
+my @wuPartText = ();
+my @wuPartLink = ();
 #there is probably a better way of doing this
 my @allParts = split(/\[(.*?)\]/s, $writeup);
 $i = -1;
@@ -86,8 +87,6 @@ if(length $writeup &lt; 512) {
 }
 
 
-#my $numlinks = 0;
-#while($writeup =~ /\[.*?\]/g) {$numlinks++; }
 my $numlinks = scalar(@wuPartLink);
 #count number of paragraphs in the writeup
 my $numparagraphs = scalar(@allParagraphs);
@@ -177,16 +176,6 @@ if($writeup =~ /\s&amp;(#?\w+)\s/) {
 	push @problems, $curCat.'All HTML entities should have a closing semicolon. You entered: &quot; &lt;code&gt;'.($i='&amp;amp;'.encodeHTML($1)).'&lt;/code&gt; &quot; but the correct way is: &quot; &lt;code&gt;'.$i.';&lt;/code&gt; &quot;.';
 }
 
-#no tags at all!
-## This section is no longer necessary now that we autoformat with &lt;p&gt; if no tags are found.
-#if(index($writeup,'&lt;')==-1) {
-#	push @problems, $curCat.'Did you know that you can use HTML to make your writeups look nicer? To create paragraphs, place a &lt;code&gt;&amp;lt;p&amp;gt;&lt;/code&gt; before, and a &lt;code&gt;&amp;lt;/p&amp;gt;&lt;/code&gt; after each paragraph. For much more HTML information, visit '.linkNodeTitle('E2 FAQ: HTML').' and the nodes it links to.';
-#	#probably trying to start a new paragraph
-#	if(index($writeup,&quot;\n\n&quot;)!=-1) {	#doesn't work - maybe check for CrLf - is this a Windows thing (if so, need to check Mac newline also), or a HTTP POST thing?
-#		push @problems, $curCat.'You can create paragraphs in HTML by putting &lt;code&gt;&amp;ltp&amp;gt;&lt;/code&gt; at the start of each paragraph, and &lt;code&gt;&amp;lt/p&amp;gt;&lt;/code&gt; at the end of each paragraph.';
-#	}
-#}
-
 } #end show HTML hints
 
 
@@ -241,7 +230,7 @@ if((defined $spellInfo) &amp;&amp; $showSpelling) {
 #	$curCat = $showCat ? 'spelling &lt;small&gt;(American English)&lt;/small&gt; ' : '';
 
 	my @badThings = ();
-	my %problemCount;	#key is problem description, value is number of times
+	my %problemCount = undef;	#key is problem description, value is number of times
 	foreach(keys(%$spellInfo)) {
 		unless(substr($_,0,1) eq '_') {
 			push(@badThings, $_);
@@ -297,21 +286,6 @@ if($writeup =~ /\ssoy\s/i) {
 if($writeup =~ /server error/i) {
 	push @problems, $curCat.'Ah, quit your griping.';
 }
-
-#if(index($writeup,'!!!')!=-1) {
-#	push @problems, $curCat.'Wow! You sure need to calm down!';
-#}
-
-#if(index($writeup,'???')!=-1) {
-#	push @problems, $curCat.'Huh?';
-#}
-
-#foreach((':)',':(','):','(:',':-)',':-(','(-:',')-:','8-)')) {
-#	if(index($writeup,$_)!=-1) {
-#		push @problems, $curCat.'&lt;tt&gt;8-P&lt;/tt&gt;';
-#		last;
-#	}
-#}
 
 } #end show silly hints
 

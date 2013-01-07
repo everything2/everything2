@@ -1,12 +1,13 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>675011</node_id>
   <title>generatehex</title>
   <code>my ($hex)= @_;
 
 my $str = &quot;&lt;table width=100% bgcolor=white border=0 cellpadding=3 cellspacing=0&gt;&quot;;
 
-my $rows;
+my $rows = &quot;&quot;;
 while (my $letter = chop $hex) {
   my $row = &quot;&lt;tr&gt;&lt;td align=center&gt;&lt;img width=128 height=14 src=&quot;;
   if (uc($letter) eq 'B') {

@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>444272</node_id>
   <title>shownewexp</title>
   <code>my ($shownumbers, $isxml, $newwuonly) = @_;
@@ -10,7 +11,7 @@ unless($$VARS{oldexp}) {
 	$$VARS{oldexp} = $$USER{experience};
 }
 
-my $str;
+my $str = &quot;&quot;;
 
 
 
@@ -24,7 +25,7 @@ my $newexp = $$USER{experience} - $$VARS{oldexp};
 
 ($header, $footer) = ('', '') if htmlcode('isZen');
 
-my $xmlstr;
+my $xmlstr = &quot;&quot;;
 $xmlstr = '&lt;xpinfo&gt;' if $isxml;
 $xmlstr .= &quot;&lt;xpchange value=\&quot;$newexp\&quot;&gt;$$USER{experience}&lt;/xpchange&gt;&quot; if $isxml;
 
@@ -39,9 +40,6 @@ if($newexp &gt; 0) {
 } else {
         $$VARS{oldexp} = $$USER{experience};
 	return;
-#	$str.='You [node tracker[superdoc]|lost] ';
-#	$newexp= -$newexp;	#Positize for display only
-#	$newexp= -$newexp * 13;	#AFD2006 times 13
 }
 
 htmlcode('achievementsByType','experience');
@@ -82,7 +80,7 @@ my $WRPS = getVars(getNode('level writeups', 'setting'));
 
 
 my $expleft = $$LVLS{$lvl} - $$USER{experience} if exists $$LVLS{$lvl};
-my ($numwu, $wrpleft);
+my ($numwu, $wrpleft) = (undef,undef);
 
 #No honor roll here
 

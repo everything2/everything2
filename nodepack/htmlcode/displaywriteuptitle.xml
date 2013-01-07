@@ -1,18 +1,20 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>259</node_id>
   <title>displaywriteuptitle</title>
   <code>#displaywriteuptitle - pass the writeup's node_id and timestamp
 
 my ($num, $timestamp) = @_;
 
-my $WRITEUP;
+my $WRITEUP = undef;
 my $votenum = 0;
 if (not $num) {
 	$WRITEUP = $NODE;
 
 } else {
-	my (@group) = @{ $$NODE{group} } if ($$NODE{group});
+	my @group = (); 
+        (@group) = @{ $$NODE{group} } if ($$NODE{group});
 	@group or return;
 	return if $num &gt; @group;
 	$WRITEUP = getNodeById($group[$num-1]);
@@ -22,31 +24,5 @@ if (not $num) {
 unless ($$WRITEUP{author_user}==$$USER{node_id} || $query-&gt;param('op') || $APP-&gt;isSpider() )
 	{ 0 &amp;&amp; $DB-&gt;sqlUpdate (&quot;node&quot;, { -hits =&gt; 'hits+1' }, &quot;node.node_id=$$WRITEUP{node_id}&quot;); } 
 
-return htmlcode('displayWriteupInfo',$votenum);
-#return htmlcode('displayWriteupInfo',$votenum.','.$$VARS{wuhead});
-
-#my $TYPE = $$WRITEUP{wrtype_writeuptype};
-#getRef $TYPE;
-#my $str = '&lt;strong&gt;(' . linkNode($WRITEUP, $$TYPE{title}) . ') by&amp;nbsp;' . linkNode($$WRITEUP{author_user}) . '&lt;/strong&gt; (' . linkNode($WRITEUP, 'print', {displaytype=&gt;'printable', lastnode_id=&gt;0}) . ')';
-##$str .= '('.htmlcode('printable','print').')'; #doesn't work right in e2node
-#
-#if($timestamp) {
-#
-#my $tableRowOpen = '&lt;table cellpadding=&quot;0&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; width=&quot;100%&quot;&gt;&lt;tr&gt;';
-#my $tableRowClose = &quot;&lt;/tr&gt;&lt;/table&gt;\n&quot;;
-#$str = $tableRowOpen . '&lt;td&gt;'.$str.'&lt;/td&gt;&lt;td align=&quot;center&quot;&gt;' . htmlcode('voteit', $votenum);
-#
-##$str.=linkNode(getNode('node row', 'superdoc'), '&lt;strong&gt;X!&lt;/strong&gt;', {alt='this node is marked for deletion'})) if $$USER{title} eq 'nate';
-#
-## $str .= htmlcode('CoolUncoolIt',$votenum);
-#
-#$str .= '&lt;/td&gt;&lt;td align=&quot;right&quot;&gt;&lt;small&gt;' . htmlcode('parsetimestamp', &quot;$$WRITEUP{createtime}&quot;) . '&lt;/small&gt;&lt;/td&gt;'.$tableRowClose.$tableRowOpen;
-#
-#$str .= '&lt;td align=&quot;center&quot;&gt;' . htmlcode('writeupcools',$$WRITEUP{node_id}
-#.',1' #uncomment this line to only show # of C!s
-#).'&lt;/td&gt;'.$tableRowClose;
-#
-#}
-#
-#$str;</code>
+return htmlcode('displayWriteupInfo',$votenum);</code>
 </node>

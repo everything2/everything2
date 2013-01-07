@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>444740</node_id>
   <title>setupuservars</title>
   <code>return if $APP-&gt;isGuest($USER);
@@ -7,7 +8,7 @@
 my $SETTINGS = getVars $NODE;
 my $now = $DB-&gt;sqlSelect(&quot;UNIX_TIMESTAMP(now())&quot;);
 
-my $maint_nodes;
+my $maint_nodes = undef;
 unless (exists $$SETTINGS{nwriteupsupdate} and 
         $now - $$SETTINGS{nwriteupsupdate} &lt; 3600) {
 
@@ -37,7 +38,7 @@ if($$USER{user_id} == $$NODE{user_id})
   delete $$VARS{can_weblog};
   my $wls = getVars(getNode(&quot;webloggables&quot;, &quot;setting&quot;));
   
-  my @canwl;
+  my @canwl = ();
   foreach(keys %$wls)
   {
       my $n = getNodeById($_);
@@ -78,7 +79,7 @@ if($$SETTINGS{numwriteups} !~ /^\d+$/) {
 	#sometimes this gets messed up!
 } elsif($$SETTINGS{numwriteups} &gt; 0){
 
-  my $maintStr;
+  my $maintStr = &quot;&quot;;
   unless($maint_nodes){
     $maint_nodes = join(&quot;, &quot;, @{$APP-&gt;getMaintenanceNodesForUser($NODE)} );
     $maintStr = &quot; AND node_id NOT IN ($maint_nodes) &quot; if $maint_nodes;

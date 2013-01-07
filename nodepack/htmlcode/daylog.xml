@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>401321</node_id>
   <title>daylog</title>
   <code>my @months = qw(January February March April May June

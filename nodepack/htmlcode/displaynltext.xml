@@ -1,12 +1,13 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>632187</node_id>
   <title>displaynltext</title>
   <code>my ($nltitle, $title) = @_;
 
 my $CN = getNode($nltitle, 'nodelet');
 return unless $CN;
-my $str;
+my $str = &quot;&quot;;
 
 $str.=&quot;&lt;tr&gt;&lt;td&gt;&lt;h3&gt;$title&lt;/h3&gt;&lt;/td&gt;&lt;/tr&gt;&quot; if $title;
 

@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>273</node_id>
   <title>newwriteups</title>
   <code>my ($limit) = @_;
@@ -16,9 +17,7 @@ my $csr = $Everything::dbh-&gt;prepare($qry);
 $csr-&gt;execute or return &quot;newwriteups: can't get&quot;;
 
 my $count=0;
-my @colors;
-#@colors = split &quot;\s*,\s*&quot;,$$THEME{themeColors} if exists $$THEME{themeColors};
-@colors = ('#CCCC99') unless @colors;
+my @colors = ('#CCCC99');
 
 
 while(my $N = $csr-&gt;fetchrow_hashref) {

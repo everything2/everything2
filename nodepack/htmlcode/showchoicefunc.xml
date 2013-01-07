@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>182</node_id>
   <title>showChoiceFunc</title>
   <code>no strict 'refs';
@@ -17,14 +18,14 @@ my $str = &quot;&quot;;
 my $showHTMLCODE = $$VARS{scf_nohtmlcode} ? 0 : 1;	#must be 0 or 1
 
 if(not $query-&gt;param('choicefunc')) {
-	my %funcs;
+	my %funcs = {};
 	my $rows = 0;
 	$str .= '&lt;table&gt;&lt;tr&gt;';
 
 	my $colwidth = int (100/(int(@modules)+$showHTMLCODE)) .'%';
 	foreach my $modname (@modules) {
 		my $stash = \%{ &quot;${modname}::&quot; };
-		my @modfuncs;
+		my @modfuncs = ();
 		foreach(keys %$stash) {
 			push (@modfuncs, $_) if (defined *{&quot;${modname}::$_&quot;}{CODE} and ($modname eq 'Everything' or not exists $Everything::{$_})) ;
 		}
@@ -83,8 +84,8 @@ unless($parentmod) {
 }
 
 
-my $parentfile;
-my @mod;
+my $parentfile = undef;
+my @mod = ();
 
 foreach (@INC)
 {
@@ -104,14 +105,14 @@ if (@mod) {
 }
 
 my $count = 0;
-my @lines;
+my @lines = ();
 my $fullText = '';
 while(@mod &gt; $count and not @lines) {
 	$fullText .= $mod[$count];
 	if($mod[$count] =~ /^sub $choicefunc\s*/) {
 
 		my $i = $count;
-		my $flag;
+		my $flag = undef;
 		do {
 			$i--;
 			$mod[$i]=~/\s*(\S)/;
