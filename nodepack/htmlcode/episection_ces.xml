@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1129970</node_id>
   <title>episection_ces</title>
   <code>my (undef,undef,undef,$mday,$mon,$year) = localtime(time);
@@ -8,7 +9,8 @@ my @months = qw(January February March April May June July August September Octo
 my $curLog = '[Editor Log: '.$months[$mon].&quot; $year]&quot;;
 
 # Link The Oracle sent with the username iff displaying a homenode
-my $oraclecode .= $query -&gt; li(
+my $oraclecode = &quot;&quot;;
+$oraclecode = $query -&gt; li(
 	linkNode(getNode('The Oracle', 'oppressor_superdoc')
 		, &quot;The Oracle&quot;
 		, {the_oracle_subject =&gt; $$NODE{title}}

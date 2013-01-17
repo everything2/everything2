@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1002054</node_id>
   <title>isSpecialDate</title>
   <code>#returns if current server time matches the given day
@@ -17,9 +18,9 @@ my $mday = $dt-&gt;mday();
 my $mon = $dt-&gt;month();
 my $hour = $dt-&gt;hour();
 
-my $y;
+
 $d = &quot;\L$d&quot;; #case insensitive
-$y = ($d =~ /(\d+)$/) ? $1 : 0; #try to get the year
+my $y = ($d =~ /(\d+)$/) ? $1 : 0; #try to get the year
 
 $mon -= 1;
 # Note that $mon = month - 1, January is 0, December is 11

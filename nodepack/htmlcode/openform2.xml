@@ -1,22 +1,16 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1101744</node_id>
   <title>openform2</title>
   <code>my ($name) = @_;
 $name ||= '';
 
-my $scratchSave = $query-&gt;hidden('scratch_id')
-  if defined $query-&gt;param('scratch_id');
-
 $query-&gt;start_form(-method =&gt; 'POST',
                    -action =&gt; urlGenNoParams($NODE,1),
                    -name =&gt; $name,
                    -id =&gt; $name) .
-
-$query-&gt;hidden('displaytype') .
-
-$scratchSave .
-
+$query-&gt;hidden('displaytype').
 $query-&gt;hidden('node_id', getId $NODE);
 </code>
 </node>

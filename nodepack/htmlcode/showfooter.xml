@@ -1,11 +1,12 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1068745</node_id>
   <title>showFooter</title>
   <code>#displays footer information in its own table
 #originally in [jukka container]
 
-my $str;
+my $str = &quot;&quot;;
 
 $str = '&lt;table cellpadding=&quot;3&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; width=&quot;100%&quot;&gt;'.&quot;\n&quot;.
 	'&lt;tr&gt;&lt;td&gt;&lt;img src=&quot;http://static.everything2.com/clear.gif&quot; width=&quot;1&quot; height=&quot;25&quot; alt=&quot;&quot; /&gt;&lt;/td&gt;&lt;/tr&gt;'.&quot;\n&lt;tr&quot;;

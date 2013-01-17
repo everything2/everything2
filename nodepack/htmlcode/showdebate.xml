@@ -1,16 +1,14 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1173524</node_id>
   <title>showdebate</title>
-  <code>#!/bin/perl
-use strict;
-
-my ( $displaymode ) = @_;
+  <code>my ( $displaymode ) = @_;
 
 my $displaymodelink = '';
 
 if ( $displaymode != 0 ) {
-    my %othermode = (displaytype=&gt;'compact') unless $query-&gt;param( 'displaytype' ) eq 'compact';
+    my %othermode = (); %othermode = (displaytype=&gt;'compact') unless $query-&gt;param( 'displaytype' ) eq 'compact';
     my $modedesc = %othermode ? 'compact' : 'display full';
 	$displaymodelink = linkNode($NODE, $modedesc, \(%othermode, title=&gt;$modedesc)).' | '.
     	linkNode($NODE, 'feed', {displaytype =&gt; 'atom', lastnode_id =&gt; ''}) . ' | ';

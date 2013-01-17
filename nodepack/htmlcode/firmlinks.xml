@@ -1,12 +1,13 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1150188</node_id>
   <title>firmlinks</title>
   <code>#displays firmlinks for this e2node or writeup
 #	for admins, also shows widgets to allow deleting of checked items
 
-my $currentnode;
-my $inE2Node;
+my $currentnode = undef;
+my $inE2Node = undef;
 my $parentstr = '' ;
 if($$NODE{type}{title} eq 'e2node') {
 	$currentnode = $NODE;
@@ -15,7 +16,7 @@ if($$NODE{type}{title} eq 'e2node') {
 	$currentnode = getNodeById($$NODE{parent_e2node});
 	$parentstr .= '&lt;div class=&quot;topic&quot; id=&quot;parentlink&quot;&gt;' ;
 
-	my $nwriteups;
+	my $nwriteups = undef;
 	unless($currentnode and $$currentnode{group} and
 		$nwriteups = @{$currentnode-&gt;{group}}){
 		$parentstr .= 'This node is unparented. ';
@@ -57,12 +58,10 @@ SELECT links.to_node, note.firmlink_note_text
 SQLEND
 
 my $csr = $DB-&gt;getDatabaseHandle()-&gt;prepare($sqlQuery);
-my @links;
+my @links = ();
 
 if($csr-&gt;execute()) {
-	my $row;
-	my $gonode;
-	while($row = $csr-&gt;fetchrow_hashref()) {
+	while(my $row = $csr-&gt;fetchrow_hashref()) {
 		my $linkedNode = getNodeById($row-&gt;{to_node});
 		my $text = $row-&gt;{firmlink_note_text};
 		push @links, { 'node' =&gt; $linkedNode, 'text' =&gt; $text };

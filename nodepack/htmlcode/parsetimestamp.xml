@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>167261</node_id>
   <title>parsetimestamp</title>
   <code># [{parsetimestamp:time,flags}]
@@ -20,7 +21,7 @@
 
 my ($timestamp,$flags)=@_;
 $flags = ($flags || 0)+0;
-my ($date, $time, $yy, $mm, $dd, $hrs, $min, $sec);
+my ($date, $time, $yy, $mm, $dd, $hrs, $min, $sec) = (undef,undef,undef,undef,undef,undef,undef,undef);
  
 if($timestamp =~ /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/)
 {
@@ -47,7 +48,7 @@ if(!($flags &amp; 64) &amp;&amp; $VARS-&gt;{'localTimeUse'}) {
 	$epoch_secs += 3600 if $VARS-&gt;{'localTimeDST'};	#maybe later, only add time if also in the time period for that - but is it true that some places have different daylight savings time stuff?
 }
 
-my $wday;
+my $wday = undef;
 ($sec, $min, $hrs, $dd, $mm, $yy, $wday, undef, undef) = localtime($epoch_secs);
 $yy += 1900;	#stupid Perl
 ++$mm;

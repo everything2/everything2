@@ -290,7 +290,6 @@ $query-&gt;delete('message');
 my $HARDLEN = 5000;
 $str .= 'Warning: text field is '.($HARDLEN-255).' chars more than will be accepted in a raw (public) message. (You should be fine for a private message, though.)' . &quot;&lt;/small&gt;&lt;br /&gt;\n&quot; . $query-&gt;textfield('message','',100,$HARDLEN);
 $str .= &quot;&lt;br /&gt;\n&quot; . $query-&gt;submit('message_send', 'blabber on');
-$str .= htmlcode('chatterinfo','sent');
 $str .= '&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';
 $str .= $query-&gt;endform;
 

@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1121226</node_id>
   <title>popwindow</title>
   <code># Pop up a window, 300 x 400 pixels in size, scrollable but non-resizable.

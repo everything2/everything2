@@ -1,12 +1,13 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>955342</node_id>
   <title>showNodelets</title>
   <code>#shows the left-side or right-side nodelets
 #parameter: 'left' or 'right' (default)
 
 my ($curSide) = @_;
-my $onRight;
+my $onRight = 0;
 my $useTable = $$THEME{noTable} ? 0 : 1;
 
 if($curSide =~ /^l/) {
@@ -40,10 +41,10 @@ if ($useTable) {
 my $isZen = htmlcode('isZen','');
 ## zen theme 1854354 = Kyle's Style, the only theme this was designed for
 if ( ($$VARS{nodelet_tabs}) &amp;&amp; ($isZen) &amp;&amp; ($$VARS{userstyle}==1854354) ) {
-	my $specialStr;
+	my $specialStr = &quot;&quot;;
 
 	my $curr = $$VARS{current_nodelet};
-	my $currNodelet;
+	my $currNodelet = undef;
 
 	my @nodelets = split(',',$$VARS{nodelets});
 	if ($APP-&gt;isEditor($USER) ) {

@@ -1,12 +1,13 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>942347</node_id>
   <title>printablefooter</title>
   <code>my $str = '
 &lt;table width=&quot;100%&quot; border=&quot;0&quot;&gt;&lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;
 ';
 
-my $E2NODE;
+my $E2NODE = undef;
 
 $E2NODE=getNode $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
 $E2NODE ||= $NODE;

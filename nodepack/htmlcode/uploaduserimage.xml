@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>539558</node_id>
   <title>uploaduserimage</title>
   <code>use POSIX qw(strftime);
@@ -36,7 +37,7 @@ $maxHeight = 800 if (($APP-&gt;getLevel($NODE)&gt;4)||(isGod($USER)));
 
 $sizelimit = 1600000 if (isGod($USER));
 
-my $fname;
+my $fname = undef;
 if ($fname = $query-&gt;upload($name)) { #recent change to CGI.pm
 
   my $basename = $$NODE{title};
@@ -51,9 +52,9 @@ if ($fname = $query-&gt;upload($name)) { #recent change to CGI.pm
   $imgname .= '.'.$1;
   $tmpfile .= '.'.$1;
 
-  my $size;
+  my $size = undef;
   {
-     my $buf;
+     my $buf = undef;
      $buf = join ('', &lt;$fname&gt;);
      $size = length($buf);
      if($size &gt; $sizelimit)

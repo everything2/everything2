@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>840319</node_id>
   <title>jsrearrangenodelets</title>
   <code>#######
@@ -16,7 +17,7 @@ return if( $APP-&gt;isGuest($USER) );
 return &quot;You need to pass me a varsfield&quot; unless $varsfield;
 my $NG=getNode $nodeletgroup,&quot;nodeletgroup&quot;;
 my $GROUP=$$NG{group};
-my %unselected;
+my %unselected = ();
 my $addprefix=$varsfield.&quot;_add_&quot;;
 my $removeprefix=$varsfield.&quot;_rem_&quot;;
 
@@ -27,7 +28,7 @@ my (@nodelets)=split(/,/,$$VARS{$varsfield});
 foreach(@nodelets){
    delete $unselected{$_};
 }
-my $str;
+my $str = &quot;&quot;;
 
 foreach(grep{/^$addprefix/} $query-&gt;param()){
    /^$addprefix(.*)/;
@@ -35,7 +36,7 @@ foreach(grep{/^$addprefix/} $query-&gt;param()){
    delete $unselected{$1};
 }
 
-my %remove;
+my %remove = ();
 
 foreach(grep{/^$removeprefix/} $query-&gt;param()){
    /^$removeprefix(.*)/;
@@ -117,9 +118,7 @@ JSCRIPTDATA
 
 
 
-my($uptag,$downtag);
-$uptag||=&quot;up&quot;;
-$downtag||=&quot;down&quot;;
+my($uptag,$downtag) = (&quot;up&quot;,&quot;down&quot;);
 $str.=htmlcode('openform') unless $formoff;
 $str.=&quot;&lt;TABLE&gt;&lt;TR&gt;&lt;TD&gt;Remove&lt;/TD&gt;&lt;/TR&gt;&quot;;
 

@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1164326</node_id>
   <title>usercheck</title>
   <code>my ($givenTitle) = @_;
@@ -14,10 +15,9 @@ my @grp = getNodeWhere({ 'title' =&gt; $checkedTitle});
 my $retstr = '';
 return $retstr unless(@grp &gt; 1);
 
-my @outstr;
-foreach(@grp)
+my @outstr = ();
+foreach my $n (@grp)
 {
-   my $n = $_;
    next if($$n{node_id} == $$NODE{node_id});
    next if(defined $givenTitle &amp;&amp; $$n{type}{title} eq 'e2node');
    next if(defined $givenTitle &amp;&amp; $$n{type}{title} eq 'node_forward');

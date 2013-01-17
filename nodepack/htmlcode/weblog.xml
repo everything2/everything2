@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>458113</node_id>
   <title>weblog</title>
   <code>return htmlcode( 'legacyweblog' , @_ ) unless ( htmlcode( 'isZen' ) ) ;
@@ -21,7 +22,7 @@ my $csr = $DB-&gt;sqlSelectMany(
 	&quot;weblog_id=$log_id AND removedby_user=0&quot; ,
 	&quot;ORDER BY linkedtime DESC LIMIT $interval$offset&quot; ) ;
 
-my %weblogspecials ;
+my %weblogspecials = ();
 
 $weblogspecials{ getloggeditem } = sub {
 	my ( $L ) = @_ ;

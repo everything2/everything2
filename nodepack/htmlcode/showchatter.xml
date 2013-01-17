@@ -1,10 +1,11 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>973519</node_id>
   <title>showchatter</title>
   <code>my $json = {};
 my $jsoncount = 1 if shift;
-my $nochat;
+my $nochat = &quot;&quot;;
 
 $nochat = 'If you '.linkNode(getNode('Create A New User','superdoc'),
 	'register',{lastnode_id=&gt;0}).', you can talk here.'
@@ -39,7 +40,7 @@ my $messagesToShow = 25;
 my $messageInterval = 360; #in seconds, how long room messages remain
 
 my $ignorelist = $DB-&gt;sqlSelectMany('ignore_node', 'messageignore', 'messageignore_id='.$$USER{user_id});
-my @list;
+my @list = ();
 while (my ($u) = $ignorelist-&gt;fetchrow) { push @list, $u; }
 my $ignoreStr = join(&quot;, &quot;,@list);
 
@@ -62,7 +63,7 @@ my $valid = getVars(getNode('egg commands','setting'));
 my $UID = getId($USER) || 0;
 my $isEDev = $APP-&gt;isDeveloper($USER, &quot;nogods&quot;);
 
-my ($str, $aid, $flags, $userLink, $userLinkApostrophe, $text);
+my ($str, $aid, $flags, $userLink, $userLinkApostrophe, $text) = (undef,undef,undef,undef,undef,undef);
 
 my $maxLen = htmlcode('chatterSplit');
 
@@ -80,7 +81,7 @@ my $sc = sub{
 my @msgs = reverse @{ $csr-&gt;fetchall_arrayref( {} ) };
 
 foreach my $MSG (@msgs){
-	my $usermessage;
+	my $usermessage = undef;
 	$aid = $$MSG{author_user} || 0;
 
 	if($$MSG{room} != $$USER{in_room}) {

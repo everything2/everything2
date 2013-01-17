@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>675041</node_id>
   <title>rearrangenodelets</title>
   <code>#  allows users to select nodelets and their order
@@ -12,12 +13,12 @@ return if( $APP-&gt;isGuest($USER) );
 my($varsfield,$nodeletgroup,$formoff)=@_;
 return 'Missing parameter.' unless $varsfield &amp;&amp; $nodeletgroup;
 
-my $i;
-my @selected;
+my $i = undef;
+my @selected = ();
 my $prefix = 'nodeletedit';
 
 if ($query -&gt; param($prefix)){
-	my $id;
+	my $id = undef;
 	foreach (grep /^$prefix\d+/, $query-&gt;param()){
 		push(@selected, $id) if ($id=$query -&gt; param($_)) &amp;&amp; !grep(/^$id$/, @selected);
 	}
@@ -33,7 +34,7 @@ foreach(@ids,@selected){ # include @selected in case user has a non-standard nod
 }
 @ids = sort { lc($names{$a}) cmp lc($names{$b}) } keys %names; # keys to include non-standard
 
-my @menus;
+my @menus = ();
 for ($i=1;$selected[$i-1];$i++){
 	push @menus, $query -&gt; popup_menu(-name =&gt; $prefix.$i, values =&gt; \@ids,
 	labels =&gt; \%names, default =&gt; $selected[$i-1], force=&gt;1);

@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>444186</node_id>
   <title>voteit</title>
   <code>return if $APP-&gt;isGuest($USER) ;
@@ -42,7 +43,7 @@ my $prevvote = $isMine ? 0 : $DB-&gt;sqlSelect('weight', 'vote', 'vote_id='.$n.
 
 $votestr .= &quot;&lt;span id=\&quot;voteinfo_$n\&quot; class=\&quot;voteinfo\&quot;&gt;&quot; ;
 if ( $isMine || $prevvote and !$novotereason ) { # show votes cast
-	my $uv ;
+	my $uv = '';
 	my $r = $$N{reputation} || 0;
 	my ($p) = $DB-&gt;sqlSelect('count(*)', 'vote', &quot;vote_id=$n AND weight&gt;0&quot;);
 	my ($m) = $DB-&gt;sqlSelect('count(*)', 'vote', &quot;vote_id=$n AND weight&lt;0&quot;);

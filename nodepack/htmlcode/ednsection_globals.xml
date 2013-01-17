@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>956694</node_id>
   <title>ednsection_globals</title>
   <code>my @globals = qw($USER $THEME $VARS $DB $query);
@@ -64,8 +65,7 @@ my %expand = (
   $reftype = &quot;Everything::Node&quot; if $reftype eq 'HASHREF' and eval (&quot;exists \$$_&quot;.'{node_id}');
 
   if ($_ eq '$PAGELOAD' or (defined $query-&gt;param(&quot;show$_&quot;) and exists $expand{$reftype})) {
-    my $ref;
-    $ref = $expand{$reftype};
+    my $ref = $expand{$reftype};
     $str.='&lt;table&gt;';
     &amp;$ref($_);
     $str.='&lt;/table&gt;';

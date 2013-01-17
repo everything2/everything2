@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>970447</node_id>
   <title>showUserGroups</title>
   <code>#pass a user object (or nothing to default to the current node, or current user if the current node is not a user), and the groups the user belongs to will be returned
@@ -27,9 +28,9 @@ push( @groups, linkNode(getNode('edev', 'usergroup'),0,{lastnode_id=&gt;0})) if 
 }
 else {
 
-my @insiders;
+my @insiders = ();
 my $csr = $DB-&gt;sqlSelectMany(&quot;node_id&quot;, &quot;node&quot;, &quot;type_nodetype=&quot;.getId(getType(&quot;usergroup&quot;)));
-my $row;
+my $row = undef;
 push @insiders, $$row{node_id} while($row = $csr-&gt;fetchrow_hashref());
 no warnings;
 
@@ -43,8 +44,8 @@ return 1 if $_ eq $needle;
 return 0;
 };
 
-my $str;
-my @skips;
+my $str = &quot;&quot;;
+my @skips = ();
 # Can skip (i.e. hide) usergroups from display.
 # If you are a god, you can see all usergroups, even skipped ones. This is so 
 # fled users can easily be removed from usergroups.

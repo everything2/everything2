@@ -44,7 +44,6 @@ my @ifys = (
       , {
          displaytype=&gt;'printable'
          , lastnode_id =&gt; 0
-         , scratch_id =&gt; $query-&gt;param('scratch_id')
         }
    )
 );

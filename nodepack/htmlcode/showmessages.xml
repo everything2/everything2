@@ -1,10 +1,12 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>973528</node_id>
   <title>showmessages</title>
   <code>my ($maxmsgs,$showOpts) = @_;
 my $json = {};
-my $jsoncount = 1 if $showOpts =~ /j/;
+my $jsoncount = undef; 
+$jsoncount = 1 if $showOpts =~ /j/;
 
 #display options
 $showOpts ||= '';
@@ -63,18 +65,18 @@ my $csr = $DB-&gt;sqlSelectMany('*', 'message', $limits . $filterMinor, &quot;OR
 my $UID = getId($USER) || 0;
 my $isEDev = $APP-&gt;isDeveloper($USER);
 
-my $aid;  #message's author's ID
-my $a; #message's author; have to do this in case sender has been deleted (!)
-my $ugID;
-my $UG;
-my $flags;
-my $userLink;
+my $aid = undef;  #message's author's ID
+my $a = undef; #message's author; have to do this in case sender has been deleted (!)
+my $ugID = undef;
+my $UG = undef;
+my $flags = undef;
+my $userLink = undef;
 
 #UIDs for Virgil, CME, Klaproth, and root.
 my @botlist = qw(1080927 839239 952215 113);
 my %bots = map{$_ =&gt; 1} @botlist;
 
-my $string;
+my $string = &quot;&quot;;
 my @msgs = @{ $csr-&gt;fetchall_arrayref( {} ) };
 @msgs = reverse @msgs if $showLastOnes;
 foreach my $MSG (@msgs) {
@@ -143,7 +145,8 @@ foreach my $MSG (@msgs) {
     # Test for ONO. This is moderately cheesy because the message text
     # could start with &quot;ONO: &quot;, but that's rare in practice. The table
     # doesn't track ONOness, so the text is all we've got.
-    my $ono = '?' if $text =~ /^O[nN]O: /;
+    my $ono ='';
+    $ono = '?' if $text =~ /^O[nN]O: /;
     $str.= qq!&lt;a href=&quot;javascript:e2.startText('message','/msg$ono $grptitle ')&quot;
 		title=&quot;Reply to group&quot; class=&quot;action&quot; style=&quot;display:none;&quot;&gt;(ra)&lt;/a&gt;!;
   }

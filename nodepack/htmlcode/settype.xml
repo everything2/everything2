@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1293807</node_id>
   <title>settype</title>
   <code>#Completely rewritten by Swap, since this thing was unnecessarily
@@ -29,7 +30,7 @@ my $applied = $patch_status -&gt; {applied};
 my @statuses = getNodeWhere({-applied =&gt;
                              $applied},&quot;status&quot;,&quot;node_id&quot;);
 
-my %dropdown_labels;
+my %dropdown_labels = ();
 
 foreach my $status(@statuses){
   my $status_title = $status -&gt; {title};
@@ -39,9 +40,7 @@ foreach my $status(@statuses){
 
 my @status_ids = keys %dropdown_labels;
 
-my $str;
-
-$str .= $query -&gt; popup_menu(&quot;patch_status&quot;, \@status_ids,
+my $str = $query -&gt; popup_menu(&quot;patch_status&quot;, \@status_ids,
                              $patch_status -&gt; {status_id},
                              \%dropdown_labels);
 

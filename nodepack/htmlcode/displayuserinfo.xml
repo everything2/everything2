@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1075515</node_id>
   <title>displayUserInfo</title>
   <code>if ($query-&gt;param('remfave')) {
@@ -72,16 +73,16 @@ if($isCE) {
 
 
 #display
-my $textPre;
-my $textMid;
-my $textPost;
+my $textPre = &quot;&quot;;
+my $textMid = &quot;&quot;;
+my $textPost = &quot;&quot;;
 if ($$THEME{noTable}) {
 	$textPre = '&lt;dt&gt;';
 	$textMid = '&lt;/dt&gt;&lt;dd&gt;';
 	$textPost = &quot;&lt;/dd&gt;\n&quot;;
 } else {
-	my $bgKey;
-	my $bgValue;
+	my $bgKey = undef;
+	my $bgValue = undef;
 	$bgKey = $$THEME{writeupTitleColor} if exists $$THEME{writeupTitleColor};
 	$bgKey ||= '#999999';
 	$textPre = '&lt;tr';
@@ -163,8 +164,6 @@ local *info_gp = sub {
 #new style
 local *info_msgme = sub {
 	return if $isGuest;
-	#return if $VARS-&gt;{borged};
-	#return if $VARS-&gt;{hidemsgme};
 	my $n = $NODE-&gt;{title};
 	return if ($n eq 'EDB') || ($n eq 'Klaproth') || ($n eq 'Cool Man Eddie') || ($n eq 'Guest User');
 
@@ -204,8 +203,6 @@ local *info_msgme = sub {
 #do NOT change this - this is the backup of the old-style
 local *info_msgme_old = sub {
 	return if $isGuest;
-	#return if $VARS-&gt;{borged};
-	#return if $VARS-&gt;{hidemsgme};
 	my $n = $NODE-&gt;{title};
 	return if ($n eq 'EDB') || ($n eq 'Klaproth') || ($n eq 'Cool Man Eddie') || ($n eq 'Guest User');
 
@@ -268,7 +265,7 @@ local *info_presents = sub {
 
 local *info_settingssome = sub {
 	return unless $isCE;
-	my @disp;
+	my @disp = ();
 
 	push(@disp, 'TinyMCE o' . ($SETTINGS-&gt;{settings_useTinyMCE} ? 'n' : 'ff') );	#maybe only show if enabled?
 
@@ -340,9 +337,9 @@ unless(($nid==220) ||($nid==322)) {	#hack around nate and hemos
 my $str = '';
 my $locker = getNodeById($$NODE{acctlock});
 $str .= '&lt;big&gt;&lt;strong&gt;Account locked&lt;/strong&gt;&lt;/big&gt; by '.linkNode($locker).'&lt;br&gt;' if(($isCE || $isRoot) &amp;&amp; $$NODE{acctlock} != 0);
-my $t; #nice Title
-my $s; #which Sub to call
-my $r; #Result of sub call
+my $t = undef; #nice Title
+my $s = undef; #which Sub to call
+my $r = undef; #Result of sub call
 
 if ($$THEME{noTable}) {
 	$str .=  &quot;&lt;dl&gt;\n&quot;;	

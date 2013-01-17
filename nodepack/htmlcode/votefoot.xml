@@ -1,13 +1,14 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>444246</node_id>
   <title>votefoot</title>
   <code>my $uid = $$USER{user_id};
 return $query-&gt;end_form if $$NODE{type}{title} eq &quot;e2node&quot; &amp;&amp; not $$NODE{group} || $APP-&gt;isGuest($USER) ;
 my $isKiller = $APP-&gt;isEditor($USER);
 
-my $voteButton;
-my $killButton;
+my $voteButton = undef;
+my $killButton = undef;
 my $rowFormat =  $$THEME{noTable} ? '&lt;div id=&quot;votefooter&quot;&gt;%s%s&lt;/div&gt;' :
 	'&lt;table border=&quot;0&quot; width=&quot;100%%&quot;&gt;&lt;tr&gt;&lt;td align=&quot;left&quot;&gt;%s&lt;/td&gt;&lt;td align=&quot;right&quot;&gt;%s&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';
 

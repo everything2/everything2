@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>987796</node_id>
   <title>CoolUncoolIt</title>
   <code>my ($N) = @_;
@@ -8,7 +9,7 @@ getRef($N);
 my $str = '';
 return $str unless $$N{ nodetype }{title} == 'writeup' ;
 
-my $nc;
+my $nc = '';
 if($nc=$$N{cooled}) {
 	$str .= $nc.' &lt;b&gt;C!&lt;/b&gt;'.( $nc==1 ? '' : 's' ) ;
 }

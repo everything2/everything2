@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1018297</node_id>
   <title>doChatMacro</title>
   <code>#doChatMacro
@@ -17,7 +18,7 @@ $uname =~ s/ /_/g;
 if($whichMacro !~ /^[A-Za-z0-9_\-]+$/) {
 return '&quot;' . $whichMacro . '&quot; isn\'t a valid macro name' . $sep;
 }
-my $macroFull;
+my $macroFull = undef;
 unless( $macroFull = $$VARS{'chatmacro_'.$whichMacro} ) {
 return '&quot;' . $whichMacro . '&quot; doesn\'t exist' . $sep;
 }
@@ -29,10 +30,10 @@ my @args = split('\s+',$$VARS{'chatmacro'});
 unshift @args, $uname;
 
 #loop through each line of the macro
-my $line;
-my $result;
-my @lineParts;
-my $part;
+my $line = undef;
+my $result undef;
+my @lineParts = ();
+my $part = undef;
 my @macroLines = split(/\n/, $macroFull);
 foreach $line (@macroLines) {
 next if $line=~/^$/;

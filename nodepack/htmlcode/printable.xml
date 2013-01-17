@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1142673</node_id>
   <title>printable</title>
   <code>linkNode($NODE, ($_[0] || 'printable version'), {displaytype=&gt;'printable',lastnode_id=&gt;0} );</code>
