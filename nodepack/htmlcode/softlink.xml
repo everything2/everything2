@@ -124,7 +124,7 @@ my $steps = scalar @nodelinks;
 my $e2nodetype = getId(getType('e2node'));
 my $grade = undef;
 my $nid = undef;
-my @badOnes = undef;	#auto-clean bad links
+my @badOnes = ();	#auto-clean bad links
 my $numCols = 4;
 
 my $thisnode = $$N{node_id};

@@ -28,6 +28,7 @@ while (1) {
 
 $str.=&quot;&lt;ul&gt;\n\t&lt;li&gt;&quot;.linkNode($NODE, &quot;MOAR&quot;, {moar =&gt; 'more'}).&quot;&lt;/li&gt;\n&quot;;
 $str.=&quot;\n\t&lt;li&gt;&quot;.linkNode($NODE, &quot;Only buffalo&quot;, {onlybuffalo =&gt; 'true'}).&quot;&lt;/li&gt;\n&quot;;
+$str.=&quot;\n\t&lt;li&gt;&quot;.linkNodeTitle(&quot;Buffalo Haiku Generator|In haiku form&quot;).&quot;&lt;/li&gt;\n&quot;;
 $str.=&quot;\n\t&lt;li&gt;&quot;.linkNodeTitle(&quot;Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo|...what?&quot;).&quot;&lt;/li&gt;&lt;/ul&gt;\n&quot;;
 
 return $str;

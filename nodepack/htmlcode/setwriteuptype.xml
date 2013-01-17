@@ -54,7 +54,7 @@ my $str = '&lt;label title=&quot;Set the general category of your writeup,
 
 my (@WRTYPE) = getNodeWhere({type_nodetype =&gt; getId(getType('writeuptype'))});
 
-my %items = {};
+my %items = ();
 
 my $isEd = $APP-&gt;isEditor($USER) ||
 	$$USER{title} eq 'Webster 1913' ||
