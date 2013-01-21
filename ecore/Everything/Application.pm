@@ -1555,5 +1555,13 @@ sub cleanNodeName
 	return $nodename;
 }
 
+sub commifyNumber
+{
+	my ($this, $number) = @_;
+	return 0 unless defined $number;
+	1 while $number =~ s/^([-+]?\d+)(\d{3})/$1,$2/;
+	return $number;
+}
+
 
 1;
