@@ -1,13 +1,9 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1176810</node_id>
   <title>usergroupmultipleadd</title>
-  <code># update 5/15/02 by jaybonci: Removed specific node references. Code cleanup.
-# update 4/03/03 by jaybonci: ANother cleanup. Changed to simple usergroup 
-#    editor instead of usergroup press gang
-
-
-my $nomulti;
+  <code>my $nomulti;
 %$nomulti = map{ getNode($_, &quot;usergroup&quot;)-&gt;{node_id} =&gt; 1 } qw/gods e2gods/;
 
 if ($APP-&gt;isAdmin($USER) and not exists($$nomulti{$$NODE{node_id}})) {

@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1163496</node_id>
   <title>displayWriteupInfo</title>
   <code>#customized display of writeup information
@@ -38,12 +39,12 @@ local *userWarn = sub {
 
 #parameters again
 
-my $inHeader;	#true=before WU text, false=after WU text (note: we use a slightly bad way of determining if we're in the header or footer)
-my $fnName;	#name of current function
+my $inHeader = undef;	#true=before WU text, false=after WU text (note: we use a slightly bad way of determining if we're in the header or footer)
+my $fnName = undef;	#name of current function
 #lookup table of user-entered function to actual function to run
 #	by default, function return values are cached
 #	a function may override the default caching by setting $infofunctions-&gt;{$fnName} to the string that should be used for future calls instead
-my $infofunctions;
+my $infofunctions = undef;
 my $CACHE_NAME = 'cache_displayWriteupInfo_'.$wuID;
 if( (exists $PAGELOAD-&gt;{$CACHE_NAME}) &amp;&amp; (defined $PAGELOAD-&gt;{$CACHE_NAME}) ) {
 	$inHeader=0;
@@ -82,7 +83,7 @@ if( (exists $PAGELOAD-&gt;{$CACHE_NAME}) &amp;&amp; (defined $PAGELOAD-&gt;{$CAC
 
 
 #determine things to display
-my @showThings;
+my @showThings = ();
 if($inPrintMode) {
 	#override user setting and show all information when printing
 	if($inHeader) {
@@ -118,7 +119,7 @@ if($inPrintMode) {
 	@showThings = @showThings[0..$max-1] if scalar(@showThings)&gt;$max;
 }
 
-my $t;	#temporary values that subs can use
+my $t = undef;	#temporary values that subs can use
 
 #display constants
 my %tDataOpen = (
@@ -211,7 +212,8 @@ local *info_dt_create = sub {
 };
 
 local *info_author = sub {
-	my $anon = 'anonymous' unless !$$VARS{anonymousvote} || $isMine || $authorIsBot || hasVoted($WRITEUP, $USER) || $isDraft;
+	my $anon = undef;
+        $anon = 'anonymous' unless !$$VARS{anonymousvote} || $isMine || $authorIsBot || hasVoted($WRITEUP, $USER) || $isDraft;
 	if ($$VARS{anonymousvote} == 1 &amp;&amp; $anon){
 		return '(anonymous)' . ($isCE?' '.info_authorsince():'');
 	}
@@ -261,10 +263,9 @@ local *info_length = sub {
 	#the CPU time to find exact values
 
 	my $wdt = breakTags($$WRITEUP{doctext}) || '';
-	my $c;	#count
+	my $c = 0;	#count
 
 	#paragraphs - could be off by one if &lt;p&gt; incorrectly used to end a paragraph instead of to start one
-	$c=0;
 	while($wdt =~ /&lt;[Pp][&gt;\s]/g) {	#weak paragraph count
 		++$c;
 	}
@@ -312,7 +313,7 @@ local *info_nothing = sub {
 
 local *info_addto = sub {
 	return '' if $query -&gt; param( 'showwidget' ) eq 'addto'.$$WRITEUP{ node_id } ; #noscript: widget is in page header
-	my $str;
+	my $str = undef;
 	unless ($isDraft){
 		$str = htmlcode('categoryform', $WRITEUP, 'writeupform');
 		$str .= htmlcode('weblogform', $WRITEUP, 'writeupform') if $$VARS{can_weblog};
@@ -352,7 +353,7 @@ local *music = sub {
 };
 
 local *audio = sub {
-	my $audioStr;
+	my $audioStr = undef;
 	my $recording=$DB-&gt;sqlSelectHashref(&quot;*&quot;, &quot;recording&quot;, &quot;recording_of=$wuID&quot;);
 	if (exists ($$recording{link})) {
 		$audioStr=&quot;&lt;a href='&quot;.$$recording{link}.&quot;'&gt;mp3&lt;/a&gt;&quot;;
@@ -382,7 +383,7 @@ local *showBookmarks = sub {
 
 
 #TODO? checkbox to have anonymous? maybe just for certain people?
-my $msgreport ;
+my $msgreport = undef;
 local *sendMessage = sub {
 	$infofunctions-&gt;{$fnName} = '';
 	return if $isGuest;
@@ -393,7 +394,8 @@ local *sendMessage = sub {
 	} elsif( $query-&gt;param( $queryid ) ) {
 		$msgreport = htmlcode('writeupmessage', $queryid, $WRITEUP) ;
 	}
-	my $nN = $query-&gt;checkbox(-name=&gt;'nn'.$queryid, value=&gt;$$WRITEUP{node_id}, label=&gt;'NN ',
+	my $nN = undef;
+             $nN = $query-&gt;checkbox(-name=&gt;'nn'.$queryid, value=&gt;$$WRITEUP{node_id}, label=&gt;'NN ',
 			title=&gt;'check to record this message as a node note')
 		if $isCE;
 	return $nN
@@ -412,9 +414,9 @@ local *sendMessage = sub {
 #build result
 my $str = '';
 
-my $s; #which Sub to call
-my $r; #Result of sub call
-my $align; #alignment
+my $s = undef; #which Sub to call
+my $r = undef; #Result of sub call
+my $align= undef ; #alignment
 my $curRow = '';
 my $anyGoodCells = 0;
 #TODO allow multiple things in a table cell

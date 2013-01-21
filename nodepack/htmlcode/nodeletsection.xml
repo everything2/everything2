@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1109816</node_id>
   <title>nodeletsection</title>
   <code># Inserts collapsible nodelet sections. These are stored in separate htmlcodes in the form (nodelet-abbreviation)section_(section-title) - that is, if you see something like 'htmlcode('nodeletsection','edn,patches');' the code you need will be at [ednsection_patches].
@@ -12,7 +13,7 @@ $altTitle = linkNodeTitle($linkTo.'|'.$altTitle) if($linkTo);
 my $isGuest = $APP-&gt;isGuest($USER);
 my $param = $nlAbbrev.'_hide'.$nlSection;
 
-my $v;
+my $v = undef;
 if (!$isGuest and (defined ($v=$query-&gt;param($param))) ) {
 	if($v) {
 		$$VARS{$param}=1;
@@ -21,7 +22,8 @@ if (!$isGuest and (defined ($v=$query-&gt;param($param))) ) {
 	}
 }
 
-my $showContent = 1 unless $$VARS{$param};
+my $showContent = undef;
+   $showContent = 1 unless $$VARS{$param};
 my $plusMinus = '&lt;tt&gt; '.( $isGuest ? '*' : ($showContent ? '-' : '+') ).' &lt;/tt&gt;';
 my $sectionId = $nlAbbrev.'section_'.$nlSection ;
 my $args = join(',',@_);
@@ -40,7 +42,7 @@ else {	#classic style: [ + ] Title
 	$s .= $plusMinus.$closeLink.$altTitle;
 }
 
-my $content ;
+my $content = undef;
 if($showContent) {
 	$content = htmlcode($sectionId);
 

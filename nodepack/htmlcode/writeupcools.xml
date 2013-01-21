@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1163178</node_id>
   <title>writeupcools</title>
   <code>my ( $N ) = @_ ;
@@ -8,10 +9,10 @@ getRef( $N );
 
 my $nr = getNode('node row', 'superdoc')-&gt;{node_id};
 
-my $str ;
-my $coollink ;
-my $coolnum ;
-my $coolers ;
+my $str = undef;
+my $coollink = undef;
+my $coolnum = undef;
+my $coolers = undef;
 
 if ( !$DB-&gt;sqlSelect('linkedby_user', 'weblog', &quot;weblog_id=$nr and to_node=$$N{node_id} and removedby_user=0&quot;)
 	and ( $$VARS{cools} &amp;&amp; $$VARS{cools} &gt; 0 )
@@ -41,7 +42,7 @@ if ( $nc ){
 		'order by tstamp ASC');
 	return &quot;(Can't get C!s)&quot; unless $csr;
 
-	my $count;
+	my $count = undef;
 	unless($nc==($count=$csr-&gt;rows)) {
 		#stored count in WU and table differ
 		#update WU info - force get, to ensure we have updated version

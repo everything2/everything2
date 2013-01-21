@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1257491</node_id>
   <title>getvarsvalues</title>
   <code># Emit all appropriate $VARS values as a string formatted 

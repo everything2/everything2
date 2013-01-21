@@ -1,8 +1,9 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1168156</node_id>
   <title>displayUserText</title>
-  <code>my $txt;
+  <code>my $txt = undef;
 
 if($DB-&gt;isApproved($NODE, getNode('users with codehome', 'nodegroup')))
 {

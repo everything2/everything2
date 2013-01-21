@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1216679</node_id>
   <title>newwriteups2</title>
   <code>my ($limit) = @_;
@@ -17,8 +18,7 @@ my $cansee = $APP-&gt;isEditor($USER);
 my $str = '&lt;table width=&quot;100%&quot; border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot;&gt;';
 
 my $count=0;
-my @colors;
-@colors = split(/\s*,\s*/,$$THEME{themeColors}) if exists $$THEME{themeColors};
+my @colors = (); @colors = split(/\s*,\s*/,$$THEME{themeColors}) if exists $$THEME{themeColors};
 @colors = ('#CCCC99') unless @colors;
 
 my $nwf = getNode('Test NW Feeder', 'nodelet'); # this old code uses the new feeder; the 'old' one is newer

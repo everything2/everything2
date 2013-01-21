@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1186576</node_id>
   <title>admin toolset</title>
   <code>return unless $APP-&gt;isAdmin($USER);
@@ -54,7 +55,7 @@ if ($currentDisplay ne 'help'){
 }
 
 my $spacer = &quot;&lt;li style='list-style: none'&gt;&lt;br&gt;&lt;/li&gt;&quot;;
-my $direWarning = ' (&lt;strong&gt;writeup:&lt;/strong&gt; only nuke under exceptional circumstances.
+my $direWarning = undef; $direWarning = ' (&lt;strong&gt;writeup:&lt;/strong&gt; only nuke under exceptional circumstances.
 	Removal is almost certainly a better idea.)' if $nt eq 'writeup';
 
 $newStr .= $spacer

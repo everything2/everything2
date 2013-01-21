@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1252198</node_id>
   <title>xmlfirmlinks</title>
   <code>my ($nid) = @_;

@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1180775</node_id>
   <title>nodenote</title>
   <code>return unless $APP-&gt;isEditor($USER);
@@ -9,7 +10,7 @@ my $N = my $onlyMe = shift;
 getRef $N if $N;
 $N ||= $NODE;
 
-my $notelist;
+my $notelist = undef;
 
 if ($$N{type}{title} eq 'writeup' &amp;&amp; !$onlyMe) { #include e2node &amp; other wus
    $notelist = $DB-&gt;sqlSelectMany(
@@ -56,8 +57,9 @@ my $makeNoteLine = sub {
 };
 
 my $noteCount = 0;
-my $finalstr;
-my $notetext = $notelist-&gt;fetchrow_hashref if $notelist;
+my $finalstr = undef;
+my $notetext = undef;
+   $notetext = $notelist-&gt;fetchrow_hashref if $notelist;
 
 while ($notetext) {
 

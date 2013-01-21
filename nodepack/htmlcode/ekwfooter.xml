@@ -1,13 +1,12 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1186946</node_id>
   <title>ekwFooter</title>
   <code># displays footer information in its own table
 # originally in [jukka container], adapted for ekw theme
 
-my $str;
-
-$str = '&lt;table cellpadding=&quot;3&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; width=&quot;100%&quot;&gt;'.&quot;\n&quot;.
+my $str = '&lt;table cellpadding=&quot;3&quot; cellspacing=&quot;0&quot; border=&quot;0&quot; width=&quot;100%&quot;&gt;'.&quot;\n&quot;.
 	'&lt;tr&gt;&lt;td&gt;&lt;img src=&quot;http://static.everything2.com/dot.gif&quot; width=&quot;1&quot; height=&quot;25&quot; alt=&quot;&quot;&gt;&lt;/td&gt;&lt;/tr&gt;'.&quot;\n&lt;tr&quot;;
 $str .= '&gt;&lt;td align=&quot;center&quot;&gt;';
 
@@ -32,11 +31,6 @@ if ( rand() &lt; 0.1 ) {
     $str .= '&lt;br /&gt;&lt;small&gt;&lt;i&gt;' . $gibberish[int(rand(@gibberish))];
     $str .= '&lt;/i&gt;&lt;/small&gt;';
 }
-
-#$str.='&lt;br /&gt;Interested in &lt;a href=&quot;http://everydevel.com/?node=ad+rates&quot;&gt;Advertising&lt;/a&gt;? Contact our ';
-#my @S = ('ad-meister', 'ad-monkey', 'ad-samurai', 'internal ad-genius');
-#$str.= $S[int(rand(@S))];
-#$str.= ', &lt;a href=&quot;mailto:robo@blockstackers.com&quot;&gt;Robo&lt;/a&gt;';
 
 my $NL = getNode('tagline grab', 'nodelet');
 $str.= '&lt;br /&gt;'.$$NL{nltext};

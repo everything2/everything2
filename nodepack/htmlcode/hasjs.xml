@@ -1,10 +1,11 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1878244</node_id>
   <title>hasJS</title>
   <code>my ($jsNode) = @_;
 
-my $JS;
+my $JS = undef
 
 if ($jsNode =~ /^\d+$/) {
 $JS = $jsNode;

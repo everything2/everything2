@@ -413,49 +413,6 @@ return '--!&gt;' unless $APP-&gt;isAdmin($USER);
 return;
 %]
 
-[%
-my $str='';
-
-##this does not work
-#local *FOO;
-#*FOO = 'hi!';
-#$str.=htmlcode('testPassing','');
-#*FOO = 'there';
-#$str.=htmlcode('testPassing','');
-
-##this works, but is annoying
-#local $Everything::HTML::BLAH;
-#$Everything::HTML::BLAH = 'test';
-#$str .= htmlcode('testPassing','');
-#$Everything::HTML::BLAH = 'more thingies';
-#$str .= htmlcode('testPassing','');
-
-##this, and variations (like single quotes) does not work
-#my $blah;
-#$blah = {'key1'=&gt;'value1','another key'=&gt;'another value','hi finally'=&gt;'bye finally',};
-#$str .= htmlcode('testPassing',\$blah);
-
-##testing, doesn't work
-#my $blah;
-#$blah = {'key1'=&gt;'value1','another key'=&gt;'another value','hi finally'=&gt;'bye finally',};
-#$str .= htmlcode('testpassing','),\$blah');
-
-#htmlcode hacking notes
-#doing ')' finishes the split()'s function, so that may be a place to start
-#oops, not is doesn't, I'm a moron
-
-##testing
-#my $MAGICO = '\');@_=('; #magic Open
-#my $MAGICC = ');#'; #magic Close
-#my $blah;
-#$blah = {'key1'=&gt;'value1','another key'=&gt;'another value','hi finally'=&gt;'bye finally',};
-#my $Everything::HTML::passMe = $blah;
-#$str .= htmlcode('testpassing',$MAGICO . '$passMe' . $MAGICC);
-
-$str;
-%]
-
-
 &lt;p&gt;
 [%
 my $UID = $$USER{node_id};

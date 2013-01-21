@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1155127</node_id>
   <title>displaydebatecomment</title>
   <code>#  $displaymode:
@@ -29,7 +30,7 @@ local *displaydebatecomment = sub{ # use local not lexical variable so it can be
 	$displaymode += 0;
 
 	my $instructions = 'div';
-	my $parentlink;
+	my $parentlink = undef;
 	if ($parent){
 		$instructions = 'li';
 		$parentlink = qq'&lt;a href=&quot;#debatecomment_$$parent{node_id}&quot;&gt;$$parent{title}&lt;/a&gt;';
@@ -47,14 +48,16 @@ local *displaydebatecomment = sub{ # use local not lexical variable so it can be
 	my %funx = (
 		responseto =&gt; sub{qq' (response to &quot;$parentlink&quot;)';},
 		links =&gt; sub{
-			my $str = linkNode($node, 'edit', {displaytype=&gt;'edit'}).' | '
+			my $str = &quot;&quot;;
+                        $str .= linkNode($node, 'edit', {displaytype=&gt;'edit'}).' | '
 				if $$node{ 'author_user' } == $$USER{ 'node_id' } || isGod( $USER );
 			$str .= linkNode($node, 'reply', {displaytype=&gt;'replyto'}) .
 				&quot; | &lt;span class='debatelink'&gt;&amp;#91;$$rootnode{'title'}&amp;#91;$$node{'node_id'}&amp;#93;|LinkToMe&amp;#93;&lt;/span&gt;&quot;;
 		},
 		comments =&gt; sub{
 			# close contentfooter before adding comments... ugh: spare div because show content still wants to close the footer:
-			my @unwrap = ('&lt;/div&gt;','&lt;div&gt;') if $displaymode &lt; 5;
+			my @unwrap = ();
+                        @unwrap = ('&lt;/div&gt;','&lt;div&gt;') if $displaymode &lt; 5;
 			++$displaymode if $displaymode == 2 || $displaymode == 4;
 			my $str = qq'$unwrap[0]&lt;ul class=&quot;comments&quot;&gt;';
 			foreach (@{$$node{group}}){
