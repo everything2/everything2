@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1251282</node_id>
   <title>sendPrivateMessage</title>
   <code>#sends a private message
@@ -57,12 +58,12 @@ my $msg = $APP-&gt;messageCleanWhitespace($params-&gt;{message});
 return 'Nothing to send: message only consists of &quot;whitespace&quot; characters (for example, a space).' unless length($msg);
 
 
-my $cachedTitles;
-my $cachedIDs;
+my $cachedTitles = undef;
+my $cachedIDs = undef;
 
 #failure warning messages
 #these are always sent to the current user (which is not neccessarily the author we say the message is from)
-my @problems;
+my @problems = ();
 #
 #subroutines
 #
@@ -85,7 +86,7 @@ my $FORWARDS;
 local *getCached = sub {
 	my ($ident,$isNumeric) = (@_[0,1]);
 	return undef unless defined($ident) &amp;&amp; length($ident);
-	my $N;
+	my $N = undef;
 
 	#get by ID
 	if((defined $isNumeric) &amp;&amp; $isNumeric) {
@@ -135,7 +136,7 @@ local *getCached = sub {
 #otherwise, a list ref of all items is returned
 local *getParamList = sub {
 	my $p=$_[0];
-	my @l;
+	my @l = ();
 	if( (defined $p) &amp;&amp; (exists $params-&gt;{$p}) &amp;&amp; (defined $params-&gt;{$p}) ) {
 		$p=$params-&gt;{$p};
 		my $r=ref $p;
@@ -236,7 +237,7 @@ unless($fromGroup) {
 #
 
 #determine who is online
-my %onlines;
+my %onlines = ();
 my $onlineOnly = boolParam('ono');
 if($onlineOnly) {
 	#ripped from message (opcode)
@@ -255,10 +256,10 @@ my $countUserGot = 0;	#count of users that got our message
 my $countGroupGot = 0;	#count of groups that got our message
 #users who blocked us; key is user ID, value is 0 if blocked, 1 if possibly blocked (happens ignoring the usergroup, but could still get msg via another usergroup)
 #	after trying to send to everybody, anything with value of 1 is added to $countUserAll
-my %blockers;
+my %blockers = ();
 
-my %groups;	#groups that get a message; key is group ID, value is -1 if user isn't allowed to send there, 0 if usergroup doesn't get message (but people in it do), higher than 0 means the usergroup also gets the message
-my %users;	#users that get a message; key is user ID, value is group they're in (or 0 for none) (or -1 to not send to them)
+my %groups = ();	#groups that get a message; key is group ID, value is -1 if user isn't allowed to send there, 0 if usergroup doesn't get message (but people in it do), higher than 0 means the usergroup also gets the message
+my %users = ();	#users that get a message; key is user ID, value is group they're in (or 0 for none) (or -1 to not send to them)
 #%users is a hash so if multiple usergroups are messaged, the user will get a group message for a group they're in, instead of potentially a group they aren't in
 
 
@@ -424,8 +425,8 @@ local *addRecipient = sub {
 #invalid node titles, aliases, and node IDs
 #	key is invalid item
 #	value is always 1
-my %invalidIDs;
-my %invalidNames;
+my %invalidIDs = ();
+my %invalidNames = ();
 
 #for each recipient, either:
 #	add to send list
@@ -433,7 +434,7 @@ my %invalidNames;
 #	add to invalid item list
 
 #this is the only place where recipients are added to the list to be messaged
-my $n;
+my $n = undef;
 foreach( @{getParamList('recipient_id')} ) {
 	$n = getCached($_,1);
 	if(defined $n) {
@@ -454,7 +455,7 @@ foreach( @{getParamList('recipient')} ) {
 }
 
 #deal with people who blocked
-my @whoBlocked;	#users who blocked sender, and not because blocking the group (listing all the group blockers could get large fast)
+my @whoBlocked = ();	#users who blocked sender, and not because blocking the group (listing all the group blockers could get large fast)
 my $numBlocked = scalar(keys(%blockers));
 my $numBlockedGroup = 0;	#number of messages blocked because blocking usergroup
 foreach(keys(%blockers)) {
@@ -472,7 +473,7 @@ my $blockedInfoMethod = getVarsValue('informmsgignore', 0, 0,1,2,3);	#0=inform v
 if($numBlocked &amp;&amp; ($blockedInfoMethod==0 || $blockedInfoMethod==2)) {
 	#inform via a msg
 	my $bMessage = 'You were blocked by '.$numBlocked.' user'.($numBlocked==1?'':'s').' total';
-	my @bReason;
+	my @bReason = ();
 	push(@bReason, $numBlockedGroup.' ignored the usergroup(s)') if $numBlockedGroup;
 	push(@bReason, scalar(@whoBlocked).' ('.join(', ', map { '[' . $_-&gt;{title} . ']' } @whoBlocked).') ignored you') if scalar(@whoBlocked);
 	$bMessage .= ': '.join(', ', @bReason) if scalar(@bReason);	#note: should always be true, but just in case
@@ -561,8 +562,8 @@ if(length($s)) {
 # finally send the message
 #
 
-my $i;
-my @getters;	#groups and users that got message
+my $i = undef;
+my @getters = ();	#groups and users that got message
 
 #send to groups archive
 foreach $i (keys(%groups)) {
@@ -580,8 +581,8 @@ foreach $i (keys(%groups)) {
 }
 
 #send to users
-my $forUG;
-my $isArchived;
+my $forUG = undef;
+my $isArchived = undef;
 foreach $i (keys(%users)) {
 
 	next if $users{$i}&lt;0;
@@ -662,7 +663,7 @@ unless( exists $bots{$aid} ){
   $msg = parseLinks($msg,0,1);
 }
 
-my $m;
+my $m = undef;
 if ( $aid==$UID) {
   $m = 'you said &quot;' . $msg . '&quot;';
   unless(scalar(@getters)) {
@@ -694,7 +695,7 @@ if ( $aid==$UID) {
     if ( $blockedInfoMethod==1 || $blockedInfoMethod==2 ) {
 
       #inform who blocked
-      my @bReason;
+      my @bReason = ();
 
       push(@bReason,
            $numBlockedGroup.' ignored the usergroup(s)') if $numBlockedGroup;

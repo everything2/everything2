@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1328032</node_id>
   <title>msgField</title>
   <code>#message field: provides a text field to send a message to a user(group)
@@ -56,8 +57,8 @@ my $showSaid = ($flags &amp; 2) ? 0 : 4;	#values wanted by sendPrivateMessage
 $aboutNode = (defined $aboutNode) &amp;&amp; length($aboutNode) &amp;&amp; ($aboutNode=~/([1-9]\d*)/) ? $1 : 0;
 
 #find message recipient(s)
-my %recipients;
-my @getters;
+my %recipients = ();
+my @getters = ();
 
 #finds recipients based on given list @tryRecipients (global since htmlcodes seem to get a bit weird with parameter passing sometimes)
 #returned list in @getters has no duplicates, and are all postive integers
@@ -67,7 +68,7 @@ my @getters;
 local *validRecipients = sub {
 	@getters=();
 	return 0 unless scalar(@tryRecipients);
-	my %recipients;
+	my %recipients = ();
 	foreach(@tryRecipients) {
 		if(/([1-9]\d*)/) {
 			$recipients{$_}=1;
@@ -87,8 +88,8 @@ if($doNormalSend) {
 #
 
 my $str='';
-my $nameTxt;	#text field
-my $nameCC;	#CC checkbox
+my $nameTxt = undef;	#text field
+my $nameCC = undef;	#CC checkbox
 
 
 #
@@ -102,7 +103,7 @@ my $nameCC;	#CC checkbox
 my $MAXLEN=12345;	#my luggage combination
 local *trySend = sub {
 	return unless defined $query-&gt;param($nameTxt);
-	my $t;
+	my $t = undef;
 	return unless length($t=$query-&gt;param($nameTxt));
 	if(length($t)&gt;$MAXLEN) { $t=substr($t,0,$MAXLEN); }
 
@@ -129,8 +130,8 @@ if($doNormalSend) {
 } else {
 	#send whatever messages are left
 	my @origParams = $query-&gt;param();
-	my $base;
-	my $getters;
+	my $base = undef;
+	my $getters = undef;
 	foreach(@origParams) {
 		next unless /^(.+?)_msgfieldmsg$/;
 		$base=$1;

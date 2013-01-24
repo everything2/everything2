@@ -1,10 +1,11 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2008803</node_id>
   <title>confirmop</title>
   <code>my $N = $query -&gt; param('like_id') || $query -&gt; param( 'cool_id' ) || $query -&gt; param( 'ins_id' ) || $query -&gt; param('cure_user_id');
-my $node = getNodeById( $N ) if $N;
-my $author = getNode( $$node{ author_user } ) if $node ;
+my $node = undef; $node = getNodeById( $N ) if $N;
+my $author = undef; $author = getNode( $$node{ author_user } ) if $node ;
 $author = $$author{ title } if $author ;
 
 my %opcodes = (

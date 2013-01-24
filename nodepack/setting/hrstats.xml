@@ -1,11 +1,11 @@
 <node>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <value>8.0405</value>
+    <value>8.0407</value>
     <key>stddev</key>
   </vars>
   <vars>
-    <value>14.7242</value>
+    <value>14.7251</value>
     <key>mean</key>
   </vars>
   <node_id>1373661</node_id>

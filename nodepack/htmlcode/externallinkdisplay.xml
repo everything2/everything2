@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1689386</node_id>
   <title>externalLinkDisplay</title>
   <code>#
@@ -13,9 +14,9 @@ my $testURL = $_[0];
 $testURL =~ s/&amp;#39;/'/g;
 $testURL =~ s/&amp;#44;/,/g;
 
-my $protocol;
-my $domain;
-my $relAddress;
+my $protocol = undef;
+my $domain = undef;
+my $relAddress = undef;
 
 if($testURL =~ /^(https?):\/\/([^\/]+)(\/.*)?$/) {
 	$protocol = $1;
@@ -25,7 +26,7 @@ if($testURL =~ /^(https?):\/\/([^\/]+)(\/.*)?$/) {
 	return '';
 }
 
-my $i;
+my $i = undef;
 
 #chop off any CGI parameters
 #	can't just test for everything2.com, org, etc., because there are

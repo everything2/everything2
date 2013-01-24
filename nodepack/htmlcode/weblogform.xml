@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2004985</node_id>
   <title>weblogform</title>
   <code>my ( $N , $inwriteupform ) = @_ ;
@@ -7,7 +8,7 @@ getRef $N ;
 $N ||= $NODE ;
 
 my $options = '' ;
-my $notification ;
+my $notification = undef;
 
 unless ( $PAGELOAD-&gt;{ cachedweblogoptions } ) {
 	my $wls = getVars( getNode( 'webloggables' , 'setting' ) ) ;
@@ -28,7 +29,7 @@ unless ( $PAGELOAD-&gt;{ cachedweblogoptions } ) {
 	delete $PAGELOAD-&gt;{ cachedweblogoptions } if $$N{ node_id } == ${ $$NODE{ group } }[-1] ;
 }
 
-my $sourceid ;
+my $sourceid = undef;
 if ( $query -&gt; param( 'op' ) eq 'weblog' and $query -&gt; param( 'target' ) == $$N{ node_id } ) {
 	$sourceid = $query -&gt; param( 'source' ) ;
 	if ( $sourceid ) {
@@ -53,7 +54,7 @@ return linkNodeTitle( 'Edit weblog menu[superdoc]|Edit weblog menu&amp;hellip;' 
 $options = &quot;\n\t\t\t&lt;option value=\&quot;\&quot; selected=\&quot;selected\&quot;&gt;Choose&amp;hellip;&lt;/option&gt;$options&quot;
 	unless $sourceid ;
 
-my ( $class , $addnid ) = ( &quot;wuformaction &quot; , $$N{ node_id } ) if $inwriteupform ;
+my ( $class , $addnid ) = (undef,undef); ($class, $addnid) = ( &quot;wuformaction &quot; , $$N{ node_id } ) if $inwriteupform ;
 $class .= &quot;ajax weblogform$$N{node_id}:weblogform?op=weblog&amp;target=/target$addnid&amp;source=/source$addnid:$$N{node_id},$inwriteupform&quot; ;
 
 return qq'&lt;fieldset id=&quot;weblogform$$N{node_id}&quot;&gt;&lt;legend&gt;Add this '	.

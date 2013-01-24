@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1936641</node_id>
   <title>displayWriteupFooter</title>
   <code>#displayWriteupFooter - pass nothing if viewing a writeup or writeup's index in e2node group if viewing an e2node
@@ -15,7 +16,7 @@
 
 my ($num) = @_;
 
-my $WRITEUP;
+my $WRITEUP = undef;
 if(not $num) {
 	#assuming the node we're looking at is a writeup
 	$WRITEUP = $NODE;

@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2005525</node_id>
   <title>widget</title>
   <code># first two arguments for the widget, second two for the opener link
@@ -26,7 +27,7 @@ if ( $query -&gt; param( 'showwidget' ) eq $showparameter ) {
 	$style .= 'hidden' ;
 }
 
-my $str ;
+my $str = &quot;&quot;;
 unless ( $tagname =~ '^form' ){
 	$str = qq'&lt;$tagname class=&quot;widget&quot; style=&quot;$style&quot;&gt;\n' ;
 } else {

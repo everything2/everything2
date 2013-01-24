@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1995178</node_id>
   <title>legacyweblog</title>
   <code>my ($limit, $log_id,$remlabel, $hideLinker, $skipFilterHTML, $listOnly) = @_;
@@ -45,7 +46,7 @@ if (defined $query and defined $query-&gt;param('nextweblog')) {
 	$limit = $nwl;  
 }
 
-my $VALIDTAGS;
+my $VALIDTAGS = undef;
 #if we're screening, get the allowed HTML tags
 unless($skipFilterHTML) {
 	my $TAGNODE = getNode('approved html tags','setting');
@@ -67,8 +68,8 @@ my $csr = $DB-&gt;sqlSelectMany('*',
 	'ORDER BY linkedtime DESC');
 
 my $count = 0;
-my $str;
-my $zenStr;
+my $str = &quot;&quot;;
+my $zenStr = &quot;&quot;;
 
 if ($listOnly) {
 $str = &quot;&lt;ul&gt;&quot;;

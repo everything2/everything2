@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1982602</node_id>
   <title>uploadAudio</title>
   <code>my ($field) =@_;
@@ -15,7 +16,7 @@ my $imageurl = 'audio/';
 my $sizelimit = 8000000;
  $sizelimit = 16000000 if isGod($USER);
 
-my $fname;
+my $fname = undef;
 if ($fname = $query-&gt;upload($name)) { #recent change to CGI.pm
 
   my $imgname = $$NODE{title};
@@ -28,12 +29,11 @@ if ($fname = $query-&gt;upload($name)) { #recent change to CGI.pm
   } 
   $imgname .= '.'.$1;
 
-  my $size;
+  my $size = undef;
   $str.= &quot;Got: &quot;.(ref $fname).&quot;&lt;br&gt;$content&lt;br&gt;&quot;;
   {
      #local $/ = undef;
-     my $buf;
-     $buf = join ('', &lt;$fname&gt;);
+     my $buf = join ('', &lt;$fname&gt;);
      $size = length($buf);
      if($size &gt; $sizelimit)
      {

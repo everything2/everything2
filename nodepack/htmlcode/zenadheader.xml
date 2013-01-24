@@ -1,8 +1,9 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1950676</node_id>
   <title>zenadheader</title>
-  <code>my $ad_text;
+  <code>my $ad_text = undef;
 
 if($APP-&gt;isGuest($USER)) 
 {

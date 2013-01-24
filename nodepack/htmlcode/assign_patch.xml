@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1991447</node_id>
   <title>assign_patch</title>
   <code>#This should only be called from patch display page --[Swap]
@@ -23,7 +24,7 @@ if(isGod($USER) ){
 
 my @splat_ids = @{ getNode('%%','usergroup')-&gt;{group} };
 
-my %dropdown_labels;
+my %dropdown_labels = ();
 
 foreach my $splat_id(@splat_ids){
   my $splat_title = getNodeById($splat_id) -&gt; {title};
@@ -34,7 +35,7 @@ $dropdown_labels{0} = &quot;Nobody&quot;;
 $dropdown_labels{0} .= &quot; *&quot; unless $assigned_to;
 push @splat_ids,0;
 
-my $str;
+my $str = undef;
 
 $str .= $query -&gt; popup_menu(&quot;assigned_to&quot;, \@splat_ids,
                              $assigned_to,

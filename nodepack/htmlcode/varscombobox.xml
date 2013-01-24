@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1300516</node_id>
   <title>varsComboBox</title>
   <code>#VARS combo box
@@ -55,8 +56,8 @@ return oops('missing final value') if (scalar(@elements)%2)==1;
 # values/labels setup
 #
 
-my @values;
-my %labels;
+my @values = ();
+my %labels = ();
 #can't just do something like %labels = @elements; because then we'd loose our order
 while(scalar(@elements)) {
 	my $k = shift(@elements);
@@ -74,7 +75,7 @@ if(!exists $labels{0}) {
 	$labels{0} = '0 (default)';
 }
 
-my $curDefault;
+my $curDefault = undef;
 
 
 #

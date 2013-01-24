@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2008367</node_id>
   <title>googleads</title>
   <code>my ($ad_location) = @_;
@@ -34,7 +35,7 @@ return &quot;&lt;!-- noad:findings --&gt;&quot; if $node_id == getNode('Findings
 return &quot;&lt;!-- noad:badnodeid --&gt;&quot; unless ($node_id =~ /^\d+$/);
 return &quot;&lt;!-- noad:https --&gt;&quot; if $query-&gt;url =~ /^https/;
 
-my ($ad_width, $ad_height, $ad_format, $ad_type);
+my ($ad_width, $ad_height, $ad_format, $ad_type) = (undef,undef,undef,undef);
 
 if ($ad_location eq 'nodelet') {
 

@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1271429</node_id>
   <title>sayings_nwing</title>
   <code>#picks a random stupid saying N-Wing would say/has said
@@ -19,8 +20,8 @@ my $isRoot = $APP-&gt;isAdmin($USER);
 my $isCE = $APP-&gt;isEditor($USER);
 my $isEDev = $APP-&gt;isDeveloper($USER);
 
-my $uName;	#user's name (FIXME: should this be escaped?)
-my $uLink;	#start of link to user
+my $uName = undef;	#user's name (FIXME: should this be escaped?)
+my $uLink = undef;	#start of link to user
 if($isGuest) {
 	my @anons = ('A Non-Cow', 'Anonymous Coward', 'You', 'Yo Momma', 'Guessed &quot;You&quot;, Sir!', 'Your Belly Button Lint');
 	$uName = $anons[int(rand(scalar(@anons)))];

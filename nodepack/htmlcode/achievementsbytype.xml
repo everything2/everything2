@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1918037</node_id>
   <title>achievementsByType</title>
   <code>my ($aType, $user_id, $debug) = @_;
@@ -10,7 +11,7 @@ $user_id ||= $$USER{user_id};
 my @achList = getNodeWhere({achievement_type =&gt; $aType}, 'achievement', 'subtype, title ASC');
 return unless @achList;
 
-my $str;
+my $str = undef;
 my $finishedgroup = '';
 
 foreach my $a (@achList) {

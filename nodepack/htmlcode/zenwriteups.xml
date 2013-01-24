@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1868932</node_id>
   <title>zenwriteups</title>
   <code>my ($isLogs) = @_;
@@ -18,7 +19,7 @@ my @newwus = @{from_json($nltext)};
 my $noHidden = !$isLogs;
 $noHidden = $noHidden &amp;&amp; $$VARS{nw_nojunk} if $cansee;
 
-my ($repthreshold, $abominations) = ('none');
+my ($repthreshold, $abominations) = ('none', undef);
 if (!$cansee or $$VARS{nw_nojunk} or $isLogs){
 	if (exists $$VARS{repThreshold}) {
 		$repthreshold = $$VARS{repThreshold} || 0; # ecore stores 0 as ''
@@ -29,7 +30,8 @@ if (!$cansee or $$VARS{nw_nojunk} or $isLogs){
         $abominations-&gt;{$_} = 1 foreach(split(',', $$VARS{unfavoriteusers}));
 }
 
-my ($count, @wus);
+my $count = undef;
+my @wus = ();
 foreach (@newwus){
 	next if $noHidden &amp;&amp; $$_{notnew} or
 		$repthreshold ne 'none' &amp;&amp; $$_{reputation} &lt; $repthreshold or
@@ -51,7 +53,7 @@ unless($APP-&gt;isGuest($USER)){
 		.join(',', map($_-&gt;{writeup_id}, @wus))
 		.')';
 
-	my $votes;
+	my $votes = undef;
 	$votes-&gt;{$_} = 1 foreach(@{$dbh -&gt; selectcol_arrayref($sql)});
 
 	$instructions .= ' class=&quot;&amp;extraclasses&quot;' ;

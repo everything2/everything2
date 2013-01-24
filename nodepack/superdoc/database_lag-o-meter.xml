@@ -5,16 +5,6 @@
 my %stats;
 my %vars;
 
-local *commify = sub {
-
-    local $_  = shift;
-    return 0 unless defined $_;
-    1 while s/^([-+]?\d+)(\d{3})/$1,$2/;
-    return $_;
-
-};
-
-
 my $csr = $dbh-&gt;prepare('show status');
 $csr-&gt;execute;
 
@@ -43,8 +33,8 @@ sprintf(&quot;%.2f&quot;, 1000000*$stats{Slow_queries}/$stats{Questions});
 
 my $str;
 $str .= &quot;Uptime: $uptime&lt;br&gt;
-Queries: &quot;. commify($stats{Questions}) .&quot;&lt;br&gt;
-Slow (&gt;$vars{long_query_time} sec): &quot;.commify($stats{Slow_queries}).&quot;&lt;br&gt;
+Queries: &quot;. $APP-&gt;commifyNumber($stats{Questions}) .&quot;&lt;br&gt;
+Slow (&gt;$vars{long_query_time} sec): &quot;.$APP-&gt;commifyNumber($stats{Slow_queries}).&quot;&lt;br&gt;
 Slow/Million: $stats{smq}&lt;br&gt;&quot;;
 
 $str;

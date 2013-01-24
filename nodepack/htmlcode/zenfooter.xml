@@ -1,8 +1,9 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1854205</node_id>
   <title>zenFooter</title>
-  <code>my $str.=' Everything2 &amp;trade; is brought to you by Everything2 Media, LLC. All content copyright &amp;#169; original author unless stated otherwise.';
+  <code>my $str=' Everything2 &amp;trade; is brought to you by Everything2 Media, LLC. All content copyright &amp;#169; original author unless stated otherwise.';
 
 if ( rand() &lt; 0.1 ) {
     my @gibberish = (

@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2031072</node_id>
   <title>ajaxEcho</title>
   <code># provide simple user feedback for AJAX opcode call (e.g., sanctify in [page actions])

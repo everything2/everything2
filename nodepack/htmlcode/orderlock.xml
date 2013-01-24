@@ -1,12 +1,13 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1466529</node_id>
   <title>orderlock</title>
   <code>return unless $APP-&gt;isAdmin($USER);
 my $str = htmlcode('openform');
 $str.= &quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;op\&quot; value=\&quot;orderlock\&quot;&gt;&quot;;
 
-my $lockornot;
+my $lockornot = undef;
 
 if($NODE-&gt;{orderlock_user})
 {

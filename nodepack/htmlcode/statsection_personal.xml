@@ -1,8 +1,9 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1273299</node_id>
   <title>statsection_personal</title>
-  <code>my $str;
+  <code>my $str = undef;
 
 #pass 2 args: category and value
 local *genRow = sub {
@@ -19,7 +20,7 @@ my $WRPS = getVars(getNode('level writeups', 'setting'));
 
 my $expleft = $$LVLS{$lvl} - $$USER{experience} if exists $$LVLS{$lvl};
 
-my ($numwu, $wrpleft);
+my ($numwu, $wrpleft) = (undef, undef);
 $$VARS{numwriteups} ||= 0;
 $numwu = $$VARS{numwriteups};
 $wrpleft = ($$WRPS{$lvl} - $numwu) if exists $$WRPS{$lvl};

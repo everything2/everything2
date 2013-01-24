@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1372587</node_id>
   <title>formxml_room</title>
   <code>my $entrance=&quot;0&quot;;

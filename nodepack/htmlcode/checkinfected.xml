@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2008093</node_id>
   <title>checkInfected</title>
   <code># infection arises if user has an old login cookie belonging to a locked account

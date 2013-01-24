@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1867798</node_id>
   <title>zensearchform</title>
   <code>my $lastnodeId = $query-&gt;param(&quot;softlinkedFrom&quot;);
@@ -7,7 +8,7 @@ $lastnodeId ||= $query -&gt; param('lastnode_id') unless $APP-&gt;isGuest($USER)
 
 my $lastnode = getNodeById($lastnodeId)
   if defined $lastnodeId;
-my $default = $$lastnode{title} if $lastnode;
+my $default = undef; $default = $$lastnode{title} if $lastnode;
 
 my $str = $query-&gt;start_form(
   -method =&gt; &quot;GET&quot;
@@ -22,7 +23,8 @@ my $str = $query-&gt;start_form(
    -maxlength =&gt; 230)
   ;
 
-my $lnid = $$NODE{parent_e2node} if
+my $lnid = undef;
+   $lnid = $$NODE{parent_e2node} if
 	$$NODE{type}{title} eq 'writeup'
 	and $$NODE{parent_e2node}
 	and getNodeById($$NODE{parent_e2node});

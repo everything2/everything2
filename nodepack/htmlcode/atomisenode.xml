@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1832095</node_id>
   <title>atomiseNode</title>
   <code>my $host = $ENV{HTTP_HOST} || $Everything::CONF-&gt;{canonical_web_server} || &quot;everything2.com&quot;;

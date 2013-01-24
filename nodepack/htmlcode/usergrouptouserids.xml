@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1980272</node_id>
   <title>usergroupToUserIds</title>
   <code>#Given a ug_id or a ug hash, convert it to a comma-separated string of user IDs
@@ -12,7 +13,7 @@ local *explode_ug = sub{
 
   my @ids = @{$$ug{'group'}};
 
-  my @result;
+  my @result = ();
   foreach my $id(@ids){
     if(getNodeById($id) -&gt; {'type'} -&gt; {'title'} eq 'user'){
       push @result, $id;

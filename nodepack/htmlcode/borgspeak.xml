@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1930687</node_id>
   <title>borgspeak</title>
   <code>my ($useBorg) = @_;
