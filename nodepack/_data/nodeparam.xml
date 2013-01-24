@@ -181,6 +181,11 @@
   </nodeparam>
   <nodeparam>
     <paramvalue>1</paramvalue>
+    <node_id>1882128</node_id>
+    <paramkey>allow_message_archive</paramkey>
+  </nodeparam>
+  <nodeparam>
+    <paramvalue>1</paramvalue>
     <node_id>1969185</node_id>
     <paramkey>allow_message_archive</paramkey>
   </nodeparam>

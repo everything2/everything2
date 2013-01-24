@@ -60,9 +60,12 @@ my $isEd = $APP-&gt;isEditor($USER) ||
 	$$USER{title} eq 'Webster 1913' ||
 	$$USER{title} eq 'Virgil';
 
+my $isE2docs = $APP-&gt;inUsergroup($USER,&quot;E2Docs&quot;);
+
 foreach (@WRTYPE){
 	next if (!$isEd and lc($$_{title}) eq 'definition'
 		|| lc($$_{title}) eq 'lede');
+        next if ((!$isEd or !$isE2docs) and lc($$_{title}) eq 'help');
 	$items{$$_{node_id}} = $$_{title};
 }
 
