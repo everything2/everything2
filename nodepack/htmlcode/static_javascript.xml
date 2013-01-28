@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2006837</node_id>
   <title>static javascript</title>
   <code>use JSON;
@@ -11,13 +12,13 @@ $lastnode = $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
 $lastnode = $query-&gt;param(&quot;lastnode_id&quot;)||0
 	if $$NODE{title} eq 'Findings:' &amp;&amp; $$NODE{type}{title} eq 'superdoc';
 
-my $e2; 
+my $e2 = undef;
 $e2-&gt;{node_id} = $$NODE{node_id};
 $e2-&gt;{lastnode_id} = $lastnode;
 $e2-&gt;{title} = $$NODE{title};
 #$e2-&gt;{ignoreMissingLibraries} = 1;
 
-my $cookie;
+my $cookie = undef;
 foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
 	if (!$APP-&gt;isGuest($USER)){
 		$$VARS{$_} = $cookie if $cookie = $query -&gt; cookie($_);
@@ -29,7 +30,7 @@ foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', '
 $e2 -&gt; {collapsedNodelets} =~ s/\bsignin\b// if $query -&gt; param('op') eq 'login';
 $e2 = encode_json($e2);
 
-my $min = '.min' unless $APP-&gt;inDevEnvironment();
+my $min = undef; $min = '.min' unless $APP-&gt;inDevEnvironment();
 my $libraries = qq'&lt;script src=&quot;http://code.jquery.com/jquery-1.4.4$min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
 # mark as guest but only in non-canonical domain so testing and caching both work
 

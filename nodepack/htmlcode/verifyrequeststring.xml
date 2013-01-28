@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1979760</node_id>
   <title>verifyRequestString</title>
   <code>#Generates a query string used to verify the form submission. Pass a prefix.

@@ -1,13 +1,14 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1995928</node_id>
   <title>fixstylesheet</title>
   <code>my $VARSNODE = getNode( 'fixed stylesheets' ,'setting' ) ;
 my $fixed = getVars( $VARSNODE ) ;
 my $howfixed = $$fixed{ $$NODE{ node_id } } ;
-my %replace ;
-my @disable ;
-my $addstyles ;
+my %replace = ();
+my @disable = ();
+my $addstyles = undef;
 
 unless ( $howfixed &gt;= 1 ) {
 	%replace = (
@@ -71,12 +72,12 @@ my $idfunction = sub {
 
 my ( $saveold ) = @_ ;
 my @input = split( '(\s*(?:\{[^}]*\}|/\*(?:[^*]|\*[^/])*\*/)\s*)' , $$NODE{ doctext } ) ;
-my $output = &quot;/*= Comments containing old/disabled rules start with = for easy finding */\n&quot; if $saveold ;
-my $fixwasneeded ;
+my $output = undef; $output = &quot;/*= Comments containing old/disabled rules start with = for easy finding */\n&quot; if $saveold ;
+my $fixwasneeded = undef;
 
 foreach ( @input ) {
 	my $chunk = $_ ;
-	my $old = &quot;/*=$chunk*/\n&quot; if $saveold ;
+	my $old = undef; $old = &quot;/*=$chunk*/\n&quot; if $saveold ;
 	unless ( $chunk =~ '^(/\*|\{)' ) {
 		$chunk =~ s/(?:\.nodetype_|(\.node_id|#nodelet_))(\d+)/&amp;$idfunction( $1 , $2 )/eg ;
 		foreach ( keys %replace ) {

@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2025090</node_id>
   <title>Notifications nodelet settings</title>
   <code>use JSON;
@@ -7,7 +8,7 @@
 my $str = '&lt;p&gt;We will notify you when...
 &lt;/p&gt;';
 
-my $settingsHash = from_json($$VARS{settings}) if $$VARS{settings};
+my $settingsHash = undef; $settingsHash = from_json($$VARS{settings}) if $$VARS{settings};
 
 if ($query-&gt;param('sexisgood')){
 	$settingsHash = {};
@@ -22,14 +23,14 @@ if ($query-&gt;param('sexisgood')){
 }
 
 my @notifications = getNodeWhere('1 =1', &quot;notification&quot;);
-my @notificationlist;
+my @notificationlist = ();
 foreach (@notifications) {
         next unless $$_{hourLimit} and htmlcode('canseeNotification', $_);
 	push @notificationlist, [$query-&gt;checkbox('notification_'.$$_{node_id},
 		$$settingsHash{notifications}-&gt;{$$_{node_id}},1,&quot;&quot;),&quot;$$_{description}&lt;br&gt;\n&quot;];
 }
 
-@notificationlist = sort {my (@a, @b); @$a[1] cmp @$b[1];} @notificationlist;
+@notificationlist = sort {my (@a,@b); @$a[1] cmp @$b[1];} @notificationlist;
 
 foreach my $thing (@notificationlist){
     $str .= @$thing[0].@$thing[1];

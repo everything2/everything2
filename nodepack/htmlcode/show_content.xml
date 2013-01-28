@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1995923</node_id>
   <title>show content</title>
   <code># generic content/contentinfo display
@@ -131,7 +132,7 @@ my @infowrap = ('&lt;div class=&quot;contentinfo contentheader&quot;&gt;', '', '
 # define content function
 
 if ( $content ) {
-	my $lastnodeid ;
+	my $lastnodeid = undef;
 	if ( !$APP-&gt;isGuest($USER) ) {
 		$lastnodeid = $$NODE{ parent_e2node } if $$NODE{ type }{ title } eq 'writeup' ;
 		$lastnodeid = $$NODE{ node_id } if $$NODE{ type }{ title } eq 'e2node' ;
@@ -143,7 +144,7 @@ if ( $content ) {
 
 	$infofunctions{$content} = sub {
 		my $N = shift ;
-		my $length = $content[$i] if $content[$i] =~ /\d/ ;
+		my $length = undef; $length = $content[$i] if $content[$i] =~ /\d/ ;
 		$$HTML{ noscreening } = ($content[$i] eq 'unfiltered');
 		$i-- unless $content[++$i];
 

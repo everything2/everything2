@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2037720</node_id>
   <title>ordernode</title>
   <code>return unless $APP-&gt;isEditor($USER);

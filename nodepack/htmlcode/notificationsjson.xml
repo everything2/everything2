@@ -1,12 +1,13 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2003576</node_id>
   <title>notificationsJSON</title>
   <code>my $limit = 10;
 my $wrap = shift;
 
 use JSON;
-my $str;
+my $str = undef;
 
 my $safe_JSON_decode = sub {
   my $args = { };
@@ -92,7 +93,7 @@ foreach my $notify (@$db_notifieds) {
            next;
         }
 
-		my ($pre, $post);
+		my ($pre, $post) = (undef, undef);
 		if ($wrap){
 			my $liId = &quot;notified_$$notify{notified_id}&quot;;
 			$pre = qq'&lt;li class=&quot;timestamp_$$notify{notified_time}&quot; id=&quot;$liId&quot;&gt;';

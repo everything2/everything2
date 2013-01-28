@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2035418</node_id>
   <title>editwriteup</title>
   <code>my ($N, $message) = @_;
@@ -45,7 +46,7 @@ $str .= qq'&lt;textarea name=&quot;${type}_doctext&quot; id=&quot;writeup_doctex
 	.'&lt;/textarea&gt;'
 	.$message;
 
-my $setType = &quot;\n&lt;p&gt;&quot;.htmlcode('setwriteuptype', $$N{wrtype_writeuptype}).&quot;&lt;/p&gt;&quot;
+my $setType = undef; $setType = &quot;\n&lt;p&gt;&quot;.htmlcode('setwriteuptype', $$N{wrtype_writeuptype}).&quot;&lt;/p&gt;&quot;
 	if $type eq 'writeup' &amp;&amp; !$APP-&gt;isMaintenanceNode($N);
 
 unless ($new){

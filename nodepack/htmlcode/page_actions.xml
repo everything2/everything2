@@ -1,10 +1,11 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2002583</node_id>
   <title>page actions</title>
   <code>my $disabled = shift || htmlcode('getdisabledactions');
 
-my $c ;
+my $c = undef;
 my @actions = () ;
 push @actions , $c if not $disabled =~ /c/ and $c = htmlcode('coolit','') ;
 

@@ -1,11 +1,12 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2038291</node_id>
   <title>messageBox</title>
   <code>my ($userID, $showCC, $messageID, $usergroupID, $failReasonRef) = @_;
 # This should probably be extended to include a possible topic
 
-my $dummyReason;
+my $dummyReason = undef;
 $failReasonRef = \$dummyReason unless $failReasonRef;
 
 if ($APP-&gt;isGuest($USER)) {

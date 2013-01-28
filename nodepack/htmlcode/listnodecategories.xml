@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2024571</node_id>
   <title>listnodecategories</title>
   <code>my ($originalN, $isIncludedParent) = @_;
@@ -39,7 +40,7 @@ while(my $row = $ds-&gt;fetchrow_hashref) {
 		elsif ($next == -2) { $prev = $$irow{node_id}; }
 		else { last };
 	}
-	my $authorCat = {-class =&gt; ' authors'} if $$N{type}{title} eq 'writeup' &amp;&amp; $$row{author_user} == $$N{author_user};
+	my $authorCat = undef; $authorCat = {-class =&gt; ' authors'} if $$N{type}{title} eq 'writeup' &amp;&amp; $$row{author_user} == $$N{author_user};
 	if ($prev &lt; 0) { $prev = ' '; }
 	else { $prev = linkNode($prev, '&amp;#xab;', { -title =&gt; 'Previous: '.getNodeById($prev)-&gt;{title}, -class =&gt; 'previous' }); }
 	if ($next &lt; 0) { $next = ' '; }
@@ -68,7 +69,7 @@ if ($parentNodeId &amp;&amp; $parentNodeId != $originalN
 if (@items || $PAGELOAD-&gt;{e2nodeCategories}) {
 	my $ies = (@items != 1 ? 'ies' : 'y');
 	my ($c, $addId) = !$isIncludedParent ? ('C', qq' id=&quot;categories$nodeid&quot;') : ('Page c', '');
-	my $moggies = qq'&lt;h4&gt;${c}ategor$ies:&lt;/h4&gt; &lt;ul&gt;&lt;li&gt;'.(join '&lt;/li&gt;&lt;li&gt;', @items).'&lt;/li&gt;&lt;/ul&gt;' if @items;
+	my $moggies = undef; $moggies = qq'&lt;h4&gt;${c}ategor$ies:&lt;/h4&gt; &lt;ul&gt;&lt;li&gt;'.(join '&lt;/li&gt;&lt;li&gt;', @items).'&lt;/li&gt;&lt;/ul&gt;' if @items;
 	return qq'&lt;div class=&quot;categories&quot;$addId&quot;&gt;$moggies\n$$PAGELOAD{e2nodeCategories}\n&lt;/div&gt;';
 }
 

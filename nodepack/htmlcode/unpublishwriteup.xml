@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2045921</node_id>
   <title>unpublishwriteup</title>
   <code>my ($wu, $reason) = @_;
@@ -48,7 +49,7 @@ $DB -&gt; sqlDelete('links',
 	&quot;to_node=$id OR from_node=$id AND linktype=&quot;.getId(getNode('category', 'linktype'))
 );
 
-my ($remover, $notification, %editor);
+my ($remover, $notification) = (undef,undef); my %editor = ();
 
 if ($$USER{node_id} == $$wu{author_user}){
 	$remover = $notification = 'author';

@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2021983</node_id>
   <title>decode short string</title>
   <code>use POSIX;
@@ -20,7 +21,7 @@ my @encodeChars = qw/
 # Exclude because of similarity: b 6
 # Exclude because of similarity: S 5
 
-my %decodeChars;
+my %decodeChars = ();
 
 for (my $charValue = 0; $charValue &lt; $#encodeChars; $charValue++) {
   $decodeChars{$encodeChars[$charValue]} = $charValue;

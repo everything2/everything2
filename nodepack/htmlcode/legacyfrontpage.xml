@@ -1,8 +1,9 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1994259</node_id>
   <title>legacyfrontpage</title>
-  <code>my $intro ;
+  <code>my $intro = undef;
 
 if(length($$VARS{preferred_theme})&amp;&amp;($$VARS{preferred_theme}!=1854183)) {
 	$intro= &quot;\n&lt;p&gt;You are currently using the &quot;.linkNode($$VARS{preferred_theme}).&quot;, which is deprecated because the site's volunteer coders don't have the time to support it. It would be best if you  &quot;.linkNode($NODE,'switch to the Zen theme',{switchToZen=&gt;'true'}).&quot; since we no longer support the others, while Zen goes on getting better.&lt;/p&gt;&quot;;
@@ -20,7 +21,7 @@ if(defined($query-&gt;param('switchToZen'))) {
 }
 
 
-my $welcomeStr.= '
+my $welcomeStr = '
 &lt;table width=&quot;100%&quot; border=&quot;0&quot;&gt;
   &lt;tr valign=&quot;top&quot;&gt;
     &lt;td width=&quot;24%&quot; rowspan=&quot;5&quot; style=&quot;padding: 1px&quot;&gt;

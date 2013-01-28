@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2033009</node_id>
   <title>showUserCategories</title>
   <code># pass a user object (or nothing to default to the current node, or current user if the current node is not a user), and the categories maintained by the user will be returned
@@ -19,7 +20,7 @@ return if(!$U);
 
 my $query = $DB-&gt;sqlSelectMany(&quot;node_id&quot;, &quot;node&quot;, &quot;author_user=&quot; . $U . &quot; and type_nodetype=&quot; . getId(getType(&quot;category&quot;)));
 
-my $row;
+my $row = undef;
 my @categories = ();
 push @categories, linkNode($$row{node_id}) while ($row = $query-&gt;fetchrow_hashref());
 

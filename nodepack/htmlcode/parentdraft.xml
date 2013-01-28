@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2036304</node_id>
   <title>parentdraft</title>
   <code># choose an e2node to be the parent of a draft
@@ -9,7 +10,7 @@ my $N = shift || $NODE;
 getRef $N;
 return '&lt;div class=&quot;error&quot;&gt;Not a draft.&lt;/div&gt;' unless $$N{type}{title} eq 'draft';
 
-my $publish = 1 if lc($query -&gt; param('parentdraft')) eq 'publish';
+my $publish = undef; $publish = 1 if lc($query -&gt; param('parentdraft')) eq 'publish';
 
 my $wrap = sub{ $query -&gt; div({id =&gt; &quot;draftstatus$$N{node_id}&quot;, class =&gt; 'parentdraft'}
 	, $_[0]
@@ -24,7 +25,7 @@ my $wrap = sub{ $query -&gt; div({id =&gt; &quot;draftstatus$$N{node_id}&quot;, 
 	)
 )};
 
-my ($str, $publishAs) = ();
+my ($str, $publishAs) = (undef,undef);
 
 if ($publish){
 	# check the user is allowed to post writeups
@@ -93,7 +94,7 @@ my $parent = $DB -&gt; sqlSelect(
 # ... and choice last time around
 my $e2node = $query -&gt; param('writeup_parent_e2node');
 
-my @existing;
+my @existing = ();
 my $newoption = 1;
 
 unless ($e2node){
@@ -186,7 +187,7 @@ unless ($publish &amp;&amp; $e2node){
 
 }else{
 	# publishing and only one option/user has chosen: see if this user can publish here:
-	my $nopublish = htmlcode('nopublishreason', $publishAs || $USER, $e2node)
+	my $nopublish = undef; $nopublish = htmlcode('nopublishreason', $publishAs || $USER, $e2node)
 		unless $e2node eq 'new'; # the user has already been checked
 
 	unless ($nopublish){
@@ -220,7 +221,7 @@ unless ($publish &amp;&amp; $e2node){
 
 		}else{
 			$str .= $nopublish;
-			my $options = &quot;Attach this draft to '&quot;
+			my $options = undef; $options = &quot;Attach this draft to '&quot;
 				.$query -&gt; escapeHTML($title)
 				.&quot;'&quot;
 				unless $e2node =~ /\D/

@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2051976</node_id>
   <title>show paged content</title>
   <code>my ($select, $from, $where, $orderby, $instructions, %functions) = @_;
@@ -11,7 +12,7 @@ $parameters{perpage} ||= $1 || 50;
 $parameters{perpage} = int $parameters{perpage}; #SQueaL safely
 my $page = int(abs(delete $parameters{page})) || 1;
 
-my ($offset, $crs, $rowCount, $pageCount);
+my ($offset, $crs, $rowCount, $pageCount) = (undef,undef,undef,undef);
 
 do{
 	$offset = ($page - 1) * $parameters{perpage};
@@ -40,7 +41,7 @@ if ($pageCount &gt; 1){
 	delete @parameters{qw(node node_id type op sexisgood)};
 	my $link = sub{
 		my ($p, $text) = @_;
-		my %class = (-class =&gt; $1.'link') if $text &amp;&amp; $text =~ /(?:^|;)(\w+)/;
+		my %class = (); %class = (-class =&gt; $1.'link') if $text &amp;&amp; $text =~ /(?:^|;)(\w+)/;
 		$text ||= $p;
 
 		'&amp;nbsp;'
@@ -53,7 +54,7 @@ if ($pageCount &gt; 1){
 		.' ';
 	};
 
-	my @navigation;
+	my @navigation = ();
 	$navigation[$page] = qq'&lt;b class=&quot;thispage&quot;&gt;&amp;nbsp;$page &lt;/b&gt;';
 
 	# show five page numbers including this one, plus first and last,

@@ -1,11 +1,12 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2035511</node_id>
   <title>display draft</title>
   <code>my $displaytype = shift;
 $displaytype ||= $query -&gt; param('displaytype') || 'display';
 
-my $displaylike;
+my $displaylike = undef;
 
 my $tinopener = ($APP-&gt;isAdmin($USER) and $query -&gt; param('tinopener') and !$APP-&gt;canSeeDraft($USER, $NODE, 'find'));
 local ($$NODE{doctext}, $$NODE{collaborators})

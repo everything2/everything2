@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2036363</node_id>
   <title>nopublishreason</title>
   <code># find any reasons for a user not being able to post a writeup (to an e2node)
@@ -23,7 +24,7 @@ return parseLinks('You need to [verify your email account[superdoc]] before you 
 
 # already has a writeup here:
 
-my @group = @{ $$E2N{group} } if $E2N and $$E2N{group};
+my @group = (); @group = @{ $$E2N{group} } if $E2N and $$E2N{group};
 foreach (@group){
 	getRef($_);
 	return if $$_{author_user} == $$user{node_id};
@@ -49,7 +50,7 @@ return ($notMe ? 'User is' : 'You are')
 
 # node is locked:
 
-my $nodelock = $DB-&gt;sqlSelectHashref('*', 'nodelock', &quot;nodelock_node=$$E2N{node_id}&quot;) if $E2N;
+my $nodelock = undef; $nodelock = $DB-&gt;sqlSelectHashref('*', 'nodelock', &quot;nodelock_node=$$E2N{node_id}&quot;) if $E2N;
 return '' unless $nodelock;
 
 return 'This node is locked. '

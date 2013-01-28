@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2047887</node_id>
   <title>angelToDraft</title>
   <code>my $tomb = shift;
@@ -43,7 +44,7 @@ if ($N &amp;&amp; $$N{doctext} eq $$data{doctext}){
 	$DB -&gt; sqlDelete('heaven', &quot;node_id=$angel_id&quot;)
 		unless $APP-&gt;inDevEnvironment();
 
-	my $killa = getNodeById($$tomb{killa_user}) unless $$tomb{killa_user} == -1;
+	my $killa = undef; $killa = getNodeById($$tomb{killa_user}) unless $$tomb{killa_user} == -1;
 	$killa = ref $killa ? &quot;[$$killa{title}\[user]]&quot; : 'unknown editor';
 	htmlcode('addNodenote', $N, &quot;Restored from Node Heaven.&lt;br&gt;Originally posted $$tomb{createtime};
 		nuked by $killa&quot;);

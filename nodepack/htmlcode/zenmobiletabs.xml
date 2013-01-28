@@ -1,10 +1,11 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2021829</node_id>
   <title>zenMobileTabs</title>
   <code>my $canEdit = canUpdateNode($USER, $NODE) &amp;&amp; $USER-&gt;{user_id} == $NODE-&gt;{author_user};
 my $dt = $query-&gt;param('displaytype') || 'display';
-my @tabs;
+my @tabs = ();
 
 if ($dt eq 'display') {
   push @tabs, [1, 'display'];

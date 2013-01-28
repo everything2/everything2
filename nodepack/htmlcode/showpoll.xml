@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2052743</node_id>
   <title>showpoll</title>
   <code>my ($POLL, $showStatus) = @_;
@@ -17,7 +18,7 @@ my $vote = ($DB-&gt;sqlSelect(
 $vote = -1 unless defined $vote;
 
 $showStatus = &quot; ($$POLL{poll_status})&quot; if $showStatus;
-my $str = '&lt;h2&gt;'.linkNode($POLL).&quot;$showStatus&lt;/h2&gt;&quot;
+my $str = undef; $str = '&lt;h2&gt;'.linkNode($POLL).&quot;$showStatus&lt;/h2&gt;&quot;
 	unless $$POLL{node_id} == $$NODE{node_id};
 
 $str .= '&lt;p&gt;&lt;cite&gt;by '

@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2035515</node_id>
   <title>setdraftstatus</title>
   <code># set publication_status and collaborators
@@ -128,7 +129,7 @@ if ($parent){
 	$detach = '';
 }
 
-my ($publishas, $advanced) = ();
+my ($publishas, $advanced) = (undef,undef);
 if ($query -&gt; param('advanced')){
 	$publishas = htmlcode('canpublishas');
 

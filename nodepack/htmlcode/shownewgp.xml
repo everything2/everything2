@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1959548</node_id>
   <title>showNewGP</title>
   <code>my ($shownumbers, $isxml, $newwuonly) = @_;
@@ -14,14 +15,14 @@ unless($$VARS{oldGP}) {
 return  if ($$VARS{oldGP} == $$USER{GP} and not $newwuonly);
 my $VSETTINGS = getVars(getNode('vote settings', 'setting'));
 
-my $str;
+my $str = undef;
 my $header = $$VSETTINGS{showExpHeader};
 my $footer = $$VSETTINGS{showExpFooter};
 my $newGP = $$USER{GP} - $$VARS{oldGP};
 
 ($header, $footer) = ('', '') if htmlcode('isZen');
 
-my $xmlstr;
+my $xmlstr = undef;
 $xmlstr = '&lt;gpinfo&gt;' if $isxml;
 $xmlstr .= &quot;&lt;gpchange value=\&quot;$newGP\&quot;&gt;$$USER{GP}&lt;/gpchange&gt;&quot; if $isxml;
 

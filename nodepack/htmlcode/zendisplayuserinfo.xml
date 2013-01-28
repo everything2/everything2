@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1873630</node_id>
   <title>zenDisplayUserInfo</title>
   <code>my @showThings = (
@@ -42,16 +43,13 @@ my $isChanop = $APP-&gt;isChanop($USER);
 my $SETTINGS = getVars $NODE;
 
 #display
-my $textPre;
-my $textMid;
-my $textPost;
-	$textPre = '&lt;dt&gt;';
-	$textMid = '&lt;/dt&gt;&lt;dd&gt;';
-	$textPost = &quot;&lt;/dd&gt;\n&quot;;
+my $textPre = '&lt;dt&gt;';
+my $textMid = '&lt;/dt&gt;&lt;dd&gt;';
+my $textPost = &quot;&lt;/dd&gt;\n&quot;;
 
 local *hash2var = sub {
 my $hash_ref = $_[0];
-my $str;
+my $str = undef;
 while ( my ($key, $value) = each(%$hash_ref) ) {
         $str.= &quot;$key=&gt;$value|||&quot;;
     }
@@ -64,7 +62,8 @@ return $str;}
 local * var2hash = sub {
 my ($str2) = @_;
 my @split2 = split(/\|\|\|/,$str2);
-my ($tstr, $hash, @temp);
+my ($tstr, $hash ) = (undef, undef); 
+my @temp = ();
 foreach (@split2) {
   @temp = split(/\=\&gt;/, $_);
 
@@ -244,9 +243,9 @@ unless(($nid==220) ||($nid==322)) {	#hack around nate and hemos
 my $str = '';
 my $locker = getNodeById($$NODE{acctlock});
 $str .= '&lt;big&gt;&lt;strong&gt;Account locked&lt;/strong&gt;&lt;/big&gt; by '.linkNode($locker).'&lt;br&gt;' if($APP-&gt;isEditor($USER) &amp;&amp; $$NODE{acctlock} != 0);
-my $t; #nice Title
-my $s; #which Sub to call
-my $r; #Result of sub call
+my $t = undef; #nice Title
+my $s = undef; #which Sub to call
+my $r = undef; #Result of sub call
 
 $str .=  qq'&lt;dl id=&quot;userinfo&quot;&gt;\n';
 
@@ -259,6 +258,5 @@ foreach my $k (@showThings) {
 $str .=  &quot;&lt;/dl&gt;\n&quot;;
 
 $str;
-
 </code>
 </node>

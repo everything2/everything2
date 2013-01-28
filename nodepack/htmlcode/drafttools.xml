@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2053784</node_id>
   <title>drafttools</title>
   <code>my ($N, $open) = @_;
@@ -11,14 +12,15 @@ my $isEditor = $APP-&gt;isEditor($USER);
 
 my $isMine = ($$N{author_user} == $$USER{node_id});
 
-my (@tools, $text , $linktitle, $attachment, $notes) = ();
+my @tools = ();
+my ($text , $linktitle, $attachment, $notes) = (undef,undef,undef,undef);
 my $n = $$N{node_id};
 my $id = 'adminheader'.$n ;
 
 my $author = getNodeById( $$N{author_user} );
 $author = $query -&gt; escapeHTML($$author{title}) if $author;
 
-my $status = getNodeById($$N{publication_status}) if $$N{publication_status};
+my $status = undef; $status = getNodeById($$N{publication_status}) if $$N{publication_status};
 $status = $$status{title} if $status;
 
 $text = $status || 'private';

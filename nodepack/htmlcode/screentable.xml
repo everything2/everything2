@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1973836</node_id>
   <title>screenTable</title>
   <code># By [call] - see [edev: Tables and HTML Validation]
@@ -25,7 +26,7 @@
 # an RE describing valid contexts. (again, perl and RE =&gt; faster than
 # a bunch of ifs or whatever)
 sub tableWellFormed ($) {
-    my (@stack);
+    my @stack = ();
     for ($_[0] =~ m{&lt;(/?table|/?tr|/?th|/?td)[\s&gt;]}ig) {
         my $tag = lc $_;
         my $top = $stack[$#stack];

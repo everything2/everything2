@@ -1,10 +1,11 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2044454</node_id>
   <title>testshowmessages</title>
   <code>my ($maxmsgs,$showOpts) = @_;
 my $json = {};
-my $jsoncount = 1 if $showOpts =~ /j/;
+my $jsoncount = undef; $jsoncount = 1 if $showOpts =~ /j/;
 
 #display options
 $showOpts ||= '';
@@ -63,12 +64,12 @@ my $csr = $DB-&gt;sqlSelectMany('*', 'message', $limits . $filterMinor, &quot;OR
 my $UID = getId($USER) || 0;
 my $isEDev = $APP-&gt;isDeveloper($USER, &quot;nogods&quot;);
 
-my $aid;  #message's author's ID
-my $a; #message's author; have to do this in case sender has been deleted (!)
-my $ugID;
-my $UG;
-my $flags;
-my $userLink;
+my $aid = undef;  #message's author's ID
+my $a = undef; #message's author; have to do this in case sender has been deleted (!)
+my $ugID = undef;
+my $UG = undef;
+my $flags = undef;
+my $userLink = undef;
 
 #UIDs for Virgil, CME, Klaproth, and root.
 my @botlist = qw(1080927 839239 952215 113);
@@ -92,7 +93,7 @@ foreach my $MSG (@msgs) {
 
   $aid = $$MSG{author_user} || 0;
   if($aid) { $a = getNodeById($aid) || 0; } else { undef $a; }
-  my $authorVars = getVars $a if $a;
+  my $authorVars = undef; $authorVars = getVars $a if $a;
   my $name = $a ? $$a{title} : '?';
   $name =~ tr/ /_/;
   $name = encodeHTML($name);
@@ -134,7 +135,7 @@ foreach my $MSG (@msgs) {
     # Test for ONO. This is moderately cheesy because the message text
     # could start with &quot;ONO: &quot;, but that's rare in practice. The table
     # doesn't track ONOness, so the text is all we've got.
-    my $ono = '?' if $text =~ /^O[nN]O: /;
+    my $ono = undef; $ono = '?' if $text =~ /^O[nN]O: /;
   }
 
   if($showDT) {
@@ -186,7 +187,7 @@ foreach my $MSG (@msgs) {
 
   $str .= '&lt;cite&gt;'.$userLink.' says&lt;/cite&gt; ' . parseLinks($text,0,1);
   my $mbid = $$MSG{message_id};
-  my $noReplyWhy;
+  my $noReplyWhy = undef;
   my $replyBox = htmlcode('messageBox', $aid, 0, $mbid, $ugID, \$noReplyWhy);
   my $replyWidgetOptions = {
     showwidget =&gt; $mbid

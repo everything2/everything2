@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>1895696</node_id>
   <title>selectWriteupTypes</title>
   <code>my ($listName, $bitOptions) = @_;
@@ -26,7 +27,7 @@ $bitOptions |= 0;
 
 my (@WRTYPE) = getNodeWhere({type_nodetype =&gt; getId(getType('writeuptype'))});
 
-my %items;
+my %items = ();
 
 foreach (@WRTYPE) {
 	$items{getId($_)} = $$_{title};

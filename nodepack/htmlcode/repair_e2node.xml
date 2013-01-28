@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2009159</node_id>
   <title>repair e2node</title>
   <code>return &quot;&quot; unless $APP-&gt;isEditor($USER);
@@ -12,15 +13,15 @@ return &quot;&quot; unless($syncnode &amp;&amp; $$syncnode{type}{title} eq &quot
 $no_order = 1 if ($syncnode-&gt;{orderlock_user});
 
 my $grp = $$syncnode{group};
-my @wus;
+my @wus = ();
 my $linktype = getId(getNode 'parent_node', 'linktype');
-my $update_group = 1 unless $no_order;
+my $update_group = undef; $update_group = 1 unless $no_order;
 
 foreach(@$grp)
 {
   my $wu = getNodeById($_);
  
-  my $reject = 1 unless $wu &amp;&amp; $$wu{type}{title} eq &quot;writeup&quot; &amp;&amp; !grep {$$_{node_id} == $$wu{node_id}} @wus;
+  my $reject = undef; $reject = 1 unless $wu &amp;&amp; $$wu{type}{title} eq &quot;writeup&quot; &amp;&amp; !grep {$$_{node_id} == $$wu{node_id}} @wus;
   $update_group ||= $reject;
   next if $reject;
 

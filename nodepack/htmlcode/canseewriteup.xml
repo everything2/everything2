@@ -1,11 +1,12 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2005858</node_id>
   <title>canseewriteup</title>
   <code>my ($N) = @_ ;
 $N ||= $NODE ;
 
-my $isTarget = delete $PAGELOAD-&gt;{notshown}-&gt;{targetauthor}
+my $isTarget = undef; $isTarget = delete $PAGELOAD-&gt;{notshown}-&gt;{targetauthor}
 	if defined $PAGELOAD-&gt;{notshown} and $PAGELOAD-&gt;{notshown}-&gt;{targetauthor} == $$N{author_user};
 
 if ($$N{author_user} == $$USER{user_id}){

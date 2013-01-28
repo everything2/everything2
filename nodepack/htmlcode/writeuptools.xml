@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2053783</node_id>
   <title>writeuptools</title>
   <code>my ($N, $open) = @_;
@@ -12,7 +13,7 @@ my $isMine = ($$N{author_user} == $$USER{node_id});
 return unless $isMine or $isEditor;
 
 my ($linktext , $linktitle, $hide, $insure,
-   $insured, $remove, $reassign, $nodenotes) = ();
+   $insured, $remove, $reassign, $nodenotes) = (undef,undef,undef,undef,undef,undef,undef,undef);
 
 my $n = $$N{node_id};
 my $id = 'adminheader'.$n ;

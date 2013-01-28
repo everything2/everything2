@@ -1,8 +1,9 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2008106</node_id>
   <title>blacklistedIPs</title>
-  <code>my $str;
+  <code>my $str = undef;
 my $offset = int($query-&gt;param('offset')) || 0;
 my $pageSize = 200;
 my ($firstItem, $lastItem) = ($offset + 1, $offset + $pageSize);
@@ -121,7 +122,7 @@ SELECT ipblacklistref.ipblacklistref_id
 	LIMIT $offset,$records
 SQLEND
 
-my $cursor;
+my $cursor = undef;
 my $saveRaise = $dbh-&gt;{RaiseError};
 $dbh-&gt;{RaiseError} = 1;
 eval { 

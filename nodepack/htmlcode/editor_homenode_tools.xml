@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <modperlsafe>1</modperlsafe>
   <node_id>2007364</node_id>
   <title>editor homenode tools</title>
   <code>my $isRoot = $APP-&gt;isAdmin($USER);
