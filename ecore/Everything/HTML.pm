@@ -1595,33 +1595,29 @@ sub htmlcode {
 
 	my ($htmlcodeCode, $codeNode) = getCode($htmlcodeName);
 
-	if (scalar @_ == 1 and !ref $_[0]) {
-
-		$splitter = '@_ = split(/\s*,\s*/, shift);';
-		$encodedArgs = $_[0];
-
-	} elsif (scalar @_ > 0) {
-
-		$encodedArgs = join(",", @_);
-
-	}	
-
 	# localize @_ to insure encodeHTML doesn't mess with our args
 	my @savedArgs = @_;
+
+	# Old-style htmlcode call. We will eventually change the way this works
+	# By creating an embedded htmlcode entrypoint which is smarter about doing the split
+	# But for now, emulate the old behavior
+
+	if(scalar(@savedArgs) == 1 && !ref($savedArgs[0]))
+	{
+		@savedArgs = split(/\s*,\s*/, $savedArgs[0]);
+	}
+
 	$encodedArgs = encodeHTML($encodedArgs);
 
-	my $warnStr = "<p>Calling htmlcode $htmlcodeName with arguments: "
-				. $encodedArgs
-				. "</p>"
+	my $warnStr = "<p>Calling htmlcode $htmlcodeName"
 				;
 	my $function;
 
 	# If we are doing a new-style htmlcode call (or have no arguments)
 	#  we can use the cached compilation of this function
+
 	if ($splitter eq "") {
 		$function = getCompiledCode($codeNode, \&evalCode);
-	} else {
-		$function  = evalCode("sub {" . $splitter . $htmlcodeCode . "\n}" );
 	}
 	return "<p>htmlcode '$htmlcodeName ' raised compile-time error:</p>\n $function"
 		if ref \$function eq 'SCALAR' ;
