@@ -10,7 +10,7 @@ if($softserve eq 'xml'){
 }
 return if($query-&gt;param('no_softlinks'));
 
-my $N = getNodeById($$NODE{parent_e2node},'light') if $$NODE{type}{title} eq 'writeup' ;
+my $N = undef; $N = getNodeById($$NODE{parent_e2node},'light') if $$NODE{type}{title} eq 'writeup' ;
 $N ||= $NODE;
 my $lnid = undef;
 if ($APP-&gt;isGuest($USER) ) {

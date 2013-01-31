@@ -19,7 +19,8 @@ return if getId($USER) != getId($NODE);
 
 &lt;table width=&quot;100%&quot; id='homenodetext'&gt;&lt;tr&gt;&lt;td&gt;
 [%  
-
+  my $isignored = $DB-&gt;sqlSelect(&quot;ignore_node&quot;,&quot;messageignore&quot;,&quot;messageignore_id=$$NODE{node_id} and ignore_node=$$USER{node_id}&quot;);
+  return if $isignored;
   return if ( $APP-&gt;isGuest($USER) );
   my $csr = $DB-&gt;sqlSelectMany('*','registration',
     'from_user='.$$NODE{user_id}.' &amp;&amp; in_user_profile=1')

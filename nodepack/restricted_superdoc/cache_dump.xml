@@ -25,7 +25,7 @@ foreach my $cache_entry (@$cache)
   $typestats-&gt;{$item-&gt;{type}-&gt;{title}}++;
    
   push @$extrainfo, $$item{type}{title};
-  if($item-&gt;{type}-&gt;{title} eq &quot;htmlcode&quot;)
+  if($item-&gt;{type}-&gt;{title} eq &quot;htmlcode&quot; or $item-&gt;{type}-&gt;{title} eq &quot;opcode&quot;)
   {
      if(exists($item-&gt;{compiledCode}))
      {

@@ -118,8 +118,6 @@ $str .= &quot;&lt;div class=\&quot;alsoonthispage\&quot;&gt;\n&lt;h2&gt;Also on 
 $str;
 %]
 
-[{stars}]
-
 &lt;div id='displaytypelinks'&gt;
 &lt;p&gt;[% return if $APP-&gt;isGuest($USER); linkNode($NODE, 'printable version', { displaytype =&gt; 'printable' , lastnode_id =&gt; '0', -rel =&gt; 'nofollow' } ) %]&lt;/p&gt;
 &lt;p&gt;[% return if $APP-&gt;isGuest($USER); linkNode($NODE, 'chaos', { displaytype =&gt; 'chaos' , lastnode_id =&gt; '0', -rel =&gt; 'nofollow' } ) %]&lt;/p&gt;
