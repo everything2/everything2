@@ -1,0 +1,10 @@
+<node>
+  <type_nodetype>150</type_nodetype>
+  <maintain_nodetype>1854352</maintain_nodetype>
+  <node_id>2100594</node_id>
+  <title>stylesheet preupdate maintenance</title>
+  <maintaintype>preupdate</maintaintype>
+  <code>my ($stylesheet_id) = @_;
+my $SSNODE = getNodeById($stylesheet_id);
+$SSNODE-&gt;{contentversion}++; #Don't call update, it'll loop</code>
+</node>
