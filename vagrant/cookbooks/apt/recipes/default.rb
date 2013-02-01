@@ -7,10 +7,11 @@
 #
 
 execute "apt-get-update-periodic" do
-  command "apt-get update"
-  #ignore_failure true
-  #only_if do
-  #  File.exists?('/var/lib/apt/periodic/update-success-stamp') &&
-  #  File.mtime('/var/lib/apt/periodic/update-success-stamp') < Time.now - 86400
-  #end
+  command "apt-get update && apt-get dist-upgrade -y"
+  ignore_failure true
+  only_if do
+    File.exists?('/var/cache/apt/pkgcache.bin') &&
+    File.mtime('/var/cache/apt/pkgcache.bin') < Time.now - 86400
+  end
 end
+
