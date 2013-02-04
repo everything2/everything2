@@ -51,6 +51,7 @@ to_install = [
     'libnet-smtp-ssl-perl',
     'libauthen-sasl-perl',
     'libxml-rss-perl',
+    'yui-compressor',
 ]
 
 to_install.each do |p|
