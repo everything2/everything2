@@ -124,6 +124,13 @@ BEGIN {
 			"assignable" => ["admin"],
 			"validate" => "integer",
 		},
+		"fix_level" => 
+		{
+			"on" => ["stylesheet"],
+			"description" => "Level of fix automatically applied to other stylesheets",
+			"assignable" => ["admin"],
+			"validate" => "integer",
+		},
 	};
 
 	foreach my $param(keys %$PARAMS)
@@ -1572,5 +1579,25 @@ sub commifyNumber
 	return $number;
 }
 
+sub uploadS3Content
+{
+	my ($this, $node) = @_;
+	
+	if(ref $node eq "")
+	{
+		$node = $this->{db}->getNodeById($node);
+	}
+
+	my $s3bucket = $node->{s3bucket};
+	if(not defined $s3bucket)
+	{
+		if($node->{type}->{title} eq "jscript" or $node->{type}->{title} eq "stylesheet")
+		{
+			$s3bucket = "jscss";
+		}
+	}
+
+	my $s3 = Everything::S3->new($s3bucket);
+}
 
 1;
