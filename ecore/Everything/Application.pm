@@ -3,6 +3,7 @@
 use strict;
 package Everything::Application;
 use Everything;
+use Everything::S3;
 
 # For node2mail
 use Email::Sender::Simple qw(try_to_sendmail);
@@ -114,6 +115,14 @@ BEGIN {
 			"on" => ["writeup"],
 			"description" => "Mark this as being about a book with this author",
 			"assignable" => ["admin"],
+		},
+		
+		"production_version" =>
+		{
+			"on" => ["stylesheet","jscript"],
+			"description" => "Mark a particular version of an s3 object as being in production",
+			"assignable" => ["admin"],
+			"validate" => "integer",
 		},
 	};
 

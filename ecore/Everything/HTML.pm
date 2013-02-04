@@ -1623,9 +1623,9 @@ sub htmlcode {
 		if ref \$function eq 'SCALAR' ;
 
 	if (wantarray) {
-		eval { @returnArray = &$function(@savedArgs); };
+		@returnArray = &$function(@savedArgs);
 	} else {
-		eval { $returnVal = &$function(@savedArgs); };
+		$returnVal = &$function(@savedArgs);
 	}
 
 	if ($@) {
