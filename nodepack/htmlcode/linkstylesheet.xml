@@ -19,11 +19,11 @@ unless (ref $n) {
 	}
 }
 if ($n) {
-  my $v = $DB-&gt;{cache}-&gt;getGlobalVersion($n);
+  #my $v = $DB-&gt;{cache}-&gt;getGlobalVersion($n);
 
   return urlGen({
   	node_id =&gt; $n-&gt;{node_id},
-  	version =&gt; $v,
+  	#version =&gt; $v,
   	displaytype =&gt; $displaytype
   }, 1)
 	  if $$USER{node_id} == $$n{author_user} || $VARS-&gt;{useRawStylesheets};
@@ -34,7 +34,7 @@ if ($n) {
     if $$USER{ user_id } != $$n{ author_user }
     &amp;&amp; !$APP-&gt;isGuest($USER);
   $escapeTitle =~ s/%[0-9A-F]{2}|_//g;
-  my $stylesheetFilename = &quot;${escapeTitle}_v$v$autofixText.css&quot;; 
+  my $stylesheetFilename = &quot;${escapeTitle}$autofixText.css&quot;; 
   return &quot;http://jscss.everything2.com/$stylesheetFilename&quot;;
 } else {
   return $n;

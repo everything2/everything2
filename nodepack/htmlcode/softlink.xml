@@ -26,13 +26,13 @@ foreach( values %{$Everything::CONF-&gt;{system}-&gt;{maintenance_nodes}} ) {
 }
 return if $unlinkables{ $$N{node_id} };
 
-my $isRoot = $APP-&gt;isAdmin($USER);
-my $cantrim = $isRoot;
+my $isEditor = $APP-&gt;isEditor($USER);
+my $cantrim = $isEditor;
 
 my $limit = undef;
 if( $APP-&gt;isGuest($USER) ) {
 	$limit = 24;
-} elsif($isRoot) {
+} elsif($isEditor) {
 	$limit = 64;
 } else {
 	$limit = 48;
