@@ -50,8 +50,6 @@ if ($$USER{user_id} == $$NODE{author_user} or $APP-&gt;isAdmin($USER) ) {
 		&lt;label&gt;&lt;input type=&quot;checkbox&quot; name=&quot;saveold&quot; value=&quot;1&quot;&gt; Save old selectors in comments&lt;/label&gt;
 		&lt;/p&gt;';
 	} else {
-		my $MENUNODE = getNode('theme menu', 'setting');
-		my $menu = getVars($MENUNODE);
                 my $inmenu = $APP-&gt;getParameter($NODE, &quot;supported_sheet&quot;); $inmenu ||= 0;
 
 		if ($query -&gt; param('sexisgood') &amp;&amp; $query-&gt;param('inmenu')){
