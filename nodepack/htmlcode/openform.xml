@@ -5,7 +5,7 @@
   <title>openform</title>
   <code>my ($name, $method) = @_;
 
-my %params = {};
+my %params = ();
 
 unless ( $name =~ /^-/ ) {
    $params{ -method } = $method if $method ;
