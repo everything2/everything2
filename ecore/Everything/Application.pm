@@ -1586,6 +1586,105 @@ sub commifyNumber
 	return $number;
 }
 
+sub fixStylesheet
+{
+	my ($this, $node, $saveold) = @_;
+
+	my $howfixed = $this->getParameter($node, 'fix_level');
+	my %replace = ();
+	my @disable = ();
+	my $addstyles = undef;
+
+	unless ( $howfixed >= 1 ) {
+		%replace = (
+		qr'\.cup_more's										=>	\"#cooluserpicks .morelink" ,
+		qr'(?:#creamofthecool([^,]*?))?\.cotc_info's		=>	\"#creamofthecool $1.contentinfo" ,
+		qr'(?:#creamofthecool([^,]*?))?\.cotc_title's		=>	\"#creamofthecool $1.title" ,
+		qr'(?:#creamofthecool([^,]*?))?\.cotc_author's		=>	\"#creamofthecool $1.author" ,
+		qr'(?:#creamofthecool([^,]*?))?\.cotc_text's		=>	\"#creamofthecool $1.content" ,
+		qr'(?:#creamofthecool([^,]*?))?\.cotc_entry's		=>	\"#creamofthecool $1.item" ,
+		qr'(?:#creamofthecool([^,]*?))?\.cotc_more's		=>	\"#creamofthecool $1.morelink" ,
+		qr'weblog_item' 									=>	\"weblog .item" ,
+		qr'(?:\.weblog(?:_| \.)item([^,]*?))?\.wl_title([^,]*?a)?'s	=>	\".weblog .item $1.title" ,
+		qr'(?:\.weblog(?:_| \.)item([^,]*?))?\.wl_author:'s	=>	\".weblog .item $1.author:" ,
+		qr'(?:\.weblog(?:_| \.)item([^,]*?))?\.wl_author's	=>	\".weblog .item .contentinfo cite" ,
+		qr'(?:\.weblog(?:_| \.)item([^,]*?))?\.wl_date's	=>	\".weblog .item $1.date" ,
+		qr'(?:\.weblog(?:_| \.)item([^,]*?))?\.wl_text's	=>	\".weblog .item $1.content" ,
+		qr'(?:\.weblog(?:_| \.)item([^,]*?))?\.wl_remove's	=>	\".weblog .item $1.remove" ,
+		qr'(?:\.weblog(?:_| \.)item([^,]*?))?\.wl_linkedby's	=>	\".weblog .item $1.linkedby" ,
+		qr'(div)?\.wl_links's								=>	\".weblog .morelink" ,
+		qr'\.wl_linkedby's									=>	\".linkedby" ,
+		qr'\.wl_remove's									=>	\".remove" ,
+		qr'(#frontpage_news\s+)\.wl_links's					=>	\"#frontpage_news .morelink" ,
+		qr'(?:#newwriteups([^,]*?))?#writeup_list's			=>	\".nodelet $1.infolist" ,
+		qr'(?:(\.infolist|#writeup_list)[^,]*?)?\.writeupmeta's	=>	\".infolist .contentinfo" ,
+		qr'\.writeup_text's									=>	\".writeup .content" ,
+		qr'#newWriteupsMore's								=>	\".nodelet .morelink" ,
+		qr'#log_list's										=>	\"#logs .infolist" ,
+		qr'(?:div)?\.writeup\b's							=>	\".writeuppage .item"
+		) unless $howfixed > 0 ;
+	
+		@disable = (
+		'(\.nodelet \.infolist|#newwriteups)([^,]*)(author|type|title)' ,
+		'author:before'
+		) ;
+
+		$addstyles = '.weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
+.weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
+.weblog .title, .nodelet .title {font-weight: bold;}';
+	}
+
+	unless ( $howfixed >= 2 ) {
+		%replace = (
+			qr'\.writeup_title's	=>	\".writeuppage .contentheader" ,
+			qr'h2\.topic'			=>	\"#pageheader .topic" ,
+		%replace ) ;
+		$addstyles .= '.actions , .actions li {display:inline;margin:0;padding:0 0.5em 0 0;}
+.actions { display: block ; }';
+	}
+
+	$addstyles = "/*= autofix added rules. adjust to taste: */\n$addstyles/*= end autofix added rules */\n\n"  if $addstyles ;
+
+	my $idfunction = sub {
+		my ( $selectid , $nodeid ) = @_ ;
+		my $str = lc( ${getNodeById( $nodeid )}{title} ) ;
+		$str =~ s/\W//g ;
+		return '#'.$str if $selectid ;
+		'.'.$str ;
+	} ;
+
+	my @input = split( '(\s*(?:\{[^}]*\}|/\*(?:[^*]|\*[^/])*\*/)\s*)' , $$node{ doctext } ) ;
+	my $output = undef; $output = "/*= Comments containing old/disabled rules start with = for easy finding */\n" if $saveold ;
+	my $fixwasneeded = undef;
+
+	foreach ( @input ) {
+		my $chunk = $_ ;
+		my $old = undef; $old = "/*=$chunk*/\n" if $saveold ;
+		unless ( $chunk =~ '^(/\*|\{)' ) {
+			$chunk =~ s/(?:\.nodetype_|(\.node_id|#nodelet_))(\d+)/&$idfunction( $1 , $2 )/eg ;
+			foreach ( keys %replace ) {
+				$chunk =~ s/$_/${$replace{ $_ }}/g ;
+			}
+			unless ( $chunk eq $_ ) {
+				$output .= $old ;
+				$fixwasneeded = 1 ;
+  			}
+			foreach ( @disable ) {
+				$chunk =~ s!([^,]*$_[^,]*)! DISABLED /*= $1 */ !sg unless $chunk =~ 'DISABLED /\*=' ;
+			}
+		}
+		$output .= $chunk ;
+	}
+
+	#unless ( $fixwasneeded ) {
+	#	$this->setParameter($node, -1, 'fix_level', $Everything::CONF->{stylesheet_fix_level});
+	#}
+
+	$output = $addstyles.$output if $fixwasneeded ;
+
+	return $output ;
+}
+
 sub uploadS3Content
 {
 	my ($this, $node) = @_;
