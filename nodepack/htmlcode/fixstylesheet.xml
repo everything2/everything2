@@ -3,9 +3,7 @@
   <modperlsafe>1</modperlsafe>
   <node_id>1995928</node_id>
   <title>fixstylesheet</title>
-  <code>my $VARSNODE = getNode( 'fixed stylesheets' ,'setting' ) ;
-my $fixed = getVars( $VARSNODE ) ;
-my $howfixed = $$fixed{ $$NODE{ node_id } } ;
+  <code>my $howfixed = $APP-&gt;getParameter($NODE, 'fix_level');
 my %replace = ();
 my @disable = ();
 my $addstyles = undef;
@@ -95,14 +93,7 @@ foreach ( @input ) {
 }
 
 unless ( $fixwasneeded ) {
-	$$fixed{ $$NODE{ node_id } } = $Everything::CONF-&gt;{stylesheet_fix_level} ;
-	setVars( $VARSNODE , $fixed ) ;
-	my $MENUNODE = getNode('theme menu', 'setting');
-	my $menu = getVars($MENUNODE);
-	if ( $$menu{ $$NODE{node_id} } ){ # theme menu only shows up-to-date stylesheets
-		$$menu{ $$NODE{node_id} } = $Everything::CONF-&gt;{stylesheet_fix_level} ;
-		setVars( $MENUNODE , $menu ) ;
-	}
+        $APP-&gt;setParameter($NODE, -1, 'fix_level', $Everything::CONF-&gt;{stylesheet_fix_level});
 }
 
 $output = $addstyles.$output if $fixwasneeded ;

@@ -52,14 +52,17 @@ if ($$USER{user_id} == $$NODE{author_user} or $APP-&gt;isAdmin($USER) ) {
 	} else {
 		my $MENUNODE = getNode('theme menu', 'setting');
 		my $menu = getVars($MENUNODE);
-		$str .= $query -&gt; checkbox(-name =&gt; 'inmenu', value =&gt; $Everything::CONF-&gt;{stylesheet_fix_level} ,
-			checked =&gt; $$menu{$$NODE{node_id}}, label =&gt; 'Include in theme menu' );
-		if ($query -&gt; param('sexisgood') &amp;&amp;
-			$query -&gt; param('inmenu') != $$menu{$$NODE{node_id}}){
-			$$menu{$$NODE{node_id}} = $query -&gt; param('inmenu') ;
-			delete $$menu{$$NODE{node_id}} unless $query -&gt; param('inmenu');
-			setVars( $MENUNODE , $menu ) ;
-		}
+                my $inmenu = $APP-&gt;getParameter($NODE, &quot;supported_sheet&quot;); $inmenu ||= 0;
+
+		if ($query -&gt; param('sexisgood') &amp;&amp; $query-&gt;param('inmenu')){
+			$APP-&gt;setParameter($NODE, -1,'supported_sheet',1);
+                        $inmenu = 1;
+		}elsif ($query-&gt;param('sexisgood') &amp;&amp; !$query-&gt;param('inmenu')){
+                        $APP-&gt;delParameter($NODE, -1,'supported_sheet');
+                        $inmenu = 0;
+                }
+		$str .= $query -&gt; checkbox(-name =&gt; 'inmenu', value =&gt; 1 ,
+			checked =&gt; $inmenu, label =&gt; 'Include in theme menu' );
 	}
 
   if ($$USER{user_id} == $$NODE{author_user}) {

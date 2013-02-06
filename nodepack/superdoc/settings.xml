@@ -36,28 +36,24 @@ if($query-&gt;param('chosentheme')) {
 }
 local $$THEME{default_style} = getVars(getNodeById( $Everything::CONF-&gt;{system}-&gt;{default_theme} ))-&gt;{default_style} if $$VARS{preferred_theme};
 
-my $sheets = getVars( getNode( 'theme menu' ,'setting' ) ) ;
-foreach ( keys %$sheets ){
-	if ( $$sheets{$_} &gt;= $Everything::CONF-&gt;{stylesheet_fix_level} ){
-		my $sh = getNodeById($_) ;
-                if(not defined $sh)
-                {
-                   delete $$sheets{$_};
-                   next;
-                }
-                my $auth = getNodeById($$sh{author_user}); 
-                my $author_string = &quot;&quot;;
-                if($auth)
-                {
-                    $author_string = &quot; by &quot;.$auth-&gt;{title};
-                }
-		$$sheets{$_} = $$sh{title}.(
-			$$sh{title} ne $$THEME{default_style} ?
-			$author_string : ' (default)');
-	}else{
-		delete $$sheets{$_} ;
-	}
+my $sheets = undef;
+my $supported_sheets = $DB-&gt;getNodesWithParam(&quot;supported_sheet&quot;);
+foreach my $thissheet (@$supported_sheets)
+{
+  my $fixlevel = $APP-&gt;getParameter($thissheet, &quot;fix_level&quot;);
+  next unless $fixlevel and $fixlevel &gt;= $Everything::CONF-&gt;{stylesheet_fix_level};
+  my $sh = getNodeById($thissheet);
+  #next unless $sh;
+
+  my $auth = getNodeById($$sh{author_user}); 
+  my $author_string = &quot;&quot;;
+  if($auth)
+  {
+    $author_string = &quot; by &quot;.$auth-&gt;{title};
+  }
+  $$sheets{$thissheet} = $$sh{title}.($$sh{title} ne $$THEME{default_style} ? $author_string : ' (default)');
 }
+
 $$sheets{ $$VARS{userstyle} } = getNodeById($$VARS{userstyle}) -&gt; {title}
 	unless !$$VARS{userstyle} || $$sheets{ $$VARS{userstyle} } ;
 
