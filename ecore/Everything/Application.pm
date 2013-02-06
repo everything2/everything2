@@ -133,7 +133,7 @@ BEGIN {
 		},
 		"supported_sheet" => 
 		{
-			"on" => ["stylehsheet"],
+			"on" => ["stylesheet"],
 			"description" => "Supported for general use",
 			"assignable" => ["admin"],
 			"validate" => "integer",
