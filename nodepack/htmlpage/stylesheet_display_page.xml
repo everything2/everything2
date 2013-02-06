@@ -33,11 +33,11 @@ if ($$USER{user_id} == $$NODE{author_user} or $APP-&gt;isAdmin($USER) ) {
   	$str .= '&lt;p&gt;&lt;strong&gt;The stylesheet has been fixed. Changes will only become permanent
 		when you click on &quot;stumbit&quot;.&lt;/strong&gt;&lt;/p&gt;
 		&lt;textarea cols=&quot;60&quot; rows=&quot;30&quot; name=&quot;stylesheet_doctext&quot;&gt;'.
-		htmlcode( 'fixstylesheet' , $saveold ).'&lt;/textarea&gt;' ;
+		$APP-&gt;fixStylesheet($NODE,$saveold ).'&lt;/textarea&gt;' ;
   }
   else {
 	# update fixed setting if doesn't need fixing:
-  	htmlcode( 'fixstylesheet' , 0 ) unless $$settings{ $$NODE{ node_id } } &gt;= $Everything::CONF-&gt;{stylesheet_fix_level} ;
+  	$APP-&gt;fixStylesheet($NODE, 0) unless $$settings{ $$NODE{ node_id } } &gt;= $Everything::CONF-&gt;{stylesheet_fix_level} ;
 	$str .= &quot;&lt;p&gt;&lt;strong&gt;Edit the stylesheet:&lt;/strong&gt;&lt;/p&gt;&quot;.
 		htmlcode(&quot;textarea&quot;,&quot;doctext,30,60&quot;);
   }
