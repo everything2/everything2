@@ -1760,6 +1760,8 @@ sub uploadS3Content
 			$properties->{content_encoding} = 'gzip';			
 		}
 
+		$properties->{cache_control} = "max-age=604800, must-revalidate"; #one week
+
 		$s3->upload_file($filespec->[0], $filespec->[0], $properties);
 	}
 
