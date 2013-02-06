@@ -1590,7 +1590,7 @@ sub fixStylesheet
 {
 	my ($this, $node, $saveold) = @_;
 
-	my $howfixed = $this->getParameter($node, 'fix_level');
+	my $howfixed = $this->getParameter($node, 'fix_level'); $howfixed ||= 0;
 	my %replace = ();
 	my @disable = ();
 	my $addstyles = undef;
@@ -1646,8 +1646,12 @@ sub fixStylesheet
 	$addstyles = "/*= autofix added rules. adjust to taste: */\n$addstyles/*= end autofix added rules */\n\n"  if $addstyles ;
 
 	my $idfunction = sub {
-		my ( $selectid , $nodeid ) = @_ ;
-		my $str = lc( ${getNodeById( $nodeid )}{title} ) ;
+		my ( $this, $selectid , $nodeid ) = @_ ;
+		next unless defined($this);
+		next unless defined($nodeid);
+		my $n = $this->{db}->getNodeById( $nodeid );
+		return unless $n;
+		my $str = lc( $n->{title} ) ;
 		$str =~ s/\W//g ;
 		return '#'.$str if $selectid ;
 		'.'.$str ;
@@ -1661,7 +1665,7 @@ sub fixStylesheet
 		my $chunk = $_ ;
 		my $old = undef; $old = "/*=$chunk*/\n" if $saveold ;
 		unless ( $chunk =~ '^(/\*|\{)' ) {
-			$chunk =~ s/(?:\.nodetype_|(\.node_id|#nodelet_))(\d+)/&$idfunction( $1 , $2 )/eg ;
+			$chunk =~ s/(?:\.nodetype_|(\.node_id|#nodelet_))(\d+)/&$idfunction( $this, $1 , $2 )/eg ;
 			foreach ( keys %replace ) {
 				$chunk =~ s/$_/${$replace{ $_ }}/g ;
 			}
