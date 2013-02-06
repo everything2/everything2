@@ -131,6 +131,13 @@ BEGIN {
 			"assignable" => ["admin"],
 			"validate" => "integer",
 		},
+		"supported_sheet" => 
+		{
+			"on" => ["stylehsheet"],
+			"description" => "Supported for general use",
+			"assignable" => ["admin"],
+			"validate" => "integer",
+		},
 	};
 
 	foreach my $param(keys %$PARAMS)
