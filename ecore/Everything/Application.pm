@@ -1695,7 +1695,7 @@ sub uploadS3Content
 	}
 
 	my $s3bucket = $node->{s3bucket};
-	if(not defined $s3bucket)
+	if(not defined $s3bucket or $s3bucket eq '')
 	{
 		if($node->{type}->{title} eq "jscript" or $node->{type}->{title} eq "stylesheet")
 		{
@@ -1703,7 +1703,64 @@ sub uploadS3Content
 		}
 	}
 
+	my $extension = undef; #mod_perl safety exercise
+
+	if($node->{type}->{title} eq "stylesheet")
+	{
+		$extension = "css";
+	}elsif($node->{type}->{title} eq "jscript")
+	{
+		$extension = "js";
+	}
+
+	my $tmpdir = "/tmp/s3upload.$$";
+	`mkdir -p $tmpdir`;
+	chdir $tmpdir;
+
 	my $s3 = Everything::S3->new($s3bucket);
+	my $to_upload = [];
+	my $filehandle = undef;
+	my $filebase = "$$node{node_id}.$$node{contentversion}";
+	open $filehandle,">$filebase.$extension";
+	print $filehandle $this->fixStylesheet($node,0);
+	close $filehandle;
+	
+	push @$to_upload, ["$filebase.$extension",0];
+
+	`yui-compressor $filebase.$extension > $filebase.min.$extension`;
+	push @$to_upload, ["$filebase.min.$extension",0];
+
+	`gzip --best -c $filebase.$extension > $filebase.gzip.$extension`;
+	push @$to_upload, ["$filebase.gzip.$extension",1];
+
+	`gzip --best -c $filebase.min.$extension > $filebase.min.gzip.$extension`;
+	push @$to_upload, ["$filebase.min.gzip.$extension",1];
+	
+
+	foreach my $filespec (@$to_upload)
+	{
+		my $properties = {};
+		my $content_type = undef;
+		if($extension eq "js")
+		{
+			$content_type = "application/javascript";
+		}elsif($extension eq "css")
+		{
+			$content_type = "text/css";
+		}
+		
+		$properties->{content_type} = $content_type;
+
+		if($filespec->[1]) #gzipped
+		{
+			$properties->{content_encoding} = 'gzip';			
+		}
+
+		$s3->upload_file($filespec->[0], $filespec->[0], $properties);
+	}
+
+	chdir("/tmp");
+	`rm -rf $tmpdir`;
 }
 
 1;
