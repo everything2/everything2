@@ -42,13 +42,13 @@ sub new
 sub upload_data
 {
 	my ($this, $name, $data, $properties) = @_;
-	return $this->{bucket}->add_key($name, $data);
+	return $this->{bucket}->add_key($name, $data, $properties);
 }
 
 sub upload_file
 {
 	my ($this, $name, $filename, $properties) = @_;
-	return $this->{bucket}->add_key_filename($name, $filename);
+	return $this->{bucket}->add_key_filename($name, $filename, $properties);
 }
 
 sub delete
