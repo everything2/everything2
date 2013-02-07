@@ -5,6 +5,9 @@ package Everything::Application;
 use Everything;
 use Everything::S3;
 
+use DateTime;
+use DateTime::Format::Strptime;
+
 # For node2mail
 use Email::Sender::Simple qw(try_to_sendmail);
 use Email::Simple;
@@ -1759,6 +1762,12 @@ sub uploadS3Content
 	push @$to_upload, ["$filebase.min.gzip.$extension",1];
 	
 
+	my $modifiedTimeFormat = '%a, %d %b %Y %T %Z'; # format for HTML header
+	my $dateOutputer = new DateTime::Format::Strptime(
+		pattern     => $modifiedTimeFormat,
+		locale      => 'en_US'
+	);
+
 	foreach my $filespec (@$to_upload)
 	{
 		my $properties = {};
@@ -1778,7 +1787,8 @@ sub uploadS3Content
 			$properties->{content_encoding} = 'gzip';			
 		}
 
-		$properties->{cache_control} = "max-age=604800"; #one week
+		#$properties->{cache_control} = "max-age=604800"; #one week
+		$properties->{expires} = $dateOutputer->format_datetime(DateTime->from_epoch(epoch => time()+60*60*24*366));
 
 		$s3->upload_file($filespec->[0], $filespec->[0], $properties);
 	}
