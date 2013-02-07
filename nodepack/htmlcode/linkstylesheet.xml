@@ -28,14 +28,14 @@ if ($n) {
   }, 1)
 	  if $$USER{node_id} == $$n{author_user} || $VARS-&gt;{useRawStylesheets};
 
-  my $escapeTitle = CGI::escape($$n{title});
-  my $autofixText = &quot;&quot;;
-  $autofixText = &quot;_autofix&quot;
-    if $$USER{ user_id } != $$n{ author_user }
-    &amp;&amp; !$APP-&gt;isGuest($USER);
-  $escapeTitle =~ s/%[0-9A-F]{2}|_//g;
-  my $stylesheetFilename = &quot;${escapeTitle}$autofixText.css&quot;; 
-  return &quot;http://jscss.everything2.com/$stylesheetFilename&quot;;
+  my $filename = &quot;$$n{node_id}.$$n{contentversion}.min&quot;;
+  if($ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
+  {
+    $filename.= &quot;.gzip&quot;;
+  }
+
+  $filename .= &quot;.css&quot;;
+  return &quot;http://jscss.everything2.com/$filename&quot;;
 } else {
   return $n;
 }
