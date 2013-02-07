@@ -70,6 +70,15 @@ BEGIN {
 			"validate" => "set_only",
 		},
 
+		#TODO: Add test
+		"usergroup_owner" =>
+		{
+			"on" => ["usergroup"],
+			"description" => "On usergroups, set the owner",
+			"assignable" => ["admin"],
+			"validate" => "integer",
+		},
+
 		"prevent_vote" =>
 		{
 			"on" => ["e2node", "writeup"],
