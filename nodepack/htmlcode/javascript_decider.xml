@@ -30,7 +30,7 @@ my $jsType = getId(getType('jscript'));
 foreach (@JS) {
 	getRef $_;
 	next unless $_ &amp;&amp; $$_{type_nodetype} == $jsType;
-	$str .= &quot;&lt;script src='$jscss/$$_{node_id}.js' type='text/javascript'&gt;&lt;/script&gt;\n&quot;;
+	$str .= &quot;&lt;script src='&quot;.htmlcode(&quot;linkjavascript&quot;,$$_{node_id}).&quot;' type='text/javascript'&gt;&lt;/script&gt;\n&quot;;
 
 }
 
