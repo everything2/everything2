@@ -50,7 +50,7 @@ if (window.onload) {
 } else {
   window.onload = nodeletSwitcher.init;
 }</doctext>
-  <contentversion>100</contentversion>
+  <contentversion>102</contentversion>
   <s3bucket></s3bucket>
   <node_id>1874173</node_id>
   <title>Nodelet Switcher</title>

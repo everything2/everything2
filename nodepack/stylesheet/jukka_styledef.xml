@@ -88,7 +88,7 @@ small {
 big {
 	font-size: 110%;
 }</doctext>
-  <contentversion>100</contentversion>
+  <contentversion>103</contentversion>
   <s3bucket></s3bucket>
   <node_id>2069743</node_id>
   <title>jukka styledef</title>

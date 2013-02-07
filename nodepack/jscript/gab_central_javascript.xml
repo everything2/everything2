@@ -22,7 +22,7 @@ function checkAll(f){
     }
 }
 </doctext>
-  <contentversion>100</contentversion>
+  <contentversion>102</contentversion>
   <s3bucket></s3bucket>
   <node_id>2069769</node_id>
   <title>gab central javascript</title>

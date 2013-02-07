@@ -68,7 +68,7 @@ function shrinkTextbox(textbox) {
    }
 
 }</doctext>
-  <contentversion>100</contentversion>
+  <contentversion>102</contentversion>
   <s3bucket></s3bucket>
   <node_id>2069795</node_id>
   <title>message inbox javascript</title>

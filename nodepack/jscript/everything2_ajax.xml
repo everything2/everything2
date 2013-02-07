@@ -652,7 +652,7 @@ e2('#chatterbox:not(.pending)', function(){
 if (e2.isChatterlight) e2('#message', e2(function(){
 	$(this).css('width','').focus();
 }).defer); // defer for IE</doctext>
-  <contentversion>100</contentversion>
+  <contentversion>102</contentversion>
   <s3bucket></s3bucket>
   <node_id>1878034</node_id>
   <title>Everything2 Ajax</title>

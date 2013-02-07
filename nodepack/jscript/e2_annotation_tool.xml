@@ -332,7 +332,7 @@ alert(AnnotationTool.node_id);
 };
 
 AnnotationTool.AnnotationTool();</doctext>
-  <contentversion>100</contentversion>
+  <contentversion>102</contentversion>
   <s3bucket></s3bucket>
   <node_id>1884065</node_id>
   <title>E2 Annotation Tool</title>

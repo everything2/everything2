@@ -782,7 +782,7 @@ span.hasvoted span.title a:visited { color: #6f748f; }
 body div#surveymessage {
 margin-top: 55px !important;
 }</doctext>
-  <contentversion>100</contentversion>
+  <contentversion>103</contentversion>
   <s3bucket></s3bucket>
   <node_id>1931383</node_id>
   <title>Low eye-strain</title>

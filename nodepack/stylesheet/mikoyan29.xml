@@ -267,7 +267,7 @@ small { font-size: 80%;}
 #e2zeitgeist.nodelet,
 #personallinks.nodelet,
 #frontpage_news	{	display: none;			}</doctext>
-  <contentversion>100</contentversion>
+  <contentversion>103</contentversion>
   <s3bucket></s3bucket>
   <node_id>1997408</node_id>
   <title>mikoyan29</title>

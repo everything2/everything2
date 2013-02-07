@@ -469,7 +469,7 @@ h1.nodetitle
      { font-style: italic; }
 .action_whisper, .action_roll, .action_fireball, .action_sanctify, .action_egg 
      { font-variant: small-caps; }</doctext>
-  <contentversion>100</contentversion>
+  <contentversion>103</contentversion>
   <s3bucket></s3bucket>
   <node_id>1881898</node_id>
   <title>Brumlove</title>

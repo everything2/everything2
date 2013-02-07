@@ -35,7 +35,7 @@
 jQuery.fx.interval = 40; // 25 frames/second: assume user is human. (Default = 13 =&gt; ~80Hz == daft)
 if (e2.fxDuration == 0) jQuery.fx.off = true;
 </doctext>
-  <contentversion>100</contentversion>
+  <contentversion>102</contentversion>
   <s3bucket></s3bucket>
   <node_id>2069287</node_id>
   <title>Boilerplate Javascript</title>

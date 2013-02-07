@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/* An empty theme for all to use. Rather than filling up [The Catwalk] with a bunch of test stylesheets, I'd like to play around with the [Style Defacer] for a while. */</doctext>
-  <contentversion>100</contentversion>
+  <contentversion>103</contentversion>
   <s3bucket></s3bucket>
   <node_id>1904465</node_id>
   <title>Empty CSS</title>

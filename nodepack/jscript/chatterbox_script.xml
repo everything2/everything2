@@ -67,7 +67,7 @@ if (/^chatterlight/.test(document.body.id)){
 		new e2.ajax.periodicalUpdater( 'newwriteups:updateNodelet:New+Writeups' , 180 );
 	}
 }</doctext>
-  <contentversion>100</contentversion>
+  <contentversion>102</contentversion>
   <s3bucket></s3bucket>
   <node_id>2007114</node_id>
   <title>chatterbox script</title>

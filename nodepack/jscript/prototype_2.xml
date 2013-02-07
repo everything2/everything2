@@ -2010,7 +2010,7 @@ Object.extend(Element.ClassNames.prototype, Enumerable);
 /*--------------------------------------------------------------------------*/
 
 Element.addMethods();</doctext>
-  <contentversion>100</contentversion>
+  <contentversion>102</contentversion>
   <s3bucket></s3bucket>
   <node_id>1872457</node_id>
   <title>ProtoType 2</title>

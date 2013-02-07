@@ -272,7 +272,7 @@ var checkInterval = function () {
 
 var interval = window.setInterval(checkInterval, 1000);
 </doctext>
-  <contentversion>100</contentversion>
+  <contentversion>102</contentversion>
   <s3bucket></s3bucket>
   <node_id>1984562</node_id>
   <title>Swap's async voting</title>

@@ -376,7 +376,7 @@ pre, tt {
 .oddrow, #homenodeheader dt  {
 	background-color: #d0d0d0;
 }</doctext>
-  <contentversion>100</contentversion>
+  <contentversion>103</contentversion>
   <s3bucket></s3bucket>
   <node_id>1931319</node_id>
   <title>The Zen of the Mooquack</title>

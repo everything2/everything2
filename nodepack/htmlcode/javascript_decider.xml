@@ -3,10 +3,7 @@
   <modperlsafe>1</modperlsafe>
   <node_id>2069289</node_id>
   <title>javascript_decider</title>
-  <code># We never get here if we're Guest User
-return &quot;&quot; if ($APP-&gt;isGuest($USER) or $query -&gt; param('guest'));
-
-while ($$VARS{includedJS} =~ s/(^|,)(?:
+  <code>while ($$VARS{includedJS} =~ s/(^|,)(?:
 	(1878034)| # Everything2 Ajax
 	(1872965)| # Zen Nodelet Collapser
 	1872456| # Prototype 1

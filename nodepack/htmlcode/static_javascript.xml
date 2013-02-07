@@ -18,6 +18,14 @@ $e2-&gt;{lastnode_id} = $lastnode;
 $e2-&gt;{title} = $$NODE{title};
 #$e2-&gt;{ignoreMissingLibraries} = 1;
 
+my $e2guest = &quot;e2.guest = &quot;;
+if( $APP-&gt;isGuest($USER) )
+{
+  $e2guest .= &quot;true&quot;;
+}else{
+  $e2guest .= &quot;false&quot;;
+}
+
 my $cookie = undef;
 foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
 	if (!$APP-&gt;isGuest($USER)){
@@ -34,14 +42,11 @@ my $min = undef; $min = '.min' unless $APP-&gt;inDevEnvironment();
 my $libraries = qq'&lt;script src=&quot;http://code.jquery.com/jquery-1.4.4$min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
 # mark as guest but only in non-canonical domain so testing and caching both work
 
-
-my $GUjs = &quot;&lt;script src='http://jscss.everything2.com/GuestJavascript.js' type='text/javascript'&gt;&lt;/script&gt;&quot;;
 my $js_decisions = htmlcode('javascript_decider');
 
 unless ($APP-&gt;isGuest($USER)){
 	$libraries .= '
 	&lt;script src=&quot;http://jscss.everything2.com/jquery-ui.min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
-	$GUjs = &quot;&quot;;
 }
 
 $libraries .= &lt;&lt;LIBS;
@@ -51,9 +56,9 @@ LIBS
 return &lt;&lt;ENDJS;
 	&lt;script type='text/javascript' name='nodeinfojson' id='nodeinfojson'&gt;
 		e2 = $e2;
+		$e2guest;
 	&lt;/script&gt;
         $libraries
         $js_decisions
-        $GUjs
 ENDJS</code>
 </node>

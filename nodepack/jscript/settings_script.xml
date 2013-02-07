@@ -69,7 +69,7 @@ void new function(zensheet){
 			Math.max(e2.fxDuration*2,100) );
 	}
 }(document.getElementById('zensheet'));</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>2028514</node_id>
   <title>settings script</title>

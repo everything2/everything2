@@ -36,7 +36,7 @@ body {margin: 0;}
 #writeup_faves li {margin-bottom: 5px;}
 #room_options input {margin-top: 0;} /* for Other Users */
 .ns_title {margin: 5px 0 0;}</doctext>
-  <contentversion>100</contentversion>
+  <contentversion>103</contentversion>
   <s3bucket></s3bucket>
   <node_id>1918718</node_id>
   <title>Primitive</title>

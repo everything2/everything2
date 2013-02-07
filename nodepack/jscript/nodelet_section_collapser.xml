@@ -4,7 +4,7 @@
 	jQuery(inElement + ' .nodelet_section .ns_title').click(function(){
  		jQuery(this).next().slideToggle(e2.fxDuration); }).css('cursor', 'pointer');
 });</doctext>
-  <contentversion>100</contentversion>
+  <contentversion>102</contentversion>
   <s3bucket></s3bucket>
   <node_id>1872990</node_id>
   <title>Nodelet Section Collapser</title>
