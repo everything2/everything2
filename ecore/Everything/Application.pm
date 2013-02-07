@@ -1733,9 +1733,18 @@ sub uploadS3Content
 	my $s3 = Everything::S3->new($s3bucket);
 	my $to_upload = [];
 	my $filehandle = undef;
+	my $content = undef;
+
+	if($extension eq "css")
+	{
+		$content = $this->fixStylesheet($node,0);
+	}elsif($extension eq "js"){
+		$content = $node->{doctext};
+	}
+
 	my $filebase = "$$node{node_id}.$$node{contentversion}";
 	open $filehandle,">$filebase.$extension";
-	print $filehandle $this->fixStylesheet($node,0);
+	print $filehandle $content;
 	close $filehandle;
 	
 	push @$to_upload, ["$filebase.$extension",0];

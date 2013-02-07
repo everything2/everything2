@@ -23,7 +23,7 @@ if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
 	&lt;script type='text/javascript'&gt;
 		var isZen = 1;
 	&lt;/script&gt;
-	&lt;script type='text/javascript' src='/index.pl?node_id=1869865'&gt;&lt;/script&gt;
+	[{static javascript}]
 	&lt;/head&gt;
 	&lt;body&gt;
 	&lt;div id=&quot;links&quot;&gt;

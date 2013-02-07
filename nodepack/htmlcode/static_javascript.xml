@@ -48,11 +48,6 @@ $libraries .= &lt;&lt;LIBS;
 	&lt;script src=&quot;http://jscss.everything2.com/jquery.ba-bbq$min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
 LIBS
 
-#$libraries .= &lt;&lt;DEVLIBS . htmlcode('nagger') if $APP-&gt;inDevEnvironment();
-#	&lt;script src=&quot;http://jscss.everything2.com/stars/jquery.MetaData.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
-#	&lt;script src=&quot;/node/jscript/star+script&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
-#DEVLIBS
-
 return &lt;&lt;ENDJS;
 	&lt;script type='text/javascript' name='nodeinfojson' id='nodeinfojson'&gt;
 		e2 = $e2;
