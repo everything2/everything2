@@ -1787,8 +1787,7 @@ sub uploadS3Content
 			$properties->{content_encoding} = 'gzip';			
 		}
 
-		#$properties->{cache_control} = "max-age=604800"; #one week
-		$properties->{expires} = $dateOutputer->format_datetime(DateTime->from_epoch(epoch => time()+60*60*24*366));
+		$properties->{expires} = $dateOutputer->format_datetime(DateTime->from_epoch(epoch => time()+60*60*24*365*10)); #10 years
 
 		$s3->upload_file($filespec->[0], $filespec->[0], $properties);
 	}
