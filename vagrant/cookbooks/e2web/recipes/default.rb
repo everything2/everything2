@@ -25,6 +25,15 @@ template '/etc/apache2/conf.d/everything' do
   notifies :reload, "service[apache2]", :delayed
 end
 
+template '/etc/apache2/mod_rewrite.conf' do
+  owner "root"
+  group "root"
+  mode "0755"
+  action "create"
+  source "mod_rewrite.conf.erb"
+  notifies :reload, "service[apache2]", :delayed
+end
+
 template '/etc/apache2/apache2.conf' do
   owner "root"
   group "root"

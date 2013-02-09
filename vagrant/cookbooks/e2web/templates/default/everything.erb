@@ -62,7 +62,7 @@ NameVirtualHost *:80
 
 		deny from env=denyip
 
-		Include /var/everything/ecore/mod_rewrite.conf
+		Include /etc/apache2/mod_rewrite.conf
 		AddOutputFilterByType DEFLATE text/javascript text/html text/xml text/css application/x-javascript
 	</Directory>
 
