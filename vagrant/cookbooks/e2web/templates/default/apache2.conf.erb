@@ -52,19 +52,6 @@ AccessFileName .htaccess
 	Satisfy all
 </Files>
 
-##### Enable User Tracking for E2 Research #####
-
-<IfModule usertrack>
-	CookieDomain .everything2.com
-	CookieExpires "2 years"
-	CookieName "E2 usertrack"
-
-	#this is super important as usertrack is not turned on by default, even if the module is loaded.
-	CookieTracking on  
-</IfModule>
-CustomLog "/var/log/clickstream" "%{cookie}n %r %t"
-
-
 ##### INCLUDE ADDITIONAL CONFIGURATION #####
 # Include module configuration:
 Include mods-enabled/*.load
