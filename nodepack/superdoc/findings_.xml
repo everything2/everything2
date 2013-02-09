@@ -22,6 +22,13 @@ my $isRoot = $APP-&gt;isAdmin($USER);
 my $curType;
 
 my @nodes;
+
+# Likely we are coming from a draft cold and we were short circuited here. Do a new search.
+if(not exists($NODE-&gt;{group}) and defined($title))
+{
+  $NODE-&gt;{group} = $APP-&gt;searchNodeName($title, [&quot;e2node&quot;], undef, 1);
+}
+
 #For some reason, sometimes e2 thinks there is no nodegroup here. Huh? --[Swap]
 if(defined $$NODE{group}) {
  @nodes = @{ $$NODE{group} };
@@ -77,10 +84,14 @@ foreach my $ND (@{ $$NODE{group} }) {
 
 $str .= &quot;&lt;/ul&gt;\n&quot;;
 
+# We need to clear out the results of the search because if we are coming here from a draft
+# we need to nix these search results so we can detect it and get new ones
+
+delete $NODE-&gt;{group};
+
 $str;
 %]
-[{e2createnewnode}]
-</doctext>
+[{e2createnewnode}]</doctext>
   <node_id>1140332</node_id>
   <title>Findings:</title>
 </node>

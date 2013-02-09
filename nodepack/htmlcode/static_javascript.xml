@@ -16,7 +16,6 @@ my $e2 = undef;
 $e2-&gt;{node_id} = $$NODE{node_id};
 $e2-&gt;{lastnode_id} = $lastnode;
 $e2-&gt;{title} = $$NODE{title};
-#$e2-&gt;{ignoreMissingLibraries} = 1;
 
 my $e2guest = &quot;e2.guest = &quot;;
 if( $APP-&gt;isGuest($USER) )
@@ -45,13 +44,10 @@ my $libraries = qq'&lt;script src=&quot;http://code.jquery.com/jquery-1.4.4$min.
 my $js_decisions = htmlcode('javascript_decider');
 
 unless ($APP-&gt;isGuest($USER)){
-	$libraries .= '
-	&lt;script src=&quot;http://jscss.everything2.com/jquery-ui.min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
+	$libraries .= '&lt;script src=&quot;'.htmlcode(&quot;linkjavascript&quot;,getNode(&quot;jquery ui&quot;,&quot;jscript&quot;)).'&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
 }
 
-$libraries .= &lt;&lt;LIBS;
-	&lt;script src=&quot;http://jscss.everything2.com/jquery.ba-bbq$min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
-LIBS
+$libraries .= '&lt;script src=&quot;'.htmlcode(&quot;linkjavascript&quot;,getNode(&quot;jquery bbq&quot;,&quot;jscript&quot;)).'&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
 
 return &lt;&lt;ENDJS;
 	&lt;script type='text/javascript' name='nodeinfojson' id='nodeinfojson'&gt;

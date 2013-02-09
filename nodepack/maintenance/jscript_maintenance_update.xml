@@ -4,11 +4,6 @@
   <node_id>2071171</node_id>
   <title>jscript maintenance update</title>
   <maintaintype>update</maintaintype>
-  <code>my ($NODE) = @_;
-
-getRef($NODE);
-return unless $NODE;
-
-#$NODE-&gt;{contentversion}++;
-</code>
+  <code>my ($jscript) = @_;
+$APP-&gt;uploadS3Content($jscript);</code>
 </node>

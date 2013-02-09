@@ -143,6 +143,7 @@ local *info_recentwriteups = sub{
 };
 
 local *info_msgme = sub {
+        return if $$VARS{hidemsgme};
 	return '&lt;div id=&quot;userMessage&quot;&gt;'.htmlcode('messageBox',$$NODE{node_id},1).'&lt;/div&gt;';
 };
 
@@ -257,6 +258,5 @@ foreach my $k (@showThings) {
 }
 $str .=  &quot;&lt;/dl&gt;\n&quot;;
 
-$str;
-</code>
+$str;</code>
 </node>
