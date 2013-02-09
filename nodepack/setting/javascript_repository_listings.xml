@@ -1,6 +1,11 @@
 <node>
   <type_nodetype>153</type_nodetype>
   <vars>
+    <value>&lt;b&gt;[jquery bbq]&lt;/b&gt; by [jaybonci]&lt;br /&gt;
+</value>
+    <key>2100806</key>
+  </vars>
+  <vars>
     <value>&lt;b&gt;[E2 Nodelet Collapser]&lt;/b&gt; by [Excalibre] &lt;br /&gt;Collapse your nodelets at the click of a mouse (for non-zen themes).&lt;br /&gt;</value>
     <key>1786409</key>
   </vars>
@@ -26,6 +31,11 @@
     <key>1874173</key>
   </vars>
   <vars>
+    <value>&lt;b&gt;[jquery ui]&lt;/b&gt; by [jaybonci]&lt;br /&gt;
+</value>
+    <key>2100807</key>
+  </vars>
+  <vars>
     <value>&lt;b&gt;[ascorbic's ajax toolshed]&lt;/b&gt; by [ascorbic]&lt;br /&gt;
 </value>
     <key>2034141</key>
@@ -35,12 +45,12 @@
     <key>1872990</key>
   </vars>
   <vars>
-    <value>&lt;b&gt;[javascript debugger]&lt;/b&gt; by [gods]&lt;br /&gt;</value>
-    <key>2023560</key>
-  </vars>
-  <vars>
     <value>&lt;b&gt;[musical appreciation]&lt;/b&gt; by [OldMiner]&lt;br /&gt;</value>
     <key>2020854</key>
+  </vars>
+  <vars>
+    <value>&lt;b&gt;[javascript debugger]&lt;/b&gt; by [gods]&lt;br /&gt;</value>
+    <key>2023560</key>
   </vars>
   <node_id>1869642</node_id>
   <title>Javascript Repository listings</title>

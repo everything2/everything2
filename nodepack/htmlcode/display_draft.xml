@@ -20,11 +20,10 @@ if ($$NODE{author_user} == $$USER{node_id}
 		getNodeWhere({pagetype_nodetype =&gt; 117, displaytype =&gt; $displaytype}, 'htmlpage') ?
 			'writeup' : 'document');
 }else{
-	$NODE = $GNODE = getNodeById($Everything::CONF-&gt;{system}-&gt;{not_found_node});
+	$NODE = $GNODE = getNodeById($Everything::CONF-&gt;{system}-&gt;{search_results});
 	$displaylike = getType($$NODE{type_nodetype});
 }
 
 my $PAGE = getPageForType($displaylike, $displaytype);
-return parseCode($PAGE -&gt; {page}, $NODE);
-</code>
+return parseCode($PAGE -&gt; {page}, $NODE);</code>
 </node>
