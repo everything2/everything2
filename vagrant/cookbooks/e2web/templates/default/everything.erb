@@ -51,6 +51,7 @@ NameVirtualHost *:80
 	SetEnvIf X-FORWARDED-FOR "183.38.89.8" denyip
 	SetEnvIf X-FORWARDED-FOR "174.36.137.162" denyip
 	SetEnvIf X-FORWARDED-FOR "84.238.211.161" denyip
+	SetEnvIf X-FORWARDED-FOR "168.61.72.61" denyip
 
 	<Directory /var/everything/www/>
 		DirectoryIndex index.pl
