@@ -47,11 +47,9 @@ NameVirtualHost *:80
 	PerlResponseHandler ModPerl::Registry
 	PerlOptions +ParseHeaders
 
-	SetEnvIf X-FORWARDED-FOR "37.0.121.104" denyip
-	SetEnvIf X-FORWARDED-FOR "183.38.89.8" denyip
-	SetEnvIf X-FORWARDED-FOR "174.36.137.162" denyip
-	SetEnvIf X-FORWARDED-FOR "84.238.211.161" denyip
-	SetEnvIf X-FORWARDED-FOR "168.61.72.61" denyip
+	<%- node["banned_ips"].each do |ip| %>
+	SetEnvIf X-FORWARDED-FOR "<%= ip %>" denyip
+	<%- end %>
 
 	<Directory /var/everything/www/>
 		DirectoryIndex index.pl
