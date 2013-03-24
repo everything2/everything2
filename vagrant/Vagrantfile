@@ -9,6 +9,7 @@ Vagrant::Config.run do |config|
   
   config.vm.share_folder("dropfiles","/dropfiles","./dropfiles")
   config.vm.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]  
+  config.vm.customize ["modifyvm", :id, "--memory", 1024]
   
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = "cookbooks"
