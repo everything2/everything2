@@ -1164,16 +1164,14 @@ sub getPageForType
 						displaytype => $displaytype}, 
 						$PAGETYPE);
 
-
-
 				$PAGE or ($PAGE) =  getNodeWhere(
 						{ -pagetype_nodetype => $ORIGTYPE,
 						displaytype => "display" },
 						$PAGETYPE );
-
-		#		$PAGE or die "No default pages loaded.  " .  
-		#			"Failed on page request for $WHEREHASH{pagetype_nodetype}" .
-		#			" $WHEREHASH{displaytype}\n";
+				$PAGE or ($PAGE) = getNodeWhere(
+						{ -pagetype_nodetype => getId(getType("node")),
+						  displaytype => "display"},
+						$PAGETYPE);
 			}
 		}
 	} until($PAGE);
