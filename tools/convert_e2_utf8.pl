@@ -18,16 +18,26 @@ my $tables_to_convert =
 
 my $reference_tables =
 {
-	"node" =>
-	{
-		
-	},
+	"node" => "title",
+	"message" => "msgtext",
+	"document" => "doctext",
 };
 
 
 sub convert_table_column
 {
 	my ($table, $column, $definition, $pre, $post) = @_;
+
+	if(exists($reference_tables->{$table}) and $reference_tables->{$table} eq $column)
+	{
+		my $count_table = "_utf8_".$table."_".$column."_length";
+		sql_verbose_do("CREATE TABLE $count_table (id INT, latin1length INT)");
+		sql_verbose_do("INSERT INTO $count_table SELECT $table"."_id as id, CHAR_LENGTH($column) AS latin1length FROM $table");
+	}else{
+		return;
+	}
+
+
 	my $latin1_check_csr = $dbh->prepare("SELECT    COLUMN_NAME,   TABLE_NAME,   CHARACTER_SET_NAME,   COLUMN_TYPE,   COLLATION_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'everything' and CHARACTER_SET_NAME='latin1' and TABLE_NAME='$table' and COLUMN_NAME='$column'");
 	$latin1_check_csr->execute();
 
