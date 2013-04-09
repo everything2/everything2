@@ -24,19 +24,23 @@ my $reference_tables =
 };
 
 
+sub make_count_table
+{
+	my ($flavor, $table, $column) = @_;
+
+	if(exists($reference_tables->{$table}) and $reference_tables->{$table} eq $column)
+	{
+		my $count_table = "_".$flavor."_".$table."_".$column."_length";
+		sql_verbose_do("CREATE TABLE $count_table (id INT, ".$flavor."length INT)");
+		sql_verbose_do("INSERT INTO $count_table SELECT $table"."_id as id, CHAR_LENGTH($column) AS ".$flavor."length FROM $table");
+	}
+}
+
 sub convert_table_column
 {
 	my ($table, $column, $definition, $pre, $post) = @_;
 
-	if(exists($reference_tables->{$table}) and $reference_tables->{$table} eq $column)
-	{
-		my $count_table = "_utf8_".$table."_".$column."_length";
-		sql_verbose_do("CREATE TABLE $count_table (id INT, latin1length INT)");
-		sql_verbose_do("INSERT INTO $count_table SELECT $table"."_id as id, CHAR_LENGTH($column) AS latin1length FROM $table");
-	}else{
-		return;
-	}
-
+	make_count_table("latin1",$table,$column);
 
 	my $latin1_check_csr = $dbh->prepare("SELECT    COLUMN_NAME,   TABLE_NAME,   CHARACTER_SET_NAME,   COLUMN_TYPE,   COLLATION_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'everything' and CHARACTER_SET_NAME='latin1' and TABLE_NAME='$table' and COLUMN_NAME='$column'");
 	$latin1_check_csr->execute();
@@ -61,6 +65,8 @@ sub convert_table_column
 	{
 		sql_verbose_do($post);
 	}
+
+	make_count_table("utf8",$table,$column);
 }
 
 sub sql_verbose_do
