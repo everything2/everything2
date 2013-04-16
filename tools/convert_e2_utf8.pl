@@ -1,7 +1,9 @@
 #!/usr/bin/perl -w
 
 use strict;
+use Carp;
 use DBI;
+use Encode::Encoder;
 
 my $dbh = DBI->connect("DBI:mysql:everything:localhost;mysql_enable_utf8=1", "everyuser", "", {AutoCommit => 1});
 
@@ -31,7 +33,8 @@ sub make_count_table
 	if(exists($reference_tables->{$table}) and $reference_tables->{$table} eq $column)
 	{
 		my $count_table = "_".$flavor."_".$table."_".$column."_length";
-		sql_verbose_do("CREATE TABLE $count_table (id INT, ".$flavor."length INT)");
+		sql_verbose_do("DROP TABLE IF EXISTS $count_table");
+		sql_verbose_do("CREATE TABLE $count_table (id INT NOT NULL PRIMARY KEY, ".$flavor."length INT)");
 		sql_verbose_do("INSERT INTO $count_table SELECT $table"."_id as id, CHAR_LENGTH($column) AS ".$flavor."length FROM $table");
 	}
 }
@@ -39,6 +42,8 @@ sub make_count_table
 sub convert_table_column
 {
 	my ($table, $column, $definition, $pre, $post) = @_;
+
+	return unless $table eq "node" and $column eq "title";
 
 	make_count_table("latin1",$table,$column);
 
@@ -58,8 +63,42 @@ sub convert_table_column
 		sql_verbose_do($pre);
 	}
 
-	sql_verbose_do("ALTER TABLE $table MODIFY COLUMN $column $definition CHARACTER SET utf8 COLLATE utf8_unicode_ci");
-	sql_verbose_do("UPDATE $table SET $column=CONVERT(CONVERT(binary $column USING latin1) using utf8)");
+
+	my $conversion_table = "_utf8_conversion_table_$table";
+	sql_verbose_do("DROP TABLE IF EXISTS $conversion_table");
+	sql_verbose_do("CREATE TABLE IF NOT EXISTS $conversion_table LIKE $table");
+	sql_verbose_do("INSERT INTO $conversion_table SELECT * from $table");
+	sql_verbose_do("ALTER TABLE $conversion_table MODIFY $column $definition character set utf8 COLLATE utf8_unicode_ci");
+
+	my $table_explanation = explain_table($table);
+	delete $table_explanation->{$column};
+
+	my $data_loop_csr = $dbh->prepare("SELECT * FROM $table");
+	$data_loop_csr->execute();
+
+	while(my $main_table_row = $data_loop_csr->fetchrow_hashref())
+	{
+		my $encoded = Encode::Encoder->new($main_table_row->{$column})->latin1->utf8;
+		my $updates;
+		foreach my $key (keys %$table_explanation)
+		{
+			if(defined($main_table_row->{$key}))
+			{
+				push @$updates, "$key=".$dbh->quote($main_table_row->{$key});
+			}else{
+				push @$updates, "$key IS NULL";
+			}
+		} 
+		my $update_str = "UPDATE $conversion_table SET $column=".$dbh->quote($encoded)." WHERE ".join(" AND ", @$updates);
+		my $count = $dbh->do($update_str);
+		if($count != 1)
+		{
+			confess("Update of utf8 booster failed: ($count rows): $update_str");			
+		}
+	}
+
+	sql_verbose_do("DROP table $table");
+	sql_verbose_do("RENAME TALBE $conversion_table TO $table");
 
 	if(defined $post)
 	{
@@ -69,13 +108,28 @@ sub convert_table_column
 	make_count_table("utf8",$table,$column);
 }
 
+sub explain_table
+{
+	my ($table) = @_;
+	my $result;
+
+	my $explain_csr = $dbh->prepare("EXPLAIN $table");
+	$explain_csr->execute();
+	while(my $row = $explain_csr->fetchrow_arrayref())
+	{
+		$result->{$row->[0]} = $result->{$row->[1]};
+	}
+
+	return $result;
+}
+
 sub sql_verbose_do
 {
 	my ($cmd) = @_;
 
 	print STDERR localtime()."\n";
 	print STDERR "$cmd"."\n";
-	$dbh->do($cmd);
+	return $dbh->do($cmd);
 }
 
 my $latin1_search = $dbh->prepare("SELECT TABLE_NAME, COLUMN_NAME, COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'everything' and CHARACTER_SET_NAME='latin1'");
