@@ -39,8 +39,6 @@ sub convert_table_column
 {
 	my ($table, $column, $definition, $pre, $post) = @_;
 
-	return unless $table eq "node" and $column eq "title";
-
 	make_count_table("latin1",$table,$column);
 
 	my $latin1_check_csr = $dbh->prepare("SELECT    COLUMN_NAME,   TABLE_NAME,   CHARACTER_SET_NAME,   COLUMN_TYPE,   COLLATION_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'everything' and CHARACTER_SET_NAME='latin1' and TABLE_NAME='$table' and COLUMN_NAME='$column'");
@@ -54,52 +52,8 @@ sub convert_table_column
 		return;
 	}
 
-	if(defined $pre)
-	{
-		sql_verbose_do($pre);
-	}
-
-
-	my $conversion_table = "_utf8_conversion_table_$table";
-	sql_verbose_do("DROP TABLE IF EXISTS $conversion_table");
-	sql_verbose_do("CREATE TABLE IF NOT EXISTS $conversion_table LIKE $table");
-	sql_verbose_do("INSERT INTO $conversion_table SELECT * from $table");
-	sql_verbose_do("ALTER TABLE $conversion_table MODIFY $column $definition character set utf8 COLLATE utf8_unicode_ci");
-
-	my $table_explanation = explain_table($table);
-	delete $table_explanation->{$column};
-
-	my $data_loop_csr = $dbh->prepare("SELECT * FROM $table");
-	$data_loop_csr->execute();
-
-	while(my $main_table_row = $data_loop_csr->fetchrow_hashref())
-	{
-		my $encoded = Encode::Encoder->new($main_table_row->{$column})->latin1->utf8;
-		my $updates;
-		foreach my $key (keys %$table_explanation)
-		{
-			if(defined($main_table_row->{$key}))
-			{
-				push @$updates, "$key=".$dbh->quote($main_table_row->{$key});
-			}else{
-				push @$updates, "$key IS NULL";
-			}
-		} 
-		my $update_str = "UPDATE $conversion_table SET $column=".$dbh->quote($encoded)." WHERE ".join(" AND ", @$updates);
-		my $count = $dbh->do($update_str);
-		if($count != 1)
-		{
-			confess("Update of utf8 booster failed: ($count rows): $update_str");			
-		}
-	}
-
-	sql_verbose_do("DROP table $table");
-	sql_verbose_do("RENAME TABLE $conversion_table TO $table");
-
-	if(defined $post)
-	{
-		sql_verbose_do($post);
-	}
+	# Fix the encoding
+	sql_verbose_do("UPDATE $table SET $column=CONVERT(CONVERT(BINARY $column using latin1) using utf8) WHERE CHARACTER_LENGTH($column) != LENGTH($column)"); 
 
 	make_count_table("utf8",$table,$column);
 }
