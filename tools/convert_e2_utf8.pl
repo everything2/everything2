@@ -9,13 +9,9 @@ my $dbh = DBI->connect("DBI:mysql:everything:localhost;mysql_enable_utf8=1", "ev
 
 my $E2DB="mysql --default-character-set=utf8 -u root everything";
 
-
+# Don't need this anymore, indexes are going to be fine
 my $tables_to_convert =
 {
-	"node" =>
-	{
-		"title" => ["char(240)", "ALTER TABLE node DROP INDEX title", "CREATE INDEX title on node (title, type_nodetype)"],
-	},
 };
 
 my $reference_tables =
@@ -98,7 +94,7 @@ sub convert_table_column
 	}
 
 	sql_verbose_do("DROP table $table");
-	sql_verbose_do("RENAME TALBE $conversion_table TO $table");
+	sql_verbose_do("RENAME TABLE $conversion_table TO $table");
 
 	if(defined $post)
 	{
