@@ -7,13 +7,6 @@ use Encode::Encoder;
 
 my $dbh = DBI->connect("DBI:mysql:everything:localhost;mysql_enable_utf8=1", "everyuser", "", {AutoCommit => 1});
 
-my $E2DB="mysql --default-character-set=utf8 -u root everything";
-
-# Don't need this anymore, indexes are going to be fine
-my $tables_to_convert =
-{
-};
-
 my $reference_tables =
 {
 	"node" => "title",
@@ -53,7 +46,9 @@ sub convert_table_column
 	}
 
 	# Fix the encoding
-	sql_verbose_do("UPDATE $table SET $column=CONVERT(CONVERT(BINARY $column using latin1) using utf8) WHERE CHARACTER_LENGTH($column) != LENGTH($column)"); 
+	sql_verbose_do("ALTER TABLE $table MODIFY $column $definition character set utf8 COLLATE utf8_unicode_ci");
+	#sql_verbose_do("UPDATE $table SET $column=CONVERT(CONVERT(BINARY $column using latin1) using utf8)"); 
+	sql_verbose_do("ALTER TABLE $table DEFAULT character set utf8 COLLATE utf8_unicode_ci");
 
 	make_count_table("utf8",$table,$column);
 }
@@ -89,25 +84,7 @@ $latin1_search->execute();
 while (my $row = $latin1_search->fetchrow_arrayref())
 {
 	my ($latin1_table, $latin1_column, $latin1_type) = @$row;
-	next if exists($tables_to_convert->{$latin1_table}->{$latin1_column});
-	
-	 convert_table_column($latin1_table, $latin1_column, $latin1_type);
+	convert_table_column($latin1_table, $latin1_column, $latin1_type);
 }
 
-foreach my $latin1_table (keys %$tables_to_convert)
-{
-	foreach my $latin1_column (keys %{$tables_to_convert->{$latin1_table}})
-	{
-		my $latin1_type = $tables_to_convert->{$latin1_table}->{$latin1_column};
-		my ($pre, $post);
-		if(ref $latin1_type eq "ARRAY") #Has pre and post
-		{
-			$pre = $latin1_type->[1];
-			$post = $latin1_type->[2];
-			$latin1_type = $latin1_type->[0];
-		}
-
-		convert_table_column($latin1_table, $latin1_column, $latin1_type,$pre,$post);
-	}
-}
-
+sql_verbose_do("ALTER DATABASE everything DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci");
