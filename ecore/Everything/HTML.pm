@@ -2274,17 +2274,21 @@ sub printHeader
 		push @cookies, $$USER{cookie};
 	}
 	
+	my $extras = {};
+	if($Everything::CONF->{'utf8'})
+	{
+		$extras->{charset} = 'utf-8';
+	}
+	if(@cookies)
+	{
+		$extras->{cookie} = \@cookies;
+	}
+
+
 	if($ENV{SCRIPT_NAME}) {
-		if (@cookies) {
-			$query->header(-type=> $datatype, 
-				       -cookie=> \@cookies,
-				       -content_length => $len,
-				       %HEADER_PARAMS);
-		} else {
-			$query->header(-type=> $datatype,
-				       -content_length => $len,
-				       %HEADER_PARAMS);
-		}
+		$query->header(-type=> $datatype, 
+			       -content_length => $len,
+			       %HEADER_PARAMS,%$extras);
 	}
 }
 
