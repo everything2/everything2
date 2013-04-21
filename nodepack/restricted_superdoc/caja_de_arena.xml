@@ -1,7 +1,17 @@
 <node>
   <type_nodetype>13</type_nodetype>
   <doctext>[%
-#%]
+return 'boo' unless $THEME -&gt; {isZen};
+return 'zen';
+my $owners = getVars(getNode('usergroup owners','setting'));
+
+foreach (keys %$owners ){
+
+$APP -&gt; setParameter($_, $USER, 'usergroup_owner', $owners -&gt; {$_});
+
+}
+
+%]
 </doctext>
   <node_id>2000674</node_id>
   <title>caja de arena</title>

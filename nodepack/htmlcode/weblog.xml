@@ -3,7 +3,7 @@
   <modperlsafe>1</modperlsafe>
   <node_id>458113</node_id>
   <title>weblog</title>
-  <code>return htmlcode( 'legacyweblog' , @_ ) unless ( htmlcode( 'isZen' ) ) ;
+  <code>return htmlcode( 'legacyweblog' , @_ ) unless htmlcode( 'isZen' );
 my ( $interval, $log_id, $remlabel, $hideLinker, $skipFilterHTML, $listOnly ) = @_ ;
 
 $log_id ||= getId( $NODE ) ;
@@ -40,8 +40,7 @@ my $instructions = 'getloggeditem, title, byline, date' ;
 my $uid = getId( $USER ) ;
 my $canRemove = $APP-&gt;isAdmin($USER) ;
 my $isCE = $canRemove || $APP-&gt;isEditor($USER) ;
-$canRemove ||= ( $$USER{ node_id } ==
-	getVars( getNode( 'usergroup owners' , 'setting' ) ) -&gt; { $$NODE{ node_id } } ) ;
+$canRemove ||= ( $$USER{ node_id } == $APP -&gt; getParameter($NODE, 'usergroup_owner') ) ;
 
 # linkedby: 0=show (default), 1=CE can see, 2=root can see, 3 or anything else=nobody can see
 # BUG: 2 -&gt; owner can see if CE even if not root

@@ -4,12 +4,12 @@
   <_create_table_statement>CREATE TABLE `nodenote_restore` (
   `nodenote_id` int(11) NOT NULL AUTO_INCREMENT,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `notetext2` text NOT NULL,
-  `notetext` text NOT NULL,
+  `notetext2` text COLLATE utf8_unicode_ci,
+  `notetext` text COLLATE utf8_unicode_ci,
   `nodenote_nodeid` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`nodenote_id`),
   KEY `timestamp` (`timestamp`),
   KEY `nodenote_nodeid` (`nodenote_nodeid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>nodenote_restore</title>
 </node>

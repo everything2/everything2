@@ -1,6 +1,7 @@
 <node>
   <extends_nodetype>2035430</extends_nodetype>
   <sqltable>writeup</sqltable>
+  <grouptable></grouptable>
   <node_id>117</node_id>
   <type_nodetype>1</type_nodetype>
   <title>writeup</title>

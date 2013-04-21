@@ -3,11 +3,11 @@
   <node_id>1885717</node_id>
   <_create_table_statement>CREATE TABLE `faq` (
   `faq_id` int(11) NOT NULL AUTO_INCREMENT,
-  `question` text NOT NULL,
-  `answer` text NOT NULL,
-  `keywords` text NOT NULL,
+  `question` text COLLATE utf8_unicode_ci,
+  `answer` text COLLATE utf8_unicode_ci,
+  `keywords` text COLLATE utf8_unicode_ci,
   `hits` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`faq_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>faq</title>
 </node>

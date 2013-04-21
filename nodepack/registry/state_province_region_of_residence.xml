@@ -4,4 +4,5 @@
   <question></question>
   <node_id>2014868</node_id>
   <title>State/Province/Region of Residence</title>
+  <input_style>text</input_style>
 </node>

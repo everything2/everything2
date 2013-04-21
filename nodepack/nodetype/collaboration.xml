@@ -2,6 +2,7 @@
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>16</extends_nodetype>
   <sqltable>collaboration</sqltable>
+  <grouptable></grouptable>
   <node_id>1254859</node_id>
   <restrict_nodetype>15</restrict_nodetype>
   <type_nodetype>1</type_nodetype>

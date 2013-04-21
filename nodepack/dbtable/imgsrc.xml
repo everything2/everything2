@@ -3,8 +3,8 @@
   <node_id>1278303</node_id>
   <_create_table_statement>CREATE TABLE `imgsrc` (
   `imgsrc_id` int(11) NOT NULL AUTO_INCREMENT,
-  `imgsrc` char(128) NOT NULL DEFAULT '',
+  `imgsrc` char(128) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`imgsrc_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>imgsrc</title>
 </node>

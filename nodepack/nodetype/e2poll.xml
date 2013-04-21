@@ -2,6 +2,7 @@
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>14</extends_nodetype>
   <sqltable>e2poll</sqltable>
+  <grouptable></grouptable>
   <node_id>1685242</node_id>
   <restrict_nodetype>14</restrict_nodetype>
   <type_nodetype>1</type_nodetype>

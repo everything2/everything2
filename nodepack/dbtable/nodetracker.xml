@@ -4,10 +4,10 @@
   <_create_table_statement>CREATE TABLE `nodetracker` (
   `nodetracker_id` int(11) NOT NULL AUTO_INCREMENT,
   `tracker_user` int(11) NOT NULL DEFAULT '0',
-  `tracker_data` mediumtext,
+  `tracker_data` mediumtext COLLATE utf8_unicode_ci,
   `lasttime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `hits` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`nodetracker_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>nodetracker</title>
 </node>

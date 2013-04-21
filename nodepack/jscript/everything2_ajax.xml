@@ -290,6 +290,14 @@ e2.ajax = {
 			return false;
 		}
 
+		// earlybeforeunload for multi-step processes which will end with a page unload
+		// -- don't annoy user by only warning them at the end
+		if ($(this).hasClass('earlybeforeunload')){
+			var msg = window.onbeforeunload({earlyCall: true});
+			if (msg &amp;&amp; !confirm(msg + '\n\nIf you continue you will end up '
+			  + 'leaving the page. Do you want to continue?')) return false;
+		}
+
 		// get ajax instructions from class &amp; chop them up
 		var params = ('[0] '+this.className).split(/\bajax\s+/);
 		if (!params[1]) return true; // no instructions
@@ -548,8 +556,9 @@ e2('#sidebar:not(.pagenodelets)', 'sortable', {
 e2('.wuformaction.ajax', 'unbind'); // ajax makes function to fiddle with form values redundant
 e2('.ajax', e2.ajax.updateTrigger);
 
-window.onbeforeunload = function(e){ // jQuery bind() won't hack it (in version 1.3)
+e2.beforeunload['ajax pending'] = function(e){
 	e = e || window.event || {}; // for IE/unknown fail
+	if (e.earlyCall) return; // window isn't really going to unload until user has done more
 
 	var warnings = {
 	// name: htmlcode; value: code to eval to get warning. false = ignore. List from [ajax update page]
@@ -599,10 +608,11 @@ window.onbeforeunload = function(e){ // jQuery bind() won't hack it (in version 
 	for (var id in e2.ajax.pending){
 		var x = e2.ajax.pending[id];
 		if (warnings[x.htmlcode] &amp;&amp; (str = eval(warnings[x.htmlcode]))) break;
-	}
-	if (x &amp;&amp; str !== false) return e.returnValue=( // was something pending, and not to be ignored
+	};
+	if (x &amp;&amp; str !== false) str = // was something pending, and not to be ignored
 		(str || 'Something on this page is being updated') +
-		&quot;. Please wait a moment.&quot; ) ;
+		&quot;. Please wait a moment.&quot;;
+	return str;
 };
 
 // rename vote button: no longer needed, but can still send form
@@ -651,8 +661,9 @@ e2('#chatterbox:not(.pending)', function(){
 
 if (e2.isChatterlight) e2('#message', e2(function(){
 	$(this).css('width','').focus();
-}).defer); // defer for IE</doctext>
-  <contentversion>102</contentversion>
+}).defer); // defer for IE 
+</doctext>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1878034</node_id>
   <title>Everything2 Ajax</title>

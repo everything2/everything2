@@ -3,16 +3,16 @@
   <node_id>170</node_id>
   <_create_table_statement>CREATE TABLE `nodelet` (
   `nodelet_id` int(11) NOT NULL AUTO_INCREMENT,
-  `nltext` text,
-  `nlcode` text,
+  `nltext` text COLLATE utf8_unicode_ci,
+  `nlcode` text COLLATE utf8_unicode_ci,
   `updateinterval` int(11) NOT NULL DEFAULT '0',
   `nlgoto` int(11) DEFAULT NULL,
   `parent_container` int(11) DEFAULT NULL,
   `lastupdate` int(11) NOT NULL DEFAULT '0',
-  `icon` varchar(80) NOT NULL DEFAULT '',
+  `icon` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
   `iconHeight` int(11) NOT NULL DEFAULT '0',
   `iconWidth` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`nodelet_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
   <title>nodelet</title>
 </node>

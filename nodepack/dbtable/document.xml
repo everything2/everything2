@@ -3,11 +3,11 @@
   <node_id>160</node_id>
   <_create_table_statement>CREATE TABLE `document` (
   `document_id` int(11) NOT NULL AUTO_INCREMENT,
-  `doctext` text,
+  `doctext` text COLLATE utf8_unicode_ci,
   `edittime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`document_id`),
   KEY `edittime` (`edittime`),
   KEY `edittime_2` (`edittime`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
   <title>document</title>
 </node>

@@ -3,7 +3,7 @@
   <node_id>445059</node_id>
   <_create_table_statement>CREATE TABLE `message` (
   `message_id` int(11) NOT NULL AUTO_INCREMENT,
-  `msgtext` text NOT NULL,
+  `msgtext` text COLLATE utf8_unicode_ci,
   `author_user` int(11) NOT NULL DEFAULT '0',
   `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `for_user` int(11) NOT NULL DEFAULT '0',
@@ -23,6 +23,6 @@
   KEY `for_user_for_usergroup` (`for_user`,`for_usergroup`),
   KEY `foruser_tstamp_message_id` (`for_user`,`tstamp`,`message_id`),
   KEY `message_author` (`author_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
   <title>message</title>
 </node>

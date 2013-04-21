@@ -4,9 +4,9 @@
   <_create_table_statement>CREATE TABLE `draft` (
   `draft_id` int(11) NOT NULL DEFAULT '0',
   `publication_status` int(11) NOT NULL DEFAULT '0',
-  `collaborators` char(255) NOT NULL DEFAULT '',
+  `collaborators` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`draft_id`),
   KEY `publication_status` (`publication_status`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>draft</title>
 </node>

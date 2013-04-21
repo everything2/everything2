@@ -1,6 +1,7 @@
 <node>
   <extends_nodetype>4</extends_nodetype>
   <sqltable>patch</sqltable>
+  <grouptable></grouptable>
   <node_id>1151141</node_id>
   <type_nodetype>1</type_nodetype>
   <writers_user>838015</writers_user>

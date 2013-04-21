@@ -3,10 +3,10 @@
   <node_id>1920433</node_id>
   <_create_table_statement>CREATE TABLE `likedit` (
   `likedit_id` int(11) NOT NULL AUTO_INCREMENT,
-  `likedit_ip` char(100) NOT NULL DEFAULT '',
+  `likedit_ip` char(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `likedit_node` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`likedit_id`),
   KEY `likedit_ip_node` (`likedit_ip`,`likedit_node`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>likedit</title>
 </node>

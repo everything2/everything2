@@ -3,8 +3,8 @@
   <node_id>1264702</node_id>
   <_create_table_statement>CREATE TABLE `nodehelp` (
   `nodehelp_id` int(11) NOT NULL DEFAULT '0',
-  `nodehelp_text` text,
+  `nodehelp_text` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`nodehelp_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>nodehelp</title>
 </node>

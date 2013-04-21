@@ -1,6 +1,7 @@
 <node>
   <extends_nodetype>7</extends_nodetype>
   <sqltable>htmlcode,maintenance</sqltable>
+  <grouptable></grouptable>
   <node_id>150</node_id>
   <type_nodetype>1</type_nodetype>
   <writers_user>114</writers_user>

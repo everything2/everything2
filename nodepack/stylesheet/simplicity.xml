@@ -255,7 +255,7 @@ text-indent: -1.5em;
 /* FONTS */
 
 body {
-	font-family: Helvetica , Arial , sans-serif ;
+	font-family: &quot;Liberation Sans&quot;, Helvetica, Arial, sans-serif ;
 }
 
 * html body {
@@ -281,7 +281,7 @@ a {
 }
 
 h1, h2, h3, h4, div.contentinfo .title {
-	font-family: serif;
+	font-family: GaramondNo8, Garamond, &quot;Gentium Basic&quot;, &quot;DejaVu Serif&quot;, serif;
 }
 
 .content {
@@ -476,7 +476,7 @@ border-left: 2px solid #e4d8b4;
 #header {
 margin-left: -2px;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>2041900</node_id>
   <title>Simplicity</title>

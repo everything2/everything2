@@ -3,12 +3,12 @@
   <node_id>1957963</node_id>
   <_create_table_statement>CREATE TABLE `podcast` (
   `podcast_id` int(11) NOT NULL DEFAULT '0',
-  `description` text NOT NULL,
-  `link` char(255) NOT NULL DEFAULT '',
+  `description` text COLLATE utf8_unicode_ci,
+  `link` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `pubdate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `announcement` int(11) NOT NULL DEFAULT '0',
   `createdby_user` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`podcast_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>podcast</title>
 </node>

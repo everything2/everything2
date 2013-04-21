@@ -3,10 +3,10 @@
   <node_id>545220</node_id>
   <_create_table_statement>CREATE TABLE `roomdata` (
   `roomdata_id` int(11) NOT NULL DEFAULT '0',
-  `criteria` text NOT NULL,
-  `abreviation` varchar(8) NOT NULL DEFAULT '',
+  `criteria` text COLLATE utf8_unicode_ci,
+  `abreviation` varchar(8) COLLATE utf8_unicode_ci DEFAULT NULL,
   `lastused_date` date NOT NULL DEFAULT '0000-00-00',
   PRIMARY KEY (`roomdata_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
   <title>roomdata</title>
 </node>

@@ -18,7 +18,7 @@ my $isCE = $APP-&gt;isEditor($USER);
 my $colspan = 2;
 # usergroup owner
 my $isOwner = 0;
-$isOwner = 1 if ($$USER{node_id} == getVars(getNode('usergroup owners','setting'))-&gt;{$$NODE{node_id}});
+$isOwner = 1 if ($$USER{node_id} == $APP -&gt; getParameter($NODE, 'usergroup_owner'));
 my $canRemove = $isRoot || $isOwner;
 
 #0=show (default), 1=CE can see, 2=root can see, 3=nobody can see
@@ -169,5 +169,6 @@ return $zenStr;
 }
 
 $str;
+
 </code>
 </node>

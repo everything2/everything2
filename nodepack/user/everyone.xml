@@ -3,6 +3,7 @@
   <nick></nick>
   <email>alex@staff.everything2.com</email>
   <realname>Anonymous Coward</realname>
+  <imgsrc></imgsrc>
   <type_nodetype>15</type_nodetype>
   <vars>
     <value>Tahoma,Verdana,Helvetica,Arial</value>
@@ -61,7 +62,7 @@
     <key>epi_hideadvice</key>
   </vars>
   <vars>
-    <value>2683 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
+    <value>2596 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
     <key>nwriteups</key>
   </vars>
   <vars>
@@ -123,7 +124,7 @@ ekw_vlinkcolor=&quot;#666633&quot;;
     <key>nodetrail</key>
   </vars>
   <vars>
-    <value>2683</value>
+    <value>2596</value>
     <key>numwriteups</key>
   </vars>
   <vars>
@@ -219,12 +220,12 @@ ekw_vlinkcolor=&quot;#666633&quot;;
     <key>anonymous_bookmark</key>
   </vars>
   <title>everyone</title>
-  <doctext>&lt;p&gt;If you'd like the key to the &lt;i&gt;everyone&lt;/i&gt; account please contact [alex]. You should, however, not need the key since any user who has reached level 1 may publish drafts to this account (under 'Advanced Options' on the draft page). Should you feel that you need the key to the account anyway, you should at least be a user of some seniority with an account in good standing and no history of on-site melodrama, in which case your reasons for wanting it will be given careful consideration.&lt;/p&gt;
+  <doctext>&lt;p&gt;Any user who has reached level 1 may publish drafts to this account (under 'Advanced Options' on the draft page). In the past it was necessary for users to be given access to the account by an administrator. We no longer do that. If you think that an existing writeup needs editing, please submit the changes to the staff and they will either make them or assign the writeup to your account.&lt;/p&gt;
 &lt;p&gt;
-&lt;p&gt;As everyone is a public account, writeups posted under this account do not have a copyright--they immediately enter the public domain. Please keep this in mind when posting!  There may also be no way to confirm who posted what on this account.  It's &quot;everyone.&quot;&lt;/p&gt;
+&lt;p&gt;As &lt;i&gt;everyone&lt;/i&gt; is a public account, writeups posted under this account do not have a copyright--they immediately enter the public domain. Please keep this in mind when posting!  There may also be no way to know who posted what on this account. It's &quot;everyone.&quot; Notices about items that may be trolls, obvious garbage, or in violation of site policy or applicable laws may be submitted to any staff member.&lt;/p&gt;
 
 
-&lt;p align=center&gt;
+&lt;p align=&quot;center&quot;&gt;
 [This place needs more actual content. Let's begin.]&lt;br&gt;&lt;br&gt;
 [Node for the Ages]&lt;br&gt;&lt;br&gt;
 [The perfect node]&lt;br&gt;&lt;Br&gt;

@@ -9,11 +9,11 @@
   `restrict_nodetype` int(11) DEFAULT '0',
   `extends_nodetype` int(11) DEFAULT '0',
   `restrictdupes` int(11) DEFAULT '0',
-  `sqltable` char(255) DEFAULT NULL,
-  `grouptable` char(40) DEFAULT '',
+  `sqltable` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `grouptable` char(40) COLLATE utf8_unicode_ci DEFAULT NULL,
   `typeVersioned` int(11) NOT NULL DEFAULT '0',
   `verify_edits` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`nodetype_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
   <title>nodetype</title>
 </node>

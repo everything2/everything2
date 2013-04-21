@@ -6,10 +6,10 @@
   `seclog_node` int(11) NOT NULL DEFAULT '0',
   `seclog_user` int(11) NOT NULL DEFAULT '0',
   `seclog_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `seclog_details` char(255) DEFAULT NULL,
+  `seclog_details` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`seclog_id`),
   KEY `seclog_node__seclog_id` (`seclog_node`,`seclog_id`),
   KEY `seclog_user__seclog_id` (`seclog_user`,`seclog_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>seclog</title>
 </node>

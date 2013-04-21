@@ -1,5 +1,6 @@
 <node>
   <doctext>The KDE version of [e2client].</doctext>
+  <dlurl></dlurl>
   <homeurl>http://sourceforge.net/projects/e2client/</homeurl>
   <node_id>1262284</node_id>
   <type_nodetype>1261857</type_nodetype>

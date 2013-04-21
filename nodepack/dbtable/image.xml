@@ -3,11 +3,11 @@
   <node_id>164</node_id>
   <_create_table_statement>CREATE TABLE `image` (
   `image_id` int(11) NOT NULL AUTO_INCREMENT,
-  `src` varchar(255) DEFAULT NULL,
-  `alt` varchar(255) DEFAULT NULL,
-  `thumbsrc` varchar(255) DEFAULT NULL,
-  `description` text,
+  `src` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `alt` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `thumbsrc` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`image_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
   <title>image</title>
 </node>

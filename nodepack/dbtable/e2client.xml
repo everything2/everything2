@@ -3,11 +3,11 @@
   <node_id>1261858</node_id>
   <_create_table_statement>CREATE TABLE `e2client` (
   `e2client_id` int(11) NOT NULL DEFAULT '0',
-  `version` char(255) NOT NULL DEFAULT '',
-  `homeurl` char(255) NOT NULL DEFAULT '',
-  `dlurl` char(255) NOT NULL DEFAULT '',
-  `clientstr` char(255) NOT NULL DEFAULT '',
+  `version` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `homeurl` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `dlurl` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `clientstr` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`e2client_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>e2client</title>
 </node>

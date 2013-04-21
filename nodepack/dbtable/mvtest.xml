@@ -6,8 +6,8 @@
   `enabled` int(11) NOT NULL DEFAULT '0',
   `starttime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `endtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `conditions` char(255) NOT NULL DEFAULT '',
+  `conditions` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`mvtest_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>mvtest</title>
 </node>

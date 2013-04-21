@@ -5,10 +5,10 @@
   `nodelock_id` int(11) NOT NULL AUTO_INCREMENT,
   `nodelock_user` int(11) NOT NULL DEFAULT '0',
   `nodelock_node` int(11) NOT NULL DEFAULT '0',
-  `nodelock_reason` text,
+  `nodelock_reason` text COLLATE utf8_unicode_ci,
   `nodelock_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`nodelock_id`),
   KEY `nodelock_node_index` (`nodelock_node`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>nodelock</title>
 </node>

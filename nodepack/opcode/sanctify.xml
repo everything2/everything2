@@ -26,6 +26,6 @@ $APP-&gt;securityLog(getNode('Sanctify user', 'superdoc'), $USER, &quot;$$USER{t
 	htmlcode('sendPrivateMessage',{
 		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
 		'recipient_id' =&gt; $$U{user_id},
-		'message' =&gt; &quot;Whoa! You&#146;ve been [Sanctify|sanctified]!&quot;
+		'message' =&gt; &quot;Whoa! You&#8217;ve been [Sanctify|sanctified]!&quot;
 	});</code>
 </node>

@@ -3,11 +3,11 @@
   <node_id>1308758</node_id>
   <_create_table_statement>CREATE TABLE `nodetest` (
   `nodetest_id` int(11) NOT NULL DEFAULT '0',
-  `nodetest_code` text NOT NULL,
-  `nodetest_description` varchar(255) NOT NULL DEFAULT '',
+  `nodetest_code` text COLLATE utf8_unicode_ci,
+  `nodetest_description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `nodetest_active` tinyint(1) NOT NULL DEFAULT '0',
   `nodetest_appliesto` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`nodetest_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>nodetest</title>
 </node>

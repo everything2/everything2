@@ -18,13 +18,10 @@ return unless $recUser;
 
 return unless $APP-&gt;inUsergroup($recUser,getNodeById($userGroup));
 
-my $ugOwners = getNode('usergroup owners','setting');
+my $auth = $USER;
+$auth = -1 if $APP -&gt; getParameter($userGroup, 'usergroup_owner') == $USER -&gt; {node_id};
+$APP -&gt; setParameter($userGroup, $auth, 'usergroup_owner', $recUser -&gt; {node_id});
 
-my $ugOwner = getVars $ugOwners;
-
-$$ugOwner{$userGroup} = $$recUser{node_id};
-
-setVars($ugOwners, $ugOwner);
-
-return 1;</code>
+return 1;
+</code>
 </node>

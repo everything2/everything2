@@ -1,5 +1,6 @@
 <node>
   <sqltable>recording</sqltable>
+  <grouptable></grouptable>
   <node_id>1957954</node_id>
   <type_nodetype>1</type_nodetype>
   <title>recording</title>

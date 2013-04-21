@@ -4,7 +4,7 @@
   <_create_table_statement>CREATE TABLE `room` (
   `room_id` int(11) NOT NULL DEFAULT '0',
   `member_user` int(11) NOT NULL DEFAULT '0',
-  `nick` char(64) NOT NULL DEFAULT '',
+  `nick` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
   `op` int(11) NOT NULL DEFAULT '0',
   `visible` int(11) NOT NULL DEFAULT '0',
   `borgd` int(11) NOT NULL DEFAULT '0',
@@ -12,6 +12,6 @@
   `unixcreatetime` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`room_id`,`member_user`),
   KEY `exp_index` (`experience`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
   <title>room</title>
 </node>

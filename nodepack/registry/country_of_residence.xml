@@ -5,4 +5,5 @@
   <question></question>
   <node_id>2014867</node_id>
   <title>Country of Residence</title>
+  <input_style>text</input_style>
 </node>

@@ -18,9 +18,10 @@ unless ( $PAGELOAD-&gt;{ cachedweblogoptions } ) {
 		if ( $$VARS{ nameifyweblogs } ) {
 			$groupTitle = $$wls{ $_ } ;
 		} else {
-			$groupTitle = getNodeById($_,&quot;light&quot;)-&gt;{title} unless $_ == 165580 ;
+			my $wl = getNodeById($_,&quot;light&quot;) || {title =&gt; ''};
+			$groupTitle = $wl-&gt;{title} unless $_ == 165580 ;
 		}
-		$options.=&quot;\n\t\t\t&lt;option value=\&quot;$_\&quot;&gt;$groupTitle&lt;/option&gt;&quot;;
+		$options.=&quot;\n\t\t\t&lt;option value=\&quot;$_\&quot;&gt;$groupTitle&lt;/option&gt;&quot; if $groupTitle;
 	}
 	$PAGELOAD-&gt;{ cachedweblogoptions } = $options
 		if $$NODE{type}{title} eq 'e2node' &amp;&amp; scalar @{ $$NODE{ group } } &gt; 1 ;

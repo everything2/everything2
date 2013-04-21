@@ -3,18 +3,17 @@
   <parent_container>19</parent_container>
   <pagetype_nodetype>16</pagetype_nodetype>
   <page>&lt;p&gt;
-[{windowview:editor,launch editor}] [% isGod( $USER ) ? '|' : '' %]
-[{usergroupmultipleadd}]
+[{windowview:editor,launch editor}]
 [%
 
 return unless isGod($USER);
 
-my $str;
+my $str = '| '.htmlcode('usergroupmultipleadd');
 
 my $wSet = getVars(getNode('webloggables','setting'))-&gt;{$$NODE{node_id}};
 
 if ($wSet) {
-$str = &quot;Already has ify - &lt;b&gt;$wSet&lt;/b&gt;&quot;;
+$str .= &quot;&lt;br&gt;Already has ify - &lt;b&gt;$wSet&lt;/b&gt;&quot;;
 }
 else {
 
@@ -32,41 +31,32 @@ $str;
 
 [%
 
-return unless isGod($USER);
+return unless $APP -&gt; isEditor($USER);
 
-my $str;
+my $cOwner = $APP -&gt; getParameter($NODE, 'usergroup_owner');
 
-my $cOwner = getVars(getNode('usergroup owners','setting'))-&gt;{$$NODE{node_id}};
-
-if ($cOwner) {
-$str = &quot;Owner is &lt;b&gt;&quot;.linkNode($cOwner).&quot;&lt;/b&gt;&quot;;
-}
-else {
-
-$str =htmlcode('openform');
+my $str =htmlcode('openform');
+$str.= 'Owner is &lt;b&gt;'.linkNode($cOwner).'&lt;/b&gt;&lt;br&gt;' if $cOwner;
 $str.=&quot;New Owner: &quot;;
+# 'leader' is correct: leadusergroup does in fact set owner
 $str.=$query-&gt;textfield('new_leader','').&quot; &quot;;
-$str.=&quot;&lt;input type='hidden' name='op' value='leadusergroup' /&gt;&quot;;
+$str.=&quot;&lt;input type='hidden' name='op' value='leadusergroup'&gt;&quot;;
 $str.=$query-&gt;submit('sexisgood','make owner');
 $str.=&quot;&lt;br&gt;Note that the user must be a member of the group &lt;em&gt;before&lt;/em&gt; they can be set as the owner.&quot;;
 $str.=$query-&gt;end_form;
-}
-
 
 %]
 
 [%
-my $str;
-$str .= &quot;&lt;p align=\&quot;right\&quot;&gt;&quot;.linkNode(1977025,&quot;Discussions for $$NODE{title}.&quot;,{show_ug =&gt; $$NODE{node_id}}).&quot;&lt;/p&gt;&quot; if $APP-&gt;inUsergroup($USER,$NODE);
-return $str;
+return '' unless  $APP-&gt;inUsergroup($USER, $NODE);
+'&lt;p align=&quot;right&quot;&gt;'.linkNode(1977025,&quot;Discussions for $$NODE{title}.&quot;,{show_ug =&gt; $$NODE{node_id}}).'&lt;/p&gt;';
 %]
 
-
 &lt;table border=0&gt; &lt;!-- enclose writeups in table to prevent overflow --&gt;
-     &lt;tr&gt;&lt;td&gt;
-[{parsecode:doctext}]
-     &lt;/td&gt;&lt;/tr&gt;
-&lt;/table&gt; &lt;!-- end overflow-blocking table --&gt;
+      &lt;tr&gt;&lt;td&gt;
+ [{parsecode:doctext}]
+      &lt;/td&gt;&lt;/tr&gt;
+ &lt;/table&gt; &lt;!-- end overflow-blocking table --&gt;
 
 &lt;p&gt;
 &lt;h2&gt;Venerable members of this group:&lt;/h2&gt;
@@ -74,7 +64,6 @@ return $str;
 [%
 my $str;
 my $UID = getId($USER);
-my $NID = $$NODE{node_id};
 my $isRoot = $APP-&gt;isAdmin($USER);
 my $isGuest = $APP-&gt;isGuest($USER);
 my $isInGroup=0;
@@ -82,23 +71,15 @@ my @users = ();
 my @memberIDs=();
 my $flags;
 my $curID;
+my $ugOwnerIndex = undef;
 
 #don't show standard groups when actually viewing that page
 #FIXME? is there a better way to tell if on that group page?
 my $showMemberAdmin = ($$NODE{title} ne 'gods');
 my $showMemberCE = ($$NODE{title} ne 'Content Editors');
 
-#get usergroup &quot;owner&quot; - lets normal user add/drop usergroup members
-my $ugOwner = 0;
-my $ugOwnerIndex = undef;
-my $ugOwners = getNode('usergroup owners','setting');
-if(defined $ugOwners) { $ugOwners = getVars($ugOwners); }
-if(defined $ugOwners) {
-	if(exists $ugOwners-&gt;{NID}) {
-		$ugOwner = $ugOwners-&gt;{NID};
-	}
-	undef $ugOwners;
-}
+#get usergroup &quot;owner&quot;
+my $ugOwner = $APP -&gt; getParameter($NODE, 'usergroup_owner');
 
 if($$NODE{group}) {
 	my $leavingnote = '&lt;/p&gt;&lt;strong&gt;You have left this usergroup&lt;/strong&gt;&lt;/p&gt;'
@@ -114,26 +95,25 @@ if($$NODE{group}) {
 	my $s;
 	my $i=0;
 	foreach(@memberIDs) {
-		my $N = $DB-&gt;getNodeById($_, 'light');
-		$curID = getId($N);
-		$s = linkNode($N,0,{lastnode_id=&gt;0});
 
-		if($curID==$ugOwner) {
+		$s = linkNode($_);
+
+		if($_==$ugOwner) {
 			$ugOwnerIndex = $i;
 			$s = '&lt;em&gt;'.$s.'&lt;/em&gt;';
 		}
-		if($curID==$UID) {
+		if($_==$UID) {
 			$s = '&lt;strong&gt;'.$s.'&lt;/strong&gt;';
 		}
 
-    my $isChanop = $APP-&gt;isChanop($curID, &quot;nogods&quot;);
+		my $isChanop = $APP-&gt;isChanop($_, &quot;nogods&quot;);
 
 		#show normal groups user is in
 		$flags = '';
-		$flags .= '@' if $showMemberAdmin and $APP-&gt;isAdmin($curID) and !$APP-&gt;getParameter($curID,&quot;hide_chatterbox_staff_symbol&quot;);
+		$flags .= '@' if $showMemberAdmin and $APP-&gt;isAdmin($_) and !$APP-&gt;getParameter($_,&quot;hide_chatterbox_staff_symbol&quot;);
 
-		$flags .= '$' if $showMemberCE and $APP-&gt;isEditor($curID, &quot;nogods&quot;) and !$APP-&gt;isAdmin($curID) and !$APP-&gt;getParameter($curID,&quot;hide_chatterbox_staff_symbol&quot;);
-    $flags .= '+' if $showMemberAdmin &amp;&amp; $isChanop;
+		$flags .= '$' if $showMemberCE and $APP-&gt;isEditor($_, &quot;nogods&quot;) and !$APP-&gt;isAdmin($_) and !$APP-&gt;getParameter($_,&quot;hide_chatterbox_staff_symbol&quot;);
+		$flags .= '+' if $showMemberAdmin &amp;&amp; $isChanop;
 
 		if(length($flags)) {
 			$s .= '&lt;small&gt;&lt;small&gt;'.$flags.'&lt;/small&gt;&lt;/small&gt;';
@@ -143,9 +123,9 @@ if($$NODE{group}) {
 		++$i;
 	}
 	$str = join(', ', @users);
-	my $num = scalar(@memberIDs);
-	$str.=&quot;&lt;br&gt;This group of $num member&quot;
-		.($num==1?'':'s')
+
+	$str.=&quot;&lt;br&gt;This group of $i member&quot;
+		.($i==1?'':'s')
 		.&quot; is led by  $users[0]$leavingnote&quot;;
 } else {
 	$str = '&lt;em&gt;This usergroup is lonely.&lt;/em&gt;';
@@ -213,7 +193,8 @@ $str .= 'other /msgs: '.$andTheRest.'&lt;br /&gt;
 ' if length($andTheRest);
 $str .= htmlcode('closeform').'&lt;/p&gt;';
 $str;
-%]</page>
+%]
+</page>
   <displaytype>display</displaytype>
   <node_id>846440</node_id>
   <title>usergroup display page</title>

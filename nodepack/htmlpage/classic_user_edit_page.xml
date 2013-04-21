@@ -80,7 +80,7 @@ if (jQuery('#bookmarklist li').length &gt; 1) {
    	).click(function(){jQuery('#bookmarklist input').attr('checked','true');});
 }
 // --&gt;&lt;/script&gt;
-
+[{closeform}]
 
 &lt;p align=&quot;center&quot;&gt;Your current homenode bio is shown below:&lt;/p&gt;
 &lt;hr class=&quot;clear&quot;&gt;
@@ -89,7 +89,6 @@ if (jQuery('#bookmarklist li').length &gt; 1) {
 [{displayUserText}]
 &lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-[{closeform}]
 </page>
   <displaytype>edit</displaytype>
   <node_id>176001</node_id>

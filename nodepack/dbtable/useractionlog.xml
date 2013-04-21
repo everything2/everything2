@@ -7,8 +7,8 @@
   `useraction_session_id` int(11) NOT NULL,
   `useraction_source_node_id` int(11) DEFAULT NULL,
   `useraction_target_node_id` int(11) DEFAULT NULL,
-  `useraction_condition` varchar(50) NOT NULL,
+  `useraction_condition` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`useractionlog_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>useractionlog</title>
 </node>

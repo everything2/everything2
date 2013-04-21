@@ -8,13 +8,12 @@ my $to_node = int($query-&gt;param(&quot;to_node&quot;));
 
 # usergroup owner
 my $isOwner = 0;
-$isOwner = 1 if ($$USER{node_id} == getVars(getNode('usergroup owners','setting'))-&gt;{$src});
+$isOwner = 1 if $$USER{node_id} == $APP -&gt; getParameter($src, 'usergroup_owner');
 my $canRemove = isGod($USER) || $isOwner || $DB -&gt; sqlSelect( &quot;weblog_id&quot; , &quot;weblog&quot; ,
 		&quot;weblog_id=$src and to_node=$to_node and linkedby_user=$$USER{ user_id }&quot; );
 
 return unless $canRemove;
 return unless $src &amp;&amp; $to_node ;
 $DB-&gt;getDatabaseHandle()-&gt;do(&quot;update weblog set removedby_user=$$USER{ user_id } where weblog_id=$src &amp;&amp; to_node=$to_node&quot;);
-
-htmlcode('update New Writeups data') if $src == 855769; # evil magic number for Node Row: this won't be needed for long</code>
+</code>
 </node>

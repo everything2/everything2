@@ -6,9 +6,8 @@
   <code>my ($nodeID, $includeTitles, $asList, $myTitle, $sbURL, $sbTitle, $imgTitle)=@_;
 
 my $myurl=&quot;http://everything2.com/node/&quot;.$nodeID;
-my $str;
+my $str = undef;
 $str.=&quot;&lt;li&gt;&quot; if $asList;
-#$str.=&quot;&lt;a href=\&quot;$sbURL&quot;.$myurl.&quot;&amp;t=&quot;.$myTitle.&quot;\&quot; target=\&quot;_new\&quot; onClick=\&quot;window.location='&quot;.urlGen({'node_id'=&gt;$$NODE{node_id}, 'op'=&gt;'socialBookmark','bookmark_site'=&gt;'$sbTitle'},1).&quot;'\&quot;&gt;&lt;img src=\&quot;http://everything2.com/images/social/$imgTitle&quot; alt=\&quot;$sbTitle\&quot; title=\&quot;$sbTitle\&quot; border=\&quot;0\&quot; /&gt;&lt;/a&gt; &quot;;
 $str.=&quot; &lt;a href=\&quot;http://furl.net/storeIt.jsp?u=&quot;.$myurl.&quot;&amp;t=&quot;.$myTitle.&quot;\&quot; target=\&quot;_new\&quot; onClick=\&quot;window.location='&quot;.urlGen({'node_id'=&gt;$$NODE{node_id}, 'op'=&gt;'socialBookmark','bookmark_site'=&gt;'$sbTitle'},1).&quot;'\&quot;&gt; $sbTitle&lt;/a&gt;&quot; if ($includeTitles);
 $str.=&quot;&lt;/li&gt;&quot; if $asList;
 

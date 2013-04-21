@@ -588,9 +588,12 @@ e2('textarea.readonly', function(){
 });
 
 e2('.wuformaction', 'click', function(){
+	// elements of class wuformaction need a different op in the big form enclosing writeups.
 	// to avoid duplication of names and other Bad Stuff in category and weblog forms in writeups, we only give
 	// their controls the right attributes when their button is clicked.
+	// this becomes redundant and is removed for some (but not all) elements with active ajax.
 	if (this.form.onsubmit &amp;&amp; !this.form.onsubmit()) return ;
+	if (!this.form.op) $(this.form).append('&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;vote&quot;&gt;');
 	this.form.op.value=this.value ;
 	var nodeid = this.name.replace( /[^0-9]+/ , '' ) ;
 	for ( var i = 0 , names = [ &quot;nid&quot; , &quot;cid&quot; , &quot;target&quot; , &quot;source&quot; ] ; names[i] ; i++ )
@@ -626,8 +629,62 @@ e2('.wuformaction', 'click', function(){
 		}
 	);
 
-})();</doctext>
-  <contentversion>102</contentversion>
+})();
+
+// extensible unload warning setup: jQuery bind() won't hack it (fails in version 1.3, later (?&lt;1.8) have IE9 problems)
+e2.beforeunload = {};
+window.onbeforeunload = function(e){
+	var events = 'focusin focus keydown keypress scroll click'
+	  , things = $(document).add(window)
+	  , jQUiStyle = $('&lt;link id=&quot;jQueryUiStylesheet&quot; rel=&quot;stylesheet&quot; href=&quot;http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/smoothness/jquery-ui.css&quot;&gt;');
+
+
+	for (var fn in e2.beforeunload){
+		var func = e2.beforeunload[fn];
+		var str = func(e);
+		if (str){
+			if (!$('#jQueryUiStylesheet', 'head')[0]) $('head').append(jQUiStyle);
+			$('&lt;div id=&quot;unloadWarning&quot;&gt;'+str+'&lt;/div&gt;')
+			.dialog({
+			  position: { my: &quot;center top&quot;, at: &quot;center top&quot;, of: window }
+			});
+			things.bind(events, cleanUp);
+			return (e.returnValue = str);
+		}
+	}
+
+	function cleanUp(e){
+		$('#unloadWarning').remove();
+		things.unbind(events, cleanUp);
+	}
+};
+
+// warn about unsaved edits in textareas
+(function(){
+	var events = 'keydown keypress keyup textInput';
+
+	function markUnsaved(){
+		$(this).addClass('unsaved');
+		$(this.form).bind('submit', function(){
+			// added long after pageload: fires after any possibility of stopping submission
+			$('textarea', this).removeClass('unsaved');
+		});
+		$(this).unbind(events, markUnsaved);
+	}
+
+	e2('textarea[name*=&quot;_doctext&quot;]', 'bind', [events, markUnsaved]);
+
+	e2.beforeunload.saveedits = function(e){
+		var opus = $('textarea.unsaved')[0];
+		if (!opus) return;
+		var what = opus.getAttribute('id') == 'writeup_doctext'
+			? 'your writeup/draft'
+			: 'a text area';
+		return 'You have made changes to ' + what + ' which be lost if you leave this page now.';
+	};
+})();
+</doctext>
+  <contentversion>111</contentversion>
   <s3bucket></s3bucket>
   <node_id>1874924</node_id>
   <title>default javascript</title>

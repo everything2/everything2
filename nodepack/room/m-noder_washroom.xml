@@ -16,5 +16,6 @@ return unless $numwr  &gt;= 1000 or isGod($USER);
 
 1;</criteria>
   <type_nodetype>545241</type_nodetype>
+  <abreviation></abreviation>
   <title>M-Noder Washroom</title>
 </node>

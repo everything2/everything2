@@ -5,6 +5,7 @@ Note that the download is source only, see the readme for instructions on compil
 &lt;p&gt;
 Also note that anyone with experience with cocoa development is welcome to help out, just drop me a line. I can set up a cvs or something, no need to duplicate effort )</doctext>
   <dlurl>http://www.math.ohio-state.edu/~ccunning/e2client.tar.gz</dlurl>
+  <homeurl></homeurl>
   <node_id>1273646</node_id>
   <type_nodetype>1261857</type_nodetype>
   <version>notevenusable-alpha</version>

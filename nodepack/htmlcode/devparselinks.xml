@@ -7,6 +7,5 @@
  my $text = $$NODE{$field};
 $text=~s/(?&lt;!\[)\[(?!\[)(.*?)(?&lt;!\])\](?!\])/linkNodeTitle ($1, $NODE)/egs;
         $text=~s/\[{2,}/[/gs; 
-        $text=~s/\]{2,}/]/gs; 
- unMSify($text);  #take out microsoft chars</code>
+        $text=~s/\]{2,}/]/gs; </code>
 </node>

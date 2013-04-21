@@ -4,7 +4,7 @@
   <_create_table_statement>CREATE TABLE `nodenote` (
   `nodenote_id` int(11) NOT NULL AUTO_INCREMENT,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `notetext` text NOT NULL,
+  `notetext` text COLLATE utf8_unicode_ci,
   `nodenote_nodeid` int(11) NOT NULL DEFAULT '0',
   `noter_user` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`nodenote_id`),
@@ -12,6 +12,6 @@
   KEY `nodenote_nodeid` (`nodenote_nodeid`),
   KEY `noter_user` (`noter_user`),
   KEY `nodenote_nodeid__noter_user` (`nodenote_nodeid`,`noter_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>nodenote</title>
 </node>

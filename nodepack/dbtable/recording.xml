@@ -5,9 +5,9 @@
   `recording_id` int(11) NOT NULL DEFAULT '0',
   `recording_of` int(11) NOT NULL DEFAULT '0',
   `appears_in` int(11) NOT NULL DEFAULT '0',
-  `link` char(255) NOT NULL DEFAULT '',
+  `link` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `read_by` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`recording_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>recording</title>
 </node>

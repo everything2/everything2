@@ -11,5 +11,6 @@ return 1 if $APP-&gt;getLevel($USER) &lt;= 3 or $APP-&gt;getLevel($USER) &gt;= 6
 
 0;</criteria>
   <type_nodetype>545241</type_nodetype>
+  <abreviation></abreviation>
   <title>Noders Nursery</title>
 </node>

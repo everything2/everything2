@@ -3,11 +3,11 @@
   <node_id>1930716</node_id>
   <_create_table_statement>CREATE TABLE `notification` (
   `notification_id` int(11) NOT NULL AUTO_INCREMENT,
-  `code` text NOT NULL,
+  `code` text COLLATE utf8_unicode_ci,
   `hourLimit` int(11) NOT NULL DEFAULT '0',
-  `description` text NOT NULL,
-  `invalid_check` text,
+  `description` text COLLATE utf8_unicode_ci,
+  `invalid_check` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`notification_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>notification</title>
 </node>

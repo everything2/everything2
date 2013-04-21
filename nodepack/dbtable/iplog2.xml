@@ -4,12 +4,12 @@
   <_create_table_statement>CREATE TABLE `iplog2` (
   `iplog2_id` int(11) NOT NULL AUTO_INCREMENT,
   `ip_user` int(11) NOT NULL DEFAULT '0',
-  `ip_addy` char(100) NOT NULL DEFAULT '',
+  `ip_addy` char(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ip_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`iplog2_id`),
   UNIQUE KEY `ip_user` (`ip_user`,`ip_addy`),
   KEY `iplog2_user` (`ip_user`),
   KEY `iplog2_addy` (`ip_addy`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>iplog2</title>
 </node>

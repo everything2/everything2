@@ -4,9 +4,9 @@
   <_create_table_statement>CREATE TABLE `annotation` (
   `annotation_id` int(11) NOT NULL AUTO_INCREMENT,
   `ann_node` int(11) NOT NULL DEFAULT '0',
-  `ann_text` text NOT NULL,
-  `ann_location` char(255) NOT NULL DEFAULT '',
+  `ann_text` text COLLATE utf8_unicode_ci,
+  `ann_location` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`annotation_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>annotation</title>
 </node>

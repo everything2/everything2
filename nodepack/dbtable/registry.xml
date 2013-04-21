@@ -3,10 +3,10 @@
   <node_id>1972148</node_id>
   <_create_table_statement>CREATE TABLE `registry` (
   `registry_id` int(11) NOT NULL DEFAULT '0',
-  `question` text NOT NULL,
+  `question` text COLLATE utf8_unicode_ci,
   `public` int(1) NOT NULL DEFAULT '1',
-  `input_style` char(16) NOT NULL DEFAULT 'text',
+  `input_style` char(16) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`registry_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>registry</title>
 </node>

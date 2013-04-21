@@ -3,34 +3,34 @@
   <node_id>173</node_id>
   <_create_table_statement>CREATE TABLE `user` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
-  `nick` varchar(20) DEFAULT NULL,
-  `passwd` varchar(127) DEFAULT NULL,
-  `realname` varchar(40) DEFAULT NULL,
-  `email` varchar(40) DEFAULT NULL,
+  `nick` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `passwd` varchar(127) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `realname` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL,
   `lasttime` datetime DEFAULT NULL,
   `karma` int(11) DEFAULT '0',
   `votes` int(11) NOT NULL DEFAULT '0',
   `experience` int(11) NOT NULL DEFAULT '0',
   `votesleft` int(11) NOT NULL DEFAULT '0',
   `users_clan` int(11) NOT NULL DEFAULT '0',
-  `imgsrc` varchar(128) NOT NULL DEFAULT '',
+  `imgsrc` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
   `in_room` int(11) NOT NULL DEFAULT '0',
   `wantsreport` int(11) NOT NULL DEFAULT '0',
   `acctlock` int(11) NOT NULL DEFAULT '0',
   `merit` float NOT NULL DEFAULT '0',
   `numwriteups` int(11) NOT NULL DEFAULT '0',
-  `validationkey` varchar(70) DEFAULT NULL,
+  `validationkey` varchar(70) COLLATE utf8_unicode_ci DEFAULT NULL,
   `validemail` int(1) DEFAULT '0',
   `GP` int(11) NOT NULL DEFAULT '0',
   `sanctity` int(11) NOT NULL DEFAULT '0',
   `stars` int(11) NOT NULL DEFAULT '0',
   `session_id` int(11) DEFAULT NULL,
   `user_salt` int(11) DEFAULT NULL,
-  `salt` varchar(23) DEFAULT NULL,
+  `salt` varchar(23) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   KEY `email` (`email`),
   KEY `lasttime` (`lasttime`),
   KEY `session_id` (`session_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
   <title>user</title>
 </node>

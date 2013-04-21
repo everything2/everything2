@@ -2,6 +2,7 @@
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>3</extends_nodetype>
   <sqltable>registry</sqltable>
+  <grouptable></grouptable>
   <node_id>1876758</node_id>
   <type_nodetype>1</type_nodetype>
   <title>registry</title>

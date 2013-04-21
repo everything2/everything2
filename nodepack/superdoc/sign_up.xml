@@ -20,7 +20,7 @@ my $formPage = sub{
 	};
 
 	return htmlcode('openform')
-		.$query -&gt; fieldset({style =&gt; 'width: 30em; max-width: 100%; margin: 3em auto 0'},
+		.$query -&gt; fieldset({style =&gt; 'width: 32em; max-width: 100%; margin: 3em auto 0'},
 			$query -&gt; legend('Enter new account details')
 			.$query -&gt; p($prompt.':')
 			.$query -&gt; p({style =&gt; 'text-align: right'},

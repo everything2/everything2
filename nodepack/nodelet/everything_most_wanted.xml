@@ -1,6 +1,7 @@
 <node>
   <nltext></nltext>
   <parent_container>20</parent_container>
+  <icon></icon>
   <nlgoto>0</nlgoto>
   <node_id>1935407</node_id>
   <type_nodetype>9</type_nodetype>

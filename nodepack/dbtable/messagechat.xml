@@ -3,11 +3,11 @@
   <node_id>1798859</node_id>
   <_create_table_statement>CREATE TABLE `messagechat` (
   `messagechat_id` int(11) NOT NULL AUTO_INCREMENT,
-  `msgtext` char(255) NOT NULL DEFAULT '',
+  `msgtext` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `author_user` int(11) NOT NULL DEFAULT '0',
   `tstamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `room` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`messagechat_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>messagechat</title>
 </node>

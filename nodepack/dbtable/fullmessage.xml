@@ -3,8 +3,8 @@
   <node_id>1100710</node_id>
   <_create_table_statement>CREATE TABLE `fullmessage` (
   `fullmessage_id` int(11) NOT NULL DEFAULT '0',
-  `msgtext` text NOT NULL,
+  `msgtext` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`fullmessage_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
   <title>fullmessage</title>
 </node>

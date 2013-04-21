@@ -164,7 +164,7 @@ unless ($stash{removed} == $$N{publication_status}){
 	.$query -&gt; submit(
 		-name =&gt; 'parentdraft',
 		value =&gt; 'Publish',
-		class =&gt; &quot;ajax draftstatus$$N{node_id}:parentdraft?parentdraft=Publish&amp;publishas=/:$$N{node_id}&quot;
+		class =&gt; &quot;earlybeforeunload ajax draftstatus$$N{node_id}:parentdraft?parentdraft=Publish&amp;publishas=/:$$N{node_id}&quot;
 	)
 	.&quot;&lt;p&gt;&lt;small&gt;Attached drafts are shown on the page they are attached to:
 	you always see your own draft, while other users with permission to see it

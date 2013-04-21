@@ -6,11 +6,11 @@
   `for_registry` int(11) NOT NULL DEFAULT '0',
   `in_user_profile` int(1) NOT NULL DEFAULT '0',
   `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `data` varchar(255) NOT NULL DEFAULT '',
-  `comments` varchar(512) NOT NULL DEFAULT '',
+  `data` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `comments` varchar(512) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`for_registry`,`from_user`),
   KEY `registry` (`for_registry`),
   KEY `user` (`from_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>registration</title>
 </node>

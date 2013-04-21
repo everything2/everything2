@@ -5,9 +5,9 @@
   `debatecomment_id` int(11) NOT NULL DEFAULT '0',
   `parent_debatecomment` int(11) NOT NULL DEFAULT '0',
   `root_debatecomment` int(11) NOT NULL DEFAULT '0',
-  `doctext` text NOT NULL,
+  `doctext` text COLLATE utf8_unicode_ci,
   `restricted` int(11) DEFAULT NULL,
   PRIMARY KEY (`debatecomment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
   <title>debatecomment</title>
 </node>

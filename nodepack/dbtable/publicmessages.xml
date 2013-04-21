@@ -4,13 +4,13 @@
   <_create_table_statement>CREATE TABLE `publicmessages` (
   `publicmessages_id` int(11) NOT NULL AUTO_INCREMENT,
   `message_id` int(11) NOT NULL,
-  `msgtext` text NOT NULL,
+  `msgtext` text COLLATE utf8_unicode_ci,
   `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `author_user` int(11) NOT NULL,
   PRIMARY KEY (`publicmessages_id`),
   UNIQUE KEY `message_id` (`message_id`),
   KEY `tstamp_index` (`tstamp`),
   KEY `author_user` (`author_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>publicmessages</title>
 </node>
