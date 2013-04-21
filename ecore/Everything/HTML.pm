@@ -2730,8 +2730,28 @@ sub mod_perlInit
 {
 	my ($db) = @_;
 
+	if($Everything::CONF->{maintenance_mode})
+	{
+		my $maintenance_html;
+		
+		if(!$maintenance_html) #intentionally mod_perl 'unsafe'
+		{
+			my $handle;
+			open $handle,"/var/everything/www/maintenance.html";
+			{
+				local $/ = undef;
+				$maintenance_html = <$handle>;
+				close $handle;
+			}
+		}	
+		print "Content-Type: text/html\n\n$maintenance_html\n";
+		return;
+	}
+
 	#blow away the globals
 	clearGlobals();
+
+	$query = getCGI();
 
 	# Initialize our connection to the database
 	Everything::initEverything($db);
@@ -2747,7 +2767,6 @@ sub mod_perlInit
 	# in the dbase to make changing these values easy.	
 	%HEADER_PARAMS = ( );
 
-	$query = getCGI();
 	set_die_handler(\&handle_errors);
 	return if $query->user_agent and $query->user_agent =~ /WebStripper/;
 	$USER = loginUser();

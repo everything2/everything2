@@ -783,6 +783,11 @@ sub initEverything
 {
 	my ($db, $staticNodetypes, $memcache) = @_;
 
+	if($Everything::CONF->{maintenance_mode})
+	{
+		exit;
+	}
+
 	$DB = new Everything::NodeBase($db, $staticNodetypes, $memcache);
 	$DB->closeTransaction();
 	$APP = new Everything::Application($DB, $CONF);
