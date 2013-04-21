@@ -1,16 +1,19 @@
-Vagrant::Config.run do |config|
-  config.vm.forward_port 80,8888,:auto => true
-  config.vm.forward_port 22,3333,:auto => true
+Vagrant.configure("2") do |config|
+  config.vm.network :forwarded_port, guest: 80, host: 8888, auto_correct: true
+  config.vm.network :forwarded_port, guest: 22, host: 3333, auto_correct: true
 
-  config.vm.box = "edev_squeeze"
-  config.vm.box_url = "http://vagrantbox.everything2.com/edev_squeeze.box"
+  config.vm.box = "edev_squeeze_vagrant2"
+  config.vm.box_url = "http://vagrantbox.everything2.com/edev_squeeze_vagrant2.box"
   config.ssh.private_key_path = "./edev_root"
   config.ssh.username = "root"
   
-  config.vm.share_folder("dropfiles","/dropfiles","./dropfiles")
-  config.vm.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]  
-  config.vm.customize ["modifyvm", :id, "--memory", 1024]
-  
+  config.vm.synced_folder "./dropfiles/","/dropfiles"
+
+  config.vm.provider :virtualbox do |vb|
+    vb.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]  
+    vb.customize ["modifyvm", :id, "--memory", 1024]
+  end
+
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = "cookbooks"
     chef.roles_path = "roles"
