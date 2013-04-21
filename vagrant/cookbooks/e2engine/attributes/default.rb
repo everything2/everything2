@@ -1,4 +1,5 @@
 default["e2engine"]["gitrepo"]      = "git://github.com/everything2/everything2.git"
+default["e2engine"]["maintenance_mode"] = 0
 default["e2engine"]["everyuser"]    = "everyuser"
 default["e2engine"]["everypass"]    = ""
 default["e2engine"]["everything_dbserv"] = "localhost"

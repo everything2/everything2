@@ -119,6 +119,7 @@ everything_conf_variables = {
     "nosearch_words" => nosearch_words_hash,
     "create_room_level" => node["e2engine"]["create_room_level"],
     "stylesheet_fix_level" => node["e2engine"]["stylesheet_fix_level"],
+    "maintenance_mode" => node["e2engine"]["maintenance_mode"],
     "writeuplowrepthreshold" => node["e2engine"]["writeuplowrepthreshold"]
 }
 
