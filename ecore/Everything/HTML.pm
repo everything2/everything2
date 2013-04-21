@@ -2145,7 +2145,7 @@ sub parseLinks {
 	   # ((?:\[[^\]|]* '[' then optionally: nodetype/author also in square brackets
 	   # [\]|] tolerate forgetting either closing ']' or pipe
 	   # [^[\]]*) then any more text in the brackets
-       $text = unMSify($text);
+#       $text = unMSify($text);
        return $text;
 }
 
