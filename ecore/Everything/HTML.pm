@@ -60,7 +60,6 @@ sub BEGIN {
               showPartialDiff
               showCompleteDiff
               recordUserAction
-              unMSify
               mod_perlInit
 
               castVote
@@ -671,58 +670,6 @@ sub breakTags {
 
   $text;
 }
-
-########################################################################
-#  Sub
-#       unMSify
-#
-#  purpose
-#       check for, and convert unconventional ASCII chars
-#       to plaintext
-#
-sub unMSify {
-   my ($s) = @_;
-   return $s unless $s =~ /[\x82-\x9C]/;
-
-   #this code was blatantly stolen from "demoronizer.pl"
-   # originally by John Walker
-   # http://www.fourmilab.ch/webtools/demoroniser/
-
-   $s =~ s/\x82/,/g;
-   $s =~ s-\x83-<em>f</em>-g;
-   $s =~ s/\x84/,,/g;
-   $s =~ s/\x85/.../g;
-
-   $s =~ s/\x88/^/g;
-#    $s =~ s-\x89- °/°°-g;
-
-   $s =~ s/\x8B/</g;
-   $s =~ s/\x8C/Oe/g;
-
-##    $s =~ s/\x91/`/g;
-       $s =~ s/\x91/'/g;
-   $s =~ s/\x92/'/g;
-   $s =~ s/\x93/"/g;
-   $s =~ s/\x94/"/g;
-   $s =~ s/\x95/*/g;
-##    $s =~ s/\x96/-/g;
-       $s =~ s/\x96/&ndash;/g;
-##    $s =~ s/\x97/--/g;
-       $s =~ s/\x97/&mdash;/g;
-##    $s =~ s-\x98-<sup>~</sup>-g;
-       $s =~ s/\x98/~/g;
-##    $s =~ s-\x99-<sup>TM</sup>-g;
-       $s =~ s/\x99/&trade;/g;
-
-   $s =~ s/\x9B/>/g;
-   $s =~ s/\x9C/oe/g;
-
-   $s;
-}
-
-
-
-
 
 #############################################################################
 #	Sub
@@ -2145,7 +2092,6 @@ sub parseLinks {
 	   # ((?:\[[^\]|]* '[' then optionally: nodetype/author also in square brackets
 	   # [\]|] tolerate forgetting either closing ']' or pipe
 	   # [^[\]]*) then any more text in the brackets
-#       $text = unMSify($text);
        return $text;
 }
 
