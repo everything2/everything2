@@ -1,6 +1,7 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Wed Apr 24 07:00:09 2013&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Wed Apr 24 07:40:13 2013&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Uberbanana&quot; node_id=&quot;973615&quot; parent_e2node=&quot;973589&quot; author_user=&quot;Quizro&quot;&gt;The Lovecraftian compulsion to keep writing even as one is being devoured&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;1222476&quot; parent_e2node=&quot;1222441&quot; author_user=&quot;Segnbora-t&quot;&gt;Anne Hathaway&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2102762&quot; parent_e2node=&quot;2102770&quot; author_user=&quot;Pandeism Fish&quot;&gt;Cup stacking&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;BookReader&quot; node_id=&quot;2102886&quot; parent_e2node=&quot;157834&quot; author_user=&quot;sam512&quot;&gt;oblivion&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;corvus&quot; node_id=&quot;2102855&quot; parent_e2node=&quot;2102838&quot; author_user=&quot;borgo&quot;&gt;April 22, 2013&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;jessicaj&quot; node_id=&quot;2102560&quot; parent_e2node=&quot;2102559&quot; author_user=&quot;StuartO)))&quot;&gt;Editor Log: April 2013&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;CapSkippy&quot; node_id=&quot;2102864&quot; parent_e2node=&quot;2102865&quot; author_user=&quot;moeyz&quot;&gt;the shadow of tulips&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Clockmaker&quot; node_id=&quot;1417500&quot; parent_e2node=&quot;1275470&quot; author_user=&quot;mirv&quot;&gt;Timur&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>
