@@ -44,7 +44,7 @@ end
 cron 'refreshRoom.pl' do
   user "root"
   minute "0-59/5"
-  command "/var/everything/ecore/bin/refreshRoom.pl 2>&1 >> #{logdir}/e2cron.refreshRoom.#{datelog}"
+  command "/var/everything/tools/refreshRoom.pl 2>&1 >> #{logdir}/e2cron.refreshRoom.#{datelog}"
 end
 
 cron 'cleanCbox.pl' do
