@@ -6,5 +6,5 @@ Disallow: /
 user-agent: AhrefsBot
 disallow: /
 
-user-agent: Yandex
-disallow: /
+User-agent: Yandex
+Crawl-delay: 2
