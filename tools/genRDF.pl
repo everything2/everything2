@@ -1,5 +1,9 @@
 #!/usr/bin/perl -w -I /var/everything/ecore
 
+# This script at one time was used generate the RDF feed.
+# It is very likely we'll use this as a starting point to do something like that again
+# For now it is removed in the post-MSU world
+
 use Everything;
 use Everything::HTML;
 use Everything::XML;
