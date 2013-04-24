@@ -1,5 +1,4 @@
 # m h  dom mon dow   command
-45 * * * * /usr/local/everything/bin/fixNewwriteups.pl
 
 # We don't run cleanCbox on the development server
 #  so that the catbox doesn't get cleared out
@@ -16,7 +15,6 @@
 
 ## Not called by cron right now:
 # emailReport.pl
-# genRDF.pl
 # genStats.pl
 # lfcalc.pl
 # updateGUSettings.pl
