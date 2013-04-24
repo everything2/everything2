@@ -65,15 +65,22 @@ if ($isEditor){
 		'to_node, food', 'links', &quot;from_node=$$N{node_id} AND linktype=$linktype&quot;);
 
 	unless ($status eq 'private' || $status eq 'removed' || $isMine){
-		if ($query -&gt; param('makeprivate')){
-			$$N{publication_status} = getId(getNode('private', 'publication_status'));
+		my %options = (private =&gt; 'Made Private', public =&gt; 'Removed from review');
+		my $change = $query -&gt; param('smiteStatus');
+
+		if ($change &amp;&amp; $options{$change}){
+			$$N{publication_status} = getId(getNode($change, 'publication_status'));
 			updateNode($N, -1);
-			$text = $status = $linktitle = 'Made Private';
+			$text = $status = $linktitle = $options{$change};
 			$DB -&gt; sqlUpdate('links', {food =&gt; ($approver = 0)},
 				&quot;from_node=$$N{node_id} AND linktype=$linktype&quot;) if $approver;
 		}else{
+			push @tools, linkNode($N, 'Remove from review', {
+				smiteStatus =&gt; 'public'
+				, -class =&gt; &quot;action ajax $id:drafttools:$n,1&quot;
+			}) if $status eq 'review';
 			push @tools, linkNode($N, 'Make private', {
-				makeprivate =&gt; 1
+				smiteStatus =&gt; 'private'
 				, -class =&gt; &quot;action ajax $id:drafttools:$n,1&quot;
 			});
 		}
@@ -133,5 +140,6 @@ if (@tools){
 }
 
 $query -&gt; span({class =&gt; 'admin', id =&gt; $id, title =&gt; $linktitle}, $text);
+ 
 </code>
 </node>
