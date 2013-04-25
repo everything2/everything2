@@ -64,12 +64,12 @@ cron 'expirerooms.pl' do
   user "root"
   minute "30"
   hour "6"
-  command "/var/everything/ecore/bin/expirerooms.pl 2>&1 >> #{logdir}/e2cron.expirerooms.#{datelog}"
+  command "/var/everything/tools/expirerooms.pl 2>&1 >> #{logdir}/e2cron.expirerooms.#{datelog}"
 end
 
 cron 'reaper.pl' do
   user "root"
   minute "50"
   hour "6"
-  command "/var/everything/ecore/bin/reaper.pl 2>&1 >> #{logdir}/e2cron.reaper.#{datelog}"
+  command "/var/everything/tools/reaper.pl 2>&1 >> #{logdir}/e2cron.reaper.#{datelog}"
 end
