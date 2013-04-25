@@ -1,10 +1,3 @@
-# m h  dom mon dow   command
-
-# We don't run cleanCbox on the development server
-#  so that the catbox doesn't get cleared out
-#  and we can use the main room as a public whiteboard
-50 * * * * /usr/local/everything/bin/cleanCbox.pl
-
 52 * * * * /usr/local/everything/bin/genDBstats.pl
 0-59/5 * * * * /usr/local/everything/bin/updateNodelet.pl
 0-59/5 * * * * /usr/local/everything/bin/refreshRoom.pl
