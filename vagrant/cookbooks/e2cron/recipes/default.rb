@@ -57,7 +57,7 @@ cron 'newstats.pl' do
   user "root"
   minute "10"
   hour "6"
-  command "/var/everything/ecore/tools/newstats.pl 2>&1 >> #{logdir}/e2cron.newstats.#{datelog}"
+  command "/var/everything/tools/newstats.pl 2>&1 >> #{logdir}/e2cron.newstats.#{datelog}"
 end
 
 cron 'expirerooms.pl' do
