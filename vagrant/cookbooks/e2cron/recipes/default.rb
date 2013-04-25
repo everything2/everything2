@@ -50,7 +50,7 @@ end
 cron 'cleanCbox.pl' do
   user "root"
   minute "50"
-  command "/var/everything/ecore/bin/cleanCbox.pl 2>&1 >> #{logdir}/e2cron.cleanCbox.#{datelog}"
+  command "/var/everything/tools/cleanCbox.pl 2>&1 >> #{logdir}/e2cron.cleanCbox.#{datelog}"
 end
 
 cron 'newstats.pl' do
