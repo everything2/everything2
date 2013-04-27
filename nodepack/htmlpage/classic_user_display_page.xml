@@ -1,11 +1,11 @@
 <node>
   <type_nodetype>5</type_nodetype>
   <parent_container>19</parent_container>
-  <pagetype_nodetype>151</pagetype_nodetype>
+  <pagetype_nodetype>0</pagetype_nodetype>
   <page>[{setupuservars}]
 &lt;p align=&quot;right&quot;&gt;[%
 return if getId($USER) != getId($NODE);
-linkNode($NODE, 'edit', {displaytype=&gt;'edit'});
+linkNode($NODE, 'edit', {displaytype=&gt;'edit', &quot;-id&quot; =&gt; &quot;usereditlink&quot;});
 %]
 &lt;p&gt;
 &lt;table width=&quot;100%&quot; cellpadding=&quot;1&quot; cellspacing=&quot;3&quot; border=&quot;0&quot;&gt;

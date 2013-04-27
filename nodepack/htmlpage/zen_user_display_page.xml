@@ -9,7 +9,7 @@
 [{showuserimage}]
 [%
 return if getId($USER) != getId($NODE);
-'&lt;p&gt;' . linkNode($NODE, '(edit user information)', {displaytype=&gt;'edit'}) . '&lt;/p&gt;';
+'&lt;p&gt;' . linkNode($NODE, '(edit user information)', {displaytype=&gt;'edit', &quot;-id&quot; =&gt; &quot;usereditlink&quot;}) . '&lt;/p&gt;';
 %]
 &lt;/div&gt;
 [{zenDisplayUserInfo}]
