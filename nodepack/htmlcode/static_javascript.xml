@@ -16,14 +16,7 @@ my $e2 = undef;
 $e2-&gt;{node_id} = $$NODE{node_id};
 $e2-&gt;{lastnode_id} = $lastnode;
 $e2-&gt;{title} = $$NODE{title};
-
-my $e2guest = &quot;e2.guest = &quot;;
-if( $APP-&gt;isGuest($USER) )
-{
-  $e2guest .= &quot;true&quot;;
-}else{
-  $e2guest .= &quot;false&quot;;
-}
+$e2-&gt;{guest} = ($APP-&gt;isGuest($USER))?(1):(0);
 
 my $cookie = undef;
 foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
@@ -44,7 +37,7 @@ my $libraries = qq'&lt;script src=&quot;http://code.jquery.com/jquery-1.4.4$min.
 my $js_decisions = htmlcode('javascript_decider');
 
 unless ($APP-&gt;isGuest($USER)){
-	$libraries .= '&lt;script src=&quot;'.htmlcode(&quot;linkjavascript&quot;,getNode(&quot;jquery ui&quot;,&quot;jscript&quot;)).'&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
+	$libraries .= '&lt;script src=&quot;http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
 }
 
 $libraries .= '&lt;script src=&quot;'.htmlcode(&quot;linkjavascript&quot;,getNode(&quot;jquery bbq&quot;,&quot;jscript&quot;)).'&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
@@ -52,7 +45,6 @@ $libraries .= '&lt;script src=&quot;'.htmlcode(&quot;linkjavascript&quot;,getNod
 return &lt;&lt;ENDJS;
 	&lt;script type='text/javascript' name='nodeinfojson' id='nodeinfojson'&gt;
 		e2 = $e2;
-		$e2guest;
 	&lt;/script&gt;
         $libraries
         $js_decisions

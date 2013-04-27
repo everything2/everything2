@@ -20,7 +20,6 @@ my @moduleTest = (
       Authen::SASL
       Cache::Memcached
       Cache
-      Captcha::reCAPTCHA
       Clone
       CGI
       Date::Calc
