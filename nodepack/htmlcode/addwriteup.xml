@@ -13,7 +13,7 @@ if ( $APP-&gt;isMaintenanceNode($NODE) ){
 my $MINE = undef; #mod_perl safety
 $MINE = delete $PAGELOAD-&gt;{my_writeup}; # saved by [canseewriteup]
 $MINE ||= htmlcode('nopublishreason', $USER, $NODE);
-return '&lt;div class=&quot;nodelock&quot;&gt;&lt;p&gt;'.$MINE.'&lt;/p&gt;&lt;/div&gt;' if $MINE and ref $MINE ne 'HASH';
+return '&lt;div class=&quot;nodelock&quot;&gt;&lt;p&gt;'.$MINE.'&lt;/p&gt;&lt;/div&gt;' if $MINE and ref $MINE eq '';
 
 # OK: user can post or edit a writeup/draft
 

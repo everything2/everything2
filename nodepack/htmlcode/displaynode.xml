@@ -5,6 +5,8 @@
   <title>displayNODE</title>
   <code>my ($limit) = @_;
 
+return unless $APP-&gt;isAdmin($USER);
+
 $limit ||= 90000;
 my $str = '';
 my @noShow = ('table', 'type_nodetype', 'passwd');
@@ -18,7 +20,7 @@ foreach my $key (keys %$NODE) {
        $str .= linkNode $$NODE{$key}, &quot;&quot; if($$NODE{$key});
        $str .= &quot;none&quot; unless($$NODE{$key});
     }			
-    elsif ($$NODE{$key} and ref $$NODE{$key} eq &quot;HASH&quot;) {
+    elsif ($$NODE{$key} and (ref $$NODE{$key} eq &quot;HASH&quot; or ref $$NODE{$key} =~ /^Everything::node/i)) {
       $str .= linkNode $$NODE{$key}, &quot;&quot;, {lastnode =&gt; getId ($NODE)};
     } else {$str .= $$NODE{$key} if (length ($$NODE{$key}) &lt; $limit);}	
   $str .= &quot;&lt;BR&gt;\n&quot;;

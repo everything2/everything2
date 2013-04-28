@@ -29,7 +29,7 @@ push @allSettings ,	(
 my $lcnt = lc($$NODE{title});
 foreach(@allSettings) {
 
-	if((ref $_) eq 'HASH') {
+	if((ref $_) eq 'HASH') { #Blessed node safety ok -jb
 		#doing fancy stuff - giving specific parameters for link
 		#this is way overkill, but this allows us to easily maintain the settings list
 		my $show = (exists $_-&gt;{$DISP}) ? $_-&gt;{$DISP} : (exists $_-&gt;{'node'}) ? $_-&gt;{'node'} : (exists $_-&gt;{'node_id'}) ? 'node_id='.$_-&gt;{'node_id'} : '(Something)';

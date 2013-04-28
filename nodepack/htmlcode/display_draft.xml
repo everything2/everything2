@@ -25,5 +25,5 @@ if ($$NODE{author_user} == $$USER{node_id}
 }
 
 my $PAGE = getPageForType($displaylike, $displaytype);
-return parseCode($PAGE -&gt; {page}, $NODE);</code>
+return &quot;&lt;!-- jblike: $$PAGE{node_id} --&gt;&quot;.parseCode($PAGE -&gt; {page}, $NODE);</code>
 </node>

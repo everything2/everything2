@@ -10,26 +10,6 @@
 &lt;/div&gt;
 
 [{votefoot}]
-
-[%
-return '' unless $APP-&gt;inDevEnvironment();
-return '' unless $$NODE{type}{title} eq 'writeup' and $$NODE{parent_e2node};
-my $str;
-# Stars for the parent e2node:
-my $PARENT = getNodeById($$NODE{parent_e2node});
-return unless($PARENT and $$PARENT{group} and my @grp = @{getNodeById($$NODE{parent_e2node})-&gt;{group}});
-my $nwriteups = scalar(@grp);
-if ($nwriteups==1) {
-  $str.=htmlcode('stars',&quot;$$NODE{parent_e2node},,,,&quot;);
-  $str.=htmlcode('nagbox');
-}
-else {
-  $str.=htmlcode('stars',&quot;$$NODE{parent_e2node},1,,,&quot;)
-  .'&lt;p&gt;This writeup is part of a larger node - please view '.linkNode($PARENT).' to rate it.&lt;/p&gt;';  
-}
-return $str;
-%]
-
 [{writeuphints}]
 
 [%
