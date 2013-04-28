@@ -24,7 +24,7 @@ return htmlcode('publishwriteup', $WRITEUP, $E2NODE) unless $problem;
 # otherwise, we don't want it:
 nukeNode $WRITEUP, -1, 1;
 
-return if ref $problem eq &quot;&quot;; #Assume HASH or in the future, bless node obj
+return if ref $problem eq &quot;&quot;; #Assume hash or in the future, bless node obj
 
 # user already has a writeup in this E2node: update it
 $$problem{doctext} = $query-&gt;param(&quot;writeup_doctext&quot;);
