@@ -1,6 +1,8 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Apr 28 00:40:14 2013&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Apr 28 15:00:12 2013&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2103018&quot; parent_e2node=&quot;2103007&quot; author_user=&quot;Lucy-S&quot;&gt;April 28, 2013&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1800292&quot; parent_e2node=&quot;1737878&quot; author_user=&quot;avalyn&quot;&gt;eszopiclone&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Clockmaker&quot; node_id=&quot;627492&quot; parent_e2node=&quot;627471&quot; author_user=&quot;RimRod&quot;&gt;Why France sucks&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;tanktop&quot; node_id=&quot;919797&quot; parent_e2node=&quot;225794&quot; author_user=&quot;m_turner&quot;&gt;Divination&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;etouffee&quot; node_id=&quot;1760231&quot; parent_e2node=&quot;556764&quot; author_user=&quot;iceowl&quot;&gt;Last Kiss&lt;/cooled&gt;
@@ -14,8 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2102971&quot; parent_e2node=&quot;2102972&quot; author_user=&quot;teleny&quot;&gt;&quot;Nine of Spades&quot;&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2102969&quot; parent_e2node=&quot;2102970&quot; author_user=&quot;legbagede&quot;&gt;intelligence failure&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;2004383&quot; parent_e2node=&quot;46115&quot; author_user=&quot;avalyn&quot;&gt;drug abuse&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Braunbeck&quot; node_id=&quot;1533433&quot; parent_e2node=&quot;1533408&quot; author_user=&quot;Lucy-S&quot;&gt;How to comfort someone whose parent has died&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2098903&quot; parent_e2node=&quot;558940&quot; author_user=&quot;Pandeism Fish&quot;&gt;moped&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

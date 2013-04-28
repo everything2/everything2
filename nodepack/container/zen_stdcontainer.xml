@@ -34,8 +34,11 @@ if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
 [%
 
 if ($ENV{HTTP_HOST} !~ /^m\.everything2/i) {
+  # This only matters in the development environment
+  my ($port) = $ENV{HTTP_HOST} =~ /(:\d+)$/;
+  $port ||=&quot;&quot;;
   return '
-	&lt;base href=&quot;http://' . $Everything::CONF-&gt;{canonical_web_server} . '&quot;&gt;' if $APP-&gt;isGuest($USER) ;
+	&lt;base href=&quot;http://' . $Everything::CONF-&gt;{canonical_web_server} . $port.'&quot;&gt;' if $APP-&gt;isGuest($USER) ;
 }
 
 %]
