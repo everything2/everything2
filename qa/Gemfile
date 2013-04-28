@@ -1,4 +1,5 @@
 gem "watir-webdriver"
 gem "json"
 gem "cucumber"
-
+gem "childprocess"
+gem "rspec"
