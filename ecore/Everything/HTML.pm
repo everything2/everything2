@@ -797,18 +797,10 @@ sub htmlErrorUsers
 {
 	my ($code, $err, $warn) = @_;
 	my $errorId = int(rand(9999999));  # just generate a random error id.
-	my $str = htmlcode("htmlError", $errorId);
-
-	# If the site does not have a piece of htmlcode to format this error
-	# for the users, we will provide a default.
-	if((not defined $str) || $str eq "")
-	{
-		$str = "Server Error (Error Id $errorId)!";
-		$str = "<font color=\"#CC0000\"><b>$str</b></font>";
-		
-		$str .= "<p>An error has occured.  Please contact the site";
-		$str .= " administrator with the Error Id.  Thank you.";
-	}
+	
+	my $str = "Server Error (Error Id $errorId)!";
+	$str = "<font color=\"#CC0000\"><b>$str</b></font>";
+	$str .= '<p id="servererror">An error has occured.  It has been logged. Apologies for the inconvenience. If it persists, contact an administrator</p>';
 
 	# Print the error to the log instead of the browser.  That way users
 	# do not see all the messy perl code.
