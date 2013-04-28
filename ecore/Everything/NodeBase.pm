@@ -451,7 +451,7 @@ sub getNode
 	
 	if(defined $TYPE)
 	{	
-		$TYPE = $this->getType($TYPE) unless(ref $TYPE eq "HASH");
+		$TYPE = $this->getType($TYPE) unless(UNIVERSAL::isa($TYPE,"HASH"));
 	}
 
 	$selectop ||= '';
@@ -756,7 +756,7 @@ sub getNodeCursor
 
 	$nodeTableOnly ||= 0;
 
-	$TYPE = $this->getType($TYPE) if((defined $TYPE) && (ref $TYPE ne "HASH"));
+	$TYPE = $this->getType($TYPE) if((defined $TYPE) && (UNIVERSAL::isa($TYPE,"HASH")));
 
 	my $wherestr = $this->genWhereString($WHERE, $TYPE, $orderby);
 
@@ -871,7 +871,7 @@ sub updateLockedNode
 
 	# We don't use getId() here because getId() won't do lists
 	my @node_id_list =
-		map { ref $_ eq 'HASH' ? int($_{node_id}) : int $_ } @$NODELIST;
+		map { UNIVERSAL::isa($_, 'HASH') ? int($_{node_id}) : int $_ } @$NODELIST;
 
 	my $updateSub = sub {
 		# Grab a fresh copy of each node, locking the nodes' DB rows.
@@ -1030,7 +1030,7 @@ sub updateNode
 			# we don't want to chance mucking with the primary key
 			next if $field eq $table . '_id';
 			# don't write a value if we haven't changed it since we read the node
-			if(ref $ORIGINAL_NODE eq "HASH" and eq_deeply($ORIGINAL_NODE->{$field}, $NODE->{$field}))
+			if(UNIVERSAL::isa($ORIGINAL_NODE,"HASH") and eq_deeply($ORIGINAL_NODE->{$field}, $NODE->{$field}))
 			{
 				next;
 			}
@@ -1401,7 +1401,7 @@ sub getType
 	# break and we will need to change this stuff.
 
 	# If they pass in a hash, just take the id.
-	$idOrName = $$idOrName{node_id} if(ref $idOrName eq "HASH");
+	$idOrName = $$idOrName{node_id} if(UNIVERSAL::isa($idOrName,"HASH"));
 	
 	return undef if((not defined $idOrName) || ($idOrName eq ""));
 
@@ -1865,14 +1865,14 @@ sub genWhereString
 	my $wherestr = "";
 	my $tempstr;
 	
-	if (ref ($WHERE) eq 'HASH') {
+	if (UNIVERSAL::isa($WHERE,'HASH')) {
 	foreach my $key (keys %$WHERE)
 	{
 		$tempstr = "";
 
 		# if your where hash includes a hash to a node, you probably really
 		# want to compare the ID of the node, not the hash reference.
-		if (ref ($$WHERE{$key}) eq "HASH")
+		if (UNIVERSAL::isa($$WHERE{$key}, "HASH"))
 		{
 			$$WHERE{$key} = $this->getId($$WHERE{$key});
 		}
@@ -2240,12 +2240,7 @@ sub getId
 {
 	my ($this, $arg) = @_;
 
-#	foreach my $arg (@args)
-#	{
-		if (ref $arg eq "HASH") {$arg = $$arg{node_id};}  
-#	}
-#	
-#	return (@args == 1 ? $args[0] : @args);
+	if (UNIVERSAL::isa($arg, "HASH")) {$arg = $$arg{node_id};}  
 	$arg;
 }
 

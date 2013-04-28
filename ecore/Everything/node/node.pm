@@ -90,10 +90,10 @@ sub xml_to_node
 	my ($this, $xml) = @_;
 	
 	my $NODE = $this->{xs}->XMLin($xml);
-	die "Malformed XML, no <node> construct!\n" unless ref $NODE eq "HASH";
+	die "Malformed XML, no <node> construct!\n" unless UNIVERSAL::isa($NODE,"HASH");
 	$NODE = $NODE->{node};
 
-	die "Malformed node construct, not a hash!\n".Data::Dumper->Dump([$NODE]) unless ref $NODE eq "HASH";
+	die "Malformed node construct, not a hash!\n".Data::Dumper->Dump([$NODE]) unless UNIVERSAL::isa($NODE,"HASH");
 
 	foreach my $field (@{$this->node_id_equivs()})
 	{

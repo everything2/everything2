@@ -151,7 +151,7 @@ sub addGroup
 	my @values;
 	
 	return if(not defined $GROUP);
-	return if(ref $GROUP ne "HASH");
+	return if(!UNIVERSAL::isa($GROUP, "HASH"));
 
 	$sort ||= 0;
 

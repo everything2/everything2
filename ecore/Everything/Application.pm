@@ -592,7 +592,7 @@ sub searchNodeName {
 	my %cooltypes;
 	
 	my $typePrefix = "n.type_nodetype IN (";
-	$TYPE=[$TYPE] if (ref($TYPE) eq 'HASH');
+	$TYPE=[$TYPE] if (UNIVERSAL::isa($TYPE,'HASH'));
 
 	if(ref($TYPE) eq 'ARRAY' and @$TYPE) {
 		foreach(@$TYPE) { $cooltypes{$this->{db}->getId($_)} = 1 }

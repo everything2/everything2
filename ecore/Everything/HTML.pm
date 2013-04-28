@@ -1361,7 +1361,7 @@ sub linkNodeTitle {
 
   getRef $lastnode;
   my $lastnodeQuery = "";
-  $lastnodeQuery = "?lastnode_id=$$lastnode{node_id}" if $lastnode && ref $lastnode eq 'HASH';
+  $lastnodeQuery = "?lastnode_id=$$lastnode{node_id}" if $lastnode && UNIVERSAL::isa($lastnode,'HASH');
   $str .= "<a href=\"$href$lastnodeQuery$linkAnchor\" title=\"$linktitle\" "
           .( $isNode ? "class='populated'" : "class='unpopulated'")
          ." >$title</a>";
