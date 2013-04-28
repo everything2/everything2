@@ -15,25 +15,7 @@
 %]
 
 [%
-  return unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
-  my $number = 0;
-  my $str = &quot;&quot;;
-  my $htmlcode = getType('htmlcode');
-  my $csr = $DB-&gt;sqlSelectMany(&quot;node_id&quot;,&quot;node&quot;,&quot;type_nodetype=$$htmlcode{node_id}&quot;);
-  while(my $row = $csr-&gt;fetchrow_arrayref())
-  {
-    my $node = getNodeById($row-&gt;[0]);
-    unless($node)
-    {
-       next;
-    }
-    if($node-&gt;{modperlsafe} != 1)
-    {  
-       $number++;
-       $str.=&quot;&lt;li&gt;&quot;.linkNode($node)
-    }
-  }
-  return &quot;Un-audited htmlcodes: $number&lt;br /&gt;&quot;.$str;
+  return &quot;U::I HASH: &quot;.UNIVERSAL::isa($NODE, 'HASH');
 %]</doctext>
   <node_id>1146920</node_id>
   <title>jaybonci's sandbox</title>

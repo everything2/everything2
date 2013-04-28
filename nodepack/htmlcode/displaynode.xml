@@ -20,7 +20,7 @@ foreach my $key (keys %$NODE) {
        $str .= linkNode $$NODE{$key}, &quot;&quot; if($$NODE{$key});
        $str .= &quot;none&quot; unless($$NODE{$key});
     }			
-    elsif ($$NODE{$key} and (ref $$NODE{$key} eq &quot;HASH&quot; or ref $$NODE{$key} =~ /^Everything::node/i)) {
+    elsif ($$NODE{$key} and UNIVERSAL::isa($$NODE{$key},&quot;HASH&quot;)) {
       $str .= linkNode $$NODE{$key}, &quot;&quot;, {lastnode =&gt; getId ($NODE)};
     } else {$str .= $$NODE{$key} if (length ($$NODE{$key}) &lt; $limit);}	
   $str .= &quot;&lt;BR&gt;\n&quot;;

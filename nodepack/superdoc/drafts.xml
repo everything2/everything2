@@ -38,7 +38,7 @@ my @showit = (
 	'title, author_user, publication_status, collaborators'
 	, 'node JOIN draft ON node_id = draft_id'
 	, &quot;author_user = $user AND type_nodetype = $$draftType{node_id}&quot;
-	, 'ORDER BY title'
+	, 'ORDER BY title LIMIT 25'
 );
 
 unless ($username){
