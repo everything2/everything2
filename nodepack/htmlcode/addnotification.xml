@@ -14,7 +14,7 @@ $notification_id = getNode($notification_id, 'notification')-&gt;{node_id}
 $user_id ||= $notification_id;
 
 # turn args to string if we were passed a hashref:
-$args = to_json($args) if ref $args eq 'HASH';
+$args = to_json($args) if(UNIVERSAL::isa($args,'HASH'));
 
 $DB-&gt;sqlInsert(
 	'notified', {

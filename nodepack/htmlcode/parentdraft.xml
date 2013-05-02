@@ -214,7 +214,7 @@ unless ($publish &amp;&amp; $e2node){
 		.'&lt;/i&gt;:&lt;/h3&gt;
 		&lt;p&gt;';
 
-		if (ref $nopublish eq 'HASH'){
+		if (UNIVERSAL::isa($nopublish,'HASH')){
 			$str .= linkNodeTitle(&quot;${title}[by &quot;
 			.($publishAs ? &quot;$$publishAs{title}]|$$publishAs{title} has&quot; : &quot;$$USER{title}]|You have&quot;)
 			.' a writeup there already.');

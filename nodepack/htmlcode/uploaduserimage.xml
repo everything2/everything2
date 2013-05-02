@@ -44,7 +44,7 @@ if ($fname = $query-&gt;upload($name)) { #recent change to CGI.pm
   $basename =~ s/\W/_/gs;
   my $imgname = $basename;
   
-  ref $query-&gt;uploadInfo($fname) eq &quot;HASH&quot; or return &quot;Image upload failed. If this persists, contact an administrator.&quot;;
+  UNIVERSAL::isa($query-&gt;uploadInfo($fname),&quot;HASH&quot;) or return &quot;Image upload failed. If this persists, contact an administrator.&quot;;
   my $content = $query-&gt;uploadInfo($fname)-&gt;{'Content-Type'};
   unless ($content =~ /(jpeg|jpg|gif|png)$/) {
      return &quot;this doesn't look like a jpg, gif or png!&quot; 

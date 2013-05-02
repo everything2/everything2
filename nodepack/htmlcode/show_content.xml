@@ -82,7 +82,7 @@ $infofunctions{ parenttitle } ||= sub {
 
 $infofunctions{ type } ||= sub {
 	my $type = $_[0]{type_title} || getNodeById($_[0]{wrtype_writeuptype}) || $_[0]{type};
-	$type = $type -&gt; {title} if ref($type) eq &quot;HASH&quot;;
+	$type = $type -&gt; {title} if(UNIVERSAL::isa($type,&quot;HASH&quot;));
 	if ($type eq 'draft'){
 		my $status = getNodeById($_[0]{publication_status});
 		$type = ($status ? $$status{title} : '(bad status)').' draft';

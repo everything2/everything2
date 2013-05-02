@@ -18,7 +18,7 @@ foreach (@globals) {
 
 
   my %options = (
-  &quot;Everything::Node&quot; =&gt; sub {
+  &quot;Everything::node&quot; =&gt; sub {
   my $nid = eval &quot;$_&quot;.&quot;-&gt;{node_id}&quot;;
   $str.= &quot;NODE: &quot;.linkNode($nid).&quot; ($nid)&quot;;
 },
@@ -62,7 +62,7 @@ my %expand = (
   my $firstchar = $1;
   $reftype = &quot;HASHREF&quot; if $reftype eq 'HASH' and $firstchar eq '$'; 
   $reftype = &quot;HASH&quot; if not $reftype and $firstchar eq '%'; 
-  $reftype = &quot;Everything::Node&quot; if $reftype eq 'HASHREF' and eval (&quot;exists \$$_&quot;.'{node_id}');
+  $reftype = &quot;Everything::node&quot; if $reftype eq 'HASHREF' and eval (&quot;exists \$$_&quot;.'{node_id}');
 
   if ($_ eq '$PAGELOAD' or (defined $query-&gt;param(&quot;show$_&quot;) and exists $expand{$reftype})) {
     my $ref = $expand{$reftype};
