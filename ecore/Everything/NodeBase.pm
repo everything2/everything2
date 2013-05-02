@@ -756,7 +756,7 @@ sub getNodeCursor
 
 	$nodeTableOnly ||= 0;
 
-	$TYPE = $this->getType($TYPE) if((defined $TYPE) && (UNIVERSAL::isa($TYPE,"HASH")));
+	$TYPE = $this->getType($TYPE) if((defined $TYPE) && (!UNIVERSAL::isa($TYPE,"HASH")));
 
 	my $wherestr = $this->genWhereString($WHERE, $TYPE, $orderby);
 
