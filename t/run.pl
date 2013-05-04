@@ -8,7 +8,7 @@ use File::Find;
 
 my $testfiles;
 my $dirname = dirname(abs_path($0));
-find(sub {push @$testfiles,$_ if /\.t$/}, $dirname);
+find(sub {$testfiles->{$_}=1 if /\.t$/}, $dirname);
 
-runtests(sort {$a cmp $b} @$testfiles);
+runtests(sort {$a cmp $b} keys %$testfiles);
 

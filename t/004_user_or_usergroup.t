@@ -6,6 +6,11 @@ use Test::More;
 use Everything;
 
 initEverything 'everything';
+unless($APP->inDevEnvironment())
+{
+	plan skip_all => "Not in the development environment";
+	exit;
+}
 
 my $definitely_a_user = getNode("root","user");
 my $definitely_a_usergroup = getNode("gods","usergroup");

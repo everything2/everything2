@@ -6,6 +6,11 @@ use Test::More;
 use Everything;
 
 initEverything 'everything';
+unless($APP->inDevEnvironment())
+{
+	plan skip_all => "Not in the development environment";
+	exit;
+}
 
 ok($APP->messageCleanWhitespace(" testing\nhere") eq "testing here");
 ok($APP->messageCleanWhitespace(" test  message ") eq "test message");

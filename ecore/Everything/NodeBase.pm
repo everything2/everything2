@@ -1983,21 +1983,21 @@ sub deriveType
 				"resolvedInheritance" => 1 );
 			
 			next if(exists $skipfields{$field});
-			
+			next if(not defined $$NODETYPE{$field});
 			# If a field in a nodetype is '-1', this field is derived from
 			# its parent.
-			if(defined $$NODETYPE{field} and $$NODETYPE{$field} eq "-1")
+			if($$NODETYPE{$field} eq "-1")
 			{
 				$$NODETYPE{$field} = $$PARENT{$field};
 			}
-			elsif(($field eq "sqltablelist") && ($$PARENT{$field} ne ""))
+			elsif(($field eq "sqltablelist") && defined($$PARENT{$field}))
 			{
 				# Inherited sqltables are added onto the list.  Derived
 				# nodetypes "extend" parent nodetypes.
 				$$NODETYPE{$field} .= "," if($$NODETYPE{$field} ne "");
 				$$NODETYPE{$field} .= "$$PARENT{$field}";
 			}
-			elsif(($field eq "grouptable") && ($$PARENT{$field} ne "") &&
+			elsif(($field eq "grouptable") && defined($$PARENT{$field}) &&
 				($$NODETYPE{$field} eq ""))
 			{
 				# We are inheriting from a group nodetype and we have not

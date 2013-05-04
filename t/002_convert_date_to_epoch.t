@@ -6,6 +6,13 @@ use Test::More;
 use Everything;
 
 initEverything 'everything';
+
+unless($APP->inDevEnvironment())
+{
+	plan skip_all => "Not in the development environment";
+	exit;
+}
+
 # Special case
 ok($APP->convertDateToEpoch("0000-00-00 00:00:00") == 0);
 #jaybonci

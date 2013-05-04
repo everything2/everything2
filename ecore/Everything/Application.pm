@@ -1343,7 +1343,7 @@ sub convertDateToEpoch
 		return 0;
 	}
 	my ($hour,$min,$sec) = split(':', $t);
-	my $epoch = Date::Calc::Mktime($year,$month,$day, $hour,$min,$sec);
+	my $epoch = Date::Calc::Date_to_Time($year,$month,$day, $hour,$min,$sec);
 	return $epoch;
 }
 
