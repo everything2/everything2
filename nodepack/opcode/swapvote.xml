@@ -8,9 +8,6 @@ return if $APP-&gt;isGuest($USER);
 my @params = $query-&gt;param;
 my $defID = getId(getNode('definition','writeuptype')) || 0;
 
-#See [E2 Options: Declining vote XP]
-$$VARS{noVoteXP} ||= 0;
-
 my $UID = getId($USER) || 0;
 
 my $oldXP = $$USER{experience};
@@ -59,8 +56,6 @@ foreach (@params) {
     $prev_uid = $$N{author_user};
   }
 
-  #castVote(getId($N), $USER, $val, $$VARS{noVoteXP}, $VSETTINGS);
-  #CastVote(getId($N), $USER, $val, 0, $VSETTINGS);
   swapCastVote(getId($N), $USER, $val, 0, $VSETTINGS);
 
   htmlcode('achievementsByType','vote,'.$$USER{user_id});
