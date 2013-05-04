@@ -3,6 +3,7 @@
 use strict;
 use lib qw(/var/everything/ecore);
 use Test::More qw(no_plan);
+use diagnostics;
 use Everything;
 
 initEverything 'everything';
