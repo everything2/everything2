@@ -80,7 +80,6 @@ everything_conf_variables = {
     "everything_dbserv" => node["e2engine"]["everything_dbserv"],
     "cookiepass" => node["e2engine"]["cookiepass"],
     "canonical_web_server" => node["e2engine"]["canonical_web_server"],
-    "use_compiled" => node["e2engine"]["use_compiled"],
     "homenode_image_host" => node["e2engine"]["homenode_image_host"],
     "smtp_host" => node["e2engine"]["smtp_host"],
     "smtp_use_ssl" => node["e2engine"]["smtp_use_ssl"],

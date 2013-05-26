@@ -5,7 +5,6 @@ default["e2engine"]["everypass"]    = ""
 default["e2engine"]["everything_dbserv"] = "localhost"
 default["e2engine"]["cookiepass"] = "userpass"
 default["e2engine"]["canonical_web_server"] = "localhost"
-default["e2engine"]["use_compiled"] = 0
 default["e2engine"]["homenode_image_host"] = "hnimagew.everything2.com"
 default["e2engine"]["smtp_host"] = "localhost"
 default["e2engine"]["smtp_use_ssl"] = 1
