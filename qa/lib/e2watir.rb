@@ -20,7 +20,7 @@ $users =
 	},
 	"normal" => 
 	{
-		"username" => "testnormal",
+		"username" => "everyone",
 		"password" => "blah"
 	},
 }
@@ -67,7 +67,7 @@ class E2watir
     end
   end
 
-  def assert_page_is_node_id(node_id)
+  def get_embedded_json_data()
     e2json = nil
     htmlblob = @browser.script(:id => 'nodeinfojson').html
 
@@ -85,10 +85,38 @@ class E2watir
     htmlblob = htmlblob.sub(/[\n\t\;]+$/,"")
 
     e2json = JSON.parse(htmlblob)    
-
     if e2json.nil?
       raise "Could not parse json from page to get node information"
     end
+
+    return e2json
+  end
+
+  def assert_user_is_guest()
+    e2json = get_embedded_json_data()
+    if e2json["guest"].nil?
+      raise "Could not get guest information from json blob in page"
+    end
+
+    if e2json["guest"].to_i != 1
+      raise "Not a guest"
+    end
+  end
+
+  def assert_user_is_not_guest()
+    e2json = get_embedded_json_data()
+    if e2json["guest"].nil?
+      raise "Could not get guest information from json blob in page"
+    end
+
+    if e2json["guest"].to_i != 0
+      raise "User is a guest"
+    end
+  end
+
+  def assert_page_is_node_id(node_id)
+    e2json = get_embedded_json_data()
+
     if e2json["node_id"].nil?
       raise "No node_id found in json blob in page"
     end
@@ -96,4 +124,13 @@ class E2watir
       raise "The specified node_id: '#{node_id}' does not match json node_id #{e2json['node_id']}"
     end
   end
+
+  def nodelet_login_as_user_class(userclass)
+    @browser.goto($site)
+    @browser.div(:id => 'signin').h2(:class => 'nodelet_title closed').click
+    @browser.text_field(:name => 'user').set $users[userclass]['username']
+    @browser.text_field(:name => 'passwd').set $users[userclass]['password']
+    @browser.button(:name => 'login').click
+  end
+
 end

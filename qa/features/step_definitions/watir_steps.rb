@@ -24,12 +24,24 @@ Given /^cookies are cleared$/ do
   @e2.clear_cookies()
 end
 
+Given /^I am logged in as an? (.*?) user/ do |userclass|
+  @e2.nodelet_login_as_user_class(userclass)
+end
+
 Then /^the (.*?) form is present$/ do |formname|
   @e2.form_validate(formname)
 end
 
 Then /^the page is node_id (\d+)$/ do |node_id|
   @e2.assert_page_is_node_id(node_id)
+end
+
+Then /^I am a guest/ do
+  @e2.assert_user_is_guest()
+end
+
+Then /^I am not a guest/ do
+  @e2.assert_user_is_not_guest()
 end
 
 Then /^the page does( not)? contain an? '(.*?)' of (id|name) '(.+?)'/ do |negative,tagtype,idorname,thisstring|
