@@ -680,11 +680,11 @@ window.onbeforeunload = function(e){
 		var what = opus.getAttribute('id') == 'writeup_doctext'
 			? 'your writeup/draft'
 			: 'a text area';
-		return 'You have made changes to ' + what + ' which be lost if you leave this page now.';
+		return 'You have made changes to ' + what + ' which will be lost if you leave this page now.';
 	};
 })();
 </doctext>
-  <contentversion>111</contentversion>
+  <contentversion>112</contentversion>
   <s3bucket></s3bucket>
   <node_id>1874924</node_id>
   <title>default javascript</title>

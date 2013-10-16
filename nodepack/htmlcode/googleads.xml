@@ -18,7 +18,7 @@ foreach my $nid (@badnodes) {
 }
 
 
-my @badwords = qw(boob breast butt ass lesbian cock dick penis sex oral anal drug pot weed crack cocaine fuck wank whore vagina vag cunt tits titty twat shit slut snatch queef queer poon prick puss orgasm nigg nuts muff motherfuck jizz hell homo handjob fag dildo dick clit cum bitch rape ejaculate bsdm fisting balling);
+my @badwords = qw(boob breast butt ass lesbian cock dick penis sex oral anal drug pot weed crack cocaine fuck wank whore vagina vag cunt tits titty twat shit slut snatch queef queer poon prick puss orgasm nigg nuts muff motherfuck jizz hell homo handjob fag dildo dick clit cum bitch rape ejaculate bsdm fisting balling masturbation);
 
 foreach my $word (@badwords) {
         return &quot;&lt;!-- noad:badword --&gt;&quot; if $$NODE{title} =~ /\b$word/i or $$NODE{title} =~ /$word\b/i;

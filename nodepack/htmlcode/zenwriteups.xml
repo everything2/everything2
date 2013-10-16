@@ -38,7 +38,8 @@ foreach (@newwus){
 		exists $abominations-&gt;{$$_{author_user}} or
 		$isLogs &amp;&amp; !$$_{islog};
 	push @wus, $_;
-	last if !$$_{notnew} || $isLogs and ++$count &gt;= $limit;
+	#last if !$$_{notnew} || $isLogs;
+        last if  ++$count &gt;= $limit;
 }
 
 my $instructions = '&lt;li' ;

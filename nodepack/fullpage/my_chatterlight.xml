@@ -17,6 +17,8 @@ $(document).ready(function() {
    setInterval('RefreshChatterbox();', chat_RefreshTime);
    setInterval('RefreshMessageInbox();', mi_RefreshTime);
    setInterval('RefreshOtherUsers();', ou_RefreshTime);
+
+   ShowNotification('&lt;div style=&quot;font-size:150%;color:#900;padding:20px;text-align:center;font-weight:bold;&quot;&gt;Would you like to test My Chatterlight v2.0?&lt;br /&gt;&lt;small style=&quot;font-size: 60%&quot;&gt;(Now mobile friendly)&lt;/small&gt;&lt;br /&gt;&lt;a href=&quot;/title/in10se\'s%20sandbox%205&quot;&gt;Check out the beta here&lt;/a&gt;.&lt;/div&gt;');
 });
 &lt;/script&gt;
 
@@ -165,6 +167,18 @@ padding-left: 16px;
 background: #fff url(http://www.education.pitt.edu/images/icons/16/sing.gif) no-repeat scroll left center;
 font-style: italic;
 }
+
+.clearfix:before,
+.clearfix:after {
+    content: &quot; &quot;; /* 1 */
+    display: table; /* 2 */
+}
+.clearfix:after {
+    clear: both;
+}
+.clearfix {
+    *zoom: 1;
+}
 &lt;/style&gt;
 
 &lt;!--
@@ -215,8 +229,7 @@ if ($isGuest) {
 
 }
 
-%]
-</doctext>
+%]</doctext>
   <node_id>1983409</node_id>
   <title>My Chatterlight</title>
 </node>

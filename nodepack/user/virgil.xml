@@ -17,7 +17,7 @@
     <key>lastnoded</key>
   </vars>
   <vars>
-    <value>c:vote,c:cfull,c:sendmsg</value>
+    <value>,c:vote,c:cfull,c:sendmsg,c:addto</value>
     <key>wufoot</key>
   </vars>
   <vars>
@@ -61,7 +61,7 @@
     <key>showmessages_replylink</key>
   </vars>
   <vars>
-    <value>1301478369</value>
+    <value>1369835677</value>
     <key>preference_last_update_time</key>
   </vars>
   <vars>
@@ -73,7 +73,7 @@
     <key>collapsedNodelets</key>
   </vars>
   <vars>
-    <value>1071</value>
+    <value>1074</value>
     <key>oldexp</key>
   </vars>
   <vars>

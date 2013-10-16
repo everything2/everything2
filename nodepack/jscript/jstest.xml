@@ -16,7 +16,7 @@ var chat_LastMessage = new Date();
 var chat_NextSilenceNotification = 60000;
 var chat_SilenceNotificationInterval = 60000;
 var chat_IsFirstLoad = true;
-var chat_GravatarSize = 22;
+var chat_GravatarSize = 32;
 var chat_EggCommands = {
    anvil:         'anvils',
    blame:         'blames',
@@ -49,7 +49,7 @@ var mi_GravatarSize = 32;
 // Other Users vars
 var ou_RefreshTime = 60000;    // in milliseconds
 var ou_IsFirstLoad = true;
-var ou_GravatarSize = 16;
+var ou_GravatarSize = 22;
 
 function RefreshMessageInbox(){
    $.ajax({
@@ -76,8 +76,8 @@ function ParseMessageInbox(xml){
          author = $(this).find('from').find('e2link');
          group = $(this).find('grp').find('e2link');
       
-         html = '&lt;div class=&quot;Private&quot; id=&quot;msg_'+mi_MsgLimit+'&quot;&gt;';// +
-         html+=   '&lt;img src=&quot;http://gravatar.com/avatar/'+author.attr('md5')+'?d='+$('#gravatarType').val()+'&amp;size=32&quot; alt=&quot;'+GetClassName(author.text())+'&quot; align=&quot;left&quot; height=&quot;'+mi_GravatarSize+'&quot; width=&quot;'+mi_GravatarSize+'&quot; /&gt;';// +
+         html = '&lt;div class=&quot;Private clearfix&quot; id=&quot;msg_'+mi_MsgLimit+'&quot;&gt;';// +
+         html+=   '&lt;img src=&quot;http://hnimagew.everything2.com/' + GetClassName(author.text()) + '&quot; alt=&quot;'+GetClassName(author.text())+'&quot; align=&quot;left&quot; height=&quot;'+mi_GravatarSize+'&quot; width=&quot;'+mi_GravatarSize+'&quot; /&gt;';// +
          html+=   '&lt;p class=&quot;To&quot;&gt;Private Message from &lt;a href=&quot;/user/'+$.trim(author.text())+'&quot;&gt;'+author.text()+'&lt;/a&gt;&lt;/b&gt; to ';
          if(group.length==0){html += 'you';}
          else{html += '&lt;a href=&quot;/node/usergroup/'+$.trim(group.text())+'&quot;&gt;'+group.text()+'&lt;/a&gt;';}
@@ -210,8 +210,9 @@ function ParsePublicMessage(msg){
    }else{
       authorHtml = '&amp;lt;'+authorHtml+'&amp;gt;';
    }
-   html += ('&lt;div class=&quot;'+cssClass+'&quot; id=&quot;'+$(msg).attr('msg_id')+'&quot;&gt;' +
-      '&lt;img src=&quot;http://gravatar.com/avatar/'+$(msg).find('from').find('e2link').attr('md5')+'?d='+$('#gravatarType').val()+'&amp;s=22&quot; alt=&quot;'+EncodeHtml(author)+'&quot; height=&quot;'+chat_GravatarSize+'&quot; width=&quot;'+chat_GravatarSize+'&quot; /&gt;' +
+// gravatar src = &quot;http://gravatar.com/avatar/'+$(msg).find('from').find('e2link').attr('md5')+'?d='+$('#gravatarType').val()+'&amp;s=22&quot;
+   html += ('&lt;div class=&quot;'+cssClass+' clearfix&quot; id=&quot;'+$(msg).attr('msg_id')+'&quot;&gt;' +
+      '&lt;img src=&quot;http://hnimagew.everything2.com/' + GetClassName(author) + '&quot; alt=&quot;'+EncodeHtml(author)+'&quot; height=&quot;'+chat_GravatarSize+'&quot; width=&quot;'+chat_GravatarSize+'&quot; align=&quot;left&quot; /&gt;' +
       '&lt;span class=&quot;Author '+EncodeHtml(author)+'&quot;&gt;'+authorHtml+'&lt;/span&gt; ' +
       '&lt;span class=&quot;Text&quot;&gt;'+txt+'&lt;/span&gt;' +
       '&lt;/div&gt;');
@@ -340,15 +341,16 @@ function Pad(n,ln){
  * exception are dashes and underscores (which are legal), and spaces which
  * are converted to underscores instead of being removed.
  */
+var regexpClassName = new RegExp('([^A-Za-z0-9_\\- ])','g');
 function GetClassName(s){
-   var invalidChars=/([^A-Za-z0-9\-_ ])/;//  \x00-\x7F])/;
-   while(s.match(invalidChars)){
-      s = s.replace(new RegExp(String(RegExp.$1),'g'),'');
-   }
-   while(s.indexOf(' ')&gt;=0){
-      s = s.replace(' ', '_');
-   }
-   return $.trim(s);
+   s = s.replace(/([^A-Za-z0-9_\-])/g, '_');
+   //while(s.match(regexpClassName )){
+   //   s = s.replace(regexpClassName, '');
+   //}
+   //while(s.indexOf(' ')&gt;=0){
+   //   s = s.replace(' ', '_');
+   //}
+   return s;
 }
 
 /*
@@ -486,7 +488,7 @@ function InsertOtherUser(ou){
    var id = InsertOtherUserUsername(username, false);
    var md5 = $(ou).find('e2link').attr('md5');
    if(md5.length==32){
-      $('#'+id).prepend('&lt;img src=&quot;http://gravatar.com/avatar/'+md5+'?d='+$('#gravatarType').val()+'&amp;s=16&quot; alt=&quot;'+GetClassName(username)+'&quot; height=&quot;'+ou_GravatarSize+'&quot; width=&quot;'+ou_GravatarSize+'&quot; /&gt; ');
+      $('#'+id).prepend('&lt;img src=&quot;http://hnimagew.everything2.com/' + GetClassName(author) + '&quot; alt=&quot;'+GetClassName(username)+'&quot; height=&quot;'+ou_GravatarSize+'&quot; width=&quot;'+ou_GravatarSize+'&quot; /&gt; ');
    }
    var position = '';
    if($(ou).attr('e2god')=='1'){position+='&lt;abbr title=&quot;Administrator&quot;&gt; @ &lt;/abbr&gt;';}
@@ -544,7 +546,7 @@ function SwapGravatars(){
       $(this).attr('src', $(this).attr('src').replace('?d=wavatar&amp;', '?d='+g+'&amp;'));
    });
 }</doctext>
-  <contentversion>102</contentversion>
+  <contentversion>131</contentversion>
   <s3bucket></s3bucket>
   <node_id>1983490</node_id>
   <title>jstest</title>

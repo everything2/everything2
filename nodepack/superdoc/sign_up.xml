@@ -21,27 +21,24 @@ my $formPage = sub{
 
 	return htmlcode('openform')
 		.$query -&gt; fieldset({style =&gt; 'width: 32em; max-width: 100%; margin: 3em auto 0'},
-			$query -&gt; legend('Enter new account details')
+			$query -&gt; legend('Sign up')
 			.$query -&gt; p($prompt.':')
 			.$query -&gt; p({style =&gt; 'text-align: right'},
 				# use silly field names and mess up labels to confuse bots
 				$query -&gt; label(&amp;$obfuscate('Username:')
 					.$query -&gt; textfield('hatstand', '', 30, 20))
 				.'&lt;br&gt;'
-				.$query -&gt; label('Real name:'
-					.$query -&gt; textfield('wotnot', '', 30, 240))
+				.$query -&gt; label(&amp;$obfuscate('Password:')
+					.$query -&gt; password_field('frog', '', 30, 240))
+				.'&lt;br&gt;'
+				.$query -&gt; label(&amp;$obfuscate('Confirm password:')
+					.$query -&gt; password_field('toad', '', 30, 240))
 				.'&lt;br&gt;'
 				.$query -&gt; label(&amp;$obfuscate('Email address:')
 					.$query -&gt; textfield('raddish', '', 30, 240))
 				.'&lt;br&gt;'
 				.$query -&gt; label(&amp;$obfuscate('Confirm email:')
 					.$query -&gt; textfield('celery', '', 30, 240))
-				.'&lt;br&gt;'
-				.$query -&gt; label(&amp;$obfuscate('Password:')
-					.$query -&gt; password_field('frog', '', 30, 240))
-				.'&lt;br&gt;'
-				.$query -&gt; label(&amp;$obfuscate('Confirm password:')
-					.$query -&gt; password_field('toad', '', 30, 240))
 				.'&lt;br&gt;'
 				.$query -&gt; checkbox(
 					-name =&gt; 'email'
@@ -57,22 +54,17 @@ my $formPage = sub{
 	
 	&lt;h4&gt;Email Privacy Policy&lt;/h4&gt;
 	
-	&lt;p&gt;We will not send you junk email &quot;member updates&quot;, sell your address to spammers, or show other people
-	your email address. We use it to send you an account activation email and for any other email services
-	that you request.&lt;/p&gt;
+	&lt;p&gt;We will only use your email to send you an account activation email and for any other email services
+	that you specifically request. It will not be disclosed to anyone else.&lt;/p&gt;
 	
 	&lt;h4&gt;Spam Policy&lt;/h4&gt;
 	
 	&lt;p&gt;We neither perpetrate nor tolerate spam.
 	&lt;/p&gt;
 	
-	&lt;p&gt;If you plan to use our site to promote your web site, business, or what-have-you free of charge,
-	please don't. It's not worth your time and it wastes ours, too. All it does is annoy the few people
-	who see your post during the five minutes that it takes our staff to notice it and delete it. We will
-	also not hesitate to ban you for plugging your goods on our site.
-	&lt;strong&gt;New accounts advertizing any product, service or web site (including &quot;personal&quot; sites and blogs)
-	in their profile are subject to immediate deletion. Their details will be submitted to public blacklists
-	for the use of other web sites.&lt;/strong&gt;
+	&lt;p&gt;New accounts advertizing any product, service or web site (including &quot;personal&quot; sites and blogs)
+	in their posts or in their profile are subject to immediate deletion. Their details may be submitted to public blacklists
+	for the use of other web sites.
 	&lt;/p&gt;
 	
 	&lt;h4&gt;Underage users&lt;/h4&gt;
@@ -114,14 +106,10 @@ my $pass = $query -&gt; param('frog');
 my $spambot = $query -&gt; param('email');
 
 # ask them nicely...
-if (!$query -&gt; param('beseech')){
-	$prompt = 'Please fill in your user name, real name (optional),
-		email address and password';
+if (!$pass || !$username || !$email){
+	$prompt = 'Please fill in all fields';
 
-# then make them jump through hoops:
-}elsif(!$pass || !$username || !$email){
-	$prompt = 'Please fill in nearly all fields (real name is still optional)';
-
+# then check they've jumped through the hoops:
 }elsif($pass ne $query -&gt; param('toad')){
 	$prompt = &quot;Passwords don't match&quot;;
 
@@ -157,17 +145,12 @@ return &amp;$formPage if $prompt;
 #######
 # all tests passed: create account
 
-my $name = $query -&gt; param('wotnot') || '';
-# real real names only have letters and spaces
-$name =~ s/[^\w ]//g;
-
 # construct new user
 my ($pwhash, $salt) = $APP -&gt; saltNewPassword($pass);
 
 my $user = {
 	nick =&gt; $username
 	, email =&gt; $email
-	, realname =&gt; $name
 	, salt =&gt; $salt
 };
 
@@ -249,16 +232,14 @@ setVars($user, $uservars);
 # send activation email
 my %mail = %{getNode('Welcome to Everything2', 'mail')};
 
-$name ||= $username;
-$mail{doctext} =~ s/&#171;name&#187;/$name/;
+$mail{doctext} =~ s/&#171;name&#187;/$username/;
 $mail{doctext} =~ s/&#171;link&#187;/$link/g;
 $mail{doctext} =~ s/&#171;servername&#187;/$ENV{SERVER_NAME}/g;
 
 $APP -&gt; node2mail($email, \%mail, 1);
 
 # tell them we're wonderful
-$name ||= $username;
-return &quot;&lt;h3&gt;Welcome to Everything2, $name!
+return &quot;&lt;h3&gt;Welcome to Everything2, $username!
 	&lt;/h3&gt;
 	&lt;p&gt;Your new user account has been created, and an email has been sent to the address you provided. 
 	You cannot use your account until you have followed the link in the email to activate it.

@@ -85,7 +85,7 @@ return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/
 &lt;ul&gt;
 &lt;li&gt;Gods have all the powers of the [Content Editor] group.&lt;/li&gt;
 &lt;li&gt;Gods have the power to bless a user. A '[bless]' grants the user 10 [GP]. Blessings are given for a multitude of reasons, often if a user offers helpful advice in the [chatterbox]. See [Golden Trinkets] for &lt;i&gt;your&lt;/i&gt; blessings.&lt;/li&gt;
-&lt;li&gt;Gods can 'bestow 25 votes' unto &lt;i&gt;any&lt;/i&gt; user. This means that that user will have 25 more votes to spend as they please that day. They can also bestow a C!&lt;/li&gt;
+&lt;li&gt;Gods can 'bestow 25 votes' unto &lt;i&gt;any&lt;/i&gt; user. This means that that user will have 25 more votes to spend as they please that day. They can also bestow a C! Of course, most users of a certain level can do the same thing through the [E2 Gift Shop|Gift Shop].&lt;/li&gt;
 
 
 &lt;li&gt;Gods can delete an entire node or any writeups within a node. Gods handle [Edit these E2 titles|title edit requests] and help content editors handle the [Broken Nodes] by fixing spelling and misplaced links.  A god will not alter any meaningful text without a msg to the author. A god may leave an &lt;b&gt;Editor's Note:&lt;/b&gt; within a given writeup to add a comment or clear up a misapprehension.&lt;/li&gt;
@@ -162,15 +162,15 @@ Everything User Search|the user search]).&lt;/li&gt;
 &lt;ul&gt;
 &lt;li&gt;[jaybonci]: Site owner&lt;/li&gt;
 &lt;li&gt;[clampe]: E2 researcher&lt;/li&gt;
-&lt;li&gt;[alex]: Director of Operations and site administrator&lt;/li&gt;
-&lt;li&gt;[wertperch]: Deputy Director of Operations&lt;/li&gt;
+&lt;li&gt;[alex]: Site manager&lt;/li&gt;
+&lt;li&gt;[Tem42]: Deputy site manager&lt;/li&gt;
 &lt;li&gt;[The Debutante]: Director of User Relations&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;
 These administrators and editors have special assignments:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;[wertperch]: [Everything User Poll|E2 Polls], [E2Docs|E2 Documentation]&lt;/li&gt;&lt;/ul&gt;
+&lt;li&gt;&lt;!-- [wertperch]: [Everything User Poll|E2 Polls], [E2Docs|E2 Documentation] --&gt;No special assignments presently.&lt;/li&gt;&lt;/ul&gt;
 
 &lt;p&gt;
 The following staff members work with jaybonci to maintain and grow the site's code:&lt;/p&gt;

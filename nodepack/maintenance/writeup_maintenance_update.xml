@@ -23,8 +23,6 @@ use JSON;
 
 $DB-&gt;{cache}-&gt;incrementGlobalVersion($E2NODE);
 
-#htmlcode('update New Writeups data');
-
 # Make a notification if someone's about to blank a writeup
 if(defined $query-&gt;param('writeup_doctext')) {
 
@@ -38,6 +36,8 @@ if(defined $query-&gt;param('writeup_doctext')) {
 	, author_id =&gt; $$USER{user_id}
   }) if length $trimmedNewText &lt; 20;
 }
+
+htmlcode('update New Writeups data') unless $query -&gt; param('op') and $query -&gt; param('op') eq 'vote' || $query -&gt; op eq 'cool';
 
 if($query-&gt;param('writeup_wrtype_writeuptype')) {
 

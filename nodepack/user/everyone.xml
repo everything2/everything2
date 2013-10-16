@@ -1,21 +1,21 @@
 <node>
-  <sanctity>2</sanctity>
+  <sanctity>3</sanctity>
   <nick></nick>
   <email>alex@staff.everything2.com</email>
   <realname>Anonymous Coward</realname>
   <imgsrc></imgsrc>
   <type_nodetype>15</type_nodetype>
   <vars>
-    <value>Tahoma,Verdana,Helvetica,Arial</value>
-    <key>ekw_headingfont</key>
-  </vars>
-  <vars>
     <value>1</value>
     <key>no_socialbookmarkinformer</key>
   </vars>
   <vars>
-    <value>2042059</value>
+    <value>2104171</value>
     <key>lastnoded</key>
+  </vars>
+  <vars>
+    <value>To Allow Publicly-Editable Writeups</value>
+    <key>mission</key>
   </vars>
   <vars>
     <value>1</value>
@@ -26,43 +26,19 @@
     <key>specialties</key>
   </vars>
   <vars>
-    <value>115</value>
-    <key>oldGP</key>
-  </vars>
-  <vars>
-    <value>#f8f8f8</value>
-    <key>ekw_bgcolor</key>
-  </vars>
-  <vars>
-    <value>#808080</value>
-    <key>ekw_vlinkcolor</key>
-  </vars>
-  <vars>
-    <value>#000000</value>
-    <key>ekw_logoborder</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>settings_useTinyMCE</key>
-  </vars>
-  <vars>
-    <value>[Everything2]</value>
-    <key>employment</key>
-  </vars>
-  <vars>
     <value>1</value>
     <key>no_likeitnotification</key>
   </vars>
   <vars>
-    <value></value>
-    <key>cools</key>
-  </vars>
-  <vars>
     <value>1</value>
-    <key>epi_hideadvice</key>
+    <key>no_socialbookmarknotification</key>
   </vars>
   <vars>
-    <value>2596 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
+    <value>114</value>
+    <key>group</key>
+  </vars>
+  <vars>
+    <value>2669 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
     <key>nwriteups</key>
   </vars>
   <vars>
@@ -70,146 +46,24 @@
     <key>preference_last_update_time</key>
   </vars>
   <vars>
-    <value>#000000</value>
-    <key>ekw_textcolor</key>
-  </vars>
-  <vars>
-    <value>otherusers!</value>
-    <key>collapsedNodelets</key>
-  </vars>
-  <vars>
-    <value>-9484</value>
-    <key>oldexp</key>
-  </vars>
-  <vars>
-    <value>Tahoma,Verdana,Helvetica,Arial</value>
-    <key>ekw_logofont</key>
-  </vars>
-  <vars>
-    <value>262,174581,170070,165437,91</value>
-    <key>nodelets</key>
-  </vars>
-  <vars>
-    <value>10</value>
-    <key>numborged</key>
-  </vars>
-  <vars>
-    <value>#f0f0f0</value>
-    <key>ekw_logomaintext</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>no_coolnotification</key>
-  </vars>
-  <vars>
-    <value>ekw_alinkcolor=&quot;#cccc99&quot;;
-ekw_bgcolor=&quot;#ddddbb&quot;;
-ekw_linkcolor=&quot;#003366&quot;;
-ekw_logoaccenttext=&quot;#ffffff&quot;;
-ekw_logobackground=&quot;#7e7e66&quot;;
-ekw_logoborder=&quot;#003366&quot;;
-ekw_logomaintext=&quot;#ddddbb&quot;;
-ekw_oddrowcolor=&quot;#cccc99&quot;;
-ekw_textcolor=&quot;#000000&quot;;
-ekw_vlinkcolor=&quot;#666633&quot;;
-</value>
-    <key>_ekw_undo</key>
-  </vars>
-  <vars>
-    <value>,1677879,176726,108,48628,15215,1727714,377036,48623,1140332,33407,</value>
-    <key>nodetrail</key>
-  </vars>
-  <vars>
-    <value>2597</value>
-    <key>numwriteups</key>
-  </vars>
-  <vars>
-    <value>[Please be Gentle]</value>
-    <key>motto</key>
-  </vars>
-  <vars>
-    <value>#d0d0d0</value>
-    <key>ekw_oddrowcolor</key>
-  </vars>
-  <vars>
-    <value>12px</value>
-    <key>ekw_textfontsize</key>
-  </vars>
-  <vars>
-    <value>Verdana, Tahoma, Arial, sans-serif</value>
-    <key>ekw_textfont</key>
-  </vars>
-  <vars>
-    <value>17pt</value>
-    <key>ekw_logofontsize</key>
-  </vars>
-  <vars>
-    <value>To Allow Publicly-Editable Writeups</value>
-    <key>mission</key>
-  </vars>
-  <vars>
-    <value>#305880</value>
-    <key>ekw_logobackground</key>
-  </vars>
-  <vars>
-    <value>1049236134</value>
-    <key>lastborg</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>no_socialbookmarknotification</key>
-  </vars>
-  <vars>
-    <value>9pt</value>
-    <key>ekw_monofontsize</key>
-  </vars>
-  <vars>
-    <value>114</value>
-    <key>group</key>
-  </vars>
-  <vars>
     <value>1</value>
     <key>no_bookmarkinformer</key>
-  </vars>
-  <vars>
-    <value>on</value>
-    <key>nullvote</key>
   </vars>
   <vars>
     <value>2.13267973856209</value>
     <key>IQM</key>
   </vars>
   <vars>
-    <value></value>
-    <key>nohints</key>
+    <value>1</value>
+    <key>no_coolnotification</key>
   </vars>
   <vars>
-    <value></value>
-    <key>coolsspent</key>
+    <value>[Please be Gentle]</value>
+    <key>motto</key>
   </vars>
   <vars>
-    <value></value>
-    <key>tokens</key>
-  </vars>
-  <vars>
-    <value>#103860</value>
-    <key>ekw_linkcolor</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>can_weblog</key>
-  </vars>
-  <vars>
-    <value>#ffff90</value>
-    <key>ekw_logoaccenttext</key>
-  </vars>
-  <vars>
-    <value>#ffd000</value>
-    <key>ekw_alinkcolor</key>
-  </vars>
-  <vars>
-    <value>1854183</value>
-    <key>preferred_theme</key>
+    <value>2669</value>
+    <key>numwriteups</key>
   </vars>
   <vars>
     <value>1</value>

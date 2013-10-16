@@ -40,7 +40,7 @@ while($dbrow = $rows-&gt;fetchrow_arrayref)
    my $thisChanop = $APP-&gt;isChanop($U,&quot;nogods&quot;);
    
    $flags = '';
-   if ($APP-&gt;isAdmin($USER) &amp;&amp; !$APP-&gt;getParameter($U,&quot;hide_chatterbox_staff_symbol&quot;) ) {
+   if ($APP-&gt;isAdmin($U) &amp;&amp; !$APP-&gt;getParameter($U,&quot;hide_chatterbox_staff_symbol&quot;) ) {
       $flags .= $linkRoots;
    }
    if ($APP-&gt;isEditor($U, &quot;nogods&quot;) &amp;&amp; !$APP-&gt;getParameter($U,&quot;hide_chatterbox_staff_symbol&quot;) ) {

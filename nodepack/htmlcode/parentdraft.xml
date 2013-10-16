@@ -82,7 +82,8 @@ if ($title){
 	$query -&gt; param('title', $title);
 }else{
 	$title = $$N{title};
-	$title =~ s/ \(\d+\)$//; # remove number from end of title (user can put it back later)
+	# remove number/writeuptype from end of title (user can put it back later if they really want it)
+	$title =~ s/ \($1\)$// if $title =~ / \(([\w\d]+)\)$/ and $1 eq int($1) || getNode($1, 'writeuptype');
 }
 
 # ...existing parent...
