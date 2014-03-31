@@ -17,7 +17,7 @@ It's not the heaviest page on the site, but it's not exactly the lightest either
 I will hunt you down. So just visit it every once in a while, marvel at your greatness,
 hit &quot;update&quot; to save the new data, and then head back out into the nodegel. Cool? - k&lt;/p&gt;
 
-[%
+[%#'
 
 return &quot;Sorry, for logged in users only&quot; if ($APP-&gt;isGuest($USER));
 
@@ -202,12 +202,9 @@ my ($name, $type) = ($$N{title}, $$N{type});
 		$n{downvotes} = ($votescast - $$N{reputation})/2;
 
 		if (int($n{upvotes}) != $n{upvotes}) {
-			$n{upvotes} = $DB-&gt;sqlSelect('count(*)', 'vote', 'vote_id='.$$N{node_id}.' and weight=1');
 			$n{downvotes} = $DB-&gt;sqlSelect('count(*)', 'vote', 'vote_id='.$$N{node_id}.' and weight=-1');
-			my $newrep = $n{upvotes} - $n{downvotes};
-			$DB-&gt;sqlUpdate(&quot;node&quot;,{reputation =&gt; $newrep},&quot;node_id=$$N{node_id}&quot;)
-				unless $newrep == $$N{reputation};
-			$n{reputation} = $newrep;
+			$n{upvotes} = $votescast - $n{downvotes};
+			$n{reputation} = $n{upvotes} - $n{downvotes};
 		}
 
 		$n{votes} = $n{downvotes} + $n{upvotes};
@@ -494,32 +491,19 @@ updateTracker();
 getOldInfo();
 }
 
-
 trackerOverview();
-
 
 trackerNodes();
 
-
 trackerRep();
 
-
-
-
-
-
-
 my $finalStr = &quot;&lt;pre&gt;&quot;.$trackerStr.&quot;&lt;/pre&gt;&quot;;
-
 
 $finalStr .=htmlcode('openform');
 $finalStr.=$query-&gt;submit(&quot;update&quot;,&quot;Update&quot;);
 $finalStr.=$query-&gt;end_form;
 
 return $finalStr.&quot;&lt;br /&gt;&lt;br /&gt;&quot;.$str;
-
-
-
 
 %]
 </doctext>

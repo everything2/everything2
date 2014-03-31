@@ -1,64 +1,20 @@
 <node>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <value>pelts ~ with snowballs</value>
-    <key>snowballs</key>
-  </vars>
-  <vars>
-    <value>pies</value>
-    <key>pie</key>
-  </vars>
-  <vars>
-    <value>throws tomatoes at</value>
-    <key>tomato</key>
-  </vars>
-  <vars>
-    <value>pizzas</value>
-    <key>pizza</key>
-  </vars>
-  <vars>
-    <value>buys a round of beer for ~ and all their friends</value>
-    <key>round</key>
-  </vars>
-  <vars>
     <value>muzzles</value>
     <key>muzzle</key>
   </vars>
   <vars>
-    <value>giant squids</value>
-    <key>giantsquid</key>
+    <value>Ph'nglui mglw'nafh ~ R'lyeh wgah'nagl fhtagn!</value>
+    <key>cthulhu</key>
   </vars>
   <vars>
-    <value>*ZZZAPS*</value>
-    <key>zap</key>
-  </vars>
-  <vars>
-    <value>pours ~ a fine cold beer</value>
-    <key>beer</key>
-  </vars>
-  <vars>
-    <value>Pours a glass of champagne for ~, but drops the glass</value>
-    <key>champagne</key>
-  </vars>
-  <vars>
-    <value>chainsaws</value>
+    <value>welcomes ~ to Narnia</value>
     <key>special</key>
   </vars>
   <vars>
-    <value>places a fine chapeau on</value>
-    <key>hat</key>
-  </vars>
-  <vars>
-    <value>smites</value>
-    <key>smite</key>
-  </vars>
-  <vars>
-    <value>hands a bowl of split pea soup to</value>
-    <key>peasoup</key>
-  </vars>
-  <vars>
-    <value>French-omelets</value>
-    <key>omelette</key>
+    <value>pours ~ a double espresso shot. </value>
+    <key>coffee</key>
   </vars>
   <vars>
     <value>nudges</value>
@@ -69,8 +25,12 @@
     <key>egg</key>
   </vars>
   <vars>
-    <value>hands ~ an ice-cold gin and tonic</value>
-    <key>gin</key>
+    <value>fixes things for ~</value>
+    <key>helps</key>
+  </vars>
+  <vars>
+    <value>turns ~ into a bong</value>
+    <key>magic</key>
   </vars>
   <vars>
     <value>offers cookies to</value>
@@ -85,14 +45,6 @@
     <key>violin</key>
   </vars>
   <vars>
-    <value>heaves a bunch of asparagus at</value>
-    <key>asparagus</key>
-  </vars>
-  <vars>
-    <value>lights a candle for</value>
-    <key>candle</key>
-  </vars>
-  <vars>
     <value>highfives</value>
     <key>highfive</key>
   </vars>
@@ -101,32 +53,104 @@
     <key>defenestrate</key>
   </vars>
   <vars>
-    <value>hugs</value>
-    <key>hug</key>
-  </vars>
-  <vars>
     <value>rubber chickens</value>
     <key>rubberchicken</key>
-  </vars>
-  <vars>
-    <value>hands a jello shot to</value>
-    <key>jelloshot</key>
   </vars>
   <vars>
     <value>mauls</value>
     <key>maul</key>
   </vars>
   <vars>
-    <value>omelets</value>
-    <key>omelet</key>
-  </vars>
-  <vars>
     <value>makes ~ a nice cup of tea</value>
     <key>tea</key>
   </vars>
   <vars>
+    <value>fistbumps</value>
+    <key>fistbump</key>
+  </vars>
+  <vars>
+    <value>pies</value>
+    <key>pie</key>
+  </vars>
+  <vars>
+    <value>throws tomatoes at</value>
+    <key>tomato</key>
+  </vars>
+  <vars>
+    <value>pizzas</value>
+    <key>pizza</key>
+  </vars>
+  <vars>
+    <value>shakes her/his booty for</value>
+    <key>booty</key>
+  </vars>
+  <vars>
+    <value>giant squids</value>
+    <key>giantsquid</key>
+  </vars>
+  <vars>
+    <value>pours ~ a fine cold beer</value>
+    <key>beer</key>
+  </vars>
+  <vars>
+    <value>finds fish in ~'s car</value>
+    <key>random</key>
+  </vars>
+  <vars>
+    <value>Pours a glass of champagne for ~, but drops the glass</value>
+    <key>champagne</key>
+  </vars>
+  <vars>
+    <value>smites</value>
+    <key>smite</key>
+  </vars>
+  <vars>
+    <value>glomps</value>
+    <key>glomp</key>
+  </vars>
+  <vars>
+    <value>French-omelets</value>
+    <key>omelette</key>
+  </vars>
+  <vars>
+    <value>dances like a fool for ~</value>
+    <key>twerk</key>
+  </vars>
+  <vars>
+    <value>hands ~ a slice of birthday cake while the chatbox sings &#194;&#161;Feliz Cumplea&#195;&#177;os</value>
+    <key>birthday</key>
+  </vars>
+  <vars>
+    <value>hands ~ an ice-cold gin and tonic</value>
+    <key>gin</key>
+  </vars>
+  <vars>
+    <value>loves ~ so very much</value>
+    <key>heart</key>
+  </vars>
+  <vars>
+    <value>gives ~ a small paper heart</value>
+    <key>valentine</key>
+  </vars>
+  <vars>
+    <value>lights a candle for</value>
+    <key>candle</key>
+  </vars>
+  <vars>
+    <value>hugs</value>
+    <key>hug</key>
+  </vars>
+  <vars>
+    <value>omelets</value>
+    <key>omelet</key>
+  </vars>
+  <vars>
     <value>drops a piano on</value>
     <key>piano</key>
+  </vars>
+  <vars>
+    <value>pours ~ a glass</value>
+    <key>glass</key>
   </vars>
   <node_id>1922142</node_id>
   <title>egg commands</title>

@@ -445,7 +445,7 @@ foreach my $k (@showThings) {
 		$isDraft &amp;&amp; $fnName !~ /^(?:type|author|dtcreate|kill|length|sendmsg|addto|nothing|draftstatus)$/;
 
 	unless( (exists $infofunctions-&gt;{$fnName}) &amp;&amp; (defined $infofunctions-&gt;{$fnName}) ) {
-		$curRow .= $align.'&lt;small&gt;(unknown value: &quot;'.encodeHTML($fnName).'&quot;; see '.linkNodeTitle('Writeup Settings').')&lt;/small&gt;'.$tDataClose unless $s;
+		$curRow .= $align.'&lt;small&gt;(unknown value: &quot;'.encodeHTML($fnName).'&quot;; see '.linkNodeTitle('Settings').')&lt;/small&gt;'.$tDataClose unless $s;
 		next;
 	}
 

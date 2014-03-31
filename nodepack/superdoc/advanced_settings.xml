@@ -136,8 +136,6 @@ but the interface is rather complicated.&lt;/small&gt;
 	&lt;br&gt;
 	[{varcheckbox:hidehomenodeUC, I'm a secret librarian. (Don't list my categories on my homenode.)}]
 	&lt;br&gt;
-	[{varcheckbox:hideNodeshells, It's mine, I tell you! Mine! All mine! (Don't let users search my nodeshells.)}]
-	&lt;br&gt;
 	[{varcheckbox:showrecentwucount, Let the world know, I'm a fervent noder, and I love it! (show recent writeup count in homenode.)}]
 	&lt;br&gt;
 	[{varcheckboxinverse:hidelastnoded,Link to user's most recently created writeup on their homenode}]

@@ -17,10 +17,7 @@ my $csr = $DB-&gt;sqlSelectMany('node.title, node.node_id, createdby_user',
 $str.='&lt;ol&gt;';
 
 while(my $row = $csr-&gt;fetchrow_hashref) {
-	my $uVars = getVars($$row{createdby_user});
-	unless ( ($$uVars{hideNodeshells}) &amp;&amp; (!isGod( $USER ))) {
-		$str.='&lt;li&gt;'.linkNodeTitle($$row{title}).&quot;&lt;/li&gt;\n&quot;;
-	}
+	$str.='&lt;li&gt;'.linkNodeTitle($$row{title}).&quot;&lt;/li&gt;\n&quot;;
 }
 
 $str.='&lt;/ol&gt;';
@@ -30,10 +27,6 @@ return $str;
 &lt;p&gt;&lt;small&gt;(These are [nodeshell|empty headings] created between half an hour and one month ago.
 They exist to be filled with writing. If you feel like writing, but you don't know what,
 you might also like to visit [Everything's Most Wanted].
-[%
-return if $APP-&gt;isGuest($USER);
-return &quot;[Advanced Settings] allows you to hide your own nodeshells from prying eyes.&quot;;
-%]
 See also [Random Nodeshells].
 [%
 return if $APP-&gt;isGuest($USER);

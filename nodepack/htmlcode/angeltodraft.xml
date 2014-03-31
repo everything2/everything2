@@ -25,6 +25,17 @@ $tomb-&gt;{title} =~ s/ \(\w+\)$//;
 $data-&gt;{type_nodetype} = getId(getType('draft'));
 $data-&gt;{publication_status} = getId(getNode('nuked', 'publication_status'));
 
+my $rep = $tomb-&gt;{reputation};
+
+if ($data -&gt;{totalvotes}){ # was this ever used?
+	$rep .= '('.($data-&gt;{totalvotes} + $tomb-&gt;{reputation})/2;
+	$rep .= '/'.($data-&gt;{totalvotes} - $tomb-&gt;{reputation})/2;
+	$rep .= ')';
+}
+
+$data-&gt;{reputation}=0;
+$data-&gt;{totalvotes}=0;
+
 foreach my $table ('node', 'document', 'draft'){
 	my @fields = $DB-&gt;getFieldsHash($table);
 	my $insertref = {};
@@ -47,10 +58,11 @@ if ($N &amp;&amp; $$N{doctext} eq $$data{doctext}){
 	my $killa = undef; $killa = getNodeById($$tomb{killa_user}) unless $$tomb{killa_user} == -1;
 	$killa = ref $killa ? &quot;[$$killa{title}\[user]]&quot; : 'unknown editor';
 	htmlcode('addNodenote', $N, &quot;Restored from Node Heaven.&lt;br&gt;Originally posted $$tomb{createtime};
-		nuked by $killa&quot;);
+		nuked by $killa at rep $rep&quot;);
 
 	return $N;
 }
 
-return &quot;Reincarnation of angel id $angel_id failed!&quot;;</code>
+return &quot;Reincarnation of angel id $angel_id failed!&quot;; 
+</code>
 </node>

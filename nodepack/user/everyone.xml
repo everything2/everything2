@@ -1,5 +1,5 @@
 <node>
-  <sanctity>3</sanctity>
+  <sanctity>4</sanctity>
   <nick></nick>
   <email>alex@staff.everything2.com</email>
   <realname>Anonymous Coward</realname>
@@ -38,7 +38,7 @@
     <key>group</key>
   </vars>
   <vars>
-    <value>2669 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
+    <value>2828 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
     <key>nwriteups</key>
   </vars>
   <vars>
@@ -62,7 +62,7 @@
     <key>motto</key>
   </vars>
   <vars>
-    <value>2669</value>
+    <value>2828</value>
     <key>numwriteups</key>
   </vars>
   <vars>

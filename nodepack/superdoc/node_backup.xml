@@ -1,9 +1,20 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
+use Net::Amazon::S3;
+
 # Assume writeup-backups/ exists in the www/ directory:
-return &quot;Node backup is offline due to the move to cloud services. If you miss this, please let [jaybonci] know, and we'll reimplement it somehow&quot;;
-my $pathprefix = '/var/everything/www/';
+my $aws_access_key_id = $Everything::CONF-&gt;{s3}-&gt;{nodebackup}-&gt;{access_key_id};
+my $aws_secret_access_key = $Everything::CONF-&gt;{s3}-&gt;{nodebackup}-&gt;{secret_access_key};
+
+my $s3 = Net::Amazon::S3-&gt;new(
+      {   aws_access_key_id     =&gt; $aws_access_key_id,
+          aws_secret_access_key =&gt; $aws_secret_access_key,
+          retry                 =&gt; 1,
+      }
+);
+my $bucket = $s3-&gt;bucket($Everything::CONF-&gt;{s3}-&gt;{nodebackup}-&gt;{bucket});
+
 my $directory = 'writeup-backups/';
 
 return &quot;&lt;p&gt;If you logged in, you'd be able to create a backup of your &quot;
@@ -116,14 +127,18 @@ my $format = ('text', 'html', 'text-html')[$e2parse-1];
 
 # make URL hard to guess
 my $obfuscateUrl = int(rand(8999999)) + 1000000;
-my $outputfilename = &quot;$cleanUser ($format) $obfuscateUrl $year-$month-$day.zip&quot;;
+my $outputfilename = &quot;$cleanUser.$format.$obfuscateUrl.$year-$month-$day.zip&quot;;
 
-# remove any old backups
-unlink glob &quot;$pathprefix$directory$cleanUser\\ (*)\\ *-*-*.zip&quot;;
-$zip -&gt; writeToFileNamed($pathprefix.$directory.$outputfilename);
+
+$zip -&gt; writeToFileNamed(&quot;/tmp/$outputfilename&quot;);
+$bucket-&gt;add_key_filename($outputfilename, &quot;/tmp/$outputfilename&quot;, {content_type =&gt; &quot;application/octet-stream&quot;});
+
+my $url = &quot;http://nodebackup.everything2.com/$outputfilename&quot;;
 
 $str .= &quot;&lt;p&gt; Your backup is ready. You can fetch it &quot;
-	.&quot;&lt;a href=\&quot;/$directory$outputfilename\&quot;&gt;here&lt;/a&gt;&lt;/p&gt;&quot;;
+	.&quot;&lt;strong&gt;&lt;a href=\&quot;$url\&quot;&gt;$url&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;&quot;;
+
+$str .= &quot;&lt;p&gt;This link is public in the sense that anyone with the URL can download it, and will last for 7 days, in which time it will be automatically deleted. This is the only time you will see this link, so download it now.&lt;/p&gt;&quot;;
 
 $str .= '&lt;p&gt;This is not your work and some of it may be private. Please do not read
 	the drafts and remember to delete the backup after checking it is OK.'
@@ -131,8 +146,7 @@ $str .= '&lt;p&gt;This is not your work and some of it may be private. Please do
 
 return $str;
 
-%]
-</doctext>
+%]</doctext>
   <node_id>1992664</node_id>
   <title>Node backup</title>
 </node>

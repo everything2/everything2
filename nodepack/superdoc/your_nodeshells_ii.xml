@@ -17,7 +17,6 @@ else
 	$inputname = $$USER{title};
 }
 
-$str.=&quot;&lt;b&gt;Don't want your nodeshells searchable? You can turn it off in [Advanced Settings].&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;&quot;;
 
 $str.= 'Look up user:&lt;br /&gt;&lt;input type=&quot;text&quot; name=&quot;ns_user&quot; value=&quot;'.encodeHTML($inputname).'&quot;&gt;&amp;nbsp;&lt;input type=&quot;submit&quot; value=&quot;View Nodeshells&quot; /&gt;&lt;/form&gt;&lt;hr /&gt;&lt;br /&gt;';
 
@@ -25,10 +24,6 @@ my $nsUser = getNode($inputname, 'user');
 
 return $str.'No such user &quot;'.encodeHTML($inputname).'&quot;&lt;br /&gt;' unless $nsUser;
 
-
-my $nsVars = getVars($nsUser);
-
-return $str.linkNodeTitle($$nsUser{title}).'\'s nodeshells are not searchable.' if ( ($$nsVars{hideNodeshells}) &amp;&amp; (!isGod( $USER )) &amp;&amp; (!($$nsUser{title} eq $$USER{title})) );
 
 my $nodetypeId = getId(getType('e2node'));
 my $csr = $DB-&gt;sqlSelectMany(

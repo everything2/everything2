@@ -50,7 +50,7 @@ $code = '&lt;div style=&quot;font-size: smaller;&quot;&gt;'.$code.'&lt;/div&gt;'
 #breaks the form on code edit pages an' patching a patch may get confusing.
 return $text.$code if ($query-&gt;param('displaytype') eq 'edit' or $$codenode{type}{title} eq 'patch');
 
-return $text unless $APP-&gt;isEditor($USER);
+return $text unless $APP-&gt;isDeveloper($USER);
 $text = htmlcode('openform') . $text . '
 &lt;input type=&quot;submit&quot; name=&quot;sexisgood&quot; value=&quot;resize&quot;&gt;&lt;/form&gt;'.$code ;
 

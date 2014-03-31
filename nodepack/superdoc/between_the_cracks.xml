@@ -106,6 +106,12 @@ while(my $wu = $rows-&gt;fetchrow_hashref)
    $title = $$wu{title};
    if($title =~ /^(.*?) \([\w-]+\)$/) { $title = $1; }
    $title =~ s/\s/_/g;
+
+#
+# Minor bug that almost no one will notice. If the first $count nodes
+# returned by the query are unvoteable, no results will be displayed.
+#
+
    if ( !$APP-&gt;isUnvotable($$wu{writeup_id}) )
    {
       $rowCtr++;

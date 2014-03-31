@@ -38,7 +38,7 @@ my @showit = (
 	'title, author_user, publication_status, collaborators'
 	, 'node JOIN draft ON node_id = draft_id'
 	, &quot;author_user = $user AND type_nodetype = $$draftType{node_id}&quot;
-	, 'ORDER BY title LIMIT 25'
+	, 'ORDER BY title'
 );
 
 unless ($username){
@@ -67,6 +67,7 @@ unless ($username){
 		.getId(getNode('nuked', 'publication_status'))
 		.', title' if $nukeeslast;
 
+	$showit[-1] .= ' LIMIT 25';
 	unshift @showit, 'show paged content';
 
 }else{

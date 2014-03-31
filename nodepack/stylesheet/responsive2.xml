@@ -65,6 +65,10 @@ th, td
 border-bottom: 1px solid #ccc;
 border-right: 1px solid #ccc;
 }
+.content table[border=&quot;0&quot;] th,
+.content table[border=&quot;0&quot;] td {
+        border: 0;
+}
 .contentinfo th, .contentinfo td
 {
 border: 0;
@@ -449,7 +453,7 @@ display: none;
    width: 99%;
    }
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>2047530</node_id>
   <title>Responsive2</title>

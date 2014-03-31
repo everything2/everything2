@@ -62,13 +62,19 @@ my $str = '&lt;p&gt;Since we didn\'t find what you were looking for, you
 	.' &lt;button type=&quot;submit&quot; name=&quot;type&quot; value=&quot;draft&quot;&gt;New draft&lt;/button&gt;
 	&lt;button type=&quot;submit&quot; name=&quot;type&quot; value=&quot;e2node&quot;&gt;New node&lt;/button&gt;';
 
-$str .= '&lt;p&gt;Lucky you, you can &lt;strong&gt;'
+if ($APP-&gt;isAdmin($USER)){
+	$str .= '&lt;p&gt;Lucky you, you can &lt;strong&gt;'
 	.linkNode(getNode('create node', 'restricted_superdoc'),
 		'create any type of node...', {newtitle =&gt; $title})
-		.'&lt;/strong&gt;&lt;/p&gt;'
-		 if $APP-&gt;isAdmin($USER);
+		.'&lt;/strong&gt;&lt;/p&gt;';
+}
 
-return $str
-		.'&lt;/fieldset&gt;&lt;/form&gt;';
+$str .= '&lt;/fieldset&gt;&lt;/form&gt;';
+
+if ($APP-&gt;isEditor($USER)){
+	$str .= &quot;&lt;p&gt;If you wish to exercise your Editorial Power to create a [document[nodetype]], create a draft, click on the 'Advanced option(s)' button, and then use the nice shiny 'Publish as document' button provided for this purpose.&lt;/p&gt;&quot;;
+}
+
+$str;
 </code>
 </node>

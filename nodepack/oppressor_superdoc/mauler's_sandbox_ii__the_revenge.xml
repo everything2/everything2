@@ -6,7 +6,7 @@
 
   my $str = 'Everything\'s Special Writeups (visible only to staff members):';
 
-  my $csr = $dbh-&gt;prepare('SELECT node_id FROM node WHERE type_nodetype=117 ORDER BY reputation DESC LIMIT 300');
+  my $csr = $dbh-&gt;prepare('SELECT node_id FROM node WHERE type_nodetype=117 ORDER BY reputation ASC LIMIT 300');
 
   #my $csr = $dbh-&gt;prepare('SELECT writeup_id FROM writeup ORDER BY cooled DESC LIMIT 100');
 

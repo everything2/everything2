@@ -327,6 +327,10 @@ p#printlink {
 .content table {
 	border-collapse: collapse;
 }
+.content table[border=&quot;0&quot;] th,
+.content table[border=&quot;0&quot;] td {
+        border: 0;
+}
 .content th,
 .content td  {
 	border: 1px solid gray;
@@ -762,7 +766,7 @@ hr.clear {
 .zen_mobiletab &gt; A:visited {
 	color: #ddF;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1882070</node_id>
   <title>Kernel Blue</title>

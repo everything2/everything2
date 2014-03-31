@@ -5,33 +5,80 @@
 th {
   text-align:left;
 }
-
+.graph td {
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  padding: 3px;
+}
+.graph div {
+  position: relative;
+/*  line-height: 25px;*/
+  height: 25px;
+  width: 100%;
+}
 .bar {
-  font-size:1px;
-  background-color:#0a0;
-  border-top:2px solid #5a5;
-  border-left:2px solid #5a5;
-  border-bottom:2px solid #050;
-  border-right:2px solid #050;
-  padding:0px;
+  background-color: #9e9;
+  padding: 0px;
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  height: 100%;
+}
+.val {
+  z-index: 100;
+  display: block;
+  position: absolute;
+  left: 5px;
+  top: 2px;
 }
 --&gt;
 &lt;/style&gt;
 
-[% #/
-
-# Made by Oolong, with code adapted from [A Year Ago Today] and [Reputation Graph].
-
+[%
 my $monthsago=1;
 my ($sec,$min,$hour,$mday,$month,$year,$wday,$yday,$isdst) =
         gmtime(time);
 $year+= 1900;
 my $strMonth;
+my $backyear = int($query-&gt;param(&quot;y&quot;)) || $year - 5;
+# no nodes before 1999
+if ($backyear &lt; 1999)
+{
+  $backyear = 1999;
+}
 
 
-my $str=&quot;&lt;table&gt;\n&lt;tr&gt;\n&lt;th&gt;Month to&lt;/th&gt;\n&lt;th colspan='2'&gt;New writeups&lt;/th&gt;\n&lt;th colspan='2'&gt;New users&lt;br&gt;(contributing)&lt;/th&gt;\n&lt;th colspan='2'&gt;C!s spent&lt;/th&gt;\n&lt;th title='ratio of cools to new writeups'&gt;C!:NW&lt;/th&gt;&lt;/tr&gt;&quot;;
+my $str='&lt;form method=&quot;get&quot; action=&quot;/index.pl&quot;&gt;
+         &lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;'.$$NODE{node_id}.'&quot; /&gt;
+         &lt;b&gt;Report back to &lt;/b&gt;
+         &lt;select name=&quot;y&quot;&gt;
+         &lt;option value=&quot;'.$backyear.'&quot;&gt;'.$backyear.'&lt;/option&gt;';
+for (my $i = $year; $i &gt; 1999; $i--) {
+  $str .= '&lt;option value=&quot;'.$i.'&quot;&gt;'.$i.'&lt;/option&gt;';
+}
+$str .= '&lt;option value=&quot;1999&quot;&gt;1999 (not suggested)&lt;/option&gt;
+         &lt;/select&gt;
+         &lt;input type=&quot;submit&quot; value=&quot;Go&quot; /&gt;
+         &lt;/form&gt;
+         &lt;hr /&gt;
+         &lt;table width=&quot;100%&quot; class=&quot;graph&quot;&gt;
+         &lt;tr&gt;
+         &lt;th&gt;Month&lt;/th&gt;
+         &lt;th&gt;New Writeups&lt;/th&gt;
+         &lt;th&gt;Contributing Users&lt;/th&gt;
+         &lt;th&gt;C!s Spent&lt;/th&gt;
+         &lt;th title=&quot;ratio of all C!s spent to new writeups&quot;&gt;C!:NW&lt;/th&gt;
+         &lt;/tr&gt;';
+
 $monthsago=1;
-while ($year&gt;2006) {
+my $maxwucnt = 1;
+my $maxusercnt = 1;
+my $maxcoolcnt = 1;
+my $maxcnwratio = .1;
+while ($year &gt;= $backyear) {
   my $strMonth = ($month+1).'';
   if (length($strMonth)==1)
   {
@@ -41,15 +88,32 @@ while ($year&gt;2006) {
   my $limit = 'type_nodetype='.getId(getType('writeup')).&quot; and publishtime &gt;= '&quot;.$strDate.&quot;' and publishtime &lt; DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 MONTH)&quot;;
 
   my $wucnt = $DB-&gt;sqlSelect('count(*)', 'node JOIN writeup on writeup.writeup_id=node.node_id', $limit);
+  if ($wucnt &gt; $maxwucnt) {
+    $maxwucnt = $wucnt;
+  }
 
-  my $limit = 'node.type_nodetype='.getId(getType('user')).&quot; and node.createtime &gt;= '&quot;.$strDate.&quot;' and node.createtime &lt; DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 MONTH) and user.numwriteups &gt; 0&quot;;
+# this query counted users who signed up and contributed in the same month - not very useful  
+#my $limit = 'node.type_nodetype='.getId(getType('user')).&quot; and node.createtime &gt;= '&quot;.$strDate.&quot;' and node.createtime &lt; DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 MONTH) and user.numwriteups &gt; 0&quot;;
+#my $usercnt = $DB-&gt;sqlSelect('count(*)', 'node JOIN user ON user.user_id=node.node_id', $limit);
 
-  my $usercnt = $DB-&gt;sqlSelect('count(*)', 'node JOIN user ON user.user_id=node.node_id', $limit);
+# this querycounts contributing users (new and old)
+  my $limit = &quot;type_nodetype='&quot;.getId(getType('writeup')).&quot;' AND createtime&gt;='&quot;.$strDate.&quot;' AND createtime&lt;DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 MONTH)&quot;;
+  my $usercnt = $DB-&gt;sqlSelect('count(DISTINCT author_user)', 'node', $limit);
+  if ($usercnt  &gt; $maxusercnt) {
+    $maxusercnt = $usercnt ;
+  }
 
   my $limit = &quot;tstamp &gt;= '&quot;.$strDate.&quot;' and tstamp &lt; DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 MONTH)&quot;;
 
   my $coolcnt = $DB-&gt;sqlSelect('count(*)', 'coolwriteups', $limit);
+  if ($coolcnt &gt; $maxcoolcnt) {
+    $maxcoolcnt = $coolcnt  ;
+  }
 
+  my $cnwratio = $wucnt ? $coolcnt/$wucnt : 0;
+  if ($cnwratio &gt; $maxcnwratio) {
+    $maxcnwratio = $cnwratio;
+  }
 
   $str.=&quot;\n&lt;tr&gt;&quot;;
   $str .= '&lt;td class=&quot;DateLabel&quot;&gt;';
@@ -63,24 +127,46 @@ while ($year&gt;2006) {
     }
     $str .= '&lt;/td&gt;';
 
-  $str.= &quot;\n\t&lt;td&gt;$wucnt&lt;/td&gt;\n\t&lt;td&gt;&lt;span class='bar' style='padding-right:&quot;.($wucnt/10).&quot;px;'&gt;&amp;nbsp;&lt;/span&gt;&lt;/td&gt;\n\t&lt;td&gt;$usercnt&lt;/td&gt;\n\t&lt;td&gt;&lt;span class='bar' style='padding-right:&quot;.($usercnt).&quot;px;'&gt;&amp;nbsp;&lt;/span&gt;&lt;/td&gt;\n\t&lt;td&gt;$coolcnt&lt;/td&gt;\n\t&lt;td&gt;&lt;span class='bar' style='padding-right:&quot;.($coolcnt/10).&quot;px;'&gt;&amp;nbsp;&lt;/span&gt;&lt;/td&gt;&quot;;
-  $str.=&quot;\n\t&lt;td&gt;&quot;.sprintf(&quot;%.2f&quot;, $coolcnt/$wucnt).&quot;&lt;/td&gt;&quot; if ($wucnt&gt;0);
-#  $str.=&quot;\n\t&lt;td&gt;&quot;.$coolcnt/$wucnt.&quot;&lt;/td&gt;&quot; if ($coolcnt&gt;0);
-  $str.=&quot;&lt;/tr&gt;&quot;;
+  $str .= '&lt;td&gt;&lt;div&gt;&lt;span class=&quot;val&quot;&gt;'.$wucnt.'&lt;/span&gt;&lt;span class=&quot;bar wubar&quot; style=&quot;width:'.($wucnt*100.0/11060.0).'%;&quot; data-value=&quot;'.$wucnt.'&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;/td&gt;
+           &lt;td&gt;&lt;div&gt;&lt;span class=&quot;val&quot;&gt;'.$usercnt.'&lt;/span&gt;&lt;span class=&quot;bar userbar&quot; style=&quot;width:'.($usercnt*100.0/1230.0).'%;&quot; data-value=&quot;'.$usercnt.'&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;/td&gt;
+           &lt;td&gt;&lt;div&gt;&lt;span class=&quot;val&quot;&gt;'.$coolcnt.'&lt;/span&gt;&lt;span class=&quot;bar coolbar&quot; style=&quot;width:'.($coolcnt*100.0/6650.0).'%;&quot; data-value=&quot;'.$coolcnt.'&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;/td&gt;
+           &lt;td&gt;&lt;div&gt;&lt;span class=&quot;val&quot;&gt;'.sprintf(&quot;%.2f&quot;, $cnwratio).'&lt;/span&gt;&lt;span class=&quot;bar cnwratio&quot; style=&quot;width:'.($cnwratio*100.0/4.0).'%;&quot; data-value=&quot;'.$cnwratio.'&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;/td&gt;
+           &lt;/tr&gt;';
 
   $month--;
   if($month&lt;0) {
-      $month = 11;
-      $year--;
-    } 
-$monthsago++;
+    $month = 11;
+    $year--;
+  } 
+  $monthsago++;
 
 }
-$str.=&quot;&lt;/table&gt;&quot;;
-return $str;
+$str .= &quot;&lt;/table&gt;&quot;;
 
-%]
-</doctext>
+$str .= '&lt;script&gt;
+$(document).ready(function() {
+  var maxwucnt = '.$maxwucnt.';
+  var maxusercnt = '.$maxusercnt.';
+  var maxcoolcnt = '.$maxcoolcnt.';
+  var maxcnwratio= '.$maxcnwratio.';
+  $(&quot;.wubar&quot;).each(function(index) {
+    $(this).css(&quot;width&quot;, (parseInt($(this).data(&quot;value&quot;)) * 100.0 / maxwucnt) + &quot;%&quot;);
+  });
+  $(&quot;.userbar&quot;).each(function(index) {
+    $(this).css(&quot;width&quot;, (parseInt($(this).data(&quot;value&quot;)) * 100.0 / maxusercnt) + &quot;%&quot;);
+  });
+  $(&quot;.coolbar&quot;).each(function(index) {
+    $(this).css(&quot;width&quot;, (parseInt($(this).data(&quot;value&quot;)) * 100.0 / maxcoolcnt) + &quot;%&quot;);
+  });
+  $(&quot;.cnwratio&quot;).each(function(index) {
+    $(this).css(&quot;width&quot;, (parseFloat($(this).data(&quot;value&quot;)) * 100.0 / maxcnwratio) + &quot;%&quot;);
+  });
+});
+&lt;/script&gt;';
+
+
+return $str;
+%]</doctext>
   <node_id>1969889</node_id>
   <title>Site Trajectory 2</title>
 </node>

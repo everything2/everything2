@@ -3,7 +3,7 @@
   <parent_container>19</parent_container>
   <pagetype_nodetype>14</pagetype_nodetype>
   <page>[%
-return unless isGod($USER) or Everything::isApproved($USER, getNode('edev','usergroup'));
+return unless $APP-&gt;isDeveloper($USER);
 
 htmlcode('listcode','doctext');
 

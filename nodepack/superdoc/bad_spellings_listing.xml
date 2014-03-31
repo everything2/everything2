@@ -2,7 +2,7 @@
   <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;
 If you have the option enabled to show &lt;strong&gt;common bad spellings&lt;/strong&gt; in your writeups, common bad spellings will be flagged and displayed you are looking at your writeup by itself (as opposed to the e2node, which may contain other noders' writeups).&lt;/p&gt;
-&lt;p&gt;This option can be toggled at &lt;a href=&quot;[% urlGen({'node'=&gt;'Writeup Settings','type'=&gt;'superdoc'}) %]&gt;Writeup Settings&lt;/a&gt; in the Writeup Hints section. You currently have it [%
+&lt;p&gt;This option can be toggled at [Settings[Superdoc]] in the Writeup Hints section. You currently have it [%
 return $VARS-&gt;{nohintSpelling} ? 'disabled, which is not recommended' : 'enabled, the recommended setting';
 %].
 &lt;/p&gt;
