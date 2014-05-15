@@ -30,7 +30,6 @@ to_install = [
     'libdate-calc-perl',
     'libdatetime-perl',
     'libdatetime-format-strptime-perl',
-    'libdigest-sha1-perl',
     'libhtml-tiny-perl',
     'libheap-perl',
     'libio-string-perl',

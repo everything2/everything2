@@ -1,8 +1,8 @@
 Vagrant.configure("2") do |config|
   config.vm.network :forwarded_port, guest: 80, host: 8888, auto_correct: true
 
-  config.vm.box = "edev_squeeze_vagrant2.v2"
-  config.vm.box_url = "http://vagrantbox.everything2.com/edev_squeeze_vagrant2.v2.box"
+  config.vm.box = "e2wheezy.v1"
+  config.vm.box_url = "http://vagrantbox.everything2.com/e2wheezy.v1.box"
   config.ssh.username = "root"
   config.ssh.forward_agent = true
   
@@ -19,6 +19,4 @@ Vagrant.configure("2") do |config|
     chef.add_role("e2development")
   end
 
-  # I use the vbguest plugin elsewhere, but I don't want to run it for E2
-  config.vbguest.auto_update = false
 end

@@ -16,6 +16,22 @@ to_install.each do |p|
   package p
 end
 
+bash "install Linux::Pid" do
+  cwd "/tmp"
+  user "root"
+  creates "/usr/local/lib/perl/5.14.2/auto/Linux/Pid/Pid.so"
+  code <<-EOH
+cd /tmp
+wget "http://search.cpan.org/CPAN/authors/id/R/RG/RGARCIA/Linux-Pid-0.04.tar.gz";
+tar xzvf Linux-Pid-0.04.tar.gz
+cd Linux-Pid-0.04
+perl Makefile.PL INSTALLDIRS=vendor
+make install
+cd ..
+rm -rf Linux-Pid*
+  EOH
+end
+
 template '/etc/apache2/conf.d/everything' do
   owner "root"
   group "root"
