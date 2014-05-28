@@ -9,7 +9,7 @@
     <key>cthulhu</key>
   </vars>
   <vars>
-    <value>welcomes ~ to Narnia</value>
+    <value>catches glimmering green butterflies for</value>
     <key>special</key>
   </vars>
   <vars>
@@ -21,19 +21,19 @@
     <key>nudge</key>
   </vars>
   <vars>
+    <value>fixes things for</value>
+    <key>helps</key>
+  </vars>
+  <vars>
     <value>eggs</value>
     <key>egg</key>
   </vars>
   <vars>
-    <value>fixes things for ~</value>
-    <key>helps</key>
-  </vars>
-  <vars>
-    <value>turns ~ into a bong</value>
+    <value>turns ~ into a song</value>
     <key>magic</key>
   </vars>
   <vars>
-    <value>offers cookies to</value>
+    <value>offers chocolate chip cookies to</value>
     <key>cookie</key>
   </vars>
   <vars>
@@ -53,6 +53,10 @@
     <key>defenestrate</key>
   </vars>
   <vars>
+    <value>makes ~ a geta of vegan sushi for</value>
+    <key>sushi</key>
+  </vars>
+  <vars>
     <value>rubber chickens</value>
     <key>rubberchicken</key>
   </vars>
@@ -69,7 +73,7 @@
     <key>fistbump</key>
   </vars>
   <vars>
-    <value>pies</value>
+    <value>throws a lemon meringue pie at</value>
     <key>pie</key>
   </vars>
   <vars>
@@ -77,11 +81,11 @@
     <key>tomato</key>
   </vars>
   <vars>
-    <value>pizzas</value>
+    <value>serves a pizza to</value>
     <key>pizza</key>
   </vars>
   <vars>
-    <value>shakes her/his booty for</value>
+    <value>shakes da booty for</value>
     <key>booty</key>
   </vars>
   <vars>
@@ -93,7 +97,7 @@
     <key>beer</key>
   </vars>
   <vars>
-    <value>finds fish in ~'s car</value>
+    <value>reads ~ a selection from the Magna Carta.</value>
     <key>random</key>
   </vars>
   <vars>
@@ -113,7 +117,7 @@
     <key>omelette</key>
   </vars>
   <vars>
-    <value>dances like a fool for ~</value>
+    <value>dances lasciviously at</value>
     <key>twerk</key>
   </vars>
   <vars>
@@ -129,10 +133,6 @@
     <key>heart</key>
   </vars>
   <vars>
-    <value>gives ~ a small paper heart</value>
-    <key>valentine</key>
-  </vars>
-  <vars>
     <value>lights a candle for</value>
     <key>candle</key>
   </vars>
@@ -145,11 +145,11 @@
     <key>omelet</key>
   </vars>
   <vars>
-    <value>drops a piano on</value>
+    <value>drops a player piano on</value>
     <key>piano</key>
   </vars>
   <vars>
-    <value>pours ~ a glass</value>
+    <value>pours ~ a glass of something darkly glistening</value>
     <key>glass</key>
   </vars>
   <node_id>1922142</node_id>

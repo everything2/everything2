@@ -85,7 +85,7 @@ unless ( $isMine ) {
 		my %labels = ( 1 =&gt; $uplbl , -1 =&gt; $dnlbl , 0 =&gt; $nolbl ) ;
 		my $confirm = 'confirm' if $$VARS{votesafety};
 		my $replace = 'replace ' unless $$VARS{noreplacevotebuttons};
-		my $clas = $replace.&quot;ajax voteinfo_$n:voteit?$confirm\op=vote&amp;vote__$n=&quot; ;
+		my $clas = $replace.&quot;ajax voteinfo_$n:voteit?${confirm}op=vote&amp;vote__$n=&quot; ;
 		my $ofauthor = $$VARS{anonymousvote} == 1 &amp;&amp; !$prevvote ? 'this' : $author.&quot;'s&quot; ;
 		my %attributes = (
 			1 =&gt; { class =&gt; $clas.&quot;1:$n,2&quot; , title =&gt; &quot;upvote $ofauthor writeup&quot; },

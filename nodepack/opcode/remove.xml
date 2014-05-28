@@ -60,7 +60,7 @@ foreach $nid (@list){
 	my $author = getNodeById($aid);
 	$author = &quot;[by $$author{title}]&quot; if $author;
 	my $msgHash = {
-		msgtext =&gt; &quot;I removed your writeup [$title$author]$reason&quot;,
+		msgtext =&gt; &quot;I removed your writeup [$title$author]$reason. It has been sent to your [Drafts[superdoc]].&quot;,
 		author_user=&gt;$$USER{node_id},
 		for_user=&gt;$aid,
 	};

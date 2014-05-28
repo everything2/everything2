@@ -36,7 +36,7 @@ $query-&gt;checkbox(
   , -label =&gt; &quot;remember me&quot;
   , -tabindex =&gt; 3
   ).
-($op eq &quot;login&quot; ? '&lt;p&gt;&lt;i&gt;Login incorrect.&lt;/i&gt;&lt;br&gt;If you are unable to login, try resetting your password. We recently changed our login system, so some passwords need to be reset. If you don\'t have access to the email attached to your account or are otherwise stuck, email &lt;a href=&quot;mailto:accounthelp@everything2.com&quot;&gt;accounthelp@everything2.com&lt;/a&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;' : &quot;&quot;)
+($op eq &quot;login&quot; ? '&lt;p&gt;&lt;i&gt;Login incorrect.&lt;/i&gt;&lt;br&gt;If you are unable to login, try resetting your password. If you don\'t have access to the email attached to your account or are otherwise stuck, email &lt;a href=&quot;mailto:accounthelp@everything2.com&quot;&gt;accounthelp@everything2.com&lt;/a&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;' : &quot;&quot;)
 .&quot;&lt;/font&gt;&quot; .
 $query-&gt;submit(
   -name =&gt; &quot;login&quot;

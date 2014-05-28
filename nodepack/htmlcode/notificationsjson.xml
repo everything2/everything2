@@ -25,7 +25,7 @@ my $otherNotifications = &quot;0&quot;;
 
 if ($$VARS{settings}) {
 
-   my $notificationList = %{from_json($$VARS{settings})}-&gt;{notifications};
+   my $notificationList = from_json($$VARS{settings})-&gt;{notifications};
    my @notify = ( );
 
    for (keys %{$notificationList}) {

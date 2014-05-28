@@ -133,7 +133,7 @@
     <key>imprecation</key>
   </vars>
   <vars>
-    <value>&#198;lien</value>
+    <value>&#239;&#191;&#189;lien</value>
     <key>alien</key>
   </vars>
   <vars>
@@ -551,6 +551,10 @@
   <vars>
     <value>Pretzellogic</value>
     <key>pretz</key>
+  </vars>
+  <vars>
+    <value>mad girl's love song</value>
+    <key>maddie</key>
   </vars>
   <vars>
     <value>nothinglasts4ever</value>

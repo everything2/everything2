@@ -70,6 +70,12 @@ $serverTimeStr = &quot;\n\n\t&quot;.'&lt;p id=&quot;servertime&quot;&gt;'.$serve
 
 return $loginStr .$votesLeftStr . $expStr . $weblogStr . $serverTimeStr;
 
+%]
+
+[%
+  return &quot;&quot; unless $APP-&gt;isEditor($USER);
+  return &quot;&lt;br/&gt;&lt;br/&gt;squeeze&quot; if $^V eq &quot;v5.10.1&quot;;
+  return &quot;&lt;br/&gt;&lt;br/&gt;wheezy&quot;;
 %]</nlcode>
   <title>Epicenter</title>
 </node>
