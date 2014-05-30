@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>2025089</node_id>
   <title>Notelet nodelet settings</title>
   <code>'You can edit your &lt;strong&gt;Notelet Nodelet&lt;/strong&gt; at the '.

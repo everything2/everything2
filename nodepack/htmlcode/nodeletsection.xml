@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>1109816</node_id>
   <title>nodeletsection</title>
   <code># Inserts collapsible nodelet sections. These are stored in separate htmlcodes in the form (nodelet-abbreviation)section_(section-title) - that is, if you see something like 'htmlcode('nodeletsection','edn,patches');' the code you need will be at [ednsection_patches].

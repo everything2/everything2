@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegate_to></delegate_to>
   <node_id>1960821</node_id>
   <title>sanctify</title>
   <code>return if ($$VARS{GPoptout});

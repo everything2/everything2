@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>150</type_nodetype>
+  <delegate_to></delegate_to>
   <maintain_nodetype>1685242</maintain_nodetype>
   <node_id>1794105</node_id>
   <title>e2poll maintenance update</title>

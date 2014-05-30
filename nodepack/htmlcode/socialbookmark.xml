@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>1946647</node_id>
   <title>socialBookmark</title>
   <code>my ($nodeID, $includeTitles, $asList, $myTitle, $sbURL, $sbTitle, $imgTitle)=@_;

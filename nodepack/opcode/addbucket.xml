@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegate_to></delegate_to>
   <node_id>909985</node_id>
   <title>addbucket</title>
   <code>foreach my $bnode ($query-&gt;param())

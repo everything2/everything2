@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>150</type_nodetype>
+  <delegate_to></delegate_to>
   <maintain_nodetype>1522375</maintain_nodetype>
   <node_id>1935675</node_id>
   <title>category maintenance create</title>

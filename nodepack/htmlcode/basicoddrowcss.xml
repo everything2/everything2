@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>1259143</node_id>
   <title>basicoddrowcss</title>
   <code># wharfinger 2/23/02

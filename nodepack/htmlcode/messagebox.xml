@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>2038291</node_id>
   <title>messageBox</title>
   <code>my ($userID, $showCC, $messageID, $usergroupID, $failReasonRef) = @_;

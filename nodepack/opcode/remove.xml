@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegate_to></delegate_to>
   <node_id>2047058</node_id>
   <title>remove</title>
   <code>if (my $wu = $query -&gt; param('writeup_id')){ # user removing own writeup

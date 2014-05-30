@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>1101124</node_id>
   <title>ekw userbody</title>
   <code>my $bgcolor = $$VARS{ ekw_bgcolor };

@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>1876163</node_id>
   <title>favorite_noder</title>
   <code>my $class = &quot;ajax favoritenoder:favorite_noder&quot; ;

@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>2003655</node_id>
   <title>show_node_forward</title>
   <code>return &quot;&quot; unless ($query &amp;&amp; defined $query-&gt;param('originalTitle'));

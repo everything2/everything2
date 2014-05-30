@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>1186040</node_id>
   <title>logWarning</title>
   <code>#call this when there is something strange happening, but it isn't

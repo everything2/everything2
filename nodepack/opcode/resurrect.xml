@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegate_to></delegate_to>
   <node_id>754045</node_id>
   <title>resurrect</title>
   <code>return unless isGod($USER);

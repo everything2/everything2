@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>2009167</node_id>
   <title>make node sane</title>
   <code># Expects single parameter, node_id or node ref

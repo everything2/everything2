@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegate_to></delegate_to>
   <node_id>977694</node_id>
   <title>linktrim</title>
   <code>return unless htmlcode('verifyRequest', 'linktrim');

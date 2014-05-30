@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>1116965</node_id>
   <title>vitsection_nodeutil</title>
   <code>my $str = &quot;&lt;ul&gt;&quot;;

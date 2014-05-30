@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>1877928</node_id>
   <title>updateNodelet</title>
   <code>my ($nodelet) = @_;

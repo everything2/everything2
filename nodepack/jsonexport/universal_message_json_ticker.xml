@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>2100759</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>2033914</node_id>
   <htmlcode_id>2033914</htmlcode_id>
   <title>universal message json ticker</title>

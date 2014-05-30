@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>1872771</node_id>
   <title>displayWriteupInfoZen</title>
   <code>#customized display of writeup information

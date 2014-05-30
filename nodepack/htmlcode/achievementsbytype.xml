@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>1918037</node_id>
   <title>achievementsByType</title>
   <code>my ($aType, $user_id, $debug) = @_;

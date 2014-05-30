@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>1973836</node_id>
   <title>screenTable</title>
   <code># By [call] - see [edev: Tables and HTML Validation]

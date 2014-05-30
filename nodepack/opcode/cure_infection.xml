@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegate_to></delegate_to>
   <node_id>2034111</node_id>
   <title>cure_infection</title>
   <code>return 0 unless $APP-&gt;isAdmin($USER) || !htmlcode('verifyRequest', 'cure_infection');

@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <modperlsafe>1</modperlsafe>
+  <delegate_to></delegate_to>
   <node_id>2051976</node_id>
   <title>show paged content</title>
   <code>my ($select, $from, $where, $orderby, $instructions, %functions) = @_;
