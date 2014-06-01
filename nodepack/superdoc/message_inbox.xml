@@ -201,8 +201,8 @@ while (my $MSG = $csr-&gt;fetchrow_hashref){
 
 		$text =~ /\[([^\[\]]*)\[user]/ and ($respondto = $1) if $respondto eq 'Cool Man Eddie'; # (sic)
 		next unless $respondto;
-		$respondto =~ s/'/&amp;\#39;/g;
-		$respondto =~ s/&quot;/&amp;\#34;/g;
+		$respondto =~ s/'/\\'/g;
+		$respondto =~ s/&quot;/\\&quot;/g;
 		$respondto =~ s/ /_/g;
 
 		$str .= '('

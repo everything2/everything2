@@ -85,8 +85,8 @@ my $faves = $DB-&gt;sqlSelectMany(
 while (my $f = $faves-&gt;fetchrow_hashref){
 	my $fVars = getVars(getNodeById($$f{from_node}));
 	if ($$fVars{settings}) {
-		if (%{from_json($$fVars{settings})-&gt;
-			{notifications}}-&gt;{$favoriteNotification}
+		if (from_json($$fVars{settings})-&gt;
+			{notifications}-&gt;{$favoriteNotification}
 		){
 			my $argSet = { writeup_id =&gt; getId($WRITEUP),
 				favorite_author =&gt; $$USER{user_id}};

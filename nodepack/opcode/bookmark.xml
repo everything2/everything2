@@ -57,7 +57,7 @@ my $notification = getNode(&quot;bookmark&quot;,&quot;notification&quot;)-&gt;{n
 foreach (@writeupAuthors) {
 	my $authorVars = getVars(getNodeById($_));
 	if ($$authorVars{settings}) {
-		if (%{ from_json($$authorVars{settings})-&gt;{notifications} }-&gt;{$notification}) {
+		if ( from_json($$authorVars{settings})-&gt;{notifications}-&gt;{$notification}) {
 			htmlcode('addNotification', $notification, $_, {
 				writeup_id =&gt; $$tempnode{node_id}
 				, bookmark_user =&gt; $$USER{user_id}

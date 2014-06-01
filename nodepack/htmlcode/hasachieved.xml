@@ -29,7 +29,7 @@ if ($result == 1) {
 
 	use JSON;
 	my $notification = getNode(&quot;achievement&quot;,&quot;notification&quot;)-&gt;{node_id};
-	if ($$VARS{settings} &amp;&amp; %{ from_json($$VARS{settings})-&gt;{notifications} }-&gt;{$notification}) {
+	if ($$VARS{settings} &amp;&amp; from_json($$VARS{settings})-&gt;{notifications}-&gt;{$notification}) {
 		htmlcode('addNotification', $notification, $user_id, {
 			achievement_id =&gt; $$ACH{node_id}
 		});

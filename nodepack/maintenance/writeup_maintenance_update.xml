@@ -38,7 +38,7 @@ if(defined $query-&gt;param('writeup_doctext')) {
   }) if length $trimmedNewText &lt; 20;
 }
 
-htmlcode('update New Writeups data') unless $query -&gt; param('op') and $query -&gt; param('op') eq 'vote' || $query -&gt; op eq 'cool';
+htmlcode('update New Writeups data') unless $query -&gt; param('op') and $query -&gt; param('op') eq 'vote' || $query -&gt; param('op') eq 'cool';
 
 if($query-&gt;param('writeup_wrtype_writeuptype')) {
 

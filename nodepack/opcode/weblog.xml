@@ -43,7 +43,7 @@ else {
 	foreach my $notifiee (@{$$SRC{group}}) {
 		my $v = getVars(getNodeById($notifiee));
 		if ($$v{settings}) {
-		if (%{from_json($$v{settings})-&gt;{notifications}}-&gt;{$weblogNotification}) {
+		if (from_json($$v{settings})-&gt;{notifications}-&gt;{$weblogNotification}) {
 			htmlcode('addNotification', $weblogNotification, $notifiee, {
 				writeup_id =&gt; getId($N), group_id =&gt; $$SRC{node_id}
 			});

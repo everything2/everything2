@@ -35,7 +35,7 @@ use JSON;
 
 my $cooledNotification = getNode(&quot;cooled&quot;,&quot;notification&quot;)-&gt;{node_id};
 if ($$coolVars{settings}) {
-	if (%{ from_json($$coolVars{settings})-&gt;{notifications} }-&gt;{$cooledNotification}) {
+	if (from_json($$coolVars{settings})-&gt;{notifications}-&gt;{$cooledNotification}) {
 		my $argSet = { writeup_id =&gt; $cid, cooluser_id =&gt; $uid};
 		my $argStr = to_json($argSet);
 		my $addNotifier = htmlcode('addNotification', $cooledNotification , $$COOL{author_user},$argStr);

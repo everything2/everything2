@@ -52,7 +52,7 @@ my $notification = getNode(&quot;socialBookmark&quot;,&quot;notification&quot;)-
 foreach (@writeupAuthors) {
 	my $authorVars = getVars(getNodeById($_));
 	if ($$authorVars{settings}) {
-		if (%{ from_json($$authorVars{settings})-&gt;{notifications} }-&gt;{$notification}) {
+		if ( from_json($$authorVars{settings})-&gt;{notifications}-&gt;{$notification}) {
 			my $argSet = { writeup_id =&gt; $$tempnode{node_id}, bookmark_user =&gt; $$USER{user_id}, bookmark_site =&gt; $bookmark_site};
 			my $argStr = to_json($argSet);
 			my $addNotifier = htmlcode('addNotification', $notification, $_, $argStr);
