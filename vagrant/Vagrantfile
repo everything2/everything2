@@ -20,5 +20,7 @@ Vagrant.configure("2") do |config|
   end
 
   # I use the vbguest plugin elsewhere, but I don't want to run it for E2
-  config.vbguest.auto_update = false
+  if defined? VagrantVbguest
+    config.vbguest.auto_update = false
+  end
 end
