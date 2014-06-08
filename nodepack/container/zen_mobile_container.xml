@@ -39,7 +39,6 @@ return htmlcode('epicenterZen') unless $$VARS{nodelets} =~ /\b$epid\b/;
 &lt;/div wrapper&gt;
 &lt;div id='footer'&gt;
 [{zenFooter}]
-    [{zen titlebar}]
 &lt;/div&gt;
 &lt;/div&gt;</context>
   <title>zen mobile container</title>

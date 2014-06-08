@@ -103,7 +103,6 @@ return parseLinks($zenStr);
 &lt;/div&gt;
 &lt;div id='footer'&gt;
 [{zenFooter}]
-[{zen titlebar}]
 &lt;/div&gt;
 &lt;script src=&quot;http://www.google-analytics.com/urchin.js&quot; type=&quot;text/javascript&quot;&gt;
 &lt;/script&gt;

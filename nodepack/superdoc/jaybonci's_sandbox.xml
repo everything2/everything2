@@ -3,15 +3,17 @@
   <doctext>[% return &quot;Hello there. This is a quick testing/debugging ground for me. Do not delete me, it is not worth the time&quot;; %]
 &lt;br /&gt;&lt;br /&gt;
 [%
-  return &quot;&quot;;
+#  return &quot;&quot;;
   return unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
-  # Send an automated thank-you.
-  my $failMessage = htmlcode('sendPrivateMessage',{
-    'recipient_id'=&gt;getId($USER),
-    'message'=&gt;'Thank you! My servants have attended to any errors.',
-    'author'=&gt;'Webster 1913',
-  });
-  
+  my $str = '';
+
+  my ($GNL) = getNode('Gigantic Node Lister', getType('restricted_superdoc'));
+  $str .= '&lt;li&gt;' .  linkNode ($GNL, undef, {lastnode_id =&gt; undef}) . '&lt;/li&gt;' if canReadNode ($USER, $GNL) ;
+;
+  my ($GCL) = getNode('Gigantic Code Lister', getType('restricted_superdoc'));
+  $str .= '&lt;li&gt;' .  linkNode ($GCL, undef, {lastnode_id =&gt; undef}) . '&lt;/li&gt;' if canReadNode ($USER, $GCL) ;
+
+  return '&lt;ul id=&quot;metalinks&quot;&gt;'.$str.'&lt;/ul&gt;' if $str
 %]
 
 [%

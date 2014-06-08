@@ -57,7 +57,6 @@ padding: 50px 300px; /* means the text doesn't show in the 300x50 window */
 &lt;/div&gt;
 &lt;div id='footer'&gt;
 [{zenFooter}]
-    [{zen titlebar}]
 &lt;/div&gt;</context>
   <title>zen container</title>
 </node>
