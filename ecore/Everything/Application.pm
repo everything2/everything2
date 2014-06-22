@@ -1842,4 +1842,23 @@ sub isIpRoutable
 	return 1;
 };
 
+sub getIp
+{
+	my ($this) = @_;
+
+	my $forwd = $ENV{HTTP_X_FORWARDED_FOR} || "";
+	my $remote = $ENV{REMOTE_ADDR} || "";
+
+	my @addrs =
+		grep { $this->isIpRoutable($_) } # ignore our Pound server
+		grep { /\S/ }
+		split /\s*,\s*/,
+		",$forwd,$remote";
+
+	return @addrs if wantarray;
+
+	my $addr = '' . join ',', @addrs;
+	return $addr;
+}
+
 1;
