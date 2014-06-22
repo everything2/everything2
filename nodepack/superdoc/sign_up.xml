@@ -1,6 +1,10 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
+my $invalidName = '^\W+$|[\[\]\&lt;\&gt;\&amp;\{\}\|\/\\\]| .*_|_.* |\s\s|^\s|\s$';
+my $validNameDescription = 'Valid user names contain at least one letter or number, and none of
+		&amp;#91; &amp;#93; &amp;lt; &amp;gt; &amp;amp; { } | / or \\. They may contain either spaces or underscores
+		but not both, may not contain multiple spaces in a row and may not start or end with a space.';
 
 # for how many days should an account activation link be valid?
 my $validForDays = 10;
@@ -12,6 +16,11 @@ my @nameBlockers = (
 );
 
 my $prompt = '';
+my $username = $query -&gt; param('hatstand');
+my $email = $query -&gt; param('raddish');
+my $pass = $query -&gt; param('frog');
+my $spambot = $query -&gt; param('email');
+
 my $formPage = sub{
 	my $obfuscate = sub{
 		my $x = shift;
@@ -51,24 +60,24 @@ my $formPage = sub{
 		)
 	.&lt;&lt;END
 	&lt;/form&gt;
-	
+
 	&lt;h4&gt;Email Privacy Policy&lt;/h4&gt;
-	
+
 	&lt;p&gt;We will only use your email to send you an account activation email and for any other email services
 	that you specifically request. It will not be disclosed to anyone else.&lt;/p&gt;
-	
+
 	&lt;h4&gt;Spam Policy&lt;/h4&gt;
-	
+
 	&lt;p&gt;We neither perpetrate nor tolerate spam.
 	&lt;/p&gt;
-	
+
 	&lt;p&gt;New accounts advertizing any product, service or web site (including &quot;personal&quot; sites and blogs)
 	in their posts or in their profile are subject to immediate deletion. Their details may be submitted to public blacklists
 	for the use of other web sites.
 	&lt;/p&gt;
-	
+
 	&lt;h4&gt;Underage users&lt;/h4&gt;
-	
+
 	&lt;p&gt;Everything2 may include member-created content designed for an adult audience. Viewing this content does not require
 	an account. For logged-in account holders, Everything2 may display text conversations conducted by adults and intended for
 	an adult audience. On-site communications are not censored or restricted by default. Users under the age of 18 are advised
@@ -78,7 +87,7 @@ my $formPage = sub{
 	&lt;/p&gt;
 END
 };
-	
+
 my $nameTaken = sub{
 	my $name = shift;
 	my $x;
@@ -91,51 +100,86 @@ my $nameTaken = sub{
 	return 0;
 };
 
-my @addrs = htmlcode('get ips');
+my @addrs = $APP-&gt;getIp();
+my $logUser = getNode('Virgil', 'user');
+
 my $secLog = sub{
 	my $msg = shift;
-	$APP -&gt; securityLog($NODE, $USER, $msg.'; IP: '.join('-', @addrs));
+	$APP -&gt; securityLog($NODE, $logUser, $msg.'; IP: '.join('-', @addrs));
 };
 
 #######
-# get/check user info
 
-my $username = $query -&gt; param('hatstand');
-my $email = $query -&gt; param('raddish');
-my $pass = $query -&gt; param('frog');
-my $spambot = $query -&gt; param('email');
+# filter out undesirables
+
+if ($username &amp;&amp; $email &amp;&amp; $pass){
+	my @undesirable = ();
+
+	# check for blacklisted IP
+	my $blacklisted;
+	foreach (@addrs){
+		last if $blacklisted = $DB-&gt;sqlSelect(
+			'ipblacklist_ipaddress'
+			, 'ipblacklist'
+			, &quot;ipblacklist_ipaddress = '$_'&quot;
+		);
+	}
+
+	push @undesirable, &quot;request from blacklisted IP: $blacklisted&quot; if $blacklisted;
+
+	# check if email address belongs to a locked account
+	my $lockedUser = $DB-&gt;sqlSelect(
+		&quot;user_id&quot;
+		, &quot;user&quot;
+		, &quot;email = &quot; . $DB-&gt;quote($email) . &quot; AND acctlock != ''&quot;
+	);
+
+	push @undesirable, 'same email address as locked user: '.linkNode($lockedUser) if $lockedUser;
+
+	# check for locked user cookie infection
+	push @undesirable, 'infected by cookie from locked user' if htmlcode('checkInfected');
+
+	# break things and annoy the user if necessary
+	if (@undesirable){
+		$logUser = getNode('Klaproth', 'user');
+		my $log = join('; ', @undesirable);
+		&amp;$secLog(&quot;Sign up rejected: $log&quot;);
+
+		$query -&gt; delete('hatstand', 'raddish', 'celery');
+		$prompt = int(rand(4)) + 1;
+	}
+}
+
+#######
 
 # ask them nicely...
-if (!$pass || !$username || !$email){
+if (!$pass || !$username || !$email || $prompt == 1){
 	$prompt = 'Please fill in all fields';
 
 # then check they've jumped through the hoops:
-}elsif($pass ne $query -&gt; param('toad')){
+}elsif($pass ne $query -&gt; param('toad') || $prompt == 2){
 	$prompt = &quot;Passwords don't match&quot;;
 
-}elsif($email ne $query -&gt; param('celery')){
+}elsif($email ne $query -&gt; param('celery') || $prompt == 3){
 	$prompt = &quot;Email addresses don't match&quot;;
 
 # RFC 5231 &amp; 5232 are not regexp friendly. Only validate host part:
 }elsif($email !~ /.+@[\w\d.-]+\.[\w]+$/){
 	$prompt = &quot;Please enter a valid email address&quot;;
 
-}elsif($username =~ /^\W+$|[\[\]\&lt;\&gt;\&amp;\{\}\|\/\\]| .*_|_.* |\s\s|^\s|\s$/){
-	$prompt = &quot;Valid user names contain at least one letter or number, and none of
-		&amp;#91; &amp;#93; &amp;lt; &amp;gt; &amp;amp; { } | / or \\. They may contain either spaces or underscores
-		but not both, may not contain multiple spaces in a row and may not start or end with a space.
-		Please enter a valid user name&quot;;
+}elsif($username =~ /$invalidName/){
+	$prompt = &quot;$validNameDescription&lt;br&gt;Please enter a valid user name&quot;;
 
-}elsif(my $old = &amp;$nameTaken($username)){
+}elsif(my $old = &amp;$nameTaken($username) || $prompt == 4){
+	&amp;$secLog(&quot;Rejected username $username: matches &quot;.linkNode($old)) unless $prompt;
 	$prompt = 'Sorry, that username is already taken. Please try a different one';
-	&amp;$secLog(&quot;Rejected username $username: matches &quot;.linkNode($old));
 
 }elsif($spambot){
 	$prompt = 'We regret that only human beings or entities claiming
 		human status are permitted to sign up for an account.
-		Please assert your humanity';
+		Please indicate your humanity';
 	my $value = ' (parameter value &quot;'.encodeHTML($spambot).'&quot;)' unless $spambot eq '1';
-	&amp;$secLog(&quot;Rejected new user claiming to be a spambot$value&quot;);
+	&amp;$secLog(&quot;User failed human intelligence test$value&quot;);
 }
 
 $query -&gt; delete('frog', 'toad');
@@ -171,46 +215,10 @@ unless ($user){
 }
 
 getRef $user;
-my $log = 'Created user '.linkNode($user);
 $user -&gt; {author_user} = $user -&gt; {node_id};
-
-# check for blacklisted IP
-my $blacklisted;
-foreach (@addrs){
-	last if $blacklisted = $DB-&gt;sqlSelect(
-		'ipblacklist_ipaddress'
-		, 'ipblacklist'
-		, &quot;ipblacklist_ipaddress = '$_'&quot;
-	);
-}
-
-# check if email address belongs to a locked account
-my $lockedUser = $DB-&gt;sqlSelect(
-	&quot;user_id&quot;
-	, &quot;user&quot;
-	, &quot;email = &quot; . $DB-&gt;quote($email) . &quot; AND acctlock != ''&quot;
-);
-
-# check for locked user infection
-my $infected = htmlcode('checkInfected');
-
-# break things if necessary
-if ($blacklisted || $lockedUser || $infected){
-	my $klaproth = getNode('Klaproth', 'user');
-	# lock account
-	$user -&gt; {acctlock} = $klaproth -&gt; {node_id};
-
-	# note reason
-	my $note = $blacklisted
-		? &quot;Created from blacklisted IP: $blacklisted&quot;
-		: ($lockedUser ? 'Same email address as locked user: '.linkNode($lockedUser) : '');
-	$note .= ' (infected)' if $infected;
-	htmlcode('addNodenote', $user, $note, $klaproth);
-	$log .= &quot;. $note -&gt; locked&quot;;
-}
-
-&amp;$secLog($log);
 $DB -&gt; updateNode($user, -1);
+
+&amp;$secLog('Created user '.linkNode($user));
 
 # log ip addresses
 map {
@@ -226,7 +234,6 @@ my $uservars = getVars($user);
 $$uservars{'showmessages_replylink'} = 1;
 $$uservars{ipaddy} = join ',', @addrs;
 $$uservars{preference_last_update_time} = 1;
-$$uservars{infected} = 1 if $infected;
 setVars($user, $uservars);
 
 # send activation email
@@ -241,7 +248,7 @@ $APP -&gt; node2mail($email, \%mail, 1);
 # tell them we're wonderful
 return &quot;&lt;h3&gt;Welcome to Everything2, $username!
 	&lt;/h3&gt;
-	&lt;p&gt;Your new user account has been created, and an email has been sent to the address you provided. 
+	&lt;p&gt;Your new user account has been created, and an email has been sent to the address you provided.
 	You cannot use your account until you have followed the link in the email to activate it.
 	This link will expire in $validForDays days.
 	&lt;/p&gt;

@@ -3,52 +3,11 @@
   <delegate_to></delegate_to>
   <node_id>2046494</node_id>
   <title>get ips</title>
-  <code>my $intFromAddr = sub {
-  my $addr = shift;
-  return undef unless $addr =~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
-  return (
-    (int $1) * 256*256*256 
-    + (int $2) * 256 * 256
-    + (int $3) * 256
-    + (int $4)
-  );
-};
-
-my $isRoutable = sub {
-  my $addr = shift;
-  my $intAddr = &amp;$intFromAddr($addr);
-
-  # Presume an address we don't recognize is routable
-  #  primarily for IPv6 purposes
-  return 1 if !defined $intAddr;
-
-  my $unroutable = [
-   { 'addr' =&gt; '0.0.0.0',       'bits' =&gt; 8 },
-   { 'addr' =&gt; '10.0.0.0',      'bits' =&gt; 8 },
-   { 'addr' =&gt; '127.0.0.0',     'bits' =&gt; 8 },
-   { 'addr' =&gt; '169.254.0.0',   'bits' =&gt; 16 },
-   { 'addr' =&gt; '172.16.0.0',    'bits' =&gt; 12 },
-   { 'addr' =&gt; '192.168.0.0',   'bits' =&gt; 16 },
-  ];
-
-  my $maxAddr = &amp;$intFromAddr('255.255.255.255');
-
-  foreach my $block (@$unroutable) {
-     my $maskBits = 32 - $$block{bits};
-     my $mask = ($maxAddr &lt;&lt; $maskBits) &amp; $maxAddr;
-     my $blockAddr = &amp;$intFromAddr($$block{addr});
-     return 0 if (($blockAddr &amp; $mask) == ($intAddr &amp; $mask));
-  }
-
-  return 1;
-
-};
-
-my $forwd = $ENV{HTTP_X_FORWARDED_FOR} || &quot;&quot;;
+  <code>my $forwd = $ENV{HTTP_X_FORWARDED_FOR} || &quot;&quot;;
 my $remote = $ENV{REMOTE_ADDR} || &quot;&quot;;
 
 my @addrs =
-  grep { &amp;$isRoutable($_) } # ignore our Pound server
+  grep { $APP-&gt;isIpRoutable($_) } # ignore our Pound server
     grep { /\S/ }
       split /\s*,\s*/,
         &quot;,$forwd,$remote&quot;;

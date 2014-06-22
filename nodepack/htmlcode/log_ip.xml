@@ -11,7 +11,7 @@ my $isUsh = sub {
   return 0;
 };
 
-my @addrs = htmlcode('get ips');
+my @addrs = $APP-&gt;getIp();
 my $addr = join ',', @addrs;
 
 return '' if ($$VARS{ipaddy} eq $addr);

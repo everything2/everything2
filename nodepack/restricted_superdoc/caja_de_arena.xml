@@ -97,7 +97,7 @@ my $nameTaken = sub{
 	return 0;
 };
 
-my @addrs = htmlcode('get ips');
+my @addrs = $APP-&gt;getIp();
 my $logUser = $USER;
 my $secLog = sub{
 	my $msg = shift;

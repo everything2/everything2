@@ -20,7 +20,9 @@
   return &quot;&quot; unless $APP-&gt;isEditor($USER);
   return &quot;squeeze&quot; if $^V eq &quot;v5.10.1&quot;;
   return &quot;wheezy&quot;;
-%]</doctext>
+%]
+
+[% return $APP-&gt;getIp() %]</doctext>
   <node_id>1146920</node_id>
   <title>jaybonci's sandbox</title>
 </node>
