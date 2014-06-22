@@ -2435,6 +2435,8 @@ sub loginUser
 	insertIntoRoom($$user{in_room}, $user, $VARS)
 		if $seconds_since_last > $TIMEOUT_SECONDS;
 
+	logUserIp($user, $VARS);
+
 	return $user;
 }
 
@@ -3422,7 +3424,44 @@ sub uncloak {
 }
 
 
+sub logUserIp
+{
+	my ($user, $vars) = @_;
+	return if $APP->isGuest($user);
 
+	my @addrs = $APP->getIp();
+	my $addr = join ',', @addrs;
+	return unless $addr;
+
+	return if ($$vars{ipaddy} eq $addr);
+	$$vars{ipaddy} = $addr;
+
+	my $hour_limit = 24;
+	my $ipquery = <<SQLEND;
+		SELECT DISTINCT iplog_ipaddy
+		FROM iplog 
+		WHERE iplog_user = $$user{user_id}
+		AND iplog_time > DATE_SUB(NOW(), INTERVAL $hour_limit HOUR)
+SQLEND
+
+	my $previous_addrs = $DB->getDatabaseHandle()->selectall_arrayref($ipquery);
+	my %ignore_addrs = ( );
+
+	map { $ignore_addrs{$$_[0]} = 1; } @$previous_addrs if ($previous_addrs);
+
+	map {
+		$DB->sqlInsert("iplog", {iplog_user => $$user{user_id}, iplog_ipaddy => $_})
+		if !$ignore_addrs{$_};
+	} @addrs;
+
+	my $infected = grep { $APP->isInfectedIp($_) } @addrs;
+
+	if ($infected) {
+		$$vars{infected} = 1;
+	}
+
+	return @addrs;
+}
 
 
 1;
