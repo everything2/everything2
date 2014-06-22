@@ -5,12 +5,6 @@
   <title>log ip</title>
   <code>return '' if $APP-&gt;isGuest($USER);
 
-my $isUsh = sub {
-  my $addr = shift;
-  return 1 if ($addr eq '24.59.79.225');
-  return 0;
-};
-
 my @addrs = $APP-&gt;getIp();
 my $addr = join ',', @addrs;
 
@@ -35,9 +29,9 @@ map {
     if !$ignore_addrs{$_};
 } @addrs;
 
-my $ushed = grep { &amp;$isUsh($_) } @addrs;
+my $infected = grep { $APP-&gt;isInfectedIp($_) } @addrs;
 
-if ($ushed) {
+if ($infected) {
    $$VARS{infected} = 1;
 }
 
