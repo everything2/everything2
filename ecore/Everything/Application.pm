@@ -1796,4 +1796,69 @@ sub uploadS3Content
 	`rm -rf $tmpdir`;
 }
 
+# Originally in the htmlcode 'get ips'. Taken unmodified.
+
+sub intFromAddr
+{
+	my ($this, $addr) = @_;
+	return undef unless $addr =~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+	return (
+		(int $1) * 256*256*256 
+		+ (int $2) * 256 * 256
+		+ (int $3) * 256
+		+ (int $4)
+	);
+}
+
+# Originally in the htmlcode 'get ips'.
+
+sub isIpRoutable
+{
+	my ($this,$addr) = @_;
+	my $intAddr = $this->intFromAddr($addr);
+
+	# Presume an address we don't recognize is routable
+	#  primarily for IPv6 purposes
+	return 1 if !defined $intAddr;
+
+	my $unroutable = [
+		{ 'addr' => '0.0.0.0',       'bits' => 8 },
+		{ 'addr' => '10.0.0.0',      'bits' => 8 },
+		{ 'addr' => '127.0.0.0',     'bits' => 8 },
+		{ 'addr' => '169.254.0.0',   'bits' => 16 },
+		{ 'addr' => '172.16.0.0',    'bits' => 12 },
+		{ 'addr' => '192.168.0.0',   'bits' => 16 },
+	];
+
+	my $maxAddr = $this->intFromAddr('255.255.255.255');
+
+	foreach my $block (@$unroutable) {
+		my $maskBits = 32 - $$block{bits};
+		my $mask = ($maxAddr << $maskBits) & $maxAddr;
+		my $blockAddr = $this->intFromAddr($$block{addr});
+		return 0 if (($blockAddr & $mask) == ($intAddr & $mask));
+	}
+
+	return 1;
+};
+
+sub getIp
+{
+	my ($this) = @_;
+
+	my $forwd = $ENV{HTTP_X_FORWARDED_FOR} || "";
+	my $remote = $ENV{REMOTE_ADDR} || "";
+
+	my @addrs =
+		grep { $this->isIpRoutable($_) } # ignore our Pound server
+		grep { /\S/ }
+		split /\s*,\s*/,
+		",$forwd,$remote";
+
+	return @addrs if wantarray;
+
+	my $addr = '' . join ',', @addrs;
+	return $addr;
+}
+
 1;
