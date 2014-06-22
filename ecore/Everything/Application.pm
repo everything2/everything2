@@ -1810,5 +1810,36 @@ sub intFromAddr
 	);
 }
 
+# Originally in the htmlcode 'get ips'.
+
+sub isIpRoutable
+{
+	my ($this,$addr) = @_;
+	my $intAddr = $this->intFromAddr($addr);
+
+	# Presume an address we don't recognize is routable
+	#  primarily for IPv6 purposes
+	return 1 if !defined $intAddr;
+
+	my $unroutable = [
+		{ 'addr' => '0.0.0.0',       'bits' => 8 },
+		{ 'addr' => '10.0.0.0',      'bits' => 8 },
+		{ 'addr' => '127.0.0.0',     'bits' => 8 },
+		{ 'addr' => '169.254.0.0',   'bits' => 16 },
+		{ 'addr' => '172.16.0.0',    'bits' => 12 },
+		{ 'addr' => '192.168.0.0',   'bits' => 16 },
+	];
+
+	my $maxAddr = $this->intFromAddr('255.255.255.255');
+
+	foreach my $block (@$unroutable) {
+		my $maskBits = 32 - $$block{bits};
+		my $mask = ($maxAddr << $maskBits) & $maxAddr;
+		my $blockAddr = $this->intFromAddr($$block{addr});
+		return 0 if (($blockAddr & $mask) == ($intAddr & $mask));
+	}
+
+	return 1;
+};
 
 1;
