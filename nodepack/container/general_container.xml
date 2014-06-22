@@ -3,7 +3,6 @@
   <parent_container>1854175</parent_container>
   <node_id>19</node_id>
   <context>[% 
- htmlcode('log ip');
  my ($time) = split &quot; &quot;,$$USER{lasttime};
 
  if (!$APP-&gt;isGuest($USER)

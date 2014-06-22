@@ -27,6 +27,7 @@
   `session_id` int(11) DEFAULT NULL,
   `user_salt` int(11) DEFAULT NULL,
   `salt` varchar(23) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `infected` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`),
   KEY `email` (`email`),
   KEY `lasttime` (`lasttime`),

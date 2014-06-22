@@ -3,7 +3,6 @@
   <parent_container>0</parent_container>
   <pagetype_nodetype>451267</pagetype_nodetype>
   <page>[%
-  htmlcode('log ip');
   my $out = htmlcode(&quot;parsecode&quot;,&quot;doctext&quot;);
   $out =~ s/^\s+//g;
   return $out;
