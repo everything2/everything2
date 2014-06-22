@@ -74,6 +74,7 @@ nosearch_words_hash = {}
 nosearch_words.each { |x| nosearch_words_hash[x] = 1 }
 
 everything_conf_variables = {
+    "infected_ips" => node["e2engine"]["infected_ips"],
     "everyuser" => node["e2engine"]["everyuser"],
     "everypass" => node["e2engine"]["everypass"],
     "everything_dbserv" => node["e2engine"]["everything_dbserv"],
