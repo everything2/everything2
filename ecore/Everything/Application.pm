@@ -1861,4 +1861,10 @@ sub getIp
 	return $addr;
 }
 
+sub isInfectedIp
+{
+	my ($this, $ip) = @_;
+	return scalar(grep {$_ eq $ip} @{$Everything::CONF->{infected_ips}} );
+}
+
 1;
