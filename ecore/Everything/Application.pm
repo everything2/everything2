@@ -1796,4 +1796,19 @@ sub uploadS3Content
 	`rm -rf $tmpdir`;
 }
 
+# Originally in the htmlcode 'get ips'. Taken unmodified.
+
+sub intFromAddr
+{
+	my ($this, $addr) = @_;
+	return undef unless $addr =~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+	return (
+		(int $1) * 256*256*256 
+		+ (int $2) * 256 * 256
+		+ (int $3) * 256
+		+ (int $4)
+	);
+}
+
+
 1;
