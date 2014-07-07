@@ -2708,7 +2708,7 @@ sub mod_perlInit
 	%HEADER_PARAMS = ( );
 
 	set_die_handler(\&handle_errors);
-	return if $query->user_agent and $query->user_agent =~ /WebStripper/;
+
 	$USER = loginUser();
 
 	#assign_test_condition();
