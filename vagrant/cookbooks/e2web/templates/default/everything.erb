@@ -55,6 +55,10 @@ NameVirtualHost *:80
 	SetEnvIf X-FORWARDED-FOR ^<%= block.gsub(".","\\.") %> denyip
 	<%- end %>
 
+	<% node["banned_user_agents"].each do |ua| %>
+	BrowserMatchNoCase <%= ua %> denyip
+	<%- end %>
+
 	<Directory /var/everything/www/>
 		DirectoryIndex index.pl
 		AddHandler perl-script .pl
