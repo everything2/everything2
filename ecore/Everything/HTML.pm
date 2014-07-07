@@ -2718,6 +2718,8 @@ sub mod_perlInit
                $query->param("node_id", getRandomNode());
        }
 
+	refreshVotesAndCools();
+
 	# Execute any operations that we may have
 	execOpCode();
 	
@@ -3463,6 +3465,35 @@ SQLEND
 	return @addrs;
 }
 
+sub refreshVotesAndCools
+{
+ my ($time) = split " ",$$USER{lasttime};
+
+ if (!$APP->isGuest($USER)
+  and (not exists $$VARS{votetime} or $$VARS{votetime} ne $time)) {
+   
+   my $VOTES = getVars(getNode('level votes', 'setting'));
+   my $COOLS = getVars(getNode('level cools', 'setting'));
+
+   $$USER{level} = undef;
+   my $lvl = $APP->getLevel($USER);
+   $$USER{level} = $lvl;
+   if (exists $$VOTES{$lvl} and $$VOTES{$lvl} =~ /^\d+$/) {
+     $$USER{votesleft} = $$VOTES{$lvl};
+   }
+   #$$USER{votesleft} = $$VOTES{$lvl};
+   if (exists $$COOLS{$lvl} and $$COOLS{$lvl} =~ /^\d+$/) {
+     $$VARS{cools} = $$COOLS{$lvl};
+   }
+   $$VARS{votesrefreshed} ||= 0;
+   $$VARS{votesrefreshed}++;
+   $$VARS{votetime} = $time;
+ }
+
+ $$USER{votesleft} = 0 if isSuspended($USER, "vote");
+ $$VARS{cools} = 0 if isSuspended($USER, "cool");
+
+}
 
 1;
 
