@@ -667,10 +667,6 @@ td {
 					margin: 1px;
 				}
 
-		#announcements {
-			display: none;
-		}
-
 		#e2logo {
 			margin: 0px;
 			float: left;
@@ -706,7 +702,7 @@ td {
    margin-top: 65px !important;
    margin-bottom: -65px !important;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1854393</node_id>
   <title>default zen stylesheet</title>

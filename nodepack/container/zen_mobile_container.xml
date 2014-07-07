@@ -16,13 +16,9 @@ return htmlcode('epicenterZen') unless $$VARS{nodelets} =~ /\b$epid\b/;
 '';
 %]
 
-&lt;div id='announcements'&gt;
-
-&lt;/div&gt;
-
 &lt;h1 id='e2logo'&gt;&lt;a href=&quot;/&quot;&gt;Everything&lt;span id=&quot;e2logo2&quot;&gt;2&lt;/span&gt;&lt;/a&gt;&lt;/h1&gt;
 [{searchform}]
-&lt;/div&gt;
+&lt;/div&gt;&lt;!-- header --&gt;
 
 [{zenMobileTabs}]
 
@@ -34,12 +30,12 @@ return htmlcode('epicenterZen') unless $$VARS{nodelets} =~ /\b$epid\b/;
 [{page header}]
     CONTAINED_STUFF
 &lt;!-- google_ad_section_end --&gt;
-&lt;/div&gt;
+&lt;/div&gt;&lt;!-- mainbody --&gt;
 
-&lt;/div wrapper&gt;
+&lt;/div&gt;&lt;!-- wrapper --&gt;
 &lt;div id='footer'&gt;
 [{zenFooter}]
-&lt;/div&gt;
-&lt;/div&gt;</context>
+&lt;/div&gt;&lt;!-- footer --&gt;
+&lt;/div&gt;&lt;!-- mobilewrapper --&gt;</context>
   <title>zen mobile container</title>
 </node>

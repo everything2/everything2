@@ -59,7 +59,6 @@ return '
 
 %]
         [{metadescriptiontag}]
-	&lt;meta name=&quot;wisdom&quot; content=&quot;Monkey! Bat! Robot Hat!&quot;&gt;
 	&lt;link rel=&quot;icon&quot; href=&quot;/favicon.ico&quot; type=&quot;image/vnd.microsoft.icon&quot;&gt;
 	&lt;!--[if lt IE 8]&gt;&lt;link rel=&quot;shortcut icon&quot; href=&quot;/favicon.ico&quot; type=&quot;image/x-icon&quot;&gt;&lt;![endif]--&gt;
 [%

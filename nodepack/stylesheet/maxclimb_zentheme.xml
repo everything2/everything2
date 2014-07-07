@@ -635,9 +635,6 @@ small {
 }
 
 /*Basic structure: this is based on ALA's 'Holy Grail' design. */
-#announcements {
-        display:none;
-}
 
 #header {
 	height: 80px;
@@ -830,13 +827,6 @@ textarea {
 width: 100%;
 }
 
-#announcements {
-position: absolute;
-top: 20px;
-font-size: 85%;
-left: 300px;
-}
-
 /*=.writeupmeta*/
 .infolist .contentinfo {
 	
@@ -852,7 +842,7 @@ left: 300px;
 
 .nodeshell { font-style: italic; }
 </doctext>
-  <contentversion>104</contentversion>
+  <contentversion>106</contentversion>
   <s3bucket></s3bucket>
   <node_id>1876637</node_id>
   <title>maxClimb_zenTheme</title>

@@ -283,13 +283,6 @@ textarea {
 width: 100%;
 }
 
-#announcements {
-position: absolute;
-top: 20px;
-font-size: 85%;
-display: none;
-}
-
 #writeup_list {
 	list-style-type: none;
 	padding: 0;
@@ -469,7 +462,7 @@ h1.nodetitle
      { font-style: italic; }
 .action_whisper, .action_roll, .action_fireball, .action_sanctify, .action_egg 
      { font-variant: small-caps; }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1881898</node_id>
   <title>Brumlove</title>

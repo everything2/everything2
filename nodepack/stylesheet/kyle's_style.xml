@@ -169,10 +169,6 @@ z-index: 2;
  margin: 0px;
 }
 
-#announcements {
-display: none;
-}
-
 .nodelet_tab {
  font-size: 80%;
 }
@@ -251,7 +247,7 @@ text-align: left;
 #admintools {
  display: none;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1854354</node_id>
   <title>Kyle's Style</title>

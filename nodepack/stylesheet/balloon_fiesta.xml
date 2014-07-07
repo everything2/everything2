@@ -323,10 +323,6 @@ width: 100%;
 background-color: #efe;
 }
 
-#announcements {
-display: none;
-}
-
 #nodelet_1322699 ol, #nodelet_1855429 ol {
 padding-left: 25px;
 }
@@ -413,7 +409,7 @@ padding: 0 200px 0 100px;
  color: inherit;
 
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1855833</node_id>
   <title>Balloon fiesta</title>
