@@ -8,7 +8,7 @@
   `totalvotes` int(11) NOT NULL DEFAULT '0',
   `poll_author` int(11) NOT NULL DEFAULT '0',
   `was_dailypoll` tinyint(4) NOT NULL DEFAULT '0',
-  `poll_status` enum('new','current','open','closed') COLLATE utf8_unicode_ci DEFAULT NULL,
+  `poll_status` enum('new','current','open','closed') COLLATE utf8_unicode_ci DEFAULT 'new',
   `multiple` tinyint(4) NOT NULL DEFAULT '0',
   `question` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`e2poll_id`)

@@ -30,6 +30,7 @@ for (1 .. 12){
 
 push @doctext, 'None of the above';
 $$POLL{doctext} = join &quot;\n\n&quot;, @doctext;
+$$POLL{poll_status} = 'new';
 
 updateNode( $POLL, -1 );
 </code>

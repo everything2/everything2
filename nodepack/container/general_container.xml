@@ -2,47 +2,7 @@
   <type_nodetype>2</type_nodetype>
   <parent_container>1854175</parent_container>
   <node_id>19</node_id>
-  <context>[% 
- my ($time) = split &quot; &quot;,$$USER{lasttime};
-
- if (!$APP-&gt;isGuest($USER)
-  and (not exists $$VARS{votetime} or $$VARS{votetime} ne $time)) {
-   
-   my $VOTES = getVars(getNode('level votes', 'setting'));
-   my $COOLS = getVars(getNode('level cools', 'setting'));
-
-   $$USER{level} = undef;
-   my $lvl = $APP-&gt;getLevel($USER);
-   $$USER{level} = $lvl;
-   if (exists $$VOTES{$lvl} and $$VOTES{$lvl} =~ /^\d+$/) {
-     $$USER{votesleft} = $$VOTES{$lvl};
-   }
-   #$$USER{votesleft} = $$VOTES{$lvl};
-   if (exists $$COOLS{$lvl} and $$COOLS{$lvl} =~ /^\d+$/) {
-     $$VARS{cools} = $$COOLS{$lvl};
-   }
-   $$VARS{votesrefreshed} ||= 0;
-   $$VARS{votesrefreshed}++;
-   $$VARS{votetime} = $time;
- }
-
- my $key = ($query-&gt;cookie('mobile') || $ENV{HTTP_HOST} =~ m'^m.everything2'i)?
-     'generalMobileParent_container' : 'generalParent_container';
- if(defined $$THEME{$key})
- {
-   $$CURRENTNODE{parent_container} = $$THEME{$key};
- } else {
-   if (my $parent = $Everything::CONF-&gt;{system}-&gt;{lc($key)} ) {
-     $$CURRENTNODE{parent_container} = $parent;
-   }
- }
-
- $$USER{votesleft} = 0 if isSuspended($USER, &quot;vote&quot;);
- $$VARS{cools} = 0 if isSuspended($USER, &quot;cool&quot;);
-
-&quot;&quot;;
-%]
-CONTAINED_STUFF
+  <context>CONTAINED_STUFF
 </context>
   <title>general container</title>
 </node>

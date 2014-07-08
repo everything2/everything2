@@ -70,6 +70,9 @@ else {
 	return '	&lt;link rel=&quot;alternate&quot; type=&quot;application/atom+xml&quot; title=&quot;Everything2 New Writeups&quot; href=&quot;/node/ticker/New+Writeups+Atom+Feed'
 	. ( $$NODE{type_nodetype}==15 ? '?foruser='.$$NODE{title} : '' ) . '&quot;&gt;';
 }
+%][%
+  return qq|&lt;meta content=&quot;width=device-width; initial-scale=1.0; user-scalable=1;&quot;
+      name=&quot;viewport&quot;&gt;| if isMobile();
 %]
 [{static javascript}]
 [{googleanalytics}]

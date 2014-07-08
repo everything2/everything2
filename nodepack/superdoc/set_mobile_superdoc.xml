@@ -25,14 +25,13 @@ HTTP host is: [% $ENV{HTTP_HOST} %]
 &lt;/p&gt;
 
 &lt;p&gt;
-Match is: [% (0  || $ENV{HTTP_HOST} =~ m'^m.everything2'i)?&quot;true&quot;:&quot;false&quot; %]
+Match is: [% isMobile()?&quot;true&quot;:&quot;false&quot; %]
 &lt;/p&gt;
 
 &lt;p&gt;
 Key: [%
 
- my $key = ($query-&gt;cookie('mobile') || $ENV{HTTP_HOST} =~ m'^m.everything2'i)?
-     'generalMobileParent_container' : 'generalParent_container';
+ my $key = isMobile()?'generalMobileParent_container' : 'generalParent_container';
 $key;
 %];
 &lt;/p&gt;</doctext>

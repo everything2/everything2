@@ -5,6 +5,7 @@
   <title>guestuserbanner</title>
   <code>return &quot;&quot;;
 return &quot;&quot; unless($APP-&gt;isGuest($USER));
+return &quot;&quot; if(isMobile());
 return &quot;&quot; unless($NODE-&gt;{type}-&gt;{title} eq &quot;writeup&quot; or $NODE-&gt;{type}-&gt;{title} eq &quot;e2node&quot;);
 
 my $style = q|-moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; align: center; width: 80%; background-color: #fdffd4; border-style:solid; border-color: #bbbbbb; border-width: 1px; min-width:300px; min-height: 70px; margin-left: auto; margin-right: auto; margin-bottom: 10px; padding: 10px; font-family: 'arial',sans-serif; font-size: 130%;|;
