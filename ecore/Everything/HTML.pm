@@ -75,6 +75,8 @@ sub BEGIN {
               insertIntoRoom
               cloak
               uncloak
+
+              isMobile
               );
 }
 
@@ -3493,6 +3495,11 @@ sub refreshVotesAndCools
  $$USER{votesleft} = 0 if isSuspended($USER, "vote");
  $$VARS{cools} = 0 if isSuspended($USER, "cool");
 
+}
+
+sub isMobile
+{
+  return $query->cookie('mobile') || $ENV{HTTP_HOST} =~ m'^m.everything2'i;
 }
 
 1;
