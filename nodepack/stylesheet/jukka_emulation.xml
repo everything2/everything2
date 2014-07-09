@@ -59,7 +59,7 @@ font-size: 110%;
 }
 /* end styledef stuff */
 #header {
-background-image: url(http://images.everything2.com/img/e2_others_02.gif);
+background-image: url(http://static.everything2.com/e2_others_02.gif);
 background-position: bottom left;
 background-repeat: no-repeat;
 width: 100%;
@@ -268,7 +268,7 @@ font-size: 12px;
 float: left;
 margin: 0;
 width: 100%;
-background-image: url(http://images.everything2.com/img/e2_others_01.gif);
+background-image: url(http://static.everything2.com/e2_others_01.gif);
 background-color: #cccc99;
 background-repeat: no-repeat;
 }
@@ -314,7 +314,7 @@ margin-right: -3px;
 width: 49px;
 height: 28px;
 border: 0;
-background: transparent url(http://images.everything2.com/img/search_button.gif) no-repeat center top;
+background: transparent url(http://static.everything2.com/search_button.gif) no-repeat center top;
 text-indent: -1000em;
 cursor: pointer; /* hand-shaped cursor */
 cursor: hand; /* for IE 5.x */
@@ -344,28 +344,28 @@ padding-top: 26px;
 background-repeat: no-repeat;    
 }
 #epicenter {
-background-image: url(http://images.everything2.com/img/epicenter.gif);
+background-image: url(http://static.everything2.com/epicenter.gif);
 }
 #chatterbox {
-background-image: url(http://images.everything2.com/img/chatterbox.gif);    
+background-image: url(http://static.everything2.com/chatterbox.gif);    
 }
 #otherusers {
-background-image: url(http://images.everything2.com/img/otherusers.gif);    
+background-image: url(http://static.everything2.com/otherusers.gif);    
 }
 #vitals {
-background-image: url(http://images.everything2.com/img/vitals.gif);
+background-image: url(http://static.everything2.com/vitals.gif);
 }
 #newwriteups {
-background-image: url(http://images.everything2.com/img/newwriteups.gif);    
+background-image: url(http://static.everything2.com/newwriteups.gif);    
 }
 #readthis {
-background-image: url(http://images.everything2.com/img/readthis.gif);    
+background-image: url(http://static.everything2.com/readthis.gif);    
 }
 #everythingdeveloper {
-background-image: url(http://images.everything2.com/img/everything_developer.gif);    
+background-image: url(http://static.everything2.com/everything_developer.gif);    
 }
 #newwriteupszen {
-background-image: url(http://images.everything2.com/img/newwriteups.gif);
+background-image: url(http://static.everything2.com/newwriteups.gif);
 }
 #displaytypelinks {
 text-align: right;
@@ -537,7 +537,7 @@ td#sl16{background:#f2f2e6;}td#sl15{background:#f3f3e8;}td#sl14{background:#f4f4
 td#sl12{background:#f6f6ed;}td#sl11{background:#f6f6ee;}td#sl10{background:#f7f7f0;}td#sl9{background:#f8f8f2;}
 td#sl8{background:#f9f9f3;}td#sl7{background:#fafaf5;}td#sl6{background:#fafaf6;}td#sl5{background:#fbfbf8;}
 td#sl4{background:#fcfcfa;}td#sl3{background:#fdfdfb;}td#sl2{background:#fefefd;}td#sl1{background:#ffffff;}</doctext>
-  <contentversion>108</contentversion>
+  <contentversion>109</contentversion>
   <s3bucket></s3bucket>
   <node_id>1855548</node_id>
   <title>jukka emulation</title>

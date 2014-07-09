@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>5</type_nodetype>
-  <parent_container>19</parent_container>
+  <parent_container>1854175</parent_container>
   <pagetype_nodetype>1261857</pagetype_nodetype>
   <page>[%
 return (($$USER{user_id} == $$NODE{author_user})?('&lt;p align=&quot;right&quot;&gt;'.linkNode($NODE, 'edit', {'displaytype'=&gt;'edit'}).'&lt;/p&gt;'):(''));

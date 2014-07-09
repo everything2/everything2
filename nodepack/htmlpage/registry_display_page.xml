@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>5</type_nodetype>
-  <parent_container>19</parent_container>
+  <parent_container>1854175</parent_container>
   <pagetype_nodetype>1876758</pagetype_nodetype>
   <page>[%     return if ($APP-&gt;isGuest($USER));
 '&lt;div style=&quot;margin:20px;text-align:center;font-weight:bold;&quot;&gt;( back to '.linkNodeTitle('Registry Information').' )&lt;/div&gt;' %]

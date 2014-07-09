@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>5</type_nodetype>
-  <parent_container>19</parent_container>
+  <parent_container>1854175</parent_container>
   <pagetype_nodetype>7</pagetype_nodetype>
   <page>[%
 $NODE = $GNODE = getNodeById($Everything::CONF-&gt;{system}-&gt;{search_results}) unless $$NODE{type}{title} ne 'draft' or $APP-&gt;canSeeDraft($USER,$NODE);

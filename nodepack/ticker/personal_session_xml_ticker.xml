@@ -26,36 +26,6 @@
    }
   $str.=&quot;&lt;/personalnodes&gt;&quot;;
   $str.=htmlcode(&quot;shownewexp&quot;, &quot;TRUE,xml&quot;);
-
-
-#####Stolen from general container
-
-$DB-&gt;sqlInsert(&quot;iplog&quot;, {iplog_user =&gt; $$USER{user_id}, iplog_ipaddy =&gt;$ENV{REMOTE_ADDR}}) unless ($$VARS{ipaddy} eq $ENV{REMOTE_ADDR} || $APP-&gt;isGuest($USER));
- $$VARS{ipaddy} = $ENV{REMOTE_ADDR};
- my ($time) = split &quot; &quot;,$$USER{lasttime};
-
- if (!$APP-&gt;isGuest($USER)
-  and (not exists $$VARS{votetime} or $$VARS{votetime} ne $time)) {
-   
-   my $VOTES = getVars(getNode('level votes', 'setting'));
-   my $COOLS = getVars(getNode('level cools', 'setting'));
-
-   my $lvl = $APP-&gt;getLevel($USER);
-   if (exists $$VOTES{$lvl} and $$VOTES{$lvl} =~ /^\d+$/) {
-     $$USER{votesleft} = $$VOTES{$lvl};
-   }
-
-   if (exists $$COOLS{$lvl} and $$COOLS{$lvl} =~ /^\d+$/) {
-     $$VARS{cools} = $$COOLS{$lvl};
-   }
-   $$VARS{votesrefreshed} ||= 0;
-   $$VARS{votesrefreshed}++;
-   $$VARS{votetime} = $time;
- }
-
-
-#####
-
   $str.=&quot;&lt;cools&gt;&quot;.(($$VARS{cools})?($$VARS{cools}):(&quot;0&quot;)).&quot;&lt;/cools&gt;&quot;;
   $str.=&quot;&lt;votesleft&gt;&quot;.$$USER{votesleft}.&quot;&lt;/votesleft&gt;&quot;;
   $str.=&quot;&lt;karma&gt;&quot;.$$USER{karma}.&quot;&lt;/karma&gt;&quot;;
