@@ -50,6 +50,6 @@ return if getId($USER) != getId($NODE) or $APP-&gt;isGuest($USER);
 [{showbookmarks}]</page>
   <displaytype>display</displaytype>
   <node_id>1854179</node_id>
-  <title>zen user display page</title>
+  <title>user display page</title>
   <mimetype></mimetype>
 </node>
