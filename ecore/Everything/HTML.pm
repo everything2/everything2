@@ -1078,14 +1078,6 @@ sub getPageForType
 		%WHEREHASH = ( -pagetype_nodetype => $$TYPE{node_id},
 				displaytype => $displaytype);
 		
-		if ($THEME) {
-			$WHEREHASH{ownedby_theme} = $$THEME{theme_id}; 
-			($PAGE) = getNodeWhere(\%WHEREHASH, $PAGETYPE);
-			
-			delete $WHEREHASH{ownedby_theme} unless $PAGE;
-			#if we didn't get a page for the current theme, do a default
-		} 
-
 
 		($PAGE) = getNodeWhere(\%WHEREHASH, $PAGETYPE) unless $PAGE;
 
