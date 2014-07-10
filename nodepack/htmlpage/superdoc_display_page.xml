@@ -2,11 +2,9 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>14</pagetype_nodetype>
-  <page>&lt;p align=&quot;right&quot;&gt;&lt;small&gt;[% linkNode($NODE, 'printable version', { displaytype =&gt; 'printable' } ) %]&lt;/small&gt;&lt;/p&gt;
-
-[{parsecode:doctext}]</page>
+  <page>[{parsecode:doctext}]</page>
   <displaytype>display</displaytype>
-  <node_id>415058</node_id>
+  <node_id>176002</node_id>
   <title>superdoc display page</title>
   <mimetype></mimetype>
 </node>

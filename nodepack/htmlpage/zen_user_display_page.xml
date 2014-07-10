@@ -49,7 +49,6 @@ return if getId($USER) != getId($NODE) or $APP-&gt;isGuest($USER);
 
 [{showbookmarks}]</page>
   <displaytype>display</displaytype>
-  <ownedby_theme>1854183</ownedby_theme>
   <node_id>1854179</node_id>
   <title>zen user display page</title>
   <mimetype></mimetype>
