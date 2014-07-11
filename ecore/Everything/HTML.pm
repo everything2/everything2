@@ -10,6 +10,7 @@ package Everything::HTML;
 
 use strict;
 use Everything;
+use Everything::Delegation::htmlcode;
 use CGI;
 use CGI::Carp qw(set_die_handler);
 use Carp qw(longmess);
@@ -1524,7 +1525,6 @@ sub htmlcode {
 	my $encodedArgs = "(no arguments)";
 	my $htmlcodeName = shift;
 
-	my ($htmlcodeCode, $codeNode) = getCode($htmlcodeName);
 
 	# localize @_ to insure encodeHTML doesn't mess with our args
 	my @savedArgs = @_;
@@ -1540,8 +1540,20 @@ sub htmlcode {
 
 	$encodedArgs = encodeHTML($encodedArgs);
 
-	my $warnStr = "<p>Calling htmlcode $htmlcodeName"
-				;
+	my $warnStr = "<p>Calling htmlcode $htmlcodeName";
+
+	my $delegation_name = $htmlcodeName;
+	$delegation_name =~ s/ /_/g;
+	if(my $delegation = Everything::Delegation::htmlcode->can($delegation_name))
+	{
+		if(wantarray) {
+			@returnArray = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $APP, @savedArgs);
+		}else{
+			$returnVal = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $APP, @savedArgs);
+		}
+	}
+
+	my ($htmlcodeCode, $codeNode) = getCode($htmlcodeName);
 	my $function;
 
 	# If we are doing a new-style htmlcode call (or have no arguments)
