@@ -715,10 +715,6 @@ display: none;
     margin: 1px;
 }
 
-#announcements {
-    display: none;
-}
-
 #e2logo {
     margin: 0px;
     float: left;
@@ -749,7 +745,7 @@ display: none;
 #metalinks {
 display: none;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1934199</node_id>
   <title>Colonel Ultramarine</title>

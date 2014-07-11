@@ -286,10 +286,6 @@ input#full_text {
 	padding: 0px;
 }
 
-#announcements {
-	display: none;
-}
-
 h1#e2logo {
 	background-image: url(http://clem-ec2-us.s3.amazonaws.com/e2/e2logo.gif);
 	background-repeat: no-repeat;
@@ -1062,7 +1058,7 @@ input#message {
 	display: none;
 }
 </doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>2000528</node_id>
   <title>Bookwormier</title>

@@ -781,10 +781,6 @@ th.oddrow {
 					margin: 1px;
 				}
 
-		#announcements {
-			display: none;
-		}
-
 		#e2logo {
 			margin: 0px;
 			float: left;
@@ -814,7 +810,7 @@ th.oddrow {
 		#metalinks {
 			display: none;
 		}</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1965240</node_id>
   <title>Azurian Rhapsody</title>

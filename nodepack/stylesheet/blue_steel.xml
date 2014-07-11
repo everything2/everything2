@@ -263,10 +263,6 @@ td {
       padding: 0px;
      }
 
-  #announcements {
-   display: none;
-  }
-
   h1#e2logo {
    margin: 5px 2px 5px 20px;
    width: 300px; height: 50px; /* these are the exact dimensions of the background image */
@@ -922,7 +918,7 @@ font-size: 100%;
 p.patch_invalid { background: darkred !important; }
 .patch_later {background: navy!important; }
 .patch_undone {background : olive !important;}</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1976666</node_id>
   <title>Blue Steel</title>

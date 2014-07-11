@@ -502,8 +502,6 @@ ul ul ul ul ul ul { list-style: circle; }
 		margin-right: 3px;
 		padding: 0px;
 		}
-
-	#announcements { display:none; } /*display:none to hide*/
 	#epicenter_zen {
 		float: right;
 		text-align:right;
@@ -719,7 +717,7 @@ textarea { width:95%; font-family: monospace; }
 .chat_user :before { content:&quot;&lt;&quot;; }
 .chat_user :after { content:&quot;&gt;&quot;; }
 */</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1930840</node_id>
   <title>Carbonated</title>

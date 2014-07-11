@@ -257,13 +257,6 @@ blockquote {
     margin-right: 3px;
 }
 
-#announcements {
-    display: none;
-    width: 0px;
-    /* Get rid of the text that says you need css to get rid of it! */
-}
-
-
 /* nodelets */
 
 .nodelet {
@@ -1027,7 +1020,7 @@ div#surveymessage {
         display: none;
 }
 </doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1902801</node_id>
   <title>Baltic</title>

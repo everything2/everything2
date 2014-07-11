@@ -280,11 +280,6 @@ margin-top: 12px;
 font-size: .85em;
 }
 
-#announcements
-{
-display: none;
-}
-
 #footer
 {
 clear: both;
@@ -293,7 +288,7 @@ margin-bottom: 25px;
 }
 
 </doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>2022033</node_id>
   <title>CollegeRuled</title>
