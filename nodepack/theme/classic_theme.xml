@@ -29,10 +29,6 @@
     <key>nodeletGradTop</key>
   </vars>
   <vars>
-    <value>20</value>
-    <key>nodeletParent_container</key>
-  </vars>
-  <vars>
     <value>#000000</value>
     <key>bodyTextcolor</key>
   </vars>

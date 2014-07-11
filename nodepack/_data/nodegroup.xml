@@ -240,12 +240,6 @@
     <rank>19</rank>
   </group>
   <group>
-    <node_id>17</node_id>
-    <orderby>20</orderby>
-    <nodegroup_id>155</nodegroup_id>
-    <rank>20</rank>
-  </group>
-  <group>
     <node_id>18</node_id>
     <orderby>21</orderby>
     <nodegroup_id>155</nodegroup_id>
@@ -1284,12 +1278,6 @@
     <rank>55</rank>
   </group>
   <group>
-    <node_id>166948</node_id>
-    <orderby>56</orderby>
-    <nodegroup_id>314</nodegroup_id>
-    <rank>56</rank>
-  </group>
-  <group>
     <node_id>169632</node_id>
     <orderby>59</orderby>
     <nodegroup_id>314</nodegroup_id>
@@ -1336,12 +1324,6 @@
     <orderby>67</orderby>
     <nodegroup_id>314</nodegroup_id>
     <rank>67</rank>
-  </group>
-  <group>
-    <node_id>166948</node_id>
-    <orderby>68</orderby>
-    <nodegroup_id>314</nodegroup_id>
-    <rank>68</rank>
   </group>
   <group>
     <node_id>176001</node_id>
@@ -1690,18 +1672,6 @@
     <orderby>2</orderby>
     <nodegroup_id>412860</nodegroup_id>
     <rank>2</rank>
-  </group>
-  <group>
-    <node_id>17</node_id>
-    <orderby>0</orderby>
-    <nodegroup_id>415062</nodegroup_id>
-    <rank>0</rank>
-  </group>
-  <group>
-    <node_id>17</node_id>
-    <orderby>0</orderby>
-    <nodegroup_id>415072</nodegroup_id>
-    <rank>0</rank>
   </group>
   <group>
     <node_id>415064</node_id>

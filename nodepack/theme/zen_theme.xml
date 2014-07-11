@@ -5,10 +5,6 @@
     <key>generalMobileParent_container</key>
   </vars>
   <vars>
-    <value>1101195</value>
-    <key>nodeletParent_container</key>
-  </vars>
-  <vars>
     <value>1</value>
     <key>noTable</key>
   </vars>
@@ -27,10 +23,6 @@
   <vars>
     <value>New CSS-based theme</value>
     <key>description</key>
-  </vars>
-  <vars>
-    <value>1854181</value>
-    <key>generalNodelet_container</key>
   </vars>
   <vars>
     <value>1854175</value>

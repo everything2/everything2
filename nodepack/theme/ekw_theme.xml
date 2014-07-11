@@ -29,10 +29,6 @@
     <key>bodyTextcolor</key>
   </vars>
   <vars>
-    <value>1101195</value>
-    <key>nodeletParent_container</key>
-  </vars>
-  <vars>
     <value>size=2</value>
     <key>nodeletBodyFontAttr</key>
   </vars>
@@ -113,12 +109,12 @@
     <key>logoBorder</key>
   </vars>
   <vars>
-    <value>Tahoma,Verdana,Helvetica,Arial</value>
-    <key>logoFont</key>
-  </vars>
-  <vars>
     <value>post-pre-pre-alpha</value>
     <key>version</key>
+  </vars>
+  <vars>
+    <value>Tahoma,Verdana,Helvetica,Arial</value>
+    <key>logoFont</key>
   </vars>
   <vars>
     <value>Courier New,Courier,monospace</value>
@@ -127,10 +123,6 @@
   <vars>
     <value>&lt;table width=100% cellpadding=0 cellspacing=10 border=0&gt;&lt;tr&gt;&lt;td valign=top&gt;</value>
     <key>thinOutlineHeader</key>
-  </vars>
-  <vars>
-    <value>1101195</value>
-    <key>generalNodelet_container</key>
   </vars>
   <vars>
     <value>#808080</value>

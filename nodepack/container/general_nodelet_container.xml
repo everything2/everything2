@@ -3,11 +3,7 @@
   <parent_container>20</parent_container>
   <node_id>175986</node_id>
   <context>[% 
-if(defined $$THEME{generalNodelet_container}) {
-	$$CURRENTNODE{parent_container} = $$THEME{generalNodelet_container};
-} else {
-	$$CURRENTNODE{parent_container} = getId(getNode('nodelet container', 'container'));
- }
+$$CURRENTNODE{parent_container} = $Everything::CONF-&gt;{system}-&gt;{nodelet_container};
 '';
 %]CONTAINED_STUFF</context>
   <title>general nodelet container</title>
