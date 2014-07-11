@@ -142,8 +142,6 @@ my $revertNow =
 !$query-&gt;param('npbtheme');
 $str .= &quot;&lt;big&gt;&lt;strong&gt;reverting to default theme&lt;/strong&gt;&lt;/big&gt;&lt;/p&gt;\n&lt;p&gt;&quot; if $revertNow;
 
-
-my $tJukka = 415063;
 my $tNPB = 945663;
 my $tClassic = 415072;
 
