@@ -1704,16 +1704,12 @@ sub insertNodelet
 	# I'm going to forget about this later, so I need to write this down here
 	# Basically the nodelet containers want a global nodelet object so they know what they are 
 	# talking about, rather than using a display subroutine of some sort. By localizing it
-	# to $PAGELOAD, we prevent a whole class of memory corruption bugs in nodelets
+	# to $PAGELOAD, we prevent a whole class of memory corruption bugs in nodelets -jb
 
 	$PAGELOAD->{current_nodelet} = $NODELET;
 	my ($pre, $post) = ('', '');
 
-        #my $html = genContainer($$NODELET{parent_container})
-        #       if $$NODELET{parent_container};
-
-        my $container = $$THEME{generalNodelet_container};
-        $container ||= getId(getNode('nodelet container','container'));
+        my $container = $Everything::CONF->{system}->{nodelet_container};
 	($pre, $post) = genContainer($container) if $container;
 	
 	# Make sure the nltext is up to date
