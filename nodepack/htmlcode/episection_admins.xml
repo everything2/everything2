@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>444690</node_id>
   <title>episection_admins</title>
   <code>my $str = &quot;\n\t\t&lt;ul&gt;&quot;;

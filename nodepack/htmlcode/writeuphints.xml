@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>470044</node_id>
   <title>writeuphints</title>
   <code>#displays hints on improving the writeup

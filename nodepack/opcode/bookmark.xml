@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>415056</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>419552</node_id>
   <title>bookmark</title>
   <code>my $node_id = $query-&gt;param('bookmark_id');

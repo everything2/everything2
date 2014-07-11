@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1175798</node_id>
   <title>ReadThis_news</title>
   <code>  my $str = '&lt;ul&gt;';

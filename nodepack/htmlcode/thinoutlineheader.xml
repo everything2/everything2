@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>539978</node_id>
   <title>thinoutlineheader</title>
   <code>return $$THEME{thinOutlineHeader} if exists $$THEME{thinOutlineHeader};

@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>35</node_id>
   <title>groupeditor</title>
   <code>my $id = getId($NODE);

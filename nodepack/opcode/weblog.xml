@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>415056</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>458215</node_id>
   <title>weblog</title>
   <code>my $SRC = $query-&gt;param(&quot;source&quot;);

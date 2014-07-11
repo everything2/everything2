@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>748856</node_id>
   <title>minilogin</title>
   <code>my $op = $query-&gt;param(&quot;op&quot;);

@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>279553</node_id>
   <title>typeMenu</title>
   <code># This constructs an HTML popup menu using the FormMenu

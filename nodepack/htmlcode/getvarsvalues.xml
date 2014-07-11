@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1257491</node_id>
   <title>getvarsvalues</title>
   <code># Emit all appropriate $VARS values as a string formatted 

@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
+  <delegated>1</delegated>
   <node_id>2070302</node_id>
   <title>metadescriptiontag</title>
   <code>return $APP-&gt;metaDescription($NODE);</code>

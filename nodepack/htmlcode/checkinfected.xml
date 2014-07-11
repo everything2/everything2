@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>2008093</node_id>
   <title>checkInfected</title>
   <code># infection arises if user has an old login cookie belonging to a locked account

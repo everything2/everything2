@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>2033009</node_id>
   <title>showUserCategories</title>
   <code># pass a user object (or nothing to default to the current node, or current user if the current node is not a user), and the categories maintained by the user will be returned

@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>2037126</node_id>
   <title>update New Writeups data</title>
   <code>my $feeder = getNode('New Writeups Feeder', 'nodelet');

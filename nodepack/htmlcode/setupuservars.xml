@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>444740</node_id>
   <title>setupuservars</title>
   <code>return if $APP-&gt;isGuest($USER);
@@ -100,7 +99,8 @@ $$SETTINGS{level} = $lvl;
 my $TITLES= getVars(getNode('level titles','setting'));
 $$SETTINGS{level} .= &quot; ($$TITLES{$$SETTINGS{level}})&quot;;
 
-if ($$NODE{title} eq 'thefez') { $$SETTINGS{level} = &quot;-1 (Arcanist)&quot; } # --N 
+if ($$NODE{title} eq 'thefez') { $$SETTINGS{level} = &quot;-1 (Arcanist)&quot; } # --N
+if ($$NODE{title} eq 'alex') { $$SETTINGS{level} = &quot;&#8734; (Ascended)&quot; } # --a
 
 $$SETTINGS{level} .= &quot; \/ $$NODE{experience}&quot;;
 

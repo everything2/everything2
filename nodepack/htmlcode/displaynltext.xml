@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>632187</node_id>
   <title>displaynltext</title>
   <code>my ($nltitle, $title) = @_;

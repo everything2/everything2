@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>2008367</node_id>
   <title>googleads</title>
   <code>my ($ad_location) = @_;

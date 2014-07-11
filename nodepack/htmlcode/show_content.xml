@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1995923</node_id>
   <title>show content</title>
   <code># generic content/contentinfo display

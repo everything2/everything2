@@ -3,7 +3,7 @@
   <doctext>[% return &quot;Hello there. This is a quick testing/debugging ground for me. Do not delete me, it is not worth the time&quot;; %]
 &lt;br /&gt;&lt;br /&gt;
 [%
-#  return &quot;&quot;;
+  return &quot;&quot;;
   return unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
   my $str = '';
 
@@ -17,12 +17,25 @@
 %]
 
 [%
+  return &quot;&quot;;
   return &quot;&quot; unless $APP-&gt;isEditor($USER);
   return &quot;squeeze&quot; if $^V eq &quot;v5.10.1&quot;;
   return &quot;wheezy&quot;;
 %]
 
-[% return $APP-&gt;getIp() %]</doctext>
+[%
+  return &quot;&quot; unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
+  my $count = 0;
+  my $str = &quot;&lt;ul&gt;&quot;;
+  my $list = [getNodeWhere({delegated =&gt; 0}, getType(&quot;htmlcode&quot;))];
+  foreach my $n (@$list)
+  {
+    $count++;
+    $str .= &quot;&lt;li&gt;&quot;.$n-&gt;{title}.&quot; - &quot;.$n-&gt;{node_id};
+  }
+  $str .= &quot;&lt;/ul&gt;&quot;;
+  return &quot;$count to go: &lt;br/&gt;$str&quot;;
+%]</doctext>
   <node_id>1146920</node_id>
   <title>jaybonci's sandbox</title>
 </node>

@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>415056</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1307637</node_id>
   <title>borg</title>
   <code>#borgs the current node 1 time (iff current node is a user and current user is an admin)

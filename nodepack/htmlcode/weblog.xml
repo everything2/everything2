@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>458113</node_id>
   <title>weblog</title>
   <code>return htmlcode( 'legacyweblog' , @_ ) unless htmlcode( 'isZen' );

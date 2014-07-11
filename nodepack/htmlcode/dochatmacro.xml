@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1018297</node_id>
   <title>doChatMacro</title>
   <code>#doChatMacro

@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1867798</node_id>
   <title>zensearchform</title>
   <code>my $lastnodeId = $query-&gt;param(&quot;softlinkedFrom&quot;);

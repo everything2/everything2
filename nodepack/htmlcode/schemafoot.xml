@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1259822</node_id>
   <title>schemafoot</title>
   <code>return &quot;&lt;/xs:schema&gt;&quot;;</code>

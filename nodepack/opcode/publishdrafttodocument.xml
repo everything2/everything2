@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>415056</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>2037809</node_id>
   <title>publishdrafttodocument</title>
   <code>my $TYPE = getType('document');

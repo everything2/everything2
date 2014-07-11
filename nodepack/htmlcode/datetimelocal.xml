@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1358138</node_id>
   <title>DateTimeLocal</title>
   <code>#returns the date and time, in long format

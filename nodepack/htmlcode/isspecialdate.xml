@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1002054</node_id>
   <title>isSpecialDate</title>
   <code>#returns if current server time matches the given day

@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1252198</node_id>
   <title>xmlfirmlinks</title>
   <code>my ($nid) = @_;

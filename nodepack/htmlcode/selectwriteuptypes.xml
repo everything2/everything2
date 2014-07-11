@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1895696</node_id>
   <title>selectWriteupTypes</title>
   <code>my ($listName, $bitOptions) = @_;

@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>401321</node_id>
   <title>daylog</title>
   <code>my @months = qw(January February March April May June

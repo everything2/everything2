@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>296</node_id>
   <title>classic iconbar</title>
   <code>  my $str = &quot;&quot;;

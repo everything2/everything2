@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>2027663</node_id>
   <title>lock user account</title>
   <code>my ($uid) = @_;

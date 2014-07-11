@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1101744</node_id>
   <title>openform2</title>
   <code>my ($name) = @_;

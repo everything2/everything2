@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>2002477</node_id>
   <title>page header</title>
   <code># let page inject stuff into the header:

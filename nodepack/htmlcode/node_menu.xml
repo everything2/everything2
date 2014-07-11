@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>176006</node_id>
   <title>node_menu</title>
   <code>my ($field, @VALUES) = @_;

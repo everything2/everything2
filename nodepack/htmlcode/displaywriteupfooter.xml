@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1936641</node_id>
   <title>displayWriteupFooter</title>
   <code>#displayWriteupFooter - pass nothing if viewing a writeup or writeup's index in e2node group if viewing an e2node

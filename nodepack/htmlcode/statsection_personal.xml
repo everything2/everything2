@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1273299</node_id>
   <title>statsection_personal</title>
   <code>my $str = undef;

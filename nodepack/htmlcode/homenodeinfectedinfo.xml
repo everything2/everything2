@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>2034108</node_id>
   <title>homenodeinfectedinfo</title>
   <code>return &quot;&quot; unless $APP-&gt;isEditor($USER);

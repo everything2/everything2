@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>2007395</node_id>
   <title>ip lookup tools</title>
   <code># encodeHTML should be a no-op here, but just in case...

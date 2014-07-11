@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>2037720</node_id>
   <title>ordernode</title>
   <code>return unless $APP-&gt;isEditor($USER);

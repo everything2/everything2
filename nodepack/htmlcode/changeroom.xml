@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>545563</node_id>
   <title>changeroom</title>
   <code>return if $APP-&gt;isGuest($USER);

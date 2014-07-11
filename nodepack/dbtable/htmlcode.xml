@@ -4,7 +4,7 @@
   <_create_table_statement>CREATE TABLE `htmlcode` (
   `htmlcode_id` int(11) NOT NULL AUTO_INCREMENT,
   `code` text COLLATE utf8_unicode_ci,
-  `delegate_to` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `delegated` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`htmlcode_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
   <title>htmlcode</title>

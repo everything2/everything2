@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>2028177</node_id>
   <title>coolsJSON</title>
   <code>my $csr = $DB-&gt;sqlSelectMany(&quot;

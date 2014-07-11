@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1116973</node_id>
   <title>vitsection_nodeinfo</title>
   <code>my $str=&quot;&lt;ul&gt;&quot;;

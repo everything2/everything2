@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1300727</node_id>
   <title>UnderConstruction</title>
   <code>#this just gives an &quot;under construction&quot; notice

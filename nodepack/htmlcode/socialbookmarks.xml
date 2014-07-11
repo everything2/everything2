@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1928483</node_id>
   <title>socialBookmarks</title>
   <code>#returns a series of social bookmarking links.

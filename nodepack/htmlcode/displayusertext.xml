@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>1168156</node_id>
   <title>displayUserText</title>
   <code>my $txt = undef;

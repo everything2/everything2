@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <delegate_to></delegate_to>
   <node_id>2070160</node_id>
   <title>guestuserbanner</title>
   <code>return &quot;&quot;;
