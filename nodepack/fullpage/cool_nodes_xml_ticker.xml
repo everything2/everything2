@@ -1,6 +1,7 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sat Jul 12 01:50:15 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sat Jul 12 02:45:11 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;legbagede&quot; node_id=&quot;1357487&quot; parent_e2node=&quot;786728&quot; author_user=&quot;gn0sis&quot;&gt;White space&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Everyone2&quot; node_id=&quot;2053508&quot; parent_e2node=&quot;128997&quot; author_user=&quot;Transitional Man&quot;&gt;Blitzkrieg&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Bitriot&quot; node_id=&quot;2114149&quot; parent_e2node=&quot;2066537&quot; author_user=&quot;moeyz&quot;&gt;attach yourself to small things, for the world is large and you must start somewhere&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;1308309&quot; parent_e2node=&quot;99387&quot; author_user=&quot;NightWriter&quot;&gt;Do you promise to tell the truth, the whole truth, and nothing but the truth?&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Orangeduck&quot; node_id=&quot;2112785&quot; parent_e2node=&quot;572127&quot; author_user=&quot;Everyone2&quot;&gt;Milquetoast&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Mister Chu&quot; node_id=&quot;2113802&quot; parent_e2node=&quot;2114125&quot; author_user=&quot;iceowl&quot;&gt;Oh How I Love Thee&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;avalyn&quot; node_id=&quot;2114126&quot; parent_e2node=&quot;2114120&quot; author_user=&quot;The Custodian&quot;&gt;July 10, 2014&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;2114099&quot; parent_e2node=&quot;2114020&quot; author_user=&quot;Tem42&quot;&gt;SuperMegaNodeFestQuest 2014. Shazam!&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

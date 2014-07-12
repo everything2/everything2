@@ -27,9 +27,11 @@
   return &quot;&quot; unless $USER-&gt;{title} eq &quot;jaybonci&quot;;
   my $count = 0;
   my $str = &quot;&lt;ul&gt;&quot;;
-  my $list = [getNodeWhere({delegated =&gt; 0}, getType(&quot;htmlcode&quot;))];
+  my $list = [$DB-&gt;getNodeWhere({}, getType(&quot;htmlcode&quot;))];
+
   foreach my $n (@$list)
   {
+    next if $n-&gt;{delegated};
     $count++;
     $str .= &quot;&lt;li&gt;&quot;.$n-&gt;{title}.&quot; - &quot;.$n-&gt;{node_id};
   }
