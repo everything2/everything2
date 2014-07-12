@@ -26,7 +26,7 @@
 
 &lt;hr width=&quot;250&quot; /&gt;
 
-&lt;p&gt;If you're interested in being an Everything2 editor please sit tight and wait for a call. [alex|I'm] trying to keep the number of staff at 40 or less by rotating new blood in now and then based on activity, merit, &lt;i&gt;writing&lt;/i&gt; skill, and ability to function in whichever role is needed at a given time. Also, I'll probably tap you on the shoulder quicker if you &lt;i&gt;don't&lt;/i&gt; msg me about it. The [gods] group is always watching and suggestions for new editorial staff are passed around based on their observations.&lt;/p&gt;
+&lt;p&gt;If you're interested in being an Everything2 editor please sit tight and wait for a call. We're trying to keep the number of staff at 40 or less by rotating new blood in now and then based on activity, merit, &lt;i&gt;writing&lt;/i&gt; skill, and ability to function in whichever role is needed at a given time. Also, I'll probably tap you on the shoulder quicker if you &lt;i&gt;don't&lt;/i&gt; msg me about it. The [gods] group is always watching and suggestions for new editorial staff are passed around based on their observations.&lt;/p&gt;
 
 &lt;hr width=250/&gt;
 
@@ -162,8 +162,7 @@ Everything User Search|the user search]).&lt;/li&gt;
 &lt;ul&gt;
 &lt;li&gt;[jaybonci]: Site owner&lt;/li&gt;
 &lt;li&gt;[clampe]: E2 researcher&lt;/li&gt;
-&lt;li&gt;[alex]: Site manager&lt;/li&gt;
-&lt;li&gt;[Tem42]: Deputy site manager&lt;/li&gt;
+&lt;li&gt;[Tem42]: Interim site manager&lt;/li&gt;
 &lt;li&gt;[The Debutante]: Director of User Relations&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -184,34 +183,6 @@ The following staff members work with jaybonci to maintain and grow the site's c
 &lt;li&gt;[Two Sheds]&lt;/li&gt;
 &lt;/ul&gt;
 
-[%
-#'
-my $groupName = &quot;e2core&quot;;
-my $group = getNode($groupName, &quot;usergroup&quot;);
-return '' if !$group;
-my $intro = &lt;&lt;INTRO;
-&lt;p&gt;
-These administrators and editors handle appeals and guide [$groupName|site policy]:
-&lt;/p&gt;
-&lt;ul&gt;
-INTRO
-my $outro = &quot;&lt;/ul&gt;&quot;;
-my @ppl;
-foreach(@{$group-&gt;{group}})
-{
-  my $N = getNodeById($_);
-  next unless($N and $N-&gt;{type}{title} eq &quot;user&quot;);
-  push @ppl, $N;
-}
-
-my $userList =
-  join(&quot;\n&quot;,
-    map { &quot;&lt;li&gt;&quot; . linkNode($_) . &quot;&lt;/li&gt;&quot; }
-      sort {lc($a-&gt;{title}) cmp lc($b-&gt;{title})} @ppl
-  );
-
-return $intro . $userList . $outro;
-%]
 
 &lt;p&gt;Copyright compliance:&lt;/p&gt;
 &lt;ul&gt;
@@ -220,7 +191,7 @@ return $intro . $userList . $outro;
 
 &lt;p&gt;Documentation, FAQs, staff docs, [superdocs|sekrits]&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;[wertperch]&lt;/li&gt;
+&lt;li&gt;Position currently open&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;hr width=&quot;250&quot; /&gt;
@@ -267,7 +238,7 @@ return join(&quot;\n&quot;, map {&quot;&lt;li&gt;&quot;.linkNode($_).&quot;&lt;/
 
 &lt;hr width=&quot;250&quot; /&gt;
 
-&lt;p&gt;&lt;b&gt;That's it.&lt;/b&gt; If you've any questions about this or anything else (regarding E2) please [message] [alex] or e-mail him at &lt;strong&gt;alex /remove this junk and add an at sign/ staff.everything2.com&lt;/a&gt;&lt;/strong&gt;.&lt;/p&gt;</doctext>
+&lt;p&gt;&lt;b&gt;That's it.&lt;/b&gt; If you've any questions about this or anything else (regarding E2) please [message] [jaybonci] or [Tem42].&lt;/p&gt;</doctext>
   <node_id>743129</node_id>
   <title>E2 staff</title>
 </node>

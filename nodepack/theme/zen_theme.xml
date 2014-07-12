@@ -1,10 +1,6 @@
 <node>
   <type_nodetype>175989</type_nodetype>
   <vars>
-    <value>2021824</value>
-    <key>generalMobileParent_container</key>
-  </vars>
-  <vars>
     <value>1</value>
     <key>noTable</key>
   </vars>

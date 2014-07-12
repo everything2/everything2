@@ -26,15 +26,7 @@ HTTP host is: [% $ENV{HTTP_HOST} %]
 
 &lt;p&gt;
 Match is: [% isMobile()?&quot;true&quot;:&quot;false&quot; %]
-&lt;/p&gt;
-
-&lt;p&gt;
-Key: [%
-
- my $key = isMobile()?'generalMobileParent_container' : 'generalParent_container';
-$key;
-%];
 &lt;/p&gt;</doctext>
   <node_id>2021836</node_id>
-  <title>set_mobile superdoc</title>
+  <title>set_mobile</title>
 </node>
