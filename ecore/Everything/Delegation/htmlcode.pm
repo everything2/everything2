@@ -10,6 +10,8 @@ BEGIN {
   *urlGen = *Everything::HTML::urlGen;
   *linkNode = *Everything::HTML::linkNode;
   *htmlcode = *Everything::HTML::htmlcode;
+  *parseCode = *Everything::HTML::parseCode;
+  *parseLinks = *Everything::HTML::parseLinks;
 } 
 
 sub linkStylesheet
@@ -126,6 +128,84 @@ sub admin_searchform
     <span class="rightmenu">'.$str.'
     </span>
     </div>';
+}
+
+sub zenadheader
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $ad_text = undef;
+
+  if($APP->isGuest($USER)) 
+  {
+    $ad_text = htmlcode( 'googleads' );
+    $ad_text = '<div class="headerads">'.$ad_text.'</div>' if $ad_text;
+  }else{
+    return "<!-- noad:settings -->";
+  }
+  return $ad_text;
+}
+
+sub linkjavascript
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($n) = @_;
+
+  unless (ref $n) {
+    unless ($n =~ /\D/) {
+      $n = getNodeById($n);
+    } else {
+      $n = getNode($n, 'jscript');
+    }
+  }
+
+  if ($n) {
+    return urlGen({node_id => $n->{node_id}}, 1)
+      if(($$USER{node_id} == $$n{author_user} && $$USER{title} ne "root") || $VARS->{useRawJavascript} );
+
+    my $filename = "$$n{node_id}.$$n{contentversion}.min";
+    if($ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
+    {
+      $filename.= ".gzip";
+    }
+
+    $filename .= ".js";
+    return "http://jscss.everything2.com/$filename";
+  } else {
+    return $n;
+  }
+}
+
+sub parsecode
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($field, $nolinks) = @_;
+  my $text = $$NODE{$field};
+  $text = parseCode ($text);
+  $nolinks ||= $PAGELOAD->{noparsecodelinks};
+
+  $text = parseLinks($text) unless $nolinks;
+  $text;
 }
 
 1;
