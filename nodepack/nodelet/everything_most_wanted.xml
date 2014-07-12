@@ -1,12 +1,11 @@
 <node>
   <nltext></nltext>
-  <parent_container>20</parent_container>
+  <parent_container>1854181</parent_container>
   <icon></icon>
   <nlgoto>0</nlgoto>
   <node_id>1935407</node_id>
   <type_nodetype>9</type_nodetype>
-  <nlcode>
-[%
+  <nlcode>[%
 
 my $wantedLinktype = getNode(&quot;mostwanted&quot;,&quot;linktype&quot;)-&gt;{node_id};
 my $mostWanted = $DB-&gt;sqlSelectMany(&quot;to_node, from_node&quot;,&quot;links&quot;,&quot;linktype=$wantedLinktype limit 6&quot;);
