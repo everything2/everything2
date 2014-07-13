@@ -234,18 +234,6 @@
     <rank>21</rank>
   </group>
   <group>
-    <node_id>175986</node_id>
-    <orderby>23</orderby>
-    <nodegroup_id>155</nodegroup_id>
-    <rank>23</rank>
-  </group>
-  <group>
-    <node_id>21</node_id>
-    <orderby>24</orderby>
-    <nodegroup_id>155</nodegroup_id>
-    <rank>24</rank>
-  </group>
-  <group>
     <node_id>22</node_id>
     <orderby>25</orderby>
     <nodegroup_id>155</nodegroup_id>
@@ -882,12 +870,6 @@
     <rank>166</rank>
   </group>
   <group>
-    <node_id>20</node_id>
-    <orderby>167</orderby>
-    <nodegroup_id>155</nodegroup_id>
-    <rank>167</rank>
-  </group>
-  <group>
     <node_id>174581</node_id>
     <orderby>168</orderby>
     <nodegroup_id>155</nodegroup_id>
@@ -1078,12 +1060,6 @@
     <orderby>9</orderby>
     <nodegroup_id>314</nodegroup_id>
     <rank>9</rank>
-  </group>
-  <group>
-    <node_id>132</node_id>
-    <orderby>10</orderby>
-    <nodegroup_id>314</nodegroup_id>
-    <rank>10</rank>
   </group>
   <group>
     <node_id>123</node_id>
@@ -1380,12 +1356,6 @@
     <rank>87</rank>
   </group>
   <group>
-    <node_id>415064</node_id>
-    <orderby>90</orderby>
-    <nodegroup_id>314</nodegroup_id>
-    <rank>90</rank>
-  </group>
-  <group>
     <node_id>444186</node_id>
     <orderby>94</orderby>
     <nodegroup_id>314</nodegroup_id>
@@ -1620,12 +1590,6 @@
     <rank>2</rank>
   </group>
   <group>
-    <node_id>415064</node_id>
-    <orderby>1</orderby>
-    <nodegroup_id>415073</nodegroup_id>
-    <rank>1</rank>
-  </group>
-  <group>
     <node_id>419565</node_id>
     <orderby>0</orderby>
     <nodegroup_id>419588</nodegroup_id>
@@ -1750,12 +1714,6 @@
     <orderby>6</orderby>
     <nodegroup_id>452113</nodegroup_id>
     <rank>6</rank>
-  </group>
-  <group>
-    <node_id>132</node_id>
-    <orderby>7</orderby>
-    <nodegroup_id>452113</nodegroup_id>
-    <rank>7</rank>
   </group>
   <group>
     <node_id>217</node_id>
@@ -2020,12 +1978,6 @@
     <orderby>7</orderby>
     <nodegroup_id>1100936</nodegroup_id>
     <rank>7</rank>
-  </group>
-  <group>
-    <node_id>1101195</node_id>
-    <orderby>8</orderby>
-    <nodegroup_id>1100936</nodegroup_id>
-    <rank>8</rank>
   </group>
   <group>
     <node_id>839239</node_id>

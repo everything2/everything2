@@ -207,6 +207,5 @@ if($cantrim) {
 	$str .= $query-&gt;submit('go','trim links') . '&lt;/form&gt;';
 }
 
-return $str if exists $$THEME{noThinOutline};
-containHtml('thin outline container', $str);</code>
+return $str;</code>
 </node>

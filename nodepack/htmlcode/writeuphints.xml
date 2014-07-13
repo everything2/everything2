@@ -297,7 +297,6 @@ return unless $str;
 $str = parseLinks($str, $$NODE{parent_e2node});
 
 $str = '&lt;p&gt;&lt;big&gt;&lt;strong&gt;Hints!&lt;/strong&gt;&lt;/big&gt; (choose which writeup hints display at &lt;a href='.urlGen({'node'=&gt;'Writeup Settings','type'=&gt;'superdoc'}).'&quot;&gt;Writeup Settings&lt;/a&gt;)&lt;/p&gt;&lt;p&gt;'.$str.'&lt;/p&gt;';
-$str = containHtml('thin outline container', $str) unless $$THEME{ 'noThinOutline' } ;
 
 $str;</code>
 </node>

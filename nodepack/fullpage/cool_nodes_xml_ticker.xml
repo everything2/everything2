@@ -1,6 +1,13 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sat Jul 12 04:00:08 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Jul 13 02:35:15 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;2114132&quot; parent_e2node=&quot;2114131&quot; author_user=&quot;borgo&quot;&gt;Christ the Redeemer&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;LaggedyAnne&quot; node_id=&quot;2114140&quot; parent_e2node=&quot;2114139&quot; author_user=&quot;etouffee&quot;&gt;I miss you because I have nothing else to miss&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Kesper North&quot; node_id=&quot;2114167&quot; parent_e2node=&quot;2114162&quot; author_user=&quot;The Custodian&quot;&gt;July 12, 2014&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2114160&quot; parent_e2node=&quot;2114159&quot; author_user=&quot;borgo&quot;&gt;The mime and me&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;shaogo&quot; node_id=&quot;2073156&quot; parent_e2node=&quot;2114030&quot; author_user=&quot;gin soaked&quot;&gt;Lamb chops&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;etouffee&quot; node_id=&quot;1287532&quot; parent_e2node=&quot;1261620&quot; author_user=&quot;icicle&quot;&gt;a smiling girl with blonde eyelashes and a sundress. someday i'll find her&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;lizardinlaw&quot; node_id=&quot;2111233&quot; parent_e2node=&quot;2111234&quot; author_user=&quot;mjijm&quot;&gt;I am Abraham Lincoln, come back from the dead to clone dinosaurs and bring the war to the Congo&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;etouffee&quot; node_id=&quot;1880588&quot; parent_e2node=&quot;1880585&quot; author_user=&quot;bol&quot;&gt;It&#8217;s memories that I&#8217;m stealing, but you&#8217;re innocent when you dream&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;vandewal&quot; node_id=&quot;2114157&quot; parent_e2node=&quot;2114156&quot; author_user=&quot;alex&quot;&gt;Editor Log: July 2014&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;VicimusGegan&quot; node_id=&quot;2114128&quot; parent_e2node=&quot;2114134&quot; author_user=&quot;Sazzz&quot;&gt;Wearing waterproof mascara for goodbyes should be a given, really.&lt;/cooled&gt;
@@ -9,13 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Bitriot&quot; node_id=&quot;2114149&quot; parent_e2node=&quot;2066537&quot; author_user=&quot;moeyz&quot;&gt;attach yourself to small things, for the world is large and you must start somewhere&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;1308309&quot; parent_e2node=&quot;99387&quot; author_user=&quot;NightWriter&quot;&gt;Do you promise to tell the truth, the whole truth, and nothing but the truth?&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;802012&quot; parent_e2node=&quot;11319&quot; author_user=&quot;Gone Jackal&quot;&gt;Winnie the Pooh&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;alex&quot; node_id=&quot;2114018&quot; parent_e2node=&quot;2113993&quot; author_user=&quot;haqiqat&quot;&gt;July 4, 2014&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;gnarl&quot; node_id=&quot;2114132&quot; parent_e2node=&quot;2114131&quot; author_user=&quot;borgo&quot;&gt;Christ the Redeemer&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2114160&quot; parent_e2node=&quot;2114159&quot; author_user=&quot;borgo&quot;&gt;The mime and me&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Kesper North&quot; node_id=&quot;2114146&quot; parent_e2node=&quot;2114138&quot; author_user=&quot;The Custodian&quot;&gt;July 11, 2014&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;lizardinlaw&quot; node_id=&quot;1002377&quot; parent_e2node=&quot;1002368&quot; author_user=&quot;andrewsky&quot;&gt;the swamp at 6AM on warm Virginia summer mornings&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2033211&quot; parent_e2node=&quot;1904936&quot; author_user=&quot;etouffee&quot;&gt;these are no more your dreams than this is your sky&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Orangeduck&quot; node_id=&quot;2112785&quot; parent_e2node=&quot;572127&quot; author_user=&quot;Everyone2&quot;&gt;Milquetoast&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

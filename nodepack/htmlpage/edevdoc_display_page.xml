@@ -9,13 +9,7 @@ linkNode($NODE, 'edit', {displaytype =&gt; 'edit'});
 %]
 &lt;/p&gt;
 
-[%
-my $str = htmlcode('devparselinks','doctext');
-return $$THEME{noThinOutline}
-	? $str
-	: containHtml('thin outline container',$str)
-;
-%]</page>
+[{parselinks:doctext}]</page>
   <displaytype>display</displaytype>
   <node_id>1985290</node_id>
   <title>edevdoc display page</title>
