@@ -4,7 +4,31 @@
   <title>listcode</title>
   <code>my ($field,$codenode) = @_;
 $codenode ||= $NODE ;
-my $code = listCode($$codenode{$field}, 1);
+my $code = $$codenode{$field};
+
+if($codenode-&gt;{delegated})
+{
+  $code = &quot;Error: could not find code in delegated htmlcode&quot;;
+  my $file=&quot;/var/everything/ecore/Everything/Delegation/htmlcode.pm&quot;;
+
+  my $filedata = undef;
+  my $fileh = undef;
+
+  open $fileh,$file;
+  {
+    local $/ = undef;
+    $filedata = &lt;$fileh&gt;;
+  }
+  close $fileh;
+
+  my $name=&quot;displaytable&quot;;
+  if($filedata =~ /^(sub displaytable.*?^})/ims)
+  {
+    $code = $1;
+  }
+}
+
+$code = listCode($code, 1);
 
 my $patchTitle = undef;
 my $patchID = undef;
@@ -48,6 +72,11 @@ $code = '&lt;div style=&quot;font-size: smaller;&quot;&gt;'.$code.'&lt;/div&gt;'
 
 #breaks the form on code edit pages an' patching a patch may get confusing.
 return $text.$code if ($query-&gt;param('displaytype') eq 'edit' or $$codenode{type}{title} eq 'patch');
+
+if($codenode-&gt;{delegated})
+{
+  return $code. '&lt;strong&gt;This is a &quot;delegated&quot; code, part of the transition of removing routines from the database. To submit a patch, you must do so on &lt;a href=&quot;https://github.com/everything2/everything2/blob/master/ecore/Everything/Delegation/htmlcode.pm&quot;&gt;github&lt;/a&gt;&lt;/strong&gt;';
+}
 
 return $text unless $APP-&gt;isDeveloper($USER);
 $text = htmlcode('openform') . $text . '
