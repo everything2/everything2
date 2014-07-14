@@ -89,7 +89,7 @@ foreach my $uid(@uids){
   #*only* to the notifications settings.
   next unless $$v{settings};
 
-  my %notifications = from_json($$v{settings}-&gt;{notifications}};
+  my %notifications = from_json($$v{settings}-&gt;{notifications});
 
   if($notifications{$replyNotification} ){
 my $notification_id = $replyNotification;
