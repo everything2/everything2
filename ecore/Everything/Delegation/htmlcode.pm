@@ -14,7 +14,12 @@ BEGIN {
   *parseCode = *Everything::HTML::parseCode;
   *parseLinks = *Everything::HTML::parseLinks;
   *isNodetype = *Everything::HTML::isNodetype;
+  *listCode = *Everything::HTML::listCode;
 } 
+
+# Used by showchoicefunc
+use Everything::XML;
+
 
 # This links a stylesheet with the proper content negotiation extension
 # linkJavascript below talks a bit about the S3 strategy
@@ -385,4 +390,195 @@ sub displaytable
 
 }
 
+# Only used in [Gigantic Code Lister]
+#
+sub showChoiceFunc
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+
+  no strict 'refs';
+
+  my @modules = (
+    'Everything',
+    'Everything::XML',
+    'Everything::NodeBase',
+    'Everything::Application',
+    'Everything::HTML'
+  );
+  my $str = "";
+  my $showHTMLCODE = $$VARS{scf_nohtmlcode} ? 0 : 1;	#must be 0 or 1
+
+  if(not $query->param('choicefunc')) {
+    my %funcs = {};
+    my $rows = 0;
+    $str .= '<table><tr>';
+
+    my $colwidth = int (100/(int(@modules)+$showHTMLCODE)) .'%';
+    foreach my $modname (@modules) {
+      my $stash = \%{ "${modname}::" };
+      my @modfuncs = ();
+      foreach(keys %$stash) {
+        push (@modfuncs, $_) if (defined *{"${modname}::$_"}{CODE} and ($modname eq 'Everything' or not exists $Everything::{$_})) ;
+      }
+
+      @modfuncs = sort {$a cmp $b} @modfuncs;
+      $funcs{$modname} = \@modfuncs;
+      $rows = int(@modfuncs) if $rows < int(@modfuncs);
+      $str.='<th width="'.$colwidth.'">'.$modname.'</th>';
+    }
+
+    if($showHTMLCODE) {
+      $str.="<th width=\"$colwidth\">HTMLCODE</th>\n";
+      my @HTMLCODE = $DB->getNodeWhere({1=>1}, $DB->getType('htmlcode'), 'title ASC', 'light');
+      $funcs{htmlcode}= \@HTMLCODE;
+      $rows=int(@HTMLCODE) if $rows < @HTMLCODE;
+    }
+
+    $str .= "</tr>\n";
+
+    my $count=0;
+    while($count < $rows) {
+      $str.='<tr>';
+      foreach(@modules) {
+        $str.= '<td>';
+        $str.=linkNode($NODE, $funcs{$_}[$count], { choicefunc => $funcs{$_}[$count], lastnode_id=>0 }) if (int (@{ $funcs{$_} }) > $count);
+        $str.='</td>';
+      }
+      $str.='<td>';
+      $str.= linkNode($funcs{htmlcode}[$count]) if $count < @{ $funcs{htmlcode} };
+      $str.="</td></tr>\n";
+      $count++;
+    }  
+
+    return $str.='</table>';
+  }
+
+  #else, we have have a specific function to display
+  $str.= 'or go back to the code '.linkNode($NODE, 'index');
+  my $choicefunc = $query->param('choicefunc');
+  my $parentmod = '';
+
+  foreach my $modname (@modules) {
+    next if $parentmod;
+    my $stash = \%{ "${modname}::" };
+    if (exists $stash->{$choicefunc}) {
+      $parentmod=$modname;
+    }
+  }
+
+  unless($parentmod) {
+    $choicefunc =~ s/</\&lt\;/g;
+    $choicefunc =~ s/>/\&gt\;/g;
+    return "<em>Sorry, man.  No dice on $choicefunc</em>.<br />\n"; 
+  }
+
+
+  my $parentfile = undef;
+  my @mod = ();
+
+  foreach (@INC)
+  {
+    $parentfile = "$_\/".$parentmod.".pm";
+    $parentfile =~ s/\:\:/\//g;
+    open MODULE, $parentfile or next;
+    @mod = <MODULE>;
+    close MODULE;
+    last;
+  }
+
+
+  if (@mod) {
+    $str.= "module $parentmod loaded: ".int(@mod)." lines\n";
+  } else {
+    $str.= "hmm. couldn't load modules $parentfile\n";
+  }
+
+  my $count = 0;
+  my @lines = ();
+  my $fullText = '';
+  while(@mod > $count and not @lines) {
+    $fullText .= $mod[$count];
+    if($mod[$count] =~ /^sub $choicefunc\s*/) {
+      my $i = $count;
+      my $flag = undef;
+      do {
+        $i--;
+        $mod[$i]=~/\s*(\S)/;
+
+        $flag = (not defined $1 or $1 eq '#');
+      } while($i > 0 and $flag);
+
+      do {
+        $i++;
+        push @lines, $mod[$i];
+      } while (not ($mod[$i] =~ /^\}\s*$/ ));
+
+    }
+    $count++;
+  }
+
+  if (@lines) {
+    $str.= listCode(join('', @lines));
+  } else {
+    $str = listCode($fullText);
+  }
+  return $str;
+}
+
+# Only used in [dbtable edit page]
+#
+sub updatetable
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # This checks the CGI params to see what we need to do
+  # to this table.
+  my ($table) = @_;
+
+  # Check to see if we need to remove a column
+  foreach my $param ($query->param)
+  {
+    if(($param =~ /REMOVE$/) && ($query->param($param) eq "REMOVE"))
+    {
+      my $fieldname = $param;
+      $fieldname =~ s/REMOVE$//;
+      $DB->dropFieldFromTable($table, $fieldname); 
+
+      # Null out this field
+      $query->param($param, "");
+    }
+  }
+
+  # If we need to create a new field in the table...
+  if((defined $query->param("fieldname_new")) && (defined $query->param("fieldtype_new")) )
+  {
+    my $fieldname = $query->param("fieldname_new");
+    my $fieldtype = $query->param("fieldtype_new");
+    my $primary = $query->param("fieldprimary_new");
+    my $default = $query->param("fielddefault_new");
+
+    $DB->addFieldToTable($table, $fieldname, $fieldtype, $primary, $default); 
+
+    $query->param("fieldname_new", "");
+    $query->param("fieldtype_new", "");
+    $query->param("fieldprimary_new", "");
+    $query->param("fielddefault_new", "");
+  }
+
+  return "";
+
+}
 1;
