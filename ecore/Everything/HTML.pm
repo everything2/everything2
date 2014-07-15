@@ -1544,6 +1544,8 @@ sub htmlcode {
 
 	my $delegation_name = $htmlcodeName;
 	$delegation_name =~ s/ /_/g;
+	my $eval_error = 0;
+
 	if(my $delegation = Everything::Delegation::htmlcode->can($delegation_name))
 	{
 		if(wantarray) {
@@ -1551,36 +1553,35 @@ sub htmlcode {
 		}else{
 			$returnVal = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $APP, @savedArgs);
 		}
+	}else{
+		my ($htmlcodeCode, $codeNode) = getCode($htmlcodeName);
+		my $function;
+
+		# If we are doing a new-style htmlcode call (or have no arguments)
+		#  we can use the cached compilation of this function
+
+		if ($splitter eq "") {
+			$function = getCompiledCode($codeNode, \&evalCode);
+		}
+			return "<p>htmlcode '$htmlcodeName ' raised compile-time error:</p>\n $function" if ref \$function eq 'SCALAR' ;
+
+		if (wantarray) {
+			@returnArray = &$function(@savedArgs);
+		} else {
+			$returnVal = &$function(@savedArgs);
+		}
+
+		if ($@) {
+			$returnVal = htmlFormatErr ($htmlcodeCode, $@, $warnStr);
+			$eval_error = 1;
+		}
 	}
 
-	my ($htmlcodeCode, $codeNode) = getCode($htmlcodeName);
-	my $function;
-
-	# If we are doing a new-style htmlcode call (or have no arguments)
-	#  we can use the cached compilation of this function
-
-	if ($splitter eq "") {
-		$function = getCompiledCode($codeNode, \&evalCode);
-	}
-	return "<p>htmlcode '$htmlcodeName ' raised compile-time error:</p>\n $function"
-		if ref \$function eq 'SCALAR' ;
-
-	if (wantarray) {
-		@returnArray = &$function(@savedArgs);
-	} else {
-		$returnVal = &$function(@savedArgs);
-	}
-
-	if ($@) {
-		$returnVal = htmlFormatErr ($htmlcodeCode, $@, $warnStr);
-	}
-
-	if (wantarray && !$@) {
+	if (wantarray and not $eval_error) {
 		return @returnArray;
 	} else {
 		return $returnVal;
 	}
-
 }
 
 #############################################################################
