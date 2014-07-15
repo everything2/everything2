@@ -15,6 +15,7 @@ BEGIN {
   *parseLinks = *Everything::HTML::parseLinks;
   *isNodetype = *Everything::HTML::isNodetype;
   *listCode = *Everything::HTML::listCode;
+  *isGod = *Everything::HTML::isGod;
 } 
 
 # Used by showchoicefunc
@@ -580,5 +581,93 @@ sub updatetable
 
   return "";
 
+}
+
+#  Used in the debate display code.
+#  TODO: Take SIZELIMIT and move it to a configuration item 
+#  $displaymode:
+#       0       Display first comment only, no children at all (used in edit page & replyto page)
+#       1       Display full text of all comments (used in display page)
+#       2       Display all of first comment, first n bytes of others (not used)
+#       3       Display only first n bytes of all comments (not used)
+#       4       Display only titles of children (used in compact page)
+#       5       Display only titles (used implicitly in compact page)
+#
+#   $parent is only used internally: passed when we recurse to
+#   signal that we're recursing and also save a few cycles
+
+sub displaydebatecomment
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $rootnode = getNodeById( $_[0]->{ 'root_debatecomment' } );
+  unless(isGod($USER)) {
+    my $restrictGroup = $$rootnode{restricted} || 923653; # legacy magic number for old CE discussions
+    return '<p><strong>Permission Denied</strong></p>' unless $APP->inUsergroup($USER,getNodeById($restrictGroup));
+  }
+
+
+  # While this doesn't exist in the database as an htmlcode, we're going to use it to make the global passing easier
+  return htmlcode("displaydebatecommentcontent", @_);
+}
+
+sub displaydebatecommentcontent
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ( $node, $displaymode, $parent ) = @_;
+  $displaymode += 0;
+
+  my $SIZELIMIT = 768;
+
+  my $instructions = 'div';
+  my $parentlink = undef;
+  if ($parent){
+    $instructions = 'li';
+    $parentlink = qq'<a href="#debatecomment_$$parent{node_id}">$$parent{title}</a>';
+  }elsif ( $$node{parent_debatecomment} ){
+    $parent = getNodeById( $$node{ 'parent_debatecomment' } );
+    $parentlink = linkNode($parent);
+  }
+
+  $instructions .= ' class="comment"' if $parentlink;
+  $instructions = qq'<$instructions id="debatecomment_$$node{node_id}">title,byline,date';
+  $instructions .= ',responseto' if $parentlink;
+  $instructions .= ','.( $displaymode != 3 ? 'content' : $SIZELIMIT ).',links' if $displaymode < 5;
+  $instructions .= ',comments' if $$node{group} && $displaymode > 0;
+
+  my %funx = (
+    responseto => sub{qq' (response to "$parentlink")';},
+    links => sub{
+      my $str = "";
+      $str .= linkNode($node, 'edit', {displaytype=>'edit'}).' | ' if $$node{ 'author_user' } == $$USER{ 'node_id' } || isGod( $USER );
+      $str .= linkNode($node, 'reply', {displaytype=>'replyto'}) . " | <span class='debatelink'>&#91;$$rootnode{'title'}&#91;$$node{'node_id'}&#93;|LinkToMe&#93;</span>";
+      return $str;
+    },
+    comments => sub{
+      # close contentfooter before adding comments... ugh: spare div because show content still wants to close the footer:
+      my @unwrap = ();
+      @unwrap = ('</div>','<div>') if $displaymode < 5;
+      ++$displaymode if $displaymode == 2 || $displaymode == 4;
+      my $str = qq'$unwrap[0]<ul class="comments">';
+      foreach (@{$$node{group}}){
+        $str .= htmlcode("displaydebatecommentcontent",getNodeById($_), $displaymode, $node, $rootnode);
+      }
+      return $str ."</ul>$unwrap[1]";
+    }
+  );
+  return htmlcode("show content",$node, $instructions, %funx);
 }
 1;
