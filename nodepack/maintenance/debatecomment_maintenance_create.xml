@@ -46,7 +46,7 @@ $$COMMENT{restricted}=$restrict;
 # my $title = $$PARENT{ 'title' };
 # $title = 're: ' . $title unless ( $title =~ /^re:/ );
 # $$COMMENT{ 'title' } = $title;
-$$COMMENT{ 'parent_debatecomment' } = $query-&gt;param( 'debatecomment_parent_debatecomment' );
+$$COMMENT{ 'parent_debatecomment' } = $PARENT-&gt;{node_id};
 
 my $root_debatecomment = $query-&gt;param( 'debatecomment_root_debatecomment' );
 $$COMMENT{ 'root_debatecomment' } = $root_debatecomment;

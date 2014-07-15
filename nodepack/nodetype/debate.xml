@@ -2,7 +2,7 @@
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>1156105</extends_nodetype>
   <sqltable></sqltable>
-  <grouptable></grouptable>
+  <grouptable>nodegroup</grouptable>
   <node_id>1157413</node_id>
   <restrict_nodetype>1156105</restrict_nodetype>
   <type_nodetype>1</type_nodetype>
