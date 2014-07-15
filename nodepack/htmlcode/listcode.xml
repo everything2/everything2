@@ -21,8 +21,8 @@ if($codenode-&gt;{delegated})
   }
   close $fileh;
 
-  my $name=&quot;displaytable&quot;;
-  if($filedata =~ /^(sub displaytable.*?^})/ims)
+  my $name=&quot;$$NODE{title}&quot;;
+  if($filedata =~ /^(sub $name.*?^})/ims)
   {
     $code = $1;
   }
