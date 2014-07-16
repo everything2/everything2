@@ -16,6 +16,9 @@ BEGIN {
   *isNodetype = *Everything::HTML::isNodetype;
   *listCode = *Everything::HTML::listCode;
   *isGod = *Everything::HTML::isGod;
+  *getRef = *Everything::HTML::getRef;
+  *urlGen = *Everything::HTML::urlGen;
+  *urlGenNoParams = *Everything::HTML::urlGenNoParams;
 } 
 
 # Used by showchoicefunc
@@ -669,5 +672,445 @@ sub displaydebatecommentcontent
     }
   );
   return htmlcode("show content",$node, $instructions, %funx);
+}
+
+sub showdebate
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ( $displaymode ) = @_;
+  my $displaymodelink = '';
+
+  if ( $displaymode != 0 ) {
+    my %othermode = (); %othermode = (displaytype=>'compact') unless $query->param( 'displaytype' ) eq 'compact';
+    my $modedesc = %othermode ? 'compact' : 'display full';
+    $displaymodelink = linkNode($NODE, $modedesc, \(%othermode, title=>$modedesc)).' | '.
+   linkNode($NODE, 'feed', {displaytype => 'atom', lastnode_id => ''}) . ' | ';
+  }
+
+  my $ug_id = $$NODE{restricted} ||= 923653;#Hack for old CE nodes
+  my $ug = getNodeById($ug_id);
+
+  my $str = '<p>[ ' . $displaymodelink . linkNode( getNode('Usergroup discussions', 'superdoc'), "$$ug{title} discussions", {show_ug=>$ug_id}) . ' | ' . linkNode( getNode('Usergroup discussions', 'superdoc'), 'all discussions' ) . ' ]</p>';
+
+  if ( $$NODE{ 'root_debatecomment' } && $$NODE{ 'root_debatecomment' } != $$NODE{ 'node_id' } ) {
+    my $rootnode = getNodeById( $$NODE{ 'root_debatecomment' } );
+    if ( $rootnode ) {
+        $str .= '<p>See whole discussion: <b>' . linkNode( $$NODE{ 'root_debatecomment' } ) . '</b>' .
+          ' by <b>' . linkNode( $$rootnode{ 'author_user' } ) . '</b></p>';
+    }
+  }else{ 
+    #When viewing the root node, update the last seen timestamp;
+
+    #This is a little inefficient, since it's two SQL calls for what
+    #should be only one. The right way to do this would be with
+    #triggers, but those look less forward to implement with purely e2
+    #code. --Swap
+    my $lastread = $DB -> sqlSelect("dateread", "lastreaddebate", "user_id=$$USER{node_id} and debateroot_id=$$NODE{node_id}");
+
+    if($lastread){
+      $DB -> sqlUpdate("lastreaddebate", {-dateread => "NOW()"}, "user_id=$$USER{node_id} and debateroot_id=$$NODE{node_id}");
+    }
+    else{
+      $DB -> sqlInsert("lastreaddebate", {"user_id" => $$USER{node_id}, "debateroot_id" => $$NODE{node_id}, -dateread => "NOW()" } );
+    }
+  }
+
+  $str . htmlcode( 'displaydebatecomment', $NODE, $displaymode );
+
+}
+
+sub closeform
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  $query->submit("sexisgood", $_[0]||"submit") .
+  $query->end_form;
+}
+
+sub displayNODE
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($limit) = @_;
+  return unless $APP->isAdmin($USER);
+
+  $limit ||= 90000;
+  my $str = '';
+  my @noShow = ('table', 'type_nodetype', 'passwd');
+
+  foreach my $key (keys %$NODE) {
+    unless (grep /^$key$/, @noShow) {
+      $str .= "<li><B>$key: </B>";
+    
+      if ($key && $key =~ /\_/ && !($key =~ /\_id/))
+      {
+         $str .= linkNode($$NODE{$key}, "") if($$NODE{$key});
+         $str .= "none" unless($$NODE{$key});
+      }			
+      elsif ($$NODE{$key} and UNIVERSAL::isa($$NODE{$key},"HASH")) {
+        $str .= linkNode($$NODE{$key}, "", {lastnode => getId ($NODE)});
+      } else {$str .= $$NODE{$key} if (length ($$NODE{$key}) < $limit);}	
+    $str .= "<BR>\n";
+    }
+  }
+
+  return $str;
+}
+
+# This is the old-style groupeditor with code that we are not sure that works anymore
+# It appears that we have javascript that removes this code and replaces it with a more modern editor
+# TODO: Is this still used?
+
+sub groupeditor
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $id = getId($NODE);
+  my $str = "
+    <script language=\"JavaScript\">
+    function saveForm()
+    {
+      var myForm;
+      var myOption;
+      var i;
+
+      for(i=1; i <= document.forms.f$id.group.length; i++) 
+      {
+        myForm = eval(\"document.forms.f\" + \"$id\");
+        myOption = eval(\"document.forms.f\" + \"$id\" + \".group\");
+        myForm[i].value = myOption.options[i-1].value;
+      }
+
+      return true;
+    }
+
+    function swapUp()
+    {
+      with(document.forms.f$id.group){
+        var x=selectedIndex;
+        if(x == -1) { return; }
+        if(options.length > 0 && x > 0) {
+          tmp = new Option(options[x].text, options[x].value);
+          options[x].text = options[x-1].text;
+          options[x].value = options[x-1].value;
+          options[x-1].text = tmp.text;
+          options[x-1].value = tmp.value;
+
+          options[x-1].selected = true
+        }
+      }
+
+    }
+
+    function swapDn()
+    {
+      with(document.forms.f$id.group)
+      {
+        x=selectedIndex;
+        if(x == -1) { return; }
+        if(x+1 < options.length) {
+          tmp = new Option(options[x].text, options[x].value);
+          options[x].text = options[x+1].text
+          options[x].value = options[x+1].value;
+          options[x+1].text = tmp.text;
+          options[x+1].value = tmp.value;		
+          options[x+1].selected = true;
+	}
+      } 
+    }
+
+    function deleteOp()
+    {
+      with(document.forms.f$id.group)
+      {
+        x=selectedIndex;
+        if(x == -1) { return; }
+
+        for(i=x;i<options.length - 1;i++) {
+          options[i].text = options[i+1].text;
+          options[i].value = options[i+1].value;
+        }
+
+	if(options.length != 0 && options.length != 1){options[x].selected = 1;}
+
+        if(selectedIndex == -1)
+        { 
+          //Opera workaround, browser bug
+          options[options.length -1].text = \"\"; 
+          options[options.length -1].value= \"\";
+        }
+        else
+        {
+          options[options.length - 1] = null;
+	}
+      }
+    }
+
+    function zoomOp()
+    {
+
+      with(document.forms.f$id.group)
+      {
+        if(selectedIndex == -1) { return; }
+        window.open('index.pl?node_id=' + options[selectedIndex].value, 'hernandez','');
+      }
+
+    }
+  </SCRIPT>";
+
+  $str .= "<form method=\"POST\" name=\"f$id\" onSubmit=\"saveForm()\">";
+
+  my $GROUP = $$NODE{group};
+
+  $GROUP ||= [];
+
+  #generate the select box
+  $str .= "\n<br /><select name=\"group\" size=\"9\">\n";
+  foreach my $item (@$GROUP) {
+    my $ITEM = $DB->getNodeById($item, 'light');
+    my $authoruser = $DB->getNodeById( $$ITEM{ 'author_user' } );
+
+    $str .= ' <option value="' . getId($ITEM) . "\">$$ITEM{title} by $$authoruser{title} ($$ITEM{node_id})\n";
+  }
+  $str .= '</select><br />';
+
+  #generate the hidden elements
+  for (my $i = 0; $i < (5 + @$GROUP); $i++) {
+    $str .= "<input type=\"hidden\" name=\"$i\" value=\"\">\n";
+  }
+
+  $str .= $query->hidden('node_id', getId $NODE) . $query->hidden('displaytype');
+
+  $str .= '
+    <a href="javascript:deleteOp();" title="remove node from group">remove</a>
+    <a href="javascript:swapUp();">up</a>
+    <a href="javascript:swapDn();">down</a>
+    <a href="javascript:zoomOp();">view</a>
+
+  <input type="submit" border="0" value="Save" onClick="javascript:saveForm()">';
+
+  $str .= '</form>';
+
+  return $str;
+}
+
+# This lists the code for a particular node. 
+# TODO: Refactor this once delegation is done and patches are dead
+
+sub listcode
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($field,$codenode) = @_;
+  $codenode ||= $NODE ;
+  my $code = $$codenode{$field};
+
+  if($codenode->{delegated})
+  {
+    $code = "Error: could not find code in delegated htmlcode";
+    my $file="/var/everything/ecore/Everything/Delegation/htmlcode.pm";
+
+    my $filedata = undef;
+    my $fileh = undef;
+
+    open $fileh,$file;
+    {
+      local $/ = undef;
+      $filedata = <$fileh>;
+    }
+
+    close $fileh;
+
+    my $name="$$NODE{title}";
+    $name =~ s/ /_/g;
+    if($filedata =~ /^(sub $name.*?^})/ims)
+    {
+      $code = $1;
+    }
+  }
+
+  $code = listCode($code, 1);
+
+  my $patchTitle = undef;
+  my $patchID = undef;
+  my $patchNode = undef;
+
+  if ($field eq 'script_text') {
+    $patchID = $$codenode{script_id};
+    $patchNode = getNode($patchID);
+    $patchTitle = $$patchNode{title};
+  } else {
+    $patchID = $$codenode{node_id};
+    $patchTitle = $$codenode{title};
+  }
+
+  # This searches for [{ text }] nodelet section calls and replaces the text with a link.
+  $code =~ s/\&\#91;\{\s*(nodeletsection)\s*:\s*([^,\s}]*)\s*,\s*([^,\s}]*)(.*?)\}\&\#93;/"[\{<a href=".urlGen({node=>$1, type=>'htmlcode'}).">$1<\/a>:<a href=".urlGen({node=> $2 . "section_" . $3, type=>'htmlcode'}).">$2, $3<\/a>$4\}]"/egs;
+
+  # This searches for [{ text }] and replaces the text with a link.
+  $code =~ s/\&\#91;\{([^<]*?)((\:(.*?))*?)\}\&\#93;/"[\{<a href=".urlGen({node=>$1, type=>'htmlcode'}).">$1<\/a>$2}]"/egs;
+
+  #this searches for "htmlcode("text", params...)" nodelet section calls and replaces the text with a link to the htmlcode.
+  $code =~ s/htmlcode\s*\(\s*("|\')(nodeletsection)\1[,\s]*(['"])[\s,]*([^,\)'"]+)[\s'",]+([^,\)'"]+)[\s'"]*((\s*\,(.*?))*?)\s*\)/"htmlcode\($1<a href=".urlGen({node=>$2, type=>'htmlcode'}).">$2<\/a>$1, <a href=".urlGen({node=> $4 . "section_" . $5, type=>'htmlcode'}).">$3$4$3, $3$5$3<\/a>, $3$6\)"/egs;
+
+  #this searches for "htmlcode("text", params...)" and replaces the text with a link to the htmlcode.
+  $code =~ s/htmlcode\s*\(\s*("|\')\s*([^'"]*?)\s*\1(((\s*^\s*\d+:\s*)*\s*,\s*[^,]+?)*?)\s*\)/"htmlcode\($1<a href=".urlGen({node=>$2, type=>'htmlcode'}).">$2<\/a>$1$3\)"/megs;
+
+  my $text = '<small>'.htmlcode('varcheckbox', 'listcode_smaller', 'Smaller code listing')."</small>\n";
+
+  #ascorbic, sometime in autumn 2008
+  my $author_id = $$codenode{author_user};
+  if($author_id){
+    $text = '<p>Originally by ' . linkNode($$codenode{author_user}) . '</p>' . $text;
+  }
+  else{
+    $text = "<p>No author! This is a bug, get it fixed!</p>".$text;
+  }
+
+  #N-Wing, Sat, Jun 15, 2002 - help reduce long line horiz scrolling
+  $code = '<div style="font-size: smaller;">'.$code.'</div>' if $VARS->{listcode_smaller};
+
+  #breaks the form on code edit pages an' patching a patch may get confusing.
+  return $text.$code if ($query->param('displaytype') eq 'edit' or $$codenode{type}{title} eq 'patch');
+
+  if($codenode->{delegated})
+  {
+    return $code. '<strong>This is a "delegated" code, part of the transition of removing routines from the database. To submit a patch, you must do so on <a href="https://github.com/everything2/everything2/blob/master/ecore/Everything/Delegation/htmlcode.pm">github</a></strong>';
+  }
+
+  return $text unless $APP->isDeveloper($USER);
+  $text = htmlcode('openform') . $text . '<input type="submit" name="sexisgood" value="resize"></form>'.$code ;
+
+  $text .= '<strong>Submit a patch</strong>';
+  $text .= $query->start_form('POST',$ENV{script_name}) . '<input type="hidden" name="op" value="new"><input type="hidden" name="type" value="patch"> <input type="hidden" name="node" value="'.$patchTitle.' (patch)"> <input type="hidden" name="patch_for_node" value="'.$patchID.'"> <input type="hidden" name="patch_field" value="'.$field.'"> ';
+
+  $text .= 'patch\'s purpose: '.$query->textfield('patch_purpose','',55,240)."<br />\n";
+  $text .= $query->textarea('patch_code', $$codenode{$field}, 20, 60);
+  $text .= "<br />\n";
+  $text .= 'You are creating a patch here. It is possible to '.linkNode($codenode,'edit code directly',{displaytype => 'edit'}).', but don\'t do that with live code.<br />' if $APP->isAdmin($USER);
+  $text .= $query->submit();
+  $text .= $query->end_form;
+
+  return $text;
+}
+
+# Only really used in the nodetype display page
+#
+sub listgroup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($field) = @_;
+
+  my $G = $$NODE{$field};
+
+  if(($G eq '') || ($G == 0)) {
+    return 'none';
+  } elsif($G == -1) {
+    return 'parent';
+  }
+
+  getRef $G;
+  return 'none' unless ref $G;
+
+  my $str = linkNode($G) . " ($$G{type}{title})";
+  return $str unless ($$G{group});
+
+  $str .= "\n<ol>\n";
+  my $groupref = $$G{group};
+  foreach my $item (@$groupref) {
+    my $N = $DB->getNodeById($item, 'light');
+    $str .= '<li>' . linkNode($N) . " ($$N{type}{title})</li>\n";
+  }
+
+  $str .= "</ol>\n";
+  return $str;
+}
+
+# Used everywhere, needs to be a template function
+#
+sub openform
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($name, $method) = @_;
+
+  my %params = ();
+
+  unless ( $name =~ /^-/ ) {
+    $params{ -method } = $method if $method ;
+    $params{ -name } = $params{-id} = $name if $name ;
+  } else {
+    %params = @_ ;
+  }
+
+  $params{ -method } ||= 'post';
+  $query->start_form( -action => urlGenNoParams($NODE,1) , %params ) .
+  $query->hidden("displaytype") . "\n" .
+  $query->hidden('node_id', $$NODE{node_id});
+}
+
+# This needs to go away, but that's at the end of a very long road
+#
+sub parsecode
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($field, $nolinks) = @_;
+  my $text = $$NODE{$field};
+  $text = parseCode ($text);
+  $nolinks ||= $PAGELOAD->{noparsecodelinks};
+
+  $text = parseLinks($text) unless $nolinks;
+  return $text;
 }
 1;
