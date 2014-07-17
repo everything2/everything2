@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>50</node_id>
   <title>setvar</title>
   <code>my ($var, $len) = @_;

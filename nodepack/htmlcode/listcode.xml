@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>37</node_id>
   <title>listcode</title>
   <code>my ($field,$codenode) = @_;
@@ -22,6 +23,7 @@ if($codenode-&gt;{delegated})
   close $fileh;
 
   my $name=&quot;$$NODE{title}&quot;;
+  $name =~ s/ /_/g;
   if($filedata =~ /^(sub $name.*?^})/ims)
   {
     $code = $1;
