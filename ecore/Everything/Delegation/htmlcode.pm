@@ -220,27 +220,6 @@ sub linkjavascript
   }
 }
 
-# This is the meat of the superdoc display code
-#
-sub parsecode
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($field, $nolinks) = @_;
-  my $text = $$NODE{$field};
-  $text = parseCode ($text);
-  $nolinks ||= $PAGELOAD->{noparsecodelinks};
-
-  $text = parseLinks($text) unless $nolinks;
-  $text;
-}
-
 # On htmlpages, this shows the inherited value for a nodetype
 #
 sub displayInherited

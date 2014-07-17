@@ -17,16 +17,12 @@
     <key>bodyLinkcolor</key>
   </vars>
   <vars>
-    <value>#6666cc</value>
-    <key>bodyVlinkcolor</key>
-  </vars>
-  <vars>
     <value>#330066</value>
     <key>nodeletGradBot</key>
   </vars>
   <vars>
-    <value>#333333</value>
-    <key>docColor</key>
+    <value>#6666cc</value>
+    <key>bodyVlinkcolor</key>
   </vars>
   <vars>
     <value>#666666</value>

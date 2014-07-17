@@ -57,10 +57,6 @@
     <key>bodyVlinkcolor</key>
   </vars>
   <vars>
-    <value>#F4EDCD</value>
-    <key>docColor</key>
-  </vars>
-  <vars>
     <value>#FFFFFF</value>
     <key>nodeletBodyColor</key>
   </vars>

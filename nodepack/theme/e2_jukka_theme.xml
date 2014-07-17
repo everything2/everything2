@@ -37,10 +37,6 @@
     <key>generalNodelet_container</key>
   </vars>
   <vars>
-    <value>&lt;table width=100% cellpadding=0 cellspacing=10 border=0&gt;&lt;tr&gt;&lt;td valign=top&gt;</value>
-    <key>thinOutlineHeader</key>
-  </vars>
-  <vars>
     <value>415063</value>
     <key>generalParent_container</key>
   </vars>
@@ -63,10 +59,6 @@
   <vars>
     <value>#cccc99</value>
     <key>oddRowColor</key>
-  </vars>
-  <vars>
-    <value>&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</value>
-    <key>thinOutlineFooter</key>
   </vars>
   <node_id>415073</node_id>
   <title>e2 jukka theme</title>

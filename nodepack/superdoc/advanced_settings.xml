@@ -325,26 +325,6 @@ return htmlcode('varsComboBox', 'localTimeOffset,0'.$params);
 &lt;/p&gt;
 &lt;/fieldset&gt;
 
-&lt;fieldset&gt;&lt;legend&gt;Deprecated/Obsolete&lt;/legend&gt;
-Theme:[%
-return if ($APP-&gt;isGuest($USER));
-
-if($query-&gt;param('chosentheme')) {
-	my $theme = getNodeById($query-&gt;param('chosentheme'));
-	my $theme_type = $$theme{type}{title} if $theme;
-	if ($theme_type eq 'theme' || $theme_type eq 'themesetting') {
-		my $theme_id = $$theme{node_id};
-		$$VARS{preferred_theme} = $theme_id;
-		getTheme();
-	}
-}
-delete $$VARS{preferred_theme} if $$VARS{preferred_theme} == $Everything::CONF-&gt;{system}-&gt;{default_theme} ;
-htmlcode('typeMenu','chosentheme',$$VARS{preferred_theme}||$Everything::CONF-&gt;{system}-&gt;{default_theme},'theme','themesetting');
-%]
-(Only Zen theme is supported)&lt;br&gt;
-Node Display (has no effect in Zen theme): [{varMenu: displaypref_e2node,displayfull|full, display|classic}] (recommended: full)
-
-&lt;/fieldset&gt;
 [{closeform}]
 [%
 return ' --&gt;' if $APP-&gt;isGuest($USER);

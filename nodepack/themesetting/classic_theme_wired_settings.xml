@@ -5,10 +5,6 @@
     <key>nodeletGradBot</key>
   </vars>
   <vars>
-    <value>#ff9999</value>
-    <key>docColor</key>
-  </vars>
-  <vars>
     <value>#ffff00</value>
     <key>nodeletTitleColor</key>
   </vars>

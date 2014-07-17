@@ -1,6 +1,7 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Thu Jul 17 02:00:12 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Thu Jul 17 03:15:09 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;etouffee&quot; node_id=&quot;2111947&quot; parent_e2node=&quot;471239&quot; author_user=&quot;andycyca&quot;&gt;Sonnet XV&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2113967&quot; parent_e2node=&quot;2113968&quot; author_user=&quot;corvus&quot;&gt;Letters from friends&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Clockmaker&quot; node_id=&quot;2113352&quot; parent_e2node=&quot;2114220&quot; author_user=&quot;Zephronias&quot;&gt;Green-Cheeked Conure&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;jessicaj&quot; node_id=&quot;2114283&quot; parent_e2node=&quot;2113989&quot; author_user=&quot;Tem42&quot;&gt;Argumentum ad lapidem&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Bitriot&quot; node_id=&quot;1053360&quot; parent_e2node=&quot;34861&quot; author_user=&quot;m_turner&quot;&gt;wax&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2114248&quot; parent_e2node=&quot;1346802&quot; author_user=&quot;ManMeat5000&quot;&gt;The Priest Joke&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;etouffee&quot; node_id=&quot;691969&quot; parent_e2node=&quot;691941&quot; author_user=&quot;Templeton&quot;&gt;Some people can just hold onto the things that really matter to them&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1741195&quot; parent_e2node=&quot;634414&quot; author_user=&quot;doyle&quot;&gt;Lightning bug&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>
