@@ -20,6 +20,10 @@ BEGIN {
   *urlGen = *Everything::HTML::urlGen;
   *urlGenNoParams = *Everything::HTML::urlGenNoParams;
   *insertNodelet = *Everything::HTML::insertNodelet;
+  *breakTags = *Everything::HTML::breakTags;
+  *screenTable = *Everything::HTML::screenTable;
+  *encodeHTML = *Everything::HTML::encodeHTML;
+  *cleanupHTML = *Everything::HTML::cleanupHTML;
 } 
 
 # Used by showchoicefunc
@@ -1351,6 +1355,333 @@ sub setvar
   }
   $query->textfield("set$var", $$VARS{$var}, $len);
 
+}
+
+# Only used in the nodetest edit page
+#
+sub yesno_field
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($field) = @_;
+
+  my $val = int($$NODE{$field});
+
+  return $val . $query->radio_group("$$NODE{type}{title}_$field", ['1', '0'], $val, 0, { '0' => 'no', '1'=> 'yes'});
+}
+
+sub textfield
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($field, $length, $expandable) = @_;
+  $length ||= 20;
+  my @expandable = (); @expandable = ( class => 'expandable' ) if $expandable ;
+  $query->textfield(-name=>$$NODE{type}{title} .'_'. $field, value=>$$NODE{$field}, size=>$length ,@expandable );
+}
+
+sub parselinks
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($field) = @_;
+  my $n = undef; $n = (( $APP->isGuest($USER) )?(undef):($NODE));
+  parseLinks( $$NODE{$field} , $n ) ;
+
+}
+
+sub textarea
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($field, $rows, $cols, $wrap) = @_;
+  $cols ||= 80;
+  $rows ||= 30;
+  my $wrapSet = [ ];
+  $wrapSet = [ -wrap => $wrap ] if ($wrap);
+
+  my $name = $$NODE{type}{title} . "_" . $field;
+
+  return $query->textarea(
+    -name       => $name
+    , -id       => $name
+    , -default  => $$NODE{$field}
+    , -rows     => $rows
+    , -columns  => $cols
+    , @$wrapSet
+  );
+
+}
+
+# This is pretty ancient and needs to go away
+#
+sub windowview
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return "" unless $DB -> canUpdateNode($USER, $NODE);
+  my ($displaytype, $title, $width, $height) = @_;
+
+  $title||=$$NODE{title};
+  $width||=300;
+  $height||=400;
+
+  return "<SCRIPT language=\"javascript\">
+	function launchThaDamnWinda() {
+	window.open('" .
+		urlGen({node_id => getId ($NODE),
+			displaytype => $displaytype}, "noquotes") .
+		"','". getId ($NODE) ."',
+		'width=$width,height=$height,scrollbars=yes');	
+	}
+  </SCRIPT><A href=\"javascript:launchThaDamnWinda()\">$title</a>";
+}
+
+# The mother of all display functions:
+# generic content/contentinfo display
+# arguments:
+# 0. single hashref or node id, arrayref of node ids or hashrefs, sql cursor for node(s) to show
+# 1. string containing comma-separated list of instructions:
+#	(optional) 'xml' to specify xml output and/or
+#	(optional) html tag, used for wrapping each node (attributes optional, quotes="double")
+#		- default is <div>
+#		- may include class attribute (which is added to default class(es))
+#		- class tokens starting with & are interpreted as function names and executed on the node
+#		- no default classes for xml, otherwise:
+#		- default class is 'item' if content is included, otherwise 'contentinfo'
+#			- div class 'contentinfo' also wraps headers/footers before and after content,
+#			  with class 'contentheader' or 'contentfooter' as appropriate
+#
+#	and then/or:
+#	list of fields to display, which can be:
+#		* a function name, either a built-in mark-up function or an additional one passed in the next argument
+#		* "text"
+#		* a hash key to a value to be marked up as
+#			- <span class="[key]>">value</span> (not xml) or
+#			- <[key]>encodeHTML(value)</[key> (xml)
+#		* 'content' to show the doctext
+#		* 'unfiltered' to show the doctext without screening the html
+#		* a number n, to display the first n bytes of the doctext
+#	Multiple content/unfiltered/numbers can be specified one after the other, separated by '-':
+#	they will be used in turn for successive items. The last one is used for any remaining items.
+# 	If content is truncated and not xml a link is provided to the node in a div class="morelink"
+#	If xml is specified content is encoded and wrapped as <content type="html">
+# 2. (optional) additional markup functions
+#	If one of these has the key 'cansee' it will be used to check whether to show an item:
+#	return '1' for yes.
+#
+# doctext is parseCoded if a node type is present and (inherits from) superdoc
+# tables in doctext are screened for logged-in users
+# TODO: Unwind the parseCode bits
+#
+sub show_content
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ( $input , $instructions , %infofunctions ) = @_ ;
+
+  my $showanyway = 96 ; # how many bytes not to bother chopping off shortened content
+  # pack/unpack input
+
+  my @input = ( $input ) ;
+  if ( ref $input eq 'ARRAY' ) {
+    @input = @$input ;
+  } elsif ( ref( $input ) =~ /DBI/ ) {
+    @input = @{ $input->fetchall_arrayref( {} ) } ;
+  }
+
+  return '' unless getRef( @input );
+
+  # define standard info functions
+
+  my $getAuthor = sub{ $_[0]->{author} ||= getNodeById($_[0] -> {author_user}, 'light') || {}; } ;
+
+  my $author = $infofunctions{author} ||= sub {
+    linkNode( &$getAuthor , '' , {-class => 'author'}) ;
+  } ;
+
+  $infofunctions{ byline } ||= sub { '<cite>by '.&$author.'</cite>' ; } ;
+
+  my $title = $infofunctions{ title } ||= sub {  linkNode($_[0] , '' , {-class => 'title'}) ; } ;
+
+  $infofunctions{ parenttitle } ||= sub { 
+    my $parent = getNodeById($_[0]{parent_e2node},'light'); 
+    return '<span class="title noparent">(No parent node) '.&$title.'</span>' unless $parent ;
+    my $author = &$getAuthor;
+    return linkNode($parent, '', {
+      -class => 'title'
+      , '#' => $$author{title}
+      , author_id => $$author{node_id}
+    });
+  };
+
+  $infofunctions{ type } ||= sub {
+    my $type = $_[0]{type_title} || getNodeById($_[0]{wrtype_writeuptype}) || $_[0]{type};
+    $type = $type -> {title} if(UNIVERSAL::isa($type,"HASH"));
+    if ($type eq 'draft'){
+      my $status = getNodeById($_[0]{publication_status});
+      $type = ($status ? $$status{title} : '(bad status)').' draft';
+    }
+
+    return '<span class="type">('.linkNode($_[0]{node_id}||$_[0]{writeup_id}, $type || '!bad type!').')</span>';
+  };
+
+  my $date = $infofunctions{date} ||= sub {
+    return '<span class="date">'
+      .htmlcode('parsetimestamp', $_[0]{publishtime} || $_[0]{createtime}, 256 + $_[1]) # 256 suppresses the seconds
+      .'</span>' ;
+  };
+
+  $infofunctions{listdate} ||= sub{
+    &$date($_[0], 4 + 512); # 4 suppresses day name, 512 adds leading zero to hours
+  };
+
+  my $oddrow = '';
+  $infofunctions{oddrow} ||= sub{
+    $oddrow = $oddrow ? '' : 'oddrow';
+  };
+
+  # decode instructions
+
+  my $xml = '1' if $instructions =~ s/^xml\b\s*// ;
+
+  my ($wrapTag, $wrapClass, $wrapAtts) = split(/\s+class="([^"]+)"/, $1) if $instructions =~ s/^\s*<([^>]+)>\s*//;
+  $wrapAtts .= $1 if $wrapTag =~ s/(\s+.*)//;
+
+  $instructions =~ s/\s*,\s*/,/g ;
+  $instructions =~ s/(^|,),+/$1/g ; # remove spare commas
+
+  my @sections = split( /,?((?:(?:content|[\d]+|unfiltered)-?)+),?/ , $instructions ) ;
+  my $content = $sections[1] ;
+
+  $wrapTag ||= 'div';
+  $wrapClass .= ' ' if $wrapClass;
+  $wrapClass .= $content ? 'item' : 'contentinfo';
+
+  my @infowrap = ('<div class="contentinfo contentheader">', '', '<div class="contentinfo contentfooter">') if $content && !$xml;
+
+  # define content function
+
+  if ( $content ) {
+    my $lastnodeid = undef;
+    if ( !$APP->isGuest($USER) ) {
+      $lastnodeid = $$NODE{ parent_e2node } if $$NODE{ type }{ title } eq 'writeup' ;
+      $lastnodeid = $$NODE{ node_id } if $$NODE{ type }{ title } eq 'e2node' ;
+    }
+
+    my $HTML = getVars( getNode( 'approved HTML tags' , 'setting' ) ) ;
+    my @content = split /-/, $content;
+    my $i = 0;
+
+    $infofunctions{$content} = sub {
+      my $N = shift ;
+      my $length = undef; $length = $content[$i] if $content[$i] =~ /\d/ ;
+      $$HTML{ noscreening } = ($content[$i] eq 'unfiltered');
+      $i-- unless $content[++$i];
+
+      my $text = $N->{ doctext } ;
+      # Superdoc stuff hardcoded below
+      $text = parseCode( $text ) if exists( $$N{ type } ) and ( $$N{ type_nodetype } eq 14 or $$N{ type }{ extends_nodetype } eq 14 ) ;
+      $text = breakTags( $text ) ;
+
+      my ( $dots , $morelink ) = ( '' , '' ) ;
+      if ( $length && length( $text ) > $length + $showanyway ) {
+        $text = substr( $text , 0 , $length );
+        $text =~ s/\[[^\]]*$// ; # broken links
+        $text =~ s/\s+\w*$// ; # broken words
+        $dots = '&hellip;' ; # don't add here in case we still have a broken tag at the end
+        $morelink = "\n<div class='morelink'>(". linkNode($$N{node_id} || $$N{writeup_id}, 'more') . ")\n</div>";
+      }
+
+      $text = screenTable( $text ) if $lastnodeid ; # i.e. if writeup page & logged in
+      $text = parseLinks( cleanupHTML( $text , $HTML ) , $lastnodeid ) ;
+      return "\n<div class=\"content\">\n$text$dots\n</div>$morelink" unless $xml ;
+
+      $text =~ s/<a .*?(href=".*?").*?>/<a $1>/sg ; # kill onmouseup etc
+      return '<content type="html">'.encodeHTML( $text.$dots ).'</content>' ;
+    };
+  }
+
+  # do it
+
+  my $str = '';
+  foreach my $N ( @input ) {
+    next if $infofunctions{cansee} and $infofunctions{cansee}($N) != 1;
+
+    my $class = qq' class="$wrapClass"' unless $xml;
+    while ($class =~ m/\&(\w+)/) {
+      my $intendedName = $1 ;
+      my $intendedFunc = $infofunctions{ $intendedName } ;
+      if ( $intendedFunc ) {
+        $class =~ s/\&$intendedName/&$intendedFunc( $N )/e ;
+      } else {
+        $class =~ s/\&$intendedName/-Bad-info-function-'$intendedName'-/ ;
+      }
+    }
+
+    $str .= qq'<$wrapTag$class$wrapAtts>';
+    my $count = 0;
+
+    foreach ( @sections ) {
+      $str .= $infowrap[$count];
+      my @chunks = split( /,+/ , $_ ) ;
+
+      foreach ( @chunks ) {
+        if ( exists( $infofunctions{ $_ } ) ) {
+          $str .= $infofunctions{ $_ }( $N ) ;
+        } elsif (/^"([^"]*)"$/){
+          $str .= $1;
+        } elsif ( $xml ) {
+          $str .= "<$_>".encodeHTML( $$N{ $_ } )."</$_>" ;
+        } else {
+          $str .= "<span class=\"$_\">".$$N{ $_ }.'</span>' ;
+        }
+
+        $str .= "\n" ;
+      }
+
+      $str .= '</div>' if $infowrap[$count++];
+    }
+    $str .= "</$wrapTag>";
+  }
+
+  return $str ;
 }
 
 1;
