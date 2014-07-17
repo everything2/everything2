@@ -19,11 +19,14 @@ BEGIN {
   *getRef = *Everything::HTML::getRef;
   *urlGen = *Everything::HTML::urlGen;
   *urlGenNoParams = *Everything::HTML::urlGenNoParams;
+  *insertNodelet = *Everything::HTML::insertNodelet;
 } 
 
 # Used by showchoicefunc
 use Everything::XML;
 
+# Used by parsetime
+use Time::Local;
 
 # This links a stylesheet with the proper content negotiation extension
 # linkJavascript below talks a bit about the S3 strategy
@@ -1113,4 +1116,241 @@ sub parsecode
   $text = parseLinks($text) unless $nolinks;
   return $text;
 }
+
+# [{parsetime:FIELD}]
+# Parses out a datetime field into a more human-readable form
+#
+sub parsetime
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($field)=@_;
+
+  my ($date, $time) = split / /,$$NODE{$field};
+
+  my ($hrs, $min, $sec) = split /:/, $time;
+  my ($yy, $mm, $dd) = split /-/, $date;
+
+  return '<i>never</i>' unless (int($yy) and int($mm) and int($dd));
+
+  my $epoch_secs=timelocal( $sec, $min, $hrs, $dd, $mm-1, $yy);
+  my $nicedate =localtime ($epoch_secs);
+
+  $nicedate =~ s/(\d\d):(\d\d):(\d\d).*$/$yy at $1:$2:$3/;
+  $nicedate;
+}
+
+sub password_field
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($field) = @_;
+
+  #like all good password fields, we should have a confirm
+  my $name = "$$NODE{type}{title}_$field";
+
+  my ($p1, $p2) = ($query->param($name.'1'), $query->param($name.'2'));
+  my $str = undef;
+
+  my $oldpass = $query -> param("oldpass");
+
+  if ( $oldpass or $p1 or $p2){
+    if(confirmUser($USER -> {title}, $oldpass)) {
+      if ( !$p1 and  !$p2){
+        $str .= "I can't let you have no password! Please input <em>something</em>.<br>"
+      } 
+      elsif ($p1 eq $p2 ) {
+        $APP -> updatePassword($USER, $p1);
+        opLogin(); # without 'user' & 'passwd' query parameters, sets cookie for current user
+        $str .= 'Password updated.<br>';
+      }
+      else {
+        $str .= "Passwords don't match!<br>";
+      }
+    }
+    else {
+      $str .= "Sorry, partner, no can do if you don't tell me your old password.<br>";
+    }
+  }
+
+  $query -> delete('oldpass', $name.1, $name.2);
+
+  return $str . '<label>Your current password:'.$query -> password_field(-name=>"oldpass", size=>10, maxlength=>10, -label=>'') . '</label><br>
+
+  <label>Enter a new password:'.$query->password_field(-name=>$name.'1', size=>10, maxlength=>10).'</label><br>
+
+  <label>Repeat new password:'.$query->password_field(-name=>$name."2", size=>10, maxlength=>10).'</label>';
+}
+
+sub nodelet_meta_container
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return 'you disabled nodelets' if $$VARS{nodelets_off};
+  return '' if $query->param('nonodelets');
+
+  my $str = undef;
+
+  unless ( $$VARS{nodelets} ) {
+    #push default nodelets on
+    my ($DEFAULT) = $DB->getNodeById( $Everything::CONF->{system}->{default_nodeletgroup} );
+    $$VARS{nodelets} = join ',', @{ $$DEFAULT{group} } ;
+  }
+
+  my $required = getNode('Master Control', 'nodelet') -> { node_id } ;
+  if( $APP->isEditor($USER) ) {
+    # If Master Control is not in the list of nodelets, add it right at the beginning. 
+    $$VARS{ nodelets } = "$required,".$$VARS{ nodelets } unless $$VARS{ nodelets } =~ /\b$required\b/ ;
+  }else{
+    # Otherwise, if it is there, remove it, keeping a comma as required
+    $$VARS{nodelets} =~ s/(,?)$required(,?)/$1 && $2 ? ",":""/ge;
+  }
+
+  # Replace [New Writeups - Zen[nodelet]] (1868940) with [New Writeups[nodelet]] (263)
+  $$VARS{nodelets} =~ s/\b1868940\b/263/g;
+  # Ensure we didn't just cause New Writeups to occur twice
+  $$VARS{nodelets} =~ s/(\b263\b.*),263\b/$1/g;
+
+  my $nodelets = $PAGELOAD->{pagenodelets} || $$VARS{nodelets} ;
+  my @nodelets = (undef); @nodelets = split(',',$nodelets) if $nodelets ;
+
+  return '' unless @nodelets;
+
+  my $CB = getNode('chatterbox','nodelet') -> {node_id} ;
+  if (!$APP->isGuest($USER) and ($$VARS{hideprivmessages} or (not $$VARS{nodelets} =~ /\b$CB\b/)) and my $count = $DB->sqlSelect('count(*)', 'message', 'for_user='.getId($USER))) {
+    my $unArcCount = $DB->sqlSelect('count(*)', 'message', 'for_user='.getId($USER).' AND archive=0');
+    $str.='<p id="msgnum">you have <a id="msgtotal" href='.
+      urlGen({'node'=>'Message Inbox','type'=>'superdoc','setvars_msginboxUnArc'=>'0'}).'>'.$count.'</a>'.
+      ( $unArcCount>0 ? '(<a id="msgunarchived" href='.
+      urlGen({'node'=>'Message Inbox','type'=>'superdoc','setvars_msginboxUnArc'=>'1'}).'>'.$unArcCount.'</a>)' : '').
+      ' messages</p>';
+  }
+
+  my $errWrapper = '<div class="nodelet">%s</div>';
+
+  my $nodeletNum=0;
+
+  foreach(@nodelets) {
+    my $current_nodelet = $DB->getNodeById($_);
+    $nodeletNum++;
+    unless(defined $current_nodelet) {
+      $str .= sprintf($errWrapper, 'Ack! Unable to get nodelet '.$_.'.</td></tr>');
+      next;
+    }
+
+    my $nl = insertNodelet($current_nodelet);
+    unless(defined $nl) {
+      $str .= sprintf($errWrapper, 'Ack! Result of nodelet '.$_.' undefined.</td></tr>');
+      next;
+    }
+
+    $str .= $nl;
+  }
+
+  return $str;
+
+}
+
+# Only used semi-temporarily by the mobile stuff
+#
+sub searchform
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($PARAM) = @_; 
+  my $str = $query->start_form("GET",$query->script_name).
+    $query->textfield(-name => "node",
+      -default => "",
+      -size => 50,
+      -maxlength => 230) .
+    $query->submit("go_button", "go");
+
+  $str.='<input type="hidden" name="lastnode_id" value="'.$$NODE{node_id}.'">'; 
+  $str.= $query->end_form unless $PARAM eq 'noendform';
+  return $str;
+}
+
+# Only used by the serverstats nodelet, likely to go away
+#
+sub serverstats
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+  
+  my $date = `date`;
+  my $uptime = `uptime`;
+  my @uptime = ();
+  my $str = undef;
+
+  $uptime =~ s/^\s*(.*?)\s*$/$1/;
+  @uptime = split /,?\s+/, $uptime;
+
+  $str = $date . "<br>";
+  shift @uptime;
+
+  $str .= "@uptime[0..3]" . "<br>";
+
+  foreach (@uptime[-3..-1]){
+    if ($_ > 1.0) {
+      $_ = "<font color=#CC0000>" . $_ ."</font>, ";
+    }else{
+      $_ .= ", "; 
+    }
+  }
+  $str .= "@uptime[-3..-1]". "<br>";
+
+  return $str;
+}
+
+# Due to its incredibly generic name, I'm unsure if we use this
+#
+sub setvar
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($var, $len) = @_;
+  $len ||=10;
+  if (my $q = $query->param("set$var")) {$$VARS{$var} = $q;}
+  if ($query->param("sexisgood") and not $query->param("set$var")){
+    $$VARS{$var}="";
+  }
+  $query->textfield("set$var", $$VARS{$var}, $len);
+
+}
+
 1;

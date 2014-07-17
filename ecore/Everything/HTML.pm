@@ -1543,7 +1543,7 @@ sub htmlcode {
 	my $warnStr = "<p>Calling htmlcode $htmlcodeName";
 
 	my $delegation_name = $htmlcodeName;
-	$delegation_name =~ s/ /_/g;
+	$delegation_name =~ s/[\s\-]/_/g;
 	my $eval_error = 0;
 
 	if(my $delegation = Everything::Delegation::htmlcode->can($delegation_name))
