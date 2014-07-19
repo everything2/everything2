@@ -3,6 +3,9 @@ package Everything::Delegation::htmlcode;
 # We have to assume that this module is subservient to Everything::HTML
 #  and that the symbols are always available
 
+# TODO: use strict
+# TODO: use warnings
+
 BEGIN {
   *getNode = *Everything::HTML::getNode;
   *getNodeById = *Everything::HTML::getNodeById;
@@ -24,6 +27,7 @@ BEGIN {
   *screenTable = *Everything::HTML::screenTable;
   *encodeHTML = *Everything::HTML::encodeHTML;
   *cleanupHTML = *Everything::HTML::cleanupHTML;
+  *getType = *Everything::HTML::getType;
 } 
 
 # Used by showchoicefunc
@@ -1661,6 +1665,294 @@ sub show_content
   }
 
   return $str ;
+}
+
+# Used in the usergroup editing functions 
+#
+sub usergroupmultipleadd
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $nomulti;
+  %$nomulti = map{ getNode($_, "usergroup")->{node_id} => 1 } qw/gods e2gods/;
+
+  if ($APP->isAdmin($USER) and not exists($$nomulti{$$NODE{node_id}})) {
+    my $adder = getNode("simple usergroup editor", "superdoc");
+
+    return linkNode($adder, "Add/drop multiple users", {'for_usergroup' => $$NODE{node_id}});
+  }
+
+  return '';
+
+}
+
+# Used in the collaboration nodetype
+# parseLinks() and htmlScreen() on given field for 
+# the node we're on (in? at?). 
+#
+# wharfinger
+# 2/19/02
+#
+sub showcollabtext
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ( $field ) = @_;
+
+  my $doctext = $$NODE{ 'doctext' };
+  my $TAGNODE = getNode( 'approved html tags', 'setting' );
+  my $TAGS    = getVars( $TAGNODE );
+
+  $$TAGS{ 'highlight' } = 1;
+
+  $doctext = breakTags( parseLinks( htmlScreen( $doctext, $TAGS ) ) );
+
+  #N-Wing 2002.04.16.n2 - took out \s* - IIRC, tags can't have gaps in front
+  $doctext =~ s/<highlight\s*>/<span class="oddrow">/gi;
+  $doctext =~ s/<\/highlight\s*>/<\/span>/gi;
+
+  return $doctext;
+}
+
+# Probably going to be something that gets encapsulated into an object method
+#
+sub mysqlproctest
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $procname = $NODE->{title};
+  my $parameters = $NODE->{parameters};
+  my $proctext = $NODE->{doctext};
+
+  my $value = $DB->createMysqlProcedure("ecore_test_$procname", $parameters, $proctext, "PROCEDURE", 1);
+  if(not ref $value eq "ARRAY")
+  {
+    return "Creation not attempted";
+  }
+
+  if($value->[0] == 1)
+  {
+    $DB->dropMysqlProcedure("ecore_test_$procname", "PROCEDURE");
+    return "Created successfully";
+  }
+
+  if($value->[0] == 0)
+  {
+    return "Mysql procedure creation failed: ".$value->[1];
+  }
+}
+
+
+# A major piece of page rendering, this can certainly go into a template
+# TODO: Move the badwords stuff to a setting in the production file
+# TODO: Make nodes auto-scan themselves on editing or submission to talk about why
+#   they are not google-safe
+#
+sub softlink
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+  my ($softserve) = @_; #parameter used by formxml_writeup and formxml_e2node
+
+  if($softserve eq 'xml'){
+    return if $$VARS{noSoftLinks};
+  }
+  return if($query->param('no_softlinks'));
+
+  my $N = undef; $N = getNodeById($$NODE{parent_e2node},'light') if $$NODE{type}{title} eq 'writeup' ;
+  $N ||= $NODE;
+  my $lnid = undef;
+  if ($APP->isGuest($USER) ) {
+    $lnid=0;
+  } else {
+    $lnid=$$N{node_id};
+  }
+
+  my %unlinkables = {};
+  foreach( values %{$Everything::CONF->{system}->{maintenance_nodes}} ) {
+    $unlinkables{$_} = 1;
+  }
+  return if $unlinkables{ $$N{node_id} };
+
+  my $isEditor = $APP->isEditor($USER);
+  my $cantrim = $isEditor;
+
+  my $limit = undef;
+  if( $APP->isGuest($USER) ) {
+    $limit = 24;
+  } elsif($isEditor) {
+    $limit = 64;
+  } else {
+    $limit = 48;
+  }
+
+  my $csr = $DB->{dbh}->prepare(
+    'select node.type_nodetype, node.title, links.hits, links.to_node 
+    from links use index (linktype_fromnode_hits), node 
+    where links.from_node='.$$N{node_id}."
+    and links.to_node = node.node_id and links.linktype=0 
+    order by links.hits desc limit $limit"
+  );
+
+  $csr->execute;
+  my @nodelinks = ();
+  while (my $link = $csr->fetchrow_hashref) {
+    push @nodelinks, $link;
+  }
+  $csr->finish;
+
+  #Look for the non-nodeshells --[Swap]
+  my @e2node_ids = map { $_ -> {to_node}} @nodelinks;
+
+  my %fillednode_ids = {};
+
+  if(@e2node_ids){
+    my $sql = "SELECT DISTINCT nodegroup_id FROM nodegroup
+      WHERE nodegroup_id IN ("
+      .join(", ", @e2node_ids).")";
+
+    #Populate the hash with autovivify (man perlglossary) --[Swap]
+    \@fillednode_ids{  @{$DB->{dbh} -> selectcol_arrayref($sql)}  };
+  }
+
+
+
+  #xml output here;
+  if($softserve){
+    my $ss ='';
+    if($softserve eq 'xml') {
+      foreach my $n (@nodelinks){
+        my $tn = getNodeById($$n{to_node},'light');
+        my $nodeshelltest = exists $fillednode_ids{$$tn{node_id}};
+        $ss .= '<e2link node_id="'.$$tn{node_id}.'" weight="'.$$n{hits}.'" filled="'.($nodeshelltest? '1' : '0').'">'
+          .encodeHTML($$tn{title})."</e2link>\n";
+      }
+      return $ss;
+    }
+  }
+
+  return '' unless @nodelinks ;
+  my $str = "\n".'<table cellpadding="10" cellspacing="0" border="0" width="100%">'."\n\t".'<tr>';
+  my $n=0;
+
+  my @maxval = (255,255,255);
+  my @minval = (170,170,170);
+  my $format = '%02x';
+
+  my $showTitle = undef;
+
+  my $gradeattstart ||= 'bgcolor="#';
+  my $dimensions = scalar @maxval - 1;
+  my $steps = scalar @nodelinks;
+
+  my $e2nodetype = getId(getType('e2node'));
+  my $grade = undef;
+  my $nid = undef;
+  my @badOnes = ();	#auto-clean bad links
+  my $numCols = 4;
+
+  my $thisnode = $$N{node_id};
+
+  foreach my $l (@nodelinks) {
+    my @badwords = qw(boob breast butt ass lesbian cock dick penis sex oral anal drug pot weed crack cocaine fuck wank whore vagina vag cunt tits titty twat shit slut snatch queef queer poon prick puss orgasm nigg nuts muff motherfuck jizz hell homo handjob fag dildo dick clit cum bitch rape ejaculate bsdm fisting balling);
+    if( $APP->isGuest($USER) )
+    {
+      my $isbad = 0;
+      foreach my $word (@badwords) {
+        if($$l{title} =~ /\b$word/i or $$l{title} =~ /$word\b/i){ $isbad = 1; last; }
+      }
+      next if $isbad;
+    }
+
+    $nid = $$l{to_node};
+    my $nodeshelltest = exists $fillednode_ids{$nid};
+    next if (!$nodeshelltest && $$VARS{hidenodeshells});
+
+    push(@badOnes,$nid) if $cantrim;	#assume link is guilty...
+
+    next if $$l{type_nodetype} != $e2nodetype;
+    next if exists $unlinkables{$nid};
+    next if $thisnode == $nid;
+    pop(@badOnes) if $cantrim;	#...until proven innocent
+
+    #==================
+    #nate sez: don't touch this, we have to send this data up to [googleads] b/c they look for naughtywords
+    # in links
+    if (not exists $$NODE{linklist}) {
+      $$NODE{linklist} = [ $l ];
+    } else {
+      push @{$$NODE{linklist}}, $l;
+    }
+    #end nate sez
+    #=================
+
+    unless ($$VARS{nogradlinks}){
+      $grade = " $gradeattstart";
+      foreach (0..$dimensions) {
+        $grade .= sprintf($format, $maxval[$_] - ($maxval[$_] - $minval[$_])/$steps * $n);
+      }
+      $grade .= '"' ;
+    }
+
+    $str.= "</tr>\n\t<tr>" if($n && !($n%$numCols));
+    $str.= "\n\t\t".'<td'.$grade.qq' class="sw$$l{hits}'.($nodeshelltest ? '' : ' nodeshell').'">';
+
+    $str.= $query->checkbox('cutlinkto_'. $nid, 0, '1', '') if $cantrim;
+    $showTitle = $$l{title};
+
+    $str.= linkNode($nid, $showTitle, {lastnode_id=>$lnid}) ;
+
+    $str.= ' ('.$$l{hits}.')' if $cantrim;
+    $str.="</td>";
+    ++$n;
+  }
+
+  for(;$n%$numCols;++$n) { $str.="\n\t\t".'<td'.(
+    $$VARS{nogradlinks}||$$VARS{nogradekw} ? '' : ' class="slend"'
+  ).'>&nbsp;</td>'; }
+  $str.="\n\t</tr>\n</table>\n";
+
+  if($cantrim) {
+    #TODO: call a FN to delete these instead (or maybe only if admin)
+    foreach(@badOnes) {
+      $str .= '<input type="hidden" name="cutlinkto_'.$_.'" value="1" />';
+    }
+
+    $str = htmlcode('openform')
+      .'<input type="HIDDEN" name="op" value="linktrim">'
+      .'<input type="HIDDEN" name="cutlinkfrom" value="'.$$N{node_id}.'">'
+      .htmlcode('verifyRequestForm', "linktrim")
+      . $str;
+
+    my $nbo = scalar(@badOnes);
+    $str .= '('.$nbo.' extra will be trimmed) ' if $nbo;
+    $str .= $query->submit('go','trim links') . '</form>';
+  }
+
+  return $str;
 }
 
 1;

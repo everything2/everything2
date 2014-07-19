@@ -15,6 +15,7 @@ use Everything;
 use Everything::Application;
 use Everything::NodeCache;
 use Test::Deep::NoTest;
+use utf8;
 
 sub BEGIN
 {
@@ -92,16 +93,7 @@ sub new
 		
 		# A connection to this database does not exist.  Create one.
 		my ($user,$pass, $dbserv) = ($Everything::CONF->{'everyuser'}, $Everything::CONF->{'everypass'}, $Everything::CONF->{'everything_dbserv'});
-
-		my $utf8string = "";
-		if($Everything::CONF->{'utf8'})
-		{
-			$utf8string = ";mysql_enable_utf8=1";
-			eval("use utf8;");
-		}
-
-		$db->{dbh} = DBI->connect("DBI:mysql:$dbname:$dbserv$utf8string", $user, $pass, {AutoCommit => 1});
-
+		$db->{dbh} = DBI->connect("DBI:mysql:$dbname:$dbserv;mysql_enable_utf8=1", $user, $pass, {AutoCommit => 1});
 		$this->{dbh} = $db->{dbh};
 		
 		$db->{cache} = new Everything::NodeCache($this);
