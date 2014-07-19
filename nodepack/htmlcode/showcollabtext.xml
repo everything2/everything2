@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1256941</node_id>
   <title>showcollabtext</title>
   <code># parseLinks() and htmlScreen() on given field for 

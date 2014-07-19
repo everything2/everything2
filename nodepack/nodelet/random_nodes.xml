@@ -26,6 +26,10 @@ my @phrase = (
 	'Little presents from the Node Fairy:',
 );
 
+# Test environment
+my $anywriteup = $DB-&gt;sqlSelect(&quot;node_id&quot;, &quot;node&quot;,&quot;type_nodetype=&quot;.getId(getType(&quot;writeup&quot;)).&quot; limit 1&quot;);
+return &quot;&quot; if !$anywriteup;
+
 my $str;
 $str.='&lt;em&gt;'.$phrase[rand(int(@phrase))].&quot;&lt;/em&gt;\n&lt;ul class=\&quot;linklist\&quot;&gt;\n&quot; ;
 

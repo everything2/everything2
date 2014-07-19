@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>166222</node_id>
   <title>softlink</title>
   <code>my ($softserve) = @_; #parameter used by formxml_writeup and formxml_e2node

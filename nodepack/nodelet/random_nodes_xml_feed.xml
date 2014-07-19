@@ -29,11 +29,15 @@ $str.=&quot;
 $str.=&quot;&lt;randomnodes&gt;\n&quot;;
 $str.='&lt;wit&gt;'.$phrase[rand(int(@phrase))].&quot;&lt;/wit&gt;\n&quot;;
 
-foreach (1..12) {
-  my $n = getNodeById(getRandomNode());
-  $str.=&quot;  &lt;e2link node_id=\&quot;$$n{node_id}\&quot;&gt;&quot;.encodeHTML($$n{title}).&quot;&lt;/e2link&gt;\n&quot;;
+# Test environment
+my $anywriteup = $DB-&gt;sqlSelect(&quot;node_id&quot;, &quot;node&quot;,&quot;type_nodetype=&quot;.getId(getType(&quot;writeup&quot;)).&quot; limit 1&quot;);
+if($anywriteup)
+{
+  foreach (1..12) {
+    my $n = getNodeById(getRandomNode());
+    $str.=&quot;  &lt;e2link node_id=\&quot;$$n{node_id}\&quot;&gt;&quot;.encodeHTML($$n{title}).&quot;&lt;/e2link&gt;\n&quot;;
+  }
 }
-
 $str.=&quot;&lt;/randomnodes&gt;\n&quot;;
 return $str;
 %]</nlcode>

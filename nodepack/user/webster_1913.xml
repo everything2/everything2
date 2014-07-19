@@ -1,0 +1,264 @@
+<node>
+  <sanctity>2</sanctity>
+  <nick></nick>
+  <email>nate@blockstackers.com</email>
+  <realname>Webster 1913</realname>
+  <imgsrc>images/userincoming/Webster_1913.jpeg</imgsrc>
+  <type_nodetype>15</type_nodetype>
+  <vars>
+    <value>1</value>
+    <key>no_notify_kill</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>personal_nodelet</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>nowhynovotes</key>
+  </vars>
+  <vars>
+    <value>1959273</value>
+    <key>lastnoded</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>no_bookmarknotification</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>specialties</key>
+  </vars>
+  <vars>
+    <value>18</value>
+    <key>oldGP</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>easter_eggs</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>HideNewWriteups</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>employment</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>cools</key>
+  </vars>
+  <vars>
+    <value>102404 - &lt;a href=&quot;/user/Webster+1913/writeups&quot;&gt;View Webster 1913's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Webster%201913&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
+    <key>nwriteups</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>ce_hidecelogs</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>showmessages_replylink</key>
+  </vars>
+  <vars>
+    <value>1278018700</value>
+    <key>preference_last_update_time</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>powersMsg</key>
+  </vars>
+  <vars>
+    <value>148327</value>
+    <key>oldexp</key>
+  </vars>
+  <vars>
+    <value>262,170070,91,263,457857,165437</value>
+    <key>nodelets</key>
+  </vars>
+  <vars>
+    <value>7</value>
+    <key>numborged</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>no_coolnotification</key>
+  </vars>
+  <vars>
+    <value>2007-04-02 23:42:56</value>
+    <key>chingbought</key>
+  </vars>
+  <vars>
+    <value>102404</value>
+    <key>numwriteups</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>motto</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>squawk_rooms</key>
+  </vars>
+  <vars>
+    <value>120</value>
+    <key>writeupbonus</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>mission</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>powersChatter</key>
+  </vars>
+  <vars>
+    <value>1204224874</value>
+    <key>lastborg</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>hasRecalculated</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>no_bookmarkinformer</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>emailSubscribedusers</key>
+  </vars>
+  <vars>
+    <value>off</value>
+    <key>nullvote</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>IQM</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>ce_hidenewwu</key>
+  </vars>
+  <vars>
+    <value>50</value>
+    <key>num_newwus</key>
+  </vars>
+  <vars>
+    <value>displayfull</value>
+    <key>displaypref_e2node</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>visible</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>nohints</key>
+  </vars>
+  <vars>
+    <value>&lt;a href=&quot;/node/superdoc/Cool+Archive?cooluser=Webster%201913&amp;amp;useraction=cooled&quot;&gt;1&lt;/a&gt;</value>
+    <key>coolsspent</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>settings_useWriteupBonus</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>tokens</key>
+  </vars>
+  <vars>
+    <value>iliterit basterd</value>
+    <key>costume</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>squawk_talk</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>can_weblog</key>
+  </vars>
+  <vars>
+    <value>415073</value>
+    <key>preferred_theme</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>pmsgDate</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>anonymous_bookmark</key>
+  </vars>
+  <title>Webster 1913</title>
+  <doctext>&lt;p&gt;The [Project Gutenberg] Etext of Webster's Unabridged Dictionary*
+Copyright &amp;copy; 1996 by [MICRA], Inc.  Plainfield, N.J.&lt;/p&gt;
+
+&lt;p&gt;Please visit the [Project Gutenberg] website at [http://www.gutenberg.org]&lt;/p&gt;
+
+
+&lt;p&gt;
+THIS ETEXT IS OTHERWISE PROVIDED TO YOU &quot;AS-IS&quot;.  NO OTHER
+WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, ARE MADE TO YOU AS
+TO THE ETEXT OR ANY MEDIUM IT MAY BE ON, INCLUDING BUT NOT
+LIMITED TO WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A
+PARTICULAR PURPOSE.  Some states do not allow disclaimers of
+implied warranties or the exclusion or limitation of
+consequential damages, so the above disclaimers and exclusions
+may not apply to you, and you may have other legal rights.&lt;/p&gt;
+
+&lt;hr&gt;
+&lt;p align=center&gt;Webster now has a human logging in occasionally and correcting assorted errors in  his writeups.  Please msg him directly with suggestions and corrections.  Also adding [hard link]s.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;strong&gt;Who is [Webster 1913]?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;[Noah Webster] would have made a [wily] noder, but since he died in 1843, he kind of missed out on the whole Internet thing. [Webster 1913] is a special user account on Everything2 created by the site administrators shortly after E2 came online in late 1999. It was used to [autonoding|autonode] the entries in the &lt;strong&gt;&lt;a href=&quot;http://www.gutenberg.org&quot; target=&quot;_blank&quot;&gt;Project Gutenberg&lt;/a&gt;&lt;/strong&gt; edition of the 1913 Webster's Unabridged Dictionary.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;But 1913? Why not a more recent edition?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Believe it or not, all the various types of modern dictionaries are [copyright]ed by their publishers. However, almost all works published before 1923 are in the [public domain], as the intellectual property rights have legally expired. The 1913 edition of Webster was the last [revision] made before 1923, so it's free for anyone to use however they wish. &lt;em&gt;See [public domain guidelines chart] for a colorful diversion.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;What should I do if I find a mistake or formatting problem in a Webster 1913 definition?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Don't panic.&lt;/em&gt; There used to be many malformed or typo-ridden Webby definitions in the [nodegel], but these have been cleaned up (both by hand and by bot) pretty thoroughly over the years. Still, with over 98,000 writeups, there are bound to be some bugs left. You can post all the details of your findings under [Broken nodes], &lt;em&gt;&lt;strong&gt;or&lt;/strong&gt;&lt;/em&gt; since [Webster 1913]'s &lt;tt&gt;/msg&lt;/tt&gt;s are checked from time to time, you can message him&lt;small&gt;(?)&lt;/small&gt; directly about problems with definition writeups (just use the message box on the writeup).&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;I found some [words missing from Webster 1913]. What should I do?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Well, you could node the definitions yourself, but if they're as brief and concise it might annoy Mr. Webster. The odds are also fair that as soon as your new writeup is noticed by the administration, they might add the Webster definition to the node anyway, which could supersede yours (it &lt;em&gt;has&lt;/em&gt; happened before, actually). If you know the definition to be a part of the 1913 Webster but find it missing on E2, let one of [the power structure of Everything2|the staff] know about it, and we'll do our best to fill in the gaps with Webster's own writeup.&lt;/p&gt;
+
+
+&lt;p&gt;&lt;strong&gt;Some interesting facts about Webster 1913&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The [Webster 1913] account has many special [privilege]s in the [system] that many other people simply do not get. From a user perspective, some are &quot;better&quot; than others.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;b&gt;You can't do a [user search] on Webster 1913&lt;/b&gt;:  Because [Webby] has over 98,000 nodes, this makes him quite a [strain] on the [database] to give you even the top fifty of them or so.  It could really [strain] [everything] if a person wanted to see all of the Webster writeups, and thus, there is a special case for Webster in the [Everything User Search].  You'll notice that if you search out [EDB], there is a similar special case.&lt;/li&gt;
+
+&lt;li&gt;&lt;b&gt;Webby writeups are always last in the list on a node&lt;/b&gt;: This is so that the user-generated [content] comes above everything else. This is also special-cased in to the code that generates the page; normally you'd see writeups listed in the [order] that they were [created].&lt;/li&gt;
+
+&lt;li&gt;&lt;b&gt;Webster 1913 writeups cannot be voted upon&lt;/b&gt;: Webster writeups all have a special [writeuptype] known as [definition].  These writeups are not [votable], but you can still C! one if a definition from the turn of the previous [century] really [inspire]s you.  Some of them are downright funny (due to poor definitions, etc). Before this, Webster was a [vote dumping] ground, and now votes are [restricted] to nodes that are considered &quot;[content]&quot;.&lt;/li&gt;
+
+&lt;li&gt;&lt;b&gt;Webster will never be one of [Everything's Best Users].&lt;/b&gt; Webster is coded specially to be excluded from [EBU] consideration.  So even while [Webster 1913|he], [nate], and [dbrown] have an almost insurmountable pile of [XP], they are not among the ranks of the [mortals].&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Webster 1913's just a [bot]. He exists to fill [content] holes so that people can't go around submitting short writeups with the definitions of common [English] words. Sometimes dry, sometimes funny, and always an object of XP lust, Webby has earned his place here in our [database].&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Webster 1913 is dreamy! How can I profess my love?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Plenty of noders have developed an affection for Webby since the dawn of E2, and more than a few have waxed poetic about him in writeups that are now many years old. We keep them around for [self-referential nostalgia of questionable historical value|nostalgic] reasons and because Mr. Webster thought they were flattering, but they aren't an example of the sort of thing we're looking for these days. Send him a [courteous] &lt;tt&gt;/msg&lt;/tt&gt; if you must, but please refrain from [extol]ling his virtures in the nodegel.&lt;/p&gt;
+
+
+&lt;p&gt;&lt;strong&gt;What other sources are there for Webster 1913 definitions?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;If you want or need to check a [Webster 1913] definition against the original source but don't want to [download] the whole thing from [Project Gutenberg] (&lt;a href=&quot;http://www.gutenberg.org/&quot; target=&quot;_blank&quot;&gt;http://www.gutenberg.org&lt;/a&gt;), you can search it at several sites on the Internet. Only two sources are listed here, though there are several different versions of the source available on the web due to updates to the Project Gutenberg file, and some versions are newer than what was used on [Everything2]. &lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;[ARTFL]: [http://humanities.uchicago.edu/forms_unrest/webster.form.html]&lt;/li&gt;
+&lt;li&gt;[Bibliomania]: [http://www.bibliomania.com/2/3/257/frameset.html]&lt;/li&gt;
+&lt;/ul&gt;</doctext>
+  <node_id>176726</node_id>
+  <passwd></passwd>
+</node>
