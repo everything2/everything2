@@ -1956,4 +1956,34 @@ sub softlink
   return $str;
 }
 
+sub daylog
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my @months = qw(January February March April May June July August September October November December);
+
+  my ($sec,$min,$hour,$mday,$mon,$year) = gmtime(time);
+  $year+= 1900;
+
+  my $daydate = "$months[$mon] $mday, $year";
+  # Create daylog e2node if it's not already there.
+  $DB -> insertNode($daydate, 'e2node', getNode('Cool Man Eddie', 'user')) unless getNode($daydate, 'e2node');
+
+  # Link to monthly ed log/root
+  my $mnthdate = $months[$mon].' '.$year;
+
+  return parseLinks(qq'<ul class="linklist">
+    <li class="loglink">[$daydate|Day logs for $daydate]</li>
+    <li class="loglink">[Editor Log: $mnthdate|Editor logs for $mnthdate]</li>
+    <li class="loglink">[root log: $mnthdate|Coder logs for $mnthdate]</li>
+    <li class="loglink">[Log Archive[superdoc]]</li>
+    </ul>');
+}
+
 1;
