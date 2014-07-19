@@ -28,6 +28,7 @@ BEGIN {
   *encodeHTML = *Everything::HTML::encodeHTML;
   *cleanupHTML = *Everything::HTML::cleanupHTML;
   *getType = *Everything::HTML::getType;
+  *htmlScreen = *Everything::HTML::htmlScreen;
 } 
 
 # Used by showchoicefunc
