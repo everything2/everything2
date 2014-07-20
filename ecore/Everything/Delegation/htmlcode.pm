@@ -1836,7 +1836,7 @@ sub softlink
       .join(", ", @e2node_ids).")";
 
     #Populate the hash with autovivify (man perlglossary) --[Swap]
-    \@fillednode_ids{  @{$DB->{dbh} -> selectcol_arrayref($sql)}  };
+    %fillednode_ids = map {  $_ => undef } @{$DB->{dbh} -> selectcol_arrayref($sql)} ;
   }
 
 
@@ -1984,6 +1984,99 @@ sub daylog
     <li class="loglink">[root log: $mnthdate|Coder logs for $mnthdate]</li>
     <li class="loglink">[Log Archive[superdoc]]</li>
     </ul>');
+}
+
+# Used in some old placement code. Very likely able to be removed
+#
+sub clearimage
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($height, $width) = @_;
+
+  $height ||= 1;
+  $width ||= 1;
+  return "<img src=\"http://static.everything2.com/clear.gif\" border=\"0\" height=\"$height\" width=\"$width\" alt=\"\">";
+}
+
+# This will almost certainly go into a template
+#
+sub showbookmarks
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($edit, $createform) = @_;
+  #the maximum number to display
+
+  return unless $$NODE{type}{title} eq 'user';
+
+
+  my $user_id =getId($NODE);
+  my $linktype=getId(getNode('bookmark', 'linktype'));
+
+  my $str = "";
+  if ($edit and $createform) {
+    $str.=htmlcode('openform');
+  }
+
+  $str.="<ul class=\"linklist\" id=\"bookmarklist\">\n";
+  my $sqlstring = "from_node=$user_id and linktype=$linktype ORDER BY title";
+
+  my $csr = $DB->sqlSelectMany('to_node, title,
+    UNIX_TIMESTAMP(createtime) AS tstamp',
+    'links JOIN node ON to_node=node_id',
+    $sqlstring);
+
+  my $count = $csr->rows();
+  while (my $link = $csr->fetchrow_hashref) {
+    my $linktitle = lc($$link{title}); #Lowercased for case-insensitive sort
+    if ($edit) {
+      if ($query->param("unbookmark_$$link{to_node}")) {
+        $DB->sqlDelete('links',
+          "from_node=$user_id 
+          AND to_node=$$link{to_node}
+          AND linktype=$linktype");
+      } else {
+       $str.="<li tstamp=\"$$link{tstamp}\" nodename=\"$linktitle\" >".$query->checkbox("unbookmark_$$link{to_node}", 0, '1', 'remove').' '.linkNode($$link{to_node})."</li>\n";
+      }
+    } else {
+      $str.="<li tstamp=\"$$link{tstamp}\" nodename=\"$linktitle\">".linkNode($$link{to_node},0,{lastnode_id=>undef})."</li>\n";
+    }
+  }
+
+  $csr->finish;
+  $str.="</ul>\n";
+
+  if ($edit and $createform) {
+    $str.=htmlcode('closeform');
+  } elsif ( $count) {
+    my $javascript = '<script type="text/javascript" src="/node/jscript/sortlist"></script>'."\n";
+
+    $javascript .= '<p><a href="javascript:void(0);" onclick="sort(this)" list_id="bookmarklist" order="desc" '
+      .'sortby="nodename">Sort by name</a> ';
+
+    $javascript .= '<a href="javascript:void(0);" onclick="sort(this)"'
+      .'list_id="bookmarklist" order="desc" '
+      .'sortby="tstamp">Sort by date</a>'."\n</p>\n";
+
+    $str = '<div id="bookmarks"><h4>User Bookmarks:</h4>'."\n"
+      .$javascript.$str.'</div>';
+  }
+
+  return $str;
+
 }
 
 1;
