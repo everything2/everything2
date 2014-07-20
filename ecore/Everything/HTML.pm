@@ -2215,10 +2215,7 @@ sub printHeader
 	}
 	
 	my $extras = {};
-	if($Everything::CONF->{'utf8'})
-	{
-		$extras->{charset} = 'utf-8';
-	}
+	$extras->{charset} = 'utf-8';
 	if(@cookies)
 	{
 		$extras->{cookie} = \@cookies;
