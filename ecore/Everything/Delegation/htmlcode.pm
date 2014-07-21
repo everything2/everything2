@@ -29,6 +29,13 @@ BEGIN {
   *cleanupHTML = *Everything::HTML::cleanupHTML;
   *getType = *Everything::HTML::getType;
   *htmlScreen = *Everything::HTML::htmlScreen;
+  *updateNode = *Everything::HTML::updateNode;
+  *rewriteCleanEscape = *Everything::HTML::rewriteCleanEscape;
+  *setVars = *Everything::HTML::setVars;
+  *cleanNodeName = *Everything::HTML::cleanNodeName;
+  *getNodeWhere = *Everything::HTML::getNodeWhere;
+  *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
+  *recordUserAction = *Everything::HTML::recordUserAction;
 } 
 
 # Used by showchoicefunc
@@ -36,6 +43,13 @@ use Everything::XML;
 
 # Used by parsetime
 use Time::Local;
+
+# Used by shownewexp, publishwriteup
+use JSON;
+
+# Used by publishwriteup
+use DateTime;
+use DateTime::Format::Strptime;
 
 # This links a stylesheet with the proper content negotiation extension
 # linkJavascript below talks a bit about the S3 strategy
@@ -1836,7 +1850,7 @@ sub softlink
       .join(", ", @e2node_ids).")";
 
     #Populate the hash with autovivify (man perlglossary) --[Swap]
-    \@fillednode_ids{  @{$DB->{dbh} -> selectcol_arrayref($sql)}  };
+    %fillednode_ids = map {  $_ => undef } @{$DB->{dbh} -> selectcol_arrayref($sql)} ;
   }
 
 
@@ -1984,6 +1998,1013 @@ sub daylog
     <li class="loglink">[root log: $mnthdate|Coder logs for $mnthdate]</li>
     <li class="loglink">[Log Archive[superdoc]]</li>
     </ul>');
+}
+
+# Used in some old placement code. Very likely able to be removed
+#
+sub clearimage
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($height, $width) = @_;
+
+  $height ||= 1;
+  $width ||= 1;
+  return "<img src=\"http://static.everything2.com/clear.gif\" border=\"0\" height=\"$height\" width=\"$width\" alt=\"\">";
+}
+
+# This will almost certainly go into a template
+#
+sub showbookmarks
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($edit, $createform) = @_;
+  #the maximum number to display
+
+  return unless $$NODE{type}{title} eq 'user';
+
+
+  my $user_id =getId($NODE);
+  my $linktype=getId(getNode('bookmark', 'linktype'));
+
+  my $str = "";
+  if ($edit and $createform) {
+    $str.=htmlcode('openform');
+  }
+
+  $str.="<ul class=\"linklist\" id=\"bookmarklist\">\n";
+  my $sqlstring = "from_node=$user_id and linktype=$linktype ORDER BY title";
+
+  my $csr = $DB->sqlSelectMany('to_node, title,
+    UNIX_TIMESTAMP(createtime) AS tstamp',
+    'links JOIN node ON to_node=node_id',
+    $sqlstring);
+
+  my $count = $csr->rows();
+  while (my $link = $csr->fetchrow_hashref) {
+    my $linktitle = lc($$link{title}); #Lowercased for case-insensitive sort
+    if ($edit) {
+      if ($query->param("unbookmark_$$link{to_node}")) {
+        $DB->sqlDelete('links',
+          "from_node=$user_id 
+          AND to_node=$$link{to_node}
+          AND linktype=$linktype");
+      } else {
+       $str.="<li tstamp=\"$$link{tstamp}\" nodename=\"$linktitle\" >".$query->checkbox("unbookmark_$$link{to_node}", 0, '1', 'remove').' '.linkNode($$link{to_node})."</li>\n";
+      }
+    } else {
+      $str.="<li tstamp=\"$$link{tstamp}\" nodename=\"$linktitle\">".linkNode($$link{to_node},0,{lastnode_id=>undef})."</li>\n";
+    }
+  }
+
+  $csr->finish;
+  $str.="</ul>\n";
+
+  if ($edit and $createform) {
+    $str.=htmlcode('closeform');
+  } elsif ( $count) {
+    my $javascript = '<script type="text/javascript" src="/node/jscript/sortlist"></script>'."\n";
+
+    $javascript .= '<p><a href="javascript:void(0);" onclick="sort(this)" list_id="bookmarklist" order="desc" '
+      .'sortby="nodename">Sort by name</a> ';
+
+    $javascript .= '<a href="javascript:void(0);" onclick="sort(this)"'
+      .'list_id="bookmarklist" order="desc" '
+      .'sortby="tstamp">Sort by date</a>'."\n</p>\n";
+
+    $str = '<div id="bookmarks"><h4>User Bookmarks:</h4>'."\n"
+      .$javascript.$str.'</div>';
+  }
+
+  return $str;
+
+}
+
+
+# displaywriteuptitle - pass the writeup's node_id and timestamp
+# Likely moving over to a template function
+# TODO: Restore hits code
+#
+sub displaywriteuptitle
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($num, $timestamp) = @_;
+
+  my $WRITEUP = undef;
+  my $votenum = 0;
+  if (not $num) {
+    $WRITEUP = $NODE;
+  } else {
+    my @group = (); 
+    (@group) = @{ $$NODE{group} } if ($$NODE{group});
+    @group or return;
+    return if $num > @group;
+    $WRITEUP = getNodeById($group[$num-1]);
+    $votenum = getId($WRITEUP);
+  }
+
+  unless ($$WRITEUP{author_user}==$$USER{node_id} || $query->param('op') || $APP->isSpider() )
+    { 0 && $DB->sqlUpdate ("node", { -hits => 'hits+1' }, "node.node_id=$$WRITEUP{node_id}"); } 
+
+  return htmlcode('displayWriteupInfo',$votenum);
+}
+
+# Almost certainly a template piece
+#
+sub e2createnewnode
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $title = $query->param('node');
+
+  #Don't allow creation of nodes that begin with http(s)://
+  $title =~ s/^\s*https?:\/\///;
+
+  return '' unless $title;
+
+  return '<p>If you '
+    .linkNode(getNode("login","superdoc"), 'Log in')
+    .' you could create a "'
+    .$query -> escapeHTML($title)
+    ."\" node. If you don't already have an account, you can "
+    . linkNode($Everything::CONF->{system}->{create_new_user}, 'register here')
+    .'.' if $APP->isGuest($USER);
+
+  my $n = getNode($title, 'e2node');
+  return '<p>'.linkNode($n).' already exists.</p>' if $n;
+
+  my $str = '<p>Since we didn\'t find what you were looking for, you can search again, or create a new draft or e2node (page): </p>'
+    .$query -> start_form(-method => 'get', action => '/')
+    .'<fieldset><legend>Search again</legend>'
+    .$query -> textfield(
+      -name => 'node',
+      size => 50,
+      maxlength => 100
+    )
+    .' '
+    .$query -> hidden('lastnode_id')
+    .$query -> submit('searchy', 'search')
+    .'<br>'
+    .$query -> checkbox(
+    -name => 'soundex',
+      value => 1,
+      label => 'Near Matches '
+    )
+    .$query -> checkbox(
+      -name => 'match_all',
+      value => 1,
+      label => 'Ignore Exact'
+    )
+    .'</fieldset></form>'
+    .$query -> start_form(-method => 'get', action => '/')
+    .'<fieldset>
+      <legend>Create new...</legend>
+      <small>You can correct the spelling or capitalization here.</small>
+      <br>'
+    .$query -> textfield(
+      -name => 'node',
+      size => 50,
+      maxlength => 100
+    )
+    .$query -> hidden('lastnode_id')
+    .$query -> hidden(-name => 'op', value => 'new', -force => 1)
+    .' <button type="submit" name="type" value="draft">New draft</button>
+    <button type="submit" name="type" value="e2node">New node</button>';
+
+  if ($APP->isAdmin($USER)){
+    $str .= '<p>Lucky you, you can <strong>'
+      .linkNode(getNode('create node', 'restricted_superdoc'),
+      'create any type of node...', {newtitle => $title})
+      .'</strong></p>';
+  }
+
+  $str .= '</fieldset></form>';
+
+  if ($APP->isEditor($USER)){
+    $str .= "<p>If you wish to exercise your Editorial Power to create a [document[nodetype]], create a draft, click on the 'Advanced option(s)' button, and then use the nice shiny 'Publish as document' button provided for this purpose.</p>";
+  }
+
+  return $str;
+
+}
+
+# Moving to template
+#
+sub bookmarkit
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if $APP->isGuest($USER);
+
+  my ( $N , $text , $title ) = @_ ;
+  $N ||= $NODE ;
+  getRef $N;
+  $text ||= 'bookmark!' ;
+  my $whatto = ( $$N{type}{title} eq 'e2node' ? 'entire page' : $$N{type}{title} ) ;
+  $title ||= "Add this $whatto to your everything2 bookmarks" ;
+
+  my $linktype = getNode('bookmark','linktype')->{node_id};
+  return '('.linkNode( $USER , 'bookmarked' , { '-title' => "You have bookmarked this $whatto" } ).')'
+    if $DB->sqlSelect('count(*)', 'links', 'from_node='.$$USER{node_id}.' and to_node='.$$N{node_id}." and linktype=$linktype");
+
+  my $params = htmlcode('verifyRequestHash', 'bookmark');
+  $$params{'op'} = 'bookmark';
+  $$params{'bookmark_id'} = $N -> {node_id};
+  $$params{'-title'} = $title ;
+  $$params{'-class'} = "action ajax bookmark$$N{node_id}:bookmarkit:$$N{node_id}" ;
+  $$params{'-id'} = "bookmark$$N{node_id}" ;
+
+  return linkNode($NODE, $text, $params);
+}
+
+sub setupuservars
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if $APP->isGuest($USER);
+
+  my $SETTINGS = getVars $NODE;
+  my $now = $DB->sqlSelect("UNIX_TIMESTAMP(now())");
+
+  my $maint_nodes = undef;
+  unless (exists $$SETTINGS{nwriteupsupdate} and $now - $$SETTINGS{nwriteupsupdate} < 3600) {
+    $$SETTINGS{nwriteupsupdate} = $now;
+    my $type1 = getId(getType('writeup'));
+    my $user = getId($NODE);
+
+    my $wherestr = "type_nodetype=$type1 AND author_user=$user ";
+    $maint_nodes = join(", ", @{$APP->getMaintenanceNodesForUser($user)} );
+    $wherestr .= " AND node_id NOT IN ($maint_nodes)" if $maint_nodes;
+
+    my $writeups = $DB->sqlSelect("count(*)", "node",$wherestr);
+
+    $$SETTINGS{numwriteups} = int($writeups);
+  }
+
+  if($$USER{user_id} == $$NODE{user_id})
+  {
+    #add numwriteups to $USER for honor roll
+
+    $$USER{numwriteups} = $$SETTINGS{numwriteups};
+    updateNode($USER, $USER);
+
+    delete $$VARS{can_weblog};
+    my $wls = getVars(getNode("webloggables", "setting"));
+  
+    my @canwl = ();
+    foreach(keys %$wls)
+    {
+      my $n = getNodeById($_);
+      next unless $n;
+      unless($$n{type}{title} eq "usergroup")
+      {
+        if($APP->isAdmin($USER) ){
+          push @canwl, $_;
+        }
+
+        next;
+      }
+ 
+      if( $APP->isAdmin($USER) || $DB->isApproved($USER, $n) ){
+        push @canwl, $_;
+        next;
+      }  
+    }
+    push @canwl, getId(getNode('News for noders. Stuff that matters.', 'superdoc')) if $APP->isEditor($USER);
+    $$VARS{can_weblog} = join ",", sort{$a <=> $b} @canwl;
+  }
+
+
+  my $numcools = $DB->sqlSelect('count(*)', 'coolwriteups', 'cooledby_user='.getId($NODE));
+  $$SETTINGS{coolsspent} = linkNode(getNode('cool archive','superdoc'), $numcools, { useraction => 'cooled', cooluser => $$NODE{title} }) if $numcools;
+
+  my $feedlink = linkNode(getNode('new writeups atom feed', 'ticker'), 'feed', {'foruser' => $$NODE{title}}, {'title' => "Atom syndication feed of latest writeups", 'type' => "application/atom+xml"});
+
+  $$SETTINGS{nwriteups} = $$SETTINGS{numwriteups} . " - " . "<a href=\"/user/".rewriteCleanEscape($$NODE{title})."/writeups\">View " . $$NODE{title} . "'s writeups</a> " . ' <small>(' . $feedlink .')</small>' if $$SETTINGS{numwriteups};
+
+  $$SETTINGS{nwriteups} = 0 if not $$SETTINGS{numwriteups};
+
+  ##Last writeup cache
+  if($$SETTINGS{numwriteups} !~ /^\d+$/) {
+    #sometimes this gets messed up!
+  } elsif($$SETTINGS{numwriteups} > 0){
+
+    my $maintStr = "";
+    unless($maint_nodes){
+      $maint_nodes = join(", ", @{$APP->getMaintenanceNodesForUser($NODE)} );
+      $maintStr = " AND node_id NOT IN ($maint_nodes) " if $maint_nodes;
+    }
+
+    my $lastnoded = getNodeById($$SETTINGS{lastnoded});
+    delete $$SETTINGS{lastnoded} unless $lastnoded and $$lastnoded{type}{title} eq 'writeup';
+
+    $$SETTINGS{lastnoded} ||= $DB->sqlSelect('node_id', 'node JOIN writeup ON node_id=writeup_id',
+      "author_user=$$NODE{node_id}"
+      .$maintStr
+      ." ORDER BY publishtime DESC LIMIT 1");
+  }
+
+  my $lvl = $APP->getLevel($NODE);
+  $$SETTINGS{level} = $lvl;
+   
+  my $TITLES= getVars(getNode('level titles','setting'));
+  $$SETTINGS{level} .= " ($$TITLES{$$SETTINGS{level}})";
+
+  if ($$NODE{title} eq 'thefez') { $$SETTINGS{level} = "-1 (Arcanist)" } # --N
+  if ($$NODE{title} eq 'alex') { $$SETTINGS{level} = "âˆž (Ascended)" } # --a
+
+  $$SETTINGS{level} .= " \/ $$NODE{experience}";
+
+  setVars($NODE, $SETTINGS);
+   
+  return '';
+}
+
+sub shownewexp
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($shownumbers, $isxml, $newwuonly) = @_;
+
+  #send TRUE if you want people to see how much exp they gained/lost
+  return if $APP->isGuest($USER);
+  unless($$VARS{oldexp}) {
+    $$VARS{oldexp} = $$USER{experience};
+  }
+
+  my $str = "";
+
+  return  if ($$VARS{oldexp} == $$USER{experience} and not $newwuonly);
+  my $VSETTINGS = getVars(getNode('vote settings', 'setting'));
+
+  my $newexp = $$USER{experience} - $$VARS{oldexp};
+
+  my $xmlstr = "";
+  $xmlstr = '<xpinfo>' if $isxml;
+  $xmlstr .= "<xpchange value=\"$newexp\">$$USER{experience}</xpchange>" if $isxml;
+
+  $str.=$header;
+  unless($newwuonly)
+  {
+    my $xpNotify = $newexp;
+
+    if($newexp > 0) {
+      $str.='You [node tracker[superdoc]|gained] ';
+    } else {
+      $$VARS{oldexp} = $$USER{experience};
+      return;
+    }
+
+    htmlcode('achievementsByType','experience');
+
+    my $notification = getNode('experience','notification')->{node_id};
+    if ($$VARS{settings}) {
+      my $all_notifications = from_json($$VARS{settings})->{notifications};
+      if ($all_notifications->{$notification}) {
+        my $argSet = { amount => $xpNotify};
+        my $argStr = to_json($argSet);
+        $argStr =~ s/,/__/g;
+        my $addNotifier = htmlcode('addNotification', $notification,$$USER{user_id},$argStr);
+      }
+    }
+
+    if ($shownumbers) {
+      if ($newexp > 1) {
+        $str.='<strong>'.$newexp.'</strong> experience points!';
+      } else {
+        $str.='<strong>1</strong> experience point.';
+      }
+    } else {
+      $str.='experience!';
+    }
+  }
+
+  $$VARS{oldexp} = $$USER{experience};
+  #reset the new experience flag
+
+  my $lvl = $APP->getLevel($USER)+1;
+  my $LVLS = getVars(getNode('level experience', 'setting'));
+  my $WRPS = getVars(getNode('level writeups', 'setting'));
+
+  my $expleft = $$LVLS{$lvl} - $$USER{experience} if exists $$LVLS{$lvl};
+  my ($numwu, $wrpleft) = (undef,undef);
+
+  #No honor roll here
+
+  $$VARS{numwriteups} ||= 0;
+  $numwu = $$VARS{numwriteups};
+  $wrpleft = ($$WRPS{$lvl} - $numwu) if exists $$WRPS{$lvl};
+
+  $xmlstr .= "<nextlevel experience=\"$expleft\" writeups=\"$wrpleft\">$lvl</nextlevel>" if $isxml;
+
+  $str.= '<br />You need <strong>'.$expleft.'</strong> more XP to earn [The Everything2 Voting/Experience System[superdoc]|level] '.$lvl.'.' if $expleft > 0;
+  $str.= '<br />You need <strong>'.$wrpleft.'</strong> more writeups to earn [The Everything2 Voting/Experience System[superdoc]|level] '.$lvl.'.' if $wrpleft > 1;
+  $str.= '<br />To reach [The Everything2 Voting/Experience System[superdoc]|level] '.$lvl.', you only need one more writeup!' if $wrpleft == 1;
+  $str = parseLinks($str);
+
+  $xmlstr.='</xpinfo>' if $isxml;
+
+  return $xmlstr if $isxml;
+  return $str;
+}
+
+sub votehead
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $uid=$$USER{node_id};
+  my $canDoStuff = $$USER{votesleft} || $APP->isEditor($USER) unless $APP->isGuest($USER);
+  my $str = "";
+  $str.="\n\t".htmlcode('openform2','pagebody');
+  $str.="\n\t\t".'<input type="hidden" name="op" value="vote" />' if $canDoStuff;	#don't bother with vote opcode if user can't vote
+
+  return $str;
+}
+
+# TODO: Don't call the tools htmlcodes by variable procedure, call it explicitly because we kind of manage this codebase via grep
+#
+sub voteit
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if $APP->isGuest($USER) ;
+  my ( $N , $showwhat ) = @_ ;
+  $N ||= $NODE ;
+  getRef( $N ) ;
+
+  my $isEditor = $APP->isEditor($USER) ;
+  return $isEditor ? 'no writeup' : '' unless $N and $$N{writeup_id} || $$N{draft_id};
+
+  $showwhat ||= 7 ; #1: kill only; 2: vote only; 3: both
+
+  my $n = $$N{node_id} ;
+  my $votesettings = getVars(getNode('vote settings','setting')) ;
+  my $isMine = $$USER{user_id}==$$N{author_user};
+
+  my $author = getNodeById( $$N{author_user} );
+  $author = $query -> escapeHTML($$author{title}) if $author;
+
+  my $edstr = '';
+
+  if ($showwhat & 1 and $isEditor || $isMine || $$N{type}{title} eq 'draft') { # admin tools
+    $edstr .= htmlcode("$$N{type}{title}tools", $N);
+  }
+
+  return $edstr unless $$N{type}{title} eq 'writeup' and $showwhat & 2 ;
+
+  my $uplbl = $$votesettings{upLabel} || 'up' ;
+  my $dnlbl = $$votesettings{downLabel} || 'down' ;
+  my $nolbl = $$votesettings{nullLabel} || 'none';
+
+  my $novotereason = '';
+  $novotereason = 'this writeup is a definition' if $$N{wrtype_writeuptype} eq getId(getNode('definition', 'writeuptype')) ;
+  $novotereason = 'voting has been disabled for this writeup' if $APP->isUnvotable($N);
+
+  my $votestr = '';
+  $votestr = '&nbsp; ' if $edstr ;
+  my $prevvote = $isMine ? 0 : $DB->sqlSelect('weight', 'vote', 'vote_id='.$n.
+    ' and voter_user='.$$USER{user_id}) || 0;
+
+  $votestr .= "<span id=\"voteinfo_$n\" class=\"voteinfo\">" ;
+  if ( $isMine || $prevvote and !$novotereason ) { # show votes cast
+    my $uv = '';
+    my $r = $$N{reputation} || 0;
+    my ($p) = $DB->sqlSelect('count(*)', 'vote', "vote_id=$n AND weight>0");
+    my ($m) = $DB->sqlSelect('count(*)', 'vote', "vote_id=$n AND weight<0");
+
+    #Hack for rounding, add 0.5 and chop off the decimal part.
+    my $rating = int(100*$p/($p+$m) + 0.5) if ($p || $m);
+    $rating ||= 0 ;
+    $rating .= '% of '.($p+$m).' votes' ;
+
+    # mark up voting info
+    $p = '+'.$p;
+    $m = '-'.$m;
+    if ($prevvote>0) {
+      $uv='+';
+      $p = '<strong>'.$p.'</strong>';
+    } elsif ($prevvote<0) {
+      $uv='-';
+      $m = '<strong>'.$m.'</strong>';
+    } else {
+      $uv='?';
+    }
+
+    $r = '<strong>'.$r.'</strong>' if $query->param('vote__'.$n);
+
+    $votestr .= '<span class="votescast" title="'.$rating.'"><abbr title="reputation">Rep</abbr>: '.$r.' ( '.$p.' / '.$m.' )' .
+      ' (<a href="/node/superdoc/Reputation+Graph?id='.$n.'" title="graph of reputation over time">Rep Graph</a>)';
+    $votestr .= ' ('.$uv.') ' unless $isMine;
+      $votestr .= '</span>' ;
+  }
+
+  unless ( $isMine ) {
+    $novotereason = ' unvotable" title="'.$novotereason if $novotereason ;
+    $votestr.="<span class=\"vote_buttons$novotereason\">";
+    if ( $novotereason ) {
+      $votestr .= '(unvotable)' ;
+    } elsif ($$USER{votesleft}) {
+      $votestr .= 'Vote:' unless $votestr =~ /votescast/ ;
+      my @values = ( 1 , -1 ) ;
+      push( @values , 0 ) if $$VARS{nullvote} && $$VARS{nullvote} ne 'off' ; #'off' for legacy
+      my %labels = ( 1 => $uplbl , -1 => $dnlbl , 0 => $nolbl ) ;
+      my $confirm = 'confirm' if $$VARS{votesafety};
+      my $replace = 'replace ' unless $$VARS{noreplacevotebuttons};
+      my $clas = $replace."ajax voteinfo_$n:voteit?${confirm}op=vote&vote__$n=" ;
+      my $ofauthor = $$VARS{anonymousvote} == 1 && !$prevvote ? 'this' : $author."'s" ;
+      my %attributes = (
+        1 => { class => $clas."1:$n,2" , title => "upvote $ofauthor writeup" },
+        -1 => { class => "$clas-1:$n,2" , title => "downvote $ofauthor writeup" },
+        0 => {class => $replace }
+      ) ;
+
+      if ( $prevvote ){
+        $attributes{ $prevvote } = { class=>$replace , disabled=>'disabled',
+          title=>'you '.( $prevvote>0 ? 'up' : 'down')."voted $author\'s writeup" } ;
+      }
+
+      $votestr .= $query -> radio_group( -name=>"vote__$n" , Values=>\@values ,
+        default=>$prevvote, labels=>\%labels, attributes=>\%attributes );
+
+      if (my $numvoteit = $query->param('numvoteit')) { # this hackery is for votefooter: vote or blab button
+        $query->param('numvoteit', $numvoteit+1);
+      } else {
+        $query->param('numvoteit', 1);
+      }	
+    }else{
+      $votestr.= '<strong>vote failed:</strong> ' if $query->param("vote__$n") && $query -> param("vote__$n") != $prevvote;
+      my $level = $APP->getLevel($USER);
+      $votestr.= '('.linkNodeTitle("Why Don't I Have Votes Today?|out of votes").')' if $level && htmlcode('displaySetting' , 'level votes', $level) ;
+    }
+
+    $votestr .='</span>' ;
+  }
+
+  $votestr .='</span>' ;
+  return $edstr.$votestr ;
+
+}
+
+# choose an e2node to be the parent of a draft
+# optionally, publish the draft to it as a writeup
+# TODO: Consolidate this under a controller, somehow
+# TODO: What bug is in searchNodeName
+sub parentdraft
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $N = shift || $NODE;
+  getRef $N;
+  return '<div class="error">Not a draft.</div>' unless $$N{type}{title} eq 'draft';
+
+  my $publish = undef; $publish = 1 if lc($query -> param('parentdraft')) eq 'publish';
+
+  my $wrap = sub{ $query -> div({id => "draftstatus$$N{node_id}", class => 'parentdraft'}
+    , $_[0]
+    .htmlcode('openform')
+    .$query -> submit(
+      -name => 'cancel',
+      value => 'Cancel'.($publish ? ' publication' : ''),
+      class => "ajax draftstatus$$N{node_id}:setdraftstatus:$$N{node_id}")
+    .'</form>'
+    .$query -> script({type => 'text/javascript'}
+      , "parent.location='#draftstatus$$N{node_id}';"
+      )
+  )};
+
+  my ($str, $publishAs) = (undef,undef);
+
+  if ($publish){
+    # check the user is allowed to post writeups
+    $str = htmlcode('nopublishreason', $USER);
+    return &$wrap("<h3>Draft cannot be published</h3><p>$str</p>") if $str;
+
+    # check if the draft meets minimal formal requirements
+    my $userLevel = $APP->getLevel($USER);
+
+    unless ($$N{doctext} =~ /\S/){
+      $str = '<p>No content.</p>';
+    }elsif($$N{doctext} =~ /\[(http\:\/\/(?:\w+\.)?everything2\.\w+)/i or !$userLevel && $$N{doctext} !~ /\[(?!http:).+]/){
+      $str = "<p><strong>Do not</strong> use the external link format to link
+        to other pages on this site (&#91;$1...&#93;).</p>" if $1;
+
+      $str = '<p>You may have read '
+        .linkNode(getNode('E2 Quick Start', 'e2node'))
+        .' a little too quickly.</p><p>Writeups on Everything2 should include '
+        .linkNode(getNode('Links on Everything2','e2node'),'links')
+        .' to other pages on the site. You can make an on-site link like this: &#91;'
+        .linkNode(getNode('hard link','e2node'))
+        .'&#93; or like this: &#91;'
+        .linkNode(getNode('pipe link','e2node'),'link one thing|show another')
+        .'&#93;. This way, each writeup is integrated with the rest of the site and new and old works can complement each other.</p>
+          <p>You can also link to other websites like this: &#91;http://example.com|external link&#93;, but external links do not help to integrate a writeup into Everything2. </p>'
+        .$str;
+    }
+
+    return &$wrap("<h3>Draft not ready for publication</h3>$str") if $str;
+
+    $publishAs = $query -> param('publishas') if $userLevel and $query -> param('publishas') and htmlcode('canpublishas', $query -> param('publishas')) == 1;
+    $publishAs = getNode($publishAs, 'user') if $publishAs;
+  }
+
+  # Can publish/choose parent
+  # work out which e2nodes to offer based on title...
+
+  my $title = $query -> param('title');
+  if ($title){
+    $title = cleanNodeName($title);
+    $query -> param('title', $title);
+  }else{
+    $title = $$N{title};
+    # remove number/writeuptype from end of title (user can put it back later if they really want it)
+    $title =~ s/ \($1\)$// if $title =~ / \(([\w\d]+)\)$/ and $1 eq int($1) || getNode($1, 'writeuptype');
+  }
+
+  # ...existing parent...
+
+  my $linktype = getId(getNode 'parent_node', 'linktype');
+  my $parent = $DB -> sqlSelect('to_node', 'links', "from_node=$$N{node_id} AND linktype=$linktype");
+
+  # ... and choice last time around
+  my $e2node = $query -> param('writeup_parent_e2node');
+
+  my @existing = ();
+  my $newoption = 1;
+
+  unless ($e2node){
+    # no choice made yet. The user chooses an e2node from:
+    # 1. the draft's current parent
+    # 2. the e2node whose title matches this draft
+    # 3. e2nodes found with a search on the title
+    # 4. a new e2node with this draft's title
+	
+    push @existing, getNodeById($parent) if $parent;
+
+    my $nameMatch = getNode($title, 'e2node', 'light');
+    push @existing, $nameMatch if $nameMatch and $$nameMatch{node_id} != $parent;
+
+    $newoption = 0 if $nameMatch;
+    $nameMatch = getId $nameMatch;
+	
+    if ($newoption or !$publish && $parent){
+      # if no existing e2node with this title, or if changing existing parent, look for similar
+      my $e2type = getId(getType('e2node'));
+      my @findings = @{$APP->searchNodeName($title, [$e2type], 0, 1)}; # without soundex
+      @findings = @{$APP->searchNodeName($title, [$e2type], 1, 1)} unless @findings; # with soundex
+
+      push @existing, map($_ && $$_{type_nodetype} == $e2type &&  # there's a bug in searchNodeName...
+        $$_{node_id} != $parent && $$_{node_id} != $nameMatch ? $_: (), @findings);
+      @existing = @existing[0..24] if @existing > 25; # enough is enough
+    }
+
+  }elsif(int $e2node){
+    # user has chosen an existing e2node (not 'new')
+    $newoption = 0;
+    push @existing, getNodeById($e2node);
+  }
+
+  # radio buttons for multiple options, hidden control if only one
+  my %prams = (name => 'writeup_parent_e2node');
+  unless ($newoption + scalar @existing == 1){
+    $prams{type} = 'radio';
+    $prams{checked} = 'checked';
+  }else{
+    # no choice:
+    $prams{type} = 'hidden';
+    ($e2node, $title) = $newoption ? ('new', $title) : ($existing[0]->{node_id}, $existing[0]->{title});
+  }
+
+  # provide e2node options: to choose existing, create new, or both
+
+  $str = htmlcode('openform')
+    .qq'<fieldset class="draftstatus"><legend>Choose destination</legend>'
+    .$query -> hidden('draft_id', $$N{node_id})
+    .$query -> hidden('title', $title);
+
+  $str .= $query -> h3(($publish ? 'Publish under' : 'Attach to').' existing title (e2node):')
+    .$query -> ul({class => 'findings'}, 
+      join('',, map($query -> li($query -> input({value => $$_{node_id}, %prams})
+	.' '
+        .linkNode($_)
+        .(delete $prams{checked} ? '' : '')
+        ), @existing)
+      )
+    )  if @existing;
+
+  $str .= $query -> h3('Create a new page (e2node) with this title:')
+    .$query -> ul({class => 'findings'} , $query -> li($query -> label(
+      $query -> input({value => 'new', %prams})
+      .' '
+      .$query -> escapeHTML($title)
+      ))
+    ) if $newoption;
+
+
+  # provide buttons
+
+  my $ajaxTrigger = 1; # we normally want to submit this form with ajax
+
+  unless ($publish && $e2node){
+    # attach only or multiple options:
+    # we have to wait until there's only one option before offering
+    # to publish so setwriteuptype can set type/hidden
+
+    $str .= $query -> p($query -> submit('choose', 'Choose'));
+
+  }else{
+    # publishing and only one option/user has chosen: see if this user can publish here:
+    my $nopublish = undef; $nopublish = htmlcode('nopublishreason', $publishAs || $USER, $e2node)
+      unless $e2node eq 'new'; # the user has already been checked
+
+    unless ($nopublish){
+      # no reason not to allow publication
+      # error report if tried to publish already and failed nonetheless:
+      $str .= parseLinks("<p>Publication failed: please try again, and if it still doesn't work, please contact an [Content Editors|editor].</p>")
+        if $query -> param('op') eq 'publishdraft';
+
+      $str .= '<p>'
+        .htmlcode('setwriteuptype', $N, $title)
+        .'</p><p>'
+        .$query -> submit('publish',  'Publish')
+        .'</p><input type="hidden" name="op" value="publishdraft">';
+		
+      $ajaxTrigger = 0; # we want to go to the e2node
+
+    }else{
+      # known reason why this user can't publish this draft here
+      $publish = 0;
+      $str .= '<h3>Your draft cannot be published at <i>'
+        .$query -> escapeHTML($title)
+        .'</i>:</h3><p>';
+
+      if (UNIVERSAL::isa($nopublish,'HASH')){
+        $str .= linkNodeTitle("${title}[by "
+          .($publishAs ? "$$publishAs{title}]|$$publishAs{title} has" : "$$USER{title}]|You have")
+          .' a writeup there already.');
+
+      }else{
+        $str .= $nopublish;
+        my $options = undef; $options = "Attach this draft to '"
+          .$query -> escapeHTML($title)
+          ."'" unless $e2node =~ /\D/ or $parent == $e2node;
+
+        my $review = getId(getNode 'review', 'publication_status');
+        $options .= ($options ? ' and request review of it' : 'Request review of this draft').'' unless $$N{publication_status} == $review;
+
+        $str .= '</p><p>'
+          .$query -> hidden(
+            -name => 'draft_publication_status',
+            -value => $review,
+          )
+          .$query -> submit('attach', $options)if $options;
+      }
+
+      $str .= '</p>';
+    }
+  }
+
+  $str .= $query -> hidden('parentdraft') if $publish;
+  $str .= htmlcode('canpublishas') if $publishAs;
+
+  $str .= $query -> hidden(
+    -name => 'ajaxTrigger',
+    value => 1,
+    class => "ajax draftstatus$$N{node_id}:"
+      .($publish ? 'parentdraft:' : 'setdraftstatus:').$$N{node_id}
+    ) if $ajaxTrigger;
+
+  return &$wrap(
+    "$str</fieldset></form>"
+    .htmlcode('openform')
+    .'<fieldset><legend>Try a different title</legend><p>'
+    .$query -> hidden('parentdraft')
+    .$query -> hidden('publishas')
+    .$query -> hidden(
+      -name => 'ajaxTrigger',
+      value => 1,
+      class => "ajax draftstatus$$N{node_id}:parentdraft:$$N{node_id}"
+    )
+    .$query -> textfield(
+      -name => 'title',
+      value => $title,
+      size => 80
+    )
+    .$query -> submit('search','Search')
+    .'</p></fieldset></form>'
+  );
+}
+
+sub openform2
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($name) = @_;
+  $name ||= '';
+
+  return $query->start_form(-method => 'POST',
+    -action => urlGenNoParams($NODE,1),
+    -name => $name,
+    -id => $name) .
+    $query->hidden('displaytype').
+    $query->hidden('node_id', getId $NODE);
+
+}
+
+
+# called from [publishdraft] or from [writeup maintenance create]
+# we have already checked that everything exists,
+# and that this user can publish this writeup to this node
+#
+sub publishwriteup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($WRITEUP, $E2NODE) = @_;
+
+  my $WRTYPE = getNodeById($query->param('writeup_wrtype_writeuptype'));
+  # if we haven't been given a type, use the default:
+  $WRTYPE = getNode('thing', "writeuptype") unless $WRTYPE and $$WRTYPE{type}{title} eq 'writeuptype';
+
+  my ($sec,$min,$hour,$mday,$mon,$year) = localtime(time);
+  my $notnew = $query->param("writeup_notnew") || 0;
+
+  # some of this should theoretically happen automatically. But sometimes fails. So:
+  $$WRITEUP{parent_e2node} = getId $E2NODE;
+  $$WRITEUP{wrtype_writeuptype} = getId $WRTYPE;
+  $$WRITEUP{notnew} = $notnew;
+  $$WRITEUP{title} = "$$E2NODE{title} ($$WRTYPE{title})";
+  $$WRITEUP{hits} = 0; # for drafts
+  $$WRITEUP{publishtime} = $$E2NODE{updated} = sprintf '%4d-%02d-%02d %02d:%02d:%02d', $year+1900,$mon+1,$mday,$hour,$min,$sec;
+
+  $DB->sqlInsert('newwriteup', {node_id => getId($WRITEUP), notnew => $notnew});
+
+  updateNode $WRITEUP, $USER; # after newwriteup insertion to update New Writeup data
+  updateNode $E2NODE, -1;
+
+  unless ($$WRTYPE{title} eq 'lede'){
+    # insert into the node group, last or before Webster entry;
+    # make sure Webster is last while we're at it
+	
+    my @addList = getNodeWhere({
+      parent_e2node => $$E2NODE{node_id},
+      author_user => getId(getNode('Webster 1913', 'user'))
+      }, 'writeup');
+	
+    removeFromNodegroup($E2NODE, $addList[0], -1) if @addList; # remove Webster
+	
+    unshift @addList, $WRITEUP;
+    insertIntoNodegroup($E2NODE, -1, \@addList);
+  }else{
+    # insert at top of node group
+    insertIntoNodegroup($E2NODE, -1, $WRITEUP, 0);
+  }
+
+  # No XP, writeup count, notifications or achievement for maintenance nodes
+  if ( $APP->isMaintenanceNode($E2NODE) ){
+    recordUserAction('createwriteupemaintenance', $$WRITEUP{node_id}, $$E2NODE{node_id});
+    return;
+  }
+
+  # record new node creation:
+  recordUserAction('createwriteup', $$WRITEUP{node_id}, $$E2NODE{node_id});
+
+  return if $$WRITEUP{author_user} != $$USER{node_id}; # no credit for publishas
+
+  # credit user
+  $$USER{experience}+=5;
+  updateNode $USER, $USER;
+
+  $$VARS{numwriteups}++;
+  $$VARS{lastnoded} = $$WRITEUP{writeup_id};
+
+  htmlcode('achievementsByType','writeup');
+
+  # Inform people who have this person as one of their favorite authors
+  my $favoriteNotification = getNode("favorite","notification")->{node_id};
+  my $favoriteLinkType = getNode("favorite","linktype")->{node_id};
+  my $faves = $DB->sqlSelectMany(
+    "from_node",
+    "links",
+    "to_node = $$USER{user_id} AND linktype= $favoriteLinkType");
+
+  while (my $f = $faves->fetchrow_hashref){
+    my $fVars = getVars(getNodeById($$f{from_node}));
+    if ($$fVars{settings}) 
+    {
+      if (from_json($$fVars{settings})->{notifications}->{$favoriteNotification})
+      {
+        my $argSet = { writeup_id => getId($WRITEUP),
+          favorite_author => $$USER{user_id}};
+        my $argStr = to_json($argSet);
+        my $addNotifier = htmlcode('addNotification',
+          $favoriteNotification, $$f{from_node},$argStr);
+      }
+    }
+  }
+
+  # Determine if this is a user created in the last two weeks
+  my $dateParser = new DateTime::Format::Strptime(
+    pattern => '%F %T',
+    locale  => 'en_US',
+  );
+
+  # This only really doesn't happen in the test environment
+  if(my $createTime = $dateParser->parse_datetime($$USER{createtime}))
+  {
+    my $userAge = DateTime->now()->subtract_datetime($createTime);
+    my $youngAge = DateTime::Duration->new(days => 14);
+    my $isYoungin = (DateTime::Duration->compare($userAge, $youngAge) < 0 ? 1 : 0);
+
+    # Make a notification about a newbie writeup
+
+    if($$VARS{numwriteups} == 1 || $isYoungin)
+    {
+      htmlcode('addNotification' , "newbiewriteup", undef,
+        {
+          writeup_id => getId($WRITEUP),
+          author_id => $$USER{user_id},
+          publish_time => DateTime->now()->strftime("%F %T")
+        }
+      );
+    }
+  }
+
+  $query -> param('publish', 'OK');
+
 }
 
 1;
