@@ -11,6 +11,7 @@ package Everything::HTML;
 use strict;
 use Everything;
 use Everything::Delegation::htmlcode;
+use Everything::Delegation::opcode;
 use CGI;
 use CGI::Carp qw(set_die_handler);
 use Carp qw(longmess);
@@ -2563,38 +2564,46 @@ sub execOpCode
   my $handled = 0;
   
   return 0 unless(defined $op && $op ne "");
-  
-  my $logError = sub {
-    my $condition = shift;
-    if ($@){
-      Everything::printLog("Problem when $condition $op opcode:\n");
-      my $params = $query->Vars();
-      for (keys %$params) {
-        Everything::printLog("- param: " . $_ . " = " . $query->param($_));
+  my $delegation = undef;
+  if($op ne "new" and $delegation = Everything::Delegation::opcode->can($op))
+  {
+    Everything::printLog("Delegating opcode: '$op'");
+    $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $APP);
+    $handled = 1;
+  }else{
+    Everything::printLog("Not delegating opcode: '$op'");
+    my $logError = sub {
+      my $condition = shift;
+      if ($@){
+        Everything::printLog("Problem when $condition $op opcode:\n");
+        my $params = $query->Vars();
+        for (keys %$params) {
+          Everything::printLog("- param: " . $_ . " = " . $query->param($_));
+        }
+        Everything::printLog($@);
       }
-      Everything::printLog($@);
+    };
+
+    my $opCodeTest = sub {
+      my $code = shift;
+      my $compiled = eval $code;
+      &$logError("compiling");
+      return $compiled;
+    };
+
+    $OPCODE = getOpCode($op);
+
+    # For built-in opcodes, like new, there will normally be no $OPCODE
+    if ($OPCODE) {
+
+      $opCodeCode = getCompiledCode($OPCODE, $opCodeTest);
+      unless ($@)
+      {
+        $handled = eval { &$opCodeCode(); };
+        &$logError("running");
+      }
+
     }
-  };
-
-  my $opCodeTest = sub {
-    my $code = shift;
-    my $compiled = eval $code;
-    &$logError("compiling");
-    return $compiled;
-  };
-
-  $OPCODE = getOpCode($op);
-
-  # For built-in opcodes, like new, there will normally be no $OPCODE
-  if ($OPCODE) {
-
-    $opCodeCode = getCompiledCode($OPCODE, $opCodeTest);
-    unless ($@)
-    {
-      $handled = eval { &$opCodeCode(); };
-      &$logError("running");
-    }
-
   }
 
   unless($handled)
