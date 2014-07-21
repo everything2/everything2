@@ -13,7 +13,7 @@ return htmlcode('displaynltext', 'New Writeups (Guest User)' )
 	if $APP-&gt;isGuest($USER) ;
 
 # live version with options for logged-in user
-htmlcode('nwuamount').htmlcode($$THEME{isZen} ? 'zenwriteups' : 'newwriteups2');
+htmlcode('nwuamount').htmlcode('zenwriteups');
 %]
 
 &lt;div class=&quot;nodeletfoot morelink&quot;&gt;([%linkNode(getNode('Writeups by Type', 'superdoc'), 'more')%])&lt;/div&gt;</nlcode>
