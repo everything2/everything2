@@ -36,6 +36,9 @@ BEGIN {
   *getNodeWhere = *Everything::HTML::getNodeWhere;
   *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
   *recordUserAction = *Everything::HTML::recordUserAction;
+  *linkNodeTitle = *Everything::HTML::linkNodeTitle;
+  *confirmUser = *Everything::HTML::confirmUser;
+  *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
 } 
 
 # Used by showchoicefunc
@@ -941,10 +944,12 @@ sub listcode
   $codenode ||= $NODE ;
   my $code = $$codenode{$field};
 
+  my $type = $codenode->{type}->{title};
+
   if($codenode->{delegated})
   {
-    $code = "Error: could not find code in delegated htmlcode";
-    my $file="/var/everything/ecore/Everything/Delegation/htmlcode.pm";
+    $code = "Error: could not find code in delegated $type";
+    my $file="/var/everything/ecore/Everything/Delegation/$type.pm";
 
     my $filedata = undef;
     my $fileh = undef;
@@ -3005,6 +3010,323 @@ sub publishwriteup
 
   $query -> param('publish', 'OK');
 
+}
+
+# Used to basically display theme stuff. Likely going to be moved to a template function
+# Currently used in settings, themes, and nodeballs
+#
+sub displayvars
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $SETTINGS = getVars $NODE;
+  my $str = '';
+  my ($keyclr, $valclr) = ('#CCCCFF', '#DEDEFF');
+
+  my @skeys = keys %$SETTINGS;
+  if(not @skeys) { 
+    return "<em>the node's settings are empty</em><br>\n";
+  }
+
+  $str .= scalar(@skeys).' key/value pair';
+  $str .= 's' unless scalar(@skeys)==1;
+  $str .= ':';
+
+  @skeys = sort {$a cmp $b} @skeys;
+
+  $str.="<table width=\"100%\" cellpadding=\"1\" cellspacing=\"1\" border=\"0\">\n";
+  $str.="<TR><TH>Setting</TH><TH>Value</TH></TR>\n";
+  foreach (@skeys) {
+    $str.= '<tr><td class="setting" bgcolor="'.$keyclr.'">'.$_.'</td><td class="setting" bgcolor="'.$valclr.'">'.encodeHTML($$SETTINGS{$_}, 1)."</td></tr>\n";  
+  }
+  $str .="</table>\n";
+  return $str
+}
+
+sub editvars
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return "<i>you can't update this node</i>" unless $DB->canUpdateNode($USER, $NODE);
+  my $SETTINGS = getVars($NODE);
+  my @params = $query->param;
+  my $str=''; 
+
+  foreach (@params) {
+    if(/setsetting_(.*)$/) {
+      $$SETTINGS{$1}=$query->param('setsetting_'.$1);
+    }
+  }
+
+  foreach (@params) {
+    if(/delsetting_(.*)$/) { #for s/a/b in 'cloakers'
+      delete $$SETTINGS{$1};
+    }
+  }
+
+
+  if($query->param('newsetting') ne '' and $query->param('newval') ne ''){
+    my $title = $query->param('newsetting');
+    $$SETTINGS{$title} = $query->param('newval');
+  }
+
+  setVars ($NODE, $SETTINGS);
+  my @skeys = keys %$SETTINGS;
+  @skeys = sort {$a cmp $b} @skeys;
+
+  my ($keysize, $valsize) = (15, 30);
+  my $oddrow = '';
+
+  $str.="<table class='setvarstable'>\n";
+  $str.="<tr><th>Remove</th><th>Setting</th><th>Value</th></tr>\n";
+  foreach(@skeys) {
+    $oddrow = ($oddrow ? '' : ' class="oddrow"');
+    my $value = encodeHTML($$SETTINGS{$_});
+
+    #  This breaks if there's a double quote in the text, so we replace with &quot;
+    $value =~ s/\"/&quot;/g;
+    $str.=qq'<tr$oddrow><td><input type="checkbox" name="delsetting_$_"></td>
+      <td class="setting"><b>$_</b></td>
+      <td class="setting"><textarea name="setsetting_$_" class="expandable"
+        cols="$valsize" rows="1">$value</textarea></td></tr>\n';
+  }
+
+  $str.=qq'<tr><td></td>
+    <td><input type="text" name="newsetting" size="$keysize"></td>
+    <td><textarea name="newval" class="expandable" cols="$valsize" rows="1"></textarea></td></tr>\n';
+  $str.="</table>\n";
+
+  return $str;
+}
+
+# Used by the legacy display stuff: printable and node heaven
+#
+sub displaywriteuptext
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  #displaywriteuptext - pass writeup's node_id
+
+  my ($num) = @_;
+
+  my $WRITEUP = undef;
+  my $LNODE = undef;
+  if (not $num) {
+    $LNODE = $$NODE{parent_e2node}; 
+    $WRITEUP=$NODE;
+  } else {
+    $LNODE = getId($NODE);
+    my @group = ();
+    @group = @{$$NODE{group}} if $$NODE{group};
+    return unless @group;
+    $WRITEUP = getNodeById($group[$num-1]);
+  }
+
+  return '' unless $WRITEUP;
+
+  my $TAGNODE = getNode('approved html tags', 'setting');
+  my $TAGS=getVars($TAGNODE);
+
+  my $text = htmlcode('standard html screen', $$WRITEUP{doctext}, $LNODE);
+  my $wuid = getId($WRITEUP);
+  return '<!-- google_ad_section_start --><!-- '.$wuid.'{ -->'.$text.'<!-- }'.$wuid.' --><!-- google_ad_section_end -->';
+
+}
+
+# Used by the category display page, and the legacy page display, via displaywriteuptext
+#
+sub standard_html_screen
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($text, $lastnode_id) = @_;
+
+  my $TAGNODE = getNode('approved html tags', 'setting');
+  my $TAGS = getVars($TAGNODE);
+
+  $lastnode_id = undef if ($APP->isGuest($USER));
+
+  $text = htmlScreen($text, $TAGS);
+  $text = screenTable ($text);
+  $text = parseLinks($text, $lastnode_id);
+  $text = breakTags($text);
+  return $text;
+}
+
+# Used to link the viewcode page in the edev nodelet
+#
+sub viewcode
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isDeveloper($USER);
+
+  my $ntt = $$NODE{type}{title};
+  return unless ($ntt eq 'superdoc') || ($ntt eq 'superdocnolinks') || ($ntt eq 'nodelet');
+
+  return '<font size="1">'.linkNode($NODE, 'viewcode', {'displaytype'=>'viewcode', 'lastnode_id'=>0}).'</font>';
+}
+
+sub addwriteup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $canPublishDirectly = 2; # this level doesn't have to create draft first
+
+  if ( $APP->isMaintenanceNode($NODE) ){
+    $canPublishDirectly = -1;
+  }
+
+  # get existing wu or reason for no new posting:
+  my $MINE = undef; #mod_perl safety
+  $MINE = delete $PAGELOAD->{my_writeup}; # saved by [canseewriteup]
+  $MINE ||= htmlcode('nopublishreason', $USER, $NODE);
+  return '<div class="nodelock"><p>'.$MINE.'</p></div>' if $MINE and !UNIVERSAL::isa($MINE,'HASH');
+
+  # OK: user can post or edit a writeup/draft
+
+  my ($str, $draftStatusLink, $lecture) = (undef,undef,undef);
+
+  if ($MINE){
+    return '<p>You can edit your contribution to this node at'.linkNode($MINE).'</p>' if $$VARS{HideWriteupOnE2node}; # user doesn't want to see their text
+
+    $str.=$query->start_form(-action => urlGenNoParams($MINE, 'noQuotes'), -class => 'writeup_add')
+      .$query -> hidden(-name => 'node_id', value => $$MINE{node_id}, -force => 1); # go to existing writeup/draft on edit
+	
+    $draftStatusLink = '<p>'
+      .linkNode($MINE, 'Set draft status...', {
+        -id => "draftstatus$$MINE{node_id}"
+        , -class => "ajax draftstatus$$MINE{node_id}:setdraftstatus?node_id=$$MINE{node_id}:$$MINE{node_id}"
+      }).'</p>' if $$MINE{type}{title} eq 'draft';
+
+  } else {
+    # set default type for [editwriteup]
+    $MINE = {type => {title=>'writeup'}};
+
+    # restricted options and lecture for new users:
+    my $level = $APP->getLevel($USER);
+    if ($level <= $canPublishDirectly){
+      $$MINE{type}{title} = 'draft' if $level < $canPublishDirectly;
+
+      $lecture = '<p class="edithelp">Before publishing a writeup, you '
+        .($$MINE{type}{title} ne 'draft' ? 'should normally ' : '')
+        .'first post it as a '
+        .linkNode(getNode('Drafts','superdoc'), 'draft')
+        .'. This gives you a chance to correct any mistakes in the content or formatting before anyone else
+          reads and can vote on it, or to ask other users to make suggestions or improvements.</p>'
+    }
+
+    $str.=$query->start_form(
+      -action => '/user/'
+      .rewriteCleanEscape($$USER{title})
+      .'/writeups/'
+      .rewriteCleanEscape($$NODE{title}),
+        -name=>'wusubform',
+        -class => 'writeup_add')
+      .qq'
+        <input type="hidden" name="node" value="new writeup">
+        <input type="hidden" name="writeup_parent_e2node" value="$$NODE{node_id}">
+        <input type="hidden" name="draft_title" value="$$NODE{title}">';
+  }
+
+  return $str.htmlcode('editwriteup', $MINE, $lecture)."</form>$draftStatusLink";
+}
+
+# Used everywhere
+#  inverse of this is in varcheckboxinverse
+#	checked   : $$VARS is 1
+#	unchecked : $$VARS doesn't exist
+#
+sub varcheckbox
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($k, @title) = @_;
+
+  return if ($APP->isGuest($USER)) || ($$USER{title} eq 'everyone');
+  my $title = join ', ', @title;
+  $title ||= $k;
+
+  if($query->param('setvar_'.$k)) {
+    $$VARS{$k} = 1;
+  } elsif($query->param('sexisgood')) {
+    delete $$VARS{$k};
+  }
+
+  return $query->checkbox('setvar_'.$k, $$VARS{$k}, '1', $title);
+
+}
+
+# Used everywhere
+#  inverse of varcheckbox
+#	checked   : $$VARS doesn't exist
+#	unchecked : $$VARS is 1
+#
+sub varcheckboxinverse
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($k, @title) = @_;
+
+  return if ($APP->isGuest($USER)) || ($$USER{title} eq 'everyone');
+  my $title = join ', ', @title;
+  $title ||= $k;
+
+  if($query->param('unsetvar_'.$k)) {
+    delete $$VARS{$k};
+  } elsif($query->param('sexisgood')) {
+    $$VARS{$k} = 1;
+  }
+
+  return $query->checkbox('unsetvar_'.$k, !$$VARS{$k}, '1', $title);
 }
 
 1;

@@ -2567,11 +2567,9 @@ sub execOpCode
   my $delegation = undef;
   if($op ne "new" and $delegation = Everything::Delegation::opcode->can($op))
   {
-    Everything::printLog("Delegating opcode: '$op'");
     $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $APP);
     $handled = 1;
   }else{
-    Everything::printLog("Not delegating opcode: '$op'");
     my $logError = sub {
       my $condition = shift;
       if ($@){

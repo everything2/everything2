@@ -35,6 +35,9 @@ BEGIN {
   *getNodeWhere = *Everything::HTML::getNodeWhere;
   *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
   *recordUserAction = *Everything::HTML::recordUserAction;
+  *linkNodeTitle = *Everything::HTML::linkNodeTitle;
+  *confirmUser = *Everything::HTML::confirmUser;
+  *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
 } 
 
 sub publishdraft
