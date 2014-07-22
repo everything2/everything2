@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>217</node_id>
   <title>addwriteup</title>
   <code>my $canPublishDirectly = 2; # this level doesn't have to create draft first
