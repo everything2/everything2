@@ -4,7 +4,9 @@ package Everything::Delegation::htmlcode;
 #  and that the symbols are always available
 
 # TODO: use strict
+# use strict;
 # TODO: use warnings
+# use warnings;
 
 BEGIN {
   *getNode = *Everything::HTML::getNode;
@@ -640,6 +642,8 @@ sub displaydebatecommentcontent
 
   my ( $node, $displaymode, $parent ) = @_;
   $displaymode += 0;
+
+  my $rootnode = getNodeById($node->{root_debatecomment});
 
   my $SIZELIMIT = 768;
 
@@ -2392,7 +2396,6 @@ sub shownewexp
   $xmlstr = '<xpinfo>' if $isxml;
   $xmlstr .= "<xpchange value=\"$newexp\">$$USER{experience}</xpchange>" if $isxml;
 
-  $str.=$header;
   unless($newwuonly)
   {
     my $xpNotify = $newexp;

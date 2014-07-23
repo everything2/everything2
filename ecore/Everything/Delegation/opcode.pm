@@ -73,11 +73,12 @@ sub publishdraft
       $e2node = $DB -> insertNode($title, 'e2node', $USER);
       $query -> param('writeup_parent_e2node', $e2node);
     }
-	
-    my $NODE = getNodeById($e2node);
+
+    # Modify the current global here
+    $NODE = getNodeById($e2node);
     return unless $NODE and $$NODE{type}{title} eq 'e2node';
 
-    return if htmlcode('nopublishreason', $publishAs || $USER, $NODE);
+    return if htmlcode('nopublishreason', $publishAs || $USER, $thisnode);
 	
     my $wu = $$draft{node_id};
 	
