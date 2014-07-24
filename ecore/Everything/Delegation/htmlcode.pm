@@ -41,6 +41,8 @@ BEGIN {
   *linkNodeTitle = *Everything::HTML::linkNodeTitle;
   *confirmUser = *Everything::HTML::confirmUser;
   *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
+  *canUpdateNode = *Everything::HTML::canUpdateNode;
+  *updateLinks = *Everything::HTML::updateLinks;
 } 
 
 # Used by showchoicefunc
@@ -55,6 +57,9 @@ use JSON;
 # Used by publishwriteup
 use DateTime;
 use DateTime::Format::Strptime;
+
+# Used by parsetimestamp
+use Time::Local;
 
 # This links a stylesheet with the proper content negotiation extension
 # linkJavascript below talks a bit about the S3 strategy
@@ -3330,6 +3335,489 @@ sub varcheckboxinverse
   }
 
   return $query->checkbox('unsetvar_'.$k, !$$VARS{$k}, '1', $title);
+}
+
+# usersearchform - Used in joker's chat only.
+#   TODO - Remove this
+#
+sub usersearchform
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($PARAM) = @_;
+
+  my $default ='';
+  my $lnid = getId($NODE);
+  my $ParentNODE = $NODE;
+  if(!$APP->isGuest($USER) and my $ln = $query->param('lastnode_id')  and ($query->param('lastnode_id') =~ /^\d+$/)) {
+    my $LN = getNode $ln;
+    if($$LN{type}{title} eq 'writeup') {
+      $LN = getNodeById($$LN{parent_e2node});
+    }
+    $default = $$LN{title} if $LN;
+  }
+
+  if($$NODE{type}{title} eq 'writeup') {
+    $ParentNODE = getNodeById($$NODE{parent_e2node});
+  }
+  $lnid = $$ParentNODE{node_id} if $ParentNODE;
+
+  my $title=$query->param('node');
+  $query->param('node', $default); 
+
+  my $str = '';
+
+  $str.="
+    <script type='text/javascript' >
+      function fullText() {
+        fT = \$('full_text');
+        if (fT.checked) {
+          searchForm = fT.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
+          searchForm.id = 'searchbox_017923811620760923756:pspyfx78im4';
+          searchForm.action = '/title/Google%20Search%20Beta';
+          searchForm.method = 'GET';
+
+          cx = document.createElement('input');
+          cx.type = 'hidden';
+          cx.name = 'cx';
+          cx.value ='017923811620760923756:pspyfx78im4';
+
+          cof = document.createElement('input');
+          cof.type = 'hidden';
+          cof.name = 'cof';
+          cof.value ='FORID:9';
+
+          sa = document.createElement('input');
+          sa.type = 'hidden';
+          sa.name = 'sa';
+          sa.value = 'Search';
+
+          searchForm.appendChild(cx);
+          searchForm.appendChild(cof);
+          searchForm.appendChild(sa);
+
+          \$('node_search').name = 'q';
+       }
+      return true;
+    }
+    </script>";
+
+  $str .= $query->start_form("GET",$query->script_name, "onSubmit='return fullText();'");
+  $str .= '<table cellpadding="0" cellspacing="0"><tr valign="middle">';
+  $str.= '<td>'.
+  $query->textfield(-name => 'node',
+    -id => 'node_search',
+    -default => $default,
+    -size => 28,
+    -maxlength => 80);
+  $str.='<input type="hidden" name="lastnode_id" value="'.$lnid.'" />';
+
+  $str.='</td><td>';
+  $str.='<input type="submit" name="searchy" value="search" />';
+
+  $query->param('node', $title); 
+
+  $str.= '</td><td style="font-family:sans-serif;">';
+
+  $query->param('soundex', '');
+  $query->param('match_all', '');
+  $query->param('nosoftlink', '');
+
+  $str.="\n".$query->checkbox(
+    -name => 'soundex',
+    -value => '1',
+    -label => '',
+  );
+
+  $str.="<small><small>Near Matches</small></small>";
+
+  $str.="<br />\n".$query->checkbox(
+    -name => 'match_all',
+    -default => '0',
+    -value => '1',
+    -label => '',
+  );
+  $str.="<small><small>Ignore Exact</small></small>";
+
+  $str.="<br />\n".$query->checkbox(
+    -id => "full_text",
+    -name => 'full_text',
+    -value => '1',
+    -label => ''
+  );
+
+  $str.="<small><small>Full Text</small></small>";
+
+  return $str . '</td></tr></table>';
+}
+
+# newwriteups - Unsure where this is used; tough to tell because of ajax call stuff and because of the number of stylesheets
+#   TODO - Where is this used?
+sub newwriteups
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($limit) = @_;
+  $limit ||= 15;
+
+  my $str = '<table width="100%" border="0" cellpadding="0" cellspacing="0">';
+
+  my $qry = "SELECT parent_e2node, (select title from node where node_id=writeup.wrtype_writeuptype limit 1) as type_title, writeup_id, (select author_user from node where node_id=writeup.writeup_id limit 1) as author_user, (select title from node where node_id=writeup.parent_e2node limit 1) as parent_title FROM writeup where notnew=0 ORDER BY writeup.publishtime DESC LIMIT $limit ";
+
+  my $csr = $Everything::dbh->prepare($qry);
+
+  $csr->execute or return "newwriteups: can't get";
+
+  my $count=0;
+  my @colors = ('#CCCC99');
+
+
+  while(my $N = $csr->fetchrow_hashref) {
+    my $clr = $colors[$count++%int(@colors)];
+    my $st = $$N{parent_title};
+    my $len = 24;
+    my @words = split ' ', $st;
+
+    foreach (@words) {
+      if(length($_) > $len) {
+        $_ = substr($st, 0, $len);
+        $_ .= '...';
+      }
+    }
+
+    $st = join ' ', @words;
+    $str .= '<tr bgcolor="'.$clr.'"><td class="oddrow" align="center" colspan="2"><strong>'.linkNode($$N{author_user}, '', {lastnode_id=>undef});
+
+    $str .= '</strong></td>';
+    $str .= '</tr><tr><td align="left">'.linkNode($$N{parent_e2node}, $st, {lastnode_id=>undef}) 
+      .'</td><td align="right"><small>('.linkNode($$N{writeup_id}, $$N{type_title},{lastnode_id=>undef}).')</small>';
+    $str.= "</td></tr>\n";
+  }
+
+  $csr->finish;
+  $str.="</font></td></tr></table>\n";
+
+  return $str;
+}
+
+# editSingleVar - used by the user edit page
+#
+sub editSingleVar
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return "<i>you can't update this node</i>" unless canUpdateNode($USER, $NODE);
+  my ($var, $title) = @_;
+  my $SETTINGS = getVars($NODE);
+  my @params = $query->param;
+  my $str=""; 
+
+  foreach (@params) {
+    if (/setsetting_$var$/) {
+      $$SETTINGS{$var}=$query->param("setsetting_$var");    
+    }
+  }
+
+  if(getId($USER) == getId($NODE))
+  { 
+    $$VARS{$var} = $$SETTINGS{$var};
+  } else { 
+    setVars ($NODE, $SETTINGS);
+  }
+
+  my ($keysize, $valsize) = (15, 30);
+  my ($keyclr, $valclr) = ("#CCCCFF", "#DEDEFF");
+  my $t = $title ? $title:$var;
+
+  $str.="<TABLE width=100% cellpadding=2 cellspacing=0>\n";
+  $str.="<TR><TD width=20% class=\"oddrow\" bgcolor=$keyclr><b>$t</b></TD>" .
+    "<TD class=\"oddrow\" bgcolor=$valclr>".$query->textfield("setsetting_$var", $$SETTINGS{$var}, $valsize)."</TD></TR>\n";
+  $str.="</TABLE>\n";
+
+  return $str;
+}
+
+sub setwriteuptype
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($N, $title) = @_;
+
+  my $type = undef;
+  if (ref $N){
+    $type = $$N{wrtype_writeuptype};
+  }else{
+    $type = $N;
+  }
+
+  my $hidebox = undef;
+
+  unless ($type){
+    # no old type: new writeup/draft for publication
+    my $checked = undef;
+
+    $title ||= $$NODE{title};
+    return $query -> hidden('writeup_notnew', 1).'Writeup type: thing; don\'t show in New Writeups nodelet' if $APP->isMaintenanceNode($NODE);
+
+    if (
+      $title =~ /^(January|February|March|April|May|June|July|August|September|October|November|December) [1-9]\d?, \d+/i ||
+      $title =~/^(dream|editor|root) Log: /i ||
+      $$VARS{HideNewWriteups}
+    ){
+      $type = getNode('log', 'writeuptype')->{node_id} if $1;
+      $checked = 1;
+    }
+
+    $checked = ' checked="checked"' if $checked or ref($N) && 
+      ($$N{reputation} || $DB -> sqlSelect('vote_id', 'vote', "vote_id=$$N{node_id}")
+      || $DB -> sqlSelect(
+        'LEFT(notetext, 25)'
+        , 'nodenote'
+        , "nodenote_nodeid=$$N{node_id} AND noter_user = 0"
+        , 'ORDER BY timestamp LIMIT 1'
+      ) eq 'Restored from Node Heaven');
+
+    $type ||= getNode('thing', 'writeuptype') -> {node_id};
+
+    $hidebox = qq!<label><input type="checkbox" name="writeup_notnew" value="1"$checked>don't show in New Writeups nodelet</label>!;
+  }
+
+  my $str = '<label title="Set the general category of your writeup, which helps identify the type of content in writeup listings."><strong>Writeup type:</strong>';
+
+  my (@WRTYPE) = getNodeWhere({type_nodetype => getId(getType('writeuptype'))});
+
+  my %items = ();
+
+  my $isEd = $APP->isEditor($USER) || $$USER{title} eq 'Webster 1913' || $$USER{title} eq 'Virgil';
+
+  my $isE2docs = $APP->inUsergroup($USER,"E2Docs");
+
+  foreach (@WRTYPE){
+    next if (!$isEd and lc($$_{title}) eq 'definition' || lc($$_{title}) eq 'lede');
+    next if ((!$isEd or !$isE2docs) and lc($$_{title}) eq 'help');
+    $items{$$_{node_id}} = $$_{title};
+  }
+
+  $items{$type} = '('.$type.')' if !defined($items{$type});
+  my @idlist = sort { $items{$a} cmp $items{$b} } keys %items;
+
+  $str.=$query->popup_menu('writeup_wrtype_writeuptype', \@idlist, $type, \%items) . '</label>';
+  return $str . $hidebox;
+
+}
+
+# [{parsetimestamp:time,flags}]
+# Parses out a datetime field into a more human-readable form
+# note: the expected time format in the parameter is: yyyy-mm-dd hh:mm:ss, although the year part works for any year after year 0
+#	flags: optional flags:
+#		1 = hide time (only show the date)
+#		2 = hide date (only show the time)
+#		4 = hide day of week (only useful if showing date)
+#		8 = show 'UTC' (recommended to show only if also showing time)
+#		16 = show full name of day of week (only useful if showing date)
+#		32 = show full name of month (only useful if showing date)
+#		64 = ignore user's local time zone settings
+#		128 = compact (yyyy-mm-dd@hh:mm)
+#		256 = hide seconds
+#		512 = leading zero on single-digit hours
+#
+sub parsetimestamp
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($timestamp,$flags)=@_;
+  $flags = ($flags || 0)+0;
+  my ($date, $time, $yy, $mm, $dd, $hrs, $min, $sec) = (undef,undef,undef,undef,undef,undef,undef,undef);
+ 
+  if($timestamp =~ /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/)
+  {
+    ($yy, $mm, $dd, $hrs, $min, $sec) = ($1, $2, $3, $4, $5, $6);
+    #let's hear it for fudge:
+    $mm-=1;
+  }elsif($timestamp =~ / /)
+  {
+    ($date, $time) = split / /,$timestamp;
+
+    ($hrs, $min, $sec) = split /:/, $time;
+    ($yy, $mm, $dd) = split /-/, $date;
+    $mm-=1;
+  }
+
+  # I repeat: let's hear it for fudge!
+  return "<em>never</em>" unless (int($yy)>0 and int($mm)>-1 and int($dd)>0);
+
+  my $epoch_secs = timelocal( $sec, $min, $hrs, $dd, $mm, $yy);
+
+  if(!($flags & 64) && $VARS->{'localTimeUse'}) {
+    $epoch_secs += $VARS->{'localTimeOffset'} if exists $VARS->{'localTimeOffset'};
+    #add 1 hour = 60 min * 60 s/min = 3600 seconds if daylight savings
+    $epoch_secs += 3600 if $VARS->{'localTimeDST'};	#maybe later, only add time if also in the time period for that - but is it true that some places have different daylight savings time stuff?
+  }
+
+  my $wday = undef;
+  ($sec, $min, $hrs, $dd, $mm, $yy, $wday, undef, undef) = localtime($epoch_secs);
+  $yy += 1900;	#stupid Perl
+  ++$mm;
+
+  my $niceDate='';
+  if(!($flags & 2)) {	#show date
+    if ($flags & 128) { # compact
+      $mm = substr('0'.$mm,-2);
+      $dd = substr('0'.$dd,-2);
+      $niceDate .= $yy. '-' .$mm. '-' .$dd;
+    } else {
+      if(!($flags & 4))
+      {	
+        #4=hide week day, 0=show week day
+        $niceDate .= ($flags & 16)	#16=full day name, 0=short name
+          ? (qw(Sunday Monday Tuesday Wednesday Thursday Friday Saturday))[$wday].', '
+          : (qw(Sun Mon Tue Wed Thu Fri Sat))[$wday].' ';
+      }
+
+      my $fullMonthName = $flags & 32;
+      $niceDate .= ($fullMonthName
+        ? (qw(January February March April May June July August September October November December))
+        : (qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)))[$mm-1];
+
+      $dd='0'.$dd if length($dd)==1 && !$fullMonthName;
+      $niceDate .= ' ' . $dd;
+      $niceDate .= ',' if $fullMonthName;
+      $niceDate .= ' '.$yy;
+    }
+  }
+
+  if(!($flags & 1)) {	#show time
+    if ($flags & 128) { # if compact
+      $niceDate .= '@' if length($niceDate);
+    } else {
+      $niceDate .= ' at ' if length($niceDate);
+    }
+
+    my $showAMPM='';
+    if($VARS->{'localTime12hr'}) {
+      if($hrs<12) {
+        $showAMPM = ' AM';
+        $hrs=12 if $hrs==0;
+      } else {
+        $showAMPM = ' PM';
+        $hrs -= 12 unless $hrs==12;
+      }
+    }
+
+    $hrs = '0'.$hrs if $flags & 512 and length($hrs)==1;
+    $min = '0'.$min if length($min)==1;
+    $niceDate .= $hrs.':'.$min;
+    if (!($flags & 128 or $flags & 256)) { # if no compact show seconds
+      $sec = '0'.$sec if length($sec)==1;
+      $niceDate .= ':'.$sec;
+    }	
+
+    $niceDate .= $showAMPM if length($showAMPM);
+  }
+
+  $niceDate .= ' UTC' if length($niceDate) && ($flags & 8);	#show UTC
+
+  return $niceDate;
+
+}
+
+sub coolit
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isEditor($USER);
+  my $ntypet = $$NODE{type}{title};
+  return unless ($ntypet eq 'e2node' || $ntypet eq 'superdoc' || $ntypet eq 'superdocnolinks' || $ntypet eq 'document');
+
+  my $str = '<span id="editorcool">' ;
+  my $class = "action ajax editorcool:coolit" ;
+
+  my $COOLLINK = getNode('coollink','linktype') -> {node_id};
+  my $COOLNODE = getNode('coolnodes','nodegroup');
+  my $link = undef;
+
+  if ( exists $PAGELOAD->{edcoollink} ){
+    $link = $PAGELOAD->{edcoollink} ; # cached by [page header]
+  } else {
+    $link = $DB->sqlSelectHashref('to_node', 'links', 'from_node='.$$NODE{node_id}.' and linktype='.$COOLLINK.' limit 1');
+  }
+
+  return '' if $link and $ntypet ne 'e2node' || ($$NODE{group} && @$NODE{group}) # let anyone uncool a nodeshell
+    and ( $APP->isEditor($$link{to_node}) ) and $$link{to_node}!=$$USER{node_id} ;
+
+  if ($query->param('uncoolme')) {
+    $DB->sqlDelete('links', 'from_node='.$$NODE{node_id}.' and linktype='.$COOLLINK.' limit 1');
+    removeFromNodegroup($COOLNODE, $NODE, -1);
+    $str .= '(you uncooled it) ' ;
+    $link = undef ;
+  }
+
+  if ($link) {
+    $str.= linkNode( $NODE , 'uncool' , { notanop => 'uncoolme' , confirmop => 'hellyeah' ,
+      -title => 'uncool this node' , -class => $class }) ;
+  } elsif (not $query->param('coolme')) {
+    $str.=linkNode($NODE,'cool!',{coolme => 'hellyea', '-title' => 'Editor Cool this node', '-class'=>$class});
+  } else {
+    insertIntoNodegroup($COOLNODE, -1, $NODE);
+    updateLinks($USER, $NODE, $COOLLINK);
+    $str.='You cooled it. ('.linkNode( $NODE , 'undo' , { 'uncoolme' => 'oops' , -title => 'undo cool' , -class => $class }).')' ;
+
+    if($ntypet eq 'e2node') {
+      my $eddie = getId(getNode('Cool Man Eddie','user'));
+      my @group = @{ $$NODE{group} } if $$NODE{group};
+      my $WRITEUP = undef;
+      my $nt = $$NODE{title};
+	
+      if(scalar(@group)) {
+        my @authors = map { getNodeById($_)->{author_user} } @group;
+        htmlcode('sendPrivateMessage',{
+          'author_id' => $eddie,
+          'recipient_id' => \@authors,
+          'message' => 'Yo, the entire node ['.$nt.'], in which you have a writeup, was editor cooled. Your reward is knowing you\'re cooler than liquid nitrogen.',
+          'fromgroup_id' => $$USER{node_id},	#group is editor that did cool
+        });
+      }
+
+    }	#if e2node
+  }
+
+  return "$str</span>" ;
 }
 
 1;

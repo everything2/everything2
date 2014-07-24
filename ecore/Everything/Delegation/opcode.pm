@@ -38,6 +38,8 @@ BEGIN {
   *linkNodeTitle = *Everything::HTML::linkNodeTitle;
   *confirmUser = *Everything::HTML::confirmUser;
   *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
+  *canUpdateNode = *Everything::HTML::canUpdateNode;
+  *updateLinks = *Everything::HTML::updateLinks;
 } 
 
 sub publishdraft
