@@ -1,8 +1,9 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>458113</node_id>
   <title>weblog</title>
-  <code>return htmlcode( 'legacyweblog' , @_ ) unless htmlcode( 'isZen' );
+  <code>
 my ( $interval, $log_id, $remlabel, $hideLinker, $skipFilterHTML, $listOnly ) = @_ ;
 
 $log_id ||= getId( $NODE ) ;

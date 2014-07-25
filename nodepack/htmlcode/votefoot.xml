@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>444246</node_id>
   <title>votefoot</title>
   <code>my $uid = $$USER{user_id};
@@ -8,8 +9,7 @@ my $isKiller = $APP-&gt;isEditor($USER);
 
 my $voteButton = undef;
 my $killButton = undef;
-my $rowFormat =  $$THEME{noTable} ? '&lt;div id=&quot;votefooter&quot;&gt;%s%s&lt;/div&gt;' :
-	'&lt;table border=&quot;0&quot; width=&quot;100%%&quot;&gt;&lt;tr&gt;&lt;td align=&quot;left&quot;&gt;%s&lt;/td&gt;&lt;td align=&quot;right&quot;&gt;%s&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';
+my $rowFormat =  '&lt;div id=&quot;votefooter&quot;&gt;%s%s&lt;/div&gt;';
 
 if( $query-&gt;param('numvoteit') &amp;&amp; $$USER{votesleft} ) {
 	$voteButton = &quot;&lt;input type='submit' name='sexisgreat' id='votebutton' value='vote!'&gt;&quot;;

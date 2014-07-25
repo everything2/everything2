@@ -1,7 +1,7 @@
 <node>
   <extends_nodetype>8</extends_nodetype>
   <sqltable>debatecomment</sqltable>
-  <grouptable></grouptable>
+  <grouptable>nodegroup</grouptable>
   <node_id>1156105</node_id>
   <restrict_nodetype>1156105</restrict_nodetype>
   <type_nodetype>1</type_nodetype>

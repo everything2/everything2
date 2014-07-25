@@ -110,9 +110,11 @@ foreach(@types) {
 my @nodes;
 while (my $temprow = $csr-&gt;fetchrow_hashref) {
        my $N = getNodeById($temprow-&gt;{root_debatecomment});
+       next unless $N;
        my $latest = getNodeById($DB-&gt;sqlSelect(&quot;MAX(debatecomment_id)&quot;,
                                                &quot;debatecomment&quot;,
                                                &quot;root_debatecomment=$$N{node_id}&quot;));
+       next unless $latest;
        my $latesttime = $$latest{'createtime'};
        $latesttime = $APP-&gt;convertDateToEpoch($latesttime);
        push @nodes, [$N,$latest,$latesttime];

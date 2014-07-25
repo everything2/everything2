@@ -89,7 +89,7 @@ foreach my $uid(@uids){
   #*only* to the notifications settings.
   next unless $$v{settings};
 
-  my %notifications = from_json($$v{settings}-&gt;{notifications});
+  my %notifications = from_json($$v{settings})-&gt;{notifications};
 
   if($notifications{$replyNotification} ){
 my $notification_id = $replyNotification;
@@ -110,9 +110,12 @@ my $addNotifier = htmlcode('addNotification', $notification_id, $user_id, $argSt
 
 updateNode( $COMMENT, $USER );
 
-my @group = @{ $$PARENT{ 'group' } } if $$PARENT{ 'group' };
+#my @group = @{ $$PARENT{ 'group' } } if $$PARENT{ 'group' };
+#Everything::printLog(&quot;About to insert comment '$COMMENT-&gt;{node_id}' into the debate nodegroup: '$PARENT-&gt;{node_id}'&quot;);
+my $output = $DB-&gt;insertIntoNodegroup( $PARENT, -1, [$COMMENT] );
+#Everything::printLog(&quot;Got output $output from debate insert&quot;);
+#updateNode($PARENT, -1);
 
-insertIntoNodegroup( $PARENT, -1, [getId( $COMMENT )] );
 #  END  if($PARENT)
 
 #updateNode( $COMMENT, $USER );
