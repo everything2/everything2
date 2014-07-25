@@ -141,7 +141,6 @@ local *linkWU = sub {
 	return linkNode($WRITEUP,$txt);
 };
 
-#ripped from displayUserInfo
 local *info_authorsince = sub {
 
 	#not if bot, or printable, or $VARS

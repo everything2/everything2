@@ -154,7 +154,6 @@ local *linkWU = sub {
 	return '&lt;a href='.urlGen(\%linkParams).'&gt;'.$txt.'&lt;/a&gt;';
 };
 
-#ripped from displayUserInfo
 local *info_authorsince = sub {
 
 	#not if bot, or printable, or $VARS
