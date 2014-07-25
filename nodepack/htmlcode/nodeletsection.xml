@@ -44,12 +44,7 @@ else {	#classic style: [ + ] Title
 my $content = undef;
 if($showContent) {
 	$content = htmlcode($sectionId);
-
-	if(!htmlcode('isZen') &amp;&amp; $styleContent &amp;&amp; $styleContent =~ /^[iI]/) { # 'indent'
-		$content = '&lt;table class=&quot;sectioncontent&quot; border=&quot;0&quot; cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; width=&quot;99%&quot;&gt;&lt;tr&gt;&lt;td width=&quot;15&quot;&gt;&lt;/td&gt;&lt;td&gt;' . $content . '&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;';
-	} else {
-		$content = qq'&lt;div class=&quot;sectioncontent&quot;&gt;\n$content\n&lt;/div&gt;\n';
-	}
+	$content = qq'&lt;div class=&quot;sectioncontent&quot;&gt;\n$content\n&lt;/div&gt;\n';
 }
 return qq'&lt;div id=&quot;$sectionId&quot; class=&quot;nodeletsection&quot;&gt;
 	&lt;div class=&quot;sectionheading&quot;&gt;$s&lt;/div&gt;\n$content&lt;/div&gt;\n';

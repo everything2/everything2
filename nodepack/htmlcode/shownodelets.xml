@@ -37,9 +37,8 @@ if ($useTable) {
 	}
 }
 
-my $isZen = htmlcode('isZen','');
 ## zen theme 1854354 = Kyle's Style, the only theme this was designed for
-if ( ($$VARS{nodelet_tabs}) &amp;&amp; ($isZen) &amp;&amp; ($$VARS{userstyle}==1854354) ) {
+if ( ($$VARS{nodelet_tabs}) &amp;&amp; ($$VARS{userstyle}==1854354) ) {
 	my $specialStr = &quot;&quot;;
 
 	my $curr = $$VARS{current_nodelet};

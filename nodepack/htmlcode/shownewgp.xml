@@ -19,7 +19,7 @@ my $header = $$VSETTINGS{showExpHeader};
 my $footer = $$VSETTINGS{showExpFooter};
 my $newGP = $$USER{GP} - $$VARS{oldGP};
 
-($header, $footer) = ('', '') if htmlcode('isZen');
+($header, $footer) = ('', '');
 
 my $xmlstr = undef;
 $xmlstr = '&lt;gpinfo&gt;' if $isxml;

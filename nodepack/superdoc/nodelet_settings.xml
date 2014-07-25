@@ -15,11 +15,7 @@ htmlcode('openform',-id=&gt;'pagebody');
 &lt;/legend&gt;
 You can change the order of nodelets by dragging and dropping the menus here (don't forget to save) or by dragging them around by the title on most other pages.
 [{rearrangenodelets:nodelets,classic nodelets,1}]
-If the 'Epicenter' nodelet is not selected, its functions are placed in the page header[%
-return '' if $$THEME{isZen};
-' if you use the zen theme. You are currently not using the zen theme, and are therefore advised
-not to remove the epicenter nodelet';
-%].&lt;/fieldset&gt;
+If the 'Epicenter' nodelet is not selected, its functions are placed in the page header.&lt;/fieldset&gt;
 
 [%
 my $str;

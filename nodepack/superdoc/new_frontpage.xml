@@ -5,15 +5,13 @@
 my $intro = &quot;Everything2 is a collection of user-submitted writings about, well, pretty much everything. Use the search box or follow the links to explore, or [Everything2 Help|click here to learn how you can contribute].&quot;;
 
 my $zenStr;
+  $zenStr = &quot;&lt;div id='welcome_message'&gt;&quot;.$intro.&quot;&lt;/div&gt;&quot;;
 
-if (htmlcode('isZen')) {
-$zenStr = &quot;&lt;div id='welcome_message'&gt;&quot;.$intro.&quot;&lt;/div&gt;&quot;;
+  $zenStr .= &quot;&lt;div id='loglinks'&gt;&quot;.htmlcode('daylog').&quot;&lt;/div&gt;&quot;;
 
-$zenStr .= &quot;&lt;div id='loglinks'&gt;&quot;.htmlcode('daylog').&quot;&lt;/div&gt;&quot;;
+  $zenStr .= htmlcode('displaynltext', 'tfcool nodelet - zen');
 
-$zenStr .= htmlcode('displaynltext', 'tfcool nodelet - zen');
-
-$zenStr .= htmlcode('displaynltext', 'Staff Picks') unless ($APP-&gt;isGuest($USER));
+  $zenStr .= htmlcode('displaynltext', 'Staff Picks') unless ($APP-&gt;isGuest($USER));
 
 $zenStr.='
      &lt;div id=&quot;creamofthecool&quot;&gt;
@@ -29,146 +27,7 @@ if (!$APP-&gt;isGuest($USER)) {
 }
 
 return &quot;&lt;table&gt;&lt;tr&gt;&lt;td&gt;&quot;.$zenStr.&quot;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&quot;;
-}
 
-my $welcomeStr;
-
-if(length($$VARS{preferred_theme})&amp;&amp;($$VARS{preferred_theme}!=1854183)) {
-	$intro= &quot;\n&lt;p&gt;You are currently using the &quot;.linkNode($$VARS{preferred_theme}).&quot;. You might like to &quot;.linkNode($NODE,'switch to the Zen theme',{switchToZen=&gt;'true'}).&quot; since we're phasing out support for the others and honestly it's nicer anyway.&lt;/p&gt;&quot;;
-	$intro.=&quot;&lt;p&gt;If you're really attached to the Jukka theme, try [Jukka Emulation].&lt;/p&gt;&quot; if($$VARS{preferred_theme}==415073);
-	$intro.=&quot;&lt;p&gt;Please try the [ekw shredder] if you want to preserve how the site looks in ekw.&lt;/p&gt;&quot; if($$VARS{preferred_theme}==1100936);
-}
-
-if(defined($query-&gt;param('switchToZen'))) {
-	$$VARS{preferred_theme}=1854183;
-	getTheme();
-	$intro= &quot;Zen theme enabled.&quot;; 
-}
-
-
-$welcomeStr.= '
-&lt;table width=&quot;100%&quot; border=&quot;0&quot;&gt;
-  &lt;tr valign=&quot;top&quot;&gt;
-    &lt;td width=&quot;24%&quot; rowspan=&quot;5&quot; style=&quot;padding: 1px&quot;&gt;
-      &lt;div id=&quot;cooluserpicks&quot;&gt;
-        &lt;table width=&quot;100%&quot; border=&quot;0&quot;&gt;&lt;tr&gt;&lt;td&gt;&lt;strong&gt;'.$intro.'&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;'.
-          htmlcode('displaynltext', 'tfcool nodelet,Cool User Picks!') .'
-          &lt;tr&gt;
-            &lt;td&gt;
-              &lt;p&gt;Check out the [Cool Archive] for more cool user picks.&lt;/p&gt;
-              &lt;p&gt;Check out the [Page of Cool] for staff selections.&lt;/p&gt;
-
-            &lt;/td&gt;
-          &lt;/tr&gt;
-        &lt;/table&gt;
-      &lt;/div&gt;
-    &lt;/td&gt;
-    &lt;td width=&quot;1%&quot; rowspan=&quot;5&quot;&gt;
-      &lt;h2&gt;&amp;nbsp;&lt;/h2&gt;
-    &lt;/td&gt;
-    &lt;td colspan=&quot;2&quot; align=&quot;center&quot;&gt;'.( $APP-&gt;isGuest($USER) ? &quot;&quot; : htmlcode('daylog')).htmlcode('displaynltext', 'Staff Picks').'&lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr valign=&quot;top&quot;&gt;
-    &lt;td width=&quot;94%&quot; colspan=&quot;2&quot;&gt;&lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr valign=top&gt; 
-    &lt;td width=94% align=&quot;center&quot; colspan=&quot;2&quot;&gt;';
-      my @wit = (
-&quot;&lt;p&gt;Good friend, for Jesus' sake forbear;&lt;br /&gt; 
-To dig the dust enclosed here;&lt;br /&gt;
-Blessed be he that spares these stones;&lt;br /&gt;
-And curst be he that moves [William Shakespeare|my] [dem bones|bones].&lt;/p&gt;&quot;,
-&quot;Live a life you love&lt;br /&gt;&lt;br /&gt;Use a god you trust&lt;br /&gt;&lt;br /&gt;Don't take it all too seriously&quot;,
-'Violently unhappy, or happily violent?',
-'Murder most foul!',
-'Whoever undertakes to set himself up as a judge of truth and knowledge is shipwrecked by the laughter of the gods',
-'Inspiration strikes like a tuna in the night ...',
-'It Is Accomplished.',
-'Treachery!  ... ... Seek it out!',
-'It is a secret to everybody.',
-'The time has come to discuss matters of the gravest importance.',
-'Get your words out.',
-'It beats a swift kick in the face.',
-&quot;You're just a microscopic cog in our catastrophic plan ...&quot;,
-'Work is Worship.',
-'[William S. Burroughs|Nothing is true; Everything is permitted.]',
-'[Everything will be required of us, and everything will be given]',
-'beauty truth and truth beauty liar!',
-'This is not real life. This is text.',
-'[Aut doce, aut disce, aut discede]',
-'[Desine fata deum flecti sperare precando]',
-'We have standards &lt;em&gt;and&lt;/em&gt; goals!',
-'All of this is coming your way...',
-'Repetition is the death of the soul.',
-'[Journalism] ... not journal writing.',
-&quot;Hurry up please, it's time.&quot;, 
-'[Observe], [Evaluate], [Act]',
-&quot;Don't Panic&quot;, 
-'Cease to hope that the decrees of the gods can be changed by prayer',
-'Play It Cool...',
-'[Nathan, This Is Unacceptable]',
-'Let it slide...',
-'[Kill the poor]',
-'[Eat the rich]',
-'Tradition &lt;em&gt;is&lt;/em&gt; a tradition.',
-'Enjoy yourself. This is of utmost importance.',
-'Fragmentation often helps me perceive facets.',
-'[Drugs|Participate in your own manipulation.]',
-&quot;It's all perspective nowadays...&quot;,
-&quot;Get a communications degree and we'll talk&quot;,
-&quot;This place needs more actual content. Let's begin.&quot;,
-'Imagine Craftsmanship.',
-'Smile. Relax. Attack.',
-&quot;Respect is Everything&quot;, 
-&quot;This dream is tied to a horse that will never tire.&quot;, 
-&quot;Tension, Apprehension, and Dissension have begun!&quot;, 
-&quot;We keep the Funk alive by talking with idiots&quot;, 
-&quot;Rumble young man Rumble&quot;, 
-&quot;Make all the dust that you can.&quot;, 
-&quot;We got the kind of games you can't rent at Blockbuster&quot;, 
-&quot;What you give us, we may not take. If at first you don't succeed...&quot;, 
-&quot;[Terrordrome|Welcome to the Terrordome]&quot;, 
-&quot;And in the end, the love you take is equal to the love you make.&quot;,
-&quot;It is accomplished.&quot;,
-&quot;No Information.&quot;,
-&quot;[E2 Nutrition Facts].&quot;,
-&quot;Time is an illusion. Lunchtime, doubly so.&quot;,
-&quot;Chestnuts posted by a noted liar, Klaproth nipping at your nodes&quot;,
-&quot;Then Al the reindeer loved him.&quot;,
-&quot;[Run, you pigeons, it's Robert Frost!]&quot;
-      ); 
-
-#$welcomeStr.=&quot;&lt;h1&gt;&quot;.$wit[int(rand(@wit))].'&lt;/h1&gt;;
-$welcomeStr.='
-&lt;/td&gt;
-  &lt;/tr&gt;';
-
-
-$welcomeStr.='
-  &lt;tr valign=&quot;top&quot;&gt; 
-    &lt;td width=&quot;94%&quot; align=&quot;left&quot; colspan=&quot;2&quot;&gt; 
-      &lt;div id=&quot;creamofthecool&quot;&gt;
-        &lt;h2&gt;[Cool Archive|Cream of the Cool]:&lt;/h2&gt;
-        &lt;p&gt; '.htmlcode('displaynltext','reallycool nodelet').'
-      &lt;/div&gt;
-    &lt;/td&gt;
-  &lt;/tr&gt;';
-
-if ( !$APP-&gt;isGuest($USER) ) {
-$welcomeStr.='
-  &lt;tr valign=&quot;top&quot;&gt; 
-    &lt;td colspan=&quot;4&quot;&gt;
-      &lt;h2&gt;[News for Noders. Stuff that matters.|News for Noders]&lt;/h2&gt;
-    &lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr valign=&quot;top&quot;&gt;
-    &lt;td colspan=&quot;4&quot;&gt;'.htmlcode('weblog', '3,165580,,,1').'&lt;/td&gt;
-  &lt;/tr&gt;';}
-
-$welcomeStr.='
-&lt;/table&gt;';
-
-return $welcomeStr;
 %]</doctext>
   <node_id>1985715</node_id>
   <title>New Frontpage</title>

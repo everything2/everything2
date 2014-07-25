@@ -1,8 +1,6 @@
 <node>
   <type_nodetype>1065266</type_nodetype>
   <doctext>[%
-return parseLinks(htmlcode('legacyfrontpage')) unless $$THEME{isZen};
-
 my $zenStr = '&lt;div id=&quot;welcome_message&quot;&gt;Everything2 is a collection of user-submitted writings about
 	more or less everything. Spend some time looking around and reading, or '
 	.linkNodeTitle('Everything2 Help|learn how to contribute')

@@ -23,7 +23,7 @@ my $header = $$VSETTINGS{showExpHeader};
 my $footer = $$VSETTINGS{showExpFooter};
 my $newexp = $$USER{experience} - $$VARS{oldexp};
 
-($header, $footer) = ('', '') if htmlcode('isZen');
+($header, $footer) = ('', '');
 
 my $xmlstr = &quot;&quot;;
 $xmlstr = '&lt;xpinfo&gt;' if $isxml;
