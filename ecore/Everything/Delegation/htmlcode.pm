@@ -51,7 +51,7 @@ use Everything::XML;
 # Used by parsetime
 use Time::Local;
 
-# Used by shownewexp, publishwriteup
+# Used by shownewexp, publishwriteup, static_javascript
 use JSON;
 
 # Used by publishwriteup
@@ -63,6 +63,9 @@ use Time::Local;
 
 # Used by typeMenu
 use Everything::FormMenu;
+
+# Used by verifyRequestHash
+use Digest::MD5 qw(md5_hex);
 
 # This links a stylesheet with the proper content negotiation extension
 # linkJavascript below talks a bit about the S3 strategy
@@ -4384,6 +4387,281 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
   $str = parseLinks($str, $$NODE{parent_e2node});
 
   $str = '<p><big><strong>Hints!</strong></big> (choose which writeup hints display at <a href='.urlGen({'node'=>'Writeup Settings','type'=>'superdoc'}).'">Writeup Settings</a>)</p><p>'.$str.'</p>';
+
+  return $str;
+}
+
+# Almost certainly going to be a template item
+#
+sub guestuserbanner
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return "";
+  return "" unless($APP->isGuest($USER));
+  return "" if(isMobile());
+  return "" unless($NODE->{type}->{title} eq "writeup" or $NODE->{type}->{title} eq "e2node");
+
+  my $style = q|-moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; align: center; width: 80%; background-color: #fdffd4; border-style:solid; border-color: #bbbbbb; border-width: 1px; min-width:300px; min-height: 70px; margin-left: auto; margin-right: auto; margin-bottom: 10px; padding: 10px; font-family: 'arial',sans-serif; font-size: 130%;|;
+
+  my $nodeshell = "";
+  if($NODE->{type}->{title} eq "e2node" or $query->param('nodeshell') == 1)
+  {
+    if(not defined $NODE->{group} or scalar(@{$NODE->{group}}) == 0)
+    {
+      $nodeshell = "<br /><br /><em><strong>$$NODE{title}</strong></em> is a topic without any content; merely an idea or a thought that someone found interesting. If you sign up for an account, you can add something here.";
+    }
+  }
+
+  return "<div id=\"guestuserbanner\" style=\"$style\"><strong>Welcome!</strong><br /><em>Everything2</em> is a community of readers and writers who write about pretty much anything and share their feedback with others. It's a great place to get help with your writing or just lose yourself in nearly a half-million pieces from over a decade in existence. People come here to contribute and read fiction, nonfiction, poetry, reviews, or their thoughts on the day. If you'd like to give feedback, offer a correction, or contribute your own work, <a href=\"/node/superdoc/Sign+up\">sign up</a>!$nodeshell</div>";
+
+}
+
+# This is going away when Node Heaven is going away en masse
+#
+sub nodeHeavenStr
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($e2node) = @_;
+
+  return '' unless isGod($USER);
+  return '' unless $$NODE{type_nodetype} eq 116;
+
+  return '';
+
+  my $title = getNodeById($e2node)->{title};
+  my $N = $DB->sqlSelect('count(*)', 'heaven', "type_nodetype=117 and title LIKE ".$DB->{dbh}->quote($title." (%"));
+
+  $N ||= 'no';
+
+  return "This node has ".linkNode(getNode('Node Heaven Title Search','restricted_superdoc'),$N, {heaventitle => $$NODE{title}})." writeup".( $N != 1 ? "s" : "")." in Node Heaven.";
+}
+
+# Also going into a template
+#
+sub googleanalytics
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return qq!
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-1314738-1']);
+    _gaq.push(['_setDomainName', 'everything2.com']);
+    _gaq.push(['_setAllowLinker', true]);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>!;
+}
+
+# This is actually a major work item for the site. All of our javascript needs to be in 1 file with it being evaluated at the bottom, not the top
+#
+sub javascript_decider
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  while ($$VARS{includedJS} =~ s/(^|,)(?:
+    (1878034)| # Everything2 Ajax
+    (1872965)| # Zen Nodelet Collapser
+    1872456| # Prototype 1
+    1872457| # Prototype 2
+    1842173	 # async voting
+    )\b($|\1)?,*/$1/x ) 
+  {
+    delete $$VARS{noquickvote} if $2;
+    delete $$VARS{nonodeletcollapser} if $3;
+  }
+
+  my ($str, $N) = (undef, undef);
+  my @JS = ( getNode('boilerplate javascript','jscript'),getNode('default javascript', 'jscript'));
+  push @JS, getNode('Everything2 Ajax', 'jscript') unless $$VARS{noquickvote} ;
+  push @JS, getNode('Zen Nodelet Collapser', 'jscript') unless $$VARS{nonodeletcollapser} ;
+  push @JS , split(',', $$VARS{includedJS}) if $$VARS{includedJS};
+
+  # TODO: Move to a setting
+  my $jscss = "http://jscss.everything2.com";
+  $str = "";
+
+  my $jsType = getId(getType('jscript'));
+  foreach (@JS) {
+    getRef $_;
+    next unless $_ && $$_{type_nodetype} == $jsType;
+    $str .= "<script src='".htmlcode("linkjavascript",$$_{node_id})."' type='text/javascript'></script>\n";
+  }
+
+  return $str;
+
+}
+
+sub static_javascript
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  $$VARS{fxDuration} = '1' if (delete $$VARS{notransitions});
+
+  my $lastnode = $$NODE{node_id};
+  $lastnode = $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
+  $lastnode = $query->param("lastnode_id")||0 if $$NODE{title} eq 'Findings:' && $$NODE{type}{title} eq 'superdoc';
+
+  my $e2 = undef;
+  $e2->{node_id} = $$NODE{node_id};
+  $e2->{lastnode_id} = $lastnode;
+  $e2->{title} = $$NODE{title};
+  $e2->{guest} = ($APP->isGuest($USER))?(1):(0);
+
+  my $cookie = undef;
+  foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
+    if (!$APP->isGuest($USER)){
+      $$VARS{$_} = $cookie if $cookie = $query -> cookie($_);
+      delete $$VARS{$_} if $cookie eq '0';
+    }
+    $e2->{$_} = $$VARS{$_} if ($$VARS{$_});
+  }
+
+  $e2 -> {collapsedNodelets} =~ s/\bsignin\b// if $query -> param('op') eq 'login';
+  $e2 = encode_json($e2);
+
+  my $min = undef; $min = '.min' unless $APP->inDevEnvironment();
+  my $libraries = qq'<script src="http://code.jquery.com/jquery-1.4.4$min.js" type="text/javascript"></script>';
+  # mark as guest but only in non-canonical domain so testing and caching both work
+
+  my $js_decisions = htmlcode('javascript_decider');
+
+  unless ($APP->isGuest($USER)){
+      $libraries .= '<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js" type="text/javascript"></script>';
+  }
+
+  $libraries .= '<script src="'.htmlcode("linkjavascript",getNode("jquery bbq","jscript")).'" type="text/javascript"></script>';
+
+  return qq|
+    <script type='text/javascript' name='nodeinfojson' id='nodeinfojson'>
+      e2 = $e2;
+    </script>
+    $libraries
+    $js_decisions|;
+}
+
+sub zenFooter
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str=' Everything2 &trade; is brought to you by Everything2 Media, LLC. All content copyright &#169; original author unless stated otherwise.';
+
+  if ( rand() < 0.1 ) {
+    my @gibberish = (
+      "We are the bat people.", "Let sleeping demons lie.",
+      "Monkey! Bat! Robot Hat!", "We're sneaking up on you.",
+    );
+    $str .= '<br /><i>' . $gibberish[int(rand(@gibberish))];
+    $str .= '</i>';
+  }
+
+  return $str;
+}
+
+sub verifyRequestHash
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  #Generates a hashref used to verify the form submission. Pass a prefix.
+  my ($prefix) = @_;
+  my $rand = rand(999999999);
+  my $nonce = md5_hex($$USER{passwd} . ' ' . $$USER{email} . $rand);
+
+  return {$prefix . '_nonce' => $nonce, $prefix . '_seed' => $rand};
+}
+
+sub createdby
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if $APP->isGuest($USER);
+  return unless $$NODE{type}{title} eq 'e2node';
+
+  my $crby = undef;
+  $crby = $$NODE{createdby_user} || $$NODE{author_user} || 0;
+  $crby=getNodeById($crby);
+
+  my $text = "";
+  $text = $$VARS{hideauthore2node} ? 'anonymous' : '' ;
+  return '<div class="createdby"  title="Created on '.htmlcode('parsetimestamp', $$NODE{createtime}, 4).'">'.(
+    $crby ? 'created by '.linkNode($crby,$text,{lastnode_id=>0}) : '(creator unknown)').'</div>';
+}
+
+sub displaynltext
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($nltitle, $title) = @_;
+
+  my $CN = getNode($nltitle, 'nodelet');
+  return unless $CN;
+  my $str = "";
+
+  $str.="<tr><td><h3>$title</h3></td></tr>" if $title;
+
+  $str.=$$CN{nltext};
 
   return $str;
 }
