@@ -61,6 +61,9 @@ use DateTime::Format::Strptime;
 # Used by parsetimestamp
 use Time::Local;
 
+# Used by typeMenu
+use Everything::FormMenu;
+
 # This links a stylesheet with the proper content negotiation extension
 # linkJavascript below talks a bit about the S3 strategy
 #
@@ -3818,6 +3821,699 @@ sub coolit
   }
 
   return "$str</span>" ;
+}
+
+# Used largely on htmlpages; very likely able to move this to a template function
+#
+sub node_menu
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($field, @VALUES) = @_;
+  my @idlist = ();
+  my %items = {};
+  my @TYPES = ();
+
+  $field or return;
+  my ($fieldname, $type) = split /\_/, $field;
+  my ($name) = $$NODE{type}{title} .'_'. $field;
+
+  #if no explicit types, use the field name to determine
+  @VALUES or push @VALUES, $type;
+
+  foreach (@VALUES)
+  {
+    next if ($_ eq 'user');
+    if(/^-/)
+    {
+      # If one of the types is in the form of
+      # -name_value, we need to split it apart
+      # and store it.	
+      my ($name, $value) = (undef,undef);
+      $_ =~ s/^-//;
+		
+      ($name, $value) = split '_', $_;
+      push @idlist, $value;
+      $items{$value} = $name;
+
+      undef $_;  # This is not a type	
+    } else {
+      my $TYPE = $DB->getType($_); 
+      push @TYPES, $TYPE if(defined $TYPE); #replace w/ node refs
+    }
+  }
+
+  my $NODELIST = $DB->selectNodeWhere({ type_nodetype => \@TYPES }, "", "title") if @TYPES;
+
+  foreach my $N (@$NODELIST) {
+    $N = $DB->getNodeById($N, 'light');
+    my $id = getId $N;
+    push @idlist, $id;
+    $items{$id} = $$N{title};
+  }
+
+  # The default thing to select
+  my $SELECT = $$NODE{$field};
+
+  if(not defined $items{"0"})
+  {
+    # We have no value for zero, make it default if current value is not in menu
+    $items{"0"} = $items{$SELECT} ? 'none' : ' ' ;
+    unshift @idlist, "0";
+  }
+
+  return $query->popup_menu($name, \@idlist, $SELECT, \%items);
+
+}
+
+# Used only in the [Settings] page where they select theme, so this is really likely going to get killed shortly
+# This constructs an HTML popup menu using the FormMenu
+# package of Everything.  Values of the menu come from
+# the specified "setting" node.
+#
+# $name - the name for the form item drop down
+# $selected - which item should be selected by default.
+#    undef if nothing specific.
+# The remaining items passed are the names of the types.
+#
+sub typeMenu
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $name = shift;
+  my $selected = shift;
+
+  my $menu = new Everything::FormMenu;
+  my $typename = undef;
+
+  while(@_ > 0)
+  {
+    $typename = shift @_;
+    $menu->addType($typename);
+  }
+
+  return $menu->writePopupHTML($query,$name,$selected);
+}
+
+# Used in the zen epicenter. Very likely a future template function
+#
+sub randomnode
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($title) = @_;
+  $title||='random';
+  my $rnd = int(rand(100000));
+
+  return '<a href='.urlGen({op=>'randomnode', garbage=>$rnd}).">$title</a>";
+}
+
+sub voteit
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if $APP->isGuest($USER) ;
+  my ( $N , $showwhat ) = @_ ;
+  $N ||= $NODE ;
+  getRef( $N ) ;
+
+  my $isEditor = $APP->isEditor($USER) ;
+  return $isEditor ? 'no writeup' : '' unless $N and $$N{writeup_id} || $$N{draft_id};
+
+  $showwhat ||= 7 ; #1: kill only; 2: vote only; 3: both
+
+  my $n = $$N{node_id} ;
+  my $votesettings = getVars(getNode('vote settings','setting')) ;
+  my $isMine = $$USER{user_id}==$$N{author_user};
+
+  my $author = getNodeById( $$N{author_user} );
+  $author = $query -> escapeHTML($$author{title}) if $author;
+
+  my $edstr = '';
+
+  if ($showwhat & 1 and $isEditor || $isMine || $$N{type}{title} eq 'draft') { # admin tools
+    $edstr .= htmlcode("$$N{type}{title}tools", $N);
+  }
+
+  return $edstr unless $$N{type}{title} eq 'writeup' and $showwhat & 2 ;
+
+  my $uplbl = $$votesettings{upLabel} || 'up' ;
+  my $dnlbl = $$votesettings{downLabel} || 'down' ;
+  my $nolbl = $$votesettings{nullLabel} || 'none';
+
+  my $novotereason = '';
+  $novotereason = 'this writeup is a definition' if $$N{wrtype_writeuptype} eq getId(getNode('definition', 'writeuptype')) ;
+  $novotereason = 'voting has been disabled for this writeup' if $APP->isUnvotable($N);
+
+  my $votestr = '';
+  $votestr = '&nbsp; ' if $edstr ;
+  my $prevvote = $isMine ? 0 : $DB->sqlSelect('weight', 'vote', 'vote_id='.$n.' and voter_user='.$$USER{user_id}) || 0;
+
+  $votestr .= "<span id=\"voteinfo_$n\" class=\"voteinfo\">" ;
+  if ( $isMine || $prevvote and !$novotereason ) { # show votes cast
+    my $uv = '';
+    my $r = $$N{reputation} || 0;
+    my ($p) = $DB->sqlSelect('count(*)', 'vote', "vote_id=$n AND weight>0");
+    my ($m) = $DB->sqlSelect('count(*)', 'vote', "vote_id=$n AND weight<0");
+
+    #Hack for rounding, add 0.5 and chop off the decimal part.
+    my $rating = int(100*$p/($p+$m) + 0.5) if ($p || $m);
+    $rating ||= 0 ;
+    $rating .= '% of '.($p+$m).' votes' ;
+
+    # mark up voting info
+    $p = '+'.$p;
+    $m = '-'.$m;
+    if ($prevvote>0) {
+      $uv='+';
+      $p = '<strong>'.$p.'</strong>';
+    } elsif ($prevvote<0) {
+      $uv='-';
+      $m = '<strong>'.$m.'</strong>';
+    } else {
+      $uv='?';
+    }
+
+    $r = '<strong>'.$r.'</strong>' if $query->param('vote__'.$n);
+
+    $votestr .= '<span class="votescast" title="'.$rating.'"><abbr title="reputation">Rep</abbr>: '.$r.' ( '.$p.' / '.$m.' )' .
+      ' (<a href="/node/superdoc/Reputation+Graph?id='.$n.'" title="graph of reputation over time">Rep Graph</a>)';
+
+    $votestr .= ' ('.$uv.') ' unless $isMine;
+    $votestr .= '</span>' ;
+  }
+
+  unless ( $isMine ) {
+    $novotereason = ' unvotable" title="'.$novotereason if $novotereason ;
+    $votestr.="<span class=\"vote_buttons$novotereason\">";
+    if ( $novotereason ) {
+      $votestr .= '(unvotable)' ;
+    } elsif ($$USER{votesleft}) {
+      $votestr .= 'Vote:' unless $votestr =~ /votescast/ ;
+      my @values = ( 1 , -1 ) ;
+      push( @values , 0 ) if $$VARS{nullvote} && $$VARS{nullvote} ne 'off' ; #'off' for legacy
+      my %labels = ( 1 => $uplbl , -1 => $dnlbl , 0 => $nolbl ) ;
+      my $confirm = 'confirm' if $$VARS{votesafety};
+      my $replace = 'replace ' unless $$VARS{noreplacevotebuttons};
+      my $clas = $replace."ajax voteinfo_$n:voteit?${confirm}op=vote&vote__$n=" ;
+      my $ofauthor = $$VARS{anonymousvote} == 1 && !$prevvote ? 'this' : $author."'s" ;
+      my %attributes = (
+        1 => { class => $clas."1:$n,2" , title => "upvote $ofauthor writeup" },
+        -1 => { class => "$clas-1:$n,2" , title => "downvote $ofauthor writeup" },
+        0 => {class => $replace }
+	) ;
+
+      if ( $prevvote ){
+        $attributes{ $prevvote } = { class=>$replace , disabled=>'disabled', title=>'you '.( $prevvote>0 ? 'up' : 'down')."voted $author\'s writeup" } ;
+      }
+
+      $votestr .= $query -> radio_group( -name=>"vote__$n" , Values=>\@values , default=>$prevvote, labels=>\%labels, attributes=>\%attributes );
+
+      if (my $numvoteit = $query->param('numvoteit'))
+      {
+        # this hackery is for votefooter: vote or blab button
+        $query->param('numvoteit', $numvoteit+1);
+      } else {
+        $query->param('numvoteit', 1);
+      }
+    }else{
+      $votestr.= '<strong>vote failed:</strong> ' if $query->param("vote__$n") && $query -> param("vote__$n") != $prevvote;
+
+      my $level = $APP->getLevel($USER);
+      $votestr.= '('.linkNodeTitle("Why Don't I Have Votes Today?|out of votes").')' if $level && htmlcode('displaySetting' , 'level votes', $level) ;
+    }
+    $votestr .='</span>' ;
+  }
+
+  $votestr .='</span>' ;
+  return $edstr.$votestr ;
+
+}
+
+# On its way to being a template mixin
+#
+sub votefoot
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $uid = $$USER{user_id};
+  return $query->end_form if $$NODE{type}{title} eq "e2node" && not $$NODE{group} || $APP->isGuest($USER) ;
+  my $isKiller = $APP->isEditor($USER);
+
+  my $voteButton = undef;
+  my $killButton = undef;
+  my $rowFormat =  '<div id="votefooter">%s%s</div>';
+
+  if( $query->param('numvoteit') && $$USER{votesleft} ) {
+    $voteButton = "<input type='submit' name='sexisgreat' id='votebutton' value='vote!'>";
+  } elsif ( !$APP->isGuest($USER) ) {
+    $voteButton = "<input type='submit' name='sexisgreat' id='blabbutton' value='blab!' title='send writeup messages'>";
+  }
+
+  $killButton = $isKiller && $$NODE{type}{title} ne 'draft' ? "<p><input type='submit' name='node' id='killbutton' value='The Killing Floor II'>" : '';
+
+  return sprintf($rowFormat, $voteButton, $killButton) . $query->end_form;
+}
+
+# One of the many nodeletsection htmlcodes. 
+#
+sub episection_admins
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "\n\t\t<ul>";
+  $str.=linkNodeTitle('nate\'s secret unborg doc|Unborg Yourself')."<br />\n" if $$VARS{borged};
+  $str.=
+    "\n\t\t\t<li>".linkNodeTitle('Edit These E2 Titles').'</li>'.
+    "\n\t\t\t<li>".linkNodeTitle('The Node Crypt').'</li>'.
+    "\n\t\t\t<li>".linkNodeTitle('Node Heaven Search').'</li>'.
+    "\n\t\t\t<li>".linkNodeTitle('God Powers and How to Use Them|Admin HOWTO').'</li>';
+
+  $str.="\n\t\t</ul>";
+  return $str;
+}
+
+sub weblog
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ( $interval, $log_id, $remlabel, $hideLinker, $skipFilterHTML, $listOnly ) = @_ ;
+
+  $log_id ||= getId( $NODE ) ;
+  $interval ||= 5 ;
+  $listOnly ||= 0 ;
+
+  my $endat = $interval ;
+  if ($query && $query->param( 'nextweblog' )) {
+    $endat = $query->param( 'nextweblog' );
+  }
+
+  my $offset = ( $endat == $interval ? '' : ' OFFSET '.( $endat - $interval ) ) ;
+
+  my $csr = $DB->sqlSelectMany(
+    'weblog_id, to_node, linkedby_user, linkedtime' ,
+    'weblog' ,
+    "weblog_id=$log_id AND removedby_user=0" ,
+    "ORDER BY linkedtime DESC LIMIT $interval$offset" ) ;
+
+  my %weblogspecials = ();
+
+  $weblogspecials{ getloggeditem } = sub {
+    my ( $L ) = @_ ;
+    my $N = getNodeById( $L->{ to_node } ) ;
+    # removed nodes/de-published drafts:
+    return "Can't get node id ".$L->{ to_node } unless $N and $$N{type}{title} ne 'draft';
+    $_[0] = { %$N , %$L } ; # $_[0] is a hashref from a DB query: no nodes harmed
+    return '' ;
+  } ;
+
+  return "<ul>\n".htmlcode( 'show content' , $csr , '<li> getloggeditem, title, byline' , %weblogspecials ).
+    "\n</ul>" if $listOnly eq '1' ;
+
+  my $instructions = 'getloggeditem, title, byline, date' ;
+  my $uid = getId( $USER ) ;
+  my $canRemove = $APP->isAdmin($USER) ;
+  my $isCE = $canRemove || $APP->isEditor($USER) ;
+  $canRemove ||= ( $$USER{ node_id } == $APP -> getParameter($NODE, 'usergroup_owner') ) ;
+
+  # linkedby: 0=show (default), 1=CE can see, 2=root can see, 3 or anything else=nobody can see
+  # BUG: 2 -> owner can see if CE even if not root
+  if( !defined $hideLinker ) {
+    $hideLinker = 0 ;
+  } elsif ( !( ( $hideLinker =~ /^(\d)$/ ) && ( ( $hideLinker = $1 ) <= 3 ) ) ) {
+    $hideLinker = 3;
+  }
+
+  --$hideLinker if $isCE ;
+  --$hideLinker if ( $canRemove ) ;
+
+  unless ( $hideLinker > 0 ) {
+    $instructions .= ', linkedby' ;
+    $weblogspecials{ linkedby } = sub {
+      my $N = shift ;
+      return '<div class="linkedby">linked by '.linkNode( $$N{linkedby_user}, '', {lastnode_id =>0} ).'</div>' unless $$N{linkedby_user}==$$N{author_user} ;
+      return '' ;
+    } ;
+  }
+
+  $remlabel ||= "remove";
+  if ( $canRemove ) {
+    $instructions .= ', remove' ;
+    eval( q|$weblogspecials{ remove } = sub {
+    my $N = shift ;
+    return '<a class="remove" href='
+      . urlGen( { node_id => $$N{ weblog_id }, source => $$N{ weblog_id } , to_node => $$N{ to_node } , op => 'removeweblog' } )
+      . '>'.'|.$remlabel.q|'.'</a>' ;
+    }|);
+  }
+
+  $instructions .= ( $skipFilterHTML ne '1' ? ', content' : ', unfiltered' ) ;
+
+  my $str = htmlcode( 'show content' , $csr , $instructions , %weblogspecials ) ;
+  my $isolder = $DB->sqlSelect( 'linkedtime' , 'weblog' ,
+    "weblog_id=$log_id AND removedby_user=0" , "ORDER BY linkedtime DESC LIMIT 1 OFFSET $endat" ) ;
+
+  if ( $offset or $isolder ) {
+    $str .= '<div class="morelink">' ;
+    $str .= linkNode( $NODE, '<- newer', { nextweblog => $endat - $interval } ) if $offset ;
+    $str .= ' | ' if $offset and $isolder ;
+    $str .= linkNode( $log_id , 'older ->' , { nextweblog => $endat + $interval } ) if $isolder ;
+    $str .= '</div>' ;
+  }
+
+  return "<div class=\"weblog\">\n$str\n</div>" ;
+}
+
+# displays hints on improving the writeup
+# parameters:
+#   (use no parameters when in a writeup display page)
+#
+sub writeuphints
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $writeup = undef;
+
+  if(ref $_[0] eq "ARRAY")
+  {
+    $writeup = $_[0]->[0];
+  }else{
+    $writeup = $$NODE{doctext};
+  }
+
+  my $UID = getId($USER);
+  my $isCE = $APP->isEditor($USER);
+  my $isMyWU = ($$NODE{author_user}==$UID);
+  my @problems;	#all problems found
+
+  #don't show unless it is your own writeup, or you are an editor
+  unless($isMyWU) {
+    if($isCE) {
+      push @problems, '<big>Note</big>: This isn\'t your writeup, so don\'t feel obliged to fix any problems listed here.';
+    } else {
+      return;
+    }
+  }
+
+  my $showDefault = !$$VARS{nohints};
+  my $showHTML = !$$VARS{nohintHTML};
+  my $showXHTML = $$VARS{hintXHTML};	#pref: strict HTML
+  my $showSilly = $$VARS{hintSilly};
+  my $showSpelling = !$$VARS{nohintSpelling};
+
+  return unless $showDefault || $showHTML || $showXHTML || $showSilly || $showSpelling;
+
+  my $showCat = 1;	#1 to show hint categories, 0 to hide
+  my $curCat = undef;
+
+  return if $APP->isMaintenanceNode($NODE);
+
+  my $c = undef;
+  my $i = undef;
+
+  #several tests are done on links, so may as well just find all links only once
+  #note: scalar(@wuPartText) == scalar(@wuPartLink)+1
+  #note: $wuPartText[$n] before $wuPartLink[$n] before $wuPartText[$n+1]
+
+  my @wuPartText = ();
+  my @wuPartLink = ();
+  #there is probably a better way of doing this
+  my @allParts = split(/\[(.*?)\]/s, $writeup);
+  $i = -1;
+  $c = scalar(@allParts);
+
+  foreach(@allParts) {
+    push(@wuPartText, $allParts[++$i]);
+    if($i<$c) {
+      push(@wuPartLink, $allParts[++$i]);
+    }
+  }
+
+  #Count paragraphs, accounting for both <p...> and <BR><BR>
+  my @allParagraphs = split(/\<\w*?p|<br>\w*?<br>/si, $writeup);
+
+  $writeup = ' '.$writeup.' ';	#cheap hack - stylewise :( and speedwise :) - to make \s match at start and end
+
+  #warning to bones:  you will need to escape any single quotes!
+  #"let's" -> "let\'s" -- (you get the idea)
+  #also, use &#91; and &#93; instead of [ and ], respectively
+
+  #default hints
+  if($showDefault) {
+    $curCat = $showCat ? '(essential) ' : '';
+
+    if(length $writeup < 512) {
+      push(@problems, $curCat.'You have a whole lot more space for your writeup...why so short? Tell us more! Try to include some references or "further reading" through hard-links.');
+    }
+
+    my $numlinks = scalar(@wuPartLink);
+    #count number of paragraphs in the writeup
+    my $numparagraphs = scalar(@allParagraphs);
+
+    #New linking suggestion:  see if we have an average of at least one link per paragraph rather than by character count.
+    if($numlinks < $numparagraphs) {
+      push(@problems, $curCat.'How about linking other nodes in your writeup? To link, put "&#91;" and "&#93" around a node name: &#91;Brian Eno&#93; creates a link to '.linkNodeTitle('Brian Eno').'. Also, you can use a pipe (|) to designate a title. &#91;Brian Eno|Master of Sound&#93; links to '.linkNodeTitle('Brian Eno').', but looks like this: '.linkNodeTitle('Brian Eno|Master of Sound').'.
+</p><p>
+Use the pipe to reduce the number of <em>dead-end links</em> in your writeups by showing one thing and pointing to another. For example:  &#91;fiction|those crazy voices in my head&#93;.
+</p><p>
+You don\'t even need to have nodes created to make links to them, once you\'ve linked you can create the nodes simply by clicking on them -- the Everything search will give you a list of similar choices...use the <em>pipe</em> to point to these or create a new node!'
+        );
+    }
+
+    #forgot to close a link - long link
+    $i=127;	#too high? (99 was too short for some crazy softlinkers)
+    $c='';
+
+    foreach(@wuPartLink) {
+      if(length($_)>$i) {
+        $c.=', ' if length($c);
+        $c.='" <code>&#91;'.encodeHTML(substr($_,0,$i),1).'</code> "';
+      }
+    }
+
+    if(length($c)) {
+      push @problems, $curCat.'You may have forgotten to close a link. Here is the start of the long links: '.$c.'.';
+    }
+
+    #forgot to close a link - [ in a link
+    $c='';
+
+    foreach(@wuPartLink) {
+      if( index($_,'[')!=-1 ) {
+        next if $_ =~ /[^[\]]*(?:\[[^\]|]*[\]|][^[\]]*)?/ ; # direct link, regexp from parselinks in HTML.pm
+        $c.=', ' if length($c);
+        $c.='" <code>&#91;'.encodeHTML($_,1).'&#93;</code> "';
+      }
+    }
+
+    if(length($c)) {
+      push @problems, $curCat.'It looks like you forgot to close a link, since you tried to link to a node with &#91; in the title. Here is what you linked to: '.$c.'.';
+    }
+
+    #forgot to close a link - no final ]
+    if( ($i=index($wuPartText[-1],'['))!=-1 ) {
+      push @problems, $curCat.'Oops, it looks like you forgot to close your last link. You ended with: " <code>'.encodeHTML(substr($wuPartText[-1],$i),1).'</code> ".';
+    }
+
+  } #end show default hints
+
+  #HTML hints
+  if($showHTML) {
+    $curCat = $showCat ? '(basic HTML) ' : '';
+
+    #HTML tags in links
+    $c='';
+    foreach(@wuPartLink) {
+      $i = (($i=index($_,'|'))==-1) ? $_ : substr($_,0,$i);	#only care about part that links, not display
+      if($i =~ /<.*?>/) {
+        $c.=', ' if length($c);
+        $c.='" <code>'.encodeHTML($i,1).'</code> "';
+      }
+    }
+
+    if(length($c)) {
+      push @problems, $curCat.'You placed an HTML tag in a link. Either put the tag outside the link, or create a #pipe link, and put the tag in the display part. You tried to link to: '.$c.'.';
+    }
+
+    #non-escaped special characters & < > [ ]
+    if($writeup =~ /\s([&<>])\s/) {
+      push @problems, $curCat.'The ampersand, less-than, and greater-than symbols have special meaning in HTML, and so to show them by themselves, they have to be entered a certain way. Here is how you should enter them:
+        <table border="1" cellpadding="5" cellspacing="0">
+        <tr><th>symbol name</th><th>symbol to display</th><th>what to enter</th></tr>
+        <tr><td>ampersand</td><td>&amp;</td><td><code>&amp;amp;</code></td></tr>
+        <tr><td>less than</td><td>&lt;</td><td><code>&amp;lt;</code></td></tr>
+        <tr><td>greater than</td><td>&gt;</td><td><code>&amp;gt;</code></td></tr>
+        </table>
+        For example, to show the symbol '.($i=encodeHTML($1,1)).' enter it as: " <code>'.encodeHTML($i).'</code> ".';
+    }
+
+    if($writeup =~ /\s([\[\]])\s/) {
+      push @problems, $curCat.'On Everything, the square brackets, &#91; and &#93; have a special meaning - they form links to other nodes. If you want to just display them, you will have to use an HTML entity. To show an open square bracket &#91; type in " <code>&amp;#91;</code> ". To show a close square bracket &#93; type in " <code>&amp;#93;</code> ". If you already know this, and are wondering why you\'re seeing this message, you probably accidently inserted a space at the very '.($1 eq '[' ? 'start' : 'end').' of a link.';
+    }
+
+    #no closing semicolon on entity
+    if($writeup =~ /\s&(#?\w+)\s/) {
+      push @problems, $curCat.'All HTML entities should have a closing semicolon. You entered: " <code>'.($i='&amp;'.encodeHTML($1)).'</code> " but the correct way is: " <code>'.$i.';</code> ".';
+    }
+
+  } #end show HTML hints
+
+  #strict HTML
+  if($showXHTML) {
+    $curCat = $showCat ? '(stricter HTML) ' : '';
+
+    #bold tag
+    if($writeup =~ /<[Bb](\s.*?)?>/) {
+      push @problems, $curCat.'If you want text to be bold, the <code>&lt;strong&gt;</code> tag (instead of the <code>&lt;b&gt;</code> tag) is better in most cases.';
+    }
+
+    #italics tag
+    if($writeup =~ /<[Ii](\s.*?)?>/) {
+      push @problems, $curCat.'If you want text to be italics, there are a few other tags you could use instead of <code>&lt;i&gt;</code>. The <code>&lt;em&gt;</code> tag is the most commonly used alternative, which gives something <em>emphasis</em>. In rarer cases, use <code>&lt;cite&gt;</code> to cite something (such as a book title) or <code>&lt;var&gt;</code> to indicate a variable. However, using the  <code>&lt;i&gt;</code> tag here is OK for certain things, such as foreign words.';
+    }
+
+    #tt tag
+    if($writeup =~ /<tt(\s.*?)?>/i) {
+      push @problems, $curCat.'There are a few other tags you may want to use instead of the <code>&lt;tt&gt;</code> tag. You may want to use <code>&lt;code&gt;</code>, to indicate a code fragment; <code>&lt;samp&gt;</code>, to show sample output from a program, or <code>&lt;kbd&gt;</code>, to indicate text for the user to enter (on a keyboard).';
+    }
+
+    #maybe check for balanced tags? have to watch for <br /> <hr /> (anything else?)
+
+    #no closing paragraph tags
+    if(($writeup =~ /<[Pp](\s.*?)?>/) && ($writeup !~ /<\/[Pp]>/)) {
+      push @problems, $curCat.'Each paragraph tag, <code>&lt;p&gt;</code> , should have a matching close paragraph tag, <code>&lt;/p&gt;</code> .';
+    }
+
+  } #end show strict HTML hints
+
+  #
+  # spelling
+  #
+
+  my $spellInfo = undef;
+  if($showSpelling) {
+    $spellInfo = getNode('bad spellings en-US','setting');
+    if(defined $spellInfo) {
+      $spellInfo = getVars($spellInfo);
+    }
+  }
+
+  if((defined $spellInfo) && $showSpelling) {
+    $curCat = $showCat ? 'spelling <small>(English)</small> ' : '';
+    my @badThings = ();
+    my %problemCount = undef;	#key is problem description, value is number of times
+
+    foreach(keys(%$spellInfo)) {
+      unless(substr($_,0,1) eq '_') {
+        push(@badThings, $_);
+        $problemCount{$_} = 0;
+      }
+    }
+
+    #find all spelling problems
+    my $cheapSpellCheck;
+    foreach(@allParts) {
+      $cheapSpellCheck = lc($_);
+      $cheapSpellCheck =~ s/ +/_/gs;
+
+      foreach(@badThings) {
+        if(index($cheapSpellCheck, $_)!=-1) {
+          ++$problemCount{$_};	#count the number of times spelling incorrectly (once per section)
+        }
+      }
+
+    }
+
+    #summary
+    foreach(keys(%problemCount)) {
+      $i = $problemCount{$_};
+      next if $i==0;
+      $c = $curCat;
+      push(@problems, $c . $$spellInfo{$_} );
+    }
+
+  }
+
+  undef $spellInfo;
+
+  #silly hints
+  #	every now and then, change which hints are commented out to keep things interesting
+  if($showSilly)
+  {
+    $curCat = $showCat ? '(<em>s</em><sup>i</sup><strong>L</strong><sub>l</sub><big>y</big>) ' : '';
+
+    #silly hint - "bad" words
+    #what other good "bad" words are there?
+    if( (index($writeup,'AOL')!=-1) || ($writeup =~ /\smicrosoft\s/i) || ($writeup =~ /\sbill gates\s/i) ) {
+      push @problems, $curCat.'Shame on you! You used a bad word!';
+    }
+
+    if($writeup =~ /\ssoy\s/i) {
+      push @problems, $curCat.'SOY! SOY! SOY! Soy makes you strong! Strength crushes enemies! SOY!';
+    }
+
+    if($writeup =~ /server error/i) {
+      push @problems, $curCat.'Ah, quit your griping.';
+    }
+
+  }  #end show silly hints
+
+  return if !scalar(@problems) || (!$isMyWU && $isCE && (scalar(@problems)==1));
+  my $str = join('</p><p>',@problems);
+  return unless $str;
+  $str = parseLinks($str, $$NODE{parent_e2node});
+
+  $str = '<p><big><strong>Hints!</strong></big> (choose which writeup hints display at <a href='.urlGen({'node'=>'Writeup Settings','type'=>'superdoc'}).'">Writeup Settings</a>)</p><p>'.$str.'</p>';
+
+  return $str;
 }
 
 1;
