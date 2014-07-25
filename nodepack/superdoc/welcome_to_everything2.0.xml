@@ -2,12 +2,7 @@
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
-my $str;
-
-if (htmlcode('isZen')) {
-$str = htmlcode('displaynltext', 'tfcool nodelet - zen');
-}
-
+my $str = htmlcode('displaynltext', 'tfcool nodelet - zen');
 
 $str.= &quot;&lt;div id='welcome_message'&gt;&lt;p&gt;
 Welcome Message goes here&lt;/p&gt;&lt;/div&gt;&quot;;

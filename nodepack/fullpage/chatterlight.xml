@@ -10,8 +10,6 @@
 	&lt;link rel='stylesheet' id='basesheet' type='text/css' href='/node/stylesheet/basesheet?displaytype=view'&gt;
 
 [%
-return unless htmlcode('isZen');
-
 my $str =
 '	&lt;link rel=&quot;stylesheet&quot; id=&quot;zensheet&quot; type=&quot;text/css&quot; href=&quot;'
                  . htmlcode('linkStylesheet', $$VARS{userstyle}||$$THEME{default_style},'serve')

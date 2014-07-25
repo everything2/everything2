@@ -19,10 +19,6 @@ if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
 	return &quot;   \t&lt;style type='text/css'&gt;\n\n\t&quot; . htmlScreen($$VARS{customstyle}) . &quot;\n\n\t&lt;/style&gt;&quot;;
 }
 %]
-
-	&lt;script type='text/javascript'&gt;
-		var isZen = 1;
-	&lt;/script&gt;
 	[{static javascript}]
 	&lt;/head&gt;
 	&lt;body&gt;

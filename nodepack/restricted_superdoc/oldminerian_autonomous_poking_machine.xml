@@ -1135,13 +1135,6 @@ return $str;
 
 [{nwuamount}]
 
-[%
-if (htmlcode('isZen')) {
-  return 'isZen';
-} else {
-  return 'isNotZen';
-}
-%]
 &lt;div&gt;
 [%
 return htmlcode('zenwriteups', '');
