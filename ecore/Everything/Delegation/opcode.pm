@@ -40,6 +40,7 @@ BEGIN {
   *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
   *canUpdateNode = *Everything::HTML::canUpdateNode;
   *updateLinks = *Everything::HTML::updateLinks;
+  *isSuspended = *Everything::HTML::isSuspended;
 } 
 
 sub publishdraft

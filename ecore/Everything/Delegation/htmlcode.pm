@@ -43,6 +43,7 @@ BEGIN {
   *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
   *canUpdateNode = *Everything::HTML::canUpdateNode;
   *updateLinks = *Everything::HTML::updateLinks;
+  *isSuspended = *Everything::HTML::isSuspended;
 } 
 
 # Used by showchoicefunc
@@ -66,6 +67,12 @@ use Everything::FormMenu;
 
 # Used by verifyRequestHash
 use Digest::MD5 qw(md5_hex);
+
+# Used by uploaduserimage
+use POSIX qw(strftime);
+use Net::Amazon::S3;
+use File::Copy;
+use Image::Magick; 
 
 # This links a stylesheet with the proper content negotiation extension
 # linkJavascript below talks a bit about the S3 strategy
@@ -4662,6 +4669,348 @@ sub displaynltext
   $str.="<tr><td><h3>$title</h3></td></tr>" if $title;
 
   $str.=$$CN{nltext};
+
+  return $str;
+}
+
+# Not currently used; left for clarity, but a strong candidate for removal
+#
+sub lockroom
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless isGod($USER);
+  my $R ||= $$USER{in_room};
+  return if $R == 0;
+
+  getRef($R);
+
+  my $open = "1\;";
+  my $locked = "0\;";
+
+  my $title = "";
+  if($$R{criteria} eq $open) {
+    $title = '(lock)';
+  } elsif($$R{criteria} eq $locked) {
+    $title = '(unlock)';
+  } else {
+    return;
+  }
+
+  return linkNode($NODE, $title, {op=>'lockroom', target => getId($R)});
+}
+
+# Used in the epicenter, chatterbox, and a few other places
+#
+sub borgcheck
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $$VARS{borged};
+  my $t = time;
+  my $str = "";
+  my $numborged = $$VARS{numborged};
+  $numborged ||= 1;
+  $numborged *=2;
+
+  if ($t - $$VARS{borged} < 300+60*$numborged) {
+    $str .= linkNodeTitle('You\'ve Been Borged!');
+  } else {
+    $$VARS{lastborg} = $$VARS{borged};
+    delete $$VARS{borged};
+    $str .= '<em>'.linkNodeTitle('EDB') . ' has spit you out...</em>'; 
+    $DB->sqlUpdate('room', {borgd => '0'}, 'member_user='.getId($USER));
+  }
+
+  return $str.'<br /><br />';
+}
+
+sub newnodes
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($limit) = @_;
+  $limit ||= 50;
+
+  my $qry = 'SELECT writeup_id FROM writeup';
+
+  my $isEd = $APP->isEditor($USER);
+
+  $qry.= ' WHERE notnew=0 ' unless $isEd;
+  $qry.= " ORDER BY publishtime DESC LIMIT $limit";
+
+  my $ed = undef;
+  $ed = 'ed,' if $isEd;
+  my $funk = sub{
+    my $N = shift; # $N is a full node by now
+    my $str.='<td>';
+
+    if($$N{notnew}){
+      $str .= '(<font color="red">H!</font>)';
+      $str .= '(<a href='.urlGen({'node_id'=>$$NODE{node_id}, 'op'=>'unhidewriteup', 'hidewriteup'=>$$N{node_id}}).'>un-h!</a>)';
+    } else {
+      $str .= '(<a href='.urlGen({'node_id'=>$$NODE{node_id}, 'op'=>'hidewriteup', 'hidewriteup'=>$$N{node_id}}).'>h?</a>)';
+    }
+
+    $str .= '(<font color="red">...</font>)' if $DB->sqlSelect('notnew', 'newwriteup', "node_id=$$N{node_id}") != $$N{notnew};
+    $str.='</td><td>';
+    $str.='&nbsp;</td>';
+    return $str;
+  };
+
+  my $nids = $DB->{dbh} -> selectcol_arrayref($qry);
+
+  return htmlcode('show content', $nids ,
+    qq'<tr class="&oddrow">$ed "<td>", parenttitle, type, "</td><td>", listdate, "</td><td>", author, "</td>"', 'ed' => $funk);
+
+}
+
+sub uploaduserimage
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($field) = @_;
+
+  return if isSuspended($NODE,"homenodepic");
+
+  my $aws_access_key_id = $Everything::CONF->{s3}->{homenodeimages}->{access_key_id};
+  my $aws_secret_access_key = $Everything::CONF->{s3}->{homenodeimages}->{secret_access_key};
+
+  my $s3 = Net::Amazon::S3->new(
+   {
+      aws_access_key_id     => $aws_access_key_id,
+      aws_secret_access_key => $aws_secret_access_key,
+      retry                 => 1,
+   }
+  );
+
+  my $bucket = $s3->bucket($Everything::CONF->{s3}->{homenodeimages}->{bucket});
+
+  my $str ='';
+  my $image = Image::Magick -> new(); 
+  my $name = $field.'_file';
+  my $tmpfile = '/tmp/everythingimage' . int(rand(10000)); 
+
+  my $sizelimit = 800000;
+  my $maxWidth = 200;
+  $maxWidth = 400 if (($APP->getLevel($NODE)>4)||(isGod($USER)));
+  my $maxHeight = 400;
+  $maxHeight = 800 if (($APP->getLevel($NODE)>4)||(isGod($USER)));
+
+
+  $sizelimit = 1600000 if (isGod($USER));
+
+  my $fname = undef;
+  if ($fname = $query->upload($name))
+  { 
+    my $basename = $$NODE{title};
+    $basename =~ s/\W/_/gs;
+    my $imgname = $basename;
+  
+    UNIVERSAL::isa($query->uploadInfo($fname),"HASH") or return "Image upload failed. If this persists, contact an administrator.";
+    my $content = $query->uploadInfo($fname)->{'Content-Type'};
+    unless ($content =~ /(jpeg|jpg|gif|png)$/)
+    {
+      return "this doesn't look like a jpg, gif or png!" 
+    }
+  
+    $imgname .= '.'.$1;
+    $tmpfile .= '.'.$1;
+
+    my $size = undef;
+    {
+       my $buf = undef;
+       $buf = join ('', <$fname>);
+       $size = length($buf);
+
+       if($size > $sizelimit)
+       {
+         return "your image is too big.  The current limit is $sizelimit bytes";
+       }
+
+       open OUTFILE, ">$tmpfile";
+       print OUTFILE $buf;
+       close OUTFILE;
+    }
+
+    $str.=$image->Read($tmpfile);
+    my ($width, $height)=$image->Get('width', 'height'); 
+    my $proportion=1;
+    my $resizing=0;
+    if ($width> $maxWidth)
+    {
+      $proportion=$maxWidth/$width;
+      $resizing=1;
+    }
+
+    if ($height> $maxHeight)
+    {
+      if (($maxHeight/$height)<$proportion)
+      {
+        $proportion=$maxHeight/$height; 
+      }
+    
+      $resizing=1;
+    }
+  
+    if ($resizing==1)
+    {
+      $width=$width*$proportion;
+      $height=$height*$proportion;
+
+      $image->Resize(width=>$width,  height=>$height, filter=>"Lanczos");
+      $image->Write($tmpfile); 
+    }
+    undef $image;
+
+    unless( $bucket->add_key_filename($basename,$tmpfile, { content_type => $content} ) )
+    {
+      return "Image upload failed on REST call. Try again in a few";
+    }
+
+    $$NODE{$field} = "/$basename";
+    $DB->updateNode ($NODE, $USER);
+  
+    $DB->getDatabaseHandle()->do('replace newuserimage set newuserimage_id='.getId($NODE));
+
+    unlink($tmpfile);
+
+
+    $str.="$size bytes received!  Make sure to SHIFT-reload on your user page, if you see the old image.";
+  } else {
+    $str.="<small>the rules are simple: only upload jpgs, gifs, and pngs. ". ($sizelimit/1000)."k max.  
+      Big images will be resized to $maxWidth pixels across, or $maxHeight tall.  We <strong>will</strong> take away this privilege if what you post is copyrighted or
+      obscene - ".linkNodeTitle('be cool').'</small>';
+    $str.=$query->filefield($name);
+  }
+
+  return $str;
+}
+
+# Used only in [Everything I Ching]
+#
+sub generatehex
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($hex)= @_;
+
+  my $str = "<table width=100% bgcolor=white border=0 cellpadding=3 cellspacing=0>";
+
+  my $rows = "";
+  while (my $letter = chop $hex) {
+    my $row = "<tr><td align=center><img width=128 height=14 src=";
+    if (uc($letter) eq 'B') {
+      $row .="http://static.everything2.com/broke.gif";
+    } else {
+      $row .="http://static.everything2.com/full.gif";
+    }
+    $row.="></td></tr>";
+    $rows = $row.$rows;
+  }
+
+  $str.=$rows;
+  return $str."</table>";
+}
+
+# Super likely going to be moved to a template if we even need to keep it.
+# It is only used by the printable htmlcode pages, which are likely to be moved to CSS.
+#
+sub printableheader
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($WRITEUP) = @_;
+  getRef $WRITEUP;
+  $WRITEUP ||= $NODE;
+
+  my $TYPE = $$WRITEUP{wrtype_writeuptype};
+  my $E2NODE = getNode $$WRITEUP{parent_e2node}; 
+  getRef $TYPE;
+
+  if(getId($NODE)==getId($WRITEUP)) {
+    #new way - let displayWriteupInfo handle individual WU header and footer
+    return htmlcode('displayWriteupInfo', getId($WRITEUP));
+  }
+
+  my $str="<b>";
+  $str.= "$$E2NODE{title} " unless getId($NODE) != getId($WRITEUP);
+  $str.="(".linkNode($WRITEUP, $$TYPE{title}).") by&nbsp;".linkNode($$WRITEUP{author_user})."</b>\n";
+
+  $str="<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>
+    <td>$str</td>
+    <td align=right>";
+ 
+  if($$WRITEUP{cooled})
+  {
+    $str .= htmlcode('writeupcools',$WRITEUP->{node_id});
+  }
+  
+  $str .= "</td><td align=right>"."<font size=2>".htmlcode('parsetimestamp', "$$WRITEUP{publishtime}")."</font></td></tr></table>";
+
+  return $str;
+}
+
+# Similar to printableheader only used by the printable htmlpages. Shares its fate.
+#
+sub printablefooter
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = '<table width="100%" border="0"><tr><td align="left"><b>';
+
+  my $E2NODE = undef;
+
+  $E2NODE=getNode $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
+  $E2NODE ||= $NODE;
+  my $site = $Everything::CONF->{system}->{site_url};
+  $site =~ s/\/$//;
+  $site.= "/title/$$E2NODE{title}";
+  $site =~ s/ /\+/g;
+
+  $str.= $site. "</b></td><td align='right'><b>http://everything2.com/node/$$NODE{node_id}</b></td></tr></table>";
 
   return $str;
 }
