@@ -12,7 +12,7 @@
 [%
 my $str =
 '	&lt;link rel=&quot;stylesheet&quot; id=&quot;zensheet&quot; type=&quot;text/css&quot; href=&quot;'
-                 . htmlcode('linkStylesheet', $$VARS{userstyle}||$$THEME{default_style},'serve')
+                 . htmlcode('linkStylesheet', $$VARS{userstyle}||$Everything::CONF-&gt;{default_style},'serve')
                  . '&quot; media=&quot;screen,tv,projection&quot;&gt;' ;
 $str .= &quot;   \t&lt;style type='text/css'&gt;\n\n\t&quot; . htmlScreen($$VARS{customstyle}) . &quot;\n\n\t&lt;/style&gt;&quot;
 	if ($$VARS{customstyle});

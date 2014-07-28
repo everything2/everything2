@@ -13,7 +13,7 @@
 [% $PAGELOAD-&gt;{noparsecodelinks} = 1; &quot;&quot;; %]
 [%
 '	&lt;link rel=&quot;stylesheet&quot; id=&quot;zensheet&quot; type=&quot;text/css&quot; href=&quot;'
-                 . htmlcode('linkStylesheet', $$VARS{userstyle}||$$THEME{default_style}, 'serve')
+                 . htmlcode('linkStylesheet', $$VARS{userstyle}||$Everything::CONF-&gt;{default_style}, 'serve')
                  . '&quot; media=&quot;screen,tv,projection&quot;&gt;' ;
 %][%
 

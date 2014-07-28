@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>720339</node_id>
   <title>createroom</title>
   <code>return unless $APP-&gt;getLevel($USER) &gt;= $Everything::CONF-&gt;{create_room_level};

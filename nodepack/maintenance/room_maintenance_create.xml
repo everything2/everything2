@@ -7,7 +7,7 @@
   <code>my ($N) = @_;
 
 my $canCreate = ($APP-&gt;getLevel($USER) &gt;= $Everything::CONF-&gt;{create_room_level} or isGod($USER));
-$canCreate = 0 if htmlcode('isSuspended', 'room', $USER);
+$canCreate = 0 if isSuspended($USER, 'room');
 
 if (!$canCreate) {
   nukeNode($N, -1);

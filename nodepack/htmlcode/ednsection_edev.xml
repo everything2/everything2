@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>908369</node_id>
   <title>ednsection_edev</title>
   <code>my $csr = $DB-&gt;sqlSelectMany(&quot;to_node&quot;, &quot;weblog&quot;, &quot;weblog_id=&quot;.getNode('edev','usergroup')-&gt;{node_id}.&quot; and removedby_user=0&quot;, &quot;order by tstamp DESC limit 5&quot; );

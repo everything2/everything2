@@ -11,7 +11,7 @@ if ($APP-&gt;getLevel($USER) &lt; $Everything::CONF-&gt;{create_room_level}
 
 my $str;
 
-if (htmlcode('isSuspended', 'room', $USER)) {
+if (isSuspended($USER, 'room')) {
    return '&lt;h2 class=&quot;warning&quot;&gt;You\'ve been suspended from creating new rooms!&lt;/h2&gt;';
 }
 $query-&gt;delete('op', 'type', 'node');
