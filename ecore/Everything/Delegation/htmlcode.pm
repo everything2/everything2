@@ -43,7 +43,9 @@ BEGIN {
   *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
   *canUpdateNode = *Everything::HTML::canUpdateNode;
   *updateLinks = *Everything::HTML::updateLinks;
-  *isSuspended = *Everything::HTML::isSuspended;
+  *changeRoom = *Everything::HTML::changeRoom;
+  *cloak = *Everything::HTML::cloak;
+  *uncloak = *Everything::HTML::uncloak;
 } 
 
 # Used by showchoicefunc
@@ -65,7 +67,7 @@ use Time::Local;
 # Used by typeMenu
 use Everything::FormMenu;
 
-# Used by verifyRequestHash
+# Used by verifyRequestHash, getGravatarMD5
 use Digest::MD5 qw(md5_hex);
 
 # Used by uploaduserimage
@@ -5013,6 +5015,428 @@ sub printablefooter
   $str.= $site. "</b></td><td align='right'><b>http://everything2.com/node/$$NODE{node_id}</b></td></tr></table>";
 
   return $str;
+}
+
+# Changeroom is the room changing widget
+# TODO: Develop a notion of public accounts
+#
+sub changeroom
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if $APP->isGuest($USER);
+  return if $$USER{title} eq 'everyone';
+  return ("You are locked in your current room for " . ceil(($$VARS{lockedin} - time)/ 60) . " minutes.<br><br>") if ($$VARS{lockedin} > time);
+
+  my $str = "";
+  $str = ' instant ajax chatterbox_chatter:#' if $query and $query -> param('ajaxTrigger') and defined $query->param('changeroom')	and $query->param('changeroom') != $$USER{in_room};
+  my $RM = getNode('e2 rooms', 'nodegroup');
+  my @rooms = @{ $$RM{group}  };
+  my @aprrooms;
+  my %aprlabel;
+  my ($nodelet) = @_ ;
+  $nodelet =~ s/ /+/g;
+
+  foreach(@rooms) {
+    my $R = getNodeById($_);
+    next unless eval($$R{criteria});
+    if(defined $query->param('changeroom') and $query->param('changeroom') == $_ and $$USER{in_room} != $_)
+    {
+      changeRoom($USER, $R);
+    }
+  
+    push @aprrooms, $_;
+    $aprlabel{$_} = $$R{title};
+  }
+
+  return unless @aprrooms;
+
+  push @aprrooms, '0';
+  $aprlabel{0}='outside';
+
+  if(defined $query->param('changeroom') and $query->param('changeroom') == 0)
+  {
+    #steppin' outside
+    #$$USER{in_room} = 0;
+    #updateNode($USER, -1);
+	changeRoom($USER, 0);
+    #we should also edit the rooms table
+  }
+
+  my $isCloaker = $APP->userCanCloak($USER);
+  if($query->param('sexiscool') and $isCloaker)
+  {
+    if($query->param('cloaked'))
+    {
+      cloak($USER, $VARS);
+    } else {
+      uncloak($USER, $VARS);
+    }
+  }
+
+  my $id = $nodelet ;
+  $id =~ s/\W//g ;
+  $nodelet = ":$nodelet" if $nodelet ;
+  my $ajax = 'ajax '.( $nodelet ? lc($id).':updateNodelet' : 'room_options:changeroom' ).'?ajaxTrigger=1&' ;
+  $str ="<div class='nodelet_section$str' id='room_options'>";
+  $str.="<h4 class='ns_title'>Room Options</h4>";
+  $str.=htmlcode('openform');
+  $str.=$query->checkbox(-name=>'cloaked', checked=>$$VARS{visible}, value=>1, label=>'cloaked', class=>$ajax."sexiscool=1&cloaked=/$nodelet") if $isCloaker;
+
+  #$str.=htmlcode('lockroom').' '.htmlcode('createroom');
+  $str.=' '.htmlcode('createroom');
+
+  $str.='<br>';
+  $str.=$query->popup_menu(-name=>'changeroom', Values=>\@aprrooms, default=>$$USER{in_room}, labels=>\%aprlabel,class=>$ajax."changeroom=/$nodelet");
+  $str.=$query->submit('sexiscool','go');
+  $str.='</form></div>';
+
+  return $str;
+}
+
+# Createroom, likely moving to a controller
+#
+sub createroom
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->getLevel($USER) >= $Everything::CONF->{create_room_level};
+  my $cr = getId(getNode('create room','superdoc'));
+  return '<span title="create a new room to chat in">'. linkNode($cr,'create',{lastnode_id=>0}). '</span>';
+}
+
+#  allows users to select nodelets and their order
+#  usage: [{rearrangenodelets:nodelets,default nodelets}]
+#  first parameter:  user variable which stores the comma delimited list of selected node_id's ie $$VARS{nodelets}
+#  second parameter: nodeletgroup which contains nodelets a user can choose from
+#  optional third parameter: send form controls only, not an entire form
+# TODO: Move me to templates
+#
+sub rearrangenodelets
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if( $APP->isGuest($USER) );
+  my($varsfield,$nodeletgroup,$formoff)=@_;
+  return 'Missing parameter.' unless $varsfield && $nodeletgroup;
+
+  my $i = undef;
+  my @selected = ();
+  my $prefix = 'nodeletedit';
+
+  if ($query -> param($prefix)){
+    my $id = undef;
+    foreach (grep /^$prefix\d+/, $query->param()){
+      push(@selected, $id) if ($id=$query -> param($_)) && !grep(/^$id$/, @selected);
+    }
+    $$VARS{nodelets} = join ',', @selected;
+  } else {
+    @selected = split ',', $$VARS{nodelets};
+  }
+
+  my %names = ('0'=>'(none)');
+  my @ids = (@{ getNode($nodeletgroup,'nodeletgroup')->{group} });
+  foreach(@ids,@selected){ # include @selected in case user has a non-standard nodelet selected
+    $names{$_} ||= getNodeById($_)->{title};
+  }
+  @ids = sort { lc($names{$a}) cmp lc($names{$b}) } keys %names; # keys to include non-standard
+
+  my @menus = ();
+  for ($i=1;$selected[$i-1];$i++){
+    push @menus, $query -> popup_menu(-name => $prefix.$i, values => \@ids,
+    labels => \%names, default => $selected[$i-1], force=>1);
+  }
+
+  for($i;$ids[$i];$i++){
+    push @menus, $query -> popup_menu(-name => $prefix.$i, values => \@ids,
+    labels => \%names, default => '0', force=>1);
+  }
+
+  my $str = $query->hidden(-name => $prefix, value=>1).qq'<ul id="rearrangenodelets"><li>\n'.
+    join("</li>\n<li>", @menus)."</li></ul>\n";
+
+  return $str if $formoff;
+  return htmlcode('openform').$str.htmlcode('closeform');
+
+}
+
+# This needs to move to a template
+#
+sub minilogin
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $op = $query->param("op");
+  $query->delete('passwd');
+
+  my $goto = getId($NODE);
+  $goto = $Everything::CONF->{system}->{default_node} if $goto == $Everything::CONF->{system}->{default_guest_node};
+  return $query->start_form(-method => "POST", -action => $query->script_name, -name => "loginform", -id => "loginform") .
+    $query->hidden("node_id", $goto) . "\n" .
+    $query->hidden("lastnode_id") . "\n" .
+    $query->hidden(-name => "op", value => "login", force => 1) . "\n" .
+    '
+      <table border="0">
+      <tr>
+      <td><strong>Login</strong></td>
+      <td>'. $query->textfield (-name => "user", -size => 10, -maxlength => 20, -tabindex => 1).'</td>
+      </tr>
+      <tr>
+      <td><strong>Password</strong></td>
+      <td>'.$query->password_field(-name => "passwd", -size => 10, -maxlength => 240, -tabindex => 2) .' </td>
+      </tr>
+      </table>
+      <font size="2">'.
+    $query->checkbox(
+      -name => "expires"
+      , -checked => ""
+      , -value => "+10y"
+      , -label => "remember me"
+      , -tabindex => 3
+    ).
+    ($op eq "login" ? '<p><i>Login incorrect.</i><br>If you are unable to login, try resetting your password. If you don\'t have access to the email attached to your account or are otherwise stuck, email <a href="mailto:accounthelp@everything2.com">accounthelp@everything2.com</a></p></td></tr>' : "")
+."</font>" .
+    $query->submit(
+      -name => "login"
+      , -value => "Login"
+      , -tabindex => 4
+    )."<br />".
+    linkNodeTitle("Reset password[superdoc]|Lost password")."
+    <p><strong>".linkNode($Everything::CONF->{system}->{create_new_user},'Sign up')."</strong></p>\n" .
+    $query->end_form;
+}
+
+
+
+#displays firmlinks for this e2node or writeup
+#	for admins, also shows widgets to allow deleting of checked items
+# TODO - Template code
+#
+sub firmlinks
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $currentnode = undef;
+  my $inE2Node = undef;
+  my $parentstr = '' ;
+  if($$NODE{type}{title} eq 'e2node') {
+    $currentnode = $NODE;
+    $inE2Node=1;
+  } elsif($$NODE{type}{title} eq 'writeup') {
+    $currentnode = getNodeById($$NODE{parent_e2node});
+    $parentstr .= '<div class="topic" id="parentlink">' ;
+
+    my $nwriteups = undef;
+    unless($currentnode and $$currentnode{group} and $nwriteups = @{$currentnode->{group}})
+    {
+      $parentstr .= 'This node is unparented. ';
+      $parentstr .= $APP->isEditor($USER)? linkNode(getNode('Magical Writeup Reparenter', 'superdoc'), 'Reparent it.', {old_writeup_id => $$NODE{node_id}})
+        : 'Please contact an editor to have this repaired.';
+      return "$parentstr</div>";
+    }
+
+    my $nodeTitle=$$currentnode{title};
+    $parentstr .= linkNode($currentnode,"See all of $nodeTitle").
+      ( $nwriteups == 1 ? ', no other writeups in this node' :
+        (  $nwriteups == 2 ? ', there is 1 more in this node' :
+	', there are '.($nwriteups-1).' more in this node' ) ) . '.</div>' ;
+    $inE2Node=0;
+  }
+
+  return unless($currentnode);
+
+  my $firmlink = getNode('firmlink', 'linktype');
+  return unless($firmlink);
+
+  my $firmlinkId = $$firmlink{node_id};
+  my $RECURSE = 1;
+  my $cantrim = $DB -> canUpdateNode($USER, $currentnode) || $APP->isEditor($USER);
+
+  my $sqlQuery = qq|;
+    SELECT links.to_node, note.firmlink_note_text
+    FROM links
+    LEFT JOIN firmlink_note AS note
+      ON note.from_node = links.from_node
+      AND note.to_node = links.to_node
+    WHERE links.linktype = $firmlinkId
+      AND links.from_node = $$currentnode{node_id}|;
+
+  my $csr = $DB->getDatabaseHandle()->prepare($sqlQuery);
+  my @links = ();
+
+  if($csr->execute()) {
+    while(my $row = $csr->fetchrow_hashref()) {
+      my $linkedNode = getNodeById($row->{to_node});
+      my $text = $row->{firmlink_note_text};
+      push @links, { 'node' => $linkedNode, 'text' => $text };
+    }
+    $csr->finish();
+  }
+
+  my $str = '';
+  foreach(sort {lc($$a{node}->{title}) cmp lc($$b{node}->{title})} @links)
+  {
+    my ($linkedNode, $linkText) = ($$_{node}, $$_{text});
+    $str .=' , ' if $str;
+    $str .= $query->checkbox('cutlinkto_'.$$linkedNode{node_id}, 0, '1', '') if $cantrim;
+    $str .= linkNode($linkedNode);
+    $str .= encodeHTML(" $linkText") if $linkText ne '';
+  }
+
+  my $firmhead = '';
+
+  if ($str ne '') {
+    if($cantrim) {
+      $firmhead = htmlcode('openform', 'firmlinktrim_form')
+        .htmlcode('verifyRequestForm', 'linktrim')
+        .'<input type="hidden" name="op" value="linktrim">'
+        .'<input type="hidden" name="linktype" value="'.$firmlinkId.'">'
+        .'<input type="hidden" name="cutlinkfrom" value="'.$$currentnode{node_id}.'">';
+    }
+
+    $firmhead .= '<strong>See';
+    if( !$inE2Node || (exists $$NODE{group}) && (defined $$NODE{group}) && ( scalar(@{$$NODE{group}})>0 ) ) {
+      $firmhead .= ' also';
+    }
+    $firmhead .= ': </strong>';
+
+    if($cantrim) {
+      $str.= ' &nbsp; '.$query->submit('go','un-link').'</form>';
+    }
+
+    $str = "\t<div class='topic' id='firmlink'>".$firmhead.$str."</div>";
+  }
+
+  return "$parentstr\n$str" ;
+}
+
+# Used by nodeletsection
+#
+sub ednsection_edev
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $csr = $DB->sqlSelectMany("to_node", "weblog", "weblog_id=".getNode('edev','usergroup')->{node_id}." and removedby_user=0", "order by tstamp DESC limit 5" );
+
+  my $str = "";
+  while (my $W = $csr->fetchrow_hashref) {
+    $str.= linkNode($$W{to_node}, undef, {lastnode_id => undef})."<br>";
+  }
+
+  return $str;
+}
+
+# Only used in the patch system. Deletable once that is wound down.
+#
+sub settype
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($patch_id) = @_;
+  $patch_id ||= $NODE -> {node_id};
+
+  my $PATCH = getNodeById($patch_id);
+
+  my $patch_status = getNodeById($PATCH -> {cur_status});
+
+  #Process changes, if any
+  if( $APP->isAdmin($USER) )
+  {
+    my $new_status = $query -> param('patch_status');
+    if( $new_status and $new_status != $patch_status -> {status_id})
+    {
+      $NODE -> {cur_status} = $new_status;
+      updateNode($NODE,-1);
+    }
+  }
+
+  my $applied = $patch_status -> {applied};
+
+  #Only get the statuses that match this status, so that you can't go
+  #from applied to unapplied statuses without hitting the little applied
+  #button.
+  my @statuses = getNodeWhere({-applied => $applied},"status","node_id");
+
+  my %dropdown_labels = ();
+
+  foreach my $status(@statuses)
+  {
+    my $status_title = $status -> {title};
+    $status_title .= " *" if $$status{status_id} == $$patch_status{status_id}; 
+    $dropdown_labels{$status -> {status_id}} = $status_title;
+  }
+
+  my @status_ids = keys %dropdown_labels;
+
+  my $str = $query -> popup_menu("patch_status", \@status_ids, $patch_status -> {status_id}, \%dropdown_labels);
+
+  return $str;
+}
+
+sub getGravatarMD5
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $gravatarUser = shift;
+  getRef $gravatarUser;
+
+  my $defaultEmail = "$$gravatarUser{title}\@chat.everything2.com";
+  my $email = $DB->sqlSelect("setting_value", "uservars", "user_id = $$gravatarUser{user_id}". " AND setting_name = 'gravatar_email'");
+
+  $email = $defaultEmail unless defined $email;
+  $email = lc $email;
+  $email =~ s/^\s+|\s+$//g;
+
+  return md5_hex($email);
+
 }
 
 1;

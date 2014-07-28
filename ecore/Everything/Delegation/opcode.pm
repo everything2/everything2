@@ -40,7 +40,9 @@ BEGIN {
   *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
   *canUpdateNode = *Everything::HTML::canUpdateNode;
   *updateLinks = *Everything::HTML::updateLinks;
-  *isSuspended = *Everything::HTML::isSuspended;
+  *changeRoom = *Everything::HTML::changeRoom;
+  *cloak = *Everything::HTML::cloak;
+  *uncloak = *Everything::HTML::uncloak;
 } 
 
 sub publishdraft

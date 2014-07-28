@@ -2653,8 +2653,7 @@ sub isSuspended
         my ($usr, $sustype) = @_;
 
         return undef unless $usr and $sustype and $sustype = getNode($sustype, "sustype");
-        return $DB->sqlSelect("suspension_id", "suspension", "suspension_user=$$usr{node_id} 
-         and suspension_sustype=$$sustype{node_id}");
+        return $DB->sqlSelect("suspension_id", "suspension", "suspension_user=$$usr{node_id} and suspension_sustype=$$sustype{node_id}");
 
 }
 
