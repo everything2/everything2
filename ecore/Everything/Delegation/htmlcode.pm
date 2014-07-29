@@ -5165,9 +5165,10 @@ sub rearrangenodelets
     labels => \%names, default => $selected[$i-1], force=>1);
   }
 
-  for($i;$ids[$i];$i++){
+  while($ids[$i]){
     push @menus, $query -> popup_menu(-name => $prefix.$i, values => \@ids,
     labels => \%names, default => '0', force=>1);
+    $i++;
   }
 
   my $str = $query->hidden(-name => $prefix, value=>1).qq'<ul id="rearrangenodelets"><li>\n'.
@@ -5437,6 +5438,248 @@ sub getGravatarMD5
 
   return md5_hex($email);
 
+}
+
+sub writeupssincelastyear
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($userID) = @_;
+
+  # Ignore maintenance writeups such as [Broken Nodes] and [Edit these E2 Titles]
+  my $notIn = " AND node.node_id NOT IN (";
+  my $firstIn = 1;
+
+  foreach (values %{$Everything::CONF->{system}->{maintenance_nodes}} )
+  {
+    # Look for numbers, and presume all numbers are node IDs
+    next unless /^\d+$/;
+
+    if ($firstIn)
+    {
+      $firstIn = 0;
+      $notIn .= $_;
+    } else {
+      $notIn .= ', ' . $_;
+    }
+  }
+
+  $notIn .= ") ";
+
+  # No node restriction string if no maintenance nodes were found
+  $notIn = "" if $firstIn;
+
+  my $sqlStr = "SELECT COUNT(*)
+    FROM node JOIN writeup ON writeup.writeup_id=node.node_id
+    WHERE publishtime > (NOW() - INTERVAL 1 YEAR)
+    AND author_user=$userID $notIn";
+
+  my $dbh = $DB->getDatabaseHandle();
+  my $qh = $dbh -> prepare($sqlStr);
+  $qh -> execute();
+  my ($numwriteups) = $qh -> fetchrow();
+  $qh -> finish();
+
+  return $numwriteups;
+}
+
+# This is almost certainly identical to the flattenUsergroup functionality that already exists inside of the NodeBase
+# but I am keeping it for compatibility. Ultimately it can be wound into something less oddly specific
+#
+sub usergroupToUserIds
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+
+  #Given a ug_id or a ug hash, convert it to a comma-separated string of user IDs
+  my ($ug) = @_;
+
+  #Given a ug_id or a ug hashref, convert it recursively to an array of user IDs
+  my @uids = htmlcode("explode_ug",$ug);
+
+  my $out = "@uids";
+
+  $out =~ s/ /,/g;
+  return $out;
+}
+
+# Used this to kill off a local subref in usergroupToUserIds
+#
+sub explode_ug
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($ug) = @_;
+  $ug = getNodeById($ug) if $ug =~ /^\d+$/;
+
+  my @ids = @{$$ug{'group'}};
+
+  my @result = ();
+  foreach my $id(@ids){
+    if(getNodeById($id) -> {'type'} -> {'title'} eq 'user'){
+      push @result, $id;
+    } else{
+      push @result, htmlcode("explode_ug",$id);
+    }
+  }
+
+  return @result;
+}
+
+sub unignoreUser
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($uname) = @_;
+
+  my $U = getNode($uname, 'user');
+  $U ||= getNode($uname, 'usergroup');
+  if ($U) {
+    return if $$U{title} eq 'EDB';
+    unless ($DB->sqlSelect('*','messageignore',"messageignore_id=$$USER{node_id} AND ignore_node=$$U{node_id}")) {
+      return 'not yet ignoring '.$$U{title};
+    } else {
+      $DB->sqlDelete('messageignore',"messageignore_id=$$USER{node_id} AND ignore_node=$$U{node_id}");
+    }
+  } else {
+    $uname = encodeHTML($uname);
+    return "<strong>$uname</strong> doesn't seem to exist on the system!" unless $U;
+  }
+
+  $query->param('DEBUGignoreUser', 'tried to unignore '.$$U{title});
+  return "$$U{title} unignored";
+
+}
+
+sub assign_patch
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  #This should only be called from patch display page --[Swap]
+  my ($patch_id) = @_;
+
+  $patch_id ||= $NODE -> {node_id};
+
+  my $PATCH = getNodeById($patch_id);
+
+  my $assigned_to = $PATCH -> {assigned_to};
+
+  #Process changes, if any
+  if(isGod($USER) ){
+    my $new_assign = $query -> param('assigned_to');
+    if( $new_assign and $new_assign != $assigned_to ){
+      $PATCH -> {assigned_to} = $new_assign;
+      updateNode($PATCH,-1);
+    }
+  }
+
+  my @splat_ids = @{ getNode('%%','usergroup')->{group} };
+
+  my %dropdown_labels = ();
+
+  foreach my $splat_id(@splat_ids){
+    my $splat_title = getNodeById($splat_id) -> {title};
+    $splat_title .= " *" if $splat_id == $assigned_to;
+    $dropdown_labels{$splat_id} = $splat_title;
+  }
+
+  $dropdown_labels{0} = "Nobody";
+  $dropdown_labels{0} .= " *" unless $assigned_to;
+  push @splat_ids,0;
+
+  my $str = undef;
+
+  $str .= $query -> popup_menu("assigned_to", \@splat_ids,
+    $assigned_to,
+    \%dropdown_labels);
+
+  return $str;
+}
+
+sub zensearchform
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $lastnodeId = $query->param("softlinkedFrom");
+  $lastnodeId ||= $query -> param('lastnode_id') unless $APP->isGuest($USER);
+
+  my $lastnode = getNodeById($lastnodeId) if defined $lastnodeId;
+  my $default = undef; $default = $$lastnode{title} if $lastnode;
+
+  my $str = $query->start_form(
+    -method => "GET"
+    , -action => $query->script_name
+    , -id => 'search_form'
+    ).
+    $query->textfield(-name => 'node',
+      value => $default,
+      force => 1,
+      -id => 'node_search',
+      -size => 28,
+      -maxlength => 230);
+
+  my $lnid = undef;
+  $lnid = $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup' and $$NODE{parent_e2node} and getNodeById($$NODE{parent_e2node});
+  $lnid ||= getId($NODE);
+
+  $str.='<input type="hidden" name="lastnode_id" value="'.$lnid.'">';
+  $str.='<input type="submit" name="searchy" value="search" id="search_submit" title="Search within Everything2">';
+
+  $str.=qq'\n<span title="Include near matches in the search results">'.$query->checkbox(
+    -id => "near_match",
+    -name => 'soundex',
+    -value => '1',
+    checked => 0,
+    force => 1,
+    -label => 'Near Matches'
+  ) . "</span>";
+
+  $str.=qq'\n<span title="Show all results, even when there is a page matching the search exactly">'.$query->checkbox(
+    -id => "match_all",
+    -name => 'match_all',
+    -value => '1',
+    checked => 0,
+    force => 1,
+    -label => 'Ignore Exact',
+  ) . "</span>";
+
+  return $str . "\n</form>";
 }
 
 1;
