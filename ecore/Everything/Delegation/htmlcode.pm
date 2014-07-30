@@ -48,6 +48,7 @@ BEGIN {
   *uncloak = *Everything::HTML::uncloak;
   *isMobile = *Everything::HTML::isMobile;
   *isSuspended = *Everything::HTML::isSuspended;
+  *escapeAngleBrackets = *Everything::HTML::escapeAngleBrackets;
 }
 
 # Used by showchoicefunc
@@ -59,8 +60,10 @@ use Time::Local;
 # Used by shownewexp, publishwriteup, static_javascript
 use JSON;
 
-# Used by publishwriteup
+# Used by publishwriteup,isSpecialDate
 use DateTime;
+
+# Used by publishwriteup
 use DateTime::Format::Strptime;
 
 # Used by parsetimestamp
@@ -77,6 +80,9 @@ use POSIX qw(strftime);
 use Net::Amazon::S3;
 use File::Copy;
 use Image::Magick; 
+
+# Used by showchatter
+use utf8;
 
 # This links a stylesheet with the proper content negotiation extension
 # linkJavascript below talks a bit about the S3 strategy
@@ -5285,25 +5291,23 @@ sub firmlinks
   my $RECURSE = 1;
   my $cantrim = $DB -> canUpdateNode($USER, $currentnode) || $APP->isEditor($USER);
 
-  my $sqlQuery = qq|;
-    SELECT links.to_node, note.firmlink_note_text
-    FROM links
+  my $csr = $DB -> sqlSelectMany(
+    'links.to_node, note.firmlink_note_text',
+    'links
     LEFT JOIN firmlink_note AS note
       ON note.from_node = links.from_node
-      AND note.to_node = links.to_node
-    WHERE links.linktype = $firmlinkId
-      AND links.from_node = $$currentnode{node_id}|;
+      AND note.to_node = links.to_node',
+    "links.linktype = $firmlinkId
+      AND links.from_node = $$currentnode{node_id}");
 
-  my $csr = $DB->getDatabaseHandle()->prepare($sqlQuery);
   my @links = ();
 
-  if($csr->execute()) {
+  if($csr) {
     while(my $row = $csr->fetchrow_hashref()) {
       my $linkedNode = getNodeById($row->{to_node});
       my $text = $row->{firmlink_note_text};
       push @links, { 'node' => $linkedNode, 'text' => $text };
     }
-    $csr->finish();
   }
 
   my $str = '';
@@ -6022,4 +6026,659 @@ sub showuserimage
   $imgsrc = "/$imgsrc" if ($imgsrc !~ /^\//);
   return '<img src="http://'.$Everything::CONF->{homenode_image_host}.$imgsrc.'" id="userimage">'; 
 }
+
+sub showchatter
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $json = {};
+  my $jsoncount = 1 if shift;
+  my $nochat = "";
+
+  $nochat = 'If you '.linkNode(getNode('Create A New User','superdoc'),
+    'register',{lastnode_id=>0}).', you can talk here.' if $APP->isGuest($USER);
+
+  ### Check to see if they're suspended for having an unverified email address
+
+  my $sushash = $DB->sqlSelectHashref("suspension_sustype", "suspension", "suspension_user=$$USER{node_id} and suspension_sustype='1948205'") unless $nochat;
+
+  $nochat = "<strong>You need to ".linkNode(getNode('verify your email account','superdoc'))." before you can talk in public here.</strong>" if $sushash && $$sushash{suspension_sustype};
+
+
+  if(!$nochat && $$VARS{publicchatteroff})
+  {
+    if($query->param('RemoveEarPlugs') eq '1')
+    {
+      delete $$VARS{publicchatteroff};
+    } else {
+      $nochat = '<em>your earplugs are in ('.linkNode($NODE,'remove them',{'RemoveEarPlugs'=>1, -class => "ajax chatterbox:updateNodelet:Chatterbox"}).')</em>';
+    }
+  }
+
+  if ($nochat)
+  {
+    $nochat = qq'<p id="chat_nochat">$nochat</p>';
+    return $nochat unless $jsoncount;
+    return { '1' => {value => $nochat, id => 'nochat'} };
+  }
+
+  my $useBorgSpeak = 0;
+  my $messagesToShow = 25;
+  my $messageInterval = 360; #in seconds, how long room messages remain
+
+  my $ignorelist = $DB->sqlSelectMany('ignore_node', 'messageignore', 'messageignore_id='.$$USER{user_id});
+  my @list = ();
+  while (my ($u) = $ignorelist->fetchrow)
+  { 
+    push @list, $u;
+  }
+
+  my $ignoreStr = join(", ",@list);
+
+  my $wherestr = "for_user=0 " ;
+  $wherestr .= "and tstamp >= date_sub(now(), interval $messageInterval second)" unless $Everything::CONF->{environment} ne "production" && !$$USER{in_room};
+  $wherestr .= ' and room='.$$USER{in_room} unless ($$VARS{omniphonic});
+  $wherestr .= " and author_user not in ($ignoreStr)" if $ignoreStr;
+
+  my $csr = $DB->sqlSelectMany('*', 'message use index(foruser_tstamp) ', $wherestr, "order by tstamp desc limit $messagesToShow");
+
+  if($csr->rows == 0)
+  {
+    my $borgspeak = '<div id="chat_borgspeak">'.htmlcode('borgspeak',$useBorgSpeak).'</div>';
+    return $borgspeak unless $jsoncount;
+    return { '1' => {value => $borgspeak, id => 'borgspeak'} };
+  }
+
+  my $valid = getVars(getNode('egg commands','setting'));
+  my $UID = getId($USER) || 0;
+  my $isEDev = $APP->isDeveloper($USER, "nogods");
+
+  my ($str, $aid, $flags, $userLink, $userLinkApostrophe, $text) = (undef,undef,undef,undef,undef,undef);
+
+  my $maxLen = htmlcode('chatterSplit');
+
+  my %fireballs = (
+    fireball => 'BURSTS INTO FLAMES!!!' ,
+    conflagrate => 'CONFLAGRATES!!!' ,
+    immolate => 'IMMOLATES!!!' ,
+    singe => 'is slightly singed. *cough*' ,
+    explode => 'EXPLODES INTO PYROTECHNICS!!!' ,
+    limn => 'IS LIMNED IN FLAMES!!!' ) ;
+
+  my $sc = sub{
+    qq'<span style="font-variant:small-caps">$_[0]</span>' ;
+  };
+
+  my @msgs = reverse @{ $csr->fetchall_arrayref( {} ) };
+
+  foreach my $MSG (@msgs)
+  {
+    my $usermessage = undef;
+    $aid = $$MSG{author_user} || 0;
+
+    if($$MSG{room} != $$USER{in_room})
+    {
+      if($$MSG{room})
+      {
+        my $R = getNodeById($$MSG{room});
+        $str.='('.linkNode($R, $$R{abreviation}).')';
+      } else {
+        $str.='(out)';
+      }
+    }
+
+    $text = $$MSG{msgtext};
+    utf8::decode($text);
+
+    $text = escapeAngleBrackets($text);
+
+    #Close dangling square brackets
+    my $numopenbrackets = ($text =~ tr:\[::);
+    my $numclosebrackets = ($text =~ tr:\]::);
+    while($numclosebrackets < $numopenbrackets)
+    {
+      $text .= "]";
+      $numclosebrackets++;
+    }
+
+    $text = parseLinks($text,0,1);
+
+    my $userTitle = getNodeById($aid, 'light')->{'title'};
+    $userTitle =~ s/ /_/g; # replace spaces with underscores in username
+    $userLink = "<span class='chat_user chat_$userTitle'>". linkNode($aid) . "</span>";
+    $userLinkApostrophe = "<span class='chat_user chat_$userTitle'>". linkNode($aid, getNode($aid)->{title} . "'s") . "</span>";
+
+    if (htmlcode('isSpecialDate','halloween'))
+    {
+      my $aUser = getNodeById($aid, 'light');
+      my $costume = getVars($aUser)->{costume} if (getVars($aUser)->{costume});
+      if ($costume gt '')
+      {
+        my $halloweenStr = $$aUser{title}."|".encodeHTML($costume);
+        $userLink = linkNodeTitle($halloweenStr);
+      }
+    }
+
+    if($$VARS{powersChatter})
+    {
+      my $isChanop = $APP->isChanop($aid, "nogods");
+      $flags = '';
+
+      if($APP->isAdmin($aid) && !$APP->getParameter($aid,"hide_chatterbox_staff_symbol") )
+      {
+        $flags .= '@';
+      } elsif($APP->isEditor($aid, "nogods") && !$APP->getParameter($aid,"hide_chatterbox_staff_symbol")){
+        $flags .= '$';
+      }
+
+      $flags .= "+" if $isChanop;
+      $flags .= '%' if $isEDev;
+      if(length($flags))
+      {
+        $flags = '<small>'.$flags.'</small> ';
+      }
+    }
+
+    if ( $text =~ /^\/me(\b)(.*)/i )
+    {
+      $usermessage = '<i>' . $userLink . $1 . $2 . '</i>';
+      # What do you mean, \me's code is broken? -- eien_meru
+    } 
+    elsif ( $text =~ /^\/me\'s\s(.*)/i )
+    {
+      #Attempt to match this one before matching the AFD2007 commands.
+      $usermessage = '<i>' . $userLinkApostrophe . ' ' . $1 . '</i>';
+    }
+    elsif ( $text =~ /^\/sings?\b\s?(.*)/i )
+    { 
+      my @notesarray = ("&#9835;", "&#9834;", "&#9835;&#9834;", "&#9834;&#9835;");
+      $usermessage = "&lt;$userLink&gt; <i> $notesarray[int(rand(4))] $1 $notesarray[int(rand(4))]</i>";
+    }
+    elsif ($text =~ /(^\/whisper)(.*)/i)
+    { 
+      ##any other names by which you should whisper?
+      $usermessage = '<small>&lt;' . $userLink .'&gt; ' . $2 . '</small>'
+    }
+    elsif ($text =~ /(^\/death)(.*)/i)
+    { 
+      $usermessage = '&lt;' . $userLink .'&gt; ' . &$sc($2);
+    }
+    elsif ( $text =~ /^\/rolls(.*)/i )
+    {
+      ### dice rolling
+      if ($text =~ /^\/rolls 1d2 &rarr; 1/i)
+      { 
+        $usermessage = &$sc( $userLink . ' flips a coin &rarr; heads' );
+      }
+      elsif ($text =~ /^\/rolls 1d2 &rarr; 2/i)
+      {
+        $usermessage = &$sc( $userLink . ' flips a coin &rarr; tails');
+      }
+      else 
+      { 
+        $usermessage = &$sc( $userLink . ' rolls ' . $1 );
+      }
+    }
+    elsif ( $text =~ /^\/(fireball|conflagrate|immolate|singe|explode|limn)s?\s(.*)/i )
+    {
+      ### fireball messages
+      $usermessage = &$sc( $userLink . ' fireballs ' . $2 ).'...<br><i>' . linkNodeTitle($2) . " $fireballs{$1}</i>";
+    }
+    elsif ( $text =~ /^\/sanctify?\s(.*)/i )
+    {
+      ### Sanctify command
+      $usermessage = &$sc( $userLink . ' raises the hand of benediction...').'<br><i>' . linkNodeTitle ($1) . ' has been SANCTIFIED!</i>';
+    }
+    elsif ( $text =~ /^\/(\S*)\s+(.*)/ && $$valid{lc($1)})
+    { 
+      #Case insensitive match
+      ### normal egg message
+
+      my $target = $2;
+      (my $eggStr = $$valid{$1}) =~ s/( ~|$)/ $target/;
+      $usermessage = &$sc( $userLink . ' ' . $eggStr ).'!';
+    }
+
+    $usermessage ||= '&lt;' . $userLink . '&gt; ' . $text;
+    $usermessage = qq'<div class="chat" id="chat_$$MSG{message_id}">$flags$usermessage</div>';
+    unless ($jsoncount)
+    {
+      $str.="$usermessage\n";
+    } else {
+      $$json{$jsoncount} = {
+        value => $usermessage,
+        id => $$MSG{message_id}
+      };
+      $jsoncount++;
+    }
+  }
+
+  return $str unless $jsoncount;
+  return $json;
+}
+
+sub showmessages
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($maxmsgs,$showOpts) = @_;
+  my $json = {};
+  my $jsoncount = undef; 
+  $jsoncount = 1 if $showOpts =~ /j/;
+
+  #display options
+  $showOpts ||= '';
+  my $noreplylink = {getId(getNode("klaproth","user")) => 1};
+
+  my $showD = $$VARS{pmsgDate} || (index($showOpts,'d')!=-1); #show date
+  my $showT = $$VARS{pmsgTime} || (index($showOpts,'t')!=-1); #show time
+  my $showDT = $showD || $showT;
+  my $showArc = index($showOpts,'a')!=-1;      #show archived messages (usually don't)
+  my $showNotArc = index($showOpts,'A')==-1;   #show non-archive messages (usually do)
+  return unless $showArc || $showNotArc;
+  my $showGroup = index($showOpts,'g')==-1;    #show group messages (usually do)
+  my $showNotGroup = index($showOpts,'G')==-1; #show group messages (usually do)
+  my $canSeeHidden = $APP->isEditor($USER);
+  return unless $showGroup || $showNotGroup;
+
+  return if $APP->isGuest($USER) ;
+
+  my $showLastOnes = ! ($$VARS{chatterbox_msgs_ascend} || 0); 
+
+  if($maxmsgs =~ /^(.)(\d+)$/)
+  {
+    #force oldest/newest first
+    $maxmsgs=$2;
+    if($1 eq '-')
+    {
+      $showLastOnes=1;
+    } elsif($1 eq '+') {
+      $showLastOnes=0;
+    }
+  }
+
+  $maxmsgs ||= 10;
+  $maxmsgs = 100 if ($maxmsgs > 100);
+
+  my $order = $showLastOnes ? 'DESC' : 'ASC';
+  my $limits = 'for_user='.getId($USER);
+  my $totalMsg = $DB->sqlSelect('COUNT(*)','message',$limits); #total messages for user, archived and not, group and not, from all users
+  my $filterUser = $query->param('fromuser');
+  if($filterUser)
+  {
+    $filterUser = getNode($filterUser, 'user');
+    $filterUser = $filterUser ? $$filterUser{node_id} : 0;
+  }
+
+  $limits .= ' AND author_user='.$filterUser if $filterUser;
+
+  my $filterMinor = ''; #things to only filter for display, and not for the "X more in inbox" message
+
+  unless($showGroup && $showNotGroup)
+  {
+    $filterMinor .= ' AND for_usergroup=0' unless $showGroup;
+    $filterMinor .= ' AND for_usergroup!=0' unless $showNotGroup;
+  }
+
+  unless($showArc && $showNotArc)
+  {
+    $filterMinor .= ' AND archive=0' unless $showArc;
+    $filterMinor .= ' AND archive!=0' unless $showNotArc;
+  }
+
+  my $csr = $DB->sqlSelectMany('*', 'message', $limits . $filterMinor, "ORDER BY  message_id $order LIMIT $maxmsgs");
+  my $UID = getId($USER) || 0;
+  my $isEDev = $APP->isDeveloper($USER);
+
+  my $aid = undef;  #message's author's ID
+
+  #TODO: $a is a special variable, rename this
+  my $a = undef; #message's author; have to do this in case sender has been deleted (!)
+  my $ugID = undef;
+  my $UG = undef;
+  my $flags = undef;
+  my $userLink = undef;
+
+  #UIDs for Virgil, CME, Klaproth, and root.
+  my @botlist = qw(1080927 839239 952215 113);
+  my %bots = map{$_ => 1} @botlist;
+
+  my $string = "";
+  my @msgs = @{ $csr->fetchall_arrayref( {} ) };
+  @msgs = reverse @msgs if $showLastOnes;
+  foreach my $MSG (@msgs)
+  {
+    my $text = $$MSG{msgtext};
+    #Bots, don't escape HTML for them.
+    unless( exists $bots{$$MSG{author_user}} )
+    {
+      $text = escapeAngleBrackets($text);
+    }
+
+    $text =~ s/\[([^\]]*?)$/&#91;$1/; #unclosed [ fixer
+    my $timestamp = $$MSG{tstamp};
+    $timestamp =~ s/\D//g;
+    my $str = qq'<div class="privmsg timestamp_$timestamp" id="message_$$MSG{message_id}">';
+
+    $str.= "<span class=\"deleteBox\" title=\"Check this box and hit Talk to delete this message\">";
+    $str.= $query->checkbox('deletemsg_'.$$MSG{message_id}, '', 'yup', ' ');
+    $str.= "</span>";
+
+    $aid = $$MSG{author_user} || 0;
+    if($aid)
+    { 
+      $a = getNodeById($aid) || 0;
+    } else { 
+      undef $a;
+    }
+
+    my $authorVars = getVars $a if $a;
+    my $name = $a ? $$a{title} : '?';
+    $name =~ tr/ /_/;
+    $name = encodeHTML($name);
+
+    if($$VARS{showmessages_replylink} and not $$noreplylink{$$MSG{author_user}}){
+      my $jsname = $name;
+      $jsname=htmlcode("eddiereply", $text) if $jsname eq "Cool_Man_Eddie";
+      $jsname =~ s/"/&quot;/g;
+      $jsname =~ s/'/\\'/g;
+      $str.= qq!<a href="javascript:e2.startText('message','/msg $jsname ')" title="Reply to $jsname" class="action" style="display:none;">(r)</a>!;
+    }
+
+    $ugID = $$MSG{for_usergroup};
+    $UG = $ugID ? getNodeById($ugID) : undef;
+
+    if($$VARS{showmessages_replylink} && defined($UG) and not $$noreplylink{$$MSG{author_user}})
+    {
+      my $grptitle = $$UG{node_id}==$UID ? '' : $$UG{title};
+      # Grmph. -- wharf
+      $grptitle =~ s/ /_/g;
+      $grptitle =~ s/"/&quot;/g;
+      $grptitle =~ s/'/\\'/g;
+      # Test for ONO. This is moderately cheesy because the message text
+      # could start with "ONO: ", but that's rare in practice. The table
+      # doesn't track ONOness, so the text is all we've got.
+      my $ono ='';
+      $ono = '?' if $text =~ /^O[nN]O: /;
+      $str.= qq!<a href="javascript:e2.startText('message','/msg$ono $grptitle ')" title="Reply to group" class="action" style="display:none;">(ra)</a>!;
+    }
+
+    $str.=' ';
+
+    if($showDT)
+    {
+      my $tsflags = 128; # compact timestamp
+      $str .= '<small class="date">';
+      $tsflags |= 1 if !$showT; # hide time 
+      $tsflags |= 2 if !$showD; # hide date
+      $str .= htmlcode('parsetimestamp', "$$MSG{tstamp},$tsflags");
+      $str .= '</small> ';
+    }
+
+    $str .= '(' . linkNode($UG) . ') ' if $ugID;
+
+    #N-Wing probably doing too much work...
+    #changes literal '\n' into HTML breaks (slash, then n; not a newline)
+    $text =~ s/\s+\\n\s+/<br>/g;
+
+    if ($$VARS{chatterbox_authorsince} && $a && $authorVars)
+    {
+      $str .= '<small>('. htmlcode('timesince', $a->{lasttime}, 1). ')</small> ' if (!$$authorVars{hidelastseen} || $canSeeHidden);
+    }
+
+    if($$VARS{powersMsg})
+    {
+      # Separating mere coders from the gods...
+      my $isCommitter = $APP->inUsergroup($aid,'%%','nogods');
+      my $isChanop = $APP->isChanop($aid,"nogods");
+
+      $flags = '';
+      if($APP->isAdmin($aid) && !$APP->getParameter($aid,"hide_chatterbox_staff_symbol"))
+      {
+        $flags .= '@';
+      } elsif($APP->isEditor($aid, "nogods") && !$APP->isAdmin($aid) && !$APP->getParameter($aid,"hide_chatterbox_staff_symbol")){
+        $flags .= '$';
+      }
+
+      $flags .= '*' if $isCommitter;
+
+      $flags .= '+' if $isChanop;
+
+      $flags .= '%' if $isEDev && $APP->isDeveloper($aid);
+      if(length($flags))
+      {
+        $flags = '<small>'.$flags.'</small> ';
+        $str .= $flags;
+      }
+    }
+
+    $userLink = $a ? linkNode($a) : '?';
+
+    $str.='<cite>'.$userLink.' says</cite> '.parseLinks($text,0,1);
+    $str.="</div>";
+
+    unless ($jsoncount)
+    {
+      $string.="$str\n";
+    } else {
+      $$json{$jsoncount} = {
+        value => $str,
+        id => $$MSG{message_id},
+        timestamp => $timestamp
+      };
+      $jsoncount++;
+    }
+  }
+
+  if($totalMsg)
+  {
+    my $MI_node = getNode("Message Inbox", "superdoc");
+    my $str = qq'<p id="message_total$totalMsg" class="timestamp_920101106172500">(you have '.linkNode($MI_node,"$totalMsg private messages").')</p>';
+    unless ($jsoncount)
+    {
+      $string.="$str\n";
+    } else {
+      $$json{$jsoncount} = {
+        value => $str,
+        id => "total$totalMsg", # will be replaced if number changes
+        timestamp => '920101106172500' # keep at bottom. 90,000 years should be enough
+      };
+    }
+
+  }
+
+  return $string unless $jsoncount;
+  return $json;
+}
+
+sub eddiereply
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $text = shift;
+  my $splitStr1='Hey, ';
+  my $splitStr2=' just cooled';
+  my $splitStr3=' just \[E2 Gift'; # Cater for C! gifts notifications - BlackPawn
+  my @tempsplit = split($splitStr1,$text);
+  my $coolStr = $tempsplit[1];
+
+  my @coolsplit= split(/$splitStr2/,$tempsplit[1]);
+  if ($coolsplit[0] eq $coolStr)
+  {
+    @coolsplit= split(/$splitStr3/,$tempsplit[1]);
+  }
+
+  my $eddie = $coolsplit[0];
+  $eddie =~ s/\[user\]//g;
+  $eddie =~ s/\[//g;
+  $eddie =~ s/ /_/g;
+  $eddie =~ s/\]//g;
+  return $eddie;
+}
+
+sub CoolUncoolIt
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($N) = @_;
+  $N = $NODE unless $N;
+  getRef($N);
+  my $str = '';
+  return $str unless $$N{ nodetype }{title} == 'writeup' ;
+
+  my $nc = '';
+  if($nc=$$N{cooled}) {
+    $str .= $nc.' <b>C!</b>'.( $nc==1 ? '' : 's' ) ;
+  }
+
+  my $nid = getId($N);
+  my $nr = getId(getNode('node row', 'superdoc'));
+  my $kuid = $DB->sqlSelect('linkedby_user', 'weblog', "weblog_id=$nr and to_node=$nid and removedby_user=0") || 0;
+
+  #determine if we give should put a link to allow the user to C! the WU
+  return $str unless !$kuid
+    && ( exists $$VARS{cools} && $$VARS{cools} ne '' && $$VARS{cools} > 0 )
+    && ($$N{author_user} != $$USER{user_id})
+    && ($query->param('displaytype') ne 'printable')
+    && not ($DB->sqlSelect('*','coolwriteups',"coolwriteups_id=$$N{node_id} and cooledby_user=$$USER{node_id}")) ;
+
+  my $author = getNodeById( $$N{ author_user } ) ;
+  $author = $author -> { title } if $author ;
+  $author =~ s/[\W]/ /g ;
+  my $op = $$VARS{coolsafety} ? 'confirmop' : 'op'  ;
+  return $str . ' <b>'.linkNode( $NODE , 'C?' , { $op=>'cool', cool_id=>$$N{ node_id }, lastnode_id => 0 , -title => "C! $author"."'s writeup" , -class => "action" }).'</b>';
+
+}
+
+# returns if current server time matches the given day
+# parameter: case insensitive string(s) of date(s) - if more than 1, then any matches counts as a success
+# if no date given, or date not found, returns 0
+#
+sub isSpecialDate
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($d) = @_;
+  my $dt = DateTime->now( time_zone => "UTC" );
+  my $year = $dt->year();
+  my $mday = $dt->mday();
+  my $mon = $dt->month();
+  my $hour = $dt->hour();
+
+
+  $d = "\L$d"; #case insensitive
+  my $y = ($d =~ /(\d+)$/) ? $1 : 0; #try to get the year
+
+  $mon -= 1;
+  # Note that $mon = month - 1, January is 0, December is 11
+
+  if($d =~ /^afd/) {
+    return '1' if ($mon==3 and $mday==1 and ($y?$y==$year:1));
+  } elsif($d =~ /^halloween/) {
+    return '1' if ($mon==9 and $mday==31 and ($y?$y==$year:1));
+  } elsif($d =~ /^xmas/) {
+    return '1' if ($mon==11 and $mday==25 and ($y?$y==$year:1));
+  } elsif($d =~ /^nye/) {
+    return '1' if ($mon==11 and $mday==31 and ($y?$y==$year:1));
+  } elsif($d =~ /^nyd/) {
+    return '1' if ($mon==0 and $mday==1 and ($y?$y==$year:1));
+  }
+
+  return 0;
+}
+
+# Inserts collapsible nodelet sections. These are stored in separate htmlcodes in the form (nodelet-abbreviation)section_(section-title)
+# - that is, if you see something like 'htmlcode('nodeletsection','edn,patches');' the code you need will be at [ednsection_patches].
+#
+sub nodeletsection
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($nlAbbrev, $nlSection, $altTitle, $linkTo, $styleTitle, $styleContent) = @_;
+
+  $altTitle ||= $nlSection;
+  $altTitle = linkNodeTitle($linkTo.'|'.$altTitle) if($linkTo);
+
+  my $isGuest = $APP->isGuest($USER);
+  my $param = $nlAbbrev.'_hide'.$nlSection;
+
+  my $v = undef;
+  if (!$isGuest and (defined ($v=$query->param($param))) )
+  {
+    if($v)
+    {
+      $$VARS{$param}=1;
+    } else {
+      delete $$VARS{$param};
+    }
+  }
+
+  my $showContent = undef;
+  $showContent = 1 unless $$VARS{$param};
+  my $plusMinus = '<tt> '.( $isGuest ? '*' : ($showContent ? '-' : '+') ).' </tt>';
+  my $sectionId = $nlAbbrev.'section_'.$nlSection ;
+  my $args = join(',',@_);
+  $args =~ s/ /+/;
+
+  my ($s, $closeLink) = ('[<a style="text-decoration: none" class="ajax '.$sectionId.
+    ':nodeletsection:'.$args.'" href=' .
+    urlGen({node_id=>$NODE->{node_id}, $param=>($showContent ? '1' : '0')})
+    . ' title="' . ($showContent ? 'collapse' : 'expand') . '">', '</a>]') unless $isGuest;
+
+  $altTitle = " <strong>$altTitle</strong>";
+  if($styleTitle && $styleTitle =~ /^[fF]/)
+  {
+    #full style: [ Title + ]
+    $s .= $altTitle.$plusMinus.$closeLink;
+  } else {
+    #classic style: [ + ] Title
+    $s .= $plusMinus.$closeLink.$altTitle;
+  }
+
+  my $content = undef;
+  if($showContent)
+  {
+    $content = htmlcode($sectionId);
+    $content = qq'<div class="sectioncontent">\n$content\n</div>\n';
+  }
+
+  return qq'<div id="$sectionId" class="nodeletsection"><div class="sectionheading">$s</div>\n$content</div>\n';
+}
+
 1;
