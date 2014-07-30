@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>970447</node_id>
   <title>showUserGroups</title>
   <code>#pass a user object (or nothing to default to the current node, or current user if the current node is not a user), and the groups the user belongs to will be returned

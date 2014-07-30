@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1438180</node_id>
   <title>ednsection_patches</title>
   <code>my $patches = $DB-&gt;sqlSelectMany(&quot;patch_id, (select author_user from node where node_id=patch.patch_id limit 1) as author_user, (select title from node where node_id=patch.patch_id limit 1) as title&quot;, &quot;patch&quot;, &quot;cur_status=1983892 order by patch_id desc limit 7&quot;);

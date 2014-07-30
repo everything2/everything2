@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>987796</node_id>
   <title>CoolUncoolIt</title>
   <code>my ($N) = @_;
