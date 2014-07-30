@@ -5732,7 +5732,7 @@ sub ednsection_cgiparam
 # TODO: Make me into template code
 # TODO: Why is Everything::node in here?
 #
-sub endsection_globals
+sub ednsection_globals
 {
   my $DB = shift;
   my $query = shift;
