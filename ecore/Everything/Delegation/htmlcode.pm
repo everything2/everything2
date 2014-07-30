@@ -46,7 +46,9 @@ BEGIN {
   *changeRoom = *Everything::HTML::changeRoom;
   *cloak = *Everything::HTML::cloak;
   *uncloak = *Everything::HTML::uncloak;
-} 
+  *isMobile = *Everything::HTML::isMobile;
+  *isSuspended = *Everything::HTML::isSuspended;
+}
 
 # Used by showchoicefunc
 use Everything::XML;
@@ -5682,4 +5684,342 @@ sub zensearchform
   return $str . "\n</form>";
 }
 
+sub ednsection_cgiparam
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = '';
+  $str = '[<i>Ajax call parameters, not original page parameters</i>]<br>' if $query->param('displaytype')eq 'ajaxupdate';
+  my $c=0;
+  foreach my $var ($query->param) {
+    next if $var eq 'passwd';
+    my $q=$query->param($var);
+
+    #Sanitise the variable for display
+    $var =~ s/\</\&lt\;/g;
+    $var =~ s/\>/\&gt\;/g;
+
+    next if $q eq '';
+    next if ($var eq 'op') && !$q;
+    ++$c;
+
+    my $maxLen = 70;
+    my $isDebug = ($var =~ /^debug/i);
+    $maxLen *= 2 if $isDebug;
+
+    $str .= '<tt>' if $isDebug;
+    $str .= '<strong>'.$var.'</strong>';
+    if((my $l=length($q))>$maxLen) {
+      $str .= ':'.encodeHTML(substr($q,0,$maxLen),1).'... ('.$l.')';
+    } elsif($q) {
+      $str .= ':'.encodeHTML($q,1);
+    }
+
+    $str .= '</tt>' if $isDebug;
+    $str .= "<br>\n";
+  }
+
+  $str = "<small>$c<br></small>\n".$str if $c;
+  return $str;
+}
+
+# TODO: Make me into template code
+# TODO: Why is Everything::node in here?
+#
+sub endsection_globals
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my @globals = qw($USER $THEME $VARS $DB $query);
+  my $ajax='ajax ednsection_globals:nodeletsection:edn,globals';
+
+  my $str = '<table cellpadding="0" cellspacing="1" border="0">';
+  foreach (@globals) {
+    $str.='<tr>';
+    no strict 'refs';
+    my $reftype = eval "ref $_";
+    $str.="<td><small>$_</small></td>";
+    $str.='<td><small>';
+    my %options = (
+      "Everything::node" => sub {
+        my $nid = eval "$_"."->{node_id}";
+        $str.= "NODE: ".linkNode($nid)." ($nid)";
+      },
+     "Everything::NodeBase" => sub {
+        $str.= "NODEBASE (".$DB->{dbname}.")";
+      },
+      "HASHREF" => sub {
+         $str.= linkNode($NODE, "HASHREF", { "show$_" => 1, -class=>$ajax });
+         $str.= " (".int(eval("keys \%{$_}")).")";
+      },
+      "HASH" => sub {
+         $str.= linkNode($NODE, "HASH", { "show$_" => 1, -class=>$ajax });
+         $str.= " (".int(eval("keys $_")).")";
+      }
+    );
+
+    my %expand = (
+      "HASHREF" => sub {
+        no strict;
+        my $hr = eval "$_";
+        my $count = 0;
+        foreach my $key (keys %$hr) {
+          $str.="\n<tr><td>$key</td>";
+          $str.='<td><code>'.encodeHTML($$hr{$key}).'</code></td>' if exists $$hr{$key};
+          $str.="</tr>\n";
+        }
+      }, 
+      "HASH" => sub {
+        no strict;
+        my $hr = eval "\\$_";
+        my $count = 0;
+        foreach my $key (keys %$hr) {
+          $str.="\n<tr><td><small>$key</small></td>";
+          $str.='<td><small><code>'.encodeHTML($$hr{$key}).'</code></small></td>' if exists $$hr{$key};
+          $str.="</tr>\n";
+        }
+      }
+    );
+
+    /^(.)/;
+    my $firstchar = $1;
+    $reftype = "HASHREF" if $reftype eq 'HASH' and $firstchar eq '$'; 
+    $reftype = "HASH" if not $reftype and $firstchar eq '%'; 
+    $reftype = "Everything::node" if $reftype eq 'HASHREF' and eval ("exists \$$_".'{node_id}');
+
+    if ($_ eq '$PAGELOAD' or (defined $query->param("show$_") and exists $expand{$reftype})) {
+      my $ref = $expand{$reftype};
+      $str.='<table>';
+      &$ref($_);
+      $str.='</table>';
+    } elsif (exists $options{$reftype}) {
+      my $ref = $options{$reftype};
+      &$ref($_);
+    } else {
+      $str.= $reftype;
+    }
+
+    $str.='</small></td>';
+    $str.="</tr>\n";
+
+  }
+  
+  use strict 'refs';
+  return $str.'</table>';
+}
+
+# Used on the edev nodelet only
+#
+sub ednsection_patches
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $patches = $DB->sqlSelectMany("patch_id, (select author_user from node where node_id=patch.patch_id limit 1) as author_user, (select title from node where node_id=patch.patch_id limit 1) as title", "patch", "cur_status=1983892 order by patch_id desc limit 7");
+  return 'No patches. Word.' unless $patches->rows;
+
+
+  my $str = '<table id="ednsection_patches">';
+  while (my $patch = $patches->fetchrow_hashref){
+    $str.= "<tr><td class='oddrow' align='center'><b>".
+      linkNode($$patch{author_user}).
+      "</b></td></tr><tr><td>".
+      linkNode($$patch{patch_id},$$patch{title},{lastnode_id=>0}).
+      "</td></tr>";
+  }
+
+  $str.= '</table><p align="center">'.linkNodeTitle("Patch Manager") ;
+  return $str;
+}
+
+# Used on our mobile page only
+#
+sub zenMobileTabs
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless isMobile();
+  my $canEdit = canUpdateNode($USER, $NODE) && $USER->{user_id} == $NODE->{author_user};
+  my $dt = $query->param('displaytype') || 'display';
+  my @tabs = ();
+
+  if ($dt eq 'display') {
+    push @tabs, [1, 'display'];
+  } else {
+    push @tabs, [0, linkNode($NODE, 'display')];
+  }
+
+  if ($canEdit) {
+    if ($dt eq 'edit') {
+      push @tabs, [1, 'edit'];
+    } else {
+      push @tabs, [0, linkNode($NODE, 'edit', { displaytype => 'edit'})];
+    }
+  }
+
+  if ( !$APP->isGuest($USER) ) {
+    my $cb = getNode('chatterbox', 'nodelet');
+    if ($cb && $dt eq 'shownodelet' && $query->param('nodelet_id') == $cb->{node_id}) {
+      push @tabs, [1, 'chat'];
+    } else {
+      push @tabs, [0, linkNode($NODE, 'chat', { displaytype => 'shownodelet', nodelet_id => $cb->{node_id}})];
+    }
+  }
+
+  if ( !$APP->isGuest($USER) ) {
+    my $ou = getNode('other users', 'nodelet');
+    if ($ou && $dt eq 'shownodelet' && $query->param('nodelet_id') == $ou->{node_id}) {
+      push @tabs, [1, 'other users'];
+    } else {
+      push @tabs, [0, linkNode($NODE, 'other users', { displaytype => 'shownodelet', nodelet_id => $ou->{node_id} })];
+    }
+  }
+
+  if ($dt eq 'listnodelets') {
+    push @tabs, [1, 'more...'];
+  } else {
+    push @tabs, [0, linkNode($NODE, 'more...', { displaytype => 'listnodelets' })];
+  }
+
+  return ('<div id="zen_mobiletabs">'
+    .(join ' | ', map {
+      my ($selected, $str) = @$_;
+      '<span class="'.($selected?'zen_mobiletab_selected' : 'zen_mobiletab').'">'.$str.'</span>'
+      } @tabs)
+    . '</div>');
+}
+
+# Used only on the user display page
+# pass a user object (or nothing to default to the current node, or current user if the current node is not a user), and the groups the user belongs to will be returned
+#
+sub showUserGroups
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+
+  my $U = $_[0];
+  if($U) {
+    $U = getId($U);
+  } else {
+    if($$NODE{type_nodetype}==getId(getNode('user', 'nodetype'))) {
+      $U = getId($NODE);
+    } else {
+      $U = getId($USER);
+    }
+  }
+
+  my $userID = getId($USER);
+  return if(!$U);
+
+  my @groups = ();
+
+  if (($$VARS{hidehomenodeUG} && !$APP->isAdmin($USER) ) || $APP->isGuest($USER) ) {
+    return unless $APP->isEditor($U);
+    push( @groups, linkNode(getNode('gods', 'usergroup'),0,{lastnode_id=>0})) if $APP->isAdmin($U);
+    push( @groups, linkNode(getNode('Content Editors', 'usergroup'),0,{lastnode_id=>0})) if $APP->isEditor($U,"nogods");
+    push( @groups, linkNode(getNode('edev', 'usergroup'),0,{lastnode_id=>0})) if $APP->isDeveloper($U,"nogods");
+  } else {
+
+    my @insiders = ();
+    my $csr = $DB->sqlSelectMany("node_id", "node", "type_nodetype=".getId(getType("usergroup")));
+    my $row = undef;
+    push @insiders, $$row{node_id} while($row = $csr->fetchrow_hashref());
+    no warnings;
+
+    my $str = "";
+    my @skips = ();
+
+    # Can skip (i.e. hide) usergroups from display.
+    # If you are a god, you can see all usergroups, even skipped ones. This is so 
+    # fled users can easily be removed from usergroups.
+    # TODO: Make me a setting or UG param
+    if (!$APP->isAdmin($USER) ) {
+      @skips= ('HD2','Eurohostages','PDXCB','nodahs','weeklings','Horace Phair','SIGTITLE','e2gods');
+    }
+
+
+    foreach(@insiders) {
+      my $n = getNodeById($_);
+      next unless !(htmlcode("in_an_array",$$n{title},@skips));
+      my $usergroup = getNodeById($$n{node_id});
+      my $in_usergroup=htmlcode("in_an_array",$U,@{$$usergroup{group}});
+      push( @groups, linkNode(getNode($$n{title}, 'usergroup'),0,{lastnode_id=>0})) if $in_usergroup;
+    }
+  }
+
+
+  return if !scalar(@groups);
+  return join(', ', @groups);
+
+}
+
+# Only used in the list usergroups code above, probably replaceable with grep
+#
+sub in_an_array
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $needle = shift;
+  my @haystack = @_;
+
+  for (@haystack) {
+    return 1 if $_ eq $needle;
+  }
+  return 0;
+}
+
+sub showuserimage
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $DB->isApproved($NODE, getNode('users with image', 'nodegroup')) or $APP->getLevel($NODE) >= 1;
+  return if isSuspended($NODE,"homenodepic");
+  return unless $$NODE{imgsrc};
+  my $imgsrc = $$NODE{imgsrc};
+  $imgsrc = "$$NODE{title}";
+  $imgsrc =~ s/\W/_/g;
+  $imgsrc = "/$imgsrc" if ($imgsrc !~ /^\//);
+  return '<img src="http://'.$Everything::CONF->{homenode_image_host}.$imgsrc.'" id="userimage">'; 
+}
 1;
