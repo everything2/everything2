@@ -5285,25 +5285,23 @@ sub firmlinks
   my $RECURSE = 1;
   my $cantrim = $DB -> canUpdateNode($USER, $currentnode) || $APP->isEditor($USER);
 
-  my $sqlQuery = qq|;
-    SELECT links.to_node, note.firmlink_note_text
-    FROM links
+  my $csr = $DB -> sqlSelectMany(
+    'links.to_node, note.firmlink_note_text',
+    'links
     LEFT JOIN firmlink_note AS note
       ON note.from_node = links.from_node
-      AND note.to_node = links.to_node
-    WHERE links.linktype = $firmlinkId
-      AND links.from_node = $$currentnode{node_id}|;
+      AND note.to_node = links.to_node',
+    "links.linktype = $firmlinkId
+      AND links.from_node = $$currentnode{node_id}");
 
-  my $csr = $DB->getDatabaseHandle()->prepare($sqlQuery);
   my @links = ();
 
-  if($csr->execute()) {
+  if($csr) {
     while(my $row = $csr->fetchrow_hashref()) {
       my $linkedNode = getNodeById($row->{to_node});
       my $text = $row->{firmlink_note_text};
       push @links, { 'node' => $linkedNode, 'text' => $text };
     }
-    $csr->finish();
   }
 
   my $str = '';
