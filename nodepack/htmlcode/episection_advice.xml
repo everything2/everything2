@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1112300</node_id>
   <title>episection_advice</title>
   <code>'&lt;ul&gt;'.

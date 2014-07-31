@@ -20,33 +20,7 @@ $str .= &quot;   \t&lt;style type='text/css'&gt;\n\n\t&quot; . htmlScreen($$VARS
 return $str;
 %]
 [{static javascript}]
-[%
-# for some reason, if we don't define a background color here as well as in the BODY
-# the EKW .oddrow class doesn't show up properly.  Funky.
 
-my $nonZenStyle = &quot;\n\t&lt;!-- Define styles if NOT using Zen --&gt; \n\t&lt;style type='text/css'&gt;&quot;;
-unless ( !$$VARS{preferred_theme} || $$VARS{preferred_theme} == 1854183 ) { #unless user is using zen, define styles
-	$nonZenStyle .= '
-		#chatterlight_mainbody { float: left; width: 70%; /* width: 750px; */ margin-left: 10px; }
-		#chatterlight_NW       { float: right; width: 190px; }
-		#chatterlight_hints    { display: none; }';
-	if ( $$VARS{preferred_theme} == 1100936 ) { # EKW support
-		$nonZenStyle .= &quot;\n\t\t/* EKW support */&quot;;
-		$nonZenStyle .= &quot;\n\t\ta:link    { color: &quot;       .  $$VARS{ekw_linkcolor}    . &quot;; }&quot; if exists $$VARS{ekw_linkcolor};
-		$nonZenStyle .= &quot;\n\t\ta:hover   { color: &quot;       .  $$VARS{ekw_alinkcolor}   . &quot;; }&quot; if exists $$VARS{ekw_alinkcolor};
-		$nonZenStyle .= &quot;\n\t\ta:visited { color: &quot;       .  $$VARS{ekw_vlinkcolor}   . &quot;; }&quot; if exists $$VARS{ekw_vlinkcolor};
-		$nonZenStyle .= &quot;\n\t\tbody      { color: &quot;       .  $$VARS{ekw_textcolor}    . &quot;; }&quot; if exists $$VARS{ekw_textcolor};
-		$nonZenStyle .= &quot;\n\t\tbody      { background: &quot;  .  $$VARS{ekw_bgcolor}      . &quot;; }&quot; if exists $$VARS{ekw_bgcolor};
-		$nonZenStyle .= &quot;\n\t\tbody      { font-family: &quot; .  $$VARS{ekw_textfont}     . &quot;; }&quot; if exists $$VARS{ekw_textfont};
-		$nonZenStyle .= &quot;\n\t\tbody      { font-size: &quot;   .  $$VARS{ekw_textfontsize} . &quot;; }&quot; if exists $$VARS{ekw_textfontsize};
-		$nonZenStyle .= &quot;\n\t\t.oddrow   { background: &quot;  .  $$VARS{ekw_oddrowcolor}  . &quot;; }&quot; if exists $$VARS{ekw_oddrowcolor};
-		$nonZenStyle .= &quot;\n\t\t.nodelet_title   { background: &quot; . $$VARS{ekw_logobackground} . &quot;; }&quot;  if exists $$VARS{ekw_logobackground};
-		}
-	}
-
-	$nonZenStyle .= &quot;\n\t&lt;/style&gt;&quot;;
-	return $nonZenStyle;
-%]
 	&lt;/head&gt;
 &lt;body id=&quot;chatterlight&quot;&gt;
 	&lt;div id=&quot;chatterlight_mainbody&quot;&gt;
@@ -101,9 +75,6 @@ unless ( !$$VARS{preferred_theme} || $$VARS{preferred_theme} == 1854183 ) { #unl
 			return &quot;&quot; unless $notificationsNodelet &amp;&amp; $nodelets{$$notificationsNodelet{node_id}};
 
 			my $str = insertNodelet($notificationsNodelet);
-			if (htmlcode('isEkw')) {
-				$str = &quot;&lt;table&gt;$str&lt;/table&gt;&quot;;
-			}
 			$str = &lt;&lt;ENDHTML;
 			&lt;div id=\&quot;chatterlight_Notifications\&quot;&gt;
 			$str
