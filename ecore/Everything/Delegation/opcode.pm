@@ -46,6 +46,7 @@ BEGIN {
   *isMobile = *Everything::HTML::isMobile;
   *isSuspended = *Everything::HTML::isSuspended;
   *escapeAngleBrackets = *Everything::HTML::escapeAngleBrackets;
+  *canReadNode = *Everything::HTML::canReadNode;
 } 
 
 sub publishdraft
