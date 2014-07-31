@@ -66,7 +66,7 @@ use DateTime;
 # Used by publishwriteup
 use DateTime::Format::Strptime;
 
-# Used by parsetimestamp
+# Used by parsetimestamp, timesince
 use Time::Local;
 
 # Used by typeMenu
@@ -6679,6 +6679,599 @@ sub nodeletsection
   }
 
   return qq'<div id="$sectionId" class="nodeletsection"><div class="sectionheading">$s</div>\n$content</div>\n';
+}
+
+# This functionality might go away
+#
+# pass which macro name to "run"
+# $$VARS{chatmacro} should contain the macro's text (yes, this is a bit clunky, but passing complex arguments via htmlcode is a pain)
+# $$VARS{chatmacro_NAME} where NAME is the macro's name should contain the actual macro
+# returns: parsed macro text (used for debugging)
+#
+sub doChatMacro
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $whichMacro = $_[0];
+  my $sep = "\n";
+  my $uid = getId($USER);
+  my $uname = $$USER{'title'};
+  $uname =~ s/ /_/g;
+
+  if($whichMacro !~ /^[A-Za-z0-9_\-]+$/)
+  {
+    return '"' . $whichMacro . '" isn\'t a valid macro name' . $sep;
+  }
+
+  my $macroFull = undef;
+  unless( $macroFull = $$VARS{'chatmacro_'.$whichMacro} )
+  {
+    return '"' . $whichMacro . '" doesn\'t exist' . $sep;
+  }
+
+  my $origSendTo = $query->param('sendto');
+  my $origMessage = $query->param('message');
+  my $str = '';
+  my @args = split('\s+',$$VARS{'chatmacro'});
+  unshift @args, $uname;
+
+  #loop through each line of the macro
+  my $line = undef;
+  my $result = undef;
+  my @lineParts = ();
+  my $part = undef;
+  my @macroLines = split(/\n/, $macroFull);
+  foreach $line (@macroLines)
+  {
+    next if $line=~/^$/;
+    next if $line=~/^#/;
+    next unless $line=~/^\/say\s+(.*?)$/;
+    $line = $1;
+
+    #loop through each part of the line, looking for special symbols
+    @lineParts = split('\s+', $line);
+
+    $result = '';
+    foreach $part (@lineParts) {
+      if($part =~ /^\$(.*)/)
+      { 
+        #starts with $
+	my $r = $1;
+	if($r =~ /^\d+\+?$/)
+        { 
+          #numbers with optional + at end
+          if(substr($r,-1,1) eq '+')
+          {
+            $r = substr($r, 0, -1);
+            $result .= join(' ', @{@args}[$r..$#{@args}]); #tye on PM says: @{$aRef}[$n..$#{$aRef}]
+          } else {
+            $result .= $args[$r];
+          }
+        } else {
+          $result .= $part;
+        }
+      } else {
+        $result .= $part;
+      }
+
+      $result .= ' ';
+
+    }
+
+  $result =~ s/^\s+//;
+  $result =~ s/\s+$//;
+
+  # $DB->sqlInsert('message', {msgtext=>'DEBUG: using line result: }'.$result.'{', author_user=>$uid, for_user=>$uid});
+
+  $query->param(-name=>'sendto', -value=>'');
+  $query->param(-name=>'message',-value=>$result);
+
+  #following mixed from htmlcode and getCode to call message (opcode)
+  my $CODE = getNode('message', getType('opcode'));
+  if(defined $CODE)
+  {
+    $str .= 'eval='.
+    evalCode('@_ = ();'."\n" . $$CODE{'code'}).';';
+  }
+
+  $str .= $result . $sep;
+
+  }
+
+  $query->param(-name=>'sendto', -value=>$origSendTo);
+  $query->param(-name=>'message',-value=>$origMessage);
+
+  return $str;
+}
+
+sub episection_advice
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return '<ul>'.
+    '<li>'.linkNodeTitle('E2 Quick Start|Quick Start').'</li>'.
+    '<li>'.linkNodeTitle('Everything2 Help').'</li>'.
+    '<li>'.linkNodeTitle('E2 Mentoring Sign-Up').'</li>'.
+    '</ul>';
+}
+
+sub vitsection_maintenance
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str ="<ul>";
+  $str.="<li>".linkNodeTitle('Edit These E2 Titles|Node Title Edit')."</li>";
+  $str.="<li>".linkNodeTitle('broken nodes|Broken Writeups')."</li>";
+  $str.="<li>".linkNodeTitle('E2 Nuke Request|Writeup Deletion Request')."</li>";
+  $str.="<li>".linkNodeTitle('Nodeshells Marked for Destruction|Nodeshell Deletion Request')."</li>";
+  $str.="<li>".linkNodeTitle('Node Heaven')."</li>" if $APP->isEditor($USER) or $APP->getLevel($USER)>=1;
+  $str.="<li>".linkNodeTitle('E2 Bugs|Make a bug report')."</li>";
+  $str.="<li>".linkNodeTitle('Suggestions for E2|Suggest a change to E2\'s code')."</li>";
+  $str.="</ul>";
+  return $str;
+
+}
+
+sub vitsection_nodeutil
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "<ul>";
+  $str.="<li>".linkNodeTitle('Node Tracker')."</li>";
+  $str.="<li>".linkNodeTitle('E2 Source Code Formatter|Source Code Formatter')."</li>";
+  $str.="<li>".linkNodeTitle('Text Formatter')."</li>";
+  $str.="</ul>";
+
+  return $str;
+}
+
+sub vitsection_nodeinfo
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str="<ul>";
+  $str.="<li>".linkNodeTitle('E2 HTML Tags')."</li>";
+  $str.="<li>".linkNodeTitle('HTML symbol reference')."</li>";
+  $str.="<li>".linkNodeTitle('Using Unicode on E2')."</li>";
+  $str.="<li>".linkNodeTitle('Reference Desk')."</li>";
+
+  $str.="</ul>";
+  return $str;
+
+}
+
+sub vitsection_list
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str="<ul>";
+
+  $str.="<li>".linkNodeTitle('Writeups by Type')."</li>";
+  $str.="<li>".linkNodeTitle('Everything\'s Most Wanted')."</li>";
+  $str.="<li>".linkNodeTitle('Cool Archive').' <small>(C! writeups)</small>'."</li>";
+  $str.="<li>".linkNodeTitle('Page of Cool').' <small>(Editor Picks)</small>'."</li>";
+  $str.="<li>".linkNodeTitle('Usergroup Picks')."</li>";
+  $str.="<li>".linkNodeTitle('A Year Ago Today')."</li>";
+  $str.="<li>".linkNodeTitle('News for Noders. Stuff that matters.|Old News')."</li>";
+  $str.="<li>".linkNodeTitle('Your nodeshells')."</li>";
+  $str.="<li>".linkNodeTitle('Random nodeshells')."</li>";
+
+  $str.="</ul>";
+
+  return $str;
+}
+
+sub vitsection_misc
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str="<ul>";
+
+  $str.="<li>".linkNodeTitle('Everything User Poll')."</li>";
+  $str.="<li>".linkNodeTitle('The Everything2 Voting/Experience System')."</li>";
+  $str.="<li>".linkNodeTitle('Chatterlight')."</li>";
+  $str.="<li>".linkNodeTitle('E2 Gift Shop')."</li>";
+  $str.="<li>".linkNodeTitle('Everything Quote Server')."</li>";
+  $str.="<li>".linkNodeTitle('The Registries')."</li>";
+  if (!$APP->isGuest($USER) && $APP->getLevel($USER)>2)
+  {
+    $str.="<li>".linkNodeTitle('Do You C! What I C?')."</li>";
+  }
+  if (!$APP->isGuest($USER) && $APP->getLevel($USER)>2)
+  {
+    $str.="<li>".linkNodeTitle('The Recommender')."</li>";
+  }
+
+  $str.="</ul>";
+  return $str;
+}
+
+sub ednsection_util
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+  #Useful nodelet section in EDev Nodelet
+
+  my $nl = "<br />\n";
+  my $s = '';
+  $s .= linkNodeTitle('List Nodes of Type') . ' <small>';
+  $s .= '<a href='.urlGen({node=>'List Nodes of Type',type=>'superdoc',filter_user=>$$USER{title}}).'> (yours)</a>';
+  #it would be neat to link to previous search type, but this isn't stored
+  $s .= '</small>'.$nl;
+
+  $s .= linkNodeTitle('Everything Data Pages').$nl;
+
+  $s .= linkNodeTitle('Everything Document Directory').$nl;
+
+  $s .= linkNodeTitle('Gigantic Code Lister').$nl;
+
+  return $s;
+
+}
+
+sub episection_ces
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my (undef,undef,undef,$mday,$mon,$year) = localtime(time);
+  $year += 1900; #stupid Perl
+  my @months = qw(January February March April May June July August September October November December);
+  my $curLog = '[Editor Log: '.$months[$mon]." $year]";
+
+  # Link The Oracle sent with the username iff displaying a homenode
+  my $oraclecode = "";
+  $oraclecode = $query -> li(linkNode(getNode('The Oracle', 'oppressor_superdoc'), "The Oracle", {the_oracle_subject => $$NODE{title}}))if $$NODE{type}{title} eq 'user';
+
+  return parseLinks("<ul>
+    <li>[Drafts for review[superdoc]]</li>
+    <li>[25] | [Everything New Nodes]</li>
+    <li>[E2 Nuke Request]</li>
+    <li>[Nodeshells Marked For Destruction|Nodeshells]</li>
+    <li>[Recent Node Notes]</li>
+    <li>[Your insured writeups]</li>
+    <li>".linkNode(getNode("Node Parameter Editor","oppressor_superdoc"),"Parameter Editor", {for_node => $$NODE{node_id}})."</li>
+    <li>[Blind Voting Booth]</li>
+    <li>[usergroup discussions|Group discussions]</li>
+    <li>$curLog</li>$oraclecode</ul>");
+}
+
+# I'm not sure if this is used,  but it's hard to grep this term
+#
+sub printable
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return linkNode($NODE, ($_[0] || 'printable version'), {displaytype=>'printable',lastnode_id=>0} );
+}
+
+# originally by [|site=pm&type=user|vroom] at [|site=pm&type=htmlcode|timesince]
+# updated to include fractional resolution
+# last update: Wednesday, July 13, 2005
+#
+sub timesince
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($timestamp,$shortMode,$fractionalResolution) = @_;
+  $fractionalResolution = 10 unless (defined $fractionalResolution) && $fractionalResolution;	#10 shows ___._
+
+  my ($d, $t) = split(' ',$timestamp);
+  my ($hour, $min, $sec) = split(':',$t);
+  my ($year, $month, $day) = split('-',$d);
+  my $noHTML = $shortMode =~ m/nohtml/i;
+
+  return '?' unless int($month) && int($year) && int($day);
+  return '?' unless $year > 1990 && $year < 2100; #sanity
+  my $last_here = timegm($sec, $min, $hour, $day, $month-1, $year);
+
+  my $SECOND = 1;
+  my $MINUTE = 60;
+  my $HOUR = 3600;
+  my $DAY = 24 * $HOUR;
+  my $WEEK = 7 * $DAY;
+  my $MONTH = 30.4375 * $DAY; #approx (30.4375==365.25/12)
+  my $YEAR = 365.25 * $DAY; #approx
+
+  # Lord Brawl removed the +3600 for Standard Time on 18 Dec 2005, 
+  # and again on 29 Oct 2006. 
+  # Put it back in April... $last_here + 3600 + 95; 
+  my $difference = time - $last_here + 10; #+/- constant is a hack (+3600 during daylight savings time) (even more fun, varies per web server)
+  if (!$noHTML) {
+    return '<em title="timesince:'.$difference.'">now!</em>' if $difference<0;
+    return '<em>now</em>' if $difference==0;
+  } else {
+    return '*now*' if $difference <= 0;
+  }
+
+  my @params = ();
+
+  if($difference >= $YEAR)
+  {
+    push @params, $YEAR, ($shortMode ? ('y','y') : ('year', 'years'));
+  } elsif($difference >= $MONTH) {
+    push @params, $MONTH, ($shortMode ? ('mon','mon') : ('month', 'months'));	#FIXME?
+  } elsif($difference >= $WEEK) {
+    push @params, $WEEK, ($shortMode ? ('wk','wk') : ('week', 'weeks'));
+  } elsif($difference >= $DAY) {
+    push @params, $DAY, ($shortMode ? ('d','d') : ('day', 'days'));	#FIXME?
+  } elsif($difference >= $HOUR) {
+    push @params, $HOUR, ($shortMode ? ('hr','hr') : ('hour', 'hours'));
+  } elsif($difference >= $MINUTE) {
+    push @params, $MINUTE, ($shortMode ? ('min','min') : ('minute', 'minutes'));	#FIXME?
+  } else {
+    push @params, $SECOND, ($shortMode ? ('s','s') : ('second', 'seconds'));
+  }
+
+  #assume $difference is positive
+  #my $lapse = int($difference / $params[0] + 0.5);
+  my $lapse = int(($difference / $params[0]) * $fractionalResolution + 0.5)/$fractionalResolution;
+
+  #my $str = sprintf('%d %s', $lapse, $params[$lapse==1 ? 1 : 2]);
+  my $str = $lapse . ' ' . $params[$lapse==1 ? 1 : 2];
+  $str .= ' ago ' unless $shortMode;
+
+  return $str;
+}
+
+sub addfirmlink
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $RECURSE = 1;
+  return unless $APP->isEditor($USER);
+
+  $query->delete('op');
+
+  return htmlcode('openform')
+    .'<fieldset><legend>Firmlink</legend>'
+    . htmlcode('verifyRequestForm', 'firmlink')
+    . $query->hidden(-name => "op", -value => "firmlink")
+    . $query->hidden(-name => "firmlink_from_id", -value => $$NODE{node_id})
+    .'<label>Firmlink node to: '
+    .  $query->textfield(-name => 'firmlink_to_node')
+    .'</label>'
+    .'<br>'
+    .'<label>With (optional) following text: '
+    .  $query->textfield(-name => 'firmlink_note_text')
+    .'</label>'
+    .'<br>'
+    . $query->submit(-value => "Firmlink")
+    .'</fieldset>'
+    .'</form>';
+
+}
+
+sub writeupcools
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ( $N ) = @_ ;
+  $N = $NODE unless $N ;
+  getRef( $N );
+
+  my $nr = getNode('node row', 'superdoc')->{node_id};
+
+  my $str = undef;
+  my $coollink = undef;
+  my $coolnum = undef;
+  my $coolers = undef;
+
+  if ( !$DB->sqlSelect('linkedby_user', 'weblog', "weblog_id=$nr and to_node=$$N{node_id} and removedby_user=0")
+    and ( $$VARS{cools} && $$VARS{cools} > 0 )
+    and ($$N{author_user} != $$USER{user_id})
+    and ($query->param('displaytype') ne 'printable')
+    and !$DB->sqlSelect( '*', 'coolwriteups', "coolwriteups_id=$$N{node_id} and cooledby_user=$$USER{node_id}" ) )
+  {
+    my $author = getNodeById( $$N{ author_user } ) unless $$VARS{anonymousvote} == 1;
+    if ($author)
+    {
+      $author = $author -> {title};
+      $author =~ s/[\W]/ /g;
+      $author .= "'s";
+    } else {
+      $author = 'this';
+    }
+
+    my $op = $$VARS{coolsafety} ? 'confirmop' : 'op'  ;
+    $coollink = '<b>'.linkNode( $NODE , 'C?' , { $op=>'cool', cool_id=>$$N{ node_id }, lastnode_id => 0 ,
+      -title => "C! $author writeup" , -class => "action ajax cools$$N{node_id}:writeupcools:$$N{node_id}" }).'</b>';
+  }
+
+  my $nc = $$N{cooled} ; #num C!s, quick check
+  if ( $nc ){
+    $coollink = " &#183; $coollink" if $coollink ;
+    $coolnum = $nc.' <b>C!</b>'.( $nc==1 ? '' : 's' ) ;
+
+    my $csr = $DB->sqlSelectMany('cooledby_user', 'coolwriteups', 'coolwriteups_id='.$$N{ node_id },'order by tstamp ASC');
+    return "(Can't get C!s)" unless $csr;
+
+    my $count = undef;
+    unless($nc==($count=$csr->rows))
+    {
+      #stored count in WU and table differ
+      #update WU info - force get, to ensure we have updated version
+      $N = getNodeById( $$N{ node_id } , 'force' ) ;
+      if ( $N && $$N{ cooled } != $count )
+      {
+        $$N{ cooled } = $count ;
+        updateNode( $N , -1 ) ;
+      }
+
+      $coolers .= htmlcode('logWarning',$$N{ node_id } , 'writeupcools: count mismatch: $nc='.$nc.' and query='.$count.($N?' (fixed)':'(not fixed)'));
+      $nc=$count;
+    }
+
+    $count = 0 ;
+    my @people = () ;
+    my @coolers = @{ $csr -> fetchall_arrayref( {} ) } ;
+    foreach ( @coolers )
+    {
+      ++$count ;
+      my $CG = getNodeById( $$_{ cooledby_user } ) ;
+      my $t = ( $CG ? linkNode( $CG ) : '?' ) ;
+      if ( $$CG{user_id} == $$USER{ user_id } )
+      {
+        push @people, '<strong>'.$t.'</strong> (#'.$count.')' ;
+      } else {
+        push @people, $t;
+      }
+    }
+
+    $csr->finish;
+
+    $coolers .= join( ', ' , @people ) ;
+    $coolers =~ s/((?:.*?,){5})/$1<br>/g ;
+
+    unless($count==$nc)
+    {
+      # log wrong count; do NOT fix: the fix was attempted before, but that didn't work for some strange reason
+      $coolers .= htmlcode('logWarning',$$N{ node_id } , 'writeupcools: STILL a count mismatch: $nc='.$nc.' and $count='.$count.' and $$N{cooled}='.$$N{cooled});
+    }
+  }
+
+  $query -> param( 'showwidget' , 'showCs'.$$N{ node_id } ) if $query -> param( 'op' ) eq 'cool' and $query -> param( 'cool_id' ) == $$N{ node_id } ;
+
+  return '<span id="cools'.$$N{node_id}.'" class="cools">'.htmlcode( 'widget' , '<small>This writeup has been cooled by: &nbsp;</small><br>
+    '.$coolers , 'span ' , $coolnum , { showwidget => 'showCs'.$$N{ node_id } , -title => 'show who gave the C!s' , -closetitle => 'hide cools' } ) .
+    $coollink.'</span>' ;
+}
+
+sub usercheck
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($givenTitle) = @_;
+
+  return if($$NODE{type_nodetype} != getId(getType('e2node')) && !defined $givenTitle);
+
+  my $cf = getVars(getNode('chatterbox forward', 'setting'));
+  my $checkedTitle = $$NODE{title};
+  $checkedTitle = $givenTitle if defined $givenTitle;
+  my @grp = getNodeWhere({ 'title' => $checkedTitle});
+  my $retstr = '';
+  return $retstr unless(@grp > 1);
+
+  my @outstr = ();
+  foreach my $n (@grp)
+  {
+    next if($$n{node_id} == $$NODE{node_id});
+    next if(defined $givenTitle && $$n{type}{title} eq 'e2node');
+    next if(defined $givenTitle && $$n{type}{title} eq 'node_forward');
+    next unless canReadNode($USER, $n) and $$n{type}{title} ne 'draft';
+    my $tmp = linkNode($n, $$n{type}{title});
+
+    if($$n{type}{title} eq 'user')
+    {
+
+      if($$cf{lc($$n{title})})
+      {
+        my $ptr = $$cf{lc($$n{title})};
+        my $tousr = getNode($ptr, 'user')||getNode($ptr, 'usergroup');
+
+      #this will not work if the user has both _ and " " in their nick, but oh well
+
+        unless($tousr)
+        {
+          $ptr =~ s/_/ /g;
+          $tousr = getNode($ptr, 'user');
+        }  
+
+        $tmp .= ' (message alias for '.linkNode($tousr).')';
+      }
+   }
+   push @outstr, $tmp;
+  }
+
+  return $retstr unless @outstr > 0;
+
+  $retstr = '("'.$checkedTitle.'" is also a: ';
+  $retstr .= join(', ',@outstr);
+  my $id = "isalso";
+  $id .= "forward" if defined $givenTitle;
+  return "\t".'<div class="topic" id="' . $id . '">'.$retstr.'.)</div>';
 }
 
 1;
