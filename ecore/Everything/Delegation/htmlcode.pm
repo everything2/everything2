@@ -7275,4 +7275,614 @@ sub usercheck
   return "\t".'<div class="topic" id="' . $id . '">'.$retstr.'.)</div>';
 }
 
+sub vitsection_nodeinfo
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str="<ul>";
+
+  $str.="<li>".linkNodeTitle('E2 HTML Tags')."</li>";
+  $str.="<li>".linkNodeTitle('HTML symbol reference')."</li>";
+  $str.="<li>".linkNodeTitle('Using Unicode on E2')."</li>";
+  $str.="<li>".linkNodeTitle('Reference Desk')."</li>";
+
+  $str.="</ul>";
+  return $str;
+}
+
+sub linkGroupMessages
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # just call this in a usergroup page
+  # optional argument: user name to /msg to join the group; this should already have any spaces converted into underlines
+  # this will create a link to 'usergroup message archive' with the current group already selected
+
+  my $msgJoin = $_[0];
+
+  unless( Everything::isApproved($USER, $NODE) )
+  {
+    return 'How about logging in?' if $APP->isGuest($USER);
+    return 'You aren\'t a member of this usergroup.'.($msgJoin && length($msgJoin) ? ' To join, <tt>/msg '.$msgJoin.'</tt> .' : '');
+  }
+
+  my $gid=$$NODE{node_id};
+  return 'Ack! Unable to find group ID!' unless $gid;
+  my ($num)=$DB->sqlSelect('COUNT(*)','message','for_user='.$gid.' AND for_usergroup='.$gid);
+
+  return '<a href='.urlGen({'node'=>'usergroup message archive', 'type'=>'superdoc', 'viewgroup'=>$$NODE{title}}).'>'.$num.'</a> message'.($num==1?' has':'s have').' been sent to this group.';
+}
+
+sub statsection_personal
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = undef;
+
+  #pass 2 args: category and value
+  local *genRow = sub {
+    return '<div><span class="var_label">' . $_[0] . ': </span><span class="var_value">' . $_[1] . "</span></div>\n";
+  };
+
+  $str .= genRow('XP',$$USER{experience});
+  $str .= genRow('Writeups',$$VARS{numwriteups});
+
+  my $lvl = $APP->getLevel($USER)+1;
+  my $LVLS = getVars(getNode('level experience', 'setting'));
+  my $WRPS = getVars(getNode('level writeups', 'setting'));
+
+  my $expleft = $$LVLS{$lvl} - $$USER{experience} if exists $$LVLS{$lvl};
+
+  my ($numwu, $wrpleft) = (undef, undef);
+  $$VARS{numwriteups} ||= 0;
+  $numwu = $$VARS{numwriteups};
+  $wrpleft = ($$WRPS{$lvl} - $numwu) if exists $$WRPS{$lvl};
+
+  $str .= genRow('Level',$APP->getLevel($USER));
+  if ($expleft > 0)
+  {
+    $str .= genRow('XP needed',$expleft);
+  } else {
+    $str .= genRow('WUs needed',$wrpleft);
+  }
+
+  if (!$$VARS{GPoptout})
+  {
+    $str .= genRow('GP', $$USER{GP});
+  }
+
+  return '<div>'.$str.'</div>';
+}
+ 
+# customized display of writeup information
+# pass (optional) writeup ID, (optional) things to show
+# This monster is exactly why we need templates
+#
+sub displayWriteupInfo
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  #
+  # setup
+  #
+
+  #parameters
+  my ($WRITEUP) = @_;
+  $WRITEUP ||= $NODE;
+  return 'Ack! displayWriteupInfo: Can\'t get writeup '.$WRITEUP unless getRef $WRITEUP;
+
+  my $nID = getId($NODE);
+  my $wuID = getId $WRITEUP;
+
+  #constants
+  my $UID = getId($USER);
+  my $isGuest = $APP->isGuest($USER);
+  my $isRoot = $APP->isAdmin($USER);
+  my $isCE = $APP->isEditor($USER);
+  my $aid = $$WRITEUP{author_user} || 0;
+  my $wuAuthor = getNodeById($aid) || undef;
+  my $isMine = (!$isGuest) && ($aid==$UID);
+  my $isDraft = ($$WRITEUP{type}{title} eq 'draft');
+  my $authorIsBot = (defined $wuAuthor) && (($wuAuthor->{title} eq 'Webster 1913'));	#FIXME: get (cached) bot setting
+  my $inPrintMode = $query->param('displaytype') eq 'printable';	#FIXME - is that the best way to see if printable?	#if displaytype=printable - when printing, we don't want things like, for example, voting buttons
+  my $v=getVars($wuAuthor);
+
+  #client-side error
+  local *userWarn = sub {
+    return '<small title="displayWriteupInfo (htmlcode)">!!! ' . $_[0] . ' !!!</small>';
+  };
+
+
+  #parameters again
+
+  my $inHeader = undef;	#true=before WU text, false=after WU text (note: we use a slightly bad way of determining if we're in the header or footer)
+  my $fnName = undef;	#name of current function
+  #lookup table of user-entered function to actual function to run
+  #	by default, function return values are cached
+  #	a function may override the default caching by setting $infofunctions->{$fnName} to the string that should be used for future calls instead
+  my $infofunctions = undef;
+  my $CACHE_NAME = 'cache_displayWriteupInfo_'.$wuID;
+
+  if( (exists $PAGELOAD->{$CACHE_NAME}) && (defined $PAGELOAD->{$CACHE_NAME}) )
+  {
+    $inHeader=0;
+    $infofunctions = $PAGELOAD->{$CACHE_NAME};
+  } else {
+    $inHeader=1;
+    $infofunctions = {
+      'type'=>\&info_wutype,
+      'kill'=>\&info_kill,
+      'draftstatus'=>\&draftstatus,
+      'vote'=>\&info_vote,
+      'cfull'=>\&info_c_full,
+      'cshort'=>\&info_c_short,
+      'dtcreate'=>\&info_dt_create,
+      'author'=>\&info_author,
+      'authoranon'=>\&info_author_anon,
+      'print'=>\&info_print,
+      'pseudoanon'=>\&info_author_pseudo,
+      'typeauthorprint'=>\&info_typeauthor,
+      'notnew'=>\&info_hidden,	#original name
+      'hidden'=>\&info_hidden,	#name that makes more sense
+      'length'=>\&info_length,
+      'sendmsg'=>\&sendMessage,
+      'social'=>\&showBookmarks,
+      'hits'=>\&info_hits,
+      'addto'=>\&info_addto,
+      'cats'=>\&info_cats,
+      'audio'=>\&audio,
+      'music'=>\&music,
+      'nothing'=>\&info_nothing,
+    };
+    $PAGELOAD->{$CACHE_NAME} = $infofunctions;
+  }
+
+  #determine things to display
+  my @showThings = ();
+  if($inPrintMode) {
+    #override user setting and show all information when printing
+    if($inHeader) {
+      @showThings = ('l:typeauthorprint','c:kill','c:vote','r:dtcreate','\n','l:cfull','c:hidden','r:length');
+    } else {
+      @showThings = ();
+    }
+  } else {
+    #use user vars, if set, or default
+    if($inHeader)
+    {
+      #header
+      if ($$VARS{wuhead})
+      {
+        @showThings = split(/\s*,\s*/, $$VARS{wuhead});
+      } else {
+        #no settings given, so use default header, which is mostly "classic"
+        @showThings = ('c:type','c:author','c:hits', 'r:dtcreate');
+      }
+    } else {
+      #footer
+      if ($$VARS{wufoot}){
+        @showThings = split(/\s*,\s*/, $$VARS{wufoot});
+      } else {
+        @showThings = ('l:kill','c:vote');
+        push @showThings,('c:cfull') unless (exists $$VARS{wuhead} && ($$VARS{wuhead}=~'cfull'||$$VARS{wuhead}=~'cshort'));
+        push @showThings,('c:sendmsg','c:addto','r:social');
+      }
+    }
+  }
+
+  # Why is this in a closure?
+  {
+    #my $max = 16; #don't let user go nuts
+    my $max = 50;	#don't let the user go too nuts (we cache now, so repeating something several times doesn't really matter)
+    @showThings = @showThings[0..$max-1] if scalar(@showThings)>$max;
+  }
+
+  my $t = undef;	#temporary values that subs can use
+
+  #display constants
+  my %tDataOpen = (
+    'l'=>'<td style="text-align:left" class="',
+    'c'=>'<td class="',
+    'r'=>'<td  style="text-align:right" class="',
+  );
+
+  my $tDataClose = '</td>';
+  my $tRowOpen = '<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr class="';
+  my $tRowClose = "</tr></table>\n";
+
+  # subs
+  #
+
+  #links to the current WU, showing the given text
+  #does NOT create softlink, since they are useless between e2node and writeup
+  local *linkWU = sub {
+    my ($txt) = @_;
+    $txt = $WRITEUP->{title} || '???' unless (defined $txt) && length($txt);
+    return linkNode($WRITEUP,$txt);
+  };
+
+  local *info_authorsince = sub {
+    #not if bot, or printable, or $VARS
+    return if $authorIsBot;
+    return if $inPrintMode;
+    return if $$VARS{info_authorsince_off};
+    return if $$v{hidelastseen} && !$isCE;
+    return unless $wuAuthor;
+    return " " if $isGuest;
+    my $lastTime = $$wuAuthor{lasttime};
+    my $lastTimeTitle = htmlcode('timesince', $lastTime, "noHTML");
+    my $lastTimeText = htmlcode('timesince', $lastTime, "short");
+    return ''
+      . qq[<small title="Author last logged in $lastTimeTitle">]
+      . "($lastTimeText)"
+      . "</small>";
+  };
+
+  local *info_wutype = sub {
+    return linkWU('<b>Draft</b>') if $isDraft;
+    $t = $$WRITEUP{wrtype_writeuptype} || 0;
+    return userWarn(linkWU('bad WU type: 0')) unless $t;
+    getRef $t;
+    return userWarn(linkWU('bad WU type: '.$$t{node_id})) unless $t;
+    return userWarn(linkWU('0 length WU type title: '.$$t{node_id})) unless length($$t{title});
+    return '<span class="type">('.linkWU($$t{title}).')</span>';
+  };
+
+  local *info_kill = sub {
+    $infofunctions->{$fnName} = '';
+    return htmlcode("$$WRITEUP{type}{title}tools", $wuID) if $isCE or $isMine or $isDraft;
+  };
+
+  local *info_vote = sub {
+    return htmlcode('ilikeit',$wuID) if $APP->isGuest($USER);
+    $t = htmlcode('voteit',$wuID,2);
+    return '' unless $t;
+    $infofunctions->{$fnName} = '';
+    return '<small>'.$t.'</small>';
+  };
+
+  local *info_c_full = sub {
+    unless ( !$APP->isGuest($USER) || $query->param('showwidget') eq 'showCs'.$$WRITEUP{node_id} )
+    {
+      return '' unless $$WRITEUP{cooled} ;
+      return linkNode($NODE, $$WRITEUP{cooled}.' <b>C!</b>'.( $$WRITEUP{cooled}==1 ? '' : 's' ),
+        { showwidget=>'showCs'.$$WRITEUP{node_id}, lastnode_id => 0 , -title => $$WRITEUP{cooled}.' users found this writeup COOL' ,
+        -class => "action ajax cools$wuID:writeupcools:$wuID" ,
+        -id => "cools$wuID" } );
+    }
+
+    return htmlcode('writeupcools',$wuID);
+  };
+
+  local *info_c_short = sub {
+    $$VARS{wuhead} =~ s/cshort/cfull/;
+    $$VARS{wufoot} =~ s/cshort/cfull/;
+    return info_c_full();
+  };
+
+  local *info_dt_create = sub {
+    return '<small class="date" title="'.htmlcode('parsetimestamp', $$WRITEUP{publishtime} || $$WRITEUP{createtime}, 4).'" >'.htmlcode('parsetimestamp', $$WRITEUP{publishtime} || $$WRITEUP{createtime}).'</small>';
+  };
+
+  local *info_author = sub {
+    my $anon = undef;
+    $anon = 'anonymous' unless !$$VARS{anonymousvote} || $isMine || $authorIsBot || hasVoted($WRITEUP, $USER) || $isDraft;
+    if ($$VARS{anonymousvote} == 1 && $anon)
+    {
+      return '(anonymous)' . ($isCE?' '.info_authorsince():'');
+    }
+
+    if(defined $wuAuthor)
+    {
+      my $authorLink = linkNode( $wuAuthor , $anon , { lastnode_id => 0 , -class => 'author' } ) ;
+      $authorLink = '<s>'.$authorLink.'</s>' if $isCE && !$authorIsBot && (exists $wuAuthor->{acctlock}) && ($wuAuthor->{acctlock});
+      return 'by <a name="'.$wuAuthor->{title}.'"></a><strong>' . $authorLink . '</strong> ' . ( !$anon ? info_authorsince():'');
+    } else {
+      return '<em>unable to find author '.$aid.'</em>';
+    }
+  };
+
+  # FIXME: direct links to writeups won't work if author is anonymous
+  local *info_author_anon = sub {
+    $$VARS{anonymousvote} = '1';
+    $$VARS{wuhead} =~ s/authoranon/author/;
+    $$VARS{wufoot} =~ s/authoranon/author/;
+    return &info_author();
+  };
+
+  local *info_author_pseudo = sub {
+    $$VARS{anonymousvote} = '2';
+    $$VARS{wuhead} =~ s/pseudoanon/author/;
+    $$VARS{wufoot} =~ s/pseudoanon/author/;
+    return &info_author() ;
+  };
+
+  local *info_print = sub {
+    return if $inPrintMode;
+    return '('.linkNode($WRITEUP, 'print', {displaytype=>'printable',lastnode_id=>0}).')';
+  };
+
+  local *info_typeauthor = sub {
+    return &info_wutype() . ' ' . &info_author() . ' ' . &info_print();
+  };
+
+  local *info_hidden = sub {
+    return unless $isCE || $isMine;
+    my $disp = '<small>(' . ($$WRITEUP{notnew} ? 'hidden' : 'public') . ')</small>';
+    $infofunctions->{'notnew'} = $infofunctions->{'hidden'} = $disp;
+    return $disp;
+  };
+
+  local *info_length = sub {
+    #most of these counts are rough,
+    #and can be fooled rather easily;
+    #however, it isn't worth taking
+    #the CPU time to find exact values
+
+    my $wdt = breakTags($$WRITEUP{doctext}) || '';
+    my $c = 0;	#count
+
+    #paragraphs - could be off by one if <p> incorrectly used to end a paragraph instead of to start one
+    while($wdt =~ /<[Pp][>\s]/g)
+    {
+      #weak paragraph count
+      ++$c;
+    }
+    $c=1 if !$c;
+    $t = $c.' <abbr title="approximate paragraphs">' . ($VARS->{noCharEntities} ? 'p' : '&para;') . '</abbr>, ';
+
+    #if we want to burn CPU, we could count sections - p, blockquote, ul, ol, hr, anything else - as separators
+
+    #now only deal with plain text
+    $wdt =~ s/\<.+?\>//gs;
+
+    #sentences
+    $c = ($wdt =~ tr/.!?//);
+    $t .= $c.' <abbr title="approximate sentences">s</abbr>, ' if $c;
+
+    #words
+    $c=0;
+    while($wdt =~ /\w+/g)
+    {
+      ++$c;
+    }
+
+    $t .= $c.' <abbr title="approximate words">w</abbr>, ' if $c;
+    # $t .= (($wdt =~ s/\W+/ /gs)||0).' w, ';
+
+    $t .= length($$WRITEUP{doctext}) . ' <abbr title="characters">c</abbr>';
+
+    return $t;
+  };
+
+
+  local *info_hits = sub {
+    my $hitStr; # This is a kludgy way to do this, but it seems efficient - Oo.
+    (my $y,my $m,my $d) = split /-/, $$WRITEUP{createtime};
+    my $dateval = $d+31*$m+365*$y; 
+    if ($dateval > 733253 )
+    {
+      $hitStr='publication';
+    }else { 
+      $hitStr='23rd October 2008';
+    }
+
+    #my $hitshits=$DB->sqlSelect("hits","node","node_id=$wuID"); # $$WRITEUP{hits} ?
+    #return qq'<span title="hits since $hitStr according to the node table">Hits: $$WRITEUP{hits}</span>';
+    return ""
+  };
+
+
+  local *info_nothing = sub {
+    return;
+  };
+
+  local *info_addto = sub {
+    return '' if $query -> param( 'showwidget' ) eq 'addto'.$$WRITEUP{ node_id } ; #noscript: widget is in page header
+    my $str = undef;
+    unless ($isDraft)
+    {
+      $str = htmlcode('categoryform', $WRITEUP, 'writeupform');
+      $str .= htmlcode('weblogform', $WRITEUP, 'writeupform') if $$VARS{can_weblog};
+    }
+
+    if ($str)
+    {
+      my $author = getNodeById( $$WRITEUP{ author_user } ) ;
+      $author = $author -> { title } if $author ;
+      $author =~ s/[\W]/ /g ;
+      $query -> param( 'showwidget' , 'addto'.$$WRITEUP{ node_id } ) if
+        $query -> param( 'op' ) eq 'weblog' && $query -> param( 'target' ) == $$WRITEUP{ node_id } or
+        $query -> param( 'op' ) eq 'category' && $query -> param( 'nid' ) == $$WRITEUP{ node_id } ;
+
+      $str = htmlcode( 'widget' , '
+        <small>'.htmlcode( 'bookmarkit' , $WRITEUP , "Add $author"."'s writeup to your E2 bookmarks" ).'</small>
+        <hr>'.$str , 'span' , 'Add to&hellip;' ,
+        { showwidget => 'addto'.$$WRITEUP{ node_id } ,
+        '-title' => "Add $author"."'s writeup to your bookmarks, a category or a usergroup page" ,
+        '-closetitle' => 'hide addto options' ,
+        node => $WRITEUP , addto => 'noscript' } ) ;
+    } else {
+      $str = '<small>'.htmlcode( 'bookmarkit' , $WRITEUP , 'bookmark' ).'</small>' ;
+    }
+
+    return "<span class=\"addto\">\n$str\n</span>"
+  };
+
+  local *info_cats = sub {
+    return htmlcode('listnodecategories', $$WRITEUP{ node_id });
+  };
+
+  local *music = sub {
+    return ''
+      . '<button title="Add additional World Cup content"'
+      . ' onClick="flatify(this);return false;">'
+      . '<img src="http://static.everything2.com/futbol.png">'
+      . '</button>';
+  };
+
+  local *audio = sub {
+    my $audioStr = undef;
+    my $recording=$DB->sqlSelectHashref("*", "recording", "recording_of=$wuID");
+    if (exists ($$recording{link}))
+    {
+      $audioStr="<a href='".$$recording{link}."'>mp3</a>";
+    } else {
+      my $GROUP = getNode('podpeople','usergroup');
+      my $id = getId($USER);
+      if (grep /^$id$/, @{ $$GROUP{group} })
+      {
+        $audioStr.='<a href=' . urlGen({node => $WRITEUP->{title}.' mp3',type => 'recording',op => 'new',displaytype => 'edit','recording_recording_of' => $wuID,
+          'recording_read_by' => $$USER{user_id},}) .'>Add mp3</a>';
+      }
+    }
+
+    return $audioStr;
+  };
+
+  local *showBookmarks = sub {
+    return '' if $$v{nosocialbookmarking} || $$VARS{nosocialbookmarking};
+    return htmlcode('socialBookmarks',$wuID);
+  };
+
+
+  #TODO? checkbox to have anonymous? maybe just for certain people?
+  my $msgreport = undef;
+  local *sendMessage = sub {
+    $infofunctions->{$fnName} = '';
+    return if $isGuest;
+    my $queryid = 'msg_re'.$$WRITEUP{node_id} ;
+    $msgreport = qq'<a id="sent$queryid"></a>' ;
+    if( $$WRITEUP{author_user}!=$$USER{user_id} && $$VARS{borged} )
+    {
+      return '(you may not talk now)' ;
+    } elsif( $query->param( $queryid ) ){
+      $msgreport = htmlcode('writeupmessage', $queryid, $WRITEUP) ;
+    }
+    my $nN = undef;
+    $nN = $query->checkbox(-name=>'nn'.$queryid, value=>$$WRITEUP{node_id}, label=>'NN ', title=>'check to record this message as a node note') if $isCE;
+    return $nN.$query->checkbox( -name=>'cc'.$queryid, value=>'1', label=>'CC ',
+      title=>'check to send a copy of this message to yourself' )
+      . $query->textfield( -name => $queryid, size => 20 , maxlength => 1500 , 	#1530=255*6
+      class => 'expandable ajax '."sent$queryid:writeupmessage?$queryid=/&cc$queryid=/&nn$queryid=/:$queryid,$$WRITEUP{node_id}" ,
+      title => "send a comment to the $$WRITEUP{type}{title}'s author" ) ;
+  };
+
+  #
+  # main
+  #
+
+  #build result
+  my $str = '';
+
+  my $s = undef; #which Sub to call
+  my $r = undef; #Result of sub call
+  my $align= undef ; #alignment
+  my $curRow = '';
+  my $anyGoodCells = 0;
+  #TODO allow multiple things in a table cell
+  foreach my $k (@showThings)
+  {
+    $fnName = $k;
+    $align = $tDataOpen{l}."wu_$fnName\">";
+    if($fnName eq '\n')
+    {
+      #literal characters '\' and 'n', not newline
+      if($anyGoodCells)
+      {
+        $str .= $tRowOpen;
+        $str .= ($inHeader?'wu_header"':'wu_footer"').">";
+        $str .= $curRow . $tRowClose;
+      }
+  
+      $curRow = '';
+      $anyGoodCells = 0;
+      next;
+
+    } elsif($fnName =~ /^(.):(.+)$/) {
+      #calling a function
+      $fnName = $2;
+      $align = ($tDataOpen{$1}."wu_$fnName\">") || $align;
+    }
+
+    next if length($fnName)==0 or
+      $fnName eq 'kill' && !$isDraft && !$isMine && !$isCE or
+      $isDraft && $fnName !~ /^(?:type|author|dtcreate|kill|length|sendmsg|addto|nothing|draftstatus)$/;
+
+    unless( (exists $infofunctions->{$fnName}) && (defined $infofunctions->{$fnName}) )
+    {
+      $curRow .= $align.'<small>(unknown value: "'.encodeHTML($fnName).'"; see '.linkNodeTitle('Settings').')</small>'.$tDataClose unless $s;
+      next;
+    }
+
+    $s = $infofunctions->{$fnName};
+    if( (ref $s) eq 'CODE' )
+    {
+      #compute result
+      #$query->param('debug'.$wuID.$fnName.($inHeader?'head':'foot').int(rand(99)), 'uncached');
+      $r = &$s();
+      $r = '' if !defined $r;
+      if( (defined $infofunctions->{$fnName}) && (ref $infofunctions->{$fnName}) eq 'CODE' )
+      {
+        if( !exists $infofunctions->{'!'.$fnName})
+        {
+          #2007-12-05 for kthejoker
+          #the function is letting us handle caching
+          $infofunctions->{$fnName} = $r;
+        }
+      }
+    } else {
+      #$query->param('debug'.$wuID.$fnName.($inHeader?'head':'foot').int(rand(99)), 'cached');
+      #use cached result
+      $r = $s;
+    }
+
+    $curRow .= $align . $r . $tDataClose."\n";
+    if ($r)
+    {
+      $anyGoodCells = 1;
+    }
+  }
+
+  if ($anyGoodCells)
+   {
+    $str .= $tRowOpen . ($inHeader?'wu_header"':'wu_footer"').">". $curRow . $tRowClose;
+  }
+
+  $str .= $msgreport ;
+
+  unless ($inHeader)
+  {
+    #not showing anything about this writeup anymore, so delete cache
+    delete $PAGELOAD->{$CACHE_NAME};
+  }
+
+  return $str;
+
+}
+
 1;
