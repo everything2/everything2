@@ -9147,10 +9147,10 @@ sub sendPrivateMessage
     #   users, etc) since an "inbox" table record is created for (and owned by) each recipient
     #   and none are distinctly a master. So for now no link is created.
     #
-    $DB-&gt;sqlInsert('message_outbox',{
-           'msgtext' =&gt; $m,
-       'author_user' =&gt; $aid,
-       'tstamp' =&gt; $sendTime,
+    $DB->sqlInsert('message_outbox',{
+       'msgtext'     => $m,
+       'author_user' => $aid,
+       'tstamp'      => $sendTime,
     });
 
   } else {
