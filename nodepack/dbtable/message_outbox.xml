@@ -14,5 +14,5 @@
   KEY `author_user_archive_tstamp` (`author_user`,`archive`,`tstamp`),
   KEY `message_author` (`author_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
-  <title>message</title>
+  <title>message_outbox</title>
 </node>

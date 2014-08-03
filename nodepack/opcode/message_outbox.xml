@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>415056</type_nodetype>
   <node_id>2109004</node_id>
-  <title>message</title>
+  <title>message_outbox</title>
   <code>return if $APP-&gt;isGuest($USER);
 
 my $UID = getId($USER)||0;
