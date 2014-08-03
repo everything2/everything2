@@ -47,6 +47,7 @@ BEGIN {
   *isSuspended = *Everything::HTML::isSuspended;
   *escapeAngleBrackets = *Everything::HTML::escapeAngleBrackets;
   *canReadNode = *Everything::HTML::canReadNode;
+  *stripCode = *Everything::HTML::stripCode;
 } 
 
 sub publishdraft

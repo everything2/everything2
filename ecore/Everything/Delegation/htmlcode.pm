@@ -50,6 +50,8 @@ BEGIN {
   *isSuspended = *Everything::HTML::isSuspended;
   *escapeAngleBrackets = *Everything::HTML::escapeAngleBrackets;
   *canReadNode = *Everything::HTML::canReadNode;
+  *stripCode = *Everything::HTML::stripCode;
+  *canDeleteNode = *Everything::HTML::canDeleteNode;
 }
 
 # Used by showchoicefunc
@@ -7883,6 +7885,1261 @@ sub displayWriteupInfo
 
   return $str;
 
+}
+
+sub displayUserText
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $txt = undef;
+  my $APRTAGS = getNode 'approved html tags', 'setting';
+  $txt = stripCode($$NODE{doctext});
+  $txt = breakTags(htmlScreen($txt, getVars($APRTAGS)));
+  $txt = parseLinks($txt) unless($query->param("links_noparse"));
+  return $txt;
+}
+
+sub customtextarea
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  #This takes one of two inputs.
+  #If it takes a zero or is blank, then the style is going to be in "#rows,#cols" 
+  # format for the HTMLcode formatting
+  #If it takes a one, it will be in 'rows="#" cols="#"' format
+
+  my ($dispopt) = @_;
+  $dispopt ||= 0;
+
+  my $rowval = 20;
+  my $colval = 60;
+
+  if($$VARS{textareaSize} == 1)
+  {
+    $rowval = 30;
+    $colval = 80;
+  }elsif($$VARS{textareaSize} == 2)
+  {
+    $rowval = 50;
+    $colval = 95
+  }
+
+  if (wantarray)
+  {
+    return (-rows => $rowval, -cols => $colval);
+  } else {
+    return 'rows="'.$rowval.'" cols="'.$colval.'" ' if($dispopt == 1);
+    return "$rowval,$colval"; #if($dispopt == 0);
+  }
+
+}
+
+sub rtnsection_cwu
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # ReadThis - C! writeups
+  my $str = "<ul class='linklist'>\n";
+  my $csr = $DB->sqlSelectMany("distinct coolwriteups_id", "coolwriteups", "", "order by tstamp desc limit 15");
+
+  map {
+    my $wu = getNodeById $$_{coolwriteups_id};
+    my $parent = getNodeById $$wu{parent_e2node};
+    my $author = getNodeById $$wu{author_user};
+    $author = $$author{title} if $author ;
+    $str .= '<li>'.linkNode($parent, '', {'#' => $author, lastnode_id => 0})."</li>\n";
+  } @{$csr -> fetchall_arrayref({})};
+
+  $csr->finish();
+
+  return "$str</ul>\n";
+}
+
+sub rtnsection_nws
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if ( $APP->isGuest($USER) );
+  my $str = '<ul class="linklist">';
+  my $csr = $DB->sqlSelectMany('*', 'weblog, node', 'weblog_id=165580 && removedby_user=0 and to_node = node_id', 'ORDER BY linkedtime DESC LIMIT 4');
+ 
+  while(my $row = $csr->fetchrow_hashref()){
+    my $newsitem = getNodeById($$row{node_id});
+    next unless($newsitem);
+    $str .= '<li>'.linkNode($newsitem, $$newsitem{title}, {lastnode_id=>0}).'</li>';
+  }
+
+  $str .= '</ul>';
+
+  $csr->finish();
+  return $str;
+}
+
+sub rtnsection_edc
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # ed Cools - See [ReadThis]
+
+  my $str = '<ul class="linklist">';
+  my $poclink = getId(getNode('coollink', 'linktype'));
+  my $pocgrp = getNode('coolnodes', 'nodegroup')->{group};
+  my $count = 0;
+
+  foreach(reverse @$pocgrp)
+  {
+    last if($count >= 5);
+    $count++;
+
+    next unless($_);
+
+    my $csr = $DB->{dbh}->prepare('SELECT * FROM links WHERE from_node=\''.getId($_).'\' and linktype=\''.$poclink.'\' limit 1');
+    $csr->execute;
+
+    my $coolref = $csr->fetchrow_hashref;
+
+    next unless($coolref);
+    $coolref = getNodeById($$coolref{from_node});
+    next unless($coolref); 
+    $str .= '<li>'.linkNode($coolref,$$coolref{title}, {lastnode_id => 0}).'</li>';
+
+    $csr->finish();
+  }
+
+  $str.='</ul>';
+  return $str;
+}
+
+sub nodenote
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isEditor($USER);
+  return if($$VARS{hidenodenotes});
+
+  my $N = my $onlyMe = shift;
+  getRef $N if $N;
+  $N ||= $NODE;
+
+  my $notelist = undef;
+
+  if ($$N{type}{title} eq 'writeup' && !$onlyMe)
+  { 
+    #include e2node & other wus
+    $notelist = $DB->sqlSelectMany(
+      'nodenote.notetext, nodenote.nodenote_id, nodenote.nodenote_nodeid, nodenote.noter_user, nodenote.timestamp'
+      , 'nodenote'
+      , "nodenote_nodeid = $$N{node_id}"
+      . " OR nodenote_nodeid = $$N{parent_e2node}"
+      . " ORDER BY nodenote_nodeid, timestamp");
+  } elsif ($$N{type}{title} eq 'e2node') { 
+    # include writeups
+    $notelist = $DB->sqlSelectMany(
+      'nodenote.notetext, nodenote.nodenote_id, nodenote.nodenote_nodeid, nodenote.noter_user, nodenote.timestamp, node.author_user'
+      , 'nodenote'
+      . " LEFT OUTER JOIN writeup ON writeup.writeup_id = nodenote_nodeid"
+      . " LEFT OUTER JOIN node ON node.node_id = writeup.writeup_id"
+      , "nodenote_nodeid = $$N{node_id}"
+      . " OR writeup.parent_e2node = $$N{node_id}"
+      . " ORDER BY nodenote_nodeid, timestamp");
+  } else {
+    $notelist = $DB->sqlSelectMany(
+      'nodenote.notetext, nodenote.nodenote_id, nodenote.nodenote_nodeid, nodenote.noter_user, nodenote.timestamp'
+      , 'nodenote'
+      , "nodenote_nodeid = $$N{node_id}"
+      . " ORDER BY timestamp");
+  }
+
+  my $makeNoteLine = sub {
+    my $notetext = shift;
+    my $delbox = $$notetext{noter_user} ? $onlyMe ? ' * '
+      : qq'<input type="checkbox" name="deletenote_$$notetext{nodenote_id}", value="1">'
+      : ' &bull; '; # if no user it's a system note
+    return "<p>$delbox"
+      . htmlcode('parsetimestamp', $$notetext{timestamp}, 129 - !$$notetext{noter_user})
+      . ' ' . parseLinks($$notetext{notetext})
+      . '</p>';
+  };
+
+  my $noteCount = 0;
+  my $finalstr = undef;
+  my $notetext = undef;
+  $notetext = $notelist->fetchrow_hashref if $notelist;
+
+  while ($notetext)
+  {
+    my $currentNodeId = $$notetext{nodenote_nodeid};
+    my $currentAuthor = $$notetext{author_user};
+
+    $finalstr .= '<hr>' if $noteCount != 0;
+
+    if ($currentNodeId != $$N{node_id} && !$onlyMe)
+    {
+      $finalstr .= '<b>'.linkNode($currentNodeId).'</b>';
+      $finalstr .= ' by '.linkNode($currentAuthor) if $$N{type}{title} eq 'e2node';
+    }
+
+    while ($notetext && $$notetext{nodenote_nodeid} == $currentNodeId)
+    {
+      $finalstr .= &$makeNoteLine($notetext);
+      $noteCount++;
+      $notetext = $notelist->fetchrow_hashref;
+    }
+  }
+
+  return $finalstr ? $query -> div({style => 'white-space:normal'}, $finalstr) : '' if $onlyMe;
+  my $form = qq'<p align="right">
+    <input type="hidden" name="ajaxTrigger" value="1" class="ajax nodenotes:nodenote">
+    <input type="hidden" name="notefor" value="$$N{node_id}">
+    <input type="hidden" name="op" value="nodenote">
+    <input type="text" name="notetext" maxlength="255" size="22" class="expandable"><br>
+    <input type="submit" value="(un)note">
+    </p>';
+			
+  return '<div class="nodelet_section" id="nodenotes">
+    <h4 class="ns_title">Node Notes <em>('.$noteCount.')</em></h4>'.htmlcode('openform')."\n\t\t".$finalstr."\n\t\t".$form.'
+    </form></div>';
+}
+
+# call this when there is something strange happening, but it isn't
+#  a full blown Server Error!
+#
+# this logs some information to the warnlog table and displays a little
+#  warning message to the user ... unless it is N-Wing, then it just shows the
+#  message
+#
+# parameters:
+#	node_id of error (if omitted, uses current node_id) (useful for nodegroups)
+#	short description of problem (may not contain commas) (may be omitted, but logging the warning isn't very useful then)
+#
+# sample uses:
+#	htmlcode('logWarning',',I got a weird number. It was: '.$num);
+#	htmlcode('logWarning',$$WRITEUP{node_id}.',saw:'.$s.' expected:'.$e);
+#
+sub logWarning
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my @allParams = @_;
+
+  my $nodeID = undef;
+  my $description = undef;
+  my $uid = undef
+  my $UID = getId($USER);
+
+  $nodeID = $allParams[0] || getId($NODE) || 0;
+  $description = $allParams[1] || '';
+  $uid = $UID || 0;
+
+  my $info = '';
+
+  local *createInfoString = sub {
+    $info='(node_id, user_id) = (' . $nodeID . ', ' . $uid . '); description = ' . $description;
+  };
+
+  if( $APP->isAdmin($USER) ) {
+    $info = createInfoString();
+  } else {
+    my $dbh = $DB->getDatabaseHandle();
+    unless($dbh) {
+      $info = createInfoString() . ' Ack! No handle!';
+    } else {
+      my $values = join(',',($nodeID, $uid, $dbh->quote($description)));
+      my $result = $dbh->do('INSERT INTO warnlog (problemnode_id,problemuser_id,description) VALUES('.$values.')');
+
+      if($result) {
+        $info = '#'.$DB->sqlSelect('LAST_INSERT_ID()');
+      } else {
+        $info = createInfoString() . ' Ack! Unable to insert!';
+      }
+    }
+  }
+
+  return '<small>( <span style="color: blue;">Server Warning!</span> <small>(don\'t worry about this)</small> '.$info.' )</small>';
+}
+
+sub admin_toolset
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isAdmin($USER);
+
+  my $currentDisplay = $query->param("displaytype") || "display";
+  my $nt = $$NODE{type}{title};
+
+  my $newStr = $query -> h4({class => 'ns_title'}, 'Node Toolset');
+
+  if ($query -> param('showcloner')){
+    $newStr .= $query -> start_form(action => urlGenNoParams(
+      getNode('node cloner', 'restricted_superdoc'), 'noquotes'))
+      .$query -> fieldset($query -> legend('Clone node')
+      .$query -> hidden('srcnode_id', $$NODE{node_id})
+      .$query -> label('New title:' .$query -> textfield(-name => 'newname'
+      , -title => 'name for cloned node'))
+      .$query -> submit('ajaxTrigger', 'clone') # don't ajaxify this form...
+      ).$query -> end_form .'<ul>';
+  }else{
+    $newStr .= '<ul>'
+      .$query -> li(linkNode($NODE, 'Clone Node...', {
+      showcloner => 1
+      , -class => 'ajax mcadmintools:admin+toolset' }));
+  }
+
+  $newStr .= $query -> li(linkNode($NODE,"Display Node"))	if ($currentDisplay ne 'display');
+
+  if ($currentDisplay ne 'edit' && $currentDisplay ne 'viewcode')
+  {
+    if ($nt eq'nodelet' || $nt =~ 'superdoc')
+    {
+      $newStr .= $query -> li(linkNode($NODE,"Edit Code",{displaytype => "viewcode"}));
+    } else {
+      $newStr .= $query -> li(linkNode($NODE,"Edit Node",{displaytype => "edit"}));
+    }
+  }
+
+  $newStr .= $query -> li(linkNode($NODE,"Node XML",{displaytype => "xmltrue"})) if ($currentDisplay ne 'xmltrue');
+
+  if ($currentDisplay ne 'help')
+  {
+    if ($DB->sqlSelectHashref("*", "nodehelp", "nodehelp_id=$$NODE{node_id}"))
+    {
+      $newStr .= $query -> li(linkNode($NODE,"Node Documentation",{displaytype => "help"}));
+    } else {
+      $newStr .= $query -> li(linkNode($NODE,"Document Node?",{displaytype => "help"}));
+    }
+  }
+
+  my $spacer = "<li style='list-style: none'><br></li>";
+  my $direWarning = undef; $direWarning = ' (<strong>writeup:</strong> only nuke under exceptional circumstances.
+    Removal is almost certainly a better idea.)' if $nt eq 'writeup';
+
+  $newStr .= $spacer.$query -> li(
+    $query -> a({ href => "/?confirmop=nuke&node_id=$$NODE{node_id}", class => 'action'
+    , title => 'nuke this node' }, 'Delete Node'))
+    .$direWarning
+    .$spacer if canDeleteNode($USER, $NODE) and $nt ne 'draft' and $nt ne 'user';
+
+  if ($nt eq 'user')
+  {
+    $newStr .= $spacer
+      .$query -> li(linkNode(getNode('The Old Hooked Pole', 'restricted_superdoc')
+      , 'Detonate noder'
+      , {notanop => 'usernames'
+      , confirmop => $$NODE{title}
+      , -title => 'delete user account if safe, otherwise lock it'
+      , -class => 'action'}))
+      .$spacer
+      .$query -> li(linkNode($NODE, 'bless', { op=>'bless', bless_id=>$$NODE{node_id}}))
+      .$query -> li(linkNode($NODE, 'bestow 25 votes', { op=>'bestow', bestow_id=>$$NODE{node_id} }))
+      .$query -> li(linkNode(getNode('bestow cools', 'restricted_superdoc'), 'bestow cools', {'myuser' => $$NODE{title}}))
+      .$query -> li(linkNode(getNode('Node Forbiddance','restricted_superdoc'), 'forbid', { forbid => $$NODE{node_id}}));
+
+    if ($$NODE{acctlock})
+    {
+      $newStr .=$query -> li(linkNode($NODE, 'Unlock Account', { op=>'unlockaccount', lock_id=>$NODE->{node_id} }));
+    } else {
+      $newStr .= $query -> li(linkNode($NODE, 'Lock Account', {op=>'lockaccount', lock_id=>$NODE->{node_id}}));
+    }
+  } elsif($nt eq 'writeup' && $$VARS{nokillpopup}) {
+    # mauler and riverrun don't get a writeup admin widget:
+    $newStr .= $query -> li(linkNode(getNode('Magical Writeup Reparenter', 'superdoc')
+      , 'Reparent&hellip;'
+      , {old_writeup_id => $NODE->{node_id}}))
+      .$query -> li(linkNode(getNode('Renunciation Chainsaw', 'oppressor_superdoc')
+      , 'Change author&hellip;'
+      , {wu_id => $NODE->{node_id}}));
+  }
+
+  $newStr .= '</ul>';
+
+  return $query -> div({id => 'mcadmintools', class => 'nodelet_section'}, $newStr);
+}
+
+sub nwuamount
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return '' if ( $APP->isGuest($USER) );
+  my ($nodelet,$noAdminNoJunkOption) = @_ ;
+  $nodelet ||= 'New Writeups';
+  $nodelet =~ s/\s/+/g;
+  my $nodeletId = lc($nodelet) ;
+  $nodeletId =~ s/\W// ;
+  my $ajax = "ajax $nodeletId:updateNodelet?op=/&nw_nojunk=/&amount=/:$nodelet" ;
+
+  my @amount = (1, 5, 10, 15, 20, 25, 30, 40);
+  $$VARS{num_newwus} ||= 15 ;
+
+  my $str = htmlcode('openform');
+
+  $str.="\n\t<input type='hidden' name='op' value='changewucount'>";
+  $str .= $query -> popup_menu( -name=>'amount', Values=>\@amount, default=>$$VARS{num_newwus}, class=> $ajax ) ;
+  $str.="\n\t".$query->submit("lifeisgood","show");
+  $str.="\n\t".$query->checkbox(-name=>"nw_nojunk", checked=>$$VARS{nw_nojunk}, value=>'1', label=>"No junk", class=>$ajax) if !$noAdminNoJunkOption and $APP->isEditor($USER);
+  $str.="\n".$query->end_form;
+  return $str;
+}
+
+# sends a private message
+#
+# usage, examples, etc. in this node's "help" view:
+#  ?node=sendPrivateMessage&type=htmlcode&displaytype=help
+#
+# TODO error condition for certain alias (me, I, anything else?) (maybe just hardcode in here, if a few)
+# TODO if target is bot (use bot setting), see if they have a special htmlcode (probably best to run after did everything else)
+#
+# big big big big TODO: put this info into help displaytype ALSO 
+# massive like OMG semi-trailer-truck-sized TODO: recode website; take tea when done
+# big TODO:
+#	How do we want to handle don't-send-to-self and auto-archive-when-sending-to-self ?
+#	I've had 2 false starts that are specific to single-target, pseudo-group, and usergroup, but are pretty clumsy
+#	I'm now thinking maybe doing something like msg-ignore: user can specify groups to do certain things to.
+#
+# thought #2: instead of making another table, since this is all user-based, we can just throw things into VARS
+#	maybe: 'automsgsend_###' where ### is node_id of recipient (group or usergroup)
+#	if multiple cases match, do one that keeps the most
+#	bits:
+#		0    1      if NOT set, ignore everything else, and use default settings
+#		1-2  2,4,6  0=default, 2=always CC self, 4=never get self, 6=reserved
+#		4    8      set archived flag, if happens to get message
+#
+# another thought: maybe change 'archive' field into 'folder' field; needs more thought: who create? who view? etc.
+#
+sub sendPrivateMessage
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  #
+  #parameters setup, part 1 of 2
+  #
+
+  my $params = shift;
+  my $showWhatSaid = $params->{show_said};
+
+  #
+  #constants and global vars setup, part 1 of 2
+  #
+
+  my $UID = $USER->{node_id} || 0;
+
+  return '' if $APP->isGuest($USER);
+  return '' if $USER->{title} eq 'everyone';
+  return 'Nothing to send: no message was given.' unless $params->{message};
+  my $msg = $APP->messageCleanWhitespace($params->{message});
+  return 'Nothing to send: message only consists of "whitespace" characters (for example, a space).' unless length($msg);
+
+  my $cachedTitles = undef;
+  my $cachedIDs = undef;
+
+  #failure warning messages
+  #these are always sent to the current user (which is not neccessarily the author we say the message is from)
+  my @problems = ();
+  #
+  # subroutines
+  #
+
+  # returns if a parameter is set to 1 or not
+  # if the given parameter exists and equals '1', then true is returned
+  # any other condition will return false
+
+  local *boolParam = sub {
+    return (defined $_[0]) && (exists $params->{$_[0]}) && (defined $params->{$_[0]}) && ($params->{$_[0]} eq '1');
+  };
+
+  # gets a user or usergroup
+  # pass ($title) to get based on title (respecting chatterbox forwards)
+  # pass ($id, 1) to get based on node ID
+  # passed username should NOT be escaped
+  ## this tries really hard to deal with names with spaces and/or underscores, and should get them, no matter how they are set up
+  #note: do NOT optimize this to use the light-get, since then usergroups wouldn't have their group members loaded (this may be no longer true - does the UG auto code deal with this properly?)
+  # updated: 2002.11.10.n0
+
+  my $FORWARDS;
+  local *getCached = sub {
+    my ($ident,$isNumeric) = (@_[0,1]);
+    return undef unless defined($ident) && length($ident);
+    my $N = undef;
+
+    #get by ID
+    if((defined $isNumeric) && $isNumeric)
+    {
+      return undef unless $ident =~ /^(\d+)$/;
+      $ident=$1;
+      return $cachedIDs->{$ident} if exists $cachedIDs->{$ident};
+      $N=getNodeById($ident);
+      if(!$APP->isUserOrUsergroup($N))
+      {
+        undef $N;
+      }
+
+      if((defined $N) && (exists $N->{title}) && length($N->{title}))
+      {
+        $cachedTitles->{$N->{title}} = $N;
+      }
+
+      $cachedIDs->{$ident} = $N;
+
+      #get by title
+    } else {
+      return $cachedTitles->{$ident} if exists $cachedTitles->{$ident};
+
+      # given title isn't cached, so find it
+      # a forward address takes precedence over a real user
+
+      if(!defined $FORWARDS)
+      {
+        $FORWARDS = getVars(getNode('chatterbox forward','setting'));
+      }
+
+      my $forwarded = (exists $FORWARDS->{lc $ident}) ? $FORWARDS->{lc $ident} : $ident;
+      my $escaped = $DB->quote($forwarded);
+
+      $N = getNode($forwarded,"usergroup") || getNode($forwarded,"user") || undef;
+      if(!defined $N)
+      {
+        # try getting, underscores converted to spaces
+        $forwarded =~ tr/_/ /;
+        $N = getNode($forwarded,"usergroup") || getNode($forwarded,"user") || undef;
+      }
+
+      # on 2002.11.09.n5, removed space-and-underscore-in-name code; see displaytype=help for more information
+      # found (or didn't find), so cache title and possibly forward
+      # note: $N may be invalid, but we're still caching the miss-hit, so we don't try getting it again
+
+      $cachedIDs->{$N->{node_id}} = $N if defined $N;
+      $cachedTitles->{$ident} = $N;
+      $cachedTitles->{$forwarded} = $N unless $ident eq $forwarded;
+    }
+
+    return $N;
+  };
+
+  # returns a list ref of items in a given parameter
+  # if a given parameter (in $param) is invalid, an empty list ref is returned
+  # otherwise, a list ref of all items is returned
+
+  local *getParamList = sub {
+    my $p=$_[0];
+    my @l = ();
+    if( (defined $p) && (exists $params->{$p}) && (defined $params->{$p}) )
+    {
+      $p=$params->{$p};
+      my $r=ref $p;
+      if($r eq '')
+      {
+        @l = ($p);
+      } elsif($r eq 'SCALAR') {
+        @l = ($$p);
+      } elsif($r eq 'ARRAY') {
+        return $p;
+      } elsif($r eq 'HASH') {
+        @l = keys(%$p);
+      }
+    }
+    return \@l;
+  };
+
+
+  #
+  # main function
+  #
+
+  # determine author
+  # note: in most cases, we'll just skip to the last 'unless' to use current user
+
+  my $aid = $params->{author_id};
+  if((defined $aid) && length($aid) && $aid && ($aid =~ /^(\d+)$/))
+  {
+    $aid = getNodeById($1,'light') || undef;	#note that this allows any node to /msg user
+    $aid = (defined $aid) ? $aid->{node_id} : undef;
+  } else {
+    undef $aid;
+  }
+
+  unless(defined $aid)
+  {
+    #don't know author ID, so try to get author name
+    $aid = $params->{author};
+    if((defined $aid) && length($aid))
+    {
+      $aid = getCached($aid) || undef;
+      $aid = (defined $aid) ? $aid->{node_id} : undef;
+    }
+  }
+
+  unless(defined $aid)
+  {
+    #don't know author's title, either, so just use current user
+    $aid = $UID;
+  }
+
+
+  # determine node message is about
+  # note: if message table is expanded to include something like 'about_node', this section can be mostly removed
+
+  my $aboutNode = $params->{renode_id};
+  if((defined $aboutNode) && length($aboutNode) && $aboutNode && ($aboutNode=~/^(\d+)$/))
+  {
+    $aboutNode = getNodeById($1,'light') || undef;
+    if(defined $aboutNode)
+    {
+      $aboutNode = length($aboutNode->{title}) ? $aboutNode->{title} : 'id://'.$aboutNode->{node_id};
+    }
+  } else {
+    undef $aboutNode;
+  }
+
+  unless(defined $aboutNode)
+  {
+    $aboutNode=$params->{renode};
+    if((defined $aboutNode) && length($aboutNode) && ($aboutNode=~/^(.+)$/))
+    {
+      $aboutNode=length($1) ? $1 : undef;
+    } else {
+      undef $aboutNode;
+    }
+  }
+
+  # determine time to say message was sent
+  my $sendTime = $params->{renode_id};
+  if((defined $sendTime) && ($sendTime =~ /^(\d{14,})$/))
+  {
+    #Y10K compliant
+    $sendTime = $1;
+  } else {
+    undef $sendTime;
+  }
+
+  # determine which usergroup to say message was from
+  my $fromGroup = $params->{fromgroup_id};
+  if( (defined $fromGroup) && length($fromGroup) && $fromGroup && ($fromGroup=~/^(\d+)$/) )
+  {
+    $fromGroup = getNodeById($1,'light') || undef;
+    if(defined $fromGroup)
+    {
+      $fromGroup = $fromGroup->{node_id};
+    }
+  } else {
+    $fromGroup = 0;
+  }
+
+  unless($fromGroup)
+  {
+    if((defined $fromGroup) && length($fromGroup) && ($fromGroup=~/^(.+)$/))
+    {
+      if(length($1))
+      {
+        $fromGroup=getCached($1);
+        $fromGroup = (defined $fromGroup) ? $fromGroup->{node_id} : 0;
+      } else {
+        $fromGroup=0;
+      }
+    } else {
+      $fromGroup=0;
+    }
+  }
+
+  #
+  # determine recipient(s)
+  #
+
+  # determine who is online
+
+  my %onlines = ();
+  my $onlineOnly = boolParam('ono');
+
+  if($onlineOnly)
+  {
+    # ripped from message (opcode)
+    my $csr = $DB->sqlSelectMany('member_user', 'room', '', '');
+    while(my ($ol) = $csr->fetchrow)
+    {
+      $onlines{$ol}=1;
+    }
+    $csr->finish;
+  }
+
+  #determine which groups get a copy sent to themselves
+  my $ccGroups = boolParam('ccgroup');
+
+  my $countUserAll = 0;	#count of users we tried to /msg, including those ignoring us
+  my $countUserGot = 0;	#count of users that got our message
+  my $countGroupGot = 0;	#count of groups that got our message
+  
+  # users who blocked us; key is user ID, value is 0 if blocked, 1 if possibly blocked (happens ignoring the usergroup, but could still get msg via another usergroup)
+  #  after trying to send to everybody, anything with value of 1 is added to $countUserAll
+  my %blockers = ();
+
+  my %groups = ();	#groups that get a message; key is group ID, value is -1 if user isn't allowed to send there, 0 if usergroup doesn't get message (but people in it do), higher than 0 means the usergroup also gets the message
+  my %users = ();	#users that get a message; key is user ID, value is group they're in (or 0 for none) (or -1 to not send to them)
+
+  # %users is a hash so if multiple usergroups are messaged, the user will get a group message for a group they're in, instead of potentially a group they aren't in
+
+
+  #
+  # general routines that hopefully will be later moved to npbutil
+  #
+
+
+  # returns a value in $VARS->{_argument_}, constrained to the given values
+  # parameters are all required:
+  #	value to get value of in VARS
+  #	default value to return, if value is not in VARS hash, or value is not one of the given values
+  #	list or list ref of valid values
+  # returns if all arguments aren't supplied
+  # created: 2002.06.15.n6
+  # updated: 2002.06.15.n6
+
+  # TODO move into npbutil, after it is cleaned a bit
+  # TODO bool version also for npbutil
+
+  local *getVarsValue = sub {
+    my ($varsKey, $defaultVal, @allowedValues) = @_;
+    return unless (defined $varsKey) && length($varsKey);
+
+    # possibly change list ref into list
+    if( (scalar(@allowedValues)==1) && ((ref $allowedValues[0]) eq 'ARRAY') )
+    {
+      @allowedValues = @{$allowedValues[0]};
+    }
+
+    # determine what to return
+    return $defaultVal unless exists $VARS->{$varsKey};
+    my $val = $VARS->{$varsKey};
+    foreach(@allowedValues)
+    {
+      return $val if $_ eq $val;
+    }
+
+    return $defaultVal;
+
+  };
+
+
+  #
+  # flag recipients
+  #
+
+
+  # adds a user to the list to get the message (or not get message)
+  # pass user object and optionally group ID (if no group is passed, defaults to no group)
+  # included in things this functions does:
+  #  all checks for where a user would not get a message: online-only, ignoring user, ignoring group
+  #  finding (and possibly increasing) the msg group level
+  # updated: 2002.11.09.n6
+
+  local *addUser = sub {
+    my ($userObj, $groupID) = @_[0,1];
+    return unless defined $userObj;
+    $groupID = (defined $groupID) ? $groupID : 0;
+    my $uid = $userObj->{node_id};
+
+    if(exists $users{$uid})
+    {
+      # user is already getting message
+      return if $users{$uid}==-1;	#user doesn't want message
+
+      # if this is a group message, see if user knows it is from a group
+      if($groupID && ($users{$uid}==0))
+      {
+        # user doesn't know this is from a group, so say it is
+        $users{$uid}=$groupID;
+      }
+      # note: should always be true, but just in case
+    } else {
+      #user isn't set to get/not get a message
+
+      # check for ignoring author
+      if( $APP->userIgnoresMessagesFrom($uid, $aid) )
+      {
+        $users{$uid}=-1;
+        $blockers{$uid}=0;
+        ++$countUserAll;
+        return;
+      }
+
+      # check for online only
+      # this check should be before ignore-usergroup test; otherwise, the blocked-user message incorrectly includes people who are just ignoring OnO messages
+      if($onlineOnly && !exists $onlines{$uid})
+      {
+        # message is online-only and the recipient isn't online
+        # see if they want the message anyway
+        # TODO? cache this?
+
+        my $v = getVars($userObj);
+        unless( $v->{getofflinemsgs} )
+        {
+          # user doesn't want ONO messages, and this msg was ONO, so block them from getting the message (to prevent having to look up their VARS again)
+          $users{$uid}=-1;
+          return;
+        }
+      }
+
+      # check for ignoring usergroup
+      #  The proper thing to do isn't clear when the recipient user is in
+      #  several of the usergroups this message is going to, and the
+      #  recipient is ignoring some groups, but not others. We could either
+      #  block the message if ANY of the usergroups are ignored, or block if
+      #  ALL of the usergroups are ignored. The latter case is done here;
+      #  this means there is a lower chance you'll miss a message you meant
+      #  to get, although there is a higher chance you'll get a message you
+      #  did not want.
+
+      if($groupID)
+      {
+        $blockers{$uid}=$groupID;	#non-zero means may still get message
+        # don't mark as send-message, but also don't mark as do-not-send-at-all
+        return if( $APP->userIgnoresMessagesFrom($uid, $groupID) );
+        # note: countUsersAll is not adjusted here, so it doesn't count the same recipient twice; it is added later ("deal with people who blocked")
+      }
+
+      # passed all checks, so allow message to be sent to user
+      delete $blockers{$uid};	#if blocked from 1 usergroup, but got anyway, forget that we tried to block
+      ++$countUserAll;
+      ++$countUserGot;
+      $users{$uid}=$groupID;
+    }
+  };
+
+  # adds a user or usergroup to get a message (or not get the message)
+  # pass user or usergroup object
+  # updated: 2004.12.12.n0 (Sunday, December 12, 2004)
+
+  local *addRecipient = sub {
+    my $u = $_[0];
+    return unless defined $u;
+    my $i=$u->{node_id};
+
+    if( $APP->isUsergroup($u) )
+    {
+      if(exists $groups{$i})
+      {
+        # already did this group, don't bother with again
+        next;
+      }
+         
+      unless($APP->inUsergroup($USER, $u) )
+      { 
+        push @problems, 'You are not allowed to message the ['.$u->{title}.'] usergroup.';
+        $groups{$i}=-1;
+        return;
+      }
+
+      # all checks pass, so send /msg to group and members
+      ++$countGroupGot;
+
+      # see if usergroup itself gets a copy
+      if($ccGroups)
+      {
+        # htmlcode caller forced groups to get
+        $groups{$i} = $i;
+      } else {
+        $groups{$i} = ($APP->getParameter($i, 'allow_message_archive') ) ? $i : 0;	#see if group gets a copy
+      }
+
+      # loop though all users
+      foreach( @{$DB->selectNodegroupFlat($u)} )
+      {
+        addUser($_, $i);
+      }
+
+    } else {
+      addUser($u);
+
+    }
+  };
+
+  # invalid node titles, aliases, and node IDs
+  #  key is invalid item
+  #  value is always 1
+
+  my %invalidIDs = ();
+  my %invalidNames = ();
+
+  # for each recipient, either:
+  #  add to send list
+  #  reject for some reason (examples: permission denied, online-only)
+  #  add to invalid item list
+
+  # this is the only place where recipients are added to the list to be messaged
+  my $n = undef;
+  foreach( @{getParamList('recipient_id')} )
+  {
+    $n = getCached($_,1);
+    if(defined $n)
+    {
+      addRecipient($n);
+    } else {
+      $invalidIDs{$_}=1;
+    }
+  }
+
+  foreach( @{getParamList('recipient')} )
+  {
+    $n = getCached($_);
+    if(defined $n)
+    {
+      addRecipient($n);
+    } else {
+      $n = $_;
+      $n =~ tr/ /_/;
+      $invalidNames{$n}=1;
+    }
+  }
+
+  # deal with people who blocked
+  my @whoBlocked = ();	#users who blocked sender, and not because blocking the group (listing all the group blockers could get large fast)
+  my $numBlocked = scalar(keys(%blockers));
+  my $numBlockedGroup = 0;	#number of messages blocked because blocking usergroup
+  foreach(keys(%blockers))
+  {
+    if($blockers{$_}==0)
+    {
+      # blocking sender
+      push(@whoBlocked, getCached($_,1));
+    } else {
+      # blocking usergroup(s)
+      ++$countUserAll; #not done in addUser, so do it now
+      ++$numBlockedGroup;
+    }
+  }
+  my $blockedInfoMethod = getVarsValue('informmsgignore', 0, 0,1,2,3);	#0=inform via msg, 1=inform in 'you said "blah"' area in chatterbox, 2=inform both ways, 3=don't inform
+
+  if($numBlocked && ($blockedInfoMethod==0 || $blockedInfoMethod==2))
+  {
+    # inform via a msg
+    my $bMessage = 'You were blocked by '.$numBlocked.' user'.($numBlocked==1?'':'s').' total';
+    my @bReason = ();
+    push(@bReason, $numBlockedGroup.' ignored the usergroup(s)') if $numBlockedGroup;
+    push(@bReason, scalar(@whoBlocked).' ('.join(', ', map { '[' . $_->{title} . ']' } @whoBlocked).') ignored you') if scalar(@whoBlocked);
+    $bMessage .= ': '.join(', ', @bReason) if scalar(@bReason);	#note: should always be true, but just in case
+    $bMessage .= '.';
+    push(@problems, $bMessage);
+  }
+
+  # when sending a message and we aren't a recipient, but we get it anyway, pick one of the normal recipients to be the for_usergroup
+  #  if the message was sent to any usergroups, pick one of those
+  #  otherwise, pick a random user
+  #  in either case, this will return the node_id of the choosen node for for_usergroup
+  # created: 2002.07.28.n0
+  # updated: 2002.12.02.n1
+
+  local *pickRandomForGroup = sub {
+    #first try a random group
+    foreach(keys(%groups))
+    {
+      if($_ >= 0) { return $_; }	#if -1, then that group didn't get the message
+    }
+
+    #not sending to any groups, so pick a random user besides the sending user
+    foreach(keys(%users))
+    {
+      return $_ unless $_==$UID;	#yourself as a group is rather annoying
+    }
+
+    #return (exists $users{$UID}) ? $UID : 0;	#may have to return self as usergroup after all (oops, this makes all /msgs to self have yourself as a group; yuck)
+    #return 0;
+    #return 1;
+    #return "false";
+    #return "0";
+    #return "file not found";
+    return 0; # note: should always be true, but just in case
+    #return 0;
+    #return;
+  };
+
+
+  # special case sender getting msg
+  if(boolParam('ccself'))
+  {
+    # set the for-group as just a random recipient of the message
+    # this is far from perfect, but there isn't a way to store all recipients, so this will have to do
+    # done here, and not relied upon at the actual msg-send part so we try to not get ourselves as the for-group we're sending to
+
+    # if sending to at least 1 group, try to make that the from group
+
+    # since we aren't sending to any groups, pick a random person
+    unless(exists $users{$UID})
+    {
+      $users{$UID} = pickRandomForGroup() || $UID;	#extra OR is for very rare case so user still gets CC-to-self message when nobody gets message (such as everybody is blocking sender)
+    }
+  }
+
+  # add things to message
+  if($onlineOnly)
+  {
+    # say ONO even for CCed to self message as a reminder of how it was sent
+    $msg = 'OnO: ' . $msg;
+  }
+
+  if(defined $aboutNode)
+  {
+    # maybe FIXME: add another field to message table, although this wouldn't be used much (just for WU title area)
+    $msg = 're ['.$aboutNode.']: '.$msg;
+  }
+
+  # construct invalid recipients message
+  my $s = '';
+  my @badIDs = sort { ($a<=>$b) || ($a cmp $b) } keys(%invalidIDs);
+  if($n=scalar(@badIDs))
+  {
+    $s = 'Node ID' . ($n==1
+      ? ' ' . $badIDs[0] . ' is not a valid user or usergroup ID.'
+      : 's ' . join(', ', @badIDs) . ' are not valid user or usergroup IDs.');
+  }
+
+  my @badNames = sort { $a cmp $b } keys(%invalidNames);
+  if($n=scalar(@badNames))
+  {
+    $s .= ' ' if length($s);
+    if($n==1)
+    {
+      $s .= encodeHTML($badNames[0]) . ' is not a valid user or usergroup name or alias.';
+    } else {
+      $s .= encodeHTML(join(@badNames)) . ' are not valid user or usergroup names or aliases.';
+    }
+  }
+
+  if(length($s))
+  {
+    push(@problems, $s . ' You tried to say: \\n ' . encodeHTML($msg));	#slash, then 'n', not newline
+  }
+
+
+  #
+  # finally send the message
+  #
+
+  my $i = undef;
+  my @getters = ();	#groups and users that got message
+
+  # send to groups archive
+  foreach $i (keys(%groups))
+  {
+    next if $groups{$i}<0;	#negative indicates user isn't allowed to send to group
+    push(@getters, $i);	#count as 1 for group
+    next if $groups{$i}==0;
+
+    $DB->sqlInsert('message',{'msgtext' => $msg,'author_user' => $aid,'tstamp' => $sendTime,
+      'for_user' => $i,
+      'for_usergroup' => $i,	#don't bother with ($i || $fromGroup) since $i is never going to be 0
+    });
+  }
+
+  # send to users
+  my $forUG = undef;
+  my $isArchived = undef;
+  foreach $i (keys(%users))
+  {
+    next if $users{$i}<0;
+
+    $forUG=$users{$i};
+    if($i==$UID)
+    {
+      # the for-group is really just a random recipient of the message
+      # this is far from perfect, but there isn't a way to store all recipients, so this will have to do
+      # if the msg was forced-gotten, then this was already done; but this is for the normal case
+
+      $forUG ||= pickRandomForGroup();
+    }
+
+    $isArchived=0;
+    $forUG ||= $fromGroup;
+
+    push(@getters, $i) if $users{$i}==0; # only list people that aren't in a UG (otherwise, UG recipient list would be quite large)
+
+    $DB->sqlInsert('message',{
+      'msgtext' => $msg,
+      'author_user' => $aid,
+      'tstamp' => $sendTime,
+      'for_user' => $i,
+      'for_usergroup' => $forUG,
+      'archive' => $isArchived,
+    });
+
+    # message_id is auto
+    # room is 0
+    # fullmessage_id was never implemented (thank christ)
+  }
+
+  # inform user of any problems
+  #  since these are sent back to the sending user, increase the maximum message length
+
+  if(scalar(@problems))
+  {
+    my $rootUser = getNode('root','user','light') || undef;
+    $rootUser = (defined $rootUser) ? ($rootUser->{node_id} || 0) : 0;
+    foreach my $prob (@problems)
+    {
+      $DB->sqlInsert('message',{
+        'msgtext' => $prob,
+        'author_user' => $rootUser,
+        'for_user' => $UID,	#the actual user gets the error(s), not the author we say is sending the message
+      });
+    }
+  }
+
+  # link to groups and users that were messaged
+  # parameters: node_id of user, optional alternate text to display
+
+  local *linkU = sub {
+    my $id = $_[0];
+    my $altDisp = $_[1] || undef;
+    return '<em title="sendPrivateMessage (htmlcode)">!!! nobody !!!</em>' unless $id;
+    return linkNode($id, ((defined $altDisp) ? $altDisp : getCached($id,1)->{title}));
+  };
+
+
+  #
+  # sent /msg information
+  #
+
+  # if multiple messages sent at same time (such as through the WU header area), find the query param to use
+  my $qpm = 'sentmessage';
+  if( defined $query->param($qpm) )
+  {
+    my $i=0;
+    while(defined $query->param($qpm.$i) )
+    {
+      ++$i;
+    }
+    $qpm=$qpm.$i;
+  }
+
+  # UIDs for Virgil, CME, Klaproth, and root.
+  my @botlist = qw(1080927 839239 952215 113);
+  my %bots = map{$_ => 1} @botlist;
+
+  # escape for sender's display
+  # Bots, don't escape HTML for them.
+  unless( exists $bots{$aid} )
+  {
+    $msg = escapeAngleBrackets($msg);
+    $msg = parseLinks($msg,0,1);
+  }
+
+  my $m = undef;
+  if ( $aid==$UID)
+  {
+    $m = 'you said "' . $msg . '"';
+    unless(scalar(@getters))
+    {
+      $m .= ' to nobody';
+    } else {
+      # TODO allow only certain recipients to not be shown
+
+      # TODO loop though list anonrecipient, create hash, foreach loop
+      #  checks hash to see if that recipient is anonymous
+
+      # TODO recode entire engine
+      my $anonRecipient = boolParam('anonrecipient');
+      foreach (@getters)
+      {
+        $_ = ($anonRecipient) ? linkU($_,'?') : linkU($_);
+      }
+      $m .= ' to ' . join(', ', @getters);
+    }
+    $m .= ' (sent ';
+    $m .= ' to '.$countUserGot.' noder'.($countUserGot==1?'':'s');
+    $m .= ' and '.$countGroupGot
+      .' group'.($countGroupGot==1?'':'s') unless $countGroupGot==0;
+
+    if ($numBlocked)
+    {
+      # note: should always be true, but just in case
+      $m .= ' (You were blocked by '.$numBlocked.' user'.($numBlocked==1?'':'s').' total';
+
+      if ( $blockedInfoMethod==1 || $blockedInfoMethod==2 )
+      {
+        # inform who blocked
+        my @bReason = ();
+
+        push(@bReason, $numBlockedGroup.' ignored the usergroup(s)') if $numBlockedGroup;
+
+        if (scalar(@whoBlocked) )
+        {
+          push(@bReason, scalar(@whoBlocked).' ('.join(', ', 
+            map { linkU($_->{node_id}, $_->{title}) } @whoBlocked)
+            .') ignored you') ;
+        }
+
+        # note: should always be true, but we haven't actually thought it through
+        $m .= ': '.join(', ', @bReason) if scalar(@bReason);
+      }
+
+      $m .= '.)';
+    }
+  
+    $m .= ')';                    # Dear sweet christ
+
+  } else {
+    $m = "You triggered a message from "
+      .linkNode($aid)
+      ." that reads \"$msg\"";
+  }
+
+  $query->param($qpm,$m);	#inform in chatterbox
+  return $showWhatSaid ? $m : undef;
 }
 
 1;
