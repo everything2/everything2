@@ -1884,12 +1884,6 @@
     <rank>100</rank>
   </group>
   <group>
-    <node_id>839239</node_id>
-    <orderby>4</orderby>
-    <nodegroup_id>1168155</nodegroup_id>
-    <rank>4</rank>
-  </group>
-  <group>
     <node_id>1177444</node_id>
     <orderby>0</orderby>
     <nodegroup_id>1177323</nodegroup_id>

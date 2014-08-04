@@ -1,21 +1,12 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1168156</node_id>
   <title>displayUserText</title>
   <code>my $txt = undef;
-
-if($DB-&gt;isApproved($NODE, getNode('users with codehome', 'nodegroup')))
-{
-  $txt = breakTags(parseCode($$NODE{doctext}));
-}
-else
-{
-  my $APRTAGS = getNode 'approved html tags', 'setting';
-  $txt = stripCode($$NODE{doctext});
-  $txt = breakTags(htmlScreen($txt, getVars($APRTAGS)));
-}
-
-
+my $APRTAGS = getNode 'approved html tags', 'setting';
+$txt = stripCode($$NODE{doctext});
+$txt = breakTags(htmlScreen($txt, getVars($APRTAGS)));
 $txt = parseLinks($txt) unless($query-&gt;param(&quot;links_noparse&quot;));
 return $txt;</code>
 </node>
