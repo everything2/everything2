@@ -7277,27 +7277,6 @@ sub usercheck
   return "\t".'<div class="topic" id="' . $id . '">'.$retstr.'.)</div>';
 }
 
-sub vitsection_nodeinfo
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str="<ul>";
-
-  $str.="<li>".linkNodeTitle('E2 HTML Tags')."</li>";
-  $str.="<li>".linkNodeTitle('HTML symbol reference')."</li>";
-  $str.="<li>".linkNodeTitle('Using Unicode on E2')."</li>";
-  $str.="<li>".linkNodeTitle('Reference Desk')."</li>";
-
-  $str.="</ul>";
-  return $str;
-}
-
 sub linkGroupMessages
 {
   my $DB = shift;
@@ -9140,6 +9119,388 @@ sub sendPrivateMessage
 
   $query->param($qpm,$m);	#inform in chatterbox
   return $showWhatSaid ? $m : undef;
+}
+
+# Moving straight into the model
+# and being exported quickly through the controller
+#
+sub formxml
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $ntype = getNodeById($$NODE{type_nodetype});
+  return "" unless $ntype;
+
+  my $hcode = "formxml_".$$ntype{title};
+  return "<info>No valid specific conversion for this type</info>\n" unless(getNode($hcode,"htmlcode"));
+  return htmlcode($hcode);
+}
+
+sub formxml_user
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";
+
+  $str.="<doctext>";
+  $str.=encodeHTML(htmlcode("displayUserText")) unless $query->param("no_doctext");
+  $str.="</doctext>\n";
+
+  my $vars = getVars($NODE);
+
+  # the DTD needs updating to deal with the added stuff
+  # oh, and, this is probably horribly broken. sorry, i don't /do/ perl.
+
+  $str.="<experience>".$$NODE{experience}."</experience>\n";
+  $str.="<lasttime>".$$NODE{lasttime}."</lasttime>\n";
+  $str.="<level value=\"".$APP->getLevel($NODE)."\">".$$vars{level}."</level>\n";
+
+  $str.="<writeups>";
+  if (defined $$vars{numwriteups})
+  {
+    $str.=$$vars{numwriteups}; 
+  }
+  $str.="</writeups>";
+
+  $str.="<image>";
+  if (defined $$NODE{imgsrc})
+  {
+    $str.=$$NODE{imgsrc};
+  }
+  $str.="</image>\n";
+
+  if (defined $$vars{cools})
+  {
+    $str.="<cools>".$$vars{coolsspent}."</cools>";
+  }
+
+  $str.="<lastnoded>\n";
+
+  if (!$$vars{hidelastnoded})
+  {
+    my $n = $$NODE{title};
+    if (!(($n eq 'EDB') || ($n eq 'Klaproth') || ($n eq 'Cool Man Eddie') || ($n eq 'Webster 1913')))
+    {
+      my $ln = getNodeById($$vars{lastnoded});
+      if ($ln)
+      {
+        $ln = getNodeById($$ln{parent_e2node});
+        $str.="<e2link node_id=\"$$ln{node_id}\">".encodeHTML($$ln{title})."</e2link>\n";
+      }
+    }
+  }
+
+  $str.="</lastnoded>\n";
+
+  $str.="<userstrings>\n";
+  $str.="  <mission>".encodeHTML($$vars{mission})."</mission>\n";
+  $str.="  <specialties>".encodeHTML($$vars{specialties})."</specialties>\n";
+  $str.="  <motto>".encodeHTML($$vars{motto})."</motto>\n";
+  $str.="  <employment>".encodeHTML($$vars{employment})."</employment>\n";
+  $str.="</userstrings>\n";
+
+  $str.="<groupmembership>\n";
+  my @groups = ();
+  my $U = getId($NODE);
+  push( @groups, getNode('gods', 'usergroup')) if $APP->isAdmin($U);
+  push( @groups, getNode('Content Editors', 'usergroup')) if $APP->isEditor($U,"nogods") and !$APP->isAdmin($U);
+  push( @groups, getNode('edev', 'usergroup')) if $APP->isDeveloper($U);
+
+  # There probably aren't too many usergroups with names that need to be encoded, but this will stop the errors before they occur.
+  $str.= "<e2link node_id=\"$$_{node_id}\">".encodeHTML($$_{title})."</e2link>\n" foreach(@groups);
+
+  $str.="</groupmembership>\n";
+
+  $str.="<bookmarks>\n";
+  my $linktype = getId(getNode('bookmark', 'linktype'));
+  my $csr = $DB->sqlSelectMany('to_node', 'links', "from_node=$$NODE{node_id} and linktype=$linktype");
+  while (my $ROW = $csr->fetchrow_hashref())
+  { 
+    my $bm = getNodeById($$ROW{to_node}, 'light');
+    $str.="  <e2link node_id=\"$$bm{node_id}\">".encodeHTML($$bm{title})."</e2link>\n";
+  }
+
+  $str.="</bookmarks>\n";
+  return $str;
+}
+
+sub xmlheader
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str.="";
+  $str .= "<node node_id=\"$$NODE{node_id}\" createtime=\"".
+    ($$NODE{publishtime}||$$NODE{createtime})
+    ."\" type_nodetype=\"$$NODE{type_nodetype}\"".htmlcode("schemalink", "$$NODE{type_nodetype}").">\n";
+  my $ntype = getNodeById($$NODE{type_nodetype});
+  $str.="<type>".encodeHTML($$ntype{title})."</type>\n" if $ntype;
+  $str.="<title>".encodeHTML($$NODE{title})."</title>\n";
+  my $crby = $$NODE{createdby_user} || $$NODE{author_user} || 0;
+  $crby=getNodeById($crby);
+  $str.="<author user_id=\"$$crby{node_id}\">".encodeHTML($$crby{title})."</author>\n";
+  return $str;
+}
+
+sub xmlfooter
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return "</node>";
+}
+
+sub formxml_e2node
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $grp = $$NODE{group};
+  my $str = "";
+  $str.= htmlcode("xmlfirmlinks", "$$NODE{node_id}");
+  $str.= htmlcode("xmlwriteup","$_") foreach(@$grp);
+  $str.= "<softlinks>\n".htmlcode("softlink", "xml")."</softlinks>\n";
+  $str.= "<nodelock>".encodeHTML(htmlcode('nopublishreason', $USER, $NODE))."</nodelock>";
+  $str.= htmlcode("xmlnodesuggest");
+  return $str;
+}
+
+#
+# Seriously get rid of the node row stuff
+#
+sub xmlwriteup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($WRITEUPID) = @_;
+
+  my $wu = getNodeById($WRITEUPID);
+  return unless $wu;
+  return unless($$wu{type_nodetype} == getId(getType('writeup')));
+
+  my $str.="";
+
+  my $nr = getId(getNode("node row", "superdoc"));
+  my $marked = (($DB->sqlSelect('linkedby_user', 'weblog', "weblog_id=$nr and to_node=$$wu{node_id}"))?(1):(0));
+
+  $str .= "<writeup node_id=\"$$wu{node_id}\" createtime=\"$$wu{publishtime}\" ";
+  $str .= "type_nodetype=\"$$wu{type_nodetype}\" marked=\"$marked\">\n";
+  my $ntype = getNodeById($$wu{wrtype_writeuptype});
+
+  my $parent = getNodeById($$wu{parent_e2node});
+  # see [Drum & Bass] (using displaytype=xmltrue) 
+  # to see the problem
+  $str.="<parent><e2link node_id=\"$$parent{node_id}\">".encodeHTML($$parent{title})."</e2link></parent>" if($parent);
+
+  $str.="<writeuptype>".$$ntype{title}."</writeuptype>\n" if $ntype;
+
+  if(hasVoted($wu, $USER) || $$wu{author_user} == $$USER{node_id})
+  {
+    my $up = $DB->sqlSelect("count(*)", "vote", "vote_id=$$wu{node_id} AND weight=1");
+    my $dn = $DB->sqlSelect("count(*)", "vote", "vote_id=$$wu{node_id} AND weight=-1");
+    my $cast = $DB->sqlSelect("weight", "vote", "vote_id=$$wu{node_id} AND voter_user=$$USER{user_id}");
+    $str.="<reputation up=\"$up\" down=\"$dn\" cast=\"$cast\">$$wu{reputation}</reputation>\n";
+  }
+
+  my $coolcsr = $DB->sqlSelectMany("cooledby_user", "coolwriteups", "coolwriteups_id=$$wu{node_id} order by tstamp ASC");
+
+  $str.="<cools>\n";
+
+  while(my $coolrow = $coolcsr->fetchrow_hashref())
+  {
+    my $usr = getNodeById($$coolrow{cooledby_user});
+    next unless $usr;
+    $str.=" <e2link node_id=\"$$usr{node_id}\">".encodeHTML($$usr{title})."</e2link>\n";
+  }
+
+  $str.="</cools>\n";
+  $str.="<title>".encodeHTML($$wu{title})."</title>\n";
+
+  my $au = getNodeById($$wu{author_user});
+  $str.="<author user_id=\"$$au{node_id}\">".encodeHTML($$au{title})."</author>\n";
+  $str.="<doctext>";
+  $str.=encodeHTML(($query->param('links_noparse') == 1)?($$wu{doctext}):(parseLinks($$wu{doctext}))) unless($query->param("no_doctext"));
+  $str.="</doctext>\n";
+  $str.="</writeup>\n";
+  return $str;
+}
+
+sub xmlfirmlinks
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($nid) = @_;
+  my $csr = $DB->sqlSelectMany("*","links","linktype=".getId(getNode('firmlink', 'linktype'))." AND from_node=$nid");
+  my $str = "<firmlinks>\n";
+
+  while(my $ROW = $csr->fetchrow_hashref)
+  {
+    my $n = getNodeById($$ROW{to_node});
+    next unless $n;
+    $str.="  <e2link node_id=\"$$n{node_id}\">".encodeHTML($$n{title})."</e2link>\n";
+  }
+
+  $str.="</firmlinks>\n";
+  return $str;
+}
+
+sub formxml_writeup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";
+  $str.= htmlcode("xmlfirmlinks", "$$NODE{parent_e2node}");
+  $str.= htmlcode("xmlwriteup","$$NODE{node_id}");
+  $str.= "<softlinks>\n".htmlcode("softlink", "xml")."</softlinks>\n";
+  return $str;
+}
+
+sub schemalink
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($schemafor) = @_;
+  my $noderef = getNodeById($schemafor);
+  my $row = $DB->sqlSelect("*", "xmlschema", "schema_extends=$$noderef{node_id}");
+  $row = $DB->sqlSelect("schema_id", "xmlschema", "schema_extends=0") unless($row);
+
+  return " xmlns=\"http://www.everything2.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.everything2.com/?node_id=$row\" ";
+}
+
+sub schemafoot
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return "</xs:schema>";
+}
+
+sub formxml_superdoc
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  #patch from fuzzie.. sorta
+  #applied so that you can choose not to get the findings doc.
+  return "" if (($query->param("no_superdocs") == 1) || ($query->param("no_findings") == 1 && $$NODE{node_id} == $Everything::CONF->{system}->{search_results} ));
+
+  my $grp = $$NODE{group};
+  my $str = "";
+  $str.="<superdoctext>\n";
+  my $txt = $$NODE{doctext};
+  $txt = parseCode($txt);
+  $txt = parseLinks($txt) unless($query->param("links_noparse") == 1 or $$NODE{type_title} eq "superdocnolinks");
+  $str.= encodeHTML($txt);
+  $str.="</superdoctext>\n";
+  return $str;
+}
+
+sub xmlnodesuggest
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $cf = getVars(getNode("chatterbox forward", "setting"));
+  my $retstr = "<sametitles>";
+  my @grp = getNodeWhere({ 'title' => $$NODE{title}});
+  foreach(@grp)
+  {
+    my $n = $_;
+    next unless canReadNode($USER, $n);
+    next if($$n{node_id} == $$NODE{node_id});
+    my $tmp = "<nodesuggest type=\"$$n{type}{title}\">";
+    $tmp.= '<e2link node_id="'.$$n{node_id}.'">'.encodeHTML($$n{title}).'</e2link>';
+
+    if($$n{type}{title} eq 'user')
+    {
+      if($$cf{lc($$n{title})})
+      {
+        my $ptr = $$cf{lc($$n{title})};
+        my $tousr = getNode($ptr, 'user');
+        #this will not work if the user has both _ and " " in their nick, but oh well
+
+        unless($tousr)
+        {
+          $ptr =~ s/_/ /g;
+          $tousr = getNode($ptr, 'user');
+        }  
+
+        $tmp .= '<useralias><e2link node_id="'.$$tousr{node_id}.'">'.encodeHTML($$tousr{title}).'</e2link></useralias>';
+      }
+    }
+
+    $tmp .= "</nodesuggest>";
+    $retstr.=$tmp;
+  }
+
+  $retstr.="</sametitles>";
+  return $retstr;
 }
 
 1;
