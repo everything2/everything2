@@ -52,6 +52,7 @@ BEGIN {
   *canReadNode = *Everything::HTML::canReadNode;
   *stripCode = *Everything::HTML::stripCode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
+  *hasVoted = *Everything::HTML::hasVoted;
 }
 
 # Used by showchoicefunc
