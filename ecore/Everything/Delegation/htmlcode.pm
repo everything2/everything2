@@ -9504,4 +9504,593 @@ sub xmlnodesuggest
   return $retstr;
 }
 
+# screens notelet text
+# reads "raw" and writes "screened"
+#
+sub screenNotelet
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $work = $VARS->{'noteletRaw'} || $VARS->{'personalRaw'};
+  delete $VARS->{'personalRaw'};
+
+  my $UID = getId($USER) || 0;
+  # not filtering, since only shown for user that enters the stuff anyway
+
+  ##only allow certain HTML tags through
+  #my $HTMLS = getVars(getNode('approved HTML tags','setting'));
+
+  ##allow a few other tags and attributes
+  ##TODO? others?
+  #$HTMLS->{'table'} = 'border,cellpadding,cellspacing';
+  #$HTMLS->{'th'} = $HTMLS->{'tr'} = $HTMLS->{'td'} = 1;
+
+  #TODO? allow eds to psuedoExec
+  #TODO? allow admins to have normal code
+
+  #$work =~ s/\<!--.*?--\>//gs;	#htmlScreen messes up comments
+  #$work = htmlScreen($work, $HTMLS);	#we may get rid of this later
+
+  unless($VARS->{noteletKeepComments})
+  {
+    $work =~ s/<!--.*?-->//gs;
+  }
+
+  # length is limited based on level
+  my $maxLen = $APP->getLevel($USER) || 0;
+  $maxLen *= 100;
+  if($maxLen>1000)
+  {
+    $maxLen=1000;
+  } elsif($maxLen<500) {
+    $maxLen=500;
+  }
+
+  # power has its privileges
+  # this is in [Notelet Editor] (superdoc) and [screenNotelet] (htmlcode)
+  if($APP->isAdmin($USER))
+  {
+    $maxLen = 32768;
+  } elsif( $APP->isEditor($USER) ) {
+    $maxLen += 100;
+  } elsif($APP->isDeveloper($USER) ) {
+    $maxLen = 16384; #16k ought to be enough for everyone. --[Swap]
+  }
+
+  if(length($work)>$maxLen)
+  {
+    $work=substr($work,0,$maxLen);
+  }
+
+  # N-Wing added 2003.08.20.n3 to deal with an unclosed comment
+  # preventing a user from editing the notelet later
+  if($work =~ /^(.*)<!--(.+?)$/s)
+  {
+    my $preLastComment = $1;
+    my $postLastComment = $2;
+    if($postLastComment !~ /-->/s)
+    {
+      # oops, unclosed comment; display it instead
+      $work = $preLastComment . '<code>&lt;!--</code>' . $postLastComment;
+    }
+  }
+
+  delete $VARS->{'personalScreened'};	#old way
+  if(length($work))
+  {
+    $VARS->{'noteletScreened'} = $work;
+  } else {
+    delete $VARS->{'noteletScreened'};
+  }
+
+  return;
+
+}
+
+sub formxml_usergroup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $txt = parseCode($$NODE{doctext});
+  my $str = "";
+  $txt = parseLinks($txt) unless($query->param("links_noparse"));
+  $txt = encodeHTML($txt);
+  $str.="<description>\n";
+  $str.=$txt unless($query->param("no_descrip"));
+  $str.="</description>\n";
+  $str.="<weblog>\n";
+
+  if($DB->isApproved($USER, $NODE))
+  {
+    my $csr = $DB->sqlSelectMany("*", "weblog", "removedby_user=0 and weblog_id=$$NODE{node_id} order by tstamp DESC");
+
+    while(my $row = $csr->fetchrow_hashref)
+    {
+      my $n = getNodeById($$row{to_node});
+      next unless($n);
+      $str.="<e2link node_id=\"$$n{node_id}\">$$n{title}</e2link>";
+    }
+  }
+
+  $str.="</weblog>\n";
+  $str.="<usergroup>\n";
+  foreach(@{$$NODE{group}})
+  {
+    my $n = getNodeById($_);
+    $str.= "<e2link node_id=\"$$n{node_id}\">$$n{title}</e2link>";
+  }
+
+  $str.="</usergroup>\n";
+  return $str;
+}
+
+sub ennchoice
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $nodes = {"25" => "25", "100" => "Everything New Nodes", "200" => "E2N", "300" => "ENN", "1024" => "EKN"};
+  my $str = '<p align="right"><form method=\"post\">';
+  $str.='<input type="hidden" name="type" value="superdoc">Show: <select name="node">';
+  foreach(sort {$a <=> $b} keys %$nodes)
+  {
+    $str.="<option value=\"$$nodes{$_}\"".(($$nodes{$_} eq $$NODE{title})?(" SELECTED "):("")).">$_</option>";
+  }
+  $str.='</select><input type="submit" value="go"></form></p>';
+  return $str;
+}
+
+# VARS combo box
+# safely allows a user to set a value in their $VARS via an uneditable combo box
+#
+# parameters:
+#   $key - which element is being changed; $VARS->{$key}
+#   $flags - bitwise flags:
+#      1 = separate 0 and undef - by default, a value of 0 will delete $VARS->{$key}; if this is set, the actual value of 0 will be stored; also note that there isn't a way to delete the key if changed
+#   @elements - elements of list:
+#      even indices is value, odd indices is what to display
+#
+# examples:
+#   show small, medium, large, which will be set in $VARS->{editsize}
+#   [{varsComboBox:editsize,0, 0,small (default),1,medium,2,large}]
+#
+# created: 2002.05.10.n5
+# updated: 2002.06.20.n4 by N-Wing
+#
+sub varsComboBox
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($key, $flags, @elements) = @_;
+  return if $APP->isGuest($USER);
+
+  local *oops = sub {
+    return '<span border="solid black 1px;" title="varsComboBox">!!! '.$_[0].' !!!</span>';
+  };
+
+
+  #
+  # deal with parameters
+  #
+
+  return oops('no $VARS key given') unless defined $key;
+  return oops('invalid $VARS key given') unless $key =~ /(\w+)/;
+  $key = $1;
+
+  $flags = (defined $flags) ? $flags+0 : 0;
+  my $separate0 = $flags & 1;
+
+  # if($elements[0] and ref $elements[0] eq "ARRAY")
+  # {
+  #        @elements = @$elements[0];
+  # }
+
+  unless(scalar(@elements)) {
+    return oops('no values given');
+  }
+
+  return oops('no elements given') if scalar(@elements)==0;
+  return oops('missing final value') if (scalar(@elements)%2)==1;
+
+
+  #
+  # values/labels setup
+  #
+
+  my @values = ();
+  my %labels = ();
+  # can't just do something like %labels = @elements; because then we'd loose our order
+
+  while(scalar(@elements))
+  {
+    my $k = shift(@elements);
+    return oops('@elements key #'.scalar(@values).' (index #'.(scalar(@values)<<1).') invalid') unless $k =~ /(-?[\w]+)/;
+    $k=$1;
+    return oops('key "'.encodeHTML($k,1).'" already exists; value is "'.$labels{$k}.'"') if exists $labels{$k};
+    my $v = shift(@elements);
+
+    push(@values, $k);
+    $labels{$k} = $v;
+  }
+
+  if(!exists $labels{0})
+  {
+    push(@values, 0);
+    $labels{0} = '0 (default)';
+  }
+
+  my $curDefault = undef;
+
+  #
+  # possibly change VARS
+  #
+
+  my $qp = 'setvars_'.$key;
+  if(defined $query->param($qp))
+  {
+    my $newVal = $query->param($qp);
+    if(exists $labels{$newVal})
+    {
+      # only allow a value explicitly given as allowed
+      if($newVal eq '0')
+      {
+        # special case 0: do we delete or actually set
+        if($separate0)
+        {
+          $VARS->{$key} = 0;
+        } else {
+          delete $VARS->{$key};
+        }
+      } else {
+        $VARS->{$key} = $newVal;
+      }
+    }
+  }
+
+
+  #
+  # display combo box
+  #
+
+  my $curSel = (exists $VARS->{$key}) ? $VARS->{$key} : 0;
+  if(!exists $labels{$curSel})
+  {
+    push(@values, $curSel);
+    $labels{$curSel} = $curSel
+  }
+
+  $labels{$curSel} = '* '.$labels{$curSel};
+
+  return $query->popup_menu($qp, \@values, $curSel, \%labels);
+}
+
+# message field: provides a text field to send a message to a user(group)
+#
+# arguments:
+#  $mfuID - msgfield unique identifier, or special value of 0 or blank to indicate no more
+#  $flags - bitwise flags:
+#    1 = no CC box
+#    2 = do NOT show what was said here
+#  $aboutNode - node_id the message is about
+#  @tryRecipients - ID(s) of user(group)(s) to send message to
+#
+# if $mfuID is blank, this uses (a) hidden parameter(s) to know who to send the message(s) to;
+# otherwise, the hidden parameter(s) are ignored for normal message sending
+#
+# created: 2002.06.22.n6
+# updated: 2002.07.30.n2
+#
+sub msgField
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($mfuID, $flags, $aboutNode, @tryRecipients) = @_;
+
+  my $UID = $USER->{node_id}||0;
+  return if $APP->isGuest($USER);
+
+  # gives information in HTML that an error occured; hovering the mouse over the message yields more information
+  # created: 2002.06.22.n6
+  # updated: 2002.07.07.n0
+
+  local *oops = sub {
+    my $arg = 'msgField (htmlcode): ' . ($_[0] || 'unknown error');
+    $arg =~ s/&/&amp;/gs;
+    $arg =~ s/</&lt;/gs;
+    $arg =~ s/>/&gt;/gs;
+    $arg =~ s/"/&quot;/gs;
+    $arg =~ s/\[/&#91;/gs;
+    $arg =~ s/\]/&#93;/gs;
+    return '<span border="solid black 1px;" title="' . $arg . '">Sorry, a server error occured. This is likely only a temporary glitch, and things will soon be working properly again.</span>';
+  };
+
+
+  #
+  # deal with parameters
+  #
+
+  my $doNormalSend = (defined $mfuID) && length($mfuID) && ($mfuID !~ /^\s*0\s*$/);
+  undef $mfuID unless $doNormalSend;
+
+
+  # find bitwise flags
+  $flags = (defined $flags) && length($flags) && ($flags=~/([1-9]\d*)/) ? $1 : 0;
+  my $showCC = !($flags & 1);
+  my $showSaid = ($flags & 2) ? 0 : 4;	#values wanted by sendPrivateMessage
+
+  # node message is about
+  $aboutNode = (defined $aboutNode) && length($aboutNode) && ($aboutNode=~/([1-9]\d*)/) ? $1 : 0;
+
+  # find message recipient(s)
+  my %recipients = ();
+  my @getters = ();
+
+  # finds recipients based on given list @tryRecipients (global since htmlcodes seem to get a bit weird with parameter passing sometimes)
+  # returned list in @getters has no duplicates, and are all postive integers
+  # real returned value is how many are in new list, equal to scalar(@getters)
+  # created: 2002.07.14.n0
+  # updated: 2002.07.14.n0
+
+  local *validRecipients = sub {
+    @getters=();
+    return 0 unless scalar(@tryRecipients);
+    my %recipients = ();
+    foreach(@tryRecipients)
+    {
+      if(/([1-9]\d*)/)
+      {
+        $recipients{$_}=1;
+      }
+    }
+    return scalar(@getters = keys(%recipients));
+  };
+
+  if($doNormalSend)
+  {
+    return oops('must give at least one valid recipient ID') unless validRecipients();
+    $showCC=0 if exists $recipients{$UID};	#no point in CC box if already going to /msg self
+  }
+
+
+  #
+  # other setup
+  #
+
+  my $str='';
+  my $nameTxt = undef;	#text field
+  my $nameCC = undef;	#CC checkbox
+
+  #
+  # send message(s)
+  #
+
+  # tries to send a message
+  #  set global vars $nameTxt and $nameCC before calling
+  # created: 2002.07.06.n6
+  # updated: 2002.07.22.n1
+
+  my $MAXLEN=12345;	#my luggage combination
+  local *trySend = sub {
+    return unless defined $query->param($nameTxt);
+    my $t = undef;
+    return unless length($t=$query->param($nameTxt));
+    if(length($t)>$MAXLEN)
+    {
+      $t=substr($t,0,$MAXLEN);
+    }
+
+    my $doCC = (defined $query->param($nameCC)) && ($query->param($nameCC) eq '1') ? 1 : 0;
+
+    $t = htmlcode('sendPrivateMessage', { 'recipient_id' => \@getters, 'message' => $t, 'ccself' => $doCC, 'renode_id' => $aboutNode, 'show_said' => $showSaid});
+    $str .= $t . "<br />\n" if (defined $t) && length($t);
+
+    $query->delete($nameTxt);
+    return;
+  };
+
+  if($doNormalSend) {
+    # send message as normal
+    $nameTxt = $mfuID.'_msgfieldmsg';
+    $nameCC = $mfuID.'_msgfieldcc';
+    trySend();
+  } else {
+    # send whatever messages are left
+    my @origParams = $query->param();
+    my $base = undef;
+    my $getters = undef;
+    foreach(@origParams)
+    {
+      next unless /^(.+?)_msgfieldmsg$/;
+      $base=$1;
+      $getters = $base.'_msgfieldget';
+      if( (defined $query->param($getters)) && length($getters=$query->param($getters)) )
+      {
+        @tryRecipients = split(',',$getters);
+        next unless validRecipients();	#no valid things to send to
+      } else {
+        # don't know who to send to
+        next;
+      }
+
+      $nameTxt = $base . '_msgfieldmsg';
+      $nameCC = $base . '_msgfieldcc';
+      trySend();
+    }
+  }
+
+  return $str unless $doNormalSend;
+
+  #
+  # create form / display field
+  #
+
+  $str .= $query->hidden($mfuID.'_msgfieldget', join(',', @getters));	#used when doing "cleanup" send
+  if($showCC)
+  {
+    $str .= $query->checkbox($nameCC,'','1','CC').' ';
+  }
+  $str .= $query->textfield(-name=>$nameTxt, value=>'', size=>24, class=>'expandable');
+
+  #
+  # cleanup and return
+  #
+
+  return $str;
+}
+
+# returns the date and time, in long format
+#
+# parameter:
+#  $useTime - the time to use (in seconds); if not set, uses current time
+#  $showServer - if set, uses the server's time, instead of the user's time offset
+#
+# created: 2002.09.07.n6
+# updated: 2007-07-26(4)
+# TODO also have a "short" format, and optionally show just date or time
+# TODO localization:
+#  local language - really best if we load common localization strings before we even parse the pages
+#  local format (just Gregorian month, day, and year, unless we can figure a safe way of combining a date/time module and potentially dangerous user input)
+#
+sub DateTimeLocal
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($useTime, $showServer) = @_;
+
+  my $calcTime = defined($useTime) && length($useTime) ? $useTime : time;
+  if(!$showServer && $VARS->{'localTimeUse'})
+  {
+    $calcTime += $VARS->{'localTimeOffset'} if exists $VARS->{'localTimeOffset'};
+    #add 1 hour = 60 min * 60 s/min = 3600 seconds if daylight savings
+    $calcTime += 3600 if $VARS->{'localTimeDST'};	#maybe later, only add time if also in the time period for that - but places have different daylight saving time start and end dates
+  }
+
+  my @months = qw(January February March April May June July August September October November December);
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($calcTime);
+  my $result = ('Sun','Mon','Tues','Wednes','Thurs','Fri','Satur')[$wday].'day, ' . $months[$mon] . ' ' . $mday . ', ' . (1900+$year) . ' at ';
+
+  my $showAMPM='';
+  if($VARS->{'localTime12hr'})
+  {
+    if($hour<12)
+    {
+      $showAMPM = ' AM';
+      $hour=12 if $hour==0;
+    } else {
+      $showAMPM = ' PM';
+      $hour -= 12 unless $hour==12;
+    }
+  }
+
+  # $hour = '0'.$hour if length($hrs)==1;	#leading 0 looks ugly
+  $min = '0'.$min if length($min)==1;
+  $sec = '0'.$sec if length($sec)==1;	
+  $result .= $hour.':'.$min.':'.$sec;
+  $result .= $showAMPM if length($showAMPM);
+
+  # $result .= sprintf('%02d:%02d:%02d',$hour,$min,$sec);
+
+  return $result;
+}
+
+# returns a navigation bar containing available settings superdocs
+#
+sub settingsDocs
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $DISP = 'navbardisp';
+
+  # settings to link to:
+  #  a title by itself will just link to that node, of type 'superdoc'
+  #  a hash ref is special:
+
+  my @allSettings = (
+    'Settings',
+    'Advanced Settings'
+  ) ;
+
+  push @allSettings, 'Admin Settings' if $APP->isEditor($USER);
+  push @allSettings ,(
+    'Nodelet Settings',
+    {$DISP=>'Profile', 'node_id'=>$$USER{node_id}, 'displaytype'=>'edit'});
+
+
+  my $lcnt = lc($$NODE{title});
+  foreach(@allSettings)
+  {
+    if(UNIVERSAL::isa($_,'HASH'))
+    { 
+      # doing fancy stuff - giving specific parameters for link
+      # this is way overkill, but this allows us to easily maintain the settings list
+      my $show = (exists $_->{$DISP}) ? $_->{$DISP} : (exists $_->{'node'}) ? $_->{'node'} : (exists $_->{'node_id'}) ? 'node_id='.$_->{'node_id'} : '(Something)';
+      delete $_->{$DISP};
+      $_->{'type'}='superdoc' unless (exists $_->{'type'}) || (exists $_->{'node_id'});
+
+      if( ((exists $_->{'node_id'}) && ($_->{'node_id'}==$$NODE{'node_id'})) || ((exists $_->{'node'}) && ($_->{'node'} eq $$NODE{'title'})) )
+      {
+        # probably on the given node, so don't link it
+        $_ = '<strong>'.$show.'</strong>';
+      } else {
+        # probably not on node, so link it
+        $_ = '<a href='.urlGen($_).'>'.$show.'</a>';
+      }
+
+    } else {
+      # straight-forwards superdoc and given the title
+      if($lcnt eq lc($_))
+      {
+        # on this setting, so don't link it
+        $_ = '<strong>'.$_.'</strong>';
+      } else {
+        # not on node, so link it
+        $_ = '<a href='.urlGen({'node'=>$_,'type'=>'superdoc'}).'>'.$_.'</a>';
+      }
+    }
+  }
+
+  return '<div class="settingsdocs">&ndash; &nbsp;' . join(' &#183; ', @allSettings) . ' &nbsp; &ndash;</div>';
+}
+
 1;
