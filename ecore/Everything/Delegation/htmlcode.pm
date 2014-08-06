@@ -10517,7 +10517,7 @@ sub zenwriteups
       .join(',', map($_->{writeup_id}, @wus)).')';
 
     my $votes = undef;
-    $votes->{$_} = 1 foreach(@{$dbh -> selectcol_arrayref($sql)});
+    $votes->{$_} = 1 foreach(@{$DB->{dbh} -> selectcol_arrayref($sql)});
 
     $instructions .= ' class="&extraclasses"' ;
     $newwuspecials{extraclasses} = sub{
