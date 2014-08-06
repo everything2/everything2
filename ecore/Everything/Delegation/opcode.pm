@@ -50,6 +50,7 @@ BEGIN {
   *stripCode = *Everything::HTML::stripCode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *hasVoted = *Everything::HTML::hasVoted;
+  *getHRLF = *Everything::HTML::getHRLF;
 } 
 
 sub publishdraft
