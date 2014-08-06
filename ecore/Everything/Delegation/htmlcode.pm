@@ -61,7 +61,7 @@ use Everything::XML;
 # Used by parsetime
 use Time::Local;
 
-# Used by shownewexp, publishwriteup, static_javascript
+# Used by shownewexp, publishwriteup, static_javascript, zenwriteups
 use JSON;
 
 # Used by publishwriteup,isSpecialDate
@@ -85,7 +85,7 @@ use Net::Amazon::S3;
 use File::Copy;
 use Image::Magick; 
 
-# Used by showchatter
+# Used by showchatter, userAtomFeed
 use utf8;
 
 # This links a stylesheet with the proper content negotiation extension
@@ -10091,6 +10091,585 @@ sub settingsDocs
   }
 
   return '<div class="settingsdocs">&ndash; &nbsp;' . join(' &#183; ', @allSettings) . ' &nbsp; &ndash;</div>';
+}
+
+sub formxml_room
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $entrance="0";
+  if(eval($$NODE{criteria}) and not $APP->isGuest($USER))
+  {
+    $entrance=1;
+    changeRoom($USER, $NODE);
+  }
+  my $str = "<canenter>".$entrance."</canenter>\n";
+  $str.="<description>".encodeHTML(($query->param("links_noparse"))?($$NODE{doctext}):(parseLinks($$NODE{doctext})))."</description>";
+  return $str;
+}
+
+sub formxml_superdocnolinks
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return htmlcode("formxml_superdoc");
+}
+
+sub statsection_advancement
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";
+
+  #pass 2 args: category and value
+  local *genRow = sub {
+    return '<div><span class="var_label">' . $_[0] . ': </span><span class="var_value">' . $_[1] . "</span></div>\n";
+  };
+
+  my $hv = getVars(getNode("hrstats", "setting"));
+  my $IQM = (($$USER{merit})?($$USER{merit}):(0));
+
+  $str .= genRow('Merit', sprintf('%.2f', $IQM || 0));
+  $str .= genRow('LF', sprintf('%.4f', getHRLF($USER) || 0));
+  $str .= genRow("Devotion", int(($$VARS{numwriteups} * $$USER{merit}) + .5));
+  $str .= genRow("Merit mean",$$hv{mean});
+  $str .= genRow("Merit stddev", $$hv{stddev});
+
+  return "<div>".$str."</div>";
+}
+
+sub orderlock
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return $APP->isEditor($USER);
+
+  my $N = getNodeById($query->param('node_id'));
+
+  return unless $N;
+  return unless $$N{type}{title} eq "e2node";
+
+  if($query->param("unlock")){
+    $N->{orderlock_user} = 0;
+  }else{
+    $N->{orderlock_user} = $USER->{node_id};
+  }
+
+  updateNode($N, -1);
+  return;
+}
+
+#
+# possibly forms a link to external web site
+# URL must start with the protocol, http:// or https://
+#
+# used by 'Nothing Found' and 'Findings:'
+#
+sub externalLinkDisplay
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $testURL = $_[0];
+  $testURL =~ s/&#39;/'/g;
+  $testURL =~ s/&#44;/,/g;
+
+  my $protocol = undef;
+  my $domain = undef;
+  my $relAddress = undef;
+
+  if($testURL =~ /^(https?):\/\/([^\/]+)(\/.*)?$/)
+  {
+    $protocol = $1;
+    $domain = $2;
+    $relAddress = $3 || '';
+  } else {
+    return '';
+  }
+
+  my $i = undef;
+
+  # chop off any CGI parameters
+  #  can't just test for everything2.com, org, etc., because there are
+  #  many ways to create an address (example: IP address) that could
+  #  slip by our tests; to be safe, just remove all the parameters
+
+  # N-Wing is disabling this for now (2005 March 12), because kthejoker
+  #  thinks is annoying and won't be a problem. So blame k. if
+  #  things go badly. :) (On a more serious note, if people *do*
+  #  start doing bad things, just uncomment the next two lines.)
+  #  $i = index($relAddress, '?');
+  #  $relAddress = substr($relAddress,0,$i) if $i != -1;
+
+  # construct URL
+  my $fullURL = $protocol . '://' . $domain;
+  if(length($relAddress)==0)
+  {
+    $fullURL .= '/';
+  } else {
+    $fullURL .= $relAddress;
+  }
+
+  $fullURL = join('', split('"', $fullURL));	#remove double quotes
+
+  # create link
+  my $str = '<a href="' . $fullURL . '" class="external">' . encodeHTML($fullURL, 1) . '</a>';
+  return $str;
+}
+
+sub chatterSplit
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $maxLen = ((exists $VARS->{splitChatter}) && (defined $VARS->{splitChatter}) && ($VARS->{splitChatter}=~/^([1-9]\d*)$/)) ? $1 : 0;
+  $maxLen += 0;
+  if($maxLen<1)
+  {
+    $maxLen=20;	#default width
+  } elsif($maxLen>999) {
+    $maxLen=999;
+  }
+  return $maxLen;
+}
+
+sub isdaylog
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($NID) =@_;
+  getRef($NID);
+  return 0 unless $$NID{type}{title} eq 'e2node';
+
+  my $isDaylog=0;
+  my $daylogTitle=$$NID{title};
+  my @months = ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+
+  foreach (@months)
+  {
+    if ($daylogTitle =~ /$_\s\d+,\s\d+/) {$isDaylog=1; last;}
+  }
+
+  return $isDaylog;
+}
+
+sub softlock
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isEditor($USER);
+  my $defaultreason="";
+
+  if($query->param('nodeunlock'))
+  {
+    $defaultreason = $DB->sqlSelect("nodelock_reason", "nodelock", "nodelock_node=$$NODE{node_id}");
+    $DB->sqlDelete("nodelock","nodelock_node=$$NODE{node_id}");
+  }
+
+  if($query->param('nodelock'))
+  {
+    $DB->sqlInsert("nodelock", {
+      nodelock_reason => $query->param('nodelock_reason'),
+      nodelock_user => $$USER{user_id},
+      nodelock_node => $$NODE{node_id}}
+      ) unless ($DB->sqlSelectHashref("*", "nodelock", "nodelock_node=$$NODE{node_id}"));
+  }
+
+  my $nodelock = $DB->sqlSelectHashref("*", "nodelock", "nodelock_node=$$NODE{node_id}");
+  my $str =htmlcode('openform').'<fieldset><legend>Node lock</legend>';
+
+  if($nodelock)
+  {
+    my $locker = getNodeById($$nodelock{nodelock_user});
+    $str .= '(Locked by '.linkNode($locker, $$locker{title}).qq')<input type="hidden" name="nodeunlock" value="$$NODE{node_id}"><input type="submit" value="Unlock this e2node">';
+  } else {
+    $str .= qq'Lock this node because: <input type="hidden" name="nodelock" value="$$NODE{node_id}">
+      <input type="text" size="60" class="expandable" name="nodelock_reason" value="">
+      <input type="submit" value="Lock">';
+  }
+
+  $str .='</fieldset></form>';
+  return $str;
+}
+
+sub atomiseNode
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $host = $ENV{HTTP_HOST} || $Everything::CONF->{canonical_web_server} || "everything2.com";
+  my $host = "http://$host" ;
+
+  my $atominfo = sub {
+    my $N = shift ;
+    my $url = $host . urlGen({ }, 'noQuotes', $N) ;
+    my $author = getNodeById( $$N{author_user} ) ;
+    my $timestamp = $$N{publishtime} || $$N{createtime};
+    $timestamp =~ /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
+    $timestamp = sprintf ("%04d-%02d-%02dT%02d:%02d:%02dZ", $1, $2, $3, $4, $5, $6);
+	
+    return '<title>' . encodeHTML($$N{title}) . '</title>' .
+      '<link rel="alternate" type="text/html" href="' . $url . '"/>' .
+      '<id>' . $url . '</id>' .
+      '<author>' .
+      '<name>' . $$author{ title } . '</name>' .
+      '<uri>' . $host . '/user/' . $$author{ title } . '</uri>' .
+      '</author>' .
+      '<published>'. $timestamp . '</published>' .
+      '<updated>'. $timestamp . '</updated>' ;
+  };
+
+  my ( $input , $length ) = @_ ;
+  $length ||= 1024 ;
+  return htmlcode( 'show content' , $input , "xml <entry> atominfo, $length" , ( atominfo => $atominfo) ) ;
+}
+
+sub userAtomFeed
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($foruser) = @_;
+  return unless $foruser;
+
+  $foruser =~ s/&#39;/'/g;
+  my $u = getNode($foruser, 'user');
+  return unless $u;
+
+  my $csr = $DB->sqlSelectMany('node.node_id, publishtime',
+    'node JOIN writeup on node_id=writeup_id',
+    'author_user=' . getId($u) .
+    ' order by publishtime desc limit 6');
+
+  # this is so we have the first result for the timestamp
+  my $row = $csr->fetchrow_hashref;
+  return unless $row;
+  my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+  $str .= "<feed xmlns=\"http://www.w3.org/2005/Atom\" xml:base=\"http://everything2.com/\">\n";
+  $str .= "    <title>" . $foruser . "'s New Writeups</title>\n";
+  $str .= "    <link rel=\"alternate\" type=\"text/html\" href=\"http://everything2.com/index.pl?node=Everything%20User%20Search&amp;usersearch=" . $foruser . "\" />\n";
+  $str .= "    <link rel=\"self\" type=\"application/atom+xml\" href=\"?node=New%20Writeups%20Atom%20Feed&amp;type=ticker&amp;foruser=" . $foruser . "\" />\n";
+  $str .= "    <id>http://everything2.com/?node=New%20Writeups%20Atom%20Feed&amp;foruser=" . $foruser . "</id>\n";
+
+  my $timestamp = $$row{publishtime};   
+  $timestamp =~ /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
+  $timestamp = sprintf ("%04d-%02d-%02dT%02d:%02d:%02dZ", $1, $2, $3, $4, $5, $6);
+   
+  $str .= "    <updated>$timestamp</updated>\n";
+
+  do {
+    $str .= htmlcode('atomiseNode', $$row{node_id});
+  } while($row = $csr->fetchrow_hashref);
+
+  $str.="</feed>\n";
+  utf8::encode($str);
+  return $str;
+}
+
+sub ignoreUser
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($uname) = @_;
+  my $U = getNode($uname, 'user');
+  $U ||= getNode($uname, 'usergroup');
+  if($U)
+  {
+    return if $$U{title} eq 'EDB';
+    unless($DB->sqlSelect('*', 'messageignore', "messageignore_id=$$USER{node_id} and ignore_node=$$U{node_id}"))
+    {
+      $DB->sqlInsert('messageignore', { messageignore_id => getId($USER), ignore_node => $$U{node_id}});
+    } else {
+      return 'already ignoring '.$$U{title};
+    }
+  } else {
+    $uname = encodeHTML($uname);
+    return "<strong>$uname</strong> doesn't seem to exist on the system!" unless $U;
+  }
+
+  $query->param('DEBUGignoreUser', 'tried to ignore '.$$U{title});
+  return "$$U{title} ignored";
+}
+
+sub zenwriteups
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($isLogs) = @_;
+
+  my $UID = $$USER{user_id} || $Everything::CONF->{system}->{guest_user} ;
+  my $limit = $$VARS{ num_newwus } || ($APP->isGuest($USER) ? 15 : 12);
+  my $cansee = $APP->isEditor($USER);
+
+  my $nltext = getNode("New Writeups Feeder", 'nodelet') -> {nltext};
+  return "<em>No writeups</em>" if $nltext eq "";
+
+  my @newwus = @{from_json($nltext)};
+  return "<em>No writeups</em>" unless(@newwus);
+
+  my $noHidden = !$isLogs;
+  $noHidden = $noHidden && $$VARS{nw_nojunk} if $cansee;
+
+  my ($repthreshold, $abominations) = ('none', undef);
+  if (!$cansee or $$VARS{nw_nojunk} or $isLogs)
+  {
+    if (exists $$VARS{repThreshold})
+    {
+      $repthreshold = $$VARS{repThreshold} || 0; # ecore stores 0 as ''
+    } elsif (exists $Everything::CONF->{writeuplowrepthreshold}) {
+      $repthreshold = $Everything::CONF->{writeuplowrepthreshold} || 0;
+    }
+	
+    $abominations->{$_} = 1 foreach(split(',', $$VARS{unfavoriteusers}));
+  }
+
+  my $count = undef;
+  my @wus = ();
+  foreach (@newwus)
+  {
+    next if $noHidden && $$_{notnew} or
+      $repthreshold ne 'none' && $$_{reputation} < $repthreshold or
+      exists $abominations->{$$_{author_user}} or
+      $isLogs && !$$_{islog};
+    push @wus, $_;
+    # last if !$$_{notnew} || $isLogs;
+    last if  ++$count >= $limit;
+  }
+
+  my $instructions = '<li' ;
+  my %newwuspecials = () ;
+
+  unless($APP->isGuest($USER))
+  {
+    my $sql = "SELECT vote_id
+      FROM vote
+      WHERE voter_user=$UID
+      AND vote_id in ("
+      .join(',', map($_->{writeup_id}, @wus)).')';
+
+    my $votes = undef;
+    $votes->{$_} = 1 foreach(@{$dbh -> selectcol_arrayref($sql)});
+
+    $instructions .= ' class="&extraclasses"' ;
+    $newwuspecials{extraclasses} = sub{
+      my $N = shift ;
+      my $str = ''; # it remembers if you don't do this
+      $str .= ' hasvoted' if exists $votes->{$$N{writeup_id}} ;
+      $str .= ' mine' if $$N{author_user} == $UID ;
+      $str .= ' wu_hide' if $$N{notnew} ;
+      return $str ;
+    };
+  }
+
+  $instructions .= '>parenttitle, type, byline' ;
+
+  if ($cansee && !$isLogs)
+  {
+    $instructions .= ', editorstuff';
+    my $ajax = "ajax newwriteups:updateNodelet:New+Writeups" ;
+
+    $newwuspecials{editorstuff} = sub {
+      my $N = shift ;
+      # reputation warning
+      my ( $rep ) = $$N{ reputation } ;
+      my $str = ( $rep < 0 ? "R:$rep " : '' ).'<span class="hide">(' ;
+      # flag if hiddden from New Writeups and control to hide/unhide
+      $str .= $$N{ notnew } > 0 ?
+        'H: '
+        .linkNode($NODE, 'un-h!', {
+        op => 'unhidewriteup' ,
+        hidewriteup => $N -> {writeup_id},
+        -title => 'unhide this writeup',
+        -class => $ajax}):
+      linkNode($NODE, 'h?', {
+        op => 'hidewriteup' ,
+        hidewriteup => $N -> {writeup_id},
+        -title => 'hide this writeup',
+        -class => $ajax});
+      $str .= ')</span>' ;
+      $str .= ' (X)' if $$N{nuked} && !$$N{restored};
+      $str .= ' (R)' if $$N{restored};
+      qq'<span class="admin">$str</span>' ;
+    };
+  }
+
+  return '<ul class="infolist">'.htmlcode('show content' , \@wus , $instructions , %newwuspecials) .'</ul>';
+}
+
+# TODO: Make this JSON
+#
+sub ajaxVar
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($name, $value) = @_;
+
+  my $idList = '[,\\d]*' ;
+  my $nameList = '[!,\\w]*' ;
+  my $nodeId = '\\d*' ;
+
+  my %valid = (
+    collapsedNodelets => $nameList ,
+    nodetrail => $idList ,
+    current_nodelet => $nodeId
+  );
+
+  my $test = $valid{$name};
+
+  return 'invalid name' unless $test ;
+  return 'invalid value' unless $value =~ /^($test|0)$/ or !$value ;
+
+  my $oldVal = $$VARS{$name}||'0';
+
+  if ($value gt '')
+  {
+    if ($value eq '0')
+    {
+      delete $$VARS{$name};
+    }
+    $$VARS{$name} = $value;
+  }
+
+  my $retval = $$VARS{$name}||'0';
+  return "{name: '$name', value: '$retval', oldval: '$oldVal'}";
+
+}
+
+sub favorite_noder
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $class = "ajax favoritenoder:favorite_noder" ;
+
+  # TODO: Do not hardcode node_ids
+  if ($$NODE{type_nodetype} == 15)
+  {
+    my $nid = $$NODE{node_id};
+    my $favlinktype = getId(getNode('favorite','linktype'));
+    my $favnoder = $DB->sqlSelect('to_node','links',"from_node=$$USER{node_id} AND to_node=$nid AND linktype=$favlinktype");
+    my $username = $$NODE{title} ;
+    $username =~ s/"/&quot;/s ;
+    $username =~ s/>/&gt;/s ;
+
+    if ($favnoder)
+    {
+      return linkNode($nid,"unfavorite!",
+        { op => "unfavorite",
+          fave_id => $NODE -> {node_id},
+          -title => "stop notification of new writeups by $username",
+          -id => 'favoritenoder',
+          -class => $class ,
+        }) ;
+    } else {
+      return linkNode($nid,"favorite!",
+        { op => "favorite",
+          fave_id => $NODE -> {node_id},
+          -title => "get notification of new writeups by $username",
+          -id => 'favoritenoder',
+          -class => $class ,
+        });
+    }
+  }
+}
+
+# TODO: Resolve name conflict with Everything::HTML
+#
+sub updateNodelet
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($nodelet) = @_;
+  return unless $nodelet;
+
+  $nodelet = getNode($nodelet,'nodelet');
+  return unless $nodelet;
+  return insertNodelet($nodelet);
 }
 
 1;
