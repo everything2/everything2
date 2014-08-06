@@ -145,9 +145,6 @@ td {
 
 /****** FORMATTING ******/
 
-/* Hide the format button */
-#formatButton {display: none}
-
 body,
 th,
 td {
@@ -782,7 +779,7 @@ span.hasvoted span.title a:visited { color: #6f748f; }
 body div#surveymessage {
 margin-top: 55px !important;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1931383</node_id>
   <title>Low eye-strain</title>

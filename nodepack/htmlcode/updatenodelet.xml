@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1877928</node_id>
   <title>updateNodelet</title>
   <code>my ($nodelet) = @_;

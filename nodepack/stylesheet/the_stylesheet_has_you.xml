@@ -61,9 +61,6 @@ a:link {
 
 /****** FORMATTING ******/
 
-/* Hide the format button */
-#formatButton {display: none}
-
 body,
 th,
 td {
@@ -613,7 +610,7 @@ td {
 			display: none;
 		}
 </doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1938878</node_id>
   <title>The stylesheet has you</title>

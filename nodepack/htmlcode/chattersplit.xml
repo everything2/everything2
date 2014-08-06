@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1689930</node_id>
   <title>chatterSplit</title>
   <code>my $maxLen = ((exists $VARS-&gt;{splitChatter}) &amp;&amp; (defined $VARS-&gt;{splitChatter}) &amp;&amp; ($VARS-&gt;{splitChatter}=~/^([1-9]\d*)$/)) ? $1 : 0;
