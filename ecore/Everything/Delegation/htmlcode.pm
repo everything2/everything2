@@ -62,7 +62,7 @@ use Everything::XML;
 # Used by parsetime
 use Time::Local;
 
-# Used by shownewexp, publishwriteup, static_javascript, zenwriteups
+# Used by shownewexp, publishwriteup, static_javascript, zenwriteups, hasAchieved
 use JSON;
 
 # Used by publishwriteup,isSpecialDate
@@ -6391,7 +6391,9 @@ sub showmessages
 
     if($$VARS{showmessages_replylink} and not $$noreplylink{$$MSG{author_user}}){
       my $jsname = $name;
-      $jsname=htmlcode("eddiereply", $text) if $jsname eq "Cool_Man_Eddie";
+      # This is an incredibly stupid hack. Because the htmlcode dispatcher is trying to handle teplate logic, we get this bad behavior
+      #  pass in a harmless undef to keep the htmlcode function from mangling the string
+      $jsname=htmlcode("eddiereply", $text, undef) if $jsname eq "Cool_Man_Eddie";
       $jsname =~ s/"/&quot;/g;
       $jsname =~ s/'/\\'/g;
       $str.= qq!<a href="javascript:e2.startText('message','/msg $jsname ')" title="Reply to $jsname" class="action" style="display:none;">(r)</a>!;
@@ -10345,7 +10347,7 @@ sub atomiseNode
   my $APP = shift;
 
   my $host = $ENV{HTTP_HOST} || $Everything::CONF->{canonical_web_server} || "everything2.com";
-  my $host = "http://$host" ;
+  $host = "http://$host" ;
 
   my $atominfo = sub {
     my $N = shift ;
@@ -10712,4 +10714,183 @@ sub googleSearchForm
     <br />';
 }
 
+sub hasAchieved
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($ACH, $user_id, $force) = @_;
+
+  getRef $ACH;
+  $ACH ||= getNode($_[0], 'achievement');
+  return 0 unless $ACH;
+
+  $user_id ||= $$USER{user_id};
+  return unless getNodeById($user_id)->{type}{title} eq 'user';
+
+  $force = undef unless $force == 1;
+
+  return 1 if $DB->sqlSelect('count(*)'
+    , 'achieved'
+    , "achieved_user=$user_id
+    AND achieved_achievement=$$ACH{node_id} LIMIT 1");
+
+  return 0 unless $$ACH{achievement_still_available};
+
+  my $result = $force || evalCode("my \$user_id = $user_id;\n$$ACH{code}", $NODE);
+
+  if ($result == 1)
+  {
+    $DB->sqlInsert("achieved",{achieved_user => $user_id, achieved_achievement => $$ACH{node_id}});
+
+    my $notification = getNode("achievement","notification")->{node_id};
+    if ($$VARS{settings} && from_json($$VARS{settings})->{notifications}->{$notification})
+    {
+      htmlcode('addNotification', $notification, $user_id, {achievement_id => $$ACH{node_id}});
+    }
+  }
+
+  return $result;
+}
+
+sub show_node_forward
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return "" unless ($query && defined $query->param('originalTitle'));
+
+  my $originalTitle = $query->param('originalTitle');
+  my $encodedTitle = encodeHTML($originalTitle);
+  my $forwardNode = getNode($originalTitle, 'node_forward', 'light');
+  my $alsoStr = htmlcode('usercheck', $originalTitle);
+  my $editStr = "";
+
+  if ($APP->isEditor($USER) && $forwardNode) {
+    $editStr = " ". linkNode($forwardNode, "(edit forward)", {displaytype => 'edit'});
+  }
+
+  return '<div class="forward">' . "Redirected from <em>$encodedTitle</em>$alsoStr$editStr". '</div>';
+}
+
+sub achievementsByType
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($aType, $user_id, $debug) = @_;
+  return unless $aType;
+
+  $user_id ||= $$USER{user_id};
+
+  my @achList = getNodeWhere({achievement_type => $aType}, 'achievement', 'subtype, title ASC');
+  return unless @achList;
+
+  my $str = undef;
+  my $finishedgroup = '';
+
+  foreach my $a (@achList)
+  {
+    # forget about blah100 if we haven't got blah050:
+    next if $$a{subtype} && $$a{subtype} eq $finishedgroup;
+
+    my $result = htmlcode('hasAchieved', $a, $user_id);
+    $finishedgroup = $$a{subtype} unless $result;
+
+    $str.=linkNode($a)." - $result<br>" if $debug;
+  }
+
+  return $str;
+}
+
+sub statsection_fun
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = undef;
+
+  # pass 2 args: category and value
+  local *genRow = sub {
+    return '<div><span class="var_label">' . $_[0] . ': </span><span class="var_value">' . $_[1] . "</span></div>\n";
+  };
+
+  $str .= genRow('Node-Fu',sprintf('%.1f', $$USER{experience}/$$VARS{numwriteups})) if ($$VARS{numwriteups});
+  $str .= genRow('Golden Trinkets',$$USER{karma});
+  $str .= genRow('Silver Trinkets',$$USER{sanctity});
+  $str .= genRow('Stars',$$USER{stars});
+  $str .= genRow('Easter Eggs',$$VARS{easter_eggs});
+  $str .= genRow('Tokens',$$VARS{tokens});
+  return '<div>'.$str.'</div>';
+
+}
+
+sub editor_homenode_tools
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $isRoot = $APP->isAdmin($USER);
+  my $isEditor = $APP->isEditor($USER);
+  my $targetVars = getVars $NODE;
+  my $iph = getNode('IP Hunter', 'restricted_superdoc');
+  my $nh = getNode('Node Heaven', 'superdoc');
+  my $oracle = getNode('The Oracle', 'oppressor_superdoc');
+  my $ipblacklist = getNode('IP Blacklist', 'restricted_superdoc');
+
+  # not sports illustrated!
+  my $SI = getNode("Suspension Info", "superdoc");
+  my $str = linkNode($SI, "Suspensions", {"lookup_user" => $$NODE{node_id}});
+
+  $str.=linkNode($nh, ' - Node Heaven Search', {'heavenuser'=>$$NODE{title}}) if $isEditor;
+
+  if($isRoot){
+    my @addrs = split /\s*,\s*/, $$targetVars{ipaddy};
+    $str.= "\n - ".linkNode($oracle, "The Oracle", {the_oracle_subject => $$NODE{title}}).' - '.linkNode($NODE,'editvars',{displaytype=>'editvars'}) . '<br />';
+    $str.= "\nIP Hunt: ".linkNode($iph, 'by name', {hunt_name => $$NODE{title}});
+    if (scalar @addrs)
+    {
+      $str.= ' or ';
+      map {
+        my $ip = encodeHTML($_);
+        $str.= "<br>\n"
+        . linkNode($iph, 'by IP', {hunt_ip => $ip})
+        . " ($ip <small>"
+        . htmlcode('ip lookup tools', $ip)
+        . "</small>)"
+        . '&nbsp;'
+        . linkNode($ipblacklist, "Blacklist IP?", {'bad_ip' => $ip} );
+      } @addrs;
+    }
+  } elsif ($isEditor) {
+    $str.= "\n - ".linkNode($oracle, "The Oracle", {the_oracle_subject => $$NODE{title}}) . "<br />\n";
+  }
+
+  return $str;
+}
 1;
