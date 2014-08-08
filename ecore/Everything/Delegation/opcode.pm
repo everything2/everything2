@@ -48,6 +48,9 @@ BEGIN {
   *escapeAngleBrackets = *Everything::HTML::escapeAngleBrackets;
   *canReadNode = *Everything::HTML::canReadNode;
   *stripCode = *Everything::HTML::stripCode;
+  *canDeleteNode = *Everything::HTML::canDeleteNode;
+  *hasVoted = *Everything::HTML::hasVoted;
+  *getHRLF = *Everything::HTML::getHRLF;
 } 
 
 sub publishdraft

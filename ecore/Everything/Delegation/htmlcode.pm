@@ -52,6 +52,8 @@ BEGIN {
   *canReadNode = *Everything::HTML::canReadNode;
   *stripCode = *Everything::HTML::stripCode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
+  *hasVoted = *Everything::HTML::hasVoted;
+  *getHRLF = *Everything::HTML::getHRLF;
 }
 
 # Used by showchoicefunc
@@ -60,7 +62,7 @@ use Everything::XML;
 # Used by parsetime
 use Time::Local;
 
-# Used by shownewexp, publishwriteup, static_javascript
+# Used by shownewexp, publishwriteup, static_javascript, zenwriteups
 use JSON;
 
 # Used by publishwriteup,isSpecialDate
@@ -84,7 +86,7 @@ use Net::Amazon::S3;
 use File::Copy;
 use Image::Magick; 
 
-# Used by showchatter
+# Used by showchatter, userAtomFeed
 use utf8;
 
 # This links a stylesheet with the proper content negotiation extension
@@ -4483,19 +4485,14 @@ sub googleanalytics
   my $APP = shift;
 
   return qq!
-  <script type="text/javascript">
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-1314738-1']);
-    _gaq.push(['_setDomainName', 'everything2.com']);
-    _gaq.push(['_setAllowLinker', true]);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
+  ga('create', 'UA-1314738-1', 'auto');
+  ga('send', 'pageview');
   </script>!;
 }
 
@@ -7277,27 +7274,6 @@ sub usercheck
   return "\t".'<div class="topic" id="' . $id . '">'.$retstr.'.)</div>';
 }
 
-sub vitsection_nodeinfo
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str="<ul>";
-
-  $str.="<li>".linkNodeTitle('E2 HTML Tags')."</li>";
-  $str.="<li>".linkNodeTitle('HTML symbol reference')."</li>";
-  $str.="<li>".linkNodeTitle('Using Unicode on E2')."</li>";
-  $str.="<li>".linkNodeTitle('Reference Desk')."</li>";
-
-  $str.="</ul>";
-  return $str;
-}
-
 sub linkGroupMessages
 {
   my $DB = shift;
@@ -9154,6 +9130,1600 @@ sub sendPrivateMessage
 
   $query->param($qpm,$m);	#inform in chatterbox
   return $showWhatSaid ? $m : undef;
+}
+
+# Moving straight into the model
+# and being exported quickly through the controller
+#
+sub formxml
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $ntype = getNodeById($$NODE{type_nodetype});
+  return "" unless $ntype;
+
+  my $hcode = "formxml_".$$ntype{title};
+  return "<info>No valid specific conversion for this type</info>\n" unless(getNode($hcode,"htmlcode"));
+  return htmlcode($hcode);
+}
+
+sub formxml_user
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";
+
+  $str.="<doctext>";
+  $str.=encodeHTML(htmlcode("displayUserText")) unless $query->param("no_doctext");
+  $str.="</doctext>\n";
+
+  my $vars = getVars($NODE);
+
+  # the DTD needs updating to deal with the added stuff
+  # oh, and, this is probably horribly broken. sorry, i don't /do/ perl.
+
+  $str.="<experience>".$$NODE{experience}."</experience>\n";
+  $str.="<lasttime>".$$NODE{lasttime}."</lasttime>\n";
+  $str.="<level value=\"".$APP->getLevel($NODE)."\">".$$vars{level}."</level>\n";
+
+  $str.="<writeups>";
+  if (defined $$vars{numwriteups})
+  {
+    $str.=$$vars{numwriteups}; 
+  }
+  $str.="</writeups>";
+
+  $str.="<image>";
+  if (defined $$NODE{imgsrc})
+  {
+    $str.=$$NODE{imgsrc};
+  }
+  $str.="</image>\n";
+
+  if (defined $$vars{cools})
+  {
+    $str.="<cools>".$$vars{coolsspent}."</cools>";
+  }
+
+  $str.="<lastnoded>\n";
+
+  if (!$$vars{hidelastnoded})
+  {
+    my $n = $$NODE{title};
+    if (!(($n eq 'EDB') || ($n eq 'Klaproth') || ($n eq 'Cool Man Eddie') || ($n eq 'Webster 1913')))
+    {
+      my $ln = getNodeById($$vars{lastnoded});
+      if ($ln)
+      {
+        $ln = getNodeById($$ln{parent_e2node});
+        $str.="<e2link node_id=\"$$ln{node_id}\">".encodeHTML($$ln{title})."</e2link>\n";
+      }
+    }
+  }
+
+  $str.="</lastnoded>\n";
+
+  $str.="<userstrings>\n";
+  $str.="  <mission>".encodeHTML($$vars{mission})."</mission>\n";
+  $str.="  <specialties>".encodeHTML($$vars{specialties})."</specialties>\n";
+  $str.="  <motto>".encodeHTML($$vars{motto})."</motto>\n";
+  $str.="  <employment>".encodeHTML($$vars{employment})."</employment>\n";
+  $str.="</userstrings>\n";
+
+  $str.="<groupmembership>\n";
+  my @groups = ();
+  my $U = getId($NODE);
+  push( @groups, getNode('gods', 'usergroup')) if $APP->isAdmin($U);
+  push( @groups, getNode('Content Editors', 'usergroup')) if $APP->isEditor($U,"nogods") and !$APP->isAdmin($U);
+  push( @groups, getNode('edev', 'usergroup')) if $APP->isDeveloper($U);
+
+  # There probably aren't too many usergroups with names that need to be encoded, but this will stop the errors before they occur.
+  $str.= "<e2link node_id=\"$$_{node_id}\">".encodeHTML($$_{title})."</e2link>\n" foreach(@groups);
+
+  $str.="</groupmembership>\n";
+
+  $str.="<bookmarks>\n";
+  my $linktype = getId(getNode('bookmark', 'linktype'));
+  my $csr = $DB->sqlSelectMany('to_node', 'links', "from_node=$$NODE{node_id} and linktype=$linktype");
+  while (my $ROW = $csr->fetchrow_hashref())
+  { 
+    my $bm = getNodeById($$ROW{to_node}, 'light');
+    $str.="  <e2link node_id=\"$$bm{node_id}\">".encodeHTML($$bm{title})."</e2link>\n";
+  }
+
+  $str.="</bookmarks>\n";
+  return $str;
+}
+
+sub xmlheader
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str.="";
+  $str .= "<node node_id=\"$$NODE{node_id}\" createtime=\"".
+    ($$NODE{publishtime}||$$NODE{createtime})
+    ."\" type_nodetype=\"$$NODE{type_nodetype}\"".htmlcode("schemalink", "$$NODE{type_nodetype}").">\n";
+  my $ntype = getNodeById($$NODE{type_nodetype});
+  $str.="<type>".encodeHTML($$ntype{title})."</type>\n" if $ntype;
+  $str.="<title>".encodeHTML($$NODE{title})."</title>\n";
+  my $crby = $$NODE{createdby_user} || $$NODE{author_user} || 0;
+  $crby=getNodeById($crby);
+  $str.="<author user_id=\"$$crby{node_id}\">".encodeHTML($$crby{title})."</author>\n";
+  return $str;
+}
+
+sub xmlfooter
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return "</node>";
+}
+
+sub formxml_e2node
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $grp = $$NODE{group};
+  my $str = "";
+  $str.= htmlcode("xmlfirmlinks", "$$NODE{node_id}");
+  $str.= htmlcode("xmlwriteup","$_") foreach(@$grp);
+  $str.= "<softlinks>\n".htmlcode("softlink", "xml")."</softlinks>\n";
+  $str.= "<nodelock>".encodeHTML(htmlcode('nopublishreason', $USER, $NODE))."</nodelock>";
+  $str.= htmlcode("xmlnodesuggest");
+  return $str;
+}
+
+#
+# Seriously get rid of the node row stuff
+#
+sub xmlwriteup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($WRITEUPID) = @_;
+
+  my $wu = getNodeById($WRITEUPID);
+  return unless $wu;
+  return unless($$wu{type_nodetype} == getId(getType('writeup')));
+
+  my $str.="";
+
+  my $nr = getId(getNode("node row", "superdoc"));
+  my $marked = (($DB->sqlSelect('linkedby_user', 'weblog', "weblog_id=$nr and to_node=$$wu{node_id}"))?(1):(0));
+
+  $str .= "<writeup node_id=\"$$wu{node_id}\" createtime=\"$$wu{publishtime}\" ";
+  $str .= "type_nodetype=\"$$wu{type_nodetype}\" marked=\"$marked\">\n";
+  my $ntype = getNodeById($$wu{wrtype_writeuptype});
+
+  my $parent = getNodeById($$wu{parent_e2node});
+  # see [Drum & Bass] (using displaytype=xmltrue) 
+  # to see the problem
+  $str.="<parent><e2link node_id=\"$$parent{node_id}\">".encodeHTML($$parent{title})."</e2link></parent>" if($parent);
+
+  $str.="<writeuptype>".$$ntype{title}."</writeuptype>\n" if $ntype;
+
+  if(hasVoted($wu, $USER) || $$wu{author_user} == $$USER{node_id})
+  {
+    my $up = $DB->sqlSelect("count(*)", "vote", "vote_id=$$wu{node_id} AND weight=1");
+    my $dn = $DB->sqlSelect("count(*)", "vote", "vote_id=$$wu{node_id} AND weight=-1");
+    my $cast = $DB->sqlSelect("weight", "vote", "vote_id=$$wu{node_id} AND voter_user=$$USER{user_id}");
+    $str.="<reputation up=\"$up\" down=\"$dn\" cast=\"$cast\">$$wu{reputation}</reputation>\n";
+  }
+
+  my $coolcsr = $DB->sqlSelectMany("cooledby_user", "coolwriteups", "coolwriteups_id=$$wu{node_id} order by tstamp ASC");
+
+  $str.="<cools>\n";
+
+  while(my $coolrow = $coolcsr->fetchrow_hashref())
+  {
+    my $usr = getNodeById($$coolrow{cooledby_user});
+    next unless $usr;
+    $str.=" <e2link node_id=\"$$usr{node_id}\">".encodeHTML($$usr{title})."</e2link>\n";
+  }
+
+  $str.="</cools>\n";
+  $str.="<title>".encodeHTML($$wu{title})."</title>\n";
+
+  my $au = getNodeById($$wu{author_user});
+  $str.="<author user_id=\"$$au{node_id}\">".encodeHTML($$au{title})."</author>\n";
+  $str.="<doctext>";
+  $str.=encodeHTML(($query->param('links_noparse') == 1)?($$wu{doctext}):(parseLinks($$wu{doctext}))) unless($query->param("no_doctext"));
+  $str.="</doctext>\n";
+  $str.="</writeup>\n";
+  return $str;
+}
+
+sub xmlfirmlinks
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($nid) = @_;
+  my $csr = $DB->sqlSelectMany("*","links","linktype=".getId(getNode('firmlink', 'linktype'))." AND from_node=$nid");
+  my $str = "<firmlinks>\n";
+
+  while(my $ROW = $csr->fetchrow_hashref)
+  {
+    my $n = getNodeById($$ROW{to_node});
+    next unless $n;
+    $str.="  <e2link node_id=\"$$n{node_id}\">".encodeHTML($$n{title})."</e2link>\n";
+  }
+
+  $str.="</firmlinks>\n";
+  return $str;
+}
+
+sub formxml_writeup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";
+  $str.= htmlcode("xmlfirmlinks", "$$NODE{parent_e2node}");
+  $str.= htmlcode("xmlwriteup","$$NODE{node_id}");
+  $str.= "<softlinks>\n".htmlcode("softlink", "xml")."</softlinks>\n";
+  return $str;
+}
+
+sub schemalink
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($schemafor) = @_;
+  my $noderef = getNodeById($schemafor);
+  my $row = $DB->sqlSelect("*", "xmlschema", "schema_extends=$$noderef{node_id}");
+  $row = $DB->sqlSelect("schema_id", "xmlschema", "schema_extends=0") unless($row);
+
+  return " xmlns=\"http://www.everything2.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.everything2.com/?node_id=$row\" ";
+}
+
+sub schemafoot
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return "</xs:schema>";
+}
+
+sub formxml_superdoc
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  #patch from fuzzie.. sorta
+  #applied so that you can choose not to get the findings doc.
+  return "" if (($query->param("no_superdocs") == 1) || ($query->param("no_findings") == 1 && $$NODE{node_id} == $Everything::CONF->{system}->{search_results} ));
+
+  my $grp = $$NODE{group};
+  my $str = "";
+  $str.="<superdoctext>\n";
+  my $txt = $$NODE{doctext};
+  $txt = parseCode($txt);
+  $txt = parseLinks($txt) unless($query->param("links_noparse") == 1 or $$NODE{type_title} eq "superdocnolinks");
+  $str.= encodeHTML($txt);
+  $str.="</superdoctext>\n";
+  return $str;
+}
+
+sub xmlnodesuggest
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $cf = getVars(getNode("chatterbox forward", "setting"));
+  my $retstr = "<sametitles>";
+  my @grp = getNodeWhere({ 'title' => $$NODE{title}});
+  foreach(@grp)
+  {
+    my $n = $_;
+    next unless canReadNode($USER, $n);
+    next if($$n{node_id} == $$NODE{node_id});
+    my $tmp = "<nodesuggest type=\"$$n{type}{title}\">";
+    $tmp.= '<e2link node_id="'.$$n{node_id}.'">'.encodeHTML($$n{title}).'</e2link>';
+
+    if($$n{type}{title} eq 'user')
+    {
+      if($$cf{lc($$n{title})})
+      {
+        my $ptr = $$cf{lc($$n{title})};
+        my $tousr = getNode($ptr, 'user');
+        #this will not work if the user has both _ and " " in their nick, but oh well
+
+        unless($tousr)
+        {
+          $ptr =~ s/_/ /g;
+          $tousr = getNode($ptr, 'user');
+        }  
+
+        $tmp .= '<useralias><e2link node_id="'.$$tousr{node_id}.'">'.encodeHTML($$tousr{title}).'</e2link></useralias>';
+      }
+    }
+
+    $tmp .= "</nodesuggest>";
+    $retstr.=$tmp;
+  }
+
+  $retstr.="</sametitles>";
+  return $retstr;
+}
+
+# screens notelet text
+# reads "raw" and writes "screened"
+#
+sub screenNotelet
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $work = $VARS->{'noteletRaw'} || $VARS->{'personalRaw'};
+  delete $VARS->{'personalRaw'};
+
+  my $UID = getId($USER) || 0;
+  # not filtering, since only shown for user that enters the stuff anyway
+
+  ##only allow certain HTML tags through
+  #my $HTMLS = getVars(getNode('approved HTML tags','setting'));
+
+  ##allow a few other tags and attributes
+  ##TODO? others?
+  #$HTMLS->{'table'} = 'border,cellpadding,cellspacing';
+  #$HTMLS->{'th'} = $HTMLS->{'tr'} = $HTMLS->{'td'} = 1;
+
+  #TODO? allow eds to psuedoExec
+  #TODO? allow admins to have normal code
+
+  #$work =~ s/\<!--.*?--\>//gs;	#htmlScreen messes up comments
+  #$work = htmlScreen($work, $HTMLS);	#we may get rid of this later
+
+  unless($VARS->{noteletKeepComments})
+  {
+    $work =~ s/<!--.*?-->//gs;
+  }
+
+  # length is limited based on level
+  my $maxLen = $APP->getLevel($USER) || 0;
+  $maxLen *= 100;
+  if($maxLen>1000)
+  {
+    $maxLen=1000;
+  } elsif($maxLen<500) {
+    $maxLen=500;
+  }
+
+  # power has its privileges
+  # this is in [Notelet Editor] (superdoc) and [screenNotelet] (htmlcode)
+  if($APP->isAdmin($USER))
+  {
+    $maxLen = 32768;
+  } elsif( $APP->isEditor($USER) ) {
+    $maxLen += 100;
+  } elsif($APP->isDeveloper($USER) ) {
+    $maxLen = 16384; #16k ought to be enough for everyone. --[Swap]
+  }
+
+  if(length($work)>$maxLen)
+  {
+    $work=substr($work,0,$maxLen);
+  }
+
+  # N-Wing added 2003.08.20.n3 to deal with an unclosed comment
+  # preventing a user from editing the notelet later
+  if($work =~ /^(.*)<!--(.+?)$/s)
+  {
+    my $preLastComment = $1;
+    my $postLastComment = $2;
+    if($postLastComment !~ /-->/s)
+    {
+      # oops, unclosed comment; display it instead
+      $work = $preLastComment . '<code>&lt;!--</code>' . $postLastComment;
+    }
+  }
+
+  delete $VARS->{'personalScreened'};	#old way
+  if(length($work))
+  {
+    $VARS->{'noteletScreened'} = $work;
+  } else {
+    delete $VARS->{'noteletScreened'};
+  }
+
+  return;
+
+}
+
+sub formxml_usergroup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $txt = parseCode($$NODE{doctext});
+  my $str = "";
+  $txt = parseLinks($txt) unless($query->param("links_noparse"));
+  $txt = encodeHTML($txt);
+  $str.="<description>\n";
+  $str.=$txt unless($query->param("no_descrip"));
+  $str.="</description>\n";
+  $str.="<weblog>\n";
+
+  if($DB->isApproved($USER, $NODE))
+  {
+    my $csr = $DB->sqlSelectMany("*", "weblog", "removedby_user=0 and weblog_id=$$NODE{node_id} order by tstamp DESC");
+
+    while(my $row = $csr->fetchrow_hashref)
+    {
+      my $n = getNodeById($$row{to_node});
+      next unless($n);
+      $str.="<e2link node_id=\"$$n{node_id}\">$$n{title}</e2link>";
+    }
+  }
+
+  $str.="</weblog>\n";
+  $str.="<usergroup>\n";
+  foreach(@{$$NODE{group}})
+  {
+    my $n = getNodeById($_);
+    $str.= "<e2link node_id=\"$$n{node_id}\">$$n{title}</e2link>";
+  }
+
+  $str.="</usergroup>\n";
+  return $str;
+}
+
+sub ennchoice
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $nodes = {"25" => "25", "100" => "Everything New Nodes", "200" => "E2N", "300" => "ENN", "1024" => "EKN"};
+  my $str = '<p align="right"><form method=\"post\">';
+  $str.='<input type="hidden" name="type" value="superdoc">Show: <select name="node">';
+  foreach(sort {$a <=> $b} keys %$nodes)
+  {
+    $str.="<option value=\"$$nodes{$_}\"".(($$nodes{$_} eq $$NODE{title})?(" SELECTED "):("")).">$_</option>";
+  }
+  $str.='</select><input type="submit" value="go"></form></p>';
+  return $str;
+}
+
+# VARS combo box
+# safely allows a user to set a value in their $VARS via an uneditable combo box
+#
+# parameters:
+#   $key - which element is being changed; $VARS->{$key}
+#   $flags - bitwise flags:
+#      1 = separate 0 and undef - by default, a value of 0 will delete $VARS->{$key}; if this is set, the actual value of 0 will be stored; also note that there isn't a way to delete the key if changed
+#   @elements - elements of list:
+#      even indices is value, odd indices is what to display
+#
+# examples:
+#   show small, medium, large, which will be set in $VARS->{editsize}
+#   [{varsComboBox:editsize,0, 0,small (default),1,medium,2,large}]
+#
+# created: 2002.05.10.n5
+# updated: 2002.06.20.n4 by N-Wing
+#
+sub varsComboBox
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($key, $flags, @elements) = @_;
+  return if $APP->isGuest($USER);
+
+  local *oops = sub {
+    return '<span border="solid black 1px;" title="varsComboBox">!!! '.$_[0].' !!!</span>';
+  };
+
+
+  #
+  # deal with parameters
+  #
+
+  return oops('no $VARS key given') unless defined $key;
+  return oops('invalid $VARS key given') unless $key =~ /(\w+)/;
+  $key = $1;
+
+  $flags = (defined $flags) ? $flags+0 : 0;
+  my $separate0 = $flags & 1;
+
+  # if($elements[0] and ref $elements[0] eq "ARRAY")
+  # {
+  #        @elements = @$elements[0];
+  # }
+
+  unless(scalar(@elements)) {
+    return oops('no values given');
+  }
+
+  return oops('no elements given') if scalar(@elements)==0;
+  return oops('missing final value') if (scalar(@elements)%2)==1;
+
+
+  #
+  # values/labels setup
+  #
+
+  my @values = ();
+  my %labels = ();
+  # can't just do something like %labels = @elements; because then we'd loose our order
+
+  while(scalar(@elements))
+  {
+    my $k = shift(@elements);
+    return oops('@elements key #'.scalar(@values).' (index #'.(scalar(@values)<<1).') invalid') unless $k =~ /(-?[\w]+)/;
+    $k=$1;
+    return oops('key "'.encodeHTML($k,1).'" already exists; value is "'.$labels{$k}.'"') if exists $labels{$k};
+    my $v = shift(@elements);
+
+    push(@values, $k);
+    $labels{$k} = $v;
+  }
+
+  if(!exists $labels{0})
+  {
+    push(@values, 0);
+    $labels{0} = '0 (default)';
+  }
+
+  my $curDefault = undef;
+
+  #
+  # possibly change VARS
+  #
+
+  my $qp = 'setvars_'.$key;
+  if(defined $query->param($qp))
+  {
+    my $newVal = $query->param($qp);
+    if(exists $labels{$newVal})
+    {
+      # only allow a value explicitly given as allowed
+      if($newVal eq '0')
+      {
+        # special case 0: do we delete or actually set
+        if($separate0)
+        {
+          $VARS->{$key} = 0;
+        } else {
+          delete $VARS->{$key};
+        }
+      } else {
+        $VARS->{$key} = $newVal;
+      }
+    }
+  }
+
+
+  #
+  # display combo box
+  #
+
+  my $curSel = (exists $VARS->{$key}) ? $VARS->{$key} : 0;
+  if(!exists $labels{$curSel})
+  {
+    push(@values, $curSel);
+    $labels{$curSel} = $curSel
+  }
+
+  $labels{$curSel} = '* '.$labels{$curSel};
+
+  return $query->popup_menu($qp, \@values, $curSel, \%labels);
+}
+
+# message field: provides a text field to send a message to a user(group)
+#
+# arguments:
+#  $mfuID - msgfield unique identifier, or special value of 0 or blank to indicate no more
+#  $flags - bitwise flags:
+#    1 = no CC box
+#    2 = do NOT show what was said here
+#  $aboutNode - node_id the message is about
+#  @tryRecipients - ID(s) of user(group)(s) to send message to
+#
+# if $mfuID is blank, this uses (a) hidden parameter(s) to know who to send the message(s) to;
+# otherwise, the hidden parameter(s) are ignored for normal message sending
+#
+# created: 2002.06.22.n6
+# updated: 2002.07.30.n2
+#
+sub msgField
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($mfuID, $flags, $aboutNode, @tryRecipients) = @_;
+
+  my $UID = $USER->{node_id}||0;
+  return if $APP->isGuest($USER);
+
+  # gives information in HTML that an error occured; hovering the mouse over the message yields more information
+  # created: 2002.06.22.n6
+  # updated: 2002.07.07.n0
+
+  local *oops = sub {
+    my $arg = 'msgField (htmlcode): ' . ($_[0] || 'unknown error');
+    $arg =~ s/&/&amp;/gs;
+    $arg =~ s/</&lt;/gs;
+    $arg =~ s/>/&gt;/gs;
+    $arg =~ s/"/&quot;/gs;
+    $arg =~ s/\[/&#91;/gs;
+    $arg =~ s/\]/&#93;/gs;
+    return '<span border="solid black 1px;" title="' . $arg . '">Sorry, a server error occured. This is likely only a temporary glitch, and things will soon be working properly again.</span>';
+  };
+
+
+  #
+  # deal with parameters
+  #
+
+  my $doNormalSend = (defined $mfuID) && length($mfuID) && ($mfuID !~ /^\s*0\s*$/);
+  undef $mfuID unless $doNormalSend;
+
+
+  # find bitwise flags
+  $flags = (defined $flags) && length($flags) && ($flags=~/([1-9]\d*)/) ? $1 : 0;
+  my $showCC = !($flags & 1);
+  my $showSaid = ($flags & 2) ? 0 : 4;	#values wanted by sendPrivateMessage
+
+  # node message is about
+  $aboutNode = (defined $aboutNode) && length($aboutNode) && ($aboutNode=~/([1-9]\d*)/) ? $1 : 0;
+
+  # find message recipient(s)
+  my %recipients = ();
+  my @getters = ();
+
+  # finds recipients based on given list @tryRecipients (global since htmlcodes seem to get a bit weird with parameter passing sometimes)
+  # returned list in @getters has no duplicates, and are all postive integers
+  # real returned value is how many are in new list, equal to scalar(@getters)
+  # created: 2002.07.14.n0
+  # updated: 2002.07.14.n0
+
+  local *validRecipients = sub {
+    @getters=();
+    return 0 unless scalar(@tryRecipients);
+    my %recipients = ();
+    foreach(@tryRecipients)
+    {
+      if(/([1-9]\d*)/)
+      {
+        $recipients{$_}=1;
+      }
+    }
+    return scalar(@getters = keys(%recipients));
+  };
+
+  if($doNormalSend)
+  {
+    return oops('must give at least one valid recipient ID') unless validRecipients();
+    $showCC=0 if exists $recipients{$UID};	#no point in CC box if already going to /msg self
+  }
+
+
+  #
+  # other setup
+  #
+
+  my $str='';
+  my $nameTxt = undef;	#text field
+  my $nameCC = undef;	#CC checkbox
+
+  #
+  # send message(s)
+  #
+
+  # tries to send a message
+  #  set global vars $nameTxt and $nameCC before calling
+  # created: 2002.07.06.n6
+  # updated: 2002.07.22.n1
+
+  my $MAXLEN=12345;	#my luggage combination
+  local *trySend = sub {
+    return unless defined $query->param($nameTxt);
+    my $t = undef;
+    return unless length($t=$query->param($nameTxt));
+    if(length($t)>$MAXLEN)
+    {
+      $t=substr($t,0,$MAXLEN);
+    }
+
+    my $doCC = (defined $query->param($nameCC)) && ($query->param($nameCC) eq '1') ? 1 : 0;
+
+    $t = htmlcode('sendPrivateMessage', { 'recipient_id' => \@getters, 'message' => $t, 'ccself' => $doCC, 'renode_id' => $aboutNode, 'show_said' => $showSaid});
+    $str .= $t . "<br />\n" if (defined $t) && length($t);
+
+    $query->delete($nameTxt);
+    return;
+  };
+
+  if($doNormalSend) {
+    # send message as normal
+    $nameTxt = $mfuID.'_msgfieldmsg';
+    $nameCC = $mfuID.'_msgfieldcc';
+    trySend();
+  } else {
+    # send whatever messages are left
+    my @origParams = $query->param();
+    my $base = undef;
+    my $getters = undef;
+    foreach(@origParams)
+    {
+      next unless /^(.+?)_msgfieldmsg$/;
+      $base=$1;
+      $getters = $base.'_msgfieldget';
+      if( (defined $query->param($getters)) && length($getters=$query->param($getters)) )
+      {
+        @tryRecipients = split(',',$getters);
+        next unless validRecipients();	#no valid things to send to
+      } else {
+        # don't know who to send to
+        next;
+      }
+
+      $nameTxt = $base . '_msgfieldmsg';
+      $nameCC = $base . '_msgfieldcc';
+      trySend();
+    }
+  }
+
+  return $str unless $doNormalSend;
+
+  #
+  # create form / display field
+  #
+
+  $str .= $query->hidden($mfuID.'_msgfieldget', join(',', @getters));	#used when doing "cleanup" send
+  if($showCC)
+  {
+    $str .= $query->checkbox($nameCC,'','1','CC').' ';
+  }
+  $str .= $query->textfield(-name=>$nameTxt, value=>'', size=>24, class=>'expandable');
+
+  #
+  # cleanup and return
+  #
+
+  return $str;
+}
+
+# returns the date and time, in long format
+#
+# parameter:
+#  $useTime - the time to use (in seconds); if not set, uses current time
+#  $showServer - if set, uses the server's time, instead of the user's time offset
+#
+# created: 2002.09.07.n6
+# updated: 2007-07-26(4)
+# TODO also have a "short" format, and optionally show just date or time
+# TODO localization:
+#  local language - really best if we load common localization strings before we even parse the pages
+#  local format (just Gregorian month, day, and year, unless we can figure a safe way of combining a date/time module and potentially dangerous user input)
+#
+sub DateTimeLocal
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($useTime, $showServer) = @_;
+
+  my $calcTime = defined($useTime) && length($useTime) ? $useTime : time;
+  if(!$showServer && $VARS->{'localTimeUse'})
+  {
+    $calcTime += $VARS->{'localTimeOffset'} if exists $VARS->{'localTimeOffset'};
+    #add 1 hour = 60 min * 60 s/min = 3600 seconds if daylight savings
+    $calcTime += 3600 if $VARS->{'localTimeDST'};	#maybe later, only add time if also in the time period for that - but places have different daylight saving time start and end dates
+  }
+
+  my @months = qw(January February March April May June July August September October November December);
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($calcTime);
+  my $result = ('Sun','Mon','Tues','Wednes','Thurs','Fri','Satur')[$wday].'day, ' . $months[$mon] . ' ' . $mday . ', ' . (1900+$year) . ' at ';
+
+  my $showAMPM='';
+  if($VARS->{'localTime12hr'})
+  {
+    if($hour<12)
+    {
+      $showAMPM = ' AM';
+      $hour=12 if $hour==0;
+    } else {
+      $showAMPM = ' PM';
+      $hour -= 12 unless $hour==12;
+    }
+  }
+
+  # $hour = '0'.$hour if length($hrs)==1;	#leading 0 looks ugly
+  $min = '0'.$min if length($min)==1;
+  $sec = '0'.$sec if length($sec)==1;	
+  $result .= $hour.':'.$min.':'.$sec;
+  $result .= $showAMPM if length($showAMPM);
+
+  # $result .= sprintf('%02d:%02d:%02d',$hour,$min,$sec);
+
+  return $result;
+}
+
+# returns a navigation bar containing available settings superdocs
+#
+sub settingsDocs
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $DISP = 'navbardisp';
+
+  # settings to link to:
+  #  a title by itself will just link to that node, of type 'superdoc'
+  #  a hash ref is special:
+
+  my @allSettings = (
+    'Settings',
+    'Advanced Settings'
+  ) ;
+
+  push @allSettings, 'Admin Settings' if $APP->isEditor($USER);
+  push @allSettings ,(
+    'Nodelet Settings',
+    {$DISP=>'Profile', 'node_id'=>$$USER{node_id}, 'displaytype'=>'edit'});
+
+
+  my $lcnt = lc($$NODE{title});
+  foreach(@allSettings)
+  {
+    if(UNIVERSAL::isa($_,'HASH'))
+    { 
+      # doing fancy stuff - giving specific parameters for link
+      # this is way overkill, but this allows us to easily maintain the settings list
+      my $show = (exists $_->{$DISP}) ? $_->{$DISP} : (exists $_->{'node'}) ? $_->{'node'} : (exists $_->{'node_id'}) ? 'node_id='.$_->{'node_id'} : '(Something)';
+      delete $_->{$DISP};
+      $_->{'type'}='superdoc' unless (exists $_->{'type'}) || (exists $_->{'node_id'});
+
+      if( ((exists $_->{'node_id'}) && ($_->{'node_id'}==$$NODE{'node_id'})) || ((exists $_->{'node'}) && ($_->{'node'} eq $$NODE{'title'})) )
+      {
+        # probably on the given node, so don't link it
+        $_ = '<strong>'.$show.'</strong>';
+      } else {
+        # probably not on node, so link it
+        $_ = '<a href='.urlGen($_).'>'.$show.'</a>';
+      }
+
+    } else {
+      # straight-forwards superdoc and given the title
+      if($lcnt eq lc($_))
+      {
+        # on this setting, so don't link it
+        $_ = '<strong>'.$_.'</strong>';
+      } else {
+        # not on node, so link it
+        $_ = '<a href='.urlGen({'node'=>$_,'type'=>'superdoc'}).'>'.$_.'</a>';
+      }
+    }
+  }
+
+  return '<div class="settingsdocs">&ndash; &nbsp;' . join(' &#183; ', @allSettings) . ' &nbsp; &ndash;</div>';
+}
+
+sub formxml_room
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $entrance="0";
+  if(eval($$NODE{criteria}) and not $APP->isGuest($USER))
+  {
+    $entrance=1;
+    changeRoom($USER, $NODE);
+  }
+  my $str = "<canenter>".$entrance."</canenter>\n";
+  $str.="<description>".encodeHTML(($query->param("links_noparse"))?($$NODE{doctext}):(parseLinks($$NODE{doctext})))."</description>";
+  return $str;
+}
+
+sub formxml_superdocnolinks
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return htmlcode("formxml_superdoc");
+}
+
+sub statsection_advancement
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";
+
+  #pass 2 args: category and value
+  local *genRow = sub {
+    return '<div><span class="var_label">' . $_[0] . ': </span><span class="var_value">' . $_[1] . "</span></div>\n";
+  };
+
+  my $hv = getVars(getNode("hrstats", "setting"));
+  my $IQM = (($$USER{merit})?($$USER{merit}):(0));
+
+  $str .= genRow('Merit', sprintf('%.2f', $IQM || 0));
+  $str .= genRow('LF', sprintf('%.4f', getHRLF($USER) || 0));
+  $str .= genRow("Devotion", int(($$VARS{numwriteups} * $$USER{merit}) + .5));
+  $str .= genRow("Merit mean",$$hv{mean});
+  $str .= genRow("Merit stddev", $$hv{stddev});
+
+  return "<div>".$str."</div>";
+}
+
+sub orderlock
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return $APP->isEditor($USER);
+
+  my $N = getNodeById($query->param('node_id'));
+
+  return unless $N;
+  return unless $$N{type}{title} eq "e2node";
+
+  if($query->param("unlock")){
+    $N->{orderlock_user} = 0;
+  }else{
+    $N->{orderlock_user} = $USER->{node_id};
+  }
+
+  updateNode($N, -1);
+  return;
+}
+
+#
+# possibly forms a link to external web site
+# URL must start with the protocol, http:// or https://
+#
+# used by 'Nothing Found' and 'Findings:'
+#
+sub externalLinkDisplay
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $testURL = $_[0];
+  $testURL =~ s/&#39;/'/g;
+  $testURL =~ s/&#44;/,/g;
+
+  my $protocol = undef;
+  my $domain = undef;
+  my $relAddress = undef;
+
+  if($testURL =~ /^(https?):\/\/([^\/]+)(\/.*)?$/)
+  {
+    $protocol = $1;
+    $domain = $2;
+    $relAddress = $3 || '';
+  } else {
+    return '';
+  }
+
+  my $i = undef;
+
+  # chop off any CGI parameters
+  #  can't just test for everything2.com, org, etc., because there are
+  #  many ways to create an address (example: IP address) that could
+  #  slip by our tests; to be safe, just remove all the parameters
+
+  # N-Wing is disabling this for now (2005 March 12), because kthejoker
+  #  thinks is annoying and won't be a problem. So blame k. if
+  #  things go badly. :) (On a more serious note, if people *do*
+  #  start doing bad things, just uncomment the next two lines.)
+  #  $i = index($relAddress, '?');
+  #  $relAddress = substr($relAddress,0,$i) if $i != -1;
+
+  # construct URL
+  my $fullURL = $protocol . '://' . $domain;
+  if(length($relAddress)==0)
+  {
+    $fullURL .= '/';
+  } else {
+    $fullURL .= $relAddress;
+  }
+
+  $fullURL = join('', split('"', $fullURL));	#remove double quotes
+
+  # create link
+  my $str = '<a href="' . $fullURL . '" class="external">' . encodeHTML($fullURL, 1) . '</a>';
+  return $str;
+}
+
+sub chatterSplit
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $maxLen = ((exists $VARS->{splitChatter}) && (defined $VARS->{splitChatter}) && ($VARS->{splitChatter}=~/^([1-9]\d*)$/)) ? $1 : 0;
+  $maxLen += 0;
+  if($maxLen<1)
+  {
+    $maxLen=20;	#default width
+  } elsif($maxLen>999) {
+    $maxLen=999;
+  }
+  return $maxLen;
+}
+
+sub isdaylog
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($NID) =@_;
+  getRef($NID);
+  return 0 unless $$NID{type}{title} eq 'e2node';
+
+  my $isDaylog=0;
+  my $daylogTitle=$$NID{title};
+  my @months = ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+
+  foreach (@months)
+  {
+    if ($daylogTitle =~ /$_\s\d+,\s\d+/) {$isDaylog=1; last;}
+  }
+
+  return $isDaylog;
+}
+
+sub softlock
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isEditor($USER);
+  my $defaultreason="";
+
+  if($query->param('nodeunlock'))
+  {
+    $defaultreason = $DB->sqlSelect("nodelock_reason", "nodelock", "nodelock_node=$$NODE{node_id}");
+    $DB->sqlDelete("nodelock","nodelock_node=$$NODE{node_id}");
+  }
+
+  if($query->param('nodelock'))
+  {
+    $DB->sqlInsert("nodelock", {
+      nodelock_reason => $query->param('nodelock_reason'),
+      nodelock_user => $$USER{user_id},
+      nodelock_node => $$NODE{node_id}}
+      ) unless ($DB->sqlSelectHashref("*", "nodelock", "nodelock_node=$$NODE{node_id}"));
+  }
+
+  my $nodelock = $DB->sqlSelectHashref("*", "nodelock", "nodelock_node=$$NODE{node_id}");
+  my $str =htmlcode('openform').'<fieldset><legend>Node lock</legend>';
+
+  if($nodelock)
+  {
+    my $locker = getNodeById($$nodelock{nodelock_user});
+    $str .= '(Locked by '.linkNode($locker, $$locker{title}).qq')<input type="hidden" name="nodeunlock" value="$$NODE{node_id}"><input type="submit" value="Unlock this e2node">';
+  } else {
+    $str .= qq'Lock this node because: <input type="hidden" name="nodelock" value="$$NODE{node_id}">
+      <input type="text" size="60" class="expandable" name="nodelock_reason" value="">
+      <input type="submit" value="Lock">';
+  }
+
+  $str .='</fieldset></form>';
+  return $str;
+}
+
+sub atomiseNode
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $host = $ENV{HTTP_HOST} || $Everything::CONF->{canonical_web_server} || "everything2.com";
+  my $host = "http://$host" ;
+
+  my $atominfo = sub {
+    my $N = shift ;
+    my $url = $host . urlGen({ }, 'noQuotes', $N) ;
+    my $author = getNodeById( $$N{author_user} ) ;
+    my $timestamp = $$N{publishtime} || $$N{createtime};
+    $timestamp =~ /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
+    $timestamp = sprintf ("%04d-%02d-%02dT%02d:%02d:%02dZ", $1, $2, $3, $4, $5, $6);
+	
+    return '<title>' . encodeHTML($$N{title}) . '</title>' .
+      '<link rel="alternate" type="text/html" href="' . $url . '"/>' .
+      '<id>' . $url . '</id>' .
+      '<author>' .
+      '<name>' . $$author{ title } . '</name>' .
+      '<uri>' . $host . '/user/' . $$author{ title } . '</uri>' .
+      '</author>' .
+      '<published>'. $timestamp . '</published>' .
+      '<updated>'. $timestamp . '</updated>' ;
+  };
+
+  my ( $input , $length ) = @_ ;
+  $length ||= 1024 ;
+  return htmlcode( 'show content' , $input , "xml <entry> atominfo, $length" , ( atominfo => $atominfo) ) ;
+}
+
+sub userAtomFeed
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($foruser) = @_;
+  return unless $foruser;
+
+  $foruser =~ s/&#39;/'/g;
+  my $u = getNode($foruser, 'user');
+  return unless $u;
+
+  my $csr = $DB->sqlSelectMany('node.node_id, publishtime',
+    'node JOIN writeup on node_id=writeup_id',
+    'author_user=' . getId($u) .
+    ' order by publishtime desc limit 6');
+
+  # this is so we have the first result for the timestamp
+  my $row = $csr->fetchrow_hashref;
+  return unless $row;
+  my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+  $str .= "<feed xmlns=\"http://www.w3.org/2005/Atom\" xml:base=\"http://everything2.com/\">\n";
+  $str .= "    <title>" . $foruser . "'s New Writeups</title>\n";
+  $str .= "    <link rel=\"alternate\" type=\"text/html\" href=\"http://everything2.com/index.pl?node=Everything%20User%20Search&amp;usersearch=" . $foruser . "\" />\n";
+  $str .= "    <link rel=\"self\" type=\"application/atom+xml\" href=\"?node=New%20Writeups%20Atom%20Feed&amp;type=ticker&amp;foruser=" . $foruser . "\" />\n";
+  $str .= "    <id>http://everything2.com/?node=New%20Writeups%20Atom%20Feed&amp;foruser=" . $foruser . "</id>\n";
+
+  my $timestamp = $$row{publishtime};   
+  $timestamp =~ /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
+  $timestamp = sprintf ("%04d-%02d-%02dT%02d:%02d:%02dZ", $1, $2, $3, $4, $5, $6);
+   
+  $str .= "    <updated>$timestamp</updated>\n";
+
+  do {
+    $str .= htmlcode('atomiseNode', $$row{node_id});
+  } while($row = $csr->fetchrow_hashref);
+
+  $str.="</feed>\n";
+  utf8::encode($str);
+  return $str;
+}
+
+sub ignoreUser
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($uname) = @_;
+  my $U = getNode($uname, 'user');
+  $U ||= getNode($uname, 'usergroup');
+  if($U)
+  {
+    return if $$U{title} eq 'EDB';
+    unless($DB->sqlSelect('*', 'messageignore', "messageignore_id=$$USER{node_id} and ignore_node=$$U{node_id}"))
+    {
+      $DB->sqlInsert('messageignore', { messageignore_id => getId($USER), ignore_node => $$U{node_id}});
+    } else {
+      return 'already ignoring '.$$U{title};
+    }
+  } else {
+    $uname = encodeHTML($uname);
+    return "<strong>$uname</strong> doesn't seem to exist on the system!" unless $U;
+  }
+
+  $query->param('DEBUGignoreUser', 'tried to ignore '.$$U{title});
+  return "$$U{title} ignored";
+}
+
+sub zenwriteups
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($isLogs) = @_;
+
+  my $UID = $$USER{user_id} || $Everything::CONF->{system}->{guest_user} ;
+  my $limit = $$VARS{ num_newwus } || ($APP->isGuest($USER) ? 15 : 12);
+  my $cansee = $APP->isEditor($USER);
+
+  my $nltext = getNode("New Writeups Feeder", 'nodelet') -> {nltext};
+  return "<em>No writeups</em>" if $nltext eq "";
+
+  my @newwus = @{from_json($nltext)};
+  return "<em>No writeups</em>" unless(@newwus);
+
+  my $noHidden = !$isLogs;
+  $noHidden = $noHidden && $$VARS{nw_nojunk} if $cansee;
+
+  my ($repthreshold, $abominations) = ('none', undef);
+  if (!$cansee or $$VARS{nw_nojunk} or $isLogs)
+  {
+    if (exists $$VARS{repThreshold})
+    {
+      $repthreshold = $$VARS{repThreshold} || 0; # ecore stores 0 as ''
+    } elsif (exists $Everything::CONF->{writeuplowrepthreshold}) {
+      $repthreshold = $Everything::CONF->{writeuplowrepthreshold} || 0;
+    }
+	
+    $abominations->{$_} = 1 foreach(split(',', $$VARS{unfavoriteusers}));
+  }
+
+  my $count = undef;
+  my @wus = ();
+  foreach (@newwus)
+  {
+    next if $noHidden && $$_{notnew} or
+      $repthreshold ne 'none' && $$_{reputation} < $repthreshold or
+      exists $abominations->{$$_{author_user}} or
+      $isLogs && !$$_{islog};
+    push @wus, $_;
+    # last if !$$_{notnew} || $isLogs;
+    last if  ++$count >= $limit;
+  }
+
+  my $instructions = '<li' ;
+  my %newwuspecials = () ;
+
+  unless($APP->isGuest($USER))
+  {
+    my $sql = "SELECT vote_id
+      FROM vote
+      WHERE voter_user=$UID
+      AND vote_id in ("
+      .join(',', map($_->{writeup_id}, @wus)).')';
+
+    my $votes = undef;
+    $votes->{$_} = 1 foreach(@{$DB->{dbh} -> selectcol_arrayref($sql)});
+
+    $instructions .= ' class="&extraclasses"' ;
+    $newwuspecials{extraclasses} = sub{
+      my $N = shift ;
+      my $str = ''; # it remembers if you don't do this
+      $str .= ' hasvoted' if exists $votes->{$$N{writeup_id}} ;
+      $str .= ' mine' if $$N{author_user} == $UID ;
+      $str .= ' wu_hide' if $$N{notnew} ;
+      return $str ;
+    };
+  }
+
+  $instructions .= '>parenttitle, type, byline' ;
+
+  if ($cansee && !$isLogs)
+  {
+    $instructions .= ', editorstuff';
+    my $ajax = "ajax newwriteups:updateNodelet:New+Writeups" ;
+
+    $newwuspecials{editorstuff} = sub {
+      my $N = shift ;
+      # reputation warning
+      my ( $rep ) = $$N{ reputation } ;
+      my $str = ( $rep < 0 ? "R:$rep " : '' ).'<span class="hide">(' ;
+      # flag if hiddden from New Writeups and control to hide/unhide
+      $str .= $$N{ notnew } > 0 ?
+        'H: '
+        .linkNode($NODE, 'un-h!', {
+        op => 'unhidewriteup' ,
+        hidewriteup => $N -> {writeup_id},
+        -title => 'unhide this writeup',
+        -class => $ajax}):
+      linkNode($NODE, 'h?', {
+        op => 'hidewriteup' ,
+        hidewriteup => $N -> {writeup_id},
+        -title => 'hide this writeup',
+        -class => $ajax});
+      $str .= ')</span>' ;
+      $str .= ' (X)' if $$N{nuked} && !$$N{restored};
+      $str .= ' (R)' if $$N{restored};
+      qq'<span class="admin">$str</span>' ;
+    };
+  }
+
+  return '<ul class="infolist">'.htmlcode('show content' , \@wus , $instructions , %newwuspecials) .'</ul>';
+}
+
+# TODO: Make this JSON
+#
+sub ajaxVar
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($name, $value) = @_;
+
+  my $idList = '[,\\d]*' ;
+  my $nameList = '[!,\\w]*' ;
+  my $nodeId = '\\d*' ;
+
+  my %valid = (
+    collapsedNodelets => $nameList ,
+    nodetrail => $idList ,
+    current_nodelet => $nodeId
+  );
+
+  my $test = $valid{$name};
+
+  return 'invalid name' unless $test ;
+  return 'invalid value' unless $value =~ /^($test|0)$/ or !$value ;
+
+  my $oldVal = $$VARS{$name}||'0';
+
+  if ($value gt '')
+  {
+    if ($value eq '0')
+    {
+      delete $$VARS{$name};
+    }
+    $$VARS{$name} = $value;
+  }
+
+  my $retval = $$VARS{$name}||'0';
+  return "{name: '$name', value: '$retval', oldval: '$oldVal'}";
+
+}
+
+sub favorite_noder
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $class = "ajax favoritenoder:favorite_noder" ;
+
+  # TODO: Do not hardcode node_ids
+  if ($$NODE{type_nodetype} == 15)
+  {
+    my $nid = $$NODE{node_id};
+    my $favlinktype = getId(getNode('favorite','linktype'));
+    my $favnoder = $DB->sqlSelect('to_node','links',"from_node=$$USER{node_id} AND to_node=$nid AND linktype=$favlinktype");
+    my $username = $$NODE{title} ;
+    $username =~ s/"/&quot;/s ;
+    $username =~ s/>/&gt;/s ;
+
+    if ($favnoder)
+    {
+      return linkNode($nid,"unfavorite!",
+        { op => "unfavorite",
+          fave_id => $NODE -> {node_id},
+          -title => "stop notification of new writeups by $username",
+          -id => 'favoritenoder',
+          -class => $class ,
+        }) ;
+    } else {
+      return linkNode($nid,"favorite!",
+        { op => "favorite",
+          fave_id => $NODE -> {node_id},
+          -title => "get notification of new writeups by $username",
+          -id => 'favoritenoder',
+          -class => $class ,
+        });
+    }
+  }
+}
+
+# TODO: Resolve name conflict with Everything::HTML
+#
+sub updateNodelet
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($nodelet) = @_;
+  return unless $nodelet;
+
+  $nodelet = getNode($nodelet,'nodelet');
+  return unless $nodelet;
+  return insertNodelet($nodelet);
+}
+
+sub hasJS
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($jsNode) = @_;
+
+  my $JS = undef;
+
+  if ($jsNode =~ /^\d+$/)
+  {
+    $JS = $jsNode;
+  } else {
+    $JS = getId(getNode($jsNode,"jscript"));
+  }
+
+  return unless $JS;
+  return ($$VARS{includedJS} =~ /$JS/);
+}
+
+sub googleSearchForm
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return '<img src="http://www.google.com/coop/images/google_custom_search_smnar.gif" alt="Google Custom Search" style="margin:0 0 -5px 2px" /><br />
+    <form action="http://www.google.com/cse" id="searchbox_017923811620760923756:pspyfx78im4">
+    <input type="hidden" name="cx" value="017923811620760923756:pspyfx78im4" />
+    <input type="text" name="q" size="16" />
+    <input type="submit" name="sa" value="Search" />
+    </form>
+    <br />';
 }
 
 1;

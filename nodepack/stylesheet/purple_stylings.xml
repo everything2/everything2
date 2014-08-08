@@ -79,10 +79,6 @@ a:active {
         width: 100%;
 }
 
-#formatButton {
-        display: none;
-}
-
 /* The nodelet border colour should be the same as the nodelet title background */
 .nodelet {
 	border-color: #410458;
@@ -753,7 +749,7 @@ th.oddrow {
 		#metalinks {
 			display: none;
 		}</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1933589</node_id>
   <title>Purple Stylings</title>

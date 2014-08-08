@@ -28,21 +28,6 @@ my $vlnkclr = 'purple';
 my $lnkclr  = 'blue';
 my $bgcolor;
 
-if ( $$VARS{ 'preferred_theme' } == 1100936 ) {
-    # Yet another reason to get off my ass and convert ekw 
-    # to the $$VARS{theme*} regime.
-    $txtclr  = $$VARS{ekw_textcolor} || $$THEME{bodyTextcolor} || $txtclr;
-    $vlnkclr = $$VARS{ekw_vlinkcolor} || $$THEME{bodyLinkcolor} || $lnkclr;
-    $lnkclr  = $$VARS{ekw_linkcolor} || $$THEME{bodyVlinkcolor} || $vlnkclr;
-    $bgcolor = $$VARS{ekw_bgcolor} || $$THEME{bodyBgcolor} || '';
-    $bgcolor = 'bgcolor=&quot;' . $bgcolor . '&quot; '
-        if ( $bgcolor );
-} else {
-    $txtclr  = $$THEME{bodyTextcolor};
-    $lnkclr  = $$THEME{bodyLinkcolor};
-    $vlnkclr = $$THEME{bodyVlinkcolor};
-}
-
 my $str = '
 &lt;html&gt;
 &lt;head&gt;
