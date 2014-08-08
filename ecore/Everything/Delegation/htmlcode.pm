@@ -4576,7 +4576,15 @@ sub static_javascript
   $e2 = encode_json($e2);
 
   my $min = undef; $min = '.min' unless $APP->inDevEnvironment();
-  my $libraries = qq'<script src="http://code.jquery.com/jquery-1.4.4$min.js" type="text/javascript"></script>';
+  my $libraries = "";
+  if($VARS->{use_javascript_beta})
+  {
+    # For JD to solve a safari problem
+    $libraries = qq'<script src="http://code.jquery.com/jquery-1.6.4$min.js" type="text/javascript"></script>';
+  }else{
+    # For everybody else
+    $libraries = qq'<script src="http://code.jquery.com/jquery-1.4.4$min.js" type="text/javascript"></script>';
+  }
   # mark as guest but only in non-canonical domain so testing and caching both work
 
   my $js_decisions = htmlcode('javascript_decider');
