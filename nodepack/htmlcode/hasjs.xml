@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1878244</node_id>
   <title>hasJS</title>
   <code>my ($jsNode) = @_;
