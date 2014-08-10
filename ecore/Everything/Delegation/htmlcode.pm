@@ -63,7 +63,7 @@ use Everything::XML;
 # Used by parsetime
 use Time::Local;
 
-# Used by shownewexp, publishwriteup, static_javascript, zenwriteups, hasAchieved
+# Used by shownewexp, publishwriteup, static_javascript, zenwriteups, hasAchieved, addNotification
 use JSON;
 
 # Used by publishwriteup,isSpecialDate
@@ -78,7 +78,7 @@ use Time::Local;
 # Used by typeMenu
 use Everything::FormMenu;
 
-# Used by verifyRequestHash, getGravatarMD5
+# Used by verifyRequestHash, getGravatarMD5, verifyRequest, verifyRequestForm
 use Digest::MD5 qw(md5_hex);
 
 # Used by uploaduserimage
@@ -89,6 +89,9 @@ use Image::Magick;
 
 # Used by showchatter, userAtomFeed
 use utf8;
+
+# Used by socialBookmarks
+use CGI;
 
 # This links a stylesheet with the proper content negotiation extension
 # linkJavascript below talks a bit about the S3 strategy
@@ -11345,6 +11348,558 @@ sub coolcount
   
   my $user_id = shift;
   return $DB->sqlSelect("count(*)","coolwriteups JOIN node ON coolwriteups_id = node_id","author_user=$user_id and type_nodetype=117");
+}
+
+sub ilikeit
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if !$APP->isGuest($USER) or $APP->isSpider();
+
+  my ($WU) = @_;
+  return unless getRef($WU) && $$WU{type}{title} eq 'writeup' ;
+
+  my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR} || undef;
+  my $likeExists = $DB->sqlSelect("count(*)","likedit","likedit_ip = '$addr' and likedit_node=$$WU{node_id}");
+  return " <b>Thanks!</b>" if $likeExists || 
+    ( $query->param('op') eq 'ilikeit' && $query->param("like_id") == $$WU{node_id} );
+
+  return linkNode($NODE,'I like it!', {confirmop => 'ilikeit', like_id => $$WU{node_id},
+    -id => "like$$WU{node_id}",
+    -class => "action ajax like$$WU{node_id}:ilikeit:$$WU{node_id}:",
+    -title => 'send a message to the author telling them someone likes their work'} );
+
+}
+
+sub socialBookmarks
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # returns a series of social bookmarking links.
+
+  my ($targetNode, $includeTitles, $asList, $full) = @_;
+  getRef $targetNode;
+  $targetNode = $NODE unless $targetNode;
+  my $titleNode = $targetNode;
+  my $parentNode = getNode($$targetNode{parent_e2node}) if $$targetNode{parent_e2node};
+  $titleNode = $parentNode if $parentNode;
+  my $bDontQuoteUrl = 1;
+  my $url = undef;
+  $url = 'http://' . $1 if $ENV{HTTP_HOST} =~ /(?:.+?\.)($Everything::CONF->{canonical_web_server})(?::\d+)/;
+  $url = 'http://' . $Everything::CONF->{canonical_web_server} if $url eq '';
+  $url .= urlGen({ }, $bDontQuoteUrl, $targetNode);
+  my $title = $$titleNode{title};
+
+  my $str = '';
+
+  my @defaultNetworks = ('twitter', 'facebook', 'delicious', 'digg', 'stumbleupon', 'reddit');
+
+  my @allNetworks = ('twitter', 'facebook', 'delicious', 'yahoomyweb', 'googlebookmarks', 'blinklist', 'magnolia', 'windowslive', 'digg', 'propellor', 'stumbleupon', 'technorati', 'newsvine', 'reddit');
+
+  my @showNetworks = @defaultNetworks;
+  @showNetworks = @allNetworks if $full;
+
+  my $yahooTitle = $title;
+  $yahooTitle =~ s/ /\+/g;
+
+  my $twitterUrl = htmlcode('create short url', $targetNode); 
+
+  my $deplussedUrl = $url;
+  $deplussedUrl =~ s/[ \+]|%2B/%20/g;
+  $deplussedUrl = CGI::escape($deplussedUrl);
+  my $stumbleUrl = $deplussedUrl;
+  my $diggUrl = $deplussedUrl;
+  my $propellorUrl = $deplussedUrl;
+
+  my $socialSites = {
+    'delicious' => {
+      posturl => 'http://del.icio.us/post'
+        , params => { 'title' => $title, 'url' => $url }
+        , classname => 'social_delicious'
+        , listname => 'del.icio.us'
+        , imagename => 'delicious.gif'
+      },
+    'facebook' => {
+      posturl => 'http://www.facebook.com/share.php'
+        , params => { 't' => $title, 'u' => $url }
+        , classname => 'social_facebook'
+        , listname => 'Facebook'
+        , imagename => 'facebook.gif'
+     },
+    'yahoomyweb' => {
+      posturl => 'http://myweb2.search.yahoo.com/myresults/bookmarklet'
+        , params => { 't' => $yahooTitle, 'u' => $url }
+        , classname => 'social_yahoo'
+        , listname => 'Yahoo! Bookmarks'
+        , imagename => 'yahoo_myweb.gif'
+      },
+    'googlebookmarks' => {
+      posturl => 'http://www.google.com/bookmarks/mark'
+        , params => { 'op' => 'edit', 'title' => $title, 'bkmk' => $url }
+        , classname => 'social_googlebookmarks'
+        , listname => 'Google Bookmarks'
+        , imagename => 'google_bmarks.gif'
+      },
+    'googleplus' => {
+      posturl => 'https://plus.google.com/share'
+        , params => { 'title' => $title, 'url' => $url }
+        , classname => 'social_googleplus'
+        , listname => 'Google Plus'
+        , imagename => 'google_bmarks.gif'
+    },
+    'blinklist' => {
+      posturl => 'http://blinklist.com/blink'
+        , params => { 't' => $title, 'u' => $url, 'v' => '2' }
+        , classname => 'social_blinklist'
+        , listname => 'BlinkList'
+        , imagename => 'blinklist.gif'
+    },
+    'magnolia' => {
+      posturl => 'http://ma.gnolia.com/bookmarklet/add'
+        , params => { 'title' => $title, 'url' => $url }
+        , classname => 'social_magnolia'
+        , listname => 'ma.gnol.ia'
+        , imagename => 'magnolia.gif'
+    },
+    'windowslive' => {
+      posturl => 'https://favorites.live.com/quickadd.aspx'
+        , params => { 'marklet' => 1, 'mkt' => 'en-us', 'title' => $title, 'url' => $url, "top" => 1 }
+        , classname => 'social_windowslive'
+        , listname => 'Windows Live'
+        , imagename => 'windows_live.gif'
+    },
+    'digg' => {
+      posturl => 'http://digg.com/submit'
+        , params => { 'phase' => 2, 'title' => $title, 'url' => $diggUrl }
+        , classname => 'social_digg'
+        , listname => 'Digg'
+        , imagename => 'digg.gif'
+    },
+    'propellor' => {
+      posturl => 'http://www.propeller.com/story/submit/'
+        , params => { 'title' => $title, 'url' => $propellorUrl }
+        , classname => 'social_propellor'
+        , listname => 'Propellor'
+        , imagename => 'propellor-from-wide-submit.gif'
+      },
+    'netscape' => {
+      posturl => 'http://www.netscape.com/submit/'
+        , params => { 'T' => $title, 'U' => $url }
+        , classname => 'social_netscape'
+        , listname => 'Netscape'
+        , imagename => 'netscape.gif'
+        , discontinued => 'netscape became Propellor in Sep. 2007'
+    },
+    'stumbleupon' => {
+      posturl => 'http://www.stumbleupon.com/submit'
+        , params => { 'title' => $title, 'url' => $stumbleUrl }
+        , classname => 'social_stumbleupon'
+        , listname => 'StumbleUpon'
+        , imagename => 'stumbleupon.gif'
+    },
+    'technorati' => {
+      posturl => 'http://www.technorati.com/faves'
+        , params => { 'add' => $url }
+        , classname => 'social_technorati'
+        , listname => 'Technorati'
+        , imagename => 'technorati.gif'
+    },
+    'newsvine' => {
+      posturl => 'http://www.newsvine.com/_wine/save'
+        , params => { 'h' => $title, 'u' => $url }
+        , classname => 'social_newsvine'
+        , listname => 'Newsvine'
+        , imagename => 'newsvine.gif'
+    },
+    'reddit' => {
+      posturl => 'http://www.reddit.com/submit'
+      , params => { 'title' => $title, 'url' => $url }
+      , classname => 'social_reddit'
+      , listname => 'Reddit'
+      , imagename => 'reddit.gif'
+    },
+    'tailrank' => {
+      posturl => 'http://tailrank.com/share/'
+      , params => { 'title' => $title, 'link_href' => $url }
+      , classname => 'social_tailrank'
+      , listname => 'TailRank'
+      , imagename => 'tailrank.gif'
+      , discontinued => 'TailRank was discontinued in June 2009'
+    },
+    'twitter' => {
+      posturl => 'http://twitter.com/home'
+      , params => { 'status' => "$title - $twitterUrl" }
+      , classname => 'social_twitter'
+      , listname => 'Twitter'
+      , imagename => 'twitter-a.gif'
+     }
+  };
+
+  my $makeSocialLink = sub {
+    my ($networkName, $url, $title, $includeTitles, $asList) = @_;
+    my ($link, $str) = ('', '');
+    my $site = $$socialSites{$networkName};
+
+    my $postUrl = $$site{posturl}. '?'. (join '&', map{ $_ . '=' . $$site{params}->{$_} } keys %{$$site{params}});
+
+    $link =
+    "<a href=\"$postUrl\""
+      . ' title="' . $$site{listname} . '"'
+      . ' target="_new" onClick="window.location=\''
+      . urlGen(
+        {
+          'node_id'         => $$NODE{node_id}
+          , 'op'            => 'socialBookmark'
+          , 'bookmark_site' => $networkName
+        }
+        , $bDontQuoteUrl
+      )
+    . "'\">";
+
+    my $bookmarkCode = "<div class=\"social_button social_$networkName\">" . $link . "</a></div>\n";
+    $bookmarkCode .= $link . "$$site{listname}</a>\n" if $includeTitles;
+    $bookmarkCode = "<li>\n\t$bookmarkCode</li>\n" if $asList;
+    return $bookmarkCode;
+  };
+
+  $str .= join '', map { &$makeSocialLink($_, $url, $title, $includeTitles, $asList); } @showNetworks;
+  $str = "<ul class=\"bookmarkList\">\n$str</ul>\n" if $asList;
+  return $str;
+
+}
+
+sub epicenterZen
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if ( $APP->isGuest($USER) );
+  # Upon successful log-in, write current browser to VARS
+  if ($query->param("op") eq "login")
+  {
+    $$VARS{browser} = $ENV{HTTP_USER_AGENT};
+  }
+
+  my @thingys = ();
+  my $votesLeftStr = "";
+
+  my $isRoot = $APP->isAdmin($USER);
+  my $isEd = $APP->isEditor($USER);
+
+  my $c = $$VARS{cools} || 0;
+  my $v = $$USER{votesleft} || 0;
+  if($v !~ /^\d+$/)
+  {
+    $v = 0;
+  }
+  if (int $c || int $v)
+  {
+    if(int $c)
+    { 
+      push @thingys, '<strong id="chingsleft">'.$c.'</strong> C!'.($c>1?'s':'');
+    }
+	
+    if(int $v)
+    {
+      push @thingys, '<strong id="votesleft">'.$v.'</strong> vote'.($v>1?'s':'');
+    }
+  }
+
+  if (scalar(@thingys))
+  {
+    $votesLeftStr = "\n\n\t".'<span id="voteInfo">You have ' . join(' and ',@thingys) . ' left today.</span>';
+  }
+
+  my @xps = grep { /\S/ } ( htmlcode('shownewexp', 1), htmlcode('showNewGp', 1) );
+  my $expStr = '';
+
+  if (scalar @xps)
+  {
+    $expStr .= '<span id="experience">'. join(' | ', @xps). '</span>';
+  }
+
+  $expStr =~ s/<br ?\/?>/ | /g;
+
+  my @ifys = (linkNode($NODE, 'print', { displaytype=>'printable', lastnode_id => 0 }));
+  push(@ifys, linkNode(getNode('chatterlight','fullpage'),'chat'));
+  push(@ifys, linkNode(getNode('message inbox','superdoc'),'inbox'));
+
+  my $opStr = join(" | ",@ifys);
+
+  return "<div id='epicenter_zen'><span id='epicenter_zen_info'>
+    ".linkNode($USER,0,{lastnode_id=>0})."
+    | ".linkNode($NODE, 'Log Out', {op=>'logout'})."
+    | ".linkNode($Everything::CONF->{system}->{user_settings}, 'Preferences',{lastnode_id=>0})."
+    | ".linkNode(getNode('Drafts','superdoc'))."
+    | ".linkNode(getNode('Everything2 Help','e2node'), 'Help')."
+    | ".htmlcode('randomnode','Random')."
+    </span>
+    <br />
+    $votesLeftStr<br />
+    $expStr<br />
+    <span id='epicenter_zen_commands'>
+    $opStr
+    </span>
+    </div>";
+}
+
+sub borgspeak
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($useBorg) = @_;
+  my $EDB = 100;
+
+  if ($useBorg)
+  {
+    $EDB = int(rand(100));
+  }
+
+  my $response = '<i>and all is quiet...</i>';
+
+  if($EDB<25)
+  {
+    my @borgspeak = (
+      'grrrrr...', '/me hungry!', '/me smells blood',
+      "$$USER{title} looks tasty.",
+      '<i>you feel its eyes watching you</i>',
+      '/me is watching you',
+      '/me coughs politely and eats your soul',
+      '/me tries to bite your toe',
+      '/me starts eating your hair',
+      '/me whispers the names of forgotten demons in your ear',
+      "mmmm $$USER{title} food",
+      '/me haunts your darkest nightmares',
+      'me hungry!',
+      "/me sniffs $$USER{title} appraisingly",
+      "/me wants fresh noder flesh"
+    );
+
+    $response = $borgspeak[int(rand(@borgspeak))];
+
+    my $edblink = linkNodeTitle('EDB');
+    if($response =~ /\/me/)
+    {
+      $response =~ s/\/me /<i>$edblink /;
+      $response .= '</i>';
+    } else {
+      $response = "&lt;$edblink&gt; " . $response;
+    }
+  }
+
+  return $response;
+}
+
+sub addNotification
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($notification_id, $user_id, $args) = @_;
+
+  # get notification id if we were passed a name:
+  $notification_id = getNode($notification_id, 'notification')->{node_id} if $notification_id =~ /\D/;
+
+  $user_id ||= $notification_id;
+
+  # turn args to string if we were passed a hashref:
+  $args = to_json($args) if(UNIVERSAL::isa($args,'HASH'));
+
+  $DB->sqlInsert(
+    'notified', {
+      notification_id => $notification_id,
+      user_id => $user_id,
+      args => $args,
+      -notified_time => 'now()'
+    });
+  return 1;
+}
+
+sub verifyRequest
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # checks that the form was a real e2 one
+  my ($prefix) = @_;
+  my $test = md5_hex($$USER{passwd} . ' ' . $$USER{email} . $query->param($prefix . '_seed'));
+  return ($test eq $query->param($prefix . '_nonce')) ? 1 : 0;
+}
+
+sub verifyRequestForm
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # Generates the form fields used to verify the form submission. Pass a prefix.
+  my ($prefix) = @_;
+  my $rand = rand(999999999);
+  my $nonce = md5_hex($$USER{passwd} . ' ' . $$USER{email} . $rand);
+
+  return $query->hidden($prefix . '_nonce', $nonce) . $query->hidden($prefix . '_seed', $rand);
+}
+
+# takes no arguments
+# returns a string containing letters to indicate disabled actions for the current node:
+# b(ookmark), c(ool), w(eblog), (c)a(tegory), O(verride), L(ink to disable page)
+#
+# example usage:
+# my $b = htmlcode('bookmarkit' , $NODE , 'Add to bookmarks' ) unless htmlcode('getdisabledactions') =~ /b/ ;
+#
+# (originally from [page actions])
+#
+sub getdisabledactions
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $SETTINGS = getVars( getNode( 'Disabled actions' ,'setting' ) ) ;
+  my $disabled = $$SETTINGS{ $$NODE{node_id} } . '!' . $$SETTINGS{ $$NODE{type_nodetype} } ;
+  $disabled = $1 if $disabled =~ /O/ and $disabled =~ /(\w+)!/ ; # remove nodetype disables if Overridden
+  # noscript option for wus: put addto widget in page actions because it needs a different op than the writeup form:
+  $disabled =~ s/[baw]//g if $query -> param( 'addto' ) ;
+  return $disabled;
+}
+
+sub messageBox 
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($userID, $showCC, $messageID, $usergroupID, $failReasonRef) = @_;
+  # This should probably be extended to include a possible topic
+
+  my $dummyReason = undef;
+  $failReasonRef = \$dummyReason unless $failReasonRef;
+
+  if ($APP->isGuest($USER)) {
+    $$failReasonRef = "You are not logged in.";
+    return;
+  } elsif ($VARS->{borged}) {
+    $$failReasonRef = "You are borged and so may not talk now.";
+    return;
+    # The hidemsgme setting is only valid on homenodes, but this htmlcode is
+    #  used elsewhere.  Presume a $messageId will be passed in other cases
+  } elsif ($VARS->{hidemsgme} && !$messageID) {
+    $$failReasonRef = "This user disabled the homenode message box.";
+    return;
+  }
+
+  my $n = getNodeById($userID)->{title};
+  if ($n eq 'EDB' || $n eq 'Klaproth' || $n eq 'Cool Man Eddie' || $n eq 'Guest User')
+  {
+    $$failReasonRef = "This user is a robot and can not receive your message.";
+    return;
+  }
+
+  my $isMe=($$USER{node_id}==$userID);
+  my $qp='msguser_'.$userID;
+  my $str='';
+  if(!$isMe && $$VARS{borged})
+  {
+    $str = '(you may not talk now)';
+  } elsif($userID && (defined $query->param($qp)) && (length($query->param($qp))) ) {
+    my $msg = $query->param($qp);
+    my $ccMe = (defined $query->param('cc'.$qp)) && ($query->param('cc'.$qp) eq '1') ? 1 : 0;
+
+    my $recipient=$userID;
+    if ((defined $query->param("ug$usergroupID")) && (length($query->param("ug$usergroupID"))) )
+    {
+        $recipient=$usergroupID;
+    }
+
+    my $failMessage = htmlcode('sendPrivateMessage',{
+      'recipient_id'=>$recipient,
+      'message'=>$msg,
+      'ccself'=>$ccMe,});
+    undef $failMessage unless (defined $failMessage) && (length($failMessage));
+
+    if(defined $failMessage)
+    {
+      $str = '<strong>Error</strong>: unable to send message "'.$msg.'": '.$failMessage;
+    } else {
+      $query->param($qp,'');  #clear text field
+      $str = $msg;
+      $str = escapeAngleBrackets($str);
+      $str = parseLinks($str,0,1) unless $$VARS{showRawPrivateMsg};
+      $str = '<small>You said "</small>'.$str.'<small>" to '.linkNode($recipient).'.</small>';
+    }
+    $str .= "<br />\n";
+  }
+
+  $str = "<div class='messageBox' id='replyto$messageID'><span id='sent$messageID'></span>" . $str . htmlcode('openform');
+  if ($showCC)
+  {
+    $str .= $query->checkbox('cc'.$qp,'','1','CC ');
+  }
+
+  $str .= $query->hidden( 'showwidget' , $messageID);
+  $str .= $query->hidden( 'ajaxTrigger', 1);
+
+  my $sendName='Send'; # Unless it's a usergroup message...
+  if ($usergroupID)
+  {
+    $sendName='Send to user';
+  }
+
+  $str .= $query->textfield(-name=>$qp, class=>"expandable ajax replyto$messageID:messageBox:$userID,$showCC,$messageID,$usergroupID", size=>20, maxlength=>1234 );
+  $str .= ' ' .$query->submit('message send', $sendName);
+  if ($usergroupID)
+  {
+    $str.=$query->button(-name=>'send_to_all',-value=>'Send to group', -onClick=>'$'."('#replyto$messageID > form > textarea').after('".$query->hidden("ug$usergroupID",1)."'); ".'$'."('#replyto$messageID > form').submit();");
+  }
+
+  $str .= $query->end_form() . '</div>';
+  return $str;
+
 }
 
 1;
