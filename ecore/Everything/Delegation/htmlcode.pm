@@ -54,6 +54,7 @@ BEGIN {
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *hasVoted = *Everything::HTML::hasVoted;
   *getHRLF = *Everything::HTML::getHRLF;
+  *evalCode = *Everything::HTML::evalCode;
 }
 
 # Used by showchoicefunc
@@ -62,7 +63,7 @@ use Everything::XML;
 # Used by parsetime
 use Time::Local;
 
-# Used by shownewexp, publishwriteup, static_javascript, zenwriteups
+# Used by shownewexp, publishwriteup, static_javascript, zenwriteups, hasAchieved
 use JSON;
 
 # Used by publishwriteup,isSpecialDate
@@ -4576,7 +4577,15 @@ sub static_javascript
   $e2 = encode_json($e2);
 
   my $min = undef; $min = '.min' unless $APP->inDevEnvironment();
-  my $libraries = qq'<script src="http://code.jquery.com/jquery-1.4.4$min.js" type="text/javascript"></script>';
+  my $libraries = "";
+  if($VARS->{use_javascript_beta})
+  {
+    # For JD to solve a safari problem
+    $libraries = qq'<script src="http://code.jquery.com/jquery-1.6.4$min.js" type="text/javascript"></script>';
+  }else{
+    # For everybody else
+    $libraries = qq'<script src="http://code.jquery.com/jquery-1.4.4$min.js" type="text/javascript"></script>';
+  }
   # mark as guest but only in non-canonical domain so testing and caching both work
 
   my $js_decisions = htmlcode('javascript_decider');
@@ -6391,7 +6400,9 @@ sub showmessages
 
     if($$VARS{showmessages_replylink} and not $$noreplylink{$$MSG{author_user}}){
       my $jsname = $name;
-      $jsname=htmlcode("eddiereply", $text) if $jsname eq "Cool_Man_Eddie";
+      # This is an incredibly stupid hack. Because the htmlcode dispatcher is trying to handle teplate logic, we get this bad behavior
+      #  pass in a harmless undef to keep the htmlcode function from mangling the string
+      $jsname=htmlcode("eddiereply", $text, undef) if $jsname eq "Cool_Man_Eddie";
       $jsname =~ s/"/&quot;/g;
       $jsname =~ s/'/\\'/g;
       $str.= qq!<a href="javascript:e2.startText('message','/msg $jsname ')" title="Reply to $jsname" class="action" style="display:none;">(r)</a>!;
@@ -10359,7 +10370,7 @@ sub atomiseNode
   my $APP = shift;
 
   my $host = $ENV{HTTP_HOST} || $Everything::CONF->{canonical_web_server} || "everything2.com";
-  my $host = "http://$host" ;
+  $host = "http://$host" ;
 
   my $atominfo = sub {
     my $N = shift ;
@@ -10724,6 +10735,630 @@ sub googleSearchForm
     <input type="submit" name="sa" value="Search" />
     </form>
     <br />';
+}
+
+sub hasAchieved
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($ACH, $user_id, $force) = @_;
+
+  getRef $ACH;
+  $ACH ||= getNode($_[0], 'achievement');
+  return 0 unless $ACH;
+
+  $user_id ||= $$USER{user_id};
+  return unless getNodeById($user_id)->{type}{title} eq 'user';
+
+  $force = undef unless $force == 1;
+
+  return 1 if $DB->sqlSelect('count(*)'
+    , 'achieved'
+    , "achieved_user=$user_id
+    AND achieved_achievement=$$ACH{node_id} LIMIT 1");
+
+  return 0 unless $$ACH{achievement_still_available};
+
+  my $result = $force || evalCode("my \$user_id = $user_id;\n$$ACH{code}", $NODE);
+
+  if ($result == 1)
+  {
+    $DB->sqlInsert("achieved",{achieved_user => $user_id, achieved_achievement => $$ACH{node_id}});
+
+    my $notification = getNode("achievement","notification")->{node_id};
+    if ($$VARS{settings} && from_json($$VARS{settings})->{notifications}->{$notification})
+    {
+      htmlcode('addNotification', $notification, $user_id, {achievement_id => $$ACH{node_id}});
+    }
+  }
+
+  return $result;
+}
+
+sub show_node_forward
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return "" unless ($query && defined $query->param('originalTitle'));
+
+  my $originalTitle = $query->param('originalTitle');
+  my $encodedTitle = encodeHTML($originalTitle);
+  my $forwardNode = getNode($originalTitle, 'node_forward', 'light');
+  my $alsoStr = htmlcode('usercheck', $originalTitle);
+  my $editStr = "";
+
+  if ($APP->isEditor($USER) && $forwardNode) {
+    $editStr = " ". linkNode($forwardNode, "(edit forward)", {displaytype => 'edit'});
+  }
+
+  return '<div class="forward">' . "Redirected from <em>$encodedTitle</em>$alsoStr$editStr". '</div>';
+}
+
+sub achievementsByType
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($aType, $user_id, $debug) = @_;
+  return unless $aType;
+
+  $user_id ||= $$USER{user_id};
+
+  my @achList = getNodeWhere({achievement_type => $aType}, 'achievement', 'subtype, title ASC');
+  return unless @achList;
+
+  my $str = undef;
+  my $finishedgroup = '';
+
+  foreach my $a (@achList)
+  {
+    # forget about blah100 if we haven't got blah050:
+    next if $$a{subtype} && $$a{subtype} eq $finishedgroup;
+
+    my $result = htmlcode('hasAchieved', $a, $user_id);
+    $finishedgroup = $$a{subtype} unless $result;
+
+    $str.=linkNode($a)." - $result<br>" if $debug;
+  }
+
+  return $str;
+}
+
+sub statsection_fun
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = undef;
+
+  # pass 2 args: category and value
+  local *genRow = sub {
+    return '<div><span class="var_label">' . $_[0] . ': </span><span class="var_value">' . $_[1] . "</span></div>\n";
+  };
+
+  $str .= genRow('Node-Fu',sprintf('%.1f', $$USER{experience}/$$VARS{numwriteups})) if ($$VARS{numwriteups});
+  $str .= genRow('Golden Trinkets',$$USER{karma});
+  $str .= genRow('Silver Trinkets',$$USER{sanctity});
+  $str .= genRow('Stars',$$USER{stars});
+  $str .= genRow('Easter Eggs',$$VARS{easter_eggs});
+  $str .= genRow('Tokens',$$VARS{tokens});
+  return '<div>'.$str.'</div>';
+
+}
+
+sub editor_homenode_tools
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $isRoot = $APP->isAdmin($USER);
+  my $isEditor = $APP->isEditor($USER);
+  my $targetVars = getVars $NODE;
+  my $iph = getNode('IP Hunter', 'restricted_superdoc');
+  my $nh = getNode('Node Heaven', 'superdoc');
+  my $oracle = getNode('The Oracle', 'oppressor_superdoc');
+  my $ipblacklist = getNode('IP Blacklist', 'restricted_superdoc');
+
+  # not sports illustrated!
+  my $SI = getNode("Suspension Info", "superdoc");
+  my $str = linkNode($SI, "Suspensions", {"lookup_user" => $$NODE{node_id}});
+
+  $str.=linkNode($nh, ' - Node Heaven Search', {'heavenuser'=>$$NODE{title}}) if $isEditor;
+
+  if($isRoot){
+    my @addrs = split /\s*,\s*/, $$targetVars{ipaddy};
+    $str.= "\n - ".linkNode($oracle, "The Oracle", {the_oracle_subject => $$NODE{title}}).' - '.linkNode($NODE,'editvars',{displaytype=>'editvars'}) . '<br />';
+    $str.= "\nIP Hunt: ".linkNode($iph, 'by name', {hunt_name => $$NODE{title}});
+    if (scalar @addrs)
+    {
+      $str.= ' or ';
+      map {
+        my $ip = encodeHTML($_);
+        $str.= "<br>\n"
+        . linkNode($iph, 'by IP', {hunt_ip => $ip})
+        . " ($ip <small>"
+        . htmlcode('ip lookup tools', $ip)
+        . "</small>)"
+        . '&nbsp;'
+        . linkNode($ipblacklist, "Blacklist IP?", {'bad_ip' => $ip} );
+      } @addrs;
+    }
+  } elsif ($isEditor) {
+    $str.= "\n - ".linkNode($oracle, "The Oracle", {the_oracle_subject => $$NODE{title}}) . "<br />\n";
+  }
+
+  return $str;
+}
+
+sub page_header
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # let page inject stuff into the header:
+  my ($str,$after) = ("","");
+  ($str,$after) = split /<!--.*?-->/, $PAGELOAD->{pageheader} if($PAGELOAD->{pageheader});
+
+  my $ntypet = $$NODE{type}{title};
+  if ( $ntypet eq 'e2node' or $ntypet eq 'writeup' )
+  {
+    $str .= htmlcode( 'createdby' )."\n" if $ntypet eq 'e2node' ;
+    $str .= htmlcode( 'firmlinks' )."\n" ;
+    $str .= htmlcode( 'usercheck' )."\n" if $ntypet eq 'e2node' ;
+  }
+
+  if ($ntypet eq 'e2node' || $ntypet eq 'superdoc' || $ntypet eq 'superdocnolinks' || $ntypet eq 'document')
+  {
+    my $COOLLINK = getNode('coollink','linktype') -> {node_id};
+    $PAGELOAD->{edcoollink} = $DB->sqlSelectHashref('to_node', 'links', 'from_node='.$$NODE{node_id}.' and linktype='.$COOLLINK.' limit 1') ;
+    $str .= '<div id="cooledby"><strong>cooled by</strong> '.linkNode($PAGELOAD->{edcoollink}->{to_node})."</div>\n" if $PAGELOAD->{edcoollink} ;
+  }
+
+  $str .= htmlcode( 'confirmop' ) if $query -> param( 'confirmop' ) ;
+  my $disabled = htmlcode('getdisabledactions');
+  $str .= htmlcode('page actions', $disabled) unless $APP->isGuest($USER) ;
+
+  unless ($disabled =~ /a/)
+  {
+    $str .= htmlcode('listnodecategories') unless defined $PAGELOAD->{e2nodeCategories}; # i.e. unless writeups have already listed any page categories
+  }
+
+  return qq'<div id="pageheader">
+    <h1 class="nodetitle">$$NODE{title}</h1>\n\t'.
+    htmlcode( 'show_node_forward' ) . "$str $after</div>" ;
+}
+
+sub writeuptools
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($N, $open) = @_;
+  getRef $N;
+
+  return htmlcode('drafttools', @_) if $$N{type}{title} eq 'draft';
+
+  my $isEditor = $APP->isEditor($USER);
+  my $isMine = ($$N{author_user} == $$USER{node_id});
+  return unless $isMine or $isEditor;
+
+  my ($linktext , $linktitle, $hide, $insure, $insured, $remove, $reassign, $nodenotes) = (undef,undef,undef,undef,undef,undef,undef,undef);
+
+  my $n = $$N{node_id};
+  my $id = 'adminheader'.$n ;
+  my $ajax = "ajax $id:writeuptools:$n,1";
+
+  my $author = getNodeById( $$N{author_user} );
+  $author = $query -> escapeHTML($$author{title}) if $author;
+
+  if ($$N{notnew})
+  {
+    $hide = 'Unhide';
+    $linktitle .= 'Hidden';
+    $linktext = 'H';
+  }else{
+    $hide = 'Hide';
+    $linktitle .= 'Published';
+    $linktext = 'P';
+  }
+
+  if ($isEditor and $$N{publication_status} and my $publisher = $DB->sqlSelect('publisher','publish',"publish_id = $n limit 1"))
+  {
+    $insured = 'Insured by '.($publisher ? linkNode($publisher) : '&#91;missing editor&#93;');
+    $linktitle .= "; $insured";
+    $linktitle =~ s/<.*?>//g;
+
+    $linktext .= '&#183;I';
+  }
+
+  if ($isMine)
+  {
+    $remove = linkNode($N, 'remove writeup', {confirmop => 'remove', %{htmlcode('verifyRequestHash', 'remove')}, writeup_id => $n, writeup_parent_e2node => $$N{parent_e2node}
+      # reattach to node
+      , draft_publication_status => getId(getNode 'private', 'publication_status')
+      , -class => "action" # no ajax: go to draft's own page
+      , -title => 'remove this writeup and return it to draft status'
+    });
+  }elsif ($insured) {
+    $insured .= ' ('.linkNode($NODE , 'undo', {confirmop=>'insure', ins_id => $n,
+      -class => "action $ajax" ,
+      -title => 'remove the insurance on this writeup'
+      }).')';
+  }else{
+    $insure = linkNode($NODE, 'Insure', { op=>'insure', ins_id=>$n, -class=>"action $ajax" });
+    my $authorForAjax = $author;
+    $authorForAjax =~ s/ /+/g;
+
+    $remove = $query -> small(
+      $query->textfield(
+        -name=>'removereason'.$n,
+        class=>'expandable', size=> $$VARS{nokillpopup} ? 12 : 30,
+        title=>"Reason for removing ${author}'s writeup"
+	)
+      )
+      .$query->checkbox(
+        -name => "removenode$n"
+        , value => 1
+        , checked => 0
+        , label => $$VARS{nokillpopup} ? 'axe' : 'Remove writeup'
+        , class => "replace ajax $id:drafttools?op=remove&removenode$n=1&removereason$n=/"
+        ."&removereason$n=/#Reason+for+removing+${authorForAjax}'s+writeup:$n,1"
+        , onclick => "if (this.checked) \$('#killbutton').click();" # for if no ajax
+      );
+  }
+
+  # mauler and riverrun don't want a widget:
+  return $query -> span({class => 'admin', id => $id}, $insured ? $insured : $insure.$remove) if $$VARS{nokillpopup};
+
+  my @out = ();
+
+  if ($isEditor)
+  {
+    $reassign = linkNode(getNode('Magical Writeup Reparenter', 'superdoc'), 'Reparent&hellip;', {old_writeup_id => $n})
+      .' &nbsp; '
+      .linkNode(getNode('Renunciation Chainsaw', 'oppressor_superdoc'), 'Change author&hellip;', {wu_id => $n});
+
+    if ($nodenotes = htmlcode('nodenote', $n))
+    {
+      $linktext .= '&#183;N';
+      $linktitle .= '; has nodenotes';
+    }
+
+    push @out, linkNode($NODE, "$hide writeup" , { op => lc($hide).'writeup', hidewriteup => $n , -class => "action $ajax"});
+
+    push @out, $insure if $insure;
+    @out = (join ' &#183; ', @out);
+  }
+
+  push @out, $insured if $insured;
+  push @out, $remove if $remove;
+  push @out, $reassign if $reassign;
+  push @out, $nodenotes if $nodenotes;
+
+  $query -> param( 'showwidget' , 'admin' ) if $open ;
+
+  return $query -> span({class => 'admin', id => $id},
+    htmlcode('widget', join('<hr>', @out), 'span', "<b>$linktext</b>", {showwidget => 'admin', -title => "$linktitle. Click here to show/hide admin options."}));
+
+}
+
+sub zenDisplayUserInfo
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my @showThings = (
+    'msgalias',
+    'createtime',
+    'last',
+    'nwriteups',
+    'recentwriteups',
+    'level',
+    'gp',
+    'coolsspent',
+    'mission',
+    'specialties',
+    'employment',
+    'motto',
+    'groups',
+    'categories',
+    'lastnoded',
+    'presents',
+    'draftshare',
+    'manip',
+    'msgme',
+    'msgyou',
+  );
+
+  my @noHTMLSCREEN = ('nwriteups', 'coolsspent', 'level');
+
+  # only works when called from a user node
+  # FIXME? should we abort for locked users? maybe just certain things?
+  return unless ($$NODE{type_nodetype}==getId(getType('user')));
+
+  # constants
+  my $UID = getId($USER);
+  my $isGuest = $APP->isGuest($USER);
+  my $nid = getId($NODE);
+  my $isRoot = $APP->isAdmin($USER);
+  my $isMe = (!$isGuest) && ($nid==$UID);
+  my $isEd = $APP->isEditor($USER);
+  my $isChanop = $APP->isChanop($USER);
+  my $SETTINGS = getVars $NODE;
+
+  # display
+  my $textPre = '<dt>';
+  my $textMid = '</dt><dd>';
+  my $textPost = "</dd>\n";
+
+  local *hash2var = sub {
+    my $hash_ref = $_[0];
+    my $str = undef;
+    while ( my ($key, $value) = each(%$hash_ref) )
+    {
+      $str.= "$key=>$value|||";
+    }
+
+    $str = substr($str,0,-3);
+
+    return $str;
+  };
+
+  local * var2hash = sub {
+    my ($str2) = @_;
+    my @split2 = split(/\|\|\|/,$str2);
+    my ($tstr, $hash ) = (undef, undef); 
+    my @temp = ();
+    foreach (@split2)
+    {
+      @temp = split(/\=\>/, $_);
+      $$hash{$temp[0]} = $temp[1];
+    }
+
+    return $hash;
+  };
+
+  local *info_groups = sub {
+    return if $$VARS{hidehomenodeUG} ;
+    return htmlcode('showUserGroups','').(( $APP->isEditor($NODE) )?(" - ".linkNode(getNode("Editor Endorsements","superdoc"),"My Endorsements",{editor=>$$NODE{node_id}})):(''));
+  };
+
+  local *info_categories = sub {
+    return if $$VARS{hidehomenodeUC} ;
+    return htmlcode('showUserCategories');
+  };
+
+  local *info_msgalias = sub {
+    #jb says: same as in [usercheck]
+    my $cf = getVars(getNode('chatterbox forward', 'setting'));
+    my $retstr = '';
+    return unless($$cf{lc($$NODE{title})});
+    my $ptr = $$cf{lc($$NODE{title})};
+    my $tousr = getNode($ptr, 'user');
+    unless($tousr)
+    {
+      $ptr =~ s/_/ /g;
+      $tousr = getNode($ptr, 'user')||getNode($ptr, 'usergroup');
+    }
+
+    return unless $tousr;
+    return linkNode($tousr);
+  };
+
+  local *info_lastnoded = sub {
+    return if $$VARS{hidelastnoded};
+    my $n = $$NODE{title};
+    return if ($n eq 'EDB') || ($n eq 'Klaproth') || ($n eq 'Cool Man Eddie') || ($n eq 'Webster 1913');
+
+    my $lastnoded = getNodeById($$SETTINGS{lastnoded});
+    return unless($lastnoded);
+    my $parentnode = getNodeById($$lastnoded{parent_e2node});
+
+    return linkNode($lastnoded, $$parentnode{title});
+  };
+
+  local *info_draftshare = sub {
+    return if $isGuest;
+    return linkNode(getNode('Drafts', 'superdoc'), 'Your drafts')
+    if ($$USER{node_id} == $$NODE{node_id});
+    return linkNode(getNode('Drafts', 'superdoc'), "$$NODE{title}'s drafts", {other_user => $$NODE{title}});
+  };
+
+  local *info_manip = sub {
+    return unless $isEd || $isChanop;
+    return htmlcode('editor homenode tools');
+  };
+
+  local *info_gp = sub {
+    return if $isGuest;
+    return unless($isMe or $isRoot);
+    return if ((exists $$VARS{GPoptout})&&(defined $$VARS{GPoptout}));
+    return $$NODE{GP};
+  };
+
+  local *info_recentwriteups = sub{
+    return unless $$SETTINGS{showrecentwucount};
+    my $recentwriteups = htmlcode('writeupssincelastyear',$nid);
+    $recentwriteups = '<em>none!</em>' unless $recentwriteups; 
+    return $recentwriteups;
+  };
+
+  local *info_msgme = sub {
+    return if $$VARS{hidemsgme};
+    return '<div id="userMessage">'.htmlcode('messageBox',$$NODE{node_id},1).'</div>';
+  };
+
+  local *info_msgyou = sub {
+    return if $isGuest;
+    return if $$VARS{hidemsgyou};
+    return unless my $nummsgs = $DB->sqlSelect('count(*)', 'message', "for_user=$$USER{node_id} and author_user=$$NODE{node_id}");
+    return linkNode(getNode('message inbox', 'superdoc'), "$nummsgs messages",{ fromuser => $$NODE{title} });
+  };
+
+  local *info_last = sub {
+    return if $$SETTINGS{hidelastseen} && !$isEd;
+    my $tmp = htmlcode('timesince',$$NODE{lasttime});
+    $tmp = defined($tmp) ? (' ('.$tmp.')') : '';
+    return htmlcode('parsetime','lasttime') . $tmp;
+  };
+
+  local *info_usersince = sub {
+    my $tmp = htmlcode('timesince',$$NODE{createtime});
+    $tmp = defined($tmp) ? (' ('.$tmp.')') : '';
+    return htmlcode('parsetime','createtime') . $tmp;
+  };
+
+  local *info_presents = sub {
+    return unless $isMe;
+    return if $$VARS{hidevotedata};
+    #thanks to epicenter nodelet, vote opcode, and {voting/experience system}
+    my $v = $$USER{votesleft} || 0;
+    my $c = $$VARS{cools} || 0;
+    my $VOTES = getVars(getNode('level votes', 'setting')) || 0;
+    my $COOLS = getVars(getNode('level cools', 'setting')) || 0;
+    my $lvl = $APP->getLevel($USER) || 0;
+    my $tV = $VOTES ? $$VOTES{$lvl} : 0; $tV = 0 if $tV eq 'NONE';
+    my $tC = $COOLS ? $$COOLS{$lvl} : 0; $tC = 0 if $tC eq 'NONE';
+    return '<strong>'.$v.'</strong><small> / '.$tV.'</small> votes &nbsp; | &nbsp; <strong>'.$c.'</strong><small> / '.$tC.'</small> C!s';
+  };
+
+  local *infoDefault = sub {
+    my $k = $_[0] || '';
+    my $v = $$SETTINGS{$k} ? $$SETTINGS{$k} : $$NODE{$k};
+    $v = htmlScreen($v) unless grep /$k/, @noHTMLSCREEN;
+    return parseLinks($v);
+  };
+
+  #titles of info things to display
+  my %prettyTitles = (
+    createtime=>'user since',
+    last=>'last seen',
+    nwriteups=>'number of write-ups',
+    recentwriteups=>'number of write-ups within last year',
+    level=>'level / experience',
+    gp=>'GP',
+    mission=>'mission drive within everything',
+    specialties=>'specialties',
+    employment=>'school/company',
+    motto=>'motto',
+    groups=>'member of',
+    categories=>'categories maintained',
+    lastnoded=>'most recent writeup',
+    # msgme=>'/msg me',	#set for each user, below
+    msgyou=>'/msgs from me',
+    draftshare=>'things in progress',
+    msgalias=>'is a chatterbox forward for',
+    manip=>'manipulation',
+    coolsspent=>'C!s spent',
+    presents=>'your daily votes and C!s',
+  );
+
+  if($isMe)
+  {
+    $prettyTitles{msgme} = '/msg yourself';
+    $prettyTitles{msgyou} = 'talking to yourself';
+  } else {
+    my $t=$$NODE{title};
+    $t=~tr/ /_/;
+    $prettyTitles{msgme} = 'Send private message to '.$$NODE{title};
+  }
+
+ my %specialDisplays = (
+    msgalias=>\&info_msgalias,
+    last=>\&info_last,
+    groups=>\&info_groups,
+    categories=>\&info_categories,
+    recentwriteups=>\&info_recentwriteups,
+    gp=>\&info_gp,
+    msgme=>,\&info_msgme,
+    msgyou=>,\&info_msgyou,
+    presents=>\&info_presents,
+    lastnoded=>\&info_lastnoded,
+    draftshare=>\&info_draftshare,
+    manip=>\&info_manip,
+  );
+
+  unless(($nid==220) ||($nid==322)) {	#hack around nate and hemos
+    $specialDisplays{'createtime'} = \&info_usersince;
+  }
+
+  #build result
+  my $str = '';
+  my $locker = getNodeById($$NODE{acctlock});
+  $str .= '<big><strong>Account locked</strong></big> by '.linkNode($locker).'<br>' if($APP->isEditor($USER) && $$NODE{acctlock} != 0);
+  my $t = undef; #nice Title
+  my $s = undef; #which Sub to call
+  my $r = undef; #Result of sub call
+
+  $str .=  qq'<dl id="userinfo">\n';
+
+  foreach my $k (@showThings)
+  {
+    $t = $prettyTitles{$k} || $k;
+    $s = $specialDisplays{$k} || \&infoDefault; #TODO generate function by title name, if doesn't exist, do default stuff
+    $r = &$s($k);
+    if($r) { $str .= $textPre . $t . $textMid . $r . $textPost; }
+  }
+  $str .=  "</dl>\n";
+
+  return $str;
+
+}
+
+sub coolcount
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+  
+  my $user_id = shift;
+  return $DB->sqlSelect("count(*)","coolwriteups JOIN node ON coolwriteups_id = node_id","author_user=$user_id and type_nodetype=117");
 }
 
 1;

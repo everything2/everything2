@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1914782</node_id>
   <title>googleSearchForm</title>
   <code>return '&lt;img src=&quot;http://www.google.com/coop/images/google_custom_search_smnar.gif&quot; alt=&quot;Google Custom Search&quot; style=&quot;margin:0 0 -5px 2px&quot; /&gt;&lt;br /&gt;

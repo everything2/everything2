@@ -51,6 +51,7 @@ BEGIN {
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *hasVoted = *Everything::HTML::hasVoted;
   *getHRLF = *Everything::HTML::getHRLF;
+  *evalCode = *Everything::HTML::evalCode;
 } 
 
 sub publishdraft
