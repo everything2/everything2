@@ -101,8 +101,11 @@ $str .= &quot;$paginationLinks
 while (my $MSG = $csr-&gt;fetchrow_hashref){
 	my $text = $$MSG{msgtext};
 
-	# TODO-MSG-OUTBOX : This needs further consideration
+	# This could use a little further consideration :
 	# Don't escape HTML for anyone since we're displaying the stored, pre-rendered &quot;you sent X to user Y&quot; text
+	# It should be relatively safe since it is text that has already been cleared as safe for html display to the user
+	# and they are messages which originated from the user who will be viewing it.
+	#
 	# don't escape HTML for bots
 	# unless ($$bots{$$touser{title}} eq 'Content Editors') {
 	#	$text = escapeAngleBrackets($text);
@@ -182,7 +185,8 @@ $str .= $paginationLinks.$query -&gt; p(
 		onclick=&quot;$('.archive&amp;#91;name^=unarchive]').each(function(){this.checked=true;});&quot;&gt;!
 );
 
-# TODO-MSG-OUTBOX : Consider adding back a send message area here (currently removed, would need it's own html form)
+# TODO-MSG-OUTBOX : Consider adding back a send message area here (currently removed, would need it's own html form). 
+#                   Might want to also build out reply-to links then.
 
 $str.' '
 	.$query-&gt;submit('message_outbox update', 'submit')
