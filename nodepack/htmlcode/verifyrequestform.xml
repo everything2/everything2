@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1979757</node_id>
   <title>verifyRequestForm</title>
   <code>#Generates the form fields used to verify the form submission. Pass a prefix.

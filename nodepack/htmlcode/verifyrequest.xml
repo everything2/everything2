@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1979756</node_id>
   <title>verifyRequest</title>
   <code>#checks that the form was a real e2 one
