@@ -63,7 +63,8 @@ use Everything::XML;
 # Used by parsetime
 use Time::Local;
 
-# Used by shownewexp, publishwriteup, static_javascript, zenwriteups, hasAchieved, addNotification
+# Used by shownewexp, publishwriteup, static_javascript, zenwriteups, hasAchieved, addNotification,
+#  showNewGP
 use JSON;
 
 # Used by publishwriteup,isSpecialDate
@@ -11900,6 +11901,262 @@ sub messageBox
   $str .= $query->end_form() . '</div>';
   return $str;
 
+}
+
+sub socialBookmark
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($nodeID, $includeTitles, $asList, $myTitle, $sbURL, $sbTitle, $imgTitle)=@_;
+
+  my $myurl="http://everything2.com/node/".$nodeID;
+  my $str = undef;
+  $str.="<li>" if $asList;
+  $str.=" <a href=\"http://furl.net/storeIt.jsp?u=".$myurl."&t=".$myTitle."\" target=\"_new\" onClick=\"window.location='".urlGen({'node_id'=>$$NODE{node_id}, 'op'=>'socialBookmark','bookmark_site'=>'$sbTitle'},1)."'\"> $sbTitle</a>" if ($includeTitles);
+  $str.="</li>" if $asList;
+
+  return $str;
+}
+
+sub showNewGP
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($shownumbers, $isxml, $newwuonly) = @_;
+  return if $APP->isGuest($USER);
+
+  #send TRUE if you want people to see how much GP they gained/lost
+  unless($$VARS{oldGP})
+  {
+    $$VARS{oldGP} = $$USER{GP};
+  }
+
+  return if ($$VARS{oldGP} == $$USER{GP} and not $newwuonly);
+  my $VSETTINGS = getVars(getNode('vote settings', 'setting'));
+
+  my $str = undef;
+  my $header = $$VSETTINGS{showExpHeader};
+  my $footer = $$VSETTINGS{showExpFooter};
+  my $newGP = $$USER{GP} - $$VARS{oldGP};
+
+  ($header, $footer) = ('', '');
+
+  my $xmlstr = undef;
+  $xmlstr = '<gpinfo>' if $isxml;
+  $xmlstr .= "<gpchange value=\"$newGP\">$$USER{GP}</gpchange>" if $isxml;
+
+  $str.=$header;
+  unless($newwuonly)
+  {
+    my $gpNotify = $newGP;
+
+    if($newGP > 0)
+    {
+      $str.='Yay! You gained ';
+    } else {
+      $$VARS{oldGP} = $$USER{GP};
+      return;
+      $str.='Ack! You lost ';
+      $newGP= -$newGP; # Positize for display only
+    }
+
+    #htmlcode('achievementsByType','egperience');
+
+    my $notification = getNode('GP','notification')->{node_id};
+    if ($$VARS{settings})
+    {
+      my $all_notifications = from_json($$VARS{settings})->{notifications};
+      if ($all_notifications->{$notification})
+      {
+        my $argSet = { amount => $gpNotify };
+        my $argStr = to_json($argSet);
+        my $addNotifier = htmlcode('addNotification', $notification,$$USER{user_id},$argStr);
+      }
+    }
+
+    if ($shownumbers)
+    {
+      if ($newGP > 1)
+      {
+        $str.='<strong>'.$newGP.'</strong> GP!';
+      } else {
+        $str.='<strong>1</strong> GP.';
+      }
+    } else {
+      $str.='GP!';
+    }
+
+  } # (end) unless($newwuonly)
+
+  $$VARS{oldGP} = $$USER{GP};
+  #reset the new GP flag
+
+  my $lvl = $APP->getLevel($USER)+1;
+
+
+  $xmlstr.='</gpinfo>' if $isxml;
+
+  return $xmlstr if $isxml;
+  return $str.$footer;
+}
+
+sub uploadAudio
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($field) =@_;
+  return "TODO: Fix audio uploads";
+
+  return if isSuspended($NODE,"audio");
+
+  my $str ='';
+  my $name = $field.'_file';
+  my $tmpfile = '/tmp/everythingaudio' . int(rand(10000)); 
+  my $imagedir = '/usr/local/everything/www/audio';
+
+  my $imageurl = 'audio/';
+  my $sizelimit = 8000000;
+  $sizelimit = 16000000 if isGod($USER);
+
+  my $fname = undef;
+  if ($fname = $query->upload($name))
+  {
+    my $imgname = $$NODE{title};
+    $imgname =~ s/\W/_/gs;
+  
+    UNIVERSAL::isa($query->uploadInfo($fname),"HASH") or return "File upload failed. If this persists, contact an administrator.";
+    my $content = $query->uploadInfo($fname)->{'Content-Type'};
+    unless ($content =~ /(mp3|mpg3|ogg|audio\/mpeg)$/)
+    {
+      return "this doesn't look like an mp3 (or an Ogg Vorbis) - it seems to be a $content!" 
+    }
+    $imgname .= '.'.$1;
+
+    my $size = undef;
+    $str.= "Got: ".(ref $fname)."<br>$content<br>";
+  
+    {
+      # local $/ = undef;
+      my $buf = join ('', <$fname>);
+      $size = length($buf);
+      if($size > $sizelimit)
+      {
+        return "your image is too big.  Our current limit is $sizelimit bytes";
+      }
+
+      open OUTFILE, ">$tmpfile";
+      print OUTFILE $buf;
+      close OUTFILE;
+    }
+	
+    system "/bin/mv $tmpfile $imagedir/$imgname";
+    $$NODE{$field} = $imageurl.$imgname;
+    $DB->updateNode ($NODE, $USER); #this is probably unnecesssary
+  
+    $DB->getDatabaseHandle()->do('replace newuserimage set newuserimage_id='.getId($NODE)); # Not sure what this bit does
+
+    $str.="$size bytes received!  " . $tmpfile;
+  } else {
+    $str.="Please only upload mp3s of 8MB or less, and only recordings of content you <em>explicitly have permission to record</em> - ".linkNodeTitle('be cool');
+    $str.=$query->filefield($name);
+  }
+
+  return $str;
+}
+
+sub addnodeforward
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isEditor($USER);
+
+  htmlcode('openform').'<fieldset><legend>Add node forward</legend>
+    <input type="hidden" name="op" value="new">
+    <input type="hidden" name="type" value="node_forward">
+    <input type="hidden" name="node" id="new_node_title" value="'.$$NODE{title}.'">
+    <label>Forward node to:
+    <input type="text" name="forward_to_node"></label>
+    <input type="submit" value="Add forward">
+    </fieldset>
+    </form>';
+}
+
+sub page_actions
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $disabled = shift || htmlcode('getdisabledactions');
+
+  my $c = undef;
+  my @actions = () ;
+  push @actions , $c if not $disabled =~ /c/ and $c = htmlcode('coolit','') ;
+
+  if ($$NODE{type}{title} eq 'user')
+  {
+    my $minLevel = 11;
+    my $Sanctificity = 10;
+    push @actions , linkNode($NODE, 'sanctify', {op=>'sanctify', -title => "Give 'em 10GP!",
+      -id => 'sanctify', -class => 'ajax (sanctify):ajaxEcho:Sanctified!'})
+      if !$$VARS{GPoptout} && $$USER{title} ne $$NODE{title} &&
+      $APP->getLevel($USER) >= $minLevel && $$USER{GP} >= $Sanctificity;
+    push @actions , $b if $b = htmlcode('favorite_noder');
+  }
+
+  my $b = ""; $b = htmlcode('bookmarkit' , $NODE , 'Add to bookmarks' ) unless $disabled =~ /b/ ;
+  my $a = ""; $a = htmlcode( 'categoryform' ) unless $disabled =~ /a/ ;
+  my $w = ""; $w = htmlcode( 'weblogform' ) if $$NODE{type}{sqltablelist} =~ /document/ && $$VARS{can_weblog} and not $disabled =~ /w/ ;
+
+  my $title = 'Add this '.( $$NODE{ type }{ title } eq 'e2node' ? 'entire page' : $$NODE{ type }{ title } ).' to a ' ;
+
+  unless ( $query -> param( 'addto' ) )
+  {
+    push @actions , $b if $b ;
+    push @actions , htmlcode( 'widget' , $a , 'form' , 'Add to category&hellip;' ,
+      { showwidget => 'category' , -title => $title.'category' } ) if $a ;
+    push @actions , htmlcode( 'widget' , $w , 'form' , 'Add to page&hellip;' ,
+      { showwidget => 'weblog' , -title => $title.' usergroup page' } ) if  $w ;
+  } else {
+    push @actions , htmlcode( 'widget' ,
+      $query -> hidden( 'addto' )."<small>$b</small><hr>\n$a\n$w" , 'form' , 'Add to&hellip;' ,
+      { showwidget => 'addto'.$$NODE{ node_id } , -title => $title.'category or usergroup page' } ) ;
+  }
+
+  my $disable = ""; $disable = linkNode( getNode( 'Disable actions' , 'superdoc' ) , '<small>x</small>' ,
+    { '-title' => 'Disable some/all actions for this node/nodetype&hellip;' ,
+    donode => $$NODE{node_id} } ) . "</li>\n<li>" if $APP->isEditor($USER) and not $disabled =~ /L/ ;
+
+  return '<ul class="topic actions"><li>' . $disable . join( "</li>\n<li>" , @actions ) . "</li>\n</ul>\n" if @actions ;
+  return '' ;
 }
 
 1;
