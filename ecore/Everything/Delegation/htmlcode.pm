@@ -12159,4 +12159,387 @@ sub page_actions
   return '' ;
 }
 
+sub writeupmessage
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($queryid, $N) = @_ ;
+  getRef $N ;
+  $N ||= $NODE ;
+
+  my $msg = $query->param($queryid) ;
+  my $wutitle = $$N{ title } ;
+  $wutitle =~ s/ \(\w+\)$// ;
+
+  my $msgreport = htmlcode('sendPrivateMessage', {
+    'recipient_id'=>$$N{ author_user },
+    'message'=>$msg,
+    'ccself'=>( $query->param('cc'.$queryid) ? 1 : 0 ) ,
+    'renode'=>$wutitle });
+
+  if( $msgreport )
+  {
+    $msgreport = ' <strong>Error</strong>: unable to send writeup message "'.$msg.'": '.$msgreport ;
+  } else {
+    $query -> Delete($queryid);
+    $msgreport = $msg;
+    $msgreport =~ s/\</&lt;/g;
+    $msgreport =~ s/\>/&gt;/g;
+    htmlcode('addNodenote', $query -> param("nn$queryid"), qq'messaged: "$msgreport"', $USER) if $query -> param("nn$queryid");
+    $msgreport = '<strong>Sent writeup message: </strong>'.parseLinks( $msgreport , $$N{parent} ) ;
+  }
+
+  return qq'<p id="sent$queryid" class="sentmessage">$msgreport</p>'
+
+}
+
+sub canseewriteup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($N) = @_ ;
+  $N ||= $NODE ;
+
+  my $isTarget = undef; $isTarget = delete $PAGELOAD->{notshown}->{targetauthor} if defined $PAGELOAD->{notshown} and $PAGELOAD->{notshown}->{targetauthor} == $$N{author_user};
+
+  if ($$N{author_user} == $$USER{user_id}){
+    $PAGELOAD->{my_writeup} ||= $N if $$NODE{type}{title} eq 'e2node'; # used by [addwriteup]
+    return 1;
+  }
+
+  my $param = $query ? $query -> param( 'showhidden' ) : undef;
+  my @checks = ('unfavorite', 'lowrep');
+
+  if ($$N{type}{title} eq 'draft'){
+    return 0 if $APP->isGuest($USER) or !$APP->canSeeDraft($USER, $N, 'find');
+    unshift @checks, 'unpublished';
+  }
+
+  return 1 if $$NODE{node_id} == $$N{node_id} or $isTarget or $param == $$N{node_id} or $param eq 'all';
+
+  my %tests = (
+    unpublished => sub{
+      getNodeById($$N{publication_status}) -> {title} eq 'review' && $APP->isEditor($USER);
+      },
+
+    unfavorite => sub{ # disliked authors
+      !$$VARS{ unfavoriteusers } ||
+      $$VARS{ unfavoriteusers } !~ /\b$$N{author_user}\b/ ;
+      },
+
+    lowrep => sub{ # reputation threshold
+      my $threshold = $Everything::CONF->{writeuplowrepthreshold} || 'none' ;
+      $threshold = $$VARS{ repThreshold } || '0' if exists $$VARS{ repThreshold } ; # ecore stores 0 as ''
+      $threshold eq 'none' or $$N{reputation} > $threshold;
+      }
+  );
+
+  foreach ( @checks )
+  {
+    # not keys because priority order is important
+    unless ( &{ $tests{$_} } )
+    {
+      return 1 if $param eq $_ ; # this is the reason it was hidden; we want it shown
+      push @{ $PAGELOAD->{notshown}->{$_} }, $N if defined $PAGELOAD->{notshown} and defined $PAGELOAD->{notshown}->{$_} ;
+      return 0 ;
+    }
+  }
+
+  return 1 ;
+}
+
+sub checkInfected
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # infection arises if user has an old login cookie belonging to a locked account
+
+  return 1 if $$VARS{infected};
+
+  # if logged on, no old cookie
+  return 0 unless $APP -> isGuest($USER) && $query;
+
+  my $loginCookie = $query->cookie($Everything::CONF->{cookiepass});
+
+  return 0 unless $loginCookie;
+
+  my ($user_name) = split(/\|/, $loginCookie);
+  my $check_user = getNode($user_name, 'user');
+
+  return 1 if $check_user && $$check_user{acctlock};
+
+  return 0;
+
+}
+
+sub confirmop
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $N = $query -> param('like_id') || $query -> param( 'cool_id' ) || $query -> param( 'ins_id' ) || $query -> param('cure_user_id');
+  my $node = undef; $node = getNodeById( $N ) if $N;
+  my $author = undef; $author = getNode( $$node{ author_user } ) if $node ;
+  $author = $$author{ title } if $author ;
+
+  my %opcodes = (
+    cool => "cool $author"."'s writeup" ,
+    uncoolme => 'uncool this node',
+    insure => "remove the insurance on $author"."'s writeup",
+    ilikeit => "send $author a message saying you like their work",
+    cure_infection => "remove ${author}'s infection",
+    nuke => "delete this $$NODE{type}{title}",
+    nukedraft => "delete this draft",
+    remove => "remove this writeup and return it to draft status"
+    , leavegroup => 'leave this usergroup'
+    , usernames => 'smite ' . $query -> escapeHTML ($query -> param('confirmop'))
+  );
+
+  my $str = '<fieldset><legend>Confirm</legend>
+    <p>Do you really want to '.(
+    $opcodes{ $query -> param( 'confirmop' ) } ||
+    $opcodes{ $query -> param( 'notanop' ) } ||
+    'do this'
+    ).'?</p>' ;
+
+  my $paramname = $query -> param( 'notanop' ) || 'op' ;
+  my $paramvalue = $query -> param( 'confirmop' ) ;
+  $query -> delete( 'confirmop' , 'op' , 'notanop' ) ;
+  $str .= qq'<button name="$paramname" value="$paramvalue" type="submit">OK</button>' ;
+  foreach ( $query -> param )
+  {
+    $str .= $query -> hidden( $_ ) if $query -> param( $_ ) ;
+  }
+  $str .= '</fieldset>' ;
+
+  htmlcode( 'widget' , $str , 'form' , '' , { showwidget => '' } ) ;
+}
+
+sub repair_e2node
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return "" unless $APP->isEditor($USER);
+
+  my ($syncnode, $no_order) = @_;
+  getRef $syncnode;
+  return "" unless($syncnode && $$syncnode{type}{title} eq "e2node");
+
+  # Set noorder if node's order is locked
+  $no_order = 1 if ($syncnode->{orderlock_user});
+
+  my $grp = $$syncnode{group};
+  my @wus = ();
+  my $linktype = getId(getNode 'parent_node', 'linktype');
+  my $update_group = undef; $update_group = 1 unless $no_order;
+
+  foreach(@$grp)
+  {
+    my $wu = getNodeById($_);
+    my $reject = undef; $reject = 1 unless $wu && $$wu{type}{title} eq "writeup" && !grep {$$_{node_id} == $$wu{node_id}} @wus;
+    $update_group ||= $reject;
+    next if $reject;
+
+    my $nt = getNodeById($$wu{wrtype_writeuptype});
+    $$wu{title} = $$syncnode{title}.' ('.$$nt{title}.')';
+    $$wu{parent_e2node} = $$syncnode{node_id};
+
+    updateNode($wu, -1);
+
+    # Get a numeric value to easily sort on -- publishtime as is may not be suitable in perl
+    # (date format can vary between MySQL versions/settings)
+    $$wu{numtime} = $DB->sqlSelect("publishtime+0", "writeup", "writeup_id = $$wu{node_id}");
+    push @wus, $wu;
+  
+    # make sure there is no left-over draft attachment
+    $DB -> sqlDelete('links', "from_node=$$wu{node_id} AND linktype=$linktype");
+  }
+
+  unless ($no_order)
+  {
+    my $webby = getId(getNode("Webster 1913", "user"));
+    my $lede = getId(getNode('lede', 'writeuptype'));
+    # Sort with lede-type at the top and Webby writeups at the bottom,
+    # secondarily sorting by publish time descending
+    my $isWebby = sub {
+      return 0 if $_[0]->{wrtype_writeuptype} == $lede;
+      return 1 unless $_[0]->{author_user} == $webby;
+      return 2;
+    };
+    @wus = sort { &$isWebby($a) <=> &$isWebby($b) || $$a{numtime} <=> $$b{numtime}} @wus;
+  }
+
+  if ($update_group)
+  {
+    # condition avoids infinite recursion through updateNode ...
+    replaceNodegroup($syncnode, \@wus, -1);
+    updateNode($syncnode, -1); # ... but is this necessary?
+  }
+
+  return "repaired and reordered" unless $no_order;
+  return "repaired";
+
+}
+
+sub movenodelet
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # moves a nodelet to a position (top=0)
+  # position=x removes nodelet (unless it's Master Control and the user is Godlike)
+  # position=after<nodelet number> puts it after nodelet, if nodelet present
+  # position=before<nodelet number>n puts it before nodelet, ditto
+  # no position/invalid position: put it at the bottom
+
+  my ($nodelet, $position) = @_;
+  $nodelet = getNode($nodelet, 'nodelet')->{node_id} if $nodelet =~ /\D/;
+
+  return unless $nodelet and getNodeById($nodelet)->{type}->{title} eq 'nodelet' and !$APP->isGuest($USER) and $USER->{title} ne 'everyone' ;
+
+  return if $position eq 'x' and ( $APP->isEditor($USER) ) && $nodelet == getNode('Master Control', 'nodelet')->{node_id};
+
+  $$VARS{nodelets} =~ s/(?:(^|,),+)|(?:\b$nodelet\b,*)|(?:,*$)/$1/g ;
+  return if $position eq 'x' ;
+
+  if ( $position =~ /^(before|after)(\d*)$/ )
+  {
+    my $find = $2 ;
+    my $replace = ( $1 eq 'before' ? "$nodelet,$find" : "$find,$nodelet" ) ;
+    $$VARS{nodelets} =~ s/\b$find\b/$replace/ ;
+  } elsif ( int $position ) {
+    $$VARS{nodelets} =~ s/^((?:(?:^|,)\d+\b){$position})/$1,$nodelet/ ;
+  } elsif ( $position eq '0' ){
+    $$VARS{nodelets} = "$nodelet,$$VARS{nodelets}" ;
+  }
+
+  $$VARS{nodelets} = "$$VARS{nodelets},$nodelet" unless $$VARS{nodelets} =~ /\b$nodelet\b/ ;
+
+}
+
+sub isInfected
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+ 
+  my ($patient) = @_;
+  getRef $patient;
+  my $patientVars = getVars($patient);
+  return ($$patientVars{infected} == 1);
+
+}
+
+sub editwriteup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($N, $message) = @_;
+
+  $N ||= {};
+  my $type = $$N{type}{title} || 'draft';
+  my $new = !$$N{node_id};
+
+  my $str = '<fieldset><legend>';
+
+  if ($new){
+    $str .= 'New draft';
+    $str .= '/writeup' if $type eq 'writeup';
+  }else{
+    $str .= 'Edit '.($$N{author_user} == $$USER{node_id} ? 'your ' : 'this ').$type;
+  }
+
+  $str .= '</legend>';
+
+  if ($type eq 'draft' and $$NODE{type}{title} ne 'e2node')
+  {
+    $str .= '<label>Title:'.$query -> textfield(
+      -name => 'draft_title',
+      class => 'draft_title',
+      value => $$N{title},
+      -force => 1,
+      size => 80).'</label><br>';
+    $str .= '<small>You already have a draft or writeup called '
+      .linkNode((getNodeWhere({title => $query -> param('draft_title'),
+        author_user => $$N{author_user}}, 'draft'))[0] ||
+      getNode($query -> param('draft_title'), 'e2node')).'.</small>'
+	if $query -> param('draft_title') && cleanNodeName($query -> param('draft_title')) ne $$N{title};
+  }
+
+  $str .= qq'<textarea name="${type}_doctext" id="writeup_doctext" '.htmlcode('customtextarea', '1').' class="formattable">'.encodeHTML($$N{doctext}).'</textarea>'.$message;
+
+  my $setType = undef; $setType = "\n<p>".htmlcode('setwriteuptype', $$N{wrtype_writeuptype})."</p>" if $type eq 'writeup' && !$APP->isMaintenanceNode($N);
+
+  unless ($new)
+  {
+    $str .= $setType.$query -> submit('sexisgood', "Update $type");
+  }else{
+    $str .= '<input type="hidden" name="op" value="new"><p>';
+
+    if ($type eq 'draft')
+    {
+      $str .= $query -> submit('sexisgood', 'Create draft')
+        .'<input type="hidden" name="type" value="draft"></p>';
+    }else{
+      $str .= $query ->submit('sexisgood', 'submit')
+        .' '.($APP->isMaintenanceNode($N)? '(post immediately as maintenance writeup)'.$query -> hidden('type', 'writeup').$query -> hidden('writeup_notnew', '1')
+        : $query -> radio_group(
+          -name => 'type',
+          values => ['draft', 'writeup'],
+          labels => {draft => 'post as draft', writeup => 'publish immediately'},
+          default => $$VARS{defaultpostwriteup} ? 'writeup' : 'draft',
+          force => 1
+        )).'</p>'.$setType;
+    }
+  }
+
+  return "$str<p class='edithelp'><strong>Some Helpful Links:</strong>".parseLinks('[E2 HTML Tags] &middot;[HTML Symbol Reference] &middot;
+    [Using Unicode on E2] &middot;[Reference Desk]</p></fieldset>');
+
+}
+
 1;
