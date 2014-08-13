@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>2009167</node_id>
   <title>make node sane</title>
   <code># Expects single parameter, node_id or node ref
