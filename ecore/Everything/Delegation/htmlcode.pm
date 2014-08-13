@@ -13197,7 +13197,7 @@ sub notificationsJSON
   }
 
   my $currentTime = time;
-  my $sqlString = qq|;
+  my $sqlString = qq|
     SELECT notified.notification_id, notified.args, notified.notified_id
     , UNIX_TIMESTAMP(notified.notified_time) 'notified_time'
     , (hourLimit * 3600 - $currentTime + UNIX_TIMESTAMP(notified.notified_time)) AS timeLimit
