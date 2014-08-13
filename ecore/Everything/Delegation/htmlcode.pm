@@ -55,6 +55,7 @@ BEGIN {
   *hasVoted = *Everything::HTML::hasVoted;
   *getHRLF = *Everything::HTML::getHRLF;
   *evalCode = *Everything::HTML::evalCode;
+  *getCompiledCode = *Everything::HTML::getCompiledCode;
 }
 
 # Used by showchoicefunc
@@ -64,7 +65,7 @@ use Everything::XML;
 use Time::Local;
 
 # Used by shownewexp, publishwriteup, static_javascript, zenwriteups, hasAchieved, addNotification,
-#  showNewGP
+#  showNewGP, notificationsJSON
 use JSON;
 
 # Used by publishwriteup,isSpecialDate
@@ -12540,6 +12541,1020 @@ sub editwriteup
   return "$str<p class='edithelp'><strong>Some Helpful Links:</strong>".parseLinks('[E2 HTML Tags] &middot;[HTML Symbol Reference] &middot;
     [Using Unicode on E2] &middot;[Reference Desk]</p></fieldset>');
 
+}
+
+sub blacklistedIP
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = undef;
+  my $offset = int($query->param('offset')) || 0;
+  my $pageSize = 200;
+  my ($firstItem, $lastItem) = ($offset + 1, $offset + $pageSize);
+  my $records = $pageSize * 2;
+  my $displayCount = $pageSize;
+
+  ###################################################
+  # addrFromInt
+  ###################################################
+  # Takes an integer representing an IPv4 address
+  #  as an argument
+  #
+  # Returns a string with dotted IP notation
+  ###################################################
+
+  my $addrFromInt = sub {
+    my $intAddr = shift;
+    my ($oc1, $oc2, $oc3, $oc4) = ($intAddr & 255 , ($intAddr >> 8) & 255, ($intAddr >> 16) & 255, ($intAddr >> 24) & 255 );
+    return "$oc4.$oc3.$oc2.$oc1";
+  };
+
+  ###################################################
+  # rangeBitsFromInts
+  ###################################################
+  # Takes two integers representing ends of an IP
+  #  address range.
+  #
+  # Returns the number of bits it spans if they
+  #  represent a CIDR range.
+  # Returns undef otherwise.
+  ###################################################
+
+  my $rangeBitsFromInts = sub {
+    my ($minAddr, $maxAddr) = @_;
+    my $diff = abs($maxAddr - $minAddr) + 1;
+    my $log2diff = log($diff)/log(2);
+    my $epsilon = 1e-11; 
+    return undef if (($log2diff - int($log2diff)) > $epsilon);
+    return (32 - $log2diff);
+  };
+
+  ###################################################
+  # populateAddressForRange
+  ###################################################
+  # Takes a hashref containing either data about IP
+  #  blacklist entry or an IP blacklist range entry
+  # If it contains a range entry, Modifies the row
+  #  so ipblacklist_address contains a string
+  #  representation
+  #
+  # Returns nothing
+  ###################################################
+
+  my $populateAddressForRange = sub {
+    my $row = shift;
+
+    if (defined $$row{min_ip})
+    {
+      my ($minAddrInt, $maxAddrInt) = ($$row{min_ip}, $$row{max_ip});
+      my ($minAddr, $maxAddr) = (&$addrFromInt($minAddrInt), &$addrFromInt($maxAddrInt));
+      my $bits = &$rangeBitsFromInts($minAddrInt, $maxAddrInt);
+      if (defined $bits)
+      {
+        $$row{ipblacklist_ipaddress} = "$minAddr/$bits";
+      } else {
+        $$row{ipblacklist_ipaddress} = "$minAddr - $maxAddr";
+      }
+    }
+  };
+
+  ###################################################
+  # removeButton
+  ###################################################
+  # Takes a hashref containing either data about IP
+  #  blacklist entry or an IP blacklist range entry
+  #
+  # Returns a string containing a submit button to
+  #  remove the given entry
+  ###################################################
+
+  my $removeButton = sub {
+    my ($row) = @_;
+    my $hiddenHash = { };
+    $$hiddenHash{-name}  = 'remove_ip_block_ref';
+    $$hiddenHash{-value} = $$row{ipblacklistref_id};
+    my $result =  $query->hidden($hiddenHash) . '' . $query->submit({ -name => 'Remove' });
+    return $result;
+  };
+
+  ###################################################
+  ###################################################
+  # End Functions
+  ###################################################
+
+  my $getBlacklistSQL = qq|
+    SELECT ipblacklistref.ipblacklistref_id
+    , IFNULL(ipblacklist.ipblacklist_user, ipblacklistrange.banner_user_id) 'ipblacklist_user'
+    , ipblacklist.ipblacklist_ipaddress
+    , IFNULL(ipblacklist.ipblacklist_comment, ipblacklistrange.comment) 'ipblacklist_comment'
+    , ipblacklistrange.min_ip
+    , ipblacklistrange.max_ip
+    FROM ipblacklistref
+    LEFT JOIN ipblacklistrange ON ipblacklistrange.ipblacklistref_id = ipblacklistref.ipblacklistref_id
+    LEFT JOIN ipblacklist ON ipblacklist.ipblacklistref_id = ipblacklistref.ipblacklistref_id
+    WHERE (ipblacklist_id IS NOT NULL OR ipblacklistrange_id IS NOT NULL)
+    ORDER BY ipblacklistref.ipblacklistref_id DESC
+    LIMIT $offset,$records|;
+
+  my $cursor = undef;
+  my $saveRaise = $DB->{dbh}->{RaiseError};
+  $DB->{dbh}->{RaiseError} = 1;
+  eval { 
+    $cursor = $DB->{dbh}->prepare($getBlacklistSQL);
+    $cursor->execute();
+  };
+  $DB->{dbh}->{RaiseError} = $saveRaise;
+
+  if ($@)
+  {
+    $str .="<h3>Unable to load IP blacklist</h3>";
+    return $str;
+  }
+
+  my $fetchResults = $cursor->fetchall_arrayref({});
+  my $resultCount = scalar @$fetchResults;
+  # Shorten fetchResults to just the items we will display
+  $fetchResults = [ @$fetchResults[0..($displayCount - 1)] ];
+
+  my ($prevLink, $nextLink) = ('', '');
+
+  if ($offset > 0)
+  {
+    my $prevOffset = $offset - $pageSize;
+    my $offsetHash = { };
+	
+    $$offsetHash{showquery} = $query->param('showquery') if $query->param('showquery');
+
+    if ($prevOffset <= 0)
+    {
+      $prevOffset = 0;
+    } else {
+      $$offsetHash{offset} = $prevOffset;
+    }
+
+    $prevLink = linkNode($NODE , "Previous (" . ($prevOffset + 1) . " - " . ($prevOffset + $pageSize) . ")", $offsetHash);
+  }
+
+  if ($resultCount > $pageSize)
+  {
+    my $maxRecord = $offset + $resultCount;
+    my $offsetHash = { 'offset' => $offset + $pageSize };
+	
+    $$offsetHash{showquery} = $query->param('showquery') if $query->param('showquery');
+
+    $nextLink = linkNode($NODE, "Next (" . ($pageSize + $offset + 1) . " - " . $maxRecord . ")", $offsetHash);
+  } else {
+    $lastItem = $offset + $resultCount;
+    $displayCount = $resultCount;
+  }
+
+  my $header = qq|
+    <h3>Currently blacklisted IPs (#$firstItem - $lastItem)</h3>
+    <p>
+    $prevLink
+    $nextLink
+    </p>
+    <table border="1" cellspacing="2" cellpadding="3">
+      <tr>
+        <th>IP Address</th>
+        <th>Blocked by user</th>
+        <th>Reason</th>
+        <th>Remove?</th>
+      </tr>|;
+
+  $str .= $header;
+
+  $str .= "<pre>$getBlacklistSQL</pre>" if $query->param('showquery');
+
+  # Don't retain the value if we just deleted a block
+  $query->delete('remove_ip_block_ref');
+
+  for my $row (@$fetchResults)
+  {
+    &$populateAddressForRange($row);
+    $str .= "<tr>"
+      ."<td>$$row{ipblacklist_ipaddress}</td>"
+      ."<td>".linkNode($$row{ipblacklist_user})."</td>"
+      ."<td>$$row{ipblacklist_comment}</td>"
+      ."<td>"
+      . htmlcode('openform', 'removebanform')
+      . &$removeButton($row)
+      . $query->end_form()
+      ."</td>"
+      ."</tr>"
+  }
+
+  $str .= "</table>";
+  return $str;
+
+}
+
+sub listnodecategories
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($originalN, $isIncludedParent) = @_;
+  my $N = $originalN || $NODE;
+  getRef $N;
+  my $nodeid = $$N{node_id};
+
+  my $category_nodeid = getType('category')->{node_id};
+  my $catlinktype = getNode('category', 'linktype')->{node_id};
+
+  my $dbh = $DB->getDatabaseHandle();
+  return 'No database handle!' unless $dbh;
+  my $sql = "SELECT node.node_id, node.author_user
+    FROM node, links
+    WHERE node.node_id = links.from_node
+    AND links.to_node = $nodeid
+    AND node.type_nodetype = $category_nodeid
+    AND links.linktype = $catlinktype";
+
+  my $ds = $dbh->prepare($sql);
+  $ds->execute() or return $ds->errstr;
+
+  my @items = ();
+  while(my $row = $ds->fetchrow_hashref)
+  {
+    $sql = "SELECT node.node_id
+      FROM node, links
+      WHERE node.node_id = links.to_node
+      AND links.from_node = $$row{node_id}
+      AND links.linktype = $catlinktype
+      ORDER BY links.food, node.title, node.type_nodetype";
+    my $ids = $dbh->prepare($sql);
+    $ids->execute() or return $ids->errstr;
+    my $prev = -2;
+    my $next = -2;
+    while (my $irow = $ids->fetchrow_hashref)
+    {
+      if ($$irow{node_id} == $nodeid)
+      {
+        $next = -1;
+      } elsif ($next == -1) { 
+        $next = $$irow{node_id};
+      } elsif ($next == -2) { 
+        $prev = $$irow{node_id};
+      } else { 
+        last 
+      };
+    }
+
+    my $authorCat = undef; $authorCat = {-class => ' authors'} if $$N{type}{title} eq 'writeup' && $$row{author_user} == $$N{author_user};
+    if ($prev < 0)
+    {
+      $prev = ' ';
+    } else { 
+      $prev = linkNode($prev, '&#xab;', { -title => 'Previous: '.getNodeById($prev)->{title}, -class => 'previous' });
+    }
+    if ($next < 0)
+    {
+      $next = ' ';
+    } else { 
+      $next = linkNode($next, '&#xbb;', { -title => 'Next: '.getNodeById($next)->{title}, -class => 'next' });
+    }
+
+    my $s = "$prev&nbsp;&nbsp;" . linkNode($$row{node_id}, '', $authorCat) . "&nbsp;&nbsp;$next";
+    $s =~ s/^\s+//;
+    $s =~ s/\s+$//;
+    unless ($authorCat)
+    {
+      push @items, $s;
+    }else{
+      unshift @items, $s;
+    }
+  }
+
+
+  # show parent e2node categories along with writeup categories
+  my $parentNodeId = $$N{parent_e2node};
+
+  # prevent recursion from missing or self-referencing parent e2node
+  if ($parentNodeId && $parentNodeId != $originalN && $$N{type}{title} eq 'writeup' && !exists $PAGELOAD->{e2nodeCategories})
+  {
+    $PAGELOAD->{e2nodeCategories} = htmlcode('listnodecategories', $parentNodeId, 'is parent');
+  }
+
+  if (@items || $PAGELOAD->{e2nodeCategories})
+  {
+    my $ies = (@items != 1 ? 'ies' : 'y');
+    my ($c, $addId) = !$isIncludedParent ? ('C', qq' id="categories$nodeid"') : ('Page c', '');
+    my $moggies = undef; $moggies = qq'<h4>${c}ategor$ies:</h4> <ul><li>'.(join '</li><li>', @items).'</li></ul>' if @items;
+    return qq'<div class="categories"$addId">$moggies\n$$PAGELOAD{e2nodeCategories}\n</div>';
+  }
+
+  #id so content can be ajaxed in, but no class so no styling that makes it take up space:
+  return qq'<div id="categories$nodeid"></div>' unless $isIncludedParent;
+  return '';
+}
+
+# Not actually a 'test'. In production
+#
+sub testshowmessages
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($maxmsgs,$showOpts) = @_;
+  my $json = {};
+  my $jsoncount = undef; $jsoncount = 1 if $showOpts =~ /j/;
+
+  # display options
+  $showOpts ||= '';
+  my $noreplylink = {getId(getNode("klaproth","user")) => 1};
+
+  my $showD = $$VARS{pmsgDate} || (index($showOpts,'d')!=-1); #show date
+  my $showT = $$VARS{pmsgTime} || (index($showOpts,'t')!=-1); #show time
+  my $showDT = $showD || $showT;
+  my $showArc = index($showOpts,'a')!=-1;      #show archived messages (usually don't)
+  my $showNotArc = index($showOpts,'A')==-1;   #show non-archive messages (usually do)
+  return unless $showArc || $showNotArc;
+  my $showGroup = index($showOpts,'g')==-1;    #show group messages (usually do)
+  my $showNotGroup = index($showOpts,'G')==-1; #show group messages (usually do)
+  my $canSeeHidden = $APP->isEditor($USER);
+  return unless $showGroup || $showNotGroup;
+
+  return if $APP->isGuest($USER);
+
+  my $showLastOnes = ! ($$VARS{chatterbox_msgs_ascend} || 0); 
+
+  if($maxmsgs =~ /^(.)(\d+)$/)
+  {
+    # force oldest/newest first
+    $maxmsgs=$2;
+    if($1 eq '-')
+    {
+      $showLastOnes=1;
+    } elsif($1 eq '+') {
+      $showLastOnes=0;
+    }
+  }
+
+  $maxmsgs ||= 10;
+  $maxmsgs = 100 if ($maxmsgs > 100);
+
+  my $order = $showLastOnes ? 'DESC' : 'ASC';
+  my $limits = 'for_user='.getId($USER);
+  my $totalMsg = $DB->sqlSelect('COUNT(*)','message',$limits); #total messages for user, archived and not, group and not, from all users
+  my $filterUser = $query->param('fromuser');
+  if($filterUser)
+  {
+    $filterUser = getNode($filterUser, 'user');
+    $filterUser = $filterUser ? $$filterUser{node_id} : 0;
+  }
+
+  $limits .= ' AND author_user='.$filterUser if $filterUser;
+
+  my $filterMinor = ''; #things to only filter for display, and not for the "X more in inbox" message
+  unless($showGroup && $showNotGroup)
+  {
+    $filterMinor .= ' AND for_usergroup=0' unless $showGroup;
+    $filterMinor .= ' AND for_usergroup!=0' unless $showNotGroup;
+  }
+
+  unless($showArc && $showNotArc)
+  {
+    $filterMinor .= ' AND archive=0' unless $showArc;
+    $filterMinor .= ' AND archive!=0' unless $showNotArc;
+  }
+
+  my $csr = $DB->sqlSelectMany('*', 'message', $limits . $filterMinor, "ORDER BY  message_id $order LIMIT $maxmsgs");
+  my $UID = getId($USER) || 0;
+  my $isEDev = $APP->isDeveloper($USER, "nogods");
+
+  my $aid = undef;  #message's author's ID
+  my $a = undef; #message's author; have to do this in case sender has been deleted (!)
+  my $ugID = undef;
+  my $UG = undef;
+  my $flags = undef;
+  my $userLink = undef;
+
+  # UIDs for Virgil, CME, Klaproth, and root.
+  my @botlist = qw(1080927 839239 952215 113);
+  my %bots = map{$_ => 1} @botlist;
+
+  my $string = '';
+  my @msgs = @{ $csr->fetchall_arrayref( {} ) };
+  @msgs = reverse @msgs if $showLastOnes;
+  foreach my $MSG (@msgs)
+  {
+    my $text = $$MSG{msgtext};
+
+    # Bots, don't escape HTML for them.
+    unless( exists $bots{$$MSG{author_user}} )
+    {
+      $text = escapeAngleBrackets($text);
+    }
+
+    $text =~ s/\[([^\]]*?)$/&#91;$1/; #unclosed [ fixer
+    my $timestamp = $$MSG{tstamp};
+    $timestamp =~ s/\D//g;
+    my $str = qq'<div class="privmsg timestamp_$timestamp" id="message_$$MSG{message_id}">';
+
+    $aid = $$MSG{author_user} || 0;
+    if($aid)
+    {
+      $a = getNodeById($aid) || 0;
+    } else { 
+      undef $a;
+    }
+    my $authorVars = undef; $authorVars = getVars $a if $a;
+    my $name = $a ? $$a{title} : '?';
+    $name =~ tr/ /_/;
+    $name = encodeHTML($name);
+
+    if($$VARS{showmessages_replylink} and not $$noreplylink{$$MSG{author_user}})
+    {
+      $str.='<div class="repliable"></div>'
+    }
+
+    $ugID = $$MSG{for_usergroup};
+    $UG = $ugID ? getNodeById($ugID) : undef;
+
+    if($$VARS{showmessages_replylink} && defined($UG) and not $$noreplylink{$$MSG{author_user}})
+    {
+      my $grptitle = $$UG{node_id}==$UID ? '' : $$UG{title};
+      # Grmph. -- wharf
+      $grptitle =~ s/ /_/g;
+      $grptitle =~ s/"/&quot;/g;
+      $grptitle =~ s/'/\\'/g;
+      # Test for ONO. This is moderately cheesy because the message text
+      # could start with "ONO: ", but that's rare in practice. The table
+      # doesn't track ONOness, so the text is all we've got.
+      my $ono = undef; $ono = '?' if $text =~ /^O[nN]O: /;
+    }
+
+    if($showDT)
+    {
+      my $tsflags = 128; # compact timestamp
+      $str .= '<small style="font-family: sans-serif;">';
+      $tsflags |= 1 if !$showT; # hide time 
+      $tsflags |= 2 if !$showD; # hide date
+      $str .= htmlcode('parsetimestamp', "$$MSG{tstamp},$tsflags");
+      $str .= '</small> ';
+    }
+
+    $str .= '(' . linkNode($UG,0,{lastnode_id=>0}) . ') ' if $ugID;
+
+    # N-Wing probably doing too much work...
+    # changes literal '\n' into HTML breaks (slash, then n; not a newline)
+    $text =~ s/\s+\\n\s+/<br>/g;
+
+    if ($$VARS{chatterbox_authorsince} && $a && $authorVars)
+    {
+      $str .= '<small>('. htmlcode('timesince', $a->{lasttime}, 1). ')</small> ' if (!$$authorVars{hidelastseen} || $canSeeHidden);
+    }
+
+    if($$VARS{powersMsg})
+    {
+      # Separating mere coders from the gods...
+      my $isCommitter = $APP->inUsergroup($aid,'%%','nogods');
+      my $isChanop = $APP->isChanop($aid,"nogods");
+
+      $flags = '';
+      if($APP->isAdmin($aid) && !$APP->getParameter($aid,"hide_chatterbox_staff_symbol"))
+      {
+        $flags .= '@';
+      } elsif($APP->isEditor($aid,"nogods") && !$APP->isAdmin($aid) && !$APP->getParameter($aid,"hide_chatterbox_staff_symbol")) {
+        $flags .= '$';
+      }
+
+      $flags .= '*' if $isCommitter;
+
+      $flags .= '+' if $isChanop;
+
+      $flags .= '%' if $isEDev && $APP->isDeveloper($aid, "nogods");
+      if(length($flags))
+      {
+        $flags = '<small>'.$flags.'</small> ';
+        $str .= $flags;
+      }
+    }
+
+    $userLink = $a ? linkNode($a, 0) : '?';
+
+    $str .= '<cite>'.$userLink.' says</cite> ' . parseLinks($text,0,1);
+    my $mbid = $$MSG{message_id};
+    my $noReplyWhy = undef;
+    my $replyBox = htmlcode('messageBox', $aid, 0, $mbid, $ugID, \$noReplyWhy);
+    my $replyWidgetOptions = {
+      showwidget => $mbid
+      , '-title' => "Reply to $name"
+      , '-closetitle' => 'hide reply box' };
+    my $removeBox = htmlcode('confirmDeleteMessage', $mbid);
+    my $removeWidgetOptions = {
+      showwidget => "deletemsg_$mbid"
+      , '-title' => "Delete the above message"
+      , '-closetitle' => 'hide delete box'
+      , '-id' => "remove$mbid" };
+    $str .= "<div class='actions'>";
+    if ($replyBox)
+    {
+      $str .=  ""
+      . "<div class='reply'>"
+      . htmlcode('widget', $replyBox, 'div', "Reply", $replyWidgetOptions)
+      . "</div>";
+    } else {
+      $str .=  ""
+      . "<div class='reply'>"
+      . "<a title='" . encodeHTML($noReplyWhy) . "'>"
+      . "Can't reply"
+      . "</a>"
+      . "</div>";
+    }
+  
+    $str.= ""
+      . '<div class="delete">'
+      . htmlcode('widget', $removeBox, 'div', "Remove", $removeWidgetOptions)
+      . '</div>';
+    $str .= "</div>"; # </div actions>
+    $str .= "</div>"; # </div privmsg>
+
+    unless ($jsoncount)
+    {
+      $string.="$str\n";
+    } else {
+      $$json{$jsoncount} = {
+        value => $str,
+        id => $$MSG{message_id},
+        timestamp => $timestamp
+      };
+      $jsoncount++;
+    }
+  }
+
+  if($totalMsg)
+  {
+    my $MI_node = getNode("Message Inbox", "superdoc");
+    my $str = qq'<p id="message_total$totalMsg" class="timestamp_920101106172500">(you have '.linkNode($MI_node,"$totalMsg private messages").')</p>';
+
+    unless ($jsoncount)
+    {
+      $string.="$str\n";
+    } else {
+      $$json{$jsoncount} = {
+        value => $str,
+        id => "total$totalMsg", # will be replaced if number changes
+        timestamp => '920101106172500' # keep at bottom. 90,000 years should be enough
+      };
+    }
+  }
+
+  return $string unless $jsoncount;
+  return $json;
+}
+
+sub confirmDeleteMessage
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($messageID,$actioned) = @_;
+
+  if ($actioned eq "deleted")
+  {
+    return "Message deleted";
+  }
+  if ($actioned eq "archived")
+  {
+    return "Message archived";
+  }
+
+  my $archiveWhat="archive_$messageID";
+
+  my $str = linkNode( $NODE , 'Archive message' , { op => 'message', $archiveWhat => 'yup', lastnode_id => 0 , -title => "archive the above message" , -class => "action ajax message_$messageID:confirmDeleteMessage:$messageID,archived" }).' or ';
+
+  my $deleteWhat="deletemsg_$messageID";
+
+  $str.=linkNode( $NODE , 'delete for good' , { op => 'message', $deleteWhat => 'yup', lastnode_id => 0 , -title => "delete the above message" , -class => "action ajax message_$messageID:confirmDeleteMessage:$messageID,deleted" });
+
+  return $str;
+}
+
+sub notificationsJSON
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $limit = 10;
+  my $wrap = shift;
+
+  my $str = undef;
+
+  my $safe_JSON_decode = sub {
+    my $args = { };
+    my $argJSON = shift;
+    # Suppress failed conversion -- return empty hash instead
+    local $SIG{__DIE__} = sub { };
+    $args = JSON::from_json($argJSON);
+    return $args;
+  };
+
+  # hide node notes from non-editors
+  my $isEditor = $APP->isEditor($USER);
+
+  my $otherNotifications = "0";
+
+  if ($$VARS{settings})
+  {
+    my $notificationList = from_json($$VARS{settings})->{notifications};
+    my @notify = ( );
+
+    for (keys %{$notificationList})
+    {
+      next if !htmlcode('canseeNotification', $_);
+      push @notify, $_;
+    }
+
+    $otherNotifications = join(",",@notify) if scalar @notify;
+  }
+
+  my $currentTime = time;
+  my $sqlString = qq|;
+    SELECT notified.notification_id, notified.args, notified.notified_id
+    , UNIX_TIMESTAMP(notified.notified_time) 'notified_time'
+    , (hourLimit * 3600 - $currentTime + UNIX_TIMESTAMP(notified.notified_time)) AS timeLimit
+    FROM notified
+    INNER JOIN notification
+    ON notification.notification_id = notified.notification_id
+    LEFT OUTER JOIN notified AS reference
+    ON reference.user_id = $$USER{user_id} 
+    AND reference.reference_notified_id = notified.notified_id
+    AND reference.is_seen = 1
+    WHERE
+    (
+      notified.user_id = $$USER{user_id}
+      AND notified.is_seen = 0
+    ) OR (
+      notified.user_id IN ($otherNotifications)
+      AND reference.is_seen IS NULL
+    )
+    HAVING (timeLimit > 0)
+    ORDER BY notified_id DESC
+    LIMIT $limit|;
+
+  my $dbh = $DB->getDatabaseHandle();
+  my $db_notifieds = $dbh->selectall_arrayref($sqlString, {Slice => {}} );
+  my $notification_list = { };
+  my $notify_count = 1;
+
+  foreach my $notify (@$db_notifieds)
+  {
+    my $notification = getNodeById($$notify{notification_id});
+    my $displayCode = $notification->{code};
+    my $invalidCheckCode = $notification->{invalid_check};
+    my $argJSON = $$notify{args};
+    $argJSON =~ s/'/\'/g;
+    my $args = &$safe_JSON_decode($argJSON);
+    my $evalNotify = sub {
+      my $notifyCode = shift;
+      my $wrappedNotifyCode = "sub { my \$args = shift; 0; $notifyCode };";
+      my $wrappedSub = evalCode($wrappedNotifyCode);
+      return &$wrappedSub($args);
+      };
+
+    # Don't return an invalid notification and remove it from the notified table
+    if ($invalidCheckCode ne '' && &$evalNotify($invalidCheckCode))
+    {
+      $DB->sqlDelete('notified', 'notified_id = ' . int($$notify{notified_id}));
+      next;
+    }
+
+    my ($pre, $post) = (undef, undef);
+    if ($wrap)
+    {
+      my $liId = "notified_$$notify{notified_id}";
+      $pre = qq'<li class="timestamp_$$notify{notified_time}" id="$liId">';
+      $pre .= qq'<a class="dismiss $liId" title="dismiss notification" href="javascript:;">&#91;x]</a> ';
+      $post = "</li>\n";
+    }
+
+    $$notification_list{$notify_count} = {
+      id => $$notify{notified_id},
+      value => $pre.parseLinks(&$evalNotify($displayCode)).$post,
+      timestamp => $$notify{notified_time}};
+    $notify_count++;
+  }
+
+  return $notification_list;
+
+}
+
+sub ip_lookup_tools
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+  # encodeHTML should be a no-op here, but just in case...
+  my $ip = encodeHTML(shift);
+
+  return 
+    "<a href='http://whois.domaintools.com/$ip' target=\"_blank\">whois</a>"
+    . " - <a href='https://www.dan.me.uk/torcheck?ip=$ip' target=\"_blank\">Tor</a>"
+    . " - <a href='http://www.google.com/search?hl=en&q=%22$ip%22&btnG=Google+Search' target=\"_blank\">Google</a>"
+    . " - <a href='http://www.projecthoneypot.org/ip_$ip' target=\"_blank\">PH</a>"
+    . " - <a href='http://www.stopforumspam.com/ipcheck/$ip' target=\"_blank\">SFS</a>"
+    . " - <a href='http://www.botscout.com/ipcheck.htm?ip=$ip' target=\"_blank\">BS</a>";
+}
+
+sub make_node_sane
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # Expects single parameter, node_id or node ref
+  # returns undef if unable to make node sane
+  # returns node if successful
+  my ($crazy_node) = @_;
+  getRef($crazy_node);
+  return undef unless $crazy_node;
+
+  # In case this is a 'light' copy of the node, we get a complete copy
+  #  so we don't try to create unnecessary rows
+  my $crazy_node_id = $$crazy_node{node_id};
+  my $crazy_node_copy = getNodeById($crazy_node_id);
+  return undef unless $crazy_node_copy;
+
+  # Code borrowed from insertNode() in NodeBase.pm
+  my $tableArray = $$crazy_node_copy{type}{tableArray};
+
+  # Check for document_id, writeup_id, etc. and insert row
+  #  into relevant table if the table id is missing.
+  foreach my $table (@$tableArray)
+  {
+    my $table_id = $table . "_id";
+    $DB->sqlInsert($table, { $table_id => $crazy_node_id }) unless $$crazy_node_copy{$table_id};
+  }
+
+  # Now that node is sane, get one last fresh copy
+  my $sane_node = getNodeById($crazy_node_id, 'force');
+  return $sane_node;
+}
+
+sub check_blacklist
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my @addrs = @_;
+
+  return 0 unless scalar @addrs;
+
+  my $ip_list = '('
+    . ( join ',', map { $DB->quote($_) } @addrs )
+    . ')';
+
+  my $ban_query = qq|
+    SELECT ipblacklist_id
+    FROM ipblacklist
+    WHERE ipblacklist_ipaddress
+    IN $ip_list|;
+
+  return 1 if ($DB->getDatabaseHandle()->selectrow_array($ban_query));
+
+  my $intFromAddr = sub {
+    my $addr = shift;
+    return undef unless $addr =~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+    return ( (int $1) * 256*256*256 + (int $2) * 256 * 256 + (int $3) * 256 + (int $4));
+  };
+
+  my @addrsNum = map { &$intFromAddr($_) } @addrs;
+
+  my $ip_between_list = ''. ( join "\n    OR ", map { '' . (int $_) . ' BETWEEN min_ip AND max_ip' } @addrsNum );
+
+  my $range_ban_query = qq|
+    SELECT ipblacklistrange_id
+    FROM ipblacklistrange
+    WHERE $ip_between_list|;
+
+  return 1 if ($DB->getDatabaseHandle()->selectrow_array($range_ban_query));
+
+  return 0;
+}
+
+sub canseeNotification
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $notification = shift;
+  getRef $notification;
+
+  my $uid = $$USER{node_id};
+  my $isCE = $APP->isEditor($USER);
+  my $isCoder = $APP->inUsergroup($uid,"edev","nogods") || $APP->inUsergroup($uid, 'e2coders', "nogods");
+  my $isChanop = $APP->isChanop($uid, "nogods");
+
+  return 0 if ( !$isCE && ($$notification{description} =~ /node note/) );
+  return 0 if ( !$isCoder && ($$notification{description} =~ /patch/) );
+  return 0 if ( !$isCE && ($$notification{description} =~ /new user/) );
+  return 0 if ( !$isCE && ($$notification{description} =~ /(?:blanks|removes) a writeup/) );
+  return 0 if ( !$isCE && ($$notification{description} =~ /review of a draft/) );
+  return 0 if ( !$isChanop && ($$notification{description} =~ /chanop/) );
+
+  return 1;
+}
+
+sub lock_user_account
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($uid) = @_;
+  getRef $uid;
+  return unless $uid;
+  return unless($$uid{type_nodetype} == getId(getType('user')));
+  $$uid{acctlock} = $$USER{user_id};
+
+  $APP->securityLog(getNode("lockaccount","opcode"), $USER, "$$uid{title}'s account was locked by $$USER{title}");
+
+  # Delete all public messages from locked user
+  $DB->sqlDelete('message', "for_user = 0 AND author_user = $$uid{user_id}");
+
+  # revert all review drafts to 'findable' status
+  # (they won't actually be findable unless/until the account is unlocked)
+  $DB -> sqlUpdate('draft JOIN node ON draft_id=node_id', {publication_status => getId(getNode('findable', 'publication_status'))}, "node.author_user = $$uid{node_id} AND
+    draft.publication_status = " . getId(getNode('review', 'publication_status')));
+
+  updateNode($uid, -1);
+}
+
+sub show_writeups
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  local $$VARS{wufoot} = "l:kill,$$VARS{wufoot}"
+    unless !$$VARS{wufoot} or $$VARS{wufoot} =~ /\bkill\b/ or $$VARS{wuhead} =~ /\bkill\b/;
+
+  my $oldinfo = getCompiledCode(
+    getNode('displayWriteupInfo', 'htmlcode'), \&evalCode);
+
+  my $categories = getCompiledCode(
+    getNode('listnodecategories', 'htmlcode'), \&evalCode);
+
+  my $canseewriteup = getCompiledCode(
+    getNode('canseewriteup', 'htmlcode'), \&evalCode);
+
+  my $draftitem = sub{
+    return 'draftitem' if $_[0]->{type}{title} eq 'draft';
+    '';
+  };
+
+  htmlcode( 'show content' , shift || $$NODE{group} || $NODE
+    , '<div class="&draftitem"> oldinfo, content, categories, oldinfo'
+    , cansee => $canseewriteup
+    , draftitem => $draftitem
+    , categories => $categories
+    , oldinfo => $oldinfo);
+
+}
+
+sub homenodeinfectedinfo
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return "" unless $APP->isEditor($USER);
+
+  my $infectedHTML = "";
+
+  if (htmlcode('isInfected', $NODE))
+  {
+    my $infectionLink = "infected";
+    my $infectionExplanation = getNode('Infected Users', 'oppressor_superdoc');
+    $infectionLink = linkNode($infectionExplanation, $infectionLink);
+    $infectedHTML .= qq|;
+      <div>
+      <img src="http://static.everything2.com/biohazard.png" alt="Biohazard Sign" title="User is infected">
+      <p>
+      This user is $infectionLink.
+      </p>
+     </div>|;
+
+    if ( $APP->isAdmin($USER) )
+    {
+      my $cureHTML = "
+        <div>\n"
+        . htmlcode('openform', 'cure_infection_form')
+        . htmlcode('verifyRequestForm', 'cure_infection')
+        . $query->hidden("confirmop", 'cure_infection')
+        . $query->hidden("cure_user_id", $$NODE{node_id})
+        . '<button class="ajax homenode_infection:homenodeinfectedinfo?op=cure_infection&cure_user_id=/&cure_infection_seed=/&cure_infection_nonce=/&confirmmsg=/#Are+you+sure+you+wish+to+cure+this+user&apos;s+infection">
+          <img src="http://static.everything2.com/physician.png" alt="Physician Sign">
+           <p>Cure User</p> </button>'
+        . '</form>'
+        . "</div>\n";
+
+      $infectedHTML .= $cureHTML;
+    }
+  } elsif ($query->param("op") ne "cure_infection") {
+    return "";
+  } else {
+    $infectedHTML .= qq|;
+     <img src="http://static.everything2.com/physician.png" alt="Physician Sign">
+     <p>Infection cured.</p>|;
+  }
+
+  return '<div id="homenode_infection" class="warning">' . $infectedHTML . '</div>';
+}
+
+sub showUserCategories
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # pass a user object (or nothing to default to the current node, or current user if the current node is not a user), and the categories maintained by the user will be returned
+
+  my $U = $_[0];
+  if($U)
+  {
+    $U = getId($U);
+  } else {
+    if($$NODE{type_nodetype} == getId(getNode('user', 'nodetype')))
+    {
+      $U = getId($NODE);
+    } else {
+      $U = getId($USER);
+    }
+  }
+
+  return if(!$U);
+
+  my $query = $DB->sqlSelectMany("node_id", "node", "author_user=" . $U . " and type_nodetype=" . getId(getType("category")));
+
+  my $row = undef;
+  my @categories = ();
+  push @categories, linkNode($$row{node_id}) while ($row = $query->fetchrow_hashref());
+
+  return if !scalar(@categories);
+  return join(', ', @categories);
 }
 
 1;

@@ -52,6 +52,7 @@ BEGIN {
   *hasVoted = *Everything::HTML::hasVoted;
   *getHRLF = *Everything::HTML::getHRLF;
   *evalCode = *Everything::HTML::evalCode;
+  *getCompiledCode = *Everything::HTML::getCompiledCode;
 } 
 
 sub publishdraft
