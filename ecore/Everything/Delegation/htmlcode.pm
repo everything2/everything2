@@ -95,6 +95,9 @@ use utf8;
 # Used by socialBookmarks
 use CGI;
 
+# Used by create_short_url;
+use POSIX;
+
 # This links a stylesheet with the proper content negotiation extension
 # linkJavascript below talks a bit about the S3 strategy
 #
