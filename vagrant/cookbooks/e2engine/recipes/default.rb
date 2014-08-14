@@ -116,7 +116,9 @@ everything_conf_variables = {
     "create_room_level" => node["e2engine"]["create_room_level"],
     "stylesheet_fix_level" => node["e2engine"]["stylesheet_fix_level"],
     "maintenance_mode" => node["e2engine"]["maintenance_mode"],
-    "writeuplowrepthreshold" => node["e2engine"]["writeuplowrepthreshold"]
+    "writeuplowrepthreshold" => node["e2engine"]["writeuplowrepthreshold"],
+    "google_ads_badnodes" => node["e2engine"]["google_ads_badnodes"],
+    "google_ads_badwords" => node["e2engine"]["google_ads_badwords"]
 }
 
 file '/etc/everything/everything.conf.json' do
