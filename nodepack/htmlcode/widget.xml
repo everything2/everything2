@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>2005525</node_id>
   <title>widget</title>
   <code># first two arguments for the widget, second two for the opener link

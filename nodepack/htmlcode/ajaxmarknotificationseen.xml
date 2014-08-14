@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>2028126</node_id>
   <title>ajaxMarkNotificationSeen</title>
   <code>my $notified_id = shift;
