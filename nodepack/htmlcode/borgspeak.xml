@@ -1,46 +1,7 @@
 <node>
   <type_nodetype>4</type_nodetype>
-  <node_id>1930687</node_id>
+  <delegated>1</delegated>
+  <node_id>2114861</node_id>
   <title>borgspeak</title>
-  <code>my ($useBorg) = @_;
-my $EDB = 100;
-
-if ($useBorg) {
-	$EDB = int(rand(100));
-}
-
-my $response = '&lt;i&gt;and all is quiet...&lt;/i&gt;';
-
-if($EDB&lt;25) {
-		my @borgspeak = (
-		'grrrrr...', '/me hungry!', '/me smells blood',
-		&quot;$$USER{title} looks tasty.&quot;,
-		'&lt;i&gt;you feel its eyes watching you&lt;/i&gt;',
-		'/me is watching you',
-		'/me coughs politely and eats your soul',
-		'/me tries to bite your toe',
-		'/me starts eating your hair',
-		'/me whispers the names of forgotten demons in your ear',
-		&quot;mmmm $$USER{title} food&quot;,
-		#Some Swappian borgspeak
-		'/me haunts your darkest nightmares',
-		'me hungry!',
-		&quot;/me sniffs $$USER{title} appraisingly&quot;,
-		#&quot;$$USER{title} look tasty...&quot;,
-		&quot;/me wants fresh noder flesh&quot;
-		);
-
-		$response = $borgspeak[int(rand(@borgspeak))];
-
-		my $edblink = linkNodeTitle('EDB');
-		if($response =~ /\/me/) {
-			$response =~ s/\/me /&lt;i&gt;$edblink /;
-			$response .= '&lt;/i&gt;';
-		} else {
-			$response = &quot;&amp;lt;$edblink&amp;gt; &quot; . $response;
-		}
-	}
-
-return $response;
-</code>
+  <code></code>
 </node>

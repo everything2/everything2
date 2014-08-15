@@ -131,8 +131,7 @@ $str;
 &lt;/div&gt;
 
 [% $PAGELOAD-&gt;{admintools}; %]
-[{addwriteup}]
-[{nagbox}]</page>
+[{addwriteup}]</page>
   <displaytype>display</displaytype>
   <node_id>2023717</node_id>
   <title>e2node display page</title>

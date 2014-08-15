@@ -1,13 +1,12 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>2008367</node_id>
   <title>googleads</title>
   <code>my ($ad_location) = @_;
 my $node_id = $$NODE{node_id};
 
-my @badnodes = qw(1921577 1369958 2003596 29906 149007 1332646 1330152 59705);
-
-foreach my $nid (@badnodes) {
+foreach my $nid (@{$Everything::CONF-&gt;{google_ads_badnodes}}) {
    return &quot;&lt;!-- noad:badnode --&gt;&quot; if $node_id == $nid or $$NODE{type}{title} eq 'writeup' &amp;&amp; $$NODE{parent_e2node} == $nid;
    if (exists $$NODE{linklist}) {
       foreach my $l (@{ $$NODE{linklist} }) {
@@ -16,10 +15,7 @@ foreach my $nid (@badnodes) {
    }
 }
 
-
-my @badwords = qw(boob breast butt ass lesbian cock dick penis sex oral anal drug pot weed crack cocaine fuck wank whore vagina vag cunt tits titty twat shit slut snatch queef queer poon prick puss orgasm nigg nuts muff motherfuck jizz hell homo handjob fag dildo dick clit cum bitch rape ejaculate bsdm fisting balling masturbation);
-
-foreach my $word (@badwords) {
+foreach my $word (@{$Everything::CONF-&gt;{google_ads_badwords}}) {
         return &quot;&lt;!-- noad:badword --&gt;&quot; if $$NODE{title} =~ /\b$word/i or $$NODE{title} =~ /$word\b/i;
         if (exists $$NODE{linklist}) {
           foreach my $l (@{ $$NODE{linklist} }) {

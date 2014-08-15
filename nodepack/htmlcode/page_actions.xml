@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>2002583</node_id>
   <title>page actions</title>
   <code>my $disabled = shift || htmlcode('getdisabledactions');
