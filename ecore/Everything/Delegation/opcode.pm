@@ -77,59 +77,68 @@ sub publishdraft
 
   my $publishAs = $query -> param('publishas');
   if ($publishAs){
-    return if htmlcode('nopublishreason', $USER) || htmlcode('canpublishas', $publishAs) != 1;
+    if(my $reason = htmlcode('nopublishreason', $USER))
+    {
+      Everything::printLog("$USER->{title} could not publish a writeup as '$publishAs' because: '$reason'");
+      return;
+    }
+    if(htmlcode('canpublishas', $publishAs) != 1)
+    {
+      Everything::printLog("$USER->{title} could not publish a writeup as '$publishAs' because they do not have permission to publish as that user");
+      return
+    }
+
     $publishAs = getNode($publishAs, 'user');
   }
 
-    if ($e2node =~ /\D/){
-      # not a node_id: new node
-      my $title = cleanNodeName($query -> param('title'));
-      return unless $title;
-      $query -> param('e2node_createdby_user', $$publishAs{node_id}) if $publishAs;
-      $e2node = $DB -> insertNode($title, 'e2node', $USER);
-      $query -> param('writeup_parent_e2node', $e2node);
-    }
+  if ($e2node =~ /\D/){
+    # not a node_id: new node
+    my $title = cleanNodeName($query -> param('title'));
+    return unless $title;
+    $query -> param('e2node_createdby_user', $$publishAs{node_id}) if $publishAs;
+    $e2node = $DB -> insertNode($title, 'e2node', $USER);
+    $query -> param('writeup_parent_e2node', $e2node);
+  }
 
-    # Modify the current global here
-    $NODE = getNodeById($e2node);
-    return unless $NODE and $$NODE{type}{title} eq 'e2node';
+  # Modify the current global here
+  $NODE = getNodeById($e2node);
+  return unless $NODE and $$NODE{type}{title} eq 'e2node';
 
-    return if htmlcode('nopublishreason', $publishAs || $USER, $thisnode);
+  return if htmlcode('nopublishreason', $publishAs || $USER, $thisnode);
 	
-    my $wu = $$draft{node_id};
+  my $wu = $$draft{node_id};
 	
-    return unless $DB -> sqlUpdate('node, draft', {
-      type_nodetype => getType('writeup') -> {node_id},
-      publication_status => 0
-      },
-      "node_id=$wu AND draft_id=$wu"
-    );
+  return unless $DB->sqlUpdate('node, draft', {
+    type_nodetype => getType('writeup') -> {node_id},
+    publication_status => 0
+    },
+    "node_id=$wu AND draft_id=$wu"
+  );
 	
-    # remove any old attachment:
-    my $linktype = getId(getNode 'parent_node', 'linktype');
-    $DB -> sqlDelete('links', "from_node=$$draft{node_id} AND linktype=$linktype");
+  # remove any old attachment:
+  my $linktype = getId(getNode 'parent_node', 'linktype');
+  $DB->sqlDelete('links', "from_node=$$draft{node_id} AND linktype=$linktype");
 	
-    $DB -> sqlInsert('writeup', {
-      writeup_id => $wu,
-      parent_e2node => $e2node,
-      cooled => $DB->sqlSelect('count(*)', 'coolwriteups', "coolwriteups_id=$wu"),
-      notnew => $query -> param('writeup_notnew') || 0
-    });
-	
-    $DB -> sqlUpdate('hits', {hits => 0}, "node_id=$wu");
-	
-    $DB -> {cache} -> incrementGlobalVersion($draft); # tell other processes this has changed...
-    $DB -> {cache} -> removeNode($draft); # and it's in the wrong typecache, so remove it
-	
-    # if it has a history, note publication
-    htmlcode('addNodenote', $wu, 'Published') if $DB -> sqlSelect('nodenote_id', 'nodenote', "nodenote_nodeid=$wu and noter_user=0");
-	
-    getRef $wu;
-    $query -> param('node_id', $e2node);
-	
-    $$wu{author_user} = getId($publishAs) if $publishAs;
-    htmlcode('publishwriteup', $wu, $NODE);
+  $DB->sqlInsert('writeup', {
+    writeup_id => $wu,
+    parent_e2node => $e2node,
+    cooled => $DB->sqlSelect('count(*)', 'coolwriteups', "coolwriteups_id=$wu"),
+    notnew => $query -> param('writeup_notnew') || 0
+  });
 
+  $DB->sqlUpdate('hits', {hits => 0}, "node_id=$wu");
+
+  $DB->{cache}->incrementGlobalVersion($draft); # tell other processes this has changed...
+  $DB->{cache}->removeNode($draft); # and it's in the wrong typecache, so remove it
+
+  # if it has a history, note publication
+  htmlcode('addNodenote', $wu, 'Published') if $DB->sqlSelect('nodenote_id', 'nodenote', "nodenote_nodeid=$wu and noter_user=0");
+
+  getRef $wu;
+  $query->param('node_id', $e2node);
+
+  $$wu{author_user} = getId($publishAs) if $publishAs;
+  htmlcode('publishwriteup', $wu, $NODE);
 }
 
 1;

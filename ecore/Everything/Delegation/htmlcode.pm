@@ -2963,7 +2963,18 @@ sub publishwriteup
 
   $DB->sqlInsert('newwriteup', {node_id => getId($WRITEUP), notnew => $notnew});
 
-  updateNode $WRITEUP, $USER; # after newwriteup insertion to update New Writeup data
+  # If you are publishing as another user, and you have permission to, let this go through.
+  # This is after newwriteup insertion to update New Writeup data
+  if($WRITEUP->{author_user} != $USER->{node_id} && htmlcode("canpublishas",getNodeById($WRITEUP->{author_user})->{title}))
+  {
+    updateNode($WRITEUP, -1);
+  }else{
+    unless(updateNode($WRITEUP, $USER))
+    {
+      Everything::printLog("In publishwriteup, user '$$USER{title}' Could not update writeup id: '$$WRITEUP{node_id}'"); 
+    }
+  }
+
   updateNode $E2NODE, -1;
 
   unless ($$WRTYPE{title} eq 'lede'){
@@ -13551,11 +13562,11 @@ sub showUserCategories
 
   return if(!$U);
 
-  my $query = $DB->sqlSelectMany("node_id", "node", "author_user=" . $U . " and type_nodetype=" . getId(getType("category")));
+  my $dbquery = $DB->sqlSelectMany("node_id", "node", "author_user=" . $U . " and type_nodetype=" . getId(getType("category")));
 
   my $row = undef;
   my @categories = ();
-  push @categories, linkNode($$row{node_id}) while ($row = $query->fetchrow_hashref());
+  push @categories, linkNode($$row{node_id}) while ($row = $dbquery->fetchrow_hashref());
 
   return if !scalar(@categories);
   return join(', ', @categories);
