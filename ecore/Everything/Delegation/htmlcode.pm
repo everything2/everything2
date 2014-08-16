@@ -11644,7 +11644,7 @@ sub epicenterZen
     $votesLeftStr = "\n\n\t".'<span id="voteInfo">You have ' . join(' and ',@thingys) . ' left today.</span>';
   }
 
-  my @xps = grep { /\S/ } ( htmlcode('shownewexp', 1), htmlcode('showNewGp', 1) );
+  my @xps = grep { /\S/ } ( htmlcode('shownewexp', 1), htmlcode('showNewGP', 1) );
   my $expStr = '';
 
   if (scalar @xps)
