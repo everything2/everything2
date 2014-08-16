@@ -13458,14 +13458,9 @@ sub show_writeups
   local $$VARS{wufoot} = "l:kill,$$VARS{wufoot}"
     unless !$$VARS{wufoot} or $$VARS{wufoot} =~ /\bkill\b/ or $$VARS{wuhead} =~ /\bkill\b/;
 
-  my $oldinfo = getCompiledCode(
-    getNode('displayWriteupInfo', 'htmlcode'), \&evalCode);
-
-  my $categories = getCompiledCode(
-    getNode('listnodecategories', 'htmlcode'), \&evalCode);
-
-  my $canseewriteup = getCompiledCode(
-    getNode('canseewriteup', 'htmlcode'), \&evalCode);
+  my $oldinfo = sub { htmlcode("displayWriteupInfo", @_); }; 
+  my $categories = sub { htmlcode("listnodecategories", @_); };
+  my $canseewriteup = sub { htmlcode("canseewriteup", @_); };
 
   my $draftitem = sub{
     return 'draftitem' if $_[0]->{type}{title} eq 'draft';
