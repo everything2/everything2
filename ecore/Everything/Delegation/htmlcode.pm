@@ -58,6 +58,7 @@ BEGIN {
   *getCompiledCode = *Everything::HTML::getCompiledCode;
   *getPageForType = *Everything::HTML::getPageForType;
   *castVote = *Everything::HTML::castVote;
+  *adjustGP = *Everything::HTML::adjustGP;
 }
 
 # Used by showchoicefunc
@@ -13992,33 +13993,6 @@ sub Notelet_nodelet_settings
   my $APP = shift;
 
   return 'You can edit your <strong>Notelet Nodelet</strong> at the '.linkNodeTitle('Notelet editor[superdoc]');
-}
-
-sub Chatterbox_nodelet_settings
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return '<h4>Chat</h4>'.
-    parseCode(qq|
-    [{varcheckbox:hideTopic,Hide the chatterbox topic}]<br>
-    [{varcheckbox:powersChatter,Show user powers in chatterbox}]<br>
-    <h4>Private messages</h4>
-    [{varcheckbox:pmsgDate,Show date messages were sent}]<br>
-    [{varcheckbox:pmsgTime,Show time messages were sent}]<br>
-    [{varcheckbox:chatterbox_authorsince,Show when message sender was last seen}]<br>
-    [{varcheckbox:chatterbox_msgs_ascend,Show oldest messages instead of newest}]<br>
-    <br>
-    [{varcheckboxinverse:showmessages_replylink,Hide reply-to link}]<br>
-    [{varcheckbox:powersMsg,Show user powers in private messages}]<br>
-    <br>
-    [{varcheckbox:showRawPrivateMsg,Show sent message as you typed it (not with links)}]<br>
-    [{varcheckbox:hideprivmessages,Don't show private messages in the chatterbox}]<br>|);
 }
 
 sub Personal_Links_nodelet_settings

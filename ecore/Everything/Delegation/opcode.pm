@@ -55,6 +55,7 @@ BEGIN {
   *getCompiledCode = *Everything::HTML::getCompiledCode;
   *getPageForType = *Everything::HTML::getPageForType;
   *castVote = *Everything::HTML::castVote;
+  *adjustGP = *Everything::HTML::adjustGP;
 } 
 
 # Used by bookmark
@@ -314,6 +315,87 @@ sub vote
     htmlcode('logWarning',',vote: multiple ('.$numTimes.') votes ('.$countPlus.'+  '.$countMinus.'-) for same person: '.$prev_uid);
   }
 
+}
+
+sub bless
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless isGod($USER);
+  my $U = $query->param('bless_id');
+  $U = getNode($query->param("node"), 'user') if ($query->param('node'));
+  getRef $U;
+
+  return unless $$U{type}{title} eq 'user';
+
+  my $gp = int($query->param('experience')); # I have no idea where this parameter might get called from, so I'm leaving it in place to be on the safe side.
+  $gp ||= 10;
+
+  $$U{gp} += $gp;
+  $$U{karma} += 1;
+
+  htmlcode('achievementsByType','karma');
+
+  $APP->securityLog(getNode("bless","opcode"), $USER, "$$U{title} was blessed 10GP by $$USER{title}");
+
+  htmlcode('sendPrivateMessage',{
+    'author_id' => getId(getNode('Cool Man Eddie', 'user')),
+    'recipient_id' => $$U{user_id},
+    'message' => "Whoa, you&rsquo;ve just been [bless|blessed]!"});
+
+  updateNode($U, -1);
+  adjustGP($U, $gp);
+
+}
+
+sub curse
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # Currently disabled
+  return;
+  return unless isGod($USER);
+  my $U = $query->param('node_id');
+  getRef $U;
+
+  $$U{experience} -= 10;
+  $$U{karma} -= 1;
+
+  updateNode($U, -1);
+}
+
+sub bestow
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless isGod($USER);
+  my $U = $query->param('bestow_id');
+  getRef $U;
+
+  $$U{votesleft} += 25;
+  $$U{karma} += 1;
+
+  $APP->securityLog(getNode("bestow","opcode"), $USER, "$$U{title} was given 25 votes by $$USER{title}");
+
+  updateNode($U, -1);
 }
 
 1;
