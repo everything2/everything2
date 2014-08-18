@@ -57,6 +57,7 @@ BEGIN {
   *evalCode = *Everything::HTML::evalCode;
   *getCompiledCode = *Everything::HTML::getCompiledCode;
   *getPageForType = *Everything::HTML::getPageForType;
+  *castVote = *Everything::HTML::castVote;
 }
 
 # Used by showchoicefunc
