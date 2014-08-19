@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegated>1</delegated>
   <node_id>445058</node_id>
   <title>message</title>
   <code>return if $APP-&gt;isGuest($USER);

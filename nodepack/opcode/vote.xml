@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegated>1</delegated>
   <node_id>444189</node_id>
   <title>vote</title>
   <code>return unless $$USER{votesleft};

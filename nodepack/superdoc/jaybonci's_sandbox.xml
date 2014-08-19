@@ -31,10 +31,11 @@
 
   foreach my $n (@$list)
   {
+    next if $n-&gt;{delegated}; 
     my $delegation_name = $n-&gt;{title};
     $delegation_name =~ s/[\s\-]/_/g;
     $count++;
-    next if $n-&gt;{delegated}; 
+    
       #!Everything::Delegation::htmlcode-&gt;can($delegation_name);
     $str .= &quot;&lt;li&gt;&quot;.$n-&gt;{title}.&quot;&lt;/li&gt;&quot;; #.&quot; - &quot;.(Everything::Delegation::htmlcode-&gt;can($delegation_name)?(&quot; Resolves &quot;):(&quot; DOES NOT RESOLVE &quot;)).&quot;&lt;/li&gt;&quot;;
   }
