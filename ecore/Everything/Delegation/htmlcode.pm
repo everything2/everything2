@@ -7905,7 +7905,7 @@ sub displayUserText
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $txt = undef;
+  my $txt = $NODE->{doctext};
   my $APRTAGS = getNode 'approved html tags', 'setting';
   $txt = breakTags(htmlScreen($txt, getVars($APRTAGS)));
   $txt = parseLinks($txt) unless($query->param("links_noparse"));
