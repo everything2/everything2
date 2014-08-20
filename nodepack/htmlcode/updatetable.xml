@@ -3,42 +3,5 @@
   <delegated>1</delegated>
   <node_id>183</node_id>
   <title>updatetable</title>
-  <code># This checks the CGI params to see what we need to do
-# to this table.
-my ($table) = @_;
-
-# Check to see if we need to remove a column
-foreach my $param ($query-&gt;param)
-{
-  if(($param =~ /REMOVE$/) &amp;&amp;
-     ($query-&gt;param($param) eq &quot;REMOVE&quot;))
-  {
-    my $fieldname = $param;
-    $fieldname =~ s/REMOVE$//;
-    $DB-&gt;dropFieldFromTable($table, $fieldname); 
-
-    # Null out this field
-    $query-&gt;param($param, &quot;&quot;);
-  }
-}
-
-# If we need to create a new field in the table...
-if((defined $query-&gt;param(&quot;fieldname_new&quot;)) &amp;&amp;
-           (defined $query-&gt;param(&quot;fieldtype_new&quot;)) )
-{
-  my $fieldname = $query-&gt;param(&quot;fieldname_new&quot;);
-  my $fieldtype = $query-&gt;param(&quot;fieldtype_new&quot;);
-  my $primary = $query-&gt;param(&quot;fieldprimary_new&quot;);
-  my $default = $query-&gt;param(&quot;fielddefault_new&quot;);
-
-  $DB-&gt;addFieldToTable($table, $fieldname, $fieldtype, $primary, $default); 
-
-  $query-&gt;param(&quot;fieldname_new&quot;, &quot;&quot;);
-  $query-&gt;param(&quot;fieldtype_new&quot;, &quot;&quot;);
-  $query-&gt;param(&quot;fieldprimary_new&quot;, &quot;&quot;);
-  $query-&gt;param(&quot;fielddefault_new&quot;, &quot;&quot;);
-}
-
-&quot;&quot;;
-</code>
+  <code></code>
 </node>
