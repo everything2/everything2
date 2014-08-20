@@ -47,7 +47,6 @@ BEGIN {
   *isSuspended = *Everything::HTML::isSuspended;
   *escapeAngleBrackets = *Everything::HTML::escapeAngleBrackets;
   *canReadNode = *Everything::HTML::canReadNode;
-  *stripCode = *Everything::HTML::stripCode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *hasVoted = *Everything::HTML::hasVoted;
   *getHRLF = *Everything::HTML::getHRLF;
@@ -1441,55 +1440,339 @@ sub resurrect
   my $node_id=$query->param('olde2nodeid');
   return unless $node_id;
 
-  sub reinsertCorpse {
-    my ($N) = @_;
-    my @kids = ();
-    if ($$N{group})
-    {
-      foreach (@{ $$N{group} })
-      {
-        my $KID = resurrectNode($_);
-        push @kids, reinsertCorpse($KID);
-      }
-    }
-
-    my $author = $$N{author_user};
-    delete $$N{author_user};
-    my $title = $$N{title};
-    delete $$N{title};
-    my $type = $$N{type_nodetype};
-    delete $$N{type_nodetype};
-    delete $$N{group} if exists $$N{group};
-
-    my $A = getNodeById($author);
-    $A = getNode('root','user') unless $A;
-    my $id = insertNode($title, $type, $A, $N);
-    insertIntoNodegroup($id, $author, \@kids) if @kids;
-    $id;
-  }
-
-  sub resurrectNode {
-    my ($node_id) = @_;
-
-    my $N = $DB->sqlSelectHashref("*", 'tomb', "node_id=".$dbh->quote("$node_id"));
-    return unless $N;
-
-    my $DATA = eval($$N{data});
-
-    @$N{keys %$DATA} = values %$DATA;
-
-    delete $$N{data};
-    delete $$N{killa_user};
-    delete $$N{node_id};
-
-    $N;
-  }
-
-  my $N = resurrectNode($node_id);
+  my $N = htmlcode("resurrectNode", $node_id);
   return unless $N;
-  my $id = reinsertCorpse($N);
+  my $id = htmlcode("reinsertCorpse",$N);
 
   $query->param('node_id', $id);
+}
+
+sub bucketop
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless isGod($USER);
+  if($query->param("bgroupadd"))
+  {
+    my $group = getNode($query->param("node_id"));
+
+    return unless($group && $$group{type}{grouptable});
+
+    foreach my $param ($query->param)
+    {
+      next unless($param =~ /^bnode_(\d+)$/);
+
+      # For some reason, passing $1 here causes the function to receive undef.
+      # Probably has something to do with default vars.  So, we need to assign
+      # what we found to a scoped var.
+      my $insert = $1;
+      insertIntoNodegroup($group, $USER, $insert);
+    }
+  }
+
+  if($query->param("bdrop") or $query->param("dropexec"))
+  {
+    my $bucket = $$VARS{nodebucket};
+    foreach my $param ($query->param)
+    {
+      next unless($param =~ /^bnode_(\d+)$/);
+
+      # Remove the numeric id from the bucket list
+      $bucket =~ s/$1,?//;
+      $bucket =~ s/,$//;
+    }
+
+    $$VARS{nodebucket} = $bucket;
+    delete $$VARS{nodebucket} unless($bucket && $bucket ne "");
+  }
+}
+
+sub addbucket
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  foreach my $bnode ($query->param())
+  {
+    next unless($bnode =~ /^bnode_([0-9]*)$/);
+    next if ($$VARS{nodebucket} =~ /$1/);
+
+    $$VARS{nodebucket} .= "," if($$VARS{nodebucket} && $$VARS{nodebucket} ne "");
+
+    $$VARS{nodebucket} .= $1;
+  }
+
+}
+
+sub linktrim
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless htmlcode('verifyRequest', 'linktrim');
+
+  my $from_node = int $query->param('cutlinkfrom');
+  my $trimlinktype = int $query->param('linktype');
+  my $linktype = getNodeById($trimlinktype);
+
+  return unless $from_node;
+
+  my $linkName = undef; $linkName = $$linktype{title} if $linktype && $$linktype{type}{title} eq 'linktype';
+
+  if ($linkName eq '')
+  {
+    $linkName = 'softlink';
+    $trimlinktype = 0;
+  }
+
+  my %trimmable = (
+    'softlink' => 1,
+    'firmlink' => 1,
+    'favorite' => 1,
+  );
+
+  return unless $trimmable{$linkName};
+
+  if ($linkName eq 'softlink' || $linkName eq 'firmlink')
+  {
+    my $recurseGroups = 1;
+    return unless $APP->isEditor($USER);
+  } elsif ($linkName eq 'favorite') {
+    return unless $from_node == $$USER{node_id};
+  }
+
+  foreach ($query->param) {
+    next unless /^cutlinkto_(\d+)$/;
+    $DB->sqlDelete('links', "from_node=$from_node and to_node=$1 and linktype=".$trimlinktype);
+    $DB->sqlDelete('firmlink_note', "from_node=$from_node and to_node=$1") if $$linktype{title} eq 'firmlink';
+  }
+
+  1;
+}
+
+sub firmlink
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isEditor($USER);
+
+  return unless($query->param('firmlink_to_node'));
+  return unless htmlcode('verifyRequestHash', 'firmlink');
+
+  my ($firmtarget, $firmtargetname) = (undef, undef);
+  $firmtargetname = $query->param('firmlink_to_node');
+
+  foreach(qw/superdoc document superdocnolinks e2node user/)
+  {
+    $firmtarget = getNode($firmtargetname, $_);
+    last if $firmtarget;
+  }
+  my $firmfrom = getNodeById($query->param('firmlink_from_id'));
+  my $firmtypelink = getNode("firmlink","linktype");
+  my $firmtype = undef; $firmtype = $$firmtypelink{node_id} if $firmtypelink;
+  my $firmlink_note_text = $query->param('firmlink_note_text');
+
+  return unless $firmtarget && $firmfrom && $firmtype;
+  return if($$firmtarget{node_id} == $$firmfrom{node_id});
+
+  $DB->sqlInsert("links", 
+  {
+    "linktype" => $firmtype, 
+    "to_node" => $$firmtarget{node_id},
+    "from_node" => $$firmfrom{node_id}
+  });
+
+  $DB->sqlInsert("firmlink_note",
+  {
+    "to_node" => $$firmtarget{node_id},
+    "from_node" => $$firmfrom{node_id},
+    "firmlink_note_text" => $firmlink_note_text
+  }) if $firmlink_note_text ne "";
+
+  return 1;
+
+}
+
+sub insure
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isEditor($USER);
+
+  return unless($query->param('ins_id'));
+  my $insnode = getNodeById($query->param('ins_id'));
+  return unless $insnode and $$insnode{type}{title} eq 'writeup';
+
+  my $insure = getNode("insure","opcode");
+  my $AUTHOR = getNode($$insnode{author_user});
+  my $insured = getId(getNode('insured', 'publication_status'));
+
+
+  if ($$insnode{publication_status} == $insured)
+  {
+    $$insnode{publication_status} = 0;
+    htmlcode('addNodenote', $insnode, "Uninsured by [$$USER{title}\[user]]");
+    $DB->sqlDelete("publish", "publish_id = $$insnode{node_id}");
+    $APP->securityLog(getNode("insure","opcode"), $USER, "$$USER{title} uninsured \"$$insnode{title}\" by $$AUTHOR{title}");
+  } else {
+    $$insnode{publication_status} = $insured;
+    htmlcode('addNodenote', $insnode, "Insured by [$$USER{title}\[user]]");
+    $DB->sqlInsert("publish",{publish_id => $$insnode{node_id}, publisher => $$USER{user_id}});
+    $APP->securityLog(getNode("insure","opcode"), $USER, "$$USER{title} insured \"$$insnode{title}\" by $$AUTHOR{title}");
+  }
+
+  $DB->updateNode($insnode, -1);
+}
+
+sub nodenote
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isEditor($USER);
+
+  my $notetext = $query->param('notetext'); 
+  my $notefor = int($query->param('notefor'));
+
+  my $NOTEFOR = getNodeById($notefor);
+  return unless $NOTEFOR;
+
+  # Strip dynamic URLs
+  $notetext =~ s/\<.*?img.*?src[\s\"\']*?\=[\s\"\']*?.*?\?.*?\>//g;
+
+  foreach($query->param)
+  {
+    if($_ =~ /^deletenote\_(\d+)$/)
+    {
+      $DB->sqlDelete('nodenote', "nodenote_id=$1");
+      $APP->securityLog(getNode("Recent Node Notes","oppressor_superdoc"), $USER, "removed note on [$$NOTEFOR{title}]");
+    }
+  }
+
+  htmlcode('addNodenote', $notefor, $notetext, $USER) if $notetext;
+}
+
+sub lockaccount
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless(isGod($USER));
+
+  my $uid = $query->param('lock_id');
+  return unless $uid;
+  htmlcode('lock user account', $uid);
+}
+
+sub unlockaccount
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless(isGod($USER));
+
+  my $uid = $query->param('lock_id');
+  return unless $uid;
+  $uid = getNodeById($uid);
+
+  return unless($$uid{type_nodetype} == getId(getType('user')));
+  $$uid{acctlock} = 0;
+  updateNode($uid, -1);
+
+  $APP->securityLog(getNode("unlockaccount","opcode"), $USER, "$$uid{title}'s account was unlocked by $$USER{title}");
+
+}
+
+sub hidewriteup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isEditor($USER);
+
+  if($query->param('hidewriteup'))
+  {
+    my $writeup = int($query->param('hidewriteup'));
+    $DB -> sqlUpdate('newwriteup', { notnew=>'1' }, "node_id=$writeup");
+    getRef $writeup;
+    $$writeup{notnew} = 1;
+    $DB -> updateNode($writeup, -1);
+    htmlcode('addNodenote', $writeup, "Hidden by $$USER{title}");
+  }
+  return "";
+}
+
+sub unhidewriteup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isEditor($USER);
+
+  if($query->param('hidewriteup'))
+  {
+    my $writeup = int($query->param('hidewriteup'));
+    $DB->sqlUpdate('newwriteup', { notnew=>'0' }, "node_id=$writeup");
+    getRef $writeup;
+    $$writeup{notnew} = 0;
+    $DB->updateNode($writeup, -1);
+    htmlcode('addNodenote', $writeup, "Unhidden by $$USER{title}");
+  }
+
+  return "";
 }
 
 1;

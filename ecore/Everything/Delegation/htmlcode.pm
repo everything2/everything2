@@ -50,7 +50,6 @@ BEGIN {
   *isSuspended = *Everything::HTML::isSuspended;
   *escapeAngleBrackets = *Everything::HTML::escapeAngleBrackets;
   *canReadNode = *Everything::HTML::canReadNode;
-  *stripCode = *Everything::HTML::stripCode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *hasVoted = *Everything::HTML::hasVoted;
   *getHRLF = *Everything::HTML::getHRLF;
@@ -7908,7 +7907,6 @@ sub displayUserText
 
   my $txt = undef;
   my $APRTAGS = getNode 'approved html tags', 'setting';
-  $txt = stripCode($$NODE{doctext});
   $txt = breakTags(htmlScreen($txt, getVars($APRTAGS)));
   $txt = parseLinks($txt) unless($query->param("links_noparse"));
   return $txt;
@@ -15569,6 +15567,68 @@ sub blacklistedIPs
 
   return $str;
 
+}
+
+sub resurrectNode
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+  
+  my ($node_id) = @_;
+
+  my $N = $DB->sqlSelectHashref("*", 'tomb', "node_id=".$DB->{dbh}->quote("$node_id"));
+  return unless $N;
+
+  my $DATA = eval($$N{data});
+
+  @$N{keys %$DATA} = values %$DATA;
+
+  delete $$N{data};
+  delete $$N{killa_user};
+  delete $$N{node_id};
+
+  return $N;
+}
+
+sub reinsertCorpse
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+  
+  my ($N) = @_;
+  my @kids = ();
+  if ($$N{group})
+  {
+    foreach (@{ $$N{group} })
+    {
+      my $KID = htmlcode("resurrectNode",$_);
+      push @kids, htmlcode("reinsertCorpse", $KID);
+    }
+  }
+
+  my $author = $$N{author_user};
+  delete $$N{author_user};
+  my $title = $$N{title};
+  delete $$N{title};
+  my $type = $$N{type_nodetype};
+  delete $$N{type_nodetype};
+  delete $$N{group} if exists $$N{group};
+
+  my $A = getNodeById($author);
+  $A = getNode('root','user') unless $A;
+  my $id = insertNode($title, $type, $A, $N);
+  insertIntoNodegroup($id, $author, \@kids) if @kids;
+  $id;
 }
 
 1;
