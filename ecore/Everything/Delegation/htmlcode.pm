@@ -50,7 +50,6 @@ BEGIN {
   *isSuspended = *Everything::HTML::isSuspended;
   *escapeAngleBrackets = *Everything::HTML::escapeAngleBrackets;
   *canReadNode = *Everything::HTML::canReadNode;
-  *stripCode = *Everything::HTML::stripCode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *hasVoted = *Everything::HTML::hasVoted;
   *getHRLF = *Everything::HTML::getHRLF;
@@ -7908,7 +7907,6 @@ sub displayUserText
 
   my $txt = undef;
   my $APRTAGS = getNode 'approved html tags', 'setting';
-  $txt = stripCode($$NODE{doctext});
   $txt = breakTags(htmlScreen($txt, getVars($APRTAGS)));
   $txt = parseLinks($txt) unless($query->param("links_noparse"));
   return $txt;
