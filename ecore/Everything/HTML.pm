@@ -1880,6 +1880,11 @@ sub gotoNode
 	unless (canReadNode($user_id, $NODE)) {
 		$NODE = getNodeById($Everything::CONF->{system}->{permission_denied});
 	}
+
+        if($NODE->{type}->{title} eq "draft" && !$APP->canSeeDraft($user_id, $NODE))
+        {
+                $NODE = getNodeById($Everything::CONF->{system}->{permission_denied});
+        }
 	#these are contingencies various things that could go wrong
 
 	my $displaytype = $query->param("displaytype");

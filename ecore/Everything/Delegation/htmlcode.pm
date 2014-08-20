@@ -13609,7 +13609,7 @@ sub googleads
   return "<!-- noad:badnodeid -->" unless ($node_id =~ /^\d+$/);
   return "<!-- noad:https -->" if $query->url =~ /^https/;
 
-  my $ad = qq|;
+  my $ad = qq|
   <center>
   <script type="text/javascript"><!--
   google_ad_client = "ca-pub-0613380022572506";
