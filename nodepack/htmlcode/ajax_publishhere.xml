@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>4</type_nodetype>
+  <delegated>1</delegated>
   <node_id>2048103</node_id>
   <title>ajax publishhere</title>
   <code>my $did = shift;

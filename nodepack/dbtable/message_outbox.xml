@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>148</type_nodetype>
-  <node_id>2109006</node_id>
+  <node_id>2115028</node_id>
   <_create_table_statement>CREATE TABLE `message_outbox` (
   `message_id` int(11) NOT NULL AUTO_INCREMENT,
   `msgtext` text COLLATE utf8_unicode_ci,

@@ -3,36 +3,5 @@
   <delegated>1</delegated>
   <node_id>32</node_id>
   <title>displayInherited</title>
-  <code># This diplays inherited values for a nodetype.  This
-# checks to see if the given field has any inherited
-# values.
-my ($field) = @_;
-my $str = &quot;&quot;;
-my $TYPE = undef;
-
-return &quot;&quot; unless ((isNodetype($NODE)) &amp;&amp; (defined $field) &amp;&amp;
-  ($$NODE{extends_nodetype} &gt; 0));
-
-if($field eq &quot;sqltable&quot;)
-{
-  $TYPE = $DB-&gt;getType($$NODE{extends_nodetype});
-  $str .= &quot;$$TYPE{sqltablelist}&quot; if(defined $TYPE);
-}
-elsif(($field eq &quot;grouptable&quot;) &amp;&amp; ($$NODE{$field} eq &quot;&quot;))
-{
-  $TYPE = $DB-&gt;getType($$NODE{node_id});
-  my $gt = &quot;&quot;;
-  $gt = &quot;$$TYPE{$field}&quot; if(defined $TYPE);
-  $str .= $gt if ($gt ne &quot;&quot;);
-}
-elsif($$NODE{$field} eq &quot;-1&quot;)
-{
-  $TYPE = $DB-&gt;getType($$NODE{extends_nodetype});
-  my $node = undef; $node = $DB-&gt;getNodeById($$TYPE{$field});
-  my $title = undef; $title = $$node{title} if (defined $node);
-  $title ||= &quot;none&quot;;
-  $str .= $title;
-}
-
-$str = &quot; ( Inherited value: $str )&quot; if ($str ne &quot;&quot;);</code>
+  <code></code>
 </node>

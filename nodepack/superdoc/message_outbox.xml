@@ -193,6 +193,6 @@ $str.' '
 	.$query-&gt;end_form();
 
 %]</doctext>
-  <node_id>2108999</node_id>
+  <node_id>2115029</node_id>
   <title>Message Outbox</title>
 </node>

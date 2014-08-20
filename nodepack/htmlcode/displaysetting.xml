@@ -3,18 +3,5 @@
   <delegated>1</delegated>
   <node_id>174</node_id>
   <title>displaySetting</title>
-  <code># This displays the value of a setting given the key
-# $setting - the name of the setting node
-# $key - the key to display
-my ($setting, $key) = @_;
-my $SETTING = $DB-&gt;selectNodeWhere({title =&gt; $setting},
- $DB-&gt;getType('setting'));
-my $vars;
-my $str = &quot;&quot;;
-
-$SETTING = $$SETTING[0];  # there should only be one in the array
-$vars = getVars($SETTING);
-$str .= $$vars{$key};
-$str;
-</code>
+  <code></code>
 </node>

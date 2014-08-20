@@ -34,7 +34,7 @@ if ( $$PAGE{ parent_container } ) {
 return $str if $query -&gt; param('usetheme') or $query -&gt; param('cancel');
 
 # replace current theme with theme to test
-my $themeLink = htmlcode('linkstylesheet', $theme, 'serve');
+my $themeLink = htmlcode('linkStylesheet', $theme, 'serve');
 $themeLink .= '&amp;amp;autofix=1' if $query -&gt; param('autofix') &amp;&amp; $themeLink !~ /autofix/; # (one of this user's, link has query string)
 $str =~ s!(&lt;link rel=&quot;s.*?zensheet.*href=&quot;)[^&quot;]*(&quot;[^&gt;]*?&gt;)!$1$themeLink$2! if
 	$theme ne $currentStyle or $query -&gt; param('autofix');
@@ -152,7 +152,7 @@ $str =~ s!&lt;/head&gt;!$widgetstyle&lt;/head&gt;! ;
 my $querystring = '&amp;autofix=1' if $query -&gt; param('autofix');
 # if they have scripting, let their computer do the work
 unless ( $query -&gt; param( 'noscript' ) ) {
-	my $currentLink = htmlcode('linkstylesheet', $currentStyle, 'serve').$querystring;
+	my $currentLink = htmlcode('linkStylesheet', $currentStyle, 'serve').$querystring;
 
 	my $script = qq'
 &lt;script type=&quot;text/javascript&quot;&gt;

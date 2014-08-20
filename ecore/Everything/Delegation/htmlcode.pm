@@ -50,13 +50,14 @@ BEGIN {
   *isSuspended = *Everything::HTML::isSuspended;
   *escapeAngleBrackets = *Everything::HTML::escapeAngleBrackets;
   *canReadNode = *Everything::HTML::canReadNode;
-  *stripCode = *Everything::HTML::stripCode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *hasVoted = *Everything::HTML::hasVoted;
   *getHRLF = *Everything::HTML::getHRLF;
   *evalCode = *Everything::HTML::evalCode;
   *getCompiledCode = *Everything::HTML::getCompiledCode;
   *getPageForType = *Everything::HTML::getPageForType;
+  *castVote = *Everything::HTML::castVote;
+  *adjustGP = *Everything::HTML::adjustGP;
 }
 
 # Used by showchoicefunc
@@ -66,7 +67,7 @@ use Everything::XML;
 use Time::Local;
 
 # Used by shownewexp, publishwriteup, static_javascript, zenwriteups, hasAchieved, addNotification,
-#  showNewGP, notificationsJSON
+#  showNewGP, notificationsJSON, Notifications_nodelet_settings
 use JSON;
 
 # Used by publishwriteup,isSpecialDate
@@ -7904,9 +7905,8 @@ sub displayUserText
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $txt = undef;
+  my $txt = $NODE->{doctext};
   my $APRTAGS = getNode 'approved html tags', 'setting';
-  $txt = stripCode($$NODE{doctext});
   $txt = breakTags(htmlScreen($txt, getVars($APRTAGS)));
   $txt = parseLinks($txt) unless($query->param("links_noparse"));
   return $txt;
@@ -11658,7 +11658,7 @@ sub epicenterZen
     $votesLeftStr = "\n\n\t".'<span id="voteInfo">You have ' . join(' and ',@thingys) . ' left today.</span>';
   }
 
-  my @xps = grep { /\S/ } ( htmlcode('shownewexp', 1), htmlcode('showNewGp', 1) );
+  my @xps = grep { /\S/ } ( htmlcode('shownewexp', 1), htmlcode('showNewGP', 1) );
   my $expStr = '';
 
   if (scalar @xps)
@@ -13472,14 +13472,9 @@ sub show_writeups
   local $$VARS{wufoot} = "l:kill,$$VARS{wufoot}"
     unless !$$VARS{wufoot} or $$VARS{wufoot} =~ /\bkill\b/ or $$VARS{wuhead} =~ /\bkill\b/;
 
-  my $oldinfo = getCompiledCode(
-    getNode('displayWriteupInfo', 'htmlcode'), \&evalCode);
-
-  my $categories = getCompiledCode(
-    getNode('listnodecategories', 'htmlcode'), \&evalCode);
-
-  my $canseewriteup = getCompiledCode(
-    getNode('canseewriteup', 'htmlcode'), \&evalCode);
+  my $oldinfo = sub { htmlcode("displayWriteupInfo", @_); }; 
+  my $categories = sub { htmlcode("listnodecategories", @_); };
+  my $canseewriteup = sub { htmlcode("canseewriteup", @_); };
 
   my $draftitem = sub{
     return 'draftitem' if $_[0]->{type}{title} eq 'draft';
@@ -13628,7 +13623,7 @@ sub googleads
   return "<!-- noad:badnodeid -->" unless ($node_id =~ /^\d+$/);
   return "<!-- noad:https -->" if $query->url =~ /^https/;
 
-  my $ad = qq|;
+  my $ad = qq|
   <center>
   <script type="text/javascript"><!--
   google_ad_client = "ca-pub-0613380022572506";
@@ -14010,33 +14005,6 @@ sub Notelet_nodelet_settings
   my $APP = shift;
 
   return 'You can edit your <strong>Notelet Nodelet</strong> at the '.linkNodeTitle('Notelet editor[superdoc]');
-}
-
-sub Chatterbox_nodelet_settings
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return '<h4>Chat</h4>'.
-    parseCode(qq|
-    [{varcheckbox:hideTopic,Hide the chatterbox topic}]<br>
-    [{varcheckbox:powersChatter,Show user powers in chatterbox}]<br>
-    <h4>Private messages</h4>
-    [{varcheckbox:pmsgDate,Show date messages were sent}]<br>
-    [{varcheckbox:pmsgTime,Show time messages were sent}]<br>
-    [{varcheckbox:chatterbox_authorsince,Show when message sender was last seen}]<br>
-    [{varcheckbox:chatterbox_msgs_ascend,Show oldest messages instead of newest}]<br>
-    <br>
-    [{varcheckboxinverse:showmessages_replylink,Hide reply-to link}]<br>
-    [{varcheckbox:powersMsg,Show user powers in private messages}]<br>
-    <br>
-    [{varcheckbox:showRawPrivateMsg,Show sent message as you typed it (not with links)}]<br>
-    [{varcheckbox:hideprivmessages,Don't show private messages in the chatterbox}]<br>|);
 }
 
 sub Personal_Links_nodelet_settings
@@ -14564,6 +14532,1117 @@ sub canpublishas
 
   return '';
 
+}
+
+sub Notifications_nodelet_settings
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = '<p>We will notify you when...</p>';
+
+  my $settingsHash = undef; $settingsHash = from_json($$VARS{settings}) if $$VARS{settings};
+
+  if ($query->param('sexisgood'))
+  {
+    $settingsHash = {};
+    my $notifierCount = 0;
+    foreach ($query->param)
+    {
+      next unless /notification_(\d+)/;
+      $$settingsHash{notifications}->{$1} = 1;
+      $notifierCount++;
+    }
+    delete $$VARS{settings};
+    $$VARS{settings} = to_json($settingsHash) if $notifierCount;
+  }
+
+  my @notifications = getNodeWhere('1 =1', "notification");
+  my @notificationlist = ();
+  foreach (@notifications)
+  {
+    next unless $$_{hourLimit} and htmlcode('canseeNotification', $_);
+    push @notificationlist, [$query->checkbox('notification_'.$$_{node_id},
+    $$settingsHash{notifications}->{$$_{node_id}},1,""),"$$_{description}<br>\n"];
+  }
+
+  @notificationlist = sort {my (@a,@b); @$a[1] cmp @$b[1];} @notificationlist;
+
+  foreach my $thing (@notificationlist)
+  {
+    $str .= @$thing[0].@$thing[1];
+  }
+
+  $str .= '<br>'.linkNode($NODE, 'Remove Notifications nodelet', {
+    op => 'movenodelet',
+    position => 'x',
+    nodelet => 'notifications',
+    -id => 'notificationsremovallink',
+    -class => 'ajax (notificationsremovallink):ajaxEcho:'
+      .q!Remove+Notifications+nodelet!
+      .q!&lt;script+type='text/javascript'&gt;!
+      .q!e2.vanish($('#notifications'));&lt/script&gt;!
+  }) unless $$VARS{settings};
+
+  return $str;
+
+}
+
+sub Chatterbox_nodelet_settings
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return '<h4>Chat</h4>'.
+
+  parseCode(qq|
+    [{varcheckbox:hideTopic,Hide the chatterbox topic}]<br>
+    [{varcheckbox:powersChatter,Show user powers in chatterbox}]<br>
+    <h4>Private messages</h4>
+    [{varcheckbox:pmsgDate,Show date messages were sent}]<br>
+    [{varcheckbox:pmsgTime,Show time messages were sent}]<br>
+    [{varcheckbox:chatterbox_authorsince,Show when message sender was last seen}]<br>
+    [{varcheckbox:chatterbox_msgs_ascend,Show oldest messages instead of newest}]<br>
+    <br>
+    [{varcheckboxinverse:showmessages_replylink,Hide reply-to link}]<br>
+    [{varcheckbox:powersMsg,Show user powers in private messages}]<br>
+    <br>
+    [{varcheckbox:showRawPrivateMsg,Show sent message as you typed it (not with links)}]<br>
+    [{varcheckbox:hideprivmessages,Don't show private messages in the chatterbox}]<br>
+  |);
+}
+
+sub setdraftstatus
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # set publication_status and collaborators
+  # show parent node, option to change it, and option to publish
+
+  my $N = shift || $NODE;
+  getRef $N;
+  return '<div class="error">Not a draft.</div>' unless $$N{type}{title} eq 'draft';
+
+  return htmlcode('parentdraft', $N) if $query -> param('parentdraft');
+
+  my $ajax = " instant ajax adminheader$$N{node_id}:voteit:$$N{node_id},5" if $query -> param('ajaxTrigger');
+
+  my %stash = (
+    public => 'visible to any logged-in user',
+    findable => 'as "public," and may be shown in search findings',
+    private => 'visible only to you and any users and groups you choose below',
+    shared => 'your chosen collaborators can also edit',
+    review => 'as "findable," and the site\'s editors are told you want feedback',
+    removed => 'you published this and an editor removed it: as "private" but visible to editors',
+    nuked => 'you published this and it was deleted before Jun 10, 2011: same as "private"'
+  );
+
+  my @status = $DB -> getNodeWhere({}, 'publication_status');
+  my %labels = ();
+  foreach (@status)
+  {
+    next unless $stash{$$_{title}};
+    $labels{$_->{node_id}} = "$$_{title} <small>($stash{$$_{title}})</small>";
+    $stash{$$_{title}} = $$_{node_id};
+
+  }
+
+  my @values = map $stash{$_}, qw(private shared public findable review); #sorted!
+  push @values, $$N{publication_status} if $stash{removed} == $$N{publication_status} || $stash{nuked} == $$N{publication_status};
+
+  $query -> autoEscape(0);
+
+  my $str = htmlcode('openform').qq'<fieldset class="draftstatus$ajax"><legend>Status and Sharing</legend>
+    <p>Draft status:</p><p>'
+    .$query -> radio_group(
+      -name => 'draft_publication_status',
+      values => \@values,
+      labels => \%labels,
+      default => $$N{publication_status},
+      -force => 1,
+      linebreak => 1
+    ) # note current status to avoid repeat notifications:
+    .$query -> hidden(
+      -name => 'old_publication_status',
+      value => $$N{publication_status},
+      -force => 1
+    ).'</p><p><label>Share with:<br>'
+    .htmlcode('textfield', 'collaborators', 80, 'expandable')
+    .'</label><br><small>';
+
+  $query -> autoEscape(1);
+
+  $str .= 'These users and groups can '
+    .($labels{$$N{publication_status}} =~ /^private/
+      ? 'see this draft but not edit it. '
+      : 'edit this draft unless you set its status to "private." ') if $$N{collaborators};
+
+  $str .= '(Put commas between names.)</small></p></p>';
+
+  $str .= $query -> submit(
+    -name => 'sexisgood',
+    value => 'Update status/sharing')
+    .$query -> hidden(
+      -name => 'ajaxTrigger',
+      value => 1,
+      class => "ajax draftstatus$$N{node_id}:setdraftstatus:$$N{node_id}")
+    .'</fieldset></form>';
+
+  my $linktype = getId(getNode 'parent_node', 'linktype');
+
+  if (my $newparent = $query -> param('writeup_parent_e2node'))
+  {
+    # remove old attachment
+    $DB->sqlDelete('links', "from_node=$$N{node_id} AND linktype=$linktype");
+
+    if ($newparent eq 'new')
+    {
+      my $title = cleanNodeName($query->param('title'));
+      # insertNode checks user can do this and returns false if not or fails
+      $newparent = $DB -> insertNode($title, 'e2node', $USER) if $title;
+    }
+
+    $DB -> sqlInsert('links', {
+      from_node => $$N{node_id},
+      to_node => $newparent,
+      linktype => $linktype
+      }) if $newparent && $newparent !~ /\D/;
+  }
+
+  my ($parent, $editor, $changeParent, $detach) = $DB -> sqlSelect(
+    'to_node, food' # 'food' is the approving editor, if any
+    , 'links'
+    , "from_node=$$N{node_id} AND linktype=$linktype");
+
+  if ($parent)
+  {
+    $parent = 'This draft is attached to: '
+      .linkNode($parent, , 0, {-class => 'title'});
+    $parent .= '<br>Approved for publication by '.linkNode($editor) if $editor;
+    $changeParent = 'Change';
+    $detach = $query -> submit(
+      -name => 'writeup_parent_e2node',
+      value => 'Detach',
+      class => "ajax draftstatus$$N{node_id}:setdraftstatus?writeup_parent_e2node=/:$$N{node_id}"
+      ).' &nbsp; ';
+  } else {
+    $parent = 'This draft is not attached to any page';
+    $changeParent = 'Attach to page...';
+    $detach = '';
+  }
+
+  my ($publishas, $advanced) = (undef,undef);
+  if ($query -> param('advanced'))
+  {
+    $publishas = htmlcode('canpublishas');
+
+    $publishas = $query -> p($publishas) if $publishas;
+
+    $advanced = '<button type="submit" name="confirmop" value="publishdrafttodocument"
+      title="publish this draft as a document">Publish as document</button>' if $APP->isEditor($USER);
+ } else {
+    $advanced = $query -> submit(
+      -name => 'advanced'
+      , value => 'Advanced option(s)...'
+      , class => "ajax draftstatus$$N{node_id}:setdraftstatus?advanced=1:$$N{node_id}"
+      ) if $APP->getLevel($USER);
+  }
+
+  $advanced = $query -> p($advanced) if $advanced;
+
+  unless ($stash{removed} == $$N{publication_status})
+  {
+    $str .= htmlcode('openform')
+      ."<fieldset class=\"parentdraft\"><legend>Attachment and Publishing</legend>
+      <p>$parent</p>
+      $publishas
+      $detach"
+      .$query -> submit(
+        -name => 'parentdraft',
+        value => $changeParent,
+        class => "ajax draftstatus$$N{node_id}:parentdraft?parentdraft=attach:$$N{node_id}"
+        )
+      .' &nbsp; '
+      .$query -> submit(
+        -name => 'parentdraft',
+        value => 'Publish',
+        class => "earlybeforeunload ajax draftstatus$$N{node_id}:parentdraft?parentdraft=Publish&publishas=/:$$N{node_id}"
+        )
+      ."<p><small>Attached drafts are shown on the page they are attached to:
+        you always see your own draft, while other users with permission to see it
+        can click on a link to show it.</small>
+        </p>
+        </fieldset>
+        $advanced
+        </form>";
+  }
+
+ return $query -> div({id => "draftstatus$$N{node_id}", class => 'parentdraft'}, $str);
+
+}
+
+sub update_New_Writeups_data
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $feeder = getNode('New Writeups Feeder', 'nodelet');
+  $$feeder{nltext} = parseCode($$feeder{nlcode});
+  $$feeder{lastupdate} = time;
+  updateNode($feeder, -1);
+}
+
+sub ordernode
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isEditor($USER);
+
+  my $str = htmlcode('openform', 'adminordernode')
+    .'<fieldset><legend>Writeups, order and repair</legend><p>'
+    .$query -> hidden('repair_id', $$NODE{node_id})
+    .$query -> hidden('showhidden', 'all');
+
+  my $lockButt = 'Lock writeup order';
+  if ($$NODE{orderlock_user})
+  {
+    $lockButt = 'Unlock';
+    $str.= '<input type="hidden" name="unlock" value="1">';
+  }
+
+  $lockButt = qq' <button name="op" value="orderlock" type="submit"
+    class="ajax adminordernode:ordernode?op=orderlock&unlock=/">$lockButt</button></p><p>';
+
+  if($NODE->{orderlock_user})
+  {
+    $str .= 'Writeup ordering locked by '
+      .linkNode($$NODE{orderlock_user})
+      ."$lockButt";
+  }else{
+    $str .= htmlcode("windowview", "editor,Edit writeup order&hellip;").$lockButt;
+    $str .= '<button name="op" value="repair_e2node" type="submit">Repair and reorder node</button> ';
+  }
+
+  $str .= '<button name="op" value="repair_e2node_noreorder" type="submit">Repair without reordering</button></p>'
+    .linkNode(getNode('Magical Writeup Reparenter', 'superdoc')
+      , 'Reparent writeups&hellip;'
+      , {old_e2node_id => $$NODE{node_id}});
+
+  return "$str</fieldset></form>";
+}
+
+sub addNodenote
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($notefor, $notetext, $user) = @_;
+
+  getRef $user;
+  $notefor = getId $notefor;
+
+  if($user)
+  {
+    $notetext="[$$user{title}\[user]]: $notetext";
+    $user = $$user{user_id};
+  }
+  $user ||= 0;
+
+  $DB->sqlInsert("nodenote", {
+    nodenote_nodeid => $notefor
+    , noter_user => $user
+    , notetext => $notetext});
+
+  my $nodenote_id = $DB->{dbh}->last_insert_id(undef, undef, qw(nodenote nodenote_id)) || 0;
+
+  htmlcode('addNotification', 'nodenote', 0, {
+    node_noter => $user
+    , node_id => $notefor
+    , nodenote_id => $nodenote_id}) if $user;
+
+  return $nodenote_id;
+}
+
+sub unpublishwriteup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($wu, $reason) = @_;
+
+  getRef $wu;
+  return unless $wu and $$wu{type}{title} eq 'writeup';
+
+  return unless $$USER{node_id} == $$wu{author_user} or $APP->isEditor($USER);
+
+  my $id = $$wu{node_id};
+  my ($title, $noexp) = ($$wu{title}, 0);
+
+  my $E2NODE = getNodeById($$wu{parent_e2node});
+
+  if ($E2NODE)
+  {
+    $noexp = $APP->isMaintenanceNode($E2NODE);
+  }elsif ($title =~ / \((\w+)\)$/ and getNode($1, 'writeuptype')){
+    $title =~ s/ \((\w+)\)$//;
+  }
+
+  my $draftType = getType('draft');
+  return 0 unless $DB -> sqlUpdate('node, draft', {
+    type_nodetype => $draftType -> {node_id},
+    title => $title,
+    publication_status => getId(getNode('removed', 'publication_status'))},"node_id=$id AND draft_id=$id"
+  );
+
+  $$wu{title} = $title; # save possible fiddling elsewhere (e.g. in [remove])
+  $$wu{type} = $draftType;
+  $$wu{type_nodetype} = $draftType -> {node_id};
+  delete $$wu{wrtype_writeuptype};
+
+  $DB->sqlDelete('writeup', "writeup_id=$id");
+  $DB->removeFromNodegroup($E2NODE, $wu, -1) if $E2NODE;
+
+  $DB->{cache}->incrementGlobalVersion($wu); # tell other processes this has changed...
+  $DB->{cache}->removeNode($wu); # and it's in the wrong typecache, so remove it
+
+  $DB->sqlDelete('newwriteup', "node_id=$id");
+  htmlcode('update New Writeups data');
+
+  $DB->sqlDelete('publish', "publish_id=$id");
+  $DB->sqlDelete('links',
+    "to_node=$id OR from_node=$id AND linktype=".getId(getNode('category', 'linktype')));
+
+  my ($remover, $notification) = (undef,undef); my %editor = ();
+
+  if ($$USER{node_id} == $$wu{author_user})
+  {
+    $remover = $notification = 'author';
+  }else{
+    $remover = "[$$USER{title}\[user]]";
+    $notification = 'editor';
+    %editor = (editor_id => $$USER{user_id});
+  }
+
+  htmlcode('addNotification', "$notification removed writeup", 0, {
+    writeup_id => $$wu{node_id}
+    , title => $$wu{title}
+    , author_id => $$wu{author_user}
+    , reason => $reason
+    , %editor});
+
+  $reason = ": $reason" if $reason;
+  htmlcode('addNodenote', $wu, "Removed by $remover$reason");
+
+  my $author = getNodeById($$wu{author_user});
+  my $mass = getNode('massacre', 'opcode');
+
+  $APP->securityLog(getNode('massacre', 'opcode'), $USER, "[$title] by [$$author{title}] was removed$reason");
+
+  unless($noexp)
+  {
+    adjustExp($$wu{author_user}, -5);
+
+    my $vars = getVars $author;
+    $$vars{numwriteups}--;
+    $$author{numwriteups} = $$vars{numwriteups};
+
+    setVars($author, $vars);
+    updateNode($author, -1);
+  }
+
+  return 1;
+}
+
+sub angelToDraft
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $tomb = shift;
+  my $angel_id = $$tomb{node_id};
+
+  return "Duplicate node id $angel_id: ".linkNode($angel_id) if getNodeById($angel_id);
+
+  my $VAR1 = {}; # defuse recursive node Dumper snafu (refers to $VAR1 in dump)
+  my $data = eval("my $$tomb{data}");
+  return "Couldn't decode data for angel id $angel_id:".
+    htmlcode('widget', "<pre>$$tomb{data}</pre>", 'div', 'show data', {
+      showwidget => "data$angel_id"
+      , node => getNode('Rebirthing room', 'superdocnolinks')
+      , angel_id => $angel_id})unless $data;
+
+  return "Ignored: no text" if $$data{doctext} eq '' and $query -> param('noBlank');
+
+  $tomb->{title} =~ s/ \(\w+\)$//;
+  $data->{type_nodetype} = getId(getType('draft'));
+  $data->{publication_status} = getId(getNode('nuked', 'publication_status'));
+
+  my $rep = $tomb->{reputation};
+
+  if($data ->{totalvotes})
+  {
+    # was this ever used?
+    $rep .= '('.($data->{totalvotes} + $tomb->{reputation})/2;
+    $rep .= '/'.($data->{totalvotes} - $tomb->{reputation})/2;
+    $rep .= ')';
+  }
+
+  $data->{reputation}=0;
+  $data->{totalvotes}=0;
+
+  foreach my $table ('node', 'document', 'draft')
+  {
+    my @fields = $DB->getFieldsHash($table);
+    my $insertref = {};
+    foreach (@fields)
+    {
+      my $field = $$_{Field};
+      $insertref->{$field} = $$data{$field} || $$tomb{$field} || '';
+    }
+
+    # primary key may not be in the data if new tables added since nuke:
+    $$insertref{"${table}_id"} = $angel_id;
+    $DB->sqlInsert($table, $insertref);
+  }
+
+  my $N = getNodeById($angel_id);
+  updateNode($N, -1); # avoid duplicate names
+
+  if ($N && $$N{doctext} eq $$data{doctext})
+  {
+    $DB->sqlDelete('heaven', "node_id=$angel_id") unless $APP->inDevEnvironment();
+
+    my $killa = undef; $killa = getNodeById($$tomb{killa_user}) unless $$tomb{killa_user} == -1;
+    $killa = ref $killa ? "[$$killa{title}\[user]]" : 'unknown editor';
+    htmlcode('addNodenote', $N, "Restored from Node Heaven.<br>Originally posted $$tomb{createtime};
+      nuked by $killa at rep $rep");
+
+    return $N;
+  }
+
+  return "Reincarnation of angel id $angel_id failed!"; 
+}
+
+sub ajax_publishhere
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $did = shift;
+
+  my $nope = htmlcode('nopublishreason', $USER, $query -> param('writeup_parent_e2node'));
+  return '<div>'
+    .(ref $nope? 'You already have a writeup here.': $nope)
+    .'</div>' if $nope;
+
+  return $query -> hidden('writeup_parent_e2node')
+    .$query -> hidden('draft_id', $did)
+    .htmlcode('setwriteuptype', {node_id => $did})
+    # class makes name get changed to 'op' and form get submitted on click:
+    .'<br>
+    <button type="button" name="publishbutton" value="publishdraft" class="wuformaction">Publish</button>';
+}
+
+sub show_paged_content
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($select, $from, $where, $orderby, $instructions, %functions) = @_;
+  my %parameters = $query -> Vars();
+
+  $orderby =~ s/\s*\bLIMIT\s+(\d+)\s*$//si;
+
+  $parameters{perpage} ||= $1 || 50;
+  $parameters{perpage} = int $parameters{perpage}; #SQueaL safely
+  my $page = int(abs(delete $parameters{page})) || 1;
+
+  my ($offset, $crs, $rowCount, $pageCount) = (undef,undef,undef,undef);
+
+  do{
+    $offset = ($page - 1) * $parameters{perpage};
+    $crs = $DB -> sqlSelectMany(
+      "SQL_CALC_FOUND_ROWS $select"
+      , $from
+      , $where
+      , "$orderby LIMIT $offset, $parameters{perpage}");
+	
+    $rowCount = $DB -> sqlSelect('FOUND_ROWS()');
+    $pageCount = int(($rowCount - 1)/$parameters{perpage}) + 1;
+
+  } while $page > $pageCount && ($page = $pageCount);
+
+  my $content = $instructions ? htmlcode('show content', $crs, $instructions, %functions)
+    : $crs; # no instructions: caller wants to handle it
+
+  my $navigation = '';
+
+  if ($pageCount > 1)
+  {
+    # 3 possible parameters from url, 1 an ecore mistake, 1 from submit button
+    delete @parameters{qw(node node_id type op sexisgood)};
+    my $link = sub{
+      my ($p, $text) = @_;
+      my %class = (); %class = (-class => $1.'link') if $text && $text =~ /(?:^|;)(\w+)/;
+      $text ||= $p;
+
+      '&nbsp;'.linkNode($NODE, $text, {
+        %parameters
+        , page => $p
+        , -title => "go to page $p"
+        , %class
+      }).' ';
+    };
+
+    my @navigation = ();
+    $navigation[$page] = qq'<b class="thispage">&nbsp;$page </b>';
+
+    # show five page numbers including this one, plus first and last,
+    # plus second/second-last if we also have 3rd/3rd last. Dots in gaps.
+    # max 9 links/dotties, so show all if count <= 9
+    # 'go to' box if missing links
+    my ($n, $z) = $pageCount > 9
+      ? (5, $pageCount - $page < 2 ? $pageCount - 5 : $page - 3)
+      : ($pageCount, 0);
+    my $i = $page;
+
+    until($navigation[--$i > $z && $i or $i = $i + $n])
+    {
+      $navigation[$i] = &$link($i);
+    }
+
+    if ($pageCount > 9)
+    {
+      $navigation[1] ||= &$link(1);
+      $navigation[2] ||= $navigation[3] ? &$link(2) : '&nbsp;&hellip; ';
+      $navigation[$pageCount] ||= &$link($pageCount);
+      $navigation[-2] ||= $navigation[-3] ? &$link($pageCount - 1) : '&nbsp;&hellip; ';
+
+      $navigation = '<p><label>Go to page:<input type="text" name="page" size="2"></label>'
+        .$query -> submit('submit', 'Go');
+
+      unless($functions{noform})
+      {
+        $navigation = htmlcode('openform', -class => 'pagination', -method => 'get')
+          .join ("\n",
+            map {$query -> hidden($_, $parameters{$_})} keys %parameters)
+          .$navigation
+          .'</form>';
+      }else{
+        $navigation = $query -> div({class=>'pagination'}, $navigation);
+      }
+    }
+
+    $navigation[0] = &$link(1, '&#xAB;&#xAB;first') if $page > 2;
+    $navigation[0] .= &$link($page - 1, '&#xAB;prev') if $page > 1;
+    $navigation[$pageCount] .= &$link($page + 1, 'next&#xBB;')
+    unless $page == $pageCount;
+    $navigation[$pageCount] .= &$link($pageCount, 'last&#xBB;&#xBB;')
+    unless $page > $pageCount - 2;
+
+    $navigation ='<p class="pagination">Pages: '
+      .join('', @navigation)
+      ."</p>$navigation";
+  }
+
+  my $last = $offset + $parameters{perpage};
+  $last = $rowCount if $last > $rowCount;
+
+  return ($content, $navigation, $rowCount, $offset + 1, $last) if wantarray;
+  return qq'$content $navigation';
+}
+
+sub drafttools
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($N, $open) = @_;
+  getRef $N;
+
+  return htmlcode('writeuptools', @_) if $$N{type}{title} eq 'writeup';
+
+  my $isEditor = $APP->isEditor($USER);
+
+  my $isMine = ($$N{author_user} == $$USER{node_id});
+
+  my @tools = ();
+  my ($text , $linktitle, $attachment, $notes) = (undef,undef,undef,undef);
+  my $n = $$N{node_id};
+  my $id = 'adminheader'.$n ;
+
+  my $author = getNodeById( $$N{author_user} );
+  $author = $query -> escapeHTML($$author{title}) if $author;
+
+  my $status = undef; $status = getNodeById($$N{publication_status}) if $$N{publication_status};
+  $status = $$status{title} if $status;
+
+  $text = $status || 'private';
+  $text = "$text/tin-opened" if $query -> param('tinopener')
+    and $$N{collaborators} ne $$N{_ORIGINAL_VALUES}{collaborators};
+
+  $linktitle = {
+    private => $isMine ? 'only visible to you and your collaborators' :
+      "$author has given you permission to see this draft",
+    shared =>  $isMine ? 'visible to you and your collaborators (who can also edit it)' :
+      "$author has given you permission to see and edit this draft",
+    public => 'visible to all logged-in users',
+    findable => 'visible to all logged-in users, and may be shown in search findings',
+    review => 'comments/suggestions invited',
+    removed => 'removed by an editor',
+    nuked => 'posted and deleted before June 10, 2011'} -> {$text} || $text;
+
+  $text =~ s/^(\w)/\u$1/;
+  $text .= '<sup>*</sup>' if $text eq 'private' && !$isMine;
+  $text = "<b>$text draft</b>";
+
+  if ($isMine and $$NODE{node_id} != $n)
+  {
+    push @tools, linkNode($N, 'Set draft status...', { # can't put the forms here: we're already in a form
+      '#' => "draftstatus$n"
+      , -class => "ajax draftstatus$n:setdraftstatus?node_id=$n:$n"
+      , -onclick => "parent.location='#draftstatus$n'" # inline JS. Whatever next? 
+      });
+	
+    $attachment = linkNode($N, 'Publish here', {
+      '#' => "draftstatus$n"
+      , parentdraft => 'publish'
+      , writeup_parent_e2node => $$NODE{node_id}
+      , -id => "publishhere$n"
+      , -class => "ajax publishhere$n:ajax+publishhere:$n"
+      });
+  }
+
+  if ($isEditor)
+  {
+    my $linktype = getId(getNode 'parent_node', 'linktype');
+    my ($parent, $approver) = $DB -> sqlSelect( # editor approval is flagged by feeding the link
+      'to_node, food', 'links', "from_node=$$N{node_id} AND linktype=$linktype");
+
+    unless ($status eq 'private' || $status eq 'removed' || $isMine)
+    {
+      my %options = (private => 'Made Private', public => 'Removed from review');
+      my $change = $query -> param('smiteStatus');
+
+      if ($change && $options{$change})
+      {
+        $$N{publication_status} = getId(getNode($change, 'publication_status'));
+        updateNode($N, -1);
+        $text = $status = $linktitle = $options{$change};
+        $DB->sqlUpdate('links', {food => ($approver = 0)},
+          "from_node=$$N{node_id} AND linktype=$linktype") if $approver;
+      }else{
+        push @tools, linkNode($N, 'Remove from review', {
+          smiteStatus => 'public'
+          , -class => "action ajax $id:drafttools:$n,1"
+          }) if $status eq 'review';
+        push @tools, linkNode($N, 'Make private', {
+          smiteStatus => 'private'
+          , -class => "action ajax $id:drafttools:$n,1"});
+      }
+
+    }elsif($status eq 'removed'){
+      $attachment = linkNode($N, 'Unremove', {
+        parentdraft => 'publish'
+        , -class => "ajax republish:parentdraft"
+        , -title => 'republish this because someone goofed'});
+    }
+
+    if ($parent and $approver || $status eq 'review')
+    {
+      $attachment ||= 'Attached to '
+        .$query -> b(linkNode($parent, $$NODE{node_id} == $parent ? 'this node' :''));
+
+      my $approve = '';
+      if ($approver)
+      {
+         $attachment .= '<br><br>Approved for publication by '.linkNode($approver);
+         $linktitle .= '. Approved';
+         $approve = 'Revoke approval';
+      }else{
+         my $block = htmlcode('nopublishreason', $$N{author_user}, $parent);
+         if ($block && !ref($block) && $block !~ /email/)
+         {
+           $attachment .= "<br><br>Requires approval before publication because:<br>
+             <small style='white-space:normal'>$block</small>";
+           $linktitle .= '. Needs approval';
+           $approve = 'Approve';
+         }
+      }
+
+      $attachment .= '<br><br>'.linkNode($N, "<b>$approve</b>", {
+        op => 'approve_draft'
+        , revoke => $approver
+        , draft => $$N{node_id}
+        , e2node => $parent
+        , -class => "action ajax $id:drafttools:$n,1" }) if $approve;
+
+    }
+
+    $notes = htmlcode('nodenote', $N) if $status eq 'review';
+  }
+
+  push @tools, $attachment if $attachment;
+  push @tools, $notes if $notes;
+
+  if (@tools)
+  {
+    $query -> param('showwidget' , 'admin') if $open;
+    $text = htmlcode('widget'
+      , join('<hr>', @tools)
+      , 'span'
+      , $text
+      , {showwidget => 'admin', -title => "$linktitle. Click here to show/hide admin options."}
+    );
+    $linktitle = '';
+  }
+
+  return $query -> span({class => 'admin', id => $id, title => $linktitle}, $text);
+ 
+}
+
+sub blacklistedIPs
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = undef;
+  my $offset = int($query->param('offset')) || 0;
+  my $pageSize = 200;
+  my ($firstItem, $lastItem) = ($offset + 1, $offset + $pageSize);
+  my $records = $pageSize * 2;
+  my $displayCount = $pageSize;
+
+  ###################################################
+  # addrFromInt
+  ###################################################
+  # Takes an integer representing an IPv4 address
+  #  as an argument
+  #
+  # Returns a string with dotted IP notation
+  ###################################################
+  my $addrFromInt = sub {
+    my $intAddr = shift;
+    my ($oc1, $oc2, $oc3, $oc4) =
+      ($intAddr & 255
+      , ($intAddr >> 8) & 255
+      , ($intAddr >> 16) & 255
+      , ($intAddr >> 24) & 255);
+    return "$oc4.$oc3.$oc2.$oc1";
+  };
+
+  ###################################################
+  # rangeBitsFromInts
+  ###################################################
+  # Takes two integers representing ends of an IP
+  #  address range.
+  #
+  # Returns the number of bits it spans if they
+  #  represent a CIDR range.
+  # Returns undef otherwise.
+  ###################################################
+  my $rangeBitsFromInts = sub {
+    my ($minAddr, $maxAddr) = @_;
+    my $diff = abs($maxAddr - $minAddr) + 1;
+    my $log2diff = log($diff)/log(2);
+    my $epsilon = 1e-11; 
+    return undef if (($log2diff - int($log2diff)) > $epsilon);
+    return (32 - $log2diff);
+    };
+
+  ###################################################
+  # populateAddressForRange
+  ###################################################
+  # Takes a hashref containing either data about IP
+  #  blacklist entry or an IP blacklist range entry
+  # If it contains a range entry, Modifies the row
+  #  so ipblacklist_address contains a string
+  #  representation
+  #
+  # Returns nothing
+  ###################################################
+  my $populateAddressForRange = sub {
+    my $row = shift;
+
+    if (defined $$row{min_ip})
+    {
+      my ($minAddrInt, $maxAddrInt) = ($$row{min_ip}, $$row{max_ip});
+      my ($minAddr, $maxAddr) = (&$addrFromInt($minAddrInt), &$addrFromInt($maxAddrInt));
+      my $bits = &$rangeBitsFromInts($minAddrInt, $maxAddrInt);
+      if (defined $bits)
+      {
+        $$row{ipblacklist_ipaddress} = "$minAddr/$bits";
+      } else {
+        $$row{ipblacklist_ipaddress} = "$minAddr - $maxAddr";
+      }
+    }
+  };
+
+  ###################################################
+  # removeButton
+  ###################################################
+  # Takes a hashref containing either data about IP
+  #  blacklist entry or an IP blacklist range entry
+  #
+  # Returns a string containing a submit button to
+  #  remove the given entry
+  ###################################################
+  my $removeButton = sub {
+    my ($row) = @_;
+    my $hiddenHash = { };
+    $$hiddenHash{-name}  = 'remove_ip_block_ref';
+    $$hiddenHash{-value} = $$row{ipblacklistref_id};
+    my $result =  $query->hidden($hiddenHash) . ''. $query->submit({ -name => 'Remove' });
+
+    return $result;
+  };
+
+  ###################################################
+  ###################################################
+  # End Functions
+  ###################################################
+
+  my $getBlacklistSQL = qq|
+  SELECT ipblacklistref.ipblacklistref_id
+    , IFNULL(ipblacklist.ipblacklist_user, ipblacklistrange.banner_user_id)
+    'ipblacklist_user'
+    , ipblacklist.ipblacklist_ipaddress
+    , IFNULL(ipblacklist.ipblacklist_comment, ipblacklistrange.comment)
+    'ipblacklist_comment'
+    , ipblacklistrange.min_ip
+    , ipblacklistrange.max_ip
+    FROM ipblacklistref
+    LEFT JOIN ipblacklistrange ON ipblacklistrange.ipblacklistref_id = ipblacklistref.ipblacklistref_id
+    LEFT JOIN ipblacklist ON ipblacklist.ipblacklistref_id = ipblacklistref.ipblacklistref_id
+    WHERE (ipblacklist_id IS NOT NULL OR ipblacklistrange_id IS NOT NULL)
+    ORDER BY ipblacklistref.ipblacklistref_id DESC
+    LIMIT $offset,$records|;
+
+  my $cursor = undef;
+  my $saveRaise = $DB->{dbh}->{RaiseError};
+  $DB->{dbh}->{RaiseError} = 1;
+  eval { 
+    $cursor = $DB->{dbh}->prepare($getBlacklistSQL);
+    $cursor->execute();
+  };
+
+  $dbh->{RaiseError} = $saveRaise;
+
+  if ($@)
+  {
+    $str .= "<h3>Unable to load IP blacklist</h3>";
+    return $str;
+  }
+
+  my $fetchResults = $cursor->fetchall_arrayref({});
+  my $resultCount = scalar @$fetchResults;
+  # Shorten fetchResults to just the items we will display
+  $fetchResults = [ @$fetchResults[0..($displayCount - 1)] ];
+
+  my ($prevLink, $nextLink) = ('', '');
+
+  if ($offset > 0)
+  {
+    my $prevOffset = $offset - $pageSize;
+    my $offsetHash = { };
+	
+    $$offsetHash{showquery} = $query->param('showquery') if $query->param('showquery');
+
+    if ($prevOffset <= 0)
+    {
+      $prevOffset = 0;
+    } else {
+      $$offsetHash{offset} = $prevOffset;
+    }
+
+    $prevLink = linkNode(
+      $NODE
+      , "Previous (" . ($prevOffset + 1) . " - " . ($prevOffset + $pageSize) . ")"
+      , $offsetHash);
+
+  }
+
+  if ($resultCount > $pageSize)
+  {
+    my $maxRecord = $offset + $resultCount;
+    my $offsetHash = { 'offset' => $offset + $pageSize };
+	
+    $$offsetHash{showquery} = $query->param('showquery') if $query->param('showquery');
+
+    $nextLink = linkNode(
+      $NODE
+      , "Next (" . ($pageSize + $offset + 1) . " - " . $maxRecord . ")"
+      , $offsetHash
+      );
+  } else {
+    $lastItem = $offset + $resultCount;
+    $displayCount = $resultCount;
+  }
+
+  my $header = qq|
+    <h3>Currently blacklisted IPs (#$firstItem - $lastItem)</h3>
+    <p>
+    $prevLink
+    $nextLink
+    </p>
+    <table border="1" cellspacing="2" cellpadding="3">
+      <tr>
+        <th>IP Address</th>
+        <th>Blocked by user</th>
+        <th>Reason</th>
+        <th>Remove?</th>
+      </tr>|;
+
+  $str .= $header;
+
+  $str .= "<pre>$getBlacklistSQL</pre>" if $query->param('showquery');
+
+  # Don't retain the value if we just deleted a block
+  $query->delete('remove_ip_block_ref');
+
+  for my $row (@$fetchResults)
+  {
+    &$populateAddressForRange($row);
+    $str .= "<tr>"
+      ."<td>$$row{ipblacklist_ipaddress}</td>"
+      ."<td>".linkNode($$row{ipblacklist_user})."</td>"
+      ."<td>$$row{ipblacklist_comment}</td>"
+      ."<td>"
+      . htmlcode('openform', 'removebanform')
+      . &$removeButton($row)
+      . $query->end_form()
+      ."</td>"
+      ."</tr>"
+  }
+
+  $str .= "</table>";
+
+  return $str;
+
+}
+
+sub resurrectNode
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+  
+  my ($node_id) = @_;
+
+  my $N = $DB->sqlSelectHashref("*", 'tomb', "node_id=".$DB->{dbh}->quote("$node_id"));
+  return unless $N;
+
+  my $DATA = eval($$N{data});
+
+  @$N{keys %$DATA} = values %$DATA;
+
+  delete $$N{data};
+  delete $$N{killa_user};
+  delete $$N{node_id};
+
+  return $N;
+}
+
+sub reinsertCorpse
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+  
+  my ($N) = @_;
+  my @kids = ();
+  if ($$N{group})
+  {
+    foreach (@{ $$N{group} })
+    {
+      my $KID = htmlcode("resurrectNode",$_);
+      push @kids, htmlcode("reinsertCorpse", $KID);
+    }
+  }
+
+  my $author = $$N{author_user};
+  delete $$N{author_user};
+  my $title = $$N{title};
+  delete $$N{title};
+  my $type = $$N{type_nodetype};
+  delete $$N{type_nodetype};
+  delete $$N{group} if exists $$N{group};
+
+  my $A = getNodeById($author);
+  $A = getNode('root','user') unless $A;
+  my $id = insertNode($title, $type, $A, $N);
+  insertIntoNodegroup($id, $author, \@kids) if @kids;
+  $id;
 }
 
 1;

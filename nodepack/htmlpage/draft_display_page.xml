@@ -3,7 +3,12 @@
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>2035430</pagetype_nodetype>
   <page>[%
-my $str;
+if(!$APP-&gt;canSeeDraft($USER, $NODE))
+{
+  return;
+}
+
+my $str = undef;
 
 if ($query -&gt; param('nukedraft') eq 'Delete draft' &amp;&amp; htmlcode('verifyRequest', 'nukedraft')){
 	my @fields = $DB -&gt; getFieldsHash('draft', 0);

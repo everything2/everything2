@@ -3,10 +3,5 @@
   <delegated>1</delegated>
   <node_id>1168156</node_id>
   <title>displayUserText</title>
-  <code>my $txt = undef;
-my $APRTAGS = getNode 'approved html tags', 'setting';
-$txt = stripCode($$NODE{doctext});
-$txt = breakTags(htmlScreen($txt, getVars($APRTAGS)));
-$txt = parseLinks($txt) unless($query-&gt;param(&quot;links_noparse&quot;));
-return $txt;</code>
+  <code></code>
 </node>

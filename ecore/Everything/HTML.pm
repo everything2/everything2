@@ -30,7 +30,6 @@ sub BEGIN {
               jsWindow
               createNodeLinks
               parseLinks
-              stripCode
               htmlScreen
               screenTable
               cleanupHTML
@@ -1545,7 +1544,6 @@ sub htmlcode {
 
 	my $delegation_name = $htmlcodeName;
 	$delegation_name =~ s/[\s\-]/_/g;
-	my $eval_error = 0;
 
 	if(my $delegation = Everything::Delegation::htmlcode->can($delegation_name))
 	{
@@ -1555,30 +1553,10 @@ sub htmlcode {
 			$returnVal = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $APP, @savedArgs);
 		}
 	}else{
-		my ($htmlcodeCode, $codeNode) = getCode($htmlcodeName);
-		my $function;
-
-		# If we are doing a new-style htmlcode call (or have no arguments)
-		#  we can use the cached compilation of this function
-
-		if ($splitter eq "") {
-			$function = getCompiledCode($codeNode, \&evalCode);
-		}
-			return "<p>htmlcode '$htmlcodeName ' raised compile-time error:</p>\n $function" if ref \$function eq 'SCALAR' ;
-
-		if (wantarray) {
-			@returnArray = &$function(@savedArgs);
-		} else {
-			$returnVal = &$function(@savedArgs);
-		}
-
-		if ($@) {
-			$returnVal = htmlFormatErr ($htmlcodeCode, $@, $warnStr);
-			$eval_error = 1;
-		}
+                return htmlFormatErr("","$htmlcodeName could not be found as Everything::Delegation::htmlcode::$delegation_name");
 	}
 
-	if (wantarray and not $eval_error) {
+	if (wantarray) {
 		return @returnArray;
 	} else {
 		return $returnVal;
@@ -1649,24 +1627,6 @@ sub parseCode {
 		           $text;
 
 
-}
-
-#############################################################################
-#	Sub
-#		stripCode
-#
-#	Purpose
-#		A companion to parseCode so that E2 code that might have been once
-#		evaluated can be treated like comments and stripped out.  Used
-#		to deal elegantly when users lose codehome.
-#
-#	Parameters
-#		text -- the string containing code to strip
-#
-sub stripCode {
-	my ($text) = @_;
-	$text =~ s/\[(?:\{.*?\}|\".*?\"|\%.*?\%)\]//gs;
-	return $text;
 }
 
 ###################################################################
@@ -1920,6 +1880,11 @@ sub gotoNode
 	unless (canReadNode($user_id, $NODE)) {
 		$NODE = getNodeById($Everything::CONF->{system}->{permission_denied});
 	}
+
+        if($NODE->{type}->{title} eq "draft" && !$APP->canSeeDraft($user_id, $NODE))
+        {
+                $NODE = getNodeById($Everything::CONF->{system}->{permission_denied});
+        }
 	#these are contingencies various things that could go wrong
 
 	my $displaytype = $query->param("displaytype");
