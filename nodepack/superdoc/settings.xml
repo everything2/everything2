@@ -84,7 +84,7 @@ htmlcode('varcheckboxinverse', 'noquickvote' , 'Enable quick functions (a.k.a. A
 '&lt;br&gt;&lt;small&gt;(Voting, cooling, chatting, etc will no longer require complete pageloads. Highly recommended.)&lt;/small&gt;
 &lt;br&gt;' ;
 %]
-&lt;label&gt;On-page transitions:[{varscombobox:fxDuration, 0,
+&lt;label&gt;On-page transitions:[{varsComboBox:fxDuration, 0,
 	1,Off (instant),
 	100,Supersonic,
 	150,Faster,
@@ -125,7 +125,7 @@ Check for some common mistakes made in creating or editing writeups.&lt;br&gt;
 
 &lt;h2 id=&quot;noders&quot;&gt;Other users&lt;/h2&gt;
 &lt;fieldset&gt;&lt;legend&gt;Other users' writeups&lt;/legend&gt;
-&lt;label&gt;Anonymous voting:[{varscombobox:anonymousvote , 0,
+&lt;label&gt;Anonymous voting:[{varsComboBox:anonymousvote , 0,
 	0,Always show author's username ,
 	1,Hide author completely until I have voted on a writeup ,
 	2,Hide author's name until I have voted but still link to the author}]
