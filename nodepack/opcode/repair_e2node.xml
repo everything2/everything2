@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1298189</node_id>
   <title>repair_e2node</title>
   <code>return unless $APP-&gt;isEditor($USER);

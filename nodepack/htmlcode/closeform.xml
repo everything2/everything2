@@ -3,7 +3,5 @@
   <delegated>1</delegated>
   <node_id>29</node_id>
   <title>closeform</title>
-  <code>$query-&gt;submit(&quot;sexisgood&quot;, $_[0]||&quot;submit&quot;) .
-$query-&gt;end_form;
-#why are you taunting me?</code>
+  <code></code>
 </node>

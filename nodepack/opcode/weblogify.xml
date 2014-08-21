@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1882499</node_id>
   <title>weblogify</title>
   <code>my $disp = $query-&gt;param(&quot;ify_display&quot;);

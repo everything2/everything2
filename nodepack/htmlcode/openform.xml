@@ -3,21 +3,5 @@
   <delegated>1</delegated>
   <node_id>42</node_id>
   <title>openform</title>
-  <code>my ($name, $method) = @_;
-
-my %params = ();
-
-unless ( $name =~ /^-/ ) {
-   $params{ -method } = $method if $method ;
-   $params{ -name } = $params{-id} = $name if $name ;
-} else {
-   %params = @_ ;
-}
-
-$params{ -method } ||= 'post';
-
-$query-&gt;start_form( -action =&gt; urlGenNoParams($NODE,1) , %params ) .
-$query-&gt;hidden(&quot;displaytype&quot;) . &quot;\n&quot; .
-$query-&gt;hidden('node_id', $$NODE{node_id});
-</code>
+  <code></code>
 </node>
