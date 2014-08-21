@@ -1842,12 +1842,6 @@
     <rank>2</rank>
   </group>
   <group>
-    <node_id>909986</node_id>
-    <orderby>0</orderby>
-    <nodegroup_id>909983</nodegroup_id>
-    <rank>0</rank>
-  </group>
-  <group>
     <node_id>909984</node_id>
     <orderby>1</orderby>
     <nodegroup_id>909983</nodegroup_id>

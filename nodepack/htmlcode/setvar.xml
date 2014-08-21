@@ -3,11 +3,5 @@
   <delegated>1</delegated>
   <node_id>50</node_id>
   <title>setvar</title>
-  <code>my ($var, $len) = @_;
-$len ||=10;
-if (my $q = $query-&gt;param(&quot;set$var&quot;)) {$$VARS{$var} = $q;}
-if ($query-&gt;param(&quot;sexisgood&quot;) and not $query-&gt;param(&quot;set$var&quot;)){
-	$$VARS{$var}=&quot;&quot;;
-}
-$query-&gt;textfield(&quot;set$var&quot;, $$VARS{$var}, $len);</code>
+  <code></code>
 </node>

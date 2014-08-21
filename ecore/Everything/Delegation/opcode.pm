@@ -1825,4 +1825,420 @@ sub unhidewriteup
   return "";
 }
 
+sub changewucount
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return '' if ( $APP->isGuest($USER) );
+
+  if($query->param('amount'))
+  {
+    my $amount = $query->param('amount');
+    if($amount =~ /^(\d+)$/)
+    {
+      $amount=$1;
+      $amount = 50 if $amount > 50 ;
+      $$VARS{num_newwus}=$amount;
+    }
+  }
+
+  if ( $query->param( 'nw_nojunk' ) )
+  {
+    $$VARS{ nw_nojunk } = 1 ;
+  } else {
+    delete $$VARS{ nw_nojunk } ;
+  }
+
+  return 1;
+}
+
+sub repair_e2node
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isEditor($USER);
+
+  my $repair_id = $query->param('repair_id');
+  my $no_order = $query->param('noorder');
+  return unless $repair_id;
+
+  my $result = htmlcode('repair e2node', $repair_id, $no_order);
+  return 1 if $result;
+  return undef;
+}
+
+sub borg
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # borgs the current node 1 time (iff current node is a user and current user is an admin)
+  # N-Wing, Friday, May 24, 2002
+
+  my $UID = $$USER{node_id};
+
+  return unless $APP->isAdmin($USER);
+  return unless $query->param('borgvictim');
+  my $victimID = $query->param('borgvictim') || 0;
+  return unless $victimID =~ /^(\d+)$/;
+  my $victim = getNodeById($victimID=$1) || undef;
+  return unless defined $victim;
+  return unless $$victim{type}{title} eq 'user';
+
+  my $borgSelf = $victimID==$UID;
+
+  # following ripped from [message] (opcode)
+  my $V = $borgSelf ? $VARS : getVars($victim);
+  ++$$V{numborged};
+  $$V{borged}=time;
+  setVars($victim,$V) unless $borgSelf;
+  $query->param('borgcount'.$victimID,$$V{numborged}); #shown in [admin toolset]
+
+  $DB->sqlUpdate('room',{borgd=>'1'},'member_user='.$victimID);
+
+  # TODO: Seriously remove this.
+  my $OTHERUSERS = getNode('other users','nodelet');
+  $$OTHERUSERS{nltext} = Everything::HTML::parseCode($$OTHERUSERS{nlcode},$OTHERUSERS);
+  updateNode($OTHERUSERS,-1);
+
+  return;
+}
+
+sub nodetestpass
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isEditor($USER);
+
+  my $node = $DB->getDatabaseHandle->quote($query->param("node_id"));
+  $DB->sqlDelete("nodetestresult", "nodetestresult_node=$node");
+  return 1;
+}
+
+sub flushcbox
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isChanop($USER); # Specifically include gods
+  my $currentRoomId = int($$USER{in_room});
+  my $currentRoom = getNode($currentRoomId);
+  my $currentRoomName = undef;
+  if (!$currentRoom && $currentRoomId)
+  {
+    $currentRoomName = "in expired room (#$currentRoomId)";
+  } elsif (!$currentRoom) {
+    $currentRoomName = "outside";
+  } else {
+    $currentRoomName = "in room '$$currentRoom{title}'";
+  }
+
+  $APP->securityLog(getNode('flushcbox', 'opcode'), $USER, "Chat $currentRoomName flushed.");
+  $DB->sqlDelete("message", "for_user = 0 AND room = $currentRoomId");
+  return 1;
+}
+
+sub applypatch
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return -1 unless isGod($USER);
+  my $patchid = $query->param("patch_id");
+  return -2 unless $patchid;
+  my $PATCH = getNodeById($patchid);
+  return -3 unless $PATCH;
+  return -4 unless $$PATCH{type_nodetype} == getId(getType("patch"));
+
+  my $action = undef;
+  my $cur_status = getNodeById($PATCH -> {cur_status});
+  my $undone_status = getNode("undone","status");
+  my $implemented_status = getNode( ( $APP->inDevEnvironment() ? 'implemented' : 'production-implemented' ),'status');
+
+  if ($cur_status -> {applied})
+  {
+    if ($cur_status -> {title} eq 'imported-implemented')
+    {
+      $undone_status = getNode("imported-pending","status");
+    }
+
+    $$PATCH{cur_status}= $undone_status -> {status_id};
+    $action='undone';
+  } else {
+    if ($cur_status -> {title} eq 'imported-pending')
+    {
+      $implemented_status = getNode("imported-implemented","status");
+    }
+    $$PATCH{cur_status} = $implemented_status -> {status_id};
+    $$PATCH{assigned_to} = $$USER{node_id};
+    if ( $APP->inDevEnvironment() )
+    {
+      foreach ( 'title' , 'author_user' , 'purpose' , 'instructions' , 'code' )
+      {
+        $$PATCH{$_} = $query -> param( "patch_$_" ) if $query -> param( "patch_$_" ) ;
+        $query -> delete( "patch_$_" ) ; 
+      }
+    }
+
+    $action='applied';
+    $query->delete('displaytype')if $query->param('displaytype') eq 'edit';
+  }
+
+  my $TOPATCH = getNodeById($$PATCH{for_node});
+  return -5 unless $TOPATCH;
+  my $temp = $$TOPATCH{$$PATCH{field}};
+  $$TOPATCH{$$PATCH{field}} = $$PATCH{code};
+  $$PATCH{code} = $temp;
+  updateNode($PATCH, $USER);
+
+
+  $DB->sqlInsert("message", {author_user=>getId(getNode("root","user")), for_user=>$$PATCH{author_user}, msgtext=>"Your patch ([$$PATCH{title}]) was just $action by $$USER{title}. Thank you."}) unless ($$PATCH{author_user}==$$USER{node_id});
+
+  return updateNode($TOPATCH, $USER);
+}
+
+sub repair_e2node_noreorder
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isEditor($USER);
+
+  my $repair_id = $query->param('repair_id');
+  my $no_order = 1;
+  return unless $repair_id;
+
+  my $result = htmlcode('repair e2node', $repair_id, $no_order);
+  return 1 if $result;
+  return undef;
+
+}
+
+sub orderlock
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return $APP->isEditor($USER);
+
+  my $N = getNodeById($query->param('node_id'));
+
+  return unless $N;
+  return unless $$N{type}{title} eq "e2node";
+
+  if($query->param("unlock"))
+  {
+    $N->{orderlock_user} = 0;
+  }else{
+    $N->{orderlock_user} = $USER->{node_id};
+  }
+
+  updateNode($N, -1);
+  return;
+}
+
+sub pollvote
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if $APP->isGuest($USER);
+
+  my $pollId = $query -> param('poll_id');
+  my $vote = $query->param('vote');
+
+  my $N = getNodeById($pollId);
+  my @result_array = split(',', $$N{e2poll_results});
+  return unless $N  && $$N{type}{title} eq 'e2poll' && $$N{poll_status} ne 'new' && $$N{poll_status} ne 'closed'
+    && exists($result_array[$vote]);
+
+  return if $DB->sqlSelect( # has already voted on this poll
+    'vote_id'
+    , 'pollvote'
+    , "voter_user=$$USER{node_id} AND pollvote_id=$$N{node_id}");
+
+  return unless $DB->sqlInsert('pollvote', { # don't update the poll if the vote gets lost
+    pollvote_id => $pollId
+    , voter_user => $$USER{node_id}
+    , choice => $vote
+    , -votetime => 'NOW()'});
+
+  $result_array[$vote]++;
+  my $votesum = undef;
+  foreach ( @result_array )
+  {
+    $votesum = $votesum + $_;
+  }
+
+  $DB->sqlUpdate("e2poll", {
+    e2poll_results => join(',', @result_array)
+    , totalvotes => $votesum}
+    , "e2poll_id=$pollId");
+}
+
+sub softlock
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $query->param("lockID");
+  return unless $APP->isEditor($USER);
+
+  my $lockNode = getNodeById($query->param("lockID"));
+  return unless $lockNode;
+
+  my $nodeReason = $query->param('nodelock_reason') || '';
+
+  my $isLocked = $DB->sqlSelect("nodelock_node", "nodelock", "nodelock_node=$$lockNode{node_id} limit 1") || 0;
+
+  if ($isLocked)
+  {
+    $DB->sqlDelete("nodelock","nodelock_node=$$lockNode{node_id}");
+  } else {
+    $DB->sqlInsert("nodelock", {nodelock_reason => $nodeReason, nodelock_user => $$USER{user_id}, nodelock_node => $$lockNode{node_id}});
+  }
+}
+
+sub weblogify
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $disp = $query->param("ify_display");
+  my $nid =  $query->param("node_id");
+  return unless $disp;
+  return unless $disp gt '';
+
+  my $wl = getNode('webloggables','setting');
+
+  my $wSettings = getVars($wl);
+
+  $$wSettings{$nid} = $disp;
+
+  setVars($wl, $wSettings);
+
+  my $N = getNodeById($nid);
+  getRef $N;
+
+  if($$N{group})
+  {
+    my $GROUP = $$N{group};
+    my @memberIDs = @$GROUP;
+    foreach(@memberIDs)
+    {
+      my $u = getNodeById($_);
+      next unless $u;
+      my $v =getVars($u);
+      next if ($$v{can_weblog} =~ /$nid/);
+      if (length($$v{can_weblog}) ==0 )
+      {
+        $$v{can_weblog} = $nid;
+      } else {
+        $$v{can_weblog} = $$v{can_weblog} .",".$nid;
+      }
+
+      if ($_ == $$USER{user_id})
+      {
+        $VARS = $v;
+      }
+
+      setVars($u,$v);
+    }
+  }
+
+  $$N{doctext} = $$N{doctext} . "[{weblog:3}]";
+  updateNode($N,-1);
+}
+
+sub leadusergroup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $uName = $query->param("new_leader");
+  my $userGroup = $query->param("node_id");
+
+  return unless $uName;
+  return unless $userGroup;
+
+  my $recUser = getNode($uName,"user");
+  if (!$recUser)
+  {
+    $uName =~ s/\_/ /gs;
+    $recUser = getNode($uName, 'user');
+  }
+
+  return unless $recUser;
+  return unless $APP->inUsergroup($recUser,getNodeById($userGroup));
+
+  my $auth = $USER;
+  $auth = -1 if $APP -> getParameter($userGroup, 'usergroup_owner') == $USER -> {node_id};
+  $APP -> setParameter($userGroup, $auth, 'usergroup_owner', $recUser -> {node_id});
+
+  return 1;
+}
+
 1;

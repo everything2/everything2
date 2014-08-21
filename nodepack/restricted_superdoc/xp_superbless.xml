@@ -3,7 +3,7 @@
   <doctext>[%
 return unless isGod($USER);
 
-my $bonesrant = '&lt;P&gt;This is an archived version of the old [Superbless] which used to give XP instead of GP. All blessings should be given in GP nowadays. There is no reason why administrators should fiddle with user XP except for extraordinary circumstances. All usage of this node is logged.&lt;/P&gt;&lt;P&gt;-[The Power Structure of Everything2|the management]&lt;/P&gt;&lt;p&gt;Please contact [alex] if a user wants XP reset to zero.&lt;/p&gt;';
+my $bonesrant = '&lt;P&gt;This is an archived version of the old [Superbless] which used to give XP instead of GP. All blessings should be given in GP nowadays. There is no reason why administrators should fiddle with user XP except for extraordinary circumstances. All usage of this node is logged.&lt;/P&gt;&lt;P&gt;-[The Power Structure of Everything2|the management]&lt;/P&gt;&lt;p&gt;Please contact [Tem42] if a user wants XP reset to zero.&lt;/p&gt;';
 %]
 
 [%

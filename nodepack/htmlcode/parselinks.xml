@@ -3,8 +3,5 @@
   <delegated>1</delegated>
   <node_id>44</node_id>
   <title>parselinks</title>
-  <code>my ($field) = @_;
-my $n = undef; $n = (( $APP-&gt;isGuest($USER) )?(undef):($NODE));
-parseLinks( $$NODE{$field} , $n ) ;
-</code>
+  <code></code>
 </node>

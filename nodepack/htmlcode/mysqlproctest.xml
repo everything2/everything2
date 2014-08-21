@@ -3,24 +3,5 @@
   <delegated>1</delegated>
   <node_id>2069688</node_id>
   <title>mysqlproctest</title>
-  <code>my $procname = $NODE-&gt;{title};
-my $parameters = $NODE-&gt;{parameters};
-my $proctext = $NODE-&gt;{doctext};
-
-my $value = $DB-&gt;createMysqlProcedure(&quot;ecore_test_$procname&quot;, $parameters, $proctext, &quot;PROCEDURE&quot;, 1);
-if(not ref $value eq &quot;ARRAY&quot;)
-{
-  return &quot;Creation not attempted&quot;;
-}
-
-if($value-&gt;[0] == 1)
-{
-  $DB-&gt;dropMysqlProcedure(&quot;ecore_test_$procname&quot;, &quot;PROCEDURE&quot;);
-  return &quot;Created successfully&quot;;
-}
-
-if($value-&gt;[0] == 0)
-{
-  return &quot;Mysql procedure creation failed: &quot;.$value-&gt;[1];
-}</code>
+  <code></code>
 </node>

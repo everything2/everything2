@@ -3,29 +3,5 @@
   <delegated>1</delegated>
   <node_id>38</node_id>
   <title>listgroup</title>
-  <code>my ($field) = @_;
-
-my $G = $$NODE{$field};
-
-if(($G eq '') || ($G == 0)) {
-return 'none';
-} elsif($G == -1) {
-return 'parent';
-}
-
-getRef $G;
-return 'none' unless ref $G;
-
-my $str = linkNode($G) . &quot; ($$G{type}{title})&quot;;
-return $str unless ($$G{group});
-
-$str .= &quot;\n&lt;ol&gt;\n&quot;;
-my $groupref = $$G{group};
-foreach my $item (@$groupref) {
-	my $N = $DB-&gt;getNodeById($item, 'light');
-	$str .= '&lt;li&gt;' . linkNode($N) . &quot; ($$N{type}{title})&lt;/li&gt;\n&quot;;
-}
-$str .= &quot;&lt;/ol&gt;\n&quot;;
-
-$str;</code>
+  <code></code>
 </node>
