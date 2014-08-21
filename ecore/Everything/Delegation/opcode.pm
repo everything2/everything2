@@ -1129,6 +1129,56 @@ sub message
 
 }
 
+sub message_outbox
+{
+  # Standard vars for the opcode processing
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # Guests aren't allowed to perform message_outbox actions
+  return if $APP->isGuest($USER);
+
+  my $UID      = undef; $UID = getId($USER)||0;
+  my $isRoot   = undef; $isRoot = $APP->isAdmin($USER);
+  my $MSG      = undef; # Populated below with outbox message loaded from the DB by id
+
+  foreach($query->param)
+  {
+    if($_ =~ /^deletemsg\_(\d+)$/)
+    {
+
+      # Delete a message given param named : deletemsg_<messageid>
+      $MSG = $DB->sqlSelectHashref('*', 'message_outbox', "message_id=$1");
+      next unless $MSG;
+      next unless $isRoot || ($UID==$$MSG{author_user});
+      $DB->sqlDelete('message_outbox', "message_id=$$MSG{message_id}");
+
+    } elsif($_ =~ /^archive\_(\d+)$/) {
+
+      # Archive a message given param named : archive_<messageid>
+      $MSG = $DB->sqlSelectHashref('*', 'message_outbox', "message_id=$1");
+      next unless $MSG;
+      next unless $isRoot||($UID==$$MSG{author_user});
+      $DB->sqlUpdate('message_outbox', {archive=>1, tstamp=>$$MSG{tstamp}}, 'message_id='.$$MSG{message_id});
+
+    } elsif($_ =~ /^unarchive\_(\d+)$/) {
+
+      # Un-archive a message given param named : unarchive_<messageid>
+      $MSG = $DB->sqlSelectHashref('*', 'message_outbox', "message_id=$1");
+      next unless $MSG;
+      next unless $isRoot||($UID==$$MSG{author_user});
+      $DB->sqlUpdate('message_outbox', {archive=>0, tstamp=>$$MSG{tstamp}}, 'message_id='.$$MSG{message_id});
+    }
+  }
+
+}
+
+
 sub cool
 {
   my $DB = shift;
