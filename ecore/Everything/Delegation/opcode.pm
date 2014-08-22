@@ -57,6 +57,7 @@ BEGIN {
   *adjustGP = *Everything::HTML::adjustGP;
   *adjustExp = *Everything::HTML::adjustExp;
   *opLogin = *Everything::HTML::opLogin;
+  *replaceNodegroup = *Everything::HTML::replaceNodegroup; 
 } 
 
 # Used by bookmark, cool, weblog
