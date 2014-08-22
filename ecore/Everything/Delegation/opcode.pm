@@ -56,6 +56,7 @@ BEGIN {
   *castVote = *Everything::HTML::castVote;
   *adjustGP = *Everything::HTML::adjustGP;
   *adjustExp = *Everything::HTML::adjustExp;
+  *opLogin = *Everything::HTML::opLogin;
 } 
 
 # Used by bookmark, cool, weblog
@@ -235,7 +236,7 @@ sub bookmark
     fromgroup_id => $$USER{node_id},
     'author_id' => $eddie,
     'recipient_id' => \@writeupAuthors,
-    'message' => 'Yo, '.$eddiemessage.' was bookmarked. Dig it, baby2.',});
+    'message' => 'Yo, '.$eddiemessage.' was bookmarked. Dig it, baby.',});
 
 1;
 
@@ -2189,6 +2190,88 @@ sub leadusergroup
   $APP -> setParameter($userGroup, $auth, 'usergroup_owner', $recUser -> {node_id});
 
   return 1;
+}
+
+sub remove
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+  
+  if (my $wu = $query -> param('writeup_id'))
+  {
+    # user removing own writeup
+    return unless htmlcode('verifyRequest', 'remove') && getRef($wu) && $$wu{author_user} == $$USER{node_id}
+      && htmlcode('unpublishwriteup', $wu);
+
+    return htmlcode('update New Writeups data');
+  }
+
+  return unless $APP->isEditor($USER);
+
+  my @list;
+  unless ($query -> param('removeauthor'))
+  {
+    foreach ($query->param)
+    {
+      next unless /^removenode(\d+)$/;
+      push @list, $1;
+    }
+  }else{
+    my $author = getNode($query -> param('author'), 'user');
+    return unless $author;
+    @list = @{$DB -> selectNodeWhere({author_user => $$author{node_id}}, 'writeup')};
+  }
+
+  return unless @list;
+
+  my $bulkreason = $query -> param('removereason');
+  my $nid;
+  my $count = 0;
+
+  foreach $nid (@list)
+  {
+    my $N = getNodeById $nid;
+    next unless $N && $$N{type}{title} eq 'writeup';
+    next if $$N{publication_status}; # insured
+
+    my $reason = $bulkreason || $query->param('removereason'.$nid);
+    $reason = '' if $reason eq 'none';
+    next unless htmlcode('unpublishwriteup', $N, $reason);
+
+    my $aid = $$N{author_user};
+
+    # notify author:
+    next unless $aid;	#skip /msg if no WU author
+    my $parent = getNodeById($$N{parent_e2node});
+    my $title = $$parent{title} if $parent;
+    $title ||= $$N{title};
+
+    next if $aid==$$USER{node_id} && $query->param('noklapmsg'.$nid);	#no /msg to self
+    next if getVars($aid) -> {no_notify_kill}; # author doesn't want msg
+
+    unless ($reason)
+    {
+      # no msg for maintenance stuff, unless there is a reason
+      next if $APP->isMaintenanceNode($N);
+    }
+
+    $reason = ": $reason" if $reason;
+    my $author = getNodeById($aid);
+    $author = "[by $$author{title}]" if $author;
+    my $msgHash = {
+      msgtext => "I removed your writeup [$title$author]$reason. It has been sent to your [Drafts[superdoc]].",
+      author_user=>$$USER{node_id},
+      for_user=>$aid,
+    };
+    $DB->sqlInsert('message', $msgHash);
+  }
+
+  htmlcode('update New Writeups data');
 }
 
 1;

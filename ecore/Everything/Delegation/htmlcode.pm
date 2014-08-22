@@ -58,6 +58,8 @@ BEGIN {
   *getPageForType = *Everything::HTML::getPageForType;
   *castVote = *Everything::HTML::castVote;
   *adjustGP = *Everything::HTML::adjustGP;
+  *opLogin = *Everything::HTML::opLogin;
+  *adjustExp = *Everything::HTML::adjustExp;
 }
 
 # Used by showchoicefunc
