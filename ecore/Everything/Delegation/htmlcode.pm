@@ -1015,7 +1015,7 @@ sub listcode
 
     my $name="$$NODE{title}";
     $name =~ s/[\s\-]/_/g;
-    if($filedata =~ /^(sub $name\s*?^})/ims)
+    if($filedata =~ /^(sub $name\s.*?^})/ims)
     {
       $code = $1;
     }
