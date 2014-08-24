@@ -60,7 +60,7 @@ BEGIN {
   *replaceNodegroup = *Everything::HTML::replaceNodegroup; 
 } 
 
-# Used by bookmark, cool, weblog
+# Used by bookmark, cool, weblog, socialBookmark
 use JSON;
 
 sub publishdraft
@@ -237,7 +237,7 @@ sub bookmark
     fromgroup_id => $$USER{node_id},
     'author_id' => $eddie,
     'recipient_id' => \@writeupAuthors,
-    'message' => 'Yo, '.$eddiemessage.' was bookmarked. Dig it, baby.',});
+    'message' => 'Yo, '.$eddiemessage.' was bookmarked. Dig it, baby2.',});
 
 1;
 
@@ -2243,6 +2243,467 @@ sub leadusergroup
   return 1;
 }
 
+sub ilikeit
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if $APP->isSpider();
+  my $nid = $query->param("like_id");
+  return unless $nid;
+
+  my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR} || undef;
+  return if $DB->sqlSelect("count(*)","likedit","likedit_ip = '$addr' and likedit_node=$nid");
+
+  my $LIKE = getNodeById($nid);
+  my $GU = $Everything::CONF->{system}->{guest_user};
+
+  my $lType = getNode("ilikeit","linktype")->{node_id};
+
+  my $linkExists = $DB->sqlSelect("count(*)","links","from_node=$GU and to_node=$nid and linkType = $lType");
+  if ($linkExists)
+  {
+    $DB->sqlUpdate("links",{-hits => 'hits + 1'},"from_node=$GU and to_node=$nid and linkType = $lType");
+  } else {
+    $DB->sqlInsert("links",{from_node => $$USER{user_id}, to_node => $nid, linktype => $lType});
+  }
+
+  return if ($$LIKE{author_user} == getId(getNode('Webster 1913', 'user')));
+
+  my $logQueryLikeIt = qq|
+    INSERT INTO likeitlog
+    (user_agent, liked_node_id, hits)
+    VALUES
+    (?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+    hits=hits+1|;
+ 
+  $DB->getDatabaseHandle()->do($logQueryLikeIt, undef , $ENV{HTTP_USER_AGENT}, $nid, 1);
+
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time - 86400*30);
+  $year += 1900;
+  $mon++;
+  if ($mon ==12)
+  {
+    $mon = 1;
+  }
+
+  my $checkDate = sprintf('%02d-%02d-%02d',$year,$mon,$mday);
+
+  my $isRecent = (getNodeById($$LIKE{author_user})->{lasttime} ge  $checkDate);
+
+  my $likeVars = getVars(getNodeById($$LIKE{author_user}));
+  my $notifyMe = (!($$likeVars{no_likeitnotification}));
+
+  if (($isRecent) && ($notifyMe))
+  {
+    my $msgText = 'Hey, sweet! Someone likes your writeup titled "[' . getNode($$LIKE{parent_e2node})->{title} . ']!"';
+
+    $DB->sqlInsert('message',{
+      'msgtext' => , $msgText,
+      'author_user' => getId(getNode('Cool Man Eddie', 'user')),
+      'for_user' => $$LIKE{author_user},
+      'for_usergroup' => 0,
+      'archive' => 0 });
+  }
+
+  my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR} || undef;
+  $DB->sqlInsert('likedit',{likedit_ip => $addr, likedit_node => $$LIKE{node_id}});
+}
+
+sub changeusergroup
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # Changes which usergroup is selected for the Usergroup Writeups nodelet.
+
+  if($query->param('newusergroup'))
+  {
+    my $newUsergroup = $query->param('newusergroup');
+    $$VARS{nodeletusergroup}=$newUsergroup;
+  }
+
+  return 1;
+}
+
+sub favorite
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $node_id = $query -> param("fave_id");
+  my $fav = getNodeById($node_id);
+  return if $fav -> {type_nodetype} != getType("user") -> {node_id};
+  return if $APP->isGuest($USER);
+  my $LINKTYPE = getNode('favorite', 'linktype');
+
+  $DB->sqlInsert('links', {-from_node => getId($USER), -to_node => $node_id, -linktype => getId($LINKTYPE)});
+}
+
+sub unfavorite
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $node_id = $query -> param("fave_id");
+  my $fav = getNodeById($node_id);
+  return if $fav -> {type_nodetype} != getType("user") -> {node_id};
+  return if $APP->isGuest($USER);
+  my $LINKTYPE = getNode('favorite', 'linktype');
+
+  my $uid = $$USER{'node_id'};
+
+  $DB->sqlDelete('links', "from_node = $uid AND to_node = $node_id AND linktype = $$LINKTYPE{node_id}");
+}
+
+sub category
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if $APP->isGuest($USER);
+  my $isCE = $APP->isEditor($USER);
+  return if ($APP->getLevel($USER) <= 1) && !$isCE;
+
+  my $cid = $query->param('cid');
+  if ($cid eq 'new' and my $title = $query -> param('categorytitle'))
+  {
+    $cid = $DB -> insertNode(cleanNodeName($title), 'category', $USER);
+    $query -> param('cid', $cid) if $cid;
+  }
+  $cid = int $cid;
+  return unless $cid;
+
+  my $nid = int($query->param('nid'));
+  $nid ||= int($query->param('node_id'));
+  $nid ||= 0;
+  return unless $nid;
+
+  #don't let users link the category to itself
+  return if ($cid == $nid);
+
+  my $nodeToLink = getNodeById($nid);
+  my $category = getNodeById($cid);
+  return unless $nodeToLink && $category;
+
+  my $maintainer = getNodeById($$category{author_user});
+
+  # validate the maintainer nodetype
+  if ($$maintainer{type}{title} eq 'user')
+  {
+    # if category author is not current user or guest user
+    # and the user is not an admin or CE, quit
+    if($$maintainer{node_id} != $$USER{user_id} && !$APP->isGuest($$maintainer{node_id}) && !$isCE)
+    {
+      return 0;
+    }
+  } elsif ($$maintainer{type}{title} eq 'usergroup')
+  {
+    if(!$APP->inUsergroup($USER, $maintainer) && !$isCE)
+    {
+      return 0;
+    }
+  } else {
+    # category author must be a user or usergroup
+    return 0;
+  }
+
+  my $LINKTYPE = getNode('category', 'linktype');
+
+  # if the node to be linked is a writeup, make sure the writeup's parent e2node is not already linked
+  return if $$nodeToLink{type}{title} eq 'writeup' and $DB -> sqlSelect(
+    'to_node'
+    , 'links'
+    , "from_node=$$category{node_id} AND to_node=$$nodeToLink{parent_e2node} AND linktype=$$LINKTYPE{node_id}");
+
+  # don't allow dups
+  return if $DB -> sqlSelect(
+    'to_node'
+    , 'links'
+    , "from_node=$$category{node_id} AND to_node=$nid AND linktype=$$LINKTYPE{node_id}" );
+
+  # if we've passed all these checks, go ahead and add the link
+  $DB->sqlInsert('links', {
+    from_node => $cid
+    , to_node => $nid
+    , linktype => getId($LINKTYPE)
+    , -food => "(SELECT IFNULL(MAX(food) + 10, 0) 'food'
+    FROM links AS l WHERE from_node = $cid)"});
+  return 1;
+
+}
+
+sub socialBookmark
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $node_id = $query->param('node_id');
+  my $bookmark_site = $query->param('bookmark_site');
+
+  $node_id or return;
+  $bookmark_site or return;
+
+  return if $APP->isGuest($USER);
+  return 1 if $$VARS{no_socialbookmarkinformer};
+
+  my $tempnode = getNodeById($node_id);
+  return 1 if (($$tempnode{type}{title} ne "writeup") && ($$tempnode{type}{title} ne "e2node")); #only send CME for writeups & e2nodes
+
+  my $eddie = getId(getNode('Cool Man Eddie','user'));
+  my @tempgroup = @{ $$tempnode{group} } if $$tempnode{group};
+  my @group;
+  my $TV;
+  foreach (@tempgroup)
+  {
+    my $not_self_user = ($_ != getId($USER));
+    $TV = getVars(getNodeById($_)->{author_user});
+    if ((!$$TV{no_socialbookmarknotification})&&($not_self_user))
+    {
+      push @group, $_;
+    }
+  }
+
+  my $nt = $$tempnode{title};
+  my ($eddiemessage, $str,$auth);
+  my @writeupAuthors;
+
+  if(scalar(@group))
+  {
+    @writeupAuthors = map { getNodeById($_)->{author_user} } @group;
+    $eddiemessage = 'the entire node ['.$nt.'], in which you have a writeup,';
+  } else {
+    $TV = getVars(getNodeById($$tempnode{author_user}));
+    if ($$TV{no_bookmarknotification})
+    {
+      return 1;
+    }
+
+    if (getId($USER) == $$tempnode{author_user})
+    {
+      return 1;
+    }
+
+    push @writeupAuthors, $$tempnode{author_user};
+    $eddiemessage ='your writeup ['.$nt.']';
+  }
+
+  my $notification = getNode("socialBookmark","notification")->{node_id};
+  foreach (@writeupAuthors)
+  {
+    my $authorVars = getVars(getNodeById($_));
+    if ($$authorVars{settings})
+    {
+      if ( from_json($$authorVars{settings})->{notifications}->{$notification})
+      {
+        my $argSet = { writeup_id => $$tempnode{node_id}, bookmark_user => $$USER{user_id}, bookmark_site => $bookmark_site};
+        my $argStr = to_json($argSet);
+        my $addNotifier = htmlcode('addNotification', $notification, $_, $argStr);
+      }
+    }
+  }
+
+  my $sendResult = htmlcode('sendPrivateMessage',{
+    'author_id' => $eddie,
+    'recipient_id' => \@writeupAuthors,
+    'message' => 'Yo, '.$eddiemessage.' was bookmarked on '.$bookmark_site.'. Dig it, baby.',
+    'fromgroup_id' => $$USER{node_id} });
+
+  1;
+}
+
+sub sanctify
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if ($$VARS{GPoptout});
+
+  my $minLevel = 11;
+  my $Sanctificity = 10;
+  return unless $APP->getLevel($USER)>= $minLevel;
+
+  my $U = $query->param('node_id');
+  $U = getNode($query->param("node"), 'user') if ($query->param('node'));
+  getRef $U;
+
+  return unless $$U{type}{title} eq 'user';
+
+  $$U{sanctity} += 1;
+  updateNode($U, -1);
+
+  adjustGP($U, $Sanctificity);
+  adjustGP($USER, -$Sanctificity);
+  $$VARS{oldGP} = $$USER{GP};
+
+  $APP->securityLog(getNode('Sanctify user', 'superdoc'), $USER, "$$USER{title} sanctified $$U{title} with $Sanctificity GP.");
+
+  htmlcode('sendPrivateMessage',{
+    'author_id' => getId(getNode('Cool Man Eddie', 'user')),
+    'recipient_id' => $$U{user_id},
+    'message' => "Whoa! You’ve been [Sanctify|sanctified]!" });
+
+}
+
+sub movenodelet
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # See htmlcode for useful info on parameters
+  htmlcode('movenodelet',$query->param('nodelet'),$query->param('position'));
+}
+
+sub cure_infection
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return 0 unless $APP->isAdmin($USER) || !htmlcode('verifyRequest', 'cure_infection');
+
+  my $cureUserId = int($query->param("cure_user_id"));
+  my $cureUser = getNodeById($cureUserId);
+  return 0 unless $cureUser && $$cureUser{type}{title} eq 'user';
+
+  my $cureVars = getVars($cureUser);
+  $$cureVars{infected} = 0;
+  setVars($cureUser, $cureVars);
+
+  return 1;
+}
+
+sub publishdrafttodocument
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $TYPE = getType('document');
+  return unless canCreateNode($USER, $TYPE);
+
+  my $nid = $query -> param('node_id');
+  my $draft = getNodeById($nid);
+  return unless $draft && $$draft{type}{title} eq 'draft';
+
+  return if getNode($$draft{title}, 'document');
+
+  $DB -> sqlUpdate('node', {
+    type_nodetype => $$TYPE{node_id}
+    , -createtime => 'now()'
+    , hits => 0 }, "node_id=$nid");
+  $DB -> sqlDelete('draft', "draft_id=$nid");
+  $DB -> {cache} -> incrementGlobalVersion($draft); # tell other processes this has changed...
+  $DB -> {cache} -> removeNode($draft); # and it's in the wrong typecache, so remove it
+
+  $query -> delete('node');
+  $query -> param('node_id', $nid);
+}
+
+sub approve_draft
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isEditor($USER);
+
+  my $draft = $query -> param('draft');
+  my $e2node = $query -> param('e2node');
+  my $previousEditor = $query -> param('revoke');
+
+  my $food = $previousEditor ? 0 : $$USER{node_id};
+
+  my $linktype = getId(getNode('parent_node', 'linktype'));
+  my $success = $DB -> sqlUpdate( # editor approval flagged by feeding the link
+    'links', {food => $food},
+    "from_node=$draft AND to_node=$e2node AND linktype=$linktype");
+
+}
+
+sub parameter
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $paramname = $query->param('paramname');
+  my $paramvalue = $query->param('paramvalue');
+  my $action = $query->param('action');
+  my $for_node = $query->param('for_node');
+
+  if(not defined($for_node))
+  {
+    $for_node ||= $NODE;
+  }
+
+  $DB->getRef($for_node);
+
+  if($action ne "delete")
+  {
+    $APP->setParameter($for_node, $USER, $paramname, $paramvalue);
+  }else{
+    $APP->delParameter($for_node, $USER, $paramname);
+  }
+}
+
 sub remove
 {
   my $DB = shift;
@@ -2252,7 +2713,7 @@ sub remove
   my $VARS = shift;
   my $PAGELOAD = shift;
   my $APP = shift;
-  
+
   if (my $wu = $query -> param('writeup_id'))
   {
     # user removing own writeup
@@ -2317,8 +2778,7 @@ sub remove
     my $msgHash = {
       msgtext => "I removed your writeup [$title$author]$reason. It has been sent to your [Drafts[superdoc]].",
       author_user=>$$USER{node_id},
-      for_user=>$aid,
-    };
+      for_user=>$aid,};
     $DB->sqlInsert('message', $msgHash);
   }
 
