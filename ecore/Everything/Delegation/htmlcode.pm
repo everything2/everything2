@@ -4533,23 +4533,10 @@ sub javascript_decider
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  while ($$VARS{includedJS} =~ s/(^|,)(?:
-    (1878034)| # Everything2 Ajax
-    (1872965)| # Zen Nodelet Collapser
-    1872456| # Prototype 1
-    1872457| # Prototype 2
-    1842173	 # async voting
-    )\b($|\1)?,*/$1/x ) 
-  {
-    delete $$VARS{noquickvote} if $2;
-    delete $$VARS{nonodeletcollapser} if $3;
-  }
-
   my ($str, $N) = (undef, undef);
   my @JS = ( getNode('boilerplate javascript','jscript'),getNode('default javascript', 'jscript'));
   push @JS, getNode('Everything2 Ajax', 'jscript') unless $$VARS{noquickvote} ;
   push @JS, getNode('Zen Nodelet Collapser', 'jscript') unless $$VARS{nonodeletcollapser} ;
-  push @JS , split(',', $$VARS{includedJS}) if $$VARS{includedJS};
 
   # TODO: Move to a setting
   my $jscss = "http://jscss.everything2.com";
