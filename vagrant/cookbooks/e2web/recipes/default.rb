@@ -10,10 +10,28 @@
 to_install = [
     'apache2-mpm-prefork',
     'libapache2-mod-perl2',
+    'build-essential'
 ]
 
 to_install.each do |p|
   package p
+end
+
+bash "install Linux::Pid" do
+  cwd "/tmp"
+  user "root"
+  creates "/usr/local/lib/perl/5.14.2/auto/Linux/Pid/Pid.so"
+  code <<-EOH
+cd /tmp
+rm -rf Linux-Pid*
+wget "http://search.cpan.org/CPAN/authors/id/R/RG/RGARCIA/Linux-Pid-0.04.tar.gz" &>> /tmp/linux-pid.log;
+tar xzvf Linux-Pid-0.04.tar.gz &>> /tmp/linux-pid.log
+cd Linux-Pid-0.04
+perl Makefile.PL INSTALLDIRS=vendor &>> /tmp/linux-pid.log
+make install &>> /tmp/linux-pid.log
+rm -rf Linux-Pid*
+cd ..
+  EOH
 end
 
 template '/etc/apache2/conf.d/everything' do

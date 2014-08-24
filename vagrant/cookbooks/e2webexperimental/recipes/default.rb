@@ -7,8 +7,7 @@
 # All rights reserved - Do Not Redistribute
 #
 
-package 'libhtml-mason-perl-doc' #HTML::Mason documentation
-package 'libhtml-mason-perl-examples' #HTML::Mason example setup
-package 'libhtml-mason-perl' #HTML::Mason Perl module
+package 'libmason-perl' #HTML::Mason Perl module
 package 'libmoose-perl' #modern Perl object system framework
 package 'libnamespace-autoclean-perl' #Perl module to remove all imported symbols at the end of the compile cycle
+package 'libtemplate-perl' #Template-Toolkit, in case
