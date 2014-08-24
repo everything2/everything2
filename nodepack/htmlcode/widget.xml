@@ -3,45 +3,5 @@
   <delegated>1</delegated>
   <node_id>2005525</node_id>
   <title>widget</title>
-  <code># first two arguments for the widget, second two for the opener link
-# if no $linktext is provided, there will be no opener link
-# $parameters contains parameters for the link, including
-# showwidget =&gt; &lt;parameter to make widget open on pageload&gt;
-# (will be removed as appropriate), plus optionally:
-# -closetitle =&gt; &lt;title attribute for close X in widget&gt; (default: 'hide')
-# node =&gt; &lt;node to link to for noscript fallback&gt; ( default: $$NODE)
-
-my ( $content , $tagname , $linktext , $parameters ) = @_ ;
-my $N = $$parameters{ node } || $NODE ;
-delete $$parameters{ node } ;
-
-my $showparameter = $$parameters{ showwidget } ;
-$$parameters{ -class } = 'action showwidget' ;
-my $style = 'visibility:' ;
-
-if ( $query -&gt; param( 'showwidget' ) eq $showparameter ) {
-	$style .= 'visible' ;
-	$$parameters{ -class } .= ' open' ;
-	delete $$parameters{ showwidget } ;
-} else {
-	$style .= 'hidden' ;
-}
-
-my $str = &quot;&quot;;
-unless ( $tagname =~ '^form' ){
-	$str = qq'&lt;$tagname class=&quot;widget&quot; style=&quot;$style&quot;&gt;\n' ;
-} else {
-	$str = htmlcode( 'openform' , -class=&gt;&quot;widget&quot; , -style=&gt; $style ).
-	$query -&gt; hidden( -name =&gt; 'showwidget' , -value =&gt; $showparameter , -force =&gt; 1 ) ;
-}
-
-$tagname =~ s/\W.*// ; # may have had extra attributes in it
-$str .= &quot;\n&quot;.$content.linkNode( $NODE , 'X' ,
-	{ -class =&gt; 'action showwidget hidewidget' , -title =&gt; ( $$parameters{ -closetitle }||'hide' ) } ) .
-	&quot;\n&lt;/$tagname&gt;\n&quot; ;
-return $str unless $linktext ;
-
-delete $$parameters{ -closetitle } ;
-$$parameters{ displaytype } = $query -&gt; param( 'displaytype' ) if $query -&gt; param( 'displaytype' ) ;
-return $str.linkNode( $N , $linktext , $parameters ) ;</code>
+  <code></code>
 </node>

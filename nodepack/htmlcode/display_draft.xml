@@ -3,27 +3,5 @@
   <delegated>1</delegated>
   <node_id>2035511</node_id>
   <title>display draft</title>
-  <code>my $displaytype = shift;
-$displaytype ||= $query -&gt; param('displaytype') || 'display';
-
-my $displaylike = undef;
-
-my $tinopener = ($APP-&gt;isAdmin($USER) and $query -&gt; param('tinopener') and !$APP-&gt;canSeeDraft($USER, $NODE, 'find'));
-local ($$NODE{doctext}, $$NODE{collaborators})
-	= (&quot;&lt;p&gt;&lt;b&gt;&amp;#91;DOCTEXT REDACTED&amp;#93;&lt;/b&gt;&lt;/p&gt;
-		&lt;p&gt;You do not have permission to see this draft.&lt;/p&gt;&quot; , $$USER{title}) if $tinopener;
-
-if ($$NODE{author_user} == $$USER{node_id}
-		|| $APP-&gt;canSeeDraft($USER, $NODE ,&quot;find&quot;)
-		|| $$NODE{type}{title} eq 'writeup'){
-	$displaylike = getType(
-		getNodeWhere({pagetype_nodetype =&gt; 117, displaytype =&gt; $displaytype}, 'htmlpage') ?
-			'writeup' : 'document');
-}else{
-	$NODE = $GNODE = getNodeById($Everything::CONF-&gt;{system}-&gt;{search_results});
-	$displaylike = getType($$NODE{type_nodetype});
-}
-
-my $PAGE = getPageForType($displaylike, $displaytype);
-return &quot;&lt;!-- jblike: $$PAGE{node_id} --&gt;&quot;.parseCode($PAGE -&gt; {page}, $NODE);</code>
+  <code></code>
 </node>

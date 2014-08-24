@@ -3,50 +3,5 @@
   <delegated>1</delegated>
   <node_id>2021984</node_id>
   <title>create short url</title>
-  <code>use POSIX;
-
-my ($urlNode) = @_;
-my $targetId = getId $urlNode;
-
-my @encodeChars = qw/
- a   c d e f   h     k   m n o     r s t u   w x   z
- A B C D E F G H   J K L M N   P Q R   T U V W X Y Z
-   2 3 4     7 8 9 
- /
- ;
-# Exclude because of similarity: I l 1
-# Exclude because of similarity: O 0
-# Exclude because of similarity: i j
-# Exclude because of similarity: v y
-# Exclude because of similarity: g p q
-# Exclude because of similarity: b 6
-# Exclude because of similarity: S 5
-
-my $encodeInt = sub {
-
-  my $encodeMe = shift;
-  my $encodeResult = '';
-
-  while ($encodeMe != 0) {
-    my $nextCharValue = $encodeMe % $#encodeChars;
-    my $nextChar = $encodeChars[$nextCharValue];
-    $encodeResult = $nextChar . $encodeResult;
-    $encodeMe /= $#encodeChars;
-    $encodeMe = floor($encodeMe);
-  }
-  $encodeResult = '0' if $encodeResult eq '';
-  return $encodeResult;
-
-};
-
-my $shortString = &amp;$encodeInt($targetId);
-my $shortLink =
-  'http://'
-  . $Everything::CONF-&gt;{canonical_web_server}
-  . '/s/'
-  . $shortString
-  ;
-
-return $shortLink;
-</code>
+  <code></code>
 </node>

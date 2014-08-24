@@ -3,12 +3,5 @@
   <delegated>1</delegated>
   <node_id>1372587</node_id>
   <title>formxml_room</title>
-  <code>my $entrance=&quot;0&quot;;
-if(eval($$NODE{criteria}) and not $APP-&gt;isGuest($USER)) {
-  $entrance=1;
-  changeRoom($USER, $NODE);
-}
-my $str = &quot;&lt;canenter&gt;&quot;.$entrance.&quot;&lt;/canenter&gt;\n&quot;;
-$str.=&quot;&lt;description&gt;&quot;.encodeHTML(($query-&gt;param(&quot;links_noparse&quot;))?($$NODE{doctext}):(parseLinks($$NODE{doctext}))).&quot;&lt;/description&gt;&quot;;
-$str;</code>
+  <code></code>
 </node>

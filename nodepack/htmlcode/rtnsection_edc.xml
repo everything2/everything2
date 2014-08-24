@@ -3,36 +3,5 @@
   <delegated>1</delegated>
   <node_id>1175807</node_id>
   <title>rtnsection_edc</title>
-  <code>#ed Cools - See [ReadThis]
-
-  my $str = '&lt;ul class=&quot;linklist&quot;&gt;';
-  my $poclink = getId(getNode('coollink', 'linktype'));
-  my $pocgrp = getNode('coolnodes', 'nodegroup')-&gt;{group};
-  my $count = 0;
-
-  foreach(reverse @$pocgrp)
-  {
-    last if($count &gt;= 5);
-    $count++;
-
-    next unless($_);
-
-    my $csr = $dbh-&gt;prepare('SELECT * FROM links WHERE from_node=\''.getId($_).'\' and linktype=\''.$poclink.'\' limit 1');
-
-    $csr-&gt;execute;
-
-    my $coolref = $csr-&gt;fetchrow_hashref;
-
-    next unless($coolref);
-    $coolref = getNodeById($$coolref{from_node});
-    next unless($coolref); 
-    $str .= '&lt;li&gt;'.linkNode($coolref,$$coolref{title}, {lastnode_id =&gt; 0}).'&lt;/li&gt;';
-
-    $csr-&gt;finish();
-
-  }
-
-$str.='&lt;/ul&gt;';
-
-return $str;</code>
+  <code></code>
 </node>

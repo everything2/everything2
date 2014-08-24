@@ -1,23 +1,7 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegated>1</delegated>
   <node_id>2071202</node_id>
   <title>parameter</title>
-  <code>my $paramname = $query-&gt;param('paramname');
-my $paramvalue = $query-&gt;param('paramvalue');
-my $action = $query-&gt;param('action');
-my $for_node = $query-&gt;param('for_node');
-
-if(not defined($for_node))
-{
-  $for_node ||= $NODE;
-}
-
-$DB-&gt;getRef($for_node);
-
-if($action ne &quot;delete&quot;)
-{
-  $APP-&gt;setParameter($for_node, $USER, $paramname, $paramvalue);
-}else{
-  $APP-&gt;delParameter($for_node, $USER, $paramname);
-}</code>
+  <code></code>
 </node>

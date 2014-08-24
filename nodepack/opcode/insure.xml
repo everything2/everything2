@@ -3,29 +3,5 @@
   <delegated>1</delegated>
   <node_id>1179550</node_id>
   <title>insure</title>
-  <code>return unless $APP-&gt;isEditor($USER);
-
-return unless($query-&gt;param('ins_id'));
-my $insnode = getNodeById($query-&gt;param('ins_id'));
-return unless $insnode and $$insnode{type}{title} eq 'writeup';
-
-my $insure = getNode(&quot;insure&quot;,&quot;opcode&quot;);
-my $AUTHOR = getNode($$insnode{author_user});
-my $insured = getId(getNode('insured', 'publication_status'));
-
-
-if ($$insnode{publication_status} == $insured) {
-	$$insnode{publication_status} = 0;
-	htmlcode('addNodenote', $insnode, &quot;Uninsured by [$$USER{title}\[user]]&quot;);
-	$DB-&gt;sqlDelete(&quot;publish&quot;, &quot;publish_id = $$insnode{node_id}&quot;);
-        $APP-&gt;securityLog(getNode(&quot;insure&quot;,&quot;opcode&quot;), $USER, &quot;$$USER{title} uninsured \&quot;$$insnode{title}\&quot; by $$AUTHOR{title}&quot;);
-}
-else {
-	$$insnode{publication_status} = $insured;
-	htmlcode('addNodenote', $insnode, &quot;Insured by [$$USER{title}\[user]]&quot;);
-	$DB-&gt;sqlInsert(&quot;publish&quot;,{publish_id =&gt; $$insnode{node_id}, publisher =&gt; $$USER{user_id}});
-        $APP-&gt;securityLog(getNode(&quot;insure&quot;,&quot;opcode&quot;), $USER, &quot;$$USER{title} insured \&quot;$$insnode{title}\&quot; by $$AUTHOR{title}&quot;);
-}
-
-$DB -&gt; updateNode($insnode, -1);</code>
+  <code></code>
 </node>

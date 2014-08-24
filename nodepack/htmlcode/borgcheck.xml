@@ -3,21 +3,5 @@
   <delegated>1</delegated>
   <node_id>500201</node_id>
   <title>borgcheck</title>
-  <code>return unless $$VARS{borged};
-my $t = time;
-my $str = &quot;&quot;;
-my $numborged = $$VARS{numborged};
-$numborged ||= 1;
-$numborged *=2;
-
-if ($t - $$VARS{borged} &lt; 300+60*$numborged) {
-	$str .= linkNodeTitle('You\'ve Been Borged!');
-} else {
-	$$VARS{lastborg} = $$VARS{borged};
-	delete $$VARS{borged};
-	$str .= '&lt;em&gt;'.linkNodeTitle('EDB') . ' has spit you out...&lt;/em&gt;'; 
-	$DB-&gt;sqlUpdate('room', {borgd =&gt; '0'}, 'member_user='.getId($USER));
-}
-
-$str.'&lt;br /&gt;&lt;br /&gt;';</code>
+  <code></code>
 </node>

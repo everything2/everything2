@@ -3,55 +3,5 @@
   <delegated>1</delegated>
   <node_id>1689386</node_id>
   <title>externalLinkDisplay</title>
-  <code>#
-# possibly forms a link to external web site
-# URL must start with the protocol, http:// or https://
-#
-# used by 'Nothing Found' and 'Findings:'
-#
-
-my $testURL = $_[0];
-$testURL =~ s/&amp;#39;/'/g;
-$testURL =~ s/&amp;#44;/,/g;
-
-my $protocol = undef;
-my $domain = undef;
-my $relAddress = undef;
-
-if($testURL =~ /^(https?):\/\/([^\/]+)(\/.*)?$/) {
-	$protocol = $1;
-	$domain = $2;
-	$relAddress = $3 || '';
-} else {
-	return '';
-}
-
-my $i = undef;
-
-#chop off any CGI parameters
-#	can't just test for everything2.com, org, etc., because there are
-#	many ways to create an address (example: IP address) that could
-#	slip by our tests; to be safe, just remove all the parameters
-
-#N-Wing is disabling this for now (2005 March 12), because kthejoker
-#	thinks is annoying and won't be a problem. So blame k. if
-#	things go badly. :) (On a more serious note, if people *do*
-#	start doing bad things, just uncomment the next two lines.)
-# $i = index($relAddress, '?');
-# $relAddress = substr($relAddress,0,$i) if $i != -1;
-
-#construct URL
-my $fullURL = $protocol . '://' . $domain;
-if(length($relAddress)==0) {
-	$fullURL .= '/';
-} else {
-	$fullURL .= $relAddress;
-}
-$fullURL = join('', split('&quot;', $fullURL));	#remove double quotes
-
-#create link
-my $str = '&lt;a href=&quot;' . $fullURL . '&quot; class=&quot;external&quot;&gt;' . encodeHTML($fullURL, 1) . '&lt;/a&gt;';
-
-return $str;
-</code>
+  <code></code>
 </node>

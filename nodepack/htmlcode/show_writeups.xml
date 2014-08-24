@@ -3,32 +3,5 @@
   <delegated>1</delegated>
   <node_id>2002809</node_id>
   <title>show writeups</title>
-  <code>local $$VARS{wufoot} = &quot;l:kill,$$VARS{wufoot}&quot;
-	unless !$$VARS{wufoot} or $$VARS{wufoot} =~ /\bkill\b/ or $$VARS{wuhead} =~ /\bkill\b/;
-
-my $oldinfo = getCompiledCode(
-		getNode('displayWriteupInfo', 'htmlcode')
-	, \&amp;evalCode);
-
-my $categories = getCompiledCode(
-		getNode('listnodecategories', 'htmlcode')
-	, \&amp;evalCode);
-
-my $canseewriteup = getCompiledCode(
-		getNode('canseewriteup', 'htmlcode')
-	, \&amp;evalCode);
-
-my $draftitem = sub{
-	return 'draftitem' if $_[0]-&gt;{type}{title} eq 'draft';
-	'';
-};
-
-htmlcode( 'show content' , shift || $$NODE{group} || $NODE
-	, '&lt;div class=&quot;&amp;draftitem&quot;&gt; oldinfo, content, categories, oldinfo'
-	, cansee =&gt; $canseewriteup
-	, draftitem =&gt; $draftitem
-	, categories =&gt; $categories
-	, oldinfo =&gt; $oldinfo
-);
-</code>
+  <code></code>
 </node>

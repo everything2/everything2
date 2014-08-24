@@ -3,19 +3,5 @@
   <delegated>1</delegated>
   <node_id>1116978</node_id>
   <title>vitsection_list</title>
-  <code>my $str=&quot;&lt;ul&gt;&quot;;
-
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Writeups by Type').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Everything\'s Most Wanted').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Cool Archive').' &lt;small&gt;(C! writeups)&lt;/small&gt;'.&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Page of Cool').' &lt;small&gt;(Editor Picks)&lt;/small&gt;'.&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Usergroup Picks').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('A Year Ago Today').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('News for Noders. Stuff that matters.|Old News').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Your nodeshells').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Random nodeshells').&quot;&lt;/li&gt;&quot;;
-
-$str.=&quot;&lt;/ul&gt;&quot;;
-
-$str;</code>
+  <code></code>
 </node>

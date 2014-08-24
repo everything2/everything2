@@ -3,37 +3,5 @@
   <delegated>1</delegated>
   <node_id>1273299</node_id>
   <title>statsection_personal</title>
-  <code>my $str = undef;
-
-#pass 2 args: category and value
-local *genRow = sub {
-	return '&lt;div&gt;&lt;span class=&quot;var_label&quot;&gt;' . $_[0] . ': &lt;/span&gt;&lt;span class=&quot;var_value&quot;&gt;' . $_[1] . &quot;&lt;/span&gt;&lt;/div&gt;\n&quot;;
-};
-
-
-$str .= genRow('XP',$$USER{experience});
-$str .= genRow('Writeups',$$VARS{numwriteups});
-
-my $lvl = $APP-&gt;getLevel($USER)+1;
-my $LVLS = getVars(getNode('level experience', 'setting'));
-my $WRPS = getVars(getNode('level writeups', 'setting'));
-
-my $expleft = $$LVLS{$lvl} - $$USER{experience} if exists $$LVLS{$lvl};
-
-my ($numwu, $wrpleft) = (undef, undef);
-$$VARS{numwriteups} ||= 0;
-$numwu = $$VARS{numwriteups};
-$wrpleft = ($$WRPS{$lvl} - $numwu) if exists $$WRPS{$lvl};
-
-$str .= genRow('Level',$APP-&gt;getLevel($USER));
-if ($expleft &gt; 0) {
-$str .= genRow('XP needed',$expleft);
-} else {
-$str .= genRow('WUs needed',$wrpleft);
-}
-if (!$$VARS{GPoptout}) {
-$str .= genRow('GP', $$USER{GP});
-}
-
-return '&lt;div&gt;'.$str.'&lt;/div&gt;';</code>
+  <code></code>
 </node>

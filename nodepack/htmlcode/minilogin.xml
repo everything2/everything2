@@ -3,47 +3,5 @@
   <delegated>1</delegated>
   <node_id>748856</node_id>
   <title>minilogin</title>
-  <code>my $op = $query-&gt;param(&quot;op&quot;);
-$query-&gt;delete('passwd');
-
-my $goto = getId($NODE);
-$goto = $Everything::CONF-&gt;{system}-&gt;{default_node} if $goto == $Everything::CONF-&gt;{system}-&gt;{default_guest_node};
-$query-&gt;start_form(-method =&gt; &quot;POST&quot;
-  , -action =&gt; $query-&gt;script_name
-  , -name =&gt; &quot;loginform&quot;
-  , -id =&gt; &quot;loginform&quot;
-  ) .
-$query-&gt;hidden(&quot;node_id&quot;, $goto) . &quot;\n&quot; .
-$query-&gt;hidden(&quot;lastnode_id&quot;) . &quot;\n&quot; .
-$query-&gt;hidden(-name =&gt; &quot;op&quot;, value =&gt; &quot;login&quot;, force =&gt; 1) . &quot;\n&quot; .
-'
-&lt;table border=&quot;0&quot;&gt;
-&lt;tr&gt;
- &lt;td&gt;&lt;strong&gt;Login&lt;/strong&gt;&lt;/td&gt;
- &lt;td&gt;'. $query-&gt;textfield (-name =&gt; &quot;user&quot;, -size =&gt; 10, -maxlength =&gt; 20, -tabindex =&gt; 1).'&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
- &lt;td&gt;&lt;strong&gt;Password&lt;/strong&gt;&lt;/td&gt;
- &lt;td&gt;'.$query-&gt;password_field(-name =&gt; &quot;passwd&quot;, -size =&gt; 10, -maxlength =&gt; 240, -tabindex =&gt; 2) .' &lt;/td&gt;
-&lt;/tr&gt;'
-.'
-&lt;/table&gt;
-&lt;font size=&quot;2&quot;&gt;'.
-$query-&gt;checkbox(
-  -name =&gt; &quot;expires&quot;
-  , -checked =&gt; &quot;&quot;
-  , -value =&gt; &quot;+10y&quot;
-  , -label =&gt; &quot;remember me&quot;
-  , -tabindex =&gt; 3
-  ).
-($op eq &quot;login&quot; ? '&lt;p&gt;&lt;i&gt;Login incorrect.&lt;/i&gt;&lt;br&gt;If you are unable to login, try resetting your password. If you don\'t have access to the email attached to your account or are otherwise stuck, email &lt;a href=&quot;mailto:accounthelp@everything2.com&quot;&gt;accounthelp@everything2.com&lt;/a&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;' : &quot;&quot;)
-.&quot;&lt;/font&gt;&quot; .
-$query-&gt;submit(
-  -name =&gt; &quot;login&quot;
-  , -value =&gt; &quot;Login&quot;
-  , -tabindex =&gt; 4
-).&quot;&lt;br /&gt;&quot;.
-linkNodeTitle(&quot;Reset password[superdoc]|Lost password&quot;).&quot;
-&lt;p&gt;&lt;strong&gt;&quot;.linkNode($Everything::CONF-&gt;{system}-&gt;{create_new_user},'Sign up').&quot;&lt;/strong&gt;&lt;/p&gt;\n&quot; .
-$query-&gt;end_form;</code>
+  <code></code>
 </node>

@@ -3,17 +3,5 @@
   <delegated>1</delegated>
   <node_id>1259936</node_id>
   <title>formxml_superdoc</title>
-  <code>#patch from fuzzie.. sorta
-#applied so that you can choose not to get the findings doc.
-return &quot;&quot; if (($query-&gt;param(&quot;no_superdocs&quot;) == 1) || ($query-&gt;param(&quot;no_findings&quot;) == 1 &amp;&amp; $$NODE{node_id} == $Everything::CONF-&gt;{system}-&gt;{search_results} ));
-
-my $grp = $$NODE{group};
-my $str = &quot;&quot;;
-$str.=&quot;&lt;superdoctext&gt;\n&quot;;
-my $txt = $$NODE{doctext};
-$txt = parseCode($txt);
-$txt = parseLinks($txt) unless($query-&gt;param(&quot;links_noparse&quot;) == 1 or $$NODE{type_title} eq &quot;superdocnolinks&quot;);
-$str.= encodeHTML($txt);
-$str.=&quot;&lt;/superdoctext&gt;\n&quot;;
-return $str;</code>
+  <code></code>
 </node>

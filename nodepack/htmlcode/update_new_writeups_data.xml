@@ -3,11 +3,5 @@
   <delegated>1</delegated>
   <node_id>2037126</node_id>
   <title>update New Writeups data</title>
-  <code>my $feeder = getNode('New Writeups Feeder', 'nodelet');
-
-$$feeder{nltext} = parseCode($$feeder{nlcode});
-
-$$feeder{lastupdate} = time;
-
-updateNode($feeder, -1);</code>
+  <code></code>
 </node>

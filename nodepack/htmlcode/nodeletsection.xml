@@ -3,51 +3,5 @@
   <delegated>1</delegated>
   <node_id>1109816</node_id>
   <title>nodeletsection</title>
-  <code># Inserts collapsible nodelet sections. These are stored in separate htmlcodes in the form (nodelet-abbreviation)section_(section-title) - that is, if you see something like 'htmlcode('nodeletsection','edn,patches');' the code you need will be at [ednsection_patches].
-
-my ($nlAbbrev, $nlSection, $altTitle, $linkTo, $styleTitle, $styleContent) = @_;
-
-$altTitle ||= $nlSection;
-$altTitle = linkNodeTitle($linkTo.'|'.$altTitle) if($linkTo);
-
-my $isGuest = $APP-&gt;isGuest($USER);
-my $param = $nlAbbrev.'_hide'.$nlSection;
-
-my $v = undef;
-if (!$isGuest and (defined ($v=$query-&gt;param($param))) ) {
-	if($v) {
-		$$VARS{$param}=1;
-	} else {
-		delete $$VARS{$param};
-	}
-}
-
-my $showContent = undef;
-   $showContent = 1 unless $$VARS{$param};
-my $plusMinus = '&lt;tt&gt; '.( $isGuest ? '*' : ($showContent ? '-' : '+') ).' &lt;/tt&gt;';
-my $sectionId = $nlAbbrev.'section_'.$nlSection ;
-my $args = join(',',@_);
-$args =~ s/ /+/;
-
-my ($s, $closeLink) = ('[&lt;a style=&quot;text-decoration: none&quot; class=&quot;ajax '.$sectionId.
-	':nodeletsection:'.$args.'&quot; href=' .
-	urlGen({node_id=&gt;$NODE-&gt;{node_id}, $param=&gt;($showContent ? '1' : '0')})
-	. ' title=&quot;' . ($showContent ? 'collapse' : 'expand') . '&quot;&gt;', '&lt;/a&gt;]') unless $isGuest;
-
-$altTitle = &quot; &lt;strong&gt;$altTitle&lt;/strong&gt;&quot;;
-if($styleTitle &amp;&amp; $styleTitle =~ /^[fF]/) { #full style: [ Title + ]
-	$s .= $altTitle.$plusMinus.$closeLink;
-}
-else {	#classic style: [ + ] Title
-	$s .= $plusMinus.$closeLink.$altTitle;
-}
-
-my $content = undef;
-if($showContent) {
-	$content = htmlcode($sectionId);
-	$content = qq'&lt;div class=&quot;sectioncontent&quot;&gt;\n$content\n&lt;/div&gt;\n';
-}
-return qq'&lt;div id=&quot;$sectionId&quot; class=&quot;nodeletsection&quot;&gt;
-	&lt;div class=&quot;sectionheading&quot;&gt;$s&lt;/div&gt;\n$content&lt;/div&gt;\n';
-</code>
+  <code></code>
 </node>

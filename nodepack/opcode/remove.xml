@@ -1,71 +1,7 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegated>1</delegated>
   <node_id>2047058</node_id>
   <title>remove</title>
-  <code>if (my $wu = $query -&gt; param('writeup_id')){ # user removing own writeup
-
-	return unless htmlcode('verifyRequest', 'remove')
-		&amp;&amp; getRef($wu)
-		&amp;&amp; $$wu{author_user} == $$USER{node_id}
-		&amp;&amp; htmlcode('unpublishwriteup', $wu);
-
-	return htmlcode('update New Writeups data');
-}
-
-return unless $APP-&gt;isEditor($USER);
-
-my @list;
-unless ($query -&gt; param('removeauthor')){
-	foreach ($query-&gt;param){
-		next unless /^removenode(\d+)$/;
-		push @list, $1;
-	}
-}else{
-	my $author = getNode($query -&gt; param('author'), 'user');
-	return unless $author;
-	@list = @{$DB -&gt; selectNodeWhere({author_user =&gt; $$author{node_id}}, 'writeup')};
-}
-
-return unless @list;
-
-my $bulkreason = $query -&gt; param('removereason');
-my $nid;
-my $count = 0;
-
-foreach $nid (@list){
-	my $N = getNodeById $nid;
-	next unless $N &amp;&amp; $$N{type}{title} eq 'writeup';
-	next if $$N{publication_status}; # insured
-
-	my $reason = $bulkreason || $query-&gt;param('removereason'.$nid);
-	$reason = '' if $reason eq 'none';
-	next unless htmlcode('unpublishwriteup', $N, $reason);
-
-	my $aid = $$N{author_user};
-
-	# notify author:
-	next unless $aid;	#skip /msg if no WU author
-	my $parent = getNodeById($$N{parent_e2node});
-	my $title = $$parent{title} if $parent;
-	$title ||= $$N{title};
-
-	next if $aid==$$USER{node_id} &amp;&amp; $query-&gt;param('noklapmsg'.$nid);	#no /msg to self
-	next if getVars($aid) -&gt; {no_notify_kill}; # author doesn't want msg
-
-	unless ($reason){# no msg for maintenance stuff, unless there is a reason
-		next if $APP-&gt;isMaintenanceNode($N);
-	}
-
-	$reason = &quot;: $reason&quot; if $reason;
-	my $author = getNodeById($aid);
-	$author = &quot;[by $$author{title}]&quot; if $author;
-	my $msgHash = {
-		msgtext =&gt; &quot;I removed your writeup [$title$author]$reason. It has been sent to your [Drafts[superdoc]].&quot;,
-		author_user=&gt;$$USER{node_id},
-		for_user=&gt;$aid,
-	};
-	$DB-&gt;sqlInsert('message', $msgHash);
-}
-
-htmlcode('update New Writeups data');</code>
+  <code></code>
 </node>

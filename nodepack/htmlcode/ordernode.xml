@@ -3,43 +3,5 @@
   <delegated>1</delegated>
   <node_id>2037720</node_id>
   <title>ordernode</title>
-  <code>return unless $APP-&gt;isEditor($USER);
-
-
-my $str = htmlcode('openform', 'adminordernode')
-	.'&lt;fieldset&gt;&lt;legend&gt;Writeups, order and repair&lt;/legend&gt;
-	&lt;p&gt;'
-	.$query -&gt; hidden('repair_id', $$NODE{node_id})
-	.$query -&gt; hidden('showhidden', 'all');
-
-my $lockButt = 'Lock writeup order';
-if ($$NODE{orderlock_user}){
-	$lockButt = 'Unlock';
-	$str.= '&lt;input type=&quot;hidden&quot; name=&quot;unlock&quot; value=&quot;1&quot;&gt;';
-}
-
-$lockButt = qq' &lt;button name=&quot;op&quot; value=&quot;orderlock&quot; type=&quot;submit&quot;
-	class=&quot;ajax adminordernode:ordernode?op=orderlock&amp;unlock=/&quot;&gt;$lockButt&lt;/button&gt;&lt;/p&gt;
-	&lt;p&gt;';
-
-if($NODE-&gt;{orderlock_user}){
-	$str .= 'Writeup ordering locked by '
-		.linkNode($$NODE{orderlock_user})
-	.&quot;$lockButt&quot;;
-}else{
-	$str .= htmlcode(&quot;windowview&quot;, &quot;editor,Edit writeup order&amp;hellip;&quot;)
-		.$lockButt;
-
-	$str .= '&lt;button name=&quot;op&quot; value=&quot;repair_e2node&quot; type=&quot;submit&quot;&gt;Repair and reorder node&lt;/button&gt; ';
-}
-
-$str .= '&lt;button name=&quot;op&quot; value=&quot;repair_e2node_noreorder&quot; type=&quot;submit&quot;&gt;Repair without reordering&lt;/button&gt;
-	&lt;/p&gt;'
-	.linkNode(
-		getNode('Magical Writeup Reparenter', 'superdoc')
-		, 'Reparent writeups&amp;hellip;'
-		, {old_e2node_id =&gt; $$NODE{node_id}}
-	);
-
-&quot;$str&lt;/fieldset&gt;&lt;/form&gt;&quot;;</code>
+  <code></code>
 </node>

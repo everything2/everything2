@@ -3,15 +3,5 @@
   <delegated>1</delegated>
   <node_id>1298803</node_id>
   <title>ennchoice</title>
-  <code>my $nodes = {&quot;25&quot; =&gt; &quot;25&quot;, &quot;100&quot; =&gt; &quot;Everything New Nodes&quot;, &quot;200&quot; =&gt; &quot;E2N&quot;, &quot;300&quot; =&gt; &quot;ENN&quot;, &quot;1024&quot; =&gt; &quot;EKN&quot;};
-
-my $str = '&lt;p align=&quot;right&quot;&gt;&lt;form method=\&quot;post\&quot;&gt;';
-$str.='&lt;input type=&quot;hidden&quot; name=&quot;type&quot; value=&quot;superdoc&quot;&gt;
-Show: &lt;select name=&quot;node&quot;&gt;';
-foreach(sort {$a &lt;=&gt; $b} keys %$nodes)
-{
-$str.=&quot;&lt;option value=\&quot;$$nodes{$_}\&quot;&quot;.(($$nodes{$_} eq $$NODE{title})?(&quot; SELECTED &quot;):(&quot;&quot;)).&quot;&gt;$_&lt;/option&gt;&quot;;
-}
-$str.='&lt;/select&gt;&lt;input type=&quot;submit&quot; value=&quot;go&quot;&gt;&lt;/form&gt;&lt;/p&gt;';
-return $str;</code>
+  <code></code>
 </node>

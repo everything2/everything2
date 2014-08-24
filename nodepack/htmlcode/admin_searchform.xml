@@ -3,53 +3,5 @@
   <delegated>1</delegated>
   <node_id>134</node_id>
   <title>admin searchform</title>
-  <code>my ($PARAM) = @_;
-
-my $nid = getId($NODE) || '';
-return unless $APP-&gt;isEditor($USER); 
-
-my $servername = `hostname`;
-chomp $servername;
-$servername =~ s/\..*//g;
-my $str = &quot;\n\t\t\t&lt;span class='var_label'&gt;node_id:&lt;/span&gt; &lt;span class='var_value'&gt;$nid&lt;/span&gt;
-			&lt;span class='var_label'&gt;nodetype:&lt;/span&gt; &lt;span class='var_value'&gt;&quot;.linkNode($$NODE{type}).&quot;&lt;/span&gt;
-			&lt;span class='var_label'&gt;Server:&lt;/span&gt; &lt;span class='var_value'&gt;$servername&lt;/span&gt;&quot;;
-
-$str .= &quot;\n\t\t\t&lt;p&gt;&quot;.htmlcode('nodeHeavenStr',$$NODE{node_id}).&quot;&lt;/p&gt;&quot;;
-
-if($$USER{node_id}==9740) { #N-Wing
-$str .= join(&quot;&lt;br&gt;&quot;,`uptime`).'&lt;br&gt;
-';
-};
-
-$str .= &quot;\n\t\t\t&quot;.$query-&gt;start_form(&quot;POST&quot;,$query-&gt;script_name);
-
-$str .= &quot;\n\t\t\t\t&quot;.'&lt;label for =&quot;node&quot;&gt;Name:&lt;/label&gt; ' . &quot;\n\t\t\t\t&quot;.
-	$query-&gt;textfield(-name =&gt; 'node',
--id =&gt; 'node',
-		-default =&gt; &quot;$$NODE{title}&quot;,
-		-size =&gt; 18,
-		-maxlength =&gt; 80) . &quot;\n\t\t\t\t&quot;.
-	$query-&gt;submit('name_button', 'go') . &quot;\n\t\t\t&quot; .
-	$query-&gt;end_form;
-
-$str .= &quot;\n\t\t\t&quot; .$query-&gt;start_form(&quot;POST&quot;,$query-&gt;script_name).
-	&quot;\n\t\t\t\t&quot; . '&lt;label for=&quot;node_id&quot;&gt;ID:&lt;/label&gt; ' . &quot;\n\t\t\t\t&quot;.
-	$query-&gt;textfield(
-		-name =&gt; 'node_id',
--id =&gt; 'node_id',
-		-default =&gt; $nid,
-		-size =&gt; 12,
-		-maxlength =&gt; 80) . &quot;\n\t\t\t\t&quot;.
- 	$query-&gt;submit('id_button', 'go');
-
- 	$str.= &quot;\n\t\t\t&quot; . $query-&gt;end_form;
-
-'
-	&lt;div class=&quot;nodelet_section&quot;&gt;
-		&lt;h4 class=&quot;ns_title&quot;&gt;Node Info&lt;/h4&gt;
-		&lt;span class=&quot;rightmenu&quot;&gt;'.$str.'
-		&lt;/span&gt;
-	&lt;/div&gt;';
-</code>
+  <code></code>
 </node>

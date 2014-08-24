@@ -3,57 +3,5 @@
   <delegated>1</delegated>
   <node_id>447476</node_id>
   <title>cool</title>
-  <code>#single-writeup C!
-
-my ($cid) = $query-&gt;param('cool_id');
-my $uid = getId($USER);
-
-my $COOL = getNodeById($cid);
-getRef($COOL);
-
-return unless $COOL;
-return unless $$COOL{type}{title} eq 'writeup';
-return if $$COOL{author_user} == $uid;
-return if isSuspended($USER, &quot;cool&quot;);
-
-my $forceAllow = 0;
-return unless $forceAllow || ($$VARS{cools} &gt; 0);
-
-return if ($DB-&gt;sqlSelect('cooledby_user', 'coolwriteups', 'coolwriteups_id='.$cid.' and cooledby_user = '.$uid.' limit 1') || 0 );
-
---$$VARS{cools} unless $forceAllow;
-setVars($USER, $VARS); #Discount chings right away before anything else.
-
-adjustExp($$COOL{author_user}, 20);
-$DB-&gt;sqlInsert('coolwriteups', {coolwriteups_id =&gt; $cid, cooledby_user =&gt; $uid});
-$$COOL{cooled}++;
-updateNode($COOL, -1);
-
-my $coolVars = getVars($$COOL{author_user});
-
-use JSON;
-
-my $cooledNotification = getNode(&quot;cooled&quot;,&quot;notification&quot;)-&gt;{node_id};
-if ($$coolVars{settings}) {
-	if (from_json($$coolVars{settings})-&gt;{notifications}-&gt;{$cooledNotification}) {
-		my $argSet = { writeup_id =&gt; $cid, cooluser_id =&gt; $uid};
-		my $argStr = to_json($argSet);
-		my $addNotifier = htmlcode('addNotification', $cooledNotification , $$COOL{author_user},$argStr);
-	}
-}
-
-
-unless ($coolVars-&gt;{no_coolnotification}) {
-
-	htmlcode('sendPrivateMessage',{
-		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
-		'recipient_id' =&gt; $$COOL{author_user},
-		'message' =&gt; 'Hey, [' . $$USER{title} . '[user]] just cooled [' . getNode($$COOL{parent_e2node})-&gt;{title} . '], baby!',
-	});
-}
-
-htmlcode('achievementsByType','cool,'.$uid);
-htmlcode('achievementsByType','cool,'.$$COOL{author_user});
-
-'';</code>
+  <code></code>
 </node>

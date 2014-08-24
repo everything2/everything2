@@ -3,23 +3,5 @@
   <delegated>1</delegated>
   <node_id>1375509</node_id>
   <title>statsection_advancement</title>
-  <code>my $str = &quot;&quot;;
-
-#pass 2 args: category and value
-local *genRow = sub {
-	return '&lt;div&gt;&lt;span class=&quot;var_label&quot;&gt;' . $_[0] . ': &lt;/span&gt;&lt;span class=&quot;var_value&quot;&gt;' . $_[1] . &quot;&lt;/span&gt;&lt;/div&gt;\n&quot;;
-};
-
-
-my $hv = getVars(getNode(&quot;hrstats&quot;, &quot;setting&quot;));
-my $IQM = (($$USER{merit})?($$USER{merit}):(0));
-
-$str .= genRow('Merit', sprintf('%.2f', $IQM || 0));
-$str .= genRow('LF', sprintf('%.4f', getHRLF($USER) || 0));
-$str .= genRow(&quot;Devotion&quot;, int(($$VARS{numwriteups} * $$USER{merit}) + .5));
-$str .= genRow(&quot;Merit mean&quot;,$$hv{mean});
-$str .= genRow(&quot;Merit stddev&quot;, $$hv{stddev});
-
-
-return &quot;&lt;div&gt;&quot;.$str.&quot;&lt;/div&gt;&quot;;</code>
+  <code></code>
 </node>

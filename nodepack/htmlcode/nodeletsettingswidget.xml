@@ -3,31 +3,5 @@
   <delegated>1</delegated>
   <node_id>2025425</node_id>
   <title>nodeletsettingswidget</title>
-  <code># provide a settings link/widget for the nodelet named by the first argument
-# second argument is link/opener text
-
-my ($name, $text, $id, $safename) = @_;
-$id = $safename = $name ;
-my $safetext= $text;
-$safename =~ s/ /\+/g;
-$safetext =~ s/ /\+/g;
-$id =~ s/\W//g ;
-$id =lc($id);
-return linkNode(getNode('Nodelet Settings', 'superdoc'), $text,
-		{'#'=&gt;$id.'nodeletsettings', -id=&gt;$id.&quot;settingswidget&quot;,
-		-class=&gt;&quot;ajax $id&quot;.&quot;settingswidget:nodeletsettingswidget?showwidget=$id&quot;.&quot;settings:$safename,$safetext&quot;
-	}) unless $query -&gt; param('showwidget') eq &quot;$id&quot;.&quot;settings&quot; ;
-
-my $content = parseLinks(htmlcode($name.' nodelet settings', 'inwidget'))||&quot;(no settings for $name)&quot;;
-return qq'&lt;div id=&quot;$id'.qq'settingswidget&quot;&gt;'.
-# wrap in div because the script function activation stuff works on one element
-# and to provide an offset parent to put the widget in the right place
-	htmlcode('widget', &quot;&lt;fieldset&gt;&lt;legend&gt;$text&lt;/legend&gt;\n$content&lt;br&gt;\n&quot;.
-	$query -&gt; hidden('sexisgood','1').
-	# include ajax trigger because the first time it's not inserted together with the nodelet
-	$query -&gt; hidden(-name =&gt; 'ajaxTrigger', value=&gt;1,
-		class=&gt;&quot;ajax $id:updateNodelet:$safename&quot;).
-	$query -&gt; submit(&quot;submit$id&quot;,'Save').&quot;\n&lt;/fieldset&gt;\n&quot;,
-	'form', $text , {showwidget=&gt;&quot;$id&quot;.&quot;settings&quot;}).'&lt;/div&gt;';
-</code>
+  <code></code>
 </node>

@@ -3,28 +3,5 @@
   <delegated>1</delegated>
   <node_id>279553</node_id>
   <title>typeMenu</title>
-  <code># This constructs an HTML popup menu using the FormMenu
-# package of Everything.  Values of the menu come from
-# the specified &quot;setting&quot; node.
-
-use Everything::FormMenu;
-
-# $name - the name for the form item drop down
-# $selected - which item should be selected by default.
-#    undef if nothing specific.
-# The remaining items passed are the names of the types.
-my $name = shift @_;
-my $selected = shift @_;
-
-my $menu = new Everything::FormMenu;
-my $typename = undef;
-
-while(@_ &gt; 0)
-{
-  $typename = shift @_;
-  $menu-&gt;addType($typename);
-}
-
-$menu-&gt;writePopupHTML($query,$name,$selected);
-</code>
+  <code></code>
 </node>

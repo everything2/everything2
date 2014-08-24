@@ -3,24 +3,5 @@
   <delegated>1</delegated>
   <node_id>942347</node_id>
   <title>printablefooter</title>
-  <code>my $str = '
-&lt;table width=&quot;100%&quot; border=&quot;0&quot;&gt;&lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;
-';
-
-my $E2NODE = undef;
-
-$E2NODE=getNode $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
-$E2NODE ||= $NODE;
-my $site = $Everything::CONF-&gt;{system}-&gt;{site_url};
- $site =~ s/\/$//;
- $site.= &quot;/title/$$E2NODE{title}&quot;;
- $site =~ s/ /\+/g;
-
-$str.= $site. &quot;
-&lt;/b&gt;
-&lt;/td&gt;&lt;td align='right'&gt;&lt;b&gt;http://everything2.com/node/$$NODE{node_id}&lt;/b&gt;&lt;/td&gt;
-&lt;/tr&gt;&lt;/table&gt;
-&quot;;
-
-$str;</code>
+  <code></code>
 </node>

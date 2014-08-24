@@ -3,54 +3,5 @@
   <delegated>1</delegated>
   <node_id>2025092</node_id>
   <title>Personal Links nodelet settings</title>
-  <code>my $inwidget = shift;
-my $name = 'set_personalnode';
-my $delname = 'del_personalnode';
-my $i =0;
-my $limit = 50;
-$limit=100 if isGod($USER);
-
-my @newnodes = ();
-my $updateflag=0;
-my $n = undef;
-while(defined $query-&gt;param($name.$i)) {
-	$n=htmlScreen($query-&gt;param($name.$i));
-	$n =~ s/\[/\&amp;\#91;/g;
-	$n =~ s/\]/\&amp;\#93;/g;
-	push(@newnodes, $n) unless $query-&gt;param($delname.$i) || $n =~ /^\s*$/;
-	$i++;
-	last if $i &gt;= $limit;
-	$updateflag=1;
-}
-if($updateflag) {
-	$$VARS{personal_nodelet} = join('&lt;br&gt;',@newnodes);
-}
-
-my $tempstr = $$VARS{personal_nodelet};
-
-$tempstr=~ s/^\s*&lt;br&gt;//g;
-$tempstr=~ s/&lt;br&gt;\s*&lt;br&gt;/&lt;br&gt;/g;
-
-my @nodes = split '&lt;br&gt;', $tempstr;
-$i=0;
-my $str = undef;
-foreach(@nodes) {
-	$str .= '&lt;tr&gt;&lt;td&gt;'.
-		$query-&gt;checkbox(-name=&gt;$delname.$i, value=&gt;1,checked=&gt;0,force=&gt;1,label=&gt;' ').
-		'&lt;/td&gt;&lt;td&gt;'.
-		$query-&gt;textfield(-name=&gt;$name.$i, value=&gt;$_, force=&gt;1).
-		($inwidget ? '' :
-		'&lt;/td&gt;&lt;td&gt;&lt;small&gt;'.linkNodeTitle($_).'&lt;/small&gt;').
-		&quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
-	$i++;
-}
-$str .= '&lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;td&gt;' . $query-&gt;textfield(-name=&gt;$name.$i, value=&gt;'', force=&gt;1) .
-		'&lt;/td&gt;'.($inwidget ? '' : '&lt;td&gt;&lt;small&gt;(new link)&lt;/small&gt;&lt;/td&gt;').&quot;&lt;/tr&gt;\n&quot; unless $i &gt;= $limit;
-
-'Add/remove links:
-&lt;table border=&quot;0&quot;&gt;
-&lt;tr&gt;&lt;th&gt;&lt;strong&gt;x&lt;/strong&gt;&lt;/th&gt;&lt;th&gt;edit&lt;/th&gt;'.($inwidget ? '' : '&lt;th&gt;link&lt;/th&gt;').'&lt;/tr&gt;
-'.$str.'
-&lt;/table&gt;';
-</code>
+  <code></code>
 </node>

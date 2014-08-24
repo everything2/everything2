@@ -3,15 +3,5 @@
   <delegated>1</delegated>
   <node_id>1116961</node_id>
   <title>vitsection_maintenance</title>
-  <code>my $str =&quot;&lt;ul&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Edit These E2 Titles|Node Title Edit').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('broken nodes|Broken Writeups').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('E2 Nuke Request|Writeup Deletion Request').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Nodeshells Marked for Destruction|Nodeshell Deletion Request').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Node Heaven').&quot;&lt;/li&gt;&quot; if $APP-&gt;isEditor($USER) or $APP-&gt;getLevel($USER)&gt;=1;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('E2 Bugs|Make a bug report').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Suggestions for E2|Suggest a change to E2\'s code').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;/ul&gt;&quot;;
-$str;
-</code>
+  <code></code>
 </node>

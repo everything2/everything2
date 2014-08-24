@@ -3,14 +3,5 @@
   <delegated>1</delegated>
   <node_id>1258917</node_id>
   <title>schemalink</title>
-  <code>my ($schemafor) = @_;
-
-my $noderef = getNodeById($schemafor);
-
-my $row = $DB-&gt;sqlSelect(&quot;*&quot;, &quot;xmlschema&quot;, &quot;schema_extends=$$noderef{node_id}&quot;);
-$row = $DB-&gt;sqlSelect(&quot;schema_id&quot;, &quot;xmlschema&quot;, &quot;schema_extends=0&quot;) unless($row);
-
-return &quot; xmlns=\&quot;http://www.everything2.com\&quot; xmlns:xsi=\&quot;http://www.w3.org/2001/XMLSchema-instance\&quot; xsi:schemaLocation=\&quot;http://www.everything2.com/?node_id=$row\&quot; &quot;;
-
-</code>
+  <code></code>
 </node>

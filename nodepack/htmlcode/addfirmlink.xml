@@ -3,27 +3,5 @@
   <delegated>1</delegated>
   <node_id>1150391</node_id>
   <title>addfirmlink</title>
-  <code>my $RECURSE = 1;
-return unless $APP-&gt;isEditor($USER);
-
-$query-&gt;delete('op');
-
-return htmlcode('openform')
-   .'&lt;fieldset&gt;&lt;legend&gt;Firmlink&lt;/legend&gt;'
-   . htmlcode('verifyRequestForm', 'firmlink')
-   . $query-&gt;hidden(-name =&gt; &quot;op&quot;, -value =&gt; &quot;firmlink&quot;)
-   . $query-&gt;hidden(-name =&gt; &quot;firmlink_from_id&quot;, -value =&gt; $$NODE{node_id})
-   .'&lt;label&gt;Firmlink node to: '
-   .  $query-&gt;textfield(-name =&gt; 'firmlink_to_node')
-   .'&lt;/label&gt;'
-   .'&lt;br&gt;'
-   .'&lt;label&gt;With (optional) following text: '
-   .  $query-&gt;textfield(-name =&gt; 'firmlink_note_text')
-   .'&lt;/label&gt;'
-   .'&lt;br&gt;'
-   . $query-&gt;submit(-value =&gt; &quot;Firmlink&quot;)
-   .'&lt;/fieldset&gt;'
-   .'&lt;/form&gt;'
-   ;
-</code>
+  <code></code>
 </node>

@@ -3,19 +3,5 @@
   <delegated>1</delegated>
   <node_id>1438180</node_id>
   <title>ednsection_patches</title>
-  <code>my $patches = $DB-&gt;sqlSelectMany(&quot;patch_id, (select author_user from node where node_id=patch.patch_id limit 1) as author_user, (select title from node where node_id=patch.patch_id limit 1) as title&quot;, &quot;patch&quot;, &quot;cur_status=1983892 order by patch_id desc limit 7&quot;);
-return 'No patches. Word.' unless $patches-&gt;rows;
-
-
-my $str = '&lt;table id=&quot;ednsection_patches&quot;&gt;';
-while (my $patch = $patches-&gt;fetchrow_hashref){
-  $str.= &quot;&lt;tr&gt;&lt;td class='oddrow' align='center'&gt;&lt;b&gt;&quot;.
-         linkNode($$patch{author_user}).
-         &quot;&lt;/b&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&quot;.
-         linkNode($$patch{patch_id},$$patch{title},{lastnode_id=&gt;0}).
-         &quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
-}
-
-$str.= '&lt;/table&gt;&lt;p align=&quot;center&quot;&gt;'.linkNodeTitle(&quot;Patch Manager&quot;) ;
-$str;</code>
+  <code></code>
 </node>

@@ -3,56 +3,5 @@
   <delegated>1</delegated>
   <node_id>1252154</node_id>
   <title>xmlwriteup</title>
-  <code>my ($WRITEUPID) = @_;
-
-my $wu = getNodeById($WRITEUPID);
-return unless $wu;
-return unless($$wu{type_nodetype} == getId(getType('writeup')));
-
-my $str.=&quot;&quot;;
-
-my $nr = getId(getNode(&quot;node row&quot;, &quot;superdoc&quot;));
-my $marked = (($DB-&gt;sqlSelect('linkedby_user', 'weblog', &quot;weblog_id=$nr and to_node=$$wu{node_id}&quot;))?(1):(0));
-
-$str .= &quot;&lt;writeup node_id=\&quot;$$wu{node_id}\&quot; createtime=\&quot;$$wu{publishtime}\&quot; &quot;;
-$str .= &quot;type_nodetype=\&quot;$$wu{type_nodetype}\&quot; marked=\&quot;$marked\&quot;&gt;\n&quot;;
-my $ntype = getNodeById($$wu{wrtype_writeuptype});
-
-my $parent = getNodeById($$wu{parent_e2node});
-# see [Drum &amp; Bass] (using displaytype=xmltrue) 
-# to see the problem
-$str.=&quot;&lt;parent&gt;&lt;e2link node_id=\&quot;$$parent{node_id}\&quot;&gt;&quot;.encodeHTML($$parent{title}).&quot;&lt;/e2link&gt;&lt;/parent&gt;&quot; if($parent);
-
-$str.=&quot;&lt;writeuptype&gt;&quot;.$$ntype{title}.&quot;&lt;/writeuptype&gt;\n&quot; if $ntype;
-
-if(hasVoted($wu, $USER) || $$wu{author_user} == $$USER{node_id})
-{
- my $up = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;vote_id=$$wu{node_id} AND weight=1&quot;);
- my $dn = $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;vote&quot;, &quot;vote_id=$$wu{node_id} AND weight=-1&quot;);
- my $cast = $DB-&gt;sqlSelect(&quot;weight&quot;, &quot;vote&quot;, &quot;vote_id=$$wu{node_id} AND voter_user=$$USER{user_id}&quot;);
- $str.=&quot;&lt;reputation up=\&quot;$up\&quot; down=\&quot;$dn\&quot; cast=\&quot;$cast\&quot;&gt;$$wu{reputation}&lt;/reputation&gt;\n&quot;;
-}
-
-my $coolcsr = $DB-&gt;sqlSelectMany(&quot;cooledby_user&quot;, &quot;coolwriteups&quot;, &quot;coolwriteups_id=$$wu{node_id} order by tstamp ASC&quot;);
-
-$str.=&quot;&lt;cools&gt;\n&quot;;
-
-while(my $coolrow = $coolcsr-&gt;fetchrow_hashref())
-{
-  my $usr = getNodeById($$coolrow{cooledby_user});
-  next unless $usr;
-  $str.=&quot; &lt;e2link node_id=\&quot;$$usr{node_id}\&quot;&gt;&quot;.encodeHTML($$usr{title}).&quot;&lt;/e2link&gt;\n&quot;;
-}
-
-$str.=&quot;&lt;/cools&gt;\n&quot;;
-$str.=&quot;&lt;title&gt;&quot;.encodeHTML($$wu{title}).&quot;&lt;/title&gt;\n&quot;;
-
-my $au = getNodeById($$wu{author_user});
-$str.=&quot;&lt;author user_id=\&quot;$$au{node_id}\&quot;&gt;&quot;.encodeHTML($$au{title}).&quot;&lt;/author&gt;\n&quot;;
-$str.=&quot;&lt;doctext&gt;&quot;;
-$str.=encodeHTML(($query-&gt;param('links_noparse') == 1)?($$wu{doctext}):(parseLinks($$wu{doctext}))) unless($query-&gt;param(&quot;no_doctext&quot;));
-$str.=&quot;&lt;/doctext&gt;\n&quot;;
-$str.=&quot;&lt;/writeup&gt;\n&quot;;
-return $str;
-</code>
+  <code></code>
 </node>

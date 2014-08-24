@@ -3,40 +3,5 @@
   <delegated>1</delegated>
   <node_id>1685363</node_id>
   <title>pollvote</title>
-  <code>return if $APP-&gt;isGuest($USER);
-
-my $pollId = $query -&gt; param('poll_id');
-my $vote = $query-&gt;param('vote');
-
-my $N = getNodeById($pollId);
-my @result_array = split(',', $$N{e2poll_results});
-return unless $N 
-	&amp;&amp; $$N{type}{title} eq 'e2poll'
-	&amp;&amp; $$N{poll_status} ne 'new'
-	&amp;&amp; $$N{poll_status} ne 'closed'
-	&amp;&amp; exists($result_array[$vote]);
-
-return if $DB-&gt;sqlSelect( # has already voted on this poll
-	'vote_id'
-	, 'pollvote'
-	, &quot;voter_user=$$USER{node_id} AND pollvote_id=$$N{node_id}&quot;
-);
-
-return unless $DB -&gt; sqlInsert('pollvote', { # don't update the poll if the vote gets lost
-	pollvote_id =&gt; $pollId
-	, voter_user =&gt; $$USER{node_id}
-	, choice =&gt; $vote
-	, -votetime =&gt; 'NOW()'
-});
-
-$result_array[$vote]++;
-my $votesum;
-foreach ( @result_array ) {
-	$votesum = $votesum + $_;
-}
-
-$DB-&gt;sqlUpdate(&quot;e2poll&quot;, {
-		e2poll_results =&gt; join(',', @result_array)
-		, totalvotes =&gt; $votesum}
-	, &quot;e2poll_id=$pollId&quot;);</code>
+  <code></code>
 </node>

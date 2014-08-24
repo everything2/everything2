@@ -3,24 +3,5 @@
   <delegated>1</delegated>
   <node_id>1175805</node_id>
   <title>rtnsection_nws</title>
-  <code>return if ( $APP-&gt;isGuest($USER) );
-  my $str = '&lt;ul class=&quot;linklist&quot;&gt;';
-  my $csr = $DB-&gt;sqlSelectMany('*', 'weblog, node', 'weblog_id=165580 &amp;&amp; removedby_user=0 and to_node = node_id', 'ORDER BY linkedtime DESC LIMIT 4');
-  
-
-  while(my $row = $csr-&gt;fetchrow_hashref()){
-
-    my $newsitem = getNodeById($$row{node_id});
-
-    next unless($newsitem);
-
-   $str .= '&lt;li&gt;'.linkNode($newsitem, $$newsitem{title}, {lastnode_id=&gt;0}).'&lt;/li&gt;';
-
-   }
-
-   $str .= '&lt;/ul&gt;';
-
-   $csr-&gt;finish();
-   return $str;
-</code>
+  <code></code>
 </node>

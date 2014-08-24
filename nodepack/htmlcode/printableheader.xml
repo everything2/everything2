@@ -3,51 +3,5 @@
   <delegated>1</delegated>
   <node_id>942345</node_id>
   <title>printableheader</title>
-  <code>my ($WRITEUP) = @_;
-  getRef $WRITEUP;
-  $WRITEUP ||= $NODE;
-
-
-
-my $TYPE = $$WRITEUP{wrtype_writeuptype};
-my $E2NODE = getNode $$WRITEUP{parent_e2node}; 
-getRef $TYPE;
-
-if(getId($NODE)==getId($WRITEUP)) {
-	#new way - let displayWriteupInfo handle individual WU header and footer
-	return htmlcode('displayWriteupInfo', getId($WRITEUP));
-}
-
-my $str=
-&quot;&lt;b&gt;&quot;;
-
-$str.= &quot;$$E2NODE{title} &quot; unless getId($NODE) != getId($WRITEUP);
-
-$str.=&quot;(&quot;
-.linkNode($WRITEUP, $$TYPE{title}).
-&quot;) by&amp;nbsp;&quot;.linkNode($$WRITEUP{author_user})
-  .&quot;&lt;/b&gt;\n&quot;;
-
-
-$str=&quot;&lt;table cellpadding=0 cellspacing=0 border=0 width=100%&gt;&lt;tr&gt;
-&lt;td&gt;$str&lt;/td&gt;
-&lt;td align=right&gt;&quot;;
- 
-if($$WRITEUP{cooled}) {
-#	$str.=&quot; &lt;B&gt;C!&lt;/B&gt;&quot;;
-	$str .= htmlcode('writeupcools',$WRITEUP-&gt;{node_id});
-} 
-  
-$str  .=&quot;&lt;/td&gt;&lt;td align=right&gt;&quot;
-  .&quot;&lt;font size=2&gt;&quot;
-  .htmlcode('parsetimestamp', &quot;$$WRITEUP{publishtime}&quot;)
-  .&quot;&lt;/font&gt;&lt;/td&gt;
-&lt;/tr&gt;&lt;/table&gt;&quot;;
-
-
-
-
-$str;
-
-</code>
+  <code></code>
 </node>

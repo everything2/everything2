@@ -3,19 +3,5 @@
   <delegated>1</delegated>
   <node_id>1878244</node_id>
   <title>hasJS</title>
-  <code>my ($jsNode) = @_;
-
-my $JS = undef
-
-if ($jsNode =~ /^\d+$/) {
-$JS = $jsNode;
-}
-else {
-$JS = getId(getNode($jsNode,&quot;jscript&quot;));
-}
-
-return unless $JS;
-
-return ($$VARS{includedJS} =~ /$JS/);
-</code>
+  <code></code>
 </node>

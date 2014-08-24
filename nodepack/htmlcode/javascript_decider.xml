@@ -3,34 +3,5 @@
   <delegated>1</delegated>
   <node_id>2069289</node_id>
   <title>javascript_decider</title>
-  <code>while ($$VARS{includedJS} =~ s/(^|,)(?:
-	(1878034)| # Everything2 Ajax
-	(1872965)| # Zen Nodelet Collapser
-	1872456| # Prototype 1
-	1872457| # Prototype 2
-	1842173	 # async voting
-	)\b($|\1)?,*/$1/x ) {
-	delete $$VARS{noquickvote} if $2;
-	delete $$VARS{nonodeletcollapser} if $3;
-}
-
-my ($str, $N) = (undef, undef);
-my @JS = ( getNode('boilerplate javascript','jscript'),getNode('default javascript', 'jscript'));
-push @JS, getNode('Everything2 Ajax', 'jscript') unless $$VARS{noquickvote} ;
-push @JS, getNode('Zen Nodelet Collapser', 'jscript') unless $$VARS{nonodeletcollapser} ;
-push @JS , split(',', $$VARS{includedJS}) if $$VARS{includedJS};
-
-my $jscss = &quot;http://jscss.everything2.com&quot;;
-$str = &quot;&quot;;
-
-my $jsType = getId(getType('jscript'));
-foreach (@JS) {
-	getRef $_;
-	next unless $_ &amp;&amp; $$_{type_nodetype} == $jsType;
-	$str .= &quot;&lt;script src='&quot;.htmlcode(&quot;linkjavascript&quot;,$$_{node_id}).&quot;' type='text/javascript'&gt;&lt;/script&gt;\n&quot;;
-
-}
-
-return $str;
-</code>
+  <code></code>
 </node>

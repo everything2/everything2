@@ -3,32 +3,5 @@
   <delegated>1</delegated>
   <node_id>280</node_id>
   <title>editSingleVar</title>
-  <code>return &quot;&lt;i&gt;you can't update this node&lt;/i&gt;&quot; unless canUpdateNode($USER, $NODE);
-my ($var, $title) = @_;
-my $SETTINGS = getVars($NODE);
-my @params = $query-&gt;param;
-my $str=&quot;&quot;; 
-
-foreach (@params) {
-  if (/setsetting_$var$/) {
-    $$SETTINGS{$var}=$query-&gt;param(&quot;setsetting_$var&quot;);    
-  }
-
-}
-
-if(getId($USER) == getId($NODE)) { $$VARS{$var} = $$SETTINGS{$var}; }
-else { setVars ($NODE, $SETTINGS); }
-
-my ($keysize, $valsize) = (15, 30);
-my ($keyclr, $valclr) = (&quot;#CCCCFF&quot;, &quot;#DEDEFF&quot;);
-my $t = $title ? $title:$var;
-
-$str.=&quot;&lt;TABLE width=100% cellpadding=2 cellspacing=0&gt;\n&quot;;
-$str.=&quot;&lt;TR&gt;&lt;TD width=20% class=\&quot;oddrow\&quot; bgcolor=$keyclr&gt;&lt;b&gt;$t&lt;/b&gt;&lt;/TD&gt;&quot; .
-      &quot;&lt;TD class=\&quot;oddrow\&quot; bgcolor=$valclr&gt;&quot;.
-      $query-&gt;textfield(&quot;setsetting_$var&quot;, $$SETTINGS{$var}, $valsize).&quot;&lt;/TD&gt;&lt;/TR&gt;\n&quot;;
-$str.=&quot;&lt;/TABLE&gt;\n&quot;;
-
-
-$str;</code>
+  <code></code>
 </node>

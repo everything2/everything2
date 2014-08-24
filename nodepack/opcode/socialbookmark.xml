@@ -1,72 +1,7 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1936578</node_id>
   <title>socialBookmark</title>
-  <code>my $node_id = $query-&gt;param('node_id');
-my $bookmark_site = $query-&gt;param('bookmark_site');
-
-$node_id or return;
-$bookmark_site or return;
-
-return if $APP-&gt;isGuest($USER);
-#my $LINKTYPE = getNode('bookmark', 'linktype');
-
-#$DB-&gt;sqlInsert('links', {from_node =&gt; getId($USER), to_node =&gt; $node_id, linktype =&gt; getId($LINKTYPE)});
-
-return 1 if $$VARS{no_socialbookmarkinformer};
-
-my $tempnode = getNodeById($node_id);
-return 1 if (($$tempnode{type}{title} ne &quot;writeup&quot;) &amp;&amp; ($$tempnode{type}{title} ne &quot;e2node&quot;)); #only send CME for writeups &amp; e2nodes
-
-my $eddie = getId(getNode('Cool Man Eddie','user'));
-my @tempgroup = @{ $$tempnode{group} } if $$tempnode{group};
-my @group;
-my $TV;
-foreach (@tempgroup) {
-	my $not_self_user = ($_ != getId($USER));
-	$TV = getVars(getNodeById($_)-&gt;{author_user});
-	if ((!$$TV{no_socialbookmarknotification})&amp;&amp;($not_self_user)) {
-		push @group, $_;
-	}
-}
-
-my $nt = $$tempnode{title};
-my ($eddiemessage, $str,$auth);
-my @writeupAuthors;
-
-if(scalar(@group)) {
-	@writeupAuthors = map { getNodeById($_)-&gt;{author_user} } @group;
-	$eddiemessage = 'the entire node ['.$nt.'], in which you have a writeup,';
-}
-else {
-	$TV = getVars(getNodeById($$tempnode{author_user}));
-	if ($$TV{no_bookmarknotification}) { return 1;}
-	if (getId($USER) == $$tempnode{author_user}) {return 1;}
-	push @writeupAuthors, $$tempnode{author_user};
-	$eddiemessage ='your writeup ['.$nt.']';
-}
-
-use JSON;
-my $notification = getNode(&quot;socialBookmark&quot;,&quot;notification&quot;)-&gt;{node_id};
-foreach (@writeupAuthors) {
-	my $authorVars = getVars(getNodeById($_));
-	if ($$authorVars{settings}) {
-		if ( from_json($$authorVars{settings})-&gt;{notifications}-&gt;{$notification}) {
-			my $argSet = { writeup_id =&gt; $$tempnode{node_id}, bookmark_user =&gt; $$USER{user_id}, bookmark_site =&gt; $bookmark_site};
-			my $argStr = to_json($argSet);
-			my $addNotifier = htmlcode('addNotification', $notification, $_, $argStr);
-		}
-	}
-}
-
-my $sendResult = htmlcode('sendPrivateMessage',{
-	'author_id' =&gt; $eddie,
-	'recipient_id' =&gt; \@writeupAuthors,
-	'message' =&gt; 'Yo, '.$eddiemessage.' was bookmarked on '.$bookmark_site.'. Dig it, baby.',
-        'fromgroup_id' =&gt; $$USER{node_id}
-});
-
-1;
-
-</code>
+  <code></code>
 </node>

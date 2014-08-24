@@ -3,18 +3,5 @@
   <delegated>1</delegated>
   <node_id>485617</node_id>
   <title>removeweblog</title>
-  <code># This removes one item from a weblog
-my $src = int($query-&gt;param(&quot;source&quot;));
-my $to_node = int($query-&gt;param(&quot;to_node&quot;));
-
-# usergroup owner
-my $isOwner = 0;
-$isOwner = 1 if $$USER{node_id} == $APP -&gt; getParameter($src, 'usergroup_owner');
-my $canRemove = isGod($USER) || $isOwner || $DB -&gt; sqlSelect( &quot;weblog_id&quot; , &quot;weblog&quot; ,
-		&quot;weblog_id=$src and to_node=$to_node and linkedby_user=$$USER{ user_id }&quot; );
-
-return unless $canRemove;
-return unless $src &amp;&amp; $to_node ;
-$DB-&gt;getDatabaseHandle()-&gt;do(&quot;update weblog set removedby_user=$$USER{ user_id } where weblog_id=$src &amp;&amp; to_node=$to_node&quot;);
-</code>
+  <code></code>
 </node>

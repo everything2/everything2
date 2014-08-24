@@ -3,38 +3,5 @@
   <delegated>1</delegated>
   <node_id>909984</node_id>
   <title>bucketop</title>
-  <code>return unless isGod($USER);
-if($query-&gt;param(&quot;bgroupadd&quot;))
-{
-  my $group = getNode($query-&gt;param(&quot;node_id&quot;));
-
-  return unless($group &amp;&amp; $$group{type}{grouptable});
-
-  foreach my $param ($query-&gt;param)
-  {
-    next unless($param =~ /^bnode_(\d+)$/);
-
-    # For some reason, passing $1 here causes the function to receive undef.
-    # Probably has something to do with default vars.  So, we need to assign
-    # what we found to a scoped var.
-    my $insert = $1;
-    insertIntoNodegroup($group, $USER, $insert);
-  }
-}
-
-if($query-&gt;param(&quot;bdrop&quot;) or $query-&gt;param(&quot;dropexec&quot;))
-{
-  my $bucket = $$VARS{nodebucket};
-  foreach my $param ($query-&gt;param)
-  {
-    next unless($param =~ /^bnode_(\d+)$/);
-
-    # Remove the numeric id from the bucket list
-    $bucket =~ s/$1,?//;
-    $bucket =~ s/,$//;
-  }
-
-  $$VARS{nodebucket} = $bucket;
-  delete $$VARS{nodebucket} unless($bucket &amp;&amp; $bucket ne &quot;&quot;);
-}</code>
+  <code></code>
 </node>

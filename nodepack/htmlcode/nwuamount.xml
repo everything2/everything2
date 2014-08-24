@@ -3,24 +3,5 @@
   <delegated>1</delegated>
   <node_id>1217086</node_id>
   <title>nwuamount</title>
-  <code>return '' if ( $APP-&gt;isGuest($USER) );
-my ($nodelet,$noAdminNoJunkOption) = @_ ;
-$nodelet ||= 'New Writeups';
-$nodelet =~ s/\s/+/g;
-my $nodeletId = lc($nodelet) ;
-$nodeletId =~ s/\W// ;
-my $ajax = &quot;ajax $nodeletId:updateNodelet?op=/&amp;nw_nojunk=/&amp;amount=/:$nodelet&quot; ;
-
-my @amount = (1, 5, 10, 15, 20, 25, 30, 40);
-$$VARS{num_newwus} ||= 15 ;
-
-my $str = htmlcode('openform');
-
-$str.=&quot;\n\t&lt;input type='hidden' name='op' value='changewucount'&gt;&quot;;
-$str .= $query -&gt; popup_menu( -name=&gt;'amount', Values=&gt;\@amount, default=&gt;$$VARS{num_newwus}, class=&gt; $ajax ) ;
-$str.=&quot;\n\t&quot;.$query-&gt;submit(&quot;lifeisgood&quot;,&quot;show&quot;);
-$str.=&quot;\n\t&quot;.$query-&gt;checkbox(-name=&gt;&quot;nw_nojunk&quot;, checked=&gt;$$VARS{nw_nojunk}, value=&gt;'1', label=&gt;&quot;No junk&quot;, class=&gt;$ajax)
-	if !$noAdminNoJunkOption and $APP-&gt;isEditor($USER);
-$str.=&quot;\n&quot;.$query-&gt;end_form;
-$str;</code>
+  <code></code>
 </node>

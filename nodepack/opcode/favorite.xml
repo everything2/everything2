@@ -1,16 +1,7 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1930913</node_id>
   <title>favorite</title>
-  <code>my $node_id = $query -&gt; param(&quot;fave_id&quot;);
-
-my $NODE = getNodeById($node_id);
-
-return unless $NODE;
-
-return if $NODE -&gt; {type_nodetype} != getType(&quot;user&quot;) -&gt; {node_id};
-return if $APP-&gt;isGuest($USER);
-my $LINKTYPE = getNode('favorite', 'linktype');
-
-$DB-&gt;sqlInsert('links', {-from_node =&gt; getId($USER), -to_node =&gt; $node_id, -linktype =&gt; getId($LINKTYPE)});</code>
+  <code></code>
 </node>

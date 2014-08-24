@@ -3,29 +3,5 @@
   <delegated>1</delegated>
   <node_id>260</node_id>
   <title>displaywriteuptext</title>
-  <code>#displaywriteuptext - pass writeup's node_id
-
-my ($num) = @_;
-
-my $WRITEUP = undef;
-my $LNODE = undef;
-if (not $num) {
-	$LNODE = $$NODE{parent_e2node}; 
-	$WRITEUP=$NODE;
-} else {
-	$LNODE = getId($NODE);
-	my @group = ();
-        @group = @{$$NODE{group}} if $$NODE{group};
-	return unless @group;
-	$WRITEUP = getNodeById $group[$num-1];
-}
-
-return '' unless $WRITEUP;
-
-my $TAGNODE = getNode 'approved html tags', 'setting';
-my $TAGS=getVars($TAGNODE);
-
-my $text = htmlcode('standard html screen', $$WRITEUP{doctext}, $LNODE);
-my $wuid = getId($WRITEUP);
-'&lt;!-- google_ad_section_start --&gt;&lt;!-- '.$wuid.'{ --&gt;'.$text.'&lt;!-- }'.$wuid.' --&gt;&lt;!-- google_ad_section_end --&gt;';</code>
+  <code></code>
 </node>

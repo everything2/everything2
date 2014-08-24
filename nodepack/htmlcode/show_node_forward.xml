@@ -3,23 +3,5 @@
   <delegated>1</delegated>
   <node_id>2003655</node_id>
   <title>show_node_forward</title>
-  <code>return &quot;&quot; unless ($query &amp;&amp; defined $query-&gt;param('originalTitle'));
-
-my $originalTitle = $query-&gt;param('originalTitle');
-my $encodedTitle = encodeHTML($originalTitle);
-my $forwardNode = getNode($originalTitle, 'node_forward', 'light');
-my $alsoStr = htmlcode('usercheck', $originalTitle);
-my $editStr = &quot;&quot;;
-
-if ($APP-&gt;isEditor($USER) &amp;&amp; $forwardNode) {
-  $editStr = &quot; &quot;
-    . linkNode($forwardNode, &quot;(edit forward)&quot;, {displaytype =&gt; 'edit'})
-    ;
-}
-
-return '&lt;div class=&quot;forward&quot;&gt;' 
-  . &quot;Redirected from &lt;em&gt;$encodedTitle&lt;/em&gt;$alsoStr$editStr&quot;
-  . '&lt;/div&gt;'
-  ;
-</code>
+  <code></code>
 </node>

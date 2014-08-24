@@ -3,23 +3,5 @@
   <delegated>1</delegated>
   <node_id>2025091</node_id>
   <title>Chatterbox nodelet settings</title>
-  <code>'&lt;h4&gt;Chat
-&lt;/h4&gt;'.
-
-parseCode(qq\
-[{varcheckbox:hideTopic,Hide the chatterbox topic}]&lt;br&gt;
-[{varcheckbox:powersChatter,Show user powers in chatterbox}]&lt;br&gt;
-&lt;h4&gt;Private messages
-&lt;/h4&gt;
-[{varcheckbox:pmsgDate,Show date messages were sent}]&lt;br&gt;
-[{varcheckbox:pmsgTime,Show time messages were sent}]&lt;br&gt;
-[{varcheckbox:chatterbox_authorsince,Show when message sender was last seen}]&lt;br&gt;
-[{varcheckbox:chatterbox_msgs_ascend,Show oldest messages instead of newest}]&lt;br&gt;
-&lt;br&gt;
-[{varcheckboxinverse:showmessages_replylink,Hide reply-to link}]&lt;br&gt;
-[{varcheckbox:powersMsg,Show user powers in private messages}]&lt;br&gt;
-&lt;br&gt;
-[{varcheckbox:showRawPrivateMsg,Show sent message as you typed it (not with links)}]&lt;br&gt;
-[{varcheckbox:hideprivmessages,Don't show private messages in the chatterbox}]&lt;br&gt;
-\);</code>
+  <code></code>
 </node>

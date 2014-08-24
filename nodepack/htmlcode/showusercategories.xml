@@ -3,28 +3,5 @@
   <delegated>1</delegated>
   <node_id>2033009</node_id>
   <title>showUserCategories</title>
-  <code># pass a user object (or nothing to default to the current node, or current user if the current node is not a user), and the categories maintained by the user will be returned
-
-
-my $U = $_[0];
-if($U) {
-	$U = getId($U);
-} else {
-	if($$NODE{type_nodetype} == getId(getNode('user', 'nodetype'))) {
-		$U = getId($NODE);
-	} else {
-		$U = getId($USER);
-	}
-}
-return if(!$U);
-
-my $query = $DB-&gt;sqlSelectMany(&quot;node_id&quot;, &quot;node&quot;, &quot;author_user=&quot; . $U . &quot; and type_nodetype=&quot; . getId(getType(&quot;category&quot;)));
-
-my $row = undef;
-my @categories = ();
-push @categories, linkNode($$row{node_id}) while ($row = $query-&gt;fetchrow_hashref());
-
-return if !scalar(@categories);
-return join(', ', @categories);
-</code>
+  <code></code>
 </node>

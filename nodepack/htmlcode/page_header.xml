@@ -3,36 +3,5 @@
   <delegated>1</delegated>
   <node_id>2002477</node_id>
   <title>page header</title>
-  <code># let page inject stuff into the header:
-my ($str,$after) = (&quot;&quot;,&quot;&quot;);
-($str,$after) = split /&lt;!--.*?--&gt;/, $PAGELOAD-&gt;{pageheader} if($PAGELOAD-&gt;{pageheader});
-
-my $ntypet = $$NODE{type}{title};
-if ( $ntypet eq 'e2node' or $ntypet eq 'writeup' ) {
-	$str .= htmlcode( 'createdby' ).&quot;\n&quot; if $ntypet eq 'e2node' ;
-	$str .= htmlcode( 'firmlinks' ).&quot;\n&quot; ;
-	$str .= htmlcode( 'usercheck' ).&quot;\n&quot; if $ntypet eq 'e2node' ;
-}
-
-if ($ntypet eq 'e2node' || $ntypet eq 'superdoc' || $ntypet eq 'superdocnolinks' || $ntypet eq 'document') {
-	my $COOLLINK = getNode('coollink','linktype') -&gt; {node_id};
-	$PAGELOAD-&gt;{edcoollink} = $DB-&gt;sqlSelectHashref('to_node', 'links', 'from_node='.$$NODE{node_id}.' and linktype='.$COOLLINK.' limit 1') ;
-	$str .= '&lt;div id=&quot;cooledby&quot;&gt;&lt;strong&gt;cooled by&lt;/strong&gt; '.linkNode($PAGELOAD-&gt;{edcoollink}-&gt;{to_node}).&quot;&lt;/div&gt;\n&quot;
-		if $PAGELOAD-&gt;{edcoollink} ;
-}
-
-$str .= htmlcode( 'confirmop' ) if $query -&gt; param( 'confirmop' ) ;
-my $disabled = htmlcode('getdisabledactions');
-$str .= htmlcode('page actions', $disabled) unless $APP-&gt;isGuest($USER) ;
-
-unless ($disabled =~ /a/) {
-    $str .= htmlcode('listnodecategories') unless defined $PAGELOAD-&gt;{e2nodeCategories}; # i.e. unless writeups have already listed any page categories
-}
-
-return qq'&lt;div id=&quot;pageheader&quot;&gt;
-	&lt;h1 class=&quot;nodetitle&quot;&gt;$$NODE{title}&lt;/h1&gt;\n\t'.
-	htmlcode( 'show_node_forward' ) . &quot;
-	$str
-	$after
-&lt;/div&gt;&quot; ;</code>
+  <code></code>
 </node>

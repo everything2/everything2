@@ -3,17 +3,5 @@
   <delegated>1</delegated>
   <node_id>2033901</node_id>
   <title>standard html screen</title>
-  <code>my ($text, $lastnode_id) = @_;
-
-my $TAGNODE = getNode('approved html tags', 'setting');
-my $TAGS = getVars($TAGNODE);
-
-$lastnode_id = undef if ($APP-&gt;isGuest($USER));
-
-$text = htmlScreen($text, $TAGS);
-$text = screenTable ($text);
-$text = parseLinks($text, $lastnode_id);
-$text = breakTags($text);
-return $text;
-</code>
+  <code></code>
 </node>

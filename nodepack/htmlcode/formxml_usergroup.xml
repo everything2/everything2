@@ -3,36 +3,5 @@
   <delegated>1</delegated>
   <node_id>1294803</node_id>
   <title>formxml_usergroup</title>
-  <code>my $txt = parseCode($$NODE{doctext});
-my $str = &quot;&quot;;
-$txt = parseLinks($txt) unless($query-&gt;param(&quot;links_noparse&quot;));
-$txt = encodeHTML($txt);
-$str.=&quot;&lt;description&gt;\n&quot;;
-$str.=$txt unless($query-&gt;param(&quot;no_descrip&quot;));
-$str.=&quot;&lt;/description&gt;\n&quot;;
-$str.=&quot;&lt;weblog&gt;\n&quot;;
-
-if($DB-&gt;isApproved($USER, $NODE))
-{
-  my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;, &quot;weblog&quot;, &quot;removedby_user=0 and weblog_id=$$NODE{node_id} order by tstamp DESC&quot;);
-
-  while(my $row = $csr-&gt;fetchrow_hashref)
-  {
-     my $n = getNodeById($$row{to_node});
-     next unless($n);
-     $str.=&quot;&lt;e2link node_id=\&quot;$$n{node_id}\&quot;&gt;$$n{title}&lt;/e2link&gt;&quot;;
-  }
-
-}
-
-$str.=&quot;&lt;/weblog&gt;\n&quot;;
-$str.=&quot;&lt;usergroup&gt;\n&quot;;
-foreach(@{$$NODE{group}})
-{
-  my $n = getNodeById($_);
-  $str.= &quot;&lt;e2link node_id=\&quot;$$n{node_id}\&quot;&gt;$$n{title}&lt;/e2link&gt;&quot;;
-}
-
-$str.=&quot;&lt;/usergroup&gt;\n&quot;;
-return $str;</code>
+  <code></code>
 </node>

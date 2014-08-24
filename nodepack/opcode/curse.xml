@@ -3,13 +3,5 @@
   <delegated>1</delegated>
   <node_id>444709</node_id>
   <title>curse</title>
-  <code>return;
-return unless isGod($USER);
-my $U = $query-&gt;param('node_id');
-getRef $U;
-
-$$U{experience} -= 10;
-$$U{karma} -= 1;
-
-updateNode($U, -1);</code>
+  <code></code>
 </node>

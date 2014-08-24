@@ -3,19 +3,5 @@
   <delegated>1</delegated>
   <node_id>2025272</node_id>
   <title>getdisabledactions</title>
-  <code># takes no arguments
-# returns a string containing letters to indicate disabled actions for the current node:
-# b(ookmark), c(ool), w(eblog), (c)a(tegory), O(verride), L(ink to disable page)
-
-# example usage:
-# my $b = htmlcode('bookmarkit' , $NODE , 'Add to bookmarks' ) unless htmlcode('getdisabledactions') =~ /b/ ;
-
-# (originally from [page actions])
-my $SETTINGS = getVars( getNode( 'Disabled actions' ,'setting' ) ) ;
-my $disabled = $$SETTINGS{ $$NODE{node_id} } . '!' . $$SETTINGS{ $$NODE{type_nodetype} } ;
-$disabled = $1 if $disabled =~ /O/ and $disabled =~ /(\w+)!/ ; # remove nodetype disables if Overridden
-# noscript option for wus: put addto widget in page actions because it needs a different op than the writeup form:
-$disabled =~ s/[baw]//g if $query -&gt; param( 'addto' ) ;
-return $disabled;
-</code>
+  <code></code>
 </node>

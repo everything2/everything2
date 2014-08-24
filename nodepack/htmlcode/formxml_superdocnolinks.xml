@@ -3,5 +3,5 @@
   <delegated>1</delegated>
   <node_id>1372590</node_id>
   <title>formxml_superdocnolinks</title>
-  <code>return htmlcode(&quot;formxml_superdoc&quot;);</code>
+  <code></code>
 </node>

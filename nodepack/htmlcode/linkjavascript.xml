@@ -3,30 +3,5 @@
   <delegated>1</delegated>
   <node_id>2100762</node_id>
   <title>linkjavascript</title>
-  <code>my ($n) = @_;
-
-unless (ref $n) {
-	unless ($n =~ /\D/) {
-	  $n = getNodeById($n);
-	} else {
-	  $n = getNode($n, 'jscript');
-	}
-}
-if ($n) {
-  return urlGen({
-  	node_id =&gt; $n-&gt;{node_id},
-  }, 1)
-	  if(($$USER{node_id} == $$n{author_user} &amp;&amp; $$USER{title} ne &quot;root&quot;) || $VARS-&gt;{useRawJavascript} );
-
-  my $filename = &quot;$$n{node_id}.$$n{contentversion}.min&quot;;
-  if($ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
-  {
-    $filename.= &quot;.gzip&quot;;
-  }
-
-  $filename .= &quot;.js&quot;;
-  return &quot;http://jscss.everything2.com/$filename&quot;;
-} else {
-  return $n;
-}</code>
+  <code></code>
 </node>

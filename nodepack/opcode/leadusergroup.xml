@@ -3,26 +3,5 @@
   <delegated>1</delegated>
   <node_id>1887815</node_id>
   <title>leadusergroup</title>
-  <code>my $uName = $query-&gt;param(&quot;new_leader&quot;);
-my $userGroup = $query-&gt;param(&quot;node_id&quot;);
-
-return unless $uName;
-return unless $userGroup;
-
-my $recUser = getNode($uName,&quot;user&quot;);
-if (!$recUser) {
-	$uName =~ s/\_/ /gs;
-	$recUser = getNode($uName, 'user');
-}
-
-return unless $recUser;
-
-return unless $APP-&gt;inUsergroup($recUser,getNodeById($userGroup));
-
-my $auth = $USER;
-$auth = -1 if $APP -&gt; getParameter($userGroup, 'usergroup_owner') == $USER -&gt; {node_id};
-$APP -&gt; setParameter($userGroup, $auth, 'usergroup_owner', $recUser -&gt; {node_id});
-
-return 1;
-</code>
+  <code></code>
 </node>

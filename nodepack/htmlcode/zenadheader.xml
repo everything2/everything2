@@ -3,16 +3,5 @@
   <delegated>1</delegated>
   <node_id>1950676</node_id>
   <title>zenadheader</title>
-  <code>my $ad_text = undef;
-
-if($APP-&gt;isGuest($USER)) 
-{
-  $ad_text = htmlcode( 'googleads' );
-  $ad_text = '&lt;div class=&quot;headerads&quot;&gt;'.$ad_text.'&lt;/div&gt;' if $ad_text;
-}else{
-  return &quot;&lt;!-- noad:settings --&gt;&quot;;
-}
-return $ad_text;
-
-</code>
+  <code></code>
 </node>

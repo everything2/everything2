@@ -3,23 +3,5 @@
   <delegated>1</delegated>
   <node_id>1118512</node_id>
   <title>ednsection_util</title>
-  <code>#Useful nodelet section in EDev Nodelet
-
-my $nl = &quot;&lt;br /&gt;\n&quot;;
-
-my $s = '';
-
-$s .= linkNodeTitle('List Nodes of Type') . ' &lt;small&gt;';
-$s .= '&lt;a href='.urlGen({node=&gt;'List Nodes of Type',type=&gt;'superdoc',filter_user=&gt;$$USER{title}}).'&gt; (yours)&lt;/a&gt;';
-#it would be neat to link to previous search type, but this isn't stored
-$s .= '&lt;/small&gt;'.$nl;
-
-$s .= linkNodeTitle('Everything Data Pages').$nl;
-
-$s .= linkNodeTitle('Everything Document Directory').$nl;
-
-$s .= linkNodeTitle('Gigantic Code Lister').$nl;
-
-return $s;
-</code>
+  <code></code>
 </node>

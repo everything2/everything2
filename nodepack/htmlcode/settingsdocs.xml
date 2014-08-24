@@ -3,58 +3,5 @@
   <delegated>1</delegated>
   <node_id>1358159</node_id>
   <title>settingsDocs</title>
-  <code>#
-#returns a navigation bar containing available settings superdocs
-#created: 2002.09.07.n6
-#updated: 2004.12.02.n4
-
-my $DISP = 'navbardisp';
-
-#settings to link to:
-#	a title by itself will just link to that node, of type 'superdoc'
-#	a hash ref is special:
-my @allSettings = (
-	'Settings',
-	'Advanced Settings'
-	) ;
-push @allSettings,
-	'Admin Settings'
-	if $APP-&gt;isEditor($USER);
-push @allSettings ,	(
-	'Nodelet Settings',
-	{$DISP=&gt;'Profile', 'node_id'=&gt;$$USER{node_id}, 'displaytype'=&gt;'edit'}
-	);
-
-
-my $lcnt = lc($$NODE{title});
-foreach(@allSettings) {
-
-	if(UNIVERSAL::isa($_,'HASH')) { 
-		#doing fancy stuff - giving specific parameters for link
-		#this is way overkill, but this allows us to easily maintain the settings list
-		my $show = (exists $_-&gt;{$DISP}) ? $_-&gt;{$DISP} : (exists $_-&gt;{'node'}) ? $_-&gt;{'node'} : (exists $_-&gt;{'node_id'}) ? 'node_id='.$_-&gt;{'node_id'} : '(Something)';
-		delete $_-&gt;{$DISP};
-		$_-&gt;{'type'}='superdoc' unless (exists $_-&gt;{'type'}) || (exists $_-&gt;{'node_id'});
-		if( ((exists $_-&gt;{'node_id'}) &amp;&amp; ($_-&gt;{'node_id'}==$$NODE{'node_id'})) || ((exists $_-&gt;{'node'}) &amp;&amp; ($_-&gt;{'node'} eq $$NODE{'title'})) ) {
-			#probably on the given node, so don't link it
-			$_ = '&lt;strong&gt;'.$show.'&lt;/strong&gt;';
-		} else {
-			#probably not on node, so link it
-			$_ = '&lt;a href='.urlGen($_).'&gt;'.$show.'&lt;/a&gt;';
-		}
-
-	} else {
-		#straight-forwards superdoc and given the title
-		if($lcnt eq lc($_)) {
-			#on this setting, so don't link it
-			$_ = '&lt;strong&gt;'.$_.'&lt;/strong&gt;';
-		} else {
-			#not on node, so link it
-			$_ = '&lt;a href='.urlGen({'node'=&gt;$_,'type'=&gt;'superdoc'}).'&gt;'.$_.'&lt;/a&gt;';
-		}
-
-	}
-}
-
-return '&lt;div class=&quot;settingsdocs&quot;&gt;&amp;ndash; &amp;nbsp;' . join(' &amp;#183; ', @allSettings) . ' &amp;nbsp; &amp;ndash;&lt;/div&gt;';</code>
+  <code></code>
 </node>

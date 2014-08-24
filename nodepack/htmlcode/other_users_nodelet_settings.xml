@@ -3,6 +3,5 @@
   <delegated>1</delegated>
   <node_id>2030307</node_id>
   <title>Other Users nodelet settings</title>
-  <code>htmlcode('varcheckbox','showuseractions','Spy on Other Users (just for fun)');
-</code>
+  <code></code>
 </node>

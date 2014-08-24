@@ -3,34 +3,5 @@
   <delegated>1</delegated>
   <node_id>1873508</node_id>
   <title>ajaxVar</title>
-  <code>my ($name, $value) = @_;
-
-my $idList = '[,\\d]*' ;
-my $nameList = '[!,\\w]*' ;
-my $nodeId = '\\d*' ;
-
-my %valid = (
-	collapsedNodelets	=&gt; $nameList ,
-	nodetrail			=&gt; $idList ,
-	current_nodelet		=&gt; $nodeId
-);
-
-my $test = $valid{$name};
-
-return 'invalid name' unless $test ;
-return 'invalid value' unless $value =~ /^($test|0)$/ or !$value ;
-
-my $oldVal = $$VARS{$name}||'0';
-
-if ($value gt '') {
-	if ($value eq '0') {
-		delete $$VARS{$name};
-	}
-	$$VARS{$name} = $value;
-}
-
-my $retval = $$VARS{$name}||'0';
-
-return &quot;{name: '$name', value: '$retval', oldval: '$oldVal'}&quot;;
-</code>
+  <code></code>
 </node>

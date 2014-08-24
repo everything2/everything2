@@ -3,16 +3,5 @@
   <delegated>1</delegated>
   <node_id>632187</node_id>
   <title>displaynltext</title>
-  <code>my ($nltitle, $title) = @_;
-
-my $CN = getNode($nltitle, 'nodelet');
-return unless $CN;
-my $str = &quot;&quot;;
-
-$str.=&quot;&lt;tr&gt;&lt;td&gt;&lt;h3&gt;$title&lt;/h3&gt;&lt;/td&gt;&lt;/tr&gt;&quot; if $title;
-
-$str.=$$CN{nltext};
-
-
-$str;</code>
+  <code></code>
 </node>

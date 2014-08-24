@@ -3,48 +3,5 @@
   <delegated>1</delegated>
   <node_id>2021983</node_id>
   <title>decode short string</title>
-  <code>use POSIX;
-
-my ($shortString) = @_;
-
-my @encodeChars = qw/
- a   c d e f   h     k   m n o     r s t u   w x   z
- A B C D E F G H   J K L M N   P Q R   T U V W X Y Z
-   2 3 4     7 8 9 
- /
- ;
-# Exclude because of similarity: I l 1
-# Exclude because of similarity: O 0
-# Exclude because of similarity: i j
-# Exclude because of similarity: v y
-# Exclude because of similarity: g p q
-# Exclude because of similarity: b 6
-# Exclude because of similarity: S 5
-
-my %decodeChars = ();
-
-for (my $charValue = 0; $charValue &lt; $#encodeChars; $charValue++) {
-  $decodeChars{$encodeChars[$charValue]} = $charValue;
-}
-
-my $decodeInt = sub {
-  my $decodeMe = shift;
-  my $encodeResult = 0;
-
-  for my $nextChar (split //, $decodeMe) {
-    $encodeResult *= $#encodeChars;
-    my $nextCharValue = $decodeChars{$nextChar};
-    return (0, &quot;Invalid char: $nextChar&quot;) if !defined $nextCharValue;
-    $encodeResult += $nextCharValue;
-  }
-
-  return ($encodeResult, undef);
-};
-
-
-my ($decodeResult, $error) = &amp;$decodeInt($shortString);
-$error = &quot;$shortString = $decodeResult&quot;;
-my $decodeNode = getNodeById($decodeResult);
-return $decodeNode;
-</code>
+  <code></code>
 </node>

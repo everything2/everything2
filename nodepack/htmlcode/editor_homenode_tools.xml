@@ -3,49 +3,5 @@
   <delegated>1</delegated>
   <node_id>2007364</node_id>
   <title>editor homenode tools</title>
-  <code>my $isRoot = $APP-&gt;isAdmin($USER);
-my $isEditor = $APP-&gt;isEditor($USER);
-my $targetVars = getVars $NODE;
-my $iph = getNode('IP Hunter', 'restricted_superdoc');
-my $nh = getNode('Node Heaven', 'superdoc');
-my $oracle = getNode('The Oracle', 'oppressor_superdoc');
-my $ipblacklist = getNode('IP Blacklist', 'restricted_superdoc');
-
-#not sports illustrated!
-my $SI = getNode(&quot;Suspension Info&quot;, &quot;superdoc&quot;);
-my $str = linkNode($SI, &quot;Suspensions&quot;, {&quot;lookup_user&quot; =&gt; $$NODE{node_id}});
-
-$str.=linkNode($nh, ' - Node Heaven Search', {'heavenuser'=&gt;$$NODE{title}})
-   if $isEditor;
-
-if($isRoot){
-  my @addrs = split /\s*,\s*/, $$targetVars{ipaddy};
-
-	$str.= &quot;\n - &quot;.linkNode($oracle, &quot;The Oracle&quot;, {the_oracle_subject =&gt; $$NODE{title}}).' - '.linkNode($NODE,'editvars',{displaytype=&gt;'editvars'}) . '&lt;br /&gt;';
-	$str.= &quot;\nIP Hunt: &quot;.linkNode($iph, 'by name', {hunt_name =&gt; $$NODE{title}});
-	if (scalar @addrs) {
-		$str.= ' or ';
-		map {
-			my $ip = encodeHTML($_);
-			$str.= &quot;&lt;br&gt;\n&quot;
-				. linkNode($iph, 'by IP', {hunt_ip =&gt; $ip})
-				. &quot; ($ip &lt;small&gt;&quot;
-				. htmlcode('ip lookup tools', $ip)
-				. &quot;&lt;/small&gt;)&quot;
-				. '&amp;nbsp;'
-				. linkNode(
-					$ipblacklist
-					, &quot;Blacklist IP?&quot;
-					, {'bad_ip' =&gt; $ip}
-				)
-				;
-		} @addrs;
-	}
-
-} elsif ($isEditor) {
-	$str.= &quot;\n - &quot;.linkNode($oracle, &quot;The Oracle&quot;, {the_oracle_subject =&gt; $$NODE{title}}) . &quot;&lt;br /&gt;\n&quot;;
-}
-
-return $str;
-</code>
+  <code></code>
 </node>

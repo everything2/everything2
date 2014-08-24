@@ -3,22 +3,5 @@
   <delegated>1</delegated>
   <node_id>2048103</node_id>
   <title>ajax publishhere</title>
-  <code>my $did = shift;
-
-my $nope = htmlcode('nopublishreason', $USER, $query -&gt; param('writeup_parent_e2node'));
-return '&lt;div&gt;'
-	.(ref $nope
-		? 'You already have a writeup here.'
-		: $nope
-	)
-	.'&lt;/div&gt;' if $nope;
-
-return $query -&gt; hidden('writeup_parent_e2node')
-	.$query -&gt; hidden('draft_id', $did)
-	.htmlcode('setwriteuptype', {node_id =&gt; $did})
-	# class makes name get changed to 'op' and form get submitted on click:
-	.'&lt;br&gt;
-	&lt;button type=&quot;button&quot; name=&quot;publishbutton&quot; value=&quot;publishdraft&quot;
-		class=&quot;wuformaction&quot;&gt;Publish&lt;/button&gt;';
-</code>
+  <code></code>
 </node>

@@ -3,16 +3,5 @@
   <delegated>1</delegated>
   <node_id>753955</node_id>
   <title>createdby</title>
-  <code>return if $APP-&gt;isGuest($USER);
-return unless $$NODE{type}{title} eq 'e2node';
-
-my $crby = undef;
-$crby = $$NODE{createdby_user} || $$NODE{author_user} || 0;
-$crby=getNodeById($crby);
-
-my $text = &quot;&quot;;
-$text = $$VARS{hideauthore2node} ? 'anonymous' : '' ;
-'&lt;div class=&quot;createdby&quot;  title=&quot;Created on '.htmlcode('parsetimestamp', $$NODE{createtime}, 4).'&quot;&gt;'.(
-$crby ? 'created by '.linkNode($crby,$text,{lastnode_id=&gt;0}) : '(creator unknown)'
-).'&lt;/div&gt;';</code>
+  <code></code>
 </node>

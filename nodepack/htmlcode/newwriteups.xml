@@ -3,53 +3,5 @@
   <delegated>1</delegated>
   <node_id>273</node_id>
   <title>newwriteups</title>
-  <code>my ($limit) = @_;
-$limit ||= 15;
-#$limit = int($$VARS{newnodes_limit}) 
-#  if (exists $$VARS{newnodes_limit});
-
-my $str = '&lt;table width=&quot;100%&quot; border=&quot;0&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot;&gt;';
-
-my $qry = &quot;SELECT parent_e2node, (select title from node where node_id=writeup.wrtype_writeuptype limit 1) as type_title, writeup_id, (select author_user from node where node_id=writeup.writeup_id limit 1) as author_user, (select title from node where node_id=writeup.parent_e2node limit 1) as parent_title FROM writeup where notnew=0 ORDER BY writeup.publishtime DESC LIMIT $limit &quot;;
-
-my $csr = $Everything::dbh-&gt;prepare($qry);
-
-$csr-&gt;execute or return &quot;newwriteups: can't get&quot;;
-
-my $count=0;
-my @colors = ('#CCCC99');
-
-
-while(my $N = $csr-&gt;fetchrow_hashref) {
- 
-	my $clr = $colors[$count++%int(@colors)];
-	my $st = $$N{parent_title};
-	my $len = 24;
-	my @words = split ' ', $st;
-
-	foreach (@words) {
-		if(length($_) &gt; $len) {
-			$_ = substr($st, 0, $len);
-			$_ .= '...';
-		}
-	}
-
-	$st = join ' ', @words;
-
-	$str .= '&lt;tr bgcolor=&quot;'.$clr.'&quot;&gt;&lt;td class=&quot;oddrow&quot; align=&quot;center&quot; colspan=&quot;2&quot;&gt;&lt;strong&gt;'.linkNode($$N{author_user}, '', {lastnode_id=&gt;undef});
-
-        #if($rooter}
-        #{
-        #  $str .='(h?)';
-        #}
-
-        $str .= '&lt;/strong&gt;&lt;/td&gt;';
-	$str .= '&lt;/tr&gt;&lt;tr&gt;&lt;td align=&quot;left&quot;&gt;'.linkNode($$N{parent_e2node}, $st, {lastnode_id=&gt;undef}) 
-	.'&lt;/td&gt;&lt;td align=&quot;right&quot;&gt;&lt;small&gt;('.linkNode($$N{writeup_id}, $$N{type_title},{lastnode_id=&gt;undef}).')&lt;/small&gt;';
-	$str.= &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
-}
-$csr-&gt;finish;
-$str.=&quot;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;\n&quot;;
-
-return $str;</code>
+  <code></code>
 </node>

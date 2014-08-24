@@ -3,11 +3,5 @@
   <delegated>1</delegated>
   <node_id>1203049</node_id>
   <title>lockaccount</title>
-  <code>return unless(isGod($USER));
-
-my $uid = $query-&gt;param('lock_id');
-return unless $uid;
-htmlcode('lock user account', $uid);
-
-</code>
+  <code></code>
 </node>

@@ -3,33 +3,5 @@
   <delegated>1</delegated>
   <node_id>1129970</node_id>
   <title>episection_ces</title>
-  <code>my (undef,undef,undef,$mday,$mon,$year) = localtime(time);
-$year += 1900; #stupid Perl
-my @months = qw(January February March April May June July August September October November December);
-my $curLog = '[Editor Log: '.$months[$mon].&quot; $year]&quot;;
-
-# Link The Oracle sent with the username iff displaying a homenode
-my $oraclecode = &quot;&quot;;
-$oraclecode = $query -&gt; li(
-	linkNode(getNode('The Oracle', 'oppressor_superdoc')
-		, &quot;The Oracle&quot;
-		, {the_oracle_subject =&gt; $$NODE{title}}
-	))
-	if $$NODE{type}{title} eq 'user';
-
-return parseLinks(&quot;\t\t&lt;ul&gt;
-\t\t\t&lt;li&gt;[Drafts for review[superdoc]]&lt;/li&gt;
-\t\t\t&lt;li&gt;[25] | [Everything New Nodes]&lt;/li&gt;
-\t\t\t&lt;li&gt;[E2 Nuke Request]&lt;/li&gt;
-\t\t\t&lt;li&gt;[Nodeshells Marked For Destruction|Nodeshells]&lt;/li&gt;
-\t\t\t&lt;li&gt;[Recent Node Notes]&lt;/li&gt;
-\t\t\t&lt;li&gt;[Your insured writeups]&lt;/li&gt;
-\t\t\t&lt;li&gt;&quot;.
-	linkNode(getNode(&quot;Node Parameter Editor&quot;,&quot;oppressor_superdoc&quot;),&quot;Parameter Editor&quot;, {for_node =&gt; $$NODE{node_id}})
-		.&quot;&lt;/li&gt;
-\t\t\t&lt;li&gt;[Blind Voting Booth]&lt;/li&gt;
-\t\t\t&lt;li&gt;[usergroup discussions|Group discussions]&lt;/li&gt;
-\t\t\t&lt;li&gt;$curLog&lt;/li&gt;
-$oraclecode
-\t\t&lt;/ul&gt;&quot;);</code>
+  <code></code>
 </node>

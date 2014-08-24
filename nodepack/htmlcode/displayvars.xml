@@ -3,28 +3,5 @@
   <delegated>1</delegated>
   <node_id>176</node_id>
   <title>displayvars</title>
-  <code>my $SETTINGS = getVars $NODE;
-my $str = '';
-my ($keyclr, $valclr) = ('#CCCCFF', '#DEDEFF');
-
-
-my @skeys = keys %$SETTINGS;
-if(not @skeys) { 
-	return &quot;&lt;em&gt;the node's settings are empty&lt;/em&gt;&lt;br&gt;\n&quot;;
-}
-
-$str .= scalar(@skeys).' key/value pair';
-$str .= 's' unless scalar(@skeys)==1;
-$str .= ':
-';
-
-@skeys = sort {$a cmp $b} @skeys;
-
-$str.=&quot;&lt;table width=\&quot;100%\&quot; cellpadding=\&quot;1\&quot; cellspacing=\&quot;1\&quot; border=\&quot;0\&quot;&gt;\n&quot;;
-$str.=&quot;&lt;TR&gt;&lt;TH&gt;Setting&lt;/TH&gt;&lt;TH&gt;Value&lt;/TH&gt;&lt;/TR&gt;\n&quot;;
-foreach (@skeys) {
-	$str.= '&lt;tr&gt;&lt;td class=&quot;setting&quot; bgcolor=&quot;'.$keyclr.'&quot;&gt;'.$_.'&lt;/td&gt;&lt;td class=&quot;setting&quot; bgcolor=&quot;'.$valclr.'&quot;&gt;'.encodeHTML($$SETTINGS{$_}, 1).&quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;  
-}
-$str .=&quot;&lt;/table&gt;\n&quot;;
-</code>
+  <code></code>
 </node>

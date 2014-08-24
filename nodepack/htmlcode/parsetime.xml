@@ -3,24 +3,5 @@
   <delegated>1</delegated>
   <node_id>45</node_id>
   <title>parsetime</title>
-  <code># [{parsetime:FIELD}]
-# Parses out a datetime field into a more human-readable form
-#
-
-
-my ($field)=@_;
-
-my ($date, $time) = split / /,$$NODE{$field};
-
-my ($hrs, $min, $sec) = split /:/, $time;
-my ($yy, $mm, $dd) = split /-/, $date;
-
-return '&lt;i&gt;never&lt;/i&gt;' unless (int($yy) and int($mm) and int($dd));
-
-use Time::Local;
-my $epoch_secs=timelocal( $sec, $min, $hrs, $dd, $mm-1, $yy);
-my $nicedate =localtime ($epoch_secs);
-
-$nicedate =~ s/(\d\d):(\d\d):(\d\d).*$/$yy at $1:$2:$3/;
-$nicedate;</code>
+  <code></code>
 </node>

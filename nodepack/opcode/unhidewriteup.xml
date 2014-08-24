@@ -3,17 +3,5 @@
   <delegated>1</delegated>
   <node_id>1217041</node_id>
   <title>unhidewriteup</title>
-  <code>return unless $APP-&gt;isEditor($USER);
-
-if($query-&gt;param('hidewriteup'))
-{
-	my $writeup = int($query-&gt;param('hidewriteup'));
-	$DB -&gt; sqlUpdate('newwriteup', { notnew=&gt;'0' }, &quot;node_id=$writeup&quot;);
-	getRef $writeup;
-	$$writeup{notnew} = 0;
-	$DB -&gt; updateNode($writeup, -1);
-	htmlcode('addNodenote', $writeup, &quot;Unhidden by $$USER{title}&quot;);
-}
-return &quot;&quot;;
-</code>
+  <code></code>
 </node>

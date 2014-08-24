@@ -3,11 +3,5 @@
   <delegated>1</delegated>
   <node_id>1116965</node_id>
   <title>vitsection_nodeutil</title>
-  <code>my $str = &quot;&lt;ul&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Node Tracker').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('E2 Source Code Formatter|Source Code Formatter').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Text Formatter').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;/ul&gt;&quot;;
-
-$str;</code>
+  <code></code>
 </node>

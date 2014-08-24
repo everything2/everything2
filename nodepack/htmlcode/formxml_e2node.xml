@@ -3,12 +3,5 @@
   <delegated>1</delegated>
   <node_id>1252150</node_id>
   <title>formxml_e2node</title>
-  <code>my $grp = $$NODE{group};
-my $str = &quot;&quot;;
-$str.= htmlcode(&quot;xmlfirmlinks&quot;, &quot;$$NODE{node_id}&quot;);
-$str.= htmlcode(&quot;xmlwriteup&quot;,&quot;$_&quot;) foreach(@$grp);
-$str.= &quot;&lt;softlinks&gt;\n&quot;.htmlcode(&quot;softlink&quot;, &quot;xml&quot;).&quot;&lt;/softlinks&gt;\n&quot;;
-$str.= &quot;&lt;nodelock&gt;&quot;.encodeHTML(htmlcode('nopublishreason', $USER, $NODE)).&quot;&lt;/nodelock&gt;&quot;;
-$str.= htmlcode(&quot;xmlnodesuggest&quot;);
-return $str;</code>
+  <code></code>
 </node>

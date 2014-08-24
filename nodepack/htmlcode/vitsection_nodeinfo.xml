@@ -3,13 +3,5 @@
   <delegated>1</delegated>
   <node_id>1116973</node_id>
   <title>vitsection_nodeinfo</title>
-  <code>my $str=&quot;&lt;ul&gt;&quot;;
-
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('E2 HTML Tags').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('HTML symbol reference').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Using Unicode on E2').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Reference Desk').&quot;&lt;/li&gt;&quot;;
-
-$str.=&quot;&lt;/ul&gt;&quot;;
-$str;</code>
+  <code></code>
 </node>

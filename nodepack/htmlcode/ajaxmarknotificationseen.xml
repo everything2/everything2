@@ -3,27 +3,5 @@
   <delegated>1</delegated>
   <node_id>2028126</node_id>
   <title>ajaxMarkNotificationSeen</title>
-  <code>my $notified_id = shift;
-return 'invalid argument' unless $notified_id =~ /^\d+$/;
-
-my $for_user =
-$DB-&gt;sqlSelect(&quot;user_id&quot;
-		, &quot;notified&quot;
-		, &quot;notified_id = $notified_id&quot;
-	);
-my $isPersonalNotification = ($for_user == $$USER{user_id});
-
-if ($isPersonalNotification) {
-	$DB-&gt;sqlUpdate(&quot;notified&quot;,{is_seen =&gt; 1}, &quot;notified_id = $notified_id&quot;);
-} else {
-	$DB-&gt;sqlInsert(&quot;notified&quot;,
-	{
-		is_seen =&gt; 1
-		, -user_id =&gt; $$USER{user_id}
-		, -reference_notified_id =&gt; $notified_id
-		, -notified_time =&gt; 'now()'
-	}
-	);
-}
-</code>
+  <code></code>
 </node>

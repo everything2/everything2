@@ -3,26 +3,5 @@
   <delegated>1</delegated>
   <node_id>2052561</node_id>
   <title>showcurrentpoll</title>
-  <code>my $inNodelet = shift;
-
-my @POLL = getNodeWhere({poll_status =&gt; 'current'}, 'e2poll');
-return 'No current poll.' unless @POLL;
-
-my $str = htmlcode('showpoll', $POLL[0]);
-
-$str .= $inNodelet
-	? '&lt;div class=&quot;nodeletfoot&quot;&gt;'
-	: '&lt;p align=&quot;right&quot; class=&quot;morelink&quot;&gt;';
-
-$str .= parseLinks('[Everything Poll Archive[superdoc]|Past polls]
-	| [Everything Poll Directory[superdoc]|Future polls]
-	| [Everything Poll Creator[superdoc]|New poll]
-	&lt;br&gt; [Polls[by Virgil]|About polls]');
-
-$str .= $inNodelet
-	? '&lt;/div&gt;'
-	: '&lt;/p&gt;';
-
-return $str;
-</code>
+  <code></code>
 </node>

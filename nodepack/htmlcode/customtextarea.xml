@@ -3,32 +3,5 @@
   <delegated>1</delegated>
   <node_id>1170009</node_id>
   <title>customtextarea</title>
-  <code>#This takes one of two inputs.
-#If it takes a zero or is blank, then the style is going to be in &quot;#rows,#cols&quot; 
-# format for the HTMLcode formatting
-#If it takes a one, it will be in 'rows=&quot;#&quot; cols=&quot;#&quot;' format
-
-my ($dispopt) = @_;
-$dispopt ||= 0;
-
-my $rowval = 20;
-my $colval = 60;
-
-if($$VARS{textareaSize} == 1)
-{
-  $rowval = 30;
-  $colval = 80;
-}elsif($$VARS{textareaSize} == 2)
-{
-  $rowval = 50;
-  $colval = 95
-}
-
-if (wantarray) {
-   return (-rows =&gt; $rowval, -cols =&gt; $colval);
-} else {
-   return 'rows=&quot;'.$rowval.'&quot; cols=&quot;'.$colval.'&quot; ' if($dispopt == 1);
-   return &quot;$rowval,$colval&quot;; #if($dispopt == 0);
-}
-</code>
+  <code></code>
 </node>

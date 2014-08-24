@@ -3,42 +3,5 @@
   <delegated>1</delegated>
   <node_id>2008803</node_id>
   <title>confirmop</title>
-  <code>my $N = $query -&gt; param('like_id') || $query -&gt; param( 'cool_id' ) || $query -&gt; param( 'ins_id' ) || $query -&gt; param('cure_user_id');
-my $node = undef; $node = getNodeById( $N ) if $N;
-my $author = undef; $author = getNode( $$node{ author_user } ) if $node ;
-$author = $$author{ title } if $author ;
-
-my %opcodes = (
-	cool =&gt; &quot;cool $author&quot;.&quot;'s writeup&quot; ,
-	uncoolme =&gt; 'uncool this node',
-	insure =&gt; &quot;remove the insurance on $author&quot;.&quot;'s writeup&quot;,
-	ilikeit =&gt; &quot;send $author a message saying you like their work&quot;,
-	cure_infection =&gt; &quot;remove ${author}'s infection&quot;,
-	nuke =&gt; &quot;delete this $$NODE{type}{title}&quot;,
-	nukedraft =&gt; &quot;delete this draft&quot;,
-	remove =&gt; &quot;remove this writeup and return it to draft status&quot;
-	, leavegroup =&gt; 'leave this usergroup'
-	, usernames =&gt; 'smite ' . $query -&gt; escapeHTML ($query -&gt; param('confirmop'))
-) ;
-
-my $str = '
-&lt;fieldset&gt;&lt;legend&gt;Confirm&lt;/legend&gt;
-	&lt;p&gt;Do you really want to '.(
-	$opcodes{ $query -&gt; param( 'confirmop' ) } ||
-	$opcodes{ $query -&gt; param( 'notanop' ) } ||
-	'do this'
-	).'?&lt;/p&gt;' ;
-
-my $paramname = $query -&gt; param( 'notanop' ) || 'op' ;
-my $paramvalue = $query -&gt; param( 'confirmop' ) ;
-$query -&gt; delete( 'confirmop' , 'op' , 'notanop' ) ;
-$str .= qq'&lt;button name=&quot;$paramname&quot; value=&quot;$paramvalue&quot; type=&quot;submit&quot;&gt;OK&lt;/button&gt;' ;
-foreach ( $query -&gt; param ){
-	$str .= $query -&gt; hidden( $_ ) if $query -&gt; param( $_ ) ;
-}
-$str .= '
-&lt;/fieldset&gt;' ;
-
-htmlcode( 'widget' , $str , 'form' , '' , { showwidget =&gt; '' } ) ;
-</code>
+  <code></code>
 </node>

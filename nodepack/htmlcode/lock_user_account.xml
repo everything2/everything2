@@ -3,23 +3,5 @@
   <delegated>1</delegated>
   <node_id>2027663</node_id>
   <title>lock user account</title>
-  <code>my ($uid) = @_;
-getRef $uid;
-return unless $uid;
-return unless($$uid{type_nodetype} == getId(getType('user')));
-$$uid{acctlock} = $$USER{user_id};
-
-$APP-&gt;securityLog(getNode(&quot;lockaccount&quot;,&quot;opcode&quot;), $USER, &quot;$$uid{title}'s account was locked by $$USER{title}&quot;);
-
-# Delete all public messages from locked user
-$DB-&gt;sqlDelete('message', &quot;for_user = 0 AND author_user = $$uid{user_id}&quot;);
-
-# revert all review drafts to 'findable' status
-# (they won't actually be findable unless/until the account is unlocked)
-$DB -&gt; sqlUpdate('draft JOIN node ON draft_id=node_id'
-	, {publication_status =&gt; getId(getNode('findable', 'publication_status'))}
-	, &quot;node.author_user = $$uid{node_id} AND
-		draft.publication_status = &quot; . getId(getNode('review', 'publication_status')));
-
-updateNode($uid, -1);</code>
+  <code></code>
 </node>

@@ -3,20 +3,5 @@
   <delegated>1</delegated>
   <node_id>1328318</node_id>
   <title>flushcbox</title>
-  <code>return unless $APP-&gt;isChanop($USER); # Specifically include gods
-my $currentRoomId = int($$USER{in_room});
-my $currentRoom = getNode($currentRoomId);
-my $currentRoomName;
-if (!$currentRoom &amp;&amp; $currentRoomId) {
-  $currentRoomName = &quot;in expired room (#$currentRoomId)&quot;;
-} elsif (!$currentRoom) {
-  $currentRoomName = &quot;outside&quot;;
-} else {
-  $currentRoomName = &quot;in room '$$currentRoom{title}'&quot;;
-}
-
-$APP-&gt;securityLog(getNode('flushcbox', 'opcode'), $USER, &quot;Chat $currentRoomName flushed.&quot;);
-
-$DB-&gt;sqlDelete(&quot;message&quot;, &quot;for_user = 0 AND room = $currentRoomId&quot;);
-return 1;</code>
+  <code></code>
 </node>

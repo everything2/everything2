@@ -3,21 +3,5 @@
   <delegated>1</delegated>
   <node_id>1140565</node_id>
   <title>varcheckboxinverse</title>
-  <code>my ($k, @title) = @_;
-
-#inverse of varcheckbox
-#	checked   : $$VARS doesn't exist
-#	unchecked : $$VARS is 1
-
-return if ($APP-&gt;isGuest($USER)) || ($$USER{title} eq 'everyone');
-my $title = join ', ', @title;
-$title ||= $k;
-
-if($query-&gt;param('unsetvar_'.$k)) {
-	delete $$VARS{$k};
-} elsif($query-&gt;param('sexisgood')) {
-	$$VARS{$k} = 1;
-}
-
-$query-&gt;checkbox('unsetvar_'.$k, !$$VARS{$k}, '1', $title);</code>
+  <code></code>
 </node>

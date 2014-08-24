@@ -3,56 +3,5 @@
   <delegated>1</delegated>
   <node_id>1164326</node_id>
   <title>usercheck</title>
-  <code>my ($givenTitle) = @_;
-
-return if($$NODE{type_nodetype} != getId(getType('e2node'))
-   &amp;&amp; !defined $givenTitle);
-
-my $cf = getVars(getNode('chatterbox forward', 'setting'));
-my $checkedTitle = $$NODE{title};
-$checkedTitle = $givenTitle if defined $givenTitle;
-my @grp = getNodeWhere({ 'title' =&gt; $checkedTitle});
-my $retstr = '';
-return $retstr unless(@grp &gt; 1);
-
-my @outstr = ();
-foreach my $n (@grp)
-{
-   next if($$n{node_id} == $$NODE{node_id});
-   next if(defined $givenTitle &amp;&amp; $$n{type}{title} eq 'e2node');
-   next if(defined $givenTitle &amp;&amp; $$n{type}{title} eq 'node_forward');
-   next unless canReadNode($USER, $n) and $$n{type}{title} ne 'draft';
-   my $tmp = linkNode($n, $$n{type}{title});
-
-   if($$n{type}{title} eq 'user')
-   {
-
-    if($$cf{lc($$n{title})})
-    {
-      my $ptr = $$cf{lc($$n{title})};
-      my $tousr = getNode($ptr, 'user')||getNode($ptr, 'usergroup');
-
-      #this will not work if the user has both _ and &quot; &quot; in their nick, but oh well
-
-      unless($tousr)
-      {  $ptr =~ s/_/ /g;
-         $tousr = getNode($ptr, 'user');
-      }  
-
-      $tmp .= ' (message alias for '.linkNode($tousr).')';
-    }
-
-   }
-
-   push @outstr, $tmp;
-}
-
-return $retstr unless @outstr &gt; 0;
-
-$retstr = '(&quot;'.$checkedTitle.'&quot; is also a: ';
-$retstr .= join(', ',@outstr);
-my $id = &quot;isalso&quot;;
-$id .= &quot;forward&quot; if defined $givenTitle;
-return &quot;\t&quot;.'&lt;div class=&quot;topic&quot; id=&quot;' . $id . '&quot;&gt;'.$retstr.'.)&lt;/div&gt;';
-</code>
+  <code></code>
 </node>

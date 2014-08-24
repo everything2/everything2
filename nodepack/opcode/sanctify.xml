@@ -1,31 +1,7 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1960821</node_id>
   <title>sanctify</title>
-  <code>return if ($$VARS{GPoptout});
-
-my $minLevel = 11;
-my $Sanctificity = 10;
-return unless $APP-&gt;getLevel($USER)&gt;= $minLevel;
-
-my $U = $query-&gt;param('node_id');
-$U = getNode($query-&gt;param(&quot;node&quot;), 'user') if ($query-&gt;param('node'));
-getRef $U;
-
-return unless $$U{type}{title} eq 'user';
-
-        $$U{sanctity} += 1;
-        updateNode($U, -1);
-
-        adjustGP($U, $Sanctificity);
-        adjustGP($USER, -$Sanctificity);
-        $$VARS{oldGP} = $$USER{GP};
-
-$APP-&gt;securityLog(getNode('Sanctify user', 'superdoc'), $USER, &quot;$$USER{title} sanctified $$U{title} with $Sanctificity GP.&quot;);
-
-	htmlcode('sendPrivateMessage',{
-		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
-		'recipient_id' =&gt; $$U{user_id},
-		'message' =&gt; &quot;Whoa! You&#8217;ve been [Sanctify|sanctified]!&quot;
-	});</code>
+  <code></code>
 </node>

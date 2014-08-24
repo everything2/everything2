@@ -3,23 +3,5 @@
   <delegated>1</delegated>
   <node_id>1180774</node_id>
   <title>nodenote</title>
-  <code>return unless $APP-&gt;isEditor($USER);
-
-my $notetext = $query-&gt;param('notetext'); 
-my $notefor = int($query-&gt;param('notefor'));
-
-my $NOTEFOR = getNodeById($notefor);
-return unless $NOTEFOR;
-
-#Strip dynamic URLs
-$notetext =~ s/\&lt;.*?img.*?src[\s\&quot;\']*?\=[\s\&quot;\']*?.*?\?.*?\&gt;//g;
-
-foreach($query-&gt;param) {
-	if($_ =~ /^deletenote\_(\d+)$/) {
-		$DB-&gt;sqlDelete('nodenote', &quot;nodenote_id=$1&quot;);
-                $APP-&gt;securityLog(getNode(&quot;Recent Node Notes&quot;,&quot;oppressor_superdoc&quot;), $USER, &quot;removed note on [$$NOTEFOR{title}]&quot;);
-	}
-}
-
-htmlcode('addNodenote', $notefor, $notetext, $USER) if $notetext;</code>
+  <code></code>
 </node>

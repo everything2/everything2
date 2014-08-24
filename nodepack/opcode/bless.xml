@@ -3,31 +3,5 @@
   <delegated>1</delegated>
   <node_id>444704</node_id>
   <title>bless</title>
-  <code>return unless isGod($USER);
-my $U = $query-&gt;param('bless_id');
-$U = getNode($query-&gt;param(&quot;node&quot;), 'user') if ($query-&gt;param('node'));
-getRef $U;
-
-return unless $$U{type}{title} eq 'user';
-
-my $gp = int($query-&gt;param('experience')); # I have no idea where this parameter might get called from, so I'm leaving it in place to be on the safe side.
-$gp ||= 10;
-
-$$U{gp} += $gp;
-$$U{karma} += 1;
-
-htmlcode('achievementsByType','karma');
-# htmlcode('achievementsByType','experience');
-
-$APP-&gt;securityLog(getNode(&quot;bless&quot;,&quot;opcode&quot;), $USER, &quot;$$U{title} was blessed 10GP by $$USER{title}&quot;);
-
-	htmlcode('sendPrivateMessage',{
-		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
-		'recipient_id' =&gt; $$U{user_id},
-		'message' =&gt; &quot;Whoa, you&amp;rsquo;ve just been [bless|blessed]!&quot;
-	});
-
-updateNode($U, -1);
-
-adjustGP($U, $gp);</code>
+  <code></code>
 </node>
