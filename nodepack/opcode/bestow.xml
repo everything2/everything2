@@ -3,16 +3,5 @@
   <delegated>1</delegated>
   <node_id>444712</node_id>
   <title>bestow</title>
-  <code>return unless isGod($USER);
-my $U = $query-&gt;param('bestow_id');
-getRef $U;
-
-$$U{votesleft} += 25;
-$$U{karma} += 1;
-
-$APP-&gt;securityLog(getNode(&quot;bestow&quot;,&quot;opcode&quot;), $USER, &quot;$$U{title} was given 25 votes by $$USER{title}&quot;);
-
-updateNode($U, -1);
-$U = getNodeById(getId($U), 'force');
-if (getId($U) == getId($USER)) { $USER = $U ; }</code>
+  <code></code>
 </node>

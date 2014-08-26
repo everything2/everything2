@@ -3,26 +3,5 @@
   <delegated>1</delegated>
   <node_id>1930843</node_id>
   <title>addNotification</title>
-  <code>my ($notification_id, $user_id, $args) = @_;
-
-use JSON;
-
-# get notification id if we were passed a name:
-$notification_id = getNode($notification_id, 'notification')-&gt;{node_id}
-	if $notification_id =~ /\D/;
-
-$user_id ||= $notification_id;
-
-# turn args to string if we were passed a hashref:
-$args = to_json($args) if(UNIVERSAL::isa($args,'HASH'));
-
-$DB-&gt;sqlInsert(
-	'notified', {
-		notification_id =&gt; $notification_id,
-		user_id =&gt; $user_id,
-		args =&gt; $args,
-		-notified_time =&gt; 'now()'
-	});
-
-return 1;</code>
+  <code></code>
 </node>

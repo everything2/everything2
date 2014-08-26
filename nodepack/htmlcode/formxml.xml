@@ -3,13 +3,5 @@
   <delegated>1</delegated>
   <node_id>1251543</node_id>
   <title>formxml</title>
-  <code>my $ntype = getNodeById($$NODE{type_nodetype});
-return &quot;&quot; unless $ntype;
-
-my $hcode = &quot;formxml_&quot;.$$ntype{title};
-return &quot;&lt;info&gt;No valid specific conversion for this type&lt;/info&gt;\n&quot; unless(getNode($hcode,&quot;htmlcode&quot;));
-
-return htmlcode($hcode);
-
-</code>
+  <code></code>
 </node>

@@ -1,13 +1,7 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1926113</node_id>
   <title>changeusergroup</title>
-  <code># Changes which usergroup is selected for the Usergroup Writeups nodelet.
-
-if($query-&gt;param('newusergroup')) {
-	my $newUsergroup = $query-&gt;param('newusergroup');
-	$$VARS{nodeletusergroup}=$newUsergroup;
-}
-
-return 1;</code>
+  <code></code>
 </node>

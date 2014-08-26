@@ -3,41 +3,5 @@
   <delegated>1</delegated>
   <node_id>1150387</node_id>
   <title>firmlink</title>
-  <code>return unless $APP-&gt;isEditor($USER);
-
-return unless($query-&gt;param('firmlink_to_node'));
-return unless htmlcode('verifyRequestHash', 'firmlink');
-
-my ($firmtarget, $firmtargetname);
-$firmtargetname = $query-&gt;param('firmlink_to_node');
-
-foreach(qw/superdoc document superdocnolinks e2node user/)
-{
-  $firmtarget = getNode($firmtargetname, $_);
-  last if $firmtarget;
-}
-my $firmfrom = getNodeById($query-&gt;param('firmlink_from_id'));
-my $firmtypelink = getNode(&quot;firmlink&quot;,&quot;linktype&quot;);
-my $firmtype = $$firmtypelink{node_id} if $firmtypelink;
-my $firmlink_note_text = $query-&gt;param('firmlink_note_text');
-
-return unless $firmtarget &amp;&amp; $firmfrom &amp;&amp; $firmtype;
-return if($$firmtarget{node_id} == $$firmfrom{node_id});
-
-$DB-&gt;sqlInsert(&quot;links&quot;, 
-{
-  &quot;linktype&quot; =&gt; $firmtype, 
-  &quot;to_node&quot; =&gt; $$firmtarget{node_id},
-  &quot;from_node&quot; =&gt; $$firmfrom{node_id}
-});
-
-$DB-&gt;sqlInsert(&quot;firmlink_note&quot;,
-{
-  &quot;to_node&quot; =&gt; $$firmtarget{node_id},
-  &quot;from_node&quot; =&gt; $$firmfrom{node_id},
-  &quot;firmlink_note_text&quot; =&gt; $firmlink_note_text
-}) if $firmlink_note_text ne &quot;&quot;;
-
-return 1;
-</code>
+  <code></code>
 </node>

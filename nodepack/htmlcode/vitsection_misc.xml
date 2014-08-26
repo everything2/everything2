@@ -3,23 +3,5 @@
   <delegated>1</delegated>
   <node_id>1116980</node_id>
   <title>vitsection_misc</title>
-  <code>my $str=&quot;&lt;ul&gt;&quot;;
-
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Everything User Poll').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('The Everything2 Voting/Experience System').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Chatterlight').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('E2 Gift Shop').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Everything Quote Server').&quot;&lt;/li&gt;&quot;;
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('The Registries').&quot;&lt;/li&gt;&quot;;
-if (!$APP-&gt;isGuest($USER) &amp;&amp; $APP-&gt;getLevel($USER)&gt;2) {
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('Do You C! What I C?').&quot;&lt;/li&gt;&quot;;
-}
-if (!$APP-&gt;isGuest($USER) &amp;&amp; $APP-&gt;getLevel($USER)&gt;2) {
-$str.=&quot;&lt;li&gt;&quot;.linkNodeTitle('The Recommender').&quot;&lt;/li&gt;&quot;;
-}
-
-
-$str.=&quot;&lt;/ul&gt;&quot;;
-
-$str;</code>
+  <code></code>
 </node>

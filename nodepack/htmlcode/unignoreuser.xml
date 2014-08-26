@@ -3,31 +3,5 @@
   <delegated>1</delegated>
   <node_id>1985969</node_id>
   <title>unignoreUser</title>
-  <code>my ($uname) = @_;
-
-my $U = getNode($uname, 'user');
-$U ||= getNode($uname, 'usergroup');
-if ($U) {
-	return if $$U{title} eq 'EDB';
-	unless ($DB-&gt;sqlSelect('*',
-                         'messageignore',
-                         &quot;messageignore_id=$$USER{node_id}
-                          AND ignore_node=$$U{node_id}&quot;)) {
-		return 'not yet ignoring '.$$U{title};
-	}
-	else {
-		$DB-&gt;sqlDelete('messageignore',
-                   &quot;messageignore_id=$$USER{node_id}
-                    AND ignore_node=$$U{node_id}&quot;);
-	}
-} 
-else {
-       $uname = encodeHTML($uname);
-	return &quot;&lt;strong&gt;$uname&lt;/strong&gt; doesn't seem&quot;
-         .&quot; to exist on the system!&quot; unless $U;
-}
-
-$query-&gt;param('DEBUGignoreUser', 'tried to unignore '.$$U{title});
-return &quot;$$U{title} unignored&quot;;
-</code>
+  <code></code>
 </node>

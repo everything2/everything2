@@ -3,33 +3,5 @@
   <delegated>1</delegated>
   <node_id>2009167</node_id>
   <title>make node sane</title>
-  <code># Expects single parameter, node_id or node ref
-# returns undef if unable to make node sane
-# returns node if successful
-my ($crazy_node) = @_;
-getRef($crazy_node);
-return undef unless $crazy_node;
-
-# In case this is a 'light' copy of the node, we get a complete copy
-#  so we don't try to create unnecessary rows
-my $crazy_node_id = $$crazy_node{node_id};
-my $crazy_node_copy = getNodeById($crazy_node_id);
-return undef unless $crazy_node_copy;
-
-# Code borrowed from insertNode() in NodeBase.pm
-my $tableArray = $$crazy_node_copy{type}{tableArray};
-
-# Check for document_id, writeup_id, etc. and insert row
-#  into relevant table if the table id is missing.
-foreach my $table (@$tableArray)
-{
-  my $table_id = $table . &quot;_id&quot;;
-  $DB-&gt;sqlInsert($table, { $table_id =&gt; $crazy_node_id })
-    unless $$crazy_node_copy{$table_id};
-}
-
-# Now that node is sane, get one last fresh copy
-my $sane_node = getNodeById($crazy_node_id, 'force');
-$sane_node;
-</code>
+  <code></code>
 </node>

@@ -3,15 +3,5 @@
   <delegated>1</delegated>
   <node_id>1251623</node_id>
   <title>xmlheader</title>
-  <code>my $str.=&quot;&quot;;
-$str .= &quot;&lt;node node_id=\&quot;$$NODE{node_id}\&quot; createtime=\&quot;&quot;.
-	($$NODE{publishtime}||$$NODE{createtime})
-	.&quot;\&quot; type_nodetype=\&quot;$$NODE{type_nodetype}\&quot;&quot;.htmlcode(&quot;schemalink&quot;, &quot;$$NODE{type_nodetype}&quot;).&quot;&gt;\n&quot;;
-my $ntype = getNodeById($$NODE{type_nodetype});
-$str.=&quot;&lt;type&gt;&quot;.encodeHTML($$ntype{title}).&quot;&lt;/type&gt;\n&quot; if $ntype;
-$str.=&quot;&lt;title&gt;&quot;.encodeHTML($$NODE{title}).&quot;&lt;/title&gt;\n&quot;;
-my $crby = $$NODE{createdby_user} || $$NODE{author_user} || 0;
-$crby=getNodeById($crby);
-$str.=&quot;&lt;author user_id=\&quot;$$crby{node_id}\&quot;&gt;&quot;.encodeHTML($$crby{title}).&quot;&lt;/author&gt;\n&quot;;
-return $str;</code>
+  <code></code>
 </node>

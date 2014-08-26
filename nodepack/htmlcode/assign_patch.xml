@@ -3,45 +3,5 @@
   <delegated>1</delegated>
   <node_id>1991447</node_id>
   <title>assign_patch</title>
-  <code>#This should only be called from patch display page --[Swap]
-my ($patch_id) = @_;
-
-$patch_id ||= $NODE -&gt; {node_id};
-
-my $PATCH = getNodeById($patch_id);
-
-my $assigned_to = $PATCH -&gt; {assigned_to};
-
-#Process changes, if any
-if(isGod($USER) ){
-  my $new_assign = $query -&gt; param('assigned_to');
-  if( $new_assign and $new_assign != $assigned_to ){
-    $PATCH -&gt; {assigned_to} = $new_assign;
-    updateNode($PATCH,-1);
-  }
-}
-
-
-my @splat_ids = @{ getNode('%%','usergroup')-&gt;{group} };
-
-my %dropdown_labels = ();
-
-foreach my $splat_id(@splat_ids){
-  my $splat_title = getNodeById($splat_id) -&gt; {title};
-  $splat_title .= &quot; *&quot; if $splat_id == $assigned_to;
-  $dropdown_labels{$splat_id} = $splat_title;
-}
-$dropdown_labels{0} = &quot;Nobody&quot;;
-$dropdown_labels{0} .= &quot; *&quot; unless $assigned_to;
-push @splat_ids,0;
-
-my $str = undef;
-
-$str .= $query -&gt; popup_menu(&quot;assigned_to&quot;, \@splat_ids,
-                             $assigned_to,
-                             \%dropdown_labels);
-
-return $str;
-
-</code>
+  <code></code>
 </node>

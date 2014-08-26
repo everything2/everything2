@@ -3,50 +3,5 @@
   <delegated>1</delegated>
   <node_id>2025090</node_id>
   <title>Notifications nodelet settings</title>
-  <code>use JSON;
-
-my $str = '&lt;p&gt;We will notify you when...
-&lt;/p&gt;';
-
-my $settingsHash = undef; $settingsHash = from_json($$VARS{settings}) if $$VARS{settings};
-
-if ($query-&gt;param('sexisgood')){
-	$settingsHash = {};
-	my $notifierCount = 0;
-	foreach ($query-&gt;param) {
-		next unless /notification_(\d+)/;
-		$$settingsHash{notifications}-&gt;{$1} = 1;
-		$notifierCount++;
-	}
-	delete $$VARS{settings};
-	$$VARS{settings} = to_json($settingsHash) if $notifierCount;
-}
-
-my @notifications = getNodeWhere('1 =1', &quot;notification&quot;);
-my @notificationlist = ();
-foreach (@notifications) {
-        next unless $$_{hourLimit} and htmlcode('canseeNotification', $_);
-	push @notificationlist, [$query-&gt;checkbox('notification_'.$$_{node_id},
-		$$settingsHash{notifications}-&gt;{$$_{node_id}},1,&quot;&quot;),&quot;$$_{description}&lt;br&gt;\n&quot;];
-}
-
-@notificationlist = sort {my (@a,@b); @$a[1] cmp @$b[1];} @notificationlist;
-
-foreach my $thing (@notificationlist){
-    $str .= @$thing[0].@$thing[1];
-}
-
-$str .= '&lt;br&gt;'.linkNode($NODE, 'Remove Notifications nodelet', {
-	op =&gt; 'movenodelet',
-	position =&gt; 'x',
-	nodelet =&gt; 'notifications',
-	-id =&gt; 'notificationsremovallink',
-	-class =&gt; 'ajax (notificationsremovallink):ajaxEcho:'
-	.q!Remove+Notifications+nodelet!
-	.q!&amp;lt;script+type='text/javascript'&amp;gt;!
-	.q!e2.vanish($('#notifications'));&amp;lt/script&amp;gt;!
-}) unless $$VARS{settings};
-
-return $str;
-</code>
+  <code></code>
 </node>

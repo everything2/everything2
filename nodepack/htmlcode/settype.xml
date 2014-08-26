@@ -3,47 +3,5 @@
   <delegated>1</delegated>
   <node_id>1293807</node_id>
   <title>settype</title>
-  <code>#Completely rewritten by Swap, since this thing was unnecessarily
-#general and optimised and therefore complicated, when it's in fact
-#only called from one place.
-my ($patch_id) = @_;
-$patch_id ||= $NODE -&gt; {node_id};
-
-my $PATCH = getNodeById($patch_id);
-
-my $patch_status = getNodeById($PATCH -&gt; {cur_status});
-
-#Process changes, if any
-if( $APP-&gt;isAdmin($USER) ){
-  my $new_status = $query -&gt; param('patch_status');
-  if( $new_status and $new_status != $patch_status -&gt; {status_id}){
-    $NODE -&gt; {cur_status} = $new_status;
-    updateNode($NODE,-1);
-  }
-}
-
-my $applied = $patch_status -&gt; {applied};
-
-#Only get the statuses that match this status, so that you can't go
-#from applied to unapplied statuses without hitting the little applied
-#button.
-my @statuses = getNodeWhere({-applied =&gt;
-                             $applied},&quot;status&quot;,&quot;node_id&quot;);
-
-my %dropdown_labels = ();
-
-foreach my $status(@statuses){
-  my $status_title = $status -&gt; {title};
-  $status_title .= &quot; *&quot; if $$status{status_id} == $$patch_status{status_id}; 
-  $dropdown_labels{$status -&gt; {status_id}} = $status_title;
-}
-
-my @status_ids = keys %dropdown_labels;
-
-my $str = $query -&gt; popup_menu(&quot;patch_status&quot;, \@status_ids,
-                             $patch_status -&gt; {status_id},
-                             \%dropdown_labels);
-
-return $str;
-</code>
+  <code></code>
 </node>

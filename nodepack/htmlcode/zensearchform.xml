@@ -3,54 +3,5 @@
   <delegated>1</delegated>
   <node_id>1867798</node_id>
   <title>zensearchform</title>
-  <code>my $lastnodeId = $query-&gt;param(&quot;softlinkedFrom&quot;);
-$lastnodeId ||= $query -&gt; param('lastnode_id') unless $APP-&gt;isGuest($USER);
-
-my $lastnode = getNodeById($lastnodeId)
-  if defined $lastnodeId;
-my $default = undef; $default = $$lastnode{title} if $lastnode;
-
-my $str = $query-&gt;start_form(
-  -method =&gt; &quot;GET&quot;
-  , -action =&gt; $query-&gt;script_name
-  , -id =&gt; 'search_form'
-  ).
-  $query-&gt;textfield(-name =&gt; 'node',
-  	value =&gt; $default,
-  	force =&gt; 1,
-   -id =&gt; 'node_search',
-   -size =&gt; 28,
-   -maxlength =&gt; 230)
-  ;
-
-my $lnid = undef;
-   $lnid = $$NODE{parent_e2node} if
-	$$NODE{type}{title} eq 'writeup'
-	and $$NODE{parent_e2node}
-	and getNodeById($$NODE{parent_e2node});
-$lnid ||= getId($NODE);
-
-$str.='&lt;input type=&quot;hidden&quot; name=&quot;lastnode_id&quot; value=&quot;'.$lnid.'&quot;&gt;';
-$str.='&lt;input type=&quot;submit&quot; name=&quot;searchy&quot; value=&quot;search&quot; id=&quot;search_submit&quot; title=&quot;Search within Everything2&quot;&gt;';
-
-$str.=qq'\n&lt;span title=&quot;Include near matches in the search results&quot;&gt;'.$query-&gt;checkbox(
- -id =&gt; &quot;near_match&quot;,
- -name =&gt; 'soundex',
- -value =&gt; '1',
- checked =&gt; 0,
- force =&gt; 1,
- -label =&gt; 'Near Matches'
-) . &quot;&lt;/span&gt;&quot;;
-
-$str.=qq'\n&lt;span title=&quot;Show all results, even when there is a page matching the search exactly&quot;&gt;'.$query-&gt;checkbox(
- -id =&gt; &quot;match_all&quot;,
- -name =&gt; 'match_all',
- -value =&gt; '1',
- checked =&gt; 0,
- force =&gt; 1,
- -label =&gt; 'Ignore Exact',
-) . &quot;&lt;/span&gt;&quot;;
-
-return $str . &quot;\n&lt;/form&gt;&quot;;
-</code>
+  <code></code>
 </node>

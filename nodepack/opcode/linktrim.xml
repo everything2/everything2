@@ -3,46 +3,5 @@
   <delegated>1</delegated>
   <node_id>977694</node_id>
   <title>linktrim</title>
-  <code>return unless htmlcode('verifyRequest', 'linktrim');
-
-my $from_node = int $query-&gt;param('cutlinkfrom');
-my $trimlinktype = int $query-&gt;param('linktype');
-my $linktype = getNodeById($trimlinktype);
-
-return unless $from_node;
-
-my $linkName = $$linktype{title} if $linktype &amp;&amp; $$linktype{type}{title} eq 'linktype';
-
-if ($linkName eq '') {
-   $linkName = 'softlink';
-   $trimlinktype = 0;
-}
-
-my %trimmable = (
-   'softlink' =&gt; 1,
-   'firmlink' =&gt; 1,
-   'favorite' =&gt; 1,
-);
-
-return unless $trimmable{$linkName};
-
-if ($linkName eq 'softlink' || $linkName eq 'firmlink') {
-
-   my $recurseGroups = 1;
-   return unless $APP-&gt;isEditor($USER);
-
-} elsif ($linkName eq 'favorite') {
-
-   return unless $from_node == $$USER{node_id};
-
-}
-
-foreach ($query-&gt;param) {
-  next unless /^cutlinkto_(\d+)$/;
-  $DB-&gt;sqlDelete('links', &quot;from_node=$from_node and to_node=$1 and linktype=&quot;.$trimlinktype);
-  $DB-&gt;sqlDelete('firmlink_note', &quot;from_node=$from_node and to_node=$1&quot;)
-    if $$linktype{title} eq 'firmlink';
-}
-1;
-</code>
+  <code></code>
 </node>

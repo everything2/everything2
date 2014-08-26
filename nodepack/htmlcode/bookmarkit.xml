@@ -3,25 +3,5 @@
   <delegated>1</delegated>
   <node_id>419639</node_id>
   <title>bookmarkit</title>
-  <code>return if $APP-&gt;isGuest($USER);
-
-my ( $N , $text , $title ) = @_ ;
-$N ||= $NODE ;
-getRef $N;
-$text ||= 'bookmark!' ;
-my $whatto = ( $$N{type}{title} eq 'e2node' ? 'entire page' : $$N{type}{title} ) ;
-$title ||= &quot;Add this $whatto to your everything2 bookmarks&quot; ;
-
-my $linktype = getNode('bookmark','linktype')-&gt;{node_id};
-return '('.linkNode( $USER , 'bookmarked' , { '-title' =&gt; &quot;You have bookmarked this $whatto&quot; } ).')'
-	if $DB-&gt;sqlSelect('count(*)', 'links', 'from_node='.$$USER{node_id}.' and to_node='.$$N{node_id}.&quot; and linktype=$linktype&quot;);
-
-my $params = htmlcode('verifyRequestHash', 'bookmark');
-$$params{'op'} = 'bookmark';
-$$params{'bookmark_id'} = $N -&gt; {node_id};
-$$params{'-title'} = $title ;
-$$params{'-class'} = &quot;action ajax bookmark$$N{node_id}:bookmarkit:$$N{node_id}&quot; ;
-$$params{'-id'} = &quot;bookmark$$N{node_id}&quot; ;
-
-linkNode($NODE, $text, $params);</code>
+  <code></code>
 </node>

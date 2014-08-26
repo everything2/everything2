@@ -3,26 +3,5 @@
   <delegated>1</delegated>
   <node_id>259</node_id>
   <title>displaywriteuptitle</title>
-  <code>#displaywriteuptitle - pass the writeup's node_id and timestamp
-
-my ($num, $timestamp) = @_;
-
-my $WRITEUP = undef;
-my $votenum = 0;
-if (not $num) {
-	$WRITEUP = $NODE;
-
-} else {
-	my @group = (); 
-        (@group) = @{ $$NODE{group} } if ($$NODE{group});
-	@group or return;
-	return if $num &gt; @group;
-	$WRITEUP = getNodeById($group[$num-1]);
-	$votenum = getId($WRITEUP);
-}
-
-unless ($$WRITEUP{author_user}==$$USER{node_id} || $query-&gt;param('op') || $APP-&gt;isSpider() )
-	{ 0 &amp;&amp; $DB-&gt;sqlUpdate (&quot;node&quot;, { -hits =&gt; 'hits+1' }, &quot;node.node_id=$$WRITEUP{node_id}&quot;); } 
-
-return htmlcode('displayWriteupInfo',$votenum);</code>
+  <code></code>
 </node>

@@ -3,13 +3,5 @@
   <delegated>1</delegated>
   <node_id>1689930</node_id>
   <title>chatterSplit</title>
-  <code>my $maxLen = ((exists $VARS-&gt;{splitChatter}) &amp;&amp; (defined $VARS-&gt;{splitChatter}) &amp;&amp; ($VARS-&gt;{splitChatter}=~/^([1-9]\d*)$/)) ? $1 : 0;
-$maxLen += 0;
-if($maxLen&lt;1) {
-	$maxLen=20;	#default width
-} elsif($maxLen&gt;999) {
-	$maxLen=999;
-}
-
-return $maxLen;</code>
+  <code></code>
 </node>

@@ -3,19 +3,5 @@
   <delegated>1</delegated>
   <node_id>1466528</node_id>
   <title>orderlock</title>
-  <code>return $APP-&gt;isEditor($USER);
-
-my $N = getNodeById($query-&gt;param('node_id'));
-
-return unless $N;
-return unless $$N{type}{title} eq &quot;e2node&quot;;
-
-if($query-&gt;param(&quot;unlock&quot;)){
-  $N-&gt;{orderlock_user} = 0;
-}else{
-  $N-&gt;{orderlock_user} = $USER-&gt;{node_id};
-}
-
-updateNode($N, -1);
-return;</code>
+  <code></code>
 </node>

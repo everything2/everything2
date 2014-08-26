@@ -3,17 +3,5 @@
   <delegated>1</delegated>
   <node_id>444690</node_id>
   <title>episection_admins</title>
-  <code>my $str = &quot;\n\t\t&lt;ul&gt;&quot;;
-
-$str.=linkNodeTitle('nate\'s secret unborg doc|Unborg Yourself').&quot;&lt;br /&gt;\n&quot; if $$VARS{borged};
-$str.=
-&quot;\n\t\t\t&lt;li&gt;&quot;.linkNodeTitle('Edit These E2 Titles').'&lt;/li&gt;'.
-&quot;\n\t\t\t&lt;li&gt;&quot;.linkNodeTitle('The Node Crypt').'&lt;/li&gt;'.
-&quot;\n\t\t\t&lt;li&gt;&quot;.linkNodeTitle('Node Heaven Search').'&lt;/li&gt;'.
-&quot;\n\t\t\t&lt;li&gt;&quot;.linkNodeTitle('God Powers and How to Use Them|Admin HOWTO').'&lt;/li&gt;'
-;
-
-$str.=&quot;\n\t\t&lt;/ul&gt;&quot;;
-
-$str;</code>
+  <code></code>
 </node>

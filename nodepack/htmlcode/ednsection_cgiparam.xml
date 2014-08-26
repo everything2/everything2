@@ -3,35 +3,5 @@
   <delegated>1</delegated>
   <node_id>837958</node_id>
   <title>ednsection_cgiparam</title>
-  <code>my $str = '';
-$str = '[&lt;i&gt;Ajax call parameters, not original page parameters&lt;/i&gt;]&lt;br&gt;' if $query-&gt;param('displaytype')eq 'ajaxupdate';
-my $c=0;
-foreach my $var ($query-&gt;param) {
-	next if $var eq 'passwd';
-	my $q=$query-&gt;param($var);
-
-	#Sanitise the variable for display
-	$var =~ s/\&lt;/\&amp;lt\;/g;
-	$var =~ s/\&gt;/\&amp;gt\;/g;
-
-	next if $q eq '';
-	next if ($var eq 'op') &amp;&amp; !$q;
-	++$c;
-
-	my $maxLen = 70;
-	my $isDebug = ($var =~ /^debug/i);
-	$maxLen *= 2 if $isDebug;
-
-	$str .= '&lt;tt&gt;' if $isDebug;
-	$str .= '&lt;strong&gt;'.$var.'&lt;/strong&gt;';
-	if((my $l=length($q))&gt;$maxLen) {
-		$str .= ':'.encodeHTML(substr($q,0,$maxLen),1).'... ('.$l.')';
-	} elsif($q) {
-		$str .= ':'.encodeHTML($q,1);
-	}
-	$str .= '&lt;/tt&gt;' if $isDebug;
-	$str .= &quot;&lt;br&gt;\n&quot;;
-}
-$str = &quot;&lt;small&gt;$c&lt;br&gt;&lt;/small&gt;\n&quot;.$str if $c;
-$str;</code>
+  <code></code>
 </node>

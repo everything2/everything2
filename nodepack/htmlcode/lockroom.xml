@@ -3,23 +3,5 @@
   <delegated>1</delegated>
   <node_id>720265</node_id>
   <title>lockroom</title>
-  <code>return unless isGod($USER);
-my $R ||= $$USER{in_room};
-return if $R == 0;
-
-getRef($R);
-
-my $open = &quot;1\;&quot;;
-my $locked = &quot;0\;&quot;;
-
-my $title = &quot;&quot;;
-if($$R{criteria} eq $open) {
-	$title = '(lock)';
-} elsif($$R{criteria} eq $locked) {
-	$title = '(unlock)';
-} else {
-	return;
-}
-
-linkNode($NODE, $title, {op=&gt;'lockroom', target =&gt; getId($R)});</code>
+  <code></code>
 </node>

@@ -3,51 +3,5 @@
   <delegated>1</delegated>
   <node_id>1358138</node_id>
   <title>DateTimeLocal</title>
-  <code>#returns the date and time, in long format
-#
-#parameter:
-#	$useTime - the time to use (in seconds); if not set, uses current time
-#	$showServer - if set, uses the server's time, instead of the user's time offset
-#
-#created: 2002.09.07.n6
-#updated: 2007-07-26(4)
-#TODO also have a &quot;short&quot; format, and optionally show just date or time
-#TODO localization:
-#	local language - really best if we load common localization strings before we even parse the pages
-#	local format (just Gregorian month, day, and year, unless we can figure a safe way of combining a date/time module and potentially dangerous user input)
-
-my ($useTime, $showServer) = @_;
-
-my $calcTime = defined($useTime) &amp;&amp; length($useTime) ? $useTime : time;
-if(!$showServer &amp;&amp; $VARS-&gt;{'localTimeUse'}) {
-	$calcTime += $VARS-&gt;{'localTimeOffset'} if exists $VARS-&gt;{'localTimeOffset'};
-	#add 1 hour = 60 min * 60 s/min = 3600 seconds if daylight savings
-	$calcTime += 3600 if $VARS-&gt;{'localTimeDST'};	#maybe later, only add time if also in the time period for that - but places have different daylight saving time start and end dates
-}
-
-my @months = qw(January February March April May June July August September October November December);
-
-my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($calcTime);
-
-my $result = ('Sun','Mon','Tues','Wednes','Thurs','Fri','Satur')[$wday].'day, ' . $months[$mon] . ' ' . $mday . ', ' . (1900+$year) . ' at ';
-
-my $showAMPM='';
-if($VARS-&gt;{'localTime12hr'}) {
-	if($hour&lt;12) {
-		$showAMPM = ' AM';
-		$hour=12 if $hour==0;
-	} else {
-		$showAMPM = ' PM';
-		$hour -= 12 unless $hour==12;
-	}
-}
-#$hour = '0'.$hour if length($hrs)==1;	#leading 0 looks ugly
-$min = '0'.$min if length($min)==1;
-$sec = '0'.$sec if length($sec)==1;	
-$result .= $hour.':'.$min.':'.$sec;
-$result .= $showAMPM if length($showAMPM);
-
-#$result .= sprintf('%02d:%02d:%02d',$hour,$min,$sec);
-
-return $result;</code>
+  <code></code>
 </node>

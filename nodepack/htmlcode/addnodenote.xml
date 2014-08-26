@@ -3,30 +3,5 @@
   <delegated>1</delegated>
   <node_id>2045735</node_id>
   <title>addNodenote</title>
-  <code>my ($notefor, $notetext, $user) = @_;
-
-getRef $user;
-$notefor = getId $notefor;
-
-if($user){
-	$notetext=&quot;[$$user{title}\[user]]: $notetext&quot;;
-	$user = $$user{user_id};
-}
-$user ||= 0;
-
-$DB-&gt;sqlInsert(&quot;nodenote&quot;, {
-	nodenote_nodeid =&gt; $notefor
-	, noter_user =&gt; $user
-	, notetext =&gt; $notetext
-});
-
-my $nodenote_id = $DB-&gt;{dbh}-&gt;last_insert_id(undef, undef, qw(nodenote nodenote_id)) || 0;
-
-htmlcode('addNotification', 'nodenote', 0, {
-	node_noter =&gt; $user
-	, node_id =&gt; $notefor
-	, nodenote_id =&gt; $nodenote_id
-}) if $user;
-
-return $nodenote_id;</code>
+  <code></code>
 </node>

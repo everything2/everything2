@@ -3,5 +3,5 @@
   <delegated>1</delegated>
   <node_id>2070302</node_id>
   <title>metadescriptiontag</title>
-  <code>return $APP-&gt;metaDescription($NODE);</code>
+  <code></code>
 </node>

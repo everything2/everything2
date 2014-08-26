@@ -3,35 +3,5 @@
   <delegated>1</delegated>
   <node_id>2025219</node_id>
   <title>movenodelet</title>
-  <code># moves a nodelet to a position (top=0)
-# position=x removes nodelet (unless it's Master Control and the user is Godlike)
-# position=after&lt;nodelet number&gt; puts it after nodelet, if nodelet present
-# position=before&lt;nodelet number&gt;n puts it before nodelet, ditto
-# no position/invalid position: put it at the bottom
-
-my ($nodelet, $position) = @_;
-$nodelet = getNode($nodelet, 'nodelet')-&gt;{node_id} if $nodelet =~ /\D/;
-
-return unless $nodelet and getNodeById($nodelet)-&gt;{type}-&gt;{title} eq 'nodelet' and
-	!$APP-&gt;isGuest($USER) and $USER-&gt;{title} ne 'everyone' ;
-
-return if $position eq 'x' and
-	( $APP-&gt;isEditor($USER) ) &amp;&amp;
-	$nodelet == getNode('Master Control', 'nodelet')-&gt;{node_id};
-
-$$VARS{nodelets} =~ s/(?:(^|,),+)|(?:\b$nodelet\b,*)|(?:,*$)/$1/g ;
-return if $position eq 'x' ;
-
-if ( $position =~ /^(before|after)(\d*)$/ ){
-	my $find = $2 ;
-	my $replace = ( $1 eq 'before' ? &quot;$nodelet,$find&quot; : &quot;$find,$nodelet&quot; ) ;
-	$$VARS{nodelets} =~ s/\b$find\b/$replace/ ;
-} elsif ( int $position ) {
-	$$VARS{nodelets} =~ s/^((?:(?:^|,)\d+\b){$position})/$1,$nodelet/ ;
-} elsif ( $position eq '0' ){
-	$$VARS{nodelets} = &quot;$nodelet,$$VARS{nodelets}&quot; ;
-}
-
-$$VARS{nodelets} = &quot;$$VARS{nodelets},$nodelet&quot; unless $$VARS{nodelets} =~ /\b$nodelet\b/ ;
-</code>
+  <code></code>
 </node>

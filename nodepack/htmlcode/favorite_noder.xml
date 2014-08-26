@@ -3,35 +3,5 @@
   <delegated>1</delegated>
   <node_id>1876163</node_id>
   <title>favorite_noder</title>
-  <code>my $class = &quot;ajax favoritenoder:favorite_noder&quot; ;
-
-if ($$NODE{type_nodetype} == 15) {
-   my $nid = $$NODE{node_id};
-   my $favlinktype = getId(getNode('favorite','linktype'));
-   my $favnoder = $DB-&gt;sqlSelect('to_node','links',&quot;from_node=$$USER{node_id} AND 
-                                                    to_node=$nid AND
-                                                    linktype=$favlinktype&quot;);
-	my $username = $$NODE{title} ;
-	$username =~ s/&quot;/&amp;quot;/s ;
-	$username =~ s/&gt;/&amp;gt;/s ;
-   if ($favnoder ) {
-     return linkNode($nid,&quot;unfavorite!&quot;,
-                 {op =&gt; &quot;unfavorite&quot;,
-                  fave_id =&gt; $NODE -&gt; {node_id},
-                  -title =&gt; &quot;stop notification of new writeups by $username&quot;,
-				-id =&gt; 'favoritenoder',
-				-class =&gt; $class ,
-                  }) ;
-   }
-   else {
-     return linkNode($nid,&quot;favorite!&quot;,
-                 {op =&gt; &quot;favorite&quot;,
-                  fave_id =&gt; $NODE -&gt; {node_id},
-                   -title =&gt; &quot;get notification of new writeups by $username&quot;,
- 				-id =&gt; 'favoritenoder',
-				-class =&gt; $class ,
-                }) ;
-   }
-}
-</code>
+  <code></code>
 </node>

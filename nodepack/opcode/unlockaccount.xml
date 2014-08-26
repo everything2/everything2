@@ -3,16 +3,5 @@
   <delegated>1</delegated>
   <node_id>1203054</node_id>
   <title>unlockaccount</title>
-  <code>return unless(isGod($USER));
-
-my $uid = $query-&gt;param('lock_id');
-return unless $uid;
-$uid = getNodeById($uid);
-
-return unless($$uid{type_nodetype} == getId(getType('user')));
-$$uid{acctlock} = 0;
-updateNode($uid, -1);
-
-$APP-&gt;securityLog(getNode(&quot;unlockaccount&quot;,&quot;opcode&quot;), $USER, &quot;$$uid{title}'s account was unlocked by $$USER{title}&quot;);
-</code>
+  <code></code>
 </node>

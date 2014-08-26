@@ -3,29 +3,5 @@
   <delegated>1</delegated>
   <node_id>1466529</node_id>
   <title>orderlock</title>
-  <code>return unless $APP-&gt;isAdmin($USER);
-my $str = htmlcode('openform');
-$str.= &quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;op\&quot; value=\&quot;orderlock\&quot;&gt;&quot;;
-
-my $lockornot = undef;
-
-if($NODE-&gt;{orderlock_user})
-{
-  $str.= &quot;Ordering locked by &quot;.linkNode(getNodeById($NODE-&gt;{orderlock_user})).&quot; &quot;;
-
-  $str.= &quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;unlock\&quot; value=\&quot;1\&quot;&gt;&quot;;
-  $lockornot = &quot;Unlock Writeup Ordering&quot;;
-
-}else
-{
-  $lockornot = &quot;Lock Writeup Ordering&quot;;
-}
-
-
-$str.= &quot;&lt;input type=\&quot;submit\&quot; value=\&quot;$lockornot\&quot;&gt;&quot;;
-$str.=&quot;&lt;/form&gt;&quot;;
-return &quot;&lt;p align=\&quot;right\&quot;&gt;$str&lt;/p&gt;&quot;;
-
-
-</code>
+  <code></code>
 </node>

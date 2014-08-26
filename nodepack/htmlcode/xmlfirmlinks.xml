@@ -3,19 +3,5 @@
   <delegated>1</delegated>
   <node_id>1252198</node_id>
   <title>xmlfirmlinks</title>
-  <code>my ($nid) = @_;
-
-my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;,&quot;links&quot;,&quot;linktype=&quot;.getId(getNode('firmlink', 'linktype')).&quot; AND from_node=$nid&quot;);
-
-my $str = &quot;&lt;firmlinks&gt;\n&quot;;
-
-while(my $ROW = $csr-&gt;fetchrow_hashref)
-{
-  my $n = getNodeById($$ROW{to_node});
-  next unless $n;
-  $str.=&quot;  &lt;e2link node_id=\&quot;$$n{node_id}\&quot;&gt;&quot;.encodeHTML($$n{title}).&quot;&lt;/e2link&gt;\n&quot;;
-}
-
-$str.=&quot;&lt;/firmlinks&gt;\n&quot;;
-return $str;</code>
+  <code></code>
 </node>

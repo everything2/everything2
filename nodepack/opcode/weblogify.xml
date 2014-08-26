@@ -3,44 +3,5 @@
   <delegated>1</delegated>
   <node_id>1882499</node_id>
   <title>weblogify</title>
-  <code>my $disp = $query-&gt;param(&quot;ify_display&quot;);
-
-my $nid =  $query-&gt;param(&quot;node_id&quot;);
-
-return unless $disp;
-return unless $disp gt '';
-
-my $wl = getNode('webloggables','setting');
-
-my $wSettings = getVars($wl);
-
-$$wSettings{$nid} = $disp;
-
-setVars($wl, $wSettings);
-
-my $N = getNodeById($nid);
-getRef $N;
-
-
-if($$N{group}) {
-	my $GROUP = $$N{group};
-	my @memberIDs = @$GROUP;
-	foreach(@memberIDs) {
-		my $u = getNodeById($_);
-		next unless $u;
-		my $v =getVars($u);
-		next if ($$v{can_weblog} =~ /$nid/);
-if (length($$v{can_weblog}) ==0 ) {$$v{can_weblog} = $nid;}
-else {
-		$$v{can_weblog} = $$v{can_weblog} .&quot;,&quot;.$nid;
-}
-		if ($_ == $$USER{user_id}) {
-			$VARS = $v;
-		}
-		setVars($u,$v);
-	}
-}
-
-$$N{doctext} = $$N{doctext} . &quot;[{weblog:3}]&quot;;
-updateNode($N,-1);</code>
+  <code></code>
 </node>

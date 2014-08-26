@@ -3,21 +3,5 @@
   <delegated>1</delegated>
   <node_id>57</node_id>
   <title>windowview</title>
-  <code>return &quot;&quot; unless $DB -&gt; canUpdateNode($USER, $NODE);
-my ($displaytype, $title, $width, $height) = @_;
-
-$title||=$$NODE{title};
-$width||=300;
-$height||=400;
-
-&quot;&lt;SCRIPT language=\&quot;javascript\&quot;&gt;
-	function launchThaDamnWinda() {
-	window.open('&quot; .
-		urlGen({node_id =&gt; getId ($NODE),
-			displaytype =&gt; $displaytype}, &quot;noquotes&quot;) .
-		&quot;','&quot;. getId ($NODE) .&quot;',
-		'width=$width,height=$height,scrollbars=yes');	
-	}
-&lt;/SCRIPT&gt;
-&lt;A href=\&quot;javascript:launchThaDamnWinda()\&quot;&gt;$title&lt;/a&gt;&quot;;</code>
+  <code></code>
 </node>

@@ -3,48 +3,5 @@
   <delegated>1</delegated>
   <node_id>1002054</node_id>
   <title>isSpecialDate</title>
-  <code>#returns if current server time matches the given day
-#parameter: case insensitive string(s) of date(s) - if more than 1, then any matches counts as a success
-#if no date given, or date not found, returns 0
-
-#return undef;
-
-use DateTime;
-
-my ($d) = @_;
-my $dt = DateTime-&gt;now( time_zone =&gt; &quot;UTC&quot; );
-my $year = $dt-&gt;year();
-my $mday = $dt-&gt;mday();
-my $mon = $dt-&gt;month();
-my $hour = $dt-&gt;hour();
-
-
-$d = &quot;\L$d&quot;; #case insensitive
-my $y = ($d =~ /(\d+)$/) ? $1 : 0; #try to get the year
-
-$mon -= 1;
-# Note that $mon = month - 1, January is 0, December is 11
-
-if($d =~ /^afd/) {
-return '1' if ($mon==3 and $mday==1 and ($y?$y==$year:1));
-}
-
-elsif($d =~ /^halloween/) {
-return '1' if ($mon==9 and $mday==31 and ($y?$y==$year:1));
-}
-
-elsif($d =~ /^xmas/) {
-return '1' if ($mon==11 and $mday==25 and ($y?$y==$year:1));
-}
-
-elsif($d =~ /^nye/) {
-return '1' if ($mon==11 and $mday==31 and ($y?$y==$year:1));
-}
-
-elsif($d =~ /^nyd/) {
-return '1' if ($mon==0 and $mday==1 and ($y?$y==$year:1));
-}
-
-return 0;
-</code>
+  <code></code>
 </node>

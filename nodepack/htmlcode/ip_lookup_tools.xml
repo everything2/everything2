@@ -3,15 +3,5 @@
   <delegated>1</delegated>
   <node_id>2007395</node_id>
   <title>ip lookup tools</title>
-  <code># encodeHTML should be a no-op here, but just in case...
-my $ip = encodeHTML(shift);
-
-return 
-  &quot;&lt;a href='http://whois.domaintools.com/$ip' target=\&quot;_blank\&quot;&gt;whois&lt;/a&gt;&quot;
-  . &quot; - &lt;a href='https://www.dan.me.uk/torcheck?ip=$ip' target=\&quot;_blank\&quot;&gt;Tor&lt;/a&gt;&quot;
-  . &quot; - &lt;a href='http://www.google.com/search?hl=en&amp;q=%22$ip%22&amp;btnG=Google+Search' target=\&quot;_blank\&quot;&gt;Google&lt;/a&gt;&quot;
-  . &quot; - &lt;a href='http://www.projecthoneypot.org/ip_$ip' target=\&quot;_blank\&quot;&gt;PH&lt;/a&gt;&quot;
-  . &quot; - &lt;a href='http://www.stopforumspam.com/ipcheck/$ip' target=\&quot;_blank\&quot;&gt;SFS&lt;/a&gt;&quot;
-  . &quot; - &lt;a href='http://www.botscout.com/ipcheck.htm?ip=$ip' target=\&quot;_blank\&quot;&gt;BS&lt;/a&gt;&quot;
-  ;</code>
+  <code></code>
 </node>

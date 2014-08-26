@@ -3,21 +3,5 @@
   <delegated>1</delegated>
   <node_id>2027662</node_id>
   <title>canseeNotification</title>
-  <code>my $notification = shift;
-getRef $notification;
-
-my $uid = $$USER{node_id};
-my $isCE = $APP-&gt;isEditor($USER);
-my $isCoder = $APP-&gt;inUsergroup($uid,&quot;edev&quot;,&quot;nogods&quot;) || $APP-&gt;inUsergroup($uid, 'e2coders', &quot;nogods&quot;);
-my $isChanop = $APP-&gt;isChanop($uid, &quot;nogods&quot;);
-
-return 0 if ( !$isCE &amp;&amp; ($$notification{description} =~ /node note/) );
-return 0 if ( !$isCoder &amp;&amp; ($$notification{description} =~ /patch/) );
-return 0 if ( !$isCE &amp;&amp; ($$notification{description} =~ /new user/) );
-return 0 if ( !$isCE &amp;&amp; ($$notification{description} =~ /(?:blanks|removes) a writeup/) );
-return 0 if ( !$isCE &amp;&amp; ($$notification{description} =~ /review of a draft/) );
-return 0 if ( !$isChanop &amp;&amp; ($$notification{description} =~ /chanop/) );
-
-return 1;
-</code>
+  <code></code>
 </node>

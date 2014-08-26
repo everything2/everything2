@@ -3,6 +3,5 @@
   <delegated>1</delegated>
   <node_id>2031072</node_id>
   <title>ajaxEcho</title>
-  <code># provide simple user feedback for AJAX opcode call (e.g., sanctify in [page actions])
-return shift;</code>
+  <code></code>
 </node>

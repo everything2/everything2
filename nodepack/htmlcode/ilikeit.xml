@@ -3,19 +3,5 @@
   <delegated>1</delegated>
   <node_id>1920424</node_id>
   <title>ilikeit</title>
-  <code>return if !$APP-&gt;isGuest($USER) or $APP-&gt;isSpider();
-
-my ($WU) = @_;
-return unless getRef($WU) &amp;&amp; $$WU{type}{title} eq 'writeup' ;
-
-my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR} || undef;
-my $likeExists = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;likedit&quot;,&quot;likedit_ip = '$addr' and likedit_node=$$WU{node_id}&quot;);
-return &quot; &lt;b&gt;Thanks!&lt;/b&gt;&quot; if $likeExists || 
-	( $query-&gt;param('op') eq 'ilikeit' &amp;&amp; $query-&gt;param(&quot;like_id&quot;) == $$WU{node_id} );
-
-linkNode($NODE,'I like it!', {confirmop =&gt; 'ilikeit', like_id =&gt; $$WU{node_id},
-	-id =&gt; &quot;like$$WU{node_id}&quot;,
-	-class =&gt; &quot;action ajax like$$WU{node_id}:ilikeit:$$WU{node_id}:&quot;,
-	-title =&gt; 'send a message to the author telling them someone likes their work'} );
-</code>
+  <code></code>
 </node>

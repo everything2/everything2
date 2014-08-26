@@ -3,33 +3,5 @@
   <delegated>1</delegated>
   <node_id>2008911</node_id>
   <title>writeupmessage</title>
-  <code>my ($queryid, $N) = @_ ;
-getRef $N ;
-$N ||= $NODE ;
-
-my $msg = $query-&gt;param($queryid) ;
-my $wutitle = $$N{ title } ;
-$wutitle =~ s/ \(\w+\)$// ;
-
-my $msgreport = htmlcode('sendPrivateMessage', {
-	'recipient_id'=&gt;$$N{ author_user },
-	'message'=&gt;$msg,
-	'ccself'=&gt;( $query-&gt;param('cc'.$queryid) ? 1 : 0 ) ,
-	'renode'=&gt;$wutitle
-});
-
-if( $msgreport ) {
-	$msgreport = ' &lt;strong&gt;Error&lt;/strong&gt;: unable to send writeup message &quot;'.$msg.'&quot;: '.$msgreport ;
-} else {
-	$query -&gt; Delete($queryid);
-	$msgreport = $msg;
-	$msgreport =~ s/\&lt;/&amp;lt;/g;
-	$msgreport =~ s/\&gt;/&amp;gt;/g;
-	htmlcode('addNodenote', $query -&gt; param(&quot;nn$queryid&quot;), qq'messaged: &quot;$msgreport&quot;', $USER)
-		if $query -&gt; param(&quot;nn$queryid&quot;);
-	$msgreport = '&lt;strong&gt;Sent writeup message: &lt;/strong&gt;'.parseLinks( $msgreport , $$N{parent} ) ;
-}
-
-qq'&lt;p id=&quot;sent$queryid&quot; class=&quot;sentmessage&quot;&gt;$msgreport&lt;/p&gt;'
-</code>
+  <code></code>
 </node>

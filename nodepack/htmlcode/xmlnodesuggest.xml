@@ -3,41 +3,5 @@
   <delegated>1</delegated>
   <node_id>1289767</node_id>
   <title>xmlnodesuggest</title>
-  <code>my $cf = getVars(getNode(&quot;chatterbox forward&quot;, &quot;setting&quot;));
-my $retstr = &quot;&lt;sametitles&gt;&quot;;
-my @grp = getNodeWhere({ 'title' =&gt; $$NODE{title}});
-foreach(@grp)
-{
-   my $n = $_;
-   next unless canReadNode($USER, $n);
-   next if($$n{node_id} == $$NODE{node_id});
-   my $tmp = &quot;&lt;nodesuggest type=\&quot;$$n{type}{title}\&quot;&gt;&quot;;
-   $tmp.= '&lt;e2link node_id=&quot;'.$$n{node_id}.'&quot;&gt;'.encodeHTML($$n{title}).'&lt;/e2link&gt;';
-
-   if($$n{type}{title} eq 'user')
-   {
-
-    if($$cf{lc($$n{title})})
-    {
-      my $ptr = $$cf{lc($$n{title})};
-      my $tousr = getNode($ptr, 'user');
-
-      #this will not work if the user has both _ and &quot; &quot; in their nick, but oh well
-
-      unless($tousr)
-      {  $ptr =~ s/_/ /g;
-         $tousr = getNode($ptr, 'user');
-      }  
-
-      $tmp .= '&lt;useralias&gt;&lt;e2link node_id=&quot;'.$$tousr{node_id}.'&quot;&gt;'.encodeHTML($$tousr{title}).'&lt;/e2link&gt;&lt;/useralias&gt;';
-    }
-
-   }
-   
-   $tmp .= &quot;&lt;/nodesuggest&gt;&quot;;
-   $retstr.=$tmp;
-}
-
-$retstr.=&quot;&lt;/sametitles&gt;&quot;;
-return $retstr;</code>
+  <code></code>
 </node>

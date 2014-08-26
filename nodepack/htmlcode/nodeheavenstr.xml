@@ -3,17 +3,5 @@
   <delegated>1</delegated>
   <node_id>1916947</node_id>
   <title>nodeHeavenStr</title>
-  <code>my ($e2node) = @_;
-
-return '' unless isGod($USER);
-return '' unless $$NODE{type_nodetype} eq 116;
-
-return '';
-
-my $title = getNodeById($e2node)-&gt;{title};
-my $N = $DB-&gt;sqlSelect('count(*)', 'heaven', &quot;type_nodetype=117 and title LIKE &quot;.$dbh-&gt;quote($title.&quot; (%&quot;));
-
-$N ||= 'no';
-
-return &quot;This node has &quot;.linkNode(getNode('Node Heaven Title Search','restricted_superdoc'),$N, {heaventitle =&gt; $$NODE{title}}).&quot; writeup&quot;.( $N != 1 ? &quot;s&quot; : &quot;&quot;).&quot; in Node Heaven.&quot;;</code>
+  <code></code>
 </node>

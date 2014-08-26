@@ -3,57 +3,5 @@
   <delegated>1</delegated>
   <node_id>1186040</node_id>
   <title>logWarning</title>
-  <code>#call this when there is something strange happening, but it isn't
-#  a full blown Server Error!
-#
-#this logs some information to the warnlog table and displays a little
-#  warning message to the user ... unless it is N-Wing, then it just shows the
-#  message
-#
-#parameters:
-#	node_id of error (if omitted, uses current node_id) (useful for nodegroups)
-#	short description of problem (may not contain commas) (may be omitted, but logging the warning isn't very useful then)
-#
-#sample uses:
-#	htmlcode('logWarning',',I got a weird number. It was: '.$num);
-#	htmlcode('logWarning',$$WRITEUP{node_id}.',saw:'.$s.' expected:'.$e);
-#
-my @allParams = @_;
-
-my $nodeID = undef;
-my $description = undef;
-my $uid = undef
-my $UID = getId($USER);
-
-
-$nodeID = $allParams[0] || getId($NODE) || 0;
-$description = $allParams[1] || '';
-$uid = $UID || 0;
-
-my $info = '';
-
-local *createInfoString = sub {
-	$info='(node_id, user_id) = (' . $nodeID . ', ' . $uid . '); description = ' . $description;
-};
-
-if( $APP-&gt;isAdmin($USER) ) {
-	$info = createInfoString();
-} else {
-	my $dbh = $DB-&gt;getDatabaseHandle();
-	unless($dbh) {
-		$info = createInfoString() . ' Ack! No handle!';
-	} else {
-
-	my $values = join(',',($nodeID, $uid, $dbh-&gt;quote($description)));
-	my $result = $dbh-&gt;do('INSERT INTO warnlog (problemnode_id,problemuser_id,description) VALUES('.$values.')');
-
-	if($result) {
-		$info = '#'.$DB-&gt;sqlSelect('LAST_INSERT_ID()');
-	} else {
-		$info = createInfoString() . ' Ack! Unable to insert!';
-	}
-
-	}
-}
-'&lt;small&gt;( &lt;span style=&quot;color: blue;&quot;&gt;Server Warning!&lt;/span&gt; &lt;small&gt;(don\'t worry about this)&lt;/small&gt; '.$info.' )&lt;/small&gt;';</code>
+  <code></code>
 </node>

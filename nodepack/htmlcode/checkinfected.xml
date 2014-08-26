@@ -3,22 +3,5 @@
   <delegated>1</delegated>
   <node_id>2008093</node_id>
   <title>checkInfected</title>
-  <code># infection arises if user has an old login cookie belonging to a locked account
-
-return 1 if $$VARS{infected};
-
-# if logged on, no old cookie
-return 0 unless $APP -&gt; isGuest($USER) &amp;&amp; $query;
-
-my $loginCookie = $query-&gt;cookie($Everything::CONF-&gt;{cookiepass});
-
-return 0 unless $loginCookie;
-
-my ($user_name) = split(/\|/, $loginCookie);
-my $check_user = getNode($user_name, 'user');
-
-return 1 if $check_user &amp;&amp; $$check_user{acctlock};
-
-return 0;
-</code>
+  <code></code>
 </node>

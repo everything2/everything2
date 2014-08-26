@@ -3,29 +3,5 @@
   <delegated>1</delegated>
   <node_id>1832095</node_id>
   <title>atomiseNode</title>
-  <code>my $host = $ENV{HTTP_HOST} || $Everything::CONF-&gt;{canonical_web_server} || &quot;everything2.com&quot;;
-my $host = &quot;http://$host&quot; ;
-
-my $atominfo = sub {
-	my $N = shift ;
-	my $url = $host . urlGen({ }, 'noQuotes', $N) ;
-	my $author = getNodeById( $$N{author_user} ) ;
-	my $timestamp = $$N{publishtime} || $$N{createtime};
-	$timestamp =~ /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
-	$timestamp = sprintf (&quot;%04d-%02d-%02dT%02d:%02d:%02dZ&quot;, $1, $2, $3, $4, $5, $6);
-	
-	'&lt;title&gt;' . encodeHTML($$N{title}) . '&lt;/title&gt;' .
-	'&lt;link rel=&quot;alternate&quot; type=&quot;text/html&quot; href=&quot;' . $url . '&quot;/&gt;' .
-	'&lt;id&gt;' . $url . '&lt;/id&gt;' .
-	'&lt;author&gt;' .
-		'&lt;name&gt;' . $$author{ title } . '&lt;/name&gt;' .
-		'&lt;uri&gt;' . $host . '/user/' . $$author{ title } . '&lt;/uri&gt;' .
-	'&lt;/author&gt;' .
-	'&lt;published&gt;'. $timestamp . '&lt;/published&gt;' .
-	'&lt;updated&gt;'. $timestamp . '&lt;/updated&gt;' ;
-} ;
-
-my ( $input , $length ) = @_ ;
-$length ||= 1024 ;
-return htmlcode( 'show content' , $input , &quot;xml &lt;entry&gt; atominfo, $length&quot; , ( atominfo =&gt; $atominfo) ) ;</code>
+  <code></code>
 </node>

@@ -3,13 +3,5 @@
   <delegated>1</delegated>
   <node_id>1946647</node_id>
   <title>socialBookmark</title>
-  <code>my ($nodeID, $includeTitles, $asList, $myTitle, $sbURL, $sbTitle, $imgTitle)=@_;
-
-my $myurl=&quot;http://everything2.com/node/&quot;.$nodeID;
-my $str = undef;
-$str.=&quot;&lt;li&gt;&quot; if $asList;
-$str.=&quot; &lt;a href=\&quot;http://furl.net/storeIt.jsp?u=&quot;.$myurl.&quot;&amp;t=&quot;.$myTitle.&quot;\&quot; target=\&quot;_new\&quot; onClick=\&quot;window.location='&quot;.urlGen({'node_id'=&gt;$$NODE{node_id}, 'op'=&gt;'socialBookmark','bookmark_site'=&gt;'$sbTitle'},1).&quot;'\&quot;&gt; $sbTitle&lt;/a&gt;&quot; if ($includeTitles);
-$str.=&quot;&lt;/li&gt;&quot; if $asList;
-
-return $str;</code>
+  <code></code>
 </node>

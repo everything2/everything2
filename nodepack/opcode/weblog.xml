@@ -3,58 +3,5 @@
   <delegated>1</delegated>
   <node_id>458215</node_id>
   <title>weblog</title>
-  <code>my $SRC = $query-&gt;param(&quot;source&quot;);
-
-my $N = $query-&gt;param('target');
-$N ||= $query-&gt;param(&quot;node_id&quot;);
-
-getRef ($N);
-getRef $SRC;
-
-return unless $N;
-return unless $SRC;
-return unless $$N{type}{sqltablelist} =~ /document/;
-return if $$N{nodetype} eq 'usergroup'; 
-
-if ($$SRC{type}{title} eq 'usergroup') {
-  return unless Everything::isApproved($USER, $SRC);
-} elsif ($$SRC{title} eq 'News for noders. Stuff that matters.') {
-  return unless Everything::isApproved($USER, getNode('everything editors','usergroup'));
-} else {
-  return unless isGod($USER);
-}
-
-my $exists = $DB-&gt;sqlSelect(&quot;weblog_id&quot;,&quot;weblog&quot;,&quot;weblog_id=&quot;.getId($SRC).&quot; and to_node=&quot;.getId($N));
-
-if ($exists) {
-	$DB-&gt;sqlUpdate(&quot;weblog&quot;,{removedby_user =&gt; 0, linkedby_user =&gt; getId($USER)},&quot;weblog_id=&quot;.getId($SRC).&quot; and to_node=&quot;.getId($N));
-}
-else {
-	$DB-&gt;sqlInsert(&quot;weblog&quot;, {
-		weblog_id =&gt; getId($SRC), 
-		to_node =&gt; getId($N),
-		linkedby_user =&gt; getId($USER),
-		-linkedtime =&gt; 'now()'
-	});
-
-	use JSON;
-	
-	my $weblogNotification = getNode(&quot;weblog&quot;,&quot;notification&quot;)-&gt;{node_id};
-	foreach my $notifiee (@{$$SRC{group}}) {
-		my $v = getVars(getNodeById($notifiee));
-		if ($$v{settings}) {
-		if (from_json($$v{settings})-&gt;{notifications}-&gt;{$weblogNotification}) {
-			htmlcode('addNotification', $weblogNotification, $notifiee, {
-				writeup_id =&gt; getId($N), group_id =&gt; $$SRC{node_id}
-			});
-		}
-		}
-	}
-}
-
-if ($$SRC{title} eq 'News for noders. Stuff that matters.') {
-	htmlcode('addNotification', 'frontpage', 0, { frontpage_item_id =&gt; getId($N) });
-}
-
-</code>
+  <code></code>
 </node>

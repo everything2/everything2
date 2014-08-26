@@ -3,50 +3,5 @@
   <delegated>1</delegated>
   <node_id>2006837</node_id>
   <title>static javascript</title>
-  <code>use JSON;
-
-$$VARS{fxDuration} = '1' if (delete $$VARS{notransitions});
-
-my $lastnode = $$NODE{node_id};
-$lastnode = $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
-$lastnode = $query-&gt;param(&quot;lastnode_id&quot;)||0
-	if $$NODE{title} eq 'Findings:' &amp;&amp; $$NODE{type}{title} eq 'superdoc';
-
-my $e2 = undef;
-$e2-&gt;{node_id} = $$NODE{node_id};
-$e2-&gt;{lastnode_id} = $lastnode;
-$e2-&gt;{title} = $$NODE{title};
-$e2-&gt;{guest} = ($APP-&gt;isGuest($USER))?(1):(0);
-
-my $cookie = undef;
-foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
-	if (!$APP-&gt;isGuest($USER)){
-		$$VARS{$_} = $cookie if $cookie = $query -&gt; cookie($_);
-		delete $$VARS{$_} if $cookie eq '0';
-	}
-        $e2-&gt;{$_} = $$VARS{$_} if ($$VARS{$_});
-}
-
-$e2 -&gt; {collapsedNodelets} =~ s/\bsignin\b// if $query -&gt; param('op') eq 'login';
-$e2 = encode_json($e2);
-
-my $min = undef; $min = '.min' unless $APP-&gt;inDevEnvironment();
-my $libraries = qq'&lt;script src=&quot;http://code.jquery.com/jquery-1.4.4$min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
-# mark as guest but only in non-canonical domain so testing and caching both work
-
-my $js_decisions = htmlcode('javascript_decider');
-
-unless ($APP-&gt;isGuest($USER)){
-	$libraries .= '&lt;script src=&quot;http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
-}
-
-$libraries .= '&lt;script src=&quot;'.htmlcode(&quot;linkjavascript&quot;,getNode(&quot;jquery bbq&quot;,&quot;jscript&quot;)).'&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;';
-
-return &lt;&lt;ENDJS;
-	&lt;script type='text/javascript' name='nodeinfojson' id='nodeinfojson'&gt;
-		e2 = $e2;
-	&lt;/script&gt;
-        $libraries
-        $js_decisions
-ENDJS</code>
+  <code></code>
 </node>

@@ -3,24 +3,5 @@
   <delegated>1</delegated>
   <node_id>2048927</node_id>
   <title>getGravatarMD5</title>
-  <code>use Digest::MD5('md5_hex');
-
-my $gravatarUser = shift;
-getRef $gravatarUser;
-
-my $defaultEmail = &quot;$$gravatarUser{title}\@chat.everything2.com&quot;;
-my $email =
-	$DB-&gt;sqlSelect(
-		&quot;setting_value&quot;
-		, &quot;uservars&quot;
-		, &quot;user_id = $$gravatarUser{user_id}&quot;
-		. &quot; AND setting_name = 'gravatar_email'&quot;
-  );
-
-$email = $defaultEmail unless defined $email;
-$email = lc $email;
-$email =~ s/^\s+|\s+$//g;
-
-return md5_hex($email);
-</code>
+  <code></code>
 </node>

@@ -3,10 +3,5 @@
   <delegated>1</delegated>
   <node_id>1310791</node_id>
   <title>nodetestpass</title>
-  <code>return unless $APP-&gt;isEditor($USER);
-
-my $node = $DB-&gt;getDatabaseHandle-&gt;quote($query-&gt;param(&quot;node_id&quot;));
-
-$DB-&gt;sqlDelete(&quot;nodetestresult&quot;, &quot;nodetestresult_node=$node&quot;);
-return 1;</code>
+  <code></code>
 </node>

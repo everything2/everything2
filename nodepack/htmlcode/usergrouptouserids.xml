@@ -3,34 +3,5 @@
   <delegated>1</delegated>
   <node_id>1980272</node_id>
   <title>usergroupToUserIds</title>
-  <code>#Given a ug_id or a ug hash, convert it to a comma-separated string of user IDs
-my ($ug) = @_;
-
-#Given a ug_id or a ug hashref, convert it recursively to an array of user IDs
-local *explode_ug = sub{
-  my ($ug) = @_;
-  $ug = getNodeById($ug) if $ug =~ /^\d+$/;
-
-  my @ids = @{$$ug{'group'}};
-
-  my @result = ();
-  foreach my $id(@ids){
-    if(getNodeById($id) -&gt; {'type'} -&gt; {'title'} eq 'user'){
-      push @result, $id;
-    }
-    else{
-      push @result, explode_ug($id);
-    }
-  }
-
-  return @result;
-};
-
-my @uids = explode_ug($ug);
-
-my $out = &quot;@uids&quot;;
-
-$out =~ s/ /,/g;
-
-return $out;</code>
+  <code></code>
 </node>

@@ -3,10 +3,5 @@
   <delegated>1</delegated>
   <node_id>854225</node_id>
   <title>viewcode</title>
-  <code>return unless $APP-&gt;isDeveloper($USER);
-
-my $ntt = $$NODE{type}{title};
-return unless ($ntt eq 'superdoc') || ($ntt eq 'superdocnolinks') || ($ntt eq 'nodelet');
-
-'&lt;font size=&quot;1&quot;&gt;'.linkNode($NODE, 'viewcode', {'displaytype'=&gt;'viewcode', 'lastnode_id'=&gt;0}).'&lt;/font&gt;';</code>
+  <code></code>
 </node>

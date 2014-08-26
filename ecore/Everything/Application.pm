@@ -1528,7 +1528,7 @@ sub canSeeDraft
 	my %equivalents = (
 		nuked => 'private',
 		removed => $isEditor ? 'public' : 'private',
-		review => 'findable',
+		review => $isEditor ? 'public' : 'private',
 	);
 
 	my $status = $equivalents{$$STATUS{title}} || $$STATUS{title};

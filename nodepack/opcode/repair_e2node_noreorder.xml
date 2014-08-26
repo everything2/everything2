@@ -3,14 +3,5 @@
   <delegated>1</delegated>
   <node_id>1466148</node_id>
   <title>repair_e2node_noreorder</title>
-  <code>return unless $APP-&gt;isEditor($USER);
-
-my $repair_id = $query-&gt;param('repair_id');
-my $no_order = 1;
-return unless $repair_id;
-
-my $result = htmlcode('repair e2node', $repair_id, $no_order);
-return 1 if $result;
-return undef;
-</code>
+  <code></code>
 </node>

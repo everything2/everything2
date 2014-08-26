@@ -1,26 +1,7 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegated>1</delegated>
   <node_id>2037809</node_id>
   <title>publishdrafttodocument</title>
-  <code>my $TYPE = getType('document');
-return unless canCreateNode($USER, $TYPE);
-
-my $nid = $query -&gt; param('node_id');
-my $draft = getNodeById($nid);
-return unless $draft &amp;&amp; $$draft{type}{title} eq 'draft';
-
-return if getNode($$draft{title}, 'document');
-
-$DB -&gt; sqlUpdate('node', {
-		type_nodetype =&gt; $$TYPE{node_id}
-		, -createtime =&gt; 'now()'
-		, hits =&gt; 0
-	}, &quot;node_id=$nid&quot;);
-$DB -&gt; sqlDelete('draft', &quot;draft_id=$nid&quot;);
-
-$DB -&gt; {cache} -&gt; incrementGlobalVersion($draft); # tell other processes this has changed...
-$DB -&gt; {cache} -&gt; removeNode($draft); # and it's in the wrong typecache, so remove it
-
-$query -&gt; delete('node');
-$query -&gt; param('node_id', $nid);</code>
+  <code></code>
 </node>

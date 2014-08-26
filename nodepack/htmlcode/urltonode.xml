@@ -3,11 +3,5 @@
   <delegated>1</delegated>
   <node_id>2033599</node_id>
   <title>urlToNode</title>
-  <code>my $targetNode = shift;
-getRef $targetNode;
-
-my $bNoQuoteUrl = 1;
-my $urlParams = { };
-my $redirectPath = urlGen($urlParams, $bNoQuoteUrl, $targetNode);
-return 'http://' . $ENV{HTTP_HOST} . $redirectPath;</code>
+  <code></code>
 </node>

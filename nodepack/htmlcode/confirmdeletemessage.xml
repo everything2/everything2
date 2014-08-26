@@ -3,25 +3,5 @@
   <delegated>1</delegated>
   <node_id>2044460</node_id>
   <title>confirmDeleteMessage</title>
-  <code>my ($messageID,$actioned)=@_;
-
-if ($actioned eq &quot;deleted&quot;) {
-  return &quot;Message deleted&quot;;
-}
-if ($actioned eq &quot;archived&quot;) {
-  return &quot;Message archived&quot;;
-}
-
-
-my $archiveWhat=&quot;archive_$messageID&quot;;
-
-my $str = linkNode( $NODE , 'Archive message' , { op =&gt; 'message', $archiveWhat =&gt; 'yup', lastnode_id =&gt; 0 , -title =&gt; &quot;archive the above message&quot; , -class =&gt; &quot;action ajax message_$messageID:confirmDeleteMessage:$messageID,archived&quot; })
-
-.' or ';
-
-my $deleteWhat=&quot;deletemsg_$messageID&quot;;
-
-$str.=linkNode( $NODE , 'delete for good' , { op =&gt; 'message', $deleteWhat =&gt; 'yup', lastnode_id =&gt; 0 , -title =&gt; &quot;delete the above message&quot; , -class =&gt; &quot;action ajax message_$messageID:confirmDeleteMessage:$messageID,deleted&quot; });
-
-return $str;</code>
+  <code></code>
 </node>

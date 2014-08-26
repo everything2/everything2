@@ -3,22 +3,5 @@
   <delegated>1</delegated>
   <node_id>444246</node_id>
   <title>votefoot</title>
-  <code>my $uid = $$USER{user_id};
-return $query-&gt;end_form if $$NODE{type}{title} eq &quot;e2node&quot; &amp;&amp; not $$NODE{group} || $APP-&gt;isGuest($USER) ;
-my $isKiller = $APP-&gt;isEditor($USER);
-
-my $voteButton = undef;
-my $killButton = undef;
-my $rowFormat =  '&lt;div id=&quot;votefooter&quot;&gt;%s%s&lt;/div&gt;';
-
-if( $query-&gt;param('numvoteit') &amp;&amp; $$USER{votesleft} ) {
-	$voteButton = &quot;&lt;input type='submit' name='sexisgreat' id='votebutton' value='vote!'&gt;&quot;;
-} elsif ( !$APP-&gt;isGuest($USER) ) {
-	$voteButton = &quot;&lt;input type='submit' name='sexisgreat' id='blabbutton' value='blab!' title='send writeup messages'&gt;&quot;;
-}
-
-$killButton = $isKiller &amp;&amp; $$NODE{type}{title} ne 'draft' ? &quot;&lt;p&gt;&lt;input type='submit' name='node' id='killbutton' value='The Killing Floor II'&gt;&quot; : '';
-
-return sprintf($rowFormat,
-	$voteButton, $killButton) . $query-&gt;end_form;</code>
+  <code></code>
 </node>

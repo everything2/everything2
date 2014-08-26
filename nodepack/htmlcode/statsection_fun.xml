@@ -3,19 +3,5 @@
   <delegated>1</delegated>
   <node_id>1963596</node_id>
   <title>statsection_fun</title>
-  <code>my $str = undef;
-
-#pass 2 args: category and value
-local *genRow = sub {
-	return '&lt;div&gt;&lt;span class=&quot;var_label&quot;&gt;' . $_[0] . ': &lt;/span&gt;&lt;span class=&quot;var_value&quot;&gt;' . $_[1] . &quot;&lt;/span&gt;&lt;/div&gt;\n&quot;;
-};
-
-$str .= genRow('Node-Fu',sprintf('%.1f', $$USER{experience}/$$VARS{numwriteups})) if ($$VARS{numwriteups});
-$str .= genRow('Golden Trinkets',$$USER{karma});
-$str .= genRow('Silver Trinkets',$$USER{sanctity});
-$str .= genRow('Stars',$$USER{stars});
-$str .= genRow('Easter Eggs',$$VARS{easter_eggs});
-$str .= genRow('Tokens',$$VARS{tokens});
-
-return '&lt;div&gt;'.$str.'&lt;/div&gt;';</code>
+  <code></code>
 </node>

@@ -3,9 +3,5 @@
   <delegated>1</delegated>
   <node_id>720339</node_id>
   <title>createroom</title>
-  <code>return unless $APP-&gt;getLevel($USER) &gt;= $Everything::CONF-&gt;{create_room_level};
-my $cr = getId(getNode('create room','superdoc'));
-return '&lt;span title=&quot;create a new room to chat in&quot;&gt;'
-	. linkNode($cr,'create',{lastnode_id=&gt;0})
-	. '&lt;/span&gt;';</code>
+  <code></code>
 </node>

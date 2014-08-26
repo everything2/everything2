@@ -3,19 +3,5 @@
   <delegated>1</delegated>
   <node_id>720242</node_id>
   <title>lockroom</title>
-  <code>return unless isGod($USER);
-
-my $R = $$USER{in_room};
-return if $R == 0;
-
-getRef($R);
-
-
-my $denystr = &quot;0\;&quot;;
-unless ($$R{criteria} eq $denystr) {
-  $$R{criteria} = $denystr;
-} else {
-  $$R{criteria} = &quot;1\;&quot;;
-}
-updateNode($R, $USER);</code>
+  <code></code>
 </node>

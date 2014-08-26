@@ -3,33 +3,5 @@
   <delegated>1</delegated>
   <node_id>1307637</node_id>
   <title>borg</title>
-  <code>#borgs the current node 1 time (iff current node is a user and current user is an admin)
-#N-Wing, Friday, May 24, 2002
-
-my $UID = $$USER{node_id};
-
-return unless $APP-&gt;isAdmin($USER);
-return unless $query-&gt;param('borgvictim');
-my $victimID = $query-&gt;param('borgvictim') || 0;
-return unless $victimID =~ /^(\d+)$/;
-my $victim = getNodeById($victimID=$1) || undef;
-return unless defined $victim;
-return unless $$victim{type}{title} eq 'user';
-
-my $borgSelf = $victimID==$UID;
-
-#following ripped from [message] (opcode)
-my $V = $borgSelf ? $VARS : getVars($victim);
-++$$V{numborged};
-$$V{borged}=time;
-setVars($victim,$V) unless $borgSelf;
-$query-&gt;param('borgcount'.$victimID,$$V{numborged}); #shown in [admin toolset]
-
-$DB-&gt;sqlUpdate('room',{borgd=&gt;'1'},'member_user='.$victimID);
-
-my $OTHERUSERS = getNode('other users','nodelet');
-$$OTHERUSERS{nltext} = Everything::HTML::parseCode($$OTHERUSERS{nlcode},$OTHERUSERS);
-updateNode($OTHERUSERS,-1);
-
-return;</code>
+  <code></code>
 </node>

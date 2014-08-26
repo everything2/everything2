@@ -3,14 +3,5 @@
   <delegated>1</delegated>
   <node_id>1877928</node_id>
   <title>updateNodelet</title>
-  <code>my ($nodelet) = @_;
-return unless $nodelet;
-
-$nodelet = getNode($nodelet,'nodelet');
-return unless $nodelet;
-
-return insertNodelet($nodelet);
-
-
-</code>
+  <code></code>
 </node>

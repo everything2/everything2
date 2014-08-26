@@ -3,26 +3,5 @@
   <delegated>1</delegated>
   <node_id>401321</node_id>
   <title>daylog</title>
-  <code>my @months = qw(January February March April May June
-	July August September October November December);
-
-my ($sec,$min,$hour,$mday,$mon,$year) = gmtime(time);
-
-$year+= 1900;
-
-my $daydate = &quot;$months[$mon] $mday, $year&quot;;
-# Create daylog e2node if it's not already there.
-$DB -&gt; insertNode($daydate, 'e2node', getNode('Cool Man Eddie', 'user'))
-	unless getNode($daydate, 'e2node');
-
-# Link to monthly ed log/root
-my $mnthdate = $months[$mon].' '.$year;
-
-parseLinks(qq'&lt;ul class=&quot;linklist&quot;&gt;
-	&lt;li class=&quot;loglink&quot;&gt;[$daydate|Day logs for $daydate]&lt;/li&gt;
-	&lt;li class=&quot;loglink&quot;&gt;[Editor Log: $mnthdate|Editor logs for $mnthdate]&lt;/li&gt;
-	&lt;li class=&quot;loglink&quot;&gt;[root log: $mnthdate|Coder logs for $mnthdate]&lt;/li&gt;
-	&lt;li class=&quot;loglink&quot;&gt;[Log Archive[superdoc]]&lt;/li&gt;
-&lt;/ul&gt;');
-</code>
+  <code></code>
 </node>

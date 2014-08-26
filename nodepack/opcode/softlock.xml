@@ -1,26 +1,7 @@
 <node>
   <type_nodetype>415056</type_nodetype>
+  <delegated>1</delegated>
   <node_id>1876426</node_id>
   <title>softlock</title>
-  <code>return unless $query-&gt;param(&quot;lockID&quot;);
-return unless $APP-&gt;isEditor($USER);
-
-my $lockNode = getNodeById($query-&gt;param(&quot;lockID&quot;));
-return unless $lockNode;
-
-my $nodeReason = $query-&gt;param('nodelock_reason') || '';
-
-my $isLocked = $DB-&gt;sqlSelect(&quot;nodelock_node&quot;, &quot;nodelock&quot;, &quot;nodelock_node=$$lockNode{node_id} limit 1&quot;) || 0;
-
-if ($isLocked) {
-   $DB-&gt;sqlDelete(&quot;nodelock&quot;,&quot;nodelock_node=$$lockNode{node_id}&quot;);
-}
-else {
-  $DB-&gt;sqlInsert(&quot;nodelock&quot;, {nodelock_reason =&gt; $nodeReason, nodelock_user =&gt; $$USER{user_id}, nodelock_node =&gt; $$lockNode{node_id}});
-}
-
-
-
-
-</code>
+  <code></code>
 </node>

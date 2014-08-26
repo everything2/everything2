@@ -3,23 +3,5 @@
   <delegated>1</delegated>
   <node_id>1217094</node_id>
   <title>changewucount</title>
-  <code>return '' if ( $APP-&gt;isGuest($USER) );
-
-if($query-&gt;param('amount')) {
-	my $amount = $query-&gt;param('amount');
-	if($amount =~ /^(\d+)$/) {
-		$amount=$1;
-		$amount = 50 if $amount &gt; 50 ;
-		$$VARS{num_newwus}=$amount;
-	}
-}
-
-if ( $query-&gt;param( 'nw_nojunk' ) ) {
-	$$VARS{ nw_nojunk } = 1 ;
-} else {
-	delete $$VARS{ nw_nojunk } ;
-}
-
-return 1;
-</code>
+  <code></code>
 </node>

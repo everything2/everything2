@@ -3,49 +3,5 @@
   <delegated>1</delegated>
   <node_id>2015637</node_id>
   <title>check blacklist</title>
-  <code>my @addrs = @_;
-
-return 0 unless scalar @addrs;
-
-my $ip_list = '('
-  . ( join ',', map { $DB-&gt;quote($_) } @addrs )
-  . ')'
-  ;
-
-my $ban_query = &lt;&lt;SQLEND;
-SELECT ipblacklist_id
-  FROM ipblacklist
-  WHERE ipblacklist_ipaddress
-    IN $ip_list
-SQLEND
-
-return 1 if ($DB-&gt;getDatabaseHandle()-&gt;selectrow_array($ban_query));
-
-my $intFromAddr = sub {
-  my $addr = shift;
-  return undef unless $addr =~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
-  return (
-    (int $1) * 256*256*256 
-    + (int $2) * 256 * 256
-    + (int $3) * 256
-    + (int $4)
-  );
-};
-
-my @addrsNum = map { &amp;$intFromAddr($_) } @addrs;
-
-my $ip_between_list = ''
-  . ( join &quot;\n    OR &quot;,
-      map { '' . (int $_) . ' BETWEEN min_ip AND max_ip' } @addrsNum )
-  ;
-
-my $range_ban_query = &lt;&lt;SQLEND;
-SELECT ipblacklistrange_id
-  FROM ipblacklistrange
-  WHERE $ip_between_list
-SQLEND
-
-return 1 if ($DB-&gt;getDatabaseHandle()-&gt;selectrow_array($range_ban_query));
-
-return 0;</code>
+  <code></code>
 </node>

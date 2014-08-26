@@ -30,7 +30,6 @@ to_install = [
     'libdate-calc-perl',
     'libdatetime-perl',
     'libdatetime-format-strptime-perl',
-    'libdigest-sha1-perl',
     'libhtml-tiny-perl',
     'libheap-perl',
     'libio-string-perl',
@@ -75,6 +74,8 @@ nosearch_words_hash = {}
 nosearch_words.each { |x| nosearch_words_hash[x] = 1 }
 
 everything_conf_variables = {
+    "infected_ips" => node["e2engine"]["infected_ips"],
+    "default_style" => node["e2engine"]["default_style"],
     "everyuser" => node["e2engine"]["everyuser"],
     "everypass" => node["e2engine"]["everypass"],
     "everything_dbserv" => node["e2engine"]["everything_dbserv"],
@@ -111,12 +112,13 @@ everything_conf_variables = {
       "theme" => 1,
       "themesetting" => 1
     },
-    "utf8" => 1,
     "nosearch_words" => nosearch_words_hash,
     "create_room_level" => node["e2engine"]["create_room_level"],
     "stylesheet_fix_level" => node["e2engine"]["stylesheet_fix_level"],
     "maintenance_mode" => node["e2engine"]["maintenance_mode"],
-    "writeuplowrepthreshold" => node["e2engine"]["writeuplowrepthreshold"]
+    "writeuplowrepthreshold" => node["e2engine"]["writeuplowrepthreshold"],
+    "google_ads_badnodes" => node["e2engine"]["google_ads_badnodes"],
+    "google_ads_badwords" => node["e2engine"]["google_ads_badwords"]
 }
 
 file '/etc/everything/everything.conf.json' do
