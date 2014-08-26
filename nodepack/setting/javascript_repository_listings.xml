@@ -1,57 +1,5 @@
 <node>
   <type_nodetype>153</type_nodetype>
-  <vars>
-    <value>&lt;b&gt;[jquery bbq]&lt;/b&gt; by [jaybonci]&lt;br /&gt;
-</value>
-    <key>2100806</key>
-  </vars>
-  <vars>
-    <value>&lt;b&gt;[E2 Nodelet Collapser]&lt;/b&gt; by [Excalibre] &lt;br /&gt;Collapse your nodelets at the click of a mouse (for non-zen themes).&lt;br /&gt;</value>
-    <key>1786409</key>
-  </vars>
-  <vars>
-    <value>&lt;b&gt;[Additional Everything2 Ajax]&lt;/b&gt; by [gods]&lt;br /&gt;None of this functions in its and the site's current state&lt;br&gt;</value>
-    <key>2024790</key>
-  </vars>
-  <vars>
-    <value>&lt;b&gt;[Deferrer]&lt;/b&gt; by [gods]&lt;br /&gt;You will only need this if you know why&lt;br&gt;</value>
-    <key>2024791</key>
-  </vars>
-  <vars>
-    <value>&lt;b&gt;[Writeup AJAX]&lt;/b&gt; by [kthejoker]&lt;br /&gt;</value>
-    <key>1930065</key>
-  </vars>
-  <vars>
-    <value>&lt;b&gt;[universal message json ticker]&lt;/b&gt; by [ascorbic]&lt;br /&gt;
-</value>
-    <key>2033914</key>
-  </vars>
-  <vars>
-    <value>&lt;b&gt;[Nodelet Switcher]&lt;/b&gt; by [kthejoker]&lt;br /&gt;Worked with Kyle's theme. Currently doesn't&lt;br&gt;</value>
-    <key>1874173</key>
-  </vars>
-  <vars>
-    <value>&lt;b&gt;[jquery ui]&lt;/b&gt; by [jaybonci]&lt;br /&gt;
-</value>
-    <key>2100807</key>
-  </vars>
-  <vars>
-    <value>&lt;b&gt;[ascorbic's ajax toolshed]&lt;/b&gt; by [ascorbic]&lt;br /&gt;
-</value>
-    <key>2034141</key>
-  </vars>
-  <vars>
-    <value>&lt;b&gt;[Nodelet Section Collapser]&lt;/b&gt; by [kthejoker]&lt;br /&gt;Collapse sections within nodelets.&lt;br /&gt;</value>
-    <key>1872990</key>
-  </vars>
-  <vars>
-    <value>&lt;b&gt;[musical appreciation]&lt;/b&gt; by [OldMiner]&lt;br /&gt;</value>
-    <key>2020854</key>
-  </vars>
-  <vars>
-    <value>&lt;b&gt;[javascript debugger]&lt;/b&gt; by [gods]&lt;br /&gt;</value>
-    <key>2023560</key>
-  </vars>
   <node_id>1869642</node_id>
   <title>Javascript Repository listings</title>
 </node>

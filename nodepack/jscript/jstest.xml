@@ -546,9 +546,9 @@ function SwapGravatars(){
       $(this).attr('src', $(this).attr('src').replace('?d=wavatar&amp;', '?d='+g+'&amp;'));
    });
 }</doctext>
-  <contentversion>131</contentversion>
+  <contentversion>3</contentversion>
   <s3bucket></s3bucket>
-  <node_id>1983490</node_id>
+  <node_id>2115138</node_id>
   <title>jstest</title>
-  <s3content_id>1983490</s3content_id>
+  <s3content_id>2115138</s3content_id>
 </node>

@@ -173,11 +173,6 @@ z-index: 2;
  font-size: 80%;
 }
 
-.nodelet_selected {
- font-weight: bold;
-background-color: #E6ECFF;
-}
-
 .hidden {
 display: none;
 }
@@ -247,7 +242,7 @@ text-align: left;
 #admintools {
  display: none;
 }</doctext>
-  <contentversion>104</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1854354</node_id>
   <title>Kyle's Style</title>
