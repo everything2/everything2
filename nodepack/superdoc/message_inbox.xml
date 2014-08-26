@@ -6,7 +6,8 @@ return &quot;&lt;p&gt;If you had an account, you could get messages.&lt;/p&gt;&q
 	if $APP-&gt;isGuest($USER);
 
 # options
-my $str = htmlcode('openform', 'message_inbox_form')
+my $str = &quot;(Also see: [Message Outbox])&quot;
+	.htmlcode('openform', 'message_inbox_form')
 	.'&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;message&quot;&gt;'
 	.$query -&gt; hidden('perpage')
 	.$query-&gt;hidden('sexisgood','1')	#so auto-VARS changing works

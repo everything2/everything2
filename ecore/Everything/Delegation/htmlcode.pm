@@ -9129,6 +9129,20 @@ sub sendPrivateMessage
   
     $m .= ')';                    # Dear sweet christ
 
+    # Save a copy of the sent message notice into the sender's outbox (message_outbox table)
+    #
+    #   It would be useful to have this entry link back to the matching message in the "inbox"
+    #   message table. However, what constitutes the matching message is ambiguous in scenarios
+    #   where the message is delivered to multiple recipients (such as sent to a group, multiple
+    #   users, etc) since an "inbox" table record is created for (and owned by) each recipient
+    #   and none are distinctly a master. So for now no link is created.
+    #
+    $DB->sqlInsert('message_outbox',{
+       'msgtext'     => $m,
+       'author_user' => $aid,
+       'tstamp'      => $sendTime,
+    });
+
   } else {
     $m = "You triggered a message from "
       .linkNode($aid)
