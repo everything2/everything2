@@ -3,5 +3,36 @@
   <delegated>1</delegated>
   <node_id>2115167</node_id>
   <title>message_outbox</title>
-  <code></code>
+  <code>return if $APP-&gt;isGuest($USER);
+
+my $UID = getId($USER)||0;
+my $isRoot = $APP-&gt;isAdmin($USER);
+
+foreach($query-&gt;param) {
+	if($_ =~ /^deletemsg\_(\d+)$/) {
+
+		# Delete a message given param named : deletemsg_&lt;messageid&gt;
+		my $MSG = $DB-&gt;sqlSelectHashref('*', 'message_outbox', &quot;message_id=$1&quot;);
+		next unless $MSG;
+		next unless $isRoot || ($UID==$$MSG{author_user});
+		$DB-&gt;sqlDelete('message_outbox', &quot;message_id=$$MSG{message_id}&quot;);
+	} elsif($_ =~ /^archive\_(\d+)$/) {
+
+		# Archive a message given param named : archive_&lt;messageid&gt;
+		my $MSG = $DB-&gt;sqlSelectHashref('*', 'message_outbox', &quot;message_id=$1&quot;);
+		next unless $MSG;
+		next unless $isRoot||($UID==$$MSG{author_user});
+		my $realTime = $$MSG{tstamp};
+		$DB-&gt;sqlUpdate('message_outbox', {archive=&gt;1, tstamp=&gt;$realTime}, 'message_id='.$$MSG{message_id});
+
+	} elsif($_ =~ /^unarchive\_(\d+)$/) {
+
+		# Un-archive a message given param named : unarchive_&lt;messageid&gt;
+		my $MSG = $DB-&gt;sqlSelectHashref('*', 'message_outbox', &quot;message_id=$1&quot;);
+		next unless $MSG;
+		next unless $isRoot||($UID==$$MSG{author_user});
+		my $realTime = $$MSG{tstamp};
+		$DB-&gt;sqlUpdate('message_outbox', {archive=&gt;0, tstamp=&gt;$realTime}, 'message_id='.$$MSG{message_id});
+	}
+}</code>
 </node>
