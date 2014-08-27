@@ -103,16 +103,11 @@ $str .= &quot;$paginationLinks
 while (my $MSG = $csr-&gt;fetchrow_hashref){
 	my $text = $$MSG{msgtext};
 
-<<<<<<< HEAD
 	# This could use a little further consideration :
 	# Don't escape HTML for anyone since we're displaying the stored, pre-rendered &quot;you sent X to user Y&quot; text
 	# It should be relatively safe since it is text that has already been cleared as safe for html display to the user
 	# and they are messages which originated from the user who will be viewing it.
 	#
-=======
-	# TODO-MSG-OUTBOX : This needs further consideration
-	# Don't escape HTML for anyone since we're displaying the stored, pre-rendered &quot;you sent X to user Y&quot; text
->>>>>>> First pass at message outbox
 	# don't escape HTML for bots
 	# unless ($$bots{$$touser{title}} eq 'Content Editors') {
 	#	$text = escapeAngleBrackets($text);
