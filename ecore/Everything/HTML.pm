@@ -2122,13 +2122,6 @@ sub getTheme {
 	$THEME = getVars $TS;
 	$$THEME{theme_id} = getId($TS);
 
-	#we must also check the user's settings for any replacements over the theme
-	foreach (keys %$THEME) {
-		if (exists $$VARS{"theme".$_}) {
-			$$THEME{$_} = $$VARS{"theme".$_};
-		}
-	}
-	#$THEME= {};
 	1;
 }
 
