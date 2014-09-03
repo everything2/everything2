@@ -2118,19 +2118,9 @@ sub getTheme {
 
 	my $TS = getNodeById $theme_id;
 
-	if ($$TS{type}{title} eq 'themesetting') {
-		#we are referencing a theme setting.
-		my $BASETHEME = getNodeById $$TS{parent_theme};
-		$THEME = getVars $BASETHEME;
-		my $REPLACEMENTVARS = getVars $TS;
-		@$THEME{keys %$REPLACEMENTVARS} = values %$REPLACEMENTVARS;
-		$$THEME{theme_id} = getId($BASETHEME);
-		$$THEME{themesetting_id} = getId($TS);
-    } else {
-		#this whatchamacallit is a theme
-		$THEME = getVars $TS;
-		$$THEME{theme_id} = getId($TS);
-	}
+	#this whatchamacallit is a theme
+	$THEME = getVars $TS;
+	$$THEME{theme_id} = getId($TS);
 
 	#we must also check the user's settings for any replacements over the theme
 	foreach (keys %$THEME) {
