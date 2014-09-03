@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>154</pagetype_nodetype>
   <page>&lt;TABLE width=100% cellpadding=0 cellspacing=1 border=0&gt;
@@ -21,8 +20,9 @@ if (not $$NODE{from_address}) {
 &lt;/TABLE&gt;
 [{parseLinks:doctext}]
 </page>
-  <displaytype>display</displaytype>
   <node_id>195</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>mail display page</title>
   <mimetype></mimetype>
 </node>

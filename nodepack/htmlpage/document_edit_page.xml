@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>3</pagetype_nodetype>
   <page>&lt;H4&gt;title:&lt;/H4&gt;[{textfield:title}]
@@ -7,8 +6,9 @@
 &lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the document text:&lt;/strong&gt;&lt;/small&gt;&lt;br /&gt;
 
 [{textarea:doctext,30,60}]</page>
-  <displaytype>edit</displaytype>
   <node_id>62</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>document edit page</title>
   <mimetype></mimetype>
 </node>

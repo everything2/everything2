@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1254859</pagetype_nodetype>
   <page>[% # table for margin %]&lt;table cellpadding=&quot;8&quot;&gt;&lt;tr&gt;&lt;td&gt;
@@ -127,8 +126,9 @@ $str .= $NL.$doctext.$NL;
 return $str;
 %]
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</page>
-  <displaytype>display</displaytype>
   <node_id>1254863</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>collaboration display page</title>
   <mimetype></mimetype>
 </node>

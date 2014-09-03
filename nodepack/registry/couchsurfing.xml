@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>1876758</type_nodetype>
   <doctext>Please pipelink your profile on [http://www.couchsurfing.org/home|the international stranger-hosting web site], if you like.</doctext>
-  <question></question>
   <node_id>2062179</node_id>
+  <type_nodetype>1876758</type_nodetype>
+  <question></question>
   <title>CouchSurfing</title>
   <input_style>text</input_style>
 </node>

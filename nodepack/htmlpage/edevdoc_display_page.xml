@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>854232</pagetype_nodetype>
   <page>&lt;p align=&quot;right&quot;&gt;
@@ -10,8 +9,9 @@ linkNode($NODE, 'edit', {displaytype =&gt; 'edit'});
 &lt;/p&gt;
 
 [{parselinks:doctext}]</page>
-  <displaytype>display</displaytype>
   <node_id>1985290</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>edevdoc display page</title>
   <mimetype></mimetype>
 </node>

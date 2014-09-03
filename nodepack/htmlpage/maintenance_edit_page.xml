@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>150</pagetype_nodetype>
   <page>title:[{textfield:title}] maintained by:[{node_menu:author_user,user,usergroup}]&lt;br&gt;
@@ -30,8 +29,9 @@ $str;
 
 &lt;/tr&gt;&lt;/table&gt;
 </page>
-  <displaytype>edit</displaytype>
   <node_id>189</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>maintenance edit page</title>
   <mimetype></mimetype>
 </node>

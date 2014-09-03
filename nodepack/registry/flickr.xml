@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>1876758</type_nodetype>
   <doctext>Enter your Flickr profile URL. Don't forget to hardlink it.</doctext>
-  <question></question>
   <node_id>2049364</node_id>
+  <type_nodetype>1876758</type_nodetype>
+  <question></question>
   <title>Flickr</title>
   <input_style>text</input_style>
 </node>

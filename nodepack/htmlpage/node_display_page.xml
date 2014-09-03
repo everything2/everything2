@@ -1,11 +1,11 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>7</pagetype_nodetype>
   <page>[{displayNODE}]
 </page>
-  <displaytype>display</displaytype>
   <node_id>69</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>node display page</title>
   <mimetype></mimetype>
 </node>

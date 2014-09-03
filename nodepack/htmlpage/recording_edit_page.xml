@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1957954</pagetype_nodetype>
   <page>[%
@@ -127,8 +126,9 @@ $str .= htmlcode( 'closeform' );
 
 return $str;
 %]</page>
-  <displaytype>edit</displaytype>
   <node_id>1958975</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>recording edit page</title>
   <mimetype></mimetype>
 </node>

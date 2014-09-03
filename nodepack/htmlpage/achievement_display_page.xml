@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1917847</pagetype_nodetype>
   <page>&lt;p&gt;&lt;strong&gt;Displaying:&lt;/strong&gt; [% $$NODE{display}; %]&lt;/p&gt;
@@ -12,8 +11,9 @@
 
 [{listcode:code}]
 </page>
-  <displaytype>display</displaytype>
   <node_id>1917858</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>achievement display page</title>
   <mimetype></mimetype>
 </node>

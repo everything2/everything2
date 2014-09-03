@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>1876758</type_nodetype>
   <doctext>Please enter only the name of your city (i.e., do not include the State, Province, or Region which should be entered in the [State/Province/Region of Residence|this registry]).</doctext>
-  <question></question>
   <node_id>2014869</node_id>
+  <type_nodetype>1876758</type_nodetype>
+  <question></question>
   <title>City of Residence</title>
   <input_style>text</input_style>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>926672</parent_container>
   <pagetype_nodetype>117</pagetype_nodetype>
   <page>&lt;h2&gt;[&quot;$$NODE{title}&quot;]&lt;/h2&gt;
@@ -9,8 +8,9 @@
 [{displaywriteuptext}]
 
 [{printablefooter}]</page>
-  <displaytype>printable</displaytype>
   <node_id>926273</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>printable</displaytype>
   <title>writeup printable page</title>
   <mimetype></mimetype>
 </node>

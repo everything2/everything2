@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1089144</pagetype_nodetype>
   <page>[%
@@ -112,8 +111,9 @@ $str;
 %]
 
 [{closeform}]</page>
-  <displaytype>edit</displaytype>
   <node_id>1089160</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>musicnode edit page</title>
   <mimetype></mimetype>
 </node>

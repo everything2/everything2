@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>3</pagetype_nodetype>
   <page>&lt;p align=&quot;right&quot;&gt;[% linkNode($NODE, 'edit', {displaytype=&gt;&quot;edit&quot;}) if $APP-&gt;isEditor($USER); %]&lt;/p&gt;
@@ -7,8 +6,9 @@
 [{parselinks:doctext}]
 &lt;/div&gt;
 </page>
-  <displaytype>display</displaytype>
   <node_id>61</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>document display page</title>
   <mimetype></mimetype>
 </node>

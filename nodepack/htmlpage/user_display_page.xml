@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>15</pagetype_nodetype>
   <page>[{setupuservars}]
@@ -48,8 +47,9 @@ return if getId($USER) != getId($NODE) or $APP-&gt;isGuest($USER);
  
 
 [{showbookmarks}]</page>
-  <displaytype>display</displaytype>
   <node_id>1854179</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>user display page</title>
   <mimetype></mimetype>
 </node>

@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1065266</pagetype_nodetype>
   <page>[{parsecode:doctext,1}]</page>
-  <displaytype>display</displaytype>
   <node_id>1065267</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>superdocnolinks display</title>
   <mimetype></mimetype>
 </node>

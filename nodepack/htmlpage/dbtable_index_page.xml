@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>148</pagetype_nodetype>
   <page>&lt;p&gt;Indices for database table [&quot;$NODE-&gt;{title}&quot;]&lt;/p&gt;
@@ -43,8 +42,9 @@
 
    return $str;
 %]</page>
-  <displaytype>index</displaytype>
   <node_id>1427054</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>index</displaytype>
   <title>dbtable index page</title>
   <mimetype></mimetype>
 </node>

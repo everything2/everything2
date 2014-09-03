@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1685242</pagetype_nodetype>
   <page>[{showpoll}]
@@ -9,8 +8,9 @@ parseLinks '[Everything Poll Archive[superdoc]|Past polls]
 	| [Everything Poll Creator[superdoc]|New poll]
 	&lt;br&gt; [Polls[by Virgil]|About polls]'; 
 %]&lt;/p&gt;</page>
-  <displaytype>display</displaytype>
   <node_id>1968193</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>e2poll display page</title>
   <mimetype></mimetype>
 </node>

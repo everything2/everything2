@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1382262</pagetype_nodetype>
   <page>&lt;H4&gt;title:&lt;/H4&gt;[{textfield:title}]
@@ -9,8 +8,9 @@
 [{textarea:doctext,30,60}]
 &lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the code:&lt;/strong&gt;&lt;/small&gt;&lt;br /&gt;
 [{textarea:code,30,60}]</page>
-  <displaytype>edit</displaytype>
   <node_id>1385532</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>codearchive edit page</title>
   <mimetype></mimetype>
 </node>

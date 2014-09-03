@@ -1,7 +1,5 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <node_id>2115029</node_id>
-  <title>Message Outbox</title>
   <doctext>[%
 
 return &quot;&lt;p&gt;If you had an account, you could send messages.&lt;/p&gt;&quot;
@@ -194,4 +192,6 @@ $str.' '
 	.$query-&gt;end_form();
 
 %]</doctext>
+  <node_id>2115029</node_id>
+  <title>Message Outbox</title>
 </node>

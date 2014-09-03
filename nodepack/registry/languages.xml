@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>1876758</type_nodetype>
   <doctext>Any languages that you would like to go on the record as having a certain command of</doctext>
-  <question></question>
   <node_id>2003350</node_id>
+  <type_nodetype>1876758</type_nodetype>
+  <question></question>
   <title>Languages</title>
   <input_style>text</input_style>
 </node>

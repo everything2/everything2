@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>14</pagetype_nodetype>
   <page>[%
@@ -8,8 +7,9 @@ return unless $APP-&gt;isDeveloper($USER);
 htmlcode('listcode','doctext');
 
 %]</page>
-  <displaytype>viewcode</displaytype>
   <node_id>854216</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>viewcode</displaytype>
   <title>superdoc viewcode page</title>
   <mimetype></mimetype>
 </node>

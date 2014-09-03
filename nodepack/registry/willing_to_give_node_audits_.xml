@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>1876758</type_nodetype>
   <doctext>Please enter your criteria for what types of node audits you are willing to give (e.g., I will audit up to 50 writeups, I will audit any user with less than 35 writeups, etc.)</doctext>
-  <question></question>
   <node_id>2034520</node_id>
+  <type_nodetype>1876758</type_nodetype>
+  <question></question>
   <title>Willing to give Node Audits?</title>
   <input_style>text</input_style>
 </node>

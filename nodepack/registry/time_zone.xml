@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>1876758</type_nodetype>
   <doctext>It's quite often useful to know what time zone people are in, so tell us here if you want to be useful. Further notes on availability are optional.</doctext>
-  <question></question>
   <node_id>2016107</node_id>
+  <type_nodetype>1876758</type_nodetype>
+  <question></question>
   <title>Time zone</title>
   <input_style>text</input_style>
 </node>

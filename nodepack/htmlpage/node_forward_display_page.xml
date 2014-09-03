@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>0</parent_container>
   <pagetype_nodetype>1147470</pagetype_nodetype>
   <page>[%
@@ -106,8 +105,9 @@ return $str;
 &lt;/body&gt;
 &lt;/html&gt;
 </page>
-  <displaytype>display</displaytype>
   <node_id>1147480</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>node_forward display page</title>
   <mimetype></mimetype>
 </node>

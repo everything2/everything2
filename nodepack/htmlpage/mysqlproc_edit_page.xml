@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>2061807</pagetype_nodetype>
   <page>&lt;H4&gt;title:&lt;/H4&gt;[{textfield:title}]
@@ -10,8 +9,9 @@
 &lt;em&gt;[{mysqlproctest}]&lt;/em&gt;
 
 [{textarea:doctext,30,60}]</page>
-  <displaytype>edit</displaytype>
   <node_id>2069690</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>mysqlproc edit page</title>
   <mimetype></mimetype>
 </node>

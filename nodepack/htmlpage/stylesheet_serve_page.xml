@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>0</parent_container>
   <pagetype_nodetype>1854352</pagetype_nodetype>
   <page>[%
@@ -46,8 +45,9 @@ for (my $i=64; $i; $i--){
 
 return $out;
 %]</page>
-  <displaytype>serve</displaytype>
   <node_id>2024235</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>serve</displaytype>
   <title>stylesheet serve page</title>
   <mimetype>text/css</mimetype>
 </node>

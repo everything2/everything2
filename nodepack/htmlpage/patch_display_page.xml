@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1151141</pagetype_nodetype>
   <page>&lt;p&gt;
@@ -223,8 +222,9 @@ return $str;
 %]
 
 </page>
-  <displaytype>display</displaytype>
   <node_id>1151154</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>patch display page</title>
   <mimetype></mimetype>
 </node>

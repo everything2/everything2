@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1</pagetype_nodetype>
   <page>&lt;p&gt;readers: [{node_menu:readers_user,user,usergroup,-parent_-1}]
@@ -19,8 +18,9 @@
 [{displayInherited:restrictdupes}]
 &lt;p&gt;verify edits to maintain security: [{node_menu:verify_edits, -no_0, -yes_1}]
 &lt;/p&gt;</page>
-  <displaytype>edit</displaytype>
   <node_id>76</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>nodetype edit page</title>
   <mimetype></mimetype>
 </node>

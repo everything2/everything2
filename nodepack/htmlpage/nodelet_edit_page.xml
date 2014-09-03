@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>9</pagetype_nodetype>
   <page>title:[{textfield:title}]
@@ -14,8 +13,9 @@ icon width: [{textfield:iconWidth}]&lt;br&gt;
 
 nodelet code:&lt;br /&gt;
 [{textarea:nlcode,30,80,off}]</page>
-  <displaytype>edit</displaytype>
   <node_id>74</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>nodelet edit page</title>
   <mimetype></mimetype>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>6</pagetype_nodetype>
   <page>&lt;b&gt;[%linkNode($NODE, &quot;Upload the image&quot;, {displaytype=&gt;'upload'});%]&lt;br&gt;
@@ -8,8 +7,9 @@
 &lt;b&gt;&lt;font size=2&gt;thumbnail source:&lt;/b&gt;&lt;/font&gt;[{textfield:thumbsrc}]&lt;br&gt;
 &lt;b&gt;&lt;font size=2&gt;description:&lt;/font&gt;&lt;br&gt;&lt;/b&gt;[{textarea:description}]&lt;br&gt;
 </page>
-  <displaytype>edit</displaytype>
   <node_id>68</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>image edit page</title>
   <mimetype></mimetype>
 </node>

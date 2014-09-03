@@ -20,8 +20,6 @@ htmlcode('openform',-id=&gt;'pagebody');
 [%
 return if $APP-&gt;isGuest($USER);
 
-delete $$VARS{preferred_theme} if $$VARS{preferred_theme} == $Everything::CONF-&gt;{system}-&gt;{default_theme};
-
 if($query-&gt;param('chosentheme')) {
 	my $theme = getNodeById($query-&gt;param('chosentheme'));
 	my $theme_type = $$theme{type}{title} if $theme;
@@ -29,12 +27,9 @@ if($query-&gt;param('chosentheme')) {
 		delete $$VARS{preferred_theme} ;
 		delete $$VARS{userstyle} ;
 		$$VARS{userstyle} = $$theme{node_id} if $theme ;
-	} elsif ($theme_type eq 'theme' || $theme_type eq 'themesetting') {
-		$$VARS{preferred_theme} = $$theme{node_id};
 	}
 	getTheme();
 }
-local $$THEME{default_style} = getVars(getNodeById( $Everything::CONF-&gt;{system}-&gt;{default_theme} ))-&gt;{default_style} if $$VARS{preferred_theme};
 
 my $sheets = undef;
 my $supported_sheets = $DB-&gt;getNodesWithParam(&quot;supported_sheet&quot;);
@@ -62,17 +57,8 @@ $$sheets{default} = 'default zen theme' ;
 $$sheets{ $$VARS{userstyle} } .= '*' if $$VARS{userstyle} ;
 my $str = 'Choose a theme: ' . $query -&gt; popup_menu( -name =&gt; 'chosentheme', values=&gt; \@values ,
 	labels=&gt;$sheets , default=&gt;$$VARS{userstyle}||'default') ;
-if ( $$VARS{preferred_theme} ){
-        my $default_theme = $Everything::CONF-&gt;{system}-&gt;{default_theme};
-	$str .= htmlcode('typeMenu', 'chosentheme', $$VARS{preferred_theme}, 'theme', 'themesetting');
-	$str =~ s&quot;&lt;option.*$default_theme.*&lt;/option&gt;&quot;&quot; ;
-	$str =~ s/(&lt;select.*&gt;)/$1&lt;optgroup label=&quot;Zen theme styles&quot;&gt;/ ;
-	$str =~ s'&lt;/select&gt;.*&lt;select.*&gt;'&lt;/optgroup&gt;&lt;optgroup label=&quot;Unsupported themes&quot;&gt;' ;
-	$str =~ s'&lt;/select&gt;'&lt;/optgroup&gt;&lt;/select&gt;' ;
-}
-&quot;$str\n&lt;br&gt;&lt;small&gt;If you choose 'default zen theme', your theme will change when the default is changed.
-	If you choose '$$THEME{default_style}' it won't.
-	There are more (possibly less well-maintained) themes at [Theme Nirvana].&lt;/small&gt;&lt;br&gt;&quot; ;
+
+&quot;$str\n&quot;;
 %]
 [{varcheckboxinverse:nogradlinks,Show the softlink color gradient}] [{varcheckboxinverse:nogradekw,using colors from my theme}]&lt;br&gt;
 &lt;/fieldset&gt;

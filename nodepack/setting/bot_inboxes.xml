@@ -21,12 +21,12 @@
     <key>Virgil</key>
   </vars>
   <vars>
-    <value>edev</value>
-    <key>Grease Monkey</key>
-  </vars>
-  <vars>
     <value>Content Editors</value>
     <key>Webster 1913</key>
+  </vars>
+  <vars>
+    <value>edev</value>
+    <key>Grease Monkey</key>
   </vars>
   <vars>
     <value>Content Editors</value>

@@ -1,11 +1,11 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1156105</pagetype_nodetype>
   <page>[{showdebate:4}]
 </page>
-  <displaytype>compact</displaytype>
   <node_id>1157381</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>compact</displaytype>
   <title>debatecomment compact page</title>
   <mimetype></mimetype>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>4</pagetype_nodetype>
   <page>title:[{textfield:title}] maintained by:[{node_menu:author_user,user,usergroup}]&lt;br /&gt;
@@ -16,8 +15,9 @@
 [{textarea:code,30,80}]
 
 &lt;p&gt;&lt;strong&gt;Delegated: &lt;/strong&gt;[{textfield:delegated,1,0}]</page>
-  <displaytype>edit</displaytype>
   <node_id>64</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>htmlcode edit page</title>
   <mimetype></mimetype>
 </node>

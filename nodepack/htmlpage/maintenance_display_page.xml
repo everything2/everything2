@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>150</pagetype_nodetype>
   <page>Maintains: 
@@ -13,8 +12,9 @@ linkNode $N;
 Maintenance operation:[&quot;$$NODE{maintaintype}&quot;]
 &lt;p&gt;[{listcode:code}]
 </page>
-  <displaytype>display</displaytype>
   <node_id>188</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>maintenance display page</title>
   <mimetype></mimetype>
 </node>

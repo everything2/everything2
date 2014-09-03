@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>1876758</type_nodetype>
   <doctext>Please add only complete, useable addresses. This registry replaces the late and great EMAR, which was permanently retired in June 2011.</doctext>
-  <question></question>
   <node_id>2004316</node_id>
+  <type_nodetype>1876758</type_nodetype>
+  <question></question>
   <title>Mailing address</title>
   <input_style>text</input_style>
 </node>

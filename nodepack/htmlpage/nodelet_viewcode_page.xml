@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>9</pagetype_nodetype>
   <page>[%
@@ -23,8 +22,9 @@ if ($$USER{title} eq 'ascorbic') {
 %]
 [{listcode:nlcode}]
 </page>
-  <displaytype>viewcode</displaytype>
   <node_id>1933854</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>viewcode</displaytype>
   <title>nodelet viewcode page</title>
   <mimetype></mimetype>
 </node>

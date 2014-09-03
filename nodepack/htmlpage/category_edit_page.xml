@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1522375</pagetype_nodetype>
   <page>&lt;p align=&quot;right&quot;&gt;
@@ -236,8 +235,9 @@ $str .= htmlcode('openform')
 return $str;
 %]
 </page>
-  <displaytype>edit</displaytype>
   <node_id>1522377</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>category edit page</title>
   <mimetype></mimetype>
 </node>

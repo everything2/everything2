@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>1876758</type_nodetype>
   <doctext>[SoundCloud] is 'an online community which unleashes sounds from clouds.'</doctext>
-  <question></question>
   <node_id>2098221</node_id>
+  <type_nodetype>1876758</type_nodetype>
+  <question></question>
   <title>SoundCloud</title>
   <input_style>text</input_style>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>854232</pagetype_nodetype>
   <page>&lt;p align=right&gt;
@@ -10,8 +9,9 @@
 &lt;p&gt;
 &lt;h2&gt;Edit the document text:&lt;/h2&gt;
 [{textarea:doctext}]</page>
-  <displaytype>edit</displaytype>
   <node_id>1038521</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>edevdoc edit page</title>
   <mimetype></mimetype>
 </node>

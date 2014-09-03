@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>3</pagetype_nodetype>
   <page>[%
@@ -8,8 +7,9 @@ return unless isGod($USER) or Everything::isApproved($USER, getNode('edev','user
 htmlcode('listcode','doctext');
 
 %]</page>
-  <displaytype>viewcode</displaytype>
   <node_id>1958721</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>viewcode</displaytype>
   <title>document viewcode page</title>
   <mimetype></mimetype>
 </node>

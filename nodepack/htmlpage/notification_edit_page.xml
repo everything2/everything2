@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1930710</pagetype_nodetype>
   <page>[{listcode:code}]
@@ -12,8 +11,9 @@
 
 [{textarea:code,30,80}]
 &lt;/p&gt;</page>
-  <displaytype>edit</displaytype>
   <node_id>1930719</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>notification edit page</title>
   <mimetype></mimetype>
 </node>

@@ -85,16 +85,16 @@
     <key>pizza</key>
   </vars>
   <vars>
+    <value>giant squids</value>
+    <key>giantsquid</key>
+  </vars>
+  <vars>
     <value>shakes da booty for</value>
     <key>booty</key>
   </vars>
   <vars>
     <value>lays a curse upon ~, and I will curse your blessings: yea, I have cursed them already, because ye do not lay it to heart</value>
     <key>curse</key>
-  </vars>
-  <vars>
-    <value>giant squids</value>
-    <key>giantsquid</key>
   </vars>
   <vars>
     <value>pours ~ a fine cold beer</value>

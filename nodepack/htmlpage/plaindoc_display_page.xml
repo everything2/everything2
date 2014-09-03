@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1491416</pagetype_nodetype>
   <page>[% $NODE-&gt;{doctext} %]</page>
-  <displaytype>display</displaytype>
   <node_id>1491424</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>plaindoc display page</title>
   <mimetype></mimetype>
 </node>

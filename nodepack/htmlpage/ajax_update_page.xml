@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>0</parent_container>
   <pagetype_nodetype>7</pagetype_nodetype>
   <page>[%
@@ -95,8 +94,9 @@ use JSON;
 $str = [ $str ] if ref $str eq &quot;&quot;;
 return to_json($str);
 %]</page>
-  <displaytype>ajaxupdate</displaytype>
   <node_id>2009848</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>ajaxupdate</displaytype>
   <title>ajax update page</title>
   <mimetype>application/json</mimetype>
 </node>

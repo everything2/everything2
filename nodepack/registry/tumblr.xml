@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>1876758</type_nodetype>
   <doctext>It's some kind of a blogging platform.</doctext>
-  <question></question>
   <node_id>2060710</node_id>
+  <type_nodetype>1876758</type_nodetype>
+  <question></question>
   <title>Tumblr</title>
   <input_style>text</input_style>
 </node>

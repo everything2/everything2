@@ -1,11 +1,11 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>148</pagetype_nodetype>
   <page>[{updatetable:$$NODE{title}}]
 [{displaytable:$$NODE{title},1}]</page>
-  <displaytype>edit</displaytype>
   <node_id>186</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>dbtable edit page</title>
   <mimetype></mimetype>
 </node>

@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>1876758</type_nodetype>
   <doctext>Enter your Last.fm profile URL. Don't forget to hardlink it.
 
 You might also like to join [http://www.last.fm/group/Everything2|the Everything2 group] on the site.</doctext>
-  <question></question>
   <node_id>2016782</node_id>
+  <type_nodetype>1876758</type_nodetype>
+  <question></question>
   <title>last.fm</title>
   <input_style>text</input_style>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1089144</pagetype_nodetype>
   <page>Created by [% linkNode($$NODE{author_user}) %]
@@ -26,8 +25,9 @@ $str;
   return linkNode($NODE, &quot;Edit&quot;, {displaytype =&gt; 'edit'}) . &quot; this piece&quot; if canUpdateNode($USER, $NODE);
 
 %]</page>
-  <displaytype>display</displaytype>
   <node_id>1089146</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>musicnode display page</title>
   <mimetype></mimetype>
 </node>

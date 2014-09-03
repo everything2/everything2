@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>0</parent_container>
   <pagetype_nodetype>2100759</pagetype_nodetype>
   <page>[%
@@ -7,8 +6,9 @@ use JSON;
 my $json_struct = evalCode($NODE-&gt;{code});
 return encode_json($json_struct);
 %]</page>
-  <displaytype>display</displaytype>
   <node_id>2100760</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>jsonexport display page</title>
   <mimetype>application/json</mimetype>
 </node>

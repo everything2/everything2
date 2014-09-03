@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1876758</pagetype_nodetype>
   <page>[%
@@ -37,8 +36,9 @@ $str.= buildTable(['key','value'],[
 $str.=htmlcode(&quot;closeform&quot;);
 return $str;
 %]</page>
-  <displaytype>edit</displaytype>
   <node_id>2001832</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>registry edit page</title>
   <mimetype></mimetype>
 </node>

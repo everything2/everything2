@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1156105</pagetype_nodetype>
   <page>[%
@@ -73,8 +72,9 @@ $str .= '&lt;p&gt;&lt;strong&gt;Comment:&lt;/strong&gt;&lt;br&gt;
 return parseCode( $str );
 %]
 </page>
-  <displaytype>edit</displaytype>
   <node_id>1153392</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>debatecomment edit page</title>
   <mimetype></mimetype>
 </node>

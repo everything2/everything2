@@ -1,12 +1,12 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>0</parent_container>
   <pagetype_nodetype>1252389</pagetype_nodetype>
   <page>[%
 return parseCode($$NODE{doctext});
 %]</page>
-  <displaytype>display</displaytype>
   <node_id>1252294</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>ticker display page</title>
   <mimetype>text/xml</mimetype>
 </node>

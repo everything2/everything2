@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>545241</pagetype_nodetype>
   <page>[%
@@ -47,8 +46,9 @@ if ($$NODE{criteria} eq $open) {
 [%
   return &quot;&lt;br&gt;&lt;p align=\&quot;right\&quot;&gt;(&quot;.linkNode(getNode(&quot;go outside&quot;, &quot;superdocnolinks&quot;)).&quot;)&lt;/p&gt;&quot;;
 %]</page>
-  <displaytype>display</displaytype>
   <node_id>719848</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>room display page</title>
   <mimetype></mimetype>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>11</pagetype_nodetype>
   <page>[% if ($query-&gt;param(&quot;op&quot;) eq &quot;new&quot;) {
@@ -15,8 +14,9 @@
 
 [{parselinks:doctext}]
 </page>
-  <displaytype>display</displaytype>
   <node_id>77</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>note display page</title>
   <mimetype></mimetype>
 </node>

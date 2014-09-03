@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>2</pagetype_nodetype>
   <page>parent container:
@@ -7,8 +6,9 @@
 &quot;&lt;i&gt;none&lt;/i&gt;&quot;;%]&lt;br&gt;
 [{listcode:context}]
 </page>
-  <displaytype>display</displaytype>
   <node_id>59</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>container display page</title>
   <mimetype></mimetype>
 </node>

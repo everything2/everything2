@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1</pagetype_nodetype>
   <page>&lt;p&gt;&lt;a href=[%
@@ -87,8 +86,9 @@ foreach (@maints) {$str .= '&lt;li&gt;'.linkNode($_).'&lt;/li&gt;
 $str . '&lt;/ul&gt;' ;
 %]
 </page>
-  <displaytype>display</displaytype>
   <node_id>75</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
   <title>nodetype display page</title>
   <mimetype></mimetype>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>11</pagetype_nodetype>
   <page>[% if ($query-&gt;param(&quot;op&quot;) eq &quot;new&quot;) {
@@ -18,8 +17,9 @@ title:[{textfield:title}]&lt;br&gt;
 position: [{textfield:position}]&lt;br&gt;
 text:[{textarea:doctext}]&lt;br&gt;
 </page>
-  <displaytype>edit</displaytype>
   <node_id>78</node_id>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <title>note edit page</title>
   <mimetype></mimetype>
 </node>
