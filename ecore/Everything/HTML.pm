@@ -2105,10 +2105,7 @@ sub getCGI
 #
 #	Purpose
 #		this creates the $THEME variable that various components can
-#		reference for detailed settings.  The user's theme is a system-wide
-#		default theme if not specified, then a "themesetting" can be 
-#		used to override specific values.  Finally, if there are user-specific
-#		settings, they are kept in the user's settings
+#		reference for detailed settings.  
 #
 #		this function references global variables, so no params are needed
 #
