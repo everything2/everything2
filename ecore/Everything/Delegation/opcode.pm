@@ -2312,7 +2312,6 @@ sub ilikeit
       'archive' => 0 });
   }
 
-  my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR} || undef;
   $DB->sqlInsert('likedit',{likedit_ip => $addr, likedit_node => $$LIKE{node_id}});
 }
 
