@@ -12,10 +12,8 @@
            .' (this registry created by '.linkNode($$NODE{author_user}).')'
            .'&lt;div style=&quot;margin:20px&quot;&gt;'.breakTags(parseLinks(htmlScreen($$NODE{doctext}))).'&lt;/div&gt;'
            .'&lt;/div&gt;';
-  
 %]
 [%
-  
   return &quot;Registries are only available to logged in users at this time.&quot; if ($APP-&gt;isGuest($USER));
 
   my $entry = $DB-&gt;sqlSelectHashref('data,comments,in_user_profile',

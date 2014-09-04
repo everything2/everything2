@@ -40,9 +40,7 @@ return $str;
 		
 			&lt;div id='chatterbox_nodelet'&gt;
 
-				[% if ( $$VARS{preferred_theme} == 1100936 ) { return '&lt;table&gt;'; } %]
 				[% insertNodelet( getNode( 'Chatterbox', 'nodelet' ) ); %]
-				[% if ( $$VARS{preferred_theme} == 1100936 ) { return '&lt;/table&gt;'; } %]
 		
 				&lt;div id=&quot;chatterlight_rooms&quot;&gt;
  					&lt;p&gt;&lt;span title=&quot;What chatroom you are in&quot;&gt;Now talking in: [% linkNode($$USER{in_room}) || &quot;outside&quot;; %] &lt;/span&gt; [{changeroom}]
@@ -84,9 +82,7 @@ ENDHTML
 		%]
 
 	&lt;div id=&quot;chatterlight_NW&quot;&gt;
-		[% if ( $$VARS{preferred_theme} == 1100936 ) { return '&lt;table&gt;'; } %]
 		[% insertNodelet( getNode( 'New Writeups', 'nodelet' )); %]
-		[% if ( $$VARS{preferred_theme} == 1100936 ) { return '&lt;/table&gt;'; } %]
 	&lt;/div&gt; &lt;!-- close chatterlight_NW --&gt;
 
 &lt;/body&gt;

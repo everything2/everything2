@@ -2,19 +2,6 @@
   <parent_container>18</parent_container>
   <pagetype_nodetype>1854352</pagetype_nodetype>
   <page>[%
-
-if(defined($query-&gt;param('switchToZen'))) {
-	delete $$VARS{preferred_theme};
-	getTheme();
-	return &quot;Zen theme enabled.&quot;; 
-}
-
-if($$VARS{preferred_theme}and $$VARS{preferred_theme}!=1854183) {
-  return &quot;Note that you'll need to &quot;.linkNode($NODE,'switch to the Zen theme',{switchToZen=&gt;'true'}).&quot; in order to be use stylesheets like this one.&lt;br&gt;&quot;;
-}
-
-%]
-[%
 my $str = '&lt;p&gt;&lt;cite&gt;by&amp;nbsp;' . linkNode ($$NODE{author_user}) . '&lt;/cite&gt;&lt;/p&gt;';
 $str .= '&lt;p&gt;'.linkNode($NODE, &quot;View this stylesheet&quot;, {displaytype =&gt; 'view'}).'&lt;/p&gt;';
 

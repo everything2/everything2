@@ -28,7 +28,6 @@ if($query-&gt;param('chosentheme')) {
 		delete $$VARS{userstyle} ;
 		$$VARS{userstyle} = $$theme{node_id} if $theme ;
 	}
-	getTheme();
 }
 
 my $sheets = undef;

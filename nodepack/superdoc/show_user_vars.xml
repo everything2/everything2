@@ -34,49 +34,6 @@ if ($isRoot) {
 		$str .= $$inspectUser{title} . '&lt;br /&gt;';
 }
 
-my $theme = getNodeById($$inspectVars{'preferred_theme'}||$Everything::CONF-&gt;{system}-&gt;{default_theme});
-$str .= &quot;&lt;h3&gt;Theme&lt;/h3&gt;&quot;;
-$str .= &quot;&lt;p&gt;&quot; . linkNode($theme) . &quot;&lt;/p&gt;&quot;;
-
-if ($$theme{title} eq 'zen theme') {
-
-	if (defined $$inspectVars{userstyle}) {
-		$str .= &quot;&lt;p&gt;Using stylesheet &quot;
-			. linkNode(getNodeById($$inspectVars{userstyle}))
-			. &quot;&lt;/p&gt;&quot;
-			;
-	} else {
-		$str .= &quot;&lt;p&gt;Using default stylesheet.&lt;/p&gt;&quot;;
-	}
-
-	if (defined $$inspectVars{customstyle}) {
-		$str .= &quot;&lt;p&gt;Style Defacement:&lt;/p&gt;&quot;
-			. &quot;&lt;textarea id='vandalism' rows='15'&gt;&quot;
-			. encodeHTML($$inspectVars{customstyle})
-			. &quot;&lt;/textarea&gt;&quot;
-			;
-	}
-
-}
-
-my @includedJS = split(',', $$inspectVars{'includedJS'});
-@includedJS = grep { /^\d+$/ } @includedJS;
-
-$str .= &quot;&lt;h3&gt;Jscripts&lt;/h3&gt;&quot;;
-
-if (scalar @includedJS) {
-
-	$str .= &quot;&lt;ul&gt;&quot;;
-	$str .= &quot;&lt;li&gt;&quot; .
-		join &quot;&lt;li&gt;&quot;,
-			map { linkNode(getNodeById($_)) } @includedJS;
-	$str .= &quot;&lt;/ul&gt;&quot;;
-
-} else {
-
-	$str .= &quot;&lt;p&gt;&lt;strong&gt;None&lt;/strong&gt;&lt;/p&gt;&quot;;
-
-}
 
 my $tOpen = &quot;&lt;table border=\&quot;1\&quot; cellpadding=\&quot;1\&quot; cellspacing=\&quot;1\&quot;&gt;\n&quot;;
 my $tClose = '&lt;/table&gt;';
@@ -99,7 +56,7 @@ if($isRoot) {
 	'mission','motto',
 	'nick','nodelets','nohints','nowhynovotes',
 	'nullvote','numborged','numwriteups','nwriteups',
-	'personal_nodelet','preferred_theme',
+	'personal_nodelet',
 	'specialties'
 );
 }
@@ -128,25 +85,6 @@ foreach $key (@validKeys) {
 		. '&lt;/td&gt;&lt;td&gt;' . $val . &quot;&lt;/td&gt;\n&quot;;
 }
 $str.=$tClose;
-
-if($isRoot) {
- @validKeys = keys(%$THEME);
-} else {
- @validKeys = ('');
-}
-
-@validKeys = sort(@validKeys);
-$str .= '&lt;h3&gt;THEME (always yours, even if you\'re viewing someone else)&lt;/h3&gt;'.$tOpen;
-foreach $key (@validKeys) {
-	if($key ne '') {
-		$val = $$THEME{$key};
-		$val='(&lt;em&gt;null&lt;/em&gt;)' unless defined $val;
-		$str.='&lt;tr&gt;&lt;td&gt;' . encodeHTML($key)
-			. '&lt;/td&gt;&lt;td&gt;' . encodeHTML($val) . &quot;&lt;/td&gt;\n&quot;;
-	}
-}
-$str.=$tClose;
-
 
 if($isRoot) {
 @validKeys = keys(%$inspectUser);

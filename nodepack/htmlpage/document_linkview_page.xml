@@ -76,11 +76,7 @@ $text = breakTags($text) unless $codeDoc;
 
 my $oddrowclr  = '#999999';
 
-if ( $$VARS{ 'preferred_theme' } == 1100936 ) {
-  $oddrowclr  = $$VARS{ekw_oddrowcolor} || $$THEME{bodyOddrowcolor} || $oddrowclr;
-}
-
-my $str;
+my $str = '';
 $str .= &quot;&lt;table class=\&quot;item\&quot;&gt;&lt;tr&gt;&lt;td width=\&quot;80%\&quot; class=\&quot;content\&quot;&gt;$text&lt;/td&gt;&lt;td
      width=\&quot;5%\&quot;&gt;&lt;/td&gt;&lt;td valign=\&quot;top\&quot;
      bgcolor=\&quot;&quot;.$oddrowclr.&quot;\&quot; class=\&quot;content\&quot;&gt;&lt;strong&gt;Existing:&lt;/strong&gt;&lt;br&gt;&quot;;

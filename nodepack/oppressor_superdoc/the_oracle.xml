@@ -40,7 +40,6 @@ $return .= '&lt;p&gt;As a content editor, you can view an abbreviated list of us
 &lt;dt&gt;browser&lt;/dt&gt;&lt;dd&gt;the web browser and operating system the noder is using&lt;/dd&gt;
 &lt;dt&gt;easter_eggs&lt;/dt&gt;&lt;dd&gt;how many easter eggs the noder has&lt;/dd&gt;
 &lt;dt&gt;nodelets&lt;/dt&gt;&lt;dd&gt;list of nodelets the noder has turned on, node_id and name&lt;/dd&gt;
-&lt;dt&gt;preferred_theme&lt;/dt&gt;&lt;dd&gt;the E2 theme, such as Jukka, EKW, or Zen, the noder has active&lt;/dd&gt;
 &lt;dt&gt;settings_useTinyMCE&lt;/dt&gt;&lt;dd&gt;whether or not the noder has tinyMCE turned on.&lt;/dd&gt;
 &lt;dt&gt;userstyle&lt;/dt&gt;&lt;dd&gt;the Zen stylesheet the noder has active&lt;/dd&gt;
 &lt;dt&gt;wuhead&lt;/dt&gt;&lt;dd&gt;the code for displaying the writeupheader&lt;/dd&gt;
@@ -57,7 +56,6 @@ foreach(sort(keys(%{$hash}))) {
 	unless ($_ eq 'settings_useTinyMCE' 
 			|| $_ eq &quot;easter_eggs&quot; 
 			|| $_ eq &quot;nodelets&quot; 
-			|| $_ eq &quot;preferred_theme&quot; 
 			|| $_ eq &quot;userstyle&quot; 
 			|| $_ eq &quot;wuhead&quot; 
 			|| $_ eq &quot;browser&quot;) {
@@ -94,8 +92,7 @@ foreach(sort(keys(%{$hash}))) {
 	}
 	
 	# second special case: fetch node titles for these node_ids to be human-readable
-	if ($_ eq 'preferred_theme' 
-		|| $_ eq 'userstyle' 
+	if ($_ eq 'userstyle' 
 		|| $_ eq 'lastnoded' 
 		|| $_ eq 'current_nodelet'
 		|| $_ eq 'group') {
