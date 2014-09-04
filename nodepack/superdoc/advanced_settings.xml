@@ -253,8 +253,6 @@ htmlcode('varcheckbox','zenadinheader,Show ads in Zen page header');
 
 &lt;h2&gt;Unsupported options&lt;/h2&gt;
 &lt;fieldset&gt;&lt;legend&gt;Experimental/In development&lt;/legend&gt;
-&lt;p&gt;You can add or remove experimental Javascript modules at the &lt;strong&gt;[Javascript Repository]&lt;/strong&gt;
-&lt;/p&gt;
 &lt;p&gt;
 &lt;small&gt;The time zone and other settings here do not currently affect the display of all times on the site.&lt;/small&gt;&lt;br&gt;
 [{varcheckbox:localTimeUse,Use my time zone offset}]:

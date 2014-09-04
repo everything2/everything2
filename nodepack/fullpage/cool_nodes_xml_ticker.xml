@@ -1,6 +1,9 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Wed Sep  3 02:50:13 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Wed Sep  3 15:25:10 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2115276&quot; parent_e2node=&quot;2115277&quot; author_user=&quot;Mister Chu&quot;&gt;Tonight in Texas&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Clockmaker&quot; node_id=&quot;2114320&quot; parent_e2node=&quot;2114321&quot; author_user=&quot;Bitriot&quot;&gt;Oil sands&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;1489520&quot; parent_e2node=&quot;473498&quot; author_user=&quot;TheDeadGuy&quot;&gt;Ashes to Ashes&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Everyone2&quot; node_id=&quot;1411973&quot; parent_e2node=&quot;811679&quot; author_user=&quot;enth&quot;&gt;visual cortex&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;729109&quot; parent_e2node=&quot;729104&quot; author_user=&quot;MilTan&quot;&gt;tabla&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;go ahead I'll listen&quot; node_id=&quot;786389&quot; parent_e2node=&quot;786303&quot; author_user=&quot;goneaway&quot;&gt;Alan Lomax&lt;/cooled&gt;
@@ -13,9 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Bitriot&quot; node_id=&quot;2070535&quot; parent_e2node=&quot;1948730&quot; author_user=&quot;Ancientsnow&quot;&gt;look closely: a thousand words I'll never say to you&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Clockmaker&quot; node_id=&quot;2115161&quot; parent_e2node=&quot;2115157&quot; author_user=&quot;Zephronias&quot;&gt;August 27, 2014&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Mister Chu&quot; node_id=&quot;1330922&quot; parent_e2node=&quot;1330753&quot; author_user=&quot;kto9&quot;&gt;The Wasp (Texas Radio and the Big Beat)&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;RedOmega&quot; node_id=&quot;1852482&quot; parent_e2node=&quot;1852481&quot; author_user=&quot;kthejoker&quot;&gt;If it is written&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Everyone2&quot; node_id=&quot;1677622&quot; parent_e2node=&quot;1677621&quot; author_user=&quot;frankdeluxe&quot;&gt;A critique of Jaegwon Kim's meditations on the mind/body problem&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1683027&quot; parent_e2node=&quot;117826&quot; author_user=&quot;omiKron&quot;&gt;Ott&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

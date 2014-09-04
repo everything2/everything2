@@ -1,8 +1,0 @@
-<node>
-  <doctext>AOL Instant Messenger. Some people still use it. We currently do not have working gaim: links for direct use. This registry will replace part of [EIMR].</doctext>
-  <node_id>2004320</node_id>
-  <type_nodetype>1876758</type_nodetype>
-  <question></question>
-  <title>AIM username</title>
-  <input_style>text</input_style>
-</node>
