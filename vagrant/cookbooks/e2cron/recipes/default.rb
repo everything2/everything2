@@ -73,3 +73,14 @@ cron 'reaper.pl' do
   hour "6"
   command "/var/everything/tools/reaper.pl 2>&1 >> #{logdir}/e2cron.reaper.#{datelog}"
 end
+
+# We need this on the bastion. Place a 1g swapfile in the root dir
+#
+bash 'createswap' do
+  creates "/swapfile"
+  code "
+    dd if=/dev/zero of=/swapfile bs=1024 count=1M
+    mkswap /swapfile
+    swapon /swapfile
+  "
+end
