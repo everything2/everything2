@@ -5,7 +5,6 @@
 pagetype: [{node_menu:pagetype_nodetype}]&lt;br&gt;
 displaytype:[{textfield:displaytype}]&lt;br&gt;
 parent container:[{node_menu:parent_container}]&lt;br&gt;
-theme:[{node_menu:ownedby_theme}]&lt;br&gt;
 MIME type:[{textfield:mimetype}] 
 &lt;table width=100%&gt;
 &lt;tr&gt;

@@ -14,16 +14,6 @@
 &lt;b&gt;displaytype&lt;/b&gt;:
 [&quot;$$NODE{displaytype}&quot;]
 &lt;br&gt;
-&lt;b&gt;theme&lt;/b&gt;:
-[%
-unless ($$NODE{ownedby_theme}) {
-  return &quot;&lt;i&gt;this htmlpage does not belong to a theme&lt;/i&gt;&quot;;
-}
-my $THEME = getNode $$NODE{ownedby_theme};
-linkNode($THEME);
-
-%]
-&lt;br&gt;
 &lt;b&gt;MIMEtype&lt;/b&gt;: [%&quot;$$NODE{mimetype}&quot;%]
 &lt;p&gt;[{listcode:page}]
 </page>
