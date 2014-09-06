@@ -386,7 +386,7 @@ sub setVars
 	my @allVarNames = (keys %originalVars, keys %$varsref);
 	foreach my $newVar (@allVarNames) {
 		$modifiedVars{$newVar} = $$varsref{$newVar}
-			if $$varsref{$newVar} ne $originalVars{$newVar};
+			if defined($$varsref{$newVar}) and $$varsref{$newVar} ne $originalVars{$newVar};
 	}
 
 	# Now lock the node's row in the DB, read its vars as they are now,
