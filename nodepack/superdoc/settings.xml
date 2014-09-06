@@ -24,7 +24,6 @@ if($query-&gt;param('chosentheme')) {
 	my $theme = getNodeById($query-&gt;param('chosentheme'));
 	my $theme_type = $$theme{type}{title} if $theme;
 	if ($theme_type eq 'stylesheet' or $query-&gt;param('chosentheme') eq 'default' ){
-		delete $$VARS{preferred_theme} ;
 		delete $$VARS{userstyle} ;
 		$$VARS{userstyle} = $$theme{node_id} if $theme ;
 	}

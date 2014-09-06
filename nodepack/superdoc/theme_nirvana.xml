@@ -1,22 +1,8 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>[%
-return &quot;This page will allow you to customise your view of the site if you sign up for an account.&quot; if ($APP-&gt;isGuest($USER));
-
-if(defined($query-&gt;param('switchToZen'))) {
-	delete $$VARS{preferred_theme};
-	getTheme();
-	return &quot;Zen theme enabled.&quot;;
-}
-
-if($$VARS{preferred_theme} &amp;&amp; $$VARS{preferred_theme}!=1854183) {
-  return &quot;Note that you'll need to &quot;.linkNode($NODE,'switch to the Zen theme',{switchToZen=&gt;'true'}).&quot; in order to be able to use different stylesheets.&lt;br&gt;&quot;;
-}
-
-%]
-&lt;p&gt;The following is a list of [stylesheet]s for the [zen theme] in order of popularity. You can find additional zen themes on [The Catwalk].&lt;/p&gt;
+  <doctext>&lt;p&gt;The following is a list of [stylesheet]s for the [zen theme] in order of popularity. You can find additional zen themes on [The Catwalk].&lt;/p&gt;
 [%
-my $str;
+my $str = &quot;&quot;;
 my %styles;
 my $n;
 

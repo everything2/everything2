@@ -7,22 +7,6 @@ my $lnkclr  = 'blue';
 my $oddrowclr  = '#999999';
 my $bgcolor;
 
-if ( $$VARS{ 'preferred_theme' } == 1100936 ) {
-    # Yet another reason to get off my ass and convert ekw 
-    # to the $$VARS{theme*} regime.
-    $txtclr  = $$VARS{ekw_textcolor} || $$THEME{bodyTextcolor} || $txtclr;
-    $vlnkclr = $$VARS{ekw_vlinkcolor} || $$THEME{bodyLinkcolor} || $lnkclr;
-    $lnkclr  = $$VARS{ekw_linkcolor} || $$THEME{bodyVlinkcolor} || $vlnkclr;
-    $oddrowclr  = $$VARS{ekw_oddrowcolor} || $$THEME{bodyOddrowcolor} || $oddrowclr;
-    $bgcolor = $$VARS{ekw_bgcolor} || $$THEME{bodyBgcolor} || '';
-    $bgcolor = 'bgcolor=&quot;' . $bgcolor . '&quot; '
-        if ( $bgcolor );
-} else {
-    $txtclr  = $$THEME{bodyTextcolor};
-    $lnkclr  = $$THEME{bodyLinkcolor};
-    $vlnkclr = $$THEME{bodyVlinkcolor};
-}
-
 my $str = '
 &lt;style&gt;
 .oddrow {background-color: '.$oddrowclr.'}
