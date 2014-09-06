@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1308757</pagetype_nodetype>
   <page>&lt;H4&gt;Title:&lt;/H4&gt;[{textfield:title}]&lt;br&gt;
@@ -8,9 +9,8 @@
 &lt;h4&gt;Active:&lt;/h4&gt;[{yesno_field:nodetest_active}]&lt;br&gt;&lt;br&gt;
 
 </page>
-  <node_id>1308761</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>1308761</node_id>
   <title>nodetest edit page</title>
   <mimetype></mimetype>
 </node>

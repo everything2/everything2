@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>1225502</parent_container>
   <pagetype_nodetype>9</pagetype_nodetype>
   <page>&lt;p&gt;&lt;table [%
@@ -9,9 +10,8 @@ $$THEME{nodeletMCTableAttr} ? $$THEME{nodeletMCTableAttr} : 'cellpadding=&quot;1
 insertNodelet($NODE);
 %]
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/p&gt;</page>
-  <node_id>1225504</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>testembed</displaytype>
+  <node_id>1225504</node_id>
   <title>nodelet iframe page</title>
   <mimetype></mimetype>
 </node>

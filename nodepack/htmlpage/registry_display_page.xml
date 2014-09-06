@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1876758</pagetype_nodetype>
   <page>[%     return if ($APP-&gt;isGuest($USER));
@@ -160,10 +161,8 @@
 [%    return if ($APP-&gt;isGuest($USER));
 '( '.linkNodeTitle('Recent Registry Entries|What are other people saying?').' )'%]
 &lt;/div&gt;</page>
-  <node_id>2001833</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
-  <ownedby_theme>1854183</ownedby_theme>
+  <node_id>2001833</node_id>
   <title>registry display page</title>
   <mimetype></mimetype>
 </node>

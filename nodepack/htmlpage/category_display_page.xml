@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1522375</pagetype_nodetype>
   <page>[%
@@ -120,9 +121,8 @@ if ($page || $ctr == $count){
 return $str;
 %]
 </page>
-  <node_id>1522376</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>1522376</node_id>
   <title>category display page</title>
   <mimetype></mimetype>
 </node>

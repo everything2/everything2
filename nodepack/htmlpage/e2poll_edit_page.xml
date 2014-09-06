@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1685242</pagetype_nodetype>
   <page>[{openform}]
@@ -24,9 +25,8 @@ $query -&gt; escapeHTML($$NODE{doctext});
 &lt;h2&gt;[%$$NODE{title}%]&lt;/h2&gt;
 [{showpoll}]
 </page>
-  <node_id>2052745</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>2052745</node_id>
   <title>e2poll edit page</title>
   <mimetype></mimetype>
 </node>

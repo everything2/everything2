@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>1898369</parent_container>
   <pagetype_nodetype>1156105</pagetype_nodetype>
   <page>[%
@@ -48,9 +49,8 @@ $str .=  htmlcode('atomiseNode', $$N{'node_id'});
 
 $str;
 %]</page>
-  <node_id>1898367</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>atom</displaytype>
+  <node_id>1898367</node_id>
   <title>debatecomment atom page</title>
   <mimetype>application/atom+xml</mimetype>
 </node>

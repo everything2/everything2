@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1261857</pagetype_nodetype>
   <page>[%
@@ -22,9 +23,8 @@ return parseLinks($str);
 &lt;br&gt;&lt;br&gt;&lt;hr&gt;&lt;br&gt;
 [{parselinks:doctext}]
 </page>
-  <node_id>1261883</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>1261883</node_id>
   <title>e2client display page</title>
   <mimetype></mimetype>
 </node>

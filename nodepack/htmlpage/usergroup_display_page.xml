@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>16</pagetype_nodetype>
   <page>&lt;p&gt;
@@ -194,9 +195,8 @@ $str .= htmlcode('closeform').'&lt;/p&gt;';
 $str;
 %]
 </page>
-  <node_id>846440</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>846440</node_id>
   <title>usergroup display page</title>
   <mimetype></mimetype>
 </node>

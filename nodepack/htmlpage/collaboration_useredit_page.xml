@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1254859</pagetype_nodetype>
   <page>[% # table for margin %]&lt;table cellpadding=&quot;8&quot; width=&quot;100%&quot;&gt;&lt;tr&gt;&lt;td&gt;
@@ -177,9 +178,8 @@ return $str;
 
 
 </page>
-  <node_id>1254872</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>useredit</displaytype>
+  <node_id>1254872</node_id>
   <title>collaboration useredit page</title>
   <mimetype></mimetype>
 </node>

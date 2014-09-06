@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>152</pagetype_nodetype>
   <page>&lt;H4&gt;title:&lt;/H4&gt;[{textfield:title}]
@@ -6,9 +7,8 @@
 &lt;p&gt;
 &lt;p&gt;
 [{editvars}]&lt;br&gt;</page>
-  <node_id>192</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>192</node_id>
   <title>nodeball edit page</title>
   <mimetype></mimetype>
 </node>

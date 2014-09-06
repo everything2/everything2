@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>2035430</pagetype_nodetype>
   <page>[%
@@ -99,9 +100,8 @@ if ($$USER{node_id} == $$NODE{author_user}){
 
 $str;
 %]</page>
-  <node_id>2071862</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>restore</displaytype>
+  <node_id>2071862</node_id>
   <title>draft restore page</title>
   <mimetype></mimetype>
 </node>

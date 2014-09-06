@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>154</pagetype_nodetype>
   <page>&lt;H4&gt;title:&lt;/H4&gt;[{textfield:title}]
@@ -7,9 +8,8 @@
 &lt;p&gt;&lt;small&gt;&lt;strong&gt;Mail body:&lt;/strong&gt;&lt;/small&gt;&lt;br&gt;
 
 [{textarea:doctext,30,60}]</page>
-  <node_id>2072168</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>2072168</node_id>
   <title>mail edit page</title>
   <mimetype></mimetype>
 </node>

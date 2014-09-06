@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>3</pagetype_nodetype>
   <page>[% return '&lt;p align=&quot;right&quot;&gt;Return to '.linkNode($NODE).'&lt;/p&gt;'; %]
@@ -99,9 +100,8 @@ $str .=  join(&quot;&lt;/li&gt;\n&lt;li&gt;&quot;, @notlinks)
 
 %]
 </page>
-  <node_id>1409922</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>linkview</displaytype>
+  <node_id>1409922</node_id>
   <title>document linkview page</title>
   <mimetype></mimetype>
 </node>

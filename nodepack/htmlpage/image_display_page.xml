@@ -1,12 +1,12 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>6</pagetype_nodetype>
   <page>&lt;img src=&quot;/[&quot;$$NODE{src}&quot;]&quot; alt=&quot;[&quot;$$NODE{alt}&quot;]&quot;&gt;
 &lt;p&gt;[{parselinks:description}]&lt;/p&gt;
 </page>
-  <node_id>67</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>67</node_id>
   <title>image display page</title>
   <mimetype></mimetype>
 </node>

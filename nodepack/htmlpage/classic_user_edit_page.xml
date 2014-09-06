@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>15</pagetype_nodetype>
   <page>[%
@@ -89,9 +90,8 @@ if (jQuery('#bookmarklist li').length &gt; 1) {
 &lt;/div&gt;
 &lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 </page>
-  <node_id>176001</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>edit</displaytype>
+  <node_id>176001</node_id>
   <title>classic user edit page</title>
   <mimetype></mimetype>
 </node>

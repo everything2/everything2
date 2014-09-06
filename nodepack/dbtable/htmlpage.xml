@@ -7,7 +7,6 @@
   `displaytype` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
   `page` text COLLATE utf8_unicode_ci,
   `parent_container` int(11) DEFAULT NULL,
-  `ownedby_theme` int(11) NOT NULL DEFAULT '0',
   `mimetype` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`htmlpage_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>

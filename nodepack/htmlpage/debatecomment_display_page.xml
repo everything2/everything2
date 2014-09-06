@@ -1,10 +1,10 @@
 <node>
+  <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1156105</pagetype_nodetype>
   <page>[{showdebate:1}]</page>
-  <node_id>1153026</node_id>
-  <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
+  <node_id>1153026</node_id>
   <title>debatecomment display page</title>
   <mimetype></mimetype>
 </node>
