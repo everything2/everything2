@@ -2002,7 +2002,7 @@ sub softlink
   }
 
   for(;$n%$numCols;++$n) { $str.="\n\t\t".'<td'.(
-    $$VARS{nogradlinks}||$$VARS{nogradekw} ? '' : ' class="slend"'
+    $$VARS{nogradlinks} ? '' : ' class="slend"'
   ).'>&nbsp;</td>'; }
   $str.="\n\t</tr>\n</table>\n";
 
