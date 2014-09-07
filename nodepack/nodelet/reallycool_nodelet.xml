@@ -52,10 +52,6 @@ while (my ($WRITEUP) = $csr-&gt;fetchrow) {
 		.linkNode($WRITEUP, 'more',{lastnode_id =&gt;0}).')&lt;/strong&gt;&lt;/div&gt;&lt;BR /&gt;';
 	}
 
-        #Jay's fix for the server errors.
-        #$str .= &quot;&lt;tr bgcolor=\&quot;$$THEME{writeupTitleColor}\&quot;&gt;&lt;td&gt;&quot; 
-        #$str .= &quot;&lt;tr bgcolor=\&quot;\#cccc99\&quot;&gt;&lt;td&gt;&quot;
-        # More class=oddrow quickie-fixies pending proper themeprefs. -- wharf
         $str .= &quot;&lt;tr bgcolor=\&quot;\#ffffff\&quot;&gt;&lt;td class=\&quot;oddrow\&quot;&gt;&lt;span class=\&quot;cotc_title\&quot;&gt;&quot;
 	.linkNode($$WRITEUP{parent_e2node},'',{lastnode_id =&gt;0}). '&amp;nbsp;'.linkNode($WRITEUP, '('.getNodeById($$WRITEUP{wrtype_writeuptype})-&gt;{title}
 .')',{lastnode_id =&gt;0}

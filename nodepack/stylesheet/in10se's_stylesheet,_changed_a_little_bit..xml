@@ -493,7 +493,7 @@ border: 0;
 
 
 
-/* STYLES BELOW ARE UNEDITED FROM DEFAULT ZEN THEME */
+/* STYLES BELOW ARE UNEDITED FROM DEFAULT ZEN */
 
 #mainbody {
 	position: relative;
@@ -570,14 +570,6 @@ textarea {
 width: 100%;
 }
 
-#announcements {
-position: absolute;
-top: 20px;
-font-size: 85%;
-left: 300px;
-display: none;
-}
-
 #writeup_list span.hidden, #writeup_list span.hide {
 	font-size: 85%;
 	margin-left: 3px;
@@ -642,7 +634,7 @@ display: none;
 #softlinks td[bgcolor=&quot;#afafaf&quot;] { background-color: #3F6F9F; }
 #softlinks td[bgcolor=&quot;#adadad&quot;] { background-color: #3B6C9D; }
 #softlinks td[bgcolor=&quot;#ababab&quot;] { background-color: #37699B; }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1908210</node_id>
   <title>in10se's stylesheet, changed a little bit.</title>

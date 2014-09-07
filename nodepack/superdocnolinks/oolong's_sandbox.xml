@@ -134,14 +134,8 @@ $str.= '&lt;td&gt;'.
 $str.='&lt;input type=&quot;hidden&quot; name=&quot;lastnode_id&quot; value=&quot;'.$lnid.'&quot; /&gt;';
 
 $str.='&lt;/td&gt;&lt;td&gt;';
-if (exists $$THEME{searchIcon}) {
-  $str.= '&lt;input type=&quot;image&quot; name=&quot;searchy&quot; alt=&quot;search&quot; align=&quot;middle&quot; src=&quot;'.$$THEME{searchIcon}.'&quot;';
-  $str.= ' width=&quot;'.$$THEME{searchIconWidth}.'&quot;' if exists $$THEME{searchIconWidth};
-  $str.= ' height=&quot;'.$$THEME{searchIconHeight}.'&quot;' if exists $$THEME{searchIconHeight};
-  $str.=' /&gt;';
-} else {
- $str.='&lt;input type=&quot;submit&quot; name=&quot;searchy&quot; value=&quot;search&quot; /&gt;';
-}
+$str.='&lt;input type=&quot;submit&quot; name=&quot;searchy&quot; value=&quot;search&quot; /&gt;';
+
 # $query-&gt;param('node', $title); 
 
 #$str.= '&lt;/td&gt;&lt;td style=&quot;font-family:sans-serif;&quot;&gt;&lt;small&gt;&lt;small&gt;';

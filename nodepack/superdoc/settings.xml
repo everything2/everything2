@@ -16,16 +16,16 @@ htmlcode('openform',-id=&gt;'pagebody');
 %]
 
 &lt;h2 id=&quot;appearance&quot;&gt;Look and feel&lt;/h2&gt;
-&lt;fieldset&gt;&lt;legend&gt;Theme&lt;/legend&gt;
+&lt;fieldset&gt;&lt;legend&gt;Style&lt;/legend&gt;
 [%
 return if $APP-&gt;isGuest($USER);
 
-if($query-&gt;param('chosentheme')) {
-	my $theme = getNodeById($query-&gt;param('chosentheme'));
-	my $theme_type = $$theme{type}{title} if $theme;
-	if ($theme_type eq 'stylesheet' or $query-&gt;param('chosentheme') eq 'default' ){
+if($query-&gt;param('chosenstyle')) {
+	my $style = getNodeById($query-&gt;param('chosenstyle'));
+	my $style_type = $$style{type}{title} if $style;
+	if ($style_type eq 'stylesheet' or $query-&gt;param('chosenstyle') eq 'default' ){
 		delete $$VARS{userstyle} ;
-		$$VARS{userstyle} = $$theme{node_id} if $theme ;
+		$$VARS{userstyle} = $$style{node_id} if $style ;
 	}
 }
 
@@ -44,21 +44,21 @@ foreach my $thissheet (@$supported_sheets)
   {
     $author_string = &quot; by &quot;.$auth-&gt;{title};
   }
-  $$sheets{$thissheet} = $$sh{title}.($$sh{title} ne $$THEME{default_style} ? $author_string : ' (default)');
+  $$sheets{$thissheet} = $$sh{title}.($$sh{title} ne $Everything::CONF-&gt;{default_style} ? $author_string : ' (default)');
 }
 
 $$sheets{ $$VARS{userstyle} } = getNodeById($$VARS{userstyle}) -&gt; {title}
 	unless !$$VARS{userstyle} || $$sheets{ $$VARS{userstyle} } ;
 
 my @values = ( 'default' , keys %$sheets ) ;
-$$sheets{default} = 'default zen theme' ;
+$$sheets{default} = '(default)' ;
 $$sheets{ $$VARS{userstyle} } .= '*' if $$VARS{userstyle} ;
-my $str = 'Choose a theme: ' . $query -&gt; popup_menu( -name =&gt; 'chosentheme', values=&gt; \@values ,
+my $str = 'Choose a style: ' . $query -&gt; popup_menu( -name =&gt; 'chosenstyle', values=&gt; \@values ,
 	labels=&gt;$sheets , default=&gt;$$VARS{userstyle}||'default') ;
 
 &quot;$str\n&quot;;
 %]
-[{varcheckboxinverse:nogradlinks,Show the softlink color gradient}] [{varcheckboxinverse:nogradekw,using colors from my theme}]&lt;br&gt;
+[{varcheckboxinverse:nogradlinks,Show the softlink color gradient}]&lt;br&gt;
 &lt;/fieldset&gt;
 
 &lt;fieldset&gt;&lt;legend&gt;Quick functions&lt;/legend&gt;

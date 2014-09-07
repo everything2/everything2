@@ -500,7 +500,7 @@ color: #aaa;
 
 
 
-/* STYLES BELOW ARE UNEDITED FROM DEFAULT ZEN THEME */
+/* UNEDITED FROM ZEN BELOW */
 
 #mainbody {
 	position: relative;
@@ -576,14 +576,6 @@ hr.clear {
 
 textarea {
 width: 100%;
-}
-
-#announcements {
-position: absolute;
-top: 20px;
-font-size: 85%;
-left: 300px;
-display: none;
 }
 
 #writeup_list span.hidden, #writeup_list span.hide {
@@ -691,7 +683,7 @@ text-decoration: line-through;
 color: #aaa;
 font-size: 80%;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1902207</node_id>
   <title>in10se's stylesheet</title>

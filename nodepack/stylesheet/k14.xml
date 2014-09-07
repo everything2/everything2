@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>1854352</type_nodetype>
-  <doctext>/* THIS THEME IS FULL OF BLATANT THIEVERY! -TVV */
+  <doctext>/* THIS IS FULL OF BLATANT THIEVERY! -TVV */
 
 /*autofixed*/
 /*= autofix added rules. adjust to taste: */
@@ -712,10 +712,6 @@ td {
 					margin: 2px;
 				}
 
-  #announcements {
-   display: none;
-  }
-
   h1#e2logo {
    margin: 5px 2px 5px 5px;
    width: 300px; height: 50px; /* these are the exact dimensions of the background image */
@@ -752,7 +748,7 @@ td {
    margin-top: 65px !important;
    margin-bottom: -65px !important;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>2006168</node_id>
   <title>K14</title>
