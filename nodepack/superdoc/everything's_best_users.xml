@@ -159,8 +159,6 @@ my $color;
 my $clr;
 my $range = { 'min' =&gt; 135, 'max' =&gt; 255, 'steps' =&gt; $maxShow };
 
-my $ekwid = getId(getNode(&quot;ekw theme&quot;, &quot;theme&quot;));
-
 my $curr;
 my $lvlttl = getVars(getNode('level titles', 'setting'));
 my $lvl;
@@ -193,7 +191,7 @@ while(my $nid = $csr-&gt;fetchrow_hashref) {
 	$curr = sprintf('%02x', $curr);
 	$color = '#' . $curr . $curr . $curr;
 
-	$str.= &quot;&lt;tr &quot;.(($ekwid == $THEME-&gt;{theme_id})?(&quot;&quot;):(&quot;bgcolor=\&quot;$color\&quot; &quot;)).&quot;&gt;&quot;;
+	$str.= &quot;&lt;tr bgcolor=\&quot;$color\&quot; &gt;&quot;;
         $str.=&quot;&lt;td align=\&quot;center\&quot;&gt;&lt;small&gt;&quot;;
         $str.=++$place;
         $str.=&quot;&lt;/small&gt;&lt;/td&gt;&lt;td&gt;&quot;;

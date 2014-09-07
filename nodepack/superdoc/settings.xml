@@ -175,7 +175,7 @@ htmlcode('varsComboBox','informmsgignore','0', '0','by private message','1','in 
 
 $str.'&lt;br&gt;';
 %]
-&lt;script type=&quot;text/javascript&quot;&gt;THEME = {&quot;default_style&quot;: &quot;[% return $THEME-&gt;{default_style} %]&quot;}&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;THEME = {&quot;default_style&quot;: &quot;[% return $Everything::CONF-&gt;{default_style} %]&quot;}&lt;/script&gt;
 &lt;script type=&quot;text/javascript&quot; src=&quot;[{linkjavascript:settings script}]&quot;&gt;&lt;/script&gt;
 [{closeform:Save Settings}]
 [%
