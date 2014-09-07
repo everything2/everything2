@@ -5766,7 +5766,7 @@ sub ednsection_globals
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my @globals = qw($USER $THEME $VARS $DB $query);
+  my @globals = qw($USER $VARS $DB $query);
   my $ajax='ajax ednsection_globals:nodeletsection:edn,globals';
 
   my $str = '<table cellpadding="0" cellspacing="1" border="0">';
