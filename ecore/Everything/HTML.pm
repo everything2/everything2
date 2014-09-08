@@ -88,7 +88,6 @@ use vars qw($USER);
 use vars qw($TEST);
 use vars qw($TEST_CONDITION);
 use vars qw($TEST_SESSION_ID);
-use vars qw($THEME);
 use vars qw($PAGELOAD);
 use vars qw(%HEADER_PARAMS);
 
@@ -584,14 +583,12 @@ sub screenTable {
 #
 # NEW IN VERSION 2! - this now pulls formatting data from CSS:
 #   <elem class="title"> and <elem class="data">
-#   $$THEME{color_border} needs to be set, too!
 sub buildTable
 {
 	my ($labels,$data,$options,$tablealign,$datavalign) = @_;
 	return '<i>no data</i>' unless $data;
 	
-	my $borderColor = $$THEME{color_border} || $$THEME{table_border_color}
-										|| $$THEME{dataTitleBackground};
+	my $borderColor = undef; 
 	my $width = ($options=~/fullwidth/) ? 'width="100%"' : '';
 	my $tablealignment = ($tablealign eq 'left' || $tablealign eq 'center' || $tablealign eq 'right')
 		? ' align="'.$tablealign.'"' : '';
@@ -1141,8 +1138,6 @@ sub getPage
 	$TYPE = getType($$NODE{type_nodetype});
 	$displaytype ||= $$VARS{'displaypref_'.$$TYPE{title}}
 	  if exists $$VARS{'displaypref_'.$$TYPE{title}};
-	$displaytype ||= $$THEME{'displaypref_'.$$TYPE{title}}
-	  if exists $$THEME{'displaypref_'.$$TYPE{title}};
 	$displaytype = 'display' unless $displaytype;
 
 
@@ -2099,29 +2094,6 @@ sub getCGI
 	return $cgi;
 }
 
-############################################################################
-#	Sub
-#		getTheme
-#
-#	Purpose
-#		this creates the $THEME variable that various components can
-#		reference for detailed settings.  
-#
-#		this function references global variables, so no params are needed
-#
-
-sub getTheme {
-	my $theme_id = $Everything::CONF->{system}->{default_theme};
-
-	my $TS = getNodeById $theme_id;
-
-	#this whatchamacallit is a theme
-	$THEME = getVars $TS;
-	$$THEME{theme_id} = getId($TS);
-
-	1;
-}
-
 #############################################################################
 #	Sub
 #		printHeader
@@ -2284,7 +2256,6 @@ sub clearGlobals
 	$GNODE = "";
 	$USER = "";
 	$VARS = "";
-	$THEME = "";
         $PAGELOAD = {};
         $TEST = "";
 	$TEST_CONDITION = "";
@@ -2673,9 +2644,6 @@ sub mod_perlInit
 	# Execute any operations that we may have
 	execOpCode();
 	
-	# Fill out the THEME hash
-	getTheme();
-
 	# Do the work.
 	handleUserRequest();
 
