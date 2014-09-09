@@ -6103,7 +6103,6 @@ sub showchatter
 
   my $wherestr = "for_user=0 " ;
   $wherestr .= "and tstamp >= date_sub(now(), interval $messageInterval second)" unless $Everything::CONF->{environment} ne "production" && !$$USER{in_room};
-  $wherestr .= ' and room='.$$USER{in_room} unless ($$VARS{omniphonic});
   $wherestr .= " and author_user not in ($ignoreStr)" if $ignoreStr;
 
   my $csr = $DB->sqlSelectMany('*', 'message use index(foruser_tstamp) ', $wherestr, "order by tstamp desc limit $messagesToShow");

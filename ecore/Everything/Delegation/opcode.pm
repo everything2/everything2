@@ -1111,7 +1111,6 @@ sub message
 
     my $messageInterval = 480;
     my $wherestr = "for_user=0 and tstamp >= date_sub(now(), interval $messageInterval second)";
-    $wherestr .= ' and room='.$$USER{in_room} unless ($$VARS{omniphonic});
     $wherestr .= ' and author_user='.$$USER{user_id};
 
     my $lastmessage = $DB->sqlSelect('trim(msgtext)', 'message', $wherestr." order by message_id desc limit 1");
