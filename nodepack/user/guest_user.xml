@@ -5,10 +5,6 @@
   <imgsrc></imgsrc>
   <type_nodetype>15</type_nodetype>
   <vars>
-    <value>1</value>
-    <key>zenadinheader</key>
-  </vars>
-  <vars>
     <value>2029388,2027508,263</value>
     <key>nodelets</key>
   </vars>

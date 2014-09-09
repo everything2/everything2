@@ -178,9 +178,6 @@ return $str ;
 %]
 &lt;br&gt;
 [{varcheckbox:noSoftLinks,Hide softlinks}]&lt;br&gt;
-[% if  ( $APP-&gt;isDeveloper($USER) ) {
-htmlcode('varcheckbox','zenadinheader,Show ads in Zen page header');
-} %]
 &lt;/fieldset&gt;
 
 &lt;h2&gt;Information

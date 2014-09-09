@@ -1,6 +1,8 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Tue Sep  9 13:40:10 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Tue Sep  9 18:20:10 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;avalyn&quot; node_id=&quot;2115404&quot; parent_e2node=&quot;2115406&quot; author_user=&quot;Uberbanana&quot;&gt;Babymetal&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;karma debt&quot; node_id=&quot;1966464&quot; parent_e2node=&quot;1864524&quot; author_user=&quot;etouffee&quot;&gt;And I asked myself about the present: how wide it was, how deep it was, how much was mine to keep?&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;jessicaj&quot; node_id=&quot;2114332&quot; parent_e2node=&quot;2113992&quot; author_user=&quot;Hazelnut&quot;&gt;A Farewell to Legal Aid&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;NinjaPenguin&quot; node_id=&quot;1142660&quot; parent_e2node=&quot;1142214&quot; author_user=&quot;czeano&quot;&gt;I've got your Appalachian Aftermath... RIGHT HERE.&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Clockmaker&quot; node_id=&quot;2058311&quot; parent_e2node=&quot;1952763&quot; author_user=&quot;StuartO)))&quot;&gt;Parents Music Resource Center&lt;/cooled&gt;
@@ -14,8 +16,6 @@
 	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2115390&quot; parent_e2node=&quot;2115391&quot; author_user=&quot;Chord&quot;&gt;The Night is not young&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Bitriot&quot; node_id=&quot;1988044&quot; parent_e2node=&quot;778520&quot; author_user=&quot;Doctor Uncle&quot;&gt;Head so full my mouth won't shut&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Everyone2&quot; node_id=&quot;2099204&quot; parent_e2node=&quot;2099201&quot; author_user=&quot;Yurei&quot;&gt;I ambushed the Chaplain's Assistant with Jason Segel's dick.&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Lucy-S&quot; node_id=&quot;2101096&quot; parent_e2node=&quot;411427&quot; author_user=&quot;Jet-Poop&quot;&gt;Laika&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Lucy-S&quot; node_id=&quot;2107226&quot; parent_e2node=&quot;1839088&quot; author_user=&quot;Jet-Poop&quot;&gt;The 13th Hour&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>
