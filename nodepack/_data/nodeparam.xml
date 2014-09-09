@@ -175,11 +175,6 @@
     <paramkey>allow_message_archive</paramkey>
   </nodeparam>
   <nodeparam>
-    <paramvalue>1</paramvalue>
-    <node_id>1854183</node_id>
-    <paramkey>prevent_nuke</paramkey>
-  </nodeparam>
-  <nodeparam>
     <paramvalue>2</paramvalue>
     <node_id>1854394</node_id>
     <paramkey>fix_level</paramkey>
