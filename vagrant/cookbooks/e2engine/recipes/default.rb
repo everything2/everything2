@@ -8,6 +8,8 @@
 
 require 'json'
 
+everythingdir = "/var/everything"
+
 # Minor copy and paste from e2cron
 logdir = "/var/log/everything"
 datelog = "`date +\\%Y\\%m\\%d\\%H`.log"
@@ -56,7 +58,7 @@ to_install.each do |p|
   package p
 end
 
-git '/var/everything/' do
+git everythingdir do
   repository node["e2engine"]["gitrepo"]
   enable_submodules true
   action :sync
@@ -74,6 +76,7 @@ nosearch_words_hash = {}
 nosearch_words.each { |x| nosearch_words_hash[x] = 1 }
 
 everything_conf_variables = {
+    "basedir" => everythingdir,
     "infected_ips" => node["e2engine"]["infected_ips"],
     "default_style" => node["e2engine"]["default_style"],
     "everyuser" => node["e2engine"]["everyuser"],
