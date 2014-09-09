@@ -51,6 +51,9 @@ to_install = [
     'libnet-smtp-ssl-perl',
     'libauthen-sasl-perl',
     'libxml-rss-perl',
+    'libmoose-perl',
+    'libmason-perl',
+    'libnamespace-autoclean-perl',
     'yui-compressor',
 ]
 
