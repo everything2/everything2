@@ -14,6 +14,7 @@ use DBI;
 use Everything;
 use Everything::Application;
 use Everything::NodeCache;
+use Everything::Delegation::maintenance;
 use Test::Deep::NoTest;
 use utf8;
 
@@ -2126,19 +2127,25 @@ sub getNodetypeTables
 sub getMaintenanceCode
 {
 	my ($this, $NODE, $op) = @_;
+
+	my $maint = $this->findMaintenance($NODE->{type}, $op);
+	return unless $maint;
+	my $code = $this->getNodeById($maint);
+	return $$code{code};
+}
+
+sub findMaintenance
+{
+	my ($this, $TYPE, $op) = @_;
 	my $maintain;
 	my $code;
 	my %WHEREHASH;
-	my $TYPE;
 	my $done = 0;
 
 	# If the maintenance nodetype has not been loaded, don't try to do
 	# any thing (the only time this should happen is when we are
 	# importing everything from scratch).
 	return 0 if(not defined $this->getType("maintenance")); 
-
-	$this->getRef($NODE);
-	$TYPE = $this->getType($$NODE{type_nodetype});
 	
 	# Maintenance code is inherited by derived nodetypes.  This will
 	# find a maintenance code from parent nodetypes (if necessary).
@@ -2168,11 +2175,10 @@ sub getMaintenanceCode
 			}
 		}
 	} until(defined $maintain);
-	
-	$code = $this->getNodeById($$maintain[0]);
-	return $$code{code};
-}
 
+        return $maintain->[0];
+
+}
 
 
 #############################################################################
@@ -2198,6 +2204,16 @@ sub getMaintenanceCode
 sub nodeMaintenance
 {
 	my ($this, $node_id, $op) = @_;
+
+	my $thisnode = $node_id;
+        getRef($thisnode);
+        return unless $thisnode;
+        my $maintenance_name = $thisnode->{type}->{title}."_".$op; 
+        if(my $delegation = Everything::Delegation::maintenance->can($maintenance_name))
+        {
+		return $delegation->($this, $Everything::HTML::query, $Everything::HTML::GNODE, $Everything::HTML::USER, $Everything::HTML::VARS, $Everything::HTML::PAGELOAD, $Everything::HTML::APP, $node_id);
+	}
+
 	my $code;
 	
 	# NODE and op must be defined!
