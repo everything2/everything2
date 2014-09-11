@@ -29,7 +29,8 @@ $str;
 %]&lt;/font&gt;&lt;/td&gt;
 
 &lt;/tr&gt;&lt;/table&gt;
-</page>
+
+&lt;p&gt;&lt;strong&gt;Delegated: &lt;/strong&gt;[{textfield:delegated,1,0}]</page>
   <displaytype>edit</displaytype>
   <node_id>189</node_id>
   <title>maintenance edit page</title>

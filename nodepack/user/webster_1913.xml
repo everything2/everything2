@@ -126,10 +126,6 @@
     <key>no_bookmarkinformer</key>
   </vars>
   <vars>
-    <value></value>
-    <key>emailSubscribedusers</key>
-  </vars>
-  <vars>
     <value>off</value>
     <key>nullvote</key>
   </vars>
@@ -170,12 +166,12 @@
     <key>tokens</key>
   </vars>
   <vars>
-    <value>iliterit basterd</value>
-    <key>costume</key>
-  </vars>
-  <vars>
     <value></value>
     <key>squawk_talk</key>
+  </vars>
+  <vars>
+    <value>iliterit basterd</value>
+    <key>costume</key>
   </vars>
   <vars>
     <value></value>
