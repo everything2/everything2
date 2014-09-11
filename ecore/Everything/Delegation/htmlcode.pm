@@ -1013,7 +1013,15 @@ sub listcode
 
     close $fileh;
 
-    my $name="$$NODE{title}";
+    my $name="";
+    if($NODE->{type}->{title} eq "maintenance")
+    {
+      my $mainttype = getNodeById($NODE->{maintain_nodetype})->{title};
+      my $maintop = $NODE->{maintaintype};
+      $name = $mainttype."_".$maintop;
+    }else{
+      $name="$$NODE{title}";
+    }
     $name =~ s/[\s\-]/_/g;
     if($filedata =~ /^(sub $name\s.*?^})/ims)
     {

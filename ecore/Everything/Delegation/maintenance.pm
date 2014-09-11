@@ -86,4 +86,82 @@ sub room_create
   updateNode($N, -1);
 }
 
+sub dbtable_create
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # This gets called for each new dbtable node.  We
+  # want to create the associated table here.
+  my ($thisnode) = @_;
+
+  getRef($thisnode);
+  $DB->createNodeTable($thisnode->{title});
+}
+
+sub dbtable_delete
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+  # This gets called each time a dbtable node gets deleted.
+  # We want to delete the associated table here.
+  my ($thisnode) = @_;
+
+  getRef($thisnode);
+  $DB->dropNodeTable($$thisnode{title});
+}
+
+sub writeup_create
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($WRITEUP) = @_;
+  getRef($WRITEUP);
+
+  my $E2NODE = $query->param('writeup_parent_e2node');
+  getRef($E2NODE);
+
+  # we need an e2node to insert the writeup into,
+  # and the writeup must have some text:
+  my $problem = (!$E2NODE or $query->param("writeup_doctext") eq '');
+
+  # the user must be allowed to publish, the node must not be locked,
+  # and the user must not have a writeup there already:
+  $problem ||= htmlcode('nopublishreason', $USER, $E2NODE);
+
+  # if no problem, attach writeup to node:
+  return htmlcode('publishwriteup', $WRITEUP, $E2NODE) unless $problem;
+
+  # otherwise, we don't want it:
+  nukeNode($WRITEUP, -1, 1);
+
+  return unless UNIVERSAL::isa($problem,'HASH');
+
+  # user already has a writeup in this E2node: update it
+  $$problem{doctext} = $query->param("writeup_doctext");
+  $$problem{wrtype_writeuptype} = $query -> param('writeup_wrtype_writeuptype') if $query -> param('writeup_wrtype_writeuptype');
+  updateNode($problem, $USER);
+
+  # redirect to the updated writeup
+  $Everything::HTML::HEADER_PARAMS{-status} = 303;
+  $Everything::HTML::HEADER_PARAMS{-location} = htmlcode('urlToNode', $problem);
+
+}
+
 1;
