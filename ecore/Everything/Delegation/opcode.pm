@@ -237,7 +237,7 @@ sub bookmark
     fromgroup_id => $$USER{node_id},
     'author_id' => $eddie,
     'recipient_id' => \@writeupAuthors,
-    'message' => 'Yo, '.$eddiemessage.' was bookmarked. Dig it, baby2.',});
+    'message' => 'Yo, '.$eddiemessage.' was bookmarked. Dig it, baby.',});
 
 1;
 
