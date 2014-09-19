@@ -67,6 +67,13 @@ git everythingdir do
   action :sync
 end
 
+directory "#{everythingdir}/compile" do
+  owner "www-data"
+  group "root"
+  mode 0755
+  action :create
+end
+
 directory '/etc/everything' do
   owner "root"
   group "root"
