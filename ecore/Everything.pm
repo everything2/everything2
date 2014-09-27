@@ -95,12 +95,8 @@ use vars qw($APP);
 # $dbh is deprecated.  Use $DB->getDatabaseHandle() to get the DBI interface
 use vars qw($dbh);
 
-# If you want to log to a different file, change this.
-my $everythingLog = "/tmp/everything.errlog";
-
 # Used by Makefile.PL to determine the version of the install.
 my $VERSION = 0.8;
-
 
 #############################################################################
 #
