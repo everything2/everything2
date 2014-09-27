@@ -2,14 +2,15 @@ package Everything::Request;
 
 use strict;
 use Moose;
+use namespace::autoclean;
 use CGI;
 
-has 'cgi' => (lazy => 1, builder => _build_cgi, isa => "CGI", handles => ["param", "header", "cookie"])
-has 'USER' => (lazy => 1, builder => _build_user, isa => "HASHREF");
-has 'VARS' => (lazy => 1, builder => _build_vars, isa => "HASHREF");
-has 'CONF' => (isa => "HASHREF");
-has 'DB' => (isa => "Everything::NodeBase");
-has 'APP' => (isa => "Everything::Application");
+has 'cgi' => (lazy => 1, builder => "_build_cgi", isa => "CGI", handles => ["param", "header", "cookie"], is => "rw");
+has 'USER' => (lazy => 1, builder => "_build_user", isa => "HASHREF", is => "rw");
+has 'VARS' => (lazy => 1, builder => "_build_vars", isa => "HASHREF", is => "rw");
+has 'CONF' => (isa => "HASHREF", is => "rw");
+has 'DB' => (isa => "Everything::NodeBase", is => "rw");
+has 'APP' => (isa => "Everything::Application", is => "ro");
 
 sub _build_user
 {
@@ -40,5 +41,7 @@ sub _build_cgi
 
   return $cgi;
 }
+
+__PACKAGE__->meta->make_immutable;
 
 1;
