@@ -31,7 +31,6 @@ BEGIN {
   *updateNode = *Everything::HTML::updateNode;
   *rewriteCleanEscape = *Everything::HTML::rewriteCleanEscape;
   *setVars = *Everything::HTML::setVars;
-  *cleanNodeName = *Everything::HTML::cleanNodeName;
   *getNodeWhere = *Everything::HTML::getNodeWhere;
   *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
   *recordUserAction = *Everything::HTML::recordUserAction;

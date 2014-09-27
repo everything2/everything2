@@ -12,6 +12,7 @@ use strict;
 use Everything;
 use Everything::Delegation::htmlcode;
 use Everything::Delegation::opcode;
+use Everything::Request;
 use CGI;
 use CGI::Carp qw(set_die_handler);
 use Carp qw(longmess);
@@ -2178,7 +2179,7 @@ sub handleUserRequest{
     # Searching for a node my string title
     my $type  = $query->param('type');
 
-    $nodename = cleanNodeName($query->param('node'), $noRemoveSpaces);
+    $nodename = $APP->cleanNodeName($query->param('node'), $noRemoveSpaces);
 
     $author = $query -> param("author");
     $author = getNode($author,"user");
@@ -2243,11 +2244,6 @@ sub handleUserRequest{
     gotoNode($defaultNode, $user_id);
   }
 
-}
-
-sub cleanNodeName
-{
-	return $APP->cleanNodeName(@_);
 }
 
 #############################################################################
@@ -2413,7 +2409,7 @@ sub opNew
 	my $type = $query->param('type');
 	my $TYPE = getType($type);
 	my $removeSpaces = 1;
-	my $nodename = cleanNodeName($query->param('node'), $removeSpaces);
+	my $nodename = $APP->cleanNodeName($query->param('node'), $removeSpaces);
 
 	if (canCreateNode($user_id, $DB->getType($type)) and !$APP->isGuest($USER))
 	{
@@ -2618,22 +2614,16 @@ sub mod_perlInit
 		return;
 	}
 
-	# Get the HTML variables for the system.  These include what
-	# pages to show when a node is not found (404-ish), when the
-	# user is not allowed to view/edit a node, etc.  These are stored
-	# in the dbase to make changing these values easy.	
 	%HEADER_PARAMS = ( );
 
 	set_die_handler(\&handle_errors);
 
 	$USER = loginUser();
 
-	#assign_test_condition();
-
-       #only for Everything2.com
-       if ($query->param("op") eq "randomnode") {
+         #only for Everything2.com
+         if ($query->param("op") eq "randomnode") {
                $query->param("node_id", getRandomNode());
-       }
+         }
 
 	refreshVotesAndCools();
 
