@@ -2541,10 +2541,6 @@ sub execOpCode
     {
       opNew();
     }
-    elsif($op eq 'throwerror' && isGod($USER))
-    {
-      Everything::throwError();
-    }
   }
 }
 

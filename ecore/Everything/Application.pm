@@ -1867,4 +1867,89 @@ sub isInfectedIp
 	return scalar(grep {$_ eq $ip} @{$Everything::CONF->{infected_ips}} );
 }
 
+#############################################################################
+#	Sub
+#		escape
+#
+#	Purpose
+#		This encodes characters that may interfere with HTML/perl/sql
+#		into a hex number preceeded by a '%'.  This is the standard HTML
+#		thing to do when uncoding URLs.
+#
+#	Parameters
+#		$esc - the string to encode.
+#
+#	Returns
+#		Then escaped string
+#
+sub escape
+{
+	my ($this) = shift;
+	my ($esc) = @_;
+
+	$esc =~ s/(\W)/sprintf("%%%02x",ord($1))/ge;
+	
+	return $esc;
+}
+
+#############################################################################
+#	Sub
+#		unescape
+#
+#	Purpose
+#		Convert the escaped characters back to normal ascii.  See escape().
+#
+#	Parameters
+#		An array of strings to convert
+#
+#	Returns
+#		Nothing useful.  The array elements are changed.
+# Note: now that this lives in Everything::Application instead of Everything.pm, I think this is unused, but I'm going to leave it just in case
+#
+sub unescape
+{
+	my $this = shift;
+	foreach my $arg (@_)
+	{
+		tr/+/ /;
+		$arg =~ s/\%(..)/chr(hex($1))/ge;
+	}
+	
+	1;
+}
+
+sub getVarHashFromStringFast
+{
+	my $this = shift;
+	my $varString = shift;
+	my %vars = (split(/[=&]/, $varString));
+	foreach (keys %vars) {
+		$vars{$_} =~ tr/+/ /;
+		$vars{$_} =~ s/\%(..)/chr(hex($1))/ge;
+		if ($vars{$_} eq ' ') { $vars{$_} = ""; }
+	}
+	return %vars;
+}
+
+sub getVarStringFromHash
+{
+	my $this = shift;
+	my $varHash = shift;
+
+	# Clean out the keys that have do not have a value.
+	foreach (keys %$varHash) {
+		# Remove deleted value so they aren't saved
+		if (!defined $$varHash{$_}) {
+			delete $$varHash{$_};
+		}
+		# But set blank strings to a single space so
+		#  they aren't lost.
+		$$varHash{$_} = " " unless $$varHash{$_};
+	}
+	
+	my $varStr =
+		join("&", map( $_."=".$this->escape($$varHash{$_}), sort keys %$varHash) );
+	return $varStr
+}
+
 1;
