@@ -69,9 +69,7 @@ else
 	#   bad: key = NULL or &quot;rows&quot; = really big number or &quot;use tmp tables&quot;
 	# Tips: nate says add &quot;indexes&quot; to fix that?  How?
 
-	my $dbh = $DB-&gt;getDatabaseHandle();
-
-	$csr = $dbh-&gt;prepare
+	$csr = $DB-&gt;{dbh}-&gt;prepare
 		(&quot;EXPLAIN SELECT *
 		FROM node JOIN writeup ON node.node_id = writeup.writeup_id
 		WHERE author_user = $USER-&gt;{node_id}

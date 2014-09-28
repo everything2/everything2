@@ -31,16 +31,14 @@ return $str;
 &lt;/dt&gt;
 &lt;dd&gt;
 [%
-my $dbh = $DB-&gt;getDatabaseHandle();
-$dbh-&gt;{mysql_auto_reconnect} ? &quot;yes&quot; : &quot;no&quot;;
+$DB-&gt;{dbh}-&gt;{mysql_auto_reconnect} ? &quot;yes&quot; : &quot;no&quot;;
 %]
 &lt;/dd&gt;
 &lt;dt&gt;Do we raise en error on a DB failure?
 &lt;/dt&gt;
 &lt;dd&gt;
 [%
-my $dbh = $DB-&gt;getDatabaseHandle();
-$dbh-&gt;{RaiseError} ? &quot;yes&quot; : &quot;no&quot;;
+$DB-&gt;{dbh}-&gt;{RaiseError} ? &quot;yes&quot; : &quot;no&quot;;
 %]
 &lt;/dd&gt;
 &lt;/dl&gt;

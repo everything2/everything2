@@ -57,22 +57,6 @@ my $userList = $DB-&gt;sqlSelectMany(&quot;count(cooledby_user) as ucount, coole
 
 my @userSet;
 
-
-# Try this thing [call]'s way instead...
-
-
-#my $userList = $dbh-&gt; prepare (&quot;
-#select user_id from 
-#  user INNER JOIN links ON links.from_node = user.user_id AND links.linktype = $linktype 
-#       INNER JOIN writeup ON writeup.parent_e2node = links.to_node OR writeup.writeup_id = links.to_node
-#       INNER JOIN coolwriteups ON coolwriteups.coolwriteups_id = writeup.writeup_id 
-#       INNNER JOIN user AS cooling_user on coolwriteups.cooledby_user = cooling_user.user_id
-#       
-#       LIMIT  $numFriends
-#&quot;);
-#
-#$userList -&gt; execute();
-
 return &quot;$pronoun don't have any 'best friends' yet. Sorry.&quot; unless $userList-&gt;rows;
 
 

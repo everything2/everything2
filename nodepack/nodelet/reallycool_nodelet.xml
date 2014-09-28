@@ -12,10 +12,7 @@ my $repthreshholdhi = 26;
 my $limit = 4;
 my $length = 280;
 
-my $csr = $dbh-&gt;prepare(&quot;SELECT writeup_id FROM writeup LEFT JOIN node ON node_id=writeup_id WHERE reputation &gt; $repthreshholdlo AND reputation &lt; $repthreshholdhi AND cooled != 0 ORDER BY writeup_id DESC LIMIT $limit&quot;);
-
-#my $csr = $dbh-&gt;prepare(&quot;SELECT writeup_id FROM writeup LEFT JOIN node ON #node_id=writeup_id WHERE reputation &gt; $repthreshholdlo AND reputation &lt; #$repthreshholdhi AND cooled != 0 ORDER BY writeup_id LIMIT $limit&quot;);
-#4-1-02 only -- nate
+my $csr = $DB-&gt;{dbh}-&gt;prepare(&quot;SELECT writeup_id FROM writeup LEFT JOIN node ON node_id=writeup_id WHERE reputation &gt; $repthreshholdlo AND reputation &lt; $repthreshholdhi AND cooled != 0 ORDER BY writeup_id DESC LIMIT $limit&quot;);
 
 $csr-&gt;execute();
 my $str;

@@ -13,8 +13,7 @@
       Packed=&gt;'Packed', Comment=&gt;'Comment' );
    my @fields;
    {
-      my $dbh= $DB-&gt;getDatabaseHandle();
-      my $sth= $dbh-&gt;prepare( &quot;show index from $table&quot; );
+      my $sth= $DB-&gt;{dbh}-&gt;prepare( &quot;show index from $table&quot; );
       $sth-&gt;execute();
       while(  my $rec= $sth-&gt;fetchrow_hashref()  ) {
          push @fields, $rec;

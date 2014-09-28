@@ -13,9 +13,7 @@ my $isCE = $APP-&gt;isEditor($USER);
 my $isEDev = $APP-&gt;isDeveloper($USER);
 return 'Sorry, cowboy. You must be at least [edev|this tall] to ride the Node Type Lister!' unless $isCE || $isEDev;
 my $str;
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
-my $sth = $dbh-&gt;prepare('SELECT title, node_id FROM node, nodetype WHERE node_id = nodetype_id ORDER BY title');
+my $sth = $DB-&gt;{dbh}-&gt;prepare('SELECT title, node_id FROM node, nodetype WHERE node_id = nodetype_id ORDER BY title');
 $sth-&gt;execute();
 my $opt = '';
 #TODO would be more secure to have list of things allowed, instead of things not allowed
@@ -143,7 +141,7 @@ if(defined $filterUser) {
 }
 
 my $total;
-$sth = $dbh-&gt;prepare(&quot;SELECT COUNT(*) FROM node WHERE type_nodetype='$selectionTypeID'&quot;.$sqlFilterUser);
+$sth = $DB-&gt;{dbh}-&gt;prepare(&quot;SELECT COUNT(*) FROM node WHERE type_nodetype='$selectionTypeID'&quot;.$sqlFilterUser);
 $sth-&gt;execute();
 ($total) = $sth-&gt;fetchrow;
 $str .= 'Found &lt;strong&gt;' . $total . '&lt;/strong&gt; nodes of nodetype &lt;strong&gt;&lt;a href=' . urlGen({'node_id'=&gt;$selectionTypeID}) . '&gt;' . $validTypeIDs{$selectionTypeID} . '&lt;/a&gt;&lt;/strong&gt;';
@@ -180,7 +178,7 @@ $queryText .= $sqlFilterUser if length($sqlFilterUser);
 $queryText .= ' ORDER BY '.$sqlSort if length($sqlSort);
 $queryText .= &quot; LIMIT $next, $num&quot;;
 
-$sth = $dbh-&gt;prepare($queryText);
+$sth = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $sth-&gt;execute();
 my $numCurFound=0;
 my $aID; #author ID

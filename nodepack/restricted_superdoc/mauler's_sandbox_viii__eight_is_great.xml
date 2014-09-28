@@ -53,8 +53,6 @@ my $coolBonus = 20;
 my $upvoteReceivedBonus = 1;
 
 #####################################################
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 my $rows;
 my $row;
 my $queryText;
@@ -71,7 +69,7 @@ my $NodeHeavenCoolCount = 0;
 # Experience
 #
 $queryText = &quot;SELECT experience FROM user WHERE user_id=$uid&quot;;
-$rows = $dbh-&gt;prepare($queryText);
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
 $xp = $rows-&gt;fetchrow_array();
@@ -80,7 +78,7 @@ $xp = $rows-&gt;fetchrow_array();
 # Writeup Count
 #
 $queryText = &quot;SELECT COUNT(*) FROM node,writeup WHERE node.node_id=writeup.writeup_id AND node.author_user=$uid&quot;;
-$rows = $dbh-&gt;prepare($queryText);
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
 $writeupCount = $rows-&gt;fetchrow_array();
@@ -92,11 +90,11 @@ my $queryText2;
 my $rows2;
 my $row2;
 $queryText = &quot;SELECT writeup_id FROM node,writeup WHERE node.node_id=writeup.writeup_id AND node.author_user=$uid&quot;;
-$rows = $dbh-&gt;prepare($queryText);
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
 $queryText2 = &quot;SELECT COUNT(vote_id) FROM vote WHERE weight&gt;0 AND vote_id=?&quot;;
-$rows2 = $dbh-&gt;prepare($queryText2);
+$rows2 = $DB-&gt;{dbh}-&gt;prepare($queryText2);
 while($row = $rows-&gt;fetchrow_arrayref)
 {
    $rows2-&gt;execute($$row[0]);
@@ -107,7 +105,7 @@ while($row = $rows-&gt;fetchrow_arrayref)
 # Heaven Total Reputation
 #
 $queryText = &quot;SELECT SUM(heaven.reputation) AS totalReputation FROM heaven WHERE heaven.type_nodetype=117 AND heaven.author_user=$uid&quot;;
-$rows = $dbh-&gt;prepare($queryText);
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
 while($row = $rows-&gt;fetchrow_arrayref)
@@ -119,7 +117,7 @@ while($row = $rows-&gt;fetchrow_arrayref)
 # Cool Count
 #
 $queryText = &quot;SELECT COUNT(*) FROM node,writeup,coolwriteups WHERE node.node_id=writeup.writeup_id AND writeup.writeup_id=coolwriteups.coolwriteups_id AND node.author_user=$uid&quot;;
-$rows = $dbh-&gt;prepare($queryText);
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
 $coolCount = $rows-&gt;fetchrow_array();
@@ -128,7 +126,7 @@ $coolCount = $rows-&gt;fetchrow_array();
 # Node Heaven Cool Count
 #
 $queryText = &quot;SELECT COUNT(*) from coolwriteups,heaven where coolwriteups_id=node_id AND author_user=$uid&quot;;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;

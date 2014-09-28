@@ -110,8 +110,6 @@ return '&lt;p align=&quot;center&quot;&gt;&lt;big&gt;&lt;big&gt;&lt;strong&gt;G 
 
 
 #database setup
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'Oh, no! Unable to get database handle!' unless $dbh;
 my $qh;	#query handle
 my $typeID = getId(getType('writeup')) || 0;
 
@@ -119,7 +117,7 @@ my $typeID = getId(getType('writeup')) || 0;
 # total writeup count
 #
 
-$qh = $dbh-&gt;prepare('SELECT COUNT(*) FROM node WHERE author_user='.$uid.' AND type_nodetype='.$typeID);
+$qh = $DB-&gt;{dbh}-&gt;prepare('SELECT COUNT(*) FROM node WHERE author_user='.$uid.' AND type_nodetype='.$typeID);
 
 $qh-&gt;execute();
 my ($totalWUs) = $qh-&gt;fetchrow();
@@ -128,7 +126,7 @@ $qh-&gt;finish();
 return linkNode($user) . ' has no writeups'.'.' unless $totalWUs;
 
 #load in only writeups we're currently looking at
-$qh = $dbh-&gt;prepare(
+$qh = $DB-&gt;{dbh}-&gt;prepare(
 #
 # Why select all columns?
 #

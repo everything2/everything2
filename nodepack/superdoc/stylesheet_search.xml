@@ -26,7 +26,7 @@ if($zensearch){
   my $sql = &quot;SELECT node_id FROM node JOIN document ON node_id=document_id
              WHERE type_nodetype=$type_id AND doctext LIKE ?&quot;;
 
-  my $csr = $dbh -&gt; prepare($sql);
+  my $csr = $DB-&gt;{dbh}-&gt;prepare($sql);
   $csr -&gt; execute(&quot;%$zensearch%&quot;);
   my @sheet_ids;
 

@@ -16,8 +16,6 @@ $str = '&lt;style type=&quot;text/css&quot;&gt;td{padding:3px}&lt;/style&gt;
 &lt;p&gt;&lt;b&gt;Jump to accounts matched:&lt;/b&gt; &lt;a href=&quot;#byEmail&quot;&gt;by email&lt;/a&gt; | &lt;a href=&quot;#byPassword&quot;&gt;by password&lt;/a&gt; | &lt;a href=&quot;#byBrowser&quot;&gt;by browser&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;By default, this page shows the last 25 matching accounts for each category. &lt;a href=&quot;/node/superdoc/in10se%2527s+sandbox+6?showall=1&quot;&gt;Click here&lt;/a&gt; to view all matching results.&lt;/p&gt;';
 
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 my $rows;
 my $dbrow;
 my $queryText;
@@ -61,7 +59,7 @@ if ($showAll &lt;= 0)
 {
    $queryText .= ' LIMIT 25'
 }
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
@@ -105,7 +103,7 @@ if ($showAll &lt;= 0)
 {
    $queryText .= ' LIMIT 25'
 }
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
@@ -160,7 +158,7 @@ if ($showAll &lt;= 0)
    $queryText .= ' LIMIT 25'
 }
 
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;

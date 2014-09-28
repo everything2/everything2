@@ -173,8 +173,7 @@ else
 # 			&quot;LIMIT 1&quot;
 # 			);
 
-	my $dbh = $DB-&gt;getDatabaseHandle();
-# 	my $csr = $dbh-&gt;prepare
+# 	my $csr = $DB-&gt;{dbh}-&gt;prepare
 # 		(&quot;EXPLAIN SELECT *
 # 		FROM node JOIN document ON node.node_id = document.document_id
 # 		WHERE type_nodetype=117
@@ -182,7 +181,7 @@ else
 # 			AND document.doctext REGEXP ('.$findword.')
 # 		LIMIT 1&quot;);
 # Exclude: 15 user 116 e2node 117 writeup 148 dbtable 153 setting
-	my $csr = $dbh-&gt;prepare
+	my $csr = $DB-&gt;{dbh}-&gt;prepare
 		(&quot;EXPLAIN SELECT *
 		FROM node JOIN document ON node.node_id = document.document_id
 		WHERE type_nodetype != 117

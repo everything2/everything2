@@ -6,8 +6,6 @@ my $guestUser = $Everything::CONF-&gt;{system}-&gt;{guest_user};
 my $uid = $$USER{user_id};
 my $isCategory = 0;
 my $linktype = getId(getNode('category', 'linktype'));
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 
 my $sql;
 my $ds;
@@ -101,7 +99,7 @@ $sql = &quot;SELECT n.node_id, n.title, n.author_user
           LIMIT $startAt,$count&quot;
           ;
 
-$ds = $dbh-&gt;prepare($sql);
+$ds = $DB-&gt;{dbh}-&gt;prepare($sql);
 $ds-&gt;execute() or return $ds-&gt;errstr;
 while(my $n = $ds-&gt;fetchrow_hashref)
 {

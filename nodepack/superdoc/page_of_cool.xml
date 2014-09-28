@@ -64,7 +64,7 @@ foreach (reverse @$cn) {
   $count++;
   next if $count &lt; $next;
   last if $count &gt; $next+$increment;
-  my $csr = $dbh-&gt;prepare(&quot;select * from links where from_node=&quot;.getId($_).&quot; and linktype=$clink&quot;);
+  my $csr = $DB-&gt;{dbh}-&gt;prepare(&quot;select * from links where from_node=&quot;.getId($_).&quot; and linktype=$clink&quot;);
   my $str .= '&lt;tr class=&quot;';
   $str .= ( int($count) &amp; 1 ) ? 'oddrow' : 'evenrow';
   $str .= '&quot;&gt;';

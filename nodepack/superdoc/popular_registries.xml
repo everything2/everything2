@@ -6,8 +6,6 @@
 &lt;th&gt;# Submissions&lt;/th&gt;
 &lt;/tr&gt;
 [%
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 my $rows;
 my $row;
 my $str;
@@ -16,7 +14,7 @@ my $limit = 25;
 my $r;
 
 $queryText = 'select for_registry,COUNT(for_registry) AS ctr FROM registration GROUP BY for_registry ORDER BY ctr DESC LIMIT '. $limit;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;

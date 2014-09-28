@@ -16,12 +16,11 @@ my $str;
 # every possible category because it would be WAY too large.
 # We can come up with another way to the staff to add/edit categories.
 # One option would be an ajax auto-complete textbox
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
+
 my $sql = &quot;SELECT DISTINCT ug.node_id
           FROM node ug,nodegroup ng 
           WHERE ng.nodegroup_id=ug.node_id AND ng.node_id=$uid&quot;;
-my $ds = $dbh-&gt;prepare($sql);
+my $ds = $DB-&gt;{dbh}-&gt;prepare($sql);
 $ds-&gt;execute() or return $ds-&gt;errstr;
 my $inClause = $uid.','.$GU;
 while(my $n = $ds-&gt;fetchrow_hashref)
@@ -36,7 +35,7 @@ $sql = &quot;SELECT n.node_id, n.author_user
          AND type_nodetype=1522375
          AND  node_id NOT IN (SELECT to_node AS node_id FROM links WHERE from_node=n.node_id)
         ORDER BY n.title&quot;;
-my $ds = $dbh-&gt;prepare($sql);
+my $ds = $DB-&gt;{dbh}-&gt;prepare($sql);
 $ds-&gt;execute() or return $ds-&gt;errstr;
 my $ctr = 0;
 my $strList;

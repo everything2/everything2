@@ -62,8 +62,6 @@ if ($descr ne &quot;&quot;) {
 
 my $catlinktype = getNode('category', 'linktype')-&gt;{node_id};
 
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 my $sql = &quot;SELECT node.node_id,node.title,node.type_nodetype,node.author_user
            FROM node,links
            WHERE node.node_id=links.to_node
@@ -71,7 +69,7 @@ my $sql = &quot;SELECT node.node_id,node.title,node.type_nodetype,node.author_us
             AND links.linktype = $catlinktype
            ORDER BY links.food, node.title, node.type_nodetype
            LIMIT &quot;.($page*$count).&quot;,$count&quot;;
-my $ds = $dbh-&gt;prepare($sql);
+my $ds = $DB-&gt;{dbh}-&gt;prepare($sql);
 $ds-&gt;execute() or return $ds-&gt;errstr;
 
 my $ctr = 0;
