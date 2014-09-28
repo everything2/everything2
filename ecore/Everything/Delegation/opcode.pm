@@ -50,7 +50,6 @@ BEGIN {
   *hasVoted = *Everything::HTML::hasVoted;
   *getHRLF = *Everything::HTML::getHRLF;
   *evalCode = *Everything::HTML::evalCode;
-  *getCompiledCode = *Everything::HTML::getCompiledCode;
   *getPageForType = *Everything::HTML::getPageForType;
   *castVote = *Everything::HTML::castVote;
   *adjustGP = *Everything::HTML::adjustGP;

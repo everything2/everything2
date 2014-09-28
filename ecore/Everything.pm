@@ -64,9 +64,6 @@ sub BEGIN
               isNodetype
               isGod
 
-              getCompiledCode
-              clearCompiledCode
-
               dumpCallStack
               getCallStack
               printErr
@@ -110,9 +107,6 @@ sub updateNode		{ $DB->updateNode(@_); }
 sub updateLockedNode	{ $DB->updateLockedNode(@_); }
 sub replaceNode		{ $DB->replaceNode(@_); }
 sub transactionWrap	{ $DB->transactionWrap(@_); }
-sub getCompiledCode	{ $DB->getCompiledCode(@_); }
-sub clearCompiledCode	{ $DB->clearCompiledCode(@_); }
-
 
 sub isNodetype		{ $DB->isNodetype(@_); }
 sub isGroup			{ $DB->isGroup(@_); }

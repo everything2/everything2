@@ -2506,7 +2506,7 @@ sub execOpCode
     # For built-in opcodes, like new, there will normally be no $OPCODE
     if ($OPCODE) {
 
-      $opCodeCode = getCompiledCode($OPCODE, $opCodeTest);
+      $opCodeCode = $DB->getCompiledCode($OPCODE, $opCodeTest);
       unless ($@)
       {
         $handled = eval { &$opCodeCode(); };
