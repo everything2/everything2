@@ -3536,7 +3536,7 @@ sub newwriteups
 
   my $qry = "SELECT parent_e2node, (select title from node where node_id=writeup.wrtype_writeuptype limit 1) as type_title, writeup_id, (select author_user from node where node_id=writeup.writeup_id limit 1) as author_user, (select title from node where node_id=writeup.parent_e2node limit 1) as parent_title FROM writeup where notnew=0 ORDER BY writeup.publishtime DESC LIMIT $limit ";
 
-  my $csr = $Everything::dbh->prepare($qry);
+  my $csr = $DB->{dbh}->prepare($qry);
 
   $csr->execute or return "newwriteups: can't get";
 
@@ -5514,7 +5514,7 @@ sub writeupssincelastyear
     AND author_user=$userID $notIn";
 
   my $dbh = $DB->getDatabaseHandle();
-  my $qh = $dbh -> prepare($sqlStr);
+  my $qh = $dbh->prepare($sqlStr);
   $qh -> execute();
   my ($numwriteups) = $qh -> fetchrow();
   $qh -> finish();
