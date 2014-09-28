@@ -92,6 +92,7 @@ everything_conf_variables = {
     "everyuser" => node["e2engine"]["everyuser"],
     "everypass" => node["e2engine"]["everypass"],
     "everything_dbserv" => node["e2engine"]["everything_dbserv"],
+    "database" => node["e2engine"]["database"],
     "cookiepass" => node["e2engine"]["cookiepass"],
     "canonical_web_server" => node["e2engine"]["canonical_web_server"],
     "homenode_image_host" => node["e2engine"]["homenode_image_host"],
