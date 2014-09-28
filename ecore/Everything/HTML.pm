@@ -2542,8 +2542,6 @@ sub isSuspended
 #
 sub mod_perlInit
 {
-	my ($db) = @_;
-
 	if($Everything::CONF->{maintenance_mode})
 	{
 		my $maintenance_html;
@@ -2568,7 +2566,7 @@ sub mod_perlInit
 	$query = getCGI();
 
 	# Initialize our connection to the database
-	Everything::initEverything($db);
+	Everything::initEverything();
 
 	if (!defined $DB->getDatabaseHandle()) {
 		$query->print($SITE_UNAVAILABLE);
