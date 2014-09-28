@@ -21,8 +21,8 @@ if ($query -&gt; param('op') eq 'nuke'
 
 my $isCE = $APP-&gt;isEditor($USER);
 
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
+my $mydbh = $DB-&gt;getDatabaseHandle();
+return 'No database handle!' unless $mydbh;
 my $sql;
 
 # delete a link
@@ -134,7 +134,7 @@ if ($query-&gt;param('orderthem') &amp;&amp; htmlcode('verifyRequest', 'reorderC
 			WHERE links.to_node = $nid
 			AND links.from_node = $$NODE{node_id}
 			AND links.linktype = $catlinktype&quot;;
-		my $ds = $dbh-&gt;prepare($sql);
+		my $ds = $mydbh-&gt;prepare($sql);
 		$ds-&gt;execute() or return $ds-&gt;errstr;
 	}
 }
@@ -179,7 +179,7 @@ $sql = &quot;SELECT node.node_id,node.title,node.type_nodetype,node.author_user
             AND links.from_node=$$NODE{node_id}
             AND links.linktype = $catlinktype
            ORDER BY links.food, node.title, node.type_nodetype&quot;;
-my $ds = $dbh-&gt;prepare($sql);
+my $ds = $mydbh-&gt;prepare($sql);
 $ds-&gt;execute() or return $ds-&gt;errstr;
 
 my $ctr = 0;

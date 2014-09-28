@@ -37,7 +37,7 @@ my $blacklistCheckSQL = &lt;&lt;SQLEND;
 SQLEND
 
 # We use eval to prevent errors in prepare() from causing error messages the page
-my $cursor = eval { $dbh-&gt;prepare($blacklistCheckSQL, $addr) };
+my $cursor = eval { $DB-&gt;{dbh}-&gt;prepare($blacklistCheckSQL, $addr) };
 my $errorMessage = &quot;&quot;;
 
 # If $@ is true after an eval, an error was thrown, so we do nothing

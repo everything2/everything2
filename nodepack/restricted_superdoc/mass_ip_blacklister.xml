@@ -18,10 +18,10 @@ if(my $idToRemove = $query-&gt;param(&quot;remove_ip_block&quot;)){
 	
 	my $removeFromBlacklistSQL = &quot;delete from ipblacklist where ipblacklist_id = \&quot;$idToRemove\&quot;;&quot;;
 
-	eval { $dbh-&gt;do($removeFromBlacklistSQL) };
+	eval { $DB-&gt;{dbh}-&gt;do($removeFromBlacklistSQL) };
 	if( $@ ){
 		return &quot;There was an error adding this block to the database: &quot;
-		.$dbh-&gt;errstr();
+		.$DB-&gt;{dbh}-&gt;errstr();
 	}else{
                 $APP-&gt;securityLog($NODE, $USER, &quot;$$USER{title} removed $$blacklistHash{ipblacklist_ipaddress} from the IP blacklist.&quot;);
 		return &quot;The IP \&quot;$$blacklistHash{ipblacklist_ipaddress}\&quot; was successfully removed from the blacklist.&quot;;
@@ -45,11 +45,11 @@ if($query-&gt;param(&quot;add_ip_block&quot;)){
 	foreach my $ipToAdd ( @ipsToAdd ) {
 		next unless( $ipToAdd );
 		my $addBlacklistSQL = &quot;insert into ipblacklist (ipblacklist_user, ipblacklist_ipaddress, ipblacklist_comment) values (\&quot;$$USER{user_id}\&quot;,\&quot;$ipToAdd\&quot;,\&quot;$blockReason\&quot;);&quot;;
-		eval { $dbh-&gt;do($addBlacklistSQL) };
+		eval { $DB-&gt;{dbh}-&gt;do($addBlacklistSQL) };
 	
 		if( $@ ){
 			$str.= &quot;&lt;li&gt;There was an error adding this block to the database: &quot;
-			.$dbh-&gt;errstr().&quot;&lt;/li&gt;&quot;;
+			.$DB-&gt;{dbh}-&gt;errstr().&quot;&lt;/li&gt;&quot;;
 		}else{
                         $APP-&gt;securityLog($NODE, $USER, &quot;$$USER{title} added $ipToAdd to the IP blacklist: \&quot;$blockReason.\&quot;&quot;);
 			$str.= &quot;&lt;li&gt;The IP \&quot;$ipToAdd\&quot; was successfully added to the blacklist.&lt;/li&gt;\n&quot;;

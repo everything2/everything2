@@ -13,7 +13,7 @@ my $stuff = $$NODE{group} || [];
 unless ( $APP-&gt;isGuest($USER) ){
 	# find attached drafts:
 	my $linktype = getId(getNode 'parent_node', 'linktype');
-	my $drafts = $dbh -&gt; selectcol_arrayref(&quot;
+	my $drafts = $DB-&gt;{dbh}-&gt;selectcol_arrayref(&quot;
 		SELECT from_node
 		FROM links
 		WHERE

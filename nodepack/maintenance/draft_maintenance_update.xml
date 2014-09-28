@@ -44,7 +44,7 @@ if ($query -&gt; param('draft_publication_status') and
 }
 
 # avoid empty names/duplicate names for writeups/drafts by same user:
-my $title = my $urTitle = cleanNodeName($$N{title}) || 'untitled draft';
+my $title = my $urTitle = $APP-&gt;cleanNodeName($$N{title}) || 'untitled draft';
 my $count = 1;
 
 while(

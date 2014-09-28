@@ -13,7 +13,7 @@ my $limit = 50;
 
 $limit += (keys %$skip);
 
-my $csr = $Everything::dbh-&gt;prepare('select node_id,title,experience,vars from user left join node on node_id=user_id left join setting on setting_id=user_id order by experience DESC limit '.$limit);
+my $csr = $DB-&gt;{dbh}-&gt;prepare('select node_id,title,experience,vars from user left join node on node_id=user_id left join setting on setting_id=user_id order by experience DESC limit '.$limit);
 
 return 'Ack! Something\'s broken...' unless($csr-&gt;execute);
 

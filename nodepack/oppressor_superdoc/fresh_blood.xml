@@ -5,12 +5,12 @@
 my $usertype = getId(getType('user'));
 
 my $sql = &quot;select count(*) from `node` where `type_nodetype` = $usertype and `createtime` &gt; date_sub(now(), interval 1 week)&quot;;
-my $usr = $dbh-&gt;prepare($sql);
+my $usr = $DB-&gt;{dbh}-&gt;prepare($sql);
 $usr-&gt;execute or return 'Oh dear. Database oops';
 my ($numUser) = $usr-&gt;fetchrow();
 
 my $sql = &quot;select count(*) from `user`, `node` where `user_id` = `node_id` and `createtime` &gt; date_sub(now(), interval 1 week) and `lasttime` &gt; 0&quot;;
-my $usr = $dbh-&gt;prepare($sql);
+my $usr = $DB-&gt;{dbh}-&gt;prepare($sql);
 $usr-&gt;execute or return 'Oh dear. Database oops';
 my ($numLoggedIn) = $usr-&gt;fetchrow();
 
@@ -34,7 +34,7 @@ SELECT `user_id`, `nick`, `createtime`, `validemail`, `lasttime`
   DESC LIMIT $start, 50
 
 SQLEND
-$usr = $dbh-&gt;prepare($sql);
+$usr = $DB-&gt;{dbh}-&gt;prepare($sql);
 
 $usr-&gt;execute or return 'Oh dear. Database oops';
 

@@ -13,7 +13,7 @@ if (my $like = $query-&gt;param('ipaddy')) {
   $like = &quot;\%ipaddy\=$like\%&quot;;
 
 
-  my $csr = $DB-&gt;sqlSelectMany(&quot;setting_id&quot;, &quot;setting&quot;, &quot;vars like &quot;. $dbh-&gt;quote($like));
+  my $csr = $DB-&gt;sqlSelectMany(&quot;setting_id&quot;, &quot;setting&quot;, &quot;vars like &quot;. $DB-&gt;{dbh}-&gt;quote($like));
   while (my ($id) = $csr-&gt;fetchrow) {
    $str.=linkNode($id).&quot;&lt;br&gt;&quot;;
   }

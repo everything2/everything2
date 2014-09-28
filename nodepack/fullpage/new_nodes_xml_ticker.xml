@@ -9,7 +9,7 @@ my $qry = &quot;SELECT * FROM newwriteup, node where newwriteup.node_id=node.nod
 $qry.= &quot;and notnew=0 &quot; unless isGod($USER);
 $qry.= &quot; order by newwriteup_id DESC LIMIT $limit&quot;;
 
-my $csr = $Everything::dbh-&gt;prepare($qry);
+my $csr = $DB-&gt;{dbh}-&gt;prepare($qry);
 
 $csr-&gt;execute or return &quot;SHIT&quot;;
 my $count=0;

@@ -90,7 +90,7 @@ SELECT
 	WHERE ipblacklistref.ipblacklistref_id = $idToRemove
 SQLEND
 	my @blacklistAddressArray =
-		@ { $dbh-&gt;selectall_arrayref($selectAddrFromBlacklistSQL) };
+		@ { $DB-&gt;{dbh}-&gt;selectall_arrayref($selectAddrFromBlacklistSQL) };
 	my $blAddress = $blacklistAddressArray[0]-&gt;[0];
 	
 	my $removeFromBlacklistSQL = &lt;&lt;SQLEND;
@@ -105,14 +105,14 @@ DELETE ipblacklist, ipblacklistref, ipblacklistrange
 	WHERE ipblacklistref.ipblacklistref_id = $idToRemove
 SQLEND
 
-	my $saveRaise = $dbh-&gt;{RaiseError};
-	$dbh-&gt;{RaiseError} = 1;
-	eval { $dbh-&gt;do($removeFromBlacklistSQL) };
-	$dbh-&gt;{RaiseError} = $saveRaise;
+	my $saveRaise = $DB-&gt;{dbh}-&gt;{RaiseError};
+	$DB-&gt;{dbh}-&gt;{RaiseError} = 1;
+	eval { $DB-&gt;{dbh}-&gt;do($removeFromBlacklistSQL) };
+	$DB-&gt;{dbh}-&gt;{RaiseError} = $saveRaise;
 
 	if($@){
 		return &quot;There was an error removing this block from the database: &quot;
-			. $dbh-&gt;errstr()
+			. $DB-&gt;{dbh}-&gt;errstr()
 			;
 	}else{
                 $APP-&gt;securityLog($NODE, $USER, &quot;$$USER{title} removed $blAddress} from the IP blacklist.&quot;);
@@ -155,18 +155,18 @@ INSERT INTO ipblacklistrange
 		, LAST_INSERT_ID())
 SQLEND
 
-	my $saveRaise = $dbh-&gt;{RaiseError};
-	$dbh-&gt;{RaiseError} = 1;
+	my $saveRaise = $DB-&gt;{dbh}-&gt;{RaiseError};
+	$DB-&gt;{dbh}-&gt;{RaiseError} = 1;
 	eval {
-		$dbh-&gt;do($addBlacklistRefSQL);
-		$dbh-&gt;do($addBlacklistSQL);
+		$DB-&gt;{dbh}-&gt;do($addBlacklistRefSQL);
+		$DB-&gt;{dbh}-&gt;do($addBlacklistSQL);
 	};
-	$dbh-&gt;{RaiseError} = $saveRaise;
+	$DB-&gt;{dbh}-&gt;{RaiseError} = $saveRaise;
 	
 	if ($@){
 		return &quot;There was an error adding this block to the database: &quot;
 			. &quot;&lt;pre&gt;&quot; . encodeHTML($addBlacklistSQL) . &quot;&lt;/pre&gt;&quot;
-			. $dbh-&gt;errstr()
+			. $DB-&gt;{dbh}-&gt;errstr()
 			;
 	}else{
 		$ipToAdd = encodeHTML($ipToAdd);

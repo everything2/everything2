@@ -63,7 +63,7 @@ if(    $query-&gt;param( 'user_name_from' )
     if ( ! $pnode ) {
       $nonexist .= &quot;&lt;dd&gt;[&quot; . $parentnode . &quot;]&lt;/dd&gt;\n&quot;;
     } else {
-      my $csr = $dbh-&gt;prepare(  'SELECT * FROM node LEFT JOIN writeup '
+      my $csr = $DB-&gt;{dbh}-&gt;prepare(  'SELECT * FROM node LEFT JOIN writeup '
                               . 'ON node.node_id = writeup.writeup_id '
                               . 'where writeup.parent_e2node='
                               . $$pnode{ node_id } . ' AND node.author_user='

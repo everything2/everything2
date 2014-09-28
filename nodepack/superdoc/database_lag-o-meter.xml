@@ -5,14 +5,14 @@
 my %stats;
 my %vars;
 
-my $csr = $dbh-&gt;prepare('show status');
+my $csr = $DB-&gt;{dbh}-&gt;prepare('show status');
 $csr-&gt;execute;
 
 while (my ($key, $val) = $csr-&gt;fetchrow) {
   $stats{$key} = $val;
 }
 $csr-&gt;finish;
-$csr = $dbh-&gt;prepare('show variables');
+$csr = $DB-&gt;{dbh}-&gt;prepare('show variables');
 $csr-&gt;execute;
 while (my ($key, $val) = $csr-&gt;fetchrow) {
   $vars{$key} = $val;
