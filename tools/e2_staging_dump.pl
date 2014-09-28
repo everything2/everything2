@@ -25,11 +25,11 @@ my $password = $Everything::CONF->{everypass};
 my $user = $Everything::CONF->{everyuser};
 my $host = $Everything::CONF->{everything_dbserv};
 
-my $dbh = DBI->connect("DBI:mysql:database=everything;host=$host",$user, $password);
+my $thisdbh = DBI->connect("DBI:mysql:database=everything;host=$host",$user, $password);
 
-die "No database" unless $dbh;
+die "No database" unless $thisdbh;
 
-my $sth = $dbh->prepare("SHOW TABLES");
+my $sth = $thisdbh->prepare("SHOW TABLES");
 
 $sth->execute();
 
