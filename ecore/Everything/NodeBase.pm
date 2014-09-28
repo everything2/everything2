@@ -1078,10 +1078,6 @@ SQLEND
 
 		$this->executeQuery($sqlString);
 
-		# If this node had compiled code in it, and the source changed,
-		#  we need to remove the cached compile
-		$this->clearCompiledCode($NODE);
-
 		# Cache this node since it has been updated.  This way the cached
 		# version will be the same as the node in the db.
 		$this->{cache}->incrementGlobalVersion($NODE);
@@ -1096,59 +1092,6 @@ SQLEND
 
 	return 1;
 }
-
-############################################################################
-#	sub
-#		getCompiledCode
-#
-#	purpose
-#		Returns the compiled code for a node, potentially compiling if necessary
-#
-sub getCompiledCode {
-	my ($this, $NODE, $evalFunc) = @_;
-
-	if ($NODE && ref $$NODE{compiledCode} ne "CODE") {
-
-		my ($rawCode, $compileResult);
-
-		# This is a hack.  All dynamically code runs in Everything::HTML, which
-		#  exposes $NODE in evalCode.  However, since $NODE is local, recompiling
-		#  is necessary without referencing a package-level variable.
-		# So we're using $Everything::HTML::GNODE.
-		# This means this code will only work if GNODE is visible inside evalFunc.
-		# Further, since $GNODE isn't visible here, calls without evalFunc will fail.
-		# This hack is sort of necessitated by the current lag-tastic, CPU-bound
-		#  behavior on E2.
-		$rawCode = 'sub { my $NODE = $GNODE;'
-			. $$NODE{code}
-			. "\n}"
-			;
-
-		if ($evalFunc) {
-			$compileResult = &$evalFunc($rawCode);
-		} else {
-			$compileResult = eval $rawCode;
-		}
-
-		$$NODE{compiledCode} = $compileResult;
-	}
-
-	return $$NODE{compiledCode};
-}
-
-############################################################################
-#	sub
-#		clearCompiledCode
-#
-#	purpose
-#		Clears the compiled code in a node if the code that was compiled has
-#			changed
-#
-sub clearCompiledCode {
-	my ($this, $NODE) = @_;
-	delete $$NODE{compiledCode};
-}
-
 
 ############################################################################
 #	sub

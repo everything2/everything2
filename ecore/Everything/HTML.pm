@@ -2480,63 +2480,24 @@ sub execOpCode
   if($op ne "new" and $delegation = Everything::Delegation::opcode->can($op))
   {
     $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $APP);
-    $handled = 1;
-  }else{
-    my $logError = sub {
-      my $condition = shift;
-      if ($@){
-        Everything::printLog("Problem when $condition $op opcode:\n");
-        my $params = $query->Vars();
-        for (keys %$params) {
-          Everything::printLog("- param: " . $_ . " = " . $query->param($_));
-        }
-        Everything::printLog($@);
-      }
-    };
-
-    my $opCodeTest = sub {
-      my $code = shift;
-      my $compiled = eval $code;
-      &$logError("compiling");
-      return $compiled;
-    };
-
-    $OPCODE = getOpCode($op);
-
-    # For built-in opcodes, like new, there will normally be no $OPCODE
-    if ($OPCODE) {
-
-      $opCodeCode = $DB->getCompiledCode($OPCODE, $opCodeTest);
-      unless ($@)
-      {
-        $handled = eval { &$opCodeCode(); };
-        &$logError("running");
-      }
-
-    }
+    return;
   }
+  
+  # These are built in defaults.  If no 'opcode' nodes exist for
+  # the specified op, we have some default handlers.
 
-  unless($handled)
+  if($op eq 'login')
   {
-    # These are built in defaults.  If no 'opcode' nodes exist for
-    # the specified op, we have some default handlers.
-
-    if($op eq 'login')
-    {
-      opLogin()
-    }
-    elsif($op eq 'logout')
-    {
-      opLogout();
-    }
-    elsif($op eq 'nuke')
-    {
-      opNuke();
-    }
-    elsif($op eq 'new')
-    {
-      opNew();
-    }
+    opLogin()
+  }elsif($op eq 'logout')
+  {
+    opLogout();
+  }elsif($op eq 'nuke')
+  {
+    opNuke();
+  }elsif($op eq 'new')
+  {
+    opNew();
   }
 }
 
