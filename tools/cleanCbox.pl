@@ -16,8 +16,7 @@ INSERT INTO publicmessages
   ON DUPLICATE KEY UPDATE
     publicmessages.tstamp = message.tstamp
 ENDSQL
-my $dbh = $DB->getDatabaseHandle();
-$dbh->do($messageSaveSQL);
+$DB->{dbh}->do($messageSaveSQL);
 
 $DB->sqlDelete("message", "for_user=0 AND TIMESTAMPADD(SECOND, -$expireInSeconds, NOW()) > tstamp");
 #clean up the chatterbox table
