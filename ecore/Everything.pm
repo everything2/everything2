@@ -653,24 +653,15 @@ sub cleanLinks
 #	Purpose
 #		The "main" function.  Initialize the Everything module.
 #
-#	Parameters
-#		$db - the string name of the database to connect to.
-#		$staticNodetypes - (optional) 1 if the system should derive the
-#			nodetypes once and cache them.  This will speed performance,
-#			but changes to nodetypes will not take effect until the httpd
-#			is restarted.  A really good performance enhancement IF the
-#			nodetypes do not change.
-#
 sub initEverything
 {
-	my ($db, $staticNodetypes, $memcache) = @_;
-
 	if($Everything::CONF->{maintenance_mode})
 	{
 		exit;
 	}
 
-	$DB = new Everything::NodeBase($db, $staticNodetypes, $memcache);
+	$DB ||= new Everything::NodeBase();
+	$DB->{cache}->clearSessionCache();
 	$DB->closeTransaction();
 	$APP = new Everything::Application($DB, $CONF);
 }

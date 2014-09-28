@@ -58,7 +58,6 @@ sub BEGIN
 		);
 }
 
-use vars qw($dbases);
 use vars qw($EDS);
 
 #############################################################################
@@ -83,27 +82,18 @@ use vars qw($EDS);
 #
 sub new
 {
-	my ($className, $dbname) = @_;
+	my ($className) = @_;
 	my $this = {};
 	
 	bless $this;
 
-	if(not exists $dbases->{$dbname})
-	{
-		my $db = {};
-		
-		# A connection to this database does not exist.  Create one.
-		my ($user,$pass, $dbserv) = ($Everything::CONF->{'everyuser'}, $Everything::CONF->{'everypass'}, $Everything::CONF->{'everything_dbserv'});
-		$db->{dbh} = DBI->connect("DBI:mysql:$dbname:$dbserv;mysql_enable_utf8=1", $user, $pass, {AutoCommit => 1});
-		$this->{dbh} = $db->{dbh};
-		
-		$db->{cache} = new Everything::NodeCache($this);
-		$dbases->{$dbname} = $db;
-	}
+        my $dbname = $Everything::CONF->{'database'};
+	# A connection to this database does not exist.  Create one.
+	my ($user,$pass, $dbserv) = ($Everything::CONF->{'everyuser'}, $Everything::CONF->{'everypass'}, $Everything::CONF->{'everything_dbserv'});
+	my $dbh = DBI->connect("DBI:mysql:$dbname:$dbserv;mysql_enable_utf8=1", $user, $pass, {AutoCommit => 1});
+	$this->{dbh} = $dbh;
 
-
-	$this->{dbh} = $dbases->{$dbname}->{dbh};
-	$this->{cache} = $dbases->{$dbname}->{cache};
+	$this->{cache} = new Everything::NodeCache($this); 
 	$this->{dbname} = $dbname;
 	$this->{staticNodetypes} = $Everything::CONF->{static_nodetypes};
 
