@@ -516,8 +516,7 @@ unless ($$USER{title} == 'rootbeer277' ||
 	{return &quot;&lt;p&gt;Sorry but this superdoc is not ready for display&lt;/p&gt;&quot;;}
 
 	my $testexplainoutput = &quot;&lt;ul&gt;&quot;;
-my $dbh = $DB-&gt;getDatabaseHandle();
-my $csr = $dbh-&gt;prepare(
+my $csr = $DB-&gt;{dbh}-&gt;prepare(
 	&quot;EXPLAIN SELECT reputation
 	FROM node
 	WHERE author_user = 1503725

@@ -1,10 +1,6 @@
 <node>
   <type_nodetype>13</type_nodetype>
   <doctext>[%
-
-my $dbh = $DB-&gt;getDatabaseHandle();
-
-return 'No database handle!' unless $dbh;
 my $rows;
 my $str;
 my $dbrow;
@@ -12,7 +8,7 @@ my $queryText;
 my $limit = 100;
 
 $queryText = 'SELECT user_id,stars FROM user ORDER BY stars DESC LIMIT '.$limit;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;

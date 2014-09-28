@@ -1,6 +1,7 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Sep 28 03:10:10 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Sep 28 03:25:11 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;shaogo&quot; node_id=&quot;2115590&quot; parent_e2node=&quot;2113130&quot; author_user=&quot;borgo&quot;&gt;Scripps National Spelling Bee&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;466462&quot; parent_e2node=&quot;466440&quot; author_user=&quot;discofever&quot;&gt;The second mouse gets the cheese&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2115748&quot; parent_e2node=&quot;2114087&quot; author_user=&quot;JD&quot;&gt;Gone Girl&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Bitriot&quot; node_id=&quot;1793018&quot; parent_e2node=&quot;1793017&quot; author_user=&quot;Scout Finch&quot;&gt;I waited under your streetlight like a hoodlum; like a moth&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;go ahead I'll listen&quot; node_id=&quot;1081001&quot; parent_e2node=&quot;1080971&quot; author_user=&quot;Chras4&quot;&gt;Tears must be shed to make room for the laughter&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Bitriot&quot; node_id=&quot;1349892&quot; parent_e2node=&quot;1349890&quot; author_user=&quot;junkpile&quot;&gt;Perpetual reminder to myself: good sex is possible&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;StuartO)))&quot; node_id=&quot;1933542&quot; parent_e2node=&quot;1902405&quot; author_user=&quot;UterusHammer&quot;&gt;August 4, 2007&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;locke baron&quot; node_id=&quot;991540&quot; parent_e2node=&quot;991535&quot; author_user=&quot;swankivy&quot;&gt;Sucks Less!&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

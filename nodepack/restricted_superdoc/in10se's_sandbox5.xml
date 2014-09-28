@@ -1,8 +1,6 @@
 <node>
   <type_nodetype>13</type_nodetype>
   <doctext>[%
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 my $rows;
 my $str;
 my $dbrow;
@@ -12,7 +10,7 @@ my $recalcRows;
 my $row;
 
 $queryText = 'SELECT SUM(GP) FROM user';
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
@@ -20,7 +18,7 @@ my $totalGP = $rows-&gt;fetchrow_array();
 
 # get recalculated noders
 $queryText = &quot;SELECT user.user_id FROM setting,user WHERE setting.setting_id=user.user_id AND setting.vars LIKE '%hasRecalculated=1%'&quot;;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
@@ -32,7 +30,7 @@ while($row= $rows-&gt;fetchrow_arrayref)
 
 
 $queryText = 'SELECT user_id,gp FROM user ORDER BY gp DESC LIMIT '.$limit;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
@@ -65,7 +63,7 @@ while($row = $rows-&gt;fetchrow_arrayref)
 $str .= '&lt;/ol&gt;&lt;hr /&gt;';
 
 $queryText = 'SELECT user_id,gp FROM user WHERE gp&lt;&gt;0 ORDER BY gp LIMIT '.$limit;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
