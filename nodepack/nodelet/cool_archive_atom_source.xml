@@ -61,7 +61,6 @@ if($user) {
 #$limit ||= 51;
 #$limit += $place;
 
-#$dbh-&gt;do(&quot;set SQL_BIG_TABLES=1&quot;);
 my $csr = $DB-&gt;sqlSelectMany('node.node_id as nodeid', 'coolwriteups, node, writeup', $wherestr, &quot;order by $orderby limit $limit&quot;); # Why you kick my SQL syntax and call it fuck off?
 #my $csr = $DB-&gt;sqlSelectMany('*', 'coolwriteups, node, writeup', $wherestr, &quot;order by $orderby limit $limit&quot;); 
 #my $csr = $DB-&gt;sqlSelectMany(&quot;node.node_id as nodeid&quot;, &quot;newwriteup, node&quot;, &quot;newwriteup.node_id=node.node_id and notnew=0 order by newwriteup_id DESC limit $limit&quot;);

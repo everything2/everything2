@@ -16,11 +16,11 @@
 #  $str.=&quot;Sorry, couldn't find it.&quot;;
 #}
 #return $str;
-  my $csr = $dbh-&gt;prepare('SELECT node_id FROM node WHERE type_nodetype=117 AND createtime &gt; (CURDATE() - INTERVAL 1 MONTH) ORDER BY reputation DESC LIMIT 100');
+  my $csr = $DB-&gt;{dbh}-&gt;prepare('SELECT node_id FROM node WHERE type_nodetype=117 AND createtime &gt; (CURDATE() - INTERVAL 1 MONTH) ORDER BY reputation DESC LIMIT 100');
 
-  #my $csr = $dbh-&gt;prepare('SELECT node_id FROM writeup, node WHERE writeup.writeup_id=node.node_id AND node.createtime &gt; (CURDATE() - INTERVAL 1 MONTH) ORDER BY writeup.cooled DESC LIMIT 50');
+  #my $csr = $DB-&gt;{dbh}-&gt;prepare('SELECT node_id FROM writeup, node WHERE writeup.writeup_id=node.node_id AND node.createtime &gt; (CURDATE() - INTERVAL 1 MONTH) ORDER BY writeup.cooled DESC LIMIT 50');
 
- # my $csr = $dbh-&gt;prepare('SELECT node_id FROM writeup INNER JOIN node ON writeup.writeup_id=node.node_id WHERE node.createtime &gt; (CURDATE() - INTERVAL 1 MONTH) ORDER BY writeup.cooled DESC LIMIT 50');
+ # my $csr = $DB-&gt;{dbh}-&gt;prepare('SELECT node_id FROM writeup INNER JOIN node ON writeup.writeup_id=node.node_id WHERE node.createtime &gt; (CURDATE() - INTERVAL 1 MONTH) ORDER BY writeup.cooled DESC LIMIT 50');
  # This version is slightly less simple. I wonder if there's any advantage?
 
   $csr-&gt;execute();

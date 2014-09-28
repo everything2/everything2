@@ -16,7 +16,7 @@ $str .= &quot;&lt;/updated&gt;\n&quot;;
 my $numberofwriteups = 25;
 my $contentslicelength = 1024 ;
 
-my $nodeids = $dbh -&gt; selectcol_arrayref(
+my $nodeids = $DB-&gt;{dbh}-&gt;selectcol_arrayref(
 	&quot;SELECT node_id
 	FROM newwriteup
 	WHERE notnew=0

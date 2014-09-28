@@ -1,8 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 my $rows;
 my $dbrow;
 my $queryText;
@@ -12,7 +10,7 @@ my ($sec,$min,$hour,$day,$month,$yr19,@rest) =   localtime(time);
 $str .= 'Web Server DateTime: '.($yr19+1900).'-'.($month+1).'-'.$day.' '.$hour.':'.$min.':'.$sec.'&lt;br /&gt;';
 
 my $queryText = &quot;SELECT NOW()&quot;;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
   or return $rows-&gt;errstr;
 $rows-&gt;execute()
   or return $rows-&gt;errstr;
@@ -119,14 +117,12 @@ text-align: center;
 
 use Digest::MD5('md5_hex');
 
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 my $rows;
 my $dbrow;
 my $u;
 
 my $queryText = &quot;SELECT user_id FROM user ORDER BY lasttime DESC LIMIT &quot;.$count;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
   or return $rows-&gt;errstr;
 $rows-&gt;execute()
   or return $rows-&gt;errstr;

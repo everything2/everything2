@@ -13,7 +13,7 @@ else {
 
 %]
 &lt;pre&gt;
-  64:       my $csr = $dbh-&gt;prepare(  'SELECT * FROM node LEFT JOIN writeup '
+  64:       my $csr = $DB-&gt;{dbh}-&gt;prepare(  'SELECT * FROM node LEFT JOIN writeup '
   65:                               . 'ON node.node_id = writeup.writeup_id '
   66:                               . 'where writeup.parent_e2node='
   67:                               . $$pnode{ node_id } . ' AND node.author_user='

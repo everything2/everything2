@@ -48,7 +48,7 @@ if(@e2node_ids){
              WHERE nodegroup_id IN (&quot;
              .join(&quot;, &quot;, @e2node_ids).&quot;)&quot;;
 
-  \@fillednode_ids{  @{$dbh -&gt; selectcol_arrayref($sql)}  };
+  \@fillednode_ids{  @{$DB-&gt;{dbh}-&gt;selectcol_arrayref($sql)}  };
 }
 
 foreach my $ND (@{ $$NODE{group} }) {

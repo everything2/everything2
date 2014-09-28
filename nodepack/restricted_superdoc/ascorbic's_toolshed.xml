@@ -98,7 +98,7 @@ $str;
 return;
 my $sql = &quot;SELECT user.nick, setting.vars FROM setting,user WHERE setting.setting_id=user.user_id AND (setting.vars LIKE \'%rowser=vim%\')&quot;;
 
-my $usr = $dbh-&gt;prepare($sql);
+my $usr = $DB-&gt;{dbh}-&gt;prepare($sql);
 $usr-&gt;execute or return 'Oh dear. Database oops';
 
 my $str;
@@ -117,7 +117,7 @@ return unless ($$USER{title} eq 'ascorbic');
 my $sql = &quot;select * from user order by user_id desc limit 1000&quot;;
 
 
-my $usr = $dbh-&gt;prepare($sql);
+my $usr = $DB-&gt;{dbh}-&gt;prepare($sql);
 
 $usr-&gt;execute or return 'Oh dear. Database oops';
 

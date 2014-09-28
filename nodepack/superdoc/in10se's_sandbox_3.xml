@@ -1,8 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 my $rows;
 my $str;
 my $dbrow;
@@ -21,7 +19,7 @@ $queryText = &quot;SELECT node.node_id,user.numwriteups,node.createtime,user.las
                AND user.numwriteups&gt;=&quot;.$writeupCount.&quot;
               ORDER BY createtime DESC&quot;;
 
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
   or return $rows-&gt;errstr;
 $rows-&gt;execute()
   or return $rows-&gt;errstr;

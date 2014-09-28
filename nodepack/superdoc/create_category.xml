@@ -58,13 +58,11 @@ $str .= '&lt;/p&gt;
          &lt;p&gt;&lt;b&gt;Maintainer:&lt;/b&gt;&lt;br /&gt;';
 
 # Get usergroups current user is a member of
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 my $sql = &quot;SELECT DISTINCT ug.node_id,ug.title 
            FROM node ug,nodegroup ng 
            WHERE ng.nodegroup_id=ug.node_id AND ng.node_id=$$USER{user_id} 
            ORDER BY ug.title&quot;;
-my $ds = $dbh-&gt;prepare($sql);
+my $ds = $DB-&gt;{dbh}-&gt;prepare($sql);
 $ds-&gt;execute() or return $ds-&gt;errstr;
 my $catType = getId(getType('category'));
 my @vals;

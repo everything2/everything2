@@ -81,7 +81,7 @@ select node.*, writeup.*, cw.*
 
 ENDQUERY
 
-        $csr = $dbh-&gt;prepare($coolQuery);
+        $csr = $DB-&gt;{dbh}-&gt;prepare($coolQuery);
         $csr-&gt;execute(getId($U), $limit, $offset);
 
     } elsif ($useraction eq 'written') {
@@ -107,7 +107,7 @@ select nd.*, writeup.*, coolwriteups.*
 
 ENDQUERY
 
-        $csr = $dbh-&gt;prepare($coolQuery);
+        $csr = $DB-&gt;{dbh}-&gt;prepare($coolQuery);
         $csr-&gt;execute(getId($U), $limit, $offset);
 
     }
@@ -145,7 +145,7 @@ select node.*, writeup.*, cw.*
 
 ENDQUERY
 
-    $csr = $dbh-&gt;prepare($coolQuery);
+    $csr = $DB-&gt;{dbh}-&gt;prepare($coolQuery);
     $csr-&gt;execute($bigLimit, $offset);
 
 }

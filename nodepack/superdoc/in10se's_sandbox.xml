@@ -130,8 +130,6 @@ my $fromGroup = int ($query-&gt;param(&quot;gid&quot;));
 ####################################################################
 # initialize the database and some vars, they will be used multiple times
 #
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 my $dbrow;
 my $rowCtr = 0;
 my $loopCtr = 0;
@@ -271,7 +269,7 @@ FROM message,node
 WHERE message.author_user=node.node_id
 AND message.for_user='.$uid.'
 ORDER BY node.title';
-$list = $dbh-&gt;prepare($queryText);
+$list = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $list-&gt;execute()
    or return $list-&gt;errstr;
 while($dbrow = $list-&gt;fetchrow_arrayref)
@@ -301,7 +299,7 @@ FROM message,node
 WHERE message.for_usergroup=node.node_id 
 AND message.for_user='.$uid.'
 ORDER BY node.title';
-$list = $dbh-&gt;prepare($queryText);
+$list = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $list-&gt;execute()
    or return $list-&gt;errstr;
 while($dbrow = $list-&gt;fetchrow_arrayref)
@@ -379,7 +377,7 @@ if ($fromGroup &gt; 0)
 }
 $queryText .= ' ORDER BY tstamp DESC LIMIT '.($page*$count).','.$count;
 
-$list = $dbh-&gt;prepare($queryText);
+$list = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $list-&gt;execute()
    or return $list-&gt;errstr;
 
@@ -479,7 +477,7 @@ if ($fromGroup &gt; 0)
 }
 $queryText .= ' ORDER BY tstamp DESC,forGroup.Title LIMIT '.($page*$count).','.$count;
 
-$list = $dbh-&gt;prepare($queryText);
+$list = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $list-&gt;execute()
    or return $list-&gt;errstr;
 

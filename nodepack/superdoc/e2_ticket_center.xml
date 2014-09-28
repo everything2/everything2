@@ -93,8 +93,7 @@ return $header . $createtable . $footer;
 
 my $testnode;
 my $output;
-my $dbh = $DB-&gt;getDatabaseHandle();
-my $csr = $dbh-&gt;prepare(&quot;
+my $csr = $DB-&gt;{dbh}-&gt;prepare(&quot;
 	 SELECT *
 	 FROM node
 	 WHERE type_nodetype = 1949335

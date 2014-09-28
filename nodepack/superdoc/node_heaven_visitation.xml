@@ -16,7 +16,7 @@ my $isCE = $APP-&gt;isEditor($USER);
 my $visit_id = int($query-&gt;param('visit_id'));
 
 return '&lt;i&gt;You cannot come to heaven alone, you must [Node Heaven|visit] someone...&lt;/i&gt;&lt;br /&gt;' unless $visit_id;
-my $N = $DB-&gt;sqlSelectHashref('*', 'heaven', 'node_id='.$dbh-&gt;quote($visit_id));
+my $N = $DB-&gt;sqlSelectHashref('*', 'heaven', 'node_id='.$DB-&gt;{dbh}-&gt;quote($visit_id));
 
 my $NUID = $$N{author_user} || 0;	#noder user ID
 

@@ -65,8 +65,7 @@ SQLEND
 
   $str .= &quot;&lt;h3&gt;Query&lt;/h3&gt;&lt;pre&gt;$userQuery&lt;/pre&gt;&quot; if ($query-&gt;param(&quot;showquery&quot;));
 
-  my $dbh = $DB-&gt;getDatabaseHandle();
-  $usersToNail = $dbh-&gt;selectall_hashref($userQuery, 'ordinal');
+  $usersToNail = $DB-&gt;{dbh}-&gt;selectall_hashref($userQuery, 'ordinal');
 }
 
 if (keys %$usersToNail) {

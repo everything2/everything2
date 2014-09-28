@@ -21,7 +21,7 @@ if(defined $query-&gt;param('opencoffin')) {
 	$str.='&lt;h2 align=&quot;center&quot;&gt;'.linkNode($LAB, 'RESURRECT', {olde2nodeid =&gt; $node_id}).'&lt;/h2&gt;';
 
 
-	my $N = $DB-&gt;sqlSelectHashref('*', 'tomb', 'node_id='.$dbh-&gt;quote($node_id));
+	my $N = $DB-&gt;sqlSelectHashref('*', 'tomb', 'node_id='.$DB-&gt;{dbh}-&gt;quote($node_id));
 	return &quot;uh, nope -- $node_id didn't work&quot; unless $N;
 
   

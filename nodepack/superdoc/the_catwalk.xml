@@ -8,7 +8,6 @@ return &quot;This page will allow you to customize your view of the site if you 
 my $str = &quot;&quot;;
 
 my $nodeType = 1854352; #Stylesheet nodetype
-my $dbh = $DB-&gt;getDatabaseHandle();
 
 my $choicelist = [
 	'0','(no sorting)',
@@ -79,7 +78,7 @@ if(defined $filterUser) {
 }
 
 my $total;
-my $sth = $dbh-&gt;prepare(&quot;SELECT COUNT(*) FROM node WHERE type_nodetype='$nodeType'&quot;.$sqlFilterUser);
+my $sth = $DB-&gt;{dbh}-&gt;prepare(&quot;SELECT COUNT(*) FROM node WHERE type_nodetype='$nodeType'&quot;.$sqlFilterUser);
 $sth-&gt;execute();
 ($total) = $sth-&gt;fetchrow;
 $str .= $plainTextFilter if length($plainTextFilter);
@@ -94,7 +93,7 @@ $queryText .= $sqlFilterUser if length($sqlFilterUser);
 $queryText .= ' ORDER BY '.$sqlSort if length($sqlSort);
 $queryText .= &quot; LIMIT $next, $num&quot;;
 
-$sth = $dbh-&gt;prepare($queryText);
+$sth = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $sth-&gt;execute();
 my $numCurFound=0;
 my $aID; #author ID

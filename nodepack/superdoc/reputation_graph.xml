@@ -17,9 +17,6 @@ if ($$writeup{type_nodetype} != 117)
   return &quot;You can only view the reputation graph for writeups. Try clicking on the &amp;quot;Rep Graph&amp;quot; link from a writeup you have already voted on.&quot;;
 }
 
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
-
 my $queryText;
 my $csr;
 my $row;
@@ -36,7 +33,7 @@ if (!$canView)
 if (!$canView)
 {
   $queryText = 'SELECT weight FROM vote WHERE vote_id='.$writeupId.' AND voter_user='.$$USER{node_id};
-  $csr = $dbh-&gt;prepare($queryText);
+  $csr = $DB-&gt;{dbh}-&gt;prepare($queryText);
   $csr-&gt;execute();
   if($csr-&gt;rows&gt;0){$canView=1;}
 }
@@ -52,7 +49,7 @@ my $year = $prevDate [5];
 my $month = $prevDate [4];
 
 $queryText = &quot;SELECT weight,votetime FROM vote WHERE vote_id=$writeupId ORDER BY votetime&quot;;
-$csr = $dbh-&gt;prepare($queryText);
+$csr = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $csr-&gt;execute();
 my @curDate;
 my $uv = 0;

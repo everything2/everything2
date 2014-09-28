@@ -8,8 +8,6 @@
 # duplicate msgs because of differing tstamps). Feel free to add paging if you want. 
 # This report was a simplistic hack written to answer a question that the editors asked.
 
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 my $rows;
 my $str;
 my $dbrow;
@@ -17,7 +15,7 @@ my $queryText;
 my $limit = 250;
 
 $queryText = &quot;SELECT DISTINCT msgtext,tstamp FROM message WHERE author_user=839239 AND msgtext LIKE '%editor cooled%liquid nitrogen%' ORDER BY tstamp DESC LIMIT &quot;.$limit;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
   or return $rows-&gt;errstr;
 $rows-&gt;execute()
   or return $rows-&gt;errstr;
