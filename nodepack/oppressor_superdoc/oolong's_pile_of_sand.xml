@@ -8,17 +8,9 @@ Sometimes I think we should have standardised names for these things. Mostly, th
 [{closeform}]
 
 [%
-my $str;
-$str .=&quot;This is keys %GLOBAL returns:&lt;br/&gt;&quot;;
-my @keys = keys %GLOBAL;
-$str .= &quot;@keys&quot;;
-return $str;
-%]
-
-[%
 
 return urlGenNoParams(getNode(196)).&quot;Mu.&quot;;
-my $csr = $dbh-&gt;prepare(&quot;SELECT * FROM message WHERE author_user = $$USER{node_id} AND msgtext REGEXP '^/me' ORDER BY message_id DESC LIMIT 50&quot;);
+my $csr = $DB-&gt;{dbh}-&gt;prepare(&quot;SELECT * FROM message WHERE author_user = $$USER{node_id} AND msgtext REGEXP '^/me' ORDER BY message_id DESC LIMIT 50&quot;);
 # 
   $csr-&gt;execute();
 

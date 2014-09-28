@@ -122,11 +122,9 @@ $str .= '&lt;/div&gt;
 &lt;p&gt;&lt;small&gt;Writeups are displayed based on their titles, and are sorted by &amp;quot;Create Time&amp;quot;.&lt;br /&gt;
 Titles and create times do not always match up (i.e., someone can post a daylog for &amp;quot;February 28, '.(@curDate[5]+1890).'&amp;quot; today, and that daylog will be displayed in the February '.(@curDate[5]+1890).' archive).&lt;/small&gt;&lt;/p&gt;';
 
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 my $dbrow;
 my $rowCtr = 0;
-my $logs = $dbh-&gt;prepare($queryText);
+my $logs = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $logs-&gt;execute()
    or return $logs-&gt;errstr;
 

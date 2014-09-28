@@ -16,12 +16,10 @@ my $n;
 
 my $nodeId = getId($NODE);
 my $uid = getId($USER)||0;
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 
 $queryText = &quot;SELECT user.user_id,user.experience FROM setting,user WHERE setting.setting_id=user.user_id AND setting.vars LIKE '%hasRecalculated=1%'&quot;;
 
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;

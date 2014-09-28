@@ -28,9 +28,6 @@ if (defined $query-&gt;param(&quot;mr&quot;) &amp;&amp; $query-&gt;param(&quot;m
   }
 }
 
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
-
 my $str = '&lt;p&gt;These nodes have fallen between the cracks, and seem to have gone unnoticed. This page lists &lt;em&gt;up to&lt;/em&gt; '.$resultCtr.' writeups that you haven\'t voted on that have fewer than '.$maxVotes.' total vote(s)'.$repStr.' on E2. Since they have been neglected until now, why don\'t you visit them and click that vote button?&lt;/p&gt;
 
 &lt;form method=&quot;get&quot;&gt;&lt;div&gt;
@@ -98,7 +95,7 @@ SELECT title, author_user, createtime, writeup_id, totalvotes
 
 ENDQUERY
 
-$rows = $dbh-&gt;prepare($queryText);
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $rows-&gt;execute() or return $rows-&gt;errstr;
 
 while(my $wu = $rows-&gt;fetchrow_hashref)

@@ -67,14 +67,14 @@ my $execstr = $query-&gt;param('sqlquery');
 return '' unless $execstr;
 
 
-my $dbh = $DB-&gt;getDatabaseHandle();
+my $thisdbh = $DB-&gt;getDatabaseHandle();
 use Time::HiRes;
 my @start = Time::HiRes::gettimeofday;
-my $cursor = eval { $dbh-&gt;prepare($execstr) };
-return 'Bad SQL: ' . $dbh-&gt;errstr . &quot;($@)\n&quot; if $@;
+my $cursor = eval { $thisdbh-&gt;prepare($execstr) };
+return 'Bad SQL: ' . $thisdbh-&gt;errstr . &quot;($@)\n&quot; if $@;
 
 unless($cursor-&gt;execute()) {
-	return $dbh-&gt;errstr;
+	return $thisdbh-&gt;errstr;
 }
 
 #

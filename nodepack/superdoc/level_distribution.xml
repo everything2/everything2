@@ -19,12 +19,10 @@ sub hashValueDescendingNum
 
 my $nodeId = getId($NODE);
 my $uid = getId($USER)||0;
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 
 # only show themes for &quot;active&quot; users (in this case lastseen within 1 months
 $queryText = &quot;SELECT DATE_ADD(CURDATE(), INTERVAL -1 MONTH)&quot;;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
@@ -33,7 +31,7 @@ my $cutoffDate = $rows-&gt;fetchrow_array();
 $queryText = &quot;SELECT setting.setting_id,setting.vars FROM setting,user WHERE setting.setting_id=user.user_id AND user.lasttime&gt;='$cutoffDate' AND setting.vars LIKE '%level=%'&quot;;
 #$str .= '&lt;p&gt;'.$queryText.'&lt;/p&gt;';
 
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;

@@ -16,12 +16,10 @@ my $n;
 
 my $nodeId = getId($NODE);
 my $uid = getId($USER)||0;
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 
 $queryText = &quot;SELECT user.user_id,user.GP FROM setting,user WHERE setting.setting_id=user.user_id AND setting.vars LIKE '%GPoptout=1%'&quot;;
 
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
@@ -45,8 +43,6 @@ return $str;
 &lt;p&gt;&lt;hr&gt;&lt;/p&gt;
 
 [%
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 my $rows;
 my $str;
 my $dbrow;
@@ -56,14 +52,14 @@ my $limit2 = 10;
 my $row;
 
 $queryText = 'SELECT SUM(GP) FROM user';
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
 my $totalGP = $rows-&gt;fetchrow_array();
 
 $queryText = 'SELECT user_id,gp FROM user ORDER BY gp DESC LIMIT '.$limit;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
@@ -77,7 +73,7 @@ while($row = $rows-&gt;fetchrow_arrayref)
 $str .= '&lt;/ol&gt;&lt;hr /&gt;';
 
 $queryText = 'SELECT user_id,gp FROM user WHERE gp&lt;&gt;0 ORDER BY gp LIMIT '.$limit2;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh]-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
@@ -91,7 +87,7 @@ while($row = $rows-&gt;fetchrow_arrayref)
 $str .= '&lt;/ol&gt;&lt;hr /&gt;';
 
 $queryText = 'SELECT user_id,gp FROM user ORDER BY gp DESC LIMIT '.$limit2;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
@@ -118,8 +114,6 @@ return $str;
 [%
 return;
 
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 my $rows;
 my $str;
 my $dbrow;
@@ -127,7 +121,7 @@ my $queryText;
 my $limit = 100;
 
 $queryText = 'SELECT user_id,karma FROM user ORDER BY karma DESC LIMIT '.$limit;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
@@ -141,7 +135,7 @@ while($row = $rows-&gt;fetchrow_arrayref)
 $str .= '&lt;/ol&gt;&lt;hr /&gt;';
 
 $queryText = 'SELECT user_id,karma FROM user WHERE karma&lt;&gt;0 ORDER BY karma LIMIT '.$limit;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;

@@ -3,8 +3,6 @@
   <doctext>[%
 use Digest::MD5('md5_hex');
 
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
 my $rows;
 my $str;
 my $dbrow;
@@ -20,7 +18,7 @@ my $linkCEs = $powStructLink . ' title=&quot;Content Editors&quot;&gt;$&lt;/a&gt
 my $linkChanops = $powStructLink.' title=&quot;chanops&quot;&gt;+&lt;/a&gt;';
 
 $queryText = &quot;SELECT user_id FROM user,node WHERE user.user_id=node.node_id AND lasttime&gt;=ADDDATE(NOW(), INTERVAL -1 DAY) ORDER BY node.title&quot;;
-$rows = $dbh-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
   or return $rows-&gt;errstr;
 $rows-&gt;execute()
   or return $rows-&gt;errstr;

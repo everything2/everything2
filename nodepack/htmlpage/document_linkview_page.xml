@@ -25,7 +25,7 @@ while ($text =~ /$regex/g) {
   $lnk = htmlScreen($lnk);
 
   if (my $node_id = $DB-&gt;sqlSelect('node_id',
-                                'node','title='.$dbh-&gt;quote($lnk))) {
+                                'node','title='.$DB-&gt;{dbh}-&gt;quote($lnk))) {
     push @link_ids, [$node_id,$lnk];
   }
   else {
@@ -43,7 +43,7 @@ if (@link_ids) {
                    map $_ -&gt; [0],@link_ids
                    ).&quot;)&quot;;
 
-  \@fillednode_ids{  @{$dbh -&gt; selectcol_arrayref($sql)}  };
+  \@fillednode_ids{  @{$DB-&gt;{dbh} -&gt; selectcol_arrayref($sql)}  };
 }
 
 #If it's a link to anything but an e2node (type 116), it's also filled.
@@ -56,7 +56,7 @@ if (@link_ids){
                    map $_ -&gt; [0],@link_ids
                    ).&quot;)&quot;;
 
-  \@fillednode_ids{  @{$dbh -&gt; selectcol_arrayref($sql)}  };
+  \@fillednode_ids{  @{$DB-&gt;{dbh} -&gt; selectcol_arrayref($sql)}  };
 }
 
 foreach my $linkref(@link_ids) {

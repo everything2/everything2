@@ -9,23 +9,14 @@ Database table [% $$NODE{title}; %]
 
 return &quot;&lt;/p&gt;&quot; unless isGod($USER);
 
-my $dbh = $DB-&gt;getDatabaseHandle();
 my $tableName = $$NODE{title};
 my $strRowCount = &quot;&lt;small&gt;(&quot;;
 my $sthTableStats;
 
-if (!$dbh) {
-
-   $strRowCount .= 'Unable to get database handle for record count!';
-
-} else {
-
-   my $qh = $dbh-&gt;prepare(&quot;SHOW TABLE STATUS LIKE '$tableName'&quot;);
-   $qh-&gt;execute();
-   $sthTableStats = $qh-&gt;fetchrow_hashref();
-   $qh-&gt;finish();
-
-}
+my $qh = $DB-&gt;{dbh}-&gt;prepare(&quot;SHOW TABLE STATUS LIKE '$tableName'&quot;);
+$qh-&gt;execute();
+$sthTableStats = $qh-&gt;fetchrow_hashref();
+$qh-&gt;finish();
 
 my $engine = $sthTableStats-&gt;{'Engine'};
 my $rowCount = $sthTableStats-&gt;{'Rows'};
@@ -47,7 +38,7 @@ if ($engine eq 'MyISAM') {
             &amp;&amp; htmlcode('verifyRequest', 'showRowCount')) {
 
       $rowCount = -1;
-      my $qh = $dbh-&gt;prepare('SELECT COUNT(*) FROM ' . $$NODE{title});
+      my $qh = $DB-&gt;{dbh}-&gt;prepare('SELECT COUNT(*) FROM ' . $$NODE{title});
 
       if($qh) {
 

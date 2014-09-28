@@ -15,11 +15,6 @@ my $timeCount = 1;
 
 
 my $str;
-#my $csr= $dbh-&gt;prepare(&quot;select distinct coolwriteups_id from coolwriteups 
-#order by tstamp desc limit 16&quot;);
-#$csr-&gt;execute;
-
-#my $csr = $DB-&gt;sqlSelectMany(&quot;(select title from node where node_id=cooledby_user limit 1) as cooluser, coolwriteups_id, (select title from node where node_id=(select author_user from node where node_id=coolwriteups_id limit 1) limit 1) as wu_author, (select parent_e2node from writeup where writeup_id=coolwriteups_id limit 1) as parentNode, (select title from node where node_id=parentNode limit 1) as parentTitle&quot;, &quot;coolwriteups&quot;, &quot;&quot;, &quot;order by tstamp desc limit 100&quot;);
 
 my $csr = $DB-&gt;sqlSelectMany(&quot;(select title from node where node_id=cooledby_user limit 1) as cooluser, coolwriteups_id, (select title from node where node_id=(select author_user from node where node_id=coolwriteups_id limit 1) limit 1) as wu_author, (select parent_e2node from writeup where writeup_id=coolwriteups_id limit 1) as parentNode, (select title from node where node_id=parentNode limit 1) as parentTitle, (select cooled from writeup where writeup_id=coolwriteups_id limit 1) as writeupCooled&quot;, &quot;coolwriteups&quot;, &quot;&quot;, &quot;order by tstamp desc limit 30&quot;);
 

@@ -81,22 +81,14 @@ $isIronLeader = ($ironLeader == $UID);
 
 #writeup information setup
 my $showWUs = 1;
-my $dbh = undef;
 my $qh = undef;
 my $typeID = getId(getType('writeup')) || undef;
 if($showWUs &amp;&amp; !$typeID) {
 	$showWUs = 0;
 	$str .= '(DEBUG: unable to get writeup type)';
 }
-if($showWUs) {
-	$dbh = $DB-&gt;getDatabaseHandle();
-	if(!$dbh) {
-		undef $dbh;
-		$showWUs=0;
-		$str .= '(DEBUG: unable to connect to database for writeups)';
-	}
-}
-if($showWUs &amp;&amp; (defined $dbh)) {
+
+if($showWUs)) {
 
 	my $getWriteupQuery = &lt;&lt;QUERY;
 SELECT
@@ -124,11 +116,10 @@ SELECT
 		writeup.publishtime ASC
 QUERY
 
-	$qh = $dbh-&gt;prepare($getWriteupQuery);
+	$qh = $DB-&gt;{dbh}-&gt;prepare($getWriteupQuery);
 
 	if(!$qh) {
 		undef $qh;
-		undef $dbh;
 		$showWUs = 0;
 		$str .= '(DEBUG: unable to construct query for writeups)';
 	}

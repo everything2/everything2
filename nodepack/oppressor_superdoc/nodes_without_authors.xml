@@ -15,11 +15,8 @@ border-bottom:1px solid #ccc;
 &lt;/style&gt;
 
 [%
-my $dbh = $DB-&gt;getDatabaseHandle();
-return 'No database handle!' unless $dbh;
-
 my $queryText = &quot;SELECT node_id,title,type_nodetype,author_user FROM node WHERE author_user NOT IN (SELECT node_id FROM node) ORDER BY type_nodetype,title&quot;;
-my $list = $dbh-&gt;prepare($queryText);
+my $list = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $list-&gt;execute()
    or return $list-&gt;errstr;
 

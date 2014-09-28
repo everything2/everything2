@@ -31,7 +31,7 @@ $str.=&quot;
 
     next unless($_);
 
-    my $csr = $dbh-&gt;prepare('SELECT * FROM links WHERE from_node=\''.getId($_).'\' and linktype=\''.$poclink.'\'');
+    my $csr = $DB-&gt;{dbh}-&gt;prepare('SELECT * FROM links WHERE from_node=\''.getId($_).'\' and linktype=\''.$poclink.'\'');
 
     $csr-&gt;execute;
 
