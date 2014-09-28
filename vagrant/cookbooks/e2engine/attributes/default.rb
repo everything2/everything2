@@ -2,6 +2,7 @@ default["e2engine"]["gitrepo"]      = "git://github.com/everything2/everything2.
 default["e2engine"]["maintenance_mode"] = 0
 default["e2engine"]["everyuser"]    = "everyuser"
 default["e2engine"]["everypass"]    = ""
+default["e2engine"]["database"]     = "everything"
 default["e2engine"]["everything_dbserv"] = "localhost"
 default["e2engine"]["cookiepass"] = "userpass"
 default["e2engine"]["canonical_web_server"] = "localhost"
