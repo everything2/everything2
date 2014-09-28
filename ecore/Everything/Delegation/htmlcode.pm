@@ -34,7 +34,6 @@ BEGIN {
   *updateNode = *Everything::HTML::updateNode;
   *rewriteCleanEscape = *Everything::HTML::rewriteCleanEscape;
   *setVars = *Everything::HTML::setVars;
-  *cleanNodeName = *Everything::HTML::cleanNodeName;
   *getNodeWhere = *Everything::HTML::getNodeWhere;
   *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
   *recordUserAction = *Everything::HTML::recordUserAction;
@@ -2737,7 +2736,7 @@ sub parentdraft
 
   my $title = $query -> param('title');
   if ($title){
-    $title = cleanNodeName($title);
+    $title = $APP->cleanNodeName($title);
     $query -> param('title', $title);
   }else{
     $title = $$N{title};
@@ -3537,7 +3536,7 @@ sub newwriteups
 
   my $qry = "SELECT parent_e2node, (select title from node where node_id=writeup.wrtype_writeuptype limit 1) as type_title, writeup_id, (select author_user from node where node_id=writeup.writeup_id limit 1) as author_user, (select title from node where node_id=writeup.parent_e2node limit 1) as parent_title FROM writeup where notnew=0 ORDER BY writeup.publishtime DESC LIMIT $limit ";
 
-  my $csr = $Everything::dbh->prepare($qry);
+  my $csr = $DB->{dbh}->prepare($qry);
 
   $csr->execute or return "newwriteups: can't get";
 
@@ -5515,7 +5514,7 @@ sub writeupssincelastyear
     AND author_user=$userID $notIn";
 
   my $dbh = $DB->getDatabaseHandle();
-  my $qh = $dbh -> prepare($sqlStr);
+  my $qh = $dbh->prepare($sqlStr);
   $qh -> execute();
   my ($numwriteups) = $qh -> fetchrow();
   $qh -> finish();
@@ -12534,7 +12533,7 @@ sub editwriteup
       .linkNode((getNodeWhere({title => $query -> param('draft_title'),
         author_user => $$N{author_user}}, 'draft'))[0] ||
       getNode($query -> param('draft_title'), 'e2node')).'.</small>'
-	if $query -> param('draft_title') && cleanNodeName($query -> param('draft_title')) ne $$N{title};
+	if $query -> param('draft_title') && $APP->cleanNodeName($query -> param('draft_title')) ne $$N{title};
   }
 
   $str .= qq'<textarea name="${type}_doctext" id="writeup_doctext" '.htmlcode('customtextarea', '1').' class="formattable">'.encodeHTML($$N{doctext}).'</textarea>'.$message;
@@ -13902,7 +13901,7 @@ sub categoryform
       my $newname = $query -> param('categorytitle');
       if ($newname)
       {
-        $newname = cleanNodeName($newname);
+        $newname = $APP->cleanNodeName($newname);
         $notification = ' (A category with this name already exists.)' if getNode($newname, 'category');
         $newname = $query -> escapeHTML($newname);
         $notification = "Failed to create new category '$newname'.$notification";
@@ -14710,7 +14709,7 @@ sub setdraftstatus
 
     if ($newparent eq 'new')
     {
-      my $title = cleanNodeName($query->param('title'));
+      my $title = $APP->cleanNodeName($query->param('title'));
       # insertNode checks user can do this and returns false if not or fails
       $newparent = $DB -> insertNode($title, 'e2node', $USER) if $title;
     }

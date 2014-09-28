@@ -41,9 +41,9 @@ foreach (@types) {
 	$_ = getId(getType($_));
 }
 
-my $batch = $DB->sqlSelect("max(batch)", "newnodes");
+my $batch = $DB->sqlSelect("max(batch)", "newnodes") || 0;
 my $limit = $numnodes;
-my $csr = $Everything::dbh->prepare("
+my $csr = $DB->{dbh}->prepare("
 	SELECT * FROM newnodes
         left join node on newnodes.node_id=node.node_id
 	where batch = $batch

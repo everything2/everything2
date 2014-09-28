@@ -64,8 +64,6 @@ sub BEGIN
               isGroup
               isNodetype
               isGod
-              lockNode
-              unlockNode
 
               getCompiledCode
               clearCompiledCode
@@ -225,101 +223,17 @@ sub getId
 }
 
 
-#############################################################################
-#	Sub
-#		escape
-#
-#	Purpose
-#		This encodes characters that may interfere with HTML/perl/sql
-#		into a hex number preceeded by a '%'.  This is the standard HTML
-#		thing to do when uncoding URLs.
-#
-#	Parameters
-#		$esc - the string to encode.
-#
-#	Returns
-#		Then escaped string
-#
-sub escape
-{
-	my ($esc) = @_;
-
-	$esc =~ s/(\W)/sprintf("%%%02x",ord($1))/ge;
-	
-	return $esc;
-}
-
-
-#############################################################################
-#	Sub
-#		unescape
-#
-#	Purpose
-#		Convert the escaped characters back to normal ascii.  See escape().
-#
-#	Parameters
-#		An array of strings to convert
-#
-#	Returns
-#		Nothing useful.  The array elements are changed.
-#
-sub unescape
-{
-	foreach my $arg (@_)
-	{
-		tr/+/ /;
-		$arg =~ s/\%(..)/chr(hex($1))/ge;
-	}
-	
-	1;
-}
-
-
-#############################################################################
-sub getVarHashFromString
-{
-	my $varString = shift;
-	my %vars = map { split /=/ } split (/&/, $varString);
-	foreach (keys %vars) {
-		unescape $vars{$_};
-		if ($vars{$_} eq ' ') { $vars{$_} = ""; }
-	}
-	return %vars;
-}
-
 # This is an inlined, slightly sped up version of above. About a 2x perf improvement
 # The above is only kept until we are sure that it is no longer needed
 
 sub getVarHashFromStringFast
 {
-	my $varString = shift;
-	my %vars = (split(/[=&]/, $varString));
-	foreach (keys %vars) {
-		$vars{$_} =~ tr/+/ /;
-		$vars{$_} =~ s/\%(..)/chr(hex($1))/ge;
-		if ($vars{$_} eq ' ') { $vars{$_} = ""; }
-	}
-	return %vars;
+  return $APP->getVarHashFromStringFast(@_);
 }
 
 sub getVarStringFromHash
 {
-	my $varHash = shift;
-
-	# Clean out the keys that have do not have a value.
-	foreach (keys %$varHash) {
-		# Remove deleted value so they aren't saved
-		if (!defined $$varHash{$_}) {
-			delete $$varHash{$_};
-		}
-		# But set blank strings to a single space so
-		#  they aren't lost.
-		$$varHash{$_} = " " unless $$varHash{$_};
-	}
-	
-	my $varStr =
-		join("&", map( $_."=".escape($$varHash{$_}), sort keys %$varHash) );
-	return $varStr
+  return $APP->getVarStringFromHash(@_);
 }
 
 sub getVars 
@@ -742,24 +656,6 @@ sub cleanLinks
 	}
 }
 
-
-#############################################################################
-sub lockNode {
-	my ($NODE, $USER)=@_;
-
-	1;
-}
-
-
-#############################################################################
-sub unlockNode {
-	my ($NODE, $USER)=@_;
-
-
-	1;
-}
-
-
 #############################################################################
 #	Sub
 #		initEverything
@@ -886,20 +782,6 @@ sub getCallStack
 
 	return @callStack;
 }
-
-#############################################################################
-#	Sub
-#		throwError
-#
-#	Purpose
-#		Throws an ecore error for the purposes of testing error catching
-#############################################################################
-sub throwError
-{
-	my $notValidRef = undef;
-	$notValidRef->badMethod();
-}
-
 #############################################################################
 # end of package
 #############################################################################

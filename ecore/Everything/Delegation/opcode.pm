@@ -31,7 +31,6 @@ BEGIN {
   *updateNode = *Everything::HTML::updateNode;
   *rewriteCleanEscape = *Everything::HTML::rewriteCleanEscape;
   *setVars = *Everything::HTML::setVars;
-  *cleanNodeName = *Everything::HTML::cleanNodeName;
   *getNodeWhere = *Everything::HTML::getNodeWhere;
   *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
   *recordUserAction = *Everything::HTML::recordUserAction;
@@ -100,7 +99,7 @@ sub publishdraft
 
   if ($e2node =~ /\D/){
     # not a node_id: new node
-    my $title = cleanNodeName($query -> param('title'));
+    my $title = $APP->cleanNodeName($query -> param('title'));
     return unless $title;
     $query -> param('e2node_createdby_user', $$publishAs{node_id}) if $publishAs;
     $e2node = $DB -> insertNode($title, 'e2node', $USER);
@@ -2392,7 +2391,7 @@ sub category
   my $cid = $query->param('cid');
   if ($cid eq 'new' and my $title = $query -> param('categorytitle'))
   {
-    $cid = $DB -> insertNode(cleanNodeName($title), 'category', $USER);
+    $cid = $DB -> insertNode($APP->cleanNodeName($title), 'category', $USER);
     $query -> param('cid', $cid) if $cid;
   }
   $cid = int $cid;
