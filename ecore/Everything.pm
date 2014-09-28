@@ -29,7 +29,6 @@ sub BEGIN
 	@EXPORT=qw(
               $APP
               $DB
-              $dbh
               getRef
               getId
               getTables
@@ -89,9 +88,6 @@ sub BEGIN
 
 use vars qw($DB);
 use vars qw($APP);
-
-# $dbh is deprecated.  Use $DB->getDatabaseHandle() to get the DBI interface
-use vars qw($dbh);
 
 # Used by Makefile.PL to determine the version of the install.
 my $VERSION = 0.8;
@@ -683,10 +679,6 @@ sub initEverything
 	$DB = new Everything::NodeBase($db, $staticNodetypes, $memcache);
 	$DB->closeTransaction();
 	$APP = new Everything::Application($DB, $CONF);
-
-	# This is for legacy code.  You should not use $dbh!  Use
-	# $DB->getDatabaseHandle() going forward.
-	$dbh = $DB->getDatabaseHandle();
 }
 
 #############################################################################
