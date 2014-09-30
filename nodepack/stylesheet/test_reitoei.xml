@@ -14,9 +14,6 @@ a:link { color: #2f4486; }
 a:visited { color: #4865c1; } 
 a:hover { color: #93d986; } 
 
-#announcements {
-  display: none;
-}
 #header {
   background-color: #e1dfcd;
   background-image: url('http://www.eirscape.com/clients/everything2/bg_main.jpg');
@@ -110,7 +107,7 @@ div#softlinks {
   padding: 0px;
   width: 97%;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1883058</node_id>
   <title>test_ReiToei</title>

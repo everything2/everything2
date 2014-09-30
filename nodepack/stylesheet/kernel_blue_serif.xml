@@ -675,10 +675,6 @@ td {
 					margin: 1px;
 				}
 
-		#announcements {
-			display: none;
-		}
-
 		#e2logo {
 			margin: 0px;
 			float: left;
@@ -712,7 +708,7 @@ td {
 dt {
 	font-weight: bold;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1934350</node_id>
   <title>Kernel Blue serif</title>

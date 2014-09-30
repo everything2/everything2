@@ -65,9 +65,6 @@ hr {
      padding-left: 100px;
      padding-top: 110px;
     }
-  #announcements {
-   display: none;
-  }
   #searchform {
    position: absolute;
    top: 0;
@@ -335,7 +332,7 @@ hr {
 .clear {
  clear: both;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1907408</node_id>
   <title>tentatively untitled</title>

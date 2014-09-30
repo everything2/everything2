@@ -86,8 +86,6 @@ repeat:none;
 	top: 80px;
 }
 
-
-#announcements {display:none;}
 #footer {
 	display:none;
 }
@@ -276,13 +274,6 @@ textarea {
 width: 100%;
 }
 
-#announcements {
-position: absolute;
-top: 20px;
-font-size: 85%;
-left: 300px;
-}
-
 #writeup_list {
 	list-style-type: none;
 	padding: 0;
@@ -417,7 +408,7 @@ top:-70px}
   /* for Mozilla */
   -moz-opacity:0.6;
   }*/</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1909994</node_id>
   <title>Watercolour</title>

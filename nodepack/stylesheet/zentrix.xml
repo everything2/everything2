@@ -22,7 +22,7 @@ blockquote blockquote , blockquote:first-child:last-child {
 	text-indent: 0 ;
 	}
 
-#announcements , #chatterlight_hints {
+#chatterlight_hints {
 	display: none;
 	}
 
@@ -712,7 +712,7 @@ body , div, p , li , dd , dt , td , a , h1 , h2 , h3 {	/* should be every border
 	color: #229 ;
 	background-color: #f4f8ef ;
 	}</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1946088</node_id>
   <title>Zentrix</title>

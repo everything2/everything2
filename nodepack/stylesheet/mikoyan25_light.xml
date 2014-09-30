@@ -154,7 +154,6 @@
 						padding-top: 10px;
 						padding-left: 10px;
 										}
-#announcements,
 #footer,
 .clear,
 #printlink,
@@ -480,7 +479,7 @@ textarea				{
 .action_whisper .text, .action_roll,
 .action_fireball, .action_sanctify,
 .action_egg				{	font-variant: smallcaps;	}</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1983570</node_id>
   <title>mikoyan25 light</title>

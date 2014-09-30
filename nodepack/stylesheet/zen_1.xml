@@ -6,12 +6,11 @@
 	#footer {clear: both;}			
 #e2logo {position: absolute; top: 0.2em; left: 0.6em;margin: 0; width: 30px; height: 30px;}
 	#searchform {margin-top: 0.5em; text-align: right;}
-#announcements {display: none;}
 #mainbody {position: relative; float: left; width: 100%;}
 	#sidebar {position: relative; float: left;width: 200px; margin-right: -206px;}
 body {background-color: pink;}
 </doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1919216</node_id>
   <title>zen 1</title>

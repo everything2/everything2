@@ -374,13 +374,6 @@ textarea {
 	width: 100%;
 }
 
-#announcements {
-	position: absolute;
-	bottom: 20px;
-	font-size: 12px;
-	left: 300px;
-	display:none;
-}
 .nodelet .infolist {
 	list-style-type: none;
 	padding: 0;
@@ -457,7 +450,7 @@ textarea {
 #loglinks td {
 	text-align:center;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1905818</node_id>
   <title>Gunpowder Green</title>

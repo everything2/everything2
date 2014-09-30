@@ -38,8 +38,6 @@
 
         #epicenter_zen {position: relative; float: right; font-size: 80%; margin: 4px; line-height: 1.5em;}
 
-	#announcements {display: none;}
-
 #wrapper {margin-top: 5em; padding-right: 206px; }
 
  	#mainbody {position: relative; float: left; width: 100%; }
@@ -62,7 +60,7 @@
 a:link {color: blue;}
 a:visited {color: red}
 </doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1903321</node_id>
   <title>myStyle</title>

@@ -702,10 +702,6 @@ td {
 					margin: 1px;
 				}
 
-		#announcements {
-			display: none;
-		}
-
 		#e2logo {
 			margin: 0px;
 			float: left;
@@ -735,7 +731,7 @@ td {
 		#metalinks {
 			display: none;
 		}</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1907942</node_id>
   <title>Eye-Eze</title>

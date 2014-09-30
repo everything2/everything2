@@ -593,10 +593,6 @@ body {
     #searchform label input {
     }
 
-  #announcements {
-   display: none;
-  }
-
   h1#e2logo {
    position: absolute;
    top: 25px;
@@ -649,7 +645,7 @@ body {
 #message {
  width: 90%;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1903056</node_id>
   <title>Zen512</title>

@@ -545,9 +545,6 @@ td {
 				display: none;
 			}
 
-		#announcements {
-			display: none;
-		}
 
 		#e2logo {
 			margin: 0;
@@ -584,7 +581,7 @@ td {
 		#metalinks {
 			display: none;
 		}</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>2006292</node_id>
   <title>kohl14</title>

@@ -809,10 +809,6 @@ tt {
 					margin: 1px;
 				}
 
-		#announcements {
-			display: none;
-		}
-
 		#e2logo {
 			margin: 0px;
 			float: left;
@@ -846,7 +842,7 @@ tt {
 dt {
 	font-weight: bold;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1996378</node_id>
   <title>Deep Ice</title>

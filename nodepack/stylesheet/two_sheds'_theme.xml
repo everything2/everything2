@@ -36,7 +36,6 @@ body {margin: 0;}
 #searchform input {float: left; margin-top: 5px;}
 #searchform label {display: block; font-size: 80%; float: right; clear: right; text-align: left; width: 100px;}
 #searchform label input {margin: 1px;}
-#announcements {visibility: hidden;}
 
 /* footer */
 #footer {clear: both; max-height: 88px; width: 100%; text-align: center; padding: 10px 0 2px;}
@@ -91,7 +90,7 @@ hr.clear {clear: both;}
 /* layout */
 textarea {width: 100%;}
 pre {display: block; overflow: auto;} /* to stop page-widening */</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1886668</node_id>
   <title>Two Sheds' theme</title>

@@ -347,11 +347,6 @@ margin-top: 12px;
 font-size: .85em;
 }
 
-#announcements
-{
-display: none;
-}
-
 #footer
 {
 clear: both;
@@ -847,7 +842,7 @@ text-decoration: line-through;
 color: #aaa;
 font-size: 80%;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1933748</node_id>
   <title>MakeMeOneWithEverything</title>

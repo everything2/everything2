@@ -280,13 +280,6 @@ textarea {
 width: 100%;
 }
 
-#announcements {
-position: absolute;
-top: 20px;
-font-size: 85%;
-left: 300px;
-}
-
 #writeup_list {
 	list-style-type: none;
 	padding: 0;
@@ -350,7 +343,7 @@ td.wu_social { float: right }
 #chatterlight_NW { float: left; width: 190px; }
 #chatterlight_hints { display: none; }
 #chatterbox_nodelet .nodelet { width: 700px }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1981109</node_id>
   <title>don't look, sleeping</title>

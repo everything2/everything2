@@ -358,14 +358,6 @@ big big big {
 	font-size: inherit;
 }
 
-#announcements {
-	position: absolute;
-	bottom: 20px;
-	font-size: 12px;
-	left: 300px;
-	display:none;
-}
-
 #writeup_list {
 	list-style-type: none;
 	padding: 0;
@@ -783,14 +775,6 @@ big big big {
 	font-size: inherit;
 }
 
-#announcements {
-	position: absolute;
-	bottom: 20px;
-	font-size: 12px;
-	left: 300px;
-	display:none;
-}
-
 #writeup_list {
 	list-style-type: none;
 	padding: 0;
@@ -886,7 +870,7 @@ div #epicenter_zen {
 	width: 100%;
 	display:block;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1902249</node_id>
   <title>Plain Blue-Grey Nonsense</title>

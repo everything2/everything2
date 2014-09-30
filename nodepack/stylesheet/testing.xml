@@ -294,13 +294,6 @@ textarea {
 big big big {
 	font-size: inherit;
 }
-#announcements {
-	position: absolute;
-	bottom: 20px;
-	font-size: 12px;
-	left: 300px;
-	display:none;
-}
 #writeup_list {
 	list-style-type: none;
 	padding: 0;
@@ -373,7 +366,7 @@ border-top: 1px solid #333;
 	color: black;
 	border:1px;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1926953</node_id>
   <title>Testing</title>

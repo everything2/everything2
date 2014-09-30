@@ -269,13 +269,6 @@ textarea {
 width: 100%;
 }
 
-#announcements {
-position: absolute;
-top: 20px;
-font-size: 85%;
-left: 300px;
-}
-
 #writeup_list {
 	list-style-type: none;
 	padding: 0;
@@ -376,7 +369,7 @@ pre, tt {
 .oddrow, #homenodeheader dt  {
 	background-color: #d0d0d0;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1931319</node_id>
   <title>The Zen of the Mooquack</title>

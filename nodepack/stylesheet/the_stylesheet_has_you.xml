@@ -576,10 +576,6 @@ td {
 					margin: 1px;
 				}
 
-		#announcements {
-			display: none;
-		}
-
 		#e2logo {
 			margin: 0px;
 			float: right;
@@ -610,7 +606,7 @@ td {
 			display: none;
 		}
 </doctext>
-  <contentversion>104</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1938878</node_id>
   <title>The stylesheet has you</title>

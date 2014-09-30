@@ -409,14 +409,6 @@ big big big {
 	font-size: inherit;
 }
 
-#announcements {
-	position: absolute;
-	bottom: 20px;
-	font-size: 12px;
-	left: 300px;
-	display:none;
-}
-
 /*=#writeup_list*/
 .nodelet .infolist {
 	list-style-type: none;
@@ -568,7 +560,7 @@ div #epicenter_zen {
 
 
 </doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1993776</node_id>
   <title>Ooacssa</title>

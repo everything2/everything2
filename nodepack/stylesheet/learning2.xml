@@ -416,14 +416,6 @@ textarea {
         width: 100%;
 }
 
-#announcements {
-        display:none;
-        position: absolute;
-        top: 20px;
-        font-size: 85%;
-        left: 150px;
-}
-
 /*=#writeup_list*/
 .nodelet .infolist {
 	list-style-type: none;
@@ -511,7 +503,7 @@ textarea {
 /*=.writeupmeta*/
 .infolist .contentinfo {color: brown}
  </doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1883091</node_id>
   <title>Learning2</title>

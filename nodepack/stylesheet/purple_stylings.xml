@@ -716,10 +716,6 @@ th.oddrow {
 					margin: 1px;
 				}
 
-		#announcements {
-			display: none;
-		}
-
 		#e2logo {
 			margin: 0px;
 			float: left;
@@ -749,7 +745,7 @@ th.oddrow {
 		#metalinks {
 			display: none;
 		}</doctext>
-  <contentversion>104</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1933589</node_id>
   <title>Purple Stylings</title>

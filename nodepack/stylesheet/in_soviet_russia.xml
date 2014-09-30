@@ -616,10 +616,6 @@ td {
 					margin: 1px;
 				}
 
-		#announcements {
-			display: none;
-		}
-
 		#e2logo {
 			margin: 0px;
 			float: right;
@@ -649,7 +645,7 @@ td {
 		#metalinks {
 			display: none;
 		}</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1928346</node_id>
   <title>In Soviet Russia</title>

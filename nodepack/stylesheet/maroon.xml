@@ -537,10 +537,6 @@ td {
 				display: none;
 			}
 
-		#announcements {
-			display: none;
-		}
-
 		#e2logo {
 			margin: 0;
 			position: absolute;
@@ -576,7 +572,7 @@ td {
 		#metalinks {
 			display: inline;
 		}</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1903725</node_id>
   <title>Maroon</title>
