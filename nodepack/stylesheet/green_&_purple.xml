@@ -13,8 +13,6 @@ border-style: double;}
 
 #searchform { margin-top: 0.5em; text-align: right;}
 
-#announcements { display: none;}
-
 #mainbody { position: relative; float: left; width: 100%;}	
 #sidebar { position: relative; float: left; width: 200px; margin-right: -206px;}
 
@@ -131,7 +129,7 @@ pre, tt {
 .oddrow, #homenodeheader dt
 {background-color: #8AA37B;
 font-family: bookman old style; }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1926288</node_id>
   <title>Green &amp; Purple</title>

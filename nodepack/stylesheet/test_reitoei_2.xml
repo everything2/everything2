@@ -228,9 +228,6 @@ hr.clear {
 textarea {
 	width:100%;
 }
-#announcements {
-	display: none;
-}
 #writeup_list {
 	list-style-type:none;
 	padding:0pt;
@@ -341,7 +338,7 @@ h1.nodetitle {
 	padding-left: 20px;
 }
 </doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1883067</node_id>
   <title>test_ReiToei_2</title>

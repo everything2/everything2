@@ -5,7 +5,6 @@
 /* Not all elements are defined in this file, so you'll most likely want to refer to the html as well. */
 
 /*The basics*/
-#announcements { display: none  }
 
 div#nodelet_263 div.nodelet_content { height: 180px; overflow: auto }
 
@@ -266,13 +265,6 @@ textarea {
 width: 100%;
 }
 
-#announcements {
-position: absolute;
-top: 20px;
-font-size: 85%;
-left: 300px;
-}
-
 #writeup_list {
 	list-style-type: none;
 	padding: 0;
@@ -327,7 +319,7 @@ font-size: inherit;
 }
 
 </doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1904606</node_id>
   <title>Dada</title>

@@ -1,7 +1,6 @@
 <node>
   <type_nodetype>1854352</type_nodetype>
-  <doctext>
-/****** COLORS ******/
+  <doctext>/****** COLORS ******/
 body,
 div,
 p,
@@ -254,10 +253,6 @@ input#full_text {
     float: left;
     margin: 0px;
     padding: 0px;
-}
-
-#announcements {
-    display: none;
 }
 
 h1#e2logo {
@@ -948,7 +943,7 @@ body, div, p, th, td, li, dd, .writeuppage .item .content, .nodelet, .nodetitle,
 #softlinks td {
     background-color: #101010;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>2016267</node_id>
   <title>Oh Four Hundred</title>

@@ -323,11 +323,6 @@ textarea {
 	border: 1px gray solid;	
 }
 
-#announcements {
-visibility: hidden;
-position: absolute;
-}
-
 headerepicenter {
         position: absolute;
         top: 10px;
@@ -501,7 +496,7 @@ font-size: inherit;
 #staff_picks {
         font-family: Verdana;
 } </doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1904432</node_id>
   <title>the goodnight star backdrop</title>

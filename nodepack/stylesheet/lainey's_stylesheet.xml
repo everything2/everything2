@@ -322,11 +322,6 @@ textarea {
 	border: 1px gray solid;	
 }
 
-#announcements {
-visibility: hidden;
-position: absolute;
-}
-
 headerepicenter {
         position: absolute;
         top: 10px;
@@ -482,7 +477,7 @@ font-size: inherit;
         font-family: Palatino Linotype;
         border: 1px ridge;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1892714</node_id>
   <title>Lainey's Stylesheet</title>

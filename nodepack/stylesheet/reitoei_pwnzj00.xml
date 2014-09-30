@@ -271,13 +271,6 @@ textarea {
 	background-color:#DDEEFF;
 	width:100%;
 }
-#announcements {
-	display:none;
-	font-size:85%;
-	left:150px;
-	position:absolute;
-	top:20px;
-}
 #writeup_list {
 	list-style-type:none;
 	padding:13px;
@@ -417,7 +410,7 @@ div.thinoutline {
 	margin: 0px;
 	padding: 0px;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1903029</node_id>
   <title>ReiToei_pwnzj00</title>

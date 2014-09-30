@@ -269,13 +269,6 @@ textarea {
 width: 100%;
 }
 
-#announcements {
-position: absolute;
-top: 20px;
-font-size: 85%;
-left: 300px;
-}
-
 #writeup_list {
 	list-style-type: none;
 	padding: 0;
@@ -324,7 +317,7 @@ left: 300px;
 	font-size: 85%;
 	margin-left: 3px;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1889293</node_id>
   <title>skellie</title>

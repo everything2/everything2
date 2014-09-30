@@ -774,10 +774,6 @@ td {
 						padding: 0px;
 					}
 
-		#announcements {
-			display: none;
-		}
-
 		#e2logo {
 /**********
 			margin: 0px;
@@ -834,7 +830,7 @@ td {
 #chatterlight_NW { float: left; width: 190px; }
 #chatterlight_hints { display: none; }
 </doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1947443</node_id>
   <title>Kernel blue mod-test</title>

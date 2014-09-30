@@ -277,10 +277,6 @@ input#search_submit {
 	padding: 0px;
 }
 
-#announcements {
-	display: none;
-}
-
 h1#e2logo a,
 			h1#e2logo a:link,
 			h1#e2logo a:visited,
@@ -1031,7 +1027,7 @@ p#servertime {
   color: #ddF;
 }
 </doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1963336</node_id>
   <title>SharQ's Sharktank</title>
