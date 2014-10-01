@@ -2285,7 +2285,7 @@ sub opLogin
 {
 	my $user = $query->param("user");
 	my $passwd = $query->param("passwd");
-	($USER, $VARS) = loginUser($user, $passwd) if $user && $passwd;
+	$USER = loginUser($user, $passwd) if $user && $passwd;
 
 	return if !$USER || $APP->isGuest($USER); 
 
@@ -2310,7 +2310,7 @@ sub opLogin
 #		user name and plain text password, or none to use cookie
 #
 #	Returns
-#		user hashref & vars hashref
+#		user hashref
 #
 
 sub loginUser
@@ -2329,7 +2329,7 @@ sub loginUser
 	my $user = confirmUser($username, $pass, $cookie) if $username && $pass;
 	$user ||= getNodeById($Everything::CONF->{system}->{guest_user});
 
-	my $vars = getVars($user);
+	$VARS = getVars($user);
 
 	return $user if !$user
 		|| $APP->isGuest($user)
@@ -2344,12 +2344,12 @@ sub loginUser
 	my ($seconds_since_last, $now) = $sth->fetchrow_array();
 	$user -> {lastseen} = $now;
 
-	insertIntoRoom($$user{in_room}, $user, $vars)
+	insertIntoRoom($$user{in_room}, $user, $VARS)
 		if $seconds_since_last > $TIMEOUT_SECONDS;
 
-	$APP->logUserIp($user, $vars);
+	logUserIp($user, $VARS);
 
-	return ($user,$vars);
+	return $user;
 }
 
 #############################################################################
@@ -2577,9 +2577,7 @@ sub mod_perlInit
 
 	set_die_handler(\&handle_errors);
 
-	#my $REQ = Everything::Request->new(CONF => $Everything::CONF, DB => $DB, APP => $APP);
-
-	($USER, $VARS) = loginUser();
+	$USER = loginUser();
 
          #only for Everything2.com
          if ($query->param("op") eq "randomnode") {
@@ -3219,21 +3217,116 @@ sub getHRLF
 
 # Former inhabitants of the room module
 sub insertIntoRoom {
-  return $APP->insertIntoRoom(@_);
+  my ($ROOM, $U, $V) = @_;
+
+  getRef $U;
+  $V ||= getVars($U);
+  my $user_id=getId($U);
+  my $room_id=getId($ROOM);
+  $room_id = 0 unless $ROOM;
+  my $vis = $$V{visible} if exists $$V{visible};
+  $vis ||= 0;
+  my $borgd = 0;
+  $borgd = 1 if $$V{borged};
+
+  $DB->sqlInsert("room"
+    , {
+            room_id => $room_id,
+            member_user => $user_id,
+            nick => $$U{title},
+            borgd => $borgd,
+            experience => $$U{experience},
+            visible => $vis,
+            op => isGod($U)
+    }
+    , {
+            nick => $$U{title},
+            borgd => $borgd,
+            experience => $$U{experience},
+            visible => $vis,
+            op => isGod($U)
+    }
+  );
+
 }
 
+
 sub changeRoom {
-  return $APP->changeRoom(@_);
+  my ($user, $ROOM) = @_;
+  getRef $user;
+  my $room_id=getId($ROOM);
+  $room_id=0 unless $ROOM;
+
+  unless ($$user{in_room} == $room_id) {
+    $$user{in_room} = $room_id;
+    updateNode($user, -1);
+  }
+  $DB->sqlDelete("room", "member_user=".getId($user));
+    
+  insertIntoRoom($ROOM, $user);
 }
 
 sub cloak {
-  return $APP->cloak(@_);
+  my ($user, $vars) = @_;
+  my $setvarflag;
+  $setvarflag = 1 unless $vars; 
+  $vars ||= getVars $user;
+  
+  $$vars{visible}=1;
+  setVars($user, $vars) if $setvarflag;
+  $DB->sqlUpdate('room', {visible => 1}, "member_user=".getId($user));
 }
 
 sub uncloak {
-  return $APP->uncloak(@_);
+  my ($user, $vars) = @_;
+  my $setvarflag;
+  $setvarflag = 1 unless $vars; 
+  $vars ||= getVars $user;
+  
+  $$vars{visible}=0;
+  setVars($user, $vars) if $setvarflag;
+  $DB->sqlUpdate('room', {visible => 0}, "member_user=".getId($user));
 }
 
+
+sub logUserIp
+{
+	my ($user, $vars) = @_;
+	return if $APP->isGuest($user);
+
+	my @addrs = $APP->getIp();
+	my $addr = join ',', @addrs;
+	return unless $addr;
+
+	return if ($$vars{ipaddy} eq $addr);
+	$$vars{ipaddy} = $addr;
+
+	my $hour_limit = 24;
+	my $ipquery = <<SQLEND;
+		SELECT DISTINCT iplog_ipaddy
+		FROM iplog 
+		WHERE iplog_user = $$user{user_id}
+		AND iplog_time > DATE_SUB(NOW(), INTERVAL $hour_limit HOUR)
+SQLEND
+
+	my $previous_addrs = $DB->getDatabaseHandle()->selectall_arrayref($ipquery);
+	my %ignore_addrs = ( );
+
+	map { $ignore_addrs{$$_[0]} = 1; } @$previous_addrs if ($previous_addrs);
+
+	map {
+		$DB->sqlInsert("iplog", {iplog_user => $$user{user_id}, iplog_ipaddy => $_})
+		if !$ignore_addrs{$_};
+	} @addrs;
+
+	my $infected = grep { $APP->isInfectedIp($_) } @addrs;
+
+	if ($infected) {
+		$$vars{infected} = 1;
+	}
+
+	return @addrs;
+}
 
 sub refreshVotesAndCools
 {
