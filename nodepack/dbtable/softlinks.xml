@@ -1,6 +1,0 @@
-<node>
-  <type_nodetype>148</type_nodetype>
-  <node_id>2070553</node_id>
-  <_create_table_statement>CREATE ALGORITHM=UNDEFINED DEFINER=`everyuser`@`%` SQL SECURITY DEFINER VIEW `softlinks` AS select `links`.`from_node` AS `from_node`,`links`.`to_node` AS `to_node`,`links`.`linktype` AS `linktype`,`links`.`hits` AS `hits`,`links`.`food` AS `food` from `links` where (`links`.`linktype` = 0)</_create_table_statement>
-  <title>softlinks</title>
-</node>

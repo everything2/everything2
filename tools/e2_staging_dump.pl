@@ -42,11 +42,10 @@ my $table_list;
 while(my $line = $sth->fetchrow_arrayref)
 {
 	my $table = $line->[0];
-	next if $table eq "currentusers";
 	push @$table_list, $table;
 }
 
-foreach my $table(@$table_list, "currentusers")
+foreach my $table(@$table_list)
 {
 	print STDERR "Dumping $table\n";
 	my $extra = "";

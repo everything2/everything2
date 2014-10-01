@@ -37,7 +37,7 @@ while (my $CW = $csr-&gt;fetchrow_hashref()) {
 }
 
 $str.= parseLinks( &quot;\n\t&lt;/ul&gt;
-	&lt;div class='morelink cup_more'&gt;([Cool Archive|more])&lt;/div&gt;&quot; ) ;
+	&lt;div class='morelink'&gt;([Cool Archive|more])&lt;/div&gt;&quot; );
 
 $csr-&gt;finish;
 
