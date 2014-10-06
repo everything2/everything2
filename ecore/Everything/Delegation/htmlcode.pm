@@ -14289,7 +14289,7 @@ sub nopublishreason
   return 'This node is locked. '
     .parseLinks($$nodelock{nodelock_reason}
     .($notMe ? '' : '<p>If you feel you have something to add to this node, attach your
-    [Drafts[superdoc]|draft] to it and set its status to 'review' to 
+    [Drafts[superdoc]|draft] to it and set its status to "review" to 
     request review and release for publication here by an [Content Editors[usergroup]|editor].</p>'));
 }
 
