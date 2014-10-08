@@ -368,7 +368,7 @@ sub checkToken
 			, $action, $expiry) ne $query -> param('token');
 
 	$this -> updatePassword($user, $query -> param('passwd'));
-	$this -> securityLog(Everything::getNode($action eq 'activate' ? 'Sign up' : 'Reset password', 'superdoc')
+	$this -> securityLog($this->{db}->getNode($action eq 'activate' ? 'Sign up' : 'Reset password', 'superdoc')
 		, $user, "$$user{title} account $action");
 }
 
@@ -589,7 +589,7 @@ sub searchNodeName {
 	my @prewords = $this->makeCleanWords($searchWords, 1);
 	
 	my ($typestr, $wherestr, $havingstr, $rankingstr) = ('') x 4;
-	my %cooltypes;
+	my %cooltypes = ();
 	
 	my $typePrefix = "n.type_nodetype IN (";
 	$TYPE=[$TYPE] if (UNIVERSAL::isa($TYPE,'HASH'));
@@ -601,7 +601,7 @@ sub searchNodeName {
 		foreach(@$TYPE) { $typestr .= $typePrefix . $this->{db}->getId($_); }
 	}
 	
-	my @words;
+	my @words = ();
 	my $typeis = 0;
 	foreach (@prewords) {
 		if ($typeis)
@@ -743,7 +743,7 @@ sub insertSearchWord {
 	my @words = $this->makeCleanWords($nodetitle, 1);
 		   	
 	if (@words) {
-		my %wordhash;
+		my %wordhash = ();
 			
 		for (my $loop = 0; $loop <= $#words; $loop++) {
 		    $wordhash{$words[$loop]} = $loop;
@@ -834,7 +834,8 @@ sub regenSearchwords
 			# it's faster if we don't specify that in the INSERT though.
 			
 	my $nodecount = 0;
-	my ($nodeid, $nodetitle, $word, @words, $wpos);
+	my ($nodeid, $nodetitle, $word, $wpos) = (undef, undef, undef, undef);
+	my @words = ();
 	while (($nodetitle, $nodeid) = $cursor->fetchrow)
 	{
 		$nodecount++;
@@ -845,7 +846,7 @@ sub regenSearchwords
 		@words = $this->makeCleanWords($nodetitle, 1);
 		   	
 		if (@words) {
-			my %wordhash;
+			my %wordhash = ();
 			
 			for (my $loop = 0; $loop <= $#words; $loop++)
 			{
@@ -1102,7 +1103,7 @@ sub isGuest
 {
   my ($this, $user) = @_;
   return unless defined $user;
-  my $userid;
+  my $userid = undef;
   if(ref $user eq "")
   {
     $userid = $user; 
@@ -1117,13 +1118,13 @@ sub metaDescription
 {
   my ($this, $node) = @_;
 
-  my $writeuptext;
+  my $writeuptext = undef;
   if($node->{type}->{title} eq "writeup")
   {
     $writeuptext = $node->{doctext};
   }elsif($node->{type}->{title} eq "e2node")
   {
-    my $WUs;
+    my $WUs = undef;
     my $lede = $this->{db}->getNode("lede","writeuptype");
     foreach my $writeup(@{$node->{group}})
     {
@@ -1305,7 +1306,7 @@ sub node2mail {
 sub stripNodelet {
 	my ($this, $user, $nodelet) = @_;
 
-	my $nodelet_id;
+	my $nodelet_id = undef;
 	if(ref $nodelet ne "") 
 	{
 		$nodelet_id = $nodelet->{node_id};
@@ -1472,7 +1473,7 @@ sub getMaintenanceNodesForUser
 		$uid = $user->{node_id};
 	}
 
-	my $maint_nodes;
+	my $maint_nodes = undef;
 	foreach my $val (values %{$Everything::CONF->{system}->{maintenance_nodes}} )
 	{
 		my $node = $this->{db}->getNodeById($val);
@@ -1542,7 +1543,7 @@ sub canSeeDraft
 
 	# shared draft or edit check. Check if this user can see/edit
 	my @collab_names = split ',', $$draft{collaborators};
-	my $UG;
+	my $UG = undef;
 
 	foreach (@collab_names){
 		$_ =~ s/^\s*|\s*$//g;
@@ -1951,5 +1952,230 @@ sub getVarStringFromHash
 		join("&", map( $_."=".$this->escape($$varHash{$_}), sort keys %$varHash) );
 	return $varStr
 }
+
+sub cloak {
+  my ($this, $user, $vars) = @_;
+  my $setvarflag = undef;
+  $setvarflag = 1 unless $vars; 
+  $vars ||= getVars $user;
+  
+  $$vars{visible}=1;
+  Everything::setVars($user, $vars) if $setvarflag;
+  $this->{db}->sqlUpdate('room', {visible => 1}, "member_user=".getId($user));
+}
+
+sub uncloak {
+  my ($this, $user, $vars) = @_;
+  my $setvarflag = undef;
+  $setvarflag = 1 unless $vars; 
+  $vars ||= getVars $user;
+  
+  $$vars{visible}=0;
+  Everything::setVars($user, $vars) if $setvarflag;
+  $this->{db}->sqlUpdate('room', {visible => 0}, "member_user=".getId($user));
+}
+
+sub insertIntoRoom {
+  my ($this, $ROOM, $U, $V) = @_;
+
+  $this->{db}->getRef($U);
+  $V ||= Everything::getVars($U);
+  my $user_id=$this->{db}->getId($U);
+  my $room_id=$this->{db}->getId($ROOM);
+  $room_id = 0 unless $ROOM;
+  my $vis = undef; $vis = $$V{visible} if exists $$V{visible};
+  $vis ||= 0;
+  my $borgd = 0;
+  $borgd = 1 if $$V{borged};
+
+  $this->{db}->sqlInsert("room"
+    , {
+            room_id => $room_id,
+            member_user => $user_id,
+            nick => $$U{title},
+            borgd => $borgd,
+            experience => $$U{experience},
+            visible => $vis,
+            op => $this->isAdmin($U)
+    }
+    , {
+            nick => $$U{title},
+            borgd => $borgd,
+            experience => $$U{experience},
+            visible => $vis,
+            op => $this->isAdmin($U)
+    }
+  );
+
+}
+
+sub changeRoom {
+  my ($this, $user, $ROOM) = @_;
+  $this->{db}->getRef($user);
+  my $room_id=$this->{db}->getId($ROOM);
+  $room_id=0 unless $ROOM;
+
+  unless ($$user{in_room} == $room_id) {
+    $$user{in_room} = $room_id;
+    $this->{db}->updateNode($user, -1);
+  }
+  $this->{db}->sqlDelete("room", "member_user=".$this->{db}->getId($user));
+    
+  $this->insertIntoRoom($ROOM, $user);
+
+}
+
+sub logUserIp {
+  my ($this, $user, $vars) = @_;
+  return if $this->isGuest($user);
+
+  my @addrs = $this->getIp();
+  my $addr = join ',', @addrs;
+  return unless $addr;
+
+  return if ($$vars{ipaddy} eq $addr);
+  $$vars{ipaddy} = $addr;
+
+  my $hour_limit = 24;
+  my $ipquery = qq|;
+    SELECT DISTINCT iplog_ipaddy
+    FROM iplog 
+    WHERE iplog_user = $$user{user_id}
+    AND iplog_time > DATE_SUB(NOW(), INTERVAL $hour_limit HOUR)|;
+
+  my $previous_addrs = $this->{db}->getDatabaseHandle()->selectall_arrayref($ipquery);
+  my %ignore_addrs = ( );
+
+  map { $ignore_addrs{$$_[0]} = 1; } @$previous_addrs if ($previous_addrs);
+
+  map {
+    $this->{db}->sqlInsert("iplog", {iplog_user => $$user{user_id}, iplog_ipaddy => $_}) if !$ignore_addrs{$_};
+    } @addrs;
+
+  my $infected = grep { $this->isInfectedIp($_) } @addrs;
+
+  if ($infected) {
+    $$vars{infected} = 1;
+  }
+
+}
+
+sub confirmUser
+{
+  my ($this, $username, $pass, $cookie, $query) = @_;
+
+  my $user = $this->{db}->getNode($username, 'user');
+  return 0 unless $user && $user -> {acctlock} == 0;
+
+  unless ($cookie)
+  {
+    # login with plaintext password. May reset password or activate account first:
+    $this->checkToken($user, $query) if $query->param('token');
+    $pass = $this->hashString($pass, $user->{salt});
+  }
+
+  return $user if $pass eq $user->{passwd};
+  return 0 if $user->{salt};
+
+  # legacy user with unsalted password
+  return $this->updateLogin($user, $query, $cookie);
+}
+
+#############################################################################
+#	Sub
+#               isSuspended
+#
+#       Purpose
+#               Checks the suspension table for access to a certain feature.
+#
+#       Parameters        
+#               $usr - The user to check if they are suspended
+#               $sustype - The type of suspension to check
+#                        
+#       Returns       
+#               the suspension_id if suspended for the type
+#               undef otherwise
+#
+
+sub isSuspended              
+{
+  my ($this, $usr, $sustype) = @_;
+
+  return undef unless $usr and $sustype and $sustype = $this->{db}->getNode($sustype, "sustype");
+  return $this->{db}->sqlSelect("suspension_id", "suspension", "suspension_user=$$usr{node_id} and suspension_sustype=$$sustype{node_id}");
+
+}
+
+#############################################################################
+# Sub
+#   escapeAngleBrackets
+#
+# Purpose
+#   Escapes angle brackets but *only* if they're not inside square
+#   brackets. This is intended for bits of user input that is not
+#   allowed to have any HTML but is allowed bracket [linking].
+#
+# Parameters
+#   $text - the text  to escape
+#
+# Returns
+#   The escaped text
+sub escapeAngleBrackets{
+  my ($this, $text) = @_;
+
+  #These two lines do regexp magic (man perlre, grep down to
+  #assertions) to escape < and > but only if they're not inside
+  #brackets. They're a bit inefficient, but since they text they're
+  #working on is usually small, it's all good. --[Swap]
+
+  $text =~ s/((?:\[(.*?)\])|>)/$1 eq ">" ? "&gt;" : "$1"/egs;
+  $text =~ s/((?:\[(.*?)\])|<)/$1 eq "<" ? "&lt;" : "$1"/egs;
+
+  return $text;
+}
+
+sub getHRLF
+{
+  my ($this, $user) = @_;
+  $$user{numwriteups} ||= 0;
+  return 1 if $$user{numwriteups} < 25;
+  return $$user{HRLF} if $$user{HRLF};
+  my $hrstats = Everything::getVars($this->{db}->getNode("hrstats", "setting"));
+  
+  return 1 unless $$user{merit} > $$hrstats{mean};
+  return 1/(2-exp(-(($$user{merit}-$$hrstats{mean})**2)/(2*($$hrstats{stddev})**2)));
+}
+
+sub refreshVotesAndCools
+{
+  my ($this, $user, $vars) = @_;
+  my ($time) = split " ",$$user{lasttime};
+
+ if (!$this->isGuest($user)
+  and (not exists $$vars{votetime} or $$vars{votetime} ne $time)) {
+   
+   my $VOTES = Everything::getVars($this->{db}->getNode('level votes', 'setting'));
+   my $COOLS = Everything::getVars($this->{db}->getNode('level cools', 'setting'));
+
+   $$user{level} = undef;
+   my $lvl = $this->getLevel($user);
+   $$user{level} = $lvl;
+   if (exists $$VOTES{$lvl} and $$VOTES{$lvl} =~ /^\d+$/) {
+     $$user{votesleft} = $$VOTES{$lvl};
+   }
+   
+  if (exists $$COOLS{$lvl} and $$COOLS{$lvl} =~ /^\d+$/) {
+     $$vars{cools} = $$COOLS{$lvl};
+   }
+   $$vars{votesrefreshed} ||= 0;
+   $$vars{votesrefreshed}++;
+   $$vars{votetime} = $time;
+ }
+
+ $$user{votesleft} = 0 if $this->isSuspended($user, "vote");
+ $$vars{cools} = 0 if $this->isSuspended($user, "cool");
+
+}
+
 
 1;

@@ -61,7 +61,6 @@ sub BEGIN {
               processVarsSet
               showPartialDiff
               showCompleteDiff
-              recordUserAction
               mod_perlInit
 
               castVote
@@ -86,9 +85,6 @@ use vars qw($HTTP_ERROR_CODE $ERROR_HTML $SITE_UNAVAILABLE $query);
 use vars qw($VARS);
 use vars qw($GNODE);
 use vars qw($USER);
-use vars qw($TEST);
-use vars qw($TEST_CONDITION);
-use vars qw($TEST_SESSION_ID);
 use vars qw($PAGELOAD);
 use vars qw(%HEADER_PARAMS);
 
@@ -985,7 +981,6 @@ sub getCode
 {
 	my ($funcname) = @_;
 
-	if (getId($TEST)) { $funcname = check_test_substitutions($funcname); }
 	my $CODE = getNode($funcname, getType("htmlcode"));
 	if (wantarray) {
 		return ($$CODE{code}, $CODE) if defined( $CODE );
@@ -2064,37 +2059,6 @@ sub urlDecode {
 	$_[0];
 }
 
-
-#############################################################################
-#	Sub
-#		getCGI
-#
-#	Purpose
-#		This gets and sets up the CGI interface for an individual request.
-#
-#	Parameters
-#		None
-#
-#	Returns
-#		The CGI object.
-#
-sub getCGI
-{
-	my $cgi;
-	
-	if ($ENV{SCRIPT_NAME}) { 
-		$cgi = new CGI;
-	} else {
-		$cgi = new CGI(\*STDIN);
-	}
-
-	if (not defined ($cgi->param("op"))) {
-		$cgi->param("op", "");
-	}
-
-	return $cgi;
-}
-
 #############################################################################
 #	Sub
 #		printHeader
@@ -2118,8 +2082,6 @@ sub printHeader
 	# default to plain html
 	$datatype = "text/html" unless $datatype;
 	my @cookies = ();
-
-	push @cookies, generate_test_cookie();
 
 	if ($lastnode && $lastnode > 0) {
 		push @cookies, $query->cookie( -name=>'lastnode_id', -value=>'');
@@ -2253,9 +2215,6 @@ sub clearGlobals
 	$USER = "";
 	$VARS = "";
         $PAGELOAD = {};
-        $TEST = "";
-	$TEST_CONDITION = "";
-        $TEST_SESSION_ID = "";
 
 	$query = "";
 }
@@ -2326,7 +2285,7 @@ sub loginUser
 		($username, $pass) = split(/\|/, $cookie) if $cookie;
 	}
 
-	my $user = confirmUser($username, $pass, $cookie) if $username && $pass;
+	my $user = $APP->confirmUser($username, $pass, $cookie, $query) if $username && $pass;
 	$user ||= getNodeById($Everything::CONF->{system}->{guest_user});
 
 	$VARS = getVars($user);
@@ -2342,12 +2301,12 @@ sub loginUser
 		");
 	$sth->execute();
 	my ($seconds_since_last, $now) = $sth->fetchrow_array();
-	$user -> {lastseen} = $now;
+	$user->{lastseen} = $now;
 
-	insertIntoRoom($$user{in_room}, $user, $VARS)
+	$APP->insertIntoRoom($$user{in_room}, $user, $VARS)
 		if $seconds_since_last > $TIMEOUT_SECONDS;
 
-	logUserIp($user, $VARS);
+	$APP->logUserIp($user, $VARS);
 
 	return $user;
 }
@@ -2368,23 +2327,7 @@ sub loginUser
 
 sub confirmUser
 {
-	my ($username, $pass, $cookie) = @_;
-
-	my $user = getNode($username, 'user');
-	return 0 unless $user && $user -> {acctlock} == 0;
-
-	unless ($cookie)
-	{
-		# login with plaintext password. May reset password or activate account first:
-		$APP -> checkToken($user, $query) if $query -> param('token');
-		$pass = $APP -> hashString($pass, $user -> {salt});
-	}
-
-	return $user if $pass eq $user -> {passwd};
-	return 0 if $user -> {salt};
-
-	# legacy user with unsalted password
-	return $APP -> updateLogin($user, $query, $cookie);
+  return $APP->confirmUser(@_);
 }
 
 #############################################################################
@@ -2501,29 +2444,9 @@ sub execOpCode
   }
 }
 
-#############################################################################
-#	Sub
-#               isSuspended
-#
-#       Purpose
-#               Checks the suspension table for access to a certain feature.
-#
-#       Parameters        
-#               $usr - The user to check if they are suspended
-#               $sustype - The type of suspension to check
-#                        
-#       Returns       
-#               the suspension_id if suspended for the type
-#               undef otherwise
-#
-
 sub isSuspended              
 {
-        my ($usr, $sustype) = @_;
-
-        return undef unless $usr and $sustype and $sustype = getNode($sustype, "sustype");
-        return $DB->sqlSelect("suspension_id", "suspension", "suspension_user=$$usr{node_id} and suspension_sustype=$$sustype{node_id}");
-
+  return $APP->isSuspended(@_);
 }
 
 #############################################################################
@@ -2563,10 +2486,11 @@ sub mod_perlInit
 	#blow away the globals
 	clearGlobals();
 
-	$query = getCGI();
+	Everything::initEverything();
+	
+	my $REQUEST = Everything::Request->new("DB" => $DB, "CONF" => $Everything::CONF, "APP" => $Everything::APP);
 
 	# Initialize our connection to the database
-	Everything::initEverything();
 
 	if (!defined $DB->getDatabaseHandle()) {
 		$query->print($SITE_UNAVAILABLE);
@@ -2577,14 +2501,16 @@ sub mod_perlInit
 
 	set_die_handler(\&handle_errors);
 
-	$USER = loginUser();
+	$query = $REQUEST->cgi;
+	$USER = $REQUEST->USER;
+        $VARS = $REQUEST->VARS;
 
          #only for Everything2.com
          if ($query->param("op") eq "randomnode") {
                $query->param("node_id", getRandomNode());
          }
 
-	refreshVotesAndCools();
+	$APP->refreshVotesAndCools($USER, $VARS);
 
 	# Execute any operations that we may have
 	execOpCode();
@@ -2595,33 +2521,6 @@ sub mod_perlInit
 	$DB->closeTransaction();
 }
 
-#############################################################################
-# Sub
-#   escapeAngleBrackets
-#
-# Purpose
-#   Escapes angle brackets but *only* if they're not inside square
-#   brackets. This is intended for bits of user input that is not
-#   allowed to have any HTML but is allowed bracket [linking].
-#
-# Parameters
-#   $text - the text  to escape
-#
-# Returns
-#   The escaped text
-sub escapeAngleBrackets{
-  my ($text) = @_;
-
-  #These two lines do regexp magic (man perlre, grep down to
-  #assertions) to escape < and > but only if they're not inside
-  #brackets. They're a bit inefficient, but since they text they're
-  #working on is usually small, it's all good. --[Swap]
-
-  $text =~ s/((?:\[(.*?)\])|>)/$1 eq ">" ? "&gt;" : "$1"/egs;
-  $text =~ s/((?:\[(.*?)\])|<)/$1 eq "<" ? "&lt;" : "$1"/egs;
-
-  return $text;
-}
 
 #############################################################################
 # Sub
@@ -2777,177 +2676,6 @@ sub showCompleteDiff{
   }
 
   return $html;
-}
-
-
-#####################
-# sub 
-#   generate_test_cookie 
-#
-# purpose
-#   quick and dirty factory for creating a cookie from $TEST
-#
-# params
-#   none, but checks $TEST and $TEST_CONDITION
-#
-# returns
-#   condition cookie
-sub generate_test_cookie {
-   return if $TEST_CONDITION eq 'optout';
-   return $query->cookie("condition", "") unless $TEST and $TEST_CONDITION; 
-
-   return $query->cookie(-name=>'condition',
-                         -value=> join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION, $TEST_SESSION_ID)),
-                         -expires=>'+1y',
-			 -path=>'/'); 
-}
-
-#####################
-# sub 
-#   assign_test_condition
-#
-# purpose
-#   check to see if tests are running, if so stamp 'em
-#   if the user has a condition, load $TEST
-#
-# params 
-#   none, but checks $USER globals, cookies, and $query params
-# 
-# returns
-#   none
-#
-sub assign_test_condition {
-  return if isGod($USER);
-  $TEST_CONDITION = '';
-  my ($T) = getNodeWhere({ enabled => 1 }, 'mvtest');
-  return unless $T;
-
-  $TEST = $T;
-  getRef $TEST;
-
-  my $current_condition = $query->cookie('condition');
-  if ($current_condition eq 'optout') {
-    $TEST_CONDITION = 'optout';
-    return;
-  }
-
-  #if a user has logged in and been assigned a test, the users own vars
-  #trump anything the cookie says (except for optout)
-  if (!$APP->isGuest($USER) and exists $$VARS{mvtest_condition} and $$VARS{mvtest_condition} != $current_condition) {
-     if ($$VARS{mvtest_condition} eq 'optout') {
-        $TEST_CONDITION = 'optout';
-        return;
-     }
-     $current_condition = $$VARS{mvtest_condition};        
-  }
-
-  #we use the test_id/starttime as a dual key to confirm the test we have a
-  #cookie for is a valid test
-  my ($id, $starttime, $condition, $session_id);
-  if ($current_condition) {
-     ($id, $starttime, $condition, $session_id) = split "\\|", $current_condition;
-  }
-
-  if ($current_condition and $id == getId($TEST) and $starttime eq $$TEST{starttime} and $session_id) {
-     $TEST_CONDITION  = $condition;
-     $TEST_SESSION_ID = $session_id;
-  } else {
-     #if no assigned condition, or the cookie is no longer valid, assign 
-     my @potential_conditions = split ",", $$TEST{conditions};
-     if (@potential_conditions) {
-        $TEST_CONDITION = $potential_conditions[int(rand(@potential_conditions))];      
-        $TEST_SESSION_ID = int(rand(2147483647));
-     } 
-  }
-
-  #if a user is logged in, make sure that the condition info is written to their
-  #user vars
-  if ( !$APP->isGuest($USER) ) {
-    $$VARS{mvtest_condition} = join("|", (getId($TEST), $$TEST{starttime}, $TEST_CONDITION, $TEST_SESSION_ID)); 
-  } 
-
-  #the cookie for the test is stamped in the printHeader() function
-  #which calls the generate_test_cookie function
-}
-
-######################
-# sub
-#   check_test_substitutions
-#
-# purpose
-#   determine from $TEST whether we have substitutions for a given htmlcode
-#   this is called by getCode to "filter" what users see
-#
-# params
-#   htmlcode name
-#
-# returns
-#   new htmlcode name, or original
-#
-sub check_test_substitutions {
-  my ($htmlcode) = @_;
-
-  return $htmlcode if not getId($TEST) or $TEST_CONDITION eq 'optout' or not $TEST_CONDITION;
-  
-  my $key = $TEST_CONDITION. "|". $htmlcode;   
-  my $V = getVars($TEST);
-  if (exists $$V{$key} and getNode($$V{$key}, 'htmlcode')) {
-    return $$V{$key};
-  }
-
-  return $htmlcode;
-}
-
-######################
-# sub
-#   recordUserAction
-#
-# purpose
-#   Log a user action with the current user's session id and condition
-#
-# params
-#   action (node or node_id), source_node_id, target_node_id
-#
-# returns
-#   nothing
-#
-sub recordUserAction {
-  my ($action, $source_node_id, $target_node_id) = @_;
-
-  # Stop logging immediately if somebody's opted out
-  return if ($TEST_CONDITION eq 'optout');
-  # Logging won't work for gods because they aren't asssigned a SESSION_ID
-  return if isGod($USER);
-  # Don't log if there's no active session
-  return if !$TEST_SESSION_ID;
-
-  $action = getNode($action, 'useraction') if !ref $action;
-  my $action_id = int($$action{node_id}) if $action;
-
-  my %setValues =
-    (
-      -useraction_id => $action_id
-      , -useraction_session_id => $TEST_SESSION_ID
-      , useraction_condition => $TEST_CONDITION
-    );
-
-  getId($source_node_id);
-  getId($target_node_id);
-
-  $setValues{'-useraction_source_node_id'} = $source_node_id if $source_node_id;
-  $setValues{'-useraction_target_node_id'} = $target_node_id if $target_node_id;
-
-  if (!$action_id) {
-
-    Everything::printLog("Unable to log user action because '$action' isn't a valid action.");
-    return;
-
-  } else {
-
-    $DB->sqlInsert('useractionlog', \%setValues);
-
-  }
-
 }
 
 #####################
@@ -3168,7 +2896,6 @@ sub castVote {
 
     }
 
-    recordUserAction($action, $$node{node_id});
     adjustRepAndVoteCount($node, $weight-$prevweight, $voteCountChange);
 
     #the node's author gains 1 XP for an upvote or a flipped up
@@ -3203,159 +2930,38 @@ sub castVote {
   1;
 }
 
-sub getHRLF
-{
-  my ($user) = @_;
-  $$user{numwriteups} ||= 0;
-  return 1 if $$user{numwriteups} < 25;
-  return $$user{HRLF} if $$user{HRLF};
-  my $hrstats = getVars(getNode("hrstats", "setting"));
-  
-  return 1 unless $$user{merit} > $$hrstats{mean};
-  return 1/(2-exp(-(($$user{merit}-$$hrstats{mean})**2)/(2*($$hrstats{stddev})**2)));
-};
 
 # Former inhabitants of the room module
+
 sub insertIntoRoom {
-  my ($ROOM, $U, $V) = @_;
-
-  getRef $U;
-  $V ||= getVars($U);
-  my $user_id=getId($U);
-  my $room_id=getId($ROOM);
-  $room_id = 0 unless $ROOM;
-  my $vis = $$V{visible} if exists $$V{visible};
-  $vis ||= 0;
-  my $borgd = 0;
-  $borgd = 1 if $$V{borged};
-
-  $DB->sqlInsert("room"
-    , {
-            room_id => $room_id,
-            member_user => $user_id,
-            nick => $$U{title},
-            borgd => $borgd,
-            experience => $$U{experience},
-            visible => $vis,
-            op => isGod($U)
-    }
-    , {
-            nick => $$U{title},
-            borgd => $borgd,
-            experience => $$U{experience},
-            visible => $vis,
-            op => isGod($U)
-    }
-  );
-
+  return $APP->insertIntoRoom(@_);
 }
 
-
 sub changeRoom {
-  my ($user, $ROOM) = @_;
-  getRef $user;
-  my $room_id=getId($ROOM);
-  $room_id=0 unless $ROOM;
-
-  unless ($$user{in_room} == $room_id) {
-    $$user{in_room} = $room_id;
-    updateNode($user, -1);
-  }
-  $DB->sqlDelete("room", "member_user=".getId($user));
-    
-  insertIntoRoom($ROOM, $user);
+  return $APP->changeRoom(@_);
 }
 
 sub cloak {
-  my ($user, $vars) = @_;
-  my $setvarflag;
-  $setvarflag = 1 unless $vars; 
-  $vars ||= getVars $user;
-  
-  $$vars{visible}=1;
-  setVars($user, $vars) if $setvarflag;
-  $DB->sqlUpdate('room', {visible => 1}, "member_user=".getId($user));
+  return $APP->cloak(@_);
 }
 
 sub uncloak {
-  my ($user, $vars) = @_;
-  my $setvarflag;
-  $setvarflag = 1 unless $vars; 
-  $vars ||= getVars $user;
-  
-  $$vars{visible}=0;
-  setVars($user, $vars) if $setvarflag;
-  $DB->sqlUpdate('room', {visible => 0}, "member_user=".getId($user));
+  return $APP->uncloak(@_);
 }
-
 
 sub logUserIp
 {
-	my ($user, $vars) = @_;
-	return if $APP->isGuest($user);
-
-	my @addrs = $APP->getIp();
-	my $addr = join ',', @addrs;
-	return unless $addr;
-
-	return if ($$vars{ipaddy} eq $addr);
-	$$vars{ipaddy} = $addr;
-
-	my $hour_limit = 24;
-	my $ipquery = <<SQLEND;
-		SELECT DISTINCT iplog_ipaddy
-		FROM iplog 
-		WHERE iplog_user = $$user{user_id}
-		AND iplog_time > DATE_SUB(NOW(), INTERVAL $hour_limit HOUR)
-SQLEND
-
-	my $previous_addrs = $DB->getDatabaseHandle()->selectall_arrayref($ipquery);
-	my %ignore_addrs = ( );
-
-	map { $ignore_addrs{$$_[0]} = 1; } @$previous_addrs if ($previous_addrs);
-
-	map {
-		$DB->sqlInsert("iplog", {iplog_user => $$user{user_id}, iplog_ipaddy => $_})
-		if !$ignore_addrs{$_};
-	} @addrs;
-
-	my $infected = grep { $APP->isInfectedIp($_) } @addrs;
-
-	if ($infected) {
-		$$vars{infected} = 1;
-	}
-
-	return @addrs;
+  return $APP->logUserIp(@_);
 }
 
-sub refreshVotesAndCools
+sub escapeAngleBrackets
 {
- my ($time) = split " ",$$USER{lasttime};
+  return $APP->escapeAngleBrackets(@_);
+}
 
- if (!$APP->isGuest($USER)
-  and (not exists $$VARS{votetime} or $$VARS{votetime} ne $time)) {
-   
-   my $VOTES = getVars(getNode('level votes', 'setting'));
-   my $COOLS = getVars(getNode('level cools', 'setting'));
-
-   $$USER{level} = undef;
-   my $lvl = $APP->getLevel($USER);
-   $$USER{level} = $lvl;
-   if (exists $$VOTES{$lvl} and $$VOTES{$lvl} =~ /^\d+$/) {
-     $$USER{votesleft} = $$VOTES{$lvl};
-   }
-   #$$USER{votesleft} = $$VOTES{$lvl};
-   if (exists $$COOLS{$lvl} and $$COOLS{$lvl} =~ /^\d+$/) {
-     $$VARS{cools} = $$COOLS{$lvl};
-   }
-   $$VARS{votesrefreshed} ||= 0;
-   $$VARS{votesrefreshed}++;
-   $$VARS{votetime} = $time;
- }
-
- $$USER{votesleft} = 0 if isSuspended($USER, "vote");
- $$VARS{cools} = 0 if isSuspended($USER, "cool");
-
+sub getHRLF
+{
+  return $APP->getHRLF(@_);
 }
 
 sub isMobile

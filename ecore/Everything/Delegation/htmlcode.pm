@@ -36,7 +36,6 @@ BEGIN {
   *setVars = *Everything::HTML::setVars;
   *getNodeWhere = *Everything::HTML::getNodeWhere;
   *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
-  *recordUserAction = *Everything::HTML::recordUserAction;
   *linkNodeTitle = *Everything::HTML::linkNodeTitle;
   *confirmUser = *Everything::HTML::confirmUser;
   *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
@@ -1231,7 +1230,7 @@ sub password_field
   my $oldpass = $query -> param("oldpass");
 
   if ( $oldpass or $p1 or $p2){
-    if(confirmUser($USER -> {title}, $oldpass)) {
+    if(confirmUser($USER -> {title}, $oldpass, undef, $query)) {
       if ( !$p1 and  !$p2){
         $str .= "I can't let you have no password! Please input <em>something</em>.<br>"
       } 
@@ -3007,12 +3006,8 @@ sub publishwriteup
 
   # No XP, writeup count, notifications or achievement for maintenance nodes
   if ( $APP->isMaintenanceNode($E2NODE) ){
-    recordUserAction('createwriteupemaintenance', $$WRITEUP{node_id}, $$E2NODE{node_id});
     return;
   }
-
-  # record new node creation:
-  recordUserAction('createwriteup', $$WRITEUP{node_id}, $$E2NODE{node_id});
 
   return if $$WRITEUP{author_user} != $$USER{node_id}; # no credit for publishas
 
