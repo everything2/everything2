@@ -8,7 +8,6 @@
   <iconHeight>22</iconHeight>
   <iconWidth>170</iconWidth>
   <nlcode>[{openform2:formcbox}]
-
 [%
 # get settings here in case they are being updated. Slight kludge to remember them...
 $PAGELOAD-&gt;{chatterboxsettingswidgetlink} = htmlcode('nodeletsettingswidget','Chatterbox', 'Chatterbox settings');
@@ -101,7 +100,6 @@ return linkNodeTitle('go outside[superdocnolinks]').'&lt;br&gt;';
 [%
 $PAGELOAD-&gt;{chatterboxsettingswidgetlink};
 %]
-&lt;/div&gt;
-</nlcode>
+&lt;/div&gt;</nlcode>
   <title>Chatterbox</title>
 </node>

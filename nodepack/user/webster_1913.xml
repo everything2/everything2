@@ -78,7 +78,7 @@
     <key>nodelets</key>
   </vars>
   <vars>
-    <value>7</value>
+    <value>8</value>
     <key>numborged</key>
   </vars>
   <vars>
@@ -172,6 +172,10 @@
   <vars>
     <value>iliterit basterd</value>
     <key>costume</key>
+  </vars>
+  <vars>
+    <value>1412245768</value>
+    <key>borged</key>
   </vars>
   <vars>
     <value></value>

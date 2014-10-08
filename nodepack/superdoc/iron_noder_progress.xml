@@ -88,7 +88,7 @@ if($showWUs &amp;&amp; !$typeID) {
 	$str .= '(DEBUG: unable to get writeup type)';
 }
 
-if($showWUs)) {
+if($showWUs) {
 
 	my $getWriteupQuery = &lt;&lt;QUERY;
 SELECT

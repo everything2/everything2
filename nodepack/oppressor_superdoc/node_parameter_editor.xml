@@ -7,7 +7,7 @@ Available types of parameters:
   my $for_node = $query-&gt;param('for_node');
   if(not defined($for_node))
   {
-    return &quot;No node to check the parameters for. Use this from the C_E tools menu in the epicenter&quot;;
+    return &quot;No node to check the parameters for. Use this from the C_E tools menu in Master Control.&quot;;
   }else{
     my $f_node = getNodeById($for_node);
     return &quot;No such node_id '$for_node'&quot; unless defined $f_node;

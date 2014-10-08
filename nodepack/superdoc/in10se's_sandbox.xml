@@ -120,7 +120,7 @@ if ($sentOrReceived ne 's')
 my $count = int($query-&gt;param(&quot;count&quot;));
 if ($count &lt;= 0)
 {
-   $count = 500;
+   $count = 50;
 }
 my $archive = int($query-&gt;param(&quot;a&quot;));
 

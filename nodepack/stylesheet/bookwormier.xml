@@ -1058,7 +1058,7 @@ input#message {
 	display: none;
 }
 </doctext>
-  <contentversion>104</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>2000528</node_id>
   <title>Bookwormier</title>
