@@ -66,7 +66,7 @@ sub login
     ($username, $pass) = split(/\|/, $cookie) if $cookie;
   }
 
-  my $user = $self->APP->confirmUser($username, $pass, $cookie) if $username && $pass;
+  my $user = $self->APP->confirmUser($username, $pass, $cookie, $self->cgi) if $username && $pass;
   $user ||= $self->DB->getNodeById($self->CONF->{system}->{guest_user});
 
   $self->VARS(Everything::getVars($user));

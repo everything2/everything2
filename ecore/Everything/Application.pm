@@ -2178,4 +2178,217 @@ sub refreshVotesAndCools
 }
 
 
+##########################################################################
+#	insertVote -- inserts a users vote into the vote table
+#
+#	note, since user and node are the primary keys, the insert will fail
+#	if the user has already voted on a given node.
+#
+sub insertVote {
+	my ($this, $node, $user, $weight) = @_;
+	my $ret = $this->{db}->sqlInsert('vote', { vote_id => $this->{db}->getId($node),
+		voter_user => $this->{db}->getId($user),
+		weight => $weight,
+		-votetime => 'now()'
+		});
+	return 0 unless $ret;
+	#the vote was unsucessful
+
+	1;
+}
+
+##########################################################################
+#	hasVoted -- checks to see if the user has already voted on this Node
+#
+#	this is a primary key lookup, so it should be very fast
+#
+sub hasVoted {
+	my ($this, $node, $user) = @_;
+
+	my $VOTE = $this->{db}->sqlSelect("*", 'vote', "vote_id=".$this->{db}->getId($node)." 
+		and voter_user=".$this->{db}->getId($user));
+
+	return 0 unless $VOTE;
+	$VOTE;
+}
+
+#########################################################################
+#
+#	adjustRepAndVoteCount
+#
+#	adjust reputation points for a node as well as vote count, potentially
+#
+sub adjustRepAndVoteCount {
+	my ($this, $node, $pts, $voteChange) = @_;
+	$this->{db}->getRef($node);
+
+	$$node{reputation} += $pts;
+	# Rely on updateNode to discard invalid hash entries since
+	#  not all voteable nodes may have a totalvotes column
+	$$node{totalvotes} += $voteChange;
+	$this->{db}->updateNode($node, -1);
+}
+
+###########################################################################
+#
+#	castVote
+#
+#	this function does a number of things -- sees if the user is
+#	allowed to vote, inserts the vote, and allocates exp/rep points
+#
+sub castVote {
+  my ($this, $node, $user, $weight, $noxp, $VSETTINGS) = @_;
+  $this->{db}->getRef($node, $user);
+
+  my $voteWrap = sub {
+
+    my ($user, $node, $AUTHOR) = @_;
+
+    #return if they don't have any votes left today
+    return unless $$user{votesleft};
+
+    #jb says: Allow for $VSETTINGS to be specified. This will save
+    # us a few cycles in castVote
+    $VSETTINGS ||= Everything::getVars($this->{db}->getNode('vote settings', 'setting'));
+    my @votetypes = split /\s*\,\s*/, $$VSETTINGS{validTypes};
+
+    #if no types are specified, the user can vote on anything
+    #otherwise, they can only vote on "validTypes"
+    return if (@votetypes and not grep(/^$$node{type}{title}$/, @votetypes));
+
+    my $prevweight;
+    $prevweight  = $this->{db}->sqlSelect('weight',
+                                  'vote',
+                                  'voter_user='.$$user{node_id}
+                                  .' AND vote_id='.$$node{node_id}
+                                  );
+
+    # If user had already voted, update the table manually, check that the vote is
+    # actually different.
+    my $alreadyvoted = (defined $prevweight && $prevweight != 0);
+    my $voteCountChange = 0;
+    my $action;
+
+    if (!$alreadyvoted) {
+
+      $this->insertVote($node, $user, $weight);
+
+      if ($$node{type}{title} eq 'poll') {
+         $action = 'votepoll';
+      } elsif ($weight > 0) {
+         $action = 'voteup';
+      } else {
+         $action = 'votedown';
+      }
+
+      $voteCountChange = 1;
+
+    } else {
+
+        $this->{db}->sqlUpdate("vote"
+                       , { -weight => $weight, -revotetime => "NOW()" }
+                       , "voter_user=$$user{node_id}
+                          AND vote_id=$$node{node_id}"
+                       )
+          unless $prevweight == $weight;
+
+        if ($weight > 0) {
+           $action = 'voteflipup';
+        } else {
+           $action = 'voteflipdown';
+        }
+
+    }
+
+    $this->adjustRepAndVoteCount($node, $weight-$prevweight, $voteCountChange);
+
+    #the node's author gains 1 XP for an upvote or a flipped up
+    #downvote.
+    if ($weight>0 and $prevweight <= 0) {
+      $this->adjustExp($AUTHOR, $weight);
+    }
+    #Revoting down, note the subtle difference with above condition
+    elsif($weight < 0 and $prevweight > 0){
+       $this->adjustExp($AUTHOR, $weight);
+    }
+
+
+    #the voter has a chance of receiving a GP
+    if (rand(1.0) < $$VSETTINGS{voterExpChance} &&  !$alreadyvoted) {
+      $this->adjustGP($user, 1) unless($noxp);
+      #jb says this is for decline vote XP option
+      #we pass this $noxp if we want to skip the XP option
+    }
+
+    $$user{votesleft}-- unless ($alreadyvoted and $weight==$prevweight);
+
+  };
+
+  my $superUser = -1;
+  $this->{db}->updateLockedNode(
+    [ $$user{user_id}, $$node{node_id}, $$node{author_user} ]
+    , $superUser
+    , $voteWrap
+  );
+
+  1;
+}
+
+###################################################################
+#
+#	getVotes
+#
+#	get votes for a certain node.  returns
+#	a list of vote hashes.  If you specify a user, it returns
+#	only the vote hash for the users vote (if exists)
+#
+sub getVotes {
+	my ($this, $node, $user) = @_;
+
+	return $this->hasVoted($node, $user) if $user;
+
+	my $csr = $this->{db}->sqlSelectMany("*", "vote", "vote_id=".getId($node));
+	my @votes;
+
+	while (my $VOTE = $csr->fetchrow_hashref()) {
+		push @votes, $VOTE;
+	}
+	
+	@votes;
+}
+
+###
+#
+#       adjust GP
+#
+#       ideally we could optimize this, since its only inc one field.
+#
+sub adjustGP {
+        my ($this, $user, $points) = @_;
+        $this->{db}->getRef($user);
+        my $V=Everything::getVars($user);
+        return if ((exists $$V{GPoptout})&&(defined $$V{GPoptout}));
+        $$user{GP} += $points;
+        $this->{db}->updateNode($user,-1);
+        1;
+}
+
+##########################################################################
+#
+#	adjustExp
+#
+#	adjust experience points
+#
+#	ideally we could optimize this, since its only inc one field.
+#
+sub adjustExp {
+	my ($this, $user, $points) = @_;
+	$this->{db}->getRef($user);
+
+	$$user{experience} += $points;
+
+	# Only update user immediately if we're not in a transaction
+	$this->{db}->updateNode($user, -1);
+	1;
+}
 1;

@@ -39,7 +39,6 @@ sub BEGIN {
               quote
               urlGen
               urlGenNoParams
-              getCode
               getPage
               getPages
               getPageForType
@@ -65,7 +64,6 @@ sub BEGIN {
 
               castVote
               adjustExp
-              adjustRepAndVoteCount
               adjustGP
               allocateVotes
               hasVoted
@@ -965,32 +963,6 @@ sub urlGen {
   $str .= '"' unless $noquotes;
   $str;
 }
-
-
-#############################################################################
-#   Sub
-#       getCode
-#
-#   Purpose
-#       This gets the node of the appropriate htmlcode function
-#
-#   Parameters
-#       funcname - The name of the function to rerieve
-#
-sub getCode
-{
-	my ($funcname) = @_;
-
-	my $CODE = getNode($funcname, getType("htmlcode"));
-	if (wantarray) {
-		return ($$CODE{code}, $CODE) if defined( $CODE );
-		return ('"";', undef);
-	} else {
-		return $$CODE{code} if defined( $CODE );
-		return '"";';
-	}
-}
-
 
 #############################################################################
 #	Sub
@@ -2716,220 +2688,29 @@ sub allocateVotes {
 	updateNode($user, -1);
 }
 
-#########################################################################
-#
-#	adjustRepAndVoteCount
-#
-#	adjust reputation points for a node as well as vote count, potentially
-#
-sub adjustRepAndVoteCount {
-	my ($node, $pts, $voteChange) = @_;
-	getRef($node);
-
-	$$node{reputation} += $pts;
-	# Rely on updateNode to discard invalid hash entries since
-	#  not all voteable nodes may have a totalvotes column
-	$$node{totalvotes} += $voteChange;
-	updateNode($node, -1);
-}
-
-##########################################################################
-#
-#	adjustExp
-#
-#	adjust experience points
-#
-#	ideally we could optimize this, since its only inc one field.
-#
 sub adjustExp {
-	my ($user, $points) = @_;
-	getRef($user);
-
-	$$user{experience} += $points;
-
-	# Only update user immediately if we're not in a transaction
-	updateNode($user, -1);
-	1;
+  return $APP->adjustExp(@_);
 }
 
-###
-#
-#       adjust GP
-#
-#       ideally we could optimize this, since its only inc one field.
-#
 sub adjustGP {
-        my ($user, $points) = @_;
-        getRef($user);
-        my $V=getVars($user);
-        return if ((exists $$V{GPoptout})&&(defined $$V{GPoptout}));
-        $$user{GP} += $points;
-        updateNode($user,-1);
-        1;
+  return $APP->adjustGP(@_);
 }
 
-###################################################################
-#
-#	getVotes
-#
-#	get votes for a certain node.  returns
-#	a list of vote hashes.  If you specify a user, it returns
-#	only the vote hash for the users vote (if exists)
-#
 sub getVotes {
-	my ($node, $user) = @_;
-
-	return hasVoted($node, $user) if $user;
-
-	my $csr = $DB->sqlSelectMany("*", "vote", "vote_id=".getId($node));
-	my @votes;
-
-	while (my $VOTE = $csr->fetchrow_hashref()) {
-		push @votes, $VOTE;
-	}
-	
-	@votes;
+  return $APP->getVotes(@_);
 }
 
-##########################################################################
-#	hasVoted -- checks to see if the user has already voted on this Node
-#
-#	this is a primary key lookup, so it should be very fast
-#
 sub hasVoted {
-	my ($node, $user) = @_;
-
-	my $VOTE = $DB->sqlSelect("*", 'vote', "vote_id=".getId($node)." 
-		and voter_user=".getId($user));
-
-	return 0 unless $VOTE;
-	$VOTE;
+  return $APP->hasVoted(@_);
 }
 
-##########################################################################
-#	insertVote -- inserts a users vote into the vote table
-#
-#	note, since user and node are the primary keys, the insert will fail
-#	if the user has already voted on a given node.
-#
 sub insertVote {
-	my ($node, $user, $weight) = @_;
-	my $ret = $DB->sqlInsert('vote', { vote_id => getId($node),
-		voter_user => getId($user),
-		weight => $weight,
-		-votetime => 'now()'
-		});
-	return 0 unless $ret;
-	#the vote was unsucessful
-
-	1;
+  return $APP->insertVote(@_);
 }
 
-###########################################################################
-#
-#	castVote
-#
-#	this function does a number of things -- sees if the user is
-#	allowed to vote, inserts the vote, and allocates exp/rep points
-#
 sub castVote {
-  my ($node, $user, $weight, $noxp, $VSETTINGS) = @_;
-  getRef($node, $user);
-
-  my $voteWrap = sub {
-
-    my ($user, $node, $AUTHOR) = @_;
-
-    #return if they don't have any votes left today
-    return unless $$user{votesleft};
-
-    #jb says: Allow for $VSETTINGS to be specified. This will save
-    # us a few cycles in castVote
-    $VSETTINGS ||= getVars(getNode('vote settings', 'setting'));
-    my @votetypes = split /\s*\,\s*/, $$VSETTINGS{validTypes};
-
-    #if no types are specified, the user can vote on anything
-    #otherwise, they can only vote on "validTypes"
-    return if (@votetypes and not grep(/^$$node{type}{title}$/, @votetypes));
-
-    my $prevweight;
-    $prevweight  = $DB->sqlSelect('weight',
-                                  'vote',
-                                  'voter_user='.$$user{node_id}
-                                  .' AND vote_id='.$$node{node_id}
-                                  );
-
-    # If user had already voted, update the table manually, check that the vote is
-    # actually different.
-    my $alreadyvoted = (defined $prevweight && $prevweight != 0);
-    my $voteCountChange = 0;
-    my $action;
-
-    if (!$alreadyvoted) {
-
-      insertVote($node, $user, $weight);
-
-      if ($$node{type}{title} eq 'poll') {
-         $action = 'votepoll';
-      } elsif ($weight > 0) {
-         $action = 'voteup';
-      } else {
-         $action = 'votedown';
-      }
-
-      $voteCountChange = 1;
-
-    } else {
-
-        $DB->sqlUpdate("vote"
-                       , { -weight => $weight, -revotetime => "NOW()" }
-                       , "voter_user=$$user{node_id}
-                          AND vote_id=$$node{node_id}"
-                       )
-          unless $prevweight == $weight;
-
-        if ($weight > 0) {
-           $action = 'voteflipup';
-        } else {
-           $action = 'voteflipdown';
-        }
-
-    }
-
-    adjustRepAndVoteCount($node, $weight-$prevweight, $voteCountChange);
-
-    #the node's author gains 1 XP for an upvote or a flipped up
-    #downvote.
-    if ($weight>0 and $prevweight <= 0) {
-      adjustExp($AUTHOR, $weight);
-    }
-    #Revoting down, note the subtle difference with above condition
-    elsif($weight < 0 and $prevweight > 0){
-       adjustExp($AUTHOR, $weight);
-    }
-
-
-    #the voter has a chance of receiving a GP
-    if (rand(1.0) < $$VSETTINGS{voterExpChance} &&  !$alreadyvoted) {
-      adjustGP($user, 1) unless($noxp);
-      #jb says this is for decline vote XP option
-      #we pass this $noxp if we want to skip the XP option
-    }
-
-    $$user{votesleft}-- unless ($alreadyvoted and $weight==$prevweight);
-
-  };
-
-  my $superUser = -1;
-  updateLockedNode(
-    [ $$user{user_id}, $$node{node_id}, $$node{author_user} ]
-    , $superUser
-    , $voteWrap
-  );
-
-  1;
+  return $APP->castVote(@_);
 }
-
 
 # Former inhabitants of the room module
 

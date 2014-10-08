@@ -6786,23 +6786,20 @@ sub doChatMacro
 
     }
 
-  $result =~ s/^\s+//;
-  $result =~ s/\s+$//;
+    $result =~ s/^\s+//;
+    $result =~ s/\s+$//;
 
-  # $DB->sqlInsert('message', {msgtext=>'DEBUG: using line result: }'.$result.'{', author_user=>$uid, for_user=>$uid});
+    # $DB->sqlInsert('message', {msgtext=>'DEBUG: using line result: }'.$result.'{', author_user=>$uid, for_user=>$uid});
 
-  $query->param(-name=>'sendto', -value=>'');
-  $query->param(-name=>'message',-value=>$result);
+    $query->param(-name=>'sendto', -value=>'');
+    $query->param(-name=>'message',-value=>$result);
 
-  #following mixed from htmlcode and getCode to call message (opcode)
-  my $CODE = getNode('message', getType('opcode'));
-  if(defined $CODE)
-  {
-    $str .= 'eval='.
-    evalCode('@_ = ();'."\n" . $$CODE{'code'}).';';
-  }
+    if(my $delegation = Everything::Delegation::opcode->can("message"))
+    {
+      $str .= 'eval='.$delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP); 
+    }
 
-  $str .= $result . $sep;
+    $str .= $result . $sep;
 
   }
 
