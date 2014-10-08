@@ -12,6 +12,7 @@ use strict;
 use Everything;
 use Everything::Delegation::htmlcode;
 use Everything::Delegation::opcode;
+use Compress::Zlib;
 use Everything::Request;
 use CGI;
 use CGI::Carp qw(set_die_handler);
@@ -1809,6 +1810,12 @@ sub displayPage
 		$page = $pre.$page.$post;
 	}
 	setVars $USER, $VARS unless $APP->isGuest($USER);
+
+	if(canCompress())
+	{
+		$page = Compress::Zlib::memGzip($page);
+	}
+
 	printHeader($$NODE{datatype}, $page, $lastnode);
 
 	$query->print($page);
@@ -2074,6 +2081,10 @@ sub printHeader
 		$extras->{cookie} = \@cookies;
 	}
 
+	if(canCompress())
+	{
+		$extras->{content_encoding} = "gzip";
+	}
 
 	if($ENV{SCRIPT_NAME}) {
 		$query->header(-type=> $datatype, 
@@ -2748,6 +2759,17 @@ sub getHRLF
 sub isMobile
 {
   return $query->cookie('mobile') || $ENV{HTTP_HOST} =~ m'^m.everything2'i;
+}
+
+sub canCompress
+{
+  #TODO: Check to see if we can do this as an apache module, safely
+  #TODO: Don't compress things of shorter than X bytes
+  #TODO: Support deflate?
+  if($ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
+  {
+    return 1;
+  }
 }
 
 1;
