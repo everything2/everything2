@@ -4,7 +4,9 @@
 
 return '&lt;p&gt;You must be logged in to be suprised.&lt;/p&gt;' if( $APP-&gt;isGuest($USER) );
 
-my $isHalloween = htmlcode('isSpecialDate','halloween');
+#my $isHalloween = htmlcode('isSpecialDate','halloween');
+
+my $isHalloween = 0;
 
 my $costumeCost = 5;
 

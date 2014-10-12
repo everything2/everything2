@@ -4,12 +4,13 @@
 
 my $isHalloween = htmlcode('isSpecialDate','halloween');
 #my $isHalloween = 1;
+my $userGP = $$USER{GP};
 my $costume;
-my $costumeCost = 5;
+my $costumeCost = 30;
 
 
 if (!$isHalloween) {
-return &quot;Sorry, shop's closed. But we'll be back ....&quot;;
+return &quot;&lt;br&gt;&lt;br&gt;Sorry, shop's closed. Check back on All Hallows' Eve...&lt;br&gt;&lt;br&gt;&quot;;
 }
 
 my $str ='';
@@ -18,14 +19,14 @@ my $str ='';
 
 $costumeCost = 0 if isGod($USER);
 
-if ($$VARS{treats} &lt; $costumeCost) {
+if ($userGP &lt; $costumeCost) {
 if (exists($$VARS{costume})) {
-return &quot;Alright, you've got your costume. Wanna change it? Bring me back some more treats!&quot;;
+return &quot;&lt;br&gt;&lt;br&gt;Alright, you've got your costume. Wanna change it? Bring me back some cold, hard [GP|cash money]!&lt;br&gt;&lt;br&gt;&quot;;
 }
-return &quot;Sorry - a costume don't come for free. Try the [Wheel of Surprise].&quot;;
+return &quot;&lt;br&gt;&lt;br&gt;Sorry - a costume don't come free. Go [GP|start a lemonade stand] or something.&lt;br&gt;&lt;br&gt;&quot;;
 }
 
-$str = &quot;Well, I see you've got yourself a big ole bag of treats. So I tell you what. You give me that bag of treats - and I'll give you a [chatterbox name change|costume]. Whaddya say?&quot;;
+$str = &quot;&lt;br&gt;&lt;br&gt;Well, I see you've scrounged up some cash. So I tell you what. You give me 30 [GP] and I'll give you a [chatterbox name change|costume]. Whaddya say?&lt;br&gt;&lt;br&gt;&quot;;
 
 if ($query-&gt;param(&quot;dressup&quot;)) {
 
@@ -37,7 +38,8 @@ if ($query-&gt;param(&quot;dressup&quot;)) {
 
       $$VARS{costume} = $costume;
       $$VARS{treats} = 0;
-      return &quot;Alright, you've got your costume. Wanna change it? Bring me back some more treats!&quot;;
+      adjustGP($USER, -$costumeCost);
+      return &quot;Alright, you've got your costume. Wanna change it? Bring me back some more money!&quot;;
    } else {
       $str = &quot;&lt;p&gt;&lt;b&gt;That costume is also a username! Please try another option.&lt;/b&gt;&lt;/p&gt;&quot;;
    }

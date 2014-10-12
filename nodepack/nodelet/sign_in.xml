@@ -12,6 +12,9 @@ if ($APP-&gt;isGuest($USER)) {
 
 return &quot;You are logged in.&quot;;
 
-%]</nlcode>
+%]
+&lt;p&gt;
+Need help? &lt;a href=&quot;mailto:accounthelp@everything2.com&quot;&gt;accounthelp@everything2.com&lt;/a&gt;
+&lt;/p&gt;</nlcode>
   <title>Sign in</title>
 </node>

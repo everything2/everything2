@@ -9,7 +9,7 @@
     <key>cthulhu</key>
   </vars>
   <vars>
-    <value>makes egg tea for</value>
+    <value>builds a monkey for </value>
     <key>special</key>
   </vars>
   <vars>
@@ -33,7 +33,7 @@
     <key>magic</key>
   </vars>
   <vars>
-    <value>offers an animal cracker to</value>
+    <value>offers a chocolate snikerdoodle to</value>
     <key>cookie</key>
   </vars>
   <vars>
@@ -55,6 +55,10 @@
   <vars>
     <value>makes ~ a geta of vegan sushi for</value>
     <key>sushi</key>
+  </vars>
+  <vars>
+    <value>hands ~ a snifter of brandy</value>
+    <key>booze</key>
   </vars>
   <vars>
     <value>rubber chickens</value>
@@ -99,6 +103,10 @@
   <vars>
     <value>pours ~ a fine cold beer</value>
     <key>beer</key>
+  </vars>
+  <vars>
+    <value>sees that ~ is busy with kittens</value>
+    <key>random2</key>
   </vars>
   <vars>
     <value>finds a small yet inexpressibly beautiful  trilobite for</value>

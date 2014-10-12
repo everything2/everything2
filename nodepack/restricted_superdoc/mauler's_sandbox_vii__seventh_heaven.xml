@@ -73,7 +73,7 @@ while($row = $rows-&gt;fetchrow_arrayref)
 $str .= '&lt;/ol&gt;&lt;hr /&gt;';
 
 $queryText = 'SELECT user_id,gp FROM user WHERE gp&lt;&gt;0 ORDER BY gp LIMIT '.$limit2;
-$rows = $DB-&gt;{dbh]-&gt;prepare($queryText)
+$rows = $DB-&gt;{dbh}-&gt;prepare($queryText)
    or return $rows-&gt;errstr;
 $rows-&gt;execute()
    or return $rows-&gt;errstr;
