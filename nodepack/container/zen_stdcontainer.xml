@@ -74,8 +74,6 @@ else {
   return qq|&lt;meta content=&quot;width=device-width; initial-scale=1.0; user-scalable=1;&quot;
       name=&quot;viewport&quot;&gt;| if isMobile();
 %]
-[{static javascript}]
-[{googleanalytics}]
 &lt;/head&gt;
 
 &lt;body class=&quot;[%
@@ -88,6 +86,8 @@ $id =~ s/\W//g ;
 $str.'&quot; id=&quot;'.$id ;
 %]&quot; itemscope itemtype=&quot;http://schema.org/WebPage&quot;&gt;
 CONTAINED_STUFF
+[{static javascript}]
+[{googleanalytics}]
 &lt;/body&gt;
 &lt;/html&gt;</context>
   <title>zen stdcontainer</title>

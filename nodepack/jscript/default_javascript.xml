@@ -1,6 +1,65 @@
 <node>
   <type_nodetype>1786405</type_nodetype>
-  <doctext>//Begin contents of boilerplate javascript
+  <doctext>// jQuery BBQ deparam shim
+    function e2URL (url) {
+      this.url = url;
+      this._parse_param_string =
+        function(url)
+        {
+          if(url === undefined)
+          {
+            return &quot;&quot;;
+          }
+
+          var get_params_start = url.indexOf(&quot;?&quot;);
+          if(get_params_start == -1)
+          {
+            return &quot;&quot;;
+          }else{
+            return [url.slice(0,get_params_start),url.slice(get_params_start+1)];
+          }
+        };
+
+      this._make_param_array = function(param_string)
+        {
+          var param_hash = {};
+          if(param_string === undefined || param_string == &quot;&quot;)
+          {
+            return param_hash;
+          }
+
+          var param_chunks = param_string.split(&quot;&amp;&quot;);
+          for (var i = 0; i &lt; param_chunks.length; i++)
+          {
+            var this_param = param_chunks[i].split(&quot;=&quot;);
+            param_hash[decodeURIComponent(this_param[0])] = decodeURIComponent(this_param[1]);
+          }
+
+          return param_hash;
+        };
+        var _parse_param_string_output = this._parse_param_string(this.url);
+        this.url_head = _parse_param_string_output[0];
+        this.param_string = _parse_param_string_output[1];
+        this.params = this._make_param_array(this.param_string);
+
+        this.make_url = function(){
+          var _new_encoded_params = [];
+          var _param_keys = Object.keys(this.params);
+          if(_param_keys.length == 0)
+          {
+            return this.url_head;
+          }
+          for(var i = 0; i &lt; _param_keys.length; i++)
+          {
+            _new_encoded_params.push(encodeURIComponent(_param_keys[i])+&quot;=&quot;+encodeURIComponent(this.params[_param_keys[i]]));
+          }
+          return this.url_head + &quot;?&quot; + _new_encoded_params.join(&quot;&amp;&quot;);
+        }
+      }
+
+// End jQuery BBQ deparam shim
+
+//Begin contents of boilerplate javascript
 
 $.extend(e2, {
 	fxDuration: (e2.fxDuration || 200) - 1, // fx off is stored as 1
@@ -292,13 +351,13 @@ e2 = $.extend( function(x){return e2.shortFunctions[typeof x].apply(this, argume
 		if (oldHref.indexOf('?') == -1) {
 			oldHref = oldHref.replace( /(#.*|$)/ , &quot;?$1&quot; );
 		}
-		var params = $.deparam.querystring(oldHref);
+                var newurl = new e2URL(oldHref);
 		if (lastnode === undefined) {
-			delete params['lastnode_id'];
+			delete newurl.params['lastnode_id'];
 		} else {
-			params.lastnode_id = lastnode;
+			newurl.params[&quot;lastnode_id&quot;] = lastnode;
 		}
-		this.href = $.param.querystring(oldHref, params, REPLACE_PARAMS);
+		this.href = newurl.make_url();
 	},
 
 	// confirmop framework
@@ -1453,7 +1512,7 @@ if(! e2.noquickvote)
   }).defer); // defer for IE 
 }
 // End contents of Everything2 AJAX</doctext>
-  <contentversion>116</contentversion>
+  <contentversion>118</contentversion>
   <s3bucket></s3bucket>
   <node_id>1874924</node_id>
   <title>default javascript</title>
