@@ -4536,16 +4536,11 @@ sub javascript_decider
 
   my ($str, $N) = (undef, undef);
   my @JS = (getNode('default javascript', 'jscript'));
-  push @JS, getNode('Everything2 Ajax', 'jscript') unless $$VARS{noquickvote} ;
 
-  # TODO: Move to a setting
-  my $jscss = "http://jscss.everything2.com";
   $str = "";
 
   my $jsType = getId(getType('jscript'));
   foreach (@JS) {
-    getRef $_;
-    next unless $_ && $$_{type_nodetype} == $jsType;
     $str .= "<script src='".htmlcode("linkjavascript",$$_{node_id})."' type='text/javascript'></script>\n";
   }
 
