@@ -4535,7 +4535,7 @@ sub javascript_decider
   my $APP = shift;
 
   my ($str, $N) = (undef, undef);
-  my @JS = ( getNode('boilerplate javascript','jscript'),getNode('default javascript', 'jscript'));
+  my @JS = (getNode('default javascript', 'jscript'));
   push @JS, getNode('Everything2 Ajax', 'jscript') unless $$VARS{noquickvote} ;
   push @JS, getNode('Zen Nodelet Collapser', 'jscript') unless $$VARS{nonodeletcollapser} ;
 
