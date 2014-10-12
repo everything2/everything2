@@ -541,10 +541,7 @@ e2('.formattable', e2.htmlFormattingAids);
 e2('.privmsg .action', 'show');
 
 // confirmop
-e2('a.action[href*=confirmop=], form button[name=confirmop], form :submit[name=confirmop]', 'click', e2.confirmop);
-
-// fix ie567 form buttons
-if ($.browser.msie &amp;&amp; $.browser.version &lt;= 7) e2(&quot;form button&quot;, &quot;click&quot;, e2.iebuttonfix);
+e2(&quot;a.action[href*='confirmop='], form button[name=confirmop], form :submit[name=confirmop]&quot;, 'click', e2.confirmop);
 
 // expandable inputs/textareas
 (function(){
@@ -1512,7 +1509,7 @@ if(! e2.noquickvote)
   }).defer); // defer for IE 
 }
 // End contents of Everything2 AJAX</doctext>
-  <contentversion>118</contentversion>
+  <contentversion>120</contentversion>
   <s3bucket></s3bucket>
   <node_id>1874924</node_id>
   <title>default javascript</title>
