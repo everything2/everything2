@@ -4537,7 +4537,6 @@ sub javascript_decider
   my ($str, $N) = (undef, undef);
   my @JS = (getNode('default javascript', 'jscript'));
   push @JS, getNode('Everything2 Ajax', 'jscript') unless $$VARS{noquickvote} ;
-  push @JS, getNode('Zen Nodelet Collapser', 'jscript') unless $$VARS{nonodeletcollapser} ;
 
   # TODO: Move to a setting
   my $jscss = "http://jscss.everything2.com";
