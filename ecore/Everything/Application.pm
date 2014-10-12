@@ -1961,7 +1961,7 @@ sub cloak {
   
   $$vars{visible}=1;
   Everything::setVars($user, $vars) if $setvarflag;
-  $this->{db}->sqlUpdate('room', {visible => 1}, "member_user=".getId($user));
+  $this->{db}->sqlUpdate('room', {visible => 1}, "member_user=".$this->{db}->getId($user));
 }
 
 sub uncloak {
@@ -1972,7 +1972,7 @@ sub uncloak {
   
   $$vars{visible}=0;
   Everything::setVars($user, $vars) if $setvarflag;
-  $this->{db}->sqlUpdate('room', {visible => 0}, "member_user=".getId($user));
+  $this->{db}->sqlUpdate('room', {visible => 0}, "member_user=".$this->{db}->getId($user));
 }
 
 sub insertIntoRoom {
