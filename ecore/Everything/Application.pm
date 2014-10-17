@@ -48,15 +48,6 @@ BEGIN {
 			"validate" => "set_only",
 		},
 
-		#TODO: Add test
-		"node_heaven_guest" => 
-		{
-			"on" => ["user"],
-			"description" => "This user can always visit node heaven, regardless of level",
-			"assignable" => ["admin"],
-			"validate" => "set_only",
-		},
-
 		"prevent_nuke" => 
 		{
 			"description" => "Prevent the node from being nuked, via the Nuke node key",
@@ -1511,6 +1502,7 @@ sub canSeeDraft
 	}
 
 	return 1 if $user->{node_id} == $draft->{author_user};
+        return 1 if $this->isAdmin($user) || $this->isEditor($user);
 
 	# we may not have a complete node. Get needed info
 	# jb notes: this is pretty unlikely, I think, but I'll leave it in
