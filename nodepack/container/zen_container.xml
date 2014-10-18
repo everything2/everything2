@@ -7,7 +7,7 @@
  # Mobile has a wrapper around everything, instead of using CSS media selectors. We can eventually reduce it to that, but for now:
  return qq|&lt;div id=&quot;mobilewrapper&quot;&gt;| if isMobile();
 %]
-[% ($APP-&gt;use_bootstrap)?(qq|&lt;div id=&quot;header&quot; class=&quot;navbar navbar-static-top&quot;&gt;|):(qq|&lt;div id='header'&gt;|); %]
+[% ($APP-&gt;use_bootstrap)?(qq|&lt;nav class=&quot;navbar navbar-default&quot;&gt;&lt;div class=&quot;container-fluid&quot;&gt;|):(qq|&lt;div id='header'&gt;|); %]
 [%
 my $epid = getNode('Epicenter','nodelet')-&gt;{node_id};
 if ($$VARS{settings_useEpicenterZen}){
@@ -26,7 +26,16 @@ return htmlcode('epicenterZen') if $$VARS{nodelets} &amp;&amp; $$VARS{nodelets} 
  }
 %]
 &lt;div id='e2logo'&gt;&lt;a href=&quot;/&quot;&gt;Everything&lt;span id=&quot;e2logo2&quot;&gt;2&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;
-&lt;/div&gt;&lt;!-- header --&gt;
+
+[%
+  if($APP-&gt;use_bootstrap)
+  {
+    return qq|&lt;/div&gt;&lt;/nav&gt;|;
+  }else{
+    return qq|&lt;/div&gt;|;
+  }
+%]
+&lt;!-- header --&gt;
 [{zenMobileTabs}]
 &lt;div id='wrapper'&gt;
 [{guestuserbanner}]
