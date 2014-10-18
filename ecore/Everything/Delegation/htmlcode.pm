@@ -4044,8 +4044,6 @@ sub episection_admins
   $str.=linkNodeTitle('nate\'s secret unborg doc|Unborg Yourself')."<br />\n" if $$VARS{borged};
   $str.=
     "\n\t\t\t<li>".linkNodeTitle('Edit These E2 Titles').'</li>'.
-    "\n\t\t\t<li>".linkNodeTitle('The Node Crypt').'</li>'.
-    "\n\t\t\t<li>".linkNodeTitle('Node Heaven Search').'</li>'.
     "\n\t\t\t<li>".linkNodeTitle('God Powers and How to Use Them|Admin HOWTO').'</li>';
 
   $str.="\n\t\t</ul>";
@@ -6829,7 +6827,6 @@ sub vitsection_maintenance
   $str.="<li>".linkNodeTitle('broken nodes|Broken Writeups')."</li>";
   $str.="<li>".linkNodeTitle('E2 Nuke Request|Writeup Deletion Request')."</li>";
   $str.="<li>".linkNodeTitle('Nodeshells Marked for Destruction|Nodeshell Deletion Request')."</li>";
-  $str.="<li>".linkNodeTitle('Node Heaven')."</li>" if $APP->isEditor($USER) or $APP->getLevel($USER)>=1;
   $str.="<li>".linkNodeTitle('E2 Bugs|Make a bug report')."</li>";
   $str.="<li>".linkNodeTitle('Suggestions for E2|Suggest a change to E2\'s code')."</li>";
   $str.="</ul>";
@@ -10877,15 +10874,12 @@ sub editor_homenode_tools
   my $isEditor = $APP->isEditor($USER);
   my $targetVars = getVars $NODE;
   my $iph = getNode('IP Hunter', 'restricted_superdoc');
-  my $nh = getNode('Node Heaven', 'superdoc');
   my $oracle = getNode('The Oracle', 'oppressor_superdoc');
   my $ipblacklist = getNode('IP Blacklist', 'restricted_superdoc');
 
   # not sports illustrated!
   my $SI = getNode("Suspension Info", "superdoc");
   my $str = linkNode($SI, "Suspensions", {"lookup_user" => $$NODE{node_id}});
-
-  $str.=linkNode($nh, ' - Node Heaven Search', {'heavenuser'=>$$NODE{title}}) if $isEditor;
 
   if($isRoot){
     my @addrs = split /\s*,\s*/, $$targetVars{ipaddy};
