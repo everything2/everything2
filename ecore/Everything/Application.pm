@@ -1502,7 +1502,6 @@ sub canSeeDraft
 	}
 
 	return 1 if $user->{node_id} == $draft->{author_user};
-        return 1 if $this->isAdmin($user) || $this->isEditor($user);
 
 	# we may not have a complete node. Get needed info
 	# jb notes: this is pretty unlikely, I think, but I'll leave it in
@@ -1515,6 +1514,9 @@ sub canSeeDraft
 
 	my $STATUS = $this->{db}->getNodeById($$draft{publication_status});
 	return 0 if !$STATUS || $$STATUS{type}{title} ne 'publication_status';
+
+        return 1 if ($STATUS->{title} eq "nuked" or $STATUS->{title} eq "removed") && ($this->isAdmin($user) || $this->isEditor($user));
+
 
 	my $isEditor = $this->isEditor($user);
 
