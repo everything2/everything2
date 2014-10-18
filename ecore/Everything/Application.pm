@@ -2385,4 +2385,9 @@ sub adjustExp {
 	$this->{db}->updateNode($user, -1);
 	1;
 }
+
+sub use_bootstrap {
+  my ($this) = @_;
+  return $Everything::HTML::VARS->{use_bootstrap};
+}
 1;

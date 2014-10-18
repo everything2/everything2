@@ -187,12 +187,6 @@ sub admin_searchform
 			<span class='var_label'>nodetype:</span> <span class='var_value'>".linkNode($$NODE{type})."</span>
 			<span class='var_label'>Server:</span> <span class='var_value'>$servername</span>";
 
-  $str .= "\n\t\t\t<p>".htmlcode('nodeHeavenStr',$$NODE{node_id})."</p>";
-
-  if($$USER{node_id}==9740) { #N-Wing
-    $str .= join("<br>",`uptime`).'<br>';
-  };
-
   $str .= "\n\t\t\t".$query->start_form("POST",$query->script_name);
 
   $str .= "\n\t\t\t\t".'<label for ="node">Name:</label> ' . "\n\t\t\t\t".
@@ -4043,6 +4037,7 @@ sub episection_admins
   my $str = "\n\t\t<ul>";
   $str.=linkNodeTitle('nate\'s secret unborg doc|Unborg Yourself')."<br />\n" if $$VARS{borged};
   $str.=
+    "\n\t\t\t<li>".linkNodeTitle('The Node Crypt').'</li>'.
     "\n\t\t\t<li>".linkNodeTitle('Edit These E2 Titles').'</li>'.
     "\n\t\t\t<li>".linkNodeTitle('God Powers and How to Use Them|Admin HOWTO').'</li>';
 
@@ -4467,33 +4462,6 @@ sub guestuserbanner
 
   return "<div id=\"guestuserbanner\" style=\"$style\"><strong>Welcome!</strong><br /><em>Everything2</em> is a community of readers and writers who write about pretty much anything and share their feedback with others. It's a great place to get help with your writing or just lose yourself in nearly a half-million pieces from over a decade in existence. People come here to contribute and read fiction, nonfiction, poetry, reviews, or their thoughts on the day. If you'd like to give feedback, offer a correction, or contribute your own work, <a href=\"/node/superdoc/Sign+up\">sign up</a>!$nodeshell</div>";
 
-}
-
-# This is going away when Node Heaven is going away en masse
-#
-sub nodeHeavenStr
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($e2node) = @_;
-
-  return '' unless isGod($USER);
-  return '' unless $$NODE{type_nodetype} eq 116;
-
-  return '';
-
-  my $title = getNodeById($e2node)->{title};
-  my $N = $DB->sqlSelect('count(*)', 'heaven', "type_nodetype=117 and title LIKE ".$DB->{dbh}->quote($title." (%"));
-
-  $N ||= 'no';
-
-  return "This node has ".linkNode(getNode('Node Heaven Title Search','restricted_superdoc'),$N, {heaventitle => $$NODE{title}})." writeup".( $N != 1 ? "s" : "")." in Node Heaven.";
 }
 
 # Also going into a template
@@ -5659,10 +5627,14 @@ sub zensearchform
     -method => "GET"
     , -action => $query->script_name
     , -id => 'search_form'
+    , -role => "form"
+    , class => "form-inline"
     ).
+    qq|<div class="form-inline"><div class="form-group">|.
     $query->textfield(-name => 'node',
       value => $default,
       force => 1,
+      -class => 'form-control', 
       -id => 'node_search',
       -size => 28,
       -maxlength => 230);
@@ -5672,7 +5644,7 @@ sub zensearchform
   $lnid ||= getId($NODE);
 
   $str.='<input type="hidden" name="lastnode_id" value="'.$lnid.'">';
-  $str.='<input type="submit" name="searchy" value="search" id="search_submit" title="Search within Everything2">';
+  $str.='<input type="submit" name="searchy" value="search" id="search_submit" title="Search within Everything2" class="btn btn-default">';
 
   $str.=qq'\n<span title="Include near matches in the search results">'.$query->checkbox(
     -id => "near_match",
@@ -5692,7 +5664,7 @@ sub zensearchform
     -label => 'Ignore Exact',
   ) . "</span>";
 
-  return $str . "\n</form>";
+  return $str . "\n</div></div></form>";
 }
 
 sub ednsection_cgiparam
@@ -14958,81 +14930,6 @@ sub unpublishwriteup
   }
 
   return 1;
-}
-
-sub angelToDraft
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $tomb = shift;
-  my $angel_id = $$tomb{node_id};
-
-  return "Duplicate node id $angel_id: ".linkNode($angel_id) if getNodeById($angel_id);
-
-  my $VAR1 = {}; # defuse recursive node Dumper snafu (refers to $VAR1 in dump)
-  my $data = eval("my $$tomb{data}");
-  return "Couldn't decode data for angel id $angel_id:".
-    htmlcode('widget', "<pre>$$tomb{data}</pre>", 'div', 'show data', {
-      showwidget => "data$angel_id"
-      , node => getNode('Rebirthing room', 'superdocnolinks')
-      , angel_id => $angel_id})unless $data;
-
-  return "Ignored: no text" if $$data{doctext} eq '' and $query -> param('noBlank');
-
-  $tomb->{title} =~ s/ \(\w+\)$//;
-  $data->{type_nodetype} = getId(getType('draft'));
-  $data->{publication_status} = getId(getNode('nuked', 'publication_status'));
-
-  my $rep = $tomb->{reputation};
-
-  if($data ->{totalvotes})
-  {
-    # was this ever used?
-    $rep .= '('.($data->{totalvotes} + $tomb->{reputation})/2;
-    $rep .= '/'.($data->{totalvotes} - $tomb->{reputation})/2;
-    $rep .= ')';
-  }
-
-  $data->{reputation}=0;
-  $data->{totalvotes}=0;
-
-  foreach my $table ('node', 'document', 'draft')
-  {
-    my @fields = $DB->getFieldsHash($table);
-    my $insertref = {};
-    foreach (@fields)
-    {
-      my $field = $$_{Field};
-      $insertref->{$field} = $$data{$field} || $$tomb{$field} || '';
-    }
-
-    # primary key may not be in the data if new tables added since nuke:
-    $$insertref{"${table}_id"} = $angel_id;
-    $DB->sqlInsert($table, $insertref);
-  }
-
-  my $N = getNodeById($angel_id);
-  updateNode($N, -1); # avoid duplicate names
-
-  if ($N && $$N{doctext} eq $$data{doctext})
-  {
-    $DB->sqlDelete('heaven', "node_id=$angel_id") unless $APP->inDevEnvironment();
-
-    my $killa = undef; $killa = getNodeById($$tomb{killa_user}) unless $$tomb{killa_user} == -1;
-    $killa = ref $killa ? "[$$killa{title}\[user]]" : 'unknown editor';
-    htmlcode('addNodenote', $N, "Restored from Node Heaven.<br>Originally posted $$tomb{createtime};
-      nuked by $killa at rep $rep");
-
-    return $N;
-  }
-
-  return "Reincarnation of angel id $angel_id failed!"; 
 }
 
 sub ajax_publishhere
