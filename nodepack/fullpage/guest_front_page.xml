@@ -36,7 +36,7 @@ if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
 
 &lt;body class=&quot;fullpage&quot; id=&quot;guestfrontpage&quot;&gt;
     &lt;div id=&quot;header&quot;&gt;
-           &lt;h1 id=&quot;e2logo&quot;&gt;&lt;a href=&quot;/title/About+Everything2&quot;&gt;Everything&lt;span id=&quot;e2logo2&quot;&gt;2&lt;/span&gt;&lt;/a&gt;&lt;/h1&gt;
+           &lt;div id=&quot;e2logo&quot;&gt;&lt;a href=&quot;/title/About+Everything2&quot;&gt;Everything&lt;span id=&quot;e2logo2&quot;&gt;2&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;
 [%           return parseLinks(&quot;&lt;h2 id='tagline'&gt;[Everything2 Help|Read with us. Write for us.]&lt;/h2&gt;&quot;); %]
     &lt;/div&gt;
 &lt;div id='wrapper'&gt;

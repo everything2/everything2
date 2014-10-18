@@ -106,10 +106,11 @@ $(function(){
 		checks.attr('disabled', setDisable);
 	};
 
-	$('#search_form').append(
+	$('#searchbtngroup').append(
 		'&lt;span&gt;&lt;label title=&quot;Search for text within writeups&quot;&gt;'+
 		'&lt;input name=&quot;full_text&quot; value=&quot;1&quot; id=&quot;full_text&quot; type=&quot;checkbox&quot;&gt;Full Text&lt;/label&gt;&lt;/span&gt;'
-	).bind('submit', function(){
+	);
+        $('#search_form').bind('submit', function(){
 		if ( ! $('#full_text:checked').length ) return;
 		disableOtherChecks(true);
 		$('#search_form')
@@ -1514,7 +1515,7 @@ if(! e2.noquickvote)
   }).defer); // defer for IE 
 }
 // End contents of Everything2 AJAX</doctext>
-  <contentversion>123</contentversion>
+  <contentversion>126</contentversion>
   <s3bucket></s3bucket>
   <node_id>1874924</node_id>
   <title>default javascript</title>

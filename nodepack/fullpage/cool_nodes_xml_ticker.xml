@@ -1,6 +1,7 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sat Oct 18 04:20:10 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sat Oct 18 05:10:10 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;shaogo&quot; node_id=&quot;2115593&quot; parent_e2node=&quot;2116051&quot; author_user=&quot;drownzsurf&quot;&gt;Jean Stapleton&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;2115915&quot; parent_e2node=&quot;2115810&quot; author_user=&quot;jaybonci&quot;&gt;root log: October 2014&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Bitriot&quot; node_id=&quot;787282&quot; parent_e2node=&quot;787280&quot; author_user=&quot;humbabba&quot;&gt;She dumped me when she found out I'd been faking my Scottish accent&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;1128849&quot; parent_e2node=&quot;121048&quot; author_user=&quot;Habakkuk&quot;&gt;Aquaman&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;466852&quot; parent_e2node=&quot;466844&quot; author_user=&quot;/dev/joe&quot;&gt;foupe&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;decoy hunches&quot; node_id=&quot;1005193&quot; parent_e2node=&quot;1005188&quot; author_user=&quot;enkidu&quot;&gt;Drink from the cup as if it's already broken&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;decoy hunches&quot; node_id=&quot;2112856&quot; parent_e2node=&quot;179650&quot; author_user=&quot;go ahead I'll listen&quot;&gt;Acrostic&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;etouffee&quot; node_id=&quot;2098680&quot; parent_e2node=&quot;2023638&quot; author_user=&quot;Zephronias&quot;&gt;Sandra will do as Sandra always does, that is, whatever she wants&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>
