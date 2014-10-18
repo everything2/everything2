@@ -4553,14 +4553,17 @@ sub static_javascript
   my $min = undef; $min = '.min' unless $APP->inDevEnvironment();
   my $libraries = qq'<script src="http://code.jquery.com/jquery-1.11.1$min.js" type="text/javascript"></script>';
 
+  if($APP->use_bootstrap)
+  {
+    $libraries .= qq|<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>|;
+  }
+
   # mark as guest but only in non-canonical domain so testing and caching both work
   my $js_decisions = htmlcode('javascript_decider');
 
   unless ($APP->isGuest($USER)){
       $libraries .= '<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js" type="text/javascript"></script>';
   }
-
-  #$libraries .= '<script src="'.htmlcode("linkjavascript",getNode("jquery bbq","jscript")).'" type="text/javascript"></script>';
 
   return qq|
     <script type='text/javascript' name='nodeinfojson' id='nodeinfojson'>
