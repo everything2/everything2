@@ -5649,6 +5649,8 @@ sub zensearchform
   $str.='<input type="hidden" name="lastnode_id" value="'.$lnid.'">';
   $str.='<input type="submit" name="searchy" value="search" id="search_submit" title="Search within Everything2" class="btn btn-default">';
 
+
+  $str.=qq|<span id="searchbtngroup">|;
   $str.=qq'\n<span title="Include near matches in the search results">'.$query->checkbox(
     -id => "near_match",
     -name => 'soundex',
@@ -5666,6 +5668,8 @@ sub zensearchform
     force => 1,
     -label => 'Ignore Exact',
   ) . "</span>";
+
+  $str.=qq|</span>|; #searchbtngroup
 
   return $str . "\n</div></div></form>";
 }
