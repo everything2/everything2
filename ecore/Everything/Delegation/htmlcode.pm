@@ -5639,6 +5639,7 @@ sub zensearchform
       force => 1,
       -class => 'form-control', 
       -id => 'node_search',
+      -placeholder => 'Search',
       -size => 28,
       -maxlength => 230);
 
