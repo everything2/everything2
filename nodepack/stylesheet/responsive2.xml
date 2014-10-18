@@ -60,18 +60,19 @@ tr:nth-child(2n) {
 }
 img.oddrow { background-color: #000; }
 
-th, td
+th, td, .content table th, .content table td
 {
 border-bottom: 1px solid #ccc;
 border-right: 1px solid #ccc;
 }
+table[border=&quot;0&quot;] th,
+table[border=&quot;0&quot;] td,
 .content table[border=&quot;0&quot;] th,
-.content table[border=&quot;0&quot;] td {
-        border: 0;
-}
-.contentinfo th, .contentinfo td
+.content table[border=&quot;0&quot;] td,
+.contentinfo table[border=&quot;0&quot;] th,
+.contentinfo table[border=&quot;0&quot;] td
 {
-border: 0;
+        border: 0;
 }
 
 #header
@@ -453,7 +454,7 @@ display: none;
    width: 99%;
    }
 }</doctext>
-  <contentversion>106</contentversion>
+  <contentversion>110</contentversion>
   <s3bucket></s3bucket>
   <node_id>2047530</node_id>
   <title>Responsive2</title>

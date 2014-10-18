@@ -3,7 +3,7 @@
   <node_id>160</node_id>
   <_create_table_statement>CREATE TABLE `document` (
   `document_id` int(11) NOT NULL AUTO_INCREMENT,
-  `doctext` text COLLATE utf8_unicode_ci,
+  `doctext` mediumtext COLLATE utf8_unicode_ci,
   `edittime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`document_id`),
   KEY `edittime` (`edittime`),

@@ -5,7 +5,11 @@
 my $user = $query -&gt; param('other_user');
 my $username;
 
+my $showhidenukedlink = undef;
+my $shownukedlinkparams = {};
+
 if ($user){
+         $shownukedlinkparams-&gt;{other_user} = $user;
 	 my $u = getNode($user, 'user');
 	 return '&lt;p&gt;No user named &quot;'
 	 	.$query -&gt; escapeHTML($user)
@@ -15,12 +19,33 @@ if ($user){
 	 $username = $$u{title} unless $user == $$USER{node_id};
 }
 
+if($query-&gt;param(&quot;shownuked&quot;))
+{
+  $showhidenukedlink = linkNode($NODE, &quot;Hide nuked&quot;);
+}else{
+  $shownukedlinkparams-&gt;{shownuked} = 1;
+  $showhidenukedlink = linkNode($NODE, &quot;Show nuked&quot;, $shownukedlinkparams);
+}
+
+$showhidenukedlink = &quot;&lt;strong&gt;($showhidenukedlink)&lt;/strong&gt;&quot;;
+
+
+
 $user ||= $$USER{node_id};
 $query -&gt; delete('other_user') unless $username;
 
 my $status = {}; # plural of Latin 'status' is 'status'
 my ($ps, $cansee, $collaborators, $nukeeslast, $title, $showhide, $cs, $nukees);
 my $draftType = getType('draft');
+
+my $nukedStatus = getNode(&quot;nuked&quot;, &quot;publication_status&quot;);
+
+my $draftStatus = &quot;publication_status != $$nukedStatus{node_id}&quot;;
+
+if($query-&gt;param(&quot;shownuked&quot;))
+{
+  $draftStatus = &quot;publication_status = $$nukedStatus{node_id}&quot;;
+}
 
 my $statu = sub{
 	$_[0]-&gt;{type} = $draftType;
@@ -37,7 +62,7 @@ my $statu = sub{
 my @showit = (
 	'title, author_user, publication_status, collaborators'
 	, 'node JOIN draft ON node_id = draft_id'
-	, &quot;author_user = $user AND type_nodetype = $$draftType{node_id}&quot;
+	, &quot;author_user = $user AND type_nodetype = $$draftType{node_id} AND $draftStatus&quot;
 	, 'ORDER BY title'
 );
 
@@ -48,20 +73,6 @@ unless ($username){
 	$collaborators = sub{
 		qq'&lt;td class=&quot;collaborators&quot;&gt;$_[0]-&gt;{collaborators}&lt;/td&gt;';
 	};
-
-	if ($query -&gt; param('sexisgood') =~ /Sort nuked drafts (last)?/){
-		$nukeeslast = $1;
-		$DB -&gt; sqlDelete('uservars',
-			&quot;user_id=$$USER{node_id} AND setting_name = 'listnukeeslast'&quot;);
-		$DB -&gt; sqlInsert('uservars', {
-			user_id =&gt; $$USER{node_id}
-			, setting_name =&gt; 'listnukeeslast'
-			, setting_value =&gt; 1
-		}) if $nukeeslast;
-	}else{
-		$nukeeslast = $DB -&gt; sqlSelect('setting_value', 'uservars',
-			&quot;user_id=$$USER{node_id} AND setting_name='listnukeeslast'&quot;);
-	}
 
 	$showit[-1] = 'ORDER BY publication_status='
 		.getId(getNode('nuked', 'publication_status'))
@@ -97,29 +108,22 @@ my ($drafts, $navigation, $count) = htmlcode(
 
 if ($drafts eq '') {
 	if (!$username) {
-		return '&lt;p&gt;You have no drafts.&lt;/p&gt;';
+		return '&lt;p&gt;You have no drafts.&lt;/p&gt;$showhidenukedlink';
 	} else {
-		return &quot;&lt;p&gt;[${username}[user]] has no drafts visible to you.&lt;/p&gt;&quot;;
+		return &quot;&lt;p&gt;[${username}[user]] has no drafts visible to you.&lt;/p&gt;$showhidenukedlink&quot;;
 	}
 }
 
 my $showcount = &quot;&lt;p&gt;You have $count drafts.&lt;/p&gt;&quot; if $navigation;
 
-if ($$status{nuked} # user has at least one 'nuked' draft shown on this page
-		|| $nukeeslast){
-	$nukees = htmlcode('openform')
-		.htmlcode('closeform', $nukeeslast ? 'Sort nuked drafts with others'
-			: 'Sort nuked drafts last');
-}
-
 my $str =
-	&quot;&lt;h2&gt;$title&lt;/h2&gt;
+	&quot;&lt;h2&gt;$title&lt;/h2&gt;$showhidenukedlink&lt;br /&gt;
 	$showcount
 	&lt;table&gt;&lt;tr&gt;&lt;th&gt;status&lt;/th&gt;&lt;th&gt;title&lt;/th&gt;$cs&lt;/th&gt;&lt;/tr&gt;
 	$drafts
 	&lt;/table&gt;
 	$nukees
-	$navigation&quot;
+	$navigation&lt;br /&gt;&quot;
    if $drafts ne '';
 
 return $str;

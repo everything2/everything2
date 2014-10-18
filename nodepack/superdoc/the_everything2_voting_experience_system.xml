@@ -141,7 +141,7 @@ $str.=&quot;&lt;tr &quot;.($i == $userLevel ? &quot;style='font-weight:bold'&quo
 $exp = $i*2500-14000;
 $wrp = $i*10;
 
-$str.=&quot;&lt;tr &quot;.($i == $userLevel ? &quot;style='font-weight:bold'&quot; :&quot;&quot;).&quot;&gt;&lt;TD&gt;$i&lt;/TD&gt;&lt;TD&gt;Transcendant&lt;/TD&gt;&lt;TD&gt;$exp&lt;/TD&gt;&lt;TD&gt;$wrp&lt;/TD&gt;&lt;TD&gt;50&lt;/TD&gt;&lt;TD&gt;$$C{100}&lt;/TD&gt;&lt;/tr&gt;&quot;;
+$str.=&quot;&lt;tr &quot;.($i == $userLevel ? &quot;style='font-weight:bold'&quot; :&quot;&quot;).&quot;&gt;&lt;TD&gt;$i&lt;/TD&gt;&lt;TD&gt;Transcendent&lt;/TD&gt;&lt;TD&gt;$exp&lt;/TD&gt;&lt;TD&gt;$wrp&lt;/TD&gt;&lt;TD&gt;50&lt;/TD&gt;&lt;TD&gt;$$C{100}&lt;/TD&gt;&lt;/tr&gt;&quot;;
 }
 
 }

@@ -74,6 +74,7 @@ else {
   return qq|&lt;meta content=&quot;width=device-width; initial-scale=1.0; user-scalable=1;&quot;
       name=&quot;viewport&quot;&gt;| if isMobile();
 %]
+&lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=Edge&quot;&gt;
 &lt;/head&gt;
 
 &lt;body class=&quot;[%

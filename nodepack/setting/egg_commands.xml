@@ -13,6 +13,10 @@
     <key>special</key>
   </vars>
   <vars>
+    <value>hoses down</value>
+    <key>hose</key>
+  </vars>
+  <vars>
     <value>pours ~ a triple espresso shot. </value>
     <key>coffee</key>
   </vars>
@@ -21,12 +25,12 @@
     <key>nudge</key>
   </vars>
   <vars>
-    <value>fixes things for</value>
-    <key>helps</key>
-  </vars>
-  <vars>
     <value>eggs</value>
     <key>egg</key>
+  </vars>
+  <vars>
+    <value>fixes things for</value>
+    <key>helps</key>
   </vars>
   <vars>
     <value>turns ~ into a stuttering green imp</value>
@@ -147,6 +151,10 @@
   <vars>
     <value>lights a candle for</value>
     <key>candle</key>
+  </vars>
+  <vars>
+    <value>flings poop at</value>
+    <key>poo</key>
   </vars>
   <vars>
     <value>hugs</value>
