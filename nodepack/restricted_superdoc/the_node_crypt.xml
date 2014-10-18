@@ -1,17 +1,14 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <type_nodetype>13</type_nodetype>
   <doctext>Here is where the nodes come to rest, after being
 skillfully slain by an editor or god.  
 /Tell them, if you believe this
 action was unjust...  for nodes may live again.&lt;p&gt;
-Or...perhaps you should check [node heaven]!
 
 
 &lt;p&gt;
 
 [%
-return '&lt;p&gt;&lt;strong&gt;&lt;em&gt;I am very sorry, young one -- but you may not enter the Crypt&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;' unless isGod($USER);
-
 my $str;
 
 if(defined $query-&gt;param('opencoffin')) {
