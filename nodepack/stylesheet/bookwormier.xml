@@ -286,7 +286,7 @@ input#full_text {
 	padding: 0px;
 }
 
-h1#e2logo {
+div#e2logo {
 	background-image: url(http://clem-ec2-us.s3.amazonaws.com/e2/e2logo.gif);
 	background-repeat: no-repeat;
 	width: 250px;
@@ -295,10 +295,10 @@ h1#e2logo {
 	margin: 5px 20px;
 }
 
-h1#e2logo a,
-h1#e2logo a:link,
-h1#e2logo a:visited,
-h1#e2logo a:active {
+div#e2logo a,
+div#e2logo a:link,
+div#e2logo a:visited,
+div#e2logo a:active {
 	display: block;
 	font-size: 130%;
 	font-style: italic;
@@ -906,7 +906,7 @@ input#message {
 	font-size: 90%;
 }
 
-#mobilewrapper h1#e2logo {
+#mobilewrapper div#e2logo {
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#5F5F5F), to(black));
 	background-repeat: no-repeat;
 	width: auto;
@@ -1058,7 +1058,7 @@ input#message {
 	display: none;
 }
 </doctext>
-  <contentversion>105</contentversion>
+  <contentversion>106</contentversion>
   <s3bucket></s3bucket>
   <node_id>2000528</node_id>
   <title>Bookwormier</title>

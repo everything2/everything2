@@ -25,12 +25,12 @@ h1.nodetitle {
 	border-bottom:  #CCCCCC solid 1px;
 }
 
-h1#e2logo {
+div#e2logo {
 	margin: 0px;
 	padding: 0px;
 }
 
-h1#e2logo a {
+div#e2logo a {
 	background-color: #FFFFFF;
 	background-image: url(http://www.eirscape.com/clients/everything2/header_link.gif);
 	background-repeat: no-repeat;	
@@ -410,7 +410,7 @@ div.thinoutline {
 	margin: 0px;
 	padding: 0px;
 }</doctext>
-  <contentversion>104</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1903029</node_id>
   <title>ReiToei_pwnzj00</title>

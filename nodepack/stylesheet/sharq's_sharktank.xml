@@ -17,7 +17,7 @@
 	clear: both;
 }
 
-h1#e2logo {
+div#e2logo {
 	background-image: none;
 }
 
@@ -154,7 +154,7 @@ h1 {
 	font-weight: bold;
 }
 
-h1#e2logo {
+div#e2logo {
 	padding: 0px;
 	margin: 0px;
 }
@@ -277,10 +277,10 @@ input#search_submit {
 	padding: 0px;
 }
 
-h1#e2logo a,
-			h1#e2logo a:link,
-			h1#e2logo a:visited,
-			h1#e2logo a:active {
+div#e2logo a,
+			div#e2logo a:link,
+			div#e2logo a:visited,
+			div#e2logo a:active {
 	display: block;
 	padding: 15px 0 15px 20px;
 	font-size: 1.5em;
@@ -1027,7 +1027,7 @@ p#servertime {
   color: #ddF;
 }
 </doctext>
-  <contentversion>104</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1963336</node_id>
   <title>SharQ's Sharktank</title>

@@ -197,7 +197,7 @@ float: right;
 width: 25%;
 }
 
-#e2logo, h1#e2logo
+#e2logo, div#e2logo
 {
 float: left;
 width: 65%;
@@ -357,7 +357,7 @@ font-size: 85%;
 {
 display: none;
 }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>2047469</node_id>
   <title>ResponsiveBase</title>

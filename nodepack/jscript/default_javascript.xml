@@ -121,6 +121,11 @@ $(function(){
 		);
 		$('#node_search').attr('name', 'q');
 	});
+
+        $('#testdrive').bind('focus click', function(){
+	this.href = this.href.replace('&amp;noscript=1' , '');
+        });
+
 	$('#full_text')
 	.bind('change', function(){
 		if ($(this).is(':checked')) {
@@ -1509,7 +1514,7 @@ if(! e2.noquickvote)
   }).defer); // defer for IE 
 }
 // End contents of Everything2 AJAX</doctext>
-  <contentversion>120</contentversion>
+  <contentversion>123</contentversion>
   <s3bucket></s3bucket>
   <node_id>1874924</node_id>
   <title>default javascript</title>

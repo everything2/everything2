@@ -161,6 +161,10 @@
     <key>hug</key>
   </vars>
   <vars>
+    <value>cuts ~ free from the net</value>
+    <key>unnet</key>
+  </vars>
+  <vars>
     <value>omelets</value>
     <key>omelet</key>
   </vars>

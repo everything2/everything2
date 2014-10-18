@@ -782,10 +782,10 @@ td {
 						padding: 0px;
 					}
 
-		h1#e2logo a,
-		h1#e2logo a:link,
-		h1#e2logo a:visited,
-		h1#e2logo a:active {
+		div#e2logo a,
+		div#e2logo a:link,
+		div#e2logo a:visited,
+		div#e2logo a:active {
 			font-size: 0px;
 			color: transparent;
 			/* color: #38495e; */
@@ -843,7 +843,7 @@ td {
 			width: auto;
 			padding: 0;
 		}</doctext>
-  <contentversion>104</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1947527</node_id>
   <title>New Default Stylesheet</title>

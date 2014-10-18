@@ -259,7 +259,7 @@ td {
 						padding: 0px;
 					}
 
-		h1#e2logo {
+		div#e2logo {
 			margin: 5px 2px 5px 20px;
 			width: 300px; height: 50px; /* these are the exact dimensions of the background image */
 			overflow: hidden; /* sets a window big enough to show the background image and nothing else */
@@ -268,10 +268,10 @@ td {
 			background-image: url(http://everything2.com/img/e2_tight.gif);
 		}
 
-			h1#e2logo a,
-			h1#e2logo a:link,
-			h1#e2logo a:visited,
-			h1#e2logo a:active {
+			div#e2logo a,
+			div#e2logo a:link,
+			div#e2logo a:visited,
+			div#e2logo a:active {
 				display: block;
 				padding: 50px 0 0 300px; /* means the text doesn't show in the 300x50 window */
 			}
@@ -891,7 +891,7 @@ td {
 			width: auto;
 			padding: 0;
 		}</doctext>
-  <contentversion>104</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1901780</node_id>
   <title>XWiz's Zen Stylesheet Of Unparalleled Beauty</title>

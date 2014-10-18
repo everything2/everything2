@@ -279,7 +279,7 @@ body {
 				display: none;
 			}
 
-		h1#e2logo {
+		div#e2logo {
 			display: none;
 		}
 
@@ -287,7 +287,7 @@ body {
 		display: none;
 	}
 </doctext>
-  <contentversion>104</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1904870</node_id>
   <title>The Pretentious Theme</title>

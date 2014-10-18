@@ -21,7 +21,7 @@ a:hover { color: #93d986; }
   height: 54px;
 }
 
-h1#e2logo {
+div#e2logo {
   font-size: 0em;
   margin: 0px;
   padding: 0px;
@@ -31,7 +31,7 @@ h1#e2logo {
   width: 200px;
   height: 54px;
 }
-h1#e2logo a {
+div#e2logo a {
   color: #ffffff;
 }
 
@@ -107,7 +107,7 @@ div#softlinks {
   padding: 0px;
   width: 97%;
 }</doctext>
-  <contentversion>104</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1883058</node_id>
   <title>test_ReiToei</title>

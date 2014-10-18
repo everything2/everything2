@@ -117,12 +117,12 @@ h1 {
 	margin: 1.49em 0
 }
 
-h1#e2logo {
+div#e2logo {
 	font-size: 30px;
 	margin: 30px 0;
 }
 
-h1#e2logo a:link, h1#e2logo a:visited {
+div#e2logo a:link, h1#e2logo a:visited {
 	border: none;
 }
 
@@ -280,7 +280,7 @@ i {
 	font-style: oblique
 }
 </doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>2029380</node_id>
   <title>Pamphleteer</title>
