@@ -5629,50 +5629,54 @@ sub zensearchform
   my $str = $query->start_form(
     -method => "GET"
     , -action => $query->script_name
-    , -id => 'search_form'
+    , -id => ($APP->use_bootstrap)?(''):('search_form')
     , -role => "form"
-    , class => "form-inline"
+    , class => "navbar-form navbar-right"
     ).
-    qq|<div class="form-inline"><div class="form-group">|.
+    qq|<div class="form-group"><div class="has-feedback has-feedback-left">|.
     $query->textfield(-name => 'node',
       value => $default,
       force => 1,
       -class => 'form-control', 
-      -id => 'node_search',
+      -id => ($APP->use_bootstrap)?(''):('node_search'),
       -placeholder => 'Search',
       -size => 28,
-      -maxlength => 230);
-
+      -maxlength => 230).qq|<i class="glyphicon glyphicon-search form-control-feedback"></i></div>|;
+  
   my $lnid = undef;
   $lnid = $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup' and $$NODE{parent_e2node} and getNodeById($$NODE{parent_e2node});
   $lnid ||= getId($NODE);
 
   $str.='<input type="hidden" name="lastnode_id" value="'.$lnid.'">';
-  $str.='<input type="submit" name="searchy" value="search" id="search_submit" title="Search within Everything2" class="btn btn-default">';
+ 
+  if(!$APP->use_bootstrap)
+  {
+    $str.='<input type="submit" name="searchy" value="search" id="search_submit" title="Search within Everything2" class="btn btn-default">';
 
 
-  $str.=qq|<span id="searchbtngroup">|;
-  $str.=qq'\n<span title="Include near matches in the search results">'.$query->checkbox(
-    -id => "near_match",
-    -name => 'soundex',
-    -value => '1',
-    checked => 0,
-    force => 1,
-    -label => 'Near Matches'
-  ) . "</span>";
+    $str.=qq|<span id="searchbtngroup">|;
+    $str.=qq'\n<span title="Include near matches in the search results">'.$query->checkbox(
+      -id => "near_match",
+      -name => 'soundex',
+      -value => '1',
+      checked => 0,
+      force => 1,
+      -label => 'Near Matches'
+    ) . "</span>";
 
-  $str.=qq'\n<span title="Show all results, even when there is a page matching the search exactly">'.$query->checkbox(
-    -id => "match_all",
-    -name => 'match_all',
-    -value => '1',
-    checked => 0,
-    force => 1,
-    -label => 'Ignore Exact',
-  ) . "</span>";
+    $str.=qq'\n<span title="Show all results, even when there is a page matching the search exactly">'.$query->checkbox(
+      -id => "match_all",
+      -name => 'match_all',
+      -value => '1',
+      checked => 0,
+      force => 1,
+      -label => 'Ignore Exact',
+    ) . "</span>";
 
-  $str.=qq|</span>|; #searchbtngroup
+    $str.=qq|</span>|; #searchbtngroup
+  }
 
-  return $str . "\n</div></div></form>";
+  return $str . "\n</div></form>";
 }
 
 sub ednsection_cgiparam
