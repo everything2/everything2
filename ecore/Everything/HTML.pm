@@ -56,7 +56,6 @@ sub BEGIN {
               urlDecode
               encodeHTML
               decodeHTML
-              escapeAngleBrackets
               rewriteCleanEscape
               processVarsSet
               showPartialDiff
@@ -2743,11 +2742,6 @@ sub uncloak {
 sub logUserIp
 {
   return $APP->logUserIp(@_);
-}
-
-sub escapeAngleBrackets
-{
-  return $APP->escapeAngleBrackets(@_);
 }
 
 sub isMobile

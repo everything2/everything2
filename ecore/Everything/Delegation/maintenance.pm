@@ -43,7 +43,6 @@ BEGIN {
   *uncloak = *Everything::HTML::uncloak;
   *isMobile = *Everything::HTML::isMobile;
   *isSuspended = *Everything::HTML::isSuspended;
-  *escapeAngleBrackets = *Everything::HTML::escapeAngleBrackets;
   *canReadNode = *Everything::HTML::canReadNode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *hasVoted = *Everything::HTML::hasVoted;

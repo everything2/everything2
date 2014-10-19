@@ -46,7 +46,6 @@ BEGIN {
   *uncloak = *Everything::HTML::uncloak;
   *isMobile = *Everything::HTML::isMobile;
   *isSuspended = *Everything::HTML::isSuspended;
-  *escapeAngleBrackets = *Everything::HTML::escapeAngleBrackets;
   *canReadNode = *Everything::HTML::canReadNode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *hasVoted = *Everything::HTML::hasVoted;
@@ -6125,7 +6124,7 @@ sub showchatter
     $text = $$MSG{msgtext};
     utf8::decode($text);
 
-    $text = escapeAngleBrackets($text);
+    $text = $APP->escapeAngleBrackets($text);
 
     #Close dangling square brackets
     my $numopenbrackets = ($text =~ tr:\[::);
@@ -6353,7 +6352,7 @@ sub showmessages
     #Bots, don't escape HTML for them.
     unless( exists $bots{$$MSG{author_user}} )
     {
-      $text = escapeAngleBrackets($text);
+      $text = $APP->escapeAngleBrackets($text);
     }
 
     $text =~ s/\[([^\]]*?)$/&#91;$1/; #unclosed [ fixer
@@ -9036,7 +9035,7 @@ sub sendPrivateMessage
   # Bots, don't escape HTML for them.
   unless( exists $bots{$aid} )
   {
-    $msg = escapeAngleBrackets($msg);
+    $msg = $APP->escapeAngleBrackets($msg);
     $msg = parseLinks($msg,0,1);
   }
 
@@ -11851,7 +11850,7 @@ sub messageBox
     } else {
       $query->param($qp,'');  #clear text field
       $str = $msg;
-      $str = escapeAngleBrackets($str);
+      $str = $APP->escapeAngleBrackets($str);
       $str = parseLinks($str,0,1) unless $$VARS{showRawPrivateMsg};
       $str = '<small>You said "</small>'.$str.'<small>" to '.linkNode($recipient).'.</small>';
     }
@@ -12941,7 +12940,7 @@ sub testshowmessages
     # Bots, don't escape HTML for them.
     unless( exists $bots{$$MSG{author_user}} )
     {
-      $text = escapeAngleBrackets($text);
+      $text = $APP->escapeAngleBrackets($text);
     }
 
     $text =~ s/\[([^\]]*?)$/&#91;$1/; #unclosed [ fixer
