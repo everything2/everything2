@@ -69,7 +69,6 @@ sub BEGIN {
               allocateVotes
               hasVoted
               getVotes
-              getHRLF
 
               changeRoom
               insertIntoRoom
@@ -2749,11 +2748,6 @@ sub logUserIp
 sub escapeAngleBrackets
 {
   return $APP->escapeAngleBrackets(@_);
-}
-
-sub getHRLF
-{
-  return $APP->getHRLF(@_);
 }
 
 sub isMobile

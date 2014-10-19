@@ -50,7 +50,6 @@ BEGIN {
   *canReadNode = *Everything::HTML::canReadNode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *hasVoted = *Everything::HTML::hasVoted;
-  *getHRLF = *Everything::HTML::getHRLF;
   *evalCode = *Everything::HTML::evalCode;
   *getPageForType = *Everything::HTML::getPageForType;
   *castVote = *Everything::HTML::castVote;
@@ -10145,7 +10144,7 @@ sub statsection_advancement
   my $IQM = (($$USER{merit})?($$USER{merit}):(0));
 
   $str .= genRow('Merit', sprintf('%.2f', $IQM || 0));
-  $str .= genRow('LF', sprintf('%.4f', getHRLF($USER) || 0));
+  $str .= genRow('LF', sprintf('%.4f', $APP->getHRLF($USER) || 0));
   $str .= genRow("Devotion", int(($$VARS{numwriteups} * $$USER{merit}) + .5));
   $str .= genRow("Merit mean",$$hv{mean});
   $str .= genRow("Merit stddev", $$hv{stddev});
