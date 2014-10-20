@@ -4505,7 +4505,7 @@ sub javascript_decider
 
   my $jsType = getId(getType('jscript'));
   foreach (@JS) {
-    $str .= "<script src='".htmlcode("linkjavascript",$$_{node_id})."' type='text/javascript'></script>\n";
+    $str .= "<script async src='".htmlcode("linkjavascript",$$_{node_id})."' type='text/javascript'></script>\n";
   }
 
   return $str;
@@ -4549,18 +4549,18 @@ sub static_javascript
   $e2 = encode_json($e2);
 
   my $min = undef; $min = '.min' unless $APP->inDevEnvironment();
-  my $libraries = qq'<script src="http://code.jquery.com/jquery-1.11.1$min.js" type="text/javascript"></script>';
+  my $libraries = qq'<script async src="http://code.jquery.com/jquery-1.11.1$min.js" type="text/javascript"></script>';
 
   if($APP->use_bootstrap)
   {
-    $libraries .= qq|<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>|;
+    $libraries .= qq|<script async src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>|;
   }
 
   # mark as guest but only in non-canonical domain so testing and caching both work
   my $js_decisions = htmlcode('javascript_decider');
 
   unless ($APP->isGuest($USER)){
-      $libraries .= '<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js" type="text/javascript"></script>';
+      $libraries .= '<script async src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js" type="text/javascript"></script>';
   }
 
   return qq|
