@@ -2739,11 +2739,6 @@ sub uncloak {
   return $APP->uncloak(@_);
 }
 
-sub logUserIp
-{
-  return $APP->logUserIp(@_);
-}
-
 sub isMobile
 {
   return $query->cookie('mobile') || $ENV{HTTP_HOST} =~ m'^m.everything2'i;
