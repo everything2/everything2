@@ -1,6 +1,14 @@
 <node>
   <type_nodetype>1065266</type_nodetype>
-  <doctext>&lt;div style=&quot;border: solid black 1px; padding: 5px;&quot;&gt;
+  <doctext>&lt;table&gt;
+&lt;tr&gt;&lt;th&gt;type_nodetype&lt;/th&gt;&lt;th&gt;description&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;1065266&lt;/td&gt;&lt;td&gt;superdocnolinks&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;1144104&lt;/td&gt;&lt;td&gt;oppressor_superdoc&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;3&lt;/td&gt;&lt;td&gt;document&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;1983713&lt;/td&gt;&lt;td&gt;oppressor_document&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;div style=&quot;border: solid black 1px; padding: 5px;&quot;&gt;
 
 
 &lt;div style=&quot;border: solid gray 2px; padding: 3px; magin: 2px;&quot;&gt;
@@ -466,7 +474,7 @@ return ('couldn\'t find ' . $module) unless scalar(@allLines);
 
 
 
-&lt;/div&gt;</doctext>
+&lt;/div&gt;\n</doctext>
   <node_id>950586</node_id>
   <title>N-Wing's plaything</title>
 </node>

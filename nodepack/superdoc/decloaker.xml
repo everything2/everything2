@@ -6,7 +6,7 @@
 
 [% 
   return &quot;The Treaty of Algeron prohibits your presence.&quot; if $APP-&gt;isGuest($USER);
- uncloak($USER, $VARS);
+ $APP-&gt;uncloak($USER, $VARS);
  my $str =  '...like a new-born babe....';
 
 %]

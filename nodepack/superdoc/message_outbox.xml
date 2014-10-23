@@ -108,7 +108,7 @@ while (my $MSG = $csr-&gt;fetchrow_hashref){
 	#
 	# don't escape HTML for bots
 	# unless ($$bots{$$touser{title}} eq 'Content Editors') {
-	#	$text = escapeAngleBrackets($text);
+	#	$text = $APP-&gt;escapeAngleBrackets($text);
 	#	$text = parseLinks($text,0,1);
 	#	$text =~ s/\[/&amp;#91;/g; # no spare [s for page parseLinks
 	# }

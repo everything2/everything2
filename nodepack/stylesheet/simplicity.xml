@@ -22,7 +22,7 @@ padding-top: 0.5em ;
 float: right ;
 }
 
-#e2logo {
+#e2logo, #searchform div {
 display: inline;
 margin-left: 0.33em;
 }
@@ -268,6 +268,7 @@ a {
 
 #e2logo, .nodelet_title {
 	font-style: italic;
+	font-weight: bold;
 }
 
 #e2logo {
@@ -280,7 +281,7 @@ a {
 	vertical-align: sub ;
 }
 
-h1, h2, h3, h4, div.contentinfo .title {
+#e2logo, h1, h2, h3, h4, div.contentinfo .title {
 	font-family: GaramondNo8, Garamond, &quot;Gentium Basic&quot;, &quot;DejaVu Serif&quot;, serif;
 }
 
@@ -369,7 +370,7 @@ margin-left: -0.5em ;
 margin-bottom: -6px ;
 }
 
-#maignbody:before, .nodelet .type:before {
+#mainbody:before, .nodelet .type:before {
 background-position: 0 0 ;
 }
 
@@ -476,7 +477,7 @@ border-left: 2px solid #e4d8b4;
 #header {
 margin-left: -2px;
 }</doctext>
-  <contentversion>104</contentversion>
+  <contentversion>111</contentversion>
   <s3bucket></s3bucket>
   <node_id>2041900</node_id>
   <title>Simplicity</title>

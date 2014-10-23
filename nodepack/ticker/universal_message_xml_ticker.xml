@@ -46,7 +46,7 @@ if ($$recip{type_nodetype} == getId(getType('room')))
     {
       if ($query-&gt;param('do_the_right_thing'))
       {
-        $topic = escapeAngleBrackets($topic);
+        $topic = $APP-&gt;escapeAngleBrackets($topic);
       }
       $topic = parseLinks($topic);
     }

@@ -82,7 +82,7 @@ my $dStr;
               $oldinfo{devotion}, $oldinfo{average}, $oldinfo{median}, $oldinfo{upvotes}, $oldinfo{downvotes},
               $oldinfo{maxcools},$oldinfo{maxvotes});
 	if ($oldinfo{nodes}) {
-            $oldinfo{wnf} = (($oldinfo{totalrep}+(10*$oldinfo{cools}))/$oldinfo{nodes})+1;
+            $oldinfo{wnf} = (($oldinfo{totalrep}+(10*$oldinfo{cools}))/$oldinfo{nodes});
             $oldinfo{nodefu} = $oldinfo{xp}/$oldinfo{nodes};
             $oldinfo{coolratio} = ($oldinfo{cools}*100)/$oldinfo{nodes};
         }
@@ -174,7 +174,7 @@ my $csr= $DB-&gt;sqlSelectMany(
   	JOIN writeup ON node.node_id = writeup.writeup_id
 	JOIN node AS parent_node ON parent_node.node_id = writeup.parent_e2node
 	JOIN node AS type_node ON  type_node.node_id = writeup.wrtype_writeuptype'
-  , &quot;node.author_user = $userid &quot;
+  , &quot;node.author_user = $userid AND node.type_nodetype=117&quot;
   , 'ORDER BY writeup.publishtime DESC'
 );
 
@@ -284,7 +284,7 @@ $maxmerit = $rep2[$stp-1];
 
 
 if ($info{nodes}) {
-  $info{wnf} = (($info{totalrep}+(10*$info{cools}))/$info{nodes})+1;
+  $info{wnf} = (($info{totalrep}+(10*$info{cools}))/$info{nodes});
   $info{nodefu} = $info{xp}/$info{nodes};
   $info{coolratio} = ($info{cools}*100)/$info{nodes};
 }
