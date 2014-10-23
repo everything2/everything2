@@ -43,7 +43,6 @@ BEGIN {
   *updateLinks = *Everything::HTML::updateLinks;
   *changeRoom = *Everything::HTML::changeRoom;
   *cloak = *Everything::HTML::cloak;
-  *uncloak = *Everything::HTML::uncloak;
   *isMobile = *Everything::HTML::isMobile;
   *isSuspended = *Everything::HTML::isSuspended;
   *canReadNode = *Everything::HTML::canReadNode;
@@ -5060,7 +5059,7 @@ sub changeroom
     {
       cloak($USER, $VARS);
     } else {
-      uncloak($USER, $VARS);
+      $APP->uncloak($USER, $VARS);
     }
   }
 
