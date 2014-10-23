@@ -6962,6 +6962,7 @@ sub episection_ces
   $oraclecode = $query -> li(linkNode(getNode('The Oracle', 'oppressor_superdoc'), "The Oracle", {the_oracle_subject => $$NODE{title}}))if $$NODE{type}{title} eq 'user';
 
   return parseLinks("<ul>
+    <li>[E2 Editor Doc]</li>
     <li>[Drafts for review[superdoc]]</li>
     <li>[25] | [Everything New Nodes]</li>
     <li>[E2 Nuke Request]</li>
