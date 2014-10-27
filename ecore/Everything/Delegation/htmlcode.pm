@@ -41,7 +41,6 @@ BEGIN {
   *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
   *canUpdateNode = *Everything::HTML::canUpdateNode;
   *updateLinks = *Everything::HTML::updateLinks;
-  *changeRoom = *Everything::HTML::changeRoom;
   *isMobile = *Everything::HTML::isMobile;
   *isSuspended = *Everything::HTML::isSuspended;
   *canReadNode = *Everything::HTML::canReadNode;
@@ -5030,7 +5029,7 @@ sub changeroom
     next unless eval($$R{criteria});
     if(defined $query->param('changeroom') and $query->param('changeroom') == $_ and $$USER{in_room} != $_)
     {
-      changeRoom($USER, $R);
+      $APP->changeRoom($USER, $R);
     }
   
     push @aprrooms, $_;
@@ -5044,11 +5043,7 @@ sub changeroom
 
   if(defined $query->param('changeroom') and $query->param('changeroom') == 0)
   {
-    #steppin' outside
-    #$$USER{in_room} = 0;
-    #updateNode($USER, -1);
-	changeRoom($USER, 0);
-    #we should also edit the rooms table
+    $APP->changeRoom($USER, 0);
   }
 
   my $isCloaker = $APP->userCanCloak($USER);
@@ -10101,7 +10096,7 @@ sub formxml_room
   if(eval($$NODE{criteria}) and not $APP->isGuest($USER))
   {
     $entrance=1;
-    changeRoom($USER, $NODE);
+    $APP->changeRoom($USER, $NODE);
   }
   my $str = "<canenter>".$entrance."</canenter>\n";
   $str.="<description>".encodeHTML(($query->param("links_noparse"))?($$NODE{doctext}):(parseLinks($$NODE{doctext})))."</description>";
