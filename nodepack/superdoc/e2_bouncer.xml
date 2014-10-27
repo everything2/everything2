@@ -113,7 +113,7 @@ if ( defined $query-&gt;param( 'usernames' ) &amp;&amp; defined $query-&gt;param
     my $user = getNode( $username, 'user' );
 
     if ( $user ) {
-      changeRoom( $user, $room );
+      $APP-&gt;changeRoom( $user, $room );
       $str .= '&lt;li&gt;' . linkNode( $$user{ 'node_id' } ) . &quot;&lt;/li&gt;\n&quot;;
       #			if ( $$USER{ 'node_id' } != 470183 ) {
       #				$DB-&gt;sqlInsert( 'message', 

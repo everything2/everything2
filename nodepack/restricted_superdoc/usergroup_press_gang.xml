@@ -58,12 +58,9 @@ if ( defined $query-&gt;param( 'usernames' ) &amp;&amp; defined $query-&gt;param
         if ( $user ) {
             insertIntoNodegroup( $ugroop, -1, [getId( $user )] );
 
-#            changeRoom( $user, $room );
+
             $str .= '&lt;li&gt;' . linkNode( $$user{ 'node_id' } ) . &quot;&lt;/li&gt;\n&quot;;
-#            $DB-&gt;sqlInsert( 'message', 
-#                { msgtext =&gt; &quot;\[$$USER{title}\] just booted \[$username\] into \[$roomname\].&quot;,
-#                  author_user =&gt; getId( getNode( 'The Eyeball Kid', 'user' ) ),
-#                  for_user =&gt; 470183 } );
+
         } else {
             $str .= &quot;&lt;li&gt;&lt;font color=\&quot;#c00000\&quot;&gt;User &lt;b&gt;\&quot;&quot; . $username . &quot;\&quot;&lt;/b&gt; does not exist.&lt;/font&gt;&lt;/li&gt;\n&quot;;
         }

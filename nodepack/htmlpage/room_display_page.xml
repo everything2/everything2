@@ -32,7 +32,7 @@ if ($$NODE{criteria} eq $open) {
   
   return &quot;You cannot go into $$NODE{title}, I'm sorry.&quot; unless eval($$NODE{criteria}) and not $APP-&gt;isGuest($USER);
 
-  changeRoom($USER, $NODE);
+  $APP-&gt;changeRoom($USER, $NODE);
 
   # For room usage counting:
   my (undef, undef, undef, $day, $mon, $year) = localtime();
