@@ -2725,10 +2725,6 @@ sub insertIntoRoom {
   return $APP->insertIntoRoom(@_);
 }
 
-sub changeRoom {
-  return $APP->changeRoom(@_);
-}
-
 sub isMobile
 {
   return $query->cookie('mobile') || $ENV{HTTP_HOST} =~ m'^m.everything2'i;
