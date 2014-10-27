@@ -71,7 +71,6 @@ sub BEGIN {
 
               changeRoom
               insertIntoRoom
-              cloak
 
               isMobile
               );
@@ -2728,10 +2727,6 @@ sub insertIntoRoom {
 
 sub changeRoom {
   return $APP->changeRoom(@_);
-}
-
-sub cloak {
-  return $APP->cloak(@_);
 }
 
 sub isMobile
