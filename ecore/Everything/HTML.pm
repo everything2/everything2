@@ -2704,10 +2704,6 @@ sub hasVoted {
   return $APP->hasVoted(@_);
 }
 
-sub insertVote {
-  return $APP->insertVote(@_);
-}
-
 # Former inhabitants of the room module
 
 sub isMobile
