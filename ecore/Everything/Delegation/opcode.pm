@@ -43,7 +43,6 @@ BEGIN {
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *evalCode = *Everything::HTML::evalCode;
   *getPageForType = *Everything::HTML::getPageForType;
-  *adjustGP = *Everything::HTML::adjustGP;
   *adjustExp = *Everything::HTML::adjustExp;
   *opLogin = *Everything::HTML::opLogin;
   *replaceNodegroup = *Everything::HTML::replaceNodegroup; 
@@ -341,7 +340,7 @@ sub bless
     'message' => "Whoa, you&rsquo;ve just been [bless|blessed]!"});
 
   updateNode($U, -1);
-  adjustGP($U, $gp);
+  $APP->adjustGP($U, $gp);
 
 }
 
@@ -514,7 +513,7 @@ sub message
       }
 		
       $$VARS{easter_eggs}--;
-      adjustGP($recUser, 3);
+      $APP->adjustGP($recUser, 3);
       $message = "/".$phrase." $uName";
     }
   }
@@ -547,7 +546,7 @@ sub message
         $$VARS{easter_eggs}--;
         $$recUser{sanctity} += 1;
         updateNode($recUser, -1);
-        adjustGP($recUser, 5);
+        $APP->adjustGP($recUser, 5);
 
         htmlcode('sendPrivateMessage',{
           'recipient_id' => getId($recUser),
@@ -616,8 +615,8 @@ sub message
       $$recUser{sanctity} += 1;
       updateNode($recUser, -1);
 
-      adjustGP($recUser, $Sanctificity);
-      adjustGP($USER, -$Sanctificity);
+      $APP->adjustGP($recUser, $Sanctificity);
+      $APP->adjustGP($USER, -$Sanctificity);
       $APP->securityLog(getNode('Sanctify user', 'superdoc'), $USER, "$$USER{title} sanctified $sanctee with $Sanctificity GP.");
 
       htmlcode('sendPrivateMessage',{
@@ -2459,8 +2458,8 @@ sub sanctify
   $$U{sanctity} += 1;
   updateNode($U, -1);
 
-  adjustGP($U, $Sanctificity);
-  adjustGP($USER, -$Sanctificity);
+  $APP->adjustGP($U, $Sanctificity);
+  $APP->adjustGP($USER, -$Sanctificity);
   $$VARS{oldGP} = $$USER{GP};
 
   $APP->securityLog(getNode('Sanctify user', 'superdoc'), $USER, "$$USER{title} sanctified $$U{title} with $Sanctificity GP.");

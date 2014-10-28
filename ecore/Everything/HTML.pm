@@ -63,7 +63,6 @@ sub BEGIN {
               mod_perlInit
 
               adjustExp
-              adjustGP
               allocateVotes
 
               changeRoom
@@ -2688,10 +2687,6 @@ sub allocateVotes {
 
 sub adjustExp {
   return $APP->adjustExp(@_);
-}
-
-sub adjustGP {
-  return $APP->adjustGP(@_);
 }
 
 # Former inhabitants of the room module

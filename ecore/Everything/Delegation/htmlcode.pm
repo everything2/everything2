@@ -46,7 +46,6 @@ BEGIN {
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *evalCode = *Everything::HTML::evalCode;
   *getPageForType = *Everything::HTML::getPageForType;
-  *adjustGP = *Everything::HTML::adjustGP;
   *opLogin = *Everything::HTML::opLogin;
   *adjustExp = *Everything::HTML::adjustExp;
   *replaceNodegroup = *Everything::HTML::replaceNodegroup;
