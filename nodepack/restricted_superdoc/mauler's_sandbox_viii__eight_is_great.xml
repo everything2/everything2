@@ -185,8 +185,8 @@ $str.= '&lt;table class=&quot;mytable&quot;&gt;
 #if ($query-&gt;param('recalculate_XP')) {
 #   my $warnstr;
 #   if ($query-&gt;param('confirm') eq 'wakaru') {
-#      adjustExp($U, (-$xp));
-#      adjustExp($U, $newXP);
+#      $APP-&gt;adjustExp($U, (-$xp));
+#      $APP-&gt;adjustExp($U, $newXP);
 #      $$V{hasRecalculated} = 1;
 #      setVars $U, $V;
 #      $str= &quot;&lt;p&gt;Recalculation complete! $$U{title} now has &lt;b&gt;&quot;.$newXP.&quot; XP&lt;/b&gt;&quot;;

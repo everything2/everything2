@@ -19,7 +19,7 @@ if ($query-&gt;param('give')) {
 
         $$pennies{1}++;
         setVars($pennynode, $pennies);
-        adjustGP($USER, -1);
+        $APP-&gt;adjustGP($USER, -1);
 #        return &quot;&lt;p&gt;You just tossed a penny in the jar. The [e2gods|gods] smile upon you!&lt;/p&gt;&lt;p&gt;There are currently &lt;b&gt;&quot;.$$pennies{1}.&quot;&lt;/b&gt; [GP|pennies] in the penny jar.&lt;/p&gt;&quot;;
 
 }
@@ -28,7 +28,7 @@ if ($query-&gt;param('take')) {
 	return &quot;&lt;p&gt;Sorry, there are no more [GP|pennies] in the jar! Would you like to [Give a penny, take a penny|donate one]?&lt;/p&gt;&quot; if $$pennies{1} &lt; 1;
         $$pennies{1}--;
         setVars($pennynode, $pennies);
-        adjustGP($USER, 1);
+        $APP-&gt;adjustGP($USER, 1);
 #        return &quot;&lt;p&gt;You just swiped a penny from the jar.&lt;/p&gt;&lt;p&gt;There are currently &lt;b&gt;&quot;.$pennies{1}.&quot;&lt;/b&gt; [GP|pennies] in the penny jar.&lt;/p&gt;&quot;;
 
 }

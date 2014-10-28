@@ -74,7 +74,7 @@ my $count;
 
 while (my $r = $recSet-&gt;fetchrow_hashref) {
 my $n = getNode($$r{coolwriteups_id});
-next if hasVoted($n, $USER);
+next if $APP-&gt;hasVoted($n, $USER);
 next if $$n{cooled} &gt; $maxCools;
 next unless $n;
 $count++;

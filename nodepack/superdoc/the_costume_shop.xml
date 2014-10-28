@@ -38,7 +38,7 @@ if ($query-&gt;param(&quot;dressup&quot;)) {
 
       $$VARS{costume} = $costume;
       $$VARS{treats} = 0;
-      adjustGP($USER, -$costumeCost);
+      $APP-&gt;adjustGP($USER, -$costumeCost);
       return &quot;Alright, you've got your costume. Wanna change it? Bring me back some more money!&quot;;
    } else {
       $str = &quot;&lt;p&gt;&lt;b&gt;That costume is also a username! Please try another option.&lt;/b&gt;&lt;/p&gt;&quot;;

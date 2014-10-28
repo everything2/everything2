@@ -213,7 +213,7 @@ return strftime(&quot;%a, %d %b %Y %H:%M:%S %z&quot;, localtime(time())) . &quot
 
 return ;
 
-adjustGP($$USER{user_id}, 1);
+$APP-&gt;adjustGP($$USER{user_id}, 1);
 
 my $str='[level experience]: 0=0';
 

@@ -44,7 +44,7 @@ my $signum = ($curGP&gt;0) ? 1 : (($curGP&lt;0) ? -1 : 0);
     $$U{karma}+=$signum;
     updateNode($U, -1);
     htmlcode('achievementsByType','karma');
-    adjustGP($U, $curGP);
+    $APP-&gt;adjustGP($U, $curGP);
   } else {
     $str .= ', so nothing was changed';
   }

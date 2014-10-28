@@ -44,7 +44,7 @@ my $signum = ($curXP&gt;0) ? 1 : (($curXP&lt;0) ? -1 : 0);
   $APP-&gt;securityLog($NODE, $USER, &quot;$$U{title} was superblessed $curXP XP by $$USER{title}&quot;);
   if($signum!=0) {
     $$U{karma}+=$signum;
-    adjustExp($U, $curXP);
+    $APP-&gt;adjustExp($U, $curXP);
 htmlcode('achievementsByType','karma');
 
   } else {

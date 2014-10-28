@@ -25,8 +25,8 @@ if ($query-&gt;param('give_GP')) {
         $$user{sanctity} += 1;
         updateNode($user, -1);
 
-        adjustGP($user, $Sanctificity);
-        adjustGP($USER, -$Sanctificity);
+        $APP-&gt;adjustGP($user, $Sanctificity);
+        $APP-&gt;adjustGP($USER, -$Sanctificity);
 
         $APP-&gt;securityLog($NODE, $USER, &quot;$$USER{title} sanctified $$user{title} with $Sanctificity GP.&quot;);
         

@@ -53,7 +53,7 @@ for(my $count=0; $count &lt; @users; $count++) {
   $$U{karma}-=1;
   updateNode($U, -1);
   $APP-&gt;securityLog(getNode('Superbless', 'superdoc'), $USER, &quot;$$USER{title} hugged $$U{title} using the [Fiery Teddy Bear suit] for negative $curGP GP.&quot;);
-  adjustGP($U, -$curGP);
+  $APP-&gt;adjustGP($U, -$curGP);
 
 
 

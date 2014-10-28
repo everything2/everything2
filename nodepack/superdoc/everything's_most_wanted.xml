@@ -43,7 +43,7 @@ if ($query-&gt;param(&quot;yankify&quot;)) {
 	my $rewardnode = getNodeById(1986569); #Hard-coded goodness for speed.
 	my $REF = getVars($rewardnode);
 	my $refund = $$REF{$removee};
-	adjustGP($user, $refund);
+	$APP-&gt;adjustGP($user, $refund);
 	
 	my $v = getVars($user);
 	$$v{Bounty} = 0;
@@ -84,7 +84,7 @@ if ($query-&gt;param(&quot;bountify&quot;)) {
 	return &quot;&lt;p&gt;The user '$LuckyWinner' doesn't exist!&lt;/p&gt;&lt;p&gt;Please [Everything's Most Wanted|try again].&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&quot; unless $user;
 	return &quot;&lt;p&gt;It is not possible to reward yourself!&lt;/p&gt;&lt;p&gt;Please [Everything's Most Wanted|try again].&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&quot; if ($$USER{title} eq $LuckyWinner);
 
-	adjustGP($user, $reward);
+	$APP-&gt;adjustGP($user, $reward);
 	$$VARS{Bounty} = 0;
 	setVars $USER, $VARS;
 
@@ -122,7 +122,7 @@ if ($query-&gt;param(&quot;awardify&quot;)) {
 	return &quot;&lt;p&gt;The user '$LuckyWinner' doesn't exist!&lt;/p&gt;&lt;p&gt;Please [Everything's Most Wanted|try again].&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&quot; unless $user;
 	return &quot;&lt;p&gt;It is not possible to reward yourself!&lt;/p&gt;&lt;p&gt;Please [Everything's Most Wanted|try again].&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&quot; if ($$USER{title} eq $LuckyWinner);
 
-	adjustGP($user, $reward);
+	$APP-&gt;adjustGP($user, $reward);
 	$$VARS{Bounty} = 0;
 	setVars $USER, $VARS;
 
@@ -186,7 +186,7 @@ if ($query-&gt;param(&quot;Award&quot;)) {
 
 if ($query-&gt;param(&quot;Remove&quot;)) {
 
-	adjustGP($USER, $reward);
+	$APP-&gt;adjustGP($USER, $reward);
 	$$VARS{Bounty} = 0;
 	setVars $USER, $VARS;
 
@@ -245,7 +245,7 @@ if ($query-&gt;param(&quot;postBounty&quot;)) {
         return &quot;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;You must specify a node or nodeshell to be filled. Please [Everything's Most Wanted|try again].&lt;/p&gt;&quot; if ($outlawed eq &quot;&quot;);
         return &quot;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&lt;p&gt;No such node! Your 'Outlaw Node' must be a valid node or nodeshell.  Please [Everything's Most Wanted|try again].&lt;/p&gt;&quot; unless $isNode;
 
-	adjustGP($USER, -$bounty);
+	$APP-&gt;adjustGP($USER, -$bounty);
 
 	my $bountyNum;
 	my $ordernode = getNodeById(1986585); #Hard-coded goodness for speed.

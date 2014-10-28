@@ -57,7 +57,7 @@ $str .= $$VARS{borged}
 	$query-&gt;submit(-name=&gt;'message_send', id=&gt;'message_send', value=&gt;'talk'). &quot;\n\t\t&quot;;
 ;
 
-if (isSuspended($USER,&quot;chat&quot;)){
+if ($APP-&gt;isSuspended($USER,&quot;chat&quot;)){
   my $canMsg = ($$VARS{borged}
                 ? &quot;chatting.&quot;
                 : &quot;public chat, but you can /msg other users.&quot;);

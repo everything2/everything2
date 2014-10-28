@@ -63,7 +63,7 @@ if ($query-&gt;param('give_star')) {
 
         $$U{stars} += 1;
 	updateNode($U,-1);
-        adjustGP($USER, -$StarCost);
+        $APP-&gt;adjustGP($USER, -$StarCost);
         $APP-&gt;securityLog(getNode('The Gift of Star', 'node_forward'), $USER, &quot;[$$USER{title}] gave $article $Color Star to [$$U{title}] at the [E2 Gift Shop].&quot;);
 
 	my $from = $$USER{title};
@@ -451,7 +451,7 @@ if ($query-&gt;param(&quot;setTopic&quot;)) {
 $str.=&quot;&lt;p&gt;You currently have &lt;b&gt;&quot;.$$VARS{tokens}.&quot;&lt;/b&gt; token&quot;.($$VARS{tokens} == 1 ? &quot;&quot; :&quot;s&quot;).&quot;&lt;/p&gt;&quot;;
 
 
-if (isSuspended($USER,&quot;topic&quot;)) {
+if ($APP-&gt;isSuspended($USER,&quot;topic&quot;)) {
 
 	return $str.&quot;&lt;p&gt;Your topic privileges have been suspended. Ask nicely and maybe they will be restored.&lt;/p&gt;&quot;;
 

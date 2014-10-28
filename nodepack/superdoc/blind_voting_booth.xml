@@ -32,7 +32,7 @@ return 'You\'re done for today' if($$USER{votesleft} == 0);
 
            if($$tempref{wrtype_writeuptype} != 177599  &amp;&amp; $$tempref{author_user} != $$USER{user_id})
            {
-             $wu = $maybewu if(!hasVoted($tempref, $USER));
+             $wu = $maybewu if(!$APP-&gt;hasVoted($tempref, $USER));
            }
         }
 
@@ -47,7 +47,7 @@ else
   my $wutemp = getNodeById($query-&gt;param('votedon'));
 
   return linkNode($NODE, 'Try Again2') unless($wutemp);
-  return linkNode($NODE, 'Try Again3') if(!hasVoted($wutemp, $USER));
+  return linkNode($NODE, 'Try Again3') if(!$APP-&gt;hasVoted($wutemp, $USER));
 
   $wu = $query-&gt;param('votedon');
   $hasvoted = 1;

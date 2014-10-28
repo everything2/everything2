@@ -237,8 +237,8 @@ if ($query-&gt;param('recalculate_XP')) {
    my $warnstr;
    if ($query-&gt;param('confirm') eq 'wakaru') {
       $APP-&gt;securityLog($NODE, $USER, &quot;$$USER{title} recalculated $$targetUser{title}'s XP&quot;);
-      adjustExp($targetUser, (-$xp));
-      adjustExp($targetUser, $newXP);
+      $APP-&gt;adjustExp($targetUser, (-$xp));
+      $APP-&gt;adjustExp($targetUser, $newXP);
       $$targetVars{hasRecalculated} = 1;
       $DB -&gt; sqlDelete('xpHistoryCache', &quot;xpHistoryCache_id=$uid&quot;);
       setVars $targetUser, $targetVars;

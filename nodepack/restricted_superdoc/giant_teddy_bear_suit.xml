@@ -56,7 +56,7 @@ for(my $count=0; $count &lt; @users; $count++) {
   updateNode($U, -1);
   htmlcode('achievementsByType','karma');
   $APP-&gt;securityLog(getNode('Superbless', 'superdoc'), $USER, &quot;$$USER{title} hugged $$U{title} using the [Giant Teddy Bear suit] for $curGP GP.&quot;);
-  adjustGP($U, $curGP);
+  $APP-&gt;adjustGP($U, $curGP);
 
 
 
