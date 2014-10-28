@@ -62,7 +62,6 @@ sub BEGIN {
               showCompleteDiff
               mod_perlInit
 
-              castVote
               adjustExp
               adjustGP
               allocateVotes
@@ -2712,10 +2711,6 @@ sub hasVoted {
 
 sub insertVote {
   return $APP->insertVote(@_);
-}
-
-sub castVote {
-  return $APP->castVote(@_);
 }
 
 # Former inhabitants of the room module

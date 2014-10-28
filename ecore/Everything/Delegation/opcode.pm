@@ -45,7 +45,6 @@ BEGIN {
   *hasVoted = *Everything::HTML::hasVoted;
   *evalCode = *Everything::HTML::evalCode;
   *getPageForType = *Everything::HTML::getPageForType;
-  *castVote = *Everything::HTML::castVote;
   *adjustGP = *Everything::HTML::adjustGP;
   *adjustExp = *Everything::HTML::adjustExp;
   *opLogin = *Everything::HTML::opLogin;
@@ -293,7 +292,7 @@ sub vote
       $prev_uid = $$N{author_user};
     }
 
-    castVote(getId($N), $USER, $val, 0, $VSETTINGS);
+    $APP->castVote(getId($N), $USER, $val, 0, $VSETTINGS);
 
 
     htmlcode('achievementsByType','vote,'.$$USER{user_id});

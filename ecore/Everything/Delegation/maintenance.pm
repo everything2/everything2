@@ -45,7 +45,6 @@ BEGIN {
   *hasVoted = *Everything::HTML::hasVoted;
   *evalCode = *Everything::HTML::evalCode;
   *getPageForType = *Everything::HTML::getPageForType;
-  *castVote = *Everything::HTML::castVote;
   *adjustGP = *Everything::HTML::adjustGP;
   *adjustExp = *Everything::HTML::adjustExp;
   *opLogin = *Everything::HTML::opLogin;
