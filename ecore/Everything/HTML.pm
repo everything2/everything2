@@ -62,7 +62,6 @@ sub BEGIN {
               showCompleteDiff
               mod_perlInit
 
-              adjustExp
               allocateVotes
 
               changeRoom
@@ -2683,10 +2682,6 @@ sub allocateVotes {
 
 	$$user{votesleft} = $numvotes;
 	updateNode($user, -1);
-}
-
-sub adjustExp {
-  return $APP->adjustExp(@_);
 }
 
 # Former inhabitants of the room module

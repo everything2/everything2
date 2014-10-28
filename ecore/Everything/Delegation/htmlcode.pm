@@ -47,7 +47,6 @@ BEGIN {
   *evalCode = *Everything::HTML::evalCode;
   *getPageForType = *Everything::HTML::getPageForType;
   *opLogin = *Everything::HTML::opLogin;
-  *adjustExp = *Everything::HTML::adjustExp;
   *replaceNodegroup = *Everything::HTML::replaceNodegroup;
 }
 
@@ -14919,7 +14918,7 @@ sub unpublishwriteup
 
   unless($noexp)
   {
-    adjustExp($$wu{author_user}, -5);
+    $APP->adjustExp($$wu{author_user}, -5);
 
     my $vars = getVars $author;
     $$vars{numwriteups}--;

@@ -43,7 +43,6 @@ BEGIN {
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *evalCode = *Everything::HTML::evalCode;
   *getPageForType = *Everything::HTML::getPageForType;
-  *adjustExp = *Everything::HTML::adjustExp;
   *opLogin = *Everything::HTML::opLogin;
   *replaceNodegroup = *Everything::HTML::replaceNodegroup; 
 } 
@@ -1199,7 +1198,7 @@ sub cool
   --$$VARS{cools} unless $forceAllow;
   setVars($USER, $VARS); #Discount chings right away before anything else.
 
-  adjustExp($$COOL{author_user}, 20);
+  $APP->adjustExp($$COOL{author_user}, 20);
   $DB->sqlInsert('coolwriteups', {coolwriteups_id => $cid, cooledby_user => $uid});
   $$COOL{cooled}++;
   updateNode($COOL, -1);
