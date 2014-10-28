@@ -39,7 +39,6 @@ BEGIN {
   *canUpdateNode = *Everything::HTML::canUpdateNode;
   *updateLinks = *Everything::HTML::updateLinks;
   *isMobile = *Everything::HTML::isMobile;
-  *isSuspended = *Everything::HTML::isSuspended;
   *canReadNode = *Everything::HTML::canReadNode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *hasVoted = *Everything::HTML::hasVoted;
@@ -64,7 +63,7 @@ sub room_create
   my ($N) = @_;
 
   my $canCreate = ($APP->getLevel($USER) >= $Everything::CONF->{create_room_level} or isGod($USER));
-  $canCreate = 0 if isSuspended($USER, 'room');
+  $canCreate = 0 if $APP->isSuspended($USER, 'room');
 
   if (!$canCreate) {
     nukeNode($N, -1);

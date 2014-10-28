@@ -2421,11 +2421,6 @@ sub execOpCode
   }
 }
 
-sub isSuspended              
-{
-  return $APP->isSuspended(@_);
-}
-
 #############################################################################
 #	Sub
 #		mod_perlInit

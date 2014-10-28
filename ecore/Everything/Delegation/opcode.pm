@@ -39,7 +39,6 @@ BEGIN {
   *canUpdateNode = *Everything::HTML::canUpdateNode;
   *updateLinks = *Everything::HTML::updateLinks;
   *isMobile = *Everything::HTML::isMobile;
-  *isSuspended = *Everything::HTML::isSuspended;
   *canReadNode = *Everything::HTML::canReadNode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *hasVoted = *Everything::HTML::hasVoted;
@@ -245,7 +244,7 @@ sub vote
   my $APP = shift;
 
   return unless $$USER{votesleft};
-  return if isSuspended($USER, "vote");
+  return if $APP->isSuspended($USER, "vote");
   return if $APP->isGuest($USER);
   my @params = $query->param;
   my $defID = getId(getNode('definition','writeuptype')) || 0;
@@ -1113,7 +1112,7 @@ sub message
       return;
     }
 
-    return if (isSuspended($USER,"chat"));
+    return if ($APP->isSuspended($USER,"chat"));
     return if ($$VARS{infected} == 1);
 
     $DB->sqlInsert('message', {msgtext => $message, author_user => getId($USER), for_user => 0, room => $$USER{in_room}});
@@ -1192,7 +1191,7 @@ sub cool
   return unless $COOL;
   return unless $$COOL{type}{title} eq 'writeup';
   return if $$COOL{author_user} == $uid;
-  return if isSuspended($USER, "cool");
+  return if $APP->isSuspended($USER, "cool");
 
   my $forceAllow = 0;
   return unless $forceAllow || ($$VARS{cools} > 0);

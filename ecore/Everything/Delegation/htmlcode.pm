@@ -42,7 +42,6 @@ BEGIN {
   *canUpdateNode = *Everything::HTML::canUpdateNode;
   *updateLinks = *Everything::HTML::updateLinks;
   *isMobile = *Everything::HTML::isMobile;
-  *isSuspended = *Everything::HTML::isSuspended;
   *canReadNode = *Everything::HTML::canReadNode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
   *hasVoted = *Everything::HTML::hasVoted;
@@ -4777,7 +4776,7 @@ sub uploaduserimage
 
   my ($field) = @_;
 
-  return if isSuspended($NODE,"homenodepic");
+  return if $APP->isSuspended($NODE,"homenodepic");
 
   my $aws_access_key_id = $Everything::CONF->{s3}->{homenodeimages}->{access_key_id};
   my $aws_secret_access_key = $Everything::CONF->{s3}->{homenodeimages}->{secret_access_key};
@@ -5999,7 +5998,7 @@ sub showuserimage
   my $APP = shift;
 
   return unless $DB->isApproved($NODE, getNode('users with image', 'nodegroup')) or $APP->getLevel($NODE) >= 1;
-  return if isSuspended($NODE,"homenodepic");
+  return if $APP->isSuspended($NODE,"homenodepic");
   return unless $$NODE{imgsrc};
   my $imgsrc = $$NODE{imgsrc};
   $imgsrc = "$$NODE{title}";
@@ -11999,7 +11998,7 @@ sub uploadAudio
   my ($field) =@_;
   return "TODO: Fix audio uploads";
 
-  return if isSuspended($NODE,"audio");
+  return if $APP->isSuspended($NODE,"audio");
 
   my $str ='';
   my $name = $field.'_file';
@@ -14201,7 +14200,7 @@ sub nopublishreason
 
   # unverified email address:
 
-  return parseLinks('You need to [verify your email account[superdoc]] before you can publish writeups.') if isSuspended($user, 'email');
+  return parseLinks('You need to [verify your email account[superdoc]] before you can publish writeups.') if $APP->isSuspended($user, 'email');
 
   # already has a writeup here:
 
@@ -14224,7 +14223,7 @@ sub nopublishreason
   # user on forbiddance:
 
   my $userlock = $DB->sqlSelectHashref('*', 'nodelock', "nodelock_node=$$user{user_id}");
-  $userlock = {} if !$userlock && isSuspended($user, 'writeup');
+  $userlock = {} if !$userlock && $APP->isSuspended($user, 'writeup');
 
   return ($notMe ? 'User is' : 'You are')
     .' currently not allowed to publish writeups. '
