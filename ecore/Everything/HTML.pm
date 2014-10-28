@@ -70,7 +70,6 @@ sub BEGIN {
               getVotes
 
               changeRoom
-              insertIntoRoom
 
               isMobile
               );
@@ -2720,10 +2719,6 @@ sub castVote {
 }
 
 # Former inhabitants of the room module
-
-sub insertIntoRoom {
-  return $APP->insertIntoRoom(@_);
-}
 
 sub isMobile
 {

@@ -44,7 +44,7 @@ while (my ($U) = $csr->fetchrow) {
     delete $ROOM{$room_id}{$user_id};
   }  else {
     #the user needs to be inserted into the room table 
-    insertIntoRoom($room_id, $U, $V);      
+    $APP->insertIntoRoom($room_id, $U, $V);      
     print WATCHMAN localtime(time)."\tentrance\troom $room_id\t$$U{title}\n";
   } 
 }
