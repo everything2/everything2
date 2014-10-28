@@ -41,7 +41,6 @@ BEGIN {
   *isMobile = *Everything::HTML::isMobile;
   *canReadNode = *Everything::HTML::canReadNode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
-  *hasVoted = *Everything::HTML::hasVoted;
   *evalCode = *Everything::HTML::evalCode;
   *getPageForType = *Everything::HTML::getPageForType;
   *adjustGP = *Everything::HTML::adjustGP;

@@ -65,8 +65,6 @@ sub BEGIN {
               adjustExp
               adjustGP
               allocateVotes
-              hasVoted
-              getVotes
 
               changeRoom
 
@@ -2694,14 +2692,6 @@ sub adjustExp {
 
 sub adjustGP {
   return $APP->adjustGP(@_);
-}
-
-sub getVotes {
-  return $APP->getVotes(@_);
-}
-
-sub hasVoted {
-  return $APP->hasVoted(@_);
 }
 
 # Former inhabitants of the room module

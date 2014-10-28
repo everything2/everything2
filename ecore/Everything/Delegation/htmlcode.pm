@@ -44,7 +44,6 @@ BEGIN {
   *isMobile = *Everything::HTML::isMobile;
   *canReadNode = *Everything::HTML::canReadNode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
-  *hasVoted = *Everything::HTML::hasVoted;
   *evalCode = *Everything::HTML::evalCode;
   *getPageForType = *Everything::HTML::getPageForType;
   *adjustGP = *Everything::HTML::adjustGP;
@@ -7546,7 +7545,7 @@ sub displayWriteupInfo
 
   local *info_author = sub {
     my $anon = undef;
-    $anon = 'anonymous' unless !$$VARS{anonymousvote} || $isMine || $authorIsBot || hasVoted($WRITEUP, $USER) || $isDraft;
+    $anon = 'anonymous' unless !$$VARS{anonymousvote} || $isMine || $authorIsBot || $APP->hasVoted($WRITEUP, $USER) || $isDraft;
     if ($$VARS{anonymousvote} == 1 && $anon)
     {
       return '(anonymous)' . ($isCE?' '.info_authorsince():'');
@@ -9315,7 +9314,7 @@ sub xmlwriteup
 
   $str.="<writeuptype>".$$ntype{title}."</writeuptype>\n" if $ntype;
 
-  if(hasVoted($wu, $USER) || $$wu{author_user} == $$USER{node_id})
+  if($APP->hasVoted($wu, $USER) || $$wu{author_user} == $$USER{node_id})
   {
     my $up = $DB->sqlSelect("count(*)", "vote", "vote_id=$$wu{node_id} AND weight=1");
     my $dn = $DB->sqlSelect("count(*)", "vote", "vote_id=$$wu{node_id} AND weight=-1");
