@@ -34,7 +34,6 @@ BEGIN {
   *getNodeWhere = *Everything::HTML::getNodeWhere;
   *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
   *linkNodeTitle = *Everything::HTML::linkNodeTitle;
-  *confirmUser = *Everything::HTML::confirmUser;
   *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
   *canUpdateNode = *Everything::HTML::canUpdateNode;
   *updateLinks = *Everything::HTML::updateLinks;

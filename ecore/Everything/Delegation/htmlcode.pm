@@ -37,7 +37,6 @@ BEGIN {
   *getNodeWhere = *Everything::HTML::getNodeWhere;
   *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
   *linkNodeTitle = *Everything::HTML::linkNodeTitle;
-  *confirmUser = *Everything::HTML::confirmUser;
   *removeFromNodegroup = *Everything::HTML::removeFromNodegroup;
   *canUpdateNode = *Everything::HTML::canUpdateNode;
   *updateLinks = *Everything::HTML::updateLinks;
@@ -1214,7 +1213,7 @@ sub password_field
   my $oldpass = $query -> param("oldpass");
 
   if ( $oldpass or $p1 or $p2){
-    if(confirmUser($USER -> {title}, $oldpass, undef, $query)) {
+    if($APP->confirmUser($USER -> {title}, $oldpass, undef, $query)) {
       if ( !$p1 and  !$p2){
         $str .= "I can't let you have no password! Please input <em>something</em>.<br>"
       } 

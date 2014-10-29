@@ -51,14 +51,12 @@ sub BEGIN {
               embedCode
               displayPage
               gotoNode
-              confirmUser
               urlDecode
               encodeHTML
               decodeHTML
               rewriteCleanEscape
               processVarsSet
               showPartialDiff
-              showCompleteDiff
               mod_perlInit
 
               isMobile
@@ -1568,7 +1566,7 @@ sub parseCode {
 
 }
 
-###################################################################
+#############################################################################
 #	Sub
 #		listCode
 #
@@ -2270,25 +2268,6 @@ sub loginUser
 }
 
 #############################################################################
-#	Sub
-#		confirmUser
-#
-#	Purpose
-#		Check user credentials if presented.
-#
-#	Parameters
-#		user name, password, cookie
-#
-#	Returns
-#		The USER node hash reference if credentials are accepted,
-#		otherwise 0
-
-sub confirmUser
-{
-  return $APP->confirmUser(@_);
-}
-
-#############################################################################
 sub opLogout
 {
 	# The user is logging out.  Nuke their cookie.
@@ -2331,21 +2310,6 @@ sub opNew
 	{
 		$query->param("node_id", $Everything::CONF->{system}->{permission_denied});
 	}
-}
-
-
-#############################################################################
-#	Sub
-#		getOpCode
-#
-#	Purpose
-#		Get the 'op' code for the specified operation.
-#
-sub getOpCode
-{
-	my ($opname) = @_;
-	my $OPNODE = getNode($opname, "opcode");
-	return $OPNODE;
 }
 
 
@@ -2472,14 +2436,6 @@ sub mod_perlInit
 	handleUserRequest();
 
 	$DB->closeTransaction();
-}
-
-sub showPartialDiff {
-  return $APP->showPartialDiff(@_);
-}
-
-sub showCompleteDiff {
-  return $APP->showCompleteDiff(@_);
 }
 
 #####################

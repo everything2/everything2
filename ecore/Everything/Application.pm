@@ -2054,6 +2054,19 @@ sub logUserIp {
 
 }
 
+#############################################################################
+#	Sub
+#		confirmUser
+#
+#	Purpose
+#		Check user credentials if presented.
+#
+#	Parameters
+#		user name, password, cookie
+#
+#	Returns
+#		The USER node hash reference if credentials are accepted,
+#		otherwise 0
 sub confirmUser
 {
   my ($this, $username, $pass, $cookie, $query) = @_;
