@@ -268,8 +268,8 @@ sub reviewPatch{
 	  (i.e. it was based on different code on $sourceName).&lt;/p&gt;'
 	  	unless !$for_node or md5_hex($oldcode) eq $patch{target_hash};
 
-	  my $shortdiff = showPartialDiff($oldcode, $newcode);
-	  my $longdiff = showCompleteDiff($oldcode, $newcode);
+	  my $shortdiff = $APP-&gt;showPartialDiff($oldcode, $newcode);
+	  my $longdiff = $APP-&gt;showCompleteDiff($oldcode, $newcode);
 
 	  #Since this is a superdoc, these things get parsed, escape them.
 	  $shortdiff =~ s/\[/\&amp;#91;/gs;

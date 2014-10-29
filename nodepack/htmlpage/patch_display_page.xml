@@ -194,8 +194,8 @@ if($status -&gt; {applied}){
 }
 
 my $compareLink = linkNode($diffNode);
-my $shortDiff   = showPartialDiff($codeOrig,  $codeNew);
-my $longDiff    = showCompleteDiff($codeOrig, $codeNew);
+my $shortDiff   = $APP-&gt;showPartialDiff($codeOrig,  $codeNew);
+my $longDiff    = $APP-&gt;showCompleteDiff($codeOrig, $codeNew);
 
 my $str = &lt;&lt;TEXTEND;
 &lt;p&gt;
