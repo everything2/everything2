@@ -2667,23 +2667,6 @@ sub processVarsSet {
 }
 
 
-# Former inhabitants of the experience module
-
-########################################################################
-#
-#	allocateVotes
-#
-#	give votes to a specific user.  it's assumed that at some point 
-#	at a given interval, each user is allocated their share of votes
-#
-sub allocateVotes {
-	my ($user, $numvotes) = @_;
-	getRef($user);
-
-	$$user{votesleft} = $numvotes;
-	updateNode($user, -1);
-}
-
 # Former inhabitants of the room module
 
 sub isMobile
