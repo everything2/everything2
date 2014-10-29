@@ -1,6 +1,10 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Wed Oct 29 12:20:15 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Wed Oct 29 13:25:25 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2116281&quot; parent_e2node=&quot;1161335&quot; author_user=&quot;JD&quot;&gt;The Woman in Black&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2116311&quot; parent_e2node=&quot;2116309&quot; author_user=&quot;Glowing Fish&quot;&gt;The Grave&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;lizardinlaw&quot; node_id=&quot;2116307&quot; parent_e2node=&quot;2116306&quot; author_user=&quot;etouffee&quot;&gt;This is where I&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;lizardinlaw&quot; node_id=&quot;2023673&quot; parent_e2node=&quot;960907&quot; author_user=&quot;Spifficus Rex&quot;&gt;She is Overheard Singing&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;JD&quot; node_id=&quot;2115536&quot; parent_e2node=&quot;2115535&quot; author_user=&quot;Jet-Poop&quot;&gt;No More Room in Hell: The 2014 Halloween Horrorquest&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;359804&quot; parent_e2node=&quot;58965&quot; author_user=&quot;Webster 1913&quot;&gt;Welcome&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;corvus&quot; node_id=&quot;2115482&quot; parent_e2node=&quot;2116294&quot; author_user=&quot;iceowl&quot;&gt;October 28, 2014&lt;/cooled&gt;
@@ -12,10 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2116286&quot; parent_e2node=&quot;2116298&quot; author_user=&quot;gin soaked&quot;&gt;Pasta con le sarde&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;TheAnglican&quot; node_id=&quot;2116257&quot; parent_e2node=&quot;2116299&quot; author_user=&quot;lizardinlaw&quot;&gt;God gets pissed&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Clockmaker&quot; node_id=&quot;1972200&quot; parent_e2node=&quot;1972177&quot; author_user=&quot;Noung&quot;&gt;no-state solution&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;1898859&quot; parent_e2node=&quot;1898439&quot; author_user=&quot;borgo&quot;&gt;Yellow tells the story of time gone by&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Everyone2&quot; node_id=&quot;2051547&quot; parent_e2node=&quot;2051546&quot; author_user=&quot;Noung&quot;&gt;fiscal stimulus&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;mad girl's love song&quot; node_id=&quot;1864392&quot; parent_e2node=&quot;1864344&quot; author_user=&quot;Sol Invictus&quot;&gt;damnatio memoriae&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;lizardinlaw&quot; node_id=&quot;2114260&quot; parent_e2node=&quot;1736421&quot; author_user=&quot;etouffee&quot;&gt;today we paint tomorrow&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>
