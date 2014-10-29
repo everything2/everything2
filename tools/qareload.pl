@@ -13,3 +13,4 @@ if(not exists $Everything::CONF->{environment} or $Everything::CONF->{environmen
 `echo "drop database everything" | mysql -u root`;
 `echo "create database everything" | mysql -u root`;
 `/var/everything/ecoretool/ecoretool.pl bootstrap --nodepack=/var/everything/nodepack`;
+`/etc/init.d/apache2 restart`;
