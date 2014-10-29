@@ -29,7 +29,6 @@ sub BEGIN {
               $VARS
               $PAGELOAD
               $query
-              jsWindow
               createNodeLinks
               parseLinks
               htmlScreen
@@ -877,16 +876,6 @@ sub htmlErrorGods
 	$str.="</dl>\n";
 	$str;
 }
-
-
-#############################################################################
-sub jsWindow
-{
-	my($name,$url,$width,$height)=@_;
-	"window.open('$url','$name','width=$width,height=$height,scrollbars=yes')";
-}
-
-
 
 #############################################################################
 #   Sub
