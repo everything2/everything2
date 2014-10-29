@@ -2390,4 +2390,163 @@ sub use_bootstrap {
   my ($this) = @_;
   return $Everything::HTML::VARS->{use_bootstrap};
 }
+
+
+#############################################################################
+# Sub
+#   showPartialDiff
+#
+# Purpose
+#   Given two pieces of code, shows a brief diff between them that
+#   only includes the lines that have been affected by the change.
+#   This was originally in the [patch display page] htmlpage.
+#
+# Parameters
+#   $codeOrig  - old code to diff
+#   $codeNew   - new code to diff
+#
+# Returns
+#   The HTML-ready diff.
+#
+sub showPartialDiff {
+  my ($this, $codeOrig, $codeNew) = @_;
+
+  use Algorithm::Diff qw(diff);
+
+  my $diffs = diff([split("\n", $codeOrig)], [split("\n", $codeNew)]);
+  return 'Nothing changed!' unless @$diffs;
+
+  my $str = '';
+
+  my $chunk;
+  my $line;
+
+  my $s;
+
+  foreach $chunk (@$diffs) {
+    foreach $line (@$chunk) {
+      my ($sign, $lineno, $text) = @$line;
+      $s = sprintf("%4d$sign %s\n", $lineno+1, encodeHTML($text));
+      if ($sign eq '+') {
+        $s = '<font color="#008800">'.$s.'</font>';
+      }
+      elsif ($sign eq '-') {
+        $s = '<font color="#880000">'.$s.'</font>';
+      }
+      $str .= $s;
+    }
+    $str .= "\n";  #blank line between chunks
+  }
+
+  return $str;
+}
+
+#############################################################################
+# Sub
+#   showCompleteDiff
+#
+# Purpose
+#   Same as showPartialDiff, but showing all of the code and the
+#   differing lines in context.
+#
+# Parameters
+#   $codeOrig  - old code to diff
+#   $codeNew   - new code to diff
+#
+# Returns
+#   The HTML-ready diff.
+#
+
+sub showCompleteDiff{
+  my ($this, $codeOrig,$codeNew) = @_;
+  use Algorithm::Diff qw(sdiff);
+
+
+  my @diff = sdiff([split("\n", $codeOrig)], [split("\n", $codeNew)]);
+  my @minusBuffer = ();
+  my @plusBuffer = ();
+  my $html = '';
+
+  my $renderDiffLine  = sub {
+    my ($sign, $line) = @_;
+
+    # [ ] replace colors with CSS classes
+
+    my $color = '';
+    if ($sign eq '+') {
+      $color = '#008800';
+    }
+    elsif ($sign eq '-') {
+      $color = '#880000';
+    }
+
+    my $html = '';
+    if ($color) {
+      $html .= "<span style=\"color: $color\">";
+    }
+    $html .= $sign . ' ' . encodeHTML($line);
+    if ($color) {
+      $html .= "</span>";
+    }
+    return $html;
+  };
+
+  my $flushDiffBuffers = sub {
+    my $html = '';
+
+    foreach (@minusBuffer) {
+      $html .= &$renderDiffLine(@$_);
+    }
+    @minusBuffer = ();
+
+    foreach (@plusBuffer) {
+      $html .= &$renderDiffLine(@$_);
+    }
+    @plusBuffer = ();
+
+    return $html;
+  };
+
+  while (@diff) {
+    my ($sign, $left, $right) = @{shift @diff};
+
+    if ($sign eq '-') {
+      push @minusBuffer, ['-', $left];
+
+    }
+    elsif ($sign eq '+') {
+      push @plusBuffer, ['+', $right];
+
+    }
+    elsif ($sign eq 'c') {
+      push @minusBuffer, ['-', $left];
+      push @plusBuffer, ['+', $right];
+
+    }
+    elsif ((@minusBuffer || @plusBuffer)
+           && $right =~ /^\s*$/
+           && @diff
+           && ${$diff[0]}[0] ne 'u') {
+
+      # whitespace lines surrounded by changes should be included in
+      # the changes
+      # [ ] doesn't take into account multiple unchanged whitespace
+      # lines in a row
+      push @minusBuffer, ['-', $left];
+      push @plusBuffer, ['+', $right];
+
+    }
+    else {
+      $html .= &$flushDiffBuffers();
+      $html .= &$renderDiffLine(' ', $right);
+    }
+
+    if (!@diff) {
+      $html .= &$flushDiffBuffers();
+    }
+  }
+
+  return $html;
+}
+
 1;
