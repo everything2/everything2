@@ -5007,7 +5007,6 @@ sub changeroom
 
   return if $APP->isGuest($USER);
   return if $$USER{title} eq 'everyone';
-  return ("You are locked in your current room for " . ceil(($$VARS{lockedin} - time)/ 60) . " minutes.<br><br>") if ($$VARS{lockedin} > time);
 
   my $str = "";
   $str = ' instant ajax chatterbox_chatter:#' if $query and $query -> param('ajaxTrigger') and defined $query->param('changeroom')	and $query->param('changeroom') != $$USER{in_room};
@@ -5061,13 +5060,23 @@ sub changeroom
   $str.=$query->checkbox(-name=>'cloaked', checked=>$$VARS{visible}, value=>1, label=>'cloaked', class=>$ajax."sexiscool=1&cloaked=/$nodelet") if $isCloaker;
 
   #$str.=htmlcode('lockroom').' '.htmlcode('createroom');
-  $str.=' '.htmlcode('createroom');
+  $str.=' '.htmlcode('createroom')."<br />";
 
-  $str.='<br>';
-  $str.=$query->popup_menu(-name=>'changeroom', Values=>\@aprrooms, default=>$$USER{in_room}, labels=>\%aprlabel,class=>$ajax."changeroom=/$nodelet");
-  $str.=$query->submit('sexiscool','go');
-  $str.='</form></div>';
+  if(my $suspensioninfo = $APP->isSuspended($USER,"changeroom"))
+  {
+    if(defined($suspensioninfo->{ends}) and $suspensioninfo->{ends} != 0)
+    {
+      $str.='You are locked here for '.($APP->convertDateToEpoch($suspensioninfo->{ends})-time).' seconds.';
+    }else{
+      $str.='You are locked here indefinitely.';
+    }
+  }else{
 
+    $str.='<br>';
+    $str.=$query->popup_menu(-name=>'changeroom', Values=>\@aprrooms, default=>$$USER{in_room}, labels=>\%aprlabel,class=>$ajax."changeroom=/$nodelet");
+    $str.=$query->submit('sexiscool','go');
+    $str.='</form></div>';
+  }
   return $str;
 }
 
