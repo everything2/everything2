@@ -2393,7 +2393,7 @@ sub setupuservars
   $$SETTINGS{level} .= " ($$TITLES{$$SETTINGS{level}})";
 
   if ($$NODE{title} eq 'thefez') { $$SETTINGS{level} = "-1 (Arcanist)" } # --N
-  if ($$NODE{title} eq 'alex') { $$SETTINGS{level} = "âˆž (Ascended)" } # --a
+  if ($$NODE{title} eq 'alex') { $$SETTINGS{level} = "(Ascended)" } # --a
 
   $$SETTINGS{level} .= " \/ $$NODE{experience}";
 
