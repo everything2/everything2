@@ -4477,32 +4477,6 @@ sub googleanalytics
   </script>!;
 }
 
-# This is actually a major work item for the site. All of our javascript needs to be in 1 file with it being evaluated at the bottom, not the top
-#
-sub javascript_decider
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($str, $N) = (undef, undef);
-  my @JS = (getNode('default javascript', 'jscript'));
-
-  $str = "";
-
-  my $jsType = getId(getType('jscript'));
-  foreach (@JS) {
-    $str .= "<script async src='".htmlcode("linkjavascript",$$_{node_id})."' type='text/javascript'></script>\n";
-  }
-
-  return $str;
-
-}
-
 sub static_javascript
 {
   my $DB = shift;
@@ -4540,26 +4514,24 @@ sub static_javascript
   $e2 = encode_json($e2);
 
   my $min = undef; $min = '.min' unless $APP->inDevEnvironment();
-  my $libraries = qq'<script async src="http://code.jquery.com/jquery-1.11.1$min.js" type="text/javascript"></script>';
+  my $libraries = qq'<script src="http://code.jquery.com/jquery-1.11.1$min.js" type="text/javascript"></script>';
 
   if($APP->use_bootstrap)
   {
-    $libraries .= qq|<script async src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>|;
+    $libraries .= qq|<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap$min.js"></script>|;
   }
-
-  # mark as guest but only in non-canonical domain so testing and caching both work
-  my $js_decisions = htmlcode('javascript_decider');
 
   unless ($APP->isGuest($USER)){
-      $libraries .= '<script async src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js" type="text/javascript"></script>';
+      $libraries .= qq|<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui$min.js" type="text/javascript"></script>|;
   }
+  my $defaultJS = getNode("default javascript","jscript");
+  $libraries .= "<script src='".htmlcode("linkjavascript",$$defaultJS{node_id})."' type='text/javascript'></script>\n";
 
   return qq|
     <script type='text/javascript' name='nodeinfojson' id='nodeinfojson'>
       e2 = $e2;
     </script>
-    $libraries
-    $js_decisions|;
+    $libraries|;
 }
 
 sub zenFooter
