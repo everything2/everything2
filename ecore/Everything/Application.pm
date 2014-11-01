@@ -1339,6 +1339,17 @@ sub convertDateToEpoch
 	return $epoch;
 }
 
+sub convertEpochToDate
+{
+  my ($this, $epoch) = @_;
+  # Normally gmtime would be appropriate, but in production we use gmtime as localtime
+  # In dev, gmtime breaks things
+
+  my $timedata = [localtime($epoch)];
+  return join(" ", join("-",$timedata->[5]+1900,sprintf("%02d",$timedata->[4]+1),sprintf("%02d",$timedata->[3])),join(":",sprintf("%02d", $timedata->[2]),sprintf("%02d",$timedata->[1]),sprintf("%02d", $timedata->[0])));
+}
+
+
 # used as a part of the sendPrivateMessage htmlcode refactor, possibly other places
 # Tested in 003
 sub messageCleanWhitespace
@@ -2004,8 +2015,11 @@ sub insertIntoRoom {
 }
 
 sub changeRoom {
-  my ($this, $user, $ROOM) = @_;
+  my ($this, $user, $ROOM, $force) = @_;
   $this->{db}->getRef($user);
+
+  return if $this->isSuspended($user, "changeroom") and not $force;
+
   my $room_id=$this->{db}->getId($ROOM);
   $room_id=0 unless $ROOM;
 
@@ -2108,10 +2122,76 @@ sub isSuspended
 {
   my ($this, $usr, $sustype) = @_;
 
-  return undef unless $usr and $sustype and $sustype = $this->{db}->getNode($sustype, "sustype");
-  return $this->{db}->sqlSelect("suspension_id", "suspension", "suspension_user=$$usr{node_id} and suspension_sustype=$$sustype{node_id}");
+  return undef unless $usr and $sustype;
 
+  if(!UNIVERSAL::isa($sustype, "HASH"))
+  {
+    $sustype = $this->{db}->getNode($sustype, "sustype");
+    return unless $sustype;
+  }
+
+  my $suspension_info = $this->{db}->sqlSelectHashref("*", "suspension", "suspension_user=$$usr{node_id} and suspension_sustype=$$sustype{node_id}");
+ 
+  return unless $suspension_info->{suspension_id};
+ 
+  # Because the "ends" behavior was added well after the other suspension code was in place, we're going to assume that
+  # the old behavior of '0' means never ends
+  if(!defined($suspension_info->{ends}) or $this->convertDateToEpoch($suspension_info->{ends}) == 0 )
+  {
+    # Indefinite suspension
+    return $suspension_info;
+  }
+
+  if($this->convertDateToEpoch($suspension_info->{ends}) <= time())
+  {
+    # Time has been served
+    $this->unsuspendUser($usr, $sustype);
+    return;
+  }else{
+    # Suspension still valid
+    return $suspension_info;
+  }
 }
+
+sub suspendUser
+{
+  my ($this, $usr, $sustype, $suspendedby, $duration) = @_;
+  return undef unless $usr and $sustype;
+
+  if(!UNIVERSAL::isa($sustype, "HASH"))
+  {
+    $sustype = $this->{db}->getNode($sustype, "sustype");
+    return unless $sustype;
+  }
+  
+  $this->{db}->getRef($suspendedby);
+
+  if($this->isSuspended($usr, $sustype))
+  {
+     $this->unsuspendUser($usr, $sustype);
+  }
+
+  my $suspension_info = { suspension_user => $usr->{node_id}, suspendedby_user => $suspendedby->{node_id}, suspension_sustype => $sustype->{node_id}};
+  $suspension_info->{ends} = $this->convertEpochToDate(time()+$duration) if $duration;
+
+  return $this->{db}->sqlInsert("suspension", $suspension_info );
+}
+
+sub unsuspendUser
+{
+  my ($this, $usr, $sustype) = @_;
+  return undef unless $usr and $sustype;
+
+  if(!UNIVERSAL::isa($sustype, "HASH"))
+  {
+    $sustype = $this->{db}->getNode($sustype, "sustype");
+    return unless $sustype;
+  }
+  
+  return $this->{db}->sqlDelete("suspension", "suspension_user=$$usr{node_id} and suspension_sustype=$$sustype{node_id}");
+}
+
+
 
 #############################################################################
 # Sub

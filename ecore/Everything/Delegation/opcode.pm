@@ -883,6 +883,43 @@ sub message
       msgtext=>'typo alert: '.$message,
       author_user=>$UID,
       for_user=>$UID });
+  } elsif( ($isRoot || $isChanop) and $message =~ /^\/drag\s+(\S+)$/i) {
+    my $dragTarget = $1;
+    my $dragUser = getNode($dragTarget, "user");
+    if(!$dragUser)
+    {
+      $dragTarget =~ s/_/ /gs;
+      $dragUser = getNode($dragTarget, "user");
+    }
+
+    if(!$dragUser)
+    {
+      $DB->sqlInsert('message', {
+        msgtext => "Could not find user to drag: '$dragTarget'",
+        author_user => (getNode("root","user")->{node_id}),
+        for_user => $USER->{node_id}
+      });
+
+      return;
+    }
+
+    my $room = $USER->{in_room};
+    my $roomtitle = "outside";
+
+    if($room != 0)
+    {
+       $room = $DB->getNodeById($room);
+       $roomtitle = "into $room->{title}";
+    }
+
+    my $EDB = getNode("EDB", "user");
+    $APP->changeRoom($dragUser,$USER->{in_room}, "force");
+    $APP->suspendUser($dragUser,"changeroom",$USER,60*5); # 5 minutes
+    $DB->sqlInsert('message', {
+      msgtext => "You have been dragged $roomtitle for five minutes",
+      for_user => $dragUser->{node_id},
+      author_user => $EDB->{node_id}
+    });
 
   } elsif( ($isRoot || $isChanop) and $message =~ /^\/fakeborg\s+(.*)$/i) {
     my $fakeTarget = $1;
