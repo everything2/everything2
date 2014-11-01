@@ -4473,6 +4473,7 @@ sub googleanalytics
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
   ga('create', 'UA-1314738-1', 'auto');
+  ga('require', 'displayfeatures');
   ga('send', 'pageview');
   </script>!;
 }
