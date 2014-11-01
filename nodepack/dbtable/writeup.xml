@@ -8,6 +8,7 @@
   `notnew` int(11) NOT NULL DEFAULT '0',
   `cooled` int(11) NOT NULL DEFAULT '0',
   `publishtime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `feedback_policy_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`writeup_id`),
   KEY `parent_e2node_index` (`parent_e2node`),
   KEY `idx_cooled` (`cooled`),

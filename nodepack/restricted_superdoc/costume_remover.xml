@@ -47,7 +47,7 @@ return unless isGod($USER);
 
 # Build the table rows for inputting user names
 my $count = 5;
-my $str = &quot;&lt;p&gt;This tool deletes the costume variable for selected users. Use it to remove abusively or innapropriately named costumes. Note that this tool will not work on your own costume.&lt;/p&gt;&lt;p&gt;&quot;;
+my $str = &quot;&lt;p&gt;This tool deletes the costume variable for selected users. Use it to remove abusively or innapropriately named costumes.&lt;/p&gt;&lt;p&gt;&quot;;
 $str.=htmlcode('openform');
 $str.='&lt;table border=&quot;1&quot;&gt;';
 
