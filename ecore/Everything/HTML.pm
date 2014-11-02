@@ -29,7 +29,6 @@ sub BEGIN {
               $VARS
               $PAGELOAD
               $query
-              createNodeLinks
               parseLinks
               htmlScreen
               screenTable
