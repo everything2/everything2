@@ -179,41 +179,6 @@ sub query_vars_string {
 	return $error;
 }
 
-
-
-######################################################################
-#	sub
-#		tagApprove
-#
-#	purpose
-#		determines whether or not a tag (and its specified attributes)
-#		are approved or not.  Returns the cleaned tag.  Used by cleanupHTML
-#
-sub tagApprove {
-	my ($close, $tag, $attr, $APPROVED) = @_;
-
-	$tag = uc($tag) if (exists $$APPROVED{uc($tag)});
-	$tag = lc($tag) if (exists $$APPROVED{lc($tag)});
-	
-	if (exists $$APPROVED{$tag}) {
-		unless ( $close ) {
-			if ( $attr ) {
-				if ( $attr =~ qr/\b(\w+)\b\=['"]?(\w+\b%?)["']?/i ) {
-					my ( $name , $value ) = ( $1 , $2 ) ;
-					return '<'.$close.$tag.' '.$name.'="'.$value.'">' if ( $$APPROVED{$tag} =~ /\b$name\b/i ) ;
-					return '<'.$close.$tag.' '.$name.'="'.$value.'">' if $$APPROVED{ noscreening } ;
-				}
-			}
-		}
-		'<'.$close.$tag.'>' ;
-	} else {
-		return '' unless $$APPROVED{ noscreening } ;
-		$$APPROVED{$tag} .= '' ;
-		return &tagApprove ;
-	}
-}
-
-
 #############################################################################
 #	sub
 #		htmlScreen
@@ -329,7 +294,7 @@ sub cleanupHTML {
 	    $approved_tag = $preapproved_ref->{$key};
 	    # Handle miss in the pre-approved tag map
 	    unless (defined($approved_tag)) {
-		$approved_tag = tagApprove('', $1, $2,
+		$approved_tag = $APP->tagApprove('', $1, $2,
 					   $approved) || '';
 		$preapproved_ref->{$key} = $approved_tag;
 	    }
@@ -369,7 +334,7 @@ sub cleanupHTML {
 	    $outer_text = $3;
 	    $approved_tag = $preapproved_ref->{$key};
 	    unless (defined($approved_tag)) {
-		$approved_tag = tagApprove('/', $1,
+		$approved_tag = $APP->tagApprove('/', $1,
 					   $2,
 					   $approved) || '';
 		$preapproved_ref->{$key} = $approved_tag;

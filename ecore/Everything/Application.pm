@@ -2655,4 +2655,41 @@ sub urlDecode
   $_[0];
 }
 
+######################################################################
+#	sub
+#		tagApprove
+#
+#	purpose
+#		determines whether or not a tag (and its specified attributes)
+#		are approved or not.  Returns the cleaned tag.  Used by cleanupHTML
+#
+sub tagApprove
+{
+  my ($this, $close, $tag, $attr, $APPROVED) = @_;
+
+  $tag = uc($tag) if (exists $$APPROVED{uc($tag)});
+  $tag = lc($tag) if (exists $$APPROVED{lc($tag)});
+	
+  if (exists $$APPROVED{$tag})
+  {
+    unless ( $close )
+    {
+      if ( $attr )
+      {
+        if ( $attr =~ qr/\b(\w+)\b\=['"]?(\w+\b%?)["']?/i )
+        {
+          my ( $name , $value ) = ( $1 , $2 ) ;
+          return '<'.$close.$tag.' '.$name.'="'.$value.'">' if ( $$APPROVED{$tag} =~ /\b$name\b/i ) ;
+          return '<'.$close.$tag.' '.$name.'="'.$value.'">' if $$APPROVED{ noscreening } ;
+        }
+      }
+    }
+    '<'.$close.$tag.'>' ;
+  } else {
+    return '' unless $$APPROVED{ noscreening } ;
+    $$APPROVED{$tag} .= '' ;
+    return $this->tagApprove($close,$tag,$attr,$APPROVED);
+  }
+}
+
 1;
