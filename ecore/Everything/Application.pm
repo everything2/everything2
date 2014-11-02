@@ -383,7 +383,7 @@ sub updateLogin
 	my ($this, $user, $query, $cookie) = @_;
 
 	return 0 if substr($query -> param('passwd'), 0, 10) ne $user -> {passwd}
-		&& Everything::HTML::urlDecode($cookie) ne $user -> {title}.'|'.crypt($user -> {passwd}, $user -> {title});
+		&& $this->urlDecode($cookie) ne $user -> {title}.'|'.crypt($user -> {passwd}, $user -> {title});
 
 	$this -> updatePassword($user, $user -> {passwd});
 
@@ -2640,6 +2640,19 @@ sub showCompleteDiff{
   }
 
   return $html;
+}
+
+sub urlDecode
+{
+  my $this = shift;
+
+  foreach my $arg (@_)
+  {
+    tr/+/ / if $_;
+    $arg =~ s/\%(..)/chr(hex($1))/ge;
+  }
+
+  $_[0];
 }
 
 1;
