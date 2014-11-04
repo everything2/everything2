@@ -83,8 +83,8 @@ while (my $wu_row = $csr -&gt; fetchrow_hashref){
 		type_nodetype =&gt; $wu_row -&gt; {type_nodetype},
 		suffix =&gt; 'html',
 		doctext =&gt; &quot;&lt;base href=\&quot;http://everything2.com\&quot;&gt;\n&quot;.
-			breakTags parseLinks screenTable
-			$APP-&gt;htmlScreen($wu_row -&gt; {doctext},$TAGS)
+			$APP-&gt;breakTags(parseLinks(screenTable(
+			$APP-&gt;htmlScreen($wu_row -&gt; {doctext},$TAGS))))
 	} if $e2parse &amp; 2;
 }
 

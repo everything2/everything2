@@ -73,7 +73,7 @@ $text = parseLinks($codeDoc?(parseCode($text)):($APP-&gt;htmlScreen($text, $TAGS
 
 @notlinks = () if $codeDoc;
 
-$text = breakTags($text) unless $codeDoc;
+$text = $APP-&gt;breakTags($text) unless $codeDoc;
 
 my $oddrowclr  = '#999999';
 

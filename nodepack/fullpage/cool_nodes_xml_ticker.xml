@@ -1,6 +1,9 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Tue Nov  4 01:50:16 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Tue Nov  4 03:35:10 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;karma debt&quot; node_id=&quot;2116463&quot; parent_e2node=&quot;74729&quot; author_user=&quot;TheAnglican&quot;&gt;The Young Ones&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Everyone2&quot; node_id=&quot;1403062&quot; parent_e2node=&quot;1293525&quot; author_user=&quot;Gritchka&quot;&gt;plosive&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Estelore&quot; node_id=&quot;2107557&quot; parent_e2node=&quot;2107553&quot; author_user=&quot;Clockmaker&quot;&gt;The Pig-Tale: Commentary&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Bitriot&quot; node_id=&quot;2116450&quot; parent_e2node=&quot;2116448&quot; author_user=&quot;Estelore&quot;&gt;clickbait&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Ikura&quot; node_id=&quot;1863315&quot; parent_e2node=&quot;1863231&quot; author_user=&quot;Excalibur&quot;&gt;Gropecunt Lane&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1278213&quot; parent_e2node=&quot;390754&quot; author_user=&quot;hotthamir&quot;&gt;Nebuchadnezzar&lt;/cooled&gt;
@@ -13,9 +16,6 @@
 	&lt;cooled cooledby_user=&quot;gnarl&quot; node_id=&quot;2116447&quot; parent_e2node=&quot;1995706&quot; author_user=&quot;Estelore&quot;&gt;gall wasp&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;drownzsurf&quot; node_id=&quot;2116456&quot; parent_e2node=&quot;22356&quot; author_user=&quot;borgo&quot;&gt;Robert De Niro&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;drownzsurf&quot; node_id=&quot;2116467&quot; parent_e2node=&quot;798945&quot; author_user=&quot;TheAnglican&quot;&gt;The Vicar of Dibley&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Ashigaru&quot; node_id=&quot;2070603&quot; parent_e2node=&quot;2070596&quot; author_user=&quot;Jet-Poop&quot;&gt;October 2, 2012&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;spiregrain&quot; node_id=&quot;2116461&quot; parent_e2node=&quot;1194511&quot; author_user=&quot;TheAnglican&quot;&gt;Some Mothers Do 'Ave 'Em&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Ashigaru&quot; node_id=&quot;2116435&quot; parent_e2node=&quot;52301&quot; author_user=&quot;Tem42&quot;&gt;mustard&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>
