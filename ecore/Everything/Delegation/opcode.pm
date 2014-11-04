@@ -23,7 +23,6 @@ BEGIN {
   *urlGenNoParams = *Everything::HTML::urlGenNoParams;
   *insertNodelet = *Everything::HTML::insertNodelet;
   *screenTable = *Everything::HTML::screenTable;
-  *encodeHTML = *Everything::HTML::encodeHTML;
   *getType = *Everything::HTML::getType;
   *updateNode = *Everything::HTML::updateNode;
   *rewriteCleanEscape = *Everything::HTML::rewriteCleanEscape;
@@ -700,7 +699,7 @@ sub message
     $helpTopics = $helpVars->{$helpText};
     if (!$helpTopics)
     {
-      my $theTopic = encodeHTML($1);
+      my $theTopic = $APP->encodeHTML($1);
       $helpTopics = "Sorry, no information on $theTopic is available. Please try [Everything2 Help] for further assistance.";
 
       if (($helpText =~ /^(\S*)?\s+(\S*)/)&&($isRoot))
@@ -871,7 +870,7 @@ sub message
       $old = $m;
     }
 
-    $query->param('sentmessage', 'you said "' . encodeHTML($message) . '" to '.linkNode($U));
+    $query->param('sentmessage', 'you said "' . $APP->encodeHTML($message) . '" to '.linkNode($U));
 
     # botched /msg test
   } elsif( ($message =~ /^\W?(.sg|m^[aeiouy]g|ms.|smg|mgs)/i) && !$$VARS{noTypoCheck} ) {
@@ -1033,7 +1032,7 @@ sub message
     setVars($settingsnode, $topics);
 
     # Log topic changes -- the gift shop is the official "topic change location"
-    $message = encodeHTML($message);
+    $message = $APP->encodeHTML($message);
     my $msgOp = getNode('E2 Gift Shop', 'superdoc');
     my $room = getNodeById($$USER{in_room});
     my $roomName = $$USER{in_room} == 0 ? "outside" : ($room ? $$room{title} : "missing room ($$USER{in_room})");

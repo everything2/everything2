@@ -1150,6 +1150,25 @@ sub metaDescription
   return qq|<meta name="description" content="$writeuptext">|;
 }
 
+
+#############################################################################
+#	Sub
+#		encodeHTML
+#
+#	Purpose
+#		Convert the HTML markup characters (>, <, ", etc...) into encoded
+#		characters (&gt;, &lt;, &quot;, etc...).  This causes the HTML to be
+#		displayed as raw text in the browser.  This is useful for debugging
+#		and displaying the HTML.
+#
+#	Parameters
+#		$html - the HTML text that needs to be encoded.
+#		$adv - Advanced encoding.  Pass 1 if some non-HTML, but Everything
+#			specific characters should be encoded.
+#
+#	Returns
+#		The encoded string
+#
 sub encodeHTML
 {
 	my ($this, $html, $adv) = @_;
@@ -2519,7 +2538,7 @@ sub showPartialDiff {
   foreach $chunk (@$diffs) {
     foreach $line (@$chunk) {
       my ($sign, $lineno, $text) = @$line;
-      $s = sprintf("%4d$sign %s\n", $lineno+1, encodeHTML($text));
+      $s = sprintf("%4d$sign %s\n", $lineno+1, $this->encodeHTML($text));
       if ($sign eq '+') {
         $s = '<font color="#008800">'.$s.'</font>';
       }
@@ -2577,7 +2596,7 @@ sub showCompleteDiff{
     if ($color) {
       $html .= "<span style=\"color: $color\">";
     }
-    $html .= $sign . ' ' . encodeHTML($line);
+    $html .= $sign . ' ' . $this->encodeHTML($line);
     if ($color) {
       $html .= "</span>";
     }
@@ -2970,6 +2989,5 @@ sub breakTags
 
   $text;
 }
-
 
 1;

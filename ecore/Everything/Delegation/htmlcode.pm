@@ -26,7 +26,6 @@ BEGIN {
   *urlGenNoParams = *Everything::HTML::urlGenNoParams;
   *insertNodelet = *Everything::HTML::insertNodelet;
   *screenTable = *Everything::HTML::screenTable;
-  *encodeHTML = *Everything::HTML::encodeHTML;
   *getType = *Everything::HTML::getType;
   *updateNode = *Everything::HTML::updateNode;
   *rewriteCleanEscape = *Everything::HTML::rewriteCleanEscape;
@@ -1527,7 +1526,7 @@ sub windowview
 #		* "text"
 #		* a hash key to a value to be marked up as
 #			- <span class="[key]>">value</span> (not xml) or
-#			- <[key]>encodeHTML(value)</[key> (xml)
+#			- <[key]>$APP->encodeHTML(value)</[key> (xml)
 #		* 'content' to show the doctext
 #		* 'unfiltered' to show the doctext without screening the html
 #		* a number n, to display the first n bytes of the doctext
@@ -1673,7 +1672,7 @@ sub show_content
       return "\n<div class=\"content\">\n$text$dots\n</div>$morelink" unless $xml ;
 
       $text =~ s/<a .*?(href=".*?").*?>/<a $1>/sg ; # kill onmouseup etc
-      return '<content type="html">'.encodeHTML( $text.$dots ).'</content>' ;
+      return '<content type="html">'.$APP->encodeHTML( $text.$dots ).'</content>' ;
     };
   }
 
@@ -1707,7 +1706,7 @@ sub show_content
         } elsif (/^"([^"]*)"$/){
           $str .= $1;
         } elsif ( $xml ) {
-          $str .= "<$_>".encodeHTML( $$N{ $_ } )."</$_>" ;
+          $str .= "<$_>".$APP->encodeHTML( $$N{ $_ } )."</$_>" ;
         } else {
           $str .= "<span class=\"$_\">".$$N{ $_ }.'</span>' ;
         }
@@ -1904,7 +1903,7 @@ sub softlink
         my $tn = getNodeById($$n{to_node},'light');
         my $nodeshelltest = exists $fillednode_ids{$$tn{node_id}};
         $ss .= '<e2link node_id="'.$$tn{node_id}.'" weight="'.$$n{hits}.'" filled="'.($nodeshelltest? '1' : '0').'">'
-          .encodeHTML($$tn{title})."</e2link>\n";
+          .$APP->encodeHTML($$tn{title})."</e2link>\n";
       }
       return $ss;
     }
@@ -3085,7 +3084,7 @@ sub displayvars
   $str.="<table width=\"100%\" cellpadding=\"1\" cellspacing=\"1\" border=\"0\">\n";
   $str.="<TR><TH>Setting</TH><TH>Value</TH></TR>\n";
   foreach (@skeys) {
-    $str.= '<tr><td class="setting" bgcolor="'.$keyclr.'">'.$_.'</td><td class="setting" bgcolor="'.$valclr.'">'.encodeHTML($$SETTINGS{$_}, 1)."</td></tr>\n";  
+    $str.= '<tr><td class="setting" bgcolor="'.$keyclr.'">'.$_.'</td><td class="setting" bgcolor="'.$valclr.'">'.$APP->encodeHTML($$SETTINGS{$_}, 1)."</td></tr>\n";  
   }
   $str .="</table>\n";
   return $str
@@ -3135,7 +3134,7 @@ sub editvars
   $str.="<tr><th>Remove</th><th>Setting</th><th>Value</th></tr>\n";
   foreach(@skeys) {
     $oddrow = ($oddrow ? '' : ' class="oddrow"');
-    my $value = encodeHTML($$SETTINGS{$_});
+    my $value = $APP->encodeHTML($$SETTINGS{$_});
 
     #  This breaks if there's a double quote in the text, so we replace with &quot;
     $value =~ s/\"/&quot;/g;
@@ -4237,7 +4236,7 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
     foreach(@wuPartLink) {
       if(length($_)>$i) {
         $c.=', ' if length($c);
-        $c.='" <code>&#91;'.encodeHTML(substr($_,0,$i),1).'</code> "';
+        $c.='" <code>&#91;'.$APP->encodeHTML(substr($_,0,$i),1).'</code> "';
       }
     }
 
@@ -4252,7 +4251,7 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
       if( index($_,'[')!=-1 ) {
         next if $_ =~ /[^[\]]*(?:\[[^\]|]*[\]|][^[\]]*)?/ ; # direct link, regexp from parselinks in HTML.pm
         $c.=', ' if length($c);
-        $c.='" <code>&#91;'.encodeHTML($_,1).'&#93;</code> "';
+        $c.='" <code>&#91;'.$APP->encodeHTML($_,1).'&#93;</code> "';
       }
     }
 
@@ -4262,7 +4261,7 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
 
     #forgot to close a link - no final ]
     if( ($i=index($wuPartText[-1],'['))!=-1 ) {
-      push @problems, $curCat.'Oops, it looks like you forgot to close your last link. You ended with: " <code>'.encodeHTML(substr($wuPartText[-1],$i),1).'</code> ".';
+      push @problems, $curCat.'Oops, it looks like you forgot to close your last link. You ended with: " <code>'.$APP->encodeHTML(substr($wuPartText[-1],$i),1).'</code> ".';
     }
 
   } #end show default hints
@@ -4277,7 +4276,7 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
       $i = (($i=index($_,'|'))==-1) ? $_ : substr($_,0,$i);	#only care about part that links, not display
       if($i =~ /<.*?>/) {
         $c.=', ' if length($c);
-        $c.='" <code>'.encodeHTML($i,1).'</code> "';
+        $c.='" <code>'.$APP->encodeHTML($i,1).'</code> "';
       }
     }
 
@@ -4294,7 +4293,7 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
         <tr><td>less than</td><td>&lt;</td><td><code>&amp;lt;</code></td></tr>
         <tr><td>greater than</td><td>&gt;</td><td><code>&amp;gt;</code></td></tr>
         </table>
-        For example, to show the symbol '.($i=encodeHTML($1,1)).' enter it as: " <code>'.encodeHTML($i).'</code> ".';
+        For example, to show the symbol '.($i=$APP->encodeHTML($1,1)).' enter it as: " <code>'.$APP->encodeHTML($i).'</code> ".';
     }
 
     if($writeup =~ /\s([\[\]])\s/) {
@@ -4303,7 +4302,7 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
 
     #no closing semicolon on entity
     if($writeup =~ /\s&(#?\w+)\s/) {
-      push @problems, $curCat.'All HTML entities should have a closing semicolon. You entered: " <code>'.($i='&amp;'.encodeHTML($1)).'</code> " but the correct way is: " <code>'.$i.';</code> ".';
+      push @problems, $curCat.'All HTML entities should have a closing semicolon. You entered: " <code>'.($i='&amp;'.$APP->encodeHTML($1)).'</code> " but the correct way is: " <code>'.$i.';</code> ".';
     }
 
   } #end show HTML hints
@@ -5259,7 +5258,7 @@ sub firmlinks
     $str .=' , ' if $str;
     $str .= $query->checkbox('cutlinkto_'.$$linkedNode{node_id}, 0, '1', '') if $cantrim;
     $str .= linkNode($linkedNode);
-    $str .= encodeHTML(" $linkText") if $linkText ne '';
+    $str .= $APP->encodeHTML(" $linkText") if $linkText ne '';
   }
 
   my $firmhead = '';
@@ -5514,7 +5513,7 @@ sub unignoreUser
       $DB->sqlDelete('messageignore',"messageignore_id=$$USER{node_id} AND ignore_node=$$U{node_id}");
     }
   } else {
-    $uname = encodeHTML($uname);
+    $uname = $APP->encodeHTML($uname);
     return "<strong>$uname</strong> doesn't seem to exist on the system!" unless $U;
   }
 
@@ -5675,9 +5674,9 @@ sub ednsection_cgiparam
     $str .= '<tt>' if $isDebug;
     $str .= '<strong>'.$var.'</strong>';
     if((my $l=length($q))>$maxLen) {
-      $str .= ':'.encodeHTML(substr($q,0,$maxLen),1).'... ('.$l.')';
+      $str .= ':'.$APP->encodeHTML(substr($q,0,$maxLen),1).'... ('.$l.')';
     } elsif($q) {
-      $str .= ':'.encodeHTML($q,1);
+      $str .= ':'.$APP->encodeHTML($q,1);
     }
 
     $str .= '</tt>' if $isDebug;
@@ -5736,7 +5735,7 @@ sub ednsection_globals
         my $count = 0;
         foreach my $key (keys %$hr) {
           $str.="\n<tr><td>$key</td>";
-          $str.='<td><code>'.encodeHTML($$hr{$key}).'</code></td>' if exists $$hr{$key};
+          $str.='<td><code>'.$APP->encodeHTML($$hr{$key}).'</code></td>' if exists $$hr{$key};
           $str.="</tr>\n";
         }
       }, 
@@ -5746,7 +5745,7 @@ sub ednsection_globals
         my $count = 0;
         foreach my $key (keys %$hr) {
           $str.="\n<tr><td><small>$key</small></td>";
-          $str.='<td><small><code>'.encodeHTML($$hr{$key}).'</code></small></td>' if exists $$hr{$key};
+          $str.='<td><small><code>'.$APP->encodeHTML($$hr{$key}).'</code></small></td>' if exists $$hr{$key};
           $str.="</tr>\n";
         }
       }
@@ -6114,7 +6113,7 @@ sub showchatter
       my $costume = getVars($aUser)->{costume} if (getVars($aUser)->{costume});
       if ($costume gt '')
       {
-        my $halloweenStr = $$aUser{title}."|".encodeHTML($costume);
+        my $halloweenStr = $$aUser{title}."|".$APP->encodeHTML($costume);
         $userLink = linkNodeTitle($halloweenStr);
       }
     }
@@ -6341,7 +6340,7 @@ sub showmessages
     my $authorVars = getVars $a if $a;
     my $name = $a ? $$a{title} : '?';
     $name =~ tr/ /_/;
-    $name = encodeHTML($name);
+    $name = $APP->encodeHTML($name);
 
     if($$VARS{showmessages_replylink} and not $$noreplylink{$$MSG{author_user}}){
       my $jsname = $name;
@@ -7766,7 +7765,7 @@ sub displayWriteupInfo
 
     unless( (exists $infofunctions->{$fnName}) && (defined $infofunctions->{$fnName}) )
     {
-      $curRow .= $align.'<small>(unknown value: "'.encodeHTML($fnName).'"; see '.linkNodeTitle('Settings').')</small>'.$tDataClose unless $s;
+      $curRow .= $align.'<small>(unknown value: "'.$APP->encodeHTML($fnName).'"; see '.linkNodeTitle('Settings').')</small>'.$tDataClose unless $s;
       next;
     }
 
@@ -8882,15 +8881,15 @@ sub sendPrivateMessage
     $s .= ' ' if length($s);
     if($n==1)
     {
-      $s .= encodeHTML($badNames[0]) . ' is not a valid user or usergroup name or alias.';
+      $s .= $APP->encodeHTML($badNames[0]) . ' is not a valid user or usergroup name or alias.';
     } else {
-      $s .= encodeHTML(join(@badNames)) . ' are not valid user or usergroup names or aliases.';
+      $s .= $APP->encodeHTML(join(@badNames)) . ' are not valid user or usergroup names or aliases.';
     }
   }
 
   if(length($s))
   {
-    push(@problems, $s . ' You tried to say: \\n ' . encodeHTML($msg));	#slash, then 'n', not newline
+    push(@problems, $s . ' You tried to say: \\n ' . $APP->encodeHTML($msg));	#slash, then 'n', not newline
   }
 
 
@@ -9118,7 +9117,7 @@ sub formxml_user
   my $str = "";
 
   $str.="<doctext>";
-  $str.=encodeHTML(htmlcode("displayUserText")) unless $query->param("no_doctext");
+  $str.=$APP->encodeHTML(htmlcode("displayUserText")) unless $query->param("no_doctext");
   $str.="</doctext>\n";
 
   my $vars = getVars($NODE);
@@ -9160,7 +9159,7 @@ sub formxml_user
       if ($ln)
       {
         $ln = getNodeById($$ln{parent_e2node});
-        $str.="<e2link node_id=\"$$ln{node_id}\">".encodeHTML($$ln{title})."</e2link>\n";
+        $str.="<e2link node_id=\"$$ln{node_id}\">".$APP->encodeHTML($$ln{title})."</e2link>\n";
       }
     }
   }
@@ -9168,10 +9167,10 @@ sub formxml_user
   $str.="</lastnoded>\n";
 
   $str.="<userstrings>\n";
-  $str.="  <mission>".encodeHTML($$vars{mission})."</mission>\n";
-  $str.="  <specialties>".encodeHTML($$vars{specialties})."</specialties>\n";
-  $str.="  <motto>".encodeHTML($$vars{motto})."</motto>\n";
-  $str.="  <employment>".encodeHTML($$vars{employment})."</employment>\n";
+  $str.="  <mission>".$APP->encodeHTML($$vars{mission})."</mission>\n";
+  $str.="  <specialties>".$APP->encodeHTML($$vars{specialties})."</specialties>\n";
+  $str.="  <motto>".$APP->encodeHTML($$vars{motto})."</motto>\n";
+  $str.="  <employment>".$APP->encodeHTML($$vars{employment})."</employment>\n";
   $str.="</userstrings>\n";
 
   $str.="<groupmembership>\n";
@@ -9182,7 +9181,7 @@ sub formxml_user
   push( @groups, getNode('edev', 'usergroup')) if $APP->isDeveloper($U);
 
   # There probably aren't too many usergroups with names that need to be encoded, but this will stop the errors before they occur.
-  $str.= "<e2link node_id=\"$$_{node_id}\">".encodeHTML($$_{title})."</e2link>\n" foreach(@groups);
+  $str.= "<e2link node_id=\"$$_{node_id}\">".$APP->encodeHTML($$_{title})."</e2link>\n" foreach(@groups);
 
   $str.="</groupmembership>\n";
 
@@ -9192,7 +9191,7 @@ sub formxml_user
   while (my $ROW = $csr->fetchrow_hashref())
   { 
     my $bm = getNodeById($$ROW{to_node}, 'light');
-    $str.="  <e2link node_id=\"$$bm{node_id}\">".encodeHTML($$bm{title})."</e2link>\n";
+    $str.="  <e2link node_id=\"$$bm{node_id}\">".$APP->encodeHTML($$bm{title})."</e2link>\n";
   }
 
   $str.="</bookmarks>\n";
@@ -9214,11 +9213,11 @@ sub xmlheader
     ($$NODE{publishtime}||$$NODE{createtime})
     ."\" type_nodetype=\"$$NODE{type_nodetype}\"".htmlcode("schemalink", "$$NODE{type_nodetype}").">\n";
   my $ntype = getNodeById($$NODE{type_nodetype});
-  $str.="<type>".encodeHTML($$ntype{title})."</type>\n" if $ntype;
-  $str.="<title>".encodeHTML($$NODE{title})."</title>\n";
+  $str.="<type>".$APP->encodeHTML($$ntype{title})."</type>\n" if $ntype;
+  $str.="<title>".$APP->encodeHTML($$NODE{title})."</title>\n";
   my $crby = $$NODE{createdby_user} || $$NODE{author_user} || 0;
   $crby=getNodeById($crby);
-  $str.="<author user_id=\"$$crby{node_id}\">".encodeHTML($$crby{title})."</author>\n";
+  $str.="<author user_id=\"$$crby{node_id}\">".$APP->encodeHTML($$crby{title})."</author>\n";
   return $str;
 }
 
@@ -9250,7 +9249,7 @@ sub formxml_e2node
   $str.= htmlcode("xmlfirmlinks", "$$NODE{node_id}");
   $str.= htmlcode("xmlwriteup","$_") foreach(@$grp);
   $str.= "<softlinks>\n".htmlcode("softlink", "xml")."</softlinks>\n";
-  $str.= "<nodelock>".encodeHTML(htmlcode('nopublishreason', $USER, $NODE))."</nodelock>";
+  $str.= "<nodelock>".$APP->encodeHTML(htmlcode('nopublishreason', $USER, $NODE))."</nodelock>";
   $str.= htmlcode("xmlnodesuggest");
   return $str;
 }
@@ -9286,7 +9285,7 @@ sub xmlwriteup
   my $parent = getNodeById($$wu{parent_e2node});
   # see [Drum & Bass] (using displaytype=xmltrue) 
   # to see the problem
-  $str.="<parent><e2link node_id=\"$$parent{node_id}\">".encodeHTML($$parent{title})."</e2link></parent>" if($parent);
+  $str.="<parent><e2link node_id=\"$$parent{node_id}\">".$APP->encodeHTML($$parent{title})."</e2link></parent>" if($parent);
 
   $str.="<writeuptype>".$$ntype{title}."</writeuptype>\n" if $ntype;
 
@@ -9306,16 +9305,16 @@ sub xmlwriteup
   {
     my $usr = getNodeById($$coolrow{cooledby_user});
     next unless $usr;
-    $str.=" <e2link node_id=\"$$usr{node_id}\">".encodeHTML($$usr{title})."</e2link>\n";
+    $str.=" <e2link node_id=\"$$usr{node_id}\">".$APP->encodeHTML($$usr{title})."</e2link>\n";
   }
 
   $str.="</cools>\n";
-  $str.="<title>".encodeHTML($$wu{title})."</title>\n";
+  $str.="<title>".$APP->encodeHTML($$wu{title})."</title>\n";
 
   my $au = getNodeById($$wu{author_user});
-  $str.="<author user_id=\"$$au{node_id}\">".encodeHTML($$au{title})."</author>\n";
+  $str.="<author user_id=\"$$au{node_id}\">".$APP->encodeHTML($$au{title})."</author>\n";
   $str.="<doctext>";
-  $str.=encodeHTML(($query->param('links_noparse') == 1)?($$wu{doctext}):(parseLinks($$wu{doctext}))) unless($query->param("no_doctext"));
+  $str.=$APP->encodeHTML(($query->param('links_noparse') == 1)?($$wu{doctext}):(parseLinks($$wu{doctext}))) unless($query->param("no_doctext"));
   $str.="</doctext>\n";
   $str.="</writeup>\n";
   return $str;
@@ -9339,7 +9338,7 @@ sub xmlfirmlinks
   {
     my $n = getNodeById($$ROW{to_node});
     next unless $n;
-    $str.="  <e2link node_id=\"$$n{node_id}\">".encodeHTML($$n{title})."</e2link>\n";
+    $str.="  <e2link node_id=\"$$n{node_id}\">".$APP->encodeHTML($$n{title})."</e2link>\n";
   }
 
   $str.="</firmlinks>\n";
@@ -9414,7 +9413,7 @@ sub formxml_superdoc
   my $txt = $$NODE{doctext};
   $txt = parseCode($txt);
   $txt = parseLinks($txt) unless($query->param("links_noparse") == 1 or $$NODE{type_title} eq "superdocnolinks");
-  $str.= encodeHTML($txt);
+  $str.= $APP->encodeHTML($txt);
   $str.="</superdoctext>\n";
   return $str;
 }
@@ -9438,7 +9437,7 @@ sub xmlnodesuggest
     next unless canReadNode($USER, $n);
     next if($$n{node_id} == $$NODE{node_id});
     my $tmp = "<nodesuggest type=\"$$n{type}{title}\">";
-    $tmp.= '<e2link node_id="'.$$n{node_id}.'">'.encodeHTML($$n{title}).'</e2link>';
+    $tmp.= '<e2link node_id="'.$$n{node_id}.'">'.$APP->encodeHTML($$n{title}).'</e2link>';
 
     if($$n{type}{title} eq 'user')
     {
@@ -9454,7 +9453,7 @@ sub xmlnodesuggest
           $tousr = getNode($ptr, 'user');
         }  
 
-        $tmp .= '<useralias><e2link node_id="'.$$tousr{node_id}.'">'.encodeHTML($$tousr{title}).'</e2link></useralias>';
+        $tmp .= '<useralias><e2link node_id="'.$$tousr{node_id}.'">'.$APP->encodeHTML($$tousr{title}).'</e2link></useralias>';
       }
     }
 
@@ -9568,7 +9567,7 @@ sub formxml_usergroup
   my $txt = parseCode($$NODE{doctext});
   my $str = "";
   $txt = parseLinks($txt) unless($query->param("links_noparse"));
-  $txt = encodeHTML($txt);
+  $txt = $APP->encodeHTML($txt);
   $str.="<description>\n";
   $str.=$txt unless($query->param("no_descrip"));
   $str.="</description>\n";
@@ -9691,7 +9690,7 @@ sub varsComboBox
     my $k = shift(@elements);
     return oops('@elements key #'.scalar(@values).' (index #'.(scalar(@values)<<1).') invalid') unless $k =~ /(-?[\w]+)/;
     $k=$1;
-    return oops('key "'.encodeHTML($k,1).'" already exists; value is "'.$labels{$k}.'"') if exists $labels{$k};
+    return oops('key "'.$APP->encodeHTML($k,1).'" already exists; value is "'.$labels{$k}.'"') if exists $labels{$k};
     my $v = shift(@elements);
 
     push(@values, $k);
@@ -10072,7 +10071,7 @@ sub formxml_room
     $APP->changeRoom($USER, $NODE);
   }
   my $str = "<canenter>".$entrance."</canenter>\n";
-  $str.="<description>".encodeHTML(($query->param("links_noparse"))?($$NODE{doctext}):(parseLinks($$NODE{doctext})))."</description>";
+  $str.="<description>".$APP->encodeHTML(($query->param("links_noparse"))?($$NODE{doctext}):(parseLinks($$NODE{doctext})))."</description>";
   return $str;
 }
 
@@ -10204,7 +10203,7 @@ sub externalLinkDisplay
   $fullURL = join('', split('"', $fullURL));	#remove double quotes
 
   # create link
-  my $str = '<a href="' . $fullURL . '" class="external">' . encodeHTML($fullURL, 1) . '</a>';
+  my $str = '<a href="' . $fullURL . '" class="external">' . $APP->encodeHTML($fullURL, 1) . '</a>';
   return $str;
 }
 
@@ -10321,7 +10320,7 @@ sub atomiseNode
     $timestamp =~ /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
     $timestamp = sprintf ("%04d-%02d-%02dT%02d:%02d:%02dZ", $1, $2, $3, $4, $5, $6);
 	
-    return '<title>' . encodeHTML($$N{title}) . '</title>' .
+    return '<title>' . $APP->encodeHTML($$N{title}) . '</title>' .
       '<link rel="alternate" type="text/html" href="' . $url . '"/>' .
       '<id>' . $url . '</id>' .
       '<author>' .
@@ -10407,7 +10406,7 @@ sub ignoreUser
       return 'already ignoring '.$$U{title};
     }
   } else {
-    $uname = encodeHTML($uname);
+    $uname = $APP->encodeHTML($uname);
     return "<strong>$uname</strong> doesn't seem to exist on the system!" unless $U;
   }
 
@@ -10735,7 +10734,7 @@ sub show_node_forward
   return "" unless ($query && defined $query->param('originalTitle'));
 
   my $originalTitle = $query->param('originalTitle');
-  my $encodedTitle = encodeHTML($originalTitle);
+  my $encodedTitle = $APP->encodeHTML($originalTitle);
   my $forwardNode = getNode($originalTitle, 'node_forward', 'light');
   my $alsoStr = htmlcode('usercheck', $originalTitle);
   my $editStr = "";
@@ -10838,7 +10837,7 @@ sub editor_homenode_tools
     {
       $str.= ' or ';
       map {
-        my $ip = encodeHTML($_);
+        my $ip = $APP->encodeHTML($_);
         $str.= "<br>\n"
         . linkNode($iph, 'by IP', {hunt_ip => $ip})
         . " ($ip <small>"
@@ -12458,7 +12457,7 @@ sub editwriteup
 	if $query -> param('draft_title') && $APP->cleanNodeName($query -> param('draft_title')) ne $$N{title};
   }
 
-  $str .= qq'<textarea name="${type}_doctext" id="writeup_doctext" '.htmlcode('customtextarea', '1').' class="formattable">'.encodeHTML($$N{doctext}).'</textarea>'.$message;
+  $str .= qq'<textarea name="${type}_doctext" id="writeup_doctext" '.htmlcode('customtextarea', '1').' class="formattable">'.$APP->encodeHTML($$N{doctext}).'</textarea>'.$message;
 
   my $setType = undef; $setType = "\n<p>".htmlcode('setwriteuptype', $$N{wrtype_writeuptype})."</p>" if $type eq 'writeup' && !$APP->isMaintenanceNode($N);
 
@@ -12925,7 +12924,7 @@ sub testshowmessages
     my $authorVars = undef; $authorVars = getVars $a if $a;
     my $name = $a ? $$a{title} : '?';
     $name =~ tr/ /_/;
-    $name = encodeHTML($name);
+    $name = $APP->encodeHTML($name);
 
     if($$VARS{showmessages_replylink} and not $$noreplylink{$$MSG{author_user}})
     {
@@ -13021,7 +13020,7 @@ sub testshowmessages
     } else {
       $str .=  ""
       . "<div class='reply'>"
-      . "<a title='" . encodeHTML($noReplyWhy) . "'>"
+      . "<a title='" . $APP->encodeHTML($noReplyWhy) . "'>"
       . "Can't reply"
       . "</a>"
       . "</div>";
@@ -13223,8 +13222,8 @@ sub ip_lookup_tools
   my $VARS = shift;
   my $PAGELOAD = shift;
   my $APP = shift;
-  # encodeHTML should be a no-op here, but just in case...
-  my $ip = encodeHTML(shift);
+  # $APP->encodeHTML should be a no-op here, but just in case...
+  my $ip = $APP->encodeHTML(shift);
 
   return 
     "<a href='http://whois.domaintools.com/$ip' target=\"_blank\">whois</a>"

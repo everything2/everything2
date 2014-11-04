@@ -48,7 +48,6 @@ sub BEGIN {
               displayPage
               gotoNode
               encodeHTML
-              decodeHTML
               rewriteCleanEscape
               processVarsSet
               showPartialDiff
@@ -144,7 +143,7 @@ sub handle_errors {
     Everything::printLog(query_vars_string());
     if (defined $query) {
 
-        $errorFromPerl = encodeHTML($errorFromPerl);
+        $errorFromPerl = $APP->encodeHTML($errorFromPerl);
         my $errorHeader = <<ENDHEADER;
 Status: $HTTP_ERROR_CODE Internal Hamster Error
 Content-type: text/html
@@ -234,9 +233,7 @@ sub tableWellFormed ($) {
 sub debugTag ($) {
     my ($tag) = @_;
     my $htmltag = $tag;
-    $htmltag =~ s/</&lt;/g; # should be encodeHTML, but of course
-                            # I don't have that in my standalone testbench.
-    $htmltag = "<strong><small>&lt;" . $htmltag . "&gt;</small></strong>";
+    $htmltag = "<strong><small>&lt;" . $APP->encodeHTML($htmltag) . "&gt;</small></strong>";
 
     if (substr($tag, 0, 1) ne '/') {
         return $htmltag . "<div style=\"margin-left: 16px; border: dashed 1px grey\">";
@@ -330,68 +327,11 @@ sub buildTable
 	$str.='</table>';
 }
 
-
-#############################################################################
-#	Sub
-#		encodeHTML
-#
-#	Purpose
-#		Convert the HTML markup characters (>, <, ", etc...) into encoded
-#		characters (&gt;, &lt;, &quot;, etc...).  This causes the HTML to be
-#		displayed as raw text in the browser.  This is useful for debugging
-#		and displaying the HTML.
-#
-#	Parameters
-#		$html - the HTML text that needs to be encoded.
-#		$adv - Advanced encoding.  Pass 1 if some non-HTML, but Everything
-#			specific characters should be encoded.
-#
-#	Returns
-#		The encoded string
-#
 sub encodeHTML
 {
 	my ($html, $adv) = @_;
 	return $APP->encodeHTML($html, $adv);
 }
-
-
-#############################################################################
-#	Sub
-#		decodeHTML
-#
-#	Purpose
-#		This takes a string that contains encoded HTML (&gt;, &lt;, etc..)
-#		and decodes them into their respective ascii characters (>, <, etc).
-#
-#		Also see encodeHTML().
-#
-#	Parameters
-#		$html - the string that contains the encoded HTML
-#		$adv - Advanced decoding.  Pass 1 if you would also like to decode
-#			non-HTML, Everything-specific characters.
-#
-#	Returns
-#		The decoded HTML
-#
-sub decodeHTML
-{
-	my ($html, $adv) = @_;
-
-	$html =~ s/\&amp\;/\&/g;
-	$html =~ s/\&lt\;/\</g;
-	$html =~ s/\&gt\;/\>/g;
-	$html =~ s/\&quot\;/\"/g;
-
-	if($adv)
-	{
-		$html =~ s/\&\#91\;/\[/g;
-		$html =~ s/\&\#93\;/\]/g;
-	}
-
-	return $html;
-}
-
 
 #############################################################################
 #	Sub
@@ -506,7 +446,7 @@ sub htmlErrorGods
 	my $error = $err . $warn;
 	my $linenum;
 
-	$code = encodeHTML($code);
+	$code = $APP->encodeHTML($code);
 
 	my @mycode = split /\n/, $code;
 	while($error =~ /line (\d+)/sg)
@@ -525,10 +465,10 @@ sub htmlErrorGods
 
 	my $str = "<dl>\n"
 		. "<dt>Error:</dt><dd>"
-		. encodeHTML($err)
+		. $APP->encodeHTML($err)
 		. "</dd>\n"
 		. "<dt>Warning:</dt><dd>"
-		. encodeHTML($warn)
+		. $APP->encodeHTML($warn)
 		. "</dd>\n"
 		;
 
@@ -1156,7 +1096,7 @@ sub htmlcode {
 		@savedArgs = split(/\s*,\s*/, $savedArgs[0]);
 	}
 
-	$encodedArgs = encodeHTML($encodedArgs);
+	$encodedArgs = $APP->encodeHTML($encodedArgs);
 
 	my $warnStr = "<p>Calling htmlcode $htmlcodeName";
 
@@ -1262,7 +1202,7 @@ sub listCode {
 	my ($code, $numbering) = @_;
 	return unless($code); 
 
-	$code = encodeHTML($code, 1);
+	$code = $APP->encodeHTML($code, 1);
 
 	my @lines = split /\n/, $code;
 	my $count = 1;

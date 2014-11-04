@@ -23,7 +23,6 @@ BEGIN {
   *urlGenNoParams = *Everything::HTML::urlGenNoParams;
   *insertNodelet = *Everything::HTML::insertNodelet;
   *screenTable = *Everything::HTML::screenTable;
-  *encodeHTML = *Everything::HTML::encodeHTML;
   *getType = *Everything::HTML::getType;
   *updateNode = *Everything::HTML::updateNode;
   *rewriteCleanEscape = *Everything::HTML::rewriteCleanEscape;
