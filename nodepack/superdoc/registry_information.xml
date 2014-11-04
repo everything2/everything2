@@ -10,8 +10,8 @@
   while(my $ref = $csr-&gt;fetchrow_hashref()){
     push @$rows,{
       'Registry'=&gt;linkNode($$ref{for_registry}),
-      'Data'=&gt;htmlScreen($$ref{data}),
-      'Comments'=&gt;htmlScreen($$ref{comments}),
+      'Data'=&gt;$APP-&gt;htmlScreen($$ref{data}),
+      'Comments'=&gt;$APP-&gt;htmlScreen($$ref{comments}),
       'Profile?'=&gt;['No','Yes']-&gt;[$$ref{in_user_profile}]
     };
   }

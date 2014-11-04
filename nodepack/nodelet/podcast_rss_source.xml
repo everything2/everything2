@@ -71,12 +71,12 @@ $str.=&quot;\n&lt;item&gt;
    my $HTML = getVars(getNode('approved HTML tags', 'setting'));
    my $full = 0;
    if (length($$pod{description}) &lt; 1024) {
-      $text = parseLinks(htmlScreen($$pod{description}, $HTML));
+      $text = parseLinks($APP-&gt;htmlScreen($$pod{description}, $HTML));
       $full = 1;
    } else {
       $text = substr($$pod{description},0, 1024);
       $text =~ s/\s+\w*$//gs;
-      $text = parseLinks(htmlScreen($text, $HTML));
+      $text = parseLinks($APP-&gt;htmlScreen($text, $HTML));
       $text =~ s/\[.*?$//;
    }
    $text = encodeHTML($text);

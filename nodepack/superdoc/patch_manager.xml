@@ -197,7 +197,7 @@ foreach(@patches[0 .. $thispage-1]) {
 	$str .= '&lt;tr class=&quot;oddrow&quot;&gt;'  if ($oddeven%2 == 0);
 	$str .= '&lt;tr class=&quot;evenrow&quot;&gt;' if ($oddeven%2 != 0);
 	$str .= '&lt;td valign=&quot;top&quot;&gt;'.linkNode($_,$t,{lastnode_id=&gt;0}).'&lt;/td&gt;&lt;td valign=&quot;top&quot;&gt;'.linkNode($$_{author_user}).'&lt;/td&gt;&lt;td valign=&quot;top&quot;&gt;';
-	$str .= $$_{purpose} ? '&lt;small&gt;'.htmlScreen($$_{purpose},0).'&lt;/small&gt;' : '&lt;em&gt;unknown&lt;/em&gt;';
+	$str .= $$_{purpose} ? '&lt;small&gt;'.$APP-&gt;htmlScreen($$_{purpose},0).'&lt;/small&gt;' : '&lt;em&gt;unknown&lt;/em&gt;';
 	$str .= '&lt;/td&gt;&lt;td valign=&quot;top&quot;';
 	$str .= &quot; class='patch_$sclass'&gt;$s&quot;;
 	$str .= '&lt;/td&gt;&lt;td align=&quot;top&quot;&gt;';

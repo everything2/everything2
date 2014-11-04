@@ -8,7 +8,7 @@ my $str = 'Candidates for CotC';
 
 #my $csr = $DB-&gt;{dbh}-&gt;prepare('SELECT node_id FROM node WHERE type_nodetype=117 AND reputation&gt;18 ORDER BY createtime LIMIT 300');
 #my $csr = $DB-&gt;{dbh}-&gt;prepare('SELECT node_id FROM node WHERE type_nodetype=117 AND reputation&gt;18 ORDER BY reputation LIMIT 300');
-my $csr = $DB-&gt;{dbh}-&gt;prepare('SELECT node_id FROM node WHERE type_nodetype=117 AND reputation&gt;18 ORDER BY createtime DESC LIMIT 300');
+my $csr = $DB-&gt;{dbh}-&gt;prepare('SELECT node_id FROM node WHERE type_nodetype=117 AND reputation&gt;12 ORDER BY createtime DESC LIMIT 300');
 #my $csr = $DB-&gt;{dbh}-&gt;prepare('SELECT writeup_id FROM writeup ORDER BY cooled DESC LIMIT 100');
 
 $csr-&gt;execute();

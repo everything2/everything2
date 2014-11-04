@@ -128,7 +128,7 @@ foreach my $patchInfo (@$patches) {
     . '&lt;td valign=&quot;top&quot;&gt;'.linkNode($$patchInfo{author_user}).'&lt;/td&gt;'
     . &quot;&lt;td valign=\&quot;top\&quot;&gt;$$patchInfo{createtime}&lt;/td&gt;&quot;
     . '&lt;td valign=&quot;top&quot;&gt;'
-      . ($$patchInfo{purpose} ? '&lt;small&gt;'.htmlScreen($$patchInfo{purpose},0).'&lt;/small&gt;' : '&lt;em&gt;unknown&lt;/em&gt;')
+      . ($$patchInfo{purpose} ? '&lt;small&gt;'.$APP-&gt;htmlScreen($$patchInfo{purpose},0).'&lt;/small&gt;' : '&lt;em&gt;unknown&lt;/em&gt;')
     . '&lt;/td&gt;'
     . &quot;&lt;td valign=\&quot;top\&quot; class=\&quot;patch_$sclass\&quot;&gt;$s&lt;/td&gt;&quot;
     . &quot;&lt;/tr&gt;\n&quot;;
@@ -150,7 +150,7 @@ foreach my $patchInfo (@$patches) {
   my $t = $$patchInfo{title};
   $t = $1 if($t =~ /^(.*) \(patch\)$/);
   my $purpose =
-    $$patchInfo{purpose} ? htmlScreen($$patchInfo{purpose},0) : '';
+    $$patchInfo{purpose} ? $APP-&gt;htmlScreen($$patchInfo{purpose},0) : '';
 
   $copylist .= &quot;&lt;dt&gt;[&quot; . $t . &quot;]&lt;/dt&gt;&quot;
        . &quot;&lt;dd&gt;&quot;

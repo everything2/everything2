@@ -46,7 +46,7 @@ $str.= $query-&gt;textfield('cooluser', '', 15,30);
 $str.=htmlcode('closeform');
 
 
-my $user = htmlScreen($query-&gt;param('cooluser'));
+my $user = $APP-&gt;htmlScreen($query-&gt;param('cooluser'));
 
 # Select 51 rows so that we know, if 51 come back, we can provide a &quot;next&quot; link
 #  even though we always display 50 at most

@@ -14,7 +14,7 @@ delete($$VARS{customstyle});
 }
 ''
 %]
-&lt;textarea id=&quot;vandalism&quot; rows='40' name=&quot;vandalism&quot;&gt;[% htmlScreen($$VARS{customstyle}) %]&lt;/textarea&gt;&lt;br /&gt;
+&lt;textarea id=&quot;vandalism&quot; rows='40' name=&quot;vandalism&quot;&gt;[% $APP-&gt;htmlScreen($$VARS{customstyle}) %]&lt;/textarea&gt;&lt;br /&gt;
 &lt;input type='submit' name='submit' value='Throw that paint'&gt;
 &lt;/form&gt;</doctext>
   <node_id>1855110</node_id>

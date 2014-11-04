@@ -32,11 +32,11 @@ while (my ($WRITEUP) = $csr-&gt;fetchrow) {
 
 	my $text;
 	if (length($$WRITEUP{doctext}) &lt; $length) {
-		$text=parseLinks(htmlScreen($$WRITEUP{doctext}, $HTML));
+		$text=parseLinks($APP-&gt;htmlScreen($$WRITEUP{doctext}, $HTML));
 	} else {
 		my $firstwords = substr($$WRITEUP{doctext},0, 512);
 		$firstwords =~ s/\s+\w*$//gs;
-		$firstwords = parseLinks(htmlScreen($firstwords, $HTML));
+		$firstwords = parseLinks($APP-&gt;htmlScreen($firstwords, $HTML));
 		$firstwords =~ s/\[.*?$//;
 		# if the text has an opening table tag but no closing, add one.
 		# note: this prototype fails for multiple table tags.

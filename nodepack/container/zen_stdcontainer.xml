@@ -27,7 +27,7 @@ if($NODE-&gt;{type}-&gt;{title} eq &quot;writeup&quot;)
 if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
 	return '
 	&lt;style type=&quot;text/css&quot;&gt;
-' . htmlScreen($$VARS{customstyle}) . '
+' . $APP-&gt;htmlScreen($$VARS{customstyle}) . '
 	&lt;/style&gt;' ;
 }
 %]

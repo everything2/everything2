@@ -66,12 +66,12 @@ return $patchee_text;
 [% htmlcode('parsetime','createtime'); %]
 &lt;br&gt;
 patch's purpose: [%
-return ( $$NODE{purpose} ? htmlScreen($$NODE{purpose},0) : '&lt;em&gt;unknown&lt;/em&gt;' ) unless isGod($USER)|| $$NODE{author_user} == $$USER{user_id};
+return ( $$NODE{purpose} ? $APP-&gt;htmlScreen($$NODE{purpose},0) : '&lt;em&gt;unknown&lt;/em&gt;' ) unless isGod($USER)|| $$NODE{author_user} == $$USER{user_id};
 return htmlcode( 'textfield' , 'purpose', 80, 'expandable' ) ;
 %]
 &lt;br&gt;
 &lt;strong&gt;Additional instructions&lt;/strong&gt; for bringing it live: [%
-return ( $$NODE{instructions} ? htmlScreen($$NODE{instructions},0) : '&lt;em&gt;none&lt;/em&gt;' ) unless isGod($USER)|| $$NODE{author_user} == $$USER{user_id};
+return ( $$NODE{instructions} ? $APP-&gt;htmlScreen($$NODE{instructions},0) : '&lt;em&gt;none&lt;/em&gt;' ) unless isGod($USER)|| $$NODE{author_user} == $$USER{user_id};
 return htmlcode( 'textfield' , 'instructions', 80, 'expandabole' ) ;
 %]
 &lt;br&gt;

@@ -440,7 +440,7 @@ if ($query-&gt;param(&quot;setTopic&quot;)) {
 	my $oldtopic = $$topics{$room};
 	my $utf8topic = $query-&gt;param(&quot;newtopic&quot;);
 	utf8::encode($utf8topic);
-	$utf8topic = htmlScreen($utf8topic); #Admins and chanops can still put HTML in topic, though.
+	$utf8topic = $APP-&gt;htmlScreen($utf8topic); #Admins and chanops can still put HTML in topic, though.
 	$$topics{$room} = $utf8topic;
 	$$topics{$room} = $oldtopic if $utf8topic eq '' || $utf8topic =~ /^No information/i;
 	setVars($settingsnode, $topics);

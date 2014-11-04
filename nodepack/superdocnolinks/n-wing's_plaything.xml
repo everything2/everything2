@@ -331,7 +331,7 @@ $nid = 169167 if $nid !~ /^\d*$/;
 my $WU = getNodeById($nid);
 return $fullstr.'&lt;br /&gt;'.$nid.': not a writeup' if $$WU{type_nodetype}!=117;
 
-my $text = htmlScreen($$WU{doctext}, getVars(getNode('approved html tags', 'setting')));
+my $text = $APP-&gt;htmlScreen($$WU{doctext}, getVars(getNode('approved html tags', 'setting')));
 $text = parseLinks($text, $WU);
 
 my @parts = split(/(&lt;.*?&gt;)/, $text);

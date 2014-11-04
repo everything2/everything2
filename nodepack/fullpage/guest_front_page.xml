@@ -20,7 +20,7 @@
 if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
 	return '
 	&lt;style type=&quot;text/css&quot;&gt;
-' . htmlScreen($$VARS{customstyle}) . '
+' . $APP-&gt;htmlScreen($$VARS{customstyle}) . '
 	&lt;/style&gt;' ;
 }
 %]

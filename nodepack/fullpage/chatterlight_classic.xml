@@ -16,7 +16,7 @@ else {	#ascorbic's default
 %]
 [%
 if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
-	return &quot;   \t&lt;style type='text/css'&gt;\n\n\t&quot; . htmlScreen($$VARS{customstyle}) . &quot;\n\n\t&lt;/style&gt;&quot;;
+	return &quot;   \t&lt;style type='text/css'&gt;\n\n\t&quot; . $APP-&gt;htmlScreen($$VARS{customstyle}) . &quot;\n\n\t&lt;/style&gt;&quot;;
 }
 %]
 	[{static javascript}]

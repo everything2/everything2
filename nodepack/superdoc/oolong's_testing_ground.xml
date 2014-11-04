@@ -65,7 +65,7 @@ my $WRITEUP = getNodeById (1966521);
 my $TAGNODE = getNode 'approved html tags', 'setting';
 my $TAGS=getVars($TAGNODE);
 
-my $text = htmlScreen($$WRITEUP{doctext}, $TAGS);
+my $text = $APP-&gt;htmlScreen($$WRITEUP{doctext}, $TAGS);
 #$text =~ s/(\S{30})/$1 /g;
 $text = parseLinks($text);
 $text = breakTags($text);

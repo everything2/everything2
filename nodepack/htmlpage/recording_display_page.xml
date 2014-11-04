@@ -8,7 +8,7 @@
 my $TAGNODE = getNode 'approved html tags', 'setting';
 my $TAGS=getVars($TAGNODE);
 
-my $text = htmlScreen($$NODE{description}, $TAGS);
+my $text = $APP-&gt;htmlScreen($$NODE{description}, $TAGS);
 $text = parseLinks($text);
 
 my $str;

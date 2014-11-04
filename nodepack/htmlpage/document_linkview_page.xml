@@ -22,7 +22,7 @@ while ($text =~ /$regex/g) {
   next if ($lnk =~ /^\s*https?:\/\//);
 
 
-  $lnk = htmlScreen($lnk);
+  $lnk = $APP-&gt;htmlScreen($lnk);
 
   if (my $node_id = $DB-&gt;sqlSelect('node_id',
                                 'node','title='.$DB-&gt;{dbh}-&gt;quote($lnk))) {
@@ -69,7 +69,7 @@ my $TAGS=getVars($TAGNODE);
 
 #my $text = $$NODE{doctext};
 #$text =~ s/(\S{30})/$1 /g;
-$text = parseLinks($codeDoc?(parseCode($text)):(htmlScreen($text, $TAGS)));
+$text = parseLinks($codeDoc?(parseCode($text)):($APP-&gt;htmlScreen($text, $TAGS)));
 
 @notlinks = () if $codeDoc;
 

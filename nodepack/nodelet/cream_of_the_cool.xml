@@ -7,8 +7,8 @@
   <type_nodetype>9</type_nodetype>
   <updateinterval>300</updateinterval>
   <nlcode>[%
-my $repthreshholdlo = 18 ;
-my $repthreshholdhi = 26;
+my $repthreshholdlo = 12;
+my $repthreshholdhi = 20;
 my $limit = 4;
 my $length = 512;
 

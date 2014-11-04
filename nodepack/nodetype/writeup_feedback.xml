@@ -1,0 +1,10 @@
+<node>
+  <extends_nodetype>3</extends_nodetype>
+  <sqltable>writeup_feedback</sqltable>
+  <grouptable>nodegroup</grouptable>
+  <node_id>2116380</node_id>
+  <restrict_nodetype>2116380</restrict_nodetype>
+  <type_nodetype>1</type_nodetype>
+  <title>writeup_feedback</title>
+  <deleters_user>114</deleters_user>
+</node>

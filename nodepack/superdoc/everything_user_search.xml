@@ -83,7 +83,7 @@ return $query-&gt;hidden('filterhidden') .
 
 # keep all necessary parameters in %params hash for sort/filter links
 my %params = $query -&gt; Vars();
-my $us = htmlScreen($params{usersearch}); #user's title to find WUs on
+my $us = $APP-&gt;htmlScreen($params{usersearch}); #user's title to find WUs on
 return '&lt;p&gt;Please give a user name.&lt;/p&gt;' unless $us;
 
 
