@@ -2692,4 +2692,234 @@ sub tagApprove
   }
 }
 
+######################################################################
+#	Sub
+#		cleanupHTML
+#	Purpose
+#		This function cleans up ragged HTML (such as may be
+#		encountered in a writeup), performing three main
+#		functions:
+#		  * Tag screening, a la htmlScreen
+#		  * Tag balancing, ensuring that all tags are closed
+#		  * Table sanitisation, ensuring table elements are
+#		    correctly nested. 
+#       Params
+#               text -- the text/html to filter
+#               APPROVED -- ref to hash where approved tags are keys.
+#                   Null means all HTML will be taken out.
+#                   { noscreening => 1 } means no HTML will be taken out.
+#		preapproved_ref -- ref to hash/cache of 'pre-approved'
+#		    tags.
+#               debug -- a function to render a debug message into HTML.
+#
+#       Returns
+#               The text stripped of any HTML tags that are not
+#               approved, balanced and cleaned up.
+#		
+#	Limitations:
+#		  * Input is assumed to be HTML 4.0, not XHTML.
+#		  * Tags with optional closing elements are not
+#		    explicitly closed.
+#		  * HTML does not recognise the XML empty element
+#		   format, so we do not look for it explicitly.
+#
+#	Benchmarking on a Pentium M indicates that this process is
+#	approximately 3% faster than the existing htmlScreen.  
+#
+#	Algorithm features:
+# 		  * Scans tags with m//g construct
+#		  * Stacks and unstacks nested tags on finding opening
+#		    and closing
+#		    tags.
+#		  * Validates tags using a (persistent) memoisation
+#		    cache mapping source tags to 'approved' tags with
+#		    invalid tags or attributes stripped. Since most
+#		    tags appearing in writeups will be repeated many
+#		    times (eg. the '<p>' tags) the majority of tags
+#		    should be  found in this cache.
+#		  * Enforces correct table element nesting using a map
+#		    of tag -> valid parent tag
+# 		    For any element which has such a tag, the
+# 		    immediate superior (ie. top of the stack) must
+# 		    match.
+# 
+sub cleanupHTML {
+    my ($this, $text, $approved, $preapproved_ref, $debug) = @_;
+    my @stack;
+    my ($result, $tag, $ctag) = ('', '', '');
+    # Compile frequently-used regular exprs
+    my $open_tag = qr'^<(\w+)(.*?)>(.*)'ms;
+    my $close_tag = qr'^</(\w+)(.*?)>(.*)'ms;
+    # Separate regexps to handle the (unlikely) case we encounter an
+    # incomplete tag. The positional matches are the same as above.
+    my $incomplete_open_tag = qr'^<(\w+)(.*)(.*)'ms;
+    my $incomplete_close_tag = qr'^</(\w+)(.*)(.*)'ms;
+    my $key;                      # Cache key
+    my $approved_tag;
+    my $outer_text;
+    # Map of nested tags to mandatory direct parents.
+    my %nest = ('tr' => { 'table' => 1, 'tbody' => 1, 'thead' => 1 },
+		'tbody' => { 'table' => 1 },
+		'thead' => { 'table' => 1 },
+		'td' => { 'tr' => 1 },
+		'th' => { 'tr' => 1 });
+    my $nest_in;
+    # Optional-close tag names. Mapping with a hash seems to be
+    # something like twice as quick as using a single regexp.
+    my %no_close = ('p' => 1, 'br' => 1, 'hr' => 1,
+		    'img' => 1, 'input' => 1, 'link' => 1);
+    
+    # Delete any incomplete tags, including comments. These may be the result of truncating
+    # source HTML, eg. for Cream of the Cool.
+    $text =~ s/<(?:[^>]*|!--(?:[^-]*|-[^-]|--[^>])*)$//;
+    
+    # Scan tags by recognising text starting with '<'. Experiments with
+    # Firefox show that malformed opening tags (missing the closing '>')
+    # still count as opened tags, so we follow this behaviour.
+    for ($text =~ m{(^[^<]+|<[^<]+)}mig) {
+	if (/$open_tag/ || /$incomplete_open_tag/) {
+	    # Opening tag.
+	    $key = $1.$2;
+	    $tag = lc $1;
+	    $outer_text = $3;
+	    $approved_tag = $preapproved_ref->{$key};
+	    # Handle miss in the pre-approved tag map
+	    unless (defined($approved_tag)) {
+		$approved_tag = $this->tagApprove('', $1, $2,
+					   $approved) || '';
+		$preapproved_ref->{$key} = $approved_tag;
+	    }
+	    # Check correct nesting, and disapprove if not!
+	    if (   ($nest_in = $nest{$tag})
+		&& !$nest_in->{$stack[$#stack]}) {
+
+		my @extra;
+		my $opening;
+		# Choose one of the parent tags, effectively at random
+		my $missing;
+		do {
+			# Choose one of the parent tags, effectively at random
+			$missing = (keys %$nest_in)[0];
+		    unshift @extra, $missing;
+		    $opening = '<'.$missing.'>'.$opening;
+		    if ($debug) {
+			$opening = ($debug->("Missing <$missing> before <$tag>")
+				    . $opening);
+		    }
+		} while (   ($nest_in = $nest{$missing})
+			 && !$nest_in->{$stack[$#stack]});
+		push @stack, @extra;
+		$result .= $opening;
+	    }
+	    if ($approved_tag) {
+		push @stack, $tag;
+	    } elsif ($debug) {
+		$result .= $debug->("Disallowed tag <$tag>");
+	    }
+	    $result .= $approved_tag.$outer_text;
+	} elsif (/$close_tag/ || /$incomplete_close_tag/) {
+	    # Closing tag
+	    my $closing;
+	    my @popped;
+	    $tag = lc $1;
+	    $key = '/'.$1.$2;
+	    $outer_text = $3;
+	    $approved_tag = $preapproved_ref->{$key};
+	    unless (defined($approved_tag)) {
+		$approved_tag = $this->tagApprove('/', $1,
+					   $2,
+					   $approved) || '';
+		$preapproved_ref->{$key} = $approved_tag;
+	    }
+	    if ($approved_tag) {
+		# Before closing this element, close any unclosed
+		# elements which have been opened since then. We find
+		# the matching closing element by digging through the
+		# stack to find the matching opening tag. On
+		# encountering a close tag for an unopened tag, we dig
+		# through the entire stack, and restore it on reaching
+		# the bottom without finding the tag. This sounds
+		# fairly expensive, but we make the following
+		# assumptions:
+		#   1. Unopened close tags will be infrequent in the
+		#      source HTML, and 
+		#   2. The stack will be short as structures are
+		#      typically not deeply nested, hence searching
+		#      and restoring it will be inexpensive.
+		for (;;) {
+		    $ctag = pop @stack;
+		    push @popped, $ctag;
+		    if ($ctag eq $tag) {
+			# Found the tag.
+			last;
+		    } elsif (defined($ctag)) {
+			# Insert an extra closing tag.
+			$closing .= "</$ctag>"
+			    unless $no_close{$ctag};
+			if ($debug) {
+			    $result .= $debug->("Unclosed <$ctag>");
+			}
+		    } else {
+			# Closed something
+			# which was never
+			# opened. Just ignore
+			# it. Remove the tag
+			# and restore the stack.
+			s/^[^>]*>?//;
+			@stack = reverse @popped;
+			$approved_tag = '';
+			$closing = '';
+			if ($debug) {
+			    $result .= $debug->("No matching open tag "
+						. "for closing </$tag>");
+			}
+			last;
+		    }
+		}
+	    } elsif ($debug) {
+		$result .= $debug->("Disallowed tag </$tag>");
+	    }
+	    $result .= $closing.$approved_tag.$outer_text;
+	} else {
+	    # Plain text at the beginning of the text.
+	    $result .= $_;
+	}
+    }
+    # Close any remaining unclosed tags
+    while (defined($ctag = pop @stack)) {
+	unless ($no_close{$ctag}) {
+	    $result .= "</$ctag>";
+	    if ($debug) {
+		$result .= $debug->("Unclosed <$ctag>");
+	    }
+	}
+    }
+    # Clear the prepapproved cache if it's too large.
+    if (int(keys(%$preapproved_ref)) > 200) {
+	%$preapproved_ref = ();
+    }
+    return $result;
+}
+
+#############################################################################
+#	sub
+#		htmlScreen
+#
+#	purpose
+#		screen out html tags from a chunk of text
+#		returns the text, sans any tags that aren't "APPROVED"
+#   Now defers all the work to cleanupHTML
+#
+#	params
+#		text -- the text to filter
+#		APPROVED -- ref to hash where approved tags are keys.  Null means
+#			all HTML will be taken out.
+#
+sub htmlScreen {
+	my ($this, $text, $APPROVED) = @_;
+	$APPROVED ||= {};
+
+	$text = $this->cleanupHTML($text, $APPROVED);
+	$text;
+}
 1;

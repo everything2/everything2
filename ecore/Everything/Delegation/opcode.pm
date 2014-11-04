@@ -25,9 +25,7 @@ BEGIN {
   *breakTags = *Everything::HTML::breakTags;
   *screenTable = *Everything::HTML::screenTable;
   *encodeHTML = *Everything::HTML::encodeHTML;
-  *cleanupHTML = *Everything::HTML::cleanupHTML;
   *getType = *Everything::HTML::getType;
-  *htmlScreen = *Everything::HTML::htmlScreen;
   *updateNode = *Everything::HTML::updateNode;
   *rewriteCleanEscape = *Everything::HTML::rewriteCleanEscape;
   *setVars = *Everything::HTML::setVars;

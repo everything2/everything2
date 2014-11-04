@@ -28,9 +28,7 @@ BEGIN {
   *breakTags = *Everything::HTML::breakTags;
   *screenTable = *Everything::HTML::screenTable;
   *encodeHTML = *Everything::HTML::encodeHTML;
-  *cleanupHTML = *Everything::HTML::cleanupHTML;
   *getType = *Everything::HTML::getType;
-  *htmlScreen = *Everything::HTML::htmlScreen;
   *updateNode = *Everything::HTML::updateNode;
   *rewriteCleanEscape = *Everything::HTML::rewriteCleanEscape;
   *setVars = *Everything::HTML::setVars;
@@ -1672,7 +1670,7 @@ sub show_content
       }
 
       $text = screenTable( $text ) if $lastnodeid ; # i.e. if writeup page & logged in
-      $text = parseLinks( cleanupHTML( $text , $HTML ) , $lastnodeid ) ;
+      $text = parseLinks( $APP->cleanupHTML( $text , $HTML ) , $lastnodeid ) ;
       return "\n<div class=\"content\">\n$text$dots\n</div>$morelink" unless $xml ;
 
       $text =~ s/<a .*?(href=".*?").*?>/<a $1>/sg ; # kill onmouseup etc
@@ -1752,7 +1750,7 @@ sub usergroupmultipleadd
 }
 
 # Used in the collaboration nodetype
-# parseLinks() and htmlScreen() on given field for 
+# parseLinks() and $APP->htmlScreen() on given field for 
 # the node we're on (in? at?). 
 #
 # wharfinger
@@ -1776,7 +1774,7 @@ sub showcollabtext
 
   $$TAGS{ 'highlight' } = 1;
 
-  $doctext = breakTags( parseLinks( htmlScreen( $doctext, $TAGS ) ) );
+  $doctext = breakTags( parseLinks( $APP->htmlScreen( $doctext, $TAGS ) ) );
 
   #N-Wing 2002.04.16.n2 - took out \s* - IIRC, tags can't have gaps in front
   $doctext =~ s/<highlight\s*>/<span class="oddrow">/gi;
@@ -3215,7 +3213,7 @@ sub standard_html_screen
 
   $lastnode_id = undef if ($APP->isGuest($USER));
 
-  $text = htmlScreen($text, $TAGS);
+  $text = $APP->htmlScreen($text, $TAGS);
   $text = screenTable ($text);
   $text = parseLinks($text, $lastnode_id);
   $text = breakTags($text);
@@ -7831,7 +7829,7 @@ sub displayUserText
 
   my $txt = $NODE->{doctext};
   my $APRTAGS = getNode 'approved html tags', 'setting';
-  $txt = breakTags(htmlScreen($txt, getVars($APRTAGS)));
+  $txt = breakTags($APP->htmlScreen($txt, getVars($APRTAGS)));
   $txt = parseLinks($txt) unless($query->param("links_noparse"));
   return $txt;
 }
@@ -9499,8 +9497,8 @@ sub screenNotelet
   #TODO? allow eds to psuedoExec
   #TODO? allow admins to have normal code
 
-  #$work =~ s/\<!--.*?--\>//gs;	#htmlScreen messes up comments
-  #$work = htmlScreen($work, $HTMLS);	#we may get rid of this later
+  #$work =~ s/\<!--.*?--\>//gs;	#$APP->htmlScreen messes up comments
+  #$work = $APP->htmlScreen($work, $HTMLS);	#we may get rid of this later
 
   unless($VARS->{noteletKeepComments})
   {
@@ -11208,7 +11206,7 @@ sub zenDisplayUserInfo
   local *infoDefault = sub {
     my $k = $_[0] || '';
     my $v = $$SETTINGS{$k} ? $$SETTINGS{$k} : $$NODE{$k};
-    $v = htmlScreen($v) unless grep /$k/, @noHTMLSCREEN;
+    $v = $APP->htmlScreen($v) unless grep /$k/, @noHTMLSCREEN;
     return parseLinks($v);
   };
 
@@ -13950,7 +13948,7 @@ sub Personal_Links_nodelet_settings
   my $n = undef;
   while(defined $query->param($name.$i))
   {
-    $n=htmlScreen($query->param($name.$i));
+    $n=$APP->htmlScreen($query->param($name.$i));
     $n =~ s/\[/\&\#91;/g;
     $n =~ s/\]/\&\#93;/g;
     push(@newnodes, $n) unless $query->param($delname.$i) || $n =~ /^\s*$/;
