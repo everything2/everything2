@@ -68,7 +68,7 @@ my $TAGS=getVars($TAGNODE);
 my $text = $APP-&gt;htmlScreen($$WRITEUP{doctext}, $TAGS);
 #$text =~ s/(\S{30})/$1 /g;
 $text = parseLinks($text);
-$text = breakTags($text);
+$text = $APP-&gt;breakTags($text);
 
 return $text;
 

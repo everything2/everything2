@@ -12,7 +12,7 @@
 
   sub parseAsPlainText{
     my $text = shift;
-    $text = parseLinks(breakTags($APP-&gt;htmlScreen($text)));
+    $text = parseLinks($APP-&gt;breakTags($APP-&gt;htmlScreen($text)));
     $text;
   }
 

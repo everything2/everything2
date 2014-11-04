@@ -30,8 +30,8 @@ return if getId($USER) != getId($NODE) or $APP-&gt;isGuest($USER);
   while(my $ref = $csr-&gt;fetchrow_hashref()){
     push @$rows,{
       'Registry'=&gt;linkNode($$ref{for_registry}),
-      'Data'=&gt;breakTags(parseLinks($APP-&gt;htmlScreen($$ref{data}))),
-      'Comments'=&gt;breakTags(parseLinks($APP-&gt;htmlScreen($$ref{comments}))),
+      'Data'=&gt;$APP-&gt;breakTags(parseLinks($APP-&gt;htmlScreen($$ref{data}))),
+      'Comments'=&gt;$APP-&gt;breakTags(parseLinks($APP-&gt;htmlScreen($$ref{comments}))),
     };
   }
 

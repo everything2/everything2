@@ -11,7 +11,7 @@
     return htmlcode('openform')
            .'&lt;div style=&quot;margin:20px;text-align:center;&quot;&gt;'
            .' (this registry created by '.linkNode($$NODE{author_user}).')'
-           .'&lt;div style=&quot;margin:20px&quot;&gt;'.breakTags(parseLinks($APP-&gt;htmlScreen($$NODE{doctext}))).'&lt;/div&gt;'
+           .'&lt;div style=&quot;margin:20px&quot;&gt;'.$APP-&gt;breakTags(parseLinks($APP-&gt;htmlScreen($$NODE{doctext}))).'&lt;/div&gt;'
            .'&lt;/div&gt;';
 %]
 [%
@@ -132,7 +132,7 @@
 
   sub parseAsPlainText{
     my $text = shift;
-    $text = parseLinks(breakTags($APP-&gt;htmlScreen($text)));
+    $text = parseLinks($APP-&gt;breakTags($APP-&gt;htmlScreen($text)));
     $text;
   }
 
