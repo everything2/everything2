@@ -22,7 +22,6 @@ BEGIN {
   *urlGen = *Everything::HTML::urlGen;
   *urlGenNoParams = *Everything::HTML::urlGenNoParams;
   *insertNodelet = *Everything::HTML::insertNodelet;
-  *breakTags = *Everything::HTML::breakTags;
   *screenTable = *Everything::HTML::screenTable;
   *encodeHTML = *Everything::HTML::encodeHTML;
   *getType = *Everything::HTML::getType;

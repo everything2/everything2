@@ -2922,4 +2922,54 @@ sub htmlScreen {
 	$text = $this->cleanupHTML($text, $APPROVED);
 	$text;
 }
+
+
+#############################################################################
+#       sub
+#               breakTags
+#
+#       purpose
+#               Insert paragraph tags where none are found
+#
+
+sub breakTags
+{
+  my ($this,$text) = @_;
+  # Format if necessary - adapted from [call]'s code from his own ecore
+  unless ($text =~ /<\/?p[ >]/i || $text =~ /<br/i) {
+
+    # Replace all newlines in inappropriate elementswith placeholders
+    my @ignorenewlines = ("pre", "ol", "ul", "dl", "table");
+    foreach my $currenttag (@ignorenewlines) {
+      # match attributes in HTML tags by seeing everything up to the closing >
+
+      while ($text =~ /<$currenttag((.*?)\n(.*?))<\/$currenttag/si) {
+        my $temp = $1;
+        $temp =~ s%\n%<e2 newline placeholder>%g;
+        $text =~ s%<$currenttag((.*?)\n(.*?))</$currenttag%<$currenttag$temp</$currenttag%si;
+      }
+
+    }
+
+
+    # Replace all leftover \ns with BRs, and BRBR with P
+    $text =~ s%^\s*%%g;
+    $text =~ s%\s*$%%g;
+    $text =~ s%\n%<br>%g;
+    $text =~ s%\s*<br>\s*<br>%</p>\n\n<p>%g;
+    $text =~ s%\n\s*\n%</p>\n\n<p>%g;
+    $text = '<p>' . $text . '</p>';
+    my ($blocks) = "pre|center|li|ol|ul|h1|h2|h3|h4|h5|h6|blockquote|dd|dt|dl|p|table|td|tr|th|tbody|thead";
+    $text =~ s"<p><($blocks)"<$1"g;
+    $text =~ s"</($blocks)></p>"</$1>"g;
+    # Clean up by replacing newlines placeholders with proper \ns again.
+    #
+    $text =~ s"<e2 newline placeholder>"\n"g;
+
+  }
+
+  $text;
+}
+
+
 1;

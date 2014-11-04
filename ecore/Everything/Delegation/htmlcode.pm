@@ -25,7 +25,6 @@ BEGIN {
   *urlGen = *Everything::HTML::urlGen;
   *urlGenNoParams = *Everything::HTML::urlGenNoParams;
   *insertNodelet = *Everything::HTML::insertNodelet;
-  *breakTags = *Everything::HTML::breakTags;
   *screenTable = *Everything::HTML::screenTable;
   *encodeHTML = *Everything::HTML::encodeHTML;
   *getType = *Everything::HTML::getType;
@@ -1658,7 +1657,7 @@ sub show_content
       my $text = $N->{ doctext } ;
       # Superdoc stuff hardcoded below
       $text = parseCode( $text ) if exists( $$N{ type } ) and ( $$N{ type_nodetype } eq 14 or $$N{ type }{ extends_nodetype } eq 14 ) ;
-      $text = breakTags( $text ) ;
+      $text = $APP->breakTags( $text ) ;
 
       my ( $dots , $morelink ) = ( '' , '' ) ;
       if ( $length && length( $text ) > $length + $showanyway ) {
@@ -1774,7 +1773,7 @@ sub showcollabtext
 
   $$TAGS{ 'highlight' } = 1;
 
-  $doctext = breakTags( parseLinks( $APP->htmlScreen( $doctext, $TAGS ) ) );
+  $doctext = $APP->breakTags( parseLinks( $APP->htmlScreen( $doctext, $TAGS ) ) );
 
   #N-Wing 2002.04.16.n2 - took out \s* - IIRC, tags can't have gaps in front
   $doctext =~ s/<highlight\s*>/<span class="oddrow">/gi;
@@ -3216,7 +3215,7 @@ sub standard_html_screen
   $text = $APP->htmlScreen($text, $TAGS);
   $text = screenTable ($text);
   $text = parseLinks($text, $lastnode_id);
-  $text = breakTags($text);
+  $text = $APP->breakTags($text);
   return $text;
 }
 
@@ -7575,7 +7574,7 @@ sub displayWriteupInfo
     #however, it isn't worth taking
     #the CPU time to find exact values
 
-    my $wdt = breakTags($$WRITEUP{doctext}) || '';
+    my $wdt = $APP->breakTags($$WRITEUP{doctext}) || '';
     my $c = 0;	#count
 
     #paragraphs - could be off by one if <p> incorrectly used to end a paragraph instead of to start one
@@ -7829,7 +7828,7 @@ sub displayUserText
 
   my $txt = $NODE->{doctext};
   my $APRTAGS = getNode 'approved html tags', 'setting';
-  $txt = breakTags($APP->htmlScreen($txt, getVars($APRTAGS)));
+  $txt = $APP->breakTags($APP->htmlScreen($txt, getVars($APRTAGS)));
   $txt = parseLinks($txt) unless($query->param("links_noparse"));
   return $txt;
 }
