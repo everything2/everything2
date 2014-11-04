@@ -31,7 +31,6 @@ sub BEGIN {
               $query
               parseLinks
               screenTable
-              breakTags
               htmlFormatErr
               quote
               urlGen
@@ -329,11 +328,6 @@ sub buildTable
 	}
 	
 	$str.='</table>';
-}
-
-sub breakTags
-{
-  return $APP->breakTags(@_);
 }
 
 
