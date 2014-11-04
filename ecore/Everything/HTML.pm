@@ -30,7 +30,6 @@ sub BEGIN {
               $PAGELOAD
               $query
               parseLinks
-              htmlScreen
               screenTable
               breakTags
               htmlFormatErr
@@ -2181,13 +2180,6 @@ sub processVarsSet {
 		$VARS = getVars($updated_node);
 	}
 }
-
-sub htmlScreen {
-  return $APP->htmlScreen(@_);
-}
-
-
-# Former inhabitants of the room module
 
 sub isMobile
 {
