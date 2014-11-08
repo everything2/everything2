@@ -25,7 +25,6 @@ BEGIN {
   *screenTable = *Everything::HTML::screenTable;
   *getType = *Everything::HTML::getType;
   *updateNode = *Everything::HTML::updateNode;
-  *rewriteCleanEscape = *Everything::HTML::rewriteCleanEscape;
   *setVars = *Everything::HTML::setVars;
   *getNodeWhere = *Everything::HTML::getNodeWhere;
   *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;

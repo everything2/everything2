@@ -510,7 +510,6 @@ sub htmlErrorGods
 
 sub urlGen {
   my ($REF, $noquotes, $NODE) = @_;
-  my $nosemantic = $query ? $query->param('nosemantic') : 0;
 
   my $str;
   $str .= '"' unless $noquotes;
@@ -520,13 +519,13 @@ sub urlGen {
   }
   #Preserve backwards-compatibility
   else{
-    if($$REF{node} && !$nosemantic){
+    if($$REF{node}){
       my $nodetype = $$REF{type} || $$REF{nodetype};
       if($nodetype){
-        $str .= "/node/$nodetype/".rewriteCleanEscape($$REF{node});
+        $str .= "/node/$nodetype/".$APP->rewriteCleanEscape($$REF{node});
       }
       else{
-        $str .= "/title/".rewriteCleanEscape($$REF{node});
+        $str .= "/title/".$APP->rewriteCleanEscape($$REF{node});
       }
     }
     elsif($$REF{node_id} && $$REF{node_id} =~ /^\d+$/){
@@ -713,17 +712,12 @@ sub getPage
 }
 
 sub rewriteCleanEscape {
-  my ($string) = @_;
-  $string = CGI::escape(CGI::escape($string));
-  # Make spaces more readable
-  # But not for spaces at the start/end or next to other spaces
-  $string =~ s/(?<!^)(?<!\%2520)\%2520(?!$)(?!\%2520)/\+/gs;
-  return $string;
+  return $APP->rewriteCleanEscape(@_);
 }
 
 sub urlGenNoParams {
   my ($NODE, $noquotes) = @_;
-  my $nosemantic = $query ? $query->param('nosemantic') : 0;
+  
   $NODE ||= "";
   if (not ref $NODE) {
     if ($noquotes) {
@@ -732,17 +726,15 @@ sub urlGenNoParams {
     else {
       return "\"/node/$NODE\"";
     }
-  } elsif ($nosemantic) {
-    return "/node/".getId($NODE);
-  }
+  } 
 
   my $retval = "";
   my $typeTitle = $$NODE{type}{title} || "";
   if ($typeTitle eq 'e2node') {
-    $retval = "/title/".rewriteCleanEscape($$NODE{title});
+    $retval = "/title/".$APP->rewriteCleanEscape($$NODE{title});
   }
   elsif ($typeTitle eq 'user') {
-    $retval = "/$typeTitle/".rewriteCleanEscape($$NODE{title});
+    $retval = "/$typeTitle/".$APP->rewriteCleanEscape($$NODE{title});
   }
   elsif ($typeTitle eq 'writeup' || $typeTitle eq 'draft'){
   	# drafts and writeups have the same link for less breakage
@@ -756,9 +748,9 @@ sub urlGenNoParams {
 
       $title =~ s/ \([^\)]*\)$// if $typeTitle eq 'writeup'; #Remove the useless writeuptype
 
-      $author = rewriteCleanEscape($author);
+      $author = $APP->rewriteCleanEscape($author);
 
-      $retval = "/user/$author/writeups/".rewriteCleanEscape($title);
+      $retval = "/user/$author/writeups/".$APP->rewriteCleanEscape($title);
     }
     else{
       $retval = "/node/".getId($NODE);
@@ -766,7 +758,7 @@ sub urlGenNoParams {
   }
   elsif ($$NODE{type}{restrictdupes} && $typeTitle && $$NODE{title}) {
     $retval = "/node/$typeTitle/"
-              .rewriteCleanEscape($$NODE{title});
+              .$APP->rewriteCleanEscape($$NODE{title});
   }
   else {
     $retval = "/node/".getId($NODE);
@@ -849,8 +841,8 @@ sub linkNodeTitle {
 
     $nodename = $tip;
     $tip =~ s/"/&quot;/g;
-    $nodename = rewriteCleanEscape($nodename);
-    $anchor = rewriteCleanEscape($anchor);
+    $nodename = $APP->rewriteCleanEscape($nodename);
+    $anchor = $APP->rewriteCleanEscape($anchor);
 
     if($escapeTags){
       $title =~ s/</\&lt\;/g;
@@ -909,7 +901,7 @@ sub linkNodeTitle {
     $tip =~ s/"/''/g;
 
     $linktitle = $tip;
-    $href = "/title/" .rewriteCleanEscape($nodename);
+    $href = "/title/" .$APP->rewriteCleanEscape($nodename);
   }
 
   getRef $lastnode;

@@ -17,6 +17,9 @@ use Email::Sender::Transport::SMTP;
 # For convertDateToEpoch
 use Date::Calc;
 
+# For rewriteCleanEscape
+use CGI;
+
 use vars qw($PARAMS $PARAMSBYTYPE);
 BEGIN {
 	$PARAMS = 
@@ -2988,6 +2991,15 @@ sub breakTags
   }
 
   $text;
+}
+
+sub rewriteCleanEscape {
+  my ($this,$string) = @_;
+  $string = CGI::escape(CGI::escape($string));
+  # Make spaces more readable
+  # But not for spaces at the start/end or next to other spaces
+  $string =~ s/(?<!^)(?<!\%2520)\%2520(?!$)(?!\%2520)/\+/gs;
+  return $string;
 }
 
 1;

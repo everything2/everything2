@@ -28,7 +28,6 @@ BEGIN {
   *screenTable = *Everything::HTML::screenTable;
   *getType = *Everything::HTML::getType;
   *updateNode = *Everything::HTML::updateNode;
-  *rewriteCleanEscape = *Everything::HTML::rewriteCleanEscape;
   *setVars = *Everything::HTML::setVars;
   *getNodeWhere = *Everything::HTML::getNodeWhere;
   *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
@@ -2358,7 +2357,7 @@ sub setupuservars
 
   my $feedlink = linkNode(getNode('new writeups atom feed', 'ticker'), 'feed', {'foruser' => $$NODE{title}}, {'title' => "Atom syndication feed of latest writeups", 'type' => "application/atom+xml"});
 
-  $$SETTINGS{nwriteups} = $$SETTINGS{numwriteups} . " - " . "<a href=\"/user/".rewriteCleanEscape($$NODE{title})."/writeups\">View " . $$NODE{title} . "'s writeups</a> " . ' <small>(' . $feedlink .')</small>' if $$SETTINGS{numwriteups};
+  $$SETTINGS{nwriteups} = $$SETTINGS{numwriteups} . " - " . "<a href=\"/user/".$APP->rewriteCleanEscape($$NODE{title})."/writeups\">View " . $$NODE{title} . "'s writeups</a> " . ' <small>(' . $feedlink .')</small>' if $$SETTINGS{numwriteups};
 
   $$SETTINGS{nwriteups} = 0 if not $$SETTINGS{numwriteups};
 
@@ -3295,9 +3294,9 @@ sub addwriteup
 
     $str.=$query->start_form(
       -action => '/user/'
-      .rewriteCleanEscape($$USER{title})
+      .$APP->rewriteCleanEscape($$USER{title})
       .'/writeups/'
-      .rewriteCleanEscape($$NODE{title}),
+      .$APP->rewriteCleanEscape($$NODE{title}),
         -name=>'wusubform',
         -class => 'writeup_add')
       .qq'
