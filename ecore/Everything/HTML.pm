@@ -515,7 +515,7 @@ sub urlGen {
   $str .= '"' unless $noquotes;
 
   if($NODE){
-    $str .= urlGenNoParams($NODE,1);
+    $str .= $APP->urlGenNoParams($NODE,1);
   }
   #Preserve backwards-compatibility
   else{
@@ -716,61 +716,9 @@ sub rewriteCleanEscape {
 }
 
 sub urlGenNoParams {
-  my ($NODE, $noquotes) = @_;
-  
-  $NODE ||= "";
-  if (not ref $NODE) {
-    if ($noquotes) {
-      return "/node/$NODE";
-    }
-    else {
-      return "\"/node/$NODE\"";
-    }
-  } 
-
-  my $retval = "";
-  my $typeTitle = $$NODE{type}{title} || "";
-  if ($typeTitle eq 'e2node') {
-    $retval = "/title/".$APP->rewriteCleanEscape($$NODE{title});
-  }
-  elsif ($typeTitle eq 'user') {
-    $retval = "/$typeTitle/".$APP->rewriteCleanEscape($$NODE{title});
-  }
-  elsif ($typeTitle eq 'writeup' || $typeTitle eq 'draft'){
-  	# drafts and writeups have the same link for less breakage
-    my $author = getNodeById($NODE -> {author_user}, "light");
-
-    #Some older writeups are buggy and point to an author who doesn't
-    #exist anymore. --[Swap]
-    if (ref $author) {
-      $author = $author -> {title};
-      my $title = $NODE -> {title};
-
-      $title =~ s/ \([^\)]*\)$// if $typeTitle eq 'writeup'; #Remove the useless writeuptype
-
-      $author = $APP->rewriteCleanEscape($author);
-
-      $retval = "/user/$author/writeups/".$APP->rewriteCleanEscape($title);
-    }
-    else{
-      $retval = "/node/".getId($NODE);
-    }
-  }
-  elsif ($$NODE{type}{restrictdupes} && $typeTitle && $$NODE{title}) {
-    $retval = "/node/$typeTitle/"
-              .$APP->rewriteCleanEscape($$NODE{title});
-  }
-  else {
-    $retval = "/node/".getId($NODE);
-  }
-
-  if ($noquotes) {
-    return $retval;
-  }
-  else {
-    return '"'.$retval.'"';
-  }
+  return $APP->urlGenNoParams(@_);
 }
+
 
 
 #############################################################################
@@ -812,7 +760,7 @@ sub linkNode {
 
   return
        "<a href="
-      . ($exist_params ? urlGen($PARAMS,0,$NODE) : urlGenNoParams($NODE) )
+      . ($exist_params ? urlGen($PARAMS,0,$NODE) : $APP->urlGenNoParams($NODE) )
       . $tags . ">$title</a>";
 }
 

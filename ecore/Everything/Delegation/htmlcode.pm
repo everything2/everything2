@@ -22,8 +22,6 @@ BEGIN {
   *listCode = *Everything::HTML::listCode;
   *isGod = *Everything::HTML::isGod;
   *getRef = *Everything::HTML::getRef;
-  *urlGen = *Everything::HTML::urlGen;
-  *urlGenNoParams = *Everything::HTML::urlGenNoParams;
   *insertNodelet = *Everything::HTML::insertNodelet;
   *screenTable = *Everything::HTML::screenTable;
   *getType = *Everything::HTML::getType;
@@ -1132,7 +1130,7 @@ sub openform
   }
 
   $params{ -method } ||= 'post';
-  $query->start_form( -action => urlGenNoParams($NODE,1) , %params ) .
+  $query->start_form( -action => $APP->urlGenNoParams($NODE,1) , %params ) .
   $query->hidden("displaytype") . "\n" .
   $query->hidden('node_id', $$NODE{node_id});
 }
@@ -2908,7 +2906,7 @@ sub openform2
   $name ||= '';
 
   return $query->start_form(-method => 'POST',
-    -action => urlGenNoParams($NODE,1),
+    -action => $APP->urlGenNoParams($NODE,1),
     -name => $name,
     -id => $name) .
     $query->hidden('displaytype').
@@ -3266,7 +3264,7 @@ sub addwriteup
   if ($MINE){
     return '<p>You can edit your contribution to this node at'.linkNode($MINE).'</p>' if $$VARS{HideWriteupOnE2node}; # user doesn't want to see their text
 
-    $str.=$query->start_form(-action => urlGenNoParams($MINE, 'noQuotes'), -class => 'writeup_add')
+    $str.=$query->start_form(-action => $APP->urlGenNoParams($MINE, 'noQuotes'), -class => 'writeup_add')
       .$query -> hidden(-name => 'node_id', value => $$MINE{node_id}, -force => 1); # go to existing writeup/draft on edit
 	
     $draftStatusLink = '<p>'
@@ -8144,7 +8142,7 @@ sub admin_toolset
   my $newStr = $query -> h4({class => 'ns_title'}, 'Node Toolset');
 
   if ($query -> param('showcloner')){
-    $newStr .= $query -> start_form(action => urlGenNoParams(
+    $newStr .= $query -> start_form(action => $APP->urlGenNoParams(
       getNode('node cloner', 'restricted_superdoc'), 'noquotes'))
       .$query -> fieldset($query -> legend('Clone node')
       .$query -> hidden('srcnode_id', $$NODE{node_id})

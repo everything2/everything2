@@ -3002,4 +3002,62 @@ sub rewriteCleanEscape {
   return $string;
 }
 
+sub urlGenNoParams {
+  my ($this, $NODE, $noquotes) = @_;
+  
+  $NODE ||= "";
+  if (not ref $NODE) {
+    if ($noquotes) {
+      return "/node/$NODE";
+    }
+    else {
+      return "\"/node/$NODE\"";
+    }
+  } 
+
+  my $retval = "";
+  my $typeTitle = $$NODE{type}{title} || "";
+  if ($typeTitle eq 'e2node') {
+    $retval = "/title/".$this->rewriteCleanEscape($$NODE{title});
+  }
+  elsif ($typeTitle eq 'user') {
+    $retval = "/$typeTitle/".$this->rewriteCleanEscape($$NODE{title});
+  }
+  elsif ($typeTitle eq 'writeup' || $typeTitle eq 'draft'){
+  	# drafts and writeups have the same link for less breakage
+    my $author = $this->{db}->getNodeById($NODE -> {author_user}, "light");
+
+    #Some older writeups are buggy and point to an author who doesn't
+    #exist anymore. --[Swap]
+    if (ref $author) {
+      $author = $author -> {title};
+      my $title = $NODE -> {title};
+
+      $title =~ s/ \([^\)]*\)$// if $typeTitle eq 'writeup'; #Remove the useless writeuptype
+
+      $author = $this->rewriteCleanEscape($author);
+
+      $retval = "/user/$author/writeups/".$this->rewriteCleanEscape($title);
+    }
+    else{
+      $retval = "/node/".$this->{db}->getId($NODE);
+    }
+  }
+  elsif ($$NODE{type}{restrictdupes} && $typeTitle && $$NODE{title}) {
+    $retval = "/node/$typeTitle/"
+              .$this->rewriteCleanEscape($$NODE{title});
+  }
+  else {
+    $retval = "/node/".$this->{db}->getId($NODE);
+  }
+
+  if ($noquotes) {
+    return $retval;
+  }
+  else {
+    return '"'.$retval.'"';
+  }
+}
+
+
 1;
