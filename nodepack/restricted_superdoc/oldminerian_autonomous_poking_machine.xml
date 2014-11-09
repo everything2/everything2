@@ -556,7 +556,7 @@ return &quot;ceil of 5.4 is &quot; . ceil(5.4);
 &lt;h3&gt;URL Escaping Tests&lt;/h3&gt;
 
 [%
-return rewriteCleanEscape(&quot;WhyWait?&quot;);
+return $APP-&gt;rewriteCleanEscape(&quot;WhyWait?&quot;);
 %]
 
 &lt;hr&gt;

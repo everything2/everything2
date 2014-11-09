@@ -33,7 +33,7 @@ $nodename =~ s/\s+/ /gs;
 my $tip = $nodename;
 
 my $isNode = 1;
-$nodename = rewriteCleanEscape($nodename);
+$nodename = $APP-&gt;rewriteCleanEscape($nodename);
 
 #add the fragment back
 if ($fragment) {

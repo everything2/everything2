@@ -122,7 +122,7 @@ $year += 1900;
 $day = &quot;0$day&quot; if $day &lt; 10;
 $month = &quot;0$month&quot; if $month &lt; 10;
 
-my $cleanUser = rewriteCleanEscape($targetNoder -&gt; {title});
+my $cleanUser = $APP-&gt;rewriteCleanEscape($targetNoder -&gt; {title});
 my $format = ('text', 'html', 'text-html')[$e2parse-1];
 
 # make URL hard to guess

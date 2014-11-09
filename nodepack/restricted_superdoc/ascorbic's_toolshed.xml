@@ -28,7 +28,7 @@ $tip =~ s/&quot;/''/g;
 #my $isNode = getNodeWhere({ title =&gt; $nodename});
 my $isNode = 1;
 #my $urlnode = CGI::escape($nodename);
-$nodename = rewriteCleanEscape($nodename);
+$nodename = $APP-&gt;rewriteCleanEscape($nodename);
 
 #add the fragment back
 if ($fragment) {
