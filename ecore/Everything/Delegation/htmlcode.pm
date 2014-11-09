@@ -22,13 +22,10 @@ BEGIN {
   *listCode = *Everything::HTML::listCode;
   *isGod = *Everything::HTML::isGod;
   *getRef = *Everything::HTML::getRef;
-  *urlGen = *Everything::HTML::urlGen;
-  *urlGenNoParams = *Everything::HTML::urlGenNoParams;
   *insertNodelet = *Everything::HTML::insertNodelet;
   *screenTable = *Everything::HTML::screenTable;
   *getType = *Everything::HTML::getType;
   *updateNode = *Everything::HTML::updateNode;
-  *rewriteCleanEscape = *Everything::HTML::rewriteCleanEscape;
   *setVars = *Everything::HTML::setVars;
   *getNodeWhere = *Everything::HTML::getNodeWhere;
   *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
@@ -1133,7 +1130,7 @@ sub openform
   }
 
   $params{ -method } ||= 'post';
-  $query->start_form( -action => urlGenNoParams($NODE,1) , %params ) .
+  $query->start_form( -action => $APP->urlGenNoParams($NODE,1) , %params ) .
   $query->hidden("displaytype") . "\n" .
   $query->hidden('node_id', $$NODE{node_id});
 }
@@ -2358,7 +2355,7 @@ sub setupuservars
 
   my $feedlink = linkNode(getNode('new writeups atom feed', 'ticker'), 'feed', {'foruser' => $$NODE{title}}, {'title' => "Atom syndication feed of latest writeups", 'type' => "application/atom+xml"});
 
-  $$SETTINGS{nwriteups} = $$SETTINGS{numwriteups} . " - " . "<a href=\"/user/".rewriteCleanEscape($$NODE{title})."/writeups\">View " . $$NODE{title} . "'s writeups</a> " . ' <small>(' . $feedlink .')</small>' if $$SETTINGS{numwriteups};
+  $$SETTINGS{nwriteups} = $$SETTINGS{numwriteups} . " - " . "<a href=\"/user/".$APP->rewriteCleanEscape($$NODE{title})."/writeups\">View " . $$NODE{title} . "'s writeups</a> " . ' <small>(' . $feedlink .')</small>' if $$SETTINGS{numwriteups};
 
   $$SETTINGS{nwriteups} = 0 if not $$SETTINGS{numwriteups};
 
@@ -2909,7 +2906,7 @@ sub openform2
   $name ||= '';
 
   return $query->start_form(-method => 'POST',
-    -action => urlGenNoParams($NODE,1),
+    -action => $APP->urlGenNoParams($NODE,1),
     -name => $name,
     -id => $name) .
     $query->hidden('displaytype').
@@ -3267,7 +3264,7 @@ sub addwriteup
   if ($MINE){
     return '<p>You can edit your contribution to this node at'.linkNode($MINE).'</p>' if $$VARS{HideWriteupOnE2node}; # user doesn't want to see their text
 
-    $str.=$query->start_form(-action => urlGenNoParams($MINE, 'noQuotes'), -class => 'writeup_add')
+    $str.=$query->start_form(-action => $APP->urlGenNoParams($MINE, 'noQuotes'), -class => 'writeup_add')
       .$query -> hidden(-name => 'node_id', value => $$MINE{node_id}, -force => 1); # go to existing writeup/draft on edit
 	
     $draftStatusLink = '<p>'
@@ -3295,9 +3292,9 @@ sub addwriteup
 
     $str.=$query->start_form(
       -action => '/user/'
-      .rewriteCleanEscape($$USER{title})
+      .$APP->rewriteCleanEscape($$USER{title})
       .'/writeups/'
-      .rewriteCleanEscape($$NODE{title}),
+      .$APP->rewriteCleanEscape($$NODE{title}),
         -name=>'wusubform',
         -class => 'writeup_add')
       .qq'
@@ -8145,7 +8142,7 @@ sub admin_toolset
   my $newStr = $query -> h4({class => 'ns_title'}, 'Node Toolset');
 
   if ($query -> param('showcloner')){
-    $newStr .= $query -> start_form(action => urlGenNoParams(
+    $newStr .= $query -> start_form(action => $APP->urlGenNoParams(
       getNode('node cloner', 'restricted_superdoc'), 'noquotes'))
       .$query -> fieldset($query -> legend('Clone node')
       .$query -> hidden('srcnode_id', $$NODE{node_id})

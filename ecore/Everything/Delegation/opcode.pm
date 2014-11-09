@@ -19,13 +19,10 @@ BEGIN {
   *listCode = *Everything::HTML::listCode;
   *isGod = *Everything::HTML::isGod;
   *getRef = *Everything::HTML::getRef;
-  *urlGen = *Everything::HTML::urlGen;
-  *urlGenNoParams = *Everything::HTML::urlGenNoParams;
   *insertNodelet = *Everything::HTML::insertNodelet;
   *screenTable = *Everything::HTML::screenTable;
   *getType = *Everything::HTML::getType;
   *updateNode = *Everything::HTML::updateNode;
-  *rewriteCleanEscape = *Everything::HTML::rewriteCleanEscape;
   *setVars = *Everything::HTML::setVars;
   *getNodeWhere = *Everything::HTML::getNodeWhere;
   *insertIntoNodegroup = *Everything::HTML::insertIntoNodegroup;
