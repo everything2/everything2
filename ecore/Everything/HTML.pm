@@ -1115,35 +1115,10 @@ sub parseCode {
 
 }
 
-#############################################################################
-#	Sub
-#		listCode
-#
-#	Purpose
-#		To list code so that it will not be parsed by Everything or the browser
-#
-#	Parameters
-#		code -- the block of code to display
-#		numbering -- set to true if linenumbers are desired
-#
 sub listCode {
-	my ($code, $numbering) = @_;
-	return unless($code); 
-
-	$code = $APP->encodeHTML($code, 1);
-
-	my @lines = split /\n/, $code;
-	my $count = 1;
-
-	if($numbering)
-	{
-		foreach my $ln (@lines) {
-			$ln = sprintf("%4d: %s", $count++, $ln);
-		}
-	}
-
-	"<pre>" . join ("\n", @lines) . "</pre>";
+  return $APP->listCode(@_);
 }
+
 
 
 #############################################################################
