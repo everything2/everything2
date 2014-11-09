@@ -9,7 +9,7 @@ Sometimes I think we should have standardised names for these things. Mostly, th
 
 [%
 
-return urlGenNoParams(getNode(196)).&quot;Mu.&quot;;
+return $APP-&gt;urlGenNoParams(getNode(196)).&quot;Mu.&quot;;
 my $csr = $DB-&gt;{dbh}-&gt;prepare(&quot;SELECT * FROM message WHERE author_user = $$USER{node_id} AND msgtext REGEXP '^/me' ORDER BY message_id DESC LIMIT 50&quot;);
 # 
   $csr-&gt;execute();

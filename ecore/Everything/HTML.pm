@@ -34,7 +34,6 @@ sub BEGIN {
               htmlFormatErr
               quote
               urlGen
-              urlGenNoParams
               getPage
               getPages
               getPageForType
@@ -709,12 +708,6 @@ sub getPage
 
 	$PAGE;
 }
-
-sub urlGenNoParams {
-  return $APP->urlGenNoParams(@_);
-}
-
-
 
 #############################################################################
 # Sub

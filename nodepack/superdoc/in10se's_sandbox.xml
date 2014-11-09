@@ -37,9 +37,9 @@ $str .= ref $TESTNODE . '&lt;br /&gt;';
 	}
 	if ((keys(%$PARAMS) == 2 &amp;&amp; exists $$PARAMS{lastnode_id}) or (keys(%$PARAMS) == 1)) {
 		if ($$PARAMS{lastnode_id} == 0) {
-			&quot;&lt;a onmouseup=\&quot;document.cookie='lastnode_id=0; ; path=/'; 1;\&quot; href=&quot; . urlGenNoParams($NODE) . $tags . &quot;&gt;$title&lt;/a&gt;&quot;;
+			&quot;&lt;a onmouseup=\&quot;document.cookie='lastnode_id=0; ; path=/'; 1;\&quot; href=&quot; . $APP-&gt;urlGenNoParams($NODE) . $tags . &quot;&gt;$title&lt;/a&gt;&quot;;
 		} else {
-			&quot;&lt;a onmouseup=\&quot;document.cookie='lastnode_id=&quot;.$$PARAMS{lastnode_id}.&quot;; ; path=/'; 1;\&quot; href=&quot; . urlGenNoParams($NODE) . $tags . &quot;&gt;$title&lt;/a&gt;&quot;;
+			&quot;&lt;a onmouseup=\&quot;document.cookie='lastnode_id=&quot;.$$PARAMS{lastnode_id}.&quot;; ; path=/'; 1;\&quot; href=&quot; . $APP-&gt;urlGenNoParams($NODE) . $tags . &quot;&gt;$title&lt;/a&gt;&quot;;
 		}
 	} else {
 		&quot;&lt;a href=&quot; . urlGen ($PARAMS) . $tags . &quot;&gt;$title&lt;/a&gt;&quot;;

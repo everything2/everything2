@@ -16,5 +16,5 @@ return !$noteExists;</invalid_check>
   <code>my $N = getNodeById($$args{node_id});
 return linkNode($$args{node_noter}).
 ' posted a new node note at &lt;a href=&quot;'
-.urlGenNoParams($N,'noQuotes').'#nodenotes&quot;&gt;'.$$N{title}.'&lt;/a&gt;';</code>
+.$APP-&gt;urlGenNoParams($N,'noQuotes').'#nodenotes&quot;&gt;'.$$N{title}.'&lt;/a&gt;';</code>
 </node>

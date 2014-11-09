@@ -56,7 +56,7 @@ my $parentVars = getVars(getNodeById($parentOwner));
 my $replyer = getNodeById($$COMMENT{ 'author_user' }) -&gt; {'title'};
 my $msg = &quot;Attention, &lt;a href=\&quot;/user/$replyer\&quot;&gt;$replyer&lt;/a&gt; just replied to &quot;;
 
-   $msg .= '&lt;a href=&quot;'. urlGenNoParams($root_debatecomment,1) .
+   $msg .= '&lt;a href=&quot;'. $APP-&gt;urlGenNoParams($root_debatecomment,1) .
             '#debatecomment_'.$$COMMENT{ 'node_id' }.'&quot;&gt;'.$$PARENT{ 'title' }.'&lt;/a&gt;.';
 
 unless ($$parentVars{&quot;no_discussionreplynotify&quot;} 
