@@ -468,7 +468,7 @@ foreach(@INC) {
 
 return ('couldn\'t find ' . $module) unless scalar(@allLines);
 
-'&lt;p&gt;&lt;code&gt;'.$fileName.'&lt;/code&gt;&lt;br /&gt;'.&quot;\n&quot;.listCode(join('',@allLines) ,1).'&lt;/p&gt;';
+'&lt;p&gt;&lt;code&gt;'.$fileName.'&lt;/code&gt;&lt;br /&gt;'.&quot;\n&quot;.$APP-&gt;listCode(join('',@allLines) ,1).'&lt;/p&gt;';
 %]
 &lt;/p&gt;
 

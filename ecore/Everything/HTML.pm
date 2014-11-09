@@ -1115,12 +1115,6 @@ sub parseCode {
 
 }
 
-sub listCode {
-  return $APP->listCode(@_);
-}
-
-
-
 #############################################################################
 sub quote {
 	my ($text) = @_;

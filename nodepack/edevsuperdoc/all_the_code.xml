@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>13</type_nodetype>
+  <type_nodetype>1983550</type_nodetype>
   <doctext>[%
 no strict;
 
@@ -57,7 +57,7 @@ if (@mod) {
 }
 
 $str .= &quot;&lt;p&gt;&lt;b&gt;Code Result:&lt;/b&gt;&lt;/p&gt;&quot;;
-$str .= listCode(join('', @mod));
+$str .= $APP-&gt;listCode(join('', @mod));
 
 $str;
 

@@ -16,7 +16,6 @@ BEGIN {
   *parseCode = *Everything::HTML::parseCode;
   *parseLinks = *Everything::HTML::parseLinks;
   *isNodetype = *Everything::HTML::isNodetype;
-  *listCode = *Everything::HTML::listCode;
   *isGod = *Everything::HTML::isGod;
   *getRef = *Everything::HTML::getRef;
   *insertNodelet = *Everything::HTML::insertNodelet;

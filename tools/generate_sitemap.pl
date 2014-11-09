@@ -132,7 +132,7 @@ sub add_node_to_sitemap
 
 	$edittime =~ s/ .+//g;	
 	print $sitemaphandle $xg->url(
-		$xg->loc("$e2".urlGenNoParams( $N , 'noQuotes' )),
+		$xg->loc("$e2".$APP->urlGenNoParams( $N , 'noQuotes' )),
 		defined($edittime)?($xg->lastmod($edittime)):(undef),
 	)."\n";
 }

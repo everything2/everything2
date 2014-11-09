@@ -19,7 +19,6 @@ BEGIN {
   *parseCode = *Everything::HTML::parseCode;
   *parseLinks = *Everything::HTML::parseLinks;
   *isNodetype = *Everything::HTML::isNodetype;
-  *listCode = *Everything::HTML::listCode;
   *isGod = *Everything::HTML::isGod;
   *getRef = *Everything::HTML::getRef;
   *insertNodelet = *Everything::HTML::insertNodelet;
@@ -559,9 +558,9 @@ sub showChoiceFunc
   }
 
   if (@lines) {
-    $str.= listCode(join('', @lines));
+    $str.= $APP->listCode(join('', @lines));
   } else {
-    $str = listCode($fullText);
+    $str = $APP->listCode($fullText);
   }
   return $str;
 }
@@ -1002,7 +1001,7 @@ sub listcode
     }
   }
 
-  $code = listCode($code, 1);
+  $code = $APP->listCode($code, 1);
 
   my $patchTitle = undef;
   my $patchID = undef;
