@@ -48,7 +48,6 @@ sub BEGIN {
               displayPage
               gotoNode
               encodeHTML
-              rewriteCleanEscape
               processVarsSet
               showPartialDiff
               mod_perlInit
@@ -709,10 +708,6 @@ sub getPage
 	die "can't load a page $displaytype for $$TYPE{title} type" unless $PAGE;
 
 	$PAGE;
-}
-
-sub rewriteCleanEscape {
-  return $APP->rewriteCleanEscape(@_);
 }
 
 sub urlGenNoParams {
