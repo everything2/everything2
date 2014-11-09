@@ -170,7 +170,7 @@ if (!$pass || !$username || !$email || $prompt == 1){
 	$prompt = 'We regret that only human beings or entities claiming
 		human status are permitted to sign up for an account.
 		Please indicate your humanity';
-	my $value = ' (parameter value &quot;'.encodeHTML($spambot).'&quot;)' unless $spambot eq '1';
+	my $value = ' (parameter value &quot;'.$APP-&gt;encodeHTML($spambot).'&quot;)' unless $spambot eq '1';
 	&amp;$secLog(&quot;User failed human intelligence test$value&quot;);
 }
 
@@ -201,7 +201,7 @@ $user -&gt; {passwd} = $$params{token}.'|'.$$params{expiry};
 #$user = $DB -&gt; insertNode($username, 'user', -1, $user);
 
 unless ($user){
-	&amp;$secLog('Failed to create new user: username '.encodeHTML($username, 1));
+	&amp;$secLog('Failed to create new user: username '.$APP-&gt;encodeHTML($username, 1));
 	return $query -&gt; p('Sorry, something just went horribly wrong. Your account has
 		not been created. Please try again.');
 }

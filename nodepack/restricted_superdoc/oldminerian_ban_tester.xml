@@ -45,7 +45,7 @@ unless( $@ ){
 	if($cursor-&gt;execute()) {
 		my $ROW = $cursor-&gt;fetchrow_hashref();
 			if($$ROW{ipblacklist_id}){
-				debugLog('attempted create user ['.encodeHTML($name,1).'] from blacklisted IP.');
+				debugLog('attempted create user ['.$APP-&gt;encodeHTML($name,1).'] from blacklisted IP.');
 				$errorMessage=&quot;We're sorry, but we can't accept new user signups from this IP address.&quot;;
 			}
 		$cursor-&gt;finish();

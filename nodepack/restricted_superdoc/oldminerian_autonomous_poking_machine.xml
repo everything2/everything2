@@ -1050,7 +1050,7 @@ if ($referer eq &quot;&quot;) {
 
 my $host = $referer-&gt;host;
 my $refer_string = 'Your referring URL was &lt;strong&gt;'
-                   . encodeHTML($referer)
+                   . $APP-&gt;encodeHTML($referer)
                    . '&lt;/strong&gt;';
 
 my %searchHosts = (
@@ -1067,21 +1067,21 @@ my %everythingHosts = (
 my $search_string = &quot;&quot;;
 
 $refer_string .= '&lt;br&gt;Your unstripped host is '
-                 . encodeHTML($host);
+                 . $APP-&gt;encodeHTML($host);
 
 # Strip down to the base host, ignoring subdomains
 $host =~ s/.*?([^\.]+\.[^\.]+)$/\1/;
 
 $refer_string .= '&lt;br&gt;Your stripped host is '
-                 . encodeHTML($host);
+                 . $APP-&gt;encodeHTML($host);
 
 if (defined $searchHosts{$host}) {
 
-   $search_string = encodeHTML($referer-&gt;query_param($searchHosts{$host}));
+   $search_string = $APP-&gt;encodeHTML($referer-&gt;query_param($searchHosts{$host}));
    $refer_string .= '&lt;br&gt;Someone searched for '
                     . $search_string
                     . ' from '
-                    . encodeHTML($host)
+                    . $APP-&gt;encodeHTML($host)
                     . ' to get to your article.';
 
 } elsif (defined $everythingHosts{$host}) {
@@ -1089,7 +1089,7 @@ if (defined $searchHosts{$host}) {
    if (defined $referer-&gt;query_param('searchy')
             and defined $referer-&gt;query_param('node')) {
 
-      $search_string = encodeHTML($referer-&gt;query_param('node'));
+      $search_string = $APP-&gt;encodeHTML($referer-&gt;query_param('node'));
       $refer_string .= '&lt;br&gt;Someone searched for '
                        . $search_string
                        . ' on E2 to get to your article.';

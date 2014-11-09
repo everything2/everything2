@@ -1,6 +1,56 @@
 <node>
   <type_nodetype>1854352</type_nodetype>
-  <doctext>/*= autofix added basic compatibility rules */
+  <doctext>/* Fixes from Clockmaker */
+
+#pageheader {
+ padding-bottom: 15px;
+ border-bottom: 1px solid gray;
+}
+
+#pagebody .item {
+ padding: 10px 0;
+}
+#pagebody .item .contentheader {
+ margin-bottom: 20px;
+}
+#pagebody .item .contentfooter {
+ margin-top: 20px;
+}
+
+#newwriteups .contentinfo {
+ display: table;
+ width: 100%;
+}
+#newwriteups .contentinfo .title {
+ background-color: #fff;
+ text-align: left;
+ font-weight: normal;
+ float: left;
+ width: 77%;
+}
+#newwriteups .contentinfo .type {
+ float: right;
+ width: 23%;
+ font-size: 80%;
+ text-align: right;
+}
+#newwriteups .contentinfo cite {
+ display: table-header-group;
+ color: #cc9;
+ text-align: center;
+ background-color: #cc9;
+ width: 100%;
+ padding: 2px;
+}
+#newwriteups .contentinfo cite a {
+ background-color: #cc9;
+ font-weight: bold;
+ display: inline-block;
+ margin-left: -1em;
+}
+
+/* End New Writeups fixes */
+
 /* archiewood fixed News For Noders headers. */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
 .weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
@@ -527,7 +577,7 @@ td#sl8{background:#dbdbb7;}td#sl7{background:#dbdbb7;}td#sl6{background:#dbdbb8;
 td#sl4{background:#dcdcb9;}td#sl3{background:#dcdcb9;}td#sl2{background:#dcdcba;}td#sl1{background:#ddddbb;}
 
 </doctext>
-  <contentversion>105</contentversion>
+  <contentversion>106</contentversion>
   <s3bucket></s3bucket>
   <node_id>1997697</node_id>
   <title>dim jukka emulation</title>

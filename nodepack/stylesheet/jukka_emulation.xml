@@ -1,6 +1,56 @@
 <node>
   <type_nodetype>1854352</type_nodetype>
-  <doctext>/*= autofix added basic compatibility rules */
+  <doctext>/* Fixes from Clockmaker */
+
+#pageheader {
+ padding-bottom: 15px;
+ border-bottom: 1px solid gray;
+}
+
+#pagebody .item {
+ padding: 10px 0;
+}
+#pagebody .item .contentheader {
+ margin-bottom: 20px;
+}
+#pagebody .item .contentfooter {
+ margin-top: 20px;
+}
+
+#newwriteups .contentinfo {
+ display: table;
+ width: 100%;
+}
+#newwriteups .contentinfo .title {
+ background-color: #fff;
+ text-align: left;
+ font-weight: normal;
+ float: left;
+ width: 77%;
+}
+#newwriteups .contentinfo .type {
+ float: right;
+ width: 23%;
+ font-size: 80%;
+ text-align: right;
+}
+#newwriteups .contentinfo cite {
+ display: table-header-group;
+ color: #cc9;
+ text-align: center;
+ background-color: #cc9;
+ width: 100%;
+ padding: 2px;
+}
+#newwriteups .contentinfo cite a {
+ background-color: #cc9;
+ font-weight: bold;
+ display: inline-block;
+ margin-left: -1em;
+}
+
+/* End New Writeups fixes */
+
 /* archiewood fixed News For Noders headers. */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
 .weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
@@ -537,7 +587,7 @@ td#sl16{background:#f2f2e6;}td#sl15{background:#f3f3e8;}td#sl14{background:#f4f4
 td#sl12{background:#f6f6ed;}td#sl11{background:#f6f6ee;}td#sl10{background:#f7f7f0;}td#sl9{background:#f8f8f2;}
 td#sl8{background:#f9f9f3;}td#sl7{background:#fafaf5;}td#sl6{background:#fafaf6;}td#sl5{background:#fbfbf8;}
 td#sl4{background:#fcfcfa;}td#sl3{background:#fdfdfb;}td#sl2{background:#fefefd;}td#sl1{background:#ffffff;}</doctext>
-  <contentversion>110</contentversion>
+  <contentversion>112</contentversion>
   <s3bucket></s3bucket>
   <node_id>1855548</node_id>
   <title>jukka emulation</title>
