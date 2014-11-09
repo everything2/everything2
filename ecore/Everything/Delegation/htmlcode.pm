@@ -22,7 +22,6 @@ BEGIN {
   *isGod = *Everything::HTML::isGod;
   *getRef = *Everything::HTML::getRef;
   *insertNodelet = *Everything::HTML::insertNodelet;
-  *screenTable = *Everything::HTML::screenTable;
   *getType = *Everything::HTML::getType;
   *updateNode = *Everything::HTML::updateNode;
   *setVars = *Everything::HTML::setVars;
@@ -1663,7 +1662,7 @@ sub show_content
         $morelink = "\n<div class='morelink'>(". linkNode($$N{node_id} || $$N{writeup_id}, 'more') . ")\n</div>";
       }
 
-      $text = screenTable( $text ) if $lastnodeid ; # i.e. if writeup page & logged in
+      $text = $APP->screenTable( $text ) if $lastnodeid ; # i.e. if writeup page & logged in
       $text = parseLinks( $APP->cleanupHTML( $text , $HTML ) , $lastnodeid ) ;
       return "\n<div class=\"content\">\n$text$dots\n</div>$morelink" unless $xml ;
 
@@ -3208,7 +3207,7 @@ sub standard_html_screen
   $lastnode_id = undef if ($APP->isGuest($USER));
 
   $text = $APP->htmlScreen($text, $TAGS);
-  $text = screenTable ($text);
+  $text = $APP->screenTable ($text);
   $text = parseLinks($text, $lastnode_id);
   $text = $APP->breakTags($text);
   return $text;

@@ -172,85 +172,8 @@ sub query_vars_string {
 	return $error;
 }
 
-
-#############################################################################
-#       sub
-#               screenTable
-# 
-#       purpose
-#               screen out broken tables
-#               returns the HTML as it was for valid tables, otherwise helps to debug.
-#
-#       params
-#               text -- the text to filter
-#
-# By [call] - see [edev: Tables and HTML Validation]
-# Okay, in brief:
-# fast 'cause it's optimised to the 'common' cases:
-# Most writeups have no tables. Zoooom!
-# Writeups that have tables will mostly have valid tables:
-#   => Only a quick parse to validate.
-# We 'enforce' the validity of tables by outputting debug info
-#   for badly formed tables. This is UGLY so writeup authors will
-#   fix 'em quick.
-# In an HTMLcode, so compilation of this code is amortised.
-# [screenHTML] should still be used, and can be used to control
-#   attributes in the tags. Ideally this works on the output of
-#   screenHTML, but only because the 'debug' output uses <div>s
-#   with dashed outlines to help HTML writers find their oopsies.
-
-
-# Should be reasonably fast: scans through the HTML using a m''g, which
-# is about as fast as anything in perl can be. Stacks the tags (only
-# looks at table tags) and checks the structural validity by 
-# matching a two-level context descriptor (stack . tag) against
-# an RE describing valid contexts. (again, perl and RE => faster than
-# a bunch of ifs or whatever)
-sub tableWellFormed ($) {
-    my (@stack);
-    for ($_[0] =~ m{<(/?table|/?tr|/?th|/?td/?tbody/?thead)[\s>]}ig) {
-        my $tag = lc $_;
-        my $top = $stack[$#stack];
-
-        if (substr($tag, 0, 1) eq '/') {
-            # Closing tag. Pop from stack and check that they match.
-            return (0, "$top closed with $tag")
-              if pop @stack ne substr($tag, 1);
-        } else {
-            # Opening tag. Push, and check context is valid.
-            push @stack, $tag;
-            return (0, "$tag inside $top") 
-                if (($top.$tag) !~ /^(table(tr|tbody)?|(tbody|thead)tr|tr(td|th)|(td|th)(table))$/);
-        }
-    }
-    return (0, "Unclosed table elements: " . join ", ", @stack)
-        if ($#stack != -1);
-    return 1;
-}
-
-sub debugTag ($) {
-    my ($tag) = @_;
-    my $htmltag = $tag;
-    $htmltag = "<strong><small>&lt;" . $APP->encodeHTML($htmltag) . "&gt;</small></strong>";
-
-    if (substr($tag, 0, 1) ne '/') {
-        return $htmltag . "<div style=\"margin-left: 16px; border: dashed 1px grey\">";
-    } else {
-        return "</div>". $htmltag;
-    }
-}
-
-sub debugTable ($$) {
-    my ($error, $html) = @_;
-    $html =~ s{<((/?)(table|tr|td|th|thead|tbody)((\s[^>]*)|))>}{debugTag $1}ige;
-    return "<p><strong>Table formatting error: $error</strong></p>".$html;
-}
-
 sub screenTable {
-    my ($text) = @_;
-    my ($valid, $error) = tableWellFormed($text);
-    $text = debugTable ($error, $text) if ! $valid;
-    $text;
+  return $APP->screenTable(@_);
 }
 
 

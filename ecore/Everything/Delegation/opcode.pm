@@ -19,7 +19,6 @@ BEGIN {
   *isGod = *Everything::HTML::isGod;
   *getRef = *Everything::HTML::getRef;
   *insertNodelet = *Everything::HTML::insertNodelet;
-  *screenTable = *Everything::HTML::screenTable;
   *getType = *Everything::HTML::getType;
   *updateNode = *Everything::HTML::updateNode;
   *setVars = *Everything::HTML::setVars;
