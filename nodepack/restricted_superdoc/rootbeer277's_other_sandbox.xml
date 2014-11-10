@@ -55,7 +55,7 @@ my $sampletext = '&lt;html&gt;
 	&lt;/body&gt;
 &lt;/html&gt;';
 #$sampletext =~ s/&lt;!--.*?--&gt;//g;
-return $APP-&gt;breakTags(parseLinks(screenTable($APP-&gt;htmlScreen($sampletext))));
+return $APP-&gt;breakTags(parseLinks($APP-&gt;screenTable($APP-&gt;htmlScreen($sampletext))));
 %]
 [%
 # [^&gt;]
@@ -71,7 +71,7 @@ my $sampletext = '&lt;html&gt;
 	&lt;/body&gt;
 &lt;/html&gt;';
 $sampletext =~ s/&lt;!--.*?--&gt;//g;
-return $APP-&gt;breakTags(parseLinks(screenTable($APP-&gt;htmlScreen($sampletext))));
+return $APP-&gt;breakTags(parseLinks($APP-&gt;screenTable($APP-&gt;htmlScreen($sampletext))));
 %]
 [%
 # [^&gt;]
@@ -87,7 +87,7 @@ my $sampletext = '&lt;html&gt;
 	&lt;/body&gt;
 &lt;/html&gt;';
 #$sampletext =~ s/&lt;!--.*?--&gt;//g;
-return $APP-&gt;breakTags(parseLinks(screenTable($APP-&gt;htmlScreen($sampletext))));
+return $APP-&gt;breakTags(parseLinks($APP-&gt;screenTable($APP-&gt;htmlScreen($sampletext))));
 %]
 
 &lt;hr&gt;&lt;hr&gt;&lt;hr&gt;

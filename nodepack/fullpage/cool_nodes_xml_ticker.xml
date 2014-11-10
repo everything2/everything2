@@ -1,6 +1,10 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Nov  9 18:50:14 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Nov  9 23:00:14 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;jessicaj&quot; node_id=&quot;2115589&quot; parent_e2node=&quot;2116667&quot; author_user=&quot;Chord&quot;&gt;Song of the Volga Boatmen&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;legbagede&quot; node_id=&quot;2115934&quot; parent_e2node=&quot;1512948&quot; author_user=&quot;mauler&quot;&gt;1836&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;AudieMcCall&quot; node_id=&quot;1713098&quot; parent_e2node=&quot;971435&quot; author_user=&quot;mauler&quot;&gt;How I made the Year Nodes&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1138342&quot; parent_e2node=&quot;1138332&quot; author_user=&quot;anthropod&quot;&gt;eye dialect&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;montecarlo&quot; node_id=&quot;2116657&quot; parent_e2node=&quot;2116655&quot; author_user=&quot;Tem42&quot;&gt;Spoon theory&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1113551&quot; parent_e2node=&quot;397191&quot; author_user=&quot;Jargon&quot;&gt;glitch&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Berek&quot; node_id=&quot;1691523&quot; parent_e2node=&quot;849739&quot; author_user=&quot;Cairsten&quot;&gt;blackface&lt;/cooled&gt;
@@ -12,10 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Bitriot&quot; node_id=&quot;2048595&quot; parent_e2node=&quot;2048596&quot; author_user=&quot;Arreter&quot;&gt;Mary-Sue Syndrome&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;lizardinlaw&quot; node_id=&quot;2116654&quot; parent_e2node=&quot;2116635&quot; author_user=&quot;AudieMcCall&quot;&gt;November 8, 2014&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2116095&quot; parent_e2node=&quot;2116551&quot; author_user=&quot;Apollyon&quot;&gt;Echomimetic&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2116555&quot; parent_e2node=&quot;2116556&quot; author_user=&quot;AudieMcCall&quot;&gt;She Spoke to the Dead&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2116565&quot; parent_e2node=&quot;2116561&quot; author_user=&quot;Estelore&quot;&gt;Fallen London&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2116560&quot; parent_e2node=&quot;2116536&quot; author_user=&quot;haqiqat&quot;&gt;November 5, 2014&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Pandeism Fish&quot; node_id=&quot;2115186&quot; parent_e2node=&quot;789917&quot; author_user=&quot;Hazelnut&quot;&gt;I'd love to go back to the late 80's and tell them about our time&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

@@ -30,7 +30,6 @@ sub BEGIN {
               $PAGELOAD
               $query
               parseLinks
-              screenTable
               htmlFormatErr
               quote
               urlGen
@@ -171,11 +170,6 @@ sub query_vars_string {
 
 	return $error;
 }
-
-sub screenTable {
-  return $APP->screenTable(@_);
-}
-
 
 #############################################################################
 #	Sub
