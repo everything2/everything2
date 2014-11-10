@@ -171,81 +171,15 @@ sub query_vars_string {
 	return $error;
 }
 
-#############################################################################
-#	Sub
-#		buildTable
-#
-#	Purpose
-# This is a useful little function that forms nice html tables given two array
-#   references.  The first is the column labels, the second is an array
-#   reference to hash references of data.  Each hash reference should contain
-#   a key for each element in the label reference pointing to the value you
-#   would like displayed, e.g.:
-# $labels = ['name','email];
-# $rows = [{'name'=>'Dann Stayskal','email'=>'dann@stayskal.com'},
-#          {'name'=>'Jaubert Moniker','email'=>'andy@destructupad.net'}];
-#   If a row contains a key not in a label, that data will be discarded.  If a
-#   label contains a title with no matching keys, you will have a blank column.
-# The third option you can give it is a formatting option - 'nolabels','nodelet',
-#   'fullwidth', or any combination of the three (it just regexps it out).
-#   The 'nolabels' option will hide the column labels and give the background of
-#   the first row of data the color usually reserved for labels.  the 'nodelet'
-#   option does the same thing, only it uses the darker version of a table data
-#   color and smalls the font.  'fullwidth' and 'fullheight' add 'width=100%'
-#   and 'height=100%' (yeah, I know it's not pure html4.01. It renders, though.)
-#   to the table tag.
-# The fourth option defines the table's "align" attribute; added to help us
-#   break away from <center> tags. This can be modified as soon as CSS has a
-#   good way to align tables. Possible values: 'left', 'center', 'right';
-#   'center' is probably the only one we'll need to use.
-# The fifth option defines the data cells' style="vertical-align" attribute.
-#   Possible values: 'top', 'middle', 'bottom'. Added because middle-aligned
-#  lists in softlink tables are fugly. --alexander
-#
-# NEW IN VERSION 2! - this now pulls formatting data from CSS:
-#   <elem class="title"> and <elem class="data">
+
 sub buildTable
 {
-	my ($labels,$data,$options,$tablealign,$datavalign) = @_;
-	return '<i>no data</i>' unless $data;
-	
-	my $borderColor = undef; 
-	my $width = ($options=~/fullwidth/) ? 'width="100%"' : '';
-	my $tablealignment = ($tablealign eq 'left' || $tablealign eq 'center' || $tablealign eq 'right')
-		? ' align="'.$tablealign.'"' : '';
-	my $datavalignment = ($datavalign eq 'top' || $datavalign eq 'middle' || $datavalign eq 'bottom')
-		? ' valign="'.$datavalign.'"' : '';
-	$options=~/class=['"]?(\w+)['"]?/;
-	my $class = $1;
-	
-	my $str='<table '.$width.' class='.$class.'>';
-	
-	$str.='<tr>'.join('',map({'<th>'.$_.'</th>'} @$labels))
-		.'</tr>' unless $options =~/nolabels/;
-	
-	foreach my $row (@$data){
-		$str.='<tr>';
-		foreach my $label (@$labels){
-			if( !defined $$row{$label} )
-			{
-				$$row{$label} = '&nbsp;';
-			}
-			if (($options =~ /nolabels/)&&($label eq $$labels[0])) {
-				$str.='<th'.$datavalignment.'>'.$$row{$label}.'</th>';
-			} else {
-				$str.='<td'.$datavalignment.'>'.$$row{$label}.'</td>';
-			}
-		}
-		$str.='</tr>';
-	}
-	
-	$str.='</table>';
+  return $APP->buildTable(@_);
 }
 
 sub encodeHTML
 {
-	my ($html, $adv) = @_;
-	return $APP->encodeHTML($html, $adv);
+  return $APP->encodeHTML(@_);
 }
 
 #############################################################################
