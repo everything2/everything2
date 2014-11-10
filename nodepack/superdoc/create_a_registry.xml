@@ -25,7 +25,7 @@ return &quot;You would need to be [The Everything2 Voting/Experience System|leve
     {'key'=&gt;' ','value'=&gt;
      '&lt;input type=&quot;submit&quot; name=&quot;sexisgood&quot; value=&quot;create&quot;&gt;'}
   ];
-  buildTable($labels,$rows,'nolabels');
+  $APP-&gt;buildTable($labels,$rows,'nolabels');
 %]
 
 &lt;/form&gt;</doctext>

@@ -172,11 +172,6 @@ sub query_vars_string {
 }
 
 
-sub buildTable
-{
-  return $APP->buildTable(@_);
-}
-
 sub encodeHTML
 {
   return $APP->encodeHTML(@_);

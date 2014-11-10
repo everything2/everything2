@@ -1,6 +1,14 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Nov  9 23:00:14 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Mon Nov 10 02:25:20 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;Chord&quot; node_id=&quot;2116674&quot; parent_e2node=&quot;2116673&quot; author_user=&quot;lizardinlaw&quot;&gt;Sconed&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2116602&quot; parent_e2node=&quot;1144760&quot; author_user=&quot;Chord&quot;&gt;National Mall&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2116582&quot; parent_e2node=&quot;2116588&quot; author_user=&quot;AudieMcCall&quot;&gt;Poetry on Buses&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2116575&quot; parent_e2node=&quot;2116574&quot; author_user=&quot;Glowing Fish&quot;&gt;Deaths-Head Revisited&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;Everyone2&quot; node_id=&quot;1843122&quot; parent_e2node=&quot;813301&quot; author_user=&quot;Evil Catullus&quot;&gt;I do not think that they will sing to me.&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;998093&quot; parent_e2node=&quot;998092&quot; author_user=&quot;Hooverdirt&quot;&gt;Happy Trails&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;626186&quot; parent_e2node=&quot;626184&quot; author_user=&quot;Jet-Poop&quot;&gt;John Dee&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;lizardinlaw&quot; node_id=&quot;844529&quot; parent_e2node=&quot;736300&quot; author_user=&quot;junkpile&quot;&gt;One day I will step out of my body and burst into bloom&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;jessicaj&quot; node_id=&quot;2115589&quot; parent_e2node=&quot;2116667&quot; author_user=&quot;Chord&quot;&gt;Song of the Volga Boatmen&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;legbagede&quot; node_id=&quot;2115934&quot; parent_e2node=&quot;1512948&quot; author_user=&quot;mauler&quot;&gt;1836&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;AudieMcCall&quot; node_id=&quot;1713098&quot; parent_e2node=&quot;971435&quot; author_user=&quot;mauler&quot;&gt;How I made the Year Nodes&lt;/cooled&gt;
@@ -8,14 +16,6 @@
 	&lt;cooled cooledby_user=&quot;montecarlo&quot; node_id=&quot;2116657&quot; parent_e2node=&quot;2116655&quot; author_user=&quot;Tem42&quot;&gt;Spoon theory&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1113551&quot; parent_e2node=&quot;397191&quot; author_user=&quot;Jargon&quot;&gt;glitch&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Berek&quot; node_id=&quot;1691523&quot; parent_e2node=&quot;849739&quot; author_user=&quot;Cairsten&quot;&gt;blackface&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;decoy hunches&quot; node_id=&quot;1176360&quot; parent_e2node=&quot;865350&quot; author_user=&quot;Templeton&quot;&gt;i got the wound, if you got the salt&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;TanisNikana&quot; node_id=&quot;1057823&quot; parent_e2node=&quot;1057798&quot; author_user=&quot;kowalski&quot;&gt;The Militarization and Privatization of Public Space&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Chord&quot; node_id=&quot;2112378&quot; parent_e2node=&quot;997465&quot; author_user=&quot;Hazelnut&quot;&gt;Enid Blyton&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;mad girl's love song&quot; node_id=&quot;2116636&quot; parent_e2node=&quot;2047274&quot; author_user=&quot;Estelore&quot;&gt;noli nothis permittere te terere&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Auspice&quot; node_id=&quot;1852054&quot; parent_e2node=&quot;1852053&quot; author_user=&quot;Angela&quot;&gt;drop of red ink in a water glass&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Bitriot&quot; node_id=&quot;2048595&quot; parent_e2node=&quot;2048596&quot; author_user=&quot;Arreter&quot;&gt;Mary-Sue Syndrome&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;lizardinlaw&quot; node_id=&quot;2116654&quot; parent_e2node=&quot;2116635&quot; author_user=&quot;AudieMcCall&quot;&gt;November 8, 2014&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2116095&quot; parent_e2node=&quot;2116551&quot; author_user=&quot;Apollyon&quot;&gt;Echomimetic&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>

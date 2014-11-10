@@ -17,7 +17,7 @@
   }
   if($rows){
     return &quot;&lt;p&gt;To add more registry entries, check out [The Registries[superdoc]].&lt;/p&gt;&quot;
-      . buildTable($labels,$rows)
+      . $APP-&gt;buildTable($labels,$rows)
       ;
   }else{
     return '&lt;div style=&quot;text-align:center;font-weight:bold;margin:20px;&quot;&gt;'

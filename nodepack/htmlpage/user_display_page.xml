@@ -35,7 +35,7 @@ return if getId($USER) != getId($NODE) or $APP-&gt;isGuest($USER);
     };
   }
 
-  return buildTable($labels,$rows,'class=&quot;registries&quot;,nolabels') if($rows);
+  return $APP-&gt;buildTable($labels,$rows,'class=&quot;registries&quot;,nolabels') if($rows);
   return '';
 %]
 &lt;div class='content'&gt;

@@ -102,7 +102,7 @@
     $input=$query-&gt;textfield(-name=&gt;'userdata',-default=&gt;$$entry{data},
       -size =&gt; 40,-maxlength =&gt; 255);
   }
-  return htmlcode('openform').buildTable(['key','value'],[
+  return htmlcode('openform').$APP-&gt;buildTable(['key','value'],[
     {'key'=&gt;'Your Data','value'=&gt;
       $input},
     {'key'=&gt;'Comments?&lt;br&gt;(optional)','value'=&gt;
@@ -149,7 +149,7 @@
     };
   }
   if($rows){
-    return buildTable($labels,$rows,&quot;class='registries'&quot;);
+    return $APP-&gt;buildTable($labels,$rows,&quot;class='registries'&quot;);
   }else{
     return '&lt;div style=&quot;text-align:center;font-weight:bold;margin:20px;&quot;&gt;
     No users have submitted information to this registry yet.
