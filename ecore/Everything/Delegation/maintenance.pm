@@ -37,6 +37,9 @@ BEGIN {
   *replaceNodegroup = *Everything::HTML::replaceNodegroup; 
 } 
 
+# Used by writeup_create
+use JSON;
+
 sub room_create
 {
   my $DB = shift;
@@ -57,7 +60,7 @@ sub room_create
     return;
   }
 
-  getRef($N);
+  $DB->getRef($N);
   $$N{criteria} = "1;";
   $$N{author_user} = getId(getNode('gods', 'usergroup'));
   updateNode($N, -1);
@@ -77,7 +80,7 @@ sub dbtable_create
   # want to create the associated table here.
   my ($thisnode) = @_;
 
-  getRef($thisnode);
+  $DB->getRef($thisnode);
   $DB->createNodeTable($thisnode->{title});
 }
 
@@ -94,7 +97,7 @@ sub dbtable_delete
   # We want to delete the associated table here.
   my ($thisnode) = @_;
 
-  getRef($thisnode);
+  $DB->getRef($thisnode);
   $DB->dropNodeTable($$thisnode{title});
 }
 
@@ -109,10 +112,14 @@ sub writeup_create
   my $APP = shift;
 
   my ($WRITEUP) = @_;
-  getRef($WRITEUP);
+  $DB->getRef($WRITEUP);
+
+  # This is an odd consession for the time being so that maintenance functions can properly
+  # bomb out if there isn't a CGI object in place
+  return unless $query;
 
   my $E2NODE = $query->param('writeup_parent_e2node');
-  getRef($E2NODE);
+  $DB->getRef($E2NODE);
 
   # we need an e2node to insert the writeup into,
   # and the writeup must have some text:
@@ -138,6 +145,120 @@ sub writeup_create
   # redirect to the updated writeup
   $Everything::HTML::HEADER_PARAMS{-status} = 303;
   $Everything::HTML::HEADER_PARAMS{-location} = htmlcode('urlToNode', $problem);
+
+}
+
+sub e2node_create
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($E2NODE) = @_;
+  $DB->getRef($E2NODE);
+
+  $$E2NODE{createdby_user} = $$E2NODE{author_user} || $DB->getId($USER);
+  $$E2NODE{author_user} = $DB->getId($DB->getNode('Content Editors', 'usergroup')); # Content Editors can update it; author can't
+
+  $DB->updateNode($E2NODE, -1);
+}
+
+sub e2node_update
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($E2NODE) = @_;
+  $DB->getRef($E2NODE);
+
+  my $CE = $DB->getId($DB->getNode('Content Editors', 'usergroup'));
+
+  if ($$E2NODE{author_user} != $CE) {
+    $$E2NODE{createdby_user} = $$E2NODE{author_user};
+    $$E2NODE{author_user} = $CE; # Content Editors can update node, creator cannot
+    $DB->updateNode($E2NODE, -1);
+  }
+
+  $APP->repairE2Node($E2NODE, "no reorder");
+
+}
+
+sub writeup_update
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my ($WRITEUP) = @_;
+  $DB->getRef($WRITEUP);
+  return unless $WRITEUP;
+  my $E2NODE = $DB->getNodeById($$WRITEUP{parent_e2node});
+
+  return unless $E2NODE;
+
+  # avoid duplicate draft/writeup titles
+  foreach ($DB->getNodeWhere({ # should be at most one, but if not, we fix that, too:
+    title => $$E2NODE{title}, author_user => $$WRITEUP{author_user}}, 'draft')){
+      $DB->updateNode($_, -1);
+  }
+
+  $DB->{cache}->incrementGlobalVersion($E2NODE);
+
+  # Also, if run as a script, we don't have $query
+  if($query)
+  {
+    # Make a notification if someone's about to blank a writeup
+    if(defined($query->param('writeup_doctext')))
+    {
+      my $trimmedNewText = $query->param('writeup_doctext');
+      $trimmedNewText =~ s/^\s+|\s$//;
+  
+      return htmlcode('unpublishwriteup', $WRITEUP, 'blanked') unless $trimmedNewText;
+
+      htmlcode('addNotification', 'blankedwriteup', 0, {
+        writeup_id => getId($WRITEUP)
+        , author_id => $$USER{user_id}
+      }) if length $trimmedNewText < 20;
+    }
+
+    htmlcode('update New Writeups data') unless $query -> param('op') and $query -> param('op') eq 'vote' || $query -> param('op') eq 'cool';
+
+    if($query->param('writeup_wrtype_writeuptype'))
+    {
+      my $WRTYPE=getNode($$WRITEUP{wrtype_writeuptype});
+      if ($$WRTYPE{type}{title} ne 'writeuptype' or 
+        ($$WRTYPE{title} eq 'definition' || $$WRTYPE{title} eq 'lede' and
+        not Everything::isApproved($USER, getNode('Content Editors','usergroup'))
+        and $$USER{title} ne 'Webster 1913'
+        and $$USER{title} ne 'Virgil'))
+      {
+        $WRTYPE=getNode('thing','writeuptype'); 
+        $$WRITEUP{wrtype_writeuptype} = getId($WRTYPE);
+      }
+      my $title = "$$E2NODE{title} ($$WRTYPE{title})";
+      return if $$WRITEUP{title} eq $title;
+      #only YOU can prevent deep recursion...
+
+      $APP->repairE2Node($E2NODE);
+
+      $$WRITEUP{title} = $title;
+      $DB->updateNode($WRITEUP, -1);
+    }
+
+  }
 
 }
 

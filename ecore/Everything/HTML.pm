@@ -47,7 +47,6 @@ sub BEGIN {
               gotoNode
               encodeHTML
               processVarsSet
-              showPartialDiff
               mod_perlInit
 
               isMobile

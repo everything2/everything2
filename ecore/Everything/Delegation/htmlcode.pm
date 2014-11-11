@@ -12291,62 +12291,10 @@ sub repair_e2node
   my $APP = shift;
 
   return "" unless $APP->isEditor($USER);
-
   my ($syncnode, $no_order) = @_;
-  getRef $syncnode;
-  return "" unless($syncnode && $$syncnode{type}{title} eq "e2node");
+  $APP->repairE2Node($syncnode,$no_order);
 
-  # Set noorder if node's order is locked
-  $no_order = 1 if ($syncnode->{orderlock_user});
-
-  my $grp = $$syncnode{group};
-  my @wus = ();
-  my $linktype = getId(getNode 'parent_node', 'linktype');
-  my $update_group = undef; $update_group = 1 unless $no_order;
-
-  foreach(@$grp)
-  {
-    my $wu = getNodeById($_);
-    my $reject = undef; $reject = 1 unless $wu && $$wu{type}{title} eq "writeup" && !grep {$$_{node_id} == $$wu{node_id}} @wus;
-    $update_group ||= $reject;
-    next if $reject;
-
-    my $nt = getNodeById($$wu{wrtype_writeuptype});
-    $$wu{title} = $$syncnode{title}.' ('.$$nt{title}.')';
-    $$wu{parent_e2node} = $$syncnode{node_id};
-
-    updateNode($wu, -1);
-
-    # Get a numeric value to easily sort on -- publishtime as is may not be suitable in perl
-    # (date format can vary between MySQL versions/settings)
-    $$wu{numtime} = $DB->sqlSelect("publishtime+0", "writeup", "writeup_id = $$wu{node_id}");
-    push @wus, $wu;
   
-    # make sure there is no left-over draft attachment
-    $DB -> sqlDelete('links', "from_node=$$wu{node_id} AND linktype=$linktype");
-  }
-
-  unless ($no_order)
-  {
-    my $webby = getId(getNode("Webster 1913", "user"));
-    my $lede = getId(getNode('lede', 'writeuptype'));
-    # Sort with lede-type at the top and Webby writeups at the bottom,
-    # secondarily sorting by publish time descending
-    my $isWebby = sub {
-      return 0 if $_[0]->{wrtype_writeuptype} == $lede;
-      return 1 unless $_[0]->{author_user} == $webby;
-      return 2;
-    };
-    @wus = sort { &$isWebby($a) <=> &$isWebby($b) || $$a{numtime} <=> $$b{numtime}} @wus;
-  }
-
-  if ($update_group)
-  {
-    # condition avoids infinite recursion through updateNode ...
-    replaceNodegroup($syncnode, \@wus, -1);
-    updateNode($syncnode, -1); # ... but is this necessary?
-  }
-
   return "repaired and reordered" unless $no_order;
   return "repaired";
 
