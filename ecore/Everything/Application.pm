@@ -17,7 +17,7 @@ use Email::Sender::Transport::SMTP;
 # For convertDateToEpoch
 use Date::Calc;
 
-# For rewriteCleanEscape
+# For rewriteCleanEscape, urlGen
 use CGI;
 
 use vars qw($PARAMS $PARAMSBYTYPE);
@@ -2727,7 +2727,7 @@ sub tagApprove
 #		    correctly nested. 
 #       Params
 #               text -- the text/html to filter
-#               APPROVED -- ref to hash where approved tags are keys.
+#               approved -- ref to hash where approved tags are keys.
 #                   Null means all HTML will be taken out.
 #                   { noscreening => 1 } means no HTML will be taken out.
 #		preapproved_ref -- ref to hash/cache of 'pre-approved'
@@ -2929,19 +2929,19 @@ sub cleanupHTML {
 #
 #	purpose
 #		screen out html tags from a chunk of text
-#		returns the text, sans any tags that aren't "APPROVED"
+#		returns the text, sans any tags that aren't "approved_tags"
 #   Now defers all the work to cleanupHTML
 #
 #	params
 #		text -- the text to filter
-#		APPROVED -- ref to hash where approved tags are keys.  Null means
+#		approved_tags -- ref to hash where approved tags are keys.  Null means
 #			all HTML will be taken out.
 #
 sub htmlScreen {
-	my ($this, $text, $APPROVED) = @_;
-	$APPROVED ||= {};
+	my ($this, $text, $approved_tags) = @_;
+	$approved_tags ||= {};
 
-	$text = $this->cleanupHTML($text, $APPROVED);
+	$text = $this->cleanupHTML($text, $approved_tags);
 	$text;
 }
 
@@ -3304,6 +3304,224 @@ sub repairE2Node
   }
 
   return 1;
+}
+
+#############################################################################
+#   Sub
+#       urlGen
+#
+#   Purpose
+#       Generates URLs. Old code calls this directly, but this should
+#       not be necessary anymore. Prefer linkNode instead.
+#
+#   Parameters
+#
+#       $REF - hashref parameters for the URL like viewcode, etc.
+#
+#       noquotes - in case you don't want quotes around the URL.
+#
+#       $NODE - hashref of the node linking to.
+
+sub urlGen {
+  my ($this, $REF, $noquotes, $NODE) = @_;
+
+  my $str;
+  $str .= '"' unless $noquotes;
+
+  if($NODE){
+    $str .= $this->urlGenNoParams($NODE,1);
+  }
+  #Preserve backwards-compatibility
+  else{
+    if($$REF{node}){
+      my $nodetype = $$REF{type} || $$REF{nodetype};
+      if($nodetype){
+        $str .= "/node/$nodetype/".$this->rewriteCleanEscape($$REF{node});
+      }
+      else{
+        $str .= "/title/".$this->rewriteCleanEscape($$REF{node});
+      }
+    }
+    elsif($$REF{node_id} && $$REF{node_id} =~ /^\d+$/){
+      $str .= "/node/$$REF{node_id}";
+    }
+    else{ $str .= "/"; }
+  }
+
+  delete $$REF{node_id};
+  delete $$REF{node};
+  delete $$REF{nodetype};
+  delete $$REF{type};
+  delete $$REF{lastnode_id} if defined $$REF{lastnode_id} && $$REF{lastnode_id} == 0;
+  my $anchor = '#'.$$REF{'#'} if $$REF{'#'};
+  delete $$REF{'#'};
+
+  #Our mod_rewrite rules can now handle this properly
+  my $quamp = '?';
+
+  # Cycle through all the keys of the hashref for node_id, etc.
+  foreach my $key (keys %$REF) {
+    my $value = "";
+    $value = CGI::escape($$REF{$key}) if defined $$REF{$key};
+    $str .= $quamp . CGI::escape($key) .'='. $value;
+    $quamp = $noquotes eq 'no escape' ? '&' : '&amp;' ;
+  }
+
+  $str .= $anchor if $anchor;
+  $str .= '"' unless $noquotes;
+  $str;
+}
+
+
+#############################################################################
+# Sub
+#  linkNode
+#
+# Purpose
+#  Generates an HTML hyperlink.
+#
+# Parameters
+#  $NODE   - A node hashref or id of the node that we want to link to.
+#  $title  - A string with the text to display in the anchor text.
+#  $PARAMS - A hashref with any optional CGI params.
+#
+# Returns
+#  The HTML for linking to the node, with CGI params.
+#
+sub linkNode {
+  my ($this, $NODE, $title, $PARAMS) = @_;
+
+  return if not ref $NODE and $NODE =~ /\D/;
+  $NODE = $this->{db}->getNodeById($NODE, 'light') unless ref $NODE;
+
+  $title ||= $$NODE{title};
+  my $tags = "";
+
+  #any params that have a "-" preceding 
+  #get added to the anchor tag rather than the URL
+  foreach my $key (keys %$PARAMS) {
+
+    next unless ($key =~ /^-/);
+    my $pr = substr $key, 1;
+    $tags .= " $pr=\"$$PARAMS{$key}\"";
+    delete $$PARAMS{$key};
+
+  }
+
+  my $exist_params = (keys(%$PARAMS) > 0);
+
+  return
+       "<a href="
+      . ($exist_params ? $this->urlGen($PARAMS,0,$NODE) : $this->urlGenNoParams($NODE) )
+      . $tags . ">$title</a>";
+}
+
+
+#############################################################################
+sub linkNodeTitle {
+  my ($this, $nodename, $lastnode, $escapeTags) = @_;
+  my ($title, $linktitle, $linkAnchor, $href) = ('', '', '', '/');
+  $nodename ||= "";
+  ($nodename, $title) = split /\s*[|\]]+/, $nodename;
+  $title = $nodename if $title =~ m/^\s*$/;
+  $nodename =~ s/\s+/ /gs;
+
+  my $str = "";
+  my ($tip, $isNode);
+
+  #If we figure out a clever way to find the nodeshells, we should fix
+  #this variable.
+  $isNode = 1;
+
+  #A direct link draws near! Command?
+  if($nodename =~ /\[/){ # usually no anchor: check *if* before seeing *what* for performance
+    my $anchor ;
+    ($tip,$anchor) = split /\s*[[\]]/, $nodename;
+    $title = $tip if $title eq $nodename ;
+
+    $nodename = $tip;
+    $tip =~ s/"/&quot;/g;
+    $nodename = $this->rewriteCleanEscape($nodename);
+    $anchor = $this->rewriteCleanEscape($anchor);
+
+    if($escapeTags){
+      $title =~ s/</\&lt\;/g;
+      $title =~ s/>/\&gt\;/g;
+      $tip =~ s/</\&lt\;/g;
+      $tip =~ s/>/\&gt\;/g;
+    }
+
+    my ($nodetype,$user) = split /\bby\b/, $anchor;
+    $nodetype =~ s/^\s*|^\+|\s*$|\+$//g;
+    $user =~ s/\+/ /g;
+    $user =~ s/^\s*|^\+|\s*$|\+$//g;
+    $linktitle = $tip;
+
+    #Aha, trying to link to a discussion post
+    if($nodetype =~ /^\d+$/){
+
+      $href = "/node/debate/$nodename";
+      $linkAnchor = "#debatecomment_$nodetype";
+
+    } else {
+
+      $nodetype = "node" unless $this->{db}->getType($nodetype);
+      #Perhaps direct link to a writeup instead?
+      if (grep /^$nodetype$/, ("","e2node","node","writeup","draft") ){
+
+        #Anchors are case-sensitive, need to get the exact username.
+        $user = $this->{db}->getNode($user,"user");
+        my $authorid = ($user? "?author_id=$$user{node_id}" : "");
+        $user = ($user? $$user{title} : "");
+
+        $href = "/title/$nodename$authorid";
+        $linkAnchor = "#$user";
+
+      }
+
+      #Else, direct link to nodetype. Let's hope the users know what
+      #they're doing.
+      else {
+        $href = ($nodetype eq "user" ? "/" : "/node/") ."$nodetype/$nodename";
+      }
+
+    }
+  }
+
+  #Plain ol' link, no direct linking.
+  else {
+    if($escapeTags){
+      $title =~ s/</\&lt\;/g;
+      $title =~ s/>/\&gt\;/g;
+      $nodename =~ s/</\&lt\;/g;
+      $nodename =~ s/>/\&gt\;/g;
+    }
+    $tip = $nodename;
+    $tip =~ s/"/''/g;
+
+    $linktitle = $tip;
+    $href = "/title/" .$this->rewriteCleanEscape($nodename);
+  }
+
+  $this->{db}->getRef($lastnode);
+  my $lastnodeQuery = "";
+  $lastnodeQuery = "?lastnode_id=$$lastnode{node_id}" if $lastnode && UNIVERSAL::isa($lastnode,'HASH');
+  $str .= "<a href=\"$href$lastnodeQuery$linkAnchor\" title=\"$linktitle\" "
+          .( $isNode ? "class='populated'" : "class='unpopulated'")
+         ." >$title</a>";
+
+  $str;
+}
+
+sub canCompress
+{
+  #TODO: Check to see if we can do this as an apache module, safely
+  #TODO: Don't compress things of shorter than X bytes
+  #TODO: Support deflate?
+  if($ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
+  {
+    return 1;
+  }
 }
 
 1;

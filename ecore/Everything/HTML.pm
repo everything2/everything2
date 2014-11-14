@@ -31,7 +31,6 @@ sub BEGIN {
               $query
               parseLinks
               htmlFormatErr
-              quote
               urlGen
               getPage
               getPages
@@ -335,70 +334,9 @@ sub htmlErrorGods
 	$str;
 }
 
-#############################################################################
-#   Sub
-#       urlGen
-#
-#   Purpose
-#       Generates URLs. Old code calls this directly, but this should
-#       not be necessary anymore. Prefer linkNode instead.
-#
-#   Parameters
-#
-#       $REF - hashref parameters for the URL like viewcode, etc.
-#
-#       noquotes - in case you don't want quotes around the URL.
-#
-#       $NODE - hashref of the node linking to.
-
-sub urlGen {
-  my ($REF, $noquotes, $NODE) = @_;
-
-  my $str;
-  $str .= '"' unless $noquotes;
-
-  if($NODE){
-    $str .= $APP->urlGenNoParams($NODE,1);
-  }
-  #Preserve backwards-compatibility
-  else{
-    if($$REF{node}){
-      my $nodetype = $$REF{type} || $$REF{nodetype};
-      if($nodetype){
-        $str .= "/node/$nodetype/".$APP->rewriteCleanEscape($$REF{node});
-      }
-      else{
-        $str .= "/title/".$APP->rewriteCleanEscape($$REF{node});
-      }
-    }
-    elsif($$REF{node_id} && $$REF{node_id} =~ /^\d+$/){
-      $str .= "/node/$$REF{node_id}";
-    }
-    else{ $str .= "/"; }
-  }
-
-  delete $$REF{node_id};
-  delete $$REF{node};
-  delete $$REF{nodetype};
-  delete $$REF{type};
-  delete $$REF{lastnode_id} if defined $$REF{lastnode_id} && $$REF{lastnode_id} == 0;
-  my $anchor = '#'.$$REF{'#'} if $$REF{'#'};
-  delete $$REF{'#'};
-
-  #Our mod_rewrite rules can now handle this properly
-  my $quamp = '?';
-
-  # Cycle through all the keys of the hashref for node_id, etc.
-  foreach my $key (keys %$REF) {
-    my $value = "";
-    $value = CGI::escape($$REF{$key}) if defined $$REF{$key};
-    $str .= $quamp . CGI::escape($key) .'='. $value;
-    $quamp = $noquotes eq 'no escape' ? '&' : '&amp;' ;
-  }
-
-  $str .= $anchor if $anchor;
-  $str .= '"' unless $noquotes;
-  $str;
+sub urlGen
+{
+  return $APP->urlGen(@_);
 }
 
 #############################################################################
@@ -554,147 +492,16 @@ sub getPage
 	$PAGE;
 }
 
-#############################################################################
-# Sub
-#  linkNode
-#
-# Purpose
-#  Generates an HTML hyperlink.
-#
-# Parameters
-#  $NODE   - A node hashref or id of the node that we want to link to.
-#  $title  - A string with the text to display in the anchor text.
-#  $PARAMS - A hashref with any optional CGI params.
-#
-# Returns
-#  The HTML for linking to the node, with CGI params.
-#
-sub linkNode {
-  my ($NODE, $title, $PARAMS) = @_;
-
-  return if not ref $NODE and $NODE =~ /\D/;
-  $NODE = getNodeById($NODE, 'light') unless ref $NODE;
-
-  $title ||= $$NODE{title};
-  my $tags = "";
-
-  #any params that have a "-" preceding 
-  #get added to the anchor tag rather than the URL
-  foreach my $key (keys %$PARAMS) {
-
-    next unless ($key =~ /^-/);
-    my $pr = substr $key, 1;
-    $tags .= " $pr=\"$$PARAMS{$key}\"";
-    delete $$PARAMS{$key};
-
-  }
-
-  my $exist_params = (keys(%$PARAMS) > 0);
-
-  return
-       "<a href="
-      . ($exist_params ? urlGen($PARAMS,0,$NODE) : $APP->urlGenNoParams($NODE) )
-      . $tags . ">$title</a>";
+sub linkNode
+{
+  return $APP->linkNode(@_);
 }
 
-
-#############################################################################
-sub linkNodeTitle {
-  my ($nodename, $lastnode, $escapeTags) = @_;
-  my ($title, $linktitle, $linkAnchor, $href) = ('', '', '', '/');
-  $nodename ||= "";
-  ($nodename, $title) = split /\s*[|\]]+/, $nodename;
-  $title = $nodename if $title =~ m/^\s*$/;
-  $nodename =~ s/\s+/ /gs;
-
-  my $str = "";
-  my ($tip, $isNode);
-
-  #If we figure out a clever way to find the nodeshells, we should fix
-  #this variable.
-  $isNode = 1;
-
-  #A direct link draws near! Command?
-  if($nodename =~ /\[/){ # usually no anchor: check *if* before seeing *what* for performance
-    my $anchor ;
-    ($tip,$anchor) = split /\s*[[\]]/, $nodename;
-    $title = $tip if $title eq $nodename ;
-
-    $nodename = $tip;
-    $tip =~ s/"/&quot;/g;
-    $nodename = $APP->rewriteCleanEscape($nodename);
-    $anchor = $APP->rewriteCleanEscape($anchor);
-
-    if($escapeTags){
-      $title =~ s/</\&lt\;/g;
-      $title =~ s/>/\&gt\;/g;
-      $tip =~ s/</\&lt\;/g;
-      $tip =~ s/>/\&gt\;/g;
-    }
-
-    my ($nodetype,$user) = split /\bby\b/, $anchor;
-    $nodetype =~ s/^\s*|^\+|\s*$|\+$//g;
-    $user =~ s/\+/ /g;
-    $user =~ s/^\s*|^\+|\s*$|\+$//g;
-    $linktitle = $tip;
-
-    #Aha, trying to link to a discussion post
-    if($nodetype =~ /^\d+$/){
-
-      $href = "/node/debate/$nodename";
-      $linkAnchor = "#debatecomment_$nodetype";
-
-    } else {
-
-      $nodetype = "node" unless getType($nodetype);
-
-      #Perhaps direct link to a writeup instead?
-      if (grep /^$nodetype$/, ("","e2node","node","writeup","draft") ){
-
-        #Anchors are case-sensitive, need to get the exact username.
-        $user = getNode($user,"user");
-        my $authorid = ($user? "?author_id=$$user{node_id}" : "");
-        $user = ($user? $$user{title} : "");
-
-        $href = "/title/$nodename$authorid";
-        $linkAnchor = "#$user";
-
-      }
-
-      #Else, direct link to nodetype. Let's hope the users know what
-      #they're doing.
-      else {
-        $href = ($nodetype eq "user" ? "/" : "/node/") ."$nodetype/$nodename";
-      }
-
-    }
-  }
-
-  #Plain ol' link, no direct linking.
-  else {
-    if($escapeTags){
-      $title =~ s/</\&lt\;/g;
-      $title =~ s/>/\&gt\;/g;
-      $nodename =~ s/</\&lt\;/g;
-      $nodename =~ s/>/\&gt\;/g;
-    }
-    $tip = $nodename;
-    $tip =~ s/"/''/g;
-
-    $linktitle = $tip;
-    $href = "/title/" .$APP->rewriteCleanEscape($nodename);
-  }
-
-  getRef $lastnode;
-  my $lastnodeQuery = "";
-  $lastnodeQuery = "?lastnode_id=$$lastnode{node_id}" if $lastnode && UNIVERSAL::isa($lastnode,'HASH');
-  $str .= "<a href=\"$href$lastnodeQuery$linkAnchor\" title=\"$linktitle\" "
-          .( $isNode ? "class='populated'" : "class='unpopulated'")
-         ." >$title</a>";
-
-
-  $str;
+sub linkNodeTitle
+{
+  return $APP->linkNodeTitle(@_);
 }
+
 
 
 #############################################################################
@@ -961,15 +768,6 @@ sub parseCode {
 }
 
 #############################################################################
-sub quote {
-	my ($text) = @_;
-
-	$text =~ s/([\W])/sprintf("&#%03u", ord $1)/egs;
-	$text; 
-}
-
-
-#############################################################################
 sub insertNodelet
 {
 	my ($NODELET) = @_;
@@ -1147,7 +945,7 @@ sub displayPage
 	}
 	setVars $USER, $VARS unless $APP->isGuest($USER);
 
-	if(canCompress())
+	if($APP->canCompress())
 	{
 		$page = Compress::Zlib::memGzip($page);
 	}
@@ -1354,7 +1152,7 @@ sub parseLinks {
                  !<a href="$1" rel="nofollow" class="externalLink">$1</a>!gsx;
 
        #Ordinary internal e2 links.
-       $text =~ s!\[([^[\]]*(?:\[[^\]|]*[\]|][^[\]]*)?)]!linkNodeTitle ($1, $node,$escapeTags)!egs;
+       $text =~ s!\[([^[\]]*(?:\[[^\]|]*[\]|][^[\]]*)?)]!$APP->linkNodeTitle($1, $node,$escapeTags)!egs;
 	   # [^\[\]]+ any text in square brackets
 	   # ((?:\[[^\]|]* '[' then optionally: nodetype/author also in square brackets
 	   # [\]|] tolerate forgetting either closing ']' or pipe
@@ -1409,7 +1207,7 @@ sub printHeader
 		$extras->{cookie} = \@cookies;
 	}
 
-	if(canCompress())
+	if($APP->canCompress())
 	{
 		$extras->{content_encoding} = "gzip";
 	}
@@ -1818,16 +1616,6 @@ sub isMobile
   return $query->cookie('mobile') || $ENV{HTTP_HOST} =~ m'^m.everything2'i;
 }
 
-sub canCompress
-{
-  #TODO: Check to see if we can do this as an apache module, safely
-  #TODO: Don't compress things of shorter than X bytes
-  #TODO: Support deflate?
-  if($ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
-  {
-    return 1;
-  }
-}
 
 1;
 
