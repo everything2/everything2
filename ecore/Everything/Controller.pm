@@ -38,6 +38,9 @@ sub display
   $request->response->PAGEDATA->{basehref} = $this->APP->basehref();
 
   # This is a temporary measure until all of the nodelets are ported
+  #  however it does not include the $PAGELOAD mechanism that some other docs use to pass nodelet data around.
+  #  That will need to be addressed, but it should be easier given how templates are done.
+  #
   $request->response->PAGEDATA->{nodelets} = $this->dispatch_subtype($request, $this->getNode("Master Control", "nodelet"));
 
   # This is a temporary measure until individual pages can set noindex:
