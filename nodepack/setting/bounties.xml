@@ -33,6 +33,10 @@
     <key>OldMiner</key>
   </vars>
   <vars>
+    <value>500</value>
+    <key>Auspice</key>
+  </vars>
+  <vars>
     <value>400</value>
     <key>tentative</key>
   </vars>
@@ -175,6 +179,10 @@
   <vars>
     <value></value>
     <key>avalyn</key>
+  </vars>
+  <vars>
+    <value>15</value>
+    <key>schizophasic</key>
   </vars>
   <node_id>1986569</node_id>
   <title>bounties</title>

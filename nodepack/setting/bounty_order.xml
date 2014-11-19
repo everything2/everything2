@@ -1,28 +1,24 @@
 <node>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <value>ChristineWinter</value>
+    <value>schizophasic</value>
     <key>90</key>
   </vars>
   <vars>
     <value>mauler</value>
-    <key>91</key>
+    <key>102</key>
   </vars>
   <vars>
     <value>eh2</value>
     <key>2</key>
   </vars>
   <vars>
-    <value>cassparadox</value>
+    <value>Auspice</value>
     <key>78</key>
   </vars>
   <vars>
     <value>Posmella</value>
     <key>87</key>
-  </vars>
-  <vars>
-    <value>wertperch</value>
-    <key>1</key>
   </vars>
   <vars>
     <value>Clockmaker</value>
@@ -53,10 +49,6 @@
     <key>57</key>
   </vars>
   <vars>
-    <value>Simulacron3</value>
-    <key>47</key>
-  </vars>
-  <vars>
     <value>e2reneta</value>
     <key>59</key>
   </vars>
@@ -77,12 +69,12 @@
     <key>60</key>
   </vars>
   <vars>
-    <value>joer</value>
-    <key>37</key>
-  </vars>
-  <vars>
     <value>Tem42</value>
     <key>101</key>
+  </vars>
+  <vars>
+    <value>joer</value>
+    <key>37</key>
   </vars>
   <vars>
     <value>Heisenberg</value>

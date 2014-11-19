@@ -1514,8 +1514,81 @@ if(! e2.noquickvote)
 	$(this).css('width','').focus();
   }).defer); // defer for IE 
 }
-// End contents of Everything2 AJAX</doctext>
-  <contentversion>126</contentversion>
+// End contents of Everything2 AJAX
+
+// Begin contents of settings script
+e2.deleteCookie('settings_useTinyMCE');
+
+void new function(zensheet){
+	if (!zensheet) return;
+
+	var originalTheme = zensheet.href;
+	var originalSpeed = e2.fxDuration;
+	var themeMenu = $('#pagebody')[0].chosenstyle;
+	var speedMenu = $('#pagebody')[0].setvars_fxDuration;
+
+	// give previews of the effects of a couple of settings on the [Settings] page
+	if (themeMenu){
+		$(themeMenu).change(newTheme);
+		$('&lt;label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;showThemePreview&quot; value=&quot;1&quot; '+
+				'checked=&quot;checked&quot;&gt;Preview theme&lt;/label&gt;')
+			.insertAfter(themeMenu); // theme menu has no label
+		var themeOption = $('#showThemePreview').click(newTheme)[0];
+	}
+
+	if (speedMenu){
+		$('option', speedMenu).click(newSpeed);
+                 $('&lt;div class=&quot;widget&quot; style=&quot;visibility:hidden&quot;&gt;----------------&lt;br&gt;----------------&lt;br&gt;----------------&lt;a  class=&quot;action showwidget hidewidget&quot; title=&quot;hide&quot;&gt;X&lt;/a&gt;&lt;/div&gt;&lt;a  class=&quot;action showwidget&quot; id=&quot;speedtest&quot;&gt;Speed demo...&lt;/a&gt;')
+		.insertAfter(speedMenu.parentNode); // speed menu has label
+	}
+
+	// drag and drop nodelet menus on [Nodelet Settings] page
+	$('#rearrangenodelets')
+//	.disableSelection()
+	.css({
+		cursor: 'n-resize',
+//		'list-style-image': 'url(&quot;&quot;)', up-down arrow, anybody?
+		'list-style-position': 'inside' // no frustration when dragging with the blob
+	})
+	.sortable({
+		axis: 'y',
+		update: function(){
+	   		$('#rearrangenodelets select').each(function(n){
+				this.name = 'nodeletedit' + (n+1);
+      		})
+	   	}
+	})
+	.find('li').append(' &amp;ndash;&amp;#x2195;&amp;ndash;');
+
+	function newTheme(){
+		if (!themeOption.checked || $(this).attr('selected'))
+			return zensheet.href = originalTheme;
+		zensheet.href=(themeMenu.value != 'default' ?
+			'/node/'+themeMenu.value :
+			'/node/stylesheet/'+THEME.default_style) + '?displaytype=serve';
+	}
+
+	function widget(){ $('#speedtest').trigger('click'); }
+
+	function newSpeed(event){
+		e2.fxDuration = (1 * this.value) || 200;
+		if(e2.fxDuration == 1){
+			jQuery.fx.off = true;
+		}else{
+			jQuery.fx.off = false;
+		}
+		widget();
+		setTimeout(
+			function(){
+				widget();
+				e2.fxDuration = originalSpeed;
+			},
+			Math.max(e2.fxDuration*2,100) );
+	}
+}(document.getElementById('zensheet'));
+
+// End contents of settings script</doctext>
+  <contentversion>127</contentversion>
   <s3bucket></s3bucket>
   <node_id>1874924</node_id>
   <title>default javascript</title>

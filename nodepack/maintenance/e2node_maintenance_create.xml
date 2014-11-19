@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>150</type_nodetype>
+  <delegated>1</delegated>
   <maintain_nodetype>116</maintain_nodetype>
   <node_id>527249</node_id>
   <title>e2node maintenance create</title>

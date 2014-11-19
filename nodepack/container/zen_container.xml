@@ -7,13 +7,10 @@
  # Mobile has a wrapper around everything, instead of using CSS media selectors. We can eventually reduce it to that, but for now:
  return qq|&lt;div id=&quot;mobilewrapper&quot;&gt;| if isMobile();
 %]
-[% ($APP-&gt;use_bootstrap)?(qq|&lt;nav class=&quot;navbar navbar-default&quot;&gt;&lt;div class=&quot;container-fluid&quot;&gt;|):(qq|&lt;div id='header'&gt;|); %]
+&lt;div id='header'&gt;
+[% return &quot;&quot;; ($APP-&gt;use_bootstrap)?(qq|&lt;nav class=&quot;navbar navbar-default&quot;&gt;&lt;div class=&quot;container-fluid&quot;&gt;|):(qq|&lt;div id='header'&gt;|); %]
 [%
 my $epid = getNode('Epicenter','nodelet')-&gt;{node_id};
-if ($$VARS{settings_useEpicenterZen}){
-	$$VARS{nodelets} =~ s/(?:(^|,),+)|(?:\b$epid\b,*)|(?:,*$)/$1/g ;
-	delete $$VARS{settings_useEpicenterZen};
-}
 return htmlcode('epicenterZen') if $$VARS{nodelets} &amp;&amp; $$VARS{nodelets} !~ /\b$epid\b/;
 '';
 %]
@@ -28,6 +25,7 @@ return htmlcode('epicenterZen') if $$VARS{nodelets} &amp;&amp; $$VARS{nodelets} 
 &lt;div id='e2logo'&gt;&lt;a href=&quot;/&quot;&gt;Everything&lt;span id=&quot;e2logo2&quot;&gt;2&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;
 
 [%
+  return &quot;&quot;;
   if($APP-&gt;use_bootstrap)
   {
     return qq|&lt;/div&gt;&lt;/nav&gt;|;
@@ -35,6 +33,7 @@ return htmlcode('epicenterZen') if $$VARS{nodelets} &amp;&amp; $$VARS{nodelets} 
     return qq|&lt;/div&gt;|;
   }
 %]
+&lt;/div&gt;
 &lt;!-- header --&gt;
 [{zenMobileTabs}]
 &lt;div id='wrapper'&gt;
@@ -52,7 +51,7 @@ return htmlcode('epicenterZen') if $$VARS{nodelets} &amp;&amp; $$VARS{nodelets} 
 %]&gt;
 
 [{nodelet meta-container}]
-&lt;/div&gt;
+&lt;/div&gt;&lt;!-- end sidebar --&gt;
 &lt;/div&gt;
 &lt;div id='footer'&gt;
 [{zenFooter}]

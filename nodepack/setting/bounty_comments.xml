@@ -33,6 +33,10 @@
     <key>OldMiner</key>
   </vars>
   <vars>
+    <value>We've got the [Tree of Life] well-noded, now tell me all about the dark side. Bonus points may be award for separate nodes about the dark aspects of each of the sefira.</value>
+    <key>Auspice</key>
+  </vars>
+  <vars>
     <value>I want to know everything about training a sheep dog (also known as working or herding dog), using a sheep or cow dog, on the farm, shearing time, in shows, basically a very, very detailed thing about every aspect of a sheepdog's life. If it is not everything, I'll frown on it. If it has everything, you'll probably get a ching and endless praise. </value>
     <key>tentative</key>
   </vars>
@@ -61,7 +65,7 @@
     <key>Auduster</key>
   </vars>
   <vars>
-    <value>Sorry, but to node this you're going to have to come in contact with one of the worst movies of all time. A true abomination before God, really.</value>
+    <value>One of the main regions of Spain, the one which produced most of the famous conquistadors.</value>
     <key>mauler</key>
   </vars>
   <vars>
@@ -149,15 +153,11 @@
     <key>Tem42</key>
   </vars>
   <vars>
-    <value>Probably chinged because [Veruca Salt] is better than Everything.</value>
-    <key>ChristineWinter</key>
-  </vars>
-  <vars>
     <value>C! for work that is lipogrammatic and/or anagrammatic or employs a different interesting constraint.</value>
     <key>decoy hunches</key>
   </vars>
   <vars>
-    <value>The node is terribly subpar, with the first writeup as of the time of writing consisting of about 50% aggressive falsehood by volume. A good writeup that doesn't talk nonsense about unsubstantiated &#187;primordial mythologies&#171; will earn a ching, and I can egg you until I get tired of it.</value>
+    <value>The node is terribly subpar, with the first writeup as of the time of writing consisting of about 50% aggressive falsehood by volume. A good writeup that doesn't talk nonsense about unsubstantiated &#239;&#191;&#189;primordial mythologies&#239;&#191;&#189; will earn a ching, and I can egg you until I get tired of it.</value>
     <key>Clockmaker</key>
   </vars>
   <vars>
@@ -165,7 +165,7 @@
     <key>ReiToei</key>
   </vars>
   <vars>
-    <value>She desevres a good biography.</value>
+    <value>She deserves a good biography.</value>
     <key>wertperch</key>
   </vars>
   <vars>
@@ -183,6 +183,10 @@
   <vars>
     <value>This team ought to have a better writeup by now. Give it a go!&lt;br&gt;&lt;br&gt;Reward: A C! for each deserving writeup and a maximum of fifty (50) upvotes of your other stuff. If I've already voted on all of your writeups, I'll give you 200 GP and a special bonus, to be determined based on your level.</value>
     <key>avalyn</key>
+  </vars>
+  <vars>
+    <value>Probably chinged because [Veruca Salt] is better than Everything.</value>
+    <key>schizophasic</key>
   </vars>
   <node_id>1986741</node_id>
   <title>bounty comments</title>

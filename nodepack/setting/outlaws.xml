@@ -33,6 +33,10 @@
     <key>OldMiner</key>
   </vars>
   <vars>
+    <value>[Qliphoth]</value>
+    <key>Auspice</key>
+  </vars>
+  <vars>
     <value>[Herding dog]</value>
     <key>tentative</key>
   </vars>
@@ -61,7 +65,7 @@
     <key>Auduster</key>
   </vars>
   <vars>
-    <value>[Nemesis Enforcer]</value>
+    <value>[Extremadura]</value>
     <key>mauler</key>
   </vars>
   <vars>
@@ -149,10 +153,6 @@
     <key>Tem42</key>
   </vars>
   <vars>
-    <value>[Blow it out your ass it's Veruca Salt]</value>
-    <key>ChristineWinter</key>
-  </vars>
-  <vars>
     <value>[Eros rose, sore.]</value>
     <key>decoy hunches</key>
   </vars>
@@ -183,6 +183,10 @@
   <vars>
     <value>[Chicago White Sox]</value>
     <key>avalyn</key>
+  </vars>
+  <vars>
+    <value>[Blow it out your ass it's Veruca Salt]</value>
+    <key>schizophasic</key>
   </vars>
   <node_id>1986587</node_id>
   <title>outlaws</title>
