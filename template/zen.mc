@@ -1,6 +1,8 @@
 <%class>
   has 'NODE' => (isa => 'HashRef', required => 1); #TODO: Do we need this?
   has 'USER' => (isa => 'HashRef', required => 1); #TODO: Do we need this?
+
+  has 'CONF' => (isa => 'HashRef', required => 1);
   has 'pagetitle' => (isa => 'Str', required => 1);
   has 'stylesheets' => (isa => 'ArrayRef[HashRef]', required => 1);
   has 'customstyle' => (isa => 'Maybe[Str]');
@@ -16,8 +18,22 @@
       };
       return undef;
       });
+
+  # Legacy items here until we unwind htmlcodes
   has 'zenadheader' => (isa => 'Str', required => 1);
   has 'static_javascript' => (isa => 'Str', required => 1);
+  has 'zensearchform' => (isa => 'Str', required => 1);
+  # Renamed slightly, still legacy
+  has 'alternate_epicenter' => (isa => 'Maybe[Str]');
+
+
+  has 'basehref' => (isa => 'Str', required => 1);
+
+  has 'isguest' => (isa => 'Bool', required => 1);
+  has 'noindex' => (isa => 'Bool', required => 1, default => 0);
+
+  has 'atomlink' => (isa => 'Str', required => 1, default => "/node/ticker/New+Writeups+Atom+Feed");
+  has 'atomtitle' => (isa => 'Str', required => 1, default => "Everything2 New Writeups");
 
   # Temporary
   has 'nodelets' => (isa => 'Maybe[Str]');
@@ -29,22 +45,34 @@
 <!-- Inside of Mason -->
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 <title><% $.pagetitle %> - Everything2.com</title>
+
 <& helpers/stylesheets.mi, stylesheets => $.stylesheets &>
 <& helpers/customstyle.mi, customstyle => $.customstyle &>
+<& helpers/basehref.mi, basehref => $.basehref, isguest => $.isguest &>
+<& helpers/metarobots.mi, noindex => $.noindex &>
+<& helpers/atomlink.mi, atomlink => $.atomlink, atomtitle => $.atomtitle &>
+ 
 <meta name="description" content="<% $.metadescription %>" />
-<link rel="icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
 <!--[if lt IE 8]><link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"><![endif]-->
 </head>
 <body class="<% $.bodyclass %>" itemscope itemtype="http://schema.org/WebPage">
 <% $.zenadheader %>
 <div id='header'><!-- begin header -->
+<% $.alternate_epicenter %>
+<% $.zensearchform %>
 <div id='e2logo'><a href="/">Everything<span id="e2logo2">2</span></a></div>
 </div><!-- end header -->
 <div id='wrapper'>
-<!-- nodelets -->
-<% $.nodelets %>
-<!-- end nodelets -->
-<% inner() %>
+  <div id='mainbody' itemprop="mainContentOfPage">
+    <% inner() %>
+  </div> <!-- end mainbody -->
+
+  <div id='sidebar'>
+    <!-- nodelets -->
+    <% $.nodelets %>
+    <!-- end nodelets -->
+  </div><!-- end sidebar -->
+
 </div><!-- end wrapper -->
 <div id='footer'>
 Everything2 &trade; is brought to you by Everything2 Media, LLC. All content copyright &#169; original author unless stated otherwise.

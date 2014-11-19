@@ -1416,9 +1416,12 @@ sub loginUser
 
 	$VARS = getVars($user);
 
+
 	return $user if !$user
 		|| $APP->isGuest($user)
 		|| $query -> param('ajaxIdle');
+
+
 
 	my $TIMEOUT_SECONDS = 4 * 60;
 
@@ -1433,6 +1436,8 @@ sub loginUser
 		if $seconds_since_last > $TIMEOUT_SECONDS;
 
 	$APP->logUserIp($user, $VARS);
+
+	$VARS->{browser} = $ENV{HTTP_USER_AGENT};
 
 	return $user;
 }

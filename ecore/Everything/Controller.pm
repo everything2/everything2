@@ -23,16 +23,55 @@ sub display
   ];
 
   $request->response->PAGEDATA->{stylesheets} = $stylesheets;
+
+  #TODO: Make pagetitle a property of individual nodetypes
   $request->response->PAGEDATA->{pagetitle} = $this->APP->pagetitle($request->NODE);
-  $request->response->PAGEDATA->{customstyle} = $this->APP->cleanupHTML($request->VARS->{customstyle});
+  if(defined $request->VARS->{customstyle})
+  {
+    $request->response->PAGEDATA->{customstyle} = $this->APP->cleanupHTML($request->VARS->{customstyle});
+  }
+
   $request->response->PAGEDATA->{bodyclass} .= " ".$request->NODE->{type}->{title};
 
+  $request->response->PAGEDATA->{isguest} = $this->APP->isGuest($request->USER);
+
+  $request->response->PAGEDATA->{basehref} = $this->APP->basehref();
+
+  # This is a temporary measure until all of the nodelets are ported
   $request->response->PAGEDATA->{nodelets} = $this->dispatch_subtype($request, $this->getNode("Master Control", "nodelet"));
 
-  foreach my $legacy_item (qw/zenadheader static_javascript/)
+  # This is a temporary measure until individual pages can set noindex:
+  if(($request->NODE->{type_nodetype}==116 && int($request->NODE->{group}) == 0) ||$request->NODE->{node_id}==1140332||$request->NODE->{node_id}==668164)
+  {
+    $request->response->PAGEDATA->{noindex} = 1;
+  }
+
+  # This is a temporary measure until individual pages can set atomlink/atomtitle
+  if($request->NODE->{title} eq "Cool Archive")
+  {
+    $request->response->PAGEDATA->{atomtitle} = "Everything2 Cool Archive";
+    $request->response->PAGEDATA->{atomlink} = "/node/ticker/Cool+Archive+Atom+Feed";
+  }
+
+  if($request->NODE->{type}->{title} eq "user")
+  {
+    # TODO: Check URL encoding here
+    $request->response->PAGEDATA->{atomlink} = "/node/ticker/New+Writeups+Atom+Feed?foruser=".$request->NODE->{title};
+  }
+
+  foreach my $legacy_item (qw/zenadheader static_javascript zensearchform/)
   {
     $request->response->PAGEDATA->{$legacy_item} = $this->emulate_htmlcode($legacy_item,$request);
   }
+
+  my $epicenter = $this->DB->getNode("Epicenter", "nodelet")->{node_id};
+  if($request->VARS->{nodelets} and $request->VARS->{nodelets} !~ /$epicenter/)
+  {
+    $request->response->PAGEDATA->{alternate_epicenter} = $this->emulate_htmlcode("epicenterZen", $request);
+  }
+
+  #TODO: Website microdata
+
   return $request->response->render();
 }
 

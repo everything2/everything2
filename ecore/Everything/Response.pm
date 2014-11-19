@@ -11,6 +11,7 @@ has "CGI" => (isa => "CGI", is => "ro", default => sub { return CGI->new() });
 has "USER" => (isa => "HashRef", is => "ro", required => 1);
 has "VARS" => (isa => "HashRef", is => "ro", required => 1);
 has "NODE" => (isa => "HashRef", is => "ro", required => 1);
+has "CONF" => (isa => "HashRef", is => "ro", required => 1);
 
 has 'mason' => (is => "ro", isa => 'Mason::Interp', builder => "mason_init", lazy => 1);
 
@@ -42,7 +43,7 @@ sub render
 sub build_mason_args
 {
   my ($this) = @_;
-  return { %{$this->PAGEDATA}, "NODE" => $this->NODE, "USER" => $this->USER};
+  return { %{$this->PAGEDATA}, "NODE" => $this->NODE, "USER" => $this->USER, "CONF" => $this->CONF};
 }
 
 sub make_block
@@ -50,7 +51,7 @@ sub make_block
   my ($this, $template, $properties) = @_;
 
   #TODO: Auto-prepend / if it doesn't exist
-  return $this->mason->run("/".$template, {%$properties, "NODE" => $this->NODE, "USER" => $this->USER})->output();
+  return $this->mason->run("/".$template, {%$properties, "NODE" => $this->NODE, "USER" => $this->USER, "CONF" => $this->CONF})->output();
 }
 
 1;

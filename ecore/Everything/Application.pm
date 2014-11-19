@@ -3692,4 +3692,19 @@ sub pagetitle
   return $pagetitle;
 }
 
+# TODO: Place this in zen stdcontainer
+#
+sub basehref
+{
+  my ($this) = @_;
+
+  if ($ENV{HTTP_HOST} !~ /^m\.everything2/i)
+  {
+    # This only matters in the development environment
+    my ($port) = $ENV{HTTP_HOST} =~ /(:\d+)$/;
+    $port ||="";
+    return 'http://'.$Everything::CONF->{canonical_web_server}.$port;
+  }
+}
+
 1;
