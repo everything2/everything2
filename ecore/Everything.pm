@@ -19,7 +19,6 @@ use DateTime;
 use Everything::NodeBase;
 use Everything::Application;
 use JSON;
-use Devel::Caller qw(caller_args);
 
 sub BEGIN
 {
@@ -65,7 +64,6 @@ sub BEGIN
               isGod
 
               dumpCallStack
-              getCallStack
               printErr
               printLog
 
@@ -119,61 +117,18 @@ sub printErr {
 }
 
 
-#############################################################################
-#	Sub
-#		getTime
-#
-#	Purpose
-#		Quickie function to get a date and time string in a nice format.
-#
-sub getTime
-{
-	my $dt = DateTime->now();
-	return $dt->strftime("%a %b %d %R%p");
-}
 
 
-#############################################################################
-#	Sub
-#		printLog
-#
-#	Purpose
-#		Debugging utiltiy that will write the given string to the everything
-#		log (aka "elog").  Each entry is prefixed with the time and date
-#		to make for easy debugging.
-#
-#	Parameters
-#		entry - the string to print to the log.  No ending carriage return
-#			is needed.
-#
 sub printLog
 {
-	my $entry = $_[0];
-	my $time = getTime();
-	
-	# prefix the date a time on the log entry.
-	$entry = "$time: $entry\n";
-
-	if(open(ELOG, ">> ".getELogName()))
-	{
-		print ELOG $entry;
-		close(ELOG);
-	}
-
-	return 1;
+  return $APP->printLog(@_);
 }
 
 sub getELogName
 {
-	my $basedir = $Everything::CONF->{logdirectory};
-	my $thistime = [gmtime()];
-	my $datestr = $thistime->[5]+1900;
-	$datestr .= sprintf("%02d",$thistime->[4]+1);
-	$datestr .= sprintf("%02d",$thistime->[3]);
-	$datestr .= sprintf("%02d",$thistime->[2]);
-
-	return "$basedir/e2app.$datestr.log";
+  return $APP->getELogName(@_);
 }
+
 
 #############################################################################
 #	Sub
@@ -666,6 +621,17 @@ sub initEverything
 	$APP ||= new Everything::Application($DB, $CONF);
 }
 
+sub commonLogLine
+{
+  return $APP->commonLogLine(@_);
+}
+
+sub dumpCallStack
+{
+  return $APP->dumpCallStack(@_);
+} 
+
+
 #############################################################################
 #	Sub
 #		getTables
@@ -688,77 +654,6 @@ sub getTables
 	return @tmpArray;
 }
 
-sub commonLogLine
-{
-	my ($line) = @_;
-	chomp $line;
-	my $cmd = $0;
-	$cmd =~ s/.*\/(.*)/$1/g;
-	return "[".localtime()."][$$][$cmd] $line\n";
-}
-
-
-#############################################################################
-#	Sub
-#		dumpCallStack
-#
-#	Purpose
-#		Debugging utility.  Calling this function will print the current
-#		call stack to stdout.  Its useful to see where a function is
-#		being called from.
-#
-sub dumpCallStack
-{
-	my @callStack;
-	my $func;
-
-	@callStack = getCallStack();
-	
-	# Pop this function off the stack.  We don't need to see "dumpCallStack"
-	# in the stack output.
-	pop @callStack;
-	
-	print "*** Start Call Stack ***\n";
-	while($func = pop @callStack)
-	{
-		print "$func\n";
-	}
-	print "*** End Call Stack ***\n";
-}
-
-
-#############################################################################
-#	
-sub getCallStack
-{
-	my @callStack;
-	my $neglect = shift;
-	$neglect = 2 if not defined $neglect;
-
-	my ($package, $file, $line, $subname, $hashargs);
-	my $i = 0;
-
-	while(($package, $file, $line, $subname, $hashargs) = caller($i++))
-	{
-		my $codeText = "";
-
-		if ($subname eq "Everything::HTML::htmlcode"
-				|| $subname eq "Everything::HTML::evalCode"
-				) {
-			my @calledArgs = caller_args($i - 1);
-			$codeText = ":" . $calledArgs[0] if (scalar @calledArgs);
-		}
-		# We unshift it so that we can use "pop" to get them in the
-		# desired order.
-		unshift @callStack, "$file:$line:$subname$codeText";
-	}
-
-	# Get rid of this function and other callers that are part of the reporting.
-	# We don't need to see "getCallStack" in the stack.
-	while ($neglect--) { pop @callStack; }
-
-	return @callStack;
-}
 #############################################################################
 # end of package
 #############################################################################

@@ -20,6 +20,9 @@ use Date::Calc;
 # For rewriteCleanEscape, urlGen
 use CGI;
 
+# For getCallStack
+use Devel::Caller qw(caller_args);
+
 use vars qw($PARAMS $PARAMSBYTYPE);
 BEGIN {
 	$PARAMS = 
@@ -3522,6 +3525,171 @@ sub canCompress
   {
     return 1;
   }
+}
+
+
+sub getELogName
+{
+  my ($this) = @_;
+  my $basedir = $this->{conf}->{logdirectory};
+  my $thistime = [gmtime()];
+  my $datestr = $thistime->[5]+1900;
+  $datestr .= sprintf("%02d",$thistime->[4]+1);
+  $datestr .= sprintf("%02d",$thistime->[3]);
+  $datestr .= sprintf("%02d",$thistime->[2]);
+
+  return "$basedir/e2app.$datestr.log";
+}
+
+#############################################################################
+#	Sub
+#		printLog
+#
+#	Purpose
+#		Debugging utiltiy that will write the given string to the everything
+#		log (aka "elog").  Each entry is prefixed with the time and date
+#		to make for easy debugging.
+#
+#	Parameters
+#		entry - the string to print to the log.  No ending carriage return
+#			is needed.
+#
+sub printLog
+{
+  my ($this, $entry) = @_;
+
+  $entry = "" if not defined $entry;
+  my $time = $this->getTime();
+	
+  # prefix the date a time on the log entry.
+  $entry = "$time: $entry\n";
+
+  if(open(ELOG, ">> ".$this->getELogName()))
+  {
+    print ELOG $entry;
+    close(ELOG);
+  }
+
+  return 1;
+}
+
+#############################################################################
+#	Sub
+#		getTime
+#
+#	Purpose
+#		Quickie function to get a date and time string in a nice format.
+#
+sub getTime
+{
+  my $dt = DateTime->now();
+  return $dt->strftime("%a %b %d %R%p");
+}
+
+sub commonLogLine
+{
+  my ($this, $line) = @_;
+  chomp $line;
+  my $cmd = $0;
+  $cmd =~ s/.*\/(.*)/$1/g;
+  return "[".localtime()."][$$][$cmd] $line\n";
+}
+
+#############################################################################
+#	
+sub getCallStack
+{
+  my ($this, $neglect) = @_;
+  my @callStack = ();
+  $neglect = 2 if not defined $neglect;
+
+  my ($package, $file, $line, $subname, $hashargs);
+  my $i = 0;
+
+  while(($package, $file, $line, $subname, $hashargs) = caller($i++))
+  {
+    my $codeText = "";
+
+    if ($subname eq "Everything::HTML::evalCode")
+    {
+      my @calledArgs = caller_args($i - 1);
+      $codeText = ":" . $calledArgs[0] if (scalar @calledArgs);
+    }
+
+    # We unshift it so that we can use "pop" to get them in the
+    # desired order.
+    unshift @callStack, "$file:$line:$subname$codeText";
+  }
+
+  # Get rid of this function and other callers that are part of the reporting.
+  # We don't need to see "getCallStack" in the stack.
+  while ($neglect--) { pop @callStack; }
+
+  return @callStack;
+}
+
+#############################################################################
+#	Sub
+#		dumpCallStack
+#
+#	Purpose
+#		Debugging utility.  Calling this function will print the current
+#		call stack to stdout.  Its useful to see where a function is
+#		being called from.
+#
+sub dumpCallStack
+{
+  my ($this) = @_;
+  my @callStack = ();
+  my $func = undef;
+
+  @callStack = $this->getCallStack();
+	
+  # Pop this function off the stack.  We don't need to see "dumpCallStack"
+  # in the stack output.
+  pop @callStack;
+	
+  print "*** Start Call Stack ***\n";
+  while($func = pop @callStack)
+  {
+    print "$func\n";
+  }
+
+  print "*** End Call Stack ***\n";
+}
+
+sub stylesheetCDNLink
+{
+  my ($this, $stylesheet) = @_;
+
+  $this->{db}->getRef($stylesheet);
+  
+  my $filename = "$$stylesheet{node_id}.$$stylesheet{contentversion}.min";
+  if($ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
+  {
+    $filename.= ".gzip";
+  }
+  
+  $filename .= ".css";
+  return "http://jscss.everything2.com/$filename";
+}
+
+# TODO: Place this in zen stdcontainer
+#
+sub pagetitle
+{
+  my ($this, $node) = @_;
+  my $pagetitle = $node->{title};
+
+  if($node->{type}->{title} eq "writeup")
+  {
+    my $author = $this->{db}->getNodeById($node->{author_user});
+    if($author)
+    {
+      $pagetitle.=" by $$author{title}";
+    }
+  }
+  return $pagetitle;
 }
 
 1;

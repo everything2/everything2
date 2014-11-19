@@ -115,13 +115,7 @@ sub linkStylesheet
       displaytype => $displaytype
     }, 1) if(($$USER{node_id} == $$n{author_user} && $$USER{title} ne "root") || $VARS->{useRawStylesheets});
 
-    my $filename = "$$n{node_id}.$$n{contentversion}.min";
-    if($ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
-    {
-      $filename.= ".gzip";
-    }
-    $filename .= ".css";
-    return "http://jscss.everything2.com/$filename";
+    return $APP->stylesheetCDNLink($n);
   } else {
     return $n;
   }

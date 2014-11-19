@@ -14,6 +14,8 @@ use Everything::Delegation::htmlcode;
 use Everything::Delegation::opcode;
 use Compress::Zlib;
 use Everything::Request;
+use Everything::Router;
+
 use CGI;
 use CGI::Carp qw(set_die_handler);
 use Carp qw(longmess);
@@ -56,6 +58,7 @@ use vars qw($HTTP_ERROR_CODE $ERROR_HTML $SITE_UNAVAILABLE $query);
 use vars qw($VARS);
 use vars qw($GNODE);
 use vars qw($USER);
+use vars qw($REQUEST);
 use vars qw($PAGELOAD);
 use vars qw(%HEADER_PARAMS);
 
@@ -132,7 +135,7 @@ sub handle_errors {
     my $errorFromPerl = shift;
     $errorFromPerl .=
       "Call stack:\n"
-      . (join "\n" => reverse getCallStack())
+      . (join "\n" => reverse $APP->getCallStack())
       ;
     Everything::printLog($errorFromPerl);
     Everything::printLog(query_vars_string());
@@ -326,7 +329,7 @@ sub htmlErrorGods
 	# is coming from.
 	my $ignoreMe = 3;
 	$str .= "\n\n<b>Call Stack</b>:\n";
-	$str .= (join "\n", reverse getCallStack($ignoreMe));
+	$str .= (join "\n", reverse $APP->getCallStack($ignoreMe));
 	$str .= "\n<b>End Call Stack</b>\n";
 	
 	$str.= "</pre></dd>";
@@ -931,18 +934,32 @@ sub displayPage
         my $dsp = $query->param('displaytype');
         $dsp = "display" unless $dsp;
 
-	my $PAGE = getPage($NODE, $query->param('displaytype'));
-	$$NODE{datatype} = $$PAGE{mimetype};
-	$page = $$PAGE{page};
+	# jaybonci: Controller shim here
+	my $ROUTER; #mod_perl unsafe, intentionally
+	$ROUTER ||= Everything::Router->new(CONF => $Everything::CONF, APP => $APP, DB => $DB);
+	my $type = $NODE->{type}->{title};
 
-	die "NO PAGE!" unless $page;
-
-	$page = parseCode($page, $NODE);
+        if($Everything::CONF->{use_controllers} and my $controller = $ROUTER->can_handle($type, $dsp))
+	{
+		$APP->printLog("Inside of can_handle for $type, $dsp");
+		$REQUEST->NODE($NODE);
+		$page = $controller->$dsp($REQUEST);
+	}else{
 	
-	if ($$PAGE{parent_container}) {
-		my ($pre, $post) = genContainer($$PAGE{parent_container});
-		$page = $pre.$page.$post;
+		my $PAGE = getPage($NODE, $query->param('displaytype'));
+		$$NODE{datatype} = $$PAGE{mimetype};
+		$page = $$PAGE{page};
+
+		die "NO PAGE!" unless $page;
+
+		$page = parseCode($page, $NODE);
+	
+		if ($$PAGE{parent_container}) {
+			my ($pre, $post) = genContainer($$PAGE{parent_container});
+			$page = $pre.$page.$post;
+		}
 	}
+
 	setVars $USER, $VARS unless $APP->isGuest($USER);
 
 	if($APP->canCompress())
@@ -1324,8 +1341,8 @@ sub clearGlobals
 	$USER = "";
 	$VARS = "";
         $PAGELOAD = {};
-
 	$query = "";
+	$REQUEST = undef;
 }
 
 
@@ -1558,7 +1575,7 @@ sub mod_perlInit
 
 	Everything::initEverything();
 	
-	my $REQUEST = Everything::Request->new("DB" => $DB, "CONF" => $Everything::CONF, "APP" => $Everything::APP);
+	$REQUEST = Everything::Request->new("DB" => $DB, "CONF" => $Everything::CONF, "APP" => $Everything::APP);
 
 	# Initialize our connection to the database
 

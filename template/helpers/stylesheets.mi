@@ -1,0 +1,6 @@
+<%class>
+  has 'stylesheets' => ('isa' => 'ArrayRef', required => 1);
+</%class>
+% foreach my $stylesheet (@{$.stylesheets}) {
+<link rel="stylesheet" id="<% $stylesheet->{id} %>" type="text/css" href="<% $stylesheet->{href} %>" media="<% $stylesheet->{media} %>" />
+% }
