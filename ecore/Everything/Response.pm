@@ -1,6 +1,7 @@
 package Everything::Response;
 
 use Moose;
+use namespace::autoclean;
 use Mason;
 use CGI;
 
@@ -12,6 +13,7 @@ has "USER" => (isa => "HashRef", is => "ro", required => 1);
 has "VARS" => (isa => "HashRef", is => "ro", required => 1);
 has "NODE" => (isa => "HashRef", is => "ro", required => 1);
 has "CONF" => (isa => "HashRef", is => "ro", required => 1);
+has "APP" => (isa => "Everything::Application", is => "ro", required => 1);
 
 has 'mason' => (is => "ro", isa => 'Mason::Interp', builder => "mason_init", lazy => 1);
 
@@ -29,9 +31,6 @@ sub mason_init
   );
 }
 
-has "APP" => (isa => "Everything::Application", is => "ro", required => 1);
-has "CONF" => (isa => "HashRef", is => "ro", required => 1);
-
 sub render
 {
   my ($this) = @_;
@@ -43,7 +42,13 @@ sub render
 sub build_mason_args
 {
   my ($this) = @_;
-  return { %{$this->PAGEDATA}, "NODE" => $this->NODE, "USER" => $this->USER, "CONF" => $this->CONF};
+  return { %{$this->PAGEDATA}, %{$this->make_globals()}};
+}
+
+sub make_globals
+{
+  my ($this) = @_;
+  return {"NODE" => $this->NODE, "USER" => $this->USER, "CONF" => $this->CONF, "APP" => $this->APP};
 }
 
 sub make_block
@@ -51,7 +56,8 @@ sub make_block
   my ($this, $template, $properties) = @_;
 
   #TODO: Auto-prepend / if it doesn't exist
-  return $this->mason->run("/".$template, {%$properties, "NODE" => $this->NODE, "USER" => $this->USER, "CONF" => $this->CONF})->output();
+  return $this->mason->run("/".$template, {%{$this->PAGEDATA}, %$properties, %{$this->make_globals} })->output();
 }
 
+__PACKAGE__->meta->make_immutable;
 1;

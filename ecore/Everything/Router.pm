@@ -1,6 +1,7 @@
 package Everything::Router;
 
 use Moose;
+use namespace::autoclean;
 
 has "CONTROLLER_CACHE" => (isa => "HashRef", is => "rw", default => sub { {} });
 has "SUBTYPE_CACHE" => (isa => "HashRef", is => "rw", default => sub { {} });
@@ -71,7 +72,7 @@ sub dispatch_subtype
 
   if(my $delegation = "$node_class"->can($nodetype))
   {
-    return $node_class->$nodetype($request, $node);
+    return $this->SUBTYPE_CACHE->{$node_class}->$nodetype($request, $node);
   }
 }
 
@@ -84,5 +85,7 @@ sub classify_node
   $title =~ s/[^a-z1-9_]/_/g;
   return "Everything::Controller::".$type."::".$type."_$title";
 }
+
+__PACKAGE__->meta->make_immutable;
 
 1;

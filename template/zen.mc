@@ -1,8 +1,9 @@
 <%class>
   has 'NODE' => (isa => 'HashRef', required => 1); #TODO: Do we need this?
   has 'USER' => (isa => 'HashRef', required => 1); #TODO: Do we need this?
-
   has 'CONF' => (isa => 'HashRef', required => 1);
+  has 'APP' => (isa => 'Everything::Application', required => 1, handles => [qw(linkNode linkNodeTitle)]);
+
   has 'pagetitle' => (isa => 'Str', required => 1);
   has 'stylesheets' => (isa => 'ArrayRef[HashRef]', required => 1);
   has 'customstyle' => (isa => 'Maybe[Str]');
@@ -37,6 +38,12 @@
 
   # Temporary
   has 'nodelets' => (isa => 'Maybe[Str]');
+
+  sub parselinks {
+    my ($this, $toparse) = @_;
+    return $this->APP->parseLinks($toparse,( $this->APP->isGuest($this->USER) )?(undef):($this->NODE));
+  }
+
 </%class>
 <%augment wrap>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">

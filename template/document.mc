@@ -8,5 +8,5 @@
 <p align="right"><% $.document_edit_link %></p>
 % }
 <div class="content">
-<% $.NODE->{doctext} %>
+<% $.parselinks($.NODE->{doctext}) %>
 </div>

@@ -1,6 +1,7 @@
 package Everything::Controller;
 
 use Moose;
+use namespace::autoclean;
 use Everything::Delegation::htmlcode;
 
 # Export no external methods by default
@@ -37,11 +38,6 @@ sub display
 
   $request->response->PAGEDATA->{basehref} = $this->APP->basehref();
 
-  # This is a temporary measure until all of the nodelets are ported
-  #  however it does not include the $PAGELOAD mechanism that some other docs use to pass nodelet data around.
-  #  That will need to be addressed, but it should be easier given how templates are done.
-  #
-  $request->response->PAGEDATA->{nodelets} = $this->dispatch_subtype($request, $this->getNode("Master Control", "nodelet"));
 
   # This is a temporary measure until individual pages can set noindex:
   if(($request->NODE->{type_nodetype}==116 && int($request->NODE->{group}) == 0) ||$request->NODE->{node_id}==1140332||$request->NODE->{node_id}==668164)
@@ -75,6 +71,19 @@ sub display
 
   #TODO: Website microdata
 
+  $request->response->PAGEDATA->{coolsleft} = $request->VARS->{cools};
+  $request->response->PAGEDATA->{votesleft} = $request->USER->{votesleft};
+  $request->response->PAGEDATA->{servertime} = $this->emulate_htmlcode('DateTimeLocal',$request,time(),'1');
+  $request->response->PAGEDATA->{localtime} = $this->emualte_htmlcode('DateTimeLocal',$request,time()) if ($request->VARS->{localTimeUse});
+
+  # This is a temporary measure until all of the nodelets are ported
+  #  however it does not include the $PAGELOAD mechanism that some other docs use to pass nodelet data around.
+  #  That will need to be addressed, but it should be easier given how templates are done.
+  #  Nodelets are also rendered last so that we can use general use items in the main controller
+  #
+  $request->response->PAGEDATA->{nodelets} .= $this->dispatch_subtype($request, $this->getNode("Master Control", "nodelet"));
+  $request->response->PAGEDATA->{nodelets} .= $this->dispatch_subtype($request, $this->getNode("Epicenter","nodelet"));
+
   return $request->response->render();
 }
 
@@ -97,4 +106,5 @@ sub emulate_htmlcode
   }
 }
 
+__PACKAGE__->meta->make_immutable;
 1;

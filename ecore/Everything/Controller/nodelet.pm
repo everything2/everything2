@@ -1,6 +1,8 @@
 package Everything::Controller::nodelet;
 
 use Moose;
+use namespace::autoclean;
+
 extends 'Everything::Controller';
 
 sub nodelet
@@ -19,5 +21,6 @@ sub nodelet
   return $request->response->make_block($template, $properties);
 }
 
+__PACKAGE__->meta->make_immutable;
 1;
 

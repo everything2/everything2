@@ -1,6 +1,7 @@
 package Everything::Controller::document;
 
 use Moose;
+use namespace::autoclean;
 
 extends 'Everything::Controller';
 
@@ -15,4 +16,5 @@ sub display
   return $this->SUPER::display($request);
 }
 
+__PACKAGE__->meta->make_immutable;
 1;

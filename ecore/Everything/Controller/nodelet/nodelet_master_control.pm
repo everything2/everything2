@@ -1,6 +1,8 @@
 package Everything::Controller::nodelet::nodelet_master_control;
 
 use Moose;
+use namespace::autoclean;
+
 extends 'Everything::Controller::nodelet';
 
 sub nodelet
@@ -22,5 +24,5 @@ sub nodelet
   return $this->SUPER::nodelet($request,$node,$properties);
 }
 
-
+__PACKAGE__->meta->make_immutable;
 1;
