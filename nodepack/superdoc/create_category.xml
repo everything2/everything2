@@ -24,7 +24,7 @@
 [%
 
 my $str;
-my $guestUser = $Everything::CONF-&gt;{system}-&gt;{guest_user};
+my $guestUser = $Everything::CONF-&gt;{guest_user};
 #
 # Filter people out who can't create categories
 #
