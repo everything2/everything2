@@ -16,7 +16,7 @@ ok(my $randomeditor = getNode('the custodian','user'));
 ok(my $collaborator = getNode('Padlock','user'));
 ok(my $randomadmin = getNode('mauler','user'));
 ok(my $me = getNode('jaybonci','user'));
-ok(my $GU = getNodeById($Everything::CONF->{system}->{guest_user}));
+ok(my $GU = getNodeById($Everything::CONF->{guest_user}));
 
 # 2070924 == jay's private draft
 ok(my $private_draft = getNodeById(2070924));

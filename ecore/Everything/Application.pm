@@ -1108,7 +1108,7 @@ sub isGuest
     $userid = $user->{node_id};
   }
 
-  return ($this->{conf}->{system}->{guest_user} == $userid);
+  return ($this->{conf}->{guest_user} == $userid);
 }
 
 sub metaDescription

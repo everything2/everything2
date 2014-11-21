@@ -10415,7 +10415,7 @@ sub zenwriteups
 
   my ($isLogs) = @_;
 
-  my $UID = $$USER{user_id} || $Everything::CONF->{system}->{guest_user} ;
+  my $UID = $$USER{user_id} || $Everything::CONF->{guest_user} ;
   my $limit = $$VARS{ num_newwus } || ($APP->isGuest($USER) ? 15 : 12);
   my $cansee = $APP->isEditor($USER);
 
@@ -13720,7 +13720,7 @@ sub categoryform
   {
     # get user, guest user, and user's usergroups. No huge list for admins and CEs
     my $dbh = $DB->getDatabaseHandle();
-    my $inClause = join( ',' , $$USER{ user_id } , $Everything::CONF->{system}->{guest_user} , @{
+    my $inClause = join( ',' , $$USER{ user_id } , $Everything::CONF->{guest_user} , @{
       $dbh -> selectcol_arrayref( "SELECT DISTINCT ug.node_id
       FROM node ug,nodegroup ng WHERE ng.nodegroup_id=ug.node_id AND ng.node_id=$$USER{ user_id }" ) } );
 	

@@ -80,7 +80,7 @@ sub login
   }
 
   my $user = $self->APP->confirmUser($username, $pass, $cookie, $self->cgi) if $username && $pass;
-  $user ||= $self->DB->getNodeById($self->CONF->{system}->{guest_user});
+  $user ||= $self->DB->getNodeById($self->CONF->{guest_user});
 
   $self->VARS(Everything::getVars($user));
 

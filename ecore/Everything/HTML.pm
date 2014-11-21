@@ -1374,7 +1374,7 @@ sub loginUser
 	}
 
 	my $user = $APP->confirmUser($username, $pass, $cookie, $query) if $username && $pass;
-	$user ||= getNodeById($Everything::CONF->{system}->{guest_user});
+	$user ||= getNodeById($Everything::CONF->{guest_user});
 
 	$VARS = getVars($user);
 
@@ -1409,7 +1409,7 @@ sub opLogout
 {
 	# The user is logging out.  Nuke their cookie.
 	my $cookie = $query->cookie(-name => $Everything::CONF->{cookiepass}, -value => "");
-	my $user_id = $Everything::CONF->{system}->{guest_user};	
+	my $user_id = $Everything::CONF->{guest_user};	
 
 	$USER = getNodeById($user_id);
 	$VARS = getVars($USER);
