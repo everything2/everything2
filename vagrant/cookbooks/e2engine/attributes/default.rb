@@ -44,6 +44,7 @@ default["e2engine"]["s3"]["sitemap"]["access_key_id"] = ""
 default["e2engine"]["s3"]["jscss"]["bucket"] = ""
 default["e2engine"]["s3"]["jscss"]["secret_access_key"] = ""
 default["e2engine"]["s3"]["jscss"]["access_key_id"] = ""
+default["e2engine"]["guest_user"] = 779713
 default["e2engine"]["system"] = {}
 default["e2engine"]["system"]["guest_user"] = 779713
 default["e2engine"]["system"]["mobile_host"] = 'm.everything2.com'

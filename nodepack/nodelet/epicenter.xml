@@ -11,13 +11,9 @@
 
 return '' if $APP-&gt;isGuest($USER);
 
-my ($loginStr, $votesLeftStr, $expStr, $serverTimeStr, $weblogStr);
+my ($loginStr, $votesLeftStr, $expStr, $serverTimeStr);
 
 #####LOGIN STRING
-
-# Upon successful log-in, write current browser to VARS
-if ($query-&gt;param(&quot;op&quot;) eq &quot;login&quot;)
-	{ $$VARS{browser} = $ENV{HTTP_USER_AGENT}; }
 
 $loginStr = &quot;
 &lt;ul&gt;
@@ -68,7 +64,7 @@ if( (exists $VARS-&gt;{'localTimeUse'}) &amp;&amp; $VARS-&gt;{'localTimeUse'} ) 
 
 $serverTimeStr = &quot;\n\n\t&quot;.'&lt;p id=&quot;servertime&quot;&gt;'.$serverTimeStr.'&lt;/p&gt;';
 
-return $loginStr .$votesLeftStr . $expStr . $weblogStr . $serverTimeStr;
+return $loginStr .$votesLeftStr . $expStr . $serverTimeStr;
 
 %]</nlcode>
   <title>Epicenter</title>

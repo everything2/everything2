@@ -87,6 +87,7 @@ nosearch_words.each { |x| nosearch_words_hash[x] = 1 }
 
 everything_conf_variables = {
     "basedir" => everythingdir,
+    "guest_user" => node["e2engine"]["guest_user"],
     "infected_ips" => node["e2engine"]["infected_ips"],
     "default_style" => node["e2engine"]["default_style"],
     "everyuser" => node["e2engine"]["everyuser"],
