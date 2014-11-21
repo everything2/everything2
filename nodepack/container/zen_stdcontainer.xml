@@ -6,17 +6,7 @@
 &lt;html lang=&quot;en&quot;&gt;
 &lt;head&gt;
 &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=Edge&quot; /&gt;
-&lt;title&gt;[% return $NODE-&gt;{title} %][% 
-
-if($NODE-&gt;{type}-&gt;{title} eq &quot;writeup&quot;)
-{
- my $author = getNodeById($NODE-&gt;{author_user});
- if($author)
- {
-   return &quot; by $$author{title}&quot;;
- }
-}
-%] - Everything2.com&lt;/title&gt;
+&lt;title&gt;[% return $APP-&gt;pagetitle($NODE); %] - Everything2.com&lt;/title&gt;
 [%
   return &quot;&quot; if $APP-&gt;use_bootstrap();
   return qq|&lt;link rel=&quot;stylesheet&quot; id=&quot;basesheet&quot; type=&quot;text/css&quot; href=&quot;|.htmlcode(&quot;linkStylesheet&quot;,&quot;basesheet&quot;).qq|&quot; media=&quot;all&quot;&gt;&lt;link rel=&quot;stylesheet&quot; id=&quot;zensheet&quot; type=&quot;text/css&quot; href=&quot;|
@@ -33,15 +23,9 @@ if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
 %]
 	&lt;link rel=&quot;stylesheet&quot; id=&quot;printsheet&quot; type=&quot;text/css&quot; href=&quot;[{linkStylesheet:print}]&quot; media=&quot;print&quot;&gt;
 [%
-
-if ($ENV{HTTP_HOST} !~ /^m\.everything2/i) {
-  # This only matters in the development environment
-  my ($port) = $ENV{HTTP_HOST} =~ /(:\d+)$/;
-  $port ||=&quot;&quot;;
-  return '
-	&lt;base href=&quot;http://' . $Everything::CONF-&gt;{canonical_web_server} . $port.'&quot;&gt;' if $APP-&gt;isGuest($USER) ;
-}
-
+  if ($ENV{HTTP_HOST} !~ /^m\.everything2/i) {
+    return qq|&lt;base href=&quot;|.$APP-&gt;basehref().qq|&quot;&gt;| if $APP-&gt;isGuest($USER);
+  }
 %]
 [%
 my $canonical_web_server = $Everything::CONF-&gt;{canonical_web_server};
