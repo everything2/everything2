@@ -11,7 +11,7 @@ my $XG = new XML::Generator;
 my $nl = &quot;\n&quot;;
 
 my $str=$XG-&gt;info({
-	'site'=&gt;$Everything::CONF-&gt;{system}-&gt;{site_url},
+	'site'=&gt;$Everything::CONF-&gt;{site_url},
 	'sitename'=&gt;$Everything::CONF-&gt;{system}-&gt;{site_name},
 	'servertime'=&gt;scalar(localtime(time)),
 	'node_id'=&gt;$$NODE{node_id},

@@ -18,7 +18,7 @@ use XML::Generator;
 my $XG = new XML::Generator;
 
 my $str =&quot;&quot;;
-$str.=$XG-&gt;INFO({site =&gt; $Everything::CONF-&gt;{system}-&gt;{site_url}, sitename =&gt; $Everything::CONF-&gt;{system}-&gt;{site_name}, servertime =&gt; scalar(localtime(time))}, &quot;Rendered by the New Nodes XML Ticker&quot;).&quot;\n&quot;;
+$str.=$XG-&gt;INFO({site =&gt; $Everything::CONF-&gt;{site_url}, sitename =&gt; $Everything::CONF-&gt;{system}-&gt;{site_name}, servertime =&gt; scalar(localtime(time))}, &quot;Rendered by the New Nodes XML Ticker&quot;).&quot;\n&quot;;
 
 use Everything::XML;
 
