@@ -18,7 +18,7 @@ use DBI;
 use DateTime;
 use Everything::NodeBase;
 use Everything::Application;
-use JSON;
+use Everything::Configuration;
 
 sub BEGIN
 {
@@ -70,15 +70,7 @@ sub BEGIN
               commonLogLine
             );
 
-	my $json_config = "/etc/everything/everything.conf.json";
-	my ($json_handle, $json_data);
-	open $json_handle, $json_config;
-	{
-		local $/ = undef;
-		$json_data = <$json_handle>;
-	}
-	close $json_handle;
-	$CONF = JSON::from_json($json_data);
+	$CONF = Everything::Configuration->new("/etc/everything/everything.conf.json"); 
 }
 
 use vars qw($DB);

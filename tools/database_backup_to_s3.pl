@@ -11,9 +11,9 @@ my $tmpdir = "/tmp/everything_backup_$$";
 
 initEverything 'everything';
 
-my $user = $Everything::CONF->{'everyuser'};
-my $pass = $Everything::CONF->{'everypass'};
-my $host = $Everything::CONF->{'everything_dbserv'};
+my $user = $Everything::CONF->everyuser;
+my $pass = $Everything::CONF->everypass;
+my $host = $Everything::CONF->everything_dbserv;
 my $db = "everything";
 
 my $time = [gmtime()];
@@ -35,15 +35,15 @@ print commonLogLine("Completed mysqldump, starting upload");
 
 if($uploader->upload_file($filename, "$tmpdir/$filename"))
 {
-	if($Everything::CONF->{notification_email} ne "")
+	if($Everything::CONF->notification_email ne "")
 	{
 		my $email = getNode("backup ready mail", "mail");
 		if($email)
 		{
 			$email->{doctext} =~ s/\<filename\>/$filename/g;
 			$email->{title} = "Backup ready on S3: $filename";
-			$APP->node2mail($Everything::CONF->{notification_email},$email,1);
-			print commonLogLine("Sent email to: ".$Everything::CONF->{notification_email});
+			$APP->node2mail($Everything::CONF->notification_email,$email,1);
+			print commonLogLine("Sent email to: ".$Everything::CONF->notification_email);
 		}else{
 			print commonLogLine("Could not find node 'backup ready mail' of type 'mail'");
 		}

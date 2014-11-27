@@ -5,7 +5,7 @@ use namespace::autoclean;
 
 has "CONTROLLER_CACHE" => (isa => "HashRef", is => "rw", default => sub { {} });
 has "SUBTYPE_CACHE" => (isa => "HashRef", is => "rw", default => sub { {} });
-has "CONF" => (isa => "HashRef", is => "ro", required => 1);
+has "CONF" => (isa => "HashRef | Everything::Configuration", is => "ro", required => 1);
 has "APP" => (isa => "Everything::Application", "is" => "ro", required => 1);
 has "DB" => (isa => "Everything::NodeBase", "is" => "ro", required => 1);
 

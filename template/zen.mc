@@ -1,7 +1,7 @@
 <%class>
   has 'NODE' => (isa => 'HashRef', required => 1); #TODO: Do we need this?
   has 'USER' => (isa => 'HashRef', required => 1); #TODO: Do we need this?
-  has 'CONF' => (isa => 'HashRef', required => 1);
+  has 'CONF' => (isa => 'HashRef | Everything::Configuration', required => 1);
   has 'APP' => (isa => 'Everything::Application', required => 1, handles => [qw(linkNode linkNodeTitle)]);
 
   has 'pagetitle' => (isa => 'Str', required => 1);
