@@ -28,7 +28,7 @@ while (my $N = $csr-&gt;fetchrow_hashref) {
   push @users, $N;
 }
 
-$str.=$XG-&gt;INFO({site =&gt; $Everything::CONF-&gt;{site_url}, sitename =&gt; $Everything::CONF-&gt;{system}-&gt;{site_name},  servertime =&gt; scalar(localtime(time))}, 'Rendered by the Other Users XML Ticker');
+$str.=$XG-&gt;INFO({site =&gt; $Everything::CONF-&gt;site_url, sitename =&gt; $Everything::CONF-&gt;system-&gt;{site_name},  servertime =&gt; scalar(localtime(time))}, 'Rendered by the Other Users XML Ticker');
 
 my %rooms;
 $rooms{0} = 'outside';

@@ -3,7 +3,7 @@
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>7</pagetype_nodetype>
   <page>[%
-$NODE = $GNODE = getNodeById($Everything::CONF-&gt;{system}-&gt;{search_results}) unless $$NODE{type}{title} ne 'draft' or $APP-&gt;canSeeDraft($USER,$NODE);
+$NODE = $GNODE = getNodeById($Everything::CONF-&gt;system-&gt;{search_results}) unless $$NODE{type}{title} ne 'draft' or $APP-&gt;canSeeDraft($USER,$NODE);
 '';
 %]&lt;table&gt;&lt;tr&gt;&lt;td&gt;
    [{zensearchform}]
@@ -18,7 +18,7 @@ Nodelets
 #
 
 unless ( $$VARS{nodelets} ) {
-    my ($DEFAULT) = $DB-&gt;getNodeById($Everything::CONF-&gt;{system}-&gt;{default_nodeletgroup});
+    my ($DEFAULT) = $DB-&gt;getNodeById($Everything::CONF-&gt;system-&gt;{default_nodeletgroup});
     $$VARS{nodelets} = join ',', @{ $$DEFAULT{group} } ;
 }
 

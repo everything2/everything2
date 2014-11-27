@@ -41,7 +41,7 @@ while(my $MSG = $csr-&gt;fetchrow_hashref) {
 	push @msgs, $MSG;
 }
 
-$str.=$XG-&gt;INFO({site =&gt; $Everything::CONF-&gt;{site_url}, sitename =&gt; $Everything::CONF-&gt;{system}-&gt;{site_name},  servertime =&gt; scalar(localtime(time))}, 'Rendered by the Private Message XML Ticker').$nl;
+$str.=$XG-&gt;INFO({site =&gt; $Everything::CONF-&gt;site_url, sitename =&gt; $Everything::CONF-&gt;system-&gt;{site_name},  servertime =&gt; scalar(localtime(time))}, 'Rendered by the Private Message XML Ticker').$nl;
 $str .= $XG-&gt;info({
 	'for_user'=&gt;$UID,
 	'for_username'=&gt;Everything::XML::makeXmlSafe($$USER{title}),

@@ -10,7 +10,7 @@
 [%
   return &quot;&quot; if $APP-&gt;use_bootstrap();
   return qq|&lt;link rel=&quot;stylesheet&quot; id=&quot;basesheet&quot; type=&quot;text/css&quot; href=&quot;|.htmlcode(&quot;linkStylesheet&quot;,&quot;basesheet&quot;).qq|&quot; media=&quot;all&quot;&gt;&lt;link rel=&quot;stylesheet&quot; id=&quot;zensheet&quot; type=&quot;text/css&quot; href=&quot;|
-                 . htmlcode('linkStylesheet', $$VARS{userstyle}||$Everything::CONF-&gt;{default_style}, 'serve')
+                 . htmlcode('linkStylesheet', $$VARS{userstyle}||$Everything::CONF-&gt;default_style, 'serve')
                  . '&quot; media=&quot;screen,tv,projection&quot;&gt;' ;
 %][%
 
@@ -28,10 +28,10 @@ if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
   }
 %]
 [%
-my $canonical_web_server = $Everything::CONF-&gt;{canonical_web_server};
+my $canonical_web_server = $Everything::CONF-&gt;canonical_web_server;
 my $url = &quot;&quot;;
 $url = 'http://'.$canonical_web_server if $APP-&gt;isGuest($USER);
-$url .= $APP-&gt;urlGenNoParams( $NODE , 'noQuotes' ) unless $$NODE{ node_id } eq $Everything::CONF-&gt;{system}-&gt;{default_node} ;
+$url .= $APP-&gt;urlGenNoParams( $NODE , 'noQuotes' ) unless $$NODE{ node_id } eq $Everything::CONF-&gt;system-&gt;{default_node} ;
 $url ||= '/' ;
 return '	&lt;link rel=&quot;canonical&quot; href=&quot;' . $url . '&quot;&gt;' ;
 

@@ -25,7 +25,7 @@ else {
 # only show themes for &quot;active&quot; users (in this case lastseen within 6 months
 my ($sec,$min,$hour,$mday,$mon,$year) = gmtime(time - 15778800); # 365.25*24*3600/2
 my $cutoffDate = ($year+1900).'-'.($mon+1).&quot;-$mday&quot;;
-my $defaultStyle = getNode($Everything::CONF-&gt;{default_style}, &quot;stylesheet&quot;)-&gt;{node_id};
+my $defaultStyle = getNode($Everything::CONF-&gt;default_style, &quot;stylesheet&quot;)-&gt;{node_id};
 
 my $rows = $DB-&gt;sqlSelectMany( 'setting.setting_id,setting.vars' ,
 	'setting,user' ,
