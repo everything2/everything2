@@ -10434,7 +10434,7 @@ sub zenwriteups
     if (exists $$VARS{repThreshold})
     {
       $repthreshold = $$VARS{repThreshold} || 0; # ecore stores 0 as ''
-    } elsif (exists $Everything::CONF->writeuplowrepthreshold) {
+    } else {
       $repthreshold = $Everything::CONF->writeuplowrepthreshold || 0;
     }
 	
