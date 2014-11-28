@@ -15,7 +15,7 @@ sub display
 {
   my ($this, $request) = @_;
 
-  my $user_stylesheet = $this->getNodeById($request->VARS->{userstyle}) || $this->getNode($this->CONF->{default_style},"stylesheet");
+  my $user_stylesheet = $this->getNodeById($request->VARS->{userstyle}) || $this->getNode($this->CONF->default_style,"stylesheet");
 
   my $stylesheets = [
     {"id" => "basesheet", "href" => $this->APP->stylesheetCDNLink($this->getNode("basesheet","stylesheet")), "media" => "all"},

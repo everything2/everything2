@@ -52,7 +52,7 @@ sub room_create
 
   my ($N) = @_;
 
-  my $canCreate = ($APP->getLevel($USER) >= $Everything::CONF->{create_room_level} or isGod($USER));
+  my $canCreate = ($APP->getLevel($USER) >= $Everything::CONF->create_room_level or isGod($USER));
   $canCreate = 0 if $APP->isSuspended($USER, 'room');
 
   if (!$canCreate) {

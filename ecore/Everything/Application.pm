@@ -1501,7 +1501,7 @@ sub getMaintenanceNodesForUser
 	}
 
 	my $maint_nodes = undef;
-	foreach my $val (values %{$Everything::CONF->{system}->{maintenance_nodes}} )
+	foreach my $val (values %{$this->{conf}->system->{maintenance_nodes}} )
 	{
 		my $node = $this->{db}->getNodeById($val);
 		next unless $$node{'group'};
@@ -1724,7 +1724,7 @@ sub fixStylesheet
 	}
 
 	#unless ( $fixwasneeded ) {
-	#	$this->setParameter($node, -1, 'fix_level', $Everything::CONF->{stylesheet_fix_level});
+	#	$this->setParameter($node, -1, 'fix_level', $this->{conf}->stylesheet_fix_level);
 	#}
 
 	$output = $addstyles.$output if $fixwasneeded ;
@@ -1895,7 +1895,7 @@ sub getIp
 sub isInfectedIp
 {
 	my ($this, $ip) = @_;
-	return scalar(grep {$_ eq $ip} @{$Everything::CONF->{infected_ips}} );
+	return scalar(grep {$_ eq $ip} @{$this->{conf}->infected_ips} );
 }
 
 #############################################################################
@@ -3699,7 +3699,7 @@ sub basehref
     # This only matters in the development environment
     my ($port) = $ENV{HTTP_HOST} =~ /(:\d+)$/;
     $port ||="";
-    return 'http://'.$Everything::CONF->{canonical_web_server}.$port;
+    return 'http://'.$this->{conf}->canonical_web_server.$port;
   }
 }
 

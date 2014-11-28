@@ -87,15 +87,15 @@ sub new
 	
 	bless $this;
 
-        my $dbname = $Everything::CONF->{'database'};
+        my $dbname = $Everything::CONF->database;
 	# A connection to this database does not exist.  Create one.
-	my ($user,$pass, $dbserv) = ($Everything::CONF->{'everyuser'}, $Everything::CONF->{'everypass'}, $Everything::CONF->{'everything_dbserv'});
+	my ($user,$pass, $dbserv) = ($Everything::CONF->everyuser, $Everything::CONF->everypass, $Everything::CONF->everything_dbserv);
 	my $dbh = DBI->connect("DBI:mysql:$dbname:$dbserv;mysql_enable_utf8=1", $user, $pass, {AutoCommit => 1});
 	$this->{dbh} = $dbh;
 
 	$this->{cache} = new Everything::NodeCache($this); 
 	$this->{dbname} = $dbname;
-	$this->{staticNodetypes} = $Everything::CONF->{static_nodetypes};
+	$this->{staticNodetypes} = $Everything::CONF->static_nodetypes;
 
 	$this->{cache}->clearSessionCache;
 
@@ -462,7 +462,7 @@ sub getNode
 	if(defined $NODE and $selectop ne 'nocache')
 	{
 		my $perm = 0;
-		$perm = 1 if exists $Everything::CONF->{permanent_cache}->{$$NODE{type}{title}};
+		$perm = 1 if exists $Everything::CONF->permanent_cache->{$$NODE{type}{title}};
 		$this->{cache}->cacheNode($NODE, $perm);
 		$this->{cache}->memcacheNode($NODE);
 	}
@@ -547,7 +547,7 @@ sub getNodeById
 	if($selectop ne 'nocache')
 	{
 		my $perm = 0;
-		$perm = 1 if exists $Everything::CONF->{permanent_cache}->{$$NODE{type}{title}};
+		$perm = 1 if exists $Everything::CONF->permanent_cache->{$$NODE{type}{title}};
 	
 		$this->{cache}->cacheNode($NODE, $perm);
 		$this->{cache}->memcacheNode($NODE);

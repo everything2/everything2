@@ -26,8 +26,8 @@ sub mason_init
 {
   my ($this) = @_;
   return Mason->new(
-    comp_root => $this->CONF->{basedir}."/template",
-    data_dir => $this->CONF->{basedir}."/compile",
+    comp_root => $this->CONF->basedir."/template",
+    data_dir => $this->CONF->basedir."/compile",
   );
 }
 

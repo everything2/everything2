@@ -1242,7 +1242,7 @@ sub nodelet_meta_container
 
   unless ( $$VARS{nodelets} ) {
     #push default nodelets on
-    my ($DEFAULT) = $DB->getNodeById( $Everything::CONF->{system}->{default_nodeletgroup} );
+    my ($DEFAULT) = $DB->getNodeById( $Everything::CONF->system->{default_nodeletgroup} );
     $$VARS{nodelets} = join ',', @{ $$DEFAULT{group} } ;
   }
 
@@ -1836,7 +1836,7 @@ sub softlink
   }
 
   my %unlinkables = {};
-  foreach( values %{$Everything::CONF->{system}->{maintenance_nodes}} ) {
+  foreach( values %{$Everything::CONF->system->{maintenance_nodes}} ) {
     $unlinkables{$_} = 1;
   }
   return if $unlinkables{ $$N{node_id} };
@@ -2182,7 +2182,7 @@ sub e2createnewnode
     .' you could create a "'
     .$query -> escapeHTML($title)
     ."\" node. If you don't already have an account, you can "
-    . linkNode($Everything::CONF->{system}->{create_new_user}, 'register here')
+    . linkNode($Everything::CONF->system->{create_new_user}, 'register here')
     .'.' if $APP->isGuest($USER);
 
   my $n = getNode($title, 'e2node');
@@ -4732,8 +4732,8 @@ sub uploaduserimage
 
   return if $APP->isSuspended($NODE,"homenodepic");
 
-  my $aws_access_key_id = $Everything::CONF->{s3}->{homenodeimages}->{access_key_id};
-  my $aws_secret_access_key = $Everything::CONF->{s3}->{homenodeimages}->{secret_access_key};
+  my $aws_access_key_id = $Everything::CONF->s3->{homenodeimages}->{access_key_id};
+  my $aws_secret_access_key = $Everything::CONF->s3->{homenodeimages}->{secret_access_key};
 
   my $s3 = Net::Amazon::S3->new(
    {
@@ -4743,7 +4743,7 @@ sub uploaduserimage
    }
   );
 
-  my $bucket = $s3->bucket($Everything::CONF->{s3}->{homenodeimages}->{bucket});
+  my $bucket = $s3->bucket($Everything::CONF->s3->{homenodeimages}->{bucket});
 
   my $str ='';
   my $image = Image::Magick -> new(); 
@@ -4940,7 +4940,7 @@ sub printablefooter
 
   $E2NODE=getNode $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
   $E2NODE ||= $NODE;
-  my $site = $Everything::CONF->{system}->{site_url};
+  my $site = $Everything::CONF->system->{site_url};
   $site =~ s/\/$//;
   $site.= "/title/$$E2NODE{title}";
   $site =~ s/ /\+/g;
@@ -5050,7 +5050,7 @@ sub createroom
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  return unless $APP->getLevel($USER) >= $Everything::CONF->{create_room_level};
+  return unless $APP->getLevel($USER) >= $Everything::CONF->create_room_level;
   my $cr = getId(getNode('create room','superdoc'));
   return '<span title="create a new room to chat in">'. linkNode($cr,'create',{lastnode_id=>0}). '</span>';
 }
@@ -5133,7 +5133,7 @@ sub minilogin
   $query->delete('passwd');
 
   my $goto = getId($NODE);
-  $goto = $Everything::CONF->{system}->{default_node} if $goto == $Everything::CONF->{system}->{default_guest_node};
+  $goto = $Everything::CONF->system->{default_node} if $goto == $Everything::CONF->system->{default_guest_node};
   return $query->start_form(-method => "POST", -action => $query->script_name, -name => "loginform", -id => "loginform") .
     $query->hidden("node_id", $goto) . "\n" .
     $query->hidden("lastnode_id") . "\n" .
@@ -5165,7 +5165,7 @@ sub minilogin
       , -tabindex => 4
     )."<br />".
     linkNodeTitle("Reset password[superdoc]|Lost password")."
-    <p><strong>".linkNode($Everything::CONF->{system}->{create_new_user},'Sign up')."</strong></p>\n" .
+    <p><strong>".linkNode($Everything::CONF->system->{create_new_user},'Sign up')."</strong></p>\n" .
     $query->end_form;
 }
 
@@ -5392,7 +5392,7 @@ sub writeupssincelastyear
   my $notIn = " AND node.node_id NOT IN (";
   my $firstIn = 1;
 
-  foreach (values %{$Everything::CONF->{system}->{maintenance_nodes}} )
+  foreach (values %{$Everything::CONF->system->{maintenance_nodes}} )
   {
     # Look for numbers, and presume all numbers are node IDs
     next unless /^\d+$/;
@@ -5967,7 +5967,7 @@ sub showuserimage
   $imgsrc = "$$NODE{title}";
   $imgsrc =~ s/\W/_/g;
   $imgsrc = "/$imgsrc" if ($imgsrc !~ /^\//);
-  return '<img src="http://'.$Everything::CONF->{homenode_image_host}.$imgsrc.'" id="userimage">'; 
+  return '<img src="http://'.$Everything::CONF->homenode_image_host.$imgsrc.'" id="userimage">'; 
 }
 
 sub showchatter
@@ -6025,7 +6025,7 @@ sub showchatter
   my $ignoreStr = join(", ",@list);
 
   my $wherestr = "for_user=0 " ;
-  $wherestr .= "and tstamp >= date_sub(now(), interval $messageInterval second)" unless $Everything::CONF->{environment} ne "production" && !$$USER{in_room};
+  $wherestr .= "and tstamp >= date_sub(now(), interval $messageInterval second)" unless $Everything::CONF->environment ne "production" && !$$USER{in_room};
   $wherestr .= " and author_user not in ($ignoreStr)" if $ignoreStr;
 
   my $csr = $DB->sqlSelectMany('*', 'message use index(foruser_tstamp) ', $wherestr, "order by tstamp desc limit $messagesToShow");
@@ -9394,7 +9394,7 @@ sub formxml_superdoc
 
   #patch from fuzzie.. sorta
   #applied so that you can choose not to get the findings doc.
-  return "" if (($query->param("no_superdocs") == 1) || ($query->param("no_findings") == 1 && $$NODE{node_id} == $Everything::CONF->{system}->{search_results} ));
+  return "" if (($query->param("no_superdocs") == 1) || ($query->param("no_findings") == 1 && $$NODE{node_id} == $Everything::CONF->system->{search_results} ));
 
   my $grp = $$NODE{group};
   my $str = "";
@@ -10298,7 +10298,7 @@ sub atomiseNode
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $host = $ENV{HTTP_HOST} || $Everything::CONF->{canonical_web_server} || "everything2.com";
+  my $host = $ENV{HTTP_HOST} || $Everything::CONF->canonical_web_server || "everything2.com";
   $host = "http://$host" ;
 
   my $atominfo = sub {
@@ -10415,7 +10415,7 @@ sub zenwriteups
 
   my ($isLogs) = @_;
 
-  my $UID = $$USER{user_id} || $Everything::CONF->{guest_user} ;
+  my $UID = $$USER{user_id} || $Everything::CONF->guest_user ;
   my $limit = $$VARS{ num_newwus } || ($APP->isGuest($USER) ? 15 : 12);
   my $cansee = $APP->isEditor($USER);
 
@@ -10434,8 +10434,8 @@ sub zenwriteups
     if (exists $$VARS{repThreshold})
     {
       $repthreshold = $$VARS{repThreshold} || 0; # ecore stores 0 as ''
-    } elsif (exists $Everything::CONF->{writeuplowrepthreshold}) {
-      $repthreshold = $Everything::CONF->{writeuplowrepthreshold} || 0;
+    } elsif (exists $Everything::CONF->writeuplowrepthreshold) {
+      $repthreshold = $Everything::CONF->writeuplowrepthreshold || 0;
     }
 	
     $abominations->{$_} = 1 foreach(split(',', $$VARS{unfavoriteusers}));
@@ -11334,8 +11334,8 @@ sub socialBookmarks
   $titleNode = $parentNode if $parentNode;
   my $bDontQuoteUrl = 1;
   my $url = undef;
-  $url = 'http://' . $1 if $ENV{HTTP_HOST} =~ /(?:.+?\.)($Everything::CONF->{canonical_web_server})(?::\d+)/;
-  $url = 'http://' . $Everything::CONF->{canonical_web_server} if $url eq '';
+  $url = 'http://' . $1 if $ENV{HTTP_HOST} =~ /(?:.+?\.)($Everything::CONF->canonical_web_server)(?::\d+)/;
+  $url = 'http://' . $Everything::CONF->canonical_web_server if $url eq '';
   $url .= urlGen({ }, $bDontQuoteUrl, $targetNode);
   my $title = $$titleNode{title};
 
@@ -11583,7 +11583,7 @@ sub epicenterZen
   return "<div id='epicenter_zen'><span id='epicenter_zen_info'>
     ".linkNode($USER,0,{lastnode_id=>0})."
     | ".linkNode($NODE, 'Log Out', {op=>'logout'})."
-    | ".linkNode($Everything::CONF->{system}->{user_settings}, 'Preferences',{lastnode_id=>0})."
+    | ".linkNode($Everything::CONF->system->{user_settings}, 'Preferences',{lastnode_id=>0})."
     | ".linkNode(getNode('Drafts','superdoc'))."
     | ".linkNode(getNode('Everything2 Help','e2node'), 'Help')."
     | ".htmlcode('randomnode','Random')."
@@ -12176,7 +12176,7 @@ sub canseewriteup
       },
 
     lowrep => sub{ # reputation threshold
-      my $threshold = $Everything::CONF->{writeuplowrepthreshold} || 'none' ;
+      my $threshold = $Everything::CONF->writeuplowrepthreshold || 'none' ;
       $threshold = $$VARS{ repThreshold } || '0' if exists $$VARS{ repThreshold } ; # ecore stores 0 as ''
       $threshold eq 'none' or $$N{reputation} > $threshold;
       }
@@ -12213,7 +12213,7 @@ sub checkInfected
   # if logged on, no old cookie
   return 0 unless $APP -> isGuest($USER) && $query;
 
-  my $loginCookie = $query->cookie($Everything::CONF->{cookiepass});
+  my $loginCookie = $query->cookie($Everything::CONF->cookiepass);
 
   return 0 unless $loginCookie;
 
@@ -13447,7 +13447,7 @@ sub googleads
 
   my $node_id = $$NODE{node_id};
 
-  foreach my $nid (@{$Everything::CONF->{google_ads_badnodes}})
+  foreach my $nid (@{$Everything::CONF->google_ads_badnodes})
   {
     return "<!-- noad:badnode -->" if $node_id == $nid or $$NODE{type}{title} eq 'writeup' && $$NODE{parent_e2node} == $nid;
     if (exists $$NODE{linklist})
@@ -13459,7 +13459,7 @@ sub googleads
     }
   }
 
-  foreach my $word (@{$Everything::CONF->{google_ads_badwords}})
+  foreach my $word (@{$Everything::CONF->google_ads_badwords})
   {
     return "<!-- noad:badword -->" if $$NODE{title} =~ /\b$word/i or $$NODE{title} =~ /$word\b/i;
     if (exists $$NODE{linklist})
@@ -13594,7 +13594,7 @@ sub create_short_url
   my $shortString = &$encodeInt($targetId);
   my $shortLink =
     'http://'
-    . $Everything::CONF->{canonical_web_server}
+    . $Everything::CONF->canonical_web_server
     . '/s/'
     . $shortString;
 
@@ -13720,7 +13720,7 @@ sub categoryform
   {
     # get user, guest user, and user's usergroups. No huge list for admins and CEs
     my $dbh = $DB->getDatabaseHandle();
-    my $inClause = join( ',' , $$USER{ user_id } , $Everything::CONF->{guest_user} , @{
+    my $inClause = join( ',' , $$USER{ user_id } , $Everything::CONF->guest_user , @{
       $dbh -> selectcol_arrayref( "SELECT DISTINCT ug.node_id
       FROM node ug,nodegroup ng WHERE ng.nodegroup_id=ug.node_id AND ng.node_id=$$USER{ user_id }" ) } );
 	
@@ -14077,7 +14077,7 @@ sub display_draft
     $displaylike = getType(
       getNodeWhere({pagetype_nodetype => 117, displaytype => $displaytype}, 'htmlpage') ?'writeup' : 'document');
   } else {
-    $NODE = $GNODE = getNodeById($Everything::CONF->{system}->{search_results});
+    $NODE = $GNODE = getNodeById($Everything::CONF->system->{search_results});
     $displaylike = getType($$NODE{type_nodetype});
   }
 

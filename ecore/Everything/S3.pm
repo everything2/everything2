@@ -11,13 +11,13 @@ sub new
 	
 	return if not defined $s3type;
 	my $this = {};
-	if(exists($Everything::CONF->{s3}->{$s3type}))
+	if(exists($Everything::CONF->s3->{$s3type}))
 	{
 		foreach my $value (qw/bucket access_key_id secret_access_key/)
 		{
-			if(exists($Everything::CONF->{s3}->{$s3type}->{$value}))
+			if(exists($Everything::CONF->s3->{$s3type}->{$value}))
 			{
-				$this->{$value} = $Everything::CONF->{s3}->{$s3type}->{$value};
+				$this->{$value} = $Everything::CONF->s3->{$s3type}->{$value};
 			}else{
 				return undef;
 			}

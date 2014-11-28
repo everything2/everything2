@@ -75,12 +75,12 @@ sub login
 
   unless ($username && $pass)
   {
-    $cookie = $self->cookie($self->CONF->{cookiepass}) || $self->param($self->CONF->{cookiepass});
+    $cookie = $self->cookie($self->CONF->cookiepass) || $self->param($self->CONF->cookiepass);
     ($username, $pass) = split(/\|/, $cookie) if $cookie;
   }
 
   my $user = $self->APP->confirmUser($username, $pass, $cookie, $self->cgi) if $username && $pass;
-  $user ||= $self->DB->getNodeById($self->CONF->{guest_user});
+  $user ||= $self->DB->getNodeById($self->CONF->guest_user);
 
   $self->VARS(Everything::getVars($user));
 
