@@ -1,17 +1,5 @@
 <nodegroup>
   <group>
-    <node_id>87</node_id>
-    <orderby>1</orderby>
-    <nodegroup_id>96</nodegroup_id>
-    <rank>1</rank>
-  </group>
-  <group>
-    <node_id>87</node_id>
-    <orderby>1</orderby>
-    <nodegroup_id>98</nodegroup_id>
-    <rank>1</rank>
-  </group>
-  <group>
     <node_id>90</node_id>
     <orderby>4</orderby>
     <nodegroup_id>96</nodegroup_id>
@@ -39,18 +27,6 @@
     <node_id>91</node_id>
     <orderby>2</orderby>
     <nodegroup_id>1685949</nodegroup_id>
-    <rank>2</rank>
-  </group>
-  <group>
-    <node_id>93</node_id>
-    <orderby>2</orderby>
-    <nodegroup_id>96</nodegroup_id>
-    <rank>2</rank>
-  </group>
-  <group>
-    <node_id>93</node_id>
-    <orderby>2</orderby>
-    <nodegroup_id>98</nodegroup_id>
     <rank>2</rank>
   </group>
   <group>
