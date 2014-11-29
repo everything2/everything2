@@ -16,6 +16,7 @@ Originally by:
 * Jordi Gutiérrez Hermoso (Swap)
 * Matt Kane (ascorbic)
 * Colin McEwan (call)
+* Alyssa Milburn (fuzzie)
 * Fergus Ray Murray (Oolong)
 * Brian Orlick (OldMiner)
  
