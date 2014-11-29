@@ -1,0 +1,13 @@
+<node>
+  <type_nodetype>5</type_nodetype>
+  <parent_container>18</parent_container>
+  <pagetype_nodetype>2117441</pagetype_nodetype>
+  <page>&lt;h4&gt;title:&lt;/h4&gt;[{textfield:title}]
+&lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the data:&lt;/strong&gt;&lt;/small&gt;&lt;br /&gt;
+
+[{textarea:vars,30,60}]</page>
+  <displaytype>edit</displaytype>
+  <node_id>2117444</node_id>
+  <title>datastash edit page</title>
+  <mimetype></mimetype>
+</node>

@@ -52,7 +52,7 @@ sub node_to_xml
 	my $NODE = $this->node_xml_prep($N, $dbh, $options);
 
 	my $vars_out;
-	if(exists($NODE->{vars}))
+	if(exists($NODE->{vars}) and $NODE->{type}->{title} ne "datastash")
 	{
 		$vars_out = {Everything::getVarHashFromStringFast($NODE->{vars})};
 		$NODE->{vars} = [];
@@ -99,7 +99,11 @@ sub xml_to_node
 	{
 		$NODE->{$field} = $NODE->{node_id};
 	}
-	$NODE = $this->_repack_node_vars($NODE);
+
+        if($NODE->{type}->{title} ne "datastash")
+        {
+		$NODE = $this->_repack_node_vars($NODE);
+        }
 	return $this->xml_to_node_post($NODE);
 }
 

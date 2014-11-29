@@ -1,9 +1,10 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sat Nov 29 18:05:24 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sat Nov 29 20:15:11 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
+	&lt;cooled cooledby_user=&quot;legbagede&quot; node_id=&quot;1349855&quot; parent_e2node=&quot;500040&quot; author_user=&quot;spikehay&quot;&gt;Cascade Range&lt;/cooled&gt;
+	&lt;cooled cooledby_user=&quot;StuartO)))&quot; node_id=&quot;2117432&quot; parent_e2node=&quot;2069500&quot; author_user=&quot;Estelore&quot;&gt;red-tailed hawk&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Chord&quot; node_id=&quot;2052849&quot; parent_e2node=&quot;2053122&quot; author_user=&quot;sam512&quot;&gt;From Ignorance, Lead Me To Truth&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Everyone2&quot; node_id=&quot;2117402&quot; parent_e2node=&quot;1365129&quot; author_user=&quot;Orthologist&quot;&gt;Cantor's paradox&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;2117432&quot; parent_e2node=&quot;2069500&quot; author_user=&quot;Estelore&quot;&gt;red-tailed hawk&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;corvus&quot; node_id=&quot;2117394&quot; parent_e2node=&quot;2117364&quot; author_user=&quot;moeyz&quot;&gt;November 28, 2014&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Zephronias&quot; node_id=&quot;2117305&quot; parent_e2node=&quot;1831033&quot; author_user=&quot;TheAnglican&quot;&gt;Talladega Nights: The Ballad of Ricky Bobby&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1087208&quot; parent_e2node=&quot;116381&quot; author_user=&quot;jon-o&quot;&gt;harpsichord&lt;/cooled&gt;
@@ -15,7 +16,6 @@
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2117377&quot; parent_e2node=&quot;2117378&quot; author_user=&quot;Zephronias&quot;&gt;Egg Binding&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;1086874&quot; parent_e2node=&quot;1086863&quot; author_user=&quot;susandragon&quot;&gt;perigalacticon&lt;/cooled&gt;
 	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2117255&quot; parent_e2node=&quot;2117151&quot; author_user=&quot;borgo&quot;&gt;Editor Log: November 2014&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2022067&quot; parent_e2node=&quot;2022066&quot; author_user=&quot;Texwiller&quot;&gt;How to lose weight and get a flat stomach&lt;/cooled&gt;
 
 &lt;/COOLEDNODES&gt;</doctext>
   <node_id>1101708</node_id>
