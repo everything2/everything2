@@ -24,12 +24,12 @@ if ($$USER{user_id} == $$NODE{author_user} or $APP-&gt;isAdmin($USER) ) {
   }
   else {
 	# update fixed setting if doesn't need fixing:
-  	$APP-&gt;fixStylesheet($NODE, 0) unless $$settings{ $$NODE{ node_id } } &gt;= $Everything::CONF-&gt;{stylesheet_fix_level} ;
+  	$APP-&gt;fixStylesheet($NODE, 0) unless $$settings{ $$NODE{ node_id } } &gt;= $Everything::CONF-&gt;stylesheet_fix_level ;
 	$str .= &quot;&lt;p&gt;&lt;strong&gt;Edit the stylesheet:&lt;/strong&gt;&lt;/p&gt;&quot;.
 		htmlcode(&quot;textarea&quot;,&quot;doctext,30,60&quot;);
   }
 
-	if ( $$settings{ $$NODE{ node_id } } &lt; $Everything::CONF-&gt;{stylesheet_fix_level} and
+	if ( $$settings{ $$NODE{ node_id } } &lt; $Everything::CONF-&gt;stylesheet_fix_level and
 			!$query -&gt; param( 'fixstylesheet') ){
 		$str .= '&lt;p&gt;You can automatically fix this stylesheet to adapt it to many of the recent changes in the E2 code.
 		Changes will not become permanent until you stumbit again.&lt;/p&gt;

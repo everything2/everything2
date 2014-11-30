@@ -2178,7 +2178,7 @@ sub ilikeit
   return if $DB->sqlSelect("count(*)","likedit","likedit_ip = '$addr' and likedit_node=$nid");
 
   my $LIKE = getNodeById($nid);
-  my $GU = $Everything::CONF->{guest_user};
+  my $GU = $Everything::CONF->guest_user;
 
   my $lType = getNode("ilikeit","linktype")->{node_id};
 

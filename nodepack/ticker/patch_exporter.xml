@@ -12,11 +12,11 @@ my $xmlin = XML::Simple-&gt;new(
     XMLDecl =&gt; 1,
 );
 
-my $patchids_ref = $xmlin -&gt; XMLin(get('http://'.($Everything::CONF-&gt;{environment} eq &quot;production&quot; ? '' : 'dev1.' ).
+my $patchids_ref = $xmlin -&gt; XMLin(get('http://'.($Everything::CONF-&gt;environment eq &quot;production&quot; ? '' : 'dev1.' ).
 	'everything2.com/node/ticker/imported+patches'));
 
 my $import_status  = getId(getNode(
-	($Everything::CONF-&gt;{environment} eq &quot;production&quot; ? 'production-imported' : 'implemented'),'status'));
+	($Everything::CONF-&gt;environment eq &quot;production&quot; ? 'production-imported' : 'implemented'),'status'));
 
 foreach my $patch_id( @{$patchids_ref -&gt; {patch_id}}){
   my $imported_patch = getNodeById($patch_id);
@@ -24,7 +24,7 @@ foreach my $patch_id( @{$patchids_ref -&gt; {patch_id}}){
   updateNode($imported_patch,-1);
 }
 
-my $production_status = getId(getNode(($Everything::CONF-&gt;{environment} eq &quot;production&quot; ?
+my $production_status = getId(getNode(($Everything::CONF-&gt;environment eq &quot;production&quot; ?
 	'production-ready' : 'production-implemented' ),'status'));
 
 my @patches =

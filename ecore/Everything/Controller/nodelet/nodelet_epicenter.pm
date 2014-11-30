@@ -9,7 +9,7 @@ sub nodelet
   my ($this, $request, $node, $properties) = @_;
   $properties->{template} = "nodelet/epicenter";
   $properties->{borgcheck} = $this->emulate_htmlcode("borgcheck",$request); 
-  $properties->{usersettings} = $this->getNodeById($this->CONF->{system}->{user_settings});
+  $properties->{usersettings} = $this->getNodeById($this->CONF->system->{user_settings});
   $properties->{drafts} = $this->getNode("Drafts","superdoc");
   $properties->{expearned} = $this->emulate_htmlcode('shownewexp',$request, 'TRUE');
 

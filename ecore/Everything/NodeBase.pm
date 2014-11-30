@@ -18,6 +18,9 @@ use Everything::Delegation::maintenance;
 use Test::Deep::NoTest;
 use utf8;
 
+# Used by stashData
+use JSON;
+
 sub BEGIN
 {
 	use Exporter ();
@@ -87,15 +90,15 @@ sub new
 	
 	bless $this;
 
-        my $dbname = $Everything::CONF->{'database'};
+        my $dbname = $Everything::CONF->database;
 	# A connection to this database does not exist.  Create one.
-	my ($user,$pass, $dbserv) = ($Everything::CONF->{'everyuser'}, $Everything::CONF->{'everypass'}, $Everything::CONF->{'everything_dbserv'});
+	my ($user,$pass, $dbserv) = ($Everything::CONF->everyuser, $Everything::CONF->everypass, $Everything::CONF->everything_dbserv);
 	my $dbh = DBI->connect("DBI:mysql:$dbname:$dbserv;mysql_enable_utf8=1", $user, $pass, {AutoCommit => 1});
 	$this->{dbh} = $dbh;
 
 	$this->{cache} = new Everything::NodeCache($this); 
 	$this->{dbname} = $dbname;
-	$this->{staticNodetypes} = $Everything::CONF->{static_nodetypes};
+	$this->{staticNodetypes} = $Everything::CONF->static_nodetypes;
 
 	$this->{cache}->clearSessionCache;
 
@@ -462,7 +465,7 @@ sub getNode
 	if(defined $NODE and $selectop ne 'nocache')
 	{
 		my $perm = 0;
-		$perm = 1 if exists $Everything::CONF->{permanent_cache}->{$$NODE{type}{title}};
+		$perm = 1 if exists $Everything::CONF->permanent_cache->{$$NODE{type}{title}};
 		$this->{cache}->cacheNode($NODE, $perm);
 		$this->{cache}->memcacheNode($NODE);
 	}
@@ -547,7 +550,7 @@ sub getNodeById
 	if($selectop ne 'nocache')
 	{
 		my $perm = 0;
-		$perm = 1 if exists $Everything::CONF->{permanent_cache}->{$$NODE{type}{title}};
+		$perm = 1 if exists $Everything::CONF->permanent_cache->{$$NODE{type}{title}};
 	
 		$this->{cache}->cacheNode($NODE, $perm);
 		$this->{cache}->memcacheNode($NODE);
@@ -2824,6 +2827,27 @@ sub deleteNodeParam
 
 	$this->sqlDelete("nodeparam","node_id=".$this->quote($node_id)." and paramkey=".$this->quote($paramname));
 	$this->{cache}->deleteCachedNodeParam($node_id,$paramname);
+}
+
+sub stashData
+{
+  my ($this, $stash_name, $stash_values) = @_;
+  
+  # TODO: Add to permanent cache
+  my $stashnode = $this->getNode($stash_name, "datastash");
+  return unless $stashnode;
+
+  if(defined($stash_values))
+  {
+    # write operation
+    my $stash_text = to_json($stash_values);
+    $stashnode->{vars} = $stash_text;
+    $this->updateNode($stashnode, -1);
+    return $stash_values;
+  }else{
+    # read operation
+    return from_json($stashnode->{vars});
+  }
 }
 
 #############################################################################

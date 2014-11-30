@@ -3,7 +3,7 @@
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>7</pagetype_nodetype>
   <page>[%
-$NODE = $GNODE = getNodeById($Everything::CONF-&gt;{system}-&gt;{search_results}) unless $$NODE{type}{title} ne 'draft' or $APP-&gt;canSeeDraft($USER,$NODE);
+$NODE = $GNODE = getNodeById($Everything::CONF-&gt;system-&gt;{search_results}) unless $$NODE{type}{title} ne 'draft' or $APP-&gt;canSeeDraft($USER,$NODE);
 '';
 %]&lt;table&gt;&lt;tr&gt;&lt;td&gt;
    [{zensearchform}]
@@ -18,7 +18,7 @@ Nodelets
 #
 
 unless ( $$VARS{nodelets} ) {
-    my ($DEFAULT) = $DB-&gt;getNodeById($Everything::CONF-&gt;{system}-&gt;{default_nodeletgroup});
+    my ($DEFAULT) = $DB-&gt;getNodeById($Everything::CONF-&gt;system-&gt;{default_nodeletgroup});
     $$VARS{nodelets} = join ',', @{ $$DEFAULT{group} } ;
 }
 
@@ -30,11 +30,6 @@ if( $APP-&gt;isEditor($USER) ) {
   # Otherwise, if it is there, remove it, keeping a comma as required
     $$VARS{nodelets} =~ s/(,?)$required(,?)/$1 &amp;&amp; $2 ? &quot;,&quot;:&quot;&quot;/ge;
 }
-
-# Replace [New Writeups - Zen[nodelet]] (1868940) with [New Writeups[nodelet]] (263)
-$$VARS{nodelets} =~ s/\b1868940\b/263/g;
-# Ensure we didn't just cause New Writeups to occur twice
-$$VARS{nodelets} =~ s/(\b263\b.*),263\b/\1/g;
 
 my $nodelets = $PAGELOAD-&gt;{pagenodelets} || $$VARS{nodelets} ;
 my @nodelets = split(',',$nodelets) if $nodelets ;

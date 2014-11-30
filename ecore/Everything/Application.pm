@@ -147,6 +147,13 @@ BEGIN {
 			"assignable" => ["admin"],
 			"validate" => "integer",
 		},
+		"last_update" => 
+		{
+			"on" => ["datastash"],
+			"description" => "When the stash was last updated",
+			"assignable" => ["admin"],
+			"validate" => "integer"
+		},
 	};
 
 	foreach my $param(keys %$PARAMS)
@@ -506,7 +513,7 @@ sub makeClean
 #	Parameters
 #       $text   The text string to process.
 #		$harder	Aggressively clean each word with cleanWordAggressive,
-#				if $this->{conf}->{clean_search_words_aggressively} is also set.
+#				if $this->{conf}->clean_search_words_aggressively is also set.
 #
 #	Returns
 #		The array of words extracted from $text.
@@ -516,7 +523,7 @@ sub makeCleanWords
 {
     my ($this, $text, $harder) = @_;
     $text = $this->makeClean($text);
-	$harder &&= $this->{conf}->{clean_search_words_aggressively};
+	$harder &&= $this->{conf}->clean_search_words_aggressively;
 	
 	my @words = ();
 	if ($text) {
@@ -567,8 +574,8 @@ sub makeCleanWords
 #		better matches.
 #
 #	Package-global variables you should know about
-#		$this->{conf}->{clean_search_words_aggressively}	1=try to trim plural, 'ed' suffixes from words
-#		$this->{conf}->{search_row_limit}			maximum number of rows to return from a search.
+#		$this->{conf}->clean_search_words_aggressively	1=try to trim plural, 'ed' suffixes from words
+#		$this->{conf}->search_row_limit			maximum number of rows to return from a search.
 #
 #	Note
 # 		If you get 'not found' on search queries which should return something,
@@ -617,7 +624,7 @@ sub searchNodeName {
 		}
 		else
 		{
-			push(@words, $_) unless (exists $this->{conf}->{nosearch_words}->{$_} or length($_) < 2);
+			push(@words, $_) unless (exists $this->{conf}->nosearch_words->{$_} or length($_) < 2);
 		}
 	}
 	
@@ -632,7 +639,7 @@ sub searchNodeName {
 	{
 		$typestr = "AND $typestr" if ($typestr);
 		
-		if ($this->{conf}->{clean_search_words_aggressively})
+		if ($this->{conf}->clean_search_words_aggressively)
 		{
 			@words = map($this->cleanWordAggressive($_), @words);
 		}
@@ -683,7 +690,7 @@ sub searchNodeName {
 	}	
    	
    	my @ret = ();
-	my $searchRowLimit = $this->{conf}->{search_row_limit};
+	my $searchRowLimit = $this->{conf}->search_row_limit;
 
 #    my $sql =
 #    	"
@@ -798,7 +805,7 @@ sub regenSearchwords
 	print "Regenerating searchwords, this could take a while...<br><br>\n";
 
 	print 	"Will be cleaning words " .
-			(($this->{conf}->{clean_search_words_aggressively}) ? "" : "non-") .
+			(($this->{conf}->clean_search_words_aggressively) ? "" : "non-") .
 			"aggressively.<br>\n";
 			
 	print "Clearing searchwords table<br>\n ";
@@ -1108,7 +1115,7 @@ sub isGuest
     $userid = $user->{node_id};
   }
 
-  return ($this->{conf}->{guest_user} == $userid);
+  return ($this->{conf}->guest_user == $userid);
 }
 
 sub metaDescription
@@ -1287,7 +1294,7 @@ sub _isSpiderCheck
 sub inDevEnvironment
 {
 	my ($this) = @_;
-	return $this->{conf}->{environment} eq "development";
+	return $this->{conf}->environment eq "development";
 }
 
 sub node2mail {
@@ -1297,13 +1304,13 @@ sub node2mail {
 	my $subject = $$node{title};
 	my $body = $$node{doctext};
 
-	my $from = $this->{conf}->{mail_from};
+	my $from = $this->{conf}->mail_from;
 	my $transport = Email::Sender::Transport::SMTP->new(
-  	{ "host" => $this->{conf}->{smtp_host},
-    	  "port" => $this->{conf}->{smtp_port},
-    	  "ssl" => $this->{conf}->{smtp_use_ssl},
-    	  "sasl_username" => $this->{conf}->{smtp_user},
-    	  "sasl_password" => $this->{conf}->{smtp_pass},
+  	{ "host" => $this->{conf}->smtp_host,
+    	  "port" => $this->{conf}->smtp_port,
+    	  "ssl" => $this->{conf}->smtp_use_ssl,
+    	  "sasl_username" => $this->{conf}->smtp_user,
+    	  "sasl_password" => $this->{conf}->smtp_pass,
   	});
 
 	my $email = Email::Simple->create(
@@ -1475,7 +1482,7 @@ sub isMaintenanceNode
 	return unless $node;
 	return unless $node->{type}->{title} eq "e2node" or $node->{type}->{title} eq "writeup";
 
-	my $maintenance_nodes = [values %{$this->{conf}->{system}->{maintenance_nodes}}];
+	my $maintenance_nodes = [values %{$this->{conf}->system->{maintenance_nodes}}];
 
 	if($node->{type}->{title} eq "writeup")
 	{
@@ -1501,7 +1508,7 @@ sub getMaintenanceNodesForUser
 	}
 
 	my $maint_nodes = undef;
-	foreach my $val (values %{$Everything::CONF->{system}->{maintenance_nodes}} )
+	foreach my $val (values %{$this->{conf}->system->{maintenance_nodes}} )
 	{
 		my $node = $this->{db}->getNodeById($val);
 		next unless $$node{'group'};
@@ -1724,7 +1731,7 @@ sub fixStylesheet
 	}
 
 	#unless ( $fixwasneeded ) {
-	#	$this->setParameter($node, -1, 'fix_level', $Everything::CONF->{stylesheet_fix_level});
+	#	$this->setParameter($node, -1, 'fix_level', $this->{conf}->stylesheet_fix_level);
 	#}
 
 	$output = $addstyles.$output if $fixwasneeded ;
@@ -1895,7 +1902,7 @@ sub getIp
 sub isInfectedIp
 {
 	my ($this, $ip) = @_;
-	return scalar(grep {$_ eq $ip} @{$Everything::CONF->{infected_ips}} );
+	return scalar(grep {$_ eq $ip} @{$this->{conf}->infected_ips} );
 }
 
 #############################################################################
@@ -3531,7 +3538,7 @@ sub canCompress
 sub getELogName
 {
   my ($this) = @_;
-  my $basedir = $this->{conf}->{logdirectory};
+  my $basedir = $this->{conf}->logdirectory;
   my $thistime = [gmtime()];
   my $datestr = $thistime->[5]+1900;
   $datestr .= sprintf("%02d",$thistime->[4]+1);
@@ -3699,7 +3706,7 @@ sub basehref
     # This only matters in the development environment
     my ($port) = $ENV{HTTP_HOST} =~ /(:\d+)$/;
     $port ||="";
-    return 'http://'.$Everything::CONF->{canonical_web_server}.$port;
+    return 'http://'.$this->{conf}->canonical_web_server.$port;
   }
 }
 

@@ -3,7 +3,7 @@
   <doctext>[%
 my $isChanop = $APP-&gt;isChanop($USER);
 
-if ($APP-&gt;getLevel($USER) &lt; $Everything::CONF-&gt;{create_room_level}
+if ($APP-&gt;getLevel($USER) &lt; $Everything::CONF-&gt;create_room_level
    and not isGod($USER)
    and not $isChanop) {
   return &quot;&lt;I&gt;Too young, my friend.&lt;/I&gt;&quot;;

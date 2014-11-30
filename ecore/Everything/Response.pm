@@ -12,7 +12,7 @@ has "CGI" => (isa => "CGI", is => "ro", default => sub { return CGI->new() });
 has "USER" => (isa => "HashRef", is => "ro", required => 1);
 has "VARS" => (isa => "HashRef", is => "ro", required => 1);
 has "NODE" => (isa => "HashRef", is => "ro", required => 1);
-has "CONF" => (isa => "HashRef", is => "ro", required => 1);
+has "CONF" => (isa => "HashRef | Everything::Configuration", is => "ro", required => 1);
 has "APP" => (isa => "Everything::Application", is => "ro", required => 1);
 
 has 'mason' => (is => "ro", isa => 'Mason::Interp', builder => "mason_init", lazy => 1);
@@ -26,8 +26,8 @@ sub mason_init
 {
   my ($this) = @_;
   return Mason->new(
-    comp_root => $this->CONF->{basedir}."/template",
-    data_dir => $this->CONF->{basedir}."/compile",
+    comp_root => $this->CONF->basedir."/template",
+    data_dir => $this->CONF->basedir."/compile",
   );
 }
 

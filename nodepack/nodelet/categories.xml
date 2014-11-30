@@ -6,7 +6,7 @@
   <node_id>1935779</node_id>
   <type_nodetype>9</type_nodetype>
   <nlcode>[%
-my $GU = $Everything::CONF-&gt;{guest_user};
+my $GU = $Everything::CONF-&gt;guest_user;
 my $uid = $$USER{user_id};
 
 my $str;

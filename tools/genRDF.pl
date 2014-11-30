@@ -27,14 +27,14 @@ sub genTag { Everything::XML::genTag(@_); }
 #first the channel tag
 my $doc = ""; 
 
-my $url = $Everything::CONF->{system}->{site_url};
+my $url = $Everything::CONF->system->{site_url};
 
 $url .= "/" unless $url =~ /\/$/;
 
 $doc .= $XMLGEN->channel(
-	"\n\t".genTag("title", $Everything::CONF->{system}->{site_name}) .
+	"\n\t".genTag("title", $Everything::CONF->system->{site_name}) .
 	"\t".genTag("link", $url) .
-	"\t".genTag("description", $Everything::CONF->{system}->{site_description})
+	"\t".genTag("description", $Everything::CONF->system->{site_description})
 	)."\n";
 
 foreach (@types) {

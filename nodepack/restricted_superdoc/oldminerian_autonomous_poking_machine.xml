@@ -1127,31 +1127,7 @@ my $str = &quot;&lt;p&gt;Perl version: $] &lt;/p&gt;&quot;;
 
 return $str;
 %]
-&lt;hr&gt;
-&lt;a name=&quot;nwzen&quot;&gt;
-&lt;h3&gt;Fixing [New Writeups - Zen[nodelet]]&lt;/h3&gt;
 
-[{nwuamount}]
-
-&lt;div&gt;
-[%
-return htmlcode('zenwriteups', '');
-%]
-&lt;/div&gt;
-
-&lt;pre&gt;
-SELECT node.title, setting.vars
-   FROM node
-   JOIN user
-     ON user.user_id = node.node_id
-   JOIN setting
-     ON setting.setting_id = node.node_id
-   WHERE
-     setting.vars LIKE '%1868940%'
-
-Elapsed time: 27.105617 seconds
-&lt;/pre&gt;
-&lt;hr&gt;
 
 </doctext>
   <node_id>1988300</node_id>

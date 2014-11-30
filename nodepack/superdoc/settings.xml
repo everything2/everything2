@@ -34,7 +34,7 @@ my $supported_sheets = $DB-&gt;getNodesWithParam(&quot;supported_sheet&quot;);
 foreach my $thissheet (@$supported_sheets)
 {
   my $fixlevel = $APP-&gt;getParameter($thissheet, &quot;fix_level&quot;);
-  next unless $fixlevel and $fixlevel &gt;= $Everything::CONF-&gt;{stylesheet_fix_level};
+  next unless $fixlevel and $fixlevel &gt;= $Everything::CONF-&gt;stylesheet_fix_level;
   my $sh = getNodeById($thissheet);
   #next unless $sh;
 
@@ -44,7 +44,7 @@ foreach my $thissheet (@$supported_sheets)
   {
     $author_string = &quot; by &quot;.$auth-&gt;{title};
   }
-  $$sheets{$thissheet} = $$sh{title}.($$sh{title} ne $Everything::CONF-&gt;{default_style} ? $author_string : ' (default)');
+  $$sheets{$thissheet} = $$sh{title}.($$sh{title} ne $Everything::CONF-&gt;default_style ? $author_string : ' (default)');
 }
 
 $$sheets{ $$VARS{userstyle} } = getNodeById($$VARS{userstyle}) -&gt; {title}
@@ -175,7 +175,7 @@ htmlcode('varsComboBox','informmsgignore','0', '0','by private message','1','in 
 
 $str.'&lt;br&gt;';
 %]
-&lt;script type=&quot;text/javascript&quot;&gt;THEME = {&quot;default_style&quot;: &quot;[% return $Everything::CONF-&gt;{default_style} %]&quot;}&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;THEME = {&quot;default_style&quot;: &quot;[% return $Everything::CONF-&gt;default_style %]&quot;}&lt;/script&gt;
 &lt;script type=&quot;text/javascript&quot; src=&quot;[{linkjavascript:settings script}]&quot;&gt;&lt;/script&gt;
 [{closeform:Save Settings}]
 [%

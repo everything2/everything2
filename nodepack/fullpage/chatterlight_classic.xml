@@ -41,7 +41,7 @@ if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
 		&lt;/div&gt;
 
 		&lt;div style='width: 25%; float: left'&gt;
-			[% insertNodelet( getNode( 'New Writeups - zen', 'nodelet' )); %]
+			[% insertNodelet( getNode( 'New Writeups', 'nodelet' )); %]
 
 		&lt;/div&gt;
 	&lt;/div&gt;
@@ -54,7 +54,7 @@ if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
 &lt;script&gt;
 new PeriodicalExecuter(function() { if ($F('message') == '') {updateTalk();}},10);
 new PeriodicalExecuter(function() { if ($('message').size != &quot;70&quot;) {$('message').size=&quot;70&quot;; $('message').focus();}},0.2);
-new PeriodicalExecuter(function() {E2AJAX.updateNodelet('1868940','New Writeups - zen');},180);
+new PeriodicalExecuter(function() {E2AJAX.updateNodelet('263','New Writeups');},180);
 $('message').size=&quot;70&quot;;
 $('message').focus();
 &lt;/script&gt;

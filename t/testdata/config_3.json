@@ -1,0 +1,142 @@
+{
+  "basedir": "basedir_value",
+  "guest_user": 123456,
+  "site_url": "site_url",
+  "infected_ips": [
+    "1.2.3.4"
+  ],
+  "default_style": "Ice Cream!",
+  "everyuser": "anotheruser",
+  "everypass": "anotherpass",
+  "everything_dbserv": "anotherhost",
+  "database": "anotherdatabase",
+  "cookiepass": "anothercookiepass",
+  "canonical_web_server": "anotherwebserver",
+  "homenode_image_host": "anotherimagehost",
+  "smtp_host": "anothersmtphost",
+  "smtp_use_ssl": 0,
+  "smtp_port": 654321,
+  "smtp_user": "anothersmtpuser",
+  "smtp_pass": "anothersmtppass",
+  "mail_from": "anothermailfrom",
+  "environment": "anotherenvironment",
+  "notification_email": "anothernotificationemail",
+  "nodecache_size": 123,
+  "s3": {
+    "homenodeimages": {
+      "bucket": "s3.homenodeimages.bucket",
+      "secret_access_key": "s3.homenodeimages.secret_access_key",
+      "access_key_id": "s3.homenodeimages.access_key_id"
+    },
+    "nodebackup": {
+      "bucket": "s3.nodebackup.bucket",
+      "secret_access_key": "s3.nodebackup.secret_access_key",
+      "access_key_id": "s3.nodebackup.access_key_id"
+    },
+    "backup": {
+      "bucket": "s3.backup.bucket",
+      "secret_access_key": "s3.backup.secret_access_key",
+      "access_key_id": "s3.backup.access_key_id"
+    },
+    "sitemap": {
+      "bucket": "s3.sitemap.bucket",
+      "secret_access_key": "s3.sitemap.secret_access_key",
+      "access_key_id": "s3.sitemap.access_key_id"
+    },
+    "jscss": {
+      "bucket": "s3.jscss.bucket",
+      "secret_access_key": "s3.jscss.secret_access_key",
+      "access_key_id": "s3.jscss.access_key_id"
+    }
+  },
+  "static_nodetypes": 0,
+  "memcache": {
+    "somevalue": "here"
+  },
+  "clean_search_words_aggressively": 0,
+  "search_row_limit": 321,
+  "logdirectory": "anotherlogdirectory",
+  "system": {
+    "site_url": "http://everything2.com",
+    "site_description": "Everything2 is a collection of user-submitted writings about more or less everything",
+    "site_name": "Everything2",
+    "create_new_user": 2072173,
+    "default_guest_node": 2030780,
+    "default_node": 124,
+    "default_nodeletgroup": 837990,
+    "default_theme": 1854183,
+    "default_duplicates_node": 382987,
+    "not_found_node": 668164,
+    "search_results": 1140332,
+    "permission_denied": 104,
+    "user_settings": 108,
+    "generalparent_container": 166948,
+    "guest_link": 2014296,
+    "nodelet_container": 1854181,
+    "maintenance_nodes": {
+      "broken_nodes": 379710,
+      "e2_bugs": 364471,
+      "nodeshells_marked_for_destruction": 596824,
+      "e2_nuke_request": 171917,
+      "suggestions_for_e2": 368049,
+      "edit_these_e2_titles": 174079,
+      "e2_title_edit_siding_and_repair_yard": 1428471
+    }
+  },
+  "permanent_cache": {
+    "usergroup": 1,
+    "container": 1,
+    "htmlcode": 1,
+    "maintenance": 1,
+    "setting": 1,
+    "fullpage": 1,
+    "nodetype": 1,
+    "writeuptype": 1,
+    "linktype": 1,
+    "sustype": 1,
+    "nodelet": 1,
+    "theme": 1
+  },
+  "nosearch_words": {
+    "a": 1,
+    "an": 1,
+    "and": 1,
+    "are": 1,
+    "at": 1,
+    "definition": 1,
+    "everything": 1,
+    "for": 1,
+    "if": 1,
+    "in": 1,
+    "is": 1,
+    "it": 1,
+    "my": 1,
+    "new": 1,
+    "node": 1,
+    "not": 1,
+    "of": 1,
+    "on": 1,
+    "that": 1,
+    "the": 1,
+    "thing": 1,
+    "this": 1,
+    "to": 1,
+    "we": 1,
+    "what": 1,
+    "why": 1,
+    "with": 1,
+    "writeup": 1,
+    "you": 1,
+    "your": 1
+  },
+  "create_room_level": 99,
+  "stylesheet_fix_level": 98,
+  "maintenance_mode": 1,
+  "writeuplowrepthreshold": -97,
+  "google_ads_badnodes": [
+    "123456"
+  ],
+  "google_ads_badwords": [
+    "fuckfuck"
+  ]
+}

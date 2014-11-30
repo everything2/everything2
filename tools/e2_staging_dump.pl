@@ -21,9 +21,9 @@ my $tables =
 	"hits" => "--no-data",
 };
 
-my $password = $Everything::CONF->{everypass};
-my $user = $Everything::CONF->{everyuser};
-my $host = $Everything::CONF->{everything_dbserv};
+my $password = $Everything::CONF->everypass;
+my $user = $Everything::CONF->everyuser;
+my $host = $Everything::CONF->everything_dbserv;
 
 my $thisdbh = DBI->connect("DBI:mysql:database=everything;host=$host",$user, $password);
 

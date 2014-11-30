@@ -227,7 +227,7 @@ return $nodegrouponeline;
 
 &lt;p&gt;[% $ENV{SCRIPT_NAME}; %]
 
-&lt;p&gt;Create room level is [% $Everything::CONF-&gt;{create_room_level} %]
+&lt;p&gt;Create room level is [% $Everything::CONF-&gt;create_room_level %]
 &lt;p&gt;GhettoAardvark chanops test: [% $APP-&gt;isChanop(1318017); %]
 &lt;p&gt;Arthur Conan Doyle chanops test: [% $APP-&gt;isChanop(1791357); %]
 

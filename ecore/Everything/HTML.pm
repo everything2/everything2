@@ -556,12 +556,12 @@ sub nodeName
 	
 		if($search_group && @$search_group > 0)
 		{
-			$NODE = getNodeById($Everything::CONF->{system}->{search_results});
+			$NODE = getNodeById($Everything::CONF->system->{search_results});
 			$$NODE{group} = $search_group;
 		}
 		else
 		{
-			$NODE = getNodeById($Everything::CONF->{system}->{not_found_node});
+			$NODE = getNodeById($Everything::CONF->system->{not_found_node});
 		}
 
 		displayPage ($NODE, $user_id);
@@ -593,7 +593,7 @@ sub nodeName
 		#jb says: 5/02/2002 - Fixes here to use gotoNode instead of displayPage
 		#see [root log: May 2002] for the long reason
 
-		return gotoNode($Everything::CONF->{system}->{not_found_node}, $user_id, 1) unless @canread;
+		return gotoNode($Everything::CONF->system->{not_found_node}, $user_id, 1) unless @canread;
 		return gotoNode($canread[0], $user_id, 1) if @canread == 1;
 
 		# Allow a node_forward to bypass an e2node if we're clicking through from
@@ -612,7 +612,7 @@ sub nodeName
 		}
 
 		#we found multiple nodes with that name.  ick
-		my $NODE = getNodeById( $Everything::CONF->{system}->{default_duplicates_node} );
+		my $NODE = getNodeById( $Everything::CONF->system->{default_duplicates_node} );
 		
 		$$NODE{group} = \@canread;
 		displayPage($NODE, $user_id);
@@ -784,7 +784,7 @@ sub insertNodelet
 	$PAGELOAD->{current_nodelet} = $NODELET;
 	my ($pre, $post) = ('', '');
 
-        my $container = $Everything::CONF->{system}->{nodelet_container};
+        my $container = $Everything::CONF->system->{nodelet_container};
 	($pre, $post) = genContainer($container) if $container;
 	
 	# Make sure the nltext is up to date
@@ -939,7 +939,7 @@ sub displayPage
 	$ROUTER ||= Everything::Router->new(CONF => $Everything::CONF, APP => $APP, DB => $DB);
 	my $type = $NODE->{type}->{title};
 
-        if($Everything::CONF->{use_controllers} and my $controller = $ROUTER->can_handle($type, $dsp))
+        if($Everything::CONF->use_controllers and my $controller = $ROUTER->can_handle($type, $dsp))
 	{
 		$APP->printLog("Inside of can_handle for $type, $dsp");
 		$REQUEST->NODE($NODE);
@@ -992,19 +992,19 @@ sub gotoNode
 		$NODE = getNodeById($node_id, 'force');
 	}
 	else {
-		$NODE = getNodeById($Everything::CONF->{system}->{search_results});
+		$NODE = getNodeById($Everything::CONF->system->{search_results});
 		$$NODE{group} = $node_id;
 	}
 
-	unless ($NODE) { $NODE = getNodeById($Everything::CONF->{system}->{not_found_node}); }	
+	unless ($NODE) { $NODE = getNodeById($Everything::CONF->system->{not_found_node}); }	
 	
 	unless (canReadNode($user_id, $NODE)) {
-		$NODE = getNodeById($Everything::CONF->{system}->{permission_denied});
+		$NODE = getNodeById($Everything::CONF->system->{permission_denied});
 	}
 
         if($NODE->{type}->{title} eq "draft" && !$APP->canSeeDraft($user_id, $NODE))
         {
-                $NODE = getNodeById($Everything::CONF->{system}->{permission_denied});
+                $NODE = getNodeById($Everything::CONF->system->{permission_denied});
         }
 	#these are contingencies various things that could go wrong
 
@@ -1066,7 +1066,7 @@ sub gotoNode
 
 	# Create softlinks -- a linktype of 0 is the default
 	my $linktype = 0;
-	$linktype = getNodeById($Everything::CONF->{system}->{guest_link})
+	$linktype = getNodeById($Everything::CONF->system->{guest_link})
 		if $APP->isGuest($USER);
 
 	my $lastnode = $query->param('lastnode_id');
@@ -1129,7 +1129,7 @@ sub gotoNode
 	# make sure editing user is allowed to edit
 	if ($displaytype and $displaytype eq "edit") {
 		unless (canUpdateNode ($USER, $NODE)) {
-			$NODE = getNodeById($Everything::CONF->{system}->{permission_denied});
+			$NODE = getNodeById($Everything::CONF->system->{permission_denied});
 			$query->param('displaytype', 'display');
 		}
 	}
@@ -1219,10 +1219,10 @@ sub handleUserRequest{
   my $handled = 0;
   my $noRemoveSpaces = 0;
 
-  my $defaultNode = $Everything::CONF->{system}->{default_node};
+  my $defaultNode = $Everything::CONF->system->{default_node};
 
   if ( $APP->isGuest($USER) ){
-    $defaultNode = $Everything::CONF->{system}->{default_guest_node};
+    $defaultNode = $Everything::CONF->system->{default_guest_node};
   }
 
   if ($query->param('node')) {
@@ -1282,7 +1282,7 @@ sub handleUserRequest{
       nodeName($nodename, $user_id);
     }
     else {
-      gotoNode($Everything::CONF->{system}->{permission_denied}, $user_id);
+      gotoNode($Everything::CONF->system->{permission_denied}, $user_id);
     }
   }
   elsif ($node_id = $query->param('node_id')) {
@@ -1340,7 +1340,7 @@ sub opLogin
 	$passwd = $USER -> {passwd};
 
 	$USER -> {cookie} = $query -> cookie(
-		-name => $Everything::CONF -> {cookiepass}
+		-name => $Everything::CONF->cookiepass
 		, -value => "$user|$passwd"
 		, -expires => $query->param('expires'));
 }
@@ -1366,15 +1366,15 @@ sub loginUser
 
 	unless ($username && $pass or !$query)
 	{
-		$cookie = $query->cookie($Everything::CONF->{cookiepass})
+		$cookie = $query->cookie($Everything::CONF->cookiepass)
 			#jb 5-19-02: To support wap phones and maybe other clients/configs without cookies:
-			|| $query->param($Everything::CONF->{cookiepass});
+			|| $query->param($Everything::CONF->cookiepass);
 	
 		($username, $pass) = split(/\|/, $cookie) if $cookie;
 	}
 
 	my $user = $APP->confirmUser($username, $pass, $cookie, $query) if $username && $pass;
-	$user ||= getNodeById($Everything::CONF->{guest_user});
+	$user ||= getNodeById($Everything::CONF->guest_user);
 
 	$VARS = getVars($user);
 
@@ -1408,8 +1408,8 @@ sub loginUser
 sub opLogout
 {
 	# The user is logging out.  Nuke their cookie.
-	my $cookie = $query->cookie(-name => $Everything::CONF->{cookiepass}, -value => "");
-	my $user_id = $Everything::CONF->{guest_user};	
+	my $cookie = $query->cookie(-name => $Everything::CONF->cookiepass, -value => "");
+	my $user_id = $Everything::CONF->guest_user;	
 
 	$USER = getNodeById($user_id);
 	$VARS = getVars($USER);
@@ -1445,7 +1445,7 @@ sub opNew
 	} 
 	else
 	{
-		$query->param("node_id", $Everything::CONF->{system}->{permission_denied});
+		$query->param("node_id", $Everything::CONF->system->{permission_denied});
 	}
 }
 
@@ -1519,7 +1519,7 @@ sub execOpCode
 #
 sub mod_perlInit
 {
-	if($Everything::CONF->{maintenance_mode})
+	if($Everything::CONF->maintenance_mode)
 	{
 		my $maintenance_html;
 		

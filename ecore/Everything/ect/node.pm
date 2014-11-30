@@ -52,7 +52,7 @@ sub node_to_xml
 	my $NODE = $this->node_xml_prep($N, $dbh, $options);
 
 	my $vars_out;
-	if(exists($NODE->{vars}))
+	if(exists($NODE->{vars}) and $NODE->{type_nodetype} != 2117441) #Don't do this for datastash objects
 	{
 		$vars_out = {Everything::getVarHashFromStringFast($NODE->{vars})};
 		$NODE->{vars} = [];
@@ -99,7 +99,14 @@ sub xml_to_node
 	{
 		$NODE->{$field} = $NODE->{node_id};
 	}
-	$NODE = $this->_repack_node_vars($NODE);
+
+        if($NODE->{type_nodetype} != 2117441) # Don't do this for datastash objects
+        {
+		$NODE = $this->_repack_node_vars($NODE);
+        }else{
+		# Because we force the array, we will need to pull it out for the datastash type
+		$NODE->{vars} = $NODE->{vars}->[0];
+	}
 	return $this->xml_to_node_post($NODE);
 }
 

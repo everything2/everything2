@@ -6,7 +6,7 @@ use Everything::Delegation::htmlcode;
 
 # Export no external methods by default
 has 'EXTERNAL' => (lazy => 1, is => "ro", isa => 'ArrayRef', default => sub { [] });
-has 'CONF' => (is => "ro", isa => 'HashRef', required => 1);
+has 'CONF' => (is => "ro", isa => 'HashRef | Everything::Configuration', required => 1);
 has 'APP' => (is => "ro", isa => 'Everything::Application', required => 1);
 has 'DB' => (is => "ro", isa => 'Everything::NodeBase', required => 1, handles => [qw(getNodeById getNode)]);
 has 'ROUTER' => (is => "ro", isa => 'Everything::Router', required => 1, handles => [qw(dispatch_subtype)]);
@@ -15,7 +15,7 @@ sub display
 {
   my ($this, $request) = @_;
 
-  my $user_stylesheet = $this->getNodeById($request->VARS->{userstyle}) || $this->getNode($this->CONF->{default_style},"stylesheet");
+  my $user_stylesheet = $this->getNodeById($request->VARS->{userstyle}) || $this->getNode($this->CONF->default_style,"stylesheet");
 
   my $stylesheets = [
     {"id" => "basesheet", "href" => $this->APP->stylesheetCDNLink($this->getNode("basesheet","stylesheet")), "media" => "all"},

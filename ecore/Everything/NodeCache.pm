@@ -88,7 +88,7 @@ sub new
 	
 	bless $this;  # oh, my lord
 
-	$this->{maxSize} = $Everything::CONF->{nodecache_size};
+	$this->{maxSize} = $Everything::CONF->nodecache_size;
 	$this->{nodeBase} = $nodeBase;
 	
 	$this->{nodeQueue} = new Everything::CacheQueue();
@@ -108,8 +108,8 @@ sub new
 
 	$this->{pagecache} = {};
 	
-	if ($Everything::CONF->{memcache}) { 
-        	$this->{memcache} = new Everything::Memcache($Everything::CONF->{memcache}, $nodeBase);
+	if ($Everything::CONF->memcache) { 
+        	$this->{memcache} = new Everything::Memcache($Everything::CONF->memcache, $nodeBase);
     	}
 	
 	return $this;

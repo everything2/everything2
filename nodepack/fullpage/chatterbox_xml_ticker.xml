@@ -46,7 +46,7 @@ if(exists $$V{$room}) {
 	$topic = $query-&gt;escape($topic);
 }
 
-$str.=$XG-&gt;INFO({site =&gt; $Everything::CONF-&gt;{system}-&gt;{site_url}, sitename =&gt; $Everything::CONF-&gt;{system}-&gt;{site_name}, servertime=&gt;scalar(localtime(time)), room =&gt; $$RNODE{title}, topic =&gt; $topic}, &quot;Rendered by the Chatterbox XML Ticker, which has been deprecated since 2002. Use the universal message xml ticker instead.&quot;);
+$str.=$XG-&gt;INFO({site =&gt; $Everything::CONF-&gt;site_url, sitename =&gt; $Everything::CONF-&gt;system-&gt;{site_name}, servertime=&gt;scalar(localtime(time)), room =&gt; $$RNODE{title}, topic =&gt; $topic}, &quot;Rendered by the Chatterbox XML Ticker, which has been deprecated since 2002. Use the universal message xml ticker instead.&quot;);
 
 my $m;
 my $mTime;

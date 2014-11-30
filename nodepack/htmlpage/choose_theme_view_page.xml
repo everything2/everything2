@@ -4,7 +4,7 @@
   <pagetype_nodetype>7</pagetype_nodetype>
   <page>[%
 # get default stylesheet, user's stylesheet, and the one to test
-my $defaultStyle = getNode($Everything::CONF-&gt;{default_style},'stylesheet')-&gt;{node_id};
+my $defaultStyle = getNode($Everything::CONF-&gt;default_style,'stylesheet')-&gt;{node_id};
 my $currentStyle = $$VARS{userstyle} || $defaultStyle;
 
 my $theme = $query -&gt; param('theme');

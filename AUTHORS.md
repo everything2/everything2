@@ -16,7 +16,10 @@ Originally by:
 * Jordi Gutiérrez Hermoso (Swap)
 * Matt Kane (ascorbic)
 * Colin McEwan (call)
+* Alyssa Milburn (fuzzie)
 * Fergus Ray Murray (Oolong)
 * Brian Orlick (OldMiner)
+* wharfinger
+* Ellen Wilson (ekw)
  
 ... and dozens of others who have committed patches and looked after the well being of the code on the site

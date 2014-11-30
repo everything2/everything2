@@ -9,7 +9,7 @@ use CGI;
 has 'cgi' => (lazy => 1, builder => "_build_cgi", isa => "CGI", handles => ["param", "header", "cookie"], is => "rw");
 has 'USER' => (lazy => 1, builder => "_build_user", isa => "HashRef", is => "rw");
 has 'VARS' => (lazy => 1, builder => "_build_vars", isa => "HashRef", is => "rw");
-has 'CONF' => (isa => "HashRef", is => "rw");
+has 'CONF' => (isa => "HashRef | Everything::Configuration", is => "rw");
 has 'DB' => (isa => "Everything::NodeBase", is => "rw");
 has 'APP' => (isa => "Everything::Application", is => "ro");
 has 'response' => (lazy => 1, isa => "Everything::Response", is => "ro", builder => "_build_response");
@@ -75,12 +75,12 @@ sub login
 
   unless ($username && $pass)
   {
-    $cookie = $self->cookie($self->CONF->{cookiepass}) || $self->param($self->CONF->{cookiepass});
+    $cookie = $self->cookie($self->CONF->cookiepass) || $self->param($self->CONF->cookiepass);
     ($username, $pass) = split(/\|/, $cookie) if $cookie;
   }
 
   my $user = $self->APP->confirmUser($username, $pass, $cookie, $self->cgi) if $username && $pass;
-  $user ||= $self->DB->getNodeById($self->CONF->{guest_user});
+  $user ||= $self->DB->getNodeById($self->CONF->guest_user);
 
   $self->VARS(Everything::getVars($user));
 

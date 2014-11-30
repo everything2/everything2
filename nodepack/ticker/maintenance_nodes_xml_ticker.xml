@@ -4,7 +4,7 @@
   my $str;
   $str.=&quot;&lt;maintenance&gt;\n&quot;;
 
-  foreach (keys %{$Everything::CONF-&gt;{system}-&gt;{maintenance_nodes}})
+  foreach (keys %{$Everything::CONF-&gt;system-&gt;{maintenance_nodes}})
   {
     my $n = $_;
     $n =~ s/\_/ /g;
