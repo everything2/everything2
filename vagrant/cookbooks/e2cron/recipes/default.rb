@@ -76,7 +76,6 @@ end
 
 cron 'data_generator_heartbeat.pl' do
   user "root"
-  minute "1"
   command "/var/everything/tools/data_generator_heartbeat.pl 2>&1 >> #{logdir}/data_generator_heartbeat.reaper.#{datelog}"
 end
 
