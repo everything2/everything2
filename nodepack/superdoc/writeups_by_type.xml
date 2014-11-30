@@ -8,7 +8,7 @@
 my $wuType = abs int($query-&gt;param(&quot;wutype&quot;));
 
 my $count = abs int($query-&gt;param(&quot;count&quot;));
-$count = 50 if !$count or $count &gt; 50;
+$count = 50 if !$count;
 
 my $page = abs int($query-&gt;param(&quot;page&quot;));
 
