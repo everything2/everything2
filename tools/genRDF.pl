@@ -27,7 +27,7 @@ sub genTag { Everything::XML::genTag(@_); }
 #first the channel tag
 my $doc = ""; 
 
-my $url = $Everything::CONF->system->{site_url};
+my $url = $Everything::CONF->{site_url};
 
 $url .= "/" unless $url =~ /\/$/;
 

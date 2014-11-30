@@ -4935,7 +4935,7 @@ sub printablefooter
 
   $E2NODE=getNode $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
   $E2NODE ||= $NODE;
-  my $site = $Everything::CONF->system->{site_url};
+  my $site = $Everything::CONF->{site_url};
   $site =~ s/\/$//;
   $site.= "/title/$$E2NODE{title}";
   $site =~ s/ /\+/g;
