@@ -47,7 +47,6 @@ default["e2engine"]["s3"]["jscss"]["access_key_id"] = ""
 default["e2engine"]["guest_user"] = 779713
 default["e2engine"]["site_url"] = 'http://everything2.com'
 default["e2engine"]["system"] = {}
-default["e2engine"]["system"]["site_url"] = 'http://everything2.com'
 default["e2engine"]["system"]["site_description"] = 'Everything2 is a collection of user-submitted writings about more or less everything'
 default["e2engine"]["system"]["site_name"] = 'Everything2'
 default["e2engine"]["system"]["create_new_user"] = 2072173
