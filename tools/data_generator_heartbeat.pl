@@ -6,6 +6,8 @@ use Everything;
 
 initEverything 'everything';
 
+print "Starting data generator: ".localtime()." (".time().")\n";
+
 foreach my $dir (@INC)
 {
   my $full_directory_path = "$dir/Everything/DataStash";
@@ -25,3 +27,5 @@ foreach my $dir (@INC)
     }
   }
 }
+
+print "Finished data generator: ".localtime()." (".time().")\n";
