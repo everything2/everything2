@@ -3,7 +3,7 @@
   <doctext>[%
 return unless isGod($USER);
 
-my $bonesrant = '&lt;P&gt;This is an archived version of the old [Superbless] which used to give XP instead of GP. All blessings should be given in GP nowadays. There is no reason why administrators should fiddle with user XP except for extraordinary circumstances. All usage of this node is logged.&lt;/P&gt;&lt;P&gt;-[The Power Structure of Everything2|the management]&lt;/P&gt;&lt;p&gt;Please contact [Tem42] if a user wants XP reset to zero.&lt;/p&gt;';
+my $bonesrant = '&lt;P&gt;This is an archived version of the old [Superbless] which used to give XP instead of GP. All blessings should be given in GP nowadays. There is no reason why administrators should fiddle with user XP except for extraordinary circumstances. All usage of this node is logged.&lt;/P&gt;&lt;P&gt;-[The Power Structure of Everything2|the management]&lt;/P&gt;&lt;p&gt;Please contact [Tem42] if a user wants XP reset to zero.&lt;br&gt;&lt;/p&gt;';
 %]
 
 [%
@@ -74,7 +74,7 @@ for (my $i = 0; $i &lt; $count; $i++) {
   $str.=&quot;&lt;tr&gt;&lt;td&gt;&quot;;
   $str.=$query-&gt;textfield(&quot;multiblessUser$i&quot;, '', 40, 80);
   $str.=&quot;&lt;/td&gt;&lt;td&gt;&quot;;
-  $str.=$query-&gt;textfield(&quot;multiblessXP$i&quot;, '', 4, 5);
+  $str.=$query-&gt;textfield(&quot;multiblessXP$i&quot;, '', 10, 10);
   $str.=&quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
 }
 
