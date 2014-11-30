@@ -103,7 +103,10 @@ sub xml_to_node
         if($NODE->{type_nodetype} != 2117441) # Don't do this for datastash objects
         {
 		$NODE = $this->_repack_node_vars($NODE);
-        }
+        }else{
+		# Because we force the array, we will need to pull it out for the datastash type
+		$NODE->{vars} = $NODE->{vars}->[0];
+	}
 	return $this->xml_to_node_post($NODE);
 }
 

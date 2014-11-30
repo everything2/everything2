@@ -147,6 +147,13 @@ BEGIN {
 			"assignable" => ["admin"],
 			"validate" => "integer",
 		},
+		"last_update" => 
+		{
+			"on" => ["datastash"],
+			"description" => "When the stash was last updated",
+			"assignable" => ["admin"],
+			"validate" => "integer"
+		},
 	};
 
 	foreach my $param(keys %$PARAMS)

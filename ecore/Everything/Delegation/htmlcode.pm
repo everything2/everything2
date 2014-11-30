@@ -1255,11 +1255,6 @@ sub nodelet_meta_container
     $$VARS{nodelets} =~ s/(,?)$required(,?)/$1 && $2 ? ",":""/ge;
   }
 
-  # Replace [New Writeups - Zen[nodelet]] (1868940) with [New Writeups[nodelet]] (263)
-  $$VARS{nodelets} =~ s/\b1868940\b/263/g;
-  # Ensure we didn't just cause New Writeups to occur twice
-  $$VARS{nodelets} =~ s/(\b263\b.*),263\b/$1/g;
-
   my $nodelets = $PAGELOAD->{pagenodelets} || $$VARS{nodelets} ;
   my @nodelets = (undef); @nodelets = split(',',$nodelets) if $nodelets ;
 
