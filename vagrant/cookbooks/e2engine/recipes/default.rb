@@ -126,6 +126,7 @@ everything_conf_variables = {
       "linktype" => 1,
       "sustype" => 1,
       "nodelet" => 1,
+      "datastash" => 1,
       "theme" => 1
     },
     "nosearch_words" => nosearch_words_hash,
