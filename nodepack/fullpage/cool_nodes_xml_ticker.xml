@@ -1,24 +1,33 @@
 <node>
   <type_nodetype>451267</type_nodetype>
-  <doctext>&lt;COOLEDNODES&gt;&lt;INFO sitename=&quot;Everything2&quot; site=&quot;http://everything2.com&quot; servertime=&quot;Sun Nov 30 17:45:20 2014&quot;&gt;Rendered by the Cool Nodes XML Ticker&lt;/INFO&gt;
-	&lt;cooled cooledby_user=&quot;Chord&quot; node_id=&quot;2117465&quot; parent_e2node=&quot;15106&quot; author_user=&quot;Estelore&quot;&gt;someone&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;legbagede&quot; node_id=&quot;2117404&quot; parent_e2node=&quot;2117403&quot; author_user=&quot;Tem42&quot;&gt;Stealing a shroud out of a grave&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;haqiqat&quot; node_id=&quot;1951104&quot; parent_e2node=&quot;1951103&quot; author_user=&quot;DejaMorgana&quot;&gt;This is not my Internet&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;2117456&quot; parent_e2node=&quot;243237&quot; author_user=&quot;Zephronias&quot;&gt;Frozen&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;moeyz&quot; node_id=&quot;2117431&quot; parent_e2node=&quot;2117401&quot; author_user=&quot;Glowing Fish&quot;&gt;November 29, 2014&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;2040777&quot; parent_e2node=&quot;1214291&quot; author_user=&quot;Tem42&quot;&gt;desire path&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;2117453&quot; parent_e2node=&quot;2117454&quot; author_user=&quot;Zephronias&quot;&gt;Big Hero 6&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;shaogo&quot; node_id=&quot;2117360&quot; parent_e2node=&quot;1947090&quot; author_user=&quot;Tem42&quot;&gt;Dunning-Kruger Effect&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2117062&quot; parent_e2node=&quot;2117064&quot; author_user=&quot;e2reneta&quot;&gt;In the House Upon the Dirt Between the Lake and the Woods&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2117070&quot; parent_e2node=&quot;678448&quot; author_user=&quot;mauler&quot;&gt;Ono no Komachi&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;2117038&quot; parent_e2node=&quot;2112617&quot; author_user=&quot;moeyz&quot;&gt;my favorite aisle&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;per ou&quot; node_id=&quot;1272366&quot; parent_e2node=&quot;116381&quot; author_user=&quot;Rudra&quot;&gt;harpsichord&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2117326&quot; parent_e2node=&quot;37295&quot; author_user=&quot;TheAnglican&quot;&gt;GSM&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Tem42&quot; node_id=&quot;2117318&quot; parent_e2node=&quot;649141&quot; author_user=&quot;Glowing Fish&quot;&gt;Union Station&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;mauler&quot; node_id=&quot;2117377&quot; parent_e2node=&quot;2117378&quot; author_user=&quot;Zephronias&quot;&gt;Egg Binding&lt;/cooled&gt;
-	&lt;cooled cooledby_user=&quot;Jet-Poop&quot; node_id=&quot;1487229&quot; parent_e2node=&quot;1487228&quot; author_user=&quot;eliserh&quot;&gt;Outer Banks&lt;/cooled&gt;
+  <doctext>[%
 
-&lt;/COOLEDNODES&gt;</doctext>
+my $cache = $DB-&gt;stashData(&quot;coolnodes&quot;);
+
+my $xml;
+use XML::Generator;
+my $XG = new XML::Generator;
+
+my $count = 15;
+my %used;
+
+foreach my $CW (@$cache) {
+  next if exists $used{$$CW{coolwriteups_id}};
+  $used{$$CW{coolwriteups_id}} = 1;
+  $xml .=&quot;\t&quot;.$XG-&gt;cooled({node_id =&gt; $$CW{coolwriteups_id}, 
+     parent_e2node =&gt; $$CW{parentNode}, 
+     author_user =&gt; $$CW{wu_author},
+     cooledby_user =&gt; $$CW{cooluser}},
+     $$CW{parentTitle}).&quot;\n&quot;;
+  last unless (--$count);
+}
+
+$xml = $XG-&gt;COOLEDNODES(
+   $XG-&gt;INFO({site =&gt; $Everything::CONF-&gt;site_url, sitename =&gt; $Everything::CONF-&gt;system-&gt;{site_name},  servertime =&gt; scalar(localtime(time))}, 'Rendered by the Cool Nodes XML Ticker')
+   . &quot;\n&quot;.$xml . &quot;\n&quot;);
+
+$xml;
+%]</doctext>
   <node_id>1101708</node_id>
   <title>Cool Nodes XML Ticker</title>
 </node>

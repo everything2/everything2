@@ -9,7 +9,9 @@
   $str.=htmlcode(&quot;openform&quot;);
   $str.=&quot;&lt;select name=\&quot;editor\&quot;&gt;&quot;;
    foreach(@grp){
-  $str.=&quot;&lt;option value=\&quot;$_\&quot;&quot;.(($query-&gt;param(&quot;editor&quot;).&quot;&quot; eq &quot;$_&quot;)?(&quot; SELECTED &quot;):(&quot;&quot;)).&quot;&gt;&quot;.getNodeById($_)-&gt;{title}.&quot;&lt;/option&gt;&quot; unless($except{$_}) || not getNodeById($_)-&gt;{type}-&gt;{title} eq &quot;user&quot;}
+  $str.=&quot;&lt;option value=\&quot;$_\&quot;&quot;.(($query-&gt;param(&quot;editor&quot;).&quot;&quot; eq &quot;$_&quot;)?(&quot; SELECTED &quot;):(&quot;&quot;)).&quot;&gt;&quot;.getNodeById($_)-&gt;{title}.&quot;&lt;/option&gt;&quot; unless($except{$_}) || not getNodeById($_)-&gt;{type}-&gt;{title} eq &quot;user&quot;;
+$except{$_} = 1;
+}
   $str.=&quot;&lt;/select&gt;&lt;input type=\&quot;submit\&quot; value=\&quot;Show Endorsements\&quot;&gt;&lt;/form&gt;&quot;;
 
   my $ed = $query-&gt;param(&quot;editor&quot;);

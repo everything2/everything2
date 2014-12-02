@@ -5,7 +5,7 @@
   <page>&lt;pre&gt;
 [%
   use JSON;
-  return to_json(from_json($NODE-&gt;{vars} || {}),{utf8 =&gt; 1, pretty =&gt; 1});
+  return to_json(from_json($NODE-&gt;{vars} || &quot;{}&quot;),{utf8 =&gt; 1, pretty =&gt; 1});
 %]
 &lt;/pre&gt;</page>
   <displaytype>display</displaytype>
