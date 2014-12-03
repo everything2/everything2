@@ -6,6 +6,7 @@ use JSON;
 
 has 'CONF' => (isa => 'Everything::Configuration', is => 'ro', required => 1);
 has 'DB' => (isa => 'Everything::NodeBase', is => 'ro', required => 1);
+has 'APP' => (isa => 'Everything::Application', is => 'ro', required => 1);
 
 has 'interval' => (isa => 'Int', is => 'ro', required => 1, default => 300);
 

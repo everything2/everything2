@@ -108,23 +108,11 @@ my %NO_SIDE_EFFECT_PARAMS = (
 	, 'originalTitle' => 1
 	, 'should_redirect' => 'delete'
 );
-     
+
 sub getRandomNode {
-        my $limit = $DB->sqlSelect("max(e2node_id)", "e2node");
-        my $min = $DB->sqlSelect("min(e2node_id)", "e2node");
-        my $rnd = int(rand($limit-$min));
-        
-        $rnd+= $min;
-
-        my $e2node = $DB->sqlSelect("e2node_id", "e2node"
-            , "e2node_id=$rnd "
-              . "AND EXISTS(SELECT 1 FROM nodegroup WHERE nodegroup_id = e2node_id)"
-            );
-
-        $e2node||=getRandomNode();
-
-        $e2node;
+  return $APP->getRandomNode(@_);
 }
+     
 
 sub handle_errors {
 

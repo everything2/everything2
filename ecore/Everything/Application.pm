@@ -3749,6 +3749,10 @@ sub parseLinks {
        return $text;
 }
 
+sub getRandomNode {
+  my ($this) = @_;
+  return $this->{db}->getNodeById($this->{db}->sqlSelect("e2node_id", "e2node", "exists(select 1 from nodegroup where nodegroup_id=e2node_id) order by RAND() limit 1;"));
+}
 
 #############################################################################
 1;

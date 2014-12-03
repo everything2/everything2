@@ -21,7 +21,7 @@ foreach my $dir (@INC)
        require "$full_directory_path/$file";
        my $classname = $file; $classname =~ s/\.pm$//g;
        print "Evaluating generator '$classname'...";
-       my $generator = "Everything::DataStash::$classname"->new(DB => $Everything::DB, CONF => $Everything::CONF);
+       my $generator = "Everything::DataStash::$classname"->new(DB => $Everything::DB, CONF => $Everything::CONF, APP => $Everything::APP);
 
        print "".($generator->generate_if_needed()?("updated"):("not needed"))."\n";
     }
