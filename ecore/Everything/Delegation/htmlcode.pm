@@ -15438,4 +15438,33 @@ sub frontpage_creamofthecool
   return qq|<div id="cotc">$str</div>|;
 }
 
+sub frontpage_cooluserpicks
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";
+  my $cache = $DB->stashData("coolnodes");
+
+  my $count = 15;
+  my %used;
+
+  $str.="\n\t<ul class=\"linklist\">";
+
+  foreach my $CW (@$cache) {
+    next if exists $used{$$CW{coolwriteups_id}};
+    $used{$$CW{coolwriteups_id}} = 1;
+    $str.="\n\t\t<li>".linkNode($$CW{coolwriteups_id}, $$CW{parentTitle}, {lastnode_id => 0}) ."</li>";
+    last unless (--$count);
+  }
+
+  $str.= parseLinks("</ul><div class='morelink'>([Cool Archive|more])</div>" );
+  return $str;
+}
+
 1;
