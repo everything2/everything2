@@ -1,36 +1,18 @@
 <node>
   <nltext></nltext>
-  <parent_container>1854181</parent_container>
+  <parent_container>0</parent_container>
   <type_nodetype>9</type_nodetype>
   <updateinterval>30</updateinterval>
   <node_id>1916666</node_id>
   <nlcode>[%
+my $str = qq|&lt;ul class=&quot;linklist&quot;&gt;|;
 
-my @NODELIST;
-my $str;
-my $n;
-my $limit = 15;
-
-my $csr = $DB-&gt;sqlSelectMany( 'from_node'
-	, 'links JOIN node ON node.node_id = links.from_node'
-	, &quot;linktype = &quot;.getId(getNode('coollink','linktype'))
-	. &quot; AND node.type_nodetype = &quot; . getId(getNode('e2node','nodetype'))
-	. &quot; ORDER BY rand() LIMIT $limit&quot;
-	);
-
-while ($n = $csr-&gt;fetchrow_hashref) {
-push @NODELIST, linkNode($n-&gt;{from_node}, '', {lastnode_id =&gt; 0});
+foreach my $N(@{$DB-&gt;stashData(&quot;staffpicks&quot;)})
+{
+  $str .= qq|&lt;li&gt;|.linkNode(getNodeById($N), '', {lastnode_id =&gt; 0}).qq|&lt;/li&gt;|;
 }
 
-$str = &quot;
-         &lt;ul class=\&quot;linklist\&quot;&gt;&quot;;
-
-$str .= &quot;\n\t\t&lt;li&gt;&quot; . join(&quot;&lt;/li&gt; \n\t\t&lt;li&gt;&quot;,@NODELIST) . &quot;&lt;/li&gt;&quot;;
-
-$str .= parseLinks( '
-        &lt;/ul&gt;
-        &lt;div class=&quot;nodeletfoot morelink&quot;&gt;([Page of Cool|more])&lt;/div&gt;
-' ) ;
+$str .= qq|&lt;/ul&gt;&lt;div class=&quot;nodeletfoot morelink&quot;&gt;(|.linkNodeTitle(&quot;Page of Cool|more&quot;).qq|)&lt;/div&gt;|;
 
 return $str;
 
