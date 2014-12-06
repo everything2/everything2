@@ -61,7 +61,6 @@ default["e2engine"]["system"]["permission_denied"] = 104
 default["e2engine"]["system"]["user_settings"] = 108
 default["e2engine"]["system"]["generalparent_container"] = 166948
 default["e2engine"]["system"]["guest_link"] = 2014296
-default["e2engine"]["system"]["nodelet_container"] = 1854181
 default["e2engine"]["system"]["maintenance_nodes"] = {}
 default["e2engine"]["system"]["maintenance_nodes"]["broken_nodes"] = 379710
 default["e2engine"]["system"]["maintenance_nodes"]["e2_bugs"] = 364471
