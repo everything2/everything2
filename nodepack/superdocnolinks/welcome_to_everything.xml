@@ -26,7 +26,7 @@ $zenStr.='
         &lt;h3 id=&quot;creamofthecool_title&quot;&gt;'
 		.linkNodeTitle('Cool Archive[superdoc]|Cream of the Cool')
 		.'&lt;/h3&gt;
-        '.htmlcode('displaynltext','Cream of the Cool').'
+        '.htmlcode('frontpage_creamofthecool').'
       &lt;/div&gt;';
 
 if (!$APP-&gt;isGuest($USER)) {
