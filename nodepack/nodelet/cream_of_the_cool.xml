@@ -7,30 +7,9 @@
   <type_nodetype>9</type_nodetype>
   <updateinterval>300</updateinterval>
   <nlcode>[%
-my $repthreshholdlo = 12;
-my $repthreshholdhi = 20;
-my $limit = 4;
 my $length = 512;
 
-my $csr = $DB-&gt;sqlSelectMany(
-	'wu.node_id, wu.author_user,
-		parent_e2node,
-		doctext,
-		type.title as type_title'
-	,
-	'node wu
-		JOIN writeup ON writeup_id= wu.node_id 
-		JOIN document on document_id = wu.node_id
-		JOIN node type on type.node_id = writeup.wrtype_writeuptype'
-	,
-	&quot;wu.reputation &gt; $repthreshholdlo
-		AND wu.reputation &lt; $repthreshholdhi
-		AND writeup.cooled != 0&quot;
-	,
-	&quot;ORDER BY writeup.publishtime DESC LIMIT $limit&quot;
-);
-
-my $str = htmlcode( 'show content' , $csr , 'parenttitle, type, byline,'.$length ) ;
+my $str = htmlcode( 'show content' , $DB-&gt;stashData(&quot;creamofthecool&quot;), 'parenttitle, type, byline,'.$length ) ;
 
 # stop PRE breaking layout: replace PRE with TT; fix spaces and newlines to still work
 while ( $str =~ /&lt;pre&gt;(.*?)&lt;\/pre&gt;/si )
