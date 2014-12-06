@@ -8,7 +8,7 @@ my $zenStr = '&lt;div id=&quot;welcome_message&quot;&gt;Everything2 is a collect
 
 $zenStr .= '&lt;div id=&quot;loglinks&quot;&gt;
 &lt;h3&gt;Logs&lt;/h3&gt;
-'.htmlcode( 'displaynltext', 'Logs' ).'
+'.htmlcode( 'daylog' ).'
 &lt;/div&gt;';
 
 $zenStr .= '&lt;div id=&quot;cooluserpicks&quot;&gt;

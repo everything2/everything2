@@ -420,6 +420,12 @@
     <rank>13</rank>
   </group>
   <group>
+    <node_id>1689202</node_id>
+    <orderby>7</orderby>
+    <nodegroup_id>837990</nodegroup_id>
+    <rank>7</rank>
+  </group>
+  <group>
     <node_id>1923735</node_id>
     <orderby>14</orderby>
     <nodegroup_id>216</nodegroup_id>
