@@ -18,7 +18,6 @@ $str .= '&lt;hr width=&quot;20%&quot;&gt;&lt;pre&gt;';
 $str .= `pwd;ls /var/everything/ecore;`;
 $str .= '&lt;/pre&gt;';
 #$str .= '&lt;hr width=&quot;20%&quot;&gt;&lt;pre&gt;';
-# $str .= `perl -I/var/everything/ecore /var/everything/ecore/bin/updateNodelet.pl --force 'New Writeups (Guest User)' 2&gt;&amp;1`;
 # $str .= `perl -I/var/everything/ecore /var/everything/ecore/bin/refreshRoom.pl 2&gt;&amp;1`;
 # $str .= `cat /etc/everything/everything.conf`;
 #$str .= '&lt;/pre&gt;';

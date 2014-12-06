@@ -8,14 +8,13 @@
   <iconHeight>26</iconHeight>
   <iconWidth>170</iconWidth>
   <nlcode>[%
-# cached version for Guest User
-return htmlcode('displaynltext', 'New Writeups (Guest User)' )
-	if $APP-&gt;isGuest($USER) ;
-
-# live version with options for logged-in user
-htmlcode('nwuamount').htmlcode('zenwriteups');
+if(!$APP-&gt;isGuest($USER))
+{
+return htmlcode('nwuamount');
+}
 %]
-
-&lt;div class=&quot;nodeletfoot morelink&quot;&gt;([%linkNode(getNode('Writeups by Type', 'superdoc'), 'more')%])&lt;/div&gt;</nlcode>
+[{zenwriteups}]
+&lt;div class=&quot;nodeletfoot morelink&quot;&gt;([%linkNode(getNode('Writeups by Type', 'superdoc'), 'more')%])&lt;/div&gt;
+</nlcode>
   <title>New Writeups</title>
 </node>
