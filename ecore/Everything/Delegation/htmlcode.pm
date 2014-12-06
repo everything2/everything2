@@ -80,6 +80,9 @@ use CGI;
 # Used by create_short_url;
 use POSIX;
 
+# Used by update_New_Writeups_data
+use Everything::DataStash::newwriteups;
+
 # This links a stylesheet with the proper content negotiation extension
 # linkJavascript below talks a bit about the S3 strategy
 #
@@ -10414,10 +10417,7 @@ sub zenwriteups
   my $limit = $$VARS{ num_newwus } || ($APP->isGuest($USER) ? 15 : 12);
   my $cansee = $APP->isEditor($USER);
 
-  my $nltext = getNode("New Writeups Feeder", 'nodelet') -> {nltext};
-  return "<em>No writeups</em>" if $nltext eq "";
-
-  my @newwus = @{from_json($nltext)};
+  my @newwus = @{$DB->stashData("newwriteups")};
   return "<em>No writeups</em>" unless(@newwus);
 
   my $noHidden = !$isLogs;
@@ -14657,10 +14657,8 @@ sub update_New_Writeups_data
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $feeder = getNode('New Writeups Feeder', 'nodelet');
-  $$feeder{nltext} = parseCode($$feeder{nlcode});
-  $$feeder{lastupdate} = time;
-  updateNode($feeder, -1);
+  my $datastash = Everything::DataStash::newwriteups->new(APP => $APP, CONF => $Everything::CONF, DB => $DB);
+  $datastash->generate();
 }
 
 sub ordernode
