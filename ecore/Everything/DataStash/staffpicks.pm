@@ -19,7 +19,13 @@ sub generate
     . " ORDER BY rand() LIMIT $limit"
   );
 
-  return $this->SUPER::generate($cuss->fetchall_arrayref({}));
+  my $links = [];
+  foreach my $block(@{$cuss->fetchall_arrayref({})})
+  {
+    push @$links, $block->{from_node};
+  }
+
+  return $this->SUPER::generate($links);
 }
 
 
