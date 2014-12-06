@@ -2007,24 +2007,16 @@ sub daylog
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my @months = qw(January February March April May June July August September October November December);
+  my $daylogs = $DB->stashData("dayloglinks");
 
-  my ($sec,$min,$hour,$mday,$mon,$year) = gmtime(time);
-  $year+= 1900;
+  my $str = qq|<ul class="linklist">|;
 
-  my $daydate = "$months[$mon] $mday, $year";
-  # Create daylog e2node if it's not already there.
-  $DB -> insertNode($daydate, 'e2node', getNode('Cool Man Eddie', 'user')) unless getNode($daydate, 'e2node');
-
-  # Link to monthly ed log/root
-  my $mnthdate = $months[$mon].' '.$year;
-
-  return parseLinks(qq'<ul class="linklist">
-    <li class="loglink">[$daydate|Day logs for $daydate]</li>
-    <li class="loglink">[Editor Log: $mnthdate|Editor logs for $mnthdate]</li>
-    <li class="loglink">[root log: $mnthdate|Coder logs for $mnthdate]</li>
-    <li class="loglink">[Log Archive[superdoc]]</li>
-    </ul>');
+  foreach my $block (@$daylogs)
+  {
+    $str .= qq|<li class="loglink">|.linkNodeTitle("$block->[0]|$block->[1]").qq|</li>|;
+  }
+  $str .= qq|</ul>|;
+  return $str;
 }
 
 # Used in some old placement code. Very likely able to be removed
