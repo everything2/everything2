@@ -1,12 +1,8 @@
 <node>
   <nltext></nltext>
   <parent_container>1854181</parent_container>
-  <icon>http://static.everything2.com/everything_developer.gif</icon>
-  <nlgoto>0</nlgoto>
-  <node_id>836984</node_id>
   <type_nodetype>9</type_nodetype>
-  <iconHeight>25</iconHeight>
-  <iconWidth>170</iconWidth>
+  <node_id>836984</node_id>
   <nlcode>[%
 
 my $vc = htmlcode('viewcode');

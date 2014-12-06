@@ -6,12 +6,8 @@
   `nltext` text COLLATE utf8_unicode_ci,
   `nlcode` text COLLATE utf8_unicode_ci,
   `updateinterval` int(11) NOT NULL DEFAULT '0',
-  `nlgoto` int(11) DEFAULT NULL,
   `parent_container` int(11) DEFAULT NULL,
   `lastupdate` int(11) NOT NULL DEFAULT '0',
-  `icon` varchar(80) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `iconHeight` int(11) NOT NULL DEFAULT '0',
-  `iconWidth` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`nodelet_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
   <title>nodelet</title>

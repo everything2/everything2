@@ -1,11 +1,9 @@
 <node>
   <nltext></nltext>
   <parent_container>1854181</parent_container>
-  <icon></icon>
-  <nlgoto>0</nlgoto>
-  <node_id>2027508</node_id>
   <type_nodetype>9</type_nodetype>
   <updateinterval>1200</updateinterval>
+  <node_id>2027508</node_id>
   <nlcode>[%
 # Start with C!s from [rtnsection_cwu]
 my $str='';

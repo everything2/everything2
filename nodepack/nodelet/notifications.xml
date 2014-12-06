@@ -1,10 +1,8 @@
 <node>
   <nltext></nltext>
   <parent_container>1854181</parent_container>
-  <icon></icon>
-  <nlgoto>0</nlgoto>
-  <node_id>1930708</node_id>
   <type_nodetype>9</type_nodetype>
+  <node_id>1930708</node_id>
   <nlcode>&lt;ul id='notifications_list'&gt;
 [%
 # show settings dialog if no notifications active

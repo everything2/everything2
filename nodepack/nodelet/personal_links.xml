@@ -1,12 +1,8 @@
 <node>
   <nltext></nltext>
   <parent_container>1854181</parent_container>
-  <icon>http://static.everything2.com/personal_nodes.gif</icon>
-  <nlgoto>0</nlgoto>
-  <node_id>174581</node_id>
   <type_nodetype>9</type_nodetype>
-  <iconHeight>24</iconHeight>
-  <iconWidth>170</iconWidth>
+  <node_id>174581</node_id>
   <nlcode>[%
 return 'You must log in first.' if $APP-&gt;isGuest($USER);
 

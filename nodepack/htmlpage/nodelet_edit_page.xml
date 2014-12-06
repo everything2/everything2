@@ -7,11 +7,6 @@ maintained by:[{node_menu:author_user,user,usergroup}]&lt;br&gt;
 parent container:[{node_menu:parent_container}]&lt;br&gt;
 update interval: [{textfield:updateinterval}] (in seconds)
 &lt;br&gt;
-nodelet icon URL: [{textfield:icon}]&lt;br&gt;
-icon height: [{textfield:iconHeight}]&lt;br&gt;
-icon width: [{textfield:iconWidth}]&lt;br&gt;
-
-
 nodelet code:&lt;br /&gt;
 [{textarea:nlcode,30,80,off}]</page>
   <displaytype>edit</displaytype>

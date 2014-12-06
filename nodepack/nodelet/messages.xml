@@ -1,10 +1,8 @@
 <node>
   <nltext></nltext>
   <parent_container></parent_container>
-  <icon></icon>
-  <nlgoto></nlgoto>
-  <node_id>2044453</node_id>
   <type_nodetype>9</type_nodetype>
+  <node_id>2044453</node_id>
   <nlcode>&lt;div id=&quot;messages_messages&quot;&gt;
 [{testshowmessages}]
 &lt;/div&gt;

@@ -1,13 +1,9 @@
 <node>
   <nltext></nltext>
   <parent_container>1854181</parent_container>
-  <icon>http://static.everything2.com/random_nodes.gif</icon>
-  <nlgoto>0</nlgoto>
-  <node_id>1922511</node_id>
   <type_nodetype>9</type_nodetype>
-  <iconHeight>25</iconHeight>
-  <iconWidth>170</iconWidth>
   <updateinterval>-1</updateinterval>
+  <node_id>1922511</node_id>
   <nlcode>[%
 my @choices = ('cousin','sibling','grandpa','grandma');
 my $r = $choices[rand(@choices)];

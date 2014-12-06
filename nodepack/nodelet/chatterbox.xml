@@ -1,12 +1,8 @@
 <node>
   <nltext></nltext>
   <parent_container>1854181</parent_container>
-  <icon>http://static.everything2.com/chatterbox.gif</icon>
-  <nlgoto>0</nlgoto>
-  <node_id>170070</node_id>
   <type_nodetype>9</type_nodetype>
-  <iconHeight>22</iconHeight>
-  <iconWidth>170</iconWidth>
+  <node_id>170070</node_id>
   <nlcode>[{openform2:formcbox}]
 [%
 # get settings here in case they are being updated. Slight kludge to remember them...
