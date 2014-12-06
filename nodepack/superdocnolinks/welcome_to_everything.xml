@@ -13,7 +13,7 @@ $zenStr .= '&lt;div id=&quot;loglinks&quot;&gt;
 
 $zenStr .= '&lt;div id=&quot;cooluserpicks&quot;&gt;
 &lt;h3&gt;Cool User Picks!&lt;/h3&gt;
-'.htmlcode('displaynltext', 'Cool User Picks').'&lt;/div&gt;' ;
+'.htmlcode('frontpage_cooluserpicks').'&lt;/div&gt;' ;
 
 $zenStr .= '
 	&lt;div id=&quot;staff_picks&quot;&gt;

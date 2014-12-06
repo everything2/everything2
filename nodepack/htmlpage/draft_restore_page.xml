@@ -42,7 +42,7 @@ if ($query -&gt; param('nukedraft') eq 'Delete draft' &amp;&amp; htmlcode('verif
 	.$query -&gt; ul(
 		$query -&gt; li(
 			$query -&gt; h4('Cool inspiration')
-			.htmlcode('displaynltext', 'Cool User Picks')
+			.htmlcode('frontpage_cooluserpicks')
 		)
 		.$query -&gt; li(
 			$query -&gt; h4('What Inspired the Editors')
