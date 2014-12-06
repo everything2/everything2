@@ -7,7 +7,6 @@
   <type_nodetype>9</type_nodetype>
   <iconHeight>25</iconHeight>
   <iconWidth>170</iconWidth>
-  <updateinterval>-1</updateinterval>
   <nlcode>[%
 my @choices = ('cousin','sibling','grandpa','grandma');
 my $r = $choices[rand(@choices)];
@@ -26,27 +25,22 @@ my @phrase = (
 	'Little presents from the Node Fairy:',
 );
 
-# Test environment
-my $anywriteup = $DB-&gt;sqlSelect(&quot;node_id&quot;, &quot;node&quot;,&quot;type_nodetype=&quot;.getId(getType(&quot;writeup&quot;)).&quot; limit 1&quot;);
-return &quot;&quot; if !$anywriteup;
+my $randomnodes = $DB-&gt;stashData(&quot;randomnodes&quot;);
 
 my $str;
 $str.='&lt;em&gt;'.$phrase[rand(int(@phrase))].&quot;&lt;/em&gt;\n&lt;ul class=\&quot;linklist\&quot;&gt;\n&quot; ;
 
 my $len = 20;
-foreach(1..12) { 
-	my $RN = getNodeById( getRandomNode() );
+foreach my $N (@$randomnodes) { 
+	my $RN = getNodeById( $N-&gt;{node_id} );
 	my $node_title = $$RN{'title'};
 	$node_title =~ s/(\S{$len})\S{4,}/$1.../go;
-	$str .= '&lt;li' ;
-	$str .= ' class=&quot;nodeshell&quot;'  unless $$RN{'group'} ;
-	$str .= '&gt;' . linkNode($RN, $node_title, {lastnode_id=&gt;0}) . &quot;&lt;/li&gt;\n&quot;;
+	$str .= '&lt;li&gt;' . linkNode($RN, $node_title, {lastnode_id=&gt;0}) . &quot;&lt;/li&gt;\n&quot;;
 }
 $str .= &quot;&lt;/ul&gt;\n&quot; ;
 
 return $str;
 
-%]
-</nlcode>
+%]</nlcode>
   <title>Random Nodes</title>
 </node>

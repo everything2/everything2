@@ -96,9 +96,9 @@ return if ($$VARS{GPoptout});
 my $minLevel = 11;
 my $Sanctificity = 10;
 
-return unless $APP-&gt;getLevel($USER)&gt;= $minLevel;
+return unless $APP-&gt;getLevel($USER)&gt;= $minLevel or $APP-&gt;isEditor($USER);
 
-my $str = &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Sanctity&lt;/b&gt;&lt;/p&gt;&lt;p&gt;You are at least [The Everything2 Voting/Experience System|Level $minLevel], so you have the power to [Sanctify user|Sanctify] other users with GP. Would you like to [Sanctify user|sanctify someone]?&lt;/p&gt;&lt;p&gt;NEW! You can now also sanctify users directly when you visit their homenodes by using the link in your Epicenter nodelet. Note that if you do it this way your sanctification will be anonymous.&quot;;
+my $str = &quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Sanctity&lt;/b&gt;&lt;/p&gt;&lt;p&gt;You are at least [The Everything2 Voting/Experience System|Level $minLevel], so you have the power to [Sanctify user|Sanctify] other users with GP. Would you like to [Sanctify user|sanctify someone]?&lt;/p&gt;&lt;p&gt;You may also sanctify other users by clicking on the link on their homenode, or by using the \/sanctify command in the [Chatterbox].&quot;;
 
 return $str;
 
