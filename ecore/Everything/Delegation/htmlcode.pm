@@ -15418,4 +15418,32 @@ sub reinsertCorpse
   $id;
 }
 
+sub frontpage_creamofthecool
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $length = 512;
+  my $str = htmlcode( 'show content' , $DB->stashData("creamofthecool"), 'parenttitle, type, byline,'.$length ) ;
+
+  # stop PRE breaking layout: replace PRE with TT; fix spaces and newlines to still work
+  while ( $str =~ /<pre>(.*?)<\/pre>/si )
+  {
+    my $temp = $1;
+    $temp =~ s/\n/<br>/g;
+    $str =~ s/<pre>(.*?)<\/pre>/<tt>$temp<\/tt>/si;
+    $str =~ s/  / &nbsp;/g; # replace two spaces with space and nbsp
+  }
+
+  $str =~ s!<hr.+>!<hr>!ig ; # no width on hr to avoid stretch
+
+  # For the transition period, pretend this is a nodelet
+  return qq|<div id="cotc">$str</div>|;
+}
+
 1;
