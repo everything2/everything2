@@ -764,24 +764,10 @@ sub insertNodelet
 	my ($NODELET) = @_;
 	getRef $NODELET;
 
-	# I'm going to forget about this later, so I need to write this down here
-	# Basically the nodelet containers want a global nodelet object so they know what they are 
-	# talking about, rather than using a display subroutine of some sort. By localizing it
-	# to $PAGELOAD, we prevent a whole class of memory corruption bugs in nodelets -jb
-
-	$PAGELOAD->{current_nodelet} = $NODELET;
-	my ($pre, $post) = ('', '');
-
-        my $container = $Everything::CONF->system->{nodelet_container};
-	($pre, $post) = genContainer($container) if $container;
-	
 	# Make sure the nltext is up to date
 	updateNodelet($NODELET);
 	return "" unless ($$NODELET{nltext} =~ /\S/);
-
-	delete $PAGELOAD->{current_nodelet};	
-	# now that we are guaranteed that nltext is up to date, sub it in.
-	return $pre.$NODELET->{nltext}.$post;
+	return $APP->zen_wrap_nodelet($NODELET->{title}, $NODELET->{nltext});
 }
 
 

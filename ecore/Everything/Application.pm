@@ -3754,5 +3754,14 @@ sub getRandomNode {
   return $this->{db}->getNodeById($this->{db}->sqlSelect("e2node_id", "e2node", "exists(select 1 from nodegroup where nodegroup_id=e2node_id) order by RAND() limit 1;"));
 }
 
+sub zen_wrap_nodelet {
+  my ($this, $title, $nodelet_stuff) = @_;
+  my $id = lc($title);
+  $id =~ s/\W//g;
+
+ return qq|<div class='nodelet' id='$id'><h2 class="nodelet_title">$title</h2><div class='nodelet_content'>$nodelet_stuff</div></div>|;
+
+}
+
 #############################################################################
 1;
