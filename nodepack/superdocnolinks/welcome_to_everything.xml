@@ -35,7 +35,7 @@ if (!$APP-&gt;isGuest($USER)) {
         &lt;h2 id=&quot;frontpage_news_title&quot;&gt;'
 		.linkNodeTitle('News for Noders. Stuff that matters.[superdoc]|News for Noders')
 		.'&lt;/h2&gt;
-   '.htmlcode('displaynltext', 'Front Page News').'&lt;/div&gt;';
+   '.htmlcode('frontpage_news').'&lt;/div&gt;';
 }
 
 return $zenStr ;
