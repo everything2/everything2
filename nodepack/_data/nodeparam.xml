@@ -594,39 +594,4 @@
     <node_id>113</node_id>
     <paramkey>level_override</paramkey>
   </nodeparam>
-  <nodeparam>
-    <paramvalue>1417984599</paramvalue>
-    <node_id>2117445</node_id>
-    <paramkey>last_update</paramkey>
-  </nodeparam>
-  <nodeparam>
-    <paramvalue>1417984598</paramvalue>
-    <node_id>2117538</node_id>
-    <paramkey>last_update</paramkey>
-  </nodeparam>
-  <nodeparam>
-    <paramvalue>1417984599</paramvalue>
-    <node_id>2117537</node_id>
-    <paramkey>last_update</paramkey>
-  </nodeparam>
-  <nodeparam>
-    <paramvalue>1417984597</paramvalue>
-    <node_id>2117544</node_id>
-    <paramkey>last_update</paramkey>
-  </nodeparam>
-  <nodeparam>
-    <paramvalue>1417984629</paramvalue>
-    <node_id>2117633</node_id>
-    <paramkey>last_update</paramkey>
-  </nodeparam>
-  <nodeparam>
-    <paramvalue>1417984629</paramvalue>
-    <node_id>2117636</node_id>
-    <paramkey>last_update</paramkey>
-  </nodeparam>
-  <nodeparam>
-    <paramvalue>1417984599</paramvalue>
-    <node_id>2117640</node_id>
-    <paramkey>last_update</paramkey>
-  </nodeparam>
 </nodeparam>

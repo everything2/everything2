@@ -17,6 +17,7 @@ sub data_out
 	my $data;
 	while(my $row = $csr->fetchrow_hashref())
 	{
+		next if $row->{paramkey} eq "last_update";
 		push @{$data->{nodeparam}}, $row;
 	}
 	
