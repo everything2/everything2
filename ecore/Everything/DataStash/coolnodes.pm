@@ -1,8 +1,8 @@
 package Everything::DataStash::coolnodes;
 
 use Moose;
-use namespace::autoclean;
 extends 'Everything::DataStash';
+use namespace::autoclean;
 
 has '+interval' => (default => 60);
 

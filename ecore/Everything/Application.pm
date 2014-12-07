@@ -3763,5 +3763,23 @@ sub zen_wrap_nodelet {
 
 }
 
+sub fetch_weblog {
+  my ($this, $weblog, $number, $offset) = @_;
+
+    $weblog = $this->{db}->getNodeById($weblog);
+    return unless $weblog;
+
+    $number ||= 5;
+    $offset ||= 0;
+
+    my $csr = $this->{db}->sqlSelectMany(
+    'weblog_id, to_node, linkedby_user, linkedtime' ,
+    'weblog' ,
+    "weblog_id=$weblog->{node_id} AND removedby_user=0" ,
+    "ORDER BY linkedtime DESC LIMIT $number OFFSET $offset" ) ;
+
+    return $csr->fetchall_arrayref({});
+}
+
 #############################################################################
 1;
