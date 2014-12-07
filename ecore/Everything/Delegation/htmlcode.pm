@@ -15463,8 +15463,31 @@ sub frontpage_cooluserpicks
     last unless (--$count);
   }
 
-  $str.= parseLinks("</ul><div class='morelink'>([Cool Archive|more])</div>" );
+  $str.= parseLinks("</ul><div class='nodeletfoot morelink'>([Cool Archive|more])</div>" );
   return $str;
+}
+
+sub frontpage_staffpicks
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<ul class="linklist">|;
+
+  foreach my $N(@{$DB->stashData("staffpicks")})
+  {
+    $str .= qq|<li>|.linkNode(getNodeById($N), '', {lastnode_id => 0}).qq|</li>|;
+  }
+
+  $str .= qq|</ul><div class="nodeletfoot morelink">(|.linkNodeTitle("Page of Cool|more").qq|)</div>|;
+
+  return $str;
+
 }
 
 1;
