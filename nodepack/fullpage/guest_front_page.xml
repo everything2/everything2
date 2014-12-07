@@ -28,8 +28,6 @@ if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
 	&lt;link rel=&quot;icon&quot; href=&quot;/favicon.ico&quot; type=&quot;image/vnd.microsoft.icon&quot;&gt;
 	&lt;!--[if lt IE 8]&gt;&lt;link rel=&quot;shortcut icon&quot; href=&quot;/favicon.ico&quot; type=&quot;image/x-icon&quot;&gt;&lt;![endif]--&gt;
 	&lt;link rel=&quot;alternate&quot; type=&quot;application/atom+xml&quot; title=&quot;Everything2 New Writeups&quot; href=&quot;/node/ticker/New+Writeups+Atom+Feed&quot;&gt;
-[{static javascript}]
-[{googleanalytics}]
 &lt;/head&gt;
 
 
@@ -87,7 +85,7 @@ if ( !$APP-&gt;isGuest($USER) ) {
   $zenStr.='
   &lt;div id=&quot;frontpage_news&quot;&gt;
         &lt;h2 id=&quot;frontpage_news_title&quot;&gt;[News for Noders. Stuff that matters.|News for Noders]&lt;/h2&gt;
-   '.htmlcode('displaynltext', 'Front Page News').'&lt;/div&gt;';
+   '.htmlcode('frontpage_news').'&lt;/div&gt;';
 }
 
 return parseLinks($zenStr);
@@ -105,7 +103,7 @@ return parseLinks($zenStr);
 [{zenFooter}]
 &lt;/div&gt;
 [{googleanalytics}]
-
+[{static javascript}]
 &lt;/body&gt;
 &lt;/html&gt;</doctext>
   <node_id>2030780</node_id>
