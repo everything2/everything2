@@ -15490,4 +15490,43 @@ sub frontpage_staffpicks
 
 }
 
+sub frontpage_news
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<div class="weblog">|;
+  
+  my $fpnews = $DB->stashData("frontpagenews");
+
+  my $newsnodes = [];
+  foreach my $N(@$fpnews)
+  {
+    push @$newsnodes, $DB->getNodeById($N->{to_node});
+  }
+
+  my %weblogspecials = ();
+
+  # Lifted largely from [weblog]
+
+  $weblogspecials{ getloggeditem } = sub {
+    my ( $L ) = @_ ;
+    my $N = getNodeById( $L->{ to_node } ) ;
+    # removed nodes/de-published drafts:
+    return "Can't get node id ".$L->{ to_node } unless $N and $$N{type}{title} ne 'draft';
+    $_[0] = { %$N , %$L } ; # $_[0] is a hashref from a DB query: no nodes harmed
+    return '' ;
+  } ;
+
+  $str.= htmlcode("show content", $newsnodes, "getloggeditem, title, byline, date, linkedby, content");
+
+  $str .= qq|</div>|;
+  return $str;
+}
+
 1;
