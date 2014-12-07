@@ -108,3 +108,11 @@ foreach my $chinger (keys %$cools)
     $DB->sqlInsert("coolwriteups",{"coolwriteups_id" => $writeup_node->{node_id}, cooledby_user => $chinger_node->{node_id}});
   }
 }
+
+# Create a document so we can create a new item
+my $frontpage_superdoc = $DB->getNode("News for Noders. Stuff that matters.", "superdoc");
+my $document = $DB->insertNode("Front page news item #1", "document", $DB->getNode("root","user"), {});
+$document = getNode("Front page news item #1","document");
+$document->{doctext} = "This is the dawn of a new age. Of Everything. And Anything. Mostly Everything";
+$DB->updateNode($document, -1);
+$DB->sqlInsert("weblog",{"weblog_id" => $frontpage_superdoc->{node_id}, "to_node" => $document->{node_id} }); 
