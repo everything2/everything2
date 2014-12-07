@@ -18,7 +18,7 @@ $zenStr .= '&lt;div id=&quot;cooluserpicks&quot;&gt;
 $zenStr .= '
 	&lt;div id=&quot;staff_picks&quot;&gt;
 	&lt;h3&gt;Staff Picks&lt;/h3&gt;
-'.htmlcode('displaynltext', 'Staff Picks')
+'.htmlcode('frontpage_staffpicks')
 .'&lt;/div&gt;' unless ($APP-&gt;isGuest($USER));
 
 $zenStr.='
