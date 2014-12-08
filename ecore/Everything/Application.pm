@@ -2344,6 +2344,7 @@ sub adjustRepAndVoteCount {
 	$$node{reputation} += $pts;
 	# Rely on updateNode to discard invalid hash entries since
 	#  not all voteable nodes may have a totalvotes column
+	$$node{totalvotes} ||= 0;
 	$$node{totalvotes} += $voteChange;
 	$this->{db}->updateNode($node, -1);
 }

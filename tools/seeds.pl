@@ -8,19 +8,27 @@ initEverything;
 
 if($Everything::CONF->environment ne "development")
 {
-	print "Not in the 'development' environment. Exiting\n";
+	print STDERR "Not in the 'development' environment. Exiting\n";
 	exit;
 }
 
 my $APP = $Everything::APP;
 
-foreach my $user (qw|normaluser normaluser2 normaluser3|,"user with space")
+foreach my $user (1..30,"user with space")
 {
+  if($user =~ /^\d/)
+  {
+    # Insert a user like "normaluser1"
+    $user = "normaluser$user";
+  }
+  print STDERR "Inserting user: $user\n";
   $DB->insertNode($user,"user",-1,{});
 
   my $author = getNode($user,"user");
   $author->{author_user} = $author->{node_id};
   $author->{passwd} = "blah";
+  $author->{doctext} = "Homenode text for $user";
+  $author->{votesleft} = 50;
   $DB->updateNode($author, -1);
 }
 
@@ -36,10 +44,13 @@ my $writeuptypes =
 };
 
 my $writeups = {
-  "normaluser" => [
+  "normaluser1" => [
     ["Quick brown fox", "thing", "The quick brown fox jumped over the [lazy dog]"],
-    ["lazy dog","thing","The lazy dog kind of just sat there while the [quick brown fox] jumped over him"],
-    ["regular brown fox","thing","Not very [quick], but still [admirable]."]],
+    ["lazy dog","idea","The lazy dog kind of just sat there while the [quick brown fox] jumped over him"],
+    ["regular brown fox","person","Not very [quick], but still [admirable]. What does [he|the fox] say?"],
+    ["Why are foxes lazy?","essay","<em>Are they really lazy?</em><strong>Here is my manifesto</strong>"],
+    ["Dogs are a man's best friend","idea","I want to [hug all the dogs]. HUG them. [Hug them long]. [Hug them huge]"],
+    ["hug all the dogs","thing","Break out the pug hugs"]],
   "normaluser2" => [
     ["tomato", "idea", "A red [vegetable]. A fruit, actually"],
     ["tomatoe", "how-to","A poorly-spelled way to say [tomato]"],
@@ -61,13 +72,13 @@ foreach my $author (keys %$writeups)
     my $writeup_parent;
     unless($writeup_parent = getNode($thiswriteup->[0],"e2node"))
     {
-      print "Inserting e2node: '$thiswriteup->[0]'\n";
+      print STDERR "Inserting e2node: '$thiswriteup->[0]'\n";
       $DB->insertNode($thiswriteup->[0],"e2node",$authornode,{});
       $writeup_parent = $DB->getNode($thiswriteup->[0],"e2node");
     }
     my $writeuptype = getNode($thiswriteup->[1],"writeuptype");
 
-    print "Inserting writeup: '$thiswriteup->[0] ($writeuptype->{title})'\n";
+    print STDERR "Inserting writeup: '$thiswriteup->[0] ($writeuptype->{title})'\n";
     my $parent_e2node = getNode($thiswriteup->[0],"e2node");
     $DB->insertNode("$thiswriteup->[0] ($writeuptype->{title})","writeup",$authornode, {});
 
@@ -90,7 +101,7 @@ foreach my $author (keys %$writeups)
   }
 }
 
-my $cools = { "normaluser" => ["good poetry (poetry)"]};
+my $cools = { "normaluser1" => ["good poetry (poetry)"], "normaluser5" => ["Quick brown fox (thing)","lazy dog (idea)", "regular brown fox (person)"]};
 
 foreach my $chinger (keys %$cools)
 {
@@ -100,7 +111,7 @@ foreach my $chinger (keys %$cools)
     my $writeup_node = getNode($writeup, "writeup");
     unless($writeup_node)
     {
-      print "Could not get writeup node '$writeup'"; 
+      print STDERR "ERROR: Could not get writeup node '$writeup'"; 
       next;
     }
     $writeup_node->{cooled}++;
@@ -111,8 +122,40 @@ foreach my $chinger (keys %$cools)
 
 # Create a document so we can create a new item
 my $frontpage_superdoc = $DB->getNode("News for Noders. Stuff that matters.", "superdoc");
-my $document = $DB->insertNode("Front page news item #1", "document", $DB->getNode("root","user"), {});
-$document = getNode("Front page news item #1","document");
+print STDERR "Creating frontpage news item\n";
+$DB->insertNode("Front page news item #1", "document", $DB->getNode("root","user"), {});
+my $document = getNode("Front page news item #1","document");
 $document->{doctext} = "This is the dawn of a new age. Of Everything. And Anything. <em>Mostly</em> [Everything]";
 $DB->updateNode($document, -1);
 $DB->sqlInsert("weblog",{"weblog_id" => $frontpage_superdoc->{node_id}, "to_node" => $document->{node_id} }); 
+
+# Cast some votes so we can generate front page content
+
+for my $writeup ("Quick brown fox (thing)","lazy dog (idea)", "regular brown fox (person)")
+{
+  my $writeupnode = getNode($writeup, "writeup");
+  unless($writeupnode)
+  {
+    print STDERR "ERROR: Could not get writeupnode: '$writeup'\n";
+    next;
+  }
+  for my $userseq (2..30)
+  {
+    my $weight = 1;
+    if($userseq == 23)
+    {
+      #23 is a jerk
+      $weight = -1;
+    }
+
+    my $user = getNode("normaluser$userseq","user");
+    unless($user)
+    {
+      print STDERR "ERROR: Could not get author for vote: 'normaluser$userseq'\n";
+      next;
+    }
+    print STDERR "Casting vote $user->{title} on '$writeupnode->{title}'\n";
+    $APP->castVote($writeupnode, $user, $weight);
+  }
+}
+

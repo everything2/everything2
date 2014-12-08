@@ -15529,4 +15529,29 @@ sub frontpage_news
   return $str;
 }
 
+sub frontpage_altcontent
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<div class="cotc">|;
+  my $fpcontent = $DB->stashData("altfrontpagecontent");
+  my $content = [];
+  foreach my $N(@$fpcontent)
+  {
+    push @$content, $DB->getNodeById($N);
+  }
+
+  $str .= htmlcode("show content", $content, 'parenttitle, type, byline,1024-512');
+
+  $str .= qq|</div>|;
+  return $str;
+
+}
+
 1;
