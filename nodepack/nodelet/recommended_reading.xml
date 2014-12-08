@@ -1,56 +1,47 @@
 <node>
   <nltext></nltext>
-  <parent_container>1854181</parent_container>
+  <parent_container>0</parent_container>
   <type_nodetype>9</type_nodetype>
-  <updateinterval>1200</updateinterval>
   <node_id>2027508</node_id>
   <nlcode>[%
 # Start with C!s from [rtnsection_cwu]
+# TODO: Clean up for google 
 my $str='';
 $str.='&lt;h4&gt;'.linkNode(getNode('An Introduction to Everything2','e2node'), 'About Everything2').'&lt;/h4&gt;';
 $str.='&lt;h4&gt;'.linkNode(getNode('Cool Archive','superdoc'), 'User Picks').'&lt;/h4&gt;';
 $str.='&lt;ul class=&quot;infolist&quot;&gt;';
-my $csr = $DB-&gt;sqlSelectMany(&quot;distinct coolwriteups_id&quot;, &quot;coolwriteups&quot;, &quot;&quot;, &quot;order by tstamp desc limit 6&quot;);
+my $coolnodes = $DB-&gt;stashData(&quot;coolnodes&quot;);
+my $count = 0;
+my $seen;
 
-while(my $row = $csr-&gt;fetchrow_hashref()){
-	my $cw = getNodeById($$row{coolwriteups_id});
-	next unless($cw);
-	my $np = getNodeById($$cw{parent_e2node});
-	$str .= '&lt;li&gt;'.linkNode($cw, $$np{title}, {lastnode_id =&gt; 0});
+while($count &lt; 6){
+  my $cw = shift @$coolnodes;
+  next if $seen-&gt;{$cw-&gt;{coolwriteups_id}};
+  $seen-&gt;{$cw-&gt;{coolwriteups_id}} = 1;
+
+  my $N = $DB-&gt;getNodeById($cw-&gt;{coolwriteups_id});
+  next unless $N;
+  $str .= &quot;&lt;li&gt;&quot;.linkNode($N, $cw-&gt;{parentTitle}, {lastnode_id =&gt; 0}).&quot;&lt;/li&gt;&quot;;
+  $count++;
 }
 
-$csr-&gt;finish();
 $str.='&lt;/ul&gt;';
+
+my $staffpicks = $DB-&gt;stashData(&quot;staffpicks&quot;);
 
 # From [rtnsection_edc]
 $str.= '&lt;h4&gt;'.linkNode(getNode('Page of Cool','superdoc'), 'Editor Picks').'&lt;/h4&gt;';
 
 $str.= '&lt;ul class=&quot;infolist&quot;&gt;';
-my $poclink = getId(getNode('coollink', 'linktype'));
-my $pocgrp = getNode('coolnodes', 'nodegroup')-&gt;{group};
-my $count = 0;
 
-foreach(reverse @$pocgrp)
+for(1..6)
 {
-	last if($count &gt;= 4);
-	$count++;
-
-	next unless($_);
-
-	my $csr = $DB-&gt;{dbh}-&gt;prepare('SELECT * FROM links WHERE from_node=\''.getId($_).'\' and linktype=\''.$poclink.'\' limit 1');
-
-	$csr-&gt;execute;
-
-	my $coolref = $csr-&gt;fetchrow_hashref;
-
-	next unless($coolref);
-	$coolref = getNodeById($$coolref{from_node});
-	next unless($coolref); 
-	$str .= '&lt;li&gt;'.linkNode($coolref,$$coolref{title}, {lastnode_id =&gt; 0}).'&lt;/li&gt;';
-
-	$csr-&gt;finish();
-
+  my $edpick = shift @$staffpicks;
+  my $N = getNodeById(@$staffpicks);
+  next unless $N;
+  $str .= &quot;&lt;li&gt;&quot;.linkNode($N,'',{lastnode_id =&gt; 0}).&quot;&lt;/li&gt;&quot;;
 }
+
 
 $str.='&lt;/ul&gt;';
 

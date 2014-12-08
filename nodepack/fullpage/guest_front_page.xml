@@ -78,7 +78,7 @@ $zenStr.=&quot;&lt;h3 id='wit'&gt;&quot;.$wit[int(rand(@wit))].&quot;&lt;/h3&gt;
 $zenStr.='
      &lt;div id=&quot;bestnew&quot;&gt;
         &lt;h3 id=&quot;bestnew_title&quot;&gt;[Cool Archive|The Best of The Week]&lt;/h3&gt;
-        '.htmlcode('displaynltext','New Cool Stuff').'
+        '.htmlcode('frontpage_altcontent').'
       &lt;/div&gt;';
 
 if ( !$APP-&gt;isGuest($USER) ) {
