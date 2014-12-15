@@ -2846,7 +2846,7 @@ sub stashData
     return $stash_values;
   }else{
     # read operation
-    return from_json($stashnode->{vars});
+    return from_json($stashnode->{vars},{ utf8  => 1 });
   }
 }
 

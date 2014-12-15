@@ -15540,7 +15540,7 @@ sub frontpage_altcontent
   my $APP = shift;
 
   my $str = qq|<div class="cotc">|;
-  my $fpcontent = $DB->stashData("altfrontpagecontent");
+  my $fpcontent = $DB->stashData("altfrontpagecontent") || [];
   my $content = [];
   foreach my $N(@$fpcontent)
   {

@@ -54,6 +54,7 @@ my $writeups = {
   "normaluser2" => [
     ["tomato", "idea", "A red [vegetable]. A fruit, actually"],
     ["tomatoe", "how-to","A poorly-spelled way to say [tomato]"],
+    ["swedish tomatoë", "essay","Swedish tomatoes"],
     ["potato", "essay","Boil em, mash em, put em in a [stew]."]],
   "user with space" => [
     ["bad poetry", "idea", "Kind of bad poetry here"],
@@ -101,7 +102,7 @@ foreach my $author (keys %$writeups)
   }
 }
 
-my $cools = { "normaluser1" => ["good poetry (poetry)"], "normaluser5" => ["Quick brown fox (thing)","lazy dog (idea)", "regular brown fox (person)"]};
+my $cools = { "normaluser1" => ["good poetry (poetry)", "swedish tomatoë (essay)"], "normaluser5" => ["Quick brown fox (thing)","lazy dog (idea)", "regular brown fox (person)"]};
 
 foreach my $chinger (keys %$cools)
 {
@@ -123,8 +124,8 @@ foreach my $chinger (keys %$cools)
 # Create a document so we can create a new item
 my $frontpage_superdoc = $DB->getNode("News for Noders. Stuff that matters.", "superdoc");
 print STDERR "Creating frontpage news item\n";
-$DB->insertNode("Front page news item #1", "document", $DB->getNode("root","user"), {});
-my $document = getNode("Front page news item #1","document");
+$DB->insertNode("Front page news item 1", "document", $DB->getNode("root","user"), {});
+my $document = getNode("Front page news item 1","document");
 $document->{doctext} = "This is the dawn of a new age. Of Everything. And Anything. <em>Mostly</em> [Everything]";
 $DB->updateNode($document, -1);
 $DB->sqlInsert("weblog",{"weblog_id" => $frontpage_superdoc->{node_id}, "to_node" => $document->{node_id} }); 

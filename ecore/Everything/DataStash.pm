@@ -2,6 +2,7 @@ package Everything::DataStash;
 
 use Moose;
 use namespace::autoclean;
+use utf8;
 use JSON;
 
 has 'CONF' => (isa => 'Everything::Configuration', is => 'ro', required => 1);
