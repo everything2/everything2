@@ -12,7 +12,7 @@ sub generate
 
   my $review = $this->DB->getId($this->DB->getNode('review', 'publication_status'));
   my $cuss = $this->DB->sqlSelectMany(
-    "title, author_user, request.timestamp AS publishtime, (Select CONCAT(timestamp, ': ', notetext) From nodenote As response
+    "node_id, title, author_user, request.timestamp AS publishtime, (Select CONCAT(timestamp, ': ', notetext) From nodenote As response
 		Where response.nodenote_nodeid = request.nodenote_nodeid
 			And response.timestamp > request.timestamp
 			Order By response.timestamp Desc Limit 1) as latestnote,
