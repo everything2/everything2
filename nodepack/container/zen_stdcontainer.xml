@@ -5,6 +5,7 @@
   <context>&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;en&quot;&gt;
 &lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
 &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=Edge&quot; /&gt;
 &lt;title&gt;[% return $APP-&gt;pagetitle($NODE); %] - Everything2.com&lt;/title&gt;
 [%

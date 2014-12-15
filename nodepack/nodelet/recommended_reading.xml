@@ -14,7 +14,7 @@ my $coolnodes = $DB-&gt;stashData(&quot;coolnodes&quot;);
 my $count = 0;
 my $seen;
 
-while($count &lt; 6){
+while($count &lt; 6 and @$coolnodes &gt; 0){
   my $cw = shift @$coolnodes;
   next if $seen-&gt;{$cw-&gt;{coolwriteups_id}};
   $seen-&gt;{$cw-&gt;{coolwriteups_id}} = 1;
