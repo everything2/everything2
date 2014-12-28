@@ -65,8 +65,8 @@ my $datanodes = {
   },
   "draft" => {
     "normaluser1" => [
-#      ["Really old draft, editor neglected","thing","a draft to trigger editor neglect"],
-#      ["Really old draft, user neglected","thing","a draft to trigger user neglect"],
+      ["Really old draft, editor neglected","thing","a draft to trigger editor neglect","review"],
+      ["Really old draft, user neglected","thing","a draft to trigger user neglect","review"],
     ],
   },
 };
@@ -94,22 +94,24 @@ foreach my $datatype (keys %$datanodes)
 
       my $writeup = getNode("$thiswriteup->[0] ($writeuptype->{title})",$datatype);
       $writeup->{createtime} = $APP->convertEpochToDate(time());
+      $writeup->{doctext} = $thiswriteup->[2];
+      $writeup->{document_id} = $writeup->{node_id};
+
       if($datatype eq "writeup")
       {
         $writeup->{parent_e2node} = $parent_e2node->{node_id};
         $writeup->{wrtype_writeuptype} = $writeuptype->{node_id};
-        $writeup->{doctext} = $thiswriteup->[2];
         $writeup->{notnew} = 0;
         $writeup->{cooled} = 0;
-        $writeup->{document_id} = $writeup->{node_id};
         $writeup->{writeup_id} = $writeup->{writeup_id};
         # Once we have better models, this will be a lot cleaner, but for now, faking the data is as best as we can do
         $writeup->{publishtime} = $writeup->{createtime};
         $writeup->{edittime} = $writeup->{createtime};
       }elsif($datatype eq "draft"){
+        $writeup->{draft_id} = $writeup->{node_id};
         $writeup->{publication_status} = getNode($thiswriteup->[3],"publication_status")->{node_id};
       }
-      $DB->updateNode($writeup, -1);
+      $DB->updateNode($writeup, $authornode);
       if($datatype eq "writeup")
       {
         $DB->insertIntoNodegroup($parent_e2node,-1,$writeup);
