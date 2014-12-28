@@ -43,65 +43,81 @@ my $writeuptypes =
   "idea" => getNode("idea","writeuptype"),
 };
 
-my $writeups = {
-  "normaluser1" => [
-    ["Quick brown fox", "thing", "The quick brown fox jumped over the [lazy dog]"],
-    ["lazy dog","idea","The lazy dog kind of just sat there while the [quick brown fox] jumped over him"],
-    ["regular brown fox","person","Not very [quick], but still [admirable]. What does [he|the fox] say?"],
-    ["Why are foxes lazy?","essay","<em>Are they really lazy?</em><strong>Here is my manifesto</strong>"],
-    ["Dogs are a man's best friend","idea","I want to [hug all the dogs]. HUG them. [Hug them long]. [Hug them huge]"],
-    ["hug all the dogs","thing","Break out the pug hugs"]],
-  "normaluser2" => [
-    ["tomato", "idea", "A red [vegetable]. A fruit, actually"],
-    ["tomatoe", "how-to","A poorly-spelled way to say [tomato]"],
-    ["swedish tomatoë", "essay","Swedish tomatoes"],
-    ["potato", "essay","Boil em, mash em, put em in a [stew]."]],
-  "user with space" => [
-    ["bad poetry", "idea", "Kind of bad poetry here"],
-    ["good poetry", "poetry", "Solid work here"],
-    ["tomato", "definition", "What is a tomato, really?"],
-  ],
+my $datanodes = {
+  "writeup" => {
+    "normaluser1" => [
+      ["Quick brown fox", "thing", "The quick brown fox jumped over the [lazy dog]"],
+      ["lazy dog","idea","The lazy dog kind of just sat there while the [quick brown fox] jumped over him"],
+      ["regular brown fox","person","Not very [quick], but still [admirable]. What does [he|the fox] say?"],
+      ["Why are foxes lazy?","essay","<em>Are they really lazy?</em><strong>Here is my manifesto</strong>"],
+      ["Dogs are a man's best friend","idea","I want to [hug all the dogs]. HUG them. [Hug them long]. [Hug them huge]"],
+      ["hug all the dogs","thing","Break out the pug hugs"]],
+    "normaluser2" => [
+      ["tomato", "idea", "A red [vegetable]. A fruit, actually"],
+      ["tomatoe", "how-to","A poorly-spelled way to say [tomato]"],
+      ["swedish tomatoë", "essay","Swedish tomatoes"],
+      ["potato", "essay","Boil em, mash em, put em in a [stew]."]],
+    "user with space" => [
+      ["bad poetry", "idea", "Kind of bad poetry here"],
+      ["good poetry", "poetry", "Solid work here"],
+      ["tomato", "definition", "What is a tomato, really?"],
+    ],
+  },
+  "draft" => {
+    "normaluser1" => [
+#      ["Really old draft, editor neglected","thing","a draft to trigger editor neglect"],
+#      ["Really old draft, user neglected","thing","a draft to trigger user neglect"],
+    ],
+  },
 };
 
 # insertNode is: $title, $TYPE, $USER, $DATA
-
-foreach my $author (keys %$writeups)
+foreach my $datatype (keys %$datanodes)
 {
-  foreach my $thiswriteup (@{$writeups->{$author}})
+  foreach my $author (keys %{$datanodes->{$datatype}})
   {
-    my $authornode = getNode($author, "user");
-    my $writeup_parent;
-    unless($writeup_parent = getNode($thiswriteup->[0],"e2node"))
+    foreach my $thiswriteup (@{$datanodes->{$datatype}->{$author}})
     {
-      print STDERR "Inserting e2node: '$thiswriteup->[0]'\n";
-      $DB->insertNode($thiswriteup->[0],"e2node",$authornode,{});
-      $writeup_parent = $DB->getNode($thiswriteup->[0],"e2node");
+      my $authornode = getNode($author, "user");
+      my $writeup_parent;
+      unless($writeup_parent = getNode($thiswriteup->[0],"e2node"))
+      {
+        print STDERR "Inserting e2node: '$thiswriteup->[0]'\n";
+        $DB->insertNode($thiswriteup->[0],"e2node",$authornode,{});
+        $writeup_parent = $DB->getNode($thiswriteup->[0],"e2node");
+      }
+      my $writeuptype = getNode($thiswriteup->[1],"writeuptype");
+
+      print STDERR "Inserting writeup: '$thiswriteup->[0] ($writeuptype->{title})'\n";
+      my $parent_e2node = getNode($thiswriteup->[0],"e2node");
+      $DB->insertNode("$thiswriteup->[0] ($writeuptype->{title})",$datatype,$authornode, {});
+
+      my $writeup = getNode("$thiswriteup->[0] ($writeuptype->{title})",$datatype);
+      $writeup->{createtime} = $APP->convertEpochToDate(time());
+      if($datatype eq "writeup")
+      {
+        $writeup->{parent_e2node} = $parent_e2node->{node_id};
+        $writeup->{wrtype_writeuptype} = $writeuptype->{node_id};
+        $writeup->{doctext} = $thiswriteup->[2];
+        $writeup->{notnew} = 0;
+        $writeup->{cooled} = 0;
+        $writeup->{document_id} = $writeup->{node_id};
+        $writeup->{writeup_id} = $writeup->{writeup_id};
+        # Once we have better models, this will be a lot cleaner, but for now, faking the data is as best as we can do
+        $writeup->{publishtime} = $writeup->{createtime};
+        $writeup->{edittime} = $writeup->{createtime};
+      }elsif($datatype eq "draft"){
+        $writeup->{publication_status} = getNode($thiswriteup->[3],"publication_status")->{node_id};
+      }
+      $DB->updateNode($writeup, -1);
+      if($datatype eq "writeup")
+      {
+        $DB->insertIntoNodegroup($parent_e2node,-1,$writeup);
+        $DB->updateNode($parent_e2node, -1);
+      }
     }
-    my $writeuptype = getNode($thiswriteup->[1],"writeuptype");
-
-    print STDERR "Inserting writeup: '$thiswriteup->[0] ($writeuptype->{title})'\n";
-    my $parent_e2node = getNode($thiswriteup->[0],"e2node");
-    $DB->insertNode("$thiswriteup->[0] ($writeuptype->{title})","writeup",$authornode, {});
-
-    my $writeup = getNode("$thiswriteup->[0] ($writeuptype->{title})","writeup");
-    $writeup->{parent_e2node} = $parent_e2node->{node_id};
-    $writeup->{wrtype_writeuptype} = $writeuptype->{node_id};
-    $writeup->{doctext} = $thiswriteup->[2];
-    $writeup->{notnew} = 0;
-    $writeup->{cooled} = 0;
-    $writeup->{document_id} = $writeup->{node_id};
-    $writeup->{writeup_id} = $writeup->{writeup_id};
-
-    # Once we have better models, this will be a lot cleaner, but for now, faking the data is as best as we can do
-    $writeup->{publishtime} = $APP->convertEpochToDate(time());
-    $writeup->{createtime} = $writeup->{publishtime};
-    $writeup->{edittime} = $writeup->{publishtime};
-    $DB->updateNode($writeup, -1);
-    $DB->insertIntoNodegroup($parent_e2node,-1,$writeup);
-    $DB->updateNode($parent_e2node, -1);
   }
 }
-
 my $cools = { "normaluser1" => ["good poetry (poetry)", "swedish tomatoë (essay)"], "normaluser5" => ["Quick brown fox (thing)","lazy dog (idea)", "regular brown fox (person)"]};
 
 foreach my $chinger (keys %$cools)
