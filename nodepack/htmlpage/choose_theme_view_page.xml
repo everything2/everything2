@@ -8,8 +8,9 @@ my $defaultStyle = getNode($Everything::CONF-&gt;default_style,'stylesheet')-&gt
 my $currentStyle = $$VARS{userstyle} || $defaultStyle;
 
 my $theme = $query -&gt; param('theme');
-$theme = &quot;&quot; if $theme and getNode( $theme )-&gt;{ type }{ title } ne 'stylesheet' ;
-$theme ||= $currentStyle;
+my $themenode = getNode($theme);
+$theme = &quot;&quot; if($theme and (!$themenode || $themenode-&gt;{ type }{ title } ne 'stylesheet'));
+$theme ||= getNodeById($currentStyle);
 
 if ( $query -&gt; param( 'usetheme' ) and !$APP-&gt;isGuest($USER) ) {
 	$$VARS{ userstyle } = $theme  ;

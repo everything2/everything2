@@ -1,0 +1,113 @@
+<node>
+  <type_nodetype>1144104</type_nodetype>
+  <doctext>[%
+
+####################################################################
+# get all the URL parameters
+
+my $wuType = abs int($query-&gt;param(&quot;wutype&quot;));
+
+my $count = abs int($query-&gt;param(&quot;count&quot;));
+$count = 50 if !$count;
+
+my $page = abs int($query-&gt;param(&quot;page&quot;));
+
+my $orderby = $query-&gt;param('orderby') || &quot;node.reputation DESC&quot;;
+
+my $year= $query-&gt;param('year') || &quot;2014&quot;;
+
+my $nextyear = $year + 1  || &quot;2015&quot;;
+
+####################################################################
+# Form with list of writeup types and number to show
+
+my (@WRTYPE) = getNodeWhere({type_nodetype =&gt; getId(getType('writeuptype'))});
+my %items;
+map $items{$$_{node_id}} = $$_{title}, @WRTYPE;
+
+my @idlist = sort { $items{$a} cmp $items{$b} } keys %items;
+unshift @idlist, 0;
+$items{0} = 'All';
+
+my $choices = [
+	'cooled DESC,node.reputation DESC', 'node.reputation DESC', 'publishtime DESC', 'publishtime ASC'
+];
+
+my $labels = {
+        'cooled DESC,node.reputation DESC'=&gt;'C!, then reputation',
+        'node.reputation DESC'=&gt;'Reputation',
+        'publishtime DESC'=&gt;'Date, most recent first',
+        'publishtime ASC'=&gt;'Date, most recent last'
+};
+
+my $str = htmlcode('openform')
+	.qq'&lt;fieldset&gt;&lt;legend&gt;Choose...&lt;/legend&gt;
+	&lt;input type=&quot;hidden&quot; name=&quot;page&quot; value=&quot;$page&quot;&gt;
+	&lt;strong&gt;Year:&lt;/strong&gt;'
+	.$query -&gt; textfield('year', '2014', 4, 4)
+	.'
+	&lt;label&gt; &amp;nbsp; &lt;strong&gt;Select Writeup Type:&lt;/strong&gt;'
+	.$query -&gt; popup_menu('wutype', \@idlist, 0, \%items)
+	.'&lt;/label&gt; &amp;nbsp; 
+	&lt;label&gt; &amp;nbsp; &lt;strong&gt;Number of writeups to display:&lt;/strong&gt;'
+	.$query -&gt; popup_menu('count', [0, 15, 25, 50, 75, 100, 150, 200, 250, 500], $count)
+	.'&lt;/label&gt; &amp;nbsp;
+	&lt;label&gt; &amp;nbsp; &lt;strong&gt;Order By:&lt;/strong&gt;'
+	.$query -&gt; popup_menu('orderby', $choices, 'cooled DESC,reputation DESC', $labels)
+	.'&lt;/label&gt; &amp;nbsp; '
+	.$query -&gt; submit('Get Writeups')
+	.'&lt;/fieldset&gt;&lt;/form&gt;';
+
+####################################################################
+# get writeups
+#
+my $where = &quot;wrtype_writeuptype=$wuType
+	and &quot; if $wuType;
+
+$where .= &quot;publishtime &gt;= '&quot;.$year.&quot;-01-01 00:00:00' and publishtime &lt; '&quot;.$nextyear.&quot;-01-01 00:00:00'&quot;;
+
+my $wus = $DB -&gt; sqlSelectMany('
+ 	writeup_id, parent_e2node, publishtime,
+	node.author_user,
+	type.title AS type_title,
+	cooled, node.reputation
+','
+	writeup
+	JOIN node ON writeup_id = node.node_id
+	JOIN node type ON type.node_id = writeup.wrtype_writeuptype
+',
+	$where
+,'
+	ORDER BY '.$orderby.' LIMIT '.($page * $count).','.$count
+);
+
+####################################################################
+# display
+#
+
+$str .= '&lt;table style=&quot;margin-left: auto; margin-right: auto;&quot;&gt;
+	&lt;tr&gt;
+	&lt;th&gt;Title&lt;/th&gt;
+	&lt;th&gt;Author&lt;/th&gt;
+	&lt;th&gt;Published&lt;/th&gt;
+	&lt;th&gt;C/rep&lt;/th&gt;
+	&lt;/tr&gt;'
+	.htmlcode('show content', $wus, '&lt;tr class=&quot;&amp;oddrow&quot;&gt;&quot;&lt;td&gt;&quot;, parenttitle, type,
+		&quot;&lt;/td&gt;&lt;td&gt;&quot;, author, &quot;&lt;/td&gt;&lt;td align=\'right\'&gt;&lt;small&gt;&quot;, listdate, &quot;&lt;/small&gt;&lt;/td&gt;
+		&lt;td&gt;&lt;small&gt;&quot;, cooled, &quot;/&quot;, reputation, &quot;&lt;/small&gt;&lt;/td&gt;&quot;')
+	.'&lt;/table&gt;';
+
+$str .= '&lt;p class=&quot;morelink&quot;&gt;';
+$str .= linkNode($NODE, '&amp;lt&amp;lt Prev',
+	{wutype =&gt; $wuType, page =&gt; $page-1, count =&gt; $count}).' | ' if $page;
+
+$str .= '&lt;b&gt;Page '.($page+1).'&lt;/b&gt; | '
+	.linkNode($NODE, 'Next &amp;gt;&amp;gt;',
+		{wutype =&gt; $wuType, page =&gt; $page+1, count =&gt; $count})
+	.'&lt;/p&gt;';
+
+return $str;
+%]</doctext>
+  <node_id>2117840</node_id>
+  <title>mauler's sandbox XII: Sand Fast, Sand Furious</title>
+</node>

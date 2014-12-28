@@ -1,327 +1,327 @@
 <node>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <value>66000</value>
+    <value>50000</value>
     <key>32</key>
   </vars>
   <vars>
-    <value>68500</value>
+    <value>52500</value>
     <key>33</key>
   </vars>
   <vars>
-    <value>38500</value>
+    <value>23100</value>
     <key>21</key>
   </vars>
   <vars>
-    <value>143500</value>
+    <value>127500</value>
     <key>63</key>
   </vars>
   <vars>
-    <value>211000</value>
+    <value>195000</value>
     <key>90</key>
   </vars>
   <vars>
-    <value>163500</value>
+    <value>147500</value>
     <key>71</key>
   </vars>
   <vars>
-    <value>5900</value>
+    <value>2800</value>
     <key>7</key>
   </vars>
   <vars>
-    <value>51000</value>
+    <value>35000</value>
     <key>26</key>
   </vars>
   <vars>
-    <value>186000</value>
+    <value>170000</value>
     <key>80</key>
   </vars>
   <vars>
-    <value>233500</value>
+    <value>217500</value>
     <key>99</key>
   </vars>
   <vars>
-    <value>31000</value>
+    <value>17100</value>
     <key>18</key>
   </vars>
   <vars>
-    <value>166000</value>
+    <value>150000</value>
     <key>72</key>
   </vars>
   <vars>
-    <value>26000</value>
+    <value>13600</value>
     <key>16</key>
   </vars>
   <vars>
-    <value>96000</value>
+    <value>80000</value>
     <key>44</key>
   </vars>
   <vars>
-    <value>123500</value>
+    <value>107500</value>
     <key>55</key>
   </vars>
   <vars>
-    <value>53500</value>
+    <value>37500</value>
     <key>27</key>
   </vars>
   <vars>
-    <value>171000</value>
+    <value>155000</value>
     <key>74</key>
   </vars>
   <vars>
-    <value>196000</value>
+    <value>180000</value>
     <key>84</key>
   </vars>
   <vars>
-    <value>128500</value>
+    <value>112500</value>
     <key>57</key>
   </vars>
   <vars>
-    <value>223500</value>
+    <value>207500</value>
     <key>95</key>
   </vars>
   <vars>
-    <value>138500</value>
+    <value>122500</value>
     <key>61</key>
   </vars>
   <vars>
-    <value>36000</value>
+    <value>21000</value>
     <key>20</key>
   </vars>
   <vars>
-    <value>216000</value>
+    <value>200000</value>
     <key>92</key>
   </vars>
   <vars>
-    <value>208500</value>
+    <value>192500</value>
     <key>89</key>
   </vars>
   <vars>
-    <value>11300</value>
+    <value>5500</value>
     <key>10</key>
   </vars>
   <vars>
-    <value>63500</value>
+    <value>47500</value>
     <key>31</key>
   </vars>
   <vars>
-    <value>73500</value>
+    <value>57500</value>
     <key>35</key>
   </vars>
   <vars>
-    <value>13500</value>
+    <value>6600</value>
     <key>11</key>
   </vars>
   <vars>
-    <value>213500</value>
+    <value>197500</value>
     <key>91</key>
   </vars>
   <vars>
-    <value>181000</value>
+    <value>165000</value>
     <key>78</key>
   </vars>
   <vars>
-    <value>106000</value>
+    <value>90000</value>
     <key>48</key>
   </vars>
   <vars>
-    <value>203500</value>
+    <value>187500</value>
     <key>87</key>
   </vars>
   <vars>
-    <value>178500</value>
+    <value>162500</value>
     <key>77</key>
   </vars>
   <vars>
-    <value>218500</value>
+    <value>202500</value>
     <key>93</key>
   </vars>
   <vars>
-    <value>58500</value>
+    <value>42500</value>
     <key>29</key>
   </vars>
   <vars>
-    <value>148500</value>
+    <value>132500</value>
     <key>65</key>
   </vars>
   <vars>
-    <value>111000</value>
+    <value>95000</value>
     <key>50</key>
   </vars>
   <vars>
-    <value>83500</value>
+    <value>67500</value>
     <key>39</key>
   </vars>
   <vars>
-    <value>146000</value>
+    <value>130000</value>
     <key>64</key>
   </vars>
   <vars>
-    <value>228500</value>
+    <value>212500</value>
     <key>97</key>
   </vars>
   <vars>
-    <value>16000</value>
+    <value>7800</value>
     <key>12</key>
   </vars>
   <vars>
-    <value>88500</value>
+    <value>72500</value>
     <key>41</key>
   </vars>
   <vars>
-    <value>131000</value>
+    <value>115000</value>
     <key>58</key>
   </vars>
   <vars>
-    <value>23500</value>
+    <value>12000</value>
     <key>15</key>
   </vars>
   <vars>
-    <value>116000</value>
+    <value>100000</value>
     <key>52</key>
   </vars>
   <vars>
-    <value>188500</value>
+    <value>172500</value>
     <key>81</key>
   </vars>
   <vars>
-    <value>136000</value>
+    <value>120000</value>
     <key>60</key>
   </vars>
   <vars>
-    <value>126000</value>
+    <value>110000</value>
     <key>56</key>
   </vars>
   <vars>
-    <value>98500</value>
+    <value>82500</value>
     <key>45</key>
   </vars>
   <vars>
-    <value>151000</value>
+    <value>135000</value>
     <key>66</key>
   </vars>
   <vars>
-    <value>168500</value>
+    <value>152500</value>
     <key>73</key>
   </vars>
   <vars>
-    <value>33500</value>
+    <value>19000</value>
     <key>19</key>
   </vars>
   <vars>
-    <value>176000</value>
+    <value>160000</value>
     <key>76</key>
   </vars>
   <vars>
-    <value>201000</value>
+    <value>185000</value>
     <key>86</key>
   </vars>
   <vars>
-    <value>141000</value>
+    <value>125000</value>
     <key>62</key>
   </vars>
   <vars>
-    <value>121000</value>
+    <value>105000</value>
     <key>54</key>
   </vars>
   <vars>
-    <value>153500</value>
+    <value>137500</value>
     <key>67</key>
   </vars>
   <vars>
-    <value>161000</value>
+    <value>145000</value>
     <key>70</key>
   </vars>
   <vars>
-    <value>156000</value>
+    <value>140000</value>
     <key>68</key>
   </vars>
   <vars>
-    <value>28500</value>
+    <value>15300</value>
     <key>17</key>
   </vars>
   <vars>
-    <value>900</value>
+    <value>300</value>
     <key>2</key>
   </vars>
   <vars>
-    <value>400</value>
+    <value>100</value>
     <key>1</key>
   </vars>
   <vars>
-    <value>206000</value>
+    <value>190000</value>
     <key>88</key>
   </vars>
   <vars>
-    <value>61000</value>
+    <value>45000</value>
     <key>30</key>
   </vars>
   <vars>
-    <value>236000</value>
+    <value>220000</value>
     <key>100</key>
   </vars>
   <vars>
-    <value>191000</value>
+    <value>175000</value>
     <key>82</key>
   </vars>
   <vars>
-    <value>48500</value>
+    <value>32500</value>
     <key>25</key>
   </vars>
   <vars>
-    <value>56000</value>
+    <value>40000</value>
     <key>28</key>
   </vars>
   <vars>
-    <value>86000</value>
+    <value>70000</value>
     <key>40</key>
   </vars>
   <vars>
-    <value>173500</value>
+    <value>157500</value>
     <key>75</key>
   </vars>
   <vars>
-    <value>193500</value>
+    <value>177500</value>
     <key>83</key>
   </vars>
   <vars>
-    <value>21000</value>
+    <value>10500</value>
     <key>14</key>
   </vars>
   <vars>
-    <value>133500</value>
+    <value>117500</value>
     <key>59</key>
   </vars>
   <vars>
-    <value>158500</value>
+    <value>142500</value>
     <key>69</key>
   </vars>
   <vars>
-    <value>108500</value>
+    <value>92500</value>
     <key>49</key>
   </vars>
   <vars>
-    <value>46000</value>
+    <value>30000</value>
     <key>24</key>
   </vars>
   <vars>
-    <value>118500</value>
+    <value>102500</value>
     <key>53</key>
   </vars>
   <vars>
-    <value>183500</value>
+    <value>167500</value>
     <key>79</key>
   </vars>
   <vars>
-    <value>91000</value>
+    <value>75000</value>
     <key>42</key>
   </vars>
   <vars>
-    <value>41000</value>
+    <value>25300</value>
     <key>22</key>
   </vars>
   <vars>
-    <value>101000</value>
+    <value>85000</value>
     <key>46</key>
   </vars>
   <vars>
@@ -329,79 +329,79 @@
     <key>0</key>
   </vars>
   <vars>
-    <value>43500</value>
+    <value>27600</value>
     <key>23</key>
   </vars>
   <vars>
-    <value>18500</value>
+    <value>9100</value>
     <key>13</key>
   </vars>
   <vars>
-    <value>226000</value>
+    <value>210000</value>
     <key>96</key>
   </vars>
   <vars>
-    <value>4500</value>
+    <value>2100</value>
     <key>6</key>
   </vars>
   <vars>
-    <value>198500</value>
+    <value>182500</value>
     <key>85</key>
   </vars>
   <vars>
-    <value>76000</value>
+    <value>60000</value>
     <key>36</key>
   </vars>
   <vars>
-    <value>1500</value>
+    <value>600</value>
     <key>3</key>
   </vars>
   <vars>
-    <value>221000</value>
+    <value>205000</value>
     <key>94</key>
   </vars>
   <vars>
-    <value>113500</value>
+    <value>97500</value>
     <key>51</key>
   </vars>
   <vars>
-    <value>9300</value>
+    <value>4500</value>
     <key>9</key>
   </vars>
   <vars>
-    <value>103500</value>
+    <value>87500</value>
     <key>47</key>
   </vars>
   <vars>
-    <value>81000</value>
+    <value>65000</value>
     <key>38</key>
   </vars>
   <vars>
-    <value>7500</value>
+    <value>3600</value>
     <key>8</key>
   </vars>
   <vars>
-    <value>2300</value>
+    <value>1000</value>
     <key>4</key>
   </vars>
   <vars>
-    <value>231000</value>
+    <value>215000</value>
     <key>98</key>
   </vars>
   <vars>
-    <value>71000</value>
+    <value>55000</value>
     <key>34</key>
   </vars>
   <vars>
-    <value>78500</value>
+    <value>62500</value>
     <key>37</key>
   </vars>
   <vars>
-    <value>93500</value>
+    <value>77500</value>
     <key>43</key>
   </vars>
   <vars>
-    <value>3300</value>
+    <value>1500</value>
     <key>5</key>
   </vars>
   <node_id>444403</node_id>

@@ -1,407 +1,407 @@
 <node>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <value>320</value>
+    <value>160</value>
     <key>32</key>
   </vars>
   <vars>
-    <value>330</value>
+    <value>165</value>
     <key>33</key>
   </vars>
   <vars>
-    <value>210</value>
+    <value>105</value>
     <key>21</key>
   </vars>
   <vars>
-    <value>630</value>
+    <value>315</value>
     <key>63</key>
   </vars>
   <vars>
-    <value>900</value>
+    <value>450</value>
     <key>90</key>
   </vars>
   <vars>
-    <value>710</value>
+    <value>355</value>
     <key>71</key>
   </vars>
   <vars>
-    <value>70</value>
+    <value>35</value>
     <key>7</key>
   </vars>
   <vars>
-    <value>260</value>
+    <value>130</value>
     <key>26</key>
   </vars>
   <vars>
-    <value>800</value>
+    <value>400</value>
     <key>80</key>
   </vars>
   <vars>
-    <value>990</value>
+    <value>495</value>
     <key>99</key>
   </vars>
   <vars>
-    <value>180</value>
+    <value>90</value>
     <key>18</key>
   </vars>
   <vars>
-    <value>720</value>
+    <value>360</value>
     <key>72</key>
   </vars>
   <vars>
-    <value>160</value>
+    <value>80</value>
     <key>16</key>
   </vars>
   <vars>
-    <value>440</value>
+    <value>220</value>
     <key>44</key>
   </vars>
   <vars>
-    <value>550</value>
+    <value>275</value>
     <key>55</key>
   </vars>
   <vars>
-    <value>270</value>
+    <value>135</value>
     <key>27</key>
   </vars>
   <vars>
-    <value>740</value>
+    <value>370</value>
     <key>74</key>
   </vars>
   <vars>
-    <value>840</value>
+    <value>420</value>
     <key>84</key>
   </vars>
   <vars>
-    <value>570</value>
+    <value>285</value>
     <key>57</key>
   </vars>
   <vars>
-    <value>950</value>
+    <value>475</value>
     <key>95</key>
   </vars>
   <vars>
-    <value>610</value>
+    <value>305</value>
     <key>61</key>
   </vars>
   <vars>
-    <value>200</value>
+    <value>100</value>
     <key>20</key>
   </vars>
   <vars>
-    <value>920</value>
+    <value>460</value>
     <key>92</key>
   </vars>
   <vars>
-    <value>890</value>
+    <value>445</value>
     <key>89</key>
   </vars>
   <vars>
-    <value>100</value>
+    <value>50</value>
     <key>10</key>
   </vars>
   <vars>
-    <value>310</value>
+    <value>155</value>
     <key>31</key>
   </vars>
   <vars>
-    <value>350</value>
+    <value>175</value>
     <key>35</key>
   </vars>
   <vars>
-    <value>110</value>
+    <value>55</value>
     <key>11</key>
   </vars>
   <vars>
-    <value>910</value>
+    <value>455</value>
     <key>91</key>
   </vars>
   <vars>
-    <value>780</value>
+    <value>390</value>
     <key>78</key>
   </vars>
   <vars>
-    <value>480</value>
+    <value>240</value>
     <key>48</key>
   </vars>
   <vars>
-    <value>870</value>
+    <value>435</value>
     <key>87</key>
   </vars>
   <vars>
-    <value>770</value>
+    <value>385</value>
     <key>77</key>
   </vars>
   <vars>
-    <value>930</value>
+    <value>465</value>
     <key>93</key>
   </vars>
   <vars>
-    <value>290</value>
+    <value>145</value>
     <key>29</key>
   </vars>
   <vars>
-    <value>650</value>
+    <value>325</value>
     <key>65</key>
   </vars>
   <vars>
-    <value>500</value>
+    <value>250</value>
     <key>50</key>
   </vars>
   <vars>
-    <value>390</value>
+    <value>195</value>
     <key>39</key>
   </vars>
   <vars>
-    <value>640</value>
+    <value>320</value>
     <key>64</key>
   </vars>
   <vars>
-    <value>970</value>
+    <value>485</value>
     <key>97</key>
   </vars>
   <vars>
-    <value>120</value>
+    <value>60</value>
     <key>12</key>
   </vars>
   <vars>
-    <value>410</value>
+    <value>205</value>
     <key>41</key>
   </vars>
   <vars>
-    <value>580</value>
+    <value>290</value>
     <key>58</key>
   </vars>
   <vars>
-    <value>150</value>
+    <value>75</value>
     <key>15</key>
   </vars>
   <vars>
-    <value>520</value>
+    <value>260</value>
     <key>52</key>
   </vars>
   <vars>
-    <value>810</value>
+    <value>405</value>
     <key>81</key>
   </vars>
   <vars>
-    <value>600</value>
+    <value>300</value>
     <key>60</key>
   </vars>
   <vars>
-    <value>560</value>
+    <value>280</value>
     <key>56</key>
   </vars>
   <vars>
-    <value>450</value>
+    <value>225</value>
     <key>45</key>
   </vars>
   <vars>
-    <value>660</value>
+    <value>330</value>
     <key>66</key>
   </vars>
   <vars>
-    <value>730</value>
+    <value>365</value>
     <key>73</key>
   </vars>
   <vars>
-    <value>190</value>
+    <value>95</value>
     <key>19</key>
   </vars>
   <vars>
-    <value>760</value>
+    <value>380</value>
     <key>76</key>
   </vars>
   <vars>
-    <value>860</value>
+    <value>430</value>
     <key>86</key>
   </vars>
   <vars>
-    <value>620</value>
+    <value>310</value>
     <key>62</key>
   </vars>
   <vars>
-    <value>540</value>
+    <value>270</value>
     <key>54</key>
   </vars>
   <vars>
-    <value>670</value>
+    <value>335</value>
     <key>67</key>
   </vars>
   <vars>
-    <value>700</value>
+    <value>350</value>
     <key>70</key>
   </vars>
   <vars>
-    <value>680</value>
+    <value>340</value>
     <key>68</key>
   </vars>
   <vars>
-    <value>170</value>
-    <key>17</key>
-  </vars>
-  <vars>
-    <value>20</value>
+    <value>10</value>
     <key>2</key>
   </vars>
   <vars>
-    <value>10</value>
+    <value>85</value>
+    <key>17</key>
+  </vars>
+  <vars>
+    <value>5</value>
     <key>1</key>
   </vars>
   <vars>
-    <value>880</value>
+    <value>440</value>
     <key>88</key>
   </vars>
   <vars>
-    <value>300</value>
+    <value>150</value>
     <key>30</key>
   </vars>
   <vars>
-    <value>1000</value>
+    <value>500</value>
     <key>100</key>
   </vars>
   <vars>
-    <value>820</value>
+    <value>410</value>
     <key>82</key>
   </vars>
   <vars>
-    <value>250</value>
+    <value>125</value>
     <key>25</key>
   </vars>
   <vars>
-    <value>280</value>
+    <value>140</value>
     <key>28</key>
   </vars>
   <vars>
-    <value>400</value>
+    <value>200</value>
     <key>40</key>
   </vars>
   <vars>
-    <value>750</value>
+    <value>375</value>
     <key>75</key>
   </vars>
   <vars>
-    <value>830</value>
+    <value>415</value>
     <key>83</key>
   </vars>
   <vars>
-    <value>140</value>
+    <value>70</value>
     <key>14</key>
   </vars>
   <vars>
-    <value>590</value>
+    <value>295</value>
     <key>59</key>
   </vars>
   <vars>
-    <value>690</value>
+    <value>345</value>
     <key>69</key>
   </vars>
   <vars>
-    <value>490</value>
+    <value>245</value>
     <key>49</key>
   </vars>
   <vars>
-    <value>240</value>
+    <value>120</value>
     <key>24</key>
   </vars>
   <vars>
-    <value>530</value>
+    <value>265</value>
     <key>53</key>
   </vars>
   <vars>
-    <value>790</value>
+    <value>395</value>
     <key>79</key>
   </vars>
   <vars>
-    <value>220</value>
+    <value>110</value>
     <key>22</key>
   </vars>
   <vars>
-    <value>420</value>
+    <value>210</value>
     <key>42</key>
   </vars>
   <vars>
-    <value>0</value>
+    <value></value>
     <key>0</key>
   </vars>
   <vars>
-    <value>460</value>
+    <value>230</value>
     <key>46</key>
   </vars>
   <vars>
-    <value>130</value>
+    <value>65</value>
     <key>13</key>
   </vars>
   <vars>
-    <value>230</value>
+    <value>115</value>
     <key>23</key>
   </vars>
   <vars>
-    <value>960</value>
+    <value>480</value>
     <key>96</key>
   </vars>
   <vars>
-    <value>60</value>
+    <value>30</value>
     <key>6</key>
   </vars>
   <vars>
-    <value>850</value>
+    <value>425</value>
     <key>85</key>
   </vars>
   <vars>
-    <value>30</value>
+    <value>15</value>
     <key>3</key>
   </vars>
   <vars>
-    <value>360</value>
+    <value>180</value>
     <key>36</key>
   </vars>
   <vars>
-    <value>940</value>
+    <value>470</value>
     <key>94</key>
   </vars>
   <vars>
-    <value>90</value>
-    <key>9</key>
-  </vars>
-  <vars>
-    <value>510</value>
+    <value>255</value>
     <key>51</key>
   </vars>
   <vars>
-    <value>470</value>
+    <value>45</value>
+    <key>9</key>
+  </vars>
+  <vars>
+    <value>235</value>
     <key>47</key>
   </vars>
   <vars>
-    <value>80</value>
-    <key>8</key>
-  </vars>
-  <vars>
-    <value>380</value>
+    <value>190</value>
     <key>38</key>
   </vars>
   <vars>
     <value>40</value>
+    <key>8</key>
+  </vars>
+  <vars>
+    <value>20</value>
     <key>4</key>
   </vars>
   <vars>
-    <value>980</value>
+    <value>490</value>
     <key>98</key>
   </vars>
   <vars>
-    <value>340</value>
+    <value>170</value>
     <key>34</key>
   </vars>
   <vars>
-    <value>370</value>
+    <value>185</value>
     <key>37</key>
   </vars>
   <vars>
-    <value>430</value>
+    <value>215</value>
     <key>43</key>
   </vars>
   <vars>
-    <value>50</value>
+    <value>25</value>
     <key>5</key>
   </vars>
   <node_id>461429</node_id>

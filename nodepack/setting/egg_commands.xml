@@ -37,12 +37,12 @@
     <key>magic</key>
   </vars>
   <vars>
-    <value>offers a chocolate snikerdoodle to</value>
-    <key>cookie</key>
-  </vars>
-  <vars>
     <value>drops an anvil on</value>
     <key>anvil</key>
+  </vars>
+  <vars>
+    <value>gives ~ a gingerbread man</value>
+    <key>cookie</key>
   </vars>
   <vars>
     <value>plays the world's tiniest violin for</value>
@@ -55,6 +55,10 @@
   <vars>
     <value>belligerently defenestrates</value>
     <key>defenestrate</key>
+  </vars>
+  <vars>
+    <value>puts a present under the tree for</value>
+    <key>christmas</key>
   </vars>
   <vars>
     <value>makes ~ a geta of vegan sushi for</value>
@@ -149,16 +153,20 @@
     <key>heart</key>
   </vars>
   <vars>
+    <value>pours ~ a mug of eggnog</value>
+    <key>eggnog</key>
+  </vars>
+  <vars>
     <value>lights a candle for</value>
     <key>candle</key>
   </vars>
   <vars>
-    <value>flings poop at</value>
-    <key>poo</key>
-  </vars>
-  <vars>
     <value>hugs</value>
     <key>hug</key>
+  </vars>
+  <vars>
+    <value>flings poop at</value>
+    <key>poo</key>
   </vars>
   <vars>
     <value>cuts ~ free from the net</value>

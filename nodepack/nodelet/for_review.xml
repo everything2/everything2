@@ -1,40 +1,9 @@
 <node>
   <nltext></nltext>
-  <parent_container>1854181</parent_container>
+  <parent_container>0</parent_container>
   <type_nodetype>9</type_nodetype>
-  <updateinterval>360</updateinterval>
   <node_id>2068913</node_id>
   <nlcode>[%
-
-my $review = getId(getNode('review', 'publication_status'));
-my @noteResponse = (
-	&quot;, (Select CONCAT(timestamp, ': ', notetext) From nodenote As response
-		Where response.nodenote_nodeid = request.nodenote_nodeid
-			And response.timestamp &gt; request.timestamp
-			Order By response.timestamp Desc Limit 1) as latestnote,
-		(Select count(*) From nodenote As response
-		Where response.nodenote_nodeid = request.nodenote_nodeid
-			And response.timestamp &gt; request.timestamp) as notecount&quot;
-	, &quot;notecount &gt; 0,&quot;
-	, '&lt;th align=&quot;center&quot; title=&quot;node notes&quot;&gt;N?&lt;/th&gt;'
-	, 'notes'
-	) if $APP-&gt;isEditor($USER);
-
-my $drafts = $DB -&gt; sqlSelectMany(
-	&quot;title, author_user, request.timestamp AS publishtime $noteResponse[0]&quot;
-	, &quot;draft
-		JOIN node on node_id = draft_id
-		JOIN nodenote AS request
-			ON draft_id = nodenote_nodeid
-			AND request.noter_user = 0
-		LEFT JOIN nodenote AS newer
-			ON request.nodenote_nodeid = newer.nodenote_nodeid
-			AND newer.noter_user = 0
-			AND request.timestamp &lt; newer.timestamp&quot;
-	, &quot;publication_status = $review
-		AND newer.timestamp IS NULL&quot;
-	, &quot;ORDER BY $noteResponse[1] request.timestamp&quot;
-);
 
 my %funx = (
 	startline =&gt; sub{
@@ -52,11 +21,12 @@ my %funx = (
 	}
 );
 
+my $drafts = $DB-&gt;stashData(&quot;reviewdrafts&quot;);
+
 &quot;&lt;table&gt;
-&lt;tr&gt;&lt;th&gt;Draft&lt;/th&gt;$noteResponse[2]&lt;/tr&gt;&quot;
+&lt;tr&gt;&lt;th&gt;Draft&lt;/th&gt;&quot;.($APP-&gt;isEditor($USER)?(qq|&lt;th align=&quot;center&quot; title=&quot;node notes&quot;&gt;N?&lt;/th&gt;|):(&quot;&quot;)).&quot;&lt;/tr&gt;&quot;
 .htmlcode('show content', $drafts
-	, qq!&lt;tr class=&quot;&amp;oddrow&quot;&gt; startline, title, byline, &quot;&lt;/td&gt;
-		&quot;, $noteResponse[3]!,
+	, qq!&lt;tr class=&quot;&amp;oddrow&quot;&gt; startline, title, byline, &quot;&lt;/td&gt;&quot;,!.(($APP-&gt;isEditor($USER)?(&quot;notes&quot;):(&quot;&quot;))),
 	%funx)
 .'&lt;/table&gt;';
 %]
