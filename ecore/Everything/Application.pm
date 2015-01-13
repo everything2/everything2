@@ -23,6 +23,9 @@ use CGI;
 # For getCallStack
 use Devel::Caller qw(caller_args);
 
+# For add_notification
+use JSON;
+
 use vars qw($PARAMS $PARAMSBYTYPE);
 BEGIN {
 	$PARAMS = 
@@ -3780,6 +3783,35 @@ sub fetch_weblog {
     "ORDER BY linkedtime DESC LIMIT $number OFFSET $offset" ) ;
 
     return $csr->fetchall_arrayref({});
+}
+
+sub add_notification {
+  my ($this, $notification_id, $user_id, $args) = @_;
+
+  # get notification id if we were passed a name:
+  $notification_id = $this->{db}->getNode($notification_id, 'notification')->{node_id} if $notification_id =~ /\D/;
+
+  $user_id ||= $notification_id;
+
+  # turn args to string if we were passed a hashref:
+  $args = to_json($args) if(UNIVERSAL::isa($args,'HASH'));
+
+  $this->{db}->sqlInsert(
+    'notified', {
+      notification_id => $notification_id,
+      user_id => $user_id,
+      args => $args,
+      -notified_time => 'now()'
+    });
+
+  return 1;
+}
+
+# Terrible, stupid shim for now until I can rewrite the sendPrivateMessage htmlcode
+sub send_message {
+  my ($this, $params) = @_;
+
+  $this->{db}->sqlInsert("message",{"author_user" => $params->{from},"for_user" => $params->{to},"msgtext" => $params->{message}});
 }
 
 #############################################################################

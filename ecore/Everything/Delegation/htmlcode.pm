@@ -46,7 +46,7 @@ use Everything::XML;
 # Used by parsetime
 use Time::Local;
 
-# Used by shownewexp, publishwriteup, static_javascript, zenwriteups, hasAchieved, addNotification,
+# Used by shownewexp, publishwriteup, static_javascript, zenwriteups, hasAchieved,
 #  showNewGP, notificationsJSON, Notifications_nodelet_settings
 use JSON;
 
@@ -11647,24 +11647,7 @@ sub addNotification
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my ($notification_id, $user_id, $args) = @_;
-
-  # get notification id if we were passed a name:
-  $notification_id = getNode($notification_id, 'notification')->{node_id} if $notification_id =~ /\D/;
-
-  $user_id ||= $notification_id;
-
-  # turn args to string if we were passed a hashref:
-  $args = to_json($args) if(UNIVERSAL::isa($args,'HASH'));
-
-  $DB->sqlInsert(
-    'notified', {
-      notification_id => $notification_id,
-      user_id => $user_id,
-      args => $args,
-      -notified_time => 'now()'
-    });
-  return 1;
+  return $APP->add_notification(@_);
 }
 
 sub verifyRequest

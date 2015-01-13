@@ -10,6 +10,9 @@ print "Starting data generator: ".localtime()." (".time().")\n";
 
 my $seen_modules;
 
+my $force;
+$force = 1 if defined($ARGV[0]) and $ARGV[0] eq "force";
+
 foreach my $dir (@INC)
 {
   my $full_directory_path = "$dir/Everything/DataStash";
@@ -27,7 +30,7 @@ foreach my $dir (@INC)
        print "Evaluating generator '$classname'...";
        my $generator = "Everything::DataStash::$classname"->new(DB => $Everything::DB, CONF => $Everything::CONF, APP => $Everything::APP);
 
-       print "".($generator->generate_if_needed()?("updated"):("not needed"))."\n";
+       print "".($generator->generate_if_needed($force)?("updated"):("not needed"))."\n";
     }
   }
 }

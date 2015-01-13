@@ -233,7 +233,7 @@ sub setVars
 	my @allVarNames = (keys %originalVars, keys %$varsref);
 	foreach my $newVar (@allVarNames) {
 		$modifiedVars{$newVar} = $$varsref{$newVar}
-			if defined($$varsref{$newVar}) and $$varsref{$newVar} ne $originalVars{$newVar};
+			if defined($$varsref{$newVar}) and (!defined($originalVars{$newVar}) || $$varsref{$newVar} ne $originalVars{$newVar});
 	}
 
 	# Now lock the node's row in the DB, read its vars as they are now,
@@ -242,7 +242,7 @@ sub setVars
 	#  ways at once.  (No more infinite C!s.  q.q)
 	my $updateSub = sub {
 		my $currentVarString =
-			$DB->sqlSelect('vars', 'setting', "setting_id = $$NODE{node_id}");
+			$DB->sqlSelect('vars', 'setting', "setting_id = $$NODE{node_id}") || "";
 		my %currentVars = getVarHashFromStringFast($currentVarString);
 		map { $currentVars{$_} = $modifiedVars{$_}; } keys %modifiedVars;
 		map { delete $currentVars{$_} if !defined $$varsref{$_}; } keys %currentVars;

@@ -18,6 +18,14 @@ sub generate
   return $this->DB->stashData($this->stash_name, $data);  
 }
 
+sub current_data
+{
+  my ($this) = @_;
+  my $current_data = $this->DB->stashData($this->stash_name);
+  return {} unless UNIVERSAL::isa($current_data, "HASH");
+  return $current_data;
+}
+
 sub stash_name
 {
   my ($this) = @_;
@@ -28,8 +36,8 @@ sub stash_name
 
 sub generate_if_needed
 {
-  my ($this) = @_;
-  if(time() - $this->stash_last_updated > $this->interval)
+  my ($this, $force) = @_;
+  if($force or time() - $this->stash_last_updated > $this->interval)
   {
     $this->generate();
     $this->stash_set_updated();

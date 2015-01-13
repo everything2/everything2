@@ -14,7 +14,7 @@ if($Everything::CONF->environment ne "development")
 
 my $APP = $Everything::APP;
 
-foreach my $user (1..30,"user with space")
+foreach my $user (1..30,"user with space","genericeditor")
 {
   if($user =~ /^\d/)
   {
@@ -31,6 +31,18 @@ foreach my $user (1..30,"user with space")
   $author->{votesleft} = 50;
   $DB->updateNode($author, -1);
 }
+
+print STDERR "Promoting genericeditor to be a content editor\n";
+my $ce = $DB->getNode("Content Editors","usergroup");
+my $genericed = $DB->getNode("genericeditor","user");
+$DB->insertIntoNodegroup($ce, $DB->getNode("root","user"), $genericed);
+$DB->updateNode($ce,-1);
+$genericed->{vars} ||= "";
+my $genericedv = getVars($genericed);
+$genericedv->{nodelets} = "1687135,262,2044453,170070,91,263,1157024,165437,1689202,1930708";
+$genericedv->{settings} = '{"notifications":{"2045486":1}}';
+setVars($genericed,$genericedv);
+$DB->updateNode($genericed, -1);
 
 my $types = 
 {
@@ -67,6 +79,7 @@ my $datanodes = {
     "normaluser1" => [
       ["Really old draft, editor neglected","thing","a draft to trigger editor neglect","review"],
       ["Really old draft, user neglected","thing","a draft to trigger user neglect","review"],
+      ["Really, really old draft, user neglected","thing","a draft to trigger findable change","review"],
     ],
   },
 };
@@ -120,6 +133,39 @@ foreach my $datatype (keys %$datanodes)
     }
   }
 }
+
+# Update drafts to trigger user and editor neglect
+foreach my $d("user","editor")
+{
+  print STDERR "Updating draft to backdate for $d neglect\n";
+  my $neglect = $DB->getNode("Really old draft, $d neglected (thing)","draft");
+  unless($neglect)
+  {
+    die "Could not get draft for neglect detection!";
+  }
+  $neglect->{createtime} = $APP->convertEpochToDate(time()-20*24*60*60);
+  $neglect->{publishtime} = $neglect->{createtime};
+  $DB->updateNode($neglect, -1);
+
+  # Insert a nodenote where the notetext is null
+  print STDERR "Putting node notes on $d neglect\n";
+  $DB->sqlInsert("nodenote", {"nodenote_nodeid" => $neglect->{node_id}, "timestamp" => $APP->convertEpochToDate(time()-15*24*60*60),"notetext" => "author requested review"}); 
+  if($d eq "user")
+  {
+    $DB->sqlInsert("nodenote",{"nodenote_nodeid" => $neglect->{node_id}, "timestamp" => $APP->convertEpochToDate(time()-10*24*60*60),"notetext" => "looks good","noter_user" => $DB->getNode("root","user")->{node_id}});
+  }
+
+}
+
+# Trigger the neglecteddrafts boot back to findable
+my $oldneglect = $DB->getNode("Really, really old draft, user neglected (thing)","draft");
+$oldneglect->{createtime} = $APP->convertEpochToDate(time()-40*24*60*60);
+$oldneglect->{publishtime} = $oldneglect->{createtime};
+$DB->updateNode($oldneglect, -1);
+$DB->sqlInsert("nodenote", {"nodenote_nodeid" => $oldneglect->{node_id}, "timestamp" => $APP->convertEpochToDate(time()-30*24*60*60),"notetext" => "author requested review"}); 
+$DB->sqlInsert("nodenote", {"nodenote_nodeid" => $oldneglect->{node_id}, "timestamp" => $APP->convertEpochToDate(time()-29*24*60*60),"notetext" => "looks good","noter_user" => $DB->getNode("root","user")->{node_id}});
+
+
 my $cools = { "normaluser1" => ["good poetry (poetry)", "swedish tomatoë (essay)"], "normaluser5" => ["Quick brown fox (thing)","lazy dog (idea)", "regular brown fox (person)"]};
 
 foreach my $chinger (keys %$cools)
