@@ -8,7 +8,7 @@ use base qw(Everything::ect::node);
 sub node_xml_prep
 {
 	my ($this, $N, $dbh) = @_;
-	$N->{vars} = "[]";
+	$N->{vars} = "{}";
 	return $this->SUPER::node_xml_prep($N, $dbh);
 }
 
