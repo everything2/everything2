@@ -121,6 +121,10 @@ sub getELogName
   return $APP->getELogName(@_);
 }
 
+sub getVars
+{
+  return $APP->getVars(@_);
+}
 
 #############################################################################
 #	Sub
@@ -172,27 +176,6 @@ sub getVarStringFromHash
 {
   return $APP->getVarStringFromHash(@_);
 }
-
-sub getVars 
-{
-	my ($NODE) = @_;
-	getRef $NODE;
-
-	return if ($NODE == -1);
-	return unless $NODE;
-	
-	unless (exists $$NODE{vars}) {
-		warn ("getVars:\t'vars' field does not exist for node ".getId($NODE)."
-		perhaps it doesn't join on the settings table?\n");
-	}
-
-	my %vars;
-	return \%vars unless ($$NODE{vars});
-
-	%vars = getVarHashFromStringFast($$NODE{vars});
-	\%vars;
-}
-
 
 #############################################################################
 #	Sub

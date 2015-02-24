@@ -10,7 +10,7 @@ sub nodelet
   my ($this, $request, $node, $properties) = @_;
 
   my $nodelettitle = $node->{title};
-  my $nodeletclass = $nodelettitle;
+  my $nodeletclass = lc($nodelettitle);
   $nodeletclass =~ s/\W//g;
 
   $properties->{nodelettitle} = $nodelettitle;

@@ -83,7 +83,8 @@ sub display
   #
   $request->response->PAGEDATA->{nodelets} .= $this->dispatch_subtype($request, $this->getNode("Master Control", "nodelet"));
   $request->response->PAGEDATA->{nodelets} .= $this->dispatch_subtype($request, $this->getNode("Epicenter","nodelet"));
-
+  $request->response->PAGEDATA->{nodelets} .= $this->dispatch_subtype($request, $this->getNode("Node Statistics","nodelet"));
+  $request->response->PAGEDATA->{nodelets} .= $this->dispatch_subtype($request, $this->getNode("Other Users","nodelet"));
   return $request->response->render();
 }
 

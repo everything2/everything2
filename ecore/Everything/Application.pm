@@ -3814,5 +3814,21 @@ sub send_message {
   $this->{db}->sqlInsert("message",{"author_user" => $params->{from},"for_user" => $params->{to},"msgtext" => $params->{message}});
 }
 
-#############################################################################
+sub getVars 
+{
+  my ($this, $N) = @_;
+  $this->{db}->getRef($N);
+  return if ($N == -1);
+  return unless $N;
+	
+  unless (exists $N->{vars}) {
+    $this->printLog("getVars: 'vars' field does not exist for node ".getId($N)."perhaps it doesn't join on the settings table?\n");
+  }
+
+  my %vars = ();
+  return {} unless ($N->{vars});
+
+  %vars = $this->getVarHashFromStringFast($N->{vars});
+  return \%vars;
+}
 1;
