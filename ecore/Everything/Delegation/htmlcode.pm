@@ -14089,7 +14089,7 @@ sub nopublishreason
   foreach (@group)
   {
     getRef($_);
-    return if $$_{author_user} == $$user{node_id};
+    return $_ if $$_{author_user} == $$user{node_id};
   }
 
   # no more checks if author has an editor-approved a draft for this node:
