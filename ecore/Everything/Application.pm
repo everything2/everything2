@@ -239,8 +239,8 @@ sub updatePassword
 {
 	my ($this, $user, $pass) = @_;
 
-	($user -> {passwd}, $user -> {salt}) = $this -> saltNewPassword($pass);
-	return $this -> {db} -> updateNode($user, $user);
+	($user->{passwd}, $user->{salt}) = $this -> saltNewPassword($pass);
+	return $this->{db}->updateNode($user, $user);
 }
 
 #############################################################################
@@ -316,7 +316,7 @@ sub getToken
 {
 	my ($this, $user, $pass, $action, $expiry) = @_;
 
-	my $token = $this -> hashString("$action$pass$expiry", $user -> {salt});
+	my $token = $this->hashString("$action$pass$expiry", $user -> {salt});
 	# email clients may parse dots at end of links as outside link
 	$token =~ s/\.+$//;
 	return $token;
@@ -371,7 +371,7 @@ sub checkToken
 
 	return if ($expiry && time() > $expiry)
 		or ($action ne 'activate' && $action ne 'reset')
-		or $this -> getToken($user, $query -> param('passwd')
+		or $this->getToken($user, $query -> param('passwd')
 			, $action, $expiry) ne $query -> param('token');
 
 	$this -> updatePassword($user, $query -> param('passwd'));

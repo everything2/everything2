@@ -1639,7 +1639,7 @@ sub show_content
       my $length = undef; $length = $content[$i] if $content[$i] =~ /\d/ ;
       $$HTML{ noscreening } = ($content[$i] eq 'unfiltered');
       $i-- unless $content[++$i];
-
+      my $xml = 0;
       my $text = $N->{ doctext } ;
       # Superdoc stuff hardcoded below
       $text = parseCode( $text ) if exists( $$N{ type } ) and ( $$N{ type_nodetype } eq 14 or $$N{ type }{ extends_nodetype } eq 14 ) ;

@@ -6,19 +6,26 @@ use Everything::Response;
 use namespace::autoclean;
 use CGI;
 
-has 'cgi' => (lazy => 1, builder => "_build_cgi", isa => "CGI", handles => ["param", "header", "cookie"], is => "rw");
+has 'cgi' => (lazy => 1, builder => "_build_cgi", isa => "CGI", handles => ["param", "header", "cookie","url","request_method"], is => "rw");
 has 'USER' => (lazy => 1, builder => "_build_user", isa => "HashRef", is => "rw");
 has 'VARS' => (lazy => 1, builder => "_build_vars", isa => "HashRef", is => "rw");
-has 'CONF' => (isa => "HashRef | Everything::Configuration", is => "rw");
-has 'DB' => (isa => "Everything::NodeBase", is => "rw");
-has 'APP' => (isa => "Everything::Application", is => "ro");
+has 'CONF' => (isa => "Everything::Configuration", is => "ro", required => 1);
+has 'DB' => (isa => "Everything::NodeBase", is => "ro", required => 1);
+has 'APP' => (isa => "Everything::Application", is => "ro", required => 1);
 has 'response' => (lazy => 1, isa => "Everything::Response", is => "ro", builder => "_build_response");
+
 
 # Pageload is going to go away
 has 'PAGELOAD' => (isa => "HashRef", builder => "_build_pageload", is => "rw");
 
 # NODE is kind of a squishy concept here. Eventually, the router is going to set this
 has 'NODE' => (is => "rw", isa => "HashRef");
+
+sub POSTDATA
+{
+  my $self = shift;
+  return $self->cgi->param("POSTDATA");
+}
 
 sub _build_user
 {
