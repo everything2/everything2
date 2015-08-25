@@ -73,6 +73,18 @@ NameVirtualHost *:80
 		AddOutputFilterByType DEFLATE text/javascript text/html text/xml text/css application/x-javascript
 	</Directory>
 
+        ScriptAliasMatch /api/.* /var/everything/www/api/index.pl
+        <Directory /var/everything/www/api/>
+                DirectoryIndex index.pl
+                AddHandler perl-script .pl
+                Options +ExecCGI +FollowSymLinks
+                AllowOverride None
+                Order allow,deny
+                allow from all
+
+                deny from env=denyip
+        </Directory>
+
 	ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
 	<Directory "/usr/lib/cgi-bin">
 		AllowOverride None

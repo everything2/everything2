@@ -1,3 +1,4 @@
+name		 "e2webdebug"
 maintainer       "Jay Bonci - Everything2 Media"
 maintainer_email "jay@bonci.net"
 license          "Same as the Everything Engine"
