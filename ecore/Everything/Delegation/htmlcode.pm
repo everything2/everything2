@@ -14743,6 +14743,7 @@ sub unpublishwriteup
   if ($E2NODE)
   {
     $noexp = $APP->isMaintenanceNode($E2NODE);
+    $title = $E2NODE -> {title};
   }elsif ($title =~ / \((\w+)\)$/ and getNode($1, 'writeuptype')){
     $title =~ s/ \((\w+)\)$//;
   }
