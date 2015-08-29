@@ -4391,7 +4391,7 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
   return unless $str;
   $str = parseLinks($str, $$NODE{parent_e2node});
 
-  $str = '<p><big><strong>Hints!</strong></big> (choose which writeup hints display at <a href='.urlGen({'node'=>'Writeup Settings','type'=>'superdoc'}).'">Writeup Settings</a>)</p><p>'.$str.'</p>';
+  $str = '<p><big><strong>Hints!</strong></big> (choose which writeup hints display in your <a href='.urlGen({'node'=>'Settings','type'=>'superdoc'}).'">Settings</a>)</p><p>'.$str.'</p>';
 
   return $str;
 }
