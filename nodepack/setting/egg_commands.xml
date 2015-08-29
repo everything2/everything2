@@ -9,7 +9,11 @@
     <key>cthulhu</key>
   </vars>
   <vars>
-    <value>builds a monkey for </value>
+    <value>attaches a small blue thumb-up symbol to</value>
+    <key>like</key>
+  </vars>
+  <vars>
+    <value>blobs</value>
     <key>special</key>
   </vars>
   <vars>
@@ -41,7 +45,7 @@
     <key>anvil</key>
   </vars>
   <vars>
-    <value>gives ~ a gingerbread man</value>
+    <value>gives ~ a chocolate teacake</value>
     <key>cookie</key>
   </vars>
   <vars>
@@ -55,10 +59,6 @@
   <vars>
     <value>belligerently defenestrates</value>
     <key>defenestrate</key>
-  </vars>
-  <vars>
-    <value>puts a present under the tree for</value>
-    <key>christmas</key>
   </vars>
   <vars>
     <value>makes ~ a geta of vegan sushi for</value>
@@ -151,10 +151,6 @@
   <vars>
     <value>loves ~ so very much</value>
     <key>heart</key>
-  </vars>
-  <vars>
-    <value>pours ~ a mug of eggnog</value>
-    <key>eggnog</key>
   </vars>
   <vars>
     <value>lights a candle for</value>

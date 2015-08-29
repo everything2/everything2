@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-my $pollgod = 'Tem42';
+my $pollgod = 'mauler';
 my $turnPollsOff=0;
 return 'Sorry, poll creation has been temporarily disabled.' if ($turnPollsOff);
 

@@ -594,4 +594,9 @@
     <node_id>113</node_id>
     <paramkey>level_override</paramkey>
   </nodeparam>
+  <nodeparam>
+    <paramvalue>1180811</paramvalue>
+    <node_id>1969185</node_id>
+    <paramkey>usergroup_owner</paramkey>
+  </nodeparam>
 </nodeparam>

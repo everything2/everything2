@@ -352,18 +352,21 @@ e2 = $.extend( function(x){return e2.shortFunctions[typeof x].apply(this, argume
 	setLastnode: function(lastnode){
 		var REPLACE_PARAMS = 2;
 		var oldHref = this.href;
-                // this function is why we need jquery bbq
+		// this function is why we need jquery bbq
 		// deparam does not deal well with no query string, so provide a blank one
 		if (oldHref.indexOf('?') == -1) {
 			oldHref = oldHref.replace( /(#.*|$)/ , &quot;?$1&quot; );
 		}
-                var newurl = new e2URL(oldHref);
+		// don't encode an anchor
+		var newHref = oldHref.split('#');
+		var newurl = new e2URL(newHref[0]);
 		if (lastnode === undefined) {
 			delete newurl.params['lastnode_id'];
 		} else {
 			newurl.params[&quot;lastnode_id&quot;] = lastnode;
 		}
-		this.href = newurl.make_url();
+		newHref[0] = newurl.make_url();
+		this.href = newHref.join('#');
 	},
 
 	// confirmop framework
@@ -913,7 +916,7 @@ if(! e2.noquickvote)
 		function ajaxFinished(result, success, statusText){
 			if (success){
 				if (replaceID) {
-					nu = $(result);
+					nu = $($.parseHTML(result));
 					ol.replaceWith(nu);
 				}else{
 					ol.html(result);
@@ -1587,8 +1590,9 @@ void new function(zensheet){
 	}
 }(document.getElementById('zensheet'));
 
-// End contents of settings script</doctext>
-  <contentversion>127</contentversion>
+// End contents of settings script 
+</doctext>
+  <contentversion>133</contentversion>
   <s3bucket></s3bucket>
   <node_id>1874924</node_id>
   <title>default javascript</title>
