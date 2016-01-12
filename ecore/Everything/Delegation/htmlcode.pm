@@ -8151,8 +8151,6 @@ sub admin_toolset
     }
   }
 
-  $newStr .= $query -> li(linkNode($NODE,"Node XML",{displaytype => "xmltrue"})) if ($currentDisplay ne 'xmltrue');
-
   if ($currentDisplay ne 'help')
   {
     if ($DB->sqlSelectHashref("*", "nodehelp", "nodehelp_id=$$NODE{node_id}"))
@@ -8181,6 +8179,13 @@ sub admin_toolset
       , {notanop => 'usernames'
       , confirmop => $$NODE{title}
       , -title => 'delete user account if safe, otherwise lock it'
+      , -class => 'action'}))
+      .$query -> li(linkNode(getNode('The Old Hooked Pole', 'restricted_superdoc')
+      , 'Smite Spammer'
+      , {notanop => 'usernames'
+      , confirmop => $$NODE{title}
+      , smite => 1
+      , -title => 'detonate noder, blank their homenode, remove their writeups, blacklist their IP where appropriate'
       , -class => 'action'}))
       .$spacer
       .$query -> li(linkNode($NODE, 'bless', { op=>'bless', bless_id=>$$NODE{node_id}}))
