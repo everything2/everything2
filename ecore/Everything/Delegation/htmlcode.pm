@@ -8173,19 +8173,24 @@ sub admin_toolset
 
   if ($nt eq 'user')
   {
+    my $verify = htmlcode('verifyRequestHash', 'polehash');
+
     $newStr .= $spacer
       .$query -> li(linkNode(getNode('The Old Hooked Pole', 'restricted_superdoc')
       , 'Detonate noder'
-      , {notanop => 'usernames'
+      , {%$verify
+      , detonate => 1
+      , notanop => 'usernames'
       , confirmop => $$NODE{title}
       , -title => 'delete user account if safe, otherwise lock it'
       , -class => 'action'}))
       .$query -> li(linkNode(getNode('The Old Hooked Pole', 'restricted_superdoc')
       , 'Smite Spammer'
-      , {notanop => 'usernames'
-      , confirmop => $$NODE{title}
-      , smite => 1
-      , -title => 'detonate noder, blank their homenode, remove their writeups, blacklist their IP where appropriate'
+      , {%$verify
+      , confirmop => 'remove'
+      , removeauthor => 1
+      , author => $$NODE{title}
+      , -title => 'detonate this noder, blank their homenode, remove their writeups, blacklist their IP where appropriate'
       , -class => 'action'}))
       .$spacer
       .$query -> li(linkNode($NODE, 'bless', { op=>'bless', bless_id=>$$NODE{node_id}}))
@@ -12224,9 +12229,10 @@ sub confirmop
     cure_infection => "remove ${author}'s infection",
     nuke => "delete this $$NODE{type}{title}",
     nukedraft => "delete this draft",
-    remove => "remove this writeup and return it to draft status"
+    remove => !$query -> param('polehash_seed') ? "return this/these writeups to draft status"
+	: 'smite '.$APP -> encodeHTML($query -> param('author')).' for a vile spammer'
     , leavegroup => 'leave this usergroup'
-    , usernames => 'smite ' . $query -> escapeHTML ($query -> param('confirmop'))
+    , usernames => 'detonate ' . $query -> escapeHTML ($query -> param('confirmop'))
   );
 
   my $str = '<fieldset><legend>Confirm</legend>
