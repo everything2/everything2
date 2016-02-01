@@ -978,7 +978,8 @@ sub gotoNode
 
         if($NODE->{type}->{title} eq "draft" && !$APP->canSeeDraft($user_id, $NODE))
         {
-                $NODE = getNodeById($Everything::CONF->system->{permission_denied});
+                # if you can't see a draft, you don't need/want to know it's there
+                $NODE = getNodeById($Everything::CONF->system->{not_found_node});
         }
 	#these are contingencies various things that could go wrong
 
