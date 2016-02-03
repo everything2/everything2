@@ -12407,218 +12407,6 @@ sub editwriteup
 
 }
 
-sub blacklistedIP
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = undef;
-  my $offset = int($query->param('offset')) || 0;
-  my $pageSize = 200;
-  my ($firstItem, $lastItem) = ($offset + 1, $offset + $pageSize);
-  my $records = $pageSize * 2;
-  my $displayCount = $pageSize;
-
-  ###################################################
-  # addrFromInt
-  ###################################################
-  # Takes an integer representing an IPv4 address
-  #  as an argument
-  #
-  # Returns a string with dotted IP notation
-  ###################################################
-
-  my $addrFromInt = sub {
-    my $intAddr = shift;
-    my ($oc1, $oc2, $oc3, $oc4) = ($intAddr & 255 , ($intAddr >> 8) & 255, ($intAddr >> 16) & 255, ($intAddr >> 24) & 255 );
-    return "$oc4.$oc3.$oc2.$oc1";
-  };
-
-  ###################################################
-  # rangeBitsFromInts
-  ###################################################
-  # Takes two integers representing ends of an IP
-  #  address range.
-  #
-  # Returns the number of bits it spans if they
-  #  represent a CIDR range.
-  # Returns undef otherwise.
-  ###################################################
-
-  my $rangeBitsFromInts = sub {
-    my ($minAddr, $maxAddr) = @_;
-    my $diff = abs($maxAddr - $minAddr) + 1;
-    my $log2diff = log($diff)/log(2);
-    my $epsilon = 1e-11; 
-    return undef if (($log2diff - int($log2diff)) > $epsilon);
-    return (32 - $log2diff);
-  };
-
-  ###################################################
-  # populateAddressForRange
-  ###################################################
-  # Takes a hashref containing either data about IP
-  #  blacklist entry or an IP blacklist range entry
-  # If it contains a range entry, Modifies the row
-  #  so ipblacklist_address contains a string
-  #  representation
-  #
-  # Returns nothing
-  ###################################################
-
-  my $populateAddressForRange = sub {
-    my $row = shift;
-
-    if (defined $$row{min_ip})
-    {
-      my ($minAddrInt, $maxAddrInt) = ($$row{min_ip}, $$row{max_ip});
-      my ($minAddr, $maxAddr) = (&$addrFromInt($minAddrInt), &$addrFromInt($maxAddrInt));
-      my $bits = &$rangeBitsFromInts($minAddrInt, $maxAddrInt);
-      if (defined $bits)
-      {
-        $$row{ipblacklist_ipaddress} = "$minAddr/$bits";
-      } else {
-        $$row{ipblacklist_ipaddress} = "$minAddr - $maxAddr";
-      }
-    }
-  };
-
-  ###################################################
-  # removeButton
-  ###################################################
-  # Takes a hashref containing either data about IP
-  #  blacklist entry or an IP blacklist range entry
-  #
-  # Returns a string containing a submit button to
-  #  remove the given entry
-  ###################################################
-
-  my $removeButton = sub {
-    my ($row) = @_;
-    my $hiddenHash = { };
-    $$hiddenHash{-name}  = 'remove_ip_block_ref';
-    $$hiddenHash{-value} = $$row{ipblacklistref_id};
-    my $result =  $query->hidden($hiddenHash) . '' . $query->submit({ -name => 'Remove' });
-    return $result;
-  };
-
-  ###################################################
-  ###################################################
-  # End Functions
-  ###################################################
-
-  my $getBlacklistSQL = qq|
-    SELECT ipblacklistref.ipblacklistref_id
-    , IFNULL(ipblacklist.ipblacklist_user, ipblacklistrange.banner_user_id) 'ipblacklist_user'
-    , ipblacklist.ipblacklist_ipaddress
-    , IFNULL(ipblacklist.ipblacklist_comment, ipblacklistrange.comment) 'ipblacklist_comment'
-    , ipblacklistrange.min_ip
-    , ipblacklistrange.max_ip
-    FROM ipblacklistref
-    LEFT JOIN ipblacklistrange ON ipblacklistrange.ipblacklistref_id = ipblacklistref.ipblacklistref_id
-    LEFT JOIN ipblacklist ON ipblacklist.ipblacklistref_id = ipblacklistref.ipblacklistref_id
-    WHERE (ipblacklist_id IS NOT NULL OR ipblacklistrange_id IS NOT NULL)
-    ORDER BY ipblacklistref.ipblacklistref_id DESC
-    LIMIT $offset,$records|;
-
-  my $cursor = undef;
-  my $saveRaise = $DB->{dbh}->{RaiseError};
-  $DB->{dbh}->{RaiseError} = 1;
-  eval { 
-    $cursor = $DB->{dbh}->prepare($getBlacklistSQL);
-    $cursor->execute();
-  };
-  $DB->{dbh}->{RaiseError} = $saveRaise;
-
-  if ($@)
-  {
-    $str .="<h3>Unable to load IP blacklist</h3>";
-    return $str;
-  }
-
-  my $fetchResults = $cursor->fetchall_arrayref({});
-  my $resultCount = scalar @$fetchResults;
-  # Shorten fetchResults to just the items we will display
-  $fetchResults = [ @$fetchResults[0..($displayCount - 1)] ];
-
-  my ($prevLink, $nextLink) = ('', '');
-
-  if ($offset > 0)
-  {
-    my $prevOffset = $offset - $pageSize;
-    my $offsetHash = { };
-	
-    $$offsetHash{showquery} = $query->param('showquery') if $query->param('showquery');
-
-    if ($prevOffset <= 0)
-    {
-      $prevOffset = 0;
-    } else {
-      $$offsetHash{offset} = $prevOffset;
-    }
-
-    $prevLink = linkNode($NODE , "Previous (" . ($prevOffset + 1) . " - " . ($prevOffset + $pageSize) . ")", $offsetHash);
-  }
-
-  if ($resultCount > $pageSize)
-  {
-    my $maxRecord = $offset + $resultCount;
-    my $offsetHash = { 'offset' => $offset + $pageSize };
-	
-    $$offsetHash{showquery} = $query->param('showquery') if $query->param('showquery');
-
-    $nextLink = linkNode($NODE, "Next (" . ($pageSize + $offset + 1) . " - " . $maxRecord . ")", $offsetHash);
-  } else {
-    $lastItem = $offset + $resultCount;
-    $displayCount = $resultCount;
-  }
-
-  my $header = qq|
-    <h3>Currently blacklisted IPs (#$firstItem - $lastItem)</h3>
-    <p>
-    $prevLink
-    $nextLink
-    </p>
-    <table border="1" cellspacing="2" cellpadding="3">
-      <tr>
-        <th>IP Address</th>
-        <th>Blocked by user</th>
-        <th>Reason</th>
-        <th>Remove?</th>
-      </tr>|;
-
-  $str .= $header;
-
-  $str .= "<pre>$getBlacklistSQL</pre>" if $query->param('showquery');
-
-  # Don't retain the value if we just deleted a block
-  $query->delete('remove_ip_block_ref');
-
-  for my $row (@$fetchResults)
-  {
-    &$populateAddressForRange($row);
-    $str .= "<tr>"
-      ."<td>$$row{ipblacklist_ipaddress}</td>"
-      ."<td>".linkNode($$row{ipblacklist_user})."</td>"
-      ."<td>$$row{ipblacklist_comment}</td>"
-      ."<td>"
-      . htmlcode('openform', 'removebanform')
-      . &$removeButton($row)
-      . $query->end_form()
-      ."</td>"
-      ."</tr>"
-  }
-
-  $str .= "</table>";
-  return $str;
-
-}
-
 sub listnodecategories
 {
   my $DB = shift;
@@ -13189,6 +12977,66 @@ sub make_node_sane
   # Now that node is sane, get one last fresh copy
   my $sane_node = getNodeById($crazy_node_id, 'force');
   return $sane_node;
+}
+
+sub blacklistIP
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+#	purpose
+#		add an IP address to the blacklist table or update an existing
+#		entry for the address
+#
+#	parameters
+#		IP to block, reason to block it
+#
+#	returns
+#		error report or report on action done
+#
+	my ($ipToAdd, $blockReason) = @_;
+
+	return 'No IP given to blacklist' unless $ipToAdd;
+	# still waiting for IPv6...
+	return "'$ipToAdd' is not a valid IP address" unless $ipToAdd =~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+	my $result = '';
+
+	my $data = {ipblacklist_user => $$USER{user_id}
+		, ipblacklist_ipaddress => $ipToAdd
+	};
+
+	my $update = 0;
+
+	my $listRef = $DB -> sqlSelect('ipblacklistref_id'
+		, 'ipblacklist'
+		, "ipblacklist_ipaddress = '$ipToAdd'"
+	);
+
+	if ($listRef){
+		$$data{ipblacklistref_id} = $listRef;
+		$update = {%$data
+			, -ipblacklist_comment => 'CONCAT('.$DB->quote("$blockReason <br>&#91;").
+				", ipblacklist_timestamp, ']: ', ipblacklist_comment)"
+		};
+		$result = "updated IP blacklist entry for $ipToAdd";
+	}else{
+		$DB -> sqlInsert('ipblacklistref', {});
+		$$data{-ipblacklistref_id} = 'LAST_INSERT_ID()';
+		$$data{ipblacklist_comment} = $blockReason;
+		$result = "added $ipToAdd to IP blacklist";
+	}
+
+	return "Error adding $ipToAdd to blacklist" unless
+		$DB -> sqlInsert('ipblacklist', $data, $update);
+
+	$APP->securityLog(getNode('IP Blacklist', 'restricted_superdoc'), $USER, "$$USER{title} $result: \"$blockReason.\"");
+	$result =~ s/^(\w)/\u$1/;
+	return $result;
 }
 
 sub check_blacklist
@@ -15228,6 +15076,7 @@ sub blacklistedIPs
   SELECT ipblacklistref.ipblacklistref_id
     , IFNULL(ipblacklist.ipblacklist_user, ipblacklistrange.banner_user_id)
     'ipblacklist_user'
+    , ipblacklist_timestamp
     , ipblacklist.ipblacklist_ipaddress
     , IFNULL(ipblacklist.ipblacklist_comment, ipblacklistrange.comment)
     'ipblacklist_comment'
@@ -15237,7 +15086,7 @@ sub blacklistedIPs
     LEFT JOIN ipblacklistrange ON ipblacklistrange.ipblacklistref_id = ipblacklistref.ipblacklistref_id
     LEFT JOIN ipblacklist ON ipblacklist.ipblacklistref_id = ipblacklistref.ipblacklistref_id
     WHERE (ipblacklist_id IS NOT NULL OR ipblacklistrange_id IS NOT NULL)
-    ORDER BY ipblacklistref.ipblacklistref_id DESC
+    ORDER BY ipblacklist_timestamp DESC
     LIMIT $offset,$records|;
 
   my $cursor = undef;
@@ -15310,7 +15159,8 @@ sub blacklistedIPs
     <table border="1" cellspacing="2" cellpadding="3">
       <tr>
         <th>IP Address</th>
-        <th>Blocked by user</th>
+        <th>Blocked<br>by user</th>
+        <th>Blocked on/at</th>
         <th>Reason</th>
         <th>Remove?</th>
       </tr>|;
@@ -15328,6 +15178,7 @@ sub blacklistedIPs
     $str .= "<tr>"
       ."<td>$$row{ipblacklist_ipaddress}</td>"
       ."<td>".linkNode($$row{ipblacklist_user})."</td>"
+      ."<td>$$row{ipblacklist_timestamp}</td>"
       ."<td>$$row{ipblacklist_comment}</td>"
       ."<td>"
       . htmlcode('openform', 'removebanform')
