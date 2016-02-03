@@ -13003,7 +13003,7 @@ sub blacklistIP
 
 	return 'No IP given to blacklist' unless $ipToAdd;
 	# still waiting for IPv6...
-	return "'$ipToAdd' is not a valid IP address" unless $ipToAdd =~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+	return "'".$APP->encodeHTML($ipToAdd)."' is not a valid IP address" unless $ipToAdd =~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
 	my $result = '';
 
 	my $data = {ipblacklist_user => $$USER{user_id}
