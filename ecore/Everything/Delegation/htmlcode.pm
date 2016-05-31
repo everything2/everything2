@@ -1919,7 +1919,7 @@ sub softlink
   my $thisnode = $$N{node_id};
 
   foreach my $l (@nodelinks) {
-    my @badwords = qw(boob breast butt ass lesbian cock dick penis sex oral anal drug pot weed crack cocaine fuck wank whore vagina vag cunt tits titty twat shit slut snatch queef queer poon prick puss orgasm nigg nuts muff motherfuck jizz hell homo handjob fag dildo dick clit cum bitch rape ejaculate bsdm fisting balling fetish);
+    my @badwords = qw(boob breast butt ass lesbian cock dick penis sex oral anal drug pot weed crack cocaine fuck wank whore vagina vag cunt tits titty twat shit slut snatch queef queer poon prick puss orgasm nigg nuts muff motherfuck jizz hell homo handjob fag dildo dick clit cum bitch rape ejaculate bsdm fisting balling fetish suicide);
     if( $APP->isGuest($USER) )
     {
       my $isbad = 0;
