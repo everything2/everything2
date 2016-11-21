@@ -8189,6 +8189,7 @@ sub admin_toolset
       , {%$verify
       , confirmop => 'remove'
       , removeauthor => 1
+      , removereason => 'smiting spammer'
       , author => $$NODE{title}
       , -title => 'detonate this noder, blank their homenode, remove their writeups, blacklist their IP where appropriate'
       , -class => 'action'}))
