@@ -21,7 +21,7 @@
     <key>specialties</key>
   </vars>
   <vars>
-    <value></value>
+    <value>5</value>
     <key>oldGP</key>
   </vars>
   <vars>
@@ -57,7 +57,7 @@
     <key>hide_weblog_1434789</key>
   </vars>
   <vars>
-    <value>167</value>
+    <value>174</value>
     <key>oldexp</key>
   </vars>
   <vars>
@@ -149,7 +149,7 @@
     <key>tokens</key>
   </vars>
   <vars>
-    <value>114,165580,838015,923653,1199641,1233079,1237120,1326100,1328284,1358106,1376889,1393053,1402260,1434789,1511125,1516990,1518778,1532935,1546117,1547812,1676086,1688687,1689600,1707759,1736101</value>
+    <value></value>
     <key>can_weblog</key>
   </vars>
   <vars>
@@ -181,5 +181,6 @@ You are here to listen.&lt;/p&gt;
 &lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
 </doctext>
   <node_id>952215</node_id>
+  <votesleft>997</votesleft>
   <passwd></passwd>
 </node>

@@ -14,7 +14,6 @@
 
 	my $sec = {
 		&quot;Kill reasons&quot; =&gt; getId(getNode(&quot;massacre&quot;,&quot;opcode&quot;)), 
-		&quot;Password requests&quot; =&gt; getId(getNode(&quot;What's my password?&quot;, &quot;superdoc&quot;)),
 		&quot;Password resets&quot; =&gt; getId(getNode(&quot;Reset password&quot;, &quot;superdoc&quot;)),
 		&quot;Suspensions&quot; =&gt; getId(getNode(&quot;Suspension Info&quot;, &quot;superdoc&quot;)),
 		&quot;Resurrections&quot; =&gt; getId(getNode(&quot;Dr. Nate's Secret Lab&quot;, &quot;restricted_superdoc&quot;)),
@@ -34,10 +33,8 @@
 		&quot;Node Notes&quot; =&gt; getId(getNode(&quot;Recent Node Notes&quot;,&quot;oppressor_superdoc&quot;)),
 		&quot;Writeup reparentings&quot; =&gt; getId(getNode(&quot;Magical Writeup Reparenter&quot;,&quot;superdoc&quot;)),
 		&quot;Topic changes&quot; =&gt; getId(getNode(&quot;E2 Gift Shop&quot;,&quot;superdoc&quot;)),
-		&quot;Email Verifications&quot; =&gt; getId(getNode(&quot;Verify your email account&quot;,&quot;superdoc&quot;)),
 		&quot;IP Blacklist&quot; =&gt; getId(getNode(&quot;IP Blacklist&quot;, &quot;restricted_superdoc&quot;)),
-		&quot;User Signup (old)&quot; =&gt; getId(getNode(&quot;Create a New User&quot;, &quot;superdoc&quot;)),
-		&quot;User Signup (new)&quot; =&gt; getId(getNode(&quot;Sign up&quot;, &quot;superdoc&quot;)),
+		&quot;User Signup&quot; =&gt; getId(getNode(&quot;Sign up&quot;, &quot;superdoc&quot;)),
 		&quot;Writeup insurance&quot; =&gt; getId(getNode(&quot;insure&quot;, &quot;opcode&quot;)),
                 &quot;XP SuperBless&quot; =&gt; getId(getNode(&quot;XP Superbless&quot;,&quot;restricted_superdoc&quot;)),
                 &quot;XP Recalculations&quot; =&gt; getId(getNode(&quot;Recalculate XP&quot;,&quot;superdoc&quot;)),

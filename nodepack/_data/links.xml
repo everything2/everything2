@@ -10,6 +10,34 @@
     <linktype>1920136</linktype>
     <food>0</food>
     <hits>0</hits>
+    <to_node>3</to_node>
+    <from_node>779713</from_node>
+  </link>
+  <link>
+    <linktype>1920136</linktype>
+    <food>0</food>
+    <hits>0</hits>
+    <to_node>4</to_node>
+    <from_node>779713</from_node>
+  </link>
+  <link>
+    <linktype>1920136</linktype>
+    <food>0</food>
+    <hits>0</hits>
+    <to_node>8</to_node>
+    <from_node>779713</from_node>
+  </link>
+  <link>
+    <linktype>1920136</linktype>
+    <food>0</food>
+    <hits>0</hits>
+    <to_node>9</to_node>
+    <from_node>779713</from_node>
+  </link>
+  <link>
+    <linktype>1920136</linktype>
+    <food>0</food>
+    <hits>0</hits>
     <to_node>15</to_node>
     <from_node>779713</from_node>
   </link>

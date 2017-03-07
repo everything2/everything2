@@ -1,6 +1,11 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
+# how long do blacklisted IPs block account creation? (SQL INTERVAL)
+my $ipTrauma = '3 MONTH';
+# for how long will a signup form still work after being served?
+my $formLife = 86400;
+
 my $invalidName = '^\W+$|[\[\]\&lt;\&gt;\&amp;\{\}\|\/\\\]| .*_|_.* |\s\s|^\s|\s$';
 my $validNameDescription = 'Valid user names contain at least one letter or number, and none of
 		&amp;#91; &amp;#93; &amp;lt; &amp;gt; &amp;amp; { } | / or \\. They may contain either spaces or underscores
@@ -16,10 +21,21 @@ my @nameBlockers = (
 );
 
 my $prompt = '';
-my $username = $query -&gt; param('hatstand');
-my $email = $query -&gt; param('raddish');
-my $pass = $query -&gt; param('frog');
-my $spambot = $query -&gt; param('email');
+my %names = ();
+
+# use automation-resistant field names
+my $seed = &quot;$1&quot; if join(',', $query-&gt;param) =~ /,q5q(\d+)/;
+my $hashName = sub{
+	my $x = crypt(&quot;$_ majtki&quot;, &quot;\$5\$$seed}&quot;);
+	$x =~ s/[^0-9A-z]/q/g;
+	$x;
+};
+foreach ('username', 'email', 'pass', 'spambot') { $names{$_} = &amp;$hashName };
+
+my $username = $query -&gt; param($names{'username'});
+my $email = $query -&gt; param($names{'email'});
+my $pass = $query -&gt; param($names{'pass'});
+my $spambot = $seed ? $query -&gt; param($names{'spambot'}) : 1;
 
 my $formPage = sub{
 	my $obfuscate = sub{
@@ -28,6 +44,9 @@ my $formPage = sub{
 		$x;
 	};
 
+	$seed = time + $formLife;
+	foreach ('username', 'email', 'pass', 'spambot') {$names{$_} = &amp;$hashName}
+
 	return htmlcode('openform')
 		.$query -&gt; fieldset({style =&gt; 'width: 32em; max-width: 100%; margin: 3em auto 0'},
 			$query -&gt; legend('Sign up')
@@ -35,24 +54,24 @@ my $formPage = sub{
 			.$query -&gt; p({style =&gt; 'text-align: right'},
 				# use silly field names and mess up labels to confuse bots
 				$query -&gt; label(&amp;$obfuscate('Username:')
-					.$query -&gt; textfield('hatstand', '', 30, 20))
+					.$query -&gt; textfield($names{'username'}, $username, 30, 20))
 				.'&lt;br&gt;'
 				.$query -&gt; label(&amp;$obfuscate('Password:')
-					.$query -&gt; password_field('frog', '', 30, 240))
+					.$query -&gt; password_field($names{'pass'}, '', 30, 240))
 				.'&lt;br&gt;'
 				.$query -&gt; label(&amp;$obfuscate('Confirm password:')
 					.$query -&gt; password_field('toad', '', 30, 240))
 				.'&lt;br&gt;'
 				.$query -&gt; label(&amp;$obfuscate('Email address:')
-					.$query -&gt; textfield('raddish', '', 30, 240))
+					.$query -&gt; textfield($names{'email'}, $email, 30, 240))
 				.'&lt;br&gt;'
 				.$query -&gt; label(&amp;$obfuscate('Confirm email:')
 					.$query -&gt; textfield('celery', '', 30, 240))
 				.'&lt;br&gt;'
 				.$query -&gt; checkbox(
-					-name =&gt; 'email'
+					-name =&gt; $names{'spambot'}
 					, value =&gt; 1
-					, checked =&gt; 1
+					, checked =&gt; $spambot
 					, label =&gt; 'I am an evil robot spammer')
 				.'&lt;br&gt;'
 				.$query -&gt; submit('beseech', 'Submit')
@@ -121,7 +140,8 @@ if ($username &amp;&amp; $email &amp;&amp; $pass){
 		last if $blacklisted = $DB-&gt;sqlSelect(
 			'ipblacklist_ipaddress'
 			, 'ipblacklist'
-			, &quot;ipblacklist_ipaddress = '$_'&quot;
+			, &quot;ipblacklist_ipaddress = '$_'
+			AND ipblacklist_timestamp &gt; DATE_SUB(NOW(), INTERVAL $ipTrauma)&quot;
 		);
 	}
 
@@ -136,6 +156,8 @@ if ($username &amp;&amp; $email &amp;&amp; $pass){
 
 	push @undesirable, 'same email address as locked user: '.linkNode($lockedUser) if $lockedUser;
 
+	push @undesirable, &quot;email address $email is from spamland domain $1&quot; if $email =~ /\.(ammuca\.eu)$/;
+
 	# check for locked user cookie infection
 	push @undesirable, 'infected by cookie from locked user' if htmlcode('checkInfected');
 
@@ -145,7 +167,7 @@ if ($username &amp;&amp; $email &amp;&amp; $pass){
 		my $log = join('; ', @undesirable);
 		&amp;$secLog(&quot;Sign up rejected: $log&quot;);
 
-		$query -&gt; delete('hatstand', 'raddish', 'celery');
+		$query -&gt; delete(values %names);
 		$prompt = int(rand(4)) + 1;
 	}
 }
@@ -153,7 +175,7 @@ if ($username &amp;&amp; $email &amp;&amp; $pass){
 #######
 
 # ask them nicely...
-if (!$pass || !$username || !$email || $prompt == 1){
+if (time &gt; $seed || !$pass || !$username || !$email || $prompt == 1){
 	$prompt = 'Please fill in all fields';
 
 # then check they've jumped through the hoops:
@@ -182,7 +204,7 @@ if (!$pass || !$username || !$email || $prompt == 1){
 	&amp;$secLog(&quot;User failed human intelligence test$value&quot;);
 }
 
-$query -&gt; delete('frog', 'toad');
+$query -&gt; delete('toad');
 
 return &amp;$formPage if $prompt;
 
@@ -234,6 +256,7 @@ my $uservars = getVars($user);
 $$uservars{'showmessages_replylink'} = 1;
 $$uservars{ipaddy} = join ',', @addrs;
 $$uservars{preference_last_update_time} = 1;
+$$uservars{coolsafety} = 1;
 setVars($user, $uservars);
 
 # send activation email

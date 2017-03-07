@@ -1,13 +1,17 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-return unless $APP-&gt;isEditor($USER);
+return $query -&gt; p('There is nothing here that you need.')
+	.$query -&gt; p('Honestly.') unless $APP-&gt;isEditor($USER);
 
 my $SETTINGSNODE = getNode( 'Disabled actions' , 'setting' ) ;
 my $disabled = getVars( $SETTINGSNODE ) ;
 
 my $id = $query -&gt; param( 'donode' ) ;
 $id ||= $query -&gt; param( 'lastnode_id' ) ;
+
+return $query -&gt; p(&quot;This page is used to edit the actions available in the page header for an individual page or for a nodetype. You probably don't need it. To use it, click on the little 'x' next to the action links under the page title.&quot;) unless $id;
+
 my $donode = getNodeById( $id ) ;
 my $nodetype = $$donode{ type_nodetype } ;
 my %options = ( b =&gt; 'bookmarking' , c =&gt; 'editor cools' , w =&gt; 'weblogging' , a =&gt; 'adding to categories (why?)' ,

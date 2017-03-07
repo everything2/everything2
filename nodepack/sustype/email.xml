@@ -1,9 +1,9 @@
 <node>
   <type_nodetype>1399991</type_nodetype>
-  <doctext>&lt;p&gt;&lt;em&gt;Do not impose this suspension manually.&lt;/em&gt;  Use chat suspension instead.&lt;/p&gt;
+  <doctext>&lt;p&gt;&lt;em&gt;Do not impose this suspension.&lt;/em&gt;  It is obsolete.&lt;/p&gt;
 
 &lt;p&gt;
-To prevent spam, new accounts begin with an &quot;email suspension&quot; which prevents them from chatting in any room, but not from sending messages.  They will need to click on the link in their welcome email or visit [Verify your email address].  If the user has issues validating, visit their homenode [Infected Users|to see if they are infected].  If they are, they may be a repeat offender creating a new account.
+To prevent spam, new accounts used to be created with an &quot;email suspension&quot; which prevented them from chatting in any room or posting writeups, but not from sending messages. The suspension was lifted when they proved they had a valid email address. Since November 7, 2012 it has no longer been possible to log in to a new account at all without activating the account with a link sent by email, so this is no longer needed.
 &lt;/p&gt;</doctext>
   <node_id>1948205</node_id>
   <title>email</title>

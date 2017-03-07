@@ -5,5 +5,5 @@
   <invalid_check></invalid_check>
   <node_id>1930854</node_id>
   <title>e2poll</title>
-  <code>return &quot;There's a new [Everything Poll Directory|E2 Poll] available to vote on...&quot;</code>
+  <code>return &quot;There's a new [Everything User Poll[superdoc]|E2 Poll] available to vote on...&quot;</code>
 </node>

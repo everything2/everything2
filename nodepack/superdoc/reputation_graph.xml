@@ -8,13 +8,13 @@
 
 my $writeupId = int($query-&gt;param('id'));
 my $writeup = getNodeById($writeupId);
-return &quot;Not a valid node. Try clicking the &amp;quot;Rep Graph&amp;quot; link from a writeup you have already voted on.&quot; unless $writeup;
+return &quot;&lt;p&gt;Not a valid node. Try clicking the &amp;quot;Rep Graph&amp;quot; link from a writeup you have already voted on.&lt;/p&gt;&quot; unless $writeup;
 
 my $str = '&lt;p&gt;You are viewing the monthly reputation graph for the following writeup:&lt;br /&gt;'.linkNode($writeup).' by '.linkNode($$writeup{author_user}).'&lt;/p&gt;';
 
 if ($$writeup{type_nodetype} != 117)
 {
-  return &quot;You can only view the reputation graph for writeups. Try clicking on the &amp;quot;Rep Graph&amp;quot; link from a writeup you have already voted on.&quot;;
+  return &quot;&lt;p&gt;You can only view the reputation graph for writeups. Try clicking on the &amp;quot;Rep Graph&amp;quot; link from a writeup you have already voted on.&lt;/p&gt;&quot;;
 }
 
 my $queryText;
@@ -40,7 +40,7 @@ if (!$canView)
 
 if (!$canView)
 {
-  return &quot;You haven't voted on that writeup, so you are not allowed to see its reputation. Try clicking on the &amp;quot;Rep Graph&amp;quot; link from a writeup you have already voted on.&quot;;
+  return &quot;&lt;p&gt;You haven't voted on that writeup, so you are not allowed to see its reputation. Try clicking on the &amp;quot;Rep Graph&amp;quot; link from a writeup you have already voted on.&lt;/p&gt;&quot;;
 }
 
 use Date::Parse;
@@ -48,10 +48,11 @@ my @prevDate = strptime($$writeup{publishtime});
 my $year = $prevDate [5];
 my $month = $prevDate [4];
 
-$queryText = &quot;SELECT weight,votetime FROM vote WHERE vote_id=$writeupId ORDER BY votetime&quot;;
+$queryText = &quot;SELECT weight,votetime,revotetime FROM vote WHERE vote_id=$writeupId ORDER BY GREATEST(revotetime,votetime)&quot;;
 $csr = $DB-&gt;{dbh}-&gt;prepare($queryText);
 $csr-&gt;execute();
 my @curDate;
+my $dt;
 my $uv = 0;
 my $dv = 0;
 
@@ -65,7 +66,11 @@ $str .= '&lt;table cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; align=&qu
 
 while(my $row = $csr-&gt;fetchrow_hashref)
 {
-  @curDate = strptime($$row{votetime});
+  $dt = $$row{votetime};
+  if ($$row{revotetime} &gt; $dt) {
+    $dt = $$row{revotetime};
+  }
+  @curDate = strptime($dt);
 
   while($curDate[5]&gt;$year || ($curDate[5]==$year &amp;&amp; $curDate[4]&gt;$month))
   {

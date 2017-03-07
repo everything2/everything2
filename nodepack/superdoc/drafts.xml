@@ -21,7 +21,7 @@ if ($user){
 
 if($query-&gt;param(&quot;shownuked&quot;))
 {
-  $showhidenukedlink = linkNode($NODE, &quot;Hide nuked&quot;);
+  $showhidenukedlink = linkNode($NODE, &quot;Hide nuked&quot;, $shownukedlinkparams);
 }else{
   $shownukedlinkparams-&gt;{shownuked} = 1;
   $showhidenukedlink = linkNode($NODE, &quot;Show nuked&quot;, $shownukedlinkparams);

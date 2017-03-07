@@ -311,8 +311,11 @@ table.registries {
    margin: 0;
    padding: 1px;
 }
-</doctext>
-  <contentversion>104</contentversion>
+
+#homenodeinspector .contentfooter {
+  border-bottom: 1px solid;
+}</doctext>
+  <contentversion>107</contentversion>
   <s3bucket></s3bucket>
   <node_id>1973976</node_id>
   <title>basesheet</title>

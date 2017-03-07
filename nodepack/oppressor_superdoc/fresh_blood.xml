@@ -21,7 +21,7 @@ $start ||= 0;
 
 $sql =  &lt;&lt;SQLEND;
 
-SELECT `user_id`, `nick`, `createtime`, `validemail`, `lasttime`
+SELECT `user_id`, `nick`, `createtime`, `lasttime`
   , (SELECT `notetext`
       FROM nodenote
       WHERE nodenote_nodeid = user_id LIMIT 1
@@ -60,20 +60,19 @@ if ($last &lt; $numUser) {
 
 $str .= $nav;
 
-$str .= &quot;&lt;table style='width: 100%; border-top: 1px gray solid'&gt;&lt;tr&gt;&lt;th&gt;Joined&lt;/th&gt;&lt;th&gt;User&lt;/th&gt;&lt;th&gt;Last logged in&lt;/th&gt;&lt;th&gt;Node note&lt;/th&gt;&lt;th&gt;Validated&lt;/th&gt;&lt;/tr&gt;\n&quot;;
+$str .= &quot;&lt;table style='width: 100%; border-top: 1px gray solid'&gt;&lt;tr&gt;&lt;th&gt;Joined&lt;/th&gt;&lt;th&gt;User&lt;/th&gt;&lt;th&gt;Last logged in&lt;/th&gt;&lt;th&gt;Node note&lt;/th&gt;&lt;/tr&gt;\n&quot;;
 $usr-&gt;fetchrow_hashref;
 while(my $N = $usr-&gt;fetchrow_hashref) {
 	my $login = htmlcode('timesince',$$N{lasttime});
    my $create = htmlcode('timesince',$$N{createtime});
 
-   $str .= sprintf(&quot;\t&lt;tr class='%s'&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;&lt;a href=%s&gt;%s&lt;/a&gt;&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;/tr&gt;\n&quot;,
+   $str .= sprintf(&quot;\t&lt;tr class='%s'&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;&lt;a href=%s&gt;%s&lt;/a&gt;&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;/tr&gt;\n&quot;,
                   $row ? 'oddrow' : 'evenrow',
                   $create,
                   &quot;/node/$$N{user_id}&quot;,
                   $$N{nick},
                   $login eq '?' ? 'never' : $login,
                   $$N{notetext},
-                  $$N{validemail}
                   );
    $row= !$row;
 }

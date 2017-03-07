@@ -73,7 +73,7 @@
     <key>collapsedNodelets</key>
   </vars>
   <vars>
-    <value>1112</value>
+    <value>1146</value>
     <key>oldexp</key>
   </vars>
   <vars>
@@ -147,6 +147,10 @@
   <vars>
     <value>1882128</value>
     <key>can_weblog</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>msginboxUnArc</key>
   </vars>
   <vars>
     <value>1</value>

@@ -1,6 +1,10 @@
 <node>
   <type_nodetype>153</type_nodetype>
   <vars>
+    <value>applauds ~! They are showered in approval!</value>
+    <key>applaud</key>
+  </vars>
+  <vars>
     <value>muzzles</value>
     <key>muzzle</key>
   </vars>
@@ -13,7 +17,7 @@
     <key>like</key>
   </vars>
   <vars>
-    <value>blobs</value>
+    <value>throws tabby cats at</value>
     <key>special</key>
   </vars>
   <vars>
@@ -23,6 +27,10 @@
   <vars>
     <value>pours ~ a triple espresso shot </value>
     <key>coffee</key>
+  </vars>
+  <vars>
+    <value>writes a terse sonnet for ~. It is a true work of art that you will treasure forever</value>
+    <key>random3</key>
   </vars>
   <vars>
     <value>nudges</value>
@@ -39,6 +47,10 @@
   <vars>
     <value>turns ~ into a stuttering green imp</value>
     <key>magic</key>
+  </vars>
+  <vars>
+    <value>writes ~ fanfic. </value>
+    <key>random5</key>
   </vars>
   <vars>
     <value>drops an anvil on</value>
@@ -97,16 +109,28 @@
     <key>pizza</key>
   </vars>
   <vars>
+    <value>oppresses the masses, but spares ~</value>
+    <key>random4</key>
+  </vars>
+  <vars>
+    <value>gives ~ a handful of hundreds and thousands</value>
+    <key>treat</key>
+  </vars>
+  <vars>
+    <value>throws a chocolate egg at ~'s door</value>
+    <key>trick</key>
+  </vars>
+  <vars>
     <value>giant squids</value>
     <key>giantsquid</key>
   </vars>
   <vars>
-    <value>shakes da booty for</value>
-    <key>booty</key>
-  </vars>
-  <vars>
     <value>lays a curse upon ~, and I will curse your blessings: yea, I have cursed them already, because ye do not lay it to heart</value>
     <key>curse</key>
+  </vars>
+  <vars>
+    <value>shakes da booty for</value>
+    <key>booty</key>
   </vars>
   <vars>
     <value>pours ~ a fine cold beer</value>
@@ -133,16 +157,20 @@
     <key>glomp</key>
   </vars>
   <vars>
+    <value>cuts ~ a slice of cake</value>
+    <key>cake</key>
+  </vars>
+  <vars>
     <value>French-omelets</value>
     <key>omelette</key>
   </vars>
   <vars>
-    <value>dances lasciviously at</value>
-    <key>twerk</key>
-  </vars>
-  <vars>
     <value>hands ~ a slice of birthday cake while the chatbox sings &#194;&#161;Feliz Cumplea&#195;&#177;os</value>
     <key>birthday</key>
+  </vars>
+  <vars>
+    <value>dances lasciviously at</value>
+    <key>twerk</key>
   </vars>
   <vars>
     <value>hands ~ an ice-cold gin and tonic</value>
@@ -151,6 +179,10 @@
   <vars>
     <value>loves ~ so very much</value>
     <key>heart</key>
+  </vars>
+  <vars>
+    <value>pours a glass of eggnog for ~</value>
+    <key>eggnog</key>
   </vars>
   <vars>
     <value>lights a candle for</value>

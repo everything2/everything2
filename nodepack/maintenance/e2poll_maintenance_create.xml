@@ -17,6 +17,10 @@ unless ($$POLL{title} &amp;&amp; $query -&gt; param('e2poll_question')) {
 $$POLL{poll_author}=$$POLL{author_user};
 $$POLL{author_user} = getId(getNode('Content Editors', 'usergroup'));
 
+# this node no longer belongs to its author. So if the author is a normal user, they can't update it any more
+# so e2poll_question will get lost. So:
+$$POLL{question} = $query -&gt; param('e2poll_question');
+
 my @doctext = ();
 $$POLL{e2poll_results} = 0;
 

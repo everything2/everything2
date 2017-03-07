@@ -1,13 +1,11 @@
 <node>
   <type_nodetype>13</type_nodetype>
-  <doctext>&lt;div style=&quot;width:600px&quot;&gt;
-&lt;p&gt;This page manages the IP addresses which are barred from &lt;strong&gt;creating new accounts&lt;/strong&gt;.  Except for very extreme circumstances, we don't block pageloads as [Guest User].&lt;/p&gt;
+  <doctext>&lt;p&gt;This page manages the IP addresses which are barred from &lt;strong&gt;creating new accounts&lt;/strong&gt;.  Except for very extreme circumstances, we don't block pageloads as [Guest User].&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;This tool should ONLY be used to block access at the IP level for users whose primary accounts have been locked if they continue to abuse our hospitality.&lt;/strong&gt; ~~[dann[user]]&lt;/p&gt;
-&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;This tool should ONLY be used to block access at the IP level for users whose primary accounts have been locked if they continue to abuse our hospitality.&lt;/strong&gt; Usually the 'Smite Spammer' tool will do the job automatically for you when it needs to be done. &lt;/p&gt;
 
-&lt;h3&gt;&lt;!-- ' --&gt;
-[%
+&lt;h3&gt;
+[% #'
 local $SIG{__WARN__} = sub {};
 
 ###############################################
@@ -64,6 +62,7 @@ my $rangeMinMax = sub {
 
 	return ($validAddr, $addrMin, $addrMax);
 };
+
 ###############################################
 ###############################################
 # End functions
@@ -121,33 +120,28 @@ SQLEND
 
 }
 
-
 ### Add an IP to the blacklist if requested
 if($query-&gt;param(&quot;add_ip_block&quot;)){
 	my $ipToAdd = $query-&gt;param(&quot;bad_ip&quot;);
 	return &quot;You must list an IP to block.&quot; unless $ipToAdd;
 	my ($isRangeAddr, $rangeMin, $rangeMax) = &amp;$rangeMinMax($ipToAdd);
-	$ipToAdd = $DB-&gt;quote($ipToAdd);
 	
 	my $blockReason = $query-&gt;param(&quot;block_reason&quot;);
-	$blockReason = $DB-&gt;quote($blockReason);
 	return &quot;You must give a reason to block this IP.&quot; unless $blockReason;
 
-my $addBlacklistRefSQL = &lt;&lt;SQLEND;
+	return htmlcode('blacklistIP', $ipToAdd, $blockReason) unless $isRangeAddr;
+
+	$ipToAdd = $DB-&gt;quote($ipToAdd);
+	$blockReason = $DB-&gt;quote($blockReason);
+
+	my $addBlacklistRefSQL = &lt;&lt;SQLEND;
 INSERT INTO ipblacklistref
 	()
 	VALUES
 	()
 SQLEND
 
-	my $addBlacklistSQL = &lt;&lt;SQLEND;
-INSERT INTO ipblacklist
-	(ipblacklist_user, ipblacklist_ipaddress, ipblacklist_comment
-	 , ipblacklistref_id)
-	VALUES ($$USER{user_id}, $ipToAdd, $blockReason, LAST_INSERT_ID())
-SQLEND
-
-	$addBlacklistSQL = &lt;&lt;SQLEND if $isRangeAddr;
+	my $addBlacklistSQL = &lt;&lt;SQLEND if $isRangeAddr;
 INSERT INTO ipblacklistrange
 	(banner_user_id, min_ip, max_ip, comment
 	 , ipblacklistref_id)
@@ -189,25 +183,7 @@ local $SIG{__WARN__} = sub {};
 
 my $bad_ip = $query-&gt;param(&quot;bad_ip&quot;);
 
-my @alreadyBanned =
-	$DB-&gt;sqlSelect(
-		'ipblacklist_comment'
-		, 'ipblacklist'
-		, 'ipblacklist_ipaddress = ' . $DB-&gt;quote($bad_ip)
-	) if defined $bad_ip;
-
-my $str = &quot;&quot;;
-
-if (scalar @alreadyBanned != 0 &amp;&amp; !$query-&gt;param('add_ip_block')) {
-	$str .= 
-		&quot;&lt;p&gt;&lt;strong&gt;&quot;
-		. encodeHTML($bad_ip) . &quot; was already banned for the reason: &quot;
-		. encodeHTML($alreadyBanned[0])
-		. &quot;&lt;/strong&gt;&lt;/p&gt;&quot;
-		;
-}
-
-$str .= 
+my $str = 
 $query-&gt;start_form
 .$query-&gt;hidden('node_id', getId($NODE))
 .'&lt;div&gt;&lt;strong&gt;IP Address&lt;/strong&gt;&lt;br /&gt;'

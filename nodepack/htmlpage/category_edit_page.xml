@@ -36,10 +36,18 @@ if ($deleteId &gt; 0)
 
 my ($str, $addstr) = ('', '');
 if ($isCE) {
+	$str .= htmlcode('openform', 'titleForm')
+		.'&lt;fieldset&gt;&lt;legend&gt;Fix title&lt;/legend&gt;
+		&lt;p&gt;&lt;/p&gt;'
+		.$query -&gt; label(
+			'Please only change the title on request from the maintainer or if it really obviously needs fixing:&lt;br&gt;'
+			.$query -&gt; textfield('category_title', $$NODE{title}, 25)
+		)
+		.$query -&gt; submit('Fix')
+		.'&lt;/fieldset&gt;'
+		.$query -&gt; endform;
+
 	my $maintainer = getNodeById($$NODE{author_user});
-	$str .= htmlcode('openform', 'setMaintainerForm')
-		. '&lt;fieldset&gt;&lt;legend&gt;Maintainer&lt;/legend&gt;'
-		;
 
 	# change the maintainer
 	my $setMaintainer = $query-&gt;param('setMaintainer');
@@ -55,17 +63,19 @@ if ($isCE) {
 		} else { $str .= &quot;&lt;b&gt;Unable to find user or usergroup: $setMaintainer &lt;/b&gt;&lt;br&gt;&quot;; }
 	}
 	
-	$str .= ''
-		. htmlcode('verifyRequestForm', 'setMaintainerForm')
-		. 'Since you\'re an editor, you can change the maintainer of this category. &lt;br&gt; Enter the name of a user or usergroup: &lt;br&gt; (setting it to &quot;Guest User&quot; means that everyone who can create categories can contribute) &lt;br&gt;'
+	$str .= htmlcode('openform', 'setMaintainerForm')
+		.'&lt;fieldset&gt;&lt;legend&gt;Maintainer&lt;/legend&gt;
+		&lt;p&gt;Since you\'re an editor, you can change the maintainer of this category.&lt;/p&gt;
+		Enter the name of a user or usergroup, or &quot;Guest User&quot; to allow anyone who can create categories to contribute:&lt;br&gt;'
 		. $query-&gt;textfield('setMaintainer', $$maintainer{title}, 25)
 		. $query-&gt;submit(&quot;changeit&quot;, &quot;Change&quot;)
 		. '&lt;br&gt; Current maintainer: ' . linkNode($maintainer)
 		. '&lt;/fieldset&gt;'
+		. htmlcode('verifyRequestForm', 'setMaintainerForm')
 		. $query-&gt;endform
 		;
 } else {
-  $str .= '&lt;p&gt;To change the maintainer of this category, please contact an editor.&lt;/p&gt;';
+  $str .= '&lt;p&gt;To change the title or maintainer of this category, please contact an editor.&lt;/p&gt;';
 }
 
 

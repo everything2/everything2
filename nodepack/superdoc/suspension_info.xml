@@ -76,7 +76,7 @@ if ($lookupUser) {
    $DB-&gt;sqlSelectMany(
      &quot;node_id, title, doctext&quot;
      , &quot;node LEFT JOIN document ON node_id = document_id&quot;
-     , &quot;type_nodetype = $sustypeTypeId $suspensionRestrict&quot;
+     , &quot;type_nodetype = $sustypeTypeId $suspensionRestrict AND title != 'email'&quot;
    );
 
   my %suspension_types = ();

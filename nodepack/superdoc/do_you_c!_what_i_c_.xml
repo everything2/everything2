@@ -62,6 +62,7 @@ my $count;
 
 while (my $r = $recSet-&gt;fetchrow_hashref) {
 my $n = getNode($$r{coolwriteups_id});
+next unless $$n{type}{title} eq 'writeup';
 next if $APP-&gt;hasVoted($n, $USER);
 next if $$n{author_user} == 176726; ##Don't show Webby's writeups
 next if $$n{cooled} &gt; $maxCools;

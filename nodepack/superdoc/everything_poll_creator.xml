@@ -8,15 +8,13 @@ return 'Sorry, poll creation has been temporarily disabled.' if ($turnPollsOff);
 #new restrict check for any usergroup
 my $isRoot = $APP-&gt;isAdmin($USER);
 
-my $userlevel=$APP-&gt;getLevel($USER);
-return 'You must be Level 3 to create polls. Sorry.' if (($userlevel&lt;3)&amp;&amp;(!$isRoot));
+#my $userlevel=$APP-&gt;getLevel($USER);
+#return 'You must be Level 3 to create polls. Sorry.' if (($userlevel&lt;3)&amp;&amp;(!$isRoot));
 
 my $str = qq`&lt;h3&gt;Important! Read this or weep!&lt;/h3&gt;
 
 &lt;ul&gt;
-&lt;li&gt;If you are Level 3 or higher, you can create a poll on any topic that interests you.
-Please do not abuse this privilege.
-&lt;/li&gt;
+&lt;li&gt;Welcome to the E2 Poll Creator! Please use this form to create a poll on any topic that interests you. Please do not abuse this privilege&lt;/li&gt;
 &lt;li&gt;By default, all polls have a &quot;None of the above&quot; option at the end.
 Be imaginative and use as many of the available option slots as possible so
 that it will not be needed.

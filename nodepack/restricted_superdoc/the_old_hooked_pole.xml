@@ -1,32 +1,23 @@
 <node>
   <type_nodetype>13</type_nodetype>
   <doctext>[%
-return 'You\'ve got other things to snoop on, don\'t ya.' unless(isGod($USER));
+return 'You\'ve got other things to snoop on, don\'t ya.' unless($APP -&gt; isEditor($USER));
 
-my $str = '&lt;h3&gt;&amp;ldquo;Off the stage with \'em!&amp;rdquo;&lt;/h3&gt;
-   A mass user deletion tool which provides basic checks for deletion.
-  &lt;br&gt;&lt;br&gt;Copy and paste list of names of users to destroy.
-  &lt;p&gt;
-  This does the following things:
-  &lt;/p&gt;
-  &lt;ul&gt;
-    &lt;li&gt;Checks to see if the user has every logged in
-    &lt;li&gt;Checks if the user has any live writeups
-    &lt;li&gt;Checks if the user has any live e2nodes
-    &lt;li&gt;Deletes the user if it is safe
-    &lt;li&gt;Locks a user if deletion isn\'t safe
-  &lt;/ul&gt;
-  ';
+# block spammer's IP if a locked account had logged in from same IP less than this long ago (SQL INTERVAL)
+my $ipTrauma = '1 MONTH';
+
+my $str = '';
 
 my @savedUsers = ( );
 my $usersToNail = { };
+my $smite = $query -&gt; param('op') eq 'remove' ? 1 : ''; # did we come here from the Smite Spammer link?
+my $usernameString = $smite ? $query-&gt;param('author') : $query-&gt;param('usernames');
 
-if (defined $query-&gt;param('usernames')) {
+if ($usernameString) {
 
   my $typeIdUser = getType('user')-&gt;{node_id};
   my $typeIdWriteup = getType('writeup')-&gt;{node_id};
   my $typeIdE2node = getType('e2node')-&gt;{node_id};
-  my $usernameString = $query-&gt;param('usernames');
   $usernameString =~ s/[\[\]]//g;
   my @usernames = split('\s*[\n\r]\s*', $usernameString);
 
@@ -69,6 +60,38 @@ SQLEND
 }
 
 if (keys %$usersToNail) {
+
+  my $smiteSpammer = sub{
+	my @smitten = ();
+	my $targetUserData = shift;
+	my $spammer = $$targetUserData{node_id};
+
+	if (getRef $spammer){ # may conceivably have been nuked
+		$$spammer{doctext} = '';
+		updateNode($spammer, -1);
+		my $uservars = getVars($spammer);
+		$uservars = { ipaddy =&gt; $$uservars{ipaddy} };
+		setVars($spammer, $uservars);
+		push @smitten, 'Blanked homenode';
+		htmlcode('addNodenote', $$targetUserData{node_id}, &quot;Spammer: smitten by [$$USER{title}\[user]]&quot;);
+	}
+
+	# has this user logged in from the same IP as a recently locked user?
+	my $badIP = $DB-&gt;sqlSelect('myIP.iplog_ipaddy'
+		, &quot;iplog myIP JOIN iplog badIP JOIN user
+			ON myIP.iplog_ipaddy = badIP.iplog_ipaddy
+			AND myIP.iplog_ipaddy != 'unknown'
+			AND user_id = badIP.iplog_user
+			AND user_id != myIP.iplog_user&quot;
+		, &quot;myIP.iplog_user = $$targetUserData{node_id}
+			AND acctlock != 0
+			AND lasttime &gt; DATE_SUB(NOW(), INTERVAL $ipTrauma)&quot;
+	);
+
+	push @smitten, htmlcode('blacklistIP', $badIP, &quot;Spammer $$targetUserData{input} using same IP as recently locked account&quot;) if $badIP;
+
+	@smitten;
+  };
 
   $str .= '&lt;h3&gt;The Doomed Performers&lt;/h3&gt;';
   $str .= '&lt;ul&gt;';
@@ -114,10 +137,11 @@ if (keys %$usersToNail) {
 
       push @unsafeReasons,  &quot;$targetName has $$targetUserData{'writeup count'} writeups!&quot;;
       $safeToWhack = 0;
+
       
     }
 
-    if (!htmlcode('verifyRequestHash', 'polehash')) {
+    if (!htmlcode('verifyRequest', 'polehash')) {
       push @unsafeReasons,  &quot;$targetName not being whacked because security hash verification failed.&quot;;
       $safeToWhack = 0;
       $safeToLock = 0;
@@ -144,6 +168,8 @@ if (keys %$usersToNail) {
 
         }
 
+        push @unsafeReasons, &amp;$smiteSpammer($targetUserData) if $smite;
+
       }
 
       $str .= '&lt;ul&gt;&lt;li&gt;' . (join '&lt;li&gt;', @unsafeReasons) . '&lt;/ul&gt;';
@@ -157,8 +183,23 @@ if (keys %$usersToNail) {
 
 }
 
+return $str if $smite || $query -&gt; param('detonate');
 
-$str .= htmlcode('openform', 'username_whacker', 'POST')
+$str .= '&lt;h3&gt;&amp;ldquo;Off the stage with \'em!&amp;rdquo;&lt;/h3&gt;
+   A mass user deletion tool which provides basic checks for deletion.
+  &lt;br&gt;&lt;br&gt;Copy and paste list of names of users to destroy.
+  &lt;p&gt;
+  This does the following things:
+  &lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Checks to see if the user has ever logged in
+    &lt;li&gt;Checks if the user has any live writeups
+    &lt;li&gt;Checks if the user has any live e2nodes
+    &lt;li&gt;Deletes the user if it is safe
+    &lt;li&gt;Locks a user if deletion isn\'t safe
+  &lt;/ul&gt;
+  '
+  .htmlcode('openform', 'username_whacker', 'POST')
   . $query-&gt;hidden(-name =&gt; &quot;showquery&quot;)
   . htmlcode('verifyRequestForm', 'polehash')
   ;
@@ -192,7 +233,6 @@ $str .= ''
 
 return $str;
 %]
-
 </doctext>
   <node_id>2108998</node_id>
   <title>The Old Hooked Pole</title>

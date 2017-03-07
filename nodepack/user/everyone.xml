@@ -38,7 +38,7 @@
     <key>group</key>
   </vars>
   <vars>
-    <value>2834 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
+    <value>2849 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
     <key>nwriteups</key>
   </vars>
   <vars>
@@ -62,7 +62,7 @@
     <key>motto</key>
   </vars>
   <vars>
-    <value>2834</value>
+    <value>2849</value>
     <key>numwriteups</key>
   </vars>
   <vars>
