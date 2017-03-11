@@ -2641,7 +2641,10 @@ sub remove
 
   return unless $APP->isEditor($USER);
 
-  my @list;
+  my @list = ();
+  my $bulkreason = $query -> param('removereason');
+  my $author='';
+
   unless ($query -> param('removeauthor'))
   {
     foreach ($query->param)
@@ -2650,16 +2653,17 @@ sub remove
       push @list, $1;
     }
   }else{
-    my $author = getNode($query -> param('author'), 'user');
+    $author = getNode($query -> param('author'), 'user');
     return unless $author;
     @list = @{$DB -> selectNodeWhere({author_user => $$author{node_id}}, 'writeup')};
+    htmlcode('sendPrivateMessage', {
+      message => "I am removing your writeups: $bulkreason.",
+      recipient_id=>$$author{user_id}});
   }
 
   return unless @list;
 
-  my $bulkreason = $query -> param('removereason');
   my $nid;
-  my $count = 0;
 
   foreach $nid (@list)
   {
@@ -2671,9 +2675,10 @@ sub remove
     $reason = '' if $reason eq 'none';
     next unless htmlcode('unpublishwriteup', $N, $reason);
 
-    my $aid = $$N{author_user};
+    next if $author; # removing all writeups: no individual notifications
 
     # notify author:
+    my $aid = $$N{author_user};
     next unless $aid;	#skip /msg if no WU author
     my $parent = getNodeById($$N{parent_e2node});
     my $title = $$parent{title} if $parent;
@@ -2691,11 +2696,9 @@ sub remove
     $reason = ": $reason" if $reason;
     my $author = getNodeById($aid);
     $author = "[by $$author{title}]" if $author;
-    my $msgHash = {
-      msgtext => "I removed your writeup [$title$author]$reason. It has been sent to your [Drafts[superdoc]].",
-      author_user=>$$USER{node_id},
-      for_user=>$aid,};
-    $DB->sqlInsert('message', $msgHash);
+    htmlcode('sendPrivateMessage', {
+      message => "I removed your writeup [$title$author]$reason. It has been sent to your [Drafts[superdoc]].",
+      recipient_id=>$aid});
   }
 
   htmlcode('update New Writeups data');
