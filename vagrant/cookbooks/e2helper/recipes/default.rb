@@ -11,7 +11,9 @@ to_install = [
   'vim',
   'locate',
   'screen',
-  'mysql-client'
+  'mysql-client',
+  'xz-utils',
+  'xdelta3'
 ]
 
 to_install.each do |p|
