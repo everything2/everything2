@@ -97,6 +97,17 @@ if node["e2web"]["tls_cert"]
   end
 end
 
+if node["e2web"]["tls_cert"].nil? and node["e2web"]["tls_key"].nil?
+  bash "Create E2 snakeoil certs" do
+    cwd "/tmp"
+    user "root"
+    creates "/etc/apache2/e2.key"
+    code <<-EOH
+    openssl req -x509 -nodes -days 365 -newkey rsa:4096 -batch -keyout /etc/apache2/e2.key -out /etc/apache2/e2.cert -subj '/C=US/ST=MA/L=Maynard/O=Everything2.com/OU=edev/CN=vagranttest.everything2.com'
+    EOH
+  end
+end
+
 file '/etc/logrotate.d/apache2' do
   action "delete"
   notifies :reload, "service[apache2]", :delayed
