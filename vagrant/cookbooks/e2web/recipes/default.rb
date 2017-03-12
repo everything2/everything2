@@ -6,6 +6,7 @@
 #
 # You are free to use/modify these files under the same terms as the Everything Engine itself
 
+require 'base64'
 
 to_install = [
     'apache2-mpm-prefork',
@@ -62,28 +63,38 @@ template '/etc/apache2/apache2.conf' do
   variables(node["e2web"])
 end
 
-link '/etc/apache2/mods-enabled/rewrite.load' do
-  action "create"
-  to "../mods-available/rewrite.load"
-  link_type :symbolic
-  owner "root"
-  group "root"
+['rewrite','proxy','proxy_http','ssl'].each do |apache_mod|
+  link "/etc/apache2/mods-enabled/#{apache_mod}.load" do
+    action "create"
+    to "../mods-available/#{apache_mod}.load"
+    link_type :symbolic
+    owner "root"
+    group "root"
+    notifies :reload, "service[apache2]", :delayed
+  end
 end
 
-link '/etc/apache2/mods-enabled/proxy.load' do
-  action "create"
-  to "../mods-available/proxy.load"
-  link_type :symbolic
-  owner "root"
-  group "root"
+if node["e2web"]["tls_key"]
+  file '/etc/apache2/e2.key' do
+    owner 'root'
+    group 'root'
+    mode '0700'
+    action 'create'
+    content (node["e2web"]["tls_key"])?(Base64.decode64(node["e2web"]["tls_key"])):("")
+    notifies :reload, "service[apache2]", :delayed
+  end
 end
 
-link '/etc/apache2/mods-enabled/proxy_http.load' do
-  action "create"
-  to "../mods-available/proxy_http.load"
-  link_type :symbolic
-  owner "root"
-  group "root"
+if node["e2web"]["tls_cert"]
+  file '/etc/apache2/e2.cert' do
+    owner 'root'
+    group 'root'
+    mode '0700'
+    action 'create'
+    only_if node["e2web"]["tls_cert"]
+    content (node["e2web"]["tls_cert"])?(Base64.decode64(node["e2web"]["tls_cert"])):("")
+    notifies :reload, "service[apache2]", :delayed
+  end
 end
 
 file '/etc/logrotate.d/apache2' do
