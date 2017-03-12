@@ -91,7 +91,6 @@ if node["e2web"]["tls_cert"]
     group 'root'
     mode '0700'
     action 'create'
-    only_if node["e2web"]["tls_cert"]
     content (node["e2web"]["tls_cert"])?(Base64.decode64(node["e2web"]["tls_cert"])):("")
     notifies :reload, "service[apache2]", :delayed
   end
