@@ -2019,25 +2019,6 @@ sub daylog
   return $str;
 }
 
-# Used in some old placement code. Very likely able to be removed
-#
-sub clearimage
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($height, $width) = @_;
-
-  $height ||= 1;
-  $width ||= 1;
-  return "<img src=\"http://static.everything2.com/clear.gif\" border=\"0\" height=\"$height\" width=\"$width\" alt=\"\">";
-}
-
 # This will almost certainly go into a template
 #
 sub showbookmarks
