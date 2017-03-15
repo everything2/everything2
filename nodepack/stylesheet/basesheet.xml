@@ -65,7 +65,7 @@ font-size: 100%;
 }
 
 .externalLink {
-	background:transparent url(http://static.everything2.com/external.png) no-repeat scroll right center; 
+	background:transparent url(https://s3.amazonaws.com/static.everything2.com/external.png) no-repeat scroll right center; 
 	padding-right:13px;
 	/* This is the external link icon used by Wikimedia, used under the GPL as spelt out here:
 	http://commons.wikimedia.org/wiki/File:Icon_External_Link.png */
@@ -140,7 +140,7 @@ fieldset{ /* this is FF default; IE has none */
 
 .open , .closed {
 	padding-left: 13px ;
-	background-image: url( &quot;http://static.everything2.com/triangles.png&quot; ) ;
+	background-image: url( &quot;https://s3.amazonaws.com/static.everything2.com/triangles.png&quot; ) ;
 	background-repeat: no-repeat ;
 }
 
@@ -211,7 +211,7 @@ fieldset{ /* this is FF default; IE has none */
 
 .social_button {
   float: left; /* why is this here? */
-  background-image: url( &quot;http://static.everything2.com/socialcombined.gif&quot; ) ;
+  background-image: url( &quot;https://s3.amazonaws.com/static.everything2.com/socialcombined.gif&quot; ) ;
   background-repeat: no-repeat ;
   padding: 0;
   margin: 2px;
@@ -315,7 +315,7 @@ table.registries {
 #homenodeinspector .contentfooter {
   border-bottom: 1px solid;
 }</doctext>
-  <contentversion>107</contentversion>
+  <contentversion>108</contentversion>
   <s3bucket></s3bucket>
   <node_id>1973976</node_id>
   <title>basesheet</title>

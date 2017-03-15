@@ -50,7 +50,7 @@ return $str . $settingslink . '&lt;/div&gt;';
 return '' unless $APP-&gt;isAdmin($USER);
 my $str = '&lt;hr width=&quot;100&quot; /&gt;&lt;small&gt;&lt;strong&gt;node bucket&lt;/strong&gt;&lt;/small&gt;&lt;br&gt;';
 
-my $PARAMS = { op =&gt; 'addBucket', 'bnode_' . $$NODE{node_id} =&gt; 1, -class=&gt;'action' };
+my $PARAMS = { op =&gt; 'addbucket', 'bnode_' . $$NODE{node_id} =&gt; 1, -class=&gt;'action' };
 my $t = $$NODE{title};
 $t =~ s/(\S{16})/$1 /g;
 $str .= linkNode($NODE, &quot;Add '$t'&quot;, $PARAMS);

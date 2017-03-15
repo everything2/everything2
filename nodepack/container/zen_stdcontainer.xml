@@ -65,13 +65,7 @@ else {
   return qq|&lt;meta content=&quot;width=device-width; initial-scale=1.0; user-scalable=1;&quot;
       name=&quot;viewport&quot;&gt;| if isMobile();
 %]
-&lt;link href=&quot;//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css&quot; rel=&quot;stylesheet&quot;&gt;
-[% if($APP-&gt;use_bootstrap()){
-  return qq|
-&lt;link rel=&quot;stylesheet&quot; href=&quot;https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css&quot;&gt;
-&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;|;
-  }
-%]
+&lt;link href=&quot;https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css&quot; rel=&quot;stylesheet&quot;&gt;
 &lt;/head&gt;
 
 &lt;body class=&quot;[%

@@ -454,7 +454,7 @@ e2 = $.extend( function(x){return e2.shortFunctions[typeof x].apply(this, argume
 			active: {},
 
 			'HTML toolbar': {
-				library: 'http://jscss.everything2.com/2069738.js',
+				library: 'https://s3.amazonaws.com/jscss.everything2.com/2069738.js',
 				test: 'edToolbar',
 	
 				stop: function(id){
@@ -472,7 +472,7 @@ e2 = $.extend( function(x){return e2.shortFunctions[typeof x].apply(this, argume
 			},
 
 			'WYSIWYG editor': {
-				library: 'http://jscss.everything2.com/tiny_mce/tiny_mce.js?a=1',
+				library: 'https://s3.amazonaws.com/jscss.everything2.com/tiny_mce/tiny_mce.js?a=1',
 				test: 'tinyMCE',
 	
 				stop: function(id){ // don't use mceToggleEditor, it loses changes afterwards
@@ -741,7 +741,7 @@ e2.beforeunload = {};
 window.onbeforeunload = function(e){
 	var events = 'focusin focus keydown keypress scroll click'
 	  , things = $(document).add(window)
-	  , jQUiStyle = $('&lt;link id=&quot;jQueryUiStylesheet&quot; rel=&quot;stylesheet&quot; href=&quot;http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/smoothness/jquery-ui.css&quot;&gt;');
+	  , jQUiStyle = $('&lt;link id=&quot;jQueryUiStylesheet&quot; rel=&quot;stylesheet&quot; href=&quot;https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/smoothness/jquery-ui.css&quot;&gt;');
 
 
 	for (var fn in e2.beforeunload){
@@ -856,7 +856,7 @@ if(! e2.noquickvote)
 {
   $.ajaxSetup({
 	type: 'POST',
-	url: 'http://'+window.location.hostname+((window.location.port != &quot;&quot;)?(&quot;:&quot;):(&quot;&quot;))+window.location.port+&quot;/index.pl&quot;,
+	url: window.location.protocol+'//'+window.location.hostname+((window.location.port != &quot;&quot;)?(&quot;:&quot;):(&quot;&quot;))+window.location.port+&quot;/index.pl&quot;,
 	// hostname included for Guest User on non-canonical domain with canonical base element in html head
 	cache: false,
 	dataType: 'text',
@@ -1590,9 +1590,8 @@ void new function(zensheet){
 	}
 }(document.getElementById('zensheet'));
 
-// End contents of settings script 
-</doctext>
-  <contentversion>133</contentversion>
+// End contents of settings script </doctext>
+  <contentversion>134</contentversion>
   <s3bucket></s3bucket>
   <node_id>1874924</node_id>
   <title>default javascript</title>
