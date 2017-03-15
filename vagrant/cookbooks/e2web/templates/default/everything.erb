@@ -1,7 +1,4 @@
-PerlSwitches -I/var/everything/ecore
-ServerName everything2.com
-NameVirtualHost *:80
-<VirtualHost *:80>
+<% coreconfig="
 	ServerName everything2.com
 	ServerAlias www.everything2.com
 	ServerAlias everything2.net
@@ -46,19 +43,24 @@ NameVirtualHost *:80
 	PerlModule Apache::DBI CGI Everything Everything::HTML
 	PerlResponseHandler ModPerl::Registry
 	PerlOptions +ParseHeaders
+"
 
-	<%- node["banned_ips"].each do |ip| %>
-	SetEnvIf X-FORWARDED-FOR "<%= ip %>" denyip
-	<%- end %>
+coreconfig+="\t\# Explicit IP address bans\n"
+node["banned_ips"].each do |ip|
+	coreconfig+="\tSetEnvIf X-FORWARDED-FOR \"#{ip}\" denyip\n"
+end
 
-	<% node["banned_blocks"].each do |block| %>
-	SetEnvIf X-FORWARDED-FOR ^<%= block.gsub(".","\\.") %> denyip
-	<%- end %>
+coreconfig+="\t\# IP address block bans\n"
+node["banned_blocks"].each do |block|
+	coreconfig+="\tSetEnvIf X-FORWARDED-FOR ^#{block.gsub(".","\\.")} denyip\n"
+end
 
-	<% node["banned_user_agents"].each do |ua| %>
-	BrowserMatchNoCase <%= ua %> denyip
-	<%- end %>
+coreconfig+="\t\# User agent bans\n"
+node["banned_user_agents"].each do |ua|
+	coreconfig+="\tBrowserMatchNoCase #{ua} denyip\n"
+end
 
+coreconfig+="
 	<Directory /var/everything/www/>
 		DirectoryIndex index.pl
 		AddHandler perl-script .pl
@@ -86,21 +88,34 @@ NameVirtualHost *:80
         </Directory>
 
 	ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
-	<Directory "/usr/lib/cgi-bin">
+	<Directory \"/usr/lib/cgi-bin\">
 		AllowOverride None
 		Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
 		Order allow,deny
 		Allow from all
 	</Directory>
 
-	#this was the old customlog before enabling joining login info with usertrack module
-	#CustomLog /var/log/apache2/clickstream "%{cookie}n %r %t" env=!dontlog
 	# NORMAL LOGS
-	ErrorLog "|/usr/sbin/rotatelogs -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600"
+	ErrorLog \"|/usr/sbin/rotatelogs -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600\"
 	# Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
 	LogLevel warn
 
-	CustomLog "|/usr/sbin/rotatelogs -f /var/log/apache2/e2.access.%Y%m%d%H.log 3600" combined env=!dontlog
-	ServerSignature On
+	CustomLog \"|/usr/sbin/rotatelogs -f /var/log/apache2/e2.access.%Y%m%d%H.log 3600\" combined env=!dontlog
+	ServerSignature On"
 
+%>
+PerlSwitches -I/var/everything/ecore
+ServerName everything2.com
+NameVirtualHost *:80
+<VirtualHost *:80>
+<%=coreconfig %>
 </VirtualHost>
+<IfModule mod_ssl.c>
+<VirtualHost _default_:443>
+	SSLEngine on
+	SSLCertificateFile    /etc/apache2/e2.cert
+	SSLCertificateKeyFile /etc/apache2/e2.key
+<%=coreconfig %>
+</VirtualHost>
+</IfModule>
+
