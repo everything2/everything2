@@ -253,7 +253,7 @@ sub linkjavascript
     }
 
     $filename .= ".js";
-    return "http://jscss.everything2.com/$filename";
+    return "https://s3.amazonaws.com/jscss.everything2.com/$filename";
   } else {
     return $n;
   }
@@ -4471,7 +4471,7 @@ sub static_javascript
   $e2 = encode_json($e2);
 
   my $min = undef; $min = '.min' unless $APP->inDevEnvironment();
-  my $libraries = qq'<script src="http://code.jquery.com/jquery-1.11.1$min.js" type="text/javascript"></script>';
+  my $libraries = qq'<script src="https://code.jquery.com/jquery-1.11.1$min.js" type="text/javascript"></script>';
 
   if($APP->use_bootstrap)
   {
@@ -4479,7 +4479,7 @@ sub static_javascript
   }
 
   unless ($APP->isGuest($USER)){
-      $libraries .= qq|<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui$min.js" type="text/javascript"></script>|;
+      $libraries .= qq|<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui$min.js" type="text/javascript"></script>|;
   }
   my $defaultJS = getNode("default javascript","jscript");
   $libraries .= "<script src='".htmlcode("linkjavascript",$$defaultJS{node_id})."' type='text/javascript'></script>\n";
@@ -4837,9 +4837,9 @@ sub generatehex
   while (my $letter = chop $hex) {
     my $row = "<tr><td align=center><img width=128 height=14 src=";
     if (uc($letter) eq 'B') {
-      $row .="http://static.everything2.com/broke.gif";
+      $row .="https://s3.amazonaws.com/static.everything2.com/broke.gif";
     } else {
-      $row .="http://static.everything2.com/full.gif";
+      $row .="https://s3.amazonaws.com/static.everything2.com/full.gif";
     }
     $row.="></td></tr>";
     $rows = $row.$rows;

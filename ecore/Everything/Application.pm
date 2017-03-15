@@ -3682,7 +3682,7 @@ sub stylesheetCDNLink
   }
   
   $filename .= ".css";
-  return "http://jscss.everything2.com/$filename";
+  return "https://s3.amazonaws.com/jscss.everything2.com/$filename";
 }
 
 sub pagetitle
