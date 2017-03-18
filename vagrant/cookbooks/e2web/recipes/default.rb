@@ -107,6 +107,12 @@ if node["e2web"]["tls_cert"].nil? and node["e2web"]["tls_key"].nil?
   end
 end
 
+bash "Check S3 for certs" do
+  cwd "/tmp"
+  user "root"
+  code "/var/everything/tools/fetch_tls_keys.pl"
+end
+
 file '/etc/logrotate.d/apache2' do
   action "delete"
   notifies :reload, "service[apache2]", :delayed
