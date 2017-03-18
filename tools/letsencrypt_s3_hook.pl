@@ -12,15 +12,23 @@ use Everything::S3;
 # clean_challenge domain token value 
 # invalid_challenge domain
 
-my $s3 = Everything::S3->new("acme");
+my $acme = Everything::S3->new("acme");
+my $keyexchange = Everything::S3->new("keyexchange");
 
 if($ARGV[0] eq "deploy_challenge")
 {
-  $s3->upload_data($ARGV[2],$ARGV[3]);
+  $acme->upload_data($ARGV[2],$ARGV[3]);
 }elsif($ARGV[0] eq "clean_challenge"){
-  $s3->delete($ARGV[2]);
+  $acme->delete($ARGV[2]);
 }elsif($ARGV[0] eq "invalid_challenge"){
 # TODO mail here
+}elsif($ARGV[0] eq "unchanged_cert"){
+# Do nothing
+}elsif($ARGV[0] eq "exit_hook"){
+# Do nothing
+}elsif($ARGV[0] eq "deploy_cert"){
+  $acme->upload_file("e2.cert","/etc/dehydrated/certs/everything2.com/fullchain.pem");
+  $acme->upload_file("e2.key","/etc/dehydrated/certs/everything2.com/privkey.pem");
 }else{
-  print "Invalid token hook!\n";
+  print "Invalid token hook! (".$ARGV[0].")\n";
 }
