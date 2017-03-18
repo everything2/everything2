@@ -53,7 +53,8 @@ sub upload_file
 
 sub delete
 {
-	my ($this, $filename) = @_;
+	my ($this, $name) = @_;
+	return $this->{bucket}->delete_key($name);
 }
 
 1;
