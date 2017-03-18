@@ -3831,4 +3831,39 @@ sub getVars
   %vars = $this->getVarHashFromStringFast($N->{vars});
   return \%vars;
 }
+
+
+# TODO: Needs an offset
+# TODO: Process to autoclean messages from deleted users and groups
+
+sub get_messages
+{
+  my ($this, $user, $limit) = @_;
+
+  $this->{db}->getRef($user);
+  return unless defined($user) and defined($user->{node_id});
+
+  $limit ||= 15;
+  $limit = 15 if ($limit < 0);
+  $limit = 100 if ($limit > 100);
+
+  my $csr = $this->{db}->sqlSelectMany("*","message","for_user=$user->{node_id}", "ORDER BY tstamp LIMIT $limit");
+  my $records = [];
+  while (my $row = $csr->fetchrow_hashref)
+  {
+    my $from_user = $this->{db}->getNodeById($row->{author_user});
+    next unless $from_user;
+    my $for_usergroup = {};
+    if($row->{for_usergroup})
+    {
+      my $message_usergroup = $this->{db}->getNodeById($row->{for_usergroup});
+      $for_usergroup = { "node_id" => $for_usergroup->{node_id}, "title" => $for_usergroup->{title}};
+    }
+
+    push $records, {"from_user" => {"node_id" => $from_user->{node_id}, "title" => $from_user->{title}}, "msgtext" => $row->{msgtext}, "for_usergroup" => $for_usergroup};
+  }
+  return $records;
+}
+
+
 1;

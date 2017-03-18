@@ -11,7 +11,7 @@ sub get
   {
     return [$self->HTTP_FORBIDDEN];
   }
-  return [200, {}];
+  return [200, $self->APP->get_messages($REQUEST->USER)];
 }
 
 __PACKAGE__->meta->make_immutable;
