@@ -6,6 +6,12 @@ use Digest::SHA;
 
 my $keyexchange = Everything::S3->new("keyexchange");
 
+unless($keyexchange)
+{
+  print "No keyexchange credentials, quitting\n";
+  exit;
+}
+
 my $apachedir="/etc/apache2";
 
 
