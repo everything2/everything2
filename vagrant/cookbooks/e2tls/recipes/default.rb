@@ -43,3 +43,5 @@ template '/etc/dehydrated/domains.txt' do
   mode 0700
   source 'domains.txt.erb'
 end
+
+package 'curl'
