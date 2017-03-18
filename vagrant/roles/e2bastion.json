@@ -1,1 +1,1 @@
-{"name":"e2bastion","description":"Bastion/SSH/Cron servers ","json_class":"Chef::Role","default_attributes":{},"override_attributes":{},"chef_type":"role","run_list":["recipe[e2engine]","recipe[e2helper]","recipe[e2cron]"],"env_run_lists":{}}
+{"name":"e2bastion","description":"Bastion/SSH/Cron servers ","json_class":"Chef::Role","default_attributes":{},"override_attributes":{},"chef_type":"role","run_list":["recipe[e2engine]","recipe[e2helper]","recipe[e2cron]","recipe[e2tls]"],"env_run_lists":{}}
