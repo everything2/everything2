@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use lib qw(/home/admin/everything2/ecore);
+use lib qw(/var/everything/ecore);
 
 use Everything::S3;
 
@@ -18,8 +18,10 @@ my $keyexchange = Everything::S3->new("keyexchange");
 if($ARGV[0] eq "deploy_challenge")
 {
   $acme->upload_data($ARGV[2],$ARGV[3]);
+  print "Uploaded $ARGV[2]\n";
 }elsif($ARGV[0] eq "clean_challenge"){
   $acme->delete($ARGV[2]);
+  print "Deleted $ARGV[2]\n";
 }elsif($ARGV[0] eq "invalid_challenge"){
 # TODO mail here
 }elsif($ARGV[0] eq "unchanged_cert"){
@@ -27,8 +29,17 @@ if($ARGV[0] eq "deploy_challenge")
 }elsif($ARGV[0] eq "exit_hook"){
 # Do nothing
 }elsif($ARGV[0] eq "deploy_cert"){
-  $acme->upload_file("e2.cert","/etc/dehydrated/certs/everything2.com/fullchain.pem");
-  $acme->upload_file("e2.key","/etc/dehydrated/certs/everything2.com/privkey.pem");
+  unless($keyexchange->upload_file("e2.cert","/etc/dehydrated/certs/everything2.com/fullchain.pem"))
+  {
+    print "E2 Cert upload failed: ".$keyexchange->errstr()."\n";
+    exit;
+  }
+  unless($keyexchange->upload_file("e2.key","/etc/dehydrated/certs/everything2.com/privkey.pem"))
+  {
+    print "E2 Key upload failed: ".$keyexchange->errstr()."\n";
+    exit;
+  }
+  print "Uploaded keys to e2 keyexchange server\n";
 }else{
   print "Invalid token hook! (".$ARGV[0].")\n";
 }
