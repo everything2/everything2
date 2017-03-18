@@ -5938,7 +5938,7 @@ sub showuserimage
   $imgsrc = "$$NODE{title}";
   $imgsrc =~ s/\W/_/g;
   $imgsrc = "/$imgsrc" if ($imgsrc !~ /^\//);
-  return '<img src="http://'.$Everything::CONF->homenode_image_host.$imgsrc.'" id="userimage">'; 
+  return '<img src="https://s3-us-west-2.amazonaws.com/hnimagew.everything2.com'.$imgsrc.'" id="userimage">'; 
 }
 
 sub showchatter
