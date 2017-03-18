@@ -57,4 +57,15 @@ sub delete
 	return $this->{bucket}->delete_key($name);
 }
 
+sub errstr
+{
+	my ($this) = @_;
+	return $this->{bucket}->errstr;
+}
+
+sub err
+{
+	my ($this) = @_;
+	return $this->{bucket}->err;
+}
 1;
