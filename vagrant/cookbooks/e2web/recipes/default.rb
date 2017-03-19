@@ -74,29 +74,7 @@ end
   end
 end
 
-if node["e2web"]["tls_key"]
-  file '/etc/apache2/e2.key' do
-    owner 'root'
-    group 'root'
-    mode '0700'
-    action 'create'
-    content (node["e2web"]["tls_key"])?(Base64.decode64(node["e2web"]["tls_key"])):("")
-    notifies :reload, "service[apache2]", :delayed
-  end
-end
-
-if node["e2web"]["tls_cert"]
-  file '/etc/apache2/e2.cert' do
-    owner 'root'
-    group 'root'
-    mode '0700'
-    action 'create'
-    content (node["e2web"]["tls_cert"])?(Base64.decode64(node["e2web"]["tls_cert"])):("")
-    notifies :reload, "service[apache2]", :delayed
-  end
-end
-
-if node["e2web"]["tls_cert"].nil? and node["e2web"]["tls_key"].nil?
+if node["e2web"]["make_snakeoil_tls_cert"]
   bash "Create E2 snakeoil certs" do
     cwd "/tmp"
     user "root"
