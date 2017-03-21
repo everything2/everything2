@@ -5,9 +5,8 @@
 my $isGuest = $APP-&gt;isGuest($USER);
  
 my $pageSource = &lt;&lt;'CODEEND';
-&lt;script type=&quot;text/javascript&quot; src=&quot;http://code.jquery.com/jquery-1.4.2.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;https://code.jquery.com/jquery-1.4.2.js&quot;&gt;&lt;/script&gt;
 &lt;script type=&quot;text/javascript&quot; src=&quot;/node/jscript/jstest&quot;&gt;&lt;/script&gt;
-
 &lt;script type=&quot;text/javascript&quot;&gt;
 $(document).ready(function() {
    RefreshMessageInbox();

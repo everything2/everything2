@@ -53,7 +53,7 @@ $$sheets{ $$VARS{userstyle} } = getNodeById($$VARS{userstyle}) -&gt; {title}
 my @values = ( 'default' , keys %$sheets ) ;
 $$sheets{default} = '(default)' ;
 $$sheets{ $$VARS{userstyle} } .= '*' if $$VARS{userstyle} ;
-my $str = 'Choose a style: ' . $query -&gt; popup_menu( -name =&gt; 'chosenstyle', values=&gt; \@values ,
+my $str = 'Choose a style: ' . $query -&gt; popup_menu( -name =&gt; 'chosenstyle', -id =&gt; 'settings_styleselector', values=&gt; \@values ,
 	labels=&gt;$sheets , default=&gt;$$VARS{userstyle}||'default') ;
 
 &quot;$str\n&quot;;

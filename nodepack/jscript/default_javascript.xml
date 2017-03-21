@@ -1527,8 +1527,7 @@ void new function(zensheet){
 
 	var originalTheme = zensheet.href;
 	var originalSpeed = e2.fxDuration;
-	var themeMenu = $('#pagebody')[0].chosenstyle;
-	var speedMenu = $('#pagebody')[0].setvars_fxDuration;
+	var themeMenu = $(&quot;#settings_styleselector&quot;)[0];
 
 	// give previews of the effects of a couple of settings on the [Settings] page
 	if (themeMenu){
@@ -1539,29 +1538,26 @@ void new function(zensheet){
 		var themeOption = $('#showThemePreview').click(newTheme)[0];
 	}
 
-	if (speedMenu){
-		$('option', speedMenu).click(newSpeed);
-                 $('&lt;div class=&quot;widget&quot; style=&quot;visibility:hidden&quot;&gt;----------------&lt;br&gt;----------------&lt;br&gt;----------------&lt;a  class=&quot;action showwidget hidewidget&quot; title=&quot;hide&quot;&gt;X&lt;/a&gt;&lt;/div&gt;&lt;a  class=&quot;action showwidget&quot; id=&quot;speedtest&quot;&gt;Speed demo...&lt;/a&gt;')
-		.insertAfter(speedMenu.parentNode); // speed menu has label
-	}
-
-	// drag and drop nodelet menus on [Nodelet Settings] page
-	$('#rearrangenodelets')
-//	.disableSelection()
-	.css({
+        if(!e2.guest)
+        {
+	     // drag and drop nodelet menus on [Nodelet Settings] page
+	     $('#rearrangenodelets')
+//           .disableSelection()
+	     .css({
 		cursor: 'n-resize',
 //		'list-style-image': 'url(&quot;&quot;)', up-down arrow, anybody?
 		'list-style-position': 'inside' // no frustration when dragging with the blob
-	})
-	.sortable({
+  	     })
+	     .sortable({
 		axis: 'y',
 		update: function(){
 	   		$('#rearrangenodelets select').each(function(n){
 				this.name = 'nodeletedit' + (n+1);
       		})
 	   	}
-	})
-	.find('li').append(' &amp;ndash;&amp;#x2195;&amp;ndash;');
+	     })
+	     .find('li').append(' &amp;ndash;&amp;#x2195;&amp;ndash;');
+        }
 
 	function newTheme(){
 		if (!themeOption.checked || $(this).attr('selected'))
@@ -1591,7 +1587,7 @@ void new function(zensheet){
 }(document.getElementById('zensheet'));
 
 // End contents of settings script </doctext>
-  <contentversion>134</contentversion>
+  <contentversion>139</contentversion>
   <s3bucket></s3bucket>
   <node_id>1874924</node_id>
   <title>default javascript</title>
