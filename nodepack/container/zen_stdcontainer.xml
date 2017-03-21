@@ -31,7 +31,7 @@ if (exists(($$VARS{customstyle})) &amp;&amp; defined(($$VARS{customstyle}))) {
 [%
 my $canonical_web_server = $Everything::CONF-&gt;canonical_web_server;
 my $url = &quot;&quot;;
-$url = 'http://'.$canonical_web_server if $APP-&gt;isGuest($USER);
+$url = ($APP-&gt;is_tls()?('https'):('http')).'://'.$canonical_web_server if $APP-&gt;isGuest($USER);
 $url .= $APP-&gt;urlGenNoParams( $NODE , 'noQuotes' ) unless $$NODE{ node_id } eq $Everything::CONF-&gt;system-&gt;{default_node} ;
 $url ||= '/' ;
 return '	&lt;link rel=&quot;canonical&quot; href=&quot;' . $url . '&quot;&gt;' ;
