@@ -3710,7 +3710,7 @@ sub basehref
     # This only matters in the development environment
     my ($port) = $ENV{HTTP_HOST} =~ /(:\d+)$/;
     $port ||="";
-    return 'http://'.$this->{conf}->canonical_web_server.$port;
+    return ($this->is_tls()?('https'):('http')).'://'.$this->{conf}->canonical_web_server.$port;
   }
 }
 
@@ -3863,6 +3863,12 @@ sub get_messages
     push $records, {"from_user" => {"node_id" => $from_user->{node_id}, "title" => $from_user->{title}}, "msgtext" => $row->{msgtext}, "for_usergroup" => $for_usergroup};
   }
   return $records;
+}
+
+sub is_tls
+{
+  my ($this) = @_;
+  return $ENV{HTTPS};
 }
 
 
