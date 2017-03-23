@@ -1,15 +1,9 @@
 <node>
   <type_nodetype>150</type_nodetype>
+  <delegated>1</delegated>
   <maintain_nodetype>1147470</maintain_nodetype>
   <node_id>1991791</node_id>
   <title>node_forward maintenance create</title>
   <maintaintype>create</maintaintype>
-  <code>my ($FORWARD)=@_;
-getRef ($FORWARD);
-
-$$FORWARD{author_user} = getId(getNode('Content Editors', 'usergroup'));
-
-updateNode($FORWARD, -1);
-
-htmlcode('addNodenote', $FORWARD, &quot;Created by [$$USER{title}\[user]]&quot;);</code>
+  <code></code>
 </node>

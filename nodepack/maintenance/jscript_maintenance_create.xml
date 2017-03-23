@@ -1,29 +1,9 @@
 <node>
   <type_nodetype>150</type_nodetype>
+  <delegated>1</delegated>
   <maintain_nodetype>1786405</maintain_nodetype>
   <node_id>1872476</node_id>
   <title>jscript maintenance create</title>
   <maintaintype>create</maintaintype>
-  <code>my ($JSCRIPT) = @_;
-
-getRef($JSCRIPT);
-
-my $scriptAuthor = $$JSCRIPT{author_user};
-my $author = getNodeById($scriptAuthor)-&gt;{title};
-$$JSCRIPT{author_user} = getNode('e2gods','usergroup') -&gt; {'node_id'};
-
-$$JSCRIPT{doctext} = $query-&gt;param(&quot;jscript_doctext&quot;);
-
-my $JNODE = getNode('Javascript Repository listings','setting');
-
-my $SETTINGS = getVars($JNODE);
-
-my $nid = $$JSCRIPT{node_id};
-
-$$SETTINGS{$nid} = &quot;&lt;b&gt;[&quot;.$$JSCRIPT{title}.&quot;]&lt;/b&gt; by [&quot;.$author.&quot;]&lt;br /&gt;
-&quot;.$query-&gt;param(&quot;jscript_desc&quot;) ;
-
-setVars($JNODE, $SETTINGS);
-
-updateNode($JSCRIPT, -1);</code>
+  <code></code>
 </node>

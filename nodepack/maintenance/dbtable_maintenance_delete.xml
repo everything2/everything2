@@ -5,10 +5,5 @@
   <node_id>157</node_id>
   <title>dbtable maintenance delete</title>
   <maintaintype>delete</maintaintype>
-  <code># This gets called each time a dbtable node gets deleted.
-# We want to delete the associated table here.
-my ($NODE) = @_;
-
-getRef $NODE;
-$DB-&gt;dropNodeTable($$NODE{title});</code>
+  <code></code>
 </node>

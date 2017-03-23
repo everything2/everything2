@@ -1,20 +1,9 @@
 <node>
   <type_nodetype>150</type_nodetype>
+  <delegated>1</delegated>
   <maintain_nodetype>2035430</maintain_nodetype>
   <node_id>2036236</node_id>
   <title>draft maintenance create</title>
   <maintaintype>create</maintaintype>
-  <code>my ($D) = @_;
-getRef $D;
-
-# make sure it has a publication status
-$$D{publication_status} = $query -&gt; param('draft_publication_status') ||
-	getNode('private', 'publication_status') -&gt; {node_id};
-
-# if draft has just been created from an e2node
-# doctext parameter would be ignored because of wrong nodetype prefix
-$$D{doctext} = $query -&gt; param('writeup_doctext') if $query -&gt; param('writeup_doctext');
-
-updateNode($D, $USER);
-</code>
+  <code></code>
 </node>

@@ -1,20 +1,9 @@
 <node>
   <type_nodetype>150</type_nodetype>
+  <delegated>1</delegated>
   <maintain_nodetype>1147470</maintain_nodetype>
   <node_id>2051617</node_id>
   <title>node_forward maintenance update</title>
   <maintaintype>update</maintaintype>
-  <code>my ($FORWARD) = @_;
-getRef $FORWARD;
-
-my $forwardTitle = $query-&gt;param(&quot;forward_to_node&quot;);
-$forwardTitle = $$FORWARD{doctext} if $$FORWARD{doctext} =~ /\D/;
-
-if ($forwardTitle) {
-  my $forwardId = getId(getNode($forwardTitle, &quot;e2node&quot;));
-  return unless $forwardId &amp;&amp; $forwardId ne $$FORWARD{doctext}; # no infinite recursion, please, we're British.
-  $$FORWARD{doctext} = $forwardId;
-  $query -&gt; param('node_forward_doctext', $forwardId) if $query -&gt; param('node_forward_doctext');
-  updateNode($FORWARD, -1);
-}</code>
+  <code></code>
 </node>

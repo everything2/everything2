@@ -5,10 +5,5 @@
   <node_id>156</node_id>
   <title>dbtable maintenance create</title>
   <maintaintype>create</maintaintype>
-  <code># This gets called for each new dbtable node.  We
-# want to create the associated table here.
-my ($NODE) = @_;
-
-getRef $NODE;
-$DB-&gt;createNodeTable($$NODE{title});</code>
+  <code></code>
 </node>

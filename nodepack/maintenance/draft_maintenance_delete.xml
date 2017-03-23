@@ -1,36 +1,9 @@
 <node>
   <type_nodetype>150</type_nodetype>
+  <delegated>1</delegated>
   <maintain_nodetype>2035430</maintain_nodetype>
   <node_id>2047125</node_id>
   <title>draft maintenance delete</title>
   <maintaintype>delete</maintaintype>
-  <code># get rid of any votes and cools left over from a time as a writeup
-# record level-relevant info for old users who have not recalculated their XP
-
-my ($id) = @_;
-
-my $N = getNodeById($id);
-my @cache = $DB -&gt; sqlSelect('upvotes, cools',
-		'xpHistoryCache', # xpHistoryCache for user is deleted once XP has been recalculated
-		&quot;xpHistoryCache_id=$$N{author_user}&quot;)
-	if $$N{author_user} &lt; 1960662; # magic number identifies October 29, 2008
-
-my $totalvotes = int($DB -&gt; sqlDelete('vote', &quot;vote_id=$id&quot;));
-my $cools = int($DB -&gt; sqlDelete('coolwriteups', &quot;coolwriteups_id=$id&quot;));
-
-return unless @cache;
-
-my $upvotes = ($totalvotes + $$N{reputation})/2;
-# ... if the voting history was lost in Node Heaven, improvise:
-$upvotes = $$N{reputation} if $totalvotes &lt; $$N{reputation} || $upvotes != int($upvotes);
-
-return unless $upvotes || $cools;
-
-$upvotes += $cache[0];
-$cools += $cache[1];
-
-$DB -&gt; sqlUpdate('xpHistoryCache',
-	{upvotes =&gt; $upvotes, cools =&gt; $cools},
-	&quot;xpHistoryCache_id=$$N{author_user}&quot;);
-</code>
+  <code></code>
 </node>

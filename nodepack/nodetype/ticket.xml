@@ -1,9 +1,0 @@
-<node>
-  <extends_nodetype>3</extends_nodetype>
-  <sqltable>ticket</sqltable>
-  <grouptable></grouptable>
-  <node_id>1949335</node_id>
-  <type_nodetype>1</type_nodetype>
-  <title>ticket</title>
-  <deleters_user>114</deleters_user>
-</node>

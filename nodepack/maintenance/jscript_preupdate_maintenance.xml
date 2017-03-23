@@ -1,10 +1,9 @@
 <node>
   <type_nodetype>150</type_nodetype>
+  <delegated>1</delegated>
   <maintain_nodetype>1786405</maintain_nodetype>
   <node_id>2100744</node_id>
   <title>jscript preupdate maintenance</title>
   <maintaintype>preupdate</maintaintype>
-  <code>my ($script_id) = @_;
-my $JNODE = getNodeById($script_id);
-$JNODE-&gt;{contentversion}++; #Don't call update, it'll loop</code>
+  <code></code>
 </node>
