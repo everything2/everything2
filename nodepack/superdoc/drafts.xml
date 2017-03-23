@@ -108,7 +108,7 @@ my ($drafts, $navigation, $count) = htmlcode(
 
 if ($drafts eq '') {
 	if (!$username) {
-		return '&lt;p&gt;You have no drafts.&lt;/p&gt;$showhidenukedlink';
+		return &quot;&lt;p&gt;You have no drafts.&lt;/p&gt;$showhidenukedlink&quot;;
 	} else {
 		return &quot;&lt;p&gt;[${username}[user]] has no drafts visible to you.&lt;/p&gt;$showhidenukedlink&quot;;
 	}

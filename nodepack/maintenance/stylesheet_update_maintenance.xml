@@ -1,9 +1,9 @@
 <node>
   <type_nodetype>150</type_nodetype>
+  <delegated>1</delegated>
   <maintain_nodetype>1854352</maintain_nodetype>
   <node_id>2100739</node_id>
   <title>stylesheet update maintenance</title>
   <maintaintype>update</maintaintype>
-  <code>my ($stylesheet) = @_;
-$APP-&gt;uploadS3Content($stylesheet);</code>
+  <code></code>
 </node>

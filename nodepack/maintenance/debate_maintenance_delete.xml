@@ -1,21 +1,9 @@
 <node>
   <type_nodetype>150</type_nodetype>
+  <delegated>1</delegated>
   <maintain_nodetype>1157413</maintain_nodetype>
   <node_id>1156096</node_id>
   <title>debate maintenance delete</title>
   <maintaintype>delete</maintaintype>
-  <code>my ( $NODE ) = @_;
-getRef $NODE;
-
-return unless $DB-&gt;canDeleteNode( $USER, $NODE );
-
-my $GROUP = $$NODE{ 'group' };
-
-if ( $GROUP ) {
-    foreach my $item ( @$GROUP ) {
-        my $child = getNodeById( $item );
-        nukeNode( $child, $USER );
-    }
-}
-</code>
+  <code></code>
 </node>

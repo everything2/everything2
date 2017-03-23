@@ -1,22 +1,9 @@
 <node>
   <type_nodetype>150</type_nodetype>
+  <delegated>1</delegated>
   <maintain_nodetype>1254859</maintain_nodetype>
   <node_id>1926166</node_id>
   <title>collaboration maintenance update</title>
   <maintaintype>update</maintaintype>
-  <code>my ($NODE) = @_;
-getRef $NODE;
-return unless $NODE;
-
-  $DB-&gt;{cache}-&gt;incrementGlobalVersion($NODE);
-  my $WRTYPE=getNode $$NODE{wrtype_writeuptype};
-  
-  my $title = &quot;$$NODE{title}&quot;;
-  return if $$NODE{title} eq $title; 
-  #only YOU can prevent deep recursion...
-
-  $$NODE{title} = $title;
-  updateNode $NODE, -1;
-
-</code>
+  <code></code>
 </node>

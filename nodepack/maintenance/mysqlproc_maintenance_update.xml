@@ -1,12 +1,9 @@
 <node>
   <type_nodetype>150</type_nodetype>
+  <delegated>1</delegated>
   <maintain_nodetype>2061807</maintain_nodetype>
   <node_id>2069693</node_id>
   <title>mysqlproc maintenance update</title>
   <maintaintype>update</maintaintype>
-  <code>my ($N) = @_;
-getRef($N);
-
-$DB-&gt;createMysqlProcedure($N-&gt;{title}, $N-&gt;{parameters}, $N-&gt;{doctext});
-</code>
+  <code></code>
 </node>

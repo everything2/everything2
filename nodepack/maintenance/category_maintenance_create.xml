@@ -1,49 +1,9 @@
 <node>
   <type_nodetype>150</type_nodetype>
+  <delegated>1</delegated>
   <maintain_nodetype>1522375</maintain_nodetype>
   <node_id>1935675</node_id>
   <title>category maintenance create</title>
   <maintaintype>create</maintaintype>
-  <code>my ($CATEGORY) = @_;
-getRef $CATEGORY;
-
-my $guestuserId= getId(getNode('guest user', 'user'));
-
-my $maintUserId = int($query-&gt;param(&quot;maintainer&quot;)) if $query;
-$maintUserId ||= $$USER{user_id};
-my $MAINTAINER = getNodeById($maintUserId);
-my $maintType = $$MAINTAINER{type}{title} if $MAINTAINER;
-
-# If an invalid maintainer is given, use the current user instead
-if ($maintType ne 'user' &amp;&amp; $maintType ne 'usergroup')
-{
-   $maintUserId = $$USER{user_id};
-   $MAINTAINER = $USER;
-   $maintType = 'user';
-}
-
-# if someone is trying to create a user-maintained node that doesn't
-# belong to the current or guest user, remove it
-if ($maintType eq 'user'
-    &amp;&amp; $$MAINTAINER{node_id} != $$USER{user_id} 
-    &amp;&amp; $$MAINTAINER{node_id} != $guestuserId
-   )
-{
-  nukeNode $CATEGORY, -1, 1;
-  return;
-}
-
-# if someone is trying to create a usergroup-maintained node, and the 
-# current user does not belong to that usergroup, remove it
-if ($maintType eq 'usergroup'
-    &amp;&amp; ! $APP-&gt;inUsergroup($USER, $MAINTAINER)
-   )
-{
-  nukeNode $CATEGORY, -1, 1;
-  return;
-}
-
-$$CATEGORY{author_user} = $$MAINTAINER{node_id};
-updateNode($CATEGORY, -1);
-</code>
+  <code></code>
 </node>

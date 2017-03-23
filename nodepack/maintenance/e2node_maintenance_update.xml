@@ -5,17 +5,5 @@
   <node_id>827409</node_id>
   <title>e2node maintenance update</title>
   <maintaintype>update</maintaintype>
-  <code>my ($NODE) = @_;
-getRef $NODE;
-
-my $CE = getId(getNode('Content Editors', 'usergroup'));
-
-if ($$NODE{author_user} != $CE){
-  $$NODE{createdby_user} = $$NODE{author_user};
-  $$NODE{author_user} = $CE; # Content Editors can update node, creator cannot
-  updateNode($NODE, -1);
-}
-
-htmlcode('repair e2node', $NODE, 'No reorder');
-</code>
+  <code></code>
 </node>
