@@ -900,7 +900,7 @@ sub user_delete
 
 }
 
-sub draft_create
+sub draft_create2
 {
   my $DB = shift;
   my $query = shift;
@@ -923,7 +923,7 @@ sub draft_create
   $DB->updateNode($D, $USER);
 }
 
-sub draft_update
+sub draft_update2
 {
   my $DB = shift;
   my $query = shift;
