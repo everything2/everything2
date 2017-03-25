@@ -17,7 +17,7 @@ my $sitemapnum = 0;
 my $sitemapfiles;
 
 my $urls = 0;
-my $e2 = "http://everything2.com";
+my $e2 = "https://everything2.com";
 my $sitemaphandle;
 
 $DB->{cache}->setCacheSize(50);
