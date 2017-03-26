@@ -1,4 +1,4 @@
-Sitemap: http://everything2.com/sitemap/index.xml
+Sitemap: https://everything2.com/sitemap/index.xml
 
 User-Agent: 008
 Disallow: /
