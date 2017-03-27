@@ -110,7 +110,7 @@
 
 #cooluserpicks {
 	background-color: #eeebdd;
-	/* background-image: url(http://www.kenvective.com/e2/brn35_plaster.png); */
+	/* background-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/brn35_plaster.png); */
 	border-style: solid;
 	border-width: 1px;
 	border-color: #4c8797;
@@ -122,7 +122,7 @@
 	margin-bottom: 15px;
 	/* list-style-type: disc; */
 	list-style-position: outside;
-	list-style-image: url(http://www.kenvective.com/e2/ul_ching.png);
+	list-style-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/ul_ching.png);
 }
 
 #creamofthecool{
@@ -147,7 +147,7 @@
         margin-top: 10px;
         margin-bottom: 5px; 
 	color: white;
-        background-image: url(http://www.kenvective.com/e2/oddrow_crnr_grad.png);
+        background-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/oddrow_crnr_grad.png);
         background-repeat: no-repeat;
 	background-position: 0px 5px;
 }
@@ -169,7 +169,7 @@
         font-size: 120%;
 	font-weight: bold;
 	color: white;
-        background-image: url(http://www.kenvective.com/e2/oddrow_crnr_grad.png);
+        background-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/oddrow_crnr_grad.png);
         background-repeat: no-repeat;
 	background-position: 0px 0px;
 	padding-left: 10px;
@@ -199,7 +199,7 @@
 
 #loglinks{
 	/*background-color: #eeebdd;*/
-	/* background-image: url(http://www.kenvective.com/e2/brn35_plaster.png); */
+	/* background-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/brn35_plaster.png); */
 	/*border-style: solid;
 	border-width: 1px;
 	border-color: #4c8797;*/
@@ -217,7 +217,7 @@
 	font-weight: bold;
 	/*background-color: #5a5341;*/
 	/*color: white;*/
-	/*background-image: url(http://www.kenvective.com/e2/h3_crnr_cool.png);
+	/*background-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/h3_crnr_cool.png);
 	background-repeat: no-repeat;
 	background-position: 0px 0px;*/
 	padding-left: 0px;
@@ -248,7 +248,7 @@
 .weblog .item .title {
         font-size: 14px;
         font-weight: 800;
-        background-image: url(http://www.kenvective.com/e2/h3_crnr_grad5.png);
+        background-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/h3_crnr_grad5.png);
         background-repeat: no-repeat;
 	background-position: 0px 0px;
 }
@@ -340,7 +340,7 @@
 /*=.weblog_item*/
 .weblog .item {
 	/* background-color: #eeebdd; */
-       /* background-image: url(http://www.kenvective.com/e2/brn35_plaster.png); */
+       /* background-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/brn35_plaster.png); */
 	border-bottom-style: solid;
 	border-bottom-width: 1px;
 	border-bottom-color: #4c8797;
@@ -366,7 +366,7 @@
 
 /*
 #nodelet_165437 {
-        background-image: url(http://images.everything2.com/img/epicenter.gif);
+        background-image: url(https://s3.amazonaws.com/static.everything2.com/epicenter.gif);
         background-repeat: no-repeat;
 	background-position: 0px 0px;
 }
@@ -376,7 +376,7 @@
 	font-weight: bold;
         background-color: #5a5341;
 	color: white;
-        background-image: url(http://www.kenvective.com/e2/h3_crnr_cool.png);
+        background-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/h3_crnr_cool.png);
         background-repeat: no-repeat;
 	background-position: 0px 0px;
 	padding-left: 10px;
@@ -405,7 +405,7 @@
         padding-right: 5px;
         padding-top: 1px;
         padding-bottom: 1px;
-        background-image: url(http://www.kenvective.com/e2/oddrow_crnr_grad.png);
+        background-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/oddrow_crnr_grad.png);
         background-repeat: no-repeat;
 	background-position: 0px 0px;
         padding-left:10px;
@@ -434,7 +434,7 @@
         padding-right: 5px;
         padding-top: 1px;
         padding-bottom: 1px;
-        background-image: url(http://www.kenvective.com/e2/oddrowF.png);
+        background-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/oddrowF.png);
         background-repeat: no-repeat;
 	background-position: 5px 0px;
         padding-left:10px;
@@ -444,7 +444,7 @@
 
 /*
 #nodelet_263 {
-	/* background-image: url(http://www.kenvective.com/e2/brn35_plaster.png); */
+	/* background-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/brn35_plaster.png); */
 }
 */       
 
@@ -456,7 +456,7 @@
 	word-wrap: break-word;
 	margin-bottom: 2px;
         background-color: #eeebdd;
-	background-image: url(http://www.kenvective.com/e2/nodeletF.png);
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/nodeletF.png);
         background-repeat: no-repeat;
 	background-position: 5px 2px;
 	border-style: solid;
@@ -483,7 +483,7 @@
 	text-align: right;
 	font-size: 200%;
 	padding-left: 325px;
-        background-image: url(http://www.kenvective.com/e2/e2Logo.png);
+        background-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/e2Logo.png);
         background-repeat: no-repeat;
 	background-position: 15px top;
         height: 40px;
@@ -501,7 +501,7 @@
 body {
 	color: black;
 	background-color: #e2d8ac;
-        /* background-image: url(http://www.kenvective.com/e2/brn35_plaster.png); */
+        /* background-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/brn35_plaster.png); */
 }
 
 a:link {
@@ -571,7 +571,7 @@ div,p, th, td, li, dd {
         padding-right: 5px;
         padding-top: 1px;
         padding-bottom: 0px;
-        background-image: url(http://www.kenvective.com/e2/oddrow_crnr_grad.png);
+        background-image: url(https://s3.amazonaws.com/static.everything2.com/maxclimb/oddrow_crnr_grad.png);
         background-repeat: no-repeat;
 	background-position: 0px 0px;
         padding-left:10px;
@@ -840,9 +840,8 @@ width: 100%;
 /*=#nodelet_170070*/
 #chatterbox { width: 196px; }
 
-.nodeshell { font-style: italic; }
-</doctext>
-  <contentversion>106</contentversion>
+.nodeshell { font-style: italic; }</doctext>
+  <contentversion>107</contentversion>
   <s3bucket></s3bucket>
   <node_id>1876637</node_id>
   <title>maxClimb_zenTheme</title>

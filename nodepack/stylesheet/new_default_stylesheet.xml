@@ -794,7 +794,7 @@ td {
 			background-repeat: no-repeat;
 			background-position: center left;
 			margin-top: -5px;
-			background-image: url(http://everything2.com/img/e2_tight.gif);
+			background-image: url(https://s3.amazonaws.com/static.everything2.com/e2_tight.gif);
 			float: left;
 			display: hidden;
 		}
@@ -843,7 +843,7 @@ td {
 			width: auto;
 			padding: 0;
 		}</doctext>
-  <contentversion>105</contentversion>
+  <contentversion>106</contentversion>
   <s3bucket></s3bucket>
   <node_id>1947527</node_id>
   <title>New Default Stylesheet</title>

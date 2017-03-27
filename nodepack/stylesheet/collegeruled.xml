@@ -234,7 +234,7 @@ height: 0;
 #wrapper
 {
 /*padding-right: 255px;*/ /* sidebar goes in this gap */
-background: #fff url(http://www.pitt.edu/~rttaylor/e2/collegeruled/collegeruledbg.png) repeat-y scroll top left;
+background: #fff url(https://s3.amazonaws.com/static.everything2.com/collegeruled/collegeruledbg.png) repeat-y scroll top left;
 margin: 0 auto;
 text-align: left;
 display: inline-block;
@@ -286,9 +286,8 @@ clear: both;
 text-align: center;
 margin-bottom: 25px;
 }
-
 </doctext>
-  <contentversion>104</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>2022033</node_id>
   <title>CollegeRuled</title>

@@ -108,7 +108,7 @@ width: 100%;
 position: absolute;
 top: 0;
 left: 0;
-background: #036 url(http://www.pitt.edu/~rttaylor/e2/css/header-bg.jpg) top left repeat-x;
+background: #036 url(https://s3.amazonaws.com/static.everything2.com/in10se/header-bg.jpg) top left repeat-x;
 color: #fff;
 font-size: 75%;
 }
@@ -200,7 +200,7 @@ text-align: center;
 
 .writeup
 {
-background: url(http://www.pitt.edu/~rttaylor/e2/css/left-top-corner-box.jpg) top left no-repeat;
+background: url(https://s3.amazonaws.com/static.everything2.com/in10se/left-top-corner-box.jpg) top left no-repeat;
 margin-bottom: 20px;
 border-bottom: 3px dotted #aaa;
 padding-bottom: 20px;
@@ -226,7 +226,7 @@ padding: 0 10px 10px 10px;
 
 .writeuptable
 {
-background: url(http://www.pitt.edu/~rttaylor/e2/css/right-bottom-corner-box.jpg) bottom right no-repeat;
+background: url(https://s3.amazonaws.com/static.everything2.com/in10se/right-bottom-corner-box.jpg) bottom right no-repeat;
 }
 
 /* for some reason, the softlink table is not displayed block in firefox, it is to the right of the vote button */
@@ -243,7 +243,7 @@ clear: both;
 padding: 0 2px;
 word-wrap: break-word;
 margin-bottom: 2px;
-background: url(http://www.pitt.edu/~rttaylor/e2/css/brown-left-top-corner-box.jpg) top left no-repeat;
+background: url(https://s3.amazonaws.com/static.everything2.com/in10se/brown-left-top-corner-box.jpg) top left no-repeat;
 margin-bottom: 10px;
 font-size: 85%;
 }
@@ -260,7 +260,7 @@ border: 0;
 .nodelet_content
 {
 padding: 3px 15px;
-background: url(http://www.pitt.edu/~rttaylor/e2/css/right-bottom-corner-box.jpg) bottom right no-repeat;
+background: url(https://s3.amazonaws.com/static.everything2.com/in10se/right-bottom-corner-box.jpg) bottom right no-repeat;
 }
 
 .nodelet ul, .nodelet ul li
@@ -293,7 +293,7 @@ margin-top: 3px;
 float: left;
 width: 200px;
 margin-right: 20px;
-background: url(http://www.pitt.edu/~rttaylor/e2/css/brown-left-top-corner-box.jpg) top left no-repeat;
+background: url(https://s3.amazonaws.com/static.everything2.com/in10se/brown-left-top-corner-box.jpg) top left no-repeat;
 font-size: 85%;
 }
 
@@ -313,7 +313,7 @@ padding: 0;
 
 #cooluserpicks ul
 {
-background: url(http://www.pitt.edu/~rttaylor/e2/css/right-bottom-corner-box.jpg) bottom right no-repeat;
+background: url(https://s3.amazonaws.com/static.everything2.com/in10se/right-bottom-corner-box.jpg) bottom right no-repeat;
 }
 
 #cooluserpicks ul li a
@@ -346,7 +346,7 @@ border: 0;
 
 .cotc_entry
 {
-background: url(http://www.pitt.edu/~rttaylor/e2/css/left-top-corner-box.jpg) top left no-repeat;
+background: url(https://s3.amazonaws.com/static.everything2.com/in10se/left-top-corner-box.jpg) top left no-repeat;
 margin-bottom: 12px;
 }
 
@@ -358,7 +358,7 @@ font-weight: bold;
 
 .cotc_text
 {
-background: url(http://www.pitt.edu/~rttaylor/e2/css/right-bottom-corner-box.jpg) bottom right no-repeat;
+background: url(https://s3.amazonaws.com/static.everything2.com/in10se/right-bottom-corner-box.jpg) bottom right no-repeat;
 padding: 12px 15px;
 }
 
@@ -375,7 +375,7 @@ border: 0;
 
 .weblog_item
 {
-background: url(http://www.pitt.edu/~rttaylor/e2/css/left-top-corner-box.jpg) top left no-repeat;
+background: url(https://s3.amazonaws.com/static.everything2.com/in10se/left-top-corner-box.jpg) top left no-repeat;
 margin-bottom: 12px;
 }
 
@@ -399,14 +399,14 @@ font-size: 75%;
 
 .wl_text
 {
-background: url(http://www.pitt.edu/~rttaylor/e2/css/right-bottom-corner-box.jpg) bottom right no-repeat;
+background: url(https://s3.amazonaws.com/static.everything2.com/in10se/right-bottom-corner-box.jpg) bottom right no-repeat;
 padding: 12px 15px;
 }
 
 /* homenodes */
 #homenodeheader
 {
-background: url(http://www.pitt.edu/~rttaylor/e2/css/left-top-corner-box.jpg) top left no-repeat;
+background: url(https://s3.amazonaws.com/static.everything2.com/in10se/left-top-corner-box.jpg) top left no-repeat;
 font-size: 90%;
 clear: both;
 padding-bottom: 10px;
@@ -423,7 +423,7 @@ margin-top: 20px;
 #homenodeheader dl
 {
 padding: 12px 15px;
-background: url(http://www.pitt.edu/~rttaylor/e2/css/right-bottom-corner-box.jpg) bottom right no-repeat;
+background: url(https://s3.amazonaws.com/static.everything2.com/in10se/right-bottom-corner-box.jpg) bottom right no-repeat;
 }
 
 #homenodeheader dt
@@ -683,7 +683,7 @@ text-decoration: line-through;
 color: #aaa;
 font-size: 80%;
 }</doctext>
-  <contentversion>105</contentversion>
+  <contentversion>106</contentversion>
   <s3bucket></s3bucket>
   <node_id>1902207</node_id>
   <title>in10se's stylesheet</title>
