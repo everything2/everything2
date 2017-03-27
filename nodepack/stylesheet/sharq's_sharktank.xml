@@ -8,7 +8,7 @@
 .actions { display: block ; }
 /*= end autofix added rules */
 
-/* @override http://www.everything2.com/?node_id=1963336&amp;displaytype=view */
+/* @override https://www.everything2.com/?node_id=1963336&amp;displaytype=view */
 
 /****** COLOURS ******/
 
@@ -1027,7 +1027,7 @@ p#servertime {
   color: #ddF;
 }
 </doctext>
-  <contentversion>105</contentversion>
+  <contentversion>106</contentversion>
   <s3bucket></s3bucket>
   <node_id>1963336</node_id>
   <title>SharQ's Sharktank</title>

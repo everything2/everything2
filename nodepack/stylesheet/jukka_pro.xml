@@ -718,41 +718,41 @@ pre {
 /*   Zeitgeist:          1855429  */ /* no icon! */
 
 #nodelet_170070 {
-	background-image: url(http://images.everything2.com/img/chatterbox.gif); }
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/chatterbox.gif); }
 #nodelet_1919557 { }
 #nodelet_836984 { 
-	background-image: url(http://images.everything2.com/img/everything_developer.gif); }
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/everything_developer.gif); }
 #nodelet_262 {
-	background-image: url(http://images.everything2.com/img/epicenter.gif); }
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/epicenter.gif); }
 #nodelet_1876005 {
-	background-image: url(http://images.everything2.com/img/personal_nodes.gif); }
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/personal_nodes.gif); }
 #nodelet_1923735 { }
 #nodelet_1868940 {
-	background-image: url(http://images.everything2.com/img/newwriteups.gif); }
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/newwriteups.gif); }
 #nodelet_263 {
-	background-image: url(http://images.everything2.com/img/newwriteups.gif); }
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/newwriteups.gif); }
 #nodelet_1290534 { }
 #nodelet_1930708 { }
 #nodelet_91 {
-	background-image: url(http://images.everything2.com/img/otherusers.gif); }
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/otherusers.gif); }
 #nodelet_174581 {
-	background-image: url(http://images.everything2.com/img/personal_nodes.gif); }
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/personal_nodes.gif); }
 #nodelet_1685943 {
-	background-image: url(http://images.everything2.com/img/epic_icon_search_DDDDBB.gif); }
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/epic_icon_search_DDDDBB.gif); }
 #nodelet_457857 {
-	background-image: url(http://images.everything2.com/img/random_nodes.gif); }
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/random_nodes.gif); }
 #nodelet_1157024 {
-	background-image: url(http://images.everything2.com/img/readthis.gif); }
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/readthis.gif); }
 #nodelet_1322699 { }
 #nodelet_838296 {
-	background-image: url(http://images.everything2.com/img/statistics.gif); }
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/statistics.gif); }
 #nodelet_1689202 {
-	background-image: url(http://everything2.com/images/e2poll.gif); }
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/e2poll.gif); }
 #nodelet_1924754 { }
 #nodelet_165437 {
-	background-image: url(http://images.everything2.com/img/vitals.gif); }
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/vitals.gif); }
 #nodelet_1855429 { }</doctext>
-  <contentversion>103</contentversion>
+  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
   <node_id>1930477</node_id>
   <title>Jukka pro</title>

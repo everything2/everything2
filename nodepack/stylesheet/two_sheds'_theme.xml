@@ -18,8 +18,8 @@ a:hover {color: #933;}
 .writeup, #cooluserpicks, .weblog_item {border-color: #90909A;}
 
 /* backgrounds */
-#header {background-image: url('http://collopy.net/e2/header.gif'); background-repeat: repeat-x;} /* 50px high */
-#footer {background-image: url('http://collopy.net/e2/footer.gif'); background-repeat: repeat-x;} /* 100px high */
+#header {background-image: url('https://s3.amazonaws.com/static.everything2.com/slate/header.gif'); background-repeat: repeat-x;} /* 50px high */
+#footer {background-image: url('https://s3.amazonaws.com/static.everything2.com/slate/footer.gif'); background-repeat: repeat-x;} /* 100px high */
 .oddrow, #homenodeheader dt, .weblog_item {background-color: #E4E4F5;}
 
 /* structure */
@@ -90,7 +90,7 @@ hr.clear {clear: both;}
 /* layout */
 textarea {width: 100%;}
 pre {display: block; overflow: auto;} /* to stop page-widening */</doctext>
-  <contentversion>104</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1886668</node_id>
   <title>Two Sheds' theme</title>

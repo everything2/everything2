@@ -70,7 +70,7 @@ small {
 	top:0pt;
 	width:100%;
 	background-color: #FFA200;
-	background-image: url(http://www.citystate.co.uk/e2/e2back.jpg);
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/fonduetest1/e2back.jpg);
 	background-repeat: repeat-x;
 }
 #wrapper {
@@ -125,7 +125,7 @@ pre {
         font-color: #FFEC28;
 	margin-left:8px;
 	text-align:left;
-	background-image: url(http://www.citystate.co.uk/e2/e2logo.jpg);
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/fonduetest1/e2logo.jpg);
 	background-repeat: no-repeat;
 	width: 253px;
 	height: 76px;
@@ -413,7 +413,7 @@ margin-top: 0px;
         border-right: 1px solid #708259;
         border-bottom: 2px solid #708259;
 }</doctext>
-  <contentversion>104</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1887242</node_id>
   <title>fondue test1</title>

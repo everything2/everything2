@@ -20,9 +20,10 @@
 
 /* Fonts and where to find 'em */
 /* This seems to be slowing down rendering something fierce, and not actually doing any good, so I'm commenting it out.
+   jb says: If you ever re-enable it, this font link is broken
 @font-face {
     font-family: &quot;Charis SIL&quot;;
-    src: url('http://scripts.sil.org/CharisSIL_download');
+    src: url('https://scripts.sil.org/CharisSIL_download');
 }
 */
 
@@ -49,7 +50,7 @@ h1.nodetitle {
     font-size: xx-large;
     font-weight: normal;
     font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
-    background: url(http://pics.livejournal.com/q_pheevr/pic/000547cf) #c8c9ca;
+    background: url(https://s3.amazonaws.com/static.everything2.com/baltic/000547cf) #c8c9ca;
     color: #313539;
     border: thin solid #4f5863;
     text-shadow: #4f5863 2px 2px 2px;
@@ -140,7 +141,7 @@ abbr {
 }
 
 #currentuserpoll img.oddrow {                    
-      background: url(http://pics.livejournal.com/q_pheevr/pic/000547cf) #dddddd;
+      background: url(https://s3.amazonaws.com/static.everything2.com/baltic/000547cf) #dddddd;
       border: 2px outset #4f5863;
       margin-top: 1px;
 }
@@ -186,7 +187,7 @@ blockquote {
     top: 0px;
     left: 0px;
     padding-left: 100px;   
-    background: url('http://pics.livejournal.com/q_pheevr/pic/00051k09');
+    background: url('https://s3.amazonaws.com/static.everything2.com/baltic//00051k09');
     color: #ffffff;
     height: 80px;
     border-bottom: outset 2px #4f5863;
@@ -569,7 +570,7 @@ li span.type{
 /*=.writeup_title*/
 .writeuppage .contentheader {
     font-family: &quot;Optima&quot;,&quot;CG Omega&quot;,&quot;Ottawa&quot;,&quot;Trebuchet MS&quot;,sans-serif;
-    background: url(http://pics.livejournal.com/q_pheevr/pic/000547cf) #c8c9ca;
+    background: url(https://s3.amazonaws.com/static.everything2.com/baltic//000547cf) #c8c9ca;
     padding-left: 11px;
     padding-right: 24px;
     padding-top: 3px;
@@ -971,7 +972,7 @@ div#epicenter_zen {
     position: absolute;
     right: 370px;
     top: 16px;
-    background: url(http://pics.livejournal.com/q_pheevr/pic/000547cf) #c8c9ca;
+    background: url(https://s3.amazonaws.com/static.everything2.com/baltic/000547cf) #c8c9ca;
     padding: 5px;
     border: thin outset;
     color: #000000;
@@ -1018,9 +1019,8 @@ li.nodeshell{
 
 div#surveymessage {
         display: none;
-}
-</doctext>
-  <contentversion>104</contentversion>
+}</doctext>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1902801</node_id>
   <title>Baltic</title>

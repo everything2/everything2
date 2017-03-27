@@ -68,7 +68,7 @@ font-size: 100%;
 	background:transparent url(https://s3.amazonaws.com/static.everything2.com/external.png) no-repeat scroll right center; 
 	padding-right:13px;
 	/* This is the external link icon used by Wikimedia, used under the GPL as spelt out here:
-	http://commons.wikimedia.org/wiki/File:Icon_External_Link.png */
+	https://commons.wikimedia.org/wiki/File:Icon_External_Link.png */
 }
 
 .chat_nate{ /* compensate for ancient markup removed from showchatter */
@@ -315,7 +315,7 @@ table.registries {
 #homenodeinspector .contentfooter {
   border-bottom: 1px solid;
 }</doctext>
-  <contentversion>108</contentversion>
+  <contentversion>109</contentversion>
   <s3bucket></s3bucket>
   <node_id>1973976</node_id>
   <title>basesheet</title>

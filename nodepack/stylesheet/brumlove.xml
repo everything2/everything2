@@ -448,7 +448,7 @@ h1.nodetitle
   margin-left: -50px;
   margin-top: 10px;
   display: block;
-  background: url('http://www.everything2.com/img/e2_others_01.gif') bottom left;
+  background: url('https://s3.amazonaws.com/static.everything2.com/e2_others_01.gif') bottom left;
   width: 350px;
   height: 30px;
   padding-top: 10px;
@@ -462,7 +462,7 @@ h1.nodetitle
      { font-style: italic; }
 .action_whisper, .action_roll, .action_fireball, .action_sanctify, .action_egg 
      { font-variant: small-caps; }</doctext>
-  <contentversion>104</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1881898</node_id>
   <title>Brumlove</title>

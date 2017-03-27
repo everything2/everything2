@@ -11,7 +11,7 @@ font-size: 85%;
 font-family: Arial Unicode MS, Arial, Tahoma, Helvetica, Sans-Serif;
 margin: 0;
 padding: 0;
-/*background: #157be1 url(http://www.pitt.edu/~rttaylor/e2/hipsterdufus/page_bg.gif) repeat-x 0 0;*/
+/*background: #157be1 url(https://s3.amazonaws.com/static.everything2.com/hipsterdufus/page_bg.gif) repeat-x 0 0;*/
 background-color: #69c;
 line-height: 130%;
 }
@@ -219,7 +219,7 @@ border-left: 1px solid #fff;
 border-right: 1px solid #000;
 border-bottom: 1px solid #000;
 padding: 0 20px 20px 20px;
-background: #fff url(http://www.pitt.edu/~rttaylor/e2/hipsterdufus/section_shadow.gif) repeat-x 0 0;
+background: #fff url(https://s3.amazonaws.com/static.everything2.com/hipsterdufus/section_shadow.gif) repeat-x 0 0;
 }
 
 #chatterlight_mainbody
@@ -231,7 +231,7 @@ border-left: 1px solid #fff;
 border-right: 1px solid #000;
 border-bottom: 1px solid #000;
 padding: 0 20px 20px 20px;
-background: #fff url(http://www.pitt.edu/~rttaylor/e2/hipsterdufus/section_shadow.gif) repeat-x 0 0;
+background: #fff url(https://s3.amazonaws.com/static.everything2.com/hipsterdufus/section_shadow.gif) repeat-x 0 0;
 }
 
 .nodetitle
@@ -553,7 +553,7 @@ border: 0;
 
 .writeuptable
 {
-background: #fff url(http://www.pitt.edu/~rttaylor/e2/hipsterdufus/section_shadow.gif) repeat-x 0 0;
+background: #fff url(https://s3.amazonaws.com/static.everything2.com/hipsterdufus/section_shadow.gif) repeat-x 0 0;
 }
 
 .writeup_title
@@ -824,7 +824,7 @@ text-decoration: line-through;
 color: #aaa;
 font-size: 80%;
 }</doctext>
-  <contentversion>104</contentversion>
+  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
   <node_id>1934436</node_id>
   <title>HipsterDufus</title>

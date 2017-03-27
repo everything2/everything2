@@ -226,11 +226,6 @@
   </nodeparam>
   <nodeparam>
     <paramvalue>2</paramvalue>
-    <node_id>1903321</node_id>
-    <paramkey>fix_level</paramkey>
-  </nodeparam>
-  <nodeparam>
-    <paramvalue>2</paramvalue>
     <node_id>1904465</node_id>
     <paramkey>fix_level</paramkey>
   </nodeparam>
@@ -406,11 +401,6 @@
   </nodeparam>
   <nodeparam>
     <paramvalue>2</paramvalue>
-    <node_id>1986077</node_id>
-    <paramkey>fix_level</paramkey>
-  </nodeparam>
-  <nodeparam>
-    <paramvalue>2</paramvalue>
     <node_id>1993776</node_id>
     <paramkey>fix_level</paramkey>
   </nodeparam>
@@ -462,11 +452,6 @@
   <nodeparam>
     <paramvalue>2</paramvalue>
     <node_id>2001670</node_id>
-    <paramkey>fix_level</paramkey>
-  </nodeparam>
-  <nodeparam>
-    <paramvalue>2</paramvalue>
-    <node_id>2002625</node_id>
     <paramkey>fix_level</paramkey>
   </nodeparam>
   <nodeparam>

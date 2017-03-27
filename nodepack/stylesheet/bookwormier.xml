@@ -22,7 +22,7 @@ td,
 }
 
 body {
-	background-image: url(&quot;http://clem-ec2-us.s3.amazonaws.com/e2/e2bg.jpg&quot;);
+	background-image: url(&quot;https://s3.amazonaws.com/static.everything2.com/bookwormier/e2bg.jpg&quot;);
 }
 
 /* darker detailing/backgrounds */
@@ -251,7 +251,7 @@ input#node_search {
 	margin-top: 15px;
 	float: left;
 	padding-left: 20px;
-	background-image: url(http://clem-ec2-us.s3.amazonaws.com/e2/magnifier.png);
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/bookwormier/magnifier.png);
 	background-repeat: no-repeat;
 	font-size: 12px;
 }
@@ -287,7 +287,7 @@ input#full_text {
 }
 
 div#e2logo {
-	background-image: url(http://clem-ec2-us.s3.amazonaws.com/e2/e2logo.gif);
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/bookwormier/e2logo.gif);
 	background-repeat: no-repeat;
 	width: 250px;
 	height: 50px;
@@ -344,7 +344,7 @@ p#printlink {
 	width: 16px;
 	height: 16px;
 	overflow: hidden;
-	background-image: url(http://clem-ec2-us.s3.amazonaws.com/e2/printer.png);
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/bookwormier/printer.png);
 	float: right;
 }
 p#printlink a {
@@ -1056,9 +1056,8 @@ input#message {
 
 #mobilewrapper .createdby, #mobilewrapper td.wu_length, #mobilewrapper td.wu_hits, #mobilewrapper .topic.actions {
 	display: none;
-}
-</doctext>
-  <contentversion>106</contentversion>
+}</doctext>
+  <contentversion>107</contentversion>
   <s3bucket></s3bucket>
   <node_id>2000528</node_id>
   <title>Bookwormier</title>

@@ -78,7 +78,7 @@ height: 3px;
 	top:0pt;
 	width:100%;
 	background-color: #FFA200;
-	background-image: url(http://www.citystate.co.uk/e2/e2logo_blue_slice.jpg);
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/fonduetest2/e2logo_blue_slice.jpg);
 	background-repeat: repeat-x;
 }
 
@@ -143,7 +143,7 @@ pre {
         font-color: #FFEC28;
 	margin-left:8px;
 	text-align:left;
-	background-image: url(http://www.citystate.co.uk/e2/e2logo_blue.jpg);
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/fonduetest2/e2logo_blue.jpg);
 	background-repeat: no-repeat;
 	width: 150px;
 	height: 64px;
@@ -162,7 +162,7 @@ div#e2logo {
 
 div#e2logo a {
 	background-color: #FFFFFF;
-	background-image: url(http://www.citystate.co.uk/e2/e2logo_blue.jpg);
+	background-image: url(https://s3.amazonaws.com/static.everything2.com/fonduetest2/e2logo_blue.jpg);
 	background-repeat: no-repeat;	
 	width: 150px;
 	height: 64px;
@@ -336,7 +336,7 @@ div#e2logo a {
 
 #homenodeheader dt {
         background-color: #A8B5DE;
-        background-image: url(http://www.citystate.co.uk/e2/e2_stripez.jpg);
+        background-image: url(https://s3.amazonaws.com/static.everything2.com/fonduetest2/e2_stripez.jpg);
 	padding: 2px;
 	display:block;
 }
@@ -412,7 +412,7 @@ textarea {
 
 td.oddrow {
 	background-color: #A8B5DE;
-        background-image: url(http://www.citystate.co.uk/e2/e2_stripez.jpg);
+        background-image: url(https://s3.amazonaws.com/static.everything2.com/fonduetest2/e2_stripez.jpg);
 	padding: 2px;
 }
 
@@ -502,7 +502,7 @@ background-color: #CACEE0;
 border-right: 1px solid #51546A;
 border-bottom: 2px solid #51546A;
 }</doctext>
-  <contentversion>105</contentversion>
+  <contentversion>107</contentversion>
   <s3bucket></s3bucket>
   <node_id>1901810</node_id>
   <title>fondue test2 (blue)</title>

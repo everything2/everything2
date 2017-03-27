@@ -109,7 +109,7 @@ font-size: 110%;
 }
 /* end styledef stuff */
 #header {
-background-image: url(http://static.everything2.com/e2_others_02.gif);
+background-image: url(https://s3.amazonaws.com/static.everything2.com/e2_others_02.gif);
 background-position: bottom left;
 background-repeat: no-repeat;
 width: 100%;
@@ -328,7 +328,7 @@ font-size: 12px;
 float: left;
 margin: 0;
 width: 100%;
-background-image: url(http://static.everything2.com/e2_others_01.gif);
+background-image: url(https://s3.amazonaws.com/static.everything2.com/e2_others_01.gif);
 background-color: #cccc99;
 background-repeat: no-repeat;
 }
@@ -374,7 +374,7 @@ margin-right: -3px;
 width: 49px;
 height: 28px;
 border: 0;
-background: transparent url(http://static.everything2.com/search_button.gif) no-repeat center top;
+background: transparent url(https://s3.amazonaws.com/static.everything2.com/search_button.gif) no-repeat center top;
 text-indent: -1000em;
 cursor: pointer; /* hand-shaped cursor */
 cursor: hand; /* for IE 5.x */
@@ -404,28 +404,28 @@ padding-top: 26px;
 background-repeat: no-repeat;    
 }
 #epicenter {
-background-image: url(http://static.everything2.com/epicenter.gif);
+background-image: url(https://s3.amazonaws.com/static.everything2.com/epicenter.gif);
 }
 #chatterbox {
-background-image: url(http://static.everything2.com/chatterbox.gif);    
+background-image: url(https://s3.amazonaws.com/static.everything2.com/chatterbox.gif);    
 }
 #otherusers {
-background-image: url(http://static.everything2.com/otherusers.gif);    
+background-image: url(https://s3.amazonaws.com/static.everything2.com/otherusers.gif);    
 }
 #vitals {
-background-image: url(http://static.everything2.com/vitals.gif);
+background-image: url(https://s3.amazonaws.com/static.everything2.com/vitals.gif);
 }
 #newwriteups {
-background-image: url(http://static.everything2.com/newwriteups.gif);    
+background-image: url(https://s3.amazonaws.com/static.everything2.com/newwriteups.gif);    
 }
 #readthis {
-background-image: url(http://static.everything2.com/readthis.gif);    
+background-image: url(https://s3.amazonaws.com/static.everything2.com/readthis.gif);    
 }
 #everythingdeveloper {
-background-image: url(http://static.everything2.com/everything_developer.gif);    
+background-image: url(https://s3.amazonaws.com/static.everything2.com/everything_developer.gif);    
 }
 #newwriteupszen {
-background-image: url(http://static.everything2.com/newwriteups.gif);
+background-image: url(https://s3.amazonaws.com/static.everything2.com/newwriteups.gif);
 }
 #displaytypelinks {
 text-align: right;
@@ -575,9 +575,8 @@ td#sl16{background:#d8d8b2;}td#sl15{background:#d9d9b3;}td#sl14{background:#d9d9
 td#sl12{background:#dadab5;}td#sl11{background:#dadab5;}td#sl10{background:#dadab6;}td#sl9{background:#dadab6;}
 td#sl8{background:#dbdbb7;}td#sl7{background:#dbdbb7;}td#sl6{background:#dbdbb8;}td#sl5{background:#dbdbb8;}
 td#sl4{background:#dcdcb9;}td#sl3{background:#dcdcb9;}td#sl2{background:#dcdcba;}td#sl1{background:#ddddbb;}
-
 </doctext>
-  <contentversion>106</contentversion>
+  <contentversion>107</contentversion>
   <s3bucket></s3bucket>
   <node_id>1997697</node_id>
   <title>dim jukka emulation</title>

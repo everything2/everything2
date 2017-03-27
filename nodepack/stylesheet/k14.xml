@@ -718,7 +718,7 @@ td {
    overflow: hidden; /* sets a window big enough to show the background image and nothing else */
    background-repeat: no-repeat;
    background-position: 0 0;
-   background-image: url(http://everything2.com/img/e2_tight.gif);
+   background-image: url(https://s3.amazonaws.com/static.everything2.com/e2_tight.gif);
   }
 
    div#e2logo a,
@@ -748,7 +748,7 @@ td {
    margin-top: 65px !important;
    margin-bottom: -65px !important;
 }</doctext>
-  <contentversion>105</contentversion>
+  <contentversion>106</contentversion>
   <s3bucket></s3bucket>
   <node_id>2006168</node_id>
   <title>K14</title>
