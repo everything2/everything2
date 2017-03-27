@@ -67,7 +67,7 @@ my $comment = &quot;&quot;;
   $str.= '&lt;table width=&quot;260&quot; border=0 cellpadding=0 cellspacing=2 style=&quot;border: solid 1px black;&quot;&gt;';
   $str.= '&lt;tr&gt;&lt;td bgcolor=&quot;gray&quot; align=&quot;left&quot;&gt;';
   $str.= '&lt;table width=&quot;'.$width.'%&quot; border=0 cellpadding=0 cellspacing=0 bgcolor=&quot;'.$color.'&quot;&gt;';
-  $str.= '&lt;tr&gt;&lt;td&gt;&lt;img src=&quot;http://static.everything2.com/clear.gif&quot; width=1 height=13 alt=&quot;&quot; border=0&gt;';
+  $str.= '&lt;tr&gt;&lt;td&gt;&lt;img src=&quot;https://s3.amazonaws.com/static.everything2.com/clear.gif&quot; width=1 height=13 alt=&quot;&quot; border=0&gt;';
   $str.= '&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/p&gt;';
   $str.= '&lt;p align=&quot;center&quot;&gt;'.$comment.'&lt;/p&gt;';
   $str.= '&lt;hr width=&quot;25%&quot;&gt;';
@@ -132,8 +132,7 @@ while (my $N = $clocked_nodes-&gt;fetchrow_hashref) {
 
   return $str;
 
-%]
-</doctext>
+%]</doctext>
   <node_id>1206744</node_id>
   <title>Noding speedometer</title>
 </node>

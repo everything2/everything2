@@ -1,5 +1,5 @@
 <node>
-  <doctext>&lt;p style=&quot;text-align:right&quot;&gt;&lt;a href=&quot;http://webchat.freenode.net/?channels=everything2&quot;&gt;Join us on IRC&lt;/a&gt; | [{linkGroupMessages}] | [edev FAQ]&lt;/p&gt;
+  <doctext>&lt;p style=&quot;text-align:right&quot;&gt; [{linkGroupMessages}] | [edev FAQ]&lt;/p&gt;
 [%
 my $UID = getId($USER);
 my $isGuest = $APP-&gt;isGuest($USER);

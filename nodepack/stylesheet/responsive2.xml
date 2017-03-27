@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>1854352</type_nodetype>
-  <doctext>@import url(http2://everything2.com/node/stylesheet/ResponsiveBase?displaytype=view);
+  <doctext>@import url(https://everything2.com/node/stylesheet/ResponsiveBase?displaytype=view);
 
 html
 {
@@ -454,7 +454,7 @@ display: none;
    width: 99%;
    }
 }</doctext>
-  <contentversion>112</contentversion>
+  <contentversion>113</contentversion>
   <s3bucket></s3bucket>
   <node_id>2047530</node_id>
   <title>Responsive2</title>
