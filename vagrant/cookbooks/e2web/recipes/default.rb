@@ -63,6 +63,17 @@ template '/etc/apache2/apache2.conf' do
   variables(node["e2web"])
 end
 
+
+template '/etc/apache2/conf.d/ssl.conf' do
+  owner "root"
+  group "root"
+  mode "0755"
+  action "create"
+  source 'ssl.conf.erb'
+  notifies :reload, "service[apache2]", :delayed
+  variables(node["e2web"])
+end
+
 ['rewrite','proxy','proxy_http','ssl'].each do |apache_mod|
   link "/etc/apache2/mods-enabled/#{apache_mod}.load" do
     action "create"
