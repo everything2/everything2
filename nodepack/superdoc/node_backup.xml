@@ -82,7 +82,7 @@ while (my $wu_row = $csr -&gt; fetchrow_hashref){
 		title =&gt; $wu_row -&gt; {title},
 		type_nodetype =&gt; $wu_row -&gt; {type_nodetype},
 		suffix =&gt; 'html',
-		doctext =&gt; &quot;&lt;base href=\&quot;http://everything2.com\&quot;&gt;\n&quot;.
+		doctext =&gt; &quot;&lt;base href=\&quot;https://everything2.com\&quot;&gt;\n&quot;.
 			$APP-&gt;breakTags(parseLinks($APP-&gt;screenTable(
 			$APP-&gt;htmlScreen($wu_row -&gt; {doctext},$TAGS))))
 	} if $e2parse &amp; 2;
@@ -133,7 +133,7 @@ my $outputfilename = &quot;$cleanUser.$format.$obfuscateUrl.$year-$month-$day.zi
 $zip -&gt; writeToFileNamed(&quot;/tmp/$outputfilename&quot;);
 $bucket-&gt;add_key_filename($outputfilename, &quot;/tmp/$outputfilename&quot;, {content_type =&gt; &quot;application/octet-stream&quot;});
 
-my $url = &quot;http://nodebackup.everything2.com/$outputfilename&quot;;
+my $url = &quot;https://s3-us-west-2.amazonaws.com/nodebackup.everything2.com/$outputfilename&quot;;
 
 $str .= &quot;&lt;p&gt; Your backup is ready. You can fetch it &quot;
 	.&quot;&lt;strong&gt;&lt;a href=\&quot;$url\&quot;&gt;$url&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;&quot;;

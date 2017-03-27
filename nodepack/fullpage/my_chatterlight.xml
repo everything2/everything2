@@ -163,7 +163,6 @@ font-color: #f00;
 .sing .Text, .sings .Text
 {
 padding-left: 16px;
-background: #fff url(http://www.education.pitt.edu/images/icons/16/sing.gif) no-repeat scroll left center;
 font-style: italic;
 }
 

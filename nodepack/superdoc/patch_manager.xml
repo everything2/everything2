@@ -40,7 +40,7 @@ The status of each patch can be
 &lt;p&gt;
 Notice that these are only the patches for code that is housed in the
 database itself. For patches to the running [ecore], we have
-[http://devel.everything2.com/hg|a Mercurial repository] that you can
+[https://github.com/everything2/everything2|a git repository] that you can
 also check up on. Lastly, if you are a member of [edev] and don't know
 what this is all about, [Swap|I] recommend reading [edev: Quickstart]
 or the [Coding for E2] series.
@@ -210,7 +210,6 @@ $str .= &quot;&lt;/table&gt;&lt;/p&gt;\n&quot;;
 
 return $str;
 %]
-
 </doctext>
   <node_id>1295688</node_id>
   <title>Patch Manager</title>
