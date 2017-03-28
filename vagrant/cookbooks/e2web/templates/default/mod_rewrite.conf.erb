@@ -1,7 +1,10 @@
 
 RewriteEngine On
+
+<% if node["e2engine"]["environment"] != "development" %>
 RewriteCond %{HTTPS}                       off
 RewriteRule (.*)                           https://%{HTTP_HOST}/$1 [R=301,L]
+<% end %>
 
 RewriteRule ^node/(\d+)/(\w+)/?$           index.pl?node_id=$1&displaytype=$2  [QSA]
 RewriteRule ^node/(\d+)([^&]*)/?$          index.pl?node_id=$1$2               [QSA]
