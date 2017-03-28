@@ -39,6 +39,12 @@ if($ARGV[0] eq "deploy_challenge")
     print "E2 Key upload failed: ".$keyexchange->errstr()."\n";
     exit;
   }
+  unless($keyexchange->upload_file("e2.chain","/etc/dehydrated/certs/everything2.com/chain.pem"))
+  {
+    print "E2 Chain upload failed: ".$keyexchange->errstr()."\n";
+    exit;
+  }
+
   print "Uploaded keys to e2 keyexchange server\n";
 }else{
   print "Invalid token hook! (".$ARGV[0].")\n";
