@@ -29,7 +29,7 @@ if($ARGV[0] eq "deploy_challenge")
 }elsif($ARGV[0] eq "exit_hook"){
 # Do nothing
 }elsif($ARGV[0] eq "deploy_cert"){
-  unless($keyexchange->upload_file("e2.cert","/etc/dehydrated/certs/everything2.com/fullchain.pem"))
+  unless($keyexchange->upload_file("e2.cert","/etc/dehydrated/certs/everything2.com/cert.pem"))
   {
     print "E2 Cert upload failed: ".$keyexchange->errstr()."\n";
     exit;

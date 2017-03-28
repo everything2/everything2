@@ -4,6 +4,9 @@ use lib qw(/var/everything/ecore);
 use Everything::S3;
 use Digest::SHA;
 
+# If called from chef, we never want to reload the server
+my $never_reload = $ARGV[0];
+
 my $keyexchange = Everything::S3->new("keyexchange");
 
 unless($keyexchange)
@@ -35,8 +38,17 @@ unless($new_key_response and $new_key_response->{value})
   exit; 
 }
 
+my $new_chain_response = $keyexchange->get_key("e2.chain");
+unless($new_chain_response and $new_chain_response->{value})
+{
+  print "Could not fetch the chain: ".$keyexchange->errstr."\n";
+  exit;
+}
+
+
 my $old_cert_sha = "";
 my $old_key_sha = "";
+my $old_chain_sha = "";
 
 if(-e "$apachedir/e2.cert")
 {
@@ -51,6 +63,21 @@ if(-e "$apachedir/e2.cert")
   }
 
   $old_cert_sha = Digest::SHA::sha1_hex($cert_data);
+}
+
+if(-e "$apachedir/e2.chain")
+{
+  my $chain_handle;
+  open $chain_handle,"$apachedir/e2.chain";
+
+  my $chain_data;
+  {
+    local $/ = undef;
+    $chain_data = <$chain_handle>;
+    close $chain_handle;
+  }
+
+  $old_chain_sha = Digest::SHA::sha1_hex($chain_data);
 }
 
 if(-e "$apachedir/e2.key")
@@ -103,7 +130,21 @@ if($old_key_sha ne $new_key_sha)
   print "Key is current\n";
 }
 
-if($reload_apache and -e "/etc/init.d/apache2")
+if($old_chain_sha ne $new_chain_sha)
+{
+  print "Old chain SHA1: $old_chain_sha\n";
+  print "New chain SHA1: $new_chain_sha\n";
+
+  $reload_apache = 1;
+  my $chain_handle;
+  open $chain_handle,">$apachedir/e2.chain";
+  print $chain_handle $new_key_response->{value};
+  close $chain_handle;
+}else{
+  print "Chain is current\n";
+}
+
+if($reload_apache and -e "/etc/init.d/apache2" and $never_reload ne "never_reload")
 {
   print "Reloading apache\n";
 #  `/etc/init.d/apache2 reload`;
