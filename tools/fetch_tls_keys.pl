@@ -7,6 +7,7 @@ use Digest::SHA;
 
 # If called from chef, we never want to reload the server
 my $never_reload = $ARGV[0];
+$never_reload ||= "";
 
 my $keyexchange = Everything::S3->new("keyexchange");
 
@@ -140,7 +141,7 @@ if($old_chain_sha ne $new_chain_sha)
   $reload_apache = 1;
   my $chain_handle;
   open $chain_handle,">$apachedir/e2.chain";
-  print $chain_handle $new_key_response->{value};
+  print $chain_handle $new_chain_response->{value};
   close $chain_handle;
 }else{
   print "Chain is current\n";
