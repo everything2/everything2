@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w
 
+use strict;
 use lib qw(/var/everything/ecore);
 use Everything::S3;
 use Digest::SHA;
@@ -98,6 +99,7 @@ if(-e "$apachedir/e2.key")
 #SHA1 is fine, we're just trying to see if the file is different
 my $new_cert_sha = Digest::SHA::sha1_hex($new_cert_response->{value});
 my $new_key_sha = Digest::SHA::sha1_hex($new_key_response->{value});
+my $new_chain_sha = Digest::SHA::sha1_hex($new_chain_response->{value});
 
 my $reload_apache;
 
