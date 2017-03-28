@@ -9348,7 +9348,7 @@ sub schemalink
   my $row = $DB->sqlSelect("*", "xmlschema", "schema_extends=$$noderef{node_id}");
   $row = $DB->sqlSelect("schema_id", "xmlschema", "schema_extends=0") unless($row);
 
-  return " xmlns=\"http://www.everything2.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.everything2.com/?node_id=$row\" ";
+  return " xmlns=\"https://www.everything2.com\" xmlns:xsi=\"https://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"https://www.everything2.com/?node_id=$row\" ";
 }
 
 sub schemafoot
