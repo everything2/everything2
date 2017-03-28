@@ -53,7 +53,7 @@ SSLMutex  file:${APACHE_RUN_DIR}/ssl_mutex
 #   ciphers(1) man page from the openssl package for list of all available
 #   options.
 #   Enable only secure ciphers:
-SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5
+SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5:!RC4
 
 #   Speed-optimized SSL Cipher configuration:
 #   If speed is your main concern (on busy HTTPS servers e.g.),
