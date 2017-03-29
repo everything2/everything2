@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
 
+use strict;
 use lib "/var/everything/ecore";
 use Everything;
 use Everything::HTML;
 initEverything 'everything';
 
-open (WATCHMAN, ">> /var/everything/log/watchman");
 my $time = 4 * 60;
 my $limit = 160;
 
@@ -35,7 +35,7 @@ $csr=$DB->getDatabaseHandle()->prepare("
 $csr->execute or die "errr... the query";
 while (my ($U) = $csr->fetchrow) {
   $U = getNodeById($U);
-  $V = getVars ($U);
+  my $V = getVars ($U);
   my $room_id = $$U{in_room};
   my $user_id = $$U{user_id};
 
@@ -45,7 +45,7 @@ while (my ($U) = $csr->fetchrow) {
   }  else {
     #the user needs to be inserted into the room table 
     $APP->insertIntoRoom($room_id, $U, $V);      
-    print WATCHMAN localtime(time)."\tentrance\troom $room_id\t$$U{title}\n";
+    print localtime(time)."\tentrance\troom $room_id\t$$U{title}\n";
   } 
 }
 $csr->finish;
@@ -54,7 +54,7 @@ $csr->finish;
 foreach my $room_id (keys %ROOM) {
   foreach (keys %{ $ROOM{$room_id}}) {
     $DB->sqlDelete("room", "room_id=$room_id and member_user=$_");
-    print WATCHMAN localtime(time)."\tdeparture\troom $room_id\t$ROOM{$room_id}{$_}{nick}\n";
+    print localtime(time)."\tdeparture\troom $room_id\t$ROOM{$room_id}{$_}{nick}\n";
   }
 }
 
