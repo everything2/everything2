@@ -45,3 +45,21 @@ template '/etc/dehydrated/domains.txt' do
 end
 
 package 'curl'
+
+
+# Also in e2engine,e2web,e2tls
+logdir = "/var/log/everything"
+datelog = "`date +\\%Y\\%m\\%d\\%H`.log"
+
+directory logdir do
+  owner "www-data"
+  group "root"
+  mode 0755
+  action :create
+end
+
+cron 'dehydrated' do
+  hour '2'
+  minute '0'
+  command "/var/dehydrated/dehydrated -c 2>&1 >> #{logdir}/e2tls.dehydrated.#{datelog}"
+end

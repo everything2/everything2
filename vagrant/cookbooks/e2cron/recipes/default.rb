@@ -7,7 +7,7 @@
 # You are free to use/modify these files under the same terms as the Everything Engine itself
 #
 
-# Also in e2engine,e2web
+# Also in e2engine,e2web,e2tls
 logdir = "/var/log/everything"
 datelog = "`date +\\%Y\\%m\\%d\\%H`.log"
 
