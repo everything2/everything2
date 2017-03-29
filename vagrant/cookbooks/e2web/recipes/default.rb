@@ -123,6 +123,12 @@ cron 'log_deliver_to_s3.pl' do
   command "/var/everything/tools/log_deliver_to_s3.pl 2>&1 >> #{logdir}/e2cron.log_deliver_to_s3.#{datelog}"
 end
 
+cron 'check for new TLS cert' do
+  minute '0'
+  hour '3'
+  command "/var/everything/tools/fetch_tls_keys.pl 2>&1 >> #{logdir}/e2web.fetch_tls_keys.#{datelog}"
+end
+
 service 'apache2' do
   supports :status => true, :restart => true, :reload => true
 end
