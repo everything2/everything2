@@ -264,109 +264,6 @@ sub writeup_update
 
 }
 
-sub draft_create
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($D) = @_;
-  $DB->getRef($D);
-
-  # make sure it has a publication status
-  $$D{publication_status} = ($query && $query->param('draft_publication_status') )|| $DB->getNode('private', 'publication_status')->{node_id};
-
-  # if draft has just been created from an e2node
-  # doctext parameter would be ignored because of wrong nodetype prefix
-  $$D{doctext} = $query->param('writeup_doctext') if $query && $query->param('writeup_doctext');
-
-  if($USER) #Keep in mind that we're running this in an odd hybrid mode, both as a script where there is no HTML context, and inside of mod_perl
-  {
-    $DB->updateNode($D, $USER);
-  }else{
-    $DB->updateNode($D, -1);
-  }
-}
-
-sub draft_update
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($N) = @_;
-  $DB->getRef($N);
-
-  # validate new publication_status. Make 'private' if invalid.
-  # notify editor(s) if status changed to review:
-  if ($query and $query->param('draft_publication_status') and $query->param('old_publication_status') != $$N{publication_status})
-  {
-    my $status = $DB->getNodeById($$N{publication_status});
-    unless ($status && $$status{type}{title} eq 'publication_status')
-    {
-      $$N{publication_status} = getId(getNode('private', 'publication_status'));
-      return $DB->updateNode($N, $USER) if $$N{publication_status};
-    }elsif($$status{title} eq 'review'){
-      my $editor = $DB->sqlSelect(
-        'nodelock_user'
-        , 'nodelock'
-        , "nodelock_node=$$N{author_user}");
-
-      $editor ||= $DB->sqlSelect(
-        'suspendedby_user'
-        , 'suspension'
-        , "suspension_user=$$N{author_user}
-        AND suspension_sustype=".getId(getNode('writeup', 'sustype')));
-
-      # record event in node history:
-      my $note = ' (while suspended by '.linkNode($editor).') ' if $editor;
-      my $nodenote_id = htmlcode('addNodenote', $$N{node_id}, "author requested review$note");
-
-      # Notify. If no $editor, everyone gets it:
-      htmlcode('addNotification', 'draft for review', $editor, {draft_id => $$N{node_id}, nodenote_id => $nodenote_id});
-
-    }
-  }
-
-  # avoid empty names/duplicate names for writeups/drafts by same user:
-  my $title = my $urTitle = $APP->cleanNodeName($$N{title}) || 'untitled draft';
-  my $count = 1;
-
-  while(
-    $DB->sqlSelect(
-      'node_id',
-      'node',
-      'title='.$DB->quote($title)."
-        AND type_nodetype=$$N{type_nodetype}
-        AND author_user=$$N{author_user}
-	AND node_id!=$$N{node_id}")
-    or $DB -> sqlSelect(
-      'writeup_id',
-      'node e2 JOIN writeup ON e2.node_id=parent_e2node
-        JOIN node wu ON wu.node_id=writeup_id',
-      'e2.title='.$DB->quote($title)."
-        AND wu.author_user=$$N{author_user}")
-  )
-  {
-    $title = "$urTitle ($count)";
-    $count++;
-  }
-
-  return if $title eq $$N{title};
-
-  $$N{title} = $title;
-  $DB->updateNode($N, $USER);
-
-}
-
 sub e2node_delete
 {
   my $DB = shift;
@@ -900,7 +797,7 @@ sub user_delete
 
 }
 
-sub draft_create2
+sub draft_create
 {
   my $DB = shift;
   my $query = shift;
@@ -923,7 +820,7 @@ sub draft_create2
   $DB->updateNode($D, $USER);
 }
 
-sub draft_update2
+sub draft_update
 {
   my $DB = shift;
   my $query = shift;
