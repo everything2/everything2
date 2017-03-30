@@ -242,21 +242,21 @@ sub linkjavascript
     }
   }
 
-  if ($n) {
-    return urlGen({node_id => $n->{node_id}}, 1)
-      if(($$USER{node_id} == $$n{author_user} && $$USER{title} ne "root") || $VARS->{useRawJavascript} );
+  return "" unless $n;
 
-    my $filename = "$$n{node_id}.$$n{contentversion}.min";
-    if($ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
-    {
-      $filename.= ".gzip";
-    }
-
-    $filename .= ".js";
-    return "https://s3.amazonaws.com/jscss.everything2.com/$filename";
-  } else {
-    return $n;
+  if($Everything::CONF->use_local_javascript)
+  {
+    return "/js/$$n{node_id}.js";
   }
+
+  my $filename = "$$n{node_id}.$$n{contentversion}.min";
+  if($ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
+  {
+    $filename.= ".gzip";
+  }
+
+  $filename .= ".js";
+  return "https://s3.amazonaws.com/jscss.everything2.com/$filename";
 }
 
 # On htmlpages, this shows the inherited value for a nodetype
