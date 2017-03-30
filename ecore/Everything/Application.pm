@@ -1742,7 +1742,7 @@ sub fixStylesheet
 	return $output ;
 }
 
-sub uploadS3Content
+sub jscssS3Upload
 {
 	my ($this, $node) = @_;
 	
@@ -1770,13 +1770,7 @@ sub uploadS3Content
 		$extension = "js";
 	}
 
-	my $tmpdir = "/tmp/s3upload.$$";
-	`mkdir -p $tmpdir`;
-	chdir $tmpdir;
-
 	my $s3 = Everything::S3->new($s3bucket);
-	my $to_upload = [];
-	my $filehandle = undef;
 	my $content = undef;
 
 	if($extension eq "css")
@@ -1785,22 +1779,37 @@ sub uploadS3Content
 	}elsif($extension eq "js"){
 		$content = $node->{doctext};
 	}
+	
+	$this->uploadS3Content($s3, $node->{node_id},$content,$extension,$$node{contentversion});
+}
 
-	my $filebase = "$$node{node_id}.$$node{contentversion}";
-	open $filehandle,">$filebase.$extension";
+sub uploadS3Content
+{
+ 	my ($this, $s3, $key, $content, $type, $version) = @_;
+
+	my $to_upload = [];
+	my $filehandle = undef;
+	my $tmpdir = "/tmp/s3upload.$$";
+	`mkdir -p $tmpdir`;
+	chdir $tmpdir;
+
+	my $filebase = "$key.$version";
+	open $filehandle,">$filebase.$type";
 	print $filehandle $content;
 	close $filehandle;
 	
-	push @$to_upload, ["$filebase.$extension",0];
+	push @$to_upload, ["$key.$type","$filebase.$type",0];
+	push @$to_upload, ["$filebase.$type","$filebase.$type",0];
 
-	`yui-compressor $filebase.$extension > $filebase.min.$extension`;
-	push @$to_upload, ["$filebase.min.$extension",0];
+	# YUI compressor is doing both the CSS and JS
+	`JAVA_CMD=java yui-compressor $filebase.$type > $filebase.min.$type`;
+	push @$to_upload, ["$filebase.min.$type","$filebase.min.$type",0];
 
-	`gzip --best -c $filebase.$extension > $filebase.gzip.$extension`;
-	push @$to_upload, ["$filebase.gzip.$extension",1];
+	`gzip --best -c $filebase.$type > $filebase.gzip.$type`;
+	push @$to_upload, ["$filebase.gzip.$type","$filebase.gzip.$type",1];
 
-	`gzip --best -c $filebase.min.$extension > $filebase.min.gzip.$extension`;
-	push @$to_upload, ["$filebase.min.gzip.$extension",1];
+	`gzip --best -c $filebase.min.$type > $filebase.min.gzip.$type`;
+	push @$to_upload, ["$filebase.min.gzip.$type","$filebase.min.gzip.$type",1];
 	
 
 	my $modifiedTimeFormat = '%a, %d %b %Y %T %Z'; # format for HTML header
@@ -1813,24 +1822,26 @@ sub uploadS3Content
 	{
 		my $properties = {};
 		my $content_type = undef;
-		if($extension eq "js")
+		if($type eq "js")
 		{
 			$content_type = "application/javascript";
-		}elsif($extension eq "css")
+		}elsif($type eq "css")
 		{
 			$content_type = "text/css";
 		}
 		
 		$properties->{content_type} = $content_type;
 
-		if($filespec->[1]) #gzipped
+		if($filespec->[2]) #gzipped
 		{
 			$properties->{content_encoding} = 'gzip';			
 		}
 
 		$properties->{expires} = $dateOutputer->format_datetime(DateTime->from_epoch(epoch => time()+60*60*24*365*10)); #10 years
 
-		$s3->upload_file($filespec->[0], $filespec->[0], $properties);
+		# Replace anything in the bucket
+		$s3->delete($filespec->[0]);
+		$s3->upload_file($filespec->[0], $filespec->[1], $properties);
 	}
 
 	chdir("/tmp");
