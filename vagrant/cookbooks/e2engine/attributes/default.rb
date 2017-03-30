@@ -26,6 +26,7 @@ default["e2engine"]["stylesheet_fix_level"] = 2
 default["e2engine"]["writeuplowrepthreshold"] = -8
 default["e2engine"]["infected_ips"] = ["10.10.10.10"]
 default["e2engine"]["default_style"] = "Kernel Blue"
+default["e2engine"]["use_local_javascript"] = 1;
 default["e2engine"]["google_ads_badwords"] = ["fuckfuck"]
 default["e2engine"]["google_ads_badnodes"] = ["123456"]
 default["e2engine"]["s3"] = {}
