@@ -1037,7 +1037,7 @@ sub jscript_update
   my $APP = shift;
 
   my ($jscript) = @_;
-  $APP->uploadS3Content($jscript);
+  #$APP->jscssS3Upload($jscript);
 }
 
 sub stylesheet_preupdate
@@ -1067,7 +1067,7 @@ sub stylesheet_update
   my $APP = shift;
 
   my ($stylesheet) = @_;
-  $APP->uploadS3Content($stylesheet);
+  $APP->jscssS3Upload($stylesheet);
 
 }
 
@@ -1082,8 +1082,9 @@ sub jscript_preupdate
   my $APP = shift;
 
   my ($script_id) = @_;
-  my $JNODE = getNodeById($script_id);
-  $JNODE->{contentversion}++; #Don't call update, it'll loop
+  # jscript updates are coming out of the database
+  #my $JNODE = $DB->getNodeById($script_id);
+  #$JNODE->{contentversion}++; #Don't call update, it'll loop
 
 }
 
