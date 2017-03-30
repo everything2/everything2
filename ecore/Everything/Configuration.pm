@@ -56,6 +56,8 @@ has 'search_row_limit' => (isa => 'Int', is => 'ro', default => 200);
 
 has 'logdirectory' => (isa => 'Str', is => 'ro', default => '/var/log/everything');
 
+has 'use_local_javascript' => (isa => 'Bool', is => 'ro', default => '0');
+
 # TODO: Get rid of this
 has 'system' => (isa => 'HashRef', is => 'ro', default => sub { {} });
 
