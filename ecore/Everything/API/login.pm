@@ -1,4 +1,4 @@
-package Everything::API::v1::login;
+package Everything::API::login;
 
 use Moose;
 use namespace::autoclean;
