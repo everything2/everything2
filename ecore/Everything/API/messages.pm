@@ -1,4 +1,4 @@
-package Everything::API::v1::messages;
+package Everything::API::messages;
 
 use Moose;
 use namespace::autoclean;
