@@ -4,8 +4,6 @@ use strict;
 use JSON;
 use namespace::autoclean;
 
-use vars qw($routechooser);
-
 has 'CONF' => (isa => "Everything::Configuration", is => "ro", required => 1);
 has 'DB' => (isa => "Everything::NodeBase", is => "ro", required => 1);
 has 'APP' => (isa => "Everything::Application", is => "ro", required => 1, handles => ["printLog"]);
@@ -148,9 +146,9 @@ sub route
   #$self->printLog("Choosing route for $path in '".ref($self)."'");
   # Since Moose is giving me trouble with this, I'll let mod_perl cover me
   # TODO: The right way with Moose Meta 
-  $routechooser ||= $self->_build_routechooser;
+  $self->{routerchooser} ||= $self->_build_routechooser;
 
-  return $routechooser->($REQUEST, $path);
+  return $self->{routerchooser}->($REQUEST, $path);
 
 }
 
