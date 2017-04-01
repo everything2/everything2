@@ -6,7 +6,7 @@ use Everything::Response;
 use namespace::autoclean;
 use CGI;
 
-has 'cgi' => (lazy => 1, builder => "_build_cgi", isa => "CGI", handles => ["param", "header", "cookie","url","request_method"], is => "rw");
+has 'cgi' => (lazy => 1, builder => "_build_cgi", isa => "CGI", handles => ["param", "header", "cookie","url","request_method","path_info"], is => "rw");
 has 'USER' => (lazy => 1, builder => "_build_user", isa => "HashRef", is => "rw");
 has 'VARS' => (lazy => 1, builder => "_build_vars", isa => "HashRef", is => "rw");
 has 'CONF' => (isa => "Everything::Configuration", is => "ro", required => 1);

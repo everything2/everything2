@@ -4,15 +4,50 @@ use Moose;
 use namespace::autoclean;
 extends 'Everything::API';
 
+sub routes
+{ 
+  return {
+  ":id/action/archive" => "archive(:id)",
+  ":id/action/delete" => "delete(:id)",
+  ":id/action/unarchive" => "unarchive(:id)",
+  "create" => "create",
+  "/" => "get",
+  "/:id" => "get(:id)"
+  }
+}
+
 sub get
 {
-  my ($self, $REQUEST) = @_;
+  my ($self, $REQUEST, $id) = @_;
   if($self->APP->isGuest($REQUEST->USER))
   {
     return [$self->HTTP_FORBIDDEN];
   }
-  return [200, $self->APP->get_messages($REQUEST->USER)];
+  return [$self->HTTP_OK, $self->APP->get_messages($REQUEST->USER)];
 }
 
-__PACKAGE__->meta->make_immutable;
+sub archive
+{
+  my ($self, $REQUEST, $id) = @_;
+  if($self->APP->isGuest($REQUEST->USER))
+  {
+    return [$self->HTTP_FORBIDDEN];
+  }
+
+  return [$self->HTTP_OK, ["Got archive: $id"]];
+}
+
+sub unarchive
+{
+  my ($self, $REQUEST, $id) = @_;
+
+  return [$self->HTTP_OK, ["Got unarchive: $id"]];
+}
+
+sub delete
+{
+  my ($self, $REQUEST, $id) = @_;
+
+  return [$self->HTTP_OK, ["Got delete: $id"]];
+}
 1;

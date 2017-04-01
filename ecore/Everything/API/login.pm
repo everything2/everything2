@@ -35,5 +35,4 @@ sub post
   }
 }
 
-__PACKAGE__->meta->make_immutable;
 1;

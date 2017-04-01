@@ -6,8 +6,14 @@ use Everything::APIRouter;
 
 initEverything;
 
-my $APIr;
-$APIr ||= Everything::APIRouter->new();
+use vars qw($APIr);
 
-return $APIr->route();
+# Inside of mod_perl this should start initialized
+unless($APIr)
+{
+  Everything::printLog("Creating new APIRouter object");
+  $APIr ||= Everything::APIRouter->new();
+}
+
+return $APIr->dispatcher;
 
