@@ -9,11 +9,11 @@ use Everything::Request;
 use Data::Dumper;
 use Everything::API;
 
-has 'ROUTE_TABLE' => (isa => "HashRef", is => "ro", builder => "build_route_table");
+has 'MODULE_TABLE' => (isa => "HashRef", is => "ro", builder => "build_module_table");
 
 with 'Everything::HTTP';
 
-sub build_route_table
+sub build_module_table
 {
   my $args = {"DB" => $Everything::DB, "APP" => $Everything::APP, "CONF" => $Everything::CONF};
   my $routes;
@@ -39,7 +39,8 @@ sub build_route_table
   return $routes;
 }
 
-sub route
+
+sub dispatcher
 {
   my ($self) = @_;
   my $REQUEST = Everything::Request->new("DB" => $Everything::DB, "APP" => $Everything::APP, "CONF" => $Everything::CONF);
@@ -51,16 +52,17 @@ sub route
     return $self->output($REQUEST, [$self->HTTP_METHOD_NOT_ALLOWED]); 
   }
 
-  if(my ($endpoint) = $urlform =~ /^\/api\/([^\/]+)/)
+  if(my ($endpoint, $extra) = $urlform =~ m|^/api/([^/]+)/?(.*)|)
   {
-    if(exists $self->ROUTE_TABLE->{$endpoint} and exists $self->ROUTE_TABLE->{$endpoint})
+    if(exists $self->MODULE_TABLE->{$endpoint})
     {
-      $self->output($REQUEST, $self->ROUTE_TABLE->{$endpoint}->$method($REQUEST));
+      $self->output($REQUEST, $self->MODULE_TABLE->{$endpoint}->route($REQUEST, $extra));
     }else{
-      $self->output($REQUEST, $self->ROUTE_TABLE->{catchall}->$method($REQUEST));
+      $self->output($REQUEST, $self->MODULE_TABLE->{catchall}->$method($REQUEST));
     }
   }else{
-    $self->output($REQUEST, $self->ROUTE_TABLE->{catchall}->$method($REQUEST));
+    $self->output($REQUEST, [$self->HTTP_OK, [$urlform,$endpoint,$extra]]);
+    #$self->MODULE_TABLE->{catchall}->$method($REQUEST));
   }
 }
 
