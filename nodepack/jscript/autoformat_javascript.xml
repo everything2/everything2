@@ -1,34 +1,7 @@
 <node>
   <type_nodetype>1786405</type_nodetype>
-  <doctext>function autoFormat (id)
-{
-  var elem = document.getElementsByName(id).item(0);
-  var text = elem.value;
-  var blocks = &quot;pre|center|li|ol|ul|h1|h2|h3|h4|h5|h6&quot; +
-    &quot;|blockquote|dd|dt|dl|p&quot; +
-    &quot;|table|td|tr|th&quot;;
-
-  text = '&lt;p&gt;' + text
-    // strip out existing formatting 
-    .replace (new RegExp('&lt;/?p&gt;', 'ig'), '')
-    .replace (new RegExp('&lt;br */?&gt;', 'ig'), '')
-    // Strip out leading and trailing space
-    .replace (new RegExp('\\s*$', 'ig'), '')
-    .replace (new RegExp('^\\s*', 'ig'), '')
-    // New formatting
-    .replace (new RegExp(&quot;\n&quot;, 'ig'), &quot;&lt;br /&gt;\n&quot;)
-    .replace (new RegExp(&quot;&lt;br /&gt;\n(&lt;br /&gt;\n)+&quot;, 'ig'), &quot;&lt;/p&gt;\n\n&lt;p&gt;&quot;)
-    + '&lt;/p&gt;';
-  text = text
-    // Fix block elements
-    .replace (new RegExp('&lt;p&gt;&lt;('+blocks+'[ &gt;])', 'ig'), '&lt;$1')
-    .replace (new RegExp('&lt;/('+blocks+')&gt;&lt;/p&gt;', 'ig'), '&lt;/$1&gt;');
-
-  elem.value = text;
-
-}
-</doctext>
-  <contentversion>102</contentversion>
+  <doctext># Moved to /js/2069739.js</doctext>
+  <contentversion>114</contentversion>
   <s3bucket></s3bucket>
   <node_id>2069739</node_id>
   <title>Autoformat javascript</title>

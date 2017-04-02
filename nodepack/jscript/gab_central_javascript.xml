@@ -1,28 +1,7 @@
 <node>
   <type_nodetype>1786405</type_nodetype>
-  <doctext>function replyTo(f, s, c) {
-       if (c || document.forms[f].setvar_autofillInbox.checked) {
-          document.forms[f].message.value = &quot;/msg &quot;+s+&quot; &quot;;
-          document.forms[f].message.focus();
-       }
-}
-
-function replyToEddie (s) {
-       replyTo(2,s,1);
-}
-
-function clearReply(f) {
-	document.forms[f].message.value = &quot;&quot;;
-}
-
-function checkAll(f){
-    for (i=0; i &lt; document.forms[f].elements.length; i++) {
-      if(document.forms[f].elements[i].name.substring(0,9) == &quot;deletemsg&quot;)
-          {document.forms[f].elements[i].checked=true;}
-    }
-}
-</doctext>
-  <contentversion>102</contentversion>
+  <doctext>// Moved to /js/2069769.js -jb</doctext>
+  <contentversion>103</contentversion>
   <s3bucket></s3bucket>
   <node_id>2069769</node_id>
   <title>gab central javascript</title>
