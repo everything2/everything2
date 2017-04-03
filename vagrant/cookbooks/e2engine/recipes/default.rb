@@ -52,7 +52,6 @@ to_install = [
     'libauthen-sasl-perl',
     'libxml-rss-perl',
     'libmoose-perl',
-    'libmason-perl',
     'libnamespace-autoclean-perl',
     'yui-compressor',
 ]
@@ -65,13 +64,6 @@ git everythingdir do
   repository node["e2engine"]["gitrepo"]
   enable_submodules true
   action :sync
-end
-
-directory "#{everythingdir}/compile" do
-  owner "www-data"
-  group "root"
-  mode 0755
-  action :create
 end
 
 directory '/etc/everything' do
