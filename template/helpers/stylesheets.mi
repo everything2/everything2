@@ -1,7 +1,0 @@
-<%class>
-  has 'stylesheets' => ('isa' => 'ArrayRef', required => 1);
-</%class>
-% foreach my $stylesheet (@{$.stylesheets}) {
-<link rel="stylesheet" id="<% $stylesheet->{id} %>" type="text/css" href="<% $stylesheet->{href} %>" media="<% $stylesheet->{media} %>" />
-% }
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
