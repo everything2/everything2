@@ -14,7 +14,6 @@ use Everything::Delegation::htmlcode;
 use Everything::Delegation::opcode;
 use Compress::Zlib;
 use Everything::Request;
-use Everything::Router;
 
 use CGI;
 use CGI::Carp qw(set_die_handler);
@@ -908,30 +907,19 @@ sub displayPage
         my $dsp = $query->param('displaytype');
         $dsp = "display" unless $dsp;
 
-	# jaybonci: Controller shim here
-	my $ROUTER; #mod_perl unsafe, intentionally
-	$ROUTER ||= Everything::Router->new(CONF => $Everything::CONF, APP => $APP, DB => $DB);
 	my $type = $NODE->{type}->{title};
 
-        if($Everything::CONF->use_controllers and my $controller = $ROUTER->can_handle($type, $dsp))
-	{
-		$APP->printLog("Inside of can_handle for $type, $dsp");
-		$REQUEST->NODE($NODE);
-		$page = $controller->$dsp($REQUEST);
-	}else{
-	
-		my $PAGE = getPage($NODE, $query->param('displaytype'));
-		$$NODE{datatype} = $$PAGE{mimetype};
-		$page = $$PAGE{page};
+	my $PAGE = getPage($NODE, $query->param('displaytype'));
+	$$NODE{datatype} = $$PAGE{mimetype};
+	$page = $$PAGE{page};
 
-		die "NO PAGE!" unless $page;
+	die "NO PAGE!" unless $page;
 
-		$page = parseCode($page, $NODE);
+	$page = parseCode($page, $NODE);
 	
-		if ($$PAGE{parent_container}) {
-			my ($pre, $post) = genContainer($$PAGE{parent_container});
-			$page = $pre.$page.$post;
-		}
+	if ($$PAGE{parent_container}) {
+		my ($pre, $post) = genContainer($$PAGE{parent_container});
+		$page = $pre.$page.$post;
 	}
 
 	setVars $USER, $VARS unless $APP->isGuest($USER);

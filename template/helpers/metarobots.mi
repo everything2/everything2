@@ -1,6 +1,0 @@
-<%class>
-  has 'noindex' => (isa => "Bool", required => 1);
-</%class>
-% if($.noindex) {
-<meta name="robots" content="noindex, follow">
-% }

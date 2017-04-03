@@ -1,5 +1,0 @@
-<%class>
-  has 'atomlink' => ('isa' => 'Str', required => 1);
-  has 'atomtitle' => ('isa' => 'Str', required => 1);
-</%class>
-<link rel="alternate" type="application/atom+xml" title="<% $.atomtitle %>" href="<% $.atomlink %>">

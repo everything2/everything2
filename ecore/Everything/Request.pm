@@ -2,7 +2,6 @@ package Everything::Request;
 
 use strict;
 use Moose;
-use Everything::Response;
 use namespace::autoclean;
 use CGI;
 
@@ -12,13 +11,11 @@ has 'VARS' => (lazy => 1, builder => "_build_vars", isa => "HashRef", is => "rw"
 has 'CONF' => (isa => "Everything::Configuration", is => "ro", required => 1);
 has 'DB' => (isa => "Everything::NodeBase", is => "ro", required => 1);
 has 'APP' => (isa => "Everything::Application", is => "ro", required => 1);
-has 'response' => (lazy => 1, isa => "Everything::Response", is => "ro", builder => "_build_response");
 
 
 # Pageload is going to go away
 has 'PAGELOAD' => (isa => "HashRef", builder => "_build_pageload", is => "rw");
 
-# NODE is kind of a squishy concept here. Eventually, the router is going to set this
 has 'NODE' => (is => "rw", isa => "HashRef");
 
 sub POSTDATA
@@ -37,12 +34,6 @@ sub _build_pageload
 {
   my $self = shift;
   return {};
-}
-
-sub _build_response
-{
-  my $self = shift;
-  return Everything::Response->new(USER => $self->USER, CONF => $self->CONF, VARS => $self->VARS, DB => $self->DB, NODE => $self->NODE, APP => $self->APP); 
 }
 
 sub _build_vars

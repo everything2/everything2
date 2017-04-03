@@ -1,8 +1,0 @@
-<%class>
-  has 'customstyle';
-</%class>
-% if(defined($.customstyle)) {
-<style type="text/css">
-<% $.customstyle %> 
-</style>
-% }
