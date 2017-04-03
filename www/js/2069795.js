@@ -1,5 +1,5 @@
 // 2069795.js - Message inbox javascript
-// Probably used in [Message Inbox]
+// Used exclusively in [Message Inbox 2]
 
 function replyTo(s, c) {
        if (c || document.message_inbox_form.setvar_autofillInbox.checked) {
