@@ -7631,7 +7631,7 @@ sub displayWriteupInfo
     return ''
       . '<button title="Add additional World Cup content"'
       . ' onClick="flatify(this);return false;">'
-      . '<img src="http://static.everything2.com/futbol.png">'
+      . '<img src="https://s3.amazonaws.com/static.everything2.com/futbol.png">'
       . '</button>';
   };
 
@@ -13176,7 +13176,7 @@ sub homenodeinfectedinfo
     $infectionLink = linkNode($infectionExplanation, $infectionLink);
     $infectedHTML .= qq|;
       <div>
-      <img src="http://static.everything2.com/biohazard.png" alt="Biohazard Sign" title="User is infected">
+      <img src="https://s3.amazonaws.com/static.everything2.com/biohazard.png" alt="Biohazard Sign" title="User is infected">
       <p>
       This user is $infectionLink.
       </p>
@@ -13191,7 +13191,7 @@ sub homenodeinfectedinfo
         . $query->hidden("confirmop", 'cure_infection')
         . $query->hidden("cure_user_id", $$NODE{node_id})
         . '<button class="ajax homenode_infection:homenodeinfectedinfo?op=cure_infection&cure_user_id=/&cure_infection_seed=/&cure_infection_nonce=/&confirmmsg=/#Are+you+sure+you+wish+to+cure+this+user&apos;s+infection">
-          <img src="http://static.everything2.com/physician.png" alt="Physician Sign">
+          <img src="https://s3.amazonaws.com/static.everything2.com/physician.png" alt="Physician Sign">
            <p>Cure User</p> </button>'
         . '</form>'
         . "</div>\n";
@@ -14125,7 +14125,7 @@ sub showpoll
       $str.='<tr><td>'.($i == $vote ? '<b>' : '').$options[$i].($i ==$vote ? '</b>' : '').'</td>
         <td align="right">&nbsp;'.$results[$i].'&nbsp;</td>
         <td align="right">'.sprintf("%2.2f",($results[$i]/$votedivider)*100).'%</td></tr>';
-      $str.="<tr><td colspan='3'><img class='oddrow' src='http://static.everything2.com/dot.gif' height='8' width='"
+      $str.="<tr><td colspan='3'><img class='oddrow' src='https://s3.amazonaws.com/static.everything2.com/dot.gif' height='8' width='"
         .sprintf("%2.0f",($results[$i]/$votedivider)*180)."' /></td></tr>";
       $i++;
     }
