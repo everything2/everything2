@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>&lt;script type=&quot;text/javascript&quot;&gt;
-	$('head').append('&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;http://www.google.com/cse/api/branding.css&quot;&gt;');
+	$('head').append('&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://www.google.com/cse/api/branding.css&quot;&gt;');
 &lt;/script&gt;
 &lt;div class=&quot;cse-branding-right&quot; style=&quot;background-color:#FFFFFF;color:#000000&quot;&gt;
   &lt;div class=&quot;cse-branding-form&quot;&gt;
@@ -17,7 +17,7 @@
     &lt;/form&gt;
   &lt;/div&gt;
   &lt;div class=&quot;cse-branding-logo&quot;&gt;
-    &lt;img src=&quot;http://www.google.com/images/poweredby_transparent/poweredby_FFFFFF.gif&quot; alt=&quot;Google&quot;&gt;
+    &lt;img src=&quot;https://www.google.com/images/poweredby_transparent/poweredby_FFFFFF.gif&quot; alt=&quot;Google&quot;&gt;
   &lt;/div&gt;
   &lt;div class=&quot;cse-branding-text&quot;&gt;
     Custom Search
@@ -36,7 +36,7 @@
   var googleSearchDomain = &quot;www.google.com&quot;;
   var googleSearchPath = &quot;/cse&quot;;
 &lt;/script&gt;
-&lt;script type=&quot;text/javascript&quot; src=&quot;http://www.google.com/afsonline/show_afs_search.js&quot;&gt;&lt;/script&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;https://www.google.com/afsonline/show_afs_search.js&quot;&gt;&lt;/script&gt;
 
 &lt;!-- Google Search Result Snippet Ends --&gt;
 </doctext>
