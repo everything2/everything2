@@ -88,7 +88,7 @@ Keys:
 ### /api/sessions/create
 Accepts a POST with two parameters
 * **username** - Username of the user
-* **pass** - Password of the user
+* **passwd** - Password of the user
 
 If the login was unsuccessful, a 403 Forbidden is returned.
 
