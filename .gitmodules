@@ -1,3 +1,3 @@
 [submodule "vagrant/cookbooks/ntp"]
 	path = vagrant/cookbooks/ntp
-	url = git://github.com/opscode-cookbooks/ntp.git
+	url = https://github.com/opscode-cookbooks/ntp.git
