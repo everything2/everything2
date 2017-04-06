@@ -3895,5 +3895,41 @@ sub is_tls
   return $ENV{HTTPS};
 }
 
+sub get_bookmarks
+{
+  my ($this, $user) = @_;
+
+  my $user_id = $user->{node_id};
+
+  my $linktype=$this->{db}->getId($this->{db}->getNode('bookmark', 'linktype'));
+  my $sqlstring = "from_node=$user_id and linktype=$linktype ORDER BY title";
+
+  my $csr = $this->{db}->sqlSelectMany('to_node, title,
+    UNIX_TIMESTAMP(createtime) AS tstamp',
+    'links JOIN node ON to_node=node_id',
+    $sqlstring);
+
+  my $bookmarks;
+  while(my $row = $csr->fetchrow_hashref)
+  {
+    push @$bookmarks, {"node_id" => $row->{to_node}, "title" => $row->{title}};
+  }
+
+  return $bookmarks;
+}
+
+sub delete_bookmark
+{
+  my ($this, $user, $link) = @_;
+
+  my $user_id = $user->{node_id};
+  my $linktype=$this->{db}->getId($this->{db}->getNode('bookmark', 'linktype'));
+
+  $this->{db}->sqlDelete('links',
+    "from_node=$user_id 
+    AND to_node=$$link{node_id}
+    AND linktype=$linktype");
+
+}
 
 1;

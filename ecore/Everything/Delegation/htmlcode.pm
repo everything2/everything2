@@ -2036,9 +2036,9 @@ sub showbookmarks
 
   return unless $$NODE{type}{title} eq 'user';
 
-
   my $user_id =getId($NODE);
-  my $linktype=getId(getNode('bookmark', 'linktype'));
+  my $bookmarks = $APP->get_bookmarks($NODE);
+
 
   my $str = "";
   if ($edit and $createform) {
@@ -2046,31 +2046,23 @@ sub showbookmarks
   }
 
   $str.="<ul class=\"linklist\" id=\"bookmarklist\">\n";
-  my $sqlstring = "from_node=$user_id and linktype=$linktype ORDER BY title";
-
-  my $csr = $DB->sqlSelectMany('to_node, title,
-    UNIX_TIMESTAMP(createtime) AS tstamp',
-    'links JOIN node ON to_node=node_id',
-    $sqlstring);
-
-  my $count = $csr->rows();
-  while (my $link = $csr->fetchrow_hashref) {
+  my $count = scalar(@$bookmarks);
+  foreach my $link (@$bookmarks) {
     my $linktitle = lc($$link{title}); #Lowercased for case-insensitive sort
     if ($edit) {
-      if ($query->param("unbookmark_$$link{to_node}")) {
-        $DB->sqlDelete('links',
-          "from_node=$user_id 
-          AND to_node=$$link{to_node}
-          AND linktype=$linktype");
+      if ($query->param("unbookmark_$$link{node_id}")) {
+        if($USER->{node_id} eq $NODE->{node_id} || $APP->isAdmin($USER))
+        {
+          $APP->delete_bookmark($NODE, $link);
+        }
       } else {
-       $str.="<li tstamp=\"$$link{tstamp}\" nodename=\"$linktitle\" >".$query->checkbox("unbookmark_$$link{to_node}", 0, '1', 'remove').' '.linkNode($$link{to_node})."</li>\n";
+       $str.="<li tstamp=\"$$link{tstamp}\" nodename=\"$linktitle\" >".$query->checkbox("unbookmark_$$link{node_id}", 0, '1', 'remove').' '.linkNode($$link{node_id})."</li>\n";
       }
     } else {
-      $str.="<li tstamp=\"$$link{tstamp}\" nodename=\"$linktitle\">".linkNode($$link{to_node},0,{lastnode_id=>undef})."</li>\n";
+      $str.="<li tstamp=\"$$link{tstamp}\" nodename=\"$linktitle\">".linkNode($$link{node_id},0,{lastnode_id=>undef})."</li>\n";
     }
   }
 
-  $csr->finish;
   $str.="</ul>\n";
 
   if ($edit and $createform) {
