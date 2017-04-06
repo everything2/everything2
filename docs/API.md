@@ -87,8 +87,9 @@ If the user is logged in, it returns the following additional information:
 * **leveltitle** - The user's experience level title
 * **cools** - The user's current number of cools
 * **votes** - The user's current number of remaining votes
-* ~~**bookmarks** - Array of bookmark objects. See the bookmarks API~~ (Not yet implemented)
+* **bookmarks** - Array of bookmark objects. See the bookmarks API
 * ~~**num_writeups** - Number of writeups a user has created~~ (Not yet implemented)
+* ~~**powers** - Array of special powers the client can use to display more advanced tools~~ (Not yet implemented) 
 
 ### /api/sessions/create
 Accepts a POST with two parameters

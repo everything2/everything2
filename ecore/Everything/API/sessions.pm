@@ -31,6 +31,8 @@ sub user_api_structure
     $userinfo->{leveltitle} = $self->APP->getLevelTitle($level);
     $userinfo->{cools} = $REQUEST->USER->{cools} || 0;
     $userinfo->{votes} = $REQUEST->USER->{votesleft} || 0;
+
+    $userinfo->{bookmarks} = $self->APP->get_bookmarks($REQUEST->USER) || [];
   }
 
   return $userinfo;
