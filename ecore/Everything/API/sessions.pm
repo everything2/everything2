@@ -12,7 +12,8 @@ sub routes
   "/" => "get",
   }
 }
-sub get
+
+sub user_api_structure
 {
   my ($self, $REQUEST) = @_;
 
@@ -29,7 +30,13 @@ sub get
     $userinfo->{votes} = $REQUEST->USER->{votesleft} || 0;
   }
 
-  return [$self->HTTP_OK, $userinfo]
+  return $userinfo;
+}
+
+sub get
+{
+  my ($self, $REQUEST) = @_;
+  return [$self->HTTP_OK, $self->user_api_structure($REQUEST)]
 }
 
 sub create
@@ -43,7 +50,7 @@ sub create
     my $salted = $self->APP->hashString($data->{passwd}, $user->{salt});
     if($salted eq $user->{passwd})
     {
-      return [$self->HTTP_OK, {"user_id" => $user->{user_id}, "username" => $user->{title}}];
+      return [$self->HTTP_OK, $self->user_api_structure($REQUEST)];
     }else{
       return [$self->HTTP_FORBIDDEN];
     }
@@ -55,7 +62,10 @@ sub create
 sub destroy
 {
   my ($self, $REQUEST) = @_;
-  return [$self->HTTP_UNIMPLEMENTED];
+
+  # We only need to destroy the cookie; the API exit point is user neutral after this point
+  $REQUEST->USER($self->DB->getNodeById($self->CONF->guest_user));
+  return [$self->HTTP_OK,$self->user_api_structure($REQUEST), {"cookie" => $REQUEST->cookie(-name => $self->CONF->cookiepass, -value => "")}];
 }
 
 1;
