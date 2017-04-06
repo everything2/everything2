@@ -25,7 +25,6 @@ my $opt = '';
 #	ditto, plus privacy
 #	restricted_superdoc - admins only
 #	bug - ?
-#	rawdata - ?
 #	oppressor_superdoc - editors only
 #	debate, debatecomment - like writeups/e2nodes - eventually a zillion of them
 
@@ -39,7 +38,7 @@ delete $skips{'user'} if $$USER{node_id}==9740 || 1306028 || 1390290;	#2005 Augu
 if($isRoot) {
 #	@skips{qw()} = ();
 } else {
-	@skips{qw(restricted_superdoc bug rawdata)} = ();
+	@skips{qw(restricted_superdoc bug)} = ();
 	@skips{qw(oppressor_superdoc debate debatecomment)} = () unless $isCE;
 }
 
