@@ -78,12 +78,15 @@ sub output
 
   my $response_code = $output->[0];
   my $data = $output->[1];
-  my $additional_headers = $output->[2];
+  my $headers = $output->[2];
 
-  print $REQUEST->header(-status => $response_code);
+  $headers->{status} = $response_code;
+  $headers->{charset} = "utf-8";
+  $headers->{type} = "application/json";
+
   if($data)
   {
-    print $REQUEST->header("application/json");
+    print $REQUEST->header($headers);
     print JSON::to_json($data); 
   }
 }

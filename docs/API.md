@@ -94,6 +94,8 @@ Accepts a POST with two parameters
 
 If the login was unsuccessful, a 403 Forbidden is returned.
 
+If the login was successful, the output of /api/sessions is returned
+
 ### /api/sessions/destroy
 Destroys the current session. Not explicitly needed since no on-server state is kept for sessions. Simply deletes the cookie. Regardless of its current use, we recommend calling this in case any backend server state does need to be cleaned.
 
