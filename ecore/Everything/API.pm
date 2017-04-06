@@ -8,13 +8,7 @@ has 'CONF' => (isa => "Everything::Configuration", is => "ro", required => 1);
 has 'DB' => (isa => "Everything::NodeBase", is => "ro", required => 1);
 has 'APP' => (isa => "Everything::Application", is => "ro", required => 1, handles => ["printLog"]);
 
-has 'HTTP_OK' => (is => "ro", isa => "Int", default => 200);
-
-has 'HTTP_BAD_REQUEST' => (is => "ro", isa => "Int", default => 400);
-has 'HTTP_FORBIDDEN' => (is => "ro", isa => "Int", default => 403);
-has 'HTTP_UNIMPLEMENTED' => (is => "ro", isa => "Int", default => 405);
-
-
+with 'Everything::HTTP';
 
 # This compiles the route template into perlcode which does the right thing.
 # It supports variables as denoted by :
