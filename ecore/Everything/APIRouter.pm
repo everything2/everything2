@@ -52,6 +52,13 @@ sub dispatcher
     return $self->output($REQUEST, [$self->HTTP_METHOD_NOT_ALLOWED]); 
   }
 
+  # While in beta, API access is restricted
+  unless($REQUEST->isGuest || $REQUEST->isEditor || $REQUEST->isDeveloper || $REQUEST->isClientDeveloper || $Everything::CONF->environment eq "development")
+  {
+    $self->output($REQUEST, [$self->HTTP_FORBIDDEN]);
+    return;
+  }
+
   if(my ($endpoint, $extra) = $urlform =~ m|^/api/([^/]+)/?(.*)|)
   {
     if(exists $self->MODULE_TABLE->{$endpoint})
@@ -61,8 +68,7 @@ sub dispatcher
       $self->output($REQUEST, $self->MODULE_TABLE->{catchall}->$method($REQUEST));
     }
   }else{
-    $self->output($REQUEST, [$self->HTTP_OK, [$urlform,$endpoint,$extra]]);
-    #$self->MODULE_TABLE->{catchall}->$method($REQUEST));
+    $self->output($REQUEST, $self->MODULE_TABLE->{catchall}->$method($REQUEST));
   }
 }
 

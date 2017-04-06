@@ -893,6 +893,12 @@ sub isDeveloper
 	return $this->{db}->isApproved($user,$this->{db}->getNode('edev','usergroup'), $nogods);
 }
 
+sub isClientDeveloper
+{
+	my ($this, $user, $nogods) = @_;
+	return $this->{db}->isApproved($user,$this->{db}->getNode('clientdev','usergroup'), $nogods);
+}
+
 sub isAdmin
 {
 	my ($this, $user) = @_;

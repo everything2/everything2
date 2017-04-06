@@ -62,6 +62,36 @@ sub _build_cgi
   return $cgi;
 }
 
+sub isGuest
+{
+  my $self = shift;
+  return $self->APP->isGuest($self->USER);
+}
+
+sub isAdmin
+{
+  my $self = shift;
+  return $self->APP->isAdmin($self->USER);
+}
+
+sub isEditor
+{
+  my $self = shift;
+  return $self->APP->isEditor($self->USER);
+}
+
+sub isDeveloper
+{
+  my $self = shift;
+  return $self->APP->isDeveloper($self->USER);
+}
+
+sub isClientDeveloper
+{
+  my $self = shift;
+  return $self->APP->isClientDeveloper($self->USER);
+}
+
 sub login
 {
   my $self = shift;
