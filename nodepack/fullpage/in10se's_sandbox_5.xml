@@ -294,8 +294,8 @@ textarea,input,form {
   &lt;div class=&quot;users&quot;&gt;&lt;/div&gt;
 &lt;/div&gt;
 
-&lt;script src=&quot;http://code.jquery.com/jquery-1.10.1.min.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;http://app.education.pitt.edu/js/mychatterlight.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://code.jquery.com/jquery-1.10.1.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://app.education.pitt.edu/js/mychatterlight.js&quot;&gt;&lt;/script&gt;
     &lt;/body&gt;
 &lt;/html&gt;
 CODEEND
