@@ -956,6 +956,13 @@ sub getLevel {
         $level;
 }
 
+sub getLevelTitle {
+	my ($this, $lvl) = @_;
+	$lvl ||= 0;
+	my $titles = Everything::getVars($this->{db}->getNode("level titles","setting"));
+	return $titles->{$lvl};
+}
+
 ########################################################################
 #
 

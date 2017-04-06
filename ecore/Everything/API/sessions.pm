@@ -25,7 +25,10 @@ sub user_api_structure
 
   unless($userinfo->{is_guest})
   {
-    $userinfo->{level} = $self->APP->getLevel($REQUEST->USER) || 0;
+    my $level = $self->APP->getLevel($REQUEST->USER) || 0;
+
+    $userinfo->{level} = $level;
+    $userinfo->{leveltitle} = $self->APP->getLevelTitle($level);
     $userinfo->{cools} = $REQUEST->USER->{cools} || 0;
     $userinfo->{votes} = $REQUEST->USER->{votesleft} || 0;
   }
