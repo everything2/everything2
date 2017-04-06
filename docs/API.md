@@ -22,6 +22,8 @@ This API will be version 2, as the old xmltrue nodetype can be considered versio
 
 Successful APIs will always return 200 OK and well-formed JSON. If you pass a ````Accept-Encoding: gzip```` header, the server may at its discretion compress the output.
 
+Content should always be assumed to be UTF-8 encoded.
+
 Return codes follow basic HTTP conventions.
 
 ### Return codes:
