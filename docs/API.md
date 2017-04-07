@@ -17,6 +17,7 @@ This API will be version 2, as the old xmltrue nodetype can be considered versio
 * POSTS only accept JSON-encoded content
 * While in beta, only authorized API developers will have access to the APIs
 * After beta has been eliminated, rate limiting will be imposed. Likely this is 5,000 requests in an hour, measured in 5 minute buckets.
+* API endpoints are case-sensitive, which means calls to /API/ will correct return a 404.
 
 ## Return codes and content
 
@@ -98,7 +99,7 @@ Accepts a POST with two parameters
 
 If the login was unsuccessful, a 403 Forbidden is returned.
 
-If the login was successful, the output of /api/sessions is returned
+If the login was successful, the output of /api/sessions is returned, along with the cookie in the headers as Set-Cookie to continue the authentication. The cookie does not have an expiration.
 
 ### /api/sessions/destroy
 Destroys the current session. Not explicitly needed since no on-server state is kept for sessions. Simply deletes the cookie. Regardless of its current use, we recommend calling this in case any backend server state does need to be cleaned.
