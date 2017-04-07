@@ -3885,10 +3885,10 @@ sub get_messages
     if($row->{for_usergroup})
     {
       my $message_usergroup = $this->{db}->getNodeById($row->{for_usergroup});
-      $for_usergroup = { "node_id" => $for_usergroup->{node_id}, "title" => $for_usergroup->{title}};
+      $for_usergroup = { "node_id" => int($for_usergroup->{node_id}), "title" => $for_usergroup->{title}};
     }
 
-    push $records, {"from_user" => {"node_id" => $from_user->{node_id}, "title" => $from_user->{title}}, "msgtext" => $row->{msgtext}, "for_usergroup" => $for_usergroup};
+    push $records, {"from_user" => {"node_id" => int($from_user->{node_id}), "title" => $from_user->{title}}, "msgtext" => $row->{msgtext}, "for_usergroup" => $for_usergroup};
   }
   return $records;
 }
@@ -3917,7 +3917,7 @@ sub get_bookmarks
   my $bookmarks;
   while(my $row = $csr->fetchrow_hashref)
   {
-    push @$bookmarks, {"node_id" => $row->{to_node}, "title" => $row->{title}};
+    push @$bookmarks, {"node_id" => int($row->{to_node}), "title" => $row->{title}};
   }
 
   return $bookmarks;
