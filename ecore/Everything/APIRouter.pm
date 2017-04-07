@@ -59,6 +59,8 @@ sub dispatcher
     return;
   }
 
+  #Everything::printLog("Received API request: $urlform");
+
   if(my ($endpoint, $extra) = $urlform =~ m|^/api/([^/]+)/?(.*)|)
   {
     if(exists $self->MODULE_TABLE->{$endpoint})
@@ -68,6 +70,7 @@ sub dispatcher
       $self->output($REQUEST, $self->MODULE_TABLE->{catchall}->$method($REQUEST));
     }
   }else{
+    #Everything::printLog("Request fell through to catchall after form check: $method for $urlform");
     $self->output($REQUEST, $self->MODULE_TABLE->{catchall}->$method($REQUEST));
   }
 }
@@ -84,9 +87,9 @@ sub output
   $headers->{charset} = "utf-8";
   $headers->{type} = "application/json";
 
+  print $REQUEST->header($headers);
   if($data)
   {
-    print $REQUEST->header($headers);
     print JSON::to_json($data); 
   }
 }

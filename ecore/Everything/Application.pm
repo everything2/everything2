@@ -2145,12 +2145,16 @@ sub confirmUser
   my ($this, $username, $pass, $cookie, $query) = @_;
 
   my $user = $this->{db}->getNode($username, 'user');
-  return 0 unless $user && $user -> {acctlock} == 0;
+  return 0 unless $user && $user->{acctlock} == 0;
 
   unless ($cookie)
   {
     # login with plaintext password. May reset password or activate account first:
-    $this->checkToken($user, $query) if $query->param('token');
+    if($query and $query->param('token'))
+    {
+      $this->checkToken($user, $query);
+    }
+
     $pass = $this->hashString($pass, $user->{salt});
   }
 
@@ -3846,7 +3850,7 @@ sub getVars
   return unless $N;
 	
   unless (exists $N->{vars}) {
-    $this->printLog("getVars: 'vars' field does not exist for node ".getId($N)."perhaps it doesn't join on the settings table?\n");
+    $this->printLog("getVars: 'vars' field does not exist for node ".$this->{db}->getId($N)."perhaps it doesn't join on the settings table?\n");
   }
 
   my %vars = ();
@@ -3900,6 +3904,7 @@ sub get_bookmarks
   my ($this, $user) = @_;
 
   my $user_id = $user->{node_id};
+  return [] unless $user_id;
 
   my $linktype=$this->{db}->getId($this->{db}->getNode('bookmark', 'linktype'));
   my $sqlstring = "from_node=$user_id and linktype=$linktype ORDER BY title";

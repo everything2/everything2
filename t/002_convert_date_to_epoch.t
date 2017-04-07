@@ -2,7 +2,7 @@
 
 use strict;
 use lib qw(/var/everything/ecore);
-use Test::More;
+use Test::More tests => 3;
 use Everything;
 
 initEverything 'everything';
