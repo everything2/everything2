@@ -18,7 +18,7 @@ sub user_api_structure
   my ($self, $REQUEST) = @_;
 
   my $userinfo = {
-    "user_id" => $REQUEST->USER->{user_id},
+    "user_id" => int($REQUEST->USER->{user_id}),
     "username" => $REQUEST->USER->{title},
     "is_guest" => ($self->APP->isGuest($REQUEST->USER) || 0)
   };
@@ -27,10 +27,10 @@ sub user_api_structure
   {
     my $level = $self->APP->getLevel($REQUEST->USER) || 0;
 
-    $userinfo->{level} = $level;
+    $userinfo->{level} = int($level);
     $userinfo->{leveltitle} = $self->APP->getLevelTitle($level);
-    $userinfo->{cools} = $REQUEST->USER->{cools} || 0;
-    $userinfo->{votes} = $REQUEST->USER->{votesleft} || 0;
+    $userinfo->{cools} = int($REQUEST->USER->{cools}) || 0;
+    $userinfo->{votes} = int($REQUEST->USER->{votesleft}) || 0;
 
     $userinfo->{bookmarks} = $self->APP->get_bookmarks($REQUEST->USER) || [];
   }
