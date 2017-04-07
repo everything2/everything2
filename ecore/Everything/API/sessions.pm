@@ -41,7 +41,7 @@ sub user_api_structure
 sub get
 {
   my ($self, $REQUEST) = @_;
-  return [$self->HTTP_OK, $self->user_api_structure($REQUEST)]
+  return [$self->HTTP_OK, $self->user_api_structure($REQUEST)];
 }
 
 sub create
@@ -51,17 +51,26 @@ sub create
 
   if($data->{username} and $data->{passwd})
   {
-    my $user = $self->DB->getNode($data->{username},"user");
-    my $salted = $self->APP->hashString($data->{passwd}, $user->{salt});
-    if($salted eq $user->{passwd})
+    if($REQUEST->login(username => $data->{username}, pass => $data->{passwd}))
     {
-      return [$self->HTTP_OK, $self->user_api_structure($REQUEST)];
+      if(!$self->APP->isGuest($REQUEST->USER))
+      {
+        return [$self->HTTP_OK, $self->user_api_structure($REQUEST), {"Set-Cookie" => $self->make_cookie($REQUEST)}];
+      }else{
+        return [$self->HTTP_FORBIDDEN];
+      }
     }else{
-      return [$self->HTTP_FORBIDDEN];
+      return [$self->HTTP_BAD_REQUEST];
     }
   }else{
     return [$self->HTTP_BAD_REQUEST];
   }
+}
+
+sub make_cookie
+{
+  my ($self, $REQUEST) = @_;
+  return $REQUEST->cookie(-name => $self->CONF->cookiepass, -value => $REQUEST->USER->{title}."|".$REQUEST->USER->{passwd});
 }
 
 sub destroy

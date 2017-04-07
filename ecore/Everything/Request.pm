@@ -27,7 +27,8 @@ sub POSTDATA
 sub _build_user
 {
   my $self = shift;
-  return $self->login;
+  Everything::printLog("In _build_user");
+  return $self->get_current_user;
 }
 
 sub _build_pageload
@@ -95,7 +96,17 @@ sub isClientDeveloper
 sub login
 {
   my $self = shift;
+  Everything::printLog("In get_current_user");
+  $self->USER($self->get_current_user(@_));
+  $self->VARS(Everything::getVars($self->USER));
+}
+
+sub get_current_user
+{
+  my $self = shift;
   my $inputs = {@_};
+
+  Everything::printLog("In get_current_user");
 
   my $username = $inputs->{username};
   my $pass = $inputs->{pass};
@@ -103,16 +114,24 @@ sub login
 
   unless ($username && $pass)
   {
-    $cookie = $self->cookie($self->CONF->cookiepass) || $self->param($self->CONF->cookiepass);
+    $cookie = $self->cookie($self->CONF->cookiepass);
     ($username, $pass) = split(/\|/, $cookie) if $cookie;
   }
 
-  my $user = $self->APP->confirmUser($username, $pass, $cookie, $self->cgi) if $username && $pass;
+  my $user;
+  if($username && $pass)
+  {
+    Everything::printLog("Trying confirmUser for: $username, $pass, $cookie");
+    $user = $self->APP->confirmUser($username, $pass, $cookie, $self->cgi);
+  }
+  
   $user ||= $self->DB->getNodeById($self->CONF->guest_user);
-
-  $self->VARS(Everything::getVars($user));
+  Everything::printLog("confirmUser returned: $user->{title}");
 
   return $user if !$user || $self->APP->isGuest($user) || $self->param('ajaxIdle');
+  
+  # If we don't assign VARS here, then we will loop forever trying to bootstrap it
+  $self->VARS(Everything::getVars($user));
 
   my $TIMEOUT_SECONDS = 4 * 60;
 

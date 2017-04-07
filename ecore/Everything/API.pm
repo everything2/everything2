@@ -71,11 +71,11 @@ sub _build_routechooser
     $perlcode .= '$REQUEST,'."$arguments)};";
  
   }
-  $perlcode .= '$self->printLog("Could not choose route for $path");';
+  #$perlcode .= '$self->printLog("Could not choose route for $path");';
   $perlcode .= 'return [$self->HTTP_UNIMPLEMENTED];';
   $perlcode .= '}';
   
-  $self->printLog("Compiled routes into code: '$perlcode'");
+  #$self->printLog("Compiled routes into code: '$perlcode'");
   eval("\$subroutineref = $perlcode");
   if($@)
   {
@@ -94,6 +94,7 @@ sub routes
 sub get
 {
   my ($self, $REQUEST) = @_;
+  #$self->printLog("Handling with catchall: ".$REQUEST->url(-absolute=>1));
   return [$self->HTTP_UNIMPLEMENTED];
 }
 
@@ -124,7 +125,7 @@ sub delete
 sub parse_postdata
 {
   my ($self, $REQUEST) = @_;
-  $self->printLog("parse_postdata: ".$REQUEST->POSTDATA);
+  #$self->printLog("parse_postdata: ".$REQUEST->POSTDATA);
   if(!$REQUEST->POSTDATA)
   {
     return {};

@@ -2,7 +2,7 @@
 
 use strict;
 use lib qw(/var/everything/ecore);
-use Test::More qw(no_plan);
+use Test::More tests => 13;
 use diagnostics;
 use Everything;
 
@@ -31,7 +31,3 @@ ok($APP->userCanCloak($user) == 0, "User can no longer cloak");
 
 ok($APP->userCanCloak(getNode("root","user")) == 1, "An admin can cloak");
 
-TODO: {
-	local $TODO = "Need to test editors getting cloaking powers";
-	ok(0);
-}
