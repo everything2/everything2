@@ -53,6 +53,7 @@ to_install = [
     'libxml-rss-perl',
     'libmoose-perl',
     'libnamespace-autoclean-perl',
+    'libwww-perl',
     'yui-compressor',
 ]
 
