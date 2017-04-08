@@ -21,13 +21,20 @@ has 'NODE' => (is => "rw", isa => "HashRef");
 sub POSTDATA
 {
   my $self = shift;
-  return $self->cgi->param("POSTDATA");
+  my $encoding = $ENV{CONTENT_TYPE};
+
+  if($encoding eq "application/json")
+  {
+    return $self->cgi->param("POSTDATA");
+  }elsif($encoding eq "application/x-www-form-urlencoded")
+  {
+    return $self->cgi->param("data");
+  }
 }
 
 sub _build_user
 {
   my $self = shift;
-  Everything::printLog("In _build_user");
   return $self->get_current_user;
 }
 
@@ -96,7 +103,6 @@ sub isClientDeveloper
 sub login
 {
   my $self = shift;
-  Everything::printLog("In get_current_user");
   $self->USER($self->get_current_user(@_));
   $self->VARS(Everything::getVars($self->USER));
 }
@@ -105,8 +111,6 @@ sub get_current_user
 {
   my $self = shift;
   my $inputs = {@_};
-
-  Everything::printLog("In get_current_user");
 
   my $username = $inputs->{username};
   my $pass = $inputs->{pass};
@@ -121,12 +125,10 @@ sub get_current_user
   my $user;
   if($username && $pass)
   {
-    Everything::printLog("Trying confirmUser for: $username, $pass, $cookie");
     $user = $self->APP->confirmUser($username, $pass, $cookie, $self->cgi);
   }
   
   $user ||= $self->DB->getNodeById($self->CONF->guest_user);
-  Everything::printLog("confirmUser returned: $user->{title}");
 
   return $user if !$user || $self->APP->isGuest($user) || $self->param('ajaxIdle');
   

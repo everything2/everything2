@@ -92,4 +92,10 @@ ok($response->code == 200, "Session destroys ok");
 ok($session = $json->decode($response->content), "Content accurately decodes");
 ok($session->{is_guest} == 1, "Still guest due to destroyed session");
 
+# Alternate form post method
+ok($response = $ua->post("$endpoint/create", {data => $json->encode({"username" => "root","passwd" => "blah"})}));
+ok($response->code == 200, "Session is ok");
+ok($session = $json->decode($response->content), "Content accurately decodes");
+ok($session->{is_guest} == 0, "Not guest anymore due to successful login");
+
 done_testing();

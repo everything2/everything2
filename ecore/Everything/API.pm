@@ -125,7 +125,7 @@ sub delete
 sub parse_postdata
 {
   my ($self, $REQUEST) = @_;
-  #$self->printLog("parse_postdata: ".$REQUEST->POSTDATA);
+  $self->printLog("parse_postdata: ".$REQUEST->POSTDATA);
   if(!$REQUEST->POSTDATA)
   {
     return {};
