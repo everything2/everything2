@@ -13278,7 +13278,6 @@ sub googleads
   return "<!-- noad:nothingfound -->" if $node_id == getNode('Nothing Found', 'superdoc')->{node_id};
   return "<!-- noad:findings -->" if $node_id == getNode('Findings:', 'superdoc')->{node_id};
   return "<!-- noad:badnodeid -->" unless ($node_id =~ /^\d+$/);
-  return "<!-- noad:https -->" if $query->url =~ /^https/;
 
   my $ad = qq|
   <center>
