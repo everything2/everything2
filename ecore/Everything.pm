@@ -116,6 +116,11 @@ sub printLog
   return $APP->printLog(@_);
 }
 
+sub devLog
+{
+  return $APP->devLog(@_);
+}
+
 sub getELogName
 {
   return $APP->getELogName(@_);

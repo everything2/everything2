@@ -6,9 +6,12 @@ use namespace::autoclean;
 
 has 'CONF' => (isa => "Everything::Configuration", is => "ro", required => 1);
 has 'DB' => (isa => "Everything::NodeBase", is => "ro", required => 1);
-has 'APP' => (isa => "Everything::Application", is => "ro", required => 1, handles => ["printLog"]);
+has 'APP' => (isa => "Everything::Application", is => "ro", required => 1, handles => ["printLog", "devLog"]);
 
 with 'Everything::HTTP';
+
+has 'CURRENT_VERSION' => (isa => "Int", default => 1, is => "ro");
+has 'MINIMUM_VERSION' => (isa => "Int", lazy => 1, builder => "_build_minimum_version", is => "ro");
 
 # This compiles the route template into perlcode which does the right thing.
 # It supports variables as denoted by :
@@ -17,13 +20,21 @@ with 'Everything::HTTP';
 #
 # TODO: There's no sanity checking that a variable conforms to anything in particular
 
+sub _build_minimum_version
+{
+  my ($self) = @_;
+  
+  # If minimum isn't set then the current version is the minimum
+  return $self->CURRENT_VERSION;
+}
+
 sub _build_routechooser
 {
   my ($self) = @_;
 
   my $routes = $self->routes;
   my $subroutineref;
-  my $perlcode = 'sub { my $REQUEST=shift;my $path=shift;';
+  my $perlcode = 'sub { my $REQUEST=shift;my $version = shift; my $path=shift;';
 
   foreach my $route(keys %{$routes})
   {
@@ -62,20 +73,20 @@ sub _build_routechooser
     $perlcode .= '$path =~ /^';
     $perlcode .= join('\/',@$re);
     $perlcode .= '$/){ ';
-    #$perlcode .= '$self->printLog("Choosing \''.$routetarget.'\' for $path");';
+    $perlcode .= '$self->devLog("Choosing \''.$routetarget.'\' for $path");';
     $perlcode .= 'return ';
 
     $perlcode .= '$self->'.$subref.'(';
     $arguments ||= "";
     $arguments =~ s/\:/\$/g;
-    $perlcode .= '$REQUEST,'."$arguments)};";
+    $perlcode .= '$REQUEST,$version,'."$arguments)};";
  
   }
-  #$perlcode .= '$self->printLog("Could not choose route for $path");';
+  $perlcode .= '$self->devLog("Could not choose route for $path");';
   $perlcode .= 'return [$self->HTTP_UNIMPLEMENTED];';
   $perlcode .= '}';
   
-  #$self->printLog("Compiled routes into code: '$perlcode'");
+  $self->devLog("Compiled routes into code: '$perlcode'");
   eval("\$subroutineref = $perlcode");
   if($@)
   {
@@ -94,38 +105,42 @@ sub routes
 sub get
 {
   my ($self, $REQUEST) = @_;
-  #$self->printLog("Handling with catchall: ".$REQUEST->url(-absolute=>1));
+  $self->devLog("Handling with get catchall: ".$REQUEST->url(-absolute=>1));
   return [$self->HTTP_UNIMPLEMENTED];
 }
 
 sub post
 {
   my ($self, $REQUEST) = @_;
+  $self->devLog("Handling with post catchall: ".$REQUEST->url(-absolute=>1));
   return [$self->HTTP_UNIMPLEMENTED];
 }
 
 sub put
 {
   my ($self, $REQUEST) = @_;
+  $self->devLog("Handling with put catchall: ".$REQUEST->url(-absolute=>1));
   return [$self->HTTP_UNIMPLEMENTED];
 }
 
 sub patch
 {
   my ($self, $REQUEST) = @_;
+  $self->devLog("Handling with patch catchall: ".$REQUEST->url(-absolute=>1));
   return [$self->HTTP_UNIMPLEMENTED];
 }
 
 sub delete
 {
   my ($self, $REQUEST) = @_;
+  $self->devLog("Handling with delete catchall: ".$REQUEST->url(-absolute=>1));
   return [$self->HTTP_UNIMPLEMENTED];
 }
 
 sub parse_postdata
 {
   my ($self, $REQUEST) = @_;
-  $self->printLog("parse_postdata: ".$REQUEST->POSTDATA);
+  $self->devLog("parse_postdata: ".$REQUEST->POSTDATA);
   if(!$REQUEST->POSTDATA)
   {
     return {};
@@ -138,13 +153,42 @@ sub route
 {
   my ($self, $REQUEST, $path) = @_;
 
-  #$self->printLog("Choosing route for $path in '".ref($self)."'");
+  $self->devLog("Choosing route for $path in '".ref($self)."'");
   # Since Moose is giving me trouble with this, I'll let mod_perl cover me
   # TODO: The right way with Moose Meta 
+  my $version = $self->get_api_version($REQUEST);
+
+  if($version == 0 || $version > $self->CURRENT_VERSION)
+  {
+    $self->devLog("Sending HTTP_BAD_REQUEST due to request version being 0 or higher than CURRENT_VERSION");
+    return [$self->HTTP_BAD_REQUEST];
+  }
+
+  if($version < $self->MINIMUM_VERSION)
+  {
+    $self->devLog("Sending HTTP_GONE due to request version being lower than minimum");
+    return [$self->HTTP_GONE];
+  }
+
   $self->{routerchooser} ||= $self->_build_routechooser;
 
-  return $self->{routerchooser}->($REQUEST, $path);
+  return $self->{routerchooser}->($REQUEST, $version, $path);
 
+}
+
+sub get_api_version
+{
+  my ($self, $REQUEST) = @_;
+ 
+  my $accept_header = $ENV{HTTP_ACCEPT}; 
+  if(defined($accept_header) and my ($version) = $accept_header =~ /application\/vnd\.e2\.v(\d+)/)
+  {
+    $self->devLog("Explicitly requesting API version $version");
+    return $version;
+  }else{
+    $self->devLog("No API version requested, defaulting to CURRENT_VERSION");
+    return $self->CURRENT_VERSION
+  }
 }
 
 __PACKAGE__->meta->make_immutable;

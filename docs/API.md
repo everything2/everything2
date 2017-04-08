@@ -4,12 +4,12 @@ Everything2 needs to evolve to keep up with the times. We've lived with the earl
 
 As a part of the future API-driven nature of the site, we need to start abstracting features away into APIs that a richer front-end can drive. I've all but settled on [React.js](http://reactjs.com/), Facebook's front-end framework for fast and responsive UIs. While a UI rewrite is not needed as a part of the API-ification, it is an easy way to start exercising the consumption part of the API and get feedback. It will also as a consequence, start to make the site more responsive as the features come in.
 
-This API will be version 2, as the old xmltrue nodetype can be considered version 1.0.
+This API is version 2, as the old xmltrue nodetype is considered version 1.0.
 
 ## API religion
 
 * All E2 APIs will be available at https://everything2.com/api/$api. 
-* ~~APIs will all be versioned. To request a specific version of the API, send the accept header: ```Accept: application/vnd.e2.v$version+json```~~(Not yet implemented)
+* APIs are versioned. To request a specific version of the API, send the accept header: ````Accept: application/vnd.e2.v$version+json````. Versions are all non-decimal numeric numbers.
 * API requests that are not versioned are always assumed to be the current version.
 * APIs will only be versioned if the fundamental agreements change. We will NOT increment the version if additional fields are returned. You cannot assume that the presence of keys not in your version will break.
 * Objects are listed as their plural format and follow the general form: ````/api/$object/$id````
@@ -17,7 +17,7 @@ This API will be version 2, as the old xmltrue nodetype can be considered versio
 * POSTS accept either JSON-encoded content (application/json) or Form-encoded content with the full JSON payload encoded as the data parameter: (application/x-www-form-urlencoded). 
 * While in beta, only authorized API developers will have access to the APIs
 * After beta has been eliminated, rate limiting will be imposed. Likely this is 5,000 requests in an hour, measured in 5 minute buckets.
-* API endpoints are case-sensitive, which means calls to /API/ will correct return a 404.
+* API endpoints are case-sensitive, which means calls to /API/ will correctly return a 404.
 
 ## Return codes and content
 
@@ -108,4 +108,12 @@ Returns the output of /api/sessions for the new current user, which is probably 
 
 ## Searches
 
+## Tests
+
+### /api/tests (version 2)
+returns ````{"v": 2}````
+
+### /api/tests (version 3)
+returns ````{"version": 3}````
+Test-only API which is to validate version-acceptance
 

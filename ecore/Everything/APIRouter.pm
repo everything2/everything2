@@ -59,7 +59,7 @@ sub dispatcher
     return;
   }
 
-  #Everything::printLog("Received API request: $urlform");
+  Everything::devLog("Received API request: $urlform");
 
   if(my ($endpoint, $extra) = $urlform =~ m|^/api/([^/]+)/?(.*)|)
   {
@@ -67,10 +67,11 @@ sub dispatcher
     {
       $self->output($REQUEST, $self->MODULE_TABLE->{$endpoint}->route($REQUEST, $extra));
     }else{
+      Everything::devLog("Request fell through to catchall after MODULE_TABLE check");
       $self->output($REQUEST, $self->MODULE_TABLE->{catchall}->$method($REQUEST));
     }
   }else{
-    #Everything::printLog("Request fell through to catchall after form check: $method for $urlform");
+    Everything::devLog("Request fell through to catchall after form check: $method for $urlform");
     $self->output($REQUEST, $self->MODULE_TABLE->{catchall}->$method($REQUEST));
   }
 }

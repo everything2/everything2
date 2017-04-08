@@ -40,13 +40,13 @@ sub user_api_structure
 
 sub get
 {
-  my ($self, $REQUEST) = @_;
+  my ($self, $REQUEST, $version) = @_;
   return [$self->HTTP_OK, $self->user_api_structure($REQUEST)];
 }
 
 sub create
 {
-  my ($self, $REQUEST) = @_;
+  my ($self, $REQUEST, $version) = @_;
   my $data = $self->parse_postdata($REQUEST);
 
   if($data->{username} and $data->{passwd})
@@ -75,7 +75,7 @@ sub make_cookie
 
 sub destroy
 {
-  my ($self, $REQUEST) = @_;
+  my ($self, $REQUEST, $version) = @_;
 
   # We only need to destroy the cookie; the API exit point is user neutral after this point
   $REQUEST->USER($self->DB->getNodeById($self->CONF->guest_user));
