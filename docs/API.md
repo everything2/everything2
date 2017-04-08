@@ -14,7 +14,7 @@ This API will be version 2, as the old xmltrue nodetype can be considered versio
 * APIs will only be versioned if the fundamental agreements change. We will NOT increment the version if additional fields are returned. You cannot assume that the presence of keys not in your version will break.
 * Objects are listed as their plural format and follow the general form: ````/api/$object/$id````
 * Objects will embed both the node_id and the title for foreign keys for ease of display
-* POSTS only accept JSON-encoded content
+* POSTS accept either JSON-encoded content (application/json) or Form-encoded content with the full JSON payload encoded as the data parameter: (application/x-www-form-urlencoded). 
 * While in beta, only authorized API developers will have access to the APIs
 * After beta has been eliminated, rate limiting will be imposed. Likely this is 5,000 requests in an hour, measured in 5 minute buckets.
 * API endpoints are case-sensitive, which means calls to /API/ will correct return a 404.
