@@ -3597,14 +3597,30 @@ sub printLog
 {
   my ($this, $entry) = @_;
 
-  $entry = "" if not defined $entry;
+  $this->genericLog($this->getELogName(), $entry);
+}
+
+sub devLog
+{
+  my ($this, $entry) = @_;
+
+  if($this->inDevEnvironment)
+  {
+    $this->genericLog("/tmp/development.log", $entry);
+  }
+}
+
+sub genericLog
+{
+  my ($this, $log, $entry) = @_;
   my $time = $this->getTime();
-	
+  $entry = "" if not defined $entry;
+        
   # prefix the date a time on the log entry.
   $entry = "$time: $entry\n";
-
-  if(open(ELOG, ">> ".$this->getELogName()))
-  {
+  
+  if(open(ELOG, ">>$log"))
+  { 
     print ELOG $entry;
     close(ELOG);
   }

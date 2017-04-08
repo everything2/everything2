@@ -18,7 +18,7 @@ sub routes
 
 sub get
 {
-  my ($self, $REQUEST, $id) = @_;
+  my ($self, $REQUEST, $version, $id) = @_;
   if($self->APP->isGuest($REQUEST->USER))
   {
     return [$self->HTTP_FORBIDDEN];
@@ -28,7 +28,7 @@ sub get
 
 sub archive
 {
-  my ($self, $REQUEST, $id) = @_;
+  my ($self, $REQUEST, $version, $id) = @_;
   if($self->APP->isGuest($REQUEST->USER))
   {
     return [$self->HTTP_FORBIDDEN];
@@ -39,14 +39,14 @@ sub archive
 
 sub unarchive
 {
-  my ($self, $REQUEST, $id) = @_;
+  my ($self, $REQUEST, $version, $id) = @_;
 
   return [$self->HTTP_OK, ["Got unarchive: $id"]];
 }
 
 sub delete
 {
-  my ($self, $REQUEST, $id) = @_;
+  my ($self, $REQUEST, $version, $id) = @_;
 
   return [$self->HTTP_OK, ["Got delete: $id"]];
 }

@@ -59,7 +59,7 @@ ok($response->code == 403, "Return code is 403");
 
 # Normal user credentials
 my $cookie_jar = HTTP::Cookies->new();
-ok(my $ua = LWP::UserAgent->new());
+ok($ua = LWP::UserAgent->new());
 $ua->cookie_jar($cookie_jar);
 
 $request->content($json->encode({"username" => "normaluser1", "passwd" => "blah"}));
