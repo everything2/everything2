@@ -89,13 +89,13 @@ If the user is logged in, it returns the following additional information:
 * **cools** - The user's current number of cools
 * **votes** - The user's current number of remaining votes
 * **bookmarks** - Array of bookmark objects. See the bookmarks API. This key is not shown if there are no bookmarks.
-* ~~**num_writeups** - Number of writeups a user has created~~ (Not yet implemented)
+* **num_writeups** - Number of writeups a user has created. The key is not displayed if the amount is zero
 * **powers** - Array of special powers the client can use to display more advanced tools. This is not shown if there are no special powers to display
-** **ed** - User is an editor
-** **admin** - User is an admin
-** **chanop** - User is a channel operator
-** **client** - User is a client developer (Not given to admins by default for UI clarity)
-** **dev** - User is a site developer (Same as **client**)
+  * **ed** - User is an editor
+  * **admin** - User is an admin
+  * **chanop** - User is a channel operator
+  * **client** - User is a client developer (Not given to admins by default for UI clarity)
+  * **dev** - User is a site developer (Same as **client**)
 
 ### /api/sessions/create
 Accepts a POST with two parameters

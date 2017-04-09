@@ -50,6 +50,12 @@ sub user_api_structure
     {
       $userinfo->{powers} = $powers;
     }
+
+    my $numwriteups = $REQUEST->VARS->{numwriteups};
+    if($numwriteups)
+    {
+      $userinfo->{numwriteups} = int($numwriteups);
+    }
   }
 
   return $userinfo;
