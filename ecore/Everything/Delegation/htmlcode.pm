@@ -4302,7 +4302,7 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
   if((defined $spellInfo) && $showSpelling) {
     $curCat = $showCat ? 'spelling <small>(English)</small> ' : '';
     my @badThings = ();
-    my %problemCount = undef;	#key is problem description, value is number of times
+    my %problemCount = {};	#key is problem description, value is number of times
 
     foreach(keys(%$spellInfo)) {
       unless(substr($_,0,1) eq '_') {
