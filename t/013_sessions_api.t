@@ -41,6 +41,8 @@ ok(defined($response->header('set-cookie')), "Properly sets cookie header");
 ok($session = $json->decode($response->content), "Content accurately decodes");
 ok($session->{is_guest} == 0, "Accurately is not guest");
 ok($session->{username} eq "root", "Logged in as root");
+ok(exists $session->{powers}, "Root has special powers");
+ok(grep("ed", @{$session->{powers}}), "Root is an editor");
 
 # Bad post without password gives 400 Bad Request
 $request->content($json->encode({"username" => "root"}));
@@ -69,6 +71,7 @@ ok($response->header('content-type') =~ /^application\/json/i, "Returns JSON");
 ok($session = $json->decode($response->content), "Content accurately decodes");
 ok($session->{is_guest} == 0, "Accurately is not guest");
 ok($session->{username} eq "normaluser1", "Logged in as normaluser1");
+ok(!exists($session->{powers}), "Normal user doesn't have any special powers");
 ok(defined($response->header('set-cookie')), "Properly sets cookie header");
 
 # With cookies

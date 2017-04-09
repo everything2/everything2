@@ -32,7 +32,24 @@ sub user_api_structure
     $userinfo->{cools} = int($REQUEST->USER->{cools}) || 0;
     $userinfo->{votes} = int($REQUEST->USER->{votesleft}) || 0;
 
-    $userinfo->{bookmarks} = $self->APP->get_bookmarks($REQUEST->USER) || [];
+    my $bookmarks = $self->APP->get_bookmarks($REQUEST->USER) || [];
+    if(scalar @$bookmarks)
+    {
+      $userinfo->{bookmarks} = $bookmarks;
+    }
+
+    my $powers = [];
+    push @$powers, "ed" if $self->APP->isEditor($REQUEST->USER);
+    push @$powers, "admin", if $self->APP->isAdmin($REQUEST->USER);
+    push @$powers, "chanop" if $self->APP->isChanop($REQUEST->USER);
+
+    # Admins don't have these powers by default, not because they can't, but because not all care.
+    push @$powers, "client" if $self->APP->isClientDeveloper($REQUEST->USER, "nogods");
+    push @$powers, "dev", if $self->APP->isDeveloper($REQUEST->USER, "nogods");
+    if(scalar @$powers)
+    {
+      $userinfo->{powers} = $powers;
+    }
   }
 
   return $userinfo;
