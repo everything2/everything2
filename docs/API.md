@@ -27,6 +27,19 @@ Content should always be assumed to be UTF-8 encoded.
 
 Return codes follow basic HTTP conventions.
 
+## Node references
+
+All node references from inside another node are JSON objects containing two fields, regardless of type:
+* **node_id** The internal node signifier id
+* **title** The user-displayable title. The client is responsible for HTML-encoding it.
+
+Being able to see a node_id doesn't mean that you can request the displayable page for it.
+
+If a node reference in the database is broken, you will see the following construct:
+````{"node_id": 0, "title": "(unknown)"}````
+
+There is no node_id 0, so you can key off of that to know that something is broken. The client should be able to handle that gracefully. In places inside of the data model where there is simply no reference in the database, the key won't be returned.
+
 ### Return codes:
 
 No other content is expected to be returned in any situation other than 200 OK.
@@ -60,6 +73,27 @@ Node requests need to be able to accept any kind of return content, as dictated 
 
 ## Messages
 
+Current version: *1 (beta)*
+
+Retrieves, sends, and sets status on messages
+
+### /api/messages
+
+Returns the top 15 messages ordered by newest first.
+
+Messages have the following keys:
+
+* **for_user** - The node reference of the receving user. This is almost certainly the logged in user, though in future versions, admins should be able to check system accounts (root, CME, Klaproth)
+* **author_user** - The node reference of the sending user.
+* **msgtext** - The text of the message
+* **for_usergroup** - The node reference of the group the message was send to. Missing if not a usergroup message
+
+Users who are not logged in should expect to receive 403 Forbidden
+
+### /api/messages/:id
+
+Returns the message at :id, formatted per the */api/messages* construct. Users who do not own the message should expect to receive 403 Forbidden.
+
 ## Chats
 
 ## Bookmarks
@@ -70,11 +104,11 @@ Node requests need to be able to accept any kind of return content, as dictated 
 
 ## Sessions
 
+Current version: *1 (beta)*
+
 Logs a user in
 
 ### /api/sessions
-
-Current version: *1 (beta)*
 
 Returns the JSON encoded values associated with the current session
 

@@ -80,12 +80,15 @@ sub create
       {
         return [$self->HTTP_OK, $self->user_api_structure($REQUEST), {"Set-Cookie" => $self->make_cookie($REQUEST)}];
       }else{
+        $self->devLog("Login came back as guest user, meaning bad password, returning 403 FORBIDDEN");
         return [$self->HTTP_FORBIDDEN];
       }
     }else{
+      $self->devLog("Everything::Request::login returned false, returning 400 BAD REQUEST");
       return [$self->HTTP_BAD_REQUEST];
     }
   }else{
+    $self->devLog("Could not find username and passwd in JSON, returning 400 BAD REQUEST");
     return [$self->HTTP_BAD_REQUEST];
   }
 }

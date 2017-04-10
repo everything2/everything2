@@ -3882,31 +3882,89 @@ sub getVars
 
 sub get_messages
 {
-  my ($this, $user, $limit) = @_;
+  my ($this, $user, $offset, $limit) = @_;
 
   $this->{db}->getRef($user);
   return unless defined($user) and defined($user->{node_id});
-
+  
+  $limit = int($limit);
   $limit ||= 15;
   $limit = 15 if ($limit < 0);
   $limit = 100 if ($limit > 100);
 
-  my $csr = $this->{db}->sqlSelectMany("*","message","for_user=$user->{node_id}", "ORDER BY tstamp LIMIT $limit");
+  $offset = int($offset);
+  $offset ||= 0;
+
+  my $csr = $this->{db}->sqlSelectMany("*","message","for_user=$user->{node_id}", "ORDER BY tstamp LIMIT $limit OFFSET $offset");
   my $records = [];
   while (my $row = $csr->fetchrow_hashref)
   {
-    my $from_user = $this->{db}->getNodeById($row->{author_user});
-    next unless $from_user;
-    my $for_usergroup = {};
-    if($row->{for_usergroup})
-    {
-      my $message_usergroup = $this->{db}->getNodeById($row->{for_usergroup});
-      $for_usergroup = { "node_id" => int($for_usergroup->{node_id}), "title" => $for_usergroup->{title}};
-    }
-
-    push $records, {"from_user" => {"node_id" => int($from_user->{node_id}), "title" => $from_user->{title}}, "msgtext" => $row->{msgtext}, "for_usergroup" => $for_usergroup};
+    push @$records, $this->message_json_structure($row);
   }
   return $records;
+}
+
+sub get_message
+{
+  my ($this, $message_id) = @_;
+  
+  my $row = $this->{db}->sqlSelectHashref("*", "message", "message_id=".int($message_id));
+  
+  if($row->{message_id})
+  {
+    return $this->message_json_structure($row);
+  }
+
+  return;
+}
+
+sub message_json_structure
+{
+  my ($this, $message) = @_;
+
+  my $for_usergroup = {};
+  if($message->{for_usergroup})
+  {
+    $for_usergroup = $this->node_json_reference($message->{for_usergroup});
+  }
+
+  my $message_struct = {"message_id" => int($message->{message_id}), author_user => $this->node_json_reference($message->{author_user}), "msgtext" => $message->{msgtext}, for_user => $this->node_json_reference($message->{for_user})};
+
+  if($message->{for_usergroup})
+  {
+    $message_struct->{for_usergroup} = $this->node_json_reference($message->{for_usergroup});
+  }
+
+  return $message_struct;
+}
+
+sub node_json_reference
+{
+  my ($this, $node_id) = @_;
+
+  my $node = $this->{db}->getNodeById($node_id);
+
+  if($node)
+  {
+    return {"node_id" => int($node->{node_id}), "title" => $node->{title}};
+  }else{
+    return {"node_id" => int(0), "title" => "(unknown)"};
+  }
+}
+
+sub can_see_message
+{
+  my ($this, $user, $message) = @_;
+
+  $this->devLog("Got user $user->{node_id}");
+  $this->devLog("Got message: $message->{message_id}");
+
+  if($message->{message_id} and $message->{for_user}->{node_id} == $user->{node_id})
+  {
+    return 1;
+  }
+
+  return 0;
 }
 
 sub is_tls

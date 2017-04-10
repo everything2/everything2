@@ -11,12 +11,12 @@ sub routes
   ":id/action/delete" => "delete(:id)",
   ":id/action/unarchive" => "unarchive(:id)",
   "create" => "create",
-  "/" => "get",
-  "/:id" => "get(:id)"
+  "/" => "get_all",
+  "/:id" => "get_single_message(:id)"
   }
 }
 
-sub get
+sub get_all
 {
   my ($self, $REQUEST, $version, $id) = @_;
   if($self->APP->isGuest($REQUEST->USER))
@@ -24,6 +24,30 @@ sub get
     return [$self->HTTP_FORBIDDEN];
   }
   return [$self->HTTP_OK, $self->APP->get_messages($REQUEST->USER)];
+}
+
+sub get_single_message
+{
+  my($self, $REQUEST, $version, $id) = @_;
+  if($self->APP->isGuest($REQUEST->USER))
+  {
+    $self->devLog("Can't access message due to being Guest");
+    return [$self->HTTP_FORBIDDEN];
+  }
+  my $message = $self->APP->get_message(int($id));
+  unless($message)
+  {
+    $self->devLog("Can't access message due to it not being a valid message");
+    return [$self->HTTP_FORBIDDEN];
+  }
+
+  if($self->APP->can_see_message($REQUEST->USER, $message))
+  {
+    return [$self->HTTP_OK, $message];
+  }else{
+    $self->devLog("Can't see the message due to it failing can_see_message");
+    return [$self->HTTP_FORBIDDEN];
+  }
 }
 
 sub archive
