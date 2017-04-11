@@ -23,7 +23,9 @@ sub get_all
   {
     return [$self->HTTP_FORBIDDEN];
   }
-  return [$self->HTTP_OK, $self->APP->get_messages($REQUEST->USER)];
+  my $limit = int($REQUEST->cgi->param("limit")) || undef;
+  my $offset = int($REQUEST->cgi->param("offset")) || undef;
+  return [$self->HTTP_OK, $self->APP->get_messages($REQUEST->USER,$limit, $offset)];
 }
 
 sub get_single_message

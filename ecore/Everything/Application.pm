@@ -3877,12 +3877,11 @@ sub getVars
 }
 
 
-# TODO: Needs an offset
 # TODO: Process to autoclean messages from deleted users and groups
 
 sub get_messages
 {
-  my ($this, $user, $offset, $limit) = @_;
+  my ($this, $user, $limit, $offset) = @_;
 
   $this->{db}->getRef($user);
   return unless defined($user) and defined($user->{node_id});
@@ -3894,6 +3893,8 @@ sub get_messages
 
   $offset = int($offset);
   $offset ||= 0;
+
+  $this->devLog("Getting messages for $user->{title} with limit $limit and offset $offset");
 
   my $csr = $this->{db}->sqlSelectMany("*","message","for_user=$user->{node_id}", "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset");
   my $records = [];
