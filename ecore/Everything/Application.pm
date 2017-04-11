@@ -3895,7 +3895,7 @@ sub get_messages
   $offset = int($offset);
   $offset ||= 0;
 
-  my $csr = $this->{db}->sqlSelectMany("*","message","for_user=$user->{node_id}", "ORDER BY tstamp LIMIT $limit OFFSET $offset");
+  my $csr = $this->{db}->sqlSelectMany("*","message","for_user=$user->{node_id}", "ORDER BY tstamp DESC LIMIT $limit OFFSET $offset");
   my $records = [];
   while (my $row = $csr->fetchrow_hashref)
   {
@@ -3928,7 +3928,7 @@ sub message_json_structure
     $for_usergroup = $this->node_json_reference($message->{for_usergroup});
   }
 
-  my $message_struct = {"message_id" => int($message->{message_id}), author_user => $this->node_json_reference($message->{author_user}), "msgtext" => $message->{msgtext}, for_user => $this->node_json_reference($message->{for_user})};
+  my $message_struct = {"message_id" => int($message->{message_id}), author_user => $this->node_json_reference($message->{author_user}), "msgtext" => $message->{msgtext}, for_user => $this->node_json_reference($message->{for_user}), "timestamp" => $this->iso_date_format($message->{tstamp})};
 
   if($message->{for_usergroup})
   {
@@ -3936,6 +3936,15 @@ sub message_json_structure
   }
 
   return $message_struct;
+}
+
+sub iso_date_format
+{
+  my ($this, $timestamp) = @_;
+  
+  return unless $timestamp;
+  $timestamp =~ s/ /T/;
+  $timestamp.="Z";
 }
 
 sub node_json_reference
