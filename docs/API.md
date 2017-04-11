@@ -89,6 +89,10 @@ Retrieves, sends, and sets status on messages
 
 Returns the top 15 messages ordered by newest first.
 
+Takes two optional GET parameters for pagination
+* *limit* - Number of messages to return at a time. If left blank defaults to 15. Maximum of 100
+* *offset* - Offset of the number of messages to return from DESC sorting
+
 Messages have the following keys:
 
 * **message_id** - The internal message identifier

@@ -50,22 +50,61 @@ sub login
 {
   my ($self, $username, $passwd) = @_;
 
-  if($username and $passwd)
-  {
-    my $request = HTTP::Request->new("POST", $self->endpoint."/sessions/create");
-    $request->header('Content-Type' => 'application/json');
-    $request->content($self->json->encode({"username" => $username, "passwd" => $passwd}));
-    my $response = $self->ua->request($request);
- 
-    if($response->code == $self->HTTP_OK)
-    {
-      $self->session($self->json->decode($response->content));
-    }
+  # This is intentionally so we can test for bad requests
+  my $post;
+  $post->{username} = $username if $username;
+  $post->{passwd} = $passwd if $passwd;
 
-    return $respose->code;
-  }else{
-    return;
+  my $request = HTTP::Request->new("POST", $self->endpoint."/sessions/create");
+  $request->header('Content-Type' => 'application/json');
+  $request->content($self->json->encode($post));
+  my $response = $self->ua->request($request);
+
+  return $self->_format_response($response, "session");
+}
+
+sub logout
+{
+  my ($self) = @_;
+
+  my $response = $self->ua->get($self->endpoint."/sessions/destroy");
+  $self->session($self->json->decode($response->content));
+  return $self->_format_response($response, "session");
+}
+
+sub messages
+{
+  my ($self, $limit, $offset) = @_;
+
+  my $query_string = "";
+  $query_string .= "limit=$limit;" if $limit;
+  $query_string .= "offset=$offset; if $offset;
+  $query_string = "?$query_string" if $query_string;
+
+  $self->_format_response($self->ua->get($self->endpoint."/messages$query_string"), "messages");
+
+}
+
+sub message_id
+{
+  my($self, $message_id) = @_;
+
+  $self->_format_response($self->ua->get($self->endpoint."/messages/$message_id"),"message");
+
+}
+
+sub _format_response
+{
+  my ($self, $response, $data_key) = @_;
+
+  my $output = {"code" => $response->code};
+  
+  if($response->code == $self->HTTP_OK)
+  {
+    $output->{$data_key} = $self->json->decode($response->content);
   }
+
+  return $output;
 }
 
 1;
