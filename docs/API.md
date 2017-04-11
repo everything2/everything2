@@ -40,6 +40,14 @@ If a node reference in the database is broken, you will see the following constr
 
 There is no node_id 0, so you can key off of that to know that something is broken. The client should be able to handle that gracefully. In places inside of the data model where there is simply no reference in the database, the key won't be returned.
 
+## Dates
+
+All dates are going to be encoded in ISO format:
+
+YYYY-MM-DDT-HH:MM:SSZ
+
+All times are in UTC
+
 ### Return codes:
 
 No other content is expected to be returned in any situation other than 200 OK.
@@ -84,6 +92,7 @@ Returns the top 15 messages ordered by newest first.
 Messages have the following keys:
 
 * **message_id** - The internal message identifier
+* **timestamp** - The creation time of the message in ISO format
 * **for_user** - The node reference of the receving user. This is almost certainly the logged in user, though in future versions, admins should be able to check system accounts (root, CME, Klaproth)
 * **author_user** - The node reference of the sending user.
 * **msgtext** - The text of the message
