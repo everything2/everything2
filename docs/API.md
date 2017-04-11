@@ -83,6 +83,7 @@ Returns the top 15 messages ordered by newest first.
 
 Messages have the following keys:
 
+* **message_id** - The internal message identifier
 * **for_user** - The node reference of the receving user. This is almost certainly the logged in user, though in future versions, admins should be able to check system accounts (root, CME, Klaproth)
 * **author_user** - The node reference of the sending user.
 * **msgtext** - The text of the message
