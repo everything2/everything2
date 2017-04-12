@@ -29,7 +29,7 @@ sub user_api_structure
 
     $userinfo->{level} = int($level);
     $userinfo->{leveltitle} = $self->APP->getLevelTitle($level);
-    $userinfo->{cools} = int($REQUEST->USER->{cools}) || 0;
+    $userinfo->{cools} = int($REQUEST->VARS->{cools}) || 0;
     $userinfo->{votes} = int($REQUEST->USER->{votesleft}) || 0;
 
     my $bookmarks = $self->APP->get_bookmarks($REQUEST->USER) || [];
