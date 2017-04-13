@@ -102,11 +102,20 @@ Messages have the following keys:
 * **msgtext** - The text of the message
 * **for_usergroup** - The node reference of the group the message was send to. Missing if not a usergroup message
 
-Users who are not logged in should expect to receive 403 Forbidden
+Users who are not logged in should expect to receive 401 Unauthorized
 
 ### /api/messages/:id
 
 Returns the message at :id, formatted per the */api/messages* construct. Users who do not own the message should expect to receive 403 Forbidden.
+
+### /api/messages/create
+
+Sends a message. At this time, will accept a usergroup in "for", but will not deliver it.
+
+Accepts a JSON post with the following parameters
+* **for** - The name of 
+* **for_id** - More precise and preferred version of for_id. Is ignored if this and **for** are sent at the same time.
+* **message** - The message text to send
 
 ## Chats
 

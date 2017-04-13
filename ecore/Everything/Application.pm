@@ -3851,11 +3851,32 @@ sub add_notification {
   return 1;
 }
 
-# Terrible, stupid shim for now until I can rewrite the sendPrivateMessage htmlcode
 sub send_message {
   my ($this, $params) = @_;
 
-  $this->{db}->sqlInsert("message",{"author_user" => $params->{from},"for_user" => $params->{to},"msgtext" => $params->{message}});
+  unless(UNIVERSAL::isa($params->{to},'HASH'))
+  {
+    $params->{to} = $this->{db}->getNodeById($params->{to});
+  }
+
+  if(not defined($params->{to}) or ($params->{to}->{type}->{title} ne "user"))
+  {
+    return {"errors" => 1, "errortext" => "Did not specify a valid user"};
+  }
+
+  unless(UNIVERSAL::isa($params->{from}, 'HASH'))
+  {
+    $params->{from} = $this->{db}->getNodeById($params->{from});
+  }
+
+  if(not defined($params->{from}) or ($params->{from}->{type}->{title} ne "user"))
+  {
+    return {"errors" => 1, "errortext" => "Did not specify a valid sending user"}; 
+  }
+
+  $this->{db}->sqlInsert("message",{"author_user" => $params->{from}->{node_id},"for_user" => $params->{to}->{node_id},"msgtext" => $params->{message}});
+
+  return {"successes" => 1};
 }
 
 sub getVars 
