@@ -19,10 +19,7 @@ sub routes
 sub get_all
 {
   my ($self, $REQUEST, $version, $id) = @_;
-  if($self->APP->isGuest($REQUEST->USER))
-  {
-    return [$self->HTTP_UNAUTHORIZED];
-  }
+
   my $limit = int($REQUEST->cgi->param("limit")) || undef;
   my $offset = int($REQUEST->cgi->param("offset")) || undef;
   return [$self->HTTP_OK, $self->APP->get_messages($REQUEST->USER,$limit, $offset)];
@@ -31,11 +28,6 @@ sub get_all
 sub create
 {
   my ($self, $REQUEST, $version) = @_;
-  if($self->APP->isGuest($REQUEST->USER))
-  {
-    $self->devLog("Can't send a message as guest. Sending UNAUTHORIZED");
-    return [$self->HTTP_UNAUTHORIZED];
-  }
 
   my $data = $self->parse_postdata($REQUEST);
 
@@ -69,53 +61,36 @@ sub create
 
 sub get_single_message
 {
-  my($self, $REQUEST, $version, $id) = @_;
-  if($self->APP->isGuest($REQUEST->USER))
-  {
-    $self->devLog("Can't access message due to being Guest");
-    return [$self->HTTP_FORBIDDEN];
-  }
-  my $message = $self->APP->get_message(int($id));
-  unless($message)
-  {
-    $self->devLog("Can't access message due to it not being a valid message");
-    return [$self->HTTP_FORBIDDEN];
-  }
-
-  if($self->APP->can_see_message($REQUEST->USER, $message))
-  {
-    return [$self->HTTP_OK, $message];
-  }else{
-    $self->devLog("Can't see the message due to it failing can_see_message");
-    return [$self->HTTP_FORBIDDEN];
-  }
+  my($self, $message) = @_;
+  return $message;
 }
 
 sub archive
 {
-  my ($self, $REQUEST, $version, $id) = @_;
-  if($self->APP->isGuest($REQUEST->USER))
-  {
-    return [$self->HTTP_FORBIDDEN];
-  }
-
-  return [$self->HTTP_OK, ["Got archive: $id"]];
+  my ($self, $message) = @_;
+  return $self->APP->message_archive_set($message,1);
 }
 
 sub unarchive
 {
-  my ($self, $REQUEST, $version, $id) = @_;
-
-  return [$self->HTTP_OK, ["Got unarchive: $id"]];
+  my ($self, $message) = @_;
+  return $self->APP->message_archive_set($message,0);
 }
 
 sub delete
 {
-  my ($self, $REQUEST, $version, $id) = @_;
+  my ($self, $message) = @_;
+  return $self->APP->delete_message($message);
+}
 
+sub _message_operation_okay
+{
+  my ($orig, $self, $REQUEST, $version, $id) = @_;
+
+  # TODO: The Moose method wrapping won't let me get away with this
   if($self->APP->isGuest($REQUEST->USER))
   {
-    $self->devLog("Can't access message due to being Guest");
+    $self->devLog("Can't access path due to being Guest");
     return [$self->HTTP_FORBIDDEN];
   }
 
@@ -128,9 +103,18 @@ sub delete
 
   if($self->APP->can_see_message($REQUEST->USER, $message))
   {
-    return [$self->HTTP_OK, {"deleted" => $self->APP->delete_message($message)}];
+    my $return = $self->$orig($message);
+    if(UNIVERSAL::isa($return, "HASH"))
+    {
+      return [$self->HTTP_OK, $return];
+    }else{
+      return [$self->HTTP_OK, {"id" => $return}];
+    }
+  }else{
+    return [$self->HTTP_FORBIDDEN];
   }
-
-  return [$self->HTTP_OK, ["Got delete: $id"]];
 }
+
+around ['get_all','create'] => \&Everything::API::unauthorized_if_guest;
+around ['archive','unarchive','delete','get_single_message'] => \&_message_operation_okay;
 1;

@@ -191,5 +191,19 @@ sub get_api_version
   }
 }
 
+sub unauthorized_if_guest
+{
+  my $orig = shift;
+  my $self = shift;
+  my $REQUEST = shift;
+
+  if($self->APP->isGuest($REQUEST->USER))
+  {
+    $self->devLog("Can't access path due to being Guest");
+    return [$self->HTTP_UNAUTHORIZED];
+  }
+  return $self->$orig($REQUEST, @_);
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
