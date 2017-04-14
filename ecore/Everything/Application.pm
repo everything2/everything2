@@ -3998,6 +3998,21 @@ sub can_see_message
   return 0;
 }
 
+sub delete_message
+{
+  my ($this, $message) = @_;
+
+  $this->devLog("Deleting message: $message->{message_id}");
+  
+  if($message->{message_id})
+  {
+    $this->{db}->sqlDelete("message","message_id=$message->{message_id}");
+    return $message->{message_id};
+  }
+
+  return;
+}
+
 sub is_tls
 {
   my ($this) = @_;
