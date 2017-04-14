@@ -113,6 +113,24 @@ sub delete
 {
   my ($self, $REQUEST, $version, $id) = @_;
 
+  if($self->APP->isGuest($REQUEST->USER))
+  {
+    $self->devLog("Can't access message due to being Guest");
+    return [$self->HTTP_FORBIDDEN];
+  }
+
+  my $message = $self->APP->get_message(int($id));
+  unless($message)
+  {
+    $self->devLog("Can't access message due to it not being a valid message");
+    return [$self->HTTP_FORBIDDEN];
+  }
+
+  if($self->APP->can_see_message($REQUEST->USER, $message))
+  {
+    return [$self->HTTP_OK, {"deleted" => $self->APP->delete_message($message)}];
+  }
+
   return [$self->HTTP_OK, ["Got delete: $id"]];
 }
 1;

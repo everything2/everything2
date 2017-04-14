@@ -108,6 +108,12 @@ Users who are not logged in should expect to receive 401 Unauthorized
 
 Returns the message at :id, formatted per the */api/messages* construct. Users who do not own the message should expect to receive 403 Forbidden.
 
+### /api/messages/:id/action/delete
+
+Deletes the message at :id. 
+
+Returns 403 Forbidden if you don't own the message or the message does not exist.
+
 ### /api/messages/create
 
 Sends a message. At this time, will accept a usergroup in "for", but will not deliver it.
