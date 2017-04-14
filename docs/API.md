@@ -114,6 +114,20 @@ Deletes the message at :id.
 
 Returns 403 Forbidden if you don't own the message or the message does not exist.
 
+On success returns a hash with the id of the deleted message.
+
+### /api/messages/:id/action/archive
+
+Archives the message at :id
+
+Return parameters the same as action/delete
+
+### /api/messages/:id/action/unarchive
+
+Unarchives the message at :id
+
+Return parameters the same as action/delete
+
 ### /api/messages/create
 
 Sends a message. At this time, will accept a usergroup in "for", but will not deliver it.

@@ -3950,7 +3950,7 @@ sub message_json_structure
     $for_usergroup = $this->node_json_reference($message->{for_usergroup});
   }
 
-  my $message_struct = {"message_id" => int($message->{message_id}), author_user => $this->node_json_reference($message->{author_user}), "msgtext" => $message->{msgtext}, for_user => $this->node_json_reference($message->{for_user}), "timestamp" => $this->iso_date_format($message->{tstamp})};
+  my $message_struct = {"message_id" => int($message->{message_id}), author_user => $this->node_json_reference($message->{author_user}), "msgtext" => $message->{msgtext}, for_user => $this->node_json_reference($message->{for_user}), "timestamp" => $this->iso_date_format($message->{tstamp}), "archive" => int($message->{archive})};
 
   if($message->{for_usergroup})
   {
@@ -3987,14 +3987,14 @@ sub can_see_message
 {
   my ($this, $user, $message) = @_;
 
-  $this->devLog("Got user $user->{node_id}");
   $this->devLog("Got message: $message->{message_id}");
 
   if($message->{message_id} and $message->{for_user}->{node_id} == $user->{node_id})
   {
+    $this->devLog("User $user->{node_id} can see message $message->{message_id}");
     return 1;
   }
-
+  $this->devLog("User $user->{node_id} can NOT see message $message->{message_id}");
   return 0;
 }
 
@@ -4011,6 +4011,16 @@ sub delete_message
   }
 
   return;
+}
+
+sub message_archive_set
+{
+  my ($this, $message, $value) = @_;
+
+  $this->devLog("Archiving message bit set to $value: $message->{message_id}");
+
+  $this->{db}->sqlUpdate("message",{"archive"=>$value},"message_id=$message->{message_id}");
+  return $message->{message_id};
 }
 
 sub is_tls
