@@ -118,4 +118,25 @@ sub _format_response
   return $output;
 }
 
+sub ignore_messages_from
+{
+  my ($self, $ignore) = @_;
+
+  $self->_format_response($self->_do_post($self->endpoint."/messageignores/create", {"ignore" => $ignore}),"messageignore");
+}
+
+sub ignore_messages_from_id
+{
+  my ($self, $ignore) = @_;
+  
+  $self->_format_response($self->_do_post($self->endpoint."/messageignores/create", {"ignore_id" => $ignore}),"messageignore");
+}
+
+sub unignore_messages_from_id
+{
+  my ($self, $ignore_id) = @_;
+
+  $self->_format_response($self->ua->get($self->endpoint."/messageignores/$ignore_id/action/delete"),"messageignore");
+}
+
 1;
