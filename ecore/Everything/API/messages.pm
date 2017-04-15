@@ -1,5 +1,6 @@
 package Everything::API::messages;
 
+use strict;
 use Moose;
 use namespace::autoclean;
 extends 'Everything::API';
@@ -18,7 +19,7 @@ sub routes
 
 sub get_all
 {
-  my ($self, $REQUEST, $version, $id) = @_;
+  my ($self, $REQUEST, $version) = @_;
 
   my $limit = int($REQUEST->cgi->param("limit")) || undef;
   my $offset = int($REQUEST->cgi->param("offset")) || undef;
@@ -46,9 +47,9 @@ sub create
       }
     }
 
-    if($data->{for_id})
+    if(int($data->{for_id}))
     {
-      return [$self->HTTP_OK, $self->APP->send_message({"from" => $REQUEST->USER, "to" => $data->{for_id},"message" => $data->{message}})];
+      return [$self->HTTP_OK, $self->APP->send_message({"from" => $REQUEST->USER, "to" => int($data->{for_id}),"message" => $data->{message}})];
     }else{
       $self->devLog("Fell through all checks and couldn't generate a sane for_id structure. Sending BAD REQUEST");
       return [$self->HTTP_BAD_REQUEST];
@@ -117,4 +118,6 @@ sub _message_operation_okay
 
 around ['get_all','create'] => \&Everything::API::unauthorized_if_guest;
 around ['archive','unarchive','delete','get_single_message'] => \&_message_operation_okay;
+
+__PACKAGE__->meta->make_immutable;
 1;

@@ -137,6 +137,32 @@ Accepts a JSON post with the following parameters
 * **for_id** - More precise and preferred version of for_id. Is ignored if this and **for** are sent at the same time.
 * **message** - The message text to send
 
+## Message Ignores
+
+Current version: *1 (beta)*
+
+Sets message blocking preferences. If you block a user, you won't see messages from that user. If you block a usergroup, you won't see messages sent to that usergroup (that presumably you are a member of). Has no other practical effect in blocking non user or usergroup nodes from messaging you.
+
+All methods return 401 Unauthorized for Guest
+
+### /api/messageignores
+
+Lists all of the nodes you are ignoring messages from in an array of nodes in standard node reference JSON format.
+
+### /api/messageignores/create
+
+Accepts a post with one of two parameters
+* **ignore_id** - The node_id to ignore messages from
+* **ignore** - The node to ignore messages from. Tries a usergroup first, then a user. If neither are found returns 400 Bad Request  
+
+### /api/messageignores/:id
+
+Retrives a node format if you are blocking messages from that node, 404 NOT FOUND otherwise
+
+### /api/messageignores/:id/delete
+
+Stops ignoring a particular node at :id
+
 ## Chats
 
 ## Bookmarks
