@@ -4071,7 +4071,7 @@ sub get_message_ignores
 {
   my ($this, $user) = @_;
   
-  my $csr = $this->{db}->sqlSelectMany("*","messageignore","messageignore_id=".$user->{node_id});
+  my $csr = $this->{db}->sqlSelectMany("*","messageignore","messageignore_id=".$user->{node_id}." ORDER BY messageignore_id");
   my $records = [];
 
   while(my $row = $csr->fetchrow_hashref())
@@ -4092,6 +4092,8 @@ sub message_ignore_set
   return unless $ignore;
   # TODO: Can only ignore users and usergroups?
 
+  $this->devLog("message_ignore_set: $user->{node_id} is ".(($state)?(""):("un"))."ignoring $ignore->{title}");
+
   if($state)
   {
     if(my $struct = $this->is_ignoring_messages($user,$ignore_id))
@@ -4102,7 +4104,7 @@ sub message_ignore_set
       return $this->node_json_reference($ignore);
     }
   }else{
-    $this->{db}->sqlDelete("messageignore","messageignore_id=$user->{node_id} and ignore_id=$ignore->{node_id}");
+    $this->{db}->sqlDelete("messageignore","messageignore_id=$user->{node_id} and ignore_node=$ignore->{node_id}");
     return [$ignore->{node_id}];
   }
 }
