@@ -9,7 +9,7 @@ use JSON;
 
 with 'Everything::HTTP';
 
-has 'ua' => (is => 'ro', isa => 'LWP::UserAgent', lazy => 1, builder => "_build_ua");
+has 'ua' => (is => 'ro', isa => 'LWP::UserAgent', lazy => 1, builder => "_build_ua", handles => ["get"]);
 has 'session' => (is => 'rw', isa => 'HashRef', lazy => 1, builder => "_build_session");
 has 'endpoint' => (is => 'ro', required => 1, default => "https://everything2.com/api");
 has 'json' => (is => 'ro', lazy => 1, builder => "_build_json");
@@ -39,7 +39,7 @@ sub _build_ua
 sub _build_session
 {
   my ($self) = @_;
-  my $response = $self->ua->get($self->endpoint."/sessions");
+  my $response = $self->get($self->endpoint."/sessions");
   if($response->code == $self->HTTP_OK)
   {
     $self->session($self->json->decode($response->content));
@@ -72,7 +72,7 @@ sub logout
 {
   my ($self) = @_;
 
-  my $response = $self->ua->get($self->endpoint."/sessions/destroy");
+  my $response = $self->get($self->endpoint."/sessions/destroy");
   $self->session($self->json->decode($response->content));
   return $self->_format_response($response, "session");
 }
@@ -86,7 +86,7 @@ sub messages
   $query_string .= "offset=$offset;" if $offset;
   $query_string = "?$query_string" if $query_string;
 
-  $self->_format_response($self->ua->get($self->endpoint."/messages$query_string"), "messages");
+  $self->_format_response($self->get($self->endpoint."/messages$query_string"), "messages");
 
 }
 
@@ -94,7 +94,7 @@ sub message_id
 {
   my($self, $message_id) = @_;
 
-  $self->_format_response($self->ua->get($self->endpoint."/messages/$message_id"),"message");
+  $self->_format_response($self->get($self->endpoint."/messages/$message_id"),"message");
 
 }
 
@@ -116,6 +116,12 @@ sub _format_response
   }
 
   return $output;
+}
+
+sub get_ignores
+{
+  my ($self) = @_;
+  $self->_format_response($self->get($self->endpoint."/messageignores"), "messageignore");
 }
 
 sub ignore_messages_from
