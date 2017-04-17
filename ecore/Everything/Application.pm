@@ -128,14 +128,6 @@ BEGIN {
 			"description" => "Mark this as being about a book with this author",
 			"assignable" => ["admin"],
 		},
-		
-		"production_version" =>
-		{
-			"on" => ["stylesheet","jscript"],
-			"description" => "Mark a particular version of an s3 object as being in production",
-			"assignable" => ["admin"],
-			"validate" => "integer",
-		},
 		"fix_level" => 
 		{
 			"on" => ["stylesheet"],
