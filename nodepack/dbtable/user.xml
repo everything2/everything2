@@ -12,7 +12,6 @@
   `votes` int(11) NOT NULL DEFAULT '0',
   `experience` int(11) NOT NULL DEFAULT '0',
   `votesleft` int(11) NOT NULL DEFAULT '0',
-  `users_clan` int(11) NOT NULL DEFAULT '0',
   `imgsrc` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
   `in_room` int(11) NOT NULL DEFAULT '0',
   `wantsreport` int(11) NOT NULL DEFAULT '0',
