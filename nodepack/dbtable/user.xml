@@ -14,7 +14,6 @@
   `votesleft` int(11) NOT NULL DEFAULT '0',
   `imgsrc` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
   `in_room` int(11) NOT NULL DEFAULT '0',
-  `wantsreport` int(11) NOT NULL DEFAULT '0',
   `acctlock` int(11) NOT NULL DEFAULT '0',
   `merit` float NOT NULL DEFAULT '0',
   `numwriteups` int(11) NOT NULL DEFAULT '0',
