@@ -810,12 +810,17 @@ sub draft_create
   my ($D) = @_;
   $DB->getRef($D);
 
-  # make sure it has a publication status
-  $$D{publication_status} = $query -> param('draft_publication_status') || getNode('private', 'publication_status') -> {node_id};
+  if($query)
+  {
+    # make sure it has a publication status
+    $$D{publication_status} = $query -> param('draft_publication_status');
 
-  # if draft has just been created from an e2node
-  # doctext parameter would be ignored because of wrong nodetype prefix
-  $$D{doctext} = $query -> param('writeup_doctext') if $query -> param('writeup_doctext');
+    # if draft has just been created from an e2node
+    # doctext parameter would be ignored because of wrong nodetype prefix
+    $$D{doctext} = $query -> param('writeup_doctext') if $query -> param('writeup_doctext');
+  }
+
+  $$D{publication_status} ||= $DB->getNode('private', 'publication_status')->{node_id};
 
   $DB->updateNode($D, $USER);
 }
@@ -835,8 +840,8 @@ sub draft_update
 
   # validate new publication_status. Make 'private' if invalid.
   # notify editor(s) if status changed to review:
-  if ($query -> param('draft_publication_status') and
-    $query -> param('old_publication_status') != $$N{publication_status})
+  if ($query and $query->param('draft_publication_status') and
+    $query->param('old_publication_status') != $$N{publication_status})
   {
     my $status = getNodeById($$N{publication_status});
 

@@ -3,7 +3,8 @@
 use strict;
 use lib qw(/var/everything/ecore);
 use Everything;
-
+use Everything::HTML;
+use CGI;
 initEverything;
 
 if($Everything::CONF->environment ne "development")
@@ -12,6 +13,7 @@ if($Everything::CONF->environment ne "development")
 	exit;
 }
 
+$Everything::HTML::USER = getNode("root","user");
 my $APP = $Everything::APP;
 
 foreach my $user (1..30,"user with space","genericeditor")
