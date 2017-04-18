@@ -26,6 +26,7 @@
   `user_salt` int(11) DEFAULT NULL,
   `salt` varchar(23) COLLATE utf8_unicode_ci DEFAULT NULL,
   `infected` int(11) NOT NULL DEFAULT '0',
+  `message_forward_to` int(11) DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   KEY `email` (`email`),
   KEY `lasttime` (`lasttime`),
