@@ -5,13 +5,11 @@ use Moose;
 use namespace::autoclean;
 use CGI;
 
+with 'Everything::Globals';
+
 has 'cgi' => (lazy => 1, builder => "_build_cgi", isa => "CGI", handles => ["param", "header", "cookie","url","request_method","path_info"], is => "rw");
 has 'USER' => (lazy => 1, builder => "_build_user", isa => "HashRef", is => "rw");
 has 'VARS' => (lazy => 1, builder => "_build_vars", isa => "HashRef", is => "rw");
-has 'CONF' => (isa => "Everything::Configuration", is => "ro", required => 1);
-has 'DB' => (isa => "Everything::NodeBase", is => "ro", required => 1);
-has 'APP' => (isa => "Everything::Application", is => "ro", required => 1);
-
 
 # Pageload is going to go away
 has 'PAGELOAD' => (isa => "HashRef", builder => "_build_pageload", is => "rw");

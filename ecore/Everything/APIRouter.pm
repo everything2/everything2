@@ -11,11 +11,11 @@ use Everything::API;
 
 has 'MODULE_TABLE' => (isa => "HashRef", is => "ro", builder => "build_module_table");
 
+with 'Everything::Globals';
 with 'Everything::HTTP';
 
 sub build_module_table
 {
-  my $args = {"DB" => $Everything::DB, "APP" => $Everything::APP, "CONF" => $Everything::CONF};
   my $routes;
   foreach my $path (@INC)
   {
@@ -29,13 +29,13 @@ sub build_module_table
          next unless -e $fullmodule and -f $fullmodule;
          my ($apiname) = $module =~ /^([^\.]+)/;
          eval("use Everything::API::$apiname");
-         $routes->{$apiname} = "Everything::API::$apiname"->new($args);
+         $routes->{$apiname} = "Everything::API::$apiname"->new;
        }
        last;
     }
   }
 
-  $routes->{catchall} = Everything::API->new($args);
+  $routes->{catchall} = Everything::API->new;
   return $routes;
 }
 
@@ -43,7 +43,7 @@ sub build_module_table
 sub dispatcher
 {
   my ($self) = @_;
-  my $REQUEST = Everything::Request->new("DB" => $Everything::DB, "APP" => $Everything::APP, "CONF" => $Everything::CONF);
+  my $REQUEST = Everything::Request->new;
   my $urlform = $REQUEST->url(-absolute=>1);
   my $method = lc($REQUEST->request_method());
 
@@ -59,7 +59,7 @@ sub dispatcher
     return;
   }
 
-  Everything::devLog("Received API request: $urlform");
+  $self->devLog("Received API request: $urlform");
 
   if(my ($endpoint, $extra) = $urlform =~ m|^/api/([^/]+)/?(.*)|)
   {
@@ -67,11 +67,11 @@ sub dispatcher
     {
       $self->output($REQUEST, $self->MODULE_TABLE->{$endpoint}->route($REQUEST, $extra));
     }else{
-      Everything::devLog("Request fell through to catchall after MODULE_TABLE check");
+      $self->devLog("Request fell through to catchall after MODULE_TABLE check");
       $self->output($REQUEST, $self->MODULE_TABLE->{catchall}->$method($REQUEST));
     }
   }else{
-    Everything::devLog("Request fell through to catchall after form check: $method for $urlform");
+    $self->devLog("Request fell through to catchall after form check: $method for $urlform");
     $self->output($REQUEST, $self->MODULE_TABLE->{catchall}->$method($REQUEST));
   }
 }
