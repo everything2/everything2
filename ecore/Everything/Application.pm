@@ -3598,7 +3598,15 @@ sub devLog
 
   if($this->inDevEnvironment)
   {
-    $this->genericLog("/tmp/development.log", $entry);
+    my $callerinfo = [caller()];
+    
+    # Check to see if this is a convenience call to the delegation method in Everything::Globals
+    if($callerinfo->[0] eq "Moose::Meta::Method::Delegation")
+    {
+      $callerinfo = [caller(2)];
+    }
+
+    $this->genericLog("/tmp/development.log", join(":",$callerinfo->[0],$callerinfo->[2])." - ".$entry);
   }
 }
 

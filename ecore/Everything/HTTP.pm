@@ -8,5 +8,6 @@ has 'HTTP_FORBIDDEN' => (is => "ro", isa => "Int", default => 403);
 has 'HTTP_NOT_FOUND' => (is => "ro", isa => "Int", default => 404);
 has 'HTTP_UNIMPLEMENTED' => (is => "ro", isa => "Int", default => 405);
 has 'HTTP_GONE' => (is => "ro", isa => "Int", default => 410);
+
 1;
 

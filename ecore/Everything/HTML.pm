@@ -1505,7 +1505,7 @@ sub mod_perlInit
 
 	Everything::initEverything();
 	
-	$REQUEST = Everything::Request->new("DB" => $DB, "CONF" => $Everything::CONF, "APP" => $Everything::APP);
+	$REQUEST = Everything::Request->new;
 
 	# Initialize our connection to the database
 

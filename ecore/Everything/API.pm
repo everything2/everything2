@@ -4,10 +4,7 @@ use strict;
 use JSON;
 use namespace::autoclean;
 
-has 'CONF' => (isa => "Everything::Configuration", is => "ro", required => 1);
-has 'DB' => (isa => "Everything::NodeBase", is => "ro", required => 1);
-has 'APP' => (isa => "Everything::Application", is => "ro", required => 1, handles => ["printLog", "devLog"]);
-
+with 'Everything::Globals';
 with 'Everything::HTTP';
 
 has 'CURRENT_VERSION' => (isa => "Int", default => 1, is => "ro");
