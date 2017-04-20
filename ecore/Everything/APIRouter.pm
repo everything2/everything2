@@ -9,30 +9,19 @@ use Everything::Request;
 use Data::Dumper;
 use Everything::API;
 
-has 'MODULE_TABLE' => (isa => "HashRef", is => "ro", builder => "build_module_table");
-
 with 'Everything::Globals';
 with 'Everything::HTTP';
 
+has 'MODULE_TABLE' => (isa => "HashRef", is => "ro", builder => "build_module_table", lazy => 1);
+
 sub build_module_table
 {
+  my ($self) = @_;
   my $routes;
-  foreach my $path (@INC)
+
+  foreach my $plugin (@{$self->FACTORY->{api}->all})
   {
-    if(-d "$path/Everything/API/")
-    {
-       my $dirhandle;
-       opendir($dirhandle,"$path/Everything/API/");
-       foreach my $module(readdir($dirhandle))
-       {
-         my $fullmodule = "$path/Everything/API/$module";
-         next unless -e $fullmodule and -f $fullmodule;
-         my ($apiname) = $module =~ /^([^\.]+)/;
-         eval("use Everything::API::$apiname");
-         $routes->{$apiname} = "Everything::API::$apiname"->new;
-       }
-       last;
-    }
+    $routes->{$plugin} = $self->FACTORY->{api}->available($plugin)->new();
   }
 
   $routes->{catchall} = Everything::API->new;
