@@ -6,7 +6,6 @@ use Test::More;
 use Data::Dumper;
 
 ok(my $ua = LWP::UserAgent->new, "Create a new LWP::UA object");
-ok($ua->timeout(5), "Set a reasonable timeout");
 ok(my $response = $ua->get("http://localhost/api/"), "Get a the base URL");
 ok($response->code eq 405, "Default route gives unimplemented"); # Unimplemented
 

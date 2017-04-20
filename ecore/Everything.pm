@@ -19,15 +19,17 @@ use DateTime;
 use Everything::NodeBase;
 use Everything::Application;
 use Everything::Configuration;
+use Everything::PluginFactory;
 
 sub BEGIN
 {
 	use Exporter ();
-	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $CONF);
+	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $CONF $FACTORY);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
               $APP
               $DB
+	      $FACTORY
               getRef
               getId
               getTables
@@ -71,11 +73,18 @@ sub BEGIN
             );
 
 	$CONF = Everything::Configuration->new("/etc/everything/everything.conf.json"); 
+
+	foreach my $plugin ("API","Node","DataStash")
+	{
+		$FACTORY->{lc($plugin)} = Everything::PluginFactory->new("Everything::$plugin");
+		die $FACTORY->{lc($plugin)}->error_string if $FACTORY->{lc($plugin)}->error_string;
+	}
+
 }
 
 use vars qw($DB);
 use vars qw($APP);
-
+use vars qw($FACTORY);
 # Used by Makefile.PL to determine the version of the install.
 my $VERSION = 0.8;
 
