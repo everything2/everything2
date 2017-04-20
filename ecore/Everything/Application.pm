@@ -3977,9 +3977,9 @@ sub node_json_reference
 
   if($node)
   {
-    return {"node_id" => int($node->{node_id}), "title" => $node->{title}};
+    return {"node_id" => int($node->{node_id}), "title" => $node->{title}, "type" => $node->{type}->{title}};
   }else{
-    return {"node_id" => int(0), "title" => "(unknown)"};
+    return {"node_id" => int(0), "title" => "(unknown)", "type" => "(unknown)"};
   }
 }
 
@@ -4047,7 +4047,7 @@ sub get_bookmarks
   my $bookmarks;
   while(my $row = $csr->fetchrow_hashref)
   {
-    push @$bookmarks, {"node_id" => int($row->{to_node}), "title" => $row->{title}};
+    push @$bookmarks, $this->node_json_reference($row->{to_node});
   }
 
   return $bookmarks;
@@ -4119,6 +4119,40 @@ sub is_ignoring_messages
   {
     return $this->node_json_reference($this->{db}->getNodeById($ignorestruct->{ignore_node}));
   }
+}
+
+# These two are wrapper functions to get us to a state where eventually NodeBase will return an object. Once that is the case these
+# can be made passthroughs
+#
+sub node_by_name
+{
+  my ($this, $title, $type) = @_;
+
+  my $node = $this->{db}->getNode($title, $type);
+
+  return unless $node;
+  return $this->get_blessed_node($node);
+}
+
+sub node_by_id
+{
+  my ($this, $id) = @_;
+  my $node = $this->{db}->getNodeById($id);
+
+  return unless $node;
+  return $this->get_blessed_node($node);
+}
+
+sub get_blessed_node
+{
+  my ($this, $node) = @_;
+
+  if(my $class = $Everything::FACTORY->{node}->available($node->{type}->{title}))
+  {
+    return $class->new($node);
+  }
+
+  return;
 }
 
 1;

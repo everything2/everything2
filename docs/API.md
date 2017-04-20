@@ -32,6 +32,7 @@ Return codes follow basic HTTP conventions.
 All node references from inside another node are JSON objects containing two fields, regardless of type:
 * **node_id** The internal node signifier id
 * **title** The user-displayable title. The client is responsible for HTML-encoding it.
+* **type** A user-readable type which eventually maps to an API endpoint which you can use to make further requests against it
 
 Being able to see a node_id doesn't mean that you can request the displayable page for it.
 
