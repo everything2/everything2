@@ -107,6 +107,15 @@ Returns all of the items returned by /api/nodes/:id for that id, plus the follow
 * **bookmarks** - Array of bookmark objects. See the bookmarks API. This key is not shown if there are no bookmarks.
 * **numwriteups** - Number of writeups a user has created. The key is not displayed if the amount is zero
 
+## Usergroups
+
+### /api/usergroups/:id
+
+Returns all of the items returned by /api/nodes/:id, plus the following:
+
+* **doctext** - Usergroup description
+* **group** - An array of node references of group members
+
 ## Writeups
 
 ### /api/writeups
