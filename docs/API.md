@@ -37,13 +37,13 @@ All node references from inside another node are JSON objects containing two fie
 Being able to see a node_id doesn't mean that you can request the displayable page for it.
 
 If a node reference in the database is broken, you will see the following construct:
-````{"node_id": 0, "title": "(unknown)"}````
+````{"node_id": 0, "title": "(unknown)", "type": "(unknown)"}````
 
 There is no node_id 0, so you can key off of that to know that something is broken. The client should be able to handle that gracefully. In places inside of the data model where there is simply no reference in the database, the key won't be returned.
 
 ## Dates
 
-All dates are going to be encoded in ISO format:
+All dates are encoded in ISO format:
 
 YYYY-MM-DDT-HH:MM:SSZ
 
@@ -57,6 +57,7 @@ No other content is expected to be returned in any situation other than 200 OK.
 * 400 BAD REQUEST, The server did not understand the API call or did not have the proper parameters POSTed to it.
 * 401 UNAUTHORIZED, The request is not available to users that are not logged in
 * 403 FORBIDDEN, The logged in user account does not have the proper permissions on that object and action
+* 404 NOT FOUND, The user requested an object which doesn't have a corresponding database entry
 * 405 UNIMPLEMENTED, The API path that was specified does not match a valid route
 * 410 GONE, The version of the API you requested is no longer available, but the path is valid.
 
@@ -68,17 +69,76 @@ During the rapid development period, we may be changing the APIs, but we will be
 
 ## Node requests
 
-Node requests need to be able to accept any kind of return content, as dictated by the type parameter. The exact content of each of the type of request will be TBD.
+The node requests form is good for looking up particular node_ids, but does not have actions on it.
 
-### Users
+### /api/nodes
 
-### Writeups
+Always returns UNIMPLEMENTED
 
-### Drafts
+### /api/nodes/:id
 
-### Documents
+Returns the readable form of a node. Always the following items:
 
-### Superdocument
+* **node_id** The unique identifier of the object
+* **author** A node reference of the creator of the object
+* **type** Human readable version of the type. Pluralize to find the right API
+* **title** The title of the node
+
+Different types contain additional information.
+
+## Users
+
+### /api/users
+
+Always returns UNIMPLEMENTED
+
+### /api/users/:id
+
+Returns all of the items returned by /api/nodes/:id for that id, plus the following:
+
+* **doctext** - The user's homenode text
+* **numcools** - The number of C!s the user has spent
+* **experience** - The experience of the user
+* **GP** - The GP of the user
+* **level** - The current level of the user
+* **leveltitle** - The title of the level of the user
+* **createtime** - The ISO formatted time when the user signed up
+* **lasttime** - The ISO formatted time when the user was last online
+* **bookmarks** - Array of bookmark objects. See the bookmarks API. This key is not shown if there are no bookmarks.
+* **numwriteups** - Number of writeups a user has created. The key is not displayed if the amount is zero
+
+## Writeups
+
+### /api/writeups
+
+Always returns UNIMPLEMENTED
+
+### /api/writeups/:id
+
+Returns all of the items in /api/nodes/:id, plus the following:
+
+* **doctext** - Writeup text
+* **reputation** - The reputation of the node if you have voted on it
+* **weight** - Which way the user voted if they voted on it
+* **cools** - Array of node references of users that have C!ed the writeup
+
+## E2nodes
+
+### /api/e2nodes
+
+Always returns UNIMPLEMENTED
+
+### /api/e2nodes/:id
+
+Returns all of the items in /api/nodes/:id, plus the following:
+
+* **group** - If there are writeups in the node, a listing of /api/writeups objects
+
+## Drafts
+
+## Documents
+
+## Superdocument
 
 ## Messages
 
@@ -183,23 +243,21 @@ Logs a user in
 Returns the JSON encoded values associated with the current session
 
 Keys:
-* **user_id** - The user_id of the current user
-* **username** - The username of the current user
-* **is_guest** - 1 or 0 depending on whether the user is a "logged in user". This is the preferred check other than the internal user "Guest User"
+* **display** - Contains private information about the session
+  * **is_guest** - 1 or 0 depending on whether the user is a "logged in user". This is the preferred check other than the internal user "Guest User"
+  * **powers** - Array of special powers the client can use to display more advanced tools. This is not shown if there are no special powers to display 
+    * **ed** - User is an editor
+    * **admin** - User is an admin
+    * **chanop** - User is a channel operator
+    * **client** - User is a client developer (Not given to admins by default for UI clarity)
+    * **dev** - User is a site developer (Same as **client**)
+  * **votesleft** - How many votes left the user has
+  * **coolsleft** - How many C!s left the user has
+* *user** - If the user is not a guest, the output of /api/user for the user_id
 
-If the user is logged in, it returns the following additional information:
-* **level** - The user's experience level
-* **leveltitle** - The user's experience level title
-* **cools** - The user's current number of cools
-* **votes** - The user's current number of remaining votes
 * **bookmarks** - Array of bookmark objects. See the bookmarks API. This key is not shown if there are no bookmarks.
 * **num_writeups** - Number of writeups a user has created. The key is not displayed if the amount is zero
 * **powers** - Array of special powers the client can use to display more advanced tools. This is not shown if there are no special powers to display
-  * **ed** - User is an editor
-  * **admin** - User is an admin
-  * **chanop** - User is a channel operator
-  * **client** - User is a client developer (Not given to admins by default for UI clarity)
-  * **dev** - User is a site developer (Same as **client**)
 
 ### /api/sessions/create
 Accepts a POST with two parameters

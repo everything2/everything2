@@ -25,9 +25,7 @@ ok(my $ua = LWP::UserAgent->new, "Make a new LWP::UserAgent object");
 ok(my $response = $ua->get($endpoint), "Get the default sessions endpoint");
 ok($response->code == 200, "Default sessions endpoint always returns 200");
 ok(my $session = $json->decode($response->content), "Content accurately decodes");
-ok($session->{username} eq "Guest User", "Username says 'Guest User'");
-ok($session->{user_id} eq $Everything::CONF->guest_user, "User id is present and is that of Guest User");
-ok($session->{is_guest} == 1, "is_guest should be on");
+ok($session->{display}->{is_guest} == 1, "is_guest should be on");
 ok($response->header('content-type') =~ /^application\/json/i, "Returns JSON");
 
 # Development credentials
@@ -39,10 +37,10 @@ ok($response->code == 200, "Response code is 200");
 ok($response->header('content-type') =~ /^application\/json/i, "Returns JSON");
 ok(defined($response->header('set-cookie')), "Properly sets cookie header");
 ok($session = $json->decode($response->content), "Content accurately decodes");
-ok($session->{is_guest} == 0, "Accurately is not guest");
-ok($session->{username} eq "root", "Logged in as root");
-ok(exists $session->{powers}, "Root has special powers");
-ok(grep("ed", @{$session->{powers}}), "Root is an editor");
+ok($session->{display}->{is_guest} == 0, "Accurately is not guest");
+ok($session->{user}->{title} eq "root", "Logged in as root");
+ok(exists $session->{display}->{powers}, "Root has special powers");
+ok(grep("ed", @{$session->{display}->{powers}}), "Root is an editor");
 
 # Bad post without password gives 400 Bad Request
 $request->content($json->encode({"username" => "root"}));
@@ -69,22 +67,22 @@ ok($response = $ua->request($request), "Good normaluser1 credential POST to /cre
 ok($response->code == 200, "Response code is 200");
 ok($response->header('content-type') =~ /^application\/json/i, "Returns JSON");
 ok($session = $json->decode($response->content), "Content accurately decodes");
-ok($session->{is_guest} == 0, "Accurately is not guest");
-ok($session->{username} eq "normaluser1", "Logged in as normaluser1");
-ok(!exists($session->{powers}), "Normal user doesn't have any special powers");
+ok($session->{display}->{is_guest} == 0, "Accurately is not guest");
+ok($session->{user}->{title} eq "normaluser1", "Logged in as normaluser1");
+ok(!exists($session->{display}->{powers}), "Normal user doesn't have any special powers");
 ok(defined($response->header('set-cookie')), "Properly sets cookie header");
 
 # With cookies
 ok($response = $ua->get($endpoint), "Get repeat connection with cookie_jar");
 ok($response->code == 200, "Return code is 200");
 ok($session = $json->decode($response->content), "Content accurately decodes");
-ok($session->{is_guest} == 0, "Non-guest due to cookies being saved");
+ok($session->{display}->{is_guest} == 0, "Non-guest due to cookies being saved");
 
 # Session destruction
 ok($response = $ua->get("$endpoint/destroy"));
 ok($response->code == 200, "Session destroys ok");
 ok($session = $json->decode($response->content), "Content accurately decodes");
-ok($session->{is_guest} == 1, "Guest due to destroyed session");
+ok($session->{display}->{is_guest} == 1, "Guest due to destroyed session");
 my $cookiestring = $ua->cookie_jar->as_string;
 my $cookiename = $Everything::CONF->cookiepass;
 ok($cookiestring =~ /$cookiename=""/, "Cookie destroyed");
@@ -93,12 +91,12 @@ ok($cookiestring =~ /$cookiename=""/, "Cookie destroyed");
 ok($response = $ua->get("$endpoint/destroy"));
 ok($response->code == 200, "Session destroys ok");
 ok($session = $json->decode($response->content), "Content accurately decodes");
-ok($session->{is_guest} == 1, "Still guest due to destroyed session");
+ok($session->{display}->{is_guest} == 1, "Still guest due to destroyed session");
 
 # Alternate form post method
 ok($response = $ua->post("$endpoint/create", {data => $json->encode({"username" => "root","passwd" => "blah"})}));
 ok($response->code == 200, "Session is ok");
 ok($session = $json->decode($response->content), "Content accurately decodes");
-ok($session->{is_guest} == 0, "Not guest anymore due to successful login");
+ok($session->{display}->{is_guest} == 0, "Not guest anymore due to successful login");
 
 done_testing();

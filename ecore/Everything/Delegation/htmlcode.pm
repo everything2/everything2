@@ -1833,7 +1833,7 @@ sub softlink
     $lnid=$$N{node_id};
   }
 
-  my %unlinkables = {};
+  my %unlinkables = ();
   foreach( values %{$Everything::CONF->system->{maintenance_nodes}} ) {
     $unlinkables{$_} = 1;
   }
@@ -7563,6 +7563,7 @@ sub displayWriteupInfo
 
 
   local *info_hits = sub {
+    return "";
     my $hitStr; # This is a kludgy way to do this, but it seems efficient - Oo.
     (my $y,my $m,my $d) = split /-/, $$WRITEUP{createtime};
     my $dateval = $d+31*$m+365*$y; 
@@ -7575,7 +7576,6 @@ sub displayWriteupInfo
 
     #my $hitshits=$DB->sqlSelect("hits","node","node_id=$wuID"); # $$WRITEUP{hits} ?
     #return qq'<span title="hits since $hitStr according to the node table">Hits: $$WRITEUP{hits}</span>';
-    return ""
   };
 
 
