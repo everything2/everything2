@@ -17,45 +17,35 @@ sub user_api_structure
 {
   my ($self, $REQUEST) = @_;
 
+  my $user = $self->APP->node_by_id($REQUEST->USER->{node_id});
+  my $is_guest = $user->is_guest;
+
   my $userinfo = {
-    "user_id" => int($REQUEST->USER->{user_id}),
-    "username" => $REQUEST->USER->{title},
-    "is_guest" => ($self->APP->isGuest($REQUEST->USER) || 0)
+    "display" => {"is_guest" => int($is_guest)}
   };
 
-  unless($userinfo->{is_guest})
+  unless($user->is_guest)
   {
-    my $level = $self->APP->getLevel($REQUEST->USER) || 0;
-
-    $userinfo->{level} = int($level);
-    $userinfo->{leveltitle} = $self->APP->getLevelTitle($level);
-    $userinfo->{cools} = int($REQUEST->VARS->{cools}) || 0;
-    $userinfo->{votes} = int($REQUEST->USER->{votesleft}) || 0;
-
-    my $bookmarks = $self->APP->get_bookmarks($REQUEST->USER) || [];
-    if(scalar @$bookmarks)
-    {
-      $userinfo->{bookmarks} = $bookmarks;
-    }
-
     my $powers = [];
-    push @$powers, "ed" if $self->APP->isEditor($REQUEST->USER);
-    push @$powers, "admin", if $self->APP->isAdmin($REQUEST->USER);
-    push @$powers, "chanop" if $self->APP->isChanop($REQUEST->USER);
-
-    # Admins don't have these powers by default, not because they can't, but because not all care.
-    push @$powers, "client" if $self->APP->isClientDeveloper($REQUEST->USER, "nogods");
-    push @$powers, "dev", if $self->APP->isDeveloper($REQUEST->USER, "nogods");
+    push @$powers, "ed" if $user->is_editor;
+    push @$powers, "admin", if $user->is_admin;
+    push @$powers, "chanop" if $user->is_chanop;
+    push @$powers, "client" if $user->is_clientdev;
+    push @$powers, "dev", if $user->is_developer;
     if(scalar @$powers)
     {
-      $userinfo->{powers} = $powers;
+      $userinfo->{display}->{powers} = $powers;
     }
-
-    my $numwriteups = $REQUEST->VARS->{numwriteups};
-    if($numwriteups)
+    foreach my $spend("coolsleft","votesleft")
     {
-      $userinfo->{numwriteups} = int($numwriteups);
-    }
+      my $s = $user->$spend;
+      if($s)
+      {
+        $userinfo->{display}->{$spend} = $s;
+      }
+    } 
+     
+    $userinfo->{user} = $user->json_display;
   }
 
   return $userinfo;
