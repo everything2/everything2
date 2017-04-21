@@ -7,25 +7,15 @@ with 'Everything::Node::helper::group';
 
 override 'json_display' => sub
 {
-  my ($self) = @_;
+  my ($self, $user) = @_;
   my $values = super();
 
+  my $group = [];
   $values->{author} = $self->author->json_reference;
 
-  return $values;
-};
-
-sub group_voting_display
-{
-  my ($self, $user) = @_;
-
-  my $values = $self->json_display;
-
-  my $group;
-
-  foreach my $writeup (@{$self->group})
+  foreach my $writeup (@{$self->group || []})
   {
-    push @$group, $writeup->voting_display($user);
+    push @$group, $writeup->display_single_writeup($user);
   }
 
   if(scalar(@$group) > 0)
@@ -34,7 +24,7 @@ sub group_voting_display
   }
 
   return $values;
-}
+};
 
 __PACKAGE__->meta->make_immutable;
 1;
