@@ -1869,7 +1869,7 @@ sub softlink
   #Look for the non-nodeshells --[Swap]
   my @e2node_ids = map { $_ -> {to_node}} @nodelinks;
 
-  my %fillednode_ids = {};
+  my %fillednode_ids = ();
 
   if(@e2node_ids){
     my $sql = "SELECT DISTINCT nodegroup_id FROM nodegroup

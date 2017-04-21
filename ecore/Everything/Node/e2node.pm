@@ -3,20 +3,7 @@ package Everything::Node::e2node;
 use Moose;
 extends 'Everything::Node';
 
-has 'group' => (is => 'ro', lazy => 1, builder => '_build_group');
-
-sub _build_group
-{
-  my ($self) = @_;
-
-  my $group;
-  foreach my $item (@{$self->NODEDATA->{group}})
-  {
-    push @$group, $self->APP->node_by_id($item);
-  }
-
-  return $group;
-}
+with 'Everything::Node::helper::group';
 
 override 'json_display' => sub
 {
