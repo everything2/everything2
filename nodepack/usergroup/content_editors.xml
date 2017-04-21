@@ -1,10 +1,5 @@
 <node>
-  <doctext>[%
-#return 'Sorry; something somewhere is giving a 500 web server error. (Maybe &lt;code&gt;Everything::isApproved&lt;/code&gt;?) --N-Wing, 2006-03-30(3)';
-
-#return unless Everything::isApproved($USER, $NODE);
-#htmlcode('weblog', '15');
-%]</doctext>
+  <doctext></doctext>
   <type_nodetype>16</type_nodetype>
   <node_id>923653</node_id>
   <title>Content Editors</title>

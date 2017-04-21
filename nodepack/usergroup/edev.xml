@@ -1,63 +1,6 @@
 <node>
-  <doctext>&lt;p style=&quot;text-align:right&quot;&gt; [{linkGroupMessages}] | [edev FAQ]&lt;/p&gt;
-[%
-my $UID = getId($USER);
-my $isGuest = $APP-&gt;isGuest($USER);
-my $isEdev = $APP-&gt;isDeveloper($USER);
-return &quot;edev is the 'Everything Developer' usergroup, for people interested in contributing to the development of this site, or just learning about how it works. Please /msg [Oolong] if you want to be added.&quot; if !$isEdev;
-
-my $str = '&lt;h2&gt;[Patch Manager]&lt;/h2&gt;&lt;p&gt;';
-
-%]
-&lt;/p&gt;
-
-[%
-
-my $UID = getId($USER);
-my $isGuest = $APP-&gt;isGuest($USER);
-my $isEdev = $APP-&gt;isDeveloper($USER);
-return if !$isEdev;
-my $str = '&lt;h2&gt;Edev Documents!&lt;/h2&gt;&lt;p&gt;';
-
-my @edoc = getNodeWhere ({}, 'edevdoc', 'title');
-foreach (@edoc) {
-	$str.= linkNode($_) .&quot;&lt;br /&gt;\n&quot;;
-}
-
-return $str unless $APP-&gt;isDeveloper($USER); 
-
-$str.=htmlcode('openform');
-$str.=&quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;op\&quot; value=\&quot;new\&quot;&gt;\n&quot;;
-$str.=&quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;type\&quot; value=\&quot;edevdoc\&quot;&gt;\n&quot;;
-$str.=&quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;displaytype\&quot; value=\&quot;edit\&quot;&gt;\n&quot;;
-$str.='&lt;h2&gt;Make that dev doc:&lt;/h2&gt;';
-$str.=$query-&gt;textfield('node', '', 25);
-$str.=htmlcode('closeform');
-
-$str;
-%]
-
-[{weblog}]
-
-&lt;p&gt;
-
-[%
-return unless isGod($USER); 
-
-my $str=htmlcode('openform') . 'bestow devpoint on ' . $query-&gt;textfield('luckyuser') . htmlcode('closeform');
-
-if($query-&gt;param('luckyuser')) {
-	my $U = getNode($query-&gt;param('luckyuser'), 'user');
-	return $str unless $U;
-	my $V = getVars $U;
-	$$V{devpoints}++;
-	setVars($U, $V);
-	updateNode($U, -1);
-	$str.=linkNode($U).&quot; now has $$V{devpoints} devpoints&quot;;
-}
-
-$str;
-%]</doctext>
+  <doctext>&lt;p style=&quot;text-align:right&quot;&gt;[edev FAQ]&lt;/p&gt;
+</doctext>
   <type_nodetype>16</type_nodetype>
   <node_id>838015</node_id>
   <title>edev</title>
