@@ -12,8 +12,7 @@ sub get_id
     return [$self->HTTP_NOT_FOUND];
   }
 
-  my $u = $self->APP->node_by_id($user->{node_id});
-  return [$self->HTTP_OK, $node->voting_display($u)];
+  return [$self->HTTP_OK, $node->json_display($user)];
 }
 
 around ['get_id'] => \&Everything::API::nodes::_can_read_okay;

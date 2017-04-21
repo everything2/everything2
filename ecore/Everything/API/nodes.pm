@@ -22,8 +22,8 @@ sub get
 
 sub get_id
 {
-  my ($self, $node) = @_;
-  return [$self->HTTP_OK, $node->json_display]
+  my ($self, $node, $user) = @_;
+  return [$self->HTTP_OK, $node->json_display($user)]
 }
 
 sub _can_read_okay
@@ -40,7 +40,8 @@ sub _can_read_okay
 
   if($node->can_read_node($REQUEST->USER))
   {
-    return $self->$orig($node,$REQUEST->USER);
+    my $user = $self->APP->node_by_id($REQUEST->USER->{user_id});
+    return $self->$orig($node,$user);
   }else{
     return [$self->HTTP_FORBIDDEN];
   }

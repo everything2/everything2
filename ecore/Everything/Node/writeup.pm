@@ -5,8 +5,15 @@ extends 'Everything::Node::document';
 
 override 'json_display' => sub
 {
-  my ($self) = @_;
-  my $values = super();
+  my ($self, $user) = @_;
+  return $self->single_writeup_display($user);
+};
+
+sub single_writeup_display
+{
+  my ($self, $user) = @_;
+
+  my $values = $self->SUPER::json_display;
 
   my $cools = $self->cools;
   if(scalar(@$cools) > 0)
@@ -15,24 +22,15 @@ override 'json_display' => sub
   }
 
   $values->{author} = $self->author->json_reference;
-
-  return $values;
-};
-
-sub voting_display
-{
-  my ($self, $user) = @_;
-
-  my $display = $self->json_display;
-  return $display if $user->is_guest;
+  return $values if $user->is_guest;
 
   if(my $vote = $self->user_has_voted($user))
   {
-    $display->{reputation} = $self->reputation;
-    $display->{vote} = int($vote->{weight}); 
+    $values->{reputation} = $self->reputation;
+    $values->{vote} = int($vote->{weight}); 
   }
 
-  return $display;
+  return $values;
 }
 
 sub cools
