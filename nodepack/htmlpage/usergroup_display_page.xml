@@ -54,7 +54,7 @@ return '' unless  $APP-&gt;inUsergroup($USER, $NODE);
 
 &lt;table border=0&gt; &lt;!-- enclose writeups in table to prevent overflow --&gt;
       &lt;tr&gt;&lt;td&gt;
- [{parsecode:doctext}]
+ [{parselinks:doctext}]
       &lt;/td&gt;&lt;/tr&gt;
  &lt;/table&gt; &lt;!-- end overflow-blocking table --&gt;
 
@@ -194,6 +194,7 @@ $str .= 'other /msgs: '.$andTheRest.'&lt;br /&gt;
 $str .= htmlcode('closeform').'&lt;/p&gt;';
 $str;
 %]
+[{weblog}]
 </page>
   <displaytype>display</displaytype>
   <node_id>846440</node_id>

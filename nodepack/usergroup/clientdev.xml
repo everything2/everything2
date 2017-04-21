@@ -13,68 +13,7 @@ If you said yes to any of those questions (except the last one - you need seriou
 &lt;/p&gt;
 
 
-
-&lt;h2&gt;Registered Clients&lt;/h2&gt;
-&lt;p&gt;
-(See [clientdev: Registering a client|here] for more information as to what this is about)&lt;br /&gt;
-&lt;table border=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;0&quot;&gt;
-&lt;tr&gt;&lt;th&gt;title&lt;/th&gt;&lt;th&gt;version&lt;/th&gt;&lt;/tr&gt;
-[%
-my @clientdoc = getNodeWhere ({}, 'e2client', 'title');
-my $str;
-my $v;
-foreach (@clientdoc) {
-	$v = $_-&gt;{'version'};
-	$str .=
-		'&lt;tr&gt;&lt;td&gt;' . linkNode($_) . '&lt;/td&gt;&lt;td&gt;' .
-		((defined $v) &amp;&amp; length($v) ? encodeHTML($v,1) : '')
-		. '&lt;td&gt;&lt;/tr&gt;
-';
-}
-$str .= '&lt;/table&gt;
-';
-
-return $str unless $DB-&gt;isApproved($USER, $NODE);
-
-$str.=htmlcode('openform');
-$str.=&quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;op\&quot; value=\&quot;new\&quot;&gt;\n&quot;;
-$str.=&quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;type\&quot; value=\&quot;e2client\&quot;&gt;\n&quot;;
-$str.=&quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;displaytype\&quot; value=\&quot;edit\&quot;&gt;\n&quot;;
-$str.='&lt;h2&gt;Register your client:&lt;/h2&gt;';
-$str.=$query-&gt;textfield('node', '', 25);
-$str.=htmlcode('closeform');
-
-$str;
-%]
-&lt;/p&gt;
-
-
-
-&lt;p&gt;Things to (eventually) come:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;make debates work for general groups&lt;/li&gt;
-&lt;li&gt;list of people, their programming language, the platform, and the project&lt;/li&gt;
-&lt;/ol&gt;
-
-
-
-[%
-return '';
-return '' unless Everything::isApproved($USER, $NODE);
-#TODO: user info stuff
-
-my $str='';
-'&lt;p&gt;'.$str.'&lt;/p&gt;';
-%]
-
-&lt;p&gt;[{linkGroupMessages:N-Wing}]&lt;/p&gt;
-
-&lt;p&gt;&lt;hr /&gt;&lt;/p&gt;
-[%
-return '' unless Everything::isApproved($USER, $NODE);
-&quot;&lt;p&gt;\n&quot;.htmlcode('weblog','').&quot;\n&lt;p&gt;&quot;;
-%]
-&lt;p&gt;&lt;hr /&gt;&lt;/p&gt;</doctext>
+[Clientdev Home]</doctext>
   <type_nodetype>16</type_nodetype>
   <node_id>1199641</node_id>
   <title>clientdev</title>
