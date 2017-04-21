@@ -15,7 +15,7 @@ override 'json_display' => sub
 
   foreach my $writeup (@{$self->group || []})
   {
-    push @$group, $writeup->display_single_writeup($user);
+    push @$group, $writeup->single_writeup_display($user);
   }
 
   if(scalar(@$group) > 0)
