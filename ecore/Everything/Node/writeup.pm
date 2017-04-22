@@ -24,10 +24,19 @@ sub single_writeup_display
   $values->{author} = $self->author->json_reference;
   return $values if $user->is_guest;
 
-  if(my $vote = $self->user_has_voted($user))
+  my $vote = $self->user_has_voted($user);
+
+  if($vote || $self->author_user == $user->node_id)
   {
-    $values->{reputation} = $self->reputation;
-    $values->{vote} = int($vote->{weight}); 
+    foreach my $key ("reputation","upvotes","downvotes")
+    {
+      $values->{$key} = int($self->$key);
+    }
+  }
+
+  if($vote)
+  {
+    $values->{vote} = $vote->{weight};
   }
 
   return $values;
@@ -64,6 +73,24 @@ sub reputation
 {
   my ($self) = @_;
   return $self->NODEDATA->{reputation};
+}
+
+sub downvotes
+{
+  my ($self) = @_;
+  return $self->vote_count(-1);
+}
+
+sub upvotes
+{
+  my ($self) = @_;
+  return $self->vote_count(1);
+}
+
+sub vote_count
+{
+  my ($self, $direction) = @_;
+  return $self->DB->sqlSelect("count(*)","vote","vote_id=".$self->node_id." and weight=$direction");
 }
 
 __PACKAGE__->meta->make_immutable;
