@@ -127,9 +127,15 @@ Always returns UNIMPLEMENTED
 Returns all of the items in /api/nodes/:id, plus the following:
 
 * **doctext** - Writeup text
-* **reputation** - The reputation of the node if you have voted on it
-* **weight** - Which way the user voted if they voted on it
 * **cools** - Array of node references of users that have C!ed the writeup
+
+If a user has voted on it:
+* **vote** - Which way the user voted
+
+If a user has voted on it or is the author:
+* **reputation** - The reputation of the node if you have voted on it or if it is yours
+* **upvotes** - The number of people who have voted up on a node
+* **downvotes** - The number of people who have voted down on a node
 
 ## E2nodes
 
