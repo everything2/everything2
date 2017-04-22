@@ -270,10 +270,6 @@ Keys:
   * **coolsleft** - How many C!s left the user has
 * *user** - If the user is not a guest, the output of /api/user for the user_id
 
-* **bookmarks** - Array of bookmark objects. See the bookmarks API. This key is not shown if there are no bookmarks.
-* **num_writeups** - Number of writeups a user has created. The key is not displayed if the amount is zero
-* **powers** - Array of special powers the client can use to display more advanced tools. This is not shown if there are no special powers to display
-
 ### /api/sessions/create
 Accepts a POST with two parameters
 * **username** - Username of the user
