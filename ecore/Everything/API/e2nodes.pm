@@ -3,6 +3,8 @@ package Everything::API::e2nodes;
 use Moose;
 extends 'Everything::API::nodes';
 
+has 'CREATE_ALLOWED' => (is => 'ro', isa => 'Int', default => 1);
+
 sub get_id
 {
   my ($self, $node, $user) = @_;

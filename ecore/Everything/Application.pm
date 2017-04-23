@@ -4155,4 +4155,16 @@ sub get_blessed_node
   return;
 }
 
+sub node_new
+{
+  my ($this, $type) = @_;
+  
+  if(my $class = $Everything::FACTORY->{node}->available($type))
+  {
+    return $class->new({});
+  }
+
+  return;
+}
+
 1;

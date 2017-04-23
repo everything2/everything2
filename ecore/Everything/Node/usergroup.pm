@@ -24,5 +24,12 @@ override 'json_display' => sub
   return $values;
 };
 
+sub field_whitelist 
+{
+  my ($self) = @_;
+
+  return ["doctext"];
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

@@ -70,5 +70,50 @@ sub json_display
   return $self->json_reference(@_);
 }
 
+sub insert
+{
+  my ($self, $user, $data) = @_;
+
+  my $title = $data->{title};
+  return unless $title;
+  delete $data->{title};
+
+  my $allowed_data = {};
+
+  foreach my $key (@{$self->field_whitelist})
+  {
+    if(exists($data->{$key}))
+    {
+      $allowed_data->{$key} = $data->{$key};
+    }
+  }
+
+  my $new_node_id = $self->DB->insertNode($title, $self->typeclass, $user->NODEDATA,$allowed_data);
+  return unless $new_node_id;
+  $self->NODEDATA($self->DB->getNodeById($new_node_id));
+  return $self;
+}
+
+sub can_create_type
+{
+  my ($self, $user) = @_;
+
+  return $self->DB->canCreateNode($user->NODEDATA, $self->typeclass);  
+}
+
+sub typeclass
+{
+  my ($self) = @_;
+  my $string = ref($self);
+  $string =~ s/.*:://g;
+  return $string;
+}
+
+sub field_whitelist
+{
+  my ($self) = @_;
+  return [];
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
