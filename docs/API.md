@@ -109,12 +109,25 @@ Returns all of the items returned by /api/nodes/:id for that id, plus the follow
 
 ## Usergroups
 
+### /api/usergroups/
+
+Always returns UNIMPLEMENTED
+
 ### /api/usergroups/:id
 
 Returns all of the items returned by /api/nodes/:id, plus the following:
 
 * **doctext** - Usergroup description
 * **group** - An array of node references of group members
+
+### /api/usergroups/create
+
+Allows a user to create a usergroup if they are allowed to. This is currently restricted to admins only. Accepts two post parameters:
+
+* **title** (required) - The title of the new usergroup
+* **doctext** - The description of the group
+
+Returns the usergroups/:id display function of the newly created usergroup
 
 ## Writeups
 
@@ -148,6 +161,16 @@ Always returns UNIMPLEMENTED
 Returns all of the items in /api/nodes/:id, plus the following:
 
 * **group** - If there are writeups in the node, a listing of /api/writeups objects
+
+### /api/e2nodes/create
+
+Accepts a POST parameter with the following parameters:
+
+* **title** - The title of the e2node to create
+
+Note that due to a quirk in the security model of e2, all e2node owners are set to "Content Editors" in the system, with an additional owner set in a different table.
+
+Returns the display of e2nodes/:id of the newly created object
 
 ## Drafts
 

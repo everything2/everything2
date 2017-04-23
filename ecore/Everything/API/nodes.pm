@@ -5,11 +5,14 @@ use Moose;
 
 extends 'Everything::API';
 
+has 'CREATE_ALLOWED' => (is => 'ro', isa => 'Int', default => 0);
+
 sub routes
 { 
   return {
   "/" => "get",
-  "/:id" => "get_id(:id)"
+  "/:id" => "get_id(:id)",
+  "create" => "create"
   }
 }
 
@@ -24,6 +27,58 @@ sub get_id
 {
   my ($self, $node, $user) = @_;
   return [$self->HTTP_OK, $node->json_display($user)]
+}
+
+sub create
+{
+  my ($self, $REQUEST, $version) = @_;
+
+  my $user = $self->APP->node_by_id($REQUEST->USER->{node_id});
+
+  if($user->is_guest)
+  {
+    $self->devLog("Guest cannot access create endpoint");
+    return [$self->HTTP_UNAUTHORIZED] if $user->is_guest;
+  }
+
+  unless($self->CREATE_ALLOWED)
+  {
+    $self->devLog("Creation flag explicitly off for API, returning UNIMPLEMENTED");
+    return [$self->HTTP_UNIMPLEMENTED];
+  }
+
+  my $newnode = $self->APP->node_new($self->node_type);
+
+  unless($newnode)
+  {
+    $self->devLog("Returning unimplemented due to lack of good node skeleton for type: ".$self->node_type);
+    return [$self->HTTP_UNIMPLEMENTED];
+  }
+
+  unless($newnode->can_create_type($user))
+  {
+    $self->devLog("User ".$user->title." can't create node for of type ".$self->node_type.". Returning FORBIDDEN");
+    return [$self->HTTP_FORBIDDEN];
+  }
+  my $node = $newnode->insert($user, $self->parse_postdata($REQUEST));
+
+  unless($node)
+  {
+    $self->devLog("Didn't get a good node back from the insert routine, having to return UNAUTHORIZED");
+    return [$self->HTTP_UNAUTHORIZED] unless $node;
+  }
+
+  return [$self->HTTP_OK, $node->json_display($user)];
+}
+
+sub node_type
+{
+  my ($self) = @_;
+  my $string = ref $self;
+  $string =~ s/.*:://g;
+  $string =~ s/s$//g;
+
+  return $string;
 }
 
 sub _can_read_okay

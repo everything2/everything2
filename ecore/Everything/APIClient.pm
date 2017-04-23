@@ -17,7 +17,12 @@ has 'json' => (is => 'ro', lazy => 1, builder => "_build_json");
 sub username
 {
   my ($self) = @_;
-  return $self->session->{username};
+  if($self->session->{display}->{is_guest} == 0)
+  {
+    return $self->session->{user}->{title};
+  }else{
+    return "Guest User";
+  }
 }
 
 sub _build_json
@@ -108,6 +113,7 @@ sub _format_response
 {
   my ($self, $response, $data_key) = @_;
 
+  $data_key ||= "data";
   my $output = {"code" => $response->code};
   
   if($response->code == $self->HTTP_OK)
@@ -143,6 +149,20 @@ sub unignore_messages_from_id
   my ($self, $ignore_id) = @_;
 
   $self->_format_response($self->ua->get($self->endpoint."/messageignores/$ignore_id/action/delete"),"messageignore");
+}
+
+sub create_e2node
+{
+  my ($self, $data) = @_;
+  
+  $self->_format_response($self->_do_post($self->endpoint."/e2nodes/create", $data),"e2node");
+}
+
+sub create_usergroup
+{
+  my ($self, $data) = @_;
+  
+  $self->_format_response($self->_do_post($self->endpoint."/usergroups/create", $data),"usergroup");
 }
 
 1;

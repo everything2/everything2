@@ -49,7 +49,14 @@ sub _build_routechooser
       if(my ($variable) = $section =~ /^:([^:]+)/)
       {
         push @$variables, $variable;
-        push @$re,'([^\/]+)';
+
+        if($variable eq "id")
+        {
+          # id is a numeric hint
+          push @$re,'(\d+)';
+        }else{
+          push @$re,'([^\/]+)';
+        }
       }else{
         push @$re,$section;
       }
