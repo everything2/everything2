@@ -1,15 +1,13 @@
-# Everything2 API Specification v2.0
+# Everything2 API Specification
 
 Everything2 needs to evolve to keep up with the times. We've lived with the early 2000s era limitations of the Everything Engine as put together by the Everything Development Company, and a small army of volunteer coders has kept it moving and alive for some time. In order to move to the next level of usability and to embrace the mobile revolution that is now approximately half of our traffic, we need to move to a modern achitecture.
 
 As a part of the future API-driven nature of the site, we need to start abstracting features away into APIs that a richer front-end can drive. I've all but settled on [React.js](http://reactjs.com/), Facebook's front-end framework for fast and responsive UIs. While a UI rewrite is not needed as a part of the API-ification, it is an easy way to start exercising the consumption part of the API and get feedback. It will also as a consequence, start to make the site more responsive as the features come in.
 
-This API is version 2, as the old xmltrue nodetype is considered version 1.0.
-
 ## API religion
 
 * All E2 APIs will be available at https://everything2.com/api/$api. 
-* APIs are versioned. To request a specific version of the API, send the accept header: ````Accept: application/vnd.e2.v$version+json````. Versions are all non-decimal numeric numbers.
+* APIs are versioned. To request a specific version of the API, send the accept header: ````Accept: application/vnd.e2.v$version+json````. Versions are all non-decimal numeric numbers. All APIs start at version 1 unless otherwise specified
 * API requests that are not versioned are always assumed to be the current version.
 * APIs will only be versioned if the fundamental agreements change. We will NOT increment the version if additional fields are returned. You cannot assume that the presence of keys not in your version will break.
 * Objects are listed as their plural format and follow the general form: ````/api/$object/$id````
