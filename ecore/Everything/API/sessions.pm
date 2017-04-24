@@ -8,7 +8,7 @@ sub routes
 {
   return {
   "create" => "create",
-  "destroy" => "destroy",
+  "delete" => "delete",
   "/" => "get",
   }
 }
@@ -89,11 +89,11 @@ sub make_cookie
   return $REQUEST->cookie(-name => $self->CONF->cookiepass, -value => $REQUEST->USER->{title}."|".$REQUEST->USER->{passwd});
 }
 
-sub destroy
+sub delete
 {
   my ($self, $REQUEST, $version) = @_;
 
-  # We only need to destroy the cookie; the API exit point is user neutral after this point
+  # We only need to delete the cookie; the API exit point is user neutral after this point
   $REQUEST->USER($self->DB->getNodeById($self->CONF->guest_user));
   return [$self->HTTP_OK,$self->user_api_structure($REQUEST), {"cookie" => $REQUEST->cookie(-name => $self->CONF->cookiepass, -value => "")}];
 }

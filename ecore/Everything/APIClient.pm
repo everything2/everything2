@@ -77,7 +77,7 @@ sub logout
 {
   my ($self) = @_;
 
-  my $response = $self->get($self->endpoint."/sessions/destroy");
+  my $response = $self->get($self->endpoint."/sessions/delete");
   $self->session($self->json->decode($response->content));
   return $self->_format_response($response, "session");
 }
