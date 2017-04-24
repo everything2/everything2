@@ -67,7 +67,11 @@ sub json_reference
 sub json_display
 {
   my $self = shift;
-  return $self->json_reference(@_);
+  my $values = $self->json_reference(@_);
+  $values->{author} = $self->author->json_reference;
+  $values->{createtime} = $self->APP->iso_date_format($self->createtime);
+
+  return $values;
 }
 
 sub insert
@@ -113,6 +117,12 @@ sub field_whitelist
 {
   my ($self) = @_;
   return [];
+}
+
+sub createtime
+{
+  my ($self) = @_;
+  return $self->{NODEDATA}->{createtime};
 }
 
 __PACKAGE__->meta->make_immutable;
