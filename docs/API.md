@@ -106,6 +106,10 @@ Returns all of the items returned by /api/nodes/:id for that id, plus the follow
 * **lasttime** - The ISO formatted time when the user was last online
 * **bookmarks** - Array of bookmark objects. See the bookmarks API. This key is not shown if there are no bookmarks.
 * **numwriteups** - Number of writeups a user has created. The key is not displayed if the amount is zero
+* **specialties** - User-inputted text field for "specialties" as listed on homenode
+* **missions** - User-inputted text field for "mission drive within everything" as listed on homenode
+* **employment** - User-inputted text field for "school/company" as listed on homenode
+* **motto** - User-inputted text field for "motto" as listed on homenode
 
 ## Usergroups
 
