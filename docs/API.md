@@ -81,6 +81,7 @@ Returns the readable form of a node. Always the following items:
 
 * **node_id** The unique identifier of the object
 * **author** A node reference of the creator of the object
+* **creattime** ISO formatted date of when the node was created
 * **type** Human readable version of the type. Pluralize to find the right API
 * **title** The title of the node
 

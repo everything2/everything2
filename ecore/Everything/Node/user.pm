@@ -28,7 +28,7 @@ override 'json_display' => sub
     $values->{bookmarks} = $bookmarks;
   }
 
-  foreach my $time("lasttime","createtime")
+  foreach my $time("lasttime")
   {
     my $t = $self->$time;
     if($t)
@@ -64,12 +64,6 @@ sub lasttime
 {
   my ($self) = @_;
   return $self->NODEDATA->{lasttime};
-}
-
-sub createtime
-{
-  my ($self) = @_;
-  return $self->NODEDATA->{createtime};
 }
 
 sub experience
