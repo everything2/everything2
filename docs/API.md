@@ -302,8 +302,8 @@ If the login was unsuccessful, a 403 Forbidden is returned.
 
 If the login was successful, the output of /api/sessions is returned, along with the cookie in the headers as Set-Cookie to continue the authentication. The cookie does not have an expiration.
 
-### /api/sessions/destroy
-Destroys the current session. Not explicitly needed since no on-server state is kept for sessions. Simply deletes the cookie. Regardless of its current use, we recommend calling this in case any backend server state does need to be cleaned.
+### /api/sessions/delete
+Tears down the current session. Not explicitly needed since no on-server state is kept for sessions. Simply deletes the cookie. Regardless of its current use, we recommend calling this in case any backend server state does need to be cleaned.
 
 Returns the output of /api/sessions for the new current user, which is probably Guest User. Logging out Guest User has no other effect.
 

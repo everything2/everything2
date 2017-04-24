@@ -78,20 +78,20 @@ ok($response->code == 200, "Return code is 200");
 ok($session = $json->decode($response->content), "Content accurately decodes");
 ok($session->{display}->{is_guest} == 0, "Non-guest due to cookies being saved");
 
-# Session destruction
-ok($response = $ua->get("$endpoint/destroy"));
-ok($response->code == 200, "Session destroys ok");
+# Session delete
+ok($response = $ua->get("$endpoint/delete"));
+ok($response->code == 200, "Session deletes ok");
 ok($session = $json->decode($response->content), "Content accurately decodes");
-ok($session->{display}->{is_guest} == 1, "Guest due to destroyed session");
+ok($session->{display}->{is_guest} == 1, "Guest due to deleted session");
 my $cookiestring = $ua->cookie_jar->as_string;
 my $cookiename = $Everything::CONF->cookiepass;
-ok($cookiestring =~ /$cookiename=""/, "Cookie destroyed");
+ok($cookiestring =~ /$cookiename=""/, "Cookie deleted");
 
-# Destroying session again
-ok($response = $ua->get("$endpoint/destroy"));
-ok($response->code == 200, "Session destroys ok");
+# Deleting session again
+ok($response = $ua->get("$endpoint/delete"));
+ok($response->code == 200, "Session deletes ok");
 ok($session = $json->decode($response->content), "Content accurately decodes");
-ok($session->{display}->{is_guest} == 1, "Still guest due to destroyed session");
+ok($session->{display}->{is_guest} == 1, "Still guest due to deleted session");
 
 # Alternate form post method
 ok($response = $ua->post("$endpoint/create", {data => $json->encode({"username" => "root","passwd" => "blah"})}));
