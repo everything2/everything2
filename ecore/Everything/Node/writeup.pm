@@ -28,7 +28,8 @@ sub single_writeup_display
     $values->{cools} = $cools;
   }
 
-  $values->{author} = $self->author->json_reference;
+  $values->{writeuptype} = $self->writeuptype;
+
   return $values if $user->is_guest;
 
   my $vote = $self->user_has_voted($user);
@@ -105,6 +106,13 @@ sub parent
   my ($self) = @_;
 
   return $self->APP->node_by_id($self->NODEDATA->{parent_e2node});
+}
+
+sub writeuptype
+{
+  my ($self) = @_;
+
+  return $self->APP->node_by_id($self->NODEDATA->{wrtype_writeuptype})->title;
 }
 
 __PACKAGE__->meta->make_immutable;
