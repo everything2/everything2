@@ -26,7 +26,21 @@ sub get
 sub get_id
 {
   my ($self, $node, $user) = @_;
-  return [$self->HTTP_OK, $node->json_display($user)]
+
+  my $class = ref $self;
+  $class =~ s/.*:://g;
+  $class =~ s/s$//g;
+
+  unless($class eq "node")
+  {
+    if($node->typeclass ne $class)
+    {
+      $self->devLog("Node class of ".$node->typeclass." does not match API class $class (and is not node). Returning NOT FOUND");
+      return [$self->HTTP_NOT_FOUND];
+    }
+  }
+
+  return [$self->HTTP_OK, $node->json_display($user)];
 }
 
 sub create
@@ -90,6 +104,7 @@ sub _can_read_okay
   # We need a cleanly blessed node object to continue
   unless($node)
   {
+    $self->devLog("Could not get blessed node reference for id: $id. Returning UNIMPLEMENTED");
     return [$self->HTTP_UNIMPLEMENTED];
   }
 
@@ -98,6 +113,7 @@ sub _can_read_okay
     my $user = $self->APP->node_by_id($REQUEST->USER->{user_id});
     return $self->$orig($node,$user);
   }else{
+    $self->devLog("Could not read node per can_read_node. Returning UNIMPLEMENTED");
     return [$self->HTTP_FORBIDDEN];
   }
 
