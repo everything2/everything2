@@ -69,6 +69,8 @@ During the rapid development period, we may be changing the APIs, but we will be
 
 The node requests form is good for looking up particular node_ids, but does not have actions on it.
 
+Looking up the a node_id under a wrong type API throws a 404 NOT FOUND; for instance, looking up a user under /api/usergroups.
+
 ### /api/nodes
 
 Always returns UNIMPLEMENTED
