@@ -54,6 +54,7 @@ to_install = [
     'libmoose-perl',
     'libnamespace-autoclean-perl',
     'libwww-perl',
+    'libperl-critic-perl',
     'yui-compressor',
 ]
 
