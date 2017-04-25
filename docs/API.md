@@ -144,6 +144,7 @@ Returns all of the items in /api/nodes/:id, plus the following:
 
 * **doctext** - Writeup text
 * **cools** - Array of node references of users that have C!ed the writeup
+* **softlinks** - The softlinks of the parent node for display purposes
 
 If a user has voted on it:
 * **vote** - Which way the user voted
@@ -164,6 +165,7 @@ Always returns UNIMPLEMENTED
 Returns all of the items in /api/nodes/:id, plus the following:
 
 * **group** - If there are writeups in the node, a listing of /api/writeups objects
+* **softlinks** - An array of node references with an additional parameter: ``hits``. They are in hits order
 
 ### /api/e2nodes/create
 

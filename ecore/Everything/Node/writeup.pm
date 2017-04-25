@@ -6,7 +6,14 @@ extends 'Everything::Node::document';
 override 'json_display' => sub
 {
   my ($self, $user) = @_;
-  return $self->single_writeup_display($user);
+  my $writeup = $self->single_writeup_display($user);
+  my $softlinks = $self->parent->softlinks($user);
+  if(scalar(@$softlinks))
+  {
+    $writeup->{softlinks} = $softlinks;
+  }
+
+  return $writeup;
 };
 
 sub single_writeup_display
@@ -91,6 +98,13 @@ sub vote_count
 {
   my ($self, $direction) = @_;
   return $self->DB->sqlSelect("count(*)","vote","vote_id=".$self->node_id." and weight=$direction");
+}
+
+sub parent
+{
+  my ($self) = @_;
+
+  return $self->APP->node_by_id($self->NODEDATA->{parent_e2node});
 }
 
 __PACKAGE__->meta->make_immutable;
