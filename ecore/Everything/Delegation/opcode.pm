@@ -770,10 +770,15 @@ sub message
 
     my $U = getNode($user, 'usergroup');
     $U = getNode($user, 'user') unless $U;
+
+    if($U->{message_forward_to})
+    {
+      $U = getNodeById($U->{message_forward_to});
+    }
+
     $user =~ s/\_/ /gs unless $U;
     $U = getNode($user, 'usergroup') unless $U;
     $U = getNode($user, 'user') unless $U;
-    $U = getNode($user, 'lockeduser') unless $U;
 
     if(not $U)
     {

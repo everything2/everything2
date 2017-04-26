@@ -7149,11 +7149,17 @@ sub usercheck
 
     if($$n{type}{title} eq 'user')
     {
-
-      if($$cf{lc($$n{title})})
+      #getNodeWhere gives partial node results
+      $n = getNodeById($n->{node_id});
+      my $tousr = undef;
+      my $ptr = undef;
+      if($n->{message_forward_to})
       {
-        my $ptr = $$cf{lc($$n{title})};
-        my $tousr = getNode($ptr, 'user')||getNode($ptr, 'usergroup');
+        $tousr = getNodeById($n->{message_forward_to});
+      }elsif($$cf{lc($$n{title})})
+      {
+        $ptr = $$cf{lc($$n{title})};
+        $tousr = getNode($ptr, 'user')||getNode($ptr, 'usergroup');
 
       #this will not work if the user has both _ and " " in their nick, but oh well
 
@@ -7162,9 +7168,8 @@ sub usercheck
           $ptr =~ s/_/ /g;
           $tousr = getNode($ptr, 'user');
         }  
-
-        $tmp .= ' (message alias for '.linkNode($tousr).')';
       }
+      $tmp .= ' (message alias for '.linkNode($tousr).')' if($tousr);
    }
    push @outstr, $tmp;
   }
@@ -8322,6 +8327,11 @@ sub sendPrivateMessage
         undef $N;
       }
 
+      if($N->{message_forward_to})
+      {
+        $N = getNodeById($N->{message_forward_to});
+      }
+
       if((defined $N) && (exists $N->{title}) && length($N->{title}))
       {
         $cachedTitles->{$N->{title}} = $N;
@@ -8350,6 +8360,12 @@ sub sendPrivateMessage
         # try getting, underscores converted to spaces
         $forwarded =~ tr/_/ /;
         $N = getNode($forwarded,"usergroup") || getNode($forwarded,"user") || undef;
+      }
+
+      if($N->{message_forward_to})
+      {
+        $forwarded = $N->{title};
+        $N = getNodeById($N->{message_forward_to});
       }
 
       # on 2002.11.09.n5, removed space-and-underscore-in-name code; see displaytype=help for more information
@@ -8867,6 +8883,7 @@ sub sendPrivateMessage
   foreach $i (keys(%groups))
   {
     next if $groups{$i}<0;	#negative indicates user isn't allowed to send to group
+
     push(@getters, $i);	#count as 1 for group
     next if $groups{$i}==0;
 
@@ -8882,7 +8899,6 @@ sub sendPrivateMessage
   foreach $i (keys(%users))
   {
     next if $users{$i}<0;
-
     $forUG=$users{$i};
     if($i==$UID)
     {
@@ -8892,7 +8908,6 @@ sub sendPrivateMessage
 
       $forUG ||= pickRandomForGroup();
     }
-
     $isArchived=0;
     $forUG ||= $fromGroup;
 
@@ -8902,8 +8917,8 @@ sub sendPrivateMessage
       'msgtext' => $msg,
       'author_user' => $aid,
       'tstamp' => $sendTime,
-      'for_user' => $i,
       'for_usergroup' => $forUG,
+      'for_user' => $i,
       'archive' => $isArchived,
     });
 
@@ -9404,10 +9419,17 @@ sub xmlnodesuggest
 
     if($$n{type}{title} eq 'user')
     {
-      if($$cf{lc($$n{title})})
+      $n = getNodeById($n->{node_id});
+      my $ptr = undef;
+      my $tousr = undef;
+
+      if($n->{message_forward_to})
       {
-        my $ptr = $$cf{lc($$n{title})};
-        my $tousr = getNode($ptr, 'user');
+        $tousr = getNodeById($n->{message_forward_to});
+      }elsif($$cf{lc($$n{title})})
+      {
+        $ptr = $$cf{lc($$n{title})};
+        $tousr = getNode($ptr, 'user');
         #this will not work if the user has both _ and " " in their nick, but oh well
 
         unless($tousr)
@@ -9415,9 +9437,8 @@ sub xmlnodesuggest
           $ptr =~ s/_/ /g;
           $tousr = getNode($ptr, 'user');
         }  
-
-        $tmp .= '<useralias><e2link node_id="'.$$tousr{node_id}.'">'.$APP->encodeHTML($$tousr{title}).'</e2link></useralias>';
       }
+     $tmp .= '<useralias><e2link node_id="'.$$tousr{node_id}.'">'.$APP->encodeHTML($$tousr{title}).'</e2link></useralias>';
     }
 
     $tmp .= "</nodesuggest>";
@@ -11071,13 +11092,22 @@ sub zenDisplayUserInfo
     #jb says: same as in [usercheck]
     my $cf = getVars(getNode('chatterbox forward', 'setting'));
     my $retstr = '';
-    return unless($$cf{lc($$NODE{title})});
-    my $ptr = $$cf{lc($$NODE{title})};
-    my $tousr = getNode($ptr, 'user');
-    unless($tousr)
+    my $ptr = undef;
+    my $tousr = undef;
+
+    if($NODE->{message_forward_to})
     {
-      $ptr =~ s/_/ /g;
-      $tousr = getNode($ptr, 'user')||getNode($ptr, 'usergroup');
+      $tousr = getNodeById($NODE->{message_forward_to});
+    }elsif($$cf{lc($$NODE{title})})
+    {
+      $ptr = $$cf{lc($$NODE{title})};
+      $tousr = getNode($ptr, 'user');
+
+      unless($tousr)
+      {
+        $ptr =~ s/_/ /g;
+        $tousr = getNode($ptr, 'user')||getNode($ptr, 'usergroup');
+      }
     }
 
     return unless $tousr;
@@ -13879,7 +13909,7 @@ sub display_draft
     $displaylike = getType(
       getNodeWhere({pagetype_nodetype => 117, displaytype => $displaytype}, 'htmlpage') ?'writeup' : 'document');
   } else {
-    $NODE = $GNODE = getNodeById($Everything::CONF->system->{search_results});
+    $NODE = $Everything::HTML::GNODE = getNodeById($Everything::CONF->system->{search_results});
     $displaylike = getType($$NODE{type_nodetype});
   }
 
@@ -15070,7 +15100,7 @@ sub blacklistedIPs
     $cursor->execute();
   };
 
-  $dbh->{RaiseError} = $saveRaise;
+  $DB->{dbh}->{RaiseError} = $saveRaise;
 
   if ($@)
   {
