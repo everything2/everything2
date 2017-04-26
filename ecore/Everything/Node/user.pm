@@ -157,5 +157,14 @@ sub coolsleft
   return $self->VARS->{cools} || 0;
 }
 
+sub deliver_message
+{
+  my ($self, $messagedata) = @_;
+
+  $self->DB->sqlInsert("message",{"author_user" => $messagedata->{from}->node_id,"for_user" => $self->node_id,"msgtext" => $messagedata->{message}});
+
+  return {"successes" => 1};
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

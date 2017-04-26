@@ -3874,9 +3874,11 @@ sub send_message {
     return {"errors" => 1, "errortext" => "Did not specify a valid sending user"}; 
   }
 
-  $this->{db}->sqlInsert("message",{"author_user" => $params->{from}->{node_id},"for_user" => $params->{to}->{node_id},"msgtext" => $params->{message}});
+  my $to = $this->node_by_id($params->{to}->{node_id});
+  my $from = $this->node_by_id($params->{from}->{node_id});
 
-  return {"successes" => 1};
+  return $to->deliver_message({"from" => $from, "message" => $params->{message}});
+
 }
 
 sub getVars 
