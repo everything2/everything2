@@ -49,7 +49,21 @@ sub create
 
     if(int($data->{for_id}))
     {
-      return [$self->HTTP_OK, $self->APP->send_message({"from" => $REQUEST->USER, "to" => int($data->{for_id}),"message" => $data->{message}})];
+      my $deliver_to_node = $self->APP->node_by_id(int($data->{for_id}));
+      my $from_node = $self->APP->node_by_id($REQUEST->USER->{node_id});
+      if($deliver_to_node)
+      {
+        if($deliver_to_node->can("deliver_message"))
+        {
+          return [$self->HTTP_OK, $deliver_to_node->deliver_message({"from" => $from_node, "message" => $data->{message}})]
+        }else{
+          $self->devLog("Can't send message due to not having delivery_message endpoint on node type ".$deliver_to_node->type.". Returning BAD REQUEST");
+          return [$self->HTTP_BAD_REQUEST];  
+        }
+      }else{
+        $self->devLog("Delivery target is not a valid node. Returning BAD REQUEST");
+        return [$self->HTTP_BAD_REQUEST];
+      }
     }else{
       $self->devLog("Fell through all checks and couldn't generate a sane for_id structure. Sending BAD REQUEST");
       return [$self->HTTP_BAD_REQUEST];
