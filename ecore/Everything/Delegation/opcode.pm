@@ -764,9 +764,6 @@ sub message
     my $onlyOnline = (substr($1,-1,1) eq '?') ? 1 : 0;
     $message = $3;
     my $user = $2;
-    my $FORWARDS = getVars(getNode('chatterbox forward','setting'));
-    #$user = $$FORWARDS{$user} if exists $$FORWARDS{$user};
-    $user = $$FORWARDS{lc($user)} if exists $$FORWARDS{lc($user)};
 
     my $U = getNode($user, 'usergroup');
     $U = getNode($user, 'user') unless $U;
@@ -2418,7 +2415,7 @@ sub socialBookmark
 
   my $nt = $$tempnode{title};
   my ($eddiemessage, $str,$auth);
-  my @writeupAuthors;
+  my @writeupAuthors = ();
 
   if(scalar(@group))
   {
