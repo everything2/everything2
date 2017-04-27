@@ -73,7 +73,6 @@ if ( defined $query-&gt;param( 'recipients' ) &amp;&amp; defined $query-&gt;para
 
     # Split recipient list into array
     my @users = split( '\n', $recipients );
-    my $forwards = getVars( getNode( 'chatterbox forward', 'setting' ) );
     my $count = 0;
     my $sent;  # Keep track of who we've sent the /msg to, so as to avoid repeats.
 
@@ -85,8 +84,11 @@ if ( defined $query-&gt;param( 'recipients' ) &amp;&amp; defined $query-&gt;para
         }
 
         # If it's an alias, get the proper username before getting the user hash.
-        $victimname = $$forwards{ lc( $victimname ) } if ( exists( $$forwards{ lc( $victimname ) } ) );
         my $victim = getNode( $victimname, 'user' );
+        if($victim-&gt;{message_forward_to})
+        {
+          $victim = getNodeById($victim-&gt;{message_forward_to});
+        }
 
         # Skip duplicates
         if ( $$sent{ $$victim{ 'node_id' } } ) {
@@ -95,30 +97,6 @@ if ( defined $query-&gt;param( 'recipients' ) &amp;&amp; defined $query-&gt;para
         } else {
             $$sent{ $$victim{ 'node_id' } } = 1;
         }
-
-#        my $victim = getNode( $victimname, 'user' );
-#        $victimname = $$forwards{lc($victimname)} if(exists($$forwards{lc($victimname)}));
-        # Have to do it in this order bc c_e =&gt; Content_Editors
-#        my $victim = getNode( $victimname, 'usergroup' );
-#        $victim = getNode( $victimname, 'user' );
-        # return 'We don't have a user here' unless($victim);
-
-#        if($$victim{type_nodetype} = getId(getType('usergroup')))
-#        {
-
-#            next unless(isApproved($USER, $victim));
-
-#            my $grp = $$victim{group};
-
-#            foreach(@$grp)
-#            {
-                # send message.
-                # There has to be a cleaner way to do this (without weird bugs). 
-                # Let me see if I can come up with a way.
-                # I wanted to overhaul the message system. Now might be a good 
-                # time - jb
-#            }
-#        }
 
         if ( $victim ) {
             # Some feedback for the user

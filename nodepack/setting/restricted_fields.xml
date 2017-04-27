@@ -54,11 +54,15 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>vars</key>
+    <key>message_forward_to</key>
   </vars>
   <vars>
     <value>1</value>
     <key>writeup_title</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>vars</key>
   </vars>
   <vars>
     <value>1</value>
@@ -74,11 +78,11 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>cooled</key>
+    <key>type</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>type</key>
+    <key>cooled</key>
   </vars>
   <vars>
     <value>1</value>
