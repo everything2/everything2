@@ -38,7 +38,7 @@ sub xml_vars_no_store
 sub xml_no_store
 {
 	my ($this) = @_;
-	return ["lasttime","numwriteups","merit","salt","user_salt","in_room","karma","GP","experience","session_id","validationkey",@{$this->SUPER::xml_no_store()}];
+	return ["message_forward_to","lasttime","numwriteups","merit","salt","user_salt","in_room","karma","GP","experience","session_id","validationkey",@{$this->SUPER::xml_no_store()}];
 }
 
 sub import_no_consider
