@@ -47,7 +47,7 @@ use Everything::XML;
 use Time::Local;
 
 # Used by shownewexp, publishwriteup, static_javascript, zenwriteups, hasAchieved,
-#  showNewGP, notificationsJSON, Notifications_nodelet_settings
+#  showNewGP, notificationsJSON, Notifications_nodelet_settings,sendPrivateMessage
 use JSON;
 
 # Used by publishwriteup,isSpecialDate
@@ -7131,7 +7131,6 @@ sub usercheck
 
   return if($$NODE{type_nodetype} != getId(getType('e2node')) && !defined $givenTitle);
 
-  my $cf = getVars(getNode('chatterbox forward', 'setting'));
   my $checkedTitle = $$NODE{title};
   $checkedTitle = $givenTitle if defined $givenTitle;
   my @grp = getNodeWhere({ 'title' => $checkedTitle});
@@ -7156,18 +7155,6 @@ sub usercheck
       if($n->{message_forward_to})
       {
         $tousr = getNodeById($n->{message_forward_to});
-      }elsif($$cf{lc($$n{title})})
-      {
-        $ptr = $$cf{lc($$n{title})};
-        $tousr = getNode($ptr, 'user')||getNode($ptr, 'usergroup');
-
-      #this will not work if the user has both _ and " " in their nick, but oh well
-
-        unless($tousr)
-        {
-          $ptr =~ s/_/ /g;
-          $tousr = getNode($ptr, 'user');
-        }  
       }
       $tmp .= ' (message alias for '.linkNode($tousr).')' if($tousr);
    }
@@ -8271,6 +8258,8 @@ sub sendPrivateMessage
   my $params = shift;
   my $showWhatSaid = $params->{show_said};
 
+  $APP->devLog("Got sendPrivateMessage with parameters: ".JSON::encode_json($params));
+
   #
   #constants and global vars setup, part 1 of 2
   #
@@ -8302,21 +8291,22 @@ sub sendPrivateMessage
   };
 
   # gets a user or usergroup
-  # pass ($title) to get based on title (respecting chatterbox forwards)
+  # pass ($title) to get based on title (respecting message deliver forwards)
   # pass ($id, 1) to get based on node ID
   # passed username should NOT be escaped
   ## this tries really hard to deal with names with spaces and/or underscores, and should get them, no matter how they are set up
   #note: do NOT optimize this to use the light-get, since then usergroups wouldn't have their group members loaded (this may be no longer true - does the UG auto code deal with this properly?)
   # updated: 2002.11.10.n0
 
-  my $FORWARDS;
   local *getCached = sub {
     my ($ident,$isNumeric) = (@_[0,1]);
+    $APP->devLog("sendPrivateMessage: getCached params: $ident,$isNumeric");
     return undef unless defined($ident) && length($ident);
+
     my $N = undef;
 
     #get by ID
-    if((defined $isNumeric) && $isNumeric)
+    if($isNumeric)
     {
       return undef unless $ident =~ /^(\d+)$/;
       $ident=$1;
@@ -8341,31 +8331,28 @@ sub sendPrivateMessage
 
       #get by title
     } else {
-      return $cachedTitles->{$ident} if exists $cachedTitles->{$ident};
-
+      if(exists($cachedTitles->{$ident}))
+      {
+        $APP->devLog("Found cache hit for $ident: $cachedTitles->{$ident}");
+        return $cachedTitles->{$ident} if exists $cachedTitles->{$ident};
+      }
       # given title isn't cached, so find it
       # a forward address takes precedence over a real user
 
-      if(!defined $FORWARDS)
-      {
-        $FORWARDS = getVars(getNode('chatterbox forward','setting'));
-      }
-
-      my $forwarded = (exists $FORWARDS->{lc $ident}) ? $FORWARDS->{lc $ident} : $ident;
-      my $escaped = $DB->quote($forwarded);
-
+      my $forwarded = $ident;
       $N = getNode($forwarded,"usergroup") || getNode($forwarded,"user") || undef;
-      if(!defined $N)
+
+      unless($N)
       {
-        # try getting, underscores converted to spaces
-        $forwarded =~ tr/_/ /;
-        $N = getNode($forwarded,"usergroup") || getNode($forwarded,"user") || undef;
+         $APP->devLog("sendPrivateMessage getCached couldn't find object for $forwarded, bailing");
+         return;
       }
 
       if($N->{message_forward_to})
       {
         $forwarded = $N->{title};
         $N = getNodeById($N->{message_forward_to});
+        $APP->devLog("sendPrivateMessage getCached: using $forwarded for $N->{title}");
       }
 
       # on 2002.11.09.n5, removed space-and-underscore-in-name code; see displaytype=help for more information
@@ -8374,7 +8361,7 @@ sub sendPrivateMessage
 
       $cachedIDs->{$N->{node_id}} = $N if defined $N;
       $cachedTitles->{$ident} = $N;
-      $cachedTitles->{$forwarded} = $N unless $ident eq $forwarded;
+      $cachedTitles->{$forwarded} = $N;
     }
 
     return $N;
@@ -8386,10 +8373,12 @@ sub sendPrivateMessage
 
   local *getParamList = sub {
     my $p=$_[0];
+    $APP->devLog("sendPrivateMessage getParamList params: ".JSON::encode_json([$p])); 
     my @l = ();
     if( (defined $p) && (exists $params->{$p}) && (defined $params->{$p}) )
     {
       $p=$params->{$p};
+      $APP->devLog("sendPrivateMessage getParamList data: ".JSON::encode_json([$p])); 
       my $r=ref $p;
       if($r eq '')
       {
@@ -8542,11 +8531,6 @@ sub sendPrivateMessage
   # %users is a hash so if multiple usergroups are messaged, the user will get a group message for a group they're in, instead of potentially a group they aren't in
 
 
-  #
-  # general routines that hopefully will be later moved to npbutil
-  #
-
-
   # returns a value in $VARS->{_argument_}, constrained to the given values
   # parameters are all required:
   #	value to get value of in VARS
@@ -8596,6 +8580,7 @@ sub sendPrivateMessage
 
   local *addUser = sub {
     my ($userObj, $groupID) = @_[0,1];
+    $APP->devLog("sendPrivateMessage addUser params: ".JSON::encode_json([$userObj->{node_id},$groupID]));
     return unless defined $userObj;
     $groupID = (defined $groupID) ? $groupID : 0;
     my $uid = $userObj->{node_id};
@@ -8673,6 +8658,7 @@ sub sendPrivateMessage
 
   local *addRecipient = sub {
     my $u = $_[0];
+    $APP->devLog("sendPrivateMessage addRecipient: $u->{node_id}");
     return unless defined $u;
     my $i=$u->{node_id};
 
@@ -8803,15 +8789,7 @@ sub sendPrivateMessage
       return $_ unless $_==$UID;	#yourself as a group is rather annoying
     }
 
-    #return (exists $users{$UID}) ? $UID : 0;	#may have to return self as usergroup after all (oops, this makes all /msgs to self have yourself as a group; yuck)
-    #return 0;
-    #return 1;
-    #return "false";
-    #return "0";
-    #return "file not found";
     return 0; # note: should always be true, but just in case
-    #return 0;
-    #return;
   };
 
 
@@ -8917,7 +8895,7 @@ sub sendPrivateMessage
       'msgtext' => $msg,
       'author_user' => $aid,
       'tstamp' => $sendTime,
-      'for_usergroup' => $forUG,
+      'for_usergroup' => ((defined $forUG)?($forUG):(0)),
       'for_user' => $i,
       'archive' => $isArchived,
     });
@@ -9406,7 +9384,6 @@ sub xmlnodesuggest
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $cf = getVars(getNode("chatterbox forward", "setting"));
   my $retstr = "<sametitles>";
   my @grp = getNodeWhere({ 'title' => $$NODE{title}});
   foreach(@grp)
@@ -9426,17 +9403,6 @@ sub xmlnodesuggest
       if($n->{message_forward_to})
       {
         $tousr = getNodeById($n->{message_forward_to});
-      }elsif($$cf{lc($$n{title})})
-      {
-        $ptr = $$cf{lc($$n{title})};
-        $tousr = getNode($ptr, 'user');
-        #this will not work if the user has both _ and " " in their nick, but oh well
-
-        unless($tousr)
-        {
-          $ptr =~ s/_/ /g;
-          $tousr = getNode($ptr, 'user');
-        }  
       }
      $tmp .= '<useralias><e2link node_id="'.$$tousr{node_id}.'">'.$APP->encodeHTML($$tousr{title}).'</e2link></useralias>';
     }
@@ -11090,7 +11056,6 @@ sub zenDisplayUserInfo
 
   local *info_msgalias = sub {
     #jb says: same as in [usercheck]
-    my $cf = getVars(getNode('chatterbox forward', 'setting'));
     my $retstr = '';
     my $ptr = undef;
     my $tousr = undef;
@@ -11098,16 +11063,6 @@ sub zenDisplayUserInfo
     if($NODE->{message_forward_to})
     {
       $tousr = getNodeById($NODE->{message_forward_to});
-    }elsif($$cf{lc($$NODE{title})})
-    {
-      $ptr = $$cf{lc($$NODE{title})};
-      $tousr = getNode($ptr, 'user');
-
-      unless($tousr)
-      {
-        $ptr =~ s/_/ /g;
-        $tousr = getNode($ptr, 'user')||getNode($ptr, 'usergroup');
-      }
     }
 
     return unless $tousr;
@@ -11216,7 +11171,7 @@ sub zenDisplayUserInfo
     # msgme=>'/msg me',	#set for each user, below
     msgyou=>'/msgs from me',
     draftshare=>'things in progress',
-    msgalias=>'is a chatterbox forward for',
+    msgalias=>'is a messaging forward for',
     manip=>'manipulation',
     coolsspent=>'C!s spent',
     presents=>'your daily votes and C!s',
