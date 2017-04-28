@@ -21,7 +21,7 @@ $start ||= 0;
 
 $sql =  &lt;&lt;SQLEND;
 
-SELECT `user_id`, `nick`, `createtime`, `lasttime`
+SELECT `user_id`, `nick`, `title`,`createtime`, `lasttime`
   , (SELECT `notetext`
       FROM nodenote
       WHERE nodenote_nodeid = user_id LIMIT 1
@@ -70,7 +70,7 @@ while(my $N = $usr-&gt;fetchrow_hashref) {
                   $row ? 'oddrow' : 'evenrow',
                   $create,
                   &quot;/node/$$N{user_id}&quot;,
-                  $$N{nick},
+                  $$N{title},
                   $login eq '?' ? 'never' : $login,
                   $$N{notetext},
                   );
