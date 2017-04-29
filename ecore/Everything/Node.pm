@@ -55,7 +55,19 @@ sub can_read_node
 {
   my ($self, $user) = @_;
 
-  return $self->DB->canReadNode($user, $self->NODEDATA);
+  return $self->DB->canReadNode($user->NODEDATA, $self->NODEDATA);
+}
+
+sub can_update_node
+{
+  my ($self, $user) = @_;
+  return $self->DB->canUpdateNode($user->NODEDATA, $self->NODEDATA);
+}
+
+sub can_delete_node
+{
+  my ($self, $user) = @_;
+  return $self->DB->canDeleteNode($user->NODEDATA, $self->NODEDATA);
 }
 
 sub json_reference
@@ -123,6 +135,13 @@ sub createtime
 {
   my ($self) = @_;
   return $self->{NODEDATA}->{createtime};
+}
+
+sub delete
+{
+  my ($self, $user) = @_;
+
+  return $self->DB->nukeNode($self->{NODEDATA}, $user->{NODEDATA});
 }
 
 __PACKAGE__->meta->make_immutable;
