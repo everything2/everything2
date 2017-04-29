@@ -87,6 +87,17 @@ Returns the readable form of a node. Always the following items:
 
 Different types contain additional information.
 
+### /api/nodes/:id/action/delete
+
+Deletes the node if the user has permission to do so.
+
+Returns 403 FORBIDDEN if the user does not have permission
+
+Returns 404 NOT FOUND if the node does not exist
+
+On success returns a has with one key:
+* **deleted**: The node_id of the removed node 
+
 ## Users
 
 ### /api/users
@@ -133,6 +144,26 @@ Allows a user to create a usergroup if they are allowed to. This is currently re
 * **doctext** - The description of the group
 
 Returns the usergroups/:id display function of the newly created usergroup
+
+### /api/usergroups/:id/action/adduser
+
+Adds users to the usergroup. Takes an array of node_ids to add as a POST parameter
+
+Returns 403 FORBIDDEN if the user doesn't have permission to do this action
+
+Returns 401 Unauthorized if the user is not logged in
+
+Returns the node reference if successful
+
+### /api/usergroups/:id/action/removeuser
+
+Removes users to the usergroup. Takes an array of node_ids to remove
+
+Returns 403 FORBIDDEN if the user doesn't have permission on this group
+
+Returns 401 Unauthorized if the user is not logged in
+
+Returns the node reference if successful
 
 ## Writeups
 

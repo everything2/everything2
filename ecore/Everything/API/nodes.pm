@@ -12,6 +12,7 @@ sub routes
   return {
   "/" => "get",
   "/:id" => "get_id(:id)",
+  "/:id/action/delete" => "delete(:id)",
   "create" => "create"
   }
 }
@@ -108,15 +109,39 @@ sub _can_read_okay
     return [$self->HTTP_UNIMPLEMENTED];
   }
 
-  if($node->can_read_node($REQUEST->USER))
+  my $user = $self->APP->node_by_id($REQUEST->USER->{user_id});
+  if($node->can_read_node($user))
   {
-    my $user = $self->APP->node_by_id($REQUEST->USER->{user_id});
     return $self->$orig($node,$user);
   }else{
-    $self->devLog("Could not read node per can_read_node. Returning UNIMPLEMENTED");
+    $self->devLog("Could not read node per can_read_node. Returning FORBIDDEN");
     return [$self->HTTP_FORBIDDEN];
   }
 
+}
+
+sub delete
+{
+  my ($self, $REQUEST, $verison, $id) = @_;
+
+  my $node = $self->APP->node_by_id($id);
+
+  unless($node)
+  {
+    $self->devLog("Could not get blessed node reference for id: $id. Returning NOT FOUND");
+    return [$self->HTTP_NOT_FOUND];
+  }
+
+  my $user = $self->APP->node_by_id($REQUEST->USER->{user_id});
+  my $node_id = $node->node_id;
+  if($node->can_delete_node($user))
+  {
+    $node->delete($user);
+    return [$self->HTTP_OK, {"deleted" => $node_id}];
+  }else{
+    $self->devLog("Could not delete node per can_delete_node. Returning FORBIDDEN");
+    return [$self->HTTP_FORBIDDEN];
+  }
 }
 
 around ['get_id'] => \&_can_read_okay;

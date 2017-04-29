@@ -165,4 +165,30 @@ sub create_usergroup
   $self->_format_response($self->_do_post($self->endpoint."/usergroups/create", $data),"usergroup");
 }
 
+sub usergroup_add
+{
+  my ($self, $group_id, $user_ids) = @_;
+
+  $self->_format_response($self->_do_post($self->endpoint."/usergroups/$group_id/action/adduser", $user_ids));
+}
+
+sub usergroup_remove
+{
+  my ($self, $group_id, $user_ids) = @_;
+
+  $self->_format_response($self->_do_post($self->endpoint."/usergroups/$group_id/action/removeuser",$user_ids));
+}
+
+sub delete_node
+{
+  my ($self, $node_id) = @_;
+  $self->_format_response($self->ua->get($self->endpoint."/nodes/$node_id/action/delete"));
+}
+
+sub get_node_by_id
+{
+  my ($self, $node_id) = @_;
+  $self->_format_response($self->ua->get($self->endpoint."/nodes/$node_id"));
+}
+
 1;
