@@ -6,11 +6,10 @@ use lib qw(/var/everything/ecore);
 use LWP::UserAgent;
 use HTTP::Request;
 use Test::More;
-use Everything;
 use JSON;
+use Everything;
 
 use HTTP::Cookies;
-
 initEverything 'everything';
 unless($APP->inDevEnvironment())
 {
