@@ -8341,6 +8341,11 @@ sub sendPrivateMessage
 
       my $forwarded = $ident;
       $N = getNode($forwarded,"usergroup") || getNode($forwarded,"user") || undef;
+      unless($N)
+      {
+           $forwarded =~ s/_/ /g;
+           $N = getNode($forwarded,"usergroup") || getNode($forwarded,"user") || undef;
+      }
 
       unless($N)
       {
