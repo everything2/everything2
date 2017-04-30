@@ -16,8 +16,8 @@ unless($APP->inDevEnvironment())
 
 ok(my $eapi = Everything::APIClient->new(endpoint => "http://localhost/api"), "Create a new Everything::APIClient object");
 
-my $cme = getNode("Cool Man Eddie", "user");
-my $virgil = getNode("Virgil","user");
+ok(my $cme = $eapi->get_node("Cool Man Eddie", "user")->{data}, "CME fetch ok");
+ok(my $virgil = $eapi->get_node("Virgil","user")->{data}, "Virgil fetch ok");
 my $emptyignores = {"code" => 200, "messageignore" => []};
 
 my $unauthorized = {"code" => 401};

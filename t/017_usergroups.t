@@ -7,6 +7,11 @@ use Everything::APIClient;
 use Test::More;
 
 initEverything 'everything';
+unless($APP->inDevEnvironment())
+{
+        plan skip_all => "Not in the development environment";
+        exit;
+}
 
 my $eapi = Everything::APIClient->new("endpoint" => "http://localhost/api");
 
