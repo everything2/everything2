@@ -54,7 +54,8 @@ sub _group_operation_permissions
 sub adduser
 {
   my ($self, $user, $group, $data) = @_;
-  $group->group_add($data);
+  $group->group_add($data, $user);
+  $group->update($user);
 
   return [$self->HTTP_OK, $group->json_display($user)];
 }
@@ -62,7 +63,9 @@ sub adduser
 sub removeuser
 {
   my ($self, $user, $group, $data) = @_;
-  $group->group_remove($data);
+  $group->group_remove($data, $user);
+  $group->update($user);
+
   return [$self->HTTP_OK, $group->json_display($user)];
 }
 

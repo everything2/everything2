@@ -98,6 +98,14 @@ Returns 404 NOT FOUND if the node does not exist
 On success returns a has with one key:
 * **deleted**: The node_id of the removed node 
 
+### /api/nodes/lookup/:type/:title
+
+Looks up the node by type and title. Note that this currently does not properly handle returning multiple nodes of the same title back.
+
+If the title/type combination does not exist, this returns NOT FOUND
+
+If the user cannot read the node details, this returns FORBIDDEN
+
 ## Users
 
 ### /api/users
