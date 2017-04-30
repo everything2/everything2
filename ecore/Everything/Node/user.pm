@@ -51,6 +51,11 @@ override 'json_display' => sub
     }
   }
 
+  if(my $fwd = $self->message_forward_to)
+  {
+    $values->{message_forward_to} = $fwd->json_reference;
+  }
+
   return $values;
 };
 
@@ -149,6 +154,14 @@ sub votesleft
 {
   my ($self) = @_;
   return $self->NODEDATA->{votesleft};
+}
+
+sub message_forward_to
+{
+  my ($self) = @_;
+
+  return unless $self->NODEDATA->{message_forward_to};
+  return $self->APP->node_by_id($self->NODEDATA->{message_forward_to});
 }
 
 sub coolsleft
