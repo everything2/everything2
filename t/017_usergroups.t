@@ -81,7 +81,7 @@ ok($result->{code} == 403, "Return code is Forbidden");
 ok($result = $eapi->get_node_by_id($usergroup->{node_id}), "Normaluser1 gets the node by id");
 ok($result->{code} == 200, "Guest user get by id returns 200");
 $usergroup = $result->{data};
-ok(scalar(@{$usergroup->{group}}) == 1, "There is one node in the group");
+ok(scalar(@{$usergroup->{group}||[]}) == 1, "There is one node in the group");
 ok($usergroup->{group}->[0]->{node_id} == $nm1->{node_id}, "Only normaluser1 is left in the group");
 
 # Non-owner delete
