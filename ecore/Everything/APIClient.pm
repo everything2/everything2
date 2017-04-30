@@ -191,4 +191,10 @@ sub get_node_by_id
   $self->_format_response($self->ua->get($self->endpoint."/nodes/$node_id"));
 }
 
+sub get_node
+{
+  my ($self, $title, $type) = @_;
+  $self->_format_response($self->ua->get($self->endpoint."/nodes/lookup/$type/$title"));
+}
+
 1;

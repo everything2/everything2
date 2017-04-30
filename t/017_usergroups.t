@@ -17,22 +17,22 @@ my $usergroup = $result->{usergroup};
 ok($usergroup->{node_id} != 0, "Non-zero node_id is returned");
 ok(!exists($usergroup->{group}), "Group is empty");
 
-my $root = getNode("root","user");
-my $nm1 = getNode("normaluser1","user");
-my $nm2 = getNode("normaluser2","user");
+ok(my $root = $eapi->get_node("root","user")->{data}, "Get user for root");
+ok(my $nm1 = $eapi->get_node("normaluser1","user")->{data}, "Get user for normaluser1");
+ok(my $nm2 = $eapi->get_node("normaluser2","user")->{data}, "Get user for normaluser2");
 
 #Initial add
 ok($result = $eapi->usergroup_add($usergroup->{node_id}, [$root->{node_id}]), "Add 'root' to the usergroup");
 ok($result->{code} == 200, "Return code on the add is 200");
 $usergroup = $result->{data};
-ok(scalar(@{$usergroup->{group}}) == 1, "There is one node in the group");
+ok(scalar(@{$usergroup->{group}||[]}) == 1, "There is one node in the group");
 ok($usergroup->{group}->[0]->{node_id} == $root->{node_id}, "Root is in the group");
 
 #Second add
 ok($result = $eapi->usergroup_add($usergroup->{node_id}, [$nm1->{node_id}]), "Add 'normaluser1' to the usergroup");
 ok($result->{code} == 200, "Return code on the add is 200");
 $usergroup = $result->{data};
-ok(scalar(@{$usergroup->{group}}) == 2, "There are two nodes in the group");
+ok(scalar(@{$usergroup->{group}||[]}) == 2, "There are two nodes in the group");
 ok($usergroup->{group}->[1]->{node_id} == $nm1->{node_id}, "Normaluser1 is in the group");
 
 #Single remove
@@ -91,7 +91,7 @@ ok($result->{code} == 403, "Non-owner delete returns Forbidden");
 ok($result = $eapi->get_node_by_id($usergroup->{node_id}), "Normaluser1 gets the node by id");
 ok($result->{code} == 200, "Guest user get by id returns 200");
 $usergroup = $result->{data};
-ok(scalar(@{$usergroup->{group}}) == 1, "There is one node in the group");
+ok(scalar(@{$usergroup->{group}||[]}) == 1, "There is one node in the group");
 
 ok($eapi->logout, "Log out okay");
 ok($eapi->login("root","blah"), "Log back in as root");

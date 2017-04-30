@@ -113,34 +113,6 @@ sub get
   return [$self->HTTP_UNIMPLEMENTED];
 }
 
-sub post
-{
-  my ($self, $REQUEST) = @_;
-  $self->devLog("Handling with post catchall: ".$REQUEST->url(-absolute=>1));
-  return [$self->HTTP_UNIMPLEMENTED];
-}
-
-sub put
-{
-  my ($self, $REQUEST) = @_;
-  $self->devLog("Handling with put catchall: ".$REQUEST->url(-absolute=>1));
-  return [$self->HTTP_UNIMPLEMENTED];
-}
-
-sub patch
-{
-  my ($self, $REQUEST) = @_;
-  $self->devLog("Handling with patch catchall: ".$REQUEST->url(-absolute=>1));
-  return [$self->HTTP_UNIMPLEMENTED];
-}
-
-sub delete
-{
-  my ($self, $REQUEST) = @_;
-  $self->devLog("Handling with delete catchall: ".$REQUEST->url(-absolute=>1));
-  return [$self->HTTP_UNIMPLEMENTED];
-}
-
 sub parse_postdata
 {
   my ($self, $REQUEST) = @_;

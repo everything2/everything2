@@ -19,37 +19,37 @@ sub _build_group
 
 sub group_remove
 {
-  my ($self, $items_to_remove) = @_;
+  my ($self, $items_to_remove, $user) = @_;
 
-  my $newgroup = [];
-  foreach my $group_item (@{$self->NODEDATA->{group}})
+  foreach my $item (@$items_to_remove)
   {
-    my $found = 0;
-    foreach my $item (@$items_to_remove)
+    my $itemnode = $self->APP->node_by_id($item);
+    unless($itemnode)
     {
-      if($group_item == $item)
-      {
-        $found = 1;
-        last;
-      }
+      $self->devLog("Couldn't find item node for id: $item");
+      next;
     }
-    unless($found)
-    {
-      push @$newgroup, $group_item;
-    }
+    $self->DB->removeFromNodegroup($self->NODEDATA, $itemnode->NODEDATA, $user->NODEDATA);
   }
+  $self->DB->updateNode($self->NODEDATA, $user->NODEDATA);
 
-  $self->NODEDATA->{group} = $newgroup;
+  $self->NODEDATA($self->DB->getNodeById($self->node_id));
   $self->group($self->_build_group);
   return $self;
 }
 
 sub group_add
 {
-  my ($self, $items_to_add) = @_;
+  my ($self, $items_to_add, $user) = @_;
 
   foreach my $item (@$items_to_add)
   {
+    my $itemnode = $self->APP->node_by_id($item);
+    unless($itemnode)
+    {
+      $self->devLog("Couldn't find item node for id: $item");
+      next;
+    }
     my $found = 0;
     foreach my $group_item (@{$self->NODEDATA->{group}})
     {
@@ -61,10 +61,12 @@ sub group_add
     }
     unless($found)
     {
-      push @{$self->NODEDATA->{group}},$item;
+      $self->DB->insertIntoNodegroup($self->NODEDATA, $user->NODEDATA, $itemnode->NODEDATA);
     }
   }
+  $self->DB->updateNode($self->NODEDATA, $user->NODEDATA);
 
+  $self->NODEDATA($self->DB->getNodeById($self->node_id));
   $self->group($self->_build_group);
   return $self;
 }

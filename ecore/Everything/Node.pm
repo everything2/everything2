@@ -134,14 +134,20 @@ sub field_whitelist
 sub createtime
 {
   my ($self) = @_;
-  return $self->{NODEDATA}->{createtime};
+  return $self->NODEDATA->{createtime};
+}
+
+sub update
+{
+  my ($self, $user) = @_;
+  return $self->DB->updateNode($self->NODEDATA, $user->NODEDATA)
 }
 
 sub delete
 {
   my ($self, $user) = @_;
 
-  return $self->DB->nukeNode($self->{NODEDATA}, $user->{NODEDATA});
+  return $self->DB->nukeNode($self->NODEDATA, $user->NODEDATA);
 }
 
 __PACKAGE__->meta->make_immutable;

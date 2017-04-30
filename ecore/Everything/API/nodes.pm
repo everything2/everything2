@@ -2,6 +2,7 @@ package Everything::API::nodes;
 
 use strict;
 use Moose;
+use URI::Escape;
 
 extends 'Everything::API';
 
@@ -13,7 +14,8 @@ sub routes
   "/" => "get",
   "/:id" => "get_id(:id)",
   "/:id/action/delete" => "delete(:id)",
-  "create" => "create"
+  "create" => "create",
+  "lookup/:type/:title" => "get_by_name(:type,:title)"
   }
 }
 
@@ -22,6 +24,39 @@ sub get
   my ($self, $REQUEST, $version, $id) = @_;
 
   return [$self->HTTP_UNIMPLEMENTED];
+}
+
+sub get_by_name
+{
+  my ($self, $REQUEST, $version, $type, $title) = @_;
+  $self->devLog("Doing node lookup for: title: $title, type: $type");
+
+  $type = uri_unescape($type);
+  $title = uri_unescape($title);
+
+  # Works around an ecore bug which throws an ISE on non-existent nodetype
+  my $nodetype = $self->APP->node_by_name($type,"nodetype");
+  unless($nodetype)
+  {
+    return [$self->HTTP_NOT_FOUND];
+  }
+
+  my $node = $self->APP->node_by_name(uri_unescape($title), uri_unescape($type));
+
+  unless($node)
+  {
+    return [$self->HTTP_NOT_FOUND];
+  }
+
+  my $user = $self->APP->node_by_id($REQUEST->USER->{user_id});
+  if($node->can_read_node($user))
+  {
+    return [$self->HTTP_OK, $node->json_display($user)];
+  }else{
+    $self->devLog("Could not read node per can_read_node. Returning FORBIDDEN");
+    return [$self->HTTP_FORBIDDEN];
+  }
+
 }
 
 sub get_id
