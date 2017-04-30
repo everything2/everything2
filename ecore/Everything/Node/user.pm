@@ -37,7 +37,7 @@ override 'json_display' => sub
     }
   }
 
-  foreach my $num("experience","GP","numwriteups","numcools")
+  foreach my $num("experience","GP","numwriteups","numcools","is_online")
   {
     $values->{$num} = int($self->$num);
   }
@@ -164,6 +164,20 @@ sub deliver_message
   $self->DB->sqlInsert("message",{"author_user" => $messagedata->{from}->node_id,"for_user" => $self->node_id,"msgtext" => $messagedata->{message}});
 
   return {"successes" => 1};
+}
+
+sub is_online
+{
+  my ($self) = @_;
+  
+  my $count = $self->DB->sqlSelect("count(*)","room","member_user=".$self->node_id);
+  return $count;
+}
+
+sub get_online_messages_always
+{
+  my ($self) = @_;
+  return $self->VARS->{getofflinemsgs};
 }
 
 __PACKAGE__->meta->make_immutable;
