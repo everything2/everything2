@@ -130,6 +130,8 @@ Returns all of the items returned by /api/nodes/:id for that id, plus the follow
 * **missions** - User-inputted text field for "mission drive within everything" as listed on homenode
 * **employment** - User-inputted text field for "school/company" as listed on homenode
 * **motto** - User-inputted text field for "motto" as listed on homenode
+* **is_online** - Whether the user is online. This is mostly used internally to send ONO messages, but could be used for other features in the future
+* **message_forward_to** - Node reference to message recipient if this is a chatterbox forward
 
 ## Usergroups
 
