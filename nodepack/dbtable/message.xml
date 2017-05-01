@@ -8,7 +8,6 @@
   `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `for_user` int(11) NOT NULL DEFAULT '0',
   `room` int(11) NOT NULL DEFAULT '0',
-  `fullmessage_id` int(11) NOT NULL DEFAULT '0',
   `archive` tinyint(1) NOT NULL DEFAULT '0',
   `for_usergroup` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`message_id`),
