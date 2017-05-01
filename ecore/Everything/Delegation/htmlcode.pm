@@ -8907,7 +8907,6 @@ sub sendPrivateMessage
 
     # message_id is auto
     # room is 0
-    # fullmessage_id was never implemented (thank christ)
   }
 
   # inform user of any problems
