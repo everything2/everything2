@@ -104,7 +104,7 @@ sub insert
     }
   }
 
-  my $new_node_id = $self->DB->insertNode($title, $self->typeclass, $user->NODEDATA,$allowed_data);
+  my $new_node_id = $self->DB->insertNode($title, $self->typeclass, $user->NODEDATA,$allowed_data, "skip maintenances");
   return unless $new_node_id;
   $self->NODEDATA($self->DB->getNodeById($new_node_id));
   return $self;
@@ -140,14 +140,14 @@ sub createtime
 sub update
 {
   my ($self, $user) = @_;
-  return $self->DB->updateNode($self->NODEDATA, $user->NODEDATA)
+  return $self->DB->updateNode($self->NODEDATA, $user->NODEDATA, undef, "skip maintenance")
 }
 
 sub delete
 {
   my ($self, $user) = @_;
 
-  return $self->DB->nukeNode($self->NODEDATA, $user->NODEDATA);
+  return $self->DB->nukeNode($self->NODEDATA, $user->NODEDATA, undef, "skip maintenances");
 }
 
 __PACKAGE__->meta->make_immutable;
