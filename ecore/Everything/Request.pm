@@ -146,6 +146,20 @@ sub get_current_user
   return $user;
 }
 
+sub get_api_version
+{
+  my ($self) = @_;
+ 
+  my $accept_header = $ENV{HTTP_ACCEPT}; 
+  if(defined($accept_header) and my ($version) = $accept_header =~ /application\/vnd\.e2\.v(\d+)/)
+  {
+    $self->devLog("Explicitly requesting API version $version");
+    return $version;
+  }
+  $self->devLog("No API version requested, defaulting to CURRENT_VERSION");
+  return undef;
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

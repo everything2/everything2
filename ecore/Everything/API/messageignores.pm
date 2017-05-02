@@ -17,14 +17,14 @@ sub routes
 
 sub get_all
 {
-  my ($self, $REQUEST, $version) = @_;
+  my ($self, $REQUEST) = @_;
 
   return [$self->HTTP_OK, $self->APP->get_message_ignores($REQUEST->USER)];
 }
 
 sub create
 {
-  my ($self, $REQUEST, $version) = @_;
+  my ($self, $REQUEST) = @_;
 
   my $data = $self->parse_postdata($REQUEST);
 
@@ -46,7 +46,7 @@ sub create
 
 sub get_single
 {
-  my ($self, $REQUEST, $version, $id) = @_;
+  my ($self, $REQUEST, $id) = @_;
 
   my $ignore = $self->APP->is_ignoring_messages($REQUEST->USER,int($id));
   if($ignore)
@@ -59,7 +59,7 @@ sub get_single
 
 sub delete
 {
-  my ($self, $REQUEST, $version, $id) = @_;
+  my ($self, $REQUEST, $id) = @_;
 
   return [$self->HTTP_OK, $self->APP->message_ignore_set($REQUEST->USER,int($id),0)];
 }

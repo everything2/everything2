@@ -390,10 +390,12 @@ sub updateLogin
 {
 	my ($this, $user, $query, $cookie) = @_;
 
+        $this->devLog("Updating login for user to salt: $user->{title}");
+
 	return 0 if substr($query -> param('passwd'), 0, 10) ne $user -> {passwd}
 		&& $this->urlDecode($cookie) ne $user -> {title}.'|'.crypt($user -> {passwd}, $user -> {title});
 
-	$this -> updatePassword($user, $user -> {passwd});
+	$this->updatePassword($user, $user -> {passwd});
 
 	# set new login cookie, unless we're going to anyway (and avoid infinite loop)
 	Everything::HTML::oplogin() unless $query -> param('op') eq 'login';
@@ -2137,7 +2139,17 @@ sub confirmUser
   my ($this, $username, $pass, $cookie, $query) = @_;
 
   my $user = $this->{db}->getNode($username, 'user');
-  return 0 unless $user && $user->{acctlock} == 0;
+  unless($user)
+  {
+    $this->devLog("Could not log in with user: $username as it does not exist");
+    return 0;
+  }
+
+  unless($user->{acctlock} == 0)
+  {
+    $this->devLog("Could not log into logged account: $username");
+    return 0;
+  }
 
   unless ($cookie)
   {
@@ -2151,7 +2163,11 @@ sub confirmUser
   }
 
   return $user if $pass eq $user->{passwd};
-  return 0 if $user->{salt};
+  if($user->{salt})
+  {
+    $this->devLog("Could not log in because password is salted but doesn't equal what is given");
+    return 0;
+  }
 
   # legacy user with unsalted password
   return $this->updateLogin($user, $query, $cookie);

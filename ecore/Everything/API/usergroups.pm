@@ -17,7 +17,7 @@ around 'routes' => sub {
 
 sub _group_operation_permissions
 {
-  my ($orig, $self, $REQUEST, $version, $id) = @_;
+  my ($orig, $self, $REQUEST, $id) = @_;
 
   my $user = $self->APP->node_by_id($REQUEST->USER->{node_id});
   if($user->is_guest)

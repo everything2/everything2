@@ -31,7 +31,7 @@ sub _build_routechooser
 
   my $routes = $self->routes;
   my $subroutineref;
-  my $perlcode = 'sub { my $REQUEST=shift;my $version = shift; my $path=shift;';
+  my $perlcode = 'sub { my $REQUEST=shift;my $path=shift;';
 
   foreach my $route(keys %{$routes})
   {
@@ -83,7 +83,7 @@ sub _build_routechooser
     $perlcode .= '$self->'.$subref.'(';
     $arguments ||= "";
     $arguments =~ s/\:/\$/g;
-    $perlcode .= '$REQUEST,$version,'."$arguments)};";
+    $perlcode .= '$REQUEST,'."$arguments)};";
  
   }
   $perlcode .= '$self->devLog("Could not choose route for $path");';
@@ -132,7 +132,8 @@ sub route
   $self->devLog("Choosing route for $path in '".ref($self)."'");
   # Since Moose is giving me trouble with this, I'll let mod_perl cover me
   # TODO: The right way with Moose Meta 
-  my $version = $self->get_api_version($REQUEST);
+  my $version = $REQUEST->get_api_version;
+  $version = $self->CURRENT_VERSION unless(defined($version));
 
   if($version == 0 || $version > $self->CURRENT_VERSION)
   {
@@ -147,25 +148,9 @@ sub route
   }
 
   $self->{routerchooser} ||= $self->_build_routechooser;
-
-  return $self->{routerchooser}->($REQUEST, $version, $path);
-
+  return $self->{routerchooser}->($REQUEST, $path);
 }
 
-sub get_api_version
-{
-  my ($self, $REQUEST) = @_;
- 
-  my $accept_header = $ENV{HTTP_ACCEPT}; 
-  if(defined($accept_header) and my ($version) = $accept_header =~ /application\/vnd\.e2\.v(\d+)/)
-  {
-    $self->devLog("Explicitly requesting API version $version");
-    return $version;
-  }else{
-    $self->devLog("No API version requested, defaulting to CURRENT_VERSION");
-    return $self->CURRENT_VERSION
-  }
-}
 
 sub unauthorized_if_guest
 {

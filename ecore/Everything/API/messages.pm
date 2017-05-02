@@ -19,7 +19,7 @@ sub routes
 
 sub get_all
 {
-  my ($self, $REQUEST, $version) = @_;
+  my ($self, $REQUEST) = @_;
 
   my $limit = int($REQUEST->cgi->param("limit")) || undef;
   my $offset = int($REQUEST->cgi->param("offset")) || undef;
@@ -28,7 +28,7 @@ sub get_all
 
 sub create
 {
-  my ($self, $REQUEST, $version) = @_;
+  my ($self, $REQUEST) = @_;
 
   my $data = $self->parse_postdata($REQUEST);
 
@@ -100,7 +100,7 @@ sub delete
 
 sub _message_operation_okay
 {
-  my ($orig, $self, $REQUEST, $version, $id) = @_;
+  my ($orig, $self, $REQUEST, $id) = @_;
 
   # TODO: The Moose method wrapping won't let me get away with this
   if($self->APP->isGuest($REQUEST->USER))

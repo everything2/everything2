@@ -19,7 +19,9 @@ sub routes
 
 sub get
 {
-  my ($self, $REQUEST, $version) = @_;
+  my ($self, $REQUEST) = @_;
+
+  my $version = $REQUEST->get_api_version || $self->CURRENT_VERSION;
 
   if($version == 2)
   {

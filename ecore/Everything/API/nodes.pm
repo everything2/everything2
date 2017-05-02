@@ -21,14 +21,14 @@ sub routes
 
 sub get
 {
-  my ($self, $REQUEST, $version, $id) = @_;
+  my ($self, $REQUEST, $id) = @_;
 
   return [$self->HTTP_UNIMPLEMENTED];
 }
 
 sub get_by_name
 {
-  my ($self, $REQUEST, $version, $type, $title) = @_;
+  my ($self, $REQUEST, $type, $title) = @_;
   $self->devLog("Doing node lookup for: title: $title, type: $type");
 
   $type = uri_unescape($type);
@@ -81,7 +81,7 @@ sub get_id
 
 sub create
 {
-  my ($self, $REQUEST, $version) = @_;
+  my ($self, $REQUEST) = @_;
 
   my $user = $self->APP->node_by_id($REQUEST->USER->{node_id});
 
@@ -151,7 +151,7 @@ sub node_type
 
 sub _can_read_okay
 {
-  my ($orig, $self, $REQUEST, $version, $id) = @_;
+  my ($orig, $self, $REQUEST, $id) = @_;
 
   my $node = $self->APP->node_by_id(int($id));
 
@@ -175,7 +175,7 @@ sub _can_read_okay
 
 sub delete
 {
-  my ($self, $REQUEST, $verison, $id) = @_;
+  my ($self, $REQUEST, $id) = @_;
 
   my $node = $self->APP->node_by_id($id);
 

@@ -21,7 +21,7 @@ my $api_versions = {0 => 400, 1 => 410, 2 => 200, 3 => 200};
 foreach my $api_version(keys %$api_versions)
 { 
   $request->header('Accept' => 'application/vnd.e2.v'.$api_version);
-  ok(my $response = $ua->request($request));
+  ok(my $response = $ua->request($request), "Make the version $api_version request");
   ok($response->code == $api_versions->{$api_version}, "Version $api_version should return ".$api_versions->{$api_version});
 
   my $testdata;
