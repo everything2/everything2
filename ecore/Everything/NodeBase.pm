@@ -983,7 +983,7 @@ sub closeTransaction
 #
 sub updateNode
 {
-	my ($this, $NODE, $USER, $light) = @_;
+	my ($this, $NODE, $USER, $light, $skip_maintenance) = @_;
 	my %VALUES;
 	my $tableArray;
 
@@ -995,7 +995,7 @@ sub updateNode
 	# be getting the same hash as $NODE from the cache. This is because evalCode
 	# is pretty dumb, but I'm stuck with it for right now
 
-	$this->nodeMaintenance($NODE, "preupdate");
+	$this->nodeMaintenance($NODE, "preupdate") unless $skip_maintenance;
 
 	# We extract the values from the node for each table that it joins
 	# on and update each table individually.
@@ -1088,7 +1088,7 @@ SQLEND
 	$ORIGINAL_NODE = undef;
 
 	# This node has just been updated.  Do any maintenance if needed.
-	$this->nodeMaintenance($NODE, 'update');
+	$this->nodeMaintenance($NODE, 'update') unless $skip_maintenance;
 
 	return 1;
 }
@@ -1102,15 +1102,15 @@ SQLEND
 #		if it is, update it, otherwise insert the node as new
 #
 sub replaceNode {
-	my ($this, $title, $TYPE, $USER, $DATA) = @_;
+	my ($this, $title, $TYPE, $USER, $DATA, $skip_maintenance) = @_;
 
 	if (my $N = $this->getNode($title, $TYPE)) {
 		if ($this->canUpdateNode($USER,$N)) {
 			@$N{keys %$DATA} = values %$DATA if $DATA;
-			$this->updateNode($N, $USER);
+			$this->updateNode($N, $USER, undef, $skip_maintenance);
 		}
 	} else { 
-		$this->insertNode($title, $TYPE, $USER, $DATA);
+		$this->insertNode($title, $TYPE, $USER, $DATA, $skip_maintenance);
 	}
 }
 
@@ -1134,7 +1134,7 @@ sub replaceNode {
 #
 sub insertNode
 {
-	my ($this, $title, $TYPE, $USER, $DATA) = @_;
+	my ($this, $title, $TYPE, $USER, $DATA, $skip_maintenance) = @_;
 	my $tableArray;
 	my $table;
 	my $NODE;
@@ -1195,12 +1195,12 @@ sub insertNode
 	# This node has just been created.  Do any maintenance if needed.
 	# We do this here before calling updateNode below to make sure that
 	# the 'created' routines are executed before any 'update' routines.
-	$this->nodeMaintenance($NODE, 'create');
+	$this->nodeMaintenance($NODE, 'create') unless $skip_maintenance;
 
 	if ($DATA)
 	{
 		@$NODE{keys %$DATA} = values %$DATA;
-		$this->updateNode($NODE, $USER); 
+		$this->updateNode($NODE, $USER, undef, $skip_maintenance); 
 	}
 
 	return $node_id;
@@ -1254,7 +1254,7 @@ sub tombstoneNode {
 #	
 sub nukeNode
 {
-	my ($this, $NODE, $USER, $NOTOMB) = @_;
+	my ($this, $NODE, $USER, $NOTOMB, $skip_maintenance) = @_;
 	my $tableArray;
 	my $table;
 	my $result = 0;
@@ -1267,7 +1267,7 @@ sub nukeNode
 	$this->tombstoneNode($NODE, $USER) unless $NOTOMB;
 
 	# This node is about to be deleted.  Do any maintenance if needed.
-	$this->nodeMaintenance($NODE, 'delete');
+	$this->nodeMaintenance($NODE, 'delete') unless $skip_maintenance;
 	
 	# Delete this node from the cache that we keep.
 	$this->{cache}->incrementGlobalVersion($NODE);
