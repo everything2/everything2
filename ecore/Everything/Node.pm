@@ -89,23 +89,24 @@ sub json_display
 sub insert
 {
   my ($self, $user, $data) = @_;
+  $self->devLog("Insert called by user '".$user->title."' with data ".$self->JSON->encode($data));
 
   my $title = $data->{title};
-  return unless $title;
-  delete $data->{title};
-
-  my $allowed_data = {};
-
-  foreach my $key (@{$self->field_whitelist})
+  unless(defined $title)
   {
-    if(exists($data->{$key}))
-    {
-      $allowed_data->{$key} = $data->{$key};
-    }
+    $self->devLog("Everything::Node::insert: Didn't get a title in the \$data hash, returning");
+    return;
   }
 
-  my $new_node_id = $self->DB->insertNode($title, $self->typeclass, $user->NODEDATA,$allowed_data, "skip maintenances");
-  return unless $new_node_id;
+  delete $data->{title};
+
+  my $new_node_id = $self->DB->insertNode($title, $self->typeclass, $user->NODEDATA,$data, "skip maintenances");
+  unless($new_node_id)
+  {
+    $self->devLog("Did not get good node_id back from insertNode. Returning");
+    return;
+  }
+
   $self->NODEDATA($self->DB->getNodeById($new_node_id));
   return $self;
 }
@@ -125,11 +126,6 @@ sub typeclass
   return $string;
 }
 
-sub field_whitelist
-{
-  my ($self) = @_;
-  return [];
-}
 
 sub createtime
 {
