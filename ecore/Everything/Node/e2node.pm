@@ -52,5 +52,13 @@ sub softlinks
   return $softlinks;
 }
 
+around 'insert' => sub {
+ my ($orig, $self, $user, $data) = @_;
+
+ $data->{author_user} = $self->APP->node_by_name("Content Editors","usergroup")->node_id;
+
+ return $self->$orig($user, $data);
+};
+
 __PACKAGE__->meta->make_immutable;
 1;

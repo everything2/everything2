@@ -14,12 +14,14 @@ unless($APP->inDevEnvironment())
 }
 
 my $eapi = Everything::APIClient->new("endpoint" => "http://localhost/api");
-
+my $description = "This is a description!<br>";
 ok($eapi->login("root","blah"), "Log in as root");
-ok(my $result = $eapi->create_usergroup({"title" => "My usergroup ".time(),"doctext" => "This is a description!"}), "Usergroup create returns a non undef structure");
+ok(my $result = $eapi->create_usergroup({"title" => "My usergroup ".time(),"doctext" => $description}), "Usergroup create returns a non undef structure");
 ok($result->{code} == 200, "200 OK returned from usergroup creation");
 my $usergroup = $result->{usergroup};
 ok($usergroup->{node_id} != 0, "Non-zero node_id is returned");
+ok($usergroup->{doctext} eq $description);
+
 ok(!exists($usergroup->{group}), "Group is empty");
 
 ok(my $root = $eapi->get_node("root","user")->{data}, "Get user for root");

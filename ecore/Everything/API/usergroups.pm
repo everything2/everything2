@@ -69,6 +69,13 @@ sub removeuser
   return [$self->HTTP_OK, $group->json_display($user)];
 }
 
+sub field_whitelist 
+{
+  my ($self) = @_;
+  return ["title","doctext"];
+}
+
+
 around ['adduser','removeuser'] => \&_group_operation_permissions; 
 
 __PACKAGE__->meta->make_immutable;

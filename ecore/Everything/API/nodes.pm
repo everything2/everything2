@@ -88,7 +88,7 @@ sub create
   if($user->is_guest)
   {
     $self->devLog("Guest cannot access create endpoint");
-    return [$self->HTTP_UNAUTHORIZED] if $user->is_guest;
+    return [$self->HTTP_UNAUTHORIZED];
   }
 
   unless($self->CREATE_ALLOWED)
@@ -110,12 +110,30 @@ sub create
     $self->devLog("User ".$user->title." can't create node for of type ".$self->node_type.". Returning FORBIDDEN");
     return [$self->HTTP_FORBIDDEN];
   }
-  my $node = $newnode->insert($user, $self->parse_postdata($REQUEST));
+
+  my $postdata = $self->parse_postdata($REQUEST);
+  my $allowed_data = {};
+
+  foreach my $key (@{$self->field_whitelist},"title")
+  {
+    if(exists($postdata->{$key}))
+    {
+      $allowed_data->{$key} = $postdata->{$key};
+    }
+  }
+
+  unless(exists $allowed_data->{title})
+  {
+    $self->devLog("No title in POST data for node creation. Returning BAD REQUEST");
+    return [$self->HTTP_BAD_REQUEST];
+  }
+
+  my $node = $newnode->insert($user, $allowed_data);
 
   unless($node)
   {
     $self->devLog("Didn't get a good node back from the insert routine, having to return UNAUTHORIZED");
-    return [$self->HTTP_UNAUTHORIZED] unless $node;
+    return [$self->HTTP_UNAUTHORIZED];
   }
 
   return [$self->HTTP_OK, $node->json_display($user)];
@@ -177,6 +195,12 @@ sub delete
     $self->devLog("Could not delete node per can_delete_node. Returning FORBIDDEN");
     return [$self->HTTP_FORBIDDEN];
   }
+}
+
+sub field_whitelist
+{
+  my ($self) = @_;
+  return [];
 }
 
 around ['get_id'] => \&_can_read_okay;
