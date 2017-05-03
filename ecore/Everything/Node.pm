@@ -135,8 +135,24 @@ sub createtime
 
 sub update
 {
-  my ($self, $user) = @_;
-  return $self->DB->updateNode($self->NODEDATA, $user->NODEDATA, undef, "skip maintenance")
+  my ($self, $user, $data) = @_;
+
+  $self->devLog("Attempting to update node: ".$self->title." (".$self->node_id.") as user: ".$user->title);
+  $self->devLog("Received update overwrite data: ".$self->JSON->encode([$data]));
+  my $NODEDATA = $self->NODEDATA;
+  foreach my $key (keys %$data)
+  {
+    $self->devLog("Overwriting data in node for key $key");
+    $NODEDATA->{$key} = $data->{$key};
+  }
+  $self->NODEDATA($NODEDATA);
+  if($self->DB->updateNode($self->NODEDATA, $user->NODEDATA, undef, "skip maintenance"))
+  {
+    my $newnode = $self->APP->node_by_id($self->node_id);
+    return $newnode;
+  }else{
+    return;
+  }
 }
 
 sub delete
@@ -144,6 +160,13 @@ sub delete
   my ($self, $user) = @_;
 
   return $self->DB->nukeNode($self->NODEDATA, $user->NODEDATA, undef, "skip maintenances");
+}
+
+sub field_whitelist
+{
+  my ($self, $user) = @_;
+
+  return [];
 }
 
 __PACKAGE__->meta->make_immutable;

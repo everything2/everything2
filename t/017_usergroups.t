@@ -20,8 +20,15 @@ ok(my $result = $eapi->create_usergroup({"title" => "My usergroup ".time(),"doct
 ok($result->{code} == 200, "200 OK returned from usergroup creation");
 my $usergroup = $result->{usergroup};
 ok($usergroup->{node_id} != 0, "Non-zero node_id is returned");
-ok($usergroup->{doctext} eq $description);
+ok($usergroup->{doctext} eq $description, "Description matches what was passed");
 
+# Description update
+$description.= "A second line of text<br>";
+ok($result = $eapi->update_node($usergroup->{node_id}, {"doctext" => $description}), "Update description field of usergroup");
+ok($result->{code} == 200, "Result of update is 200 OK");
+ok($result->{data}->{doctext} eq $description, "Document text got updated properly");
+
+# User adding
 ok(!exists($usergroup->{group}), "Group is empty");
 
 ok(my $root = $eapi->get_node("root","user")->{data}, "Get user for root");
@@ -73,7 +80,7 @@ ok($eapi->logout,"Log out of root");
 
 # Guest user group add
 ok($result = $eapi->usergroup_add($usergroup->{node_id}, [$root->{node_id}]), "Try to add as guest user");
-ok($result->{code} == 401, "Return code is Unauthorized");
+ok($result->{code} == 403, "Return code is Forbidden");
 ok($result = $eapi->get_node_by_id($usergroup->{node_id}), "Guest user gets the node by id");
 ok($result->{code} == 200, "Guest user get by id returns 200");
 $usergroup = $result->{data};

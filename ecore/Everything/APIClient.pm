@@ -185,6 +185,12 @@ sub delete_node
   $self->_format_response($self->ua->get($self->endpoint."/nodes/$node_id/action/delete"));
 }
 
+sub update_node
+{
+  my ($self, $node_id, $data) = @_;
+  $self->_format_response($self->_do_post($self->endpoint."/nodes/$node_id/action/update",$data));
+}
+
 sub get_node_by_id
 {
   my ($self, $node_id) = @_;
