@@ -22,5 +22,12 @@ sub doctext
   return $self->NODEDATA->{doctext};
 }
 
+sub field_whitelist
+{
+  my ($self, $user) = @_;
+
+  return ["doctext"];
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

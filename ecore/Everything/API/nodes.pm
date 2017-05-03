@@ -115,7 +115,7 @@ sub create
   my $postdata = $REQUEST->JSON_POSTDATA;
   my $allowed_data = {};
 
-  foreach my $key (@{$self->field_whitelist},"title")
+  foreach my $key (@{$newnode->field_whitelist},"title")
   {
     if(exists($postdata->{$key}))
     {
@@ -142,14 +142,30 @@ sub create
 
 sub update
 {
-  my ($self, $REQUEST, $id) = @_;
+  my ($self, $REQUEST, $node, $user) = @_;
 
-  my $user = $self->APP->node_by_id($REQUEST->USER->{node_id});
-  
-  if($user->is_guest)
-  { 
-    $self->devLog("Guest cannot access update endpoint");
-    return [$self->HTTP_UNAUTHORIZED];
+  my $postdata = $REQUEST->JSON_POSTDATA;
+
+  my $allowed_data = {};
+ 
+  $self->devLog("Available update keys are: ".$self->JSON->encode($node->field_whitelist)); 
+  foreach my $key (@{$node->field_whitelist})
+  {
+    if(exists($postdata->{$key}))
+    {
+      $self->devLog("Found request to update key '$key'");
+      $allowed_data->{$key} = $postdata->{$key};
+    }
+  }
+
+  $node = $node->update($user, $allowed_data);
+  if($node)
+  {
+    $self->devLog("Update successful, returning new node object as JSON");
+    return [$self->HTTP_OK, $node->json_display($user)];
+  }else{
+    $self->devLog("Update went wrong for some reason, returning FORBIDDEN");
+    return [$self->HTTP_FORBIDDEN];
   }
 
 }
@@ -168,58 +184,82 @@ sub _can_read_okay
 {
   my ($orig, $self, $REQUEST, $id) = @_;
 
+  my $output = $self->_can_action_okay($REQUEST, "read", $id);
+
+  # On success: true, node, user
+  # On failure: false, error
+  if($output->[0])
+  {
+    return $self->$orig($output->[1], $output->[2]);
+  }else{
+    return [$output->[1]];
+  }
+
+}
+
+sub _can_update_okay
+{
+  my ($orig, $self, $REQUEST, $id) = @_; 
+
+  my $output = $self->_can_action_okay($REQUEST, "update", $id);
+  if($output->[0])
+  {
+    return $self->$orig($REQUEST, $output->[1], $output->[2]);
+  }else{
+    return [$output->[1]];
+  }
+}
+
+sub _can_delete_okay
+{
+  my ($orig, $self, $REQUEST, $id) = @_; 
+
+  my $output = $self->_can_action_okay($REQUEST, "delete", $id);
+  if($output->[0])
+  {
+    return $self->$orig($REQUEST, $output->[1], $output->[2]);
+  }else{
+    return [$output->[1]];
+  }
+}
+
+sub _can_action_okay
+{
+  my ($self, $REQUEST, $action, $id) = @_;
+  
   my $node = $self->APP->node_by_id(int($id));
 
-  # We need a cleanly blessed node object to continue
   unless($node)
   {
     $self->devLog("Could not get blessed node reference for id: $id. Returning UNIMPLEMENTED");
-    return [$self->HTTP_UNIMPLEMENTED];
+    return [0, $self->HTTP_UNIMPLEMENTED];
   }
 
   my $user = $self->APP->node_by_id($REQUEST->USER->{user_id});
-  if($node->can_read_node($user))
+  my $check = "can_".$action."_node";
+  if($node->$check($user))
   {
-    return $self->$orig($node,$user);
+    return [1,$node,$user];
   }else{
-    $self->devLog("Could not read node per can_read_node. Returning FORBIDDEN");
-    return [$self->HTTP_FORBIDDEN];
+    $self->devLog("Could not $action node per can_".$action."_node. Returning FORBIDDEN");
+    return [0,$self->HTTP_FORBIDDEN];
   }
-
 }
+
 
 sub delete
 {
-  my ($self, $REQUEST, $id) = @_;
+  my ($self, $REQUEST, $node, $user) = @_;
 
-  my $node = $self->APP->node_by_id($id);
-
-  unless($node)
-  {
-    $self->devLog("Could not get blessed node reference for id: $id. Returning NOT FOUND");
-    return [$self->HTTP_NOT_FOUND];
-  }
-
-  my $user = $self->APP->node_by_id($REQUEST->USER->{user_id});
   my $node_id = $node->node_id;
-  if($node->can_delete_node($user))
-  {
-    $node->delete($user);
-    return [$self->HTTP_OK, {"deleted" => $node_id}];
-  }else{
-    $self->devLog("Could not delete node per can_delete_node. Returning FORBIDDEN");
-    return [$self->HTTP_FORBIDDEN];
-  }
-}
-
-sub field_whitelist
-{
-  my ($self) = @_;
-  return [];
+  $node->delete($user);
+  return [$self->HTTP_OK, {"deleted" => $node_id}];
 }
 
 around ['get_id'] => \&_can_read_okay;
- 
+around ['delete'] => \&_can_delete_okay;
+around ['update'] => \&_can_update_okay;
+
 __PACKAGE__->meta->make_immutable;
 1;
 

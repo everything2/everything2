@@ -20,24 +20,14 @@ sub _group_operation_permissions
 {
   my ($orig, $self, $REQUEST, $id) = @_;
 
-  my $user = $self->APP->node_by_id($REQUEST->USER->{node_id});
-  if($user->is_guest)
+  my $output = $self->_can_action_okay($REQUEST, "update", $id);
+  my ($node, $user) = (undef, undef);
+  if($output->[0])
   {
-    $self->devLog("User is not logged in and thus can never perform these functions. Returning UNAUTHORIZED");
-    return [$self->HTTP_UNAUTHORIZED];
-  }
-
-  my $group = $self->APP->node_by_id($id);
-  unless($group)
-  {
-    $self->devLog("Could not find node by id: $id. Returning NOT FOUND");
-    return [$self->HTTP_NOT_FOUND];
-  }
-
-  unless($group->can_update_node($user))
-  {
-    $self->devLog("User doesn't have permission to update node ".$group->title." (".$group->node_id."). Returning FORBIDDEN");
-    return [$self->HTTP_FORBIDDEN];
+    $node = $output->[1];
+    $user = $output->[2];
+  }else{
+    return [$output->[1]];
   }
 
   my $data = $REQUEST->JSON_POSTDATA;
@@ -48,8 +38,7 @@ sub _group_operation_permissions
     return [$self->BAD_REQUEST];
   }
 
-  return $self->$orig($user, $group, $data, $id);
-
+  return $self->$orig($user, $node, $data);
 }
 
 sub adduser
@@ -69,13 +58,6 @@ sub removeuser
 
   return [$self->HTTP_OK, $group->json_display($user)];
 }
-
-sub field_whitelist 
-{
-  my ($self) = @_;
-  return ["title","doctext"];
-}
-
 
 around ['adduser','removeuser'] => \&_group_operation_permissions; 
 

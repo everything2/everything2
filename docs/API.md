@@ -98,6 +98,22 @@ Returns 404 NOT FOUND if the node does not exist
 On success returns a has with one key:
 * **deleted**: The node_id of the removed node 
 
+### /api/nodes/:id/action/update
+
+Updates the node if the user has permission to do so
+
+Returns 403 FORBIDDEN if the user does not have permission
+
+Returns 404 NOT FOUND if the node does not exist
+
+On success, returns the json display of the newly updated node
+
+The fields that are allowed to be updated work on a whitelist system. The following node type and field combinations are allowed:
+
+* **users** - doctext
+* **documents** - doctext
+* **usergroups** - doctext
+
 ### /api/nodes/lookup/:type/:title
 
 Looks up the node by type and title. Note that this currently does not properly handle returning multiple nodes of the same title back.
