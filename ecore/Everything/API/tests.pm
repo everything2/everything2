@@ -1,6 +1,5 @@
 package Everything::API::tests;
 
-use strict;
 use Moose;
 use namespace::autoclean;
 

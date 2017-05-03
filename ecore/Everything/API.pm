@@ -1,6 +1,5 @@
 package Everything::API;
 use Moose;
-use strict;
 use JSON;
 use namespace::autoclean;
 
@@ -112,18 +111,6 @@ sub get
   $self->devLog("Handling with get catchall: ".$REQUEST->url(-absolute=>1));
   return [$self->HTTP_UNIMPLEMENTED];
 }
-
-sub parse_postdata
-{
-  my ($self, $REQUEST) = @_;
-  $self->devLog("parse_postdata: ".$REQUEST->POSTDATA);
-  if(!$REQUEST->POSTDATA)
-  {
-    return {};
-  }
-  return JSON::from_json($REQUEST->POSTDATA);  
-}
-
 
 sub route
 {

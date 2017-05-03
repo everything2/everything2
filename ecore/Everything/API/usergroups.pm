@@ -4,6 +4,7 @@ use Moose;
 extends 'Everything::API::nodes';
 
 has 'CREATE_ALLOWED' => (is => 'ro', isa => 'Int', default => 1);
+has 'UPDATE_ALLOWED' => (is => 'ro', isa => 'Int', default => 1);
 
 around 'routes' => sub {
   my ($orig, $self) = @_;
@@ -39,7 +40,7 @@ sub _group_operation_permissions
     return [$self->HTTP_FORBIDDEN];
   }
 
-  my $data = $self->parse_postdata($REQUEST);
+  my $data = $REQUEST->JSON_POSTDATA;
   
   unless(ref $data eq "ARRAY")
   {

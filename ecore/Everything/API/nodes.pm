@@ -1,12 +1,12 @@
 package Everything::API::nodes;
 
-use strict;
 use Moose;
 use URI::Escape;
 
 extends 'Everything::API';
 
 has 'CREATE_ALLOWED' => (is => 'ro', isa => 'Int', default => 0);
+has 'UPDATE_ALLOWED' => (is => 'ro', isa => 'Int', default => 0);
 
 sub routes
 { 
@@ -15,6 +15,7 @@ sub routes
   "/:id" => "get_id(:id)",
   "/:id/action/delete" => "delete(:id)",
   "create" => "create",
+  "/:id/action/update" => "update(:id)",
   "lookup/:type/:title" => "get_by_name(:type,:title)"
   }
 }
@@ -111,7 +112,7 @@ sub create
     return [$self->HTTP_FORBIDDEN];
   }
 
-  my $postdata = $self->parse_postdata($REQUEST);
+  my $postdata = $REQUEST->JSON_POSTDATA;
   my $allowed_data = {};
 
   foreach my $key (@{$self->field_whitelist},"title")
@@ -137,6 +138,20 @@ sub create
   }
 
   return [$self->HTTP_OK, $node->json_display($user)];
+}
+
+sub update
+{
+  my ($self, $REQUEST, $id) = @_;
+
+  my $user = $self->APP->node_by_id($REQUEST->USER->{node_id});
+  
+  if($user->is_guest)
+  { 
+    $self->devLog("Guest cannot access update endpoint");
+    return [$self->HTTP_UNAUTHORIZED];
+  }
+
 }
 
 sub node_type
