@@ -30,6 +30,15 @@ sub POSTDATA
   }
 }
 
+sub JSON_POSTDATA
+{
+  my $self = shift;
+  my $postdata = $self->POSTDATA;
+  $self->devLog("Parsing POST data: ".$postdata);
+  return {} unless $postdata;
+  return $self->JSON->decode($postdata);
+}
+
 sub _build_user
 {
   my $self = shift;

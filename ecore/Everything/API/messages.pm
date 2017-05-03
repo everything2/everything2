@@ -1,6 +1,5 @@
 package Everything::API::messages;
 
-use strict;
 use Moose;
 use namespace::autoclean;
 extends 'Everything::API';
@@ -30,7 +29,7 @@ sub create
 {
   my ($self, $REQUEST) = @_;
 
-  my $data = $self->parse_postdata($REQUEST);
+  my $data = $REQUEST->JSON_POSTDATA;
 
   if($data->{message})
   {

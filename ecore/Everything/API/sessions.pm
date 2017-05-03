@@ -60,7 +60,7 @@ sub get
 sub create
 {
   my ($self, $REQUEST) = @_;
-  my $data = $self->parse_postdata($REQUEST);
+  my $data = $REQUEST->JSON_POSTDATA;
 
   if($data->{username} and $data->{passwd})
   {
