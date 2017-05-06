@@ -1221,7 +1221,7 @@ sub password_field
 
   $query -> delete('oldpass', $name.1, $name.2);
 
-  return $str . '<label>Your current password:'.$query -> password_field(-name=>"oldpass", size=>10, maxlength=>10, -label=>'') . '</label><br>
+  return $str . '<label>Your current password:'.$query->password_field(-name=>"oldpass", size=>10, maxlength=>10, -label=>'') . '</label><br>
 
   <label>Enter a new password:'.$query->password_field(-name=>$name.'1', size=>10, maxlength=>10).'</label><br>
 
