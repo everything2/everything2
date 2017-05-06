@@ -23,10 +23,10 @@ sub POSTDATA
 
   if($encoding eq "application/json")
   {
-    return $self->cgi->param("POSTDATA");
+    return $self->param("POSTDATA");
   }elsif($encoding eq "application/x-www-form-urlencoded")
   {
-    return $self->cgi->param("data");
+    return $self->param("data");
   }
 }
 
@@ -112,7 +112,10 @@ sub login
   my $self = shift;
   $self->USER($self->get_current_user(@_));
   $self->VARS(Everything::getVars($self->USER));
+  return $self->USER;
 }
+
+# Completely reimplements the CGI-entangled logic of Everything::Application::confirmUser
 
 sub get_current_user
 {
@@ -121,21 +124,87 @@ sub get_current_user
 
   my $username = $inputs->{username};
   my $pass = $inputs->{pass};
-  my $cookie = $inputs->{cookie};
+  my $originalpass = $pass;
+  my $cookie = undef;
+
+  $self->devLog("Got get_current_user with u/p: $username, $pass");
 
   unless ($username && $pass)
   {
     $cookie = $self->cookie($self->CONF->cookiepass);
-    ($username, $pass) = split(/\|/, $cookie) if $cookie;
+    if($cookie)
+    {
+      ($username, $pass) = split(/\|/, $cookie);
+      $self->devLog("Cookie found for '$username', attempting login from that");
+    }
   }
 
-  my $user;
-  if($username && $pass)
+  my $user = undef;
+
+  if($username)
   {
-    $user = $self->APP->confirmUser($username, $pass, $cookie, $self->cgi);
+    $user = $self->APP->node_by_name($username, "user");
+    unless($user)
+    {
+      $self->devLog("Could not get blessed node for user: '$username'");
+    }
+  }
+
+  if($user)
+  {
+    if($user->locked)
+    {
+      $self->devLog("Account is locked: $username");
+    }else{
+       unless($cookie)
+       {
+          # Check for a password reset token
+          if($self->param('token'))
+          {
+            $self->APP->checkToken($user->NODEDATA, $self->cgi);
+          }
+
+          if($pass)
+          {
+            $pass = $self->APP->hashString($pass, $user->salt);
+          }
+       }
+      if($username && ($pass || $originalpass))
+      {
+        if($pass eq $user->passwd)
+        {
+          $self->devLog("Salted password accepted for user: ".$user->title); 
+          $user = $user->NODEDATA;
+          print $self->header({-cookie => $self->make_login_cookie($user)});
+        }else{
+          $self->devLog("Salted password not accepted by default for user: ".$user->title);
+          if($user->salt)
+          {
+            $self->devLog("User has salt available, therefore bad login");
+            $user = undef;
+          }else{
+            $self->devLog("No salt available, therefore legacy password method");
+            if(substr($originalpass, 0, 10) ne $user->passwd && $self->APP->urlDecode($cookie) ne $user->title.'|'.crypt($user->passwd, $user->title))
+            {
+                $self->devLog("Could not verify password with legacy method '".substr($originalpass, 0, 10)."' vs '".$user->passwd."'");
+                $user = undef;
+            }else{
+                $user = $user->NODEDATA;
+                $self->APP->updatePassword($user, $user->{passwd});
+                print $self->header({-cookie => $self->make_login_cookie($user)});
+                $self->devLog("Successfully updated password and logged in as: ".$user->{title});
+            }
+          }
+        }
+      }else{
+        $self->devLog("Username and password not present, could not go any further. Username: $username Pass: $pass");
+      }
+    }
   }
   
   $user ||= $self->DB->getNodeById($self->CONF->guest_user);
+
+  
 
   return $user if !$user || $self->APP->isGuest($user) || $self->param('ajaxIdle');
   
@@ -167,6 +236,17 @@ sub get_api_version
   }
   $self->devLog("No API version requested, defaulting to CURRENT_VERSION");
   return undef;
+}
+
+sub make_login_cookie
+{
+  my ($self, $user) = @_;
+  my $expires = "";
+  if($self->cgi->param("expires"))
+  {
+    $expires = $self->cgi->param("expires");
+  }
+  return $self->cookie(-name => $self->CONF->cookiepass, -value => $user->{title}."|".$user->{passwd}, -expires => $expires);
 }
 
 __PACKAGE__->meta->make_immutable;

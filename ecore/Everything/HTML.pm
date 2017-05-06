@@ -1293,78 +1293,8 @@ sub opNuke
 
 sub opLogin
 {
-	my $user = $query->param("user");
-	my $passwd = $query->param("passwd");
-	$USER = loginUser($user, $passwd) if $user && $passwd;
-
-	return if !$USER || $APP->isGuest($USER); 
-
-	$user = $USER -> {title};
-	$passwd = $USER -> {passwd};
-
-	$USER -> {cookie} = $query -> cookie(
-		-name => $Everything::CONF->cookiepass
-		, -value => "$user|$passwd"
-		, -expires => $query->param('expires'));
-}
-
-#############################################################################
-#	Sub
-#		loginUser
-#
-#	Purpose
-#		log in user or set Guest User. Set $VARS. Update last seen
-#		time and room for logged in user
-#
-#	Parameters
-#		user name and plain text password, or none to use cookie
-#
-#	Returns
-#		user hashref
-#
-
-sub loginUser
-{
-	my ($username, $pass, $cookie) = @_;
-
-	unless ($username && $pass or !$query)
-	{
-		$cookie = $query->cookie($Everything::CONF->cookiepass)
-			#jb 5-19-02: To support wap phones and maybe other clients/configs without cookies:
-			|| $query->param($Everything::CONF->cookiepass);
-	
-		($username, $pass) = split(/\|/, $cookie) if $cookie;
-	}
-
-	my $user = $APP->confirmUser($username, $pass, $cookie, $query) if $username && $pass;
-	$user ||= getNodeById($Everything::CONF->guest_user);
-
-	$VARS = getVars($user);
-
-
-	return $user if !$user
-		|| $APP->isGuest($user)
-		|| $query -> param('ajaxIdle');
-
-
-
-	my $TIMEOUT_SECONDS = 4 * 60;
-
-	my $sth = $DB->getDatabaseHandle()->prepare("
-		CALL update_lastseen($$user{node_id});
-		");
-	$sth->execute();
-	my ($seconds_since_last, $now) = $sth->fetchrow_array();
-	$user->{lastseen} = $now;
-
-	$APP->insertIntoRoom($$user{in_room}, $user, $VARS)
-		if $seconds_since_last > $TIMEOUT_SECONDS;
-
-	$APP->logUserIp($user, $VARS);
-
-	$VARS->{browser} = $ENV{HTTP_USER_AGENT};
-
-	return $user;
+        $USER = $REQUEST->login("username" => $query->param("user"), "pass" => $query->param("passwd"));
+        $VARS = $REQUEST->VARS;
 }
 
 #############################################################################
@@ -1504,7 +1434,7 @@ sub mod_perlInit
 	clearGlobals();
 
 	Everything::initEverything();
-	
+
 	$REQUEST = Everything::Request->new;
 
 	# Initialize our connection to the database
@@ -1519,6 +1449,12 @@ sub mod_perlInit
 	set_die_handler(\&handle_errors);
 
 	$query = $REQUEST->cgi;
+
+	if($query and $query->param('token'))
+        {
+
+        }
+
 	$USER = $REQUEST->USER;
         $VARS = $REQUEST->VARS;
 

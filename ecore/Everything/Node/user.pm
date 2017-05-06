@@ -193,5 +193,23 @@ sub get_online_messages_always
   return $self->VARS->{getofflinemsgs};
 }
 
+sub locked
+{
+  my ($self) = @_;
+  return $self->NODEDATA->{acctlock};
+}
+
+sub salt
+{
+  my ($self) = @_;
+  return $self->NODEDATA->{salt};
+}
+
+sub passwd
+{
+  my ($self) = @_;
+  return $self->NODEDATA->{passwd};
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

@@ -68,7 +68,7 @@ sub create
     {
       if(!$self->APP->isGuest($REQUEST->USER))
       {
-        return [$self->HTTP_OK, $self->user_api_structure($REQUEST), {-cookie => $self->make_cookie($REQUEST)}];
+        return [$self->HTTP_OK, $self->user_api_structure($REQUEST)];
       }else{
         $self->devLog("Login came back as guest user, meaning bad password, returning 403 FORBIDDEN");
         return [$self->HTTP_FORBIDDEN];
@@ -83,11 +83,6 @@ sub create
   }
 }
 
-sub make_cookie
-{
-  my ($self, $REQUEST) = @_;
-  return $REQUEST->cookie(-name => $self->CONF->cookiepass, -value => $REQUEST->USER->{title}."|".$REQUEST->USER->{passwd});
-}
 
 sub delete
 {

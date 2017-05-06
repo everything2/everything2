@@ -392,13 +392,13 @@ sub updateLogin
 
         $this->devLog("Updating login for user to salt: $user->{title}");
 
-	return 0 if substr($query -> param('passwd'), 0, 10) ne $user -> {passwd}
-		&& $this->urlDecode($cookie) ne $user -> {title}.'|'.crypt($user -> {passwd}, $user -> {title});
+	  return 0 if substr($query->param('passwd'), 0, 10) ne $user->{passwd}
+		&& $this->urlDecode($cookie) ne $user->{title}.'|'.crypt($user->{passwd}, $user->{title});
 
-	$this->updatePassword($user, $user -> {passwd});
+	$this->updatePassword($user, $user->{passwd});
 
 	# set new login cookie, unless we're going to anyway (and avoid infinite loop)
-	Everything::HTML::oplogin() unless $query -> param('op') eq 'login';
+        Everything::HTML::oplogin() unless $query->param('op') eq 'login';
 	return $user;
 }
 
@@ -2098,11 +2098,7 @@ sub logUserIp {
   $$vars{ipaddy} = $addr;
 
   my $hour_limit = 24;
-  my $ipquery = qq|;
-    SELECT DISTINCT iplog_ipaddy
-    FROM iplog 
-    WHERE iplog_user = $$user{user_id}
-    AND iplog_time > DATE_SUB(NOW(), INTERVAL $hour_limit HOUR)|;
+  my $ipquery = qq|SELECT DISTINCT iplog_ipaddy FROM iplog WHERE iplog_user = $$user{user_id} AND iplog_time > DATE_SUB(NOW(), INTERVAL $hour_limit HOUR)|;
 
   my $previous_addrs = $this->{db}->getDatabaseHandle()->selectall_arrayref($ipquery);
   my %ignore_addrs = ( );
