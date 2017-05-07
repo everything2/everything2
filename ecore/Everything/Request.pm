@@ -8,8 +8,10 @@ use CGI;
 with 'Everything::Globals';
 
 has 'cgi' => (lazy => 1, builder => "_build_cgi", isa => "CGI", handles => ["param", "header", "cookie","url","request_method","path_info"], is => "rw");
-has 'USER' => (lazy => 1, builder => "_build_user", isa => "HashRef", is => "rw");
+has 'USER' => (lazy => 1, builder => "_build_user", isa => "HashRef", is => "rw", "trigger" => \&_user_trigger);
 has 'VARS' => (lazy => 1, builder => "_build_vars", isa => "HashRef", is => "rw");
+
+has 'user' => (lazy => 1, builder => "_build_blessed_user", isa => "Everything::Node::user", is => "rw", handles => ["is_guest","is_admin","is_developer","is_chanop","is_clientdev","is_editor"]);
 
 # Pageload is going to go away
 has 'PAGELOAD' => (isa => "HashRef", builder => "_build_pageload", is => "rw");
@@ -43,6 +45,19 @@ sub _build_user
 {
   my $self = shift;
   return $self->get_current_user;
+}
+
+sub _user_trigger
+{
+  my ($self, $user, $old_user) = @_;
+  $self->user($self->APP->node_by_id($user->{node_id}));
+}
+
+sub _build_blessed_user
+{
+  my $self = shift;
+
+  return $self->APP->node_by_id($self->USER->{node_id});
 }
 
 sub _build_pageload

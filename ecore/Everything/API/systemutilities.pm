@@ -11,9 +11,8 @@ sub routes
 sub roompurge
 {
   my ($self, $REQUEST) = @_;
-  my $user = $self->APP->node_by_id($REQUEST->USER->{user_id});
-  $self->devLog("Received roompurge request from ".$user->title);
-  if(!$user or !$user->is_admin)
+  $self->devLog("Received roompurge request from ".$REQUEST->user->title);
+  if(!$REQUEST->user->is_admin)
   {
     return [$self->HTTP_FORBIDDEN];
   }

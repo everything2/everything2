@@ -17,9 +17,9 @@ sub user_api_structure
 {
   my ($self, $REQUEST) = @_;
 
-  my $user = $self->APP->node_by_id($REQUEST->USER->{node_id});
-  my $is_guest = $user->is_guest;
+  my $is_guest = $REQUEST->is_guest;
 
+  my $user = $REQUEST->user;
   my $userinfo = {
     "display" => {"is_guest" => int($is_guest)}
   };
@@ -27,11 +27,11 @@ sub user_api_structure
   unless($user->is_guest)
   {
     my $powers = [];
-    push @$powers, "ed" if $user->is_editor;
-    push @$powers, "admin", if $user->is_admin;
-    push @$powers, "chanop" if $user->is_chanop;
-    push @$powers, "client" if $user->is_clientdev;
-    push @$powers, "dev", if $user->is_developer;
+    push @$powers, "ed" if $REQUEST->is_editor;
+    push @$powers, "admin", if $REQUEST->is_admin;
+    push @$powers, "chanop" if $REQUEST->is_chanop;
+    push @$powers, "client" if $REQUEST->is_clientdev;
+    push @$powers, "dev", if $REQUEST->is_developer;
     if(scalar @$powers)
     {
       $userinfo->{display}->{powers} = $powers;
@@ -66,7 +66,7 @@ sub create
   {
     if($REQUEST->login(username => $data->{username}, pass => $data->{passwd}))
     {
-      if(!$self->APP->isGuest($REQUEST->USER))
+      if(!$REQUEST->is_guest)
       {
         return [$self->HTTP_OK, $self->user_api_structure($REQUEST)];
       }else{

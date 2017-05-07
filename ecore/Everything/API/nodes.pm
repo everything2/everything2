@@ -49,10 +49,9 @@ sub get_by_name
     return [$self->HTTP_NOT_FOUND];
   }
 
-  my $user = $self->APP->node_by_id($REQUEST->USER->{user_id});
-  if($node->can_read_node($user))
+  if($node->can_read_node($REQUEST->user))
   {
-    return [$self->HTTP_OK, $node->json_display($user)];
+    return [$self->HTTP_OK, $node->json_display($REQUEST->user)];
   }else{
     $self->devLog("Could not read node per can_read_node. Returning FORBIDDEN");
     return [$self->HTTP_FORBIDDEN];
@@ -84,9 +83,7 @@ sub create
 {
   my ($self, $REQUEST) = @_;
 
-  my $user = $self->APP->node_by_id($REQUEST->USER->{node_id});
-
-  if($user->is_guest)
+  if($REQUEST->is_guest)
   {
     $self->devLog("Guest cannot access create endpoint");
     return [$self->HTTP_UNAUTHORIZED];
@@ -106,9 +103,9 @@ sub create
     return [$self->HTTP_UNIMPLEMENTED];
   }
 
-  unless($newnode->can_create_type($user))
+  unless($newnode->can_create_type($REQUEST->user))
   {
-    $self->devLog("User ".$user->title." can't create node for of type ".$self->node_type.". Returning FORBIDDEN");
+    $self->devLog("User ".$REQUEST->user->title." can't create node for of type ".$self->node_type.". Returning FORBIDDEN");
     return [$self->HTTP_FORBIDDEN];
   }
 
@@ -129,7 +126,7 @@ sub create
     return [$self->HTTP_BAD_REQUEST];
   }
 
-  my $node = $newnode->insert($user, $allowed_data);
+  my $node = $newnode->insert($REQUEST->user, $allowed_data);
 
   unless($node)
   {
@@ -137,7 +134,7 @@ sub create
     return [$self->HTTP_UNAUTHORIZED];
   }
 
-  return [$self->HTTP_OK, $node->json_display($user)];
+  return [$self->HTTP_OK, $node->json_display($REQUEST->user)];
 }
 
 sub update
@@ -235,11 +232,10 @@ sub _can_action_okay
     return [0, $self->HTTP_UNIMPLEMENTED];
   }
 
-  my $user = $self->APP->node_by_id($REQUEST->USER->{user_id});
   my $check = "can_".$action."_node";
-  if($node->$check($user))
+  if($node->$check($REQUEST->user))
   {
-    return [1,$node,$user];
+    return [1,$node,$REQUEST->user];
   }else{
     $self->devLog("Could not $action node per can_".$action."_node. Returning FORBIDDEN");
     return [0,$self->HTTP_FORBIDDEN];
