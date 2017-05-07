@@ -11,7 +11,11 @@ override 'json_display' => sub
   my $values = super();
 
   my $group = [];
-  $values->{author} = $self->author->json_reference;
+  my $createdby = $self->APP->node_by_id($self->createdby_user || 0);
+  if($createdby)
+  {
+    $values->{createdby} = $createdby->json_reference;
+  }
 
   foreach my $writeup (@{$self->group || []})
   {
@@ -31,6 +35,12 @@ override 'json_display' => sub
   }
   return $values;
 };
+
+sub createdby_user
+{
+  my ($self) = @_;
+  return $self->NODEDATA->{createdby_user};
+}
 
 sub softlinks
 {
@@ -54,10 +64,10 @@ sub softlinks
 
 around 'insert' => sub {
  my ($orig, $self, $user, $data) = @_;
-
- $data->{author_user} = $self->APP->node_by_name("Content Editors","usergroup")->node_id;
-
- return $self->$orig($user, $data);
+ 
+ my $newnode = $self->$orig($user, $data);
+ $newnode->update($user, {"author_user" => $self->APP->node_by_name("Content Editors","usergroup")->node_id});
+ return $newnode;
 };
 
 __PACKAGE__->meta->make_immutable;

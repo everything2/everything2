@@ -137,7 +137,18 @@ sub update
 {
   my ($self, $user, $data) = @_;
 
-  $self->devLog("Attempting to update node: ".$self->title." (".$self->node_id.") as user: ".$user->title);
+  my $updater_title = undef;
+  my $user_struct = undef;
+  if($user and $user eq "-1")
+  {
+    $updater_title = "root";
+    $user_struct = -1;
+  }else{
+    $updater_title = $user->title;
+    $user_struct = $user->NODEDATA;
+  }
+
+  $self->devLog("Attempting to update node: ".$self->title." (".$self->node_id.") as user: $updater_title");
   $self->devLog("Received update overwrite data: ".$self->JSON->encode([$data]));
   my $NODEDATA = $self->NODEDATA;
   foreach my $key (keys %$data)
@@ -146,7 +157,7 @@ sub update
     $NODEDATA->{$key} = $data->{$key};
   }
   $self->NODEDATA($NODEDATA);
-  if($self->DB->updateNode($self->NODEDATA, $user->NODEDATA, undef, "skip maintenance"))
+  if($self->DB->updateNode($self->NODEDATA, $user_struct, undef, "skip maintenance"))
   {
     my $newnode = $self->APP->node_by_id($self->node_id);
     return $newnode;

@@ -126,6 +126,8 @@ sub create
     return [$self->HTTP_BAD_REQUEST];
   }
 
+  $allowed_data->{createdby_user} = $REQUEST->user->node_id;
+
   my $node = $newnode->insert($REQUEST->user, $allowed_data);
 
   unless($node)
