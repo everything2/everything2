@@ -203,4 +203,10 @@ sub get_node
   $self->_format_response($self->ua->get($self->endpoint."/nodes/lookup/$type/$title"));
 }
 
+sub roompurge
+{
+  my ($self) = @_;
+  $self->_format_response($self->ua->get($self->endpoint."/systemutilities/roompurge"));
+}
+
 1;

@@ -1450,11 +1450,6 @@ sub mod_perlInit
 
 	$query = $REQUEST->cgi;
 
-	if($query and $query->param('token'))
-        {
-
-        }
-
 	$USER = $REQUEST->USER;
         $VARS = $REQUEST->VARS;
 
