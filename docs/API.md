@@ -372,6 +372,12 @@ Tears down the current session. Not explicitly needed since no on-server state i
 
 Returns the output of /api/sessions for the new current user, which is probably Guest User. Logging out Guest User has no other effect.
 
+## System Utilities
+
+### /api/systemutilities/roompurge
+
+(Admin only) Kicks all users "offline" for the purposes of ONO messages. Desirable mostly for testing
+
 ## Searches
 
 ## Tests
