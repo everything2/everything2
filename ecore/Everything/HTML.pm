@@ -12,6 +12,7 @@ use strict;
 use Everything;
 use Everything::Delegation::htmlcode;
 use Everything::Delegation::opcode;
+use Everything::Delegation::container;
 use Compress::Zlib;
 use Everything::Request;
 
@@ -848,25 +849,6 @@ sub genContainer {
 }
 
 
-############################################################################
-#	Sub	containHtml
-#
-#	purpose
-#		Wrap a given block of HTML in a container specified by title
-#		hopefully this makes containers easier to use
-#
-#	params
-#		container - title of container
-#		html - html to insert
-#
-sub containHtml {
-	my ($container, $html) =@_;
-	my ($TAINER) = getNode($container, getType("container"));
-	my ($pre, $post) = genContainer($TAINER);
-	return $pre.$html.$post;
-}
-
-
 #############################################################################
 #	Sub
 #		displayPage
@@ -916,8 +898,21 @@ sub displayPage
 	die "NO PAGE!" unless $page;
 
 	$page = parseCode($page, $NODE);
-	
-	if ($$PAGE{parent_container}) {
+
+        my $container_node = $DB->getNodeById($$PAGE{parent_container});
+        my $container_sub = "nothing";
+        if($container_node)
+        {
+          $container_sub = $container_node->{title};
+          $container_sub =~ s/ /_/g;
+          $APP->devLog("Found container node: $container_node->{title}, using '$container_sub'"); 
+        }
+
+        if($container_node and my $delegation = Everything::Delegation::container->can($container_sub))
+        {
+		$APP->devLog("Using Everything::Delegation::container::$container_sub for node: '$NODE->{title}'");
+                $page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $page);
+        }elsif ($$PAGE{parent_container}) {
 		my ($pre, $post) = genContainer($$PAGE{parent_container});
 		$page = $pre.$page.$post;
 	}
