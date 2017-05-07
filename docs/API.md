@@ -226,6 +226,7 @@ Returns all of the items in /api/nodes/:id, plus the following:
 
 * **group** - If there are writeups in the node, a listing of /api/writeups objects
 * **softlinks** - An array of node references with an additional parameter: ``hits``. They are in hits order
+* **createdby** - Node reference to the user that created the e2node. Internally, all e2nodes are owned by "Content Editors" so they cannot be retitled or deleted by random users.
 
 ### /api/e2nodes/create
 
