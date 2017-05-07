@@ -76,6 +76,11 @@ sub output
   $headers->{status} = $response_code;
   $headers->{charset} = "utf-8";
   $headers->{type} = "application/json";
+  
+  if($self->CONF->{environment} eq "development")
+  {
+    $headers->{'-Access-Control-Allow-Origin'} = '*';
+  }
 
   print $REQUEST->header($headers);
   if($data)
