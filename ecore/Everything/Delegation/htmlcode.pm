@@ -965,7 +965,9 @@ sub listcode
 
   my $type = $codenode->{type}->{title};
 
-  if($codenode->{delegated})
+  my $delegated = $type eq "container" || $type eq "htmlcode" || $type eq "opcode" || $type eq "maintenance";
+
+  if($delegated)
   {
     $code = "Error: could not find code in delegated $type";
     my $file="/var/everything/ecore/Everything/Delegation/$type.pm";
@@ -987,6 +989,10 @@ sub listcode
       my $mainttype = getNodeById($NODE->{maintain_nodetype})->{title};
       my $maintop = $NODE->{maintaintype};
       $name = $mainttype."_".$maintop;
+    }elsif($NODE->{type}->{title} eq "container"){
+      my $container_name = $NODE->{title};
+      $container_name =~ s/ /_/g;
+      $name = $container_name;
     }else{
       $name="$$NODE{title}";
     }
@@ -1041,9 +1047,9 @@ sub listcode
   #breaks the form on code edit pages an' patching a patch may get confusing.
   return $text.$code if ($query->param('displaytype') eq 'edit' or $$codenode{type}{title} eq 'patch');
 
-  if($codenode->{delegated})
+  if($delegated)
   {
-    return $code. '<strong>This is a "delegated" code, part of the transition of removing routines from the database. To submit a patch, you must do so on <a href="https://github.com/everything2/everything2/blob/master/ecore/Everything/Delegation/htmlcode.pm">github</a></strong>';
+    return $code. '<strong>This is a "delegated" code, part of the transition of removing routines from the database. To submit a patch, you must do so on <a href="https://github.com/everything2/everything2/blob/master/ecore/Everything/Delegation/'.$NODE->{type}->{title}.'.pm">github</a></strong>';
   }
 
   return $text unless $APP->isDeveloper($USER);
