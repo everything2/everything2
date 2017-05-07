@@ -60,7 +60,7 @@ sub zen_stdcontainer
 . '" media="screen,tv,projection">' ;
 
   if (exists(($$VARS{customstyle})) && defined(($$VARS{customstyle}))) {
-	return qq|<style type="text/css">|.$APP->htmlScreen($$VARS{customstyle}).'</style>';
+	$str .= qq|<style type="text/css">|.$APP->htmlScreen($$VARS{customstyle}).'</style>';
   }
 	
   $str .= qq|<link rel="stylesheet" id="printsheet" type="text/css" href="|.htmlcode("linkStylesheet","print").qq|" media="print">|;
