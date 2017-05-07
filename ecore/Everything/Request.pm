@@ -190,7 +190,10 @@ sub get_current_user
         {
           $self->devLog("Salted password accepted for user: ".$user->title); 
           $user = $user->NODEDATA;
-          print $self->header({-cookie => $self->make_login_cookie($user)});
+          unless($cookie)
+          {
+            print $self->header({-cookie => $self->make_login_cookie($user)});
+          }
         }else{
           $self->devLog("Salted password not accepted by default for user: ".$user->title);
           if($user->salt)
@@ -206,7 +209,10 @@ sub get_current_user
             }else{
                 $user = $user->NODEDATA;
                 $self->APP->updatePassword($user, $user->{passwd});
-                print $self->header({-cookie => $self->make_login_cookie($user)});
+                unless($cookie)
+                {
+                  print $self->header({-cookie => $self->make_login_cookie($user)});
+                }
                 $self->devLog("Successfully updated password and logged in as: ".$user->{title});
             }
           }
@@ -260,6 +266,7 @@ sub make_login_cookie
   if($self->cgi->param("expires"))
   {
     $expires = $self->cgi->param("expires");
+    $self->devLog("Got expires checkbox: $expires");
   }
   return $self->cookie(-name => $self->CONF->cookiepass, -value => $user->{title}."|".$user->{passwd}, -expires => $expires);
 }
