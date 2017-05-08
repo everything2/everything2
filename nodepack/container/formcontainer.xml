@@ -2,23 +2,6 @@
   <type_nodetype>2</type_nodetype>
   <parent_container>1854175</parent_container>
   <node_id>18</node_id>
-  <context>[%
-$query-&gt;start_form(-method=&gt;'POST', action=&gt;$ENV{script_name}, name=&gt;'pagebody', id=&gt;'pagebody') .
-$query-&gt;hidden('displaytype') .
-$query-&gt;hidden('node_id', getId($NODE));
-%]
-[%
-if ($NODE &amp;&amp; $$NODE{type} &amp;&amp; $query-&gt;param('displaytype') eq 'edit') {
-  my $type = $$NODE{type}{title};
-  return htmlcode('verifyRequestForm', &quot;edit_$type&quot;);
-} else {
-  return &quot;&quot;;
-}
-%]
-CONTAINED_STUFF
-[%
-$query-&gt;submit('sexisgood', 'stumbit') .
-$query-&gt;end_form;
-%]</context>
+  <context></context>
   <title>formcontainer</title>
 </node>
