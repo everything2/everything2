@@ -1280,7 +1280,6 @@ sub nodelet_meta_container
     my $current_nodelet = $DB->getNodeById($_);
     $nodeletNum++;
     unless(defined $current_nodelet) {
-      $str .= sprintf($errWrapper, 'Ack! Unable to get nodelet '.$_.'.</td></tr>');
       next;
     }
 
