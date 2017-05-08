@@ -101,7 +101,6 @@ sub zen_stdcontainer
   }
   
   $str .= qq|<meta content="width=device-width; initial-scale=1.0; user-scalable=1;"name="viewport">| if isMobile();
-  $str .= qq|<meta content="hello">|;
   $str .= qq|<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     </head><body class="|;
   $str .= 'writeuppage ' if $$NODE{e2node_id} || $$NODE{writeup_id} || $$NODE{draft_id};
