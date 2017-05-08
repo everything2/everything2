@@ -219,6 +219,7 @@ sub get_current_user
         }
       }else{
         $self->devLog("Username and password not present, could not go any further. Username: $username Pass: $pass");
+  	$user = $self->DB->getNodeById($self->CONF->guest_user);
       }
     }
   }
