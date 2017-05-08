@@ -946,9 +946,6 @@ sub groupeditor
   return $str;
 }
 
-# This lists the code for a particular node. 
-# TODO: Refactor this once delegation is done and patches are dead
-
 sub listcode
 {
   my $DB = shift;
@@ -989,10 +986,6 @@ sub listcode
       my $mainttype = getNodeById($NODE->{maintain_nodetype})->{title};
       my $maintop = $NODE->{maintaintype};
       $name = $mainttype."_".$maintop;
-    }elsif($NODE->{type}->{title} eq "container"){
-      my $container_name = $NODE->{title};
-      $container_name =~ s/ /_/g;
-      $name = $container_name;
     }else{
       $name="$$NODE{title}";
     }

@@ -900,17 +900,10 @@ sub displayPage
 	$page = parseCode($page, $NODE);
 
         my $container_node = $DB->getNodeById($$PAGE{parent_container});
-        my $container_sub = "nothing";
-        if($container_node)
-        {
-          $container_sub = $container_node->{title};
-          $container_sub =~ s/ /_/g;
-          $APP->devLog("Found container node: $container_node->{title}, using '$container_sub'"); 
-        }
 
-        if($container_node and my $delegation = Everything::Delegation::container->can($container_sub))
+        if($container_node and my $delegation = Everything::Delegation::container->can($container_node->{title}))
         {
-		$APP->devLog("Using Everything::Delegation::container::$container_sub for node: '$NODE->{title}'");
+		$APP->devLog("Using Everything::Delegation::container::$container_node->{title} for node: '$NODE->{title}'");
                 $page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $page);
         }elsif ($$PAGE{parent_container}) {
 		my ($pre, $post) = genContainer($$PAGE{parent_container});
