@@ -2,30 +2,6 @@
   <type_nodetype>2</type_nodetype>
   <parent_container>0</parent_container>
   <node_id>926672</node_id>
-  <context>&lt;html&gt;
-&lt;head&gt;
-&lt;META NAME=&quot;robots&quot; CONTENT=&quot;noindex&quot;&gt;
-&lt;style&gt;
-body {
-  color:black;
-  background:white;
-}
-
-a:link {
-  color:black;
-  text-decoration:none;
-}
-&lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;title&gt;[&quot;$$NODE{title}&quot;]&lt;/title&gt;
-&lt;center&gt;
-&lt;table width=90%&gt;
-&lt;tr&gt;&lt;td&gt;
-CONTAINED_STUFF
-&lt;/td&gt;
-&lt;/table&gt;
-&lt;/body&gt;
-&lt;/html&gt; </context>
-  <title>printable container</title>
+  <context></context>
+  <title>printable_container</title>
 </node>

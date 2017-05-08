@@ -2,63 +2,6 @@
   <type_nodetype>2</type_nodetype>
   <parent_container>1854174</parent_container>
   <node_id>1854175</node_id>
-  <context>[{zenadheader}]
-[%
- # Mobile has a wrapper around everything, instead of using CSS media selectors. We can eventually reduce it to that, but for now:
- return qq|&lt;div id=&quot;mobilewrapper&quot;&gt;| if isMobile();
-%]
-&lt;div id='header'&gt;
-[% return &quot;&quot;; ($APP-&gt;use_bootstrap)?(qq|&lt;nav class=&quot;navbar navbar-default&quot;&gt;&lt;div class=&quot;container-fluid&quot;&gt;|):(qq|&lt;div id='header'&gt;|); %]
-[%
-my $epid = getNode('Epicenter','nodelet')-&gt;{node_id};
-return htmlcode('epicenterZen') if $$VARS{nodelets} &amp;&amp; $$VARS{nodelets} !~ /\b$epid\b/;
-'';
-%]
-[% 
- if(isMobile())
- {
-    return htmlcode(&quot;searchform&quot;);
- }else{
-    return qq|&lt;div id='searchform'&gt;|.htmlcode(&quot;zensearchform&quot;).qq|&lt;/div&gt;|;
- }
-%]
-&lt;div id='e2logo'&gt;&lt;a href=&quot;/&quot;&gt;Everything&lt;span id=&quot;e2logo2&quot;&gt;2&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;
-
-[%
-  return &quot;&quot;;
-  if($APP-&gt;use_bootstrap)
-  {
-    return qq|&lt;/div&gt;&lt;/nav&gt;|;
-  }else{
-    return qq|&lt;/div&gt;|;
-  }
-%]
-&lt;/div&gt;
-&lt;!-- header --&gt;
-[{zenMobileTabs}]
-&lt;div id='wrapper'&gt;
-[{guestuserbanner}]
-  &lt;div id='mainbody' itemprop=&quot;mainContentOfPage&quot;&gt;
-
-
-&lt;!-- google_ad_section_start --&gt;
-[{page header}]
-    CONTAINED_STUFF
-&lt;!-- google_ad_section_end --&gt;
-&lt;/div&gt;
-&lt;div id='sidebar'[%
-    return ' class=&quot;pagenodelets&quot;' if $PAGELOAD-&gt;{pagenodelets};
-%]&gt;
-
-[{nodelet meta-container}]
-&lt;/div&gt;&lt;!-- end sidebar --&gt;
-&lt;/div&gt;
-&lt;div id='footer'&gt;
-[{zenFooter}]
-&lt;/div&gt;
-[%
-  # Close the mobilewrapper
-  return qq|&lt;/div&gt;|;
-%]</context>
-  <title>zen container</title>
+  <context></context>
+  <title>zen_container</title>
 </node>
