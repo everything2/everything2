@@ -390,30 +390,6 @@
     <rank>1</rank>
   </group>
   <group>
-    <node_id>1685943</node_id>
-    <orderby>12</orderby>
-    <nodegroup_id>216</nodegroup_id>
-    <rank>12</rank>
-  </group>
-  <group>
-    <node_id>1685943</node_id>
-    <orderby>12</orderby>
-    <nodegroup_id>1685949</nodegroup_id>
-    <rank>12</rank>
-  </group>
-  <group>
-    <node_id>1686097</node_id>
-    <orderby>11</orderby>
-    <nodegroup_id>1685949</nodegroup_id>
-    <rank>11</rank>
-  </group>
-  <group>
-    <node_id>1686097</node_id>
-    <orderby>13</orderby>
-    <nodegroup_id>1685949</nodegroup_id>
-    <rank>13</rank>
-  </group>
-  <group>
     <node_id>1689202</node_id>
     <orderby>13</orderby>
     <nodegroup_id>216</nodegroup_id>
