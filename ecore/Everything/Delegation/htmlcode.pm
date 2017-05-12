@@ -10417,7 +10417,7 @@ sub zenwriteups
   my $instructions = '<li' ;
   my %newwuspecials = () ;
 
-  unless($APP->isGuest($USER))
+  unless($APP->isGuest($USER) || scalar(@wus) == 0)
   {
     my $sql = "SELECT vote_id
       FROM vote
