@@ -1,6 +1,21 @@
 // 1874924.js "default javascript"
 // Used on every pageload
 
+function replyToCB(s, onlineonly) {
+        var mbox = jQuery('#message')[0] ;
+        mbox.value = ( onlineonly ? '/msg? ' : '/msg ' ) + s + " ";
+        // move the cursor to the end of the text box
+        if (mbox.createTextRange) { // IE
+                var r = mbox.createTextRange();
+                r.moveStart('character', mbox.value.length);
+                r.select();
+        } else { // other, in particular webkit
+                mbox.focus();
+                if (mbox.setSelectionRange)
+                        mbox.setSelectionRange(mbox.value.length, mbox.value.length);
+        }
+}
+
 // jQuery BBQ deparam shim
     function e2URL (url) {
       this.url = url;
