@@ -74,12 +74,6 @@ return $email;
 &lt;p&gt;You can remove your bookmarks:&lt;/p&gt;
 &lt;input type=&quot;button&quot; value=&quot;Check All&quot; id=&quot;checkall&quot; style=&quot;display:none&quot;&gt;
 [{showbookmarks:edit}]
-&lt;script&gt;&lt;!--
-if (jQuery('#bookmarklist li').length &gt; 1) {
-   jQuery('#checkall').show(
-   	).click(function(){jQuery('#bookmarklist input').attr('checked','true');});
-}
-// --&gt;&lt;/script&gt;
 [{closeform}]
 
 &lt;p align=&quot;center&quot;&gt;Your current homenode bio is shown below:&lt;/p&gt;
