@@ -5054,7 +5054,9 @@ sub rearrangenodelets
   my %names = ('0'=>'(none)');
   my @ids = (@{ getNode($nodeletgroup,'nodeletgroup')->{group} });
   foreach(@ids,@selected){ # include @selected in case user has a non-standard nodelet selected
-    $names{$_} ||= getNodeById($_)->{title};
+    my $n = getNodeById($_);
+    next unless $n;
+    $names{$_} ||= $n->{title};
   }
   @ids = sort { lc($names{$a}) cmp lc($names{$b}) } keys %names; # keys to include non-standard
 
