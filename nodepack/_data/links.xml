@@ -197,13 +197,6 @@
   </link>
   <link>
     <linktype>779713</linktype>
-    <food>507</food>
-    <hits>8</hits>
-    <to_node>1985920</to_node>
-    <from_node>2014296</from_node>
-  </link>
-  <link>
-    <linktype>779713</linktype>
     <food>500</food>
     <hits>1</hits>
     <to_node>1986695</to_node>
@@ -341,13 +334,6 @@
     <hits>1</hits>
     <to_node>2014296</to_node>
     <from_node>1979477</from_node>
-  </link>
-  <link>
-    <linktype>779713</linktype>
-    <food>500</food>
-    <hits>1</hits>
-    <to_node>2014296</to_node>
-    <from_node>1985920</from_node>
   </link>
   <link>
     <linktype>779713</linktype>
