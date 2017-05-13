@@ -2066,7 +2066,7 @@ sub showbookmarks
   if ($edit and $createform) {
     $str.=htmlcode('closeform');
   } elsif ( $count) {
-    my $javascript = '<script type="text/javascript" src="/js/1985920.js"></script>'."\n";
+    my $javascript = '';
 
     $javascript .= '<p><a href="javascript:void(0);" onclick="sort(this)" list_id="bookmarklist" order="desc" '
       .'sortby="nodename">Sort by name</a> ';
