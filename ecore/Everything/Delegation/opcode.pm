@@ -985,11 +985,6 @@ sub message
     setVars($U, $V);
     $DB->sqlUpdate('room', {borgd => '1'}, 'member_user='.getId($U));
 
-    # update nodelet
-    my $OTHERUSERS = getNode('other users', 'nodelet');
-    $$OTHERUSERS{nltext} =  Everything::HTML::parseCode($$OTHERUSERS{nlcode}, $OTHERUSERS);
-    updateNode($OTHERUSERS, -1);
-
     htmlcode('addNotification', 'chanop borged user', 0, {
       chanop_id => $USER->{node_id},
       user_id => $U->{node_id} });
@@ -1833,11 +1828,6 @@ sub borg
   $query->param('borgcount'.$victimID,$$V{numborged}); #shown in [admin toolset]
 
   $DB->sqlUpdate('room',{borgd=>'1'},'member_user='.$victimID);
-
-  # TODO: Seriously remove this.
-  my $OTHERUSERS = getNode('other users','nodelet');
-  $$OTHERUSERS{nltext} = Everything::HTML::parseCode($$OTHERUSERS{nlcode},$OTHERUSERS);
-  updateNode($OTHERUSERS,-1);
 
   return;
 }
