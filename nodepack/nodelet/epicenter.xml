@@ -1,67 +1,8 @@
 <node>
   <nltext></nltext>
-  <parent_container>1854181</parent_container>
+  <parent_container>0</parent_container>
   <type_nodetype>9</type_nodetype>
   <node_id>262</node_id>
-  <nlcode>[{borgcheck}][%
-
-return '' if $APP-&gt;isGuest($USER);
-
-my ($loginStr, $votesLeftStr, $expStr, $serverTimeStr);
-
-#####LOGIN STRING
-
-$loginStr = &quot;
-&lt;ul&gt;
-	&lt;li&gt;&quot;.linkNode($NODE, 'Log Out', {op=&gt;'logout'}).&quot;&lt;/li&gt;
-	&lt;li title=\&quot;User Settings\&quot;&gt;&quot;.linkNode($Everything::CONF-&gt;system-&gt;{user_settings}, '',{lastnode_id=&gt;0}).&quot;&lt;/li&gt;
-	&lt;li title=\&quot;Your profile\&quot;&gt;&quot;.linkNode($USER,0,{lastnode_id=&gt;0}).' '.linkNode($USER,'&lt;small&gt;(edit)&lt;/small&gt;',{displaytype=&gt;'edit',lastnode_id=&gt;0}).&quot;&lt;/li&gt;
-	&lt;li title=\&quot;Draft, format, and organize your works in progress\&quot;&gt;&quot;.linkNode(getNode('Drafts','superdoc')).&quot;&lt;/li&gt;
-	&lt;li title=\&quot;Learn what all those numbers mean\&quot;&gt;&quot;.linkNode(getNode('The Everything2 Voting/Experience System','superdoc'), 'Voting/XP System').&quot;&lt;/li&gt;
-	&lt;li title=\&quot;View a randomly selected node\&quot;&gt;&quot;.htmlcode('randomnode','Random Node').&quot;&lt;/li&gt;
-	&lt;li title=\&quot;Need help?\&quot;&gt;&quot;.linkNode(getNode(
-		($APP-&gt;getLevel($USER) &lt; 2 ? 'E2 Quick Start' : 'Everything2 Help'),'e2node'), 'Help').&quot;&lt;/li&gt;
-&lt;/ul&gt;&quot;;
-
-###VOTES LEFT, XP
-
-my @thingys = ();
-
-my $c = (int $$VARS{cools}) || 0;
-my $v = (int $$USER{votesleft}) || 0;
-if($v !~ /^\d+$/) { $v = 0; }
-if ($c || $v) {
-	if($c) { push @thingys, '&lt;strong id=&quot;chingsleft&quot;&gt;'.$c.'&lt;/strong&gt; C!'.($c&gt;1?'s':''); }
-	if($v) { push @thingys, '&lt;strong id=&quot;votesleft&quot;&gt;'.$v.'&lt;/strong&gt; vote'.($v&gt;1?'s':''); }
-}
-
-if (scalar(@thingys)) {
-	$votesLeftStr = &quot;\n\n\t&quot;.'&lt;p id=&quot;voteschingsleft&quot;&gt;You have ' . join(' and ',@thingys) . ' left today.&lt;/p&gt;';
-}
-
-$expStr = &quot;\n\n\t&quot;.'&lt;p id=&quot;experience&quot;&gt;'.htmlcode('shownewexp','TRUE').'&lt;/p&gt;';
-
-unless 	($$VARS{GPoptout}) {
-	$expStr .= &quot;\n\n\t&quot;.'&lt;p id=&quot;gp&quot;&gt;'.htmlcode('showNewGP','TRUE').'&lt;/p&gt;';
-}
-
-
-
-#### SERVER TIME
-
-my $NOW = time;
-$serverTimeStr='server time' . &quot;&lt;br /&gt;\n\t\t&quot; . htmlcode('DateTimeLocal',$NOW.',1');
-
-if( (exists $VARS-&gt;{'localTimeUse'}) &amp;&amp; $VARS-&gt;{'localTimeUse'} ) {
-	$serverTimeStr .= &quot;&lt;br /&gt;\n\t\t&quot; . linkNodeTitle('Advanced Settings|your time') . &quot;&lt;br /&gt;\n\t\t&quot; . htmlcode('DateTimeLocal',$NOW);
-} else {
-	$serverTimeStr .= &quot;&lt;br /&gt;\n\t\t&quot; . linkNodeTitle('Advanced Settings|(set your time)');
-}
-
-$serverTimeStr = &quot;\n\n\t&quot;.'&lt;p id=&quot;servertime&quot;&gt;'.$serverTimeStr.'&lt;/p&gt;';
-
-return $loginStr .$votesLeftStr . $expStr . $serverTimeStr;
-
-%]</nlcode>
+  <nlcode></nlcode>
   <title>Epicenter</title>
 </node>

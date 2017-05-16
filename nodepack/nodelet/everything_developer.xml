@@ -1,38 +1,8 @@
 <node>
   <nltext></nltext>
-  <parent_container>1854181</parent_container>
+  <parent_container>0</parent_container>
   <type_nodetype>9</type_nodetype>
   <node_id>836984</node_id>
-  <nlcode>[%
-
-my $vc = htmlcode('viewcode');
-my @links;
-
-push @links, $vc if $vc;
-push @links, '&lt;font size=&quot;1&quot;&gt;'.linkNode($NODE, 'xmltrue', {displaytype=&gt;'xmltrue'}).'&lt;/font&gt;';
-return join ' / ',@links;
-%]
-
-&lt;br /&gt;
-
-[%
-
-return unless $$VARS{nodelets};
-
-my $str =
-'node_id='.getId($NODE). ' (' . $$NODE{type}{title} . ') &lt;small&gt;' . $$NODE{createtime} . ' ('.htmlcode('timesince',$$NODE{createtime}.',1').&quot; old)&lt;/small&gt;&lt;br /&gt;\n&quot;;
-
-$str .='&lt;font size=&quot;1&quot;&gt;using: '.linkNode(getPage($NODE, $query-&gt;param('displaytype'))).'&lt;/font&gt;&lt;br /&gt;&lt;br /&gt;';
-$str .= '&lt;a href='.urlGen({node=&gt;'edev',type=&gt;'usergroup'}).'&gt;edev usergroup&lt;/a&gt;'.
-'&lt;br /&gt;'.
-htmlcode('nodeletsection','edn,cgiparam').
-htmlcode('nodeletsection','edn,edev').
-htmlcode('nodeletsection','edn,util').
-htmlcode('nodeletsection','edn,globals').
-htmlcode('nodeletsection','edn,patches');
-#;
-
-$str;
-%]</nlcode>
+  <nlcode></nlcode>
   <title>Everything Developer</title>
 </node>

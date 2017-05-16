@@ -1,51 +1,8 @@
 <node>
   <nltext></nltext>
-  <parent_container>1854181</parent_container>
+  <parent_container>0</parent_container>
   <type_nodetype>9</type_nodetype>
   <node_id>1290534</node_id>
-  <nlcode>[%
-if((exists $VARS-&gt;{lockCustomHTML}) || (exists $VARS-&gt;{noteletLocked})) { #latter way is deprecated
-	#may later say why locked? or give a msg field to anon admin?
-	return 'Sorry, your Notelet is currently locked, probably because an administrator is working with your account. It should soon be back to normal.';
-}
-
-#message to display if text not set
-#(urlGen instead parseLinks to foil pranksters making e2nodes with same title)
-my $blankMsg = 'You currently have no text set for your personal nodelet. You can edit it at &lt;a href='.
-	urlGen({'node'=&gt;'Notelet Editor','type'=&gt;'superdoc'}).'&gt;Notelet Editor&lt;/a&gt; or &lt;br&gt;'.
-	linkNode($NODE, 'remove it here', {
-    op =&gt; 'movenodelet',
-    position =&gt; 'x',
-    nodelet =&gt; 'Notelet',
-    -id =&gt; 'noteletremovallink',
-    -class =&gt; 'ajax (noteletremovallink):ajaxEcho:'
-    .q!remove+it+here!
-    .q!&amp;lt;script+type='text/javascript'&amp;gt;!
-    .q!e2.vanish($('#notelet'));&amp;lt/script&amp;gt;!
-}).' or at your &lt;a href='.urlGen({'node'=&gt;'Nodelet Settings','type'=&gt;'superdoc'}).'&gt;Nodelet Settings&lt;/a&gt;';
-
-#have to deal with deprecated stuff
-if(exists $VARS-&gt;{personalRaw}) {
-	$VARS-&gt;{noteletRaw} = $VARS-&gt;{personalRaw};
-	delete $VARS-&gt;{personalRaw};
-}
-if(exists $VARS-&gt;{personalScreened}) {
-	$VARS-&gt;{noteletScreened} = $VARS-&gt;{personalScreened};
-	delete $VARS-&gt;{personalScreened};
-}
-
-return $blankMsg unless ((exists $VARS-&gt;{'noteletRaw'}) &amp;&amp; length($VARS-&gt;{'noteletRaw'}));
-unless(exists $VARS-&gt;{'noteletScreened'}) {
-	htmlcode('screenNotelet','');
-	return $blankMsg unless ((exists $VARS-&gt;{'noteletRaw'}) &amp;&amp; length($VARS-&gt;{'noteletRaw'}));
-}
-
-return parseLinks($VARS-&gt;{'noteletScreened'});
-
-%]
-
-&lt;div class=&quot;nodeletfoot&quot;&gt;([%
-linkNode(getNode('Notelet editor','superdoc'),'edit');
-%])&lt;/div&gt;</nlcode>
+  <nlcode></nlcode>
   <title>Notelet</title>
 </node>

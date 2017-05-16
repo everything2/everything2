@@ -1,13 +1,8 @@
 <node>
   <nltext></nltext>
-  <parent_container>1854181</parent_container>
+  <parent_container>0</parent_container>
   <type_nodetype>9</type_nodetype>
   <node_id>1923735</node_id>
-  <nlcode>[{daylog}]
-[{zenwriteups:New Logs}]
-&lt;div class=&quot;nodeletfoot morelink&quot;&gt;([%
-	linkNode(getNode('Writeups by Type', 'superdoc'), 'more',
-		{wutype=&gt;getNode('log', 'writeuptype')-&gt;{node_id}});
-%])&lt;/div&gt;</nlcode>
+  <nlcode></nlcode>
   <title>New Logs</title>
 </node>
