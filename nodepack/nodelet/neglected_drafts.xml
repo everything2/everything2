@@ -3,41 +3,6 @@
   <parent_container>0</parent_container>
   <type_nodetype>9</type_nodetype>
   <node_id>2051342</node_id>
-  <nlcode>[%
-
-my $setType = sub{
-	# make hashref look enough like a real node that linkNode works properly
-	$_[0] -&gt; {type}{title} = 'draft';
-	'';
-};
-
-my $days = sub{
-	qq'&lt;span class=&quot;days&quot;&gt;&amp;#91;$_[0]-&gt;{days} days&amp;#93;&lt;/span&gt;';
-};
-
-
-my $str = &quot;&quot;;
-
-my $data = $DB-&gt;stashData(&quot;neglecteddrafts&quot;);
-
-foreach my $param (qw(Editor Author)){
-	$str .= &quot;&lt;h4&gt;$param neglect&lt;/h4&gt;&quot;;
-
-	my $list = htmlcode('show content', $data-&gt;{lc($param)}, '&lt;li&gt; setType, title, byline, days', setType =&gt; $setType, days =&gt; $days);
-
-	if ($list){
-		$str .= qq'&lt;ul class=&quot;infolist&quot;&gt;$list&lt;/ul&gt;' if $list;
-	}else{
-		$str .= '&lt;p&gt;&lt;small&gt;&lt;em&gt;(none)&lt;/em&gt;&lt;/small&gt;&lt;/p&gt;';
-	}
-}
-
-$str;
-
-%]
-&lt;div class=&quot;nodeletfoot&quot;&gt;
-	&lt;a href=&quot;/node/superdoc/Drafts For Review&quot;&gt;Drafts for Review&lt;/a&gt;
-&lt;/div&gt;
-</nlcode>
+  <nlcode></nlcode>
   <title>Neglected Drafts</title>
 </node>

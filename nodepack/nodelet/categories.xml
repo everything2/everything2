@@ -1,56 +1,8 @@
 <node>
   <nltext></nltext>
-  <parent_container>1854181</parent_container>
+  <parent_container>0</parent_container>
   <type_nodetype>9</type_nodetype>
   <node_id>1935779</node_id>
-  <nlcode>[%
-my $GU = $Everything::CONF-&gt;guest_user;
-my $uid = $$USER{user_id};
-
-my $str;
-
-# Get usergroups current user is a member of.
-# NOTE: I specifically am not adding an option for admins and CEs to list
-# every possible category because it would be WAY too large.
-# We can come up with another way to the staff to add/edit categories.
-# One option would be an ajax auto-complete textbox
-
-my $sql = &quot;SELECT DISTINCT ug.node_id
-          FROM node ug,nodegroup ng 
-          WHERE ng.nodegroup_id=ug.node_id AND ng.node_id=$uid&quot;;
-my $ds = $DB-&gt;{dbh}-&gt;prepare($sql);
-$ds-&gt;execute() or return $ds-&gt;errstr;
-my $inClause = $uid.','.$GU;
-while(my $n = $ds-&gt;fetchrow_hashref)
-{
-  $inClause .= ','.$$n{node_id};
-}
-
-# Now get all the categories the user can edit
-$sql = &quot;SELECT n.node_id, n.author_user
-        FROM node n
-        WHERE author_user IN ($inClause)
-         AND type_nodetype=1522375
-         AND  node_id NOT IN (SELECT to_node AS node_id FROM links WHERE from_node=n.node_id)
-        ORDER BY n.title&quot;;
-my $ds = $DB-&gt;{dbh}-&gt;prepare($sql);
-$ds-&gt;execute() or return $ds-&gt;errstr;
-my $ctr = 0;
-my $strList;
-while(my $n = $ds-&gt;fetchrow_hashref)
-{
-  $ctr++;
-  $strList .= '&lt;li&gt;'.linkNode($$n{node_id}, '', {lastnode_id=&gt;0})
-             .' by '.linkNode($$n{author_user}, '', {lastnode_id=&gt;0})
-             .' (&lt;a href=&quot;/index.pl?op=category&amp;node_id='.$$NODE{node_id}.'&amp;cid='.$$n{node_id}.'&amp;nid='.$$NODE{node_id}.'&quot;&gt;add&lt;/a&gt;)&lt;/li&gt;';
-}
-$str .= '&lt;ul id=&quot;nodelists&quot;&gt;'
-         .$strList
-         .'&lt;/ul&gt;
-         &lt;div class=&quot;nodeletfoot&quot;&gt;'
-        .linkNodeTitle('Create Category', 0, 'Add a new Category')
-        .'&lt;/div&gt;';
-return $str;
-%]</nlcode>
+  <nlcode></nlcode>
   <title>Categories</title>
 </node>

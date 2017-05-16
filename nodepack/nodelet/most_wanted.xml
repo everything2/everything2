@@ -1,44 +1,8 @@
 <node>
   <nltext></nltext>
-  <parent_container>1854181</parent_container>
+  <parent_container>0</parent_container>
   <type_nodetype>9</type_nodetype>
   <node_id>1986723</node_id>
-  <nlcode>&lt;table&gt;
-[%
-my $str;
-
-$str.=&quot;&lt;p&gt;&lt;table class='mytable'&gt;&lt;tr&gt;&lt;th&gt;Requesting Sheriff&lt;/th&gt;&lt;th&gt;Outlaw Nodeshell&lt;/th&gt;&lt;th&gt;GP Reward (if any)&lt;/th&gt;&lt;/tr&gt;&quot;;
-
-my $REQ = getVars(getNode('bounty order','setting'));
-my $OUT = getVars(getNode('outlaws', 'setting'));
-my $REW = getVars(getNode('bounties', 'setting'));
-my $HIGH = getVars(getNode('bounty number', 'setting'));
-my $MAX = 5;
-
-my $bountyTot = $$HIGH{1};
-my $numberShown = 0;
-my $outlawStr;
-my $requester;
-my $reward;
-
-for(my $i = $bountyTot; $numberShown &lt; $MAX; $i--) {
-
-if (exists $$REQ{$i}) {
-$numberShown++;
-my $requesterName = $$REQ{$i};
-$requester = linkNode(getNode($requesterName, 'user'));
-$outlawStr = parseLinks(encodeHTML($$OUT{$requesterName}));
-$reward = encodeHTML($$REW{$requesterName});
-$str.=&quot;&lt;tr&gt;&lt;TD&gt;$requester&lt;/TD&gt;&lt;TD&gt;$outlawStr&lt;/TD&gt;&lt;TD&gt;$reward&lt;/TD&gt;&lt;/tr&gt;&quot;;
-}
-}
-
-$str.=&quot;&lt;p&gt;&lt;small&gt;Fill these nodes and get rewards! More details at &quot; . linkNodeTitle('Everything\'s Most Wanted') . &quot;\.&lt;/small&gt;&lt;/p&gt;&quot;;
-
-return $str;
-
-%]
-&lt;/table&gt;
-</nlcode>
+  <nlcode></nlcode>
   <title>Most Wanted</title>
 </node>

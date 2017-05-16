@@ -1,37 +1,8 @@
 <node>
   <nltext></nltext>
-  <parent_container>1854181</parent_container>
+  <parent_container>0</parent_container>
   <type_nodetype>9</type_nodetype>
   <node_id>1687135</node_id>
-  <nlcode>[%
-
-# originally, this nodelet was a fake nodelet force inserted by 'showNodelets';
-# it was broken out into a normal nodelet (still force inserted, but by
-# 'nodelet meta-container') so it acts normally, and is logically contained
-# -- N-Wing  Thursday, December 2, 2004
-
-my $UID = $$USER{user_id};
-my $isAdmin = $APP-&gt;isAdmin($USER);
-my $isCE = $APP-&gt;isEditor($USER);
-
-# 'nodelet meta-container' only calls this if user is at least
-# an editor, but someone might try to look at at on its own page, so:
-return 'Nothing for you here.' unless $isCE;
-
-my $str = htmlcode('admin searchform');
-
-$str .= htmlcode('admin toolset') if $isAdmin;
-
-$str .= htmlcode('nodenote');
-
-$str .= htmlcode('nodeletsection', 'epi', 'admins', 'Admin') if $isAdmin;
-
-$str .= htmlcode('nodeletsection', 'epi', 'ces', 'CE');
-
-$str;
-
-%]
-
-</nlcode>
+  <nlcode></nlcode>
   <title>Master Control</title>
 </node>

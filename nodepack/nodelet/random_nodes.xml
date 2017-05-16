@@ -1,42 +1,8 @@
 <node>
   <nltext></nltext>
-  <parent_container>1854181</parent_container>
+  <parent_container>0</parent_container>
   <type_nodetype>9</type_nodetype>
   <node_id>457857</node_id>
-  <nlcode>[%
-my @choices = ('cousin','sibling','grandpa','grandma');
-my $r = $choices[rand(@choices)];
-my $rn = rand();
-my @phrase = (
-	'Nodes your '.$r.' would have liked:',
-	'After stirring Everything, these nodes rose to the top:',
-	'Look at this mess the Death Borg made!',
-	'Just another sprinkling of '.($rn&lt;0.5?'indeterminacy':'randomness'),
-	'The '.($rn&lt;0.5?'best':'worst').' nodes of all time:',
-	($rn&lt;0.5?'Drink up!':'Food for thought:'),
-	'Things you could have written:',
-	'What you are reading:',
-	'Read this. You know you want to:',
-	'Nodes to '.($rn&lt;0.5?'live by':'die for').':',
-	'Little presents from the Node Fairy:',
-);
-
-my $randomnodes = $DB-&gt;stashData(&quot;randomnodes&quot;);
-
-my $str;
-$str.='&lt;em&gt;'.$phrase[rand(int(@phrase))].&quot;&lt;/em&gt;\n&lt;ul class=\&quot;linklist\&quot;&gt;\n&quot; ;
-
-my $len = 20;
-foreach my $N (@$randomnodes) { 
-	my $RN = getNodeById( $N-&gt;{node_id} );
-	my $node_title = $$RN{'title'};
-	$node_title =~ s/(\S{$len})\S{4,}/$1.../go;
-	$str .= '&lt;li&gt;' . linkNode($RN, $node_title, {lastnode_id=&gt;0}) . &quot;&lt;/li&gt;\n&quot;;
-}
-$str .= &quot;&lt;/ul&gt;\n&quot; ;
-
-return $str;
-
-%]</nlcode>
+  <nlcode></nlcode>
   <title>Random Nodes</title>
 </node>

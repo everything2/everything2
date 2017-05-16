@@ -125,26 +125,7 @@ $str .= '&lt;input type=&quot;button&quot; value=&quot;Preview this style&quot;
 
 $str;
 
-%]
-&lt;script type=&quot;text/javascript&quot;&gt;
-        var zenSheet = document.getElementById('zensheet');
-        var	newStyle = document.createElement('link');
-        newStyle.setAttribute('rel', 'stylesheet');
-        newStyle.setAttribute('type', 'text/css');
-        newStyle.setAttribute('href', '/index.pl?node_id=[% $NODE-&gt;{node_id} %]&amp;amp;displaytype=serve');
-        document.getElementsByTagName('head')[0].appendChild(newStyle);
-
-        newStyle.disabled = true; // belt &amp; braces for old IE
-        zenSheet.disabled = false ; // ditto
-        var newValue = 'Revert' ;
-        document.getElementById('previewstyle').onclick = function () {
-	var oldValue = this.getAttribute('value');
-	this.setAttribute('value', newValue);
-	newValue = oldValue;
-	zenSheet.disabled = ( ! zenSheet.disabled ) ;
-	newStyle.disabled = ( ! newStyle.disabled ) ;
-        }
-&lt;/script&gt;</page>
+%]</page>
   <displaytype>display</displaytype>
   <node_id>1854353</node_id>
   <title>stylesheet display page</title>

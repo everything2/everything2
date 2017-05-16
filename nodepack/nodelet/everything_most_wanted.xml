@@ -1,28 +1,8 @@
 <node>
   <nltext></nltext>
-  <parent_container>1854181</parent_container>
+  <parent_container>0</parent_container>
   <type_nodetype>9</type_nodetype>
   <node_id>1935407</node_id>
-  <nlcode>[%
-
-my $wantedLinktype = getNode(&quot;mostwanted&quot;,&quot;linktype&quot;)-&gt;{node_id};
-my $mostWanted = $DB-&gt;sqlSelectMany(&quot;to_node, from_node&quot;,&quot;links&quot;,&quot;linktype=$wantedLinktype limit 6&quot;);
-
-my $wantedStr;
-my $wCount = 0;
-
-while (my $w = $mostWanted-&gt;fetchrow_hashref) {
-$wCount++;
-$wantedStr .=&quot;&lt;p&gt;&quot;.linkNode($$w{from_node}).&quot; will pay 50XP to see &lt;b&gt;&quot;.linkNode($$w{to_node}).&quot;&lt;/b&gt; filled.&lt;/p&gt;&quot;;
-last if $wCount == 3;
-}
-
-$wantedStr .= &quot;&lt;p&gt;Know anything about ... &lt;/p&gt;&quot;;
-
-return $wantedStr;
-
-%]
-
-</nlcode>
+  <nlcode></nlcode>
   <title>Everything Most Wanted</title>
 </node>

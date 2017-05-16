@@ -3,33 +3,6 @@
   <parent_container>0</parent_container>
   <type_nodetype>9</type_nodetype>
   <node_id>2068913</node_id>
-  <nlcode>[%
-
-my %funx = (
-	startline =&gt; sub{
-		$_[0] -&gt; {type}{title} = 'draft';
-		'&lt;td&gt;';
-	},
-	notes =&gt; sub{
-		$_[0]{latestnote} =~ s/\[user\]//;
-		my $note = encodeHTML($_[0]{latestnote}, 'adv');
-		'&lt;td align=&quot;center&quot;&gt;'
-		.($_[0]{notecount} ? linkNode($_[0], $_[0]{notecount},
-				{'#' =&gt; 'nodenotes', -title =&gt; &quot;$_[0]{notecount} notes; latest $note&quot;})
-			: '&amp;nbsp;')
-		.'&lt;/td&gt;';
-	}
-);
-
-my $drafts = $DB-&gt;stashData(&quot;reviewdrafts&quot;);
-
-&quot;&lt;table&gt;
-&lt;tr&gt;&lt;th&gt;Draft&lt;/th&gt;&quot;.($APP-&gt;isEditor($USER)?(qq|&lt;th align=&quot;center&quot; title=&quot;node notes&quot;&gt;N?&lt;/th&gt;|):(&quot;&quot;)).&quot;&lt;/tr&gt;&quot;
-.htmlcode('show content', $drafts
-	, qq!&lt;tr class=&quot;&amp;oddrow&quot;&gt; startline, title, byline, &quot;&lt;/td&gt;&quot;,!.(($APP-&gt;isEditor($USER)?(&quot;notes&quot;):(&quot;&quot;))),
-	%funx)
-.'&lt;/table&gt;';
-%]
-</nlcode>
+  <nlcode></nlcode>
   <title>For Review</title>
 </node>
