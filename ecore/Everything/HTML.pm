@@ -836,31 +836,6 @@ sub updateNodelet
 	""; # don't return anything
 }
 
-
-#############################################################################
-sub genContainer {
-	my ($CONTAINER) = @_;
-	getRef $CONTAINER;
-	my $replacetext;
-	# Create prefix and suffix code fields
-	if (! exists $CONTAINER->{_context_prefix}) {
-		($CONTAINER->{_context_prefix},
-		 $CONTAINER->{_context_suffix})
-		    = split('CONTAINED_STUFF', $CONTAINER->{context});
-	}
-	my $prefix = parseCode ($CONTAINER->{_context_prefix}, $CONTAINER);
-	my $suffix = parseCode ($CONTAINER->{_context_suffix}, $CONTAINER);
-
-	if ($$CONTAINER{parent_container}) {
-		my ($parentprefix, $parentsuffix)
-		    = genContainer($$CONTAINER{parent_container});
-		return ($parentprefix.$prefix, $suffix.$parentsuffix);
-	} 
-	
-	return ($prefix, $suffix);
-}
-
-
 #############################################################################
 #	Sub
 #		displayPage
@@ -917,10 +892,7 @@ sub displayPage
         {
 		$APP->devLog("Using Everything::Delegation::container::$container_node->{title} for node: '$NODE->{title}'");
                 $page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $page);
-        }elsif ($$PAGE{parent_container}) {
-		my ($pre, $post) = genContainer($$PAGE{parent_container});
-		$page = $pre.$page.$post;
-	}
+        }
 
 	setVars $USER, $VARS unless $APP->isGuest($USER);
 
