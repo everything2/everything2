@@ -49,7 +49,6 @@ if($isRoot) {
  (
 	'borged',
 	'coolnotification','cools','coolsafety',
-	'displaypref_e2node',
 	'emailSubscribedusers','employment',
 	'ipaddy',
 	'level',

@@ -118,19 +118,6 @@ insertIntoNodegroup($n, $USER, $c)
 #insertIntoNodegroup($t, $USER, $c);
 #}
 
-###
-### edev - how you edit Guest User
-###
-if(0) {
-my $gu = getNode('Guest User','user');
-my $v = getVars($gu);
-#TODO add if not there, instead of just clearing
-#$$v{displaypref_e2node}='displayfull';
-$$v{nodelets}='262,457857,263,165437,174581';
-#$$v{nodelets}='262,457857,263,165437,174581';
-setVars($gu, $v);
-}
-
 $str;
 %]
 &lt;/p&gt;

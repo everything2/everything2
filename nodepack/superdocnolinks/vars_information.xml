@@ -13,7 +13,6 @@ This will explain what the different things in the &lt;code&gt;VARS&lt;/code&gt;
 &lt;tr&gt;&lt;td&gt;cools&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;number of [% linkNodeTitle('C!',0); %]s left in the day&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;coolsafety&lt;/td&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;devpoints&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;number of devpoints accrued, as shown in the Everything Developer nodelet&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;displaypref_e2node&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;edn_hidecgiparam&lt;/td&gt;&lt;td&gt;&lt;var&gt;empty&lt;/var&gt;, 1&lt;/td&gt;&lt;td&gt;if set, in the Everything Developer nodelet, don't show the CGI parameters for the current page&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;edn_hidedocuments&lt;/td&gt;&lt;td&gt;&lt;var&gt;empty&lt;/var&gt;, 1&lt;/td&gt;&lt;td&gt;if set, in the Everything Developer nodelet, don't show the titles of documents on &lt;a href=&quot;http://www.everydevel.com/&quot;&gt;EveryDevel.com&lt;/a&gt;, as is seen in the &lt;a href=&quot;http://www.everydevel.com/index.pl?node=Documentation&amp;type=nodelet&quot;&gt;Documentation nodelet&lt;/a&gt; on that site&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;edn_hideedev&lt;/td&gt;&lt;td&gt;&lt;var&gt;empty&lt;/var&gt;, 1&lt;/td&gt;&lt;td&gt;if set, in the Everything Developer nodelet, don't show the most recent titles of posts in the [% linkNode(getNode('edev','usergroup'),'edev forum',{lastnode_id=&gt;0}); %]&lt;/td&gt;&lt;/tr&gt;
