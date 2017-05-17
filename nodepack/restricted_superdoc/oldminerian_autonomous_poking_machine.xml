@@ -72,27 +72,6 @@ return $str;
 [% return `w`; %]
 &lt;/pre&gt;
 &lt;hr&gt;
-&lt;h3&gt;Displayfull fixing&lt;/h3&gt;
-[%
-my $wasSet = $$VARS{displaypref_e2node};
-$wasSet = &quot;&lt;em&gt;not set&lt;/em&gt;&quot; if !defined $wasSet;
-
-$$VARS{displaypref_e2node} = 'displayfull' if defined $query-&gt;param('displayfix');
-
-my $isSet = $$VARS{displaypref_e2node};
-
-return &quot;&quot;
-  . &quot;&lt;p&gt;&quot;
-  . &quot;Setting was: $wasSet&quot;
-  . &quot;&lt;br&gt;&quot;
-  . &quot;Setting is now: $isSet&quot;
-  . &quot;&lt;/p&gt;&quot;
-  . htmlcode('openform', 'displayfixform', 'GET')
-  . $query-&gt;submit( -name =&gt; 'displayfix', -value =&gt; &quot;Fix me&quot;)
-  . $query-&gt;end_form()
-  ;
-%]
-&lt;hr&gt;
 &lt;h3&gt;Hash Member Existence Checking&lt;/h3&gt;
 [%
 my %testHash;

@@ -57,10 +57,6 @@
     <key>num_newwus</key>
   </vars>
   <vars>
-    <value>displayfull</value>
-    <key>displaypref_e2node</key>
-  </vars>
-  <vars>
     <value>164</value>
     <key>oldexp</key>
   </vars>

@@ -113,10 +113,6 @@
     <key>num_newwus</key>
   </vars>
   <vars>
-    <value>displayfull</value>
-    <key>displaypref_e2node</key>
-  </vars>
-  <vars>
     <value>1</value>
     <key>hide_weblog_165580</key>
   </vars>
