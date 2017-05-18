@@ -3761,6 +3761,7 @@ sub basehref
 {
   my ($this) = @_;
 
+
   if ($ENV{HTTP_HOST} !~ /^m\.everything2/i)
   {
     # This only matters in the development environment
@@ -4040,6 +4041,12 @@ sub message_archive_set
 sub is_tls
 {
   my ($this) = @_;
+
+  if(defined $ENV{HTTP_X_FORWARDED_PROTO})
+  {
+    return ($ENV{HTTPS_X_FORWARDED_PROTO} eq "https")?(1):(0); 
+  }
+
   return $ENV{HTTPS};
 }
 
