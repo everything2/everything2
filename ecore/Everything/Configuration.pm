@@ -74,6 +74,9 @@ has 'google_ads_badwords' => (isa => 'ArrayRef', is => 'ro', default => sub { []
 
 has 'use_controllers' => (isa => 'Bool', is => 'ro', default => 0);
 
+has 'certificate_manager' => (isa => 'HashRef', is => 'ro', default => sub { {} });
+
+
 around BUILDARGS => sub
 {
   my $orig = shift;
