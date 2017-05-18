@@ -102,6 +102,7 @@ everything_conf_variables = {
     "notification_email" => node["e2engine"]["notification_email"],
     "nodecache_size" => node["e2engine"]["nodecache_size"],
     "s3" => node["e2engine"]["s3"].to_hash,
+    "certificate_manager" => node["e2engine"]["certificate_manager"].to_hash,
     "static_nodetypes" => node["e2engine"]["static_nodetypes"],
     "memcache" => node["e2engine"]["memcache"].to_hash,
     "clean_search_words_aggressively" => node["e2engine"]["clean_search_words_aggressively"],
