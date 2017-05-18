@@ -21,6 +21,41 @@ git '/var/paws' do
   action :sync
 end
 
+# MooseX::ClassAttribute for PAWS
+git '/var/MooseX-ClassAttribute' do
+  repository 'https://github.com/moose/MooseX-ClassAttribute.git'
+  revision 'v0.29'
+  action :sync
+end
+
+# List::Utils as needed by MooseX::ClassAttribute
+git '/var/Scalar-List-Utils' do
+  repository "https://github.com/Dual-Life/Scalar-List-Utils.git"
+  revision 'v1.47'
+  action :sync
+end
+
+# JSON::MaybeXS as needed by MooseX::ClassAttribute
+git '/var/JSON-MaybeXS' do
+  repository "https://github.com/p5sagit/JSON-MaybeXS.git"
+  revision 'v1.003009'
+  action :sync
+end
+
+# Net::Amazon::Signature::V4 needed by PAWS
+git '/var/Net-Amazon-Signature-S4' do
+  repository "https://github.com/gitpan/Net-Amazon-Signature-V4.git"
+  revision 'gitpan_version/0.14'
+  action :sync
+end
+
+# URL::Encode as needed by PAWS
+git '/var/p5-url-encode' do
+  repository "https://github.com/chansen/p5-url-encode.git"
+  revision 'v0.03'
+  action :sync
+end
+
 directory '/etc/dehydrated/' do
   owner 'root'
   group 'root'
@@ -51,8 +86,9 @@ template '/etc/dehydrated/domains.txt' do
   source 'domains.txt.erb'
 end
 
-package 'curl'
-
+['curl','libdata-printer-perl','build-essential','libmodule-find-perl','liburi-template-perl','libmodule-runtime-perl','libconfig-ini-perl'].each do |pkg|
+  package pkg
+end
 
 # Also in e2engine,e2web,e2tls
 logdir = "/var/log/everything"
