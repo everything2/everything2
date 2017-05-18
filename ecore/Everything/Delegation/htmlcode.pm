@@ -2143,7 +2143,7 @@ sub e2createnewnode
     .' you could create a "'
     .$query -> escapeHTML($title)
     ."\" node. If you don't already have an account, you can "
-    . linkNode($Everything::CONF->system->{create_new_user}, 'register here')
+    . linkNode($Everything::CONF->system->{create_new_user}, ' register here')
     .'.' if $APP->isGuest($USER);
 
   my $n = getNode($title, 'e2node');
@@ -5947,7 +5947,7 @@ sub showchatter
   my $jsoncount = 1 if shift;
   my $nochat = "";
 
-  $nochat = 'If you '.linkNode(getNode('Create A New User','superdoc'),
+  $nochat = 'If you '.linkNode($Everything::CONF->system->{create_new_user},
     'register',{lastnode_id=>0}).', you can talk here.' if $APP->isGuest($USER);
 
   ### Check to see if they're suspended for having an unverified email address
@@ -13897,7 +13897,7 @@ sub nopublishreason
 
   if( $APP->isGuest($USER) )
   {
-    return parseLinks('[login[superdoc]|Log in] or [create a new user[superdoc]|register]to write something here or to contact authors.');
+    return parseLinks('[login[superdoc]|Log in] or [Sign Up[superdoc]|register] to write something here or to contact authors.');
   }
 
   # unverified email address:
