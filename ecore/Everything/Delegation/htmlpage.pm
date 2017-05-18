@@ -60,6 +60,25 @@ sub container_display_page
   return $str;
 }
 
+sub container_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+ 
+  my $str = "";
+  $str .= qq|title:|.htmlcode("textfield","title");
+  $str .= qq|maintained by:|.htmlcode("node_menu","author_user,user,usergroup").qq|<br>|;
+  $str .= qq|Parent container:|.htmlcode("node_menu","parent_container").qq|<br>|;
+  $str .= qq|container html:<br>|.htmlcode("textarea","context");
+
+  return $str; 
+}
+
 sub nodelet_display_page
 {
   my $DB = shift;
@@ -77,5 +96,59 @@ sub nodelet_display_page
 
   return Everything::HTML::insertNodelet($NODE);
 }
+
+sub document_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p align="right">|;
+  $str .= linkNode($NODE, 'edit', {displaytype=>"edit"}) if $APP->isEditor($USER);
+  $str .= qq|</p>|;
+  $str .= qq|<div class="content">|;
+  $str .= htmlcode("parselinks","doctext");
+  $str .= qq|</div>|;
+
+  return $str;
+}
+
+sub document_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<H4>title:</H4>|.htmlcode("textfield","title");
+  $str .= qq|<h4>owner:</h4>|.htmlcode("node_menu","author_user,user,usergroup");
+  $str .= qq|<p><small><strong>Edit the document text:</strong></small><br />|;
+  $str .= htmlcode("textarea","doctext,30,60");
+
+  return $str;
+}
+
+sub htmlcode_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return htmlcode("listcode","code");
+}
+
+
+
 
 1;
