@@ -14,6 +14,13 @@ git '/var/dehydrated' do
   action :sync
 end
 
+# PAWS for ACM API
+git '/var/paws' do
+  repository 'https://github.com/pplu/aws-sdk-perl.git'
+  revision 'release-0.32'
+  action :sync
+end
+
 directory '/etc/dehydrated/' do
   owner 'root'
   group 'root'
