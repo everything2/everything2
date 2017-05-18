@@ -471,10 +471,7 @@ sub getPage
 	
 	getRef $NODE;
 	$TYPE = getType($$NODE{type_nodetype});
-	$displaytype ||= $$VARS{'displaypref_'.$$TYPE{title}}
-	  if exists $$VARS{'displaypref_'.$$TYPE{title}};
-	$displaytype = 'display' unless $displaytype;
-
+	$displaytype ||= 'display';
 
 	my $PAGE = getPageForType $TYPE, $displaytype;
 	$PAGE ||= getPageForType $TYPE, 'display';
