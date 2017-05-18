@@ -35,12 +35,6 @@ cron 'generate_sitemap.pl' do
   command "/var/everything/tools/generate_sitemap.pl 2>&1 >> #{logdir}/e2cron.generate_sitemap.#{datelog}"
 end
 
-cron 'updateNodelet.pl' do
-  user "root"
-  minute "0-59/5"
-  command "/var/everything/tools/updateNodelet.pl 2>&1 >> #{logdir}/e2cron.updateNodelet.#{datelog}"
-end
-
 cron 'refreshRoom.pl' do
   user "root"
   minute "0-59/5"
