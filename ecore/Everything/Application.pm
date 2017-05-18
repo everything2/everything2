@@ -4041,10 +4041,10 @@ sub message_archive_set
 sub is_tls
 {
   my ($this) = @_;
-
+            
   if(defined $ENV{HTTP_X_FORWARDED_PROTO})
   {
-    return ($ENV{HTTPS_X_FORWARDED_PROTO} eq "https")?(1):(0); 
+    return ($ENV{HTTP_X_FORWARDED_PROTO} eq "https")?(1):(0); 
   }
 
   return $ENV{HTTPS};
