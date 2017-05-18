@@ -14,6 +14,8 @@ use Everything::Delegation::htmlcode;
 use Everything::Delegation::opcode;
 use Everything::Delegation::container;
 use Everything::Delegation::nodelet;
+use Everything::Delegation::htmlpage;
+
 use Compress::Zlib;
 use Everything::Request;
 
@@ -877,11 +879,20 @@ sub displayPage
 
 	my $PAGE = getPage($NODE, $query->param('displaytype'));
 	$$NODE{datatype} = $$PAGE{mimetype};
-	$page = $$PAGE{page};
 
-	die "NO PAGE!" unless $page;
+	my $pagetitle = $PAGE->{title};
+	$pagetitle =~ s/ /_/g;
 
-	$page = parseCode($page, $NODE);
+	if(my $delegation = Everything::Delegation::htmlpage->can($pagetitle))
+	{
+		# $NODE twice for legacy reasons though I am not sure if anyone needs it
+		# TODO: Get rid of above
+		$page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $NODE);	
+	}else{
+		$page = $$PAGE{page};
+		die "NO PAGE!" unless $page;
+		$page = parseCode($page, $NODE);
+	}
 
         my $container_node = $DB->getNodeById($$PAGE{parent_container});
 
