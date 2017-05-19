@@ -11488,11 +11488,6 @@ sub epicenterZen
   my $APP = shift;
 
   return if ( $APP->isGuest($USER) );
-  # Upon successful log-in, write current browser to VARS
-  if ($query->param("op") eq "login")
-  {
-    $$VARS{browser} = $ENV{HTTP_USER_AGENT};
-  }
 
   my @thingys = ();
   my $votesLeftStr = "";

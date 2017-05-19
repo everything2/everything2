@@ -242,6 +242,8 @@ sub get_current_user
 
   $self->APP->insertIntoRoom($$user{in_room}, $user, $self->VARS) if $seconds_since_last > $TIMEOUT_SECONDS;
 
+  # Upon successful log-in, write current browser to VARS
+  $self->VARS->{browser} = $ENV{HTTP_USER_AGENT};
   $self->APP->logUserIp($user, $self->VARS);
   return $user;
 }
