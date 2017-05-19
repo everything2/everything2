@@ -13,9 +13,7 @@
 [{listcode:code}]
 &lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the code:&lt;/strong&gt;&lt;/small&gt;&lt;br /&gt;
 
-[{textarea:code,30,80}]
-
-&lt;p&gt;&lt;strong&gt;Delegated: &lt;/strong&gt;[{textfield:delegated,1,0}]</page>
+[{textarea:code,30,80}]</page>
   <displaytype>edit</displaytype>
   <node_id>64</node_id>
   <title>htmlcode edit page</title>
