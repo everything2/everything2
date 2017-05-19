@@ -32,7 +32,7 @@ sub node_id_equivs
 sub xml_vars_no_store
 {
 	my ($this) = @_;
-	return ["votesrefreshed","browser","includedJS","ListNodesOfType_Type","votetime","ipaddy","level","nwriteupsupdate",@{$this->SUPER::xml_vars_no_store()}];
+	return ["votesrefreshed","browser","ListNodesOfType_Type","votetime","ipaddy","level","nwriteupsupdate",@{$this->SUPER::xml_vars_no_store()}];
 }
 
 sub xml_no_store
