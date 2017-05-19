@@ -10584,31 +10584,6 @@ sub updateNodelet
   return insertNodelet($nodelet);
 }
 
-sub hasJS
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($jsNode) = @_;
-
-  my $JS = undef;
-
-  if ($jsNode =~ /^\d+$/)
-  {
-    $JS = $jsNode;
-  } else {
-    $JS = getId(getNode($jsNode,"jscript"));
-  }
-
-  return unless $JS;
-  return ($$VARS{includedJS} =~ /$JS/);
-}
-
 sub googleSearchForm
 {
   my $DB = shift;

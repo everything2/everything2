@@ -148,7 +148,91 @@ sub htmlcode_display_page
   return htmlcode("listcode","code");
 }
 
+sub htmlcode_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
 
+  my $str = qq|title:|.htmlcode("textfield","title").qq|maintained by:|.htmlcode("node_menu","author_user,user,usergroup").qq|<br />|;
+  
+  if($APP->isAdmin($USER) and $NODE->{type}->{title} eq "patch")
+  {
+    if($query->param("op") eq "applypatch")
+    {
+      $str .= linkNode($NODE, "Apply this patch", {"op" => "applypatch", "patch_id" => "$$NODE{node_id}"})."<Br>";
+    }else{
+      $str .= "<font color=\"red\">The patch has been applied</font> ".linkNode($NODE, "Unapply", {"op" => "applypatch", "patch_id" => "$$NODE{node_id}"})."<br />";
+    }
+  }
 
+  $str .= htmlcode("listcode","code"). qq|<p><small><strong>Edit the code:</strong></small><br />|;
+  $str .= htmlcode("textarea","code,30,80");
+
+  return $str;
+}
+
+sub htmlpage_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<b>pagetype</b>:|; 
+
+  my $N = $DB->getNodeById($$NODE{pagetype_nodetype}, 'light');
+  $str .= linkNode($N);
+  $str .= qq|<br><b>parent container</b>:|;
+  if($NODE->{parent_container})
+  {
+    $str .= linkNode ($$NODE{parent_container});
+  }else{
+    $str .= "<i>none</i>";
+  }
+
+  $str .= qq|<br><b>displaytype</b>:$$NODE{displaytype}<br><b>MIMEtype</b>: $$NODE{mimetype}<p>|;
+  $str .= htmlcode("listcode","page");
+
+  return $str;
+}
+
+sub htmlpage_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|title:|.htmlcode("textfield","title").qq|<br>|;
+  $str .= qq|maintained by:|.htmlcode("node_menu","author_user,user,usergroup").qq|<br>|;
+  $str .= qq|pagetype: |.htmlcode("node_menu","pagetype_nodetype").qq|<br>|;
+  $str .= qq|displaytype: |.htmlcode("textfield","displaytype").qq|<br>|;
+  $str .= qq|parent container: |.htmlcode("node_menu","parent_container").qq|<br>|;
+  $str .= qq|MIME type:|.htmlcode("textfield","mimetype").qq|<br>|;
+  $str .= qq|<table width="100%"><tr><td width="90%"><p><font size=2><b>Edit the page:</b></font><br>|;
+  $str .= htmlcode("textarea","page").qq|</td><td width=10%><font size=2>|;
+
+  my $N = getType($$NODE{pagetype_nodetype});
+  $str .= "<li>";
+  $str .= join "\n<li>", $DB->getFields;
+
+  my @tables = @{ $DB->getNodetypeTables($N) };
+  foreach (@tables) {
+    $str .="\n<li>";
+    $str .= join "\n<li>", $DB->getFields($_);
+  }
+  $str .= qq|</font></td></tr></table>|."TESTING";
+}
 
 1;
