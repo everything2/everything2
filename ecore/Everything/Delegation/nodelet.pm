@@ -1203,33 +1203,6 @@ return $str.qq'\n</ul>\n<div class="nodeletfoot">\n$settingslink\n</div>';
 
 }
 
-sub everything_most_wanted
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $wantedLinktype = getNode("mostwanted","linktype")->{node_id};
-  my $mostWanted = $DB->sqlSelectMany("to_node, from_node","links","linktype=$wantedLinktype limit 6");
-
-  my $wantedStr = "";
-  my $wCount = 0;
-
-  while (my $w = $mostWanted->fetchrow_hashref)
-  {
-    $wCount++;
-    $wantedStr .="<p>".linkNode($$w{from_node})." will pay 50XP to see <b>".linkNode($$w{to_node})."</b> filled.</p>";
-    last if $wCount == 3;
-  }
-
-  $wantedStr .= "<p>Know anything about ... </p>";
-  return $wantedStr;
-}
-
 sub categories
 {
   my $DB = shift;
