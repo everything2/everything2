@@ -128,22 +128,7 @@ foreach(sort(keys(%{$hash}))) {
 		}
 	}
 	
-	# fourth special case: fetch included javascript titles but do not link
-	if ($_ eq 'includedJS') {
-		unless ($hash-&gt;{$_} eq '&amp;nbsp;') {
-			my @items_list = split(/,/,$hash-&gt;{$_});
-			foreach my $i (@items_list) {
-			#check to make sure node exists before grabbing title
-			if (getNodeById($i)) {
-					$return .= &quot;\n&lt;br&gt;&quot; . getNodeById($i)-&gt;{title} if $i;
-				} else {
-					$return .= &quot;\n&lt;br&gt;(&lt;b style=\&quot;color:red;\&quot;&gt;ERROR:&lt;/b&gt; Node not found!)&quot; if $i;
-				}
-			}
-		}
-	}
-	
-	# fifth special case: get titles of notifications_nodelet items
+	# fourth special case: get titles of notifications_nodelet items
 	# assumption: 'settings' will have more than just the notifications in it some day
 	# therefore, look for &quot;notifications&quot;: and return the list that comes after it.
 	# this technique can be applied to other hypothetical things saved in 'settings'
