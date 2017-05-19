@@ -11,7 +11,7 @@ my $type = getType('user');
 my $varstats;
 my $specialstats;
 
-my $tostrip = "ekw_logobackground";
+my $tostrip = "includedJS";
 
 while(my $row = $csr->fetchrow_hashref())
 {
