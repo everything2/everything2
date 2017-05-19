@@ -269,7 +269,6 @@ div#e2logo a {
 }
 .sectioncontent .linklist{
     margin: 5px 0 16px 32px;
-    text-indent: -16px;
 }
 #mainbody .linklist {
 	margin: 5px 0;
@@ -763,7 +762,7 @@ hr.clear {
 .zen_mobiletab &gt; A:visited {
 	color: #ddF;
 }</doctext>
-  <contentversion>116</contentversion>
+  <contentversion>119</contentversion>
   <s3bucket></s3bucket>
   <node_id>1882070</node_id>
   <title>Kernel Blue</title>
