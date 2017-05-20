@@ -232,7 +232,44 @@ sub htmlpage_edit_page
     $str .="\n<li>";
     $str .= join "\n<li>", $DB->getFields($_);
   }
-  $str .= qq|</font></td></tr></table>|."TESTING";
+  $str .= qq|</font></td></tr></table>|;
 }
+
+sub node_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return htmlcode("displayNODE");
+}
+
+sub nodegroup_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";
+  unless ($NODE->{group})
+  {
+    $str .= "<i>This nodegroup is empty</i>";
+  } else {
+    my @list = map {$query -> li(linkNode($_))} @{$$NODE{group}};
+    $str .= $query -> ul( {id => 'pagecontent'}, join("\n", @list) );
+  }
+
+  $str .= qq|<div id="pagefooter">|.htmlcode("windowview","editor,launch editor").qq|</div>|;
+  return $str;
+}
+
 
 1;
