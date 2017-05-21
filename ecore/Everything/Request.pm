@@ -7,7 +7,7 @@ use CGI;
 
 with 'Everything::Globals';
 
-has 'cgi' => (lazy => 1, builder => "_build_cgi", isa => "CGI", handles => ["param", "header", "cookie","url","request_method","path_info"], is => "rw");
+has 'cgi' => (lazy => 1, builder => "_build_cgi", isa => "CGI", handles => ["param", "header", "cookie","url","request_method","path_info","script_name"], is => "rw");
 has 'USER' => (lazy => 1, builder => "_build_user", isa => "HashRef", is => "rw", "trigger" => \&_user_trigger);
 has 'VARS' => (lazy => 1, builder => "_build_vars", isa => "HashRef", is => "rw");
 
@@ -272,6 +272,12 @@ sub make_login_cookie
     $self->devLog("Got expires checkbox: $expires");
   }
   return $self->cookie(-name => $self->CONF->cookiepass, -value => $user->{title}."|".$user->{passwd}, -expires => $expires);
+}
+
+sub can_gzip
+{
+  my ($self) = @_;
+  return $ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/;
 }
 
 __PACKAGE__->meta->make_immutable;

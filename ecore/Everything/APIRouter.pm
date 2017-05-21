@@ -2,32 +2,9 @@ package Everything::APIRouter;
 
 use diagnostics;
 use Moose;
-use namespace::autoclean;
-use JSON;
-use Everything;
-use Everything::Request;
-use Data::Dumper;
-use Everything::API;
+extends 'Everything::Router';
 
-with 'Everything::Globals';
-with 'Everything::HTTP';
-
-has 'MODULE_TABLE' => (isa => "HashRef", is => "ro", builder => "build_module_table", lazy => 1);
-
-sub build_module_table
-{
-  my ($self) = @_;
-  my $routes;
-
-  foreach my $plugin (@{$self->FACTORY->{api}->all})
-  {
-    $routes->{$plugin} = $self->FACTORY->{api}->available($plugin)->new();
-  }
-
-  $routes->{catchall} = Everything::API->new;
-  return $routes;
-}
-
+has 'CONTROLLER_TYPE' => (is => 'ro', isa => 'Str', default => 'API');
 
 sub dispatcher
 {
@@ -52,42 +29,25 @@ sub dispatcher
 
   if(my ($endpoint, $extra) = $urlform =~ m|^/api/([^/]+)/?(.*)|)
   {
-    if(exists $self->MODULE_TABLE->{$endpoint})
+    if(exists $self->CONTROLLER_TABLE->{$endpoint})
     {
-      $self->output($REQUEST, $self->MODULE_TABLE->{$endpoint}->route($REQUEST, $extra));
+      $self->output($REQUEST, $self->CONTROLLER_TABLE->{$endpoint}->route($REQUEST, $extra));
     }else{
-      $self->devLog("Request fell through to catchall after MODULE_TABLE check");
-      $self->output($REQUEST, $self->MODULE_TABLE->{catchall}->$method($REQUEST));
+      $self->devLog("Request fell through to catchall after CONTROLLER_TABLE check");
+      $self->output($REQUEST, $self->CONTROLLER_TABLE->{catchall}->$method($REQUEST));
     }
   }else{
     $self->devLog("Request fell through to catchall after form check: $method for $urlform");
-    $self->output($REQUEST, $self->MODULE_TABLE->{catchall}->$method($REQUEST));
+    $self->output($REQUEST, $self->CONTROLLER_TABLE->{catchall}->$method($REQUEST));
   }
 }
 
-sub output
-{
-  my ($self, $REQUEST, $output) = @_;
-
-  my $response_code = $output->[0];
-  my $data = $output->[1];
-  my $headers = $output->[2];
-
-  $headers->{status} = $response_code;
-  $headers->{charset} = "utf-8";
-  $headers->{type} = "application/json";
-  
-  if($self->CONF->{environment} eq "development")
-  {
-    $headers->{'-Access-Control-Allow-Origin'} = '*';
-  }
-
-  print $REQUEST->header($headers);
-  if($data)
-  {
-    print JSON::to_json($data); 
-  }
-}
+around 'output' => sub {
+  my ($orig, $self, $REQUEST, $output)  = @_;
+  $output->[2]->{charset} = "utf-8";
+  $output->[2]->{type} = "application/json";
+  return $self->$orig($REQUEST, $output);
+};
 
 __PACKAGE__->meta->make_immutable;
 1;

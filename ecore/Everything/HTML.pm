@@ -868,13 +868,6 @@ sub displayPage
 	}
 	
 
-        #jb says fix here. We need to check for displaytype, because on xmltrue and future data
-        #outputs, guest user loads on e2nodes would be broken
-        #4-17-2002
-
-        my $dsp = $query->param('displaytype');
-        $dsp = "display" unless $dsp;
-
 	my $type = $NODE->{type}->{title};
 
 	my $PAGE = getPage($NODE, $query->param('displaytype'));
@@ -883,36 +876,44 @@ sub displayPage
 	my $pagetitle = $PAGE->{title};
 	$pagetitle =~ s/ /_/g;
 
-	if(my $delegation = Everything::Delegation::htmlpage->can($pagetitle))
+	if($Everything::ROUTER->can_route($NODE, $query->param("displaytype")))
 	{
-		# $NODE twice for legacy reasons though I am not sure if anyone needs it
-		# TODO: Get rid of above
-		$page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $NODE);	
+		$page = "";
+		# HTMLRouter does the printing
+		$Everything::ROUTER->route_node($NODE, $query->param("displaytype") || "display", $REQUEST);
 	}else{
-		$page = $$PAGE{page};
-		die "NO PAGE!" unless $page;
-		$page = parseCode($page, $NODE);
+
+		if(my $delegation = Everything::Delegation::htmlpage->can($pagetitle))
+		{
+			# $NODE twice for legacy reasons though I am not sure if anyone needs it
+			# TODO: Get rid of above
+			$page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $NODE);	
+		}else{
+			$page = $$PAGE{page};
+			die "NO PAGE!" unless $page;
+			$page = parseCode($page, $NODE);
+		}
+
+        	my $container_node = $DB->getNodeById($$PAGE{parent_container});
+
+        	if($container_node and my $delegation = Everything::Delegation::container->can($container_node->{title}))
+        	{
+			$APP->devLog("Using Everything::Delegation::container::$container_node->{title} for node: '$NODE->{title}'");
+                	$page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $page);
+        	}
+
+		setVars $USER, $VARS unless $APP->isGuest($USER);
+
+		if($APP->canCompress())
+		{
+			$page = Compress::Zlib::memGzip($page);
+		}
+
+		printHeader($$NODE{datatype}, $page, $lastnode);
+
+		$query->print($page);
+		$page = "";
 	}
-
-        my $container_node = $DB->getNodeById($$PAGE{parent_container});
-
-        if($container_node and my $delegation = Everything::Delegation::container->can($container_node->{title}))
-        {
-		$APP->devLog("Using Everything::Delegation::container::$container_node->{title} for node: '$NODE->{title}'");
-                $page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $page);
-        }
-
-	setVars $USER, $VARS unless $APP->isGuest($USER);
-
-	if($APP->canCompress())
-	{
-		$page = Compress::Zlib::memGzip($page);
-	}
-
-	printHeader($$NODE{datatype}, $page, $lastnode);
-
-	$query->print($page);
-	$page = "";
 }
 
 

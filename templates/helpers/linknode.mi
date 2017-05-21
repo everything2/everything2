@@ -1,0 +1,4 @@
+<%class>
+  has 'node' => (required => 1);
+</%class>
+<a href="<% $.node->canonical_url %>"><% $.node->title %></a>

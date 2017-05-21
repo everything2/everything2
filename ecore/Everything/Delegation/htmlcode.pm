@@ -4460,16 +4460,10 @@ sub static_javascript
   $e2->{nonodeletcollapser} = 1 if($VARS->{nonodeletcollapser});
   $e2 = encode_json($e2);
 
-  my $min = undef; $min = '.min' unless $APP->inDevEnvironment();
-  my $libraries = qq'<script src="https://code.jquery.com/jquery-1.11.1$min.js" type="text/javascript"></script>';
-
-  if($APP->use_bootstrap)
-  {
-    $libraries .= qq|<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap$min.js"></script>|;
-  }
+  my $libraries = qq'<script src="https://code.jquery.com/jquery-1.11.1.min.js" type="text/javascript"></script>';
 
   unless ($APP->isGuest($USER)){
-      $libraries .= qq|<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui$min.js" type="text/javascript"></script>|;
+      $libraries .= qq|<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js" type="text/javascript"></script>|;
   }
   my $defaultJS = getNode("default javascript","jscript");
   $libraries .= "<script src='".htmlcode("linkjavascript",$$defaultJS{node_id})."' type='text/javascript'></script>\n";
@@ -5544,16 +5538,15 @@ sub zensearchform
   my $str = $query->start_form(
     -method => "GET"
     , -action => $query->script_name
-    , -id => ($APP->use_bootstrap)?(''):('search_form')
-    , -role => "form"
-    , class => "navbar-form navbar-right"
+    , -id => 'search_form'
+    , -role => 'form'
     ).
     qq|<div class="form-group"><div class="has-feedback has-feedback-left">|.
     $query->textfield(-name => 'node',
       value => $default,
       force => 1,
       -class => 'form-control', 
-      -id => ($APP->use_bootstrap)?(''):('node_search'),
+      -id => 'node_search',
       -placeholder => 'Search',
       -size => 28,
       -maxlength => 230).qq|<i class="glyphicon glyphicon-search form-control-feedback"></i></div>|;
@@ -5563,14 +5556,11 @@ sub zensearchform
   $lnid ||= getId($NODE);
 
   $str.='<input type="hidden" name="lastnode_id" value="'.$lnid.'">';
- 
-  if(!$APP->use_bootstrap)
-  {
-    $str.='<input type="submit" name="searchy" value="search" id="search_submit" title="Search within Everything2" class="btn btn-default">';
+  $str.='<input type="submit" name="searchy" value="search" id="search_submit" title="Search within Everything2" class="btn btn-default">';
 
 
-    $str.=qq|<span id="searchbtngroup">|;
-    $str.=qq'\n<span title="Include near matches in the search results">'.$query->checkbox(
+  $str.=qq|<span id="searchbtngroup">|;
+  $str.=qq'\n<span title="Include near matches in the search results">'.$query->checkbox(
       -id => "near_match",
       -name => 'soundex',
       -value => '1',
@@ -5579,7 +5569,7 @@ sub zensearchform
       -label => 'Near Matches'
     ) . "</span>";
 
-    $str.=qq'\n<span title="Show all results, even when there is a page matching the search exactly">'.$query->checkbox(
+  $str.=qq'\n<span title="Show all results, even when there is a page matching the search exactly">'.$query->checkbox(
       -id => "match_all",
       -name => 'match_all',
       -value => '1',
@@ -5588,9 +5578,7 @@ sub zensearchform
       -label => 'Ignore Exact',
     ) . "</span>";
 
-    $str.=qq|</span>|; #searchbtngroup
-  }
-
+  $str.=qq|</span>|; #searchbtngroup
   return $str . "\n</div></form>";
 }
 

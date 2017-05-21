@@ -1,6 +1,7 @@
 package Everything::Node;
 
 use Moose;
+use CGI;
 
 with 'Everything::Globals';
 
@@ -178,6 +179,29 @@ sub field_whitelist
   my ($self, $user) = @_;
 
   return [];
+}
+
+sub url_safe_title
+{
+  my ($self) = @_;
+
+  my $title = $self->title;  
+  $title = CGI::escape(CGI::escape($title));
+  # Make spaces more readable
+  # But not for spaces at the start/end or next to other spaces
+  $title =~ s/(?<!^)(?<!\%2520)\%2520(?!$)(?!\%2520)/\+/gs;
+  return $title;
+}
+
+sub canonical_url
+{
+  my ($self) = @_;
+  return "/".join("/","node",$self->type->title,$self->url_safe_title);
+}
+
+sub metadescription
+{
+  return "Everything2 is a community for fiction, nonfiction, poetry, reviews, and more. Get writing help or enjoy nearly a half million pieces of original writing.";
 }
 
 __PACKAGE__->meta->make_immutable;

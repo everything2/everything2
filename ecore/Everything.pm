@@ -16,7 +16,9 @@ package Everything;
 use strict;
 use DBI;
 use DateTime;
+use Mason;
 use Everything::NodeBase;
+use Everything::HTMLRouter;
 use Everything::Application;
 use Everything::Configuration;
 use Everything::PluginFactory;
@@ -24,12 +26,13 @@ use Everything::PluginFactory;
 sub BEGIN
 {
 	use Exporter ();
-	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $CONF $FACTORY);
+	use vars	   qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $CONF $FACTORY $MASON $ROUTER);
 	@ISA=qw(Exporter);
 	@EXPORT=qw(
               $APP
               $DB
 	      $FACTORY
+              $MASON
               getRef
               getId
               getTables
@@ -73,8 +76,10 @@ sub BEGIN
             );
 
 	$CONF = Everything::Configuration->new("/etc/everything/everything.conf.json"); 
+	$MASON = Mason->new(allow_globals => [qw($REQUEST)], data_dir => "/var/mason", comp_root => "/var/everything/templates");
+	$ROUTER = Everything::HTMLRouter->new();
 
-	foreach my $plugin ("API","Node","DataStash")
+	foreach my $plugin ("API","Node","DataStash", "Controller")
 	{
 		$FACTORY->{lc($plugin)} = Everything::PluginFactory->new("Everything::$plugin");
 		die $FACTORY->{lc($plugin)}->error_string if $FACTORY->{lc($plugin)}->error_string;
@@ -84,7 +89,6 @@ sub BEGIN
 
 use vars qw($DB);
 use vars qw($APP);
-use vars qw($FACTORY);
 # Used by Makefile.PL to determine the version of the install.
 my $VERSION = 0.8;
 

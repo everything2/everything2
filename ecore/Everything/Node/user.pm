@@ -211,5 +211,34 @@ sub passwd
   return $self->NODEDATA->{passwd};
 }
 
+sub style
+{
+  my ($self) = @_;
+
+  my $userstyle = $self->VARS->{userstyle};
+  my $default = $self->APP->node_by_name($self->CONF->default_style,"stylesheet");
+
+  unless($userstyle)
+  {
+    return $default;
+  }
+
+  $userstyle = $self->APP->node_by_id($userstyle);
+
+  if($userstyle and $userstyle->type->title eq "stylesheet")
+  {
+    return $userstyle;
+  }
+
+  return $default;
+}
+
+sub customstyle
+{
+  my ($self) = @_;
+
+  return ($self->VARS->{customstyle})?($self->VARS->{customstyle}):(undef);
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
