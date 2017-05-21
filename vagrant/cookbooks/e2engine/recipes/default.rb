@@ -55,6 +55,7 @@ to_install = [
     'libnamespace-autoclean-perl',
     'libwww-perl',
     'libperl-critic-perl',
+    'libmason-perl',
     'yui-compressor',
 ]
 
@@ -72,6 +73,13 @@ directory '/etc/everything' do
   owner "root"
   group "root"
   mode "0755"
+  action "create"
+end
+
+directory '/var/mason' do
+  owner "www-data"
+  group "www-data"
+  mode 0755
   action "create"
 end
 
