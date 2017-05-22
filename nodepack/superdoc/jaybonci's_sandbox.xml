@@ -4,18 +4,19 @@
 [%
   use Everything::Delegation::htmlpage;
   my $str = &quot;&quot;;
-
+  my $count = 0;
   my @nodes = $DB-&gt;getNodeWhere({type_nodetype =&gt; getNode(&quot;htmlpage&quot;,&quot;nodetype&quot;)-&gt;{node_id}});
 
   foreach my $n (@nodes)
   {
+    $count++;
     my $title = $n-&gt;{title};
     $title =~ s/ /_/g;
     next if(Everything::Delegation::htmlpage-&gt;can($title));
     $str .= linkNodeTitle($n-&gt;{title}).&quot;&lt;br&gt;&quot;;
   }
 
-  return $str;
+  return &quot;To go: $count&lt;br&gt;$str&lt;br&gt;&quot;;
 
 %]
 [%
