@@ -9,8 +9,8 @@ my $usr = $DB-&gt;{dbh}-&gt;prepare($sql);
 $usr-&gt;execute or return 'Oh dear. Database oops';
 my ($numUser) = $usr-&gt;fetchrow();
 
-my $sql = &quot;select count(*) from `user`, `node` where `user_id` = `node_id` and `createtime` &gt; date_sub(now(), interval 1 week) and `lasttime` &gt; 0&quot;;
-my $usr = $DB-&gt;{dbh}-&gt;prepare($sql);
+$sql = &quot;select count(*) from `user`, `node` where `user_id` = `node_id` and `createtime` &gt; date_sub(now(), interval 1 week) and `lasttime` &gt; 0&quot;;
+$usr = $DB-&gt;{dbh}-&gt;prepare($sql);
 $usr-&gt;execute or return 'Oh dear. Database oops';
 my ($numLoggedIn) = $usr-&gt;fetchrow();
 

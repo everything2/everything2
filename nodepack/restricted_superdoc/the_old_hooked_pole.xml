@@ -119,7 +119,7 @@ if (keys %$usersToNail) {
 
     }
 
-    if ($$targetUserData{lasttime} != 0) {
+    if (&quot;$$targetUserData{lasttime}&quot; ne &quot;0&quot;) {
 
       push @unsafeReasons,  &quot;$targetName logged in at $$targetUserData{lasttime}!&quot;;
       $safeToWhack = 0;
