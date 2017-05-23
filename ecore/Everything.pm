@@ -97,24 +97,24 @@ my $VERSION = 0.8;
 #   a few wrapper functions for the NodeBase stuff
 #	this allows the $DB to be optional for the general node functions
 #
-sub getNode			{ $DB->getNode(@_); }
-sub getNodeById		{ $DB->getNodeById(@_); }
-sub getType 		{ $DB->getType(@_); }
-sub getNodeWhere 	{ $DB->getNodeWhere(@_); }
-sub selectNodeWhere	{ $DB->selectNodeWhere(@_); }
-sub selectNode		{ $DB->getNodeById(@_); }
+sub getNode		{ return $DB->getNode(@_); }
+sub getNodeById		{ return $DB->getNodeById(@_); }
+sub getType 		{ return $DB->getType(@_); }
+sub getNodeWhere 	{ return $DB->getNodeWhere(@_); }
+sub selectNodeWhere	{ return $DB->selectNodeWhere(@_); }
+sub selectNode		{ return $DB->getNodeById(@_); }
 
-sub nukeNode		{ $DB->nukeNode(@_);}
-sub insertNode		{ $DB->insertNode(@_); }
-sub updateNode		{ $DB->updateNode(@_); }
-sub updateLockedNode	{ $DB->updateLockedNode(@_); }
-sub replaceNode		{ $DB->replaceNode(@_); }
-sub transactionWrap	{ $DB->transactionWrap(@_); }
+sub nukeNode		{ return $DB->nukeNode(@_);}
+sub insertNode		{ return $DB->insertNode(@_); }
+sub updateNode		{ return $DB->updateNode(@_); }
+sub updateLockedNode	{ return $DB->updateLockedNode(@_); }
+sub replaceNode		{ return $DB->replaceNode(@_); }
+sub transactionWrap	{ return $DB->transactionWrap(@_); }
 
-sub isNodetype		{ $DB->isNodetype(@_); }
-sub isGroup			{ $DB->isGroup(@_); }
-sub isGod			{ $DB->isGod(@_); }
-sub isApproved		{ $DB->isApproved(@_); }
+sub isNodetype		{ return $DB->isNodetype(@_); }
+sub isGroup		{ return $DB->isGroup(@_); }
+sub isGod		{ return $DB->isGod(@_); }
+sub isApproved		{ return $DB->isApproved(@_); }
 
 #############################################################################
 sub printErr {
@@ -399,23 +399,23 @@ sub updateLinks
 {
 	my ($TONODE, $FROMNODE, $type, $user_id) = @_;
 	getRef $type;
-	my $isSoftlink = 1
-		if $type == 0 || (UNIVERSAL::isa($type,'HASH') && $$type{title} eq 'guest user link');
+	my $isSoftlink = 0;
+        $isSoftlink = 1 if $type == 0 || (UNIVERSAL::isa($type,'HASH') && $$type{title} eq 'guest user link');
 
-	return undef if getId($TONODE) == getId($FROMNODE) and $isSoftlink;
+	return if getId($TONODE) == getId($FROMNODE) and $isSoftlink;
 	getRef $TONODE;
 	getRef $FROMNODE;
 	
-	return undef unless $TONODE && $FROMNODE;
-	return undef unless ($$TONODE{type}{title} eq 'e2node' and $$FROMNODE{type}{title} eq 'e2node') or !$isSoftlink;
-	return undef if $APP->isSpider();
+	return unless $TONODE && $FROMNODE;
+	return unless ($$TONODE{type}{title} eq 'e2node' and $$FROMNODE{type}{title} eq 'e2node') or !$isSoftlink;
+	return if $APP->isSpider();
 
 	$type ||= 0;
 	$type = getId $type;
 	my $to_id = getId $TONODE;
 	my $from_id = getId $FROMNODE;
 
-	return undef if $to_id == $from_id;
+	return if $to_id == $from_id;
 
 	my $rows = $DB->sqlUpdate('links',
 			{ -hits => 'hits+1' ,  -food => 'food+1'}, 
@@ -612,6 +612,7 @@ sub initEverything
 	$DB->{cache}->clearSessionCache();
 	$DB->closeTransaction();
 	$APP ||= new Everything::Application($DB, $CONF);
+	return;
 }
 
 sub commonLogLine

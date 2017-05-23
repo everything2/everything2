@@ -22,3 +22,5 @@ sub roompurge
   $self->DB->sqlDelete("room","");
   return [$self->HTTP_OK, {purged => $to_delete}];
 }
+
+1;

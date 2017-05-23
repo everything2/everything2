@@ -19,11 +19,11 @@ sub new
 			{
 				$this->{$value} = $Everything::CONF->s3->{$s3type}->{$value};
 			}else{
-				return undef;
+				return;
 			}
 		}
 	}else{
-		return undef;
+		return;
 	}
 
 	$this->{s3} = Net::Amazon::S3->new(
