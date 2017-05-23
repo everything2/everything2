@@ -4434,8 +4434,6 @@ sub static_javascript
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  $$VARS{fxDuration} = '1' if (delete $$VARS{notransitions});
-
   my $lastnode = $$NODE{node_id};
   $lastnode = $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
   $lastnode = $query->param("lastnode_id")||0 if $$NODE{title} eq 'Findings:' && $$NODE{type}{title} eq 'superdoc';
