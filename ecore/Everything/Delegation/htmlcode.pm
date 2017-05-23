@@ -10552,8 +10552,6 @@ sub favorite_noder
   }
 }
 
-# TODO: Resolve name conflict with Everything::HTML
-#
 sub updateNodelet
 {
   my $DB = shift;

@@ -50,7 +50,7 @@ sub _build_user
 sub _user_trigger
 {
   my ($self, $user, $old_user) = @_;
-  $self->user($self->APP->node_by_id($user->{node_id}));
+  return $self->user($self->APP->node_by_id($user->{node_id}));
 }
 
 sub _build_blessed_user
@@ -259,7 +259,7 @@ sub get_api_version
     return $version;
   }
   $self->devLog("No API version requested, defaulting to CURRENT_VERSION");
-  return undef;
+  return;
 }
 
 sub make_login_cookie

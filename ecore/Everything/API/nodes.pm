@@ -244,7 +244,6 @@ sub _can_action_okay
   }
 }
 
-
 sub delete
 {
   my ($self, $REQUEST, $node, $user) = @_;

@@ -773,67 +773,11 @@ sub insertNodelet
 	  $APP->devLog("Accepting delegation for nodelet: $NODELET->{title} as $delegation_name");
 	  my $nltext = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $APP);
           return $APP->zen_wrap_nodelet($NODELET->{title}, $nltext);
-	}else{
-	  # Make sure the nltext is up to date
-	  updateNodelet($NODELET);
-	  return "" unless ($$NODELET{nltext} =~ /\S/);
-	  return $APP->zen_wrap_nodelet($NODELET->{title}, $NODELET->{nltext});
 	}
+
+	return "";
 }
 
-
-#############################################################################
-#	Sub
-#		updateNodelet
-#
-#	Purpose
-#		Nodelets store their code in the nlcode (nodelet code) field.
-#		This code is not eval-ed every time the nodelet is displayed.
-#		Call this function every time you display a nodelet.  This
-#		will eval the code if the specified interval has passed.
-#
-#		The updateinterval field dictates how often we eval the nlcode.
-#		If it is -1, we eval the code the first time and never do it
-#		again.
-#
-#	Parameters
-#		$NODELET - the nodelet to update
-#
-sub updateNodelet
-{
-	my ($NODELET) = @_;
-	my $interval;
-	my $lastupdate;
-	my $currTime = time; 
-
-	getRef $NODELET;
-
-	$interval = $$NODELET{updateinterval};
-	$lastupdate = $$NODELET{lastupdate};
-	$lastupdate ||= 0;
-	$interval = 0 unless defined $interval;
-
-        return if $interval;
-        #we update nodes async
-
-	# Return if we have generated it, and never want to update again (-1) 
-	return if($interval == -1 && $lastupdate != 0);
-	
-	# If we are beyond the update interal, or this thing has never
-	# been generated before, generate it.
-#	if((not $currTime or not $interval) or
-#		($currTime > $lastupdate + $interval) || ($lastupdate == 0))
-	if ($interval == 0)
-	{
-		$$NODELET{nltext} = parseCode($$NODELET{nlcode}, $NODELET);
-		$$NODELET{lastupdate} = $currTime; 
-
-#		updateNode($NODELET, -1) unless $interval == 0;
-		#if interval is zero then it should only be updated in cache
-	}
-	
-	""; # don't return anything
-}
 
 #############################################################################
 #	Sub

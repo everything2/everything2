@@ -56,8 +56,8 @@ sub publishdraft
   my $draft = $query -> param('draft_id');
   getRef $draft;
 
-  return unless $draft and $$draft{doctext} and $$draft{type}{title} eq 'draft' and
-    $$USER{node_id} == $$draft{author_user} || $APP->isEditor($USER);
+  return unless ($draft and $$draft{doctext} and ($$draft{type}{title} eq 'draft') and
+    ( ($$USER{node_id} == $$draft{author_user}) || $APP->isEditor($USER)) );
 
   my $publishAs = $query -> param('publishas');
   if ($publishAs){
