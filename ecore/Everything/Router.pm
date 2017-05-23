@@ -29,7 +29,7 @@ sub dispatcher
 {
   my ($self) = @_;
   my $REQUEST = Everything::Request->new; 
-  $self->output($REQUEST, [$self->HTTP_UNIMPLEMENTED]);
+  return $self->output($REQUEST, [$self->HTTP_UNIMPLEMENTED]);
 }
 
 sub output

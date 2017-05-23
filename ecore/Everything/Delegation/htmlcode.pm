@@ -445,7 +445,7 @@ sub showChoiceFunc
   my $showHTMLCODE = $$VARS{scf_nohtmlcode} ? 0 : 1;	#must be 0 or 1
 
   if(not $query->param('choicefunc')) {
-    my %funcs = {};
+    my %funcs = ();
     my $rows = 0;
     $str .= '<table><tr>';
 
@@ -3817,7 +3817,7 @@ sub node_menu
 
   my ($field, @VALUES) = @_;
   my @idlist = ();
-  my %items = {};
+  my %items = ();
   my @TYPES = ();
 
   $field or return;
@@ -4300,7 +4300,7 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
   if((defined $spellInfo) && $showSpelling) {
     $curCat = $showCat ? 'spelling <small>(English)</small> ' : '';
     my @badThings = ();
-    my %problemCount = {};	#key is problem description, value is number of times
+    my %problemCount = ();	#key is problem description, value is number of times
 
     foreach(keys(%$spellInfo)) {
       unless(substr($_,0,1) eq '_') {
@@ -4925,8 +4925,8 @@ sub changeroom
   $str = ' instant ajax chatterbox_chatter:#' if $query and $query -> param('ajaxTrigger') and defined $query->param('changeroom')	and $query->param('changeroom') != $$USER{in_room};
   my $RM = getNode('e2 rooms', 'nodegroup');
   my @rooms = @{ $$RM{group}  };
-  my @aprrooms;
-  my %aprlabel;
+  my @aprrooms = ();
+  my %aprlabel = ();
   my ($nodelet) = @_ ;
   $nodelet =~ s/ /+/g;
 
@@ -15218,7 +15218,7 @@ sub frontpage_cooluserpicks
   my $cache = $DB->stashData("coolnodes");
 
   my $count = 15;
-  my %used;
+  my %used = ();
 
   $str.="\n\t<ul class=\"linklist\">";
 

@@ -90,7 +90,7 @@ sub _build_routechooser
   $perlcode .= '}';
   
   $self->devLog("Compiled routes into code: '$perlcode'");
-  eval("\$subroutineref = $perlcode");
+  eval ("\$subroutineref = $perlcode");
   if($@)
   {
     # TODO: Something other than die
