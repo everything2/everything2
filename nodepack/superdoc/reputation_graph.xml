@@ -67,7 +67,7 @@ $str .= '&lt;table cellspacing=&quot;0&quot; cellpadding=&quot;0&quot; align=&qu
 while(my $row = $csr-&gt;fetchrow_hashref)
 {
   $dt = $$row{votetime};
-  if ($$row{revotetime} &gt; $dt) {
+  if ($APP-&gt;convertDateToEpoch($$row{revotetime}) &gt; $APP-&gt;convertDateToEpoch($dt) ) {
     $dt = $$row{revotetime};
   }
   @curDate = strptime($dt);
