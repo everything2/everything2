@@ -17,10 +17,6 @@ override 'json_display' => sub
   my ($self) = @_;
 
   my $values = super();
-  my $level = $self->APP->getLevel($self->NODEDATA) || 0;
-  $values->{level} = int($level);
-  $values->{leveltitle} = $self->APP->getLevelTitle($level);
-
 
   my $bookmarks = $self->APP->get_bookmarks($self->NODEDATA) || [];
   if(scalar @$bookmarks)
@@ -37,12 +33,12 @@ override 'json_display' => sub
     }
   }
 
-  foreach my $num("experience","GP","numwriteups","numcools","is_online")
+  foreach my $num("experience","GP","numwriteups","numcools","is_online","level")
   {
     $values->{$num} = int($self->$num);
   }
 
-  foreach my $text("mission","motto","employment","specialties")
+  foreach my $text("mission","motto","employment","specialties","leveltitle")
   {
     my $t = $self->$text;
     if($t)
@@ -238,6 +234,61 @@ sub customstyle
   my ($self) = @_;
 
   return ($self->VARS->{customstyle})?($self->VARS->{customstyle}):(undef);
+}
+
+sub nodelets
+{
+  my ($self) = @_;
+  my $output = [];
+  if($self->VARS->{nodelets})
+  {
+    foreach my $nodelet (split(",",$self->VARS->{nodelets}))
+    {
+      my $nodelet = $self->APP->node_by_id($nodelet);
+      next unless $nodelet;
+      push @$output, $nodelet;
+    }
+
+    return $output;
+  }else{
+    return [$self->APP->node_by_name("default nodelets","nodeletgroup")->group];
+  }
+}
+
+sub is_borged
+{
+  my ($self) = @_;
+
+  unless($self->VARS->{borged})
+  {
+    return;
+  }
+
+  my $t = time;
+  my $numborged = $self->VARS->{numborged};
+  $numborged ||= 1;
+  $numborged *=2;
+
+  if ($t - $self->VARS->{borged} < 300+60*$numborged) {
+    return 1;
+  } else {
+    $self->VARS->{lastborg} = $self->VARS->{borged};
+    delete $self->VARS->{borged};
+    $self->DB->sqlUpdate('room', {borgd => '0'}, 'member_user='.$self->node_id);
+    return 0;
+  }
+}
+
+sub level
+{
+  my ($self) = @_;
+  return $self->APP->getLevel($self->{NODEDATA});
+}
+
+sub leveltitle
+{
+  my ($self) = @_;
+  return $self->APP->getLevelTitle($self->level);
 }
 
 __PACKAGE__->meta->make_immutable;

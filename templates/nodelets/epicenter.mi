@@ -1,0 +1,8 @@
+<%class>
+has 'is_borged';
+has 'votesleft';
+has 'coolsleft';
+has 'level';
+
+</%class>
+Epicenter here

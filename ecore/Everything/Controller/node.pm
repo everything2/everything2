@@ -1,6 +1,7 @@
 package Everything::Controller::node;
 
 use Moose;
+use Everything::Delegation::nodelet;
 extends 'Everything::Controller';
 
 # TODO: implement public method filtering
@@ -76,7 +77,60 @@ sub layout
 
   $params->{no_ads} = 1 unless($REQUEST->is_guest);
 
+  $params = $self->nodelets($REQUEST->user->nodelets, $params);
+
   return $self->MASON->run($template, %$params)->output();
+}
+
+sub nodelets
+{
+  my ($self, $nodelets, $params) = @_;
+  my $REQUEST = $params->{REQUEST};
+  my $node = $params->{node};
+
+  $params->{nodelets} = {};
+  $params->{nodeletorder} ||= [];
+
+  foreach my $nodelet (@{$nodelets|| []})
+  {
+    my $title = lc($nodelet->title);
+    my $id = $title;
+    $title =~ s/ /_/g;
+    $id =~ s/\W//g;
+
+    if(Everything::Controller::node->can($title))
+    {
+      my $return = $self->$title($REQUEST, $node);
+      next unless $return;
+      $params->{nodelets}->{$title} = $return;
+    }else{
+      if(my $delegation = Everything::Delegation::nodelet->can($title))
+      {
+        $self->devLog("Using delegated nodelet content for: $title");
+        $params->{nodelets}->{$title}->{delegated_content} = $delegation->($self->DB, $REQUEST->cgi, $node->NODEDATA, $REQUEST->user->NODEDATA,$REQUEST->VARS, $Everything::HTML::PAGELOAD, $self->APP);
+      }
+    }
+    push @{$params->{nodeletorder}}, $title;  
+    $params->{nodelets}->{$title}->{title} = $nodelet->title;
+    $params->{nodelets}->{$title}->{id} = $id;
+  }
+  return $params;
+}
+
+sub epicenter_new
+{
+  my ($self, $REQUEST, $node) = @_;
+
+  if($REQUEST->is_guest)
+  {
+    return;
+  }
+
+  my $params = {};
+  foreach my $property (qw|is_borged level coolsleft votesleft|)
+  {
+    $params->{$property} = $REQUEST->user->$property;
+  }
 }
 
 1;

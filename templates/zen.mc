@@ -31,6 +31,9 @@ has 'lastnode' => (required => 1);
 
 has 'show_guest_nodeshell_banner' => (default => 0);
 
+has 'nodelets' => (required => 1);
+has 'nodeletorder' => (required => 1);
+
 sub _build_pagetitle
 {
   my ($self) = @_;
@@ -82,6 +85,7 @@ sub _build_pagetitle
   <!-- google_ad_section_end -->
  </div>
  <div id='sidebar'>
+  <& '/helpers/nodelets.mi', nodelets => $.nodelets, nodeletorder => $.nodeletorder &>
   <!-- nodelets -->
  </div> 
 </div>
