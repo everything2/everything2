@@ -2839,8 +2839,9 @@ sub cleanupHTML {
     
     # Delete any incomplete tags, including comments. These may be the result of truncating
     # source HTML, eg. for Cream of the Cool.
-    $text =~ s/<(?:[^>]*|!--(?:[^-]*|-[^-]|--[^>])*)$//;
-    
+    $text =~ s/<[^>]*$//;
+    $text =~ s/<!--(?:[^-]*|-[^-]|--[^>])*$//g;
+ 
     # Scan tags by recognising text starting with '<'. Experiments with
     # Firefox show that malformed opening tags (missing the closing '>')
     # still count as opened tags, so we follow this behaviour.
