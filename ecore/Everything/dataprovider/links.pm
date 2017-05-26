@@ -1,9 +1,8 @@
 package Everything::dataprovider::links;
 use base qw(Everything::dataprovider::base);
 
-
 use strict;
-use warnings
+use warnings;
 use lib qw(lib);
 
 sub data_out
