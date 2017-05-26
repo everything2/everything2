@@ -59,6 +59,8 @@ sub output
       print $data;
     }
   }
+
+  return;
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -11,7 +11,7 @@ sub code_text
   my $filedata = undef;
   my $fileh = undef;
 
-  open $fileh,$file;
+  open($fileh,'<',$file);
   {
     local $/ = undef;
     $filedata = <$fileh>;

@@ -89,7 +89,7 @@ around BUILDARGS => sub
   if(@_ == 0)
   {
     $configfile = '/etc/everything/everything.conf.json';
-  }elsif(@_ == 1 and !ref $_[0])
+  }elsif((@_ == 1) and (!(ref $_[0])))
   {
     # If there is one arg, assume it is the configfile
     $configfile = $_[0];

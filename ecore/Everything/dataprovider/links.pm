@@ -1,10 +1,10 @@
-#!/usr/bin/perl -w
-
-use strict;
-use lib qw(lib);
-use Everything::dataprovider::base;
 package Everything::dataprovider::links;
 use base qw(Everything::dataprovider::base);
+
+
+use strict;
+use warnings
+use lib qw(lib);
 
 sub data_out
 {
@@ -31,6 +31,7 @@ sub data_in
 	{
 		$this->_hash_insert("links",$link);
 	}
+	return;
 }
 
 1;
