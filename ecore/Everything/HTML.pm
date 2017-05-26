@@ -1377,6 +1377,7 @@ sub mod_perlInit
 
 	$USER = $REQUEST->USER;
         $VARS = $REQUEST->VARS;
+	$PAGELOAD = $REQUEST->PAGELOAD;
 
          #only for Everything2.com
          if ($query->param("op") eq "randomnode") {

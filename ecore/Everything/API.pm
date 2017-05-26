@@ -102,7 +102,7 @@ sub _build_routechooser
 
 sub routes
 {
-  {"/" => "get"}
+  return {"/" => "get"}
 }
 
 sub get

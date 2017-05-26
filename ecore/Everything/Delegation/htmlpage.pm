@@ -233,6 +233,7 @@ sub htmlpage_edit_page
     $str .= join "\n<li>", $DB->getFields($_);
   }
   $str .= qq|</font></td></tr></table>|;
+  return $str;
 }
 
 sub node_display_page
@@ -271,5 +272,148 @@ sub nodegroup_display_page
   return $str;
 }
 
+sub nodegroup_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return htmlcode("groupeditor");
+}
+
+sub nodegroup_editor_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p align="right">|;
+
+  if ($query->param('op') eq 'close')
+  {
+    $$VARS{group} = "";
+    $str .= "<SCRIPT language=\"javascript\">parent.close()</SCRIPT>";		
+  }else{ 
+    $$VARS{group}||= getId ($NODE);
+    $str .=linkNode($NODE, "close", {displaytype=> $query->param('displaytype'), op => 'close'});
+  }
+
+  $str .= htmlcode("groupeditor").qq|</FORM>|;
+}
+
+sub nodelet_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|title:|.htmlcode("textfield","title");
+  $str .= qq|maintained by:|.htmlcode("node_menu","author_user","user","usergroup").qq|<br />|;
+  $str .= qq|parent container:|.htmlcode("node_menu","parent_container").qq|<br />|;
+  $str .= qq|update_interval:|.htmlcode("textfield","updateinterval").qq|(in seconds)<br />|;
+  $str .= qq|nodelet code:<br />|;
+  $str .= htmlcode("textarea","nlcode",30,80,"off");
+
+  return $str;
+}
+
+sub nodetype_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p><a href=|.urlGen({
+    'node'=>'List Nodes of Type',
+    'type'=>'superdoc',
+    'setvars_ListNodesOfType_Type'=>$$NODE{node_id}
+    #'chosen_type'=>$$NODE{title},
+    }).qq|>List Nodes of Type</a></p>|;
+
+  $str .= qq|<p><strong>Authorized Readers</strong>:|.htmlcode("listgroup","readers_user").
+    htmlcode("displayInherited","readers_user");
+  $str .= qq|<p><strong>Authorized Creators</strong>:|.htmlcode("listgroup","writers_user").
+    htmlcode("displayInherited","writers_user");
+  $str .= qq|<p><strong>Authorized Deleters</strong>:|.htmlcode("listgroup","deleters_user").
+    htmlcode("displayInherited","deleters_user");
+
+  $str .= qq|<p><strong>Restrict Duplicates</strong> (identical titles):|;
+
+  if($$NODE{restrictdupes} == -1)
+  {
+    $str.='parent';
+  } else {
+    $str.=($$NODE{restrictdupes} ? 'Yes':'No');
+  }
+
+  $str .= htmlcode("displayInherited","restrictdups");
+  $str .= qq|<p><strong>Verify edits to maintain security</strong>:|;
+  $str .= ($$NODE{verify_edits} ? 'Yes':'No');
+
+  my $plural = '';
+  my $tablestr = '';
+  if (exists $$NODE{sqltable})
+  {
+    my $tableList = $$NODE{sqltable};
+    my @tables = split /,/, $tableList;
+    $plural = 's' if scalar @tables > 1;
+    $tablestr .= join ', ', map { linkNode(getNode($_, 'dbtable')); } @tables;
+  } else {
+    $tablestr .=  '<i>none</i>';
+  }
+
+  $str .=  "<p><strong>Sql Table$plural</strong>: $tablestr";
+
+  $str .= htmlcode("displayInherited","sqltable");
+  $str .= qq|<p><strong>Extends Nodetype:</strong> |;
+
+  $str .= linkNode ($$NODE{extends_nodetype}) if ($$NODE{extends_nodetype});
+
+  $str .= qq|<p><strong>Relevant pages:</strong><br />|;
+
+  $str .= '<ul>';
+  my @pages = ();
+  push @pages, Everything::HTML::getPages($NODE);
+
+  foreach (@pages)
+  {
+    $str .= '<li>' .linkNode($_) . '</li>';
+  }
+  $str .= qq|</ul>|;
+  $str .= qq|<p><strong>Active Maintenances:</strong><br />|;
+
+  $str .= qq|<ul>|;
+
+  my (@maints) = getNodeWhere ({maintain_nodetype=>getId($NODE)}, getType('maintenance'));
+
+  unless(@maints)
+  {
+    $str .= '<em>no maintenance functions</em>';
+  } else {
+    foreach (@maints)
+    {
+      $str .= '<li>'.linkNode($_).'</li>';
+    }
+  }
+  $str .= '</ul>' ;
+
+  return $str;
+}
 
 1;

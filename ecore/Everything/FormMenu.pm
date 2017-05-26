@@ -9,6 +9,7 @@ package Everything::FormMenu;
 #############################################################################
 
 use strict;
+use warnings;
 use Everything;
 use Everything::HTML;
 

@@ -31,14 +31,14 @@ sub dispatcher
   {
     if(exists $self->CONTROLLER_TABLE->{$endpoint})
     {
-      $self->output($REQUEST, $self->CONTROLLER_TABLE->{$endpoint}->route($REQUEST, $extra));
+      return $self->output($REQUEST, $self->CONTROLLER_TABLE->{$endpoint}->route($REQUEST, $extra));
     }else{
       $self->devLog("Request fell through to catchall after CONTROLLER_TABLE check");
-      $self->output($REQUEST, $self->CONTROLLER_TABLE->{catchall}->$method($REQUEST));
+      return $self->output($REQUEST, $self->CONTROLLER_TABLE->{catchall}->$method($REQUEST));
     }
   }else{
     $self->devLog("Request fell through to catchall after form check: $method for $urlform");
-    $self->output($REQUEST, $self->CONTROLLER_TABLE->{catchall}->$method($REQUEST));
+    return $self->output($REQUEST, $self->CONTROLLER_TABLE->{catchall}->$method($REQUEST));
   }
 }
 

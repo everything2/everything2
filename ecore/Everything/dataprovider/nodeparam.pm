@@ -1,10 +1,8 @@
-#!/usr/bin/perl -w
+package Everything::dataprovider::nodeparam;
+use base qw(Everything::dataprovider::base);
 
 use strict;
 use lib qw(lib);
-use Everything::dataprovider::base;
-package Everything::dataprovider::nodeparam;
-use base qw(Everything::dataprovider::base);
 
 sub data_out
 {
