@@ -1107,7 +1107,7 @@ sub e2node_display_page
 	.' ]';
     };
 
-    if ( my $count = scalar @{ $PAGELOAD->{notshown}->{lowrep} } )
+    if ( my $count = scalar @{ $PAGELOAD->{notshown}->{lowrep} || [] } )
     {
       $reasoncount++;
       $hidden .= '<h3>Low reputation writeup'.($count == 1 ? '' : 's')
@@ -1124,7 +1124,7 @@ sub e2node_display_page
         {-class=>'action', showhidden=>'lowrep'})."</p>\n" if $count > 1 ;
     }
 
-    if (my $count = scalar @{ $PAGELOAD->{notshown}->{unpublished} })
+    if (my $count = scalar @{ $PAGELOAD->{notshown}->{unpublished} || []})
     {
       $reasoncount++;
       $hidden .= qq'<h3>Drafts</h3>\n<ul class="infolist">\n'
@@ -1136,7 +1136,7 @@ sub e2node_display_page
         {-class=>'action', showhidden=>'unpublished'})."</p>\n" if $count > 1 ;
     }
 
-    if ( my $count = scalar @{ $PAGELOAD->{notshown}->{unfavorite} } )
+    if ( my $count = scalar @{ $PAGELOAD->{notshown}->{unfavorite} || [] } )
     {
       $reasoncount++;
       $hidden.=qq'<h3>Unfavorites</h3>\n<ul class="infolist">
