@@ -9,10 +9,11 @@
 
   foreach my $n (@nodes)
   {
-    $count++;
+
     my $title = $n-&gt;{title};
     $title =~ s/ /_/g;
     next if(Everything::Delegation::htmlpage-&gt;can($title));
+    $count++;    
     $str .= linkNodeTitle($n-&gt;{title}).&quot;&lt;br&gt;&quot;;
   }
 
