@@ -208,49 +208,6 @@ sub formcontainer
   return zen_container($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP, $str);
 }
 
-sub printable_container
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $contained_stuff = shift;
-  $contained_stuff ||= "";  
-
-  my $str = qq|
-<html>
-<head>
-<META NAME="robots" CONTENT="noindex">
-<style>
-body {
-  color:black;
-  background:white;
-}
-
-a:link {
-  color:black;
-  text-decoration:none;
-}
-</style>
-</head>
-<body>
-<title>$$NODE{title}</title>
-<center>
-<table width=90%>
-<tr><td>
-$contained_stuff
-</td>
-</table>
-</body>
-</html>|;
-
- return $str;
-}
-
 sub atom_container
 {
   my $DB = shift;

@@ -3102,72 +3102,6 @@ sub editvars
   return $str;
 }
 
-# Used by the legacy display stuff: printable and node heaven
-#
-sub displaywriteuptext
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  #displaywriteuptext - pass writeup's node_id
-
-  my ($num) = @_;
-
-  my $WRITEUP = undef;
-  my $LNODE = undef;
-  if (not $num) {
-    $LNODE = $$NODE{parent_e2node}; 
-    $WRITEUP=$NODE;
-  } else {
-    $LNODE = getId($NODE);
-    my @group = ();
-    @group = @{$$NODE{group}} if $$NODE{group};
-    return unless @group;
-    $WRITEUP = getNodeById($group[$num-1]);
-  }
-
-  return '' unless $WRITEUP;
-
-  my $TAGNODE = getNode('approved html tags', 'setting');
-  my $TAGS=getVars($TAGNODE);
-
-  my $text = htmlcode('standard html screen', $$WRITEUP{doctext}, $LNODE);
-  my $wuid = getId($WRITEUP);
-  return '<!-- google_ad_section_start --><!-- '.$wuid.'{ -->'.$text.'<!-- }'.$wuid.' --><!-- google_ad_section_end -->';
-
-}
-
-# Used by the category display page, and the legacy page display, via displaywriteuptext
-#
-sub standard_html_screen
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($text, $lastnode_id) = @_;
-
-  my $TAGNODE = getNode('approved html tags', 'setting');
-  my $TAGS = getVars($TAGNODE);
-
-  $lastnode_id = undef if ($APP->isGuest($USER));
-
-  $text = $APP->htmlScreen($text, $TAGS);
-  $text = $APP->screenTable ($text);
-  $text = parseLinks($text, $lastnode_id);
-  $text = $APP->breakTags($text);
-  return $text;
-}
-
 # Used to link the viewcode page in the edev nodelet
 #
 sub viewcode
@@ -4831,78 +4765,6 @@ sub generatehex
   return $str."</table>";
 }
 
-# Super likely going to be moved to a template if we even need to keep it.
-# It is only used by the printable htmlcode pages, which are likely to be moved to CSS.
-#
-sub printableheader
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($WRITEUP) = @_;
-  getRef $WRITEUP;
-  $WRITEUP ||= $NODE;
-
-  my $TYPE = $$WRITEUP{wrtype_writeuptype};
-  my $E2NODE = getNode $$WRITEUP{parent_e2node}; 
-  getRef $TYPE;
-
-  if(getId($NODE)==getId($WRITEUP)) {
-    #new way - let displayWriteupInfo handle individual WU header and footer
-    return htmlcode('displayWriteupInfo', getId($WRITEUP));
-  }
-
-  my $str="<b>";
-  $str.= "$$E2NODE{title} " unless getId($NODE) != getId($WRITEUP);
-  $str.="(".linkNode($WRITEUP, $$TYPE{title}).") by&nbsp;".linkNode($$WRITEUP{author_user})."</b>\n";
-
-  $str="<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>
-    <td>$str</td>
-    <td align=right>";
- 
-  if($$WRITEUP{cooled})
-  {
-    $str .= htmlcode('writeupcools',$WRITEUP->{node_id});
-  }
-  
-  $str .= "</td><td align=right>"."<font size=2>".htmlcode('parsetimestamp', "$$WRITEUP{publishtime}")."</font></td></tr></table>";
-
-  return $str;
-}
-
-# Similar to printableheader only used by the printable htmlpages. Shares its fate.
-#
-sub printablefooter
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = '<table width="100%" border="0"><tr><td align="left"><b>';
-
-  my $E2NODE = undef;
-
-  $E2NODE=getNode $$NODE{parent_e2node} if $$NODE{type}{title} eq 'writeup';
-  $E2NODE ||= $NODE;
-  my $site = $Everything::CONF->{site_url};
-  $site =~ s/\/$//;
-  $site.= "/title/$$E2NODE{title}";
-  $site =~ s/ /\+/g;
-
-  $str.= $site. "</b></td><td align='right'><b>http://everything2.com/node/$$NODE{node_id}</b></td></tr></table>";
-
-  return $str;
-}
-
 # Changeroom is the room changing widget
 # TODO: Develop a notion of public accounts
 #
@@ -6456,7 +6318,6 @@ sub CoolUncoolIt
   return $str unless !$kuid
     && ( exists $$VARS{cools} && $$VARS{cools} ne '' && $$VARS{cools} > 0 )
     && ($$N{author_user} != $$USER{user_id})
-    && ($query->param('displaytype') ne 'printable')
     && not ($DB->sqlSelect('*','coolwriteups',"coolwriteups_id=$$N{node_id} and cooledby_user=$$USER{node_id}")) ;
 
   my $author = getNodeById( $$N{ author_user } ) ;
@@ -6878,21 +6739,6 @@ sub episection_ces
     <li>$curLog</li>$oraclecode</ul>");
 }
 
-# I'm not sure if this is used,  but it's hard to grep this term
-#
-sub printable
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return linkNode($NODE, ($_[0] || 'printable version'), {displaytype=>'printable',lastnode_id=>0} );
-}
-
 # originally by [|site=pm&type=user|vroom] at [|site=pm&type=htmlcode|timesince]
 # updated to include fractional resolution
 # last update: Wednesday, July 13, 2005
@@ -7026,7 +6872,6 @@ sub writeupcools
   if ( !$DB->sqlSelect('linkedby_user', 'weblog', "weblog_id=$nr and to_node=$$N{node_id} and removedby_user=0")
     and ( $$VARS{cools} && $$VARS{cools} > 0 )
     and ($$N{author_user} != $$USER{user_id})
-    and ($query->param('displaytype') ne 'printable')
     and !$DB->sqlSelect( '*', 'coolwriteups', "coolwriteups_id=$$N{node_id} and cooledby_user=$$USER{node_id}" ) )
   {
     my $author = getNodeById( $$N{ author_user } ) unless $$VARS{anonymousvote} == 1;
@@ -7268,7 +7113,6 @@ sub displayWriteupInfo
   my $isMine = (!$isGuest) && ($aid==$UID);
   my $isDraft = ($$WRITEUP{type}{title} eq 'draft');
   my $authorIsBot = (defined $wuAuthor) && (($wuAuthor->{title} eq 'Webster 1913'));	#FIXME: get (cached) bot setting
-  my $inPrintMode = $query->param('displaytype') eq 'printable';	#FIXME - is that the best way to see if printable?	#if displaytype=printable - when printing, we don't want things like, for example, voting buttons
   my $v=getVars($wuAuthor);
 
   #client-side error
@@ -7303,7 +7147,6 @@ sub displayWriteupInfo
       'dtcreate'=>\&info_dt_create,
       'author'=>\&info_author,
       'authoranon'=>\&info_author_anon,
-      'print'=>\&info_print,
       'pseudoanon'=>\&info_author_pseudo,
       'typeauthorprint'=>\&info_typeauthor,
       'notnew'=>\&info_hidden,	#original name
@@ -7323,34 +7166,25 @@ sub displayWriteupInfo
 
   #determine things to display
   my @showThings = ();
-  if($inPrintMode) {
-    #override user setting and show all information when printing
-    if($inHeader) {
-      @showThings = ('l:typeauthorprint','c:kill','c:vote','r:dtcreate','\n','l:cfull','c:hidden','r:length');
+  #use user vars, if set, or default
+  if($inHeader)
+  {
+    #header
+    if ($$VARS{wuhead})
+    {
+      @showThings = split(/\s*,\s*/, $$VARS{wuhead});
     } else {
-      @showThings = ();
+      #no settings given, so use default header, which is mostly "classic"
+      @showThings = ('c:type','c:author','c:hits', 'r:dtcreate');
     }
   } else {
-    #use user vars, if set, or default
-    if($inHeader)
-    {
-      #header
-      if ($$VARS{wuhead})
-      {
-        @showThings = split(/\s*,\s*/, $$VARS{wuhead});
-      } else {
-        #no settings given, so use default header, which is mostly "classic"
-        @showThings = ('c:type','c:author','c:hits', 'r:dtcreate');
-      }
+    #footer
+    if ($$VARS{wufoot}){
+      @showThings = split(/\s*,\s*/, $$VARS{wufoot});
     } else {
-      #footer
-      if ($$VARS{wufoot}){
-        @showThings = split(/\s*,\s*/, $$VARS{wufoot});
-      } else {
-        @showThings = ('l:kill','c:vote');
-        push @showThings,('c:cfull') unless (exists $$VARS{wuhead} && ($$VARS{wuhead}=~'cfull'||$$VARS{wuhead}=~'cshort'));
-        push @showThings,('c:sendmsg','c:addto','r:social');
-      }
+      @showThings = ('l:kill','c:vote');
+      push @showThings,('c:cfull') unless (exists $$VARS{wuhead} && ($$VARS{wuhead}=~'cfull'||$$VARS{wuhead}=~'cshort'));
+      push @showThings,('c:sendmsg','c:addto','r:social');
     }
   }
 
@@ -7386,9 +7220,8 @@ sub displayWriteupInfo
   };
 
   local *info_authorsince = sub {
-    #not if bot, or printable, or $VARS
+    #not if bot or $VARS
     return if $authorIsBot;
-    return if $inPrintMode;
     return if $$VARS{info_authorsince_off};
     return if $$v{hidelastseen} && !$isCE;
     return unless $wuAuthor;
@@ -7481,13 +7314,8 @@ sub displayWriteupInfo
     return &info_author() ;
   };
 
-  local *info_print = sub {
-    return if $inPrintMode;
-    return '('.linkNode($WRITEUP, 'print', {displaytype=>'printable',lastnode_id=>0}).')';
-  };
-
   local *info_typeauthor = sub {
-    return &info_wutype() . ' ' . &info_author() . ' ' . &info_print();
+    return &info_wutype() . ' ' . &info_author();
   };
 
   local *info_hidden = sub {
@@ -11488,7 +11316,7 @@ sub epicenterZen
 
   $expStr =~ s/<br ?\/?>/ | /g;
 
-  my @ifys = (linkNode($NODE, 'print', { displaytype=>'printable', lastnode_id => 0 }));
+  my @ifys = ();
   push(@ifys, linkNode(getNode('chatterlight','fullpage'),'chat'));
   push(@ifys, linkNode(getNode('message inbox','superdoc'),'inbox'));
 
