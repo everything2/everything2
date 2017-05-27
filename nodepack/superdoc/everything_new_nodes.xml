@@ -8,11 +8,7 @@
 &lt;/p&gt;&lt;/ul&gt;
 &lt;table cellpadding=0 cellspacing=0 width=100%&gt;
 [{newnodes:100}]
-&lt;/table&gt;
-&lt;p align=&quot;right&quot;&gt;
-[% linkNode($NODE, 'printable version', { displaytype =&gt; 'printable' } ) %]
-&lt;/p&gt;
-</doctext>
+&lt;/table&gt;</doctext>
   <node_id>523351</node_id>
   <title>Everything New Nodes</title>
 </node>

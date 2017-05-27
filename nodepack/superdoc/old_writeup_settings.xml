@@ -63,7 +63,7 @@ $query-&gt;param('headspec',$newSpec);
 my $nl = &quot;&lt;br /&gt;\n&quot;;
 
 $query-&gt;param('hsdefault_b', 'l:type,l:author,c:kill,r:vote,r:cshort'); #bare
-$query-&gt;param('hsdefault_a', 'l:type,l:pseudoanon,l:print,c:kill,c:vote,c:cshort,r:dtcreate'); #pseudo-anonymous author
+$query-&gt;param('hsdefault_a', 'l:type,l:pseudoanon,c:kill,c:vote,c:cshort,r:dtcreate'); #pseudo-anonymous author
 $query-&gt;param('hsdefault_c', 'l:typeauthorprint,c:kill,c:vote,c:cshort,r:dtcreate'); #classic
 $query-&gt;param('hsdefault_f', 'l:typeauthorprint,c:kill,c:vote,r:dtcreate,\n,l:cfull,sendmsg,c:length,r:notnew,r:social'); #full
 
@@ -165,7 +165,7 @@ $query-&gt;param('footspec',$newSpec);
 my $nl = &quot;&lt;br /&gt;\n&quot;;
 
 $query-&gt;param('fsdefault_b', 'l:type,l:author,c:kill,r:vote,r:cshort'); #bare
-$query-&gt;param('fsdefault_a', 'l:type,l:pseudoanon,l:print,c:kill,c:vote,c:cshort,r:dtcreate'); #pseudo-anonymous author
+$query-&gt;param('fsdefault_a', 'l:type,l:pseudoanon,c:kill,c:vote,c:cshort,r:dtcreate'); #pseudo-anonymous author
 $query-&gt;param('fsdefault_c', 'l:typeauthorprint,c:kill,c:vote,c:cshort,r:dtcreate'); #classic
 $query-&gt;param('fsdefault_f', 'l:typeauthorprint,c:kill,c:vote,r:dtcreate,\n,l:cfull,sendmsg,c:length,r:notnew,r:social'); #full
 
@@ -271,11 +271,10 @@ then at the top of every writeup you view will display the writeup's author to t
 &lt;tr&gt;&lt;td&gt;&lt;code&gt;kill&lt;/code&gt;&lt;/td&gt;&lt;td&gt;shows if a writeup is marked for destruction[% return ($APP-&gt;isEditor($USER) ) ? '; editor note: this also shows deletion checkboxes' : ''; %]&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;code&gt;length&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Shows the number of characters, and approximate number of words, in the writeup.&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;code&gt;notnew&lt;/code&gt;&lt;/td&gt;&lt;td&gt;shows if the writeup was created hidden[% return ($APP-&gt;isEditor($USER) ) ? '' : '; note: this will only display if it is your writeup'; %]&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;code&gt;print&lt;/code&gt;&lt;/td&gt;&lt;td&gt;links to printable version&lt;/td&gt;&lt;/th&gt;
 &lt;tr&gt;&lt;td&gt;&lt;code&gt;pseudoanon&lt;/code&gt;&lt;/td&gt;&lt;td&gt;like &lt;code&gt;authoranon&lt;/code&gt; (only shows writeup's author if it is yours, or you have voted on it), but anonymous text links to author's homenode, and the user's name appears if you hover the mouse cursor over the link; see also: &lt;code&gt;author&lt;/code&gt; and &lt;code&gt;authoranon&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;code&gt;sendmsg&lt;/code&gt;&lt;/td&gt;&lt;td&gt;Provides a text area where you can send the writeup's author a message. The area acts just like a normal private message (&lt;tt&gt;/msg&lt;/tt&gt;), except you don't need to enter the /msg part, and the writeup's title is automatically prepended to your message. (This is mainly provided as an easier way to send the author a message, without having to bother with copying their name and writeup title.)&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;code&gt;type&lt;/code&gt;&lt;/td&gt;&lt;td&gt;shows writeup type (idea/person/thing/idea/definition)&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;code&gt;typeauthorprint&lt;/code&gt;&lt;/td&gt;&lt;td&gt;shows writeup type, author, and printable link (this combination is commonly used, so it has its own code)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;code&gt;typeauthorprint&lt;/code&gt;&lt;/td&gt;&lt;td&gt;shows writeup type and author (this combination is commonly used, so it has its own code)&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;code&gt;vote&lt;/code&gt;&lt;/td&gt;&lt;td&gt;shows voting area&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;&lt;code&gt;social&lt;/code&gt;&lt;/td&gt;&lt;td&gt;shows social bookmarking buttons&lt;/td&gt;&lt;/tr&gt;
 
