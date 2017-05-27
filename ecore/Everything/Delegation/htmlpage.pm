@@ -1160,10 +1160,6 @@ sub e2node_display_page
   unless($APP->isGuest($USER))
   {
     $str .= qq|<p>|;
-    $str .= linkNode($NODE, 'printable version', { displaytype => 'printable' , lastnode_id => '0', -rel => 'nofollow' } );
-    $str .= qq|</p>|;
-
-    $str .= qq|<p>|;
     $str .= linkNode($NODE, 'chaos', { displaytype => 'chaos' , lastnode_id => '0', -rel => 'nofollow' } );
     $str .= qq|</p>|;
   }
