@@ -1270,4 +1270,262 @@ sub superdoc_viewcode_page
   return htmlcode('listcode','doctext');
 }
 
+sub usergroup_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p>|.htmlcode("windowview","editor,launch editor");
+
+  if(isGod($USER))
+  {
+    $str .= '| '.htmlcode('usergroupmultipleadd');
+
+    my $wSet = getVars(getNode('webloggables','setting'))->{$$NODE{node_id}};
+
+    if ($wSet)
+    {
+      $str .= "<br>Already has ify - <b>$wSet</b>";
+    } else {
+
+      $str .=htmlcode('openform');
+      $str.="Value to Display (e.g. <b>Edevify</b>): ";
+      $str.=$query->textfield('ify_display','')." ";
+      $str.="<input type='hidden' name='op' value='weblogify' />";
+      $str.=$query->submit('sexisgood','add ify!');
+      $str.=$query->end_form;
+    }
+
+  }
+
+  $str .= qq|</p>|;
+
+  if($APP->isEditor($USER))
+  {
+    my $cOwner = $APP->getParameter($NODE, 'usergroup_owner');
+    $str.= htmlcode('openform');
+    $str.= 'Owner is <b>'.linkNode($cOwner).'</b><br>' if $cOwner;
+    $str.="New Owner: ";
+    # 'leader' is correct: leadusergroup does in fact set owner
+    $str.=$query->textfield('new_leader','')." ";
+    $str.="<input type='hidden' name='op' value='leadusergroup'>";
+    $str.=$query->submit('sexisgood','make owner');
+    $str.="<br>Note that the user must be a member of the group <em>before</em> they can be set as the owner.";
+    $str.=$query->end_form;
+  }
+
+  if($APP->inUsergroup($USER, $NODE))
+  {
+    #TODO: Undo node_id hardcoding
+    $str .= '<p align="right">'.linkNode(1977025,"Discussions for $$NODE{title}.",{show_ug => $$NODE{node_id}}).'</p>';
+  }
+
+  $str .= qq|<table border=0> <!-- enclose writeups in table to prevent overflow -->|;
+  $str .= qq|<tr><td>|;
+  $str .= htmlcode("parselinks","doctext");
+  $str .= qq|</td></tr>|;
+  $str .= qq|</table> <!-- end overflow-blocking table -->|;
+  $str .= qq|<p><h2>Venerable members of this group:</h2><p>|;
+
+  my $UID = getId($USER);
+  my $isRoot = $APP->isAdmin($USER);
+  my $isGuest = $APP->isGuest($USER);
+  my $isInGroup=0;
+  my @users = ();
+  my @memberIDs=();
+  my $flags = undef;
+  my $curID = undef;
+  my $ugOwnerIndex = undef;
+
+  #don't show standard groups when actually viewing that page
+  #FIXME? is there a better way to tell if on that group page?
+  my $showMemberAdmin = ($$NODE{title} ne 'gods');
+  my $showMemberCE = ($$NODE{title} ne 'Content Editors');
+
+  #get usergroup "owner"
+  my $ugOwner = $APP -> getParameter($NODE, 'usergroup_owner');
+
+  if($$NODE{group})
+  {
+    my $leavingnote = '</p><strong>You have left this usergroup</strong></p>' if $query -> param('leavegroup')
+      && htmlcode('verifyRequest', 'leavegroup')
+      && $DB -> removeFromNodegroup($NODE, $USER, -1);
+
+    my $GROUP = $$NODE{group};
+    @memberIDs = @$GROUP;
+
+    $isInGroup = $APP->inUsergroup($UID, $NODE);
+
+    my $s;
+    my $i=0;
+    foreach(@memberIDs)
+    {
+      $s = linkNode($_);
+
+      if($_==$ugOwner)
+      {
+        $ugOwnerIndex = $i;
+        $s = '<em>'.$s.'</em>';
+      }
+
+      if($_==$UID)
+      {
+        $s = '<strong>'.$s.'</strong>';
+      }
+
+      my $isChanop = $APP->isChanop($_, "nogods");
+
+      #show normal groups user is in
+      $flags = '';
+      $flags .= '@' if $showMemberAdmin and $APP->isAdmin($_) and !$APP->getParameter($_,"hide_chatterbox_staff_symbol");
+
+      $flags .= '$' if $showMemberCE and $APP->isEditor($_, "nogods") and !$APP->isAdmin($_) and !$APP->getParameter($_,"hide_chatterbox_staff_symbol");
+      $flags .= '+' if $showMemberAdmin && $isChanop;
+
+      if(length($flags))
+      {
+        $s .= '<small><small>'.$flags.'</small></small>';
+      }
+
+      push(@users, $s);
+      ++$i;
+    }
+    $str .= join(', ', @users);
+
+    $str.="<br>This group of $i member"
+      .($i==1?'':'s')
+      ." is led by  $users[0]$leavingnote";
+  } else {
+    $str = '<em>This usergroup is lonely.</em>';
+  }
+  $str .= '</p>';
+
+  if(!$isGuest)
+  {
+
+    if ($isInGroup)
+    {
+      $str .= htmlcode('openform')
+        .htmlcode('verifyRequestForm', 'leavegroup')
+        .$query -> hidden('notanop', 'leavegroup')
+        .$query -> submit(
+          -name => 'confirmop'
+          , value => 'Leave group'
+          , title => 'leave this usergroup')
+        .'</form>';
+    }
+
+    #determine ways user may talk walk usergroup, owner, and/or leader
+    $str .= '<p style="border: solid black 1px; padding:2px;">' . htmlcode('openform');
+
+
+    if(scalar(@memberIDs > 0))
+    {
+      $curID = $memberIDs[0];	#first user in group
+
+      #send message to group "owner"
+      # $ugOwner
+      if($ugOwner && defined $ugOwnerIndex)
+      {
+        $str .= '/msg the group "owner", '
+          .$users[$ugOwnerIndex]
+          .($isInGroup ? '' : ' (they can add you to the group)')
+          .htmlcode('msgField', 'msggrpowner' . $ugOwner . ',,' . $$NODE{node_id} . ',' . $ugOwner) . "<br>\n";
+      }
+
+      #send message to group leader (first person)
+      if($curID and (getNodeById($curID,'light')->{type_nodetype}) == (getNode('user','nodetype','light')->{node_id}) )
+      {
+        #only /msg group leader if they are a user
+        $str .= '/msg the group leader, '.$users[0].': '.htmlcode('msgField', 'msggrpleader'.$curID . ',,' . $$NODE{node_id} . ',' . $curID) . "<br />\n";
+      }
+
+    }
+
+
+    #send message to group, show number of messages from group
+    if($isInGroup || $isRoot)
+    {
+      $str .= '(You aren\'t in this group, but may talk to it anyway, since you\'re an administrator. If you want a copy of your /msg, check the "CC" box.)<br />' if !$isInGroup;
+      $curID = $$NODE{node_id};
+      $str .= '/msg the usergroup';
+      #TODO ' (messages archived at [usergroup message archive] group = thisone)'
+      $str .= ': '.htmlcode('msgField', 'ug'.$curID.',,'.',,'.$curID)."<br />\n";
+
+      if(!$$VARS{hidemsgyou})
+      {
+        my $nummsgs = $DB->sqlSelect('count(*)', 'message', "for_user=$$USER{node_id} and for_usergroup=$$NODE{node_id}");
+        $str .= '<p>'.linkNode(getNode('message inbox', 'superdoc'), "you have $nummsgs message".($nummsgs==1?'':'s').' from this usergroup', { fromgroup => $$NODE{title} }).'</p>' if $nummsgs;
+      }
+    }
+
+    my $andTheRest = htmlcode('msgField','0');
+    $str .= 'other /msgs: '.$andTheRest.'<br />' if length($andTheRest);
+    $str .= htmlcode('closeform').'</p>';
+
+  }
+  $str .= htmlcode("weblog");
+
+  return $str;
+}
+
+sub usergroup_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p>|.htmlcode("usergroupmultipleadd").qq|</p>|;
+  $str .= qq|<p><b>Title</b></p>|;
+  $str .= htmlcode("textfield","title");
+  $str .= qq|<p><b>Moderator Type</b></p>|;
+
+  my %valueList = ('0' => 'Single Moderator', '1' => 'Multiple Moderator');
+  my @list =  keys(%valueList);
+
+  $str .= $query->popup_menu('usergroup_modtype', \@list, $$NODE{modtype}, \%valueList);
+
+  $str .= qq|<p><b>Join Type</b></p>|;
+
+  %valueList = ('0' => 'Open to All', '1' => 'User Request', '2' => 'Moderator Only');
+  @list =  keys(%valueList);
+
+  $str .= $query->popup_menu('usergroup_jointype', \@list, $$NODE{jointype}, \%valueList);
+
+  $str .= qq|<p>|.$query->checkbox('usergroup_messageArchive',$$NODE{messageArchive},1,'Archive messages?').qq|</p>|;
+
+  $str .= qq|<p><b>Recommendation Link</b> (aka Weblog Link)</p>|.htmlcode("textfield","recommendationLink");
+
+  $str .= qq|<p><b>Usergroup Lineup Info (255 char. max)</b></p>|;
+  $str .= htmlcode("textarea","shortdesc,4,40");
+
+  $str .= qq|<p><b>Usergroup Doctext</b></p>|;
+  $str .= htmlcode("textarea","doctext");
+
+  return $str; 
+}
+
+sub node_xml_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return qq|<?xml version="1.0" standalone="yes"?><error><message>You can only use the XML displaytype on your own writeups.</message></error>|;
+
+}
+
 1;
