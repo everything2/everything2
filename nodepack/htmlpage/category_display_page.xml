@@ -52,7 +52,14 @@ if ($APP-&gt;isGuest($$maintainer{node_id}) ) {
 #  $DB-&gt;sqlDelete(&quot;links&quot;, &quot;from_node=$$NODE{node_id} AND to_node=$deleteId AND #linktype=$linktypeId&quot;);
 #}
 
-my $descr = htmlcode('standard html screen', $$NODE{doctext}, '');
+my $descr = $NODE-&gt;{doctext};
+my $TAGNODE = getNode('approved html tags', 'setting');
+my $TAGS = getVars($TAGNODE);
+$descr = $APP-&gt;htmlScreen($descr, $TAGS);
+$descr = $APP-&gt;screenTable ($descr);
+$descr = parseLinks($descr, undef);
+$descr = $APP-&gt;breakTags($descr);
+
 if ($descr ne &quot;&quot;) {
   $str .= '&lt;div class=&quot;content&quot;&gt;'
     . $descr
