@@ -99,7 +99,7 @@ else{ #No usergroup requested, show all available.
   $wherestr .= &quot;restricted in &quot;.$appendstr;
 }
 
-my $csr=$DB-&gt;sqlSelectMany(&quot;root_debatecomment&quot;, &quot;debatecomment&quot;, $wherestr,
+$csr=$DB-&gt;sqlSelectMany(&quot;root_debatecomment&quot;, &quot;debatecomment&quot;, $wherestr,
                            &quot;GROUP BY root_debatecomment&quot;);
 
 my @types = qw( debate );
