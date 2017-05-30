@@ -62,7 +62,7 @@ $cleantitle =~ s/\&amp;gt\;/\&gt;/g;
 
 my $fieldname = $$NODE{type}{title}.&quot;_title&quot;;
 
-$str .= $query -&gt; textfield($fieldname,$cleantitle, 20);
+$str .= $query -&gt; textfield($fieldname,$cleantitle, 20).
 '&lt;/label&gt;
 &lt;/p&gt;
 ';
