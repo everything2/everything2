@@ -3,7 +3,7 @@ package Everything::Delegation::htmlpage;
 use strict;
 use warnings;
 
-# Used by writeup_xml_page
+# Used by writeup_xml_page, e2node_xml_page
 use Everything::XML;
 
 # Used by room display page
@@ -1522,6 +1522,406 @@ sub node_xml_page
 
   return qq|<?xml version="1.0" standalone="yes"?><error><message>You can only use the XML displaytype on your own writeups.</message></error>|;
 
+}
+
+sub mail_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";
+  $str .= qq|<H4>title:</H4>|.htmlcode("textfield","title");
+  $str .= qq|<h4>owner:</h4>|.htmlcode("node_menu","author_user,user,usergroup");
+  $str .= qq|<h4>from address:</h4>|.htmlcode("textfield","from_address");
+  $str .= qq|<p><small><strong>Mail body:</strong></small><br>|;
+  $str .= htmlcode("textarea","doctext,30,60");
+
+  return $str;
+}
+
+sub superdocnolinks_display_page
+{
+  return htmlcode("parsecode","doctext",1);
+}
+
+sub e2node_xml_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  use Everything::XML;
+  my $except = ['reputation'];
+
+  my $str = "";
+  foreach (@{ $$NODE{group}})
+  {
+    $str.= node2xml($_, $except)."\n";
+  }
+
+  return $str;
+}
+
+sub node_forward_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $origTitle = $query->param("originalTitle");
+  my $circularLink = ($origTitle eq $$NODE{title});
+
+  my $targetNodeId = $$NODE{doctext};
+  my $targetNode = undef;
+  if ($targetNodeId ne '') {
+    $targetNode = getNodeById($targetNodeId, 'light');
+  }
+
+  my $badLink = ($circularLink || !$targetNode);
+  $origTitle ||= $$NODE{title};
+
+  my $urlParams = { };
+
+  unless ($APP->isAdmin($USER) && $badLink)
+  {
+    if (!$badLink)
+    {
+      # For good links, forward all users
+      $urlParams = { 'originalTitle' => $origTitle };
+
+    } else {
+
+      # For circular or non-functional links, send non-gods to the search page
+      $urlParams = {
+         'node' => $$NODE{title}
+         , 'match_all' => 1
+      };
+
+    }
+
+    $$urlParams{'lastnode_id'} = $query->param('lastnode_id')
+      if defined $query->param('lastnode_id');
+
+  } else {
+    # For circular or non-functional links, send gods directly to the edit page
+    $targetNode = $NODE;
+    $urlParams = {
+      'displaytype' => 'edit'
+      , 'circularLink' => $circularLink
+    };
+  }
+
+  my $redirect_url = urlGen($urlParams, 'no escape', $targetNode);
+
+  # TODO: Replace with Request goodness
+  $Everything::HTML::HEADER_PARAMS{-status} = 303;
+  $Everything::HTML::HEADER_PARAMS{-location} =
+    (($Everything::CONF->environment eq "development")?('http://'):('https://')) . $ENV{HTTP_HOST} . $redirect_url;
+
+  my $str = qq|<html>
+    <head>
+    <title>$$NODE{title}\@everything2.com</title>
+    <script language="JavaScript">
+    <!--
+      location.href = "$redirect_url";
+    -->
+    </script>
+    <noscript>
+    <meta http-equiv="refresh" content="0; URL='$redirect_url'">
+    </noscript>
+    </head>
+    <body>|;
+
+  # The following is a simple informative display for gods only.
+  # It shoudl never appear unless someone has disabled HTTP,
+  #  META, *and* javascript redirects.
+
+  return $str.qq|</body></html>| unless $APP->isAdmin($USER);
+
+  $str .=
+    '<p>'
+    .  linkNode(
+       $$NODE{ 'node_id' }
+       , "edit <b>$$NODE{ 'title' }</b>"
+       , { 'displaytype' => 'edit' }
+     )
+  . '</p>';
+
+  if ($$NODE{doctext} ne '') {
+    $str .= '<p><strong>forward-to:</strong> '
+      . linkNode( $$NODE{ 'doctext' } )
+      . '</p>'
+  }
+
+  if ($circularLink)
+  {
+    $str .= '<p><strong>This is a circular link!</srong></p>';
+
+  }
+
+  $str.=qq|</body></html>|;
+
+  return $str;
+
+}
+
+sub node_forward_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+
+  my $str = qq|<p><strong>|.(linkNode( getType('node_forward') )).qq|</strong></p>|;
+  $str .= qq|<table><tr><th align="right"><strong>title:</strong></th>|;
+  $str .= qq|<td>|.htmlcode("textfield","title").qq|</td></tr><tr><th align="right"><strong>owner:</strong></th>|;
+  $str .= qq|<td>|.htmlcode("node_menu","author_user,user,usergroup").qq|</td></tr>|;
+  $str .= qq|<tr><th align="right"><strong>forward-to node ID/title:</strong></th>|;
+  $str .= qq|<td>|.htmlcode("textfield","doctext").qq|</td>|;
+  $str .= qq|</tr></table>|;
+
+  if ($query->param('circularLink')) {
+     $str .= "<p><strong>This is a circular link!</strong></p>";
+  } 
+
+  my $targetNodeId = $$NODE{doctext};
+  my $targetNode = undef;
+
+  $str .= "<p>";
+
+  if ($targetNodeId ne '')
+  {
+    $targetNode = getNodeById($targetNodeId, 'light');
+    if ($targetNode)
+    {
+      $str .= "Forwards to: " . linkNode($targetNode);
+    } else {
+      $str .= "The current forward node ID doesn't lead to a valid node.";
+    }
+
+  } else {
+    $str .= "This forward is presently blank.";
+  }
+
+  $str .= "</p>";
+
+  return $str;
+}
+
+sub patch_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p>Back to |.linkNodeTitle("patch manager").qq|</p>|;
+  $str .= qq|<p align="right">|;
+
+  my $status = getNodeById($NODE->{cur_status});
+
+  my $caneditpatch = ($APP->isAdmin($USER) || $$NODE{author_user} == $$USER{user_id});
+
+  if($APP->isAdmin($USER))
+  {
+    if($status->{applied})
+    {
+      $str.= "<font color=\"red\">The patch has been applied</font>".
+        linkNode($NODE, "Unapply", 
+               {"op" => "applypatch", 
+                "patch_id" => "$$NODE{node_id}",
+                "displaytype" => "edit"})."<br>";
+    }else{
+      $str .= linkNode($NODE, "Apply this patch", 
+                    {"op" => "applypatch",
+                     "patch_id" => "$$NODE{node_id}"})
+                     ."<br>" unless $status -> {applied};
+    }
+  }
+
+  if($caneditpatch and !$status->{applied})
+  {
+    $str .= linkNode($NODE, 'edit',
+                {'displaytype'=>'edit',
+                 'lastnode_id'=>0});
+  }
+
+  $str .= qq|</p>|;
+
+  if($caneditpatch)
+  {
+    $str.= htmlcode('openform').qq|<br>|;
+  }
+
+  $str .= qq|<p>|.linkNode($$NODE{author_user},0,{lastnode_id=>0}).qq|submitted a patch for|; 
+
+  my $patchee = getNodeById($$NODE{for_node});
+  my $patchee_text = '';
+  if($patchee)
+  {
+    $patchee_text = linkNode($$NODE{for_node},0,{lastnode_id=>0});
+  } else {
+    $patchee_text = "missing node $$NODE{for_node}";
+  }
+
+  $str .= $patchee_text.qq|'s "<code>["$$NODE{field}"]</code>" field on |.htmlcode('parsetime','createtime');
+  $str .= qq|<br>patch's purpose: |;
+  if($caneditpatch)
+  {
+    $str .= htmlcode( 'textfield' , 'purpose', 80, 'expandable' );
+  }else{
+    $str .= ( $$NODE{purpose} ? $APP->htmlScreen($$NODE{purpose},0) : '<em>unknown</em>' );
+  }
+
+  $str .= qq|<br><strong>Additional instructions</strong> for bringing it live: |;
+  
+  if($caneditpatch)
+  {
+    $str .= htmlcode( 'textfield' , 'instructions', 80, 'expandable' );
+  }else{
+    $str .= ( $$NODE{instructions} ? $APP->htmlScreen($$NODE{instructions},0) : '<em>none</em>' );
+  }
+
+  $str .= qq|<br>status:|;
+
+  htmlcode('settype', ',status,cur_status,node_id,' . ($APP->isAdmin($USER)?1:0) );
+
+  $str .= qq|<br>assigned to: |;
+
+  my $assignedstr = " ".htmlcode('assign_patch',$NODE->{node_id});
+  $assignedstr=($$NODE{assigned_to} ? linkNode($$NODE{assigned_to}) : '<em>nobody</em>') . $assignedstr;
+
+  $assignedstr.= '<p><a href="https://everything2.com/node/superdoc/Patch+importer?patch_action=review&patch_id='.$$NODE{node_id}.'">Review and import patch</a></p>' if $status -> {title}eq"production-ready";   
+
+  $str .= $assignedstr;
+
+  $str .= qq|</p>|;
+
+  if($caneditpatch)
+  {
+
+    if($query->param('sexisgood'))
+    {
+
+      if ( $APP->isAdmin($USER) )
+      {
+	  #Changing the status of a patch assigns it to the person who changes
+	  #it, except for "assigned" status.
+	  my $newstat = $query -> param("setfield_cur_status_$$NODE{node_id}");
+	  my $curstat = $$NODE{cur_status};
+	  my $assigned_stat = getNode("assigned","status") -> {node_id};
+	
+	  if($newstat != $curstat && $newstat != $assigned_stat){
+	    $$NODE{assigned_to} = $$USER{user_id};
+	  }
+	
+	  #If not assigned to anyone, it defaults to the person choosing the
+	  #assigned status.
+	  my $assigned_to = $query -> param("setfield_assigned_to_$$NODE{node_id}");
+	  if($newstat == $assigned_stat && !$assigned_to){
+	    $$NODE{assigned_to} = $$USER{user_id};
+	  }
+      }
+      $$NODE{ purpose } = $query -> param( 'patch_purpose' ) || $$NODE{ purpose } ;
+      $$NODE{ instructions } = $query -> param( 'patch_instructions' ) || $$NODE{ instructions } ;
+      updateNode($NODE,-1);
+    }
+    $str .= htmlcode('closeform','');
+  }
+
+  $str .= qq|<p style="border:solid black 1px; padding:5px;">Talk to people related to this patch:|;
+
+  $str .= htmlcode("openform");
+
+  my %whoRelated = (
+    'author' => $$NODE{author_user},
+    'assigned' => $$NODE{assigned_to},
+  );
+
+  my $w = undef;
+  
+  foreach(sort(keys(%whoRelated)))
+  {
+    next unless (exists $whoRelated{$_}) && (defined $whoRelated{$_}) && length($w=$whoRelated{$_}) && $w;
+    $str .=  htmlcode('msgField', 'patch' . $$NODE{node_id} . '_' . $_ . '_' . $w . ',,' . $$NODE{node_id} . ',' . $w) . ' ' . $_ . ', ' . linkNode($w,0,{lastnode_id=>0}) . "<br />\n";
+  }
+
+  $str .= htmlcode("msgField").qq|<br />|;
+  $str .= htmlcode("closeform");
+
+  $str .= qq|</p>|;
+
+  my $patchedNode = $$NODE{for_node};
+  my $patchCreateTime = $$NODE{createtime};
+  # When there's a more recent patch to the current node, it's more helpful
+  #  to diff against that, so we see just what this individual patch was
+  #  intended to do.
+  my $patchSearch = "
+    SELECT patch.patch_id
+    FROM patch
+    JOIN node
+      ON patch_id = node.node_id
+    JOIN status
+      ON patch.cur_status = status.status_id
+    WHERE patch.for_node = ?
+      AND node.createtime > ?
+      AND status.applied = 1
+    ORDER BY node.createtime ASC
+    LIMIT 1";
+
+  my $nextPatch = $DB->getDatabaseHandle()->selectrow_array(
+    $patchSearch
+    , {}
+    , ( $patchedNode, $patchCreateTime ));
+
+  my $diffNode = undef;
+  my $codeOrig = undef;
+
+  if ($nextPatch)
+  {
+    $diffNode = getNodeById($nextPatch);
+    $codeOrig = $$diffNode{code};
+  } else {
+    $diffNode = getNodeById($$NODE{for_node});
+    $codeOrig = $$diffNode{$$NODE{field}};
+  }
+
+  my $codeNew = $NODE->{code};
+
+  #Don't show applied/production-ready patches as reversed
+  if($status -> {applied})
+  {
+    ($codeNew,$codeOrig) = ($codeOrig,$codeNew);
+  }
+
+  my $compareLink = linkNode($diffNode);
+  my $shortDiff   = $APP->showPartialDiff($codeOrig,  $codeNew);
+  my $longDiff    = $APP->showCompleteDiff($codeOrig, $codeNew);
+
+  $str .= qq|<p>Diffing against $compareLink</p><hr><p>Just the changes: <br><br></p>|;
+  $str .= qq|<pre>$shortDiff</pre><p>The complete diff:<br><br></p><pre>$longDiff</pre>|;
+
+  return $str;
 }
 
 1;
