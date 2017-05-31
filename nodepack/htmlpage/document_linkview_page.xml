@@ -43,7 +43,7 @@ if (@link_ids) {
                    map $_ -&gt; [0],@link_ids
                    ).&quot;)&quot;;
 
-  \@fillednode_ids{  @{$DB-&gt;{dbh} -&gt; selectcol_arrayref($sql)}  };
+  @fillednode_ids{  @{$DB-&gt;{dbh} -&gt; selectcol_arrayref($sql)}  } = ();
 }
 
 #If it's a link to anything but an e2node (type 116), it's also filled.
@@ -56,7 +56,7 @@ if (@link_ids){
                    map $_ -&gt; [0],@link_ids
                    ).&quot;)&quot;;
 
-  \@fillednode_ids{  @{$DB-&gt;{dbh} -&gt; selectcol_arrayref($sql)}  };
+  @fillednode_ids{  @{$DB-&gt;{dbh} -&gt; selectcol_arrayref($sql)}  } = ();
 }
 
 foreach my $linkref(@link_ids) {

@@ -380,7 +380,7 @@ foreach (uniq(sort({$b&lt;=&gt;$a} keys(%node),keys(%oldnode)))) {
         }
     }
 }
-$change;
+$change = undef;
 if ($didhead) {$trackerStr .= $line.&quot;\n&quot;; $change = 1;}
 };
 
@@ -449,7 +449,7 @@ if ($didhead) {
     
     for (my $i=0; $i &lt; @a1; ++$i) {
         $trackerStr .= &quot;$a1[$i]  $a2[$i]  $a3[$i]  $a4[$i]  &quot;;
-        if ($a6[$i] &gt; &quot; &quot;) {
+        if ($a6[$i] ne &quot; &quot;) {
                 $trackerStr .= linkNode($a6[$i],&quot;$a5[$i]&quot;).&quot;\n&quot;;
         }
         else {
