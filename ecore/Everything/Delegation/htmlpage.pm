@@ -316,6 +316,8 @@ sub nodegroup_editor_page
   }
 
   $str .= htmlcode("groupeditor").qq|</FORM>|;
+
+  return $str;
 }
 
 sub nodelet_edit_page
@@ -498,7 +500,7 @@ sub dbtable_display_page
       {
 
         $rowCount = -1;
-        my $qh = $DB->{dbh}->prepare('SELECT COUNT(*) FROM ' . $$NODE{title});
+        $qh = $DB->{dbh}->prepare('SELECT COUNT(*) FROM ' . $$NODE{title});
 
         if($qh)
         {
@@ -839,14 +841,13 @@ sub node_basicedit_page
   my $type = $$NODE{type}{title};
   if (!htmlcode('verifyRequest', "basicedit_$type"))
   {
-    $query->delete_all() if (grep(/^update_/, $query->Vars));
+    $query->delete_all() if (grep {/^update_/} $query->Vars);
   }else{
 
     # This code does the update, if we have one.
-    my $param = undef;
     my @params = $query->param;
 
-    foreach $param (@params)
+    foreach my $param (@params)
     {
       if ($param =~ /^update_(\w*)$/)
       {
@@ -864,18 +865,16 @@ sub node_basicedit_page
 
   my $tables = $DB->getNodetypeTables($$NODE{type_nodetype});
   my @fields = ();
-  my $table = undef;
-  my $field = undef;
   my %titletype = ();
 
   $str .= htmlcode('verifyRequestForm', "basicedit_$type");
 
   push @$tables, 'node';
-  foreach $table (@$tables)
+  foreach my $table (@$tables)
   {
     @fields = $DB->getFieldsHash($table);
 
-    foreach $field (@fields)
+    foreach my $field (@fields)
     {
       $titletype{$$field{Field}} = $$field{Type};
     }
@@ -883,7 +882,7 @@ sub node_basicedit_page
 
   pop @$tables;
 
-  foreach $field (keys %titletype)
+  foreach my $field (keys %titletype)
   {
     $str .= "$field ($titletype{$field}): ";
 
@@ -1013,7 +1012,7 @@ sub room_display_page
   
   $str .= qq|<p>|;
 
-  if(eval($$NODE{criteria}) and !$APP->isGuest($USER))
+  if((eval {$$NODE{criteria}}) and not $APP->isGuest($USER))
   {
     $APP->changeRoom($USER, $NODE);
     # For room usage counting:
@@ -1351,7 +1350,8 @@ sub usergroup_display_page
 
   if($$NODE{group})
   {
-    my $leavingnote = '</p><strong>You have left this usergroup</strong></p>' if $query -> param('leavegroup')
+    my $leavingnote = '';
+    $leavingnote = '</p><strong>You have left this usergroup</strong></p>' if $query -> param('leavegroup')
       && htmlcode('verifyRequest', 'leavegroup')
       && $DB->removeFromNodegroup($NODE, $USER, -1);
 
@@ -1381,9 +1381,9 @@ sub usergroup_display_page
 
       #show normal groups user is in
       $flags = '';
-      $flags .= '@' if $showMemberAdmin and $APP->isAdmin($_) and !$APP->getParameter($_,"hide_chatterbox_staff_symbol");
+      $flags .= '@' if $showMemberAdmin and $APP->isAdmin($_) and not $APP->getParameter($_,"hide_chatterbox_staff_symbol");
 
-      $flags .= '$' if $showMemberCE and $APP->isEditor($_, "nogods") and !$APP->isAdmin($_) and !$APP->getParameter($_,"hide_chatterbox_staff_symbol");
+      $flags .= '$' if $showMemberCE and $APP->isEditor($_, "nogods") and not $APP->isAdmin($_) and not $APP->getParameter($_,"hide_chatterbox_staff_symbol");
       $flags .= '+' if $showMemberAdmin && $isChanop;
 
       if(length($flags))
@@ -1762,7 +1762,7 @@ sub patch_display_page
     }
   }
 
-  if($caneditpatch and !$status->{applied})
+  if($caneditpatch and not $status->{applied})
   {
     $str .= linkNode($NODE, 'edit',
                 {'displaytype'=>'edit',
@@ -2020,7 +2020,7 @@ sub debatecomment_edit_page
   
     my $ug_id = $restrict;
     my $ug = getNodeById($ug_id);
-    my $ug_name = $$ug{'title'};
+    $ug_name = $$ug{'title'};
     my $cleantitle = $$NODE{ 'title' };
     $cleantitle =~ s/^$ug_name\: //;
 

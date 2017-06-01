@@ -10,4 +10,3 @@ foreach my $file(`find /var/everything/ecore -type f`)
   print `diff -u $file /tmp/tidy`;
   `rm /tmp/tidy`;
 }
-
