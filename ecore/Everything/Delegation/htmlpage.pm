@@ -6,8 +6,11 @@ use warnings;
 # Used by writeup_xml_page, e2node_xml_page
 use Everything::XML;
 
-# Used by room display page
+# Used by room_display_page
 use POSIX qw(ceil floor);
+
+# Used by collaboration_display_page, collaboration_useredit_page
+use POSIX qw(strftime);
 
 BEGIN {
   *getNode = *Everything::HTML::getNode;
@@ -1350,7 +1353,7 @@ sub usergroup_display_page
   {
     my $leavingnote = '</p><strong>You have left this usergroup</strong></p>' if $query -> param('leavegroup')
       && htmlcode('verifyRequest', 'leavegroup')
-      && $DB -> removeFromNodegroup($NODE, $USER, -1);
+      && $DB->removeFromNodegroup($NODE, $USER, -1);
 
     my $GROUP = $$NODE{group};
     @memberIDs = @$GROUP;
@@ -1920,6 +1923,686 @@ sub patch_display_page
 
   $str .= qq|<p>Diffing against $compareLink</p><hr><p>Just the changes: <br><br></p>|;
   $str .= qq|<pre>$shortDiff</pre><p>The complete diff:<br><br></p><pre>$longDiff</pre>|;
+
+  return $str;
+}
+
+sub document_viewcode_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return unless $APP->isDeveloper($USER);
+  return htmlcode('listcode','doctext');
+}
+
+sub debatecomment_display_page
+{
+  return htmlcode("showdebate",1);
+}
+
+sub ticker_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return parseCode($$NODE{doctext});
+}
+
+sub plaindoc_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return $NODE->{doctext};
+}
+
+sub debatecomment_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";
+  my $restrict = undef;
+  if ( $query->param( 'sexisgood' ) )
+  {
+    $restrict = $query->param( 'debatecomment_restricted' );
+    $$NODE{ 'restricted' } = $restrict;
+  }
+
+  $restrict = getNodeById($$NODE{ 'root_debatecomment' }) -> {'restricted'};
+  my $title = $$NODE { 'title' };
+  $title =~ s/\</\&lt\;/g;
+  $title =~ s/\>/\&gt\;/g;
+
+  my $ug_name = getNodeById($restrict) -> {'title'};
+
+  $title =~ /^\s*([\w\s]+):/;
+  my $prefix = $1;
+
+  $title = "$ug_name: ".$title unless lc($prefix) eq lc($ug_name);
+
+  $$NODE { 'title' } = $title;
+  updateNode( $NODE, $USER );
+
+  $str .= htmlcode("showdebate",0);
+
+  my $rootnode = getNodeById( $$NODE{ 'root_debatecomment' } );
+  $restrict = $$NODE{restricted};
+
+  # If the user's not in the usergroup, deny access
+  if ( $APP->inUsergroup($USER, getNodeById($$rootnode{ restricted })) || Everything::isApproved($USER,$rootnode) )
+  {
+
+    $str .= qq|<input type="hidden" name="debatecomment_author_user" value="$$USER{node_id}"></input>|;
+    $str .= qq|<input type="hidden" name="sexisgood"><input type="hidden" name="debatecomment_restricted" value="$restrict">|;
+    $str .= qq|<h2>Edit your comment</h2><p><label>Comment title:|;
+  
+    my $ug_id = $restrict;
+    my $ug = getNodeById($ug_id);
+    my $ug_name = $$ug{'title'};
+    my $cleantitle = $$NODE{ 'title' };
+    $cleantitle =~ s/^$ug_name\: //;
+
+    $cleantitle =~ s/\&lt\;/\</g;
+    $cleantitle =~ s/\&gt\;/\>/g;
+
+    my $fieldname = $$NODE{type}{title}."_title";
+
+    $str .= $query -> textfield($fieldname,$cleantitle, 20).'</label></p>';
+    $str .= '<p><strong>Comment:</strong><br>';
+    $str .= htmlcode("textarea","doctext,20,60,virtual").qq|</p>|;
+
+  }
+  return $str;
+}
+
+sub debatecomment_replyto_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<form method="post" id="pagebody">|;
+  
+  $str .= htmlcode("showdebate",0);
+  my $rootnode = getNodeById( $$NODE{ 'root_debatecomment' } );
+
+  #new way - includes hack to cover old way
+  my $restrict = $$rootnode{restricted}||0;
+  if($restrict==0) {
+    $restrict=getNode("Content Editors","usergroup")->{node_id};
+  } elsif($restrict==1) {
+    $restrict=getNode("gods","usergroup")->{node_id};
+  }
+
+  my $restrictNode = getNodeById($restrict);
+  unless($restrictNode)
+  {
+    #ack! no group permission somehow!
+    return 'Ack! Parent has no group!';
+  }
+
+  unless( $APP->inUsergroup($USER,$restrictNode) || Everything::isApproved($USER,$restrictNode) )
+  {
+    $str.= 'You are not allowed to add a comment to this debate.';
+  }else{
+
+    my $newtitle = $$NODE{ 'title' };
+    my $ug_name = $restrictNode->{'title'};
+
+    $newtitle =~ s/^$ug_name: //;
+    $newtitle = 're: ' . $newtitle unless ( $newtitle =~ /^re: / );
+    $newtitle =~ s/"/&quot;/g;
+
+    $str .= qq|<input type="hidden" name="op" value="new">|;
+    $str .= qq|<input type="hidden" name="type" value="debatecomment">|;
+    $str .= qq|<input type="hidden" name="displaytype" value="edit">|;
+    $str .= qq|<input type="hidden" name="debatecomment_restricted" value=".$restrict.">|;
+    $str .= qq|<input type="hidden" name="debatecomment_parent_debatecomment" value="$$NODE{node_id}">|;
+    $str .= qq|<input type="hidden" name="debatecomment_root_debatecomment" value="$$NODE{root_debatecomment}">|;
+    $str .= qq|<h2>Enter your reply</h2>|;
+    $str .= qq|<label>Comment title:<input type="text" size="60" maxlength="64" name="node" value="$newtitle"></label><br>|;
+    $str .= qq|<p><strong>Comment:</strong><br>|;
+    $str .= qq|<textarea name="debatecomment_doctext" cols="60" rows="20" wrap="virtual"></textarea></p>|;
+    $str .= qq|<input type="submit" name="sexisgood" value="sumbit">|;
+  }
+
+  $str .= qq|</form>|;
+
+  return $str;
+}
+
+sub debatecomment_compact_page
+{
+  return htmlcode("showdebate","4");
+}
+
+sub node_xmltrue_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
+  $str.= htmlcode("xmlheader").htmlcode("formxml").htmlcode("xmlfooter");
+  return $str;
+}
+
+sub podcast_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $TAGNODE = getNode 'approved html tags', 'setting';
+  my $TAGS=getVars($TAGNODE);
+
+  my $text = $APP->htmlScreen($$NODE{description}, $TAGS);
+  $text = parseLinks($text);
+
+  my $str = "";
+  $str.= qq|<object type="application/x-shockwave-flash" data="http://static.everything2.com/player_mp3_maxi.swf" width="300" height="20"><param name="movie" value="http://static.everything2.com/player_mp3_maxi.swf" /><param name="bgcolor" value="#ffffff" /><param name="FlashVars" value="mp3=$$NODE{link}&amp;width=300&amp;autoload=0&amp;volume=50&amp;showstop=1&amp;showinfo=1&amp;showvolume=1" /></object><h2><a href='$$NODE{link}'>download mp3</a></h2>|;
+  $str.="$text";
+  $str.='<p align="right">('.linkNode($NODE, 'edit', {'displaytype'=>'edit', 'lastnode_id'=>0}).")</p>" if canUpdateNode($USER, $NODE);
+ 
+  return $str;
+}
+
+sub collaboration_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<table cellpadding="8"><tr><td>|;
+  #---------------------------------------------------------
+  # wharfinger
+  # 2/15/2002
+  #---------------------------------------------------------
+
+  # User node_ids are in $$NODE{ 'group' }
+  # It would be nice to have read-only users, too.
+
+
+  #---------------------------------------------------------
+  # Is the user allowed in?
+  my $GROUP   = $NODE->{group};
+  my $UID     = $USER->{node_id};
+  my $isRoot  = $APP->isAdmin($USER);
+  my $isCE    = $APP->isEditor($USER);
+  my $allowed = 0;
+
+  my $NL = "<br />\n"; 
+
+  $allowed = $isRoot || $isCE;
+  $allowed ||= Everything::isApproved( $USER, getNode( 'crtleads', 'usergroup' ) );
+  $allowed ||= Everything::isApproved( $USER, $NODE );
+  if( !$allowed )
+  {
+    if ($$NODE{public}==1)
+    {
+      $str .= $NL.htmlcode('showcollabtext', 'doctext').$NL;
+    }
+    else
+    { 
+      $str .= '<p>Permission denied.</p><p>('.$$NODE{public}.')</p>';
+    }
+  }else{
+    #---------------------------------------------------------
+    # List allowed users
+    if ( $GROUP )
+    {
+      $str .= '<p><strong>Allowed users/groups:</strong> ';
+      foreach my $item ( @$GROUP )
+      {
+        $str .= linkNode( $item ) . ' ';
+      }
+      $str .= "</p>\n";
+    }
+
+    my $lockedby_user = $$NODE{ 'lockedby_user' } || 0;
+    my $locktime      = $$NODE{ 'locktime' } || 0;
+    my $lockendtime   = strftime( '%Y-%m-%d %H:%M:%S', localtime( time() - ( 15 * 60 ) ) );
+    my $lockedbyother = $lockedby_user != 0 && $lockedby_user != $UID;
+    my $canedit       = ( $isRoot || $isCE || ! $lockedbyother );
+
+    my $unlock = $query->param( 'unlock' ) || '';
+
+    # Use it or lose it. Locks expire after fifteen minutes 
+    # without submitting anything.
+    if ( ( $lockedbyother && $lockendtime ge $locktime ) || ( $canedit && $unlock eq 'true' ) )
+    {
+      $$NODE{ 'locktime' }      = 0;
+      $$NODE{ 'lockedby_user' } = 0;
+
+      updateNode( $NODE, -1 );
+
+      $locktime      = 0;
+      $lockedby_user = 0;
+      $lockedbyother = 0;
+
+      $str .= '<p>You just unlocked it. </p>' if ( $canedit && $unlock eq 'true' );
+    }
+
+    if ( ! $canedit )
+    {
+      $str .= '<p><strong>Locked by</strong> ' . linkNode( $lockedby_user ) . '</p>';
+    } else {
+      $str .= '<p>';
+
+      if ( $lockedby_user == $UID )
+      {
+        $str .= '<strong>Locked by</strong> ' . linkNode( $UID, 'you' ) . ': ';
+      } elsif ( $lockedbyother ) {
+        $str .= '<strong>Locked by</strong> ' . linkNode( $lockedby_user ) . ': ';
+      }
+
+      $str .= linkNode( $$NODE{ 'node_id' }, '<strong>edit</strong>', { 'displaytype' => 'useredit' } ) . ' ';
+
+      if ( $lockedbyother && ( $isRoot || $isCE ) )
+      {
+        $str .= ' (editing will <strong>lock the node</strong> and boot ' . linkNode( $lockedby_user ) . ') ';
+      }
+
+      if ( $lockedby_user != 0 && $canedit )
+      {
+        $str .= linkNode( $$NODE{ 'node_id' }, 'unlock', { 'unlock' => 'true' } ) . ' ';
+      }
+
+      if ( $isRoot || $isCE )
+      {
+        $str .= $query -> a({
+          href => "/?node_id=$$NODE{node_id}&confirmop=nuke"
+          , class => 'action'
+          , title => 'delete this collaboration'
+          }, 'delete');
+      }
+
+      $str .= "</p>\n\n";
+    }
+
+
+    #---------------------------------------------------------
+    # Display doctext
+
+    my $doctext = htmlcode('showcollabtext', 'doctext');
+    $str .= $NL.$doctext.$NL;
+  }
+  
+  $str .= qq|</td></tr></table>|;
+  return $str;
+}
+
+sub edevdoc_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";
+
+  if($APP->isDeveloper($USER))
+  {
+    $str .= qq|<p align="right">|.linkNode($NODE, 'edit', {displaytype => 'edit'}).qq|</p>|;
+  }
+
+  $str .= htmlcode("parselinks","doctext");
+
+  return $str;
+}
+
+sub schema_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<h4>title:</h4>|.htmlcode("textfield","title");
+  $str .= qq|<h4>maintainer:</h4>|.htmlcode("node_menu","author_user,user,usergroup");
+  $str .= qq|<h4>schema_extends:</h4>|.htmlcode("node_menu","schema_extends,ticker,nodetype");
+  $str .= qq|<p><small><strong>Edit the document text:</strong></small><br />|;
+  $str .= htmlcode("textarea","doctext,30,80");
+
+  return $str;
+}
+
+sub collaboration_useredit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<table cellpadding="8" width="100%"><tr><td>|;
+
+  my $NL = "\n";
+  
+  #---------------------------------------------------------
+  # Is the user allowed in?
+  my $GROUP   = $$NODE{ 'group' } || [];
+  my $UID     = getId( $USER );
+  my $isRoot  = $APP->isAdmin($USER);
+  my $isCE    = $APP->isEditor($USER);
+  my $allowed = 0;
+
+  my $AUTOLOCKEXPIRE_SEC = 15*60;
+  my $lockedby_user = $$NODE{ 'lockedby_user' } || 0;
+  my $locktime      = $$NODE{ 'locktime' } || 0;
+  my $lockendtime   = strftime( "%Y-%m-%d %H:%M:%S", localtime( time() - $AUTOLOCKEXPIRE_SEC ) );
+  my $lockedbyother = $lockedby_user != 0 && $lockedby_user != $UID;
+
+  my $canedit = ( $isRoot || $isCE || ! $lockedbyother );
+  $allowed = $isRoot || $isCE;
+
+  $allowed ||= Everything::isApproved( $USER, getNode( 'crtleads', 'usergroup' ) );
+  $allowed ||= Everything::isApproved( $USER, $NODE );
+
+  return "<p>Permission denied.</p></td></tr></table>" unless ( $allowed );
+
+  # Unlock if the locker has gone for a while without 
+  # submitting any changes.
+  if ( $lockedbyother && $lockendtime ge $locktime )
+  {
+    $lockedby_user = $UID;
+    $lockedbyother = 0;
+    $canedit       = 1;
+  }
+
+  #---------------------------------------------------------
+  $str .= '<p><strong>Locked by</strong> ' . linkNode( $lockedby_user ) . '</p>' if ( $lockedbyother && ! $canedit );
+  $str .= '<p>' . linkNode( $$NODE{ 'node_id' }, '<b>display</b>' ) . " ";
+
+  if ( $canedit )
+  {
+    $$NODE{ 'lockedby_user' } = $$USER{ 'node_id' };
+    $$NODE{ 'locktime' }      = strftime( "%Y-%m-%d %H:%M:%S", 
+                                          localtime() );
+    updateNode( $NODE, -1 );
+
+    $str .= linkNode( $$NODE{ 'node_id' }, 'unlock', { 'unlock' => 'true' } ) . ' ';
+
+    if ( $isRoot || $isCE )
+    {
+      $str .= $query -> a({
+        href => "/?node_id=$$NODE{node_id}&confirmop=nuke"
+        , class => 'action'
+        , title => 'delete this collaboration'
+        }, 'delete');
+    }
+
+    $str .= "</p>\n";
+  } else {
+    return $str . "</p></td></tr></table>";
+  }
+
+  #---------------------------------------------------------
+  # List allowed users
+  $str .= htmlcode( 'openform' );
+  $str .= "<p><b>Allowed users/groups (one per line):</b> \n";
+
+  if ( $isRoot || $isCE ) 
+  {
+    $str .= '<br />'; 
+    if ( defined $query->param( 'users' ) )
+    {
+      my $usernames = $query->param( 'users' );
+      # Remove whitespace from beginning and end of each line   
+      $usernames =~ s/\s*\n\s*/\n/g;
+
+      my @users = split( '\n', $usernames );
+
+      foreach my $user ( @$GROUP ) {
+        $DB->removeFromNodegroup( $NODE, getNodeById( $user ), -1 );
+      }
+
+      my $badusers = '';
+      my $user = 0;
+
+      foreach my $username ( @users )
+      {
+        $user = getNode( $username, 'user' ) || getNode( $username, 'usergroup' );
+
+        if ( $user )
+        {
+          insertIntoNodegroup( $NODE, -1, $user );
+	} else {
+          $badusers .= '<dd>['.$username.']</dd>'.$NL;
+        }
+      }
+
+      if ( $badusers )
+      {
+        $str .= "<dl><dt><b>These aren't real users:</b></dt>\n";
+        $str .= parseLinks( $badusers );
+        $str .= "</dl>\n";
+      }
+    }
+
+    $str .= '<textarea cols="20" rows="6" name="users">';
+    $GROUP = $$NODE{ 'group' } || [];
+    if ( $GROUP )
+    {
+      my $user;
+      foreach my $item ( @$GROUP )
+      {
+        $user = getNode( $item );
+        $str .= $$user{ 'title' } . $NL;
+      }
+    }
+
+    $str .= "</textarea>\n</p>\n";
+  } else {
+    if ( $GROUP )
+    {
+      foreach my $item ( @$GROUP )
+      {
+        $str .= linkNode( $item ) . ' ';
+      }
+    }
+    $str .= "</p>\n";
+  }
+
+  if ( defined $query->param( 'doctext' ) )
+  {
+    $$NODE{ 'doctext' } = $query->param( 'doctext' );
+    if ( $query->param( 'public' ) )
+    {
+      $$NODE{ 'public' } =  1;
+    } else {
+      $$NODE{ 'public' } =  0;
+    }
+    updateNode( $NODE, -1 );
+  }
+
+  #---------------------------------------------------------
+  # Display doctext
+  $str .= "<p><b>Content:</b><br />\n";
+  # Dammit, the doctext this digs up is from before the update 
+  # above. 
+  $str .= htmlcode( 'showcollabtext', 'doctext' ) . $NL;
+
+  # Edit doctext
+  $str .= '<textarea name="doctext" rows="20" cols="60" wrap="virtual">';
+
+  my $doctext = $query->param( 'doctext' ) || $$NODE{ 'doctext' };
+  $doctext =~ s/\&/\&amp;/g;
+  $doctext =~ s/</&lt;/g;
+  $doctext =~ s/>/&gt;/g;
+  $str .= $doctext;
+
+  $str .= "</textarea>\n";
+  $str .= $NL;
+  $str .="<input type='checkbox' name='public' ".( ($$NODE{ 'public' }==1) ? "checked='true'" : "")." value='1' /> Public?<br />";
+
+  $str .= htmlcode( 'closeform' );
+  $str .= qq|</td></tr></table>|;
+  return $str;
+}
+
+sub e2client_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";
+  $str .= (($$USER{user_id} == $$NODE{author_user})?('<p align="right">'.linkNode($NODE, 'edit', {'displaytype'=>'edit'}).'</p>'):(''));
+  $str .= qq|<p><table>|;
+
+  my $usr = getNodeById($$NODE{author_user});
+  my $clientstr = "<tr><td><strong>Maintainer:</strong></td><td>".linkNode($usr)."</td></tr>";
+  $clientstr .= "<tr><td><strong>Homepage:</strong></td><td>[$$NODE{homeurl}]</td></tr>";
+  $clientstr .= "<tr><td><strong>Download:</strong></td><td>[$$NODE{dlurl}]</td></tr>.";
+  $clientstr .= "<tr><td><strong>Version:</strong></td><td>$$NODE{version}</td></tr>.";
+  $clientstr .= "<tr><td><strong>Unique Client String:</strong></td><td><b>$$NODE{clientstr}</b></td></tr>";
+
+  $str .= parseLinks($clientstr);
+  $str .= qq|</table></p><br><br><hr><br>|.htmlcode("parselinks","doctext");
+
+  return $str;
+}
+
+sub e2client_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<table><tr><td><b>Title:</b></td><td>|.htmlcode("textfield","title").qq|</td>|;
+  $str .= qq|<tr><td><b>Client ID (string):</b></td><td>|.htmlcode("textfield","clientstr").qq|</td></tr>|;
+  $str .= qq|<tr><td><b>Version (string):</b></td><td>|.htmlcode("textfield","version").qq|</td></tr>|;
+  $str .= qq|<tr><td><b>Homepage URL:</b></td><td>|.htmlcode("textfield","homeurl").qq|</td></tr>|;
+  $str .= qq|<tr><td><b>Download URL:</b></td><td>|.htmlcode("textfield","dlurl").qq|</td></tr>|;
+  $str .= qq|</table><br><br><b>Description:</b><br>|;
+  $str .= htmlcode("textarea","doctext,30,60");
+
+  return $str;
+}
+
+sub node_help_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";  
+
+  if($APP->isAdmin($USER))
+  {
+    my $dohelp = $query->param("dohelp");  
+    my $txt = $query->param("helptext");
+
+    if($dohelp eq "create")
+    {
+      $DB->sqlInsert("nodehelp", {nodehelp_id => $$NODE{node_id}, nodehelp_text => $txt});
+      $str.= "Help topic created!<br><br>";
+    }
+  
+    if($dohelp eq "update")
+    {
+      $DB->sqlUpdate("nodehelp", {nodehelp_text => $txt}, "nodehelp_id=$$NODE{node_id}");
+      $str.= "Help topic updated!<br><br>";
+    }
+  }
+
+  my $csr = $DB->sqlSelectMany("*", "nodehelp", "nodehelp_id=$$NODE{node_id}");
+  $str .= "<p align=\"right\">Help for: ".linkNode($NODE)."</p><br>";
+  my $nohelp = "<em><p align=\"center\">No help topic available for this item</p></em>";
+
+  if(my $row = $csr->fetchrow_hashref())
+  { 
+     if(length($$row{nodehelp_text}) < 3)
+     {
+      $str.= $nohelp 
+     }
+     else
+     {
+      $str.= parseLinks($$row{nodehelp_text});
+     }
+  }
+  else
+  {
+     $str.= $nohelp;
+  }
+  
+  $str.= "<br><br>";
+  
+
+  if($APP->isAdmin($USER))
+  {
+    $csr = $DB->sqlSelectMany("*", "nodehelp", "nodehelp_id=$$NODE{node_id}");
+    my $row = undef;
+    my $dohelp = undef;
+    if($row = $csr->fetchrow_hashref())
+    {
+      $dohelp = "update";
+    } else{
+      $dohelp = "create";
+    }
+
+    $str .= "<br><br><p align=\"center\"><hr width=\"200\"></p><br>Because you are spiffy, you can edit the help topic for ".linkNode($NODE).":<br><br>".htmlcode("openform")."<input type=\"hidden\" name=\"dohelp\" value=\"$dohelp\"><textarea name=\"helptext\" rows=\"30\" cols=\"80\">$$row{nodehelp_text}</textarea><br><input type=\"submit\" value=\"submit\"></form>";
+
+  }
 
   return $str;
 }

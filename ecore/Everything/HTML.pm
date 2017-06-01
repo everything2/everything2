@@ -823,16 +823,18 @@ sub displayPage
 	if($Everything::ROUTER->can_route($NODE, $query->param("displaytype")))
 	{
 		$page = "";
+		$APP->devLog("Using available router for $NODE->{title} / $NODE->{type}->{title}");
 		# HTMLRouter does the printing
 		$Everything::ROUTER->route_node($NODE, $query->param("displaytype") || "display", $REQUEST);
 	}else{
 
 		if(my $delegation = Everything::Delegation::htmlpage->can($pagetitle))
 		{
+			$APP->devLog("Using delegated htmlpage for '$pagetitle'");
 			# $NODE twice for legacy reasons though I am not sure if anyone needs it
-			# TODO: Get rid of above
 			$page = $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $Everything::APP, $NODE);	
 		}else{
+			$APP->devLog("Using legacy htmlpage for '$pagetitle'");
 			$page = $$PAGE{page};
 			die "NO PAGE!" unless $page;
 			$page = parseCode($page, $NODE);
