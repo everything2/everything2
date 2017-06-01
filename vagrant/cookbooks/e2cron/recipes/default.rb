@@ -73,6 +73,12 @@ cron 'data_generator_heartbeat.pl' do
   command "/var/everything/tools/data_generator_heartbeat.pl 2>&1 >> #{logdir}/data_generator_heartbeat.reaper.#{datelog}"
 end
 
+cron 'data_generator_heartbeat lenghty' do
+  user "root"
+  command "/var/everything/tools/data_generator_heartbeat.pl --lengthy 2>&1 >> #{logdir}/data_generator_lengthy.reaper.#{datelog}"
+  minute 15
+end
+
 # We need this on the bastion. Place a 1g swapfile in the root dir
 #
 bash 'createswap' do
