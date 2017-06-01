@@ -106,8 +106,6 @@ return $str;
 
 [%
 
-#return &quot;&lt;p&gt;Hold your horses!&lt;/p&gt;&quot; unless $$USER{title} eq 'mauler';
-
 my $voteCost = 1;
 
 my $minlevel = 2;
@@ -163,9 +161,6 @@ return $str;
 %]
 
 [%
-
-
-#return &quot;&lt;p&gt;Hold your horses!&lt;/p&gt;&quot; unless $$USER{title} eq 'mauler';
 
 my $minLev = 9;
 my $votesLev = 1;
@@ -280,11 +275,6 @@ my $lvl = $APP-&gt;getLevel($user);
 
 $str.=$query-&gt;start_form();
 $str.=$query-&gt;hidden('node_id', $$NODE{node_id});
-#if ($forceAllow) {
-#	$str.= &quot;&lt;p&gt;As you're a stick-wielding oppressor you have unlimited C!s to give away. Please don't go overboard on this: we want to keep these gifts special, and would mostly expect them to be given by 'ordinary' users.&quot;;
-#} else {
-#	$str .= &quot;&lt;p&gt;You currently have &quot; . $$VARS{cools} . &quot; C!&quot; . ($$VARS{cools} &gt; 1 ? 's' : '') . ' to give.';	
-#}
 $str.= &quot;&lt;/p&gt;&lt;p&gt;Who's the lucky noder? &quot; . $query-&gt;textfield('give_to');
 
 
@@ -308,7 +298,6 @@ my $gpCost = 100;
 my $ChingLevel = 4;
 my $lvl = $APP-&gt;getLevel($USER);
 
-#return unless $lvl &gt;= $ChingLevel;
 return if ($$VARS{GPoptout});
 
 my $msg = &quot;&lt;p&gt;If you'd like another ching to use or give away, you might be able to buy one for the bargain price of &lt;strong&gt;$gpCost GP&lt;/strong&gt;. You must be at least [The Everything2 Voting/Experience System|Level $minLevel], and you can only buy one C! every 24 hours.&lt;/p&gt;&quot;;
@@ -334,9 +323,9 @@ my ($hour, $min, $sec) = split(':',$t);
 my ($year, $month, $day) = split('-',$d);
 my $ching_time = timelocal($sec, $min, $hour, $day, $month-1, $year);
 
-my ($d, $t) = split(' ',$hours24);
-my ($hour, $min, $sec) = split(':',$t);
-my ($year, $month, $day) = split('-',$d);
+($d, $t) = split(' ',$hours24);
+($hour, $min, $sec) = split(':',$t);
+($year, $month, $day) = split('-',$d);
 my $hour_time = timelocal($sec, $min, $hour, $day, $month-1, $year);
 
 my $timeDiff = $ching_time-$hour_time;
@@ -400,6 +389,7 @@ my $canBuy = (($$USER{GP} &gt;= $tokenCost) &amp;&amp; ($lvl &gt;= $minlevel));
 my ($str, $resultStr);
 
 $$VARS{tokens} = 0 unless exists($$VARS{tokens});
+$$VARS{tokens} = 0 if($$VARS{tokens} eq &quot;&quot;);
 
 if ($query-&gt;param(&quot;buyToken&quot;) &amp;&amp; $$USER{GP} &gt;= $tokenCost) {
 
@@ -411,7 +401,7 @@ if ($query-&gt;param(&quot;buyToken&quot;) &amp;&amp; $$USER{GP} &gt;= $tokenCos
 	$resultStr = &quot;Sweet, now you have &lt;b&gt;&quot;.$$VARS{tokens}.&quot;&lt;/b&gt; token&quot;.($$VARS{tokens} == 1 ? &quot;&quot; :&quot;s&quot;);
 }
 
-if ($$VARS{tokens} &lt;= 0) {
+if (int($$VARS{tokens}) &lt;= 0) {
 	$str = &quot;&lt;p&gt;You don't have any tokens right now.&lt;/p&gt;&quot;;
 
 	if ($canBuy) {
@@ -520,6 +510,7 @@ my ($str, $resultStr);
 $str.=&quot;&lt;p&gt;&lt;hr width='300' /&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;The Gift of Eggs&lt;/b&gt;&lt;/p&gt;&quot;;
 
 $$VARS{easter_eggs} = 0 unless exists($$VARS{easter_eggs});
+$$VARS{easter_eggs} = 0 if($$VARS{easter_eggs} eq &quot;&quot;);
 
 return $str if ($$VARS{GPoptout});
 
