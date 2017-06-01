@@ -6727,6 +6727,7 @@ sub episection_ces
 
   return parseLinks("<ul>
     <li>[E2 Editor Doc]</li>
+    <li>[Content Reports]</li>
     <li>[Drafts for review[superdoc]]</li>
     <li>[25] | [Everything New Nodes]</li>
     <li>[E2 Nuke Request]</li>
