@@ -15144,4 +15144,5 @@ sub frontpage_altcontent
 
 }
 
+
 1;
