@@ -15,4 +15,5 @@ if($Everything::CONF->environment ne "development")
 `/var/everything/ecoretool/ecoretool.pl bootstrap --nodepack=/var/everything/nodepack`;
 `/var/everything/tools/seeds.pl`;
 `/var/everything/tools/data_generator_heartbeat.pl`;
+`/var/everything/tools/data_generator_heartbeat.pl --lengthy`;
 `/etc/init.d/apache2 restart`;
