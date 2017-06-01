@@ -11,7 +11,7 @@ has '+lengthy' => (default => 1);
 sub generate
 {
   my ($this) = @_;
-  my $csr = $this->DB->sqlSelectMany("node_id","node","title is null");
+  my $csr = $this->DB->sqlSelectMany("node_id","node","title is null or title = ''");
 
   my $outdata = [];
   while (my $row = $csr->fetchrow_arrayref)
