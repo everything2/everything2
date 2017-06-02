@@ -9,12 +9,13 @@
   {
     &quot;editing_invalid_authors&quot; =&gt; 
       {&quot;title&quot; =&gt; &quot;Invalid Authors on writeups&quot;, &quot;extended_title&quot; =&gt; &quot;These nodes do not have authors. Either the users were deleted or the records were damaged&quot;},
-    &quot;editing_null_node_titles&quot; =&gt; {&quot;title&quot; =&gt; &quot;Null titles on nodes&quot;, &quot;extended_title&quot; =&gt; &quot;These nodes have null titles. Not necessarily writeups.&quot;},
+    &quot;editing_null_node_titles&quot; =&gt; {&quot;title&quot; =&gt; &quot;Null titles on nodes&quot;, &quot;extended_title&quot; =&gt; &quot;These nodes have null or empty-string titles. Not necessarily writeups.&quot;},
     &quot;editing_writeups_bad_types&quot; =&gt; {&quot;title&quot; =&gt; &quot;Writeup types that are invalid&quot;, &quot;extended_title&quot; =&gt; &quot;These are writeup types, such as (thing), (idea), (definition), etc that are not valid&quot;},
     &quot;editing_writeups_broken_titles&quot; =&gt; {&quot;title&quot; =&gt; &quot;Writeup titles that aren't the right pattern&quot;, &quot;extended_title&quot; =&gt; &quot;These are writeup titles that don't have a left parenthesis in them, which means that it doesn't follow the 'parent_title (type)' pattern.&quot;},
     &quot;editing_writeups_invalid_parents&quot; =&gt; {&quot;title&quot; =&gt; &quot;Writeups that don't have valid e2node parents&quot;, &quot;extended_title&quot; =&gt; &quot;These nodes need to be reparented&quot;},
     &quot;editing_writeups_under_20_characters&quot; =&gt; {&quot;title&quot; =&gt; &quot;Writeups under 20 characters&quot;, &quot;extended_title&quot; =&gt; &quot;Writeups that are under 20 characters&quot;},
-    &quot;editing_writeups_without_formatting&quot; =&gt; {&quot;title&quot; =&gt; &quot;Writeups without any HTML tags&quot;, &quot;extended_title&quot; =&gt; &quot;Writeups that don't have any HTML tags in them, limited to 200.&quot;},
+    &quot;editing_writeups_without_formatting&quot; =&gt; {&quot;title&quot; =&gt; &quot;Writeups without any HTML tags&quot;, &quot;extended_title&quot; =&gt; &quot;Writeups that don't have any HTML tags in them, limited to 200, ignores E1 writeups.&quot;},
+    &quot;editing_writeups_linkless&quot; =&gt; {&quot;title&quot; =&gt; &quot;Writeups without links&quot;, &quot;extended_title&quot; =&gt; &quot;Writeups post-2001 that don't have any links in them&quot;},
   };
 
   if($query-&gt;param(&quot;driver&quot;))
@@ -54,6 +55,7 @@
     {
       my $datanode = getNode($driver, &quot;datastash&quot;);
       next unless $datanode;
+      next unless $datanode-&gt;{vars};
 
       my $data = $DB-&gt;stashData($driver);
       $data = [] unless UNIVERSAL::isa($data, &quot;ARRAY&quot;);
