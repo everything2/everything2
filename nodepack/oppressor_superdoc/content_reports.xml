@@ -8,7 +8,7 @@
   my $drivers = 
   {
     &quot;editing_invalid_authors&quot; =&gt; 
-      {&quot;title&quot; =&gt; &quot;Invalid Authors on writeups&quot;, &quot;extended_title&quot; =&gt; &quot;These nodes do not have authors. Either the users were deleted or the records were damaged&quot;},
+      {&quot;title&quot; =&gt; &quot;Invalid Authors on nodes&quot;, &quot;extended_title&quot; =&gt; &quot;These nodes do not have authors. Either the users were deleted or the records were damaged. Includes all types&quot;},
     &quot;editing_null_node_titles&quot; =&gt; {&quot;title&quot; =&gt; &quot;Null titles on nodes&quot;, &quot;extended_title&quot; =&gt; &quot;These nodes have null or empty-string titles. Not necessarily writeups.&quot;},
     &quot;editing_writeups_bad_types&quot; =&gt; {&quot;title&quot; =&gt; &quot;Writeup types that are invalid&quot;, &quot;extended_title&quot; =&gt; &quot;These are writeup types, such as (thing), (idea), (definition), etc that are not valid&quot;},
     &quot;editing_writeups_broken_titles&quot; =&gt; {&quot;title&quot; =&gt; &quot;Writeup titles that aren't the right pattern&quot;, &quot;extended_title&quot; =&gt; &quot;These are writeup titles that don't have a left parenthesis in them, which means that it doesn't follow the 'parent_title (type)' pattern.&quot;},
@@ -37,7 +37,7 @@
         {
            my $N = getNodeById($node_id);
            next unless $N;
-           $str .= &quot;&lt;li&gt;&quot;.linkNode($N, &quot;node_id: $node_id, title: &quot;.($N-&gt;{title} || &quot;&quot;)).&quot;&lt;/li&gt;&quot;;
+           $str .= qq|&lt;li&gt;&lt;a href=&quot;/?node_id=$node_id&quot;&gt;node_id: $node_id title: |.($N-&gt;{title} || &quot;&quot;).&quot; type: $N-&gt;{type}-&gt;{title} &lt;/li&gt;&quot;;
         }
         $str .= &quot;&lt;/ul&gt;&quot;;
       }else{

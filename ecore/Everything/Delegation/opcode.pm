@@ -1832,23 +1832,6 @@ sub borg
   return;
 }
 
-sub nodetestpass
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return unless $APP->isEditor($USER);
-
-  my $node = $DB->getDatabaseHandle->quote($query->param("node_id"));
-  $DB->sqlDelete("nodetestresult", "nodetestresult_node=$node");
-  return 1;
-}
-
 sub flushcbox
 {
   my $DB = shift;
