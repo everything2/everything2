@@ -1380,25 +1380,6 @@ sub setvar
 
 }
 
-# Only used in the nodetest edit page
-#
-sub yesno_field
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($field) = @_;
-
-  my $val = int($$NODE{$field});
-
-  return $val . $query->radio_group("$$NODE{type}{title}_$field", ['1', '0'], $val, 0, { '0' => 'no', '1'=> 'yes'});
-}
-
 sub textfield
 {
   my $DB = shift;
