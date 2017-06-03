@@ -2607,4 +2607,439 @@ sub node_help_display_page
   return $str;
 }
 
+sub datastash_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return qq|<pre>|.to_json(from_json($NODE->{vars} || "{}"),{utf8 => 1, pretty => 1}).qq|</pre>|;
+}
+
+sub jsonexport_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $json_struct = evalCode($NODE->{code});
+  return encode_json($json_struct);
+}
+
+sub document_linkview_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p align="right">Return to |.linkNode($NODE).qq|</p>|;
+
+  my @links = ();
+  my @notlinks = ();
+
+  my $regex = qr/\[(.*?)[\]\[\|]/;
+  my $ntt = $NODE->{type}->{title};
+  my $codeDoc = ($ntt eq 'superdoc') || ($ntt eq 'superdocnolinks') || ($ntt eq 'restricted_superdoc') || ($ntt eq 'oppressor_superdoc'); #FIXME better way of checking for code
+  $regex = qr/\[([^%{].*?)[\]\[\|]/ if $codeDoc;
+
+  my $text = $$NODE{doctext};
+  my $scratchID;
+
+  my @link_ids = ();
+  while ($text =~ /$regex/g)
+  {
+    my $lnk = $1;
+    #omit external links
+    next if ($lnk =~ /^\s*https?:\/\//);
+
+
+    $lnk = $APP->htmlScreen($lnk);
+
+    if (my $node_id = $DB->sqlSelect('node_id', 'node','title='.$DB->{dbh}->quote($lnk)))
+    {
+      push @link_ids, [$node_id,$lnk];
+    } else {
+      push @notlinks, linkNodeTitle($lnk, $NODE);
+    }
+  }
+
+  my %fillednode_ids = ();
+  #Only make one SQL call to find the non-nodeshells.
+  if (@link_ids)
+  {
+    my $sql = "SELECT DISTINCT nodegroup_id
+      FROM nodegroup
+      WHERE nodegroup_id IN ("
+      .join(", ",
+      (map { $_ -> [0]} @link_ids)
+      ).")";
+
+    @fillednode_ids{  @{$DB->{dbh} -> selectcol_arrayref($sql)}  } = ();
+  }
+
+  #If it's a link to anything but an e2node (type 116), it's also filled.
+  if (@link_ids)
+  {
+    my $sql = "SELECT node_id
+     FROM node
+     WHERE type_nodetype != ".$DB->getType("e2node")->{node_id}." 
+       AND node_id in ("
+     .join(", ",
+     (map {$_ -> [0]} @link_ids)
+     ).")";
+
+    @fillednode_ids{  @{$DB->{dbh} -> selectcol_arrayref($sql)}  } = ();
+  }
+
+  foreach my $linkref(@link_ids)
+  {
+    my $isfilled = exists $fillednode_ids{$linkref -> [0]};
+    push @links, [linkNodeTitle($linkref -> [1], $NODE), $isfilled ];
+  }
+
+  my $TAGNODE = getNode 'approved html tags', 'setting';
+  my $TAGS=getVars($TAGNODE);
+
+  @notlinks = () if $codeDoc;
+
+  $text = $APP->breakTags($text) unless $codeDoc;
+
+  my $oddrowclr  = '#999999';
+
+  $str .= "<table class=\"item\"><tr><td width=\"80%\" class=\"content\">$text</td><td width=\"5%\"></td><td valign=\"top\"
+    bgcolor=\"".$oddrowclr."\" class=\"content\"><strong>Existing:</strong><br>";
+
+  $str .= "<ul class=\"linklist\">\n";
+
+  foreach my $linkref(@links)
+  {
+    my $link = $$linkref[0];
+    my $isfilled = $$linkref[1];
+    $str .= "<li ".($isfilled ? "" : "class=\"nodeshell\"" ).">";
+    $str .= $link."</li>\n";
+  }
+
+  $str .= "</ul>\n";
+  $str .= "<hr width=\"20\"><br><strong>Non-Existing:</strong><br>";
+
+  $str .= "<ul class=\"linklist\">\n <li>";
+
+  $str .=  join("</li>\n<li>", @notlinks)
+    ."</li>\n</ul></td></tr></table>";
+
+  return $str;
+}
+
+sub e2node_chaos_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";
+
+  my @junk=(
+    "Where did I put that?"
+    , "I lost my mind in San Francisco"
+    , "Shuffle shuffle"
+    , "I smashed it into a million pieces, and cut myself on its beauty"
+    , "It used to be full of stars, but now I'm full of scars.");
+
+  $str .= qq|<small><p align="right"><strong>$junk[rand(@junk)]</strong></p></small>|;
+
+
+  my $softlinkType = 0;
+  my $E2NODE = $NODE;
+  my $csr =
+    $DB->sqlSelectMany(
+    "to_node"
+    , "links"
+    , "from_node = $$E2NODE{node_id} AND linktype = $softlinkType"
+    );
+
+  my @LINKS = ();
+
+  while(my $row = $csr->fetchrow_hashref)
+  {
+    my $N = getNodeById($$row{to_node}, 'light');
+    next unless $N;
+    push @LINKS, $N;
+  }
+
+  if(scalar(@LINKS) == 0)
+  {
+    $str .= "<p>Ain't nothin'</p>";
+  }else{
+    $str = qq|<p>Somewhere near |.linkNode($E2NODE).qq| I got lost in:</p>|;
+    $str .= '<div id="softlinks">';
+
+    foreach(sort {rand() <=> rand()} @LINKS)
+    {
+      my $fontSize = int((rand(8)**2.2+65)) . '%';
+      $str .= linkNode($_, undef, {
+      lastnode_id => $$E2NODE{node_id}
+      , -style=> "font-size: $fontSize;"});
+
+      $str .= "&nbsp;" x (rand(50));
+    }
+  $str .= '</div>';
+  }
+
+return $str;
+}
+
+sub dbtable_index_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p>Indices for database table $NODE->{title}</p>|;
+  my $table = $NODE->{title};
+  my @cols = qw(Name Seq Column Coll Card SubPt Packed Comment );
+  my %cols = ( Name=>'Key_name', Seq=>'Seq_in_index',
+    Column=>'Column_name', Coll=>'Collation',
+    Card=>'Cardinality', SubPt=>'Sub_part',
+    Packed=>'Packed', Comment=>'Comment' );
+
+  my @fields;
+  {
+    my $sth= $DB->{dbh}->prepare( "show index from $table" );
+    $sth->execute();
+    while(  my $rec= $sth->fetchrow_hashref()  )
+    {
+      push @fields, $rec;
+    }
+    $sth->finish();
+  }
+
+  $str .= "<table class=\"index\">\n";
+  $str .= " <tr>\n";
+
+  foreach my $fieldname (  @cols  )
+  {
+    $str .= qq|  <th class="indexHeader">$fieldname</th>|;
+  }
+  $str .= " </tr>\n";
+
+  foreach my $field (  @fields  )
+  {
+    $str .= " <tr>\n";
+    foreach my $value (  @{$field}{@cols{@cols}}  )
+    {
+      $value = "&nbsp;"   if  $value eq "";
+      $str .= "  <td class=\"indexValue\">$value</td>\n";
+    }
+
+    $str .= " </tr>\n";
+  }
+
+  $str .= "</table>\n";
+
+  return $str;
+}
+
+sub jscript_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return $NODE->{doctext};
+}
+
+sub user_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = htmlcode("setupuservars");
+  $str .= qq|<div id='homenodeheader'>|;
+  $str .= htmlcode("homenodeinfectedinfo");
+  $str .= qq|<div id='homenodepicbox'>|;
+  $str .= htmlcode("showuserimage");
+
+  if(getId($USER) == getId($NODE) and not $APP->isGuest($USER))
+  {
+    $str.= '<p>' . linkNode($NODE, '(edit user information)', {displaytype=>'edit', "-id" => "usereditlink"}) . '</p>';
+  }
+
+  $str .= qq|</div>|;
+  $str .= htmlcode("zenDisplayUserInfo");
+
+  $str .= qq|</div>|;
+  $str .= qq|<hr class='clear'>|;
+  $str .= qq|<table width="100%" id='homenodetext'><tr><td>|;
+
+  my $isignored = $DB->sqlSelect("ignore_node","messageignore","messageignore_id=$$NODE{node_id} and ignore_node=$$USER{node_id}");
+  if(not $isignored and not $APP->isGuest($USER))
+  {
+
+    my $csr = $DB->sqlSelectMany('*','registration',
+      'from_user='.$$NODE{user_id}.' && in_user_profile=1');
+
+    if($csr)
+    {
+      my $labels = ['Registry','Data','Comments'];
+      my $rows = undef;
+
+      while(my $ref = $csr->fetchrow_hashref())
+      {
+        push @$rows,{
+          'Registry'=>linkNode($$ref{for_registry}),
+          'Data'=>$APP->breakTags(parseLinks($APP->htmlScreen($$ref{data}))),
+          'Comments'=>$APP->breakTags(parseLinks($APP->htmlScreen($$ref{comments}))),
+        };
+      }
+      $str .= $APP->buildTable($labels,$rows,'class="registries",nolabels') if($rows);
+    }else{
+      $str .= "SQL problem, tell a [coder]";
+    }
+  }
+
+  $str .= qq|<div class='content'>|;
+  $str .= htmlcode("displayUserText");
+  $str .= qq|</div></td></tr></table>|;
+
+  $str .= htmlcode("showbookmarks");
+
+  return $str;
+}
+
+sub patch_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p>title: |.htmlcode("textfield","title").qq| maintained by: |;
+  $str .= htmlcode("node_menu","author_user,user,usergroup").qq|</p>|;
+
+  if($APP->isAdmin($USER) and $NODE->{type}->{title} eq "patch")
+  {
+    $str .= linkNode($NODE, "Apply this patch", {"op" => "applypatch", "patch_id" => $$NODE{node_id}}).'<br>' unless $$NODE{cur_status} == 1288865;
+    $str .= "<font color=\"red\">The patch has been applied</font> ".linkNode($NODE, "Unapply", {"op" => "applypatch", "patch_id" => $$NODE{node_id}, displaytype=>'edit'})."<br />";
+  }
+
+  $str .= qq|<p>Change the description of the patch:</p>|;
+  $str .= htmlcode("textfield","purpose,80");
+  $str .= qq|<p>Any additional instructions for bringing this patch into production?</p>|;
+  $str .= htmlcode("textfield","instructions,80");
+
+  if(getNodeById($NODE->{cur_status})->{applied})
+  {
+    $str .= htmlcode('listcode',$$NODE{field},getNodeById($$NODE{for_node}));
+  }else{
+    $str .= htmlcode('listcode','code');
+  }
+
+  if(not getNodeById($NODE->{cur_status})->{applied})
+  {
+    $str .= "<p><small><strong>Edit the code:</strong></small><br />\n";
+    $str .= htmlcode('textarea',"code,30,80");
+    $str .= $query -> checkbox( -name=>'op' , value=>'applypatch' , selected=>0 , force=>1 ,label=>'apply this patch immediately' ).
+      '<br>'.
+      $query -> hidden( 'patch_id' , $$NODE{node_id} ) if $APP->inDevEnvironment();
+  }
+
+  return $str;
+}
+
+sub e2node_softlinks_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
+  $str.= htmlcode("xmlheader")."<softlinks>\n".htmlcode("softlink", "xml")."</softlinks>\n".htmlcode("xmlfooter");
+  return $str;
+}
+
+sub datastash_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<h4>title:</h4>|.htmlcode("textfield","title");
+  $str .= qq|<p><small><strong>Edit the data:</strong></small><br />|;
+  $str .= htmlcode("textarea","vars,30,60");
+
+  return $str;
+}
+
+sub e2poll_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = htmlcode("openform");
+  $str .= qq|<fieldset><legend>Edit poll</legend>|;
+ 
+  if($NODE->{poll_status} ne "new")
+  {
+    $str.= qq|<p><strong>This poll has already been posted for voting. Editing it now is probably a stupid idea.</strong></p>|;
+  }
+
+  $str .= qq|<label>Question:|.htmlcode("textfield","question,72").qq|</label>|;
+  $str .= qq|<p><b>Answers</b> are separated by one or more line-breaks:</p>|;
+  $str .= qq|<textarea name="e2poll_doctext" |.htmlcode("customtextarea","1").qq|>|;
+
+  $str .= $query -> escapeHTML($$NODE{doctext});
+  $str .= qq|</textarea></fieldset>|;
+  $str .= htmlcode("closeform");
+
+  $str .= qq|<h2>$$NODE{title}</h2>|;
+
+  $str .= htmlcode("showpoll");
+  return $str;
+}
+
 1;
