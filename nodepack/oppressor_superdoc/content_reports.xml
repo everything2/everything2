@@ -36,8 +36,12 @@
         foreach my $node_id (@$data)
         {
            my $N = getNodeById($node_id);
-           next unless $N;
-           $str .= qq|&lt;li&gt;&lt;a href=&quot;/?node_id=$node_id&quot;&gt;node_id: $node_id title: |.($N-&gt;{title} || &quot;&quot;).&quot; type: $N-&gt;{type}-&gt;{title} &lt;/li&gt;&quot;;
+           if($N)
+           {
+             $str .= qq|&lt;li&gt;&lt;a href=&quot;/?node_id=$node_id&quot;&gt;node_id: $node_id title: |.($N-&gt;{title} || &quot;&quot;).&quot; type: $N-&gt;{type}-&gt;{title} &lt;/li&gt;&quot;;
+           }else{
+             $str .= qq|&lt;li&gt;Could not assemble node reference for id: $node_id&lt;/li&gt;|;
+           }
         }
         $str .= &quot;&lt;/ul&gt;&quot;;
       }else{
