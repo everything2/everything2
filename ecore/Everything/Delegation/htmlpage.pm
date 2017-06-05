@@ -3042,4 +3042,538 @@ sub e2poll_edit_page
   return $str;
 }
 
+sub category_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $page = int($query->param('p'));
+  my $count = 50;
+  my $isCategoryEditor = 0;
+  my $maintainer = getNodeById($$NODE{author_user});
+  my $guestuserId = getId(getNode('guest user', 'user'));
+  if ($$maintainer{type_nodetype} == getId(getType('user')))
+  {
+    if($$maintainer{node_id} == $$USER{user_id} && !$APP->isGuest($USER) )
+    {
+      $isCategoryEditor = 1;
+    }
+  }elsif($$maintainer{type_nodetype} == getId(getType('usergroup'))) {
+    if ($APP->inUsergroup($USER, getNodeById($$maintainer{node_id})))
+    {
+      $isCategoryEditor = 1;
+    }
+  }
+
+  if (!$isCategoryEditor)
+  {
+    if ($APP->isEditor($USER))
+    {
+      $isCategoryEditor = 1;
+    }
+  }
+
+  my $str = "";
+  if ($isCategoryEditor == 1)
+  {
+    $str .= '<p style="text-align:right">'.linkNode($NODE, 'edit', {displaytype => 'edit'}).'</p>';
+  } elsif(!$APP->isGuest($$NODE{author_user})) {
+    $str .= '<p>If you find any nodes you think should be in this category, message the maintainer (or an editor) with your suggestion.</p>';
+  }
+
+  if ($APP->isGuest($$maintainer{node_id}) )
+  {
+    $str .= '<p><b>Maintained By:</b> Everyone</p>';
+  } else {
+    $str .= '<p><b>Maintained By:</b> '.linkNode($maintainer).'</p>';
+  }
+
+  my $descr = $NODE->{doctext};
+  my $TAGNODE = getNode('approved html tags', 'setting');
+  my $TAGS = getVars($TAGNODE);
+  $descr = $APP->htmlScreen($descr, $TAGS);
+  $descr = $APP->screenTable($descr);
+  $descr = parseLinks($descr, undef);
+  $descr = $APP->breakTags($descr);
+
+  if ($descr ne "")
+  {
+    $str .= qq|<div class="content">$descr</div>|;
+  }
+
+  my $catlinktype = getNode('category', 'linktype')->{node_id};
+
+  my $sql = "SELECT node.node_id,node.title,node.type_nodetype,node.author_user
+           FROM node,links
+           WHERE node.node_id=links.to_node
+            AND links.from_node=$$NODE{node_id}
+            AND links.linktype = $catlinktype
+           ORDER BY links.food, node.title, node.type_nodetype
+           LIMIT ".($page*$count).",$count";
+  my $ds = $DB->{dbh}->prepare($sql);
+  $ds->execute() or return $ds->errstr;
+
+  my $ctr = 0;
+  my $num = $page*$count;
+  my $nodetype;
+  my $table;
+  while(my $row = $ds->fetchrow_hashref)
+  {
+    $ctr++;
+    $num++;
+    $nodetype = getNode($$row{type_nodetype});
+    if ($ctr % 2 == 0)
+    {
+      $table .= '<tr>';
+    }else {
+      $table .= '<tr class="oddrow">';
+    }
+
+    $table .= '<td style="text-align:center">'.$num.'</td>
+           <td>'.linkNode($$row{node_id}, $$row{title}, {lastnode_id=>0}).'</td>
+           <td>'.($$nodetype{title} eq 'writeup' ? 
+				linkNode($$row{author_user},'', {lastnode_id=>0}):'&nbsp;').'</td>
+           <td style="text-align:center">'.$$nodetype{title}.'</td>
+           </tr>';
+  }
+
+  unless ($num)
+  {
+    $str .= '<p><strong>This category is empty.</strong></p>';
+  }else{
+    $str .= qq|<table align="center" cellpadding="3"><tr><th>&nbsp</th><th>Title</th>|;
+    $str .= qq|<th>by</th><th>Type</th></tr>$table\n</table>\n|;
+  }
+
+  if ($page || $ctr == $count)
+  {
+    $str .= '<p style="text-align:center">';
+    $str .= '<a href="/index.pl?node_id='.$$NODE{node_id}.'&p='.($page-1).'">&lt;&lt;Prev</a>' if $page;
+    $str .= ' | <b>Page '.($page+1).'</b> | ';
+    $str .= '<a href="/index.pl?node_id='.$$NODE{node_id}.'&p='.($page+1).'">Next&gt;&gt;</a>' if $ctr == $count;
+    $str .= '</p>'
+  }
+
+  return $str;
+}
+
+sub category_editor_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p align=right>|;
+
+  if ($query->param('op') eq 'close')
+  {
+    $$VARS{group} = "";
+    $str .= "<SCRIPT language=\"javascript\">parent.close()</SCRIPT>";		
+  }else{
+    $$VARS{group}||= getId ($NODE);
+    $str .= linkNode($NODE, "close", {displaytype=> $query->param('displaytype'),op => 'close'});
+  }
+  $str .= htmlcode("groupeditor");
+  $str .= qq|</FORM>|;
+
+  return $str;
+}
+
+sub category_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p align="right">|.linkNode($NODE, 'display', {displaytype => 'display'}).qq|</p>|;
+
+  return $str.'You cannot edit this category.' unless(not $APP->isGuest($USER) and canUpdateNode($USER, $NODE));
+
+  if ($query -> param('op') eq 'nuke' && $query->param('node_id') == $$NODE{node_id} && htmlcode('verifyRequest', 'nukecat'))
+  {
+    nukeNode($NODE, -1);
+    return $query->b('Category deleted');
+  }
+
+
+  my $isCE = $APP->isEditor($USER);
+
+  my $mydbh = $DB->getDatabaseHandle();
+  return 'No database handle!' unless $mydbh;
+  my $sql;
+
+  # delete a link
+  my $deleteId = int($query->param('del'));
+  if ($deleteId > 0)
+  {
+    my $linktypeId = getId(getNode('category', 'linktype'));
+    $DB->sqlDelete("links", "from_node=$$NODE{node_id} AND to_node=$deleteId AND linktype=$linktypeId");
+  }
+
+  my $addstr = '';
+  if ($isCE)
+  {
+    $str .= htmlcode('openform', 'titleForm').'<fieldset><legend>Fix title</legend><p></p>'
+      .$query -> label(
+        'Please only change the title on request from the maintainer or if it really obviously needs fixing:<br>'
+        .$query -> textfield('category_title', $$NODE{title}, 25)
+      ).$query -> submit('Fix')
+      .'</fieldset>'
+      .$query -> endform;
+
+    my $maintainer = getNodeById($$NODE{author_user});
+
+    # change the maintainer
+    my $setMaintainer = $query->param('setMaintainer');
+    if ($setMaintainer && htmlcode('verifyRequest', 'setMaintainerForm'))
+    {
+      my $newMaintainer = getNode($setMaintainer, 'user');
+      if (!$newMaintainer)
+      {
+        $newMaintainer = getNode($setMaintainer, 'usergroup');
+      }
+
+      if ($newMaintainer)
+      {
+        $$NODE{author_user} = $$newMaintainer{node_id};
+        updateNode($NODE, -1);
+        $maintainer = $newMaintainer;
+      } else { $str .= "<b>Unable to find user or usergroup: $setMaintainer </b><br>"; }
+    }
+	
+    $str .= htmlcode('openform', 'setMaintainerForm')
+      .'<fieldset><legend>Maintainer</legend><p>Since you\'re an editor, you can change the maintainer of this category.</p>
+      Enter the name of a user or usergroup, or "Guest User" to allow anyone who can create categories to contribute:<br>'
+      . $query->textfield('setMaintainer', $$maintainer{title}, 25)
+      . $query->submit("changeit", "Change")
+      . '<br> Current maintainer: ' . linkNode($maintainer)
+      . '</fieldset>'
+      . htmlcode('verifyRequestForm', 'setMaintainerForm')
+      . $query->endform;
+  } else {
+    $str .= '<p>To change the title or maintainer of this category, please contact an editor.</p>';
+  }
+
+  my $catlinktype = getNode('category', 'linktype')->{node_id};
+
+  # add a node if the user submitted the addnode form
+  if ($query->param('addnode') && htmlcode('verifyRequest', 'addCatNode'))
+  {
+    my $addnodename = $query->param('addnodename');
+    my $byuser;
+    my $authornotfound = 0;
+	
+    if ($addnodename =~ /(.*)\[by (.*)\]$/)
+    {
+      $addnodename = $1;
+      $byuser = getId(getNode($2, 'user'));
+      if (!$byuser) { $authornotfound = 1; }
+    }
+	
+    my $addnodeid;
+    if (!$authornotfound)
+    {
+      $addnodeid = getId(getNode($addnodename, 'e2node'));
+    }
+	
+    if ($addnodeid && $byuser)
+    {
+      my $cursor = $DB->sqlSelectMany('writeup_id','writeup', "parent_e2node = $addnodeid");		
+      my $wid;
+      $addnodeid = 0;
+      while (($wid) = $cursor->fetchrow())
+      {
+        if (getNode($wid)->{author_user} == $byuser)
+        {
+          $addnodeid = $wid;
+	  last;
+        }
+      }
+    }
+	
+    if ($addnodeid)
+    {
+      $DB->sqlInsert("links", {
+        from_node => $$NODE{node_id},
+        to_node => $addnodeid,
+        linktype => $catlinktype,
+      });
+
+      $addstr .= "Added " . linkNode($addnodeid);
+    } else {
+      $addstr .= "Node not found: " . parseLinks("[$addnodename]");
+      if ($byuser)
+      { 
+        $addstr .= " by " . linkNode($byuser);
+      }elsif ($authornotfound){ 
+        $addstr .= " (unknown author given)";
+      }
+    }
+  }
+
+
+  # reorder the nodes if the user submitted a reordering form
+  if ($query->param('orderthem') && htmlcode('verifyRequest', 'reorderCatNodes'))
+  {
+    for my $param ($query->param)
+    {
+      next unless $param =~ /^catfood_(\d+)$/;
+      my $nid = $1;
+      my $nf = $query->param($param);
+      $query->delete($param);
+      if ($nf eq '' || $nf =~ /\D/)
+      {
+        $nf = 0;
+      }
+		
+      $sql = "UPDATE links
+        SET food = $nf
+        WHERE links.to_node = $nid
+        AND links.from_node = $$NODE{node_id}
+        AND links.linktype = $catlinktype";
+      my $ds = $mydbh->prepare($sql);
+      $ds->execute() or return $ds->errstr;
+    }
+  }
+
+
+  # "add a node" box---mostly so that editors can add nodes to categories
+
+  $str .= htmlcode('openform', 'addCatNode')
+    . '<fieldset><legend>Add by name</legend>'
+    . '<p>Add a whole node ("node title") or a single writeup ("node title[by someone]"):</p>'
+    . htmlcode('verifyRequestForm', 'addCatNode');
+
+  if ($addstr ne '')
+  {
+    $str .= "<p>$addstr</p>";
+  }
+
+  $str .= ''.$query->textfield("addnodename", '', 25)
+   . $query->submit("addnode", "Add")
+   . '</fieldset>' . $query->endform;
+
+
+  $str .= htmlcode('openform', 'updateDescrForm').'<fieldset><legend>Category Description</legend>'
+    .'<textarea name="category_doctext" id="category_doctext" '
+    . htmlcode('customtextarea', '1')
+    . ' class="formattable">'
+    . $APP->encodeHTML($$NODE{doctext})
+    . '</textarea>'
+    . $query->submit("update", "Update Description")
+    . '</fieldset>' . $query->endform;
+
+
+  # list nodes in the category, with "delete" links
+
+  $sql = "SELECT node.node_id,node.title,node.type_nodetype,node.author_user
+    FROM node,links
+    WHERE node.node_id=links.to_node
+    AND links.from_node=$$NODE{node_id}
+    AND links.linktype = $catlinktype
+    ORDER BY links.food, node.title, node.type_nodetype";
+
+  my $ds = $mydbh->prepare($sql);
+  $ds->execute() or return $ds->errstr;
+
+  my $ctr = 0;
+  my $table = '';
+  my $nodetype;
+  while(my $row = $ds->fetchrow_hashref)
+  {
+    $ctr++;
+    $nodetype = getNode($$row{type_nodetype});
+    if ($ctr % 2 == 0)
+    {
+      $table .= '<tr>';
+    }else{
+      $table .= '<tr class="oddrow">';
+    }
+
+    $table .= '<td>'.linkNode($$row{node_id}, $$row{title}, {lastnode_id=>0}).'</td><td>'.
+      ($$nodetype{title} eq 'writeup' ? linkNode($$row{author_user},'', {lastnode_id=>0}):'&nbsp;').
+      '</td><td style="text-align:center">'.$$nodetype{title}.
+      '</td><td style="text-align:center"><a href="/index.pl?node_id='.$$NODE{node_id}.
+      '&displaytype=edit&del='.$$row{node_id}.'">delete</a></td><td>'.
+      $query->textfield("catfood_$$row{node_id}", 10*$ctr, 10) . '</td></tr>';
+  }
+
+  unless ($ctr)
+  {
+    $str .= '<p><strong>This category is empty.</strong></p>';
+  }else{
+    $str .= htmlcode('openform', 'reorderCatNodes')
+    . '<fieldset><legend>Reorder</legend>'
+    . htmlcode('verifyRequestForm', 'reorderCatNodes')
+    . qq'<table><tr>
+      <th>Title</th>
+      <th>by</th>
+      <th>Type</th>
+      <th>Delete</th>
+      <th>Order</th>
+      </tr>$table<tr><td colspan="4">&nbsp;</td><td>'
+	. $query->submit("orderthem", "Reorder")
+	. '</td></tr></table>'
+	. '</fieldset>'
+	. $query->endform;
+  }
+
+  $str .= htmlcode('openform')
+    .htmlcode('verifyRequestForm', 'nukecat')
+    .'<br><button type="submit" name="confirmop" value="nuke" title="delete this category">Delete Category</button> </form>'
+    if $$NODE{author_user} == $$USER{node_id} || $isCE;
+
+  return $str;
+
+}
+
+sub stylesheet_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = '<p><cite>by&nbsp;' . linkNode ($$NODE{author_user}) . '</cite></p>';
+  $str .= '<p>'.linkNode($NODE, "View this stylesheet", {displaytype => 'view'}).'</p>';
+
+  if(not $APP->isGuest($USER))
+  {
+    if ($query->param('userstyle'))
+    {
+      $$VARS{userstyle} = $$NODE{node_id};
+    }
+
+    if ($$USER{user_id} == $$NODE{author_user} or $APP->isAdmin($USER) )
+    {
+      my $VARSNODE = getNode( 'fixed stylesheets' ,'setting' ) ;
+      my $settings = getVars( $VARSNODE ) ;
+
+      if ( $query -> param( 'fixstylesheet' ) )
+      {
+  	my $saveold = ( $query -> param( 'saveold' ) ? '1' : '0' ) ;
+  	$str .= '<p><strong>The stylesheet has been fixed. Changes will only become permanent when you click on "stumbit".</strong></p><textarea cols="60" rows="30" name="stylesheet_doctext">'.
+        $APP->fixStylesheet($NODE,$saveold ).'</textarea>' ;
+      } else {
+	# update fixed setting if doesn't need fixing:
+  	$APP->fixStylesheet($NODE, 0) unless $$settings{ $$NODE{ node_id } } >= $Everything::CONF->stylesheet_fix_level ;
+	$str .= "<p><strong>Edit the stylesheet:</strong></p>".htmlcode("textarea","doctext,30,60");
+      }
+
+      if ( $$settings{ $$NODE{ node_id } } < $Everything::CONF->stylesheet_fix_level and not $query -> param( 'fixstylesheet') )
+      {
+        $str .= '<p>You can automatically fix this stylesheet to adapt it to many of the recent changes in the E2 code. Changes will not become permanent until you stumbit again.</p><p><input type="submit" name="fixstylesheet" value="Autofix this stylesheet"><label><input type="checkbox" name="saveold" value="1"> Save old selectors in comments</label></p>';
+      } else {
+        my $inmenu = $APP->getParameter($NODE, "supported_sheet"); $inmenu ||= 0;
+
+        if ($query -> param('sexisgood') && $query->param('inmenu'))
+        {
+          $APP->setParameter($NODE, -1,'supported_sheet',1);
+          $inmenu = 1;
+        }elsif ($query->param('sexisgood') && !$query->param('inmenu')){
+          $APP->delParameter($NODE, -1,'supported_sheet');
+          $inmenu = 0;
+        }
+        $str .= $query -> checkbox(-name => 'inmenu', value => 1 ,checked => $inmenu, label => 'Include in theme menu' );
+      }
+
+      if ($$USER{user_id} == $$NODE{author_user})
+      {
+        $str .="<p>Talk to your users:</p>";
+      } else {
+        $str .="<p>Talk to the stylesheet's users:</p>";
+      }
+
+      $str .= '<input type="text" name="style_msg" size="50" value="">';
+      $str .= "<br>";
+
+      my $msg = $query -> param('style_msg');
+
+      #Trim whitespace so that we don't send blank /msgs.
+      $msg =~ s/^\s*//;
+      $msg =~ s/\s*$//;
+
+      # Send /msg to users if there is a /msg to send --[Swap]
+      if ($msg)
+      {
+        my $csr = $DB->sqlSelectMany('setting_id','setting',"vars like '%userstyle=$$NODE{node_id}%'");
+        my $numusers = $csr -> rows;
+        my $maxusers = 500;
+
+        if ($numusers > $maxusers)
+        {
+          # Kernel blue has about 15,000 users at the time of this coding
+          # (April 2009). Somehow, I don't think that /msging 15,000
+          # people at once is a good idea. --[Swap]
+          $str .= "<p><small>Sorry, you have too many users! Talk to [e2 staff|an admin or editor] to make a general announcement on the front page instead if you really need to.</small></p>";
+        } else {
+          my @stylesheet_users;
+          while (my $row = $csr -> fetchrow_hashref)
+          {
+            my $uid = $$row{'setting_id'};
+            my $user = getNodeById($uid) -> {'title'};
+            push @stylesheet_users,$user;
+          }
+
+          htmlcode('sendPrivateMessage',{'recipient' => \@stylesheet_users,'message' => $msg,});
+
+          #No XSS!
+          $msg =~ s/\</\&lt\;/g;
+          $msg =~ s/\>/\&gt\;/g;
+
+          $str .= "<p><small>You said, <i>\"$msg\"</i> (sent to ".@stylesheet_users." users)</small></p>\n";
+        }
+      }
+    }
+
+    my %autofix = ();
+    %autofix = ( autofix => '1' ) if($$USER{ user_id } == $$NODE{ author_user });
+    $str .= '<p>'.linkNode( $NODE , 'Try this stylesheet out' , {displaytype => 'choosetheme', theme => $$NODE{ node_id }, noscript => 1, -id => 'testdrive', %autofix}).'</p>' ;
+
+    $str .= "<p><input type='checkbox' ".
+      ( $$VARS{userstyle} == $$NODE{node_id} ?"checked='checked''" :"").
+      " name='userstyle' value='".$$NODE{node_id}."'> Use this stylesheet</p>";
+
+    $str .= '<input type="button" value="Preview this style" id="previewstyle">';
+  }
+
+  return $str;
+
+}
+
+sub stylesheet_view_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  if ($query->param('version'))
+  {
+    # Set a far-future expiry time if a specific version is requested.
+    $Everything::HTML::HEADER_PARAMS{'-expires'} = '+10y';
+  }
+
+  return $$NODE{doctext};
+}
+
 1;
