@@ -6671,11 +6671,11 @@ sub ednsection_util
   #it would be neat to link to previous search type, but this isn't stored
   $s .= '</small>'.$nl;
 
+  $s .= qq|<a href="https://github.com/everything2/everything2">E2 on Github</a>$nl|;
+
   $s .= linkNodeTitle('Everything Data Pages').$nl;
 
   $s .= linkNodeTitle('Everything Document Directory').$nl;
-
-  $s .= linkNodeTitle('Gigantic Code Lister').$nl;
 
   return $s;
 
