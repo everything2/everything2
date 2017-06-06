@@ -3,10 +3,8 @@ package Everything::Delegation::htmlcode;
 # We have to assume that this module is subservient to Everything::HTML
 #  and that the symbols are always available
 
-# TODO: use strict
-# use strict;
-# TODO: use warnings
-# use warnings;
+use strict;
+use warnings;
 
 BEGIN {
   *getNode = *Everything::HTML::getNode;
@@ -352,17 +350,14 @@ sub displaytable
   # you get when 'show columns from $table' is executed.
   my ($table, $edit) = @_;
   my @fields = $DB->getFieldsHash($table);
-  my $field = undef;
   my $str = "";
 
   $edit = 0 if(not defined $edit);
 
   $str .= "<table border=1 width=400>\n";
 
-  $field = $fields[0];
-
-    $str .= " <tr>\n";
-  foreach my $fieldname (keys %$field)
+  $str .= " <tr>\n";
+  foreach my $fieldname (keys %{$fields[0]})
   {
     $str .= "  <td bgcolor=\"#cccccc\">$fieldname</td>\n";
   }
@@ -370,7 +365,7 @@ sub displaytable
   $str .= "  <td bgcolor=\"#cccccc\">Remove Field?</td>\n" if($edit);
   $str .= " </tr>\n";
 
-  foreach $field (@fields)
+  foreach my $field (@fields)
   {
     $str .= " <tr>\n";
     foreach my $value (values %$field)
@@ -415,8 +410,7 @@ sub displaytable
     $str .= "<br>\n";
   }
 
-  $str;
-
+  return $str;
 }
 
 # Only used in [Gigantic Code Lister]
@@ -750,7 +744,7 @@ sub showdebate
   }
 
   $str . htmlcode( 'displaydebatecomment', $NODE, $displaymode );
-
+  return $str;
 }
 
 sub closeform
@@ -2016,7 +2010,7 @@ sub showbookmarks
   return unless $$NODE{type}{title} eq 'user';
 
   my $user_id =getId($NODE);
-  my $bookmarks = $APP->get_bookmarks($NODE);
+  my $bookmarks = $APP->get_bookmarks($NODE) || [];
 
 
   my $str = "";
@@ -8097,14 +8091,14 @@ sub sendPrivateMessage
   local *getCached = sub {
     my ($ident,$isNumeric) = (@_[0,1]);
     $APP->devLog("sendPrivateMessage: getCached params: $ident,$isNumeric");
-    return undef unless defined($ident) && length($ident);
+    return unless defined($ident) && length($ident);
 
     my $N = undef;
 
     #get by ID
     if($isNumeric)
     {
-      return undef unless $ident =~ /^(\d+)$/;
+      return unless $ident =~ /^(\d+)$/;
       $ident=$1;
       return $cachedIDs->{$ident} if exists $cachedIDs->{$ident};
       $N=getNodeById($ident);
@@ -8933,7 +8927,7 @@ sub formxml_user
   my @groups = ();
   my $U = getId($NODE);
   push( @groups, getNode('gods', 'usergroup')) if $APP->isAdmin($U);
-  push( @groups, getNode('Content Editors', 'usergroup')) if $APP->isEditor($U,"nogods") and !$APP->isAdmin($U);
+  push( @groups, getNode('Content Editors', 'usergroup')) if($APP->isEditor($U,"nogods") and not $APP->isAdmin($U));
   push( @groups, getNode('edev', 'usergroup')) if $APP->isDeveloper($U);
 
   # There probably aren't too many usergroups with names that need to be encoded, but this will stop the errors before they occur.
@@ -8964,7 +8958,7 @@ sub xmlheader
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $str.="";
+  my $str="";
   $str .= "<node node_id=\"$$NODE{node_id}\" createtime=\"".
     ($$NODE{publishtime}||$$NODE{createtime})
     ."\" type_nodetype=\"$$NODE{type_nodetype}\"".htmlcode("schemalink", "$$NODE{type_nodetype}").">\n";
@@ -9029,7 +9023,7 @@ sub xmlwriteup
   return unless $wu;
   return unless($$wu{type_nodetype} == getId(getType('writeup')));
 
-  my $str.="";
+  my $str = "";
 
   my $nr = getId(getNode("node row", "superdoc"));
   my $marked = (($DB->sqlSelect('linkedby_user', 'weblog', "weblog_id=$nr and to_node=$$wu{node_id}"))?(1):(0));
@@ -10187,7 +10181,7 @@ sub zenwriteups
   $noHidden = $noHidden && $$VARS{nw_nojunk} if $cansee;
 
   my ($repthreshold, $abominations) = ('none', undef);
-  if (!$cansee or $$VARS{nw_nojunk} or $isLogs)
+  if ((not $cansee) or $$VARS{nw_nojunk} or $isLogs)
   {
     if (exists $$VARS{repThreshold})
     {
@@ -10299,7 +10293,7 @@ sub ajaxVar
   my $test = $valid{$name};
 
   return 'invalid name' unless $test ;
-  return 'invalid value' unless $value =~ /^($test|0)$/ or !$value ;
+  return 'invalid value' unless($value =~ /^($test|0)$/ or not $value);
 
   my $oldVal = $$VARS{$name}||'0';
 
@@ -11059,7 +11053,8 @@ sub socialBookmarks
   getRef $targetNode;
   $targetNode = $NODE unless $targetNode;
   my $titleNode = $targetNode;
-  my $parentNode = getNode($$targetNode{parent_e2node}) if $$targetNode{parent_e2node};
+  my $parentNode = undef;
+  $parentNode = getNode($$targetNode{parent_e2node}) if $$targetNode{parent_e2node};
   $titleNode = $parentNode if $parentNode;
   my $bDontQuoteUrl = 1;
   my $url = undef;
@@ -11214,8 +11209,8 @@ sub socialBookmarks
   };
 
   my $makeSocialLink = sub {
-    my ($networkName, $url, $title, $includeTitles, $asList) = @_;
-    my ($link, $str) = ('', '');
+    my ($networkName, $url, $title, $includeTitles, $showAsList) = @_;
+    my $link = '';
     my $site = $$socialSites{$networkName};
 
     my $postUrl = $$site{posturl}. '?'. (join '&', map{ $_ . '=' . $$site{params}->{$_} } keys %{$$site{params}});
@@ -11236,7 +11231,7 @@ sub socialBookmarks
 
     my $bookmarkCode = "<div class=\"social_button social_$networkName\">" . $link . "</a></div>\n";
     $bookmarkCode .= $link . "$$site{listname}</a>\n" if $includeTitles;
-    $bookmarkCode = "<li>\n\t$bookmarkCode</li>\n" if $asList;
+    $bookmarkCode = "<li>\n\t$bookmarkCode</li>\n" if $showAsList;
     return $bookmarkCode;
   };
 
@@ -11611,8 +11606,8 @@ sub showNewGP
     } else {
       $$VARS{oldGP} = $$USER{GP};
       return;
-      $str.='Ack! You lost ';
-      $newGP= -$newGP; # Positize for display only
+      # $str.='Ack! You lost ';
+      # $newGP= -$newGP; # Positize for display only
     }
 
     #htmlcode('achievementsByType','egperience');
@@ -11666,8 +11661,6 @@ sub uploadAudio
   my $APP = shift;
 
   my ($field) =@_;
-  return "TODO: Fix audio uploads";
-
   return if $APP->isSuspended($NODE,"audio");
 
   my $str ='';
@@ -11679,8 +11672,8 @@ sub uploadAudio
   my $sizelimit = 8000000;
   $sizelimit = 16000000 if isGod($USER);
 
-  my $fname = undef;
-  if ($fname = $query->upload($name))
+  my $fname = $query->upload($name);
+  if($fname)
   {
     my $imgname = $$NODE{title};
     $imgname =~ s/\W/_/gs;
@@ -11737,7 +11730,7 @@ sub addnodeforward
 
   return unless $APP->isEditor($USER);
 
-  htmlcode('openform').'<fieldset><legend>Add node forward</legend>
+  return htmlcode('openform').'<fieldset><legend>Add node forward</legend>
     <input type="hidden" name="op" value="new">
     <input type="hidden" name="type" value="node_forward">
     <input type="hidden" name="node" id="new_node_title" value="'.$$NODE{title}.'">
@@ -11772,10 +11765,11 @@ sub page_actions
       -id => 'sanctify', -class => 'ajax (sanctify):ajaxEcho:Sanctified!'})
       if !$$VARS{GPoptout} && $$USER{title} ne $$NODE{title} &&
       $APP->getLevel($USER) >= $minLevel && $$USER{GP} >= $Sanctificity;
-    push @actions , $b if $b = htmlcode('favorite_noder');
+    my $favorite_noder = htmlcode('favorite_noder');
+    push @actions , $favorite_noder if($favorite_noder);
   }
 
-  my $b = ""; $b = htmlcode('bookmarkit' , $NODE , 'Add to bookmarks' ) unless $disabled =~ /b/ ;
+  my $bookmark_add = ""; $bookmark_add = htmlcode('bookmarkit' , $NODE , 'Add to bookmarks' ) unless $disabled =~ /b/ ;
   my $a = ""; $a = htmlcode( 'categoryform' ) unless $disabled =~ /a/ ;
   my $w = ""; $w = htmlcode( 'weblogform' ) if $$NODE{type}{sqltablelist} =~ /document/ && $$VARS{can_weblog} and not $disabled =~ /w/ ;
 
@@ -11783,14 +11777,14 @@ sub page_actions
 
   unless ( $query -> param( 'addto' ) )
   {
-    push @actions , $b if $b ;
+    push @actions , $bookmark_add if $bookmark_add ;
     push @actions , htmlcode( 'widget' , $a , 'form' , 'Add to category&hellip;' ,
       { showwidget => 'category' , -title => $title.'category' } ) if $a ;
     push @actions , htmlcode( 'widget' , $w , 'form' , 'Add to page&hellip;' ,
       { showwidget => 'weblog' , -title => $title.' usergroup page' } ) if  $w ;
   } else {
     push @actions , htmlcode( 'widget' ,
-      $query -> hidden( 'addto' )."<small>$b</small><hr>\n$a\n$w" , 'form' , 'Add to&hellip;' ,
+      $query -> hidden( 'addto' )."<small>$bookmark_add</small><hr>\n$a\n$w" , 'form' , 'Add to&hellip;' ,
       { showwidget => 'addto'.$$NODE{ node_id } , -title => $title.'category or usergroup page' } ) ;
   }
 
@@ -11866,7 +11860,7 @@ sub canseewriteup
   my @checks = ('unfavorite', 'lowrep');
 
   if ($$N{type}{title} eq 'draft'){
-    return 0 if $APP->isGuest($USER) or !$APP->canSeeDraft($USER, $N, 'find');
+    return 0 if($APP->isGuest($USER) or not $APP->canSeeDraft($USER, $N, 'find'));
     unshift @checks, 'unpublished';
   }
 
@@ -11979,7 +11973,7 @@ sub confirmop
   }
   $str .= '</fieldset>' ;
 
-  htmlcode( 'widget' , $str , 'form' , '' , { showwidget => '' } ) ;
+  return htmlcode( 'widget' , $str , 'form' , '' , { showwidget => '' } ) ;
 }
 
 sub repair_e2node
@@ -12021,9 +12015,9 @@ sub movenodelet
   my ($nodelet, $position) = @_;
   $nodelet = getNode($nodelet, 'nodelet')->{node_id} if $nodelet =~ /\D/;
 
-  return unless $nodelet and getNodeById($nodelet)->{type}->{title} eq 'nodelet' and !$APP->isGuest($USER) and $USER->{title} ne 'everyone' ;
+  return unless($nodelet and (getNodeById($nodelet)->{type}->{title} eq 'nodelet') and not $APP->isGuest($USER) and ($USER->{title} ne 'everyone'));
 
-  return if $position eq 'x' and ( $APP->isEditor($USER) ) && $nodelet == getNode('Master Control', 'nodelet')->{node_id};
+  return if($position eq 'x' and ( $APP->isEditor($USER) ) and $nodelet == getNode('Master Control', 'nodelet')->{node_id});
 
   $$VARS{nodelets} =~ s/(?:(^|,),+)|(?:\b$nodelet\b,*)|(?:,*$)/$1/g ;
   return if $position eq 'x' ;
@@ -12040,7 +12034,7 @@ sub movenodelet
   }
 
   $$VARS{nodelets} = "$$VARS{nodelets},$nodelet" unless $$VARS{nodelets} =~ /\b$nodelet\b/ ;
-
+  return $VARS->{nodelets};
 }
 
 sub isInfected
@@ -12319,7 +12313,7 @@ sub testshowmessages
   my $isEDev = $APP->isDeveloper($USER, "nogods");
 
   my $aid = undef;  #message's author's ID
-  my $a = undef; #message's author; have to do this in case sender has been deleted (!)
+  my $message_author = undef; #message's author; have to do this in case sender has been deleted (!)
   my $ugID = undef;
   my $UG = undef;
   my $flags = undef;
@@ -12350,12 +12344,12 @@ sub testshowmessages
     $aid = $$MSG{author_user} || 0;
     if($aid)
     {
-      $a = getNodeById($aid) || 0;
+      $message_author = getNodeById($aid) || 0;
     } else { 
-      undef $a;
+      undef $message_author;
     }
     my $authorVars = undef; $authorVars = getVars $a if $a;
-    my $name = $a ? $$a{title} : '?';
+    my $name = $message_author ? $$message_author{title} : '?';
     $name =~ tr/ /_/;
     $name = $APP->encodeHTML($name);
 
@@ -12367,7 +12361,7 @@ sub testshowmessages
     $ugID = $$MSG{for_usergroup};
     $UG = $ugID ? getNodeById($ugID) : undef;
 
-    if($$VARS{showmessages_replylink} && defined($UG) and not $$noreplylink{$$MSG{author_user}})
+    if($$VARS{showmessages_replylink} and defined($UG) and not $$noreplylink{$$MSG{author_user}})
     {
       my $grptitle = $$UG{node_id}==$UID ? '' : $$UG{title};
       # Grmph. -- wharf
@@ -12396,9 +12390,9 @@ sub testshowmessages
     # changes literal '\n' into HTML breaks (slash, then n; not a newline)
     $text =~ s/\s+\\n\s+/<br>/g;
 
-    if ($$VARS{chatterbox_authorsince} && $a && $authorVars)
+    if ($$VARS{chatterbox_authorsince} && $message_author && $authorVars)
     {
-      $str .= '<small>('. htmlcode('timesince', $a->{lasttime}, 1). ')</small> ' if (!$$authorVars{hidelastseen} || $canSeeHidden);
+      $str .= '<small>('. htmlcode('timesince', $message_author->{lasttime}, 1). ')</small> ' if (!$$authorVars{hidelastseen} || $canSeeHidden);
     }
 
     if($$VARS{powersMsg})
@@ -12427,7 +12421,7 @@ sub testshowmessages
       }
     }
 
-    $userLink = $a ? linkNode($a, 0) : '?';
+    $userLink = $message_author ? linkNode($message_author, 0) : '?';
 
     $str .= '<cite>'.$userLink.' says</cite> ' . parseLinks($text,0,1);
     my $mbid = $$MSG{message_id};
@@ -12682,13 +12676,13 @@ sub make_node_sane
   # returns node if successful
   my ($crazy_node) = @_;
   getRef($crazy_node);
-  return undef unless $crazy_node;
+  return unless $crazy_node;
 
   # In case this is a 'light' copy of the node, we get a complete copy
   #  so we don't try to create unnecessary rows
   my $crazy_node_id = $$crazy_node{node_id};
   my $crazy_node_copy = getNodeById($crazy_node_id);
-  return undef unless $crazy_node_copy;
+  return unless $crazy_node_copy;
 
   # Code borrowed from insertNode() in NodeBase.pm
   my $tableArray = $$crazy_node_copy{type}{tableArray};
@@ -12794,7 +12788,7 @@ sub check_blacklist
 
   my $intFromAddr = sub {
     my $addr = shift;
-    return undef unless $addr =~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+    return unless $addr =~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
     return ( (int $1) * 256*256*256 + (int $2) * 256 * 256 + (int $3) * 256 + (int $4));
   };
 
@@ -12866,7 +12860,7 @@ sub lock_user_account
   $DB -> sqlUpdate('draft JOIN node ON draft_id=node_id', {publication_status => getId(getNode('findable', 'publication_status'))}, "node.author_user = $$uid{node_id} AND
     draft.publication_status = " . getId(getNode('review', 'publication_status')));
 
-  updateNode($uid, -1);
+  return updateNode($uid, -1);
 }
 
 sub show_writeups
@@ -12891,13 +12885,12 @@ sub show_writeups
     '';
   };
 
-  htmlcode( 'show content' , shift || $$NODE{group} || $NODE
+  return htmlcode( 'show content' , shift || $$NODE{group} || $NODE
     , '<div class="&draftitem"> oldinfo, content, categories, oldinfo'
     , cansee => $canseewriteup
     , draftitem => $draftitem
     , categories => $categories
     , oldinfo => $oldinfo);
-
 }
 
 sub homenodeinfectedinfo
@@ -13005,8 +12998,8 @@ sub googleads
 
   foreach my $nid (@{$Everything::CONF->google_ads_badnodes})
   {
-    return "<!-- noad:badnode -->" if $node_id == $nid or $$NODE{type}{title} eq 'writeup' && $$NODE{parent_e2node} == $nid;
-    if (exists $$NODE{linklist})
+    return "<!-- noad:badnode -->" if ($node_id == $nid or ($$NODE{type}{title} eq 'writeup' and $$NODE{parent_e2node} == $nid));
+    if(exists($$NODE{linklist}))
     {
       foreach my $l (@{ $$NODE{linklist} })
       {
@@ -13541,6 +13534,7 @@ sub ajaxMarkNotificationSeen
       });
   }
 
+  return;
 }
 
 sub coolsJSON
@@ -13623,7 +13617,7 @@ sub display_draft
 
   my $displaylike = undef;
 
-  my $tinopener = ($APP->isAdmin($USER) and $query -> param('tinopener') and !$APP->canSeeDraft($USER, $NODE, 'find'));
+  my $tinopener = ($APP->isAdmin($USER) and $query -> param('tinopener') and not $APP->canSeeDraft($USER, $NODE, 'find'));
   local ($$NODE{doctext}, $$NODE{collaborators})
     = ("<p><b>&#91;DOCTEXT REDACTED&#93;</b></p><p>You do not have permission to see this draft.</p>" , $$USER{title}) if $tinopener;
 
@@ -13899,7 +13893,7 @@ sub canpublishas
   my $anonymousPublishLevel = 1; # users at or above this level can publish as 'everyone'
   my $target = shift;
 
-  return '' unless $USER && !$APP->isGuest($USER) and $APP->getLevel($USER) >= $anonymousPublishLevel;
+  return '' unless($USER and not $APP->isGuest($USER) and $APP->getLevel($USER) >= $anonymousPublishLevel);
 
   my %accounts = (everyone => 1, Virgil => 'e2docs');
 
@@ -14051,7 +14045,8 @@ sub setdraftstatus
 
   return htmlcode('parentdraft', $N) if $query -> param('parentdraft');
 
-  my $ajax = " instant ajax adminheader$$N{node_id}:voteit:$$N{node_id},5" if $query -> param('ajaxTrigger');
+  my $ajax = "";
+  $ajax = " instant ajax adminheader$$N{node_id}:voteit:$$N{node_id},5" if $query -> param('ajaxTrigger');
 
   my %stash = (
     public => 'visible to any logged-in user',
@@ -14073,7 +14068,7 @@ sub setdraftstatus
 
   }
 
-  my @values = map $stash{$_}, qw(private shared public findable review); #sorted!
+  my @values = (map {$stash{$_} } qw(private shared public findable review)); #sorted!
   push @values, $$N{publication_status} if $stash{removed} == $$N{publication_status} || $stash{nuked} == $$N{publication_status};
 
   $query -> autoEscape(0);
@@ -14218,7 +14213,7 @@ sub update_New_Writeups_data
   my $APP = shift;
 
   my $datastash = Everything::DataStash::newwriteups->new(APP => $APP, CONF => $Everything::CONF, DB => $DB);
-  $datastash->generate();
+  return $datastash->generate();
 }
 
 sub ordernode
@@ -14492,7 +14487,7 @@ sub show_paged_content
       : ($pageCount, 0);
     my $i = $page;
 
-    until($navigation[--$i > $z && $i or $i = $i + $n])
+    until($navigation[((--$i > $z) and $i) or ($i = $i + $n)])
     {
       $navigation[$i] = &$link($i);
     }
@@ -14639,7 +14634,7 @@ sub drafttools
         , -title => 'republish this because someone goofed'});
     }
 
-    if ($parent and $approver || $status eq 'review')
+    if (($parent and $approver) or ($status eq 'review'))
     {
       $attachment ||= 'Attached to '
         .$query -> b(linkNode($parent, $$NODE{node_id} == $parent ? 'this node' :''));
@@ -14742,7 +14737,7 @@ sub blacklistedIPs
     my $diff = abs($maxAddr - $minAddr) + 1;
     my $log2diff = log($diff)/log(2);
     my $epsilon = 1e-11; 
-    return undef if (($log2diff - int($log2diff)) > $epsilon);
+    return if (($log2diff - int($log2diff)) > $epsilon);
     return (32 - $log2diff);
     };
 
@@ -14979,7 +14974,7 @@ sub reinsertCorpse
   $A = getNode('root','user') unless $A;
   my $id = insertNode($title, $type, $A, $N);
   insertIntoNodegroup($id, $author, \@kids) if @kids;
-  $id;
+  return $id;
 }
 
 sub frontpage_creamofthecool
