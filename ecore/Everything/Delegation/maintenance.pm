@@ -616,7 +616,7 @@ sub e2poll_create
 
   unless ($$POLL{title} && $query -> param('e2poll_question'))
   {
-    nukeNode($POLL, -1);
+    $DB->nukeNode($POLL, -1);
     $query -> param('node_id', getId(getNode('Everything Poll Creator', 'superdoc')));
     return;
   }

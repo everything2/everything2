@@ -12,6 +12,12 @@ use POSIX qw(ceil floor);
 # Used by collaboration_display_page, collaboration_useredit_page
 use POSIX qw(strftime);
 
+# Used by choosetheme_view_page
+use Everything::Delegation::container;
+
+# Used by ajax_update_page
+use JSON;
+
 BEGIN {
   *getNode = *Everything::HTML::getNode;
   *getNodeById = *Everything::HTML::getNodeById;
@@ -3574,6 +3580,1267 @@ sub stylesheet_view_page
   }
 
   return $$NODE{doctext};
+}
+
+sub debatecomment_atom_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $N = getNodeById($$NODE{ 'root_debatecomment' });
+
+  my $UID = getId($USER);
+  unless( $APP->isAdmin($USER) )
+  {
+    my $gID_CE = $DB->getNode("Content Editors","usergroup")->{node_id};
+    my $restrictGroup = $$N{restricted} || $gID_CE;	#old way of indicating CEs only was 0
+    return if $restrictGroup==114;	#quick check for admins (they were already checked for, so don't bother checking again)
+    return if ($restrictGroup==$gID_CE) && !$APP->isEditor($USER);	#quick check for editors
+    return if ($restrictGroup==838015) && !$APP->isDeveloper($USER);	#quick check for edev
+
+    $restrictGroup = getNodeById($restrictGroup);
+    return unless $restrictGroup;
+    return unless Everything::isApproved($USER, $restrictGroup);
+  }
+
+  my $GROUP = $$N{ 'group' };
+
+
+  my @com = $APP->getCommentChildren(@$GROUP);
+  my @sorted = sort {$b cmp $a} @com;
+  my $str;
+  foreach (@sorted) {
+    my $comment = $_;
+    $str .= htmlcode('atomiseNode', $comment);
+  }
+
+  $str .=  htmlcode('atomiseNode', $$N{'node_id'});
+
+  return $str;
+}
+
+sub achievement_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p><strong>Displaying:</strong>$$NODE{display}</p>|;
+  $str .= qq|<p><strong>Type:</strong>$$NODE{achievement_type}</p>|;
+  $str .= qq|<p><strong>Subtype:</strong>$$NODE{subtype}</p>|;
+  $str .= qq|<p><strong>Still available:</strong>|.($$NODE{achievement_still_available} ? 'yes' : 'no').qq|</p>|;
+  $str .= htmlcode("listcode","code");
+  return $str;
+}
+
+sub achievement_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p>title:|.htmlcode("textfield","title").qq| maintained by:|.htmlcode("node_menu","author_user,user,usergroup").qq|<br>|;
+  $str .= qq|display:|.htmlcode("textfield","display,100").qq|<br>|;
+  $str .= qq|type:|.htmlcode("textfield","achievement_type").qq|<br>|;
+  $str .= qq|subtype:|.htmlcode("textfield","subtype").qq|<br>|;
+  $str .= qq|<small>When checking <a href="/node/htmlcode/achievementsByType">achievements by type</a>, achievements of the same subtype are checked in title order only up to the first unachieved one.</small>|;
+
+  $str .= qq|</p>|.htmlcode("listcode","code");
+  $str .= qq|<p><small><strong>Edit the code:</strong></small><br>|;
+  $str .= htmlcode("textarea","code,30,80");
+ 
+  return $str;
+}
+
+sub notification_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<dl><dt>|.parseLinks(qq!Description (used in [Notifications nodelet settings[htmlcode]]).  Changing this may have [canseeNotification[htmlcode]|security implications].!).qq|</dt>|;
+  $str .= qq|<dd>$NODE->{description}</dd>|;
+  $str .= qq|<dt>Maximum hours this notification is good for (0 will cause it to never display)</dt>|;
+  $str .= qq|<dd>$NODE->{hourLimit}</dd>|;
+  $str .= qq|<dt>Code to display notification</dt>|;
+  $str .= qq|<dd>|.htmlcode("listcode","code").qq|</dd>|;
+  $str .= qq|<dt>Code to check for invalid notification</dt>|;
+  $str .= qq|<dd>|.htmlcode("listcode","invalid_check").qq|</dd></dl>|;
+
+  return $str;
+}
+
+sub notification_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = htmlcode("listcode","code");
+  $str .= qq|<p><small><strong>description:</strong></small>|.htmlcode("textfield","description,80").qq|</p>|;
+  $str .= qq|<p><small><strong>Time Limit (in Hours):</strong></small> |.htmlcode("textfield","hourLimit").qq|</p>|;
+  $str .= qq|<p><small><strong>Edit the code:</strong></small><br />|;
+  $str .= htmlcode("textarea","code,30,80");
+  $str .= qq|</p>|;
+ 
+  return $str;
+}
+
+sub podcast_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str='<p align="right">('.linkNode($NODE, 'display', {'displaytype'=>'display', 'lastnode_id'=>0}).")</p>";
+
+  # This code does the update, if we have one.
+  my @params = $query->param;
+
+  foreach my $param (@params)
+  {
+    if ($param =~ /^update_(\w*)$/)
+    {
+      $$NODE{$1} = $query->param($param);
+    }
+  }
+
+  updateNode($NODE, $USER);
+
+  $str.=htmlcode( 'openform' );
+
+  my $field;
+  my %titletype;
+  my $size = 80;
+
+  $field="title";
+  $str .= "$field: ";
+  $str .= $query->textfield( -name => "update_$field",
+    -default => $$NODE{$field}, -size => $size,
+    -maxlength => $1 ) . "<br>\n";
+
+  $field="link";
+  $str .= "$field: ";
+  $str .= $query->textfield( -name => "update_$field",
+    -default => $$NODE{$field}, -size => $size,
+    -maxlength => $1 ) . "<br>\n";
+
+  $field="description";
+  $str .= "$field: ";
+  $str .= $query->textarea( -name => "update_$field",
+    -default => $$NODE{$field}, -rows => 20, -columns => $size,
+    -maxlength => $1 ) . "<br>\n";
+
+  $field="pubdate";
+  $str .= "$field: ";
+  $str .= $query->textarea( -name => "update_$field",
+    -default => $$NODE{$field}, -rows => 20, -columns => $size,
+    -maxlength => $1 ) . "<br>\n";
+
+
+  $str .= htmlcode( 'closeform' );
+
+  $str .= '
+    <hr />
+    <b>Add a new recording:</b><br />
+    <form method="post">
+    <input type="hidden" name="op" value="new">
+    <input type="hidden" name="type" value="recording">
+    <input type="hidden" name="recording_appears_in" value="'.$$NODE{node_id}.'">
+    <input type="hidden" name="displaytype" value="edit">
+    <input type="text" size="50" maxlength="64" name="node" value="">
+    <input type="submit" value="create">
+    </form>
+  ';
+  return $str;
+
+}
+
+sub recording_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return "You're in the wrong place" unless(canUpdateNode($USER, $NODE));
+
+  my $str='<p align="right">('.linkNode($NODE, 'display', {'displaytype'=>'display', 'lastnode_id'=>0}).")</p>";
+  $str.=htmlcode( 'openform' );
+  $str.=htmlcode("uploadAudio", "link");
+
+  # This code does the update, if we have one.
+  my @params = $query->param;
+  my $author_id;
+  my $wu_author;
+  my $wu_title;
+
+  foreach my $param (@params)
+  {
+    if ($param =~ /^update_(\w*)$/)
+    {
+      $$NODE{$1} = $query->param($param);
+    }elsif ($param eq 'wu_author'){
+      $wu_author=$query->param($param);    
+      $author_id=getNode($wu_author, "user")->{node_id};
+    }elsif ($param eq 'wu_title'){
+      $wu_title=$query->param($param);    
+    }elsif ($param eq "read_by"){
+      my $reader=getNode($query->param($param), "user")->{node_id};
+      if ($reader) {
+        $$NODE{read_by}=$reader;
+      }else {
+        $str.="<p>Reader not found</p>";
+      }
+    }
+  }
+
+  if ($wu_title)
+  {
+    my $parentNodeId=getNode($wu_title, "e2node")->{node_id};
+
+    $$NODE{recording_of}=$DB->sqlSelect("node_id","node LEFT JOIN writeup ON node.node_id = writeup.writeup_id", "writeup.parent_e2node=$parentNodeId AND node.author_user = $author_id");
+  }
+
+  updateNode($NODE, $USER);
+
+  my $field;
+  my %titletype;
+  my $size = 80;
+  my $wu;
+  $wu = getNodeById($$NODE{'recording_of'});
+
+  my ($writername, $readername);
+
+  if ($wu) { $writername = getNodeById($$wu{'author_user'}) -> {'title'}; }
+  if ($$NODE{'read_by'}) { $readername = getNodeById($$NODE{'read_by'}) -> {'title'};  }
+
+  $str .="<table>";
+
+  $field="title";
+  $str .= "<tr><td>$field: </td><td>";
+  $str .= $query->textfield( -name => "update_$field",
+    -default => $$NODE{$field}, -size => $size,
+    -maxlength => $1 ) . "</td></tr>\n";
+
+  $field="link";
+  $str .= "<tr><td>$field: </td><td>";
+  $str .= $query->textfield( -name => "update_$field",
+    -default => $$NODE{$field}, -size => $size,
+    -maxlength => $1 ) . "</td></tr>\n";
+
+  $str .= "<tr><td>recording of: </td><td>";
+  my $nodeTitle={getNodeById($$wu{parent_e2node}) || {}}->{title};
+  $str .= $query->textfield( -name => "wu_title",
+    -default => $nodeTitle, -size => $size,
+    -maxlength => $1 )."</td></tr>\n";
+
+  $str .= "<tr><td>written by: </td><td>";
+  $str .= $query->textfield( -name => "wu_author",
+    -default => $writername, -size => $size, 
+    -maxlength => $1);
+  $str .= "</td></tr>\n";
+
+  $field="read_by";
+  $str .= "<tr><td>read by:</td><td>";
+  $str .= $query->textfield( -name => "read_by",
+    -default => $readername, -size => $size,
+    -maxlength => $1 ) . "</td></tr>\n";
+
+  $field="description";
+  $str .= "<tr><td>$field: </td><td>";
+  $str .= $query->textarea( -name => "update_$field",
+    -default => $$NODE{$field}, -rows => 20, -columns => $size,
+    -maxlength => $1 ) . "</td></tr>\n";
+
+  $str .= "</table>\n";
+
+  $str .= htmlcode( 'closeform' );
+
+  return $str;
+
+}
+
+sub recording_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $TAGNODE = getNode('approved html tags', 'setting');
+  my $TAGS=getVars($TAGNODE);
+
+  my $text = $APP->htmlScreen($$NODE{description}, $TAGS);
+  $text = parseLinks($text);
+
+  my $str = "";
+  $str.="<h2><a href='$$NODE{link}'>audio file</a></h2>";
+  if ($$NODE{recording_of}!=0)
+  {
+    $str.="<h3>A recording of ".linkNode($$NODE{recording_of})."</h3>";
+    $str.="<h4>Written by ".linkNode(getNode($$NODE{recording_of})->{author_user})."</h4>";
+  }
+
+  $str.="<h4>Read by ".linkNode($$NODE{read_by})."</h4>";
+  $str.="$text";
+  $str.='<p align="right">('.linkNode($NODE, 'edit', {'displaytype'=>'edit', 'lastnode_id'=>0}).")</p>" if canUpdateNode($USER, $NODE);
+ 
+  return $str;
+}
+
+sub e2poll_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = htmlcode("showpoll");
+  $str .= qq|<p align="right" class="morelink">|;
+  $str .= parseLinks('[Everything Poll Archive[superdoc]|Past polls]
+	| [Everything Poll Directory[superdoc]|Future polls]
+	| [Everything Poll Creator[superdoc]|New poll]
+	<br> [Polls[by Virgil]|About polls]'); 
+  $str .= qq|</p>|;
+  return $str;
+}
+
+sub choose_theme_view_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # get default stylesheet, user's stylesheet, and the one to test
+  my $defaultStyle = getNode($Everything::CONF->default_style,'stylesheet')->{node_id};
+  my $currentStyle = $$VARS{userstyle} || $defaultStyle;
+
+  my $theme = $query -> param('theme');
+  my $themenode = getNode($theme);
+  $theme = "" if($theme and (!$themenode || $themenode->{ type }{ title } ne 'stylesheet'));
+  $theme ||= getNodeById($currentStyle);
+
+  if ($query->param( 'usetheme' ) and not $APP->isGuest($USER) )
+  {
+    $$VARS{ userstyle } = $theme  ;
+    return "OK" if $query -> param('usetheme') eq 'ajax' ;
+  }
+
+  # testdisplay parameter enables testing other displaytypes than display
+  my $testdisplay = undef;
+  $testdisplay = $query -> param( 'testdisplay' ) unless $query -> param( 'testdisplay' ) eq 'choosetheme' ;
+  $query -> delete('displaytype');
+  $query -> param('displaytype', $testdisplay) if $testdisplay;
+
+  # generate page output with user's current stylesheet
+  my $PAGE = Everything::HTML::getPage( $NODE , $testdisplay ) ;
+  my $str = parseCode( $$PAGE{ page } , $NODE ) ; #currently, ecore ignores the 2nd argument
+  if ( $$PAGE{ parent_container } )
+  {
+    if(my $container_node = $DB->getNodeById($$PAGE{parent_container}))
+    {
+      my $delegation = Everything::Delegation::container->can($container_node->{title});
+      $str = $delegation->($DB, $query, $Everything::HTML::GNODE, $USER, $VARS, $PAGELOAD, $APP, $str);
+    }
+  }
+
+  return $str if $query -> param('usetheme') or $query -> param('cancel');
+
+  # replace current theme with theme to test
+  my $themeLink = htmlcode('linkStylesheet', $theme, 'serve');
+  $str =~ s!(<link rel="s.*?zensheet.*href=")[^"]*("[^>]*?>)!$1$themeLink$2! if
+    $theme ne $currentStyle or $query -> param('autofix');
+
+  # Get list of stylesheets sorted by popularity
+  # ============ nearly same code as Theme Nirvana =============
+  # only show themes for "active" users (in this case lastseen within 6 months
+
+  my ($sec,$min,$hour,$mday,$mon,$year) = gmtime(time - 15778800); # 365.25*24*3600/2
+  my $cutoffDate = ($year+1900).'-'.($mon+1)."-$mday";
+
+  my $rows = $DB->sqlSelectMany( 'setting.setting_id,setting.vars' ,
+	'setting,user' ,
+	"setting.setting_id=user.user_id 
+		AND user.lasttime>='$cutoffDate' 
+		AND setting.vars LIKE '%userstyle=%'
+		AND setting.vars NOT LIKE '%userstyle=$defaultStyle%'" ) ;
+
+  my $dbrow = undef;
+  my %styles = ();
+
+  while($dbrow = $rows->fetchrow_arrayref)
+  {
+    $$dbrow[1] =~ m/userstyle=([0-9]+)/;
+    if (exists($styles{$1}))
+    {
+      $styles{$1} = $styles{$1}+1;
+    }else{
+      $styles{$1} = 1;
+   }
+  }
+
+  my @keys = sort {$styles{$b} <=> $styles{$a}} (keys(%styles)) ;
+  unshift( @keys , $defaultStyle ) ;
+  # ======== end nearly same code ========
+
+ # add theme to test to menu if it's not already in it
+  unshift( @keys , $theme ) unless $styles{ $theme } or $theme eq $defaultStyle ;
+
+  my $widget = '' ;
+  if(not $APP->isGuest($USER) )
+  {
+    foreach ( @keys )
+    {
+      my $n = getNodeById( $_ );
+      next unless $n ;
+      $widget .= "<option value=\"$_\"" ;
+      $widget .= ' selected="selected"' if $_ eq $theme ;
+      $widget .= '>'.$$n{ title } ;
+      $widget .= '*' if $_ eq $$VARS{ userstyle } ;
+      $widget .= '</option>' ;
+    }
+
+    $widget = htmlcode( 'openform' , 'widget' ).
+      '<h3 id="widgetheading">Test theme: <em>'.getNodeById( $theme ) -> { title }.'</em></h3><div>
+	<label>Choose a theme:<select name="theme">'.$widget.'</select></label>
+	<input type="submit" name="usetheme" value="Use this theme">
+	<input type="submit" name="cancel" value="Cancel">
+	<br>
+	<small>Click on links to test this theme on other pages.
+	Bugs to <a href="/user/DonJaime">DonJaime</a>.</small>
+	</div>
+	</form>' ;
+  }
+
+  my $widgetstyle = '
+    <style type="text/css">
+      html body form#widget {
+	position: absolute ;
+	position: fixed ;
+	top: 5em ; left:5em ;
+	z-index: 1000000 ;
+	font: 16px sans-serif normal ;
+	background: #ffd ;
+	color:black;
+	border: 1px solid black ;
+	padding: 0.25em ;
+      }
+
+      html body form#widget > * {
+	font: inherit ;
+	color: inherit ;
+	background: inherit ;
+      }
+
+      html body form#widget h3 {
+	font-weight: bold ;
+	margin: 0 0 0.5em ;
+	padding: 0.125em 0.25em ;
+	color: #ffd ;
+	background: black ;
+      }
+
+      html body form#widget small {
+	border-top: 1px solid black ;
+	display: block ;
+	margin-top: 0.5em ;
+	font-size: 75% ;
+      }
+      '. # old IE hack:
+      '* html #widget { position: absolute ; }
+      </style>' ;
+
+  $str =~ s!(<body.*?>)!$1$widget! ;
+  $str =~ s!</head>!$widgetstyle</head>! ;
+
+  my $querystring = '';
+  my $currentLink = htmlcode('linkStylesheet', $currentStyle, 'serve').$querystring;
+
+  my $script = qq'<script type="text/javascript">
+    var zenSheet = jQuery( "#zensheet" ) ;
+    var titletext = jQuery( "#widgetheading em" )[0] ;
+    var widget = jQuery("#widget")[0];
+    var theme = "$theme" ;
+    var currentLink = "$currentLink";
+
+    jQuery( widget.theme ).bind("change", function() {
+      theme = this.value ;
+      zenSheet.attr( "href" , "/index.pl?node_id=" + theme + "&displaytype=serve$querystring" ) ;
+      titletext.nodeValue = this[ this.selectedIndex ].firstChild.nodeValue ;
+    });
+
+    widget.usetheme.onclick = function() {
+      jQuery.ajax( {url:this.form.action, data: { displaytype: "choosetheme" , usetheme: "ajax" , theme: theme } ,success: cleanup } ) ;
+      return false ;
+    }
+
+    widget.cancel.onclick = function(){
+      zenSheet.attr("href" , currentLink) ;
+      cleanup() ;
+      return false ;
+    }
+
+    function cleanup() {
+      document.body.removeChild( widget ) ;
+      jQuery("a").unbind(".themetest");
+    }
+
+    function changehref(){
+ 	// leave already changed and external/js links alone
+	if (this.savehref || this.getAttribute( "href" ).match( /^\\w+:/ )) return;
+
+	this.savehref = this.href ;
+
+	// rename any displaytype parameter:
+	this.href = this.href.replace( /(\\?|&)displaytype=/ , "\$1testdisplay=" ) ;
+	// add parameters to existing queries:
+	this.href = this.href.replace( /\\?(.*)/ ,
+		"?displaytype=choosetheme$querystring&theme=" + theme + "&\$1" ) ;
+	// add query if was none
+	if ( this.href.match( /\\?/ ) ) return ;
+	this.href = this.href.replace( /\$|(#.*)/ , "?displaytype=choosetheme$querystring&theme=" + theme + "\$1" ) ;
+    }
+
+    function unchangehref(){
+      this.href = this.savehref ;
+      delete this.savehref;
+    }
+
+    zenSheet.attr( "href" , "/index.pl?node_id=" + theme + "&displaytype=serve$querystring" ) ;
+    jQuery("a").bind("focus.themetest click.themetest", changehref).bind("blur.themetest", unchangehref) ;
+    jQuery(widget).draggable().css("cursor","move");
+    </script>' ;
+  $str =~ s!</body>!$script</body>! ;
+  return $str;
+
+}
+
+sub registry_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # This code does the update, if we have one.
+  my @params = $query->param;
+
+  foreach my $param (@params)
+  {
+    if ($param =~ /^update_(\w*)$/)
+    {
+      $$NODE{$1} = $query->param($param);
+    }
+  }
+
+  updateNode($NODE, $USER);
+
+  my $str='<p align="right">('.linkNode($NODE, 'display', {'displaytype'=>'display', 'lastnode_id'=>0}).")</p>";
+
+  $str.= htmlcode("openform");
+  $str.= $APP->buildTable(['key','value'],[
+    {'key'=>'Title','value'=>
+    $query->textfield( -name => "update_title", -default => $$NODE{title}, -size => 40, -maxlength => 255 )},
+    {'key'=>'Introduction','value'=>
+    $query->textarea( -name => "update_doctext", -default => $$NODE{doctext}, -rows => 7, -columns => 50 )},
+
+    ],'nolabels','center');
+
+  $str.=htmlcode("closeform");
+
+  return $str;
+}
+
+sub registry_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";
+
+  if($APP->isGuest($USER))
+  {
+    $str .= '<div style="margin:20px;text-align:center;font-weight:bold;">( back to '.linkNodeTitle('Registry Information').' )</div>';
+    $str .= "Registries are only available to logged in users at this time."
+  }else{
+
+    $str.= htmlcode('openform')
+           .'<div style="margin:20px;text-align:center;">'
+           .' (this registry created by '.linkNode($$NODE{author_user}).')'
+           .'<div style="margin:20px">'.$APP->breakTags(parseLinks($APP->htmlScreen($$NODE{doctext}))).'</div>'
+           .'</div>';
+    my $entry = $DB->sqlSelectHashref('data,comments,in_user_profile',
+      'registration','from_user='.$$USER{user_id}.' && for_registry='.$$NODE{node_id});
+
+    my $blurb = '';
+
+    my $userdata = $query->param('userdata');
+    my $usercomments = $query->param('usercomments');
+    my $userprofile = $query->param('userprofile')||'0';
+    my $userdelete = $query->param('userdelete');
+  
+    # they want to DELETE their entry
+    if($userdelete)
+    {    
+      if($DB->sqlDelete('registration', "from_user=$$USER{user_id} && for_registry=$$NODE{node_id}"))
+      {
+        $blurb.='<br />Your record was removed successfully'
+      }else{
+        $blurb.='<br />There was a problem removing your record. Please notify a [coder]';
+      }
+    }else{
+      if ($$NODE{input_style} eq 'date' && $userdata)
+      {
+        my $years=$query->param('years');
+        my $months=$query->param('months');
+        $months='0'.$months if ($months<10);
+        my $days=$query->param('days');
+        $days='0'.$days if ($days<10);
+
+        if ($years eq 'secret')
+        {
+          $userdata="$months-$days";
+        } else { 
+          $userdata="$years-$months-$days";
+        }
+      }
+      
+      # they want to UPDATE their entry
+      if($entry && $userdata)
+      {
+        if($DB->sqlUpdate('registration',{'data'=>$userdata,'comments'=>$usercomments,'in_user_profile'=>$userprofile},
+          "from_user=$$USER{user_id} && for_registry=$$NODE{node_id}"))
+        {
+          $blurb.='<br />Your record was updated successfully';
+        }else{
+          $blurb.='<br />There was a problem updating your record. Please notify a [coder]';
+        }
+      }elsif(!$entry && $userdata){   
+        # they want to INSERT their entry
+        if($DB->sqlInsert('registration',{'data'=>$userdata,
+          'comments'=>$usercomments,'from_user'=>$$USER{user_id},
+          'for_registry'=>$$NODE{node_id},'in_user_profile'=>$userprofile}))
+        {
+          $blurb.='<br />Your record was added successfully!';
+        }else{
+          $blurb.='<br />There was a problem adding your record. Please notify a [coder]';
+        }
+      }
+    }
+
+    ## fetch data again to display and calculate which options user has.
+    $entry = $DB->sqlSelectHashref('data,comments,in_user_profile',
+      'registration',"from_user=$$USER{user_id} && for_registry=$$NODE{node_id}");
+ 
+    my $input = undef;
+    if ($$NODE{input_style} eq 'date')
+    {
+      my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
+      my @years=('secret');
+      for (my $yearCounter=0; $yearCounter<=$year; $yearCounter++)
+      {
+        push(@years,$yearCounter+1900);
+      }
+      $input.=$query->popup_menu(-name=>'years',-values => \@years);
+
+      my @months = ();
+      for (my $monthCounter=1; $monthCounter<=12; $monthCounter++)
+      {
+        push(@months,$monthCounter);
+      }
+      $input.=$query->popup_menu(-name=>'months',-values => \@months);
+      # Handy list of month names follows, in case we decide we're keen to implement them
+      # my @monthNames=qw(nomonth January February March April May June July August September October November December);
+    
+      my @days = ();
+      for (my $dayCounter=1; $dayCounter<=31; $dayCounter++)
+      {
+        push (@days, $dayCounter);
+      }
+    
+      $input.=$query->hidden(-name=>'userdata', -value=>'date');
+      $input.=$query->popup_menu(-name=>'days',-values => \@days);
+    } elsif ($$NODE{input_style}eq'yes/no'){
+      $input.=$query->popup_menu(-name=>'userdata',-values => ['Yes', 'No']);
+    } else {
+      $input=$query->textfield(-name=>'userdata',-default=>$$entry{data}, -size => 40,-maxlength => 255);
+    }
+  
+    $str.= htmlcode('openform').$APP->buildTable(['key','value'],[
+     {'key'=>'Your Data','value'=> $input},
+     {'key'=>'Comments?<br>(optional)','value'=>
+       $query->textarea(-name=>'usercomments',-default=>$$entry{comments},
+      	class => 'expandable', onfocus => 'this.maxlength=512;',
+	  	-onKeyPress=>"document.getElementById('lengthCounter').innerHTML=this.maxlength-this.value.length+' chars left';",
+      -rows => 2,-cols => 40)."<div id='lengthCounter'>512 chars allowed</div>"},
+     {'key'=>'Show in your profile?','value'=>
+      $query->checkbox('userprofile',$$entry{in_user_profile},1,'yes please!')},
+     {'key'=>'&nbsp;','value'=>$query->submit("sexisgood", "submit").
+      ((($$entry{data}||$userdata)&&!$userdelete)?
+        $query->submit("userdelete", "remove my entry"):'')}],"nolabels")."$blurb</form>";
+  
+    my $csr = $DB->sqlSelectMany('*','registration',
+       "for_registry=$$NODE{node_id}",'ORDER BY tstamp DESC');
+     $str.= 'SQL Error (prepare).  Please notify a [coder]' if(not $csr);
+
+    my $labels = ['User','Data','As of','Comments','Profile?'];
+    my $rows = [];
+    while(my $ref = $csr->fetchrow_hashref())
+    {
+      my $username=getNode($$ref{from_user})->{title};
+      push @$rows,{
+        'User'=>linkNode($$ref{from_user})."<a name=\"$username\"></a>",
+        'Data'=>$APP->parseAsPlainText($$ref{data}),
+        'Comments'=>$APP->parseAsPlainText($$ref{comments}),
+        'Profile?'=>['No','Yes']->[$$ref{in_user_profile}],
+        'As of'=>$$ref{tstamp}#parseSQLTstamp($$ref{tstamp})
+      };
+    }
+  
+    if(scalar(@$rows))
+    {
+      $str.=$APP->buildTable($labels,$rows,"class='registries'");
+    }else{
+      $str.= '<div style="text-align:center;font-weight:bold;margin:20px;">
+        No users have submitted information to this registry yet.</div>'
+    }
+  
+    $str .= qq|<div style="margin:20px;text-align:center;font-weight:bold;">|;
+    $str .= '( '.linkNodeTitle('Recent Registry Entries|What are other people saying?').' )';
+    $str .= qq|</div>|;
+  }
+
+  return $str;
+}
+
+sub ajax_update_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  # This is implemented as an htmlpage/display type so as to go
+  # through the usual security checks to access the $NODE
+  # htmlcodes called have to be listed here with a definition of
+  # valid arguments unless their name begins with ajax or ends with JSON,
+  # in which case they are presumed to be written safely
+
+  if ($query -> param('originaldisplaytype'))
+  {
+    $query->param('displaytype', $query -> param('originaldisplaytype'));
+  }else{
+    $query->delete('displaytype');
+  }
+
+  my $title = '\\w[^\'"<>]*' ;
+  my $node_id = '\\d*' ;
+  my $anything = '.*' ;
+  my $something = '.+' ;
+
+  my %valid = (
+    updateNodelet => 	[ $title ], #nodelet name
+    nodeletsection =>	[ $title, $title, $title, "($title)?", '\\w*', '\\w*' ], # ($nlAbbrev, $nlSection, $altTitle, $linkTo, $styleTitle, $styleContent)
+    ilikeit =>			[ $node_id ],
+    coolit => 			[],
+    ordernode => 		[],
+    favorite_noder =>	[],
+    'admin toolset' =>	[],
+    nodenote =>			[ $anything ],
+    bookmarkit =>		[ $node_id , $title , $title ], #node_id, link text, link title
+    weblogform => 		[ $node_id , $anything ], #writeup_id, flag for in writeup
+    categoryform => 	[ $node_id , $anything ], #writeup_id, flag for in writeup
+    voteit => 			[ $node_id , '\\d\\d?' ], #writeup_id, flag for editor stuff/vote/both
+    writeuptools =>		[ $node_id , $anything ], #writeup_id, flag for open widget
+    drafttools => 		[ $node_id , $anything ], #writeup_id, flag for open widget
+    writeupmessage => 	[ $anything , $node_id ], #parameter name for message, writeup_id
+    writeupcools => 	[ $node_id ], #writeup_id
+    changeroom => 		[ $title ], #nodelet name
+    showmessages =>		[ $node_id , '\\w*' ], #max message number, show options
+    testshowmessages =>		[ $node_id , '\\w*' ], #max message number, show options
+    showchatter =>		[ $anything ], # flag to send JSON
+    displaynltext2 => 	[ $title ], #nodelet name
+    movenodelet => 		[ "($node_id|$title)" , $anything ], # bad position is harmless
+    setdraftstatus => 	[ $node_id ],
+    parentdraft => 		[ $node_id ],
+    listnodecategories 		=>[ $node_id ],
+    zenDisplayUserInfo		=>[],
+    messageBox				=>[ $node_id, $anything, $title, $node_id ],
+    confirmDeleteMessage	=>[ $node_id, $title ],
+    nodeletsettingswidget	=>[ $title, $title ], #nodelet name, link text
+    homenodeinfectedinfo	=> [],
+    "user searcher"		=> [ $something ],
+  );
+
+  my @args = ();
+  my $str = "";
+  my $flagComplete = undef;
+  @args = split ',', $query->param('args');
+  $flagComplete = '<!-- AJAX OK -->'; # let client distinguish empty/partial/failure
+
+  my $htmlcode = $query->param('htmlcode') ;
+  return unless $htmlcode ;
+  my $test = $valid{$htmlcode};
+
+  unless ($test)
+  {
+    $str = 'unauthorised htmlcode' unless $htmlcode =~ /^ajax|JSON$/; # these carry out their own checks if needed
+  } else {
+    my $i = 0 ;
+    my @test = @$test ;
+    foreach (@args)
+    {
+      $str .= "argument $i invalid<br>" unless $_ =~ /^$test[$i]$/s ;
+      $i++ ;
+    }
+  }
+
+  unless ( $str )
+  {
+    $str = htmlcode($htmlcode, @args) ;
+  } else {
+    if ( Everything::isApproved( $USER , getNode('edev', 'usergroup') ) )
+    {
+      $str = $APP->parseLinks("[ajax update page[htmlpage]]: error running htmlcode [${htmlcode}[htmlcode]]<br>$str");
+    } elsif ( $APP->isEditor($USER) ) {
+      $str = 'ajax htmlcode/argument error' ;
+    } else {
+      $str = 'code error' ;
+    }
+  
+    $str = qq'<span class="error">$str</span>'; # needs to be wrapped in case it replaces something
+  }
+
+  return $str.$flagComplete unless $query->http('accept') =~ /\bjson\b/i;
+  $str = [ $str ] if ref $str eq "";
+  return to_json($str);
+
+}
+
+sub mysqlproc_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<br /><b>CREATE PROCEDURE $NODE->{title}($NODE->{parameters} )</b><br /><b>BEGIN</b><br />|;
+  $str .= qq|<pre>$NODE->{doctext}</pre><b>END</b><br />|;
+
+  return $str;
+}
+
+sub node_editvars_page
+{
+  return htmlcode("editvars");
+}
+
+sub node_listnodelets_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<table><tr><td>|;
+  $str .= htmlcode("zensearchform");
+  $str .= qq|</td></tr></table><div class="nodelet"><div class="nodelet_title">Nodelets</div>|;
+
+  # Duplicated wholesale from [nodelet meta-container]. This should be refactored,
+  # probably much the way it is in pre-1.0
+  #
+
+  unless ( $$VARS{nodelets} )
+  {
+    my ($DEFAULT) = $DB->getNodeById($Everything::CONF->system->{default_nodeletgroup});
+    $$VARS{nodelets} = join ',', @{ $$DEFAULT{group} } ;
+  }
+
+  my $required = getNode('Master Control', 'nodelet') -> { node_id } ;
+  if( $APP->isEditor($USER) )
+  {
+    # If Master Control is not in the list of nodelets, add it right at the beginning. 
+    $$VARS{ nodelets } = "$required,".$$VARS{ nodelets } unless $$VARS{ nodelets } =~ /\b$required\b/ ;
+  }else{
+    # Otherwise, if it is there, remove it, keeping a comma as required
+    $$VARS{nodelets} =~ s/(,?)$required(,?)/$1 && $2 ? ",":""/ge;
+  }
+
+  my $nodelets = $PAGELOAD->{pagenodelets} || $$VARS{nodelets} ;
+  my @nodelets = ();
+  @nodelets = split(',',$nodelets) if $nodelets ;
+
+  my $n = 1;
+  $str .= qq|<table width="100%">|; 
+
+  $str .= ( join '', map {
+    my $current_nodelet = getNode($_);
+    $n = 1 - $n;
+    my $row = undef;
+    if ($n) {
+      $row = '<tr class="oddrow"><td>';
+    } else {
+      $row = '<tr class="evenrow"><td>';
+    }
+    $row .= linkNode($NODE, $current_nodelet->{title},
+                   { displaytype => 'shownodelet',
+                     nodelet_id => $_}).'</t></tr>';
+    } @nodelets); 
+  $str .= '</table></div>';
+
+  return $str;
+}
+
+sub node_shownodelet_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $nodelet_id = $query->param('nodelet_id');
+  my $current_nodelet = getNode($nodelet_id);
+  if (!$current_nodelet) {
+    return 'no nodelet to show';
+  }
+
+  my $nl = insertNodelet($current_nodelet);
+
+  # Nasty hack: if a nodelet links back to the same node preserving
+  # the displaytype, the 'shownodelet' display type will be
+  # meaningless without the nodelet_id to show. So reinsert it
+  # anywhere within a tag.
+  $nl =~ s/(<[^>]*\bdisplaytype=shownodelet\b)/$1&nodelet_id=$nodelet_id/g;
+  # Also insert a hidden 'nodelet_id' next to any input that sets a displaytype of 'shownodelet'.
+  $nl =~ s{
+    (<input\b[^>]*\bname=(|'|")displaytype(|'|")[^>]*value=(|'|")shownodelet(|'|")
+    | <input\b[^>]*\bvalue=(|'|")shownodelet(|'|")[^>]*\bname=(|'|")displaytype(|'|"))
+  }{<INPUT TYPE="hidden" NAME="nodelet_id" VALUE="$nodelet_id" />$1}gxi;
+
+  return $nl;
+}
+
+sub stylesheet_serve_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  if ($query->param('version'))
+  {
+    # Set a far-future expiry time if a specific version is requested.
+    $Everything::HTML::HEADER_PARAMS{'-expires'} = '+10y';
+  }
+
+  my $out = $$NODE{doctext};
+  my $autofix = $query -> param( 'autofix' );
+  if ( $autofix or not $APP->isGuest($USER) )
+  {
+    unless ( htmlcode( 'displaySetting' , 'fixed stylesheets', $$NODE{ node_id } ) >= $Everything::CONF->stylesheet_fix_level )
+    {
+      $out = "/*autofixed*/\n".$APP->fixStylesheet($NODE , 0 ) if $$USER{ user_id } != $$NODE{ author_user } or $autofix ;
+    }
+  }
+
+  $out =~ s/^\s+//mg;
+  $out .= "/* SOFTLINK COLORS */\n";
+
+  my $styleRule = '\\b\\s*(?:,[^{]*)?{[^}]*background[^;}]*#(?:(\\w\\w)(\\w\\w)(\\w\\w)|(\\w)(\\w)(\\w))';
+  my @max = ( 255, 255, 255 ) ;
+  my @min = ( 170, 170, 170 ) ;
+  @max = (hex($1||$4.$4),hex($2||$5.$5),hex($3||$6.$6)) if $out =~ /#sl1$styleRule/ || $out =~ /#mainbody$styleRule/ || $out =~ /\bbody$styleRule/ ;
+  @min = (hex($1||$4.$4),hex($2||$5.$5),hex($3||$6.$6)) if $out =~ /#sl64$styleRule/ || $out =~ /\.slend$styleRule/ || $out =~ /\.oddrow$styleRule/ ;
+
+  for (my $i=64; $i; $i--)
+  {
+    $out .= "td#sl$i\{background:#".( join '' , ( map {sprintf( '%02x', int($max[$_]-($i-1)*($max[$_]-$min[$_])/63) )} (0..2) ) ).';}';
+    $out .= "\n" if $i % 4 == 1 ;
+  }
+
+  return $out;
+}
+
+sub draft_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return htmlcode("display draft","display");
+}
+
+sub draft_display_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  if(!$APP->canSeeDraft($USER, $NODE))
+  {
+    return;
+  }
+
+  my $str = undef;
+
+  if ($query -> param('nukedraft') eq 'Delete draft' && htmlcode('verifyRequest', 'nukedraft'))
+  {
+    my @fields = $DB -> getFieldsHash('draft', 0);
+    my $linktype = getId(getNode 'parent_node', 'linktype');
+    my $parent = $DB -> sqlSelect(
+      'to_node', 'links', "from_node=$$NODE{node_id} AND linktype=$linktype");
+    
+    $str = '<p><strong>Draft permanently deleted</strong></p>'.htmlcode('openform')
+      .'<input type="hidden" name="op" value="new">'
+      .$query -> hidden('type', 'draft')
+      .$query -> hidden('node', $$NODE{title})
+      .$query -> hidden('draft_doctext', $$NODE{doctext})
+      .$query -> hidden('writeup_parent_e2node', $parent)
+      .join ("\n", map {$_ ne 'draft_id' && $query -> hidden("draft_$_", $$NODE{$_})} @fields)
+      .htmlcode('closeform', 'Undo')
+      .$query -> small('(create a new draft with the same content and status as the one you just deleted, using information stored in this page on your browser.)')
+      .$query -> hr()
+      .$query -> h2('What next?')
+
+      .$query -> h3('Write:')
+      .$query -> ul($query -> li(linkNodeTitle('Drafts[superdoc]|Your other drafts'))
+      .$query -> li($query -> h4('Pages thirsting for content')
+      .$query -> ul($query -> li(linkNodeTitle('Your nodeshells[superdoc]|Created by you'))
+      .$query -> li(linkNodeTitle('Random nodeshells[superdoc]|Created by anyone')))))
+      .$query -> h3('Read:')
+      .$query -> ul($query -> li($query -> h4('Cool inspiration').htmlcode('frontpage_cooluserpicks'))
+      .$query -> li($query -> h4('What Inspired the Editors').htmlcode('frontpage_staffpicks')));
+
+      nukeNode($NODE, -1, 1); # no user check, gone forever
+
+      return $str;
+  }
+
+  if (($$NODE{author_user} != $$USER{node_id}) and ($query->param('draft_title') or $query -> param('draft_doctext')) and
+    $APP->canSeeDraft($USER, $NODE, 'edit'))
+  {
+    my ($tt, $tx) = (undef, undef);
+    $$NODE{title} = $tt if $tt = $query -> param('draft_title');
+    $$NODE{doctext} = $tx if $tx = $query -> param('draft_doctext');	
+    updateNode($NODE, -1);
+  }
+
+  $str = htmlcode('display draft');
+
+  if ($$USER{node_id} == $$NODE{author_user})
+  {
+    $str .= htmlcode('setdraftstatus', $NODE).htmlcode('openform')
+      .htmlcode('verifyRequestForm', 'nukedraft')
+      .'<br><input type="submit" name="confirmop" value="Delete draft" title="delete this draft">
+        <input type="hidden" name="notanop" value="nukedraft"></form>';
+
+  }elsif($APP->isEditor($USER)){
+    my $status = getNodeById($$NODE{publication_status}) -> {title};
+    if ($status eq 'review' && $APP->canSeeDraft($USER, $NODE, 'find') )
+    {
+      # let editors see the HTML
+      $str .= '<form class="writeup_add"><fieldset><legend>HTML source (not editable)</legend>
+        <textarea id="writeup_doctext" class="readonly"'.htmlcode('customtextarea', '1').'>'
+        .encodeHTML($$NODE{doctext})
+        .'</textarea></fieldset></form>';
+    }elsif($status eq 'removed'){
+      # let editors restore if removed by mistake
+      if ($query -> param('parentdraft'))
+      {
+        $str .= htmlcode('parentdraft', $NODE);
+      }else{
+        $str .= $query -> div({-id => 'republish'},'');
+      }
+    }
+  }
+
+  return $str;
+}
+
+sub draft_linkview_page
+{
+  return htmlcode("display draft");
+}
+
+sub mysqlproc_edit_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<H4>title:</H4>|.htmlcode("textfield","title");
+  $str .= qq|<h4>parameters:|.htmlcode("textfield","parameters,60");
+  $str .= qq|<h4>owner:</h4>|.htmlcode("node_menu","author_user,user,usergroup");
+  $str .= qq|<p><small><strong>Edit the mysql procedure code:</strong></small><br />|;
+  $str .= qq|<br /><br /><em>|.htmlcode("mysqlproctest").qq|</em>|;
+  $str .= htmlcode("textarea","doctext,30,60");
+
+  return $str;
+}
+
+sub draft_restore_page
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = undef;
+
+  if ($query -> param('nukedraft') eq 'Delete draft' && htmlcode('verifyRequest', 'nukedraft'))
+  {
+    my @fields = $DB -> getFieldsHash('draft', 0);
+    my $linktype = getId(getNode 'parent_node', 'linktype');
+    my $parent = $DB -> sqlSelect(
+      'to_node', 'links', "from_node=$$NODE{node_id} AND linktype=$linktype");
+
+    $str = '<p><strong>Draft permanently deleted</strong></p>'.htmlcode('openform')
+      .'<input type="hidden" name="op" value="new">'
+      .$query -> hidden('type', 'draft')
+      .$query -> hidden('node', $$NODE{title})
+      .$query -> hidden('draft_doctext', $$NODE{doctext})
+      .$query -> hidden('writeup_parent_e2node', $parent)
+      .join ("\n", map {$_ ne 'draft_id' && $query -> hidden("draft_$_", $$NODE{$_})} @fields)
+      .htmlcode('closeform', 'Undo')
+      .$query -> small('(create a new draft with the same content and status as the one you just deleted,
+        using information stored in this page on your browser.)')
+      .$query -> hr()
+      .$query -> h2('What next?')
+      .$query -> h3('Write:')
+      .$query -> ul($query -> li(linkNodeTitle('Drafts[superdoc]|Your other drafts'))
+      .$query -> li($query -> h4('Pages thirsting for content')
+      .$query -> ul($query -> li(linkNodeTitle('Your nodeshells[superdoc]|Created by you'))
+      .$query -> li(linkNodeTitle('Random nodeshells[superdoc]|Created by anyone')))))
+      .$query -> h3('Read:')
+      .$query -> ul($query -> li($query -> h4('Cool inspiration')
+      .htmlcode('frontpage_cooluserpicks'))
+      .$query -> li($query -> h4('What Inspired the Editors').htmlcode('frontpage_staffpicks')));
+      
+      nukeNode($NODE, -1, 1); # no user check, gone forever
+      return $str;
+  }
+
+  if (($$NODE{author_user} != $$USER{node_id}) and
+	($query -> param('draft_title') or $query -> param('draft_doctext')) and
+	$APP->canSeeDraft($USER, $NODE, 'edit'))
+  {
+    my ($tt, $tx) = (undef, undef);
+    $$NODE{title} = $tt if $tt = $query -> param('draft_title');
+    $$NODE{doctext} = $tx if $tx = $query -> param('draft_doctext');
+	
+    updateNode($NODE, -1);
+  }
+
+  $str = htmlcode('display draft');
+
+  if ($$USER{node_id} == $$NODE{author_user})
+  {
+    $str .= htmlcode('setdraftstatus', $NODE)
+      .htmlcode('openform')
+      .htmlcode('verifyRequestForm', 'nukedraft')
+      .'<br><input type="submit" name="confirmop" value="Delete draft" title="delete this draft"><input type="hidden" name="notanop" value="nukedraft"></form>';
+
+  }elsif($APP->isEditor($USER)){
+    my $status = getNodeById($$NODE{publication_status}) -> {title};
+
+    if ($status eq 'review' && !$APP->canSeeDraft($USER, $NODE, 'edit'))
+    {
+      # let editors see the HTML
+      $str .= '<form class="writeup_add"><fieldset><legend>HTML source (not editable)</legend>
+        <textarea id="writeup_doctext" class="readonly"'
+        .htmlcode('customtextarea', '1')
+        .'>'
+        .encodeHTML($$NODE{doctext})
+        .'</textarea></fieldset></form>';
+    }elsif($status eq 'removed'){
+      # let editors restore if removed by mistake
+      if ($query -> param('parentdraft'))
+      {
+        $str .= htmlcode('parentdraft', $NODE);
+      }else{
+        $str .= $query -> div({-id => 'republish'},'');
+      }
+    }
+  }
+
+  return $str;
 }
 
 1;

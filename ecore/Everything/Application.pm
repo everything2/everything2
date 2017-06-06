@@ -4189,4 +4189,33 @@ sub node_new
   return;
 }
 
+# Used in [Recent Registry Entries] and registry_display_page
+sub parseAsPlainText{
+  my ($this, $text) = @_;
+  my $text = shift;
+  $text = $this->parseLinks($this->breakTags($this->htmlScreen($text)));
+  return $text;
+}
+
+# Used by debatecomment_atom_page
+sub getCommentChildren
+{
+  my ($this, @gr) = @_;
+  my @comments = ();
+  foreach (@gr)
+  {
+    my $item = $_;
+    my $child = $this->{db}->getNodeById($item);
+    push (@comments, $item);
+    my $group = $$child{'group'};
+    my @children = $this->getCommentChildren(@$group);
+    foreach (@children)
+    {
+      push (@comments, $_);
+    }
+  }
+  return @comments;
+}
+
+
 1;
