@@ -743,7 +743,7 @@ sub showdebate
     }
   }
 
-  $str . htmlcode( 'displaydebatecomment', $NODE, $displaymode );
+  $str .= htmlcode( 'displaydebatecomment', $NODE, $displaymode );
   return $str;
 }
 
