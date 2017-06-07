@@ -40,7 +40,7 @@ if ($query-&gt;param(&quot;yankify&quot;)) {
 	my $user = getNode($removee, 'user');
 	return &quot;&lt;p&gt;The user '$removee' doesn't exist!&lt;/p&gt;&lt;p&gt;Please [Everything's Most Wanted|try again].&lt;/p&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;&quot; unless $user;
 
-	my $rewardnode = getNodeById(1986569); #Hard-coded goodness for speed.
+	my $rewardnode = getNode('bounties', 'setting');
 	my $REF = getVars($rewardnode);
 	my $refund = $$REF{$removee};
 	$APP-&gt;adjustGP($user, $refund);
@@ -54,7 +54,7 @@ if ($query-&gt;param(&quot;yankify&quot;)) {
 		setVars $USER, $VARS;
 	}
 
-	my $deletenode = getNodeById(1986585);
+	my $deletenode = getNode('bounty order', 'setting');
 	my $deletevars = getVars($deletenode);
 	delete $$deletevars{$$v{BountyNumber}};
 	setVars($deletenode, $deletevars);
@@ -88,7 +88,7 @@ if ($query-&gt;param(&quot;bountify&quot;)) {
 	$$VARS{Bounty} = 0;
 	setVars $USER, $VARS;
 
-	my $deletenode = getNodeById(1986585); #Hard-coded goodness for speed.
+	my $deletenode = getNode('bounty order', 'setting');
 	my $deletevars = getVars($deletenode);
 	delete $$deletevars{$$VARS{BountyNumber}};
 	setVars($deletenode, $deletevars);
@@ -96,9 +96,9 @@ if ($query-&gt;param(&quot;bountify&quot;)) {
 
 	$citation = &quot;[$LuckyWinner] tracked down $outlaw and earned $reward GP from [$sheriff]!&quot;;
 
-	my $justicenode = getNodeById(1986592); #Hard-coded goodness for speed.
+	my $justicenode = getNode('justice served', 'setting');
 	my $justicevars = getVars($justicenode);
-	my $numbernode = getNodeById(1986610);
+	my $numbernode = getNode('bounty number', 'setting');
 	my $numbervar = getVars($numbernode);
 
 	my $citesNum = (($$numbervar{&quot;justice&quot;})+1);
@@ -126,7 +126,7 @@ if ($query-&gt;param(&quot;awardify&quot;)) {
 	$$VARS{Bounty} = 0;
 	setVars $USER, $VARS;
 
-	my $deletenode = getNodeById(1986585); #Hard-coded goodness for speed.
+	my $deletenode = getNode('bounty order', 'setting');
 	my $deletevars = getVars($deletenode);
 	delete $$deletevars{$$VARS{BountyNumber}};
 	setVars($deletenode, $deletevars);
@@ -135,9 +135,9 @@ if ($query-&gt;param(&quot;awardify&quot;)) {
 	if ($reward &gt; 0) {$citation.=&quot; and $reward GP&quot;;}
 	$citation.=&quot;!&quot;;
 
-	my $justicenode = getNodeById(1986592); #Hard-coded goodness for speed.
+	my $justicenode = getNode('justice served', 'setting');
 	my $justicevars = getVars($justicenode);
-	my $numbernode = getNodeById(1986610);
+	my $numbernode = getNode('bounty number', 'setting');
 	my $numbervar = getVars($numbernode);
 
 	my $citesNum = (($$numbervar{&quot;justice&quot;})+1);
@@ -190,7 +190,7 @@ if ($query-&gt;param(&quot;Remove&quot;)) {
 	$$VARS{Bounty} = 0;
 	setVars $USER, $VARS;
 
-	my $deletenode = getNodeById(1986585); #Hard-coded goodness for speed.
+	my $deletenode = getNode('bounty order', 'setting');
 	my $deletevars = getVars($deletenode);
 	delete $$deletevars{$$VARS{BountyNumber}};
 	setVars($deletenode, $deletevars);
@@ -248,8 +248,8 @@ if ($query-&gt;param(&quot;postBounty&quot;)) {
 	$APP-&gt;adjustGP($USER, -$bounty);
 
 	my $bountyNum;
-	my $ordernode = getNodeById(1986585); #Hard-coded goodness for speed.
-	my $maxnode = getNodeById(1986610);
+	my $ordernode = getNode('bouunty order', 'setting');
+	my $maxnode = getNode('bounty number', 'setting');
 	my $BNT = getVars($ordernode);
 	my $MAX = getVars($maxnode);
 	$bountyNum = ($$MAX{1} + 1);
@@ -262,18 +262,18 @@ if ($query-&gt;param(&quot;postBounty&quot;)) {
 	$$VARS{BountyNumber} = $bountyNum;
 	setVars $USER, $VARS;
 
-	my $settingsnode = getNodeById(1986569); #Hard-coded goodness for speed.
+	my $settingsnode = getNode('bounties', 'setting));
 	my $bountySettings = getVars($settingsnode);
 	$$bountySettings{$sheriff} = $bounty;
 	setVars($settingsnode, $bountySettings);
 
 	my $outlawStr = &quot;[$outlawed]&quot;;
-	my $outlawnode = getNodeById(1986587); #Hard-coded goodness for speed.
+	my $outlawnode = getNode('outlaws', 'setting');
 	my $outlawvars = getVars($outlawnode);
 	$$outlawvars{$sheriff} = $outlawStr;
 	setVars($outlawnode, $outlawvars);
 
-	my $commentsnode = getNodeById(1986741); #Hard-coded goodness for speed.
+	my $commentsnode = getNode('bounty comments', 'setting');
 	my $commentsvars = getVars($commentsnode);
 	$$commentsvars{$sheriff} = $comment;
 	setVars($commentsnode, $commentsvars);

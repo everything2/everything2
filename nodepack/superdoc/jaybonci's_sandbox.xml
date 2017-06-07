@@ -2,7 +2,6 @@
   <type_nodetype>14</type_nodetype>
   <doctext>&lt;br /&gt;
 [%
-  use Everything::Delegation::htmlpage;
   my $str = &quot;&quot;;
   my $count = 0;
   my @nodes = $DB-&gt;getNodeWhere({type_nodetype =&gt; getNode(&quot;htmlpage&quot;,&quot;nodetype&quot;)-&gt;{node_id}});
@@ -10,9 +9,8 @@
   foreach my $n (@nodes)
   {
 
-    my $title = $n-&gt;{title};
-    $title =~ s/ /_/g;
-    next if(Everything::Delegation::htmlpage-&gt;can($title));
+    my $fullnode = $DB-&gt;getNodeById($n-&gt;{node_id});
+    next unless($fullnode-&gt;{page} =~ /\S/);
     $count++;    
     $str .= linkNodeTitle($n-&gt;{title}).&quot;&lt;br&gt;&quot;;
   }
