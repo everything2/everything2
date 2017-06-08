@@ -1,6 +1,7 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
 use strict;
+use warnings;
 package Everything::Application;
 use Everything;
 use Everything::S3;
@@ -367,8 +368,9 @@ sub checkToken
 			, $action, $expiry) ne $query -> param('token');
 
 	$this -> updatePassword($user, $query -> param('passwd'));
-	$this -> securityLog($this->{db}->getNode($action eq 'activate' ? 'Sign up' : 'Reset password', 'superdoc')
+	return $this->securityLog($this->{db}->getNode($action eq 'activate' ? 'Sign up' : 'Reset password', 'superdoc')
 		, $user, "$$user{title} account $action");
+
 }
 
 #############################################################################
@@ -451,7 +453,7 @@ sub cleanWordAggressive
 	# drop double chars at end of word, except for [lsaeiou]
 	$word =~ s/([^lsaeiou])\1$/$1/;
 	
-	$word;
+	return $word;
 
 }
 
@@ -496,7 +498,7 @@ sub makeClean
 	$text =~ s/(\w)[^\w\s_]+/$1/g;
 	$text =~ s/[^\w\s_]+(\w)/$1/g;
 
-	$text;
+	return $text;
 }
 
 #############################################################################
@@ -524,15 +526,15 @@ sub makeCleanWords
 	
 	my @words = ();
 	if ($text) {
-		@words = map( substr($_, 0, 20), split(/\s/, $text) );
+		@words = map { substr($_, 0, 20) } split(/\s/, $text);
 		
 		if ($harder && @words)
 		{
-			@words = map( $this->cleanWordAggressive($_), @words);
+			@words = map { $this->cleanWordAggressive($_) }  @words;
 		}
 	}
 	
-	@words;
+	return @words;
 }
 
 #############################################################################
@@ -638,10 +640,10 @@ sub searchNodeName {
 		
 		if ($this->{conf}->clean_search_words_aggressively)
 		{
-			@words = map($this->cleanWordAggressive($_), @words);
+			@words = map {$this->cleanWordAggressive($_) } @words;
 		}
 
-    	@words = map($this->{db}->{dbh}->quote($_), @words);
+    	@words = map {$this->{db}->{dbh}->quote($_)} @words;
 
     	if ($useSoundex)
 	    {
@@ -760,7 +762,7 @@ sub insertSearchWord {
 			); 
 		}
 	}
-	1;
+	return 1;
 }
 
 
@@ -774,7 +776,7 @@ sub insertSearchWord {
 sub removeSearchWord {
 	my ($this, $NODE) = @_;
 
-	$this->{db}->sqlDelete("searchwords", "node_id=".$this->{db}->getId($NODE));
+	return $this->{db}->sqlDelete("searchwords", "node_id=".$this->{db}->getId($NODE));
 }
 
 
@@ -797,7 +799,7 @@ sub removeSearchWord {
 sub regenSearchwords
 {
 	my ($this) = @_;
-	$|=1;
+	local $|=1;
 	
 	print "Regenerating searchwords, this could take a while...<br><br>\n";
 
@@ -873,6 +875,7 @@ sub regenSearchwords
             ") || die $!;
 
 	print "<br><b>Done. $nodecount nodes processed.</b><br>\n ";
+	return;
 }
 
 sub isEditor
@@ -911,9 +914,9 @@ sub chatSigils
 	my ($this, $user, $exclude, $nolinks) = @_;
 	
 	my $sigils = "";
-	$sigils .= '@' if $this->isAdmin($user) and !$this->getParameter($user,"hide_chatterbox_staff_symbol");
-	$sigils .= '$' if !$this->isAdmin($user) and $this->isEditor($user, "nogods") and !$this->getParameter($user,"hide_chatterbox_staff_symbol");
-	$sigils .= '+' if $this->isChanop($user, "nogods") and !$this->getParameter($user,"hide_chatterbox_staff_symbol");
+	$sigils .= '@' if $this->isAdmin($user) and not $this->getParameter($user,"hide_chatterbox_staff_symbol");
+	$sigils .= '$' if not $this->isAdmin($user) and $this->isEditor($user, "nogods") and not $this->getParameter($user,"hide_chatterbox_staff_symbol");
+	$sigils .= '+' if $this->isChanop($user, "nogods") and not $this->getParameter($user,"hide_chatterbox_staff_symbol");
 	$sigils .= '%' if $this->isDeveloper($user, "nogods");
 
 	return $sigils;
@@ -947,7 +950,7 @@ sub getLevel {
                 }
         }
 
-        $level;
+        return $level;
 }
 
 sub getLevelTitle {
@@ -1077,12 +1080,6 @@ sub getParametersForType
   return $paramsbytype;
 }
 
-sub getAllNodesWithParameter
-{
-  my ($this, $parameter, $value) = @_;
-  
-}
-
 sub getParameterForType
 {
   my ($this, $type, $param) = @_;
@@ -1110,7 +1107,7 @@ sub securityLog
     $this->{db}->getRef($user);
   }
   return unless defined($node) and defined($user);
-  $this->{db}->sqlInsert('seclog', { 'seclog_node' => $$node{node_id}, 'seclog_user'=>$$user{node_id}, 'seclog_details'=>$details});
+  return $this->{db}->sqlInsert('seclog', { 'seclog_node' => $$node{node_id}, 'seclog_user'=>$$user{node_id}, 'seclog_details'=>$details});
 }
 
 sub isGuest
@@ -1333,7 +1330,7 @@ sub node2mail {
   	"body" => $body
 	);
 
-	try_to_sendmail($email, { "transport" => $transport });
+	return try_to_sendmail($email, { "transport" => $transport });
 }
 
 sub stripNodelet {
@@ -1580,10 +1577,10 @@ sub canSeeDraft
 	);
 
 	my $status = $equivalents{$$STATUS{title}} || $$STATUS{title};
-	return 0 if $status eq 'private' and !$$draft{collaborators} || $disposition eq "edit";
+	return 0 if ($status eq 'private' and (not $$draft{collaborators} or $disposition eq "edit"));
 
 	# locked users' drafts are private, except removed drafts for editors
-	return 0 if (!$isEditor || $$STATUS{title} ne 'removed') and $this->{db}->sqlSelect('acctlock', 'user', "user_id=$$draft{author_user}");
+	return 0 if (not $isEditor or $$STATUS{title} ne 'removed') and $this->{db}->sqlSelect('acctlock', 'user', "user_id=$$draft{author_user}");
 
 	return 1 if($status eq 'public' and $disposition ne "edit");
 	return 1 if($status eq 'findable' and $disposition eq "find");;
@@ -1787,7 +1784,7 @@ sub jscssS3Upload
 		$content = $node->{doctext};
 	}
 	
-	$this->uploadS3Content($s3, $node->{node_id},$content,$extension,$$node{contentversion});
+	return $this->uploadS3Content($s3, $node->{node_id},$content,$extension,$$node{contentversion});
 }
 
 sub uploadS3Content
@@ -1853,6 +1850,7 @@ sub uploadS3Content
 
 	chdir("/tmp");
 	`rm -rf $tmpdir`;
+	return;
 }
 
 # Originally in the htmlcode 'get ips'. Taken unmodified.
@@ -1860,7 +1858,7 @@ sub uploadS3Content
 sub intFromAddr
 {
 	my ($this, $addr) = @_;
-	return undef unless $addr =~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+	return unless $addr =~ /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
 	return (
 		(int $1) * 256*256*256 
 		+ (int $2) * 256 * 256
@@ -1974,7 +1972,7 @@ sub unescape
 		$arg =~ s/\%(..)/chr(hex($1))/ge;
 	}
 	
-	1;
+	return 1;
 }
 
 sub getVarHashFromStringFast
@@ -2007,7 +2005,7 @@ sub getVarStringFromHash
 	}
 	
 	my $varStr =
-		join("&", map( $_."=".$this->escape($$varHash{$_}), sort keys %$varHash) );
+		join("&", map { $_."=".$this->escape($$varHash{$_}) } (sort keys %$varHash) );
 	return $varStr
 }
 
@@ -2046,7 +2044,7 @@ sub insertIntoRoom {
   my $borgd = 0;
   $borgd = 1 if $$V{borged};
 
-  $this->{db}->sqlInsert("room"
+  return $this->{db}->sqlInsert("room"
     , {
             room_id => $room_id,
             member_user => $user_id,
@@ -2064,7 +2062,6 @@ sub insertIntoRoom {
             op => $this->isAdmin($U)
     }
   );
-
 }
 
 sub changeRoom {
@@ -2082,8 +2079,7 @@ sub changeRoom {
   }
   $this->{db}->sqlDelete("room", "member_user=".$this->{db}->getId($user));
     
-  $this->insertIntoRoom($ROOM, $user);
-
+  return $this->insertIntoRoom($ROOM, $user);
 }
 
 sub logUserIp {
@@ -2189,7 +2185,7 @@ sub isSuspended
 {
   my ($this, $usr, $sustype) = @_;
 
-  return undef unless $usr and $sustype;
+  return unless $usr and $sustype;
 
   if(!UNIVERSAL::isa($sustype, "HASH"))
   {
@@ -2203,7 +2199,7 @@ sub isSuspended
  
   # Because the "ends" behavior was added well after the other suspension code was in place, we're going to assume that
   # the old behavior of '0' means never ends
-  if(!defined($suspension_info->{ends}) or $this->convertDateToEpoch($suspension_info->{ends}) == 0 )
+  if(not defined($suspension_info->{ends}) or $this->convertDateToEpoch($suspension_info->{ends}) == 0 )
   {
     # Indefinite suspension
     return $suspension_info;
@@ -2223,7 +2219,7 @@ sub isSuspended
 sub suspendUser
 {
   my ($this, $usr, $sustype, $suspendedby, $duration) = @_;
-  return undef unless $usr and $sustype;
+  return unless $usr and $sustype;
 
   if(!UNIVERSAL::isa($sustype, "HASH"))
   {
@@ -2247,7 +2243,7 @@ sub suspendUser
 sub unsuspendUser
 {
   my ($this, $usr, $sustype) = @_;
-  return undef unless $usr and $sustype;
+  return unless $usr and $sustype;
 
   if(!UNIVERSAL::isa($sustype, "HASH"))
   {
@@ -2305,7 +2301,7 @@ sub refreshVotesAndCools
   my ($this, $user, $vars) = @_;
   my ($time) = split " ",$$user{lasttime};
 
- if (!$this->isGuest($user)
+ if (not $this->isGuest($user)
   and (not exists $$vars{votetime} or $$vars{votetime} ne $time)) {
    
    my $VOTES = Everything::getVars($this->{db}->getNode('level votes', 'setting'));
@@ -2397,10 +2393,10 @@ sub castVote {
 
   my $voteWrap = sub {
 
-    my ($user, $node, $AUTHOR) = @_;
+    my ($voteuser, $node, $AUTHOR) = @_;
 
     #return if they don't have any votes left today
-    return unless $$user{votesleft};
+    return unless $$voteuser{votesleft};
 
     #jb says: Allow for $VSETTINGS to be specified. This will save
     # us a few cycles in castVote
@@ -2414,7 +2410,7 @@ sub castVote {
     my $prevweight;
     $prevweight  = $this->{db}->sqlSelect('weight',
                                   'vote',
-                                  'voter_user='.$$user{node_id}
+                                  'voter_user='.$$voteuser{node_id}
                                   .' AND vote_id='.$$node{node_id}
                                   );
 
@@ -2426,7 +2422,7 @@ sub castVote {
 
     if (!$alreadyvoted) {
 
-      $this->insertVote($node, $user, $weight);
+      $this->insertVote($node, $voteuser, $weight);
 
       if ($$node{type}{title} eq 'poll') {
          $action = 'votepoll';
@@ -2442,7 +2438,7 @@ sub castVote {
 
         $this->{db}->sqlUpdate("vote"
                        , { -weight => $weight, -revotetime => "NOW()" }
-                       , "voter_user=$$user{node_id}
+                       , "voter_user=$$voteuser{node_id}
                           AND vote_id=$$node{node_id}"
                        )
           unless $prevweight == $weight;
@@ -2470,12 +2466,12 @@ sub castVote {
 
     #the voter has a chance of receiving a GP
     if (rand(1.0) < $$VSETTINGS{voterExpChance} &&  !$alreadyvoted) {
-      $this->adjustGP($user, 1) unless($noxp);
+      $this->adjustGP($voteuser, 1) unless($noxp);
       #jb says this is for decline vote XP option
       #we pass this $noxp if we want to skip the XP option
     }
 
-    $$user{votesleft}-- unless ($alreadyvoted and $weight==$prevweight);
+    $$voteuser{votesleft}-- unless ($alreadyvoted and $weight==$prevweight);
 
   };
 
@@ -3100,10 +3096,11 @@ sub urlGenNoParams {
 
   if ($noquotes) {
     return $retval;
-  }
-  else {
+  } else {
     return '"'.$retval.'"';
   }
+
+  return; # Make perlcritic happy
 }
 
 
@@ -3400,7 +3397,8 @@ sub urlGen {
   delete $$REF{nodetype};
   delete $$REF{type};
   delete $$REF{lastnode_id} if defined $$REF{lastnode_id} && $$REF{lastnode_id} == 0;
-  my $anchor = '#'.$$REF{'#'} if $$REF{'#'};
+  my $anchor = '';
+  $anchor = '#'.$$REF{'#'} if $$REF{'#'};
   delete $$REF{'#'};
 
   #Our mod_rewrite rules can now handle this properly
@@ -3514,7 +3512,7 @@ sub linkNodeTitle {
 
       $nodetype = "node" unless $this->{db}->getType($nodetype);
       #Perhaps direct link to a writeup instead?
-      if (grep /^$nodetype$/, ("","e2node","node","writeup","draft") ){
+      if (grep {/^$nodetype$/ } ("","e2node","node","writeup","draft") ){
 
         #Anchors are case-sensitive, need to get the exact username.
         $user = $this->{db}->getNode($user,"user");
@@ -3557,7 +3555,7 @@ sub linkNodeTitle {
           .( $isNode ? "class='populated'" : "class='unpopulated'")
          ." >$title</a>";
 
-  $str;
+  return $str;
 }
 
 sub canCompress
@@ -3602,7 +3600,7 @@ sub printLog
 {
   my ($this, $entry) = @_;
 
-  $this->genericLog($this->getELogName(), $entry);
+  return $this->genericLog($this->getELogName(), $entry);
 }
 
 sub devLog
@@ -3619,8 +3617,9 @@ sub devLog
       $callerinfo = [caller(2)];
     }
 
-    $this->genericLog("/tmp/development.log", join(":",$callerinfo->[0],$callerinfo->[2])." - ".$entry);
+    return $this->genericLog("/tmp/development.log", join(":",$callerinfo->[0],$callerinfo->[2])." - ".$entry);
   }
+  return;
 }
 
 sub genericLog
@@ -3724,6 +3723,7 @@ sub dumpCallStack
   }
 
   print "*** End Call Stack ***\n";
+  return;
 }
 
 sub stylesheetCDNLink
@@ -3983,6 +3983,7 @@ sub iso_date_format
   return unless $timestamp;
   $timestamp =~ s/ /T/;
   $timestamp.="Z";
+  return $timestamp;
 }
 
 sub node_json_reference
@@ -4082,11 +4083,10 @@ sub delete_bookmark
   my $user_id = $user->{node_id};
   my $linktype=$this->{db}->getId($this->{db}->getNode('bookmark', 'linktype'));
 
-  $this->{db}->sqlDelete('links',
+  return $this->{db}->sqlDelete('links',
     "from_node=$user_id 
     AND to_node=$$link{node_id}
     AND linktype=$linktype");
-
 }
 
 sub get_message_ignores
@@ -4192,7 +4192,6 @@ sub node_new
 # Used in [Recent Registry Entries] and registry_display_page
 sub parseAsPlainText{
   my ($this, $text) = @_;
-  my $text = shift;
   $text = $this->parseLinks($this->breakTags($this->htmlScreen($text)));
   return $text;
 }
