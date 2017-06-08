@@ -10,24 +10,14 @@
      '','ORDER BY tstamp DESC LIMIT 100')
     || return 'SQL Error (prepare).  Please notify a [coder]';
 
-  sub parseAsPlainText{
-    my $text = shift;
-    $text = parseLinks($APP-&gt;breakTags($APP-&gt;htmlScreen($text)));
-    $text;
-  }
-
   my $labels = ['Registry','User','Data','Comments','Profile?'];
   my $rows;
   while(my $ref = $csr-&gt;fetchrow_hashref()){
     my $data = $$ref{data};
     my $comments = $$ref{comments};
-#    $data =~ s/(\S{30,}?)/$1 /g;
-#    $comments =~ s/(\S{30,}?)/$1 /g;
-#    $data = splitHTML(parseAsPlainText($data));
- #   $comments = splitHTML (parseAsPlainText($comments));
 
-    $data = parseAsPlainText($data);
-    $comments = parseAsPlainText($comments);
+    $data = $APP-&gt;parseAsPlainText($data);
+    $comments = $APP-&gt;parseAsPlainText($comments);
 
     push @$rows,{
       'Registry'=&gt;linkNode($$ref{for_registry}),
