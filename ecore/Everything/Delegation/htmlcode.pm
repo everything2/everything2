@@ -10191,8 +10191,11 @@ sub zenwriteups
     } else {
       $repthreshold = $Everything::CONF->writeuplowrepthreshold || 0;
     }
-	
-    $abominations->{$_} = 1 foreach(split(',', $$VARS{unfavoriteusers}));
+    
+    if($VARS->{unfavoriteusers})
+    {	
+      $abominations->{$_} = 1 foreach(split(',', $$VARS{unfavoriteusers}));
+    }
   }
 
   my $count = undef;
