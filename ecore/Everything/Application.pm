@@ -3497,6 +3497,8 @@ sub linkNodeTitle {
     }
 
     my ($nodetype,$user) = split /\bby\b/, $anchor;
+    $nodetype ||= "";
+    $user ||= "";
     $nodetype =~ s/^\s*|^\+|\s*$|\+$//g;
     $user =~ s/\+/ /g;
     $user =~ s/^\s*|^\+|\s*$|\+$//g;
