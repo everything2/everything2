@@ -1581,6 +1581,7 @@ sub show_content
 
   my ($wrapTag, $wrapClass, $wrapAtts) = split(/\s+class="([^"]+)"/, $1) if $instructions =~ s/^\s*<([^>]+)>\s*//;
   $wrapAtts .= $1 if $wrapTag =~ s/(\s+.*)//;
+  $wrapAtts ||= "";
 
   $instructions =~ s/\s*,\s*/,/g ;
   $instructions =~ s/(^|,),+/$1/g ; # remove spare commas
@@ -1658,7 +1659,7 @@ sub show_content
     my $count = 0;
 
     foreach ( @sections ) {
-      $str .= $infowrap[$count];
+      $str .= ($infowrap[$count] || "");
       my @chunks = split( /,+/ , $_ ) ;
 
       foreach ( @chunks ) {
