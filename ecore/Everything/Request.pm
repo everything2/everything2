@@ -131,7 +131,7 @@ sub get_current_user
   my $self = shift;
   my $inputs = {@_};
 
-  my $username = $inputs->{username} | "";
+  my $username = $inputs->{username} || "";
   my $pass = $inputs->{pass} || "";
   my $originalpass = $pass;
   my $cookie = undef;
