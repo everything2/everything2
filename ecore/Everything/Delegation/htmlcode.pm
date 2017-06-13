@@ -7437,7 +7437,7 @@ sub displayWriteupInfo
 
 
   #TODO? checkbox to have anonymous? maybe just for certain people?
-  my $msgreport = undef;
+  my $msgreport = "";
   local *sendMessage = sub {
     $infofunctions->{$fnName} = '';
     return if $isGuest;
