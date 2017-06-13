@@ -3735,7 +3735,7 @@ sub stylesheetCDNLink
   $this->{db}->getRef($stylesheet);
   
   my $filename = "$$stylesheet{node_id}.$$stylesheet{contentversion}.min";
-  if($ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
+  if($ENV{HTTP_ACCEPT_ENCODING} and $ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
   {
     $filename.= ".gzip";
   }

@@ -248,7 +248,7 @@ sub linkjavascript
   }
 
   my $filename = "$$n{node_id}.$$n{contentversion}.min";
-  if($ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
+  if($ENV{HTTP_ACCEPT_ENCODING} and $ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
   {
     $filename.= ".gzip";
   }
