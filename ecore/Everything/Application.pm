@@ -3468,6 +3468,7 @@ sub linkNodeTitle {
   my ($title, $linktitle, $linkAnchor, $href) = ('', '', '', '/');
   $nodename ||= "";
   ($nodename, $title) = split /\s*[|\]]+/, $nodename;
+  $title ||= "";
   $title = $nodename if $title =~ m/^\s*$/;
   $nodename =~ s/\s+/ /gs;
 
