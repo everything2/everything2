@@ -79,7 +79,9 @@ sub BEGIN
 	$MASON = Mason->new(
 		data_dir => "/var/mason", 
 		comp_root => "/var/everything/templates", 
-		static_source => ($CONF->environment eq "production"));
+		static_source => ($CONF->environment eq "production"),
+		allow_globals => [qw($REQUEST)]);
+
 	$ROUTER = Everything::HTMLRouter->new();
 
 	foreach my $plugin ("API","Node","DataStash", "Controller")

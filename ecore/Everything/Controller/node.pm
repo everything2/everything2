@@ -4,6 +4,8 @@ use Moose;
 use Everything::Delegation::nodelet;
 extends 'Everything::Controller';
 
+use Data::Dumper;
+
 # TODO: implement public method filtering
 
 sub display
@@ -79,7 +81,10 @@ sub layout
 
   $params = $self->nodelets($REQUEST->user->nodelets, $params);
 
-  return $self->MASON->run($template, %$params)->output();
+  $self->devLog("Ready to go to Mason".Data::Dumper->Dump([$params]));
+
+  $self->MASON->set_global('$REQUEST',$REQUEST);
+  return $self->MASON->run($template, $params)->output();
 }
 
 sub nodelets
@@ -98,11 +103,12 @@ sub nodelets
     $title =~ s/ /_/g;
     $id =~ s/\W//g;
 
-    if(Everything::Controller::node->can($title))
+    if($self->can($title))
     {
-      my $return = $self->$title($REQUEST, $node);
-      next unless $return;
-      $params->{nodelets}->{$title} = $return;
+      $self->devLog("In controller-handled nodelet: $title");
+      my $nodelet_values = $self->$title($REQUEST, $node);
+      next unless $nodelet_values;
+      $params->{nodelets}->{$title} = $nodelet_values;
     }else{
       if(my $delegation = Everything::Delegation::nodelet->can($title))
       {
@@ -113,14 +119,15 @@ sub nodelets
     push @{$params->{nodeletorder}}, $title;  
     $params->{nodelets}->{$title}->{title} = $nodelet->title;
     $params->{nodelets}->{$title}->{id} = $id;
+    $params->{nodelets}->{$title}->{node} = $node;
   }
   return $params;
 }
 
-sub epicenter_new
+sub epicenter
 {
   my ($self, $REQUEST, $node) = @_;
-
+  
   if($REQUEST->is_guest)
   {
     return;
@@ -131,6 +138,18 @@ sub epicenter_new
   {
     $params->{$property} = $REQUEST->user->$property;
   }
+
+  $params->{settings} = $self->APP->node_by_id($self->CONF->system->{user_settings});
+  $params->{drafts} = $self->APP->node_by_name("Drafts","superdoc");
+  $params->{votingsystem} = $self->APP->node_by_name("The Everything2 Voting/Experience System","superdoc");
+  if($REQUEST->user->level > 2)
+  {
+    $params->{help} = $self->APP->node_by_name('Everything2 Help','e2node');
+  }else{
+    $params->{help} = $self->APP->node_by_name('Everything2 Quick Start', 'e2node');
+  }
+
+  return $params;
 }
 
 1;
