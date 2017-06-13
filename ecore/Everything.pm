@@ -407,7 +407,7 @@ sub updateLinks
 	my $isSoftlink = 0;
         $isSoftlink = 1 if $type == 0 || (UNIVERSAL::isa($type,'HASH') && $$type{title} eq 'guest user link');
 
-	return if getId($TONODE) == getId($FROMNODE) and $isSoftlink;
+	return if (getId($TONODE) || 0) == (getId($FROMNODE) || 0) and $isSoftlink;
 	getRef $TONODE;
 	getRef $FROMNODE;
 	
