@@ -2884,8 +2884,8 @@ sub cleanupHTML {
 	    $result .= $approved_tag.$outer_text;
 	} elsif (/$close_tag/ || /$incomplete_close_tag/) {
 	    # Closing tag
-	    my $closing;
-	    my @popped;
+	    my $closing = "";
+	    my @popped = ();
 	    $tag = lc $1;
 	    $key = '/'.$1.$2;
 	    $outer_text = $3;
