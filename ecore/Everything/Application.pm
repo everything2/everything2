@@ -3563,7 +3563,7 @@ sub canCompress
   #TODO: Check to see if we can do this as an apache module, safely
   #TODO: Don't compress things of shorter than X bytes
   #TODO: Support deflate?
-  if($ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
+  if($ENV{HTTP_ACCEPT_ENCODING} and $ENV{HTTP_ACCEPT_ENCODING} =~ /gzip/)
   {
     return 1;
   }
