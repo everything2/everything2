@@ -144,7 +144,7 @@ sub zen_container
   $str .= qq|<div id='header'>|;
 
   my $epid = getNode('Epicenter','nodelet')->{node_id};
-  $str .= htmlcode('epicenterZen') if $$VARS{nodelets} && $$VARS{nodelets} !~ /\b$epid\b/;
+  $str .= (htmlcode('epicenterZen') || "") if $$VARS{nodelets} && $$VARS{nodelets} !~ /\b$epid\b/;
  
   if(isMobile())
   {
@@ -154,7 +154,7 @@ sub zen_container
   }
 
   $str.=qq|<div id='e2logo'><a href="/">Everything<span id="e2logo2">2</span></a></div></div>|;
-  $str.=htmlcode("zenMobileTabs");
+  $str.=(htmlcode("zenMobileTabs") || "");
 
   $str.=qq|<div id='wrapper'>|;
   $str.=htmlcode("guestuserbanner");
