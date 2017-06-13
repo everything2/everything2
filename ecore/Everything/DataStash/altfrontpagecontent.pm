@@ -10,10 +10,11 @@ sub generate
 {
   my ($this) = @_;
 
-  my $repthreshholdlo = 6;
+  my $repthreshholdlo = 12 ;
   my $maxage = "1 WEEK";
   my $pulllimit = 24;
   my $limit = 3;
+  my $length = '1024-512';
 
   my $csr = $this->DB->sqlSelectMany(
     'writeup_id, parent_e2node,

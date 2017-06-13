@@ -1,5 +1,4 @@
 <%class>
-has 'REQUEST' => (required => 1);
 has 'node' => (required => 1);
 has 'basesheet' => (required => 1);
 has 'zensheet' => (required => 1);

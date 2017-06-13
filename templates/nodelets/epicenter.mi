@@ -1,8 +1,48 @@
 <%class>
 has 'is_borged';
+
 has 'votesleft';
 has 'coolsleft';
-has 'level';
 
+has 'voteschingsleft' => (lazy => 1, builder => "_build_voteschingsleft");
+
+has 'settings';
+has 'drafts';
+has 'votingsystem';
+has 'helptext';
+
+has 'newxp';
+has 'newgp';
+
+sub _build_voteschingsleft
+{
+  my ($self) = shift;
+  if($self->coolsleft or $self->votesleft)
+  {
+    my $thingys = [];
+    if($self->coolsleft)
+    {
+      push @$thingys, qq|<strong id="chingsleft">|.$self->coolsleft.qq|</strong> C!|.($self->coolsleft > 1 ? 's': '');
+    }
+    if($self->votesleft)
+    {
+      push @$thingys, qq|<strong id="votesleft">|.$self->votesleft.qq|</strong> vote|.($self->votesleft > 1 ? 's': '');
+    }
+
+    return qq|<p id="voteschingsleft">You have |. join(' and ',@$thingys).qq| left today.</p>|;
+  }
+}
 </%class>
-Epicenter here
+<ul>
+<li><& '/helpers/linknode.mi', node => $.node, title => "Log Out", params => {"op" => "logout"} &></li>
+<li title="User Settings"><& '/helpers/linknode.mi', node => $.settings, params => {"lastnode_id" => 0} &></li> 
+<li title="Your profile"><& '/helpers/linknode.mi', node => $REQUEST->user &> <& '/helpers/linknode.mi', node => $REQUEST->user, title => '(edit)', params => {"displaytype" => "edit"} &></li>
+<li title="Draft, format, and organize your works in progress"><& '/helpers/linknode.mi', node => $.drafts &></li>
+<li title="Learn what all those numbers mean"><& '/helpers/linknode.mi', node => $.votingsystem, title => 'Voting/XP System' &></li>
+<li title="View a randomly selected node"><& '/helpers/randomnode.mi' &></li>
+% if($.helptext) {
+<li title="Need help?"><& '/helpers/linknode.mi', node => $.helptext, title => 'Help' &></li>
+% }
+<% $.voteschingsleft %>
+
+</ul>
