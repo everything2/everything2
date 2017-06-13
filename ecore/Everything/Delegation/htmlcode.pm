@@ -1157,7 +1157,7 @@ sub parsetime
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my ($field)=@_;
+  my ($field) = @_;
 
   my ($date, $time) = split / /,$$NODE{$field};
 
@@ -1592,7 +1592,8 @@ sub show_content
   $wrapClass .= ' ' if $wrapClass;
   $wrapClass .= $content ? 'item' : 'contentinfo';
 
-  my @infowrap = ('<div class="contentinfo contentheader">', '', '<div class="contentinfo contentfooter">') if $content && !$xml;
+  my @infowrap = ();
+  @infowrap = ('<div class="contentinfo contentheader">', '', '<div class="contentinfo contentfooter">') if $content && !$xml;
 
   # define content function
 
