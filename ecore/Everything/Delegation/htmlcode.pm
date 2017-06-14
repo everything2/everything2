@@ -7261,8 +7261,8 @@ sub displayWriteupInfo
 
   local *info_author = sub {
     my $anon = undef;
-    $anon = 'anonymous' unless !$$VARS{anonymousvote} || $isMine || $authorIsBot || $APP->hasVoted($WRITEUP, $USER) || $isDraft;
-    if ($$VARS{anonymousvote} == 1 && $anon)
+    $anon = 'anonymous' unless not $VARS->{anonymousvote} || $isMine || $authorIsBot || $APP->hasVoted($WRITEUP, $USER) || $isDraft;
+    if (exists($VARS->{anonymousvote}) && $VARS->{anonymousvote} == 1 && $anon)
     {
       return '(anonymous)' . ($isCE?' '.info_authorsince():'');
     }
@@ -8651,11 +8651,10 @@ sub sendPrivateMessage
   # finally send the message
   #
 
-  my $i = undef;
   my @getters = ();	#groups and users that got message
 
   # send to groups archive
-  foreach $i (keys(%groups))
+  foreach my $i (keys(%groups))
   {
     next if $groups{$i}<0;	#negative indicates user isn't allowed to send to group
 
@@ -8671,7 +8670,7 @@ sub sendPrivateMessage
   # send to users
   my $forUG = undef;
   my $isArchived = undef;
-  foreach $i (keys(%users))
+  foreach my $i (keys(%users))
   {
     next if $users{$i}<0;
     $forUG=$users{$i};
@@ -11062,7 +11061,7 @@ sub socialBookmarks
   $parentNode = getNode($$targetNode{parent_e2node}) if $$targetNode{parent_e2node};
   $titleNode = $parentNode if $parentNode;
   my $bDontQuoteUrl = 1;
-  my $url = undef;
+  my $url = "";
   $url = 'http://' . $1 if $ENV{HTTP_HOST} =~ /(?:.+?\.)($Everything::CONF->canonical_web_server)(?::\d+)/;
   $url = 'http://' . $Everything::CONF->canonical_web_server if $url eq '';
   $url .= urlGen({ }, $bDontQuoteUrl, $targetNode);
@@ -11861,7 +11860,7 @@ sub canseewriteup
     return 1;
   }
 
-  my $param = $query ? $query -> param( 'showhidden' ) : undef;
+  my $param = $query ? $query->param( 'showhidden' ) : "";
   my @checks = ('unfavorite', 'lowrep');
 
   if ($$N{type}{title} eq 'draft'){
@@ -11869,7 +11868,7 @@ sub canseewriteup
     unshift @checks, 'unpublished';
   }
 
-  return 1 if $$NODE{node_id} == $$N{node_id} or $isTarget or $param == $$N{node_id} or $param eq 'all';
+  return 1 if $$NODE{node_id} == $$N{node_id} or $isTarget or $param eq $$N{node_id} or $param eq 'all';
 
   my %tests = (
     unpublished => sub{
