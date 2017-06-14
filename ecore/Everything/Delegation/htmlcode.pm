@@ -2023,6 +2023,11 @@ sub showbookmarks
   $str.="<ul class=\"linklist\" id=\"bookmarklist\">\n";
   my $count = scalar(@$bookmarks);
   foreach my $link (@$bookmarks) {
+
+    next unless defined($link->{title});
+    # Not all bookmarks have a tstamp component
+    $link->{tstamp} ||= "";
+
     my $linktitle = lc($$link{title}); #Lowercased for case-insensitive sort
     if ($edit) {
       if ($query->param("unbookmark_$$link{node_id}")) {
@@ -7261,8 +7266,8 @@ sub displayWriteupInfo
 
   local *info_author = sub {
     my $anon = undef;
-    $anon = 'anonymous' unless not $VARS->{anonymousvote} || $isMine || $authorIsBot || $APP->hasVoted($WRITEUP, $USER) || $isDraft;
-    if (exists($VARS->{anonymousvote}) && $VARS->{anonymousvote} == 1 && $anon)
+    $anon = 'anonymous' unless (not $VARS->{anonymousvote}) or $isMine or $authorIsBot or $APP->hasVoted($WRITEUP, $USER) or $isDraft;
+    if ($VARS->{anonymousvote} && $anon)
     {
       return '(anonymous)' . ($isCE?' '.info_authorsince():'');
     }
@@ -11861,6 +11866,7 @@ sub canseewriteup
   }
 
   my $param = $query ? $query->param( 'showhidden' ) : "";
+  $param ||= "";
   my @checks = ('unfavorite', 'lowrep');
 
   if ($$N{type}{title} eq 'draft'){
