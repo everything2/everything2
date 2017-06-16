@@ -3780,11 +3780,10 @@ sub basehref
 sub parseLinks {
        my ($this, $text, $node, $escapeTags) = @_;
 
-       #Using ! for the s operator so that we don't have to escape all
-       #those damn forward slashes. --[Swap]
-
        #Pipelinked external links, if no anchor text in the pipelink,
        #fill the anchor text with the "[link]" text.
+
+       return "" unless defined($text);
 
        $text =~ s!\[                         #Open bracket
                   \s*(https?://[^\]\|\[<>"]+) #The URL to match

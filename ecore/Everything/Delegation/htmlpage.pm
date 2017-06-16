@@ -1198,8 +1198,8 @@ sub writeup_display_page
   my $APP = shift;
 
   my $str = "";
-  $str .= htmlcode("votehead");
-  $str .= htmlcode("show writeups");
+  $str .= htmlcode("votehead") || "";
+  $str .= htmlcode("show writeups") || "";
 
   $str .= qq|<div id='displaytypelinks'>|;
   
@@ -1210,9 +1210,9 @@ sub writeup_display_page
 
   $str .= qq|</div>|;
 
-  $str .= htmlcode("votefoot");
+  $str .= htmlcode("votefoot") || "";
 
-  $str .= htmlcode("writeuphints");
+  $str .= htmlcode("writeuphints") || "";
 
   if($NODE->{parent_e2node})
   {
