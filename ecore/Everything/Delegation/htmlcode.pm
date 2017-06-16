@@ -4369,7 +4369,7 @@ sub static_javascript
     $e2->{$_} = $$VARS{$_} if ($$VARS{$_});
   }
 
-  $e2->{collapsedNodelets} =~ s/\bsignin\b// if $query -> param('op') eq 'login';
+  $e2->{collapsedNodelets} =~ s/\bsignin\b// if($query->param('op') and $query -> param('op') eq 'login');
   $e2->{noquickvote} = 1 if($VARS->{noquickvote});
   $e2->{nonodeletcollapser} = 1 if($VARS->{nonodeletcollapser});
   $e2 = encode_json($e2);
@@ -4928,7 +4928,7 @@ sub minilogin
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $op = $query->param("op");
+  my $op = $query->param("op") || "";
   $query->delete('passwd');
 
   my $goto = getId($NODE);
@@ -10824,7 +10824,7 @@ sub zenDisplayUserInfo
 
   local *info_groups = sub {
     return if $$VARS{hidehomenodeUG} ;
-    return htmlcode('showUserGroups','').(( $APP->isEditor($NODE) )?(" - ".linkNode(getNode("Editor Endorsements","superdoc"),"My Endorsements",{editor=>$$NODE{node_id}})):(''));
+    return (htmlcode('showUserGroups','') || "").(( $APP->isEditor($NODE) )?(" - ".linkNode(getNode("Editor Endorsements","superdoc"),"My Endorsements",{editor=>$$NODE{node_id}})):(''));
   };
 
   local *info_categories = sub {
@@ -10887,7 +10887,7 @@ sub zenDisplayUserInfo
 
   local *info_msgme = sub {
     return if $$VARS{hidemsgme};
-    return '<div id="userMessage">'.htmlcode('messageBox',$$NODE{node_id},1).'</div>';
+    return '<div id="userMessage">'.(htmlcode('messageBox',$$NODE{node_id},1) || "").'</div>';
   };
 
   local *info_msgyou = sub {

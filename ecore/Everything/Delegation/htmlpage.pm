@@ -2888,11 +2888,11 @@ sub user_display_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $str = htmlcode("setupuservars");
+  my $str = htmlcode("setupuservars") || "";
   $str .= qq|<div id='homenodeheader'>|;
-  $str .= htmlcode("homenodeinfectedinfo");
+  $str .= htmlcode("homenodeinfectedinfo") || "";
   $str .= qq|<div id='homenodepicbox'>|;
-  $str .= htmlcode("showuserimage");
+  $str .= htmlcode("showuserimage") || "";
 
   if(getId($USER) == getId($NODE) and not $APP->isGuest($USER))
   {
