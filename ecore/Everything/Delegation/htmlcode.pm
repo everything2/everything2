@@ -4441,8 +4441,8 @@ sub createdby
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  return if $APP->isGuest($USER);
-  return unless $$NODE{type}{title} eq 'e2node';
+  return "" if $APP->isGuest($USER);
+  return "" unless $$NODE{type}{title} eq 'e2node';
 
   my $crby = undef;
   $crby = $$NODE{createdby_user} || $$NODE{author_user} || 0;

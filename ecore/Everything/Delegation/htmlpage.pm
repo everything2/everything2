@@ -1180,7 +1180,7 @@ sub e2node_display_page
   $str .= htmlcode("softlink");
   $str .= qq|</div>|;
 
-  $str .= $PAGELOAD->{admintools};
+  $str .= $PAGELOAD->{admintools} || "";
 
   $str .= htmlcode("addwriteup");
 
