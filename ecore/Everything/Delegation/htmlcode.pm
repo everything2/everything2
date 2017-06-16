@@ -7276,7 +7276,7 @@ sub displayWriteupInfo
     {
       my $authorLink = linkNode( $wuAuthor , $anon , { lastnode_id => 0 , -class => 'author' } ) ;
       $authorLink = '<s>'.$authorLink.'</s>' if $isCE && !$authorIsBot && (exists $wuAuthor->{acctlock}) && ($wuAuthor->{acctlock});
-      return 'by <a name="'.$wuAuthor->{title}.'"></a><strong>' . $authorLink . '</strong> ' . ( !$anon ? info_authorsince():'');
+      return 'by <a name="'.$wuAuthor->{title}.'"></a><strong>' . $authorLink . '</strong> ' . (( !$anon ? info_authorsince():'')||"");
     } else {
       return '<em>unable to find author '.$aid.'</em>';
     }
