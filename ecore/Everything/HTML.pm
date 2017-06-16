@@ -1058,7 +1058,7 @@ sub printHeader
 	if ($lastnode && $lastnode > 0) {
 		push @cookies, $query->cookie( -name=>'lastnode_id', -value=>'');
 
-	} elsif ($lastnode == -1) {
+	} elsif ($lastnode && $lastnode == -1) {
 
 	} else {
 		push @cookies, $query->cookie('lastnode_id', '');
