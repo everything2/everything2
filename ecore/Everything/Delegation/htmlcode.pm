@@ -1794,7 +1794,7 @@ sub softlink
   my $APP = shift;
   my ($softserve) = @_; #parameter used by formxml_writeup and formxml_e2node
 
-  if($softserve eq 'xml'){
+  if($softserve and $softserve eq 'xml'){
     return if $$VARS{noSoftLinks};
   }
   return if($query->param('no_softlinks'));
@@ -3858,8 +3858,8 @@ sub votefoot
   return $query->end_form if $$NODE{type}{title} eq "e2node" && not $$NODE{group} || $APP->isGuest($USER) ;
   my $isKiller = $APP->isEditor($USER);
 
-  my $voteButton = undef;
-  my $killButton = undef;
+  my $voteButton = "";
+  my $killButton = "";
   my $rowFormat =  '<div id="votefooter">%s%s</div>';
 
   if( $query->param('numvoteit') && $$USER{votesleft} ) {
@@ -11445,7 +11445,7 @@ sub getdisabledactions
   my $APP = shift;
 
   my $SETTINGS = getVars( getNode( 'Disabled actions' ,'setting' ) ) ;
-  my $disabled = $$SETTINGS{ $$NODE{node_id} } . '!' . $$SETTINGS{ $$NODE{type_nodetype} } ;
+  my $disabled = ($$SETTINGS{ $$NODE{node_id} } || ""). '!' . ($$SETTINGS{ $$NODE{type_nodetype} } ||"");
   $disabled = $1 if $disabled =~ /O/ and $disabled =~ /(\w+)!/ ; # remove nodetype disables if Overridden
   # noscript option for wus: put addto widget in page actions because it needs a different op than the writeup form:
   $disabled =~ s/[baw]//g if $query -> param( 'addto' ) ;
