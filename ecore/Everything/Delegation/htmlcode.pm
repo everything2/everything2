@@ -6742,6 +6742,8 @@ sub timesince
   my ($d, $t) = split(' ',$timestamp);
   my ($hour, $min, $sec) = split(':',$t);
   my ($year, $month, $day) = split('-',$d);
+
+  $shortMode = "" if not defined($shortMode);
   my $noHTML = $shortMode =~ m/nohtml/i;
 
   return '?' unless int($month) && int($year) && int($day);
@@ -6848,7 +6850,7 @@ sub writeupcools
   my $nr = getNode('node row', 'superdoc')->{node_id};
 
   my $str = undef;
-  my $coollink = undef;
+  my $coollink = "";
   my $coolnum = undef;
   my $coolers = undef;
 

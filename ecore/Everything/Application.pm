@@ -3370,7 +3370,9 @@ sub repairE2Node
 sub urlGen {
   my ($this, $REF, $noquotes, $NODE) = @_;
 
-  my $str;
+  $noquotes = "" unless defined($noquotes);
+
+  my $str = "";
   $str .= '"' unless $noquotes;
 
   if($NODE){
