@@ -7242,7 +7242,7 @@ sub displayWriteupInfo
   };
 
   local *info_c_full = sub {
-    unless ( !$APP->isGuest($USER) || $query->param('showwidget') eq 'showCs'.$$WRITEUP{node_id} )
+    unless ( not $APP->isGuest($USER) or ($query->param('showwidget') and ($query->param('showwidget') eq 'showCs'.$$WRITEUP{node_id} )))
     {
       return '' unless $$WRITEUP{cooled} ;
       return linkNode($NODE, $$WRITEUP{cooled}.' <b>C!</b>'.( $$WRITEUP{cooled}==1 ? '' : 's' ),
