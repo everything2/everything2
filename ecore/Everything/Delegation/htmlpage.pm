@@ -3967,9 +3967,9 @@ sub choose_theme_view_page
 
   # testdisplay parameter enables testing other displaytypes than display
   my $testdisplay = undef;
-  $testdisplay = $query -> param( 'testdisplay' ) unless $query -> param( 'testdisplay' ) eq 'choosetheme' ;
-  $query -> delete('displaytype');
-  $query -> param('displaytype', $testdisplay) if $testdisplay;
+  $testdisplay = $query->param( 'testdisplay' ) unless($query->param('testdisplay') and $query->param('testdisplay') eq 'choosetheme');
+  $query->delete('displaytype');
+  $query->param('displaytype', $testdisplay) if $testdisplay;
 
   # generate page output with user's current stylesheet
   my $PAGE = Everything::HTML::getPage( $NODE , $testdisplay ) ;

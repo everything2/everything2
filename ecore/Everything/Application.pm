@@ -2835,6 +2835,7 @@ sub cleanupHTML {
     
     # Delete any incomplete tags, including comments. These may be the result of truncating
     # source HTML, eg. for Cream of the Cool.
+    $text = "" if not defined($text);
     $text =~ s/<[^>]*$//;
     $text =~ s/<!--(?:[^-]|-[^-]|--[^>])*$//g;
  
@@ -2914,7 +2915,7 @@ sub cleanupHTML {
 		for (;;) {
 		    $ctag = pop @stack;
 		    push @popped, $ctag;
-		    if ($ctag eq $tag) {
+		    if ($ctag and $ctag eq $tag) {
 			# Found the tag.
 			last;
 		    } elsif (defined($ctag)) {
