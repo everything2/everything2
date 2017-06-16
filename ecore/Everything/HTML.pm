@@ -662,14 +662,12 @@ sub htmlcode {
 	# By creating an embedded htmlcode entrypoint which is smarter about doing the split
 	# But for now, emulate the old behavior
 
-	if(scalar(@savedArgs) == 1 && !ref($savedArgs[0]))
+	if(scalar(@savedArgs) == 1 && !ref($savedArgs[0]) && defined($savedArgs[0]))
 	{
 		@savedArgs = split(/\s*,\s*/, $savedArgs[0]);
 	}
 
 	$encodedArgs = $APP->encodeHTML($encodedArgs);
-
-	my $warnStr = "<p>Calling htmlcode $htmlcodeName";
 
 	my $delegation_name = $htmlcodeName;
 	$delegation_name =~ s/[\s\-]/_/g;
