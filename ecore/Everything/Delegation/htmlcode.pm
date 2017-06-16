@@ -1110,7 +1110,7 @@ sub openform
 
   my %params = ();
 
-  unless ( $name =~ /^-/ ) {
+  unless ($name and $name =~ /^-/ ) {
     $params{ -method } = $method if $method ;
     $params{ -name } = $params{-id} = $name if $name ;
   } else {
@@ -12516,11 +12516,11 @@ sub confirmDeleteMessage
 
   my ($messageID,$actioned) = @_;
 
-  if ($actioned eq "deleted")
+  if ($actioned and $actioned eq "deleted")
   {
     return "Message deleted";
   }
-  if ($actioned eq "archived")
+  if ($actioned and $actioned eq "archived")
   {
     return "Message archived";
   }
@@ -13377,7 +13377,7 @@ sub widget
   $$parameters{ -class } = 'action showwidget' ;
   my $style = 'visibility:' ;
 
-  if ( $query -> param( 'showwidget' ) eq $showparameter )
+  if ($query->param('showwidget') and $query->param('showwidget') eq $showparameter )
   {
     $style .= 'visible' ;
     $$parameters{ -class } .= ' open' ;
