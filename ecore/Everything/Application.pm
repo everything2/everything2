@@ -1486,7 +1486,7 @@ sub isMaintenanceNode
 		$node = $this->{db}->getNodeById($node);
 	}
 
-	return unless $node;
+	return unless $node and $node->{node_id};
 	return unless $node->{type}->{title} eq "e2node" or $node->{type}->{title} eq "writeup";
 
 	my $maintenance_nodes = [values %{$this->{conf}->system->{maintenance_nodes}}];
@@ -3001,6 +3001,8 @@ sub htmlScreen {
 sub breakTags
 {
   my ($this,$text) = @_;
+
+  $text = "" unless(defined($text));
   # Format if necessary - adapted from [call]'s code from his own ecore
   unless ($text =~ /<\/?p[ >]/i || $text =~ /<br/i) {
 
@@ -3034,7 +3036,7 @@ sub breakTags
 
   }
 
-  $text;
+  return $text;
 }
 
 sub rewriteCleanEscape {

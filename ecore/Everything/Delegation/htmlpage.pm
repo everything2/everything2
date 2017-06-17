@@ -1352,7 +1352,7 @@ sub usergroup_display_page
   my $showMemberCE = ($$NODE{title} ne 'Content Editors');
 
   #get usergroup "owner"
-  my $ugOwner = $APP -> getParameter($NODE, 'usergroup_owner');
+  my $ugOwner = $APP->getParameter($NODE, 'usergroup_owner') || 0;
 
   if($$NODE{group})
   {
