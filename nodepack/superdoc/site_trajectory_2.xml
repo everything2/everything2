@@ -97,13 +97,13 @@ while ($year &gt;= $backyear) {
 #my $usercnt = $DB-&gt;sqlSelect('count(*)', 'node JOIN user ON user.user_id=node.node_id', $limit);
 
 # this querycounts contributing users (new and old)
-  my $limit = &quot;type_nodetype='&quot;.getId(getType('writeup')).&quot;' AND createtime&gt;='&quot;.$strDate.&quot;' AND createtime&lt;DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 MONTH)&quot;;
+  $limit = &quot;type_nodetype='&quot;.getId(getType('writeup')).&quot;' AND createtime&gt;='&quot;.$strDate.&quot;' AND createtime&lt;DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 MONTH)&quot;;
   my $usercnt = $DB-&gt;sqlSelect('count(DISTINCT author_user)', 'node', $limit);
   if ($usercnt  &gt; $maxusercnt) {
     $maxusercnt = $usercnt ;
   }
 
-  my $limit = &quot;tstamp &gt;= '&quot;.$strDate.&quot;' and tstamp &lt; DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 MONTH)&quot;;
+  $limit = &quot;tstamp &gt;= '&quot;.$strDate.&quot;' and tstamp &lt; DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 MONTH)&quot;;
 
   my $coolcnt = $DB-&gt;sqlSelect('count(*)', 'coolwriteups', $limit);
   if ($coolcnt &gt; $maxcoolcnt) {

@@ -42,11 +42,11 @@ while ($year&gt;2007) {
 
   my $wucnt = $DB-&gt;sqlSelect('count(*)', 'node JOIN writeup on writeup.writeup_id=node.node_id', $limit);
 
-  my $limit = 'type_nodetype='.getId(getType('user')).&quot; and createtime &gt;= '&quot;.$strDate.&quot;' and createtime &lt; DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 MONTH)&quot;;
+  $limit = 'type_nodetype='.getId(getType('user')).&quot; and createtime &gt;= '&quot;.$strDate.&quot;' and createtime &lt; DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 MONTH)&quot;;
 
   my $usercnt = $DB-&gt;sqlSelect('count(*)', 'node', $limit);
 
-  my $limit = &quot;tstamp &gt;= '&quot;.$strDate.&quot;' and tstamp &lt; DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 MONTH)&quot;;
+  $limit = &quot;tstamp &gt;= '&quot;.$strDate.&quot;' and tstamp &lt; DATE_ADD('&quot;.$strDate.&quot;',INTERVAL 1 MONTH)&quot;;
 
   my $coolcnt = $DB-&gt;sqlSelect('count(*)', 'coolwriteups', $limit);
 
