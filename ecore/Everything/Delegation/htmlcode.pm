@@ -3128,7 +3128,7 @@ sub addwriteup
 
   # OK: user can post or edit a writeup/draft
 
-  my ($str, $draftStatusLink, $lecture) = (undef,undef,undef);
+  my ($str, $draftStatusLink, $lecture) = ("","","");
 
   if ($MINE){
     return '<p>You can edit your contribution to this node at'.linkNode($MINE).'</p>' if $$VARS{HideWriteupOnE2node}; # user doesn't want to see their text
@@ -6130,6 +6130,7 @@ sub showmessages
       # This is an incredibly stupid hack. Because the htmlcode dispatcher is trying to handle teplate logic, we get this bad behavior
       #  pass in a harmless undef to keep the htmlcode function from mangling the string
       $jsname=htmlcode("eddiereply", $text, undef) if $jsname eq "Cool_Man_Eddie";
+
       $jsname =~ s/"/&quot;/g;
       $jsname =~ s/'/\\'/g;
       $str.= qq!<a href="javascript:e2.startText('message','/msg $jsname ')" title="Reply to $jsname" class="action" style="display:none;">(r)</a>!;
@@ -6265,6 +6266,12 @@ sub eddiereply
   }
 
   my $eddie = $coolsplit[0];
+
+  # This is a message type that eddiereply can't handle;
+  unless(defined($eddie))
+  {
+    return "Cool_Man_Eddie";
+  }
   $eddie =~ s/\[user\]//g;
   $eddie =~ s/\[//g;
   $eddie =~ s/ /_/g;
@@ -13314,7 +13321,7 @@ sub categoryform
   $options .= qq'<option value="new">New category&hellip;</option>';
   $options =~ s/$categoryid/$categoryid" selected="selected/ if $categoryid;
 
-  if ( $query -> param( 'op' ) eq 'category' and $query -> param( 'nid' ) == $$N{ node_id } )
+  if ( ($query->param( 'op' ) || "" ) eq 'category' and ( $query->param('nid') and $query->param( 'nid' ) == $$N{ node_id } ) )
   {
     # report on attempt to add to category or provide opportunity to name a new category
 
@@ -13343,7 +13350,7 @@ sub categoryform
 
   $notification = "<p><small>$notification</small></p>" if $notification ;
 
-  my ( $class , $addnid ) = (undef,undef); ( $class , $addnid ) = ( "wuformaction " , $$N{ node_id } ) if $inwriteupform ;
+  my ( $class , $addnid ) = ("",""); ( $class , $addnid ) = ( "wuformaction " , $$N{ node_id } ) if $inwriteupform ;
 
   $class .= "ajax categoryform$$N{node_id}:categoryform?op=category&nid=/nid$addnid&cid=/cid$addnid"
     .($createcategory ? '&categorytitle=/' : '')
