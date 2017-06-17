@@ -4102,7 +4102,7 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
     $c='';
 
     foreach(@wuPartLink) {
-      if(length($_)>$i) {
+      if((length($_) || 0)>$i) {
         $c.=', ' if length($c);
         $c.='" <code>&#91;'.$APP->encodeHTML(substr($_,0,$i),1).'</code> "';
       }
@@ -4116,6 +4116,7 @@ You don\'t even need to have nodes created to make links to them, once you\'ve l
     $c='';
 
     foreach(@wuPartLink) {
+      next unless defined($_);
       if( index($_,'[')!=-1 ) {
         next if $_ =~ /[^[\]]*(?:\[[^\]|]*[\]|][^[\]]*)?/ ; # direct link, regexp from parselinks in HTML.pm
         $c.=', ' if length($c);
@@ -13221,7 +13222,7 @@ sub weblogform
   $N ||= $NODE ;
 
   my $options = '' ;
-  my $notification = undef;
+  my $notification = "";
 
   unless ( $PAGELOAD->{ cachedweblogoptions } )
   {
