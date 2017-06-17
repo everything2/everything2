@@ -12276,7 +12276,7 @@ sub testshowmessages
   my $APP = shift;
 
   my ($maxmsgs,$showOpts) = @_;
-  $showOps = "" unless(defined($showOpts));
+  $showOpts = "" unless(defined($showOpts));
 
   my $json = {};
   my $jsoncount = undef; $jsoncount = 1 if $showOpts =~ /j/;
