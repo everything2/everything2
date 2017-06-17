@@ -3441,7 +3441,8 @@ sub urlGen {
 sub linkNode {
   my ($this, $NODE, $title, $PARAMS) = @_;
 
-  return if not ref $NODE and $NODE =~ /\D/;
+  return "" if not defined($NODE);
+  return "" if not ref($NODE) and $NODE =~ /\D/;
   $NODE = $this->{db}->getNodeById($NODE, 'light') unless ref $NODE;
 
   $title ||= $$NODE{title};
