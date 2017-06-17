@@ -232,7 +232,6 @@ sub other_users
   my $sameUser;   # if the user to show is the user that is loading the page
   my $userID;     # only get member_user from hash once
   my $n;          # nick
-  my $is1337 = ($userID == 220 || $userID == 322);        # nate and hemos
 
   # Fetch users to ignore.
   my $ignorelist = $DB->sqlSelectMany('ignore_node', 'messageignore',

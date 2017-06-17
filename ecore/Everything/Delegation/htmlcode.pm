@@ -1311,7 +1311,7 @@ sub searchform
     $query->submit("go_button", "go");
 
   $str.='<input type="hidden" name="lastnode_id" value="'.$$NODE{node_id}.'">'; 
-  $str.= $query->end_form unless $PARAM eq 'noendform';
+  $str.= $query->end_form unless($PARAM and $PARAM eq 'noendform');
   return $str;
 }
 
@@ -4363,8 +4363,8 @@ sub static_javascript
   my $cookie = undef;
   foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
     if (!$APP->isGuest($USER)){
-      $$VARS{$_} = $cookie if $cookie = $query -> cookie($_);
-      delete $$VARS{$_} if $cookie eq '0';
+      $$VARS{$_} = $cookie if($cookie = $query->cookie($_));
+      delete $$VARS{$_} if(defined($cookie) and $cookie eq '0');
     }
     $e2->{$_} = $$VARS{$_} if ($$VARS{$_});
   }
@@ -5043,6 +5043,7 @@ sub firmlinks
   foreach(sort {lc($$a{node}->{title}) cmp lc($$b{node}->{title})} @links)
   {
     my ($linkedNode, $linkText) = ($$_{node}, $$_{text});
+    $linkText="" unless(defined($linkText));
     $str .=' , ' if $str;
     $str .= $query->checkbox('cutlinkto_'.$$linkedNode{node_id}, 0, '1', '') if $cantrim;
     $str .= linkNode($linkedNode);
@@ -12236,7 +12237,7 @@ sub listnodecategories
   {
     my $ies = (@items != 1 ? 'ies' : 'y');
     my ($c, $addId) = !$isIncludedParent ? ('C', qq' id="categories$nodeid"') : ('Page c', '');
-    my $moggies = undef; $moggies = qq'<h4>${c}ategor$ies:</h4> <ul><li>'.(join '</li><li>', @items).'</li></ul>' if @items;
+    my $moggies = ""; $moggies = qq'<h4>${c}ategor$ies:</h4> <ul><li>'.(join '</li><li>', @items).'</li></ul>' if @items;
     return qq'<div class="categories"$addId">$moggies\n$$PAGELOAD{e2nodeCategories}\n</div>';
   }
 
@@ -13495,7 +13496,9 @@ sub nodeletsettingswidget
   # second argument is link/opener text
 
   my ($name, $text, $id, $safename) = @_;
-  $id = $safename = $name ;
+  return unless defined($name);
+
+  $id = $safename = $name;
   my $safetext= $text;
   $safename =~ s/ /\+/g;
   $safetext =~ s/ /\+/g;
