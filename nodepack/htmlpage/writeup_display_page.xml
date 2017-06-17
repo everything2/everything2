@@ -2,31 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>117</pagetype_nodetype>
-  <page>[{votehead}]
-[{show writeups}]
-
-&lt;div id='displaytypelinks'&gt;
-&lt;p&gt;[% return if $APP-&gt;isGuest($USER); linkNode($NODE, 'link view', { displaytype =&gt; 'linkview' } ) %] &lt;/p&gt;
-&lt;/div&gt;
-
-[{votefoot}]
-[{writeuphints}]
-
-[%
-return unless $$NODE{parent_e2node};
-'&lt;div id=&quot;softlinks&quot;&gt;
-'.htmlcode('softlink').'
-&lt;/div&gt;';
-%]
-
-[%
-return unless $$NODE{type}{title} ne 'draft' &amp;&amp; canUpdateNode($USER, $NODE) or
-	$$NODE{type}{title} eq 'draft' &amp;&amp; $APP-&gt;canSeeDraft($USER, $NODE, 'edit');
-
-htmlcode('openform', -class=&gt;'writeup_add')
-	.htmlcode('editwriteup', $NODE)
-	.'&lt;/form&gt;';
-%]</page>
+  <page></page>
   <displaytype>display</displaytype>
   <node_id>1854180</node_id>
   <title>writeup display page</title>

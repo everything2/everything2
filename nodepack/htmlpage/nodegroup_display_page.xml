@@ -2,15 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>8</pagetype_nodetype>
-  <page>[% unless ($$NODE{group}) {
-	&quot;&lt;i&gt;This nodegroup is empty&lt;/i&gt;&quot;;
-} else {
-	my @list = map {$query -&gt; li(linkNode($_))} @{$$NODE{group}};
-	$query -&gt; ul( {id =&gt; 'pagecontent'}, join(&quot;\n&quot;, @list) );
-}
-%]
-&lt;div id=&quot;pagefooter&quot;&gt;[{windowview:editor,launch editor}]&lt;/div&gt;
-</page>
+  <page></page>
   <displaytype>display</displaytype>
   <node_id>70</node_id>
   <title>nodegroup display page</title>

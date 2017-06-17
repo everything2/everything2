@@ -2,39 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>16</pagetype_nodetype>
-  <page>&lt;p&gt;[{usergroupmultipleadd}]&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;Title&lt;/b&gt;&lt;/p&gt;
-[{textfield:title}]
-
-&lt;p&gt;&lt;b&gt;Moderator Type&lt;/b&gt;&lt;/p&gt;
-[%
-my %valueList = ('0' =&gt; 'Single Moderator', '1' =&gt; 'Multiple Moderator');
-my @list =  keys(%valueList);
-
-$query-&gt;popup_menu('usergroup_modtype', \@list, $$NODE{modtype}, \%valueList);
-%]
-
-&lt;p&gt;&lt;b&gt;Join Type&lt;/b&gt;&lt;/p&gt;
-[%
-my %valueList = ('0' =&gt; 'Open to All', '1' =&gt; 'User Request', '2' =&gt; 'Moderator Only');
-my @list =  keys(%valueList);
-
-$query-&gt;popup_menu('usergroup_jointype', \@list, $$NODE{jointype}, \%valueList);
-%]
-
-&lt;p&gt;[%
-$query-&gt;checkbox('usergroup_messageArchive',$$NODE{messageArchive},1,'Archive messages?');
-%]&lt;/p&gt;
-
-&lt;p&gt;&lt;b&gt;Recommendation Link&lt;/b&gt; (aka Weblog Link)&lt;/p&gt;
-[{textfield:recommendationLink}]
-
-&lt;p&gt;&lt;b&gt;Usergroup Lineup Info (255 char. max)&lt;/b&gt;&lt;/p&gt;
-[{textarea:shortdesc,4,40}]
-
-&lt;p&gt;&lt;b&gt;Usergroup Doctext&lt;/b&gt;&lt;/p&gt;
-[{textarea:doctext}]</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>846444</node_id>
   <title>usergroup edit page</title>

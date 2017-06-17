@@ -2,9 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>0</parent_container>
   <pagetype_nodetype>1252389</pagetype_nodetype>
-  <page>[%
-return parseCode($$NODE{doctext});
-%]</page>
+  <page></page>
   <displaytype>display</displaytype>
   <node_id>1252294</node_id>
   <title>ticker display page</title>

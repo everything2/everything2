@@ -2,18 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>0</parent_container>
   <pagetype_nodetype>117</pagetype_nodetype>
-  <page>[%
-use Everything::XML;
-#return unless $$NODE{type}{title} eq 'writeup';
-
-return node2xml($NODE, ['reputation']) unless canUpdateNode($USER, $NODE);
-
-node2xml($NODE, []);
-#minor bug XML.pm line 594: push @NOFIELDS, @$EXCEPT if @$EXCEPT;
-#if exceptions not given at all, gives error:
-#&quot;Can't use an undefined value as an ARRAY reference at /usr/local/lib/perl5/site_perl/Everything/XML.pm line 594&quot;
-%]
-</page>
+  <page></page>
   <displaytype>xml</displaytype>
   <node_id>266</node_id>
   <title>writeup xml page</title>

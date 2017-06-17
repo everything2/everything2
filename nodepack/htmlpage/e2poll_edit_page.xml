@@ -2,29 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1685242</pagetype_nodetype>
-  <page>[{openform}]
-&lt;fieldset&gt;&lt;legend&gt;Edit poll&lt;/legend&gt;
-[%
-
-return '' if $$NODE{poll_status} eq 'new';
-'&lt;p&gt;&lt;strong&gt;This poll has already been posted for voting. Editing it now is probably a stupid idea.
-&lt;/strong&gt;&lt;/p&gt;';
-
-%]
-&lt;label&gt;Question:[{textfield:question,72}]&lt;/label&gt;
-&lt;p&gt;&lt;b&gt;Answers&lt;/b&gt; are separated by one or more line-breaks:
-&lt;/p&gt;
-&lt;textarea name=&quot;e2poll_doctext&quot; [{customtextarea:1}]&gt;
-[%
-$query -&gt; escapeHTML($$NODE{doctext});
-%]
-&lt;/textarea&gt;
-&lt;/fieldset&gt;
-[{closeform}]
-
-&lt;h2&gt;[%$$NODE{title}%]&lt;/h2&gt;
-[{showpoll}]
-</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>2052745</node_id>
   <title>e2poll edit page</title>

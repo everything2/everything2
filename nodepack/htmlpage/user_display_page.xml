@@ -2,52 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>15</pagetype_nodetype>
-  <page>[{setupuservars}]
-&lt;div id='homenodeheader'&gt;
-[{homenodeinfectedinfo}]
-&lt;div id='homenodepicbox'&gt;
-[{showuserimage}]
-[%
-return if getId($USER) != getId($NODE) or $APP-&gt;isGuest($USER);
-'&lt;p&gt;' . linkNode($NODE, '(edit user information)', {displaytype=&gt;'edit', &quot;-id&quot; =&gt; &quot;usereditlink&quot;}) . '&lt;/p&gt;';
-%]
-&lt;/div&gt;
-[{zenDisplayUserInfo}]
-&lt;/div&gt;
-
-&lt;hr class='clear'&gt;
-
-&lt;table width=&quot;100%&quot; id='homenodetext'&gt;&lt;tr&gt;&lt;td&gt;
-[%  
-  my $isignored = $DB-&gt;sqlSelect(&quot;ignore_node&quot;,&quot;messageignore&quot;,&quot;messageignore_id=$$NODE{node_id} and ignore_node=$$USER{node_id}&quot;);
-  return if $isignored;
-  return if ( $APP-&gt;isGuest($USER) );
-  my $csr = $DB-&gt;sqlSelectMany('*','registration',
-    'from_user='.$$NODE{user_id}.' &amp;&amp; in_user_profile=1')
-      ||return 'SQL Problem.  Please notify a [coder].';
-  my $labels = ['Registry','Data','Comments'];
-  my $rows;
-  while(my $ref = $csr-&gt;fetchrow_hashref()){
-    push @$rows,{
-      'Registry'=&gt;linkNode($$ref{for_registry}),
-      'Data'=&gt;$APP-&gt;breakTags(parseLinks($APP-&gt;htmlScreen($$ref{data}))),
-      'Comments'=&gt;$APP-&gt;breakTags(parseLinks($APP-&gt;htmlScreen($$ref{comments}))),
-    };
-  }
-
-  return $APP-&gt;buildTable($labels,$rows,'class=&quot;registries&quot;,nolabels') if($rows);
-  return '';
-%]
-&lt;div class='content'&gt;
-[{displayUserText}]
-&lt;/div&gt;
-&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-
-
-
- 
-
-[{showbookmarks}]</page>
+  <page></page>
   <displaytype>display</displaytype>
   <node_id>1854179</node_id>
   <title>user display page</title>

@@ -2,37 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>5</pagetype_nodetype>
-  <page>title:[{textfield:title}] maintained by:[{node_menu:author_user,user,usergroup}]&lt;br&gt;
-pagetype: [{node_menu:pagetype_nodetype}]&lt;br&gt;
-displaytype:[{textfield:displaytype}]&lt;br&gt;
-parent container:[{node_menu:parent_container}]&lt;br&gt;
-MIME type:[{textfield:mimetype}] 
-&lt;table width=100%&gt;
-&lt;tr&gt;
-&lt;td width=90%&gt;
-&lt;p&gt;&lt;FONT SIZE=2&gt;&lt;b&gt;Edit the page:&lt;/b&gt;&lt;/FONT&gt;&lt;br&gt;
-[{textarea:page}]&lt;/td&gt;
-&lt;td width=10%&gt;&lt;font size=2&gt;[%
-
-#return;
-my $N = getType($$NODE{pagetype_nodetype});
-my $str;
-$str .= &quot;&lt;li&gt;&quot;;
-$str .= join &quot;\n&lt;li&gt;&quot;, $DB-&gt;getFields;
-
-my @tables = @{ $DB-&gt;getNodetypeTables($N) };
-foreach (@tables) {
-  $str .=&quot;\n&lt;li&gt;&quot;;
-  $str .= join &quot;\n&lt;li&gt;&quot;, $DB-&gt;getFields($_);
-}
-$str;
-
-
-
-%]&lt;/font&gt;&lt;/td&gt;
-
-&lt;/tr&gt;&lt;/table&gt;
-</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>66</node_id>
   <title>htmlpage edit page</title>

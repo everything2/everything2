@@ -2,17 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>150</pagetype_nodetype>
-  <page>Maintains: 
-[%
-my $N = $DB-&gt;getNodeById($$NODE{maintain_nodetype}, 'light');
-linkNode $N;
-%]
-&lt;br&gt;
-
-&lt;p&gt;
-Maintenance operation:[&quot;$$NODE{maintaintype}&quot;]
-&lt;p&gt;[{listcode:code}]
-</page>
+  <page></page>
   <displaytype>display</displaytype>
   <node_id>188</node_id>
   <title>maintenance display page</title>

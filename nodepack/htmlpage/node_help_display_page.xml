@@ -2,75 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>7</pagetype_nodetype>
-  <page>[%
-$NODE = $GNODE = getNodeById($Everything::CONF-&gt;system-&gt;{search_results}) unless $$NODE{type}{title} ne 'draft' or $APP-&gt;canSeeDraft($USER, $NODE);
-'';
-%][%
-
-  return unless $APP-&gt;isAdmin($USER);
-  my $dohelp = $query-&gt;param(&quot;dohelp&quot;);  
-  my $txt = $query-&gt;param(&quot;helptext&quot;);
-
-  if($dohelp eq &quot;create&quot;)
-  {
-    $DB-&gt;sqlInsert(&quot;nodehelp&quot;, {nodehelp_id =&gt; $$NODE{node_id}, nodehelp_text =&gt; $txt});
-
-    return &quot;Help topic created!&lt;br&gt;&lt;br&gt;&quot;;
-  }
-  
-  if($dohelp eq &quot;update&quot;)
-  {
-    $DB-&gt;sqlUpdate(&quot;nodehelp&quot;, {nodehelp_text =&gt; $txt}, &quot;nodehelp_id=$$NODE{node_id}&quot;);
-    return &quot;Help topic updated!&lt;br&gt;&lt;br&gt;&quot;;
-  }
-
-  return &quot;&quot;;
-
-%]
-
-[%
-  my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;, &quot;nodehelp&quot;, &quot;nodehelp_id=$$NODE{node_id}&quot;);
-  my $str = &quot;&lt;p align=\&quot;right\&quot;&gt;Help for: &quot;.linkNode($NODE).&quot;&lt;/p&gt;&lt;br&gt;&quot;;
-  my $nohelp = &quot;&lt;em&gt;&lt;p align=\&quot;center\&quot;&gt;No help topic available for this item&lt;/p&gt;&lt;/em&gt;&quot;;
-  if(my $row = $csr-&gt;fetchrow_hashref())
-  { 
-     if(length($$row{nodehelp_text}) &lt; 3)
-     {
-      $str.= $nohelp 
-     }
-     else
-     {
-      $str.= parseLinks($$row{nodehelp_text});
-     }
-  }
-  else
-  {
-     $str.= $nohelp;
-  }
-  
-  $str.= &quot;&lt;br&gt;&lt;br&gt;&quot;;
-  return $str;
-%]
-
-[%
-  return unless $APP-&gt;isAdmin($USER);;
-
-  my $csr = $DB-&gt;sqlSelectMany(&quot;*&quot;, &quot;nodehelp&quot;, &quot;nodehelp_id=$$NODE{node_id}&quot;);
-  my $row;
-  my $dohelp;
-  if($row = $csr-&gt;fetchrow_hashref())
-  {
-    $dohelp = &quot;update&quot;;
-  }
-  else
-  {
-    $dohelp = &quot;create&quot;;
-  }
-
-  my $str = &quot;&lt;br&gt;&lt;br&gt;&lt;p align=\&quot;center\&quot;&gt;&lt;hr width=\&quot;200\&quot;&gt;&lt;/p&gt;&lt;br&gt;Because you are spiffy, you can edit the help topic for &quot;.linkNode($NODE).&quot;:&lt;br&gt;&lt;br&gt;&quot;.htmlcode(&quot;openform&quot;).&quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;dohelp\&quot; value=\&quot;$dohelp\&quot;&gt;&lt;textarea name=\&quot;helptext\&quot; rows=\&quot;30\&quot; cols=\&quot;80\&quot;&gt;$$row{nodehelp_text}&lt;/textarea&gt;&lt;br&gt;&lt;input type=\&quot;submit\&quot; value=\&quot;submit\&quot;&gt;&lt;/form&gt;&quot;;
-
-  return $str;
-%]</page>
+  <page></page>
   <displaytype>help</displaytype>
   <node_id>1264699</node_id>
   <title>node help display page</title>

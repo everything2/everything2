@@ -2,46 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>148</pagetype_nodetype>
-  <page>&lt;p&gt;Indices for database table [&quot;$NODE-&gt;{title}&quot;]&lt;/p&gt;
-[%
-   my $table = $NODE-&gt;{title};
-   my @cols = qw(
-      Name Seq Column Coll Card SubPt Packed Comment );
-   my %cols = ( Name=&gt;'Key_name', Seq=&gt;'Seq_in_index',
-      Column=&gt;'Column_name', Coll=&gt;'Collation',
-      Card=&gt;'Cardinality', SubPt=&gt;'Sub_part',
-      Packed=&gt;'Packed', Comment=&gt;'Comment' );
-   my @fields;
-   {
-      my $sth= $DB-&gt;{dbh}-&gt;prepare( &quot;show index from $table&quot; );
-      $sth-&gt;execute();
-      while(  my $rec= $sth-&gt;fetchrow_hashref()  ) {
-         push @fields, $rec;
-      }
-      $sth-&gt;finish();
-   }
-   my $str = &quot;&quot;;
-
-   $str .= &quot;&lt;table class=\&quot;index\&quot;&gt;\n&quot;;
-   $str .= &quot; &lt;tr&gt;\n&quot;;
-   foreach my $fieldname (  @cols  ) {
-      $str .= qq[  &lt;th class=&quot;indexHeader&quot;&gt;
-         $fieldname&lt;/th&gt;\n];
-   }
-   $str .= &quot; &lt;/tr&gt;\n&quot;;
-
-   foreach my $field (  @fields  ) {
-      $str .= &quot; &lt;tr&gt;\n&quot;;
-      foreach my $value (  @{$field}{@cols{@cols}}  ) {
-         $value = &quot;&amp;nbsp;&quot;   if  $value eq &quot;&quot;;
-         $str .= &quot;  &lt;td class=\&quot;indexValue\&quot;&gt;$value&lt;/td&gt;\n&quot;;
-      }
-      $str .= &quot; &lt;/tr&gt;\n&quot;;
-   }
-   $str .= &quot;&lt;/table&gt;\n&quot;;
-
-   return $str;
-%]</page>
+  <page></page>
   <displaytype>index</displaytype>
   <node_id>1427054</node_id>
   <title>dbtable index page</title>

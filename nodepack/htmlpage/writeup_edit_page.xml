@@ -2,48 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>117</pagetype_nodetype>
-  <page>[%
-
-my $uid = getId($USER);
-
-return 'If you need a writeup removed, revert it to draft' unless ( $APP-&gt;isEditor($USER) ); 
-
-my $str;
-my $pname = $query-&gt;param('parentnodename');
-if($pname) {
-	my $E2N = getNode($pname, 'e2node');
-	if($E2N) {
-		my $nid = getId($NODE);
-		$$NODE{parent_e2node} = getId($E2N);
-		updateNode($NODE, $USER);
-
-		my $alreadyIn = 0;
-		foreach(@{$$E2N{group}}) {
-			if($_==$nid) {
-				$alreadyIn = 1;
-				last;
-			}
-		}
-		if($alreadyIn) {
-			$str .= 'Writeup is already in ';
-		} else {
-			insertIntoNodegroup($E2N, -1, $NODE);
-			$str.= 'Writeup has been reparented with ';
-		}
-		$str .= linkNode($E2N) . '.';
-	} else {
-		$str.=&quot;No e2node named $pname exists!&quot;;
-	}
-}
-$str.='&lt;p&gt;parent e2node:';
-my $E2NODE = getNodeById($$NODE{parent_e2node});
-$str.$query-&gt;textfield('parentnodename', $$E2NODE{title});
-
-%]
-&lt;p&gt;
-Writeuptype:[{node_menu:wrtype_writeuptype}]
-&lt;p&gt;
-[{textarea:doctext}]</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>170046</node_id>
   <title>writeup edit page</title>

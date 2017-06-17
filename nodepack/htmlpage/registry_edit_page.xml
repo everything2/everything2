@@ -2,37 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1876758</pagetype_nodetype>
-  <page>[%
-return &quot;You can't edit this, don't be ridiculous.&quot; unless(canUpdateNode($USER, $NODE));
-
-# This code does the update, if we have one.
-my $param;
-my @params = $query-&gt;param;
-
-foreach $param (@params)
-{
-  if ($param =~ /^update_(\w*)$/)
-  {
-    $$NODE{$1} = $query-&gt;param($param);
-  }
-}
-
-updateNode($NODE, $USER);
-
-my $str = my $str='&lt;p align=&quot;right&quot;&gt;('.linkNode($NODE, 'display', {'displaytype'=&gt;'display', 'lastnode_id'=&gt;0}).&quot;)&lt;/p&gt;&quot;;
-
-$str.= htmlcode(&quot;openform&quot;);
-$str.= $APP-&gt;buildTable(['key','value'],[
-    {'key'=&gt;'Title','value'=&gt;
-    $query-&gt;textfield( -name =&gt; &quot;update_title&quot;, -default =&gt; $$NODE{title}, -size =&gt; 40, -maxlength =&gt; 255 )},
-    {'key'=&gt;'Introduction','value'=&gt;
-    $query-&gt;textarea( -name =&gt; &quot;update_doctext&quot;, -default =&gt; $$NODE{doctext}, -rows =&gt; 7, -columns =&gt; 50 )},
-
-  ],'nolabels','center');
-
-$str.=htmlcode(&quot;closeform&quot;);
-return $str;
-%]</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>2001832</node_id>
   <title>registry edit page</title>

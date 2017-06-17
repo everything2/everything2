@@ -2,12 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>154</pagetype_nodetype>
-  <page>&lt;H4&gt;title:&lt;/H4&gt;[{textfield:title}]
-&lt;h4&gt;owner:&lt;/h4&gt;[{node_menu : author_user,user,usergroup}]
-&lt;h4&gt;from address:&lt;/h4&gt;[{textfield:from_address}]
-&lt;p&gt;&lt;small&gt;&lt;strong&gt;Mail body:&lt;/strong&gt;&lt;/small&gt;&lt;br&gt;
-
-[{textarea:doctext,30,60}]</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>2072168</node_id>
   <title>mail edit page</title>

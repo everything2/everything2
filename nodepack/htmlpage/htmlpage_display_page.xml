@@ -2,22 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>5</pagetype_nodetype>
-  <page>&lt;b&gt;pagetype&lt;/b&gt;: 
-[%
-	my $N = $DB-&gt;getNodeById($$NODE{pagetype_nodetype}, 'light');
-	linkNode $N;
-%]&lt;br&gt;
-&lt;b&gt;parent container&lt;/b&gt;:
-[% return linkNode ($$NODE{parent_container}) if $$NODE{parent_container};
-&quot;&lt;i&gt;none&lt;/i&gt;&quot;;
-%]
-&lt;br&gt;
-&lt;b&gt;displaytype&lt;/b&gt;:
-[&quot;$$NODE{displaytype}&quot;]
-&lt;br&gt;
-&lt;b&gt;MIMEtype&lt;/b&gt;: [%&quot;$$NODE{mimetype}&quot;%]
-&lt;p&gt;[{listcode:page}]
-</page>
+  <page></page>
   <displaytype>display</displaytype>
   <node_id>65</node_id>
   <title>htmlpage display page</title>

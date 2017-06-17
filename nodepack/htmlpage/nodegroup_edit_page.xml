@@ -2,8 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>8</pagetype_nodetype>
-  <page>[{groupeditor}]
-</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>71</node_id>
   <title>nodegroup edit page</title>

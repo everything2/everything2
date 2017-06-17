@@ -2,36 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1151141</pagetype_nodetype>
-  <page>&lt;p&gt;
-title:[{textfield:title}] maintained by:[{node_menu:author_user,user,usergroup}]
-&lt;/p&gt;
-[%
-  return &quot;&quot; unless (isGod($USER)||$$NODE{type_nodetype}!=1151141);
-  return linkNode($NODE, &quot;Apply this patch&quot;, {&quot;op&quot; =&gt; &quot;applypatch&quot;, &quot;patch_id&quot; =&gt; $$NODE{node_id}}).'&lt;br&gt;' unless $$NODE{cur_status} == 1288865;
-  return &quot;&lt;font color=\&quot;red\&quot;&gt;The patch has been applied&lt;/font&gt; &quot;.linkNode($NODE, &quot;Unapply&quot;, {&quot;op&quot; =&gt; &quot;applypatch&quot;, &quot;patch_id&quot; =&gt; $$NODE{node_id}, displaytype=&gt;'edit'}).&quot;&lt;br /&gt;&quot;;
-%]
-
-&lt;p&gt;Change the description of the patch:&lt;/p&gt;
- [{textfield:purpose,80}]
-&lt;p&gt;Any additional instructions for bringing this patch into production?&lt;/p&gt;
- [{textfield:instructions,80}]
-
-[%
-return htmlcode('listcode','code') unless getNodeById($NODE -&gt; {cur_status}) -&gt; {applied};
-htmlcode('listcode',$$NODE{field},getNodeById($$NODE{for_node}));
-%]
-[%
-return if getNodeById($NODE -&gt; {cur_status}) -&gt; {applied}; #If applied, don't allow editting.
-
-my $str;
-$str .= &quot;&lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the code:&lt;/strong&gt;&lt;/small&gt;&lt;br /&gt;\n&quot;;
-
-$str .= htmlcode('textarea',&quot;code,30,80&quot;);
-$str .= $query -&gt; checkbox( -name=&gt;'op' , value=&gt;'applypatch' , selected=&gt;0 , force=&gt;1 ,label=&gt;'apply this patch immediately' ).
-'&lt;br&gt;'.
-$query -&gt; hidden( 'patch_id' , $$NODE{node_id} ) if $APP-&gt;inDevEnvironment();
-return $str;
-%]</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>1977053</node_id>
   <title>patch edit page</title>

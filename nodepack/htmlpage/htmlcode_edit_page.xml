@@ -2,18 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>4</pagetype_nodetype>
-  <page>title:[{textfield:title}] maintained by:[{node_menu:author_user,user,usergroup}]&lt;br /&gt;
-[%
-  return &quot;&quot; unless isGod($USER);
-  return &quot;&quot; unless $NODE-&gt;{type}-&gt;{title} eq &quot;patch&quot;;
-  return linkNode($NODE, &quot;Apply this patch&quot;, {&quot;op&quot; =&gt; &quot;applypatch&quot;, &quot;patch_id&quot; =&gt; &quot;$$NODE{node_id}&quot;}).&quot;&lt;Br&gt;&quot; unless $query-&gt;param(&quot;op&quot;) eq &quot;applypatch&quot;;
-  return &quot;&lt;font color=\&quot;red\&quot;&gt;The patch has been applied&lt;/font&gt; &quot;.linkNode($NODE, &quot;Unapply&quot;, {&quot;op&quot; =&gt; &quot;applypatch&quot;, &quot;patch_id&quot; =&gt; &quot;$$NODE{node_id}&quot;}).&quot;&lt;br /&gt;&quot;;
-%]
-
-[{listcode:code}]
-&lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the code:&lt;/strong&gt;&lt;/small&gt;&lt;br /&gt;
-
-[{textarea:code,30,80}]</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>64</node_id>
   <title>htmlcode edit page</title>

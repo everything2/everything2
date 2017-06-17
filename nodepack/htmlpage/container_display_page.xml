@@ -2,11 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>2</pagetype_nodetype>
-  <page>parent container:
-[%return linkNode ($$NODE{parent_container}) if $$NODE{parent_container};
-&quot;&lt;i&gt;none&lt;/i&gt;&quot;;%]&lt;br&gt;
-[{listcode:context}]
-</page>
+  <page></page>
   <displaytype>display</displaytype>
   <node_id>59</node_id>
   <title>container display page</title>

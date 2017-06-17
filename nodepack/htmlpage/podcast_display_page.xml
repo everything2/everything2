@@ -2,33 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1957956</pagetype_nodetype>
-  <page>[%
-
-
-my $TAGNODE = getNode 'approved html tags', 'setting';
-my $TAGS=getVars($TAGNODE);
-
-my $text = $APP-&gt;htmlScreen($$NODE{description}, $TAGS);
-$text = parseLinks($text);
-
-my $str;
-$str.= &lt;&lt;ENDTEXT;
-
-&lt;object type=&quot;application/x-shockwave-flash&quot; data=&quot;http://static.everything2.com/player_mp3_maxi.swf&quot; width=&quot;300&quot; height=&quot;20&quot;&gt;
-    &lt;param name=&quot;movie&quot; value=&quot;http://static.everything2.com/player_mp3_maxi.swf&quot; /&gt;
-    &lt;param name=&quot;bgcolor&quot; value=&quot;#ffffff&quot; /&gt;
-    &lt;param name=&quot;FlashVars&quot; value=&quot;mp3=$$NODE{link}&amp;amp;width=300&amp;amp;autoload=0&amp;amp;volume=50&amp;amp;showstop=1&amp;amp;showinfo=1&amp;amp;showvolume=1&quot; /&gt;
-&lt;/object&gt;
-&lt;h2&gt;&lt;a href='$$NODE{link}'&gt;download mp3&lt;/a&gt;&lt;/h2&gt;
-ENDTEXT
-
-$str.=&quot;$text&quot;;
-$str.='&lt;p align=&quot;right&quot;&gt;('.linkNode($NODE, 'edit', {'displaytype'=&gt;'edit', 'lastnode_id'=&gt;0}).&quot;)&lt;/p&gt;&quot; if canUpdateNode($USER, $NODE);
- 
-return $str;
-
-
-%]</page>
+  <page></page>
   <displaytype>display</displaytype>
   <node_id>1957962</node_id>
   <title>podcast display page</title>

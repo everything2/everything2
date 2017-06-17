@@ -2,33 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>150</pagetype_nodetype>
-  <page>title:[{textfield:title}] maintained by:[{node_menu:author_user,user,usergroup}]&lt;br&gt;
-Maintains: [{node_menu:maintain_nodetype}]&lt;br&gt;
-maintaintype:[{textfield:maintaintype}](create, update, or delete)&lt;br&gt;
-
-&lt;table width=100%&gt;
-&lt;tr&gt;
-&lt;td width=90%&gt;
-&lt;p&gt;&lt;FONT SIZE=2&gt;&lt;b&gt;Edit the code:&lt;/b&gt;&lt;/FONT&gt;&lt;br&gt;
-[{textarea:code}]&lt;/td&gt;
-&lt;td width=10%&gt;&lt;font size=2&gt;[%
-my $N = $DB-&gt;getNodeById($$NODE{maintain_nodetype});
-my $str;
-$str .= &quot;&lt;li&gt;&quot;;
-$str .= join &quot;\n&lt;li&gt;&quot;, $DB-&gt;getFields;
-
-my @tables = @{ $DB-&gt;getNodetypeTables($$NODE{maintain_nodetype}) };
-foreach (@tables) {
-  $str .=&quot;\n&lt;li&gt;&quot;;
-  $str .= join &quot;\n&lt;li&gt;&quot;, $DB-&gt;getFields($_);
-}
-$str;
-
-
-
-%]&lt;/font&gt;&lt;/td&gt;
-
-&lt;/tr&gt;&lt;/table&gt;</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>189</node_id>
   <title>maintenance edit page</title>

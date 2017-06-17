@@ -2,77 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1156105</pagetype_nodetype>
-  <page>[%
-my $restrict;
-if ( $query-&gt;param( 'sexisgood' ) ) {
-    
-    $restrict = $query-&gt;param( 'debatecomment_restricted' );
-    $$NODE{ 'restricted' } = $restrict;
-}
-$restrict = getNodeById($$NODE{ 'root_debatecomment' }) -&gt; {'restricted'};
-my $title = $$NODE { 'title' };
-$title =~ s/\&lt;/\&amp;lt\;/g;
-$title =~ s/\&gt;/\&amp;gt\;/g;
-
-my $ug_name = getNodeById($restrict) -&gt; {'title'};
-
-$title =~ /^\s*([\w\s]+):/;
-my $prefix = $1;
-
-$title = &quot;$ug_name: &quot;.$title unless lc($prefix) eq lc($ug_name);
-
-$$NODE { 'title' } = $title;
-
-
-updateNode( $NODE, $USER );
-
-'';
-%]
-
-[{showdebate:0}]
-
-[%
-my $rootnode = getNodeById( $$NODE{ 'root_debatecomment' } );
-my $restrict = $$NODE{restricted};
-
-# If the user's not in the usergroup, deny access
-if ( ! $APP-&gt;inUsergroup($USER, getNodeById($$rootnode{ restricted })) &amp;&amp; 
-     ! Everything::isApproved($USER,$rootnode) ) {
-    return '';
-}
-
-my $str = '';
-
-$str .= '
-&lt;input type=&quot;hidden&quot; name=&quot;debatecomment_author_user&quot; value=&quot;' . $$USER{ 'node_id' } . '&quot;&gt;&lt;/input&gt;
-&lt;input type=&quot;hidden&quot; name=&quot;sexisgood&quot;&gt;
-&lt;input type=&quot;hidden&quot; name=&quot;debatecomment_restricted&quot; value=&quot;' . $restrict . '&quot;&gt;
-&lt;h2&gt;Edit your comment&lt;/h2&gt;
-&lt;p&gt;
-&lt;label&gt;Comment title:';
-
-my $ug_id = $restrict;
-my $ug = getNodeById($ug_id);
-my $ug_name = $$ug{'title'};
-my $cleantitle = $$NODE{ 'title' };
-$cleantitle =~ s/^$ug_name\: //;
-
-$cleantitle =~ s/\&amp;lt\;/\&lt;/g;
-$cleantitle =~ s/\&amp;gt\;/\&gt;/g;
-
-my $fieldname = $$NODE{type}{title}.&quot;_title&quot;;
-
-$str .= $query -&gt; textfield($fieldname,$cleantitle, 20).
-'&lt;/label&gt;
-&lt;/p&gt;
-';
-
-$str .= '&lt;p&gt;&lt;strong&gt;Comment:&lt;/strong&gt;&lt;br&gt;
-[{textarea:doctext,20,60,virtual}]&lt;/p&gt;';
-
-return parseCode( $str );
-%]
-</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>1153392</node_id>
   <title>debatecomment edit page</title>

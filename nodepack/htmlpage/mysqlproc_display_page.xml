@@ -2,13 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>2061807</pagetype_nodetype>
-  <page>&lt;br /&gt;
-&lt;b&gt;CREATE PROCEDURE [% $NODE-&gt;{title}%]([% $NODE-&gt;{parameters} %])&lt;/b&gt;&lt;br /&gt;
-&lt;b&gt;BEGIN&lt;/b&gt;&lt;br /&gt;
-&lt;pre&gt;
-[% return $NODE-&gt;{doctext}; %]
-&lt;/pre&gt;
-&lt;b&gt;END&lt;/b&gt;&lt;br /&gt;</page>
+  <page></page>
   <displaytype>display</displaytype>
   <node_id>2069689</node_id>
   <title>mysqlproc display page</title>

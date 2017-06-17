@@ -2,25 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>154</pagetype_nodetype>
-  <page>&lt;TABLE width=100% cellpadding=0 cellspacing=1 border=0&gt;
-&lt;TR bgcolor=[%
-  $$VARS{mailhead_color} or &quot;#CCCCCC&quot;;
-%]&gt;&lt;TH&gt;To:&lt;/TH&gt;&lt;TD width=100%&gt;[%linkNode($$NODE{author_user})%]&lt;TD&gt;&lt;/TR&gt;
-&lt;TR bgcolor=[%
-  $$VARS{mailhead_color} or &quot;#CCCCCC&quot;;
-%]&gt;&lt;TH&gt;From:&lt;/TH&gt;&lt;/TH&gt;&lt;TD width=100%&gt;[%
-if (not $$NODE{from_address}) {
-  return &quot;&lt;i&gt;nobody&lt;/i&gt;&quot;;
-} else {
-  return $$NODE{from_address};
-}
-#eventually this will have links to an addressbook
-#as well as a home node if a person exists within the 
-#system
-%]&lt;/TD&gt;&lt;/TR&gt;
-&lt;/TABLE&gt;
-[{parseLinks:doctext}]
-</page>
+  <page></page>
   <displaytype>display</displaytype>
   <node_id>195</node_id>
   <title>mail display page</title>

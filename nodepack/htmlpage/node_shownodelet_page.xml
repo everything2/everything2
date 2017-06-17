@@ -2,31 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>7</pagetype_nodetype>
-  <page>[%
-$NODE = $GNODE = getNodeById($Everything::CONF-&gt;system-&gt;{not_found_node}) unless $$NODE{type}{title} ne 'draft' or $APP-&gt;canSeeDraft($USER,$NODE);
-'';
-%][%
-  my $nodelet_id = $query-&gt;param('nodelet_id');
-  my $current_nodelet = getNode($nodelet_id);
-  if (!$current_nodelet) {
-    return 'no nodelet to show';
-  }
-  my $nl = insertNodelet($current_nodelet);
-
-  # Nasty hack: if a nodelet links back to the same node preserving
-  # the displaytype, the 'shownodelet' display type will be
-  # meaningless without the nodelet_id to show. So reinsert it
-  # anywhere within a tag.
-  $nl =~ s/(&lt;[^&gt;]*\bdisplaytype=shownodelet\b)/$1&amp;nodelet_id=$nodelet_id/g;
-  # Also insert a hidden 'nodelet_id' next to any input that sets a displaytype of 'shownodelet'.
-  $nl =~ s{
-    (&lt;input\b[^&gt;]*\bname=(|'|&quot;)displaytype(|'|&quot;)[^&gt;]*value=(|'|&quot;)shownodelet(|'|&quot;)
-    | &lt;input\b[^&gt;]*\bvalue=(|'|&quot;)shownodelet(|'|&quot;)[^&gt;]*\bname=(|'|&quot;)displaytype(|'|&quot;))
-  }{&lt;INPUT TYPE=&quot;hidden&quot; NAME=&quot;nodelet_id&quot; VALUE=&quot;$nodelet_id&quot; /&gt;$1}gxi;
-
-
-  $nl;
-%]</page>
+  <page></page>
   <displaytype>shownodelet</displaytype>
   <node_id>2021826</node_id>
   <title>node shownodelet page</title>

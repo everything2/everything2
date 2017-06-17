@@ -2,45 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>9</pagetype_nodetype>
-  <page>[%
-return unless isGod($USER);
-
-if ($query -&gt; param('submit') eq 'Update now'){
-	$$NODE{nltext} = parseCode($$NODE{nlcode}, $NODE);
-	$$NODE{lastupdate} = time;
-	updateNode($NODE, $USER);
-}
-
-my $str = htmlcode('openform')
-	.'&lt;fieldset&gt;&lt;legend&gt;Admin&lt;/legend&gt;&lt;label&gt;Update interval (seconds):'
-	.htmlcode('textfield', 'updateinterval')
-	.'&lt;/label&gt;'
-	.$query -&gt; submit('submit', 'Submit')
-	.'&lt;br&gt;&lt;br&gt;'
-	.$query -&gt; submit('submit', 'Update now')
-	.'&lt;p&gt;';
-
-if ($query -&gt; param('op') eq 'movenodelet' &amp;&amp; $query -&gt; param('nodelet') == $$NODE{node_id}){
-	$str .= 'Nodelet added. (It will not be shown in the sidebar on this page.)';
-}elsif ($$VARS{nodelets} =~ /\b$$NODE{node_id}\b/){
-	$str .= 'You are using this nodelet.';
-}else{
-	$str .= linkNode($NODE,'Add this nodelet',
-		{op =&gt; 'movenodelet', nodelet =&gt; $$NODE{node_id}, position =&gt; '0'});
-}
-
-$str.'&lt;/p&gt;&lt;/fieldset&gt;&lt;/form&gt;';
-
-%]
-[%
-return '' if $APP-&gt;isGuest($USER);
-$PAGELOAD-&gt;{ pagenodelets } = $$VARS{ nodelets } ;
-$PAGELOAD-&gt;{ pagenodelets } =~ s/\b$$NODE{node_id}\b,?//;
-delete $PAGELOAD-&gt;{pagenodelets} if $PAGELOAD-&gt;{pagenodelets} eq $$VARS{nodelets};
-
-return insertNodelet($NODE);
-%]
-</page>
+  <page></page>
   <displaytype>display</displaytype>
   <node_id>73</node_id>
   <title>nodelet display page</title>

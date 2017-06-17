@@ -2,14 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>2061807</pagetype_nodetype>
-  <page>&lt;H4&gt;title:&lt;/H4&gt;[{textfield:title}]
-&lt;h4&gt;parameters:[{textfield:parameters,60}]
-&lt;h4&gt;owner:&lt;/h4&gt;[{node_menu : author_user,user,usergroup}]
-&lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the mysql procedure code:&lt;/strong&gt;&lt;/small&gt;&lt;br /&gt;
-&lt;br /&gt;&lt;br /&gt;
-&lt;em&gt;[{mysqlproctest}]&lt;/em&gt;
-
-[{textarea:doctext,30,60}]</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>2069690</node_id>
   <title>mysqlproc edit page</title>

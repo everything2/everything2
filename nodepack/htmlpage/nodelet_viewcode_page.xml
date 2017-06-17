@@ -2,27 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>9</pagetype_nodetype>
-  <page>[%
-return &quot;&quot; unless isGod($USER);
-if ($$USER{title} eq 'ascorbic') {
-  if ($query-&gt;param('addnodelet')) {
-    my (@nls)=split(/,/,$$VARS{nodelets});
-    push @nls, $$NODE{node_id};
-    my %seen = ();
-    my $item;
-    my @nl;
-    foreach $item (@nls) {
-      push(@nl, $item) unless $seen{$item}++;
-    }
-
-    $$VARS{nodelets} = join(',',@nl);
-  } else {
-    return &quot;&lt;a href='&quot; . urlGen({node_id=&gt;getId($NODE), addnodelet =&gt; 1}) . &quot;'&gt;Add this nodelet&lt;/a&gt;&quot;;
-  }
-}
-%]
-[{listcode:nlcode}]
-</page>
+  <page></page>
   <displaytype>viewcode</displaytype>
   <node_id>1933854</node_id>
   <title>nodelet viewcode page</title>

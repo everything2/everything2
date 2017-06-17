@@ -2,12 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>2117441</pagetype_nodetype>
-  <page>&lt;pre&gt;
-[%
-  use JSON;
-  return to_json(from_json($NODE-&gt;{vars} || &quot;{}&quot;),{utf8 =&gt; 1, pretty =&gt; 1});
-%]
-&lt;/pre&gt;</page>
+  <page></page>
   <displaytype>display</displaytype>
   <node_id>2117442</node_id>
   <title>datastash display page</title>

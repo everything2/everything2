@@ -2,18 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1930710</pagetype_nodetype>
-  <page>&lt;dl&gt;
-&lt;dt&gt;[% parseLinks(qq!Description (used in [Notifications nodelet settings[htmlcode]]).  Changing this may have [canseeNotification[htmlcode]|security implications].!) %]&lt;/dt&gt;
-&lt;dd&gt;[% $$NODE{description} %]&lt;/dd&gt;
-&lt;dt&gt;Maximum hours this notification is good for (0 will cause it to never display)&lt;/dt&gt;
-&lt;dd&gt;[% $$NODE{hourLimit} %]&lt;/dd&gt;
-&lt;dt&gt;Code to display notification&lt;/dt&gt;
-&lt;dd&gt;[{listcode:code}]&lt;/dd&gt;
-&lt;dt&gt;Code to check for invalid notification&lt;/dt&gt;
-&lt;dd&gt;[{listcode:invalid_check}]&lt;/dd&gt;
-&lt;/dl&gt;
-
-</page>
+  <page></page>
   <displaytype>display</displaytype>
   <node_id>1930717</node_id>
   <title>notification display page</title>
