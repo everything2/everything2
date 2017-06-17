@@ -2,13 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>2</pagetype_nodetype>
-  <page>title:[{textfield:title}]
-maintained by:[{node_menu:author_user,user,usergroup}]&lt;br&gt;
-
-Parent container:[{node_menu:parent_container}]&lt;br&gt;
-
-
-container html:&lt;br&gt;[{textarea:context}]</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>60</node_id>
   <title>container edit page</title>

@@ -2,11 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>0</parent_container>
   <pagetype_nodetype>451267</pagetype_nodetype>
-  <page>[%
-  my $out = htmlcode(&quot;parsecode&quot;,&quot;doctext&quot;);
-  $out =~ s/^\s+//g;
-  return $out;
-%]</page>
+  <page></page>
   <displaytype>display</displaytype>
   <node_id>451268</node_id>
   <title>fullpage display page</title>

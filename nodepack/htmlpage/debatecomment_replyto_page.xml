@@ -2,52 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1156105</pagetype_nodetype>
-  <page>&lt;form method=&quot;post&quot; id=&quot;pagebody&quot;&gt;
-[{showdebate:0}]
-
-[%
-my $rootnode = getNodeById( $$NODE{ 'root_debatecomment' } );
-
-#new way - includes hack to cover old way
-my $restrict = $$rootnode{restricted}||0;
-if($restrict==0) {
-	$restrict=923653;	#CE hack
-} elsif($restrict==1) {
-	$restrict=114;	#admin hack
-}
-my $restrictNode = getNodeById($restrict);
-unless($restrictNode) {
-	#ack! no group permission somehow!
-	return 'Ack! Parent has no group!';
-}
-
-unless( $APP-&gt;inUsergroup($USER,getNodeById($restrict)) ||
-       Everything::isApproved($USER,$restrictNode) ) {
-	return 'You are not allowed to add a comment to this debate.';
-}
-
-my $newtitle = $$NODE{ 'title' };
-
-my $ug_name = getNodeById($restrict) -&gt; {'title'};
-
-$newtitle =~ s/^$ug_name: //;
-$newtitle = 're: ' . $newtitle unless ( $newtitle =~ /^re: / );
-$newtitle =~ s/&quot;/&amp;quot;/g;
-
-'
-&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;new&quot;&gt;
-&lt;input type=&quot;hidden&quot; name=&quot;type&quot; value=&quot;debatecomment&quot;&gt;
-&lt;input type=&quot;hidden&quot; name=&quot;displaytype&quot; value=&quot;edit&quot;&gt;
-&lt;input type=&quot;hidden&quot; name=&quot;debatecomment_restricted&quot; value=&quot;'.$restrict.'&quot;&gt;
-&lt;input type=&quot;hidden&quot; name=&quot;debatecomment_parent_debatecomment&quot; value=&quot;' . $$NODE{ 'node_id' } . '&quot;&gt;
-&lt;input type=&quot;hidden&quot; name=&quot;debatecomment_root_debatecomment&quot; value=&quot;' . $$NODE{ 'root_debatecomment' } . '&quot;&gt;
-&lt;h2&gt;Enter your reply&lt;/h2&gt;
-&lt;label&gt;Comment title:&lt;input type=&quot;text&quot; size=&quot;60&quot; maxlength=&quot;64&quot; name=&quot;node&quot; value=&quot;' . $newtitle . '&quot;&gt;&lt;/label&gt;&lt;br&gt;
-&lt;p&gt;&lt;strong&gt;Comment:&lt;/strong&gt;&lt;br&gt;
-&lt;textarea name=&quot;debatecomment_doctext&quot; cols=&quot;60&quot; rows=&quot;20&quot; wrap=&quot;virtual&quot;&gt;&lt;/textarea&gt;&lt;/p&gt;
-&lt;input type=&quot;submit&quot; name=&quot;sexisgood&quot; value=&quot;sumbit&quot;&gt;';
-%]
-&lt;/form&gt;</page>
+  <page></page>
   <displaytype>replyto</displaytype>
   <node_id>1156529</node_id>
   <title>debatecomment replyto page</title>

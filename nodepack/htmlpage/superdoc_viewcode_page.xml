@@ -2,12 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>14</pagetype_nodetype>
-  <page>[%
-return unless $APP-&gt;isDeveloper($USER);
-
-htmlcode('listcode','doctext');
-
-%]</page>
+  <page></page>
   <displaytype>viewcode</displaytype>
   <node_id>854216</node_id>
   <title>superdoc viewcode page</title>

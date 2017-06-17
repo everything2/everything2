@@ -2,14 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>545241</pagetype_nodetype>
-  <page>Title:[{textfield:title}] maintained by: [{node_menu:author_user,user,usergroup}]&lt;br&gt;
-Other Users Abrev:[{textfield:abbreviation}]&lt;br&gt;
-&lt;b&gt;Criteria&lt;/b&gt; (evaled perl)&lt;br&gt;
-[{textarea:criteria}]
-&lt;p&gt;
-&lt;b&gt;description&lt;/b&gt;&lt;br&gt;
-[{textarea:doctext}]
-</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>545247</node_id>
   <title>room edit page</title>

@@ -2,16 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1930710</pagetype_nodetype>
-  <page>[{listcode:code}]
-
-&lt;p&gt;&lt;small&gt;&lt;strong&gt;description:&lt;/strong&gt;&lt;/small&gt;  [{textfield:description,80}]&lt;/p&gt;
-
-&lt;p&gt;&lt;small&gt;&lt;strong&gt;Time Limit (in Hours):&lt;/strong&gt;&lt;/small&gt;  [{textfield:hourLimit}]&lt;/p&gt;
-
-&lt;p&gt;&lt;small&gt;&lt;strong&gt;Edit the code:&lt;/strong&gt;&lt;/small&gt;&lt;br /&gt;
-
-[{textarea:code,30,80}]
-&lt;/p&gt;</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>1930719</node_id>
   <title>notification edit page</title>

@@ -2,18 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1261857</pagetype_nodetype>
-  <page>&lt;table&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;Title:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;Client ID (string):&lt;/b&gt;&lt;/td&gt;&lt;td&gt;[{textfield:clientstr}]&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;Version (string):&lt;/b&gt;&lt;/td&gt;&lt;td&gt;[{textfield:version}]&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;Homepage URL:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;[{textfield:homeurl}]&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;&lt;b&gt;Download URL:&lt;/b&gt;&lt;/td&gt;&lt;td&gt;[{textfield:dlurl}]&lt;/td&gt;&lt;/tr&gt;
-&lt;/table&gt;
-&lt;br&gt;&lt;br&gt;
-&lt;b&gt;Description:&lt;/b&gt;&lt;br&gt;
-[{textarea:doctext,30,60}]
-
-</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>1261885</node_id>
   <title>e2client edit page</title>

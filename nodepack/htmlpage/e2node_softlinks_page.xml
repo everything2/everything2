@@ -2,13 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>0</parent_container>
   <pagetype_nodetype>116</pagetype_nodetype>
-  <page>[%
-my $str = &quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; standalone=\&quot;yes\&quot;?&gt;\n&quot;;
-$str.= htmlcode(&quot;xmlheader&quot;).&quot;&lt;softlinks&gt;\n&quot;.htmlcode(&quot;softlink&quot;, &quot;xml&quot;).&quot;&lt;/softlinks&gt;\n&quot;.htmlcode(&quot;xmlfooter&quot;);
-return $str;
-%]
-
-</page>
+  <page></page>
   <displaytype>softlinks</displaytype>
   <node_id>2025224</node_id>
   <title>e2node softlinks page</title>

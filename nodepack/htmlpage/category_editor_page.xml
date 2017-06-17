@@ -2,18 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1522375</pagetype_nodetype>
-  <page>&lt;p align=right&gt;
-[%
-if ($query-&gt;param('op') eq 'close') {
-	$$VARS{group} = &quot;&quot;;
-	return &quot;&lt;SCRIPT language=\&quot;javascript\&quot;&gt;parent.close()&lt;/SCRIPT&gt;&quot;;		
-} 
-$$VARS{group}||= getId ($NODE);
-linkNode $NODE, &quot;close&quot;, {displaytype=&gt; $query-&gt;param('displaytype'),
-	op =&gt; 'close'};
-%]
-[{groupeditor}]
-&lt;/FORM&gt;</page>
+  <page></page>
   <displaytype>editor</displaytype>
   <node_id>1522378</node_id>
   <title>category editor page</title>

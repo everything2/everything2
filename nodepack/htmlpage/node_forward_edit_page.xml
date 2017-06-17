@@ -2,56 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1147470</pagetype_nodetype>
-  <page>&lt;p&gt;&lt;strong&gt;([%linkNode( 1147470 )%])&lt;/strong&gt;&lt;/p&gt;
-&lt;table&gt;
-&lt;tr&gt;
-    &lt;th align=&quot;right&quot;&gt;&lt;strong&gt;title:&lt;/strong&gt;&lt;/th&gt;
-    &lt;td&gt;[{textfield:title}]&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-    &lt;th align=&quot;right&quot;&gt;&lt;strong&gt;owner:&lt;/strong&gt;&lt;/th&gt;
-    &lt;td&gt;[{node_menu : author_user,user,usergroup}]&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-    &lt;th align=&quot;right&quot;&gt;&lt;strong&gt;forward-to node ID/title:&lt;/strong&gt;&lt;/th&gt;
-    &lt;td&gt;[{textfield:doctext}]&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-[%
-
-my $str = &quot;&quot;;
-
-if ($query-&gt;param('circularLink')) {
-   $str .= &quot;&lt;p&gt;&lt;strong&gt;This is a circular link!&lt;/strong&gt;&lt;/p&gt;&quot;;
-} 
-
-my $targetNodeId = $$NODE{doctext};
-my $targetNode;
-
-$str .= &quot;&lt;p&gt;&quot;;
-
-if ($targetNodeId ne '') {
-   $targetNode = getNodeById($targetNodeId, 'light');
-
-   if ($targetNode) {
-      $str .= &quot;Forwards to: &quot; . linkNode($targetNode);
-   } else {
-      $str .= &quot;The current forward node ID doesn't lead to a valid node.&quot;;
-   }
-
-} else {
-
-   $str .= &quot;This forward is presently blank.&quot;;
-
-}
-
-$str .= &quot;&lt;/p&gt;&quot;;
-
-return $str;
-
-%]
-
-</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>1147524</node_id>
   <title>node_forward edit page</title>

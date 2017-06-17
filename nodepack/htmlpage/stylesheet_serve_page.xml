@@ -2,47 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>0</parent_container>
   <pagetype_nodetype>1854352</pagetype_nodetype>
-  <page>[%
-if ($query-&gt;param('version')) {
-  # Set a far-future expiry time if a specific version is requested.
-  $HEADER_PARAMS{'-expires'} = '+10y';
-}
-
-my $out = $$NODE{doctext};
-my $autofix = $query -&gt; param( 'autofix' );
-if ( $autofix or !$APP-&gt;isGuest($USER) ) {
-	unless ( htmlcode( 'displaySetting' , 'fixed stylesheets', $$NODE{ node_id } ) &gt;= $Everything::CONF-&gt;stylesheet_fix_level ) {
-		$out = &quot;/*autofixed*/\n&quot;.$APP-&gt;fixStylesheet($NODE , 0 ) if
-			$$USER{ user_id } != $$NODE{ author_user } or
-			$autofix ;
-	}
-}
-
-$out =~ s/^\s+//mg;
-$out .= &quot;/* SOFTLINK COLORS */\n&quot;;
-
-my $styleRule = '\\b\\s*(?:,[^{]*)?{[^}]*background[^;}]*#(?:(\\w\\w)(\\w\\w)(\\w\\w)|(\\w)(\\w)(\\w))';
-my @max = ( 255, 255, 255 ) ;
-my @min = ( 170, 170, 170 ) ;
-@max = (hex($1||$4.$4),hex($2||$5.$5),hex($3||$6.$6)) if
-	$out =~ /#sl1$styleRule/ ||
-	$out =~ /#mainbody$styleRule/ ||
-	$out =~ /\bbody$styleRule/ ;
-@min = (hex($1||$4.$4),hex($2||$5.$5),hex($3||$6.$6)) if
-	$out =~ /#sl64$styleRule/ ||
-	$out =~ /\.slend$styleRule/ ||
-	$out =~ /\.oddrow$styleRule/ ;
-
-
-for (my $i=64; $i; $i--){
-	$out .= &quot;td#sl$i\{background:#&quot;.(
-		join '' , ( map sprintf( '%02x', int($max[$_]-($i-1)*($max[$_]-$min[$_])/63) ), (0..2) )
-		).';}';
-	$out .= &quot;\n&quot; if $i % 4 == 1 ;
-}
-
-return $out;
-%]</page>
+  <page></page>
   <displaytype>serve</displaytype>
   <node_id>2024235</node_id>
   <title>stylesheet serve page</title>

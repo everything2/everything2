@@ -2,16 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1917847</pagetype_nodetype>
-  <page>&lt;p&gt;&lt;strong&gt;Displaying:&lt;/strong&gt; [% $$NODE{display}; %]&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Type:&lt;/strong&gt; [% $$NODE{achievement_type}; %]&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Subtype:&lt;/strong&gt; [% $$NODE{subtype} %]&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Still available:&lt;/strong&gt; [% $$NODE{achievement_still_available} ? 'yes' : 'no'; %]&lt;/p&gt;
-
-[{listcode:code}]
-</page>
+  <page></page>
   <displaytype>display</displaytype>
   <node_id>1917858</node_id>
   <title>achievement display page</title>

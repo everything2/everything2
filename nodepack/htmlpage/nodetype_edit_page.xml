@@ -2,23 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1</pagetype_nodetype>
-  <page>&lt;p&gt;readers: [{node_menu:readers_user,user,usergroup,-parent_-1}]
-[{displayInherited:readers_user}]
-&lt;p&gt;creators: [{node_menu:writers_user,user,usergroup,-parent_-1}]
-[{displayInherited:writers_user}]
-&lt;p&gt;deleters: [{node_menu:deleters_user,user,usergroup,-parent_-1}]
-[{displayInherited:deleters_user}]
-&lt;p&gt;sqltable : [{textfield:sqltable}]
-[{displayInherited:sqltable}]
-&lt;p&gt;grouptable: [{textfield:grouptable}]
-[{displayInherited:grouptable}]
-&lt;p&gt;extends: [{node_menu:extends_nodetype}]
-&lt;p&gt;restrict nodetype(groups):[{node_menu:restrict_nodetype,nodetype,nodetypegroup}]
-[{displayInherited:restrict_nodetype}]
-&lt;p&gt;restrict duplicate titles: [{node_menu:restrictdupes,-yes_1,-no_0,-parent_-1}]
-[{displayInherited:restrictdupes}]
-&lt;p&gt;verify edits to maintain security: [{node_menu:verify_edits, -no_0, -yes_1}]
-&lt;/p&gt;</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>76</node_id>
   <title>nodetype edit page</title>

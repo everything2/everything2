@@ -2,65 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>116</pagetype_nodetype>
-  <page>[%
-
-my @junk=(
-    &quot;Where did I put that?&quot;
-    , &quot;I lost my mind in San Francisco&quot;
-    , &quot;Shuffle shuffle&quot;
-    , &quot;I smashed it into a million pieces, and cut myself on its beauty&quot;
-    , &quot;It used to be full of stars, but now I'm full of scars.&quot;
-  );
-
-return qq-&lt;small&gt;&lt;p align=&quot;right&quot;&gt;&lt;strong&gt;$junk[rand(@junk)]&lt;/strong&gt;&lt;/p&gt;&lt;/small&gt;-;
-
-%]
-
-[%
-  my $softlinkType = 0;
-  my $E2NODE = $NODE;
-  my $csr =
-    $DB-&gt;sqlSelectMany(
-      &quot;to_node&quot;
-      , &quot;links&quot;
-      , &quot;from_node = $$E2NODE{node_id} AND linktype = $softlinkType&quot;
-    );
-
-  my @LINKS;
-
-  while(my $row = $csr-&gt;fetchrow_hashref)
-  {
-    my $N = getNodeById($$row{to_node}, 'light');
-    next unless $N;
-    push @LINKS, $N;
-  }
-  return &quot;&lt;p&gt;Ain't nothin'&lt;/p&gt;&quot; unless @LINKS &gt; 0;
-  my $str = &quot;&quot;
-    . &quot;&lt;p&gt;&quot;
-    . &quot;Somewhere near &quot; . linkNode($E2NODE) . &quot; I got lost in:&quot;
-    . &quot;&lt;/p&gt;&quot;
-    ;
-  $str .= '&lt;div id=&quot;softlinks&quot;&gt;';
-  foreach(sort {rand() &lt;=&gt; rand()} @LINKS)
-  {
-    my $fontSize = int((rand(8)**2.2+65)) . '%';
-    $str .= 
-     linkNode(
-       $_
-       , undef
-       , {
-           lastnode_id =&gt; $$E2NODE{node_id}
-           , -style=&gt; &quot;font-size: $fontSize;&quot;
-         }
-     );
-
-    $str .= &quot;&amp;nbsp;&quot; x (rand(50));
-  }
-  $str .= '&lt;/div&gt;';
-  
-  return $str;
-%]
-</page>
+  <page></page>
   <displaytype>chaos</displaytype>
   <node_id>1418973</node_id>
   <title>e2node chaos page</title>

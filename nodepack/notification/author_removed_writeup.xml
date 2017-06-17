@@ -13,7 +13,8 @@ return ($draft &amp;&amp; $$draft{type}{title} ne 'draft');</invalid_check>
 	? linkNode($$args{writeup_id})
 	: linkNodeTitle($$args{title});
 
-my $reason = &quot; ($$args{reason})&quot; if $$args{reason};
+my $reason = &quot;&quot;;
+$reason = &quot; ($$args{reason})&quot; if $$args{reason};
 
 linkNode($$args{author_id})
 .&quot; removed &lt;b&gt;$titleLink&lt;/b&gt;$reason&quot;;</code>

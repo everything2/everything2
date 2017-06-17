@@ -2,14 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>0</parent_container>
   <pagetype_nodetype>1854352</pagetype_nodetype>
-  <page>[%
-if ($query-&gt;param('version')) {
-  # Set a far-future expiry time if a specific version is requested.
-  $HEADER_PARAMS{'-expires'} = '+10y';
-}
-
-return $$NODE{doctext};
-%]</page>
+  <page></page>
   <displaytype>view</displaytype>
   <node_id>1854395</node_id>
   <title>stylesheet view page</title>

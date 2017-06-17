@@ -2,14 +2,7 @@
   <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>854232</pagetype_nodetype>
-  <page>&lt;p align=right&gt;
-[% linkNode($NODE,'display', {displaytype=&gt;'display'}) %]
-&lt;p&gt;
-&lt;h2&gt;title:&lt;/h2&gt;
-[{textfield:title}]
-&lt;p&gt;
-&lt;h2&gt;Edit the document text:&lt;/h2&gt;
-[{textarea:doctext}]</page>
+  <page></page>
   <displaytype>edit</displaytype>
   <node_id>1038521</node_id>
   <title>edevdoc edit page</title>
