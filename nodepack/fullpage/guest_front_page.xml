@@ -4,12 +4,10 @@
 
 &lt;html lang=&quot;en&quot;&gt;
 &lt;head&gt;
-    &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;
-    [{metadescriptiontag}]
-    &lt;meta name=&quot;google-site-verification&quot; content=&quot;h2M358x3GpjjKb8tD8cpry9Wb_nAvMjHK-BTkY3Rnfk&quot; /&gt;
-    &lt;title&gt;Everything2&lt;/title&gt;
-
-	&lt;link rel=&quot;stylesheet&quot; id=&quot;basesheet&quot; type=&quot;text/css&quot; href=&quot;[{linkStylesheet:basesheet}]&quot; media=&quot;all&quot;&gt;
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;
+[{metadescriptiontag}]
+&lt;title&gt;Everything2&lt;/title&gt;
+&lt;link rel=&quot;stylesheet&quot; id=&quot;basesheet&quot; type=&quot;text/css&quot; href=&quot;[{linkStylesheet:basesheet}]&quot; media=&quot;all&quot;&gt;
 [% $PAGELOAD-&gt;{noparsecodelinks} = 1; &quot;&quot;; %]
 [%
 '	&lt;link rel=&quot;stylesheet&quot; id=&quot;zensheet&quot; type=&quot;text/css&quot; href=&quot;'
@@ -81,12 +79,12 @@ $zenStr.='
         '.htmlcode('frontpage_altcontent').'
       &lt;/div&gt;';
 
-if ( !$APP-&gt;isGuest($USER) ) {
+#if ( !$APP-&gt;isGuest($USER) ) {
   $zenStr.='
   &lt;div id=&quot;frontpage_news&quot;&gt;
         &lt;h2 id=&quot;frontpage_news_title&quot;&gt;[News for Noders. Stuff that matters.|News for Noders]&lt;/h2&gt;
    '.htmlcode('frontpage_news').'&lt;/div&gt;';
-}
+#}
 
 return parseLinks($zenStr);
 
