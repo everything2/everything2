@@ -2535,10 +2535,12 @@ sub voteit
       my @values = ( 1 , -1 ) ;
       push( @values , 0 ) if $$VARS{nullvote} && $$VARS{nullvote} ne 'off' ; #'off' for legacy
       my %labels = ( 1 => $uplbl , -1 => $dnlbl , 0 => $nolbl ) ;
-      my $confirm = 'confirm' if $$VARS{votesafety};
-      my $replace = 'replace ' unless $$VARS{noreplacevotebuttons};
+      my $confirm = "";
+      $confirm = 'confirm' if $$VARS{votesafety};
+      my $replace = "";
+      $replace = 'replace ' unless $$VARS{noreplacevotebuttons};
       my $clas = $replace."ajax voteinfo_$n:voteit?${confirm}op=vote&vote__$n=" ;
-      my $ofauthor = $$VARS{anonymousvote} == 1 && !$prevvote ? 'this' : $author."'s" ;
+      my $ofauthor = (defined($VARS->{anonymousvote}) && $VARS->{anonymousvote} == 1 && !$prevvote ? 'this' : $author."'s");
       my %attributes = (
         1 => { class => $clas."1:$n,2" , title => "upvote $ofauthor writeup" },
         -1 => { class => "$clas-1:$n,2" , title => "downvote $ofauthor writeup" },
@@ -5436,7 +5438,7 @@ sub ednsection_cgiparam
   my $APP = shift;
 
   my $str = '';
-  $str = '[<i>Ajax call parameters, not original page parameters</i>]<br>' if $query->param('displaytype')eq 'ajaxupdate';
+  $str = '[<i>Ajax call parameters, not original page parameters</i>]<br>' if(($query->param('displaytype') || "" ) eq 'ajaxupdate');
   my $c=0;
   foreach my $var ($query->param) {
     next if $var eq 'passwd';
@@ -6751,6 +6753,8 @@ sub timesince
   my $APP = shift;
 
   my ($timestamp,$shortMode,$fractionalResolution) = @_;
+
+  return "?" unless $timestamp;
   $fractionalResolution = 10 unless (defined $fractionalResolution) && $fractionalResolution;	#10 shows ___._
 
   my ($d, $t) = split(' ',$timestamp);
@@ -7389,7 +7393,7 @@ sub displayWriteupInfo
   };
 
   local *info_addto = sub {
-    return '' if $query -> param( 'showwidget' ) eq 'addto'.$$WRITEUP{ node_id } ; #noscript: widget is in page header
+    return '' if $query->param('showwidget') and $query->param('showwidget') eq 'addto'.$$WRITEUP{ node_id } ; #noscript: widget is in page header
     my $str = undef;
     unless ($isDraft)
     {
@@ -12277,6 +12281,7 @@ sub testshowmessages
 
   my ($maxmsgs,$showOpts) = @_;
   $showOpts = "" unless(defined($showOpts));
+  $maxmsgs = "" unless(defined($maxmsgs));
 
   my $json = {};
   my $jsoncount = undef; $jsoncount = 1 if $showOpts =~ /j/;
@@ -13528,7 +13533,7 @@ sub nodeletsettingswidget
   return linkNode(getNode('Nodelet Settings', 'superdoc'), $text,
     {'#'=>$id.'nodeletsettings', -id=>$id."settingswidget",
     -class=>"ajax $id"."settingswidget:nodeletsettingswidget?showwidget=$id"."settings:$safename,$safetext"
-    }) unless $query -> param('showwidget') eq "$id"."settings" ;
+    }) unless(($query -> param('showwidget')||"") eq "$id"."settings");
 
   my $content = parseLinks(htmlcode($name.' nodelet settings', 'inwidget'))||"(no settings for $name)";
   return qq'<div id="$id'.qq'settingswidget">'.

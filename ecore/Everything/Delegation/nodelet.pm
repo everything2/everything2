@@ -569,7 +569,7 @@ sub chatterbox
     }
 
     #borged or allow talk
-    $msgstr .= htmlcode('borgcheck');
+    $msgstr .= htmlcode('borgcheck') || "";
     $msgstr .= $$VARS{borged}
     ? '<small>You\'re borged, so you can\'t talk right now.</small><br>' . $query->submit('message_send', 'erase')
     : "<input type='text' id='message' name='message' class='expandable' size='".($$NODE{title} eq "ajax chatterlight" ? "70" : "12")."' maxlength='512'>" . "\n\t\t" .
@@ -1318,7 +1318,6 @@ sub messages
   my $APP = shift;
 
   return qq|<div id="messages_messages">|.htmlcode('testshowmessages').qq|</div>|;
-
 }
 
 sub neglected_drafts
