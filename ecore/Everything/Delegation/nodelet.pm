@@ -84,11 +84,11 @@ sub epicenter
     $votesLeftStr = "\n\n\t".'<p id="voteschingsleft">You have ' . join(' and ',@thingys) . ' left today.</p>';
   }
 
-  $expStr = "\n\n\t".'<p id="experience">'.htmlcode('shownewexp','TRUE').'</p>';
+  $expStr = "\n\n\t".'<p id="experience">'.(htmlcode('shownewexp','TRUE') || "").'</p>';
 
   unless ($$VARS{GPoptout})
   {
-    $expStr .= "\n\n\t".'<p id="gp">'.htmlcode('showNewGP','TRUE').'</p>';
+    $expStr .= "\n\n\t".'<p id="gp">'.(htmlcode('showNewGP','TRUE') || "").'</p>';
   }
 
   #### SERVER TIME

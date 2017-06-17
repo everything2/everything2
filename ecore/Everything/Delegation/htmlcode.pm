@@ -6257,6 +6257,12 @@ sub eddiereply
   my $splitStr2=' just cooled';
   my $splitStr3=' just \[E2 Gift'; # Cater for C! gifts notifications - BlackPawn
   my @tempsplit = split($splitStr1,$text);
+
+  unless($tempsplit[1])
+  {
+    return "Cool_Man_Eddie";
+  }
+
   my $coolStr = $tempsplit[1];
 
   my @coolsplit= split(/$splitStr2/,$tempsplit[1]);
@@ -12270,6 +12276,8 @@ sub testshowmessages
   my $APP = shift;
 
   my ($maxmsgs,$showOpts) = @_;
+  $showOps = "" unless(defined($showOpts));
+
   my $json = {};
   my $jsoncount = undef; $jsoncount = 1 if $showOpts =~ /j/;
 
@@ -13286,7 +13294,9 @@ sub categoryform
   getRef $N ;
   $N ||= $NODE ;
 
-  my ($categoryid, $options, $choose, $createcategory, $notification) = (undef,undef,undef,undef,undef);
+  $inwriteupform = "" unless(defined($inwriteupform));
+
+  my ($categoryid, $options, $choose, $createcategory, $notification) = (undef,undef,"","","");
 
   unless ( $PAGELOAD->{ cachedcategoryoptions } )
   {
