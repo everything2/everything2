@@ -956,7 +956,7 @@ sub listcode
 
   my $type = $codenode->{type}->{title};
 
-  my $delegated = $type eq "container" || $type eq "htmlcode" || $type eq "opcode" || $type eq "maintenance";
+  my $delegated = $type eq "container" || $type eq "htmlcode" || $type eq "opcode" || $type eq "maintenance" || $type eq "htmlpage";
 
   if($delegated)
   {
