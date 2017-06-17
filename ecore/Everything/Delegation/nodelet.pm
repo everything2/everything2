@@ -47,7 +47,7 @@ sub epicenter
   my $APP = shift;
 
   my $str = "";
-  $str .= htmlcode("borgcheck");
+  $str .= htmlcode("borgcheck") || "";
 
   return $str if $APP->isGuest($USER);
   my ($loginStr, $votesLeftStr, $expStr, $serverTimeStr);

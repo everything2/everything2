@@ -5835,7 +5835,7 @@ sub showchatter
   my $UID = getId($USER) || 0;
   my $isEDev = $APP->isDeveloper($USER, "nogods");
 
-  my ($str, $aid, $flags, $userLink, $userLinkApostrophe, $text) = (undef,undef,undef,undef,undef,undef);
+  my ($str, $aid, $flags, $userLink, $userLinkApostrophe, $text) = ("","","","","","");
 
   my $maxLen = htmlcode('chatterSplit');
 
@@ -7597,14 +7597,17 @@ sub customtextarea
   my $rowval = 20;
   my $colval = 60;
 
-  if($$VARS{textareaSize} == 1)
+  if($VARS->{textareaSize})
   {
-    $rowval = 30;
-    $colval = 80;
-  }elsif($$VARS{textareaSize} == 2)
-  {
-    $rowval = 50;
-    $colval = 95
+    if($$VARS{textareaSize} == 1)
+    {
+      $rowval = 30;
+      $colval = 80;
+    }elsif($$VARS{textareaSize} == 2)
+    {
+      $rowval = 50;
+      $colval = 95
+    }
   }
 
   if (wantarray)
@@ -7769,7 +7772,7 @@ sub nodenote
   };
 
   my $noteCount = 0;
-  my $finalstr = undef;
+  my $finalstr = "";
   my $notetext = undef;
   $notetext = $notelist->fetchrow_hashref if $notelist;
 
@@ -7927,7 +7930,7 @@ sub admin_toolset
   }
 
   my $spacer = "<li style='list-style: none'><br></li>";
-  my $direWarning = undef; $direWarning = ' (<strong>writeup:</strong> only nuke under exceptional circumstances.
+  my $direWarning = ""; $direWarning = ' (<strong>writeup:</strong> only nuke under exceptional circumstances.
     Removal is almost certainly a better idea.)' if $nt eq 'writeup';
 
   $newStr .= $spacer.$query -> li(
@@ -12079,6 +12082,7 @@ sub editwriteup
 
   my ($N, $message) = @_;
 
+  $message = "" unless(defined($message));
   $N ||= {};
   my $type = $$N{type}{title} || 'draft';
   my $new = !$$N{node_id};
@@ -13747,8 +13751,8 @@ sub e2nodetools
     }
 
     $str .= htmlcode('openform').'<fieldset><legend>Change title</legend>';		
-    my $newTitle = $query->param('e2node_title');
-    if ($newTitle ne $query->param('oldTitle'))
+    my $newTitle = $query->param('e2node_title') || "";
+    if ($newTitle and $newTitle ne $query->param('oldTitle'))
     {
       # repair node if title has changed
       if ($$NODE{title} eq $newTitle)
