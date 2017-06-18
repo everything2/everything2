@@ -81,6 +81,9 @@ use POSIX;
 # Used by update_New_Writeups_data
 use Everything::DataStash::newwriteups;
 
+# Used by display_draft
+use Everything::Delegation::htmlpage;
+
 # This links a stylesheet with the proper content negotiation extension
 # linkJavascript below talks a bit about the S3 strategy
 #
@@ -13673,7 +13676,15 @@ sub display_draft
   }
 
   my $PAGE = getPageForType($displaylike, $displaytype);
-  return parseCode($PAGE -> {page}, $NODE);
+  my $title = lc($PAGE->{title});
+  $title =~ s/ /_/g;
+
+  if(my $delegation = Everything::Delegation::htmlpage->can($title))
+  {
+    return $delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP);
+  }else{
+   return parseCode($PAGE -> {page}, $NODE);
+  }
 }
 
 sub nopublishreason
