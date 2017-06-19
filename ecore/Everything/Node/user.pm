@@ -291,5 +291,11 @@ sub leveltitle
   return $self->APP->getLevelTitle($self->level);
 }
 
+sub infravision
+{
+  my ($self) = @_;
+  return $self->VARS->{infravision};
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

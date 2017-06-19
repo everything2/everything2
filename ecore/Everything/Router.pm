@@ -15,12 +15,13 @@ has 'CONTROLLER_TYPE' => (is => 'ro', isa => 'Str', default => 'Controller');
 
 sub _build_controller_table
 {
-  my ($self) = @_;
-  my $routes;
+  my ($self, $plugin_type) = @_;
+  my $routes = {};
+  $plugin_type ||= $self->CONTROLLER_TYPE;
 
-  foreach my $plugin (@{$self->FACTORY->{lc($self->CONTROLLER_TYPE)}->all})
+  foreach my $plugin (@{$self->FACTORY->{lc($plugin_type)}->all})
   {
-    $routes->{$plugin} = $self->FACTORY->{lc($self->CONTROLLER_TYPE)}->available($plugin)->new();
+    $routes->{$plugin} = $self->FACTORY->{lc($plugin_type)}->available($plugin)->new();
   }
   return $routes;
 }

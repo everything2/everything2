@@ -84,7 +84,7 @@ sub BEGIN
 
 	$ROUTER = Everything::HTMLRouter->new();
 
-	foreach my $plugin ("API","Node","DataStash", "Controller")
+	foreach my $plugin ("API","Node","DataStash", "Controller", "Page")
 	{
 		$FACTORY->{lc($plugin)} = Everything::PluginFactory->new("Everything::$plugin");
 		die $FACTORY->{lc($plugin)}->error_string if $FACTORY->{lc($plugin)}->error_string;
