@@ -1,7 +1,7 @@
 package Everything::Controller::maintenance;
 
 use Moose;
-extends 'Everything::Controller::node';
+extends 'Everything::Controller';
 
 sub display
 {
