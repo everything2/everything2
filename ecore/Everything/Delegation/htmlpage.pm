@@ -648,9 +648,8 @@ sub mail_display_page
   my $APP = shift;
 
   my $str = qq|<TABLE width=100% cellpadding=0 cellspacing=1 border=0>|;
-  $str .= qq|<TR bgcolor="|.($$VARS{mailhead_color} or "#CCCCCC").qq|"><TH>To:</TH><TD width=100%>|;
-  $str .= linkNode($$NODE{author_user}).qq|<TD></TR><TR bgcolor="|.($$VARS{mailhead_color} or "#CCCCCC");
-  $str .= qq|"><TH>From:</TH></TH><TD width=100%>|;
+  $str .= qq|<TR bgcolor="#CCCCCC"><TH>To:</TH><TD width=100%>|;
+  $str .= linkNode($$NODE{author_user}).qq|<TD></TR><TR bgcolor="#CCCCCC"><TH>From:</TH></TH><TD width=100%>|;
 
   if(not $$NODE{from_address})
   {
