@@ -167,7 +167,7 @@ sub other_users
   my $wherestr = "";
 
   $$USER{in_room} = int($USER->{in_room});
-  $USER->{in_room} = 0 unless getNodeById($USER->{in_room});
+  $USER->{in_room} = 0 unless $DB->getNodeById($USER->{in_room});
   if ($$USER{in_room}) {
     $wherestr = "room_id=$$USER{in_room} OR room_id=0";
   }
@@ -246,15 +246,15 @@ sub other_users
     $num++;
     $userID = $$U{member_user};
 
-    my $jointime = $APP->convertDateToEpoch(getNodeById($userID)->{createtime});
+    my $jointime = $APP->convertDateToEpoch($DB->getNodeById($userID)->{createtime});
 
-    my $userVars = getVars(getNodeById($userID));
+    my $userVars = getVars($DB->getNodeById($userID));
 
     my ($lastnode,$lastnodetime, $lastnodehidden);
     my $lastnodeid =  $userVars -> {lastnoded};
     if ($lastnodeid)
     {
-      $lastnode = getNodeById($lastnodeid);
+      $lastnode = $DB->getNodeById($lastnodeid);
       $lastnodetime = $lastnode -> {publishtime};
       $lastnodehidden = $lastnode -> {notnew};
 
@@ -360,7 +360,7 @@ sub other_users
 
     $n =~ tr/ /_/;
 
-    my $thisnoder .= $nameLink . $flags;
+    my $thisnoder = $nameLink . $flags;
 
     #Votes only get refreshed when user logs in
     my $activedays = $userVars -> {votesrefreshed};
@@ -542,7 +542,8 @@ sub chatterbox
     {
 
       my $msgstr = htmlcode('showmessages','10');
-      my $hr .= '<hr width="40%">' if $msgstr;
+      my $hr = "";
+      $hr = '<hr width="40%">' if $msgstr;
       $str .= qq|<div id="chatterbox_messages">$msgstr</div>$hr|;
     }
   }
@@ -653,7 +654,7 @@ sub personal_links
   if (my $n = $query->param('addpersonalnodelet'))
   {
     return "<b>Security Error</b>" unless htmlcode('verifyRequest', 'personalnodelet');
-    $n = getNodeById $n;
+    $n = $DB->getNodeById($n);
     if ($$VARS{personal_nodelet} !~ /$$n{title}/)
     {
       $$VARS{personal_nodelet} .= '<br>'.$$n{title} if @nodes < $limit;
@@ -687,9 +688,9 @@ sub personal_links
   {
     $str .= '<hr width="100" /><small><strong>node bucket</strong></small><br>';
     my $PARAMS = { op => 'addbucket', 'bnode_' . $$NODE{node_id} => 1, -class=>'action' };
-    my $t = $$NODE{title};
-    $t =~ s/(\S{16})/$1 /g;
-    $str .= linkNode($NODE, "Add '$t'", $PARAMS);
+    my $title = $$NODE{title};
+    $title =~ s/(\S{16})/$1 /g;
+    $str .= linkNode($NODE, "Add '$title'", $PARAMS);
 
     my @bnodes = ();
     @bnodes = split ',', $$VARS{nodebucket} if (defined($$VARS{nodebucket}));
@@ -707,7 +708,7 @@ sub personal_links
       my @newbnodes;
       foreach my $id (@bnodes)
       {
-        my $node=getNodeById($id);
+        my $node=$DB->getNodeById($id);
         next unless $node;
         push @newbnodes, $id;
         # Can't use CGI::checkbox here because it insists on having a label...
@@ -772,7 +773,7 @@ sub random_nodes
   my $len = 20;
   foreach my $N (@$randomnodes)
   { 
-    my $RN = getNodeById( $N->{node_id} );
+    my $RN = $DB->getNodeById( $N->{node_id} );
     my $node_title = $$RN{'title'};
     $node_title =~ s/(\S{$len})\S{4,}/$1.../go;
     $str .= '<li>' . linkNode($RN, $node_title, {lastnode_id=>0}) . "</li>\n";
@@ -893,19 +894,6 @@ sub notelet
       .q!e2.vanish($('#notelet'));&lt/script&gt;!
       }).' or at your <a href='.urlGen({'node'=>'Nodelet Settings','type'=>'superdoc'}).'>Nodelet Settings</a>';
 
-  #have to deal with deprecated stuff
-  if(exists $VARS->{personalRaw})
-  {
-    $VARS->{noteletRaw} = $VARS->{personalRaw};
-    delete $VARS->{personalRaw};
-  }
-
-  if(exists $VARS->{personalScreened})
-  {
-    $VARS->{noteletScreened} = $VARS->{personalScreened};
-    delete $VARS->{personalScreened};
-  }
-
   unless ((exists $VARS->{'noteletRaw'}) && length($VARS->{'noteletRaw'}))
   {
     $str .= $blankMsg;
@@ -953,7 +941,7 @@ sub recent_nodes
   foreach (@list) {
     next unless $_;
     next unless $$VARS{nodetrail} !~ /\b$_\b/; 	#skip dupes
-    $list .= "<li>" . linkNode(getNodeById($_), undef, {"lastnode_id" => 0}) . "</li>";
+    $list .= "<li>" . linkNode($DB->getNodeById($_), undef, {"lastnode_id" => 0}) . "</li>";
     $$VARS{nodetrail} .= $_ . ',' ; #push this onto the bottom of the list
     last if ++$i > 8;
   }
@@ -1050,7 +1038,7 @@ SQLEND
   my $wuListText = "<ul id='writeup_faves'>";
 
   for my $n (@$writeuplist) {
-    my $N = getNodeById($$n[0]);
+    my $N = $DB->getNodeById($$n[0]);
     $wuListText .=
       "<li><span class='writeupmeta'><span class='title'>".linkNode($$N{node_id})."</span> "
       . "by <span class='author'>".linkNode($$N{author_user})."</span></span></li>";
@@ -1155,7 +1143,7 @@ sub usergroup_writeups
   for(@groupids)
   {
     next if ($_ == 165580); # Exclude 'News for Noders. Stuff that matters.'
-    push (@groups, getNodeById($_,"light")->{title});
+    push (@groups, $DB->getNodeById($_,"light")->{title});
   }
 
   for(@groups)
@@ -1411,7 +1399,7 @@ sub quick_reference
   my $lookfor = $NODE->{title};
   if ($$NODE{type}{title} eq 'writeup') {
     # Instead of writeup title w/ type annotation, use the e2node title
-    $lookfor = getNodeById($NODE->{parent_e2node})->{title} ;
+    $lookfor = $DB->getNodeById($NODE->{parent_e2node})->{title} ;
   }
   else
   {
