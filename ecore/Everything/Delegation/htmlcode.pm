@@ -38,9 +38,6 @@ BEGIN {
   *replaceNodegroup = *Everything::HTML::replaceNodegroup;
 }
 
-# Used by showchoicefunc
-use Everything::XML;
-
 # Used by parsetime
 use Time::Local;
 
@@ -416,148 +413,6 @@ sub displaytable
   return $str;
 }
 
-# Only used in [Gigantic Code Lister]
-#
-sub showChoiceFunc
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-
-  no strict 'refs';
-
-  my @modules = (
-    'Everything',
-    'Everything::XML',
-    'Everything::NodeBase',
-    'Everything::Application',
-    'Everything::HTML'
-  );
-  my $str = "";
-  my $showHTMLCODE = $$VARS{scf_nohtmlcode} ? 0 : 1;	#must be 0 or 1
-
-  if(not $query->param('choicefunc')) {
-    my %funcs = ();
-    my $rows = 0;
-    $str .= '<table><tr>';
-
-    my $colwidth = int (100/(int(@modules)+$showHTMLCODE)) .'%';
-    foreach my $modname (@modules) {
-      my $stash = \%{ "${modname}::" };
-      my @modfuncs = ();
-      foreach(keys %$stash) {
-        push (@modfuncs, $_) if (defined *{"${modname}::$_"}{CODE} and ($modname eq 'Everything' or not exists $Everything::{$_})) ;
-      }
-
-      @modfuncs = sort {$a cmp $b} @modfuncs;
-      $funcs{$modname} = \@modfuncs;
-      $rows = int(@modfuncs) if $rows < int(@modfuncs);
-      $str.='<th width="'.$colwidth.'">'.$modname.'</th>';
-    }
-
-    if($showHTMLCODE) {
-      $str.="<th width=\"$colwidth\">HTMLCODE</th>\n";
-      my @HTMLCODE = $DB->getNodeWhere({1=>1}, $DB->getType('htmlcode'), 'title ASC', 'light');
-      $funcs{htmlcode}= \@HTMLCODE;
-      $rows=int(@HTMLCODE) if $rows < @HTMLCODE;
-    }
-
-    $str .= "</tr>\n";
-
-    my $count=0;
-    while($count < $rows) {
-      $str.='<tr>';
-      foreach(@modules) {
-        $str.= '<td>';
-        $str.=linkNode($NODE, $funcs{$_}[$count], { choicefunc => $funcs{$_}[$count], lastnode_id=>0 }) if (int (@{ $funcs{$_} }) > $count);
-        $str.='</td>';
-      }
-      $str.='<td>';
-      $str.= linkNode($funcs{htmlcode}[$count]) if $count < @{ $funcs{htmlcode} };
-      $str.="</td></tr>\n";
-      $count++;
-    }  
-
-    return $str.='</table>';
-  }
-
-  #else, we have have a specific function to display
-  $str.= 'or go back to the code '.linkNode($NODE, 'index');
-  my $choicefunc = $query->param('choicefunc');
-  my $parentmod = '';
-
-  foreach my $modname (@modules) {
-    next if $parentmod;
-    my $stash = \%{ "${modname}::" };
-    if (exists $stash->{$choicefunc}) {
-      $parentmod=$modname;
-    }
-  }
-
-  unless($parentmod) {
-    $choicefunc =~ s/</\&lt\;/g;
-    $choicefunc =~ s/>/\&gt\;/g;
-    return "<em>Sorry, man.  No dice on $choicefunc</em>.<br />\n"; 
-  }
-
-
-  my $parentfile = undef;
-  my @mod = ();
-
-  foreach (@INC)
-  {
-    $parentfile = "$_\/".$parentmod.".pm";
-    $parentfile =~ s/\:\:/\//g;
-    open MODULE, $parentfile or next;
-    @mod = <MODULE>;
-    close MODULE;
-    last;
-  }
-
-
-  if (@mod) {
-    $str.= "module $parentmod loaded: ".int(@mod)." lines\n";
-  } else {
-    $str.= "hmm. couldn't load modules $parentfile\n";
-  }
-
-  my $count = 0;
-  my @lines = ();
-  my $fullText = '';
-  while(@mod > $count and not @lines) {
-    $fullText .= $mod[$count];
-    if($mod[$count] =~ /^sub $choicefunc\s*/) {
-      my $i = $count;
-      my $flag = undef;
-      do {
-        $i--;
-        $mod[$i]=~/\s*(\S)/;
-
-        $flag = (not defined $1 or $1 eq '#');
-      } while($i > 0 and $flag);
-
-      do {
-        $i++;
-        push @lines, $mod[$i];
-      } while (not ($mod[$i] =~ /^\}\s*$/ ));
-
-    }
-    $count++;
-  }
-
-  if (@lines) {
-    $str.= $APP->listCode(join('', @lines));
-  } else {
-    $str = $APP->listCode($fullText);
-  }
-  return $str;
-}
-
 # Only used in [dbtable edit page]
 #
 sub updatetable
@@ -760,8 +615,7 @@ sub closeform
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  $query->submit("sexisgood", $_[0]||"submit") .
-  $query->end_form;
+  return $query->submit("sexisgood", $_[0]||"submit").$query->end_form;
 }
 
 sub displayNODE
@@ -782,7 +636,7 @@ sub displayNODE
   my @noShow = ('table', 'type_nodetype', 'passwd');
 
   foreach my $key (keys %$NODE) {
-    unless (grep /^$key$/, @noShow) {
+    unless (grep {/^$key$/} @noShow) {
       $str .= "<li><B>$key: </B>";
     
       if ($key && $key =~ /\_/ && !($key =~ /\_id/))
@@ -1121,9 +975,9 @@ sub openform
   }
 
   $params{ -method } ||= 'post';
-  $query->start_form( -action => $APP->urlGenNoParams($NODE,1) , %params ) .
-  $query->hidden("displaytype") . "\n" .
-  $query->hidden('node_id', $$NODE{node_id});
+  return $query->start_form( -action => $APP->urlGenNoParams($NODE,1) , %params ) .
+    $query->hidden("displaytype") . "\n" .
+    $query->hidden('node_id', $$NODE{node_id});
 }
 
 # This needs to go away, but that's at the end of a very long road
@@ -4496,7 +4350,7 @@ sub lockroom
   my $APP = shift;
 
   return unless isGod($USER);
-  my $R ||= $$USER{in_room};
+  my $R = $$USER{in_room};
   return if $R == 0;
 
   getRef($R);
@@ -10446,7 +10300,7 @@ sub hasAchieved
   $user_id ||= $$USER{user_id};
   return unless getNodeById($user_id)->{type}{title} eq 'user';
 
-  $force = undef unless $force == 1;
+  $force = undef unless( defined($force) and ($force == 1));
 
   return 1 if $DB->sqlSelect('count(*)'
     , 'achieved'
@@ -10523,7 +10377,7 @@ sub achievementsByType
     next if $$a{subtype} && $$a{subtype} eq $finishedgroup;
 
     my $result = htmlcode('hasAchieved', $a, $user_id);
-    $finishedgroup = $$a{subtype} unless $result;
+    $finishedgroup = ($$a{subtype} || '') unless $result;
 
     $str.=linkNode($a)." - $result<br>" if $debug;
   }
