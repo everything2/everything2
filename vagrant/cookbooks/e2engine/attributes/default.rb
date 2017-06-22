@@ -29,6 +29,7 @@ default["e2engine"]["default_style"] = "Kernel Blue"
 default["e2engine"]["use_local_javascript"] = 1;
 default["e2engine"]["google_ads_badwords"] = ["fuckfuck"]
 default["e2engine"]["google_ads_badnodes"] = ["123456"]
+default["e2engine"]["certificate_manager"] = {}
 default["e2engine"]["s3"] = {}
 default["e2engine"]["s3"]["homenodeimages"]["bucket"] = ""
 default["e2engine"]["s3"]["homenodeimages"]["secret_access_key"] = ""
