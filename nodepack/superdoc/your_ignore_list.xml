@@ -48,7 +48,7 @@ $str.=$query-&gt;param('username') ?
   '.&lt;/small&gt;&lt;/p&gt;' : '' ).
   &quot;&lt;p&gt;You are being ignored by&quot;;
 
-my $csr = $DB-&gt;sqlSelectMany('messageignore_id', 'messageignore', 'ignore_node='.$userId);
+$csr = $DB-&gt;sqlSelectMany('messageignore_id', 'messageignore', 'ignore_node='.$userId);
 
 my @ignoring;
 while(my $luser = $csr-&gt;fetchrow_hashref) {
