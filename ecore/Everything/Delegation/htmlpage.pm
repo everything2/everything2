@@ -4710,7 +4710,7 @@ sub draft_display_page
       # let editors see the HTML
       $str .= '<form class="writeup_add"><fieldset><legend>HTML source (not editable)</legend>
         <textarea id="writeup_doctext" class="readonly"'.htmlcode('customtextarea', '1').'>'
-        .encodeHTML($$NODE{doctext})
+        .$APP->encodeHTML($$NODE{doctext})
         .'</textarea></fieldset></form>';
     }elsif($status eq 'removed'){
       # let editors restore if removed by mistake
@@ -4826,7 +4826,7 @@ sub draft_restore_page
         <textarea id="writeup_doctext" class="readonly"'
         .htmlcode('customtextarea', '1')
         .'>'
-        .encodeHTML($$NODE{doctext})
+        .$APP->encodeHTML($$NODE{doctext})
         .'</textarea></fieldset></form>';
     }elsif($status eq 'removed'){
       # let editors restore if removed by mistake
