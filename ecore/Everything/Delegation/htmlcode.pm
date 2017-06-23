@@ -2208,8 +2208,6 @@ sub shownewexp
   my $str = "";
 
   return  if ($$VARS{oldexp} == $$USER{experience} and not $newwuonly);
-  my $VSETTINGS = getVars(getNode('vote settings', 'setting'));
-
   my $newexp = $$USER{experience} - $$VARS{oldexp};
 
   my $xmlstr = "";

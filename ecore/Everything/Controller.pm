@@ -134,7 +134,7 @@ sub epicenter
   }
 
   my $params = {};
-  foreach my $property (qw|is_borged level coolsleft votesleft|)
+  foreach my $property (qw|is_borged level coolsleft votesleft newxp newgp|)
   {
     $params->{$property} = $REQUEST->user->$property;
   }
