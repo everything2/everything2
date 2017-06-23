@@ -659,7 +659,7 @@ sub mail_display_page
   }
 
   $str .= qq|</TD></TR></TABLE>|;
-  $str .= htmlcode("parseLinks","doctext");
+  $str .= $APP->parseLinks($APP->encodeHTML($NODE->{doctext}));
 
   return $str;
 }
