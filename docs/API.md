@@ -349,6 +349,7 @@ Returns the JSON encoded values associated with the current session
 Keys:
 * **display** - Contains private information about the session
   * **is_guest** - 1 or 0 depending on whether the user is a "logged in user". This is the preferred check other than the internal user "Guest User"
+  * **infravision** - Person can see cloaked users
   * **powers** - Array of special powers the client can use to display more advanced tools. This is not shown if there are no special powers to display 
     * **ed** - User is an editor
     * **admin** - User is an admin
