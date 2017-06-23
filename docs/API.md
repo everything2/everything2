@@ -358,6 +358,10 @@ Keys:
     * **dev** - User is a site developer (Same as **client**)
   * **votesleft** - How many votes left the user has
   * **coolsleft** - How many C!s left the user has
+  * **newxp** - Any new xp the user has gotten. Once this message is seen once, it goes away
+  * **newgp** - Any new gp the user has gotten. Once this message is seen once, it goes away
+  * **xp_to_level** - The amount of xp until the user reaches the next level
+  * **writeups_to_level** - The number of writeups until the user reaches the next level
 * *user** - If the user is not a guest, the output of /api/user for the user_id
 
 ### /api/sessions/create

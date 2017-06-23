@@ -36,7 +36,7 @@ sub user_api_structure
     {
       $userinfo->{display}->{powers} = $powers;
     }
-    foreach my $property ("coolsleft","votesleft","infravision")
+    foreach my $property ("coolsleft","votesleft","infravision","newgp","newxp","writeups_to_level","xp_to_level")
     {
       my $p = $user->$property;
       if($p)

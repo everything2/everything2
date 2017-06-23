@@ -2,15 +2,7 @@ package Everything::Node::user;
 
 use Moose;
 extends 'Everything::Node::document';
-
-has 'VARS' => ('is' => 'ro', 'isa' => 'HashRef', 'lazy' => 1, 'builder' => '_build_VARS');
-
-sub _build_VARS
-{
-  my ($self) = @_;
-
-  return Everything::getVars($self->NODEDATA); 
-}
+with 'Everything::Node::helper::setting';
 
 override 'json_display' => sub
 {
@@ -58,7 +50,7 @@ override 'json_display' => sub
 sub numwriteups
 {
   my ($self) = @_;
-  return $self->VARS->{numwriteups};
+  return $self->VARS->{numwriteups} || 0;
 }
 
 sub lasttime
@@ -295,6 +287,94 @@ sub infravision
 {
   my ($self) = @_;
   return $self->VARS->{infravision};
+}
+
+sub newxp
+{
+  my ($self, $dontupdate) = @_;
+
+  if(not defined($self->VARS->{oldexp}))
+  {
+    $self->VARS->{oldexp} = $self->experience;  
+    return 0;
+  }
+
+  my $difference = 0;
+  if($self->VARS->{oldexp} != $self->experience)
+  {
+    # Negative here is okay
+    $difference = $self->experience - $self->VARS->{oldexp};
+    unless($dontupdate)
+    {
+      $self->VARS->{oldexp} = $self->experience;  
+    }
+  }
+
+  return $difference;
+}
+
+sub gp
+{
+  my ($self) = @_;
+  return $self->NODEDATA->{GP} || 0;
+}
+
+sub newgp
+{
+  my ($self, $dontupdate) = @_;
+
+  if(not defined($self->VARS->{oldGP}))
+  {
+    $self->VARS->{oldGP} = $self->gp;
+    return 0;
+  }
+
+  my $difference = 0;
+
+  if($self->VARS->{oldGP} != $self->gp)
+  {
+    $difference = $self->gp - $self->VARS->{oldGP};
+    unless($dontupdate)
+    {
+      $self->VARS->{oldGP} = $self->gp;
+    } 
+  }
+
+  $difference = 0 if $difference < 0;
+  return $difference;
+}
+
+sub xp_to_level
+{
+  my ($self) = @_;
+
+  my $LVLS = $self->APP->node_by_name('level experience','setting')->VARS || {};
+  my $lvl = $self->level+1;
+
+  my $to_lvl = 0;
+  if($LVLS->{$lvl})
+  {
+    $to_lvl = ($LVLS->{$lvl} - $self->experience);
+    $to_lvl = 0 if $to_lvl < 0;
+  }
+
+  return $to_lvl;
+}
+
+sub writeups_to_level
+{
+  my ($self) = @_;
+
+  my $WRPS = $self->APP->node_by_name('level writeups','setting')->VARS || {};
+  my $lvl = $self->level+1;
+
+  my $to_lvl = 0;
+  if($WRPS->{$lvl})
+  {
+    $to_lvl = ($$WRPS{$lvl} - $self->numwriteups);
+    $to_lvl = 0 if $to_lvl < 0;
+  }
+  return $to_lvl;
 }
 
 __PACKAGE__->meta->make_immutable;
