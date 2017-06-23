@@ -36,12 +36,12 @@ sub user_api_structure
     {
       $userinfo->{display}->{powers} = $powers;
     }
-    foreach my $spend("coolsleft","votesleft")
+    foreach my $property ("coolsleft","votesleft","infravision")
     {
-      my $s = $user->$spend;
-      if($s)
+      my $p = $user->$property;
+      if($p)
       {
-        $userinfo->{display}->{$spend} = $s;
+        $userinfo->{display}->{$property} = $p;
       }
     } 
      
