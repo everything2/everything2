@@ -1434,7 +1434,8 @@ sub show_content
 
   # decode instructions
 
-  my $xml = '1' if $instructions =~ s/^xml\b\s*// ;
+  my $xml = 0;
+  $xml = '1' if $instructions =~ s/^xml\b\s*// ;
 
   my ($wrapTag, $wrapClass, $wrapAtts) = split(/\s+class="([^"]+)"/, $1) if $instructions =~ s/^\s*<([^>]+)>\s*//;
   $wrapAtts .= $1 if $wrapTag =~ s/(\s+.*)//;
@@ -1471,7 +1472,6 @@ sub show_content
       my $length = undef; $length = $content[$i] if $content[$i] =~ /\d/ ;
       $$HTML{ noscreening } = ($content[$i] eq 'unfiltered');
       $i-- unless $content[++$i];
-      my $xml = 0;
       my $text = $N->{ doctext } ;
       # Superdoc stuff hardcoded below
       $text = parseCode( $text ) if exists( $$N{ type } ) and ( $$N{ type_nodetype } eq 14 or $$N{ type }{ extends_nodetype } eq 14 ) ;
