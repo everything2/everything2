@@ -293,6 +293,7 @@ sub newxp
 {
   my ($self, $dontupdate) = @_;
 
+  $self->APP->devLog("User VARS in newxp: ".$self->VARS);
   if(not defined($self->VARS->{oldexp}))
   {
     $self->VARS->{oldexp} = $self->experience;  
@@ -306,6 +307,7 @@ sub newxp
     $difference = $self->experience - $self->VARS->{oldexp};
     unless($dontupdate)
     {
+      $self->APP->devLog("Setting oldexp as ".$self->experience." (was ".$self->VARS->{oldexp}.")");
       $self->VARS->{oldexp} = $self->experience;  
     }
   }

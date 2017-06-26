@@ -38,7 +38,7 @@ BEGIN {
   *replaceNodegroup = *Everything::HTML::replaceNodegroup;
 }
 
-# Used by parsetime
+# Used by parsetime,parsetimestamp, timesince
 use Time::Local;
 
 # Used by shownewexp, publishwriteup, static_javascript, zenwriteups, hasAchieved,
@@ -50,9 +50,6 @@ use DateTime;
 
 # Used by publishwriteup
 use DateTime::Format::Strptime;
-
-# Used by parsetimestamp, timesince
-use Time::Local;
 
 # Used by typeMenu
 use Everything::FormMenu;

@@ -228,8 +228,13 @@ sub setVars
 		perhaps it doesn't join on the settings table?\n");
 	}
 
+        $APP->devLog("Inside of setVars for $NODE->{title}"); 
 	my $newVarsStr = getVarStringFromHash($varsref);
-	return unless ($newVarsStr ne $$NODE{vars}); #we don't need to update...
+	unless ($newVarsStr ne $$NODE{vars})
+        {
+          $APP->devLog("setVars does not need to update for $NODE->{title}");
+          return;
+        }
 
 	# Create a list of the vars-as-loaded
 	my %originalVars = getVarHashFromStringFast($$NODE{vars});
@@ -247,8 +252,7 @@ sub setVars
 	# This way we avoid race conditions with vars being updated in multiple
 	#  ways at once.  (No more infinite C!s.  q.q)
 	my $updateSub = sub {
-		my $currentVarString =
-			$DB->sqlSelect('vars', 'setting', "setting_id = $$NODE{node_id}") || "";
+		my $currentVarString = $DB->sqlSelect('vars', 'setting', "setting_id = $$NODE{node_id}") || "";
 		my %currentVars = getVarHashFromStringFast($currentVarString);
 		map { $currentVars{$_} = $modifiedVars{$_}; } keys %modifiedVars;
 		map { delete $currentVars{$_} if !defined $$varsref{$_}; } keys %currentVars;

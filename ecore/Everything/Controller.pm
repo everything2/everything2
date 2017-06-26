@@ -134,19 +134,9 @@ sub epicenter
   }
 
   my $params = {};
-  foreach my $property (qw|is_borged level coolsleft votesleft newxp newgp|)
+  foreach my $property (qw|is_borged level coolsleft votesleft newxp newgp writeups_to_level xp_to_level|)
   {
     $params->{$property} = $REQUEST->user->$property;
-  }
-
-  $params->{settings} = $self->APP->node_by_id($self->CONF->system->{user_settings});
-  $params->{drafts} = $self->APP->node_by_name("Drafts","superdoc");
-  $params->{votingsystem} = $self->APP->node_by_name("The Everything2 Voting/Experience System","superdoc");
-  if($REQUEST->user->level > 2)
-  {
-    $params->{help} = $self->APP->node_by_name('Everything2 Help','e2node');
-  }else{
-    $params->{help} = $self->APP->node_by_name('Everything2 Quick Start', 'e2node');
   }
 
   return $params;

@@ -818,12 +818,17 @@ sub displayPage
 	my $pagetitle = $PAGE->{title};
 	$pagetitle =~ s/ /_/g;
 
+	$APP->devLog("Vars reference before can_route: ".$REQUEST->user->VARS);
 	if($Everything::ROUTER->can_route($NODE, $query->param("displaytype")))
 	{
 		$page = "";
 		$APP->devLog("Using available router for $NODE->{title} / $NODE->{type}->{title}");
 		# HTMLRouter does the printing
 		$Everything::ROUTER->route_node($NODE, $query->param("displaytype") || "display", $REQUEST);
+	
+		# TODO: Make sure that VARS are set in ROUTER once we're cut over
+		$APP->devLog("Vars reference in can_route: $VARS");
+		setVars($USER, $VARS) unless $APP->isGuest($USER);
 	}else{
 
 		if(my $delegation = Everything::Delegation::htmlpage->can($pagetitle))
@@ -1219,7 +1224,7 @@ sub opNuke
 sub opLogin
 {
         $USER = $REQUEST->login("username" => $query->param("user"), "pass" => $query->param("passwd"));
-        $VARS = $REQUEST->VARS;
+        $VARS = $REQUEST->user->VARS;
 }
 
 #############################################################################
@@ -1376,7 +1381,8 @@ sub mod_perlInit
 	$query = $REQUEST->cgi;
 
 	$USER = $REQUEST->USER;
-        $VARS = $REQUEST->VARS;
+        $VARS = $REQUEST->user->VARS;
+        $APP->devLog("VARS reference in mod_perlInit: $VARS");
 	$PAGELOAD = $REQUEST->PAGELOAD;
 
          #only for Everything2.com

@@ -6,13 +6,16 @@ has 'coolsleft';
 
 has 'voteschingsleft' => (lazy => 1, builder => "_build_voteschingsleft");
 
-has 'settings';
-has 'drafts';
-has 'votingsystem';
-has 'helptext';
+has 'newgp' => (default => 0, lazy => 1);
+has 'newxp' => (default => 0, lazy => 1);
 
-has 'newxp';
-has 'newgp';
+has 'writeups_to_level' => (default => 0, lazy => 1);
+has 'xp_to_level' => (default => 0, lazy => 1);
+
+has 'localtimeset' => (default => 0, lazy => 1);
+has 'localtime_12h' => (default => 0, lazy => 1);
+has 'localtime_tzadjust' => (default => 0, lazy => 1);
+has 'localtime_dst' => (default => 0, lazy => 1);
 
 sub _build_voteschingsleft
 {
@@ -35,14 +38,47 @@ sub _build_voteschingsleft
 </%class>
 <ul>
 <li><& '/helpers/linknode.mi', node => $.node, title => "Log Out", params => {"op" => "logout"} &></li>
-<li title="User Settings"><& '/helpers/linknode.mi', node => $.settings, params => {"lastnode_id" => 0} &></li> 
+<li title="User Settings"><& '/helpers/linknodetitle.mi', node => "Settings", params => {"lastnode_id" => 0} &></li> 
 <li title="Your profile"><& '/helpers/linknode.mi', node => $REQUEST->user &> <& '/helpers/linknode.mi', node => $REQUEST->user, title => '(edit)', params => {"displaytype" => "edit"} &></li>
-<li title="Draft, format, and organize your works in progress"><& '/helpers/linknode.mi', node => $.drafts &></li>
-<li title="Learn what all those numbers mean"><& '/helpers/linknode.mi', node => $.votingsystem, title => 'Voting/XP System' &></li>
+<li title="Draft, format, and organize your works in progress"><& '/helpers/linknodetitle.mi', node => "Drafts", type => "superdoc" &></li>
+<li title="Learn what all those numbers mean"><& '/helpers/linknodetitle.mi', node => "The Everything2 Voting/Experience System", type => "superdoc", title => 'Voting/XP System' &></li>
 <li title="View a randomly selected node"><& '/helpers/randomnode.mi' &></li>
-% if($.helptext) {
-<li title="Need help?"><& '/helpers/linknode.mi', node => $.helptext, title => 'Help' &></li>
+<li title="Need help?">
+% if($REQUEST->user->level > 2)
+% {
+<& '/helpers/linknodetitle.mi', node => "Everything2 Help", title => 'Help' &>
+% } else {
+<& '/helpers/linknodetitle.mi', node => "Everything2 Quick Start", title => 'Help' &>
 % }
-<% $.voteschingsleft %>
-
+</li>
 </ul>
+<% $.voteschingsleft %>
+% if($.newxp > 0) {
+<p id="experience">
+You <& '/helpers/linknodetitle.mi', node => "node tracker", type => "superdoc", title => "gained" &>
+<strong><% $.newxp %></strong> experience point<% ($.newxp > 1)?('s'):('') %></strong>
+%   if($.xp_to_level > 0) {
+<br />You need <strong><% $.xp_to_level %></strong> more XP to earn <& '/helpers/linknodetitle.mi', "node" => "The Everything2 Voting/Experience System", type => "superdoc", title => "level" &><% $REQUEST->user->level+1 %>
+%   }
+%   if($.writeups_to_level > 0) {
+%     if($.writeups_to_level > 1) {
+<br />You need <strong><% $.writeups_to_level %></strong> more writeups to earn <& '/helpers/linknodetitle.mi', "node" => "The Everything2 Voting/Experience System", "type" => "superdoc", "title" => "level" &><% $REQUEST->user->level+1 %>
+%     } else {
+<br />To reach <& '/helpers/linknodetitle.mi', "node" => "The Everything2 Voting/Experience System", "type" => "superdoc", "title" => "level" &><% $REQUEST->user->level + 1 %>, you only need one more writeup!
+%     }
+%   }
+</p>
+% }
+% if($.newgp > 0) {
+<p id="gp">Yay! you gained <% $.newgp %></p>
+% }
+<p id="servertime">
+server time<br /><& '/helpers/displaytime.mi' &><br />
+% if($.localtimeset)
+% {
+<& '/helpers/displaytime.mi', "display_12h" => $.localtime_12h, "tzadjust" => $.localtime_tzadjust, "dst" => $.localtime_dst &> 
+% } else {
+<& '/helpers/linknodetitle.mi', 'node' => 'Advanced Settings', 'type' => 'superdoc', 'title' => '(set your time)' &>
+% }
+
+</p>

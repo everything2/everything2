@@ -145,7 +145,7 @@ sub unauthorized_if_guest
   my $self = shift;
   my $REQUEST = shift;
 
-  if($self->APP->isGuest($REQUEST->USER))
+  if($REQUEST->is_guest)
   {
     $self->devLog("Can't access path due to being Guest");
     return [$self->HTTP_UNAUTHORIZED];
