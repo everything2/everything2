@@ -818,7 +818,6 @@ sub displayPage
 	my $pagetitle = $PAGE->{title};
 	$pagetitle =~ s/ /_/g;
 
-	$APP->devLog("Vars reference before can_route: ".$REQUEST->user->VARS);
 	if($Everything::ROUTER->can_route($NODE, $query->param("displaytype")))
 	{
 		$page = "";
@@ -827,7 +826,6 @@ sub displayPage
 		$Everything::ROUTER->route_node($NODE, $query->param("displaytype") || "display", $REQUEST);
 	
 		# TODO: Make sure that VARS are set in ROUTER once we're cut over
-		$APP->devLog("Vars reference in can_route: $VARS");
 		setVars($USER, $VARS) unless $APP->isGuest($USER);
 	}else{
 
@@ -1382,7 +1380,6 @@ sub mod_perlInit
 
 	$USER = $REQUEST->USER;
         $VARS = $REQUEST->user->VARS;
-        $APP->devLog("VARS reference in mod_perlInit: $VARS");
 	$PAGELOAD = $REQUEST->PAGELOAD;
 
          #only for Everything2.com

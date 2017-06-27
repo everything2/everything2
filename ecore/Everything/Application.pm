@@ -4097,60 +4097,6 @@ sub delete_bookmark
     AND linktype=$linktype");
 }
 
-sub get_message_ignores
-{
-  my ($this, $user) = @_;
-  
-  my $csr = $this->{db}->sqlSelectMany("*","messageignore","messageignore_id=".$user->{node_id}." ORDER BY messageignore_id");
-  my $records = [];
-
-  while(my $row = $csr->fetchrow_hashref())
-  {
-    my $node = $this->{db}->getNodeById($row->{ignore_node});
-    next unless $node;
-    push @$records, $this->node_json_reference($node);
-  }
-
-  return $records;
-}
-
-sub message_ignore_set
-{
-  my ($this, $user, $ignore_id, $state) = @_;
-
-  my $ignore = $this->{db}->getNodeById($ignore_id);
-  return unless $ignore;
-  # TODO: Can only ignore users and usergroups?
-
-  $this->devLog("message_ignore_set: $user->{node_id} is ".(($state)?(""):("un"))."ignoring $ignore->{title}");
-
-  if($state)
-  {
-    if(my $struct = $this->is_ignoring_messages($user,$ignore_id))
-    {
-      return $struct;
-    }else{
-      $this->{db}->sqlInsert("messageignore",{"messageignore_id" => $user->{user_id}, "ignore_node" => $ignore->{node_id}});
-      return $this->node_json_reference($ignore);
-    }
-  }else{
-    $this->{db}->sqlDelete("messageignore","messageignore_id=$user->{node_id} and ignore_node=$ignore->{node_id}");
-    return [$ignore->{node_id}];
-  }
-}
-
-sub is_ignoring_messages
-{
-  my ($this, $user, $ignore) = @_;
-
-  my $ignorestruct = $this->{db}->sqlSelectHashref("*","messageignore","messageignore_id=$user->{user_id} and ignore_node=".int($ignore));
-
-  if($ignorestruct)
-  {
-    return $this->node_json_reference($this->{db}->getNodeById($ignorestruct->{ignore_node}));
-  }
-}
-
 # These two are wrapper functions to get us to a state where eventually NodeBase will return an object. Once that is the case these
 # can be made passthroughs
 #
