@@ -379,5 +379,61 @@ sub writeups_to_level
   return $to_lvl;
 }
 
+sub message_ignores
+{
+  my ($self) = @_;
+
+  my $csr = $self->DB->sqlSelectMany("*","messageignore","messageignore_id=".$self->node_id." ORDER BY messageignore_id");
+  my $records = [];
+
+  while(my $row = $csr->fetchrow_hashref())
+  {
+    my $node = $self->APP->node_by_id($row->{ignore_node});
+    next unless $node;
+    push @$records, $node->json_reference;
+  }
+
+  return $records;
+}
+
+sub set_message_ignore
+{
+  my ($self, $ignore_id, $state) = @_;
+
+  my $ignore = $self->DB->getNodeById($ignore_id);
+  return unless $ignore;
+
+  $self->devLog("set_message_ignore: ".$self->node_id." is ".(($state)?(""):("un"))."ignoring $ignore->{title}");
+
+  if($state)
+  {
+    if(my $struct = $self->is_ignoring_messages($ignore_id))
+    {
+      return $struct;
+    }else{
+      $self->DB->sqlInsert("messageignore",{"messageignore_id" => $self->node_id, "ignore_node" => $ignore->{node_id}});
+      return $self->APP->node_json_reference($ignore);
+    }
+  }else{
+    $self->DB->sqlDelete("messageignore","messageignore_id=".$self->node_id." and ignore_node=$ignore->{node_id}");
+    return [$ignore->{node_id}];
+  }
+
+}
+
+sub is_ignoring_messages
+{
+  my ($self, $ignore) = @_;
+
+  my $ignorestruct = $self->DB->sqlSelectHashref("*","messageignore","messageignore_id=".$self->node_id." and ignore_node=".int($ignore));
+
+  if($ignorestruct)
+  {
+    return $self->APP->node_by_id($ignorestruct->{ignore_node})->json_reference;
+  }
+}
+
+
+
 __PACKAGE__->meta->make_immutable;
 1;

@@ -18,7 +18,7 @@ sub get_all
 {
   my ($self, $REQUEST) = @_;
 
-  return [$self->HTTP_OK, $self->APP->get_message_ignores($REQUEST->USER)];
+  return [$self->HTTP_OK, $REQUEST->user->message_ignores];
 }
 
 sub create
@@ -35,7 +35,7 @@ sub create
 
   if(int($data->{ignore_id}))
   {
-    return [$self->HTTP_OK, $self->APP->message_ignore_set($REQUEST->USER, $data->{ignore_id},1)];
+    return [$self->HTTP_OK, $REQUEST->user->set_message_ignore($data->{ignore_id}, 1)];
   }else{
     return [$self->HTTP_BAD_REQUEST];
   }
@@ -47,7 +47,7 @@ sub get_single
 {
   my ($self, $REQUEST, $id) = @_;
 
-  my $ignore = $self->APP->is_ignoring_messages($REQUEST->USER,int($id));
+  my $ignore = $REQUEST->user->is_ignoring_messages(int($id));
   if($ignore)
   {
     return [$self->HTTP_OK, $ignore];
@@ -60,7 +60,7 @@ sub delete
 {
   my ($self, $REQUEST, $id) = @_;
 
-  return [$self->HTTP_OK, $self->APP->message_ignore_set($REQUEST->USER,int($id),0)];
+  return [$self->HTTP_OK, $REQUEST->user->set_message_ignore(int($id),0)];
 }
 
 around ['get_all','create','get_single','delete'] => \&Everything::API::unauthorized_if_guest;
