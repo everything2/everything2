@@ -1221,7 +1221,7 @@ sub opNuke
 
 sub opLogin
 {
-        $USER = $REQUEST->login("username" => $query->param("user"), "pass" => $query->param("passwd"));
+        $USER = $REQUEST->login("username" => $query->param("user"), "pass" => $query->param("passwd"))->NODEDATA;
         $VARS = $REQUEST->user->VARS;
 }
 
@@ -1378,7 +1378,7 @@ sub mod_perlInit
 
 	$query = $REQUEST->cgi;
 
-	$USER = $REQUEST->USER;
+	$USER = $REQUEST->user->NODEDATA;
         $VARS = $REQUEST->user->VARS;
 	$PAGELOAD = $REQUEST->PAGELOAD;
 

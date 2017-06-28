@@ -19,7 +19,7 @@ sub dispatcher
   }
 
   # While in beta, API access is restricted
-  unless($REQUEST->isGuest || $REQUEST->isEditor || $REQUEST->isDeveloper || $REQUEST->isClientDeveloper || $Everything::CONF->environment eq "development")
+  unless($REQUEST->is_guest || $REQUEST->is_editor || $REQUEST->is_developer || $REQUEST->is_clientdev || $Everything::CONF->environment eq "development")
   {
     $self->output($REQUEST, [$self->HTTP_FORBIDDEN]);
     return;

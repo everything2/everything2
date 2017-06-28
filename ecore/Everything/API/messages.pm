@@ -22,7 +22,7 @@ sub get_all
 
   my $limit = int($REQUEST->cgi->param("limit")) || undef;
   my $offset = int($REQUEST->cgi->param("offset")) || undef;
-  return [$self->HTTP_OK, $self->APP->get_messages($REQUEST->USER,$limit, $offset)];
+  return [$self->HTTP_OK, $self->APP->get_messages($REQUEST->user->NODEDATA,$limit, $offset)];
 }
 
 sub create
@@ -101,7 +101,7 @@ sub _message_operation_okay
   my ($orig, $self, $REQUEST, $id) = @_;
 
   # TODO: The Moose method wrapping won't let me get away with this
-  if($self->APP->isGuest($REQUEST->USER))
+  if($REQUEST->user->is_guest)
   {
     $self->devLog("Can't access path due to being Guest");
     return [$self->HTTP_FORBIDDEN];
@@ -114,7 +114,7 @@ sub _message_operation_okay
     return [$self->HTTP_FORBIDDEN];
   }
 
-  if($self->APP->can_see_message($REQUEST->USER, $message))
+  if($self->APP->can_see_message($REQUEST->user->NODEDATA, $message))
   {
     my $return = $self->$orig($message);
     if(UNIVERSAL::isa($return, "HASH"))

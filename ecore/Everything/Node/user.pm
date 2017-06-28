@@ -433,7 +433,11 @@ sub is_ignoring_messages
   }
 }
 
-
+sub in_room
+{
+  my ($self) = @_;
+  return $self->NODEDATA->{in_room};
+}
 
 __PACKAGE__->meta->make_immutable;
 1;
