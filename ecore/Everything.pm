@@ -228,11 +228,9 @@ sub setVars
 		perhaps it doesn't join on the settings table?\n");
 	}
 
-        $APP->devLog("Inside of setVars for $NODE->{title}"); 
 	my $newVarsStr = getVarStringFromHash($varsref);
 	unless ($newVarsStr ne $$NODE{vars})
         {
-          $APP->devLog("setVars does not need to update for $NODE->{title}");
           return;
         }
 

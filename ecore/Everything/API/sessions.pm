@@ -89,7 +89,7 @@ sub delete
   my ($self, $REQUEST) = @_;
 
   # We only need to delete the cookie; the API exit point is user neutral after this point
-  $REQUEST->USER($self->DB->getNodeById($self->CONF->guest_user));
+  $REQUEST->logout;
   return [$self->HTTP_OK,$self->user_api_structure($REQUEST), {"cookie" => $REQUEST->cookie(-name => $self->CONF->cookiepass, -value => "")}];
 }
 
