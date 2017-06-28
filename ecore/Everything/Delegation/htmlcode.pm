@@ -9942,6 +9942,7 @@ sub atomiseNode
     my $N = shift ;
     my $url = $host . urlGen({ }, 'noQuotes', $N) ;
     my $author = getNodeById( $$N{author_user} ) ;
+    my $authorurl = $host . $APP -> urlGenNoParams($author, 'no quotes') ;
     my $timestamp = $$N{publishtime} || $$N{createtime};
     $timestamp =~ /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/;
     $timestamp = sprintf ("%04d-%02d-%02dT%02d:%02d:%02dZ", $1, $2, $3, $4, $5, $6);
@@ -9951,7 +9952,7 @@ sub atomiseNode
       '<id>' . $url . '</id>' .
       '<author>' .
       '<name>' . $$author{ title } . '</name>' .
-      '<uri>' . $host . '/user/' . $$author{ title } . '</uri>' .
+      '<uri>' . $authorurl . '</uri>' .
       '</author>' .
       '<published>'. $timestamp . '</published>' .
       '<updated>'. $timestamp . '</updated>' ;
