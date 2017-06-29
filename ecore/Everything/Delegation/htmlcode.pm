@@ -11281,7 +11281,7 @@ sub verifyRequest
   # checks that the form was a real e2 one
   my ($prefix) = @_;
   my $test = md5_hex($$USER{passwd} . ' ' . $$USER{email} . $query->param($prefix . '_seed'));
-  return ($test eq $query->param($prefix . '_nonce')) ? 1 : 0;
+  return (defined($query->param($prefix . '_nonce')) and $test eq $query->param($prefix . '_nonce')) ? 1 : 0;
 }
 
 sub verifyRequestForm
@@ -12113,7 +12113,7 @@ sub listnodecategories
     my $ies = (@items != 1 ? 'ies' : 'y');
     my ($c, $addId) = !$isIncludedParent ? ('C', qq' id="categories$nodeid"') : ('Page c', '');
     my $moggies = ""; $moggies = qq'<h4>${c}ategor$ies:</h4> <ul><li>'.(join '</li><li>', @items).'</li></ul>' if @items;
-    return qq'<div class="categories"$addId">$moggies\n$$PAGELOAD{e2nodeCategories}\n</div>';
+    return qq'<div class="categories"$addId">$moggies\n'.($$PAGELOAD{e2nodeCategories}||"").qq'\n</div>';
   }
 
   #id so content can be ajaxed in, but no class so no styling that makes it take up space:

@@ -978,7 +978,7 @@ sub gotoNode
 		$redirQuery->delete('op') if $redirQuery->param('op') eq "";
 		foreach ($redirQuery->param) {
 			$safeToRedirect = 0 unless defined $NO_SIDE_EFFECT_PARAMS{$_};
-			$redirQuery->delete($_) if $NO_SIDE_EFFECT_PARAMS{$_} eq 'delete';
+			$redirQuery->delete($_) if(defined($NO_SIDE_EFFECT_PARAMS{$_}) and $NO_SIDE_EFFECT_PARAMS{$_} eq 'delete');
 		}
 
 		if ($safeToRedirect) {

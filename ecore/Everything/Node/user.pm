@@ -62,13 +62,13 @@ sub lasttime
 sub experience
 {
   my ($self) = @_;
-  return $self->NODEDATA->{experience};
+  return $self->NODEDATA->{experience} || 0;
 }
 
 sub GP
 {
   my ($self) = @_;
-  return $self->NODEDATA->{GP};
+  return $self->NODEDATA->{GP} || 0;
 }
 
 sub mission
@@ -293,7 +293,6 @@ sub newxp
 {
   my ($self, $dontupdate) = @_;
 
-  $self->APP->devLog("User VARS in newxp: ".$self->VARS);
   if(not defined($self->VARS->{oldexp}))
   {
     $self->VARS->{oldexp} = $self->experience;  
@@ -301,6 +300,7 @@ sub newxp
   }
 
   my $difference = 0;
+
   if($self->VARS->{oldexp} != $self->experience)
   {
     # Negative here is okay

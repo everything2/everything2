@@ -363,7 +363,7 @@ sub other_users
     my $thisnoder = $nameLink . $flags;
 
     #Votes only get refreshed when user logs in
-    my $activedays = $userVars -> {votesrefreshed};
+    my $activedays = $userVars->{votesrefreshed} || 0;
 
     # Gotta resort the noderlist by recent writeups and XP
     push @noderlist, {
