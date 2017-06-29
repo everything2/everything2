@@ -69,7 +69,7 @@ sub layout
   foreach ('fxDuration', 'collapsedNodelets', 'settings_useTinyMCE', 'autoChat', 'inactiveWindowMarker'){
     if (!$REQUEST->is_guest){
       $REQUEST->VARS->{$_} = $cookie if($cookie = $REQUEST->cookie($_));
-      delete $REQUEST->VARS->{$_} if $cookie eq '0';
+      delete $REQUEST->VARS->{$_} if(defined($cookie) and $cookie eq '0');
     }
     $e2->{$_} = $REQUEST->VARS->{$_} if ($REQUEST->VARS->{$_});
   }
