@@ -3209,7 +3209,7 @@ sub category_edit_page
 
   if ($query -> param('op') eq 'nuke' && $query->param('node_id') == $$NODE{node_id} && htmlcode('verifyRequest', 'nukecat'))
   {
-    nukeNode($NODE, -1);
+    $DB->nukeNode($NODE, -1);
     return $query->b('Category deleted');
   }
 
@@ -4680,7 +4680,7 @@ sub draft_display_page
       .$query -> ul($query -> li($query -> h4('Cool inspiration').htmlcode('frontpage_cooluserpicks'))
       .$query -> li($query -> h4('What Inspired the Editors').htmlcode('frontpage_staffpicks')));
 
-      nukeNode($NODE, -1, 1); # no user check, gone forever
+      $DB->nukeNode($NODE, -1, 1); # no user check, gone forever
 
       return $str;
   }
@@ -4792,7 +4792,7 @@ sub draft_restore_page
       .htmlcode('frontpage_cooluserpicks'))
       .$query -> li($query -> h4('What Inspired the Editors').htmlcode('frontpage_staffpicks')));
       
-      nukeNode($NODE, -1, 1); # no user check, gone forever
+      $DB->nukeNode($NODE, -1, 1); # no user check, gone forever
       return $str;
   }
 

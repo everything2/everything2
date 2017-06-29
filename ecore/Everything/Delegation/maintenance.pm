@@ -920,8 +920,8 @@ sub draft_delete
     'xpHistoryCache', # xpHistoryCache for user is deleted once XP has been recalculated
     "xpHistoryCache_id=$$N{author_user}") if $$N{author_user} < 1960662; # magic number identifies October 29, 2008
 
-  my $totalvotes = int($DB -> sqlDelete('vote', "vote_id=$id"));
-  my $cools = int($DB -> sqlDelete('coolwriteups', "coolwriteups_id=$id"));
+  my $totalvotes = int($DB -> sqlDelete('vote', "vote_id=$N->{node_id}"));
+  my $cools = int($DB -> sqlDelete('coolwriteups', "coolwriteups_id=$N->{node_id}"));
 
   return unless @cache;
 
