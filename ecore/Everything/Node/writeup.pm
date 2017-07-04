@@ -115,5 +115,17 @@ sub writeuptype
   return $self->APP->node_by_id($self->NODEDATA->{wrtype_writeuptype})->title;
 }
 
+sub canonical_url
+{
+  my ($self) = @_;
+  return "/user/".$self->author->uri_safe_title."/writeups/".$self->parent->uri_safe_title;
+}
+
+sub notnew
+{
+  my ($self) = @_;
+  return $self->NODEDATA->{notnew};
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

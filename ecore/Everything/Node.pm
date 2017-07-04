@@ -2,6 +2,7 @@ package Everything::Node;
 
 use Moose;
 use CGI;
+use URI::Escape;
 
 with 'Everything::Globals';
 
@@ -181,6 +182,7 @@ sub field_whitelist
   return [];
 }
 
+# TODO: Is this still useful?
 sub url_safe_title
 {
   my ($self) = @_;
@@ -193,10 +195,17 @@ sub url_safe_title
   return $title;
 }
 
+sub uri_safe_title
+{
+  my ($self) = @_;
+
+  return uri_escape_utf8($self->title);
+}
+
 sub canonical_url
 {
   my ($self) = @_;
-  return "/".join("/","node",$self->type->title,$self->url_safe_title);
+  return "/".join("/","node",$self->type->uri_safe_title,$self->uri_safe_title);
 }
 
 sub metadescription

@@ -1302,6 +1302,7 @@ sub execOpCode
   my $delegation = undef;
   if($op ne "new" and $delegation = Everything::Delegation::opcode->can($op))
   {
+    $APP->devLog("Using delegated opcode: $op");
     $delegation->($DB, $query, $GNODE, $USER, $VARS, $PAGELOAD, $APP);
     return;
   }

@@ -3,7 +3,11 @@
 
   has 'node' => (required => 1);
   has 'title';
+  has 'innertitle';
   has 'params';
+  has 'class';
+  has 'anchor';
+
   sub uri_params
   {
     my ($this) = @_;
@@ -24,5 +28,4 @@
   }
 
 </%class>
-
-<a href="<% $.node->canonical_url %><% $.uri_params %>"><% $.title || $.node->title %></a>
+<a <% defined($.innertitle)?(qq|title="|.$.innertitle.qq|" |):('') %><% defined($.class)?(qq|class="|.$.class.qq|" |):('') %>href="<% $.node->canonical_url %><% $.uri_params %><% defined($.anchor)?("#".$.anchor):('') %>"><% defined($.title)?($.title):($.node->title) %></a>

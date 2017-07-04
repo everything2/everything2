@@ -142,4 +142,17 @@ sub epicenter
   return $params;
 }
 
+sub new_writeups
+{
+  my ($self, $REQUEST, $node) = @_;
+
+  my $params = {};
+  $params->{newwriteups} = [];
+  foreach my $newwriteups_entry (@{$self->DB->stashData("newwriteups")})
+  {
+    push @{$params->{newwriteups}}, $self->APP->node_by_id($newwriteups_entry->{writeup_id});
+  }
+  return $params;
+}
+
 1;
