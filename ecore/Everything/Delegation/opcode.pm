@@ -1706,12 +1706,15 @@ sub hidewriteup
 
   if($query->param('hidewriteup'))
   {
+    $APP->devLog("Hiding writeup: ".$query->param('hidewriteup'));
     my $writeup = int($query->param('hidewriteup'));
-    $DB -> sqlUpdate('newwriteup', { notnew=>'1' }, "node_id=$writeup");
+    $DB->sqlUpdate('newwriteup', { notnew=>'1' }, "node_id=$writeup");
     getRef $writeup;
     $$writeup{notnew} = 1;
-    $DB -> updateNode($writeup, -1);
+    $DB->updateNode($writeup, -1);
     htmlcode('addNodenote', $writeup, "Hidden by $$USER{title}");
+  }else{
+    $APP->devLog("In hidewriteup: Can't figure out what writeup to hide");
   }
   return "";
 }
