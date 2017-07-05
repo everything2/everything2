@@ -34,6 +34,11 @@ sub single_writeup_display
 
   my $vote = $self->user_has_voted($user);
 
+  if($self->author_user == $user->node_id)
+  {
+    $values->{notnew} = $self->notnew;
+  }
+
   if($vote || $self->author_user == $user->node_id)
   {
     foreach my $key ("reputation","upvotes","downvotes")
@@ -126,6 +131,25 @@ sub notnew
   my ($self) = @_;
   return $self->NODEDATA->{notnew};
 }
+
+sub field_whitelist
+{
+  return ["doctext","parent_e2node","wrtype_writeuptype","notnew"];
+}
+
+around 'insert' => sub {
+ my ($orig, $self, $user, $data) = @_;
+
+ my $newnode = $self->$orig($user, $data);
+
+ # TODO: better superuser insert
+ my $root = $self->APP->node_by_name("root","user");
+ my $parent = $newnode->parent;
+ $parent->group_add([$newnode->node_id], $root);
+ $parent->update($root);
+
+ return $newnode;
+};
 
 __PACKAGE__->meta->make_immutable;
 1;

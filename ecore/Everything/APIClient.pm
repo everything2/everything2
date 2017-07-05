@@ -47,8 +47,10 @@ sub _build_session
   my $response = $self->get($self->endpoint."/sessions");
   if($response->code == $self->HTTP_OK)
   {
-    $self->session($self->json->decode($response->content));
+    return $self->json->decode($response->content);
   }
+
+  return {};
 }
 
 sub login
@@ -91,7 +93,7 @@ sub messages
   $query_string .= "offset=$offset;" if $offset;
   $query_string = "?$query_string" if $query_string;
 
-  $self->_format_response($self->get($self->endpoint."/messages$query_string"), "messages");
+  return $self->_format_response($self->get($self->endpoint."/messages$query_string"), "messages");
 
 }
 
@@ -99,14 +101,13 @@ sub message_id
 {
   my($self, $message_id) = @_;
 
-  $self->_format_response($self->get($self->endpoint."/messages/$message_id"),"message");
-
+  return $self->_format_response($self->get($self->endpoint."/messages/$message_id"),"message");
 }
 
 sub send_message
 {
   my ($self, $for, $message) = @_;
-  $self->_format_response($self->_do_post($self->endpoint."/messages/create", {"for" => $for, "message" => $message}),"message");
+  return $self->_format_response($self->_do_post($self->endpoint."/messages/create", {"for" => $for, "message" => $message}),"message");
 }
 
 sub _format_response
@@ -127,86 +128,85 @@ sub _format_response
 sub get_ignores
 {
   my ($self) = @_;
-  $self->_format_response($self->get($self->endpoint."/messageignores"), "messageignore");
+  return $self->_format_response($self->get($self->endpoint."/messageignores"), "messageignore");
 }
 
 sub ignore_messages_from
 {
   my ($self, $ignore) = @_;
-
-  $self->_format_response($self->_do_post($self->endpoint."/messageignores/create", {"ignore" => $ignore}),"messageignore");
+  return $self->_format_response($self->_do_post($self->endpoint."/messageignores/create", {"ignore" => $ignore}),"messageignore");
 }
 
 sub ignore_messages_from_id
 {
   my ($self, $ignore) = @_;
-  
-  $self->_format_response($self->_do_post($self->endpoint."/messageignores/create", {"ignore_id" => $ignore}),"messageignore");
+  return $self->_format_response($self->_do_post($self->endpoint."/messageignores/create", {"ignore_id" => $ignore}),"messageignore");
 }
 
 sub unignore_messages_from_id
 {
   my ($self, $ignore_id) = @_;
-
-  $self->_format_response($self->ua->get($self->endpoint."/messageignores/$ignore_id/action/delete"),"messageignore");
+  return $self->_format_response($self->ua->get($self->endpoint."/messageignores/$ignore_id/action/delete"),"messageignore");
 }
 
 sub create_e2node
 {
   my ($self, $data) = @_;
-  
-  $self->_format_response($self->_do_post($self->endpoint."/e2nodes/create", $data),"e2node");
+  return $self->_format_response($self->_do_post($self->endpoint."/e2nodes/create", $data),"e2node");
+}
+
+sub create_writeup
+{
+  my ($self, $data) = @_;
+  return $self->_format_response($self->_do_post($self->endpoint."/writeups/create",$data),"writeup");
 }
 
 sub create_usergroup
 {
   my ($self, $data) = @_;
-  
-  $self->_format_response($self->_do_post($self->endpoint."/usergroups/create", $data),"usergroup");
+  return $self->_format_response($self->_do_post($self->endpoint."/usergroups/create", $data),"usergroup");
 }
 
 sub usergroup_add
 {
   my ($self, $group_id, $user_ids) = @_;
-
-  $self->_format_response($self->_do_post($self->endpoint."/usergroups/$group_id/action/adduser", $user_ids));
+  return $self->_format_response($self->_do_post($self->endpoint."/usergroups/$group_id/action/adduser", $user_ids));
 }
 
 sub usergroup_remove
 {
   my ($self, $group_id, $user_ids) = @_;
-
-  $self->_format_response($self->_do_post($self->endpoint."/usergroups/$group_id/action/removeuser",$user_ids));
+  return $self->_format_response($self->_do_post($self->endpoint."/usergroups/$group_id/action/removeuser",$user_ids));
 }
 
 sub delete_node
 {
   my ($self, $node_id) = @_;
-  $self->_format_response($self->ua->get($self->endpoint."/nodes/$node_id/action/delete"));
+  return $self->_format_response($self->ua->get($self->endpoint."/nodes/$node_id/action/delete"));
 }
 
 sub update_node
 {
   my ($self, $node_id, $data) = @_;
-  $self->_format_response($self->_do_post($self->endpoint."/nodes/$node_id/action/update",$data));
+  return $self->_format_response($self->_do_post($self->endpoint."/nodes/$node_id/action/update",$data));
 }
 
 sub get_node_by_id
 {
   my ($self, $node_id) = @_;
-  $self->_format_response($self->ua->get($self->endpoint."/nodes/$node_id"));
+  return $self->_format_response($self->ua->get($self->endpoint."/nodes/$node_id"));
 }
 
 sub get_node
 {
   my ($self, $title, $type) = @_;
-  $self->_format_response($self->ua->get($self->endpoint."/nodes/lookup/$type/$title"));
+  return $self->_format_response($self->ua->get($self->endpoint."/nodes/lookup/$type/$title"));
 }
 
 sub roompurge
 {
   my ($self) = @_;
-  $self->_format_response($self->ua->get($self->endpoint."/systemutilities/roompurge"));
+  return $self->_format_response($self->ua->get($self->endpoint."/systemutilities/roompurge"));
 }
 
 1;

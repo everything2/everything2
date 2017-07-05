@@ -110,6 +110,14 @@ sub create
   }
 
   my $postdata = $REQUEST->JSON_POSTDATA;
+  $postdata = $self->translate_create_params($postdata);
+
+  if(not defined($postdata))
+  {
+    $self->devLog("No postdata after translate_create_params, returning BAD REQUEST");
+    return [$self->HTTP_BAD_REQUEST];
+  }
+
   my $allowed_data = {};
 
   foreach my $key (@{$newnode->field_whitelist},"title")
@@ -118,12 +126,6 @@ sub create
     {
       $allowed_data->{$key} = $postdata->{$key};
     }
-  }
-
-  unless(exists $allowed_data->{title})
-  {
-    $self->devLog("No title in POST data for node creation. Returning BAD REQUEST");
-    return [$self->HTTP_BAD_REQUEST];
   }
 
   $allowed_data->{createdby_user} = $REQUEST->user->node_id;
@@ -137,6 +139,14 @@ sub create
   }
 
   return [$self->HTTP_OK, $node->json_display($REQUEST->user)];
+}
+
+sub translate_create_params
+{
+  my ($self, $postdata) = @_;
+
+  # The default is to do no translation
+  return $postdata;
 }
 
 sub update
