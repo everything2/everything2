@@ -52,6 +52,11 @@ sub single_writeup_display
     $values->{vote} = $vote->{weight};
   }
 
+  if($self->parent)
+  {
+    $values->{parent} = $self->parent->json_reference;
+  }
+
   return $values;
 }
 
