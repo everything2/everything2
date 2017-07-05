@@ -205,6 +205,7 @@ Returns all of the items in /api/nodes/:id, plus the following:
 * **cools** - Array of node references of users that have C!ed the writeup
 * **softlinks** - The softlinks of the parent node for display purposes
 * **writeuptype** - The text representation of the type of writeup, such as "thing","person","place","definition"
+* **parent** - Node reference to the parent e2node if it exists. The lack of this field denotes an error that should be handled
 
 If a user has voted on it:
 * **vote** - Which way the user voted
