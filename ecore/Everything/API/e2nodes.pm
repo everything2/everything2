@@ -5,5 +5,6 @@ extends 'Everything::API::nodes';
 
 has 'CREATE_ALLOWED' => (is => 'ro', isa => 'Int', default => 1);
 
+
 __PACKAGE__->meta->make_immutable;
 1;

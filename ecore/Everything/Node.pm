@@ -91,7 +91,7 @@ sub json_display
 sub insert
 {
   my ($self, $user, $data) = @_;
-  $self->devLog("Insert called by user '".$user->title."' with data ".$self->JSON->encode($data));
+  $self->devLog("Insert called by user '".$user->title."' for type '".$self->typeclass."' with data ".$self->JSON->encode($data));
 
   my $title = $data->{title};
   unless(defined $title)

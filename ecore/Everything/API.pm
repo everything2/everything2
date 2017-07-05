@@ -14,7 +14,7 @@ has 'MINIMUM_VERSION' => (isa => "Int", lazy => 1, builder => "_build_minimum_ve
 # We have actions verbs specified as as a token so the route chooser doesn't
 # confuse things like /:id and /create
 #
-# TODO: There's no sanity checking that a variable conforms to anything in particular
+# TODO: There's no sanity checking that a variable conforms to a particular pattern such as number or string in particular
 
 sub _build_minimum_version
 {

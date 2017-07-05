@@ -214,6 +214,18 @@ If a user has voted on it or is the author:
 * **upvotes** - The number of people who have voted up on a node
 * **downvotes** - The number of people who have voted down on a node
 
+If a user owns it
+* **notnew** - Whether the node was hidden from New Writeups
+
+### /api/writeups/create
+
+Creates a writeup. Requires several parameters:
+
+* **title** - Title that it is being filed under
+* **writeuptype** - Type of the writeup (place, person, definition, etc)
+* **doctext** - Text of the writeup
+* **notnew** - Whether to hide the writeup from new writeups. Defaults to zero.
+
 ## E2nodes
 
 ### /api/e2nodes
