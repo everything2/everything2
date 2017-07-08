@@ -16,6 +16,7 @@
     &quot;editing_writeups_under_20_characters&quot; =&gt; {&quot;title&quot; =&gt; &quot;Writeups under 20 characters&quot;, &quot;extended_title&quot; =&gt; &quot;Writeups that are under 20 characters&quot;},
     &quot;editing_writeups_without_formatting&quot; =&gt; {&quot;title&quot; =&gt; &quot;Writeups without any HTML tags&quot;, &quot;extended_title&quot; =&gt; &quot;Writeups that don't have any HTML tags in them, limited to 200, ignores E1 writeups.&quot;},
     &quot;editing_writeups_linkless&quot; =&gt; {&quot;title&quot; =&gt; &quot;Writeups without links&quot;, &quot;extended_title&quot; =&gt; &quot;Writeups post-2001 that don't have any links in them&quot;},
+    &quot;editing_e2nodes_with_duplicate_titles&quot; =&gt; {&quot;title&quot; =&gt; &quot;Writeups with titles that only differ by case&quot;, &quot;extended_title&quot; =&gt; &quot;Writeups that only differ by case&quot;},
   };
 
   if($query-&gt;param(&quot;driver&quot;))
