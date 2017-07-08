@@ -13626,7 +13626,7 @@ sub e2nodetools
 	or was created by mistake. If there is anything else wrong with it, you should just correct the spelling.<br>'
         .$query -> submit('sumbit', 'Delete')
         .$query -> checkbox(
-          -name => 'confirmop'
+          -name => 'op'
 	  , value => 'nuke'
           , label => 'I really mean this')
         .'</fieldset></form>';
