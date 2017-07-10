@@ -178,7 +178,7 @@ sub get_current_user
   my ($seconds_since_last, $now) = $sth->fetchrow_array();
   $user->NODEDATA->{lastseen} = $now;
 
-  $self->APP->insertIntoRoom($user->in_room, $user->NODEDATA, $user->VARS) if $seconds_since_last > $TIMEOUT_SECONDS;
+  $self->APP->insertIntoRoom($user->in_room, $user->NODEDATA, $user->VARS) if($seconds_since_last > $TIMEOUT_SECONDS || $self->APP->inDevEnvironment);
   if($ENV{HTTP_USER_AGENT})
   {
     $user->VARS->{browser} = $ENV{HTTP_USER_AGENT};
