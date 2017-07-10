@@ -84,8 +84,14 @@ ok($data->{code} == 200, "Notnew creation returns ok request");
 ok(defined($data->{writeup}->{node_id}), "Writeup structure comes back ok");
 ok($data->{writeup}->{notnew} == 1, "Notnew is set");
 
-# Delete the notnew writeup
 $writeup_id = $data->{writeup}->{node_id};
+
+# Guest user can't delete writeups
+ok($eapi->logout, "Successfully log out");
+ok($data = $eapi->delete_node($writeup_id), "Post a Guest User deletion request");
+ok($data->{code} == 403, "Deleting a node as Guest User returns forbidden");
+
+# Delete the notnew writeup
 ok($eapi->login("root","blah"),"Log in as root");
 ok($data = $eapi->delete_node($writeup_id), "Delete returns a data structure for root");
 ok($data->{code} == 200, "Notnew writeup delete ok");
@@ -100,6 +106,12 @@ ok($data->{code} == 400, "Writeup without writeuptype returns bad request");
 
 ok($data = $eapi->create_writeup({title => $title, writeuptype => $writeuptype}), "Try to create a writeup without a doctext"); 
 ok($data->{code} == 400, "Writeup without doctype returns bad request");
+
+ok($eapi->logout, "Log out of normaluser1, back to Guest User");
+ok($data = $eapi->create_writeup({title => $title, writeuptype => $writeuptype, doctext => $doctext}), "Try to create a writeup without a title");
+ok($data->{code} == 401, "Creating otherwise good writeup as Guest User returns unauthorized"); 
+
+
 
 # Teardown of test e2node
 ok($eapi->login("root","blah"), "Log in as root");
