@@ -11,7 +11,7 @@ if($Everything::CONF->environment ne "development")
 }
 
 `echo "drop database everything" | mysql -u root`;
-`echo "create database everything" | mysql -u root`;
+`echo "create database everything DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci" | mysql -u root`;
 `/var/everything/ecoretool/ecoretool.pl bootstrap --nodepack=/var/everything/nodepack`;
 `/var/everything/tools/seeds.pl`;
 `/var/everything/tools/data_generator_heartbeat.pl`;
