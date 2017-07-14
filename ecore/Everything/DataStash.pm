@@ -2,7 +2,6 @@ package Everything::DataStash;
 
 use Moose;
 use namespace::autoclean;
-use utf8;
 use JSON;
 
 with 'Everything::Globals';
