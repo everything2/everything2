@@ -83,7 +83,7 @@ elsif ( defined $old_writeup_id )
 		my $guessParentTitle = $$writeup{title};
 		# strip off '(idea)' writeuptype from title, if present
 		#  but be tolerant of writeups where it gets cut off
-		$guessParentTitle =~ s/^(.*?)(\([^\(]*)?$/\1/;
+		$guessParentTitle =~ s/^(.*?)(\([^\(]*)?$/$1/;
 		my $potentialParent = getNode($guessParentTitle, 'e2node');
 		if ($potentialParent)
 			{
