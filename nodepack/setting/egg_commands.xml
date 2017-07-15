@@ -181,10 +181,6 @@
     <key>heart</key>
   </vars>
   <vars>
-    <value>pours a glass of eggnog for ~</value>
-    <key>eggnog</key>
-  </vars>
-  <vars>
     <value>lights a candle for</value>
     <key>candle</key>
   </vars>
