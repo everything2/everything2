@@ -134,12 +134,45 @@ sub canonical_url
 sub notnew
 {
   my ($self) = @_;
-  return $self->NODEDATA->{notnew};
+  return int($self->NODEDATA->{notnew} || 0);
+}
+
+sub is_junk
+{
+  my ($self) = @_;
+ 
+  return ($self->reputation < $self->CONF->writeuplowrepthreshold) || 0;
+}
+
+sub is_log
+{
+  my ($self) = @_;
+
+  return ($self->title =~ /^((January|February|March|April|May|June|July|August|September|October|November|December) [[:digit:]]{1,2}, [[:digit:]]{4})|(dream|editor|root) Log: /) || 0;
 }
 
 sub field_whitelist
 {
   return ["doctext","parent_e2node","wrtype_writeuptype","notnew"];
+}
+
+sub new_writeups_reference 
+{
+  my ($self) = @_;
+
+  my $outdata = {};
+
+  foreach my $key (qw|author parent|)
+  {
+    $outdata->{$key} = $self->$key->json_reference;
+  }
+
+  foreach my $key (qw|title notnew node_id is_junk is_log writeuptype|)
+  {
+    $outdata->{$key} = $self->$key;
+  }
+
+  return $outdata;
 }
 
 around 'insert' => sub {

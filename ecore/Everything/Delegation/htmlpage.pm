@@ -2622,7 +2622,8 @@ sub datastash_display_page
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  return qq|<pre>|.to_json(from_json($NODE->{vars} || "{}"),{utf8 => 1, pretty => 1}).qq|</pre>|;
+  my $json = JSON->new;
+  return qq|<pre>|.$json->pretty->encode($json->decode($NODE->{vars} || "[{}]")).qq|</pre>|;
 }
 
 sub jsonexport_display_page

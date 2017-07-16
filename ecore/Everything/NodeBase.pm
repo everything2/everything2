@@ -2843,16 +2843,17 @@ sub stashData
   my $stashnode = $this->getNode($stash_name, "datastash");
   return unless $stashnode;
 
+  my $json = JSON->new;
   if(defined($stash_values))
   {
     # write operation
-    my $stash_text = to_json($stash_values);
+    my $stash_text = $json->latin1->encode($stash_values);
     $stashnode->{vars} = $stash_text;
     $this->updateNode($stashnode, -1);
     return $stash_values;
   }else{
     # read operation
-    return from_json($stashnode->{vars},{ utf8  => 1 });
+    return $json->decode($stashnode->{vars});
   }
 }
 
