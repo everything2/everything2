@@ -349,6 +349,24 @@ Stops ignoring a particular node at :id
 
 ## Cools
 
+## New Writeups
+
+### /api/newwriteups
+
+Returns a JSON array of new writeups. 
+
+Parameters:
+* **limit** - Limit the number of items returned. Non-guest users can specify this. This defaults to 15, and has a maximum of 40. If you are an editor, this is the effective display limit, not only just visible writeups. 
+
+New writeups keys:
+* **node_id** - Node ID
+* **title** - Title of the writeup
+* **writeuptype** - Type of the writeup (person, place, thing, how-to, etc)
+* **author** - Node reference for the author
+* **parent** - Node reference for the parent e2node
+* **is_log** - Whether the node is a log of some type (daylog, ed log, etc)
+* **notnew** - If you are an editor, whether the node was hidden from new writeups
+
 ## Sessions
 
 Current version: *1 (beta)*
