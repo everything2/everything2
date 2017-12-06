@@ -7825,11 +7825,11 @@ sub admin_toolset
       .$query -> li(linkNode(getNode('The Old Hooked Pole', 'restricted_superdoc')
       , 'Smite Spammer'
       , {%$verify
-      , confirmop => 'remove'
-      , removeauthor => 1
+      , smite => 1
+      , notanop => 'usernames'
+      , confirmop => $$NODE{title}
       , removereason => 'smiting spammer'
-      , author => $$NODE{title}
-      , -title => 'detonate this noder, blank their homenode, remove their writeups, blacklist their IP where appropriate'
+      , -title => 'detonate this noder, blank their homenode, blacklist their IP where appropriate'
       , -class => 'action'}))
       .$spacer
       .$query -> li(linkNode($NODE, 'bless', { op=>'bless', bless_id=>$$NODE{node_id}}))
