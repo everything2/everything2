@@ -1,5 +1,6 @@
 package Everything::API;
 use Moose;
+use Try::Tiny;
 use JSON;
 use namespace::autoclean;
 
@@ -90,12 +91,15 @@ sub _build_routechooser
   $perlcode .= '}';
   
   $self->devLog("Compiled routes into code: '$perlcode'");
-  eval ("\$subroutineref = $perlcode");
-  if($@)
-  {
-    # TODO: Something other than die
-    die "Router compiler error! ($perlcode): $@";
-  }
+
+  try {
+    ## no critic (ProhibitStringyEval)
+    eval ("\$subroutineref = $perlcode") or do {
+      die "Router compiler error! ($perlcode): $@";
+    }
+  } catch {
+    die "Router compiler error (in catch)! ($perlcode): $_";
+  };
 
   return $subroutineref;
 }
