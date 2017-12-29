@@ -20,7 +20,7 @@ if($ARGV[0] eq "deploy_challenge")
   $acme->upload_data($ARGV[2],$ARGV[3]);
   print "Uploaded $ARGV[2]\n";
 }elsif($ARGV[0] eq "clean_challenge"){
-  $acme->delete($ARGV[2]);
+  $acme->delete_key($ARGV[2]);
   print "Deleted $ARGV[2]\n";
 }elsif($ARGV[0] eq "invalid_challenge"){
 # TODO mail here

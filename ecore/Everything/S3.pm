@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
+use warnings;
 use Everything;
 use Net::Amazon::S3;
 package Everything::S3;
@@ -51,9 +52,9 @@ sub upload_file
 	return $this->{bucket}->add_key_filename($name, $filename, $properties);
 }
 
-sub delete
+sub delete_key
 {
-	my ($this, $name) = @_;
+	my ($this, $name);
 	return $this->{bucket}->delete_key($name);
 }
 
@@ -66,12 +67,6 @@ sub get_key
 sub errstr
 {
 	my ($this) = @_;
-	return $this->{bucket}->errstr;
-}
-
-sub err
-{
-	my ($this) = @_;
-	return $this->{bucket}->err;
+	return $this->{bucket}->err .": ".$this->{bucket}->errstr;
 }
 1;
