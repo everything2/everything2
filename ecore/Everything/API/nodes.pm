@@ -3,6 +3,8 @@ package Everything::API::nodes;
 use Moose;
 use URI::Escape;
 
+## no critic (ProhibitBuiltinHomonyms)
+
 extends 'Everything::API';
 
 has 'CREATE_ALLOWED' => (is => 'ro', isa => 'Int', default => 0);
