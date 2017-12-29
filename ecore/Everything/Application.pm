@@ -1593,7 +1593,7 @@ sub canSeeDraft
 		$_ =~ s/^\s*|\s*$//g;
 		return 1 if lc($_) eq lc($$user{title}) or lc($_) eq 'everybody';
 		if ($UG = $this->{db}->getNode($_, 'usergroup')){
-			my $collab_ids = { map $_->{node_id}, @{$this->{db}->selectNodegroupFlat($UG)} };
+			my $collab_ids = { map {$_->{node_id}} @{$this->{db}->selectNodegroupFlat($UG)} };
  				return 1 if exists $collab_ids->{$$user{node_id}};
 		}
 	}
@@ -1703,10 +1703,10 @@ sub fixStylesheet
 	$addstyles = "/*= autofix added rules. adjust to taste: */\n$addstyles/*= end autofix added rules */\n\n"  if $addstyles ;
 
 	my $idfunction = sub {
-		my ( $this, $selectid , $nodeid ) = @_ ;
-		next unless defined($this);
+		my ( $localthis, $selectid , $nodeid ) = @_ ;
+		next unless defined($localthis);
 		next unless defined($nodeid);
-		my $n = $this->{db}->getNodeById( $nodeid );
+		my $n = $localthis->{db}->getNodeById( $nodeid );
 		return unless $n;
 		my $str = lc( $n->{title} ) ;
 		$str =~ s/\W//g ;
@@ -1798,7 +1798,7 @@ sub uploadS3Content
 	chdir $tmpdir;
 
 	my $filebase = "$key.$version";
-	open $filehandle,">$filebase.$type";
+	open $filehandle,">","$filebase.$type";
 	print $filehandle $content;
 	close $filehandle;
 	
@@ -2017,7 +2017,7 @@ sub cloak {
   
   $$vars{visible}=1;
   Everything::setVars($user, $vars) if $setvarflag;
-  $this->{db}->sqlUpdate('room', {visible => 1}, "member_user=".$this->{db}->getId($user));
+  return $this->{db}->sqlUpdate('room', {visible => 1}, "member_user=".$this->{db}->getId($user));
 }
 
 sub uncloak {
@@ -2028,7 +2028,7 @@ sub uncloak {
   
   $$vars{visible}=0;
   Everything::setVars($user, $vars) if $setvarflag;
-  $this->{db}->sqlUpdate('room', {visible => 0}, "member_user=".$this->{db}->getId($user));
+  return $this->{db}->sqlUpdate('room', {visible => 0}, "member_user=".$this->{db}->getId($user));
 }
 
 sub insertIntoRoom {
@@ -2111,6 +2111,7 @@ sub logUserIp {
     $$vars{infected} = 1;
   }
 
+  return;
 }
 
 #############################################################################
@@ -2325,6 +2326,7 @@ sub refreshVotesAndCools
  $$user{votesleft} = 0 if $this->isSuspended($user, "vote");
  $$vars{cools} = 0 if $this->isSuspended($user, "cool");
 
+ return;
 }
 
 
@@ -2344,7 +2346,7 @@ sub insertVote {
 	return 0 unless $ret;
 	#the vote was unsucessful
 
-	1;
+	return 1;
 }
 
 ##########################################################################
@@ -2359,7 +2361,7 @@ sub hasVoted {
 		and voter_user=".$this->{db}->getId($user));
 
 	return 0 unless $VOTE;
-	$VOTE;
+	return $VOTE;
 }
 
 #########################################################################
@@ -2377,7 +2379,7 @@ sub adjustRepAndVoteCount {
 	#  not all voteable nodes may have a totalvotes column
 	$$node{totalvotes} ||= 0;
 	$$node{totalvotes} += $voteChange;
-	$this->{db}->updateNode($node, -1);
+	return $this->{db}->updateNode($node, -1);
 }
 
 ###########################################################################
@@ -2393,25 +2395,23 @@ sub castVote {
 
   my $voteWrap = sub {
 
-    my ($voteuser, $node, $AUTHOR) = @_;
+    my ($voteuser, $localnode, $AUTHOR) = @_;
 
     #return if they don't have any votes left today
     return unless $$voteuser{votesleft};
 
-    #jb says: Allow for $VSETTINGS to be specified. This will save
-    # us a few cycles in castVote
     $VSETTINGS ||= Everything::getVars($this->{db}->getNode('vote settings', 'setting'));
     my @votetypes = split /\s*\,\s*/, $$VSETTINGS{validTypes};
 
     #if no types are specified, the user can vote on anything
     #otherwise, they can only vote on "validTypes"
-    return if (@votetypes and not grep(/^$$node{type}{title}$/, @votetypes));
+    return if (@votetypes and not grep { /^$$localnode{type}{title}$/ } @votetypes);
 
     my $prevweight;
     $prevweight  = $this->{db}->sqlSelect('weight',
                                   'vote',
                                   'voter_user='.$$voteuser{node_id}
-                                  .' AND vote_id='.$$node{node_id}
+                                  .' AND vote_id='.$$localnode{node_id}
                                   );
 
     # If user had already voted, update the table manually, check that the vote is
@@ -2422,9 +2422,9 @@ sub castVote {
 
     if (!$alreadyvoted) {
 
-      $this->insertVote($node, $voteuser, $weight);
+      $this->insertVote($localnode, $voteuser, $weight);
 
-      if ($$node{type}{title} eq 'poll') {
+      if ($$localnode{type}{title} eq 'poll') {
          $action = 'votepoll';
       } elsif ($weight > 0) {
          $action = 'voteup';
@@ -2439,7 +2439,7 @@ sub castVote {
         $this->{db}->sqlUpdate("vote"
                        , { -weight => $weight, -revotetime => "NOW()" }
                        , "voter_user=$$voteuser{node_id}
-                          AND vote_id=$$node{node_id}"
+                          AND vote_id=$$localnode{node_id}"
                        )
           unless $prevweight == $weight;
 
@@ -2451,7 +2451,7 @@ sub castVote {
 
     }
 
-    $this->adjustRepAndVoteCount($node, $weight-$prevweight, $voteCountChange);
+    $this->adjustRepAndVoteCount($localnode, $weight-$prevweight, $voteCountChange);
 
     #the node's author gains 1 XP for an upvote or a flipped up
     #downvote.
@@ -2482,7 +2482,7 @@ sub castVote {
     , $voteWrap
   );
 
-  1;
+  return 1;
 }
 
 ###################################################################
@@ -2505,7 +2505,7 @@ sub getVotes {
 		push @votes, $VOTE;
 	}
 	
-	@votes;
+	return @votes;
 }
 
 ###
@@ -2521,7 +2521,7 @@ sub adjustGP {
         return if ((exists $$V{GPoptout})&&(defined $$V{GPoptout}));
         $$user{GP} += $points;
         $this->{db}->updateNode($user,-1);
-        1;
+        return 1;
 }
 
 ##########################################################################
@@ -2540,7 +2540,7 @@ sub adjustExp {
 
 	# Only update user immediately if we're not in a transaction
 	$this->{db}->updateNode($user, -1);
-	1;
+	return 1;
 }
 
 sub use_bootstrap {
@@ -2575,15 +2575,10 @@ sub showPartialDiff {
 
   my $str = '';
 
-  my $chunk;
-  my $line;
-
-  my $s;
-
-  foreach $chunk (@$diffs) {
-    foreach $line (@$chunk) {
+  foreach my $chunk (@$diffs) {
+    foreach my $line (@$chunk) {
       my ($sign, $lineno, $text) = @$line;
-      $s = sprintf("%4d$sign %s\n", $lineno+1, $this->encodeHTML($text));
+      my $s = sprintf("%4d$sign %s\n", $lineno+1, $this->encodeHTML($text));
       if ($sign eq '+') {
         $s = '<font color="#008800">'.$s.'</font>';
       }
@@ -2637,31 +2632,31 @@ sub showCompleteDiff{
       $color = '#880000';
     }
 
-    my $html = '';
+    my $localhtml = '';
     if ($color) {
-      $html .= "<span style=\"color: $color\">";
+      $localhtml .= "<span style=\"color: $color\">";
     }
-    $html .= $sign . ' ' . $this->encodeHTML($line);
+    $localhtml .= $sign . ' ' . $this->encodeHTML($line);
     if ($color) {
-      $html .= "</span>";
+      $localhtml .= "</span>";
     }
-    return $html;
+    return $localhtml;
   };
 
   my $flushDiffBuffers = sub {
-    my $html = '';
+    my $localhtml = '';
 
     foreach (@minusBuffer) {
-      $html .= &$renderDiffLine(@$_);
+      $localhtml .= &$renderDiffLine(@$_);
     }
     @minusBuffer = ();
 
     foreach (@plusBuffer) {
-      $html .= &$renderDiffLine(@$_);
+      $localhtml .= &$renderDiffLine(@$_);
     }
     @plusBuffer = ();
 
-    return $html;
+    return $localhtml;
   };
 
   while (@diff) {
@@ -2716,7 +2711,7 @@ sub urlDecode
     $arg =~ s/\%(..)/chr(hex($1))/ge;
   }
 
-  $_[0];
+  return $_[0];
 }
 
 ######################################################################
@@ -2748,7 +2743,7 @@ sub tagApprove
         }
       }
     }
-    '<'.$close.$tag.'>' ;
+    return '<'.$close.$tag.'>' ;
   } else {
     return '' unless $$APPROVED{ noscreening } ;
     $$APPROVED{$tag} .= '' ;
@@ -2986,7 +2981,7 @@ sub htmlScreen {
 	$approved_tags ||= {};
 
 	$text = $this->cleanupHTML($text, $approved_tags);
-	$text;
+	return $text;
 }
 
 
@@ -3290,6 +3285,7 @@ sub buildTable
 	}
 	
 	$str.='</table>';
+	return $str;
 }
 
 sub repairE2Node
@@ -3419,7 +3415,7 @@ sub urlGen {
 
   $str .= $anchor if $anchor;
   $str .= '"' unless $noquotes;
-  $str;
+  return $str;
 }
 
 
@@ -3639,11 +3635,12 @@ sub genericLog
         
   # prefix the date a time on the log entry.
   $entry = "$time: $entry\n";
-  
-  if(open(ELOG, ">>$log"))
+ 
+  my $elog;
+  if(open($elog, ">>",$log))
   { 
-    print ELOG $entry;
-    close(ELOG);
+    print $elog $entry;
+    close($elog);
   }
 
   return 1;
