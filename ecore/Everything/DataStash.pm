@@ -49,7 +49,7 @@ sub generate_if_needed
 sub stash_node
 {
   my ($this) = @_;
-  $this->DB->getNode($this->stash_name, "datastash");
+  return $this->DB->getNode($this->stash_name, "datastash");
 }
 
 sub stash_last_updated
