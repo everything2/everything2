@@ -20,7 +20,11 @@ if($ARGV[0])
 sub critique_file
 {
   my ($file) = @_;
-  print "$file\n";
+  
   my $violations = [$critic->critique($file)];
-  print @$violations;
+  if(scalar(@$violations))
+  {
+    print "$file\n";
+    print @$violations;
+  }  
 }
