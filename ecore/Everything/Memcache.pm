@@ -15,8 +15,11 @@ package Everything::Memcache;
 #############################################################################
 
 use strict;
+use warnings;
 use Everything;
 use Cache::Memcached;
+
+## no critic (ProhibitAutomaticExportation)
 
 sub BEGIN
 {
