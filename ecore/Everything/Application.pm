@@ -1844,7 +1844,7 @@ sub uploadS3Content
 		$properties->{expires} = $dateOutputer->format_datetime(DateTime->from_epoch(epoch => time()+60*60*24*365*10)); #10 years
 
 		# Replace anything in the bucket
-		$s3->delete($filespec->[0]);
+		$s3->delete_key($filespec->[0]);
 		$s3->upload_file($filespec->[0], $filespec->[1], $properties);
 	}
 
