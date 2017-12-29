@@ -14,6 +14,7 @@ package Everything;
 #############################################################################
 
 use strict;
+use warnings;
 use DBI;
 use DateTime;
 use Mason;
@@ -22,6 +23,8 @@ use Everything::HTMLRouter;
 use Everything::Application;
 use Everything::Configuration;
 use Everything::PluginFactory;
+
+## no critic (ProhibitAutomaticExportation)
 
 sub BEGIN
 {
@@ -122,12 +125,11 @@ sub isGod		{ return $DB->isGod(@_); }
 sub isApproved		{ return $DB->isApproved(@_); }
 
 #############################################################################
+
 sub printErr {
-	print STDERR $_[0]; 
+  print STDERR $_[0]; 
+  return;
 }
-
-
-
 
 sub printLog
 {
@@ -264,6 +266,7 @@ sub setVars
 	{
 		Everything::HTML::processVarsSet($NODE);
 	}
+	return;
 }
 
 
@@ -414,7 +417,7 @@ sub updateLinks
 	getRef $FROMNODE;
 	
 	return unless $TONODE && $FROMNODE;
-	return unless ($$TONODE{type}{title} eq 'e2node' and $$FROMNODE{type}{title} eq 'e2node') or !$isSoftlink;
+	return unless ($$TONODE{type}{title} eq 'e2node' and $$FROMNODE{type}{title} eq 'e2node') or not $isSoftlink;
 	return if $APP->isSpider();
 
 	$type ||= 0;
@@ -485,6 +488,8 @@ sub updateHits
 		$DB->sqlUpdate('node', { -hits => 'hits+1' },
 			"node_id IN $groupList $author_restrict");
 	}
+
+	return;
 }
 
 
@@ -554,8 +559,6 @@ sub cleanLinks
 	my $row;
 	my @to_array;
 	my @from_array;
-	my $badlink;
-
 	$select = "SELECT to_node,node_id from links";
 	$select .= " left join node on to_node=node_id";
 
@@ -590,15 +593,17 @@ sub cleanLinks
 		}
 	}
 
-	foreach $badlink (@to_array)
+	foreach my $badlink (@to_array)
 	{
 		$DB->sqlDelete("links", { to_node => $badlink });
 	}
 
-	foreach $badlink (@from_array)
+	foreach my $badlink (@from_array)
 	{
 		$DB->sqlDelete("links", { from_node => $badlink });
 	}
+
+	return;
 }
 
 #############################################################################
