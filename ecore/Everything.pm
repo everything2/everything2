@@ -621,7 +621,7 @@ sub initEverything
 	}
 
 	$DB ||= new Everything::NodeBase();
-	$DB->{cache}->clearSessionCache();
+	$DB->{cache}->clearSessionCache;
 	$DB->closeTransaction();
 	$APP ||= new Everything::Application($DB, $CONF);
 	return;
