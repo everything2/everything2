@@ -56,6 +56,7 @@ to_install = [
     'libwww-perl',
     'libperl-critic-perl',
     'libmason-perl',
+    'libtry-tiny-perl',
     'yui-compressor',
 ]
 
