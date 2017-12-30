@@ -8,9 +8,12 @@ package Everything::XML;
 ############################################################
 
 use strict;
+use warnings;
 use Everything;
 use XML::Generator;
 use XML::Parser;
+
+## no critic (ProhibitAutomaticExportation)
 
 sub BEGIN
 {
@@ -54,10 +57,14 @@ sub genTag {
 	
 	$XMLGEN = new XML::Generator if not $XMLGEN; 
 	
-	no strict 'refs';
-	$content = makeXmlSafe($content) unless $embedXML;	
-	*{(ref $XMLGEN) ."::$tag"}->($XMLGEN, $PARAMS, $content)."\n";
-	#tricky, but that's how XML::Generator works...
+        if(defined($content))
+        {
+          unless($embedXML)
+          {
+  	    $content = makeXmlSafe($content);
+          }
+        }
+	return $XMLGEN->$tag($PARAMS,$content)."\n";
 }
 
 #####################################################################
@@ -71,13 +78,13 @@ sub genTag {
 #		str - the literal string 
 sub makeXmlSafe {
 	my ($str) = @_;
-
+        
 	#we use an HTML convention...  
 	$str =~ s/\&/\&amp\;/g;
 	$str =~ s/\</\&lt\;/g;
 	$str =~ s/\>/\&gt\;/g;
 
-	$str;
+	return $str;
 }
 
 #####################################################################
@@ -95,7 +102,7 @@ sub unMakeXmlSafe {
 	$str =~ s/\&amp\;/\&/g;
 	$str =~ s/\&lt\;/\</g;
 	$str =~ s/\&gt\;/\>/g;
-	$str;
+	return $str;
 }
 
 ######################################################################
@@ -127,7 +134,7 @@ sub vars2xml {
 			$varstr.= genTag $key, $$VARS{$key}; 
 		}
 	}
-	genTag ($tag, "\n".$varstr."\t", $PARAMS, 'parseth not the xml tags');
+	return genTag ($tag, "\n".$varstr."\t", $PARAMS, 'parseth not the xml tags');
 }
 
 #################################################################
@@ -148,11 +155,11 @@ sub group2xml {
 	my $ingroup = "";
 	my $count = 1;
 	foreach (@$group) {
-		my $tag = "groupnode" . $count++;
+		my $localtag = "groupnode" . $count++;
 		$ingroup.="\t\t" 
-			.noderef2xml($tag, $_, {table=>'nodegroup'}) ;
+			.noderef2xml($localtag, $_, {table=>'nodegroup'}) ;
 	}
-	genTag($tag, "\n".$ingroup."\t", $PARAMS, "don't parse me please");
+	return genTag($tag, "\n".$ingroup."\t", $PARAMS, "don't parse me please");
 }
 
 ##################################################################
@@ -183,9 +190,9 @@ sub noderef2xml {
 		$title = $node_id;
 		$typetitle = "literal_value";
 	}
-	$$PARAMS{type}  = $typetitle;
+	$$PARAMS{type} = $typetitle;
 
-	genTag ($tag, $title, $PARAMS);
+	return genTag ($tag, $title, $PARAMS);
 }
 
 ###################################################################
@@ -229,7 +236,7 @@ sub node2xml
 	}
 
 
-	my $str;
+	my $str = "";
 	$XMLGEN = new XML::Generator unless $XMLGEN;
 	$str.= $XMLGEN->INFO('rendered by Everything::XML.pm') ."\n";
 	#note: should also include server, date/time info
@@ -260,7 +267,7 @@ sub node2xml
 			#we have a setting hash
 			$str.= vars2xml($field, getVars($N), \%attr);
 		
-		} elsif ($field =~ /_\w+$/ and $$N{$field} =~ /^\d+$/) {
+		} elsif ($field =~ /_\w+$/ and defined($N->{$field}) and $N->{$field} =~ /^\d+$/) {
 			# This field is a node reference.  We need to resolve this
 			# reference to a node name and type.
 			$str.= noderef2xml($field, $$N{$field}, \%attr);
@@ -270,6 +277,6 @@ sub node2xml
 		}
 	}
 
-	$XMLGEN->NODE($str);
+	return $XMLGEN->NODE($str);
 }
 1;
