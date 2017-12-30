@@ -13,7 +13,7 @@ sub dispatcher
   my $urlform = $REQUEST->url(-absolute=>1);
   my $method = lc($REQUEST->request_method());
 
-  if(!grep($method,"get","put","post","delete","patch"))
+  if(not grep {$method} ("get","put","post","delete","patch"))
   {
     return $self->output($REQUEST, [$self->HTTP_METHOD_NOT_ALLOWED]); 
   }
