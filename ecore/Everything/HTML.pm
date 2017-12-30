@@ -23,6 +23,8 @@ use CGI;
 use CGI::Carp qw(set_die_handler);
 use Carp qw(longmess);
 
+## no critic (ProhibitAutomaticExportation,RequireUseWarnings)
+
 sub BEGIN {
 	use Exporter ();
 	use vars qw($DB $VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
@@ -115,7 +117,7 @@ my %NO_SIDE_EFFECT_PARAMS = (
 sub getRandomNode {
   return $APP->getRandomNode(@_);
 }
-     
+
 
 sub handle_errors {
 
@@ -148,6 +150,7 @@ ENDHEADER
         print $errorFromPerl;
 
     }
+    return;
 }
 
 sub query_vars_string {
@@ -188,18 +191,16 @@ sub encodeHTML
 sub htmlFormatErr
 {
 	my ($code, $err, $warn) = @_;
-	my $str;
 
 	my $dbg = getNode("debuggers", "usergroup");
-
-	$str = htmlErrorUsers($code, $err, $warn);
+	my $str = htmlErrorUsers($code, $err, $warn);
 
 	if($DB->isApproved($USER, $dbg))
 	{
 		$str = htmlErrorGods($code, $err, $warn);
 	}
 
-	$str;
+	return $str;
 }
 
 
@@ -255,7 +256,7 @@ sub htmlErrorUsers
 	$error .= longmess();
 	Everything::printLog($error);
 
-	$str;
+	return $str;
 }
 
 
@@ -325,7 +326,7 @@ sub htmlErrorGods
 	
 	$str.= "</pre></dd>";
 	$str.="</dl>\n";
-	$str;
+	return $str;
 }
 
 sub urlGen
@@ -480,7 +481,7 @@ sub getPage
 
 	die "can't load a page $displaytype for $$TYPE{title} type" unless $PAGE;
 
-	$PAGE;
+	return $PAGE;
 }
 
 sub linkNode
@@ -552,7 +553,7 @@ sub nodeName
 			$NODE = getNodeById($Everything::CONF->system->{not_found_node});
 		}
 
-		displayPage ($NODE, $user_id);
+		return displayPage ($NODE, $user_id);
 	}
 	elsif (@$select_group == 1)
 	{
@@ -574,13 +575,6 @@ sub nodeName
 			push @canread, $_;
 		}
 
-		#jb says: 4/14/2002 - Enhancement made here to default to an e2node
-		#instead of going to the findings page.  If there are more than one item, and
-		#none of them is an e2node, then all you'll get "Findings:"
-
-		#jb says: 5/02/2002 - Fixes here to use gotoNode instead of displayPage
-		#see [root log: May 2002] for the long reason
-
 		return gotoNode($Everything::CONF->system->{not_found_node}, $user_id, 1) unless @canread;
 		return gotoNode($canread[0], $user_id, 1) if @canread == 1;
 
@@ -600,10 +594,10 @@ sub nodeName
 		}
 
 		#we found multiple nodes with that name.  ick
-		my $NODE = getNodeById( $Everything::CONF->system->{default_duplicates_node} );
+		$NODE = getNodeById( $Everything::CONF->system->{default_duplicates_node} );
 		
 		$$NODE{group} = \@canread;
-		displayPage($NODE, $user_id);
+		return displayPage($NODE, $user_id);
 	}
 }
 
@@ -626,12 +620,14 @@ sub evalCode {
 	};
 
 	$code =~ s/\015//gs;
+
+	## no critic (ProhibitStringyEval)
 	my $str = eval $code;
 
  	local $SIG{__WARN__} = sub {};
 	$str .= htmlFormatErr ($code, $@, $warnbuf) if ($@ or $warnbuf); 
-	$@ = undef;
-	$str;
+	local $@ = undef;
+	return $str;
 }
 
 #########################################################################
@@ -751,8 +747,7 @@ sub parseCode {
 		  )
 		  \]
 		   /embedCode("$1",$CURRENTNODE)/egsx;
-		           $text;
-
+	return $text;
 
 }
 
@@ -861,6 +856,7 @@ sub displayPage
 		$query->print($page);
 		$page = "";
 	}
+	return;
 }
 
 
@@ -911,7 +907,7 @@ sub gotoNode
 
 			# Blank the passed values if this looks like an XSRF
 			if ($query->param('add') || $query->param('group')
-				|| grep(/^${type}_/, $query->Vars)) {
+				|| (grep { /^${type}_/ } $query->Vars)) {
 				$query->delete_all();
 			}
 		}
@@ -1025,7 +1021,7 @@ sub gotoNode
 		}
 	}
 
-	displayPage($NODE, $user_id);
+	return displayPage($NODE, $user_id);
 }
 
 
@@ -1087,6 +1083,8 @@ sub printHeader
 			       -content_length => $len,
 			       %HEADER_PARAMS,%$extras);
 	}
+
+	return;
 }
 
 
@@ -1185,9 +1183,10 @@ sub handleUserRequest{
     gotoNode($defaultNode, $user_id);
   }
 
+  return;
 }
 
-#############################################################################
+############################################################################
 sub clearGlobals
 {
 	$GNODE = "";
@@ -1196,6 +1195,8 @@ sub clearGlobals
         $PAGELOAD = {};
 	$query = "";
 	$REQUEST = undef;
+
+	return;
 }
 
 
@@ -1206,7 +1207,7 @@ sub opNuke
 	my $node_id = $query->param("node_id");
 
 	return if $APP->getParameter($node_id, "prevent_nuke");
-	nukeNode($node_id, $user_id);
+	return nukeNode($node_id, $user_id);
 }
 
 
@@ -1223,6 +1224,7 @@ sub opLogin
 {
         $USER = $REQUEST->login("username" => $query->param("user"), "pass" => $query->param("passwd"))->NODEDATA;
         $VARS = $REQUEST->user->VARS;
+	return; 
 }
 
 #############################################################################
@@ -1236,6 +1238,7 @@ sub opLogout
 	$VARS = getVars($USER);
 
 	$$USER{cookie} = $cookie if($cookie);
+	return;
 }
 
 
@@ -1249,7 +1252,7 @@ sub opNew
 	my $removeSpaces = 1;
 	my $nodename = $APP->cleanNodeName($query->param('node'), $removeSpaces);
 
-	if (canCreateNode($user_id, $DB->getType($type)) and !$APP->isGuest($USER))
+	if (canCreateNode($user_id, $DB->getType($type)) and not $APP->isGuest($USER))
 	{
 		$node_id = insertNode($nodename,$TYPE, $user_id);
 
@@ -1268,6 +1271,8 @@ sub opNew
 	{
 		$query->param("node_id", $Everything::CONF->system->{permission_denied});
 	}
+
+	return;
 }
 
 
@@ -1323,6 +1328,8 @@ sub execOpCode
   {
     opNew();
   }
+
+  return;
 }
 
 #############################################################################
@@ -1348,7 +1355,7 @@ sub mod_perlInit
 		if(!$maintenance_html) #intentionally mod_perl 'unsafe'
 		{
 			my $handle;
-			open $handle,"/var/everything/www/maintenance.html";
+			open $handle,'<',"/var/everything/www/maintenance.html";
 			{
 				local $/ = undef;
 				$maintenance_html = <$handle>;
@@ -1397,6 +1404,7 @@ sub mod_perlInit
 	handleUserRequest();
 
 	$DB->closeTransaction();
+	return;
 }
 
 #####################
@@ -1417,6 +1425,8 @@ sub processVarsSet {
 	if ($$updated_node{node_id} == $$USER{node_id}) {
 		$VARS = getVars($updated_node);
 	}
+
+	return;
 }
 
 sub isMobile
