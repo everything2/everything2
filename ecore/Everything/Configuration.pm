@@ -108,7 +108,7 @@ around BUILDARGS => sub
   if($configfile)
   {
     my ($json_handle, $json_data);
-    if(open $json_handle, $configfile)
+    if(open $json_handle,'<',$configfile)
     {
       local $/ = undef;
       $json_data = <$json_handle>;
