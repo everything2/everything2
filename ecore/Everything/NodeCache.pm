@@ -41,11 +41,13 @@ package Everything::NodeCache;
 #############################################################################
 
 use strict;
+use warnings;
 use Everything;
 use Everything::CacheQueue;
 use Everything::NodeBase;
 use Everything::Memcache;
 
+## no critic (ProhibitAutomaticExportation)
 
 sub BEGIN
 {
@@ -86,7 +88,7 @@ sub new
 	my ($packageName, $nodeBase) = @_;
 	my $this = {};
 	
-	bless $this;  # oh, my lord
+	bless $this, $packageName;
 
 	$this->{maxSize} = $Everything::CONF->nodecache_size;
 	$this->{nodeBase} = $nodeBase;
@@ -142,6 +144,8 @@ sub createVersionTable{
 	
 		$dbh->do($createTable);
 	}
+
+	return;
 }	
 	
 
@@ -162,7 +166,7 @@ sub setCacheSize
 	my ($this, $newMaxSize) = @_;
 	
 	$this->{maxSize} = $newMaxSize;
-	$this->purgeCache();
+	return $this->purgeCache();
 }
 
 
@@ -208,7 +212,7 @@ sub getCachedNodeByName
 	my $data;
 	my $NODE;
 	
-	return undef if(not defined $typename);
+	return if(not defined $typename);
 	
 	if(defined $this->{typeCache}{$typename}{$title})
 	{
@@ -217,7 +221,7 @@ sub getCachedNodeByName
 	
 		if ($$NODE{title} ne $title) {
 			delete $this->{typeCache}{$typename}{$title};
-			return undef;
+			return;
 		}
 		return $NODE if($this->isSameVersion($NODE));
 	}  elsif ($this->{memcache}) {
@@ -227,7 +231,7 @@ sub getCachedNodeByName
        			return $NODE if $this->isSameVersion($NODE);
        		}
 	}
-	return undef;
+	return;
 }
 
 
@@ -263,7 +267,7 @@ sub getCachedNodeById
        			return $NODE if $this->isSameVersion($NODE);
        		}
 	}
-	return undef;
+	return;
 }
 
 
@@ -398,6 +402,8 @@ sub flushCache
 	$this->{version} = {};
 	$this->{paramcache} = {};
 	$this->{groupCache} = {};
+
+	return;
 }
 
 
@@ -422,10 +428,7 @@ sub flushCacheGlobal
 	$this->flushCache();
 
 	$dbh->do("update version set version=version+1");
-	#$dbh->do("drop table if exists version");
-
-	# Since we dropped the table, re-create it so nothing breaks!
-	#$this->createVersionTable();
+	return;
 }
 
 
@@ -471,12 +474,12 @@ sub getCachedNodeParam
 	{
 		if(exists($this->{paramcache}->{$node_id}->{$param}))
 		{
-			$this->{paramcache}->{$node_id}->{$param};
+			return $this->{paramcache}->{$node_id}->{$param};
 		}else{
-			return undef;
+			return;
 		}
 	}else{
-		return undef;
+		return;
 	}
 }
 
@@ -609,7 +612,7 @@ sub removeNodeFromHash
 		return $data;
 	}
 
-	return undef;
+	return;
 }
 
 
@@ -707,12 +710,14 @@ sub incrementGlobalVersion
 		$this->{nodeBase}->sqlInsert('version',
 			{ version_id => $$NODE{node_id}, version => 1 } );
 	}
-	$this->{nodeBase}->sqlUpdate('typeversion', {-version => 'version+1'}, "typeversion_id=".$$NODE{type}{node_id}) if $this->{nodeBase}->sqlSelect("version", "typeversion", "typeversion_id=".$$NODE{type}{node_id});; 
+	return $this->{nodeBase}->sqlUpdate('typeversion', {-version => 'version+1'}, "typeversion_id=".$$NODE{type}{node_id}) if $this->{nodeBase}->sqlSelect("version", "typeversion", "typeversion_id=".$$NODE{type}{node_id});
+        return; 
 }
 
-sub clearSessionCache {
-	my ($this) = @_;
-    $this->resetCache();
+sub clearSessionCache
+{
+  my ($this) = @_;
+  return $this->resetCache();
 }
 
 
@@ -732,52 +737,60 @@ sub clearSessionCache {
 #
 sub resetCache
 {
-	my ($this) = @_;
+  my ($this) = @_;
 
-	$this->{paramcache} = {};
-	$this->{pagecache} = {};
-	$this->{verified} = {};
-	$this->{typeVerified} = {};
-    my %newVersion;
-    my @confirmTypes;
+  $this->{paramcache} = {};
+  $this->{pagecache} = {};
+  $this->{verified} = {};
+  $this->{typeVerified} = {};
 
-	if (my $csr = $this->{nodeBase}->sqlSelectMany('*', "typeversion")) {
-      while (my $N = $csr->fetchrow_hashref) { 
-	    if (exists $this->{typeVersion}{$$N{typeversion_id}}) {
-		   if ($this->{typeVersion}{$$N{typeversion_id}} == $$N{version}) {
-				$this->{typeVerified}{$$N{typeversion_id}} = 1;
-			} else {
-				push @confirmTypes, $$N{typeversion_id};
-			}
-		} else {
-			push @confirmTypes, $$N{typeversion_id};
-		}
-		#if the typeversion haven't changed, we can verify the type
-	    $newVersion{$$N{typeversion_id}} = $$N{version};
-	  } 
-       $csr->finish;
+  my %newVersion = ();
+  my @confirmTypes = ();
+
+  if (my $csr = $this->{nodeBase}->sqlSelectMany('*', "typeversion"))
+  {
+    while (my $N = $csr->fetchrow_hashref)
+    {
+      if (exists $this->{typeVersion}{$$N{typeversion_id}})
+      {
+        if ($this->{typeVersion}{$$N{typeversion_id}} == $$N{version})
+        {
+          $this->{typeVerified}{$$N{typeversion_id}} = 1;
+        } else {
+          push @confirmTypes, $$N{typeversion_id};
+        }
+      } else {
+        push @confirmTypes, $$N{typeversion_id};
+      }
+
+      #if the typeversion haven't changed, we can verify the type
+      $newVersion{$$N{typeversion_id}} = $$N{version};
+    } 
+    $csr->finish;
+  }
+
+  # some types that are typeVersion have changed, or have just been added 
+  # to typeversion.  we need to remove any stale data from that type
+  foreach my $nodetype_id (@confirmTypes)
+  {
+    my $typename = $this->{nodeBase}->sqlSelect("title", 'node', "node_id=$nodetype_id");
+    foreach my $nodename (keys %{ $this->{typeCache}{$typename} })
+    {
+      my $NODE = $this->{nodeQueue}->getItem($this->{typeCache}{$typename}{$nodename});
+      if (not $this->isSameVersion($NODE))
+      {
+        #$this->{nodeBase}->getNode($$NODE{node_id}, 'force');	
+        $this->removeNode($NODE);
+      }
     }
 
-	#some types that are typeVersion have changed, or have just been added 
-    #to typeversion.  we need to remove any stale data from that type
-	foreach my $nodetype_id (@confirmTypes) {
-		my $typename = $this->{nodeBase}->sqlSelect("title", 'node', "node_id=$nodetype_id");
-		foreach my $nodename (keys %{ $this->{typeCache}{$typename} }) {
-			my $NODE = $this->{nodeQueue}->getItem($this->{typeCache}{$typename}{$nodename});
-			if (not $this->isSameVersion($NODE)) {
-				#$this->{nodeBase}->getNode($$NODE{node_id}, 'force');	
-				$this->removeNode($NODE);
-			}
-			
-		}
-		$this->{typeVerified}{$nodetype_id} = 1;
-    }
+    $this->{typeVerified}{$nodetype_id} = 1;
+  }
 
+  $this->{typeVersion} = \%newVersion;
+  #replace the typeVersion with the most recent table
 	
-	$this->{typeVersion} = \%newVersion;
-	#replace the typeVersion with the most recent table
-	
-	"";
+  return;
 }
 
 
@@ -791,7 +804,7 @@ sub hasGroupCache {
 
 sub getGroupCache {
 	my ($this, $NODE) = @_;
-	return undef if !defined $$NODE{node_id};
+	return if !defined $$NODE{node_id};
 	return $this->{groupCache}->{$$NODE{node_id}};
 }
 
@@ -823,7 +836,7 @@ sub existsInGroupCache {
 
 sub pageCacheSet {
 	my ($this, $key, $value) = @_;
-	$this->{pagecache}->{$key} = $value;
+	return $this->{pagecache}->{$key} = $value;
 }
 
 sub pageCacheGet {
