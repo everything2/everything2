@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
+use warnings;
 use XML::Simple qw(:strict);
 use Clone qw(clone);
 package Everything::ect::node;
@@ -58,7 +59,7 @@ sub node_to_xml
 		$NODE->{vars} = [];
 		foreach my $key(keys %$vars_out)
 		{
-			next if(grep(/^$key$/, @{$this->xml_vars_no_store()}));
+			next if(grep {/^$key$/} @{$this->xml_vars_no_store()});
 			push @{$NODE->{vars}},{"key" => $key, "value" => $vars_out->{$key}};
 		}
 	}
@@ -199,6 +200,8 @@ sub _strip_defaults
 			
 		}
 	}
+
+	return;
 }
 
 sub import_no_consider

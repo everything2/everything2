@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
+use warnings;
 use lib qw(lib);
 use Clone qw(clone);
 package Everything::ect::nodegroup;
