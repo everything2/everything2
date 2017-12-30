@@ -4,6 +4,8 @@ use Moose;
 use namespace::autoclean;
 extends 'Everything::API';
 
+## no critic (ProhibitBuiltinHomonyms)
+
 sub routes
 {
   return {
