@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-my $currentYear = '2016';
+my $currentYear = '2017';
 my $dateMinInc = '' . $currentYear . '-11-01';
 my $dateMaxExc = '' . $currentYear . '-12-01';
 my $triggerAchievement = $query -&gt; param('ironise'); # option to activate achievement if iron noder period is not one calendar month
@@ -54,8 +54,7 @@ if(!defined $ug) {
 #	value is light node ref
 my %ironNoders;
 
-my $str = &quot;&lt;h3&gt;IRON NODER PROGRESS for $currentYear&lt;/h3&gt;&quot;;
-$str .= '&lt;ul&gt;
+my $str .= '&lt;ul&gt;
 ';
 
 my $u;
@@ -74,10 +73,11 @@ foreach $ironID (@{$$ug{group}}) {
 
 }
 
-# We don't use these presently, but it might be useful in the future
+# We don't use $isIronNoder presently, but it might be useful in the future
 #  if we want to show special things to the organizers/members
 $isIronNoder = (defined $ironNoders{$UID});
 $isIronLeader = ($ironLeader == $UID);
+#$isIronLeader = 1 if $$USER{title} eq 'DonJaime';
 
 #writeup information setup
 my $showWUs = 1;
@@ -157,6 +157,29 @@ my $statYourWU = 0;
 
 my $htmlListUser;
 
+my %functionMap = (
+	votecheck =&gt; sub {
+		my $N = shift;
+		my $str = '';
+		if ($$N{vote_id}) {
+			$str .= 'hasvoted';
+			$statVotedWU++;
+		}
+		return $str;
+	},
+	title =&gt; sub {
+		my $N = shift;
+		return linkNode($N, $$N{parenttitle}, { -class =&gt; 'title' } );
+	},
+	titleForWu =&gt; sub {
+		my $N = shift;
+		return &quot;[$$N{parenttitle}\[by $$u{title}]]&quot;;
+	}
+);
+
+my $forWu = $isIronLeader &amp;&amp; $query -&gt; param('wuFormat') ? 'ForWu' : '';
+my $instructions = &quot;&lt;li class=\&quot;&amp;votecheck\&quot;&gt;title$forWu&quot;;
+
 foreach $sortKey (@displayOrder) {
 	$u = $ironNodersBySortKey{$sortKey};
 	$ironID = getId($u);
@@ -169,7 +192,7 @@ foreach $sortKey (@displayOrder) {
 
 	$htmlListUser .= '&lt;li&gt;';
 	if($showWUs) { $htmlListUser .= '&lt;big&gt;'; };
-	$htmlListUser .= linkNode($u);
+	$htmlListUser .= $forWu ? &quot;[$$u{title}\[user]]&quot; : linkNode($u);
 	if($showWUs) { $htmlListUser .= '&lt;/big&gt;'; };
 
 	if($showWUs) {
@@ -194,22 +217,6 @@ foreach $sortKey (@displayOrder) {
 		$htmlListUser .= ' (' . $statUserWU . ')';
 
 		$htmlListUser .= &quot;&lt;ol&gt;\n&quot;;
-		my $instructions = '&lt;li class=&quot;&amp;votecheck&quot;&gt;title';
-		my %functionMap = (
-			votecheck =&gt; sub {
-				my $N = shift;
-				my $str = '';
-				if ($$N{vote_id}) {
-					$str .= ' hasvoted';
-					$statVotedWU++;
-				}
-				return $str;
-			},
-			title =&gt; sub {
-				my $N = shift;
-				return linkNode($N, $$N{parenttitle}, { -class =&gt; 'title' } );
-			}
-		);
 
 		$htmlListUser .= htmlcode('show content', \@validWUs, $instructions, %functionMap)
 			. '&lt;/ol&gt;'
@@ -237,6 +244,12 @@ foreach $sortKey (@displayOrder) {
 
 $str .= '&lt;/ul&gt;';
 
+if ($forWu){
+	$str =~ s/ class=&quot;[\w\s]+&quot;//g;
+	$str = $query -&gt; textarea('text', $str, 40, 80);
+	$str =~ s/\[/&amp;#91;/g;
+	return $str;
+}
 
 #statistics
 if($showWUs) {
@@ -276,8 +289,11 @@ if($showWUs) {
 &lt;/p&gt;';
 }
 
+my $leaderLink = $isIronLeader ? '&lt;p&gt; &amp;#91; '.linkNode($NODE, 'Format for writeup', {wuFormat =&gt; 'yes'}).' ]&lt;/p&gt;' : '';
 
-return $str;
+return &quot;&lt;h3&gt;IRON NODER PROGRESS for $currentYear&lt;/h3&gt;
+$leaderLink
+$str&quot;;
 %]
 
 &lt;p&gt;&lt;br&gt;All-time IRON NODER statistics can be found at [THE HALL OF THE IRON].&lt;/p&gt;

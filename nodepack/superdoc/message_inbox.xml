@@ -250,12 +250,12 @@ unless ($totalmsgs || $filterUser || $filterGroup
 	$str .= '&lt;/table&gt;' if $totalmsgs;
 
 	$totalmsgs ||= 'no';
-	$showFilters =~ s/messages/message/ if $totalmsgs == 1;
+	$showFilters =~ s/messages/message/ if $totalmsgs ne 'no' &amp;&amp; $totalmsgs == 1;
 	$showFilters = ($foruser == $$USER{node_id} ? 'You have '
 			: linkNode($foruser).' has ')
 		.$totalmsgs
 		.$showFilters;
-	$showFilters .= &quot;. ($grandtotal all together)&quot; if $totalmsgs != $grandtotal;
+	$showFilters .= &quot;. ($grandtotal all together)&quot; if $totalmsgs eq 'no' &amp;&amp; $grandtotal != 0 or $totalmsgs != $grandtotal;
 }
 
 $str .= $query -&gt; p($showFilters);

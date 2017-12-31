@@ -238,7 +238,7 @@ my $lvl = $APP-&gt;getLevel($USER);
 
 return &quot;&lt;p&gt;Sorry, you must be [The Everything2 Voting/Experience System|Level $ChingLev] to give away C!s&lt;/p&gt;&quot; unless ($lvl &gt;= $ChingLev);
 
-return &quot;&lt;p&gt;Sorry, but you don't have a C! to give away. Please come back when you have a C!.&lt;/p&gt;&quot; if $$VARS{cools} &lt; 1;
+return &quot;&lt;p&gt;Sorry, but you don't have a C! to give away. Please come back when you have a C!.&lt;/p&gt;&quot; unless $$VARS{cools} &amp;&amp; $$VARS{cools} &gt; 0;
 
 my $str;
 if ($query-&gt;param('give_cool')) {
