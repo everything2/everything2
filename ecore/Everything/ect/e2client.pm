@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
+use warnings;
 use lib qw(lib);
 package Everything::ect::e2client;
 use base qw(Everything::ect::document);

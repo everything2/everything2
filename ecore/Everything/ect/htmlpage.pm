@@ -1,7 +1,9 @@
 #!/usr/bin/perl -w
 
 use strict;
+use warnings;
 use lib qw(lib);
+use Everything::ect::node;
 package Everything::ect::htmlpage;
 use base qw(Everything::ect::node);
 
