@@ -14,22 +14,8 @@ package Everything::CacheQueue;
 #############################################################################
 
 use strict;
+use warnings;
 use Everything;
-
-
-sub BEGIN
-{
-	use Exporter();
-	use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-	@ISA=qw(Exporter);
-	@EXPORT = qw(
-		queueItem
-		getNextItem
-		getItem
-		removeItem
-		getSize
-		listItems); 
-}
 
 #############################################################################
 #	Sub
@@ -249,7 +235,7 @@ sub queueData
 	my ($this, $data) = @_;
 
 	$this->{numPermanent}++ if($$data{permanent});
-	$this->insertData($data, $this->{queueTail});
+	return $this->insertData($data, $this->{queueTail});
 }
 
 
@@ -267,6 +253,7 @@ sub insertData
 
 	# Increment the queue size since we just added one
 	$this->{queueSize}++;
+	return $this->{queueSize};
 }
 
 
@@ -290,6 +277,7 @@ sub removeData
 	
 	$this->{numPermanent}-- if($$data{permanent});
 	$this->{queueSize}--;
+	return $this->{queueSize};
 }
 
 
