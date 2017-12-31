@@ -3,8 +3,11 @@ package Everything::Delegation::opcode;
 # We have to assume that this module is subservient to Everything::HTML
 #  and that the symbols are always available
 
-# TODO: use strict
-# TODO: use warnings
+use strict;
+use warnings;
+
+## no critic (ProhibitBuiltinHomonyms)
+
 BEGIN {
   *getNode = *Everything::HTML::getNode;
   *getNodeById = *Everything::HTML::getNodeById;
@@ -88,7 +91,7 @@ sub publishdraft
   $NODE = getNodeById($e2node);
   return unless $NODE and $$NODE{type}{title} eq 'e2node';
 
-  return if htmlcode('nopublishreason', $publishAs || $USER, $thisnode);
+  return if htmlcode('nopublishreason', $publishAs || $USER, $NODE);
 	
   my $wu = $$draft{node_id};
 	
@@ -100,7 +103,7 @@ sub publishdraft
   );
 	
   # remove any old attachment:
-  my $linktype = getId(getNode 'parent_node', 'linktype');
+  my $linktype = getId(getNode('parent_node', 'linktype'));
   $DB->sqlDelete('links', "from_node=$$draft{node_id} AND linktype=$linktype");
 	
   $DB->sqlInsert('writeup', {
@@ -122,7 +125,7 @@ sub publishdraft
   $query->param('node_id', $e2node);
 
   $$wu{author_user} = getId($publishAs) if $publishAs;
-  htmlcode('publishwriteup', $wu, $NODE);
+  return htmlcode('publishwriteup', $wu, $NODE);
 }
 
 sub bookmark
@@ -216,7 +219,7 @@ sub bookmark
     'recipient_id' => \@writeupAuthors,
     'message' => 'Yo, '.$eddiemessage.' was bookmarked. Dig it, baby.',});
 
-1;
+  return 1;
 
 }
 
@@ -236,7 +239,7 @@ sub vote
   my @params = $query->param;
   my $defID = getId(getNode('definition','writeuptype')) || 0;
 
-  my $UID = getId($USER) || 0;
+  my $userid = getId($USER) || 0;
 
   my $oldXP = $$USER{experience};
   my $prev_uid = 0;
@@ -256,12 +259,12 @@ sub vote
 
     next unless $N;
     next unless $$N{type}{title} eq 'writeup' ;
-    next if $$N{author_user} == $UID;
+    next if $$N{author_user} == $userid;
     next if $$N{wrtype_writeuptype}==$defID;
 
     if ( $APP->isUnvotable($N) )
     {
-      htmlcode('logWarning',getId($N).',vote: attempt on disallowed node: '.$val.' from '.$UID);
+      htmlcode('logWarning',getId($N).',vote: attempt on disallowed node: '.$val.' from '.$userid);
       next;
     }
 
@@ -294,6 +297,7 @@ sub vote
     htmlcode('logWarning',',vote: multiple ('.$numTimes.') votes ('.$countPlus.'+  '.$countMinus.'-) for same person: '.$prev_uid);
   }
 
+  return; 
 }
 
 sub bless
@@ -330,7 +334,7 @@ sub bless
 
   updateNode($U, -1);
   $APP->adjustGP($U, $gp);
-
+  return;
 }
 
 sub curse
@@ -345,14 +349,13 @@ sub curse
 
   # Currently disabled
   return;
-  return unless isGod($USER);
-  my $U = $query->param('node_id');
-  getRef $U;
+  # return unless isGod($USER);
+  # my $U = $query->param('node_id');
+  # getRef $U;
 
-  $$U{experience} -= 10;
-  $$U{karma} -= 1;
-
-  updateNode($U, -1);
+  # $$U{experience} -= 10;
+  # $$U{karma} -= 1;
+  # updateNode($U, -1);
 }
 
 sub bestow
@@ -375,6 +378,7 @@ sub bestow
   $APP->securityLog(getNode("bestow","opcode"), $USER, "$$U{title} was given 25 votes by $$USER{title}");
 
   updateNode($U, -1);
+  return;
 }
 
 sub message
@@ -391,7 +395,7 @@ sub message
 
   my $for_user = $query->param('sendto');
   my $message = $query->param('message');
-  my $UID = undef; $UID = getId($USER)||0;
+  my $userid = undef; $userid = getId($USER)||0;
   my $isRoot = $APP->isAdmin($USER);
   my $isChanop = $APP->isChanop($USER, "nogods");
 
@@ -401,19 +405,19 @@ sub message
     {
       my $MSG = $DB->sqlSelectHashref('*', 'message', "message_id=$1");
       next unless $MSG;
-      next unless $isRoot || ($UID==$$MSG{for_user});
+      next unless $isRoot || ($userid==$$MSG{for_user});
       $DB->sqlDelete('message', "message_id=$$MSG{message_id}");
     } elsif($_ =~ /^archive\_(\d+)$/) {
       #NPB FIXME Perl Monks is better
       my $MSG = $DB->sqlSelectHashref('*', 'message', "message_id=$1");
       next unless $MSG;
-      next unless $isRoot||($UID==$$MSG{for_user});
+      next unless $isRoot||($userid==$$MSG{for_user});
       my $realTime = $$MSG{tstamp};
       $DB->sqlUpdate('message', {archive=>1, tstamp=>$realTime}, 'message_id='.$$MSG{message_id});
     } elsif($_ =~ /^unarchive\_(\d+)$/) {
       my $MSG = $DB->sqlSelectHashref('*', 'message', "message_id=$1");
       next unless $MSG;
-      next unless $isRoot||($UID==$$MSG{for_user});
+      next unless $isRoot||($userid==$$MSG{for_user});
       my $realTime = $$MSG{tstamp};
       $DB->sqlUpdate('message', {archive=>0, tstamp=>$realTime}, 'message_id='.$$MSG{message_id});
     }
@@ -480,8 +484,7 @@ sub message
       $validCommand = 1;
       if ($$VARS{easter_eggs} < 1)
       {
-        my $message = "You have no eggs to do that with.";
-        $query->param('sentmessage', $message);
+        $query->param('sentmessage', "You have no eggs to do that with");
         return;
       }
 
@@ -496,8 +499,7 @@ sub message
       return unless $recUser;
       if ($$recUser{user_id} == $$USER{user_id})
       {
-        my $message = "You can't do that to yourself!";
-        $query->param('sentmessage', $message);
+        $query->param('sentmessage', "You can't do that to yourself!");
         return;
       }
 		
@@ -724,7 +726,7 @@ sub message
     # $3 - message
     my $isONO = (substr($1,-1,1) eq '?');
     my $allTargets = $2;
-    my $message = $3;
+    $message = $3;
 
     return if $message=~/^\s+$/;
 
@@ -816,7 +818,7 @@ sub message
         $rec[$i] = $m;
       }
 
-      push(@rec, $UID); #so when admins msg a group they aren't in, they'll get the msg they sent
+      push(@rec, $userid); #so when admins msg a group they aren't in, they'll get the msg they sent
 
       # sorted for easy user duplication detection
       @rec = sort { $a <=> $b } @rec;
@@ -835,16 +837,16 @@ sub message
       }
       $csr->finish;
       my @actives = ();
-      foreach $m (@rec)
+      foreach my $recip (@rec)
       {
-        if($onlines{$m})
+        if($onlines{$recip})
         {
-          push @actives, $m;
+          push @actives, $recip;
         } else {
-          my $v = getVars(getNodeById($m));
+          my $v = getVars(getNodeById($recip));
           if($$v{'getofflinemsgs'})
           {
-            push @actives, $m;
+            push @actives, $recip;
           }
         }
       }
@@ -860,11 +862,11 @@ sub message
 
     # add message to table for each user
     my $old = 0;
-    foreach $m (@rec)
+    foreach my $recip (@rec)
     {
-      next if $m==$old;
-      $DB->sqlInsert('message', {msgtext=>$message, author_user=>$UID, for_user=>$m, for_usergroup=>$ugID });
-      $old = $m;
+      next if $recip==$old;
+      $DB->sqlInsert('message', {msgtext=>$message, author_user=>$userid, for_user=>$recip, for_usergroup=>$ugID });
+      $old = $recip;
     }
 
     $query->param('sentmessage', 'you said "' . $APP->encodeHTML($message) . '" to '.linkNode($U));
@@ -874,8 +876,8 @@ sub message
 
     $DB->sqlInsert('message',{
       msgtext=>'typo alert: '.$message,
-      author_user=>$UID,
-      for_user=>$UID });
+      author_user=>$userid,
+      for_user=>$userid });
   } elsif( ($isRoot || $isChanop) and $message =~ /^\/drag\s+(\S+)$/i) {
     my $dragTarget = $1;
     my $dragUser = getNode($dragTarget, "user");
@@ -918,7 +920,7 @@ sub message
     my $fakeTarget = $1;
     return unless length($fakeTarget);
 
-    my $message = '/me has swallowed ['.$fakeTarget.']. ';
+    $message = '/me has swallowed ['.$fakeTarget.']. ';
 
     # FIXME: should be a local sub
     my @EDBURSTS = (
@@ -975,7 +977,7 @@ sub message
       $sendMessage = $sendMessage . ': '.$reason;
     }
 
-    $DB->sqlInsert('message', {msgtext => $sendMessage, author_user => getId($BORG), for_user => $UID });
+    $DB->sqlInsert('message', {msgtext => $sendMessage, author_user => getId($BORG), for_user => $userid });
 
     # update user stats
     my $V = getVars($U);
@@ -992,24 +994,24 @@ sub message
     # as of 2008-08-12, not showing messages in public area
     return;
 
-    # display message in chatterbox
-    my $message = "/me has swallowed [$user]. ";
+    ## display message in chatterbox
+    #my $message = "/me has swallowed [$user]. ";
 
-    my @EDBURSTS = (
-      '*BURP*', 'Mmmm...', "[$user] is good food!",
-      "[$user] was tasty!", 'keep \'em coming!',
-      "[$user] yummy! More!", '[EDB] needed that!',
-      '*GULP*','moist noder flesh', '*B R A P *' );
+    #my @EDBURSTS = (
+    #  '*BURP*', 'Mmmm...', "[$user] is good food!",
+    #  "[$user] was tasty!", 'keep \'em coming!',
+    #  "[$user] yummy! More!", '[EDB] needed that!',
+    #  '*GULP*','moist noder flesh', '*B R A P *' );
 
-    $message .= $EDBURSTS[int(rand(@EDBURSTS))];
+    # $message .= $EDBURSTS[int(rand(@EDBURSTS))];
 
-    $DB->sqlInsert('message', {
-      msgtext => $message,
-      author_user => getId($BORG),
-      for_user => 0,
-      room => $$USER{in_room} });
+    # $DB->sqlInsert('message', {
+    #  msgtext => $message,
+    #  author_user => getId($BORG),
+    #  for_user => 0,
+    #  room => $$USER{in_room} });
 
-    return;
+    # return;
 
   } elsif(($isRoot or $isChanop) and $message=~/^\/topic\s+(.*)$/i) {
 
@@ -1032,7 +1034,7 @@ sub message
 
   } elsif( ($isRoot || $isChanop) and $message=~ /^\/sayas\s+(\S*)\s+(.*)$/si) {
 
-    my $message = $2;
+    $message = $2;
     my $fromuser = lc($1);
     my $fromref = undef;
 
@@ -1084,7 +1086,7 @@ sub message
       $message = 'Sorry, you aren\'t allowed to use macros yet. You tried to run: '.$message;
     }
 
-    $DB->sqlInsert('message', {msgtext => $message, author_user => $rootID, for_user => $UID }) if $message;
+    $DB->sqlInsert('message', {msgtext => $message, author_user => $rootID, for_user => $userid }) if $message;
 
   } elsif($message =~ /^\/(ignore|unignore)(\s+.*)?$/i) {
     # ignore user via IRC command added 2007 March 11
@@ -1111,8 +1113,8 @@ sub message
 
     $DB->sqlInsert('message',{
       msgtext => "You typed an invalid command: $message",
-      author_user => $UID,
-      for_user => $UID,});
+      author_user => $userid,
+      for_user => $userid,});
 
   } else {
     return if $$VARS{publicchatteroff};
@@ -1139,6 +1141,7 @@ sub message
     $DB->sqlInsert('message', {msgtext => $message, author_user => getId($USER), for_user => 0, room => $$USER{in_room}});
   }
 
+  return;
 }
 
 sub message_outbox
@@ -1155,7 +1158,7 @@ sub message_outbox
   # Guests aren't allowed to perform message_outbox actions
   return if $APP->isGuest($USER);
 
-  my $UID      = undef; $UID = getId($USER)||0;
+  my $userid      = undef; $userid = getId($USER)||0;
   my $isRoot   = undef; $isRoot = $APP->isAdmin($USER);
   my $MSG      = undef; # Populated below with outbox message loaded from the DB by id
 
@@ -1167,7 +1170,7 @@ sub message_outbox
       # Delete a message given param named : deletemsg_<messageid>
       $MSG = $DB->sqlSelectHashref('*', 'message_outbox', "message_id=$1");
       next unless $MSG;
-      next unless $isRoot || ($UID==$$MSG{author_user});
+      next unless $isRoot || ($userid==$$MSG{author_user});
       $DB->sqlDelete('message_outbox', "message_id=$$MSG{message_id}");
 
     } elsif($_ =~ /^archive\_(\d+)$/) {
@@ -1175,7 +1178,7 @@ sub message_outbox
       # Archive a message given param named : archive_<messageid>
       $MSG = $DB->sqlSelectHashref('*', 'message_outbox', "message_id=$1");
       next unless $MSG;
-      next unless $isRoot||($UID==$$MSG{author_user});
+      next unless $isRoot||($userid==$$MSG{author_user});
       $DB->sqlUpdate('message_outbox', {archive=>1, tstamp=>$$MSG{tstamp}}, 'message_id='.$$MSG{message_id});
 
     } elsif($_ =~ /^unarchive\_(\d+)$/) {
@@ -1183,11 +1186,12 @@ sub message_outbox
       # Un-archive a message given param named : unarchive_<messageid>
       $MSG = $DB->sqlSelectHashref('*', 'message_outbox', "message_id=$1");
       next unless $MSG;
-      next unless $isRoot||($UID==$$MSG{author_user});
+      next unless $isRoot||($userid==$$MSG{author_user});
       $DB->sqlUpdate('message_outbox', {archive=>0, tstamp=>$$MSG{tstamp}}, 'message_id='.$$MSG{message_id});
     }
   }
 
+  return; 
 }
 
 
@@ -1253,7 +1257,7 @@ sub cool
   htmlcode('achievementsByType','cool,'.$uid);
   htmlcode('achievementsByType','cool,'.$$COOL{author_user});
 
-  return '';
+  return;
 }
 
 sub weblog
@@ -1321,6 +1325,7 @@ sub weblog
     htmlcode('addNotification', 'frontpage', 0, { frontpage_item_id => getId($N) });
   }
 
+  return;
 }
 
 sub removeweblog
@@ -1347,21 +1352,15 @@ sub removeweblog
   return unless $src && $to_node ;
   $DB->getDatabaseHandle()->do("update weblog set removedby_user=$$USER{ user_id } where weblog_id=$src && to_node=$to_node");
 
+  return;
 }
 
 # There are still references to this in the javascript that need to get cleaned out
 #
 sub massacre
 {
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
   # Legacy opcode that exists because unpublishwriteup links to it for the security monitor. Disabling the page, then will swing back around to clean this out
+  return;
 }
 
 sub lockroom
@@ -1389,6 +1388,7 @@ sub lockroom
     $$R{criteria} = "1\;";
   }
   updateNode($R, $USER);
+  return;
 }
 
 sub resurrect
@@ -1411,6 +1411,7 @@ sub resurrect
   my $id = htmlcode("reinsertCorpse",$N);
 
   $query->param('node_id', $id);
+  return;
 }
 
 sub bucketop
@@ -1457,6 +1458,8 @@ sub bucketop
     $$VARS{nodebucket} = $bucket;
     delete $$VARS{nodebucket} unless($bucket && $bucket ne "");
   }
+
+  return;
 }
 
 sub addbucket
@@ -1479,6 +1482,7 @@ sub addbucket
     $$VARS{nodebucket} .= $1;
   }
 
+  return;
 }
 
 sub linktrim
@@ -1529,7 +1533,7 @@ sub linktrim
     $DB->sqlDelete('firmlink_note', "from_node=$from_node and to_node=$1") if $$linktype{title} eq 'firmlink';
   }
 
-  1;
+  return;
 }
 
 sub firmlink
@@ -1616,6 +1620,7 @@ sub insure
   }
 
   $DB->updateNode($insnode, -1);
+  return;
 }
 
 sub nodenote
@@ -1649,6 +1654,7 @@ sub nodenote
   }
 
   htmlcode('addNodenote', $notefor, $notetext, $USER) if $notetext;
+  return;
 }
 
 sub lockaccount
@@ -1666,6 +1672,7 @@ sub lockaccount
   my $uid = $query->param('lock_id');
   return unless $uid;
   htmlcode('lock user account', $uid);
+  return;
 }
 
 sub unlockaccount
@@ -1689,7 +1696,7 @@ sub unlockaccount
   updateNode($uid, -1);
 
   $APP->securityLog(getNode("unlockaccount","opcode"), $USER, "$$uid{title}'s account was unlocked by $$USER{title}");
-
+  return;
 }
 
 sub hidewriteup
@@ -1795,7 +1802,7 @@ sub repair_e2node
 
   my $result = htmlcode('repair e2node', $repair_id, $no_order);
   return 1 if $result;
-  return undef;
+  return;
 }
 
 sub borg
@@ -1811,7 +1818,7 @@ sub borg
   # borgs the current node 1 time (iff current node is a user and current user is an admin)
   # N-Wing, Friday, May 24, 2002
 
-  my $UID = $$USER{node_id};
+  my $userid = $$USER{node_id};
 
   return unless $APP->isAdmin($USER);
   return unless $query->param('borgvictim');
@@ -1821,7 +1828,7 @@ sub borg
   return unless defined $victim;
   return unless $$victim{type}{title} eq 'user';
 
-  my $borgSelf = $victimID==$UID;
+  my $borgSelf = $victimID==$userid;
 
   # following ripped from [message] (opcode)
   my $V = $borgSelf ? $VARS : getVars($victim);
@@ -1945,7 +1952,7 @@ sub repair_e2node_noreorder
 
   my $result = htmlcode('repair e2node', $repair_id, $no_order);
   return 1 if $result;
-  return undef;
+  return;
 
 }
 
@@ -1959,7 +1966,7 @@ sub orderlock
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  return $APP->isEditor($USER);
+  return unless $APP->isEditor($USER);
 
   my $N = getNodeById($query->param('node_id'));
 
@@ -2019,6 +2026,8 @@ sub pollvote
     e2poll_results => join(',', @result_array)
     , totalvotes => $votesum}
     , "e2poll_id=$pollId");
+
+  return;
 }
 
 sub softlock
@@ -2047,6 +2056,8 @@ sub softlock
   } else {
     $DB->sqlInsert("nodelock", {nodelock_reason => $nodeReason, nodelock_user => $$USER{user_id}, nodelock_node => $$lockNode{node_id}});
   }
+
+  return;
 }
 
 sub weblogify
@@ -2103,6 +2114,7 @@ sub weblogify
 
   $$N{doctext} = $$N{doctext} . "[{weblog:3}]";
   updateNode($N,-1);
+  return;
 }
 
 sub leadusergroup
@@ -2208,6 +2220,7 @@ sub ilikeit
   }
 
   $DB->sqlInsert('likedit',{likedit_ip => $addr, likedit_node => $$LIKE{node_id}});
+  return;
 }
 
 sub changeusergroup
@@ -2248,6 +2261,7 @@ sub favorite
   my $LINKTYPE = getNode('favorite', 'linktype');
 
   $DB->sqlInsert('links', {-from_node => getId($USER), -to_node => $node_id, -linktype => getId($LINKTYPE)});
+  return;
 }
 
 sub unfavorite
@@ -2269,6 +2283,7 @@ sub unfavorite
   my $uid = $$USER{'node_id'};
 
   $DB->sqlDelete('links', "from_node = $uid AND to_node = $node_id AND linktype = $$LINKTYPE{node_id}");
+  return;
 }
 
 sub category
@@ -2376,7 +2391,7 @@ sub socialBookmark
   return 1 if (($$tempnode{type}{title} ne "writeup") && ($$tempnode{type}{title} ne "e2node")); #only send CME for writeups & e2nodes
 
   my $eddie = getId(getNode('Cool Man Eddie','user'));
-  my @tempgroup = @{ $$tempnode{group} } if $$tempnode{group};
+  my @tempgroup = (); @tempgroup = @{ $$tempnode{group} } if $$tempnode{group};
   my @group;
   my $TV;
   foreach (@tempgroup)
@@ -2434,7 +2449,7 @@ sub socialBookmark
     'message' => 'Yo, '.$eddiemessage.' was bookmarked on '.$bookmark_site.'. Dig it, baby.',
     'fromgroup_id' => $$USER{node_id} });
 
-  1;
+  return 1;
 }
 
 sub sanctify
@@ -2473,6 +2488,7 @@ sub sanctify
     'recipient_id' => $$U{user_id},
     'message' => "Whoa! You’ve been [Sanctify|sanctified]!" });
 
+  return;
 }
 
 sub movenodelet
@@ -2487,6 +2503,7 @@ sub movenodelet
 
   # See htmlcode for useful info on parameters
   htmlcode('movenodelet',$query->param('nodelet'),$query->param('position'));
+  return;
 }
 
 sub cure_infection
@@ -2539,8 +2556,10 @@ sub publishdrafttodocument
   $DB -> {cache} -> incrementGlobalVersion($draft); # tell other processes this has changed...
   $DB -> {cache} -> removeNode($draft); # and it's in the wrong typecache, so remove it
 
-  $query -> delete('node');
-  $query -> param('node_id', $nid);
+  $query->delete('node');
+  $query->param('node_id', $nid);
+
+  return;
 }
 
 sub approve_draft
@@ -2566,6 +2585,7 @@ sub approve_draft
     'links', {food => $food},
     "from_node=$draft AND to_node=$e2node AND linktype=$linktype");
 
+  return;
 }
 
 sub parameter
@@ -2596,6 +2616,8 @@ sub parameter
   }else{
     $APP->delParameter($for_node, $USER, $paramname);
   }
+
+  return;
 }
 
 sub remove
@@ -2631,9 +2653,9 @@ sub remove
       push @list, $1;
     }
   }else{
-    $author = getNode($query -> param('author'), 'user');
+    $author = getNode($query->param('author'), 'user');
     return unless $author;
-    @list = @{$DB -> selectNodeWhere({author_user => $$author{node_id}}, 'writeup')};
+    @list = @{$DB->selectNodeWhere({author_user => $$author{node_id}}, 'writeup')};
     htmlcode('sendPrivateMessage', {
       message => "I am removing your writeups: $bulkreason.",
       recipient_id=>$$author{user_id}});
@@ -2641,9 +2663,7 @@ sub remove
 
   return unless @list;
 
-  my $nid;
-
-  foreach $nid (@list)
+  foreach my $nid (@list)
   {
     my $N = getNodeById $nid;
     next unless $N && $$N{type}{title} eq 'writeup';
@@ -2659,7 +2679,7 @@ sub remove
     my $aid = $$N{author_user};
     next unless $aid;	#skip /msg if no WU author
     my $parent = getNodeById($$N{parent_e2node});
-    my $title = $$parent{title} if $parent;
+    my $title = undef; $title = $$parent{title} if $parent;
     $title ||= $$N{title};
 
     next if $aid==$$USER{node_id} && $query->param('noklapmsg'.$nid);	#no /msg to self
@@ -2672,14 +2692,16 @@ sub remove
     }
 
     $reason = ": $reason" if $reason;
-    my $author = getNodeById($aid);
-    $author = "[by $$author{title}]" if $author;
+    my $writeup_author = getNodeById($aid);
+    $writeup_author = "[by $$writeup_author{title}]" if $writeup_author;
+    $writeup_author = "" unless defined($writeup_author);
     htmlcode('sendPrivateMessage', {
-      message => "I removed your writeup [$title$author]$reason. It has been sent to your [Drafts[superdoc]].",
+      message => "I removed your writeup [$title$writeup_author]$reason. It has been sent to your [Drafts[superdoc]].",
       recipient_id=>$aid});
   }
 
   htmlcode('update New Writeups data');
+  return;
 }
 
 1;
