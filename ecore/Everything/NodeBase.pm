@@ -16,10 +16,10 @@ use Everything::Application;
 use Everything::NodeCache;
 use Everything::Delegation::maintenance;
 use Test::Deep::NoTest;
-use utf8;
-
-# Used by stashData
 use JSON;
+use Try::Tiny;
+
+## no critic (ProhibitAutomaticExportation,RequireUseWarnings)
 
 sub BEGIN
 {
@@ -88,7 +88,7 @@ sub new
 	my ($className) = @_;
 	my $this = {};
 	
-	bless $this;
+	bless $this, $className;
 
         my $dbname = $Everything::CONF->database;
 	# A connection to this database does not exist.  Create one.
@@ -222,7 +222,7 @@ sub sqlSelect
 	my $cursor = $this->sqlSelectMany($select, $from, $where, $other);
 	my @result;
 	
-	return undef if(not defined $cursor);
+	return if(not defined $cursor);
 
 	@result = $cursor->fetchrow();
 	$cursor->finish();
@@ -264,7 +264,7 @@ sub sqlSelectMany
 	my $result = $cursor->execute();
 	
 	return $cursor if($result);
-	return undef;
+	return;
 }
 
 
@@ -350,7 +350,8 @@ sub sqlUpdate
 
 	my $result = $this->executeQuery($sql);
 	return $result if($result);
-	(Everything::printErr("sqlUpdate failed:\n $sql\n") and return 0);
+	Everything::printErr("sqlUpdate failed:\n $sql\n");
+        return 0;
 }
 
 
@@ -413,7 +414,9 @@ sub sqlInsert
 	my $sql = "INSERT INTO $table ($names) VALUES($values)$updateSql\n";
 	my $result = $this->executeQuery($sql);
 	return $result if($result);
-	(Everything::printErr("sqlInsert failed:\n $sql") and return 0);
+
+	Everything::printErr("sqlInsert failed:\n $sql");
+	return 0;
 }
 
 
@@ -515,7 +518,7 @@ sub getNodeById
 	return -1 if $N == -1;
 	$N = $this->getId($N);
 	$N = int($N);
-	return undef unless $N;
+	return unless $N;
 	
 	if($selectop ne 'nocache')
 	{
@@ -525,7 +528,7 @@ sub getNodeById
 	}
 
 	$NODE = $this->sqlSelectHashref('*', 'node', "node_id=$N");
-	return undef if(not defined $NODE);
+	return if(not defined $NODE);
 	
 	$NODETYPE = $this->getType($$NODE{type_nodetype});
 	if (not defined $NODETYPE or $NODETYPE == -1) {
@@ -533,7 +536,7 @@ sub getNodeById
 			"Node $$NODE{title} (#$$NODE{node_id}) has a bad nodetype #$$NODE{type_nodetype}."
 			. "  This can't end well."
 		);
-		return undef if not defined $NODETYPE;
+		return if not defined $NODETYPE;
 	}
 
 	# Wire up the node's nodetype
@@ -604,6 +607,8 @@ sub loadGroupNodeIDs
 			$cursor->finish();
 		}
 	}
+
+	return;
 }
 
 
@@ -706,7 +711,7 @@ sub selectNodeWhere
 		$cursor->finish();
 	}
 
-	return undef unless(@nodelist);
+	return unless(@nodelist);
 	
 	return \@nodelist;
 }
@@ -762,9 +767,8 @@ sub getNodeCursor
 	if((! $nodeTableOnly) && (defined $TYPE) && (ref $$TYPE{tableArray}))
 	{
 		my $tableArray = $$TYPE{tableArray};
-		my $table;
 		
-		foreach $table (@$tableArray)
+		foreach my $table (@$tableArray)
 		{
 			$select .= " LEFT OUTER JOIN $table ON node_id=" . $table . "_id";
 		}
@@ -775,7 +779,7 @@ sub getNodeCursor
 	if ($select eq "SELECT * FROM node")
 	{
 		Everything::HTML::htmlFormatErr($select, 'getNodeCursor() tried to evaluate a stupid query', '');
-		return undef;
+		return;
 	}
 
 	#$select .= " FOR UPDATE" if $this->{dbh}->{AutoCommit} == 0;
@@ -789,7 +793,7 @@ sub getNodeCursor
 	my $result = $cursor->execute();
 
 	return $cursor if($result);
-	return undef;
+	return;
 }
 
 
@@ -922,23 +926,30 @@ sub transactionWrap
 
 		$commitTriesLeft -= 1;
 
-		eval {
-			&$CODE;
-			$this->{dbh}->commit;
+		my $commitfailure = 0;
+
+		try {
+			eval {
+				&$CODE;
+				$this->{dbh}->commit;
+			} or do {
+				$commitfailure = 1;
+				$accumulatedErrors .= "Error $commitTriesLeft: " . $@ . "\n";
+			}
+		} catch {
+			$commitfailure = 1;
+			$accumulatedErrors .= "Error $commitTriesLeft: $_\n";
 		};
 
-		if (!$@) {
-			$committed = 1;
-		} else {
+		if($commitfailure)
+		{
 			$this->{dbh}->rollback();
-			$accumulatedErrors .= "Error $commitTriesLeft: " . $@ . "\n";
 		}
-
 	}
 
 	$this->{dbh}->{RaiseError} = $savedRaiseError;
 	$this->{dbh}->{AutoCommit} = $savedAutoCommit;
-	$@ = $accumulatedErrors;
+	local $@ = $accumulatedErrors;
 	return $committed;
 }
 
@@ -963,6 +974,8 @@ sub closeTransaction
 		Everything::printLog("AutoCommit was left off after the last page served.");
 		$this->{dbh}->{AutoCommit} = 1;
 	}
+
+	return;
 }
 
 #############################################################################
@@ -1112,6 +1125,8 @@ sub replaceNode {
 	} else { 
 		$this->insertNode($title, $TYPE, $USER, $DATA, $skip_maintenance);
 	}
+
+	return;
 }
 
 
@@ -1136,7 +1151,6 @@ sub insertNode
 {
 	my ($this, $title, $TYPE, $USER, $DATA, $skip_maintenance) = @_;
 	my $tableArray;
-	my $table;
 	my $NODE;
 
 	
@@ -1182,7 +1196,7 @@ sub insertNode
 	# Now go and insert the appropriate rows in the other tables that
 	# make up this nodetype;
 	$tableArray = $$TYPE{tableArray};
-	foreach $table (@$tableArray)
+	foreach my $table (@$tableArray)
 	{
 		$this->sqlInsert($table, { $table . "_id" => $node_id });
 	}
@@ -1233,6 +1247,7 @@ sub tombstoneNode {
     use Data::Dumper;
     $N{data} = Data::Dumper->Dump([\%data]);
     $this->sqlInsert("tomb", \%N);
+    return;
 }
 
 
@@ -1256,7 +1271,6 @@ sub nukeNode
 {
 	my ($this, $NODE, $USER, $NOTOMB, $skip_maintenance) = @_;
 	my $tableArray;
-	my $table;
 	my $result = 0;
 	my $groupTable;
 	
@@ -1277,7 +1291,7 @@ sub nukeNode
 
 	push @$tableArray, "node";  # the node table is not in there.
 
-	foreach $table (@$tableArray)
+	foreach my $table (@$tableArray)
 	{
 		my $sql = "DELETE FROM $table WHERE " . $table . "_id=$$NODE{node_id}";
 		$result += $this->executeQuery($sql);
@@ -1339,7 +1353,7 @@ sub getType
 	# If they pass in a hash, just take the id.
 	$idOrName = $$idOrName{node_id} if(UNIVERSAL::isa($idOrName,"HASH"));
 	
-	return undef if((not defined $idOrName) || ($idOrName eq ""));
+	return if((not defined $idOrName) || ($idOrName eq ""));
 
 	if($idOrName =~ /\D/) # Does it contain non-digits?
 	{
@@ -1372,11 +1386,11 @@ sub getType
 	else
 	{
 		# We only get here if the id is zero or negative
-		return undef;
+		return;
 	}
 
 	# If we did not find a matching nodetype, forget it.
-	return undef unless(defined $TYPE);
+	return unless(defined $TYPE);
 
 	if(not exists $$TYPE{type})
 	{
@@ -1702,9 +1716,8 @@ sub addFieldToTable
 		my @fields = $this->getFieldsHash($table);
 		my @prikeys;
 		my $primaries;
-		my $field;
 
-		foreach $field (@fields)
+		foreach my $field (@fields)
 		{
 			push @prikeys, $$field{Field} if($$field{Key} eq "PRI");
 		}
@@ -1885,14 +1898,13 @@ sub deriveType
 	my ($this, $TYPE) = @_;
 	my $PARENT;
 	my $NODETYPE;
-	my $field;
 	
 	# If this type has been derived already, don't do it again.
 	return $TYPE if(exists $$TYPE{resolvedInheritance});
 
 	# Make a copy of the TYPE.  We don't want to change whatever is stored
 	# in the cache if static nodetypes are turned off.
-	foreach $field (keys %$TYPE)
+	foreach my $field (keys %$TYPE)
 	{
 		$$NODETYPE{$field} = $$TYPE{$field};
 	}
@@ -1908,7 +1920,7 @@ sub deriveType
 
 	if(defined $PARENT)
 	{
-		foreach $field (keys %$PARENT)
+		foreach my $field (keys %$PARENT)
 		{
 			# We add some fields that are not apart of the actual
 			# node, skip these because they are never inherited
@@ -2170,8 +2182,10 @@ sub nodeMaintenance
 	{
 		$node_id = $this->getId($node_id);
 		my $args = "\@\_ = \"$node_id\";\n";
-		Everything::HTML::embedCode("%" . $args . $code . "%", @_);
+		return Everything::HTML::embedCode("%" . $args . $code . "%", @_);
 	}
+
+        return;
 }
 
 #############################################################################
@@ -2192,7 +2206,7 @@ sub getId
 	my ($this, $arg) = @_;
 
 	if (UNIVERSAL::isa($arg, "HASH")) {$arg = $$arg{node_id};}  
-	$arg;
+	return $arg;
 }
 
 
@@ -2221,7 +2235,7 @@ sub getRef
 		}
 	}
 	
-	ref $_[0];
+	return ref $_[0];
 }
 
 
@@ -2287,7 +2301,7 @@ sub canCreateNode {
 	$this->getRef($TYPE);
 
 	return 1 unless $$TYPE{writers_user};	
-	$this->isApproved ($USER, $$TYPE{writers_user});
+	return $this->isApproved ($USER, $$TYPE{writers_user});
 }
 
 
@@ -2310,7 +2324,7 @@ sub canUpdateNode {
 	return 0 if((not defined $NODE) || ($NODE == 0));
 	$EDS ||= $this->getNode('content editors', 'usergroup');
 	my $type = $$NODE{type}{title};
-	return 1 if grep /^$UID$/, @{ $$EDS{group} } and grep /^$type$/, ('writeup','document','oppressor_document','category');
+	return 1 if grep {/^$UID$/} @{ $$EDS{group} } and grep {/^$type$/}('writeup','document','oppressor_document','category');
 	return $this->isApproved ($USER, $$NODE{author_user});
 }
 
@@ -2324,7 +2338,7 @@ sub canReadNode {
 
 	return 0 if((not defined $NODE) || ($NODE == 0));
 	return 1 unless $$NODE{type}{readers_user};	
-	$this->isApproved($USER, $$NODE{type}{readers_user});
+	return $this->isApproved($USER, $$NODE{type}{readers_user});
 }
 
 
@@ -2445,7 +2459,7 @@ sub flattenNodegroup
 	my @listref;
 	my $group;
 
-	return undef if (not defined $NODE);
+	return if (not defined $NODE);
 
 	# If groupsTraversed is not defined, initialize it to an empty
 	# hash reference.
@@ -2457,7 +2471,7 @@ sub flattenNodegroup
 	{
 		# return if we have already been through this group.  Otherwise,
 		# we will get stuck in infinite recursion.
-		return undef if($$groupsTraversed{$$NODE{node_id}});
+		return if($$groupsTraversed{$$NODE{node_id}});
 		$$groupsTraversed{$$NODE{node_id}} = $$NODE{node_id};
 		
 		foreach my $groupref (@{ $$NODE{group} })
@@ -2502,7 +2516,7 @@ sub insertIntoNodegroup
 	my $rank;	
 
 
-	return undef unless($this->canUpdateNode ($USER, $NODE)); 
+	return unless($this->canUpdateNode ($USER, $NODE)); 
 	
 	$TYPE = $$NODE{type};
 	$groupTable = $this->isGroup($TYPE);
@@ -2584,6 +2598,7 @@ sub insertIntoNodegroup
 	#we should also refresh the group list ref stuff
 	$this->{cache}->incrementGlobalVersion($NODE);
 	$_[1] = $this->getNodeById($NODE, 'force'); #refresh the group
+	return $_[1];
 }
 
 
@@ -2692,19 +2707,23 @@ sub createMysqlProcedure
 	$create_procedure .= "$procbody\n";
 	$create_procedure .= "END\n";
 
-	eval {
-		$this->{dbh}->do($create_procedure);
-		$this->{dbh}->commit();
+
+	my $return_value = [1,""];
+	try {
+		eval {
+			$this->{dbh}->do($create_procedure);
+			$this->{dbh}->commit();
+		} or do {
+			$return_value = [0, $@];
+		}
+	} catch {
+		$return_value = [0, $_];
 	};
 
 	$this->{dbh}->{'AutoCommit'} = 1;
 	$this->{dbh}->{'RaiseError'} = 0;
-	if($@)
-	{
-		return [0, $@];
-	}else{
-		return [1, ""];
-	}
+
+	return $return_value;
 }
 
 sub dropMysqlProcedure
@@ -2790,7 +2809,7 @@ sub setNodeParam
 
 	return unless $node_id;
 	$this->executeQuery("INSERT into nodeparam VALUES(".join(",",$this->quote($node_id),$this->quote($paramname),$this->quote($paramvalue)).") ON DUPLICATE KEY UPDATE paramvalue=".$this->quote($paramvalue));
-	$this->{cache}->setCachedNodeParam($node_id, $paramname, $paramvalue);
+	return $this->{cache}->setCachedNodeParam($node_id, $paramname, $paramvalue);
 }
 
 sub getNodesWithParam
@@ -2832,7 +2851,7 @@ sub deleteNodeParam
 	return unless $node_id;
 
 	$this->sqlDelete("nodeparam","node_id=".$this->quote($node_id)." and paramkey=".$this->quote($paramname));
-	$this->{cache}->deleteCachedNodeParam($node_id,$paramname);
+	return $this->{cache}->deleteCachedNodeParam($node_id,$paramname);
 }
 
 sub stashData
@@ -2879,7 +2898,6 @@ sub groupCache {
 sub groupUncache {
 	my $this = shift;
 	return $this->{cache}->groupUncache(@_);
-	return 1;
 }
 
 sub existsInGroupCache {
