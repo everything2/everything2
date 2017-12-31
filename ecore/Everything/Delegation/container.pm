@@ -78,7 +78,7 @@ sub zen_stdcontainer
   my $no='';
   if($$NODE{type}{title} eq 'e2node'
 	|| ($$NODE{type}{title} eq 'superdoc'
-		and $$NODE{title} eq 'Findings:' || $$NODE{title} eq 'Nothing Found')
+		and ($$NODE{title} eq 'Findings:' or $$NODE{title} eq 'Nothing Found'))
 	|| ($$NODE{type}{title} eq 'user'
 		and $APP -> getLevel($NODE)==0 and $no='no'))
   {
@@ -108,7 +108,7 @@ sub zen_stdcontainer
   if($$NODE{type}{title} =~ /superdoc/)
   {
     #superdocs and variants further identified by title
-    my $id .= ( $$NODE{ node_id } != 124 ? lc( $$NODE{ 'title' } ) : 'frontpage' ) ;
+    my $id = ( $$NODE{ node_id } != 124 ? lc( $$NODE{ 'title' } ) : 'frontpage' ) ;
     $id =~ s/\W//g ;
     $str.'" id="'.$id ;
   }
