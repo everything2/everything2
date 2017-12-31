@@ -5,8 +5,16 @@
     <key>applaud</key>
   </vars>
   <vars>
+    <value>carves ~ a slice of turkey, with a side of mashed potatoes, stuffing, cranberry sauce, yams, and pumpkin pie</value>
+    <key>turkey</key>
+  </vars>
+  <vars>
     <value>muzzles</value>
     <key>muzzle</key>
+  </vars>
+  <vars>
+    <value>burns a terrorist in effigy for ~</value>
+    <key>guy</key>
   </vars>
   <vars>
     <value>Ph'nglui mglw'nafh ~ R'lyeh wgah'nagl fhtagn!</value>
@@ -17,7 +25,7 @@
     <key>like</key>
   </vars>
   <vars>
-    <value>throws tabby cats at</value>
+    <value>builds a snowman that bares an eerie resemblance to ~</value>
     <key>special</key>
   </vars>
   <vars>
@@ -57,7 +65,7 @@
     <key>anvil</key>
   </vars>
   <vars>
-    <value>gives ~ a chocolate teacake</value>
+    <value>gives ~ a gingerbread cookie</value>
     <key>cookie</key>
   </vars>
   <vars>
@@ -97,7 +105,7 @@
     <key>fistbump</key>
   </vars>
   <vars>
-    <value>throws an apple pie, a la mode, at</value>
+    <value>hands ~ a mince pie</value>
     <key>pie</key>
   </vars>
   <vars>
@@ -111,14 +119,6 @@
   <vars>
     <value>oppresses the masses, but spares ~</value>
     <key>random4</key>
-  </vars>
-  <vars>
-    <value>gives ~ a handful of hundreds and thousands</value>
-    <key>treat</key>
-  </vars>
-  <vars>
-    <value>throws a chocolate egg at ~'s door</value>
-    <key>trick</key>
   </vars>
   <vars>
     <value>giant squids</value>
@@ -181,6 +181,10 @@
     <key>heart</key>
   </vars>
   <vars>
+    <value>pours ~ a glass of eggnog, with extra nog</value>
+    <key>eggnog</key>
+  </vars>
+  <vars>
     <value>lights a candle for</value>
     <key>candle</key>
   </vars>
@@ -191,10 +195,6 @@
   <vars>
     <value>flings poop at</value>
     <key>poo</key>
-  </vars>
-  <vars>
-    <value>cuts ~ free from the net</value>
-    <key>unnet</key>
   </vars>
   <vars>
     <value>omelets</value>

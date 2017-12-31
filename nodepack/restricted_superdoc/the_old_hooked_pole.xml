@@ -10,8 +10,9 @@ my $str = '';
 
 my @savedUsers = ( );
 my $usersToNail = { };
-my $smite = $query -&gt; param('op') eq 'remove' ? 1 : ''; # did we come here from the Smite Spammer link?
+my $smite = $query -&gt; param('op') eq 'remove' ? 1 : ''; # did we come here from the Smite Spammer link (old version)?
 my $usernameString = $smite ? $query-&gt;param('author') : $query-&gt;param('usernames');
+$smite ||= $query -&gt; param('smite'); # from Smite Spammer link (new version)
 
 if ($usernameString) {
 
@@ -115,7 +116,7 @@ if (keys %$usersToNail) {
 
     } else {
 
-      $targetName = linkNode($$targetUserData{node_id}, $targetName);
+      $targetName = linkNode($$targetUserData{node_id});
 
     }
 
@@ -135,7 +136,10 @@ if (keys %$usersToNail) {
 
     if ($$targetUserData{'writeup count'} != 0) {
 
-      push @unsafeReasons,  &quot;$targetName has $$targetUserData{'writeup count'} writeups!&quot;;
+      my %removereason = $query -&gt; param('removereason') ? (removereason =&gt; $query -&gt; param('removereason')) : ();
+      my $removeLink = linkNode(getNode('Altar of Sacrifice','oppressor_superdoc'), 'Remove them...'
+	, {author =&gt; $$targetUserData{'title'}, %removereason});
+      push @unsafeReasons,  &quot;$targetName has $$targetUserData{'writeup count'} writeups! &amp;#91; $removeLink ]&quot;;
       $safeToWhack = 0;
 
       
