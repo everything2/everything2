@@ -6,6 +6,9 @@ package Everything::Delegation::htmlcode;
 use strict;
 use warnings;
 
+## Until all of the evals are dead, this is a strict necessity
+## no critic (ProhibitStringyEval)
+
 BEGIN {
   *getNode = *Everything::HTML::getNode;
   *getNodeById = *Everything::HTML::getNodeById;
@@ -820,7 +823,7 @@ sub listcode
     my $filedata = undef;
     my $fileh = undef;
 
-    open $fileh,$file;
+    open $fileh,"<",$file;
     {
       local $/ = undef;
       $filedata = <$fileh>;
@@ -1024,7 +1027,7 @@ sub parsetime
   my $nicedate =localtime ($epoch_secs);
 
   $nicedate =~ s/(\d\d):(\d\d):(\d\d).*$/$yy at $1:$2:$3/;
-  $nicedate;
+  return $nicedate;
 }
 
 sub password_field
@@ -1049,7 +1052,7 @@ sub password_field
 
   if ( $oldpass or $p1 or $p2){
     if($APP->confirmUser($USER -> {title}, $oldpass, undef, $query)) {
-      if ( !$p1 and  !$p2){
+      if ( not $p1 and not $p2){
         $str .= "I can't let you have no password! Please input <em>something</em>.<br>"
       } 
       elsif ($p1 eq $p2 ) {
@@ -1111,7 +1114,7 @@ sub nodelet_meta_container
   return '' unless @nodelets;
 
   my $CB = getNode('chatterbox','nodelet') -> {node_id} ;
-  if (!$APP->isGuest($USER) and ($$VARS{hideprivmessages} or (not $$VARS{nodelets} =~ /\b$CB\b/)) and my $count = $DB->sqlSelect('count(*)', 'message', 'for_user='.getId($USER))) {
+  if (not $APP->isGuest($USER) and ($$VARS{hideprivmessages} or (not $$VARS{nodelets} =~ /\b$CB\b/)) and my $count = $DB->sqlSelect('count(*)', 'message', 'for_user='.getId($USER))) {
     my $unArcCount = $DB->sqlSelect('count(*)', 'message', 'for_user='.getId($USER).' AND archive=0');
     $str.='<p id="msgnum">you have <a id="msgtotal" href='.
       urlGen({'node'=>'Message Inbox','type'=>'superdoc','setvars_msginboxUnArc'=>'0'}).'>'.$count.'</a>'.
@@ -1224,8 +1227,7 @@ sub setvar
   if ($query->param("sexisgood") and not $query->param("set$var")){
     $$VARS{$var}="";
   }
-  $query->textfield("set$var", $$VARS{$var}, $len);
-
+  return $query->textfield("set$var", $$VARS{$var}, $len);
 }
 
 sub textfield
@@ -1241,7 +1243,7 @@ sub textfield
   my ($field, $length, $expandable) = @_;
   $length ||= 20;
   my @expandable = (); @expandable = ( class => 'expandable' ) if $expandable ;
-  $query->textfield(-name=>$$NODE{type}{title} .'_'. $field, value=>$$NODE{$field}, size=>$length ,@expandable );
+  return $query->textfield(-name=>$$NODE{type}{title} .'_'. $field, value=>$$NODE{$field}, size=>$length ,@expandable );
 }
 
 sub parselinks
@@ -1256,8 +1258,7 @@ sub parselinks
 
   my ($field) = @_;
   my $n = undef; $n = (( $APP->isGuest($USER) )?(undef):($NODE));
-  parseLinks( $$NODE{$field} , $n ) ;
-
+  return parseLinks( $$NODE{$field} , $n );
 }
 
 sub textarea
@@ -1395,11 +1396,11 @@ sub show_content
   $infofunctions{ parenttitle } ||= sub { 
     my $parent = getNodeById($_[0]{parent_e2node},'light'); 
     return '<span class="title noparent">(No parent node) '.&$title.'</span>' unless $parent ;
-    my $author = &$getAuthor;
+    my $localauthor = &$getAuthor;
     return linkNode($parent, '', {
       -class => 'title'
-      , '#' => $$author{title}
-      , author_id => $$author{node_id}
+      , '#' => $$localauthor{title}
+      , author_id => $$localauthor{node_id}
     });
   };
 
@@ -1434,7 +1435,7 @@ sub show_content
   my $xml = 0;
   $xml = '1' if $instructions =~ s/^xml\b\s*// ;
 
-  my ($wrapTag, $wrapClass, $wrapAtts) = split(/\s+class="([^"]+)"/, $1) if $instructions =~ s/^\s*<([^>]+)>\s*//;
+  my ($wrapTag, $wrapClass, $wrapAtts) = (undef, undef, undef); ($wrapTag, $wrapClass, $wrapAtts) = split(/\s+class="([^"]+)"/, $1) if $instructions =~ s/^\s*<([^>]+)>\s*//;
   $wrapAtts .= $1 if $wrapTag =~ s/(\s+.*)//;
   $wrapAtts ||= "";
 
@@ -1471,7 +1472,7 @@ sub show_content
       $i-- unless $content[++$i];
       my $text = $N->{ doctext } ;
       # Superdoc stuff hardcoded below
-      $text = parseCode( $text ) if exists( $$N{ type } ) and ( $$N{ type_nodetype } eq 14 or $$N{ type }{ extends_nodetype } eq 14 ) ;
+      $text = parseCode( $text ) if exists( $$N{ type } ) and ( $$N{ type_nodetype } eq "14" or $$N{ type }{ extends_nodetype } eq "14" ) ;
       $text = $APP->breakTags( $text ) ;
 
       my ( $dots , $morelink ) = ( '' , '' ) ;
@@ -1498,7 +1499,7 @@ sub show_content
   foreach my $N ( @input ) {
     next if $infofunctions{cansee} and $infofunctions{cansee}($N) != 1;
 
-    my $class = qq' class="$wrapClass"' unless $xml;
+    my $class = ''; $class = qq' class="$wrapClass"' unless $xml;
     while ($class =~ m/\&(\w+)/) {
       my $intendedName = $1 ;
       my $intendedFunc = $infofunctions{ $intendedName } ;
@@ -1735,7 +1736,7 @@ sub softlink
 
   my $showTitle = undef;
 
-  my $gradeattstart ||= 'bgcolor="#';
+  my $gradeattstart = 'bgcolor="#';
   my $dimensions = scalar @maxval - 1;
   my $steps = scalar @nodelinks;
 
@@ -2253,7 +2254,7 @@ sub shownewexp
   my $LVLS = getVars(getNode('level experience', 'setting'));
   my $WRPS = getVars(getNode('level writeups', 'setting'));
 
-  my $expleft = $$LVLS{$lvl} - $$USER{experience} if exists $$LVLS{$lvl};
+  my $expleft = 0; $expleft = $$LVLS{$lvl} - $$USER{experience} if exists $$LVLS{$lvl};
   my ($numwu, $wrpleft) = (undef,undef);
 
   #No honor roll here
@@ -2286,7 +2287,8 @@ sub votehead
   my $APP = shift;
 
   my $uid=$$USER{node_id};
-  my $canDoStuff = $$USER{votesleft} || $APP->isEditor($USER) unless $APP->isGuest($USER);
+  my $canDoStuff = undef;
+  $canDoStuff = $$USER{votesleft} || $APP->isEditor($USER) unless($APP->isGuest($USER));
   my $str = "";
   $str.="\n\t".htmlcode('openform2','pagebody');
   $str.="\n\t\t".'<input type="hidden" name="op" value="vote" />' if $canDoStuff;	#don't bother with vote opcode if user can't vote
@@ -2312,7 +2314,7 @@ sub voteit
   getRef( $N ) ;
 
   my $isEditor = $APP->isEditor($USER) ;
-  return $isEditor ? 'no writeup' : '' unless $N and $$N{writeup_id} || $$N{draft_id};
+  return $isEditor ? 'no writeup' : '' unless($N and $$N{writeup_id} or $$N{draft_id});
 
   $showwhat ||= 7 ; #1: kill only; 2: vote only; 3: both
 
@@ -2325,7 +2327,7 @@ sub voteit
 
   my $edstr = '';
 
-  if ($showwhat & 1 and $isEditor || $isMine || $$N{type}{title} eq 'draft') { # admin tools
+  if (($showwhat & 1) and $isEditor or $isMine or $$N{type}{title} eq 'draft') { # admin tools
     $edstr .= htmlcode("$$N{type}{title}tools", $N);
   }
 
@@ -2345,15 +2347,15 @@ sub voteit
     ' and voter_user='.$$USER{user_id}) || 0;
 
   $votestr .= "<span id=\"voteinfo_$n\" class=\"voteinfo\">" ;
-  if ( $isMine || $prevvote and !$novotereason ) { # show votes cast
+  if ( $isMine or $prevvote and not $novotereason ) { # show votes cast
     my $uv = '';
     my $r = $$N{reputation} || 0;
     my ($p) = $DB->sqlSelect('count(*)', 'vote', "vote_id=$n AND weight>0");
     my ($m) = $DB->sqlSelect('count(*)', 'vote', "vote_id=$n AND weight<0");
 
     #Hack for rounding, add 0.5 and chop off the decimal part.
-    my $rating = int(100*$p/($p+$m) + 0.5) if ($p || $m);
-    $rating ||= 0 ;
+    my $rating = 0;
+    $rating = int(100*$p/($p+$m) + 0.5) if ($p || $m);
     $rating .= '% of '.($p+$m).' votes' ;
 
     # mark up voting info
@@ -2471,7 +2473,7 @@ sub parentdraft
 
     unless ($$N{doctext} =~ /\S/){
       $str = '<p>No content.</p>';
-    }elsif($$N{doctext} =~ /\[(http\:\/\/(?:\w+\.)?everything2\.\w+)/i or !$userLevel && $$N{doctext} !~ /\[(?!http:).+]/){
+    }elsif($$N{doctext} =~ /\[(http\:\/\/(?:\w+\.)?everything2\.\w+)/i or not $userLevel and $$N{doctext} !~ /\[(?!http:).+]/){
       $str = "<p><strong>Do not</strong> use the external link format to link
         to other pages on this site (&#91;$1...&#93;).</p>" if $1;
 
@@ -2504,7 +2506,7 @@ sub parentdraft
   }else{
     $title = $$N{title};
     # remove number/writeuptype from end of title (user can put it back later if they really want it)
-    $title =~ s/ \($1\)$// if $title =~ / \(([\w\d]+)\)$/ and $1 eq int($1) || getNode($1, 'writeuptype');
+    $title =~ s/ \($1\)$// if($title =~ / \(([\w\d]+)\)$/ and $1 eq int($1) or getNode($1, 'writeuptype'));
   }
 
   # ...existing parent...
@@ -2533,14 +2535,14 @@ sub parentdraft
     $newoption = 0 if $nameMatch;
     $nameMatch = getId $nameMatch;
 	
-    if ($newoption or !$publish && $parent){
+    if ($newoption or not $publish and $parent){
       # if no existing e2node with this title, or if changing existing parent, look for similar
       my $e2type = getId(getType('e2node'));
       my @findings = @{$APP->searchNodeName($title, [$e2type], 0, 1)}; # without soundex
       @findings = @{$APP->searchNodeName($title, [$e2type], 1, 1)} unless @findings; # with soundex
 
-      push @existing, map($_ && $$_{type_nodetype} == $e2type &&  # there's a bug in searchNodeName...
-        $$_{node_id} != $parent && $$_{node_id} != $nameMatch ? $_: (), @findings);
+      push @existing, map {$_ && $$_{type_nodetype} == $e2type &&  # there's a bug in searchNodeName...
+        $$_{node_id} != $parent && $$_{node_id} != $nameMatch ? $_: () } @findings;
       @existing = @existing[0..24] if @existing > 25; # enough is enough
     }
 
@@ -2568,15 +2570,15 @@ sub parentdraft
     .$query -> hidden('draft_id', $$N{node_id})
     .$query -> hidden('title', $title);
 
-  $str .= $query -> h3(($publish ? 'Publish under' : 'Attach to').' existing title (e2node):')
+  #TODO: Why are there two commas here?
+  $str .= $query->h3(($publish ? 'Publish under' : 'Attach to').' existing title (e2node):')
     .$query -> ul({class => 'findings'}, 
-      join('',, map($query -> li($query -> input({value => $$_{node_id}, %prams})
+      join('',, map {$query -> li($query -> input({value => $$_{node_id}, %prams})
 	.' '
         .linkNode($_)
         .(delete $prams{checked} ? '' : '')
-        ), @existing)
-      )
-    )  if @existing;
+        )} @existing)
+      ) if @existing;
 
   $str .= $query -> h3('Create a new page (e2node) with this title:')
     .$query -> ul({class => 'findings'} , $query -> li($query -> label(
@@ -2835,7 +2837,7 @@ sub publishwriteup
     }
   }
 
-  $query -> param('publish', 'OK');
+  return $query->param('publish', 'OK');
 
 }
 
@@ -2978,7 +2980,7 @@ sub addwriteup
   my $MINE = undef; #mod_perl safety
   $MINE = delete $PAGELOAD->{my_writeup}; # saved by [canseewriteup]
   $MINE ||= htmlcode('nopublishreason', $USER, $NODE);
-  return '<div class="nodelock"><p>'.$MINE.'</p></div>' if $MINE and !UNIVERSAL::isa($MINE,'HASH');
+  return '<div class="nodelock"><p>'.$MINE.'</p></div>' if($MINE and not UNIVERSAL::isa($MINE,'HASH'));
 
   # OK: user can post or edit a writeup/draft
 
@@ -3108,7 +3110,7 @@ sub usersearchform
   my $default ='';
   my $lnid = getId($NODE);
   my $ParentNODE = $NODE;
-  if(!$APP->isGuest($USER) and my $ln = $query->param('lastnode_id')  and ($query->param('lastnode_id') =~ /^\d+$/)) {
+  if(not $APP->isGuest($USER) and my $ln = $query->param('lastnode_id')  and ($query->param('lastnode_id') =~ /^\d+$/)) {
     my $LN = getNode $ln;
     if($$LN{type}{title} eq 'writeup') {
       $LN = getNodeById($$LN{parent_e2node});
@@ -3345,14 +3347,14 @@ sub setwriteuptype
       $checked = 1;
     }
 
-    $checked = ' checked="checked"' if $checked or ref($N) && 
-      ($$N{reputation} || $DB -> sqlSelect('vote_id', 'vote', "vote_id=$$N{node_id}")
-      || $DB -> sqlSelect(
+    $checked = ' checked="checked"' if($checked or ref($N) and 
+      ($$N{reputation} or $DB -> sqlSelect('vote_id', 'vote', "vote_id=$$N{node_id}")
+      or $DB -> sqlSelect(
         'LEFT(notetext, 25)'
         , 'nodenote'
         , "nodenote_nodeid=$$N{node_id} AND noter_user = 0"
         , 'ORDER BY timestamp LIMIT 1'
-      ) eq 'Restored from Node Heaven');
+      ) eq 'Restored from Node Heaven'));
 
     $type ||= getNode('thing', 'writeuptype') -> {node_id};
 
@@ -3370,8 +3372,8 @@ sub setwriteuptype
   my $isE2docs = $APP->inUsergroup($USER,"E2Docs");
 
   foreach (@WRTYPE){
-    next if (!$isEd and lc($$_{title}) eq 'definition' || lc($$_{title}) eq 'lede');
-    next if ((!$isEd or !$isE2docs) and lc($$_{title}) eq 'help');
+    next if (not $isEd and lc($$_{title}) eq 'definition' or lc($$_{title}) eq 'lede');
+    next if ((not $isEd or not $isE2docs) and lc($$_{title}) eq 'help');
     $items{$$_{node_id}} = $$_{title};
   }
 
@@ -3531,8 +3533,8 @@ sub coolit
     $link = $DB->sqlSelectHashref('to_node', 'links', 'from_node='.$$NODE{node_id}.' and linktype='.$COOLLINK.' limit 1');
   }
 
-  return '' if $link and $ntypet ne 'e2node' || ($$NODE{group} && @$NODE{group}) # let anyone uncool a nodeshell
-    and ( $APP->isEditor($$link{to_node}) ) and $$link{to_node}!=$$USER{node_id} ;
+  return '' if($link and $ntypet ne 'e2node' or ($$NODE{group} and @$NODE{group}) # let anyone uncool a nodeshell
+    and ( $APP->isEditor($$link{to_node}) ) and $$link{to_node}!=$$USER{node_id});
 
   if ($query->param('uncoolme')) {
     $DB->sqlDelete('links', 'from_node='.$$NODE{node_id}.' and linktype='.$COOLLINK.' limit 1');
@@ -3553,7 +3555,7 @@ sub coolit
 
     if($ntypet eq 'e2node') {
       my $eddie = getId(getNode('Cool Man Eddie','user'));
-      my @group = @{ $$NODE{group} } if $$NODE{group};
+      my @group = (); @group = @{ $$NODE{group} } if $$NODE{group};
       my $WRITEUP = undef;
       my $nt = $$NODE{title};
 	
@@ -3605,12 +3607,12 @@ sub node_menu
       # If one of the types is in the form of
       # -name_value, we need to split it apart
       # and store it.	
-      my ($name, $value) = (undef,undef);
+      my ($localname, $value) = (undef,undef);
       $_ =~ s/^-//;
 		
-      ($name, $value) = split '_', $_;
+      ($localname, $value) = split '_', $_;
       push @idlist, $value;
-      $items{$value} = $name;
+      $items{$value} = $localname;
 
       undef $_;  # This is not a type	
     } else {
@@ -3619,7 +3621,8 @@ sub node_menu
     }
   }
 
-  my $NODELIST = $DB->selectNodeWhere({ type_nodetype => \@TYPES }, "", "title") if @TYPES;
+  my $NODELIST = ();
+  $NODELIST = $DB->selectNodeWhere({ type_nodetype => \@TYPES }, "", "title") if @TYPES;
 
   foreach my $N (@$NODELIST) {
     $N = $DB->getNodeById($N, 'light');
@@ -3709,7 +3712,7 @@ sub votefoot
   my $APP = shift;
 
   my $uid = $$USER{user_id};
-  return $query->end_form if $$NODE{type}{title} eq "e2node" && not $$NODE{group} || $APP->isGuest($USER) ;
+  return $query->end_form if($$NODE{type}{title} eq "e2node" and not $$NODE{group} or $APP->isGuest($USER));
   my $isKiller = $APP->isEditor($USER);
 
   my $voteButton = "";
@@ -3819,6 +3822,7 @@ sub weblog
     } ;
   }
 
+  ## no critic (RequireCheckingReturnValueOfEval)
   $remlabel ||= "remove";
   if ( $canRemove ) {
     $instructions .= ', remove' ;
@@ -3829,6 +3833,7 @@ sub weblog
       . '>'.'|.$remlabel.q|'.'</a>' ;
     }|);
   }
+  ## use critic (RequireCheckingReturnValueOfEval)
 
   $instructions .= ( $skipFilterHTML ne '1' ? ', content' : ', unfiltered' ) ;
 
@@ -4151,22 +4156,22 @@ sub guestuserbanner
   my $APP = shift;
 
   return "";
-  return "" unless($APP->isGuest($USER));
-  return "" if(isMobile());
-  return "" unless($NODE->{type}->{title} eq "writeup" or $NODE->{type}->{title} eq "e2node");
+  # return "" unless($APP->isGuest($USER));
+  # return "" if(isMobile());
+  # return "" unless($NODE->{type}->{title} eq "writeup" or $NODE->{type}->{title} eq "e2node");
 
-  my $style = q|-moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; align: center; width: 80%; background-color: #fdffd4; border-style:solid; border-color: #bbbbbb; border-width: 1px; min-width:300px; min-height: 70px; margin-left: auto; margin-right: auto; margin-bottom: 10px; padding: 10px; font-family: 'arial',sans-serif; font-size: 130%;|;
+  # my $style = q|-moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; align: center; width: 80%; background-color: #fdffd4; border-style:solid; border-color: #bbbbbb; border-width: 1px; min-width:300px; min-height: 70px; margin-left: auto; margin-right: auto; margin-bottom: 10px; padding: 10px; font-family: 'arial',sans-serif; font-size: 130%;|;
 
-  my $nodeshell = "";
-  if($NODE->{type}->{title} eq "e2node" or $query->param('nodeshell') == 1)
-  {
-    if(not defined $NODE->{group} or scalar(@{$NODE->{group}}) == 0)
-    {
-      $nodeshell = "<br /><br /><em><strong>$$NODE{title}</strong></em> is a topic without any content; merely an idea or a thought that someone found interesting. If you sign up for an account, you can add something here.";
-    }
-  }
+  # my $nodeshell = "";
+  # if($NODE->{type}->{title} eq "e2node" or $query->param('nodeshell') == 1)
+  # {
+  #   if(not defined $NODE->{group} or scalar(@{$NODE->{group}}) == 0)
+  #   {
+  #     $nodeshell = "<br /><br /><em><strong>$$NODE{title}</strong></em> is a topic without any content; merely an idea or a thought that someone found interesting. If you sign up for an account, you can add something here.";
+  #   }
+  # }
 
-  return "<div id=\"guestuserbanner\" style=\"$style\"><strong>Welcome!</strong><br /><em>Everything2</em> is a community of readers and writers who write about pretty much anything and share their feedback with others. It's a great place to get help with your writing or just lose yourself in nearly a half-million pieces from over a decade in existence. People come here to contribute and read fiction, nonfiction, poetry, reviews, or their thoughts on the day. If you'd like to give feedback, offer a correction, or contribute your own work, <a href=\"/node/superdoc/Sign+up\">sign up</a>!$nodeshell</div>";
+  # return "<div id=\"guestuserbanner\" style=\"$style\"><strong>Welcome!</strong><br /><em>Everything2</em> is a community of readers and writers who write about pretty much anything and share their feedback with others. It's a great place to get help with your writing or just lose yourself in nearly a half-million pieces from over a decade in existence. People come here to contribute and read fiction, nonfiction, poetry, reviews, or their thoughts on the day. If you'd like to give feedback, offer a correction, or contribute your own work, <a href=\"/node/superdoc/Sign+up\">sign up</a>!$nodeshell</div>";
 
 }
 
@@ -4420,7 +4425,7 @@ sub newnodes
   $ed = 'ed,' if $isEd;
   my $funk = sub{
     my $N = shift; # $N is a full node by now
-    my $str.='<td>';
+    my $str='<td>';
 
     if($$N{notnew}){
       $str .= '(<font color="red">H!</font>)';
@@ -4510,10 +4515,10 @@ sub uploaduserimage
        {
          return "your image is too big.  The current limit is $sizelimit bytes";
        }
-
-       open OUTFILE, ">$tmpfile";
-       print OUTFILE $buf;
-       close OUTFILE;
+       my $outfile;
+       open $outfile, ">","$tmpfile";
+       print $outfile $buf;
+       close $outfile;
     }
 
     $str.=$image->Read($tmpfile);
@@ -4627,6 +4632,7 @@ sub changeroom
   my ($nodelet) = @_ ;
   $nodelet =~ s/ /+/g;
 
+  ## no critic (RequireCheckingReturnValueOfEval)
   foreach(@rooms) {
     my $R = getNodeById($_);
     next unless eval($$R{criteria});
@@ -4638,6 +4644,7 @@ sub changeroom
     push @aprrooms, $_;
     $aprlabel{$_} = $$R{title};
   }
+  ## use critic (RequireCheckingReturnValueOfEval)
 
   return unless @aprrooms;
 
@@ -4734,8 +4741,8 @@ sub rearrangenodelets
 
   if ($query -> param($prefix)){
     my $id = undef;
-    foreach (grep /^$prefix\d+/, $query->param()){
-      push(@selected, $id) if ($id=$query -> param($_)) && !grep(/^$id$/, @selected);
+    foreach (grep {/^$prefix\d+/} $query->param()){
+      push(@selected, $id) if ($id=$query->param($_) and not grep {/^$id$/} @selected);
     }
     $$VARS{nodelets} = join ',', @selected;
   } else {
@@ -5230,7 +5237,8 @@ sub zensearchform
   my $lastnodeId = $query->param("softlinkedFrom");
   $lastnodeId ||= $query -> param('lastnode_id') unless $APP->isGuest($USER);
 
-  my $lastnode = getNodeById($lastnodeId) if defined $lastnodeId;
+  my $lastnode = undef; 
+  $lastnode = getNodeById($lastnodeId) if defined $lastnodeId;
   my $default = undef; $default = $$lastnode{title} if $lastnode;
 
   my $str = $query->start_form(
@@ -5338,6 +5346,8 @@ sub ednsection_globals
   my $PAGELOAD = shift;
   my $APP = shift;
 
+  ## no critic (RequireCheckingReturnValueOfEval,ProhibitNoStrict,ProhibitProlongedStrictureOverride)
+
   my @globals = qw($USER $VARS $DB $query);
   my $ajax='ajax ednsection_globals:nodeletsection:edn,globals';
 
@@ -5414,6 +5424,8 @@ sub ednsection_globals
   
   use strict 'refs';
   return $str.'</table>';
+
+  ## use critic (RequireCheckingReturnValueOfEval,ProhibitNoStrict,ProhibitProlongedStrictureOverride)
 }
 
 # Used on the edev nodelet only
@@ -5549,7 +5561,6 @@ sub showUserGroups
     my $csr = $DB->sqlSelectMany("node_id", "node", "type_nodetype=".getId(getType("usergroup")));
     my $row = undef;
     push @insiders, $$row{node_id} while($row = $csr->fetchrow_hashref());
-    no warnings;
 
     my $str = "";
     my @skips = ();
@@ -5630,7 +5641,7 @@ sub showchatter
   my $APP = shift;
 
   my $json = {};
-  my $jsoncount = 1 if shift;
+  my $jsoncount = undef; $jsoncount = 1 if shift;
   my $nochat = "";
 
   $nochat = 'If you '.linkNode($Everything::CONF->system->{create_new_user},
@@ -5638,7 +5649,8 @@ sub showchatter
 
   ### Check to see if they're suspended for having an unverified email address
 
-  my $sushash = $DB->sqlSelectHashref("suspension_sustype", "suspension", "suspension_user=$$USER{node_id} and suspension_sustype='1948205'") unless $nochat;
+  my $sushash = undef;
+  $sushash = $DB->sqlSelectHashref("suspension_sustype", "suspension", "suspension_user=$$USER{node_id} and suspension_sustype='1948205'") unless $nochat;
 
   $nochat = "<strong>You need to ".linkNode(getNode('verify your email account','superdoc'))." before you can talk in public here.</strong>" if $sushash && $$sushash{suspension_sustype};
 
@@ -5748,7 +5760,7 @@ sub showchatter
     if (htmlcode('isSpecialDate','halloween'))
     {
       my $aUser = getNodeById($aid, 'light');
-      my $costume = getVars($aUser)->{costume} if (getVars($aUser)->{costume});
+      my $costume = ''; $costume = getVars($aUser)->{costume} if (getVars($aUser)->{costume});
       if ($costume gt '')
       {
         my $halloweenStr = $$aUser{title}."|".$APP->encodeHTML($costume);
@@ -5935,8 +5947,7 @@ sub showmessages
 
   my $aid = undef;  #message's author's ID
 
-  #TODO: $a is a special variable, rename this
-  my $a = undef; #message's author; have to do this in case sender has been deleted (!)
+  my $msgauthor = undef; #message's author; have to do this in case sender has been deleted (!)
   my $ugID = undef;
   my $UG = undef;
   my $flags = undef;
@@ -5970,13 +5981,15 @@ sub showmessages
     $aid = $$MSG{author_user} || 0;
     if($aid)
     { 
-      $a = getNodeById($aid) || 0;
+      $msgauthor = getNodeById($aid) || 0;
     } else { 
-      undef $a;
+      undef $msgauthor;
     }
 
-    my $authorVars = getVars $a if $a;
-    my $name = $a ? $$a{title} : '?';
+    my $authorVars = undef;
+    $authorVars = getVars($msgauthor) if($msgauthor);
+
+    my $name = $msgauthor ? $$msgauthor{title} : '?';
     $name =~ tr/ /_/;
     $name = $APP->encodeHTML($name);
 
@@ -5994,7 +6007,7 @@ sub showmessages
     $ugID = $$MSG{for_usergroup};
     $UG = $ugID ? getNodeById($ugID) : undef;
 
-    if($$VARS{showmessages_replylink} && defined($UG) and not $$noreplylink{$$MSG{author_user}})
+    if($$VARS{showmessages_replylink} and defined($UG) and not $$noreplylink{$$MSG{author_user}})
     {
       my $grptitle = $$UG{node_id}==$UID ? '' : $$UG{title};
       # Grmph. -- wharf
@@ -6027,9 +6040,9 @@ sub showmessages
     #changes literal '\n' into HTML breaks (slash, then n; not a newline)
     $text =~ s/\s+\\n\s+/<br>/g;
 
-    if ($$VARS{chatterbox_authorsince} && $a && $authorVars)
+    if ($$VARS{chatterbox_authorsince} && $msgauthor && $authorVars)
     {
-      $str .= '<small>('. htmlcode('timesince', $a->{lasttime}, 1). ')</small> ' if (!$$authorVars{hidelastseen} || $canSeeHidden);
+      $str .= '<small>('. htmlcode('timesince', $msgauthor->{lasttime}, 1). ')</small> ' if (!$$authorVars{hidelastseen} || $canSeeHidden);
     }
 
     if($$VARS{powersMsg})
@@ -6058,7 +6071,7 @@ sub showmessages
       }
     }
 
-    $userLink = $a ? linkNode($a) : '?';
+    $userLink = $msgauthor ? linkNode($msgauthor) : '?';
 
     $str.='<cite>'.$userLink.' says</cite> '.parseLinks($text,0,1);
     $str.="</div>";
@@ -6154,7 +6167,7 @@ sub CoolUncoolIt
   $N = $NODE unless $N;
   getRef($N);
   my $str = '';
-  return $str unless $$N{ nodetype }{title} == 'writeup' ;
+  return $str unless($$N{ nodetype }{title} eq 'writeup');
 
   my $nc = '';
   if($nc=$$N{cooled}) {
@@ -6166,10 +6179,10 @@ sub CoolUncoolIt
   my $kuid = $DB->sqlSelect('linkedby_user', 'weblog', "weblog_id=$nr and to_node=$nid and removedby_user=0") || 0;
 
   #determine if we give should put a link to allow the user to C! the WU
-  return $str unless !$kuid
-    && ( exists $$VARS{cools} && $$VARS{cools} ne '' && $$VARS{cools} > 0 )
-    && ($$N{author_user} != $$USER{user_id})
-    && not ($DB->sqlSelect('*','coolwriteups',"coolwriteups_id=$$N{node_id} and cooledby_user=$$USER{node_id}")) ;
+  return $str unless not $kuid
+    and ( exists $$VARS{cools} and $$VARS{cools} ne '' and $$VARS{cools} > 0 )
+    and ($$N{author_user} != $$USER{user_id})
+    and not ($DB->sqlSelect('*','coolwriteups',"coolwriteups_id=$$N{node_id} and cooledby_user=$$USER{node_id}")) ;
 
   my $author = getNodeById( $$N{ author_user } ) ;
   $author = $author -> { title } if $author ;
@@ -6244,7 +6257,7 @@ sub nodeletsection
   my $param = $nlAbbrev.'_hide'.$nlSection;
 
   my $v = undef;
-  if (!$isGuest and (defined ($v=$query->param($param))) )
+  if (not $isGuest and (defined ($v=$query->param($param))) )
   {
     if($v)
     {
@@ -6261,7 +6274,8 @@ sub nodeletsection
   my $args = join(',',@_);
   $args =~ s/ /+/;
 
-  my ($s, $closeLink) = ('[<a style="text-decoration: none" class="ajax '.$sectionId.
+  my ($s, $closeLink) = ('','');
+  ($s, $closeLink) = ('[<a style="text-decoration: none" class="ajax '.$sectionId.
     ':nodeletsection:'.$args.'" href=' .
     urlGen({node_id=>$NODE->{node_id}, $param=>($showContent ? '1' : '0')})
     . ' title="' . ($showContent ? 'collapse' : 'expand') . '">', '</a>]') unless $isGuest;
@@ -6327,12 +6341,10 @@ sub doChatMacro
   unshift @args, $uname;
 
   #loop through each line of the macro
-  my $line = undef;
   my $result = undef;
   my @lineParts = ();
-  my $part = undef;
   my @macroLines = split(/\n/, $macroFull);
-  foreach $line (@macroLines)
+  foreach my $line (@macroLines)
   {
     next if $line=~/^$/;
     next if $line=~/^#/;
@@ -6343,7 +6355,7 @@ sub doChatMacro
     @lineParts = split('\s+', $line);
 
     $result = '';
-    foreach $part (@lineParts) {
+    foreach my $part (@lineParts) {
       if($part =~ /^\$(.*)/)
       { 
         #starts with $
@@ -6725,12 +6737,12 @@ sub writeupcools
   my $coolnum = undef;
   my $coolers = undef;
 
-  if ( !$DB->sqlSelect('linkedby_user', 'weblog', "weblog_id=$nr and to_node=$$N{node_id} and removedby_user=0")
+  if ( not $DB->sqlSelect('linkedby_user', 'weblog', "weblog_id=$nr and to_node=$$N{node_id} and removedby_user=0")
     and ( $$VARS{cools} && $$VARS{cools} > 0 )
     and ($$N{author_user} != $$USER{user_id})
-    and !$DB->sqlSelect( '*', 'coolwriteups', "coolwriteups_id=$$N{node_id} and cooledby_user=$$USER{node_id}" ) )
+    and not $DB->sqlSelect( '*', 'coolwriteups', "coolwriteups_id=$$N{node_id} and cooledby_user=$$USER{node_id}" ) )
   {
-    my $author = getNodeById( $$N{ author_user } ) unless $$VARS{anonymousvote} == 1;
+    my $author = undef; $author = getNodeById( $$N{ author_user } ) unless($$VARS{anonymousvote} == 1);
     if ($author)
     {
       $author = $author -> {title};
@@ -6910,7 +6922,8 @@ sub statsection_personal
   my $LVLS = getVars(getNode('level experience', 'setting'));
   my $WRPS = getVars(getNode('level writeups', 'setting'));
 
-  my $expleft = $$LVLS{$lvl} - $$USER{experience} if exists $$LVLS{$lvl};
+  my $expleft = 0;
+  $expleft = $$LVLS{$lvl} - $$USER{experience} if exists $$LVLS{$lvl};
 
   my ($numwu, $wrpleft) = (undef, undef);
   $$VARS{numwriteups} ||= 0;
@@ -7226,18 +7239,18 @@ sub displayWriteupInfo
 
   local *info_hits = sub {
     return "";
-    my $hitStr; # This is a kludgy way to do this, but it seems efficient - Oo.
-    (my $y,my $m,my $d) = split /-/, $$WRITEUP{createtime};
-    my $dateval = $d+31*$m+365*$y; 
-    if ($dateval > 733253 )
-    {
-      $hitStr='publication';
-    }else { 
-      $hitStr='23rd October 2008';
-    }
+    # my $hitStr; # This is a kludgy way to do this, but it seems efficient - Oo.
+    # (my $y,my $m,my $d) = split /-/, $$WRITEUP{createtime};
+    # my $dateval = $d+31*$m+365*$y; 
+    # if ($dateval > 733253 )
+    # {
+    #   $hitStr='publication';
+    # }else { 
+    #   $hitStr='23rd October 2008';
+    # }
 
-    #my $hitshits=$DB->sqlSelect("hits","node","node_id=$wuID"); # $$WRITEUP{hits} ?
-    #return qq'<span title="hits since $hitStr according to the node table">Hits: $$WRITEUP{hits}</span>';
+    # my $hitshits=$DB->sqlSelect("hits","node","node_id=$wuID"); # $$WRITEUP{hits} ?
+    # return qq'<span title="hits since $hitStr according to the node table">Hits: $$WRITEUP{hits}</span>';
   };
 
 
@@ -7259,9 +7272,9 @@ sub displayWriteupInfo
       my $author = getNodeById( $$WRITEUP{ author_user } ) ;
       $author = $author -> { title } if $author ;
       $author =~ s/[\W]/ /g ;
-      $query -> param( 'showwidget' , 'addto'.$$WRITEUP{ node_id } ) if
-        $query -> param( 'op' ) eq 'weblog' && $query -> param( 'target' ) == $$WRITEUP{ node_id } or
-        $query -> param( 'op' ) eq 'category' && $query -> param( 'nid' ) == $$WRITEUP{ node_id } ;
+      $query -> param( 'showwidget' , 'addto'.$$WRITEUP{ node_id } ) if(
+        $query -> param( 'op' ) eq 'weblog' and $query -> param( 'target' ) == $$WRITEUP{ node_id } or
+        $query -> param( 'op' ) eq 'category' and $query -> param( 'nid' ) == $$WRITEUP{ node_id });
 
       $str = htmlcode( 'widget' , '
         <small>'.htmlcode( 'bookmarkit' , $WRITEUP , "Add $author"."'s writeup to your E2 bookmarks" ).'</small>
@@ -7298,7 +7311,7 @@ sub displayWriteupInfo
     } else {
       my $GROUP = getNode('podpeople','usergroup');
       my $id = getId($USER);
-      if (grep /^$id$/, @{ $$GROUP{group} })
+      if (grep {/^$id$/} @{ $$GROUP{group} })
       {
         $audioStr.='<a href=' . urlGen({node => $WRITEUP->{title}.' mp3',type => 'recording',op => 'new',displaytype => 'edit','recording_recording_of' => $wuID,
           'recording_read_by' => $$USER{user_id},}) .'>Add mp3</a>';
@@ -7373,9 +7386,9 @@ sub displayWriteupInfo
       $align = ($tDataOpen{$1}."wu_$fnName\">") || $align;
     }
 
-    next if length($fnName)==0 or
-      $fnName eq 'kill' && !$isDraft && !$isMine && !$isCE or
-      $isDraft && $fnName !~ /^(?:type|author|dtcreate|kill|length|sendmsg|addto|nothing|draftstatus)$/;
+    next if(length($fnName)==0 or
+      $fnName eq 'kill' and not $isDraft and not $isMine and not $isCE or
+      $isDraft and $fnName !~ /^(?:type|author|dtcreate|kill|length|sendmsg|addto|nothing|draftstatus)$/);
 
     unless( (exists $infofunctions->{$fnName}) && (defined $infofunctions->{$fnName}) )
     {
@@ -7884,7 +7897,7 @@ sub nwuamount
   $str.="\n\t<input type='hidden' name='op' value='changewucount'>";
   $str .= $query -> popup_menu( -name=>'amount', Values=>\@amount, default=>$$VARS{num_newwus}, class=> $ajax ) ;
   $str.="\n\t".$query->submit("lifeisgood","show");
-  $str.="\n\t".$query->checkbox(-name=>"nw_nojunk", checked=>$$VARS{nw_nojunk}, value=>'1', label=>"No junk", class=>$ajax) if !$noAdminNoJunkOption and $APP->isEditor($USER);
+  $str.="\n\t".$query->checkbox(-name=>"nw_nojunk", checked=>$$VARS{nw_nojunk}, value=>'1', label=>"No junk", class=>$ajax) if(not $noAdminNoJunkOption and $APP->isEditor($USER));
   $str.="\n".$query->end_form;
   return $str;
 }
@@ -9450,15 +9463,15 @@ sub msgField
   local *validRecipients = sub {
     @getters=();
     return 0 unless scalar(@tryRecipients);
-    my %recipients = ();
+    my %localrecipients = ();
     foreach(@tryRecipients)
     {
       if(/([1-9]\d*)/)
       {
-        $recipients{$_}=1;
+        $localrecipients{$_}=1;
       }
     }
-    return scalar(@getters = keys(%recipients));
+    return scalar(@getters = keys(%localrecipients));
   };
 
   if($doNormalSend)
@@ -9753,7 +9766,7 @@ sub orderlock
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  return $APP->isEditor($USER);
+  return unless $APP->isEditor($USER);
 
   my $N = getNodeById($query->param('node_id'));
 
@@ -10083,10 +10096,10 @@ sub zenwriteups
   my @wus = ();
   foreach (@newwus)
   {
-    next if $noHidden && $$_{notnew} or
-      $repthreshold ne 'none' && $$_{reputation} < $repthreshold or
-      exists $abominations->{$$_{author_user}} or
-      $isLogs && !$$_{islog};
+    next if($noHidden and $$_{notnew} or
+      $repthreshold ne 'none' and $$_{reputation} < $repthreshold or
+      exists($abominations->{$$_{author_user}}) or
+      $isLogs and not $$_{islog});
     push @wus, $_;
     # last if !$$_{notnew} || $isLogs;
     last if  ++$count >= $limit;
@@ -10101,7 +10114,7 @@ sub zenwriteups
       FROM vote
       WHERE voter_user=$UID
       AND vote_id in ("
-      .join(',', map($_->{writeup_id}, @wus)).')';
+      .join(',', map { $_->{writeup_id} } @wus).')';
 
     my $votes = undef;
     $votes->{$_} = 1 foreach(@{$DB->{dbh} -> selectcol_arrayref($sql)});
@@ -10802,7 +10815,7 @@ sub zenDisplayUserInfo
   local *infoDefault = sub {
     my $k = $_[0] || '';
     my $v = $$SETTINGS{$k} ? $$SETTINGS{$k} : $$NODE{$k};
-    $v = $APP->htmlScreen($v) unless grep /$k/, @noHTMLSCREEN;
+    $v = $APP->htmlScreen($v) unless(grep {/$k/} @noHTMLSCREEN);
     return parseLinks($v);
   };
 
@@ -10906,10 +10919,10 @@ sub ilikeit
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  return if !$APP->isGuest($USER) or $APP->isSpider();
+  return if(not $APP->isGuest($USER) or $APP->isSpider());
 
   my ($WU) = @_;
-  return unless getRef($WU) && $$WU{type}{title} eq 'writeup' ;
+  return unless(getRef($WU) and $$WU{type}{title} eq 'writeup');
 
   my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR} || undef;
   my $likeExists = $DB->sqlSelect("count(*)","likedit","likedit_ip = '$addr' and likedit_node=$$WU{node_id}");
@@ -11095,7 +11108,7 @@ sub socialBookmarks
   };
 
   my $makeSocialLink = sub {
-    my ($networkName, $url, $title, $includeTitles, $showAsList) = @_;
+    my ($networkName, $localurl, $localtitle, $localincludeTitles, $showAsList) = @_;
     my $link = '';
     my $site = $$socialSites{$networkName};
 
@@ -11116,7 +11129,7 @@ sub socialBookmarks
     . "'\">";
 
     my $bookmarkCode = "<div class=\"social_button social_$networkName\">" . $link . "</a></div>\n";
-    $bookmarkCode .= $link . "$$site{listname}</a>\n" if $includeTitles;
+    $bookmarkCode .= $link . "$$site{listname}</a>\n" if $localincludeTitles;
     $bookmarkCode = "<li>\n\t$bookmarkCode</li>\n" if $showAsList;
     return $bookmarkCode;
   };
@@ -11584,9 +11597,10 @@ sub uploadAudio
         return "your image is too big.  Our current limit is $sizelimit bytes";
       }
 
-      open OUTFILE, ">$tmpfile";
-      print OUTFILE $buf;
-      close OUTFILE;
+      my $outfile;
+      open $outfile, ">","$tmpfile";
+      print $outfile $buf;
+      close $outfile;
     }
 	
     system "/bin/mv $tmpfile $imagedir/$imgname";
@@ -11656,21 +11670,21 @@ sub page_actions
   }
 
   my $bookmark_add = ""; $bookmark_add = htmlcode('bookmarkit' , $NODE , 'Add to bookmarks' ) unless $disabled =~ /b/ ;
-  my $a = ""; $a = htmlcode( 'categoryform' ) unless $disabled =~ /a/ ;
-  my $w = ""; $w = htmlcode( 'weblogform' ) if $$NODE{type}{sqltablelist} =~ /document/ && $$VARS{can_weblog} and not $disabled =~ /w/ ;
+  my $categoryform = ""; $categoryform = htmlcode( 'categoryform' ) unless $disabled =~ /a/ ;
+  my $w = ""; $w = htmlcode( 'weblogform' ) if($$NODE{type}{sqltablelist} =~ /document/ and $$VARS{can_weblog} and not $disabled =~ /w/);
 
   my $title = 'Add this '.( $$NODE{ type }{ title } eq 'e2node' ? 'entire page' : $$NODE{ type }{ title } ).' to a ' ;
 
   unless ( $query -> param( 'addto' ) )
   {
     push @actions , $bookmark_add if $bookmark_add ;
-    push @actions , htmlcode( 'widget' , $a , 'form' , 'Add to category&hellip;' ,
-      { showwidget => 'category' , -title => $title.'category' } ) if $a ;
+    push @actions , htmlcode( 'widget' , $categoryform , 'form' , 'Add to category&hellip;' ,
+      { showwidget => 'category' , -title => $title.'category' } ) if $categoryform ;
     push @actions , htmlcode( 'widget' , $w , 'form' , 'Add to page&hellip;' ,
       { showwidget => 'weblog' , -title => $title.' usergroup page' } ) if  $w ;
   } else {
     push @actions , htmlcode( 'widget' ,
-      $query -> hidden( 'addto' )."<small>$bookmark_add</small><hr>\n$a\n$w" , 'form' , 'Add to&hellip;' ,
+      $query -> hidden( 'addto' )."<small>$bookmark_add</small><hr>\n$categoryform\n$w" , 'form' , 'Add to&hellip;' ,
       { showwidget => 'addto'.$$NODE{ node_id } , -title => $title.'category or usergroup page' } ) ;
   }
 
@@ -14716,10 +14730,12 @@ sub blacklistedIPs
   my $cursor = undef;
   my $saveRaise = $DB->{dbh}->{RaiseError};
   $DB->{dbh}->{RaiseError} = 1;
+  ## no critic (RequireCheckingReturnValueOfEval)
   eval { 
     $cursor = $DB->{dbh}->prepare($getBlacklistSQL);
     $cursor->execute();
   };
+  ## use critic (RequireCheckingReturnValueOfEval)
 
   $DB->{dbh}->{RaiseError} = $saveRaise;
 
