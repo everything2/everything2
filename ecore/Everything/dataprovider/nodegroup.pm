@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
+use warnings;
 use lib qw(lib);
 use Everything::dataprovider::base;
 package Everything::dataprovider::nodegroup;
@@ -31,6 +32,7 @@ sub data_in
 	{
 		$this->_hash_insert("nodegroup",$link);
 	}
+	return;
 }
 
 1;

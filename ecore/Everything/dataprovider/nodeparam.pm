@@ -2,6 +2,7 @@ package Everything::dataprovider::nodeparam;
 use base qw(Everything::dataprovider::base);
 
 use strict;
+use warnings;
 use lib qw(lib);
 
 sub data_out
@@ -30,6 +31,7 @@ sub data_in
 	{
 		$this->_hash_insert("nodeparam",$nodeparam);
 	}
+	return;
 }
 
 1;
