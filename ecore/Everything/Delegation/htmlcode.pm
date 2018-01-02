@@ -6153,45 +6153,6 @@ sub eddiereply
   return $eddie;
 }
 
-sub CoolUncoolIt
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($N) = @_;
-  $N = $NODE unless $N;
-  getRef($N);
-  my $str = '';
-  return $str unless($$N{ nodetype }{title} eq 'writeup');
-
-  my $nc = '';
-  if($nc=$$N{cooled}) {
-    $str .= $nc.' <b>C!</b>'.( $nc==1 ? '' : 's' ) ;
-  }
-
-  my $nid = getId($N);
-  my $nr = getId(getNode('node row', 'superdoc'));
-  my $kuid = $DB->sqlSelect('linkedby_user', 'weblog', "weblog_id=$nr and to_node=$nid and removedby_user=0") || 0;
-
-  #determine if we give should put a link to allow the user to C! the WU
-  return $str unless not $kuid
-    and ( exists $$VARS{cools} and $$VARS{cools} ne '' and $$VARS{cools} > 0 )
-    and ($$N{author_user} != $$USER{user_id})
-    and not ($DB->sqlSelect('*','coolwriteups',"coolwriteups_id=$$N{node_id} and cooledby_user=$$USER{node_id}")) ;
-
-  my $author = getNodeById( $$N{ author_user } ) ;
-  $author = $author -> { title } if $author ;
-  $author =~ s/[\W]/ /g ;
-  my $op = $$VARS{coolsafety} ? 'confirmop' : 'op'  ;
-  return $str . ' <b>'.linkNode( $NODE , 'C?' , { $op=>'cool', cool_id=>$$N{ node_id }, lastnode_id => 0 , -title => "C! $author"."'s writeup" , -class => "action" }).'</b>';
-
-}
-
 # returns if current server time matches the given day
 # parameter: case insensitive string(s) of date(s) - if more than 1, then any matches counts as a success
 # if no date given, or date not found, returns 0
