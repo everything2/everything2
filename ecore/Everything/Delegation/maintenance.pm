@@ -3,8 +3,9 @@ package Everything::Delegation::maintenance;
 # We have to assume that this module is subservient to Everything::HTML
 #  and that the symbols are always available
 
-# TODO: use strict
-# TODO: use warnings
+use strict;
+use warnings;
+
 BEGIN {
   *getNode = *Everything::HTML::getNode;
   *getNodeById = *Everything::HTML::getNodeById;
@@ -64,6 +65,7 @@ sub room_create
   $$N{criteria} = "1;";
   $$N{author_user} = getId(getNode('gods', 'usergroup'));
   $DB->updateNode($N, -1);
+  return;
 }
 
 sub dbtable_create
@@ -82,6 +84,7 @@ sub dbtable_create
 
   $DB->getRef($thisnode);
   $DB->createNodeTable($thisnode->{title});
+  return;
 }
 
 sub dbtable_delete
@@ -99,6 +102,7 @@ sub dbtable_delete
 
   $DB->getRef($thisnode);
   $DB->dropNodeTable($$thisnode{title});
+  return;
 }
 
 sub writeup_create
@@ -123,7 +127,7 @@ sub writeup_create
 
   # we need an e2node to insert the writeup into,
   # and the writeup must have some text:
-  my $problem = (!$E2NODE or $query->param("writeup_doctext") eq '');
+  my $problem = (not $E2NODE or $query->param("writeup_doctext") eq '');
 
   # the user must be allowed to publish, the node must not be locked,
   # and the user must not have a writeup there already:
@@ -146,6 +150,7 @@ sub writeup_create
   $Everything::HTML::HEADER_PARAMS{-status} = 303;
   $Everything::HTML::HEADER_PARAMS{-location} = htmlcode('urlToNode', $problem);
 
+  return;
 }
 
 sub e2node_create
@@ -165,6 +170,7 @@ sub e2node_create
   $$E2NODE{author_user} = $DB->getId($DB->getNode('Content Editors', 'usergroup')); # Content Editors can update it; author can't
 
   $DB->updateNode($E2NODE, -1);
+  return;
 }
 
 sub e2node_update
@@ -190,6 +196,7 @@ sub e2node_update
 
   $APP->repairE2Node($E2NODE, "no reorder");
 
+  return;
 }
 
 sub writeup_update
@@ -236,13 +243,13 @@ sub writeup_update
       }) if length $trimmedNewText < 20;
     }
 
-    htmlcode('update New Writeups data') unless $query -> param('op') and $query -> param('op') eq 'vote' || $query -> param('op') eq 'cool';
+    htmlcode('update New Writeups data') unless($query->param('op') and $query->param('op') eq 'vote' or $query -> param('op') eq 'cool');
 
     if($query->param('writeup_wrtype_writeuptype'))
     {
       my $WRTYPE=getNode($$WRITEUP{wrtype_writeuptype});
       if ($$WRTYPE{type}{title} ne 'writeuptype' or 
-        ($$WRTYPE{title} eq 'definition' || $$WRTYPE{title} eq 'lede' and
+        ($$WRTYPE{title} eq 'definition' or $$WRTYPE{title} eq 'lede' and
         not Everything::isApproved($USER, getNode('Content Editors','usergroup'))
         and $$USER{title} ne 'Webster 1913'
         and $$USER{title} ne 'Virgil'))
@@ -262,6 +269,7 @@ sub writeup_update
 
   }
 
+  return;
 }
 
 sub e2node_delete
@@ -284,7 +292,7 @@ sub e2node_delete
   foreach(@$group) {
     htmlcode('unpublishwriteup', getId($_), 'parent node deleted');
   }
-  1;
+  return;
 }
 
 sub debate_delete
@@ -310,6 +318,7 @@ sub debate_delete
     }
   }
 
+  return;
 }
 
 sub writeup_delete
@@ -327,6 +336,8 @@ sub writeup_delete
 # (Then the draft gets nuked. )
 
   htmlcode('unpublishwriteup', $_[0], '(nuked)');
+
+  return;
 }
 
 sub debatecomment_create
@@ -448,8 +459,8 @@ sub debatecomment_create
 
   updateNode( $COMMENT, $USER );
 
-  my $output = $DB->insertIntoNodegroup( $PARENT, -1, [$COMMENT] );
-
+  $DB->insertIntoNodegroup( $PARENT, -1, [$COMMENT] );
+  return;
 }
 
 sub debatecomment_delete
@@ -478,6 +489,7 @@ sub debatecomment_delete
     }
   }
 
+  return;
 }
 
 sub debate_create
@@ -563,7 +575,7 @@ sub debate_create
   $$COMMENT{'doctext'} = $query -> param('newdebate_text');
 
   updateNode( $COMMENT, $USER );
-
+  return;
 }
 
 sub patch_create
@@ -598,6 +610,7 @@ sub patch_create
   my $argStr = to_json($argSet);
   my $addNotifier = htmlcode('addNotification', $notification_id, $user_id, $argStr);
 
+  return;
 }
 
 sub e2poll_create
@@ -645,7 +658,7 @@ sub e2poll_create
   $$POLL{poll_status} = 'new';
 
   updateNode( $POLL, -1 );
-
+  return;
 }
 
 sub jscript_create
@@ -679,7 +692,7 @@ sub jscript_create
   setVars($JNODE, $SETTINGS);
   updateNode($JNODE, -1);
   updateNode($JSCRIPT, -1);
-
+  return;
 }
 
 sub collaboration_update
@@ -705,6 +718,7 @@ sub collaboration_update
 
   $$N{title} = $title;
   $DB->updateNode($N, -1);
+  return;
 }
 
 sub category_create
@@ -722,7 +736,7 @@ sub category_create
 
   my $guestuserId= getId(getNode('guest user', 'user'));
 
-  my $maintUserId = int($query->param("maintainer")) if $query;
+  my $maintUserId = 0; $maintUserId = int($query->param("maintainer")) if $query;
   $maintUserId ||= $$USER{user_id};
   my $MAINTAINER = getNodeById($maintUserId);
   my $maintType = undef;
@@ -754,7 +768,7 @@ sub category_create
 
   $$CATEGORY{author_user} = $$MAINTAINER{node_id};
   $DB->updateNode($CATEGORY, -1);
-
+  return;
 }
 
 sub node_forward_create
@@ -774,7 +788,7 @@ sub node_forward_create
 
   $DB->updateNode($FORWARD, -1);
   htmlcode('addNodenote', $FORWARD, "Created by [$$USER{title}\[user]]");
-
+  return;
 }
 
 sub user_delete
@@ -794,7 +808,7 @@ sub user_delete
 
   # Remove user from room lists so [Other Users[nodelet]] doesn't bug out
   $DB->sqlDelete('room', "member_user = $$DELETED_USER{node_id}");
-
+  return;
 }
 
 sub draft_create
@@ -823,6 +837,7 @@ sub draft_create
   $$D{publication_status} ||= $DB->getNode('private', 'publication_status')->{node_id};
 
   $DB->updateNode($D, $USER);
+  return;
 }
 
 sub draft_update
@@ -866,7 +881,7 @@ sub draft_update
       );
 
       # record event in node history:
-      my $note = ' (while suspended by '.linkNode($editor).') ' if $editor;
+      my $note = ''; $note = ' (while suspended by '.linkNode($editor).') ' if $editor;
       my $nodenote_id = htmlcode('addNodenote', $$N{node_id}, "author requested review$note");
 
       # Notify. If no $editor, everyone gets it:
@@ -898,6 +913,7 @@ sub draft_update
 
   $$N{title} = $title;
   updateNode($N, $USER);
+  return;
 }
 
 sub draft_delete
@@ -916,7 +932,7 @@ sub draft_delete
   my ($id) = @_;
 
   my $N = getNodeById($id);
-  my @cache = $DB -> sqlSelect('upvotes, cools',
+  my @cache = (); @cache = $DB->sqlSelect('upvotes, cools',
     'xpHistoryCache', # xpHistoryCache for user is deleted once XP has been recalculated
     "xpHistoryCache_id=$$N{author_user}") if $$N{author_user} < 1960662; # magic number identifies October 29, 2008
 
@@ -935,7 +951,7 @@ sub draft_delete
   $cools += $cache[1];
 
   $DB->sqlUpdate('xpHistoryCache', {upvotes => $upvotes, cools => $cools}, "xpHistoryCache_id=$$N{author_user}");
-
+  return;
 }
 
 sub node_forward_update
@@ -962,7 +978,8 @@ sub node_forward_update
     $query->param('node_forward_doctext', $forwardId) if $query -> param('node_forward_doctext');
     $DB->updateNode($FORWARD, -1);
   }
-} 
+  return;
+}
 
 sub podcast_create
 {
@@ -981,7 +998,7 @@ sub podcast_create
   $$PODCAST{author_user} = getId(getNode('podpeople', 'usergroup')); # so all podpeople can edit it
 
   $DB->updateNode($PODCAST, -1);
-
+  return;
 }
 
 sub mysqlproc_create
@@ -998,7 +1015,7 @@ sub mysqlproc_create
   $DB->getRef($N);
 
   $DB->createMysqlProcedure($N->{title}, $N->{parameters}, $N->{doctext});
-
+  return;
 }
 
 sub mysqlproc_delete
@@ -1014,6 +1031,7 @@ sub mysqlproc_delete
   my ($N) = @_;
   $DB->getRef($N);
   $DB->dropMysqlProcedure($N->{title});
+  return;
 }
 
 sub mysqlproc_update
@@ -1029,6 +1047,7 @@ sub mysqlproc_update
   my ($N) = @_;
   $DB->getRef($N);
   $DB->createMysqlProcedure($N->{title}, $N->{parameters}, $N->{doctext});
+  return;
 }
 
 sub jscript_update
@@ -1043,6 +1062,7 @@ sub jscript_update
 
   my ($jscript) = @_;
   #$APP->jscssS3Upload($jscript);
+  return;
 }
 
 sub stylesheet_preupdate
@@ -1058,7 +1078,7 @@ sub stylesheet_preupdate
   my ($stylesheet_id) = @_;
   my $SSNODE = getNodeById($stylesheet_id);
   $SSNODE->{contentversion}++; #Don't call update, it'll loop
-
+  return;
 }
 
 sub stylesheet_update
@@ -1073,7 +1093,7 @@ sub stylesheet_update
 
   my ($stylesheet) = @_;
   $APP->jscssS3Upload($stylesheet);
-
+  return;
 }
 
 sub jscript_preupdate
@@ -1090,7 +1110,7 @@ sub jscript_preupdate
   # jscript updates are coming out of the database
   #my $JNODE = $DB->getNodeById($script_id);
   #$JNODE->{contentversion}++; #Don't call update, it'll loop
-
+  return;
 }
 
 1;
