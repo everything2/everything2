@@ -3533,7 +3533,7 @@ sub coolit
     $link = $DB->sqlSelectHashref('to_node', 'links', 'from_node='.$$NODE{node_id}.' and linktype='.$COOLLINK.' limit 1');
   }
 
-  return '' if($link and $ntypet ne 'e2node' or ($$NODE{group} and @$NODE{group}) # let anyone uncool a nodeshell
+  return '' if($link and ($ntypet ne 'e2node' or ($$NODE{group} and @$NODE{group})) # let anyone uncool a nodeshell
     and ( $APP->isEditor($$link{to_node}) ) and $$link{to_node}!=$$USER{node_id});
 
   if ($query->param('uncoolme')) {
