@@ -78,10 +78,10 @@ sub BEGIN
               commonLogLine
             );
 
-	$CONF = Everything::Configuration->new("/etc/everything/everything.conf.json"); 
+	$CONF = Everything::Configuration->new("/etc/everything/everything.conf.json");
 	$MASON = Mason->new(
-		data_dir => "/var/mason", 
-		comp_root => "/var/everything/templates", 
+		data_dir => "/var/mason",
+		comp_root => "/var/everything/templates",
 		static_source => ($CONF->environment eq "production"),
 		allow_globals => [qw($REQUEST)]);
 
@@ -127,7 +127,7 @@ sub isApproved		{ return $DB->isApproved(@_); }
 #############################################################################
 
 sub printErr {
-  print STDERR $_[0]; 
+  print STDERR $_[0];
   return;
 }
 
@@ -293,7 +293,7 @@ sub canUpdateNode
 
 #############################################################################
 sub canReadNode
-{ 
+{
 	return $DB->canReadNode(@_);
 }
 
@@ -357,7 +357,7 @@ sub selectNodegroupFlat
 #		selectNodegroupFlat on this before, you will need to do it again
 #		as all data will have been blown away by the forced refresh.
 #
-sub removeFromNodegroup 
+sub removeFromNodegroup
 {
 	return $DB->removeFromNodegroup(@_);
 }
@@ -415,7 +415,7 @@ sub updateLinks
 	return if (getId($TONODE) || 0) == (getId($FROMNODE) || 0) and $isSoftlink;
 	getRef $TONODE;
 	getRef $FROMNODE;
-	
+
 	return unless $TONODE && $FROMNODE;
 	return unless ($$TONODE{type}{title} eq 'e2node' and $$FROMNODE{type}{title} eq 'e2node') or not $isSoftlink;
 	return if $APP->isSpider();
@@ -428,15 +428,15 @@ sub updateLinks
 	return if $to_id == $from_id;
 
 	my $rows = $DB->sqlUpdate('links',
-			{ -hits => 'hits+1' ,  -food => 'food+1'}, 
+			{ -hits => 'hits+1' ,  -food => 'food+1'},
 			"from_node=$from_id && to_node=$to_id && linktype=" .
 			$DB->getDatabaseHandle()->quote($type));
 
-	if ($rows eq "0E0") { 
-		$DB->sqlInsert("links", {'from_node' => $from_id, 'to_node' => $to_id, 
-				'linktype' => $type, 'hits' => 1, 'food' => '500' }); 
-		$DB->sqlInsert("links", {'from_node' => $to_id, 'to_node' => $from_id, 
-				'linktype' => $type, 'hits' => 1, 'food' => '500' }); 
+	if ($rows eq "0E0") {
+		$DB->sqlInsert("links", {'from_node' => $from_id, 'to_node' => $to_id,
+				'linktype' => $type, 'hits' => 1, 'food' => '500' });
+		$DB->sqlInsert("links", {'from_node' => $to_id, 'to_node' => $from_id,
+				'linktype' => $type, 'hits' => 1, 'food' => '500' });
 	}
 
 	if ($user_id) {
@@ -515,20 +515,20 @@ sub selectLinks
 	my $obstr = "";
 	my @links;
 	my $cursor;
-	
+
 	$obstr = " ORDER BY $orderby" if $orderby;
 
 	$cursor = $DB->sqlSelectMany ("*", 'links use index (linktype_fromnode_hits) ',
 		"from_node=". $DB->getDatabaseHandle()->quote(getId($FROMNODE)) .
-		$obstr); 
-	
+		$obstr);
+
 	while (my $linkref = $cursor->fetchrow_hashref())
 	{
 		push @links, $linkref;
 	}
-	
+
 	$cursor->finish;
-	
+
 	return \@links;
 }
 
@@ -620,10 +620,10 @@ sub initEverything
 		exit;
 	}
 
-	$DB ||= new Everything::NodeBase();
+	$DB ||= Everything::NodeBase->new;
 	$DB->{cache}->clearSessionCache;
 	$DB->closeTransaction();
-	$APP ||= new Everything::Application($DB, $CONF);
+	$APP ||= Everything::Application->new($DB, $CONF);
 	return;
 }
 
@@ -635,7 +635,7 @@ sub commonLogLine
 sub dumpCallStack
 {
   return $APP->dumpCallStack(@_);
-} 
+}
 
 
 #############################################################################
