@@ -6,6 +6,11 @@ use Perl::Critic;
 
 my $critic = Perl::Critic->new(-severity => 1, -theme => "bugs");
 
+if(defined($ENV{"CRITIC_FULL"}))
+{
+  $critic = Perl::Critic->new(-severity => 1, -theme => "core && !cosmetic && !complexity", -exclude => ["RequireArgUnpacking"]);
+}
+
 if($ARGV[0])
 {
   critique_file($ARGV[0]);
@@ -26,5 +31,5 @@ sub critique_file
   {
     print "$file\n";
     print @$violations;
-  }  
+  } 
 }
