@@ -13,20 +13,6 @@ use warnings;
 use Everything;
 use Everything::HTML;
 
-sub BEGIN
-{
-	use Exporter();
-	use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-	@ISA=qw(Exporter);
-	@EXPORT = qw(
-		addSettings
-		addGroup
-		addHashInfo
-		writePopupHTML
-		writeScrollingListHTML); 
-}
-
-
 #############################################################################
 #	Sub
 #		new
@@ -75,12 +61,11 @@ sub addSettings
 	my ($this, $setting, $sort) = @_;
 	my $NODE = $DB->getNode($setting, $DB->getType("setting"));
 	my $vars;
-	my $key;
 
 	return if(not defined $NODE);
 	$vars = getVars($NODE);
 
-	$this->addHash($vars, $sort);
+	return $this->addHash($vars, $sort);
 }
 
 
@@ -101,15 +86,14 @@ sub addType
 {
 	my ($this, $type, $sort) = @_;
 	my $TYPE = $DB->getType($type);
-	my $typeid = $$TYPE{node_id} if(defined $TYPE);
+	my $typeid = undef; $typeid = $$TYPE{node_id} if(defined $TYPE);
 	my $NODES = $DB->selectNodeWhere({type_nodetype => $typeid});
-	my $NODE;
 	my $gValues = $this->{VALUES};
-	my @values;
+	my @values = ();
 
 	$sort ||= 0;
 	
-	foreach $NODE (@$NODES)
+	foreach my $NODE (@$NODES)
 	{
 		getRef $NODE;
 		$this->{LABELS}->{$$NODE{node_id}} = $$NODE{title};
@@ -126,6 +110,8 @@ sub addType
 	{
 		push @$gValues, @values;
 	}
+
+	return;
 }
 
 
@@ -145,11 +131,10 @@ sub addGroup
 {
 	my ($this, $group, $sort) = @_;
 	my $GROUP = $DB->getNode($group);
-	my $groupnode;
 	my $NODE;
 	my $GROUPNODES;
 	my $gValues = $this->{VALUES};
-	my @values;
+	my @values = ();
 	
 	return if(not defined $GROUP);
 	return if(!UNIVERSAL::isa($GROUP, "HASH"));
@@ -157,7 +142,7 @@ sub addGroup
 	$sort ||= 0;
 
 	$GROUPNODES = selectNodegroupFlat($GROUP);
-	foreach $groupnode (@$GROUPNODES)
+	foreach my $groupnode (@$GROUPNODES)
 	{
 		$NODE = $DB->getNodeById($groupnode);
 		$this->{LABELS}->{$$NODE{node_id}} = $$NODE{title};
@@ -174,6 +159,8 @@ sub addGroup
 	{
 		push @$gValues, @values;
 	}
+
+	return;
 }
 
 
@@ -198,13 +185,12 @@ sub addGroup
 sub addHash
 {
 	my ($this, $hashref, $sort) = @_;
-	my $key;
 	my $gValues = $this->{VALUES};
-	my @values;
+	my @values = ();
 
 	$sort ||= 0;
 	
-	foreach $key (keys %$hashref)
+	foreach my $key (keys %$hashref)
 	{
 		$this->{LABELS}->{$key} = $$hashref{$key};
 		push @values, $key;
@@ -220,6 +206,8 @@ sub addHash
 	{
 		push @$gValues, @values;
 	}
+
+	return;
 }
 
 
