@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
+use warnings;
 use XML::Simple;
 
 package Everything::dataprovider::base;
@@ -23,14 +24,16 @@ sub xml_out
 	`mkdir -p $$this{basedir}/_data/`;
 
 	my $handle;
-	open $handle, ">$$this{basedir}/_data/$filename.xml";
+	open $handle, ">","$$this{basedir}/_data/$filename.xml";
 	print $handle $this->{xs}->XMLout({"$filename" => $data});
 	close $handle;
+	return;
 }
 
 sub data_out
 {
 	my ($this) = @_;
+	return;
 }
 
 sub _hash_insert
@@ -56,7 +59,7 @@ sub _hash_insert
 	}
 
 	$this->{dbh}->do($template, undef, @$values);
-
+	return;
 }
 
 1;
