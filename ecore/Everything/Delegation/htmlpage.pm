@@ -15,6 +15,9 @@ use POSIX qw(strftime);
 # Used by choosetheme_view_page
 use Everything::Delegation::container;
 
+# Used by superdoc delegation
+use Everything::Delegation::document;
+
 # Used by ajax_update_page
 use JSON;
 
@@ -826,7 +829,31 @@ sub classic_user_edit_page
 
 sub superdoc_display_page
 {
-  return htmlcode("parsecode","doctext");
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $doctitle = $NODE->{title};
+  $doctitle =~ s/[\s-]/_/g;
+  $doctitle =~ s/[^A-Za-z0-9]/_/g;
+  $doctitle = lc($doctitle);
+
+  if($doctitle =~ /^\d+$/)
+  {
+    $doctitle = "document_$doctitle";
+  }
+
+  if(my $delegation = Everything::Delegation::document->can("$doctitle"))
+  {
+    $APP->devLog("Using document delegation for $NODE->{title} as '$doctitle'");
+    return parseLinks($delegation->($DB, $query, $NODE, $USER, $VARS, $PAGELOAD, $APP));
+  }else{
+    return htmlcode("parsecode","doctext");
+  }
 }
 
 sub node_basicedit_page
