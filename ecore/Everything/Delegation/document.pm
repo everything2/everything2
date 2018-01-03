@@ -124,4 +124,57 @@ sub a_year_ago_today
   return $str;
 }
 
+sub about_nobody
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<br><br><p><center><table width="40%"><tr><td><i>About Nobody</i><p>|;
+  
+  my $iterations = 20;
+  my @verbs = (
+    'talks about',
+    'broke',
+    'walked',
+    'saw you do',
+    'cares about',
+    'drew on',
+    'can breathe under',
+    'remembers',
+    'cleaned up',
+    'does',
+    'fell on',
+    'thinks badly of',
+    'picks up',
+    'eats'
+  );
+
+  my @dirobj = (
+    'questions',
+    'you',
+    'the vase',
+    'the dog',
+    'the walls',
+    'water',
+    'last year',
+    'the yard',
+    'Algebra',
+    'the sidewalk',
+    'you',
+    'the slack'
+  );
+
+  while ($iterations--)
+  {
+    $str .= "Nobody " . $verbs[rand(@verbs)] . ' ' .  $dirobj[rand(@dirobj)] . ".<br>";
+  }
+  $str .= "</td></table><br>and on and on [about Nobody].<p align=right>Andrew Lang/[nate|Nate Oostendorp]";
+  return $str;
+}
+
 1;
