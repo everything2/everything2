@@ -1,58 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>&lt;br&gt;&lt;br&gt;
-&lt;p&gt;
-&lt;center&gt;
-&lt;table width=40%&gt;&lt;tr&gt;&lt;td&gt;
-&lt;i&gt;About Nobody&lt;/i&gt;
-&lt;p&gt;
-[% my $iterations = 20;
-my @verbs = (
-        'talks about',
-        'broke',
-        'walked',
-        'saw you do',
-        'cares about',
-        'drew on',
-        'can breathe under',
-        'remembers',
-        'cleaned up',
-        'does',
-        'fell on',
-        'thinks badly of',
-        'picks up',
-        'eats'
-);
-
-my @dirobj = (
-        'questions',
-        'you',
-        'the vase',
-        'the dog',
-        'the walls',
-        'water',
-        'last year',
-        'the yard',
-        'Algebra',
-        'the sidewalk',
-        'you',
-        'the slack'
-);
-
-
-my $str = &quot;&quot;;
-while ($iterations--) {
-        $str .= &quot;Nobody &quot; . $verbs[rand(@verbs)] . ' ' .  $dirobj[rand(@dirobj)] . &quot;.&lt;br&gt;
-&quot;;
-}
-$str;
-
-
-%]
-&lt;/td&gt;&lt;/table&gt;
-&lt;br&gt;
-and on and on [about Nobody].
-&lt;p align=right&gt;Andrew Lang/[nate|Nate Oostendorp]</doctext>
+  <doctext></doctext>
   <node_id>165501</node_id>
   <title>about nobody</title>
 </node>
