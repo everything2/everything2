@@ -1,30 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>[%
-my @stuff = (&quot;Yeah, yeah, get a room...&quot;, &quot;I'll take door number three...&quot;, &quot;Hey, that's a llama back there!&quot;, &quot;Three doors, down, on your right, just past [Political Asylum]&quot;, &quot;They can't ALL be locked!?&quot;, &quot;Why be so stuffed up in a room? [Go outside]!&quot;);
-
-my $str =&quot;&lt;p align=\&quot;center\&quot;&gt;&quot;.($stuff[rand(@stuff)]).&quot;&lt;/p&gt;&lt;br&gt;&lt;br&gt;&quot;.&quot;&lt;p align=\&quot;right\&quot;&gt;..or you could &quot;.linkNode(getNode(&quot;go outside&quot;, &quot;superdocnolinks&quot;)).&quot;&lt;/p&gt;&lt;br&gt;&lt;br&gt;&quot;;
-
-my $csr = $DB-&gt;sqlSelectMany(&quot;node_id, title&quot;, &quot;node&quot;, &quot;type_nodetype=&quot;.getId(getType(&quot;room&quot;)));
-
-my $rooms;
-
-while(my $ROW = $csr-&gt;fetchrow_hashref())
-{
-   $$rooms{lc($$ROW{title})} = $$ROW{node_id};
-}
-
-  $str.=&quot;&lt;ul&gt;&quot;;
-
-foreach(sort(keys %$rooms))
-{
-  $str.=&quot;&lt;li&gt;&quot;.linkNode(getNodeById($$rooms{$_}));
-}
-
-  $str.=&quot;&lt;/ul&gt;&quot;;
-
-  return $str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>1253993</node_id>
   <title>Available Rooms</title>
 </node>
