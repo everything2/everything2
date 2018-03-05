@@ -3,6 +3,9 @@ package Everything::Delegation::document;
 use strict;
 use warnings;
 
+# Used by advanced_settings
+use DateTime;
+
 BEGIN {
   *getNode = *Everything::HTML::getNode;
   *getNodeById = *Everything::HTML::getNodeById;
@@ -260,6 +263,394 @@ sub admin_settings
     $str .= "</table>\n".'If you will use a macro, make sure the "Use" column is checked. If you won\'t use it, uncheck it, and it will be deleted. The text in the "macro" area of a "non-use" macro is the default text, although you can change it (but be sure to check the "use" checkbox if you want to keep it). Each macro must currently begin with <code>/say</code> (which indicates that you\'re saying something). Note: each macro is limited to '.$l.' characters. Sorry, until a better solution is found, instead of square brackets, &#91; and &#93;, you\'ll have to use curly brackets, { and } instead. <tt>:(</tt> There is more information about macros at [macro FAQ].</p>';
 
   }
+
+  $str .= htmlcode("closeform");
+  return $str;
+}
+
+sub advanced_settings
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return '<p>You need to sign in or '
+	.linkNode(getNode('Sign up','superdoc'), 'register')
+	.' to use this page.</p>' if ($APP->isGuest($USER));
+
+  if (defined $query->param('sexisgood'))
+  {
+    $$VARS{'preference_last_update_time'} = DateTime->now()->epoch()-60;
+  }
+
+  $PAGELOAD->{pageheader} = '<!-- put at end -->'.htmlcode('settingsDocs');
+  my $str = htmlcode('openform', -id=>'pagebody');
+  $str .= qq|<h2>Page display</h2>|;
+
+  my @headeroptions = ( 'audio', 'length' , 'hits' , 'dtcreate' ) ;
+  my @footeroptions = ( 'kill' , 'sendmsg' , 'addto' , 'social' ) ;
+
+  my $legacycheck = '^$|c:type,c:(author|pseudoanon)(,\w:' . join( ')?(,\w:' , @headeroptions ) . ',?)?' ;
+  my $legacyhead = '';
+  $legacyhead = '<p>'.$query->checkbox(-name=>'replaceoldheader',
+    -label=>'Overwrite all existing header settings. (Changing settings here will not overwrite any custom formatting you already have in place unless you check this.)')."</p>\n" 
+    unless $$VARS{ wuhead } =~ /^$legacycheck$/ || $query -> param( 'replaceoldheader' ) ;
+
+  $legacycheck = '^$|(l:kill)?,?c:vote,c:cfull(,\w:' . join( ')?(,\w:' , @footeroptions ) . ',?)?' ;
+  my $legacyfoot = '';
+  $legacyfoot = '<p>'.$query->checkbox(-name=>'replaceoldfooter',
+    -label=>'Overwrite all existing footer settings. (Changing settings here will not overwrite any custom formatting you already have in place unless you check this.)')."</p>\n"
+    unless $$VARS{ wufoot } =~ /^$legacycheck$/ || $query -> param( 'replaceoldfooter' );
+
+  if(defined($query->param('change_stuff')))
+  {
+    $$VARS{ wuhead } = 'c:type,c:author,c:audio,c:length,c:hits,r:dtcreate' unless $legacyhead ;
+    $$VARS{ wuhead } =~ s/,$// ;
+
+    foreach my $headeroption ( @headeroptions )
+    {
+      if($query->param('wuhead_'.$headeroption))
+      {
+        $$VARS{ wuhead } .= ",c:$headeroption," unless $$VARS{ wuhead } =~ /\w:$headeroption/ ;
+      } else {
+        $$VARS{ wuhead } =~ s/,?\w:$headeroption//g ;
+      }
+    }
+
+    $$VARS{ wufoot }='l:kill,c:vote,c:cfull,c:sendmsg,c:addto,r:social' unless $legacyfoot ;
+    $$VARS{ wufoot } =~ s/,$// ;
+    foreach my $footeroption ( @footeroptions )
+    {
+      if($query->param('wufoot_'.$footeroption))
+      {
+        $$VARS{ wufoot } .= ",c:$footeroption" unless $$VARS{ wufoot } =~ /\w:$footeroption/ ;
+      } else {
+        $$VARS{ wufoot } =~ s/,?\w:$footeroption//g ;
+      }
+    }
+
+    if ( $query -> param( 'nokillpopup' ) )
+    {
+      $$VARS{ nokillpopup } = 4 ;
+    } else {
+      delete $$VARS{ nokillpopup }
+    }
+  }
+
+  $str .= "<fieldset><legend>Writeup Headers</legend>\n";
+  $str .= htmlcode('varcheckboxinverse', 'info_authorsince_off','Show how long ago the author was here');
+  $str .= "<br>\n";
+
+  $str .= $query->checkbox(-name=>'wuhead_audio',
+    -checked=>( ($$VARS{'wuhead'}=~'audio') ? 1 : 0 ) ,
+    -label=>'Show links to any audio files');
+  $str .= "<br>\n";
+
+  $str .= $query->checkbox(-name=>'wuhead_length',
+    -checked=>( ($$VARS{'wuhead'}=~'length') ? 1 : 0 ) ,
+    -label=>'Show approximate word count of writeup');
+  $str .= "<br>\n";
+
+  $str .= $query->checkbox(-name=>'wuhead_hits',
+    -checked=>( ($$VARS{'wuhead'}=~'hits' || $$VARS{'wuhead'} eq '' ) ? 1 : 0 ) ,
+    -label=>'Show a hit counter for each writeup');
+  $str .= "<br>\n";
+
+  $str .= $query->checkbox(-name=>'wuhead_dtcreate',
+    -checked=>( ($$VARS{'wuhead'}=~'dtcreate' || $$VARS{'wuhead'} eq '' ) ? 1 : 0 ) ,
+    -label=>'Show time of creation');
+  $str .= "<br>\n";
+
+  $str .= "$legacyhead</fieldset>";
+
+  $str .= "<fieldset><legend>Writeup Footers</legend>\n";
+
+  if ($$USER{title} =~ /^(?:mauler|riverrun|Wiccanpiper|DonJaime)$/ and isGod($USER))
+  {
+    # only gods can disable pop-up: they get the missing tools in Master Control
+    # as of 2011-07-15 only three gods are using it. Let's lose it gradually...
+    $str .= $query->checkbox(-name=>'nokillpopup',
+      -checked=>( $$VARS{ nokillpopup } == 4 ) ,
+      -label=> 'Admin tools always visible, no pop-up' )
+      .'<br>';
+  }
+
+  $str .= $query->checkbox(-name=>'wufoot_sendmsg',
+    -checked=>( ($$VARS{'wufoot'}=~'sendmsg' || $$VARS{'wufoot'} eq '' ) ? 1 : 0 ) ,
+    -label=>'Show a box to send messages to the author');
+  $str .= "<br>\n";
+
+  $str .= $query->checkbox(-name=>'wufoot_addto',
+   -checked=>( ($$VARS{'wufoot'}=~'addto' || $$VARS{'wufoot'} eq '' ) ? 1 : 0 ) ,
+   -label=>'Show a tool to add the writeup to your bookmarks, a usergroup page or a category');
+  $str .= "<br>\n";
+
+  $str .= $query->checkbox(-name=>'wufoot_social',
+    -checked=>( ($$VARS{'wufoot'}=~'social' || $$VARS{'wufoot'} eq '' ) ? 1 : 0 ) ,
+    -label=>'Show social bookmarking buttons');
+  $str .= "<br>\n";
+
+  if($$VARS{nosocialbookmarking})
+  {
+    $str .= "<small>To see social bookmarking buttons on other people's writeups you must enable them for yours<br>\n";
+
+    $str .= htmlcode('varcheckboxinverse','nosocialbookmarking','Enable social bookmarking buttons on my writeups')."</small><br>\n"
+  }
+
+  $str .= "$legacyfoot</fieldset>";
+
+  $str .= $query->hidden(-name=>'change_stuff');
+
+  $str .= qq|<p><small><strong>[Old Writeup Settings]</strong> provides more control over writeup headers and footers, but the interface is rather complicated.</small></p>|;
+  $str .= qq|<fieldset><legend>Homenodes</legend>|;
+
+  $str .= htmlcode("varcheckbox","hidemsgme","I am anti-social.");
+  $str .= qq|(So don't display the user /msg box in users' homenodes.)|;
+  $str .= qq|<br>|;
+
+  $str .= htmlcode("varcheckbox","hidemsgyou",'No one talks to me either, so on homenodes, hide the "/msgs from me" link to [Message Inbox]');
+  $str .= qq|<br>|;
+  
+  $str .= htmlcode("varcheckbox","hidevotedata","Not only that, but I'm careless with my votes and C!s (so don't show them on my homenode)");
+  $str .= qq|<br>|;
+
+  $str .= htmlcode("varcheckbox","hidehomenodeUG","I'm a loner, Dottie, a rebel. (Don't list my usergroups on my homenode.)");
+  $str .= qq|<br>|;
+
+  $str .= htmlcode("varcheckbox","hidehomenodeUC","I'm a secret librarian. (Don't list my categories on my homenode.)");
+  $str .= qq|<br>|;
+
+  $str .= htmlcode("varcheckbox","showrecentwucount","Let the world know, I'm a fervent noder, and I love it! (show recent writeup count in homenode.)");
+  $str .= qq|<br>|;
+
+  $str .= htmlcode("varcheckboxinverse","hidelastnoded","Link to user's most recently created writeup on their homenode");
+  $str .= qq|<br>|;
+  $str .= qq|</fieldset>|;
+
+  $str .= qq|<fieldset><legend>Other display options</legend>|;
+  $str .= htmlcode("varcheckboxinverse","hideauthore2node","Show who created a writeup page title (a.k.a. e2node)");
+  $str .= qq|<br>|;
+
+  $$VARS{ repThreshold } ||= '0' if exists( $$VARS{ repThreshold } ) ; # ecore stores 0 as ''
+  if ( $query -> param( 'sexisgood' ) )
+  {
+    $query -> param( 'activateThreshold' , 1 ) if $query->param('repThreshold') ne '' and $$VARS{repThreshold} eq 'none' ;
+    unless ( $query -> param( 'activateThreshold' ) )
+    {
+      $$VARS{repThreshold} = 'none';
+    } else {
+      $$VARS{repThreshold} = $query->param('repThreshold');
+      unless ( $$VARS{repThreshold} =~ /\d+|none/ )
+      {
+        delete $$VARS{repThreshold};
+      } else {
+        $$VARS{repThreshold} = int $$VARS{repThreshold};
+	if ( $query->param('repThreshold') > 50 )
+        {
+          $query->param( 'repThreshold' , 50 );
+          $str.="<small>Maximum threshold is 50.</small><br>";
+        }
+      }
+    }
+  }
+
+  $query -> param( 'repThreshold' , '' ) if $$VARS{repThreshold} eq 'none';
+
+  $str .= $query -> checkbox( -name=>'activateThreshold' , -value => 1 ,
+    -checked=>( $$VARS{repThreshold} eq 'none' ? 0 : 1 ) , -force => 1 ,
+    -label=>'Hide low-reputation writeups in New Writeups and e2nodes.' ) ;
+
+  $str .= ' <label>Reputation threshold: ';
+  $str .= $query-> textfield( 'repThreshold' , $$VARS{repThreshold} , 3 , 3 );
+  $str .= "</label> (default is ".$Everything::CONF->writeuplowrepthreshold.")";
+
+  $str .= qq|<br>|;
+  $str .= htmlcode("varcheckbox","noSoftLinks","Hide softlinks");
+  $str .= qq|<br>|;
+  $str .= qq|</fieldset>|;
+
+  $str .= qq|<h2>Information</h2>|;
+  $str .= qq|<fieldset><legend>Writeup maintenance</legend>|;
+
+  $str .= htmlcode("varcheckboxinverse","no_notify_kill","Tell me when my writeups are deleted");
+  $str .= qq|<br>|;
+
+  $str .= htmlcode("varcheckboxinverse","no_editnotification","Tell me when my writeups get edited by [e2 staff|an editor or administrator]");
+  $str .= qq|</fieldset>|;
+
+  $str .= qq|<fieldset><legend>Writeup response</legend>|;
+
+  $str .= htmlcode("varcheckboxinverse","no_coolnotification",'Tell me when my writeups get [C!]ed ("cooled")');
+  $str .= qq|<br>|;
+
+  $str .= htmlcode("varcheckboxinverse","no_likeitnotification","Tell me when Guest Users like my writeups");
+  $str .= qq|<br>|;
+
+  $str .= htmlcode("varcheckboxinverse","no_bookmarknotification","Tell me when my writeups get bookmarked on E2");
+  $str .= qq|<br>|;
+
+  $str .= htmlcode("varcheckboxinverse","no_bookmarkinformer","Tell others when I bookmark a writeup on E2");
+  $str .= htmlcode("varcheckbox","anonymous_bookmark","but do it anonymously");
+  $str .= qq|</fieldset>|;
+
+  $str .= qq|<fieldset><legend>Social bookmarking</legend>|;
+
+  $str .= htmlcode("varcheckboxinverse","nosocialbookmarking","Allow others to see social bookmarking buttons on my writeups");
+  $str .= qq|<small>Unchecking this will also hide the social bookmarking buttons on other people's writeups.</small><br>|;
+
+  $str .= htmlcode("varcheckboxinverse","no_socialbookmarknotification","Tell me when my writeups get bookmarked on a social bookmarking site");
+  $str .= qq|<br>|;
+
+  $str .= htmlcode("varcheckboxinverse","no_socialbookmarkinformer","Tell others when I bookmark a writeup on a social bookmarking site");
+  $str .= qq|</p></fieldset>|;
+
+  $str .= qq|<fieldset><legend>Other information</legend>|;
+
+  $str .= htmlcode("varcheckboxinverse","no_discussionreplynotify","Tell me when someone replies to my usergroup discussion posts");
+  $str .= qq|<br>|;
+
+  $str .= htmlcode("varcheckbox","hidelastseen","Don't tell anyone when I was last here");
+  $str .= qq|<br>|;
+  $str .= qq|</fieldset>|;
+
+  $str .= qq|<h2>Messages</h2>|;
+  $str .= qq|<fieldset><legend>Message Inbox</legend>|;
+
+  $str .= htmlcode("varcheckbox","sortmyinbox","Sort my messages in message inbox");
+  $str .= qq|<br>|;
+
+  $str .= htmlcode("varcheckbox","mitextarea","Larger text box in Message Inbox");
+  $str .= qq|<br></fieldset>|;
+
+  $str .= qq|<fieldset><legend>Usergroup messages</legend>|;
+  $str .= htmlcode("varcheckbox","getofflinemsgs","Get online-only messages, even while offline.");
+  $str .= '([online only /msg|explanation])';
+  $str .= qq|</fieldset>|;
+
+  $str .= qq|<h2>Miscellaneous</h2>|;
+  $str .= qq|<fieldset><legend>Chatterbox</legend>|;
+
+  $str .= htmlcode("varcheckboxinverse","noTypoCheck","Check for chatterbox command typos");
+  $str .= qq|&ndash; /mgs etc.(when enabled, some messages that aren't typos may be flagged as such, although this will protect you against most real typos)<br>|;
+  $str .= qq|</fieldset>|;
+
+  $str .= qq|<fieldset><legend>Nodeshells</legend>|;
+
+  $str .= htmlcode("varcheckbox","hidenodeshells","Hide nodeshells in search results and softlink tables");
+  $str .= qq|<br><small>A nodeshell is a page on Everything2 with a title but no content</small>|;
+  $str .= qq|</fieldset>|;
+
+  $str .= qq|<fieldset><legend>GP system</legend>|;
+  $str .= htmlcode("varcheckbox","GPoptout","Opt me out of the GP System.");
+  $str .= qq|<br>|;
+  $str .= qq|<small>[GP] is a points reward system. You get points for doing good stuff and can use them to buy fun stuff.</small>|;
+  $str .= qq|</fieldset>|;
+
+  $str .= qq|<fieldset><legend>Little-needed</legend>|;
+
+  $str .= htmlcode("varcheckbox","defaultpostwriteup","Publish immediately by default.");
+  $str .= qq|<br>|;
+
+  $str .= qq|<small>(Some older users may appreciate having 'publish immediately' initially selected instead 'post as draft'.)</small><br>|;
+
+  $str .= htmlcode("varcheckbox","noquickvote","Disable quick functions (a.k.a. AJAX).");
+  $str .= qq|<br>|;
+
+  $str .= qq|<small>(Voting, cooling, chatting, etc will all require complete pageloads. You probably don't want this.)</small><br>|;
+
+  $str .= htmlcode("varcheckbox","nonodeletcollapser","Disable nodelet collapser");
+  $str .= qq|<br>|;
+  $str .= qq|<small>(clicking on a nodelet title will not hide its content).</small><br>|;
+
+  $str .= htmlcode("varcheckbox","HideNewWriteups","Hide your new writeups by default");
+  $str .= qq|<br>|;
+  $str .= "<small>(note: some writeups, such as [Everything Daylogs|day log]s and maintenance-related writeups,always default to a hidden creation)</small><br>";
+
+  $str .= htmlcode("varcheckbox","nullvote","Show null vote button");
+  $str .= qq|<br><small>Some old browsers needed at least one radio-button to be selected</small></fieldset>|;
+
+  $str .= qq|<h2>Unsupported options</h2>|;
+  $str .= qq|<fieldset><legend>Experimental/In development</legend>|;
+  $str .= qq|<p><small>The time zone and other settings here do not currently affect the display of all times on the site.</small><br>|;
+
+  $str .= htmlcode("varcheckbox","localTimeUse","Use my time zone offset");
+
+  #daylight saving time messes things up; cheap way is to have a separate checkbox for daylight saving time
+  my %specialNames = (
+    '-12:00'=>'International date line West',
+    '-11:00'=>'Samoa',
+    '-10:00'=>'Hawaii',
+    '-9:00'=>'Alaska',
+    '-8:00'=>'Pacific (Los Angeles/Vancouver)/Baja California',
+    '-7:00'=>'Mountain (Calgary/Denver/Salt Lake City)/Chihuahua/La Paz',
+    '-6:00'=>'Central (Winnipeg/Chicago/New Orleans)/Central America',
+    '-5:00'=>'Eastern (New York City/Atlanta/Miami)/Bogota/Lima/Quito',
+    '-4:30'=>'Caracas',
+    '-4:00'=>'Atlantic (Halifax)/Asuncion/Santiago/Georgetown/San Juan',
+    '-3:30'=>'Newfoundland',
+    '-3:00'=>'Greenland/Rio de Janeiro/Brasilia/Buenos Aires/Montevideo',
+    '-1:00'=>'Azores/Cabo Verde',
+    '0:00'=>'UTC server time (Lisbon/London/Dublin/Reykjavik/Monrovia)',
+    '1:00'=>'Central Europe (Madrid/Amsterdam/Paris/Berlin/Prague)',
+    '2:00'=>'Eastern Europe/Jerusalem/Istanbul/Cairo/Cape Town',
+    '3:00'=>'Moscow/Baghdad/Nairobi',
+    '3:30'=>'Tehran',
+    '4:00'=>'Caucasus (Tblisi/Yerevan/Baku)/Abu Dhabi/Port Louis',
+    '4:30'=>'Kabul',
+    '5:00'=>'Ekaterinburg/Islamabad/Tashkent',
+    '5:30'=>'Chennai/Kolkata/Mumbai/Sri Jayawardenepura',
+    '6:00'=>'Astana/Dhaka/Novosibirsk',
+    '6:30'=>'Yangoon (Rangoon)',
+    '7:00'=>'Bangkok/Hanoi/Jakarta/Krasnoyarsk',
+    '8:00'=>'Beijing/Hong Kong/Singapore/Urumqi/Irkutsk/Perth/Ulaanbataar',
+    '9:00'=>'Tokyo/Seoul/Yakutsk',
+    '9:30'=>'Adelaide/Darwin',
+    '10:00'=>'Guam/Sydney/Melbourne/Brisbane/Vladivostok',
+    '11:00'=>'Magadan/Solomon Islands/New Caledonia',
+    '12:00'=>'Auckland/Wellington/Fiji',
+    '13:00'=>'Nuku\'alofa',
+  );
+
+  my $params='';
+  my $t= -43200; # 12 * 3600: time() uses seconds
+  my $minutes = '00';
+  my $plus ;
+  for(my $hours=-12;$hours<=13;++$hours)
+  {
+    my $n = ( $hours % 12 ? 2 : ( $hours ? 1 : 3 ) );
+    $plus = '-' unless $hours ;
+    for (my $i=$n; $i ; $i--)
+    {
+      my $zone = "$hours:$minutes" ;
+      $params .= ",$t,$plus$zone".($specialNames{$zone} ? " - $specialNames{$zone}" :'');
+      $minutes = $minutes eq '00' ? '30' : '00' ;
+      $t += 1800 ;
+      $plus = '+' unless $hours ;
+    }
+  }
+  $params =~ s/\b(\d):/0$1:/g ;
+  #Y2k bug:
+  #	60*60*24*365*100=3153600000=100 years ago, 365 days/year
+  #	60*60*24*25=2160000=25 extra leap days; adjustment to 26: Feb 29, 2004
+  #week in future:
+  #	60*60*24*7=604800=week
+
+  $params=',-3155760000,Y2k bug'.$params.',604800,I live for the future';
+
+  $str .= htmlcode('varsComboBox', 'localTimeOffset,0'.$params);
+  $str .= qq|<br>|;
+
+  $str .= htmlcode("varcheckbox","localTimeDST","I am currently in daylight saving time");
+  $str .= qq|(so add an an hour to my normal offset)<br>|;
+
+  $str .= htmlcode("varcheckbox","localTime12hr","I am from a backwards country that uses a 12 hour clock");
+  $str .= qq|(show AM/PM instead of 24-hour format)|;
+
+  $str .= qq|</p></fieldset>|;
 
   $str .= htmlcode("closeform");
   return $str;
