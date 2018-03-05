@@ -834,4 +834,38 @@ sub ask_everything__do_i_have_the_swine_flu_
   return $str;
 }
 
+sub available_rooms
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my @stuff = ("Yeah, yeah, get a room...", "I'll take door number three...", "Hey, that's a llama back there!", "Three doors, down, on your right, just past [Political Asylum]", "They can't ALL be locked!?", "Why be so stuffed up in a room? [Go outside]!");
+
+  my $str ="<p align=\"center\">".($stuff[rand(@stuff)])."</p><br><br>"."<p align=\"right\">..or you could ".linkNode(getNode("go outside", "superdocnolinks"))."</p><br><br>";
+
+  my $csr = $DB->sqlSelectMany("node_id, title", "node", "type_nodetype=".getId(getType("room")));
+
+  my $rooms = {};
+
+  while(my $ROW = $csr->fetchrow_hashref())
+  {
+    $$rooms{lc($$ROW{title})} = $$ROW{node_id};
+  }
+
+  $str.="<ul>";
+
+  foreach(sort(keys %$rooms))
+  {
+    $str.="<li>".linkNode(getNodeById($$rooms{$_}));
+  }
+
+  $str.="</ul>";
+  return $str;
+}
+
 1;
