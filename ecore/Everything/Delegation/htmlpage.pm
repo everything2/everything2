@@ -847,6 +847,7 @@ sub superdoc_display_page
     $doctitle = "document_$doctitle";
   }
 
+  $APP->devLog("Proposed delegation for '$NODE->{title}': '$doctitle'");
   if(my $delegation = Everything::Delegation::document->can("$doctitle"))
   {
     $APP->devLog("Using document delegation for $NODE->{title} as '$doctitle'");
