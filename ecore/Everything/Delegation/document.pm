@@ -35,6 +35,7 @@ BEGIN {
   *getPageForType = *Everything::HTML::getPageForType;
   *opLogin = *Everything::HTML::opLogin;
   *replaceNodegroup = *Everything::HTML::replaceNodegroup;
+  *encodeHTML = *Everything::HTML::encodeHTML;
 }
 
 sub document_25
@@ -654,6 +655,100 @@ sub advanced_settings
 
   $str .= htmlcode("closeform");
   return $str;
+}
+
+sub alphabetizer
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p>Go ahead -- one entry per line:</p>|;
+  $str .= htmlcode("openform");
+
+  $str .= qq|<p><!-- N-Wing added options 2005-12-12 -->|;
+
+  $str .= qq|separator: |;
+  $str .= htmlcode("varsComboBox","alphabetizer_sep",0,0,"none (default)",1,"<br>",2,"<li> (use in UL or OL)");
+  $str .= qq|<br />|;
+
+  $str .= qq|sort: |;
+  $str .= htmlcode("varcheckbox","alphabetizer_sortorder","reverse");
+  $str .= htmlcode("varcheckboxinverse","alphabetizer_case","ignore case (default yes)");
+  $str .= qq|<br />|;
+
+  $str .= htmlcode("varcheckbox","alphabetizer_format","make everything an E2 link");
+
+  $str .= qq|</p><p>|;
+
+  $str .= $query->textarea('alpha', '', 20,60);
+  $str .= qq|</p>|;
+
+  $str .= htmlcode("closeform");
+
+  my $list = $query->param('alpha');
+  return $str unless $list;
+
+  my $outputstr = '';
+  my $leOpen = '';
+  my $leClose = '';
+  my $s = $VARS->{'alphabetizer_sep'};
+  if($s==1)
+  {
+    $leClose = '&lt;br&gt;'
+  } elsif($s==2) {
+    $leOpen = '&lt;li&gt;';
+    $leClose = '&lt;/li&gt;';
+  } else {
+    #no formatting
+  }
+
+  my @entries = split "\n", $list;
+
+  foreach(@entries)
+  {
+    s/^\s*(.*?)\s*$/$1/;
+
+    # Put articles at the end so they don't screw up
+    # the sort.
+    $_ =~ s/^(An?) (.*)$/$2, $1/i;
+    $_ =~ s/^(The) (.*)$/$2, $1/i;
+  }
+
+  if($VARS->{'alphabetizer_case'})
+  {
+    @entries = sort @entries;
+  } else {
+    @entries = sort {lc($a) cmp lc($b)} @entries;
+  }
+
+  @entries = reverse @entries if $VARS->{'alphabetizer_sortorder'};
+
+  foreach(@entries)
+  {
+    next unless length($_);
+    $_ =~ s/^(.*), (An?)/$2 $1/i;
+    $_ =~ s/^(.*), (The)/$2 $1/i;
+
+    if($VARS->{'alphabetizer_format'})
+    {
+      #put brackets around the string.
+      $_ = '['.$_.']';
+    }
+  }
+
+  foreach (@entries)
+  {
+    next unless length($_);
+
+    $outputstr .= $leOpen . encodeHTML($_,1) . $leClose . "\n";
+  }
+
+  return qq|$str<pre>$outputstr</pre></p>|;
 }
 
 1;
