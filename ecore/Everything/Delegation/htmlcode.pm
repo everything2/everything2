@@ -7301,7 +7301,7 @@ sub displayWriteupInfo
     } elsif( $query->param( $queryid ) ){
       $msgreport = htmlcode('writeupmessage', $queryid, $WRITEUP) ;
     }
-    my $nN = undef;
+    my $nN = "";
     $nN = $query->checkbox(-name=>'nn'.$queryid, value=>$$WRITEUP{node_id}, label=>'NN ', title=>'check to record this message as a node note') if $isCE;
     return $nN.$query->checkbox( -name=>'cc'.$queryid, value=>'1', label=>'CC ',
       title=>'check to send a copy of this message to yourself' )
