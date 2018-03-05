@@ -29,7 +29,6 @@ BEGIN {
   *isMobile = *Everything::HTML::isMobile;
   *canReadNode = *Everything::HTML::canReadNode;
   *canDeleteNode = *Everything::HTML::canDeleteNode;
-  *evalCode = *Everything::HTML::evalCode;
   *getPageForType = *Everything::HTML::getPageForType;
   *opLogin = *Everything::HTML::opLogin;
   *replaceNodegroup = *Everything::HTML::replaceNodegroup;
@@ -174,6 +173,95 @@ sub about_nobody
     $str .= "Nobody " . $verbs[rand(@verbs)] . ' ' .  $dirobj[rand(@dirobj)] . ".<br>";
   }
   $str .= "</td></table><br>and on and on [about Nobody].<p align=right>Andrew Lang/[nate|Nate Oostendorp]";
+  return $str;
+}
+
+sub admin_settings
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return '<p>You need to sign in or '
+	.linkNode(getNode('Sign up','superdoc'), 'register').' to use this page.</p>' if $APP->isGuest($USER);
+
+  $PAGELOAD->{pageheader} = '<!-- at end -->'.htmlcode('settingsDocs');
+
+  my $str = htmlcode('openform', -id => 'pagebody');
+
+  #editor options
+  if($APP->isEditor($USER))
+  {
+    return unless $APP->isEditor($USER);
+    my $nl = "<br />\n";
+    $str .= "<p><strong>Editor Stuff</strong>\n";
+    $str .= $nl . htmlcode('varcheckbox','killfloor_showlinks,Add HTML in the killing floor display for easy copy & paste');
+
+    $str .= $nl . htmlcode('varcheckbox','hidenodenotes,Hide Node Notes');
+
+    $str .= '</p>';
+
+    my $f = $query->param('sexisgood'); #end of form indicator
+    my $l=768; #max length of each macro
+
+    #key is allowed macro, value is the default
+    #note: things like $1 are NOT supposed to be interpolated - that is done when the macro is executed
+    my %allowedMacros = (
+      'room' => '/say /msg $1 Just so you know - you are not in the default room, where most people stay. To get back into the main room, either visit {go outside}, or: go to the top of the "other users" nodelet, pick "outside" from the dropdown list, and press the "Go" button.',
+      'newbie' => '/say /msg $1 Hello, your writeups could use a little work. Read [Everything University] and [Everything FAQ] to improve your current and future writeups. $2+'."\n".'/say /msg $1 If you have any questions, you can send me a private message by typing this in the chatterbox: /msg $0 (Your message here.)',
+      'html' => '/say /msg $1 Your writeups could be improved by using some HTML tags, such as &lt;p&gt; , which starts a new paragraph. [Everything FAQ: Can I use HTML in my writeups?] lists the tags allowed here, and [E2 HTML tags] shows you how to use them.',
+      'wukill' => '/say /msg $1 FYI - I removed your writeup $2+',
+      'nv' => '/say /msg $1 Hey, I know that you probably didn\'t mean to, but advertising your writeups ("[nodevertising]") in the chatterbox isn\'t cool. Imagine if everyone did that - there would be no room for chatter.',
+      'misc1' => '/say /msg $0 Use this for your own custom macro. See [macro FAQ] for information about macros.'."\n".'/say /msg $0 If you have an idea of another thing to add that would be wanted by many people, give N-Wing a /msg.',
+      'misc2' => '/say /msg $0 Yup, this is an area for another custom macro.'
+    );
+
+    my @ks = sort(keys(%allowedMacros));
+
+    foreach my $k (@ks)
+    {
+      my $v = undef;
+      if( (defined $query->param('usemacro_'.$k)) && ($v=$query->param('usemacro_'.$k) eq '1') )
+      {
+	#possibly add macro
+	if( (defined $query->param('macrotext_'.$k)) && ($v=$query->param('macrotext_'.$k)) )
+        {
+          $v =~ tr/\r/\n/; $v =~ s/\n+/\n/gs; #line endings are a pain
+          $v =~ s/[^\n\x20-\x7e]//gs; #could probably also allow \x80-\xfe
+          $v = substr($v,0,$l);
+          $v =~ s/\{/[/gs; $v =~ s/\}/]/gs; #hack - it seems you can't use square brackets in a superdoc :(
+          $$VARS{'chatmacro_'.$k} = $v;
+	}
+      } elsif($f) {
+        #delete unwanted macro (but only if no form submit problems)
+        delete $$VARS{'chatmacro_'.$k};
+      }
+    }
+
+    $str .= '<p><strong>Macros</strong></p>'."\n".'<table cellspacing="1" cellpadding="2" border="1"><tr><th>Use?</th><th>Name</th><th>Text</th></tr>'."\n";
+
+    foreach my $k (@ks)
+    {
+	my $v = $$VARS{'chatmacro_'.$k};
+	my $z = ($v && length($v)>0) ? 1 : 0;
+	unless($z) { $v = $allowedMacros{$k}; }
+	$v =~ s/\[/{/gs; $v =~ s/\]/}/gs; #square-link-in-superdoc workaround :(
+	$str .= '<tr><td>' .
+	$query->checkbox('usemacro_'.$k, $z, '1', '')
+	. '</td><td><code>' . $k . '</code></td><td>' .
+	$query->textarea(-name=>'macrotext_'.$k, -default=>$v, -rows=>6, -columns=>65, -override=>1)
+	. "</td></tr>\n";
+    }
+
+    $str .= "</table>\n".'If you will use a macro, make sure the "Use" column is checked. If you won\'t use it, uncheck it, and it will be deleted. The text in the "macro" area of a "non-use" macro is the default text, although you can change it (but be sure to check the "use" checkbox if you want to keep it). Each macro must currently begin with <code>/say</code> (which indicates that you\'re saying something). Note: each macro is limited to '.$l.' characters. Sorry, until a better solution is found, instead of square brackets, &#91; and &#93;, you\'ll have to use curly brackets, { and } instead. <tt>:(</tt> There is more information about macros at [macro FAQ].</p>';
+
+  }
+
+  $str .= htmlcode("closeform");
   return $str;
 }
 
