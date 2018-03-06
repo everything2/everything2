@@ -8,8 +8,6 @@ padding: 3px;
 }
 &lt;/style&gt;
 
-&lt;p align=center&gt;&lt;img SRC=&quot;http://people.fas.harvard.edu/~nkapur/otwanted.gif&quot; height=270 width=216&gt;&lt;/p&gt;
-
 &lt;p&gt;&lt;blockquote&gt;&lt;p align=center&gt;&lt;b&gt;Welcome to Everything's Most Wanted&lt;/b&gt;&lt;/p&gt;
 
 
@@ -260,9 +258,9 @@ if ($query-&gt;param(&quot;postBounty&quot;)) {
 
 	$$VARS{Bounty} = 1;
 	$$VARS{BountyNumber} = $bountyNum;
-	setVars $USER, $VARS;
+	setVars($USER, $VARS);
 
-	my $settingsnode = getNode('bounties', 'setting));
+	my $settingsnode = getNode('bounties', 'setting');
 	my $bountySettings = getVars($settingsnode);
 	$$bountySettings{$sheriff} = $bounty;
 	setVars($settingsnode, $bountySettings);
