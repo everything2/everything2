@@ -1081,4 +1081,96 @@ sub bad_spellings_listing
   return $str;
 }
 
+sub bestow_easter_eggs
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+
+  return 'Who do you think you are? The Easter Bunny?' unless $APP->isAdmin($USER);
+
+  my @params = $query->param;
+  my $str = '';
+
+  my (@users, @thenodes);
+  foreach (@params)
+  {
+    if(/^eggUser(\d+)$/)
+    {
+      $users[$1] = $query->param($_);
+    }
+  }
+
+  for(my $count=0; $count < @users; $count++)
+  {
+    next unless $users[$count];
+
+    my ($U) = getNode ($users[$count], 'user');
+    if (not $U)
+    {
+      $str.="couldn't find user $users[$count]<br />";
+      next;
+    }
+
+    # Send an automated notification.
+    my $failMessage = htmlcode('sendPrivateMessage',{
+      'recipient_id'=>getId($U),
+      'message'=>'Far out! Somebody has given you an [easter egg].',
+      'author'=>'Cool Man Eddie',
+      });
+
+    $str .= "User $$U{title} was given one easter egg";
+  
+    my $v = getVars($U);
+    if (!exists($$v{easter_eggs}))
+    {
+      $$v{easter_eggs} = 1;
+    } else {
+      $$v{easter_eggs} += 1;
+    }
+   
+    setVars($U, $v);
+    $str .= "<br />\n";
+  }
+
+  # Build the table rows for inputting user names
+  my $count = 5;
+  $str.=htmlcode('openform');
+  $str.='<table border="1">';
+  $str.="\t<tr><th>Egg these users</th></tr> ";
+
+  for (my $i = 0; $i < $count; $i++)
+  {
+    $query->param("eggUser$i", '');
+    $str.="\n\t<tr><td>";
+    $str.=$query->textfield("eggUser$i", '', 40, 80);
+    $str.="</td>";
+  }
+
+  $str.='</table>';
+
+  $str.=htmlcode('closeform');
+
+  if ($query->param("Give yourself an egg you greedy bastard"))
+  {
+    if (!exists($$VARS{easter_eggs}))
+    {
+      $$VARS{easter_eggs} = 1;
+    } else {
+      $$VARS{easter_eggs} += 1;
+    }
+  }
+
+  $str.=htmlcode('openform');
+  $str.=$query->submit('Give yourself an egg you greedy bastard');
+  $str.=$query->end_form;
+
+  return $str;
+}
+
 1;
