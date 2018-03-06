@@ -1173,4 +1173,136 @@ sub bestow_easter_eggs
   return $str;
 }
 
+sub between_the_cracks
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $isGuest = $APP->isGuest($USER);
+  return "<p>Undifferentiated from the masses of the streets, you fall between the cracks yourself.</p>" if $isGuest;
+
+  my $rowCtr = 0;
+
+  my ($title, $queryText, $rows);
+  my $count = 1000;
+  my $maxVotes = int($query->param("mv"));
+  my ($minRep, $repRestriction, $repStr) = (undef, '', '');
+  my $resultCtr = 50;
+
+  if ($maxVotes <= 0)
+  {
+    $maxVotes = 5;
+  }
+
+  if (defined $query->param("mr") && $query->param("mr") ne "")
+  {
+    $minRep = int($query->param("mr"));
+    if ($minRep > 5 || abs($minRep) > ($maxVotes - 2))
+    {
+      $minRep = undef;
+    }
+  
+    if (defined $minRep)
+    {
+      $repRestriction = "AND reputation >= $minRep";
+      $repStr = " and a reputation of $minRep or greater";
+    }
+  }
+
+  my $str = qq|<p>These nodes have fallen between the cracks, and seem to have gone unnoticed. This page lists <em>up to</em> $resultCtr writeups that you haven't voted on that have fewer than $maxVotes total vote(s)$repStr on E2. Since they have been neglected until now, why don\'t you visit them and click that vote button?</p>|;
+  $str .= qq|<form method="get"><div>|;
+  $str .= qq|<input type="hidden" name="node_id" value="|.getId($NODE).qq|" />|;
+  $str .= qq|<b>Display writeups with |;
+
+  my @mvChoices = ();
+
+  for(my $i=1;$i<=10;$i++)
+  {
+    push @mvChoices, $i
+  }
+
+  $str .= $query->popup_menu('mv', \@mvChoices, $maxVotes);
+  $str .= ' (or fewer) votes and ';
+
+  my %mrLabels = ();
+  my @mrValues = ();
+
+  for(my $i=-3;$i<=3;$i++)
+  {
+    $mrLabels{$i} = $i;
+    push @mrValues, $i;
+  }
+
+  $mrLabels{''} = 'no restriction';
+  push @mrValues, '';
+
+  $str .= $query->popup_menu(-name => 'mr',
+    -labels => \%mrLabels,
+    -default => $minRep,
+    -values => \@mrValues);
+
+  $str .= ' (or greater) rep.';
+
+  $str .= qq|</b><input type="submit" value="Go" /></div></form>|;
+  $str .= qq|<table width="100%"><tr><th>#</th><th>Writeup</th><th>Author</th>|;
+  $str .= qq|<th>Total Votes</th><th>Create Time</th></tr>|;
+
+  $queryText = qq|SELECT title, author_user, createtime, writeup_id, totalvotes
+    FROM writeup
+    JOIN node
+      ON writeup.writeup_id = node.node_id
+    LEFT OUTER JOIN vote
+      ON vote.vote_id = node.node_id AND vote.voter_user = $$USER{user_id}
+    WHERE
+      node.totalvotes <= $maxVotes
+      $repRestriction
+      AND node.author_user <> $$USER{user_id}
+      AND vote.voter_user IS NULL
+      AND wrtype_writeuptype <> 177599
+    ORDER BY writeup.writeup_id
+    LIMIT $count|;
+
+  $rows = $DB->{dbh}->prepare($queryText);
+  $rows->execute() or return $rows->errstr;
+
+  while(my $wu = $rows->fetchrow_hashref)
+  {
+    $title = $$wu{title};
+    if($title =~ /^(.*?) \([\w-]+\)$/) { $title = $1; }
+    $title =~ s/\s/_/g;
+
+    if ( !$APP->isUnvotable($$wu{writeup_id}) )
+    {
+      $rowCtr++;
+      if ($rowCtr % 2 == 0)
+      {
+        $str .= '<tr class="evenrow">';
+      }else{
+        $str .= '<tr class="oddrow">';
+      }
+      $str .= '<td style="text-align:center;padding:0 5px">'.$rowCtr.'</td>
+         <td>'.linkNode($$wu{writeup_id}, '', {lastnode_id=>0}).'</td>
+         <td>'.linkNode($$wu{author_user}, '', {lastnode_id=>0}).'</td>
+         <td style="text-align:center">'.$$wu{totalvotes}.'</td>
+         <td style="text-align:right">'.$$wu{createtime}.'</td>
+         </tr>';
+    }
+    last if ($rowCtr >= $resultCtr);
+  }
+
+  if ($rowCtr == 0)
+  {
+    $str .= '<tr><td colspan="3"><em>You have voted on all '.$count.' writeups with the lowest number of votes.</em></td></tr>';
+  }
+
+  $str .= '</table><p style="text-align:right">Bugs to [in10se]</p>';
+
+  return $str;
+}
+
 1;
