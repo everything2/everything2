@@ -1305,4 +1305,103 @@ sub between_the_cracks
   return $str;
 }
 
+sub blind_voting_booth
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $poweruser = $APP->isEditor($USER);
+
+  my $wu = undef;
+  my $hasvoted = 0;
+
+  my $str = 'Welcome to the blind voting booth.  You can give anonymous feedback without knowing who wrote a writeup here, if you so choose.<br><br>';
+
+
+  if(!($query->param('op') eq 'vote'))
+  {
+    return qq|You're done for today| if($$USER{votesleft} == 0);
+
+    my $wucount = 0;
+    while(!$wu && $wucount < 30)
+    {
+ 
+      my $limit = $DB->sqlSelect("max(writeup_id)", "writeup");
+      my $min = $DB->sqlSelect("min(writeup_id)", "writeup");
+      my $rnd = int(rand($limit-$min));
+
+      $rnd+= $min;
+
+      my $maybewu = $DB->sqlSelect("writeup_id", "writeup", "writeup_id=$rnd");
+
+  
+      if($maybewu)
+      {
+        my $tempref = getNodeById($maybewu);
+
+        if($$tempref{wrtype_writeuptype} != 177599  && $$tempref{author_user} != $$USER{user_id})
+        {
+          $wu = $maybewu if(!$APP->hasVoted($tempref, $USER));
+        }
+      }
+
+      $wucount++;
+    }
+
+  } else {
+    my $wutemp = getNodeById($query->param('votedon'));
+
+    return linkNode($NODE, 'Try Again') unless($wutemp);
+    return linkNode($NODE, 'Try Again') if(!$APP->hasVoted($wutemp, $USER));
+
+    $wu = $query->param('votedon');
+    $hasvoted = 1;
+
+  }
+
+  my $rndnode = getNodeById($wu);
+  my $nodeauthor = getNodeById($$rndnode{author_user});
+
+  $str.=htmlcode('votehead');
+  $str.='(<b>'.$$rndnode{title}.'</b>) by ';
+  if($hasvoted == 1)
+  {
+    $str.=linkNode(getNode($$nodeauthor{title}, 'user'), $$nodeauthor{title}).' - ('.linkNode(getNodeById($$rndnode{parent_e2node}), 'full node').')';
+  } else {
+    $str.='? - ('.linkNode(getNodeById($$rndnode{parent_e2node}), 'full node').')';
+  }
+  
+  $str.='<br>';
+
+  if($hasvoted == 0)
+  {
+    $str.='<input type="hidden" name="votedon" value="'.$$rndnode{node_id}.'"><input type="radio" name="vote__'.$$rndnode{node_id}.'" value="1"> +<input type="radio" name="vote__'.$$rndnode{node_id}.'" value="-1"> - '.linkNode($NODE, 'pass on this writeup', {garbage=>int(rand(100000))});
+  } else {
+    $str.='Reputation: '.$$rndnode{reputation};
+  }
+
+  $str.='<br><hr><br>';
+  $str.=$$rndnode{doctext};
+
+  if($hasvoted == 0)
+  {
+    $str.='<table border="0" width="100%"><tr><td align="left"><INPUT TYPE="submit" NAME="sexisgreat" VALUE="vote!"></td>';
+    if($poweruser)
+    {
+      $str.= '<td align="right"><INPUT TYPE="submit" NAME="node" VALUE="the killing floor II"></td>';
+    }
+    
+    $str.='</tr></table></form>';
+  }
+
+  $str.= '<br><br><hr><br>'.linkNode($NODE, 'Another writeup, please') if($hasvoted && $$USER{votesleft} != 0);
+
+  return $str;
+}
+
 1;
