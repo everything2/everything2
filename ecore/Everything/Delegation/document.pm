@@ -1025,4 +1025,60 @@ sub back_up_my_vars
   return $backupInfo . $str;
 }
 
+sub bad_spellings_listing
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p>If you have the option enabled to show <strong>common bad spellings</strong> in your writeups, common bad spellings will be flagged and displayed you are looking at your writeup by itself (as opposed to the e2node, which may contain other noders' writeups).</p>|;
+  $str .= qq|<p>This option can be toggled at [Settings[Superdoc]] in the Writeup Hints section. You currently have it |;
+  $str .= $VARS->{nohintSpelling} ? 'disabled, which is not recommended' : 'enabled, the recommended setting';
+  $str .= qq|</p><p>|;
+
+  my $spellInfo = getNode('bad spellings en-US','setting');
+  return $str.'<strong>Error</strong>: unable to get spelling setting.' unless defined $spellInfo;
+
+  my $isRoot = $APP->isAdmin($USER);
+  my $isCE = $APP->isEditor($USER);
+  if($isRoot)
+  {
+    $str .= '<p>(Site administrators can edit this setting at '.linkNode($spellInfo,0,{lastnode_id=>0}).'.)</p><p>
+';
+  }
+
+  $spellInfo = getVars($spellInfo);
+  return $str.'<strong>Error</strong>: unable to get spelling information.' unless defined $spellInfo;
+
+  #table header
+  $str .= qq|Spelling errors and corrections:<table border="1" cellpadding="2" cellspacing="0"><tr><th>invalid</th><th>correction</th></tr>|;
+
+  #table body - wrong spellings to correct spellings
+  my $s="";
+  my $numShown = 0;
+  foreach(sort(keys(%$spellInfo)))
+  {
+    next if substr($_,0,1) eq '_';
+    next if $_ eq 'nwing';
+    ++$numShown;
+    $s = $_;
+    $s =~ tr/_/ /;
+    $str .= '<tr><td>'.$s.'</td><td>'.$$spellInfo{$_}.'</td></tr>';
+  }
+
+  #table footer
+  $str .= '</table>';
+
+  $str .= '('.$numShown.' entries';
+  $str .= ' shown, '.scalar(keys(%$spellInfo)).' total' if $isCE;
+  $str .= ')';
+
+  $str .= qq|</p>|;
+  return $str;
+}
+
 1;
