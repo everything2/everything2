@@ -1458,4 +1458,48 @@ sub bounty_hunters_wanted
   return $str;
 }
 
+sub buffalo_generator
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my @verbNouns=('Buffalo', 'buffalo', 'police', 'bream', 'perch', 'char', 'people', 'dice', 'cod', 'smelt', 'pants');
+  my @intermediatePunctuation=(',', ';', ',', ':', '...');
+  my @finalPunctuation=('.', '!', '?');
+
+  my $str='';
+  my $sentence='';
+
+  @verbNouns=('buffalo') if ($query->param('onlybuffalo'));
+
+  while (1)
+  {
+    $sentence='';
+    while (1)
+    {
+      $sentence.=$verbNouns[int(rand(@verbNouns))];
+      last if(rand(1)<0.1);
+      $sentence.=$intermediatePunctuation[int(rand(@intermediatePunctuation))] if (rand(1)<0.25);
+      $sentence.=" ";
+    }
+    $sentence=ucfirst($sentence);
+    $sentence.=$finalPunctuation[int(rand(@finalPunctuation))].' ';
+    $str.=$sentence;
+    last if(rand(1)<0.4);
+  }
+
+  $str.="<ul>\n\t<li>".linkNode($NODE, "MOAR", {moar => 'more'})."</li>\n";
+  $str.="\n\t<li>".linkNode($NODE, "Only buffalo", {onlybuffalo => 'true'})."</li>\n";
+  $str.="\n\t<li>".linkNodeTitle("Buffalo Haiku Generator|In haiku form")."</li>\n";
+  $str.="\n\t<li>".linkNodeTitle("Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo|...what?")."</li></ul>\n";
+
+  return $str;
+
+}
+
 1;
