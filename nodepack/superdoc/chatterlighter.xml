@@ -1,18 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>[%
-my $nlid = getNode( 'Notifications' , 'nodelet' ) -&gt; { node_id } ;
-$PAGELOAD-&gt;{ pagenodelets } = &quot;$nlid,&quot; if $$VARS{ nodelets } =~ /\b$nlid\b/ ;
-$PAGELOAD-&gt;{ pagenodelets } .= getNode( 'New Writeups' , 'nodelet' ) -&gt; { node_id } ;
-
-insertNodelet( getNode( 'Chatterbox', 'nodelet' ) );
-#below: you only get the real deal if you have AJAX
-%]
-&lt;span class=&quot;instant ajax chatterlight_rooms:updateNodelet:Other+Users&quot;&gt;&lt;/span&gt;
-&lt;div id=&quot;chatterlight_rooms&quot;&gt;
- 	&lt;p&gt;&lt;span title=&quot;What chatroom you are in&quot;&gt;Now talking in: [% linkNode($$USER{in_room}) || &quot;outside&quot;; %] &lt;/span&gt; [{changeroom}]
-&lt;/div&gt;
-</doctext>
+  <doctext></doctext>
   <node_id>2007476</node_id>
   <title>Chatterlighter</title>
 </node>
