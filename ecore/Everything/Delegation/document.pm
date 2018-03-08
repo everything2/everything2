@@ -1592,4 +1592,30 @@ sub chatterbox_help_topics
   return $str . "\n</ol>\n\n";
 }
 
+sub chatterlighter
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $nlid = getNode( 'Notifications' , 'nodelet' ) -> { node_id } ;
+  $PAGELOAD->{ pagenodelets } = "$nlid," if $$VARS{ nodelets } =~ /\b$nlid\b/ ;
+  $PAGELOAD->{ pagenodelets } .= getNode( 'New Writeups' , 'nodelet' ) -> { node_id } ;
+
+  my $str = insertNodelet( getNode( 'Chatterbox', 'nodelet' ) );
+  $str .= qq|<span class="instant ajax chatterlight_rooms:updateNodelet:Other+Users"></span>|;
+  $str .= qq|<div id="chatterlight_rooms">|;
+  $str .= qq|<p><span title="What chatroom you are in">Now talking in: |;
+  $str .= linkNode($$USER{in_room}) || "outside";
+  $str .= qq|</span> |;
+  $str .= htmlcode("changeroom");
+  $str .= qq|</div>|;
+
+  return $str;
+}
+
 1;
