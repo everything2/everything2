@@ -1,41 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>[%
-
-my @verbNouns=('Buffalo', 'buffalo', 'police', 'bream', 'perch', 'char', 'people', 'dice', 'cod', 'smelt', 'pants');
-my @intermediatePunctuation=(',', ';', ',', ':', '...');
-my @finalPunctuation=('.', '!', '?');
-
-my $str='';
-my $sentence='';
-
-@verbNouns=('buffalo') if ($query-&gt;param('onlybuffalo'));
-
-while (1) {
-  $sentence='';
-  while (1) {
-
-    $sentence.=$verbNouns[int(rand(@verbNouns))];
-    last if(rand(1)&lt;0.1);
-    $sentence.=$intermediatePunctuation[int(rand(@intermediatePunctuation))] if (rand(1)&lt;0.25);
-    $sentence.=&quot; &quot;;
-  }
-  $sentence=ucfirst($sentence);
-  $sentence.=$finalPunctuation[int(rand(@finalPunctuation))].' ';
-  $str.=$sentence;
-  last if(rand(1)&lt;0.4);
-}
-
-$str.=&quot;&lt;ul&gt;\n\t&lt;li&gt;&quot;.linkNode($NODE, &quot;MOAR&quot;, {moar =&gt; 'more'}).&quot;&lt;/li&gt;\n&quot;;
-$str.=&quot;\n\t&lt;li&gt;&quot;.linkNode($NODE, &quot;Only buffalo&quot;, {onlybuffalo =&gt; 'true'}).&quot;&lt;/li&gt;\n&quot;;
-$str.=&quot;\n\t&lt;li&gt;&quot;.linkNodeTitle(&quot;Buffalo Haiku Generator|In haiku form&quot;).&quot;&lt;/li&gt;\n&quot;;
-$str.=&quot;\n\t&lt;li&gt;&quot;.linkNodeTitle(&quot;Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo|...what?&quot;).&quot;&lt;/li&gt;&lt;/ul&gt;\n&quot;;
-
-return $str;
-
-%]
-
-</doctext>
+  <doctext></doctext>
   <node_id>2062553</node_id>
   <title>Buffalo Generator</title>
 </node>
