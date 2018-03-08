@@ -1,44 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>[%
-
-my @verbNouns=('Buffalo', 'buffalo', 'police', 'people', 'bream', 'perch', 'char', 'dice', 'cod', 'smelt', 'pants');
-my @wordLength=(3,3,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
-my @intermediatePunctuation=(',', ';', ',', ':', '...');
-my @finalPunctuation=('.', '!', '?');
-my @lineLength=(5,7,5); 
-my $str='';
-my $sentence='';
-
-@verbNouns=('buffalo') if ($query-&gt;param('onlybuffalo'));
-
-  $sentence='&lt;p style=&quot;text-align:center&quot;&gt;';
-  for (my $i=0; $i&lt;3; $i++){
-    my $syllables=0;
-    while ($syllables&lt;$lineLength[$i]) {
-      my $wordNumber=(rand(@verbNouns));
-      if ($syllables+$wordLength[$wordNumber]&gt;$lineLength[$i]) {
-        $wordNumber=(4+rand(@verbNouns-4)); # Pick a one-syllable word.
-      }
-      $syllables+=$wordLength[$wordNumber];
-      $sentence.=$verbNouns[$wordNumber];
-      $sentence.=$intermediatePunctuation[int(rand(@intermediatePunctuation))] if (rand(1)&lt;0.1);
-      $sentence.=&quot; &quot;;
-    }
-    $sentence.=&quot;&lt;br /&gt;&quot;;    
-  }
-  $sentence=ucfirst($sentence);
-  #$sentence.=$finalPunctuation[int(rand(@finalPunctuation))].' ';
-  $str.=$sentence.&quot;&lt;/p&gt;&quot;;
-
-
-$str.=&quot;&lt;ul&gt;\n\t&lt;li&gt;&quot;.linkNode($NODE, &quot;Furthermore!&quot;, {moar =&gt; 'further'}).&quot;&lt;/li&gt;\n&quot;;
-$str.=&quot;\t&lt;li&gt;&quot;.linkNodeTitle(&quot;Buffalo Generator|More buffalo, less haiku&quot;).&quot;&lt;/li&gt;\n&quot;;
-$str.=&quot;\t&lt;li&gt;&quot;.linkNodeTitle(&quot;Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo&quot;).&quot;&lt;/li&gt;&lt;/ul&gt;\n&quot;;
-
-return $str;
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>2069205</node_id>
   <title>Buffalo Haiku Generator</title>
 </node>
