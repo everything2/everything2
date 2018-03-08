@@ -1502,4 +1502,53 @@ sub buffalo_generator
 
 }
 
+sub buffalo_haiku_generator
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my @verbNouns=('Buffalo', 'buffalo', 'police', 'people', 'bream', 'perch', 'char', 'dice', 'cod', 'smelt', 'pants');
+  my @wordLength=(3,3,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1);
+  my @intermediatePunctuation=(',', ';', ',', ':', '...');
+  my @finalPunctuation=('.', '!', '?');
+  my @lineLength=(5,7,5); 
+  my $str='';
+  my $sentence='';
+
+  @verbNouns=('buffalo') if ($query->param('onlybuffalo'));
+
+  $sentence='<p style="text-align:center">';
+  for (my $i=0; $i<3; $i++)
+  {
+    my $syllables=0;
+    while ($syllables<$lineLength[$i])
+    {
+      my $wordNumber=(rand(@verbNouns));
+      if ($syllables+$wordLength[$wordNumber]>$lineLength[$i])
+      {
+        $wordNumber=(4+rand(@verbNouns-4)); # Pick a one-syllable word.
+      }
+      $syllables+=$wordLength[$wordNumber];
+      $sentence.=$verbNouns[$wordNumber];
+      $sentence.=$intermediatePunctuation[int(rand(@intermediatePunctuation))] if (rand(1)<0.1);
+      $sentence.=" ";
+    }
+    $sentence.="<br />";    
+  }
+  $sentence=ucfirst($sentence);
+  $str.=$sentence."</p>";
+
+
+  $str.="<ul>\n\t<li>".linkNode($NODE, "Furthermore!", {moar => 'further'})."</li>\n";
+  $str.="\t<li>".linkNodeTitle("Buffalo Generator|More buffalo, less haiku")."</li>\n";
+  $str.="\t<li>".linkNodeTitle("Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo")."</li></ul>\n";
+
+  return $str;
+}
+
 1;
