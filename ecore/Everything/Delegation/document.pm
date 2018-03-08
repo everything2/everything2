@@ -1404,4 +1404,58 @@ sub blind_voting_booth
   return $str;
 }
 
+sub bounty_hunters_wanted
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<style type="text/css"> .mytable th, .mytable td {border: 1px solid silver;padding: 3px;}</style>|;
+
+  $str .= qq|<p align=center><b>[Everything's Most Wanted] is now automated</b></p>|;
+
+  $str .= "<p>Okay, so [mauler|I] just finished fully automating the [Everything's Most Wanted] feature so that noders can manage bounties they have posted by themselves without having to go through the tedious process of messaging an admin several times. Hopefully this feature should be a lot more useful now. [Everything's Most Wanted|Check it out!]</p>";
+
+  $str .= "<p>The five most recently requested nodes are automatically listed below. If you fill one of these, please message the requesting noder to claim your prize. Please see [Everything's Most Wanted|the main list] for full details on conditions and rewards.</p>";
+
+  $str .= qq|<p>&nbsp;</p>|;
+
+  $str .= qq|<table>|;
+
+  $str.="<p><table class='mytable' align=center><tr><th>Requesting Sheriff</th><th>Outlaw Nodeshell</th><th>GP Reward (if any)</th></tr>";
+
+  my $REQ = getVars(getNode('bounty order','setting'));
+  my $OUT = getVars(getNode('outlaws', 'setting'));
+  my $REW = getVars(getNode('bounties', 'setting'));
+  my $HIGH = getVars(getNode('bounty number', 'setting'));
+  my $MAX = 5;
+
+  my $bountyTot = $$HIGH{1};
+  my $numberShown = 0;
+  my $outlawStr = "";
+  my $requester = undef;
+  my $reward = undef;
+
+  for(my $i = $bountyTot; $numberShown < $MAX; $i--)
+  {
+
+    if (exists $$REQ{$i})
+    {
+      $numberShown++;
+      $requester = $$REQ{$i};
+      $outlawStr = $$OUT{$requester};
+      $reward = $$REW{$requester};
+      $str.="<tr><TD>[$requester]</TD><TD>$outlawStr</TD><TD>$reward</TD></tr>";
+    }
+  }
+
+  $str .= "</table><p align=center>([Everything's Most Wanted|see full list])</p><p>&nbsp;</p>";
+
+  return $str;
+}
+
 1;
