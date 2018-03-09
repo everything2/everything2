@@ -13,7 +13,7 @@ if ( $APP-&gt;isGuest($USER) )
 {
  return 'You need an account to access this node.&lt;br /&gt;&lt;br /&gt;.'
    . 'Why not '
-   . linkNode(getNode('Create a New user', 'superdoc'), 'create one')
+   . linkNode(getNode('Sign Up', 'superdoc'), 'create one')
    . '?';
 } 
 my ($name) = @_;
