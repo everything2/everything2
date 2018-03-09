@@ -1680,4 +1680,118 @@ sub clientdev_home
   return $str;
 }
 
+sub confirm_password
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $token = $query->param('token');
+  my $action = $query->param('action');
+  my $expiry = $query->param('expiry');
+  my $username = $query->param('user');
+
+  unless($token and $action and $username)
+  {
+    return qq|<p>To use this page, please click on or copy and paste the link from the email we sent you. </p>|.
+      qq|<p>If we didn't send you an email, you don't need this page.</p>|;
+  }
+  
+  return '<p>Invalid action.</p>' unless($action eq 'activate' || $action eq 'reset');
+
+  my $user = getNode($username, 'user');
+
+  if ($expiry && time() > $expiry)
+  {
+    # make sure unactivated account is gone in case they want to recreate it
+    $DB->nukeNode($user, -1, 'no tombstone') if $action eq 'activate'
+      && $user && !$user -> {lasttime} && $expiry =~ /$$user{passwd}/;
+
+    return $query->p('This link has expired. But you can '
+      .linkNode(getNode($action eq 'reset' ? 'Reset password' : 'Sign up', 'superdoc')
+      , 'get a new one').'.');
+  }
+
+  return $query->p(
+    'The account you are trying to activate does not exist. But you can '
+    .linkNode(getNode('Sign up', 'superdoc') , 'create a new one').'.') unless $user;
+
+  return "<p>We're sorry, but we don't accept new users from the IP address you
+    used to create this account. Please get in touch with us if you think this
+    is a mistake.</p>" if $action eq 'activate' && $user -> {acctlock};
+
+  my $prompt = '';
+
+  if ($query -> param('op') ne 'login')
+  {
+    # check for locked-user infection...
+    my $newVars = getVars($user);
+    if ($$newVars{infected})
+    {
+      # new user infects current user
+      $$VARS{infected} = 1 unless $APP -> isGuest($USER);
+
+    }elsif(htmlcode('checkInfected')){
+      # current user infects new user
+      $$newVars{infected} = 1;
+      setVars($user, $newVars);
+    }
+
+    $action = 'validate' if $$newVars{infected};
+
+    $prompt = "Please log in with your username and password to $action your account";
+
+  }elsif($USER -> {title} ne $username || $$USER{salt} eq $query -> param('oldsalt')){
+    $prompt = 'Password or link invalid. Please try again';
+  }
+
+  $query -> delete('passwd');
+
+  return htmlcode('openform')
+    .$query->fieldset({style => 'width: 25em; max-width: 100%; margin: 3em auto 0'},
+      $query->legend('Log in')
+      .$query -> p($prompt.':')
+      .$query -> p({style => 'text-align: right'},
+        $query -> label('Username:'
+        .$query -> textfield(
+          -name => 'user'
+          , readonly => 'readonly'
+          , size => 30
+          , maxlength => 240))
+          .'<br>'
+        .$query -> label('Password:'
+        .$query -> password_field('passwd', '', 30, 240))
+        .'<br>'
+        .$query->checkbox("expires", "", "+10y", 'stay logged in')
+        .'<br>'
+        .$query -> submit('sockItToMe', $action)
+      )
+    )
+    .$query -> hidden('token')
+    .$query -> hidden('action')
+    .$query -> hidden('expiry')
+    .$query -> hidden('oldsalt', $$USER{salt})
+    .$query -> hidden(-name => 'op', value => 'login', force => '1')
+    .'</form>' if $prompt;
+
+  return "<p>Password updated. You are logged in.</p>" if $action eq 'reset';
+
+  # send welcome message
+  htmlcode('sendPrivateMessage', {
+    'author_id' => getId(getNode('Virgil','user')),
+    'recipient_id' => $USER -> {node_id},
+    'message' => "Welcome to E2! We hope you're enjoying the site. If you haven't already done so,
+    We recommend reading both [E2 Quick Start] and [Links on Everything2] before you start writing anything. If you have any questions or need help, feel free to ask any editor (editors have a \$ next to their names in the Other Users list)" });
+
+  return "<p>Your account has been activated and you have been logged in.</p>
+    <p>Perhaps you'd like to edit " .linkNode($USER, 'your profile')
+    .", or check out the logged-in users' <a href='/'>front page</a>,
+    or maybe just read <a href='/?op=randomnode'>something at random</a>.";
+
+}
+
 1;
