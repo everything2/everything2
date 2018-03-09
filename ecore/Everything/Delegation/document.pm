@@ -1618,4 +1618,66 @@ sub chatterlighter
   return $str;
 }
 
+sub clientdev_home
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+
+  my $str = qq|<h2>Registered Clients</h2>|;
+  $str .= qq|<p>|;
+  $str .= "(See [clientdev: Registering a client|here] for more information as to what this is about)<br />";
+  $str .= qq|<table border="1" cellpadding="1" cellspacing="0">|;
+  $str .= qq|<tr><th>title</th><th>version</th></tr>|;
+
+  my @clientdoc = getNodeWhere ({}, 'e2client', 'title');
+  my $v = undef;
+
+  foreach (@clientdoc)
+  {
+    $v = $_->{'version'};
+    $str .=
+    '<tr><td>' . linkNode($_) . '</td><td>' .((defined $v) && length($v) ? encodeHTML($v,1) : ''). '<td></tr>';
+  }
+
+  $str .= '</table>';
+
+  if($DB->isApproved($USER, $NODE))
+  {
+    $str.=htmlcode('openform');
+    $str.="<input type=\"hidden\" name=\"op\" value=\"new\">\n";
+    $str.="<input type=\"hidden\" name=\"type\" value=\"e2client\">\n";
+    $str.="<input type=\"hidden\" name=\"displaytype\" value=\"edit\">\n";
+    $str.='<h2>Register your client:</h2>';
+    $str.=$query->textfield('node', '', 25);
+    $str.=htmlcode('closeform');
+  }
+
+  $str .= qq|</p>|;
+
+  $str .= qq|<p>Things to (eventually) come:</p>|;
+  $str .= qq|<ol><li>make debates work for general groups</li>|;
+  $str .= qq|<li>list of people, their programming language, the platform, and the project</li>|;
+  $str .= qq|</ol>|;
+
+  $str .= qq|<p>|;
+  $str .= htmlcode("linkGroupMessages","N-Wing");
+  $str .= qq|</p>|;
+
+  $str .= qq|<p><hr /></p>|;
+
+  my $cd = getNode("clientdev","usergroup");
+  if($DB->isApproved($USER, $cd))
+  {
+    $str .= "<p>\n".htmlcode('weblog',"5,$cd->{node_id}")."\n<p>";
+  }
+
+  return $str;
+}
+
 1;
