@@ -1794,4 +1794,192 @@ sub confirm_password
 
 }
 
+sub cool_archive
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p>Welcome to the Cool Archive page -- where you can see the entire|;
+  $str .= qq|library of especially worthwhile content in the mess of Everything history.  Enjoy.|;
+  $str .= qq|<small>(|;
+  $str .= linkNode(getNode('Cool Archive Atom Feed','ticker'),'feed',{lastnode_id=>0});
+  $str .= qq|)</small></p>|;
+
+  $str .= qq|<p><strong>NB</strong>: sorting by something other than most recently or oldest C!ed requires entering a user.</p>|;
+
+  $str .= htmlcode("openform");
+
+  my $isEDev = $APP->isDeveloper($USER);
+  my $isDevServer = 0;
+  my $orderby = $query->param('orderby');
+  my $useraction = $query->param('useraction');
+  $useraction ||= '';
+
+
+  my %orderhash = (
+    'tstamp DESC' => 'Most Recently Cooled',   # coolwriteups
+    'tstamp ASC' => 'Oldest Cooled',           # coolwriteups
+    'title ASC' => 'Title(needs user)',        # node
+    'title DESC' => 'Title (Reverse)' ,        # node
+    'reputation DESC, title ASC' => 'Highest Reputation', # writeup
+    'reputation ASC, title ASC' => 'Lowest Reputation',   # writeup
+    'cooled DESC, title ASC' => 'Most Cooled',            # writeups
+  );
+
+  my $offset = $query->param('place');
+  $offset ||= 0;
+
+  $orderby = '' unless exists $orderhash{$orderby};
+
+  $orderby ||= 'tstamp DESC';
+
+  my @ordervals = keys %orderhash;
+
+  $str.='Order by: '.$query->popup_menu('orderby', \@ordervals, $orderby, \%orderhash);
+  $str.= ' and ';
+  my @actions = ('cooled', 'written');
+  $str.=$query->popup_menu('useraction', \@actions);
+  $str.=' by user: ';
+  $str.= $query->textfield('cooluser', '', 15,30);
+
+
+  $str.=htmlcode('closeform');
+
+  my $user = $APP->htmlScreen($query->param('cooluser'));
+
+  # Select 51 rows so that we know, if 51 come back, we can provide a "next" link
+  #  even though we always display 50 at most
+  my $pageSize = 50;
+  my $limit    = $pageSize + 1;
+
+  my ($csr, $wherestr, $coolQuery) = (undef, undef, undef);
+
+  if($user)
+  {
+    my $U = getNode($user, 'user');
+    return $str . "<br />Sorry, no '$user' is found on the system!" unless $U;
+
+    if ($useraction eq 'cooled')
+    {
+      $coolQuery = qq|
+        select node.*, writeup.*, cw.*
+        from 
+         (select * from coolwriteups where cooledby_user = ? ) cw
+        inner join node
+          on node.node_id = cw.coolwriteups_id
+        inner join writeup
+          on writeup.writeup_id = node.node_id
+        order by $orderby
+        limit ?
+        offset ?|;
+
+      $csr = $DB->{dbh}->prepare($coolQuery);
+      $csr->execute(getId($U), $limit, $offset);
+
+    } elsif ($useraction eq 'written') {
+
+      $coolQuery = qq|
+        select nd.*, writeup.*, coolwriteups.*
+        from 
+        (select * from node where author_user = ? ) nd 
+        inner join coolwriteups
+        on coolwriteups.coolwriteups_id = nd.node_id
+        inner join writeup
+        on writeup.writeup_id = nd.node_id
+        where writeup.cooled != 0
+        order by $orderby
+        limit ?
+        offset ?|;
+
+        $csr = $DB->{dbh}->prepare($coolQuery);
+        $csr->execute(getId($U), $limit, $offset);
+
+    }
+
+  } elsif($orderby =~ /^(title|reputation|cooled) (ASC|DESC)/) {
+
+    return $str . '<br>To sort by title, reputation, or number of C!s, a user name must be supplied.';
+
+  } else {
+
+    # Ordered by tstamp
+    # We can do sorting and limiting in sub-query because it contains our sort field
+
+    # We use "bigLimit" instead of the default limit because it's possible for
+    #  a bunch of cools to point to writeups which no longer exist.  This is our hacky way
+    #  of making sure paging still works ($limit or more results are necessary to trigger
+    #  the "next" link) without doing a huge join
+    my $bigLimit = 10 * $limit;
+
+    $coolQuery = qq|
+      select node.*, writeup.*, cw.*
+      from 
+      (select * from coolwriteups order by $orderby limit ? offset ? ) cw
+      inner join writeup
+        on writeup.writeup_id = cw.coolwriteups_id
+      inner join node
+        on node.node_id = cw.coolwriteups_id|;
+
+    $csr = $DB->{dbh}->prepare($coolQuery);
+    $csr->execute($bigLimit, $offset);
+
+  }
+ 
+  return encodeHTML($coolQuery) unless $csr;
+
+  if ($isEDev and $isDevServer)
+  {
+    my $total = $csr->rows;
+    $str .= "<h3>Query Debug</h3>";
+    $str .= "<pre>" . encodeHTML($coolQuery) . "</pre>" if $isEDev;
+    $str .= "orderby: " . encodeHTML($orderby) . "<br>"
+      . "limit: " . encodeHTML($limit) . "<br>"
+      . "offset: " . encodeHTML($offset) . "<br>"
+      . "<strong>total: " . encodeHTML($total) . "</strong><br>";
+  }
+
+  $str.='<table width="100%" cellpadding="0" cellspacing="0">';
+  $str.='<tr>';
+  $str.='<th>Writeup</th><th>Written by</th><th>Cooled By</th></tr>';
+
+  my $count = 0;
+
+  $str .= htmlcode('show content', $csr,
+    '<tr class="&oddrow">"<td>",parenttitle, type, "</td><td>", author, "</td><td>", cooledby, "</td>"',
+    cansee => sub{
+      return 1 unless ++$count > $pageSize;
+      0;
+    },
+    cooledby => sub{
+      linkNode($_[0]->{cooledby_user});
+    }
+  );
+
+  $csr->finish;
+
+  $str.='<tr><td>';
+  $str.=linkNode($NODE, "<--last $pageSize", {orderby => $orderby, 
+    cooluser => $user, 
+    useraction => $useraction, 
+    place => $offset - $pageSize})
+  if $offset >= $pageSize;
+
+  $str.='</td><td colspan="2" align="right">';
+  $str.=linkNode($NODE, "next $pageSize-->", {orderby => $orderby,
+    cooluser => $user, 
+    useraction => $useraction, 
+    place => $offset + $pageSize})
+  if $count > $pageSize;
+
+  $str.='</td></tr>';
+  $str.='</table>';
+  return $str;
+
+}
+
 1;
