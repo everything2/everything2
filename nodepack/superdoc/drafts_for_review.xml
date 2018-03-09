@@ -1,7 +1,7 @@
 <node>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
-return 'Only [Create a new user|logged-in users] can see drafts.'
+return 'Only [Sign Up|logged-in users] can see drafts.'
 	if $APP-&gt;isGuest($USER);
 
 my $review = getId(getNode('review', 'publication_status'));

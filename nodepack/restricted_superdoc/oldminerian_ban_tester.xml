@@ -22,7 +22,6 @@ return $env_str;
 
 my $str = '';
 
-# Code taken from node 101 -- Create a New User
 my $addr = $ENV{HTTP_X_FORWARDED_FOR} || $ENV{REMOTE_ADDR} || undef;
 my $name = &quot;StinkfistEulogy&quot;;
 
