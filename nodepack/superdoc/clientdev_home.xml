@@ -1,57 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>&lt;h2&gt;Registered Clients&lt;/h2&gt;
-&lt;p&gt;
-(See [clientdev: Registering a client|here] for more information as to what this is about)&lt;br /&gt;
-&lt;table border=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;0&quot;&gt;
-&lt;tr&gt;&lt;th&gt;title&lt;/th&gt;&lt;th&gt;version&lt;/th&gt;&lt;/tr&gt;
-[%
-my @clientdoc = getNodeWhere ({}, 'e2client', 'title');
-my $str;
-my $v;
-foreach (@clientdoc) {
-	$v = $_-&gt;{'version'};
-	$str .=
-		'&lt;tr&gt;&lt;td&gt;' . linkNode($_) . '&lt;/td&gt;&lt;td&gt;' .
-		((defined $v) &amp;&amp; length($v) ? encodeHTML($v,1) : '')
-		. '&lt;td&gt;&lt;/tr&gt;
-';
-}
-$str .= '&lt;/table&gt;
-';
-
-return $str unless $DB-&gt;isApproved($USER, $NODE);
-
-$str.=htmlcode('openform');
-$str.=&quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;op\&quot; value=\&quot;new\&quot;&gt;\n&quot;;
-$str.=&quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;type\&quot; value=\&quot;e2client\&quot;&gt;\n&quot;;
-$str.=&quot;&lt;input type=\&quot;hidden\&quot; name=\&quot;displaytype\&quot; value=\&quot;edit\&quot;&gt;\n&quot;;
-$str.='&lt;h2&gt;Register your client:&lt;/h2&gt;';
-$str.=$query-&gt;textfield('node', '', 25);
-$str.=htmlcode('closeform');
-
-$str;
-%]
-&lt;/p&gt;
-
-
-
-&lt;p&gt;Things to (eventually) come:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;make debates work for general groups&lt;/li&gt;
-&lt;li&gt;list of people, their programming language, the platform, and the project&lt;/li&gt;
-&lt;/ol&gt;
-
-
-
-&lt;p&gt;[{linkGroupMessages:N-Wing}]&lt;/p&gt;
-
-&lt;p&gt;&lt;hr /&gt;&lt;/p&gt;
-[%
-my $cd = getNode(&quot;clientdev&quot;,&quot;usergroup&quot;);
-return '' unless Everything::isApproved($USER, $cd);
-&quot;&lt;p&gt;\n&quot;.htmlcode('weblog',&quot;5,$cd-&gt;{node_id}&quot;).&quot;\n&lt;p&gt;&quot;;
-%]</doctext>
+  <doctext></doctext>
   <node_id>2144912</node_id>
   <title>Clientdev Home</title>
 </node>
