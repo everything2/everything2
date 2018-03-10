@@ -1982,38 +1982,4 @@ sub cool_archive
 
 }
 
-sub create_a_node
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-
-  my $str = qq|<p>This is where you can create a new node.  Just type in the title you want and click the button. Please make sure that you've searched for it a few times and a few different ways first. You might already find what you're looking for.  Check out the [Everything FAQ] if you're a little lost.</p>|;
-
-  return "Sorry, in order to create a node you have to [login] or [Sign Up]" if $APP->isGuest($USER);
-
-  my $newNodeName = $query->param("newNodeName");
-
-  $newNodeName = "" if (!defined $newNodeName);
-
-  $str .= $query->startform ."Node name: ";
-  $str .= $query->textfield(-name => "node",
-    -default => $newNodeName,
-    -size => 50,
-    -maxlength => 100);
-  $str .= "<input TYPE=\"hidden\" NAME=\"op\" VALUE=\"new\">\n";
-  $str .= "<input TYPE=\"hidden\" NAME=\"type\" VALUE=\"e2node\">\n";
-  $str .= "<input TYPE=\"hidden\" NAME=\"e2node_createdby_user\" VALUE=\"".getId($USER)."\">\n";
-
-  $str .= $query->submit("createit", "Create it!") . "\n";
-  $str .= $query->endform;
-  return $str;
-
-}
-
 1;
