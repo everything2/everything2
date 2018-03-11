@@ -1982,4 +1982,53 @@ sub cool_archive
 
 }
 
+sub create_a_registry
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+  
+  my $str = qq|<p>Registries are places where people can share snippets of information about themselves, like their [email address] or [favourite vegetables].</p>|;
+
+  $str .= qq|<p>Before you create any new registries, you should have a look at [the registries] we already have.</p>|;
+
+  $str .= htmlcode("openform");
+
+  if($query->param('sexisgood'))
+  {
+    return $str;
+  }
+
+  if($APP->getLevel($USER) < 8)
+  {
+    return "You would need to be [The Everything2 Voting/Experience System|level 8] to create a registry." unless $APP->getLevel($USER);
+
+  }
+
+  my $labels = ['key','value'];
+  my $rows = [
+    {'key'=>'Title','value'=>
+     '<input type="text" name="node" size="40" maxlength="255">
+      <input type="hidden" name="op" value="new">
+      <input type="hidden" name="type" value="registry">
+      <input type="hidden" name="displaytype" value="display">'
+    },
+    {'key'=>'Description', 'value'=>
+     '<textarea name="registry_doctext" rows="7" cols="50"></textarea>'
+    },
+    {'key'=>'Answer style', 'value'=>
+     $query->popup_menu(-name=>'registry_input_style', -values=>['text','yes/no','date'])
+    },
+    {'key'=>' ','value'=>
+     '<input type="submit" name="sexisgood" value="create">'}
+  ];
+  $str .= $APP->buildTable($labels,$rows,'nolabels');
+  $str .= qq|</form>|;
+  return $str;
+}
+
 1;
