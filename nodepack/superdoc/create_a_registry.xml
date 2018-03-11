@@ -1,34 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>&lt;p&gt;Registries are places where people can share snippets of information about themselves, like their [email address] or [favourite vegetables].&lt;/p&gt;
-&lt;p&gt;Before you create any new registries, you should have a look at [the registries] we already have.&lt;/p&gt;
-[{openform}]
-[%
-return if $query-&gt;param('sexisgood');
-return &quot;You would need to be [The Everything2 Voting/Experience System|level 8] to create a registry.&quot; unless $APP-&gt;getLevel($USER) &gt;= 8;
-
-
-  my $labels = ['key','value'];
-  my $rows = [
-    {'key'=&gt;'Title','value'=&gt;
-     '&lt;input type=&quot;text&quot; name=&quot;node&quot; size=&quot;40&quot; maxlength=&quot;255&quot;&gt;
-      &lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;new&quot;&gt;
-      &lt;input type=&quot;hidden&quot; name=&quot;type&quot; value=&quot;registry&quot;&gt;
-      &lt;input type=&quot;hidden&quot; name=&quot;displaytype&quot; value=&quot;display&quot;&gt;'
-    },
-    {'key'=&gt;'Description', 'value'=&gt;
-     '&lt;textarea name=&quot;registry_doctext&quot; rows=&quot;7&quot; cols=&quot;50&quot;&gt;&lt;/textarea&gt;'
-    },
-    {'key'=&gt;'Answer style', 'value'=&gt;
-     $query-&gt;popup_menu(-name=&gt;'registry_input_style', -values=&gt;['text','yes/no','date'])
-    },
-    {'key'=&gt;' ','value'=&gt;
-     '&lt;input type=&quot;submit&quot; name=&quot;sexisgood&quot; value=&quot;create&quot;&gt;'}
-  ];
-  $APP-&gt;buildTable($labels,$rows,'nolabels');
-%]
-
-&lt;/form&gt;</doctext>
+  <doctext></doctext>
   <node_id>2064103</node_id>
   <title>Create a Registry</title>
 </node>
