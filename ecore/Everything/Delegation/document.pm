@@ -2031,4 +2031,118 @@ sub create_a_registry
   return $str;
 }
 
+sub create_category
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p><b><big>[Everything2 Help] &gt; [Everything2 Categories]</big></b></p>|;
+
+  $str .= "<p>A [category] is a way to group a list of related nodes. You can create a category that only you can edit, a category that anyone can edit, or a category that can be maintained by any [Everything2 Usergroups|usergroup] you are a member of.</p>";
+
+  $str .= qq|<p>The scope of categories is limitless. Some examples might include:</p>|;
+
+  $str .= qq|<ul>|;
+  $str .= qq|<li>$USER->{title}'s Favorite Movies</li>|;
+  $str .= qq|<li>The Definitive Guide To Star Trek</li>|;
+  $str .= qq|<li>Everything2 Memes</li>|;
+  $str .= qq|<li>Funny Node Titles</li>|;
+  $str .= qq|<li>The Best Books of All Time</li>|;
+  $str .= qq|<li>Albums $USER->{title} Owns</li>|;
+  $str .= qq|<li>Writeups About Love</li>|;
+  $str .= qq|<li>Angsty Poetry</li>|;
+  $str .= qq|<li>Human Diseases</li>|;
+  $str .= qq|<li>... the list could go on and on</li>|;
+  $str .= qq|</ul>|;
+
+  $str .= "<p>Before you create your own category you might want to visit the [Display Categories|category display page] to see if you can contribute to an existing category.</p>";
+
+  my $guestUser = $Everything::CONF->guest_user;
+  #
+  # Filter people out who can't create categories
+  #
+  if ( $APP->isGuest($USER) )
+  {
+    $str .= "You must be [login|logged in] to create a category.";
+    return $str;
+  }
+
+  if ( $APP->getLevel($USER) <= 1 )
+  {
+     $str.='Note that until you are at least Level 2, you can only add your own writeups to categories.';
+  }
+
+  # this check may or may not be needed/wanted
+  my $userlock = $DB->sqlSelectHashref('*', 'nodelock', "nodelock_node=$$USER{user_id}");
+  if ($userlock)
+  {
+    return 'You are forbidden from creating categories.';
+  }
+
+  #
+  # Output Form
+  #
+
+  $str .= $query->startform;
+  $query->param("node", "");
+  $str .= '<p><b>Category Name:</b><br />';
+  $str .= $query->textfield(-name => "node",
+    -default => "",
+    -size => 50,
+    -maxlength => 255);
+  $str .= '</p><p><b>Maintainer:</b><br />';
+
+  # Get usergroups current user is a member of
+  my $sql = "SELECT DISTINCT ug.node_id,ug.title 
+    FROM node ug,nodegroup ng 
+    WHERE ng.nodegroup_id=ug.node_id AND ng.node_id=$$USER{user_id} ORDER BY ug.title";
+  my $ds = $DB->{dbh}->prepare($sql);
+  $ds->execute() or return $ds->errstr;
+  my $catType = getId(getType('category'));
+  my @vals = ();
+  my %txts = ();
+
+  # current user
+  $txts{$$USER{user_id}} = "Me ($$USER{title})";
+  push @vals, $$USER{user_id};
+  # guest user will be used for "Any Noder"
+  $txts{$guestUser} = "Any Noder";
+  push @vals, $guestUser;
+  while(my $ug = $ds->fetchrow_hashref)
+  { 
+    $txts{$$ug{node_id}} = $$ug{title} . " (usergroup)";
+     push @vals, $$ug{node_id};
+  }
+
+  $str .= $query->popup_menu("maintainer", \@vals, "", \%txts );
+
+  my @customDimensions = htmlcode('customtextarea');
+
+  # clear op which is set to "" on page load
+  # also clear 'type' which may have been set to navigate to this page
+  $query->delete('op', 'type');
+
+  $str .= '</p>'
+    . '<fieldset><legend>Category Description</legend>'
+    . $query->textarea(
+      -name => "category_doctext"
+      , -id => "category_doctext"
+      , -class => "formattable"
+      , @customDimensions
+    )
+    . '</fieldset>'
+    . $query->hidden(-name => "op", -value => "new")
+    . $query->hidden(-name => "type", -value => $catType);
+
+  $str .= $query->submit("createit", "Create It!");
+  $str .= $query->endform;
+
+  return $str;
+}
+
 1;
