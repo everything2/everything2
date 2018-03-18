@@ -2325,4 +2325,167 @@ sub disable_actions
   return $str;
 }
 
+sub display_categories
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $canContributePublicCategory = ($APP->getLevel($USER) >= 1);
+  my $guestUser = $Everything::CONF->guest_user;
+  my $uid = $$USER{user_id};
+  my $isCategory = 0;
+  my $linktype = getId(getNode('category', 'linktype'));
+
+  my $sql = '';
+  my $ds = undef;
+  my $str = '';
+  my $ctr = 0;
+
+  my $count = 50;
+  my $page = int($query->param('p'));
+  if ($page < 0)
+  {
+    $page = 0;
+  }
+
+  my $maintainerName = $query->param('m');
+  $maintainerName =~ s/^\s+|\s+$//g;
+  my $maintainer = undef;
+
+  if (length($maintainerName) > 0)
+  {
+    $maintainer = getNode($maintainerName, 'user');
+    if (!$$maintainer{node_id})
+    {
+      $maintainer = getNode($maintainerName, 'usergroup');
+      if (!$$maintainer{node_id})
+      {
+        $maintainerName = '';
+        $$maintainer{node_id} = 0;
+      }
+    }
+  }
+
+  my $userType = getId(getType('user'));
+  my $usergroupType = getId(getType('usergroup'));
+  my $categoryType = getId(getType('category'));
+
+  my $order = $query->param('o');
+
+  $str .= qq|<form method="get" action="/index.pl">|;
+  $str .= qq|<input type="hidden" name="node_id" value="|.getId($NODE);
+  $str .= qq|" />|;
+  $str .= qq|<table><tr><td><b>Maintained By:</b></td><td>|;
+  $str .= $query->textfield(-name => "m",
+    -default => $maintainerName,
+    -size => 25,
+    -maxlength => 255);
+
+  $str .= qq| (leave blank to list all categories)</td>|;
+  $str .= qq|</tr><tr><td><b>Sort Order:</b></td><td>|;
+  $str .= qq|<select name="o">|;
+  $str .= qq|<option value="">Category Name</option>|;
+  $str .= qq|<option value="m">Maintainer</option>|;
+  $str .= qq|</select></td></tr></table>|;
+  $str .= $query->submit("submit", "Submit");
+  $str .= $query->endform;
+
+  my $contribute = "";
+  $contribute = "<th>Can I Contribute?</th>" if !$APP->isGuest($USER);
+
+  $str .= qq|<table width="100%"><tr>|;
+  $str .= qq|<th>Category</th><th>Maintainer</th>$contribute</tr>|;
+
+  my $orderBy = 'n.title,a.title';
+
+  if ($order eq 'm')
+  {
+    $orderBy='a.title,n.title';
+  }
+
+  my $authorRestrict = "";
+  $authorRestrict = "AND n.author_user = $$maintainer{node_id}\n" if ($$maintainer{node_id} > 0);
+
+  my $startAt = $page * $count;
+
+  $sql = "SELECT n.node_id, n.title, n.author_user
+    , a.title AS maintainer
+    , a.type_nodetype AS maintainerType
+    FROM node n
+    JOIN node a
+    ON n.author_user = a.node_id
+    WHERE n.type_nodetype = $categoryType
+    $authorRestrict
+    AND n.title NOT LIKE '%\_root'
+    ORDER BY $orderBy
+    LIMIT $startAt,$count";
+
+  $ds = $DB->{dbh}->prepare($sql);
+  $ds->execute() or return $ds->errstr;
+  while(my $n = $ds->fetchrow_hashref)
+  {
+    my $maintName = $$n{maintainer};
+    my $maintId = $$n{author_user};
+    my $isPublicCategory = ($guestUser == $maintId);
+
+    $ctr++;
+    if($ctr % 2 == 0)
+    {
+      $str .= '<tr class="evenrow">';
+    }else{
+      $str .= '<tr class="oddrow">';
+    }
+    $str .= '<td>'.linkNode($$n{node_id}, $$n{title}).'</td>';
+
+    my $authorLink = linkNode($$n{author_user}, $maintName);
+    $authorLink = "Everyone" if $isPublicCategory;
+    $authorLink .= ' (usergroup)' if ($$n{maintainerType} == $usergroupType);
+
+    $str .= qq'<td style="text-align:center">$authorLink</td>\n';
+
+    if (!$APP->isGuest($USER))
+    {
+      $str .= '<td style="text-align:center">';
+      if ($isPublicCategory && $canContributePublicCategory or $maintId == $uid)
+      {
+        $str .= '<b>Yes!</b>';
+      }elsif ($$n{maintainerType} == $usergroupType && $APP->inUsergroup($uid, $maintName)){
+        $str .= '<b>Yes!</b>';
+      }else{
+        $str .= 'No';
+      }
+      $str .= "</td>\n"
+    }
+  
+    $str .= '</tr>';
+  }
+
+  if ($ctr <= 0)
+  {
+    $str .= '<tr><td colspan="2"><em>No categories found!</em></td></tr>';
+  }
+  $str .= '</table>';
+
+  $str .= '<p style="text-align:center">';
+  if ($page > 0)
+  {
+    $str .= '<a href="/index.pl?node_id='.getId($NODE).'&p='.($page-1).'&m='.$maintainerName.'&o='.$order.'">&lt;&lt; Previous</a>';
+  }
+
+  $str .= ' | <b>Page '.($page+1).'</b> | ';
+  if ($ctr >= $count)
+  {
+    $str .= '<a href="/index.pl?node_id='.getId($NODE).'&p='.($page+1).'&m='.$maintainerName.'&o='.$order.'">Next &gt;&gt;</a>';
+  }
+  $str .= '</p>';
+
+  return $str;
+
+}
+
 1;
