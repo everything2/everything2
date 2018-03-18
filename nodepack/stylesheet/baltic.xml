@@ -499,8 +499,6 @@ li span.type{
     padding-left: 4ex;
 }
 
-/* What's up with these &quot;metal inks&quot;? (= Donation Box; anything else?) */
-
 #metalinks {
     margin: 2px;
     padding:  0;
@@ -1020,7 +1018,7 @@ li.nodeshell{
 div#surveymessage {
         display: none;
 }</doctext>
-  <contentversion>105</contentversion>
+  <contentversion>106</contentversion>
   <s3bucket></s3bucket>
   <node_id>1902801</node_id>
   <title>Baltic</title>
