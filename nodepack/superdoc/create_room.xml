@@ -1,32 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>[%
-my $isChanop = $APP-&gt;isChanop($USER);
-
-if ($APP-&gt;getLevel($USER) &lt; $Everything::CONF-&gt;create_room_level
-   and not isGod($USER)
-   and not $isChanop) {
-  return &quot;&lt;I&gt;Too young, my friend.&lt;/I&gt;&quot;;
-}
-
-my $str;
-
-if ($APP-&gt;isSuspended($USER, 'room')) {
-   return '&lt;h2 class=&quot;warning&quot;&gt;You\'ve been suspended from creating new rooms!&lt;/h2&gt;';
-}
-$query-&gt;delete('op', 'type', 'node');
-$str.=$query-&gt;start_form;
-$str.=$query-&gt;hidden(-name =&gt; 'op', -value =&gt; 'new');
-$str.=$query-&gt;hidden(-name =&gt; 'type', -value =&gt; 'room');
-$str.='Room name: ';
-$str.=$query-&gt;textfield(-name =&gt; 'node', -size =&gt; 28, -maxlenght =&gt; 80);
-$str.=&quot;&lt;P&gt;And a few words of description: &quot;
-     .$query-&gt;textarea(&quot;room_doctext&quot;, &quot;&quot;, 5, 60, &quot;&quot;, &quot;wrap=virtual&quot;)
-     ;
-$str.=$query-&gt;submit(&quot;enter&quot;);
-$str.=$query-&gt;end_form;
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>719799</node_id>
   <title>Create Room</title>
 </node>
