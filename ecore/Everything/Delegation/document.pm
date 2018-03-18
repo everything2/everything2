@@ -2241,4 +2241,23 @@ sub database_lag_o_meter
   return $str;
 }
 
+sub decloaker
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p><em>Or to drown my clothes, and say I was stripped.</em> --- [Parolles]</p>|;
+
+  return qq|$str The Treaty of Algeron prohibits your presence.| if $APP->isGuest($USER);
+  $APP->uncloak($USER, $VARS);
+  $str .=  '...like a new-born babe....';
+
+  return $str;
+}
+
 1;
