@@ -2451,7 +2451,7 @@ sub display_categories
     if (!$APP->isGuest($USER))
     {
       $str .= '<td style="text-align:center">';
-      if ($isPublicCategory && $canContributePublicCategory or $maintId == $uid)
+      if (($isPublicCategory and $canContributePublicCategory) or ($maintId == $uid))
       {
         $str .= '<b>Yes!</b>';
       }elsif ($$n{maintainerType} == $usergroupType && $APP->inUsergroup($uid, $maintName)){
@@ -2488,4 +2488,90 @@ sub display_categories
 
 }
 
+sub do_you_c__what_i_c_
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<h4>What It Does</h4><ul>|;
+  $str .= qq|<li>Picks up to 100 things you've cooled.</li>|;
+  $str .= qq|<li>Finds everyone else who has cooled those things, too, then uses the top 20 of those (your "best friends.")</li>|;
+  $str .= qq|<li>Finds the writeups that have been cooled by your "best friends" the most.</li>|;
+  $str .= qq|<li>Shows you the top 10 from that list that you haven't voted on and have less than 10C!s.</li>|;
+
+  $str .= qq|</ul>|;
+
+  my $user = $query->param('cooluser');
+  $str.=htmlcode('openform');
+  $str.='<p>Or you can enter a user name to see what we think <em>they</em> would like:'.$query->textfield('cooluser', encodeHTML($user), 15,30);
+  $str.=htmlcode('closeform').'</p>';
+
+
+  my $user_id = $$USER{user_id};
+
+  my $pronoun = 'You';
+  if($user)
+  {
+    my $U = getNode($user, 'user');
+    return $str . "<br />Sorry, no '" . encodeHTML($user) . "' is found on the system!" unless $U;
+    $user_id=$$U{user_id};
+    $pronoun='They';
+  }
+
+  my $numCools = 100;
+  my $numFriends = 20;
+  my $numWriteups = 10;
+  my $maxCools = $query->param('maxcools') || 10;
+
+  my $coolList = $DB->sqlSelectMany("coolwriteups_id","coolwriteups","cooledby_user=$user_id order by rand() limit $numCools");
+  return $str."$pronoun haven't cooled anything yet. Sorry - you might like to try [The Recommender], which uses bookmarks, instead." unless $coolList->rows;
+
+  my @coolStr = ();
+
+  while (my $c = $coolList->fetchrow_hashref)
+  {
+    push (@coolStr, $$c{coolwriteups_id});
+  }
+
+  my $coolStr = join(',',@coolStr);
+
+  my $userList = $DB->sqlSelectMany("count(cooledby_user) as ucount, cooledby_user","coolwriteups","coolwriteups_id in ($coolStr) and cooledby_user!=$user_id group by cooledby_user order by ucount desc limit $numFriends");
+
+  return $str."$pronoun don't have any 'best friends' yet. Sorry." unless $userList->rows;
+
+
+  my @userSet = ();
+
+  while (my $u = $userList->fetchrow_hashref)
+  {
+    push (@userSet, $$u{cooledby_user});
+  }
+
+  my $userStr = join(',',@userSet);
+
+  my $recSet = $DB->sqlSelectMany("count(coolwriteups_id) as coolcount, coolwriteups_id", "coolwriteups", "(select count(*) from coolwriteups as c1 where c1.coolwriteups_id = coolwriteups.coolwriteups_id and c1.cooledby_user=$user_id)=0 and (select author_user from node where node_id=coolwriteups_id)!=$user_id and cooledby_user in (".$userStr.") group by coolwriteups_id having coolcount>1 order by coolcount desc limit 300");
+
+  my $count = undef;
+
+  while (my $r = $recSet->fetchrow_hashref)
+  {
+    my $n = getNode($$r{coolwriteups_id});
+    next unless $$n{type}{title} eq 'writeup';
+    next if $APP->hasVoted($n, $USER);
+    next if $$n{author_user} == 176726; ##Don't show Webby's writeups
+    next if $$n{cooled} > $maxCools;
+    next unless $n;
+    $count++;
+    $str .= linkNode($n)."<br />";
+    last if ($count == $numWriteups);
+  }
+
+  return $str;
+
+}
 1;
