@@ -2145,4 +2145,44 @@ sub create_category
   return $str;
 }
 
+sub create_room
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $isChanop = $APP->isChanop($USER);
+
+  if ($APP->getLevel($USER) < $Everything::CONF->create_room_level
+    and not isGod($USER)
+    and not $isChanop)
+  {
+    return "<I>Too young, my friend.</I>";
+  }
+
+  my $str = "";
+
+  if ($APP->isSuspended($USER, 'room'))
+  {
+    return '<h2 class="warning">You\'ve been suspended from creating new rooms!</h2>';
+  }
+
+  $query->delete('op', 'type', 'node');
+  $str.=$query->start_form;
+  $str.=$query->hidden(-name => 'op', -value => 'new');
+  $str.=$query->hidden(-name => 'type', -value => 'room');
+  $str.='Room name: ';
+  $str.=$query->textfield(-name => 'node', -size => 28, -maxlenght => 80);
+  $str.="<P>And a few words of description: "
+    .$query->textarea("room_doctext", "", 5, 60, "", "wrap=virtual");
+  $str.=$query->submit("enter");
+  $str.=$query->end_form;
+
+  return $str;
+}
+
 1;
