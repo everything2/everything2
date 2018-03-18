@@ -1,45 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>&lt;p&gt;
-[%
-my %stats;
-my %vars;
-
-my $csr = $DB-&gt;{dbh}-&gt;prepare('show status');
-$csr-&gt;execute;
-
-while (my ($key, $val) = $csr-&gt;fetchrow) {
-  $stats{$key} = $val;
-}
-$csr-&gt;finish;
-$csr = $DB-&gt;{dbh}-&gt;prepare('show variables');
-$csr-&gt;execute;
-while (my ($key, $val) = $csr-&gt;fetchrow) {
-  $vars{$key} = $val;
-}
-$csr-&gt;finish;
-
-$stats{smq} = 
-sprintf(&quot;%.2f&quot;, 1000000*$stats{Slow_queries}/$stats{Questions});
-        my $time         = $stats{Uptime};
-        my ($d,$h,$m,$s) = (0, 0, 0, 0);
-
-        $d += int($time / (60*60*24)); $time -= $d * (60*60*24);
-        $h += int($time / (60*60));    $time -= $h * (60*60);
-        $m += int($time / (60));       $time -= $m * (60);
-        $s += int($time);
-
-        my $uptime = sprintf(&quot;%d+%02d:%02d:%02d&quot;, $d, $h, $m, $s);
-
-my $str;
-$str .= &quot;Uptime: $uptime&lt;br&gt;
-Queries: &quot;. $APP-&gt;commifyNumber($stats{Questions}) .&quot;&lt;br&gt;
-Slow (&gt;$vars{long_query_time} sec): &quot;.$APP-&gt;commifyNumber($stats{Slow_queries}).&quot;&lt;br&gt;
-Slow/Million: $stats{smq}&lt;br&gt;&quot;;
-
-$str;
-%]
-&lt;p&gt;Slow/Million Queries is a decent barometer of how much lag the Database is hitting.  Rising=bad, falling=good.</doctext>
+  <doctext></doctext>
   <node_id>1054397</node_id>
   <title>Database Lag-o-meter</title>
 </node>
