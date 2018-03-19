@@ -2574,4 +2574,159 @@ sub do_you_c__what_i_c_
   return $str;
 
 }
+
+sub drafts
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+
+  my $str = qq|<div id="pagebody">|;
+  my $user = $query -> param('other_user');
+  my $username = '';
+
+  my $showhidenukedlink = undef;
+  my $shownukedlinkparams = {};
+
+  if ($user)
+  {
+    $shownukedlinkparams->{other_user} = $user;
+    my $u = getNode($user, 'user');
+    return '<div id="pagebody"><p>No user named "'.$query -> escapeHTML($user).'" found.</p></div>' unless $u;
+    $user = $$u{node_id};
+    # record displayed status:
+    $username = $$u{title} unless $user == $$USER{node_id};
+  }
+
+  if($query->param("shownuked"))
+  {
+    $showhidenukedlink = linkNode($NODE, "Hide nuked", $shownukedlinkparams);
+  }else{
+    $shownukedlinkparams->{shownuked} = 1;
+    $showhidenukedlink = linkNode($NODE, "Show nuked", $shownukedlinkparams);
+  }
+
+  $showhidenukedlink = "<strong>($showhidenukedlink)</strong>";
+
+
+
+  $user ||= $$USER{node_id};
+  $query -> delete('other_user') unless $username;
+
+  my $status = {}; # plural of Latin 'status' is 'status'
+  my ($ps, $cansee, $collaborators, $nukeeslast, $title, $showhide, $cs, $nukees) = ('','','','','','','','');
+  my $draftType = getType('draft');
+
+  my $nukedStatus = getNode("nuked", "publication_status");
+
+  my $draftStatus = "publication_status != $$nukedStatus{node_id}";
+
+  if($query->param("shownuked"))
+  {
+    $draftStatus = "publication_status = $$nukedStatus{node_id}";
+  }
+
+  my $statu = sub{
+    $_[0]->{type} = $draftType;
+    $ps = $_[0]->{publication_status};
+    if ($$status{$ps})
+    {
+      $ps = $$status{$ps};
+    }else{ # only look up each status once
+      $ps = $ps ? $$status{$ps} = getNodeById($ps)->{title} : 'broken';
+      $$status{$ps} = 1 unless $username; # to track if any of mine nuked
+    }
+    return qq'<td class="status">$ps</td>';
+  };
+
+  my @showit = (
+    'title, author_user, publication_status, collaborators'
+    , 'node JOIN draft ON node_id = draft_id'
+    , "author_user = $user AND type_nodetype = $$draftType{node_id} AND $draftStatus"
+    , 'ORDER BY title');
+
+  unless ($username)
+  {
+    $title = 'Your drafts';
+    $cs = '<th>Collaborators';
+    $collaborators = sub{
+      qq'<td class="collaborators">$_[0]->{collaborators}</td>';
+    };
+
+    $showit[-1] = 'ORDER BY publication_status='
+      .getId(getNode('nuked', 'publication_status'))
+      .', title' if $nukeeslast;
+
+    $showit[-1] .= ' LIMIT 25';
+    unshift @showit, 'show paged content';
+
+  }else{
+    $title = "${username}'s drafts (visible to you)";
+    $cansee = sub { 
+      my $draft = shift; return $APP->canSeeDraft($USER, $draft, "find")
+    };
+
+    $cs = '<th title="shows whether you or a usergroup you are in is a collaborator on this draft">Collaborator?';
+    $collaborators = sub{
+      my $yes = '&nbsp;';
+      if ($_[0]->{collaborators})
+      {
+        if ($_[0]->{collaborators} =~ qr/(?:^|,)\s*$$USER{title}\s*(?:$|,)/i)
+        {
+          $yes = 'you';
+        }elsif ($ps = 'private' || $APP->canSeeDraft($USER, $_[0], 'edit') ){
+          $yes = 'group';
+        }
+      }
+      return qq'<td class="collaborators">$yes</td>';
+    };
+
+    @showit = ('show content', $DB -> sqlSelectMany(@showit));
+  }
+
+  my ($drafts, $navigation, $count) = htmlcode(
+    @showit
+    , '<tr class="&oddrow"> status, "<td>", title, "</td>", coll'
+    , cansee => $cansee, status => $statu, coll => $collaborators);
+
+  if ($drafts eq '')
+  {
+    if (!$username)
+    {
+      $str .= qq|<p>You have no drafts.</p>$showhidenukedlink|;
+    } else {
+      $str .= qq|<p>[${username}[user]] has no drafts visible to you.</p>$showhidenukedlink|;
+    }
+  }else{
+
+    my $showcount = "";
+    $showcount = "<p>You have $count drafts.</p>" if $navigation;
+
+    my $outstr = "";
+    $outstr = "<h2>$title</h2>$showhidenukedlink<br />
+      $showcount
+      <table><tr><th>status</th><th>title</th>$cs</th></tr>
+      $drafts
+      </table>
+      $nukees
+      $navigation<br />" if $drafts ne '';
+
+    $str .= $outstr;
+  }
+  $str .= qq|</div>|; #pagebody
+  $str .= htmlcode("openform","pagefooter");
+  
+  unless($query->param('other_user'))
+  {
+    $str .= htmlcode('editwriteup');
+  }
+  $str .= qq|</form>|;
+
+  return $str;
+}
 1;
