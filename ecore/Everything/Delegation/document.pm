@@ -2729,4 +2729,69 @@ sub drafts
 
   return $str;
 }
+
+sub drafts_for_review
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return 'Only [Sign Up|logged-in users] can see drafts.' if $APP->isGuest($USER);
+
+  my $review = getId(getNode('review', 'publication_status'));
+  my @noteResponse = ();
+  @noteResponse = (
+    ", (Select CONCAT(timestamp, ': ', notetext) From nodenote As response
+    Where response.nodenote_nodeid = request.nodenote_nodeid
+    And response.timestamp > request.timestamp
+    Order By response.timestamp Desc Limit 1) as latestnote,
+    (Select count(*) From nodenote As response
+    Where response.nodenote_nodeid = request.nodenote_nodeid
+    And response.timestamp > request.timestamp) as notecount"
+    , "notecount > 0,"
+    , '<th align="center" title="node notes">N?</th>'
+    , 'notes') if $APP->isEditor($USER);
+
+  my $drafts = $DB -> sqlSelectMany(
+    "title, author_user, request.timestamp AS publishtime $noteResponse[0]"
+    , "draft
+    JOIN node on node_id = draft_id
+    JOIN nodenote AS request ON draft_id = nodenote_nodeid
+    AND request.noter_user = 0
+    LEFT JOIN nodenote AS newer
+      ON request.nodenote_nodeid = newer.nodenote_nodeid
+      AND newer.noter_user = 0
+      AND request.timestamp < newer.timestamp"
+    , "publication_status = $review
+    AND newer.timestamp IS NULL"
+    , "ORDER BY $noteResponse[1] request.timestamp"
+  );
+
+  my %funx = (
+    startline => sub{
+      $_[0] -> {type}{title} = 'draft';
+      '<td>';
+    },
+    notes => sub{
+      $_[0]{latestnote} =~ s/\[user\]//;
+      my $note = encodeHTML($_[0]{latestnote}, 'adv');
+      '<td align="center">'
+      .($_[0]{notecount} ? linkNode($_[0], $_[0]{notecount},
+      {'#' => 'nodenotes', -title => "$_[0]{notecount} notes; latest $note"})
+      : '&nbsp;')
+      .'</td>';
+    }
+  );
+
+  return "<table><tr><th>Draft</th><th>For review since</th>$noteResponse[2]</tr>"
+    .htmlcode('show content', $drafts
+    , qq!<tr class="&oddrow"> startline, title, byline, "</td>
+    <td align='right'>", listdate, "</td>", $noteResponse[3]!,
+    %funx).'</table>';
+}
+
 1;
