@@ -1,68 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>[%
-my $showTechStuff = 1;	#TODO maybe only show for @$% people later
-my $list;
-my $author;
-my $lnode = $query-&gt;param('lastnode_id') || 0;
-my $UID = $$USER{node_id};
-my $oddrow = '';
-my $ONE;
-
-#TODO - get fancy by also showing dates, if multiple of same type by same author
-foreach my $N (@{ $$NODE{group} }) {
-	$N = $DB-&gt;getNodeById($N, 'light');
-	next unless canReadNode($USER, $N);
-	$author = $$N{author_user};
-	next if $$N{type}{title} eq 'draft' and !$APP-&gt;canSeeDraft($USER, $N, 'find');
-	$ONE = $list ? undef : $N;
-	$oddrow = ($oddrow ? '' : ' class=&quot;oddrow&quot;');
-	$list .= &quot;&lt;tr$oddrow&gt;&quot;;
-	if($showTechStuff) {
-		$list .= '&lt;td&gt;'.$$N{node_id}.'&lt;/td&gt;';
-	}
-	$list .= '&lt;td&gt;' . linkNode($N,'',{lastnode_id=&gt;$lnode}) . '&lt;/td&gt;&lt;td&gt;' . $$N{type}{title}.'&lt;/td&gt;&lt;td&gt;';
-	if($author) {
-		$list .= '&lt;strong&gt;' if $author==$UID;
-		$list .= linkNode($author,'',{lastnode_id=&gt;0});
-		$list .= '&lt;/strong&gt;' if $author==$UID;
-	}
-	$list .= '&lt;td&gt;'.$$N{createtime}.'&lt;/td&gt;';
-	$list .= '&lt;/td&gt;&lt;/tr&gt;
-';
-}
-
-unless ($list){
-	$NODE = $GNODE = getNodeById($Everything::CONF-&gt;system-&gt;{not_found_node});
-	return parseCode($$NODE{doctext});
-}elsif($ONE){
-	$HEADER_PARAMS{-status} = 303;
-	$HEADER_PARAMS{-location} = htmlcode('urlToNode', $ONE);
-	return;
-}
-
-my $str = '&lt;p&gt;&lt;big&gt;Multiple nodes named &quot;'.$query-&gt;param('node')
-.'&quot; were found:&lt;/big&gt;&lt;/p&gt;
-&lt;table&gt;
-&lt;tr&gt;';
-
-$str .= '&lt;th&gt;node_id&lt;/th&gt;' if $showTechStuff;
-
-&lt;&lt;ENDITALL ;
-$str&lt;th&gt;title&lt;/th&gt;&lt;th&gt;type&lt;/th&gt;&lt;th&gt;author&lt;/th&gt;&lt;th&gt;createtime&lt;/th&gt;&lt;/tr&gt;
-$list
-&lt;/table&gt;
-&lt;p&gt;On Everything2, different things can have the same title.
-For example, a user could have the name &quot;aardvark&quot;, but there could also be a 
-page full of writeups called &quot;[aardvark]&quot;.&lt;/p&gt;
-&lt;p&gt;If you are looking for information about a topic, choose
-&lt;strong&gt;e2node&lt;/strong&gt;; this is where people's writeups are shown.&lt;br&gt;
-If you want to see a user's profile, pick &lt;strong&gt;user&lt;/strong&gt;.&lt;br&gt;
-Other types of page, such as &lt;strong&gt;superdoc&lt;/strong&gt;, are special
-and may be interactive or help keep the site running.
-&lt;/p&gt;
-ENDITALL
-%]</doctext>
+  <doctext></doctext>
   <node_id>382987</node_id>
   <title>Duplicates Found:</title>
 </node>

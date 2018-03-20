@@ -4,13 +4,13 @@
 [%
   my $str = &quot;&quot;;
   my $count = 0;
-  my @nodes = $DB-&gt;getNodeWhere({type_nodetype =&gt; getNode(&quot;htmlpage&quot;,&quot;nodetype&quot;)-&gt;{node_id}});
+  my @nodes = $DB-&gt;getNodeWhere({type_nodetype =&gt; getNode(&quot;superdoc&quot;,&quot;nodetype&quot;)-&gt;{node_id}});
 
-  foreach my $n (@nodes)
+  foreach my $n (sort {$a-&gt;{title} cmp $b-&gt;{title}} @nodes)
   {
 
     my $fullnode = $DB-&gt;getNodeById($n-&gt;{node_id});
-    next unless($fullnode-&gt;{page} =~ /\S/);
+    next unless($fullnode-&gt;{doctext} =~ /\S/);
     $count++;    
     $str .= linkNodeTitle($n-&gt;{title}).&quot;&lt;br&gt;&quot;;
   }
@@ -18,15 +18,7 @@
   return &quot;To go: $count&lt;br&gt;$str&lt;br&gt;&quot;;
 
 %]
-[%
-my $str = &quot;&quot;; 
-foreach my $key (keys %ENV){
-  $str .= &quot;$key: $ENV{$key}&lt;br /&gt;&quot;;
-  }
-
-return $str;
-
-%]</doctext>
+</doctext>
   <node_id>1146920</node_id>
   <title>jaybonci's sandbox</title>
 </node>
