@@ -2794,4 +2794,77 @@ sub drafts_for_review
     %funx).'</table>';
 }
 
+sub duplicates_found_
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $showTechStuff = 1;	#TODO maybe only show for @$% people later
+  my $list = undef;
+  my $author = '';
+  my $lnode = $query->param('lastnode_id') || 0;
+  my $UID = $$USER{node_id};
+  my $oddrow = '';
+  my $ONE = undef;
+
+  #TODO - get fancy by also showing dates, if multiple of same type by same author
+  foreach my $N (@{ $$NODE{group} })
+  {
+    $N = $DB->getNodeById($N, 'light');
+    next unless canReadNode($USER, $N);
+    $author = $$N{author_user};
+    next if $$N{type}{title} eq 'draft' and !$APP->canSeeDraft($USER, $N, 'find');
+    $ONE = $list ? undef : $N;
+    $oddrow = ($oddrow ? '' : ' class="oddrow"');
+    $list .= "<tr$oddrow>";
+    if($showTechStuff)
+    {
+      $list .= '<td>'.$$N{node_id}.'</td>';
+    }
+
+    $list .= '<td>' . linkNode($N,'',{lastnode_id=>$lnode}) . '</td><td>' . $$N{type}{title}.'</td><td>';
+
+    if($author)
+    {
+      $list .= '<strong>' if $author==$UID;
+      $list .= linkNode($author,'',{lastnode_id=>0});
+      $list .= '</strong>' if $author==$UID;
+    }
+
+    $list .= '<td>'.$$N{createtime}.'</td>';
+    $list .= '</td></tr>';
+  }
+
+  unless ($list)
+  {
+    $NODE = $Everything::HTML::GNODE = getNodeById($Everything::CONF->system->{not_found_node});
+    return parseCode($$NODE{doctext});
+  }elsif($ONE){
+    $Everything::HTML::HEADER_PARAMS{-status} = 303;
+    $Everything::HTML::HEADER_PARAMS{-location} = htmlcode('urlToNode', $ONE);
+    return;
+  }
+
+  my $str = '<p><big>Multiple nodes named "'.$query->param('node').'" were found:</big></p><table><tr>';
+
+  $str .= '<th>node_id</th>' if $showTechStuff;
+  $str .= qq|<th>title</th><th>type</th><th>author</th><th>createtime</th></tr>|;
+  $str .= $list; 
+  $str .= qq|</table>|;
+
+  $str .= qq|<p>On Everything2, different things can have the same title.|;
+  $str .= qq| For example, a user could have the name "aardvark", but there could also be a page full of writeups called "[aardvark]".</p>|;
+  $str .= qq|<p>If you are looking for information about a topic, choose |;
+  $str .= qq|<strong>e2node</strong>; this is where people's writeups are shown.<br>|;
+  $str .= qq|If you want to see a user's profile, pick <strong>user</strong>.<br>|;
+  $str .= qq|Other types of page, such as <strong>superdoc</strong>, are special
+and may be interactive or help keep the site running.</p>|;
+  return $str;
+}
+
 1;
