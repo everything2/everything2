@@ -3037,4 +3037,100 @@ sub e2_bouncer
 
 }
 
+sub e2_collaboration_nodes
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str .= '';
+
+  # To be done:
+  #   "create" for crtleads:
+  #       allow "create by all" with a create maintainance that
+  #       forbids preterite users from creating;
+  # 
+  #   "delete" for editors/crtleads:
+  #       allow "delete by all" with delete maintainance, or 
+  #       just allow delete by CEs and let non-CE crtleads lump
+  #       it?
+  #
+  #   Test, test, test the locking code.
+  #       Maybe ask nate how that feature was intended to work, 
+  #       or hey, maybe it exists in a later version of 
+  #       ecore...?
+  #
+  #   Damn, we need ACLs.
+
+  #---------------------------------------------------------
+  # Is the user allowed in?
+
+  return "<p>Permission denied.</p>" unless ( $APP->isEditor($USER) );
+
+  $str .= qq|<p><b>Here's how these puppies operate:</b></p>|;
+  $str .= qq|<dl><dt><b>Access</b></dt><dd>|;
+  $str .= qq|<p>Any CE or god can view or edit any collaboration node. A regular |;
+  $str .= qq|user can't, unless one of us explicitly grants access. You grant |;
+  $str .= qq|access by editing the node and adding the user's name to the |;
+  $str .= qq|"Allowed Users" list for that node (just type it into the box; it |;
+  $str .= qq|should be clear). You can also add a user<em>group</em> to the |;
+  $str .= qq|list: In that case, every user who belongs to that group will have |;
+  $str .= qq|access (<em>full</em> access) to the node. </p></dd> |;
+
+  $str .= qq|<dt><b>Locking</b></dt>|;
+  $str .= qq|<dd>|;
+  $str .= qq|<p>The only difficulty with this is the fact that two different |;
+  $str .= qq|users will, inevitably, end up trying to edit the same node at the |;
+  $str .= qq|same time. They'll step on each other\'s changes. We handle this |;
+  $str .= qq|problem the way everybody does: When somebody begins editing a |;
+  $str .= qq|collaboration node, it is automatically "locked". CEs and gods can |;
+  $str .= qq|forcibly unlock a collaboration node, but don't |;
+  $str .= qq|do it too casually because, once again, you may step on the |;
+  $str .= qq|user's changes. Any user can voluntarily release his or her |;
+  $str .= qq|<em>own</em> lock on a collaboration node (but they'll forget |;
+  $str .= qq|which is why you can do it yourself). Finally, all "locks" on |;
+  $str .= qq|these nodes expire after fifteen idle minutes, or maybe it's |;
+  $str .= qq|twenty. I can't remember. <strong>Use it or lose it.</strong></p>|;
+
+  $str .= qq|<p>The "locking" feature may be a bit perplexing at first, but |;
+  $str .= qq|it's necessary if the feature is to be useful in practice. |;
+  $str .= qq|</p></dd></dl><br />|;
+  $str .= qq|<p>The HTML "rules" here are the same as for writeups, except |;
+  $str .= qq|that you can also use the mysterious and powerful |;
+  $str .= qq|&lt;highlight&gt; tag. </p>|;
+
+  $str .= '
+    <hr />
+    <b>Search for a collaboration node:</b><br />
+    <form method="post" enctype="application/x-www-form-urlencoded">
+    <input type="text" name="node" value="" size="50" maxlength="64">
+    <input type="hidden" name="type" value="collaboration">
+    <input type="submit" name="searchy" value="search">
+    <br />
+    <input type="checkbox" name="soundex" value="1" default="0">Near Matches
+    <input type="checkbox" name="match_all" value="1" default="0">Ignore Exact
+    </form>';
+
+  $str .= '
+    <hr />
+    <b>Create a new collaboration node:</b><br />
+    <form method="post">
+    <input type="hidden" name="op" value="new">
+    <input type="hidden" name="type" value="collaboration">
+    <input type="hidden" name="displaytype" value="useredit">
+    <input type="text" size="50" maxlength="64" name="node" value="">
+    <input type="submit" value="create">
+    </form>';
+
+  $str .= '<br /><br /><br /><br />
+    <p><i>Bug reports and tearful accusations (or admissions) of 
+    infidelity go to <a href="/index.pl?node_id=470183">wharfinger</a>.</i></p>';
+
+  return $str;
+}
+
 1;
