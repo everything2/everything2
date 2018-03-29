@@ -2907,4 +2907,134 @@ sub e2_acceptable_use_policy
 
 }
 
+sub e2_bouncer
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return "Permission Denied" unless $APP->isChanop($USER);
+
+  my $header ='
+    <p>...a.k.a [Nerf] Borg.</p>
+    <script language="JavaScript">
+    <!--
+    function useroom( name ) 
+    { document.forms.bouncer.roomname.value = name; }
+    //-->
+    </script>';
+
+  $header .= htmlcode('openform2','bouncer');
+
+  my @stuff2 = (
+    "Yeah, yeah, get a room...", 
+    "I'll take door number three...", 
+    "Hey, that's a llama back there!", 
+    "Three doors, down, on your right, just past [Political Asylum]", 
+    "They can't ALL be locked!?", 
+    "Why be so stuffed up in a room? [Go outside]!"
+    );
+
+  # $roommenu gets put into the $table
+  my $roommenu = '<select name="roomname"><option name="outside">outside</option>';
+  # The rest of this builds the list of rooms for the bottom.
+  my $str2 ="<hr><p align=\"center\">"
+  . ($stuff2[rand(@stuff2)])
+  . "</p><br>"
+  . "<p align=\"left\">Visit room: </p>";
+
+  my $csr2 = $DB->sqlSelectMany("node_id, title", "node", "type_nodetype=".getId(getType("room")));
+  my $rooms2 = {};
+  while (my $ROW2 = $csr2->fetchrow_hashref())
+  {
+    $$rooms2{lc($$ROW2{title})} = $$ROW2{node_id};
+  }
+
+  $str2.="<ul><li>[Go Outside|outside]</li>";
+  foreach (sort(keys %$rooms2))
+  { 
+    my $nodehash = getNodeById($$rooms2{$_});
+    $str2.="<li>".linkNode($nodehash); 
+    $roommenu .= '<option name=' 
+    . $nodehash->{'title'} 
+    . '>'
+    . $nodehash->{'title'}
+    . '</option>';
+  }
+
+  $roommenu .= '</select>';
+  $str2.="</ul>";
+
+  my $table = qq|<table><tr><td valign="top" align="right" width="80"><p>Move user(s)</p>|;
+  $table .= qq|<p><i>Put each username on its own line, and don\'t hardlink them.</i></p>|;
+  $table .= qq|</td><td><textarea name="usernames" rows="20" cols="30">|;
+  $table .= $query->param( 'usernames' );
+  $table .= qq|</textarea></td></tr><tr>|;
+  $table .= qq|<td valign="top" align="right">to room</td>|;
+  $table .= qq|<td valign="top" align="right">$roommenu</td></tr>|;
+  $table .= qq|<tr><td valign="top" colspan="2" align="right">|;
+  $table .= qq|<input type="submit" name="sexisgood" value="submit" /></form>|;
+  $table .= qq|</td></tr></table>|;
+
+  if ( defined $query->param( 'usernames' ) && defined $query->param( 'roomname' ) )
+  {
+    my $usernames = $query->param( 'usernames' );
+    my $roomname  = $query->param( 'roomname' );
+    my $room      = getNode( $roomname, 'room' );
+    my $str = '';
+
+    if ( ! $room && ! ( $roomname eq 'outside' ) )
+    {
+      return '<p><font color="#c00000">Room <b>"' 
+      . $roomname 
+        . '"</b> does not exist.</font></p>';
+    }elsif ( $roomname eq 'outside' ) {
+      $room = 0;
+      $str .= "<p>Moving users outside into the main room.</p>\n";
+    } else {
+      $str .= "<p>Moving users to room <b>" 
+      . linkNode( $$room{ 'node_id' } ) . ":</b></p>\n";
+    }
+
+    # Remove whitespace from beginning and end of each line
+    $usernames =~ s/\s*\n\s*/\n/g;
+
+    my @users = split( '\n', $usernames );
+
+    $str .= "<ol>\n";
+
+    my $count = 0;
+
+    foreach my $username ( @users )
+    {
+      my $user = getNode( $username, 'user' );
+
+      if ( $user )
+      {
+        $APP->changeRoom( $user, $room );
+        $str .= '<li>' . linkNode( $$user{ 'node_id' } ) . "</li>\n";
+      } else {
+        $str .= "<li><font color=\" #c00000\">User <b>\"" 
+          . $username 
+          . "\"</b> does not exist.</font></li>\n";
+      }
+
+      ++$count;
+    }
+
+    $str .= "</ol>\n";
+
+    $str .= "<p>No users specified.</p>\n" if ( $count == 0 );
+
+    return $header. $table . $str . $str2;
+  } else {
+    return $header. $table . $str2;
+  }
+
+}
+
 1;
