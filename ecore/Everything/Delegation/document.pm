@@ -2867,4 +2867,44 @@ and may be interactive or help keep the site running.</p>|;
   return $str;
 }
 
+sub e2_acceptable_use_policy
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return qq|<center><h1>Acceptable Use Policy</h1></center>
+
+<hr />
+
+<p>By using this website, you implicitly agree to the following condition(s):</p>
+
+<ol>
+<li>[Be cool]. Do not harass other users in any way (i.e., in the chatterbox, via /msg, in writeups, in the creation of nodeshells or in any other way). "Harassment" is defined as:
+  <ul><li>Threatening (an)other user(s) in any way, and/or</li>
+      <li>Creating additional accounts intended to annoy other users</li>
+  </ul></li>
+<li>Do not flood the chatterbox or the New Writeups list ("spamming").</li>
+</ol>
+
+<p>By willfully violating (at the discretion of the administration) any of the above condition(s), you may be subjected to the following actions:</p>
+
+<ul>
+<li>You may be forbidden from noding for as long as deemed necessary by the administration.</li>
+<li>You may be forbidden from using the chatterbox for as long as deemed necessary by the administration.</li>
+<li>Your account may be locked and made inaccessible.</li>
+<li>Your IP address/hostname may be banned from accessing our webservers.</li>
+<li>Depending on the severity of the violation(s), a complaint may be made to your internet service provider.</li>
+</ul>
+
+<p>Attempting to circumvent any disciplinary action <b>by any means</b> will most assuredly result in a complaint being made to your internet service provider.</p>
+
+<p><small><small>Last revised: 23 April 2008</small></small></p>|;
+
+}
+
 1;
