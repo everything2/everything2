@@ -262,9 +262,9 @@ setVars($user, $uservars);
 # send activation email
 my %mail = %{getNode('Welcome to Everything2', 'mail')};
 
-$mail{doctext} =~ s/&#171;name&#187;/$username/;
-$mail{doctext} =~ s/&#171;link&#187;/$link/g;
-$mail{doctext} =~ s/&#171;servername&#187;/$ENV{SERVER_NAME}/g;
+$mail{doctext} =~ s/«name»/$username/;
+$mail{doctext} =~ s/«link»/$link/g;
+$mail{doctext} =~ s/«servername»/$ENV{SERVER_NAME}/g;
 
 $APP -&gt; node2mail($email, \%mail, 1);
 

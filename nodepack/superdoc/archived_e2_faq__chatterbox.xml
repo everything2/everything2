@@ -13,7 +13,7 @@
 &lt;p&gt;The [Chatterbox] is a blanket term for the increasingly elaborate messaging system that is built into E2, but also refers specifically to a [nodelet] which facilitates semi-real-time chat capabilities among users. The [Java Chatterbox] is a separate chat program (a [Java] applet, in geek parlance) that you can use instead of (or in addition to) the Chatterbox nodelet. There are also a couple of special pages that permit more advanced public and private communication via modified interfaces to the Chatterbox code.&lt;/p&gt;
 
 &lt;!--
-&lt;p&gt;If you're here because you clicked on a &lt;strong&gt;&#216;&lt;/strong&gt; symbol in the Other Users nodelet it means that particular user has been 'swallowed' by the [EDB] and is temporarily banned from communicating in the Chatterbox. &lt;em&gt;Please read on for details...&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;If you're here because you clicked on a &lt;strong&gt;Ø&lt;/strong&gt; symbol in the Other Users nodelet it means that particular user has been 'swallowed' by the [EDB] and is temporarily banned from communicating in the Chatterbox. &lt;em&gt;Please read on for details...&lt;/em&gt;&lt;/p&gt;
 --&gt;
 
 &lt;p&gt;&lt;strong&gt;Chatterbox Behavior&lt;/strong&gt;&lt;/p&gt;
@@ -146,7 +146,7 @@ which would send the message to everybody in the [edev] group, and make them all
 &lt;p&gt;&lt;a name=&quot;q_borg&quot;&gt;&lt;strong&gt;Q: What's it mean when someone gets [Borged]?  What is an [EDB]?&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;A:&lt;/strong&gt; Well, sometimes the [edb|Everything Death Borg] gets hungry. When it gets hungry, it tends to go looking for something to eat &amp;#8212; preferably some [derc|poor Everything noder]. The EDB's appetite is best whetted by swallowing someone who is [abusing] the Chatterbox with endless arguments, personal attacks, excessive profanity, or general dumbosity (though he may sometimes swallow someone else just for [fun]). When a noder is swallowed by EDB, they won't be able to send any messages in the Chatterbox for a period of time that varies based on how many times the EDB has had to deal with them, though they can still see what conversations are going on. At the end of the time-out [EDB] will poop the user back out, and they can safely [chatter] again &amp;#8212; ideally, in a more [mature] fashion).&lt;/p&gt;
 
-&lt;p&gt;While 'borged' a user's name will appear in the [Other Users] nodelet with a &lt;strong&gt;[E2 FAQ: Chatterbox|&#216;]&lt;/strong&gt; symbol next to their name. Also, nothing prevents a borged user from using their time in EDB's tummy constructively, as they can author and post new writeups without any difficulties.&lt;/p&gt;
+&lt;p&gt;While 'borged' a user's name will appear in the [Other Users] nodelet with a &lt;strong&gt;[E2 FAQ: Chatterbox|Ø]&lt;/strong&gt; symbol next to their name. Also, nothing prevents a borged user from using their time in EDB's tummy constructively, as they can author and post new writeups without any difficulties.&lt;/p&gt;
 &lt;br /&gt;
 
 &lt;p&gt;&lt;strong&gt;Q: What about [#everything]?&lt;/strong&gt;&lt;/p&gt;

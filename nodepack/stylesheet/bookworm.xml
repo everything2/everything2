@@ -403,7 +403,7 @@ blockquote p[align=justify] {
 }
 
 blockquote:before {
-content: '&#8220;';
+content: '“';
 	font-size: 48px;
 	float: left;
 line-height: 20px;
@@ -414,7 +414,7 @@ font-weight: bold;
 }
 
 blockquote:after {
-content: '&#8221;';
+content: '”';
 	font-size: 48px;
 	line-height: 20px;
 	color: #ddd !important;

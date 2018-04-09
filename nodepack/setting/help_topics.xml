@@ -305,7 +305,7 @@
     <key>private_message</key>
   </vars>
   <vars>
-    <value>299,792,458 m/s, or 1.8026175 &#215; 10^12 furlongs/fortnight. We at Everything2 believe that help should be comprehensive.</value>
+    <value>299,792,458 m/s, or 1.8026175 × 10^12 furlongs/fortnight. We at Everything2 believe that help should be comprehensive.</value>
     <key>speed_of_light</key>
   </vars>
   <vars>

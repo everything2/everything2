@@ -34,7 +34,7 @@ if ($query-&gt;param('give_GP')) {
 	htmlcode('sendPrivateMessage',{
 		'author_id' =&gt; getId(getNode('Cool Man Eddie', 'user')),
 		'recipient_id' =&gt; $$user{user_id},
-		'message' =&gt; &quot;Whoa! You&#8217;ve been [Sanctify|sanctified]$from&quot;
+		'message' =&gt; &quot;Whoa! You’ve been [Sanctify|sanctified]$from&quot;
 	});
 	$str = &quot;&lt;p&gt;User [&quot; . $$user{title} .&quot;] has been given 10 GP. &quot;;
 	return $str . &quot;&lt;/p&gt;You have &lt;b&gt;&quot; . $$USER{GP} . &quot; GP&lt;/b&gt; left. Would you like to [Sanctify user|sanctify someone else]?&lt;/p&gt;&lt;p&gt;Or, return to the [E2 Gift Shop].&lt;/p&gt;&quot;;
