@@ -72,6 +72,7 @@ sub zen_stdcontainer
   my $url = "";
   $url = ($APP->is_tls()?('https'):('http')).'://'.$canonical_web_server if $APP->isGuest($USER);
   $url .= $APP->urlGenNoParams( $NODE , 'noQuotes' ) unless $$NODE{ node_id } eq $Everything::CONF->system->{default_node} ;
+  $url .= "http://localhost:8888" if $APP->inDevEnvironment();
   $url ||= '/' ;
   $str .= '<link rel="canonical" href="' . $url . '">' ;
 
