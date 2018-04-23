@@ -41,7 +41,7 @@ BEGIN {
   *replaceNodegroup = *Everything::HTML::replaceNodegroup;
 }
 
-# Used by parsetime,parsetimestamp, timesince
+# Used by parsetime, parsetimestamp, timesince, giftshop_buyching 
 use Time::Local;
 
 # Used by shownewexp, publishwriteup, static_javascript, zenwriteups, hasAchieved,
@@ -60,8 +60,8 @@ use Everything::FormMenu;
 # Used by verifyRequestHash, getGravatarMD5, verifyRequest, verifyRequestForm
 use Digest::MD5 qw(md5_hex);
 
-# Used by uploaduserimage
-use POSIX qw(strftime);
+# Used by uploaduserimage, giftshop_buyching
+use POSIX qw(strftime ceil floor);
 use Net::Amazon::S3;
 use File::Copy;
 use Image::Magick; 
@@ -15001,5 +15001,669 @@ sub frontpage_altcontent
 
 }
 
+sub giftshop_star
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if ($$VARS{GPoptout});
+
+  my $str = "";
+  my $minLevel = 1;
+  my $userLev = $APP->getLevel($USER);
+  my $userGP = $$USER{GP};
+  my $StarMax = 75;
+  my $StarMin = 25;
+  my $StarCost = $StarMax - (($userLev - 1) * 5);
+
+  if ($StarCost < $StarMin) {$StarCost = 25};
+
+  $str.= "<p><hr width='300' /></p><p><b>The Gift of Star</b></p>";
+
+  if ($userLev < $minLevel)
+  {
+    $str.="<p>Sorry, you must be at least [Level $minLevel] to purchase a Star. Please come back when you have reached Level $minLevel.</p>";
+
+    return $str;
+  }
+
+  $str.= "<p>Because you are Level $minLevel or higher, you have the power to purchase a Star to reward other users. For Level $userLev users, Stars currently cost <b>$StarCost GP</b>.";
+  if ($StarCost > $StarMin)
+  {
+    $str.=" Gain another level to reduce the Star cost by 5 GP.</p>";
+  } else {
+    $str.="</p>";
+  }
+
+  $str.="<p>Giving a user a Star sends them a private message telling them that you have given them a Star and informing them of the reason why they earned it.</p>";
+
+  if ($userGP < $StarCost)
+  {
+    $str.="<p>Sorry you do not have enough GP to buy a Star right now. Please come back when you have <b>$StarCost GP</b>.</p>";
+    return $str;
+  } else {
+    $str.="<p>You have <b>$userGP GP</b>.</p>";
+  }
+
+  if ($query->param('give_star'))
+  {
+    my $recipient = $query->param('givee');
+    my $reason = $query->param('starReason');
+    my $Color = $query->param('starColor');
+    my $U = getNode($recipient, 'user');
+    my $article = "b";
+    return "<p><hr width='300' /></p><p><b>The Gift of Star</b></p><p>That user doesn't exist! Please [E2 Gift Shop|try again].</p>" unless $U;
+    return "<p><hr width='300' /></p><p><b>The Gift of Star</b></p><p>Sorry, you cannot give a star to yourself! Please [E2 Gift Shop|try again].</p>" if ($$U{user_id} == $$USER{user_id});
+    return "<p><hr width='300' /></p><p><b>The Gift of Star</b></p><p>You must enter a reason. Please [E2 Gift Shop|try again].</p>" unless $reason;
+    if ( $Color =~ /^\s*[aeiou]/i )
+    {
+      $article = "an"; 
+    } else {
+      $article = "a";
+    } 
+
+    $$U{stars} += 1;
+    updateNode($U,-1);
+    $APP->adjustGP($USER, -$StarCost);
+    $APP->securityLog(getNode('The Gift of Star', 'node_forward'), $USER, "[$$USER{title}] gave $article $Color Star to [$$U{title}] at the [E2 Gift Shop].");
+
+    my $from = $$USER{title};
+    htmlcode('sendPrivateMessage',{
+      'author_id' => getId(getNode('Cool Man Eddie', 'user')),
+      'recipient_id' => $$U{user_id},
+      'message' => "Sweet! [$from] just awarded you $article [Star|$Color Star], because <i>$reason</i>"});
+    $str = "<p><hr width='300' /></p><p><b>The Gift of Star</b></p><p>Okay, $article $Color Star has been awarded to [" . $$U{title} ."]. ";
+
+    if ($$USER{GP} >= $StarCost)
+    {
+      return $str . "You have <b>" . $$USER{GP} . "</b> GP left. Would you like to [E2 Gift Shop|give another Star]?</p>";
+    }
+
+    return $str . "You now have <b>" . $$USER{GP} . "</b> GP left.</p>";
+
+  }
+
+  $str.=$query->start_form();
+  $str.=$query->hidden('node_id', $$NODE{node_id});
+  $str.="<p>Yes! Please give a " . $query->textfield('starColor', 'Gold', 10) . " Star to noder " . $query->textfield('givee');
+  $str.=" because " . $query->textfield('starReason', '', 40) . "</p>";
+  $str.=$query->submit('give_star','Star Them!');
+  $str.=$query->end_form();
+
+  return $str;
+}
+
+sub giftshop_sanctify
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if ($$VARS{GPoptout});
+
+  my $minLevel = 11;
+  my $Sanctificity = 10;
+
+  return unless $APP->getLevel($USER)>= $minLevel or $APP->isEditor($USER);
+
+  my $str = "<p><hr width='300' /></p><p><b>The Gift of Sanctity</b></p><p>You are at least [The Everything2 Voting/Experience System|Level $minLevel], so you have the power to [Sanctify user|Sanctify] other users with GP. Would you like to [Sanctify user|sanctify someone]?</p><p>You may also sanctify other users by clicking on the link on their homenode, or by using the \/sanctify command in the [Chatterbox].";
+
+  return $str;
+
+}
+
+sub giftshop_buyvotes
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+
+  my $voteCost = 1;
+
+  my $minlevel = 2;
+  my $lvl = $APP->getLevel($USER);
+  my $CurGP = $$USER{GP};
+
+  my $str = "<p><hr width='300' /></p><p><b>The Gift of Votes</b></p>";
+
+  return $str if ($$VARS{GPoptout});
+
+  if (($lvl >= $minlevel) && ($CurGP >= $voteCost))
+  {
+    $str.="<p>Because you are at least [The Everything2 Voting/Experience System|Level $minlevel] you can also buy additional votes, if you want. Each additional vote costs <b>$voteCost GP</b>. You currently have <b>$CurGP GP</b>.</p><p>Please note that these votes will expire and reset at the end of the day, just like normal votes.</p>";
+
+    my $voteIncrease = $query->param("numVotes");
+
+    if ($query->param('buyVotes'))
+    {
+
+      if ($voteIncrease < 1)
+      {
+        $str.="<p>You must enter a positive number.</p>";
+      } elsif ($voteIncrease <= $$USER{GP}) {
+
+        $$USER{votesleft} += $voteIncrease;
+        $$USER{GP} -= ($voteIncrease*$voteCost);
+        $APP->securityLog(getNode('Buy Votes', 'node_forward'), $USER, "$$USER{title} purchased $voteIncrease votes at the [E2 Gift Shop].");
+        updateNode($USER, -1);
+
+        $str= "<p><hr width='300' /></p><p><b>The Gift of Votes</b></p><p>You now have <b>$$USER{votesleft}</b> total votes. Happy voting!</p>"; 
+      } else {
+        $str.="<p>You do not have enough GP!</p>";
+      }
+    }
+
+    $str.=htmlcode('openform');
+    $str.="</p><p>How many votes would you like to buy? " . $query->textfield('numVotes')."<br /><br />";
+    $str.=$query->submit("buyVotes","Buy Votes");
+    $str.=$query->end_form;
+
+  } elsif ($lvl >= $minlevel) {
+
+    return "<p><hr width='300' /></p><p><b>The Gift of Votes</b></p><p>You do not have enough GP to buy votes at this time. Please come back when you have more GP!</p>";
+
+  } else {
+
+    return "<p><hr width='300' /></p><p><b>The Gift of Votes</b></p><p>You are not a high enough level to buy votes yet. Please come back when you reach [The Everything2 Voting/Experience System|Level $minlevel]!</p>";
+
+  }
+
+  return $str;
+}
+
+sub giftshop_votes
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+
+  my $minLev = 9;
+  my $votesLev = 1;
+  my $lvl = $APP->getLevel($USER);
+  my $vts = $$USER{votesleft};
+
+  return if (($lvl < $votesLev) || ($lvl < $minLev));
+
+  my $str = "<p>Give the gift of votes! If you happen to have votes to spare, you can give up to 25 of them at a time to another user as a gift. Please use this to encourage newbies.</p>";
+
+  return $str."<p>Sorry, but it looks like you don't have any votes to give away now. Please come back when you have some votes.</p>" if $vts < 1;
+
+  $str.="<p>You currently have <b>$vts</b> votes.</p>";
+
+  if ($query->param('give_votes'))
+  {
+    my $recipient = $query->param('give_to');
+    my $amt = $query->param('votesGiven');
+    my $U = getNode($recipient, 'user');
+    return "<p>That user doesn't exist! Please [E2 Gift Shop|try again].</p>" unless $U;
+    return "<p>You do not have that many votes! Please [E2 Gift Shop|try again].</p>" unless $amt <= $vts;
+    return "<p>You must enter a number less than 26 and greater than zero. Please [E2 Gift Shop|try again].</p>" if ($amt < 1 || $amt > 25);
+    $$U{votesleft}+=$amt;
+    $$U{sanctity} += 1;
+    updateNode($U,-1);
+    $$USER{votesleft}-=$amt;
+    updateNode($USER, -1);
+        
+    $APP->securityLog(getNode('The Gift of Votes', 'node_forward'), $USER, "$$USER{title} gave $amt of their votes to $$U{title} at the [E2 Gift Shop].");
+
+    my $from =  ($query->param('anon') eq 'sssh') ? "someone mysterious" : ('[' . $$USER{title} . ']');
+    htmlcode('sendPrivateMessage',{
+      'author_id' => getId(getNode('Cool Man Eddie', 'user')),
+      'recipient_id' => $$U{user_id},
+      'message' => "Whoa! $from just [E2 Gift Shop|gave you] ".($amt||"0")." vote".($amt == 1 ? "" :"s")." to spend. You'd better use 'em by midnight, baby!" });
+    $str = "<p>Okay, ".($amt||"0")." vote".($amt == 1 ? " is" :"s are")." waiting for [" . $$U{title} ."]. ";
+    if ($$USER{votesleft} != 0)
+    {
+      return $str . "You have <b>" . $$USER{votesleft} . "</b> votes left. Would you like to [E2 Gift Shop|give some more]?</p>";
+    }
+
+    return $str . "Those were your last votes for today!</p>";
+  }
+
+  $str.=$query->start_form();
+  $str.=$query->hidden('node_id', $$NODE{node_id});
+
+  $str.="<p>Who's the lucky noder? " . $query->textfield('give_to');
+  $str.=" And how many votes are you giving them? " . $query->textfield('votesGiven');
+  $str.=$query->checkbox(-name=>'anon',
+    -value=>'sssh',
+    -label=>'Give anonymously') . '</p>';
+
+  $str.=$query->submit('give_votes','Give Votes!');
+  $str.=$query->end_form();
+
+  return $str;
+}
+
+sub giftshop_ching
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+
+  my $ChingLev = 4;
+  my $lvl = $APP->getLevel($USER);
+
+  my $str = "<p><hr width='300' /></p><p><b>The Gift of Ching</b></p>";
+
+  $str.="<p>Give the gift of ching! If you happen to have a C! to spare, why not spread the love and give it to a fellow noder?</p>" if ($lvl >= $ChingLev);
+
+  return "<p>Sorry, you must be [The Everything2 Voting/Experience System|Level $ChingLev] to give away C!s</p>" unless ($lvl >= $ChingLev);
+
+  return "<p>Sorry, but you don't have a C! to give away. Please come back when you have a C!.</p>" unless $$VARS{cools} && $$VARS{cools} > 0;
+
+  if ($query->param('give_cool'))
+  {
+    my $recipient = $query->param('give_to');
+
+    my $user = getNode($recipient, 'user');
+
+    return "<p>Sorry, users must be Level 1 or higher to receive a C!.</p>" unless $lvl > 0;
+
+    return "<p>The user '$recipient' doesn't exist! Please [E2 Gift Shop|try again].</p>" unless $user;
+    my $v = getVars($user);
+
+    $$v{cools}++;
+    setVars($user, $v);
+    $$user{sanctity} += 1;
+    updateNode($user,-1);
+    $$VARS{cools}--;
+    $APP->securityLog( getNode('The Gift of Ching', 'node_forward'), $USER, "$$USER{title} gave a C! to $$user{title} at the [E2 Gift Shop].");
+
+    my $from =  ($query->param('anon') eq 'sssh') ? "someone mysterious" : ('[' . $$USER{title} . ']');
+    htmlcode('sendPrivateMessage',{
+      'author_id' => getId(getNode('Cool Man Eddie', 'user')),
+      'recipient_id' => $$user{user_id},
+      'message' => "Hey, $from just [E2 Gift Shop|gave you] a C! to spend. Use it to rock someone's world!"
+    });
+
+    $str = "<p>A neatly-wrapped C! is waiting for [" . $$user{title} ."]. ";
+    if ($$VARS{cools} != 0)
+    {
+      return $str . "You have <b>" . $$VARS{cools} . "</b> C!s left. Would you like to [E2 Gift Shop|give another]?</p>";
+    }
+    
+    return $str . "That was your last C! for today.</p>";
+
+  }
+
+  $str.=$query->start_form();
+  $str.=$query->hidden('node_id', $$NODE{node_id});
+  $str.= "</p><p>Who's the lucky noder? " . $query->textfield('give_to');
+
+
+  $str.= $query->checkbox(-name=>'anon',
+    -value=>'sssh',
+    -label=>'Give anonymously') . '</p>';
+
+  $str.=$query->submit('give_cool','Give C!');
+  $str.=$query->end_form();
+
+  return $str;
+
+}
+
+sub giftshop_buyching
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $minLevel = 12;
+  my $gpCost = 100;
+  my $ChingLevel = 4;
+  my $lvl = $APP->getLevel($USER);
+
+  return if ($$VARS{GPoptout});
+
+  my $msg = "<p>If you'd like another ching to use or give away, you might be able to buy one for the bargain price of <strong>$gpCost GP</strong>. You must be at least [The Everything2 Voting/Experience System|Level $minLevel], and you can only buy one C! every 24 hours.</p>";
+
+  return $msg."<p>Sorry, you must be [The Everything2 Voting/Experience System|Level $minLevel] in order to buy chings.</p>" unless $lvl>= $minLevel;
+
+  return "<p>Sorry, you must have at least $gpCost GP in order to buy a ching.</p>" unless $$USER{GP} >= $gpCost;
+
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time-86400);
+  my $hours24 = sprintf "%4d-%02d-%02d %02d:%02d:%02d",
+  $year+1900,$mon+1,$mday,$hour,$min,$sec;
+
+  ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
+  my $curTime = sprintf "%4d-%02d-%02d %02d:%02d:%02d",
+  $year+1900,$mon+1,$mday,$hour,$min,$sec;
+
+  if ($$VARS{chingbought} gt $hours24)
+  {
+    my ($d, $t) = split(' ',$$VARS{chingbought});
+    my ($chinghour, $chingmin, $chingsec) = split(':',$t);
+    my ($chingyear, $chingmonth, $chingday) = split('-',$d);
+    my $ching_time = timelocal($chingsec, $chingmin, $chinghour, $chingday, $chingmonth-1, $chingyear);
+
+    ($d, $t) = split(' ',$hours24);
+    ($chinghour, $chingmin, $chingsec) = split(':',$t);
+    ($chingyear, $chingmonth, $chingday) = split('-',$d);
+    my $hour_time = timelocal($chingsec, $chingmin, $chinghour, $chingday, $chingmonth-1, $chingyear);
+
+    my $timeDiff = $ching_time-$hour_time;
+    my $hourDiff = floor($timeDiff / 3600);
+    my $minDiff = floor(($timeDiff - $hourDiff * 3600) / 60);
+
+    return "<p>You bought your last ching at <b>".$$VARS{chingbought}."</b>.<br /> You may buy another ching in $hourDiff hours, $minDiff minutes.</p>";
+  }
+
+
+  if ($query->param('buy_ching'))
+  {
+
+    $$VARS{cools} ||= 0;
+    $$VARS{cools}++;
+    $$VARS{chingbought} = $curTime;
+    setVars($USER, $VARS);
+    $APP->securityLog(getNode('Buy Chings', 'node_forward'), $USER, "$$USER{title} purchased a C! at the [E2 Gift Shop] for $gpCost GP.");
+
+    $$USER{GP} += (-1*$gpCost);
+    return "<p>Transaction complete. You have $$VARS{cools} cools now.  Thank you, come again!</p>";
+  }
+
+
+  my $str = "";
+  $str.="<p>You currently have <b>".$$USER{GP}." GP</b>.</p>";
+  $str.=$query->start_form();
+  $str.="<input type='hidden' name='node_id' value='$$NODE{node_id}' />";
+  $str.=$query->submit('buy_ching','Buy Ching!');
+  $str.=$query->end_form();
+
+  return $msg.$str;
+
+}
+
+sub giftshop_topic
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p><hr width='300' /></p><p><b>The Gift of Topic</b></p>|;
+
+  my $minlevel = 6;
+
+  my $lvl = $APP->getLevel($USER);
+
+  my $tokenCost = 25;
+  my $canBuy = (($$USER{GP} >= $tokenCost) && ($lvl >= $minlevel));
+
+  my $resultStr = "";
+
+  $$VARS{tokens} = 0 unless exists($$VARS{tokens});
+  $$VARS{tokens} = 0 if($$VARS{tokens} eq "");
+
+  if ($query->param("buyToken") && $$USER{GP} >= $tokenCost)
+  {
+    $$USER{GP} += (-1*$tokenCost);
+    $$VARS{tokens}++;
+    $$VARS{tokens_bought}++;
+    setVars($USER, $VARS);
+    $resultStr = "Sweet, now you have <b>".$$VARS{tokens}."</b> token".($$VARS{tokens} == 1 ? "" :"s");
+  }
+
+  if (int($$VARS{tokens}) <= 0)
+  {
+    $str .= "<p>You don't have any tokens right now.</p>";
+
+    if ($canBuy)
+    {
+      $str.="Wanna buy one? Only $tokenCost GP ...</p>";
+      $str.=htmlcode('openform');
+      $str.=$query->submit("buyToken","Buy Token");
+      $str.=$query->end_form;
+    } else {
+      $str.="<p>You can't buy one right now. You need to be";
+      $str.=" at least [Voting/Experience System|Level $minlevel] and have at least <b>$tokenCost GP</b>.</p>";
+    }
+
+    return $str;
+  }
+
+  if ($query->param("setTopic"))
+  {
+    $$VARS{tokens}--;
+
+    #possibly limit topic changes to one every 30 minutes?
+
+    my $room = 0;
+
+    my $settingsnode = getNode('Room topics', 'setting');
+    my $topics = getVars($settingsnode);
+    my $oldtopic = $$topics{$room};
+    my $utf8topic = $query->param("newtopic");
+    utf8::encode($utf8topic);
+    $utf8topic = $APP->htmlScreen($utf8topic); #Admins and chanops can still put HTML in topic, though.
+    $$topics{$room} = $utf8topic;
+    $$topics{$room} = $oldtopic if $utf8topic eq '' || $utf8topic =~ /^No information/i;
+    setVars($settingsnode, $topics);
+    $APP->securityLog($NODE, $USER, "$$USER{title} changed room topic to '".$utf8topic."'");
+    return "The topic has been updated. Go now and enjoy the fruits of your labor.";
+  }
+
+  $str.="<p>You currently have <b>".$$VARS{tokens}."</b> token".($$VARS{tokens} == 1 ? "" :"s")."</p>";
+
+
+  if ($APP->isSuspended($USER,"topic"))
+  {
+    return $str."<p>Your topic privileges have been suspended. Ask nicely and maybe they will be restored.</p>";
+  }
+
+  my ($lastChange, $lastTime) = $DB->sqlSelect(
+    "seclog_details, seclog_time"
+    , "seclog"
+    , "seclog_node = $$NODE{node_id}"
+    , "ORDER BY seclog_id DESC LIMIT 1" );
+
+  # Escape brackets for easier copy & paste action
+  $lastChange =~ s/\[/&#91;/g;
+  $lastChange =~ s/]/&#93;/g;
+  my $lastTopic = "At $lastTime, $lastChange";
+
+  $str.="<p>You can update the outside room topic for the low cost of <b>1</b> token. To do so, just fill in the box below. The only rules are no insults or harassment of noders, no utter nonsense, and no links to NSFW material. Violators will lose their topic-setting privileges.";
+
+  $str .= htmlcode('openform')
+    . "<dl><dt>Last topic change</dt><dd>$lastTopic</dd></dl>"
+    . $query->textfield("newtopic", "New Topic", 100)
+    . "<br />"
+    . $query->submit("setTopic","Set The Topic")
+    . $query->end_form;
+
+  return $str.$resultStr if ($$VARS{GPoptout});
+
+  if ($lvl >= $minlevel)
+  {
+    $str.="<p>Because you are at least [The Everything2 Voting/Experience System|Level $minlevel]";
+    if ($$USER{GP} >= $tokenCost)
+    {
+      $str.= ", you can also buy more tokens, if you want. One token costs <b>$tokenCost GP</b>.</p>";
+      $str.=htmlcode('openform');
+      $str.=$query->submit("buyToken","Buy Token");
+      $str.=$query->end_form;
+
+    } else {
+      $str.= ", you are allowed to buy additional tokens. But one token costs <b>$tokenCost GP</b>, so you do not have enough GP right now. Please come back when you have more GP.</p>";
+    }
+  }
+
+  return $str.$resultStr;
+
+}
+
+sub giftshop_buyeggs
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $minlevel = 7;
+
+  my $lvl = $APP->getLevel($USER);
+
+  my $eggCost = 25;
+  my $canBuy = (($$USER{GP} >= $eggCost) && ($lvl >= $minlevel));
+  my $canBuyFive = ($canBuy && ($$USER{GP} >= $eggCost * 5));
+
+  my $str = "";
+  my $resultStr = "";
+
+  $str .= "<p><hr width='300' /></p><p><b>The Gift of Eggs</b></p>";
+
+  $$VARS{easter_eggs} = 0 unless exists($$VARS{easter_eggs});
+  $$VARS{easter_eggs} = 0 if($$VARS{easter_eggs} eq "");
+
+  return $str if ($$VARS{GPoptout});
+
+  my $boughtEggs = 0;
+  if ($query->param("buyEgg"))
+  {
+    $$USER{GP} += (-1*$eggCost);
+    $$VARS{easter_eggs}++;
+    $$VARS{easter_eggs_bought}++;
+    $boughtEggs = 1;
+  } elsif ($query->param("buyFiveEggs")) {
+    $$USER{GP} += (-5*$eggCost);
+    $$VARS{easter_eggs} += 5;
+    $$VARS{easter_eggs_bought} += 5;
+    $boughtEggs = 1;
+  }
+
+  if ($boughtEggs)
+  {
+    setVars($USER, $VARS);
+    $resultStr = "Sweet, now you have ".$$VARS{easter_eggs}." easter egg".($$VARS{easter_eggs} == 1 ? "" :"s");
+  }
+
+  if ($canBuy)
+  {
+    $str.="<p>You also can buy Easter Eggs if you want. Only <b>$eggCost GP</b> per egg!</p>";
+
+    if ($resultStr eq '')
+    {
+      $str.="<p>You currently have <b>".($$VARS{easter_eggs} ? $$VARS{easter_eggs} :"no")."</b> Easter Egg".($$VARS{easter_eggs} == 1 ? "" :"s")."</p>";
+    }
+
+    $str.=htmlcode('openform');
+    $str.=$query->submit("buyEgg","Buy Easter Egg");
+    if ($canBuyFive)
+    {
+      $str.=$query->submit("buyFiveEggs","Buy Five (5) Easter Eggs");
+    }
+    
+    $str.=$query->end_form;
+
+  } elsif ($lvl >= $minlevel) {
+
+    $str.="<p>You do not have enough GP to buy an easter egg right now. Please come back when you have at least $eggCost GP.<br /><br /></p>";
+
+  } else {
+    $str.="<p>You are not a high enough level to buy easter eggs yet. Please come back when you reach [The Everything2 Voting/Experience System|Level $minlevel].<br /><br /></p>";
+
+  }
+
+  return $str.$resultStr;
+
+}
+
+sub giftshop_eggs
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $buyEggsLev = 7;
+  my $lvl = $APP->getLevel($USER);
+  my $eggs = $$VARS{easter_eggs};
+
+  return if ($lvl < $buyEggsLev);
+
+  my $str = "<p>Give the gift of eggs! If you happen to have some easter eggs to spare, you can give one to another user as a gift. Please use this to encourage newbies.</p>";
+
+  return $str."<p>Sorry, but it looks like you don't have any eggs to give away now. Please come back when you have an egg.</p>" if $eggs < 1;
+
+  if ($query->param('give_egg'))
+  {
+    my $recipient = $query->param('give_to');
+    my $U = getNode($recipient, 'user');
+    return "<p>That user doesn't exist! Please [E2 Gift Shop|try again].</p>" unless $U;
+    my $v = getVars($U);
+    $$v{easter_eggs}++;
+    setVars($U, $v);
+    $$VARS{easter_eggs}--;
+
+    $APP->securityLog(getNode('The Gift of Eggs', 'node_forward'), $USER, "$$USER{title} gave an easter egg to $$U{title} at the [E2 Gift Shop].");
+
+    my $from =  ($query->param('anon') eq 'sssh') ? "someone mysterious" : ('[' . $$USER{title} . ']');
+    htmlcode('sendPrivateMessage',
+    {
+      'author_id' => getId(getNode('Cool Man Eddie', 'user')),
+      'recipient_id' => $$U{user_id},
+      'message' => "Hey, $from just gave you an [easter egg]! That means you are tastier than an omelette!"
+    });
+
+    $str = "<p>Okay, the Easter Bunny just paid a visit to [" . $$U{title} ."]. ";
+    if ($$USER{votesleft} != 0)
+    {
+      return $str . "You have <b>".($$VARS{easter_eggs}||"0")."</b> easter egg".($$VARS{easter_eggs} == 1 ? "" :"s")." left. Would you like to [E2 Gift Shop|give another]?</p>";
+    }
+
+    return $str . "You just gave away your last easter egg!</p>";
+  }
+
+  $str.=$query->start_form();
+  $str.=$query->hidden('node_id', $$NODE{node_id});
+
+  $str.="<p>Who's the lucky noder? " . $query->textfield('give_to');
+  $str.=$query->checkbox(-name=>'anon',
+    -value=>'sssh',
+    -label=>'Give anonymously') . '</p>';
+
+  $str.=$query->submit('give_egg','Egg them!');
+  $str.=$query->end_form();
+
+  return $str;
+}
 
 1;

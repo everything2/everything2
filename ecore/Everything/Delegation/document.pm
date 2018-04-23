@@ -2818,7 +2818,7 @@ sub duplicates_found_
     $N = $DB->getNodeById($N, 'light');
     next unless canReadNode($USER, $N);
     $author = $$N{author_user};
-    next if $$N{type}{title} eq 'draft' and !$APP->canSeeDraft($USER, $N, 'find');
+    next if(($$N{type}{title} eq 'draft') and not $APP->canSeeDraft($USER, $N, 'find'));
     $ONE = $list ? undef : $N;
     $oddrow = ($oddrow ? '' : ' class="oddrow"');
     $list .= "<tr$oddrow>";
@@ -3047,7 +3047,7 @@ sub e2_collaboration_nodes
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $str .= '';
+  my $str = '';
 
   # To be done:
   #   "create" for crtleads:
@@ -3185,6 +3185,46 @@ sub e2_full_text_search
 <!-- Google Search Result Snippet Ends -->
 |;
 
+}
+
+sub e2_gift_shop
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p>Welcome to the Everything2 Gift Shop!</p>|;
+
+  $str .= htmlcode("giftshop_star");
+  $str .= htmlcode("giftshop_sanctify");
+  $str .= htmlcode("giftshop_buyvotes");
+  $str .= htmlcode("giftshop_votes");
+  $str .= htmlcode("giftshop_ching");
+  $str .= htmlcode("giftshop_buyching");
+  $str .= htmlcode("giftshop_topic");
+  $str .= htmlcode("giftshop_buyeggs");
+  $str .= htmlcode("giftshop_eggs");
+
+
+  $str .= qq|<p><hr width='300' /></p><p><b>Self Eggsamination</b></p>|;
+
+  if ($$VARS{GPoptout})
+  {
+    $str.="<p>You currently have <b>".($$VARS{easter_eggs}||"0")."</b> easter egg".($$VARS{easter_eggs} == 1 ? "" :"s")." and <b>".($$VARS{tokens}||"0")."</b> token".($$VARS{tokens} == 1 ? "" :"s").".</p>";
+  } else {
+    $str.="<p>You currently have <b>".$$USER{GP}." GP</b>, <b>".($$VARS{easter_eggs}||"0")."</b> easter egg".($$VARS{easter_eggs} == 1 ? "" :"s").", and <b>".($$VARS{tokens}||"0")."</b> token".($$VARS{tokens} == 1 ? "" :"s").".</p>";
+  }
+
+  htmlcode('achievementsByType','miscellaneous,'.$$USER{user_id});
+
+  $$VARS{oldexp} = $$USER{experience};
+  $$VARS{oldGP} = $$USER{GP};
+
+  return $str;
 }
 
 1;
