@@ -3242,4 +3242,70 @@ sub e2_marble_shop
   return $str;
 }
 
+sub e2_penny_jar
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return '<p>You must be logged in to [touch the puppy|touch the pennies].</p>' if($APP->isGuest($USER));
+  return "Sorry, it seems you are not interested in [GP|pennies] right now." if ($$VARS{GPoptout});
+
+  my $userGP = $$USER{GP};
+  my $pennynode = getNode("penny jar","setting"); 
+  my $pennies = getVars($pennynode);
+  my $str = "";
+
+  return "<p>Sorry, there are no more [GP|pennies] in the jar! Would you like to [Give a penny, take a penny|donate one]?</p>" if $$pennies{1} < 1;
+
+  $str.= "<p>Oh look! It's a jar of [GP|pennies]!</p><p>Would you like to give a penny or take a penny?</p>";
+
+  if ($query->param('give'))
+  {
+    return "<p>Sorry, you do not have any GP to give!</p>" if $userGP < 1;
+
+    $$pennies{1}++;
+    setVars($pennynode, $pennies);
+    $APP->adjustGP($USER, -1);
+  }
+
+  if ($query->param('take'))
+  {
+    return "<p>Sorry, there are no more [GP|pennies] in the jar! Would you like to [Give a penny, take a penny|donate one]?</p>" if $$pennies{1} < 1;
+    $$pennies{1}--;
+    setVars($pennynode, $pennies);
+    $APP->adjustGP($USER, 1);
+  }
+
+  $str.=$query->start_form();
+  $str.=$query->hidden('node_id', $$NODE{node_id});
+  $str.=$query->submit('give','The more you give the more you get. Give!');
+  $str.=$query->end_form();
+
+  $str.=$query->start_form();
+  $str.=$query->hidden('node_id', $$NODE{node_id});
+  $str.=$query->submit('take','No! Giving is for the weak. Take!');
+  $str.=$query->end_form();
+
+  if ($$pennies{1} == 1)
+  {
+    $str.="<p>There is currently <b>1</b> penny in the penny jar.</p>";
+  } else {
+
+    if ($$pennies{1})
+    {
+      $str.="<p>There are currently <b>".$$pennies{1}."</b> pennies in the penny jar.</p>";
+    } else {
+      $str.="<p>There are no more pennies in the penny jar!</p>";
+
+    }
+  }
+
+  return $str;
+}
+
 1;
