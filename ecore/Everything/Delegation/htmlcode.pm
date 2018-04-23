@@ -5657,7 +5657,7 @@ sub showchatter
 
   if(!$nochat && $$VARS{publicchatteroff})
   {
-    if($query->param('RemoveEarPlugs') eq '1')
+    if(defined($query->param('RemoveEarPlugs')) and $query->param('RemoveEarPlugs') eq '1')
     {
       delete $$VARS{publicchatteroff};
     } else {
