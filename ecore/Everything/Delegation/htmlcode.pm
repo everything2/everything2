@@ -5877,12 +5877,14 @@ sub showmessages
   my $APP = shift;
 
   my ($maxmsgs,$showOpts) = @_;
+
+  #display options
+  $showOpts ||= '';
+
   my $json = {};
   my $jsoncount = undef; 
   $jsoncount = 1 if $showOpts =~ /j/;
 
-  #display options
-  $showOpts ||= '';
   my $noreplylink = {getId(getNode("klaproth","user")) => 1};
 
   my $showD = $$VARS{pmsgDate} || (index($showOpts,'d')!=-1); #show date
@@ -13697,7 +13699,10 @@ sub showpoll
   $vote = -1 unless defined $vote;
 
   $showStatus = " ($$POLL{poll_status})" if $showStatus;
-  my $str = undef; $str = '<h2>'.linkNode($POLL)."$showStatus</h2>" unless $$POLL{node_id} == $$NODE{node_id};
+
+  $showStatus ||= "";
+  my $str = undef;
+  $str = '<h2>'.linkNode($POLL)."$showStatus</h2>" unless $$POLL{node_id} == $$NODE{node_id};
 
   $str .= '<p><cite>by '.linkNode($$POLL{poll_author}, '', {-class => 'author'}).'</cite>';
 
