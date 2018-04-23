@@ -3048,7 +3048,7 @@ sub varcheckbox
 
   my ($k, @title) = @_;
 
-  return if ($APP->isGuest($USER)) || ($$USER{title} eq 'everyone');
+  return "" if ($APP->isGuest($USER)) || ($$USER{title} eq 'everyone');
   my $title = join ', ', @title;
   $title ||= $k;
 
@@ -3079,7 +3079,7 @@ sub varcheckboxinverse
 
   my ($k, @title) = @_;
 
-  return if ($APP->isGuest($USER)) || ($$USER{title} eq 'everyone');
+  return "" if ($APP->isGuest($USER)) || ($$USER{title} eq 'everyone');
   my $title = join ', ', @title;
   $title ||= $k;
 
@@ -9246,7 +9246,7 @@ sub varsComboBox
   my $APP = shift;
 
   my ($key, $flags, @elements) = @_;
-  return if $APP->isGuest($USER);
+  return "" if $APP->isGuest($USER);
 
   local *oops = sub {
     return '<span border="solid black 1px;" title="varsComboBox">!!! '.$_[0].' !!!</span>';
