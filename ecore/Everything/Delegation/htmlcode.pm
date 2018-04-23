@@ -1650,9 +1650,9 @@ sub softlink
   my ($softserve) = @_; #parameter used by formxml_writeup and formxml_e2node
 
   if($softserve and $softserve eq 'xml'){
-    return if $$VARS{noSoftLinks};
+    return "" if $$VARS{noSoftLinks};
   }
-  return if($query->param('no_softlinks'));
+  return "" if($query->param('no_softlinks'));
 
   my $N = undef; $N = getNodeById($$NODE{parent_e2node},'light') if $$NODE{type}{title} eq 'writeup' ;
   $N ||= $NODE;
@@ -1667,7 +1667,7 @@ sub softlink
   foreach( values %{$Everything::CONF->system->{maintenance_nodes}} ) {
     $unlinkables{$_} = 1;
   }
-  return if $unlinkables{ $$N{node_id} };
+  return "" if $unlinkables{ $$N{node_id} };
 
   my $isEditor = $APP->isEditor($USER);
   my $cantrim = $isEditor;
