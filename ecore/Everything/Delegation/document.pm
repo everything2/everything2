@@ -3227,4 +3227,19 @@ sub e2_gift_shop
   return $str;
 }
 
+sub e2_marble_shop
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p><big>Yes!<br>We have no marbles!<br>We have no marbles today!</big></p><br><br><p>Thank-you for your custom.</p>|;
+  $str .= qq|<p>Please come back the next time you lose them.</p>|;
+  return $str;
+}
+
 1;
