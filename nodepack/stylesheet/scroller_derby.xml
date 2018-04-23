@@ -355,7 +355,7 @@ div.writeuppage .contentheader{
 /*=#writeup_list li.hasvoted span.title:before*/
  DISABLED /*= .nodelet .infolist li.hasvoted span.title:before */  DISABLED /*= 
  /*= .nodelet .infolist li.hasvoted span.title:before */  */ {
-    content: &quot;• &quot;;
+    content: &quot;&#8226; &quot;;
     color: #dd00dd;
     display: inline;
     margin-left: -1.2ex;
