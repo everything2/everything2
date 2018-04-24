@@ -3308,4 +3308,52 @@ sub e2_penny_jar
   return $str;
 }
 
+sub e2_rot13_encoder
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p>This is the E2 Rot13 Encoder.  It also does decoding.  You can just paste the stuff you want swapped around in the little box and click the buttons. It's really quite simple.  Enjoy!</p>|;
+
+  $str .= qq|<script><!--
+    function dorot13(ref){
+      var thisref=eval(ref);
+      thisref.value=rot13(thisref.value);
+    }
+
+    function rot13(str){
+    // This function is compatible with JavaScript 1.0; the last
+    // one wasn't. (charCodeAt() is JS1.2 and above) - mblase
+      var am="abcdefghijklmABCDEFGHIJKLM";
+      var nz="nopqrstuvwxyzNOPQRSTUVWXYZ";
+      for(var i=0;i<str.length;i++)
+      {
+        var ch=str.charAt(i);
+        var ca=am.indexOf(ch);
+        if(ca>=0){ str=str.substr(0,i)+nz.charAt(ca)+str.substr(i+1);}else{
+          var cz=nz.indexOf(ch);
+          if (cz>=0) str=str.substr(0,i)+am.charAt(cz)+str.substr(i+1);
+        }
+      }
+      return str
+    } 
+    --></script><form name="myform">
+    <textarea name="rotter" rows="30" cols="80">|;
+
+   my $n = getNodeById($query->param("lastnode_id"));
+   if(defined($n) and $$n{type}{title} eq "writeup")
+   {
+     $str .= encodeHTML($$n{doctext});
+   }
+
+   $str .= qq|</textarea><br><input type="button" name="floofer" value="Rot13 Encode" onclick="javascript:dorot13('document.myform.rotter');"><input type="button" name="goofer" value="Rot13 Decode" onclick="javascript:dorot13('document.myform.rotter');"></form><br><br><br><br><br><br><small><p align="right">Thanks to [mblase] for the function update.</p></small>|;
+
+   return $str;
+}
+
 1;
