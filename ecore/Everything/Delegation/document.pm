@@ -3356,4 +3356,128 @@ sub e2_rot13_encoder
    return $str;
 }
 
+sub e2_source_code_formatter
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+#    <!--  wharfinger  11/23/00                                              -->
+#    <!--  This "code", such as it is, is in the public domain.              -->
+#    <!--  Replace angle-brackets with &lt;/&gt; and square brackets with    -->
+#    <!--  &#91;/&#93;                                                       -->
+
+  return q|<script><!--
+    function do_fix_brackets( widget, option ) {
+        if ( option != 'fix' && option != 'restore' ) {
+            window.alert(   'do_fix_brackets( ) error:\n\n' +
+                            '    option == "' + option + '"\n\n' +
+                            'It must be "fix" or "restore".' );
+        } else {
+            //  Realistically speaking, we could use any non-'fix' value 
+            //  of option to signify 'restore' (I mean, that's what we ARE
+            //  doing, right?), but that's ugly. For example, you could 
+            //  call "do_fix_brackets( 'foo', 'fixbrackets' )" and have it 
+            //  do just the opposite of what it looks like.
+            widget.value = ( option == 'fix' )
+                                ? fix_brackets( widget.value )
+                                : restore_brackets( widget.value );
+
+            widget.select();
+            widget.focus();
+        }
+
+        return false;   //  Even if this was invoked by a "submit" button,
+                        //  don't submit.
+    }
+
+    //---------------------------------------------------------------------
+    //  Is there any way to pass by reference in JavaScript?
+    function fix_brackets( str ) {
+        str = str.replace( /\&/g, '&amp;' );
+        str = str.replace( /\</g, '&lt;' );
+        str = str.replace( /\>/g, '&gt;' );
+
+        //  0x5b is left square bracket; 0x5d is right square bracket.
+        //  We do that because E2 will jump to conclusions about what the 
+        //  square brackets are for. If we needed the square brackets for 
+        //  the set operator, we could do eval( '/\x5b0-9\x5d/g' ) or 
+        //  something.
+        str = str.replace( /\x5b/g, '&#91;' );
+        str = str.replace( /\x5d/g, '&#93;' );
+
+        return str;
+    }
+
+    //---------------------------------------------------------------------
+    function restore_brackets( str ) {
+        str = str.replace( /&lt;/g, '<' );
+        str = str.replace( /&gt;/g, '>' );
+        str = str.replace( /&amp;/g, '&' );
+
+        //  0x5b is left square bracket; 0x5d is right square bracket.
+        //  We do that because E2 will jump to conclusions about what the 
+        //  square brackets are for.
+        str = str.replace( /&#91;/g, '\x5b' );
+        str = str.replace( /&#93;/g, '\x5d' );
+
+        return str;
+    }
+    --></script>
+
+    <!-- **** HTML **** -->
+    <p align="justify">You have fallen into the loving arms of the E2 Source Code 
+    Formatter. Just paste your [source code] into the box and click the 
+    <b>"Reformat"</b> button, and [Vanna White\|all your dreams will come true].  
+    If you don't know (or don't care) what [source code] is, you won't find this 
+    thing useful at all. </p>
+
+    <p align="justify">The <b>"Reformat"</b> button replaces [angle bracket]s, 
+    [square bracket]s, and [ampersand]s with appropriate [HTML character 
+    entities]. <b>"DEformat"</b> changes them back again. </p>
+
+    <p align="justify">Because users' [screen resolution]s vary, we strongly urge 
+    you to keep your code &lt;= 80 columns in width so that it doesn't mess with 
+    E2's page formatting. If the lines are far too wide, [The Power Structure of Everything 2\|a god] 
+    may feel compelled to fix the thing -- and most of our gods are not 
+    programmers. To that end, we also strongly encourage you to use spaces 
+    instead of tabs: Most browsers display tabs as eight spaces, which increases 
+    the line width for no good reason since you probably only want four-space 
+    tabs anyway. Even if you don't, you should. Don't start me on about where the 
+    braces go. </p>
+
+    <p align="justify">These operations are performed on the entire string, so 
+    you'll want to paste in only the actual [source code] part of your [writeup]. 
+    You'll need to supply your own <tt>&lt;pre&gt;</tt> [E2 HTML tags\|tag]s as 
+    well. I fussed around with making it <tt>&lt;pre&gt;</tt>-aware, but that got 
+    painful. </p>
+
+    <dl>
+    <dt><b>Other E2 Formatting Utilities:</b></dt>
+    <dd><b>[Wharfinger's Linebreaker]:</b> For formatting poetry and [lyric]s.</dd>
+    </dl>
+
+    <form name="codefixer">
+      <textarea name="edit" cols="80" rows="20"></textarea>
+
+      <br>
+
+      <input type="button" name="submit" value="Reformat" 
+        onclick="javascript:do_fix_brackets( document.codefixer.edit, 'fix' )">
+      <input type="button" name="submit" value="DEformat" 
+        onclick="javascript:do_fix_brackets( document.codefixer.edit, 'restore' )">
+      <input type="button" name="clear" value="Clear" 
+        onclick="javascript:document.codefixer.edit.value='';">
+      </input>
+    </form>
+
+    <br><hr>
+    <p>Originally by [wharfinger]</p>|;
+
+}
+
 1;
