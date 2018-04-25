@@ -38,6 +38,10 @@ BEGIN {
   *encodeHTML = *Everything::HTML::encodeHTML;
 }
 
+# Used by e2_sperm_counter
+use POSIX qw(ceil);
+
+
 sub document_25
 {
   my $DB = shift;
@@ -3320,6 +3324,58 @@ sub e2_source_code_formatter
 
     <br><hr>
     <p>Originally by [wharfinger]</p>|;
+
+}
+
+sub e2_sperm_counter
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  #welcome to the E2 sperm counter.
+  #We're all not breeding, don't be afraid.
+
+  #Get the number of users on the system.
+  my $usrs = $DB->sqlSelect("count(*)", "user");
+  my $usrsnow = $DB->sqlSelect("count(*)", 'room');
+  #85% of our users are male;
+  $usrs *= .85;
+ 
+  #at any particular point, one could have between 1.2 and 1.4 billion sperm
+  #so lets do some scientific calculations as to why.
+
+  my $rand = rand(200000000);
+  my $rand2 = rand(200000000);
+  $rand += 1200000000;
+  $rand2 += 1200000000;
+
+  $usrs *= $rand;
+  $usrsnow *= $rand2;
+
+  $usrs = ceil($usrs);
+  $usrsnow = ceil($usrsnow);
+
+  $usrs = reverse("$usrs");
+  $usrsnow = reverse("$usrsnow");
+
+  $usrs =~ s/(\d\d\d)/$&\,/g;
+  $usrsnow =~ s/(\d\d\d)/$&\,/g;
+
+  my $c = chop($usrs);
+  $usrs.=$c unless($c eq ",");
+
+  $c = chop($usrsnow);
+  $usrsnow.=$c unless($c eq ",");
+
+  $usrs = reverse($usrs);
+  $usrsnow = reverse($usrsnow);
+
+  return "<p align=\"center\">E2 Users world wide have<br><br> <big><big><big><big><big><big><strong>$usrs</strong></big></big></big></big></big></big><br>sperm swimming around.<br><br>Currently online there are<br><br><big><big><big><big><big><big><strong>$usrsnow</strong></big></big></big></big></big></big><br>being wasted now, as you node.</p>";
 
 }
 
