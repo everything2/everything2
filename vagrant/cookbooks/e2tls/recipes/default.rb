@@ -107,8 +107,9 @@ cron 'dehydrated' do
   command "/var/dehydrated/dehydrated -c 2>&1 >> #{logdir}/e2tls.dehydrated.#{datelog}"
 end
 
-#cron 'aws acm key upload' do
-#  hour '3'
-#  minute '0'
-#  command "/var/everything/tools/aws_acm_cert_upload.pl 2>&1 >> #{logdir}/e2tls.aws_acm_cert_upload.#{datelog}"
-#end
+cron 'aws acm key upload' do
+  day '1,15'
+  hour '3'
+  minute '0'
+  command "/var/everything/tools/aws_acm_cert_upload.pl 2>&1 >> #{logdir}/e2tls.aws_acm_cert_upload.#{datelog}"
+end
