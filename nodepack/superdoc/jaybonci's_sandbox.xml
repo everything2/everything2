@@ -1,6 +1,22 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>&lt;br /&gt;
+  <doctext>IP:
+[% 
+        my $forward = $ENV{HTTP_X_FORWARDED_FOR} || &quot;&quot;;
+        my $remote = $ENV{REMOTE_ADDR} || &quot;&quot;;
+
+        my $finalip;
+        foreach my $ip ($forward,$remote)
+        {
+                if($APP-&gt;isIpRoutable($ip))
+                {
+                        $finalip = $ip;
+                }
+        }
+
+        return &quot;forward: $forward; remote: $remote; final: $finalip&quot;;
+ %]
+&lt;br /&gt;
 [%
   my $str = &quot;&quot;;
   my $count = 0;
@@ -17,8 +33,7 @@
 
   return &quot;To go: $count&lt;br&gt;$str&lt;br&gt;&quot;;
 
-%]
-</doctext>
+%]</doctext>
   <node_id>1146920</node_id>
   <title>jaybonci's sandbox</title>
 </node>
