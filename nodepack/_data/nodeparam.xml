@@ -165,6 +165,11 @@
     <paramkey>allow_message_archive</paramkey>
   </nodeparam>
   <nodeparam>
+    <paramvalue>1</paramvalue>
+    <node_id>1433518</node_id>
+    <paramkey>allow_message_archive</paramkey>
+  </nodeparam>
+  <nodeparam>
     <paramvalue>2</paramvalue>
     <node_id>1854394</node_id>
     <paramkey>fix_level</paramkey>
@@ -573,6 +578,11 @@
     <paramvalue>99</paramvalue>
     <node_id>113</node_id>
     <paramkey>level_override</paramkey>
+  </nodeparam>
+  <nodeparam>
+    <paramvalue>1180811</paramvalue>
+    <node_id>1433518</node_id>
+    <paramkey>usergroup_owner</paramkey>
   </nodeparam>
   <nodeparam>
     <paramvalue>1180811</paramvalue>

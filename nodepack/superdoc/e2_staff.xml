@@ -1,20 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>&lt;!-- 2008-03-11 avalyn // Removed borgo, LaggedyAnne, Lometa and Lord Brawl and from the list of gods and put them in the commented-out section that lists exeds. Removed Lord Brawl from Documentation and Servo5678 from Documentation Editors. Added The Debutante to the list of active gods, and dem bones to the list of inactive gods. --&gt;
-&lt;!-- 2008-01-13 alex // Replaced handmade lists for e2policy, mch (mentoring), and SIGTITLE with automatic code --&gt;
-&lt;!-- 2007-12-15 mauler // I updated the automatic code for displaying the gods so that it would reflect current realities and so that it would actually work, and then activated it. There's no reason why we shouldn't use this tool if we have it! It will keep the list accurate at all times and save time and effort of people having to constantly make updates by hand, as listed below --&gt;
-&lt;!-- 2007-12-08 alex // Updated active and inactive gods lists to reflect recently retired gods; put Jay back on active list --&gt;
-&lt;!-- 2007-12-01 haze // deleted ref to Klaproth, fixed some links to Help docs --&gt;
-&lt;!-- 2007-10-13 dann // Changed council listing to reflect e2policy group instead --&gt;
-&lt;!-- 2007-07-28 alex // Added grundoon, Two Sheds, LaggedyAnne, and Wiccanpiper to active gods list --&gt;
-&lt;!-- 2006-07-31 mauler // updated the gods registry (added witchiepoo, Lometa, ascorbic, removed Toaster, knifegirl, and Gritchka to the inactive list) --&gt;
-&lt;!-- 2006-07-13 avalyn // cleaned up punctuation, HTML, and minor alphabetical miscues in lists  --&gt;
-&lt;!-- 2007-03-04 panamaus // changed references of CtF to creases, added JerboaKolinowski to inactive gods list --&gt;
-
-
-
-
-&lt;p&gt;This document will explain the powers and functions of editors and &quot;[gods].&quot; If you have any questions about E2 and you've read [Everything2 Help] and looked through the links in your [nodelet|nodelets] please [Chatterbox|/msg] one of these volunteers and they will gladly help you out.
+  <doctext>&lt;p&gt;This document will explain the powers and functions of editors and &quot;[gods].&quot; If you have any questions about E2 and you've read [Everything2 Help] and looked through the links in your [nodelet|nodelets] please [Chatterbox|/msg] one of these volunteers and they will gladly help you out.
 &lt;/p&gt;
 
 &lt;ul&gt;
@@ -109,16 +95,10 @@ Everything User Search|the user search]).&lt;/li&gt;
 &lt;!-- &lt;p&gt;&lt;strong&gt;Active:&lt;/strong&gt;&lt;/p&gt; --&gt;
 
 [%
-  # 2007-12-15 mauler // I fixed up this code for automatically displaying the gods and activated it. No reason why we shouldn't use this if we have it!
-
   my @gods = map {getNodeById($_)} @{getNode(&quot;gods&quot;, &quot;usergroup&quot;)-&gt;{group}};
   my @e2godsgrp = @{getNode(&quot;e2gods&quot;,&quot;usergroup&quot;)-&gt;{group}};
-  my @edcgrp = (&quot;jaybonci&quot;);
-  my @closegrp = (&quot;dbrown&quot;, &quot;hemos&quot;, &quot;Kurt&quot;, &quot;robnotrob&quot;, &quot;robo&quot;, &quot;dem bones&quot;, &quot;clampe&quot;, &quot;hemos&quot;, &quot;Kurt&quot;, &quot;nate&quot;, &quot;thefez&quot;);
 
   my %e2gods = map { $_ =&gt; 1} @e2godsgrp;
-  my %edc = map{ $_ =&gt; 1 } @edcgrp;
-  my %close = map{ $_ =&gt; 1} @closegrp;
   
   my (@active, @inactive);
   foreach(@gods)
@@ -134,7 +114,6 @@ Everything User Search|the user search]).&lt;/li&gt;
   {
      $str.=&quot;&lt;li&gt;&quot;;
      $str.=linkNode($_);
-     $str.=&quot;#&quot; if(exists($edc{$_-&gt;{title}}));
      $str.=&quot;&lt;/li&gt;&quot;;
   }
   $str.=&quot;&lt;/ol&gt;&quot;;
@@ -144,17 +123,11 @@ Everything User Search|the user search]).&lt;/li&gt;
   {
      $str.=&quot;&lt;li&gt;&quot;;
      $str.=linkNode($_);
-     $str.=&quot;*&quot; if(exists($close{$_-&gt;{title}}) and not exists($edc{$_-&gt;{title}}));
-     $str.=&quot;#&quot; if(not exists($close{$_-&gt;{title}}) and exists($edc{$_-&gt;{title}}));
-     $str.=&quot;#*&quot; if(exists($close{$_-&gt;{title}}) and exists($edc{$_-&gt;{title}}));
      $str.=&quot;&lt;/li&gt;&quot;;
   }
   $str.=&quot;&lt;/ol&gt;&quot;;
   return $str;
 %]
-
-&lt;p&gt;&lt;strong&gt;#&lt;/strong&gt;These users are employees/owners of [Everything2 Media LLC].&lt;/p&gt;
-
 &lt;hr width=250/&gt;
 &lt;h2&gt;Who does what?&lt;/h2&gt;
 
