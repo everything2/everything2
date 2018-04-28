@@ -7,7 +7,7 @@ Vagrant.configure("2") do |config|
   config.ssh.username = "root"
   config.ssh.forward_agent = true
   
-  config.vm.synced_folder "./dropfiles/","/dropfiles"
+  config.vm.synced_folder "./dropfiles/","/dropfiles", SharedFoldersEnableSymlinksCreate: false
 
   config.vm.provider :virtualbox do |vb|
     vb.name = "Everything2 Development Environment"
