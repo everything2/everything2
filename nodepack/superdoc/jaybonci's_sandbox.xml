@@ -1,22 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>IP:
-[% 
-        my $forward = $ENV{HTTP_X_FORWARDED_FOR} || &quot;&quot;;
-        my $remote = $ENV{REMOTE_ADDR} || &quot;&quot;;
-
-        my $finalip;
-        foreach my $ip ($forward,$remote)
-        {
-                if($APP-&gt;isIpRoutable($ip))
-                {
-                        $finalip = $ip;
-                }
-        }
-
-        return &quot;forward: $forward; remote: $remote; final: $finalip&quot;;
- %]
-&lt;br /&gt;
+  <doctext>&lt;br /&gt;
 [%
   my $str = &quot;&quot;;
   my $count = 0;
