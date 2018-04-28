@@ -3379,4 +3379,110 @@ sub e2_sperm_counter
 
 }
 
+sub e2_ticket_center
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+
+  my $str = q|<style type='text/css'>
+    .staff_only { background: #c0ffee; display: block; }
+    .smallcell { width: 100px; }
+    .summarycell { width: 50%; }
+    .summary { width: 90%; }
+    .createticket { width: 90%; }
+    </style><!-- / block context sensitive coloring problems -->|;
+
+  ## This section is for ticket creation.  The list will display below the create area.
+
+  my $isGod = $APP->isAdmin($USER);
+  my $isCE = $APP->isEditor($USER);
+
+  ## Don't display conditions
+  return "$str<p>You must be logged in to view service tickets.</p>" if $APP->isGuest($USER);
+  return $str unless($isGod); ## temp until system is ready
+
+  ## Define variables
+  my (@TKTTYPES) = getNodeWhere({type_nodetype => getId(getType('ticket_type'))});
+  my @TKTTYPE;
+  foreach(@TKTTYPES) { push @TKTTYPE, $_; }
+  my $settickettype ="\n\t\t<select id='tickettype' name='tickettype'>";
+  foreach(@TKTTYPE) { $settickettype.="\n\t\t\t<option value='".$_->{node_id}."'>".$_->{title}."</option>"; }
+  $settickettype.="\n\t\t</select>";
+
+  my $header = "<h3>Create a New Ticket</h3>\n"
+    . '<form method="post" action="/index.pl" enctype="multipart/form-data">';
+  my $ticketsummary = '<input type="text" class="summary" name="summary" maxlength="250">';
+  my $ticketdescription = "<textarea id='description' name='description' "
+    . htmlcode('customtextarea','1')
+    . " wrap='virtual' >"
+    . "</textarea>";
+
+  my $createdby = "<input type='hidden' name='createdby' value='$$USER{node_id}'>";
+  my $footer = "\n" . $createdby
+    . "\n" . '<input type="hidden" name="op" value="new">'
+    . "\n" . '<input type=hidden name="type" value="1949335">'
+    . "\n" . $query->submit("createit", "Enter Ticket")
+    . "\n" . $query->endform;
+
+  ## Admin Only checkbox only visible to admins, C_Es
+  my $adminchecktitle = "";
+  my $admincheck = "";
+  if ($isGod || $isCE)
+  {
+    $adminchecktitle = '<span class="staff_only">Admin<br>Only?</span>';
+    $admincheck = '<span class="staff_only"><input type="checkbox" name="adminonly" value="1">';
+  }else{
+    $adminchecktitle = "&nbsp;";
+    $admincheck = "&nbsp;";
+  }
+
+  ## start multi-line string to define the table layout
+  my $createtable = '
+    <table border="0" class="createticket" cellpadding="0" cellspacing="0">
+    <tr>
+    <th class="smallcell">'.$adminchecktitle.'</td>
+    <th>Type</td>
+    <th class="summarycell">Short Summary</td>
+    <tr>
+    <td align="center">'.$admincheck.'</td>
+    <td align="center">'.$settickettype.'</td>
+    <td align="center">'.$ticketsummary.'</td>
+    <tr>
+    <th colspan="3">Detailed Description <small>(please be specific)</small></th>
+    <tr><td colspan="3">'.$ticketdescription.'</td></table>';
+
+  ## end multi-line string to create the table layout
+
+  $str .= $header . $createtable . $footer;
+
+  $str .= qq|<hr><h3>Ticket Listing</h3><!-- / block context sensitive coloring problems -->|;
+
+  my $testnode = undef;
+  my $output = "";
+  my $csr = $DB->{dbh}->prepare("
+    SELECT *
+    FROM node
+    WHERE type_nodetype = 1949335 LIMIT 100");
+  $csr->execute();
+
+  while (my $s = $csr->fetchrow_hashref)
+  {
+    $output .= "<p>";
+    foreach my $keys (sort(keys(%{$s})))
+    {
+      $output .= $keys . ":" . $s->{$keys} . " ";
+    }
+    
+    $output .= "summary: " . $s->{'summary'} . "</p>";
+  }
+
+  return $str.$output;
+}
+
 1;
