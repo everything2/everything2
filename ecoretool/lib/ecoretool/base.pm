@@ -142,7 +142,7 @@ sub _skippable_types
 		"edevdoc" => [],
 		"patch" => [],
 		"user" => [113,952215,779713,839239,1080927,373682,176726,373682,373113], #root,klaproth,guest user,cool man eddie,virgil,everyone,webster 1913,everyone, EDB
-		"usergroup" => [838015, 114, 829913, 923653, 1199641, 1969185, 1192564, 1882128,1175790], #Edev, gods, e2gods, content editors, clientdev, chanops,debuggers,e2docs,%%
+		"usergroup" => [838015, 114, 829913, 923653, 1199641, 1969185, 1192564, 1882128, 1175790, 1433518], #Edev, gods, e2gods, content editors, clientdev, chanops,debuggers,e2docs,%%,SIGTITLE
 		"node_forward" => [],
 		"ticket" => [], 
 		"draft" => [],
@@ -158,10 +158,6 @@ sub _skippable_types
 		"recording" => [],
 		"registry" => [],
 
-		# Include the stylesheets so we can grep for problems
-		# print, Kernel Blue, and basesheet
-		# "stylesheet" => [2004473,1882070,1973976],
-		
 		# Noders Nursery, M-Noder Washroom, Political Asylum, Valhalla
 		"room" => [553146,553133,553129,545263],
 	};
