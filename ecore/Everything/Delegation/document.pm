@@ -4104,4 +4104,196 @@ sub everything_finger
 
 }
 
+sub everything_document_directory
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = q|<style type="text/css">|;
+  $str .= q|<!--
+    th {
+      text-align: left;
+    }
+    -->
+    </style>|;
+
+  $str .= q|<p>|;
+
+  my $UID = getId($USER);
+
+  return '<p>Please log in first.</p>' if $APP->isGuest($USER);
+
+  my $isRoot = $APP->isAdmin($USER);
+  my $isCE = $APP->isEditor($USER);
+  my $isEDev = $APP->isDeveloper($USER);
+
+  my $showLinkViewcode = $isEDev || $isRoot;
+  my $showNodeId = $isEDev || $isRoot;
+
+  my @types = ();
+  my $filteredType = undef;
+  my $pushit = 0;
+
+  if ($query->param('filter_nodetype'))
+  {
+    $filteredType=$query->param('filter_nodetype');
+    $pushit = 1;
+    if ((!$isCE) && ($filteredType eq 'oppressor_superdoc'))
+    {
+      $pushit=0;
+    } elsif ((!$isRoot) && ($filteredType eq 'restricted_superdoc')) {
+      $pushit=0;
+    }elsif ((!$isEDev) && ($filteredType eq 'EDevdoc')){
+      $pushit=0;
+    }
+
+    if ($pushit)
+    {
+      push(@types, $filteredType);
+    }
+  } else {
+    @types = qw(superdoc document superdocnolinks);
+    push(@types, 'oppressor_superdoc') if $isCE;
+    push(@types, 'restricted_superdoc') if $isRoot;
+    push(@types, 'restricted_testdoc') if $isRoot;
+    push(@types, 'Edevdoc') if $isEDev;
+  }
+
+  foreach(@types)
+  {
+    $_ = getId(getType($_));
+  }
+
+  #TODO checkboxes to NOT show things
+
+  my %ids = ($$USER{node_id}=>$USER, $$NODE{node_id}=>$NODE);
+  local *getNodeFromID = sub {
+    my $nid = $_[0];
+    return unless (defined $nid) && ($nid=~/^\d+$/);
+    #already known, return it
+    return $ids{$nid} if exists $ids{$nid};
+
+    #unknown, find that (we also cache a mis-hit, so we don't try to get it again later)
+    my $N = getNodeById($nid);
+    return $ids{$nid}=$N;
+  };
+
+  my $opt = undef;
+
+  my $choicelist = [
+    '0','whatever the database feels like',
+    'idA','node_id, ascending (lowest first)',
+    'idD','node_id, descending (highest first)',
+    'nameA','title, ascending (ABC)',
+    'nameD','title, descending (ZYX)',
+    'authorA','author\'s ID, ascending (lowest ID first)',
+    'authorD','author\'s ID, descending (highest ID first)',
+    'createA','create time, ascending (oldest first)',
+    'createD','create time, descending (newest first)',
+  ];
+
+  $opt .= 'sort order: ' . htmlcode('varsComboBox','EDD_Sort', 0, @$choicelist) . "<br />\n";
+
+  $opt .= 'only show things';
+  $opt.=' written by ' . $query->textfield('filter_user') . '<br />';
+  $opt .= 'only show nodes of type' . $query->textfield('filter_nodetype') . '<br />';
+
+  $str .= qq|Choose your poison, sir:<form method="POST">|;
+  $str .= qq|<input type="hidden" name="node_id" value="$NODE->{node_id}">|;
+  $str .= qq|$opt<input type="submit" value="Fetch!"></form>|;
+
+  my $filterUser = (defined $query->param('filter_user')) ? $query->param('filter_user') : undef;
+  if(defined $filterUser)
+  {
+    $filterUser = getNode($filterUser, 'user') || getNode($filterUser, 'usergroup') || undef;
+  }
+
+  if(defined $filterUser)
+  {
+    $filterUser = getId($filterUser);
+  }
+
+  #mapping of unsafe VARS sort data into safe SQL
+  my %mapVARStoSQL = (
+    '0' => '',
+    'idA' => 'node_id ASC',
+    'idD' => 'node_id DESC',
+    'nameA' => 'title ASC',
+    'nameD' => 'title DESC',
+    'authorA' => 'author_user ASC',
+    'authorD' => 'author_user DESC',
+    'createA' => 'createtime ASC',
+    'createD' => 'createtime DESC',
+    );
+
+  my $sqlSort = '';
+  if( (exists $VARS->{EDD_Sort}) && (defined $VARS->{EDD_Sort}) )
+  {
+    if(exists $mapVARStoSQL{$VARS->{EDD_Sort}})
+    {
+      $sqlSort = $mapVARStoSQL{$VARS->{EDD_Sort}};
+    }
+  }
+
+  $str.='<table><tr bgcolor="#dddddd">';
+  $str .= '<th class="oddrow"><small><small>viewcode</small></small></th>' if $showLinkViewcode;
+  $str .= '<th class="oddrow">title</th><th class="oddrow">author</th><th class="oddrow">type</th><th class="oddrow">created</th>';
+  $str .= '<th class="oddrow">node_id</th>' if $showNodeId;
+  $str .= '</tr>';
+
+  my @nodes = getNodeWhere({type_nodetype => \@types, author_user => $filterUser},'',$sqlSort);
+  my $shown = 0;
+  my $limit = $query->param('edd_limit') || 0;
+  if($limit =~ /^(\d+)$/)
+  {
+    $limit = $1 || 0; 
+  } else {
+    $limit = 0;
+  }
+
+  unless($limit)
+  {
+    #default to a reasonable limit if don't specify limit
+    $limit = 60;
+    $limit += 10 if $isEDev;
+    $limit += 10 if $isCE;
+    $limit += 10 if $isRoot;
+  }
+
+  foreach my $n (@nodes)
+  {
+    last if $shown >= $limit;
+    ++$shown;
+    my $user = getNodeFromID($$n{author_user});
+
+    $str .= '<tr><td>';
+    $str .= '<a href='.urlGen({'node_id'=>$$n{node_id},'displaytype'=>'viewcode'}).'>vc</a></td><td>' if $showLinkViewcode;
+    $str .= linkNode($n, 0, {lastnode_id=>0});
+    $str .= qq|</td><td>$$user{title}</td><td><small>$$n{type}{title}</small></td><td><small>|;
+    $str .= htmlcode('parsetimestamp',$$n{createtime}.',1');
+    $str .= '</small></td>';
+
+    if($showNodeId)
+    {
+      $str .= '<td>' . $$n{node_id} . '</td>';
+    }
+
+    $str .= '</tr>';
+  }
+
+  $str = (($shown != scalar(@nodes)) ? linkNode($NODE,scalar(@nodes),{edd_limit=>scalar(@nodes), lastnode_id=>0}) : $shown) .
+' found, ' . $shown . ' most recent shown.<br />' . $str . '</table>';
+
+  $str = 'Lucky you; you also can use <a href='.urlGen({'node'=>'List Nodes of Type','type'=>'superdoc'}).'>List Nodes of Type</a>,</p><p>' . $str if ($isEDev || $isCE);
+
+  $str .= q|</p>|;
+  return $str;
+
+}
+
 1;
