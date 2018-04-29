@@ -3933,14 +3933,21 @@ sub editor_endorsements
   
   my @grp = (@{getNode("gods","usergroup")->{group}},@{getNode("Content Editors","usergroup")->{group}}, @{getNode("exeds","nodegroup")->{group}});
   my %except = map {getNode($_,"user")->{node_id} => 1} ("Cool Man Eddie","EDB","Webster 1913","Klaproth");
+
   @grp = sort {lc(getNodeById($a)->{title}) cmp lc(getNodeById($b)->{title})} @grp;
   my $str = "Select your <b>favorite</b> editor to see what they've [Page of Cool|endorsed]:";
 
+
   $str.=htmlcode("openform");
+  my $last=0;
   $str.="<select name=\"editor\">";
-   foreach(@grp){
-  $str.="<option value=\"$_\"".(($query->param("editor")."" eq "$_")?(" SELECTED "):("")).">".getNodeById($_)->{title}."</option>" unless($except{$_}) || not getNodeById($_)->{type}->{title} eq "user"}
-  $str.="</select><input type=\"submit\" value=\"Show Endorsements\"></form>";
+  foreach(@grp)
+  {
+    next if $last == $_;
+    $last = $_;
+    $str.="<option value=\"$_\"".(($query->param("editor")."" eq "$_")?(" SELECTED "):("")).">".getNodeById($_)->{title}."</option>" unless($except{$_}) || not getNodeById($_)->{type}->{title} eq "user"
+  }
+    $str.="</select><input type=\"submit\" value=\"Show Endorsements\"></form>";
 
   my $ed = $query->param("editor");
   $ed =~ s/[^\d]//g;
