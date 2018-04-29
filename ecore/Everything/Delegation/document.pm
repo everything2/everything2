@@ -3704,4 +3704,89 @@ sub e2_staff
   return $str;
 }
 
+sub edev_faq
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = q|<!-- NPB TODO make in-page style sheets -->|;
+
+  $str .= q|<p>Okey-dokey, here are some FAQs for those in the |.linkNode(getNode('edev','usergroup')).q| usergroup.
+You, |.linkNode($USER,0,{lastnode_id=>0}) . ', ' . ( $APP->isDeveloper($USER,"nogods") ? '<strong>are</strong> a respected <small>(haha, yeah, right!)</small>' : 'are <strong>not</strong> a').q| member of the edev group here, on E2. In this FAQ, "I" is [N-Wing].
+</p>|;
+
+  $str .= q|<p>First: All E2 development is driven out of <a href="https://github.com/everything2/everything2">Github</a>. Anyone there can spin up a development environment, see how it works, submit pull requests, or ask for features that they can work on. There's plenty to chip in on. Check out the <a href="https://github.com/everything2/everything2/issues">open issues</a> and feel free to start contributing.</p>|;
+
+  $str .= q|<p>Questions:</p><ol>|;
+  $str .= q|<li><a href="#powers">What are some of my superpowers?</a></li>|;
+  $str .= q|<li><a href="#msg">Why are random people sending me private messages that start with "EDEV:" or "ONO: EDEV:"?</a></li>|;
+
+  $str .= q|<li><a href="#background">What is the background of edev and it's relationship to the development of the site/source?</a></li>|;
+  $str .= q|<li><a href="#edevify">What is this "Edevify!" link thingy I see in my Epicenter nodelet?</a></li>|;
+  $str .= q|<li><a href="#ownesite">Does everybody have their own Everything site for hacking on?</a></li>|;
+  $str .= q|<li><a href="#edevite">What is an edevite?</a></li>|;
+  $str .= q|<li><a href="#edevdoc">What is an Edevdoc?</a></li>|;
+  $str .= q|<li><a href="#whyjoin">Why did others (or, why should I) join the edev group?</a></li>|;
+  $str .= q|<li><a href="#improvements">How do we go about finding tasks here? If we have personal projects for the improvement of E2, what is the appropriate way to get started? Should I verify that what I'm thinking of is useful, or should I make it work and then submit source patches?</a></li>|;
+  $str .= q|</ol>|;
+
+  $str .= q|<p><hr /><a name="powers">Q: <strong>What are some of my superpowers?</strong></a><br />|;
+  $str .= q|A: I wouldn't say <em>superpowers</em>, just <em>powers</em>. Anyway:</p>|;
+  $str .= q|<ul>|;
+  $str .= q|<li>You're a hash! (in the [Other Users] nodelet, [edevite]s have a <code>%</code> next to their name (which is only viewable by fellow edevites))</li>|;
+  $str .= q|<li>You can see the source code for many things here. If you visit something like a [superdoc] (for example, this node), if you append <code>&amp;displaytype=viewcode</code> to the URL, it will show the code that generates that node. When you have the [Everything Developer] nodelet turned on, you can more easily simply follow the little "viewcode" link (which only displays on nodes you may view the source for). For example, you can see this node's source by going |.linkNode($NODE,'here',{'displaytype'=>'viewcode'}).q|</li>|;
+  $str .= q|<li>You can see other random things, like [dbtable]s (nodes and other things (like softlinks) are stored in tables in the database; viewing one shows the field names and storage types) and [theme] (a theme contains information about a generic theme).</li>|;
+  $str .= q|<li>You can see/use [List Nodes of Type], which lists nodes of a certain type. One example <small>(</small>ab<small>)</small>use of this is to get a list of rooms. [nate] in [Edev First Post!] <small>(doesn't that sound like a troll title?)</small> lists some other node types you may be interested in. Actually, you should probably read that anyway, it has other starting information, too.</li>|;
+  $str .= q|<li>You have your own (well, shared with editors and admins) section in [user settings 2]. (As of the time this FAQ was written, there is only 1 setting there, which is explained in the <a href="#msg">next question</a>.)</li>|;
+  $str .= q|<li>You can [Edevify] things. See the <a href="#edevify">later question</a> for more information about this.</li>|;
+  $str .= q|</ul>|;
+
+  $str .= q|<p><hr /><a name="msg">Q: <strong>Why/how are random people sending me private messages that have '([edev])' in front of them?</strong></a><br />|;
+  $str .= q|A (short) : They aren't random people, and they aren't sending to just you.<br />|;
+  $str .= q|A (longer) : When somebody is a member of a [usergroup], they can send a private message to that group, which will then be sent to everybody in that group. In this case, those "random people" are other people in the [edev] usergroup, and they're typing something like this in the chatterbox:<br /><br />|;
+  $str .= q|<code>/msg edev Hi everybody, I'm Doctor Nick! Have you seen [EDev FAQ] yet?</code><br /><br />|;
+  $str .= q|and (assuming the other person is you), everybody in edev would then get a message that looks something like:<br /><br />|;
+  $str .= q|<form><input type="checkbox">|;
+  $str .= qq|([edev]) <i> $$USER{title} says</i> Hi everybody, I'm Doctor Nick! Have you seen [EDev FAQ] yet?<br /><br />|;
+  $str .= q|If the <code>/msg</code> is changed to a <code>/msg?</code> instead (with the question mark), then that message is only sent to people that are currently online (which will make the message start with 'ONO: '). For the most part, there isn't much reason to send this type of message in the edev group. For a little more information about this feature, see [online only /msg].|;
+  $str .= q|</p>|;
+
+
+  $str .= q|<p><hr /><a name="background">Q: <strong>What is the background of edev and it's relationship to the development of the site/source?</strong></a><br />|;
+  $str .= q|A: Edev is the coordination list for development of Everything2.com. It is used for discussion of new features or of modifications, or to help people debug their problems. Some code snippets people have written as part of edev have been incorporated into the E2 code here. The main way this happens is by creating Github pull requests.|;
+  $str .= q|</p>|;
+
+  $str .= q|<p><hr /><a name="edevify">Q: <strong>What is this "Edevify!" link thingy I see in my Epicenter nodelet?</strong></a><br />|;
+  $str .= q|A: This simply puts whatever node you're viewing on the [edev] (usergroup) page. About the only time to use this is when you create a normal writeup that is relevant to edev. Note: this does not work on things like "group" nodes, which includes [e2node]s; to "Edevify" your writeup, you must be viewing your writeup alone (the easiest way is to follow the idea/thing link when viewing your writeup from the e2node).|;
+  $str .= q|</p>|;
+
+  $str .= q|<p><hr /><a name="ownesite">Q: <strong>Does everybody have their own Everything site for hacking on?</strong></a><br />
+A: Yes! Everything has a development environment that is powered by <a href="https://vagrantup.com">Vagrant</a> and <a href="https://www.virtualbox.org">VirtualBox</a>. Starting up your very own copy of the environment is as simple as installing a couple of pieces of software, cloning the repository, and typing <em>"vagrant up"</em>.|;
+  $str .= q|</p>|;
+
+  $str .= q|<p><hr /><a name="edevite">Q: <strong>What is an edevite?</strong></a><br />|;
+  $str .= q|A: Instead of calling somebody "a member of the [edev] group" or "in the [edev] (user)group", I just call them an "edevite".|;
+  $str .= q|</p>|;
+
+  $str .= q|<p><hr /><a name="edevdoc">Q: <strong>What is an Edevdoc?</strong></a><br />|;
+  $str .= q|A: The [Edevdoc] extends the [document] nodetype, but allows edevites (and only edevites) to create and view it. They are primarily useful in testing out APIs and writing Javascript pieces to test out new interfaces and functionality. You can also do it entirely in the development environment as well.|;
+  $str .= q|</p>|;
+
+  $str .= q|<p><hr /><a name="whyjoin">Q: <strong>Why did others (or, why should I) join the edev group?</strong></a><br />|;
+  $str .= q|A from [anotherone]: I'm in the group because I like to take stuff apart, see how it works. [participate in your own manipulation\|Understand what's going on]. I've had a few of my ideas implemented, and it was cool knowing that I'd dome something useful.<br />|;
+  $str .= q|A from [conform]: I'm interested (for the moment) on working on the theme implementation and I've got some ideas for nodelet UI improvements.<br />|;
+  $str .= q|A from [N-Wing]: I originally (way back in the old days of Everything 1) had fun trying to break/hack E1 (and later E2) (hence my previous E2 goal, "Breaking Everything"). Around the time I decided to start learning some Perl, the edev group was announced, so I was able to learn Perl from working code <strong>and</strong> find more problems in E2 at the same time. (However, it wasn't until later I realized that E2 isn't the best place to start learning Perl from. <tt>:)</tt> )|;
+  $str .= q|</p>|;
+
+  $str .= q|<p><hr /><a name="improvements">Q: <strong>How do we go about finding tasks here? If we have personal projects for the improvement of E2, what is the appropriate way to get started? Should I verify that what I'm thinking of is useful, or should I make it work and then submit source patches?</strong></a><br />|;
+  $str .= q|A: Generally, feel free to post a message to the group or <a href="https://github.com/everything2/everything2/issues">open an issue</a> on the page. </p>|;
+
+  return $str;
+}
+
 1;
