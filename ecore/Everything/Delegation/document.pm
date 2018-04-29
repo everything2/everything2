@@ -3830,4 +3830,37 @@ sub enn
   return $str;
 }
 
+sub edev_documentation_index
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my @edoc = getNodeWhere ({}, "edevdoc", "title");
+  my $str = "";
+  foreach (@edoc) {
+    $str.= linkNode($_) ."<br>\n";
+  }
+
+
+  $str.="<p><i>Looks pretty lonely...</i>" if @edoc < 10;
+
+  return $str unless $APP->isDeveloper($USER);
+
+  $str.=htmlcode('openform');
+  $str.="<INPUT type=hidden name=op value=new>\n";
+  $str.="<INPUT type=hidden name=type value=edevdoc>\n";
+  $str.="<INPUT type=hidden name=displaytype value=edit>\n";
+  $str.="<h2>Make that dev doc:</h2>";
+  $str.=$query->textfield('node', "", 25);
+  $str.=htmlcode('closeform');
+
+  return $str;
+
+}
+
 1;
