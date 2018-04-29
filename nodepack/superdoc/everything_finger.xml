@@ -1,65 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>[%
-
-my $str;
-my $wherestr;
-
-#old way
-unless($$VARS{infravision}) {
-	$wherestr.=' and ' if $wherestr;
-	$wherestr.='visible=0';
-}
-
-my $csr = $DB-&gt;sqlSelectMany('*', 'room', $wherestr, 'order by experience DESC');
-
-$str.= '&lt;table align=&quot;center&quot; width=&quot;75%&quot; cellpadding=&quot;2&quot; border=&quot;1&quot; cellspacing=&quot;0&quot;&gt;&lt;tr&gt;&lt;th&gt;Who&lt;/th&gt;&lt;th&gt;What&lt;/th&gt;&lt;th&gt;Where&lt;/th&gt;&lt;/tr&gt;';
-
-my $UID = getId($USER);	#logged on user's ID
-my $uid;	#current display user's ID
-
-my $newbielook = $APP-&gt;isEditor($USER);
-
-my $flags;
-my $num = 0;
-while (my $U = $csr-&gt;fetchrow_hashref) {
-	$num++;
-	$uid = $$U{member_user};
-	$str.='&lt;tr&gt;&lt;td&gt;';
-	$str.=linkNode($uid, $$U{nick}, {lastnode_id=&gt;0});
-  
-	$flags = '';
-
-	$flags .= '&lt;font color=&quot;#ff0000&quot;&gt;invis&lt;/font&gt;' if $$U{visible};
-
-	$flags .= '@' if $APP-&gt;isAdmin($uid);
-	$flags .= '$' if $APP-&gt;isEditor($uid, &quot;nogods&quot;) and not $APP-&gt;isAdmin($uid);
-	$flags .= '%' if $APP-&gt;isDeveloper($uid, &quot;nogods&quot;);
-
-        my $difftime = time()-$U-&gt;{unixcreatetime};
-	if($newbielook and $difftime &lt; 60*60*24*30) {
-		my $d = sprintf(&quot;%d&quot;, $difftime/(60*60*24))+1;
-		$flags .= '&lt;strong&gt;' if $d&lt;=3;
-		$flags .= $d;
-		$flags .= '&lt;/strong&gt;' if $d&lt;=3;
-	}
-
-
-	$str .= '&lt;/td&gt;&lt;td&gt;'.$flags.'&lt;/td&gt;&lt;td&gt;';
-
-	$str .= ($$U{room_id}) ? linkNode($$U{room_id}) : 'outside';
-	$str .= &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
-}
-$csr-&gt;finish;
-
-$str.='&lt;/table&gt;';
-
-return '&lt;em&gt;No users are logged in!&lt;/em&gt;' unless $num;
-my $intro = &quot;There are currently $num users on Everything2&lt;br&gt;&quot;;
-
-$intro.$str;
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>553317</node_id>
   <title>Everything Finger</title>
 </node>
