@@ -3945,7 +3945,7 @@ sub editor_endorsements
   {
     next if $last == $_;
     $last = $_;
-    $str.="<option value=\"$_\"".(($query->param("editor")."" eq "$_")?(" SELECTED "):("")).">".getNodeById($_)->{title}."</option>" unless($except{$_}) || not getNodeById($_)->{type}->{title} eq "user"
+    $str.="<option value=\"$_\"".(($query->param("editor")."" eq "$_")?(" SELECTED "):("")).">".getNodeById($_)->{title}."</option>" unless($except{$_}) or not getNodeById($_)->{type}->{title} eq "user"
   }
     $str.="</select><input type=\"submit\" value=\"Show Endorsements\"></form>";
 
@@ -4028,6 +4028,79 @@ sub everything_data_pages
 
   $str .= q|</table>|;
   return $str;
+
+}
+
+sub everything_finger
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = "";
+  my $wherestr = "";
+
+  #old way
+  unless($$VARS{infravision})
+  {
+    $wherestr.=' and ' if $wherestr;
+    $wherestr.='visible=0';
+  }
+
+  my $csr = $DB->sqlSelectMany('*', 'room', $wherestr, 'order by experience DESC');
+
+  $str.= '<table align="center" width="75%" cellpadding="2" border="1" cellspacing="0"><tr><th>Who</th><th>What</th><th>Where</th></tr>';
+
+  my $UID = getId($USER);	#logged on user's ID
+  my $uid;	#current display user's ID
+
+  my $newbielook = $APP->isEditor($USER);
+
+  my $flags = "";
+  my $num = 0;
+  while (my $U = $csr->fetchrow_hashref)
+  {
+    $num++;
+    $uid = $$U{member_user};
+    $str.='<tr><td>';
+    $str.=linkNode($uid, $$U{nick}, {lastnode_id=>0});
+  
+    $flags = '';
+
+    $flags .= '<font color="#ff0000">invis</font>' if $$U{visible};
+
+    $flags .= '@' if $APP->isAdmin($uid);
+    $flags .= '$' if $APP->isEditor($uid, "nogods") and not $APP->isAdmin($uid);
+    $flags .= '%' if $APP->isDeveloper($uid, "nogods");
+
+    my $difftime = time()-$U->{unixcreatetime};
+    if($newbielook and $difftime < 60*60*24*30)
+    {
+      my $d = sprintf("%d", $difftime/(60*60*24))+1;
+      $flags .= '<strong>' if $d<=3;
+      $flags .= $d;
+      $flags .= '</strong>' if $d<=3;
+    }
+
+
+    $str .= '</td><td>'.$flags.'</td><td>';
+
+    $str .= ($$U{room_id}) ? linkNode($$U{room_id}) : 'outside';
+    $str .= "</td></tr>\n";
+  }
+
+  $csr->finish;
+
+  $str.='</table>';
+
+  return '<em>No users are logged in!</em>' unless $num;
+  my $intro = "There are currently $num users on Everything2<br>";
+
+  return $intro.$str;
 
 }
 
