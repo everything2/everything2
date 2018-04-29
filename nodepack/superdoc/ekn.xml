@@ -1,11 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>&lt;p&gt;[{ennchoice}]&lt;/p&gt;
-&lt;p&gt;(see also [Writeups by Type])&lt;/p&gt;
-&lt;p align=center&gt;The last &lt;strong&gt;1024&lt;/strong&gt; writeups. That's between about four and eight weeks' worth.&lt;br&gt;This is most useful if you've been away for a while.&lt;/p&gt;
-&lt;table cellpadding=0 cellspacing=0 width=100%&gt;
-[{newnodes:1024}]
-&lt;/table&gt;</doctext>
+  <doctext></doctext>
   <node_id>1496318</node_id>
   <title>EKN</title>
 </node>
