@@ -3809,4 +3809,25 @@ sub ekn
   return $str;
 }
 
+sub enn
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = q|<p>|.htmlcode("ennchoice").q|</p>|;
+  $str .= q|<p>(see also [Writeups by Type])</p>|;
+  $str .= q|<p align=center>These are the last <b>300</b> nodes that have been added to "[Everything]".<br><br>|;
+  
+  $str .= q|<table cellpadding=0 cellspacing=0 width=100%>|;
+  $str .= htmlcode("newnodes",300);
+  $str .= q|</table>|;
+
+  return $str;
+}
+
 1;
