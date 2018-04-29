@@ -3921,4 +3921,50 @@ sub edit_weblog_menu
 
 }
 
+sub editor_endorsements
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+  
+  my @grp = (@{getNode("gods","usergroup")->{group}},@{getNode("Content Editors","usergroup")->{group}}, @{getNode("exeds","nodegroup")->{group}});
+  my %except = map {getNode($_,"user")->{node_id} => 1} ("Cool Man Eddie","EDB","Webster 1913","Klaproth");
+  @grp = sort {lc(getNodeById($a)->{title}) cmp lc(getNodeById($b)->{title})} @grp;
+  my $str = "Select your <b>favorite</b> editor to see what they've [Page of Cool|endorsed]:";
+
+  $str.=htmlcode("openform");
+  $str.="<select name=\"editor\">";
+   foreach(@grp){
+  $str.="<option value=\"$_\"".(($query->param("editor")."" eq "$_")?(" SELECTED "):("")).">".getNodeById($_)->{title}."</option>" unless($except{$_}) || not getNodeById($_)->{type}->{title} eq "user"}
+  $str.="</select><input type=\"submit\" value=\"Show Endorsements\"></form>";
+
+  my $ed = $query->param("editor");
+  $ed =~ s/[^\d]//g;
+  return $str unless $ed && getNodeById($ed)->{type}->{title} eq "user";
+
+  my $csr = $DB->sqlSelectMany("node_id", "links left join node on links.from_node=node_id", "linktype=".getId(getNode("coollink", "linktype"))." and to_node='$ed' order by title");
+
+  my $innerstr = "";
+  my $count = 0;
+  while(my $row = $csr->fetchrow_hashref)
+  {
+    $count++;    
+    my $n = getNodeById($$row{node_id});
+    $$n{group} ||= [];
+    my $num = scalar(@{$$n{group}});
+    $innerstr.="<li>".linkNode($n).
+    (($$n{type}{title} eq "e2node")?
+    (" - $num writeup".(($num == 0 || $num > 1)?("s"):(""))):
+    (" - ($$n{type}{title})"))."</li>";
+  }
+
+  $str.=linkNode(getNodeById($ed))." has endorsed $count nodes<br><ul>$innerstr</ul>";
+
+  return $str;
+}
+
 1;
