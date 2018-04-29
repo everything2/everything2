@@ -3754,7 +3754,7 @@ You, |.linkNode($USER,0,{lastnode_id=>0}) . ', ' . ( $APP->isDeveloper($USER,"no
   $str .= q|<form><input type="checkbox">|;
   $str .= qq|([edev]) <i> $$USER{title} says</i> Hi everybody, I'm Doctor Nick! Have you seen [EDev FAQ] yet?<br /><br />|;
   $str .= q|If the <code>/msg</code> is changed to a <code>/msg?</code> instead (with the question mark), then that message is only sent to people that are currently online (which will make the message start with 'ONO: '). For the most part, there isn't much reason to send this type of message in the edev group. For a little more information about this feature, see [online only /msg].|;
-  $str .= q|</p>|;
+  $str .= q|</form></p>|;
 
 
   $str .= q|<p><hr /><a name="background">Q: <strong>What is the background of edev and it's relationship to the development of the site/source?</strong></a><br />|;
@@ -3785,6 +3785,26 @@ A: Yes! Everything has a development environment that is powered by <a href="htt
 
   $str .= q|<p><hr /><a name="improvements">Q: <strong>How do we go about finding tasks here? If we have personal projects for the improvement of E2, what is the appropriate way to get started? Should I verify that what I'm thinking of is useful, or should I make it work and then submit source patches?</strong></a><br />|;
   $str .= q|A: Generally, feel free to post a message to the group or <a href="https://github.com/everything2/everything2/issues">open an issue</a> on the page. </p>|;
+
+  return $str;
+}
+
+sub ekn
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = q|<p>|.htmlcode("ennchoice").q|</p>|;
+  $str .= q|<p>(see also [Writeups by Type])</p>|;
+  $str .= q|<p align=center>The last <strong>1024</strong> writeups. That's between about four and eight weeks' worth.<br>This is most useful if you've been away for a while.</p>|;
+  $str .= q|<table cellpadding=0 cellspacing=0 width=100%>|;
+  $str .= htmlcode("newnodes",1024);
+  $str .= q|</table>|;
 
   return $str;
 }
