@@ -1,55 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>&lt;p&gt;A note to client developers:
-The following are Everything Data Pages (nodetype=&lt;code&gt;fullpage&lt;/code&gt;) -- you may write scripts to parse them and provide you with entertaining
-server-side data.  With the [New Nodes XML Ticker] and the [User Search XML Ticker] please don't hit it 
-more than every 5 mins, as they are fairly expensive pages.  Please don't hit ANY of the pages more frequently
-than every 30 seconds -- although you may offer a &quot;refresh&quot; button to the users.  I'd prefer not to have tons of inactive users bogging down the server.
-&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;headlines.rdf&quot;&gt;http://everything2.com/headlines.rdf&lt;/a&gt; is the RDF feed of Cool Nodes -- &quot;Cool User Picks!&quot;.&lt;/p&gt;
-&lt;p&gt;
-[%
-my $str='&lt;table&gt;&lt;tr&gt;&lt;th&gt;title&lt;/th&gt;&lt;th&gt;node_id&lt;/th&gt;';
-my $isRoot = $APP-&gt;isAdmin($USER);
-my $isDev = $isRoot || $APP-&gt;isDeveloper($USER);
-
-$str .= '&lt;th&gt;viewcode&lt;/th&gt;' if $isDev;
-$str .= '&lt;th&gt;edit&lt;/th&gt;' if $isRoot;
-$str .= &quot;&lt;/tr&gt;\n&quot;;
-
-$str = '(&lt;a href='.urlGen({node=&gt;'List Nodes of Type', chosen_type=&gt;'fullpage'}).'&gt;alternate display&lt;/a&gt; at [List Nodes of Type])'.$str if $isDev;
-
-my @nodes = getNodeWhere({type_nodetype =&gt; getId(getType('fullpage'))});
-foreach (@nodes) {
-	$str.= '&lt;tr&gt;&lt;td&gt;'.linkNode($_).'&lt;/td&gt;&lt;td&gt;'.$$_{node_id};
-	$str.= '&lt;/td&gt;&lt;td&gt;'.linkNode($_, 'viewcode', {displaytype =&gt; 'viewcode'}) if $isDev;
-	$str.= '&lt;/td&gt;&lt;td&gt;'.linkNode($_, 'edit', {displaytype =&gt; 'edit'}) if $isRoot;
-	$str .= &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
-}
-
-$str.'&lt;/table&gt;';
-%]
-&lt;/p&gt;
-&lt;br&gt;&lt;br&gt;&lt;hr&gt;&lt;br&gt;
-&lt;table&gt;
-[%
-
-my $isRoot = $APP-&gt;isAdmin($USER);
-my $isDev = $APP-&gt;isDeveloper($USER);
-
-my $str=&quot;These are the second generation tickers, using a more unified XML base, and also exporting information more fully. These are of type [ticker].&quot;;
-my @nodes = getNodeWhere({type_nodetype =&gt; getId(getType('ticker'))});
-foreach (@nodes) {
-	$str.= '&lt;tr&gt;&lt;td&gt;'.linkNode($_).'&lt;/td&gt;&lt;td&gt;'.$$_{node_id};
-	$str.= '&lt;/td&gt;&lt;td&gt;'.linkNode($_, 'viewcode', {displaytype =&gt; 'viewcode'}) if $isDev;
-	$str.= '&lt;/td&gt;&lt;td&gt;'.linkNode($_, 'edit', {displaytype =&gt; 'edit'}) if $isRoot;
-	$str .= &quot;&lt;/td&gt;&lt;/tr&gt;\n&quot;;
-}
-
-$str;
-%]
-&lt;/table&gt;
-</doctext>
+  <doctext></doctext>
   <node_id>781552</node_id>
   <title>Everything Data Pages</title>
 </node>
