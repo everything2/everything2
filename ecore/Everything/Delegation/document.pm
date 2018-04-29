@@ -3863,4 +3863,62 @@ sub edev_documentation_index
 
 }
 
+sub edit_weblog_menu
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if $APP->isGuest($USER) ;
+
+  my $str = htmlcode( 'openform' ).'<fieldset><legend>Display:</legend>' ;
+
+  if ( $query -> param( 'nameifyweblogs' ) )
+  {
+    $$VARS{ nameifyweblogs } = 1 ;
+  } else {
+    delete $$VARS{ nameifyweblogs } if $query -> param( 'submit' ) ;
+  }
+
+  $str .= $query -> checkbox( -name => 'nameifyweblogs' , -checked => ( $$VARS{ nameifyweblogs } ? 'checked' : '' ) ,
+    -value => 1 , -label => 'Use dynamic names (-ify!)' ).'
+    </fieldset>' ;
+
+
+  my $wls = {};
+  $wls = getVars( getNode( 'webloggables' , 'setting' ) ) if $$VARS{ nameifyweblogs } ;
+  my $somethinghidden=0;
+
+  $str .= "\n<fieldset><legend>Show items:</legend>\n" ;
+  foreach( split ',' , $$VARS{ can_weblog } )
+  {
+    if ( $query -> param( 'show_'.$_ ) )
+    {
+      delete $$VARS{ 'hide_weblog_'.$_ } ;
+    } elsif ( $query -> param( 'submit' ) ){
+      $$VARS{ 'hide_weblog_'.$_ } = $$VARS{ 'hidden_weblog' } = $somethinghidden = 1 ;
+    }
+
+    my $groupTitle = "News" ;
+    if ( $$VARS{ nameifyweblogs } )
+    {
+      $groupTitle = $$wls{ $_ } ;
+    } else {
+      $groupTitle = getNodeById($_,"light")->{title} unless $_ == 165580 ;
+    }
+
+    $str .= $query -> checkbox( -name => 'show_'.$_ , -checked => ( $$VARS{ 'hide_weblog_'.$_ } ? '' : 'checked' ) ,
+      -value => 1 , -label => $groupTitle )."<br>\n" ;
+  }
+
+  delete $$VARS{ 'hidden_weblog' } unless $somethinghidden ;
+
+  return $str.'</fieldset><input type="submit" name="submit" value="'.( $$VARS{ nameifyweblogs } ? 'Changeify!' : 'Submit' ).'"></form>';
+
+}
+
 1;
