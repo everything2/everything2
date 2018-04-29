@@ -3974,4 +3974,61 @@ sub editor_endorsements
   return $str;
 }
 
+sub everything_data_pages
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+
+  my $str = q|<p>A note to client developers: |;
+  $str .= q|The following are Everything Data Pages (nodetype=<code>fullpage</code>) -- you may write scripts to parse them and provide you with entertaining |;
+  $str .= q|server-side data.  With the [New Nodes XML Ticker] and the [User Search XML Ticker] please don't hit it |;
+  $str .= q|more than every 5 mins, as they are fairly expensive pages.  Please don't hit ANY of the pages more frequently |;
+  $str .= q|than every 30 seconds -- although you may offer a "refresh" button to the users.  I'd prefer not to have tons of inactive users bogging down the server. |;
+  $str .= q|</p><p><a href="headlines.rdf">http://everything2.com/headlines.rdf</a> is the RDF feed of Cool Nodes -- "Cool User Picks!".</p><p>|;
+
+  $str .= '<table><tr><th>title</th><th>node_id</th>';
+  my $isRoot = $APP->isAdmin($USER);
+  my $isDev = $isRoot || $APP->isDeveloper($USER);
+
+  $str .= '<th>viewcode</th>' if $isDev;
+  $str .= '<th>edit</th>' if $isRoot;
+  $str .= "</tr>\n";
+
+  $str = '(<a href='.urlGen({node=>'List Nodes of Type', chosen_type=>'fullpage'}).'>alternate display</a> at [List Nodes of Type])'.$str if $isDev;
+
+  my @nodes = getNodeWhere({type_nodetype => getId(getType('fullpage'))});
+  foreach (@nodes)
+  {
+    $str.= '<tr><td>'.linkNode($_).'</td><td>'.$$_{node_id};
+    $str.= '</td><td>'.linkNode($_, 'viewcode', {displaytype => 'viewcode'}) if $isDev;
+    $str.= '</td><td>'.linkNode($_, 'edit', {displaytype => 'edit'}) if $isRoot;
+    $str .= "</td></tr>\n";
+  }
+
+  $str .= '</table>';
+
+  $str .= q|</p><br><br><hr><br><table>|;
+
+  $str .="These are the second generation tickers, using a more unified XML base, and also exporting information more fully. These are of type [ticker].";
+
+  @nodes = getNodeWhere({type_nodetype => getId(getType('ticker'))});
+  foreach (@nodes)
+  {
+    $str.= '<tr><td>'.linkNode($_).'</td><td>'.$$_{node_id};
+    $str.= '</td><td>'.linkNode($_, 'viewcode', {displaytype => 'viewcode'}) if $isDev;
+    $str.= '</td><td>'.linkNode($_, 'edit', {displaytype => 'edit'}) if $isRoot;
+    $str .= "</td></tr>\n";
+  }
+
+  $str .= q|</table>|;
+  return $str;
+
+}
+
 1;
