@@ -4443,4 +4443,37 @@ sub everything_new_nodes
   return $str;
 }
 
+sub everything_poll_archive
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $numtoshow=10;
+  my $startat = int($query->param("startat"))||0;
+
+  my @polls = getNodeWhere({poll_status => 'closed'}, 'e2poll', "e2poll_id DESC LIMIT $startat, $numtoshow");
+
+  my $str = '<ul>';
+
+  foreach (@polls)
+  {
+    $str .= '<li>'.htmlcode('showpoll', $_).'</li>';
+  }
+
+  $str .= '</ul>';
+
+  my $PrevLink = linkNode($NODE, 'previous', {startat => $startat-$numtoshow}) if $startat;
+  my $NextLink = linkNode($NODE,'next',{startat => $startat + $numtoshow}) if scalar @polls == $numtoshow;
+
+  $str .= qq'<p align="right" class="pagination">$PrevLink $NextLink</p>';
+
+  return $str;
+
+}
+
 1;
