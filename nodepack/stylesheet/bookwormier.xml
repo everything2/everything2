@@ -809,9 +809,11 @@ padding: 20px 50px;
 #chatterbox {
 }
 
+/*** REMOVED BY BONCI - 2018-04-29
 #chatterbox .nodelet_content {
 	overflow: auto;
 }
+***/
 
 .chat_user {
 display: inline-block;
@@ -1057,7 +1059,7 @@ input#message {
 #mobilewrapper .createdby, #mobilewrapper td.wu_length, #mobilewrapper td.wu_hits, #mobilewrapper .topic.actions {
 	display: none;
 }</doctext>
-  <contentversion>107</contentversion>
+  <contentversion>108</contentversion>
   <s3bucket></s3bucket>
   <node_id>2000528</node_id>
   <title>Bookwormier</title>
