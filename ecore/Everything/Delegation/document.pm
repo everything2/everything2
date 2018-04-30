@@ -4296,4 +4296,132 @@ sub everything_document_directory
 
 }
 
+sub everything_i_ching
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my %figures = (
+    'BBBBFB' => 'Shih, the army',
+    'BFBBBB' => 'Pi, holding together (union)',
+    'FFBFFF' => 'Hsiao Ch\'u, the taming power of the small',
+    'FFFBFF' => 'Lu, treading (conduct)',
+    'BBBFFF' => 'T\'ai, peace',
+    'FFFBBB' => 'P\'i, standstill (stagnation)',
+    'FFFFBF' => 'T\'ung Jo e\'n, fellowship with men',
+    'FBFFFF' => 'Ta Yu, possession in great measure',
+    'BBBFBB' => 'Ch\'ien, Modesty',
+    'BBFBBB' => 'Yu, enthusiasm',
+    'BFFBBF' => 'Sui, following',
+    'FBBFFB' => 'Ku, Work on What Has Been Spoiled (Decay)',
+    'FBFBBF' => 'Shih Ho, biting through',
+    'FBBFBF' => 'Pi, grace',
+    'FBBBBB' => 'Po, splitting apart',
+    'BBBBBF' => 'Fu, return, the turning point',
+    'BFFFBB' => 'Hsien, influence (wooing)',
+    'BBFFFB' => 'Ho\' e\'ng, duration',
+    'FBBBFF' => 'Sun, decrease',
+    'FFBBBF' => 'I, increase',
+    'BFFFFF' => 'Kuai, break-through (resoluteness)',
+    'FFFFFB' => 'Kou, coming to meet',
+    'BFFBFB' => 'K\'un, oppression (exhaustion)',
+    'BFBFFB' => 'Ching, the well',
+    'FFBFBB' => 'Chien, development (gradual progress)',
+    'BBFBFF' => 'Kuei Mei, the marrying maiden',
+    'BBFFBF' => 'Fo\'^e\'ng, abundance (fullness)',
+    'FBFFBB' => 'Lu, the wanderer',
+    'FFBBFB' => 'Huan, dispersion (dissolution)',
+    'BFBBFF' => 'Chieh, limitation',
+    'BFBFBF' => 'Chi Chi, after completion', 
+    'FFFFFF' => 'Ch\'ien, the creative',
+    'BBBBBB' => 'K\'un, the receptive',
+    'BFBBBF' => 'Chun, difficulty at the beginning',
+    'FBBBFB' => 'Mo\'eng, youthful folly',
+    'BFBFFF' => 'Hsu, waiting (nourishment)',
+    'FFFBFB' => 'Sung, conflict',
+    'BBBBFF' => 'Lin, approach',
+    'FFBBBB' => 'Kuan, contemplation (view)',
+    'FFFBBF' => 'Wu Wang, innocence (the unexpected)',
+    'FBBFFF' => 'Ta Ch\'u, the taming power of the great',
+    'FBBBBF' => 'I, the corners of the mouth (providing nourishment)',
+    'BFFFFB' => 'Ta Kuo, preponderance of the great',
+    'BFBBFB' => 'K\'an, the abysmal (water)',
+    'FBFFBF' => 'Li, the clinging (fire)',
+    'FFFFBB' => 'Tun, retreat',
+    'BBFFFF' => 'Ta Chuang, the power of the great',
+    'FBFBBB' => 'Chin, progress',
+    'BBBFBF' => 'Ming I, darkening of the light',
+    'FFBFBF' => 'Chai Jo\' e\'n, the family (the clan)',
+    'FBFBFF' => 'K\'uei, opposition',
+    'BFBFBB' => 'Chien, obstruction',
+    'BBFBFB' => 'Hsieh, deliverence',
+    'BFFBBB' => 'Ts\'ui, gathering together (massing)',
+    'BBBFFB' => 'Sho\'^e\'ng, pushing upward',
+    'BFFFBF' => 'Ko, revolution (molting)',
+    'FBFFFB' => 'Ting, the caldron',
+    'BBFBBF' => 'Cho\'^e\'n, the arousing (shock, thunder)',
+    'FBBFBB' => 'Ko\'^e\'n, keeping still, mountain',
+    'FFBFFB' => 'Sun, the gentle (the penetrating, wind)',
+    'BFFBFF' => 'Tui, the joyous (lake)',
+    'FFBBFF' => 'Chung Fu, inner truth',
+    'BBFFBB' => 'Hsiao Kuo, preponderance of the small'
+    );
+
+  #coin method
+
+  my @pset = ("B","F","B","F");
+  my @sset = ("F","F", "B", "B");
+
+  my $primary = "";
+  my $secondary = "";
+  while (length($primary) < 6)
+  {
+    my $coins = int(rand(2))+int(rand(2))+int(rand(2));
+
+    $primary .= $pset[$coins];
+    $secondary .= $sset[$coins];
+  
+  }
+
+  my $PNODE = getNode($figures{$primary},'e2node');
+  return "$figures{$primary} not found!"  unless $PNODE;
+  my $PWRITEUP = getNodeById($$PNODE{group}[0]);
+
+  my $SNODE = getNode($figures{$secondary}, 'e2node');
+  return "$figures{$secondary} not found!" unless $SNODE;
+  my $SWRITEUP = getNodeById($$SNODE{group}[0]);
+
+  my $str = "";
+
+  $str .= q|<table width=100% border=0 cellpadding=3 cellspacing=1>|;
+  $str .= q|<tr><TH width=50%>Primary Hexagram</TH><TH width=50%>Secondary Hexagram</TH></TR>|;
+  $str .= q|<TR><td width=50% valign=top>|;
+
+  $str .= "<center>".linkNode($PNODE)."</center></td><td width=50% valign=top>";
+  $str .= "<center>".linkNode($SNODE)."</center></tr>";
+
+  $str .= q|<tr bgcolor=black><td colspan=2>|;
+  $str .= q|<table width=100% bgcolor=black cellpadding=2 cellspacing=0><tr><td align=center width=50%>|;
+  $str .= htmlcode('generatehex', $primary)."</td><td width=50% align=center>";
+  $str .= htmlcode('generatehex', $secondary)."</td></tr></table>";
+
+  $str .= "</td></tr><tr><td valign=top width=50%>";
+  $str .= "<p>".parseLinks($$PWRITEUP{doctext});
+  $str .= "</td><td valign=top width=50%>";
+  $str .= "<p>".parseLinks($$SWRITEUP{doctext});
+
+  $str .= "</td></tr></table>";
+
+  $str .= q|<br><p align=right>|;
+  $str .= q|<i>The [Everything I Ching] is brought to you by [The Gilded Frame] and [nate]</i>|;
+  $str .= q|<p align=center><font size=5>|.linkNode($NODE, 're-divine').q|</font>|;
+
+  return $str;
+}
+
 1;
