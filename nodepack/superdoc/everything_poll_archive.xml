@@ -1,33 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>[%
-
-my $numtoshow=10;
-my $startat = int($query-&gt;param(&quot;startat&quot;))||0;
-
-my @polls = getNodeWhere({poll_status =&gt; 'closed'}, 'e2poll'
-	, &quot;e2poll_id DESC LIMIT $startat, $numtoshow&quot;);
-
-my $str = '&lt;ul&gt;';
-
-foreach (@polls){
-	$str .= '&lt;li&gt;'
-		.htmlcode('showpoll', $_)
-		.'&lt;/li&gt;';
-}
-
-$str .= '&lt;/ul&gt;';
-
-my $PrevLink = linkNode($NODE, 'previous', {startat =&gt; $startat-$numtoshow})
-	if $startat;
-my $NextLink = linkNode($NODE,'next',{startat =&gt; $startat + $numtoshow})
-	if scalar @polls == $numtoshow;
-
-$str .= qq'&lt;p align=&quot;right&quot; class=&quot;pagination&quot;&gt;$PrevLink $NextLink&lt;/p&gt;';
-
-return $str;
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>1690777</node_id>
   <title>Everything Poll Archive</title>
 </node>
