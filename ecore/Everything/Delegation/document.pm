@@ -4424,4 +4424,23 @@ sub everything_i_ching
   return $str;
 }
 
+sub everything_new_nodes
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = htmlcode("ennchoice");
+  $str .= q|<br><br> <p>(see also [Writeups by Type])</p><h3><p align=center><strong>Live a life you love.<br><br>Use a god you trust.<br><br>Don't take it all too seriously[Love and Rockets\|.]</strong></h3>|;
+  $str .= q|<br><br><br><p ALIGN=LEFT><p></p></ul><table cellpadding=0 cellspacing=0 width=100%>|;
+  $str .= htmlcode("newnodes",100);
+  $str .= q|</table>|;
+
+  return $str;
+}
+
 1;
