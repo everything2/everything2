@@ -4527,4 +4527,86 @@ sub everything_poll_creator
   return $str;
 }
 
+sub everything_poll_directory
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $isRoot = $APP->isAdmin($USER);
+
+  my $dailypoll = $query->param('dailypoll') if $isRoot;
+  my $poll_id = $query->param("poll_id");
+  my $oldpolls = $query->param("oldpolls")||0;
+  my $pollfilter = undef;
+  my $pollLink = "";
+  my %oldPollParameter = ();
+
+  if ($oldpolls)
+  {
+    $pollLink = linkNode($$NODE{node_id}, 'Hide old polls');
+    %oldPollParameter = (oldpolls => 1);
+  }else{
+    $pollfilter = {'poll_status !' => 'closed'};
+    $pollLink = linkNode($$NODE{node_id}, 'Show old polls', {oldpolls => 1});
+  }
+
+  if ($dailypoll)
+  {
+    $DB->sqlUpdate('e2poll', {poll_status => 'closed'}, "poll_status='current'");
+    $DB->sqlUpdate('e2poll', {poll_status => 'current'}, "e2poll_id=$poll_id");
+
+    htmlcode('addNotification', 'e2poll', '', {e2poll_id => $poll_id});
+  }
+
+  my ($PrevLink, $NextLink) = ("","");
+  my $numtoshow=8;
+
+  my $startat = $query->param("startat")||0;
+  if ($startat)
+  {
+    my $finishat=$startat-$numtoshow;
+    $PrevLink=linkNode($NODE,'previous',{startat => $finishat, %oldPollParameter});
+  }
+
+  my @nodes = getNodeWhere($pollfilter, 'e2poll', "e2poll_id DESC LIMIT $startat, $numtoshow");
+  my $str = "";
+
+  $str .= '<p>Go to the <b>'.linkNodeTitle('Everything User Poll[superdoc]').'</b>.';
+  $str .= '</p><p>'.$pollLink.'.' if $isRoot;
+  $str .= '</p><ul>';
+
+  foreach my $n (@nodes)
+  {
+    getRef $n;
+    $str .= '<li>'.htmlcode('showpoll', $n, 'show status');
+
+    if ($isRoot)
+    {
+      $str .= '<p>'.($$n{poll_status} ne 'current'
+        ? linkNode($$NODE{node_id}, 'make current'
+        , {poll_id => $$n{node_id}, dailypoll => 1}).' | ': '')
+	.linkNode($n, 'edit', {displaytype => 'edit'})
+        .' | '
+        .linkNode($n, 'delete', {node_id => $$n{node_id}, confirmop => 'nuke'})
+        .'</p>';
+    }
+
+    $str .= '</li>';
+  }
+
+  if (scalar @nodes == $numtoshow)
+  {
+    $NextLink = linkNode($NODE, 'next', {startat => $startat + $numtoshow, %oldPollParameter});
+  }
+	
+  $str.= qq'</ul><p align="right" class="pagination">$PrevLink $NextLink</p>';
+  return $str;
+
+}
+
 1;
