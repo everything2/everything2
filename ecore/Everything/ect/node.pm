@@ -101,6 +101,14 @@ sub xml_to_node
 		$NODE->{$field} = $NODE->{node_id};
 	}
 
+	foreach my $key (keys %$NODE)
+	{
+		if(not ref $NODE->{$key})
+		{
+			utf8::decode($NODE->{$key});
+		}
+	}
+
         if($NODE->{type_nodetype} != 2117441) # Don't do this for datastash objects
         {
 		$NODE = $this->_repack_node_vars($NODE);
