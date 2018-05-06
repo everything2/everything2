@@ -115,6 +115,7 @@ sub get_current_user
     if($user->locked)
     {
       $self->devLog("Account is locked: $username");
+      $user = undef;
     }else{
        unless($cookie)
        {
