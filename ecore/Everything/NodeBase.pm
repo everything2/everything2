@@ -2062,33 +2062,6 @@ sub getNodetypeTables
 	return $$TYPE{tableArray};
 }
 
-
-#############################################################################
-#	Sub
-#		getMaintenanceCode
-#
-#	Purpose
-#		This finds the code that needs to be executed for the given
-#		node and operation.
-#
-#	Parameters
-#		$NODE - a node hash or id of the node being affected
-#		$op - the operation being performed (typically 'create', 'update',
-#			or 'delete')
-#
-#	Returns
-#		The code to be executed.  0 if no code was found.
-#
-sub getMaintenanceCode
-{
-	my ($this, $NODE, $op) = @_;
-
-	my $maint = $this->findMaintenance($NODE->{type}, $op);
-	return unless $maint;
-	my $code = $this->getNodeById($maint);
-	return $$code{code};
-}
-
 sub findMaintenance
 {
 	my ($this, $TYPE, $op) = @_;
@@ -2167,25 +2140,10 @@ sub nodeMaintenance
         if(my $delegation = Everything::Delegation::maintenance->can($maintenance_name))
         {
 		return $delegation->($this, $Everything::HTML::query, $Everything::HTML::GNODE, $Everything::HTML::USER, $Everything::HTML::VARS, $Everything::HTML::PAGELOAD, $Everything::APP, $node_id);
+	}else{
+		$Everything::APP->devLog("Could not find maintenance for $maintenance_name");
+		return;
 	}
-
-	my $code;
-	
-	# NODE and op must be defined!
-	return 0 if(not defined $node_id);
-	return 0 if((not defined $op) || ($op eq ""));
-
-	# Find the maintenance code for this page (if there is any)
-	$code = $this->getMaintenanceCode($node_id, $op);
-
-	if($code)
-	{
-		$node_id = $this->getId($node_id);
-		my $args = "\@\_ = \"$node_id\";\n";
-		return Everything::HTML::embedCode("%" . $args . $code . "%", @_);
-	}
-
-        return;
 }
 
 #############################################################################
