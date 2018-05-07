@@ -1757,3 +1757,32 @@ if ($('#bookmarklist li'))
     $('#checkall').show().click(function(){jQuery('#bookmarklist input').attr('checked','true');});
   }
 }
+
+// Basic E2 markup parsing functions
+
+function linknodetitle(text_to_parse)
+{
+  var linkparts = text_to_parse.split(/\s*[|\]]+/,2);
+  var nodename = linkparts[0];
+  var title = linkparts[1];
+
+  if(typeof title == 'undefined')
+  {
+    title=nodename;
+  }
+
+  if(typeof title == 'string' && title.match(/^\s*$/i))
+  {
+    title=nodename;
+  }
+
+  return '<a href="/node/title/'+encodeURI(nodename)+'">'+title+'</a>';
+}
+
+function linkparse(text_to_parse)
+{
+  var regularlinks = /\[([^[\]]*(?:\[[^\]|]*[\]|][^[\]]*)?)]/gi;
+  return text_to_parse.replace(regularlinks, function(matching_text,n1){return linknodetitle(n1)});
+}
+
+
