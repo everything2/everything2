@@ -4614,4 +4614,9 @@ sub everything_quote_server
   return qq|<br><br><b><font size="3"><div id="quoteserver" align="center"></div></font></b><br><br><br>|;
 }
 
+sub everything_user_poll
+{
+  return htmlcode('showcurrentpoll');
+}
+
 1;
