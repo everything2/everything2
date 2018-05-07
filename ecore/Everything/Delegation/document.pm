@@ -4609,4 +4609,9 @@ sub everything_poll_directory
 
 }
 
+sub everything_quote_server
+{
+  return qq|<br><br><b><font size="3"><div id="quoteserver" align="center"></div></font></b><br><br><br>|;
+}
+
 1;
