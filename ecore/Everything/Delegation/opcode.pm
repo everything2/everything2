@@ -2005,7 +2005,7 @@ sub pollvote
     && exists($result_array[$vote]);
 
   return if $DB->sqlSelect( # has already voted on this poll
-    'vote_id'
+    'pollvote_id'
     , 'pollvote'
     , "voter_user=$$USER{node_id} AND pollvote_id=$$N{node_id}");
 
