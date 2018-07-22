@@ -2000,12 +2000,13 @@ sub pollvote
   my $vote = $query->param('vote');
 
   my $N = getNodeById($pollId);
+  my @options = split /\n\s*/s, $$N{doctext};
   my @result_array = split(',', $$N{e2poll_results});
   return unless $N  && $$N{type}{title} eq 'e2poll' && $$N{poll_status} ne 'new' && $$N{poll_status} ne 'closed'
-    && exists($result_array[$vote]);
+    && exists($options[$vote]);
 
   return if $DB->sqlSelect( # has already voted on this poll
-    'vote_id'
+    'pollvote_id'
     , 'pollvote'
     , "voter_user=$$USER{node_id} AND pollvote_id=$$N{node_id}");
 
