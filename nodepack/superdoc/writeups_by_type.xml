@@ -7,8 +7,8 @@
 
 my $wuType = abs int($query-&gt;param(&quot;wutype&quot;));
 
-my $count = abs int($query-&gt;param(&quot;count&quot;));
-$count = 50 if !$count;
+my $count = $query-&gt;param(&quot;count&quot;) || 50;
+$count = abs int($count);
 
 my $page = abs int($query-&gt;param(&quot;page&quot;));
 
@@ -30,7 +30,7 @@ my $str = htmlcode('openform')
 	.$query -&gt; popup_menu('wutype', \@idlist, 0, \%items)
 	.'&lt;/label&gt;
 	&lt;label&gt; &amp;nbsp; &lt;strong&gt;Number of writeups to display:&lt;/strong&gt;'
-	.$query -&gt; popup_menu('count', [0, 15, 25, 50, 75, 100, 150, 200, 250, 500], $count)
+	.$query -&gt; popup_menu('count', [10, 25, 50, 75, 100, 150, 200, 250, 500], $count)
 	.'&lt;/label&gt; &amp;nbsp; '
 	.$query -&gt; submit('Get Writeups')
 	.'&lt;/fieldset&gt;&lt;/form&gt;';
