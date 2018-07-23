@@ -5164,4 +5164,38 @@ sub everything_s_best_users
   return $str;
 }
 
+sub everything_s_best_writeups
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return 'Curiosity killed the cat, ya know.' unless( $APP->isEditor($USER) );
+
+  my $str = 'Everything\'s 50 "Most Cooled" Writeups (visible only to staff members):';
+  my $csr = $DB->{dbh}->prepare('SELECT writeup_id FROM writeup ORDER BY cooled DESC LIMIT 50');
+
+  $csr->execute();
+
+  $str .= '<br><br><table><tr bgcolor="#CCCCCC"><td width="200">Writeup</td><td width="200">Author</td></tr>';
+  while(my $row = $csr->fetchrow_hashref())
+  {
+    my $bestnode = getNodeById($$row{writeup_id});
+    next unless($bestnode);
+
+    my $bestparent = getNodeById($$bestnode{parent_e2node});
+    my $bestuser = getNodeById($$bestnode{author_user});
+
+   $str.='<tr><td>'.linkNode($bestnode, $$bestnode{title}).' - '.linkNode($bestparent, 'full').' <b>'.$$bestnode{cooled}.'C!</b></td><td> by '.linkNode($bestuser, $$bestuser{title}).'</td></tr>';
+  }
+
+  $str .= '</table>';
+
+  return $str;
+}
+
 1;
