@@ -1,35 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
-  <doctext>[%
-
-  return 'Curiosity killed the cat, ya know.' unless( $APP-&gt;isEditor($USER) );
-
-  my $str = 'Everything\'s 50 &quot;Most Cooled&quot; Writeups (visible only to staff members):';
-
-  my $csr = $DB-&gt;{dbh}-&gt;prepare('SELECT writeup_id FROM writeup ORDER BY cooled DESC LIMIT 50');
-
-  $csr-&gt;execute();
-
-  $str .= '&lt;br&gt;&lt;br&gt;&lt;table&gt;&lt;tr bgcolor=&quot;#CCCCCC&quot;&gt;&lt;td width=&quot;200&quot;&gt;Writeup&lt;/td&gt;&lt;td width=&quot;200&quot;&gt;Author&lt;/td&gt;&lt;/tr&gt;';
-
-  while(my $row = $csr-&gt;fetchrow_hashref())
-  {
-
-      my $bestnode = getNodeById($$row{writeup_id});
-
-      next unless($bestnode);
-
-      my $bestparent = getNodeById($$bestnode{parent_e2node});
-      my $bestuser = getNodeById($$bestnode{author_user});
-
-     $str.='&lt;tr&gt;&lt;td&gt;'.linkNode($bestnode, $$bestnode{title}).' - '.linkNode($bestparent, 'full').' &lt;b&gt;'.$$bestnode{cooled}.'C!&lt;/b&gt;&lt;/td&gt;&lt;td&gt; by '.linkNode($bestuser, $$bestuser{title}).'&lt;/td&gt;&lt;/tr&gt;';
-
-  }
-
-  $str .= '&lt;/table&gt;';
-
-  return $str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>1160917</node_id>
   <title>Everything's Best Writeups</title>
 </node>
