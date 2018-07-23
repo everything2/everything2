@@ -168,6 +168,8 @@ sub executeQuery
 {
 	my ($this, $query) = @_;
 
+	$Everything::APP->devLog("executeQuery: '$query'");
+
 	my $result = $this->{dbh}->do($query);
 	return $result;
 }

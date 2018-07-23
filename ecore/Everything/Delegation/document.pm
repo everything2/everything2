@@ -98,7 +98,7 @@ sub a_year_ago_today
 
   }
 
-  $str = "$cnt writeups submitted ".(($yearsago == 1)?("a year"):("$yearsago years"))." ago today".$str;
+  $str .= "$cnt writeups submitted ".(($yearsago == 1)?("a year"):("$yearsago years"))." ago today".$str;
   my $firststr = "$startat-".($startat+50);
   $str.="<p align=\"center\"><table width=\"70%\"><tr>";
   $str.="<td width=\"50%\" align=\"center\">";
@@ -4931,6 +4931,236 @@ sub everything_user_search
       }
     }
   }
+  return $str;
+}
+
+sub everything_s_best_users
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $str = qq|<p align="right"><small>[News for noders.  Stuff that matters.]</small></p>|;
+
+  # Form toolbar (check boxes and Change button)
+  $str .= qq|<p align="right">|;
+  $str .= "<small>If you miss the merit display, you can go and complain to [ascorbic], but try getting some perspective first.</small>" if $$VARS{ebu_showmerit};
+
+  if ( !$APP->isGuest($USER) )
+  {
+    # Clear/reset the form control variables
+    delete $$VARS{ebu_showmerit}; # if($query->param("gochange"));
+    delete $$VARS{ebu_showdevotion} if($query->param("gochange"));
+    delete $$VARS{ebu_showaddiction} if($query->param("gochange"));
+    delete $$VARS{ebu_newusers} if($query->param("gochange"));
+    delete $$VARS{ebu_showrecent} if($query->param("gochange"));
+    # $$VARS{ebu_showmerit} = 1 if($query->param("ebu_showmerit") eq "on");
+    $$VARS{ebu_showdevotion} = 1 if($query->param("ebu_showdevotion") eq "on");
+    $$VARS{ebu_newusers} = 1 if($query->param("ebu_newusers") eq "on");
+    $$VARS{ebu_showaddiction} = 1 if($query->param("ebu_showaddiction") eq "on");
+    $$VARS{ebu_showrecent} = 1 if($query->param("ebu_showrecent") eq "on");
+
+    # Show the mini-toolbar 
+    $str .= htmlcode("openform")
+    # . "<input type=\"checkbox\" name=\"ebu_showmerit\" "
+    # . ($$VARS{ebu_showmerit}?' CHECKED ':'')
+    # . ">Display by merit "
+    . "<input type=\"checkbox\" name=\"ebu_showdevotion\" "
+    . ($$VARS{ebu_showdevotion}?' CHECKED ':'')
+    . ">Display by [devotion] "
+    . "<input type=\"checkbox\" name=\"ebu_showaddiction\" "
+    . ($$VARS{ebu_showaddiction}?' CHECKED ':'')
+    . ">Display by [addiction] "
+    . "<input type=\"checkbox\" name=\"ebu_newusers\" "
+    . ($$VARS{ebu_newusers}?' CHECKED ':'')
+    . ">Show New users  "
+    . "<input type=\"checkbox\" name=\"ebu_showrecent\" "
+    . ($$VARS{ebu_showrecent}?' CHECKED ':'')
+    . ">Don't show fled users &nbsp;<input type=\"hidden\" "
+    . "name=\"gochange\" value=\"foo\">"
+    . "<input type=\"submit\" value=\"change\"></p>";
+  } else {
+    # No toolbar for the Guest User.
+    return '';
+  }
+
+  $str .= qq|<p>Shake these people's manipulatory appendages.  They deserve it.<br /><em>A drum roll please....</em></p>|;
+
+  $str .= qq|<!-- Start the TABLE ...  --->|;
+  $str .= qq|<table border="0" width="70%" align="center">|;
+  $str .= qq|<!-- I left this out of the code block to avoid escaping the quotes. -->|;
+  $str .= qq|<tr bgcolor="#ffffff">|;
+
+  # Find out the date 2 years ago
+  my $rows = undef;
+  my $datestr = undef;
+
+  my $queryText = "SELECT DATE_ADD(CURDATE(), INTERVAL -2 YEAR)";
+  $rows = $DB->{dbh}->prepare($queryText);
+  $rows->execute();
+  $datestr = $rows->fetchrow_array();
+
+  # Body of the table
+
+  # Declare and init the string that contains our whole HTML stream.
+
+  # Build the rest of the table's heading row
+  $str .= "<th></th><th>User</th>";
+  # ... only include the Merit column if the checkbox is on.
+  if ( $$VARS{ebu_showmerit} )
+  {
+    $str .= "<th>Merit</th>";
+  }
+
+  if ( $$VARS{ebu_showdevotion} )
+  {
+    $str .= "<th>Devotion</th>";
+  }
+
+  if ( $$VARS{ebu_showaddiction} )
+  {
+    $str .= "<th>Addiction</th>";
+  }
+
+  $str .= "<th>Experience</th><th># Writeups</th><th>Rank</th><th>Level</th>";
+  $str .= "</tr>";
+
+  # Build the database query
+  # ... skip these users
+
+  my $skip = {
+    'dbrown'=>1,
+    'nate'=>1,
+    'hemos'=>1,
+    'Webster 1913'=>1,
+    'Klaproth'=>1,
+    'Cool Man Eddie'=>1,
+    'ShadowLost'=>1,
+    'EDB'=>1,
+    'everyone'=>1,
+  };
+
+  # ... set the query limits (including 'no monkeys')
+  my $maxShow = 60;
+  my $limit = $maxShow;
+
+  $limit += (keys %$skip);
+
+  my $recent = '';
+  if ($$VARS{ebu_newusers})
+  {
+    $recent = " and (select createtime from node where node_id=user.user_id)>'$datestr 00:00:00'";
+  }
+
+  # use the same cutoff date for fled users that we do for recent users
+  # the old code cut off recent users at 2 years and fled users at 1 year
+
+  my $noFled = '';
+  if ($$VARS{ebu_showrecent})
+  {
+    $noFled = " and user.lasttime>'$datestr 00:00:00' ";
+  }
+
+  # Run the query
+  my $csr = '';
+  if ( $$VARS{ebu_showmerit} )
+  {
+    # Query for all users with >24 writeups, sort by merit
+    $csr = $DB->sqlSelectMany("user_id", "user", "numwriteups > 24 $noFled order by merit desc limit $limit");
+  }
+
+  if ( $$VARS{ebu_showdevotion} )
+  {
+    # Query for all users with >24 writeups, sort by merit
+    $csr = $DB->sqlSelectMany("user_id", "user", "numwriteups > 24 $noFled order by (numwriteups*merit) desc limit $limit");
+  }
+
+  if ( $$VARS{ebu_showaddiction} )
+  {
+    # Query for all users with >24 writeups, sort by merit
+    $csr = $DB->sqlSelectMany("user_id, ((numwriteups*merit)/datediff(now(),node.createtime)) as addiction", "user, node", "numwriteups > 24 $noFled and node.node_id=user.user_id order by addiction desc limit $limit");
+  }
+
+  if ($csr eq '')
+  {
+    # default
+    # Query for all users, sort by XP (classic EBU sort)
+    $csr = $DB->sqlSelectMany("user_id", "user", "user_id > 0 $noFled $recent order by experience desc limit $limit");
+  }
+
+  # Set up to loop over the result set
+  my $uid = getId($USER) || 0;
+  my $isMe = 0;
+  my $step = 0;
+  my $color = '';
+  my $range = { 'min' => 135, 'max' => 255, 'steps' => $maxShow };
+
+  my $curr = 0;
+  my $lvlttl = getVars(getNode('level titles', 'setting'));
+  my $lvl = 0;
+
+  # Loop over the result set and display each row
+  my $place=0;
+  while(my $nid = $csr->fetchrow_hashref)
+  {
+    my $node = getNodeById($nid->{user_id});
+    next if(exists $$skip{$$node{title}});
+    next if($step >= $maxShow);
+
+    # This record is for the person who is logged in
+    $isMe = $$node{node_id}==$uid; 
+
+    $lvl = $APP->getLevel($node);
+
+    # Get the user vars for the user of record
+    my $V = getVars($node);
+
+    # Fled users may have actual #numwriteups < 25 if they've
+    # had writeups nuked since they last logged in.
+    next unless $$V{numwriteups};	#if no WUs, less-than test breaks
+    next if (($$V{numwriteups} < 25) && (!$$VARS{ebu_newusers}));
+    # Devotion is broken because numwriteups in the db isn't accurate
+    # ($$V{numwriteups} is accurate, though)
+    my $devo = int(($$V{numwriteups} * $$node{merit}) + .5);
+    my $merit = sprintf('%.2f', $$node{merit} || 0);
+
+    $curr = $$range{max} - (($$range{max} - $$range{min})/$$range{steps}) * $step;
+    $curr = sprintf('%02x', $curr);
+    $color = '#' . $curr . $curr . $curr;
+
+    $str.= "<tr bgcolor=\"$color\" >";
+    $str.="<td align=\"center\"><small>";
+    $str.=++$place;
+    $str.="</small></td><td>";
+    $str.=($isMe ? '<strong>' : '');
+    $str.=(linkNode($node,0,{lastnode_id=>undef}));
+    $str.=($isMe ? '</strong>' : '') . "</td>";
+    if ( $$VARS{ebu_showmerit} )
+    {
+      $str.= "<td>$merit</td>";
+    }
+
+    if ( $$VARS{ebu_showdevotion} )
+    {
+      $str.= "<td>$devo</td>";
+    }
+    
+    if ( $$VARS{ebu_showaddiction} )
+    {
+      my $addict = sprintf('%.3f',$nid->{addiction});
+      $str.= "<td>$addict</td>";
+    }
+    
+    $str.="<td>$$node{experience}</td><td>$$V{numwriteups}</td><td>$$lvlttl{$lvl}</td><td>$lvl</td></tr>\n";
+
+    ++$step;
+  }
+
+  $str .= qq|</table>|;
   return $str;
 }
 
