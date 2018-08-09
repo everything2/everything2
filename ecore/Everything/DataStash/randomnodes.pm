@@ -15,7 +15,7 @@ sub generate
   foreach(1..12)
   {
     my $N = $this->APP->getRandomNode();
-    push $randomnodes, {"node_id" => $N->{node_id}, "title" => $N->{title}};
+    push @$randomnodes, {"node_id" => $N->{node_id}, "title" => $N->{title}};
   }
 
   return $this->SUPER::generate($randomnodes);
