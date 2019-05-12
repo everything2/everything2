@@ -1,4 +1,8 @@
+<% if node['platform'].eql? 'ubuntu' %>
+Mutex file:${APACHE_LOCK_DIR} default
+<% else %> 
 LockFile ${APACHE_LOCK_DIR}/accept.lock
+<% end %>
 PidFile ${APACHE_PID_FILE}
 
 Timeout 300
@@ -40,8 +44,11 @@ LogFormat "%{User-agent}i" agent
 
 ##### E2 CUSTOM SETTINGS #####
 UseCanonicalName On
+
+<% unless node['platform'].eql? 'ubuntu' %>
 # DEFAULT RETURN TYPE IF NOT SPECIFIED OR INTERPRETED
 DefaultType text/plain
+<% end %>
 # DON'T RDNS LOOK UP HOST IPS FOR BEST SPEED
 HostnameLookups Off
 # SPECIFY, ENABLE AND PROTECT .htaccess FILES

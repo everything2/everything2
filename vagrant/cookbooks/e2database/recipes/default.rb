@@ -8,6 +8,19 @@
 
 package 'mysql-server'
 
+service 'mysql' do
+  supports :status => true, :restart => true, :reload => true
+end
+
+template '/etc/mysql/mysql.conf.d/mysqld.cnf' do
+  owner "root"
+  group "root"
+  source "mysqld.cnf.erb"
+  mode "0644"
+  notifies :restart, "service[mysql]", :immediate
+end
+
+
 template '/tmp/grant.sql' do
   owner "www-data"
   group "www-data"
