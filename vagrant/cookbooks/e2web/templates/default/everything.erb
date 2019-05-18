@@ -60,6 +60,11 @@ node["banned_user_agents"].each do |ua|
 	coreconfig+="\tBrowserMatchNoCase #{ua} denyip\n"
 end
 
+rotatelogs = '/usr/sbin/rotatelogs'
+if node['platform'].eql? 'ubuntu'
+  rotatelogs = '/usr/bin/rotatelogs'
+end
+
 coreconfig+="
 	<Directory /var/everything/www/>
 		DirectoryIndex index.pl
@@ -96,17 +101,19 @@ coreconfig+="
 	</Directory>
 
 	# NORMAL LOGS
-	ErrorLog \"|/usr/sbin/rotatelogs -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600\"
+	ErrorLog \"|#{rotatelogs} -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600\"
 	# Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
 	LogLevel warn
 
-	CustomLog \"|/usr/sbin/rotatelogs -f /var/log/apache2/e2.access.%Y%m%d%H.log 3600\" combined env=!dontlog
+	CustomLog \"|#{rotatelogs} -f /var/log/apache2/e2.access.%Y%m%d%H.log 3600\" combined env=!dontlog
 	ServerSignature On"
 
 %>
 PerlSwitches -I/var/everything/ecore
 ServerName everything2.com
+<% unless node['platform'].eql? 'ubuntu' %>
 NameVirtualHost *:80
+<% end %>
 <VirtualHost *:80>
 <%=coreconfig %>
 </VirtualHost>

@@ -58,6 +58,17 @@ to_install = [
     'libmason-perl',
     'libtry-tiny-perl',
     'yui-compressor',
+    'libapache-db-perl',
+    'libdevel-nytprof-perl',
+    'libdevel-cycle-perl',
+# Practical helper utils
+    'strace',
+    'vim',
+    'locate',
+    'screen',
+    'mysql-client',
+    'xz-utils',
+    'xdelta3',
 ]
 
 to_install.each do |p|

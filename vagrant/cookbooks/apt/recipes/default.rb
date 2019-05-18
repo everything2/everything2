@@ -7,9 +7,9 @@
 
 aptstamp = '/tmp/apt.timestamp'
 
-execute "apt-get-update-periodic" do
-  command "apt-get update && apt-get dist-upgrade -y && touch #{aptstamp}"
-  only_if do
-    not File.exists?(aptstamp) or File.mtime(aptstamp) < Time.now - 86400
-  end
-end
+#execute "apt-get-update-periodic" do
+#  command "apt-get update && apt-get dist-upgrade -y && touch #{aptstamp}"
+#  only_if do
+#    not File.exists?(aptstamp) or File.mtime(aptstamp) < Time.now - 86400
+#  end
+#end

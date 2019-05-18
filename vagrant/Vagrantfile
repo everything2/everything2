@@ -2,12 +2,12 @@ Vagrant.configure("2") do |config|
   config.vm.network :forwarded_port, guest: 80, host: 8888, auto_correct: true
   config.vm.network :forwarded_port, guest: 443, host: 8443, auto_correct: true
 
-  config.vm.box = "e2wheezy.v2"
-  config.vm.box_url = "http://vagrantbox.everything2.com/e2wheezy.v2.box"
-  config.ssh.username = "root"
+  config.vm.box = "ubuntu/bionic64"
   config.ssh.forward_agent = true
+
+  config.ssh.extra_args = '-oConnectTimeout=0'
   
-  config.vm.synced_folder "./dropfiles/","/dropfiles", SharedFoldersEnableSymlinksCreate: false
+  #config.vm.synced_folder "./dropfiles/","/dropfiles", SharedFoldersEnableSymlinksCreate: false
 
   config.vm.provider :virtualbox do |vb|
     vb.name = "Everything2 Development Environment"
