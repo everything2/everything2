@@ -8,6 +8,8 @@
 
 require 'json'
 
+gem_package 'aws-sdk'
+
 everythingdir = "/var/everything"
 
 # Minor copy and paste from e2cron
@@ -159,4 +161,10 @@ file '/etc/everything/everything.conf.json' do
   group "www-data"
   content JSON.pretty_generate(everything_conf_variables)
   mode "0755"
+end
+
+if node['environment'].eql? 'production'
+  Chef::Log.info('In production, doing instance registrations')
+else
+  Chef::Log.info('Not in production, not doing instance registrations')
 end
