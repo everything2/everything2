@@ -71,6 +71,7 @@ to_install = [
     'mysql-client',
     'xz-utils',
     'xdelta3',
+    'ruby'
 ]
 
 to_install.each do |p|
