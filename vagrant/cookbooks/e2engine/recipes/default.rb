@@ -8,7 +8,9 @@
 
 require 'json'
 
-gem_package 'aws-sdk'
+gem_package 'aws-sdk' do
+  timeout 240
+end
 
 everythingdir = "/var/everything"
 
@@ -104,6 +106,7 @@ nosearch_words.each { |x| nosearch_words_hash[x] = 1 }
 
 everything_conf_variables = {
     "basedir" => everythingdir,
+    "s3host" => node["e2engine"]["s3host"],
     "guest_user" => node["e2engine"]["guest_user"],
     "site_url" => node["e2engine"]["site_url"],
     "infected_ips" => node["e2engine"]["infected_ips"],
