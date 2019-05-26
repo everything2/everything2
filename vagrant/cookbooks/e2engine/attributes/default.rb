@@ -1,4 +1,5 @@
 default["e2engine"]["gitrepo"]      = "git://github.com/everything2/everything2.git"
+default["e2engine"]["s3host"]       = "s3-us-west-2.amazonaws.com"
 default["e2engine"]["maintenance_mode"] = 0
 default["e2engine"]["everyuser"]    = "everyuser"
 default["e2engine"]["everypass"]    = ""
