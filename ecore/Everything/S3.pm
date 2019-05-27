@@ -28,10 +28,11 @@ sub new
 	}
 
 	$this->{s3} = Net::Amazon::S3->new(
-	{   
+	{
 		aws_access_key_id     => $this->{access_key_id},
 		aws_secret_access_key => $this->{secret_access_key},
 		retry                 => 1,
+		host                  => $Everything::CONF->s3->{$s3type}->{host} || $Everything::CONF->s3host || 's3.amazonaws.com'
 	});
 
 	return unless defined($this->{s3});
