@@ -8,10 +8,6 @@
 
 require 'json'
 
-gem_package 'aws-sdk' do
-  timeout 240
-end
-
 everythingdir = "/var/everything"
 
 # Minor copy and paste from e2cron
@@ -73,11 +69,18 @@ to_install = [
     'mysql-client',
     'xz-utils',
     'xdelta3',
-    'ruby'
+# Needed for Amazon provisioning testing and building
+    'ruby',
+    'ruby-dev',
+    'ruby-bundler'
 ]
 
 to_install.each do |p|
   package p
+end
+
+gem_package 'aws-sdk' do
+  timeout 240
 end
 
 git everythingdir do
