@@ -87,7 +87,7 @@ opts.each do |opt|
     when '--db'
       db_security_group_registration
     when '--elb'
-      elb_target_registration
+      elb_target_group_registration
   end
 end
 
