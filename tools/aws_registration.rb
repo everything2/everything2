@@ -15,7 +15,6 @@ def query_metadata(value)
 
   begin 
     res = Net::HTTP.start(uri.hostname, uri.port){ |http|
-      http.read_timeout(10)
       http.request(req)
     }
 
