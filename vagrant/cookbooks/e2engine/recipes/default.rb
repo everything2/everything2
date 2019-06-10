@@ -7,6 +7,8 @@
 # You are free to use/modify these files under the same terms as the Everything Engine itself
 
 require 'json'
+require 'net/http'
+require 'uri'
 
 everythingdir = "/var/everything"
 
@@ -81,6 +83,7 @@ end
 
 gem_package 'aws-sdk' do
   timeout 240
+  retries 3
 end
 
 git everythingdir do
@@ -170,8 +173,13 @@ file '/etc/everything/everything.conf.json' do
   mode "0755"
 end
 
-if node['environment'].eql? 'production'
+if node['e2engine']['environment'].eql? 'production'
   Chef::Log.info('In production, doing instance registrations')
+  Chef::Log.info('Setting up ingress to production DB')
+
+  bash "AWS: Register instance with db security group" do
+    code "/var/everything/tools/aws_registration.rb --db"
+  end
 else
   Chef::Log.info('Not in production, not doing instance registrations')
 end
