@@ -180,3 +180,12 @@ end
 service 'apache2' do
   supports :status => true, :restart => true, :reload => true, :stop => true
 end
+
+if node['e2engine']['environment'].eql? 'production'
+  Chef::Log.info('In production, doing instance registrations')
+  bash "AWS: Register instance with application load balancer" do
+    code "/var/everything/tools/aws_registration.rb --elb"
+  end
+else
+  Chef::Log.info('Not in production, not doing instance registrations')
+end
