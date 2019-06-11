@@ -14,55 +14,10 @@ git '/var/paws' do
   action :sync
 end
 
-if node['platform'].eql? 'ubuntu'
-  package 'dehydrated'
-  package 'libmoosex-classattribute-perl'
-  package 'libaws-signature4-perl'
-  package 'liburi-encode-perl'
-else
-
-  # letsencrypt.org pieces
-  git '/var/dehydrated' do
-    repository 'https://github.com/lukas2511/dehydrated.git'
-    revision 'v0.4.0'
-    action :sync
-  end
-
-  # MooseX::ClassAttribute for PAWS
-  git '/var/MooseX-ClassAttribute' do
-    repository 'https://github.com/moose/MooseX-ClassAttribute.git'
-    revision 'v0.29'
-    action :sync
-  end
-
-  # List::Utils as needed by MooseX::ClassAttribute
-  git '/var/Scalar-List-Utils' do
-    repository "https://github.com/Dual-Life/Scalar-List-Utils.git"
-    revision 'v1.47'
-    action :sync
-  end
-
-  # JSON::MaybeXS as needed by MooseX::ClassAttribute
-  git '/var/JSON-MaybeXS' do
-    repository "https://github.com/p5sagit/JSON-MaybeXS.git"
-    revision 'v1.003009'
-    action :sync
-  end
-
-  # Net::Amazon::Signature::V4 needed by PAWS
-  git '/var/Net-Amazon-Signature-S4' do
-    repository "https://github.com/gitpan/Net-Amazon-Signature-V4.git"
-    revision 'gitpan_version/0.14'
-    action :sync
-  end
-
-  # URL::Encode as needed by PAWS
-  git '/var/p5-url-encode' do
-    repository "https://github.com/chansen/p5-url-encode.git"
-    revision 'v0.03'
-    action :sync
-  end
-end
+package 'dehydrated'
+package 'libmoosex-classattribute-perl'
+package 'libaws-signature4-perl'
+package 'liburi-encode-perl'
 
 directory '/etc/dehydrated/' do
   owner 'root'

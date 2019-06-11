@@ -19,15 +19,12 @@ to_install.each do |p|
 end
 
 
-if node['platform'].eql? 'ubuntu'
-load_modules = ['rewrite','proxy','proxy_http','ssl']
-  load_modules.push('perl','mpm_prefork','socache_shmcb')
+load_modules = ['rewrite','proxy','proxy_http','ssl','perl','mpm_prefork','socache_shmcb']
 
-  ['mpm_event.conf','mpm_event.load'].each do |mod|
-    file "/etc/apache2/mods-enabled/#{mod}" do
-      action "delete"
-      notifies :restart, "service[apache2]", :delayed
-    end
+['mpm_event.conf','mpm_event.load'].each do |mod|
+  file "/etc/apache2/mods-enabled/#{mod}" do
+    action "delete"
+    notifies :restart, "service[apache2]", :delayed
   end
 end
 
@@ -47,26 +44,6 @@ directory "/etc/apache2/conf.d/" do
   group "root"
   mode 0755
   action :create
-end
-
-
-unless node['platform'].eql? 'ubuntu'
-  bash "install Linux::Pid" do
-    cwd "/tmp"
-    user "root"
-    creates "/usr/local/lib/perl/5.14.2/auto/Linux/Pid/Pid.so"
-    code <<-EOH
-    cd /tmp
-    rm -rf Linux-Pid*
-    wget "http://search.cpan.org/CPAN/authors/id/R/RG/RGARCIA/Linux-Pid-0.04.tar.gz" &>> /tmp/linux-pid.log;
-    tar xzvf Linux-Pid-0.04.tar.gz &>> /tmp/linux-pid.log
-    cd Linux-Pid-0.04
-    perl Makefile.PL INSTALLDIRS=vendor &>> /tmp/linux-pid.log
-    make install &>> /tmp/linux-pid.log
-    rm -rf Linux-Pid*
-    cd ..
-    EOH
-  end
 end
 
 confdir = '/etc/apache2/conf.d'
@@ -137,14 +114,12 @@ end
 logdir = "/var/log/everything"
 datelog = "`date +\\%Y\\%m\\%d\\%H`.log"
 
-if node['platform'].eql? 'ubuntu'
-  directory "/var/run/apache2/ssl_mutex" do
-    owner "www-data"
-    group "root"
-    mode 0755
-    action :create
-    notifies :restart, "service[apache2]", :delayed
-  end
+directory "/var/run/apache2/ssl_mutex" do
+  owner "www-data"
+  group "root"
+  mode 0755
+  action :create
+  notifies :restart, "service[apache2]", :delayed
 end
 
 directory logdir do
@@ -155,16 +130,12 @@ directory logdir do
   notifies :restart, "service[apache2]", :delayed
 end
 
-
-if node['platform'].eql? 'ubuntu'
-  directory '/var/run/apache2/ssl_mutex' do
-    owner "www-data"
-    group "root"
-    mode 0755
-    action :create
-  end
+directory '/var/run/apache2/ssl_mutex' do
+  owner "www-data"
+  group "root"
+  mode 0755
+  action :create
 end
-
 
 cron 'log_deliver_to_s3.pl' do
   minute '5'

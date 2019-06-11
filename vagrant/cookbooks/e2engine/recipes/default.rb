@@ -81,11 +81,6 @@ to_install.each do |p|
   package p
 end
 
-gem_package 'aws-sdk' do
-  timeout 240
-  retries 3
-end
-
 git everythingdir do
   repository node["e2engine"]["gitrepo"]
   enable_submodules true
@@ -176,6 +171,11 @@ end
 if node['e2engine']['environment'].eql? 'production'
   Chef::Log.info('In production, doing instance registrations')
   Chef::Log.info('Setting up ingress to production DB')
+
+  gem_package 'aws-sdk' do
+    timeout 240
+    retries 3
+  end
 
   bash "AWS: Register instance with db security group" do
     code "/var/everything/tools/aws_registration.rb --db"
