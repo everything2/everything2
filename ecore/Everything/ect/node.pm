@@ -18,7 +18,6 @@ sub node_xml_prep
 {
 	my ($this, $N, $dbh, $options) = @_;
 	my $NODE = Clone::clone($N);
-	
 	$this->_node_xml_latin1_conversion($NODE);
 	$this->_strip_defaults($NODE,$dbh);
 
@@ -38,6 +37,8 @@ sub _node_xml_latin1_conversion
 	{
 		next if not defined($NODE->{$key});
 		next if $NODE->{$key} eq "";
+		next if ref $NODE->{$key} ne "";
+
 		if(!utf8::is_utf8($NODE->{$key}))
 		{
 			utf8::decode($NODE->{$key});
