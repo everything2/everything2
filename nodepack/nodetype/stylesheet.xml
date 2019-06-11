@@ -1,10 +1,10 @@
 <node>
+  <deleters_user>1685561</deleters_user>
+  <type_nodetype>1</type_nodetype>
+  <node_id>1854352</node_id>
+  <sqltable>s3content</sqltable>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>3</extends_nodetype>
-  <sqltable>s3content</sqltable>
-  <grouptable></grouptable>
-  <node_id>1854352</node_id>
-  <type_nodetype>1</type_nodetype>
   <title>stylesheet</title>
-  <deleters_user>1685561</deleters_user>
+  <grouptable></grouptable>
 </node>

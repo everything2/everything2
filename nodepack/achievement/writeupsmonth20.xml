@@ -1,10 +1,7 @@
 <node>
-  <type_nodetype>1917847</type_nodetype>
-  <display>&lt;strong&gt;Gutenberg&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Posted 20 new writeups in one month&lt;/i&gt;</display>
   <achievement_type>writeup</achievement_type>
-  <subtype></subtype>
-  <node_id>1920609</node_id>
   <title>writeupsMonth20</title>
+  <type_nodetype>1917847</type_nodetype>
   <code>my $maxWusInAMonth = $DB-&gt;sqlSelect(
 	&quot;nwus&quot;,
 	&quot;(SELECT Year(publishtime) AS year,
@@ -18,4 +15,7 @@
 	);
 return 1 if $maxWusInAMonth &gt;= 20;
 return 0;</code>
+  <node_id>1920609</node_id>
+  <display>&lt;strong&gt;Gutenberg&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Posted 20 new writeups in one month&lt;/i&gt;</display>
+  <subtype></subtype>
 </node>

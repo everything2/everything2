@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>5</type_nodetype>
-  <parent_container>0</parent_container>
-  <pagetype_nodetype>451267</pagetype_nodetype>
   <page></page>
-  <displaytype>display</displaytype>
+  <pagetype_nodetype>451267</pagetype_nodetype>
+  <parent_container>0</parent_container>
   <node_id>451268</node_id>
-  <title>fullpage display page</title>
+  <displaytype>display</displaytype>
+  <type_nodetype>5</type_nodetype>
   <mimetype></mimetype>
+  <title>fullpage display page</title>
 </node>

@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>1917847</type_nodetype>
-  <display>&lt;b&gt;God Mode&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Member of Gods usergroup&lt;/i&gt;</display>
-  <achievement_type>usergroup</achievement_type>
-  <subtype></subtype>
-  <node_id>1920602</node_id>
   <title>usergroupGods</title>
+  <achievement_type>usergroup</achievement_type>
+  <type_nodetype>1917847</type_nodetype>
   <code>return 1 if $APP-&gt;isAdmin($user_id);
 return 0;</code>
+  <subtype></subtype>
+  <display>&lt;b&gt;God Mode&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Member of Gods usergroup&lt;/i&gt;</display>
+  <node_id>1920602</node_id>
 </node>

@@ -1,4 +1,9 @@
 <node>
+  <node_id>1938878</node_id>
+  <s3content_id>1938878</s3content_id>
+  <s3bucket></s3bucket>
+  <title>The stylesheet has you</title>
+  <contentversion>105</contentversion>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/* In pretentious Russia */
 /*                                               */
@@ -606,9 +611,4 @@ td {
 			display: none;
 		}
 </doctext>
-  <contentversion>105</contentversion>
-  <s3bucket></s3bucket>
-  <node_id>1938878</node_id>
-  <title>The stylesheet has you</title>
-  <s3content_id>1938878</s3content_id>
 </node>

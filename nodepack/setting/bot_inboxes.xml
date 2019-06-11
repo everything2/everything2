@@ -1,49 +1,49 @@
 <node>
+  <title>bot inboxes</title>
   <type_nodetype>153</type_nodetype>
+  <node_id>2057733</node_id>
   <vars>
     <value>Content Editors</value>
-    <key>Cool Man Eddie</key>
-  </vars>
-  <vars>
-    <value>CST_Group</value>
-    <key>Content_Salvage</key>
-  </vars>
-  <vars>
-    <value>Content Editors</value>
-    <key>Giant Teddy Bear</key>
-  </vars>
-  <vars>
-    <value>Content Editors</value>
-    <key>Klaproth</key>
+    <key>EDB</key>
   </vars>
   <vars>
     <value>e2docs</value>
     <key>Virgil</key>
   </vars>
   <vars>
+    <key>Giant Teddy Bear</key>
     <value>Content Editors</value>
-    <key>Webster 1913</key>
-  </vars>
-  <vars>
-    <value>edev</value>
-    <key>Grease Monkey</key>
-  </vars>
-  <vars>
-    <value>Content Editors</value>
-    <key>EDB</key>
   </vars>
   <vars>
     <value>Content Editors</value>
     <key>everyone</key>
   </vars>
   <vars>
+    <key>recipe</key>
+    <value>recipians</value>
+  </vars>
+  <vars>
+    <key>Grease Monkey</key>
+    <value>edev</value>
+  </vars>
+  <vars>
     <value>Content Editors</value>
     <key>Guest User</key>
   </vars>
   <vars>
-    <value>recipians</value>
-    <key>recipe</key>
+    <value>Content Editors</value>
+    <key>Webster 1913</key>
   </vars>
-  <node_id>2057733</node_id>
-  <title>bot inboxes</title>
+  <vars>
+    <key>Cool Man Eddie</key>
+    <value>Content Editors</value>
+  </vars>
+  <vars>
+    <key>Klaproth</key>
+    <value>Content Editors</value>
+  </vars>
+  <vars>
+    <key>Content_Salvage</key>
+    <value>CST_Group</value>
+  </vars>
 </node>

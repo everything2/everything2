@@ -1,4 +1,7 @@
 <node>
+  <s3bucket></s3bucket>
+  <title>Biohazard</title>
+  <contentversion>104</contentversion>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/* This is the skeleton stylesheet for the zen theme, by ascorbic */
 /* You may use this file as a foundation for any new work, but you may find it easier to start from scratch. */
@@ -322,9 +325,6 @@ width: 100%;
 big big big {
 font-size: inherit;
 }</doctext>
-  <contentversion>104</contentversion>
-  <s3bucket></s3bucket>
   <node_id>1908055</node_id>
-  <title>Biohazard</title>
   <s3content_id>1908055</s3content_id>
 </node>

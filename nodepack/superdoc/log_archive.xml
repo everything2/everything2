@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <title>Log Archive</title>
   <doctext>[%
 
 # I can't get a damn switch statement to work, so I went with if-elsif. What version of perl are we running?
@@ -33,13 +33,13 @@ my $maxYear = $curDate[5]+1900;
 my $month = int($query-&gt;param(&quot;m&quot;));
 if ($month &lt; 1 || $month &gt; 12)
 {
-   $month = @curDate[4]+1;
+   $month = $curDate[4]+1;
 }
 
 my $year = int($query-&gt;param(&quot;y&quot;));
 if ($year &lt; $minYear || $year &gt; $maxYear)
 {
-   $year = @curDate[5]+1900;
+   $year = $curDate[5]+1900;
 }
 
 my $prevYear = $year;
@@ -98,7 +98,7 @@ for (my $i = 1; $i &lt;= 12; $i++)
 }
 $str .= '&lt;/select&gt;
 &lt;select name=&quot;y&quot;&gt;';
-for(my $i = @curDate[5]+1900; $i &gt;= $minYear; $i--)
+for(my $i = $curDate[5]+1900; $i &gt;= $minYear; $i--)
 {
    $str .= '&lt;option value=&quot;'.$i.'&quot;';
    if ($i == $year)
@@ -120,7 +120,7 @@ if ($nextYear &lt;= $year)
 $str .= '&lt;/div&gt;
 &lt;/form&gt;
 &lt;p&gt;&lt;small&gt;Writeups are displayed based on their titles, and are sorted by &amp;quot;Create Time&amp;quot;.&lt;br /&gt;
-Titles and create times do not always match up (i.e., someone can post a daylog for &amp;quot;February 28, '.(@curDate[5]+1890).'&amp;quot; today, and that daylog will be displayed in the February '.(@curDate[5]+1890).' archive).&lt;/small&gt;&lt;/p&gt;';
+Titles and create times do not always match up (i.e., someone can post a daylog for &amp;quot;February 28, '.($curDate[5]+1890).'&amp;quot; today, and that daylog will be displayed in the February '.($curDate[5]+1890).' archive).&lt;/small&gt;&lt;/p&gt;';
 
 my $dbrow;
 my $rowCtr = 0;
@@ -244,6 +244,6 @@ $str .= '&lt;p style=&quot;text-align:right&quot;&gt;Bugs to [in10se]&lt;/p&gt;'
 
 return $str;
 %]</doctext>
+  <type_nodetype>14</type_nodetype>
   <node_id>1925715</node_id>
-  <title>Log Archive</title>
 </node>

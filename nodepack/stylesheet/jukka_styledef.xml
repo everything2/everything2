@@ -1,5 +1,9 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
+  <node_id>2069743</node_id>
+  <s3content_id>2069743</s3content_id>
+  <s3bucket></s3bucket>
+  <contentversion>103</contentversion>
+  <title>jukka styledef</title>
   <doctext>/* This dummy is here because IE3 sometimes ignores the first style, not
    used any where, but needed to make this css-def function properly */
 .DUMMY {
@@ -88,9 +92,5 @@ small {
 big {
 	font-size: 110%;
 }</doctext>
-  <contentversion>103</contentversion>
-  <s3bucket></s3bucket>
-  <node_id>2069743</node_id>
-  <title>jukka styledef</title>
-  <s3content_id>2069743</s3content_id>
+  <type_nodetype>1854352</type_nodetype>
 </node>

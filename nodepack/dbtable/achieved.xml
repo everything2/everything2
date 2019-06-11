@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>148</type_nodetype>
+  <title>achieved</title>
   <node_id>1917855</node_id>
   <_create_table_statement>CREATE TABLE `achieved` (
   `achieved_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -8,5 +9,4 @@
   PRIMARY KEY (`achieved_id`),
   KEY `user_achievement` (`achieved_user`,`achieved_achievement`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
-  <title>achieved</title>
 </node>

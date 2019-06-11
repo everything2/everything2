@@ -1,10 +1,10 @@
 <node>
-  <extends_nodetype>3</extends_nodetype>
-  <sqltable></sqltable>
-  <grouptable></grouptable>
-  <node_id>1491416</node_id>
   <type_nodetype>1</type_nodetype>
   <writers_user>114</writers_user>
-  <title>plaindoc</title>
   <deleters_user>114</deleters_user>
+  <title>plaindoc</title>
+  <grouptable></grouptable>
+  <sqltable></sqltable>
+  <node_id>1491416</node_id>
+  <extends_nodetype>3</extends_nodetype>
 </node>

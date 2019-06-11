@@ -1,5 +1,10 @@
 <node>
+  <mysqlproc_id>2072166</mysqlproc_id>
+  <node_id>2072166</node_id>
+  <title>update_lastseen</title>
+  <parameters>IN input_user_id INT</parameters>
   <type_nodetype>2061807</type_nodetype>
+  <document_id>2072166</document_id>
   <doctext>  DECLARE seconds_since_last           INT;
 
   START TRANSACTION;
@@ -17,10 +22,5 @@
 
   COMMIT;
 </doctext>
-  <document_id>2072166</document_id>
-  <parameters>IN input_user_id INT</parameters>
-  <node_id>2072166</node_id>
-  <title>update_lastseen</title>
   <edittime>2012-11-02 13:33:14</edittime>
-  <mysqlproc_id>2072166</mysqlproc_id>
 </node>

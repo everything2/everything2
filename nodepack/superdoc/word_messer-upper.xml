@@ -1,4 +1,6 @@
 <node>
+  <node_id>366659</node_id>
+  <title>word messer-upper</title>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
@@ -45,6 +47,4 @@ $text =~ s/\&gt;/\&amp;gt\;/g;
 $str.$text;
 
 %]</doctext>
-  <node_id>366659</node_id>
-  <title>word messer-upper</title>
 </node>

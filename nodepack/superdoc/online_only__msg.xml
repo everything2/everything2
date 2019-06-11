@@ -1,4 +1,5 @@
 <node>
+  <node_id>1022255</node_id>
   <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;
 &lt;big&gt;&lt;strong&gt;Summary&lt;/strong&gt;&lt;/big&gt;&lt;br /&gt;
@@ -31,6 +32,5 @@ But what if you're one of those [paranoid] people who likes a full [Message Inbo
 &lt;dd&gt;No, online-only sends to everybody online, regardless of their cloaked status. (Essentially, being cloaked only changes other users' displays, nothing else.)&lt;/dd&gt;
 
 &lt;/dl&gt;</doctext>
-  <node_id>1022255</node_id>
   <title>online only /msg</title>
 </node>

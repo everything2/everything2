@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>13</type_nodetype>
+  <node_id>855431</node_id>
   <doctext>[%
 my $realuid = $$USER{ 'node_id' };
 
@@ -45,6 +45,6 @@ return listdir( $listdir, 0 );
 
 %]
 </doctext>
-  <node_id>855431</node_id>
+  <type_nodetype>13</type_nodetype>
   <title>wharfinger runs amok</title>
 </node>

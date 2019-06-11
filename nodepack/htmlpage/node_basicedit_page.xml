@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>5</type_nodetype>
-  <parent_container>1854175</parent_container>
-  <pagetype_nodetype>7</pagetype_nodetype>
   <page></page>
-  <displaytype>basicedit</displaytype>
+  <pagetype_nodetype>7</pagetype_nodetype>
+  <parent_container>1854175</parent_container>
   <node_id>404270</node_id>
-  <title>node basicedit page</title>
+  <displaytype>basicedit</displaytype>
+  <type_nodetype>5</type_nodetype>
   <mimetype></mimetype>
+  <title>node basicedit page</title>
 </node>

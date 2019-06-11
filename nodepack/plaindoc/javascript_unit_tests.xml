@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>1491416</type_nodetype>
   <doctext>&lt;br /&gt;&lt;br /&gt;
   &lt;link rel=&quot;stylesheet&quot; href=&quot;//code.jquery.com/qunit/qunit-1.15.0.css&quot;&gt;
   &lt;div id=&quot;qunit&quot;&gt;&lt;/div&gt;
@@ -35,6 +34,7 @@
       assert.deepEqual(encoded_url.params,{&quot;lastnode_id&quot;: &quot;1234&quot;}, &quot;Can remove a parameter&quot;);
     });
   &lt;/script&gt;</doctext>
-  <node_id>2116001</node_id>
+  <type_nodetype>1491416</type_nodetype>
   <title>javascript unit tests</title>
+  <node_id>2116001</node_id>
 </node>

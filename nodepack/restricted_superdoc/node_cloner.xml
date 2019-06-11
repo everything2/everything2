@@ -1,4 +1,5 @@
 <node>
+  <title>node cloner</title>
   <type_nodetype>13</type_nodetype>
   <doctext>[%
 my $SRCNODE = getNodeById($query-&gt;param(&quot;srcnode_id&quot;));
@@ -30,5 +31,4 @@ if ($newid){
 $query -&gt; p($str);
 %]</doctext>
   <node_id>418271</node_id>
-  <title>node cloner</title>
 </node>

@@ -1,4 +1,6 @@
 <node>
+  <node_id>1080463</node_id>
+  <title>VARS information</title>
   <type_nodetype>1065266</type_nodetype>
   <doctext>&lt;p&gt;
 This will explain what the different things in the &lt;code&gt;VARS&lt;/code&gt; hash do. [% linkNodeTitle('N-Wing|I',0); %]'m still working on this, so most things aren't explained yet...
@@ -75,6 +77,4 @@ $str;
 %]
 &lt;/table&gt;
 &lt;/p&gt;</doctext>
-  <node_id>1080463</node_id>
-  <title>VARS information</title>
 </node>

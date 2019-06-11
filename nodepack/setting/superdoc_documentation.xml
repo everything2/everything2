@@ -1,141 +1,141 @@
 <node>
   <type_nodetype>153</type_nodetype>
+  <title>superdoc documentation</title>
   <vars>
-    <value>An [ENN]-style listing with 25 as the default</value>
-    <key>1148595</key>
+    <value>MNFP and LF listing for people on the Honor Roll - primarily used while the system was under development</value>
+    <key>1208082</key>
   </vars>
   <vars>
-    <value>Anonyous Voting superdoc. More of a toy than anything else, but helps you to keep your voting anonymous.</value>
-    <key>1157630</key>
+    <key>1430673</key>
+    <value>[panamaus]' personal spot for testing perl code. Don't delete.</value>
   </vars>
   <vars>
-    <value>The old, old bug-tracking system. Do not use, it needs to be phased out.</value>
-    <key>204</key>
-  </vars>
-  <vars>
-    <value>Rambling musings from the early days of BSI. Please leave for posterity.</value>
-    <key>165473</key>
-  </vars>
-  <vars>
-    <value>A component of the old bug-tracking system. Do not use.</value>
-    <key>206</key>
-  </vars>
-  <vars>
-    <value>WolfDaddy's loosely code-backed project to have an E2 family tree in place. It's self-contained and hardcoded so he can use it.</value>
-    <key>1253668</key>
-  </vars>
-  <vars>
-    <value>Previous C! listing document</value>
-    <key>529746</key>
-  </vars>
-  <vars>
-    <value>Link to offsite for adfu document. Now relatively obsolete.</value>
-    <key>165558</key>
-  </vars>
-  <vars>
-    <value>Level power document used to create rooms</value>
-    <key>719799</key>
+    <key>1314567</key>
+    <value>FAQ item</value>
   </vars>
   <vars>
     <value>FAQ about how to submissions to the [Everything FAQ]</value>
     <key>1392044</key>
   </vars>
   <vars>
+    <key>204</key>
+    <value>The old, old bug-tracking system. Do not use, it needs to be phased out.</value>
+  </vars>
+  <vars>
+    <key>382987</key>
+    <value>The duplicates found document, for when multiple nodes are of the same title. This is a core system document, do not delete.</value>
+  </vars>
+  <vars>
+    <key>1422492</key>
+    <value>Public document that clearly outlines policy. The users see it exactly the way the editors see it.</value>
+  </vars>
+  <vars>
+    <key>1396984</key>
+    <value>[dann]'s personal spot for running code. Don't delete.</value>
+  </vars>
+  <vars>
+    <key>1372629</key>
+    <value>Vitals superdoc that shows writeups that were submitted a year ago this day. This only shows writeups that have lasted. It's a little expensive to generate, so it could probably be moved to a cron job.</value>
+  </vars>
+  <vars>
     <value>A database monitoring utility. It shows the &quot;slow&quot; or hanging queries on the database. Basic explanation is included.</value>
     <key>1054397</key>
   </vars>
   <vars>
-    <value>Separate doc discussing some of the other buttons editors use to get their job done.</value>
-    <key>1428988</key>
-  </vars>
-  <vars>
-    <value>[panamaus]' personal spot for testing perl code. Don't delete.</value>
-    <key>1430673</key>
-  </vars>
-  <vars>
-    <value>N-Wing's attempt at an integrated bug tracking system for the site.</value>
-    <key>1167437</key>
-  </vars>
-  <vars>
-    <value>The page with our PayPal links and previous campaign amounts. This is updated manually.</value>
-    <key>1051765</key>
-  </vars>
-  <vars>
-    <value>Vitals superdoc that shows writeups that were submitted a year ago this day. This only shows writeups that have lasted. It's a little expensive to generate, so it could probably be moved to a cron job.</value>
-    <key>1372629</key>
-  </vars>
-  <vars>
-    <value>The document used to create and control E2 Collaboration Nodes.</value>
-    <key>1256403</key>
-  </vars>
-  <vars>
-    <value>Another part of the old bug system. Do not use. It is pending phasing out.</value>
-    <key>207</key>
-  </vars>
-  <vars>
-    <value>Pointer to BSI main page. Please leave standing for &quot;corporate&quot;</value>
-    <key>165472</key>
-  </vars>
-  <vars>
-    <value>This is the regular user's document to create an e2node. This is different from the administrative version, [Create node]</value>
-    <key>365128</key>
-  </vars>
-  <vars>
-    <value>The rooms on the system that one can visit in. Remember, they expire after two weeks in a cron job.</value>
-    <key>1253993</key>
-  </vars>
-  <vars>
-    <value>Instructions on how to contact bones in case of a discovered copyright violation by an E2 user. Mentioned in the FAQ, do not delete.</value>
-    <key>1316764</key>
-  </vars>
-  <vars>
-    <value>FAQ item</value>
-    <key>828815</key>
-  </vars>
-  <vars>
-    <value>[dann]'s personal spot for running code. Don't delete.</value>
-    <key>1396984</key>
-  </vars>
-  <vars>
-    <value>Public document that clearly outlines policy. The users see it exactly the way the editors see it.</value>
-    <key>1422492</key>
-  </vars>
-  <vars>
-    <value>An old Easter Egg node by nate from a long time ago. Do not delete.</value>
-    <key>165501</key>
-  </vars>
-  <vars>
-    <value>MNFP and LF listing for people on the Honor Roll - primarily used while the system was under development</value>
-    <key>1208082</key>
-  </vars>
-  <vars>
-    <value>FAQ item</value>
-    <key>1314567</key>
-  </vars>
-  <vars>
-    <value>The duplicates found document, for when multiple nodes are of the same title. This is a core system document, do not delete.</value>
-    <key>382987</key>
-  </vars>
-  <vars>
-    <value>A basic README for the ekw theme, explaining some of the features.</value>
-    <key>1164315</key>
-  </vars>
-  <vars>
-    <value>Transforms newlines into break tags, akin to the [Writeup Formatter], but older. Possibly obsolete.</value>
-    <key>743857</key>
+    <key>206</key>
+    <value>A component of the old bug-tracking system. Do not use.</value>
   </vars>
   <vars>
     <value>The document where you sign up for a new user account.</value>
     <key>101</key>
   </vars>
   <vars>
-    <value>Legacy document about adfu, please leave for posterity.</value>
-    <key>165497</key>
+    <value>The document used to create and control E2 Collaboration Nodes.</value>
+    <key>1256403</key>
+  </vars>
+  <vars>
+    <value>Pointer to BSI main page. Please leave standing for &quot;corporate&quot;</value>
+    <key>165472</key>
+  </vars>
+  <vars>
+    <key>743857</key>
+    <value>Transforms newlines into break tags, akin to the [Writeup Formatter], but older. Possibly obsolete.</value>
+  </vars>
+  <vars>
+    <key>1167437</key>
+    <value>N-Wing's attempt at an integrated bug tracking system for the site.</value>
+  </vars>
+  <vars>
+    <key>1316764</key>
+    <value>Instructions on how to contact bones in case of a discovered copyright violation by an E2 user. Mentioned in the FAQ, do not delete.</value>
+  </vars>
+  <vars>
+    <key>1428988</key>
+    <value>Separate doc discussing some of the other buttons editors use to get their job done.</value>
+  </vars>
+  <vars>
+    <value>Level power document used to create rooms</value>
+    <key>719799</key>
+  </vars>
+  <vars>
+    <value>The rooms on the system that one can visit in. Remember, they expire after two weeks in a cron job.</value>
+    <key>1253993</key>
+  </vars>
+  <vars>
+    <value>An [ENN]-style listing with 25 as the default</value>
+    <key>1148595</key>
   </vars>
   <vars>
     <value>Javascript utility to alphabetize items.</value>
     <key>1213001</key>
   </vars>
+  <vars>
+    <value>FAQ item</value>
+    <key>828815</key>
+  </vars>
+  <vars>
+    <value>The page with our PayPal links and previous campaign amounts. This is updated manually.</value>
+    <key>1051765</key>
+  </vars>
+  <vars>
+    <value>Rambling musings from the early days of BSI. Please leave for posterity.</value>
+    <key>165473</key>
+  </vars>
+  <vars>
+    <value>A basic README for the ekw theme, explaining some of the features.</value>
+    <key>1164315</key>
+  </vars>
+  <vars>
+    <key>165558</key>
+    <value>Link to offsite for adfu document. Now relatively obsolete.</value>
+  </vars>
+  <vars>
+    <value>Previous C! listing document</value>
+    <key>529746</key>
+  </vars>
+  <vars>
+    <value>An old Easter Egg node by nate from a long time ago. Do not delete.</value>
+    <key>165501</key>
+  </vars>
+  <vars>
+    <key>365128</key>
+    <value>This is the regular user's document to create an e2node. This is different from the administrative version, [Create node]</value>
+  </vars>
+  <vars>
+    <key>165497</key>
+    <value>Legacy document about adfu, please leave for posterity.</value>
+  </vars>
+  <vars>
+    <key>1157630</key>
+    <value>Anonyous Voting superdoc. More of a toy than anything else, but helps you to keep your voting anonymous.</value>
+  </vars>
+  <vars>
+    <value>Another part of the old bug system. Do not use. It is pending phasing out.</value>
+    <key>207</key>
+  </vars>
+  <vars>
+    <value>WolfDaddy's loosely code-backed project to have an E2 family tree in place. It's self-contained and hardcoded so he can use it.</value>
+    <key>1253668</key>
+  </vars>
   <node_id>1468368</node_id>
-  <title>superdoc documentation</title>
 </node>

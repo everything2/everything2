@@ -1,4 +1,5 @@
 <node>
+  <node_id>2107159</node_id>
   <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;&lt;i&gt;&lt;b&gt;
 [% $$USER{title} %] 
@@ -88,6 +89,5 @@ $str;
 %]
 &lt;/table&gt;
 [{closeform}]</doctext>
-  <node_id>2107159</node_id>
   <title>Fiery Teddy Bear Suit</title>
 </node>

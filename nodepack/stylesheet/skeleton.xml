@@ -1,4 +1,7 @@
 <node>
+  <title>Skeleton</title>
+  <contentversion>104</contentversion>
+  <s3bucket></s3bucket>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/* This is the skeleton stylesheet for the zen theme, by ascorbic */
 /* You may use this file as a foundation for any new work, but you may find it easier to start from scratch. */
@@ -320,9 +323,6 @@ width: 100%;
 }
 
 </doctext>
-  <contentversion>104</contentversion>
-  <s3bucket></s3bucket>
-  <node_id>1884212</node_id>
-  <title>Skeleton</title>
   <s3content_id>1884212</s3content_id>
+  <node_id>1884212</node_id>
 </node>

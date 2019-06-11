@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>13</type_nodetype>
+  <node_id>1959397</node_id>
   <doctext>[%
 
 return unless $$USER{title} eq 'mauler';
@@ -26,6 +26,6 @@ return $str;
 }
 
 %]</doctext>
-  <node_id>1959397</node_id>
+  <type_nodetype>13</type_nodetype>
   <title>Unrecalculator</title>
 </node>

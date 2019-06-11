@@ -1,10 +1,10 @@
 <node>
+  <title>status</title>
+  <grouptable></grouptable>
   <restrictdupes>1</restrictdupes>
   <sqltable>status</sqltable>
-  <grouptable></grouptable>
   <node_id>1288633</node_id>
   <type_nodetype>1</type_nodetype>
   <writers_user>114</writers_user>
-  <title>status</title>
   <deleters_user>114</deleters_user>
 </node>

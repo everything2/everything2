@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>545241</type_nodetype>
   <doctext>&lt;p&gt;&lt;small&gt;(whoosh of toilet flushing, oh so gently)&lt;/small&gt;&lt;/p&gt;
 &lt;p&gt;&lt;i&gt;&amp;quot;Sir, would you like a hot towel for your hands or neck?&amp;quot;&lt;/i&gt;&lt;/p&gt;
 &lt;p&gt;[M-Noder]: &lt;b&gt;Thank you Jeeves, yes please.&lt;/b&gt;&lt;/p&gt;
@@ -9,13 +10,12 @@
 &lt;p&gt;&lt;i&gt;&amp;quot;The elevator is here for you sir.&amp;quot;&lt;/i&gt;&lt;/p&gt;
 &lt;p&gt;[M-Noder]: &lt;b&gt;Thank you, Jeeves.&lt;/b&gt; (plunks 10 GP in a china bowl next to Jeeves)&lt;/p&gt;
 &lt;p&gt;&lt;i&gt;&amp;quot;Thank [Jet-poop|you], sir!&amp;quot;&lt;/i&gt;&lt;/p&gt;</doctext>
-  <node_id>553133</node_id>
+  <title>M-Noder Washroom</title>
+  <abreviation></abreviation>
   <criteria>my $numwr = $$VARS{numwriteups};
 $numwr ||= 0;
 return unless $numwr  &gt;= 1000 or isGod($USER);
 
 1;</criteria>
-  <type_nodetype>545241</type_nodetype>
-  <abreviation></abreviation>
-  <title>M-Noder Washroom</title>
+  <node_id>553133</node_id>
 </node>

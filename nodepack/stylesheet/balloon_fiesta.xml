@@ -1,5 +1,9 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
+  <node_id>1855833</node_id>
+  <s3content_id>1855833</s3content_id>
+  <s3bucket></s3bucket>
+  <contentversion>104</contentversion>
+  <title>Balloon fiesta</title>
   <doctext>/* This is the skeleton stylesheet for the zen theme, by ascorbic */
 /* You may use this file as a foundation for any new work, but you may find it easier to start from scratch. */
 /* Not all elements are defined in this file, so you'll most likely want to refer to the html as well. */
@@ -409,9 +413,5 @@ padding: 0 200px 0 100px;
  color: inherit;
 
 }</doctext>
-  <contentversion>104</contentversion>
-  <s3bucket></s3bucket>
-  <node_id>1855833</node_id>
-  <title>Balloon fiesta</title>
-  <s3content_id>1855833</s3content_id>
+  <type_nodetype>1854352</type_nodetype>
 </node>

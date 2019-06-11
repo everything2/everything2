@@ -1,97 +1,21 @@
 <node>
-  <sanctity>2</sanctity>
-  <nick></nick>
-  <email>jay@bonci.net</email>
-  <realname>Webster 1913</realname>
-  <imgsrc>images/userincoming/Webster_1913.jpeg</imgsrc>
-  <type_nodetype>15</type_nodetype>
-  <vars>
-    <value>1</value>
-    <key>no_notify_kill</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>personal_nodelet</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>nowhynovotes</key>
-  </vars>
-  <vars>
-    <value>1959273</value>
-    <key>lastnoded</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>no_bookmarknotification</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>specialties</key>
-  </vars>
-  <vars>
-    <value>18</value>
-    <key>oldGP</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>easter_eggs</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>HideNewWriteups</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>employment</key>
-  </vars>
+  <node_id>176726</node_id>
+  <passwd></passwd>
   <vars>
     <value></value>
     <key>cools</key>
   </vars>
   <vars>
-    <value>102404 - &lt;a href=&quot;/user/Webster+1913/writeups&quot;&gt;View Webster 1913's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Webster%201913&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
-    <key>nwriteups</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>ce_hidecelogs</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>showmessages_replylink</key>
-  </vars>
-  <vars>
-    <value>1278018700</value>
-    <key>preference_last_update_time</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>powersMsg</key>
-  </vars>
-  <vars>
-    <value>148387</value>
     <key>oldexp</key>
+    <value>148387</value>
   </vars>
   <vars>
-    <value>262,170070,91,263,457857,165437</value>
-    <key>nodelets</key>
-  </vars>
-  <vars>
-    <value>8</value>
-    <key>numborged</key>
-  </vars>
-  <vars>
+    <key>nohints</key>
     <value>1</value>
-    <key>no_coolnotification</key>
   </vars>
   <vars>
-    <value>2007-04-02 23:42:56</value>
-    <key>chingbought</key>
-  </vars>
-  <vars>
-    <value>102404</value>
-    <key>numwriteups</key>
+    <value>50</value>
+    <key>num_newwus</key>
   </vars>
   <vars>
     <value></value>
@@ -99,92 +23,167 @@
   </vars>
   <vars>
     <value></value>
-    <key>squawk_rooms</key>
-  </vars>
-  <vars>
-    <value>120</value>
-    <key>writeupbonus</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>mission</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>powersChatter</key>
-  </vars>
-  <vars>
-    <value>1204224874</value>
-    <key>lastborg</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>hasRecalculated</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>no_bookmarkinformer</key>
-  </vars>
-  <vars>
-    <value>off</value>
-    <key>nullvote</key>
-  </vars>
-  <vars>
-    <value></value>
     <key>IQM</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>ce_hidenewwu</key>
+    <key>no_coolnotification</key>
   </vars>
   <vars>
-    <value>50</value>
-    <key>num_newwus</key>
+    <key>chingbought</key>
+    <value>2007-04-02 23:42:56</value>
   </vars>
   <vars>
+    <key>oldGP</key>
+    <value>18</value>
+  </vars>
+  <vars>
+    <key>anonymous_bookmark</key>
     <value>1</value>
-    <key>visible</key>
   </vars>
   <vars>
+    <key>no_notify_kill</key>
     <value>1</value>
-    <key>nohints</key>
   </vars>
   <vars>
-    <value>&lt;a href=&quot;/node/superdoc/Cool+Archive?cooluser=Webster%201913&amp;amp;useraction=cooled&quot;&gt;1&lt;/a&gt;</value>
-    <key>coolsspent</key>
+    <key>numborged</key>
+    <value>8</value>
   </vars>
   <vars>
-    <value>1</value>
-    <key>settings_useWriteupBonus</key>
-  </vars>
-  <vars>
-    <value>1</value>
     <key>tokens</key>
+    <value>1</value>
   </vars>
   <vars>
+    <key>lastborg</key>
+    <value>1204224874</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>nowhynovotes</key>
+  </vars>
+  <vars>
+    <key>specialties</key>
     <value></value>
-    <key>squawk_talk</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>ce_hidecelogs</key>
+  </vars>
+  <vars>
+    <key>mission</key>
+    <value></value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>no_bookmarknotification</key>
+  </vars>
+  <vars>
+    <key>hasRecalculated</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>powersChatter</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>numwriteups</key>
+    <value>102404</value>
+  </vars>
+  <vars>
+    <key>powersMsg</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>HideNewWriteups</key>
+  </vars>
+  <vars>
+    <key>showmessages_replylink</key>
+    <value>1</value>
   </vars>
   <vars>
     <value>iliterit basterd</value>
     <key>costume</key>
   </vars>
   <vars>
-    <value>1412245768</value>
-    <key>borged</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>can_weblog</key>
+    <key>nwriteups</key>
+    <value>102404 - &lt;a href=&quot;/user/Webster+1913/writeups&quot;&gt;View Webster 1913's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Webster%201913&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
   </vars>
   <vars>
     <value>1</value>
     <key>pmsgDate</key>
   </vars>
   <vars>
-    <value>1</value>
-    <key>anonymous_bookmark</key>
+    <key>squawk_rooms</key>
+    <value></value>
   </vars>
+  <vars>
+    <value>262,170070,91,263,457857,165437</value>
+    <key>nodelets</key>
+  </vars>
+  <vars>
+    <key>visible</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>ce_hidenewwu</key>
+  </vars>
+  <vars>
+    <key>can_weblog</key>
+    <value></value>
+  </vars>
+  <vars>
+    <value></value>
+    <key>employment</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>personal_nodelet</key>
+  </vars>
+  <vars>
+    <key>writeupbonus</key>
+    <value>120</value>
+  </vars>
+  <vars>
+    <value></value>
+    <key>squawk_talk</key>
+  </vars>
+  <vars>
+    <value>1959273</value>
+    <key>lastnoded</key>
+  </vars>
+  <vars>
+    <value>off</value>
+    <key>nullvote</key>
+  </vars>
+  <vars>
+    <key>easter_eggs</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>preference_last_update_time</key>
+    <value>1278018700</value>
+  </vars>
+  <vars>
+    <key>coolsspent</key>
+    <value>&lt;a href=&quot;/node/superdoc/Cool+Archive?cooluser=Webster%201913&amp;amp;useraction=cooled&quot;&gt;1&lt;/a&gt;</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>settings_useWriteupBonus</key>
+  </vars>
+  <vars>
+    <key>no_bookmarkinformer</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>borged</key>
+    <value>1412245768</value>
+  </vars>
+  <sanctity>2</sanctity>
+  <nick></nick>
+  <imgsrc>images/userincoming/Webster_1913.jpeg</imgsrc>
   <title>Webster 1913</title>
   <doctext>&lt;p&gt;The [Project Gutenberg] Etext of Webster's Unabridged Dictionary*
 Copyright &amp;copy; 1996 by [MICRA], Inc.  Plainfield, N.J.&lt;/p&gt;
@@ -251,7 +250,8 @@ may not apply to you, and you may have other legal rights.&lt;/p&gt;
 &lt;li&gt;[ARTFL]: [http://humanities.uchicago.edu/forms_unrest/webster.form.html]&lt;/li&gt;
 &lt;li&gt;[Bibliomania]: [http://www.bibliomania.com/2/3/257/frameset.html]&lt;/li&gt;
 &lt;/ul&gt;</doctext>
-  <node_id>176726</node_id>
   <votesleft>25</votesleft>
-  <passwd></passwd>
+  <realname>Webster 1913</realname>
+  <type_nodetype>15</type_nodetype>
+  <email>jay@bonci.net</email>
 </node>

@@ -1,6 +1,6 @@
 <node>
+  <title>vote</title>
   <type_nodetype>148</type_nodetype>
-  <node_id>444190</node_id>
   <_create_table_statement>CREATE TABLE `vote` (
   `vote_id` int(11) NOT NULL DEFAULT '0',
   `voter_user` int(11) NOT NULL DEFAULT '0',
@@ -11,5 +11,5 @@
   KEY `voter_user` (`voter_user`),
   KEY `vote_voter_user` (`voter_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
-  <title>vote</title>
+  <node_id>444190</node_id>
 </node>

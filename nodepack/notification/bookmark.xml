@@ -1,9 +1,8 @@
 <node>
-  <type_nodetype>1930710</type_nodetype>
+  <node_id>1931545</node_id>
   <description>a writeup of yours gets [bookmarked] by another noder.</description>
   <hourLimit>168</hourLimit>
   <invalid_check></invalid_check>
-  <node_id>1931545</node_id>
   <title>bookmark</title>
   <code>my $nodetype = &quot;Your writeup&quot;;
 my $bookmarkedNode = getNode($$args{writeup_id});
@@ -15,4 +14,5 @@ if ($$bookmarkedNode{type}{title} eq 'e2node') {
    }
 }
 return &quot;$nodetype &quot;.linkNode($$args{writeup_id}).&quot; was bookmarked by &quot;.linkNode($$args{bookmark_user});</code>
+  <type_nodetype>1930710</type_nodetype>
 </node>

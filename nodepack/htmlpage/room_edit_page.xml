@@ -1,10 +1,10 @@
 <node>
+  <mimetype></mimetype>
+  <title>room edit page</title>
   <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
+  <node_id>545247</node_id>
   <parent_container>18</parent_container>
   <pagetype_nodetype>545241</pagetype_nodetype>
   <page></page>
-  <displaytype>edit</displaytype>
-  <node_id>545247</node_id>
-  <title>room edit page</title>
-  <mimetype></mimetype>
 </node>

@@ -1,4 +1,6 @@
 <node>
+  <node_id>1902801</node_id>
+  <s3content_id>1902801</s3content_id>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/*= Comments containing old/disabled rules start with = for easy finding */
 /*= autofix added rules. adjust to taste: */
@@ -1018,9 +1020,7 @@ li.nodeshell{
 div#surveymessage {
         display: none;
 }</doctext>
-  <contentversion>106</contentversion>
   <s3bucket></s3bucket>
-  <node_id>1902801</node_id>
   <title>Baltic</title>
-  <s3content_id>1902801</s3content_id>
+  <contentversion>106</contentversion>
 </node>

@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>13</type_nodetype>
+  <title>GP Optouts</title>
   <doctext>[%
 sub mysort {
  lc($a) cmp lc($b);
@@ -39,6 +39,6 @@ $str .= '&lt;/ol&gt;';
 
 return $str;
 %]</doctext>
+  <type_nodetype>13</type_nodetype>
   <node_id>2156613</node_id>
-  <title>GP Optouts</title>
 </node>

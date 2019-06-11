@@ -1,4 +1,5 @@
 <node>
+  <title>Message Inbox 2</title>
   <type_nodetype>14</type_nodetype>
   <doctext>&lt;script language=&quot;JavaScript&quot; src=&quot;https://s3.amazonaws.com/jscss.everything2.com/2069795.js&quot;&gt;
 &lt;/script&gt;
@@ -379,5 +380,4 @@ $str;
 %]
 &lt;/table&gt;</doctext>
   <node_id>1798778</node_id>
-  <title>Message Inbox 2</title>
 </node>

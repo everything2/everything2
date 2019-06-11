@@ -1,10 +1,10 @@
 <node>
+  <title>debatecomment replyto page</title>
+  <mimetype></mimetype>
   <type_nodetype>5</type_nodetype>
+  <displaytype>replyto</displaytype>
+  <node_id>1156529</node_id>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1156105</pagetype_nodetype>
   <page></page>
-  <displaytype>replyto</displaytype>
-  <node_id>1156529</node_id>
-  <title>debatecomment replyto page</title>
-  <mimetype></mimetype>
 </node>

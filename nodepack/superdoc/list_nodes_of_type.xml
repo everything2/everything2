@@ -1,5 +1,6 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <node_id>863558</node_id>
+  <title>List Nodes of Type</title>
   <doctext>[%
 # list nodes of type
 #	lists all available nodetypes, prompts to display nodes of that nodetype
@@ -235,6 +236,5 @@ $str .= qq|&lt;p align=&quot;right&quot;&gt;$nextprev&lt;/p&gt;| if length($next
 
 return $str;
 %]</doctext>
-  <node_id>863558</node_id>
-  <title>List Nodes of Type</title>
+  <type_nodetype>14</type_nodetype>
 </node>

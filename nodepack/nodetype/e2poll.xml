@@ -1,11 +1,11 @@
 <node>
-  <restrictdupes>1</restrictdupes>
   <extends_nodetype>14</extends_nodetype>
+  <restrictdupes>1</restrictdupes>
   <sqltable>e2poll</sqltable>
-  <grouptable></grouptable>
   <node_id>1685242</node_id>
+  <grouptable></grouptable>
   <restrict_nodetype>14</restrict_nodetype>
-  <type_nodetype>1</type_nodetype>
   <title>e2poll</title>
   <deleters_user>114</deleters_user>
+  <type_nodetype>1</type_nodetype>
 </node>

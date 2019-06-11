@@ -1,9 +1,9 @@
 <node>
-  <extends_nodetype>3</extends_nodetype>
-  <sqltable>mail</sqltable>
-  <grouptable></grouptable>
-  <node_id>154</node_id>
   <type_nodetype>1</type_nodetype>
-  <title>mail</title>
   <deleters_user>114</deleters_user>
+  <title>mail</title>
+  <grouptable></grouptable>
+  <sqltable>mail</sqltable>
+  <node_id>154</node_id>
+  <extends_nodetype>3</extends_nodetype>
 </node>

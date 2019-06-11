@@ -1,152 +1,10 @@
 <node>
+  <title>approved html tags</title>
   <type_nodetype>153</type_nodetype>
-  <vars>
-    <value>align,valign</value>
-    <key>tr</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>strike</key>
-  </vars>
-  <vars>
-    <value>cellpadding,border,cellspacing,cols,frame,width</value>
-    <key>table</key>
-  </vars>
-  <vars>
-    <value>align</value>
-    <key>h5</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>tt</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>thead</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>u</key>
-  </vars>
-  <vars>
-    <value>lang,title</value>
-    <key>abbr</key>
-  </vars>
+  <node_id>261</node_id>
   <vars>
     <value>1</value>
     <key>caption</key>
-  </vars>
-  <vars>
-    <value>align</value>
-    <key>h6</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>sup</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>code</key>
-  </vars>
-  <vars>
-    <value>rowspan,colspan,align,valign,height,width</value>
-    <key>th</key>
-  </vars>
-  <vars>
-    <value>align</value>
-    <key>h1</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>br</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>tbody</key>
-  </vars>
-  <vars>
-    <value>lang,title</value>
-    <key>acronym</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>strong</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>dd</key>
-  </vars>
-  <vars>
-    <value>align</value>
-    <key>h4</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>s</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>em</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>nbsp</key>
-  </vars>
-  <vars>
-    <value>width</value>
-    <key>hr</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>b</key>
-  </vars>
-  <vars>
-    <value>cite</value>
-    <key>q</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>li</key>
-  </vars>
-  <vars>
-    <value>rowspan,colspan,align,valign,height,width</value>
-    <key>td</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>dl</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>kbd</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>small</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>dt</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>pre</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>center</key>
-  </vars>
-  <vars>
-    <value>type,start</value>
-    <key>ol</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>samp</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>var</key>
   </vars>
   <vars>
     <value>1</value>
@@ -154,27 +12,123 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>i</key>
+    <key>br</key>
   </vars>
   <vars>
-    <value>type</value>
-    <key>ul</key>
+    <key>dd</key>
+    <value>1</value>
   </vars>
   <vars>
     <value>1</value>
-    <key>del</key>
+    <key>ins</key>
+  </vars>
+  <vars>
+    <value>align</value>
+    <key>h6</key>
+  </vars>
+  <vars>
+    <key>ol</key>
+    <value>type,start</value>
+  </vars>
+  <vars>
+    <key>tbody</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>cellpadding,border,cellspacing,cols,frame,width</value>
+    <key>table</key>
+  </vars>
+  <vars>
+    <value>align</value>
+    <key>h3</key>
+  </vars>
+  <vars>
+    <key>var</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>s</key>
+  </vars>
+  <vars>
+    <value>width</value>
+    <key>hr</key>
+  </vars>
+  <vars>
+    <key>tt</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>small</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>i</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>dt</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>em</key>
+  </vars>
+  <vars>
+    <value>rowspan,colspan,align,valign,height,width</value>
+    <key>td</key>
+  </vars>
+  <vars>
+    <key>h5</key>
+    <value>align</value>
+  </vars>
+  <vars>
+    <key>u</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>center</key>
   </vars>
   <vars>
     <value>cite</value>
     <key>blockquote</key>
   </vars>
   <vars>
-    <value>align</value>
-    <key>h2</key>
+    <value>1</value>
+    <key>pre</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>ins</key>
+    <key>code</key>
+  </vars>
+  <vars>
+    <key>kbd</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>thead</key>
+  </vars>
+  <vars>
+    <key>nbsp</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>rowspan,colspan,align,valign,height,width</value>
+    <key>th</key>
+  </vars>
+  <vars>
+    <key>sup</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>del</key>
+  </vars>
+  <vars>
+    <key>abbr</key>
+    <value>lang,title</value>
   </vars>
   <vars>
     <value>align</value>
@@ -185,13 +139,59 @@
     <key>big</key>
   </vars>
   <vars>
+    <key>strong</key>
     <value>1</value>
-    <key>sub</key>
   </vars>
   <vars>
     <value>align</value>
-    <key>h3</key>
+    <key>h2</key>
   </vars>
-  <node_id>261</node_id>
-  <title>approved html tags</title>
+  <vars>
+    <value>cite</value>
+    <key>q</key>
+  </vars>
+  <vars>
+    <key>b</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>dl</key>
+  </vars>
+  <vars>
+    <value>type</value>
+    <key>ul</key>
+  </vars>
+  <vars>
+    <value>align</value>
+    <key>h1</key>
+  </vars>
+  <vars>
+    <key>h4</key>
+    <value>align</value>
+  </vars>
+  <vars>
+    <value>align,valign</value>
+    <key>tr</key>
+  </vars>
+  <vars>
+    <key>samp</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>acronym</key>
+    <value>lang,title</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>strike</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>li</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>sub</key>
+  </vars>
 </node>

@@ -1,6 +1,6 @@
 <node>
   <type_nodetype>148</type_nodetype>
-  <node_id>545220</node_id>
+  <title>roomdata</title>
   <_create_table_statement>CREATE TABLE `roomdata` (
   `roomdata_id` int(11) NOT NULL DEFAULT '0',
   `criteria` text COLLATE utf8_unicode_ci,
@@ -8,5 +8,5 @@
   `lastused_date` date NOT NULL DEFAULT '0000-00-00',
   PRIMARY KEY (`roomdata_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
-  <title>roomdata</title>
+  <node_id>545220</node_id>
 </node>

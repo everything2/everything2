@@ -1,4 +1,5 @@
 <node>
+  <title>Random nodeshells</title>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
@@ -45,5 +46,4 @@ return $str;
 %]
 </doctext>
   <node_id>1802702</node_id>
-  <title>Random nodeshells</title>
 </node>

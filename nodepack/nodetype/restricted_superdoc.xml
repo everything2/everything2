@@ -1,12 +1,12 @@
 <node>
-  <restrictdupes>1</restrictdupes>
-  <extends_nodetype>14</extends_nodetype>
-  <sqltable></sqltable>
-  <grouptable></grouptable>
-  <node_id>13</node_id>
-  <type_nodetype>1</type_nodetype>
+  <deleters_user>1685561</deleters_user>
   <writers_user>1685561</writers_user>
   <readers_user>1685561</readers_user>
+  <type_nodetype>1</type_nodetype>
+  <extends_nodetype>14</extends_nodetype>
+  <restrictdupes>1</restrictdupes>
+  <sqltable></sqltable>
+  <node_id>13</node_id>
+  <grouptable></grouptable>
   <title>restricted_superdoc</title>
-  <deleters_user>1685561</deleters_user>
 </node>

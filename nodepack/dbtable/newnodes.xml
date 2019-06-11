@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>148</type_nodetype>
-  <node_id>758187</node_id>
   <_create_table_statement>CREATE TABLE `newnodes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `batch` int(11) NOT NULL DEFAULT '0',
@@ -8,5 +6,7 @@
   `notnew` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`,`batch`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
+  <node_id>758187</node_id>
   <title>newnodes</title>
+  <type_nodetype>148</type_nodetype>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>148</type_nodetype>
   <node_id>1225034</node_id>
   <_create_table_statement>CREATE TABLE `iplog` (
   `iplog_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -14,4 +13,5 @@
   KEY `iplog_user__iplog_time` (`iplog_user`,`iplog_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>iplog</title>
+  <type_nodetype>148</type_nodetype>
 </node>

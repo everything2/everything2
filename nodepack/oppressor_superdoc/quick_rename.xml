@@ -76,6 +76,6 @@ $str.=htmlcode('closeform', &quot;Retitle items&quot;);
 
 %]
 </doctext>
-  <node_id>1460966</node_id>
   <title>Quick Rename</title>
+  <node_id>1460966</node_id>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <title>SIGTITLE</title>
   <doctext>&lt;p&gt;This group exists solely for the purpose of discussing node title conventions and policies, and for maintaining the documents which present them:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;[Pick Titles Carefully]&lt;/p&gt;&lt;/li&gt;
@@ -12,5 +13,4 @@
 &lt;hr&gt;</doctext>
   <type_nodetype>16</type_nodetype>
   <node_id>1433518</node_id>
-  <title>SIGTITLE</title>
 </node>

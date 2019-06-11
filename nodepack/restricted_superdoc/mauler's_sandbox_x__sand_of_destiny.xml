@@ -24,6 +24,6 @@ while($row = $rows-&gt;fetchrow_arrayref)
 $str .= '&lt;/ol&gt;&lt;hr /&gt;';
 
 %]</doctext>
-  <node_id>2108111</node_id>
   <title>mauler's Sandbox X: Sand of Destiny</title>
+  <node_id>2108111</node_id>
 </node>

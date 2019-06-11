@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
   <doctext>/* You may use this file as a foundation for any new work, but you may find it easier to start from scratch. */
 /* Not all elements are defined in this file, so you'll most likely want to refer to the html as well. */
 
@@ -870,9 +869,10 @@ div #epicenter_zen {
 	width: 100%;
 	display:block;
 }</doctext>
+  <type_nodetype>1854352</type_nodetype>
   <contentversion>105</contentversion>
-  <s3bucket></s3bucket>
-  <node_id>1902249</node_id>
   <title>Plain Blue-Grey Nonsense</title>
+  <s3bucket></s3bucket>
   <s3content_id>1902249</s3content_id>
+  <node_id>1902249</node_id>
 </node>

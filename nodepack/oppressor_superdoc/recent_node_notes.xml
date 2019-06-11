@@ -1,5 +1,6 @@
 <node>
-  <type_nodetype>1144104</type_nodetype>
+  <node_id>1429619</node_id>
+  <title>Recent Node Notes</title>
   <doctext>&lt;p align=&quot;center&quot;&gt;&lt;b&gt;&amp;#91;
 [%
 my $link = linkNode($NODE, 'Only show my notes', {'justme'=&gt;1});
@@ -89,6 +90,5 @@ $str.=&quot;\n&lt;/table&gt;&lt;br&gt;$paging&quot;;
 
 &lt;p align='center'&gt;&lt;small&gt;( bugs go to [DonJaime] )&lt;/small&gt;&lt;/p&gt;
 </doctext>
-  <node_id>1429619</node_id>
-  <title>Recent Node Notes</title>
+  <type_nodetype>1144104</type_nodetype>
 </node>

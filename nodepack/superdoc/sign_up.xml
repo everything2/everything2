@@ -1,4 +1,5 @@
 <node>
+  <title>Sign up</title>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 # how long do blacklisted IPs block account creation? (SQL INTERVAL)
@@ -281,5 +282,4 @@ return &quot;&lt;h3&gt;Welcome to Everything2, $username!
 #%]
 </doctext>
   <node_id>2072173</node_id>
-  <title>Sign up</title>
 </node>

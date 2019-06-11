@@ -1,4 +1,5 @@
 <node>
+  <node_id>1536264</node_id>
   <type_nodetype>13</type_nodetype>
   <doctext>&lt;!-- A tool made by Lord Brawl --&gt;
 
@@ -201,6 +202,5 @@ else
 &lt;/table&gt;
 [{closeform}]
 </doctext>
-  <node_id>1536264</node_id>
   <title>Klaproth Van Lines</title>
 </node>

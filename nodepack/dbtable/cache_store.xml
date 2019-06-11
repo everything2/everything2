@@ -1,4 +1,5 @@
 <node>
+  <title>cache_store</title>
   <type_nodetype>148</type_nodetype>
   <node_id>1270822</node_id>
   <_create_table_statement>CREATE TABLE `cache_store` (
@@ -7,5 +8,4 @@
   `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`cache_store_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
-  <title>cache_store</title>
 </node>

@@ -1,28 +1,29 @@
 <node>
   <type_nodetype>153</type_nodetype>
+  <title>vote settings</title>
   <vars>
-    <value>-</value>
-    <key>downLabel</key>
+    <value>.33</value>
+    <key>voteeExpChance</key>
   </vars>
   <vars>
     <value>.40</value>
     <key>voterExpChance</key>
   </vars>
   <vars>
-    <value>&lt;font size=1&gt;</value>
-    <key>voteHeader</key>
-  </vars>
-  <vars>
-    <value>.33</value>
-    <key>voteeExpChance</key>
-  </vars>
-  <vars>
-    <value>&lt;/font&gt;</value>
-    <key>voteFooter</key>
+    <value>&lt;/font&gt;&lt;br&gt;</value>
+    <key>showExpFooter</key>
   </vars>
   <vars>
     <value>&lt;br&gt;&lt;font size=2&gt;</value>
     <key>showExpHeader</key>
+  </vars>
+  <vars>
+    <value>-</value>
+    <key>downLabel</key>
+  </vars>
+  <vars>
+    <key>validTypes</key>
+    <value>writeup,e2poll</value>
   </vars>
   <vars>
     <value>+</value>
@@ -33,13 +34,12 @@
     <key>nullLabel</key>
   </vars>
   <vars>
-    <value>writeup,e2poll</value>
-    <key>validTypes</key>
+    <value>&lt;/font&gt;</value>
+    <key>voteFooter</key>
   </vars>
   <vars>
-    <value>&lt;/font&gt;&lt;br&gt;</value>
-    <key>showExpFooter</key>
+    <value>&lt;font size=1&gt;</value>
+    <key>voteHeader</key>
   </vars>
   <node_id>444191</node_id>
-  <title>vote settings</title>
 </node>

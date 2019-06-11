@@ -1,5 +1,6 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
+  <node_id>1983570</node_id>
+  <s3content_id>1983570</s3content_id>
   <doctext>/* colours: #c9c9c9; #BCBCBC*/
 
 /*= autofix added basic compatibility rules */
@@ -479,9 +480,8 @@ textarea				{
 .action_whisper .text, .action_roll,
 .action_fireball, .action_sanctify,
 .action_egg				{	font-variant: smallcaps;	}</doctext>
-  <contentversion>104</contentversion>
+  <type_nodetype>1854352</type_nodetype>
   <s3bucket></s3bucket>
-  <node_id>1983570</node_id>
+  <contentversion>104</contentversion>
   <title>mikoyan25 light</title>
-  <s3content_id>1983570</s3content_id>
 </node>

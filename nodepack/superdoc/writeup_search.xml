@@ -1,4 +1,5 @@
 <node>
+  <title>Writeup Search</title>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
@@ -82,5 +83,4 @@ $str
 %]
 [{e2createnewnode}]</doctext>
   <node_id>1957766</node_id>
-  <title>Writeup Search</title>
 </node>

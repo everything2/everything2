@@ -79,6 +79,6 @@ $str .= '&lt;/table&gt;
 
 return $str;
 %]</doctext>
-  <node_id>1962430</node_id>
   <title>Level Distribution</title>
+  <node_id>1962430</node_id>
 </node>

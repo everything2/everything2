@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>1144104</type_nodetype>
+  <title>Oolong Searches</title>
   <doctext>    &lt;script src=&quot;http://www.google.com/jsapi?key=ABQIAAAAbD3vsu2ul0cWp8kZuZRbUhSt9krv0YlhhrznTaCMQe6HkkTxiRS1NwRnpjdrCk-68F8EzFOjmC7axg&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
     &lt;script language=&quot;Javascript&quot; type=&quot;text/javascript&quot;&gt;
     //&lt;![CDATA[
@@ -40,6 +40,6 @@ searchControl.addSearcher(siteSearch);
     &lt;/script&gt;
     &lt;div id=&quot;searchcontrol&quot;&gt;Loading...&lt;/div&gt;
 </doctext>
+  <type_nodetype>1144104</type_nodetype>
   <node_id>1958020</node_id>
-  <title>Oolong Searches</title>
 </node>

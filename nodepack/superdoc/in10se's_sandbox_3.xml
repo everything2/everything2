@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <title>in10se's sandbox 3</title>
   <doctext>[%
 my $rows;
 my $str;
@@ -77,6 +77,6 @@ while($dbrow = $rows-&gt;fetchrow_arrayref)
 $str .= '&lt;/table&gt;';
 return $str;
 %]</doctext>
+  <type_nodetype>14</type_nodetype>
   <node_id>1960670</node_id>
-  <title>in10se's sandbox 3</title>
 </node>

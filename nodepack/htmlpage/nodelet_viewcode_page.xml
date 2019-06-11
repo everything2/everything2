@@ -1,10 +1,10 @@
 <node>
+  <mimetype></mimetype>
+  <title>nodelet viewcode page</title>
   <type_nodetype>5</type_nodetype>
+  <displaytype>viewcode</displaytype>
+  <node_id>1933854</node_id>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>9</pagetype_nodetype>
   <page></page>
-  <displaytype>viewcode</displaytype>
-  <node_id>1933854</node_id>
-  <title>nodelet viewcode page</title>
-  <mimetype></mimetype>
 </node>

@@ -1,4 +1,6 @@
 <node>
+  <node_id>2004473</node_id>
+  <s3content_id>2004473</s3content_id>
   <type_nodetype>1854352</type_nodetype>
   <doctext>.noprint , #printlink , #header , #footer , .topic , #displaytypelinks, .writeuppage .contentfooter , 
 #votefooter , #softlinks , .writeup_add , #sidebar , form , .writeuppage form.writeup_add, #skratch_form &gt; * {
@@ -53,9 +55,7 @@ font-size: 110% ;
 }
 
 </doctext>
-  <contentversion>105</contentversion>
   <s3bucket></s3bucket>
-  <node_id>2004473</node_id>
   <title>print</title>
-  <s3content_id>2004473</s3content_id>
+  <contentversion>105</contentversion>
 </node>

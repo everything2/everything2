@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <title>Silver Trinkets</title>
   <doctext>&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;p align=center&gt;
 &lt;font size=4&gt;
 [%
@@ -26,6 +26,6 @@ $str .= $u ? (linkNode($u) . '\'s sanctity: ' . $k) : 'no other user given';
 
 $str;
 %]</doctext>
+  <type_nodetype>14</type_nodetype>
   <node_id>1962192</node_id>
-  <title>Silver Trinkets</title>
 </node>

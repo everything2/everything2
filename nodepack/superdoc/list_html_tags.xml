@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <title>List HTML tags</title>
   <doctext>[%
 my $str = &quot;&lt;p&gt;This is the list of HTML tags that have been approved for use in writeups.  &quot;;
 $str .= &quot;Allowed attributes for the tags are listed below the tag name.  &lt;/p&gt;&quot;;
@@ -18,6 +18,6 @@ $str .= &quot;\n\t\t&lt;dd&gt;&quot; . $listvars-&gt;{$keys} . &quot;&lt;/dd&gt;
 return $str . &quot;\n&lt;/dl&gt;\n\n&quot;;
 
 %]</doctext>
+  <type_nodetype>14</type_nodetype>
   <node_id>1974729</node_id>
-  <title>List HTML tags</title>
 </node>

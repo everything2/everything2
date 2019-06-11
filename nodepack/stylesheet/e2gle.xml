@@ -1,4 +1,9 @@
 <node>
+  <node_id>1997552</node_id>
+  <s3content_id>1997552</s3content_id>
+  <s3bucket></s3bucket>
+  <title>e2gle</title>
+  <contentversion>109</contentversion>
   <type_nodetype>1854352</type_nodetype>
   <doctext>html {
  &lt;!--background-image: url(https://img97.imageshack.us/img97/2460/backgroundni.png);--&gt; 
@@ -675,9 +680,4 @@ td#sl8{background:#f5f5f5;}td#sl7{background:#f6f6f6;}td#sl6{background:#f8f8f8;
 td#sl4{background:#fafafa;}td#sl3{background:#fcfcfc;}td#sl2{background:#fdfdfd;}td#sl1{background:#ffffff;}
 
 </doctext>
-  <contentversion>109</contentversion>
-  <s3bucket></s3bucket>
-  <node_id>1997552</node_id>
-  <title>e2gle</title>
-  <s3content_id>1997552</s3content_id>
 </node>

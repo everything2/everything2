@@ -1,4 +1,5 @@
 <node>
+  <node_id>2117086</node_id>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $currentYear = '2013';
@@ -282,6 +283,5 @@ return $str;
 
 &lt;p&gt;&lt;br&gt;All-time IRON NODER statistics can be found at [THE HALL OF THE IRON].&lt;/p&gt;
 </doctext>
-  <node_id>2117086</node_id>
   <title>historical iron noder stats</title>
 </node>

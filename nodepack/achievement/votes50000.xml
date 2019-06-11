@@ -1,12 +1,12 @@
 <node>
   <type_nodetype>1917847</type_nodetype>
-  <display>&lt;strong&gt;Ballot Stuffer&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Cast 50000 votes&lt;/i&gt;</display>
-  <achievement_type>vote</achievement_type>
-  <subtype>give</subtype>
-  <node_id>1920614</node_id>
-  <title>votes50000</title>
   <code>my $voteCount = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;vote&quot;,&quot;voter_user=$user_id&quot;);
 
 return 1 if $voteCount &gt;= 50000;
 return 0;</code>
+  <achievement_type>vote</achievement_type>
+  <title>votes50000</title>
+  <node_id>1920614</node_id>
+  <display>&lt;strong&gt;Ballot Stuffer&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Cast 50000 votes&lt;/i&gt;</display>
+  <subtype>give</subtype>
 </node>

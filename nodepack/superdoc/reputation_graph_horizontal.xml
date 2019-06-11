@@ -1,4 +1,5 @@
 <node>
+  <title>Reputation Graph Horizontal</title>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
@@ -164,5 +165,4 @@ $str .= '&lt;p style=&quot;text-align:right&quot;&gt;Bugs to [in10se]&lt;/p&gt;'
 return $str;
 %]</doctext>
   <node_id>1948150</node_id>
-  <title>Reputation Graph Horizontal</title>
 </node>

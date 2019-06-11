@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>150</type_nodetype>
   <maintain_nodetype>117</maintain_nodetype>
   <node_id>310</node_id>
+  <code></code>
+  <type_nodetype>150</type_nodetype>
   <title>writeup maintenance update</title>
   <maintaintype>update</maintaintype>
-  <code></code>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <title>Registry Information</title>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
  return &quot;You'd see something here if you had an account.&quot; if $APP-&gt;isGuest($USER);
@@ -29,5 +30,4 @@
 %]
 </doctext>
   <node_id>2001829</node_id>
-  <title>Registry Information</title>
 </node>

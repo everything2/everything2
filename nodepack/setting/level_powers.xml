@@ -1,53 +1,53 @@
 <node>
-  <type_nodetype>153</type_nodetype>
-  <vars>
-    <value>Buy [token|tokens] at the [E2 Gift Shop]</value>
-    <key>6</key>
-  </vars>
   <vars>
     <value>[Sanctify] other users with [GP].</value>
     <key>11</key>
-  </vars>
-  <vars>
-    <value>Buy easter eggs at the [E2 Gift Shop]; create polls</value>
-    <key>3</key>
-  </vars>
-  <vars>
-    <value>Buy easter eggs at the [E2 Gift Shop]</value>
-    <key>7</key>
-  </vars>
-  <vars>
-    <value>Give votes to other users at the [E2 Gift Shop]</value>
-    <key>9</key>
   </vars>
   <vars>
     <value>Buy additional votes at the [E2 Gift Shop]</value>
     <key>2</key>
   </vars>
   <vars>
-    <value>Can purchase up to one extra C! per day at the E2 Gift Shop</value>
     <key>12</key>
+    <value>Can purchase up to one extra C! per day at the E2 Gift Shop</value>
   </vars>
   <vars>
-    <value>Give easter eggs to other users at the [E2 Gift Shop]</value>
-    <key>8</key>
-  </vars>
-  <vars>
-    <value>C! power!; may become a mentor</value>
-    <key>4</key>
-  </vars>
-  <vars>
-    <value>Vote on E2 writeups by other users</value>
     <key>1</key>
+    <value>Vote on E2 writeups by other users</value>
   </vars>
   <vars>
-    <value>Cloak oneself in the Other Users nodelet</value>
+    <value>Give votes to other users at the [E2 Gift Shop]</value>
+    <key>9</key>
+  </vars>
+  <vars>
+    <key>8</key>
+    <value>Give easter eggs to other users at the [E2 Gift Shop]</value>
+  </vars>
+  <vars>
     <key>10</key>
+    <value>Cloak oneself in the Other Users nodelet</value>
+  </vars>
+  <vars>
+    <key>3</key>
+    <value>Buy easter eggs at the [E2 Gift Shop]; create polls</value>
   </vars>
   <vars>
     <value>Homenode image; create rooms</value>
     <key>5</key>
   </vars>
+  <vars>
+    <key>4</key>
+    <value>C! power!; may become a mentor</value>
+  </vars>
+  <vars>
+    <key>7</key>
+    <value>Buy easter eggs at the [E2 Gift Shop]</value>
+  </vars>
+  <vars>
+    <value>Buy [token|tokens] at the [E2 Gift Shop]</value>
+    <key>6</key>
+  </vars>
   <node_id>1962878</node_id>
+  <type_nodetype>153</type_nodetype>
   <title>level powers</title>
 </node>

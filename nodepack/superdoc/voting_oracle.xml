@@ -1,4 +1,5 @@
 <node>
+  <node_id>1395195</node_id>
   <type_nodetype>14</type_nodetype>
   <doctext>Look into thy past. Where hast thou judged?
 &lt;br&gt;&lt;br&gt;
@@ -33,6 +34,5 @@ $wus -= $webbyWus;
 %]
 &lt;br&gt;&lt;br&gt;&lt;br&gt;
 &lt;p align=&quot;right&quot;&gt;&lt;small&gt;Keep in mind, these numbers could be wildly inaccurate. Oracles aren't known for their precision.&lt;/small&gt;&lt;/p&gt;</doctext>
-  <node_id>1395195</node_id>
   <title>Voting Oracle</title>
 </node>

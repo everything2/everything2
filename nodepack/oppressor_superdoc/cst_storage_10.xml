@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>1144104</type_nodetype>
+  <title>CST_Storage_10</title>
   <doctext>&lt;h2&gt;CST review archive 10&lt;/h2&gt;
 &lt;p&gt;
 This is a storage node for CST reviews. Contents are moved her from [CST_Chat].
@@ -1145,6 +1145,6 @@ Dannye says [Misty]. Word count?
 
 
 &lt;hr&gt; End of CST_Storage_10 &lt;hr&gt;</doctext>
+  <type_nodetype>1144104</type_nodetype>
   <node_id>1695296</node_id>
-  <title>CST_Storage_10</title>
 </node>

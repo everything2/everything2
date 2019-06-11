@@ -1,4 +1,6 @@
 <node>
+  <node_id>124</node_id>
+  <title>Welcome to Everything</title>
   <type_nodetype>1065266</type_nodetype>
   <doctext>[%
 my $zenStr = '&lt;div id=&quot;welcome_message&quot;&gt;Everything2 is a collection of user-submitted writings about
@@ -41,6 +43,4 @@ if (!$APP-&gt;isGuest($USER)) {
 return $zenStr ;
 
 %]</doctext>
-  <node_id>124</node_id>
-  <title>Welcome to Everything</title>
 </node>

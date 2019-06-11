@@ -1,4 +1,5 @@
 <node>
+  <title>XP Superbless</title>
   <type_nodetype>13</type_nodetype>
   <doctext>[%
 return unless isGod($USER);
@@ -84,5 +85,4 @@ $str;
 &lt;/table&gt;
 [{closeform}]</doctext>
   <node_id>1959718</node_id>
-  <title>XP Superbless</title>
 </node>

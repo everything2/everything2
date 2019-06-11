@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>1065266</type_nodetype>
+  <node_id>1986601</node_id>
   <doctext>[%
 my $NG=getNode 'classic nodelets',&quot;nodeletgroup&quot;;
 my $str;
@@ -21,6 +21,6 @@ foreach my $N  (@$GROUP) {
 return $str;
 %]
 </doctext>
-  <node_id>1986601</node_id>
+  <type_nodetype>1065266</type_nodetype>
   <title>The Nodelets</title>
 </node>

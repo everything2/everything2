@@ -1,4 +1,5 @@
 <node>
+  <title>message_outbox</title>
   <type_nodetype>148</type_nodetype>
   <node_id>2115028</node_id>
   <_create_table_statement>CREATE TABLE `message_outbox` (
@@ -14,5 +15,4 @@
   KEY `author_user_archive_tstamp` (`author_user`,`archive`,`tstamp`),
   KEY `message_author` (`author_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
-  <title>message_outbox</title>
 </node>

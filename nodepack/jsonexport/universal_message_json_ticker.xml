@@ -1,7 +1,4 @@
 <node>
-  <type_nodetype>2100759</type_nodetype>
-  <node_id>2033914</node_id>
-  <htmlcode_id>2033914</htmlcode_id>
   <title>universal message json ticker</title>
   <code>my $msglimit = int($query-&gt;param(&quot;msglimit&quot;)); # to prevent against nasty SQL injection attacks. mkb thanks call
 if ($msglimit !~ /^[0-9]*$/)
@@ -151,4 +148,7 @@ unless ($APP-&gt;isGuest($$recip{node_id}))
 $messages -&gt; {msglist} = { msg =&gt; $msglist };
 
 return {&quot;messages&quot; =&gt; $messages};</code>
+  <type_nodetype>2100759</type_nodetype>
+  <node_id>2033914</node_id>
+  <htmlcode_id>2033914</htmlcode_id>
 </node>

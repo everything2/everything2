@@ -1,8 +1,8 @@
 <node>
+  <code></code>
   <type_nodetype>150</type_nodetype>
+  <maintaintype>create</maintaintype>
+  <title>e2node maintenance create</title>
   <maintain_nodetype>116</maintain_nodetype>
   <node_id>527249</node_id>
-  <title>e2node maintenance create</title>
-  <maintaintype>create</maintaintype>
-  <code></code>
 </node>

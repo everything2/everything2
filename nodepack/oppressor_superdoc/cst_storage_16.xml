@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;h2&gt;CST review archive 16&lt;/h2&gt;
 &lt;p&gt;
 This is a storage node for CST reviews. Contents are moved her from [CST_Chat].
@@ -484,6 +483,7 @@ I've added formatting to this and am looking for the original URL. I /msged the 
 &lt;/p&gt;
 
 </doctext>
-  <node_id>1703003</node_id>
+  <type_nodetype>1144104</type_nodetype>
   <title>CST_Storage_16</title>
+  <node_id>1703003</node_id>
 </node>

@@ -1,7 +1,4 @@
 <node>
-  <type_nodetype>1930710</type_nodetype>
-  <description>a [News for Noders. Stuff that Matters|news item] gets posted to the front page.</description>
-  <hourLimit>240</hourLimit>
   <invalid_check>return 0 if !defined $$args{frontpage_item_id};
 
 my $target_id = int($$args{frontpage_item_id});
@@ -15,7 +12,10 @@ my $unlinker_id =
 
 my $isInvalid = ($unlinker_id != 0);
 return $isInvalid;</invalid_check>
-  <node_id>1930853</node_id>
   <title>frontpage</title>
+  <hourLimit>240</hourLimit>
+  <type_nodetype>1930710</type_nodetype>
   <code>return &quot;There's a new item on the [Welcome to Everything|front page]&quot;;</code>
+  <node_id>1930853</node_id>
+  <description>a [News for Noders. Stuff that Matters|news item] gets posted to the front page.</description>
 </node>
