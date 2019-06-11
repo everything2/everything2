@@ -183,6 +183,6 @@ return $xml;
 %]
 
 </doctext>
-  <node_id>1259846</node_id>
   <title>Universal Message XML Ticker</title>
+  <node_id>1259846</node_id>
 </node>

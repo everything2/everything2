@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>5</type_nodetype>
-  <parent_container>1854175</parent_container>
-  <pagetype_nodetype>1522375</pagetype_nodetype>
-  <page></page>
   <displaytype>editor</displaytype>
-  <node_id>1522378</node_id>
-  <title>category editor page</title>
+  <type_nodetype>5</type_nodetype>
   <mimetype></mimetype>
+  <title>category editor page</title>
+  <page></page>
+  <pagetype_nodetype>1522375</pagetype_nodetype>
+  <parent_container>1854175</parent_container>
+  <node_id>1522378</node_id>
 </node>

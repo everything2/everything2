@@ -1,17 +1,5 @@
 <node>
   <type_nodetype>1930710</type_nodetype>
-  <description>a user blanks a writeup</description>
-  <hourLimit>720</hourLimit>
-  <invalid_check>my $target_wu = getNodeById($$args{writeup_id});
-my $trimmedNewText = $$target_wu{'doctext'} if $target_wu;
-$trimmedNewText =~ s/^\s+|\s$//;
-my $isBlank = ($trimmedNewText eq '' || length $trimmedNewText &lt; 20);
-my $isDraft = $$target_wu{type}{title} eq 'draft' if $target_wu;
-my $isInvalid = !$isBlank || $isDraft || !$target_wu;
-return $isInvalid;
-</invalid_check>
-  <node_id>2027665</node_id>
-  <title>blankedwriteup</title>
   <code>my $author_link = getNodeById($$args{author_id}) ?
   linkNode($$args{author_id})
   : &quot;(who has been unpersoned) &quot;
@@ -24,4 +12,16 @@ my $wu_link =  $target_wu ?
 
 return &quot;$author_link &lt;strong&gt;blanked&lt;/strong&gt; $wu_link.&quot;;
 </code>
+  <invalid_check>my $target_wu = getNodeById($$args{writeup_id});
+my $trimmedNewText = $$target_wu{'doctext'} if $target_wu;
+$trimmedNewText =~ s/^\s+|\s$//;
+my $isBlank = ($trimmedNewText eq '' || length $trimmedNewText &lt; 20);
+my $isDraft = $$target_wu{type}{title} eq 'draft' if $target_wu;
+my $isInvalid = !$isBlank || $isDraft || !$target_wu;
+return $isInvalid;
+</invalid_check>
+  <hourLimit>720</hourLimit>
+  <title>blankedwriteup</title>
+  <description>a user blanks a writeup</description>
+  <node_id>2027665</node_id>
 </node>

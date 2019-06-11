@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>5</type_nodetype>
-  <parent_container>1854175</parent_container>
-  <pagetype_nodetype>14</pagetype_nodetype>
-  <page></page>
-  <displaytype>viewcode</displaytype>
-  <node_id>854216</node_id>
   <title>superdoc viewcode page</title>
   <mimetype></mimetype>
+  <displaytype>viewcode</displaytype>
+  <type_nodetype>5</type_nodetype>
+  <node_id>854216</node_id>
+  <pagetype_nodetype>14</pagetype_nodetype>
+  <parent_container>1854175</parent_container>
+  <page></page>
 </node>

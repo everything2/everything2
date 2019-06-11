@@ -1,4 +1,7 @@
 <node>
+  <s3bucket></s3bucket>
+  <title>Zentrix</title>
+  <contentversion>104</contentversion>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/* based on DonJaime's Cool Understatement */
 
@@ -712,9 +715,6 @@ body , div, p , li , dd , dt , td , a , h1 , h2 , h3 {	/* should be every border
 	color: #229 ;
 	background-color: #f4f8ef ;
 	}</doctext>
-  <contentversion>104</contentversion>
-  <s3bucket></s3bucket>
   <node_id>1946088</node_id>
-  <title>Zentrix</title>
   <s3content_id>1946088</s3content_id>
 </node>

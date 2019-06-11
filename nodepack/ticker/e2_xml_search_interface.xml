@@ -47,6 +47,6 @@ $str.=&quot;
    $str .= &quot;&lt;/searchinterface&gt;\n&quot;;
 %]
 </doctext>
-  <node_id>1252400</node_id>
   <title>E2 XML Search Interface</title>
+  <node_id>1252400</node_id>
 </node>

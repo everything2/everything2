@@ -33,6 +33,6 @@ while(my $row = $csr-&gt;fetchrow_hashref)
 $str.=&quot;&lt;/newwriteups&gt;\n&quot;;
 return $str;
 %]</doctext>
-  <node_id>1291781</node_id>
   <title>New Writeups XML Ticker</title>
+  <node_id>1291781</node_id>
 </node>

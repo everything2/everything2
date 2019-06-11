@@ -1,9 +1,9 @@
 <node>
   <type_nodetype>1930710</type_nodetype>
-  <description>someone fills one of your [Everything's Most Wanted|Most Wanted] requests.</description>
+  <code>return &quot;[USER X] has [filled] your Most Wanted nodeshell [Y].&quot;</code>
+  <title>mostwanted</title>
   <hourLimit>168</hourLimit>
   <invalid_check></invalid_check>
+  <description>someone fills one of your [Everything's Most Wanted|Most Wanted] requests.</description>
   <node_id>1935408</node_id>
-  <title>mostwanted</title>
-  <code>return &quot;[USER X] has [filled] your Most Wanted nodeshell [Y].&quot;</code>
 </node>

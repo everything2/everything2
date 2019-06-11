@@ -1,5 +1,6 @@
 <node>
-  <type_nodetype>1065266</type_nodetype>
+  <node_id>993891</node_id>
+  <title>the killing floor II</title>
   <doctext>[{openform}]
 [%
 my $UID = getId($USER);
@@ -99,6 +100,5 @@ $str;
 %]
 
 </doctext>
-  <node_id>993891</node_id>
-  <title>the killing floor II</title>
+  <type_nodetype>1065266</type_nodetype>
 </node>

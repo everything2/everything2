@@ -1,5 +1,7 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
+  <contentversion>105</contentversion>
+  <title>HipsterDufus</title>
   <doctext>/*
 ---------------------------------------
 BASIC HTML STYLING 
@@ -824,9 +826,7 @@ text-decoration: line-through;
 color: #aaa;
 font-size: 80%;
 }</doctext>
-  <contentversion>105</contentversion>
-  <s3bucket></s3bucket>
+  <type_nodetype>1854352</type_nodetype>
   <node_id>1934436</node_id>
-  <title>HipsterDufus</title>
   <s3content_id>1934436</s3content_id>
 </node>

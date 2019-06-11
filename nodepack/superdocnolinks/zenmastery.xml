@@ -1,4 +1,5 @@
 <node>
+  <title>zenmastery</title>
   <type_nodetype>1065266</type_nodetype>
   <doctext>&lt;h2&gt;About this page&lt;/h2&gt;
 
@@ -307,5 +308,4 @@ class 'remove'.
 &lt;/div&gt;
 </doctext>
   <node_id>1986688</node_id>
-  <title>zenmastery</title>
 </node>

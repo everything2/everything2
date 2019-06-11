@@ -1,4 +1,6 @@
 <node>
+  <s3content_id>1919216</s3content_id>
+  <node_id>1919216</node_id>
   <type_nodetype>1854352</type_nodetype>
   <doctext>#header {position: absolute; top: 0; width: 100%; }
 	#wrapper {margin-top: 4em; padding-right: 206px;} 
@@ -10,9 +12,7 @@
 	#sidebar {position: relative; float: left;width: 200px; margin-right: -206px;}
 body {background-color: pink;}
 </doctext>
+  <title>zen 1</title>
   <contentversion>104</contentversion>
   <s3bucket></s3bucket>
-  <node_id>1919216</node_id>
-  <title>zen 1</title>
-  <s3content_id>1919216</s3content_id>
 </node>

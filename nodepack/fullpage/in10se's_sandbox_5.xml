@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>451267</type_nodetype>
+  <node_id>2104417</node_id>
   <doctext>[%
 
 my $isGuest = $APP-&gt;isGuest($USER);
@@ -311,6 +311,6 @@ if ($isGuest) {
 }
 
 %]</doctext>
-  <node_id>2104417</node_id>
+  <type_nodetype>451267</type_nodetype>
   <title>in10se's sandbox 5</title>
 </node>

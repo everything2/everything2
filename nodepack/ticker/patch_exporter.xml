@@ -71,6 +71,6 @@ my $xml = $xmls-&gt;XMLout(
 return $xml;
 
 %]</doctext>
-  <node_id>2016425</node_id>
   <title>patch exporter</title>
+  <node_id>2016425</node_id>
 </node>

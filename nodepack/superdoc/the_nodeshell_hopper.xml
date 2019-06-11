@@ -111,6 +111,6 @@ $str .= '&lt;form method=&quot;post&quot;&gt;
 
 return $str;
 %]</doctext>
-  <node_id>1140925</node_id>
   <title>The Nodeshell Hopper</title>
+  <node_id>1140925</node_id>
 </node>

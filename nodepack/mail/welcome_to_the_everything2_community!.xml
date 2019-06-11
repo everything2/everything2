@@ -1,4 +1,6 @@
 <node>
+  <from_address></from_address>
+  <node_id>275</node_id>
   <type_nodetype>154</type_nodetype>
   <doctext>&lt;name&gt;,
 &lt;p&gt;Welcome to Everything2, one of the internet's oldest and largest writing communities. You are receiving this message because someone gave this email address when registering on Everything2.&lt;/p&gt;
@@ -16,8 +18,6 @@ user ID, which is  &lt;b&gt;&lt;user_id&gt;&lt;/b&gt;, and your validation key, 
 
 The Everything2 Staff&lt;br /&gt;
 &lt;site_url&gt;&lt;/p&gt;</doctext>
-  <from_address></from_address>
-  <mail_id>275</mail_id>
-  <node_id>275</node_id>
   <title>Welcome to the Everything2 community!</title>
+  <mail_id>275</mail_id>
 </node>

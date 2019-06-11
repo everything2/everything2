@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>148</type_nodetype>
-  <node_id>1150482</node_id>
   <_create_table_statement>CREATE TABLE `patch` (
   `patch_id` int(11) NOT NULL DEFAULT '0',
   `for_node` int(11) NOT NULL DEFAULT '0',
@@ -12,5 +10,7 @@
   PRIMARY KEY (`patch_id`),
   KEY `for_node__cur_status` (`for_node`,`cur_status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
+  <node_id>1150482</node_id>
   <title>patch</title>
+  <type_nodetype>148</type_nodetype>
 </node>

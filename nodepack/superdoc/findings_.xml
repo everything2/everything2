@@ -1,4 +1,6 @@
 <node>
+  <node_id>1140332</node_id>
+  <title>Findings:</title>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
@@ -92,6 +94,4 @@ delete $NODE-&gt;{group};
 $str;
 %]
 [{e2createnewnode}]</doctext>
-  <node_id>1140332</node_id>
-  <title>Findings:</title>
 </node>

@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>5</type_nodetype>
+  <node_id>719848</node_id>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>545241</pagetype_nodetype>
   <page></page>
-  <displaytype>display</displaytype>
-  <node_id>719848</node_id>
   <title>room display page</title>
   <mimetype></mimetype>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>display</displaytype>
 </node>

@@ -1,11 +1,11 @@
 <node>
-  <extends_nodetype>7</extends_nodetype>
-  <sqltable>htmlcode,maintenance</sqltable>
-  <grouptable></grouptable>
-  <node_id>150</node_id>
   <type_nodetype>1</type_nodetype>
   <writers_user>114</writers_user>
-  <readers_user>838015</readers_user>
-  <title>maintenance</title>
   <deleters_user>114</deleters_user>
+  <readers_user>838015</readers_user>
+  <grouptable></grouptable>
+  <title>maintenance</title>
+  <extends_nodetype>7</extends_nodetype>
+  <sqltable>htmlcode,maintenance</sqltable>
+  <node_id>150</node_id>
 </node>

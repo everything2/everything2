@@ -50,6 +50,6 @@ $str.=htmlcode('closeform');
 return $str;
 
 %]</doctext>
-  <node_id>1885718</node_id>
   <title>FAQ Editor</title>
+  <node_id>1885718</node_id>
 </node>

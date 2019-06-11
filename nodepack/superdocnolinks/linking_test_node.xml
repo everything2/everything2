@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>1065266</type_nodetype>
+  <title>linking test node</title>
   <doctext>&lt;p&gt;Enter test link. Exclude the opening and closing brackets.&lt;/p&gt;
 [%
 my $str = htmlcode('openform');
@@ -55,6 +55,6 @@ $str .= &quot;\&quot; &quot;.( $isNode ? &quot;class='populated'&quot; : &quot;c
 $str;
 %]
 </doctext>
+  <type_nodetype>1065266</type_nodetype>
   <node_id>1984667</node_id>
-  <title>linking test node</title>
 </node>

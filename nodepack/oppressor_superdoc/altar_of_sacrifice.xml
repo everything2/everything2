@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>1144104</type_nodetype>
+  <title>Altar of Sacrifice</title>
   <doctext>&lt;p&gt;Welcome to the mountaintop. Don't mind the blood.
 &lt;/p&gt;
 
@@ -97,6 +97,6 @@ $str.$query -&gt; p('&lt;button type=&quot;submit&quot; name=&quot;confirmop&quo
 &lt;/fieldset&gt;
 &lt;/form&gt;
 </doctext>
+  <type_nodetype>1144104</type_nodetype>
   <node_id>1150966</node_id>
-  <title>Altar of Sacrifice</title>
 </node>

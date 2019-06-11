@@ -1,13 +1,13 @@
 <node>
   <type_nodetype>153</type_nodetype>
+  <title>hrstats</title>
   <vars>
-    <value>8.0390</value>
-    <key>stddev</key>
+    <key>mean</key>
+    <value>14.7622</value>
   </vars>
   <vars>
-    <value>14.7622</value>
-    <key>mean</key>
+    <key>stddev</key>
+    <value>8.0390</value>
   </vars>
   <node_id>1373661</node_id>
-  <title>hrstats</title>
 </node>

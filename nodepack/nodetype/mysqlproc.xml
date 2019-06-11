@@ -1,10 +1,10 @@
 <node>
   <verify_edits>1</verify_edits>
+  <type_nodetype>1</type_nodetype>
+  <node_id>2061807</node_id>
+  <sqltable>mysqlproc</sqltable>
   <restrictdupes>1</restrictdupes>
   <extends_nodetype>3</extends_nodetype>
-  <sqltable>mysqlproc</sqltable>
-  <grouptable></grouptable>
-  <node_id>2061807</node_id>
-  <type_nodetype>1</type_nodetype>
   <title>mysqlproc</title>
+  <grouptable></grouptable>
 </node>

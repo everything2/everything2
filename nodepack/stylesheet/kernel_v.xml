@@ -1,9 +1,9 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
   <doctext></doctext>
+  <type_nodetype>1854352</type_nodetype>
   <contentversion>103</contentversion>
-  <s3bucket></s3bucket>
-  <node_id>2007668</node_id>
   <title>Kernel V</title>
+  <s3bucket></s3bucket>
   <s3content_id>2007668</s3content_id>
+  <node_id>2007668</node_id>
 </node>

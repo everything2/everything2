@@ -1,4 +1,6 @@
 <node>
+  <s3content_id>1908658</s3content_id>
+  <node_id>1908658</node_id>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/* These are the basic colours and fonts */
 body, div, p, th, td, li, dd {
@@ -48,9 +50,7 @@ pre, tt {
 	background-color: #4A4742;
 }
 </doctext>
+  <title>CharredTangerines</title>
   <contentversion>103</contentversion>
   <s3bucket></s3bucket>
-  <node_id>1908658</node_id>
-  <title>CharredTangerines</title>
-  <s3content_id>1908658</s3content_id>
 </node>

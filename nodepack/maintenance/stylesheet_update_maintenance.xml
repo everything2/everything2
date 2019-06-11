@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>1854352</maintain_nodetype>
-  <node_id>2100739</node_id>
-  <title>stylesheet update maintenance</title>
   <maintaintype>update</maintaintype>
+  <title>stylesheet update maintenance</title>
   <code></code>
+  <type_nodetype>150</type_nodetype>
+  <node_id>2100739</node_id>
+  <maintain_nodetype>1854352</maintain_nodetype>
 </node>

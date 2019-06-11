@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <title>What to do if E2 goes down</title>
   <doctext>&lt;p align=&quot;center&quot;&gt;
 &lt;!-- img src=&quot;http://www.artists.co.nz/bonnyhut/scream.jpg&quot; --&gt;
 &lt;/p&gt;
@@ -111,6 +111,6 @@ If you think that it may not have been reported yet, email the e2webmaster accou
 &lt;/strong&gt;
 &lt;/big&gt;&lt;/big&gt;&lt;/big&gt;
 &lt;/p&gt;</doctext>
+  <type_nodetype>14</type_nodetype>
   <node_id>1400116</node_id>
-  <title>What to do if E2 goes down</title>
 </node>

@@ -148,6 +148,6 @@ while($row = $rows-&gt;fetchrow_arrayref)
 }
 $str .= '&lt;/ol&gt;';
 %]</doctext>
-  <node_id>1960820</node_id>
   <title>mauler's sandbox VII: Seventh Heaven</title>
+  <node_id>1960820</node_id>
 </node>

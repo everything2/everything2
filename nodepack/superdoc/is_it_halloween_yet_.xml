@@ -1,5 +1,6 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <node_id>1980681</node_id>
+  <title>Is it Halloween yet?</title>
   <doctext>[%
 my $str;
 
@@ -12,6 +13,5 @@ $str .= &quot;&lt;p align=\&quot;center\&quot;&gt;&lt;big&gt;&lt;big&gt;&lt;big&
 
 return $str;
 %]</doctext>
-  <node_id>1980681</node_id>
-  <title>Is it Halloween yet?</title>
+  <type_nodetype>14</type_nodetype>
 </node>

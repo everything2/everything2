@@ -1,10 +1,8 @@
 <node>
-  <type_nodetype>1930710</type_nodetype>
-  <description>you gain or lose [XP].</description>
-  <hourLimit>48</hourLimit>
-  <invalid_check></invalid_check>
-  <node_id>1930852</node_id>
   <title>experience</title>
+  <invalid_check></invalid_check>
+  <hourLimit>48</hourLimit>
+  <type_nodetype>1930710</type_nodetype>
   <code>my $str;
 if ($$args{amount} &gt; 0) {
 $str .= &quot;You gained &quot;;
@@ -21,4 +19,6 @@ else {
 $str .= &quot;&lt;strong&gt;&quot;.$$args{amount}.&quot;&lt;/strong&gt; experience points.&quot;;
 }
 return $str;</code>
+  <node_id>1930852</node_id>
+  <description>you gain or lose [XP].</description>
 </node>

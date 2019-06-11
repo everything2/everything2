@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>14</type_nodetype>
   <doctext>&lt;table width=100%&gt;
 
 [%
@@ -30,6 +29,7 @@ $str;
 
 &lt;/table&gt;
 </doctext>
-  <node_id>1262425</node_id>
+  <type_nodetype>14</type_nodetype>
   <title>oblique strategies garden</title>
+  <node_id>1262425</node_id>
 </node>

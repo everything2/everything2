@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>1252389</type_nodetype>
+  <node_id>1372684</node_id>
   <doctext>[%
   my $str=&quot;&lt;timesince&gt;&quot;;
 
@@ -38,6 +38,6 @@
   $str.=&quot;&lt;/timesince&gt;&quot;;
   return $str;
 %]</doctext>
-  <node_id>1372684</node_id>
+  <type_nodetype>1252389</type_nodetype>
   <title>Time Since XML Ticker</title>
 </node>

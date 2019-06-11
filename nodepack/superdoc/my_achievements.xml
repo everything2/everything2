@@ -1,4 +1,6 @@
 <node>
+  <node_id>1917882</node_id>
+  <title>My Achievements</title>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
@@ -60,6 +62,4 @@ $str .= $debugStr if $debugStr &amp;&amp; $DB -&gt; isApproved($USER, getNode('e
 return $str;
 
 %]</doctext>
-  <node_id>1917882</node_id>
-  <title>My Achievements</title>
 </node>

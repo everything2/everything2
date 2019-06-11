@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <title>Wharfinger's Linebreaker</title>
   <doctext>&lt;h1&gt;What's a &quot;linebreaker?&quot;&lt;/h1&gt;
 
 &lt;p&gt;This is intended for use with [lyric]s and poetry, where you may have dozens of lines and you need a &lt;tt&gt;&amp;lt;br&amp;gt;&lt;/tt&gt;  tag at the end of each line.  &lt;/p&gt;
@@ -106,6 +106,6 @@ Most tags, like &lt;tt&gt;&amp;lt;p&amp;gt;&lt;/tt&gt; &quot;contain&quot; thing
 about broken HTML. &lt;/p&gt;
 
 </doctext>
+  <type_nodetype>14</type_nodetype>
   <node_id>744749</node_id>
-  <title>Wharfinger's Linebreaker</title>
 </node>

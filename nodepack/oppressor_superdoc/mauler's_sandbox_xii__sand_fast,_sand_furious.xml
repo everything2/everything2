@@ -1,4 +1,5 @@
 <node>
+  <title>mauler's sandbox XII: Sand Fast, Sand Furious</title>
   <type_nodetype>1144104</type_nodetype>
   <doctext>[%
 
@@ -109,5 +110,4 @@ $str .= '&lt;b&gt;Page '.($page+1).'&lt;/b&gt; | '
 return $str;
 %]</doctext>
   <node_id>2117840</node_id>
-  <title>mauler's sandbox XII: Sand Fast, Sand Furious</title>
 </node>

@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>5</type_nodetype>
+  <node_id>2071862</node_id>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>2035430</pagetype_nodetype>
   <page></page>
-  <displaytype>restore</displaytype>
-  <node_id>2071862</node_id>
   <title>draft restore page</title>
   <mimetype></mimetype>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>restore</displaytype>
 </node>

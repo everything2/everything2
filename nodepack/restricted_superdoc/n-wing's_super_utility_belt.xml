@@ -1,4 +1,6 @@
 <node>
+  <node_id>1107432</node_id>
+  <title>N-Wing's super utility belt</title>
   <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;This is a super utility belt that belongs to [N-Wing] (wow, that was tough to figure out, huh?)&lt;/p&gt;
 
@@ -105,6 +107,4 @@ $str;
 &lt;!--
 &lt;p style=&quot;font-family: sans-serif; font-size: 200%; background-color: yellow; border: solid black 3px; margin-left: 20px; margin-right: 20px; margin-top: 50px; margin-bottom: 10px; padding: 10px;&quot; align=&quot;center&quot;&gt;the following tool is under construction&lt;/p&gt;
 --&gt;</doctext>
-  <node_id>1107432</node_id>
-  <title>N-Wing's super utility belt</title>
 </node>

@@ -1,4 +1,6 @@
 <node>
+  <node_id>1902207</node_id>
+  <s3content_id>1902207</s3content_id>
   <type_nodetype>1854352</type_nodetype>
   <doctext>div#surveymessage { margin-top: 75px !important; }
 
@@ -683,9 +685,7 @@ text-decoration: line-through;
 color: #aaa;
 font-size: 80%;
 }</doctext>
-  <contentversion>106</contentversion>
   <s3bucket></s3bucket>
-  <node_id>1902207</node_id>
   <title>in10se's stylesheet</title>
-  <s3content_id>1902207</s3content_id>
+  <contentversion>106</contentversion>
 </node>

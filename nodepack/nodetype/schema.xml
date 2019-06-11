@@ -1,11 +1,11 @@
 <node>
-  <extends_nodetype>1252389</extends_nodetype>
   <sqltable>e2schema</sqltable>
-  <grouptable></grouptable>
   <node_id>1258942</node_id>
-  <type_nodetype>1</type_nodetype>
-  <writers_user>114</writers_user>
-  <readers_user>-1</readers_user>
+  <extends_nodetype>1252389</extends_nodetype>
   <title>schema</title>
+  <grouptable></grouptable>
+  <readers_user>-1</readers_user>
+  <writers_user>114</writers_user>
   <deleters_user>114</deleters_user>
+  <type_nodetype>1</type_nodetype>
 </node>

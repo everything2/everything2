@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>148</type_nodetype>
   <node_id>2070561</node_id>
   <_create_table_statement>CREATE TABLE `s3content` (
   `s3content_id` int(11) NOT NULL DEFAULT '0',
@@ -8,4 +7,5 @@
   PRIMARY KEY (`s3content_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>s3content</title>
+  <type_nodetype>148</type_nodetype>
 </node>

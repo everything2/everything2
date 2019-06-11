@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>1144104</type_nodetype>
+  <node_id>2131363</node_id>
   <doctext>[%
 my $gonetime = $query -&gt; param('gonetime') eq '0' ? 0 : $query -&gt; param('gonetime') || 0;
 my $goneunit = $query -&gt; param('goneunit') || 'MONTH';
@@ -58,6 +58,6 @@ htmlcode('widget'
 .htmlcode('show paged content', 'title, node_id, user_id AS author_user, doctext', 'node JOIN user on node_id=user_id JOIN document ON node_id=document_id', $filter, 'ORDER BY lasttime DESC LIMIT 10', &quot;author, $showlength, smite&quot;, ('smite' =&gt; $smite));
 %]
 </doctext>
-  <node_id>2131363</node_id>
+  <type_nodetype>1144104</type_nodetype>
   <title>Homenode inspector</title>
 </node>

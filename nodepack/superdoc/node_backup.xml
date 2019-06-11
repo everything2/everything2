@@ -1,5 +1,6 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <node_id>1992664</node_id>
+  <title>Node backup</title>
   <doctext>[%
 use Net::Amazon::S3;
 
@@ -147,6 +148,5 @@ $str .= '&lt;p&gt;This is not your work and some of it may be private. Please do
 return $str;
 
 %]</doctext>
-  <node_id>1992664</node_id>
-  <title>Node backup</title>
+  <type_nodetype>14</type_nodetype>
 </node>

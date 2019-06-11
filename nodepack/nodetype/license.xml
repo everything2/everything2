@@ -1,7 +1,7 @@
 <node>
-  <sqltable></sqltable>
+  <title>license</title>
   <grouptable></grouptable>
+  <sqltable></sqltable>
   <node_id>1981775</node_id>
   <type_nodetype>1</type_nodetype>
-  <title>license</title>
 </node>

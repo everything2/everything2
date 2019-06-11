@@ -1,5 +1,6 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
+  <node_id>2000528</node_id>
+  <s3content_id>2000528</s3content_id>
   <doctext>/*= autofix added rules. adjust to taste: */
 .actions , .actions li {display:inline;margin:0;padding:0 0.5em 0 0;}
 .actions { display: block ; }
@@ -1059,9 +1060,8 @@ input#message {
 #mobilewrapper .createdby, #mobilewrapper td.wu_length, #mobilewrapper td.wu_hits, #mobilewrapper .topic.actions {
 	display: none;
 }</doctext>
-  <contentversion>108</contentversion>
+  <type_nodetype>1854352</type_nodetype>
   <s3bucket></s3bucket>
-  <node_id>2000528</node_id>
+  <contentversion>108</contentversion>
   <title>Bookwormier</title>
-  <s3content_id>2000528</s3content_id>
 </node>

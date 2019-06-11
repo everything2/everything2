@@ -1,12 +1,12 @@
 <node>
+  <node_id>1854394</node_id>
+  <s3content_id>1854394</s3content_id>
   <type_nodetype>1854352</type_nodetype>
   <doctext>body {
  background-color: #ff0000;
 }
 </doctext>
-  <contentversion>122</contentversion>
   <s3bucket></s3bucket>
-  <node_id>1854394</node_id>
   <title>A test Sheet 1</title>
-  <s3content_id>1854394</s3content_id>
+  <contentversion>122</contentversion>
 </node>

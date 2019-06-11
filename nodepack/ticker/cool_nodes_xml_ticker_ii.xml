@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>1252389</type_nodetype>
   <doctext>[%
 my $str = &quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;\n&quot;;
 
@@ -54,6 +53,7 @@ while(my $row = $csr-&gt;fetchrow_hashref)
 
 $str.=&quot;&lt;/coolwriteups&gt;\n&quot;;
 %]</doctext>
-  <node_id>1291874</node_id>
+  <type_nodetype>1252389</type_nodetype>
   <title>Cool Nodes XML Ticker II</title>
+  <node_id>1291874</node_id>
 </node>

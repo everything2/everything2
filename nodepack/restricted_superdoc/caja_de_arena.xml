@@ -1,4 +1,6 @@
 <node>
+  <node_id>2000674</node_id>
+  <title>caja de arena</title>
   <type_nodetype>13</type_nodetype>
   <doctext>[%
 my $gonesince = $query -&gt; param('gonesince') || '1 YEAR';
@@ -24,6 +26,4 @@ htmlcode('show paged content', 'title, user_id AS author_user, doctext', 'node J
 ));
 %]
 </doctext>
-  <node_id>2000674</node_id>
-  <title>caja de arena</title>
 </node>

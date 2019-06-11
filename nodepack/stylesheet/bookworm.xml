@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
   <doctext>/*The basics*/
 body, table, td, th {
 	font-family: Georgia,&quot;Hoefler Text&quot;,&quot;Times New Roman&quot;,Times,serif;
@@ -475,9 +474,10 @@ a:link { color: inherit; text-decoration: none}
 #wrapper {padding: 0}
 
 }</doctext>
-  <contentversion>105</contentversion>
+  <type_nodetype>1854352</type_nodetype>
   <s3bucket></s3bucket>
-  <node_id>1928497</node_id>
+  <contentversion>105</contentversion>
   <title>bookworm</title>
+  <node_id>1928497</node_id>
   <s3content_id>1928497</s3content_id>
 </node>

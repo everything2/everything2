@@ -1,5 +1,7 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
+  <contentversion>106</contentversion>
+  <title>Blue Steel</title>
+  <s3bucket></s3bucket>
   <doctext>/* autofix added basic compatibility rules */
 .weblog .title,
 .weblog .date,
@@ -918,9 +920,7 @@ font-size: 100%;
 p.patch_invalid { background: darkred !important; }
 .patch_later {background: navy!important; }
 .patch_undone {background : olive !important;}</doctext>
-  <contentversion>106</contentversion>
-  <s3bucket></s3bucket>
-  <node_id>1976666</node_id>
-  <title>Blue Steel</title>
+  <type_nodetype>1854352</type_nodetype>
   <s3content_id>1976666</s3content_id>
+  <node_id>1976666</node_id>
 </node>

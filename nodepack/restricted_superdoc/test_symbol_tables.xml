@@ -32,6 +32,6 @@ dumpvar(&quot;Everything&quot;);
 
 $str;
 %]</doctext>
-  <node_id>377790</node_id>
   <title>test symbol tables</title>
+  <node_id>377790</node_id>
 </node>

@@ -1,5 +1,6 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <node_id>1959368</node_id>
+  <title>Recalculate XP</title>
   <doctext>&lt;style type=&quot;text/css&quot;&gt;
 .mytable th, .mytable td
 {
@@ -259,6 +260,5 @@ if ($query-&gt;param('recalculate_XP')) {
   return $str;
 }
 %]</doctext>
-  <node_id>1959368</node_id>
-  <title>Recalculate XP</title>
+  <type_nodetype>14</type_nodetype>
 </node>

@@ -1,56 +1,20 @@
 <node>
-  <type_nodetype>153</type_nodetype>
+  <node_id>1467462</node_id>
   <vars>
     <value>1</value>
-    <key>msubsup</key>
+    <key>munder</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>mtext</key>
+    <key>mfenced</key>
   </vars>
   <vars>
-    <value>1</value>
-    <key>mfrac</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>msup</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>ms</key>
-  </vars>
-  <vars>
-    <value>1</value>
     <key>msub</key>
+    <value>1</value>
   </vars>
   <vars>
+    <key>msubsup</key>
     <value>1</value>
-    <key>msqrt</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>mi</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>mroot</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>mover</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>mmultiscripts</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>math</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>munderover</key>
   </vars>
   <vars>
     <value>1</value>
@@ -58,7 +22,7 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>mfenced</key>
+    <key>math</key>
   </vars>
   <vars>
     <value>1</value>
@@ -66,16 +30,52 @@
   </vars>
   <vars>
     <value>1</value>
+    <key>mo</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>mfrac</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>mmultiscripts</key>
+  </vars>
+  <vars>
+    <key>mi</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>mtext</key>
+  </vars>
+  <vars>
+    <key>munderover</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>msup</key>
+  </vars>
+  <vars>
+    <key>ms</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>mover</key>
+  </vars>
+  <vars>
+    <value>1</value>
     <key>mrow</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>munder</key>
+    <key>mroot</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>mo</key>
+    <key>msqrt</key>
   </vars>
-  <node_id>1467462</node_id>
   <title>approved MathML tags</title>
+  <type_nodetype>153</type_nodetype>
 </node>

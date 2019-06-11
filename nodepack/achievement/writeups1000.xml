@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>1917847</type_nodetype>
-  <display>&lt;strong&gt;M-Noders Club&lt;/strong&gt; &lt;br/&gt; &lt;em&gt;At least 1000 writeups&lt;/em&gt;</display>
-  <achievement_type>writeup</achievement_type>
   <subtype>user</subtype>
   <node_id>1918316</node_id>
+  <display>&lt;strong&gt;M-Noders Club&lt;/strong&gt; &lt;br/&gt; &lt;em&gt;At least 1000 writeups&lt;/em&gt;</display>
   <title>writeups1000</title>
+  <achievement_type>writeup</achievement_type>
+  <type_nodetype>1917847</type_nodetype>
   <code>my $writeupCount = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;node&quot;,&quot;author_user=$user_id and type_nodetype=117&quot;);
 return 1 if $writeupCount &gt;= 1000;
 return 0;</code>

@@ -1,4 +1,6 @@
 <node>
+  <node_id>1926437</node_id>
+  <s3content_id>1926437</s3content_id>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/*colours: 00007f, black and #808080 */
 
@@ -479,9 +481,7 @@ textarea				{
 .action_whisper .text, .action_roll,
 .action_fireball, .action_sanctify,
 .action_egg				{	font-variant: smallcaps;	}</doctext>
-  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
-  <node_id>1926437</node_id>
   <title>mikoyan25</title>
-  <s3content_id>1926437</s3content_id>
+  <contentversion>104</contentversion>
 </node>

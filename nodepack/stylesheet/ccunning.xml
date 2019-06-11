@@ -1,4 +1,6 @@
 <node>
+  <s3content_id>1907554</s3content_id>
+  <node_id>1907554</node_id>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/* This is the skeleton stylesheet for the zen theme, by ascorbic */
 /* You may use this file as a foundation for any new work, but you may find it easier to start from scratch. */
@@ -324,9 +326,7 @@ font-size: inherit;
 
 
 </doctext>
+  <title>ccunning</title>
   <contentversion>104</contentversion>
   <s3bucket></s3bucket>
-  <node_id>1907554</node_id>
-  <title>ccunning</title>
-  <s3content_id>1907554</s3content_id>
 </node>

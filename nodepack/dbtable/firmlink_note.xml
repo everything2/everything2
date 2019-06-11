@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>148</type_nodetype>
-  <node_id>2034356</node_id>
   <_create_table_statement>CREATE TABLE `firmlink_note` (
   `from_node` int(11) NOT NULL,
   `to_node` int(11) NOT NULL,
@@ -10,5 +8,7 @@
   UNIQUE KEY `from_node` (`from_node`,`to_node`),
   KEY `to_node` (`to_node`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
+  <node_id>2034356</node_id>
   <title>firmlink_note</title>
+  <type_nodetype>148</type_nodetype>
 </node>

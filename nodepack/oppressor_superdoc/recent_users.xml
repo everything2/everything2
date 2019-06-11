@@ -58,6 +58,6 @@ $str .= '&lt;/table&gt;';
 
 return $str;
 %]</doctext>
-  <node_id>2045175</node_id>
   <title>Recent Users</title>
+  <node_id>2045175</node_id>
 </node>

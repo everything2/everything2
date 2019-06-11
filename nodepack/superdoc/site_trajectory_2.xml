@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <node_id>1969889</node_id>
   <doctext>&lt;style&gt;
 &lt;!--
 th {
@@ -167,6 +167,6 @@ $(document).ready(function() {
 
 return $str;
 %]</doctext>
-  <node_id>1969889</node_id>
+  <type_nodetype>14</type_nodetype>
   <title>Site Trajectory 2</title>
 </node>

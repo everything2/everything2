@@ -1,4 +1,6 @@
 <node>
+  <node_id>2021836</node_id>
+  <title>set_mobile</title>
   <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;
 Set 'mobile' mode for this client. Sets a cookie. COOKIE!
@@ -27,6 +29,4 @@ HTTP host is: [% $ENV{HTTP_HOST} %]
 &lt;p&gt;
 Match is: [% isMobile()?&quot;true&quot;:&quot;false&quot; %]
 &lt;/p&gt;</doctext>
-  <node_id>2021836</node_id>
-  <title>set_mobile</title>
 </node>

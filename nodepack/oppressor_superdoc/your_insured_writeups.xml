@@ -1,4 +1,6 @@
 <node>
+  <node_id>1950299</node_id>
+  <title>Your insured writeups</title>
   <type_nodetype>1144104</type_nodetype>
   <doctext>You have insured the following writeups (shown in something vaguely resembling but not quite matching chronological order):
 
@@ -23,6 +25,4 @@ $str.='&lt;/ul&gt;';
 
 return $str;
 %]</doctext>
-  <node_id>1950299</node_id>
-  <title>Your insured writeups</title>
 </node>

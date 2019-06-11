@@ -1,80 +1,45 @@
 <node>
   <type_nodetype>153</type_nodetype>
+  <title>restricted fields</title>
   <vars>
-    <value>1</value>
-    <key>reputation</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>experience</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>createtime</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>hits</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>imgsrc</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>node_id</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>votesleft</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>user_title</key>
-  </vars>
-  <vars>
-    <value>1</value>
     <key>votes</key>
-  </vars>
-  <vars>
     <value>1</value>
-    <key>lasttime</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>type_nodetype</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>in_room</key>
   </vars>
   <vars>
     <value>1</value>
     <key>orderlock_user</key>
   </vars>
   <vars>
+    <key>type_nodetype</key>
     <value>1</value>
-    <key>message_forward_to</key>
   </vars>
   <vars>
+    <key>cooled</key>
     <value>1</value>
-    <key>writeup_title</key>
   </vars>
   <vars>
-    <value>1</value>
-    <key>vars</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>author_user</key>
-  </vars>
-  <vars>
-    <value>1</value>
     <key>karma</key>
+    <value>1</value>
   </vars>
   <vars>
+    <key>message_forward_to</key>
     <value>1</value>
-    <key>numwriteups</key>
+  </vars>
+  <vars>
+    <key>votesleft</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>experience</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>vars</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>reputation</key>
+    <value>1</value>
   </vars>
   <vars>
     <value>1</value>
@@ -82,12 +47,47 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>cooled</key>
+    <key>lasttime</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>numwriteups</key>
   </vars>
   <vars>
     <value>1</value>
     <key>merit</key>
   </vars>
+  <vars>
+    <value>1</value>
+    <key>writeup_title</key>
+  </vars>
+  <vars>
+    <key>imgsrc</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>hits</key>
+  </vars>
+  <vars>
+    <key>user_title</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>createtime</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>node_id</key>
+  </vars>
+  <vars>
+    <key>in_room</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>author_user</key>
+    <value>1</value>
+  </vars>
   <node_id>175998</node_id>
-  <title>restricted fields</title>
 </node>

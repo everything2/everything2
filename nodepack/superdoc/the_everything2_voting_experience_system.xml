@@ -1,4 +1,6 @@
 <node>
+  <node_id>1962893</node_id>
+  <title>The Everything2 Voting/Experience System</title>
   <type_nodetype>14</type_nodetype>
   <doctext>&lt;style type=&quot;text/css&quot;&gt;
 .mytable th, .mytable td
@@ -138,8 +140,8 @@ $str.=&quot;&lt;tr &quot;.($i == $userLevel ? &quot;style='font-weight:bold'&quo
 
 } else {
 
-$exp = $i*2500-14000;
-$wrp = $i*10;
+$exp = $i*2500-30000;
+$wrp = $i*5;
 
 $str.=&quot;&lt;tr &quot;.($i == $userLevel ? &quot;style='font-weight:bold'&quot; :&quot;&quot;).&quot;&gt;&lt;TD&gt;$i&lt;/TD&gt;&lt;TD&gt;Transcendent&lt;/TD&gt;&lt;TD&gt;$exp&lt;/TD&gt;&lt;TD&gt;$wrp&lt;/TD&gt;&lt;TD&gt;50&lt;/TD&gt;&lt;TD&gt;$$C{100}&lt;/TD&gt;&lt;/tr&gt;&quot;;
 }
@@ -222,6 +224,4 @@ If you believe that this document needs updating or correcting, /msg any member 
 Last updated on October 9, 2012 by [wertperch] &lt;!-- Added header and footer, tidied up some language --&gt;&lt;br&gt;
 &lt;/small&gt;
 &lt;/p&gt;</doctext>
-  <node_id>1962893</node_id>
-  <title>The Everything2 Voting/Experience System</title>
 </node>

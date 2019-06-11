@@ -1,5 +1,6 @@
 <node>
-  <type_nodetype>13</type_nodetype>
+  <node_id>1262420</node_id>
+  <title>oblique strategies data</title>
   <doctext>my @oblique_strategies = 
 (
 &quot;(BLANK CARD)&quot;,
@@ -144,6 +145,5 @@
 
 @oblique_strategies;
 </doctext>
-  <node_id>1262420</node_id>
-  <title>oblique strategies data</title>
+  <type_nodetype>13</type_nodetype>
 </node>

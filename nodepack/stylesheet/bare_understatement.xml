@@ -1,5 +1,9 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
+  <s3content_id>1965286</s3content_id>
+  <node_id>1965286</node_id>
+  <contentversion>104</contentversion>
+  <title>Bare Understatement</title>
+  <s3bucket></s3bucket>
   <doctext>@import url(&quot;https://everything2.com/node/stylesheet/understatement?displaytype=view&quot;) ;
 /* LINKS */
 
@@ -64,9 +68,5 @@ td , th {
 	border-color: white ;
 	}
 </doctext>
-  <contentversion>104</contentversion>
-  <s3bucket></s3bucket>
-  <node_id>1965286</node_id>
-  <title>Bare Understatement</title>
-  <s3content_id>1965286</s3content_id>
+  <type_nodetype>1854352</type_nodetype>
 </node>

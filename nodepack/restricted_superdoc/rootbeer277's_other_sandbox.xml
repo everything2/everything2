@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>13</type_nodetype>
+  <title>rootbeer277's other sandbox</title>
   <doctext>&lt;p&gt;[%
 my $id = 1503725;
 my $altDisp = 'hidden user';
@@ -544,6 +544,6 @@ $testexplainoutput .= &quot;&lt;/ul&gt;&quot;;
 #return $str . linkNode(getId(getNode(&quot;C++: why input is &gt;&gt; and output is &lt;&lt;&quot;, &quot;e2node&quot;)));
 return $testexplainoutput . $str . &quot; &quot; . getId(getNode(&quot;C++: why input is &gt;&gt; and output is &lt;&lt;&quot;, &quot;e2node&quot;)) . &quot; &quot; . time . &quot; &quot; . $USER-&gt;{votesleft};
 %]</doctext>
+  <type_nodetype>13</type_nodetype>
   <node_id>1947085</node_id>
-  <title>rootbeer277's other sandbox</title>
 </node>

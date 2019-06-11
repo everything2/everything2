@@ -1,7 +1,7 @@
 <node>
-  <sqltable></sqltable>
-  <grouptable></grouptable>
-  <node_id>2116371</node_id>
   <type_nodetype>1</type_nodetype>
+  <grouptable></grouptable>
   <title>feedback_policy</title>
+  <sqltable></sqltable>
+  <node_id>2116371</node_id>
 </node>

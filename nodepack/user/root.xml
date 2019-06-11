@@ -1,12 +1,45 @@
 <node>
-  <nick></nick>
-  <email>root@localhost</email>
-  <realname>Super user</realname>
-  <imgsrc></imgsrc>
-  <type_nodetype>15</type_nodetype>
+  <passwd></passwd>
+  <node_id>113</node_id>
+  <vars>
+    <key>motto</key>
+    <value></value>
+  </vars>
+  <vars>
+    <value>1687135,262,170070,91,263,1157024,165437</value>
+    <key>nodelets</key>
+  </vars>
+  <vars>
+    <key>lastnode</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>num_newwus</key>
+    <value>15</value>
+  </vars>
   <vars>
     <value></value>
-    <key>personal_nodelet</key>
+    <key>nwriteups</key>
+  </vars>
+  <vars>
+    <value>-160</value>
+    <key>oldexp</key>
+  </vars>
+  <vars>
+    <key>numwriteups</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>nullvote</key>
+    <value>off</value>
+  </vars>
+  <vars>
+    <key>specialties</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>preference_last_update_time</key>
+    <value>1330374419</value>
   </vars>
   <vars>
     <value></value>
@@ -14,7 +47,7 @@
   </vars>
   <vars>
     <value></value>
-    <key>specialties</key>
+    <key>group</key>
   </vars>
   <vars>
     <value></value>
@@ -26,47 +59,14 @@
   </vars>
   <vars>
     <value></value>
-    <key>group</key>
+    <key>personal_nodelet</key>
   </vars>
-  <vars>
-    <value></value>
-    <key>nwriteups</key>
-  </vars>
-  <vars>
-    <value>1330374419</value>
-    <key>preference_last_update_time</key>
-  </vars>
-  <vars>
-    <value>off</value>
-    <key>nullvote</key>
-  </vars>
-  <vars>
-    <value>15</value>
-    <key>num_newwus</key>
-  </vars>
-  <vars>
-    <value>-160</value>
-    <key>oldexp</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>lastnode</key>
-  </vars>
-  <vars>
-    <value>1687135,262,170070,91,263,1157024,165437</value>
-    <key>nodelets</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>numwriteups</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>motto</key>
-  </vars>
-  <title>root</title>
   <doctext>He's the god of [gods] &amp;#8212; instant access. Unlimited power.
 Great hair.</doctext>
-  <node_id>113</node_id>
-  <passwd></passwd>
+  <title>root</title>
+  <imgsrc></imgsrc>
+  <nick></nick>
+  <realname>Super user</realname>
+  <email>root@localhost</email>
+  <type_nodetype>15</type_nodetype>
 </node>

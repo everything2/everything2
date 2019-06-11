@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>1917847</type_nodetype>
-  <achievement_still_available>0</achievement_still_available>
-  <display>&lt;strong&gt;Stop the Presses&lt;/strong&gt;&lt;br&gt;&lt;i&gt;Posted most writeups in a month&lt;/i&gt;</display>
-  <achievement_type>writeup</achievement_type>
   <subtype></subtype>
+  <display>&lt;strong&gt;Stop the Presses&lt;/strong&gt;&lt;br&gt;&lt;i&gt;Posted most writeups in a month&lt;/i&gt;</display>
   <node_id>1920610</node_id>
+  <achievement_still_available>0</achievement_still_available>
   <title>writeupsMonthMost</title>
+  <achievement_type>writeup</achievement_type>
   <code>return 0;</code>
+  <type_nodetype>1917847</type_nodetype>
 </node>

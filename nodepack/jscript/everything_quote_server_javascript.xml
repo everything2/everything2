@@ -1,9 +1,9 @@
 <node>
-  <type_nodetype>1786405</type_nodetype>
-  <doctext></doctext>
   <contentversion>1</contentversion>
-  <s3bucket></s3bucket>
-  <node_id>2157677</node_id>
   <title>Everything Quote Server Javascript</title>
+  <s3bucket></s3bucket>
+  <doctext></doctext>
+  <type_nodetype>1786405</type_nodetype>
   <s3content_id>2157677</s3content_id>
+  <node_id>2157677</node_id>
 </node>

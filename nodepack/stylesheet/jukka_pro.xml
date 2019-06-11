@@ -752,9 +752,9 @@ pre {
 #nodelet_165437 {
 	background-image: url(https://s3.amazonaws.com/static.everything2.com/vitals.gif); }
 #nodelet_1855429 { }</doctext>
-  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
-  <node_id>1930477</node_id>
   <title>Jukka pro</title>
+  <contentversion>104</contentversion>
+  <node_id>1930477</node_id>
   <s3content_id>1930477</s3content_id>
 </node>

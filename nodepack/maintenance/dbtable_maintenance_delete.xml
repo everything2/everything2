@@ -1,8 +1,8 @@
 <node>
+  <code></code>
   <type_nodetype>150</type_nodetype>
-  <maintain_nodetype>148</maintain_nodetype>
-  <node_id>157</node_id>
   <title>dbtable maintenance delete</title>
   <maintaintype>delete</maintaintype>
-  <code></code>
+  <maintain_nodetype>148</maintain_nodetype>
+  <node_id>157</node_id>
 </node>

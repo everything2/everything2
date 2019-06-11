@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>13</type_nodetype>
+  <node_id>1142758</node_id>
   <doctext>[%
 
 my $borg_victim = '';
@@ -68,6 +68,6 @@ $str .= '&lt;/form&gt;';
 
 return $str;
 %]</doctext>
-  <node_id>1142758</node_id>
+  <type_nodetype>13</type_nodetype>
   <title>The Borg Clinic</title>
 </node>

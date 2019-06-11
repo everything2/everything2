@@ -1,5 +1,6 @@
 <node>
-  <type_nodetype>1144104</type_nodetype>
+  <node_id>1752960</node_id>
+  <title>CST_Storage_17</title>
   <doctext>&lt;p&gt;
 This is a storage node for CST reviews. Reviews are moved her from our working area in [CST_Chat].
 &lt;/p&gt;&lt;p&gt;
@@ -519,6 +520,5 @@ Hello Ikura, Unfortunately there is not enough original content in this write up
 &lt;hr&gt;
 &lt;hr&gt;
 </doctext>
-  <node_id>1752960</node_id>
-  <title>CST_Storage_17</title>
+  <type_nodetype>1144104</type_nodetype>
 </node>

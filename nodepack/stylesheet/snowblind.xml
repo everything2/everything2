@@ -1,5 +1,6 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
+  <s3content_id>1932334</s3content_id>
+  <node_id>1932334</node_id>
   <doctext>/* These are the basic colours and fonts */
 body, div, p, th, td, li, dd {
 	background-color: #ffffff;
@@ -89,9 +90,8 @@ pre, tt {
 }
 
 </doctext>
+  <type_nodetype>1854352</type_nodetype>
   <contentversion>103</contentversion>
-  <s3bucket></s3bucket>
-  <node_id>1932334</node_id>
   <title>Snowblind</title>
-  <s3content_id>1932334</s3content_id>
+  <s3bucket></s3bucket>
 </node>

@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <parent_container>18</parent_container>
   <pagetype_nodetype>1917847</pagetype_nodetype>
   <page></page>
-  <displaytype>edit</displaytype>
   <node_id>1917859</node_id>
-  <title>achievement edit page</title>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <mimetype></mimetype>
+  <title>achievement edit page</title>
 </node>

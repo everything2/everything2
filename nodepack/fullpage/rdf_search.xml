@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>451267</type_nodetype>
+  <node_id>1043278</node_id>
   <doctext>[%
    my $keywords = $APP-&gt;cleanNodeName($query-&gt;param('keywords'));
    my $e2ntype = getId(getNode(&quot;e2node&quot;,&quot;nodetype&quot;));
@@ -30,6 +30,6 @@
    $xml;
 %]
 </doctext>
-  <node_id>1043278</node_id>
+  <type_nodetype>451267</type_nodetype>
   <title>rdf search</title>
 </node>

@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <node_id>1874886</node_id>
   <doctext>[%
 
 return '&lt;p&gt;You must be logged in to be suprised.&lt;/p&gt;' if( $APP-&gt;isGuest($USER) );
@@ -285,6 +285,6 @@ $$VARS{oldGP} = $$USER{GP};
 return &quot;&quot;;
 
 %]</doctext>
-  <node_id>1874886</node_id>
+  <type_nodetype>14</type_nodetype>
   <title>Wheel of Surprise</title>
 </node>

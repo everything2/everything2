@@ -1,4 +1,5 @@
 <node>
+  <node_id>165493</node_id>
   <type_nodetype>13</type_nodetype>
   <doctext>&lt;P&gt;Total Number of Nodes:
 [% $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;node&quot;); 
@@ -29,6 +30,5 @@ $DB-&gt;sqlSelect(&quot;count(*)&quot;, &quot;node&quot;, &quot;type_nodetype=$$
 
 
   </doctext>
-  <node_id>165493</node_id>
   <title>Everything Statistics</title>
 </node>

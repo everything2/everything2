@@ -1,4 +1,5 @@
 <node>
+  <title>Topic Archive</title>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
@@ -49,5 +50,4 @@ return $str;
 
 %]</doctext>
   <node_id>2033982</node_id>
-  <title>Topic Archive</title>
 </node>

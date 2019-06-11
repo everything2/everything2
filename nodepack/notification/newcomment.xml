@@ -1,10 +1,7 @@
 <node>
-  <type_nodetype>1930710</type_nodetype>
   <description>a new [usergroup discussions|comment] gets posted to a discussion in one of your usergroups.</description>
-  <hourLimit>120</hourLimit>
-  <invalid_check></invalid_check>
   <node_id>1930993</node_id>
-  <title>newcomment</title>
+  <type_nodetype>1930710</type_nodetype>
   <code>my $parent = $$args{parent};
 my $reply = $$args{reply};
 my $root = $$args{root};
@@ -15,4 +12,7 @@ my $anchoredlink = '&lt;a href=&quot;'. $APP-&gt;urlGenNoParams($root,1) .'#deba
 
 my $str .= linkNode($$args{uid}).&quot; has &lt;strong&gt;replied&lt;/strong&gt; to $anchoredlink&quot;;
 </code>
+  <title>newcomment</title>
+  <hourLimit>120</hourLimit>
+  <invalid_check></invalid_check>
 </node>

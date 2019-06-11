@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <title>Who is doing what</title>
   <doctext>[%
 return 'Curiosity killed the cat, this means YOU '.linkNode($USER, $$USER{title}) unless(isGod($USER));
 my $days = int $query-&gt;param('days');
@@ -26,6 +26,6 @@ $str .= '&lt;/ul&gt;';
 return $str;
 %]
 </doctext>
+  <type_nodetype>14</type_nodetype>
   <node_id>1189539</node_id>
-  <title>Who is doing what</title>
 </node>

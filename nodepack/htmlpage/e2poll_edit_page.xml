@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>5</type_nodetype>
+  <node_id>2052745</node_id>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>1685242</pagetype_nodetype>
   <page></page>
-  <displaytype>edit</displaytype>
-  <node_id>2052745</node_id>
   <title>e2poll edit page</title>
   <mimetype></mimetype>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
 </node>

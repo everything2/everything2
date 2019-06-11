@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
   <doctext>/* -- 
 
 A hack on test_ReiToei2 by Robin Clarke/fondue
@@ -502,9 +501,10 @@ background-color: #CACEE0;
 border-right: 1px solid #51546A;
 border-bottom: 2px solid #51546A;
 }</doctext>
-  <contentversion>107</contentversion>
+  <type_nodetype>1854352</type_nodetype>
   <s3bucket></s3bucket>
-  <node_id>1901810</node_id>
+  <contentversion>107</contentversion>
   <title>fondue test2 (blue)</title>
+  <node_id>1901810</node_id>
   <s3content_id>1901810</s3content_id>
 </node>

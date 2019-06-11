@@ -1,4 +1,7 @@
 <node>
+  <title>Deep Ice</title>
+  <contentversion>105</contentversion>
+  <s3bucket></s3bucket>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/*= autofix added rules. adjust to taste: */
 .actions , .actions li {display:inline;margin:0;padding:0 0.5em 0 0;}
@@ -842,9 +845,6 @@ tt {
 dt {
 	font-weight: bold;
 }</doctext>
-  <contentversion>105</contentversion>
-  <s3bucket></s3bucket>
-  <node_id>1996378</node_id>
-  <title>Deep Ice</title>
   <s3content_id>1996378</s3content_id>
+  <node_id>1996378</node_id>
 </node>

@@ -1,4 +1,6 @@
 <node>
+  <node_id>1928098</node_id>
+  <title>Usergroup Picks</title>
   <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;Some of Everything2's [usergroup]s keep lists of writeups and documents particularly relevant to the group in question. These are listed below. &lt;/p&gt;
 &lt;p&gt;
@@ -83,6 +85,4 @@ $text .= &quot;&lt;/ul&gt;&lt;/td&gt;&lt;/table&gt;&quot;;
 
   return $text.&quot;&lt;p align='right'&gt;Bugs go to [dann]&lt;/p&gt;&quot;;
 %]</doctext>
-  <node_id>1928098</node_id>
-  <title>Usergroup Picks</title>
 </node>

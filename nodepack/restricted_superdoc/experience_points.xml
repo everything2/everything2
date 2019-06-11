@@ -1,4 +1,5 @@
 <node>
+  <title>Experience Points</title>
   <type_nodetype>13</type_nodetype>
   <doctext>Voting...is installed!  What does this mean?  How does it apply to you?  How does it work?  What's my middle name?  All of this and more...&lt;p&gt;
 First of all, to vote on any given [writeup] simply click on the + or - icons to the left of the [timestamp].  You can click + or - on each writeup of a node and vote on all them at once by then clicking the [VOTE] button located below the last writeup and before the [soft-link] box.
@@ -50,5 +51,4 @@ Other Ideas:&lt;br&gt;
 [T-Shirts]/[Calendar]s awarded if you make [M-Noder] status...T-shirts/calendars designed by high-level noders
 &lt;br&gt;&lt;br&gt;</doctext>
   <node_id>434836</node_id>
-  <title>Experience Points</title>
 </node>

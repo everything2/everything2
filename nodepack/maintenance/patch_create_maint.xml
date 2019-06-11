@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>150</type_nodetype>
   <maintain_nodetype>1151141</maintain_nodetype>
   <node_id>1414809</node_id>
-  <title>patch create maint</title>
-  <maintaintype>create</maintaintype>
   <code></code>
+  <type_nodetype>150</type_nodetype>
+  <maintaintype>create</maintaintype>
+  <title>patch create maint</title>
 </node>
