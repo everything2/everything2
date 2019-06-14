@@ -4477,6 +4477,7 @@ sub uploaduserimage
       aws_access_key_id     => $aws_access_key_id,
       aws_secret_access_key => $aws_secret_access_key,
       retry                 => 1,
+      host                  => $Everything::CONF->s3->{homenodeimages}->{host} || $Everything::CONF->s3host || 's3.amazonaws.com'
    }
   );
 
