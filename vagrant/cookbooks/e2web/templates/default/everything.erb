@@ -122,9 +122,6 @@ NameVirtualHost *:80
 	SSLEngine on
 	SSLCertificateFile    /etc/apache2/e2.cert
 	SSLCertificateKeyFile /etc/apache2/e2.key
-<% if node["e2engine"]["environment"] != "development" %>
-	SSLCertificateChainFile /etc/apache2/e2.chain
-<% end %>
 
 <%=coreconfig %>
 </VirtualHost>
