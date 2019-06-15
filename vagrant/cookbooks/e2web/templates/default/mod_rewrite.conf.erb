@@ -22,8 +22,6 @@ RewriteRule ^user/([^&]+).*/?$             index.pl?node=$1&type=user          [
 
 RewriteRule ^favicon.ico$		   http://static.everything2.com/favicon.ico [P]
 
-RewriteRule ^/?\.well-known/acme-challenge/(.+)$        http://s3-us-west-2.amazonaws.com/acme-challenge.everything2.com/$1 [P]
-
 # make the mobile site get its own robots file to avoid double-indexing
 
 RewriteCond %{HTTP_HOST}                   ^m\.everything2.+  [NC]
