@@ -85,6 +85,7 @@ git everythingdir do
   repository node["e2engine"]["gitrepo"]
   enable_submodules true
   action :sync
+  notifies :restart, "service[apache2]", :delayed
 end
 
 directory '/etc/everything' do
