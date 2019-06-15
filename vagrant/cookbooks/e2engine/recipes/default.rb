@@ -81,6 +81,8 @@ to_install.each do |p|
   package p
 end
 
+Chef::Log.info("Primary runlist: #{node.primary_runlist}")
+
 if node.primary_runlist.include?('role[e2bastion]') or node.primary_runlist.include?('recipe[e2bastion]')
   git everythingdir do
     repository node["e2engine"]["gitrepo"]
