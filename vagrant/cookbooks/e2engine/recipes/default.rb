@@ -71,7 +71,7 @@ to_install = [
     'mysql-client',
     'xz-utils',
     'xdelta3',
-# Needed for Amazon provisioning testing and building
+# Needed for Amazon provisioning
     'ruby',
     'ruby-dev',
     'ruby-bundler'
@@ -81,11 +81,19 @@ to_install.each do |p|
   package p
 end
 
-git everythingdir do
-  repository node["e2engine"]["gitrepo"]
-  enable_submodules true
-  action :sync
-  notifies :restart, "service[apache2]", :delayed
+if node.primary_runlist.include?('role[e2bastion]') or node.primary_runlist.include?('recipe[e2bastion]')
+  git everythingdir do
+    repository node["e2engine"]["gitrepo"]
+    enable_submodules true
+    action :sync
+  end
+else
+  git everythingdir do
+    repository node["e2engine"]["gitrepo"]
+    enable_submodules true
+    action :sync
+    notifies :restart, "service[apache2]", :delayed
+  end
 end
 
 directory '/etc/everything' do
