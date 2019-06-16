@@ -14,26 +14,35 @@ sub new
 	my $this = {};
 	if(exists($Everything::CONF->s3->{$s3type}))
 	{
-		foreach my $value (qw/bucket access_key_id secret_access_key/)
+		foreach my $value (qw/bucket access_key_id secret_access_key use_iam_role/)
 		{
 			if(exists($Everything::CONF->s3->{$s3type}->{$value}))
 			{
 				$this->{$value} = $Everything::CONF->s3->{$s3type}->{$value};
-			}else{
-				return;
 			}
 		}
 	}else{
 		return;
 	}
 
-	$this->{s3} = Net::Amazon::S3->new(
+	my $s3host = $Everything::CONF->s3->{$s3type}->{host} || $Everything::CONF->s3host || 's3.amazonaws.com';
+	if($this->{use_iam_role})
 	{
-		aws_access_key_id     => $this->{access_key_id},
-		aws_secret_access_key => $this->{secret_access_key},
-		retry                 => 1,
-		host                  => $Everything::CONF->s3->{$s3type}->{host} || $Everything::CONF->s3host || 's3.amazonaws.com'
-	});
+		$this->{s3} = Net::Amazon::S3->new(
+		{
+			use_iam_role => 1,	
+			retry => 1,
+			host => $s3host
+		});
+	}else{
+		$this->{s3} = Net::Amazon::S3->new(
+		{
+			aws_access_key_id     => $this->{access_key_id},
+			aws_secret_access_key => $this->{secret_access_key},
+			retry                 => 1,
+			host                  => $s3host
+		});
+	}
 
 	return unless defined($this->{s3});
 	$this->{bucket} = $this->{s3}->bucket($this->{bucket});
