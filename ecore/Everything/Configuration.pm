@@ -74,9 +74,9 @@ has 'google_ads_badwords' => (isa => 'ArrayRef', is => 'ro', default => sub { []
 
 has 'use_controllers' => (isa => 'Bool', is => 'ro', default => 0);
 
-has 'certificate_manager' => (isa => 'HashRef', is => 'ro', default => sub { {} });
-
 has 's3host' => (isa => 'Str', is => 'ro', default => '');
+
+has 'iam_app_role' => (isa => 'Str', is => 'ro', default => '');
 
 around BUILDARGS => sub
 {
