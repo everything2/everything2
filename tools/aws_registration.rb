@@ -41,12 +41,8 @@ def instance_id
   instance_identity['instanceId']
 end
 
-def mac_address
-  query_metadata('meta-data/network/interfaces/macs/').split("\n")[0].gsub!(%r{/$},'')
-end
-
-def public_address
-  query_metadata("meta-data/network/interfaces/macs/#{mac_address}/public-ipv4s").split("\n")[0]
+def private_address
+  query_metadata("meta-data/local-ipv4")
 end
 
 def frontend_elb
@@ -67,7 +63,7 @@ end
 
 def db_security_group_registration
   begin
-    @rds.authorize_db_security_group_ingress(db_security_group_name: 'default', cidrip: "#{public_address}/32")
+    @rds.authorize_db_security_group_ingress(db_security_group_name: 'default', cidrip: "#{private_address}/32")
   rescue Aws::RDS::Errors::AuthorizationAlreadyExists
   end
 end
