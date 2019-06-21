@@ -3,6 +3,7 @@ package Everything::Node;
 use Moose;
 use CGI;
 use URI::Escape;
+use Everything::Link;
 
 with 'Everything::Globals';
 
@@ -213,6 +214,16 @@ sub canonical_url
 sub metadescription
 {
   return "Everything2 is a community for fiction, nonfiction, poetry, reviews, and more. Get writing help or enjoy nearly a half million pieces of original writing.";
+}
+
+sub ed_cooled
+{
+  my ($self) = @_;
+  my $coollink = $self->APP->node_by_name('coollink','linktype');
+  if(my $cooled = $self->DB->sqlSelectHashref('to_node', 'links', 'from_node='.$self->node_id.' and linktype='.$coollink->node_id.' limit 1'))
+  {
+    return Everything::Link->new($cooled);
+  }
 }
 
 __PACKAGE__->meta->make_immutable;
