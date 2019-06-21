@@ -1,9 +1,15 @@
 package Everything::Controller::fullpage;
 
 use Moose;
-extends 'Everything::Controller';
+extends 'Everything::Controller::page';
 
-has 'transate_to_page' => (is => 'ro', default => 1);
+# TODO: Wind this type down
+
+sub display
+{
+  my ($self, $REQUEST, $node) = @_;
+  return $self->page_delegate($REQUEST,$node); 
+}
 
 __PACKAGE__->meta->make_immutable();
 1;
