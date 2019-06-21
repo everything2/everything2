@@ -6,9 +6,13 @@ with 'Everything::HTTP';
 
 use Everything::Delegation::nodelet;
 
-has 'transate_to_page' => (is => 'ro', default => 0);
+has 'PAGE_TABLE' => (isa => "HashRef", is => "ro", builder => "_build_page_table", lazy => 1);
 
-# TODO: implement public method filtering
+sub _build_page_table
+{
+  my ($self) = @_;
+  return $self->APP->plugin_table("page");
+}
 
 sub display
 {
@@ -153,6 +157,27 @@ sub new_writeups
     push @{$params->{newwriteups}}, $self->APP->node_by_id($newwriteups_entry->{writeup_id});
   }
   return $params;
+}
+
+sub title_to_page
+{
+  my ($self, $title) = @_;
+
+  $title = lc($title);
+  $title =~ s/[\s\/\:\?]/_/g;
+  return $title;
+}
+
+sub fully_supports
+{
+  my ($self, $title) = @_;
+  1;
+}
+
+sub page_exists
+{
+  my ($self, $page) = @_;
+  return exists($self->PAGE_TABLE->{$self->title_to_page($page)});
 }
 
 1;

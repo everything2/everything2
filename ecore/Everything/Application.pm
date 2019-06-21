@@ -3648,6 +3648,8 @@ sub genericLog
   { 
     print $elog $entry;
     close($elog);
+  }else{
+    die "Could not open log: '$log': '$!'";
   }
 
   return 1;
@@ -4172,6 +4174,18 @@ sub getCommentChildren
     }
   }
   return @comments;
+}
+
+sub plugin_table
+{
+  my ($this, $plugin_type) = @_;
+
+  my $plugins = {};
+  foreach my $plugin (@{$Everything::FACTORY->{lc($plugin_type)}->all})
+  {
+    $plugins->{$plugin} = $Everything::FACTORY->{lc($plugin_type)}->available($plugin)->new();
+  }
+  return $plugins;
 }
 
 

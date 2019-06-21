@@ -4,6 +4,7 @@ use Moose;
 extends 'Everything::Page';
 
 has 'mimetype' => (default => 'application/xml', 'is' => 'ro');
+has 'guest_allowed' => (is => 'ro', default => 1);
 
 use XML::Generator;
 use Everything::XML;

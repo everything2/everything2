@@ -22,7 +22,7 @@ has 'body_class' => (required => 1);
 has 'default_javascript' => (required => 1);
 has 'nodeinfojson' => (required => 1);
 
-has 'no_ads' => (required => 1);
+has 'no_ads' => (default => 0);
 
 has 'script_name' => (required => 1);
 

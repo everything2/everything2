@@ -16,14 +16,7 @@ has 'CONTROLLER_TYPE' => (is => 'ro', isa => 'Str', default => 'Controller');
 sub _build_controller_table
 {
   my ($self, $plugin_type) = @_;
-  my $routes = {};
-  $plugin_type ||= $self->CONTROLLER_TYPE;
-
-  foreach my $plugin (@{$self->FACTORY->{lc($plugin_type)}->all})
-  {
-    $routes->{$plugin} = $self->FACTORY->{lc($plugin_type)}->available($plugin)->new();
-  }
-  return $routes;
+  return $self->APP->plugin_table($plugin_type || $self->CONTROLLER_TYPE);
 }
 
 sub dispatcher
