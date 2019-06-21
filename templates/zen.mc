@@ -78,6 +78,7 @@ sub _build_pagetitle
  <div id='mainbody' itemprop="mainContentOfPage"><!-- google_ad_section_start -->
   <div id="pageheader">
    <h1 class="nodetitle"><% $.node->title %></h1>
+   <& 'helpers/ed_cooled.mi' , node => $.node &>
   </div>
 
   <% inner() %>

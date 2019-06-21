@@ -1,0 +1,6 @@
+<%class>
+  has 'node' => (required => 1);
+</%class>
+% if ( my $edc = $.node->ed_cooled ) {
+<p><div id="cooledby"><strong>cooled by</strong> <& '/helpers/linknode.mi', node => $edc->{to_node} &></div>
+% }
