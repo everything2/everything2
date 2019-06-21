@@ -62,7 +62,6 @@ use Digest::MD5 qw(md5_hex);
 
 # Used by uploaduserimage, giftshop_buyching
 use POSIX qw(strftime ceil floor);
-use Net::Amazon::S3;
 use File::Copy;
 use Image::Magick; 
 
@@ -80,6 +79,9 @@ use Everything::DataStash::newwriteups;
 
 # Used by display_draft
 use Everything::Delegation::htmlpage;
+
+# Used by uploaduserimage
+use Everything::S3;
 
 # This links a stylesheet with the proper content negotiation extension
 # linkJavascript below talks a bit about the S3 strategy
@@ -4469,19 +4471,8 @@ sub uploaduserimage
 
   return if $APP->isSuspended($NODE,"homenodepic");
 
-  my $aws_access_key_id = $Everything::CONF->s3->{homenodeimages}->{access_key_id};
-  my $aws_secret_access_key = $Everything::CONF->s3->{homenodeimages}->{secret_access_key};
-
-  my $s3 = Net::Amazon::S3->new(
-   {
-      aws_access_key_id     => $aws_access_key_id,
-      aws_secret_access_key => $aws_secret_access_key,
-      retry                 => 1,
-      host                  => $Everything::CONF->s3->{homenodeimages}->{host} || $Everything::CONF->s3host || 's3.amazonaws.com'
-   }
-  );
-
-  my $bucket = $s3->bucket($Everything::CONF->s3->{homenodeimages}->{bucket});
+  my $s3 = Everything::S3->new('homenodeimages');
+  return "Could not generate S3 object" unless $s3;
 
   my $str ='';
   my $image = Image::Magick -> new(); 
@@ -4560,7 +4551,7 @@ sub uploaduserimage
     }
     undef $image;
 
-    unless( $bucket->add_key_filename($basename,$tmpfile, { content_type => $content} ) )
+    unless( $s3->upload_file($basename,$tmpfile, { content_type => $content} ) )
     {
       return "Image upload failed on REST call. Try again in a few";
     }
