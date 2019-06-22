@@ -4188,5 +4188,22 @@ sub plugin_table
   return $plugins;
 }
 
+sub newnodes
+{
+  my ($this, $count, $include_hidden) = @_;
+
+  my $notnew = "";
+  $notnew = "notnew=0" unless $include_hidden;
+  my $csr = $this->{db}->sqlSelectMany("writeup_id","writeup","$notnew ORDER BY publishtime DESC LIMIT $count");
+
+  my $nodes = [];
+  while(my $row = $csr->fetchrow_arrayref)
+  {
+    my $id = $row->[0];
+    push @$nodes, $this->node_by_id($id);
+  }
+
+  return $nodes;
+}
 
 1;
