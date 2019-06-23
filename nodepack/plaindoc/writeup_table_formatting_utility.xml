@@ -1,6 +1,4 @@
 <node>
-  <title>Writeup table formatting utility</title>
-  <type_nodetype>1491416</type_nodetype>
   <doctext>&lt;p&gt;
 So, follow the example/instructions below. Hit 'Format' to preview, 'Source' for the source to cut and paste.
 &lt;/p&gt;
@@ -14,4 +12,6 @@ document.write(unescape(&quot;%3Cscript%3E%3C%21--%0A//%20TableMaker%0A%0Afuncti
 // --&gt;&lt;/script&gt;
 </doctext>
   <node_id>1490561</node_id>
+  <title>Writeup table formatting utility</title>
+  <type_nodetype>1491416</type_nodetype>
 </node>

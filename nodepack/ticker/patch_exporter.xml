@@ -1,5 +1,4 @@
 <node>
-  <node_id>2016425</node_id>
   <doctext>[%
 use XML::Simple;
 use LWP::Simple;
@@ -71,6 +70,7 @@ my $xml = $xmls-&gt;XMLout(
 return $xml;
 
 %]</doctext>
-  <type_nodetype>1252389</type_nodetype>
+  <node_id>2016425</node_id>
   <title>patch exporter</title>
+  <type_nodetype>1252389</type_nodetype>
 </node>

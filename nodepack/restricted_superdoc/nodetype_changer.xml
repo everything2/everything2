@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>13</type_nodetype>
-  <title>Nodetype Changer</title>
   <doctext>[%
 
 
@@ -47,4 +45,6 @@ $str;
 
 %]</doctext>
   <node_id>1877660</node_id>
+  <title>Nodetype Changer</title>
+  <type_nodetype>13</type_nodetype>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <node_id>1986688</node_id>
   <doctext>&lt;h2&gt;About this page&lt;/h2&gt;
 
 &lt;p&gt;Welcome to Zenmastery, the demonstration node where you can view staff-only options to 
@@ -306,6 +305,7 @@ class 'remove'.
 	&lt;/div&gt;
 &lt;/div&gt;
 </doctext>
-  <type_nodetype>1065266</type_nodetype>
+  <node_id>1986688</node_id>
   <title>zenmastery</title>
+  <type_nodetype>1065266</type_nodetype>
 </node>

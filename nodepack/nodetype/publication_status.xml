@@ -1,7 +1,7 @@
 <node>
-  <type_nodetype>1</type_nodetype>
-  <sqltable></sqltable>
   <grouptable></grouptable>
-  <title>publication_status</title>
   <node_id>2035423</node_id>
+  <sqltable></sqltable>
+  <title>publication_status</title>
+  <type_nodetype>1</type_nodetype>
 </node>

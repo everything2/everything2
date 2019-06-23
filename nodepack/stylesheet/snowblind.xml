@@ -89,9 +89,9 @@ pre, tt {
 }
 
 </doctext>
-  <title>Snowblind</title>
-  <s3bucket></s3bucket>
-  <type_nodetype>1854352</type_nodetype>
-  <s3content_id>1932334</s3content_id>
   <node_id>1932334</node_id>
+  <s3bucket></s3bucket>
+  <s3content_id>1932334</s3content_id>
+  <title>Snowblind</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

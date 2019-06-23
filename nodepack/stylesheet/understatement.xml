@@ -1,9 +1,5 @@
 <node>
-  <node_id>1965235</node_id>
-  <s3content_id>1965235</s3content_id>
-  <type_nodetype>1854352</type_nodetype>
-  <s3bucket></s3bucket>
-  <title>Understatement</title>
+  <contentversion>104</contentversion>
   <doctext>/* James' Zen Stylesheet. Layout only, add colour elsewhere. */
 
 /* Preliminaries: zero everything. This may have been a bad idea. */
@@ -802,5 +798,9 @@ table , tr , td {
 	}
 }
 </doctext>
-  <contentversion>104</contentversion>
+  <node_id>1965235</node_id>
+  <s3bucket></s3bucket>
+  <s3content_id>1965235</s3content_id>
+  <title>Understatement</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

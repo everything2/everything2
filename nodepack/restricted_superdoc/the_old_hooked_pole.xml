@@ -1,5 +1,4 @@
 <node>
-  <node_id>2108998</node_id>
   <doctext>[%
 return 'You\'ve got other things to snoop on, don\'t ya.' unless($APP -&gt; isEditor($USER));
 
@@ -238,6 +237,7 @@ $str .= ''
 return $str;
 %]
 </doctext>
-  <type_nodetype>13</type_nodetype>
+  <node_id>2108998</node_id>
   <title>The Old Hooked Pole</title>
+  <type_nodetype>13</type_nodetype>
 </node>

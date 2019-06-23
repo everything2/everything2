@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>14</type_nodetype>
-  <title>Java Chatterbox</title>
   <doctext>&lt;p&gt;
 &lt;table border=&quot;1&quot;&gt;&lt;tr&gt;&lt;td&gt;
 
@@ -28,4 +26,6 @@ Note: logging in behind a proxy and/or firewall doesn't seem to work. Sorry abou
 &lt;code&gt;/msg&lt;/code&gt; &lt;a href=[% urlGen({'node'=&gt;'N-Wing', 'type'=&gt;'user'}); %]&gt;N-Wing&lt;/a&gt; with problems (although note that this has not been updated for a while)
 &lt;/p&gt;</doctext>
   <node_id>481581</node_id>
+  <title>Java Chatterbox</title>
+  <type_nodetype>14</type_nodetype>
 </node>

@@ -76,7 +76,7 @@ while($dbrow = $rows-&gt;fetchrow_arrayref)
 $str .= '&lt;/table&gt;';
 return $str;
 %]</doctext>
+  <node_id>1960670</node_id>
   <title>in10se's sandbox 3</title>
   <type_nodetype>14</type_nodetype>
-  <node_id>1960670</node_id>
 </node>

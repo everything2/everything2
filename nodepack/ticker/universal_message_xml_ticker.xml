@@ -1,7 +1,4 @@
 <node>
-  <node_id>1259846</node_id>
-  <type_nodetype>1252389</type_nodetype>
-  <title>Universal Message XML Ticker</title>
   <doctext>[%
 my $msglimit = int($query-&gt;param(&quot;msglimit&quot;)); # to prevent against nasty SQL injection attacks. mkb thanks call
 if ($msglimit !~ /^[0-9]*$/)
@@ -185,4 +182,7 @@ return $xml;
 %]
 
 </doctext>
+  <node_id>1259846</node_id>
+  <title>Universal Message XML Ticker</title>
+  <type_nodetype>1252389</type_nodetype>
 </node>

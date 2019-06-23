@@ -24,7 +24,7 @@ $str .= $u ? (linkNode($u) . '\'s karma: ' . $k) : 'no other user given';
 
 $str;
 %]</doctext>
-  <type_nodetype>14</type_nodetype>
-  <title>Golden Trinkets</title>
   <node_id>737456</node_id>
+  <title>Golden Trinkets</title>
+  <type_nodetype>14</type_nodetype>
 </node>

@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>4</type_nodetype>
-  <title>usergroupToUserIds</title>
   <code></code>
   <node_id>1980272</node_id>
+  <title>usergroupToUserIds</title>
+  <type_nodetype>4</type_nodetype>
 </node>

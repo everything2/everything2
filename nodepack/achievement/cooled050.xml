@@ -1,12 +1,12 @@
 <node>
+  <achievement_type>cool</achievement_type>
   <code>my $coolCount = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;coolwriteups&quot;,&quot;cooledby_user=$user_id&quot;);
 
 return 1 if $coolCount &gt;=50;
 return 0;</code>
-  <achievement_type>cool</achievement_type>
-  <node_id>1918118</node_id>
   <display>&lt;strong&gt;Ice Bucket&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Cooled 50 writeups&lt;/i&gt;</display>
-  <type_nodetype>1917847</type_nodetype>
+  <node_id>1918118</node_id>
   <subtype>give</subtype>
   <title>cooled050</title>
+  <type_nodetype>1917847</type_nodetype>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <node_id>2035422</node_id>
   <_create_table_statement>CREATE TABLE `draft` (
   `draft_id` int(11) NOT NULL DEFAULT '0',
   `publication_status` int(11) NOT NULL DEFAULT '0',
@@ -7,6 +6,7 @@
   PRIMARY KEY (`draft_id`),
   KEY `publication_status` (`publication_status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
-  <type_nodetype>148</type_nodetype>
+  <node_id>2035422</node_id>
   <title>draft</title>
+  <type_nodetype>148</type_nodetype>
 </node>

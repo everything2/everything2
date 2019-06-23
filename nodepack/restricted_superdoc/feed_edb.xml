@@ -1,7 +1,4 @@
 <node>
-  <node_id>1262818</node_id>
-  <title>feed EDB</title>
-  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;
 [%
 my $UID = getId($USER);
@@ -46,4 +43,7 @@ if( (defined $query-&gt;param('numborgings')) &amp;&amp; defined($t=$query-&gt;p
 'Your current borged count: '.($VARS-&gt;{numborged}||0).&quot;&lt;br /&gt;&lt;br /&gt;\n&quot;.$m;
 %]
 &lt;/p&gt;</doctext>
+  <node_id>1262818</node_id>
+  <title>feed EDB</title>
+  <type_nodetype>13</type_nodetype>
 </node>

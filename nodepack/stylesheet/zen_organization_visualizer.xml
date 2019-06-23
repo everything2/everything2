@@ -1,9 +1,5 @@
 <node>
-  <node_id>1930556</node_id>
-  <s3content_id>1930556</s3content_id>
-  <type_nodetype>1854352</type_nodetype>
-  <s3bucket></s3bucket>
-  <title>Zen Organization Visualizer</title>
+  <contentversion>104</contentversion>
   <doctext>/* This stylesheet is intended to provide visual reference for how */
 /*  the zen DIV structure is outlined.  Different DIVs are in different */
 /*  colors to provid reference.  In some cases padding has been added */
@@ -81,5 +77,9 @@ body { margin:0px; }
 #footer { background: black; color:white; }
 
 textarea { width:95%; font-family: monospace; }</doctext>
-  <contentversion>104</contentversion>
+  <node_id>1930556</node_id>
+  <s3bucket></s3bucket>
+  <s3content_id>1930556</s3content_id>
+  <title>Zen Organization Visualizer</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

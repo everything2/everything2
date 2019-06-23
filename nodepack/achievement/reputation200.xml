@@ -6,7 +6,7 @@ return 1 if $highRep &gt;= 200;
 return 0;</code>
   <display>&lt;strong&gt;Prom Queen&lt;/strong&gt; &lt;br/&gt; &lt;em&gt;Writeup reputation of 200&lt;/em&gt;</display>
   <node_id>1918066</node_id>
-  <title>reputation200</title>
   <subtype>wu</subtype>
+  <title>reputation200</title>
   <type_nodetype>1917847</type_nodetype>
 </node>

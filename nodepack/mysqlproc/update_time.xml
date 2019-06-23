@@ -1,8 +1,4 @@
 <node>
-  <node_id>2069696</node_id>
-  <edittime>2012-09-05 04:01:39</edittime>
-  <mysqlproc_id>2069696</mysqlproc_id>
-  <document_id>2069696</document_id>
   <doctext>  DECLARE seconds_since_last           INT;
 
   START TRANSACTION;
@@ -20,6 +16,10 @@
 
   COMMIT;
 </doctext>
+  <document_id>2069696</document_id>
+  <edittime>2012-09-05 04:01:39</edittime>
+  <mysqlproc_id>2069696</mysqlproc_id>
+  <node_id>2069696</node_id>
   <parameters>IN input_user_id INT</parameters>
   <title>update_time</title>
   <type_nodetype>2061807</type_nodetype>

@@ -1,10 +1,10 @@
 <node>
-  <node_id>2024235</node_id>
-  <pagetype_nodetype>1854352</pagetype_nodetype>
   <displaytype>serve</displaytype>
+  <mimetype>text/css</mimetype>
+  <node_id>2024235</node_id>
   <page></page>
+  <pagetype_nodetype>1854352</pagetype_nodetype>
   <parent_container>0</parent_container>
   <title>stylesheet serve page</title>
-  <mimetype>text/css</mimetype>
   <type_nodetype>5</type_nodetype>
 </node>

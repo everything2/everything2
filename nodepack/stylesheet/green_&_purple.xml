@@ -1,9 +1,4 @@
 <node>
-  <s3content_id>1926288</s3content_id>
-  <node_id>1926288</node_id>
-  <title>Green &amp; Purple</title>
-  <s3bucket></s3bucket>
-  <type_nodetype>1854352</type_nodetype>
   <contentversion>104</contentversion>
   <doctext>#header { margin-top: 1em; position: absolute; top: 0; left: 0; right: 0; background-color: #8FBC8F; }
 	
@@ -134,4 +129,9 @@ pre, tt {
 .oddrow, #homenodeheader dt
 {background-color: #8AA37B;
 font-family: bookman old style; }</doctext>
+  <node_id>1926288</node_id>
+  <s3bucket></s3bucket>
+  <s3content_id>1926288</s3content_id>
+  <title>Green &amp; Purple</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

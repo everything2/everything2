@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>13</type_nodetype>
-  <title>Jun 27, 2001 email from sensei</title>
   <doctext>[Jinmyo] sez: Received this evening, private stuff deleted.&lt;p&gt;
 &lt;hr&gt;&lt;/hr&gt;
 
@@ -24,4 +22,6 @@ It is very humid and hot. But the windbell sounds cool. Silly, I know.&lt;p&gt;
 Again, please send my greetings, especially to my dear friend [wharfinger]. I hope that he and all of you are well. Please make a superdoc of the relevant parts of this letter.
 </doctext>
   <node_id>1091242</node_id>
+  <title>Jun 27, 2001 email from sensei</title>
+  <type_nodetype>13</type_nodetype>
 </node>

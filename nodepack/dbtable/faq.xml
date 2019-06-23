@@ -1,5 +1,4 @@
 <node>
-  <node_id>1885717</node_id>
   <_create_table_statement>CREATE TABLE `faq` (
   `faq_id` int(11) NOT NULL AUTO_INCREMENT,
   `question` text COLLATE utf8_unicode_ci,
@@ -8,6 +7,7 @@
   `hits` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`faq_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
-  <type_nodetype>148</type_nodetype>
+  <node_id>1885717</node_id>
   <title>faq</title>
+  <type_nodetype>148</type_nodetype>
 </node>

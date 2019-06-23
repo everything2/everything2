@@ -1,5 +1,4 @@
 <node>
-  <node_id>1991425</node_id>
   <doctext>[%
 use XML::Simple;
 
@@ -21,6 +20,7 @@ my $xml = $xmls -&gt; XMLout({patchset =&gt; \@id_array});
 return $xml; 
 %]
 </doctext>
+  <node_id>1991425</node_id>
   <title>imported patches</title>
   <type_nodetype>1252389</type_nodetype>
 </node>

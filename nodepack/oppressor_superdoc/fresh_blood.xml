@@ -79,7 +79,7 @@ $str .= '&lt;/table&gt;' . $nav;
 $str;
 %]
 </doctext>
+  <node_id>1824166</node_id>
   <title>Fresh blood</title>
   <type_nodetype>1144104</type_nodetype>
-  <node_id>1824166</node_id>
 </node>

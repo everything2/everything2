@@ -1,5 +1,4 @@
 <node>
-  <node_id>2015279</node_id>
   <doctext>&lt;!-- Facebook JavaScript SDK required for most of these plugins --&gt;
 &lt;div id=&quot;fb-root&quot;&gt;&lt;/div&gt;
 &lt;script&gt;
@@ -182,6 +181,7 @@ background-color: #fee;
    &lt;div class=&quot;fb-facepile&quot; data-max-rows=&quot;5&quot; data-width=&quot;300&quot;&gt;&lt;/div&gt;
    &lt;/div&gt;
 &lt;/div&gt;</doctext>
-  <type_nodetype>14</type_nodetype>
+  <node_id>2015279</node_id>
   <title>Facebook Social Plugins Sandbox</title>
+  <type_nodetype>14</type_nodetype>
 </node>

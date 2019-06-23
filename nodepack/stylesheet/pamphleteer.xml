@@ -1,9 +1,5 @@
 <node>
-  <node_id>2029380</node_id>
-  <s3content_id>2029380</s3content_id>
-  <type_nodetype>1854352</type_nodetype>
-  <s3bucket></s3bucket>
-  <title>Pamphleteer</title>
+  <contentversion>105</contentversion>
   <doctext>@font-face {
 	font-family: 'Essays 1743';
 	src: url('https://s3.amazonaws.com/static.everything2.com/pamphleteer/essays1743-webfont.eot');
@@ -283,5 +279,9 @@ i {
 i {
 	font-style: oblique
 }</doctext>
-  <contentversion>105</contentversion>
+  <node_id>2029380</node_id>
+  <s3bucket></s3bucket>
+  <s3content_id>2029380</s3content_id>
+  <title>Pamphleteer</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

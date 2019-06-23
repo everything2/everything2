@@ -1,10 +1,10 @@
 <node>
   <displaytype>display</displaytype>
-  <pagetype_nodetype>1252389</pagetype_nodetype>
-  <node_id>1252294</node_id>
-  <title>ticker display page</title>
-  <parent_container>0</parent_container>
-  <type_nodetype>5</type_nodetype>
   <mimetype>text/xml</mimetype>
+  <node_id>1252294</node_id>
   <page></page>
+  <pagetype_nodetype>1252389</pagetype_nodetype>
+  <parent_container>0</parent_container>
+  <title>ticker display page</title>
+  <type_nodetype>5</type_nodetype>
 </node>

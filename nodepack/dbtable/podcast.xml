@@ -1,6 +1,4 @@
 <node>
-  <title>podcast</title>
-  <type_nodetype>148</type_nodetype>
   <_create_table_statement>CREATE TABLE `podcast` (
   `podcast_id` int(11) NOT NULL DEFAULT '0',
   `description` text COLLATE utf8_unicode_ci,
@@ -11,4 +9,6 @@
   PRIMARY KEY (`podcast_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <node_id>1957963</node_id>
+  <title>podcast</title>
+  <type_nodetype>148</type_nodetype>
 </node>

@@ -60,7 +60,7 @@ $str .= '&lt;/table&gt;';
 
 return $str;
 %]</doctext>
+  <node_id>1953312</node_id>
   <title>in10se's sandbox4</title>
   <type_nodetype>14</type_nodetype>
-  <node_id>1953312</node_id>
 </node>

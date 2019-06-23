@@ -23,7 +23,7 @@ while($row = $rows-&gt;fetchrow_arrayref)
 $str .= '&lt;/ol&gt;&lt;hr /&gt;';
 
 %]</doctext>
+  <node_id>2156611</node_id>
   <title>Most Starred Noders</title>
   <type_nodetype>14</type_nodetype>
-  <node_id>2156611</node_id>
 </node>

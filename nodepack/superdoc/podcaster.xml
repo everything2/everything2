@@ -39,7 +39,7 @@ $str .= '
 return $str;
 
 %]</doctext>
-  <type_nodetype>14</type_nodetype>
-  <title>Podcaster</title>
   <node_id>1957883</node_id>
+  <title>Podcaster</title>
+  <type_nodetype>14</type_nodetype>
 </node>

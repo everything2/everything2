@@ -1,7 +1,4 @@
 <node>
-  <node_id>2007587</node_id>
-  <type_nodetype>14</type_nodetype>
-  <title>Popular Registries</title>
   <doctext>&lt;table align=&quot;center&quot;&gt;
 &lt;tr&gt;
 &lt;th&gt;Registry&lt;/th&gt;
@@ -34,4 +31,7 @@ return $str;
 &lt;/table&gt;
 
 </doctext>
+  <node_id>2007587</node_id>
+  <title>Popular Registries</title>
+  <type_nodetype>14</type_nodetype>
 </node>

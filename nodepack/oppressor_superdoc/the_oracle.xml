@@ -1,5 +1,4 @@
 <node>
-  <node_id>1946673</node_id>
   <doctext>[%
 ##########
 # This section creates the user search field - always displayed
@@ -200,6 +199,7 @@ $str .= $query-&gt;hidden(&quot;new_var&quot;,$varEdit);
 $str .= htmlcode('closeform');
 
 %]</doctext>
+  <node_id>1946673</node_id>
   <title>The Oracle</title>
   <type_nodetype>1144104</type_nodetype>
 </node>

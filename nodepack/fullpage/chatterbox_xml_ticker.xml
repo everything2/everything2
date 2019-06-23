@@ -1,7 +1,4 @@
 <node>
-  <node_id>451269</node_id>
-  <type_nodetype>451267</type_nodetype>
-  <title>chatterbox XML ticker</title>
   <doctext>[%
 my $room = $$USER{in_room};
 $room ||= 0;
@@ -90,4 +87,7 @@ $mTime .= ' no';
 &quot;\n&quot;.$XG-&gt;CHATTER($str.&quot;\n&quot;);
 
 %]</doctext>
+  <node_id>451269</node_id>
+  <title>chatterbox XML ticker</title>
+  <type_nodetype>451267</type_nodetype>
 </node>

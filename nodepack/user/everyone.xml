@@ -1,74 +1,4 @@
 <node>
-  <vars>
-    <value>To Allow Publicly-Editable Writeups</value>
-    <key>mission</key>
-  </vars>
-  <vars>
-    <value>2948 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
-    <key>nwriteups</key>
-  </vars>
-  <vars>
-    <key>no_coolnotification</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>no_bookmarkinformer</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>anonymous_bookmark</key>
-  </vars>
-  <vars>
-    <key>group</key>
-    <value>114</value>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>no_socialbookmarkinformer</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>no_bookmarknotification</key>
-  </vars>
-  <vars>
-    <key>preference_last_update_time</key>
-    <value>1278018700</value>
-  </vars>
-  <vars>
-    <key>numwriteups</key>
-    <value>2948</value>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>no_socialbookmarknotification</key>
-  </vars>
-  <vars>
-    <key>no_likeitnotification</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <value>[Please be Gentle]</value>
-    <key>motto</key>
-  </vars>
-  <vars>
-    <key>lastnoded</key>
-    <value>2104171</value>
-  </vars>
-  <vars>
-    <key>IQM</key>
-    <value>2.13267973856209</value>
-  </vars>
-  <vars>
-    <value>[Multiple Personality Disorder], I'm extremely flexible, I can speak several languages, I'm widely educated, I'm genderless, I'm all-accepting and I have knowledge on a wide variety of subjects, and I take criticism well..oh, and I bite.  ;)</value>
-    <key>specialties</key>
-  </vars>
-  <imgsrc></imgsrc>
-  <realname>Anonymous Coward</realname>
-  <passwd></passwd>
-  <sanctity>4</sanctity>
-  <email>alex@staff.everything2.com</email>
-  <node_id>373682</node_id>
   <doctext>&lt;p&gt;Any user who has reached level 1 may publish drafts to this account (under 'Advanced Options' on the draft page). In the past it was necessary for users to be given access to the account by an administrator. We no longer do that. If you think that an existing writeup needs editing, please submit the changes to the staff and they will either make them or assign the writeup to your account.&lt;/p&gt;
 &lt;p&gt;
 &lt;p&gt;As &lt;i&gt;everyone&lt;/i&gt; is a public account, writeups posted under this account do not have a copyright--they immediately enter the public domain. Please keep this in mind when posting!  There may also be no way to know who posted what on this account. It's &quot;everyone.&quot; Notices about items that may be trolls, obvious garbage, or in violation of site policy or applicable laws may be submitted to any staff member.&lt;/p&gt;
@@ -84,7 +14,77 @@
 
 
 </doctext>
+  <email>alex@staff.everything2.com</email>
+  <imgsrc></imgsrc>
   <nick></nick>
+  <node_id>373682</node_id>
+  <passwd></passwd>
+  <realname>Anonymous Coward</realname>
+  <sanctity>4</sanctity>
   <title>everyone</title>
   <type_nodetype>15</type_nodetype>
+  <vars>
+    <key>group</key>
+    <value>114</value>
+  </vars>
+  <vars>
+    <key>motto</key>
+    <value>[Please be Gentle]</value>
+  </vars>
+  <vars>
+    <key>mission</key>
+    <value>To Allow Publicly-Editable Writeups</value>
+  </vars>
+  <vars>
+    <key>lastnoded</key>
+    <value>2104171</value>
+  </vars>
+  <vars>
+    <key>no_likeitnotification</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>no_bookmarknotification</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>no_bookmarkinformer</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>specialties</key>
+    <value>[Multiple Personality Disorder], I'm extremely flexible, I can speak several languages, I'm widely educated, I'm genderless, I'm all-accepting and I have knowledge on a wide variety of subjects, and I take criticism well..oh, and I bite.  ;)</value>
+  </vars>
+  <vars>
+    <key>anonymous_bookmark</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>nwriteups</key>
+    <value>2948 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
+  </vars>
+  <vars>
+    <key>IQM</key>
+    <value>2.13267973856209</value>
+  </vars>
+  <vars>
+    <key>no_socialbookmarknotification</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>preference_last_update_time</key>
+    <value>1278018700</value>
+  </vars>
+  <vars>
+    <key>numwriteups</key>
+    <value>2948</value>
+  </vars>
+  <vars>
+    <key>no_socialbookmarkinformer</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>no_coolnotification</key>
+    <value>1</value>
+  </vars>
 </node>

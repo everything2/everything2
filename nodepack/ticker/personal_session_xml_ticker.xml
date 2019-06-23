@@ -42,7 +42,7 @@ $str.=&quot;&lt;/forbiddance&gt;&quot;;
 
 %]
 &lt;/e2session&gt;</doctext>
-  <type_nodetype>1252389</type_nodetype>
-  <title>Personal Session XML Ticker</title>
   <node_id>1262798</node_id>
+  <title>Personal Session XML Ticker</title>
+  <type_nodetype>1252389</type_nodetype>
 </node>

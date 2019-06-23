@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>451267</type_nodetype>
-  <title>joker's chat</title>
   <doctext>[%
 my $txtclr  = '#202020';
 my $vlnkclr = 'purple';
@@ -85,4 +83,6 @@ $str;
 
 </doctext>
   <node_id>1729073</node_id>
+  <title>joker's chat</title>
+  <type_nodetype>451267</type_nodetype>
 </node>

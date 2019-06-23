@@ -6,7 +6,7 @@ return 1 if $voteCount &gt;= 1000;
 return 0;</code>
   <display>&lt;strong&gt;I Voted!&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Cast 1000 votes&lt;/i&gt;</display>
   <node_id>1920611</node_id>
-  <title>votes01000</title>
   <subtype>give</subtype>
+  <title>votes01000</title>
   <type_nodetype>1917847</type_nodetype>
 </node>

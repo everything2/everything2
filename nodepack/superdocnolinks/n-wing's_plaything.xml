@@ -461,7 +461,7 @@ return ('couldn\'t find ' . $module) unless scalar(@allLines);
 
 
 &lt;/div&gt;\n</doctext>
+  <node_id>950586</node_id>
   <title>N-Wing's plaything</title>
   <type_nodetype>1065266</type_nodetype>
-  <node_id>950586</node_id>
 </node>

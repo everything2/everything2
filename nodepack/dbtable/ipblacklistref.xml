@@ -1,9 +1,9 @@
 <node>
-  <title>ipblacklistref</title>
-  <type_nodetype>148</type_nodetype>
   <_create_table_statement>CREATE TABLE `ipblacklistref` (
   `ipblacklistref_id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`ipblacklistref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <node_id>2015800</node_id>
+  <title>ipblacklistref</title>
+  <type_nodetype>148</type_nodetype>
 </node>

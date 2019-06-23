@@ -1,10 +1,10 @@
 <node>
+  <displaytype>edit</displaytype>
+  <mimetype></mimetype>
+  <node_id>846444</node_id>
+  <page></page>
+  <pagetype_nodetype>16</pagetype_nodetype>
   <parent_container>18</parent_container>
   <title>usergroup edit page</title>
-  <mimetype></mimetype>
   <type_nodetype>5</type_nodetype>
-  <page></page>
-  <displaytype>edit</displaytype>
-  <node_id>846444</node_id>
-  <pagetype_nodetype>16</pagetype_nodetype>
 </node>

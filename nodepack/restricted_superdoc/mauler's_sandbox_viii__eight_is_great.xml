@@ -1,5 +1,4 @@
 <node>
-  <node_id>1961423</node_id>
   <doctext>&lt;style type=&quot;text/css&quot;&gt;
 .mytable th, .mytable td
 {
@@ -211,6 +210,7 @@ $str.= '&lt;table class=&quot;mytable&quot;&gt;
 return $str;
 
 %]</doctext>
-  <type_nodetype>13</type_nodetype>
+  <node_id>1961423</node_id>
   <title>mauler's Sandbox VIII: Eight is Great</title>
+  <type_nodetype>13</type_nodetype>
 </node>

@@ -48,7 +48,7 @@ return qq'&lt;p&gt;Sorry, but nothing matching &quot;$nt&quot; was found.$str'
 
 %]
 </doctext>
-  <type_nodetype>14</type_nodetype>
-  <title>Nothing Found</title>
   <node_id>668164</node_id>
+  <title>Nothing Found</title>
+  <type_nodetype>14</type_nodetype>
 </node>

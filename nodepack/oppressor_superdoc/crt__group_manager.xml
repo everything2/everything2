@@ -1,6 +1,4 @@
 <node>
-  <title>CRT: Group Manager</title>
-  <type_nodetype>1144104</type_nodetype>
   <doctext>[{crtnavbar}]
 [%
     my $activecrt = getNode('activecrt', 'usergroup');
@@ -32,4 +30,6 @@
 %]
 </doctext>
   <node_id>1282717</node_id>
+  <title>CRT: Group Manager</title>
+  <type_nodetype>1144104</type_nodetype>
 </node>

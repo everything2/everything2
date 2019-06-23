@@ -1,5 +1,4 @@
 <node>
-  <node_id>1798859</node_id>
   <_create_table_statement>CREATE TABLE `messagechat` (
   `messagechat_id` int(11) NOT NULL AUTO_INCREMENT,
   `msgtext` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -8,6 +7,7 @@
   `room` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`messagechat_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
-  <type_nodetype>148</type_nodetype>
+  <node_id>1798859</node_id>
   <title>messagechat</title>
+  <type_nodetype>148</type_nodetype>
 </node>

@@ -95,33 +95,32 @@
 
 
 </doctext>
-  <title>Virgil</title>
+  <email></email>
+  <imgsrc>images/userincoming/Virgil.jpeg</imgsrc>
   <nick></nick>
   <node_id>1080927</node_id>
-  <type_nodetype>15</type_nodetype>
+  <passwd></passwd>
   <realname>e2docs shared user account</realname>
+  <title>Virgil</title>
+  <type_nodetype>15</type_nodetype>
   <vars>
-    <value>1882128</value>
-    <key>can_weblog</key>
-  </vars>
-  <vars>
-    <value>262,170070,91,457857,263,165437,174581</value>
-    <key>nodelets</key>
-  </vars>
-  <vars>
+    <key>no_bookmarknotification</key>
     <value>1</value>
+  </vars>
+  <vars>
     <key>nohintHTML</key>
-  </vars>
-  <vars>
-    <key>hidemsgme</key>
     <value>1</value>
   </vars>
   <vars>
-    <value>[e2docs] usergroup</value>
-    <key>employment</key>
+    <key>collapsedNodelets</key>
+    <value></value>
   </vars>
   <vars>
-    <key>autoChat</key>
+    <key>mitextarea</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>nullvote</key>
     <value>1</value>
   </vars>
   <vars>
@@ -129,19 +128,55 @@
     <value>,c:vote,c:cfull,c:sendmsg,c:addto</value>
   </vars>
   <vars>
-    <value></value>
+    <key>mission</key>
+    <value>Guiding poets through Hell</value>
+  </vars>
+  <vars>
+    <key>hidemsgme</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>wuhead</key>
+    <value>c:type,c:author,c:dtcreate,c:length,c:hits</value>
+  </vars>
+  <vars>
+    <key>num_newwus</key>
+    <value>25</value>
+  </vars>
+  <vars>
     <key>personal_nodelet</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>employment</key>
+    <value>[e2docs] usergroup</value>
+  </vars>
+  <vars>
+    <key>settings</key>
+    <value>{&quot;notifications&quot;:{&quot;1980269&quot;:1,&quot;1936586&quot;:1,&quot;1981770&quot;:1,&quot;1930850&quot;:1,&quot;1930993&quot;:1}}</value>
+  </vars>
+  <vars>
+    <key>no_coolnotification</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>numwriteups</key>
+    <value>48</value>
+  </vars>
+  <vars>
+    <key>oldexp</key>
+    <value>1146</value>
   </vars>
   <vars>
     <key>writeupbonus</key>
     <value>29</value>
   </vars>
   <vars>
-    <key>showmessages_replylink</key>
+    <key>nohints</key>
     <value>1</value>
   </vars>
   <vars>
-    <key>no_likeitnotification</key>
+    <key>no_bookmarkinformer</key>
     <value>1</value>
   </vars>
   <vars>
@@ -149,39 +184,55 @@
     <value></value>
   </vars>
   <vars>
-    <value>1146</value>
-    <key>oldexp</key>
-  </vars>
-  <vars>
-    <key>wuhead</key>
-    <value>c:type,c:author,c:dtcreate,c:length,c:hits</value>
-  </vars>
-  <vars>
-    <key>specialties</key>
-    <value>Documentation</value>
-  </vars>
-  <vars>
-    <key>nohints</key>
+    <key>nohintSpelling</key>
     <value>1</value>
   </vars>
   <vars>
+    <key>oldGP</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>no_likeitnotification</key>
     <value>1</value>
-    <key>no_coolnotification</key>
   </vars>
   <vars>
+    <key>pmsgDate</key>
     <value>1</value>
-    <key>no_bookmarkinformer</key>
   </vars>
   <vars>
-    <key>mission</key>
-    <value>Guiding poets through Hell</value>
+    <key>lastnoded</key>
+    <value>2072798</value>
   </vars>
   <vars>
-    <value>48 - &lt;a href=&quot;/user/Virgil/writeups&quot;&gt;View Virgil's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Virgil&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
-    <key>nwriteups</key>
+    <key>GPoptout</key>
+    <value>1</value>
   </vars>
   <vars>
-    <key>no_bookmarknotification</key>
+    <key>motto</key>
+    <value>[Desine fata deum flecti sperare precando]</value>
+  </vars>
+  <vars>
+    <key>nodelets</key>
+    <value>262,170070,91,457857,263,165437,174581</value>
+  </vars>
+  <vars>
+    <key>chatterbox_msgs_descend</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>showmessages_replylink</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>autoChat</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>msginboxUnArc</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>getofflinemsgs</key>
     <value>1</value>
   </vars>
   <vars>
@@ -189,70 +240,19 @@
     <value>1369835677</value>
   </vars>
   <vars>
-    <key>numwriteups</key>
-    <value>48</value>
-  </vars>
-  <vars>
-    <key>nullvote</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <value></value>
-    <key>collapsedNodelets</key>
-  </vars>
-  <vars>
-    <value>{&quot;notifications&quot;:{&quot;1980269&quot;:1,&quot;1936586&quot;:1,&quot;1981770&quot;:1,&quot;1930850&quot;:1,&quot;1930993&quot;:1}}</value>
-    <key>settings</key>
-  </vars>
-  <vars>
-    <key>motto</key>
-    <value>[Desine fata deum flecti sperare precando]</value>
-  </vars>
-  <vars>
-    <value></value>
-    <key>oldGP</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>mitextarea</key>
-  </vars>
-  <vars>
-    <key>lastnoded</key>
-    <value>2072798</value>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>getofflinemsgs</key>
-  </vars>
-  <vars>
-    <value>25</value>
-    <key>num_newwus</key>
-  </vars>
-  <vars>
-    <key>GPoptout</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>chatterbox_msgs_descend</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>msginboxUnArc</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>nohintSpelling</key>
+    <key>can_weblog</key>
+    <value>1882128</value>
   </vars>
   <vars>
     <key>IQM</key>
     <value></value>
   </vars>
   <vars>
-    <value>1</value>
-    <key>pmsgDate</key>
+    <key>nwriteups</key>
+    <value>48 - &lt;a href=&quot;/user/Virgil/writeups&quot;&gt;View Virgil's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Virgil&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
   </vars>
-  <imgsrc>images/userincoming/Virgil.jpeg</imgsrc>
-  <email></email>
-  <passwd></passwd>
+  <vars>
+    <key>specialties</key>
+    <value>Documentation</value>
+  </vars>
 </node>

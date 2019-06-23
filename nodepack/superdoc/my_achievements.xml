@@ -1,7 +1,4 @@
 <node>
-  <node_id>1917882</node_id>
-  <type_nodetype>14</type_nodetype>
-  <title>My Achievements</title>
   <doctext>[%
 
 return &quot;If you logged in, you could see what achievements you've earned here.&quot; if $APP-&gt;isGuest($USER);
@@ -62,4 +59,7 @@ $str .= $debugStr if $debugStr &amp;&amp; $DB -&gt; isApproved($USER, getNode('e
 return $str;
 
 %]</doctext>
+  <node_id>1917882</node_id>
+  <title>My Achievements</title>
+  <type_nodetype>14</type_nodetype>
 </node>

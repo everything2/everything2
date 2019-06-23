@@ -1,5 +1,4 @@
 <node>
-  <node_id>1073526</node_id>
   <doctext>&lt;p&gt;&lt;br&gt;&lt;br&gt;
 &lt;/p&gt;
 
@@ -21,6 +20,7 @@
 
 
 &lt;p&gt;&lt;b&gt;Back to [God Powers and How to Use Them]&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;/p&gt;</doctext>
+  <node_id>1073526</node_id>
   <title>Borging users</title>
   <type_nodetype>13</type_nodetype>
 </node>

@@ -1,7 +1,5 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
-  <title>Jukka pro</title>
-  <s3bucket></s3bucket>
+  <contentversion>104</contentversion>
   <doctext>/* ****************************************************************** */
 /*                          TEXT                                      */
 /* ****************************************************************** */
@@ -754,7 +752,9 @@ pre {
 #nodelet_165437 {
 	background-image: url(https://s3.amazonaws.com/static.everything2.com/vitals.gif); }
 #nodelet_1855429 { }</doctext>
-  <contentversion>104</contentversion>
   <node_id>1930477</node_id>
+  <s3bucket></s3bucket>
   <s3content_id>1930477</s3content_id>
+  <title>Jukka pro</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

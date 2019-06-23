@@ -1,7 +1,4 @@
 <node>
-  <node_id>1304974</node_id>
-  <type_nodetype>13</type_nodetype>
-  <title>unsql doctext</title>
   <doctext>[{openform}]
 from backup, node_id: &lt;input type=&quot;text&quot; name=&quot;sql_id&quot;&gt;
 &lt;input type=&quot;submit&quot; value=&quot;fix&quot;&gt;
@@ -19,4 +16,7 @@ from backup, node_id: &lt;input type=&quot;text&quot; name=&quot;sql_id&quot;&gt
   updateNode($sqlid, -1);
   return &quot;Done&quot;;
 %]</doctext>
+  <node_id>1304974</node_id>
+  <title>unsql doctext</title>
+  <type_nodetype>13</type_nodetype>
 </node>

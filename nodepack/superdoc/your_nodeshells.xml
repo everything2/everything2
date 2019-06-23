@@ -54,7 +54,7 @@ $str.='&lt;/ul&gt;';
 
 return $str;
 %]</doctext>
+  <node_id>1411291</node_id>
   <title>Your Nodeshells</title>
   <type_nodetype>14</type_nodetype>
-  <node_id>1411291</node_id>
 </node>

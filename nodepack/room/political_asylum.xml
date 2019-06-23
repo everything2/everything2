@@ -1,8 +1,8 @@
 <node>
-  <title>Political Asylum</title>
-  <doctext>&lt;i&gt;&lt;b&gt;Political animals: tear each other to pieces here.&lt;/b&gt;&lt;/i&gt; </doctext>
   <abreviation></abreviation>
-  <node_id>553129</node_id>
-  <type_nodetype>545241</type_nodetype>
   <criteria>1;</criteria>
+  <doctext>&lt;i&gt;&lt;b&gt;Political animals: tear each other to pieces here.&lt;/b&gt;&lt;/i&gt; </doctext>
+  <node_id>553129</node_id>
+  <title>Political Asylum</title>
+  <type_nodetype>545241</type_nodetype>
 </node>

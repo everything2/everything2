@@ -1,9 +1,9 @@
 <node>
-  <node_id>1933967</node_id>
-  <s3content_id>1933967</s3content_id>
-  <doctext>/* calling dibs on the name */</doctext>
   <contentversion>103</contentversion>
-  <type_nodetype>1854352</type_nodetype>
+  <doctext>/* calling dibs on the name */</doctext>
+  <node_id>1933967</node_id>
   <s3bucket></s3bucket>
+  <s3content_id>1933967</s3content_id>
   <title>satori</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

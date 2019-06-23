@@ -1,5 +1,4 @@
 <node>
-  <description>a new user posts a writeup</description>
   <code>my $author_link = getNodeById($$args{author_id}) ?
   linkNode($$args{author_id})
   : &quot;(who has been unpersoned) &quot;
@@ -13,10 +12,8 @@ my $wu_link = getNodeById($$args{writeup_id}) ?
 
 return &quot;A new user, &lt;b&gt;$author_link&lt;/b&gt;, posted a writeup $wu_link.&quot;;
 </code>
-  <node_id>2016463</node_id>
-  <type_nodetype>1930710</type_nodetype>
+  <description>a new user posts a writeup</description>
   <hourLimit>336</hourLimit>
-  <title>newbiewriteup</title>
   <invalid_check>use DateTime;
 use DateTime::Format::Strptime;
 my $dateParser = new DateTime::Format::Strptime(
@@ -38,4 +35,7 @@ my $isOld = $notifyPublishTime ?
 my $isInvalid = !$target_wu || $isDraft || $isOld;
 return $isInvalid;
 </invalid_check>
+  <node_id>2016463</node_id>
+  <title>newbiewriteup</title>
+  <type_nodetype>1930710</type_nodetype>
 </node>

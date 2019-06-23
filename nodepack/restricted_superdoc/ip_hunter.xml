@@ -175,7 +175,7 @@ return $str;
 %]
 &lt;p align=&quot;right&quot;&gt;Bugs go to [JayBonci]&lt;/p&gt;
 </doctext>
-  <type_nodetype>13</type_nodetype>
-  <title>IP Hunter</title>
   <node_id>1244409</node_id>
+  <title>IP Hunter</title>
+  <type_nodetype>13</type_nodetype>
 </node>

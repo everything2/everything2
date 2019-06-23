@@ -1,9 +1,9 @@
 <node>
-  <s3content_id>2004553</s3content_id>
-  <node_id>2004553</node_id>
-  <title>ab</title>
-  <s3bucket></s3bucket>
-  <type_nodetype>1854352</type_nodetype>
   <contentversion>103</contentversion>
   <doctext></doctext>
+  <node_id>2004553</node_id>
+  <s3bucket></s3bucket>
+  <s3content_id>2004553</s3content_id>
+  <title>ab</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

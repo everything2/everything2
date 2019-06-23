@@ -1,7 +1,4 @@
 <node>
-  <node_id>1206744</node_id>
-  <title>Noding speedometer</title>
-  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 #constants
@@ -135,4 +132,7 @@ while (my $N = $clocked_nodes-&gt;fetchrow_hashref) {
   return $str;
 
 %]</doctext>
+  <node_id>1206744</node_id>
+  <title>Noding speedometer</title>
+  <type_nodetype>14</type_nodetype>
 </node>

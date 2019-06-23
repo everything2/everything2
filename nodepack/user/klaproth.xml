@@ -22,29 +22,44 @@ You are here to listen.&lt;/p&gt;
 &lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
 &lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;
 </doctext>
+  <email>e2bones@yahoo.com</email>
+  <imgsrc>images/userincoming/Klaproth.jpeg</imgsrc>
   <nick></nick>
-  <title>Klaproth</title>
   <node_id>952215</node_id>
-  <type_nodetype>15</type_nodetype>
+  <passwd></passwd>
   <realname>Master Klaproth</realname>
+  <title>Klaproth</title>
+  <type_nodetype>15</type_nodetype>
   <vars>
-    <value>&lt;a href=&quot;/node/superdoc/Cool+Archive?cooluser=Klaproth&amp;amp;useraction=cooled&quot;&gt;1&lt;/a&gt;</value>
-    <key>coolsspent</key>
-  </vars>
-  <vars>
-    <key>epi_hideces</key>
+    <key>nohints</key>
     <value>1</value>
   </vars>
   <vars>
-    <value></value>
-    <key>personal_nodelet</key>
+    <key>numborged</key>
+    <value>7</value>
   </vars>
   <vars>
-    <key>tokens</key>
-    <value></value>
+    <key>numwriteups</key>
+    <value>1</value>
   </vars>
   <vars>
-    <key>hidden_weblog</key>
+    <key>oldexp</key>
+    <value>174</value>
+  </vars>
+  <vars>
+    <key>hide_weblog_1434789</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>coolsspent</key>
+    <value>&lt;a href=&quot;/node/superdoc/Cool+Archive?cooluser=Klaproth&amp;amp;useraction=cooled&quot;&gt;1&lt;/a&gt;</value>
+  </vars>
+  <vars>
+    <key>hide_weblog_1402260</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>infravision</key>
     <value>1</value>
   </vars>
   <vars>
@@ -52,48 +67,20 @@ You are here to listen.&lt;/p&gt;
     <value> Retired</value>
   </vars>
   <vars>
-    <key>HideNewWriteups</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <value>1</value>
     <key>nowhynovotes</key>
-  </vars>
-  <vars>
-    <key>nodelets</key>
-    <value>262,170070,91,165437</value>
-  </vars>
-  <vars>
-    <value></value>
-    <key>can_weblog</key>
-  </vars>
-  <vars>
-    <key>infravision</key>
     <value>1</value>
   </vars>
   <vars>
-    <value> Used to be killin', now just chillin'</value>
-    <key>specialties</key>
-  </vars>
-  <vars>
-    <key>hide_weblog_1393053</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>lastnode</key>
+    <key>personal_nodelet</key>
     <value></value>
   </vars>
   <vars>
-    <key>coolsafety</key>
-    <value>1</value>
+    <key>num_newwus</key>
+    <value>25</value>
   </vars>
   <vars>
-    <key>cools</key>
-    <value></value>
-  </vars>
-  <vars>
-    <value>174</value>
-    <key>oldexp</key>
+    <key>mission</key>
+    <value>Relax on the beach!</value>
   </vars>
   <vars>
     <key>hide_weblog_1358106</key>
@@ -104,79 +91,92 @@ You are here to listen.&lt;/p&gt;
     <value>off</value>
   </vars>
   <vars>
-    <value>1278018700</value>
-    <key>preference_last_update_time</key>
-  </vars>
-  <vars>
-    <key>hide_weblog_1434789</key>
+    <key>epi_hideces</key>
     <value>1</value>
   </vars>
   <vars>
-    <value>1</value>
-    <key>numwriteups</key>
+    <key>specialties</key>
+    <value> Used to be killin', now just chillin'</value>
   </vars>
   <vars>
-    <key>visible</key>
+    <key>hide_weblog_1393053</key>
     <value>1</value>
   </vars>
   <vars>
-    <value>1 - &lt;a href=&quot;/user/Klaproth/writeups&quot;&gt;View Klaproth's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Klaproth&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
     <key>nwriteups</key>
+    <value>1 - &lt;a href=&quot;/user/Klaproth/writeups&quot;&gt;View Klaproth's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Klaproth&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
   </vars>
   <vars>
-    <value>Relax on the beach!</value>
-    <key>mission</key>
+    <key>preference_last_update_time</key>
+    <value>1278018700</value>
+  </vars>
+  <vars>
+    <key>can_weblog</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>msginboxUnArc</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>hidden_weblog</key>
+    <value>1</value>
   </vars>
   <vars>
     <key>lastborg</key>
     <value>1060197241</value>
   </vars>
   <vars>
-    <key>nohints</key>
-    <value>1</value>
-  </vars>
-  <vars>
     <key>hide_weblog_114</key>
     <value>1</value>
   </vars>
   <vars>
-    <key>numborged</key>
-    <value>7</value>
-  </vars>
-  <vars>
-    <key>hide_weblog_1402260</key>
+    <key>HideNewWriteups</key>
     <value>1</value>
   </vars>
   <vars>
-    <value></value>
-    <key>easter_eggs</key>
-  </vars>
-  <vars>
-    <value>1</value>
     <key>hide_weblog_165580</key>
-  </vars>
-  <vars>
     <value>1</value>
-    <key>msginboxUnArc</key>
   </vars>
   <vars>
-    <value>25</value>
-    <key>num_newwus</key>
+    <key>coolsafety</key>
+    <value>1</value>
   </vars>
   <vars>
-    <value>1919009</value>
-    <key>lastnoded</key>
+    <key>lastnode</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>easter_eggs</key>
+    <value></value>
   </vars>
   <vars>
     <key>motto</key>
     <value> In the midst of life we are in death</value>
   </vars>
   <vars>
-    <value>5</value>
-    <key>oldGP</key>
+    <key>nodelets</key>
+    <value>262,170070,91,165437</value>
   </vars>
-  <imgsrc>images/userincoming/Klaproth.jpeg</imgsrc>
+  <vars>
+    <key>visible</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>lastnoded</key>
+    <value>1919009</value>
+  </vars>
+  <vars>
+    <key>oldGP</key>
+    <value>5</value>
+  </vars>
+  <vars>
+    <key>cools</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>tokens</key>
+    <value></value>
+  </vars>
   <votesleft>997</votesleft>
-  <email>e2bones@yahoo.com</email>
-  <passwd></passwd>
 </node>

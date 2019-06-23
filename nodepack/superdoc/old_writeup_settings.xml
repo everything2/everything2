@@ -1,6 +1,4 @@
 <node>
-  <title>Old Writeup Settings</title>
-  <type_nodetype>14</type_nodetype>
   <doctext>[{openform}]
 &lt;p&gt;This is the old header display section of [Writeup Settings], plus footer settings using the same syntax. This provides slightly greater control over the display than the radio-button-based selection interface that will be the default.
 
@@ -296,4 +294,6 @@ Press the &quot;clear to default&quot; button to reset to the normal display; &q
 
 [{closeform}]</doctext>
   <node_id>1960257</node_id>
+  <title>Old Writeup Settings</title>
+  <type_nodetype>14</type_nodetype>
 </node>

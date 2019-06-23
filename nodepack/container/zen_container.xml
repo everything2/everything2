@@ -1,7 +1,7 @@
 <node>
-  <type_nodetype>2</type_nodetype>
+  <context></context>
+  <node_id>1854175</node_id>
   <parent_container>1854174</parent_container>
   <title>zen_container</title>
-  <node_id>1854175</node_id>
-  <context></context>
+  <type_nodetype>2</type_nodetype>
 </node>

@@ -1,6 +1,5 @@
 <node>
-  <node_id>1907942</node_id>
-  <s3content_id>1907942</s3content_id>
+  <contentversion>104</contentversion>
   <doctext>/* This is Eye-Eze, a Zen theme */
 /* It is based from the default stylesheet for the zen theme, by ascorbic */
 
@@ -732,8 +731,9 @@ td {
 		#metalinks {
 			display: none;
 		}</doctext>
-  <contentversion>104</contentversion>
-  <type_nodetype>1854352</type_nodetype>
+  <node_id>1907942</node_id>
   <s3bucket></s3bucket>
+  <s3content_id>1907942</s3content_id>
   <title>Eye-Eze</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

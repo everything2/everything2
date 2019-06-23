@@ -66,7 +66,7 @@ Pagecache:
   return $str;
 %]
 &lt;/ul&gt;</doctext>
-  <type_nodetype>13</type_nodetype>
-  <title>cache dump</title>
   <node_id>372563</node_id>
+  <title>cache dump</title>
+  <type_nodetype>13</type_nodetype>
 </node>

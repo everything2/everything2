@@ -1,80 +1,4 @@
 <node>
-  <realname>nate</realname>
-  <vars>
-    <value>1</value>
-    <key>numwriteups</key>
-  </vars>
-  <vars>
-    <key>preference_last_update_time</key>
-    <value>1278018700</value>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>epi_hideces</key>
-  </vars>
-  <vars>
-    <key>nullvote</key>
-    <value>off</value>
-  </vars>
-  <vars>
-    <key>nodelets</key>
-    <value>262,170070,91,457857,263,165437,174581</value>
-  </vars>
-  <vars>
-    <value></value>
-    <key>can_weblog</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>mission</key>
-  </vars>
-  <vars>
-    <value>1 - &lt;a href=&quot;/user/Cool+Man+Eddie/writeups&quot;&gt;View Cool Man Eddie's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Cool%20Man%20Eddie&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
-    <key>nwriteups</key>
-  </vars>
-  <vars>
-    <key>employment</key>
-    <value></value>
-  </vars>
-  <vars>
-    <value></value>
-    <key>specialties</key>
-  </vars>
-  <vars>
-    <value>191</value>
-    <key>IQM</key>
-  </vars>
-  <vars>
-    <key>infravision</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <value>2</value>
-    <key>cools</key>
-  </vars>
-  <vars>
-    <key>oldexp</key>
-    <value>164</value>
-  </vars>
-  <vars>
-    <key>motto</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>oldGP</key>
-    <value>6</value>
-  </vars>
-  <vars>
-    <key>lastnoded</key>
-    <value>910483</value>
-  </vars>
-  <vars>
-    <key>num_newwus</key>
-    <value>25</value>
-  </vars>
-  <imgsrc>images/userincoming/Cool_Man_Eddie.jpeg</imgsrc>
-  <email></email>
-  <passwd></passwd>
   <doctext>Just hangin'...  You know, chillin'.&lt;br&gt;
 Y'know ya want it -- turn me on in [User Settings].
 &lt;br&gt;&lt;br&gt;
@@ -83,8 +7,84 @@ Y'know ya want it -- turn me on in [User Settings].
 If I sent you a message, and you're not sure what it means, [C!|get the skinny on cool].
 &lt;br&gt;&lt;br&gt;
 [Cool Man Eddie meets Message Inbox]</doctext>
+  <email></email>
+  <imgsrc>images/userincoming/Cool_Man_Eddie.jpeg</imgsrc>
   <nick></nick>
-  <title>Cool Man Eddie</title>
   <node_id>839239</node_id>
+  <passwd></passwd>
+  <realname>nate</realname>
+  <title>Cool Man Eddie</title>
   <type_nodetype>15</type_nodetype>
+  <vars>
+    <key>numwriteups</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>oldexp</key>
+    <value>164</value>
+  </vars>
+  <vars>
+    <key>preference_last_update_time</key>
+    <value>1278018700</value>
+  </vars>
+  <vars>
+    <key>can_weblog</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>IQM</key>
+    <value>191</value>
+  </vars>
+  <vars>
+    <key>specialties</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>nwriteups</key>
+    <value>1 - &lt;a href=&quot;/user/Cool+Man+Eddie/writeups&quot;&gt;View Cool Man Eddie's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Cool%20Man%20Eddie&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
+  </vars>
+  <vars>
+    <key>cools</key>
+    <value>2</value>
+  </vars>
+  <vars>
+    <key>oldGP</key>
+    <value>6</value>
+  </vars>
+  <vars>
+    <key>epi_hideces</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>nullvote</key>
+    <value>off</value>
+  </vars>
+  <vars>
+    <key>lastnoded</key>
+    <value>910483</value>
+  </vars>
+  <vars>
+    <key>mission</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>motto</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>nodelets</key>
+    <value>262,170070,91,457857,263,165437,174581</value>
+  </vars>
+  <vars>
+    <key>num_newwus</key>
+    <value>25</value>
+  </vars>
+  <vars>
+    <key>infravision</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>employment</key>
+    <value></value>
+  </vars>
 </node>

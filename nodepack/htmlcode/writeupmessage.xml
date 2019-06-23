@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>4</type_nodetype>
-  <title>writeupmessage</title>
-  <node_id>2008911</node_id>
   <code></code>
+  <node_id>2008911</node_id>
+  <title>writeupmessage</title>
+  <type_nodetype>4</type_nodetype>
 </node>

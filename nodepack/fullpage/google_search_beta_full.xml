@@ -1,7 +1,4 @@
 <node>
-  <node_id>1914791</node_id>
-  <type_nodetype>451267</type_nodetype>
-  <title>Google Search Beta Full</title>
   <doctext>&lt;html&gt;
   &lt;head&gt;
     &lt;script src=&quot;http://www.google.com/uds/api?file=uds.js&amp;v=1.0&amp;key=internal-sample&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
@@ -75,4 +72,7 @@ this.leftControl.setResultSetSize(GSearch.LARGE_RESULTSET);
   &lt;/body&gt;
 &lt;/html&gt;
 </doctext>
+  <node_id>1914791</node_id>
+  <title>Google Search Beta Full</title>
+  <type_nodetype>451267</type_nodetype>
 </node>

@@ -1,7 +1,4 @@
 <node>
-  <node_id>108</node_id>
-  <title>Settings</title>
-  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return '&lt;p&gt;You need to sign in or '
 	.linkNode(getNode('Sign up','superdoc'), 'register')
@@ -183,4 +180,7 @@ $str.'&lt;br&gt;';
 [%
 return ' --&gt;' if $APP-&gt;isGuest($USER);
 %]</doctext>
+  <node_id>108</node_id>
+  <title>Settings</title>
+  <type_nodetype>14</type_nodetype>
 </node>

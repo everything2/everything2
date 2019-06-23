@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>1144104</type_nodetype>
-  <title>Quick Rename</title>
   <doctext>[{openform}]
 [%
 
@@ -78,4 +76,6 @@ $str.=htmlcode('closeform', &quot;Retitle items&quot;);
 %]
 </doctext>
   <node_id>1460966</node_id>
+  <title>Quick Rename</title>
+  <type_nodetype>1144104</type_nodetype>
 </node>

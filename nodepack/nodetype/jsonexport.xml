@@ -1,9 +1,9 @@
 <node>
-  <title>jsonexport</title>
-  <grouptable></grouptable>
   <extends_nodetype>4</extends_nodetype>
-  <sqltable></sqltable>
+  <grouptable></grouptable>
   <node_id>2100759</node_id>
-  <type_nodetype>1</type_nodetype>
   <restrictdupes>1</restrictdupes>
+  <sqltable></sqltable>
+  <title>jsonexport</title>
+  <type_nodetype>1</type_nodetype>
 </node>
