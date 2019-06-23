@@ -1,5 +1,5 @@
 <node>
-  <node_id>1955925</node_id>
+  <title>Oolong's Sandier Box</title>
   <doctext>[%
 
   return 'Curiosity killed the cat, ya know.' if(! $APP-&gt;isEditor($USER) );
@@ -50,6 +50,6 @@
 
   return $str;
 %]</doctext>
+  <node_id>1955925</node_id>
   <type_nodetype>14</type_nodetype>
-  <title>Oolong's Sandier Box</title>
 </node>

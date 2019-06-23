@@ -1,5 +1,9 @@
 <node>
+  <s3bucket></s3bucket>
   <type_nodetype>1854352</type_nodetype>
+  <s3content_id>1965240</s3content_id>
+  <node_id>1965240</node_id>
+  <title>Azurian Rhapsody</title>
   <doctext>/****** COLORS ******/
 
 body,
@@ -806,9 +810,5 @@ th.oddrow {
 		#metalinks {
 			display: none;
 		}</doctext>
-  <title>Azurian Rhapsody</title>
-  <s3content_id>1965240</s3content_id>
-  <s3bucket></s3bucket>
   <contentversion>105</contentversion>
-  <node_id>1965240</node_id>
 </node>

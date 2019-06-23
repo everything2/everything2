@@ -1,10 +1,10 @@
 <node>
-  <page></page>
-  <type_nodetype>5</type_nodetype>
+  <parent_container>18</parent_container>
   <mimetype></mimetype>
-  <displaytype>display</displaytype>
-  <title>stylesheet display page</title>
+  <type_nodetype>5</type_nodetype>
   <pagetype_nodetype>1854352</pagetype_nodetype>
   <node_id>1854353</node_id>
-  <parent_container>18</parent_container>
+  <title>stylesheet display page</title>
+  <page></page>
+  <displaytype>display</displaytype>
 </node>

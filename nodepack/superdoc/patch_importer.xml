@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $str = &quot;&quot;;
 
@@ -371,4 +370,5 @@ sub listPatches{
 %]</doctext>
   <title>Patch importer</title>
   <node_id>1991441</node_id>
+  <type_nodetype>14</type_nodetype>
 </node>

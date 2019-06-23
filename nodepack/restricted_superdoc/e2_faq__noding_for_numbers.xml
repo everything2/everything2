@@ -1,5 +1,4 @@
 <node>
-  <node_id>1152509</node_id>
   <title>E2 FAQ: Noding for Numbers</title>
   <doctext>&lt;br&gt;&lt;br&gt;&lt;br&gt;
 
@@ -74,5 +73,6 @@ And, of course, the usual guidelines as spelled out in [Everything University] a
 &lt;b&gt;
 back to&lt;br&gt;[Everything FAQ]
 &lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</doctext>
+  <node_id>1152509</node_id>
   <type_nodetype>13</type_nodetype>
 </node>

@@ -1,10 +1,10 @@
 <node>
-  <node_id>2061808</node_id>
   <grouptable></grouptable>
-  <title>mysqlview</title>
-  <extends_nodetype>3</extends_nodetype>
   <verify_edits>1</verify_edits>
-  <sqltable></sqltable>
-  <restrictdupes>1</restrictdupes>
   <type_nodetype>1</type_nodetype>
+  <extends_nodetype>3</extends_nodetype>
+  <node_id>2061808</node_id>
+  <restrictdupes>1</restrictdupes>
+  <title>mysqlview</title>
+  <sqltable></sqltable>
 </node>

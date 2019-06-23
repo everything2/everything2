@@ -1,6 +1,7 @@
 <node>
-  <title>Christen Noder</title>
+  <node_id>672226</node_id>
   <type_nodetype>13</type_nodetype>
+  <title>Christen Noder</title>
   <doctext>[{openform}]
 [%
   my $u = $query-&gt;param(&quot;christen&quot;); 
@@ -23,5 +24,4 @@
 %]
 
 [{closeform}]</doctext>
-  <node_id>672226</node_id>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <title>Brumlove</title>
   <doctext>/* Based on ascorbic's zen skeleton CSS */
 /* It's like jukka dim, but narrow and weird. */
 /* It's all reverse-y for one thing... */
@@ -462,9 +461,10 @@ h1.nodetitle
      { font-style: italic; }
 .action_whisper, .action_roll, .action_fireball, .action_sanctify, .action_egg 
      { font-variant: small-caps; }</doctext>
-  <type_nodetype>1854352</type_nodetype>
-  <node_id>1881898</node_id>
   <contentversion>105</contentversion>
-  <s3bucket></s3bucket>
+  <title>Brumlove</title>
+  <type_nodetype>1854352</type_nodetype>
   <s3content_id>1881898</s3content_id>
+  <node_id>1881898</node_id>
+  <s3bucket></s3bucket>
 </node>

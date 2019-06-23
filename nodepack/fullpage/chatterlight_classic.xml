@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>451267</type_nodetype>
+  <title>chatterlight classic</title>
   <doctext>&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;http://www.w3.org/TR/xhtml/transitional.dtd&quot;&gt;
 &lt;html&gt;
 	&lt;head&gt;
@@ -60,6 +60,6 @@ $('message').focus();
 &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;</doctext>
-  <title>chatterlight classic</title>
+  <type_nodetype>451267</type_nodetype>
   <node_id>1942820</node_id>
 </node>

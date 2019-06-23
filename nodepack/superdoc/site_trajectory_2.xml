@@ -1,4 +1,7 @@
 <node>
+  <node_id>1969889</node_id>
+  <type_nodetype>14</type_nodetype>
+  <title>Site Trajectory 2</title>
   <doctext>&lt;style&gt;
 &lt;!--
 th {
@@ -166,7 +169,4 @@ $(document).ready(function() {
 
 return $str;
 %]</doctext>
-  <type_nodetype>14</type_nodetype>
-  <title>Site Trajectory 2</title>
-  <node_id>1969889</node_id>
 </node>

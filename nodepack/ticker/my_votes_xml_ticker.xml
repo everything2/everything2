@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>1252389</type_nodetype>
+  <title>My Votes XML Ticker</title>
   <doctext>[%
 my $str = &quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;
 &lt;votes&gt;\r\n&quot;;
@@ -26,6 +26,6 @@ $str .= '&lt;/votes&gt;';
 return $str;
 %]
 </doctext>
-  <title>My Votes XML Ticker</title>
+  <type_nodetype>1252389</type_nodetype>
   <node_id>1934718</node_id>
 </node>

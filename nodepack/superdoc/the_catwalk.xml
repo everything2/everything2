@@ -1,5 +1,5 @@
 <node>
-  <title>The Catwalk</title>
+  <node_id>1854411</node_id>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
@@ -151,5 +151,5 @@ $str .= qq|&lt;p align=&quot;right&quot;&gt;$nextprev&lt;/p&gt;| if length($next
 
 return $str;
 %]</doctext>
-  <node_id>1854411</node_id>
+  <title>The Catwalk</title>
 </node>

@@ -1,10 +1,10 @@
 <node>
-  <mimetype></mimetype>
-  <page></page>
-  <type_nodetype>5</type_nodetype>
-  <displaytype>display</displaytype>
   <title>plaindoc display page</title>
+  <page></page>
+  <displaytype>display</displaytype>
+  <parent_container>1854175</parent_container>
+  <mimetype></mimetype>
+  <type_nodetype>5</type_nodetype>
   <pagetype_nodetype>1491416</pagetype_nodetype>
   <node_id>1491424</node_id>
-  <parent_container>1854175</parent_container>
 </node>

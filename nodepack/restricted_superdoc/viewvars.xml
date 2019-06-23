@@ -1,6 +1,7 @@
 <node>
-  <title>viewvars</title>
   <type_nodetype>13</type_nodetype>
+  <node_id>530149</node_id>
+  <title>viewvars</title>
   <doctext>[%
 
 
@@ -14,5 +15,4 @@ $str.=&quot;$_ : $$V{$_}&lt;br&gt;&quot;;
 
 $str;
 %]</doctext>
-  <node_id>530149</node_id>
 </node>

@@ -1,11 +1,11 @@
 <node>
-  <extends_nodetype>14</extends_nodetype>
-  <writers_user>114</writers_user>
-  <title>fullpage</title>
-  <node_id>451267</node_id>
   <grouptable></grouptable>
+  <deleters_user>114</deleters_user>
+  <extends_nodetype>14</extends_nodetype>
+  <node_id>451267</node_id>
+  <writers_user>114</writers_user>
   <type_nodetype>1</type_nodetype>
+  <title>fullpage</title>
   <restrictdupes>1</restrictdupes>
   <sqltable></sqltable>
-  <deleters_user>114</deleters_user>
 </node>

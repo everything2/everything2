@@ -1,31 +1,26 @@
 <node>
+  <type_nodetype>153</type_nodetype>
+  <node_id>1467462</node_id>
+  <title>approved MathML tags</title>
   <vars>
     <value>1</value>
-    <key>mtext</key>
+    <key>mo</key>
   </vars>
   <vars>
-    <key>msub</key>
+    <key>ms</key>
     <value>1</value>
   </vars>
   <vars>
     <value>1</value>
-    <key>munderover</key>
+    <key>math</key>
+  </vars>
+  <vars>
+    <key>mroot</key>
+    <value>1</value>
   </vars>
   <vars>
     <value>1</value>
     <key>munder</key>
-  </vars>
-  <vars>
-    <key>mfenced</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>msup</key>
-  </vars>
-  <vars>
-    <key>mn</key>
-    <value>1</value>
   </vars>
   <vars>
     <value>1</value>
@@ -33,18 +28,30 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>ms</key>
+    <key>mfenced</key>
   </vars>
   <vars>
-    <key>mover</key>
+    <value>1</value>
+    <key>mtext</key>
+  </vars>
+  <vars>
+    <key>mn</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>msub</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>munderover</key>
     <value>1</value>
   </vars>
   <vars>
     <value>1</value>
-    <key>msubsup</key>
+    <key>msup</key>
   </vars>
   <vars>
-    <key>math</key>
+    <key>mrow</key>
     <value>1</value>
   </vars>
   <vars>
@@ -52,30 +59,23 @@
     <key>mfrac</key>
   </vars>
   <vars>
-    <value>1</value>
-    <key>mrow</key>
-  </vars>
-  <vars>
-    <key>mroot</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>mo</key>
-    <value>1</value>
-  </vars>
-  <vars>
     <key>mmultiscripts</key>
     <value>1</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>mover</key>
   </vars>
   <vars>
     <key>mi</key>
     <value>1</value>
   </vars>
   <vars>
-    <key>mphantom</key>
+    <key>msubsup</key>
     <value>1</value>
   </vars>
-  <title>approved MathML tags</title>
-  <type_nodetype>153</type_nodetype>
-  <node_id>1467462</node_id>
+  <vars>
+    <value>1</value>
+    <key>mphantom</key>
+  </vars>
 </node>

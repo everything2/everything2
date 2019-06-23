@@ -10,7 +10,7 @@
   KEY `creater_user_id__to_node__displayed` (`creater_user_id`,`to_node`,`displayed`),
   KEY `creater_user_id__create_time` (`creater_user_id`,`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
-  <node_id>2050931</node_id>
   <type_nodetype>148</type_nodetype>
+  <node_id>2050931</node_id>
   <title>softlink_creation</title>
 </node>

@@ -1,10 +1,10 @@
 <node>
   <type_nodetype>148</type_nodetype>
-  <title>typeversion</title>
+  <node_id>2004575</node_id>
   <_create_table_statement>CREATE TABLE `typeversion` (
   `typeversion_id` int(11) NOT NULL DEFAULT '0',
   `version` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`typeversion_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
-  <node_id>2004575</node_id>
+  <title>typeversion</title>
 </node>

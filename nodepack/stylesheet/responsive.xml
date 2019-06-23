@@ -1,10 +1,5 @@
 <node>
-  <node_id>2047408</node_id>
-  <s3content_id>2047408</s3content_id>
   <contentversion>104</contentversion>
-  <s3bucket></s3bucket>
-  <title>Responsive</title>
-  <type_nodetype>1854352</type_nodetype>
   <doctext>@import url(https://everything2.com/node/stylesheet/ResponsiveBase?displaytype=view);
 
 #footer
@@ -204,4 +199,9 @@ text-align: right;
 display: none;
 }
 </doctext>
+  <title>Responsive</title>
+  <node_id>2047408</node_id>
+  <s3content_id>2047408</s3content_id>
+  <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
 </node>

@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>148</type_nodetype>
   <title>ipblacklist</title>
+  <type_nodetype>148</type_nodetype>
   <node_id>1948145</node_id>
   <_create_table_statement>CREATE TABLE `ipblacklist` (
   `ipblacklist_id` int(32) NOT NULL AUTO_INCREMENT,

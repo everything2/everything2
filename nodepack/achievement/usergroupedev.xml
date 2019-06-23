@@ -1,9 +1,9 @@
 <node>
   <display>&lt;b&gt;Code Monkey&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Member of [edev[usergroup]] usergroup&lt;/i&gt;</display>
-  <node_id>1920603</node_id>
-  <subtype></subtype>
   <code>return $APP-&gt;isDeveloper($user_id, &quot;nogods&quot;);</code>
+  <subtype></subtype>
+  <node_id>1920603</node_id>
   <type_nodetype>1917847</type_nodetype>
-  <achievement_type>usergroup</achievement_type>
   <title>usergroupEdev</title>
+  <achievement_type>usergroup</achievement_type>
 </node>

@@ -1,8 +1,8 @@
 <node>
-  <nlcode></nlcode>
-  <node_id>1322699</node_id>
-  <parent_container>0</parent_container>
-  <type_nodetype>9</type_nodetype>
   <nltext></nltext>
   <title>Recent Nodes</title>
+  <node_id>1322699</node_id>
+  <type_nodetype>9</type_nodetype>
+  <parent_container>0</parent_container>
+  <nlcode></nlcode>
 </node>

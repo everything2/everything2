@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>4</type_nodetype>
   <title>ignoreUser</title>
-  <node_id>1868881</node_id>
   <code></code>
+  <node_id>1868881</node_id>
+  <type_nodetype>4</type_nodetype>
 </node>

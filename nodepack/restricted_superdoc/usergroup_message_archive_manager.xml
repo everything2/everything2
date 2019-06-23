@@ -138,7 +138,7 @@ $stats .= '&lt;/ul&gt;&lt;p&gt;
 $stats . $str;
 %]
 &lt;/p&gt;</doctext>
-  <type_nodetype>13</type_nodetype>
   <title>usergroup message archive manager</title>
   <node_id>1441832</node_id>
+  <type_nodetype>13</type_nodetype>
 </node>

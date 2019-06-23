@@ -1,9 +1,9 @@
 <node>
-  <node_id>1934199</node_id>
-  <contentversion>104</contentversion>
-  <s3bucket></s3bucket>
+  <type_nodetype>1854352</type_nodetype>
   <s3content_id>1934199</s3content_id>
-  <title>Colonel Ultramarine</title>
+  <node_id>1934199</node_id>
+  <s3bucket></s3bucket>
+  <contentversion>104</contentversion>
   <doctext>/* Derived from [Kernel Blue]. */
 
 #chatterlight_mainbody { float: left; width: 80%; margin-left: 10px; }
@@ -749,5 +749,5 @@ display: none;
 #metalinks {
 display: none;
 }</doctext>
-  <type_nodetype>1854352</type_nodetype>
+  <title>Colonel Ultramarine</title>
 </node>

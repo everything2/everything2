@@ -26,7 +26,7 @@ HTTP host is: [% $ENV{HTTP_HOST} %]
 &lt;p&gt;
 Match is: [% isMobile()?&quot;true&quot;:&quot;false&quot; %]
 &lt;/p&gt;</doctext>
-  <type_nodetype>14</type_nodetype>
   <title>set_mobile</title>
   <node_id>2021836</node_id>
+  <type_nodetype>14</type_nodetype>
 </node>

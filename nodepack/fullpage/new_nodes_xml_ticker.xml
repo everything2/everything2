@@ -1,6 +1,4 @@
 <node>
-  <node_id>781532</node_id>
-  <type_nodetype>451267</type_nodetype>
   <doctext>[%
 my $limit = 100;
 
@@ -35,4 +33,6 @@ $csr-&gt;finish;
 $XG-&gt;NewNodes($str);
 %]</doctext>
   <title>New Nodes XML Ticker</title>
+  <type_nodetype>451267</type_nodetype>
+  <node_id>781532</node_id>
 </node>

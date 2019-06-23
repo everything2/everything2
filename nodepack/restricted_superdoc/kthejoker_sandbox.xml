@@ -1,5 +1,6 @@
 <node>
   <node_id>2001359</node_id>
+  <type_nodetype>13</type_nodetype>
   <title>kthejoker sandbox</title>
   <doctext>[%
 
@@ -15,5 +16,4 @@ $str;
 
 %]
 </doctext>
-  <type_nodetype>13</type_nodetype>
 </node>

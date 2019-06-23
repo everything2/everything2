@@ -1,5 +1,5 @@
 <node>
-  <node_id>855769</node_id>
+  <title>Node Row</title>
   <doctext>[% 
 return unless( $APP-&gt;isEditor($USER) );
 
@@ -9,5 +9,5 @@ return $str;
 %]
 [{weblog:10,,restore,1,0}]</doctext>
   <type_nodetype>14</type_nodetype>
-  <title>Node Row</title>
+  <node_id>855769</node_id>
 </node>

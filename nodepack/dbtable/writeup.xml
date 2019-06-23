@@ -1,4 +1,7 @@
 <node>
+  <title>writeup</title>
+  <type_nodetype>148</type_nodetype>
+  <node_id>218</node_id>
   <_create_table_statement>CREATE TABLE `writeup` (
   `writeup_id` int(11) NOT NULL DEFAULT '0',
   `parent_e2node` int(11) NOT NULL DEFAULT '0',
@@ -13,7 +16,4 @@
   KEY `writeuptype` (`wrtype_writeuptype`),
   KEY `publishtime_index` (`publishtime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
-  <node_id>218</node_id>
-  <title>writeup</title>
-  <type_nodetype>148</type_nodetype>
 </node>

@@ -1,6 +1,4 @@
 <node>
-  <title>GNL</title>
-  <type_nodetype>13</type_nodetype>
   <doctext>&lt;center&gt;&lt;h3&gt;Gigantic Node Lister&lt;/h3&gt;&lt;/center&gt;
 
 [{openform}]
@@ -129,5 +127,7 @@ $str .= $nav;
 $str .= &quot;&lt;/TABLE&gt;&quot;;
 $str;
 %]</doctext>
+  <title>GNL</title>
+  <type_nodetype>13</type_nodetype>
   <node_id>419671</node_id>
 </node>

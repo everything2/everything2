@@ -1,6 +1,7 @@
 <node>
-  <title>Security Monitor</title>
+  <node_id>1376796</node_id>
   <type_nodetype>1144104</type_nodetype>
+  <title>Security Monitor</title>
   <doctext>[% 
 	###
 	### TO BEGIN TRACKING A NEW ACTIVITY IN THE SECURITY LOG:
@@ -129,5 +130,4 @@
 	return $str;
 %]
 </doctext>
-  <node_id>1376796</node_id>
 </node>

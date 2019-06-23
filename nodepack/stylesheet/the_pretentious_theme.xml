@@ -1,10 +1,5 @@
 <node>
-  <node_id>1904870</node_id>
-  <s3content_id>1904870</s3content_id>
-  <s3bucket></s3bucket>
   <contentversion>105</contentversion>
-  <title>The Pretentious Theme</title>
-  <type_nodetype>1854352</type_nodetype>
   <doctext>/****** COLORS ******/
 
 body,
@@ -292,4 +287,9 @@ body {
 		display: none;
 	}
 </doctext>
+  <title>The Pretentious Theme</title>
+  <type_nodetype>1854352</type_nodetype>
+  <s3content_id>1904870</s3content_id>
+  <node_id>1904870</node_id>
+  <s3bucket></s3bucket>
 </node>

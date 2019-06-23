@@ -1,6 +1,7 @@
 <node>
-  <title>Cool Archive Atom Feed</title>
   <type_nodetype>1252389</type_nodetype>
+  <node_id>1926580</node_id>
+  <title>Cool Archive Atom Feed</title>
   <doctext>[% 
 my $foruser = $query-&gt;param('foruser');
 my $str;
@@ -74,5 +75,4 @@ $str.=&quot;&lt;/feed&gt;\n&quot;;
 utf8::encode($str);
 $str;
 %]</doctext>
-  <node_id>1926580</node_id>
 </node>

@@ -1,9 +1,9 @@
 <node>
+  <title>reparenting_writeups</title>
   <_create_table_statement>CREATE TABLE `reparenting_writeups` (
   `node_id` int(11) NOT NULL,
   `timeadded` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
-  <node_id>2007049</node_id>
-  <title>reparenting_writeups</title>
   <type_nodetype>148</type_nodetype>
+  <node_id>2007049</node_id>
 </node>

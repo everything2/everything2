@@ -1,4 +1,6 @@
 <node>
+  <node_id>108</node_id>
+  <type_nodetype>14</type_nodetype>
   <title>Settings</title>
   <doctext>[%
 return '&lt;p&gt;You need to sign in or '
@@ -181,6 +183,4 @@ $str.'&lt;br&gt;';
 [%
 return ' --&gt;' if $APP-&gt;isGuest($USER);
 %]</doctext>
-  <type_nodetype>14</type_nodetype>
-  <node_id>108</node_id>
 </node>

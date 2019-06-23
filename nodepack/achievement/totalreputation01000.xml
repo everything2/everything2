@@ -1,12 +1,12 @@
 <node>
+  <title>totalreputation01000</title>
+  <achievement_type>reputation</achievement_type>
   <display>&lt;strong&gt;Miss Congeniality&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Total reputation of 1000&lt;/i&gt;</display>
-  <node_id>1918062</node_id>
   <code>my $totalRep = $DB-&gt;sqlSelect(&quot;sum(reputation)&quot;,&quot;node&quot;,&quot;author_user=$user_id and type_nodetype=117&quot;);
 
 return 1 if $totalRep &gt;= 1000;
 return 0;</code>
   <subtype>user</subtype>
+  <node_id>1918062</node_id>
   <type_nodetype>1917847</type_nodetype>
-  <achievement_type>reputation</achievement_type>
-  <title>totalreputation01000</title>
 </node>

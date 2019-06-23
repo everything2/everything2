@@ -1,7 +1,5 @@
 <node>
-  <type_nodetype>148</type_nodetype>
   <title>publicmessages</title>
-  <node_id>2048212</node_id>
   <_create_table_statement>CREATE TABLE `publicmessages` (
   `publicmessages_id` int(11) NOT NULL AUTO_INCREMENT,
   `message_id` int(11) NOT NULL,
@@ -13,4 +11,6 @@
   KEY `tstamp_index` (`tstamp`),
   KEY `author_user` (`author_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
+  <type_nodetype>148</type_nodetype>
+  <node_id>2048212</node_id>
 </node>

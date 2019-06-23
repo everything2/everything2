@@ -1,6 +1,4 @@
 <node>
-  <title>Cool Nodes XML Ticker</title>
-  <type_nodetype>451267</type_nodetype>
   <doctext>[%
 
 my $cache = $DB-&gt;stashData(&quot;coolnodes&quot;);
@@ -29,5 +27,7 @@ $xml = $XG-&gt;COOLEDNODES(
 
 $xml;
 %]</doctext>
+  <title>Cool Nodes XML Ticker</title>
   <node_id>1101708</node_id>
+  <type_nodetype>451267</type_nodetype>
 </node>

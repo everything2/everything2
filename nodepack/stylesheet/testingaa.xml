@@ -1,10 +1,5 @@
 <node>
-  <node_id>1928354</node_id>
-  <s3content_id>1928354</s3content_id>
   <contentversion>104</contentversion>
-  <s3bucket></s3bucket>
-  <title>TestingAA</title>
-  <type_nodetype>1854352</type_nodetype>
   <doctext>/****** COLORS ******/
 
 body,
@@ -650,4 +645,9 @@ td {
 		#metalinks {
 			display: none;
 		}</doctext>
+  <title>TestingAA</title>
+  <type_nodetype>1854352</type_nodetype>
+  <node_id>1928354</node_id>
+  <s3content_id>1928354</s3content_id>
+  <s3bucket></s3bucket>
 </node>

@@ -1,5 +1,6 @@
 <node>
-  <title>public rooms</title>
+  <type_nodetype>153</type_nodetype>
+  <node_id>1372611</node_id>
   <vars>
     <key>0</key>
     <value>1</value>
@@ -8,6 +9,5 @@
     <value>1</value>
     <key>553129</key>
   </vars>
-  <type_nodetype>153</type_nodetype>
-  <node_id>1372611</node_id>
+  <title>public rooms</title>
 </node>

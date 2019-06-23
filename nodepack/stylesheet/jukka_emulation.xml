@@ -1,5 +1,9 @@
 <node>
   <type_nodetype>1854352</type_nodetype>
+  <node_id>1855548</node_id>
+  <s3content_id>1855548</s3content_id>
+  <s3bucket></s3bucket>
+  <contentversion>113</contentversion>
   <doctext>/* Fixes from Clockmaker */
 
 #pageheader {
@@ -588,8 +592,4 @@ td#sl12{background:#f6f6ed;}td#sl11{background:#f6f6ee;}td#sl10{background:#f7f7
 td#sl8{background:#f9f9f3;}td#sl7{background:#fafaf5;}td#sl6{background:#fafaf6;}td#sl5{background:#fbfbf8;}
 td#sl4{background:#fcfcfa;}td#sl3{background:#fdfdfb;}td#sl2{background:#fefefd;}td#sl1{background:#ffffff;}</doctext>
   <title>jukka emulation</title>
-  <s3content_id>1855548</s3content_id>
-  <contentversion>113</contentversion>
-  <s3bucket></s3bucket>
-  <node_id>1855548</node_id>
 </node>

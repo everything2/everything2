@@ -1,5 +1,7 @@
 <node>
+  <node_id>197</node_id>
   <type_nodetype>13</type_nodetype>
+  <title>create node</title>
   <doctext>&lt;p&gt;&lt;i&gt;&lt;h3&gt;Please:&lt;/h3&gt;&lt;/i&gt;  &lt;ul&gt;&lt;li&gt;
 Before creating a [new] node make sure there isn't already
 a node that you could simply [add a writeup] to.  
@@ -51,6 +53,4 @@ $str .= $query-&gt;submit(&quot;createit&quot;, &quot;Create It!&quot;) . &quot;
 $str .= $query-&gt;endform;
 $str;
 %]</doctext>
-  <title>create node</title>
-  <node_id>197</node_id>
 </node>

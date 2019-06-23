@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>148</type_nodetype>
   <title>imgsrc</title>
+  <type_nodetype>148</type_nodetype>
   <node_id>1278303</node_id>
   <_create_table_statement>CREATE TABLE `imgsrc` (
   `imgsrc_id` int(11) NOT NULL AUTO_INCREMENT,

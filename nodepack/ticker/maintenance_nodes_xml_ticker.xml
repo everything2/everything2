@@ -1,6 +1,4 @@
 <node>
-  <title>Maintenance Nodes XML Ticker</title>
-  <type_nodetype>1252389</type_nodetype>
   <doctext>[%
   my $str;
   $str.=&quot;&lt;maintenance&gt;\n&quot;;
@@ -17,5 +15,7 @@
   return $str;
 
 %]</doctext>
+  <title>Maintenance Nodes XML Ticker</title>
+  <type_nodetype>1252389</type_nodetype>
   <node_id>1298521</node_id>
 </node>

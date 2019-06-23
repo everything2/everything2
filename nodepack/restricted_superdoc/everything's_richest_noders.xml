@@ -1,4 +1,7 @@
 <node>
+  <type_nodetype>13</type_nodetype>
+  <node_id>2156614</node_id>
+  <title>Everything's Richest Noders</title>
   <doctext>[%
 my $rows;
 my $str;
@@ -63,7 +66,4 @@ $str .= '&lt;p&gt;The top ' . $limit2 . ' users hold ' . ($richestUsersGP / $tot
 
 return $str;
 %]</doctext>
-  <type_nodetype>13</type_nodetype>
-  <title>Everything's Richest Noders</title>
-  <node_id>2156614</node_id>
 </node>

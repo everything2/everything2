@@ -1,4 +1,7 @@
 <node>
+  <node_id>2117964</node_id>
+  <type_nodetype>13</type_nodetype>
+  <title>Node Notes by Editor</title>
   <doctext>[%
 
 my $targetStr = '';
@@ -93,7 +96,4 @@ $str.=&quot;\n&lt;/table&gt;&lt;br&gt;$paging&quot;;
 
 &lt;p align='center'&gt;&lt;small&gt;( bugs go to [DonJaime] )&lt;/small&gt;&lt;/p&gt;
 </doctext>
-  <type_nodetype>13</type_nodetype>
-  <title>Node Notes by Editor</title>
-  <node_id>2117964</node_id>
 </node>

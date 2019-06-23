@@ -1,12 +1,12 @@
 <node>
   <deleters_user>114</deleters_user>
-  <restrict_nodetype>15</restrict_nodetype>
-  <sqltable>document</sqltable>
-  <type_nodetype>1</type_nodetype>
-  <restrictdupes>1</restrictdupes>
-  <node_id>16</node_id>
   <grouptable>nodegroup</grouptable>
-  <writers_user>114</writers_user>
+  <sqltable>document</sqltable>
+  <restrictdupes>1</restrictdupes>
   <title>usergroup</title>
+  <type_nodetype>1</type_nodetype>
+  <writers_user>114</writers_user>
+  <restrict_nodetype>15</restrict_nodetype>
+  <node_id>16</node_id>
   <extends_nodetype>8</extends_nodetype>
 </node>

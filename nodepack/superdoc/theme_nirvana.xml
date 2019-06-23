@@ -1,5 +1,4 @@
 <node>
-  <node_id>1933698</node_id>
   <doctext>&lt;p&gt;The following is a list of [stylesheet]s for the [zen theme] in order of popularity. You can find additional zen themes on [The Catwalk].&lt;/p&gt;
 [%
 my $str = &quot;&quot;;
@@ -92,6 +91,7 @@ $str .= '&lt;/table&gt;
 
 return $str;
 %]</doctext>
-  <type_nodetype>14</type_nodetype>
   <title>Theme Nirvana</title>
+  <node_id>1933698</node_id>
+  <type_nodetype>14</type_nodetype>
 </node>

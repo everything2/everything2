@@ -1,220 +1,220 @@
 <node>
   <title>egg commands</title>
   <vars>
-    <key>turkey</key>
-    <value>heaps ~ plate with turkey, mashed potatoes, stuffing, gravy, crottled greeps and rolls</value>
-  </vars>
-  <vars>
-    <value>eggs</value>
-    <key>egg</key>
-  </vars>
-  <vars>
-    <value>lays a curse upon ~, and I will curse your blessings: yea, I have cursed them already, because ye do not lay it to heart</value>
-    <key>curse</key>
-  </vars>
-  <vars>
-    <value>unleashes a five-headed killer hellhug on user</value>
-    <key>hellhug</key>
-  </vars>
-  <vars>
-    <value>hands ~ a slice of birthday cake while the chatbox sings &#194;&#161;Feliz Cumplea&#195;&#177;os</value>
-    <key>birthday</key>
-  </vars>
-  <vars>
-    <key>random5</key>
-    <value>finds a small yet inexpressibly beautiful trilobite for</value>
-  </vars>
-  <vars>
-    <key>special</key>
-    <value>invests in the ~ brand</value>
-  </vars>
-  <vars>
-    <value>oppresses the masses, but spares ~</value>
-    <key>random4</key>
-  </vars>
-  <vars>
-    <value>French-omelets</value>
-    <key>omelette</key>
-  </vars>
-  <vars>
-    <key>hose</key>
-    <value>hoses down</value>
-  </vars>
-  <vars>
-    <value>nudges</value>
-    <key>nudge</key>
-  </vars>
-  <vars>
-    <value>awards ~ five internet points</value>
-    <key>internet</key>
-  </vars>
-  <vars>
-    <key>champagne</key>
-    <value>Pours a glass of champagne for ~, but drops the glass</value>
-  </vars>
-  <vars>
-    <key>heart</key>
-    <value>loves ~ so very much</value>
-  </vars>
-  <vars>
-    <value>belligerently defenestrates</value>
-    <key>defenestrate</key>
-  </vars>
-  <vars>
-    <value>drops an anvil on</value>
-    <key>anvil</key>
-  </vars>
-  <vars>
-    <value>highfives</value>
-    <key>highfive</key>
-  </vars>
-  <vars>
-    <key>applaud</key>
-    <value>applauds ~! They are showered in approval</value>
-  </vars>
-  <vars>
-    <key>beer</key>
-    <value>pours ~ a fine cold beer</value>
-  </vars>
-  <vars>
-    <key>hug</key>
-    <value>hugs</value>
-  </vars>
-  <vars>
-    <key>random2</key>
-    <value>sees that ~ is busy with kittens</value>
-  </vars>
-  <vars>
-    <value>pours ~ a glass of something darkly glistening</value>
-    <key>glass</key>
-  </vars>
-  <vars>
-    <value>attaches a small blue thumb-up symbol to</value>
-    <key>like</key>
-  </vars>
-  <vars>
-    <value>hands ~ a slice of pumpkin pie</value>
-    <key>pie</key>
-  </vars>
-  <vars>
-    <value>toasts marshmallows over the fiery corpse of</value>
-    <key>marshmallow</key>
-  </vars>
-  <vars>
-    <key>cake</key>
-    <value>cuts ~ a slice of cake</value>
-  </vars>
-  <vars>
-    <key>fistbump</key>
-    <value>fistbumps</value>
-  </vars>
-  <vars>
-    <key>violin</key>
-    <value>plays the world's tiniest violin for</value>
-  </vars>
-  <vars>
-    <key>sushi</key>
-    <value>makes ~ a geta of vegan sushi</value>
-  </vars>
-  <vars>
-    <key>random</key>
-    <value>writes ~ fanfic</value>
-  </vars>
-  <vars>
-    <key>candle</key>
-    <value>lights a candle for</value>
-  </vars>
-  <vars>
-    <key>cookie</key>
-    <value>gives ~ a snickerdoodle</value>
-  </vars>
-  <vars>
-    <value>his ~ with a rubber chicken</value>
-    <key>rubberchicken</key>
-  </vars>
-  <vars>
-    <value>giant squids</value>
-    <key>giantsquid</key>
-  </vars>
-  <vars>
-    <key>twerk</key>
-    <value>dances lasciviously at</value>
-  </vars>
-  <vars>
-    <value>shakes da booty for</value>
-    <key>booty</key>
-  </vars>
-  <vars>
-    <value>muzzles</value>
-    <key>muzzle</key>
-  </vars>
-  <vars>
-    <value>drops a baby grand piano on</value>
-    <key>piano</key>
-  </vars>
-  <vars>
-    <value>turns ~ into a stuttering green imp</value>
-    <key>magic</key>
-  </vars>
-  <vars>
-    <key>booze</key>
-    <value>hands ~ a snifter of brandy</value>
-  </vars>
-  <vars>
-    <value>throws tomatoes at</value>
-    <key>tomato</key>
-  </vars>
-  <vars>
     <key>maul</key>
     <value>mauls</value>
   </vars>
   <vars>
-    <key>helps</key>
-    <value>fixes things for</value>
+    <key>hellhug</key>
+    <value>unleashes a five-headed killer hellhug on user</value>
   </vars>
   <vars>
-    <key>smite</key>
-    <value>smites</value>
-  </vars>
-  <vars>
-    <key>glomp</key>
-    <value>glomps</value>
-  </vars>
-  <vars>
-    <key>gin</key>
-    <value>hands ~ an ice-cold gin and tonic</value>
-  </vars>
-  <vars>
-    <value>flings poop at</value>
-    <key>poo</key>
-  </vars>
-  <vars>
-    <value>writes a succinct sonnet for ~. It is a true work of art that you will treasure forever</value>
-    <key>random3</key>
-  </vars>
-  <vars>
-    <key>coffee</key>
-    <value>pours ~ a triple espresso shot</value>
-  </vars>
-  <vars>
-    <value>Ph'nglui mglw'nafh ~ R'lyeh wgah'nagl fhtagn</value>
-    <key>cthulhu</key>
+    <value>invests in the ~ brand</value>
+    <key>special</key>
   </vars>
   <vars>
     <key>omelet</key>
     <value>omelets</value>
   </vars>
   <vars>
-    <value>makes ~ a nice cup of tea</value>
-    <key>tea</key>
+    <value>hugs</value>
+    <key>hug</key>
   </vars>
   <vars>
-    <key>pizza</key>
-    <value>serves a pizza to</value>
+    <key>twerk</key>
+    <value>dances lasciviously at</value>
+  </vars>
+  <vars>
+    <value>makes ~ a geta of vegan sushi</value>
+    <key>sushi</key>
+  </vars>
+  <vars>
+    <key>tea</key>
+    <value>makes ~ a nice cup of tea</value>
+  </vars>
+  <vars>
+    <value>hoses down</value>
+    <key>hose</key>
+  </vars>
+  <vars>
+    <value>nudges</value>
+    <key>nudge</key>
+  </vars>
+  <vars>
+    <key>pie</key>
+    <value>hands ~ a slice of pumpkin pie</value>
+  </vars>
+  <vars>
+    <key>magic</key>
+    <value>turns ~ into a stuttering green imp</value>
+  </vars>
+  <vars>
+    <key>beer</key>
+    <value>pours ~ a fine cold beer</value>
+  </vars>
+  <vars>
+    <key>applaud</key>
+    <value>applauds ~! They are showered in approval</value>
+  </vars>
+  <vars>
+    <value>muzzles</value>
+    <key>muzzle</key>
+  </vars>
+  <vars>
+    <key>random5</key>
+    <value>finds a small yet inexpressibly beautiful trilobite for</value>
+  </vars>
+  <vars>
+    <value>his ~ with a rubber chicken</value>
+    <key>rubberchicken</key>
+  </vars>
+  <vars>
+    <value>oppresses the masses, but spares ~</value>
+    <key>random4</key>
+  </vars>
+  <vars>
+    <value>glomps</value>
+    <key>glomp</key>
+  </vars>
+  <vars>
+    <key>omelette</key>
+    <value>French-omelets</value>
+  </vars>
+  <vars>
+    <key>piano</key>
+    <value>drops a baby grand piano on</value>
+  </vars>
+  <vars>
+    <key>coffee</key>
+    <value>pours ~ a triple espresso shot</value>
+  </vars>
+  <vars>
+    <value>fixes things for</value>
+    <key>helps</key>
+  </vars>
+  <vars>
+    <key>cthulhu</key>
+    <value>Ph'nglui mglw'nafh ~ R'lyeh wgah'nagl fhtagn</value>
+  </vars>
+  <vars>
+    <key>like</key>
+    <value>attaches a small blue thumb-up symbol to</value>
+  </vars>
+  <vars>
+    <key>heart</key>
+    <value>loves ~ so very much</value>
+  </vars>
+  <vars>
+    <value>smites</value>
+    <key>smite</key>
+  </vars>
+  <vars>
+    <value>lights a candle for</value>
+    <key>candle</key>
+  </vars>
+  <vars>
+    <key>highfive</key>
+    <value>highfives</value>
+  </vars>
+  <vars>
+    <value>lays a curse upon ~, and I will curse your blessings: yea, I have cursed them already, because ye do not lay it to heart</value>
+    <key>curse</key>
+  </vars>
+  <vars>
+    <key>poo</key>
+    <value>flings poop at</value>
+  </vars>
+  <vars>
+    <key>egg</key>
+    <value>eggs</value>
+  </vars>
+  <vars>
+    <value>giant squids</value>
+    <key>giantsquid</key>
+  </vars>
+  <vars>
+    <key>cake</key>
+    <value>cuts ~ a slice of cake</value>
+  </vars>
+  <vars>
+    <key>turkey</key>
+    <value>heaps ~ plate with turkey, mashed potatoes, stuffing, gravy, crottled greeps and rolls</value>
+  </vars>
+  <vars>
+    <key>random2</key>
+    <value>sees that ~ is busy with kittens</value>
+  </vars>
+  <vars>
+    <key>fistbump</key>
+    <value>fistbumps</value>
+  </vars>
+  <vars>
+    <value>hands ~ a snifter of brandy</value>
+    <key>booze</key>
+  </vars>
+  <vars>
+    <key>birthday</key>
+    <value>hands ~ a slice of birthday cake while the chatbox sings &#194;&#161;Feliz Cumplea&#195;&#177;os</value>
+  </vars>
+  <vars>
+    <value>toasts marshmallows over the fiery corpse of</value>
+    <key>marshmallow</key>
+  </vars>
+  <vars>
+    <value>hands ~ an ice-cold gin and tonic</value>
+    <key>gin</key>
+  </vars>
+  <vars>
+    <value>gives ~ a snickerdoodle</value>
+    <key>cookie</key>
+  </vars>
+  <vars>
+    <key>defenestrate</key>
+    <value>belligerently defenestrates</value>
+  </vars>
+  <vars>
+    <key>violin</key>
+    <value>plays the world's tiniest violin for</value>
+  </vars>
+  <vars>
+    <key>internet</key>
+    <value>awards ~ five internet points</value>
+  </vars>
+  <vars>
+    <key>champagne</key>
+    <value>Pours a glass of champagne for ~, but drops the glass</value>
+  </vars>
+  <vars>
+    <key>glass</key>
+    <value>pours ~ a glass of something darkly glistening</value>
   </vars>
   <vars>
     <key>guy</key>
     <value>burns a terrorist in effigy for ~</value>
+  </vars>
+  <vars>
+    <key>booty</key>
+    <value>shakes da booty for</value>
+  </vars>
+  <vars>
+    <value>serves a pizza to</value>
+    <key>pizza</key>
+  </vars>
+  <vars>
+    <key>tomato</key>
+    <value>throws tomatoes at</value>
+  </vars>
+  <vars>
+    <value>writes ~ fanfic</value>
+    <key>random</key>
+  </vars>
+  <vars>
+    <value>writes a succinct sonnet for ~. It is a true work of art that you will treasure forever</value>
+    <key>random3</key>
+  </vars>
+  <vars>
+    <value>drops an anvil on</value>
+    <key>anvil</key>
   </vars>
   <type_nodetype>153</type_nodetype>
   <node_id>1922142</node_id>

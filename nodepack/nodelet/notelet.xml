@@ -1,8 +1,8 @@
 <node>
   <title>Notelet</title>
   <nltext></nltext>
-  <type_nodetype>9</type_nodetype>
   <parent_container>0</parent_container>
-  <node_id>1290534</node_id>
   <nlcode></nlcode>
+  <node_id>1290534</node_id>
+  <type_nodetype>9</type_nodetype>
 </node>

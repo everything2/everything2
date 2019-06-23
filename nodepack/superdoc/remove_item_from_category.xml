@@ -1,7 +1,5 @@
 <node>
-  <node_id>1522384</node_id>
   <title>remove item from category</title>
-  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $str;
 my $node = $query-&gt;param('num');
@@ -22,4 +20,6 @@ else
 $str .= &quot;Return to &quot; . linkNode(getNodeById($query-&gt;param('lastnode_id')));
 $str;
 %]</doctext>
+  <node_id>1522384</node_id>
+  <type_nodetype>14</type_nodetype>
 </node>

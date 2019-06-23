@@ -1,6 +1,7 @@
 <node>
-  <title>horrorworld</title>
+  <node_id>1803224</node_id>
   <type_nodetype>13</type_nodetype>
+  <title>horrorworld</title>
   <doctext>&lt;p&gt;The editor of &lt;a href=&quot;http://www.horrorworld.org/eulogies.htm&quot;&gt;Horrorworld's Eulogies&lt;/a&gt; says:&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;I used Publishers Graphics.  Here is my contact's information:&lt;/p&gt;
@@ -27,5 +28,4 @@ also a $5 additional charge per page for changes.&lt;/p&gt;
 
 &lt;p&gt;&lt;i&gt;Editor's Note: this works out to costs of $4.15 per copy.  I can vouch that the book is attractive and is on decent paper.&lt;/i&gt;
 &lt;/blockquote&gt;</doctext>
-  <node_id>1803224</node_id>
 </node>

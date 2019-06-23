@@ -1,6 +1,5 @@
 <node>
   <title>Costume Remover</title>
-  <type_nodetype>13</type_nodetype>
   <doctext>[%
 #return &quot;Under construction&quot; unless $$USER{title} eq 'mauler';
 return unless isGod($USER);
@@ -71,4 +70,5 @@ $str;
 
 %]</doctext>
   <node_id>1960894</node_id>
+  <type_nodetype>13</type_nodetype>
 </node>

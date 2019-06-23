@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>451267</type_nodetype>
   <node_id>1914791</node_id>
   <title>Google Search Beta Full</title>
   <doctext>&lt;html&gt;
@@ -74,5 +75,4 @@ this.leftControl.setResultSetSize(GSearch.LARGE_RESULTSET);
   &lt;/body&gt;
 &lt;/html&gt;
 </doctext>
-  <type_nodetype>451267</type_nodetype>
 </node>

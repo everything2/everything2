@@ -1,4 +1,5 @@
 <node>
+  <contentversion>105</contentversion>
   <doctext>body, div, p, th, td, li, dd {
 	font-family: &quot;lucida grande&quot;, &quot;lucida sans&quot;, &quot;lucida sans unicode&quot;, lucida, arial, sans-serif;
 	font-size: 14px; 
@@ -241,10 +242,9 @@ text-align: left;
 #admintools {
  display: none;
 }</doctext>
-  <type_nodetype>1854352</type_nodetype>
   <title>Kyle's Style</title>
-  <s3bucket></s3bucket>
-  <contentversion>105</contentversion>
   <s3content_id>1854354</s3content_id>
   <node_id>1854354</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
 </node>

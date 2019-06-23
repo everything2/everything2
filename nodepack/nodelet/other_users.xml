@@ -1,8 +1,8 @@
 <node>
-  <title>Other Users</title>
   <nltext></nltext>
+  <title>Other Users</title>
   <type_nodetype>9</type_nodetype>
-  <parent_container>0</parent_container>
   <node_id>91</node_id>
+  <parent_container>0</parent_container>
   <nlcode></nlcode>
 </node>

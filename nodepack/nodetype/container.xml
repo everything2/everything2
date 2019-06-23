@@ -1,12 +1,12 @@
 <node>
   <readers_user>838015</readers_user>
-  <sqltable>container</sqltable>
-  <type_nodetype>1</type_nodetype>
-  <restrictdupes>1</restrictdupes>
-  <deleters_user>114</deleters_user>
-  <title>container</title>
-  <writers_user>114</writers_user>
   <extends_nodetype>7</extends_nodetype>
   <node_id>2</node_id>
+  <writers_user>114</writers_user>
+  <type_nodetype>1</type_nodetype>
+  <title>container</title>
+  <restrictdupes>1</restrictdupes>
+  <sqltable>container</sqltable>
   <grouptable></grouptable>
+  <deleters_user>114</deleters_user>
 </node>

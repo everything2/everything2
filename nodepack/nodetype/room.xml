@@ -1,10 +1,10 @@
 <node>
-  <grouptable>nodegroup</grouptable>
-  <node_id>545241</node_id>
   <extends_nodetype>3</extends_nodetype>
-  <title>room</title>
-  <deleters_user>114</deleters_user>
+  <node_id>545241</node_id>
   <type_nodetype>1</type_nodetype>
+  <title>room</title>
   <restrictdupes>1</restrictdupes>
   <sqltable>roomdata</sqltable>
+  <grouptable>nodegroup</grouptable>
+  <deleters_user>114</deleters_user>
 </node>

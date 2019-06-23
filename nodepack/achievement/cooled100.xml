@@ -1,12 +1,12 @@
 <node>
-  <display>&lt;strong&gt;Ice Machine&lt;/strong&gt;&lt;br&gt;&lt;i&gt;Cooled 100 writeups&lt;/i&gt;</display>
+  <type_nodetype>1917847</type_nodetype>
   <node_id>1918123</node_id>
   <subtype>give</subtype>
   <code>my $coolCount = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;coolwriteups&quot;,&quot;cooledby_user=$user_id&quot;);
 
 return 1 if $coolCount &gt;=100;
 return 0;</code>
-  <type_nodetype>1917847</type_nodetype>
-  <title>cooled100</title>
+  <display>&lt;strong&gt;Ice Machine&lt;/strong&gt;&lt;br&gt;&lt;i&gt;Cooled 100 writeups&lt;/i&gt;</display>
   <achievement_type>cool</achievement_type>
+  <title>cooled100</title>
 </node>

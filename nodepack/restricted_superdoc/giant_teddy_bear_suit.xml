@@ -1,5 +1,5 @@
 <node>
-  <node_id>861527</node_id>
+  <title>Giant Teddy Bear Suit</title>
   <doctext>&lt;p&gt;&lt;i&gt;&lt;b&gt;
 [% $$USER{title} %] 
 &lt;/b&gt; has donned the Giant Teddy Bear Suit . . . &lt;/i&gt;
@@ -91,6 +91,6 @@ $str;
 %]
 &lt;/table&gt;
 [{closeform}]</doctext>
+  <node_id>861527</node_id>
   <type_nodetype>13</type_nodetype>
-  <title>Giant Teddy Bear Suit</title>
 </node>

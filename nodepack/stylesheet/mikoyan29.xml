@@ -1,5 +1,4 @@
 <node>
-  <title>mikoyan29</title>
   <doctext>#header, 
 #wrapper 	{	width: 100%;			}
 
@@ -267,9 +266,10 @@ small { font-size: 80%;}
 #e2zeitgeist.nodelet,
 #personallinks.nodelet,
 #frontpage_news	{	display: none;			}</doctext>
-  <type_nodetype>1854352</type_nodetype>
-  <node_id>1997408</node_id>
   <contentversion>103</contentversion>
-  <s3bucket></s3bucket>
+  <title>mikoyan29</title>
   <s3content_id>1997408</s3content_id>
+  <node_id>1997408</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
 </node>

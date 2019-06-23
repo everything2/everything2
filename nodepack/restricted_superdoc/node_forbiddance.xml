@@ -1,7 +1,4 @@
 <node>
-  <node_id>1286312</node_id>
-  <title>Node Forbiddance</title>
-  <type_nodetype>13</type_nodetype>
   <doctext>[%
    my $unforbid = $query-&gt;param(&quot;unforbid&quot;);
    my $ufusr = getNodeById($unforbid);
@@ -43,4 +40,7 @@
   $str.=&quot;&lt;/ul&gt;&quot;;
   return $str;
 %]</doctext>
+  <title>Node Forbiddance</title>
+  <type_nodetype>13</type_nodetype>
+  <node_id>1286312</node_id>
 </node>

@@ -1,9 +1,9 @@
 <node>
   <type_nodetype>1917847</type_nodetype>
-  <title>Fool's Errand</title>
-  <achievement_type>hunt</achievement_type>
-  <display>&lt;strong&gt;Fool's Errand&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;You broke the code! Happy April Fool's Day!&lt;/i&gt;</display>
   <node_id>2010055</node_id>
-  <subtype></subtype>
   <code>return 1;</code>
+  <subtype></subtype>
+  <display>&lt;strong&gt;Fool's Errand&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;You broke the code! Happy April Fool's Day!&lt;/i&gt;</display>
+  <achievement_type>hunt</achievement_type>
+  <title>Fool's Errand</title>
 </node>

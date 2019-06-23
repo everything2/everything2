@@ -1,4 +1,6 @@
 <node>
+  <node_id>1993971</node_id>
+  <type_nodetype>1144104</type_nodetype>
   <title>Nodes Without Authors</title>
   <doctext>&lt;hr&gt;
 
@@ -50,6 +52,4 @@ return $str;
 %]
 
 </doctext>
-  <type_nodetype>1144104</type_nodetype>
-  <node_id>1993971</node_id>
 </node>

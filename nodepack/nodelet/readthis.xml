@@ -1,8 +1,8 @@
 <node>
+  <nltext></nltext>
+  <title>ReadThis</title>
+  <type_nodetype>9</type_nodetype>
+  <node_id>1157024</node_id>
   <nlcode></nlcode>
   <parent_container>0</parent_container>
-  <node_id>1157024</node_id>
-  <type_nodetype>9</type_nodetype>
-  <title>ReadThis</title>
-  <nltext></nltext>
 </node>

@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>13</type_nodetype>
+  <node_id>1081562</node_id>
   <doctext>&lt;p&gt;&lt;br&gt;&lt;br&gt;It is possible to send a single Chatterbox message privately to all members of a group. This function is primarily used to send messages to all [content editor]s or all [god]s.&lt;br&gt;&lt;br&gt;
 &lt;b&gt;Please use your discretion when choosing to send a broadcast message.&lt;/b&gt; Do &lt;b&gt;all&lt;/b&gt; members of the group really need to see the message? When appropriate, consider sending your message to a single person, or use [online]-only messaging (described below).&lt;br&gt;&lt;br&gt;
 To broadcast a message type &lt;code&gt;/tell &lt;i&gt;user_group&lt;/i&gt; &lt;i&gt;message&lt;/i&gt;&lt;/code&gt; or &lt;code&gt;/msg &lt;i&gt;user_group&lt;/i&gt; &lt;i&gt;message&lt;/i&gt;&lt;/code&gt; into the Chatterbox and click &lt;b&gt;talk&lt;/b&gt;.
@@ -24,5 +25,4 @@ To ask all gods if they know what happened to a given node, type&lt;br&gt;
 
 &lt;p&gt;&lt;b&gt;Back to [God Powers and How to Use Them]&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;/p&gt;</doctext>
   <title>Broadcasting messages</title>
-  <node_id>1081562</node_id>
 </node>

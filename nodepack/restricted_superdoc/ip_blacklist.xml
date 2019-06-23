@@ -1,5 +1,4 @@
 <node>
-  <node_id>1948146</node_id>
   <doctext>&lt;p&gt;This page manages the IP addresses which are barred from &lt;strong&gt;creating new accounts&lt;/strong&gt;.  Except for very extreme circumstances, we don't block pageloads as [Guest User].&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;This tool should ONLY be used to block access at the IP level for users whose primary accounts have been locked if they continue to abuse our hospitality.&lt;/strong&gt; Usually the 'Smite Spammer' tool will do the job automatically for you when it needs to be done. &lt;/p&gt;
@@ -198,6 +197,7 @@ return $str;
 %]
 
 [{blacklistedIPs}]</doctext>
-  <type_nodetype>13</type_nodetype>
   <title>IP Blacklist</title>
+  <node_id>1948146</node_id>
+  <type_nodetype>13</type_nodetype>
 </node>

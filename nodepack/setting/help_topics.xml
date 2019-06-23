@@ -3,120 +3,88 @@
   <type_nodetype>153</type_nodetype>
   <title>help topics</title>
   <vars>
-    <key>ed_cool</key>
-    <value>/help editor_cool</value>
-  </vars>
-  <vars>
-    <value>/help submit</value>
-    <key>post</key>
-  </vars>
-  <vars>
-    <value>A [nodeshell] is a title on &amp;lt;Everything2&amp;gt; that doesn't have an article in it yet.  These are usually either titles that someone thinks would make a good article, or the remains of an article that was &amp;lt;nuke&amp;gt;d for some reason.  They often provide good inspiration for articles if you don't know what to write.  See also: [your nodeshells], [Everything's Most wanted].</value>
-    <key>nodeshell</key>
-  </vars>
-  <vars>
-    <key>c!</key>
-    <value>/help c</value>
-  </vars>
-  <vars>
-    <value>/help tinymce</value>
-    <key>wysiwyg</key>
-  </vars>
-  <vars>
-    <key>rolls</key>
-    <value>You can roll virtual dice in the chatterbox by using a command in the following format:  /rolls 3d6 or /rolls 2d8+5.  The displayed chatterbox message will repeat your roll command and show its result.  3d6 is an abbreviation for &quot;three six-sided dice&quot;.  You are not limited to real types of dice and can roll dice with any arbitrary number of sides.  /flip is an alias for /rolls 1d2, which displays a coin flip message rather than a dice roll message.</value>
-  </vars>
-  <vars>
-    <value>Hypertext Markup Language is the code used to format articles on &amp;lt;Everything2&amp;gt;.  At minimum, you are required to add &amp;lt;p&amp;gt; tags to the beginning of every paragraph to mark them as separate paragraphs so they will display properly.  The &quot;format&quot; button below the text input box can do this for you.  If you are not comfortable with HTML, you can use &amp;lt;tinyMCE&amp;gt; instead.</value>
-    <key>html</key>
+    <key>admin</key>
+    <value>Admins are users with the highest level of site access.  Admins represent the leadership of the site, and take care of site problems such as [Edit These E2 Titles|Title Edit Requests] and any problems users may have with the editors.  Admins will have a @ symbol by their names in the Other Users &amp;lt;nodelet&amp;gt;.</value>
   </vars>
   <vars>
     <value>The &amp;lt;chatterbox&amp;gt; help feature lets you access information about &amp;lt;Everything2&amp;gt;'s features quickly and easily using the format: &quot;/help topic&quot;.  Topics you can search for additional help on will be in &amp;lt;angle brackets&amp;gt; in help messages.  Multi-word help topics should use an underscore _ rather than a space.  A list of currently available help topics is available at [Chatterbox help topics]. If you need personal help, ask in the chatterbox, or see [E2 Staff].</value>
     <key>help</key>
   </vars>
   <vars>
-    <key>e2</key>
-    <value>/help Everything2</value>
-  </vars>
-  <vars>
-    <key>EDB</key>
-    <value>/help edb</value>
-  </vars>
-  <vars>
-    <key>pipe_link</key>
-    <value>A [pipe link] is a way to create a &amp;lt;link&amp;gt; in a writeup that goes to some other title than the text that is displayed.  The format is &amp;#91;target title|display text&amp;#93; and they work like [Everything FAQ|this].</value>
-  </vars>
-  <vars>
-    <key>delete</key>
-    <value>/help nuke</value>
-  </vars>
-  <vars>
-    <value>/help cme</value>
-    <key>CME</key>
-  </vars>
-  <vars>
-    <value>Everything2 has a search feature in the site header that searches for writeups by title.  If the title exists as you have typed it, you will be taken directly to that &amp;lt;node&amp;gt;.  Otherwise you will be taken to a Findings page.  See also &amp;lt;near matches&amp;gt;, &amp;lt;Ignore Exact&amp;gt;, and &amp;lt;Full text&amp;gt; </value>
-    <key>search</key>
-  </vars>
-  <vars>
-    <key>pipelink</key>
-    <value>/help pipe_link</value>
-  </vars>
-  <vars>
-    <key>collaborate</key>
-    <value>A collaborator is another user who has access to edit your &amp;lt;scratch pad&amp;gt;.  You set up users as collaborators by putting their user names into the &quot;collaborator&quot; field of the scratch pad, separated by commas if you want more than one.  This can be very helpful if you need someone to show you how to format something, add &amp;lt;link&amp;gt;s, or assist your grammar and spelling.</value>
-  </vars>
-  <vars>
     <key>drafts</key>
     <value>/help scratch_pad</value>
   </vars>
   <vars>
-    <key>blab</key>
-    <value>/help msg</value>
-  </vars>
-  <vars>
-    <key>fair_use</key>
-    <value>/copyright</value>
-  </vars>
-  <vars>
-    <key>send message</key>
-    <value>test</value>
-  </vars>
-  <vars>
-    <key>42</key>
-    <value>42 is the supposed answer to the question of Life, the Universe and Everything. But then, this site would be called &quot;Everything42&quot;, so that can't be right.</value>
-  </vars>
-  <vars>
-    <key>everything_death_borg</key>
-    <value>/help edb</value>
-  </vars>
-  <vars>
-    <value>[Chatterlight] is E2's full-page &amp;lt;chatterbox&amp;gt;, more useful than the chatterbox &amp;lt;nodelet&amp;gt; if you're going to be doing a lot of talking.</value>
-    <key>chatterlight</key>
-  </vars>
-  <vars>
+    <key>stylesheet</key>
     <value>/help zen_theme</value>
-    <key>zen</key>
   </vars>
   <vars>
-    <key>nuke</key>
-    <value>If an article does not meet E2's &amp;lt;quality&amp;gt; standards, it may be deleted from the site.  Quality is often subjective, but at minimum we require &amp;lt;link&amp;gt;s and &amp;lt;HTML&amp;gt; formatting.  You don't have to worry about HTML formatting if you are using &amp;lt;tinyMCE&amp;gt;.  Very short writeups of the sort that were common in the early years of the site are no longer acceptable and they are being slowly phased out.</value>
+    <value>/help c</value>
+    <key>c!</key>
   </vars>
   <vars>
-    <key>cool</key>
-    <value>A C!, short for 'Cool!', is a reward given to writeups by other users of the site for excellent work. They award the user 10 XP. Editor cools put whole nodes on the Page of Cool.</value>
+    <key>E2</key>
+    <value>/help e2</value>
   </vars>
   <vars>
-    <key>full_text</key>
-    <value>&amp;lt;Search&amp;gt;es the entire site, both titles and article text, using Google.  Regular searches do not search article text, only titles.</value>
+    <value>Only [Voting/Experience System|Level 1] and above users are allowed to vote. Each user can only vote once per writeup. You can gain &lt;GP&gt; by voting.</value>
+    <key>vote</key>
   </vars>
   <vars>
-    <value>/help homenode</value>
-    <key>me</key>
+    <value>Everything2 is an on-line source for user-submitted, peer-reviewed articles, reviews, and original fiction about just about any topic.</value>
+    <key>everything2</key>
   </vars>
   <vars>
-    <key>anvil</key>
+    <key>speed_of_light</key>
+    <value>299,792,458 m/s, or 1.8026175 &#215; 10^12 furlongs/fortnight. We at Everything2 believe that help should be comprehensive.</value>
+  </vars>
+  <vars>
+    <key>hard_link</key>
+    <value>Every article on &amp;lt;Everything2&amp;gt; must have links to other articles on the site.  This is accomplished by placing &amp;#91;square brackets&amp;#93; around key words and phrases relevant to your topic.  You can use [link view] to make sure your links actually go to existing places, but it's okay if a few of them don't exist yet, especially if you'd like to write those new articles yourself.  Also see: [hard link], [soft link], [pipe link], [firm link].</value>
+  </vars>
+  <vars>
+    <key>easter_egg</key>
     <value>/help egg</value>
+  </vars>
+  <vars>
+    <key>ed_cool</key>
+    <value>/help editor_cool</value>
+  </vars>
+  <vars>
+    <key>draft</key>
+    <value>/help scratch_pad</value>
+  </vars>
+  <vars>
+    <value>/help html</value>
+    <key>HTML</key>
+  </vars>
+  <vars>
+    <key>cool_man_eddie</key>
+    <value>/help cme</value>
+  </vars>
+  <vars>
+    <key>zen</key>
+    <value>/help zen_theme</value>
+  </vars>
+  <vars>
+    <value>/help scratch_pad</value>
+    <key>scratch_pads</key>
+  </vars>
+  <vars>
+    <value>Pages on &amp;lt;Everything2&amp;gt; are called nodes.  Several articles may be in any node, but only one article from any one user.</value>
+    <key>node</key>
+  </vars>
+  <vars>
+    <key>post</key>
+    <value>/help submit</value>
+  </vars>
+  <vars>
+    <value>/help pipe_link</value>
+    <key>pipelink</key>
+  </vars>
+  <vars>
+    <key>link</key>
+    <value>/help hard_link</value>
   </vars>
   <vars>
     <key>light_speed</key>
@@ -127,359 +95,391 @@
     <value>Life has only what meaning you give it.</value>
   </vars>
   <vars>
-    <key>hidden</key>
-    <value>Above the text input box for posting your writeups is a checkbox labeled &quot;Don't display in New Writeups&quot;.  If this box is checked (it's checked by default for daylogs and site maintenance postings) the writeup will not appear in New Writeups for most users.  Only you and the &lt;editor&gt;s will be able to see it.  This is useful for limited-interest writeups that might otherwise be downvoted if displayed to the public.</value>
-  </vars>
-  <vars>
-    <value>/help scratch_pad</value>
-    <key>scratch_pads</key>
-  </vars>
-  <vars>
-    <key>near_matches</key>
-    <value>&amp;lt;Search&amp;gt;es for similar titles so you don't have to get the exact title correct in your search.</value>
-  </vars>
-  <vars>
-    <value>tinyMCE is a [WYSIWYG] text editor you may use to simplify the process of formatting your writeups if you are not comfortable with &amp;lt;HTML&amp;gt;.  You can turn on tinyMCE from [writeup settings] or from a link above the text box where you can submit a writeup to the site.</value>
-    <key>tinymce</key>
-  </vars>
-  <vars>
-    <value>/help webster_1913</value>
-    <key>webster</key>
+    <value>Everything2 has a search feature in the site header that searches for writeups by title.  If the title exists as you have typed it, you will be taken directly to that &amp;lt;node&amp;gt;.  Otherwise you will be taken to a Findings page.  See also &amp;lt;near matches&amp;gt;, &amp;lt;Ignore Exact&amp;gt;, and &amp;lt;Full text&amp;gt; </value>
+    <key>search</key>
   </vars>
   <vars>
     <value>Private messages are the best way to get in touch with a specific user, particularly the &amp;lt;editor&amp;gt;s ($) and &amp;lt;administrator&amp;gt;s (@) of the site.  You can send one by using the blab box in the user's &amp;lt;homenode&amp;gt;, or type &quot;/msg username message&quot; in the chatterbox.  Additionally, there is a blab box in each writeup header to send a message to the author.  This message will start with &quot;re: TITLE&quot; when sent to provide context.  You can send a message to multiple users with /msg{USER_1 USER_2} (no space before the curly brace and use underscores for spaces in usernames).</value>
     <key>msg</key>
   </vars>
   <vars>
-    <key>lightspeed</key>
-    <value>/help speed_of_light</value>
-  </vars>
-  <vars>
-    <key>editor</key>
-    <value>Editors are users with additional site access privileges who can help you get started writing, offer help and suggestions, and if necessary &amp;lt;nuke&amp;gt; submissions that do not meet the site's &amp;lt;quality&amp;gt; standards.  They are chosen by the &amp;lt;administrator&amp;gt;s based on their record of service with the site.  Editors will have a $ symbol by their names in the Other Users list. See [E2 Staff]</value>
-  </vars>
-  <vars>
-    <value>Tokens can be won at the &lt;Wheel of Surprise&gt; and are used to change the chatterbox topic.  If you have a token, you can type &quot;/topic NEW TOPIC&quot; in the chatterbox.</value>
-    <key>token</key>
-  </vars>
-  <vars>
-    <value>The [Scratch Pads] are where you can draft &amp;lt;Everything2&amp;gt; articles before posting them to the main site.  It is strongly recommended that you draft your articles and ask for comments from the &amp;lt;chatterbox&amp;gt; or &amp;lt;editor&amp;gt;s before posting to ensure you are meeting the site's minimum &amp;lt;quality&amp;gt; requirements.  You can get additional help by having a &amp;lt;collaborator&amp;gt;.  Note the &quot;&amp;lt;Post&amp;gt;&quot; button here does not work yet.</value>
-    <key>scratch_pad</key>
-  </vars>
-  <vars>
-    <value>/help editor</value>
-    <key>$</key>
-  </vars>
-  <vars>
-    <key>nodelet</key>
-    <value>The nodelets are the helpful sidebars to the right of the page, displaying things like New Writeups, Other Users, and the Chatterbox.  They contain tools, reference material, and helpful links in a handy location while you are browsing the site.</value>
-  </vars>
-  <vars>
-    <value>/help c</value>
-    <key>C!</key>
-  </vars>
-  <vars>
-    <value>/help hard_link</value>
-    <key>hardlink</key>
-  </vars>
-  <vars>
-    <value>[Webster 1913] is the representation of the English dictionary, 1913 edition (the latest edition that's in the public domain).  These entries were added to &amp;lt;E2&amp;gt; to discourage short definition writeups.</value>
-    <key>webster_1913</key>
-  </vars>
-  <vars>
-    <key>ignore_exact</key>
-    <value>&amp;lt;Search&amp;gt;es for titles that include the word you are searching for without going directly to the exact result.  Useful for finding related information.</value>
-  </vars>
-  <vars>
-    <key>submit</key>
-    <value>It is strongly recommended that you draft your article on your &amp;lt;scratch pad&amp;gt; and ask for comments in the &amp;lt;chatterbox&amp;gt; before sumitting it to the main area.  This can help you avoid several problems.  When the article is ready, you can go to the &amp;lt;node&amp;gt; where you want to post the article and paste it into the edit box near the bottom of the page, then click the &quot;submit&quot; button.  Articles can be edited after you post them with the same box.  Note that the &quot;Post&quot; button in the Scratch Pads does not work yet.</value>
-  </vars>
-  <vars>
-    <value>In case of fire, please leave the chatterbox in an orderly fashion. Do not stop to collect your belongings. Walk, don't run. Dial 911 when you feel it is safe to do so.</value>
-    <key>fire</key>
-  </vars>
-  <vars>
-    <key>c</key>
     <value>C! is short for &quot;Cool!&quot;, and is a reward given to writeups by other users of the site for excellent work. They award the user 20 XP. </value>
+    <key>c</key>
   </vars>
   <vars>
-    <value>Only [Voting/Experience System|Level 1] and above users are allowed to vote. Each user can only vote once per writeup. You can gain &lt;GP&gt; by voting.</value>
-    <key>vote</key>
+    <value>Editors are users with additional site access privileges who can help you get started writing, offer help and suggestions, and if necessary &amp;lt;nuke&amp;gt; submissions that do not meet the site's &amp;lt;quality&amp;gt; standards.  They are chosen by the &amp;lt;administrator&amp;gt;s based on their record of service with the site.  Editors will have a $ symbol by their names in the Other Users list. See [E2 Staff]</value>
+    <key>editor</key>
   </vars>
   <vars>
-    <key>blab!</key>
-    <value>/help msg</value>
+    <value>/help nodevertising</value>
+    <key>nodevertise</key>
   </vars>
   <vars>
-    <value>A [troll] is someone who is sending abusive or inflammatory comments to the &amp;lt;chatterbox&amp;gt; or sometimes via &amp;lt;private message&amp;gt;.  Trolls just want attention, good or bad, and giving it to them just gives them what they want.  Do not fight, argue with, or attempt to mock a troll as it will only encourage them, even if you &quot;win&quot;.  If you ignore them they go away eventually.</value>
-    <key>troll</key>
-  </vars>
-  <vars>
-    <key>bookmark</key>
-    <value>The bookmark button saves a node into a list at the bottom of your &lt;homenode&gt;.</value>
-  </vars>
-  <vars>
-    <key>tinyMCE</key>
-    <value>/help tinymce</value>
-  </vars>
-  <vars>
-    <value>/help html</value>
-    <key>HTML</key>
-  </vars>
-  <vars>
-    <value>/help hidden</value>
-    <key>hidden_writeup</key>
-  </vars>
-  <vars>
-    <key>edb</key>
-    <value>EDB is &lt;Everything2&gt;'s former chatterbox enforcer, now retired.  Once in E2's history EDB would &quot;swallow&quot; abusive or annoying users to prevent them from talking for a while.  These days he is no longer needed, since the userbase is good at ignoring and discouraging trolls, but he will sometimes make appearances as a good-natured joke.</value>
-  </vars>
-  <vars>
-    <value>/help msg</value>
-    <key>message</key>
-  </vars>
-  <vars>
-    <key>fireball</key>
-    <value>A &quot;fireball&quot; is a special kind of [easter egg] command available to users who are Level 15 or higher.  To activate the fireball, type &quot;/fireball&quot; followed by a user's name. That user will then be &quot;fireballed&quot; in the chatterbox and will receive 5 GP and a silly message. Please note that it costs 1 [easter egg] to use the fireball power.</value>
-  </vars>
-  <vars>
-    <value>/help egg</value>
-    <key>smite</key>
-  </vars>
-  <vars>
-    <value>/help faq</value>
-    <key>FAQ</key>
-  </vars>
-  <vars>
-    <key>administrator</key>
-    <value>/help admin</value>
-  </vars>
-  <vars>
-    <key>god</key>
-    <value>/help admin</value>
-  </vars>
-  <vars>
-    <value>/help zen_theme</value>
-    <key>skin</key>
-  </vars>
-  <vars>
-    <value>/help xp</value>
-    <key>experience</key>
+    <value>/help wheel_of_surprise</value>
+    <key>wheel</key>
   </vars>
   <vars>
     <key>@</key>
     <value>/help admin</value>
   </vars>
   <vars>
-    <key>homenode</key>
-    <value>Your homenode is your user profile, which you can reach (and edit) by clicking your username anywhere on E2.</value>
-  </vars>
-  <vars>
-    <key>ignore</key>
-    <value>The &quot;/ignore user&quot; &lt;chatterbox&gt; command will prevent the chatterbox from displaying messages to you from the specified user (this does not work with usernames with spaces in them). This is a rarely-used tool intended to block abusive users from bothering you. &lt;Everything2&gt; very rarely has this problem with its userbase.  If you decide to un-ignore a user, you can do so at [user settings] in the &quot;Private Message Filter&quot; section.  User settings can also be used to ignore users with spaces in their names.</value>
-  </vars>
-  <vars>
-    <key>ed</key>
-    <value>/help editor</value>
-  </vars>
-  <vars>
-    <key>links</key>
-    <value>Every writeup needs [The four basic types of internal links on Everything2|links]. A link is simple to make: just put &amp;#091;square brackets&amp;#093; around a key word or phrase, and it'll be linked to a node with that title on E2. You can also [pipe link] like so: &amp;#091;actual link|display text&amp;#093;. This gives you an extra dimension to work with.</value>
-  </vars>
-  <vars>
-    <key>cool_man_eddie</key>
-    <value>/help cme</value>
-  </vars>
-  <vars>
-    <value>/help asamoth</value>
-    <key>Asamoth</key>
-  </vars>
-  <vars>
-    <key>chatterbox</key>
-    <value>The chatterbox is &amp;lt;E2&amp;gt;'s community discussion area where users can talk to each other in a public forum.  It's a good place to get help or just hang out and chat.  You can also send &amp;lt;private_message&amp;gt;s from here.  Also see &amp;lt;Chatterlight&amp;gt;.</value>
-  </vars>
-  <vars>
-    <key>zen_theme</key>
-    <value>Zen is the default interface you can select from [user settings].  Zen's main feature is that you can customize its look and behavior with stylesheets from [Theme Nirvana] or [the catwalk]. You can customize an existing stylesheet with [style defacer] (beware, some knowledge of [CSS] is required).</value>
-  </vars>
-  <vars>
-    <value>/help egg</value>
-    <key>easter_egg</key>
-  </vars>
-  <vars>
-    <key>cme</key>
-    <value>Cool Man Eddie is &lt;Everything2&gt;'s automated system to inform users of special actions or rewards that have been given.  Currently, Cool Man Eddie informs users of when a writeup has been &lt;C!&gt;ed or &lt;editor cool&gt;ed, and also when they have received gifts such as &lt;easter egg&gt;s or C!s of their own to spend.</value>
-  </vars>
-  <vars>
-    <value>/help links</value>
-    <key>linking</key>
-  </vars>
-  <vars>
-    <value>GP are points that can be earned by various means such as voting, blessings, participating in quests, etc., and can be used to buy things at the [E2 Gift Shop]. Nobody is exactly sure what &quot;GP&quot; stands for.</value>
-    <key>gp</key>
-  </vars>
-  <vars>
-    <key>stylesheet</key>
-    <value>/help zen_theme</value>
-  </vars>
-  <vars>
-    <key>wheel_of_surprise</key>
-    <value>The [Wheel of Surprise] is a gambling mechanism on E2 where you can trade your &lt;GP&gt; for a chance at winning prizes, such as more GP, tokens to change the chatterbox topic, or the much sought-after &lt;Easter Eggs&gt;.</value>
-  </vars>
-  <vars>
-    <value>You can sing in the [chatterbox] by typing &quot;/sing Your lyrics here.&quot;  Singing will automatically place musical notes around your lyrics that are randomly generated with each refresh.</value>
-    <key>sing</key>
-  </vars>
-  <vars>
-    <value>/help cme</value>
-    <key>Cool_Man_Eddie</key>
-  </vars>
-  <vars>
-    <key>homenode_pic</key>
-    <value>Users of Level1 and above may display a picture on their &lt;homenode&gt;</value>
-  </vars>
-  <vars>
-    <key>xp</key>
-    <value>XP, or experience points, is the system E2 uses to keep track of user achievements. To learn more about how to earn XP and how it affects you, visit the [The Everything2 Voting/Experience System].</value>
-  </vars>
-  <vars>
-    <key>collaborator</key>
-    <value>/help collaborate</value>
-  </vars>
-  <vars>
-    <key>wheel</key>
-    <value>/help wheel_of_surprise</value>
-  </vars>
-  <vars>
-    <value>[Asamoth] holds the distinction of the only noder on &amp;lt;Everything2&amp;gt; to become a verb.  Asamoth was the first noder who blanked all of his writeups when he quit and left out of spite, which left an inconvenient clean-up job for the &amp;lt;editor&amp;gt;s.  This practice has become known as asamothing, or pulling an asamoth.</value>
-    <key>asamoth</key>
-  </vars>
-  <vars>
-    <value>/help writeup</value>
-    <key>article</key>
-  </vars>
-  <vars>
-    <key>E2</key>
-    <value>/help e2</value>
-  </vars>
-  <vars>
-    <value>test</value>
-    <key>send</key>
-  </vars>
-  <vars>
-    <value>/help egg</value>
-    <key>hug</key>
-  </vars>
-  <vars>
-    <key>whisper</key>
-    <value>You can whisper in the [chatterbox] by typing &quot;/whisper This is my message.&quot;  Whisper will format your message smaller than normal.</value>
-  </vars>
-  <vars>
-    <value>Ah, you want answers to questions? There's no FAQ as such, just [Everything2 Help] and [E2 Quick Start]. You may find [Everything2 Glossary] useful too.</value>
-    <key>faq</key>
-  </vars>
-  <vars>
-    <key>writeup</key>
-    <value>A &amp;lt;node&amp;gt; is a page on &amp;lt;Everything2&amp;gt;, and the writeups are the user-submitted articles that are in the node.</value>
-  </vars>
-  <vars>
-    <value>/help scratch_pad</value>
-    <key>draft</key>
-  </vars>
-  <vars>
-    <key>admin</key>
-    <value>Admins are users with the highest level of site access.  Admins represent the leadership of the site, and take care of site problems such as [Edit These E2 Titles|Title Edit Requests] and any problems users may have with the editors.  Admins will have a @ symbol by their names in the Other Users &amp;lt;nodelet&amp;gt;.</value>
-  </vars>
-  <vars>
-    <key>nodevertise</key>
-    <value>/help nodevertising</value>
-  </vars>
-  <vars>
-    <key>quality</key>
-    <value>Articles submitted to E2 must meet certain quality guidelines or they may be &amp;lt;nuke&amp;gt;d.  You must include &amp;lt;link&amp;gt;s and &amp;lt;HTML&amp;gt; formatting, and the article must not be a reply or a short addition to content already in a &amp;lt;node&amp;gt;.  Articles should be spell checked before posting, and use proper grammar, punctuation, and capitalization.  Please note that &amp;lt;Everything2&amp;gt; is an English language website.</value>
-  </vars>
-  <vars>
-    <key>nodevertising</key>
-    <value>Nodevertising is announcing that you have a new writeup posted for the purpose of encouraging people to read and vote on it.  This is annoying and actively discouraged, nodevertising will often get your work downvoted.  Your writeup will appear in the New Writeups nodelet (this can take up to 5 minutes) where everyone will see it.</value>
-  </vars>
-  <vars>
-    <key>copyright</key>
     <value>For full details, please refer to [Everything2 Copyright and Fair Use FAQ]</value>
-  </vars>
-  <vars>
-    <value>An Editor Cool is an additional compliment &amp;lt;editor&amp;gt;s and &amp;lt;administrator&amp;gt;s can give to &amp;lt;node&amp;gt;s which are of exceptional quality.  The ed cool is applied to the entire node, meaning all of its &amp;lt;writeups&amp;gt; are praiseworthy.  See also &amp;lt;C!&amp;gt;.</value>
-    <key>editor_cool</key>
-  </vars>
-  <vars>
-    <key>catbox</key>
-    <value>/help chatterbox</value>
-  </vars>
-  <vars>
-    <value>/help rolls</value>
-    <key>dice</key>
-  </vars>
-  <vars>
-    <key>roll</key>
-    <value>/help rolls</value>
-  </vars>
-  <vars>
-    <key>ching</key>
-    <value>/help c</value>
-  </vars>
-  <vars>
-    <key>egg</key>
-    <value>Easter Eggs are special prizes that can be won from the &lt;[Wheel of Surprise]&gt; or bought from the &amp;lt;[E2 Gift Shop]&amp;gt;.  Eggs can be used to hug, smite, egg, omelet, or fireball another user in the chatterbox.  To use one, type &quot;/hug USER&quot; in the chatterbox.  This gives the user some &amp;lt;GP&amp;gt;.</value>
-  </vars>
-  <vars>
-    <value>/help edb</value>
-    <key>borg</key>
-  </vars>
-  <vars>
-    <value>/help help</value>
-    <key> </key>
-  </vars>
-  <vars>
-    <value>/help msg</value>
-    <key>private_message</key>
-  </vars>
-  <vars>
-    <key>link</key>
-    <value>/help hard_link</value>
-  </vars>
-  <vars>
-    <value>Every article on &amp;lt;Everything2&amp;gt; must have links to other articles on the site.  This is accomplished by placing &amp;#91;square brackets&amp;#93; around key words and phrases relevant to your topic.  You can use [link view] to make sure your links actually go to existing places, but it's okay if a few of them don't exist yet, especially if you'd like to write those new articles yourself.  Also see: [hard link], [soft link], [pipe link], [firm link].</value>
-    <key>hard_link</key>
-  </vars>
-  <vars>
-    <key>WYSIWYG</key>
-    <value>/help tinymce</value>
-  </vars>
-  <vars>
-    <key>everything2</key>
-    <value>Everything2 is an on-line source for user-submitted, peer-reviewed articles, reviews, and original fiction about just about any topic.</value>
-  </vars>
-  <vars>
-    <value>Pages on &amp;lt;Everything2&amp;gt; are called nodes.  Several articles may be in any node, but only one article from any one user.</value>
-    <key>node</key>
-  </vars>
-  <vars>
-    <value>/help gp</value>
-    <key>GP</key>
-  </vars>
-  <vars>
-    <key>XP</key>
-    <value>/help xp</value>
+    <key>copyright</key>
   </vars>
   <vars>
     <value>see: [loquat]</value>
     <key>loquat</key>
   </vars>
   <vars>
-    <key>speed_of_light</key>
-    <value>299,792,458 m/s, or 1.8026175 &#215; 10^12 furlongs/fortnight. We at Everything2 believe that help should be comprehensive.</value>
+    <value>&amp;lt;Search&amp;gt;es for titles that include the word you are searching for without going directly to the exact result.  Useful for finding related information.</value>
+    <key>ignore_exact</key>
+  </vars>
+  <vars>
+    <key>hidden_writeup</key>
+    <value>/help hidden</value>
+  </vars>
+  <vars>
+    <value>Your homenode is your user profile, which you can reach (and edit) by clicking your username anywhere on E2.</value>
+    <key>homenode</key>
+  </vars>
+  <vars>
+    <key>article</key>
+    <value>/help writeup</value>
+  </vars>
+  <vars>
+    <key>gp</key>
+    <value>GP are points that can be earned by various means such as voting, blessings, participating in quests, etc., and can be used to buy things at the [E2 Gift Shop]. Nobody is exactly sure what &quot;GP&quot; stands for.</value>
+  </vars>
+  <vars>
+    <key>collaborate</key>
+    <value>A collaborator is another user who has access to edit your &amp;lt;scratch pad&amp;gt;.  You set up users as collaborators by putting their user names into the &quot;collaborator&quot; field of the scratch pad, separated by commas if you want more than one.  This can be very helpful if you need someone to show you how to format something, add &amp;lt;link&amp;gt;s, or assist your grammar and spelling.</value>
+  </vars>
+  <vars>
+    <value>/help edb</value>
+    <key>borg</key>
+  </vars>
+  <vars>
+    <key>links</key>
+    <value>Every writeup needs [The four basic types of internal links on Everything2|links]. A link is simple to make: just put &amp;#091;square brackets&amp;#093; around a key word or phrase, and it'll be linked to a node with that title on E2. You can also [pipe link] like so: &amp;#091;actual link|display text&amp;#093;. This gives you an extra dimension to work with.</value>
+  </vars>
+  <vars>
+    <value>/help zen_theme</value>
+    <key>skin</key>
+  </vars>
+  <vars>
+    <value>/help editor</value>
+    <key>$</key>
+  </vars>
+  <vars>
+    <value>Articles submitted to E2 must meet certain quality guidelines or they may be &amp;lt;nuke&amp;gt;d.  You must include &amp;lt;link&amp;gt;s and &amp;lt;HTML&amp;gt; formatting, and the article must not be a reply or a short addition to content already in a &amp;lt;node&amp;gt;.  Articles should be spell checked before posting, and use proper grammar, punctuation, and capitalization.  Please note that &amp;lt;Everything2&amp;gt; is an English language website.</value>
+    <key>quality</key>
+  </vars>
+  <vars>
+    <key>pipe_link</key>
+    <value>A [pipe link] is a way to create a &amp;lt;link&amp;gt; in a writeup that goes to some other title than the text that is displayed.  The format is &amp;#91;target title|display text&amp;#93; and they work like [Everything FAQ|this].</value>
+  </vars>
+  <vars>
+    <key> </key>
+    <value>/help help</value>
+  </vars>
+  <vars>
+    <value>/help webster_1913</value>
+    <key>webster</key>
+  </vars>
+  <vars>
+    <value>/help xp</value>
+    <key>XP</key>
+  </vars>
+  <vars>
+    <key>full_text</key>
+    <value>&amp;lt;Search&amp;gt;es the entire site, both titles and article text, using Google.  Regular searches do not search article text, only titles.</value>
+  </vars>
+  <vars>
+    <value>Hypertext Markup Language is the code used to format articles on &amp;lt;Everything2&amp;gt;.  At minimum, you are required to add &amp;lt;p&amp;gt; tags to the beginning of every paragraph to mark them as separate paragraphs so they will display properly.  The &quot;format&quot; button below the text input box can do this for you.  If you are not comfortable with HTML, you can use &amp;lt;tinyMCE&amp;gt; instead.</value>
+    <key>html</key>
+  </vars>
+  <vars>
+    <value>The bookmark button saves a node into a list at the bottom of your &lt;homenode&gt;.</value>
+    <key>bookmark</key>
+  </vars>
+  <vars>
+    <key>send</key>
+    <value>test</value>
+  </vars>
+  <vars>
+    <value>A &amp;lt;node&amp;gt; is a page on &amp;lt;Everything2&amp;gt;, and the writeups are the user-submitted articles that are in the node.</value>
+    <key>writeup</key>
+  </vars>
+  <vars>
+    <key>hug</key>
+    <value>/help egg</value>
+  </vars>
+  <vars>
+    <key>editor_cool</key>
+    <value>An Editor Cool is an additional compliment &amp;lt;editor&amp;gt;s and &amp;lt;administrator&amp;gt;s can give to &amp;lt;node&amp;gt;s which are of exceptional quality.  The ed cool is applied to the entire node, meaning all of its &amp;lt;writeups&amp;gt; are praiseworthy.  See also &amp;lt;C!&amp;gt;.</value>
+  </vars>
+  <vars>
+    <key>everything_death_borg</key>
+    <value>/help edb</value>
+  </vars>
+  <vars>
+    <value>tinyMCE is a [WYSIWYG] text editor you may use to simplify the process of formatting your writeups if you are not comfortable with &amp;lt;HTML&amp;gt;.  You can turn on tinyMCE from [writeup settings] or from a link above the text box where you can submit a writeup to the site.</value>
+    <key>tinymce</key>
+  </vars>
+  <vars>
+    <value>It is strongly recommended that you draft your article on your &amp;lt;scratch pad&amp;gt; and ask for comments in the &amp;lt;chatterbox&amp;gt; before sumitting it to the main area.  This can help you avoid several problems.  When the article is ready, you can go to the &amp;lt;node&amp;gt; where you want to post the article and paste it into the edit box near the bottom of the page, then click the &quot;submit&quot; button.  Articles can be edited after you post them with the same box.  Note that the &quot;Post&quot; button in the Scratch Pads does not work yet.</value>
+    <key>submit</key>
+  </vars>
+  <vars>
+    <key>lightspeed</key>
+    <value>/help speed_of_light</value>
+  </vars>
+  <vars>
+    <key>CME</key>
+    <value>/help cme</value>
+  </vars>
+  <vars>
+    <value>The &quot;/ignore user&quot; &lt;chatterbox&gt; command will prevent the chatterbox from displaying messages to you from the specified user (this does not work with usernames with spaces in them). This is a rarely-used tool intended to block abusive users from bothering you. &lt;Everything2&gt; very rarely has this problem with its userbase.  If you decide to un-ignore a user, you can do so at [user settings] in the &quot;Private Message Filter&quot; section.  User settings can also be used to ignore users with spaces in their names.</value>
+    <key>ignore</key>
+  </vars>
+  <vars>
+    <value>The [Wheel of Surprise] is a gambling mechanism on E2 where you can trade your &lt;GP&gt; for a chance at winning prizes, such as more GP, tokens to change the chatterbox topic, or the much sought-after &lt;Easter Eggs&gt;.</value>
+    <key>wheel_of_surprise</key>
+  </vars>
+  <vars>
+    <key>catbox</key>
+    <value>/help chatterbox</value>
+  </vars>
+  <vars>
+    <value>You can roll virtual dice in the chatterbox by using a command in the following format:  /rolls 3d6 or /rolls 2d8+5.  The displayed chatterbox message will repeat your roll command and show its result.  3d6 is an abbreviation for &quot;three six-sided dice&quot;.  You are not limited to real types of dice and can roll dice with any arbitrary number of sides.  /flip is an alias for /rolls 1d2, which displays a coin flip message rather than a dice roll message.</value>
+    <key>rolls</key>
+  </vars>
+  <vars>
+    <key>troll</key>
+    <value>A [troll] is someone who is sending abusive or inflammatory comments to the &amp;lt;chatterbox&amp;gt; or sometimes via &amp;lt;private message&amp;gt;.  Trolls just want attention, good or bad, and giving it to them just gives them what they want.  Do not fight, argue with, or attempt to mock a troll as it will only encourage them, even if you &quot;win&quot;.  If you ignore them they go away eventually.</value>
+  </vars>
+  <vars>
+    <key>experience</key>
+    <value>/help xp</value>
+  </vars>
+  <vars>
+    <value>EDB is &lt;Everything2&gt;'s former chatterbox enforcer, now retired.  Once in E2's history EDB would &quot;swallow&quot; abusive or annoying users to prevent them from talking for a while.  These days he is no longer needed, since the userbase is good at ignoring and discouraging trolls, but he will sometimes make appearances as a good-natured joke.</value>
+    <key>edb</key>
+  </vars>
+  <vars>
+    <key>nodeshell</key>
+    <value>A [nodeshell] is a title on &amp;lt;Everything2&amp;gt; that doesn't have an article in it yet.  These are usually either titles that someone thinks would make a good article, or the remains of an article that was &amp;lt;nuke&amp;gt;d for some reason.  They often provide good inspiration for articles if you don't know what to write.  See also: [your nodeshells], [Everything's Most wanted].</value>
+  </vars>
+  <vars>
+    <value>/help egg</value>
+    <key>anvil</key>
+  </vars>
+  <vars>
+    <value>test</value>
+    <key>send message</key>
+  </vars>
+  <vars>
+    <key>roll</key>
+    <value>/help rolls</value>
+  </vars>
+  <vars>
+    <key>zen_theme</key>
+    <value>Zen is the default interface you can select from [user settings].  Zen's main feature is that you can customize its look and behavior with stylesheets from [Theme Nirvana] or [the catwalk]. You can customize an existing stylesheet with [style defacer] (beware, some knowledge of [CSS] is required).</value>
+  </vars>
+  <vars>
+    <key>collaborator</key>
+    <value>/help collaborate</value>
   </vars>
   <vars>
     <value>/help c</value>
+    <key>ching</key>
+  </vars>
+  <vars>
+    <key>fireball</key>
+    <value>A &quot;fireball&quot; is a special kind of [easter egg] command available to users who are Level 15 or higher.  To activate the fireball, type &quot;/fireball&quot; followed by a user's name. That user will then be &quot;fireballed&quot; in the chatterbox and will receive 5 GP and a silly message. Please note that it costs 1 [easter egg] to use the fireball power.</value>
+  </vars>
+  <vars>
+    <value>Above the text input box for posting your writeups is a checkbox labeled &quot;Don't display in New Writeups&quot;.  If this box is checked (it's checked by default for daylogs and site maintenance postings) the writeup will not appear in New Writeups for most users.  Only you and the &lt;editor&gt;s will be able to see it.  This is useful for limited-interest writeups that might otherwise be downvoted if displayed to the public.</value>
+    <key>hidden</key>
+  </vars>
+  <vars>
+    <value>Cool Man Eddie is &lt;Everything2&gt;'s automated system to inform users of special actions or rewards that have been given.  Currently, Cool Man Eddie informs users of when a writeup has been &lt;C!&gt;ed or &lt;editor cool&gt;ed, and also when they have received gifts such as &lt;easter egg&gt;s or C!s of their own to spend.</value>
+    <key>cme</key>
+  </vars>
+  <vars>
+    <key>delete</key>
+    <value>/help nuke</value>
+  </vars>
+  <vars>
+    <value>/help admin</value>
+    <key>administrator</key>
+  </vars>
+  <vars>
+    <value>The chatterbox is &amp;lt;E2&amp;gt;'s community discussion area where users can talk to each other in a public forum.  It's a good place to get help or just hang out and chat.  You can also send &amp;lt;private_message&amp;gt;s from here.  Also see &amp;lt;Chatterlight&amp;gt;.</value>
+    <key>chatterbox</key>
+  </vars>
+  <vars>
+    <key>whisper</key>
+    <value>You can whisper in the [chatterbox] by typing &quot;/whisper This is my message.&quot;  Whisper will format your message smaller than normal.</value>
+  </vars>
+  <vars>
+    <value>/help gp</value>
+    <key>GP</key>
+  </vars>
+  <vars>
+    <value>The [Scratch Pads] are where you can draft &amp;lt;Everything2&amp;gt; articles before posting them to the main site.  It is strongly recommended that you draft your articles and ask for comments from the &amp;lt;chatterbox&amp;gt; or &amp;lt;editor&amp;gt;s before posting to ensure you are meeting the site's minimum &amp;lt;quality&amp;gt; requirements.  You can get additional help by having a &amp;lt;collaborator&amp;gt;.  Note the &quot;&amp;lt;Post&amp;gt;&quot; button here does not work yet.</value>
+    <key>scratch_pad</key>
+  </vars>
+  <vars>
+    <value>Easter Eggs are special prizes that can be won from the &lt;[Wheel of Surprise]&gt; or bought from the &amp;lt;[E2 Gift Shop]&amp;gt;.  Eggs can be used to hug, smite, egg, omelet, or fireball another user in the chatterbox.  To use one, type &quot;/hug USER&quot; in the chatterbox.  This gives the user some &amp;lt;GP&amp;gt;.</value>
+    <key>egg</key>
+  </vars>
+  <vars>
+    <value>/help editor</value>
+    <key>ed</key>
+  </vars>
+  <vars>
+    <key>near_matches</key>
+    <value>&amp;lt;Search&amp;gt;es for similar titles so you don't have to get the exact title correct in your search.</value>
+  </vars>
+  <vars>
+    <value>The nodelets are the helpful sidebars to the right of the page, displaying things like New Writeups, Other Users, and the Chatterbox.  They contain tools, reference material, and helpful links in a handy location while you are browsing the site.</value>
+    <key>nodelet</key>
+  </vars>
+  <vars>
+    <value>42 is the supposed answer to the question of Life, the Universe and Everything. But then, this site would be called &quot;Everything42&quot;, so that can't be right.</value>
+    <key>42</key>
+  </vars>
+  <vars>
+    <value>/help admin</value>
+    <key>god</key>
+  </vars>
+  <vars>
+    <key>linking</key>
+    <value>/help links</value>
+  </vars>
+  <vars>
+    <value>/help hard_link</value>
+    <key>hardlink</key>
+  </vars>
+  <vars>
+    <value>Users of Level1 and above may display a picture on their &lt;homenode&gt;</value>
+    <key>homenode_pic</key>
+  </vars>
+  <vars>
+    <key>chatterlight</key>
+    <value>[Chatterlight] is E2's full-page &amp;lt;chatterbox&amp;gt;, more useful than the chatterbox &amp;lt;nodelet&amp;gt; if you're going to be doing a lot of talking.</value>
+  </vars>
+  <vars>
+    <key>e2</key>
+    <value>/help Everything2</value>
+  </vars>
+  <vars>
+    <key>me</key>
+    <value>/help homenode</value>
+  </vars>
+  <vars>
+    <value>Nodevertising is announcing that you have a new writeup posted for the purpose of encouraging people to read and vote on it.  This is annoying and actively discouraged, nodevertising will often get your work downvoted.  Your writeup will appear in the New Writeups nodelet (this can take up to 5 minutes) where everyone will see it.</value>
+    <key>nodevertising</key>
+  </vars>
+  <vars>
+    <value>/help rolls</value>
+    <key>dice</key>
+  </vars>
+  <vars>
+    <key>Asamoth</key>
+    <value>/help asamoth</value>
+  </vars>
+  <vars>
+    <key>EDB</key>
+    <value>/help edb</value>
+  </vars>
+  <vars>
+    <value>Tokens can be won at the &lt;Wheel of Surprise&gt; and are used to change the chatterbox topic.  If you have a token, you can type &quot;/topic NEW TOPIC&quot; in the chatterbox.</value>
+    <key>token</key>
+  </vars>
+  <vars>
+    <key>faq</key>
+    <value>Ah, you want answers to questions? There's no FAQ as such, just [Everything2 Help] and [E2 Quick Start]. You may find [Everything2 Glossary] useful too.</value>
+  </vars>
+  <vars>
+    <key>tinyMCE</key>
+    <value>/help tinymce</value>
+  </vars>
+  <vars>
+    <key>nuke</key>
+    <value>If an article does not meet E2's &amp;lt;quality&amp;gt; standards, it may be deleted from the site.  Quality is often subjective, but at minimum we require &amp;lt;link&amp;gt;s and &amp;lt;HTML&amp;gt; formatting.  You don't have to worry about HTML formatting if you are using &amp;lt;tinyMCE&amp;gt;.  Very short writeups of the sort that were common in the early years of the site are no longer acceptable and they are being slowly phased out.</value>
+  </vars>
+  <vars>
+    <key>blab</key>
+    <value>/help msg</value>
+  </vars>
+  <vars>
+    <key>fire</key>
+    <value>In case of fire, please leave the chatterbox in an orderly fashion. Do not stop to collect your belongings. Walk, don't run. Dial 911 when you feel it is safe to do so.</value>
+  </vars>
+  <vars>
+    <key>webster_1913</key>
+    <value>[Webster 1913] is the representation of the English dictionary, 1913 edition (the latest edition that's in the public domain).  These entries were added to &amp;lt;E2&amp;gt; to discourage short definition writeups.</value>
+  </vars>
+  <vars>
+    <key>wysiwyg</key>
+    <value>/help tinymce</value>
+  </vars>
+  <vars>
+    <key>smite</key>
+    <value>/help egg</value>
+  </vars>
+  <vars>
+    <value>/copyright</value>
+    <key>fair_use</key>
+  </vars>
+  <vars>
     <key>C</key>
+    <value>/help c</value>
+  </vars>
+  <vars>
+    <value>A C!, short for 'Cool!', is a reward given to writeups by other users of the site for excellent work. They award the user 10 XP. Editor cools put whole nodes on the Page of Cool.</value>
+    <key>cool</key>
+  </vars>
+  <vars>
+    <value>/help cme</value>
+    <key>Cool_Man_Eddie</key>
+  </vars>
+  <vars>
+    <key>sing</key>
+    <value>You can sing in the [chatterbox] by typing &quot;/sing Your lyrics here.&quot;  Singing will automatically place musical notes around your lyrics that are randomly generated with each refresh.</value>
+  </vars>
+  <vars>
+    <key>C!</key>
+    <value>/help c</value>
+  </vars>
+  <vars>
+    <value>/help faq</value>
+    <key>FAQ</key>
+  </vars>
+  <vars>
+    <value>/help tinymce</value>
+    <key>WYSIWYG</key>
+  </vars>
+  <vars>
+    <value>XP, or experience points, is the system E2 uses to keep track of user achievements. To learn more about how to earn XP and how it affects you, visit the [The Everything2 Voting/Experience System].</value>
+    <key>xp</key>
+  </vars>
+  <vars>
+    <value>[Asamoth] holds the distinction of the only noder on &amp;lt;Everything2&amp;gt; to become a verb.  Asamoth was the first noder who blanked all of his writeups when he quit and left out of spite, which left an inconvenient clean-up job for the &amp;lt;editor&amp;gt;s.  This practice has become known as asamothing, or pulling an asamoth.</value>
+    <key>asamoth</key>
+  </vars>
+  <vars>
+    <value>/help msg</value>
+    <key>private_message</key>
+  </vars>
+  <vars>
+    <key>message</key>
+    <value>/help msg</value>
+  </vars>
+  <vars>
+    <value>/help msg</value>
+    <key>blab!</key>
   </vars>
 </node>

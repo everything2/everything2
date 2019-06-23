@@ -1,4 +1,8 @@
 <node>
+  <s3bucket></s3bucket>
+  <s3content_id>1926953</s3content_id>
+  <node_id>1926953</node_id>
+  <type_nodetype>1854352</type_nodetype>
   <title>Testing</title>
   <doctext>/* These are the basic colours and fonts */
 body, div, p, th, td, li, dd {
@@ -366,9 +370,5 @@ border-top: 1px solid #333;
 	color: black;
 	border:1px;
 }</doctext>
-  <type_nodetype>1854352</type_nodetype>
-  <node_id>1926953</node_id>
   <contentversion>105</contentversion>
-  <s3bucket></s3bucket>
-  <s3content_id>1926953</s3content_id>
 </node>

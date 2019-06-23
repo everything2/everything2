@@ -1,8 +1,8 @@
 <node>
-  <title>backup ready mail</title>
   <type_nodetype>154</type_nodetype>
-  <mail_id>2070364</mail_id>
   <from_address></from_address>
-  <doctext>&lt;p&gt;Backup is ready on S3: &quot;&lt;filename&gt;&quot;;&lt;/p&gt;</doctext>
+  <mail_id>2070364</mail_id>
   <node_id>2070364</node_id>
+  <title>backup ready mail</title>
+  <doctext>&lt;p&gt;Backup is ready on S3: &quot;&lt;filename&gt;&quot;;&lt;/p&gt;</doctext>
 </node>

@@ -1,213 +1,213 @@
 <node>
   <node_id>1353656</node_id>
+  <type_nodetype>153</type_nodetype>
+  <title>bad spellings en-US</title>
   <vars>
-    <value>s&lt;strong&gt;ie&lt;/strong&gt;ge ([I before E])</value>
-    <key>seige</key>
-  </vars>
-  <vars>
-    <key>would_of</key>
-    <value>would &lt;strong&gt;have&lt;/strong&gt;</value>
-  </vars>
-  <vars>
-    <key>prefered</key>
-    <value>prefe&lt;strong&gt;rr&lt;/strong&gt;ed</value>
+    <value>th&lt;strong&gt;ei&lt;/strong&gt;r (typo) unless you're using some $64 word like &quot;clothier&quot;</value>
+    <key>thier</key>
   </vars>
   <vars>
     <value>N-Wing (This is a very important one to get correct.) (Oops,maybe move to a generic spelling dictionary.)</value>
     <key>nwing</key>
   </vars>
   <vars>
-    <key>compatability</key>
-    <value>compat&lt;strong&gt;i&lt;/strong&gt;bility</value>
-  </vars>
-  <vars>
-    <value>weird (&lt;strong&gt;We&lt;/strong&gt; are &lt;strong&gt;we&lt;/strong&gt;ird.) &lt;em&gt;exception&lt;/em&gt; to [I before E].</value>
-    <key>wierd</key>
-  </vars>
-  <vars>
-    <value>th&lt;strong&gt;ei&lt;/strong&gt;r (typo) unless you're using some $64 word like &quot;clothier&quot;</value>
-    <key>thier</key>
-  </vars>
-  <vars>
-    <value>could &lt;strong&gt;have&lt;/strong&gt;</value>
-    <key>could_of</key>
-  </vars>
-  <vars>
-    <value>sep&lt;strong&gt;a&lt;/strong&gt;rate (spelled with an A, honest)</value>
-    <key>seperat</key>
-  </vars>
-  <vars>
-    <value>p&lt;strong&gt;ie&lt;/strong&gt;ce ([I before E])</value>
-    <key>peice</key>
-  </vars>
-  <vars>
-    <key>equivelent</key>
-    <value>equiv&lt;strong&gt;a&lt;/strong&gt;lent</value>
-  </vars>
-  <vars>
-    <value>amat&lt;strong&gt;eu&lt;strong&gt;r</value>
-    <key>amatuer</key>
-  </vars>
-  <vars>
-    <value>a&lt;strong&gt;p&lt;/strong&gt;ology/ize</value>
-    <key>appolog</key>
-  </vars>
-  <vars>
-    <value>exist&lt;strong&gt;e&lt;/strong&gt;nce</value>
-    <key>existance</key>
-  </vars>
-  <vars>
-    <value>rec&lt;strong&gt;ei&lt;/strong&gt;ve ([I before E])</value>
-    <key>recieve</key>
-  </vars>
-  <vars>
-    <value>beca&lt;strong&gt;us&lt;/strong&gt;e (typo)</value>
-    <key>becasue</key>
-  </vars>
-  <vars>
-    <value>&lt;strong&gt;ha&lt;/strong&gt;ve (typo)</value>
-    <key>ahve</key>
+    <key>havent</key>
+    <value>haven't (contraction of HAVE NOT)</value>
   </vars>
   <vars>
     <key>rediculous</key>
     <value>r&lt;strong&gt;i&lt;/strong&gt;diculous</value>
   </vars>
   <vars>
-    <key>freind</key>
+    <value>amat&lt;strong&gt;eur&lt;/strong&gt;</value>
+    <key>amature</key>
+  </vars>
+  <vars>
+    <key>recieve</key>
+    <value>rec&lt;strong&gt;ei&lt;/strong&gt;ve ([I before E])</value>
+  </vars>
+  <vars>
+    <value>j&lt;strong&gt;us&lt;/strong&gt;t (typo)</value>
+    <key>jsut</key>
+  </vars>
+  <vars>
     <value>fr&lt;strong&gt;ie&lt;/strong&gt;nd</value>
+    <key>freind</key>
   </vars>
   <vars>
-    <key>cemetary</key>
-    <value>cemet&lt;strong&gt;e&lt;/strong&gt;ry</value>
-  </vars>
-  <vars>
-    <key>wouldnt</key>
-    <value>wouldn&lt;strong&gt;'&lt;/strong&gt;t (contraction of WOULD NOT)</value>
-  </vars>
-  <vars>
-    <value>defin&lt;strong&gt;i&lt;/strong&gt;tely</value>
-    <key>definately</key>
-  </vars>
-  <vars>
-    <value>values for this from N-Wing's getting annoyed at stupid spellings found in writeups</value>
-    <key>_all_lowercase</key>
-  </vars>
-  <vars>
-    <key>some_how</key>
-    <value>&lt;strong&gt;somehow&lt;/strong&gt; is one word</value>
-  </vars>
-  <vars>
-    <value>&lt;strong&gt;a lot&lt;/strong&gt; is two words, but it's OK in words like &quot;zealot&quot;</value>
-    <key>alot</key>
-  </vars>
-  <vars>
-    <key>doesnt</key>
-    <value>doesn&lt;strong&gt;'&lt;/strong&gt;t (contraction of DOES NOT)</value>
-  </vars>
-  <vars>
-    <value>should &lt;strong&gt;have&lt;/strong&gt;</value>
-    <key>should_of</key>
-  </vars>
-  <vars>
-    <key>becuase</key>
-    <value>bec&lt;strong&gt;au&lt;/strong&gt;se (typo)</value>
-  </vars>
-  <vars>
-    <value>for&lt;strong&gt;e&lt;/strong&gt;seeable</value>
-    <key>forseeable</key>
-  </vars>
-  <vars>
-    <key>havent</key>
-    <value>haven't (contraction of HAVE NOT)</value>
-  </vars>
-  <vars>
-    <value>correct thing here, or multiple things; can include [link]s and such</value>
-    <key>_wrong_here</key>
-  </vars>
-  <vars>
-    <value>maint&lt;strong&gt;e&lt;/strong&gt;n&lt;strong&gt;a&lt;/strong&gt;nce</value>
-    <key>maintainence</key>
-  </vars>
-  <vars>
-    <key>compatable</key>
-    <value>compat&lt;strong&gt;i&lt;/strong&gt;ble</value>
-  </vars>
-  <vars>
-    <key>aquaintance</key>
     <value>a&lt;strong&gt;cq&lt;/strong&gt;uaintance</value>
+    <key>aquaintance</key>
   </vars>
   <vars>
-    <value>hi&lt;strong&gt;l&lt;/strong&gt;arious</value>
-    <key>hillarious</key>
+    <key>alot</key>
+    <value>&lt;strong&gt;a lot&lt;/strong&gt; is two words, but it's OK in words like &quot;zealot&quot;</value>
   </vars>
   <vars>
-    <value>ben&lt;strong&gt;e&lt;/strong&gt;fit</value>
-    <key>benifit</key>
+    <value>wouldn&lt;strong&gt;'&lt;/strong&gt;t (contraction of WOULD NOT)</value>
+    <key>wouldnt</key>
   </vars>
   <vars>
     <value>Perhaps you mean fl&lt;strong&gt;uo&lt;/strong&gt;rescent, as in lighting.</value>
     <key>florescent</key>
   </vars>
   <vars>
-    <key>masterbate</key>
-    <value>mast&lt;strong&gt;u&lt;/strong&gt;rbate</value>
-  </vars>
-  <vars>
-    <value>cat&lt;strong&gt;e&lt;/strong&gt;gory</value>
-    <key>catagory</key>
-  </vars>
-  <vars>
-    <value>isn&lt;strong&gt;'&lt;/strong&gt;t (contraction of IS NOT)</value>
-    <key>isnt</key>
-  </vars>
-  <vars>
-    <value>Did you mean &lt;strong&gt;I'm&lt;/strong&gt; (I am) or &lt;strong&gt;IM&lt;/strong&gt; (instant messaging)?</value>
-    <key>_im</key>
-  </vars>
-  <vars>
-    <key>amature</key>
-    <value>amat&lt;strong&gt;eur&lt;/strong&gt;</value>
-  </vars>
-  <vars>
-    <key>masterbation</key>
-    <value>mast&lt;strong&gt;u&lt;/strong&gt;rbation</value>
-  </vars>
-  <vars>
-    <key>beastiality</key>
-    <value>b&lt;strong&gt;e&lt;/strong&gt;stiality</value>
-  </vars>
-  <vars>
-    <key>acheive</key>
-    <value>ach&lt;strong&gt;ie&lt;/strong&gt;ve ([I before E])</value>
-  </vars>
-  <vars>
     <key>_alright_hmmm_this_may_be_OK_in_the_UK</key>
     <value>only accepted correct spelling is two words, &lt;strong&gt;all right&lt;/strong&gt;</value>
+  </vars>
+  <vars>
+    <value>mast&lt;strong&gt;u&lt;/strong&gt;rbate</value>
+    <key>masterbate</key>
+  </vars>
+  <vars>
+    <key>peice</key>
+    <value>p&lt;strong&gt;ie&lt;/strong&gt;ce ([I before E])</value>
+  </vars>
+  <vars>
+    <key>amatuer</key>
+    <value>amat&lt;strong&gt;eu&lt;strong&gt;r</value>
+  </vars>
+  <vars>
+    <key>ahve</key>
+    <value>&lt;strong&gt;ha&lt;/strong&gt;ve (typo)</value>
+  </vars>
+  <vars>
+    <value>compat&lt;strong&gt;i&lt;/strong&gt;ble</value>
+    <key>compatable</key>
+  </vars>
+  <vars>
+    <value>maint&lt;strong&gt;e&lt;/strong&gt;n&lt;strong&gt;a&lt;/strong&gt;nce</value>
+    <key>maintainence</key>
+  </vars>
+  <vars>
+    <value>values for this from N-Wing's getting annoyed at stupid spellings found in writeups</value>
+    <key>_all_lowercase</key>
+  </vars>
+  <vars>
+    <value>equiv&lt;strong&gt;a&lt;/strong&gt;lent</value>
+    <key>equivelent</key>
+  </vars>
+  <vars>
+    <key>would_of</key>
+    <value>would &lt;strong&gt;have&lt;/strong&gt;</value>
   </vars>
   <vars>
     <key>aquire</key>
     <value>a&lt;strong&gt;cq&lt;/strong&gt;uire</value>
   </vars>
   <vars>
+    <key>definately</key>
+    <value>defin&lt;strong&gt;i&lt;/strong&gt;tely</value>
+  </vars>
+  <vars>
+    <value>Did you mean &lt;strong&gt;I'm&lt;/strong&gt; (I am) or &lt;strong&gt;IM&lt;/strong&gt; (instant messaging)?</value>
+    <key>_im</key>
+  </vars>
+  <vars>
+    <key>prefered</key>
+    <value>prefe&lt;strong&gt;rr&lt;/strong&gt;ed</value>
+  </vars>
+  <vars>
+    <key>becuase</key>
+    <value>bec&lt;strong&gt;au&lt;/strong&gt;se (typo)</value>
+  </vars>
+  <vars>
+    <key>acheive</key>
+    <value>ach&lt;strong&gt;ie&lt;/strong&gt;ve ([I before E])</value>
+  </vars>
+  <vars>
+    <key>desparate</key>
+    <value>desp&lt;strong&gt;e&lt;/strong&gt;rate</value>
+  </vars>
+  <vars>
+    <key>catagory</key>
+    <value>cat&lt;strong&gt;e&lt;/strong&gt;gory</value>
+  </vars>
+  <vars>
+    <value>weird (&lt;strong&gt;We&lt;/strong&gt; are &lt;strong&gt;we&lt;/strong&gt;ird.) &lt;em&gt;exception&lt;/em&gt; to [I before E].</value>
+    <key>wierd</key>
+  </vars>
+  <vars>
+    <key>compatability</key>
+    <value>compat&lt;strong&gt;i&lt;/strong&gt;bility</value>
+  </vars>
+  <vars>
+    <value>correct thing here, or multiple things; can include [link]s and such</value>
+    <key>_wrong_here</key>
+  </vars>
+  <vars>
+    <value>should &lt;strong&gt;have&lt;/strong&gt;</value>
+    <key>should_of</key>
+  </vars>
+  <vars>
+    <value>isn&lt;strong&gt;'&lt;/strong&gt;t (contraction of IS NOT)</value>
+    <key>isnt</key>
+  </vars>
+  <vars>
+    <value>bes&lt;strong&gt;ie&lt;/strong&gt;ge ([I before E])</value>
+    <key>beseige</key>
+  </vars>
+  <vars>
+    <key>benifit</key>
+    <value>ben&lt;strong&gt;e&lt;/strong&gt;fit</value>
+  </vars>
+  <vars>
+    <key>some_how</key>
+    <value>&lt;strong&gt;somehow&lt;/strong&gt; is one word</value>
+  </vars>
+  <vars>
+    <value>exist&lt;strong&gt;e&lt;/strong&gt;nce</value>
+    <key>existance</key>
+  </vars>
+  <vars>
+    <key>seige</key>
+    <value>s&lt;strong&gt;ie&lt;/strong&gt;ge ([I before E])</value>
+  </vars>
+  <vars>
+    <key>didnt</key>
+    <value>didn&lt;strong&gt;'&lt;/strong&gt;t (contraction of DID NOT)</value>
+  </vars>
+  <vars>
+    <key>forseeable</key>
+    <value>for&lt;strong&gt;e&lt;/strong&gt;seeable</value>
+  </vars>
+  <vars>
+    <key>beastiality</key>
+    <value>b&lt;strong&gt;e&lt;/strong&gt;stiality</value>
+  </vars>
+  <vars>
+    <key>becasue</key>
+    <value>beca&lt;strong&gt;us&lt;/strong&gt;e (typo)</value>
+  </vars>
+  <vars>
+    <value>sep&lt;strong&gt;a&lt;/strong&gt;rate (spelled with an A, honest)</value>
+    <key>seperat</key>
+  </vars>
+  <vars>
+    <value>cemet&lt;strong&gt;e&lt;/strong&gt;ry</value>
+    <key>cemetary</key>
+  </vars>
+  <vars>
+    <value>doesn&lt;strong&gt;'&lt;/strong&gt;t (contraction of DOES NOT)</value>
+    <key>doesnt</key>
+  </vars>
+  <vars>
+    <value>hi&lt;strong&gt;l&lt;/strong&gt;arious</value>
+    <key>hillarious</key>
+  </vars>
+  <vars>
+    <value>a&lt;strong&gt;p&lt;/strong&gt;ology/ize</value>
+    <key>appolog</key>
+  </vars>
+  <vars>
+    <key>could_of</key>
+    <value>could &lt;strong&gt;have&lt;/strong&gt;</value>
+  </vars>
+  <vars>
     <key>reccomend</key>
     <value>re&lt;strong&gt;comm&lt;/strong&gt;end</value>
   </vars>
   <vars>
-    <key>jsut</key>
-    <value>j&lt;strong&gt;us&lt;/strong&gt;t (typo)</value>
+    <key>masterbation</key>
+    <value>mast&lt;strong&gt;u&lt;/strong&gt;rbation</value>
   </vars>
-  <vars>
-    <key>beseige</key>
-    <value>bes&lt;strong&gt;ie&lt;/strong&gt;ge ([I before E])</value>
-  </vars>
-  <vars>
-    <value>desp&lt;strong&gt;e&lt;/strong&gt;rate</value>
-    <key>desparate</key>
-  </vars>
-  <vars>
-    <value>didn&lt;strong&gt;'&lt;/strong&gt;t (contraction of DID NOT)</value>
-    <key>didnt</key>
-  </vars>
-  <title>bad spellings en-US</title>
-  <type_nodetype>153</type_nodetype>
 </node>

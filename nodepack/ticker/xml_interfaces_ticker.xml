@@ -1,5 +1,4 @@
 <node>
-  <node_id>1261407</node_id>
   <title>XML Interfaces Ticker</title>
   <doctext>[%
 my $str = &quot;&lt;?xml version=\&quot;1.0\&quot; ?&gt;&quot;;
@@ -19,4 +18,5 @@ $str.=&quot;&lt;/xmlcaps&gt;&quot;;
 $str;
 %]</doctext>
   <type_nodetype>1252389</type_nodetype>
+  <node_id>1261407</node_id>
 </node>

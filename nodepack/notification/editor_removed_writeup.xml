@@ -1,10 +1,6 @@
 <node>
-  <title>editor removed writeup</title>
+  <node_id>2047070</node_id>
   <hourLimit>48</hourLimit>
-  <description>an editor removes a writeup</description>
-  <invalid_check>my $draft = getNodeById($$args{writeup_id});
-
-return ($draft &amp;&amp; $$draft{type}{title} ne 'draft');</invalid_check>
   <type_nodetype>1930710</type_nodetype>
   <code>my $reason = &quot;: $$args{reason}&quot; if $$args{reason};
 my $titleLink = (
@@ -17,5 +13,9 @@ linkNode($$args{editor_id})
 .&quot; removed &lt;b&gt;$titleLink&lt;/b&gt; by &quot;
 .linkNode($$args{author_id})
 .$reason;</code>
-  <node_id>2047070</node_id>
+  <description>an editor removes a writeup</description>
+  <invalid_check>my $draft = getNodeById($$args{writeup_id});
+
+return ($draft &amp;&amp; $$draft{type}{title} ne 'draft');</invalid_check>
+  <title>editor removed writeup</title>
 </node>

@@ -1,5 +1,8 @@
 <node>
+  <s3content_id>2049229</s3content_id>
+  <node_id>2049229</node_id>
   <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
   <doctext>body {
     color: #073642;
     background-color: #eee8d5;
@@ -205,9 +208,6 @@ a:hover {
 #chatterlight_hints { display: none; }
 
 </doctext>
-  <title>rctest</title>
-  <s3content_id>2049229</s3content_id>
   <contentversion>103</contentversion>
-  <s3bucket></s3bucket>
-  <node_id>2049229</node_id>
+  <title>rctest</title>
 </node>

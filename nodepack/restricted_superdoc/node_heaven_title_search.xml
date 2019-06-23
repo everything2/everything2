@@ -1,6 +1,4 @@
 <node>
-  <node_id>1916986</node_id>
-  <title>Node Heaven Title Search</title>
   <doctext>&lt;p&gt;Welcome to Node Heaven, where you may sit and reconcile with your dear departed writeups.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; It takes &lt;em&gt;up to&lt;/em&gt; 48 hours for a writeup that was deleted to turn up in Node Heaven. Remember: first they must be &lt;em&gt;judged&lt;/em&gt;. For that 48 hours they are in purgatory...&lt;strong&gt;&lt;em&gt;[copper starlight|sleeping]&lt;/em&gt;&lt;/strong&gt;.&lt;/p&gt;
@@ -65,5 +63,7 @@ if ( $isRoot ) {
 
 $str;
 %]</doctext>
+  <title>Node Heaven Title Search</title>
   <type_nodetype>13</type_nodetype>
+  <node_id>1916986</node_id>
 </node>

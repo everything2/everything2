@@ -1,7 +1,7 @@
 <node>
   <node_id>1983409</node_id>
-  <title>My Chatterlight</title>
   <type_nodetype>451267</type_nodetype>
+  <title>My Chatterlight</title>
   <doctext>[%
 
 my $isGuest = $APP-&gt;isGuest($USER);

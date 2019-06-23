@@ -1,9 +1,9 @@
 <node>
-  <node_id>2073120</node_id>
-  <code>return $APP-&gt;inUsergroup($user_id,'britnoders','nogods');</code>
-  <subtype></subtype>
   <display>&lt;b&gt;Britnoder&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Member of Britnoders usergroup&lt;/i&gt;</display>
-  <achievement_type>usergroup</achievement_type>
-  <title>usergroupBritnoders</title>
+  <subtype></subtype>
+  <code>return $APP-&gt;inUsergroup($user_id,'britnoders','nogods');</code>
+  <node_id>2073120</node_id>
   <type_nodetype>1917847</type_nodetype>
+  <title>usergroupBritnoders</title>
+  <achievement_type>usergroup</achievement_type>
 </node>

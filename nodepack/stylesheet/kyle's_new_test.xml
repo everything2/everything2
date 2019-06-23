@@ -1,4 +1,8 @@
 <node>
+  <s3content_id>1934600</s3content_id>
+  <node_id>1934600</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
   <doctext>.nodelet { display: none;}
 #header { display: none;}
 #msgnum {display: none;}
@@ -8,10 +12,6 @@
 #links {display: none;}
 #nodelet_170070 {display: block;}
 </doctext>
-  <type_nodetype>1854352</type_nodetype>
-  <title>kyle's new test</title>
-  <s3bucket></s3bucket>
   <contentversion>103</contentversion>
-  <s3content_id>1934600</s3content_id>
-  <node_id>1934600</node_id>
+  <title>kyle's new test</title>
 </node>

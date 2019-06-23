@@ -1,13 +1,13 @@
 <node>
-  <node_id>1986610</node_id>
-  <type_nodetype>153</type_nodetype>
   <vars>
-    <key>justice</key>
     <value>19</value>
+    <key>justice</key>
   </vars>
   <vars>
-    <value>103</value>
     <key>1</key>
+    <value>103</value>
   </vars>
   <title>bounty number</title>
+  <node_id>1986610</node_id>
+  <type_nodetype>153</type_nodetype>
 </node>

@@ -1,10 +1,8 @@
 <node>
   <node_id>1905818</node_id>
   <s3content_id>1905818</s3content_id>
-  <s3bucket></s3bucket>
-  <contentversion>104</contentversion>
-  <title>Gunpowder Green</title>
   <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
   <doctext>/*= autofix added rules. adjust to taste: */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
 .weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
@@ -455,4 +453,6 @@ textarea {
 #loglinks td {
 	text-align:center;
 }</doctext>
+  <contentversion>104</contentversion>
+  <title>Gunpowder Green</title>
 </node>

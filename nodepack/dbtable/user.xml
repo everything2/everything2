@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>148</type_nodetype>
   <title>user</title>
   <_create_table_statement>CREATE TABLE `user` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -33,4 +32,5 @@
   KEY `session_id` (`session_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
   <node_id>173</node_id>
+  <type_nodetype>148</type_nodetype>
 </node>

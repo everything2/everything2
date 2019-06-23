@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>9</type_nodetype>
   <nltext></nltext>
   <title>Node Statistics</title>
+  <type_nodetype>9</type_nodetype>
+  <node_id>90</node_id>
   <nlcode></nlcode>
   <parent_container>0</parent_container>
-  <node_id>90</node_id>
 </node>

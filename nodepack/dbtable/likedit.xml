@@ -1,5 +1,6 @@
 <node>
   <node_id>1920433</node_id>
+  <type_nodetype>148</type_nodetype>
   <_create_table_statement>CREATE TABLE `likedit` (
   `likedit_id` int(11) NOT NULL AUTO_INCREMENT,
   `likedit_ip` char(100) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -8,5 +9,4 @@
   KEY `likedit_ip_node` (`likedit_ip`,`likedit_node`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <title>likedit</title>
-  <type_nodetype>148</type_nodetype>
 </node>

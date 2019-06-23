@@ -1,6 +1,6 @@
 <node>
-  <node_id>2117445</node_id>
-  <title>newwriteups</title>
-  <vars>{}</vars>
   <type_nodetype>2117441</type_nodetype>
+  <node_id>2117445</node_id>
+  <vars>{}</vars>
+  <title>newwriteups</title>
 </node>

@@ -15,6 +15,6 @@ return 0 if !defined $$args{nodenote_id};
 my $noteExists = $DB-&gt;sqlSelect('1', 'nodenote', &quot;nodenote_id = $$args{nodenote_id}&quot;);
 
 return !$noteExists;</invalid_check>
-  <description>a new [node note] gets posted.</description>
   <title>nodenote</title>
+  <description>a new [node note] gets posted.</description>
 </node>
