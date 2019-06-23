@@ -1,5 +1,7 @@
 <node>
+  <node_id>169667</node_id>
   <title>Page of Cool</title>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
   my @grp = (@{getNode(&quot;gods&quot;,&quot;usergroup&quot;)-&gt;{group}},@{getNode(&quot;Content Editors&quot;,&quot;usergroup&quot;)-&gt;{group}}, @{getNode(&quot;exeds&quot;,&quot;nodegroup&quot;)-&gt;{group}});
   my %except = map {getNode($_,&quot;user&quot;)-&gt;{node_id} =&gt; 1} (&quot;Cool Man Eddie&quot;,&quot;EDB&quot;,&quot;Webster 1913&quot;,&quot;Klaproth&quot;,&quot;PadLock&quot;);
@@ -102,6 +104,4 @@ $str = $return . $str;
 
 %]
 &lt;/table&gt;</doctext>
-  <type_nodetype>14</type_nodetype>
-  <node_id>169667</node_id>
 </node>

@@ -1,6 +1,5 @@
 <node>
   <node_id>1372677</node_id>
-  <title>Raw VARS XML Ticker</title>
   <type_nodetype>1252389</type_nodetype>
   <doctext>[%
 my $str.=&quot;&lt;vars&gt;&quot;;
@@ -18,4 +17,5 @@ unless($APP-&gt;isGuest($USER) ){
 $str.=&quot;&lt;/vars&gt;&quot;;
 return $str;
 %]</doctext>
+  <title>Raw VARS XML Ticker</title>
 </node>

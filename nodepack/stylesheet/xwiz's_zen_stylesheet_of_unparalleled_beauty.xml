@@ -1,7 +1,6 @@
 <node>
-  <s3bucket></s3bucket>
-  <contentversion>106</contentversion>
   <title>XWiz's Zen Stylesheet Of Unparalleled Beauty</title>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/****** COLORS ******/
 
 body,
@@ -893,7 +892,8 @@ td {
 			width: auto;
 			padding: 0;
 		}</doctext>
-  <type_nodetype>1854352</type_nodetype>
   <node_id>1901780</node_id>
   <s3content_id>1901780</s3content_id>
+  <contentversion>106</contentversion>
+  <s3bucket></s3bucket>
 </node>

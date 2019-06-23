@@ -1,11 +1,11 @@
 <node>
-  <extends_nodetype>7</extends_nodetype>
-  <node_id>1957956</node_id>
   <sqltable>podcast</sqltable>
+  <type_nodetype>1</type_nodetype>
   <restrictdupes>1</restrictdupes>
-  <grouptable></grouptable>
+  <deleters_user>1957798</deleters_user>
   <title>podcast</title>
   <writers_user>1957798</writers_user>
-  <deleters_user>1957798</deleters_user>
-  <type_nodetype>1</type_nodetype>
+  <extends_nodetype>7</extends_nodetype>
+  <grouptable></grouptable>
+  <node_id>1957956</node_id>
 </node>

@@ -1,7 +1,5 @@
 <node>
-  <edittime>2012-09-05 04:06:32</edittime>
-  <document_id>2069697</document_id>
-  <type_nodetype>2061807</type_nodetype>
+  <parameters> </parameters>
   <doctext>   DECLARE bl_id int;
    SELECT MIN(ipblacklist_id) INTO bl_id
      FROM ipblacklist
@@ -46,8 +44,10 @@
        ;
    END WHILE;
 </doctext>
-  <parameters> </parameters>
+  <type_nodetype>2061807</type_nodetype>
   <title>fixup_blacklistref</title>
+  <edittime>2012-09-05 04:06:32</edittime>
+  <document_id>2069697</document_id>
   <node_id>2069697</node_id>
   <mysqlproc_id>2069697</mysqlproc_id>
 </node>

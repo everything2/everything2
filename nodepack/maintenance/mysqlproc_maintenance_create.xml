@@ -1,8 +1,8 @@
 <node>
   <title>mysqlproc maintenance create</title>
-  <maintaintype>create</maintaintype>
   <type_nodetype>150</type_nodetype>
-  <code></code>
+  <maintaintype>create</maintaintype>
   <node_id>2069691</node_id>
+  <code></code>
   <maintain_nodetype>2061807</maintain_nodetype>
 </node>

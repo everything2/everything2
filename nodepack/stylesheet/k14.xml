@@ -1,9 +1,4 @@
 <node>
-  <node_id>2006168</node_id>
-  <s3content_id>2006168</s3content_id>
-  <s3bucket></s3bucket>
-  <contentversion>106</contentversion>
-  <title>K14</title>
   <doctext>/* THIS IS FULL OF BLATANT THIEVERY! -TVV */
 
 /*autofixed*/
@@ -753,4 +748,9 @@ td {
    margin-bottom: -65px !important;
 }</doctext>
   <type_nodetype>1854352</type_nodetype>
+  <title>K14</title>
+  <s3bucket></s3bucket>
+  <contentversion>106</contentversion>
+  <s3content_id>2006168</s3content_id>
+  <node_id>2006168</node_id>
 </node>

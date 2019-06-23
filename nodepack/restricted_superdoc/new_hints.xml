@@ -1,6 +1,6 @@
 <node>
   <node_id>469817</node_id>
-  <type_nodetype>13</type_nodetype>
+  <title>new hints</title>
   <doctext>How about linking other nodes in your writeup? To link, put &quot;[&quot; and &quot;]&quot;
     around a node name: [Brian Eno] creates a link to Brian Eno. Also, you can
     use a pipe (|) to designate a title. [Brian Eno|Master of Sound] links to Brian
@@ -16,5 +16,5 @@ similar choices...use the &lt;b&gt;pipe&lt;/b&gt; to point to these or create a 
 &lt;p&gt;
 You have an unlimited amount of space for your writeup...why so short?  Tell us more!  
 Try to include some references or &quot;further reading&quot; through hard-links.</doctext>
-  <title>new hints</title>
+  <type_nodetype>13</type_nodetype>
 </node>

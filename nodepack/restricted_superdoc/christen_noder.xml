@@ -1,5 +1,4 @@
 <node>
-  <node_id>672226</node_id>
   <title>Christen Noder</title>
   <type_nodetype>13</type_nodetype>
   <doctext>[{openform}]
@@ -24,4 +23,5 @@
 %]
 
 [{closeform}]</doctext>
+  <node_id>672226</node_id>
 </node>

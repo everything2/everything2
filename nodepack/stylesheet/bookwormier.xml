@@ -1,6 +1,8 @@
 <node>
-  <node_id>2000528</node_id>
+  <s3bucket></s3bucket>
+  <contentversion>108</contentversion>
   <s3content_id>2000528</s3content_id>
+  <node_id>2000528</node_id>
   <doctext>/*= autofix added rules. adjust to taste: */
 .actions , .actions li {display:inline;margin:0;padding:0 0.5em 0 0;}
 .actions { display: block ; }
@@ -1061,7 +1063,5 @@ input#message {
 	display: none;
 }</doctext>
   <type_nodetype>1854352</type_nodetype>
-  <s3bucket></s3bucket>
-  <contentversion>108</contentversion>
   <title>Bookwormier</title>
 </node>

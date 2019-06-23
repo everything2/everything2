@@ -1,5 +1,6 @@
 <node>
   <node_id>613004</node_id>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my @wit = (
   &quot;The most neglected writeups on Everything:&quot;,
@@ -31,6 +32,5 @@ foreach my $node (@$nodes)
 return $str;
 %]
 &lt;/ol&gt;</doctext>
-  <type_nodetype>14</type_nodetype>
   <title>Everything's Obscure Writeups</title>
 </node>

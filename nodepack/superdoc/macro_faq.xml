@@ -1,6 +1,5 @@
 <node>
   <node_id>1045339</node_id>
-  <title>macro FAQ</title>
   <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;&lt;big&gt;&lt;strong&gt;Macro FAQ&lt;/strong&gt;&lt;/big&gt;[%
 ( $APP-&gt;isEditor($USER) ) ? '' : ' (note: you are not allowed to use macros yet)';
@@ -91,4 +90,5 @@ $str;
 &lt;p&gt;&lt;strong&gt;Lame Guide/FAQ/etc. Thingy&lt;/strong&gt;&lt;br /&gt;
 If you have a question about macros, you can &lt;code&gt;/msg N-Wing&lt;/code&gt;, so this currently-lame guide can be updated. You can also /msg N-Wing if you have an idea for better default macros, and/or want more added that would be probably used by other people.
 &lt;/p&gt;</doctext>
+  <title>macro FAQ</title>
 </node>

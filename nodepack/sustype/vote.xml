@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>1399991</type_nodetype>
-  <doctext>Removes a person's votes immediately and forbids them from voting inside of the vote opcode. They cannot vote, and those votes won't regenerate until the next day after this curse has been lifted.</doctext>
   <title>vote</title>
+  <doctext>Removes a person's votes immediately and forbids them from voting inside of the vote opcode. They cannot vote, and those votes won't regenerate until the next day after this curse has been lifted.</doctext>
+  <type_nodetype>1399991</type_nodetype>
   <node_id>1399994</node_id>
 </node>

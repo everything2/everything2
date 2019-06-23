@@ -1,6 +1,4 @@
 <node>
-  <node_id>1921941</node_id>
-  <type_nodetype>13</type_nodetype>
   <doctext>[%
 return unless isGod($USER);
 
@@ -15,5 +13,7 @@ $str.=$query-&gt;submit('Drink deeply from the well of cool');
 $str.=$query-&gt;end_form;
 
 %]</doctext>
+  <type_nodetype>13</type_nodetype>
   <title>The Well of Cool</title>
+  <node_id>1921941</node_id>
 </node>

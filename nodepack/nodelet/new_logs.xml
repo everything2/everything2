@@ -1,8 +1,8 @@
 <node>
   <parent_container>0</parent_container>
-  <nltext></nltext>
   <node_id>1923735</node_id>
-  <type_nodetype>9</type_nodetype>
   <nlcode></nlcode>
   <title>New Logs</title>
+  <nltext></nltext>
+  <type_nodetype>9</type_nodetype>
 </node>

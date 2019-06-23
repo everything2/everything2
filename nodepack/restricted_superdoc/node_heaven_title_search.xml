@@ -1,4 +1,5 @@
 <node>
+  <node_id>1916986</node_id>
   <title>Node Heaven Title Search</title>
   <doctext>&lt;p&gt;Welcome to Node Heaven, where you may sit and reconcile with your dear departed writeups.&lt;/p&gt;
 
@@ -65,5 +66,4 @@ if ( $isRoot ) {
 $str;
 %]</doctext>
   <type_nodetype>13</type_nodetype>
-  <node_id>1916986</node_id>
 </node>

@@ -1,10 +1,10 @@
 <node>
+  <title>mail display page</title>
+  <mimetype></mimetype>
+  <page></page>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
-  <mimetype></mimetype>
-  <title>mail display page</title>
+  <node_id>195</node_id>
   <parent_container>1854175</parent_container>
   <pagetype_nodetype>154</pagetype_nodetype>
-  <page></page>
-  <node_id>195</node_id>
 </node>

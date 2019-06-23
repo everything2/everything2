@@ -1,7 +1,5 @@
 <node>
   <node_id>945284</node_id>
-  <title>show user vars</title>
-  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $str = '';
 
@@ -110,4 +108,6 @@ $str.=$tClose;
 
 return $str;
 %]</doctext>
+  <type_nodetype>14</type_nodetype>
+  <title>show user vars</title>
 </node>

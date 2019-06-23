@@ -1,4 +1,5 @@
 <node>
+  <node_id>2116987</node_id>
   <title>mauler's sandbox XI: To Infinity and Beyond!</title>
   <type_nodetype>13</type_nodetype>
   <doctext>[%
@@ -65,5 +66,4 @@ $str .= '&lt;p&gt;The top ' . $limit2 . ' users hold ' . ($richestUsersGP / $tot
 
 return $str;
 %]</doctext>
-  <node_id>2116987</node_id>
 </node>

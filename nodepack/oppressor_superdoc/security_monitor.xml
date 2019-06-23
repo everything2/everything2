@@ -1,4 +1,5 @@
 <node>
+  <title>Security Monitor</title>
   <type_nodetype>1144104</type_nodetype>
   <doctext>[% 
 	###
@@ -128,6 +129,5 @@
 	return $str;
 %]
 </doctext>
-  <title>Security Monitor</title>
   <node_id>1376796</node_id>
 </node>

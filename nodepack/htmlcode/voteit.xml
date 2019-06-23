@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>4</type_nodetype>
   <code></code>
-  <title>voteit</title>
   <node_id>444186</node_id>
+  <title>voteit</title>
+  <type_nodetype>4</type_nodetype>
 </node>

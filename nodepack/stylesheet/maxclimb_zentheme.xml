@@ -1,9 +1,5 @@
 <node>
-  <s3content_id>1876637</s3content_id>
-  <node_id>1876637</node_id>
-  <contentversion>107</contentversion>
   <title>maxClimb_zenTheme</title>
-  <s3bucket></s3bucket>
   <doctext>/*= autofix added basic compatibility rules */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
 .weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
@@ -846,4 +842,8 @@ width: 100%;
 
 .nodeshell { font-style: italic; }</doctext>
   <type_nodetype>1854352</type_nodetype>
+  <node_id>1876637</node_id>
+  <contentversion>107</contentversion>
+  <s3bucket></s3bucket>
+  <s3content_id>1876637</s3content_id>
 </node>

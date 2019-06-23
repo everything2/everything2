@@ -1,6 +1,6 @@
 <node>
   <node_id>781532</node_id>
-  <title>New Nodes XML Ticker</title>
+  <type_nodetype>451267</type_nodetype>
   <doctext>[%
 my $limit = 100;
 
@@ -34,5 +34,5 @@ while(my $N = $csr-&gt;fetchrow_hashref){
 $csr-&gt;finish;
 $XG-&gt;NewNodes($str);
 %]</doctext>
-  <type_nodetype>451267</type_nodetype>
+  <title>New Nodes XML Ticker</title>
 </node>

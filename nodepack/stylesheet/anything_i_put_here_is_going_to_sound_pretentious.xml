@@ -1,5 +1,8 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
+  <contentversion>104</contentversion>
+  <s3content_id>1917896</s3content_id>
+  <node_id>1917896</node_id>
   <doctext>/* Thanks to ascorbic, of course, for the skeleton. */
 /* This is made for my own convenience only; there is little to no original work here. I'm just playing. My CSS skills aren't so abysmal that I couldn't make my own if I wanted to. */
 
@@ -321,9 +324,6 @@ big big big {
 font-size: inherit;
 }
 </doctext>
-  <s3bucket></s3bucket>
+  <type_nodetype>1854352</type_nodetype>
   <title>Anything I put here is going to sound pretentious</title>
-  <contentversion>104</contentversion>
-  <node_id>1917896</node_id>
-  <s3content_id>1917896</s3content_id>
 </node>

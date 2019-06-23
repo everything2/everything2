@@ -1,10 +1,10 @@
 <node>
-  <title>mysqlproc edit page</title>
-  <mimetype></mimetype>
-  <type_nodetype>5</type_nodetype>
-  <displaytype>edit</displaytype>
-  <node_id>2069690</node_id>
-  <parent_container>18</parent_container>
   <pagetype_nodetype>2061807</pagetype_nodetype>
+  <parent_container>18</parent_container>
+  <node_id>2069690</node_id>
+  <displaytype>edit</displaytype>
+  <mimetype></mimetype>
   <page></page>
+  <type_nodetype>5</type_nodetype>
+  <title>mysqlproc edit page</title>
 </node>

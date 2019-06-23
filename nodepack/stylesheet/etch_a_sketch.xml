@@ -1,4 +1,10 @@
 <node>
+  <node_id>1905962</node_id>
+  <s3content_id>1905962</s3content_id>
+  <s3bucket></s3bucket>
+  <contentversion>104</contentversion>
+  <title>etch a sketch</title>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/*The basics*/
 body, div, p, th, td, li, dd {
 	font-family: &quot;Courier New&quot;, lucida, arial, sans-serif;
@@ -316,10 +322,4 @@ width: 100%;
 big big big {
 font-size: inherit;
 }</doctext>
-  <type_nodetype>1854352</type_nodetype>
-  <s3bucket></s3bucket>
-  <contentversion>104</contentversion>
-  <title>etch a sketch</title>
-  <node_id>1905962</node_id>
-  <s3content_id>1905962</s3content_id>
 </node>

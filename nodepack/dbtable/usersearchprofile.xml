@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>148</type_nodetype>
   <title>usersearchprofile</title>
+  <type_nodetype>148</type_nodetype>
   <_create_table_statement>CREATE TABLE `usersearchprofile` (
   `profile_id` int(11) NOT NULL AUTO_INCREMENT,
   `searchtype` varchar(25) COLLATE utf8_unicode_ci DEFAULT NULL,

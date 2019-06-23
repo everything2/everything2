@@ -1,4 +1,8 @@
 <node>
+  <title>voting</title>
+  <type_nodetype>1930710</type_nodetype>
+  <description>a writeup of yours gets [Voting/Experience system|voted] on.</description>
+  <invalid_check></invalid_check>
   <code>my $str;
 if ($$args{weight} &gt; 0) {
   $str .= &quot;Someone upvoted &quot;;
@@ -12,9 +16,5 @@ if ($$args{node_id}) {
   $str .= linkNode($$args{node_id});
 }
 return $str;</code>
-  <type_nodetype>1930710</type_nodetype>
-  <invalid_check></invalid_check>
-  <title>voting</title>
-  <description>a writeup of yours gets [Voting/Experience system|voted] on.</description>
   <node_id>1961735</node_id>
 </node>

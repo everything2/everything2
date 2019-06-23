@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
   <doctext>body
 {
 font-family: Verdana,Arial,Tahoma,Calibri,Helvetica,Sans-Serif;
@@ -634,9 +633,10 @@ width: 100%;
 #softlinks td[bgcolor=&quot;#afafaf&quot;] { background-color: #3F6F9F; }
 #softlinks td[bgcolor=&quot;#adadad&quot;] { background-color: #3B6C9D; }
 #softlinks td[bgcolor=&quot;#ababab&quot;] { background-color: #37699B; }</doctext>
-  <s3bucket></s3bucket>
+  <type_nodetype>1854352</type_nodetype>
   <title>in10se's stylesheet, changed a little bit.</title>
   <contentversion>105</contentversion>
-  <node_id>1908210</node_id>
+  <s3bucket></s3bucket>
   <s3content_id>1908210</s3content_id>
+  <node_id>1908210</node_id>
 </node>

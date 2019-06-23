@@ -1,10 +1,5 @@
 <node>
-  <s3content_id>2016267</s3content_id>
-  <node_id>2016267</node_id>
   <title>Oh Four Hundred</title>
-  <contentversion>106</contentversion>
-  <s3bucket></s3bucket>
-  <type_nodetype>1854352</type_nodetype>
   <doctext>/****** COLORS ******/
 body,
 div,
@@ -948,4 +943,9 @@ body, div, p, th, td, li, dd, .writeuppage .item .content, .nodelet, .nodetitle,
 #softlinks td {
     background-color: #101010;
 }</doctext>
+  <type_nodetype>1854352</type_nodetype>
+  <node_id>2016267</node_id>
+  <contentversion>106</contentversion>
+  <s3bucket></s3bucket>
+  <s3content_id>2016267</s3content_id>
 </node>

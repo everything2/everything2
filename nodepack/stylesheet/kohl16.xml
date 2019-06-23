@@ -1,6 +1,9 @@
 <node>
   <node_id>2006294</node_id>
   <s3content_id>2006294</s3content_id>
+  <s3bucket></s3bucket>
+  <contentversion>104</contentversion>
+  <title>kohl16</title>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/*autofixed*/
 /*= autofix added rules. adjust to taste: */
@@ -583,7 +586,4 @@ td {
 		#metalinks {
 			display: none;
 		}</doctext>
-  <s3bucket></s3bucket>
-  <title>kohl16</title>
-  <contentversion>104</contentversion>
 </node>

@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>148</type_nodetype>
   <title>cachedeltaversion</title>
+  <type_nodetype>148</type_nodetype>
   <_create_table_statement>CREATE TABLE `cachedeltaversion` (
   `deltaversion` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>

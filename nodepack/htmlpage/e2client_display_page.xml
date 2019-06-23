@@ -1,10 +1,10 @@
 <node>
   <node_id>1261883</node_id>
-  <page></page>
-  <pagetype_nodetype>1261857</pagetype_nodetype>
   <parent_container>1854175</parent_container>
-  <mimetype></mimetype>
+  <pagetype_nodetype>1261857</pagetype_nodetype>
   <title>e2client display page</title>
-  <displaytype>display</displaytype>
+  <page></page>
   <type_nodetype>5</type_nodetype>
+  <mimetype></mimetype>
+  <displaytype>display</displaytype>
 </node>

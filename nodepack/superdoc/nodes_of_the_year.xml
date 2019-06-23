@@ -1,4 +1,5 @@
 <node>
+  <node_id>2117856</node_id>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
@@ -101,5 +102,4 @@ $str .= '&lt;table style=&quot;margin-left: auto; margin-right: auto;&quot;&gt;
 return $str . $navigation;
 %]</doctext>
   <title>Nodes of the Year</title>
-  <node_id>2117856</node_id>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <node_id>1102338</node_id>
   <doctext>[%
 my $isCoolPerson = $APP-&gt;isEditor($USER) || $APP-&gt;isChanop($USER);
 
@@ -19,5 +20,4 @@ $APP-&gt;changeRoom($USER,0);
 </doctext>
   <type_nodetype>1065266</type_nodetype>
   <title>go outside</title>
-  <node_id>1102338</node_id>
 </node>

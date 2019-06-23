@@ -1,5 +1,9 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
+  <node_id>1903041</node_id>
+  <contentversion>104</contentversion>
+  <s3bucket></s3bucket>
+  <s3content_id>1903041</s3content_id>
+  <title>Deranged</title>
   <doctext>/* This is the skeleton stylesheet for the zen theme, by ascorbic */
 /* You may use this file as a foundation for any new work, but you may find it easier to start from scratch. */
 /* Not all elements are defined in this file, so you'll most likely want to refer to the html as well. */
@@ -318,9 +322,5 @@ width: 100%;
 big big big {
 font-size: inherit;
 }</doctext>
-  <title>Deranged</title>
-  <contentversion>104</contentversion>
-  <s3bucket></s3bucket>
-  <s3content_id>1903041</s3content_id>
-  <node_id>1903041</node_id>
+  <type_nodetype>1854352</type_nodetype>
 </node>

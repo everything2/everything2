@@ -1,8 +1,8 @@
 <node>
+  <nlcode></nlcode>
   <parent_container>0</parent_container>
-  <nltext></nltext>
   <node_id>263</node_id>
   <type_nodetype>9</type_nodetype>
-  <nlcode></nlcode>
   <title>New Writeups</title>
+  <nltext></nltext>
 </node>

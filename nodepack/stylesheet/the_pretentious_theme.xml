@@ -4,6 +4,7 @@
   <s3bucket></s3bucket>
   <contentversion>105</contentversion>
   <title>The Pretentious Theme</title>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/****** COLORS ******/
 
 body,
@@ -291,5 +292,4 @@ body {
 		display: none;
 	}
 </doctext>
-  <type_nodetype>1854352</type_nodetype>
 </node>

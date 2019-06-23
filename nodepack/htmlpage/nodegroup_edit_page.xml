@@ -1,10 +1,10 @@
 <node>
-  <node_id>71</node_id>
-  <page></page>
-  <pagetype_nodetype>8</pagetype_nodetype>
-  <parent_container>18</parent_container>
-  <mimetype></mimetype>
-  <title>nodegroup edit page</title>
   <displaytype>edit</displaytype>
   <type_nodetype>5</type_nodetype>
+  <page></page>
+  <mimetype></mimetype>
+  <title>nodegroup edit page</title>
+  <pagetype_nodetype>8</pagetype_nodetype>
+  <parent_container>18</parent_container>
+  <node_id>71</node_id>
 </node>

@@ -1,5 +1,5 @@
 <node>
-  <node_id>609473</node_id>
+  <title>The Node Crypt</title>
   <doctext>Here is where the nodes come to rest, after being
 skillfully slain by an editor or god.  
 /Tell them, if you believe this
@@ -72,5 +72,5 @@ $str.='&lt;p align=&quot;right&quot;&gt;&lt;i&gt;In pace requiescant.&lt;/i&gt;&
 $str;
 %]</doctext>
   <type_nodetype>13</type_nodetype>
-  <title>The Node Crypt</title>
+  <node_id>609473</node_id>
 </node>

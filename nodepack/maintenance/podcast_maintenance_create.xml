@@ -1,8 +1,8 @@
 <node>
-  <node_id>2067940</node_id>
   <maintain_nodetype>1957956</maintain_nodetype>
-  <maintaintype>create</maintaintype>
-  <title>podcast maintenance create</title>
+  <node_id>2067940</node_id>
   <code></code>
   <type_nodetype>150</type_nodetype>
+  <maintaintype>create</maintaintype>
+  <title>podcast maintenance create</title>
 </node>

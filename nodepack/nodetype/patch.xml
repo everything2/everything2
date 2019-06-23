@@ -1,11 +1,11 @@
 <node>
-  <grouptable></grouptable>
-  <title>patch</title>
-  <extends_nodetype>4</extends_nodetype>
-  <node_id>1151141</node_id>
-  <sqltable>patch</sqltable>
   <type_nodetype>1</type_nodetype>
-  <writers_user>838015</writers_user>
-  <deleters_user>114</deleters_user>
+  <sqltable>patch</sqltable>
   <readers_user>838015</readers_user>
+  <deleters_user>114</deleters_user>
+  <extends_nodetype>4</extends_nodetype>
+  <writers_user>838015</writers_user>
+  <title>patch</title>
+  <grouptable></grouptable>
+  <node_id>1151141</node_id>
 </node>

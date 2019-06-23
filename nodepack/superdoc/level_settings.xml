@@ -1,6 +1,4 @@
 <node>
-  <node_id>1962858</node_id>
-  <title>Level settings</title>
   <type_nodetype>14</type_nodetype>
   <doctext>&lt;!-- &lt;style type=&quot;text/css&quot;&gt;
 .mytable th, .mytable td
@@ -112,4 +110,6 @@ $str.-&quot;&lt;/table&gt;&quot;;
 
 return $str;
 %]</doctext>
+  <title>Level settings</title>
+  <node_id>1962858</node_id>
 </node>

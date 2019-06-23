@@ -1,8 +1,8 @@
 <node>
-  <title>e2node maintenance update</title>
-  <maintaintype>update</maintaintype>
-  <type_nodetype>150</type_nodetype>
   <code></code>
   <node_id>827409</node_id>
   <maintain_nodetype>116</maintain_nodetype>
+  <title>e2node maintenance update</title>
+  <maintaintype>update</maintaintype>
+  <type_nodetype>150</type_nodetype>
 </node>

@@ -1,9 +1,9 @@
 <node>
-  <node_id>2069738</node_id>
-  <s3content_id>2069738</s3content_id>
-  <s3bucket></s3bucket>
+  <doctext>// Moved to /js/2069738.js</doctext>
+  <type_nodetype>1786405</type_nodetype>
   <title>HTMLToolbar</title>
   <contentversion>103</contentversion>
-  <type_nodetype>1786405</type_nodetype>
-  <doctext>// Moved to /js/2069738.js</doctext>
+  <s3bucket></s3bucket>
+  <s3content_id>2069738</s3content_id>
+  <node_id>2069738</node_id>
 </node>

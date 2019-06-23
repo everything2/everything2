@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>150</type_nodetype>
   <code></code>
-  <maintaintype>preupdate</maintaintype>
-  <title>jscript preupdate maintenance</title>
-  <maintain_nodetype>1786405</maintain_nodetype>
   <node_id>2100744</node_id>
+  <maintain_nodetype>1786405</maintain_nodetype>
+  <title>jscript preupdate maintenance</title>
+  <type_nodetype>150</type_nodetype>
+  <maintaintype>preupdate</maintaintype>
 </node>

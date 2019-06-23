@@ -1,10 +1,10 @@
 <node>
-  <node_id>2054468</node_id>
-  <description>a chanop borgs someone</description>
-  <hourLimit>168</hourLimit>
-  <title>chanop borged user</title>
   <invalid_check></invalid_check>
+  <hourLimit>168</hourLimit>
+  <description>a chanop borgs someone</description>
   <type_nodetype>1930710</type_nodetype>
+  <title>chanop borged user</title>
   <code>return linkNode($$args{chanop_id})
   . ' borged user ' . linkNode($$args{user_id});</code>
+  <node_id>2054468</node_id>
 </node>

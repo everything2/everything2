@@ -1,8 +1,8 @@
 <node>
+  <code></code>
   <node_id>1156290</node_id>
   <maintain_nodetype>1156105</maintain_nodetype>
   <title>debatecomment maintenance create</title>
-  <maintaintype>create</maintaintype>
-  <code></code>
   <type_nodetype>150</type_nodetype>
+  <maintaintype>create</maintaintype>
 </node>

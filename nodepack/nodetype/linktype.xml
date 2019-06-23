@@ -1,11 +1,11 @@
 <node>
-  <grouptable></grouptable>
   <title>linktype</title>
-  <restrictdupes>1</restrictdupes>
-  <sqltable></sqltable>
-  <node_id>169632</node_id>
-  <type_nodetype>1</type_nodetype>
-  <deleters_user>114</deleters_user>
   <writers_user>114</writers_user>
+  <grouptable></grouptable>
+  <node_id>169632</node_id>
+  <sqltable></sqltable>
+  <restrictdupes>1</restrictdupes>
+  <type_nodetype>1</type_nodetype>
   <readers_user>114</readers_user>
+  <deleters_user>114</deleters_user>
 </node>

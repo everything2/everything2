@@ -1,12 +1,12 @@
 <node>
   <grouptable></grouptable>
+  <node_id>1144104</node_id>
+  <writers_user>923653</writers_user>
   <title>oppressor_superdoc</title>
   <extends_nodetype>14</extends_nodetype>
+  <deleters_user>829913</deleters_user>
   <sqltable></sqltable>
-  <node_id>1144104</node_id>
   <restrictdupes>1</restrictdupes>
   <type_nodetype>1</type_nodetype>
-  <deleters_user>829913</deleters_user>
-  <writers_user>923653</writers_user>
   <readers_user>923653</readers_user>
 </node>

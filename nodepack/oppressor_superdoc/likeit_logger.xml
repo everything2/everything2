@@ -1,6 +1,4 @@
 <node>
-  <node_id>2015861</node_id>
-  <type_nodetype>1144104</type_nodetype>
   <doctext>[%
 
 my $selectQueryLikeIt = &lt;&lt;SQLEND;
@@ -30,5 +28,7 @@ my $str = ''
   ;
 
 %]</doctext>
+  <type_nodetype>1144104</type_nodetype>
   <title>likeit logger</title>
+  <node_id>2015861</node_id>
 </node>

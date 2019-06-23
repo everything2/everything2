@@ -1,9 +1,5 @@
 <node>
-  <node_id>1854393</node_id>
-  <s3content_id>1854393</s3content_id>
-  <s3bucket></s3bucket>
   <title>default zen stylesheet</title>
-  <contentversion>104</contentversion>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/****** COLORS ******/
 
@@ -707,4 +703,8 @@ td {
    margin-top: 65px !important;
    margin-bottom: -65px !important;
 }</doctext>
+  <node_id>1854393</node_id>
+  <s3content_id>1854393</s3content_id>
+  <contentversion>104</contentversion>
+  <s3bucket></s3bucket>
 </node>

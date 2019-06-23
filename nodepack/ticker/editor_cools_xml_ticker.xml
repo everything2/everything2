@@ -1,5 +1,4 @@
 <node>
-  <node_id>1256768</node_id>
   <title>Editor Cools XML Ticker</title>
   <doctext>[%
    my $str = &quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; standalone=\&quot;yes\&quot;?&gt;\n&quot;;
@@ -53,4 +52,5 @@ $str.=&quot;
 %]
 </doctext>
   <type_nodetype>1252389</type_nodetype>
+  <node_id>1256768</node_id>
 </node>

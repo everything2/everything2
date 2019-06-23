@@ -1,6 +1,4 @@
 <node>
-  <title>Magical Writeup Reparenter</title>
-  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p align=&quot;right&quot;&gt;&lt;small&gt;Bugs to to [rootbeer277]&lt;/small&gt;&lt;/p&gt;
 
 [%
@@ -339,5 +337,7 @@ return($inputs_string
 	. $feedback_string 
 	. &quot;&lt;p&gt;[Lord Brawl] says: Try [Klaproth Van Lines] for bulk moves. Certain conditions apply.&lt;/p&gt;&quot;);
 %]</doctext>
+  <type_nodetype>14</type_nodetype>
+  <title>Magical Writeup Reparenter</title>
   <node_id>1138488</node_id>
 </node>

@@ -1,7 +1,7 @@
 <node>
-  <title>penny jar</title>
-  <type_nodetype>153</type_nodetype>
   <node_id>2034633</node_id>
+  <type_nodetype>153</type_nodetype>
+  <title>penny jar</title>
   <vars>
     <key>1</key>
     <value>63</value>

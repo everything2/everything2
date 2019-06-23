@@ -1,10 +1,5 @@
 <node>
-  <s3content_id>1887242</s3content_id>
-  <node_id>1887242</node_id>
   <title>fondue test1</title>
-  <contentversion>105</contentversion>
-  <s3bucket></s3bucket>
-  <type_nodetype>1854352</type_nodetype>
   <doctext>/* -- 
 
 A hack on test_ReiToei2 by Robin Clarke/fondue
@@ -418,4 +413,9 @@ margin-top: 0px;
         border-right: 1px solid #708259;
         border-bottom: 2px solid #708259;
 }</doctext>
+  <type_nodetype>1854352</type_nodetype>
+  <node_id>1887242</node_id>
+  <contentversion>105</contentversion>
+  <s3bucket></s3bucket>
+  <s3content_id>1887242</s3content_id>
 </node>

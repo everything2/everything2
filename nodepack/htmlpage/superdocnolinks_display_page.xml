@@ -1,10 +1,10 @@
 <node>
-  <page></page>
-  <parent_container>1854175</parent_container>
   <pagetype_nodetype>1065266</pagetype_nodetype>
   <node_id>1065267</node_id>
+  <parent_container>1854175</parent_container>
+  <mimetype></mimetype>
+  <page></page>
   <type_nodetype>5</type_nodetype>
   <displaytype>display</displaytype>
   <title>superdocnolinks display page</title>
-  <mimetype></mimetype>
 </node>

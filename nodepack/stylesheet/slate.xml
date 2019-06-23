@@ -1,6 +1,9 @@
 <node>
-  <node_id>1876222</node_id>
   <s3content_id>1876222</s3content_id>
+  <s3bucket></s3bucket>
+  <contentversion>105</contentversion>
+  <node_id>1876222</node_id>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/* fonts */
 body {font-family: Helvetica, Arial, sans-serif; font-size: 12px;}
 table {font-size: 12px;}
@@ -103,8 +106,5 @@ pre {display: block; overflow: auto;} /* to stop page-widening */
 
 /* survey */
 #surveymessage { margin-right: 20em !important; margin-top: 50px !important; margin-bottom: -20px !important; }</doctext>
-  <type_nodetype>1854352</type_nodetype>
-  <s3bucket></s3bucket>
-  <contentversion>105</contentversion>
   <title>slate</title>
 </node>

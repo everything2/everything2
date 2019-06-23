@@ -1,6 +1,5 @@
 <node>
   <node_id>1163424</node_id>
-  <type_nodetype>13</type_nodetype>
   <doctext>&lt;br&gt;&lt;br&gt;&lt;br&gt;
 
 &lt;p&gt;&lt;b&gt;Idea:&lt;/b&gt;  Gods begin to offer quests individually.  I've been going over
@@ -85,5 +84,6 @@ should die but none of them offer enough substance alone.&lt;/p&gt;
 
 &lt;br&gt;&lt;br&gt;&lt;br&gt;
 </doctext>
+  <type_nodetype>13</type_nodetype>
   <title>E2 Quests superdoc</title>
 </node>

@@ -1,5 +1,5 @@
 <node>
-  <node_id>1383812</node_id>
+  <type_nodetype>13</type_nodetype>
   <doctext>Users that haven't been here in 30 days.  I propose that we auto remove someone who hasn't been to the site in 30 days unless they choose to ignore a certain usergroup's messages (with the exception of: [gods] and [content editors]).  With usergroup ownership, it is now much easier for people to be able to manage those groups. For now, here is an active, automatic list.
 &lt;br&gt;&lt;br&gt;&lt;p align=&quot;center&quot;&gt;&lt;hr width=&quot;30%&quot;&gt;&lt;/p&gt;&lt;br&gt;
 [%
@@ -35,6 +35,6 @@
   }
    return &quot;&lt;ul&gt;$str&lt;/ul&gt;&quot;;
 %]</doctext>
-  <type_nodetype>13</type_nodetype>
   <title>Usergroup Attendance Monitor</title>
+  <node_id>1383812</node_id>
 </node>
