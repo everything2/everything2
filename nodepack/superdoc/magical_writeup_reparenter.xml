@@ -337,7 +337,7 @@ return($inputs_string
 	. $feedback_string 
 	. &quot;&lt;p&gt;[Lord Brawl] says: Try [Klaproth Van Lines] for bulk moves. Certain conditions apply.&lt;/p&gt;&quot;);
 %]</doctext>
+  <node_id>1138488</node_id>
   <title>Magical Writeup Reparenter</title>
   <type_nodetype>14</type_nodetype>
-  <node_id>1138488</node_id>
 </node>

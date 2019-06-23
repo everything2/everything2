@@ -1,6 +1,4 @@
 <node>
-  <s3content_id>2022033</s3content_id>
-  <node_id>2022033</node_id>
   <contentversion>105</contentversion>
   <doctext>/*
 ---------------------------------------
@@ -289,7 +287,9 @@ text-align: center;
 margin-bottom: 25px;
 }
 </doctext>
-  <title>CollegeRuled</title>
+  <node_id>2022033</node_id>
   <s3bucket></s3bucket>
+  <s3content_id>2022033</s3content_id>
+  <title>CollegeRuled</title>
   <type_nodetype>1854352</type_nodetype>
 </node>

@@ -1,11 +1,11 @@
 <node>
-  <type_nodetype>148</type_nodetype>
-  <title>searchwords</title>
-  <node_id>1434620</node_id>
   <_create_table_statement>CREATE TABLE `searchwords` (
   `word` char(20) COLLATE utf8_unicode_ci DEFAULT NULL,
   `node_id` int(11) NOT NULL DEFAULT '0',
   `soundex_value` char(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   KEY `searchindex` (`word`,`node_id`,`soundex_value`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
+  <node_id>1434620</node_id>
+  <title>searchwords</title>
+  <type_nodetype>148</type_nodetype>
 </node>

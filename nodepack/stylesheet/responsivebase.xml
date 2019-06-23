@@ -1,7 +1,5 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
-  <s3bucket></s3bucket>
-  <title>ResponsiveBase</title>
+  <contentversion>105</contentversion>
   <doctext>/* ------------------------------------------------------------
  * HTML RESETS AND BASIC TAG STYLING
  * ------------------------------------------------------------
@@ -359,7 +357,9 @@ font-size: 85%;
 {
 display: none;
 }</doctext>
-  <contentversion>105</contentversion>
   <node_id>2047469</node_id>
+  <s3bucket></s3bucket>
   <s3content_id>2047469</s3content_id>
+  <title>ResponsiveBase</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

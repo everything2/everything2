@@ -1,7 +1,4 @@
 <node>
-  <node_id>1988300</node_id>
-  <type_nodetype>13</type_nodetype>
-  <title>OldMinerian Autonomous Poking Machine</title>
   <doctext>&lt;h3&gt;Testing environment for reCAPTCH&lt;/h3&gt;
 &lt;dl&gt;
 [%
@@ -1110,4 +1107,7 @@ return $str;
 
 
 </doctext>
+  <node_id>1988300</node_id>
+  <title>OldMinerian Autonomous Poking Machine</title>
+  <type_nodetype>13</type_nodetype>
 </node>

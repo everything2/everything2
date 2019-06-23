@@ -1,7 +1,4 @@
 <node>
-  <node_id>771767</node_id>
-  <title>EQS_NOHTML</title>
-  <type_nodetype>451267</type_nodetype>
   <doctext>[%
 my @wit = (
 
@@ -598,4 +595,7 @@ But these hands - these [semen]-covered hands are just right.'&lt;br&gt;&lt;br&g
 
 &quot;&lt;b&gt;&lt;font size=3&gt;&quot;.parseLinks($wit[int(rand(@wit))]).&quot;&lt;/font&gt;&lt;/b&gt;&quot;
 %]</doctext>
+  <node_id>771767</node_id>
+  <title>EQS_NOHTML</title>
+  <type_nodetype>451267</type_nodetype>
 </node>

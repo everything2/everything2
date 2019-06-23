@@ -1,6 +1,4 @@
 <node>
-  <title>The Oracle Classic</title>
-  <type_nodetype>13</type_nodetype>
   <doctext>[%
 return unless(isGod($USER));
 return if $query-&gt;param(&quot;userEdit&quot;);
@@ -82,4 +80,6 @@ $str.=htmlcode('closeform');
 
 %]</doctext>
   <node_id>1947127</node_id>
+  <title>The Oracle Classic</title>
+  <type_nodetype>13</type_nodetype>
 </node>

@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>4</type_nodetype>
-  <title>openform</title>
-  <node_id>42</node_id>
   <code></code>
+  <node_id>42</node_id>
+  <title>openform</title>
+  <type_nodetype>4</type_nodetype>
 </node>

@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>4</type_nodetype>
-  <title>varcheckbox</title>
-  <node_id>580212</node_id>
   <code></code>
+  <node_id>580212</node_id>
+  <title>varcheckbox</title>
+  <type_nodetype>4</type_nodetype>
 </node>

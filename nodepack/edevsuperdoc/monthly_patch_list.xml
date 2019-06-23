@@ -1,7 +1,4 @@
 <node>
-  <node_id>2036570</node_id>
-  <title>monthly patch list</title>
-  <type_nodetype>1983550</type_nodetype>
   <doctext>&lt;h3&gt;Monthly Patch Lister&lt;/h3&gt;
 [%
 use DateTime;
@@ -185,4 +182,7 @@ return $str;
 
 %]
 </doctext>
+  <node_id>2036570</node_id>
+  <title>monthly patch list</title>
+  <type_nodetype>1983550</type_nodetype>
 </node>

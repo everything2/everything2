@@ -1,5 +1,4 @@
 <node>
-  <node_id>1857772</node_id>
   <doctext>&lt;p&gt;
 This is a storage node for CST reviews. Reviews are moved here from our working area in [CST_Chat].
 &lt;/p&gt;&lt;p&gt;
@@ -398,6 +397,7 @@ Per the WikiSource.org licensing terms, this is [CST Approved] via the original 
 &lt;br&gt;Hello shrimpo, Unfortunately this poem was publish in &#8220;The Maple Laugh Forever: An Anthology of Canadian Comic Poetry&#8221; (1981) and because of the [E2 copyright changes] we can no longer keep it in the database. If you would like to update this and resubmit it you may want to read through the [E2 FAQ: Copyrighted Material] for suggestions and ideas. If you have any questions please feel free to contact an editor or myself and we will be happy to assist. :)&lt;/p&gt;
 
 </doctext>
-  <type_nodetype>1144104</type_nodetype>
+  <node_id>1857772</node_id>
   <title>CST_Storage_26</title>
+  <type_nodetype>1144104</type_nodetype>
 </node>

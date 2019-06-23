@@ -1,12 +1,13 @@
 <node>
-  <type_nodetype>153</type_nodetype>
+  <node_id>2002478</node_id>
   <title>Disabled actions</title>
+  <type_nodetype>153</type_nodetype>
   <vars>
-    <key>116</key>
-    <value>L</value>
+    <key>1854352</key>
+    <value>wL</value>
   </vars>
   <vars>
-    <key>668164</key>
+    <key>1140332</key>
     <value>wcba</value>
   </vars>
   <vars>
@@ -14,80 +15,79 @@
     <value>wcL</value>
   </vars>
   <vars>
-    <value>w</value>
-    <key>1144104</key>
-  </vars>
-  <vars>
-    <value>wO</value>
-    <key>14</key>
-  </vars>
-  <vars>
-    <key>2035430</key>
-    <value>wcabL</value>
-  </vars>
-  <vars>
-    <value>wcL</value>
-    <key>891793</key>
-  </vars>
-  <vars>
-    <key>16</key>
-    <value>wL</value>
-  </vars>
-  <vars>
-    <value>wcb</value>
-    <key>1802702</key>
-  </vars>
-  <vars>
-    <value>wcL</value>
-    <key>13</key>
-  </vars>
-  <vars>
-    <value>wcba</value>
-    <key>1140332</key>
-  </vars>
-  <vars>
-    <key>1157413</key>
-    <value>L</value>
-  </vars>
-  <vars>
-    <key>9</key>
-    <value>b</value>
-  </vars>
-  <vars>
-    <value>wOcabL</value>
-    <key>124</key>
-  </vars>
-  <vars>
     <key>15</key>
     <value>wa</value>
   </vars>
   <vars>
-    <value>wc</value>
-    <key>1872678</key>
+    <key>668164</key>
+    <value>wcba</value>
   </vars>
   <vars>
-    <key>2002475</key>
-    <value>wcb</value>
+    <key>117</key>
+    <value>wcba</value>
+  </vars>
+  <vars>
+    <key>13</key>
+    <value>wcL</value>
+  </vars>
+  <vars>
+    <key>1065266</key>
+    <value>wO</value>
+  </vars>
+  <vars>
+    <key>124</key>
+    <value>wOcabL</value>
   </vars>
   <vars>
     <key>1986688</key>
     <value>OL</value>
   </vars>
   <vars>
+    <key>891793</key>
+    <value>wcL</value>
+  </vars>
+  <vars>
+    <key>9</key>
+    <value>b</value>
+  </vars>
+  <vars>
+    <key>2035430</key>
+    <value>wcabL</value>
+  </vars>
+  <vars>
+    <key>14</key>
     <value>wO</value>
-    <key>1065266</key>
   </vars>
   <vars>
+    <key>1144104</key>
+    <value>w</value>
+  </vars>
+  <vars>
+    <key>1872678</key>
+    <value>wc</value>
+  </vars>
+  <vars>
+    <key>2002475</key>
     <value>wcb</value>
-    <key>1140925</key>
   </vars>
   <vars>
-    <key>1854352</key>
+    <key>1802702</key>
+    <value>wcb</value>
+  </vars>
+  <vars>
+    <key>16</key>
     <value>wL</value>
   </vars>
   <vars>
-    <key>117</key>
-    <value>wcba</value>
+    <key>1157413</key>
+    <value>L</value>
   </vars>
-  <node_id>2002478</node_id>
+  <vars>
+    <key>116</key>
+    <value>L</value>
+  </vars>
+  <vars>
+    <key>1140925</key>
+    <value>wcb</value>
+  </vars>
 </node>

@@ -1,9 +1,4 @@
 <node>
-  <mail_id>275</mail_id>
-  <node_id>275</node_id>
-  <title>Welcome to the Everything2 community!</title>
-  <type_nodetype>154</type_nodetype>
-  <from_address></from_address>
   <doctext>&lt;name&gt;,
 &lt;p&gt;Welcome to Everything2, one of the internet's oldest and largest writing communities. You are receiving this message because someone gave this email address when registering on Everything2.&lt;/p&gt;
 &lt;p&gt;We hope that you have registered because you like what you have read on Everything2 and want to contribute. If you have only read a little of the site, please take the time to explore it some more before making your own contribution. In principle, everything has a place on Everything2, but that doesn't mean there is a place for just any old thing. The links at the bottom of writeup pages are a useful way to take a random walk through the site and get a feel for it. You may also find &lt;a href=&quot;http://&lt;servername&gt;/?node=E2 Quick Start&quot;&gt;E2 Quick Start&lt;/a&gt; useful reading.&lt;/p&gt;
@@ -20,4 +15,9 @@ user ID, which is  &lt;b&gt;&lt;user_id&gt;&lt;/b&gt;, and your validation key, 
 
 The Everything2 Staff&lt;br /&gt;
 &lt;site_url&gt;&lt;/p&gt;</doctext>
+  <from_address></from_address>
+  <mail_id>275</mail_id>
+  <node_id>275</node_id>
+  <title>Welcome to the Everything2 community!</title>
+  <type_nodetype>154</type_nodetype>
 </node>

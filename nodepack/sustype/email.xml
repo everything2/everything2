@@ -4,7 +4,7 @@
 &lt;p&gt;
 To prevent spam, new accounts used to be created with an &quot;email suspension&quot; which prevented them from chatting in any room or posting writeups, but not from sending messages. The suspension was lifted when they proved they had a valid email address. Since November 7, 2012 it has no longer been possible to log in to a new account at all without activating the account with a link sent by email, so this is no longer needed.
 &lt;/p&gt;</doctext>
-  <type_nodetype>1399991</type_nodetype>
-  <title>email</title>
   <node_id>1948205</node_id>
+  <title>email</title>
+  <type_nodetype>1399991</type_nodetype>
 </node>

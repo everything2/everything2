@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>4</type_nodetype>
-  <title>textarea</title>
   <code></code>
   <node_id>52</node_id>
+  <title>textarea</title>
+  <type_nodetype>4</type_nodetype>
 </node>

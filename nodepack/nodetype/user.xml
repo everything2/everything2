@@ -1,12 +1,12 @@
 <node>
-  <sqltable>user,setting,document</sqltable>
-  <extends_nodetype>7</extends_nodetype>
   <deleters_user>114</deleters_user>
-  <title>user</title>
+  <extends_nodetype>7</extends_nodetype>
   <grouptable></grouptable>
   <node_id>15</node_id>
-  <verify_edits>1</verify_edits>
-  <type_nodetype>1</type_nodetype>
-  <writers_user>114</writers_user>
   <restrictdupes>1</restrictdupes>
+  <sqltable>user,setting,document</sqltable>
+  <title>user</title>
+  <type_nodetype>1</type_nodetype>
+  <verify_edits>1</verify_edits>
+  <writers_user>114</writers_user>
 </node>

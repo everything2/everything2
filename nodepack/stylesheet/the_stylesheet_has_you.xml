@@ -1,6 +1,5 @@
 <node>
-  <node_id>1938878</node_id>
-  <s3content_id>1938878</s3content_id>
+  <contentversion>105</contentversion>
   <doctext>/* In pretentious Russia */
 /*                                               */
 /* This is a modification of my other stylesheet */
@@ -607,8 +606,9 @@ td {
 			display: none;
 		}
 </doctext>
-  <contentversion>105</contentversion>
-  <type_nodetype>1854352</type_nodetype>
+  <node_id>1938878</node_id>
   <s3bucket></s3bucket>
+  <s3content_id>1938878</s3content_id>
   <title>The stylesheet has you</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

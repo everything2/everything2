@@ -1,6 +1,4 @@
 <node>
-  <title>weblog</title>
-  <type_nodetype>148</type_nodetype>
   <_create_table_statement>CREATE TABLE `weblog` (
   `weblog_id` int(11) NOT NULL DEFAULT '0',
   `to_node` int(11) NOT NULL DEFAULT '0',
@@ -12,4 +10,6 @@
   KEY `tstamp` (`tstamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
   <node_id>458689</node_id>
+  <title>weblog</title>
+  <type_nodetype>148</type_nodetype>
 </node>

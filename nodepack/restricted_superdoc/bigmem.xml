@@ -22,7 +22,7 @@ $str;
 
 
 [{closeform}]</doctext>
-  <type_nodetype>13</type_nodetype>
-  <title>bigmem</title>
   <node_id>378565</node_id>
+  <title>bigmem</title>
+  <type_nodetype>13</type_nodetype>
 </node>

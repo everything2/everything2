@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>5</type_nodetype>
-  <mimetype></mimetype>
-  <title>node editvars page</title>
-  <parent_container>18</parent_container>
-  <page></page>
   <displaytype>editvars</displaytype>
+  <mimetype></mimetype>
   <node_id>2024261</node_id>
+  <page></page>
   <pagetype_nodetype>7</pagetype_nodetype>
+  <parent_container>18</parent_container>
+  <title>node editvars page</title>
+  <type_nodetype>5</type_nodetype>
 </node>

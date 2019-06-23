@@ -315,7 +315,7 @@ Remember that each system would have its own XP/Renown requirements to achieve t
 
 return $str;
 %]</doctext>
+  <node_id>1928939</node_id>
   <title>tfxp: Compare Stats</title>
   <type_nodetype>1144104</type_nodetype>
-  <node_id>1928939</node_id>
 </node>

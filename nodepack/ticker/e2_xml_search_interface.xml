@@ -1,5 +1,4 @@
 <node>
-  <node_id>1252400</node_id>
   <doctext>[%
    my $keywords = $APP-&gt;cleanNodeName($query-&gt;param('keywords'));
    my $tr = $query-&gt;param(&quot;typerestrict&quot;);
@@ -47,6 +46,7 @@ $str.=&quot;
    $str .= &quot;&lt;/searchinterface&gt;\n&quot;;
 %]
 </doctext>
-  <type_nodetype>1252389</type_nodetype>
+  <node_id>1252400</node_id>
   <title>E2 XML Search Interface</title>
+  <type_nodetype>1252389</type_nodetype>
 </node>

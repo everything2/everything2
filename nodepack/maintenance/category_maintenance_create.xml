@@ -1,8 +1,8 @@
 <node>
-  <maintain_nodetype>1522375</maintain_nodetype>
-  <node_id>1935675</node_id>
   <code></code>
-  <title>category maintenance create</title>
+  <maintain_nodetype>1522375</maintain_nodetype>
   <maintaintype>create</maintaintype>
+  <node_id>1935675</node_id>
+  <title>category maintenance create</title>
   <type_nodetype>150</type_nodetype>
 </node>

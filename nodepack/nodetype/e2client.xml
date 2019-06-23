@@ -1,12 +1,12 @@
 <node>
-  <type_nodetype>1</type_nodetype>
-  <writers_user>1199641</writers_user>
+  <deleters_user>114</deleters_user>
+  <extends_nodetype>3</extends_nodetype>
+  <grouptable></grouptable>
+  <node_id>1261857</node_id>
+  <readers_user>1199641</readers_user>
   <restrictdupes>1</restrictdupes>
   <sqltable>e2client</sqltable>
   <title>e2client</title>
-  <deleters_user>114</deleters_user>
-  <grouptable></grouptable>
-  <extends_nodetype>3</extends_nodetype>
-  <node_id>1261857</node_id>
-  <readers_user>1199641</readers_user>
+  <type_nodetype>1</type_nodetype>
+  <writers_user>1199641</writers_user>
 </node>

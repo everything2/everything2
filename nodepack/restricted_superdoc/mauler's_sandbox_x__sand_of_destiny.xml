@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>13</type_nodetype>
-  <title>mauler's Sandbox X: Sand of Destiny</title>
   <doctext>[%
 my $rows;
 my $str;
@@ -26,4 +24,6 @@ $str .= '&lt;/ol&gt;&lt;hr /&gt;';
 
 %]</doctext>
   <node_id>2108111</node_id>
+  <title>mauler's Sandbox X: Sand of Destiny</title>
+  <type_nodetype>13</type_nodetype>
 </node>

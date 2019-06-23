@@ -1,11 +1,11 @@
 <node>
-  <type_nodetype>1917847</type_nodetype>
-  <subtype></subtype>
-  <title>tokens100</title>
+  <achievement_type>miscellaneous</achievement_type>
   <code>my $uVars = getVars(getNodeById($user_id));
 return 1 if $$uVars{tokens_bought} &gt;=100;
 return 0;</code>
-  <achievement_type>miscellaneous</achievement_type>
-  <node_id>1918342</node_id>
   <display>&lt;strong&gt;This is a Token Badge&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Collected 100 Tokens&lt;/i&gt;</display>
+  <node_id>1918342</node_id>
+  <subtype></subtype>
+  <title>tokens100</title>
+  <type_nodetype>1917847</type_nodetype>
 </node>

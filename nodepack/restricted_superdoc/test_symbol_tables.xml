@@ -1,7 +1,4 @@
 <node>
-  <node_id>377790</node_id>
-  <title>test symbol tables</title>
-  <type_nodetype>13</type_nodetype>
   <doctext>[%
 no strict;
 my $str = &quot;&quot;;
@@ -34,4 +31,7 @@ dumpvar(&quot;Everything&quot;);
 
 $str;
 %]</doctext>
+  <node_id>377790</node_id>
+  <title>test symbol tables</title>
+  <type_nodetype>13</type_nodetype>
 </node>

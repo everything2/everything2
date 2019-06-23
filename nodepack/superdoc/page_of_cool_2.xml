@@ -54,7 +54,7 @@ $str .= '&lt;/table&gt;';
 
 return $str
 %]</doctext>
-  <type_nodetype>14</type_nodetype>
-  <title>Page of Cool 2</title>
   <node_id>1964418</node_id>
+  <title>Page of Cool 2</title>
+  <type_nodetype>14</type_nodetype>
 </node>

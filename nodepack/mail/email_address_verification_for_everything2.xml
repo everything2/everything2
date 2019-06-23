@@ -1,5 +1,4 @@
 <node>
-  <from_address></from_address>
   <doctext>&lt;name&gt;,
 	
 &lt;p&gt;It looks like either you have requested a new validation key for Everything2 or someone has requested one for you.  Here's a new key for you.  All this takes is either clicking on the following link, or copying and pasting it into your web browser:&lt;/p&gt;
@@ -13,8 +12,9 @@
 &lt;p&gt;All love,&lt;br /&gt;
 The Everything2 Staff&lt;br /&gt;
 &lt;site_url&gt;&lt;/p&gt;</doctext>
-  <title>Email address verification for Everything2</title>
-  <type_nodetype>154</type_nodetype>
+  <from_address></from_address>
   <mail_id>1948244</mail_id>
   <node_id>1948244</node_id>
+  <title>Email address verification for Everything2</title>
+  <type_nodetype>154</type_nodetype>
 </node>

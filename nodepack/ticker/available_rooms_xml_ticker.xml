@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>1252389</type_nodetype>
-  <title>Available Rooms XML Ticker</title>
   <doctext>[%
 
 my $str = &quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; standalone=\&quot;yes\&quot;?&gt;\n&quot;;
@@ -43,4 +41,6 @@ foreach(sort(keys %$rooms))
 
 %]</doctext>
   <node_id>1254496</node_id>
+  <title>Available Rooms XML Ticker</title>
+  <type_nodetype>1252389</type_nodetype>
 </node>

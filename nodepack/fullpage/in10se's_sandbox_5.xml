@@ -310,7 +310,7 @@ if ($isGuest) {
 }
 
 %]</doctext>
-  <type_nodetype>451267</type_nodetype>
-  <title>in10se's sandbox 5</title>
   <node_id>2104417</node_id>
+  <title>in10se's sandbox 5</title>
+  <type_nodetype>451267</type_nodetype>
 </node>

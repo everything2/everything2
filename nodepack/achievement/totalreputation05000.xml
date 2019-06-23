@@ -4,9 +4,9 @@
 
 return 1 if $totalRep &gt;= 5000;
 return 0;</code>
-  <node_id>1918064</node_id>
   <display>&lt;strong&gt;Most Popular&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Total reputation of 5000&lt;/i&gt;</display>
-  <title>totalreputation05000</title>
+  <node_id>1918064</node_id>
   <subtype>user</subtype>
+  <title>totalreputation05000</title>
   <type_nodetype>1917847</type_nodetype>
 </node>

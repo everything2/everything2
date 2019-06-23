@@ -227,7 +227,7 @@ htmlcode('openform','').$str.$BRN.htmlcode('closeform','');
 &lt;/p&gt;
 
 &lt;p align=&quot;right&quot;&gt;&lt;small&gt;(bugs to [N-Wing])&lt;/small&gt;&lt;/p&gt;</doctext>
+  <node_id>1199723</node_id>
   <title>usergroup message archive</title>
   <type_nodetype>14</type_nodetype>
-  <node_id>1199723</node_id>
 </node>

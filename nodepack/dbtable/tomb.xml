@@ -1,7 +1,4 @@
 <node>
-  <type_nodetype>148</type_nodetype>
-  <title>tomb</title>
-  <node_id>609448</node_id>
   <_create_table_statement>CREATE TABLE `tomb` (
   `node_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_nodetype` int(11) NOT NULL DEFAULT '0',
@@ -14,4 +11,7 @@
   `data` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`node_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
+  <node_id>609448</node_id>
+  <title>tomb</title>
+  <type_nodetype>148</type_nodetype>
 </node>

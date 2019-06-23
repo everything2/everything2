@@ -1,7 +1,4 @@
 <node>
-  <node_id>481489</node_id>
-  <title>user statistics</title>
-  <type_nodetype>13</type_nodetype>
   <doctext>[%
    my $csr = $DB-&gt;getDatabaseHandle()-&gt;prepare(&quot;select count(user_id) from user where unix_timestamp(lasttime)&gt;(unix_timestamp(now())-3600*24)&quot;);
    $csr-&gt;execute or return &quot;SHIT&quot;; 
@@ -32,4 +29,7 @@ $csr-&gt;execute or return &quot;SHIT&quot;;
     &lt;/TABLE&gt;
    &quot;;
 %]  </doctext>
+  <node_id>481489</node_id>
+  <title>user statistics</title>
+  <type_nodetype>13</type_nodetype>
 </node>

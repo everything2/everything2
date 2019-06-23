@@ -1,6 +1,5 @@
 <node>
-  <node_id>1981109</node_id>
-  <s3content_id>1981109</s3content_id>
+  <contentversion>104</contentversion>
   <doctext>/* thanks to Oolong's skeleton stylesheet */
 /* no, this isn't even remotely done yet.  as it says - don't look */
 
@@ -344,8 +343,9 @@ td.wu_social { float: right }
 #chatterlight_NW { float: left; width: 190px; }
 #chatterlight_hints { display: none; }
 #chatterbox_nodelet .nodelet { width: 700px }</doctext>
-  <contentversion>104</contentversion>
-  <type_nodetype>1854352</type_nodetype>
+  <node_id>1981109</node_id>
   <s3bucket></s3bucket>
+  <s3content_id>1981109</s3content_id>
   <title>don't look, sleeping</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

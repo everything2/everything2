@@ -1,9 +1,9 @@
 <node>
-  <description>a new [e2poll] is posted.</description>
   <code>return &quot;There's a new [Everything User Poll[superdoc]|E2 Poll] available to vote on...&quot;</code>
+  <description>a new [e2poll] is posted.</description>
+  <hourLimit>720</hourLimit>
+  <invalid_check></invalid_check>
   <node_id>1930854</node_id>
   <title>e2poll</title>
-  <hourLimit>720</hourLimit>
   <type_nodetype>1930710</type_nodetype>
-  <invalid_check></invalid_check>
 </node>

@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>4</type_nodetype>
-  <title>displayNODE</title>
   <code></code>
   <node_id>33</node_id>
+  <title>displayNODE</title>
+  <type_nodetype>4</type_nodetype>
 </node>

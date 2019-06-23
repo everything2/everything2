@@ -1,9 +1,9 @@
 <node>
-  <description>you fulfill [my achievements|an achievement].</description>
   <code>return &quot;You earned the &quot;.getNodeById($$args{achievement_id})-&gt;{display}.&quot; achievement!&quot;;</code>
-  <node_id>1931728</node_id>
-  <type_nodetype>1930710</type_nodetype>
+  <description>you fulfill [my achievements|an achievement].</description>
   <hourLimit>72</hourLimit>
-  <title>achievement</title>
   <invalid_check></invalid_check>
+  <node_id>1931728</node_id>
+  <title>achievement</title>
+  <type_nodetype>1930710</type_nodetype>
 </node>

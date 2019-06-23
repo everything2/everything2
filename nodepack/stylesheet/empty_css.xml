@@ -1,9 +1,9 @@
 <node>
-  <s3content_id>1904465</s3content_id>
-  <node_id>1904465</node_id>
   <contentversion>103</contentversion>
   <doctext>/* An empty theme for all to use. Rather than filling up [The Catwalk] with a bunch of test stylesheets, I'd like to play around with the [Style Defacer] for a while. */</doctext>
+  <node_id>1904465</node_id>
   <s3bucket></s3bucket>
+  <s3content_id>1904465</s3content_id>
   <title>Empty CSS</title>
   <type_nodetype>1854352</type_nodetype>
 </node>

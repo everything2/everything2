@@ -1,7 +1,5 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
-  <s3bucket></s3bucket>
-  <title>Kernel Blue</title>
+  <contentversion>119</contentversion>
   <doctext>/****** COLORS ******/
 body,
 th,
@@ -764,7 +762,9 @@ hr.clear {
 .zen_mobiletab &gt; A:visited {
 	color: #ddF;
 }</doctext>
-  <contentversion>119</contentversion>
   <node_id>1882070</node_id>
+  <s3bucket></s3bucket>
   <s3content_id>1882070</s3content_id>
+  <title>Kernel Blue</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

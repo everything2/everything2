@@ -1,10 +1,10 @@
 <node>
   <displaytype>display</displaytype>
-  <pagetype_nodetype>148</pagetype_nodetype>
-  <node_id>185</node_id>
-  <type_nodetype>5</type_nodetype>
   <mimetype></mimetype>
-  <title>dbtable display page</title>
-  <parent_container>1854175</parent_container>
+  <node_id>185</node_id>
   <page></page>
+  <pagetype_nodetype>148</pagetype_nodetype>
+  <parent_container>1854175</parent_container>
+  <title>dbtable display page</title>
+  <type_nodetype>5</type_nodetype>
 </node>

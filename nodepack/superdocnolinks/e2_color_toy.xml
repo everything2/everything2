@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>1065266</type_nodetype>
-  <title>E2 Color Toy</title>
   <doctext>&lt;noscript&gt;
 &lt;h3&gt;JavaScript is not available in your browser.&lt;/h3&gt;
 &lt;p&gt;It may be disabled, or your browser may not support it at all. 
@@ -300,4 +298,6 @@ just let me know that icab pre2.6 has expired, and all is well on
 
 </doctext>
   <node_id>1241839</node_id>
+  <title>E2 Color Toy</title>
+  <type_nodetype>1065266</type_nodetype>
 </node>

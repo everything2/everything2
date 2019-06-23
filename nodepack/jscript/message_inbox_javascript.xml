@@ -1,9 +1,9 @@
 <node>
-  <node_id>2069795</node_id>
-  <s3content_id>2069795</s3content_id>
-  <doctext>// Moved to: js/2069795.js</doctext>
   <contentversion>104</contentversion>
-  <type_nodetype>1786405</type_nodetype>
+  <doctext>// Moved to: js/2069795.js</doctext>
+  <node_id>2069795</node_id>
   <s3bucket></s3bucket>
+  <s3content_id>2069795</s3content_id>
   <title>message inbox javascript</title>
+  <type_nodetype>1786405</type_nodetype>
 </node>

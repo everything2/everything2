@@ -1,7 +1,4 @@
 <node>
-  <node_id>366647</node_id>
-  <type_nodetype>13</type_nodetype>
-  <title>raw node editor</title>
   <doctext>Sometimes we need fire to fight fire... 
 &lt;p&gt;This allows you to edit a node and all its fields directly. 
 [{openform}] 
@@ -22,4 +19,7 @@
     $str .= &quot;$field:&quot;; $str .= $query-&gt;textfield($field, encodeHTML($$EDITNODE{$field}), 40); $str .= &quot;&lt;br /&gt;\n&quot;; } $str; 
 %] 
 [{closeform}]</doctext>
+  <node_id>366647</node_id>
+  <title>raw node editor</title>
+  <type_nodetype>13</type_nodetype>
 </node>

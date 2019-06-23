@@ -1,7 +1,4 @@
 <node>
-  <node_id>1146920</node_id>
-  <type_nodetype>14</type_nodetype>
-  <title>jaybonci's sandbox</title>
   <doctext>&lt;br /&gt;
 [%
   my $str = &quot;&quot;;
@@ -20,4 +17,7 @@
   return &quot;To go: $count&lt;br&gt;$str&lt;br&gt;&quot;;
 
 %]</doctext>
+  <node_id>1146920</node_id>
+  <title>jaybonci's sandbox</title>
+  <type_nodetype>14</type_nodetype>
 </node>

@@ -1,6 +1,4 @@
 <node>
-  <title>CST_Storage_25</title>
-  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;p&gt;
 This is a storage node for CST reviews. Reviews are moved here from our working area in [CST_Chat].
 &lt;/p&gt;&lt;p&gt;
@@ -382,4 +380,6 @@ C&amp;P from The Revolution of Everyday Life, Rebel Press; Reprint edition (Apri
 &lt;hr&gt;
 </doctext>
   <node_id>1857769</node_id>
+  <title>CST_Storage_25</title>
+  <type_nodetype>1144104</type_nodetype>
 </node>

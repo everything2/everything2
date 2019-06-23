@@ -1,5 +1,4 @@
 <node>
-  <node_id>2070638</node_id>
   <doctext>&lt;p&gt;This is a temporary ghetto tool to edit node parameters, and do a bit of testing until we have full parameter support built into the application, with the full removal of $VARS. We'll get there, but this isn't bad for now.  &lt;/p&gt;
 &lt;br /&gt;&lt;br /&gt;&lt;hr width=&quot;20%&quot; /&gt;&lt;br /&gt;&lt;br /&gt;
 Available types of parameters: 
@@ -52,6 +51,7 @@ Available types of parameters:
   }
 
 %]</doctext>
-  <type_nodetype>1144104</type_nodetype>
+  <node_id>2070638</node_id>
   <title>Node Parameter Editor</title>
+  <type_nodetype>1144104</type_nodetype>
 </node>

@@ -1,6 +1,4 @@
 <node>
-  <title>newstats</title>
-  <type_nodetype>148</type_nodetype>
   <_create_table_statement>CREATE TABLE `newstats` (
   `newstats_id` int(11) NOT NULL DEFAULT '0',
   `newstats_calctime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -8,4 +6,6 @@
   PRIMARY KEY (`newstats_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <node_id>1264987</node_id>
+  <title>newstats</title>
+  <type_nodetype>148</type_nodetype>
 </node>

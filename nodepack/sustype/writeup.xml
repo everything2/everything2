@@ -1,6 +1,6 @@
 <node>
-  <node_id>1877739</node_id>
   <doctext>Prevents publication of writeups by the suspended user.  User may still create drafts and request review.  Similar to [node forbiddance].</doctext>
+  <node_id>1877739</node_id>
   <title>writeup</title>
   <type_nodetype>1399991</type_nodetype>
 </node>

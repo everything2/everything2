@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>1399991</type_nodetype>
-  <title>chat</title>
   <doctext>Prevents user from talking in any room.  Unlike borging, there is no place to put a descriptive explanation, and this does not automatically expire.  However, the suspended user will still be able to send private messages, which borging prevents.</doctext>
   <node_id>1877740</node_id>
+  <title>chat</title>
+  <type_nodetype>1399991</type_nodetype>
 </node>

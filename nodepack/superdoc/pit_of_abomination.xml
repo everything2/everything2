@@ -1,5 +1,4 @@
 <node>
-  <node_id>2005930</node_id>
   <doctext>[{openform}]
 &lt;p&gt;For they are an Offense in thine Eyes, and that thine Eyes might be freed from
 the sight of their Works, thou mayest abominate them here. And their feeble Screeds shall not
@@ -49,6 +48,7 @@ thou mayest in thy great Mercy relent.
 &lt;/fieldset&gt;' ;
 %]
 &lt;/form&gt;</doctext>
+  <node_id>2005930</node_id>
   <title>Pit of Abomination</title>
   <type_nodetype>14</type_nodetype>
 </node>

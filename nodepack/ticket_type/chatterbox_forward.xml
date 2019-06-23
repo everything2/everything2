@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>1946032</type_nodetype>
-  <title>chatterbox_forward</title>
   <node_id>1946034</node_id>
+  <title>chatterbox_forward</title>
+  <type_nodetype>1946032</type_nodetype>
 </node>

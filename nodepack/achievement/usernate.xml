@@ -1,10 +1,10 @@
 <node>
-  <title>userNate</title>
-  <subtype></subtype>
-  <type_nodetype>1917847</type_nodetype>
   <achievement_type>user</achievement_type>
   <code>return 1 if $user_id == 220;
 return 0;</code>
-  <node_id>1918318</node_id>
   <display>&lt;strong&gt;Nate&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Mr. Oostendorp&lt;/i&gt;</display>
+  <node_id>1918318</node_id>
+  <subtype></subtype>
+  <title>userNate</title>
+  <type_nodetype>1917847</type_nodetype>
 </node>

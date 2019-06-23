@@ -1,11 +1,11 @@
 <node>
+  <deleters_user>-1</deleters_user>
+  <extends_nodetype>7</extends_nodetype>
+  <grouptable></grouptable>
+  <node_id>148</node_id>
+  <readers_user>838015</readers_user>
+  <sqltable></sqltable>
+  <title>dbtable</title>
   <type_nodetype>1</type_nodetype>
   <writers_user>-1</writers_user>
-  <sqltable></sqltable>
-  <extends_nodetype>7</extends_nodetype>
-  <title>dbtable</title>
-  <deleters_user>-1</deleters_user>
-  <grouptable></grouptable>
-  <readers_user>838015</readers_user>
-  <node_id>148</node_id>
 </node>

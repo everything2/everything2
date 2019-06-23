@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>150</type_nodetype>
-  <title>draft maintenance delete</title>
+  <code></code>
+  <maintain_nodetype>2035430</maintain_nodetype>
   <maintaintype>delete</maintaintype>
   <node_id>2047125</node_id>
-  <maintain_nodetype>2035430</maintain_nodetype>
-  <code></code>
+  <title>draft maintenance delete</title>
+  <type_nodetype>150</type_nodetype>
 </node>

@@ -67,7 +67,7 @@ $str .= &quot;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;\n&quot;;
 
 return $str;
 %]</doctext>
+  <node_id>1947629</node_id>
   <title>Oolong's temp code</title>
   <type_nodetype>14</type_nodetype>
-  <node_id>1947629</node_id>
 </node>

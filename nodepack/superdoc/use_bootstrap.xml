@@ -17,7 +17,7 @@
 
   return htmlcode(&quot;openform&quot;).qq|&lt;input type=&quot;hidden&quot; name=&quot;im_in&quot; value=&quot;$form_params-&gt;{im_in}&quot;&gt;&lt;input type=&quot;submit&quot; name=&quot;foo&quot; value=&quot;$form_params-&gt;{title}&quot;&gt;&lt;/form&gt;|;
 %]</doctext>
+  <node_id>2116107</node_id>
   <title>Use Bootstrap</title>
   <type_nodetype>14</type_nodetype>
-  <node_id>2116107</node_id>
 </node>

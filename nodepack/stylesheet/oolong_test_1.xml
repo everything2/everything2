@@ -1,7 +1,4 @@
 <node>
-  <title>Oolong Test 1</title>
-  <s3bucket></s3bucket>
-  <type_nodetype>1854352</type_nodetype>
   <contentversion>104</contentversion>
   <doctext>/* This is the skeleton stylesheet for the zen theme, by ascorbic */
 /* You may use this file as a foundation for any new work, but you may find it easier to start from scratch. */
@@ -330,6 +327,9 @@ width: 100%;
 big big big {
 font-size: inherit;
 }</doctext>
-  <s3content_id>1901770</s3content_id>
   <node_id>1901770</node_id>
+  <s3bucket></s3bucket>
+  <s3content_id>1901770</s3content_id>
+  <title>Oolong Test 1</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

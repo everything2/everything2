@@ -1,6 +1,4 @@
 <node>
-  <title>ascorbic's toolshed</title>
-  <type_nodetype>13</type_nodetype>
   <doctext>&lt;p&gt;&lt;textarea class='bespin' style='width: 400px; height: 1.7em'&gt;&lt;/textarea&gt;&lt;/p&gt;
 
 
@@ -139,4 +137,6 @@ $$N{realname},
 $str;
 %]</doctext>
   <node_id>1822016</node_id>
+  <title>ascorbic's toolshed</title>
+  <type_nodetype>13</type_nodetype>
 </node>

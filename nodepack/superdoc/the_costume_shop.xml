@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>14</type_nodetype>
-  <title>The Costume Shop</title>
   <doctext>[%
 
 my $isHalloween = htmlcode('isSpecialDate','halloween');
@@ -63,4 +61,6 @@ return &quot;&lt;p&gt;Note that since you are an administrator you can also remo
 
 %]</doctext>
   <node_id>1914948</node_id>
+  <title>The Costume Shop</title>
+  <type_nodetype>14</type_nodetype>
 </node>

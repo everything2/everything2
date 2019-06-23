@@ -1,9 +1,9 @@
 <node>
-  <node_id>1936586</node_id>
-  <description>a writeup of yours gets [social bookmarking|bookmarked on an external site].</description>
   <code>return &quot;Your writeup &quot;.linkNode($$args{writeup_id}).&quot; was bookmarked on &quot;.$$args{bookmark_site}.&quot; by &quot;.linkNode($$args{bookmark_user});</code>
-  <invalid_check></invalid_check>
-  <type_nodetype>1930710</type_nodetype>
-  <title>socialBookmark</title>
+  <description>a writeup of yours gets [social bookmarking|bookmarked on an external site].</description>
   <hourLimit>168</hourLimit>
+  <invalid_check></invalid_check>
+  <node_id>1936586</node_id>
+  <title>socialBookmark</title>
+  <type_nodetype>1930710</type_nodetype>
 </node>

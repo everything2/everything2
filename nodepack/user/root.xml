@@ -1,56 +1,44 @@
 <node>
-  <type_nodetype>15</type_nodetype>
-  <title>root</title>
-  <nick></nick>
   <doctext>He's the god of [gods] &amp;#8212; instant access. Unlimited power.
 Great hair.</doctext>
-  <node_id>113</node_id>
   <email>root@localhost</email>
+  <imgsrc></imgsrc>
+  <nick></nick>
+  <node_id>113</node_id>
   <passwd></passwd>
   <realname>Super user</realname>
-  <imgsrc></imgsrc>
+  <title>root</title>
+  <type_nodetype>15</type_nodetype>
   <vars>
-    <value>15</value>
-    <key>num_newwus</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>lastnode</key>
-  </vars>
-  <vars>
-    <key>oldexp</key>
-    <value>-160</value>
-  </vars>
-  <vars>
-    <value></value>
     <key>motto</key>
-  </vars>
-  <vars>
-    <key>oldGP</key>
     <value></value>
   </vars>
   <vars>
-    <value></value>
-    <key>specialties</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>mission</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>nwriteups</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>employment</key>
+    <key>num_newwus</key>
+    <value>15</value>
   </vars>
   <vars>
     <key>nodelets</key>
     <value>1687135,262,170070,91,263,1157024,165437</value>
   </vars>
   <vars>
+    <key>personal_nodelet</key>
+    <value></value>
+  </vars>
+  <vars>
     <key>group</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>lastnode</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>employment</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>oldGP</key>
     <value></value>
   </vars>
   <vars>
@@ -58,15 +46,27 @@ Great hair.</doctext>
     <value>off</value>
   </vars>
   <vars>
-    <key>personal_nodelet</key>
+    <key>mission</key>
     <value></value>
+  </vars>
+  <vars>
+    <key>numwriteups</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>oldexp</key>
+    <value>-160</value>
   </vars>
   <vars>
     <key>preference_last_update_time</key>
     <value>1330374419</value>
   </vars>
   <vars>
-    <key>numwriteups</key>
+    <key>specialties</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>nwriteups</key>
     <value></value>
   </vars>
 </node>

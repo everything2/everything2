@@ -34,7 +34,7 @@
       assert.deepEqual(encoded_url.params,{&quot;lastnode_id&quot;: &quot;1234&quot;}, &quot;Can remove a parameter&quot;);
     });
   &lt;/script&gt;</doctext>
-  <type_nodetype>1491416</type_nodetype>
-  <title>javascript unit tests</title>
   <node_id>2116001</node_id>
+  <title>javascript unit tests</title>
+  <type_nodetype>1491416</type_nodetype>
 </node>

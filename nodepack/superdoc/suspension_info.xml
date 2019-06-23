@@ -175,7 +175,7 @@ FOOTER
 return $str;
 
 %]</doctext>
-  <type_nodetype>14</type_nodetype>
-  <title>Suspension Info</title>
   <node_id>1399999</node_id>
+  <title>Suspension Info</title>
+  <type_nodetype>14</type_nodetype>
 </node>

@@ -1,6 +1,4 @@
 <node>
-  <s3content_id>1876637</s3content_id>
-  <node_id>1876637</node_id>
   <contentversion>107</contentversion>
   <doctext>/*= autofix added basic compatibility rules */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
@@ -843,7 +841,9 @@ width: 100%;
 #chatterbox { width: 196px; }
 
 .nodeshell { font-style: italic; }</doctext>
+  <node_id>1876637</node_id>
   <s3bucket></s3bucket>
+  <s3content_id>1876637</s3content_id>
   <title>maxClimb_zenTheme</title>
   <type_nodetype>1854352</type_nodetype>
 </node>

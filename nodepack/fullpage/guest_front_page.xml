@@ -1,5 +1,4 @@
 <node>
-  <node_id>2030780</node_id>
   <doctext>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot; &quot;http://www.w3.org/TR/html4/loose.dtd&quot;&gt;
 
 &lt;html lang=&quot;en&quot;&gt;
@@ -104,6 +103,7 @@ return parseLinks($zenStr);
 [{static javascript}]
 &lt;/body&gt;
 &lt;/html&gt;</doctext>
+  <node_id>2030780</node_id>
   <title>Guest Front Page</title>
   <type_nodetype>451267</type_nodetype>
 </node>

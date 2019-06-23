@@ -1,7 +1,4 @@
 <node>
-  <type_nodetype>148</type_nodetype>
-  <title>iplog2</title>
-  <node_id>1919228</node_id>
   <_create_table_statement>CREATE TABLE `iplog2` (
   `iplog2_id` int(11) NOT NULL AUTO_INCREMENT,
   `ip_user` int(11) NOT NULL DEFAULT '0',
@@ -12,4 +9,7 @@
   KEY `iplog2_user` (`ip_user`),
   KEY `iplog2_addy` (`ip_addy`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
+  <node_id>1919228</node_id>
+  <title>iplog2</title>
+  <type_nodetype>148</type_nodetype>
 </node>

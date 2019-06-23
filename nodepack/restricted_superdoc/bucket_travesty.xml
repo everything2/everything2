@@ -1,5 +1,4 @@
 <node>
-  <node_id>927562</node_id>
   <doctext>nodes that were broken by the node bucket:
 
 [%
@@ -19,6 +18,7 @@ $str;
 
 
 %]</doctext>
-  <type_nodetype>13</type_nodetype>
+  <node_id>927562</node_id>
   <title>bucket travesty</title>
+  <type_nodetype>13</type_nodetype>
 </node>

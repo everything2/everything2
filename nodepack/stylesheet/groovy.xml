@@ -1,9 +1,5 @@
 <node>
-  <node_id>1907213</node_id>
-  <s3content_id>1907213</s3content_id>
-  <type_nodetype>1854352</type_nodetype>
-  <s3bucket></s3bucket>
-  <title>Groovy</title>
+  <contentversion>105</contentversion>
   <doctext>/*= autofix added rules. adjust to taste: */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
 .weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
@@ -733,5 +729,9 @@ div#surveymessage {
 }
 
 </doctext>
-  <contentversion>105</contentversion>
+  <node_id>1907213</node_id>
+  <s3bucket></s3bucket>
+  <s3content_id>1907213</s3content_id>
+  <title>Groovy</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

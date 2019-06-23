@@ -1,7 +1,4 @@
 <node>
-  <node_id>1167721</node_id>
-  <type_nodetype>14</type_nodetype>
-  <title>Spam Cannon</title>
   <doctext>[%
 my $MAX_VICTIMS = 20;
 
@@ -127,4 +124,7 @@ $str;
 %]
 
 </doctext>
+  <node_id>1167721</node_id>
+  <title>Spam Cannon</title>
+  <type_nodetype>14</type_nodetype>
 </node>

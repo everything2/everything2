@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>9</type_nodetype>
-  <nltext></nltext>
   <nlcode></nlcode>
-  <title>Personal Links</title>
-  <parent_container>0</parent_container>
+  <nltext></nltext>
   <node_id>174581</node_id>
+  <parent_container>0</parent_container>
+  <title>Personal Links</title>
+  <type_nodetype>9</type_nodetype>
 </node>

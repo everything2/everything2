@@ -1,7 +1,4 @@
 <node>
-  <node_id>1386383</node_id>
-  <title>E2 Bookmarklets (edevdoc)</title>
-  <type_nodetype>1491416</type_nodetype>
   <doctext>&lt;p&gt;
 This is a page of [bookmarklet]s for use around E2. They're presented in three forms here:
 &lt;ol&gt;
@@ -273,4 +270,7 @@ Go to selected URL.
 &lt;/table&gt;
 &lt;/form&gt;
 </doctext>
+  <node_id>1386383</node_id>
+  <title>E2 Bookmarklets (edevdoc)</title>
+  <type_nodetype>1491416</type_nodetype>
 </node>

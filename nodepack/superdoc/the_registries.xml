@@ -19,7 +19,7 @@
   $str.=&quot;&lt;p&gt;(Registries are listed in order of most recent entry)&lt;/p&gt;&quot;;
   return $str;
 %]</doctext>
-  <type_nodetype>14</type_nodetype>
-  <title>The Registries</title>
   <node_id>2004312</node_id>
+  <title>The Registries</title>
+  <type_nodetype>14</type_nodetype>
 </node>

@@ -127,7 +127,7 @@
 	return $str;
 %]
 </doctext>
-  <type_nodetype>1144104</type_nodetype>
-  <title>Security Monitor</title>
   <node_id>1376796</node_id>
+  <title>Security Monitor</title>
+  <type_nodetype>1144104</type_nodetype>
 </node>

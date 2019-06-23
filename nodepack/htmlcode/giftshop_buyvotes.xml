@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>4</type_nodetype>
-  <title>giftshop_buyvotes</title>
   <code></code>
   <node_id>2157040</node_id>
+  <title>giftshop_buyvotes</title>
+  <type_nodetype>4</type_nodetype>
 </node>

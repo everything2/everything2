@@ -36,7 +36,7 @@ return $str;
 
 
 %]</doctext>
-  <type_nodetype>13</type_nodetype>
-  <title>Voting Data</title>
   <node_id>1877984</node_id>
+  <title>Voting Data</title>
+  <type_nodetype>13</type_nodetype>
 </node>

@@ -1,8 +1,8 @@
 <node>
-  <parent_container>0</parent_container>
-  <title>Chatterbox</title>
   <nlcode></nlcode>
   <nltext></nltext>
-  <type_nodetype>9</type_nodetype>
   <node_id>170070</node_id>
+  <parent_container>0</parent_container>
+  <title>Chatterbox</title>
+  <type_nodetype>9</type_nodetype>
 </node>

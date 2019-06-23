@@ -54,7 +54,7 @@ $str .= &quot;\&quot; &quot;.( $isNode ? &quot;class='populated'&quot; : &quot;c
 $str;
 %]
 </doctext>
-  <type_nodetype>1065266</type_nodetype>
-  <title>linking test node</title>
   <node_id>1984667</node_id>
+  <title>linking test node</title>
+  <type_nodetype>1065266</type_nodetype>
 </node>

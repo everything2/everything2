@@ -1,6 +1,4 @@
 <node>
-  <title>News for noders. Stuff that matters.</title>
-  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;[{weblog:10,,,,1}]
 
 
@@ -8,4 +6,6 @@
 [Everything FAQ]&lt;br&gt;&lt;br&gt;
 </doctext>
   <node_id>165580</node_id>
+  <title>News for noders. Stuff that matters.</title>
+  <type_nodetype>14</type_nodetype>
 </node>

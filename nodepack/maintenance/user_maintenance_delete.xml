@@ -1,8 +1,8 @@
 <node>
-  <maintain_nodetype>15</maintain_nodetype>
-  <node_id>2011636</node_id>
   <code></code>
-  <title>user maintenance delete</title>
+  <maintain_nodetype>15</maintain_nodetype>
   <maintaintype>delete</maintaintype>
+  <node_id>2011636</node_id>
+  <title>user maintenance delete</title>
   <type_nodetype>150</type_nodetype>
 </node>

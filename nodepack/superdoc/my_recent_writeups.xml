@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>14</type_nodetype>
-  <title>My Recent Writeups</title>
   <doctext>[%
 return &quot;If you logged in, you would know how many writeups you've published recently.&quot; if( $APP-&gt;isGuest($USER) );
 
@@ -17,4 +15,6 @@ return $str;
 
 %]</doctext>
   <node_id>1975906</node_id>
+  <title>My Recent Writeups</title>
+  <type_nodetype>14</type_nodetype>
 </node>

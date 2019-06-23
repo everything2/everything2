@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>148</type_nodetype>
-  <title>commonwords</title>
-  <node_id>1933714</node_id>
   <_create_table_statement>CREATE TABLE `commonwords` (
   `commonwords_id` int(11) NOT NULL AUTO_INCREMENT,
   `commonword` char(127) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`commonwords_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
+  <node_id>1933714</node_id>
+  <title>commonwords</title>
+  <type_nodetype>148</type_nodetype>
 </node>

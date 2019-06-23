@@ -1,9 +1,4 @@
 <node>
-  <s3content_id>1908210</s3content_id>
-  <node_id>1908210</node_id>
-  <s3bucket></s3bucket>
-  <title>in10se's stylesheet, changed a little bit.</title>
-  <type_nodetype>1854352</type_nodetype>
   <contentversion>105</contentversion>
   <doctext>body
 {
@@ -639,4 +634,9 @@ width: 100%;
 #softlinks td[bgcolor=&quot;#afafaf&quot;] { background-color: #3F6F9F; }
 #softlinks td[bgcolor=&quot;#adadad&quot;] { background-color: #3B6C9D; }
 #softlinks td[bgcolor=&quot;#ababab&quot;] { background-color: #37699B; }</doctext>
+  <node_id>1908210</node_id>
+  <s3bucket></s3bucket>
+  <s3content_id>1908210</s3content_id>
+  <title>in10se's stylesheet, changed a little bit.</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

@@ -1,8 +1,8 @@
 <node>
-  <parent_container>0</parent_container>
-  <title>Categories</title>
   <nlcode></nlcode>
   <nltext></nltext>
-  <type_nodetype>9</type_nodetype>
   <node_id>1935779</node_id>
+  <parent_container>0</parent_container>
+  <title>Categories</title>
+  <type_nodetype>9</type_nodetype>
 </node>

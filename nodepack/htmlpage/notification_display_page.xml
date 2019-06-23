@@ -1,10 +1,10 @@
 <node>
   <displaytype>display</displaytype>
+  <mimetype></mimetype>
   <node_id>1930717</node_id>
+  <page></page>
   <pagetype_nodetype>1930710</pagetype_nodetype>
   <parent_container>1854175</parent_container>
   <title>notification display page</title>
-  <mimetype></mimetype>
   <type_nodetype>5</type_nodetype>
-  <page></page>
 </node>

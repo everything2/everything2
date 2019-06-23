@@ -13,8 +13,8 @@ if ($$args{node_id}) {
 }
 return $str;</code>
   <description>a writeup of yours gets [Voting/Experience system|voted] on.</description>
+  <invalid_check></invalid_check>
   <node_id>1961735</node_id>
   <title>voting</title>
   <type_nodetype>1930710</type_nodetype>
-  <invalid_check></invalid_check>
 </node>

@@ -1,7 +1,4 @@
 <node>
-  <node_id>1885718</node_id>
-  <type_nodetype>13</type_nodetype>
-  <title>FAQ Editor</title>
   <doctext>[%
 
 my  $faqData;
@@ -52,4 +49,7 @@ $str.=htmlcode('closeform');
 return $str;
 
 %]</doctext>
+  <node_id>1885718</node_id>
+  <title>FAQ Editor</title>
+  <type_nodetype>13</type_nodetype>
 </node>

@@ -1,11 +1,11 @@
 <node>
-  <invalid_check></invalid_check>
-  <type_nodetype>1930710</type_nodetype>
-  <hourLimit>168</hourLimit>
-  <title>chanop dragged user</title>
-  <node_id>2054467</node_id>
-  <description>a chanop drags a user to another room</description>
   <code>return linkNode($$args{chanop_id})
   . ' dragged user ' . linkNode($$args{user_id})
   . ' to ' . linkNode($$args{room_id});</code>
+  <description>a chanop drags a user to another room</description>
+  <hourLimit>168</hourLimit>
+  <invalid_check></invalid_check>
+  <node_id>2054467</node_id>
+  <title>chanop dragged user</title>
+  <type_nodetype>1930710</type_nodetype>
 </node>

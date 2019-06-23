@@ -1,9 +1,9 @@
 <node>
   <contentversion>144</contentversion>
   <doctext>// Moved to /js/1874924.js</doctext>
-  <title>default javascript</title>
-  <s3bucket></s3bucket>
-  <type_nodetype>1786405</type_nodetype>
-  <s3content_id>1874924</s3content_id>
   <node_id>1874924</node_id>
+  <s3bucket></s3bucket>
+  <s3content_id>1874924</s3content_id>
+  <title>default javascript</title>
+  <type_nodetype>1786405</type_nodetype>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <node_id>1469222</node_id>
   <doctext>&lt;p&gt;&lt;br&gt;&lt;br&gt;
 
 &lt;h2&gt;E2 Changes: Short Version&lt;/h2&gt;
@@ -86,6 +85,7 @@
 
 
 &lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;/p&gt;</doctext>
+  <node_id>1469222</node_id>
   <title>E2 Mission Statement</title>
   <type_nodetype>13</type_nodetype>
 </node>

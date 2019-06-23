@@ -88,7 +88,7 @@ return $str;
 
 
 </doctext>
-  <type_nodetype>14</type_nodetype>
-  <title>The Recommender</title>
   <node_id>1957344</node_id>
+  <title>The Recommender</title>
+  <type_nodetype>14</type_nodetype>
 </node>
