@@ -1,4 +1,4 @@
-package Everything::Page::25;
+package Everything::Page::unimplemented_25;
 
 use Moose;
 extends 'Everything::Page';

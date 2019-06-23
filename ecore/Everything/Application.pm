@@ -157,6 +157,54 @@ BEGIN {
 			"assignable" => ["admin"],
 			"validate" => "integer"
 		},
+		"disable_bookmark" =>
+		{
+			"description" => "Prevent bookmarking on this node or type",
+			"assignable" => ["admin"],
+			"validate" => "integer",
+		},
+		"override_disable_bookmark" =>
+		{
+			"description" => "Allow bookmarking on this node, even if it is disabled on the type",
+			"assignable" => ["admin"],
+			"validate" => "integer",
+		},
+		"disable_cool" => 
+		{
+			"description" => "Prevent cool on this node or type",
+			"assignable" => ["admin"],
+			"validate" => "integer"
+		},
+		"override_disable_cool" =>
+		{
+			"description" => "Allow cool on this node, even if it is disabled on the type",
+			"assignable" => ["admin"],
+			"validate" => "integer",
+		},
+		"disable_weblog" => 
+		{
+			"description" => "Prevent weblogging on this node or type",
+			"assignable" => ["admin"],
+			"validate" => "integer",
+		},
+		"override_disable_weblog" =>
+		{
+			"description" => "Allow weblog on this node, even if it is disabled on the type",
+			"assignable" => ["admin"],
+			"validate" => "integer",
+		},
+		"disable_category" =>
+		{
+			"description" => "Prevent adding this node or nodetype to a category",
+			"assignable" => ["admin"],
+			"validate" => "integer",
+		},
+		"override_disable_category" =>
+		{
+			"description" => "Allow category on this node, even if it is disabled on the type",
+			"assignable" => ["admin"],
+			"validate" => "integer",
+		},
 	};
 
 	foreach my $param(keys %$PARAMS)
