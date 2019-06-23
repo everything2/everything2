@@ -1,7 +1,4 @@
 <node>
-  <type_nodetype>13</type_nodetype>
-  <node_id>434721</node_id>
-  <title>printvars</title>
   <doctext>[%
 my $str;
 foreach (keys %$VARS) {
@@ -9,4 +6,7 @@ foreach (keys %$VARS) {
 }
 $str;
 %]</doctext>
+  <title>printvars</title>
+  <type_nodetype>13</type_nodetype>
+  <node_id>434721</node_id>
 </node>

@@ -1,4 +1,6 @@
 <node>
+  <title>The Nodeshell Hopper</title>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return 'You\'ve got other things to snoop on, don\'t ya.' unless $APP-&gt;isEditor($USER);
 
@@ -110,7 +112,5 @@ $str .= '&lt;form method=&quot;post&quot;&gt;
 
 return $str;
 %]</doctext>
-  <title>The Nodeshell Hopper</title>
   <node_id>1140925</node_id>
-  <type_nodetype>14</type_nodetype>
 </node>

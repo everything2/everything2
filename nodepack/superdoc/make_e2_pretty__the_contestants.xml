@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>14</type_nodetype>
   <node_id>1910024</node_id>
   <doctext>&lt;p&gt;Below are the themes entered in [Make E2 Pretty]. If you select the zen theme in your [User Settings], you can try most of them using the links in the left column, or you can see screenshots by clicking on the images in the other columns. You can vote for your favorite new theme over at [Everything User Poll] or in the poll nodelet through October 8th. Please let [Two Sheds] know if you have any questions.&lt;/p&gt;
 &lt;p&gt;&lt;i&gt;Also, please note that these themes need not be finished works of art. We will fix any implementation and browser compatibility problems with the winning entries, so if it doesn't look to you like the pictures below, it will later. [Mozilla] browsers like [Mozilla Firefox|Firefox] and [Camino] may be best for evaluating the designers' intentions.&lt;/i&gt;&lt;/p&gt;
@@ -71,5 +70,6 @@
   &lt;td&gt;&lt;a href=&quot;http://collopy.net/e2/zen/slate/webster.jpg&quot;&gt;&lt;img src=&quot;http://collopy.net/e2/zen/slate/webster-thumb.jpg&quot;&gt;&lt;/a&gt;&lt;/td&gt;
  &lt;/tr&gt;
 &lt;/table&gt;</doctext>
+  <type_nodetype>14</type_nodetype>
   <title>Make E2 Pretty: The Contestants</title>
 </node>

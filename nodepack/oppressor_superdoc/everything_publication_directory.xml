@@ -1,5 +1,5 @@
 <node>
-  <title>Everything Publication Directory</title>
+  <node_id>1797897</node_id>
   <doctext>[%
 return &quot;go away&quot; unless $APP-&gt;inUsergroup($USER, 'thepub');
 return &quot;&quot;;
@@ -151,6 +151,6 @@ $str;
 
 &lt;br /&gt;
 &lt;p&gt;&lt;em&gt;Bug reports go to [kthejoker].&lt;/em&gt;&lt;/p&gt;</doctext>
-  <node_id>1797897</node_id>
   <type_nodetype>1144104</type_nodetype>
+  <title>Everything Publication Directory</title>
 </node>

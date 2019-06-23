@@ -1,9 +1,5 @@
 <node>
-  <s3bucket></s3bucket>
-  <node_id>1918718</node_id>
-  <s3content_id>1918718</s3content_id>
-  <type_nodetype>1854352</type_nodetype>
-  <title>Primitive</title>
+  <contentversion>104</contentversion>
   <doctext>/* structure */
 body {margin: 0;}
 #wrapper {padding: 50px 220px 0 15px;}
@@ -39,5 +35,9 @@ body {margin: 0;}
 #writeup_faves li {margin-bottom: 5px;}
 #room_options input {margin-top: 0;} /* for Other Users */
 .ns_title {margin: 5px 0 0;}</doctext>
-  <contentversion>104</contentversion>
+  <title>Primitive</title>
+  <s3bucket></s3bucket>
+  <type_nodetype>1854352</type_nodetype>
+  <s3content_id>1918718</s3content_id>
+  <node_id>1918718</node_id>
 </node>

@@ -1,8 +1,8 @@
 <node>
-  <maintaintype>delete</maintaintype>
+  <type_nodetype>150</type_nodetype>
   <title>mysqlproc maintenance delete</title>
+  <maintaintype>delete</maintaintype>
   <node_id>2069692</node_id>
   <maintain_nodetype>2061807</maintain_nodetype>
-  <type_nodetype>150</type_nodetype>
   <code></code>
 </node>

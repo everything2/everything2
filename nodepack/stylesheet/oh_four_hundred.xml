@@ -1,5 +1,4 @@
 <node>
-  <title>Oh Four Hundred</title>
   <doctext>/****** COLORS ******/
 body,
 div,
@@ -944,8 +943,9 @@ body, div, p, th, td, li, dd, .writeuppage .item .content, .nodelet, .nodetitle,
     background-color: #101010;
 }</doctext>
   <contentversion>106</contentversion>
-  <s3bucket></s3bucket>
   <type_nodetype>1854352</type_nodetype>
+  <title>Oh Four Hundred</title>
+  <s3bucket></s3bucket>
   <node_id>2016267</node_id>
   <s3content_id>2016267</s3content_id>
 </node>

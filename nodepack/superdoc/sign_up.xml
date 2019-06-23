@@ -1,6 +1,7 @@
 <node>
   <node_id>2072173</node_id>
   <type_nodetype>14</type_nodetype>
+  <title>Sign up</title>
   <doctext>[%
 # how long do blacklisted IPs block account creation? (SQL INTERVAL)
 my $ipTrauma = '3 MONTH';
@@ -281,5 +282,4 @@ return &quot;&lt;h3&gt;Welcome to Everything2, $username!
 	&lt;/p&gt;&quot;;
 #%]
 </doctext>
-  <title>Sign up</title>
 </node>

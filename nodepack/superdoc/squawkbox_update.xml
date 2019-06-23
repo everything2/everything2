@@ -1,5 +1,4 @@
 <node>
-  <node_id>1944010</node_id>
   <type_nodetype>14</type_nodetype>
   <title>squawkbox update</title>
   <doctext>[%
@@ -163,4 +162,5 @@ while(my $msg = $msgcsr-&gt;fetchrow_hashref)
   $str.=&quot;&lt;/form&gt;&quot;;
   return $str;
 %]</doctext>
+  <node_id>1944010</node_id>
 </node>

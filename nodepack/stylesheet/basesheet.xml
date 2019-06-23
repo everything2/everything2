@@ -1,10 +1,9 @@
 <node>
-  <s3bucket></s3bucket>
-  <s3content_id>1973976</s3content_id>
   <node_id>1973976</node_id>
+  <s3content_id>1973976</s3content_id>
   <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
   <title>basesheet</title>
-  <contentversion>109</contentversion>
   <doctext>/* THIS STUFF should be moved from here to fixstylesheet on its next upgrade */
 .nodeletfoot{
 	font-size: 84% ;
@@ -320,4 +319,5 @@ table.registries {
 #homenodeinspector .contentfooter {
   border-bottom: 1px solid;
 }</doctext>
+  <contentversion>109</contentversion>
 </node>

@@ -1,7 +1,5 @@
 <node>
-  <title>ipblacklistrange</title>
   <node_id>2015634</node_id>
-  <type_nodetype>148</type_nodetype>
   <_create_table_statement>CREATE TABLE `ipblacklistrange` (
   `ipblacklistrange_id` int(11) NOT NULL AUTO_INCREMENT,
   `max_ip` int(11) unsigned NOT NULL DEFAULT '0',
@@ -16,4 +14,6 @@
   KEY `ban_timestamp` (`ban_timestamp`),
   KEY `ipblacklistref_id` (`ipblacklistref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
+  <type_nodetype>148</type_nodetype>
+  <title>ipblacklistrange</title>
 </node>

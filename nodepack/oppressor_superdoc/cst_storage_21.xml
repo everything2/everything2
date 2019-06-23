@@ -1,4 +1,7 @@
 <node>
+  <node_id>1812252</node_id>
+  <type_nodetype>1144104</type_nodetype>
+  <title>CST_Storage_21</title>
   <doctext>&lt;p&gt;
 This is a storage node for CST reviews. Reviews are moved her from our working area in [CST_Chat].
 &lt;/p&gt;&lt;p&gt;
@@ -707,7 +710,4 @@ Based on that disclaimer, the quoted material above is believed to be in the Pub
 
 
 </doctext>
-  <title>CST_Storage_21</title>
-  <node_id>1812252</node_id>
-  <type_nodetype>1144104</type_nodetype>
 </node>

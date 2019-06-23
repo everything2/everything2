@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>1144104</type_nodetype>
   <node_id>1150873</node_id>
   <doctext>&lt;p align=&quot;right&quot;&gt;As announced on [September 2, 2001] in [root log: September 2001]&lt;/p&gt;&lt;br&gt;
 &lt;p&gt;&lt;b&gt;What are firmlinks?&lt;/b&gt;&lt;/p&gt;
@@ -31,4 +30,5 @@ I strongly think that firmlinks are an important step towards the future of orga
 &lt;br&gt;&lt;br&gt;
 Please give me detailed info on bug reports, theme and client included.- JayBonci&lt;br&gt;&lt;br&gt;</doctext>
   <title>E2 Editing: Firmlinks</title>
+  <type_nodetype>1144104</type_nodetype>
 </node>

@@ -1,9 +1,7 @@
 <node>
-  <s3content_id>1882070</s3content_id>
-  <node_id>1882070</node_id>
   <type_nodetype>1854352</type_nodetype>
   <s3bucket></s3bucket>
-  <contentversion>119</contentversion>
+  <title>Kernel Blue</title>
   <doctext>/****** COLORS ******/
 body,
 th,
@@ -766,5 +764,7 @@ hr.clear {
 .zen_mobiletab &gt; A:visited {
 	color: #ddF;
 }</doctext>
-  <title>Kernel Blue</title>
+  <contentversion>119</contentversion>
+  <node_id>1882070</node_id>
+  <s3content_id>1882070</s3content_id>
 </node>

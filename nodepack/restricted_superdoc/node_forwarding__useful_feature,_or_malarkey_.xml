@@ -1,7 +1,6 @@
 <node>
-  <node_id>1147570</node_id>
-  <type_nodetype>13</type_nodetype>
   <title>Node Forwarding: Useful Feature, or Malarkey?</title>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;h2&gt;wormhole!&lt;/h2&gt;
 
 &lt;p&gt;These things are node_wormholes! What a cool name! &lt;/p&gt;
@@ -83,4 +82,5 @@ New Age maniacs. Maybe it's for the best. &lt;/p&gt;
 I mean, just forbid it, period (except of course for gods, ha ha, since we're so goddamn 
 wise and good). But that's another issue. &lt;/p&gt;
 </doctext>
+  <node_id>1147570</node_id>
 </node>

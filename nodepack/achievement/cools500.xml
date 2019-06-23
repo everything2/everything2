@@ -1,11 +1,11 @@
 <node>
-  <achievement_type>cool</achievement_type>
-  <title>cools500</title>
-  <node_id>1918130</node_id>
   <type_nodetype>1917847</type_nodetype>
+  <title>cools500</title>
+  <subtype>user</subtype>
+  <node_id>1918130</node_id>
   <display>&lt;strong&gt;Covered in Cool&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Received 500 Cools&lt;/i&gt;</display>
   <code>my $coolCount = htmlcode('coolcount', $user_id);
 return 1 if $coolCount &gt;=500;
 return 0;</code>
-  <subtype>user</subtype>
+  <achievement_type>cool</achievement_type>
 </node>

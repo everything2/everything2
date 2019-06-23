@@ -1,10 +1,10 @@
 <node>
+  <title>recording display page</title>
+  <parent_container>1854175</parent_container>
+  <type_nodetype>5</type_nodetype>
+  <mimetype></mimetype>
   <page></page>
   <displaytype>display</displaytype>
-  <title>recording display page</title>
-  <type_nodetype>5</type_nodetype>
-  <pagetype_nodetype>1957954</pagetype_nodetype>
   <node_id>1958977</node_id>
-  <parent_container>1854175</parent_container>
-  <mimetype></mimetype>
+  <pagetype_nodetype>1957954</pagetype_nodetype>
 </node>

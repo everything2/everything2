@@ -1,11 +1,11 @@
 <node>
   <achievement_type>miscellaneous</achievement_type>
-  <title>eggs100</title>
-  <node_id>1918343</node_id>
-  <type_nodetype>1917847</type_nodetype>
-  <display>&lt;strong&gt;Eggs-ellent Work&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Collected 100 Easter Eggs&lt;/i&gt;</display>
   <code>my $uVars = getVars(getNodeById($user_id));
 return 1 if $$uVars{easter_eggs_bought} &gt;=100;
 return 0;</code>
+  <display>&lt;strong&gt;Eggs-ellent Work&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Collected 100 Easter Eggs&lt;/i&gt;</display>
+  <node_id>1918343</node_id>
+  <title>eggs100</title>
   <subtype></subtype>
+  <type_nodetype>1917847</type_nodetype>
 </node>

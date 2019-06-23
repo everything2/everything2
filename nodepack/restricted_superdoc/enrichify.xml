@@ -1,4 +1,7 @@
 <node>
+  <node_id>1956191</node_id>
+  <type_nodetype>13</type_nodetype>
+  <title>Enrichify</title>
   <doctext>[%
 my @params = $query-&gt;param;
 my $str;
@@ -85,7 +88,4 @@ return &quot;&lt;h3&gt;Bank Account&lt;/h3&gt;
 &lt;p&gt;You yourself have &lt;b&gt;&quot;.$$USER{GP}.&quot; GP&lt;/b&gt;.&lt;/p&gt;&quot;;
 
 %]</doctext>
-  <title>Enrichify</title>
-  <type_nodetype>13</type_nodetype>
-  <node_id>1956191</node_id>
 </node>

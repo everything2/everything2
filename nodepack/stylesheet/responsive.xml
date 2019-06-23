@@ -200,8 +200,8 @@ display: none;
 }
 </doctext>
   <title>Responsive</title>
-  <node_id>2047408</node_id>
-  <s3content_id>2047408</s3content_id>
-  <type_nodetype>1854352</type_nodetype>
   <s3bucket></s3bucket>
+  <type_nodetype>1854352</type_nodetype>
+  <s3content_id>2047408</s3content_id>
+  <node_id>2047408</node_id>
 </node>

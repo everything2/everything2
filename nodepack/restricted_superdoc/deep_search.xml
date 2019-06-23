@@ -1,4 +1,6 @@
 <node>
+  <node_id>994592</node_id>
+  <type_nodetype>13</type_nodetype>
   <title>Deep Search</title>
   <doctext>&lt;br&gt;&lt;br&gt;&lt;br&gt;
 &lt;p ALIGN=LEFT&gt;
@@ -7,6 +9,4 @@
 &lt;table cellpadding=0 cellspacing=0 width=100%&gt;
 [{newnodes:800}]
 &lt;/table&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</doctext>
-  <node_id>994592</node_id>
-  <type_nodetype>13</type_nodetype>
 </node>

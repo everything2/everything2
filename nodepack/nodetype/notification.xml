@@ -1,10 +1,10 @@
 <node>
-  <title>notification</title>
-  <sqltable>notification</sqltable>
   <type_nodetype>1</type_nodetype>
   <writers_user>829913</writers_user>
+  <sqltable>notification</sqltable>
   <extends_nodetype>7</extends_nodetype>
-  <node_id>1930710</node_id>
-  <grouptable></grouptable>
+  <title>notification</title>
   <deleters_user>829913</deleters_user>
+  <grouptable></grouptable>
+  <node_id>1930710</node_id>
 </node>

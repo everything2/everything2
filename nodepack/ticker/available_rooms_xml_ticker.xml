@@ -1,5 +1,4 @@
 <node>
-  <node_id>1254496</node_id>
   <type_nodetype>1252389</type_nodetype>
   <title>Available Rooms XML Ticker</title>
   <doctext>[%
@@ -43,4 +42,5 @@ foreach(sort(keys %$rooms))
   return $str;
 
 %]</doctext>
+  <node_id>1254496</node_id>
 </node>

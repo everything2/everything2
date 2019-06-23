@@ -1,5 +1,5 @@
 <node>
-  <title>Random Nodes XML Ticker</title>
+  <node_id>1252390</node_id>
   <doctext>[% 
 my @phrase = (
   'Nodes your grandma would have liked:',
@@ -33,5 +33,5 @@ $str.=&quot;&lt;/randomnodes&gt;\n&quot;;
 return $str;
 %]</doctext>
   <type_nodetype>1252389</type_nodetype>
-  <node_id>1252390</node_id>
+  <title>Random Nodes XML Ticker</title>
 </node>

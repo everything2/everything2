@@ -1,10 +1,10 @@
 <node>
-  <node_id>1254863</node_id>
+  <page></page>
+  <parent_container>1854175</parent_container>
+  <title>collaboration display page</title>
+  <mimetype></mimetype>
   <type_nodetype>5</type_nodetype>
   <pagetype_nodetype>1254859</pagetype_nodetype>
-  <mimetype></mimetype>
-  <parent_container>1854175</parent_container>
+  <node_id>1254863</node_id>
   <displaytype>display</displaytype>
-  <page></page>
-  <title>collaboration display page</title>
 </node>

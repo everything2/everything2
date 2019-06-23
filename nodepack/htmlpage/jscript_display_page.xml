@@ -1,10 +1,10 @@
 <node>
-  <mimetype>text/javascript</mimetype>
-  <parent_container>0</parent_container>
-  <node_id>1786408</node_id>
-  <type_nodetype>5</type_nodetype>
-  <pagetype_nodetype>1786405</pagetype_nodetype>
-  <title>jscript display page</title>
   <displaytype>display</displaytype>
+  <node_id>1786408</node_id>
+  <pagetype_nodetype>1786405</pagetype_nodetype>
+  <mimetype>text/javascript</mimetype>
+  <type_nodetype>5</type_nodetype>
+  <parent_container>0</parent_container>
+  <title>jscript display page</title>
   <page></page>
 </node>

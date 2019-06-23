@@ -1,5 +1,5 @@
 <node>
-  <title>Ooacssa</title>
+  <contentversion>104</contentversion>
   <doctext>/*= autofix added rules. adjust to taste: */
 .actions , .actions li {display:inline;margin:0;padding:0 0.5em 0 0;}
 .actions { display: block ; }
@@ -560,8 +560,8 @@ div #epicenter_zen {
 
 
 </doctext>
-  <contentversion>104</contentversion>
   <s3bucket></s3bucket>
+  <title>Ooacssa</title>
   <type_nodetype>1854352</type_nodetype>
   <s3content_id>1993776</s3content_id>
   <node_id>1993776</node_id>

@@ -1,9 +1,9 @@
 <node>
+  <mail_id>580977</mail_id>
+  <node_id>580977</node_id>
+  <title>daily report email</title>
   <type_nodetype>154</type_nodetype>
   <from_address></from_address>
-  <node_id>580977</node_id>
-  <mail_id>580977</mail_id>
-  <title>daily report email</title>
   <doctext>    The Everything2 Daily Report for [date]
 
 Good Morning, [user].  

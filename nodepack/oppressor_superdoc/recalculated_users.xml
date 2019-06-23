@@ -1,4 +1,6 @@
 <node>
+  <node_id>1960696</node_id>
+  <type_nodetype>1144104</type_nodetype>
   <title>Recalculated Users</title>
   <doctext>[%
 sub mysort {
@@ -39,6 +41,4 @@ $str .= '&lt;/ol&gt;';
 
 return $str;
 %]</doctext>
-  <type_nodetype>1144104</type_nodetype>
-  <node_id>1960696</node_id>
 </node>

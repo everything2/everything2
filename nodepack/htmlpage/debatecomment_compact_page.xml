@@ -1,10 +1,10 @@
 <node>
   <mimetype></mimetype>
-  <parent_container>1854175</parent_container>
-  <node_id>1157381</node_id>
   <type_nodetype>5</type_nodetype>
-  <pagetype_nodetype>1156105</pagetype_nodetype>
+  <parent_container>1854175</parent_container>
   <title>debatecomment compact page</title>
-  <displaytype>compact</displaytype>
   <page></page>
+  <displaytype>compact</displaytype>
+  <node_id>1157381</node_id>
+  <pagetype_nodetype>1156105</pagetype_nodetype>
 </node>

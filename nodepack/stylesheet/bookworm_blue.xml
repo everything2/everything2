@@ -1,10 +1,7 @@
 <node>
-  <s3bucket></s3bucket>
   <type_nodetype>1854352</type_nodetype>
-  <node_id>1933722</node_id>
-  <s3content_id>1933722</s3content_id>
+  <s3bucket></s3bucket>
   <title>bookworm blue</title>
-  <contentversion>104</contentversion>
   <doctext>@import url(&quot;https://everything2.com/node/stylesheet/bookworm&amp;displaytype=view&quot;);
 
 /* kuler: 1C1D21,31353D,445878, 92CDCF,EEEFF7 */
@@ -52,4 +49,7 @@ color: #92CDCF;
 	background-color: #EEEFF7;
 }
 </doctext>
+  <contentversion>104</contentversion>
+  <node_id>1933722</node_id>
+  <s3content_id>1933722</s3content_id>
 </node>

@@ -7,6 +7,6 @@
   PRIMARY KEY (`podcastLinks_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <node_id>2070552</node_id>
-  <type_nodetype>148</type_nodetype>
   <title>podcastLinks</title>
+  <type_nodetype>148</type_nodetype>
 </node>

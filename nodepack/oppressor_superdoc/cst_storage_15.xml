@@ -1,4 +1,6 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
+  <title>CST_Storage_15</title>
   <doctext>&lt;h2&gt;CST review archive 15&lt;/h2&gt;
 &lt;p&gt;
 This is a storage node for CST reviews. Contents are moved her from [CST_Chat].
@@ -893,7 +895,5 @@ See also Quest Storage collabs [CST_Storage_1|1], [CST_Storage_2|2], [CST_Storag
 &lt;br&gt;&lt;strong&gt;Compliance Assessment:&lt;/strong&gt; Yes.
 &lt;br&gt;&lt;strong&gt;Review Request (w/timestamp) &amp; Notes:&lt;/strong&gt;2005.2.24@13:47 [mirko] says Hi I have to resubmit the content of my E2 Scratch Pad for approval before posting it as [The Infamous song: In my country there is problem].
 &lt;br&gt;Hello mirko, [The Infamous song: In my country there is problem] has been reviewed by the [CST_Group] and is compliant. Please append this hardlink &amp;#91;CST Approved&amp;#93; . </doctext>
-  <title>CST_Storage_15</title>
-  <type_nodetype>1144104</type_nodetype>
   <node_id>1695303</node_id>
 </node>

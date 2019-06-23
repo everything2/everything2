@@ -1,4 +1,6 @@
 <node>
+  <title>Other Users XML Ticker II</title>
+  <type_nodetype>1252389</type_nodetype>
   <doctext>[%
 my $str = qq-&lt;?xml version=&quot;1.0&quot;?&gt;\n-;
 $str.=&quot;&lt;otherusers&gt;\n&quot;;
@@ -61,7 +63,5 @@ while (my $row = $csr-&gt;fetchrow_hashref) {
 $str .= &quot;&lt;/otherusers&gt;\n&quot;;
 return $str;
 %]</doctext>
-  <title>Other Users XML Ticker II</title>
   <node_id>1291746</node_id>
-  <type_nodetype>1252389</type_nodetype>
 </node>

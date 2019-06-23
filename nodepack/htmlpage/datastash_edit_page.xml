@@ -1,10 +1,10 @@
 <node>
+  <displaytype>edit</displaytype>
+  <pagetype_nodetype>2117441</pagetype_nodetype>
   <node_id>2117444</node_id>
   <type_nodetype>5</type_nodetype>
-  <pagetype_nodetype>2117441</pagetype_nodetype>
   <mimetype></mimetype>
-  <parent_container>18</parent_container>
-  <displaytype>edit</displaytype>
-  <page></page>
   <title>datastash edit page</title>
+  <parent_container>18</parent_container>
+  <page></page>
 </node>

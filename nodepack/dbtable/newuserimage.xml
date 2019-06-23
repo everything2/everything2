@@ -1,10 +1,10 @@
 <node>
-  <title>newuserimage</title>
   <_create_table_statement>CREATE TABLE `newuserimage` (
   `newuserimage_id` int(11) NOT NULL DEFAULT '0',
   `tstamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`newuserimage_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
-  <type_nodetype>148</type_nodetype>
   <node_id>541871</node_id>
+  <title>newuserimage</title>
+  <type_nodetype>148</type_nodetype>
 </node>

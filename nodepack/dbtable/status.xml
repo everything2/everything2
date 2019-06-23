@@ -5,6 +5,6 @@
   PRIMARY KEY (`status_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <node_id>1989892</node_id>
-  <type_nodetype>148</type_nodetype>
   <title>status</title>
+  <type_nodetype>148</type_nodetype>
 </node>

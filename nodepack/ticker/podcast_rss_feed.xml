@@ -1,5 +1,5 @@
 <node>
-  <title>Podcast RSS Feed</title>
+  <node_id>1979477</node_id>
   <doctext>[%
 my $str = &quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; ?&gt;\n&quot;;
 $str .= &quot;&lt;rss xmlns:itunes=\&quot;http://www.itunes.com/dtds/podcast-1.0.dtd\&quot; version=\&quot;2.0\&quot;&gt;&quot;;
@@ -92,6 +92,6 @@ $str .= &quot;&lt;/channel&gt;\n&lt;/rss&gt;&quot;;
 utf8::encode($str);
 return $str;
 %]</doctext>
-  <node_id>1979477</node_id>
   <type_nodetype>1252389</type_nodetype>
+  <title>Podcast RSS Feed</title>
 </node>

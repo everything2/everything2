@@ -38,6 +38,6 @@
   return $str;
 %]</doctext>
   <title>Time Since XML Ticker</title>
-  <node_id>1372684</node_id>
   <type_nodetype>1252389</type_nodetype>
+  <node_id>1372684</node_id>
 </node>

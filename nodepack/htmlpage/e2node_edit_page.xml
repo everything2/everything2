@@ -1,10 +1,10 @@
 <node>
-  <node_id>170045</node_id>
-  <type_nodetype>5</type_nodetype>
-  <pagetype_nodetype>116</pagetype_nodetype>
-  <mimetype></mimetype>
-  <parent_container>18</parent_container>
-  <displaytype>edit</displaytype>
-  <page></page>
   <title>e2node edit page</title>
+  <parent_container>18</parent_container>
+  <type_nodetype>5</type_nodetype>
+  <mimetype></mimetype>
+  <page></page>
+  <displaytype>edit</displaytype>
+  <pagetype_nodetype>116</pagetype_nodetype>
+  <node_id>170045</node_id>
 </node>

@@ -1,4 +1,5 @@
 <node>
+  <node_id>884776</node_id>
   <doctext>[{openform}]
 [%
 return 'You\'re in the wrong section, buddy!'; #this is used instead: [the killing floor II]
@@ -32,6 +33,5 @@ $str .= '&lt;/ol&gt;';
 $str;
 %]</doctext>
   <title>The killing floor</title>
-  <node_id>884776</node_id>
   <type_nodetype>13</type_nodetype>
 </node>

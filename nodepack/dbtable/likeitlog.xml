@@ -1,6 +1,7 @@
 <node>
-  <node_id>2015859</node_id>
   <type_nodetype>148</type_nodetype>
+  <title>likeitlog</title>
+  <node_id>2015859</node_id>
   <_create_table_statement>CREATE TABLE `likeitlog` (
   `likeitlog_id` int(11) NOT NULL AUTO_INCREMENT,
   `hits` int(11) DEFAULT '0',
@@ -11,5 +12,4 @@
   KEY `user_agent` (`user_agent`),
   KEY `liked_node_id` (`liked_node_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
-  <title>likeitlog</title>
 </node>

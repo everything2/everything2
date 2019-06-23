@@ -1,7 +1,7 @@
 <node>
-  <type_nodetype>451267</type_nodetype>
   <node_id>771767</node_id>
   <title>EQS_NOHTML</title>
+  <type_nodetype>451267</type_nodetype>
   <doctext>[%
 my @wit = (
 

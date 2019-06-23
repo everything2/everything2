@@ -1,11 +1,11 @@
 <node>
-  <node_id>165580</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>News for noders. Stuff that matters.</title>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;[{weblog:10,,,,1}]
 
 
 &lt;br&gt;&lt;br&gt;&lt;p align=center&gt;
 [Everything FAQ]&lt;br&gt;&lt;br&gt;
 </doctext>
+  <node_id>165580</node_id>
 </node>

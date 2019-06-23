@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>13</type_nodetype>
   <title>Who Killed What</title>
   <doctext>[%
   return unless isGod($USER);
@@ -47,6 +48,5 @@
 
 %]
 &lt;/table&gt;</doctext>
-  <type_nodetype>13</type_nodetype>
   <node_id>794900</node_id>
 </node>

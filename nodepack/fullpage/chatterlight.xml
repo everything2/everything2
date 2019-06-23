@@ -1,6 +1,6 @@
 <node>
-  <node_id>1262043</node_id>
   <type_nodetype>451267</type_nodetype>
+  <title>chatterlight</title>
   <doctext>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;
 &quot;http://www.w3.org/TR/html4/loose.dtd&quot;&gt;
 &lt;html&gt;
@@ -89,5 +89,5 @@ ENDHTML
 &lt;/body&gt;
 &lt;/html&gt;
 </doctext>
-  <title>chatterlight</title>
+  <node_id>1262043</node_id>
 </node>

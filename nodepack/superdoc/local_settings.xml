@@ -1,4 +1,7 @@
 <node>
+  <node_id>1358157</node_id>
+  <title>Local Settings</title>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p align=&quot;center&quot;&gt;[{settingsDocs}]&lt;/p&gt;
 
 &lt;p&gt;
@@ -81,7 +84,4 @@ return htmlcode('varsComboBox', 'localTimeOffset,0'.$params);
 &lt;/p&gt;
 
 [{closeform}]</doctext>
-  <title>Local Settings</title>
-  <type_nodetype>14</type_nodetype>
-  <node_id>1358157</node_id>
 </node>

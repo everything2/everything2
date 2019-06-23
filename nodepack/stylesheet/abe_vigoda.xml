@@ -1,5 +1,7 @@
 <node>
+  <s3bucket></s3bucket>
   <title>Abe Vigoda</title>
+  <type_nodetype>1854352</type_nodetype>
   <contentversion>104</contentversion>
   <doctext>/****** COLORS ******/
 
@@ -1391,8 +1393,6 @@ td {
 			display: none;
 
 		}</doctext>
-  <s3bucket></s3bucket>
   <s3content_id>1933700</s3content_id>
   <node_id>1933700</node_id>
-  <type_nodetype>1854352</type_nodetype>
 </node>

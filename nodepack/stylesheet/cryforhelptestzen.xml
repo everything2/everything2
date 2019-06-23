@@ -1,4 +1,9 @@
 <node>
+  <node_id>1939228</node_id>
+  <s3content_id>1939228</s3content_id>
+  <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
+  <title>cryforhelptestzen</title>
   <doctext>/****** COLORS ******/
 
 body,
@@ -696,9 +701,4 @@ td {
 			display: none;
 		}</doctext>
   <contentversion>104</contentversion>
-  <title>cryforhelptestzen</title>
-  <node_id>1939228</node_id>
-  <s3content_id>1939228</s3content_id>
-  <type_nodetype>1854352</type_nodetype>
-  <s3bucket></s3bucket>
 </node>

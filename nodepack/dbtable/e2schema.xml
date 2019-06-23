@@ -1,10 +1,10 @@
 <node>
-  <title>e2schema</title>
   <node_id>2025088</node_id>
-  <type_nodetype>148</type_nodetype>
   <_create_table_statement>CREATE TABLE `e2schema` (
   `e2schema_id` int(11) NOT NULL,
   `schema_extends` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`e2schema_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
+  <type_nodetype>148</type_nodetype>
+  <title>e2schema</title>
 </node>

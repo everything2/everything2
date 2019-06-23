@@ -1,8 +1,9 @@
 <node>
-  <type_nodetype>154</type_nodetype>
-  <from_address>accounthelp@everything2.com</from_address>
   <mail_id>2072170</mail_id>
   <node_id>2072170</node_id>
+  <title>Welcome to Everything2</title>
+  <type_nodetype>154</type_nodetype>
+  <from_address>accounthelp@everything2.com</from_address>
   <doctext>&lt;p&gt;&#171;name&#187;,
 &lt;/p&gt;
 &lt;p&gt;Welcome to Everything2, one of the Internet's oldest and largest writing communities. You are receiving this message
@@ -26,5 +27,4 @@ copy and paste it into your web browser:
 &lt;p&gt;The Everything2 Staff&lt;br&gt;
 &#171;servername&#187;
 &lt;/p&gt;</doctext>
-  <title>Welcome to Everything2</title>
 </node>

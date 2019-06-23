@@ -95,70 +95,118 @@
 
 
 </doctext>
-  <passwd></passwd>
+  <title>Virgil</title>
+  <nick></nick>
+  <node_id>1080927</node_id>
+  <type_nodetype>15</type_nodetype>
+  <realname>e2docs shared user account</realname>
   <vars>
-    <value>2072798</value>
-    <key>lastnoded</key>
+    <value>1882128</value>
+    <key>can_weblog</key>
   </vars>
   <vars>
-    <key>employment</key>
+    <value>262,170070,91,457857,263,165437,174581</value>
+    <key>nodelets</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>nohintHTML</key>
+  </vars>
+  <vars>
+    <key>hidemsgme</key>
+    <value>1</value>
+  </vars>
+  <vars>
     <value>[e2docs] usergroup</value>
+    <key>employment</key>
   </vars>
   <vars>
-    <key>num_newwus</key>
-    <value>25</value>
+    <key>autoChat</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>wufoot</key>
+    <value>,c:vote,c:cfull,c:sendmsg,c:addto</value>
+  </vars>
+  <vars>
+    <value></value>
+    <key>personal_nodelet</key>
+  </vars>
+  <vars>
+    <key>writeupbonus</key>
+    <value>29</value>
+  </vars>
+  <vars>
+    <key>showmessages_replylink</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>no_likeitnotification</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>cools</key>
+    <value></value>
+  </vars>
+  <vars>
+    <value>1146</value>
+    <key>oldexp</key>
+  </vars>
+  <vars>
+    <key>wuhead</key>
+    <value>c:type,c:author,c:dtcreate,c:length,c:hits</value>
+  </vars>
+  <vars>
+    <key>specialties</key>
+    <value>Documentation</value>
   </vars>
   <vars>
     <key>nohints</key>
     <value>1</value>
   </vars>
   <vars>
-    <value>48</value>
-    <key>numwriteups</key>
-  </vars>
-  <vars>
-    <value>{&quot;notifications&quot;:{&quot;1980269&quot;:1,&quot;1936586&quot;:1,&quot;1981770&quot;:1,&quot;1930850&quot;:1,&quot;1930993&quot;:1}}</value>
-    <key>settings</key>
-  </vars>
-  <vars>
-    <key>nohintSpelling</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>personal_nodelet</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>collapsedNodelets</key>
-    <value></value>
-  </vars>
-  <vars>
     <value>1</value>
     <key>no_coolnotification</key>
   </vars>
   <vars>
-    <value>,c:vote,c:cfull,c:sendmsg,c:addto</value>
-    <key>wufoot</key>
+    <value>1</value>
+    <key>no_bookmarkinformer</key>
   </vars>
   <vars>
-    <key>chatterbox_msgs_descend</key>
+    <key>mission</key>
+    <value>Guiding poets through Hell</value>
+  </vars>
+  <vars>
+    <value>48 - &lt;a href=&quot;/user/Virgil/writeups&quot;&gt;View Virgil's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Virgil&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
+    <key>nwriteups</key>
+  </vars>
+  <vars>
+    <key>no_bookmarknotification</key>
     <value>1</value>
   </vars>
   <vars>
-    <value>1</value>
-    <key>mitextarea</key>
+    <key>preference_last_update_time</key>
+    <value>1369835677</value>
   </vars>
   <vars>
-    <key>pmsgDate</key>
-    <value>1</value>
+    <key>numwriteups</key>
+    <value>48</value>
   </vars>
   <vars>
     <key>nullvote</key>
     <value>1</value>
   </vars>
   <vars>
-    <value>1</value>
-    <key>nohintHTML</key>
+    <value></value>
+    <key>collapsedNodelets</key>
+  </vars>
+  <vars>
+    <value>{&quot;notifications&quot;:{&quot;1980269&quot;:1,&quot;1936586&quot;:1,&quot;1981770&quot;:1,&quot;1930850&quot;:1,&quot;1930993&quot;:1}}</value>
+    <key>settings</key>
+  </vars>
+  <vars>
+    <key>motto</key>
+    <value>[Desine fata deum flecti sperare precando]</value>
   </vars>
   <vars>
     <value></value>
@@ -166,67 +214,35 @@
   </vars>
   <vars>
     <value>1</value>
+    <key>mitextarea</key>
+  </vars>
+  <vars>
+    <key>lastnoded</key>
+    <value>2072798</value>
+  </vars>
+  <vars>
+    <value>1</value>
     <key>getofflinemsgs</key>
   </vars>
   <vars>
-    <key>no_likeitnotification</key>
+    <value>25</value>
+    <key>num_newwus</key>
+  </vars>
+  <vars>
+    <key>GPoptout</key>
     <value>1</value>
   </vars>
   <vars>
-    <key>wuhead</key>
-    <value>c:type,c:author,c:dtcreate,c:length,c:hits</value>
-  </vars>
-  <vars>
-    <key>hidemsgme</key>
+    <key>chatterbox_msgs_descend</key>
     <value>1</value>
   </vars>
   <vars>
     <value>1</value>
-    <key>autoChat</key>
+    <key>msginboxUnArc</key>
   </vars>
   <vars>
     <value>1</value>
-    <key>no_bookmarknotification</key>
-  </vars>
-  <vars>
-    <value>48 - &lt;a href=&quot;/user/Virgil/writeups&quot;&gt;View Virgil's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Virgil&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
-    <key>nwriteups</key>
-  </vars>
-  <vars>
-    <value>29</value>
-    <key>writeupbonus</key>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>showmessages_replylink</key>
-  </vars>
-  <vars>
-    <key>motto</key>
-    <value>[Desine fata deum flecti sperare precando]</value>
-  </vars>
-  <vars>
-    <value>262,170070,91,457857,263,165437,174581</value>
-    <key>nodelets</key>
-  </vars>
-  <vars>
-    <value>1369835677</value>
-    <key>preference_last_update_time</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>cools</key>
-  </vars>
-  <vars>
-    <value>1146</value>
-    <key>oldexp</key>
-  </vars>
-  <vars>
-    <key>specialties</key>
-    <value>Documentation</value>
-  </vars>
-  <vars>
-    <value>Guiding poets through Hell</value>
-    <key>mission</key>
+    <key>nohintSpelling</key>
   </vars>
   <vars>
     <key>IQM</key>
@@ -234,25 +250,9 @@
   </vars>
   <vars>
     <value>1</value>
-    <key>no_bookmarkinformer</key>
+    <key>pmsgDate</key>
   </vars>
-  <vars>
-    <value>1882128</value>
-    <key>can_weblog</key>
-  </vars>
-  <vars>
-    <key>GPoptout</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>msginboxUnArc</key>
-    <value>1</value>
-  </vars>
-  <title>Virgil</title>
-  <nick></nick>
-  <realname>e2docs shared user account</realname>
   <imgsrc>images/userincoming/Virgil.jpeg</imgsrc>
-  <node_id>1080927</node_id>
   <email></email>
-  <type_nodetype>15</type_nodetype>
+  <passwd></passwd>
 </node>

@@ -1,4 +1,6 @@
 <node>
+  <type_nodetype>13</type_nodetype>
+  <title>mauler's Sandbox X: Sand of Destiny</title>
   <doctext>[%
 my $rows;
 my $str;
@@ -23,7 +25,5 @@ while($row = $rows-&gt;fetchrow_arrayref)
 $str .= '&lt;/ol&gt;&lt;hr /&gt;';
 
 %]</doctext>
-  <title>mauler's Sandbox X: Sand of Destiny</title>
-  <type_nodetype>13</type_nodetype>
   <node_id>2108111</node_id>
 </node>

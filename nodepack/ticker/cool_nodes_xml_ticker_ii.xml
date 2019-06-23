@@ -53,7 +53,7 @@ while(my $row = $csr-&gt;fetchrow_hashref)
 
 $str.=&quot;&lt;/coolwriteups&gt;\n&quot;;
 %]</doctext>
-  <title>Cool Nodes XML Ticker II</title>
   <type_nodetype>1252389</type_nodetype>
+  <title>Cool Nodes XML Ticker II</title>
   <node_id>1291874</node_id>
 </node>

@@ -1,7 +1,5 @@
 <node>
-  <type_nodetype>1144104</type_nodetype>
   <node_id>1695300</node_id>
-  <title>CST_Storage_12</title>
   <doctext>&lt;h2&gt;CST review archive 12&lt;/h2&gt;
 &lt;p&gt;
 This is a storage node for CST reviews. Contents are moved her from [CST_Chat].
@@ -431,4 +429,6 @@ our new &#169; guidelines?
 &lt;P&gt;2004.5.29@15:09 [iandunn] says That's ok, you can go ahead and nuke it. &lt;/p&gt;
 
 </doctext>
+  <title>CST_Storage_12</title>
+  <type_nodetype>1144104</type_nodetype>
 </node>

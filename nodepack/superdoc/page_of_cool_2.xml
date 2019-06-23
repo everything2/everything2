@@ -1,7 +1,4 @@
 <node>
-  <node_id>1964418</node_id>
-  <type_nodetype>14</type_nodetype>
-  <title>Page of Cool 2</title>
   <doctext>&lt;p&gt;The following page is a &amp;quot;best effort&amp;quot; report on editor cools given over time. Since time stamps aren't stored when editor cools are given, this report looks for [Cool Man Eddie]'s &amp;quot;Yo, the entire node &lt;em&gt;&amp;#91;node title&amp;#93;&lt;/em&gt;, in which you have a writeup, was editor cooled. Your reward is knowing you're cooler than liquid nitrogen.&amp;quot; message.&lt;/p&gt;
 &lt;p&gt;It should be noted that these CME messages could be deleted, so this report might not be 100% accurate. It should also be noted that if CME's notification message is ever changed, this report will no longer work. [Page of Cool] will show all editor cools, but without time stamps.&lt;/p&gt;
 [%
@@ -57,4 +54,7 @@ $str .= '&lt;/table&gt;';
 
 return $str
 %]</doctext>
+  <type_nodetype>14</type_nodetype>
+  <title>Page of Cool 2</title>
+  <node_id>1964418</node_id>
 </node>

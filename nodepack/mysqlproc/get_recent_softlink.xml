@@ -1,9 +1,9 @@
 <node>
-  <edittime>2012-09-05 03:59:01</edittime>
   <node_id>2069695</node_id>
-  <type_nodetype>2061807</type_nodetype>
+  <edittime>2012-09-05 03:59:01</edittime>
   <mysqlproc_id>2069695</mysqlproc_id>
   <document_id>2069695</document_id>
+  <parameters>IN input_user_id INT, IN destination_node_id INT</parameters>
   <doctext>  DECLARE recent_source_node_id           INT;
   DECLARE scid                            INT;
 
@@ -27,6 +27,6 @@
 
   SELECT recent_source_node_id;
   COMMIT;</doctext>
-  <parameters>IN input_user_id INT, IN destination_node_id INT</parameters>
   <title>get_recent_softlink</title>
+  <type_nodetype>2061807</type_nodetype>
 </node>

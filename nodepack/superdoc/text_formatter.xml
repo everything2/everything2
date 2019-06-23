@@ -1,7 +1,4 @@
 <node>
-  <type_nodetype>14</type_nodetype>
-  <node_id>1133419</node_id>
-  <title>Text Formatter</title>
   <doctext>[% return '&lt;p&gt;Note: this is from [Magical Text Formatter]&lt;/p&gt;' if $APP-&gt;isDeveloper($USER); %]
 &lt;p align=&quot;right&quot;&gt;Last updated Thursday March 21, 2002&lt;/p&gt;
 &lt;!-- 
@@ -421,4 +418,7 @@ function addStyles(mark,tag,str) {
 }
 // --&gt;
 &lt;/script&gt;</doctext>
+  <title>Text Formatter</title>
+  <type_nodetype>14</type_nodetype>
+  <node_id>1133419</node_id>
 </node>

@@ -1,8 +1,9 @@
 <node>
+  <type_nodetype>1930710</type_nodetype>
   <title>newpatch</title>
+  <hourLimit>2400</hourLimit>
   <invalid_check>return 1 if !getNodeById($$args{patch_id});
 return 0;</invalid_check>
-  <description>a new [patch manager|patch] has been submitted.</description>
   <code>my $str = linkNode($$args{patch_id}).&quot; was submitted to [Patch Manager]&quot;;
 my $patch = getNodeById($$args{patch_id});
 return unless $patch;
@@ -13,7 +14,6 @@ $str .=&quot; - &lt;b&gt;&quot;.getNodeById($status)-&gt;{title}.&quot;&lt;/b&gt
 
 return $str;
 </code>
-  <hourLimit>2400</hourLimit>
-  <type_nodetype>1930710</type_nodetype>
+  <description>a new [patch manager|patch] has been submitted.</description>
   <node_id>1930919</node_id>
 </node>

@@ -1,7 +1,7 @@
 <node>
+  <type_nodetype>150</type_nodetype>
   <title>node_forward maintenance create</title>
   <maintaintype>create</maintaintype>
-  <type_nodetype>150</type_nodetype>
   <node_id>1991791</node_id>
   <maintain_nodetype>1147470</maintain_nodetype>
   <code></code>

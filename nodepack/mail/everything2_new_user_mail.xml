@@ -1,8 +1,7 @@
 <node>
+  <title>Everything2 New User Mail</title>
   <type_nodetype>154</type_nodetype>
   <from_address></from_address>
-  <mail_id>1824504</mail_id>
-  <node_id>1824504</node_id>
   <doctext>Hey there.  Welcome to &lt;site_name&gt;.
 
 Here's the skinny:
@@ -50,5 +49,6 @@ It can all be overwhelming, as I've said.  If you need any help at all please do
 
 
 I'll see you on Everything New Nodes...</doctext>
-  <title>Everything2 New User Mail</title>
+  <mail_id>1824504</mail_id>
+  <node_id>1824504</node_id>
 </node>

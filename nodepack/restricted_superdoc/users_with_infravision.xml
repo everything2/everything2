@@ -1,7 +1,5 @@
 <node>
-  <type_nodetype>13</type_nodetype>
   <node_id>2156612</node_id>
-  <title>Users with Infravision</title>
   <doctext>[%
 sub mysort {
  lc($a) cmp lc($b);
@@ -41,4 +39,6 @@ $str .= '&lt;/ol&gt;';
 
 return $str;
 %]</doctext>
+  <type_nodetype>13</type_nodetype>
+  <title>Users with Infravision</title>
 </node>

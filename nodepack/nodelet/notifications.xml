@@ -1,8 +1,8 @@
 <node>
-  <nltext></nltext>
-  <title>Notifications</title>
-  <type_nodetype>9</type_nodetype>
   <node_id>1930708</node_id>
-  <nlcode></nlcode>
   <parent_container>0</parent_container>
+  <title>Notifications</title>
+  <nlcode></nlcode>
+  <nltext></nltext>
+  <type_nodetype>9</type_nodetype>
 </node>

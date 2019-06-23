@@ -1,10 +1,10 @@
 <node>
+  <page></page>
+  <mimetype></mimetype>
   <type_nodetype>5</type_nodetype>
+  <parent_container>1854175</parent_container>
+  <title>datastash display page</title>
   <pagetype_nodetype>2117441</pagetype_nodetype>
   <node_id>2117442</node_id>
-  <parent_container>1854175</parent_container>
-  <mimetype></mimetype>
-  <page></page>
   <displaytype>display</displaytype>
-  <title>datastash display page</title>
 </node>

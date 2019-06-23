@@ -1,8 +1,8 @@
 <node>
-  <s3content_id>1950684</s3content_id>
-  <node_id>1950684</node_id>
-  <type_nodetype>1854352</type_nodetype>
+  <title>Scroller Derby</title>
   <s3bucket></s3bucket>
+  <type_nodetype>1854352</type_nodetype>
+  <contentversion>103</contentversion>
   <doctext>/*= autofix added rules. adjust to taste: */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
 .weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
@@ -442,6 +442,6 @@ div#surveymessage {
         display: none;
 }
 </doctext>
-  <contentversion>103</contentversion>
-  <title>Scroller Derby</title>
+  <s3content_id>1950684</s3content_id>
+  <node_id>1950684</node_id>
 </node>

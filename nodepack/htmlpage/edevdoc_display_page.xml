@@ -1,10 +1,10 @@
 <node>
-  <displaytype>display</displaytype>
   <page></page>
   <title>edevdoc display page</title>
-  <node_id>1985290</node_id>
-  <pagetype_nodetype>854232</pagetype_nodetype>
+  <parent_container>1854175</parent_container>
   <type_nodetype>5</type_nodetype>
   <mimetype></mimetype>
-  <parent_container>1854175</parent_container>
+  <pagetype_nodetype>854232</pagetype_nodetype>
+  <node_id>1985290</node_id>
+  <displaytype>display</displaytype>
 </node>

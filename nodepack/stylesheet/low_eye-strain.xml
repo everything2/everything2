@@ -1,4 +1,10 @@
 <node>
+  <s3content_id>1931383</s3content_id>
+  <node_id>1931383</node_id>
+  <s3bucket></s3bucket>
+  <title>Low eye-strain</title>
+  <type_nodetype>1854352</type_nodetype>
+  <contentversion>105</contentversion>
   <doctext>/*= autofix added basic compatibility rules */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {}
 .weblog .title {margin-bottom:0em;font-weight:bold;font-size:107%;}
@@ -774,10 +780,4 @@ span.hasvoted span.title a:visited { color: #6f748f; }
 body div#surveymessage {
 margin-top: 55px !important;
 }</doctext>
-  <contentversion>105</contentversion>
-  <title>Low eye-strain</title>
-  <node_id>1931383</node_id>
-  <s3content_id>1931383</s3content_id>
-  <type_nodetype>1854352</type_nodetype>
-  <s3bucket></s3bucket>
 </node>

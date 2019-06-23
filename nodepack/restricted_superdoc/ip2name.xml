@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>13</type_nodetype>
-  <node_id>981615</node_id>
   <doctext>[{openform}]
 Please use me sparingly!
 I am expensive to run!
@@ -30,4 +28,6 @@ $str;
 
 [{closeform}]</doctext>
   <title>ip2name</title>
+  <type_nodetype>13</type_nodetype>
+  <node_id>981615</node_id>
 </node>

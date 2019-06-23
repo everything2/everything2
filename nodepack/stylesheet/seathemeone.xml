@@ -1,8 +1,4 @@
 <node>
-  <s3content_id>1934602</s3content_id>
-  <node_id>1934602</node_id>
-  <type_nodetype>1854352</type_nodetype>
-  <s3bucket></s3bucket>
   <doctext>       body {background-color: white;}
 
 	#header {position: absolute; top: 0; left: 0; right: 0;}
@@ -22,5 +18,9 @@
 		width: 200px; margin-right: -206px;}
 	#footer {clear: both;}</doctext>
   <contentversion>103</contentversion>
+  <type_nodetype>1854352</type_nodetype>
   <title>seathemeone</title>
+  <s3bucket></s3bucket>
+  <node_id>1934602</node_id>
+  <s3content_id>1934602</s3content_id>
 </node>

@@ -1,4 +1,10 @@
 <node>
+  <title>reputation100</title>
+  <subtype>wu</subtype>
+  <type_nodetype>1917847</type_nodetype>
+  <node_id>1917860</node_id>
+  <display>&lt;strong&gt;Century Award&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Writeup reputation of 100&lt;/i&gt;</display>
+  <achievement_type>reputation</achievement_type>
   <code>my $highRep = $DB-&gt;sqlSelect(&quot;reputation&quot;,&quot;node&quot;,&quot;author_user=$user_id and type_nodetype=117 order by reputation desc limit 1&quot;);
 
 return 1 if $highRep &gt;= 100;
@@ -6,10 +12,4 @@ return 0;
 
 
 </code>
-  <subtype>wu</subtype>
-  <display>&lt;strong&gt;Century Award&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Writeup reputation of 100&lt;/i&gt;</display>
-  <type_nodetype>1917847</type_nodetype>
-  <node_id>1917860</node_id>
-  <title>reputation100</title>
-  <achievement_type>reputation</achievement_type>
 </node>

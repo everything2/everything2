@@ -1,4 +1,5 @@
 <node>
+  <node_id>1385509</node_id>
   <doctext>&lt;p&gt;Ok, this isn't really a FAQ, more like a HOWTO, but I'm following site naming convensions here...&lt;/p&gt;
 &lt;p&gt;This is just a checklist for the very rare times a user should be deleted. In most cases, the user should be locked instead of nuking them from the face of the Everything. If it is decided that a user &lt;em&gt;should&lt;/em&gt; be deleted, it would probably be smart to only let [nate], [JayBonci], or I do it (AFAIK, they're the only ones that know how to do all these steps anyway). In these steps, &lt;var&gt;DELETE_ID&lt;/var&gt; refers to the soon-to-be-deleted-user's node_id.&lt;br /&gt;
 -- [N-Wing]&lt;/p&gt;
@@ -38,5 +39,4 @@ more????????????????????????????
 &lt;/p&gt;</doctext>
   <title>E2 FAQ: delete user</title>
   <type_nodetype>13</type_nodetype>
-  <node_id>1385509</node_id>
 </node>

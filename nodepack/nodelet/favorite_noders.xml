@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>9</type_nodetype>
   <node_id>1876005</node_id>
+  <title>Favorite Noders</title>
   <parent_container>0</parent_container>
+  <type_nodetype>9</type_nodetype>
   <nlcode></nlcode>
   <nltext></nltext>
-  <title>Favorite Noders</title>
 </node>

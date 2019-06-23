@@ -1,6 +1,5 @@
 <node>
   <node_id>1925715</node_id>
-  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 # I can't get a damn switch statement to work, so I went with if-elsif. What version of perl are we running?
@@ -245,5 +244,6 @@ $str .= '&lt;p style=&quot;text-align:right&quot;&gt;Bugs to [in10se]&lt;/p&gt;'
 
 return $str;
 %]</doctext>
+  <type_nodetype>14</type_nodetype>
   <title>Log Archive</title>
 </node>

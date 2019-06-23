@@ -1,13 +1,13 @@
 <node>
-  <sqltable></sqltable>
-  <title>sustype</title>
-  <restrictdupes>-1</restrictdupes>
-  <writers_user>-1</writers_user>
-  <type_nodetype>1</type_nodetype>
-  <extends_nodetype>3</extends_nodetype>
+  <verify_edits>1</verify_edits>
   <node_id>1399991</node_id>
   <readers_user>114</readers_user>
-  <verify_edits>1</verify_edits>
+  <title>sustype</title>
   <deleters_user>-1</deleters_user>
   <grouptable></grouptable>
+  <extends_nodetype>3</extends_nodetype>
+  <sqltable></sqltable>
+  <writers_user>-1</writers_user>
+  <restrictdupes>-1</restrictdupes>
+  <type_nodetype>1</type_nodetype>
 </node>

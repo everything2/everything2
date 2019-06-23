@@ -1,6 +1,4 @@
 <node>
-  <node_id>378565</node_id>
-  <type_nodetype>13</type_nodetype>
   <doctext>[{openform}]
 
 [%
@@ -24,5 +22,7 @@ $str;
 
 
 [{closeform}]</doctext>
+  <type_nodetype>13</type_nodetype>
   <title>bigmem</title>
+  <node_id>378565</node_id>
 </node>

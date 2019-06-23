@@ -1,9 +1,7 @@
 <node>
   <type_nodetype>1854352</type_nodetype>
-  <s3content_id>2007742</s3content_id>
-  <node_id>2007742</node_id>
+  <title>X2</title>
   <s3bucket></s3bucket>
-  <contentversion>105</contentversion>
   <doctext>/*autofixed*/
 /*= autofix added rules. adjust to taste: */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
@@ -696,5 +694,7 @@ text-decoration: line-through;
 color: #aaa;
 font-size: 80%;
 }</doctext>
-  <title>X2</title>
+  <contentversion>105</contentversion>
+  <node_id>2007742</node_id>
+  <s3content_id>2007742</s3content_id>
 </node>

@@ -1,6 +1,4 @@
 <node>
-  <node_id>1972148</node_id>
-  <type_nodetype>148</type_nodetype>
   <_create_table_statement>CREATE TABLE `registry` (
   `registry_id` int(11) NOT NULL DEFAULT '0',
   `question` text COLLATE utf8_unicode_ci,
@@ -8,5 +6,7 @@
   `input_style` char(16) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`registry_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
+  <node_id>1972148</node_id>
   <title>registry</title>
+  <type_nodetype>148</type_nodetype>
 </node>

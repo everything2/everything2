@@ -1,6 +1,7 @@
 <node>
-  <type_nodetype>1144104</type_nodetype>
   <node_id>1468369</node_id>
+  <title>What does what</title>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>[% return unless isGod($USER);  return &quot;&lt;p align=\&quot;right\&quot;&gt;&quot;.linkNode(getNode(&quot;superdoc documentation&quot;, &quot;setting&quot;), &quot;edit/add documentation&quot;, {displaytype =&gt; &quot;edit&quot;}).&quot;&lt;/p&gt;&quot;; %]
 
 [%
@@ -37,5 +38,4 @@
    }
    return $str;
 %]</doctext>
-  <title>What does what</title>
 </node>

@@ -1,5 +1,5 @@
 <node>
-  <title>Renunciation Chainsaw</title>
+  <node_id>1243619</node_id>
   <doctext>&lt;p&gt;This superdoc changes ownership of multiple writeups. It is meant 
 to be used in cases where a user wants to move a lot of NFNish 
 writeups to a secondary account created for that purpose, such as 
@@ -237,6 +237,6 @@ Gen nodelist: &lt;input type=&quot;text&quot; name=&quot;nodes_for&quot;&gt;
   return $str;
 %]
 </doctext>
+  <title>Renunciation Chainsaw</title>
   <type_nodetype>1144104</type_nodetype>
-  <node_id>1243619</node_id>
 </node>

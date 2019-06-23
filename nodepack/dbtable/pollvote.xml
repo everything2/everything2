@@ -1,4 +1,7 @@
 <node>
+  <type_nodetype>148</type_nodetype>
+  <title>pollvote</title>
+  <node_id>2052481</node_id>
   <_create_table_statement>CREATE TABLE `pollvote` (
   `pollvote_id` int(11) NOT NULL DEFAULT '0',
   `voter_user` int(11) NOT NULL DEFAULT '0',
@@ -6,7 +9,4 @@
   `votetime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`pollvote_id`,`voter_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
-  <type_nodetype>148</type_nodetype>
-  <node_id>2052481</node_id>
-  <title>pollvote</title>
 </node>

@@ -1,4 +1,6 @@
 <node>
+  <title>Oolong's sandbox</title>
+  <type_nodetype>1065266</type_nodetype>
   <doctext>[%
 if ($ENV{HTTP_REFERER}) {
   return &quot;You came from &quot;.$ENV{HTTP_REFERER};
@@ -199,7 +201,5 @@ Trying out a [socialBookmarks] htmlcode...
 [%
 return htmlcode('socialBookmarks','943661,,true');
 %]</doctext>
-  <title>Oolong's sandbox</title>
   <node_id>1923473</node_id>
-  <type_nodetype>1065266</type_nodetype>
 </node>
