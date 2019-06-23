@@ -1,4 +1,7 @@
 <node>
+  <type_nodetype>14</type_nodetype>
+  <node_id>1977025</node_id>
+  <title>Usergroup discussions</title>
   <doctext>[%
 #March 2009: Most of the code here is Swap hacking on top of N-Wing's
 #and kthejoker's code.
@@ -274,7 +277,4 @@ $str .= '&lt;br /&gt;
 return $str;
 %]
 </doctext>
-  <type_nodetype>14</type_nodetype>
-  <title>Usergroup discussions</title>
-  <node_id>1977025</node_id>
 </node>

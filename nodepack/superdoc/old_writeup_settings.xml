@@ -1,7 +1,7 @@
 <node>
   <node_id>1960257</node_id>
-  <title>Old Writeup Settings</title>
   <type_nodetype>14</type_nodetype>
+  <title>Old Writeup Settings</title>
   <doctext>[{openform}]
 &lt;p&gt;This is the old header display section of [Writeup Settings], plus footer settings using the same syntax. This provides slightly greater control over the display than the radio-button-based selection interface that will be the default.
 

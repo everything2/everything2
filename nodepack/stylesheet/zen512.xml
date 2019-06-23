@@ -1,5 +1,9 @@
 <node>
-  <title>Zen512</title>
+  <s3content_id>1903056</s3content_id>
+  <node_id>1903056</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
+  <contentversion>104</contentversion>
   <doctext>/****** COLORS ******/
 body {
  background-color: #f6f7f7;
@@ -645,9 +649,5 @@ body {
 #message {
  width: 90%;
 }</doctext>
-  <type_nodetype>1854352</type_nodetype>
-  <node_id>1903056</node_id>
-  <s3bucket></s3bucket>
-  <contentversion>104</contentversion>
-  <s3content_id>1903056</s3content_id>
+  <title>Zen512</title>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $rows;
 my $str;
@@ -79,4 +78,5 @@ return $str;
 %]</doctext>
   <title>in10se's sandbox 3</title>
   <node_id>1960670</node_id>
+  <type_nodetype>14</type_nodetype>
 </node>

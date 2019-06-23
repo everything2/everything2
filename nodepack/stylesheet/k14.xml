@@ -747,10 +747,10 @@ td {
    margin-top: 65px !important;
    margin-bottom: -65px !important;
 }</doctext>
-  <type_nodetype>1854352</type_nodetype>
-  <title>K14</title>
-  <s3bucket></s3bucket>
   <contentversion>106</contentversion>
+  <title>K14</title>
+  <type_nodetype>1854352</type_nodetype>
   <s3content_id>2006168</s3content_id>
   <node_id>2006168</node_id>
+  <s3bucket></s3bucket>
 </node>

@@ -1,6 +1,6 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <node_id>1695301</node_id>
-  <title>CST_Storage_13</title>
   <doctext>&lt;h2&gt;CST review archive 13&lt;/h2&gt;
 &lt;p&gt;
 This is a storage node for CST reviews. Contents are moved her from [CST_Chat].
@@ -907,5 +907,5 @@ sure it passes but I want to be absolutely sure.
 
 
 </doctext>
-  <type_nodetype>1144104</type_nodetype>
+  <title>CST_Storage_13</title>
 </node>

@@ -1,5 +1,5 @@
 <node>
-  <node_id>1960848</node_id>
+  <title>in10se's sandbox5</title>
   <doctext>[%
 my $rows;
 my $str;
@@ -107,6 +107,6 @@ return $str;
 
 %]
 </doctext>
+  <node_id>1960848</node_id>
   <type_nodetype>13</type_nodetype>
-  <title>in10se's sandbox5</title>
 </node>

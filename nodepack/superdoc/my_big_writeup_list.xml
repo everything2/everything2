@@ -1,5 +1,6 @@
 <node>
   <node_id>1490171</node_id>
+  <type_nodetype>14</type_nodetype>
   <title>My Big Writeup List</title>
   <doctext>[%
 
@@ -252,5 +253,4 @@ if ($israw) {
 $str;
 %]
 </doctext>
-  <type_nodetype>14</type_nodetype>
 </node>

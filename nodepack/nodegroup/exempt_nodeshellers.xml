@@ -1,5 +1,5 @@
 <node>
-  <node_id>1176740</node_id>
-  <type_nodetype>8</type_nodetype>
   <title>Exempt Nodeshellers</title>
+  <type_nodetype>8</type_nodetype>
+  <node_id>1176740</node_id>
 </node>

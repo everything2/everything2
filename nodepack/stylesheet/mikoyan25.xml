@@ -1,9 +1,5 @@
 <node>
-  <s3content_id>1926437</s3content_id>
-  <s3bucket></s3bucket>
   <contentversion>104</contentversion>
-  <node_id>1926437</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <doctext>/*colours: 00007f, black and #808080 */
 
 /*= autofix added basic compatibility rules */
@@ -484,4 +480,8 @@ textarea				{
 .action_fireball, .action_sanctify,
 .action_egg				{	font-variant: smallcaps;	}</doctext>
   <title>mikoyan25</title>
+  <s3content_id>1926437</s3content_id>
+  <node_id>1926437</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
 </node>

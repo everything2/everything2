@@ -1,6 +1,5 @@
 <node>
   <title>Creating customized messages on your homenode</title>
-  <type_nodetype>13</type_nodetype>
   <doctext>Some folks have [custom] messages on their [homenode] (see [rancid_pickle|mine] for an example). Several people have wondered how to do this, so I decided to pass this information along. The original [perl] [script] comes from one of the [Everything FAQ|E2 FAQs] I was updating, so forward your thanks to folks like [Nate], [N-Wing], [JayBonci], [Professor Pi] and the members of the [edev] group.
 &lt;p&gt;
 
@@ -17,4 +16,5 @@ The perl code is between the &amp;lt;strong&amp;gt; [HTML] tags. Try to be reaso
 &lt;p&gt;
 Note that this works only for members of the [gods] group.</doctext>
   <node_id>1225166</node_id>
+  <type_nodetype>13</type_nodetype>
 </node>

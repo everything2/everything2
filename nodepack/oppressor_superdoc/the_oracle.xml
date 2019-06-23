@@ -1,4 +1,5 @@
 <node>
+  <title>The Oracle</title>
   <doctext>[%
 ##########
 # This section creates the user search field - always displayed
@@ -200,6 +201,5 @@ $str .= htmlcode('closeform');
 
 %]</doctext>
   <type_nodetype>1144104</type_nodetype>
-  <title>The Oracle</title>
   <node_id>1946673</node_id>
 </node>

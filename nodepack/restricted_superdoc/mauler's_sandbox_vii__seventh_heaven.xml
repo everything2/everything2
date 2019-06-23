@@ -1,6 +1,7 @@
 <node>
-  <node_id>1960820</node_id>
   <type_nodetype>13</type_nodetype>
+  <node_id>1960820</node_id>
+  <title>mauler's sandbox VII: Seventh Heaven</title>
   <doctext>[%
 sub mysort {
  lc($a) cmp lc($b);
@@ -149,5 +150,4 @@ while($row = $rows-&gt;fetchrow_arrayref)
 }
 $str .= '&lt;/ol&gt;';
 %]</doctext>
-  <title>mauler's sandbox VII: Seventh Heaven</title>
 </node>

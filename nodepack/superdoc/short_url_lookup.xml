@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <title>Short URL Lookup</title>
   <doctext>[%
 return unless $query;
 
@@ -35,6 +35,6 @@ $HEADER_PARAMS{-location} =
   'http://' . $ENV{HTTP_HOST} . $redirect_url
   ;
 %]</doctext>
-  <title>Short URL Lookup</title>
   <node_id>2021986</node_id>
+  <type_nodetype>14</type_nodetype>
 </node>

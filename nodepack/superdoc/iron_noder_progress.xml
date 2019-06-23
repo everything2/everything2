@@ -1,6 +1,6 @@
 <node>
   <node_id>2000213</node_id>
-  <title>iron noder progress</title>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $currentYear = '2018';
 my $dateMinInc = '' . $currentYear . '-11-01';
@@ -299,5 +299,5 @@ $str&quot;;
 
 &lt;p&gt;&lt;br&gt;All-time IRON NODER statistics can be found at [THE HALL OF THE IRON].&lt;/p&gt;
 </doctext>
-  <type_nodetype>14</type_nodetype>
+  <title>iron noder progress</title>
 </node>

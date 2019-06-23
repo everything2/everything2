@@ -1,8 +1,8 @@
 <node>
-  <node_id>1872476</node_id>
-  <code></code>
-  <maintain_nodetype>1786405</maintain_nodetype>
-  <title>jscript maintenance create</title>
-  <type_nodetype>150</type_nodetype>
   <maintaintype>create</maintaintype>
+  <title>jscript maintenance create</title>
+  <maintain_nodetype>1786405</maintain_nodetype>
+  <node_id>1872476</node_id>
+  <type_nodetype>150</type_nodetype>
+  <code></code>
 </node>

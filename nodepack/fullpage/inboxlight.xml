@@ -1,6 +1,7 @@
 <node>
-  <node_id>1263106</node_id>
   <type_nodetype>451267</type_nodetype>
+  <node_id>1263106</node_id>
+  <title>inboxlight</title>
   <doctext>[%
 # Lightweight chatterbox page.
 # wharfinger
@@ -77,5 +78,4 @@ $str;
 %]
 
 </doctext>
-  <title>inboxlight</title>
 </node>

@@ -1,10 +1,10 @@
 <node>
   <title>writeup edit page</title>
-  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
   <page></page>
   <mimetype></mimetype>
-  <displaytype>edit</displaytype>
-  <node_id>170046</node_id>
   <parent_container>18</parent_container>
+  <node_id>170046</node_id>
   <pagetype_nodetype>117</pagetype_nodetype>
+  <type_nodetype>5</type_nodetype>
 </node>

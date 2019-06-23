@@ -1,8 +1,8 @@
 <node>
   <nlcode></nlcode>
-  <node_id>262</node_id>
   <parent_container>0</parent_container>
+  <node_id>262</node_id>
   <type_nodetype>9</type_nodetype>
-  <nltext></nltext>
   <title>Epicenter</title>
+  <nltext></nltext>
 </node>

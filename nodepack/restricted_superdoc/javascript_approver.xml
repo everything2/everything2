@@ -1,8 +1,8 @@
 <node>
-  <title>Javascript Approver</title>
-  <type_nodetype>13</type_nodetype>
   <doctext>1. print list of all created jscripts not currently listed in JS repository listing&lt;br /&gt;
 2. clicking a link loads the doctext from that jscript into a box for examination (and editing? or do we just reject it and make them try again? ...)&lt;br /&gt;
 3. a link also approves a jscript by adding it to the JS repository.</doctext>
+  <title>Javascript Approver</title>
   <node_id>1873010</node_id>
+  <type_nodetype>13</type_nodetype>
 </node>

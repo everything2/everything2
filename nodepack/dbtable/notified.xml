@@ -1,5 +1,6 @@
 <node>
   <title>notified</title>
+  <node_id>1930715</node_id>
   <type_nodetype>148</type_nodetype>
   <_create_table_statement>CREATE TABLE `notified` (
   `notified_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -14,5 +15,4 @@
   KEY `reference_notified_id` (`reference_notified_id`),
   KEY `reference_notified_id__user_id__is_seen` (`reference_notified_id`,`user_id`,`is_seen`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
-  <node_id>1930715</node_id>
 </node>

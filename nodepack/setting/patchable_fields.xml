@@ -1,37 +1,37 @@
 <node>
+  <node_id>1415665</node_id>
+  <type_nodetype>153</type_nodetype>
   <title>patchable fields</title>
   <vars>
-    <key>nlcode</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>datacode</key>
-  </vars>
-  <vars>
-    <key>code</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <value>1</value>
     <key>doctext</key>
+    <value>1</value>
   </vars>
   <vars>
     <value>1</value>
+    <key>page</key>
+  </vars>
+  <vars>
     <key>invalid_check</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>context</key>
   </vars>
   <vars>
     <key>hourLimit</key>
     <value>1</value>
   </vars>
   <vars>
-    <key>page</key>
+    <value>1</value>
+    <key>nlcode</key>
+  </vars>
+  <vars>
+    <key>datacode</key>
     <value>1</value>
   </vars>
   <vars>
-    <key>context</key>
     <value>1</value>
+    <key>code</key>
   </vars>
-  <type_nodetype>153</type_nodetype>
-  <node_id>1415665</node_id>
 </node>

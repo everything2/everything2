@@ -1,8 +1,8 @@
 <node>
-  <title>debatecomment maintenance delete</title>
-  <type_nodetype>150</type_nodetype>
-  <maintaintype>delete</maintaintype>
-  <code></code>
-  <node_id>1157506</node_id>
   <maintain_nodetype>1156105</maintain_nodetype>
+  <node_id>1157506</node_id>
+  <type_nodetype>150</type_nodetype>
+  <code></code>
+  <maintaintype>delete</maintaintype>
+  <title>debatecomment maintenance delete</title>
 </node>

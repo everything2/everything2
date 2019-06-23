@@ -1,8 +1,8 @@
 <node>
-  <title>Everything Developer</title>
-  <nltext></nltext>
-  <type_nodetype>9</type_nodetype>
+  <nlcode></nlcode>
   <parent_container>0</parent_container>
   <node_id>836984</node_id>
-  <nlcode></nlcode>
+  <type_nodetype>9</type_nodetype>
+  <title>Everything Developer</title>
+  <nltext></nltext>
 </node>

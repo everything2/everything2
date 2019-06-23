@@ -1,9 +1,9 @@
 <node>
-  <doctext>// Moved to: /js/2115138.js -jb</doctext>
-  <type_nodetype>1786405</type_nodetype>
-  <title>jstest</title>
-  <contentversion>4</contentversion>
-  <s3bucket></s3bucket>
-  <s3content_id>2115138</s3content_id>
   <node_id>2115138</node_id>
+  <s3content_id>2115138</s3content_id>
+  <type_nodetype>1786405</type_nodetype>
+  <s3bucket></s3bucket>
+  <contentversion>4</contentversion>
+  <doctext>// Moved to: /js/2115138.js -jb</doctext>
+  <title>jstest</title>
 </node>

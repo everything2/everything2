@@ -1,9 +1,9 @@
 <node>
-  <title>tESt</title>
-  <doctext>body{}</doctext>
-  <type_nodetype>1854352</type_nodetype>
-  <node_id>1892825</node_id>
   <contentversion>103</contentversion>
-  <s3bucket></s3bucket>
+  <doctext>body{}</doctext>
+  <title>tESt</title>
+  <node_id>1892825</node_id>
   <s3content_id>1892825</s3content_id>
+  <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
 </node>

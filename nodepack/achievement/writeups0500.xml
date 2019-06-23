@@ -1,11 +1,11 @@
 <node>
+  <type_nodetype>1917847</type_nodetype>
   <node_id>1918315</node_id>
   <subtype>user</subtype>
   <code>my $writeupCount = $DB-&gt;sqlSelect(&quot;count(*)&quot;,&quot;node&quot;,&quot;author_user=$user_id and type_nodetype=117&quot;);
 return 1 if $writeupCount &gt;= 500;
 return 0;</code>
   <display>&lt;strong&gt;D-Noders Club&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;500 Writeups&lt;/i&gt;</display>
-  <title>writeups0500</title>
   <achievement_type>writeup</achievement_type>
-  <type_nodetype>1917847</type_nodetype>
+  <title>writeups0500</title>
 </node>

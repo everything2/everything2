@@ -1,5 +1,7 @@
 <node>
+  <node_id>784525</node_id>
   <type_nodetype>14</type_nodetype>
+  <title>Fezisms Generator</title>
   <doctext>&lt;br&gt;&lt;br&gt;&lt;br&gt;
 &lt;p align=center&gt;
 [%
@@ -63,6 +65,4 @@ my @wit = (
 
 
 </doctext>
-  <title>Fezisms Generator</title>
-  <node_id>784525</node_id>
 </node>

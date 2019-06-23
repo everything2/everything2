@@ -1,6 +1,6 @@
 <node>
-  <node_id>1400005</node_id>
   <type_nodetype>1399991</type_nodetype>
-  <doctext>Removes a person's ability to upload or change their homenode pic, and hides it from view.  This gives us the ability to take it away from people per our threat in that level power's documentation.</doctext>
+  <node_id>1400005</node_id>
   <title>homenodepic</title>
+  <doctext>Removes a person's ability to upload or change their homenode pic, and hides it from view.  This gives us the ability to take it away from people per our threat in that level power's documentation.</doctext>
 </node>

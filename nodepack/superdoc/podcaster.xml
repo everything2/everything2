@@ -1,7 +1,7 @@
 <node>
   <node_id>1957883</node_id>
-  <title>Podcaster</title>
   <type_nodetype>14</type_nodetype>
+  <title>Podcaster</title>
   <doctext>[%
 my $csr=$DB-&gt;sqlSelectMany (&quot;*&quot;, &quot;podcast JOIN node ON podcast_id = node_id&quot;, &quot;1&quot;, &quot;ORDER BY pubdate DESC LIMIT 100&quot;);
 

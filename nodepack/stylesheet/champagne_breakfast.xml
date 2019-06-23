@@ -1,9 +1,9 @@
 <node>
   <contentversion>103</contentversion>
-  <s3bucket></s3bucket>
+  <doctext></doctext>
+  <title>Champagne Breakfast</title>
+  <type_nodetype>1854352</type_nodetype>
   <s3content_id>1963028</s3content_id>
   <node_id>1963028</node_id>
-  <doctext></doctext>
-  <type_nodetype>1854352</type_nodetype>
-  <title>Champagne Breakfast</title>
+  <s3bucket></s3bucket>
 </node>

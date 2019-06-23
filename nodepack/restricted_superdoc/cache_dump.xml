@@ -1,6 +1,7 @@
 <node>
-  <title>cache dump</title>
   <type_nodetype>13</type_nodetype>
+  <node_id>372563</node_id>
+  <title>cache dump</title>
   <doctext>This is what the cache contains&lt;br&gt;
 [% &quot;(Process ID: $$)\n&quot;; %]
 &lt;p&gt;
@@ -68,5 +69,4 @@ Pagecache:
   return $str;
 %]
 &lt;/ul&gt;</doctext>
-  <node_id>372563</node_id>
 </node>

@@ -1,10 +1,10 @@
 <node>
   <title>Mine</title>
-  <type_nodetype>1854352</type_nodetype>
   <doctext>Epicenter                                
 </doctext>
-  <node_id>1971159</node_id>
-  <s3content_id>1971159</s3content_id>
-  <s3bucket></s3bucket>
   <contentversion>103</contentversion>
+  <s3bucket></s3bucket>
+  <s3content_id>1971159</s3content_id>
+  <node_id>1971159</node_id>
+  <type_nodetype>1854352</type_nodetype>
 </node>

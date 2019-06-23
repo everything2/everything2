@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>13</type_nodetype>
+  <node_id>2034178</node_id>
   <doctext>[%
 return 'Sorry, your tokens are no good here.' unless isGod($USER);
 
@@ -74,5 +75,4 @@ $str;
 
 %]</doctext>
   <title>The Tokenator</title>
-  <node_id>2034178</node_id>
 </node>

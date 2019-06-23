@@ -1,6 +1,6 @@
 <node>
-  <display>&lt;b&gt;Open Window Award&lt;/b&gt; &lt;br/&gt; &lt;i&gt;Have used the word &quot;defenestrate&quot; in at least 15 writeups.&lt;/i&gt;</display>
-  <node_id>1980775</node_id>
+  <title>openwindow</title>
+  <achievement_type>writeup</achievement_type>
   <subtype></subtype>
   <code>my $uid = $$USER{'node_id'};
 
@@ -15,7 +15,7 @@ my $windowCount = $DB-&gt;sqlSelect(&quot;count(doctext)&quot;,
 
 return 1 if $windowCount &gt;= 15;
 return 0;</code>
+  <display>&lt;b&gt;Open Window Award&lt;/b&gt; &lt;br/&gt; &lt;i&gt;Have used the word &quot;defenestrate&quot; in at least 15 writeups.&lt;/i&gt;</display>
   <type_nodetype>1917847</type_nodetype>
-  <achievement_type>writeup</achievement_type>
-  <title>openwindow</title>
+  <node_id>1980775</node_id>
 </node>

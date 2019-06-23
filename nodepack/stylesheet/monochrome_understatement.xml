@@ -1,5 +1,9 @@
 <node>
-  <title>Monochrome understatement</title>
+  <type_nodetype>1854352</type_nodetype>
+  <node_id>1965449</node_id>
+  <s3content_id>1965449</s3content_id>
+  <s3bucket></s3bucket>
+  <contentversion>104</contentversion>
   <doctext>@import url(&quot;https://everything2.com/node/stylesheet/understatement?displaytype=view&quot;) ;
 
 /* LINKS */
@@ -94,9 +98,5 @@ body , div , span , p , li , ul , ol , dd , dt , table , tr , td , a , h1 , h2 ,
 	border-color: white ;
 	}
 </doctext>
-  <type_nodetype>1854352</type_nodetype>
-  <node_id>1965449</node_id>
-  <contentversion>104</contentversion>
-  <s3bucket></s3bucket>
-  <s3content_id>1965449</s3content_id>
+  <title>Monochrome understatement</title>
 </node>

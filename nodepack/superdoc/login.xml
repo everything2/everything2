@@ -1,7 +1,7 @@
 <node>
   <node_id>109</node_id>
-  <title>login</title>
   <type_nodetype>14</type_nodetype>
+  <title>login</title>
   <doctext>[%
 my $str = '';
 

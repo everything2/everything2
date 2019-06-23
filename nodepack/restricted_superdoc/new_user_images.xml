@@ -1,6 +1,7 @@
 <node>
-  <title>New user images</title>
+  <node_id>541882</node_id>
   <type_nodetype>13</type_nodetype>
+  <title>New user images</title>
   <doctext>[%
   my @params = $query-&gt;param;
 
@@ -41,5 +42,4 @@ New user images:
 %]
 
 [{closeform}]</doctext>
-  <node_id>541882</node_id>
 </node>

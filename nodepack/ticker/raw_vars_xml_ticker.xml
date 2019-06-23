@@ -1,6 +1,6 @@
 <node>
-  <node_id>1372677</node_id>
   <type_nodetype>1252389</type_nodetype>
+  <node_id>1372677</node_id>
   <doctext>[%
 my $str.=&quot;&lt;vars&gt;&quot;;
 

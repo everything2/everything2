@@ -1,12 +1,12 @@
 <node>
-  <type_nodetype>1930710</type_nodetype>
-  <hourLimit>240</hourLimit>
-  <description>a new [usergroup discussions|discussion] started in one of your usergroups.</description>
-  <invalid_check></invalid_check>
-  <title>newdiscussion</title>
-  <node_id>1980269</node_id>
   <code>my $str;
 $str .= linkNode($$args{uid}) . &quot; has started &quot; . linkNode($$args{debate_id},&quot;a new discussion &quot;);
 $str .= &quot;for &quot;.linkNode($$args{gid});
 return $str;</code>
+  <type_nodetype>1930710</type_nodetype>
+  <hourLimit>240</hourLimit>
+  <node_id>1980269</node_id>
+  <title>newdiscussion</title>
+  <invalid_check></invalid_check>
+  <description>a new [usergroup discussions|discussion] started in one of your usergroups.</description>
 </node>

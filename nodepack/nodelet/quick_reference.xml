@@ -1,8 +1,8 @@
 <node>
-  <parent_container></parent_container>
   <node_id>2146276</node_id>
-  <nlcode></nlcode>
-  <title>Quick Reference</title>
-  <nltext></nltext>
   <type_nodetype>9</type_nodetype>
+  <parent_container></parent_container>
+  <nlcode></nlcode>
+  <nltext></nltext>
+  <title>Quick Reference</title>
 </node>

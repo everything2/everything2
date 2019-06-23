@@ -1,4 +1,6 @@
 <node>
+  <node_id>1291794</node_id>
+  <type_nodetype>1252389</type_nodetype>
   <title>User Search XML Ticker II</title>
   <doctext>[%
 my $str = &quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;\n&quot;;
@@ -79,6 +81,4 @@ $str.=&quot;&lt;/usersearch&gt;&quot;;
 
 return $str;
 %]</doctext>
-  <type_nodetype>1252389</type_nodetype>
-  <node_id>1291794</node_id>
 </node>

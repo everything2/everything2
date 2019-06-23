@@ -1,6 +1,5 @@
 <node>
-  <node_id>1929198</node_id>
-  <type_nodetype>14</type_nodetype>
+  <title>Oolong's Testing Ground</title>
   <doctext>[%
 
 my $str = '$Everything::CONF-&gt;canonical_web_server = '
@@ -295,5 +294,6 @@ if ($$USER{title}eq'Oolong'){
 return $str;
 
 %]</doctext>
-  <title>Oolong's Testing Ground</title>
+  <node_id>1929198</node_id>
+  <type_nodetype>14</type_nodetype>
 </node>

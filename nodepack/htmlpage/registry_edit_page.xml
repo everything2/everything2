@@ -1,10 +1,10 @@
 <node>
-  <mimetype></mimetype>
-  <page></page>
-  <type_nodetype>5</type_nodetype>
-  <displaytype>edit</displaytype>
   <title>registry edit page</title>
-  <pagetype_nodetype>1876758</pagetype_nodetype>
-  <node_id>2001832</node_id>
+  <displaytype>edit</displaytype>
+  <page></page>
+  <mimetype></mimetype>
   <parent_container>1854175</parent_container>
+  <node_id>2001832</node_id>
+  <pagetype_nodetype>1876758</pagetype_nodetype>
+  <type_nodetype>5</type_nodetype>
 </node>

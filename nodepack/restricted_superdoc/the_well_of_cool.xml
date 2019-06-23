@@ -13,7 +13,7 @@ $str.=$query-&gt;submit('Drink deeply from the well of cool');
 $str.=$query-&gt;end_form;
 
 %]</doctext>
-  <type_nodetype>13</type_nodetype>
   <title>The Well of Cool</title>
+  <type_nodetype>13</type_nodetype>
   <node_id>1921941</node_id>
 </node>

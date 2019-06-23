@@ -1,9 +1,9 @@
 <node>
-  <doctext>XAD---XAD---XAD</doctext>
-  <type_nodetype>1854352</type_nodetype>
   <title>XAD</title>
+  <doctext>XAD---XAD---XAD</doctext>
   <contentversion>103</contentversion>
   <s3bucket></s3bucket>
-  <s3content_id>1975865</s3content_id>
   <node_id>1975865</node_id>
+  <s3content_id>1975865</s3content_id>
+  <type_nodetype>1854352</type_nodetype>
 </node>

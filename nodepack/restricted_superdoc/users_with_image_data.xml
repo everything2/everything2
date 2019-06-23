@@ -1,6 +1,4 @@
 <node>
-  <node_id>1855433</node_id>
-  <title>users with image data</title>
   <doctext>rae by rae (4875)&lt;br /&gt;
 chrisd by chrisd (2917)&lt;br /&gt;
 Hermetic by Hermetic (10089)&lt;br /&gt;
@@ -16,5 +14,7 @@ Content_Salvage by Content_Salvage (1484993)&lt;br /&gt;
 Arthur Conan Doyle by Arthur Conan Doyle (1791357)&lt;br /&gt;
 henry flower by henry flower (1748478)&lt;br /&gt;
 markadm by markadm (365664)</doctext>
+  <title>users with image data</title>
   <type_nodetype>13</type_nodetype>
+  <node_id>1855433</node_id>
 </node>

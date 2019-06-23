@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <node_id>1399999</node_id>
   <title>Suspension Info</title>
   <doctext>[%
@@ -177,5 +178,4 @@ FOOTER
 return $str;
 
 %]</doctext>
-  <type_nodetype>14</type_nodetype>
 </node>

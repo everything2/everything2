@@ -1,4 +1,5 @@
 <node>
+  <node_id>1784612</node_id>
   <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;p&gt;
 This is a storage node for CST reviews. Reviews are moved her from our working area in [CST_Chat].
@@ -716,5 +717,4 @@ Batch Processed 05/03/2006
 &lt;br&gt;Hello ccunning, Unfortunately this write up needs a couple of more paragraphs to meet fair use. If you would like to update it you may want to read through the [E2 FAQ: Copyrighted Material |FAQ]. I&#8217;ll be happy to help. If I don&#8217;t hear from you by next [April 24, 2006|Monday], I&#8217;ll assume you don&#8217;t wish to update it and it will be removed.
 &lt;br&gt;Removed because of the [E2 copyright changes].</doctext>
   <title>CST_Storage_20</title>
-  <node_id>1784612</node_id>
 </node>

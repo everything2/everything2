@@ -1,6 +1,5 @@
 <node>
   <node_id>1946238</node_id>
-  <title>Your Nodeshells II</title>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 return if $APP-&gt;isGuest($USER);
@@ -74,4 +73,5 @@ $str.='&lt;/ul&gt;';
 
 return $str;
 %]</doctext>
+  <title>Your Nodeshells II</title>
 </node>

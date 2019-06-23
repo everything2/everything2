@@ -1,8 +1,8 @@
 <node>
-  <node_id>2036686</node_id>
-  <code></code>
-  <maintain_nodetype>2035430</maintain_nodetype>
   <title>draft maintenance update</title>
   <maintaintype>update</maintaintype>
+  <code></code>
   <type_nodetype>150</type_nodetype>
+  <node_id>2036686</node_id>
+  <maintain_nodetype>2035430</maintain_nodetype>
 </node>

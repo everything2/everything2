@@ -1,6 +1,4 @@
 <node>
-  <title>Fled Noder Quest Submission</title>
-  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;This is the submission page for the [Fled Noder Quest]. Please be sure you have read the [Fled Noder Quest|rules of the quest] before submitting.&lt;/p&gt;
 
 [%
@@ -53,5 +51,7 @@ if (length($username) &gt; 0)
 }
 return $str;
 %]</doctext>
+  <title>Fled Noder Quest Submission</title>
   <node_id>1938698</node_id>
+  <type_nodetype>14</type_nodetype>
 </node>

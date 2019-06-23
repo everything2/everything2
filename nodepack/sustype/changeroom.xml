@@ -1,6 +1,6 @@
 <node>
   <node_id>2116318</node_id>
   <type_nodetype>1399991</type_nodetype>
-  <doctext>Prevents a user from leaving a particular room for a period of time.</doctext>
   <title>changeroom</title>
+  <doctext>Prevents a user from leaving a particular room for a period of time.</doctext>
 </node>

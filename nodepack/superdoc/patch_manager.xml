@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
+  <node_id>1295688</node_id>
   <doctext>&lt;p&gt;
 Below you can see which patches [edev] and [e2coders] have been up to.
 The patchee column is the piece of code that has been patched, patcher
@@ -212,5 +213,4 @@ return $str;
 %]
 </doctext>
   <title>Patch Manager</title>
-  <node_id>1295688</node_id>
 </node>

@@ -92,6 +92,6 @@ $str .= &quot;&lt;/channel&gt;\n&lt;/rss&gt;&quot;;
 utf8::encode($str);
 return $str;
 %]</doctext>
-  <type_nodetype>1252389</type_nodetype>
   <node_id>1979477</node_id>
+  <type_nodetype>1252389</type_nodetype>
 </node>

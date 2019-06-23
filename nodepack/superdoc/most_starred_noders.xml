@@ -1,7 +1,4 @@
 <node>
-  <node_id>2156611</node_id>
-  <title>Most Starred Noders</title>
-  <type_nodetype>14</type_nodetype>
   <doctext>[%
 my $rows;
 my $str;
@@ -26,4 +23,7 @@ while($row = $rows-&gt;fetchrow_arrayref)
 $str .= '&lt;/ol&gt;&lt;hr /&gt;';
 
 %]</doctext>
+  <title>Most Starred Noders</title>
+  <node_id>2156611</node_id>
+  <type_nodetype>14</type_nodetype>
 </node>

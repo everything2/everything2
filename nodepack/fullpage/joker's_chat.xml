@@ -1,5 +1,7 @@
 <node>
+  <node_id>1729073</node_id>
   <type_nodetype>451267</type_nodetype>
+  <title>joker's chat</title>
   <doctext>[%
 my $txtclr  = '#202020';
 my $vlnkclr = 'purple';
@@ -83,6 +85,4 @@ $str;
 &lt;p align=&quot;right&quot;&gt;[{usersearchform}]&lt;br&gt;&lt;br&gt;Original credit goes to wharfinger. Bugs on this item go to [JayBonci]&lt;/p&gt;
 
 </doctext>
-  <title>joker's chat</title>
-  <node_id>1729073</node_id>
 </node>

@@ -1,9 +1,5 @@
 <node>
-  <node_id>1928346</node_id>
   <contentversion>104</contentversion>
-  <s3bucket></s3bucket>
-  <s3content_id>1928346</s3content_id>
-  <title>In Soviet Russia</title>
   <doctext>/****** COLORS ******/
 
 body,
@@ -649,5 +645,9 @@ td {
 		#metalinks {
 			display: none;
 		}</doctext>
+  <title>In Soviet Russia</title>
+  <node_id>1928346</node_id>
+  <s3content_id>1928346</s3content_id>
   <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
 </node>

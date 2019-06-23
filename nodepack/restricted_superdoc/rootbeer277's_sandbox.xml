@@ -1,6 +1,7 @@
 <node>
   <node_id>1939258</node_id>
   <type_nodetype>13</type_nodetype>
+  <title>rootbeer277's sandbox</title>
   <doctext>&lt;p&gt;[rootbeer277's sandbox|clear parameters]
 &lt;p&gt;Display your writeup without links.  
 This tool will eventually allow you to specify words to retain their links.
@@ -86,5 +87,4 @@ else
 	}
 
 %]</doctext>
-  <title>rootbeer277's sandbox</title>
 </node>

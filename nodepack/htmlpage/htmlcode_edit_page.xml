@@ -1,10 +1,10 @@
 <node>
+  <mimetype></mimetype>
   <parent_container>18</parent_container>
   <node_id>64</node_id>
   <pagetype_nodetype>4</pagetype_nodetype>
+  <type_nodetype>5</type_nodetype>
   <title>htmlcode edit page</title>
   <displaytype>edit</displaytype>
-  <mimetype></mimetype>
   <page></page>
-  <type_nodetype>5</type_nodetype>
 </node>

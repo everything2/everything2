@@ -1,8 +1,8 @@
 <node>
   <maintaintype>update</maintaintype>
-  <type_nodetype>150</type_nodetype>
   <title>stylesheet update maintenance</title>
+  <code></code>
   <maintain_nodetype>1854352</maintain_nodetype>
   <node_id>2100739</node_id>
-  <code></code>
+  <type_nodetype>150</type_nodetype>
 </node>

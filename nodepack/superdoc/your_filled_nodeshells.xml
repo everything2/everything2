@@ -1,5 +1,6 @@
 <node>
   <type_nodetype>14</type_nodetype>
+  <node_id>1797573</node_id>
   <doctext>[%
 return if $APP-&gt;isGuest($USER);
 
@@ -41,5 +42,4 @@ $str.='&lt;/ul&gt;';
 return $str;
 %]</doctext>
   <title>Your filled nodeshells</title>
-  <node_id>1797573</node_id>
 </node>

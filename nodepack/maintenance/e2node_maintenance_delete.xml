@@ -1,8 +1,8 @@
 <node>
   <type_nodetype>150</type_nodetype>
-  <maintaintype>delete</maintaintype>
-  <title>e2node maintenance delete</title>
   <maintain_nodetype>116</maintain_nodetype>
-  <code></code>
   <node_id>174649</node_id>
+  <code></code>
+  <title>e2node maintenance delete</title>
+  <maintaintype>delete</maintaintype>
 </node>

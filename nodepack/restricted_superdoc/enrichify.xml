@@ -1,6 +1,4 @@
 <node>
-  <node_id>1956191</node_id>
-  <type_nodetype>13</type_nodetype>
   <doctext>[%
 my @params = $query-&gt;param;
 my $str;
@@ -88,4 +86,6 @@ return &quot;&lt;h3&gt;Bank Account&lt;/h3&gt;
 
 %]</doctext>
   <title>Enrichify</title>
+  <type_nodetype>13</type_nodetype>
+  <node_id>1956191</node_id>
 </node>

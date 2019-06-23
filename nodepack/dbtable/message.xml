@@ -1,5 +1,7 @@
 <node>
+  <title>message</title>
   <node_id>445059</node_id>
+  <type_nodetype>148</type_nodetype>
   <_create_table_statement>CREATE TABLE `message` (
   `message_id` int(11) NOT NULL AUTO_INCREMENT,
   `msgtext` text COLLATE utf8_unicode_ci,
@@ -22,6 +24,4 @@
   KEY `foruser_tstamp_message_id` (`for_user`,`tstamp`,`message_id`),
   KEY `message_author` (`author_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
-  <type_nodetype>148</type_nodetype>
-  <title>message</title>
 </node>

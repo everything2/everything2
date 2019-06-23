@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <title>Full Text Search Beta</title>
   <doctext>[%
 
 return htmlcode('googleSearchForm');
 
 %]</doctext>
-  <title>Full Text Search Beta</title>
+  <type_nodetype>14</type_nodetype>
   <node_id>1379183</node_id>
 </node>

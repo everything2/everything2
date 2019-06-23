@@ -1,4 +1,5 @@
 <node>
+  <node_id>2146715</node_id>
   <type_nodetype>1144104</type_nodetype>
   <doctext>These jobs are run on a 24 hour basis and cached in the database. They show user-submitted content that is in need of repair.
 &lt;table style=&quot;padding: 2px; margin: 5px;&quot;&gt;
@@ -74,5 +75,4 @@
 %]
 &lt;/table&gt;</doctext>
   <title>Content Reports</title>
-  <node_id>2146715</node_id>
 </node>

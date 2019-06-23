@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>1144104</type_nodetype>
   <node_id>1150873</node_id>
   <doctext>&lt;p align=&quot;right&quot;&gt;As announced on [September 2, 2001] in [root log: September 2001]&lt;/p&gt;&lt;br&gt;
 &lt;p&gt;&lt;b&gt;What are firmlinks?&lt;/b&gt;&lt;/p&gt;
@@ -29,6 +30,5 @@ We should probably create a page where people can request firmlinks. It might be
 I strongly think that firmlinks are an important step towards the future of organization in the database, and now the power is in the hands of the people who shape the database, the editors and gods. We all now will be able to point users and the information in the right direction.  Please do not abuse this power, as it is an extension of trust and judgement to you, as is your ability to kill writeups.  The future of the database as it gets larger depends on it's organization, so please don't hesitate to use it.
 &lt;br&gt;&lt;br&gt;
 Please give me detailed info on bug reports, theme and client included.- JayBonci&lt;br&gt;&lt;br&gt;</doctext>
-  <type_nodetype>1144104</type_nodetype>
   <title>E2 Editing: Firmlinks</title>
 </node>

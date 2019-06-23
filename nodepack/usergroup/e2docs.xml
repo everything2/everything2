@@ -1,10 +1,10 @@
 <node>
   <title>E2Docs</title>
-  <type_nodetype>16</type_nodetype>
   <doctext>&lt;p&gt;
 Invite-only group dedicated to maintaining E2's help documentation. If you feel you have what it takes to help out, please &lt;i&gt;/msg&lt;/i&gt; wertperch.
 &lt;/p&gt;&lt;p&gt;
 We are currently working on an update of current documentation. Group members can see the guidelines at [E2 Help Documentation Update Project].
 &lt;/p&gt;&lt;p&gt;</doctext>
   <node_id>1882128</node_id>
+  <type_nodetype>16</type_nodetype>
 </node>

@@ -1,5 +1,5 @@
 <node>
-  <title>Manna from heaven</title>
+  <node_id>1865723</node_id>
   <type_nodetype>1144104</type_nodetype>
   <doctext>[%
 
@@ -57,5 +57,5 @@ $str.=&quot;&lt;/table&gt;&quot;;
 $str;
 
 %]</doctext>
-  <node_id>1865723</node_id>
+  <title>Manna from heaven</title>
 </node>

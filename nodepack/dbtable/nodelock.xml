@@ -1,5 +1,4 @@
 <node>
-  <title>nodelock</title>
   <type_nodetype>148</type_nodetype>
   <node_id>1169583</node_id>
   <_create_table_statement>CREATE TABLE `nodelock` (
@@ -11,4 +10,5 @@
   PRIMARY KEY (`nodelock_id`),
   KEY `nodelock_node_index` (`nodelock_node`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
+  <title>nodelock</title>
 </node>

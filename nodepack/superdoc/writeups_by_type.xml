@@ -1,4 +1,7 @@
 <node>
+  <type_nodetype>14</type_nodetype>
+  <node_id>1924773</node_id>
+  <title>Writeups by Type</title>
   <doctext>[%
 
 ####################################################################
@@ -80,7 +83,4 @@ $str .= '&lt;b&gt;Page '.($page+1).'&lt;/b&gt; | '
 return $str;
 %]
 </doctext>
-  <type_nodetype>14</type_nodetype>
-  <title>Writeups by Type</title>
-  <node_id>1924773</node_id>
 </node>

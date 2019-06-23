@@ -1,4 +1,5 @@
 <node>
+  <contentversion>105</contentversion>
   <doctext>/* fonts */
 body {font-family: Arial, sans-serif; font-size: 12px;}
 table {font-size: 12px;}
@@ -89,10 +90,9 @@ hr.clear {clear: both;}
 /* layout */
 textarea {width: 100%;}
 pre {display: block; overflow: auto;} /* to stop page-widening */</doctext>
-  <type_nodetype>1854352</type_nodetype>
   <title>Two Sheds' theme</title>
-  <contentversion>105</contentversion>
-  <s3bucket></s3bucket>
-  <s3content_id>1886668</s3content_id>
   <node_id>1886668</node_id>
+  <s3content_id>1886668</s3content_id>
+  <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
 </node>

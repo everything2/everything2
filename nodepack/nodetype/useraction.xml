@@ -1,9 +1,9 @@
 <node>
-  <sqltable></sqltable>
   <type_nodetype>1</type_nodetype>
-  <restrictdupes>1</restrictdupes>
-  <title>useraction</title>
-  <extends_nodetype>7</extends_nodetype>
   <node_id>2032071</node_id>
+  <extends_nodetype>7</extends_nodetype>
+  <title>useraction</title>
+  <restrictdupes>1</restrictdupes>
+  <sqltable></sqltable>
   <grouptable></grouptable>
 </node>

@@ -1,197 +1,197 @@
 <node>
-  <type_nodetype>153</type_nodetype>
   <title>outlaws</title>
   <vars>
-    <key>Ashigaru</key>
-    <value>[Martha Vickers]</value>
-  </vars>
-  <vars>
-    <key>TheDeadGuy</key>
-    <value>[Martha Vickers]</value>
-  </vars>
-  <vars>
-    <key>StuartO)))</key>
-    <value>[Madonna]</value>
-  </vars>
-  <vars>
-    <value>[Gilroy Garlic Festival]</value>
-    <key>Wuukiee</key>
-  </vars>
-  <vars>
-    <key>e2reneta</key>
-    <value>[John Lasseter]</value>
-  </vars>
-  <vars>
-    <key>Glowing Fish</key>
-    <value>[Leo Tolstoy]</value>
-  </vars>
-  <vars>
-    <key>schizophasic</key>
-    <value>[Blow it out your ass it's Veruca Salt]</value>
-  </vars>
-  <vars>
-    <key>Bitriot</key>
-    <value>[Blockstackers Intergalactic]</value>
-  </vars>
-  <vars>
-    <key>mauler</key>
-    <value>[Extremadura]</value>
-  </vars>
-  <vars>
-    <value>[John Hughes]</value>
-    <key>The Custodian</key>
-  </vars>
-  <vars>
-    <value>[Los Angeles Kings]</value>
-    <key>e2hockey</key>
-  </vars>
-  <vars>
-    <value>[Oracle of Apollo at Delphi]</value>
-    <key>Clockmaker</key>
-  </vars>
-  <vars>
-    <value>[Philosophus Stone and the Sound of Terror!]</value>
-    <key>Zephronias</key>
-  </vars>
-  <vars>
-    <value>[Farting belches]</value>
     <key>Heitah</key>
-  </vars>
-  <vars>
-    <value>[Requiem Mass in D Minor]</value>
-    <key>jessicaj</key>
-  </vars>
-  <vars>
-    <value>[Stratford Festival]</value>
-    <key>eh2</key>
-  </vars>
-  <vars>
-    <key>civilwaractionfigure</key>
-    <value>[Shakira]</value>
-  </vars>
-  <vars>
-    <key>avalyn</key>
-    <value>[Chicago White Sox]</value>
-  </vars>
-  <vars>
-    <value>[Qliphoth]</value>
-    <key>cassparadox</key>
-  </vars>
-  <vars>
-    <value>[Al Pacino]</value>
-    <key>borgo</key>
-  </vars>
-  <vars>
-    <value>[Janet Reno]</value>
-    <key>wertperch</key>
-  </vars>
-  <vars>
-    <value>[Martin Buber]</value>
-    <key>Simulacron3</key>
-  </vars>
-  <vars>
-    <value>Writeups relating to [ITALO DISCO]!</value>
-    <key>Heisenberg</key>
-  </vars>
-  <vars>
-    <key>Auduster</key>
-    <value>[John Lilburne]</value>
-  </vars>
-  <vars>
-    <key>Aerobe</key>
-    <value>[Wolf Hall]</value>
-  </vars>
-  <vars>
-    <value>[John Lasseter]</value>
-    <key>GhettoAardvark</key>
-  </vars>
-  <vars>
-    <key>Posmella</key>
-    <value>[Revolutionary Road]</value>
-  </vars>
-  <vars>
-    <value>[Nevil Shute] or any of his books</value>
-    <key>Halspal</key>
-  </vars>
-  <vars>
-    <key>misterfuffie</key>
-    <value>[YGBSM]</value>
-  </vars>
-  <vars>
-    <value>[Tallulah Bankhead]</value>
-    <key>joer</key>
-  </vars>
-  <vars>
-    <value>[Wakjakaga]</value>
-    <key>Pericles McGee</key>
-  </vars>
-  <vars>
-    <value>[Boulder, Colorado]</value>
-    <key>OldMiner</key>
-  </vars>
-  <vars>
-    <key>dannye</key>
-    <value>[Patti LaBelle]</value>
-  </vars>
-  <vars>
-    <key>kthejoker</key>
-    <value>Famous Georges: [George Allen] (the Redskins owner), [George Brett], and/or [Gorgeous George] (aka [George Wagner])</value>
-  </vars>
-  <vars>
-    <key>JohnnyCashed</key>
-    <value>[The Boy Crisis]</value>
-  </vars>
-  <vars>
-    <key>wordnerd</key>
-    <value>[Karl Urban]</value>
-  </vars>
-  <vars>
-    <key>gnarl</key>
-    <value>[Conflict Kitchen]</value>
-  </vars>
-  <vars>
-    <key>Oolong</key>
-    <value></value>
-  </vars>
-  <vars>
-    <value>[banana hammock]</value>
-    <key>Timeshredder</key>
-  </vars>
-  <vars>
-    <key>Tem42</key>
-    <value>[Kinesin]</value>
-  </vars>
-  <vars>
-    <key>Jet-Poop</key>
-    <value>[The Magdalene Laundries]</value>
-  </vars>
-  <vars>
-    <key>liveforever</key>
-    <value>[Pueyrredones]</value>
-  </vars>
-  <vars>
-    <value>[The Avengers]</value>
-    <key>Morwen</key>
-  </vars>
-  <vars>
-    <key>decoy hunches</key>
-    <value>[Eros rose, sore.]</value>
-  </vars>
-  <vars>
-    <value>[Herding dog]</value>
-    <key>tentative</key>
+    <value>[Farting belches]</value>
   </vars>
   <vars>
     <key>ReiToei</key>
     <value>[Michael Jackson]</value>
   </vars>
   <vars>
+    <key>GhettoAardvark</key>
+    <value>[John Lasseter]</value>
+  </vars>
+  <vars>
+    <key>liveforever</key>
+    <value>[Pueyrredones]</value>
+  </vars>
+  <vars>
+    <key>misterfuffie</key>
+    <value>[YGBSM]</value>
+  </vars>
+  <vars>
+    <key>decoy hunches</key>
+    <value>[Eros rose, sore.]</value>
+  </vars>
+  <vars>
+    <value></value>
+    <key>Oolong</key>
+  </vars>
+  <vars>
+    <value>[Gilroy Garlic Festival]</value>
+    <key>Wuukiee</key>
+  </vars>
+  <vars>
+    <key>Pericles McGee</key>
+    <value>[Wakjakaga]</value>
+  </vars>
+  <vars>
+    <value>[John Lilburne]</value>
+    <key>Auduster</key>
+  </vars>
+  <vars>
+    <value>[Nevil Shute] or any of his books</value>
+    <key>Halspal</key>
+  </vars>
+  <vars>
+    <key>wordnerd</key>
+    <value>[Karl Urban]</value>
+  </vars>
+  <vars>
+    <key>Aerobe</key>
+    <value>[Wolf Hall]</value>
+  </vars>
+  <vars>
+    <key>schizophasic</key>
+    <value>[Blow it out your ass it's Veruca Salt]</value>
+  </vars>
+  <vars>
+    <value>[The Avengers]</value>
+    <key>Morwen</key>
+  </vars>
+  <vars>
     <key>Auspice</key>
     <value>[Qliphoth]</value>
   </vars>
   <vars>
-    <value>[Antiterrorism and Effective Death Penalty Act (AEDPA)]</value>
+    <key>Jet-Poop</key>
+    <value>[The Magdalene Laundries]</value>
+  </vars>
+  <vars>
+    <key>civilwaractionfigure</key>
+    <value>[Shakira]</value>
+  </vars>
+  <vars>
+    <key>kthejoker</key>
+    <value>Famous Georges: [George Allen] (the Redskins owner), [George Brett], and/or [Gorgeous George] (aka [George Wagner])</value>
+  </vars>
+  <vars>
+    <key>Ashigaru</key>
+    <value>[Martha Vickers]</value>
+  </vars>
+  <vars>
+    <key>Tem42</key>
+    <value>[Kinesin]</value>
+  </vars>
+  <vars>
+    <value>[Al Pacino]</value>
+    <key>borgo</key>
+  </vars>
+  <vars>
+    <value>[John Lasseter]</value>
+    <key>e2reneta</key>
+  </vars>
+  <vars>
+    <value>[Madonna]</value>
+    <key>StuartO)))</key>
+  </vars>
+  <vars>
+    <key>e2hockey</key>
+    <value>[Los Angeles Kings]</value>
+  </vars>
+  <vars>
+    <key>avalyn</key>
+    <value>[Chicago White Sox]</value>
+  </vars>
+  <vars>
+    <key>tentative</key>
+    <value>[Herding dog]</value>
+  </vars>
+  <vars>
+    <key>Bitriot</key>
+    <value>[Blockstackers Intergalactic]</value>
+  </vars>
+  <vars>
+    <value>[Martha Vickers]</value>
+    <key>TheDeadGuy</key>
+  </vars>
+  <vars>
+    <key>Heisenberg</key>
+    <value>Writeups relating to [ITALO DISCO]!</value>
+  </vars>
+  <vars>
+    <key>The Custodian</key>
+    <value>[John Hughes]</value>
+  </vars>
+  <vars>
+    <key>cassparadox</key>
+    <value>[Qliphoth]</value>
+  </vars>
+  <vars>
+    <key>Glowing Fish</key>
+    <value>[Leo Tolstoy]</value>
+  </vars>
+  <vars>
+    <value>[Extremadura]</value>
+    <key>mauler</key>
+  </vars>
+  <vars>
+    <value>[Patti LaBelle]</value>
+    <key>dannye</key>
+  </vars>
+  <vars>
+    <value>[banana hammock]</value>
+    <key>Timeshredder</key>
+  </vars>
+  <vars>
+    <value>[Philosophus Stone and the Sound of Terror!]</value>
+    <key>Zephronias</key>
+  </vars>
+  <vars>
+    <value>[Oracle of Apollo at Delphi]</value>
+    <key>Clockmaker</key>
+  </vars>
+  <vars>
+    <key>OldMiner</key>
+    <value>[Boulder, Colorado]</value>
+  </vars>
+  <vars>
+    <value>[Requiem Mass in D Minor]</value>
+    <key>jessicaj</key>
+  </vars>
+  <vars>
+    <value>[Martin Buber]</value>
+    <key>Simulacron3</key>
+  </vars>
+  <vars>
     <key>randombit</key>
+    <value>[Antiterrorism and Effective Death Penalty Act (AEDPA)]</value>
+  </vars>
+  <vars>
+    <value>[Revolutionary Road]</value>
+    <key>Posmella</key>
+  </vars>
+  <vars>
+    <key>joer</key>
+    <value>[Tallulah Bankhead]</value>
+  </vars>
+  <vars>
+    <key>wertperch</key>
+    <value>[Janet Reno]</value>
+  </vars>
+  <vars>
+    <key>gnarl</key>
+    <value>[Conflict Kitchen]</value>
+  </vars>
+  <vars>
+    <value>[The Boy Crisis]</value>
+    <key>JohnnyCashed</key>
+  </vars>
+  <vars>
+    <value>[Stratford Festival]</value>
+    <key>eh2</key>
   </vars>
   <node_id>1986587</node_id>
+  <type_nodetype>153</type_nodetype>
 </node>

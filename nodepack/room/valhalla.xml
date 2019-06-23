@@ -1,12 +1,12 @@
 <node>
-  <type_nodetype>545241</type_nodetype>
-  <criteria>return 0 unless isGod($USER);
-
-1;</criteria>
-  <title>Valhalla</title>
+  <abreviation></abreviation>
   <doctext>&lt;p style=&quot;font-size:135%&quot;&gt;And we,&lt;/p&gt;
 &lt;p style=&quot;font-size:135%&quot;&gt;The dead,&lt;/p&gt;
 &lt;p style=&quot;font-size:135%&quot;&gt;We wait.&lt;/p&gt;</doctext>
+  <criteria>return 0 unless isGod($USER);
+
+1;</criteria>
+  <type_nodetype>545241</type_nodetype>
   <node_id>545263</node_id>
-  <abreviation></abreviation>
+  <title>Valhalla</title>
 </node>

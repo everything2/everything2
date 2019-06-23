@@ -1,10 +1,5 @@
 <node>
-  <node_id>1883091</node_id>
-  <s3content_id>1883091</s3content_id>
-  <contentversion>104</contentversion>
-  <s3bucket></s3bucket>
   <title>Learning2</title>
-  <type_nodetype>1854352</type_nodetype>
   <doctext>/*= autofix added basic compatibility rules */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
 .weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
@@ -508,4 +503,9 @@ textarea {
 /*=.writeupmeta*/
 .infolist .contentinfo {color: brown}
  </doctext>
+  <contentversion>104</contentversion>
+  <s3bucket></s3bucket>
+  <s3content_id>1883091</s3content_id>
+  <node_id>1883091</node_id>
+  <type_nodetype>1854352</type_nodetype>
 </node>

@@ -1,5 +1,4 @@
 <node>
-  <title>hrstats</title>
   <vars>
     <key>mean</key>
     <value>14.7622</value>
@@ -8,6 +7,7 @@
     <value>8.0390</value>
     <key>stddev</key>
   </vars>
-  <type_nodetype>153</type_nodetype>
+  <title>hrstats</title>
   <node_id>1373661</node_id>
+  <type_nodetype>153</type_nodetype>
 </node>

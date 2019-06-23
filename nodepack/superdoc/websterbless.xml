@@ -1,5 +1,4 @@
 <node>
-  <title>Websterbless</title>
   <doctext>&lt;!-- A simple tool made by Lord Brawl --&gt;
 
 &lt;P&gt;
@@ -113,6 +112,7 @@ $str;
 %]
 &lt;/table&gt;
 [{closeform}]</doctext>
-  <type_nodetype>14</type_nodetype>
+  <title>Websterbless</title>
   <node_id>1526847</node_id>
+  <type_nodetype>14</type_nodetype>
 </node>

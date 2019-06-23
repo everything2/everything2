@@ -1,8 +1,8 @@
 <node>
-  <node_id>1873655</node_id>
   <doctext>&lt;p&gt;*shhh*&lt;/p&gt;
 
 &lt;p&gt;Let them think it exists!&lt;/p&gt;</doctext>
-  <type_nodetype>13</type_nodetype>
   <title>Detonate Noder</title>
+  <node_id>1873655</node_id>
+  <type_nodetype>13</type_nodetype>
 </node>

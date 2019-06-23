@@ -1,11 +1,11 @@
 <node>
-  <type_nodetype>1917847</type_nodetype>
-  <achievement_type>experience</achievement_type>
   <title>experience01000</title>
+  <achievement_type>experience</achievement_type>
   <display>&lt;strong&gt;Are You Experienced?&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;1000 XP&lt;/i&gt;</display>
   <code>my $xpCount = $DB-&gt;sqlSelect(&quot;experience&quot;,&quot;user&quot;,&quot;user_id=$user_id&quot;);
 return 1 if $xpCount &gt;= 1000;
 return 0;</code>
-  <node_id>1918333</node_id>
   <subtype>user</subtype>
+  <node_id>1918333</node_id>
+  <type_nodetype>1917847</type_nodetype>
 </node>

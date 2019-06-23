@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>14</type_nodetype>
+  <title>Recent Recordings</title>
   <doctext>[%
 
 
@@ -43,6 +43,6 @@ $str .= '
 return $str;
 
 %]</doctext>
-  <title>Recent Recordings</title>
+  <type_nodetype>14</type_nodetype>
   <node_id>1979352</node_id>
 </node>

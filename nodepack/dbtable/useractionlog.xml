@@ -1,5 +1,7 @@
 <node>
+  <title>useractionlog</title>
   <node_id>2070554</node_id>
+  <type_nodetype>148</type_nodetype>
   <_create_table_statement>CREATE TABLE `useractionlog` (
   `useractionlog_id` int(11) NOT NULL AUTO_INCREMENT,
   `useraction_id` int(11) NOT NULL,
@@ -9,6 +11,4 @@
   `useraction_condition` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`useractionlog_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
-  <title>useractionlog</title>
-  <type_nodetype>148</type_nodetype>
 </node>

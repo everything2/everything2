@@ -1,8 +1,9 @@
 <node>
-  <s3bucket></s3bucket>
-  <contentversion>106</contentversion>
+  <type_nodetype>1854352</type_nodetype>
   <s3content_id>1963336</s3content_id>
   <node_id>1963336</node_id>
+  <s3bucket></s3bucket>
+  <contentversion>106</contentversion>
   <doctext>/*= autofix added rules. adjust to taste: */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
 .weblog .title {margin-bottom:0.5em;font-weight:bold;font-size:107%;}
@@ -1030,6 +1031,5 @@ p#servertime {
   color: #ddF;
 }
 </doctext>
-  <type_nodetype>1854352</type_nodetype>
   <title>SharQ's Sharktank</title>
 </node>

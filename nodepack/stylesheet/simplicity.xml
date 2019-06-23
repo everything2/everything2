@@ -1,9 +1,5 @@
 <node>
-  <s3content_id>2041900</s3content_id>
-  <s3bucket></s3bucket>
   <contentversion>116</contentversion>
-  <node_id>2041900</node_id>
-  <type_nodetype>1854352</type_nodetype>
   <doctext>/* LAYOUT */
 
 body {
@@ -482,4 +478,8 @@ border-left: 2px solid #e4d8b4;
 margin-left: -2px;
 }</doctext>
   <title>Simplicity</title>
+  <s3content_id>2041900</s3content_id>
+  <node_id>2041900</node_id>
+  <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
 </node>

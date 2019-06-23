@@ -1,9 +1,9 @@
 <node>
-  <s3content_id>1874924</s3content_id>
-  <contentversion>144</contentversion>
-  <s3bucket></s3bucket>
-  <node_id>1874924</node_id>
   <type_nodetype>1786405</type_nodetype>
+  <s3content_id>1874924</s3content_id>
+  <node_id>1874924</node_id>
+  <s3bucket></s3bucket>
   <doctext>// Moved to /js/1874924.js</doctext>
+  <contentversion>144</contentversion>
   <title>default javascript</title>
 </node>

@@ -112,6 +112,6 @@ if(length($ug)) {
 $str;
 %]
 &lt;/user&gt;</doctext>
-  <type_nodetype>451267</type_nodetype>
   <node_id>1098218</node_id>
+  <type_nodetype>451267</type_nodetype>
 </node>

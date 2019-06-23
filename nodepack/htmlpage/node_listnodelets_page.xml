@@ -1,10 +1,10 @@
 <node>
-  <pagetype_nodetype>7</pagetype_nodetype>
-  <node_id>2021825</node_id>
-  <parent_container>1854175</parent_container>
   <mimetype></mimetype>
-  <page></page>
+  <parent_container>1854175</parent_container>
+  <node_id>2021825</node_id>
   <type_nodetype>5</type_nodetype>
-  <displaytype>listnodelets</displaytype>
+  <pagetype_nodetype>7</pagetype_nodetype>
   <title>node listnodelets page</title>
+  <displaytype>listnodelets</displaytype>
+  <page></page>
 </node>

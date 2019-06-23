@@ -1,10 +1,9 @@
 <node>
-  <node_id>1934350</node_id>
-  <s3content_id>1934350</s3content_id>
-  <contentversion>104</contentversion>
-  <s3bucket></s3bucket>
-  <title>Kernel Blue serif</title>
   <type_nodetype>1854352</type_nodetype>
+  <s3content_id>1934350</s3content_id>
+  <node_id>1934350</node_id>
+  <s3bucket></s3bucket>
+  <contentversion>104</contentversion>
   <doctext>/****** COLORS ******/
 
 body,
@@ -713,4 +712,5 @@ td {
 dt {
 	font-weight: bold;
 }</doctext>
+  <title>Kernel Blue serif</title>
 </node>

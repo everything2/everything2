@@ -1,5 +1,6 @@
 <node>
   <node_id>1283583</node_id>
+  <type_nodetype>1144104</type_nodetype>
   <title>CRT: Rescue Manager</title>
   <doctext>[{crtnavbar}]
 [%
@@ -18,5 +19,4 @@ return $str;
 [%
 return &quot;&lt;p align=\&quot;right\&quot;&gt;Back to &quot;.linkNode(getNode(&quot;CRT: Master List&quot;, &quot;oppressor_superdoc&quot;)).&quot;&lt;/p&gt;&quot;;
 %]</doctext>
-  <type_nodetype>1144104</type_nodetype>
 </node>

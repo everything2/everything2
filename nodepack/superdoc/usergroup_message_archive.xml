@@ -1,5 +1,6 @@
 <node>
   <node_id>1199723</node_id>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p align=&quot;right&quot;&gt;&lt;small&gt;See also [Usergroup discussions]&lt;/small&gt;&lt;/p&gt;
 
 &lt;p&gt;If you are a member of one of these groups, you can view messages sent to the group.&lt;/p&gt;
@@ -228,6 +229,5 @@ htmlcode('openform','').$str.$BRN.htmlcode('closeform','');
 &lt;/p&gt;
 
 &lt;p align=&quot;right&quot;&gt;&lt;small&gt;(bugs to [N-Wing])&lt;/small&gt;&lt;/p&gt;</doctext>
-  <type_nodetype>14</type_nodetype>
   <title>usergroup message archive</title>
 </node>

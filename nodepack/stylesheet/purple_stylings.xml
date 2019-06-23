@@ -1,10 +1,5 @@
 <node>
-  <node_id>1933589</node_id>
-  <s3content_id>1933589</s3content_id>
-  <contentversion>105</contentversion>
-  <s3bucket></s3bucket>
   <title>Purple Stylings</title>
-  <type_nodetype>1854352</type_nodetype>
   <doctext>/****** COLORS ******/
 
 body,
@@ -750,4 +745,9 @@ th.oddrow {
 		#metalinks {
 			display: none;
 		}</doctext>
+  <contentversion>105</contentversion>
+  <s3bucket></s3bucket>
+  <type_nodetype>1854352</type_nodetype>
+  <node_id>1933589</node_id>
+  <s3content_id>1933589</s3content_id>
 </node>

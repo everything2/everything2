@@ -1,6 +1,7 @@
 <node>
-  <node_id>273242</node_id>
   <type_nodetype>13</type_nodetype>
+  <node_id>273242</node_id>
+  <title>SQL Prompt</title>
   <doctext>[%
 $PAGELOAD-&gt;{noparsecodelinks} = 1;
 
@@ -211,5 +212,4 @@ $str = $hdr.$str.$grandClose;
 
 $str;
 %]</doctext>
-  <title>SQL Prompt</title>
 </node>

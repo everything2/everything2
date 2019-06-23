@@ -134,6 +134,6 @@ $NODE = getNodeById(124);
 
 %]
 </doctext>
-  <type_nodetype>451267</type_nodetype>
   <node_id>1873513</node_id>
+  <type_nodetype>451267</type_nodetype>
 </node>

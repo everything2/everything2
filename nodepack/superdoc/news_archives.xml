@@ -1,4 +1,5 @@
 <node>
+  <title>News Archives</title>
   <doctext>[%
   my $isGod = $APP-&gt;isAdmin( $USER );
   my $isEd = $APP-&gt;isEditor( $USER );
@@ -72,7 +73,6 @@ $text.=&quot;&lt;/table&gt;&quot;;
 
   return $text.&quot;&lt;p align='right'&gt;Bugs go to [dann]&lt;/p&gt;&quot;;
 %]</doctext>
-  <type_nodetype>14</type_nodetype>
-  <title>News Archives</title>
   <node_id>1433012</node_id>
+  <type_nodetype>14</type_nodetype>
 </node>

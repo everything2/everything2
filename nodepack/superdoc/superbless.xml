@@ -1,6 +1,5 @@
 <node>
-  <node_id>453574</node_id>
-  <type_nodetype>14</type_nodetype>
+  <title>Superbless</title>
   <doctext>[%
 return ''
    unless $APP-&gt;isEditor($USER)
@@ -91,5 +90,6 @@ $str .= '&lt;/table&gt;'
 $str;
 
 %]</doctext>
-  <title>Superbless</title>
+  <node_id>453574</node_id>
+  <type_nodetype>14</type_nodetype>
 </node>
