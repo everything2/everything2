@@ -60,10 +60,7 @@ node["banned_user_agents"].each do |ua|
 	coreconfig+="\tBrowserMatchNoCase #{ua} denyip\n"
 end
 
-rotatelogs = '/usr/sbin/rotatelogs'
-if node['platform'].eql? 'ubuntu'
-  rotatelogs = '/usr/bin/rotatelogs'
-end
+rotatelogs = '/usr/bin/rotatelogs'
 
 coreconfig+="
 	<Directory /var/everything/www/>
@@ -111,9 +108,6 @@ coreconfig+="
 %>
 PerlSwitches -I/var/everything/ecore
 ServerName everything2.com
-<% unless node['platform'].eql? 'ubuntu' %>
-NameVirtualHost *:80
-<% end %>
 <VirtualHost *:80>
 <%=coreconfig %>
 </VirtualHost>

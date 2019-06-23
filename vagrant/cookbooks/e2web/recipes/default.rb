@@ -102,27 +102,12 @@ end
 logdir = "/var/log/everything"
 datelog = "`date +\\%Y\\%m\\%d\\%H`.log"
 
-directory "/var/run/apache2/ssl_mutex" do
-  owner "www-data"
-  group "root"
-  mode 0755
-  action :create
-  notifies :restart, "service[apache2]", :delayed
-end
-
 directory logdir do
   owner "www-data"
   group "root"
   mode 0755
   action :create
   notifies :restart, "service[apache2]", :delayed
-end
-
-directory '/var/run/apache2/ssl_mutex' do
-  owner "www-data"
-  group "root"
-  mode 0755
-  action :create
 end
 
 cron 'log_deliver_to_s3.pl' do

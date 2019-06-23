@@ -41,9 +41,11 @@ execute "mysql permissions" do
   creates "/etc/chef_setup/mysql_permissions"
 end
 
+db_bootstrap = '/etc/chef_setup/database_bootstrap'
+
 execute "database bootstrap" do
-  command "/var/everything/tools/qareload.pl"
-  creates "/etc/chef_setup/database_bootstrap"
+  command "/var/everything/tools/qareload.pl && touch #{db_bootstrap}"
+  creates "#{db_bootstrap}"
 end
 
 service "mysql" do
