@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>13</type_nodetype>
+  <title>C! Changes</title>
   <doctext>&lt;p&gt;To begin, [Lord Brawl]'s original post...&lt;/p&gt;
 
 &lt;h4&gt;C! Changes&lt;/h4&gt;
@@ -134,6 +134,6 @@ In closing, as required, I do hereby affirm and assert, without any reservation 
 &lt;hr&gt;
 
 </doctext>
-  <title>C! Changes</title>
+  <type_nodetype>13</type_nodetype>
   <node_id>1125401</node_id>
 </node>

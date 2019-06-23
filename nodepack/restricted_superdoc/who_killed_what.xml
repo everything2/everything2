@@ -1,6 +1,4 @@
 <node>
-  <node_id>794900</node_id>
-  <title>Who Killed What</title>
   <doctext>[%
   return unless isGod($USER);
   my $str = htmlcode('openform');
@@ -49,4 +47,6 @@
 %]
 &lt;/table&gt;</doctext>
   <type_nodetype>13</type_nodetype>
+  <title>Who Killed What</title>
+  <node_id>794900</node_id>
 </node>

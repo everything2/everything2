@@ -1,6 +1,5 @@
 <node>
-  <node_id>1291666</node_id>
-  <title>Node Heaven XML Ticker</title>
+  <type_nodetype>1252389</type_nodetype>
   <doctext>[%
 my $str = &quot;&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot; standalone=\&quot;yes\&quot; ?&gt;\n&quot;;
 $str.=&quot;&lt;nodeheaven&gt;\n&quot;;
@@ -35,5 +34,6 @@ $str.='&lt;/nodeangel&gt;';
 $str.=&quot;&lt;/nodeheaven&gt;\n&quot;;
 return $str;
 %]</doctext>
-  <type_nodetype>1252389</type_nodetype>
+  <title>Node Heaven XML Ticker</title>
+  <node_id>1291666</node_id>
 </node>

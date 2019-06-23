@@ -1,6 +1,4 @@
 <node>
-  <s3content_id>1951961</s3content_id>
-  <node_id>1951961</node_id>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/*= autofix added basic compatibility rules */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
@@ -514,6 +512,8 @@ td#sl4{background:#828282;}td#sl3{background:#818181;}td#sl2{background:#808080;
 
 </doctext>
   <title>mikoyan25 flipped</title>
+  <s3content_id>1951961</s3content_id>
   <contentversion>107</contentversion>
   <s3bucket></s3bucket>
+  <node_id>1951961</node_id>
 </node>

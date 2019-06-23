@@ -1,9 +1,7 @@
 <node>
-  <from_address></from_address>
-  <node_id>580977</node_id>
-  <title>daily report email</title>
-  <mail_id>580977</mail_id>
   <type_nodetype>154</type_nodetype>
+  <mail_id>580977</mail_id>
+  <from_address></from_address>
   <doctext>    The Everything2 Daily Report for [date]
 
 Good Morning, [user].  
@@ -15,4 +13,6 @@ If you don't want to get this mail, login and go to
 https://everything2.com/?node=everything+email+options
 
 g'day!</doctext>
+  <title>daily report email</title>
+  <node_id>580977</node_id>
 </node>

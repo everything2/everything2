@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>9</type_nodetype>
   <nlcode></nlcode>
-  <title>Current User Poll</title>
-  <parent_container>0</parent_container>
-  <nltext></nltext>
   <node_id>1689202</node_id>
+  <parent_container>0</parent_container>
+  <type_nodetype>9</type_nodetype>
+  <title>Current User Poll</title>
+  <nltext></nltext>
 </node>

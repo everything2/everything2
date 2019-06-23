@@ -1,6 +1,6 @@
 <node>
-  <node_id>2117538</node_id>
-  <vars>{}</vars>
-  <title>coolnodes</title>
   <type_nodetype>2117441</type_nodetype>
+  <title>coolnodes</title>
+  <vars>{}</vars>
+  <node_id>2117538</node_id>
 </node>

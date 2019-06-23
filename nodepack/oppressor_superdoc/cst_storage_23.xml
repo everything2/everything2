@@ -1,4 +1,6 @@
 <node>
+  <node_id>1827083</node_id>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;p&gt;
 This is a storage node for CST reviews. Reviews are moved here from our working area in [CST_Chat].
 &lt;/p&gt;&lt;p&gt;
@@ -906,7 +908,5 @@ Hello Jack, On August 8th there were several write ups by [pos] submitted to [Co
 
 
 </doctext>
-  <type_nodetype>1144104</type_nodetype>
   <title>CST_Storage_23</title>
-  <node_id>1827083</node_id>
 </node>

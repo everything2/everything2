@@ -1,4 +1,5 @@
 <node>
+  <node_id>1263106</node_id>
   <type_nodetype>451267</type_nodetype>
   <doctext>[%
 # Lightweight chatterbox page.
@@ -77,5 +78,4 @@ $str;
 
 </doctext>
   <title>inboxlight</title>
-  <node_id>1263106</node_id>
 </node>

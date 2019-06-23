@@ -1,9 +1,9 @@
 <node>
-  <node_id>1952474</node_id>
-  <s3content_id>1952474</s3content_id>
-  <s3bucket></s3bucket>
   <title>Blank sheet</title>
-  <contentversion>103</contentversion>
-  <type_nodetype>1854352</type_nodetype>
   <doctext>/*Nothing!*/</doctext>
+  <type_nodetype>1854352</type_nodetype>
+  <node_id>1952474</node_id>
+  <s3bucket></s3bucket>
+  <contentversion>103</contentversion>
+  <s3content_id>1952474</s3content_id>
 </node>

@@ -287,9 +287,9 @@ text-align: center;
 margin-bottom: 25px;
 }
 </doctext>
-  <s3bucket></s3bucket>
   <title>CollegeRuled</title>
-  <contentversion>105</contentversion>
-  <node_id>2022033</node_id>
   <s3content_id>2022033</s3content_id>
+  <contentversion>105</contentversion>
+  <s3bucket></s3bucket>
+  <node_id>2022033</node_id>
 </node>

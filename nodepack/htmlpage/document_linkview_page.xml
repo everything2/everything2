@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>5</type_nodetype>
-  <displaytype>linkview</displaytype>
-  <mimetype></mimetype>
-  <title>document linkview page</title>
-  <page></page>
-  <parent_container>1854175</parent_container>
   <pagetype_nodetype>3</pagetype_nodetype>
   <node_id>1409922</node_id>
+  <parent_container>1854175</parent_container>
+  <type_nodetype>5</type_nodetype>
+  <page></page>
+  <mimetype></mimetype>
+  <displaytype>linkview</displaytype>
+  <title>document linkview page</title>
 </node>

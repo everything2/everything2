@@ -1,8 +1,8 @@
 <node>
-  <node_id>1876005</node_id>
-  <nltext></nltext>
-  <parent_container>0</parent_container>
-  <title>Favorite Noders</title>
-  <nlcode></nlcode>
   <type_nodetype>9</type_nodetype>
+  <title>Favorite Noders</title>
+  <nltext></nltext>
+  <nlcode></nlcode>
+  <parent_container>0</parent_container>
+  <node_id>1876005</node_id>
 </node>

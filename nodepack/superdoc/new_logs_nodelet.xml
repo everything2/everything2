@@ -1,4 +1,6 @@
 <node>
+  <node_id>2020068</node_id>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p&gt;Daylogs have long had an established place in the everything2 [nodegel], even if there is no general agreement about what that place is and if it should exist. Some hate them, some ignore them, some wouldn't miss them for the world.
 &lt;/p&gt;
 &lt;p&gt;If you fall into (or even carefully skirt the [brink] of) this last category, the [New logs] nodelet is for you. It shows the last few writeups of type 'log', whether or not they were posted hidden, and saves you nervous energy and the time you would otherwise spend feverishly checking the daylog nodes several times a day.
@@ -11,7 +13,5 @@
 &lt;input type=&quot;hidden&quot; name=&quot;position&quot; value=&quot;after263&quot;&gt;
 &lt;input type=&quot;submit&quot; value=&quot;Useful Button&quot;&gt;
 &lt;/form&gt;</doctext>
-  <type_nodetype>14</type_nodetype>
   <title>New Logs Nodelet</title>
-  <node_id>2020068</node_id>
 </node>

@@ -1,7 +1,6 @@
 <node>
-  <type_nodetype>148</type_nodetype>
   <title>node</title>
-  <node_id>168</node_id>
+  <type_nodetype>148</type_nodetype>
   <_create_table_statement>CREATE TABLE `node` (
   `node_id` int(11) NOT NULL AUTO_INCREMENT,
   `type_nodetype` int(11) NOT NULL DEFAULT '0',
@@ -19,4 +18,5 @@
   KEY `authortype` (`type_nodetype`,`author_user`),
   KEY `reputation_totalvotes` (`reputation`,`totalvotes`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
+  <node_id>168</node_id>
 </node>

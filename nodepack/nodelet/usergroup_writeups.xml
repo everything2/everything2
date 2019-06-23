@@ -1,8 +1,8 @@
 <node>
-  <parent_container>0</parent_container>
   <nltext></nltext>
-  <node_id>1924754</node_id>
-  <type_nodetype>9</type_nodetype>
-  <nlcode></nlcode>
   <title>Usergroup Writeups</title>
+  <type_nodetype>9</type_nodetype>
+  <node_id>1924754</node_id>
+  <parent_container>0</parent_container>
+  <nlcode></nlcode>
 </node>

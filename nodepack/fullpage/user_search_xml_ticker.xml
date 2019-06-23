@@ -1,5 +1,6 @@
 <node>
-  <title>User Search XML Ticker</title>
+  <node_id>762826</node_id>
+  <type_nodetype>451267</type_nodetype>
   <doctext>[%
 my $uid = getId($USER);
 my $otherid = $query-&gt;param('usersearch');
@@ -58,6 +59,5 @@ while (my $N = $csr-&gt;fetchrow_hashref) {
 
 $XG-&gt;USERSEARCH($str);
 %]</doctext>
-  <type_nodetype>451267</type_nodetype>
-  <node_id>762826</node_id>
+  <title>User Search XML Ticker</title>
 </node>

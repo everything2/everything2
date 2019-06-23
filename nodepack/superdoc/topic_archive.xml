@@ -1,5 +1,4 @@
 <node>
-  <title>Topic Archive</title>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
@@ -49,5 +48,6 @@ $str .= '&lt;/tr&gt;&lt;/table&gt;';
 return $str;
 
 %]</doctext>
+  <title>Topic Archive</title>
   <node_id>2033982</node_id>
 </node>

@@ -1,7 +1,5 @@
 <node>
-  <node_id>1098218</node_id>
   <title>user information XML</title>
-  <type_nodetype>451267</type_nodetype>
   <doctext>&lt;?xml version=&quot;1.0&quot; ?&gt; &lt;!-- is this correct --&gt; &lt;!-- hey - this is also version 1.1 - are we up to date, or what --&gt;
 &lt;user&gt;
 &lt;!-- this is now in production (finally, after many months wait) --&gt;
@@ -114,4 +112,6 @@ if(length($ug)) {
 $str;
 %]
 &lt;/user&gt;</doctext>
+  <type_nodetype>451267</type_nodetype>
+  <node_id>1098218</node_id>
 </node>

@@ -1,7 +1,10 @@
 <node>
-  <s3bucket></s3bucket>
+  <node_id>1938043</node_id>
+  <s3content_id>1938043</s3content_id>
   <contentversion>104</contentversion>
+  <s3bucket></s3bucket>
   <title>nearly default zen not by ascorbic</title>
+  <type_nodetype>1854352</type_nodetype>
   <doctext>/****** COLORS ******/
 
 body,
@@ -690,7 +693,4 @@ td {
 		#metalinks {
 			display: none;
 		}</doctext>
-  <type_nodetype>1854352</type_nodetype>
-  <node_id>1938043</node_id>
-  <s3content_id>1938043</s3content_id>
 </node>

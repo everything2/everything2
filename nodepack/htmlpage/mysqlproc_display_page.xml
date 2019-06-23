@@ -1,10 +1,10 @@
 <node>
+  <node_id>2069689</node_id>
+  <parent_container>1854175</parent_container>
+  <pagetype_nodetype>2061807</pagetype_nodetype>
   <title>mysqlproc display page</title>
   <mimetype></mimetype>
-  <displaytype>display</displaytype>
   <type_nodetype>5</type_nodetype>
-  <node_id>2069689</node_id>
   <page></page>
-  <pagetype_nodetype>2061807</pagetype_nodetype>
-  <parent_container>1854175</parent_container>
+  <displaytype>display</displaytype>
 </node>

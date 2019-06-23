@@ -1,10 +1,9 @@
 <node>
   <node_id>1946242</node_id>
-  <s3content_id>1946242</s3content_id>
   <s3bucket></s3bucket>
-  <title>Warm understatement</title>
   <contentversion>104</contentversion>
-  <type_nodetype>1854352</type_nodetype>
+  <s3content_id>1946242</s3content_id>
+  <title>Warm understatement</title>
   <doctext>@import url(&quot;https://everything2.com/node/stylesheet/understatement?displaytype=view&quot;) ;
 
 /* LINKS */
@@ -82,4 +81,5 @@ body , div , span , p , li , dd , dt , tr , td , a , h1 , h2 , h3 , form ,
     border-style: solid ;
     border-color: #fffcf8 ;
     }</doctext>
+  <type_nodetype>1854352</type_nodetype>
 </node>

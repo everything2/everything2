@@ -1,7 +1,6 @@
 <node>
   <title>e2poll</title>
   <type_nodetype>148</type_nodetype>
-  <node_id>1685329</node_id>
   <_create_table_statement>CREATE TABLE `e2poll` (
   `e2poll_id` int(11) NOT NULL DEFAULT '0',
   `is_dailypoll` tinyint(4) NOT NULL DEFAULT '0',
@@ -14,4 +13,5 @@
   `question` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`e2poll_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
+  <node_id>1685329</node_id>
 </node>

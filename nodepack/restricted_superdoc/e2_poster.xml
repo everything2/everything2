@@ -1,5 +1,4 @@
 <node>
-  <node_id>846615</node_id>
   <type_nodetype>13</type_nodetype>
   <doctext>&lt;a href=http://nightscape.net/projects/e2/store/poster_full.jpg&gt;HERE IS THE POSTER AS IT STANDS&lt;/a&gt;
 &lt;p&gt; the two nodes I don't like:
@@ -15,4 +14,5 @@ for good nodes to put in the poster.
 
 </doctext>
   <title>E2 Poster</title>
+  <node_id>846615</node_id>
 </node>

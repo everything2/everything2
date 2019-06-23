@@ -1,5 +1,6 @@
 <node>
   <title>mauler's Sandbox II: The Revenge</title>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>[%
 
   return 'Do you really want to see the eldritch horrors that result when I try to write code?' unless $USER-&gt;{title} eq 'mauler';
@@ -32,6 +33,5 @@
 
   return $str;
 %]</doctext>
-  <type_nodetype>1144104</type_nodetype>
   <node_id>1927307</node_id>
 </node>

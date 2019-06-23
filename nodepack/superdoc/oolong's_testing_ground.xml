@@ -1,5 +1,5 @@
 <node>
-  <title>Oolong's Testing Ground</title>
+  <node_id>1929198</node_id>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 
@@ -295,5 +295,5 @@ if ($$USER{title}eq'Oolong'){
 return $str;
 
 %]</doctext>
-  <node_id>1929198</node_id>
+  <title>Oolong's Testing Ground</title>
 </node>

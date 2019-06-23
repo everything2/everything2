@@ -1,4 +1,5 @@
 <node>
+  <node_id>1957153</node_id>
   <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;p&gt;
 Sometimes I think we should have standardised names for these things. Mostly, though, I don't.
@@ -31,5 +32,4 @@ my $csr = $DB-&gt;{dbh}-&gt;prepare(&quot;SELECT * FROM message WHERE author_use
 # '.$$msg{room}.'
 %]</doctext>
   <title>Oolong's Pile of Sand</title>
-  <node_id>1957153</node_id>
 </node>

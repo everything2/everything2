@@ -14,7 +14,7 @@ Available types of parameters:
     my $all_params_for_type = $APP-&gt;getParametersForType($f_node-&gt;{type});
 
     my $str = &quot;&lt;ul&gt;&quot;;
-    foreach my $param (keys %$all_params_for_type)
+    foreach my $param (sort {$a cmp $b} keys %$all_params_for_type)
     {
        $str .= &quot;&lt;li&gt; $param - &quot;.$all_params_for_type-&gt;{$param}-&gt;{description}.&quot;&lt;/li&gt;\n&quot;;
        $str .= qq|&lt;br /&gt;|.htmlcode(&quot;openform&quot;).qq|&lt;input type=&quot;hidden&quot; name=&quot;op&quot; value=&quot;parameter&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;for_node&quot; value=&quot;$$f_node{node_id}&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;paramname&quot; value=&quot;$param&quot;&gt;&lt;input type=&quot;text&quot; name=&quot;paramvalue&quot;&gt;&lt;input type=&quot;submit&quot; value=&quot;add&quot;&gt;&lt;/form&gt;|;

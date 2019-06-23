@@ -1,4 +1,5 @@
 <node>
+  <title>badly commented writeups</title>
   <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;p&gt;This is a list of writeups which have an opening to an HTML comment (&amp;lt;--) without a closing (--&amp;gt;).  As such, they may have some content hidden.  Up until about 6 months ago, this wouldn't have hidden content most times because our HTML tag balancing code worked differently. -[oldminer[user]|om], 2010 April 03
 &lt;/p&gt;
@@ -109,6 +110,5 @@ return '&lt;ol&gt;'
  ;
 
 %]</doctext>
-  <title>badly commented writeups</title>
   <node_id>2013679</node_id>
 </node>

@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>148</type_nodetype>
-  <title>nodetracker</title>
   <_create_table_statement>CREATE TABLE `nodetracker` (
   `nodetracker_id` int(11) NOT NULL AUTO_INCREMENT,
   `tracker_user` int(11) NOT NULL DEFAULT '0',
@@ -10,4 +8,6 @@
   PRIMARY KEY (`nodetracker_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <node_id>1882146</node_id>
+  <title>nodetracker</title>
+  <type_nodetype>148</type_nodetype>
 </node>

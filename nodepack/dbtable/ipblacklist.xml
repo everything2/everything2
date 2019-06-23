@@ -1,4 +1,6 @@
 <node>
+  <type_nodetype>148</type_nodetype>
+  <title>ipblacklist</title>
   <node_id>1948145</node_id>
   <_create_table_statement>CREATE TABLE `ipblacklist` (
   `ipblacklist_id` int(32) NOT NULL AUTO_INCREMENT,
@@ -13,6 +15,4 @@
   KEY `ipblacklist_timestamp__ipblacklist_id` (`ipblacklist_timestamp`,`ipblacklist_id`),
   KEY `ipblacklistref_id` (`ipblacklistref_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
-  <title>ipblacklist</title>
-  <type_nodetype>148</type_nodetype>
 </node>

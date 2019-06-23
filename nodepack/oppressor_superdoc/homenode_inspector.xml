@@ -1,5 +1,6 @@
 <node>
   <node_id>2131363</node_id>
+  <title>Homenode inspector</title>
   <doctext>[%
 my $gonetime = $query -&gt; param('gonetime') eq '0' ? 0 : $query -&gt; param('gonetime') || 0;
 my $goneunit = $query -&gt; param('goneunit') || 'MONTH';
@@ -59,5 +60,4 @@ htmlcode('widget'
 %]
 </doctext>
   <type_nodetype>1144104</type_nodetype>
-  <title>Homenode inspector</title>
 </node>

@@ -1,6 +1,6 @@
 <node>
-  <node_id>1399996</node_id>
-  <title>cool</title>
-  <doctext>Removes a person's ability to C! something. Any unspent cools the user has are destroyed, and won't regenerate until the day after this hex has been repealed.</doctext>
   <type_nodetype>1399991</type_nodetype>
+  <doctext>Removes a person's ability to C! something. Any unspent cools the user has are destroyed, and won't regenerate until the day after this hex has been repealed.</doctext>
+  <title>cool</title>
+  <node_id>1399996</node_id>
 </node>

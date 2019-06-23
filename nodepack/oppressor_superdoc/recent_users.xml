@@ -1,4 +1,5 @@
 <node>
+  <title>Recent Users</title>
   <type_nodetype>1144104</type_nodetype>
   <doctext>[%
 use Digest::MD5('md5_hex');
@@ -58,6 +59,5 @@ $str .= '&lt;/table&gt;';
 
 return $str;
 %]</doctext>
-  <title>Recent Users</title>
   <node_id>2045175</node_id>
 </node>

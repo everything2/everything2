@@ -6,6 +6,6 @@
   PRIMARY KEY (`writeup_feedback_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <node_id>2116381</node_id>
-  <title>writeup_feedback</title>
   <type_nodetype>148</type_nodetype>
+  <title>writeup_feedback</title>
 </node>

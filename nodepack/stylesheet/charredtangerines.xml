@@ -1,5 +1,7 @@
 <node>
   <s3content_id>1908658</s3content_id>
+  <contentversion>103</contentversion>
+  <s3bucket></s3bucket>
   <node_id>1908658</node_id>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/* These are the basic colours and fonts */
@@ -51,6 +53,4 @@ pre, tt {
 }
 </doctext>
   <title>CharredTangerines</title>
-  <contentversion>103</contentversion>
-  <s3bucket></s3bucket>
 </node>

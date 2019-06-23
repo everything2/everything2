@@ -1,6 +1,6 @@
 <node>
   <node_id>1399999</node_id>
-  <type_nodetype>14</type_nodetype>
+  <title>Suspension Info</title>
   <doctext>[%
 my $isEd = $APP-&gt;isEditor($USER);
 my $isChanop = $APP-&gt;isChanop($USER);
@@ -177,5 +177,5 @@ FOOTER
 return $str;
 
 %]</doctext>
-  <title>Suspension Info</title>
+  <type_nodetype>14</type_nodetype>
 </node>

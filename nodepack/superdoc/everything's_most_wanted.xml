@@ -1,5 +1,5 @@
 <node>
-  <node_id>1986695</node_id>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;style type=&quot;text/css&quot;&gt;
 .mytable th, .mytable td
 {
@@ -460,6 +460,6 @@ $str;
 &lt;li&gt;[joes3029] gunned down [1906 San Francisco Earthquake] and earned 106 XP!&lt;/li&gt;
 &lt;/ul&gt;
 </doctext>
-  <type_nodetype>14</type_nodetype>
   <title>Everything's Most Wanted</title>
+  <node_id>1986695</node_id>
 </node>

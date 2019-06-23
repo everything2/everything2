@@ -1,4 +1,6 @@
 <node>
+  <node_id>1963357</node_id>
+  <title>in10se's sandbox 4</title>
   <doctext>[%
 my $rows;
 my $dbrow;
@@ -136,6 +138,4 @@ return $str;
 %]
 </doctext>
   <type_nodetype>14</type_nodetype>
-  <title>in10se's sandbox 4</title>
-  <node_id>1963357</node_id>
 </node>

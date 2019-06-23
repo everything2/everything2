@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>1</type_nodetype>
   <grouptable></grouptable>
+  <node_id>2035430</node_id>
   <title>draft</title>
   <extends_nodetype>3</extends_nodetype>
   <sqltable>draft</sqltable>
-  <node_id>2035430</node_id>
+  <type_nodetype>1</type_nodetype>
 </node>

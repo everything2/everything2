@@ -1,5 +1,5 @@
 <node>
-  <type_nodetype>1144104</type_nodetype>
+  <title>Nodes Without Authors</title>
   <doctext>&lt;hr&gt;
 
 &lt;p&gt;Perhaps a better title for this node would be &amp;quot;Nodes Without &lt;em&gt;Valid&lt;/em&gt; Authors. The following nodes have a author set, but that user no longer exists in the database.&lt;/p&gt;
@@ -50,6 +50,6 @@ return $str;
 %]
 
 </doctext>
-  <title>Nodes Without Authors</title>
+  <type_nodetype>1144104</type_nodetype>
   <node_id>1993971</node_id>
 </node>

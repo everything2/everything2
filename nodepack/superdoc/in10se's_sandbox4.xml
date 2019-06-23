@@ -1,4 +1,5 @@
 <node>
+  <title>in10se's sandbox4</title>
   <doctext>&lt;h3&gt;How many &lt;tt&gt;ilikeit&lt;/tt&gt;s do your writeups have?&lt;/h3&gt;
 &lt;p&gt;&lt;small&gt;(since August 25, 2008)&lt;/small&gt;&lt;/p&gt;
 [%
@@ -61,6 +62,5 @@ $str .= '&lt;/table&gt;';
 return $str;
 %]</doctext>
   <type_nodetype>14</type_nodetype>
-  <title>in10se's sandbox4</title>
   <node_id>1953312</node_id>
 </node>

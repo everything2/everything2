@@ -1,5 +1,4 @@
 <node>
-  <node_id>1873513</node_id>
   <title>Ajax Update</title>
   <doctext>[%
 
@@ -136,4 +135,5 @@ $NODE = getNodeById(124);
 %]
 </doctext>
   <type_nodetype>451267</type_nodetype>
+  <node_id>1873513</node_id>
 </node>

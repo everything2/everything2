@@ -1,4 +1,5 @@
 <node>
+  <node_id>846483</node_id>
   <title>Godsify!</title>
   <doctext>Awlright dudes and dudettes.
 &lt;p&gt;You will notice a [Godsify!] link in your Epicenter.  You can use
@@ -10,5 +11,4 @@ away from user eyes, make it a [restricted_superdoc], then godsify! it.
 
 &lt;p align=right&gt;--[nate]</doctext>
   <type_nodetype>13</type_nodetype>
-  <node_id>846483</node_id>
 </node>

@@ -1,5 +1,6 @@
 <node>
   <title>Survey Randomizer Thingy</title>
+  <type_nodetype>14</type_nodetype>
   <doctext>Basically below you'll have to find the &quot;begin&quot; text and make a few changes.&lt;br&gt;&lt;br&gt;
 
 1. You'll need to change the varHowmany =  so that it equals the
@@ -99,6 +100,5 @@ window.onload = SymOnLoad;
 //--&gt;
 &lt;/script&gt;
 </doctext>
-  <type_nodetype>14</type_nodetype>
   <node_id>1980760</node_id>
 </node>

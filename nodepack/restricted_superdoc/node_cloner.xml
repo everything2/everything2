@@ -1,6 +1,6 @@
 <node>
+  <node_id>418271</node_id>
   <title>node cloner</title>
-  <type_nodetype>13</type_nodetype>
   <doctext>[%
 my $SRCNODE = getNodeById($query-&gt;param(&quot;srcnode_id&quot;));
 return 'No node to clone.' unless $SRCNODE;
@@ -30,5 +30,5 @@ if ($newid){
 
 $query -&gt; p($str);
 %]</doctext>
-  <node_id>418271</node_id>
+  <type_nodetype>13</type_nodetype>
 </node>

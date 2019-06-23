@@ -1,6 +1,6 @@
 <node>
   <node_id>2147752</node_id>
-  <vars>{}</vars>
-  <title>editing_e2nodes_with_duplicate_titles</title>
   <type_nodetype>2117441</type_nodetype>
+  <title>editing_e2nodes_with_duplicate_titles</title>
+  <vars>{}</vars>
 </node>

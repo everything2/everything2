@@ -1,6 +1,4 @@
 <node>
-  <node_id>1356453</node_id>
-  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 # If this is needed, uncomment next in while loop
@@ -100,5 +98,7 @@ return $str;
 
 %]
 </doctext>
+  <type_nodetype>14</type_nodetype>
   <title>simple usergroup editor</title>
+  <node_id>1356453</node_id>
 </node>

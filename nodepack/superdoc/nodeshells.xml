@@ -1,4 +1,6 @@
 <node>
+  <title>Nodeshells</title>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;h3&gt;New Titles in Search of Content&lt;/h3&gt;
 [%#/
 
@@ -32,7 +34,5 @@ return if $APP-&gt;isGuest($USER);
 return 'And [Your Nodeshells], and [Your Filled Nodeshells].'; 
 %])&lt;/small&gt;&lt;/p&gt;
 </doctext>
-  <type_nodetype>14</type_nodetype>
-  <title>Nodeshells</title>
   <node_id>2023222</node_id>
 </node>

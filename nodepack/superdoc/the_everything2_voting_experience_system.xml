@@ -1,7 +1,5 @@
 <node>
   <node_id>1962893</node_id>
-  <title>The Everything2 Voting/Experience System</title>
-  <type_nodetype>14</type_nodetype>
   <doctext>&lt;style type=&quot;text/css&quot;&gt;
 .mytable th, .mytable td
 {
@@ -224,4 +222,6 @@ If you believe that this document needs updating or correcting, /msg any member 
 Last updated on October 9, 2012 by [wertperch] &lt;!-- Added header and footer, tidied up some language --&gt;&lt;br&gt;
 &lt;/small&gt;
 &lt;/p&gt;</doctext>
+  <type_nodetype>14</type_nodetype>
+  <title>The Everything2 Voting/Experience System</title>
 </node>

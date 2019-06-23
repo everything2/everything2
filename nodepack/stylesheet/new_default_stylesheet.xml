@@ -1,9 +1,8 @@
 <node>
-  <node_id>1947527</node_id>
-  <s3content_id>1947527</s3content_id>
-  <s3bucket></s3bucket>
   <contentversion>106</contentversion>
-  <title>New Default Stylesheet</title>
+  <s3bucket></s3bucket>
+  <s3content_id>1947527</s3content_id>
+  <node_id>1947527</node_id>
   <doctext>/****** COLORS ******/
 
 body,
@@ -848,4 +847,5 @@ td {
 			padding: 0;
 		}</doctext>
   <type_nodetype>1854352</type_nodetype>
+  <title>New Default Stylesheet</title>
 </node>

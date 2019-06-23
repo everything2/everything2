@@ -1,8 +1,8 @@
 <node>
-  <type_nodetype>9</type_nodetype>
-  <nlcode></nlcode>
-  <title>Recommended Reading</title>
-  <parent_container>0</parent_container>
-  <nltext></nltext>
   <node_id>2027508</node_id>
+  <parent_container>0</parent_container>
+  <nlcode></nlcode>
+  <nltext></nltext>
+  <title>Recommended Reading</title>
+  <type_nodetype>9</type_nodetype>
 </node>

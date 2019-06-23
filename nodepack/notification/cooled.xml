@@ -1,9 +1,9 @@
 <node>
-  <hourLimit>96</hourLimit>
   <invalid_check></invalid_check>
-  <title>cooled</title>
-  <type_nodetype>1930710</type_nodetype>
-  <code>return &quot;Your writeup &quot;.linkNode($$args{writeup_id}).&quot; was cooled by &quot;.linkNode($$args{cooluser_id});</code>
-  <node_id>1930720</node_id>
   <description>a writeup of yours gets [C!|cooled].</description>
+  <hourLimit>96</hourLimit>
+  <type_nodetype>1930710</type_nodetype>
+  <title>cooled</title>
+  <node_id>1930720</node_id>
+  <code>return &quot;Your writeup &quot;.linkNode($$args{writeup_id}).&quot; was cooled by &quot;.linkNode($$args{cooluser_id});</code>
 </node>

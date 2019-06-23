@@ -1,5 +1,5 @@
 <node>
-  <title>reparent_request</title>
-  <type_nodetype>1946032</type_nodetype>
   <node_id>1946040</node_id>
+  <type_nodetype>1946032</type_nodetype>
+  <title>reparent_request</title>
 </node>

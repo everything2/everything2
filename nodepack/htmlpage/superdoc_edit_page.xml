@@ -1,10 +1,10 @@
 <node>
-  <mimetype></mimetype>
-  <title>superdoc edit page</title>
-  <displaytype>edit</displaytype>
-  <type_nodetype>5</type_nodetype>
-  <node_id>415059</node_id>
-  <page></page>
   <pagetype_nodetype>14</pagetype_nodetype>
+  <node_id>415059</node_id>
   <parent_container>18</parent_container>
+  <mimetype></mimetype>
+  <page></page>
+  <type_nodetype>5</type_nodetype>
+  <displaytype>edit</displaytype>
+  <title>superdoc edit page</title>
 </node>

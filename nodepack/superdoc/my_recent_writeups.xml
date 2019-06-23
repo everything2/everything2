@@ -1,4 +1,6 @@
 <node>
+  <title>My Recent Writeups</title>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return &quot;If you logged in, you would know how many writeups you've published recently.&quot; if( $APP-&gt;isGuest($USER) );
 
@@ -14,7 +16,5 @@ my $str = &quot;Since one year ago, on &quot;.$oneyearago.&quot;, &quot;.linkNod
 return $str;
 
 %]</doctext>
-  <type_nodetype>14</type_nodetype>
-  <title>My Recent Writeups</title>
   <node_id>1975906</node_id>
 </node>

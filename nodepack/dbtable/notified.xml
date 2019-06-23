@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>148</type_nodetype>
   <title>notified</title>
+  <type_nodetype>148</type_nodetype>
   <_create_table_statement>CREATE TABLE `notified` (
   `notified_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL DEFAULT '0',

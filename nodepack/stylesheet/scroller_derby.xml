@@ -1,7 +1,8 @@
 <node>
-  <title>Scroller Derby</title>
+  <s3content_id>1950684</s3content_id>
   <contentversion>103</contentversion>
   <s3bucket></s3bucket>
+  <node_id>1950684</node_id>
   <type_nodetype>1854352</type_nodetype>
   <doctext>/*= autofix added rules. adjust to taste: */
 .weblog .title,.weblog .date,.weblog .contentinfo cite,.nodelet .title {display: block;}
@@ -442,6 +443,5 @@ div#surveymessage {
         display: none;
 }
 </doctext>
-  <s3content_id>1950684</s3content_id>
-  <node_id>1950684</node_id>
+  <title>Scroller Derby</title>
 </node>

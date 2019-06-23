@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 return &quot;&lt;p&gt;This is my sandbox! Go find your own sand!&lt;/p&gt;&quot;;
 
 %]</doctext>
+  <type_nodetype>14</type_nodetype>
   <title>mauler's Sandbox III: Son of Sandbox</title>
   <node_id>1927887</node_id>
 </node>

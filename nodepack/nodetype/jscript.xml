@@ -1,11 +1,11 @@
 <node>
-  <extends_nodetype>14</extends_nodetype>
-  <restrictdupes>1</restrictdupes>
   <sqltable>s3content</sqltable>
-  <node_id>1786405</node_id>
-  <grouptable></grouptable>
+  <type_nodetype>1</type_nodetype>
+  <restrictdupes>1</restrictdupes>
+  <deleters_user>114</deleters_user>
   <title>jscript</title>
   <writers_user>114</writers_user>
-  <deleters_user>114</deleters_user>
-  <type_nodetype>1</type_nodetype>
+  <extends_nodetype>14</extends_nodetype>
+  <grouptable></grouptable>
+  <node_id>1786405</node_id>
 </node>

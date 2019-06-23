@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>1252389</type_nodetype>
   <doctext>[% 
 my $foruser = $query-&gt;param('foruser');
 $foruser =~ s/'/&amp;#39;/g;
@@ -38,6 +37,7 @@ return '&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 $str . '
 &lt;/feed&gt;' ;
 %]</doctext>
+  <type_nodetype>1252389</type_nodetype>
   <title>New Writeups Atom Feed</title>
   <node_id>1822009</node_id>
 </node>

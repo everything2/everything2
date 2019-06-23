@@ -1,10 +1,10 @@
 <node>
-  <type_nodetype>5</type_nodetype>
   <displaytype>chaos</displaytype>
-  <title>e2node chaos page</title>
-  <mimetype></mimetype>
+  <type_nodetype>5</type_nodetype>
   <page></page>
-  <parent_container>1854175</parent_container>
+  <mimetype></mimetype>
+  <title>e2node chaos page</title>
   <pagetype_nodetype>116</pagetype_nodetype>
+  <parent_container>1854175</parent_container>
   <node_id>1418973</node_id>
 </node>

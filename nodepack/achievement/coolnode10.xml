@@ -1,12 +1,12 @@
 <node>
   <type_nodetype>1917847</type_nodetype>
+  <title>coolnode10</title>
+  <achievement_type>cool</achievement_type>
+  <display>&lt;strong&gt;Ice Cold&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Writeup with 10 Cools&lt;/i&gt;</display>
+  <node_id>1918132</node_id>
   <code>my $coolCount = $DB-&gt;sqlSelect(&quot;max(cooled)&quot;,&quot;writeup&quot;,&quot;writeup_id in (select node_id from node where author_user=$user_id and type_nodetype=117)&quot;);
 
 return 1 if $coolCount &gt;=10;
 return 0;</code>
-  <achievement_type>cool</achievement_type>
-  <title>coolnode10</title>
-  <display>&lt;strong&gt;Ice Cold&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Writeup with 10 Cools&lt;/i&gt;</display>
-  <node_id>1918132</node_id>
   <subtype>wu</subtype>
 </node>

@@ -1,5 +1,7 @@
 <node>
+  <node_id>909990</node_id>
   <title>Node Bucket Usage</title>
+  <type_nodetype>13</type_nodetype>
   <doctext>You probably have noticed a new &quot;node bucket&quot; section
 to your personal nodelet -- this has a couple new 
 features which you will be interested in:
@@ -34,6 +36,4 @@ top of the node, because it is a GROUP of WRITEUPS
 puts it in the new one.
 &lt;/ol&gt;
 </doctext>
-  <type_nodetype>13</type_nodetype>
-  <node_id>909990</node_id>
 </node>

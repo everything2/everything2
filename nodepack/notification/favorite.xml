@@ -1,13 +1,13 @@
 <node>
-  <description>a [favorite author] of yours posts a writeup.</description>
-  <node_id>1930837</node_id>
+  <title>favorite</title>
   <type_nodetype>1930710</type_nodetype>
-  <code>my $wu_link = getNodeById($$args{writeup_id}) ? linkNode($$args{writeup_id}) : &quot;... which I can't find! (node id: $$args{writeup_id})&quot;;
-return &quot;&lt;b&gt;&quot;.linkNode($$args{favorite_author}).&quot;&lt;/b&gt; posted a new writeup &quot;.$wu_link;</code>
   <invalid_check>my $wu_link = getNodeById($$args{writeup_id});
 my $isInvalid = !defined $wu_link || $$wu_link{type}{title} ne 'writeup';
 return $isInvalid;
 </invalid_check>
+  <description>a [favorite author] of yours posts a writeup.</description>
   <hourLimit>168</hourLimit>
-  <title>favorite</title>
+  <node_id>1930837</node_id>
+  <code>my $wu_link = getNodeById($$args{writeup_id}) ? linkNode($$args{writeup_id}) : &quot;... which I can't find! (node id: $$args{writeup_id})&quot;;
+return &quot;&lt;b&gt;&quot;.linkNode($$args{favorite_author}).&quot;&lt;/b&gt; posted a new writeup &quot;.$wu_link;</code>
 </node>

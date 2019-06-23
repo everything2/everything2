@@ -1,8 +1,8 @@
 <node>
-  <maintaintype>update</maintaintype>
-  <title>node_forward maintenance update</title>
-  <type_nodetype>150</type_nodetype>
-  <code></code>
-  <node_id>2051617</node_id>
   <maintain_nodetype>1147470</maintain_nodetype>
+  <node_id>2051617</node_id>
+  <code></code>
+  <maintaintype>update</maintaintype>
+  <type_nodetype>150</type_nodetype>
+  <title>node_forward maintenance update</title>
 </node>
