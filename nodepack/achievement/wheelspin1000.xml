@@ -1,11 +1,11 @@
 <node>
+  <type_nodetype>1917847</type_nodetype>
   <title>wheelspin1000</title>
-  <achievement_type>miscellaneous</achievement_type>
+  <subtype></subtype>
   <code>my $uVars = getVars(getNodeById($user_id));
 return 1 if $$uVars{spin_wheel} &gt;=1000;
 return 0;</code>
-  <subtype></subtype>
-  <display>&lt;strong&gt;Big Wheels Keep on Turning&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Spun the [Wheel of Surprise] 1000 times&lt;/i&gt;</display>
-  <type_nodetype>1917847</type_nodetype>
+  <achievement_type>miscellaneous</achievement_type>
   <node_id>1918341</node_id>
+  <display>&lt;strong&gt;Big Wheels Keep on Turning&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Spun the [Wheel of Surprise] 1000 times&lt;/i&gt;</display>
 </node>

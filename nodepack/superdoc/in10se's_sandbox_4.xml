@@ -1,5 +1,5 @@
 <node>
-  <title>in10se's sandbox 4</title>
+  <node_id>1963357</node_id>
   <doctext>[%
 my $rows;
 my $dbrow;
@@ -136,6 +136,6 @@ $str .= '&lt;input type=&quot;hidden&quot; name=&quot;node_id&quot; value=&quot;
 return $str;
 %]
 </doctext>
+  <title>in10se's sandbox 4</title>
   <type_nodetype>14</type_nodetype>
-  <node_id>1963357</node_id>
 </node>

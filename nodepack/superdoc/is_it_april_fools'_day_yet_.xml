@@ -1,6 +1,7 @@
 <node>
   <node_id>1980680</node_id>
   <type_nodetype>14</type_nodetype>
+  <title>Is it April Fools' Day yet?</title>
   <doctext>[%
 my $str;
 
@@ -13,5 +14,4 @@ $str .= &quot;&lt;p align=\&quot;center\&quot;&gt;&lt;big&gt;&lt;big&gt;&lt;big&
 
 return $str;
 %]</doctext>
-  <title>Is it April Fools' Day yet?</title>
 </node>

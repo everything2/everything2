@@ -1,6 +1,5 @@
 <node>
   <type_nodetype>13</type_nodetype>
-  <node_id>2108112</node_id>
   <title>mauler's Sandbox I: A New Hope</title>
   <doctext>[%
 
@@ -36,4 +35,5 @@ $str .= '&lt;/table&gt;';
 return $str;
 
 %]</doctext>
+  <node_id>2108112</node_id>
 </node>

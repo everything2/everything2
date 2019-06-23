@@ -8,6 +8,6 @@
   KEY `setting_name` (`setting_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <node_id>2048926</node_id>
-  <type_nodetype>148</type_nodetype>
   <title>uservars</title>
+  <type_nodetype>148</type_nodetype>
 </node>

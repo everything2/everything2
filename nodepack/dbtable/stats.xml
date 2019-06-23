@@ -1,5 +1,5 @@
 <node>
-  <title>stats</title>
+  <node_id>582050</node_id>
   <_create_table_statement>CREATE TABLE `stats` (
   `stats_id` int(11) NOT NULL AUTO_INCREMENT,
   `stattime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -15,6 +15,6 @@
   PRIMARY KEY (`stats_id`),
   KEY `stattime` (`stattime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 PACK_KEYS=1</_create_table_statement>
-  <node_id>582050</node_id>
   <type_nodetype>148</type_nodetype>
+  <title>stats</title>
 </node>

@@ -1,10 +1,10 @@
 <node>
+  <page></page>
+  <mimetype></mimetype>
+  <type_nodetype>5</type_nodetype>
+  <parent_container>1854175</parent_container>
+  <title>draft edit page</title>
   <node_id>2035510</node_id>
   <pagetype_nodetype>2035430</pagetype_nodetype>
-  <type_nodetype>5</type_nodetype>
-  <mimetype></mimetype>
-  <parent_container>1854175</parent_container>
   <displaytype>edit</displaytype>
-  <page></page>
-  <title>draft edit page</title>
 </node>

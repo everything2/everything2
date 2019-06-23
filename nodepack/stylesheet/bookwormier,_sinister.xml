@@ -1,6 +1,4 @@
 <node>
-  <title>bookwormier, sinister</title>
-  <contentversion>104</contentversion>
   <doctext>@import url(&quot;https://everything2.com/node/stylesheet/Bookwormier?displaytype=view&quot;);
 #wrapper {
 	padding-left: 280px; /* sidebar goes in this gap */
@@ -24,8 +22,10 @@
 #creamofthecool, #frontpage_news  {
 	padding-left: 20px;
 }</doctext>
-  <s3bucket></s3bucket>
-  <s3content_id>2001670</s3content_id>
-  <node_id>2001670</node_id>
+  <contentversion>104</contentversion>
   <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
+  <title>bookwormier, sinister</title>
+  <node_id>2001670</node_id>
+  <s3content_id>2001670</s3content_id>
 </node>

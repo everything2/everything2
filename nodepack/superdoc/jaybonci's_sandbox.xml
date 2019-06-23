@@ -1,4 +1,6 @@
 <node>
+  <node_id>1146920</node_id>
+  <type_nodetype>14</type_nodetype>
   <title>jaybonci's sandbox</title>
   <doctext>&lt;br /&gt;
 [%
@@ -18,6 +20,4 @@
   return &quot;To go: $count&lt;br&gt;$str&lt;br&gt;&quot;;
 
 %]</doctext>
-  <type_nodetype>14</type_nodetype>
-  <node_id>1146920</node_id>
 </node>

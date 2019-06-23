@@ -1,7 +1,7 @@
 <node>
   <node_id>108</node_id>
-  <type_nodetype>14</type_nodetype>
   <title>Settings</title>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 return '&lt;p&gt;You need to sign in or '
 	.linkNode(getNode('Sign up','superdoc'), 'register')

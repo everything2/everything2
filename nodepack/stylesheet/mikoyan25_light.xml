@@ -1,8 +1,8 @@
 <node>
-  <s3bucket></s3bucket>
-  <type_nodetype>1854352</type_nodetype>
   <node_id>1983570</node_id>
   <s3content_id>1983570</s3content_id>
+  <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
   <title>mikoyan25 light</title>
   <doctext>/* colours: #c9c9c9; #BCBCBC*/
 

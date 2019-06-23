@@ -1,12 +1,12 @@
 <node>
-  <deleters_user>114</deleters_user>
-  <grouptable></grouptable>
-  <writers_user>1685561</writers_user>
   <type_nodetype>1</type_nodetype>
-  <extends_nodetype>7</extends_nodetype>
-  <node_id>1917847</node_id>
-  <readers_user>838015</readers_user>
-  <sqltable>achievement</sqltable>
   <restrictdupes>1</restrictdupes>
+  <writers_user>1685561</writers_user>
+  <sqltable>achievement</sqltable>
+  <grouptable></grouptable>
+  <deleters_user>114</deleters_user>
   <title>achievement</title>
+  <extends_nodetype>7</extends_nodetype>
+  <readers_user>838015</readers_user>
+  <node_id>1917847</node_id>
 </node>

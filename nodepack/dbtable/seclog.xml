@@ -10,6 +10,6 @@
   KEY `seclog_user__seclog_id` (`seclog_user`,`seclog_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
   <node_id>1269326</node_id>
-  <type_nodetype>148</type_nodetype>
   <title>seclog</title>
+  <type_nodetype>148</type_nodetype>
 </node>

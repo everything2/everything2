@@ -1,5 +1,4 @@
 <node>
-  <title>nodelet</title>
   <_create_table_statement>CREATE TABLE `nodelet` (
   `nodelet_id` int(11) NOT NULL AUTO_INCREMENT,
   `nltext` text COLLATE utf8_unicode_ci,
@@ -9,6 +8,7 @@
   `lastupdate` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`nodelet_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
-  <type_nodetype>148</type_nodetype>
   <node_id>170</node_id>
+  <title>nodelet</title>
+  <type_nodetype>148</type_nodetype>
 </node>

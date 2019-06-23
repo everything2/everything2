@@ -1,11 +1,11 @@
 <node>
+  <title>usersearchprofile</title>
   <type_nodetype>148</type_nodetype>
-  <node_id>1171297</node_id>
   <_create_table_statement>CREATE TABLE `usersearchprofile` (
   `profile_id` int(11) NOT NULL AUTO_INCREMENT,
   `searchtype` varchar(25) COLLATE utf8_unicode_ci DEFAULT NULL,
   `searched_user` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`profile_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
-  <title>usersearchprofile</title>
+  <node_id>1171297</node_id>
 </node>

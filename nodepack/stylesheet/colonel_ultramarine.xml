@@ -1,8 +1,6 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
   <s3content_id>1934199</s3content_id>
   <node_id>1934199</node_id>
-  <s3bucket></s3bucket>
   <contentversion>104</contentversion>
   <doctext>/* Derived from [Kernel Blue]. */
 
@@ -750,4 +748,6 @@ display: none;
 display: none;
 }</doctext>
   <title>Colonel Ultramarine</title>
+  <s3bucket></s3bucket>
+  <type_nodetype>1854352</type_nodetype>
 </node>

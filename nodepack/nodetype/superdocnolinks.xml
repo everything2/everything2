@@ -1,11 +1,11 @@
 <node>
-  <title>superdocnolinks</title>
-  <restrictdupes>1</restrictdupes>
-  <sqltable></sqltable>
-  <extends_nodetype>14</extends_nodetype>
-  <node_id>1065266</node_id>
   <type_nodetype>1</type_nodetype>
+  <restrictdupes>1</restrictdupes>
   <writers_user>114</writers_user>
   <grouptable></grouptable>
+  <title>superdocnolinks</title>
   <deleters_user>114</deleters_user>
+  <extends_nodetype>14</extends_nodetype>
+  <sqltable></sqltable>
+  <node_id>1065266</node_id>
 </node>

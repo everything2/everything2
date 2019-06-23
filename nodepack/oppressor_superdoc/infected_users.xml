@@ -1,4 +1,5 @@
 <node>
+  <node_id>2034109</node_id>
   <doctext>&lt;p&gt;
 Infection is a rare condition which is applied automatically to a user if they are closely tied to an account which has been locked.  The condition exists to discourage the rare problematic user who is locked out but continues to come back to E2.
 &lt;/p&gt;
@@ -38,7 +39,6 @@ Infections can be caught in a few ways:
 &lt;p&gt;
 Infections are intentionally constructed to be very hard to catch and to be hard to detect for the user affected by them.  This is a balance between befuddling problem users while not adversely affecting any legit users.
 &lt;/p&gt;</doctext>
-  <title>Infected Users</title>
   <type_nodetype>1144104</type_nodetype>
-  <node_id>2034109</node_id>
+  <title>Infected Users</title>
 </node>

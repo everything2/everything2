@@ -1,7 +1,6 @@
 <node>
-  <type_nodetype>1144104</type_nodetype>
-  <node_id>1817499</node_id>
   <title>CST_Storage_22</title>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;p&gt;
 This is a storage node for CST reviews. Reviews are moved here from our working area in [CST_Chat].
 &lt;/p&gt;&lt;p&gt;
@@ -860,4 +859,5 @@ Hello Jack, On August 8th there were several write ups by [pos] submitted to [Co
 2006-08-08@1:39 [Jack] says Got a nuke request from [pos] that I'm not sure how to deal with. She's claiming that five of her writeups aren't compliant and should be deleted, but they (cursorily) look fine to me.
  [Haibun|1] [Senryu|2] [Haiku|3] [Kobayashi Issa|4] [Matsuo Basho|5].
 Hello Jack, On August 8th there were several write ups by [pos] submitted to [Content_Salvage] for copyright evaluation. Unfortu</doctext>
+  <node_id>1817499</node_id>
 </node>

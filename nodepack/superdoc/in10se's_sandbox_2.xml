@@ -1,5 +1,7 @@
 <node>
+  <node_id>2068228</node_id>
   <title>in10se's sandbox 2</title>
+  <type_nodetype>14</type_nodetype>
   <doctext>Look into thy past. Where hast thou judged?
 &lt;br&gt;&lt;br&gt;
 [%
@@ -33,6 +35,4 @@ return &quot;Thou hast cast $userVoteCount votes... $userVotePercentage\% of the
 &lt;li&gt;It ignores the [definition] writeuptype rather than only ignoring Webster 1913 writeups. There are thousands of writeups that are unvoteable definitions that weren't created by Webby.&lt;/li&gt;
 &lt;li&gt;It ignores your own writeups since you can't vote on them.&lt;/li&gt;
 &lt;/ul&gt;</doctext>
-  <type_nodetype>14</type_nodetype>
-  <node_id>2068228</node_id>
 </node>

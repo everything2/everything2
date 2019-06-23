@@ -1,6 +1,4 @@
 <node>
-  <display>&lt;strong&gt;[THE IRON NODER CHALLENGE|IRON NODER]&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Posted 30 new writeups in one month&lt;/i&gt;</display>
-  <subtype></subtype>
   <code>my $maxWusInAMonth = $DB-&gt;sqlSelect(
 	&quot;nwus&quot;,
 	&quot;(SELECT Year(publishtime) AS year,
@@ -14,8 +12,10 @@
 	);
 return 1 if $maxWusInAMonth &gt;= 30;
 return 0;</code>
+  <achievement_type>writeup</achievement_type>
   <node_id>1977814</node_id>
+  <display>&lt;strong&gt;[THE IRON NODER CHALLENGE|IRON NODER]&lt;/strong&gt;&lt;br /&gt;&lt;i&gt;Posted 30 new writeups in one month&lt;/i&gt;</display>
   <type_nodetype>1917847</type_nodetype>
   <title>writeupsMonth30</title>
-  <achievement_type>writeup</achievement_type>
+  <subtype></subtype>
 </node>

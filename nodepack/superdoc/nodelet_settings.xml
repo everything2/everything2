@@ -1,5 +1,5 @@
 <node>
-  <node_id>1677879</node_id>
+  <title>Nodelet Settings</title>
   <type_nodetype>14</type_nodetype>
   <doctext>[%
 return '&lt;p&gt;You need to sign in or '
@@ -40,5 +40,5 @@ return '--&gt;' if $APP-&gt;isGuest($USER);
 '';
 %]
 </doctext>
-  <title>Nodelet Settings</title>
+  <node_id>1677879</node_id>
 </node>

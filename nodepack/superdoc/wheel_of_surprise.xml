@@ -1,5 +1,4 @@
 <node>
-  <title>Wheel of Surprise</title>
   <doctext>[%
 
 return '&lt;p&gt;You must be logged in to be suprised.&lt;/p&gt;' if( $APP-&gt;isGuest($USER) );
@@ -286,5 +285,6 @@ return &quot;&quot;;
 
 %]</doctext>
   <type_nodetype>14</type_nodetype>
+  <title>Wheel of Surprise</title>
   <node_id>1874886</node_id>
 </node>

@@ -1,4 +1,6 @@
 <node>
+  <title>The Damned Kurt/A Bug</title>
+  <type_nodetype>1144104</type_nodetype>
   <doctext>&lt;!-- last update 16 November 2004 by panamaus --&gt;
 &lt;p&gt;&lt;strong&gt;The backstory&lt;/strong&gt;&lt;/p&gt;
 &lt;blockquote&gt;
@@ -45,7 +47,5 @@
 &lt;p align=center&gt;
 &lt;em&gt;back to&lt;br /&gt;
 &lt;strong&gt;&lt;a href=&quot;/index.pl?garbage=77777&amp;op=randomnode&quot;&gt;Random Node&lt;/a&gt;&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;</doctext>
-  <title>The Damned Kurt/A Bug</title>
-  <type_nodetype>1144104</type_nodetype>
   <node_id>1684742</node_id>
 </node>

@@ -10,7 +10,7 @@ use utf8;
 sub new
 {
 	my ($class) = shift;
-	my $this = {"xs" => XML::Simple->new("NoSort" => 1, "KeepRoot" => 1, "SuppressEmpty" => 1, "NumericEscape" => 2, "KeyAttr" => {}, "ForceArray" => ['vars'], "NoAttr" => 1)};
+	my $this = {"xs" => XML::Simple->new("KeepRoot" => 1, "SuppressEmpty" => 1, "NumericEscape" => 2, "KeyAttr" => {}, "ForceArray" => ['vars'], "NoAttr" => 1)};
 	return bless $this,$class;
 }
 

@@ -1,5 +1,4 @@
 <node>
-  <title>monochrome</title>
   <contentversion>104</contentversion>
   <doctext>#header {position: absolute; top: 0; width: 100%; }
 	#e2logo {position: absolute; top: 0.2em; left: 0.6em;margin: 0; width: 30px; height: 30px;}
@@ -13,8 +12,9 @@
 			 width: 200px; margin-right: -206px;}	
 
 #footer {clear: both;}			</doctext>
+  <title>monochrome</title>
   <s3bucket></s3bucket>
   <type_nodetype>1854352</type_nodetype>
-  <node_id>1908657</node_id>
   <s3content_id>1908657</s3content_id>
+  <node_id>1908657</node_id>
 </node>

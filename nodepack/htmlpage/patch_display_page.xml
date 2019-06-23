@@ -1,10 +1,10 @@
 <node>
-  <page></page>
-  <displaytype>display</displaytype>
-  <title>patch display page</title>
-  <pagetype_nodetype>1151141</pagetype_nodetype>
-  <type_nodetype>5</type_nodetype>
   <node_id>1151154</node_id>
-  <parent_container>1854175</parent_container>
+  <pagetype_nodetype>1151141</pagetype_nodetype>
+  <displaytype>display</displaytype>
+  <page></page>
   <mimetype></mimetype>
+  <type_nodetype>5</type_nodetype>
+  <parent_container>1854175</parent_container>
+  <title>patch display page</title>
 </node>

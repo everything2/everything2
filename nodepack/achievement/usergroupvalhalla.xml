@@ -1,9 +1,9 @@
 <node>
-  <code>return $APP-&gt;inUsergroup($user_id,'valhalla', &quot;nogods&quot;);</code>
-  <subtype></subtype>
-  <display>&lt;b&gt;Guest of Valhalla&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Participated in April Fools' Day 2008 Ragnarok!&lt;/i&gt;</display>
-  <type_nodetype>1917847</type_nodetype>
   <node_id>1936186</node_id>
-  <title>usergroupValhalla</title>
+  <display>&lt;b&gt;Guest of Valhalla&lt;/b&gt;&lt;br /&gt;&lt;i&gt;Participated in April Fools' Day 2008 Ragnarok!&lt;/i&gt;</display>
+  <code>return $APP-&gt;inUsergroup($user_id,'valhalla', &quot;nogods&quot;);</code>
   <achievement_type>usergroup</achievement_type>
+  <type_nodetype>1917847</type_nodetype>
+  <subtype></subtype>
+  <title>usergroupValhalla</title>
 </node>

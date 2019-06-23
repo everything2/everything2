@@ -1,6 +1,6 @@
 <node>
-  <title>Chatterbox nodelet settings</title>
   <code></code>
-  <type_nodetype>4</type_nodetype>
   <node_id>2025091</node_id>
+  <type_nodetype>4</type_nodetype>
+  <title>Chatterbox nodelet settings</title>
 </node>

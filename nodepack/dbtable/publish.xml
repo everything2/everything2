@@ -1,10 +1,10 @@
 <node>
+  <node_id>1876600</node_id>
   <_create_table_statement>CREATE TABLE `publish` (
   `publish_id` int(11) NOT NULL DEFAULT '0',
   `publisher` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`publish_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1</_create_table_statement>
   <type_nodetype>148</type_nodetype>
-  <node_id>1876600</node_id>
   <title>publish</title>
 </node>

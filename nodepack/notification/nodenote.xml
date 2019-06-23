@@ -1,11 +1,4 @@
 <node>
-  <code>my $N = getNodeById($$args{node_id});
-return linkNode($$args{node_noter}).
-' posted a new node note at &lt;a href=&quot;'
-.$APP-&gt;urlGenNoParams($N,'noQuotes').'#nodenotes&quot;&gt;'.$$N{title}.'&lt;/a&gt;';</code>
-  <node_id>1930989</node_id>
-  <type_nodetype>1930710</type_nodetype>
-  <hourLimit>72</hourLimit>
   <invalid_check>my $N = getNodeById($$args{node_id});
 
 return 1 if !$N;
@@ -15,6 +8,13 @@ return 0 if !defined $$args{nodenote_id};
 my $noteExists = $DB-&gt;sqlSelect('1', 'nodenote', &quot;nodenote_id = $$args{nodenote_id}&quot;);
 
 return !$noteExists;</invalid_check>
+  <hourLimit>72</hourLimit>
   <title>nodenote</title>
+  <type_nodetype>1930710</type_nodetype>
+  <node_id>1930989</node_id>
   <description>a new [node note] gets posted.</description>
+  <code>my $N = getNodeById($$args{node_id});
+return linkNode($$args{node_noter}).
+' posted a new node note at &lt;a href=&quot;'
+.$APP-&gt;urlGenNoParams($N,'noQuotes').'#nodenotes&quot;&gt;'.$$N{title}.'&lt;/a&gt;';</code>
 </node>

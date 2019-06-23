@@ -1,6 +1,6 @@
 <node>
-  <type_nodetype>1399991</type_nodetype>
-  <node_id>2051262</node_id>
   <title>room</title>
+  <type_nodetype>1399991</type_nodetype>
   <doctext>Removes a person's ability to create a room.  Only effective against users who have the capability, at level 5 or greater.  Old rooms the user created will still be around.</doctext>
+  <node_id>2051262</node_id>
 </node>

@@ -1,9 +1,9 @@
 <node>
+  <description>a node is [weblogged] to a usergroup you belong to.</description>
   <code>return linkNode($$args{writeup_id}).&quot; was added to the &lt;b&gt;&quot;.linkNode($$args{group_id}).&quot;&lt;/b&gt; weblog.&quot;;</code>
   <node_id>1930850</node_id>
-  <hourLimit>168</hourLimit>
   <type_nodetype>1930710</type_nodetype>
-  <invalid_check></invalid_check>
+  <hourLimit>168</hourLimit>
   <title>weblog</title>
-  <description>a node is [weblogged] to a usergroup you belong to.</description>
+  <invalid_check></invalid_check>
 </node>

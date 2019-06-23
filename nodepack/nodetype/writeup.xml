@@ -1,9 +1,9 @@
 <node>
-  <sqltable>writeup</sqltable>
-  <title>writeup</title>
-  <type_nodetype>1</type_nodetype>
   <node_id>117</node_id>
-  <extends_nodetype>2035430</extends_nodetype>
+  <sqltable>writeup</sqltable>
   <deleters_user>114</deleters_user>
+  <title>writeup</title>
   <grouptable></grouptable>
+  <extends_nodetype>2035430</extends_nodetype>
+  <type_nodetype>1</type_nodetype>
 </node>

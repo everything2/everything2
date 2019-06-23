@@ -1,4 +1,6 @@
 <node>
+  <s3content_id>1946088</s3content_id>
+  <node_id>1946088</node_id>
   <contentversion>104</contentversion>
   <doctext>/* based on DonJaime's Cool Understatement */
 
@@ -712,9 +714,7 @@ body , div, p , li , dd , dt , td , a , h1 , h2 , h3 {	/* should be every border
 	color: #229 ;
 	background-color: #f4f8ef ;
 	}</doctext>
-  <title>Zentrix</title>
-  <node_id>1946088</node_id>
-  <s3content_id>1946088</s3content_id>
-  <type_nodetype>1854352</type_nodetype>
   <s3bucket></s3bucket>
+  <title>Zentrix</title>
+  <type_nodetype>1854352</type_nodetype>
 </node>

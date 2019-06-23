@@ -1,5 +1,6 @@
 <node>
   <title>bestow cools</title>
+  <type_nodetype>13</type_nodetype>
   <doctext>[{openform}]
 User [% $query-&gt;textfield(&quot;myuser&quot;, &quot;&quot;, 30) %]
 gets [% $query-&gt;textfield(&quot;mycools&quot;, &quot;&quot;, 3, 3) %]
@@ -30,6 +31,5 @@ updateNode($U, -1);
 return 'Success!';
 %]
 </doctext>
-  <type_nodetype>13</type_nodetype>
   <node_id>605785</node_id>
 </node>

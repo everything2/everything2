@@ -1,10 +1,10 @@
 <node>
+  <displaytype>ajaxupdate</displaytype>
+  <node_id>2009848</node_id>
+  <pagetype_nodetype>7</pagetype_nodetype>
+  <mimetype>application/json</mimetype>
+  <type_nodetype>5</type_nodetype>
+  <parent_container>0</parent_container>
   <title>ajax update page</title>
   <page></page>
-  <displaytype>ajaxupdate</displaytype>
-  <parent_container>0</parent_container>
-  <mimetype>application/json</mimetype>
-  <pagetype_nodetype>7</pagetype_nodetype>
-  <type_nodetype>5</type_nodetype>
-  <node_id>2009848</node_id>
 </node>

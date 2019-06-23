@@ -1,8 +1,4 @@
 <node>
-  <type_nodetype>1854352</type_nodetype>
-  <s3content_id>1903159</s3content_id>
-  <node_id>1903159</node_id>
-  <s3bucket></s3bucket>
   <contentversion>104</contentversion>
   <doctext>/* This is the skeleton stylesheet for the zen theme, by ascorbic */
 /* You may use this file as a foundation for any new work, but you may find it easier to start from scratch. */
@@ -330,5 +326,9 @@ width: 100%;
 big big big {
 font-size: inherit;
 }</doctext>
+  <s3bucket></s3bucket>
   <title>Verdanaholic</title>
+  <type_nodetype>1854352</type_nodetype>
+  <s3content_id>1903159</s3content_id>
+  <node_id>1903159</node_id>
 </node>

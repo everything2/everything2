@@ -1,6 +1,6 @@
 <node>
-  <title>approve_draft</title>
   <code></code>
-  <type_nodetype>415056</type_nodetype>
   <node_id>2053841</node_id>
+  <type_nodetype>415056</type_nodetype>
+  <title>approve_draft</title>
 </node>

@@ -1,9 +1,6 @@
 <node>
-  <s3content_id>1903725</s3content_id>
   <node_id>1903725</node_id>
-  <type_nodetype>1854352</type_nodetype>
-  <s3bucket></s3bucket>
-  <contentversion>104</contentversion>
+  <s3content_id>1903725</s3content_id>
   <doctext>body,
 th,
 td {
@@ -576,5 +573,8 @@ td {
 		#metalinks {
 			display: inline;
 		}</doctext>
+  <contentversion>104</contentversion>
+  <type_nodetype>1854352</type_nodetype>
   <title>Maroon</title>
+  <s3bucket></s3bucket>
 </node>

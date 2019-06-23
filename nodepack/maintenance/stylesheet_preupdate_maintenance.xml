@@ -1,8 +1,8 @@
 <node>
-  <code></code>
-  <node_id>2100594</node_id>
-  <maintain_nodetype>1854352</maintain_nodetype>
-  <type_nodetype>150</type_nodetype>
-  <maintaintype>preupdate</maintaintype>
   <title>stylesheet preupdate maintenance</title>
+  <maintaintype>preupdate</maintaintype>
+  <type_nodetype>150</type_nodetype>
+  <code></code>
+  <maintain_nodetype>1854352</maintain_nodetype>
+  <node_id>2100594</node_id>
 </node>

@@ -1,4 +1,6 @@
 <node>
+  <node_id>1997408</node_id>
+  <s3content_id>1997408</s3content_id>
   <doctext>#header, 
 #wrapper 	{	width: 100%;			}
 
@@ -267,9 +269,7 @@ small { font-size: 80%;}
 #personallinks.nodelet,
 #frontpage_news	{	display: none;			}</doctext>
   <contentversion>103</contentversion>
-  <title>mikoyan29</title>
-  <s3content_id>1997408</s3content_id>
-  <node_id>1997408</node_id>
   <type_nodetype>1854352</type_nodetype>
   <s3bucket></s3bucket>
+  <title>mikoyan29</title>
 </node>

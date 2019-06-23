@@ -1,7 +1,5 @@
 <node>
   <node_id>2033982</node_id>
-  <type_nodetype>14</type_nodetype>
-  <title>Topic Archive</title>
   <doctext>[%
 
 # Whipped up by Oolong on 2011-22-01, largely cannibalised from [Security Monitor].
@@ -50,4 +48,6 @@ $str .= '&lt;/tr&gt;&lt;/table&gt;';
 return $str;
 
 %]</doctext>
+  <title>Topic Archive</title>
+  <type_nodetype>14</type_nodetype>
 </node>

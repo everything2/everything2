@@ -1,5 +1,4 @@
 <node>
-  <type_nodetype>14</type_nodetype>
   <node_id>2007317</node_id>
   <doctext>[%
 my $isGod = htmlcode('isGod', $USER);
@@ -200,4 +199,5 @@ return $str;
 %]
 </doctext>
   <title>in10se's sandbox 6</title>
+  <type_nodetype>14</type_nodetype>
 </node>

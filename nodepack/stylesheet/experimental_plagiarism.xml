@@ -1,10 +1,6 @@
 <node>
-  <s3bucket></s3bucket>
   <node_id>2116604</node_id>
   <s3content_id>2116604</s3content_id>
-  <type_nodetype>1854352</type_nodetype>
-  <title>experimental plagiarism</title>
-  <contentversion>25</contentversion>
   <doctext>@import url(https://everything2.com/node/stylesheet/ResponsiveBase?displaytype=view);
 
 /****** COLORS ******/
@@ -770,4 +766,8 @@ hr.clear {
 .zen_mobiletab &gt; A:visited {
 	color: #ddF;
 }</doctext>
+  <contentversion>25</contentversion>
+  <type_nodetype>1854352</type_nodetype>
+  <title>experimental plagiarism</title>
+  <s3bucket></s3bucket>
 </node>

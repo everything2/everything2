@@ -1,6 +1,6 @@
 <node>
-  <title>htmlpage</title>
   <type_nodetype>148</type_nodetype>
+  <title>htmlpage</title>
   <node_id>163</node_id>
   <_create_table_statement>CREATE TABLE `htmlpage` (
   `htmlpage_id` int(11) NOT NULL AUTO_INCREMENT,

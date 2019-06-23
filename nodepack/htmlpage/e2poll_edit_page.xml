@@ -1,10 +1,10 @@
 <node>
-  <parent_container>1854175</parent_container>
+  <page></page>
   <mimetype></mimetype>
   <type_nodetype>5</type_nodetype>
+  <parent_container>1854175</parent_container>
+  <title>e2poll edit page</title>
   <pagetype_nodetype>1685242</pagetype_nodetype>
   <node_id>2052745</node_id>
-  <title>e2poll edit page</title>
-  <page></page>
   <displaytype>edit</displaytype>
 </node>

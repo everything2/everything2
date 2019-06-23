@@ -1,4 +1,5 @@
 <node>
+  <type_nodetype>14</type_nodetype>
   <title>Sanctify user</title>
   <doctext>[%
 
@@ -64,5 +65,4 @@ return &quot;&quot;;
 
 %]</doctext>
   <node_id>1927889</node_id>
-  <type_nodetype>14</type_nodetype>
 </node>

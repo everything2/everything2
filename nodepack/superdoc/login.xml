@@ -1,7 +1,5 @@
 <node>
   <node_id>109</node_id>
-  <type_nodetype>14</type_nodetype>
-  <title>login</title>
   <doctext>[%
 my $str = '';
 
@@ -42,4 +40,6 @@ $str;
 %]
 &lt;br /&gt;&lt;br /&gt;
 &lt;small&gt;Note that due to a recent change in the login mechanism, your old password (passwords set prior to 2012-11-06) is limited to ten characters. If you are having trouble logging in, try only the first ten characters&lt;/small&gt;</doctext>
+  <type_nodetype>14</type_nodetype>
+  <title>login</title>
 </node>

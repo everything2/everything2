@@ -1,4 +1,6 @@
 <node>
+  <title>E2 Word Counter</title>
+  <type_nodetype>1065266</type_nodetype>
   <doctext>&lt;script language=&quot;JavaScript&quot;&gt;
 &lt;!--
 function word_count( str ) {
@@ -33,7 +35,5 @@ you're &lt;strong&gt;doomed&lt;/strong&gt;. It might be a couple words off anywa
 &lt;br /&gt;&lt;br /&gt;
 &lt;p&gt;Feature requests and bug (ha!) reports go to [%linkNode( 470183 )%]. &lt;/p&gt;
 </doctext>
-  <title>E2 Word Counter</title>
   <node_id>1166526</node_id>
-  <type_nodetype>1065266</type_nodetype>
 </node>

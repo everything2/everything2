@@ -1,7 +1,4 @@
 <node>
-  <type_nodetype>14</type_nodetype>
-  <node_id>1882393</node_id>
-  <title>Node Tracker</title>
   <doctext>&lt;p&gt;&lt;em&gt;Finally, its time had come.&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;This is essentially a port of [cow of doom]'s node tracker.
@@ -509,4 +506,7 @@ return $finalStr.&quot;&lt;br /&gt;&lt;br /&gt;&quot;.$str;
 
 %]
 </doctext>
+  <title>Node Tracker</title>
+  <type_nodetype>14</type_nodetype>
+  <node_id>1882393</node_id>
 </node>

@@ -1,5 +1,5 @@
 <node>
-  <title>person</title>
-  <type_nodetype>118</type_nodetype>
   <node_id>249</node_id>
+  <type_nodetype>118</type_nodetype>
+  <title>person</title>
 </node>

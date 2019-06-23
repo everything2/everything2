@@ -1,10 +1,10 @@
 <node>
-  <title>e2node softlinks page</title>
   <displaytype>softlinks</displaytype>
-  <page></page>
-  <mimetype>text/xml</mimetype>
-  <parent_container>0</parent_container>
-  <node_id>2025224</node_id>
   <pagetype_nodetype>116</pagetype_nodetype>
+  <node_id>2025224</node_id>
+  <title>e2node softlinks page</title>
+  <parent_container>0</parent_container>
   <type_nodetype>5</type_nodetype>
+  <mimetype>text/xml</mimetype>
+  <page></page>
 </node>

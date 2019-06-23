@@ -1,6 +1,4 @@
 <node>
-  <title>nodenote_restore</title>
-  <type_nodetype>148</type_nodetype>
   <node_id>2070551</node_id>
   <_create_table_statement>CREATE TABLE `nodenote_restore` (
   `nodenote_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -12,4 +10,6 @@
   KEY `timestamp` (`timestamp`),
   KEY `nodenote_nodeid` (`nodenote_nodeid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci</_create_table_statement>
+  <type_nodetype>148</type_nodetype>
+  <title>nodenote_restore</title>
 </node>

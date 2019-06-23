@@ -1,4 +1,11 @@
 <node>
+  <type_nodetype>1930710</type_nodetype>
+  <title>author removed writeup</title>
+  <hourLimit>240</hourLimit>
+  <invalid_check>my $draft = getNodeById($$args{writeup_id});
+
+return ($draft &amp;&amp; $$draft{type}{title} ne 'draft');</invalid_check>
+  <description>a user removes a writeup</description>
   <code>my $titleLink = (
 	getRef($$args{writeup_id})
 		&amp;&amp; $APP-&gt;canSeeDraft($USER, $$args{writeup_id}))
@@ -11,11 +18,4 @@ $reason = &quot; ($$args{reason})&quot; if $$args{reason};
 linkNode($$args{author_id})
 .&quot; removed &lt;b&gt;$titleLink&lt;/b&gt;$reason&quot;;</code>
   <node_id>2047531</node_id>
-  <hourLimit>240</hourLimit>
-  <type_nodetype>1930710</type_nodetype>
-  <invalid_check>my $draft = getNodeById($$args{writeup_id});
-
-return ($draft &amp;&amp; $$draft{type}{title} ne 'draft');</invalid_check>
-  <title>author removed writeup</title>
-  <description>a user removes a writeup</description>
 </node>

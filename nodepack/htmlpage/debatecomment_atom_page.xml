@@ -1,10 +1,10 @@
 <node>
-  <mimetype>application/atom+xml</mimetype>
-  <parent_container>1898369</parent_container>
-  <node_id>1898367</node_id>
-  <type_nodetype>5</type_nodetype>
   <pagetype_nodetype>1156105</pagetype_nodetype>
-  <title>debatecomment atom page</title>
+  <node_id>1898367</node_id>
   <displaytype>atom</displaytype>
   <page></page>
+  <parent_container>1898369</parent_container>
+  <title>debatecomment atom page</title>
+  <mimetype>application/atom+xml</mimetype>
+  <type_nodetype>5</type_nodetype>
 </node>

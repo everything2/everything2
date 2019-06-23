@@ -1,10 +1,10 @@
 <node>
-  <title>Mine</title>
-  <doctext>Epicenter                                
-</doctext>
-  <contentversion>103</contentversion>
-  <s3bucket></s3bucket>
   <s3content_id>1971159</s3content_id>
   <node_id>1971159</node_id>
+  <contentversion>103</contentversion>
+  <doctext>Epicenter                                
+</doctext>
+  <title>Mine</title>
+  <s3bucket></s3bucket>
   <type_nodetype>1854352</type_nodetype>
 </node>

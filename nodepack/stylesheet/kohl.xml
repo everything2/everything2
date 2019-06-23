@@ -1,4 +1,10 @@
 <node>
+  <s3content_id>1886447</s3content_id>
+  <node_id>1886447</node_id>
+  <s3bucket></s3bucket>
+  <title>kohl</title>
+  <type_nodetype>1854352</type_nodetype>
+  <contentversion>104</contentversion>
   <doctext>body,
 th,
 td {
@@ -570,10 +576,4 @@ td {
 		#metalinks {
 			display: none;
 		}</doctext>
-  <contentversion>104</contentversion>
-  <title>kohl</title>
-  <type_nodetype>1854352</type_nodetype>
-  <s3content_id>1886447</s3content_id>
-  <node_id>1886447</node_id>
-  <s3bucket></s3bucket>
 </node>

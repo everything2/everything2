@@ -1,5 +1,7 @@
 <node>
   <title>Warm understatement</title>
+  <s3bucket></s3bucket>
+  <type_nodetype>1854352</type_nodetype>
   <contentversion>104</contentversion>
   <doctext>@import url(&quot;https://everything2.com/node/stylesheet/understatement?displaytype=view&quot;) ;
 
@@ -78,8 +80,6 @@ body , div , span , p , li , dd , dt , tr , td , a , h1 , h2 , h3 , form ,
     border-style: solid ;
     border-color: #fffcf8 ;
     }</doctext>
-  <s3bucket></s3bucket>
-  <type_nodetype>1854352</type_nodetype>
-  <node_id>1946242</node_id>
   <s3content_id>1946242</s3content_id>
+  <node_id>1946242</node_id>
 </node>

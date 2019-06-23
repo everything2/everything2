@@ -1,5 +1,4 @@
 <node>
-  <title>kohl16</title>
   <contentversion>104</contentversion>
   <doctext>/*autofixed*/
 /*= autofix added rules. adjust to taste: */
@@ -583,7 +582,8 @@ td {
 			display: none;
 		}</doctext>
   <s3bucket></s3bucket>
+  <title>kohl16</title>
   <type_nodetype>1854352</type_nodetype>
-  <node_id>2006294</node_id>
   <s3content_id>2006294</s3content_id>
+  <node_id>2006294</node_id>
 </node>

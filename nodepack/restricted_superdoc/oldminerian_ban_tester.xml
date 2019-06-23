@@ -1,5 +1,7 @@
 <node>
+  <node_id>1990808</node_id>
   <title>OldMinerian Ban Tester</title>
+  <type_nodetype>13</type_nodetype>
   <doctext>&lt;h2&gt;Env:&lt;/h2&gt;
 [%
 
@@ -57,6 +59,4 @@ return $str;
 
 %]
 </doctext>
-  <node_id>1990808</node_id>
-  <type_nodetype>13</type_nodetype>
 </node>

@@ -1,9 +1,9 @@
 <node>
-  <s3bucket></s3bucket>
-  <type_nodetype>1786405</type_nodetype>
-  <node_id>2069739</node_id>
-  <s3content_id>2069739</s3content_id>
-  <title>Autoformat javascript</title>
   <contentversion>114</contentversion>
   <doctext># Moved to /js/2069739.js</doctext>
+  <title>Autoformat javascript</title>
+  <s3bucket></s3bucket>
+  <type_nodetype>1786405</type_nodetype>
+  <s3content_id>2069739</s3content_id>
+  <node_id>2069739</node_id>
 </node>

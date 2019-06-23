@@ -1,37 +1,37 @@
 <node>
-  <imgsrc></imgsrc>
   <node_id>779713</node_id>
-  <type_nodetype>15</type_nodetype>
-  <email>root@localhost</email>
   <doctext></doctext>
-  <passwd></passwd>
-  <nick></nick>
-  <realname>Guest User</realname>
-  <validemail>1</validemail>
   <title>Guest User</title>
+  <nick></nick>
+  <type_nodetype>15</type_nodetype>
+  <validemail>1</validemail>
   <vars>
-    <value></value>
-    <key>nwriteups</key>
+    <key>preference_last_update_time</key>
+    <value>1278018700</value>
   </vars>
   <vars>
-    <value></value>
     <key>numwriteups</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>wufoot</key>
+    <value>c:social,c:vote,c:cfull</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>hasRecalculated</key>
   </vars>
   <vars>
     <key>collapsedNodelets</key>
     <value>signin!</value>
   </vars>
   <vars>
-    <key>hasRecalculated</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <value>c:social,c:vote,c:cfull</value>
-    <key>wufoot</key>
-  </vars>
-  <vars>
-    <key>nodelets</key>
     <value>2029388,2027508,263</value>
+    <key>nodelets</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>nwriteups</key>
   </vars>
   <vars>
     <key>wuhead</key>
@@ -41,8 +41,8 @@
     <key>num_newwus</key>
     <value>10</value>
   </vars>
-  <vars>
-    <value>1278018700</value>
-    <key>preference_last_update_time</key>
-  </vars>
+  <imgsrc></imgsrc>
+  <realname>Guest User</realname>
+  <passwd></passwd>
+  <email>root@localhost</email>
 </node>

@@ -1,4 +1,6 @@
 <node>
+  <type_nodetype>1854352</type_nodetype>
+  <s3bucket></s3bucket>
   <title>fondue test2 (blue)</title>
   <doctext>/* -- 
 
@@ -503,8 +505,6 @@ border-right: 1px solid #51546A;
 border-bottom: 2px solid #51546A;
 }</doctext>
   <contentversion>107</contentversion>
-  <s3bucket></s3bucket>
-  <s3content_id>1901810</s3content_id>
   <node_id>1901810</node_id>
-  <type_nodetype>1854352</type_nodetype>
+  <s3content_id>1901810</s3content_id>
 </node>

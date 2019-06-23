@@ -1,9 +1,9 @@
 <node>
-  <readers_user>838015</readers_user>
+  <title>datastash</title>
+  <grouptable></grouptable>
+  <sqltable>setting</sqltable>
   <node_id>2117441</node_id>
+  <readers_user>838015</readers_user>
   <type_nodetype>1</type_nodetype>
   <restrictdupes>1</restrictdupes>
-  <title>datastash</title>
-  <sqltable>setting</sqltable>
-  <grouptable></grouptable>
 </node>

@@ -1,10 +1,10 @@
 <node>
-  <mimetype></mimetype>
-  <parent_container>1854175</parent_container>
-  <node_id>719848</node_id>
-  <type_nodetype>5</type_nodetype>
   <pagetype_nodetype>545241</pagetype_nodetype>
-  <title>room display page</title>
+  <node_id>719848</node_id>
   <displaytype>display</displaytype>
   <page></page>
+  <parent_container>1854175</parent_container>
+  <title>room display page</title>
+  <mimetype></mimetype>
+  <type_nodetype>5</type_nodetype>
 </node>

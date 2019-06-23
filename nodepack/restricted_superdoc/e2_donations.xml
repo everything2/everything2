@@ -1,5 +1,5 @@
 <node>
-  <title>E2 Donations</title>
+  <node_id>1023309</node_id>
   <doctext>The [Everything Development Company] is in dire need to pay its utilities. We've sold most of the interns into [slavery] and only have a few left. If you could spare a buck, it'd be appreciated. 
 &lt;P&gt;
 The paypal account is for Blockstackers Intergalactic (our parent company) and any contributions will be earmarked to
@@ -20,6 +20,6 @@ ALT=\&quot;Make payments with PayPal - it's fast, free and secure!\&quot;&gt;
 &lt;!-- End PayPal Logo --&gt;&quot;
 %]
 &lt;/CENTER&gt;</doctext>
-  <node_id>1023309</node_id>
+  <title>E2 Donations</title>
   <type_nodetype>13</type_nodetype>
 </node>

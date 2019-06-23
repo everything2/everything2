@@ -1,128 +1,128 @@
 <node>
-  <stars>2</stars>
-  <imgsrc>images/userincoming/EDB.gif</imgsrc>
   <type_nodetype>15</type_nodetype>
-  <email>e2bones@yahoo.com</email>
   <node_id>373113</node_id>
+  <nick></nick>
+  <title>EDB</title>
   <doctext>&lt;p align=&quot;center&quot;&gt;&lt;big&gt;[EDB reads his Message Inbox]&lt;/big&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;small&gt;Deep within the [nodegel], EDB waits, dreaming.&lt;/small&gt;&lt;/p&gt;
 </doctext>
+  <stars>2</stars>
+  <passwd></passwd>
+  <email>e2bones@yahoo.com</email>
   <sanctity>1</sanctity>
-  <nick></nick>
-  <realname>EDB</realname>
-  <title>EDB</title>
-  <vars>
-    <key>epi_hideces</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>nwriteups</key>
-    <value>1 - &lt;a href=&quot;/user/EDB/writeups&quot;&gt;View EDB's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=EDB&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>visible</key>
-  </vars>
-  <vars>
-    <key>lastborg</key>
-    <value>1212496710</value>
-  </vars>
-  <vars>
-    <value></value>
-    <key>hasRecalculated</key>
-  </vars>
-  <vars>
-    <key>HideNewWriteups</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>mission</key>
-    <value>Moist Noder Flesh</value>
-  </vars>
-  <vars>
-    <key>specialties</key>
-    <value>Smelling Blood</value>
-  </vars>
-  <vars>
-    <value>139</value>
-    <key>IQM</key>
-  </vars>
-  <vars>
-    <value>20346</value>
-    <key>oldexp</key>
-  </vars>
-  <vars>
-    <key>nogradlinks</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>motto</key>
-    <value>If you think being silenced in the chatterbox for five minutes is a big deal you probably should have been silenced for ten.</value>
-  </vars>
-  <vars>
-    <key>infravision</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <value>1278018700</value>
-    <key>preference_last_update_time</key>
-  </vars>
-  <vars>
-    <key>nodelets</key>
-    <value>262,91,170070</value>
-  </vars>
-  <vars>
-    <key>nohints</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>personal_nodelet</key>
-    <value></value>
-  </vars>
-  <vars>
-    <value>1</value>
-    <key>coolnotification</key>
-  </vars>
-  <vars>
-    <key>numwriteups</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <value>910468</value>
-    <key>lastnoded</key>
-  </vars>
+  <imgsrc>images/userincoming/EDB.gif</imgsrc>
   <vars>
     <key>coolsafety</key>
     <value>1</value>
   </vars>
   <vars>
-    <value>The Company</value>
-    <key>employment</key>
+    <key>oldexp</key>
+    <value>20346</value>
   </vars>
   <vars>
-    <key>costume</key>
-    <value>CUTE KITTY CAT</value>
+    <key>coolnotification</key>
+    <value>1</value>
   </vars>
   <vars>
-    <value>off</value>
-    <key>nullvote</key>
+    <value>1</value>
+    <key>infravision</key>
+  </vars>
+  <vars>
+    <value>Smelling Blood</value>
+    <key>specialties</key>
   </vars>
   <vars>
     <key>thewar</key>
     <value>{&quot;health&quot;:199}</value>
   </vars>
   <vars>
-    <value>25</value>
+    <value></value>
+    <key>HideNewWriteups</key>
+  </vars>
+  <vars>
+    <key>employment</key>
+    <value>The Company</value>
+  </vars>
+  <vars>
+    <key>nodelets</key>
+    <value>262,91,170070</value>
+  </vars>
+  <vars>
+    <value></value>
+    <key>nogradlinks</key>
+  </vars>
+  <vars>
+    <key>epi_hideces</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <value></value>
+    <key>personal_nodelet</key>
+  </vars>
+  <vars>
+    <key>costume</key>
+    <value>CUTE KITTY CAT</value>
+  </vars>
+  <vars>
     <key>oldGP</key>
+    <value>25</value>
+  </vars>
+  <vars>
+    <value>If you think being silenced in the chatterbox for five minutes is a big deal you probably should have been silenced for ten.</value>
+    <key>motto</key>
+  </vars>
+  <vars>
+    <key>lastnoded</key>
+    <value>910468</value>
+  </vars>
+  <vars>
+    <value>139</value>
+    <key>IQM</key>
+  </vars>
+  <vars>
+    <key>numborged</key>
+    <value>115</value>
   </vars>
   <vars>
     <value></value>
     <key>chatterbox_msgs_descend</key>
   </vars>
   <vars>
-    <key>numborged</key>
-    <value>115</value>
+    <value></value>
+    <key>hasRecalculated</key>
   </vars>
-  <passwd></passwd>
+  <vars>
+    <value>Moist Noder Flesh</value>
+    <key>mission</key>
+  </vars>
+  <vars>
+    <value>1 - &lt;a href=&quot;/user/EDB/writeups&quot;&gt;View EDB's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=EDB&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
+    <key>nwriteups</key>
+  </vars>
+  <vars>
+    <key>lastborg</key>
+    <value>1212496710</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>nohints</key>
+  </vars>
+  <vars>
+    <key>nullvote</key>
+    <value>off</value>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>visible</key>
+  </vars>
+  <vars>
+    <value>1</value>
+    <key>numwriteups</key>
+  </vars>
+  <vars>
+    <value>1278018700</value>
+    <key>preference_last_update_time</key>
+  </vars>
+  <realname>EDB</realname>
 </node>

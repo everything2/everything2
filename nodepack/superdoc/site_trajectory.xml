@@ -1,6 +1,4 @@
 <node>
-  <type_nodetype>14</type_nodetype>
-  <node_id>1956567</node_id>
   <doctext>&lt;style&gt;
 &lt;!--
 th {
@@ -947,5 +945,7 @@ return $str;
 
 	&lt;td&gt;0.30&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 </doctext>
+  <type_nodetype>14</type_nodetype>
   <title>Site Trajectory</title>
+  <node_id>1956567</node_id>
 </node>

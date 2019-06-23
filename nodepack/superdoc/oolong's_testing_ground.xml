@@ -1,5 +1,6 @@
 <node>
   <title>Oolong's Testing Ground</title>
+  <type_nodetype>14</type_nodetype>
   <doctext>[%
 
 my $str = '$Everything::CONF-&gt;canonical_web_server = '
@@ -295,5 +296,4 @@ return $str;
 
 %]</doctext>
   <node_id>1929198</node_id>
-  <type_nodetype>14</type_nodetype>
 </node>

@@ -1,6 +1,4 @@
 <node>
-  <node_id>950586</node_id>
-  <type_nodetype>1065266</type_nodetype>
   <doctext>&lt;table&gt;
 &lt;tr&gt;&lt;th&gt;type_nodetype&lt;/th&gt;&lt;th&gt;description&lt;/th&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;1065266&lt;/td&gt;&lt;td&gt;superdocnolinks&lt;/td&gt;&lt;/tr&gt;
@@ -464,4 +462,6 @@ return ('couldn\'t find ' . $module) unless scalar(@allLines);
 
 &lt;/div&gt;\n</doctext>
   <title>N-Wing's plaything</title>
+  <type_nodetype>1065266</type_nodetype>
+  <node_id>950586</node_id>
 </node>

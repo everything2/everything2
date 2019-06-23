@@ -1,9 +1,7 @@
 <node>
   <s3bucket></s3bucket>
-  <type_nodetype>1854352</type_nodetype>
-  <node_id>1931319</node_id>
-  <s3content_id>1931319</s3content_id>
   <title>The Zen of the Mooquack</title>
+  <type_nodetype>1854352</type_nodetype>
   <contentversion>104</contentversion>
   <doctext>/* This is the skeleton stylesheet for the zen theme, by ascorbic */
 /* You may use this file as a foundation for any new work, but you may find it easier to start from scratch. */
@@ -374,4 +372,6 @@ pre, tt {
 .oddrow, #homenodeheader dt  {
 	background-color: #d0d0d0;
 }</doctext>
+  <s3content_id>1931319</s3content_id>
+  <node_id>1931319</node_id>
 </node>

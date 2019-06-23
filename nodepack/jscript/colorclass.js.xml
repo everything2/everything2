@@ -1,9 +1,9 @@
 <node>
-  <s3bucket></s3bucket>
-  <node_id>2069767</node_id>
-  <s3content_id>2069767</s3content_id>
-  <type_nodetype>1786405</type_nodetype>
-  <title>colorclass.js</title>
-  <doctext>// Moved to /js/2069767.js</doctext>
   <contentversion>103</contentversion>
+  <doctext>// Moved to /js/2069767.js</doctext>
+  <title>colorclass.js</title>
+  <s3bucket></s3bucket>
+  <type_nodetype>1786405</type_nodetype>
+  <s3content_id>2069767</s3content_id>
+  <node_id>2069767</node_id>
 </node>

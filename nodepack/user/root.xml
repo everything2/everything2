@@ -1,64 +1,41 @@
 <node>
-  <imgsrc></imgsrc>
   <type_nodetype>15</type_nodetype>
-  <email>root@localhost</email>
-  <node_id>113</node_id>
+  <title>root</title>
+  <nick></nick>
   <doctext>He's the god of [gods] &amp;#8212; instant access. Unlimited power.
 Great hair.</doctext>
+  <node_id>113</node_id>
+  <email>root@localhost</email>
   <passwd></passwd>
   <realname>Super user</realname>
-  <nick></nick>
-  <vars>
-    <key>nodelets</key>
-    <value>1687135,262,170070,91,263,1157024,165437</value>
-  </vars>
-  <vars>
-    <key>preference_last_update_time</key>
-    <value>1330374419</value>
-  </vars>
-  <vars>
-    <key>motto</key>
-    <value></value>
-  </vars>
-  <vars>
-    <value></value>
-    <key>lastnode</key>
-  </vars>
-  <vars>
-    <value></value>
-    <key>oldGP</key>
-  </vars>
-  <vars>
-    <key>oldexp</key>
-    <value>-160</value>
-  </vars>
-  <vars>
-    <key>mission</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>specialties</key>
-    <value></value>
-  </vars>
-  <vars>
-    <value>off</value>
-    <key>nullvote</key>
-  </vars>
-  <vars>
-    <key>employment</key>
-    <value></value>
-  </vars>
+  <imgsrc></imgsrc>
   <vars>
     <value>15</value>
     <key>num_newwus</key>
   </vars>
   <vars>
     <value></value>
-    <key>group</key>
+    <key>lastnode</key>
+  </vars>
+  <vars>
+    <key>oldexp</key>
+    <value>-160</value>
   </vars>
   <vars>
     <value></value>
-    <key>numwriteups</key>
+    <key>motto</key>
+  </vars>
+  <vars>
+    <key>oldGP</key>
+    <value></value>
+  </vars>
+  <vars>
+    <value></value>
+    <key>specialties</key>
+  </vars>
+  <vars>
+    <value></value>
+    <key>mission</key>
   </vars>
   <vars>
     <value></value>
@@ -66,7 +43,30 @@ Great hair.</doctext>
   </vars>
   <vars>
     <value></value>
-    <key>personal_nodelet</key>
+    <key>employment</key>
   </vars>
-  <title>root</title>
+  <vars>
+    <key>nodelets</key>
+    <value>1687135,262,170070,91,263,1157024,165437</value>
+  </vars>
+  <vars>
+    <key>group</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>nullvote</key>
+    <value>off</value>
+  </vars>
+  <vars>
+    <key>personal_nodelet</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>preference_last_update_time</key>
+    <value>1330374419</value>
+  </vars>
+  <vars>
+    <key>numwriteups</key>
+    <value></value>
+  </vars>
 </node>

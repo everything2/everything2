@@ -1,6 +1,7 @@
 <node>
-  <type_nodetype>14</type_nodetype>
   <node_id>2001828</node_id>
+  <title>Recent Registry Entries</title>
+  <type_nodetype>14</type_nodetype>
   <doctext>&lt;p align=&quot;center&quot; style=&quot;text-align:center; font-weight:bold; margin:20px;&quot;&gt;
   The 100 most recently added or updated registry entries, served with a hint of basil...
 &lt;/p&gt;
@@ -38,5 +39,4 @@
   return $APP-&gt;buildTable($labels,$rows,'class=&quot;registries&quot;','center');
 # 4th option centers the table, so we don't need &lt;center&gt; any more --alexander
 %]</doctext>
-  <title>Recent Registry Entries</title>
 </node>

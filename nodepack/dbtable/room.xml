@@ -1,6 +1,4 @@
 <node>
-  <title>room</title>
-  <type_nodetype>148</type_nodetype>
   <node_id>544808</node_id>
   <_create_table_statement>CREATE TABLE `room` (
   `room_id` int(11) NOT NULL DEFAULT '0',
@@ -14,4 +12,6 @@
   PRIMARY KEY (`room_id`,`member_user`),
   KEY `exp_index` (`experience`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci PACK_KEYS=1</_create_table_statement>
+  <type_nodetype>148</type_nodetype>
+  <title>room</title>
 </node>
