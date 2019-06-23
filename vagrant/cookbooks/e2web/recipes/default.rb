@@ -115,6 +115,24 @@ cron 'log_deliver_to_s3.pl' do
   command "/var/everything/tools/log_deliver_to_s3.pl 2>&1 >> #{logdir}/e2cron.log_deliver_to_s3.#{datelog}"
 end
 
+unless node['e2engine']['environment'].eql? 'production'
+  template "/lib/systemd/system/apache2.service" do
+    owner "root"
+    group "root"
+    mode "0755"
+    action "create"
+    source 'apache2.service.erb'
+    notifies :restart, "service[apache2]", :delayed
+  end
+
+  bash "systemctl reload" do
+    cwd "/tmp"
+    user "root"
+    code "systemctl daemon-reload"
+  end
+end
+
+
 service 'apache2' do
   supports :status => true, :restart => true, :reload => true, :stop => true
 end
