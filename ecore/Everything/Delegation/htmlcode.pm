@@ -4231,7 +4231,8 @@ sub static_javascript
     $e2->{$_} = $$VARS{$_} if ($$VARS{$_});
   }
 
-  $e2->{collapsedNodelets} =~ s/\bsignin\b// if($query->param('op') and $query -> param('op') eq 'login');
+  $e2->{collapsedNodelets} ||= "";
+  $e2->{collapsedNodelets} =~ s/\bsignin\b// if($query->param('op') and $query->param('op') eq 'login');
   $e2->{noquickvote} = 1 if($VARS->{noquickvote});
   $e2->{nonodeletcollapser} = 1 if($VARS->{nonodeletcollapser});
   $e2 = encode_json($e2);
