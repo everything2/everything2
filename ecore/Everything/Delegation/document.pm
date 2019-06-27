@@ -1935,7 +1935,7 @@ sub create_category
   # Output Form
   #
 
-  $str .= $query->startform;
+  $str .= $query->start_form;
   $query->param("node", "");
   $str .= '<p><b>Category Name:</b><br />';
   $str .= $query->textfield(-name => "node",
@@ -1987,7 +1987,7 @@ sub create_category
     . $query->hidden(-name => "type", -value => $catType);
 
   $str .= $query->submit("createit", "Create It!");
-  $str .= $query->endform;
+  $str .= $query->end_form;
 
   return $str;
 }
@@ -2240,7 +2240,7 @@ sub display_categories
   $str .= qq|<option value="m">Maintainer</option>|;
   $str .= qq|</select></td></tr></table>|;
   $str .= $query->submit("submit", "Submit");
-  $str .= $query->endform;
+  $str .= $query->end_form;
 
   my $contribute = "";
   $contribute = "<th>Can I Contribute?</th>" if !$APP->isGuest($USER);
@@ -3428,7 +3428,7 @@ sub e2_ticket_center
     . "\n" . '<input type="hidden" name="op" value="new">'
     . "\n" . '<input type=hidden name="type" value="1949335">'
     . "\n" . $query->submit("createit", "Enter Ticket")
-    . "\n" . $query->endform;
+    . "\n" . $query->end_form;
 
   ## Admin Only checkbox only visible to admins, C_Es
   my $adminchecktitle = "";

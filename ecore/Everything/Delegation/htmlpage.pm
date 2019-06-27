@@ -3266,7 +3266,7 @@ sub category_edit_page
         .$query -> textfield('category_title', $$NODE{title}, 25)
       ).$query -> submit('Fix')
       .'</fieldset>'
-      .$query -> endform;
+      .$query->end_form;
 
     my $maintainer = getNodeById($$NODE{author_user});
 
@@ -3296,7 +3296,7 @@ sub category_edit_page
       . '<br> Current maintainer: ' . linkNode($maintainer)
       . '</fieldset>'
       . htmlcode('verifyRequestForm', 'setMaintainerForm')
-      . $query->endform;
+      . $query->end_form;
   } else {
     $str .= '<p>To change the title or maintainer of this category, please contact an editor.</p>';
   }
@@ -3398,7 +3398,7 @@ sub category_edit_page
 
   $str .= ''.$query->textfield("addnodename", '', 25)
    . $query->submit("addnode", "Add")
-   . '</fieldset>' . $query->endform;
+   . '</fieldset>' . $query->end_form;
 
 
   $str .= htmlcode('openform', 'updateDescrForm').'<fieldset><legend>Category Description</legend>'
@@ -3408,7 +3408,7 @@ sub category_edit_page
     . $APP->encodeHTML($$NODE{doctext})
     . '</textarea>'
     . $query->submit("update", "Update Description")
-    . '</fieldset>' . $query->endform;
+    . '</fieldset>' . $query->end_form;
 
 
   # list nodes in the category, with "delete" links
@@ -3462,7 +3462,7 @@ sub category_edit_page
 	. $query->submit("orderthem", "Reorder")
 	. '</td></tr></table>'
 	. '</fieldset>'
-	. $query->endform;
+	. $query->end_form;
   }
 
   $str .= htmlcode('openform')
