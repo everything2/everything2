@@ -807,18 +807,19 @@ sub displayPage
 
 	my $type = $NODE->{type}->{title};
 
-	my $PAGE = getPage($NODE, $query->param('displaytype'));
+	my $displaytype = $query->param('displaytype');
+	my $PAGE = getPage($NODE, $displaytype);
 	$$NODE{datatype} = $$PAGE{mimetype};
 
 	my $pagetitle = $PAGE->{title};
 	$pagetitle =~ s/ /_/g;
 
-	if($Everything::ROUTER->can_route($NODE, $query->param("displaytype")))
+	if($Everything::ROUTER->can_route($NODE, $displaytype))
 	{
 		$page = "";
 		$APP->devLog("Using available router for $NODE->{title} / $NODE->{type}->{title}");
 		# HTMLRouter does the printing
-		$Everything::ROUTER->route_node($NODE, $query->param("displaytype") || "display", $REQUEST);
+		$Everything::ROUTER->route_node($NODE, $displaytype || "display", $REQUEST);
 	
 		# TODO: Make sure that VARS are set in ROUTER once we're cut over
 		setVars($USER, $VARS) unless $APP->isGuest($USER);
@@ -1118,7 +1119,7 @@ sub handleUserRequest{
     # Searching for a node my string title
     my $type  = $query->param('type');
 
-    $nodename = $APP->cleanNodeName($query->param('node'), $noRemoveSpaces);
+    $nodename = $APP->cleanNodeName(scalar $query->param('node'), $noRemoveSpaces);
 
     $author = $query -> param("author");
     $author = getNode($author,"user");
