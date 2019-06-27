@@ -4254,4 +4254,40 @@ sub newnodes
   return $nodes;
 }
 
+sub can_action
+{
+  my ($this, $node, $action) = @_;
+
+  my $disallowed = $this->{db}->getNodeParam($node, "disable_$action") || $this->{db}->getNodeParam($node->{type}, "disable_$action") || 0;
+  my $overridden = $this->{db}->getNodeParam($node, "override_disable_$action") || 0;
+
+  return 0 if $disallowed and not $overridden;
+  return 1;
+}
+
+sub can_bookmark
+{
+  my ($this, $node) = @_;
+
+  return $this->can_action($node, "bookmark");
+}
+
+sub can_edcool
+{
+  my ($this, $node) = @_;
+  return $this->can_action($node, "cool");
+}
+
+sub can_category_add
+{
+  my ($this, $node) = @_;
+  return $this->can_action($node, "category");
+}
+
+sub can_weblog
+{
+  my ($this, $node) = @_;
+  return $this->can_action($node, "weblog");
+}
+
 1;
