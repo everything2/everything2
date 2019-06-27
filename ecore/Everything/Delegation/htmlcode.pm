@@ -10450,10 +10450,9 @@ sub page_header
   }
 
   $str .= htmlcode( 'confirmop' ) if $query -> param( 'confirmop' ) ;
-  my $disabled = htmlcode('getdisabledactions');
-  $str .= htmlcode('page actions', $disabled) unless $APP->isGuest($USER) ;
+  $str .= htmlcode('page actions') unless $APP->isGuest($USER) ;
 
-  unless ($disabled =~ /a/)
+  if($APP->can_category_add($NODE))
   {
     $str .= htmlcode('listnodecategories') unless defined $PAGELOAD->{e2nodeCategories}; # i.e. unless writeups have already listed any page categories
   }
@@ -11268,33 +11267,6 @@ sub verifyRequestForm
   return $query->hidden($prefix . '_nonce', $nonce) . $query->hidden($prefix . '_seed', $rand);
 }
 
-# takes no arguments
-# returns a string containing letters to indicate disabled actions for the current node:
-# b(ookmark), c(ool), w(eblog), (c)a(tegory), O(verride), L(ink to disable page)
-#
-# example usage:
-# my $b = htmlcode('bookmarkit' , $NODE , 'Add to bookmarks' ) unless htmlcode('getdisabledactions') =~ /b/ ;
-#
-# (originally from [page actions])
-#
-sub getdisabledactions
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $SETTINGS = getVars( getNode( 'Disabled actions' ,'setting' ) ) ;
-  my $disabled = ($$SETTINGS{ $$NODE{node_id} } || ""). '!' . ($$SETTINGS{ $$NODE{type_nodetype} } ||"");
-  $disabled = $1 if $disabled =~ /O/ and $disabled =~ /(\w+)!/ ; # remove nodetype disables if Overridden
-  # noscript option for wus: put addto widget in page actions because it needs a different op than the writeup form:
-  $disabled =~ s/[baw]//g if $query -> param( 'addto' ) ;
-  return $disabled;
-}
-
 sub messageBox 
 {
   my $DB = shift;
@@ -11604,11 +11576,11 @@ sub page_actions
   my $PAGELOAD = shift;
   my $APP = shift;
 
-  my $disabled = shift || htmlcode('getdisabledactions');
+  my $disabled = shift;
 
   my $c = undef;
   my @actions = () ;
-  push @actions , $c if not $disabled =~ /c/ and $c = htmlcode('coolit','') ;
+  push @actions , $c if $APP->can_edcool($NODE) and $c = htmlcode('coolit','') ;
 
   if ($$NODE{type}{title} eq 'user')
   {
@@ -11622,9 +11594,9 @@ sub page_actions
     push @actions , $favorite_noder if($favorite_noder);
   }
 
-  my $bookmark_add = ""; $bookmark_add = htmlcode('bookmarkit' , $NODE , 'Add to bookmarks' ) unless $disabled =~ /b/ ;
-  my $categoryform = ""; $categoryform = htmlcode( 'categoryform' ) unless $disabled =~ /a/ ;
-  my $w = ""; $w = htmlcode( 'weblogform' ) if($$NODE{type}{sqltablelist} =~ /document/ and $$VARS{can_weblog} and not $disabled =~ /w/);
+  my $bookmark_add = ""; $bookmark_add = htmlcode('bookmarkit' , $NODE , 'Add to bookmarks' ) if $APP->can_bookmark($NODE);
+  my $categoryform = ""; $categoryform = htmlcode( 'categoryform' ) if $APP->can_category_add($NODE) ;
+  my $w = ""; $w = htmlcode( 'weblogform' ) if($$NODE{type}{sqltablelist} =~ /document/ and $$VARS{can_weblog} and $APP->can_weblog($NODE));
 
   my $title = 'Add this '.( $$NODE{ type }{ title } eq 'e2node' ? 'entire page' : $$NODE{ type }{ title } ).' to a ' ;
 
@@ -11641,11 +11613,7 @@ sub page_actions
       { showwidget => 'addto'.$$NODE{ node_id } , -title => $title.'category or usergroup page' } ) ;
   }
 
-  my $disable = ""; $disable = linkNode( getNode( 'Disable actions' , 'superdoc' ) , '<small>x</small>' ,
-    { '-title' => 'Disable some/all actions for this node/nodetype&hellip;' ,
-    donode => $$NODE{node_id} } ) . "</li>\n<li>" if $APP->isEditor($USER) and not $disabled =~ /L/ ;
-
-  return '<ul class="topic actions"><li>' . $disable . join( "</li>\n<li>" , @actions ) . "</li>\n</ul>\n" if @actions ;
+  return '<ul class="topic actions"><li>' . join( "</li>\n<li>" , @actions ) . "</li>\n</ul>\n" if @actions ;
   return '' ;
 }
 
