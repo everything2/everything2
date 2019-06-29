@@ -11,7 +11,7 @@ $str .= $query-&gt;textfield(-name =&gt; &quot;user&quot;,
                           -size =&gt; 35,
                           -maxlength =&gt; 255);
 $str .= $query-&gt;submit(&quot;submit&quot;, &quot;Submit&quot;);
-$str .= $query-&gt;endform;
+$str .= $query-&gt;end_form;
 
 my $username = $query-&gt;param('user');
 if (length($username) &gt; 0)
