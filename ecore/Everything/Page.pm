@@ -2,7 +2,6 @@ package Everything::Page;
 
 use Moose;
 use namespace::autoclean;
-
 with 'Everything::Globals';
 with 'Everything::HTTP';
 
