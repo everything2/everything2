@@ -58,6 +58,7 @@ to_install = [
     'libwww-perl',
     'libperl-critic-perl',
     'libmason-perl',
+    'libmason-plugin-htmlfilters-perl',
     'libtry-tiny-perl',
     'yui-compressor',
     'libapache-db-perl',
