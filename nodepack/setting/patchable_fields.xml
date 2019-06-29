@@ -3,19 +3,7 @@
   <title>patchable fields</title>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <key>hourLimit</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>nlcode</key>
-    <value>1</value>
-  </vars>
-  <vars>
     <key>invalid_check</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>doctext</key>
     <value>1</value>
   </vars>
   <vars>
@@ -23,7 +11,15 @@
     <value>1</value>
   </vars>
   <vars>
-    <key>code</key>
+    <key>nlcode</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>page</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>hourLimit</key>
     <value>1</value>
   </vars>
   <vars>
@@ -31,7 +27,11 @@
     <value>1</value>
   </vars>
   <vars>
-    <key>page</key>
+    <key>code</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>doctext</key>
     <value>1</value>
   </vars>
 </node>

@@ -14,59 +14,63 @@
   <title>EDB</title>
   <type_nodetype>15</type_nodetype>
   <vars>
-    <key>employment</key>
-    <value>The Company</value>
+    <key>coolnotification</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>lastnoded</key>
+    <value>910468</value>
+  </vars>
+  <vars>
+    <key>visible</key>
+    <value>1</value>
   </vars>
   <vars>
     <key>infravision</key>
     <value>1</value>
   </vars>
   <vars>
-    <key>thewar</key>
-    <value>{&quot;health&quot;:199}</value>
-  </vars>
-  <vars>
     <key>personal_nodelet</key>
     <value></value>
   </vars>
   <vars>
-    <key>mission</key>
-    <value>Moist Noder Flesh</value>
+    <key>nogradlinks</key>
+    <value></value>
   </vars>
   <vars>
-    <key>coolnotification</key>
-    <value>1</value>
+    <key>specialties</key>
+    <value>Smelling Blood</value>
   </vars>
   <vars>
-    <key>nullvote</key>
-    <value>off</value>
-  </vars>
-  <vars>
-    <key>epi_hideces</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>nohints</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>numborged</key>
-    <value>115</value>
+    <key>IQM</key>
+    <value>139</value>
   </vars>
   <vars>
     <key>oldexp</key>
     <value>20346</value>
   </vars>
   <vars>
+    <key>nullvote</key>
+    <value>off</value>
+  </vars>
+  <vars>
+    <key>mission</key>
+    <value>Moist Noder Flesh</value>
+  </vars>
+  <vars>
+    <key>nodelets</key>
+    <value>262,91,170070</value>
+  </vars>
+  <vars>
+    <key>oldGP</key>
+    <value>25</value>
+  </vars>
+  <vars>
+    <key>numborged</key>
+    <value>115</value>
+  </vars>
+  <vars>
     <key>hasRecalculated</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>numwriteups</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>nogradlinks</key>
     <value></value>
   </vars>
   <vars>
@@ -78,15 +82,39 @@
     <value></value>
   </vars>
   <vars>
-    <key>nodelets</key>
-    <value>262,91,170070</value>
+    <key>employment</key>
+    <value>The Company</value>
+  </vars>
+  <vars>
+    <key>thewar</key>
+    <value>{&quot;health&quot;:199}</value>
+  </vars>
+  <vars>
+    <key>preference_last_update_time</key>
+    <value>1278018700</value>
+  </vars>
+  <vars>
+    <key>nwriteups</key>
+    <value>1 - &lt;a href=&quot;/user/EDB/writeups&quot;&gt;View EDB's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=EDB&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
   </vars>
   <vars>
     <key>motto</key>
     <value>If you think being silenced in the chatterbox for five minutes is a big deal you probably should have been silenced for ten.</value>
   </vars>
   <vars>
-    <key>visible</key>
+    <key>nohints</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>HideNewWriteups</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>lastborg</key>
+    <value>1212496710</value>
+  </vars>
+  <vars>
+    <key>epi_hideces</key>
     <value>1</value>
   </vars>
   <vars>
@@ -94,35 +122,7 @@
     <value>CUTE KITTY CAT</value>
   </vars>
   <vars>
-    <key>lastnoded</key>
-    <value>910468</value>
-  </vars>
-  <vars>
-    <key>oldGP</key>
-    <value>25</value>
-  </vars>
-  <vars>
-    <key>nwriteups</key>
-    <value>1 - &lt;a href=&quot;/user/EDB/writeups&quot;&gt;View EDB's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=EDB&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
-  </vars>
-  <vars>
-    <key>specialties</key>
-    <value>Smelling Blood</value>
-  </vars>
-  <vars>
-    <key>IQM</key>
-    <value>139</value>
-  </vars>
-  <vars>
-    <key>preference_last_update_time</key>
-    <value>1278018700</value>
-  </vars>
-  <vars>
-    <key>lastborg</key>
-    <value>1212496710</value>
-  </vars>
-  <vars>
-    <key>HideNewWriteups</key>
-    <value></value>
+    <key>numwriteups</key>
+    <value>1</value>
   </vars>
 </node>

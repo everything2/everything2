@@ -3,11 +3,11 @@
   <title>bounty number</title>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <key>justice</key>
-    <value>19</value>
-  </vars>
-  <vars>
     <key>1</key>
     <value>103</value>
+  </vars>
+  <vars>
+    <key>justice</key>
+    <value>19</value>
   </vars>
 </node>
