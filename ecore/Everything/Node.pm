@@ -220,10 +220,19 @@ sub ed_cooled
 {
   my ($self) = @_;
   my $coollink = $self->APP->node_by_name('coollink','linktype');
-  if(my $cooled = $self->DB->sqlSelectHashref('to_node', 'links', 'from_node='.$self->node_id.' and linktype='.$coollink->node_id.' limit 1'))
-  {
-    return Everything::Link->new($cooled);
-  }
+  return $coollink->any_link($self);
+}
+
+sub can_be_bookmarked
+{
+  my ($self) = @_;
+  return $self->APP->can_bookmark($self->NODEDATA);
+}
+
+sub can_be_categoried
+{
+  my ($self) = @_;
+  return $self->APP->can_category_add($self->NODEDATA);
 }
 
 __PACKAGE__->meta->make_immutable;

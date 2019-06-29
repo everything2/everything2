@@ -15,7 +15,7 @@ around 'BUILDARGS' => sub {
   my $class = shift;
   my $LINKDATA = shift;
 
-  return $class->$orig("NODEDATA" => $LINKDATA);
+  return $class->$orig("LINKDATA" => $LINKDATA);
 };
 
 sub _build_to
