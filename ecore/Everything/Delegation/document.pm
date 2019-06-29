@@ -1398,47 +1398,6 @@ sub buffalo_haiku_generator
   return $str;
 }
 
-sub chatterbox_help_topics
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = qq|<p>The chatterbox help topics are a good way for new users to learn some of the basics of E2.  Simply type "/help TOPIC" in the chatterbox to get an automated message from |;
-  $str .= linkNode(getNode('Virgil','user'));
-  $str .= qq| about that topic.  Best results will be achieved by searching in lowercase and multi-word topics should use underscores rather_than_spaces.  If you notice errors, or think additional topics should be available, contact [wertperch].</p>|;
-
-  $str .= qq|<p>Examples:|;
-  $str .= qq|<br><tt>/help editor</tt>|;
-  $str .= qq|<br><tt>/help wheel_of_surprise</tt></p>|;
-
-  $str .= qq|<h3>Currently available help topics</h3>|;
-  $str .= qq|<p>(not including aliases for topics listed under multiple titles)</p>|;
-
-  $str .= qq|<ol>|;
-
-  my $helpTopics = getNode('help topics', 'setting');
-  my $helpVars = getVars($helpTopics);
-
-  ##########
-  # Display the list of help topics
-  # Except for the ones that are aliases to other topics.
-  # NOTE:  Please standardize any added help topics by keeping the main topic
-  #        all lowercase and as intuitive as possible.
-  #        less intuitive and upper-case versions should be an alias.
-
-  foreach my $keys (sort(keys(%{$helpVars})))
-  {
-    $str .= "\n\t<li>/help " . $keys . "</li>" unless ( $$helpVars{$keys} =~ /^\/help .*/ );
-  }
-
-  return $str . "\n</ol>\n\n";
-}
-
 sub chatterlighter
 {
   my $DB = shift;
