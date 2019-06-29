@@ -3,6 +3,10 @@
   <title>bot inboxes</title>
   <type_nodetype>153</type_nodetype>
   <vars>
+    <key>Grease Monkey</key>
+    <value>edev</value>
+  </vars>
+  <vars>
     <key>Guest User</key>
     <value>Content Editors</value>
   </vars>
@@ -11,15 +15,27 @@
     <value>Content Editors</value>
   </vars>
   <vars>
-    <key>Klaproth</key>
-    <value>Content Editors</value>
-  </vars>
-  <vars>
     <key>Virgil</key>
     <value>e2docs</value>
   </vars>
   <vars>
+    <key>Content_Salvage</key>
+    <value>CST_Group</value>
+  </vars>
+  <vars>
     <key>Giant Teddy Bear</key>
+    <value>Content Editors</value>
+  </vars>
+  <vars>
+    <key>everyone</key>
+    <value>Content Editors</value>
+  </vars>
+  <vars>
+    <key>recipe</key>
+    <value>recipians</value>
+  </vars>
+  <vars>
+    <key>Klaproth</key>
     <value>Content Editors</value>
   </vars>
   <vars>
@@ -27,23 +43,7 @@
     <value>Content Editors</value>
   </vars>
   <vars>
-    <key>Grease Monkey</key>
-    <value>edev</value>
-  </vars>
-  <vars>
-    <key>everyone</key>
-    <value>Content Editors</value>
-  </vars>
-  <vars>
-    <key>Content_Salvage</key>
-    <value>CST_Group</value>
-  </vars>
-  <vars>
     <key>EDB</key>
     <value>Content Editors</value>
-  </vars>
-  <vars>
-    <key>recipe</key>
-    <value>recipians</value>
   </vars>
 </node>

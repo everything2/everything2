@@ -3,15 +3,7 @@
   <title>restricted fields</title>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <key>writeup_title</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>node_id</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>votesleft</key>
+    <key>type_nodetype</key>
     <value>1</value>
   </vars>
   <vars>
@@ -19,51 +11,11 @@
     <value>1</value>
   </vars>
   <vars>
-    <key>in_room</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>message_forward_to</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>karma</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>user_title</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>cooled</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>type</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>merit</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>type_nodetype</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>experience</key>
+    <key>imgsrc</key>
     <value>1</value>
   </vars>
   <vars>
     <key>votes</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>createtime</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>orderlock_user</key>
     <value>1</value>
   </vars>
   <vars>
@@ -75,7 +27,7 @@
     <value>1</value>
   </vars>
   <vars>
-    <key>vars</key>
+    <key>type</key>
     <value>1</value>
   </vars>
   <vars>
@@ -83,11 +35,59 @@
     <value>1</value>
   </vars>
   <vars>
-    <key>imgsrc</key>
+    <key>in_room</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>cooled</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>votesleft</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>orderlock_user</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>karma</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>writeup_title</key>
     <value>1</value>
   </vars>
   <vars>
     <key>lasttime</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>vars</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>message_forward_to</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>experience</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>node_id</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>createtime</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>user_title</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>merit</key>
     <value>1</value>
   </vars>
 </node>

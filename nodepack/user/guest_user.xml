@@ -10,20 +10,24 @@
   <type_nodetype>15</type_nodetype>
   <validemail>1</validemail>
   <vars>
+    <key>nodelets</key>
+    <value>2029388,2027508,263</value>
+  </vars>
+  <vars>
     <key>preference_last_update_time</key>
     <value>1278018700</value>
   </vars>
   <vars>
-    <key>nwriteups</key>
-    <value></value>
+    <key>hasRecalculated</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>collapsedNodelets</key>
+    <value>signin!</value>
   </vars>
   <vars>
     <key>num_newwus</key>
     <value>10</value>
-  </vars>
-  <vars>
-    <key>nodelets</key>
-    <value>2029388,2027508,263</value>
   </vars>
   <vars>
     <key>wuhead</key>
@@ -34,15 +38,11 @@
     <value></value>
   </vars>
   <vars>
-    <key>hasRecalculated</key>
-    <value>1</value>
+    <key>nwriteups</key>
+    <value></value>
   </vars>
   <vars>
     <key>wufoot</key>
     <value>c:social,c:vote,c:cfull</value>
-  </vars>
-  <vars>
-    <key>collapsedNodelets</key>
-    <value>signin!</value>
   </vars>
 </node>

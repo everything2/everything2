@@ -3,51 +3,7 @@
   <title>exportable vars</title>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <key>splitChatter</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>hidelastnoded</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>no_coolnotification</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>hidemsgyou</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>powersChatter</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>getofflinemsgs</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>pmsgTime</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>noTypoCheck</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>showRawPrivateMsg</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>powersMsg</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>hidevotedata</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>info_authorsince_off</key>
+    <key>pmsgDate</key>
     <value>1</value>
   </vars>
   <vars>
@@ -55,27 +11,7 @@
     <value>1</value>
   </vars>
   <vars>
-    <key>nullvote</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>no_notify_kill</key>
-    <value>1</value>
-  </vars>
-  <vars>
     <key>mitextarea</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>pmsgDate</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>showuseractions</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>hidemsgme</key>
     <value>1</value>
   </vars>
   <vars>
@@ -83,11 +19,7 @@
     <value>1</value>
   </vars>
   <vars>
-    <key>sortmyinbox</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>informmsgignore</key>
+    <key>showuseractions</key>
     <value>1</value>
   </vars>
   <vars>
@@ -95,7 +27,11 @@
     <value>1</value>
   </vars>
   <vars>
-    <key>nowhynovotes</key>
+    <key>hidelastnoded</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>hidevotedata</key>
     <value>1</value>
   </vars>
   <vars>
@@ -103,7 +39,71 @@
     <value>1</value>
   </vars>
   <vars>
+    <key>splitChatter</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>nowhynovotes</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>no_coolnotification</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>sortmyinbox</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>noTypoCheck</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>info_authorsince_off</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>getofflinemsgs</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>no_notify_kill</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>hidemsgme</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>powersChatter</key>
+    <value>1</value>
+  </vars>
+  <vars>
     <key>hideauthore2node</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>informmsgignore</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>hidemsgyou</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>powersMsg</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>pmsgTime</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>showRawPrivateMsg</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>nullvote</key>
     <value>1</value>
   </vars>
 </node>
