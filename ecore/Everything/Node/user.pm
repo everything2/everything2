@@ -1,6 +1,8 @@
 package Everything::Node::user;
 
 use Moose;
+use Digest::MD5;
+
 extends 'Everything::Node::document';
 with 'Everything::Node::helper::setting';
 
@@ -437,6 +439,78 @@ sub in_room
 {
   my ($self) = @_;
   return $self->NODEDATA->{in_room};
+}
+
+sub email
+{
+  my ($self) = @_;
+  return $self->NODEDATA->{email};
+}
+
+sub has_bookmarked
+{
+  my ($self, $node) = @_;
+
+  my $bookmark = $self->APP->node_by_name('bookmark','linktype');
+  return $bookmark->get_link($self, $node);
+}
+
+sub request_guard_parameters
+{
+  my ($self, $scope) = @_;
+
+  my $rand = rand(999999999);
+  my $nonce = Digest::MD5::md5_hex($self->passwd.' ' .$self->email.$rand);
+
+  return {$scope.'_nonce' => $nonce, $scope.'_seed' => $rand};
+}
+
+sub usergroup_memberships
+{
+  my ($self) = @_;
+  my $groups = [];
+
+  my $usergroup = $self->APP->node_by_name('usergroup','nodetype');
+
+  my $csr = $self->DB->sqlSelectMany("DISTINCT(nodegroup_id)","nodegroup ng left join node n on ng.nodegroup_id=n.node_id",
+    "n.type_nodetype=".$usergroup->node_id." and ng.node_id=".$self->node_id); 
+
+  while(my $row = $csr->fetchrow_arrayref)
+  {
+    my $n = $self->APP->node_by_id($row->[0]);
+    next unless $n;
+    push @$groups, $n;
+  }
+  return $groups;
+}
+
+sub editable_categories
+{
+  my ($self) = @_;
+  my $categories = [];
+
+  my $category = $self->APP->node_by_name('category','nodetype');
+
+  my $category_authors = [$self->node_id, $self->CONF->guest_user];  
+
+  foreach my $ug (@{$self->usergroup_memberships})
+  {
+    push @$category_authors,$ug->node_id;
+  }
+
+  my $csr = $self->DB->sqlSelectMany("node_id","node",
+    "author_user IN (".join(',',@$category_authors).") and type_nodetype=".
+    $category->node_id);
+
+  while(my $row = $csr->fetchrow_arrayref)
+  {
+    my $n = $self->APP->node_by_id($row->[0]);
+    next unless $n;
+    push @$categories, $n;
+  }
+
+  my $sorted_categories = [sort {$a->title cmp $b->title} @$categories];
+  return $sorted_categories;
 }
 
 __PACKAGE__->meta->make_immutable;

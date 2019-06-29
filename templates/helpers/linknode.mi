@@ -7,6 +7,7 @@
   has 'params';
   has 'class';
   has 'anchor';
+  has 'id';
 
   sub uri_params
   {
@@ -18,7 +19,7 @@
     {
       push @$sections, uri_escape_utf8($param)."=".uri_escape_utf8($params->{$param});
     }
-    $str = join("+",@$sections);
+    $str = join("&",@$sections);
   
   if($str)
     {
@@ -28,4 +29,4 @@
   }
 
 </%class>
-<a <% defined($.innertitle)?(qq|title="|.$.innertitle.qq|" |):('') %><% defined($.class)?(qq|class="|.$.class.qq|" |):('') %>href="<% $.node->canonical_url %><% $.uri_params %><% defined($.anchor)?("#".$.anchor):('') %>"><% defined($.title)?($.title):($.node->title) %></a>
+<a <% defined($.innertitle)?(qq|title="|.$.innertitle.qq|" |):('') %><% defined($.class)?(qq|class="|.$.class.qq|" |):('') %><% defined($.id)?(qq|id="|.$.id.qq|" |):('') %>href="<% $.node->canonical_url %><% $.uri_params %><% defined($.anchor)?("#".$.anchor):('') %>"><% defined($.title)?($.title):($.node->title) %></a>

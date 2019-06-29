@@ -33,6 +33,8 @@ has 'show_guest_nodeshell_banner' => (default => 0);
 has 'nodelets' => (required => 1);
 has 'nodeletorder' => (required => 1);
 
+has 'friendly_pagetype' => (default => sub { my $self = shift; $self->node->type->title }, lazy => 1);
+
 sub _build_pagetitle
 {
   my ($self) = @_;
@@ -78,6 +80,16 @@ sub _build_pagetitle
  <div id='mainbody' itemprop="mainContentOfPage"><!-- google_ad_section_start -->
   <div id="pageheader">
    <h1 class="nodetitle"><% $.node->title %></h1>
+% if (!$REQUEST->user->is_guest) {
+     <ul class="topic actions">
+%   if ($.node->can_be_bookmarked) {
+<& 'helpers/bookmark.mi', friendly_pagetype => $.friendly_pagetype, node => $.node, bookmarktext => "Add to bookmarks" &>
+%   }
+%   if ($.node->can_be_categoried) {
+<& 'helpers/category.mi', friendly_pagetype => $.friendly_pagetype, node => $.node &>
+%   }
+     </ul>
+% }
    <& 'helpers/ed_cooled.mi' , node => $.node &>
   </div>
 

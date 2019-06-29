@@ -2070,7 +2070,7 @@ sub bookmarkit
 
   my $params = htmlcode('verifyRequestHash', 'bookmark');
   $$params{'op'} = 'bookmark';
-  $$params{'bookmark_id'} = $N -> {node_id};
+  $$params{'bookmark_id'} = $N->{node_id};
   $$params{'-title'} = $title ;
   $$params{'-class'} = "action ajax bookmark$$N{node_id}:bookmarkit:$$N{node_id}" ;
   $$params{'-id'} = "bookmark$$N{node_id}" ;
@@ -2112,7 +2112,8 @@ sub setupuservars
   {
     #add numwriteups to $USER for honor roll
 
-    $$USER{numwriteups} = $$SETTINGS{numwriteups};
+    $$USER{numwriteups} = $$SETTINGS{numwriteups} || '';
+    $USER->{numwriteups} = 0 if($USER->{numwriteups} eq "");
     updateNode($USER, $USER);
 
     delete $$VARS{can_weblog};
@@ -10420,6 +10421,8 @@ sub editor_homenode_tools
   return $str;
 }
 
+# TODO: Recheck all of these branches for e2node once e2nodes are in templates
+
 sub page_header
 {
   my $DB = shift;
@@ -11565,6 +11568,8 @@ sub addnodeforward
     </fieldset>
     </form>';
 }
+
+# TODO: Recheck all of these after e2nodes are in templates
 
 sub page_actions
 {
