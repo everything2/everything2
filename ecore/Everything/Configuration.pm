@@ -78,6 +78,10 @@ has 's3host' => (isa => 'Str', is => 'ro', default => '');
 
 has 'iam_app_role' => (isa => 'Str', is => 'ro', default => '');
 
+has 'recaptcha_v3_secret_key' => (isa => 'Str', is => 'ro', default => '');
+has 'recaptcha_v3_public_key' => (isa => 'Str', is => 'ro', default => '');
+
+
 around BUILDARGS => sub
 {
   my $orig = shift;
