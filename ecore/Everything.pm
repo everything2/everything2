@@ -83,7 +83,8 @@ sub BEGIN
 		data_dir => "/var/mason",
 		comp_root => "/var/everything/templates",
 		static_source => ($CONF->environment eq "production"),
-		allow_globals => [qw($REQUEST)]);
+		allow_globals => [qw($REQUEST)],
+		plugins => ['HTMLFilters']);
 
 	$ROUTER = Everything::HTMLRouter->new();
 

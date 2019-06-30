@@ -12,7 +12,7 @@
 <select name="cid">
 <option value selected="selected">Choose&hellip;</option>
 % foreach my $category (@{$REQUEST->user->editable_categories}) {
-<option value="<% $category->node_id %>"><% $category->title %></option>
+<option value="<% $category->node_id %>"><% $category->title | HTMLEntities %> (<% $category->author->title | HTMLEntities %>)</option>
 % }
 <option value="new">New category&hellip;</option>
 </select>
