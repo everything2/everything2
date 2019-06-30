@@ -1,22 +1,5 @@
 <node>
-  <doctext>[%
-my $str = &quot;&lt;p&gt;This is the list of HTML tags that have been approved for use in writeups.  &quot;;
-$str .= &quot;Allowed attributes for the tags are listed below the tag name.  &lt;/p&gt;&quot;;
-$str .= &quot;\n\n&lt;dl&gt;&quot;;
-my $listapprovedtags = getNode('approved HTML tags', 'setting');
-my $listvars = getVars($listapprovedtags);
-
-##########
-# Display the list of approved HTML tags
-
-foreach my $keys (sort(keys(%{$listvars}))) {
-$str .= &quot;\n\t&lt;dt&gt;&quot; . $keys . &quot;&lt;/dt&gt;&quot;;
-$str .= &quot;\n\t\t&lt;dd&gt;&quot; . $listvars-&gt;{$keys} . &quot;&lt;/dd&gt;&quot; unless (&quot;$listvars-&gt;{$keys}&quot; eq &quot;1&quot;);
-}
-
-return $str . &quot;\n&lt;/dl&gt;\n\n&quot;;
-
-%]</doctext>
+  <doctext></doctext>
   <node_id>1974729</node_id>
   <title>List HTML tags</title>
   <type_nodetype>14</type_nodetype>
