@@ -5,7 +5,7 @@ has 'lastnode' => (required => 1);
 <form method="GET" action="<% $.script_name %>" id="search_form" role="form">
 <div class="form-group">
  <div class="has-feedback has-feedback-left">
-  <input type="text" name="node" value="<% $.lastnode->title %>" force="1" class="form-control" id="node_search" placeholder="Search" size="28" maxlength="230">
+  <input type="text" name="node" value="<% $.lastnode->title | HTMLEntities %>" force="1" class="form-control" id="node_search" placeholder="Search" size="28" maxlength="230">
   <i class="glyphicon glyphicon-search form-control-feedback"></i>
  </div>
  <input type="hidden" name="lastnode_id" value="<% $.lastnode->node_id %>">
