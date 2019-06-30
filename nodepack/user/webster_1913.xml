@@ -74,11 +74,99 @@ may not apply to you, and you may have other legal rights.&lt;/p&gt;
   <title>Webster 1913</title>
   <type_nodetype>15</type_nodetype>
   <vars>
+    <key>HideNewWriteups</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>IQM</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>anonymous_bookmark</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>borged</key>
+    <value>1412245768</value>
+  </vars>
+  <vars>
+    <key>can_weblog</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>ce_hidecelogs</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>ce_hidenewwu</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>chingbought</key>
+    <value>2007-04-02 23:42:56</value>
+  </vars>
+  <vars>
+    <key>cools</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>coolsspent</key>
+    <value>&lt;a href=&quot;/node/superdoc/Cool+Archive?useraction=cooled&amp;amp;cooluser=Webster%201913&quot;&gt;1&lt;/a&gt;</value>
+  </vars>
+  <vars>
+    <key>costume</key>
+    <value>iliterit basterd</value>
+  </vars>
+  <vars>
+    <key>easter_eggs</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>employment</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>hasRecalculated</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>lastborg</key>
+    <value>1204224874</value>
+  </vars>
+  <vars>
+    <key>lastnoded</key>
+    <value>1959273</value>
+  </vars>
+  <vars>
+    <key>mission</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>motto</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>no_bookmarkinformer</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>no_bookmarknotification</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>no_coolnotification</key>
+    <value>1</value>
+  </vars>
+  <vars>
     <key>no_notify_kill</key>
     <value>1</value>
   </vars>
   <vars>
-    <key>visible</key>
+    <key>nodelets</key>
+    <value>262,170070,91,263,457857,165437</value>
+  </vars>
+  <vars>
+    <key>nohints</key>
     <value>1</value>
   </vars>
   <vars>
@@ -86,36 +174,28 @@ may not apply to you, and you may have other legal rights.&lt;/p&gt;
     <value>1</value>
   </vars>
   <vars>
-    <key>lastnoded</key>
-    <value>1959273</value>
-  </vars>
-  <vars>
-    <key>no_coolnotification</key>
-    <value>1</value>
+    <key>nullvote</key>
+    <value>off</value>
   </vars>
   <vars>
     <key>num_newwus</key>
     <value>50</value>
   </vars>
   <vars>
-    <key>settings_useWriteupBonus</key>
-    <value>1</value>
+    <key>numborged</key>
+    <value>8</value>
   </vars>
   <vars>
-    <key>nullvote</key>
-    <value>off</value>
+    <key>numwriteups</key>
+    <value>102404</value>
   </vars>
   <vars>
-    <key>writeupbonus</key>
-    <value>120</value>
+    <key>nwriteups</key>
+    <value>102404 - &lt;a href=&quot;/user/Webster+1913/writeups&quot;&gt;View Webster 1913's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Webster%201913&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
   </vars>
   <vars>
-    <key>IQM</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>specialties</key>
-    <value></value>
+    <key>oldGP</key>
+    <value>18</value>
   </vars>
   <vars>
     <key>oldexp</key>
@@ -126,87 +206,7 @@ may not apply to you, and you may have other legal rights.&lt;/p&gt;
     <value></value>
   </vars>
   <vars>
-    <key>easter_eggs</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>oldGP</key>
-    <value>18</value>
-  </vars>
-  <vars>
-    <key>nodelets</key>
-    <value>262,170070,91,263,457857,165437</value>
-  </vars>
-  <vars>
-    <key>numborged</key>
-    <value>8</value>
-  </vars>
-  <vars>
-    <key>showmessages_replylink</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>hasRecalculated</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>mission</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>employment</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>squawk_talk</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>can_weblog</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>no_bookmarkinformer</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>preference_last_update_time</key>
-    <value>1278018700</value>
-  </vars>
-  <vars>
-    <key>no_bookmarknotification</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>borged</key>
-    <value>1412245768</value>
-  </vars>
-  <vars>
-    <key>HideNewWriteups</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>powersMsg</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>lastborg</key>
-    <value>1204224874</value>
-  </vars>
-  <vars>
-    <key>nohints</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>ce_hidenewwu</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>motto</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>tokens</key>
+    <key>pmsgDate</key>
     <value>1</value>
   </vars>
   <vars>
@@ -214,44 +214,44 @@ may not apply to you, and you may have other legal rights.&lt;/p&gt;
     <value>1</value>
   </vars>
   <vars>
-    <key>ce_hidecelogs</key>
+    <key>powersMsg</key>
     <value>1</value>
   </vars>
   <vars>
-    <key>nwriteups</key>
-    <value>102404 - &lt;a href=&quot;/user/Webster+1913/writeups&quot;&gt;View Webster 1913's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=Webster%201913&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
+    <key>preference_last_update_time</key>
+    <value>1278018700</value>
+  </vars>
+  <vars>
+    <key>settings_useWriteupBonus</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>showmessages_replylink</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>specialties</key>
+    <value></value>
   </vars>
   <vars>
     <key>squawk_rooms</key>
     <value></value>
   </vars>
   <vars>
-    <key>costume</key>
-    <value>iliterit basterd</value>
-  </vars>
-  <vars>
-    <key>anonymous_bookmark</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>pmsgDate</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>cools</key>
+    <key>squawk_talk</key>
     <value></value>
   </vars>
   <vars>
-    <key>chingbought</key>
-    <value>2007-04-02 23:42:56</value>
+    <key>tokens</key>
+    <value>1</value>
   </vars>
   <vars>
-    <key>coolsspent</key>
-    <value>&lt;a href=&quot;/node/superdoc/Cool+Archive?useraction=cooled&amp;amp;cooluser=Webster%201913&quot;&gt;1&lt;/a&gt;</value>
+    <key>visible</key>
+    <value>1</value>
   </vars>
   <vars>
-    <key>numwriteups</key>
-    <value>102404</value>
+    <key>writeupbonus</key>
+    <value>120</value>
   </vars>
   <votesleft>25</votesleft>
 </node>

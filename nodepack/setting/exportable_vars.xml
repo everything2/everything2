@@ -3,63 +3,7 @@
   <title>exportable vars</title>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <key>pmsgDate</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>noSoftLinks</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>mitextarea</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>topicCbox</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>showuseractions</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>showmessages_replylink</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>hidelastnoded</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>hidevotedata</key>
-    <value>1</value>
-  </vars>
-  <vars>
     <key>chatterbox_msgs_descend</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>splitChatter</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>nowhynovotes</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>no_coolnotification</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>sortmyinbox</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>noTypoCheck</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>info_authorsince_off</key>
     <value>1</value>
   </vars>
   <vars>
@@ -67,7 +11,11 @@
     <value>1</value>
   </vars>
   <vars>
-    <key>no_notify_kill</key>
+    <key>hideauthore2node</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>hidelastnoded</key>
     <value>1</value>
   </vars>
   <vars>
@@ -75,11 +23,15 @@
     <value>1</value>
   </vars>
   <vars>
-    <key>powersChatter</key>
+    <key>hidemsgyou</key>
     <value>1</value>
   </vars>
   <vars>
-    <key>hideauthore2node</key>
+    <key>hidevotedata</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>info_authorsince_off</key>
     <value>1</value>
   </vars>
   <vars>
@@ -87,11 +39,35 @@
     <value>1</value>
   </vars>
   <vars>
-    <key>hidemsgyou</key>
+    <key>mitextarea</key>
     <value>1</value>
   </vars>
   <vars>
-    <key>powersMsg</key>
+    <key>noSoftLinks</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>noTypoCheck</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>no_coolnotification</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>no_notify_kill</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>nowhynovotes</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>nullvote</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>pmsgDate</key>
     <value>1</value>
   </vars>
   <vars>
@@ -99,11 +75,35 @@
     <value>1</value>
   </vars>
   <vars>
+    <key>powersChatter</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>powersMsg</key>
+    <value>1</value>
+  </vars>
+  <vars>
     <key>showRawPrivateMsg</key>
     <value>1</value>
   </vars>
   <vars>
-    <key>nullvote</key>
+    <key>showmessages_replylink</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>showuseractions</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>sortmyinbox</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>splitChatter</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>topicCbox</key>
     <value>1</value>
   </vars>
 </node>

@@ -3,44 +3,64 @@
   <title>bounties</title>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <key>TheDeadGuy</key>
-    <value>N/A</value>
-  </vars>
-  <vars>
-    <key>mauler</key>
+    <key>Aerobe</key>
     <value>500</value>
   </vars>
   <vars>
-    <key>Posmella</key>
+    <key>Ashigaru</key>
     <value>N/A</value>
   </vars>
   <vars>
-    <key>avalyn</key>
-    <value></value>
+    <key>Auduster</key>
+    <value>5</value>
   </vars>
   <vars>
-    <key>Tem42</key>
-    <value>50</value>
+    <key>Auspice</key>
+    <value>500</value>
+  </vars>
+  <vars>
+    <key>Bitriot</key>
+    <value>N/A</value>
+  </vars>
+  <vars>
+    <key>ChristineWinter</key>
+    <value>15</value>
+  </vars>
+  <vars>
+    <key>Clockmaker</key>
+    <value>200</value>
+  </vars>
+  <vars>
+    <key>GhettoAardvark</key>
+    <value>10</value>
+  </vars>
+  <vars>
+    <key>Glowing Fish</key>
+    <value>400</value>
+  </vars>
+  <vars>
+    <key>Halspal</key>
+    <value>N/A</value>
   </vars>
   <vars>
     <key>Heisenberg</key>
     <value>N/A</value>
   </vars>
   <vars>
-    <key>Timeshredder</key>
-    <value>10</value>
+    <key>Heitah</key>
+    <value>5</value>
+  </vars>
+  <vars>
+    <key>Jet-Poop</key>
+    <value>N/A</value>
+  </vars>
+  <vars>
+    <key>JohnnyCashed</key>
+    <value>80</value>
   </vars>
   <vars>
     <key>Morwen</key>
     <value>N/A</value>
-  </vars>
-  <vars>
-    <key>Aerobe</key>
-    <value>500</value>
-  </vars>
-  <vars>
-    <key>schizophasic</key>
-    <value>15</value>
   </vars>
   <vars>
     <key>OldMiner</key>
@@ -51,43 +71,7 @@
     <value>500</value>
   </vars>
   <vars>
-    <key>misterfuffie</key>
-    <value>25</value>
-  </vars>
-  <vars>
-    <key>JohnnyCashed</key>
-    <value>80</value>
-  </vars>
-  <vars>
-    <key>The Custodian</key>
-    <value>100</value>
-  </vars>
-  <vars>
-    <key>ChristineWinter</key>
-    <value>15</value>
-  </vars>
-  <vars>
-    <key>Auduster</key>
-    <value>5</value>
-  </vars>
-  <vars>
-    <key>Bitriot</key>
-    <value>N/A</value>
-  </vars>
-  <vars>
-    <key>cassparadox</key>
-    <value>500</value>
-  </vars>
-  <vars>
-    <key>Auspice</key>
-    <value>500</value>
-  </vars>
-  <vars>
-    <key>StuartO)))</key>
-    <value>40</value>
-  </vars>
-  <vars>
-    <key>Simulacron3</key>
+    <key>Posmella</key>
     <value>N/A</value>
   </vars>
   <vars>
@@ -95,24 +79,52 @@
     <value>N/A</value>
   </vars>
   <vars>
+    <key>Simulacron3</key>
+    <value>N/A</value>
+  </vars>
+  <vars>
+    <key>StuartO)))</key>
+    <value>40</value>
+  </vars>
+  <vars>
+    <key>Tem42</key>
+    <value>50</value>
+  </vars>
+  <vars>
+    <key>The Custodian</key>
+    <value>100</value>
+  </vars>
+  <vars>
+    <key>TheDeadGuy</key>
+    <value>N/A</value>
+  </vars>
+  <vars>
+    <key>Timeshredder</key>
+    <value>10</value>
+  </vars>
+  <vars>
+    <key>Wuukiee</key>
+    <value>150</value>
+  </vars>
+  <vars>
+    <key>Zephronias</key>
+    <value>200</value>
+  </vars>
+  <vars>
+    <key>avalyn</key>
+    <value></value>
+  </vars>
+  <vars>
     <key>borgo</key>
     <value>100</value>
   </vars>
   <vars>
-    <key>randombit</key>
-    <value>N/A</value>
-  </vars>
-  <vars>
-    <key>tentative</key>
-    <value>400</value>
+    <key>cassparadox</key>
+    <value>500</value>
   </vars>
   <vars>
     <key>dannye</key>
     <value>N/A</value>
-  </vars>
-  <vars>
-    <key>Clockmaker</key>
-    <value>200</value>
   </vars>
   <vars>
     <key>decoy hunches</key>
@@ -123,71 +135,59 @@
     <value>N/A</value>
   </vars>
   <vars>
-    <key>Wuukiee</key>
-    <value>150</value>
-  </vars>
-  <vars>
-    <key>wordnerd</key>
-    <value>N/A</value>
-  </vars>
-  <vars>
-    <key>Zephronias</key>
-    <value>200</value>
-  </vars>
-  <vars>
-    <key>Glowing Fish</key>
-    <value>400</value>
-  </vars>
-  <vars>
-    <key>GhettoAardvark</key>
-    <value>10</value>
-  </vars>
-  <vars>
-    <key>Ashigaru</key>
-    <value>N/A</value>
-  </vars>
-  <vars>
-    <key>Heitah</key>
-    <value>5</value>
+    <key>e2reneta</key>
+    <value>30</value>
   </vars>
   <vars>
     <key>eh2</key>
     <value>N/A</value>
   </vars>
   <vars>
+    <key>gnarl</key>
+    <value>50</value>
+  </vars>
+  <vars>
     <key>jessicaj</key>
     <value>501</value>
   </vars>
   <vars>
-    <key>e2reneta</key>
-    <value>30</value>
-  </vars>
-  <vars>
-    <key>liveforever</key>
-    <value>50</value>
-  </vars>
-  <vars>
-    <key>gnarl</key>
-    <value>50</value>
+    <key>joer</key>
+    <value>300</value>
   </vars>
   <vars>
     <key>kthejoker</key>
     <value>50</value>
   </vars>
   <vars>
-    <key>Halspal</key>
+    <key>liveforever</key>
+    <value>50</value>
+  </vars>
+  <vars>
+    <key>mauler</key>
+    <value>500</value>
+  </vars>
+  <vars>
+    <key>misterfuffie</key>
+    <value>25</value>
+  </vars>
+  <vars>
+    <key>randombit</key>
     <value>N/A</value>
+  </vars>
+  <vars>
+    <key>schizophasic</key>
+    <value>15</value>
+  </vars>
+  <vars>
+    <key>tentative</key>
+    <value>400</value>
   </vars>
   <vars>
     <key>wertperch</key>
     <value>100</value>
   </vars>
   <vars>
-    <key>Jet-Poop</key>
+    <key>wordnerd</key>
     <value>N/A</value>
-  </vars>
-  <vars>
-    <key>joer</key>
-    <value>300</value>
   </vars>
 </node>

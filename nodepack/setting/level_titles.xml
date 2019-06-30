@@ -3,164 +3,56 @@
   <title>level titles</title>
   <type_nodetype>153</type_nodetype>
   <vars>
-    <key>90</key>
-    <value>Avatar</value>
+    <key>-1</key>
+    <value>Arcanist</value>
   </vars>
   <vars>
-    <key>67</key>
-    <value>Enlightened One</value>
+    <key>-2</key>
+    <value>Master Arcanist</value>
   </vars>
   <vars>
     <key>0</key>
     <value>Initiate</value>
   </vars>
   <vars>
-    <key>70</key>
-    <value>Ageless Master</value>
+    <key>1</key>
+    <value>Novice</value>
   </vars>
   <vars>
-    <key>14</key>
-    <value>Protector of the Art</value>
-  </vars>
-  <vars>
-    <key>25</key>
-    <value>Vizier</value>
-  </vars>
-  <vars>
-    <key>3</key>
-    <value>Scribe</value>
-  </vars>
-  <vars>
-    <key>97</key>
-    <value>Transcendent</value>
-  </vars>
-  <vars>
-    <key>45</key>
-    <value>Divine Monarch</value>
-  </vars>
-  <vars>
-    <key>44</key>
-    <value>Divine Monarch</value>
-  </vars>
-  <vars>
-    <key>73</key>
-    <value>Immortal</value>
-  </vars>
-  <vars>
-    <key>6</key>
-    <value>Artificer</value>
-  </vars>
-  <vars>
-    <key>46</key>
-    <value>Renunciant</value>
-  </vars>
-  <vars>
-    <key>53</key>
-    <value>Soothsayer</value>
-  </vars>
-  <vars>
-    <key>91</key>
-    <value>Transcendent</value>
-  </vars>
-  <vars>
-    <key>17</key>
-    <value>Panjandrum</value>
-  </vars>
-  <vars>
-    <key>83</key>
-    <value>Demigodhead</value>
-  </vars>
-  <vars>
-    <key>13</key>
-    <value>Guardian of the Word</value>
-  </vars>
-  <vars>
-    <key>80</key>
-    <value>Divinity</value>
-  </vars>
-  <vars>
-    <key>16</key>
-    <value>Panjandrum</value>
-  </vars>
-  <vars>
-    <key>28</key>
-    <value>Grand Vizier</value>
+    <key>10</key>
+    <value>Polymath</value>
   </vars>
   <vars>
     <key>100</key>
     <value>Godhead</value>
   </vars>
   <vars>
-    <key>57</key>
-    <value>Visionary</value>
+    <key>11</key>
+    <value>Literatus</value>
   </vars>
   <vars>
-    <key>52</key>
-    <value>Soothsayer</value>
+    <key>12</key>
+    <value>Laureate</value>
   </vars>
   <vars>
-    <key>72</key>
-    <value>Ageless Master</value>
+    <key>13</key>
+    <value>Guardian of the Word</value>
   </vars>
   <vars>
-    <key>59</key>
-    <value>Seer</value>
-  </vars>
-  <vars>
-    <key>93</key>
-    <value>Transcendent</value>
-  </vars>
-  <vars>
-    <key>7</key>
-    <value>Chronicler</value>
-  </vars>
-  <vars>
-    <key>43</key>
-    <value>Divine Monarch</value>
-  </vars>
-  <vars>
-    <key>98</key>
-    <value>Transcendent</value>
-  </vars>
-  <vars>
-    <key>95</key>
-    <value>Transcendent</value>
-  </vars>
-  <vars>
-    <key>64</key>
-    <value>Sage</value>
-  </vars>
-  <vars>
-    <key>50</key>
-    <value>Mystic</value>
-  </vars>
-  <vars>
-    <key>74</key>
-    <value>Immortal</value>
-  </vars>
-  <vars>
-    <key>82</key>
-    <value>Demigodhead</value>
+    <key>14</key>
+    <value>Protector of the Art</value>
   </vars>
   <vars>
     <key>15</key>
     <value>Keeper of the Seal</value>
   </vars>
   <vars>
-    <key>22</key>
-    <value>Grand Poobah</value>
+    <key>16</key>
+    <value>Panjandrum</value>
   </vars>
   <vars>
-    <key>-1</key>
-    <value>Arcanist</value>
-  </vars>
-  <vars>
-    <key>88</key>
-    <value>Avatar</value>
-  </vars>
-  <vars>
-    <key>85</key>
-    <value>Godling</value>
+    <key>17</key>
+    <value>Panjandrum</value>
   </vars>
   <vars>
     <key>18</key>
@@ -171,204 +63,32 @@
     <value>Poobah</value>
   </vars>
   <vars>
-    <key>61</key>
-    <value>Prophet</value>
-  </vars>
-  <vars>
-    <key>40</key>
-    <value>Monarch</value>
-  </vars>
-  <vars>
     <key>2</key>
     <value>Acolyte</value>
-  </vars>
-  <vars>
-    <key>76</key>
-    <value>Bodhisattva</value>
-  </vars>
-  <vars>
-    <key>58</key>
-    <value>Seer</value>
-  </vars>
-  <vars>
-    <key>23</key>
-    <value>Grand Poobah</value>
-  </vars>
-  <vars>
-    <key>62</key>
-    <value>Prophet</value>
-  </vars>
-  <vars>
-    <key>11</key>
-    <value>Literatus</value>
-  </vars>
-  <vars>
-    <key>38</key>
-    <value>Hegemon</value>
-  </vars>
-  <vars>
-    <key>68</key>
-    <value>Enlightened One</value>
-  </vars>
-  <vars>
-    <key>78</key>
-    <value>Bodhisattva</value>
-  </vars>
-  <vars>
-    <key>12</key>
-    <value>Laureate</value>
-  </vars>
-  <vars>
-    <key>71</key>
-    <value>Ageless Master</value>
-  </vars>
-  <vars>
-    <key>65</key>
-    <value>Sage</value>
-  </vars>
-  <vars>
-    <key>24</key>
-    <value>Grand Poobah</value>
-  </vars>
-  <vars>
-    <key>63</key>
-    <value>Prophet</value>
-  </vars>
-  <vars>
-    <key>81</key>
-    <value>Divinity</value>
-  </vars>
-  <vars>
-    <key>84</key>
-    <value>Demigodhead</value>
-  </vars>
-  <vars>
-    <key>-2</key>
-    <value>Master Arcanist</value>
-  </vars>
-  <vars>
-    <key>56</key>
-    <value>Visionary</value>
-  </vars>
-  <vars>
-    <key>99</key>
-    <value>Transcendent</value>
-  </vars>
-  <vars>
-    <key>37</key>
-    <value>Hegemon</value>
-  </vars>
-  <vars>
-    <key>60</key>
-    <value>Seer</value>
-  </vars>
-  <vars>
-    <key>21</key>
-    <value>Poobah</value>
-  </vars>
-  <vars>
-    <key>35</key>
-    <value>Princeps</value>
-  </vars>
-  <vars>
-    <key>87</key>
-    <value>Godling</value>
-  </vars>
-  <vars>
-    <key>86</key>
-    <value>Godling</value>
-  </vars>
-  <vars>
-    <key>5</key>
-    <value>Crafter</value>
-  </vars>
-  <vars>
-    <key>39</key>
-    <value>Hegemon</value>
-  </vars>
-  <vars>
-    <key>51</key>
-    <value>Mystic</value>
-  </vars>
-  <vars>
-    <key>33</key>
-    <value>Optimate</value>
-  </vars>
-  <vars>
-    <key>48</key>
-    <value>Renunciant</value>
-  </vars>
-  <vars>
-    <key>42</key>
-    <value>Monarch</value>
-  </vars>
-  <vars>
-    <key>47</key>
-    <value>Renunciant</value>
-  </vars>
-  <vars>
-    <key>30</key>
-    <value>Grand Vizier</value>
-  </vars>
-  <vars>
-    <key>9</key>
-    <value>Archivist</value>
-  </vars>
-  <vars>
-    <key>89</key>
-    <value>Avatar</value>
-  </vars>
-  <vars>
-    <key>49</key>
-    <value>Mystic</value>
   </vars>
   <vars>
     <key>20</key>
     <value>Poobah</value>
   </vars>
   <vars>
-    <key>1</key>
-    <value>Novice</value>
+    <key>21</key>
+    <value>Poobah</value>
   </vars>
   <vars>
-    <key>77</key>
-    <value>Bodhisattva</value>
+    <key>22</key>
+    <value>Grand Poobah</value>
   </vars>
   <vars>
-    <key>8</key>
-    <value>Encyclopedist</value>
+    <key>23</key>
+    <value>Grand Poobah</value>
   </vars>
   <vars>
-    <key>92</key>
-    <value>Transcendent</value>
+    <key>24</key>
+    <value>Grand Poobah</value>
   </vars>
   <vars>
-    <key>4</key>
-    <value>Wordsmith</value>
-  </vars>
-  <vars>
-    <key>36</key>
-    <value>Princeps</value>
-  </vars>
-  <vars>
-    <key>96</key>
-    <value>Transcendent</value>
-  </vars>
-  <vars>
-    <key>79</key>
-    <value>Divinity</value>
-  </vars>
-  <vars>
-    <key>94</key>
-    <value>Transcendent</value>
-  </vars>
-  <vars>
-    <key>31</key>
-    <value>Optimate</value>
-  </vars>
-  <vars>
-    <key>41</key>
-    <value>Monarch</value>
+    <key>25</key>
+    <value>Vizier</value>
   </vars>
   <vars>
     <key>26</key>
@@ -379,39 +99,319 @@
     <value>Vizier</value>
   </vars>
   <vars>
-    <key>66</key>
-    <value>Sage</value>
+    <key>28</key>
+    <value>Grand Vizier</value>
   </vars>
   <vars>
-    <key>54</key>
-    <value>Soothsayer</value>
+    <key>29</key>
+    <value>Grand Vizier</value>
   </vars>
   <vars>
-    <key>69</key>
-    <value>Enlightened One</value>
+    <key>3</key>
+    <value>Scribe</value>
   </vars>
   <vars>
-    <key>34</key>
-    <value>Princeps</value>
+    <key>30</key>
+    <value>Grand Vizier</value>
+  </vars>
+  <vars>
+    <key>31</key>
+    <value>Optimate</value>
   </vars>
   <vars>
     <key>32</key>
     <value>Optimate</value>
   </vars>
   <vars>
-    <key>10</key>
-    <value>Polymath</value>
+    <key>33</key>
+    <value>Optimate</value>
   </vars>
   <vars>
-    <key>75</key>
-    <value>Immortal</value>
+    <key>34</key>
+    <value>Princeps</value>
+  </vars>
+  <vars>
+    <key>35</key>
+    <value>Princeps</value>
+  </vars>
+  <vars>
+    <key>36</key>
+    <value>Princeps</value>
+  </vars>
+  <vars>
+    <key>37</key>
+    <value>Hegemon</value>
+  </vars>
+  <vars>
+    <key>38</key>
+    <value>Hegemon</value>
+  </vars>
+  <vars>
+    <key>39</key>
+    <value>Hegemon</value>
+  </vars>
+  <vars>
+    <key>4</key>
+    <value>Wordsmith</value>
+  </vars>
+  <vars>
+    <key>40</key>
+    <value>Monarch</value>
+  </vars>
+  <vars>
+    <key>41</key>
+    <value>Monarch</value>
+  </vars>
+  <vars>
+    <key>42</key>
+    <value>Monarch</value>
+  </vars>
+  <vars>
+    <key>43</key>
+    <value>Divine Monarch</value>
+  </vars>
+  <vars>
+    <key>44</key>
+    <value>Divine Monarch</value>
+  </vars>
+  <vars>
+    <key>45</key>
+    <value>Divine Monarch</value>
+  </vars>
+  <vars>
+    <key>46</key>
+    <value>Renunciant</value>
+  </vars>
+  <vars>
+    <key>47</key>
+    <value>Renunciant</value>
+  </vars>
+  <vars>
+    <key>48</key>
+    <value>Renunciant</value>
+  </vars>
+  <vars>
+    <key>49</key>
+    <value>Mystic</value>
+  </vars>
+  <vars>
+    <key>5</key>
+    <value>Crafter</value>
+  </vars>
+  <vars>
+    <key>50</key>
+    <value>Mystic</value>
+  </vars>
+  <vars>
+    <key>51</key>
+    <value>Mystic</value>
+  </vars>
+  <vars>
+    <key>52</key>
+    <value>Soothsayer</value>
+  </vars>
+  <vars>
+    <key>53</key>
+    <value>Soothsayer</value>
+  </vars>
+  <vars>
+    <key>54</key>
+    <value>Soothsayer</value>
   </vars>
   <vars>
     <key>55</key>
     <value>Visionary</value>
   </vars>
   <vars>
-    <key>29</key>
-    <value>Grand Vizier</value>
+    <key>56</key>
+    <value>Visionary</value>
+  </vars>
+  <vars>
+    <key>57</key>
+    <value>Visionary</value>
+  </vars>
+  <vars>
+    <key>58</key>
+    <value>Seer</value>
+  </vars>
+  <vars>
+    <key>59</key>
+    <value>Seer</value>
+  </vars>
+  <vars>
+    <key>6</key>
+    <value>Artificer</value>
+  </vars>
+  <vars>
+    <key>60</key>
+    <value>Seer</value>
+  </vars>
+  <vars>
+    <key>61</key>
+    <value>Prophet</value>
+  </vars>
+  <vars>
+    <key>62</key>
+    <value>Prophet</value>
+  </vars>
+  <vars>
+    <key>63</key>
+    <value>Prophet</value>
+  </vars>
+  <vars>
+    <key>64</key>
+    <value>Sage</value>
+  </vars>
+  <vars>
+    <key>65</key>
+    <value>Sage</value>
+  </vars>
+  <vars>
+    <key>66</key>
+    <value>Sage</value>
+  </vars>
+  <vars>
+    <key>67</key>
+    <value>Enlightened One</value>
+  </vars>
+  <vars>
+    <key>68</key>
+    <value>Enlightened One</value>
+  </vars>
+  <vars>
+    <key>69</key>
+    <value>Enlightened One</value>
+  </vars>
+  <vars>
+    <key>7</key>
+    <value>Chronicler</value>
+  </vars>
+  <vars>
+    <key>70</key>
+    <value>Ageless Master</value>
+  </vars>
+  <vars>
+    <key>71</key>
+    <value>Ageless Master</value>
+  </vars>
+  <vars>
+    <key>72</key>
+    <value>Ageless Master</value>
+  </vars>
+  <vars>
+    <key>73</key>
+    <value>Immortal</value>
+  </vars>
+  <vars>
+    <key>74</key>
+    <value>Immortal</value>
+  </vars>
+  <vars>
+    <key>75</key>
+    <value>Immortal</value>
+  </vars>
+  <vars>
+    <key>76</key>
+    <value>Bodhisattva</value>
+  </vars>
+  <vars>
+    <key>77</key>
+    <value>Bodhisattva</value>
+  </vars>
+  <vars>
+    <key>78</key>
+    <value>Bodhisattva</value>
+  </vars>
+  <vars>
+    <key>79</key>
+    <value>Divinity</value>
+  </vars>
+  <vars>
+    <key>8</key>
+    <value>Encyclopedist</value>
+  </vars>
+  <vars>
+    <key>80</key>
+    <value>Divinity</value>
+  </vars>
+  <vars>
+    <key>81</key>
+    <value>Divinity</value>
+  </vars>
+  <vars>
+    <key>82</key>
+    <value>Demigodhead</value>
+  </vars>
+  <vars>
+    <key>83</key>
+    <value>Demigodhead</value>
+  </vars>
+  <vars>
+    <key>84</key>
+    <value>Demigodhead</value>
+  </vars>
+  <vars>
+    <key>85</key>
+    <value>Godling</value>
+  </vars>
+  <vars>
+    <key>86</key>
+    <value>Godling</value>
+  </vars>
+  <vars>
+    <key>87</key>
+    <value>Godling</value>
+  </vars>
+  <vars>
+    <key>88</key>
+    <value>Avatar</value>
+  </vars>
+  <vars>
+    <key>89</key>
+    <value>Avatar</value>
+  </vars>
+  <vars>
+    <key>9</key>
+    <value>Archivist</value>
+  </vars>
+  <vars>
+    <key>90</key>
+    <value>Avatar</value>
+  </vars>
+  <vars>
+    <key>91</key>
+    <value>Transcendent</value>
+  </vars>
+  <vars>
+    <key>92</key>
+    <value>Transcendent</value>
+  </vars>
+  <vars>
+    <key>93</key>
+    <value>Transcendent</value>
+  </vars>
+  <vars>
+    <key>94</key>
+    <value>Transcendent</value>
+  </vars>
+  <vars>
+    <key>95</key>
+    <value>Transcendent</value>
+  </vars>
+  <vars>
+    <key>96</key>
+    <value>Transcendent</value>
+  </vars>
+  <vars>
+    <key>97</key>
+    <value>Transcendent</value>
+  </vars>
+  <vars>
+    <key>98</key>
+    <value>Transcendent</value>
+  </vars>
+  <vars>
+    <key>99</key>
+    <value>Transcendent</value>
   </vars>
 </node>
