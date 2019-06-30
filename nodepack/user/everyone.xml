@@ -24,19 +24,51 @@
   <title>everyone</title>
   <type_nodetype>15</type_nodetype>
   <vars>
-    <key>no_socialbookmarkinformer</key>
+    <key>IQM</key>
+    <value>2.13267973856209</value>
+  </vars>
+  <vars>
+    <key>anonymous_bookmark</key>
     <value>1</value>
+  </vars>
+  <vars>
+    <key>group</key>
+    <value>114</value>
+  </vars>
+  <vars>
+    <key>lastnoded</key>
+    <value>2104171</value>
   </vars>
   <vars>
     <key>mission</key>
     <value>To Allow Publicly-Editable Writeups</value>
   </vars>
   <vars>
-    <key>no_socialbookmarknotification</key>
+    <key>motto</key>
+    <value>[Please be Gentle]</value>
+  </vars>
+  <vars>
+    <key>no_bookmarkinformer</key>
     <value>1</value>
   </vars>
   <vars>
-    <key>anonymous_bookmark</key>
+    <key>no_bookmarknotification</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>no_coolnotification</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>no_likeitnotification</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>no_socialbookmarkinformer</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>no_socialbookmarknotification</key>
     <value>1</value>
   </vars>
   <vars>
@@ -44,47 +76,15 @@
     <value>2948</value>
   </vars>
   <vars>
-    <key>group</key>
-    <value>114</value>
-  </vars>
-  <vars>
-    <key>no_bookmarknotification</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>lastnoded</key>
-    <value>2104171</value>
-  </vars>
-  <vars>
-    <key>no_coolnotification</key>
-    <value>1</value>
-  </vars>
-  <vars>
-    <key>no_bookmarkinformer</key>
-    <value>1</value>
+    <key>nwriteups</key>
+    <value>2948 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
   </vars>
   <vars>
     <key>preference_last_update_time</key>
     <value>1278018700</value>
   </vars>
   <vars>
-    <key>motto</key>
-    <value>[Please be Gentle]</value>
-  </vars>
-  <vars>
-    <key>IQM</key>
-    <value>2.13267973856209</value>
-  </vars>
-  <vars>
-    <key>no_likeitnotification</key>
-    <value>1</value>
-  </vars>
-  <vars>
     <key>specialties</key>
     <value>[Multiple Personality Disorder], I'm extremely flexible, I can speak several languages, I'm widely educated, I'm genderless, I'm all-accepting and I have knowledge on a wide variety of subjects, and I take criticism well..oh, and I bite.  ;)</value>
-  </vars>
-  <vars>
-    <key>nwriteups</key>
-    <value>2948 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
   </vars>
 </node>

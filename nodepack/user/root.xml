@@ -10,7 +10,7 @@ Great hair.</doctext>
   <title>root</title>
   <type_nodetype>15</type_nodetype>
   <vars>
-    <key>numwriteups</key>
+    <key>employment</key>
     <value></value>
   </vars>
   <vars>
@@ -18,7 +18,7 @@ Great hair.</doctext>
     <value></value>
   </vars>
   <vars>
-    <key>employment</key>
+    <key>lastnode</key>
     <value></value>
   </vars>
   <vars>
@@ -26,36 +26,12 @@ Great hair.</doctext>
     <value></value>
   </vars>
   <vars>
-    <key>nodelets</key>
-    <value>1687135,262,170070,91,263,1157024,165437</value>
-  </vars>
-  <vars>
-    <key>oldGP</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>nwriteups</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>personal_nodelet</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>lastnode</key>
-    <value></value>
-  </vars>
-  <vars>
-    <key>oldexp</key>
-    <value>-160</value>
-  </vars>
-  <vars>
-    <key>specialties</key>
-    <value></value>
-  </vars>
-  <vars>
     <key>motto</key>
     <value></value>
+  </vars>
+  <vars>
+    <key>nodelets</key>
+    <value>1687135,262,170070,91,263,1157024,165437</value>
   </vars>
   <vars>
     <key>nullvote</key>
@@ -66,7 +42,31 @@ Great hair.</doctext>
     <value>15</value>
   </vars>
   <vars>
+    <key>numwriteups</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>nwriteups</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>oldGP</key>
+    <value></value>
+  </vars>
+  <vars>
+    <key>oldexp</key>
+    <value>-160</value>
+  </vars>
+  <vars>
+    <key>personal_nodelet</key>
+    <value></value>
+  </vars>
+  <vars>
     <key>preference_last_update_time</key>
     <value>1330374419</value>
+  </vars>
+  <vars>
+    <key>specialties</key>
+    <value></value>
   </vars>
 </node>
