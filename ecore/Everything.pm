@@ -84,7 +84,7 @@ sub BEGIN
 		comp_root => "/var/everything/templates",
 		static_source => ($CONF->environment eq "production"),
 		allow_globals => [qw($REQUEST)],
-		plugins => ['HTMLFilters']);
+		plugins => ['HTMLFilters','Everything']);
 
 	$ROUTER = Everything::HTMLRouter->new();
 
