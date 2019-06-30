@@ -58,7 +58,7 @@ sub node_to_xml
 	{
 		$vars_out = {Everything::getVarHashFromStringFast($NODE->{vars})};
 		$NODE->{vars} = [];
-		foreach my $key(keys %$vars_out)
+		foreach my $key(sort {$a cmp $b} keys %$vars_out)
 		{
 			next if(grep {/^$key$/} @{$this->xml_vars_no_store()});
 			push @{$NODE->{vars}},{"key" => $key, "value" => $vars_out->{$key}};
