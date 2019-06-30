@@ -11,7 +11,7 @@ my $listvars = getVars($listapprovedtags);
 
 foreach my $keys (sort(keys(%{$listvars}))) {
 $str .= &quot;\n\t&lt;dt&gt;&quot; . $keys . &quot;&lt;/dt&gt;&quot;;
-$str .= &quot;\n\t\t&lt;dd&gt;&quot; . $listvars-&gt;{$keys} . &quot;&lt;/dd&gt;&quot; unless ($listvars-&gt;{$keys} == 1);
+$str .= &quot;\n\t\t&lt;dd&gt;&quot; . $listvars-&gt;{$keys} . &quot;&lt;/dd&gt;&quot; unless (&quot;$listvars-&gt;{$keys}&quot; eq &quot;1&quot;);
 }
 
 return $str . &quot;\n&lt;/dl&gt;\n\n&quot;;
