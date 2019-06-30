@@ -264,6 +264,12 @@
     <rank>2</rank>
   </group>
   <group>
+    <node_id>923653</node_id>
+    <nodegroup_id>2175734</nodegroup_id>
+    <orderby>0</orderby>
+    <rank>0</rank>
+  </group>
+  <group>
     <node_id>952215</node_id>
     <nodegroup_id>1159973</nodegroup_id>
     <orderby>100</orderby>
