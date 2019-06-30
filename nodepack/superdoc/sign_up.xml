@@ -130,6 +130,9 @@ my $secLog = sub{
 
 # filter out undesirables
 
+my $known_good = getVars(getNode(&quot;known good domains&quot;,&quot;setting&quot;));
+my $known_spam = getVars(getNode(&quot;known spam domains&quot;, &quot;setting&quot;));
+
 if ($username &amp;&amp; $email &amp;&amp; $pass){
 	my @undesirable = ();
 
@@ -155,7 +158,10 @@ if ($username &amp;&amp; $email &amp;&amp; $pass){
 
 	push @undesirable, 'same email address as locked user: '.linkNode($lockedUser) if $lockedUser;
 
-	push @undesirable, &quot;email address $email is from spamland domain $1&quot; if $email =~ /\.(ammuca\.eu)$/;
+        my $domain = lc($email);
+        $domain =~ s/.*?@//g;
+
+	push @undesirable, &quot;email address $email is from spamland domain $domain&quot; if(exists($known_spam-&gt;{$domain}) and not exists($known_good-&gt;{$domain}));
 
 	# check for locked user cookie infection
 	push @undesirable, 'infected by cookie from locked user' if htmlcode('checkInfected');
@@ -279,7 +285,9 @@ return &quot;&lt;h3&gt;Welcome to Everything2, $username!
 	&lt;/p&gt;&quot;;
 #%]
 
-[% return qq|&lt;script src=&quot;https://www.google.com/recaptcha/api.js?render=|.$Everything::CONF-&gt;recaptcha_v3_public_key.qq|&quot;&gt;&lt;/script&gt;
+[% 
+return &quot;&quot; if $Everything::CONF-&gt;environment ne &quot;production&quot;;
+return qq|&lt;script src=&quot;https://www.google.com/recaptcha/api.js?render=|.$Everything::CONF-&gt;recaptcha_v3_public_key.qq|&quot;&gt;&lt;/script&gt;
 &lt;script&gt;
 grecaptcha.ready(function() {
   grecaptcha.execute('|.$Everything::CONF-&gt;recaptcha_v3_public_key.qq|', {action: 'signup'});
