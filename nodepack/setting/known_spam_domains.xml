@@ -1,6 +1,6 @@
 <node>
   <node_id>2175689</node_id>
-  <title>spam domains</title>
+  <title>known spam domains</title>
   <type_nodetype>153</type_nodetype>
   <vars>
     <key>acton-plumber-w3.co.uk</key>
