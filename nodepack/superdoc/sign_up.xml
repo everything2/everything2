@@ -278,7 +278,14 @@ return &quot;&lt;h3&gt;Welcome to Everything2, $username!
 	out on high-quality paper, and hang it on your wall in a tasteful frame.
 	&lt;/p&gt;&quot;;
 #%]
-</doctext>
+
+[% return qq|&lt;script src=&quot;https://www.google.com/recaptcha/api.js?render=|.$Everything::CONF-&gt;recaptcha_v3_public_key.qq|&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+grecaptcha.ready(function() {
+  grecaptcha.execute('|.$Everything::CONF-&gt;recaptcha_v3_public_key.qq|', {action: 'signup'});
+});
+&lt;/script&gt;|;
+%]</doctext>
   <node_id>2072173</node_id>
   <title>Sign up</title>
   <type_nodetype>14</type_nodetype>
