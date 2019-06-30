@@ -4,7 +4,7 @@
 </%class>
 % if ( $REQUEST->user->level > 1 or $REQUEST->user->is_editor ) {
 <li>
-<form method="POST" class="widget" style="hidden">
+<form method="POST" class="widget" style="visibility: hidden;">
 <input type="hidden" name="showwidget" value="category">
 <fieldset id="categoryform<% $.node->node_id %>">
 <legend>Add this <% $.friendly_pagetype %> to a category:</legend>
@@ -19,6 +19,6 @@
 <button value="category" name="op" type="submit" class="ajax categoryform<% $.node->node_id %>:categoryform?op=category&amp;nid=/nid&amp;cid=/cid:<% $.node->node_id %>,">Add</button>
 </fieldset>
 </form>
-<a title="Add this superdoc to a category" class="action showwidget closed">Add to category&hellip;</a>
+<a title="Add this superdoc to a category" class="action showwidget">Add to category&hellip;</a>
 </li>
 % }
