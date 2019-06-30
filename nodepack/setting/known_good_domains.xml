@@ -1,0 +1,41 @@
+<node>
+  <node_id>2175692</node_id>
+  <title>known good domains</title>
+  <type_nodetype>153</type_nodetype>
+  <vars>
+    <key>aol.com</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>bonci.net</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>gmail.com</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>hotmail.com</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>icloud.com</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>mail.com</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>msn.com</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>outlook.com</key>
+    <value>1</value>
+  </vars>
+  <vars>
+    <key>yahoo.co.uk</key>
+    <value>1</value>
+  </vars>
+</node>
