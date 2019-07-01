@@ -235,5 +235,11 @@ sub can_be_categoried
   return $self->APP->can_category_add($self->NODEDATA);
 }
 
+sub can_be_weblogged
+{
+  my ($self) = @_;
+  return $self->APP->can_weblog($self->NODEDATA);
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
