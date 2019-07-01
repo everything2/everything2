@@ -2124,21 +2124,12 @@ sub setupuservars
     {
       my $n = getNodeById($_);
       next unless $n;
-      unless($$n{type}{title} eq "usergroup")
-      {
-        if($APP->isAdmin($USER) ){
-          push @canwl, $_;
-        }
-
-        next;
-      }
  
       if( $APP->isAdmin($USER) || $DB->isApproved($USER, $n) ){
         push @canwl, $_;
         next;
       }  
     }
-    push @canwl, getId(getNode('News for noders. Stuff that matters.', 'superdoc')) if $APP->isEditor($USER);
     $$VARS{can_weblog} = join ",", sort{$a <=> $b} @canwl;
   }
 
@@ -13023,13 +13014,14 @@ sub weblogform
     foreach( split ',' , $$VARS{ can_weblog } )
     {
       next if $$VARS{ 'hide_weblog_'.$_ };
-      my $groupTitle = "News" ;
+      my $groupTitle = "" ;
       if ( $$VARS{ nameifyweblogs } )
       {
         $groupTitle = $$wls{ $_ } ;
       } else {
         my $wl = getNodeById($_,"light") || {title => ''};
-        $groupTitle = $wl->{title} unless $_ == 165580 ;
+	next unless $wl and exists($wl->{title});
+        $groupTitle = $wl->{title};
       }
       $options.="\n\t\t\t<option value=\"$_\">$groupTitle</option>" if $groupTitle;
     }

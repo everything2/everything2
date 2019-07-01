@@ -1283,14 +1283,8 @@ sub weblog
   return unless $$N{type}{sqltablelist} =~ /document/;
   return if $$N{nodetype} eq 'usergroup'; 
 
-  if ($$SRC{type}{title} eq 'usergroup')
-  {
-    return unless Everything::isApproved($USER, $SRC);
-  } elsif ($$SRC{title} eq 'News for noders. Stuff that matters.') {
-    return unless Everything::isApproved($USER, getNode('everything editors','usergroup'));
-  } else {
-    return unless isGod($USER);
-  }
+  return unless $SRC->{type}->{title} eq "usergroup";
+  return unless Everything::isApproved($USER, $SRC);
 
   my $exists = $DB->sqlSelect("weblog_id","weblog","weblog_id=".getId($SRC)." and to_node=".getId($N));
 
@@ -1320,7 +1314,7 @@ sub weblog
     }
   }
 
-  if ($$SRC{title} eq 'News for noders. Stuff that matters.')
+  if ($$SRC{title} eq 'News')
   {
     htmlcode('addNotification', 'frontpage', 0, { frontpage_item_id => getId($N) });
   }

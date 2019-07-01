@@ -188,13 +188,13 @@ foreach my $chinger (keys %$cools)
 }
 
 # Create a document so we can create a new item
-my $frontpage_superdoc = $DB->getNode("News for Noders. Stuff that matters.", "superdoc");
+my $frontpage_usergroup = $DB->getNode("News", "usergroup");
 print STDERR "Creating frontpage news item\n";
 $DB->insertNode("Front page news item 1", "document", $DB->getNode("root","user"), {});
 my $document = getNode("Front page news item 1","document");
 $document->{doctext} = "This is the dawn of a new age. Of Everything. And Anything. <em>Mostly</em> [Everything]";
 $DB->updateNode($document, -1);
-$DB->sqlInsert("weblog",{"weblog_id" => $frontpage_superdoc->{node_id}, "to_node" => $document->{node_id} }); 
+$DB->sqlInsert("weblog",{"weblog_id" => $frontpage_usergroup->{node_id}, "to_node" => $document->{node_id} }); 
 
 # Cast some votes so we can generate front page content
 

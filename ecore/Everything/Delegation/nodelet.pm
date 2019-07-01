@@ -1142,7 +1142,6 @@ sub usergroup_writeups
   # get the titles of all the usergroups we need. I bet there's a more efficient way of doing this.
   for(@groupids)
   {
-    next if ($_ == 165580); # Exclude 'News for Noders. Stuff that matters.'
     push (@groups, $DB->getNodeById($_,"light")->{title});
   }
 
