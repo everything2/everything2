@@ -150,10 +150,10 @@ local * MakeEven = sub{
     }
     foreach (@$aref) {
         if (m/--$/) {
-            $_ .= &quot;-&quot; x ($len - length($_));
+            $_ .= &quot;-&quot; x ($len - length($_)) if($len - length($_) &gt; 0);
         }
         else {
-            $_ .= &quot; &quot; x ($len - length($_));
+            $_ .= &quot; &quot; x ($len - length($_)) if($len - length($_) &gt; 0);
         }
         # hard link characters are counted but not displayed
         # add spaces too account for them
@@ -504,8 +504,7 @@ $finalStr.=$query-&gt;end_form;
 
 return $finalStr.&quot;&lt;br /&gt;&lt;br /&gt;&quot;.$str;
 
-%]
-</doctext>
+%]</doctext>
   <node_id>1882393</node_id>
   <title>Node Tracker</title>
   <type_nodetype>14</type_nodetype>
