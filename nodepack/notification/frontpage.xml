@@ -5,7 +5,7 @@
   <invalid_check>return 0 if !defined $$args{frontpage_item_id};
 
 my $target_id = int($$args{frontpage_item_id});
-my $news_page = getId(getNode('News for noders. Stuff that matters.','superdoc'));
+my $news_page = getId(getNode('News','usergroup'));
 
 my $unlinker_id =
   $DB-&gt;sqlSelect(
