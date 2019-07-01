@@ -87,10 +87,6 @@
     <value>Janesify</value>
   </vars>
   <vars>
-    <key>165580</key>
-    <value>Frontpage</value>
-  </vars>
-  <vars>
     <key>1676086</key>
     <value>Punctify</value>
   </vars>
@@ -177,6 +173,10 @@
   <vars>
     <key>2100840</key>
     <value>testingify</value>
+  </vars>
+  <vars>
+    <key>2175734</key>
+    <value>News</value>
   </vars>
   <vars>
     <key>838015</key>
