@@ -513,5 +513,41 @@ sub editable_categories
   return $sorted_categories;
 }
 
+sub available_weblogs
+{
+  my ($self) = @_;
+
+  my $available = [];  
+  my $wls = $self->APP->node_by_name('webloggables' , 'setting')->VARS;
+  foreach my $weblog_id (split(',' , $self->VARS->{can_weblog}))
+  {
+    next if $self->ui_hide_weblog($weblog_id);
+    my $group_title = $wls->{$weblog_id} ;
+    unless( $self->VARS->{ nameifyweblogs } )
+    {
+      my $wl = getNodeById($_,"light") || {title => ''};
+      next unless $wl and exists($wl->{title});
+      $group_title = $wl->{title};
+    }
+    push @$available, {"title" => $group_title, "weblog_id" => $weblog_id};
+  }
+  return $available;
+}
+
+sub ui_hide_weblog_option
+{
+  my ($self, $wid) = @_;
+
+  return 1 if $self->VARS->{"hide_weblog_$wid"};
+  return;
+}
+
+sub can_weblog
+{
+  my ($self) = @_;
+  return if $self->is_guest;
+  return 1 if $self->VARS->{can_weblog};
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

@@ -88,6 +88,9 @@ sub _build_pagetitle
 %   if ($.node->can_be_categoried) {
 <& 'helpers/category.mi', friendly_pagetype => $.friendly_pagetype, node => $.node &>
 %   }
+%   if ($.node->can_be_weblogged and $REQUEST->user->can_weblog) {
+<& 'helpers/weblog.mi', friendly_pagetype => $.friendly_pagetype, node => $.node &>
+%   }
      </ul>
 % }
    <& 'helpers/ed_cooled.mi' , node => $.node &>
