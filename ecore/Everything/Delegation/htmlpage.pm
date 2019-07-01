@@ -3730,6 +3730,8 @@ sub notification_edit_page
   $str .= qq|<p><small><strong>Time Limit (in Hours):</strong></small> |.htmlcode("textfield","hourLimit").qq|</p>|;
   $str .= qq|<p><small><strong>Edit the code:</strong></small><br />|;
   $str .= htmlcode("textarea","code,30,80");
+  $str .= qq|<p><small><strong>Edit the invalidation check:</strong></small><br />|;
+  $str .= htmlcode("textarea","invalid_check,30,80");
   $str .= qq|</p>|;
  
   return $str;
