@@ -120,7 +120,7 @@ sub can_create_type
 {
   my ($self, $user) = @_;
 
-  return $self->DB->canCreateNode($user->NODEDATA, $self->typeclass);  
+  return $self->DB->canCreateNode($user->NODEDATA, $self->DB->getType($self->typeclass));
 }
 
 sub typeclass
