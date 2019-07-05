@@ -12,10 +12,4 @@ method ParseLinks ($lastnode) {
   }
 }
 
-method ParseLinks {
-  return sub {
-    $Everything::APP->parseLinks(@_);
-  }
-}
-
 1;
