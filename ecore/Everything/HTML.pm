@@ -1239,6 +1239,8 @@ sub opLogout
 	$VARS = getVars($USER);
 
 	$$USER{cookie} = $cookie if($cookie);
+
+	$REQUEST->logout;
 	return;
 }
 

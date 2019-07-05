@@ -13,8 +13,9 @@
 % foreach my $option (@{$REQUEST->user->available_weblogs}) {
 <option value="<% $option->{weblog_id} %>"><% $option->{title} %></option>
 % }
-<button value="weblog" name="op" type="submit" class="ajax weblogform<% $.node->node_id %>:weblogform?op=weblog&target=/target$addnid&source=/source:<% $.node->node_id %>,">
 </select>
+<button value="weblog" name="op" type="submit" class="ajax weblogform<% $.node->node_id %>:weblogform?op=weblog&target=/target$addnid&source=/source:<% $.node->node_id %>,">Add</button>
+</fieldset>
 </form>
 <a title="Add this <% $.friendly_pagetype %> to a usergroup page" class="action showwidget">Add to page&hellip;</a>
 </li>
