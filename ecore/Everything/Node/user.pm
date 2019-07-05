@@ -295,7 +295,7 @@ sub newxp
 {
   my ($self, $dontupdate) = @_;
 
-  if(not defined($self->VARS->{oldexp}))
+  if(not defined($self->VARS->{oldexp}) or $self->VARS->{oldexp} eq "")
   {
     $self->VARS->{oldexp} = $self->experience;  
     return 0;
@@ -327,7 +327,7 @@ sub newgp
 {
   my ($self, $dontupdate) = @_;
 
-  if(not defined($self->VARS->{oldGP}))
+  if(not defined($self->VARS->{oldGP}) or $self->VARS->{oldGP} eq "")
   {
     $self->VARS->{oldGP} = $self->gp;
     return 0;
