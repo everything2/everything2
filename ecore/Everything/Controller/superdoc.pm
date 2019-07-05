@@ -7,7 +7,7 @@ sub display
 {
   my ($self, $REQUEST, $node) = @_;
 
-  if(!$self->page_class($node)->guest_allowed and $REQUEST->user->is_guest)
+  if((not $self->page_class($node)->guest_allowed) and $REQUEST->user->is_guest)
   {
     return [$self->HTTP_FOUND,'', {location => $self->login_link}]
   }else{
