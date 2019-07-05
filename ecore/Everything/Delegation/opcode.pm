@@ -2107,8 +2107,6 @@ sub weblogify
     }
   }
 
-  $$N{doctext} = $$N{doctext} . "[{weblog:3}]";
-  updateNode($N,-1);
   return;
 }
 
