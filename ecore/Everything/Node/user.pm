@@ -547,6 +547,7 @@ sub can_weblog
   my ($self) = @_;
   return if $self->is_guest;
   return 1 if $self->VARS->{can_weblog};
+  return;
 }
 
 __PACKAGE__->meta->make_immutable;

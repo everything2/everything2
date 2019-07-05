@@ -171,7 +171,7 @@ sub title_to_page
 sub fully_supports
 {
   my ($self, $title) = @_;
-  1;
+  return 1;
 }
 
 sub page_exists
