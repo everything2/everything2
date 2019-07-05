@@ -14770,9 +14770,9 @@ sub resurrectNode
   my $N = $DB->sqlSelectHashref("*", 'tomb', "node_id=".$DB->{dbh}->quote("$node_id"));
   return unless $N;
 
-  my $DATA = eval($$N{data});
+  my $NODEDATA = eval($$N{data});
 
-  @$N{keys %$DATA} = values %$DATA;
+  @$N{keys %$NODEDATA} = values %$NODEDATA;
 
   delete $$N{data};
   delete $$N{killa_user};

@@ -818,7 +818,7 @@ sub constructNode
 	my ($this, $NODE) = @_;
 	my $TYPE = $this->getType($$NODE{type_nodetype});
 	my $cursor;
-	my $DATA;
+	my $NODEDATA;
 	
 	return 0 unless((defined $TYPE) && (ref $$TYPE{tableArray}));
 
@@ -826,10 +826,10 @@ sub constructNode
 
 	return 0 if(not defined $cursor);
 
-	$DATA = $cursor->fetchrow_hashref();
+	$NODEDATA = $cursor->fetchrow_hashref();
 	$cursor->finish();
 
-	@$NODE{keys %$DATA} = values %$DATA;
+	@$NODE{keys %$NODEDATA} = values %$NODEDATA;
 	
 	# Make sure each field is at least defined to be nothing.
 	foreach (keys %$NODE)
@@ -1117,15 +1117,15 @@ SQLEND
 #		if it is, update it, otherwise insert the node as new
 #
 sub replaceNode {
-	my ($this, $title, $TYPE, $USER, $DATA, $skip_maintenance) = @_;
+	my ($this, $title, $TYPE, $USER, $NODEDATA, $skip_maintenance) = @_;
 
 	if (my $N = $this->getNode($title, $TYPE)) {
 		if ($this->canUpdateNode($USER,$N)) {
-			@$N{keys %$DATA} = values %$DATA if $DATA;
+			@$N{keys %$NODEDATA} = values %$NODEDATA if $NODEDATA;
 			$this->updateNode($N, $USER, undef, $skip_maintenance);
 		}
 	} else { 
-		$this->insertNode($title, $TYPE, $USER, $DATA, $skip_maintenance);
+		$this->insertNode($title, $TYPE, $USER, $NODEDATA, $skip_maintenance);
 	}
 
 	return;
@@ -1151,7 +1151,7 @@ sub replaceNode {
 #
 sub insertNode
 {
-	my ($this, $title, $TYPE, $USER, $DATA, $skip_maintenance) = @_;
+	my ($this, $title, $TYPE, $USER, $NODEDATA, $skip_maintenance) = @_;
 	my $tableArray;
 	my $NODE;
 
@@ -1213,9 +1213,9 @@ sub insertNode
 	# the 'created' routines are executed before any 'update' routines.
 	$this->nodeMaintenance($NODE, 'create') unless $skip_maintenance;
 
-	if ($DATA)
+	if ($NODEDATA)
 	{
-		@$NODE{keys %$DATA} = values %$DATA;
+		@$NODE{keys %$NODEDATA} = values %$NODEDATA;
 		$this->updateNode($NODE, $USER, undef, $skip_maintenance); 
 	}
 
