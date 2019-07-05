@@ -1,6 +1,3 @@
-<%flags>
-    extends => '/zen.mc'
-</%flags>
 <%class>
   has 'wit' => (default => sub {[[
     "[The Fez is Responsible for Global Warming|DADDY NEEDS SOME]",
@@ -51,9 +48,11 @@
     "[spiders with human heads!|SEX MITTENS!]",
     "[SUITCASE-SIZED NUCLEAR DEMOLITIONS DEVICES|SUITCASE-SIZED NUCLEAR DEMOLITIONS DEVICES!]",
   ]]});
+
+  has 'needs_link_parse' => (default => 1);
 </%class>
 <br><br><br><p align="center">
 % foreach my $wit (@{$.wit}) {
-<b><font size="3"><% $wit->[int(rand(@$wit))] | ParseLinks %></font></b>
+<b><font size="3"><% $wit->[int(rand(@$wit))] %></font></b>
 % }
 </p><br><br>

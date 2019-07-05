@@ -1,6 +1,3 @@
-<%flags>
-    extends => '/zen.mc'
-</%flags>
 <%class>
   has 'approved_tags' => (isa => 'HashRef', required => 1);
 </%class>
