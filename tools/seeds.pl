@@ -86,7 +86,7 @@ my $datanodes = {
   },
 };
 
-# insertNode is: $title, $TYPE, $USER, $DATA
+# insertNode is: $title, $TYPE, $USER, $NODEDATA
 foreach my $datatype (keys %$datanodes)
 {
   foreach my $author (keys %{$datanodes->{$datatype}})
