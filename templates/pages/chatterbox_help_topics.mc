@@ -1,6 +1,3 @@
-<%flags>
-    extends => '/zen.mc'
-</%flags>
 <%class>
   has 'helpuser' => (isa => 'Everything::Node::user', required => 1);
   has 'helptopics' => (isa => 'HashRef', required => 1);

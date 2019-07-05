@@ -1,10 +1,16 @@
 package Mason::Plugin::Everything::Filters;
 use Mason::PluginRole;
+require Everything;
 
 method ParseLinks ($lastnode) {
-  require Everything;
   return sub {
-    return $Everything::APP->parseLinks($_[0], $lastnode);
+    $Everything::APP->parseLinks($_[0], $lastnode);
+  }
+}
+
+method ParseLinks {
+  return sub {
+    $Everything::APP->parseLinks(@_);
   }
 }
 
