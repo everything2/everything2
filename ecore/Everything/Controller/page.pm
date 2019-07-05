@@ -9,6 +9,7 @@ sub fully_supports
 {
   my ($self, $page) = @_;
   return 1 if $self->page_exists($page);
+  return;
 }
 
 # TODO: Always make sure this returns the same data struct
