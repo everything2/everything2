@@ -77,7 +77,7 @@ sub _build_routechooser
     $perlcode .= '$path =~ /^';
     $perlcode .= join('\/',@$re);
     $perlcode .= '$/){ ';
-    $perlcode .= '$self->devLog("Choosing \''.$routetarget.'\' for ".(($path == "")?("/"):($path)));';
+    $perlcode .= '$self->devLog("Choosing \''.$routetarget.'\' for ".(($path eq "")?("/"):($path)));';
     $perlcode .= 'return ';
 
     $perlcode .= '$self->'.$subref.'(';
