@@ -8,7 +8,7 @@ my $critic = Perl::Critic->new(-severity => 1, -theme => "bugs");
 
 if(defined($ENV{"CRITIC_FULL"}))
 {
-  $critic = Perl::Critic->new(-severity => 1, -theme => "core && !cosmetic && !complexity", -exclude => ["RequireArgUnpacking"]);
+  $critic = Perl::Critic->new(-severity => 1, -theme => "core && !cosmetic && !complexity", -exclude => ["RequireArgUnpacking","RequireVersionVar"]);
 }
 
 if($ARGV[0])

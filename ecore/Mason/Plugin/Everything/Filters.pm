@@ -1,4 +1,8 @@
 package Mason::Plugin::Everything::Filters;
+
+# Perl critic bug
+## no critic (RequireUseStrict,RequireUseWarnings,RequireEndWithOne)
+
 use Mason::PluginRole;
 require Everything;
 

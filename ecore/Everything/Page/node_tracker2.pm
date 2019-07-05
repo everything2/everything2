@@ -9,3 +9,7 @@ sub display
 
   return [$self->HTTP_OK, "testing"];
 }
+
+__PACKAGE__->meta->make_immutable;
+
+1;
