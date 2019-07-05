@@ -521,13 +521,13 @@ sub available_weblogs
   my $wls = $self->APP->node_by_name('webloggables' , 'setting')->VARS;
   foreach my $weblog_id (split(',' , $self->VARS->{can_weblog}))
   {
-    next if $self->ui_hide_weblog($weblog_id);
+    next if $self->ui_hide_weblog_option($weblog_id);
     my $group_title = $wls->{$weblog_id} ;
     unless( $self->VARS->{ nameifyweblogs } )
     {
-      my $wl = getNodeById($_,"light") || {title => ''};
-      next unless $wl and exists($wl->{title});
-      $group_title = $wl->{title};
+      my $wl = $self->APP->node_by_id($weblog_id);
+      next unless $wl;
+      $group_title = $wl->title;
     }
     push @$available, {"title" => $group_title, "weblog_id" => $weblog_id};
   }
