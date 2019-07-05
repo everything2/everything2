@@ -11,6 +11,6 @@ sub display
   return {nodelist => $self->APP->newnodes($self->records)}; 
 }
 
-1;
-
 __PACKAGE__->meta->make_immutable;
+
+1;

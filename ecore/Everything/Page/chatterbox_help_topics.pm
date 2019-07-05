@@ -12,6 +12,6 @@ sub display
   return {helpuser => $helpuser, helptopics => $helptopics};
 }
 
-1;
-
 __PACKAGE__->meta->make_immutable;
+
+1;

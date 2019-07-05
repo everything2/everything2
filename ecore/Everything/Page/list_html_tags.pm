@@ -11,6 +11,6 @@ sub display
   return {approved_tags => $approved_tags};
 }
 
-1;
-
 __PACKAGE__->meta->make_immutable;
+
+1;
