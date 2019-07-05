@@ -177,9 +177,19 @@ sub get_current_user
   my $sth = $self->DB->getDatabaseHandle()->prepare("CALL update_lastseen(".$user->node_id.");");
   $sth->execute();
   my ($seconds_since_last, $now) = $sth->fetchrow_array();
+
+  my $force_room_insert = 0;
+
+  # User has never logged in before, so update_lastseen returns undef as first result
+  if(not defined($seconds_since_last))
+  {
+    $force_room_insert = 1;
+    $seconds_since_last = 0;
+  }
+
   $user->NODEDATA->{lastseen} = $now;
 
-  $self->APP->insertIntoRoom($user->in_room, $user->NODEDATA, $user->VARS) if($seconds_since_last > $TIMEOUT_SECONDS || $self->APP->inDevEnvironment);
+  $self->APP->insertIntoRoom($user->in_room, $user->NODEDATA, $user->VARS) if($force_room_insert || $seconds_since_last > $TIMEOUT_SECONDS || $self->APP->inDevEnvironment);
   if($ENV{HTTP_USER_AGENT})
   {
     $user->VARS->{browser} = $ENV{HTTP_USER_AGENT};

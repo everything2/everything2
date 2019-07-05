@@ -2107,14 +2107,14 @@ sub insertIntoRoom {
             borgd => $borgd,
             experience => $$U{experience},
             visible => $vis,
-            op => $this->isAdmin($U)
+            op => ($this->isAdmin($U) || 0)
     }
     , {
             nick => $$U{title},
             borgd => $borgd,
             experience => $$U{experience},
             visible => $vis,
-            op => $this->isAdmin($U)
+            op => ($this->isAdmin($U) || 0)
     }
   );
 }
