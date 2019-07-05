@@ -30,10 +30,10 @@
 		AllowOverride None
 	</Directory>
 
-	# Make sure that processes in production never stray above 300M
+	# Make sure that processes in production never stray above 800M
         <Perl>
         use Apache2::SizeLimit;
-        $Apache2::SizeLimit::MAX_PROCESS_SIZE  = 350000;
+        $Apache2::SizeLimit::MAX_PROCESS_SIZE  = 800000;
         $Apache2::SizeLimit::CHECK_EVERY_N_REQUESTS = 20;
         </Perl>
 
