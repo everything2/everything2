@@ -81,6 +81,8 @@ has 'iam_app_role' => (isa => 'Str', is => 'ro', default => '');
 has 'recaptcha_v3_secret_key' => (isa => 'Str', is => 'ro', default => '');
 has 'recaptcha_v3_public_key' => (isa => 'Str', is => 'ro', default => '');
 
+has 'login_location' => (isa => 'Str', is => 'ro'); 
+
 
 around BUILDARGS => sub
 {
