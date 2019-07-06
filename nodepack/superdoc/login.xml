@@ -36,9 +36,7 @@ $str .= &quot;&lt;form method=\&quot;POST\&quot; action=\&quot;&quot;.$ENV{SCRIP
 	$str.=&quot;[Reset password[superdoc]|Forgot your password or username?]&quot;;
         $str.=&quot;&lt;p&gt;Don't have an account? [Sign up[superdoc]|Create one]!&quot;;
 $str;
-%]
-&lt;br /&gt;&lt;br /&gt;
-&lt;small&gt;Note that due to a recent change in the login mechanism, your old password (passwords set prior to 2012-11-06) is limited to ten characters. If you are having trouble logging in, try only the first ten characters&lt;/small&gt;</doctext>
+%]</doctext>
   <node_id>109</node_id>
   <title>login</title>
   <type_nodetype>14</type_nodetype>
