@@ -26,7 +26,10 @@
 
 [% #))
 
-my ($userName, $user, $str) = ($query -&gt; param('author'), 0, '');
+my $userName = $query-&gt;param('author');
+my $user = 0;
+my $str = '';
+
 if ($userName){
 	$user = getNode($userName, 'user');
 	$str = $query -&gt; escapeHTML($userName)
@@ -94,8 +97,7 @@ $str.$query -&gt; p('&lt;button type=&quot;submit&quot; name=&quot;confirmop&quo
 
 %]
 &lt;/fieldset&gt;
-&lt;/form&gt;
-</doctext>
+&lt;/form&gt;</doctext>
   <node_id>1150966</node_id>
   <title>Altar of Sacrifice</title>
   <type_nodetype>1144104</type_nodetype>
