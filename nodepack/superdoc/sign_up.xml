@@ -13,12 +13,6 @@ my $validNameDescription = 'Valid user names contain at least one letter or numb
 # for how many days should an account activation link be valid?
 my $validForDays = 10;
 
-# with which nodetypes may usernames not clash?
-my @nameBlockers = (
-	'user', 'usergroup' , 'nodetype', 'fullpage'
-	, 'document', 'superdoc', 'superdocnolinks', 'restricted_superdoc'
-);
-
 my $prompt = '';
 my %names = ();
 
@@ -106,18 +100,6 @@ my $formPage = sub{
 END
 };
 
-my $nameTaken = sub{
-	my $name = shift;
-	my $x;
-	map { return $x if $x = getNode($name, $_); } @nameBlockers;
-	return 0 unless $name =~ /( |_)/;
-
-	my $other = $1 eq ' ' ? '_' : ' ';
-	$name =~ s/[ _]/$other/g;
-	map { return $x if $x = getNode($name, $_); } @nameBlockers;
-	return 0;
-};
-
 my @addrs = $APP-&gt;getIp();
 my $logUser = getNode('Virgil', 'user');
 
@@ -197,7 +179,7 @@ if (time &gt; $seed || !$pass || !$username || !$email || $prompt eq 1){
 }elsif($username =~ /$invalidName/){
 	$prompt = &quot;$validNameDescription&lt;br&gt;Please enter a valid user name&quot;;
 
-}elsif(my $old = &amp;$nameTaken($username) || $prompt eq 4){
+}elsif(my $old = $APP-&gt;is_username_taken($username) || $prompt eq 4){
 	&amp;$secLog(&quot;Rejected username $username: matches &quot;.linkNode($old)) unless $prompt;
 	$prompt = 'Sorry, that username is already taken. Please try a different one';
 
