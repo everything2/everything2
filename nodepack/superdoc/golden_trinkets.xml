@@ -1,29 +1,5 @@
 <node>
-  <doctext>&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;p align=center&gt;
-&lt;font size=4&gt;
-[%
-return 'Nobody knows how blessed you are, since you\'re hiding. Try logging in.' if $APP-&gt;isGuest($USER);
-return '&lt;em&gt;You are not feeling very special.&lt;/em&gt;' if $$USER{karma} == 0;
-return '&lt;strong&gt;You feel a burning sensation...&lt;/strong&gt;' if $$USER{karma} &lt; 0;
-
-&quot;You feel blessed -- every day, the gods see you and are glad -- you have collected $$USER{karma} of their &quot; . linkNodeTitle('bless|Golden Trinkets');
-
-%]
-&lt;/font&gt;
-&lt;br&gt;&lt;br&gt;&lt;br&gt;
-&lt;/p&gt;
-[%
-return unless isGod($USER);
-
-my $u = $query-&gt;param('gtuser') || 0;
-$u = getNode($u, 'user') if $u;
-my $k;
-$k = $u ? $$u{karma} : 0;
-my $str = htmlcode('openform') . 'other user: ' . $query-&gt;textfield('gtuser') . $query-&gt;submit('SubMitt') . $query-&gt;end_form() . '&lt;br /&gt;';
-$str .= $u ? (linkNode($u) . '\'s karma: ' . $k) : 'no other user given';
-
-$str;
-%]</doctext>
+  <doctext></doctext>
   <node_id>737456</node_id>
   <title>Golden Trinkets</title>
   <type_nodetype>14</type_nodetype>
