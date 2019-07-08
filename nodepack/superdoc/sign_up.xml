@@ -180,14 +180,14 @@ if ($username &amp;&amp; $email &amp;&amp; $pass){
 #######
 
 # ask them nicely...
-if (time &gt; $seed || !$pass || !$username || !$email || $prompt == 1){
+if (time &gt; $seed || !$pass || !$username || !$email || $prompt eq 1){
 	$prompt = 'Please fill in all fields';
 
 # then check they've jumped through the hoops:
-}elsif($pass ne $query -&gt; param('toad') || $prompt == 2){
+}elsif($pass ne $query -&gt; param('toad') || $prompt eq 2){
 	$prompt = &quot;Passwords don't match&quot;;
 
-}elsif($email ne $query -&gt; param('celery') || $prompt == 3){
+}elsif($email ne $query -&gt; param('celery') || $prompt eq 3){
 	$prompt = &quot;Email addresses don't match&quot;;
 
 # RFC 5231 &amp; 5232 are not regexp friendly. Only validate host part:
@@ -197,7 +197,7 @@ if (time &gt; $seed || !$pass || !$username || !$email || $prompt == 1){
 }elsif($username =~ /$invalidName/){
 	$prompt = &quot;$validNameDescription&lt;br&gt;Please enter a valid user name&quot;;
 
-}elsif(my $old = &amp;$nameTaken($username) || $prompt == 4){
+}elsif(my $old = &amp;$nameTaken($username) || $prompt eq 4){
 	&amp;$secLog(&quot;Rejected username $username: matches &quot;.linkNode($old)) unless $prompt;
 	$prompt = 'Sorry, that username is already taken. Please try a different one';
 
