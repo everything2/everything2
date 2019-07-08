@@ -4158,6 +4158,9 @@ sub node_by_name
 {
   my ($this, $title, $type) = @_;
 
+  return unless defined($title) and defined($type);
+  return unless $title ne "" and $type ne "";
+
   my $node = $this->{db}->getNode($title, $type);
 
   return unless $node;

@@ -3,8 +3,6 @@ package Everything::Controller::page;
 use Moose;
 extends 'Everything::Controller';
 
-has 'login_link' => (isa => "Str", is => 'ro', default => '/?node=Login');
-
 sub fully_supports
 {
   my ($self, $page) = @_;
@@ -19,6 +17,7 @@ sub fully_supports
 sub page_delegate
 {
   my ($self, $REQUEST, $node) = @_;
+
   return $self->page_class($node)->display($REQUEST, $node);
 }
 

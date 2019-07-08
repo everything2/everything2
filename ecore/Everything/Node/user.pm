@@ -550,5 +550,11 @@ sub can_weblog
   return;
 }
 
+sub karma
+{
+  my ($self) = @_;
+  return $self->NODEDATA->{karma} || 0;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
