@@ -4293,4 +4293,30 @@ sub can_weblog
   return $this->can_action($node, "weblog");
 }
 
+# Originally in [Sign Up]
+sub is_username_taken
+{
+  my ($this, $username) = @_;
+  my $blocked_types = ['user', 'usergroup' , 'nodetype', 'fullpage', 'document', 'superdoc', 'superdocnolinks', 'restricted_superdoc'];
+
+  foreach my $type (@$blocked_types)
+  {
+    my $x = $this->{db}->getNode($username, $type);
+    return $x if $x;
+  }
+
+  return unless $username =~ /( |_)/;
+
+  my $other = $1 eq ' ' ? '_' : ' ';
+  $username =~ s/[ _]/$other/g;
+
+  foreach my $type (@$blocked_types)
+  {
+    my $x = $this->{db}->getNode($username, $type);
+    return $x if $x;
+  }
+
+  return;
+}
+
 1;
