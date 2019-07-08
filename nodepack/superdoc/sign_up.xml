@@ -123,7 +123,7 @@ my $logUser = getNode('Virgil', 'user');
 
 my $secLog = sub{
 	my $msg = shift;
-	$APP -&gt; securityLog($NODE, $logUser, $msg.'; IP: '.join('-', @addrs));
+	$APP-&gt;securityLog($NODE, $logUser, $msg.'; IP: '.join('-', @addrs));
 };
 
 #######
@@ -217,7 +217,7 @@ return &amp;$formPage if $prompt;
 # all tests passed: create account
 
 # construct new user
-my ($pwhash, $salt) = $APP -&gt; saltNewPassword($pass);
+my ($pwhash, $salt) = $APP-&gt;saltNewPassword($pass);
 
 my $user = {
 	nick =&gt; $username
@@ -226,7 +226,7 @@ my $user = {
 };
 
 # get activation link
-my $params = $APP -&gt; getTokenLinkParameters($user, $pass, 'activate', time() + $validForDays * 86400);
+my $params = $APP-&gt;getTokenLinkParameters($user, $pass, 'activate', time() + $validForDays * 86400);
 my $link = urlGen($params, 'no quotes', getNode('Confirm password', 'superdoc'));
 
 # save token &amp; expiry time in case we want to resend link later, and don't let user log on yet
@@ -271,7 +271,7 @@ $mail{doctext} =~ s/&#171;name&#187;/$username/;
 $mail{doctext} =~ s/&#171;link&#187;/$link/g;
 $mail{doctext} =~ s/&#171;servername&#187;/$ENV{SERVER_NAME}/g;
 
-$APP -&gt; node2mail($email, \%mail, 1);
+$APP-&gt;node2mail($email, \%mail, 1);
 
 # tell them we're wonderful
 return &quot;&lt;h3&gt;Welcome to Everything2, $username!
@@ -286,13 +286,17 @@ return &quot;&lt;h3&gt;Welcome to Everything2, $username!
 #%]
 
 [% 
-return &quot;&quot; if $Everything::CONF-&gt;environment ne &quot;production&quot;;
-return qq|&lt;script src=&quot;https://www.google.com/recaptcha/api.js?render=|.$Everything::CONF-&gt;recaptcha_v3_public_key.qq|&quot;&gt;&lt;/script&gt;
+if ($Everything::CONF-&gt;environment eq &quot;production&quot; or $ENV{HTTP_HOST} =~ /^development\.everything2\.com:?\d?/)
+{
+  return qq|&lt;script src=&quot;https://www.google.com/recaptcha/api.js?render=|.$Everything::CONF-&gt;recaptcha_v3_public_key.qq|&quot;&gt;&lt;/script&gt;
 &lt;script&gt;
 grecaptcha.ready(function() {
   grecaptcha.execute('|.$Everything::CONF-&gt;recaptcha_v3_public_key.qq|', {action: 'signup'});
 });
 &lt;/script&gt;|;
+} else {
+  return &quot;&quot;;
+}
 %]</doctext>
   <node_id>2072173</node_id>
   <title>Sign up</title>
