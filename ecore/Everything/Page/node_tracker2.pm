@@ -3,6 +3,8 @@ package Everything::Page::node_tracker2;
 use Moose;
 extends 'Everything::Page';
 
+with 'Everything::Security::NoGuest';
+
 sub display
 {
   my ($self, $REQUEST, $node) = @_;
