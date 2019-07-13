@@ -4319,4 +4319,20 @@ sub is_username_taken
   return;
 }
 
+# Originally in [Sign up]
+sub is_ip_blacklisted
+{
+  my ($this, $ip) = @_;
+  return $this->{db}->sqlSelect('ipblacklist_ipaddress', 'ipblacklist', "ipblacklist_ipaddress = '$ip' AND ipblacklist_timestamp > DATE_SUB(NOW(), INTERVAL ".$this->{conf}->blacklist_interval.")");
+}
+
+# Originally in [Sign up]
+sub is_email_in_locked_account
+{
+  my ($this, $email) = @_;
+  my $user_id = $this->{db}->sqlSelect("user_id", "user", "email = " . $this->{db}->quote($email) . " AND acctlock != ''");
+  return unless $user_id;
+  return $this->{db}->getNodeById($user_id);
+}
+
 1;
