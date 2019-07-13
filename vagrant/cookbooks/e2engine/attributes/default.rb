@@ -33,6 +33,7 @@ default["e2engine"]["google_ads_badnodes"] = ["123456"]
 default["e2engine"]["recaptcha_v3_public_key"] = "6LcnVKsUAAAAAEeEGV28mfD3lt_XVpFUkOzifWGo"
 default["e2engine"]["recaptcha_v3_secret_key"] = ""
 default["e2engine"]["login_location"] = "/node/superdoc/login"
+default["e2engine"]["blacklist_interval"] = "3 MONTH"
 default["e2engine"]["s3"] = {}
 default["e2engine"]["s3"]["homenodeimages"]["bucket"] = ""
 default["e2engine"]["s3"]["homenodeimages"]["secret_access_key"] = ""
