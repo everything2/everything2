@@ -1,7 +1,5 @@
 <node>
   <doctext>[%
-# how long do blacklisted IPs block account creation? (SQL INTERVAL)
-my $ipTrauma = '3 MONTH';
 # for how long will a signup form still work after being served?
 my $formLife = 86400;
 
@@ -119,24 +117,16 @@ if ($username &amp;&amp; $email &amp;&amp; $pass){
 	my @undesirable = ();
 
 	# check for blacklisted IP
-	my $blacklisted;
-	foreach (@addrs){
-		last if $blacklisted = $DB-&gt;sqlSelect(
-			'ipblacklist_ipaddress'
-			, 'ipblacklist'
-			, &quot;ipblacklist_ipaddress = '$_'
-			AND ipblacklist_timestamp &gt; DATE_SUB(NOW(), INTERVAL $ipTrauma)&quot;
-		);
-	}
+	my $blacklisted = undef;
+        foreach my $ip (@addrs) {
+          last if $blacklisted = $APP-&gt;is_ip_blacklisted($ip);
+        }
 
 	push @undesirable, &quot;request from blacklisted IP: $blacklisted&quot; if $blacklisted;
 
 	# check if email address belongs to a locked account
-	my $lockedUser = $DB-&gt;sqlSelect(
-		&quot;user_id&quot;
-		, &quot;user&quot;
-		, &quot;email = &quot; . $DB-&gt;quote($email) . &quot; AND acctlock != ''&quot;
-	);
+        my $lockedUser = undef;
+        $lockedUser = $APP-&gt;is_email_in_locked_account($email);
 
 	push @undesirable, 'same email address as locked user: '.linkNode($lockedUser) if $lockedUser;
 
