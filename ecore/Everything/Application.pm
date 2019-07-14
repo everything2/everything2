@@ -1375,6 +1375,9 @@ sub node2mail {
     	  "sasl_password" => $this->{conf}->smtp_pass,
   	});
 
+
+        $this->devLog("Trying to send mail: to: $addr, from: $from, subject: $subject"); 
+        $this->devLog("Mail body: $body");
 	my $email = Email::Simple->create(
   	"header" => [
      		"To"		=> $addr,
@@ -4333,6 +4336,51 @@ sub is_email_in_locked_account
   my $user_id = $this->{db}->sqlSelect("user_id", "user", "email = " . $this->{db}->quote($email) . " AND acctlock != ''");
   return unless $user_id;
   return $this->{db}->getNodeById($user_id);
+}
+
+# Originally in [Sign up]
+sub create_user
+{
+  my ($this, $username, $pass, $email) = @_;
+
+  my ($pwhash, $salt) = $this->saltNewPassword($pass);
+
+  my $user = { nick => $username, email => $email, salt => $salt };
+
+  my $validForDays = 10;
+
+  my $params = $this->getTokenLinkParameters($user, $pass, 'activate', time() + $validForDays * 86400);
+  my $link = $this->urlGen($params, 'no quotes', $this->{db}->getNode('Confirm password', 'superdoc'));
+
+  # save token & expiry time in case we want to resend link later, and don't let user log on yet
+  $user->{passwd} = $$params{token}.'|'.$$params{expiry};
+
+  # create user
+  $user = $this->{db}->insertNode($username, 'user', -1, $user);
+
+  return if not defined($user);
+
+
+  $this->{db}->getRef($user);
+  $user->{author_user} = $user->{node_id};
+
+  ### Save a few initial settings
+  my $uservars = $this->getVars($user);
+  $$uservars{'showmessages_replylink'} = 1;
+  $$uservars{ipaddy} = join ',', $this->getIp();
+  $$uservars{preference_last_update_time} = 1;
+  $$uservars{coolsafety} = 1;
+  Everything::setVars($user, $uservars);
+
+  $this->{db}->updateNode($user, -1);
+
+  # log ip addresses
+  foreach my $ip ($this->getIp())
+  {
+    $this->{db}->sqlInsert("iplog", {iplog_user => $$user{user_id}, iplog_ipaddy => $_});
+  }
+
+  return $user;
 }
 
 1;

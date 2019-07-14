@@ -12,4 +12,12 @@ method ParseLinks ($lastnode) {
   }
 }
 
+method Obfuscate {
+  return sub {
+    my $text = shift;
+    $text =~ s/([aeiounp])/'&#'.ord($1).';'/eg;
+    return $text;
+  }
+}
+
 1;
