@@ -4383,4 +4383,15 @@ sub create_user
   return $user;
 }
 
+sub set_spam_threshold
+{
+  my ($this, $user, $score) = @_;
+
+  my $uservars = $this->getVars($user);
+  $uservars->{recaptcha_score} = $score;
+  Everything::setVars($user, $uservars);
+  
+  return $this->{db}->updateNode($user, -1);
+}
+
 1;

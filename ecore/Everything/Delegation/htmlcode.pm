@@ -10409,6 +10409,7 @@ sub editor_homenode_tools
     $str.= "\n - ".linkNode($oracle, "The Oracle", {the_oracle_subject => $$NODE{title}}) . "<br />\n";
   }
 
+  $str.= "<br />reCAPTCHAv3 Score: ".$targetVars->{recaptcha_score}."<br />\n" if exists($targetVars->{recaptcha_score});
   return $str;
 }
 
