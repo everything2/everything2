@@ -3,6 +3,11 @@ package Everything::Page::sign_up;
 use Moose;
 extends 'Everything::Page';
 
+use HTTP::Request::Common;
+use LWP::UserAgent;
+use Data::Dumper;
+use JSON;
+
 has 'seclog_user' => (is => 'ro', isa => 'Everything::Node::user', default => sub { my ($self) = shift; return $self->APP->node_by_name('Virgil','user')});
 
 has 'user_addrs' => (is => 'ro', default => sub { my ($self) = shift; return [$self->APP->getIp] }, lazy => 1);
@@ -40,6 +45,34 @@ sub is_infected
   return 1 if $check_user && $self->locked;
 
   return 0;
+}
+
+sub verify_recaptcha_token
+{
+  my ($self, $token) = @_;
+
+  my $ua = LWP::UserAgent->new;
+  my $verify_url = 'https://www.google.com/recaptcha/api/siteverify';
+  my ($remote_ip) = $self->APP->getIp();
+  
+
+  $self->devLog("Doing recaptcha v3 check: url => $verify_url, token => $token, remote_ip => $remote_ip");
+  my $resp = $ua->request(POST $verify_url, [secret => $self->CONF->recaptcha_v3_secret_key, response => $token, remote_ip => $remote_ip]);
+
+  $self->devLog("Received HTTP response: ".Data::Dumper->Dump([$resp]));
+
+  if($resp->is_success)
+  {
+    my $json = JSON::decode_json($resp->decoded_content);
+    if($json->{success})
+    {
+      return $json;
+    }else{
+      return 0;
+    }
+  }else{
+    return 0;
+  }
 }
 
 sub display
@@ -91,6 +124,10 @@ sub display
   my $email = $REQUEST->param($names{'email'});
   my $pass = $REQUEST->param($names{'pass'});
   my $spambot = $REQUEST->param($names{'spambot'});
+
+  my $recaptcha_token = $REQUEST->param('recaptcha_token');
+  my $recaptcha_response = undef;
+  my $enforce_recaptcha = 0;
 
   $self->devLog("Username: $username, Email: $email, Pass: $pass, Spambot: $spambot");
 
@@ -168,6 +205,13 @@ sub display
     my $value = '';
     $value = ' (parameter value "'.$self->APP->encodeHTML($spambot).'")' unless $spambot eq '1';
     $self->security_log("User failed human intelligence test$value");
+  }elsif($use_recaptcha and not defined($recaptcha_token)){
+    $prompt = "Internal form error, did not receive reCAPTCHAv3 token";
+  }elsif($use_recaptcha and not ($recaptcha_response = $self->verify_recaptcha_token($recaptcha_token))){
+    $prompt = "Could not verify reCAPTCHAv3 token";
+  }elsif($use_recaptcha and $enforce_recaptcha and $recaptcha_response->{score} < 1)
+  {
+    $prompt = "Sign up rejected due to spam score of $recaptcha_response->{score}";
   }
 
   $query->delete('toad');
@@ -202,6 +246,8 @@ sub display
   $mail->{doctext} =~ s/«servername»/$ENV{SERVER_NAME}/g;
 
   $self->APP->node2mail($email, $mail, 1);
+
+  $self->APP->set_spam_threshold($new_user, $recaptcha_response->{score});
   return {"success" => 1, "username" => $username, "linkvalid" => $self->valid_for_days};
 }
 

@@ -71,7 +71,7 @@ This link will expire in <% $.linkvalid %> days.</p>
 <p>The email contains some useful information, so please read it carefully, print it out on high-quality paper, and hang it on your wall in a tasteful frame.</p>
 
 % } else {
-<& '/helpers/openform.mi', node => $.node &>
+<& '/helpers/openform.mi', node => $.node, id => "signupform" &>
 <fieldset style="width: 32em; max-width: 100%; margin: 3em auto 0">
 <legend>Sign Up</legend>
 <p><% $.prompt %>:</p>
@@ -88,6 +88,7 @@ I am an evil robot spammer
 </label>
 <br />
 <input type="submit" name="beseech" value="Submit" />
+<input type="hidden" name="recaptcha_token" value="" />
 </p>
 </fieldset>
 </form>
@@ -109,7 +110,9 @@ I am an evil robot spammer
 %   if ($.use_recaptcha) {
 <script src="https://www.google.com/recaptcha/api.js?render=<% $.recaptcha_v3_public_key %>"></script>
 <script>grecaptcha.ready(function() {
-  grecaptcha.execute('<% $.recaptcha_v3_public_key %>', {action: 'signup'});
+  grecaptcha.execute('<% $.recaptcha_v3_public_key %>', {action: 'signup'}).then(function(token){
+    document.getElementById("signupform").recaptcha_token.value = token;
+  });
 });
 </script>
 %   }
