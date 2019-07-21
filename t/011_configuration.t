@@ -9,14 +9,14 @@ use_ok("Everything::Configuration");
 
 # Use the default, and get the config file from the dev environment
 ok(my $CONF = Everything::Configuration->new());
-ok($CONF->site_url eq "http://everything2.com");
+ok($CONF->site_url eq "https://everything2.com");
 
 ok($CONF = Everything::Configuration->new("/etc/everything/everything.conf.json"));
-ok($CONF->site_url eq "http://everything2.com");
+ok($CONF->site_url eq "https://everything2.com");
 
 # Test for this construct
 ok($CONF = Everything::Configuration->new("configfile" => "/etc/everything/everything.conf.json"));
-ok($CONF->site_url eq "http://everything2.com");
+ok($CONF->site_url eq "https://everything2.com");
 
 # Read from non-default config
 ok($CONF = Everything::Configuration->new("testdata/config_1.json"));

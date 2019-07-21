@@ -5,6 +5,8 @@ package Mason::Plugin::Everything::Filters;
 
 use Mason::PluginRole;
 require Everything;
+require Date::Format;
+require Date::Parse;
 
 method ParseLinks ($lastnode) {
   return sub {
@@ -17,6 +19,18 @@ method Obfuscate {
     my $text = shift;
     $text =~ s/([aeiounp])/'&#'.ord($1).';'/eg;
     return $text;
+  }
+}
+
+method PrettyDate($template) {
+  return sub {
+    my $time = shift;
+
+    unless($time =~ /^\d+$/)
+    {
+      $time = Date::Parse::str2time($time);
+    }
+    return Date::Format::time2str($template || "%C" ,$time);
   }
 }
 

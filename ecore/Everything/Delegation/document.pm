@@ -42,23 +42,6 @@ BEGIN {
 use POSIX qw(ceil);
 
 
-sub document_25
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
- 
-  my $OUTPUT = htmlcode("ennchoice");
-  $OUTPUT .= qq|<br>(see also [Writeups by Type])<br><br>|;
-  $OUTPUT .= qq|<p ALIGN=LEFT><p></p></ul>|;
-  $OUTPUT .= qq|<table cellpadding=0 cellspacing=0 width=100%>|.htmlcode("newnodes","25").qq|</table>|;
-  return $OUTPUT; 
-}
-
 sub a_year_ago_today
 {
   my $DB = shift;
