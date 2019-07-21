@@ -3309,25 +3309,6 @@ sub e2_ticket_center
   return $str.$output;
 }
 
-sub e2n
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-
-  my $str = htmlcode("ennchoice");
-  $str .= qq|<br><p align=center>These are the last <b>200</b> nodes that have been added to "[Everything]".<br><p>(see also [Writeups by Type])</p><br><br><p ALIGN=LEFT><p></p></ul><table cellpadding=0 cellspacing=0 width=100%>|;
-  $str .= htmlcode("newnodes",200);
-  $str .= qq|</table>|;
-
-  return $str;
-}
-
 sub e2_staff
 {
   my $DB = shift;
@@ -3609,47 +3590,6 @@ A: Yes! Everything has a development environment that is powered by <a href="htt
 
   $str .= q|<p><hr /><a name="improvements">Q: <strong>How do we go about finding tasks here? If we have personal projects for the improvement of E2, what is the appropriate way to get started? Should I verify that what I'm thinking of is useful, or should I make it work and then submit source patches?</strong></a><br />|;
   $str .= q|A: Generally, feel free to post a message to the group or <a href="https://github.com/everything2/everything2/issues">open an issue</a> on the page. </p>|;
-
-  return $str;
-}
-
-sub ekn
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = q|<p>|.htmlcode("ennchoice").q|</p>|;
-  $str .= q|<p>(see also [Writeups by Type])</p>|;
-  $str .= q|<p align=center>The last <strong>1024</strong> writeups. That's between about four and eight weeks' worth.<br>This is most useful if you've been away for a while.</p>|;
-  $str .= q|<table cellpadding=0 cellspacing=0 width=100%>|;
-  $str .= htmlcode("newnodes",1024);
-  $str .= q|</table>|;
-
-  return $str;
-}
-
-sub enn
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = q|<p>|.htmlcode("ennchoice").q|</p>|;
-  $str .= q|<p>(see also [Writeups by Type])</p>|;
-  $str .= q|<p align=center>These are the last <b>300</b> nodes that have been added to "[Everything]".<br><br>|;
-  
-  $str .= q|<table cellpadding=0 cellspacing=0 width=100%>|;
-  $str .= htmlcode("newnodes",300);
-  $str .= q|</table>|;
 
   return $str;
 }
@@ -4244,25 +4184,6 @@ sub everything_i_ching
   $str .= q|<br><p align=right>|;
   $str .= q|<i>The [Everything I Ching] is brought to you by [The Gilded Frame] and [nate]</i>|;
   $str .= q|<p align=center><font size=5>|.linkNode($NODE, 're-divine').q|</font>|;
-
-  return $str;
-}
-
-sub everything_new_nodes
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = htmlcode("ennchoice");
-  $str .= q|<br><br> <p>(see also [Writeups by Type])</p><h3><p align=center><strong>Live a life you love.<br><br>Use a god you trust.<br><br>Don't take it all too seriously[Love and Rockets\|.]</strong></h3>|;
-  $str .= q|<br><br><br><p ALIGN=LEFT><p></p></ul><table cellpadding=0 cellspacing=0 width=100%>|;
-  $str .= htmlcode("newnodes",100);
-  $str .= q|</table>|;
 
   return $str;
 }
