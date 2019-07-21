@@ -5,6 +5,6 @@
 <p align="right"><form method="post">
 <input type="hidden" name="type" value="superdoc">Show: <select name="node">
 % foreach my $choice (sort {$a <=> $b} keys %{$.choices}) {
-<option value="<% $.choices->{$choice} %>"<% (($.choices->{$_} eq $.node->title)?(" SELECTED "):("")) %>><% $choice %></option>
+<option value="<% $.choices->{$choice} %>"<% (($.choices->{$choice} eq $.node->title)?(" SELECTED "):("")) %>><% $choice %></option>
 % }
 </select><input type="submit" value="go"></form></p>

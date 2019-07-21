@@ -1,10 +1,10 @@
-package Everything::Page::25;
+package Everything::Page::everything_new_nodes;
 
 use Moose;
 extends 'Everything::Page';
 
 has 'template' => (is => 'ro', default => 'numbered_nodelist');
-has 'records' => (is => 'ro', isa => 'Int', default => 25);
+has 'records' => (is => 'ro', isa => 'Int', default => 100);
 
 sub display
 {
