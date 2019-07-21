@@ -4404,52 +4404,6 @@ sub borgcheck
   return $str.'<br /><br />';
 }
 
-sub newnodes
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my ($limit) = @_;
-  $limit ||= 50;
-
-  my $qry = 'SELECT writeup_id FROM writeup';
-
-  my $isEd = $APP->isEditor($USER);
-
-  $qry.= ' WHERE notnew=0 ' unless $isEd;
-  $qry.= " ORDER BY publishtime DESC LIMIT $limit";
-
-  my $ed = undef;
-  $ed = 'ed,' if $isEd;
-  my $funk = sub{
-    my $N = shift; # $N is a full node by now
-    my $str='<td>';
-
-    if($$N{notnew}){
-      $str .= '(<font color="red">H!</font>)';
-      $str .= '(<a href='.urlGen({'node_id'=>$$NODE{node_id}, 'op'=>'unhidewriteup', 'hidewriteup'=>$$N{node_id}}).'>un-h!</a>)';
-    } else {
-      $str .= '(<a href='.urlGen({'node_id'=>$$NODE{node_id}, 'op'=>'hidewriteup', 'hidewriteup'=>$$N{node_id}}).'>h?</a>)';
-    }
-
-    $str .= '(<font color="red">...</font>)' if $DB->sqlSelect('notnew', 'newwriteup', "node_id=$$N{node_id}") != $$N{notnew};
-    $str.='</td><td>';
-    $str.='&nbsp;</td>';
-    return $str;
-  };
-
-  my $nids = $DB->{dbh} -> selectcol_arrayref($qry);
-
-  return htmlcode('show content', $nids ,
-    qq'<tr class="&oddrow">$ed "<td>", parenttitle, type, "</td><td>", listdate, "</td><td>", author, "</td>"', 'ed' => $funk);
-
-}
-
 sub uploaduserimage
 {
   my $DB = shift;
@@ -9178,27 +9132,6 @@ sub formxml_usergroup
   }
 
   $str.="</usergroup>\n";
-  return $str;
-}
-
-sub ennchoice
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $nodes = {"25" => "25", "100" => "Everything New Nodes", "200" => "E2N", "300" => "ENN", "1024" => "EKN"};
-  my $str = '<p align="right"><form method=\"post\">';
-  $str.='<input type="hidden" name="type" value="superdoc">Show: <select name="node">';
-  foreach(sort {$a <=> $b} keys %$nodes)
-  {
-    $str.="<option value=\"$$nodes{$_}\"".(($$nodes{$_} eq $$NODE{title})?(" SELECTED "):("")).">$_</option>";
-  }
-  $str.='</select><input type="submit" value="go"></form></p>';
   return $str;
 }
 
