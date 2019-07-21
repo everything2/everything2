@@ -13,7 +13,9 @@ sub display
   {
     $self->devLog("Page permission allowed: ".(ref $permission_result));
     my $controller_output = $self->page_class($node)->display($REQUEST, $node);
-    my $html = $self->layout('/pages/'.$self->title_to_page($node->title), %$controller_output, REQUEST => $REQUEST, node => $node);
+
+    my $layout = $self->page_class($node)->template || $self->title_to_page($node->title);
+    my $html = $self->layout("/pages/$layout", %$controller_output, REQUEST => $REQUEST, node => $node);
     return [$self->HTTP_OK,$html];
   } else {
     $self->devLog("Page permission not allowed");

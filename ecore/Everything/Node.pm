@@ -202,7 +202,7 @@ sub uri_safe_title
 {
   my ($self) = @_;
 
-  return uri_escape_utf8($self->title);
+  return uri_escape($self->title);
 }
 
 sub canonical_url

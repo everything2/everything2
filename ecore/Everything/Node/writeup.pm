@@ -125,6 +125,12 @@ sub writeuptype
   return $self->APP->node_by_id($self->NODEDATA->{wrtype_writeuptype})->title;
 }
 
+sub publishtime
+{
+  my ($self) = @_;
+  return $self->NODEDATA->{publishtime};
+}
+
 sub canonical_url
 {
   my ($self) = @_;
