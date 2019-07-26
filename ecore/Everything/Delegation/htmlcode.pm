@@ -10149,25 +10149,6 @@ sub updateNodelet
   return insertNodelet($nodelet);
 }
 
-sub googleSearchForm
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  return '<img src="http://www.google.com/coop/images/google_custom_search_smnar.gif" alt="Google Custom Search" style="margin:0 0 -5px 2px" /><br />
-    <form action="http://www.google.com/cse" id="searchbox_017923811620760923756:pspyfx78im4">
-    <input type="hidden" name="cx" value="017923811620760923756:pspyfx78im4" />
-    <input type="text" name="q" size="16" />
-    <input type="submit" name="sa" value="Search" />
-    </form>
-    <br />';
-}
-
 sub hasAchieved
 {
   my $DB = shift;
