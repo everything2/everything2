@@ -13,5 +13,7 @@
 <& '/helpers/linknodetitle.mi', node => 'Community Directory', type => 'document' &>
 % }}
 <p>You might also like to see the <% $content | Trim %>.</p>
+% unless($REQUEST->user->is_guest) {
 <p>Complaints? Suggestions? Tell <& '/helpers/linknode.mi', node => $.maintainer &> about it.
 <& '/helpers/messagebox.mi', to => $.maintainer, node => $.node &>
+% }
