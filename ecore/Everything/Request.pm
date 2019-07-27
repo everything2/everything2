@@ -19,11 +19,15 @@ sub POSTDATA
   my $self = shift;
   my $encoding = $ENV{CONTENT_TYPE};
 
-  if($encoding eq "application/json")
+  $self->devLog("POST data encoding: $encoding");
+
+  if($encoding =~ m|^application/json|)
   {
+    $self->devLog("Detected 'application/json'");
     return $self->param("POSTDATA");
-  }elsif($encoding eq "application/x-www-form-urlencoded")
+  }elsif($encoding =~ m|^application/x-www-form-urlencoded|)
   {
+    $self->devLog("Detected x-www-form-urlencoded");
     return $self->param("data");
   }
 }

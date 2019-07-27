@@ -1785,4 +1785,37 @@ function linkparse(text_to_parse)
   return text_to_parse.replace(regularlinks, function(matching_text,n1){return linknodetitle(n1)});
 }
 
+// Messagebox widget as #messagebox
+$("#messagebox").submit(function(event){
+  event.preventDefault();
 
+  postdata = JSON.stringify({for_id: $("#messagebox input[name=for_id]").val(), 
+    message: $("#messagebox textarea[name=message]").val()
+  });
+  set_disabled = function(state){
+    ["textarea[name=message]","input[name=submitbutton]"].forEach(function(item){
+      $("#messagebox "+item).attr("disabled",state);
+    });
+  };
+
+  $.ajax({
+    url: '/api/messages/create',
+    beforeSend: function(xhr,settings) {
+      set_disabled(true);
+    },
+    type: 'POST',
+    dataType: 'json',
+    contentType: 'application/json; charset=utf-8',
+    data: postdata,
+    success: function(result) {
+      set_disabled(false);
+      $("#messagebox textarea[name=message]").val("");
+      $("#messageboxresult").html("Message sent");
+    },
+    error: function(xhr, resp, text) {
+      set_disabled(false);
+      $("#messageboxresult").html("Message sending failed");
+      console.log(xhr, resp, text);
+    },
+  });
+});
