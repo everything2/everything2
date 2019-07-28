@@ -20,8 +20,13 @@ No junk
 <input type="hidden" name="ajaxTrigger" value="1" class="ajax newwriteups:updateNodelet:New+Writeups">
 </form>
 <ul class="infolist">
-% foreach my $writeup (@{$.newwriteups}) {
 <li class="contentinfo">
+% foreach my $writeup (@{$.newwriteups}) {
+% if($writeup->is_null) {
+(broken node)
+% } elsif($writeup->parent->is_null) {
+(broken parent)
+% } else {
 <& '/helpers/linknode.mi', node => $writeup->parent, class => "title", anchor => $writeup->author->uri_safe_title &>
 <span class="type">(<% $m->scomp('/helpers/linknode.mi', node => $writeup , title => $writeup->writeuptype) | Trim %>)</span>
 <cite>by <& '/helpers/linknode.mi', node => $writeup->author, class=> "author" &></cite>
@@ -39,9 +44,10 @@ No junk
 %       $extra = "H: ";
 %     }
 (<% $extra %><% $m->scomp('/helpers/linknode.mi', node => $.node, params => {"op" => $opcode, "hidewriteup" => $writeup->node_id}, "title" => $hidden, "class" => "ajax newwriteups:updateNodelet:New+Writeups", "innertitle" => $innertitle) | Trim %>)
+%   }
+</span>
+</span>
 % }
-</span>
-</span>
 </li>
 % }
 </ul>

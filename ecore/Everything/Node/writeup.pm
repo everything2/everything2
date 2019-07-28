@@ -115,7 +115,7 @@ sub parent
 {
   my ($self) = @_;
 
-  return $self->APP->node_by_id($self->NODEDATA->{parent_e2node});
+  return $self->APP->node_by_id($self->NODEDATA->{parent_e2node}) || Everything::Node::null->new;
 }
 
 sub writeuptype

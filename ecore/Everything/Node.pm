@@ -4,6 +4,7 @@ use Moose;
 use CGI;
 use URI::Escape;
 use Everything::Link;
+use Everything::Node::null;
 
 with 'Everything::Globals';
 
@@ -45,7 +46,7 @@ sub author_user
 sub _build_author
 {
   my $self = shift;
-  return $self->APP->node_by_id($self->author_user);
+  return $self->APP->node_by_id($self->author_user) || Everything::Node::null->new;
 }
 
 around 'BUILDARGS' => sub {
@@ -239,6 +240,12 @@ sub can_be_weblogged
 {
   my ($self) = @_;
   return $self->APP->can_weblog($self->NODEDATA);
+}
+
+sub is_null
+{
+  my ($self) = @_;
+  return 0;
 }
 
 __PACKAGE__->meta->make_immutable;
