@@ -4394,4 +4394,23 @@ sub set_spam_threshold
   return $this->{db}->updateNode($user, -1);
 }
 
+sub previous_years_nodes
+{
+  my ($this, $yearsago, $startat) = @_;
+
+  my $limit = 'type_nodetype='.$this->{db}->getId($this->{db}->getType('writeup'))." and createtime > (CURDATE() - INTERVAL $yearsago YEAR) and createtime < ((CURDATE() - INTERVAL $yearsago YEAR) + INTERVAL 1 DAY)";
+
+  my $cnt = $this->{db}->sqlSelect('count(*)', 'node', $limit);
+  my $csr = $this->{db}->sqlSelectMany('node_id', 'node', "$limit order by createtime  limit $startat,50");
+
+  my $nodes = [];
+
+  while(my $row = $csr->fetchrow_arrayref())
+  {
+    push @$nodes, $this->node_by_id($row->[0]);
+  }
+
+  return {"count" => $cnt, "nodes" => $nodes};
+}
+
 1;
