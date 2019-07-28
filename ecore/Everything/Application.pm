@@ -4407,6 +4407,9 @@ sub previous_years_nodes
 
   while(my $row = $csr->fetchrow_arrayref())
   {
+    my $n = $this->node_by_id($row->[0]);
+    next unless $n;
+
     push @$nodes, $this->node_by_id($row->[0]);
   }
 
