@@ -311,8 +311,8 @@ Return parameters the same as action/delete
 Sends a message. At this time, will accept a usergroup in "for", but will not deliver it.
 
 Accepts a JSON post with the following parameters
-* **for** - The name of 
-* **for_id** - More precise and preferred version of for_id. Is ignored if this and **for** are sent at the same time.
+* **for** - The name of the user to have the message delivered to
+* **for_id** - More precise and preferred version of the user to be sent. Is ignored if this and **for** are sent at the same time.
 * **message** - The message text to send
 
 ## Message Ignores
