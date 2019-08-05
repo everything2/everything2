@@ -10,6 +10,11 @@ require 'json'
 require 'net/http'
 require 'uri'
 
+Chef::Resource::Git.send(:include, E2)
+Chef::Resource::Bash.send(:include, E2)
+Chef::Resource::File.send(:include, E2)
+
+
 everythingdir = "/var/everything"
 
 # Minor copy and paste from e2cron
@@ -84,17 +89,11 @@ end
 
 Chef::Log.info("Primary runlist: #{node.primary_runlist}")
 
-if node.primary_runlist.include?('role[e2bastion]') or node.primary_runlist.include?('recipe[e2cron]')
-  git everythingdir do
-    repository node["e2engine"]["gitrepo"]
-    enable_submodules true
-    action :sync
-  end
-else
-  git everythingdir do
-    repository node["e2engine"]["gitrepo"]
-    enable_submodules true
-    action :sync
+git everythingdir do
+  repository node["e2engine"]["gitrepo"]
+  enable_submodules true
+  action :sync
+  if is_webhead?
     notifies :restart, "service[apache2]", :delayed
   end
 end
@@ -111,6 +110,14 @@ directory '/var/mason' do
   group "www-data"
   mode 0755
   action "create"
+end
+
+bash "Clear Mason2 cache" do
+  code "rm -rf /var/mason/obj"
+
+  if is_webhead?
+    notifies :restart, "service[apache2]", :delayed
+  end
 end
 
 nosearch_words = ['a','an','and','are','at','definition','everything','for','if','in','is','it','my','new','node','not','of','on','that','the','thing','this','to','we','what','why','with','writeup','you','your']
@@ -143,6 +150,9 @@ file '/etc/everything/everything.conf.json' do
   group "www-data"
   content JSON.pretty_generate(everything_conf_variables)
   mode "0755"
+  if is_webhead?
+    notifies :restart, "service[apache2]", :delayed 
+  end
 end
 
 if node['e2engine']['environment'].eql? 'production'
