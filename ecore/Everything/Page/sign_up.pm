@@ -127,7 +127,7 @@ sub display
 
   my $recaptcha_token = $REQUEST->param('recaptcha_token');
   my $recaptcha_response = undef;
-  my $enforce_recaptcha = 0;
+  my $enforce_recaptcha = 1;
 
   $self->devLog("Username: $username, Email: $email, Pass: $pass, Spambot: $spambot");
 
@@ -208,10 +208,12 @@ sub display
   }elsif($use_recaptcha and not defined($recaptcha_token)){
     $prompt = "Internal form error, did not receive reCAPTCHAv3 token";
   }elsif($use_recaptcha and not ($recaptcha_response = $self->verify_recaptcha_token($recaptcha_token))){
-    $prompt = "Could not verify reCAPTCHAv3 token";
-  }elsif($use_recaptcha and $enforce_recaptcha and $recaptcha_response->{score} < 1)
+    $prompt = "Could not verify reCAPTCHAv3 token - Please try again";
+    $self->security_log("Recaptcha token verification failed");
+  }elsif($use_recaptcha and $enforce_recaptcha and $recaptcha_response->{score} < .5)
   {
     $prompt = "Sign up rejected due to spam score of $recaptcha_response->{score}";
+    $self->security_log("Spam signup rejected due to recaptcha: $recaptcha_response->{score}, username: $username");
   }
 
   $query->delete('toad');
