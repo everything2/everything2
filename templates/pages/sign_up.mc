@@ -30,6 +30,7 @@
         "name" => "Username",
         "maxlength" => 20,
         "fieldname" => "username",
+        "autocomplete" => "username",
         "hash" => 1,
         "default" => $self->username,
       },
@@ -38,6 +39,7 @@
         "maxlength" => $self->password_maxlength,
         "fieldname" => "pass",
         "type" => "password",
+        "autocomplete" => "new-password",
         "hash" => 1,
         "default" => "",
       },
@@ -46,12 +48,14 @@
         "maxlength" => $self->password_maxlength,
         "fieldname" => "toad",
         "type" => "password",
+        "autocomplete" => "new-password",
         "default" => "",
       },
       {
         "name" => "Email address",
         "maxlength" => $self->email_maxlength,
         "fieldname" => "email",
+        "autocomplete" => "email",
         "hash" => 1,
         "default" => $self->email,
       },
@@ -59,6 +63,7 @@
         "name" => "Confirm email",
         "maxlength" => $self->email_maxlength,
         "fieldname" => "celery",
+        "autocomplete" => "email",
         "default" => $self->confirm_email,
       }
   ]});  
@@ -78,16 +83,12 @@ This link will expire in <% $.linkvalid %> days.</p>
 <p style="text-align: right">
 %   foreach my $element (@{$.form_elements}) {
   <label>
-  <% $element->{name} | Obfuscate %>:<input type="<% $element->{type} || "text" %>" name="<% $element->{hash} ? $.hash_field_name($element->{fieldname}) : $element->{fieldname} %>" size="30" maxlength="<% $element->{maxlength} %>" value="<% $element->{default} %>">
+  <% $element->{name} | Obfuscate %>:<input type="<% $element->{type} || "text" %>" name="<% $element->{hash} ? $.hash_field_name($element->{fieldname}) : $element->{fieldname} %>" size="30" maxlength="<% $element->{maxlength} %>" value="<% $element->{default} %>" autocomplete="<% $element->{autocomplete} %>">
   </label>
   <br />
 %   }
-<label>
-<input type="checkbox" name="<% $.hash_field_name('spambot') %>" value="1" checked="checked">
-I am an evil robot spammer
-</label>
 <br />
-<input type="submit" name="beseech" value="Submit" />
+<input type="submit" name="beseech" value="Create new account" />
 <input type="hidden" name="recaptcha_token" value="" />
 </p>
 </fieldset>
