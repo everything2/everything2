@@ -114,7 +114,7 @@ sub display
     return $x;
   };
 
-  foreach ('username', 'email', 'pass', 'spambot')
+  foreach ('username', 'email', 'pass')
   {
     $names{$_} = &$hashName;
     $self->devLog("Looking for field for $_: $names{$_} (has ".$REQUEST->param($names{$_}).")");
@@ -123,13 +123,12 @@ sub display
   my $username = $REQUEST->param($names{'username'});
   my $email = $REQUEST->param($names{'email'});
   my $pass = $REQUEST->param($names{'pass'});
-  my $spambot = $REQUEST->param($names{'spambot'});
 
   my $recaptcha_token = $REQUEST->param('recaptcha_token');
   my $recaptcha_response = undef;
   my $enforce_recaptcha = 1;
 
-  $self->devLog("Username: $username, Email: $email, Pass: $pass, Spambot: $spambot");
+  $self->devLog("Username: $username, Email: $email, Pass: $pass");
 
   my @addrs = $self->APP->getIp();
 
@@ -200,11 +199,6 @@ sub display
     $self->security_log("Rejected username $username: matches ".$self->APP->linkNode($old)) unless $prompt;
     $prompt = 'Sorry, that username is already taken. Please try a different one';
 
-  }elsif($spambot){
-    $prompt = 'We regret that only human beings or entities claiming human status are permitted to sign up for an account. Please indicate your humanity';
-    my $value = '';
-    $value = ' (parameter value "'.$self->APP->encodeHTML($spambot).'")' unless $spambot eq '1';
-    $self->security_log("User failed human intelligence test$value");
   }elsif($use_recaptcha and not defined($recaptcha_token)){
     $prompt = "Internal form error, did not receive reCAPTCHAv3 token";
   }elsif($use_recaptcha and not ($recaptcha_response = $self->verify_recaptcha_token($recaptcha_token))){
