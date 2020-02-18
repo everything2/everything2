@@ -3,6 +3,14 @@
   <title>egg commands</title>
   <type_nodetype>153</type_nodetype>
   <vars>
+    <key>Poo</key>
+    <value>finds ~ in an alternate universe, full of bees</value>
+  </vars>
+  <vars>
+    <key>alleviate </key>
+    <value>relieves ~ of their burden </value>
+  </vars>
+  <vars>
     <key>anvil</key>
     <value>drops an anvil on</value>
   </vars>
@@ -37,6 +45,10 @@
   <vars>
     <key>champagne</key>
     <value>Pours a glass of champagne for ~, but drops the glass</value>
+  </vars>
+  <vars>
+    <key>cocoa</key>
+    <value>calls upon the powers of the Dark Forces! Ominous robed figures coalesce from the shadows and kneel at the feet of ~, offering up a piping hot mug of cocoa! Mmm, tasty!</value>
   </vars>
   <vars>
     <key>coffee</key>
@@ -137,6 +149,10 @@
   <vars>
     <key>nudge</key>
     <value>nudges</value>
+  </vars>
+  <vars>
+    <key>nuke</key>
+    <value>~ has become death, the destroyer of worlds</value>
   </vars>
   <vars>
     <key>omelet</key>

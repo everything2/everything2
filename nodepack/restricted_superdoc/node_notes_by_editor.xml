@@ -23,7 +23,7 @@ if ($targetUsername) {
 
 }
 
-my $str=$query-&gt;start_form();
+my $str=$query-&gt;start_form('get');
 $str.=$targetStr;
 $str.=$query-&gt;submit('gotime','Go!');
 $str.=$query-&gt;end_form();

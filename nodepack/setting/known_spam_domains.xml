@@ -67,6 +67,10 @@
     <value>1</value>
   </vars>
   <vars>
+    <key>pioj.online</key>
+    <value>1</value>
+  </vars>
+  <vars>
     <key>piolk.online</key>
     <value>1</value>
   </vars>
