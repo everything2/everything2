@@ -164,7 +164,9 @@ sub title_to_page
   my ($self, $title) = @_;
 
   $title = lc($title);
-  $title =~ s/[\s\/\:\?]/_/g;
+  $title =~ s/[\s\/\:\?\']/_/g;
+  $title =~ s/_+/_/g;
+  $title =~ s/_$//g;
   return $title;
 }
 
@@ -177,7 +179,10 @@ sub fully_supports
 sub page_exists
 {
   my ($self, $page) = @_;
-  return exists($self->PAGE_TABLE->{$self->title_to_page($page)});
+  
+  my $page_to_find = $self->title_to_page($page);
+  $self->devLog("Looking for page: $page_to_find");
+  return exists($self->PAGE_TABLE->{$page_to_find});
 }
 
 1;
