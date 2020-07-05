@@ -71,6 +71,14 @@
     <value>belligerently defenestrates</value>
   </vars>
   <vars>
+    <key>disinfect</key>
+    <value>sprays ~ with hand sanitizer</value>
+  </vars>
+  <vars>
+    <key>distance</key>
+    <value>moves well back from ~</value>
+  </vars>
+  <vars>
     <key>egg</key>
     <value>eggs</value>
   </vars>
@@ -208,7 +216,11 @@
   </vars>
   <vars>
     <key>special</key>
-    <value>invests in the ~ brand</value>
+    <value>crafts a bespoke meme for ~</value>
+  </vars>
+  <vars>
+    <key>splatter</key>
+    <value>~ is suddenly covered in a mess of sticky green goo</value>
   </vars>
   <vars>
     <key>sushi</key>
