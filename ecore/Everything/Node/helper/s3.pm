@@ -5,7 +5,7 @@ use Moose::Role;
 sub cdn_link
 {
   my ($self, $decoration) = @_;
-  my $link = "https://s3.amazonaws.com/jscss.everything2.com/";
+  my $link = "https://s3-us-west-2.amazonaws.com/jscssw.everything2.com/";
   $link .= join(".",$self->node_id,$self->contentversion,"min");
   $link .= ".$decoration" if $decoration;
 
