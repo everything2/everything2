@@ -256,7 +256,7 @@ sub linkjavascript
   }
 
   $filename .= ".js";
-  return "https://s3.amazonaws.com/jscss.everything2.com/$filename";
+  return "https://s3-us-west-2.amazonaws.com/jscssw.everything2.com/$filename";
 }
 
 # On htmlpages, this shows the inherited value for a nodetype

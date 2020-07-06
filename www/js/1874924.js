@@ -470,7 +470,7 @@ e2 = $.extend( function(x){return e2.shortFunctions[typeof x].apply(this, argume
 			active: {},
 
 			'HTML toolbar': {
-				library: 'https://s3.amazonaws.com/jscss.everything2.com/2069738.js',
+				library: 'https://s3-us-west-2.amazonaws.com/jscssw.everything2.com/2069738.js',
 				test: 'edToolbar',
 	
 				stop: function(id){
@@ -488,7 +488,7 @@ e2 = $.extend( function(x){return e2.shortFunctions[typeof x].apply(this, argume
 			},
 
 			'WYSIWYG editor': {
-				library: 'https://s3.amazonaws.com/jscss.everything2.com/tiny_mce/tiny_mce.js?a=1',
+				library: 'https://s3-us-west-2.amazonaws.com/jscssw.everything2.com/tiny_mce/tiny_mce.js?a=1',
 				test: 'tinyMCE',
 	
 				stop: function(id){ // don't use mceToggleEditor, it loses changes afterwards
