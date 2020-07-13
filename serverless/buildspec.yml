@@ -1,0 +1,9 @@
+version: 0.2
+phases:
+  build:
+    commands:
+      - make
+artifacts:
+  files:
+    - 'install/**/*'
+  name: e2serverless.zip
