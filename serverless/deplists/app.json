@@ -936,6 +936,10 @@
     "skiptest": 1
   },
   {
+    "file": "https://cpan.metacpan.org/authors/id/B/BR/BRICAS/URI-Template-0.24.tar.gz",
+    "module": "URI::Template"
+  },
+  {
     "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Config-INI-0.025.tar.gz",
     "module": "Config::INI"
   },
