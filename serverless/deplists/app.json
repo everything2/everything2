@@ -927,6 +927,15 @@
     "module": "Net::Amazon::Signature::V4"
   },
   {
+    "file": "https://cpan.metacpan.org/authors/id/L/LE/LEONT/PerlIO-utf8_strict-0.007.tar.gz",
+    "module": "PerlIO::utf8_strict"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Mixin-Linewise-0.108.tar.gz",
+    "module": "Mixin::Linewise",
+    "skiptest": 1
+  },
+  {
     "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Config-INI-0.025.tar.gz",
     "module": "Config::INI"
   },
