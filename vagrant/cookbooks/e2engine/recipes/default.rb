@@ -145,6 +145,23 @@ everything_conf_variables["permanent_cache"] = {
 everything_conf_variables["nosearch_words"] = nosearch_words_hash
 
 
+['libraries','dlcache','buildcache'].each do |dir|
+  directory "/var/#{dir}" do
+    owner "www-data"
+    group "www-data"
+    mode 0755
+    action "create"
+  end
+end
+
+bash "Install non-system dependencies" do
+  code "perl /var/everything/tools/createdeps.pl --depfile=/var/everything/serverless/deplists/app.json --installdir=/var/libraries --skipverify=Alien::Libxml --builddir=/var/buildcache --dldir=/var/dlcache --skipverify=Alien::Libxml2"
+
+  if is_webhead?
+    notifies :restart, "service[apache2]", :delayed
+  end
+end
+
 file '/etc/everything/everything.conf.json' do
   owner "www-data"
   group "www-data"
