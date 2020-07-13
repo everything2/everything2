@@ -1,0 +1,925 @@
+[
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Test-Simple-1.302175.tar.gz",
+    "module": "Test::Simple",
+    "skiptest": 1
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/H/HA/HAARG/Role-Tiny-2.001004.tar.gz",
+    "module": "Role::Tiny"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/T/TM/TMTM/Class-Data-Inheritable-0.08.tar.gz",
+    "module": "Class::Data::Inheritable"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Try-Tiny-0.30.tar.gz",
+    "module": "Try::Tiny"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Test-Fatal-0.014.tar.gz",
+    "module": "Test::Fatal"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/T/TO/TOKUHIROM/Test-Requires-0.11.tar.gz",
+    "module": "Test::Requires"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DO/DOY/Eval-Closure-0.14.tar.gz",
+    "module": "Eval::Closure"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Devel-StackTrace-2.04.tar.gz",
+    "module": "Devel::StackTrace"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Exception-Class-1.44.tar.gz",
+    "module": "Exception::Class"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/H/HA/HAARG/MRO-Compat-0.13.tar.gz",
+    "module": "MRO::Compat"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/C/CH/CHOCOLATE/Scope-Guard-0.21.tar.gz",
+    "module": "Scope::Guard"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/C/CO/CORION/Test-Without-Module-0.20.tar.gz",
+    "module": "Test::Without::Module"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Importer-0.025.tar.gz",
+    "module": "Importer"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Sub-Info-0.002.tar.gz",
+    "module": "Sub::Info"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Term-Table-0.015.tar.gz",
+    "module": "Term::Table"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/S/SI/SIMONW/Module-Pluggable-5.2.tar.gz",
+    "module": "Module::Pluggable"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Test2-Suite-0.000130.tar.gz",
+    "module": "Test2::V0"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/IPC-Run3-0.048.tar.gz",
+    "module": "IPC::Run3"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Test2-Plugin-NoWarnings-0.08.tar.gz",
+    "module": "Test2::Plugin::NoWarnings"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/A/AD/ADAMK/Test-NoWarnings-1.04.tar.gz",
+    "module": "Test::NoWarnings",
+    "skiptest": 1
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/L/LE/LEONT/Module-Build-0.4231.tar.gz",
+    "module": "Module::Build"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/Z/ZE/ZEFRAM/Module-Runtime-0.016.tar.gz",
+    "module": "Module::Runtime"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/H/HA/HAARG/Sub-Quote-2.006006.tar.gz",
+    "module": "Sub::Quote"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/H/HA/HAARG/Test-Needs-0.002006.tar.gz",
+    "module": "Test::Needs"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/P/PE/PETDANCE/Test2-Tools-Explain-0.02.tar.gz",
+    "module": "Test2::Tools::Explain"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/A/AT/ATOOMIC/XString-0.002.tar.gz",
+    "module": "XString"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Specio-0.46.tar.gz",
+    "module": "Specio::Declare"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Params-ValidationCompiler-0.30.tar.gz",
+    "module": "Params::ValidationCompiler"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/P/PH/PHRED/Archive-Zip-1.68.tar.gz",
+    "module": "Archive::Zip"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DA/DAGOLDEN/Sub-Uplevel-0.2800.tar.gz",
+    "module": "Sub::Uplevel"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/B/BI/BIGJ/Test-Warn-0.36.tar.gz",
+    "module": "Test::Warn"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DA/DAGOLDEN/inc-latest-0.500.tar.gz",
+    "module": "inc::latest"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/P/PE/PETDANCE/HTML-Tagset-3.20.tar.gz",
+    "module": "HTML::Tagset"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Test-Deep-1.130.tar.gz",
+    "module": "Test::Deep"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/G/GA/GAAS/HTML-Parser-3.72.tar.gz",
+    "module": "HTML::Entities"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/L/LE/LEEJO/CGI-4.49.tar.gz",
+    "module": "CGI"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/A/AT/ATOOMIC/TimeDate-2.33.tar.gz",
+    "module": "Date::Parse"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/B/BB/BBB/File-NFSLock-1.29.tar.gz",
+    "module": "File::NFSLock"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/T/TY/TYEMQ/Algorithm-Diff-1.1903.tar.gz",
+    "module": "Algorithm::Diff"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/G/GA/GAAS/IO-String-1.08.tar.gz",
+    "module": "IO::String"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/J/JM/JMM/Heap-0.80.tar.gz",
+    "module": "Heap::Fibonacci"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/Cache-2.11.tar.gz",
+    "module": "Cache"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/L/LE/LEEJO/String-CRC32-1.8.tar.gz",
+    "module": "String::CRC32"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DO/DORMANDO/Cache-Memcached-1.30.tar.gz",
+    "module": "Cache::Memcached"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/T/TI/TIMB/DBI-1.643.tar.gz",
+    "module": "DBI"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Carp-Clan-6.08.tar.gz",
+    "module": "Carp::Clan"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/S/ST/STBEY/Bit-Vector-7.4.tar.gz",
+    "module": "Bit::Vector"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/S/ST/STBEY/Date-Calc-6.4.tar.gz",
+    "module": "Date::Calc"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/L/LE/LEONT/CPAN-Meta-Check-0.014.tar.gz",
+    "module": "CPAN::Meta::Check"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/File-ShareDir-Install-0.13.tar.gz",
+    "module": "File::ShareDir::Install"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Module-Implementation-0.09.tar.gz",
+    "module": "Module::Implementation"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/V/VP/VPIT/Variable-Magic-0.62.tar.gz",
+    "module": "Variable::Magic"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/F/FR/FREW/Sub-Exporter-Progressive-0.001013.tar.gz",
+    "module": "Sub::Exporter::Progressive"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/B-Hooks-EndOfScope-0.24.tar.gz",
+    "module": "B::Hooks::EndOfScope"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DO/DOY/Dist-CheckConflicts-0.11.tar.gz",
+    "module": "Dist::CheckConflicts"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Package-Stash-XS-0.29.tar.gz",
+    "module": "Package::Stash::XS"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Package-Stash-0.38.tar.gz",
+    "module": "Package::Stash"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RI/RIBASUSHI/namespace-clean-0.27.tar.gz",
+    "module": "namespace::clean"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RG/RGARCIA/Sub-Identify-0.14.tar.gz",
+    "module": "Sub::Identify"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/namespace-autoclean-0.29.tar.gz",
+    "module": "namespace::autoclean"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/Class-Inspector-1.36.tar.gz",
+    "module": "Class::Inspector"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RE/REHSACK/File-ShareDir-1.116.tar.gz",
+    "module": "File::ShareDir"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/L/LE/LEONT/Test-Harness-3.42.tar.gz",
+    "module": "Test::Harness"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/J/JE/JESSE/Test-1.26.tar.gz",
+    "module": "Test"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/J/JK/JKEENAN/IPC-System-Simple-1.30.tar.gz",
+    "module": "IPC::System::Simple"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DA/DAGOLDEN/Class-Tiny-1.006.tar.gz",
+    "module": "Class::Tiny"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DA/DAGOLDEN/Path-Tiny-0.114.tar.gz",
+    "module": "Path::Tiny"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/M/MA/MARKF/Test-utf8-1.02.tar.gz",
+    "module": "Test::utf8"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/B/BD/BDFOY/Test-File-1.443.tar.gz",
+    "module": "Test::File"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Test-Warnings-0.030.tar.gz",
+    "module": "Test::Warnings"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DM/DMUEY/File-Copy-Recursive-0.45.tar.gz",
+    "module": "File::Copy::Recursive"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/K/KE/KENTNL/Test-File-ShareDir-1.001002.tar.gz",
+    "module": "Test::File::ShareDir::Dist",
+    "skiptest": 1
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/DateTime-Locale-1.25.tar.gz",
+    "module": "DateTime::Locale"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/S/SH/SHAY/Class-Singleton-1.5.tar.gz",
+    "module": "Class::Singleton"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/DateTime-TimeZone-2.39.tar.gz",
+    "module": "DateTime::TimeZone"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/DateTime-1.52.tar.gz",
+    "module": "DateTime"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/DateTime-Format-Strptime-1.77.tar.gz",
+    "module": "DateTime::Format::Strptime"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/A/AN/ANDYA/HTML-Tiny-1.05.tar.gz",
+    "module": "HTML::Tiny"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/J/JM/JMM/Heap-0.80.tar.gz",
+    "module": "Heap"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/I/IS/ISHIGAKI/JSON-4.02.tar.gz",
+    "module": "JSON"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/B/BH/BHOLZMAN/XML-Generator-1.04.tar.gz",
+    "module": "XML::Generator"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/P/PE/PERIGRIN/XML-NamespaceSupport-1.12.tar.gz",
+    "module": "XML::NamespaceSupport"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/G/GR/GRANTM/XML-SAX-Base-1.09.tar.gz",
+    "module": "XML::SAX::Exception"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/G/GR/GRANTM/XML-SAX-1.02.tar.gz",
+    "module": "XML::SAX"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/T/TO/TODDR/XML-Parser-2.46.tar.gz",
+    "module": "XML::Parser"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/B/BJ/BJOERN/XML-SAX-Expat-0.51.tar.gz",
+    "module": "XML::SAX::Expat"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/G/GR/GRANTM/XML-Simple-2.25.tar.gz",
+    "module": "XML::Simple"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/N/NE/NEILB/Text-Diff-1.45.tar.gz",
+    "module": "Text::Diff"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/I/IN/INGY/Spiffy-0.46.tar.gz",
+    "module": "Spiffy"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/I/IN/INGY/Test-Base-0.89.tar.gz",
+    "module": "Test::Base"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/T/TI/TINITA/Test-YAML-1.07.tar.gz",
+    "module": "Test::YAML"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/T/TI/TINITA/YAML-1.30.tar.gz",
+    "module": "YAML"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/P/PH/PHRED/Apache-DBI-1.12.tar.gz",
+    "module": "Apache::DBI"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/A/AT/ATOOMIC/Clone-0.45.tar.gz",
+    "module": "Clone"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Test-Deep-1.130.tar.gz",
+    "module": "Test::Deep"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RO/ROBIN/PadWalker-2.3.tar.gz",
+    "module": "PadWalker"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RC/RCLAMP/Devel-Caller-2.06.tar.gz",
+    "module": "Devel::Caller"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DA/DAGOLDEN/Capture-Tiny-0.48.tar.gz",
+    "module": "Capture::Tiny"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RU/RURBAN/Mock-Config-0.03.tar.gz",
+    "module": "Mock::Config"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/M/MA/MATTN/Devel-CheckLib-1.14.tar.gz",
+    "module": "Devel::CheckLib"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DV/DVEEDEN/DBD-mysql-4.050.tar.gz",
+    "module": "DBD::mysql",
+    "extra": "--mysql_config=$installdir/bin/mysql_config"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/A/AD/ADAMK/Params-Util-1.07.tar.gz",
+    "module": "Params::Util"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Sub-Install-0.928.tar.gz",
+    "module": "Sub::Install"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Data-OptList-0.110.tar.gz",
+    "module": "Data::OptList"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Class-Load-0.25.tar.gz",
+    "module": "Class::Load"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Class-Load-XS-0.10.tar.gz",
+    "module": "Class::Load::XS"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Sub-Name-0.26.tar.gz",
+    "module": "Sub::Name"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/I/IL/ILMARI/Devel-OverloadInfo-0.005.tar.gz",
+    "module": "Devel::OverloadInfo"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Package-DeprecationManager-0.17.tar.gz",
+    "module": "Package::DeprecationManager",
+    "skiptest": 1
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/H/HA/HAARG/Devel-GlobalDestruction-0.14.tar.gz",
+    "module": "Devel::GlobalDestruction"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Module-Runtime-Conflicts-0.003.tar.gz",
+    "module": "Module::Runtime::Conflicts"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Sub-Exporter-0.987.tar.gz",
+    "module": "Sub::Exporter"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Moose-2.2012.tar.gz",
+    "module": "Moose"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DO/DOY/Data-Stream-Bulk-0.11.tar.gz",
+    "module": "Data::Stream::Bulk"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTTP-Date-6.05.tar.gz",
+    "module": "HTTP::Date"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/C/CK/CKRAS/DateTime-Format-HTTP-0.42.tar.gz",
+    "module": "DateTime::Format::HTTP"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/G/GA/GAAS/Digest-HMAC-1.03.tar.gz",
+    "module": "Digest::HMAC"
+  },
+  {
+    "removecore": 1,
+    "file": "https://cpan.metacpan.org/authors/id/D/DA/DANKOGAI/Encode-3.06.tar.gz",
+    "module": "Encode"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/G/GA/GAAS/Encode-Locale-1.05.tar.gz",
+    "module": "Encode::Locale"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/G/GA/GAAS/File-Listing-6.04.tar.gz",
+    "module": "File::Listing"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/URI-1.76.tar.gz",
+    "module": "URI"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/LWP-MediaTypes-6.04.tar.gz",
+    "module": "LWP::MediaTypes"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/L/LE/LEONT/ExtUtils-Config-0.008.tar.gz",
+    "module": "ExtUtils::Config"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/L/LE/LEONT/ExtUtils-Helpers-0.026.tar.gz",
+    "module": "ExtUtils::Helpers"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/L/LE/LEONT/ExtUtils-InstallPaths-0.012.tar.gz",
+    "module": "ExtUtils::InstallPaths"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/L/LE/LEONT/Module-Build-Tiny-0.039.tar.gz",
+    "module": "Module::Build::Tiny"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTTP-Message-6.24.tar.gz",
+    "module": "HTTP::Message"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTTP-Daemon-6.12.tar.gz",
+    "module": "HTTP::Daemon"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTTP-Cookies-6.08.tar.gz",
+    "module": "HTTP::Cookies"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/libwww-perl-6.45.tar.gz",
+    "module": "LWP::UserAgent"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DM/DMUEY/Digest-MD5-File-0.08.tar.gz",
+    "module": "Digest::MD5::File"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/T/TO/TOBYINK/Exporter-Tiny-1.002002.tar.gz",
+    "module": "Exporter::Tiny"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RC/RCLAMP/Text-Glob-0.11.tar.gz",
+    "module": "Text::Glob"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RC/RCLAMP/Number-Compare-0.03.tar.gz",
+    "module": "Number::Compare"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/A/AL/ALEXMV/LWP-UserAgent-Determined-1.07.tar.gz",
+    "module": "LWP::UserAgent::Determined"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RC/RCLAMP/File-Find-Rule-0.34.tar.gz",
+    "module": "File::Find::Rule"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/MooseX-StrictConstructor-0.21.tar.gz",
+    "module": "MooseX::StrictConstructor"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/M/MA/MARKOV/MIME-Types-2.17.tar.gz",
+    "module": "MIME::Types"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/MooseX-Role-Parameterized-1.11.tar.gz",
+    "module": "MooseX::Role::Parameterized"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/Params-Validate-1.29.tar.gz",
+    "module": "Params::Validate"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RE/REHSACK/List-MoreUtils-XS-0.428.tar.gz",
+    "module": "List::MoreUtils::XS"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RE/REHSACK/List-MoreUtils-0.428.tar.gz",
+    "module": "List::MoreUtils"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/F/FG/FGLOCK/Set-Infinite-0.65.tar.gz",
+    "module": "Set::Infinite"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/F/FG/FGLOCK/DateTime-Set-0.3900.tar.gz",
+    "module": "DateTime::Set"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/F/FG/FGLOCK/DateTime-Event-Recurrence-0.19.tar.gz",
+    "module": "DateTime::Event::Recurrence"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/F/FG/FGLOCK/DateTime-Event-ICal-0.13.tar.gz",
+    "module": "DateTime::Event::ICal"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/DateTime-Format-ICal-0.09.tar.gz",
+    "module": "DateTime::Format::ICal"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/DateTime-Format-Builder-0.82.tar.gz",
+    "module": "DateTime::Format::Builder"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/T/TH/THINC/DateTime-Format-Flexible-0.32.tar.gz",
+    "module": "DateTime::Format::Flexible"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/M/MA/MATTLAW/Module-Util-1.09.tar.gz",
+    "module": "Module::Util"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DD/DDICK/Test-MockTime-0.17.tar.gz",
+    "module": "Test::MockTime"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/I/IN/INGY/boolean-0.46.tar.gz",
+    "module": "boolean"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/S/SC/SCHUBIGER/DateTime-Format-Natural-1.09.tar.gz",
+    "module": "DateTime::Format::Natural"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DC/DCANTRELL/Test-Differences-0.67.tar.gz",
+    "module": "Test::Differences"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Test-Exception-0.43.tar.gz",
+    "module": "Test::Exception"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/O/OV/OVID/Test-Most-0.37.tar.gz",
+    "module": "Test::Most"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RO/ROKR/DateTimeX-Easy-0.089.tar.gz",
+    "module": "DateTimeX::Easy"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Sub-Exporter-ForMethods-0.100052.tar.gz",
+    "module": "Sub::Exporter::ForMethods"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/MooseX-Types-0.50.tar.gz",
+    "module": "MooseX::Types"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/MooseX-Types-DateTime-0.13.tar.gz",
+    "module": "MooseX::Types::DateTime"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/N/NE/NEILB/Exporter-Lite-0.08.tar.gz",
+    "module": "Exporter::Lite"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/N/NE/NEILB/Time-Duration-Parse-0.15.tar.gz",
+    "module": "Time::Duration::Parse"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/MooseX-Types-DateTime-MoreCoercions-0.15.tar.gz",
+    "module": "MooseX::Types::DateTime::MoreCoercions"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/K/KW/KWILLIAMS/Path-Class-0.37.tar.gz",
+    "module": "Path::Class"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/X/XS/XSAWYERX/Ref-Util-XS-0.117.tar.gz",
+    "module": "Ref::Util::XS"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/A/AR/ARC/Ref-Util-0.204.tar.gz",
+    "module": "Ref::Util"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/A/AB/ABIGAIL/Regexp-Common-2017060201.tar.gz",
+    "module": "Regexp::Common"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/O/OV/OVID/Sub-Override-0.09.tar.gz",
+    "module": "Sub::Override"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/M/MI/MIYAGAWA/Term-Encoding-0.03.tar.gz",
+    "module": "Term::Encoding"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/B/BD/BDFOY/IO-Interactive-1.022.tar.gz",
+    "module": "IO::Interactive"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/S/SC/SCHWIGON/class-methodmaker/Class-MethodMaker-2.24.tar.gz",
+    "module": "Class::MethodMaker"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/M/MA/MANWAR/Term-ProgressBar-2.22.tar.gz",
+    "module": "Term::ProgressBar"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/C/CH/CHROMATIC/Test-MockObject-1.20200122.tar.gz",
+    "module": "Test::MockObject"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/L/LB/LBROCARD/Term-ProgressBar-Quiet-0.31.tar.gz",
+    "module": "Term::ProgressBar::Quiet"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/EV/EVDB/Term-ProgressBar-Simple-0.03.tar.gz",
+    "module": "Term::ProgressBar::Simple"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/YAML-Tiny-1.73.tar.gz",
+    "module": "YAML::Tiny"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/File-Remove-1.58.tar.gz",
+    "module": "File::Remove"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RS/RSCHUPP/Module-ScanDeps-1.27.tar.gz",
+    "module": "Module::ScanDeps"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Module-Install-1.19.tar.gz",
+    "module": "inc::Module::Install",
+    "skiptest": 1
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/File-Which-1.23.tar.gz",
+    "module": "File::Which"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DA/DAGOLDEN/File-chdir-0.1010.tar.gz",
+    "module": "File::chdir"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/Alien-Build-2.26.tar.gz",
+    "module": "Alien::Base::Wrapper"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/Alien-Libxml2-0.16.tar.gz",
+    "module": "Alien::Libxml2"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/XML-LibXML-2.0205.tar.gz",
+    "module": "XML::LibXML"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/K/KI/KITANO/Test-LoadAllModules-0.022.tar.gz",
+    "module": "Test::LoadAllModules"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/L/LL/LLAP/Net-Amazon-S3-0.89.tar.gz",
+    "module": "Net::Amazon::S3"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Email-Simple-2.216.tar.gz",
+    "module": "Email::Simple"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Email-Abstract-3.008.tar.gz",
+    "module": "Email::Abstract"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/H/HA/HAARG/Moo-2.004000.tar.gz",
+    "module": "Moo"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/M/MA/MATEU/MooX-Types-MooseLike-0.29.tar.gz",
+    "module": "MooX::Types::MooseLike"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Throwable-0.200013.tar.gz",
+    "module": "Throwable"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Email-Sender-1.300034.tar.gz",
+    "module": "Email::Sender"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/A/AB/ABH/Mozilla-CA-20200520.tar.gz",
+    "module": "Mozilla::CA"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/C/CH/CHRISN/Net-SSLeay-1.88.tar.gz",
+    "module": "Net::SSLeay"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/S/SU/SULLR/IO-Socket-SSL-2.068.tar.gz",
+    "module": "IO::Socket::SSL"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Net-SMTP-SSL-1.04.tar.gz",
+    "module": "Net::SMTP::SSL"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/G/GB/GBARR/Authen-SASL-2.16.tar.gz",
+    "module": "Authen::SASL"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/B/BO/BOOK/DateTime-Format-Mail-0.403.tar.gz",
+    "module": "DateTime::Format::Mail"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/G/GW/GWILLIAMS/DateTime-Format-W3CDTF-0.07.tar.gz",
+    "module": "DateTime::Format::W3CDTF"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/XML-RSS-1.61.tar.gz",
+    "module": "XML::RSS"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RU/RURBAN/B-Keywords-1.21.tar.gz",
+    "module": "B::Keywords"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RS/RSAVAGE/Config-Tiny-2.24.tgz",
+    "module": "Config::Tiny"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/S/SA/SANKO/Readonly-2.05.tar.gz",
+    "module": "Readonly"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/M/MI/MITHALDU/PPI-1.270.tar.gz",
+    "module": "PPI"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/W/WY/WYANT/PPIx-QuoteLike-0.011.tar.gz",
+    "module": "PPIx::QuoteLike"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/W/WY/WYANT/PPIx-Regexp-0.072.tar.gz",
+    "module": "PPIx::Regexp"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/EL/ELLIOTJS/PPIx-Utilities-1.001000.tar.gz",
+    "module": "PPIx::Utilities"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/S/SH/SHANCOCK/Perl-Tidy-20200619.tar.gz",
+    "module": "Perl::Tidy"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DC/DCONWAY/Lingua-EN-Inflect-1.904.tar.gz",
+    "module": "Lingua::EN::Inflect"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DO/DOLMEN/Pod-Spell-1.20.tar.gz",
+    "module": "Pod::Spell"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/S/SR/SREZIC/String-Format-1.18.tar.gz",
+    "module": "String::Format"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Task-Weaken-1.06.tar.gz",
+    "module": "Task::Weaken"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/P/PE/PETDANCE/Perl-Critic-1.138.tar.gz",
+    "module": "Perl::Critic"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/I/IL/ILMARI/Class-Unload-0.11.tar.gz",
+    "module": "Class::Unload"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/M/ML/MLEHMANN/Guard-1.023.tar.gz",
+    "module": "Guard"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/P/PR/PREACTION/Log-Any-1.708.tar.gz",
+    "module": "Log::Any"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/X/XA/XAOC/ExtUtils-Depends-0.8000.tar.gz",
+    "module": "ExtUtils::Depends"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/B-Hooks-OP-Check-0.22.tar.gz",
+    "module": "B::Hooks::OP::Check"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Devel-Declare-0.006022.tar.gz",
+    "module": "Devel::Declare"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/R/RH/RHESA/Method-Signatures-Simple-1.07.tar.gz",
+    "module": "Method::Signatures::Simple"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/S/SA/SARTAK/MooseX-HasDefaults-0.03.tar.gz",
+    "module": "MooseX::HasDefaults::RO"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/J/JS/JSWARTZ/Mason-2.24.tar.gz",
+    "module": "Mason"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/L/LZ/LZE/Apache-DB-0.18.tar.gz",
+    "module": "Apache::DB"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/JSON-MaybeXS-1.004002.tar.gz",
+    "module": "JSON::MaybeXS"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/T/TI/TIMB/Devel-NYTProf-6.06.tar.gz",
+    "module": "Devel::NYTProf"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/L/LD/LDS/Devel-Cycle-1.12.tar.gz",
+    "module": "Devel::Cycle"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/MooseX-ClassAttribute-0.29.tar.gz",
+    "module": "MooseX::ClassAttribute"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/C/CH/CHANSEN/URL-Encode-0.03.tar.gz",
+    "module": "URL::Encode"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/J/JL/JLMARTIN/Paws-0.42.tar.gz",
+    "module": "Paws"
+  }
+]

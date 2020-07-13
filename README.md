@@ -7,6 +7,7 @@
  * [ecore](https://github.com/everything2/everything2/tree/master/ecore) - Core Everything libraries
  * [ecoretool](https://github.com/everything2/everything2/tree/master/ecoretool) - Tool for importing and exporting database nodes
  * [nodepack](https://github.com/everything2/everything2/tree/master/nodepack) - Infrastructure nodes, exported to XML
+ * [serverless](https://github.com/everything2/everything2/tree/master/nodepack) - Baseline needed to run E2 utilities on AWS lambda
  * [tools](https://github.com/everything2/everything2/tree/master/tools) - Some of the tools that keep the site glued together
  * [vagrant](https://github.com/everything2/everything2/tree/master/vagrant) - Vagrant virtual machine setup, see below
  * [www](https://github.com/everything2/everything2/tree/master/www) - Basic web properties, icons and index.pl
