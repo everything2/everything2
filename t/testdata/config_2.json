@@ -16,7 +16,6 @@
   "smtp_host": "localhost",
   "smtp_use_ssl": 1,
   "smtp_port": 465,
-  "smtp_user": "",
   "smtp_pass": "",
   "mail_from": "accounthelp@everything2.com",
   "environment": "development",

@@ -16,7 +16,6 @@
   "smtp_host": "anothersmtphost",
   "smtp_use_ssl": 0,
   "smtp_port": 654321,
-  "smtp_user": "anothersmtpuser",
   "smtp_pass": "anothersmtppass",
   "mail_from": "anothermailfrom",
   "environment": "anotherenvironment",
