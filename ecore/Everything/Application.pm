@@ -9,11 +9,8 @@ use Everything::S3;
 use DateTime;
 use DateTime::Format::Strptime;
 
-# For node2mail
-use Email::Sender::Simple qw(try_to_sendmail);
-use Email::Simple;
-use Email::Simple::Creator;
-use Email::Sender::Transport::SMTP;
+use Paws;
+use LWP::UserAgent;
 
 # For convertDateToEpoch
 use Date::Calc;
@@ -1367,28 +1364,28 @@ sub node2mail {
 	my $body = $$node{doctext};
 
 	my $from = $this->{conf}->mail_from;
-	my $transport = Email::Sender::Transport::SMTP->new(
-  	{ "host" => $this->{conf}->smtp_host,
-    	  "port" => $this->{conf}->smtp_port,
-    	  "ssl" => $this->{conf}->smtp_use_ssl,
-    	  "sasl_username" => $this->{conf}->smtp_user,
-    	  "sasl_password" => $this->{conf}->smtp_pass,
-  	});
+	
+	my $email = Paws->service('SES', region => $this->current_region);
 
-
-        $this->devLog("Trying to send mail: to: $addr, from: $from, subject: $subject"); 
-        $this->devLog("Mail body: $body");
-	my $email = Email::Simple->create(
-  	"header" => [
-     		"To"		=> $addr,
-     		"From"		=> $from,
-     		"Subject"	=> $subject,
-		"Content-Type"	=> 'text/html; charset="utf-8"',
-  	],
-  	"body" => $body
+	my $response = $email->SendEmail(
+		'Destination' => {
+			'ToAddresses' => \@addresses,
+		},
+  		'Message' => {
+    			'Body' => {
+      				'Html' => {
+        				'Charset' => 'UTF-8',
+        				'Data' => $body,
+      				},
+    			},
+    			'Subject' => {
+      				'Charset' => 'UTF-8',
+      				'Data' => $subject
+    			}
+  		},
+  		'Source' => $from
 	);
-
-	return try_to_sendmail($email, { "transport" => $transport });
+	return $response->MessageId;
 }
 
 sub stripNodelet {
@@ -4414,6 +4411,23 @@ sub previous_years_nodes
   }
 
   return {"count" => $cnt, "nodes" => $nodes};
+}
+
+sub current_region
+{
+  my ($this) = @_;
+
+  my $ua = LWP::UserAgent->new(timeout => 2);
+  my $resp = $ua->get('http://169.254.169.254/latest/meta-data/placement/availability-zone');
+  my $region;
+  if($resp->is_success)
+  {
+    my $az = $resp->decoded_content;
+    $az =~ s/[a-z]$//g;
+    $region = $az;
+  }
+
+  return $region;
 }
 
 1;
