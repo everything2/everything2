@@ -2,8 +2,8 @@ version: 0.2
 phases:
   build:
     commands:
-      - make
+      - cd serverless && make
 artifacts:
   files:
-    - 'install/**/*'
+    - 'serverless/install/**/*'
   name: e2serverless.zip
