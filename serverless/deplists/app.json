@@ -919,6 +919,14 @@
     "module": "URL::Encode"
   },
   {
+    "file": "https://cpan.metacpan.org/authors/id/L/LE/LEONT/File-Slurper-0.012.tar.gz",
+    "module": "File::Slurper"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DB/DBOOK/Net-Amazon-Signature-V4-0.20.tar.gz",
+    "module": "Net::Amazon::Signature::V4"
+  },
+  {
     "file": "https://cpan.metacpan.org/authors/id/J/JL/JLMARTIN/Paws-0.42.tar.gz",
     "module": "Paws"
   }
