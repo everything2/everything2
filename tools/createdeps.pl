@@ -7,14 +7,19 @@ use Getopt::Long;
 my $depfile;
 my $installdir;
 my $skipverify = [];
+my $builddir;
+my $dldir;
+
 GetOptions(
   "depfile=s" => \$depfile,
   "installdir=s" => \$installdir,
+  "builddir=s" => \$builddir,
+  "dldir=s" => \$dldir,
   "skipverify=s" => $skipverify
 );
 
-my $dldir = "3rd";
-my $builddir = "build";
+$dldir = `pwd`."3rd" if not defined $dldir;
+$builddir = `pwd`."build" if not defined $builddir;
 my $relocatable_install;
 
 if(not defined $installdir)
@@ -107,7 +112,7 @@ foreach my $dep (@$dependencies)
   {
     print "Build directory already created, skipping\n";
   }else{
-    `cd $builddir && tar xzvf ../$dldir/$destfile` 
+    `cd $builddir && tar xzvf $dldir/$destfile` 
   }
 
   my $command = "";
