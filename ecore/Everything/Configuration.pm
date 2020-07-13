@@ -33,7 +33,6 @@ has 'homenode_image_host' => (isa => 'Str', is => 'ro', default => 'localhost');
 has 'smtp_host' => (isa => 'Str', is => 'ro', default => 'localhost');
 has 'smtp_use_ssl' => (isa => 'Bool', is => 'ro', default => 1);
 has 'smtp_port' => (isa => 'Int', is => 'ro', default => 465);
-has 'smtp_pass' => (isa => 'Str', is => 'ro', default => '');
 has 'mail_from' => (isa => 'Str', is => 'ro', default => 'root@localhost');
 
 # Database backup job notification email
