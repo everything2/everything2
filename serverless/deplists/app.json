@@ -927,6 +927,10 @@
     "module": "Net::Amazon::Signature::V4"
   },
   {
+    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Config-INI-0.025.tar.gz",
+    "module": "Config::INI"
+  },
+  {
     "file": "https://cpan.metacpan.org/authors/id/J/JL/JLMARTIN/Paws-0.42.tar.gz",
     "module": "Paws"
   }
