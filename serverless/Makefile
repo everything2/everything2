@@ -43,7 +43,7 @@ magick.build: 3rd/ImageMagick-$(MAGICKVER).tar.gz $(PERL)
 	touch $@
 
 deps.build: $(PERL) mysql.build
-	PATH=$(INSTALL)/bin/:$(PATH) $(PERL) ./createdeps.pl --depfile=./deplists/app.json 2>&1 | tee deps.log && touch $@
+	PATH=$(INSTALL)/bin/:$(PATH) $(PERL) ../tools/createdeps.pl --depfile=./deplists/app.json 2>&1 | tee deps.log && touch $@
 
 3rd/perl-$(PERLVER).tar.bz2:
 	mkdir -p 3rd && cd 3rd && wget https://www.cpan.org/src/5.0/perl-$(PERLVER).tar.bz2
