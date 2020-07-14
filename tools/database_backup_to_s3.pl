@@ -36,21 +36,12 @@ print commonLogLine("Completed mysqldump, starting upload");
 
 if($uploader->upload_file($filename, "$tmpdir/$filename"))
 {
-	if($Everything::CONF->notification_email ne "")
-	{
-		my $email = getNode("backup ready mail", "mail");
-		if($email)
-		{
-			$email->{doctext} =~ s/\<filename\>/$filename/g;
-			$email->{title} = "Backup ready on S3: $filename";
-			$APP->node2mail($Everything::CONF->notification_email,$email,1);
-			print commonLogLine("Sent email to: ".$Everything::CONF->notification_email);
-		}else{
-			print commonLogLine("Could not find node 'backup ready mail' of type 'mail'");
-		}
-	}else{
-		print commonLogLine("Could not send email, notification_email not set");
-	}
+  my $topic = "database-backup-complete";
+  if($Everything::CONF->environment eq "production")
+  {
+    $APP->sns_notify($topic, "Backup ready on S3: $filename", "Backup is ready on S3: $filename");
+    print commonLogLine("Sent SNS topic to $topic");
+  }
 }else{
 	print commonLogLine("File upload failed!");
 }
