@@ -63,7 +63,6 @@ ok($CONF->canonical_web_server eq "localhost");
 ok($CONF->homenode_image_host eq "hnimagew.everything2.com");
 ok($CONF->mail_from eq 'accounthelp@everything2.com');
 ok($CONF->environment eq "development");
-ok($CONF->notification_email eq "");
 ok($CONF->nodecache_size == 200);
 ok(cmp_deeply($CONF->s3, { 
     "homenodeimages" => { "bucket" => "", "secret_access_key" => "", "access_key_id" => "" },
@@ -73,7 +72,6 @@ ok(cmp_deeply($CONF->s3, {
     "jscss" => { "bucket" => "", "secret_access_key" => "","access_key_id" => "" } }));
 ok($CONF->clean_search_words_aggressively == 1);
 ok($CONF->environment eq "development");
-ok($CONF->notification_email eq "");
 ok($CONF->nodecache_size == 200);
 ok($CONF->logdirectory eq "/var/log/everything");
 ok(ref $CONF->permanent_cache eq "HASH"); 
@@ -101,7 +99,6 @@ ok($CONF->canonical_web_server eq "anotherwebserver");
 ok($CONF->homenode_image_host eq "anotherimagehost");
 ok($CONF->mail_from eq "anothermailfrom");
 ok($CONF->environment eq "anotherenvironment");
-ok($CONF->notification_email eq "anothernotificationemail");
 ok($CONF->nodecache_size == 123);
 ok(cmp_deeply($CONF->s3,{
   "homenodeimages" => {"bucket" => "s3.homenodeimages.bucket", "secret_access_key" => "s3.homenodeimages.secret_access_key", "access_key_id" => "s3.homenodeimages.access_key_id"},

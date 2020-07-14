@@ -15,7 +15,6 @@
   "homenode_image_host": "hnimagew.everything2.com",
   "mail_from": "accounthelp@everything2.com",
   "environment": "development",
-  "notification_email": "",
   "nodecache_size": 200,
   "s3": {
     "homenodeimages": {
