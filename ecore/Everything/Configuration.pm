@@ -32,8 +32,6 @@ has 'homenode_image_host' => (isa => 'Str', is => 'ro', default => 'localhost');
 # SMTP options
 has 'mail_from' => (isa => 'Str', is => 'ro', default => 'root@localhost');
 
-# Database backup job notification email
-has 'notification_email' => (isa => 'Maybe[Str]', is => 'ro');
 has 'nodecache_size' => (isa => 'Int', is => 'ro', default => 200);
 
 has 'environment' => (isa => 'Str', is => 'ro', default => 'development');

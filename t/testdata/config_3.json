@@ -15,7 +15,6 @@
   "homenode_image_host": "anotherimagehost",
   "mail_from": "anothermailfrom",
   "environment": "anotherenvironment",
-  "notification_email": "anothernotificationemail",
   "nodecache_size": 123,
   "s3": {
     "homenodeimages": {

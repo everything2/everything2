@@ -10,7 +10,6 @@ default["e2engine"]["canonical_web_server"] = "development.everything2.com"
 default["e2engine"]["homenode_image_host"] = "hnimagew.everything2.com"
 default["e2engine"]["mail_from"] = "accounthelp@everything2.com"
 default["e2engine"]["environment"] = "development"
-default["e2engine"]["notification_email"] = ""
 default["e2engine"]["nodecache_size"] = 200
 default["e2engine"]["static_nodetypes"] = 1
 default["e2engine"]["clean_search_words_aggressively"] = 1
