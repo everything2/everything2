@@ -4430,4 +4430,23 @@ sub current_region
   return $region;
 }
 
+sub sns_notify
+{
+  my ($this, $topicname, $subject, $message) = @_;
+
+  my $sns = Paws->service('SNS', 'region' => $this->current_region);
+
+  my $matching_topic_arn;
+  foreach my $topic(@{$sns->ListTopics->Topics})
+  {
+    if($topic->TopicArn =~ /$topicname$/)
+    {
+      $matching_topic_arn = $topic->TopicArn;
+      last;
+    }
+  }
+  return unless defined $matching_topic_arn;
+  return $sns->Publish(Message => $message, Subject => $subject, TopicArn => $matching_topic_arn);
+}
+
 1;
