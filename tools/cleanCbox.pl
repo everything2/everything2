@@ -1,4 +1,7 @@
-#!/usr/bin/perl -w -I /var/everything/ecore
+#!/usr/bin/perl -w
+
+use lib qw(/var/everything/ecore);
+use lib qw(/var/libraries/lib/perl5);
 
 use Everything;
 initEverything 'everything';
