@@ -11,7 +11,6 @@ default["e2engine"]["homenode_image_host"] = "hnimagew.everything2.com"
 default["e2engine"]["smtp_host"] = "localhost"
 default["e2engine"]["smtp_use_ssl"] = 1
 default["e2engine"]["smtp_port"] = 465
-default["e2engine"]["smtp_pass"] = ""
 default["e2engine"]["mail_from"] = "accounthelp@everything2.com"
 default["e2engine"]["environment"] = "development"
 default["e2engine"]["notification_email"] = ""
