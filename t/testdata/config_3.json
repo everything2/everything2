@@ -13,7 +13,6 @@
   "cookiepass": "anothercookiepass",
   "canonical_web_server": "anotherwebserver",
   "homenode_image_host": "anotherimagehost",
-  "smtp_host": "anothersmtphost",
   "smtp_use_ssl": 0,
   "smtp_port": 654321,
   "mail_from": "anothermailfrom",

@@ -13,7 +13,6 @@
   "cookiepass": "userpass",
   "canonical_web_server": "localhost",
   "homenode_image_host": "hnimagew.everything2.com",
-  "smtp_host": "localhost",
   "smtp_use_ssl": 1,
   "smtp_port": 465,
   "mail_from": "accounthelp@everything2.com",
