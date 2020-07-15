@@ -173,6 +173,21 @@ file '/etc/everything/everything.conf.json' do
 end
 
 if node['e2engine']['environment'].eql? 'production'
+  ['database_password_secret'].each do |secret|
+    Chef::Log.info("Seeding secret: #{secret}")
+    bash "Seeding secret: #{secret}" do
+      code "/var/everything/tools/fetch_secret.rb --secret=#{secret}"
+
+      if is_webhead?
+        notifies :restart, "service[apache2]", :delayed
+      end
+    end 
+  end
+else
+  Chef::Log.info('Not in production, not doing secret seeding')
+end
+
+if node['e2engine']['environment'].eql? 'production'
   Chef::Log.info('In production, doing instance registrations')
   Chef::Log.info('Setting up ingress to production DB')
 
