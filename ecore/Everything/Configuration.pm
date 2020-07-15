@@ -147,12 +147,12 @@ sub _build_everypass
     {
       local $/ = undef;
       $default = <$fh>;
-      chomp $default;
+      close $fh;
     }else{
       croak("Could not open database secrets file: $secretfile: $!");
     }
   }
-
+  chomp($default);
   return $default
 }
 
