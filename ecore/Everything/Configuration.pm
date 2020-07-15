@@ -6,6 +6,7 @@ use JSON;
 use namespace::autoclean;
 
 has 'configfile' => (isa => 'Maybe[Str]', is => 'ro');
+has 'configdir' => (isa => 'Str', is => 'ro' => default => '/etc/everything');
 has 'site_url' => (isa => 'Str', is => 'ro', required => 1);
 has 'guest_user' => (isa => 'Int', is => 'ro', required => 1);
 has 'basedir' => (isa => 'Str', is => 'ro', default => '/var/everything');
@@ -19,7 +20,7 @@ has 'default_style' => (isa => 'Str', is => 'ro', required => 1);
 # TODO: Rename this to be something that makes it clear that it is the database user
 has 'everyuser' => (isa => 'Str', is => 'ro', default => 'everyuser');
 # TODO: Rename this to be something that makes it clear that it is the database password
-has 'everypass' => (isa => 'Str', is => 'ro', default => '');
+has 'everypass' => (isa => 'Str', is => 'ro', builder => '_build_everypass', lazy => 1);
 has 'everything_dbserv' => (isa => 'Str', is => 'ro', default => 'localhost');
 has 'database' => (isa => 'Str', is => 'ro', default => 'everything');
 
@@ -132,6 +133,28 @@ around BUILDARGS => sub
 
   return $class->$orig($config);
 };
+
+sub _build_everypass
+{
+  my ($self) = @_;
+  
+  my $secretfile = $self->configdir.'/database_password_secret';
+
+  my $default = '';
+  if(-e $secretfile)
+  {
+    if(open(my $fh, "<", $secretfile))
+    {
+      local $/ = undef;
+      $default = <$fh>;
+      chomp $default;
+    }else{
+      croak("Could not open database secrets file: $secretfile: $!");
+    }
+  }
+
+  return $default
+}
 
 __PACKAGE__->meta->make_immutable;
 1;
