@@ -173,7 +173,7 @@ file '/etc/everything/everything.conf.json' do
 end
 
 if node['e2engine']['environment'].eql? 'production'
-  ['database_password_secret','recaptcha_v3_secret'].each do |secret|
+  ['database_password_secret','recaptcha_v3_secret','infected_ips_secret'].each do |secret|
     Chef::Log.info("Seeding secret: #{secret}")
     bash "Seeding secret: #{secret}" do
       code "/var/everything/tools/fetch_secret.rb --secret=#{secret}"
