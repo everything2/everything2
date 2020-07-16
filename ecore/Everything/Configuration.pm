@@ -72,7 +72,7 @@ has 's3host' => (isa => 'Str', is => 'ro', default => '');
 
 has 'iam_app_role' => (isa => 'Str', is => 'ro', default => '');
 
-has 'recaptcha_v3_secret_key' => (isa => 'Str', is => 'ro', default => '');
+has 'recaptcha_v3_secret_key' => (isa => 'Str', is => 'ro', builder => '_build_recaptcha', lazy => 1);
 has 'recaptcha_v3_public_key' => (isa => 'Str', is => 'ro', default => '');
 
 has 'login_location' => (isa => 'Str', is => 'ro'); 
@@ -137,10 +137,21 @@ around BUILDARGS => sub
 sub _build_everypass
 {
   my ($self) = @_;
-  
-  my $secretfile = $self->configdir.'/database_password_secret';
+  return $self->_filesystem_default('database_password_secret', '');
+}
 
-  my $default = '';
+sub _build_recaptcha
+{
+  my ($self) = @_;
+  return $self->_filesystem_default('recaptcha_v3_secret','');
+}
+
+sub _filesystem_default
+{
+  my ($self, $location, $default) = @_;
+
+  my $secretfile = $self->configdir."/$location";
+
   if(-e $secretfile)
   {
     if(open(my $fh, "<", $secretfile))
@@ -149,7 +160,7 @@ sub _build_everypass
       $default = <$fh>;
       close $fh;
     }else{
-      croak("Could not open database secrets file: $secretfile: $!");
+      croak("Could not open secret file on disk: $secretfile: $!");
     }
   }
   chomp($default);
