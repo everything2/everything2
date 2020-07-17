@@ -45,19 +45,27 @@
 	PerlOptions +ParseHeaders
 "
 
+econfig='/etc/everything'
+
 coreconfig+="\t\# Explicit IP address bans\n"
-node["banned_ips"].each do |ip|
-	coreconfig+="\tSetEnvIf X-FORWARDED-FOR \"#{ip}\" denyip\n"
+if File.exist?("#{econfig}/banned_ips_secret")
+  JSON.parse(File.read("#{econfig}/banned_ips_secret")).each do |ip|
+    coreconfig+="\tSetEnvIf X-FORWARDED-FOR \"#{ip}\" denyip\n"
+  end
 end
 
 coreconfig+="\t\# IP address block bans\n"
-node["banned_blocks"].each do |block|
-	coreconfig+="\tSetEnvIf X-FORWARDED-FOR ^#{block.gsub(".","\\.")} denyip\n"
+if File.exist?("#{econfig}/banned_ipblocks_secret")
+  JSON.parse(File.read("#{econfig}/banned_ipblocks_secret")).each do |block|
+    coreconfig+="\tSetEnvIf X-FORWARDED-FOR ^#{block.gsub(".","\\.")} denyip\n"
+  end
 end
 
 coreconfig+="\t\# User agent bans\n"
-node["banned_user_agents"].each do |ua|
-	coreconfig+="\tBrowserMatchNoCase #{ua} denyip\n"
+if File.exist?("#{econfig}/banned_user_agents_secret")
+  JSON.parse(File.read("#{econfig}/banned_user_agents_secret")).each do |ua|
+    coreconfig+="\tBrowserMatchNoCase #{ua} denyip\n"
+  end
 end
 
 rotatelogs = '/usr/bin/rotatelogs'

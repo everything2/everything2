@@ -18,6 +18,18 @@ to_install.each do |p|
   package p
 end
 
+if node['e2engine']['environment'].eql? 'production'
+  ['banned_user_agents_secret','banned_ips_secret','banned_ipblocks_secret'].each do |secret|
+    Chef::Log.info("Seeding web secret: #{secret}")
+    bash "Seeding secret: #{secret}" do
+      code "/var/everything/tools/fetch_secret.rb --secret=#{secret}"
+      notifies :restart, "service[apache2]", :delayed
+    end
+  end
+else
+  Chef::Log.info('Not in production, not doing web secret seeding')
+end
+
 
 load_modules = ['rewrite','proxy','proxy_http','ssl','perl','mpm_prefork','socache_shmcb']
 
