@@ -11,8 +11,7 @@ has 'site_url' => (isa => 'Str', is => 'ro', required => 1);
 has 'guest_user' => (isa => 'Int', is => 'ro', required => 1);
 has 'basedir' => (isa => 'Str', is => 'ro', default => '/var/everything');
 
-# TODO: Make this an array of ipaddress objects
-has 'infected_ips' => (isa => 'ArrayRef', is => 'ro', default => sub { [] });
+has 'infected_ips' => (isa => 'ArrayRef', is => 'ro', builder => '_build_infected', lazy => 1);
 has 'default_style' => (isa => 'Str', is => 'ro', required => 1);
 
 # Database options
@@ -144,6 +143,25 @@ sub _build_recaptcha
 {
   my ($self) = @_;
   return $self->_filesystem_default('recaptcha_v3_secret','');
+}
+
+sub _filesystem_json_default
+{
+  my ($self, $location, $default) = @_;
+  $default = $self->_filesystem_default($location,$default);
+
+  if(not defined $default or $default eq '')
+  {
+    return [];
+  }else{
+    return JSON::from_json($default);
+  }
+}
+sub _build_infected
+{
+  my ($self) = @_;
+
+  return $self->_filesystem_json_default('infected_ips_secret','');
 }
 
 sub _filesystem_default
