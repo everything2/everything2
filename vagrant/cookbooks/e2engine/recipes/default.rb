@@ -80,7 +80,8 @@ to_install = [
 # Needed for Amazon provisioning
     'ruby',
     'ruby-dev',
-    'ruby-bundler'
+    'ruby-bundler',
+    'build-essential'
 ]
 
 to_install.each do |p|
@@ -162,6 +163,11 @@ bash "Install non-system dependencies" do
   end
 end
 
+gem_package 'aws-sdk' do
+  timeout 240
+  retries 3
+end
+
 file '/etc/everything/everything.conf.json' do
   owner "www-data"
   group "www-data"
@@ -190,11 +196,6 @@ end
 if node['e2engine']['environment'].eql? 'production'
   Chef::Log.info('In production, doing instance registrations')
   Chef::Log.info('Setting up ingress to production DB')
-
-  gem_package 'aws-sdk' do
-    timeout 240
-    retries 3
-  end
 
   bash "AWS: Register instance with db security group" do
     code "/var/everything/tools/aws_registration.rb --db"
