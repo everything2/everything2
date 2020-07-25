@@ -1,7 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'aws-sdk'
+require 'aws-sdk-rds'
+require 'aws-sdk-elasticloadbalancingv2'
 require 'net/http'
 require 'json'
 require 'uri'
