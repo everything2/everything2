@@ -163,9 +163,11 @@ bash "Install non-system dependencies" do
   end
 end
 
-gem_package 'aws-sdk' do
-  timeout 240
-  retries 3
+['rds','elasticloadbalancingv2','s3','iam','secretsmanager','ses','opsworks','ec2','lambda'].each do |pkg|
+  gem_package "aws-sdk-#{pkg}" do
+    timeout 240
+    retries 3
+  end
 end
 
 file '/etc/everything/everything.conf.json' do
