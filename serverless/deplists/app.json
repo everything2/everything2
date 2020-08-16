@@ -339,6 +339,22 @@
     "module": "XML::SAX"
   },
   {
+    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/URI-1.76.tar.gz",
+    "module": "URI"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTTP-Message-6.24.tar.gz",
+    "module": "HTTP::Message"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTTP-Date-6.05.tar.gz",
+    "module": "HTTP::Date"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/libwww-perl-6.45.tar.gz",
+    "module": "LWP::UserAgent"
+  },
+  {
     "file": "https://cpan.metacpan.org/authors/id/T/TO/TODDR/XML-Parser-2.46.tar.gz",
     "module": "XML::Parser"
   },
@@ -461,10 +477,6 @@
     "module": "Data::Stream::Bulk"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTTP-Date-6.05.tar.gz",
-    "module": "HTTP::Date"
-  },
-  {
     "file": "https://cpan.metacpan.org/authors/id/C/CK/CKRAS/DateTime-Format-HTTP-0.42.tar.gz",
     "module": "DateTime::Format::HTTP"
   },
@@ -484,10 +496,6 @@
   {
     "file": "https://cpan.metacpan.org/authors/id/G/GA/GAAS/File-Listing-6.04.tar.gz",
     "module": "File::Listing"
-  },
-  {
-    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/URI-1.76.tar.gz",
-    "module": "URI"
   },
   {
     "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/LWP-MediaTypes-6.04.tar.gz",
@@ -510,20 +518,12 @@
     "module": "Module::Build::Tiny"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTTP-Message-6.24.tar.gz",
-    "module": "HTTP::Message"
-  },
-  {
     "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTTP-Daemon-6.12.tar.gz",
     "module": "HTTP::Daemon"
   },
   {
     "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTTP-Cookies-6.08.tar.gz",
     "module": "HTTP::Cookies"
-  },
-  {
-    "file": "https://cpan.metacpan.org/authors/id/O/OA/OALDERS/libwww-perl-6.45.tar.gz",
-    "module": "LWP::UserAgent"
   },
   {
     "file": "https://cpan.metacpan.org/authors/id/D/DM/DMUEY/Digest-MD5-File-0.08.tar.gz",

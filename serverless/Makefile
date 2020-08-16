@@ -11,8 +11,8 @@ CMAKE=$(INSTALL)/bin/cmake
 
 
 all.build: $(PERL) magick.build deps.build
-	echo "Cleaning for distribution"
-	rm -rf $(INSTALL)/share/doc $(INSTALL)/doc $(INSTALL)/share/cmake* $(INSTALL)/man $(INSTALL)/bin/ctest $(INSTALL)/README $(INSTALL)/LICENSE
+#	echo "Cleaning for distribution"
+#	rm -rf $(INSTALL)/share/doc $(INSTALL)/doc $(INSTALL)/share/cmake* $(INSTALL)/man $(INSTALL)/bin/ctest $(INSTALL)/README $(INSTALL)/LICENSE
 	touch $@
 
 $(PERL): 3rd/perl-$(PERLVER).tar.bz2
@@ -43,7 +43,7 @@ magick.build: 3rd/ImageMagick-$(MAGICKVER).tar.gz $(PERL)
 	touch $@
 
 deps.build: $(PERL) mysql.build
-	PATH=$(INSTALL)/bin/:$(PATH) $(PERL) ../tools/createdeps.pl --depfile=./deplists/app.json 2>&1 | tee deps.log && touch $@
+	PATH=$(INSTALL)/bin/:$(PATH) $(PERL) ../tools/createdeps.pl --depfile=$(shell pwd)/deplists/app.json --dldir=$(shell pwd)/3rd --installdir=$(shell pwd)/install --builddir=$(shell pwd)/build && touch $@
 
 3rd/perl-$(PERLVER).tar.bz2:
 	mkdir -p 3rd && cd 3rd && wget https://www.cpan.org/src/5.0/perl-$(PERLVER).tar.bz2
@@ -72,6 +72,9 @@ cpanm.build: $(PERL) 3rd/App-cpanminus-$(CPANMVER).tar.gz
 altmodules.build: $(PERL)
 	$(PERL) $(INSTALL)/bin/cpanm --local-lib=$(INSTALL) Moose LWP::UserAgent
 	touch $@
+
+perlmodclean:
+	rm -rf install/lib/perl5 deps.build $(PERL)
 
 clean:
 	rm -rf build/* install/* *.build nytprof.* *.log inc *.unzip
