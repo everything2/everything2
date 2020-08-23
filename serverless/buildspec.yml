@@ -2,9 +2,4 @@ version: 0.2
 phases:
   build:
     commands:
-      - cd serverless && make
-artifacts:
-  files:
-    - '**/*'
-  base-directory: serverless/install
-  name: e2serverless.zip
+      - cd serverless && make codepipeline.build
