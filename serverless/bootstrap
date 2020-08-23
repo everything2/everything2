@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Heavily borrowed from: https://medium.com/@avijitsarkar123/aws-lambda-custom-runtime-really-works-how-i-developed-a-lambda-in-perl-9a481a7ab465
+set -euo pipefail
+
+# Initialization - load function handler
+# The function handler is of the format [handler-file-name-withon-extn].[handler-method]
+# The handler file/script name
+lambda_script_name="$(echo $_HANDLER | cut -d. -f1)"
+# The handler method/function name
+handler_name="$(echo $_HANDLER | cut -d. -f2)"
+# Processing
+while true
+do
+  HEADERS="$(mktemp)"
+
+  # Get an event
+  EVENT_DATA=$(curl -sS -LD "$HEADERS" -X GET "http://${AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime/invocation/next")
+  ESCAPED_EVENT_DATA=$(printf "%q" "$EVENT_DATA")
+  REQUEST_ID=$(grep -Fi Lambda-Runtime-Aws-Request-Id "$HEADERS" | tr -d '[:space:]' | cut -d: -f2)
+  OUTPUT=$(./bin/perl -MJSON -e "require \"$LAMBDA_TASK_ROOT/$lambda_script_name.pl\"; print $handler_name(decode_json(\"$ESCAPED_EVENT_DATA\"))")
+
+  curl -X POST "http://${AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime/invocation/$REQUEST_ID/response"  -d "$OUTPUT"
+done

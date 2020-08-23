@@ -11,8 +11,14 @@ CMAKE=$(INSTALL)/bin/cmake
 
 
 all.build: $(PERL) magick.build deps.build
-#	echo "Cleaning for distribution"
-#	rm -rf $(INSTALL)/share/doc $(INSTALL)/doc $(INSTALL)/share/cmake* $(INSTALL)/man $(INSTALL)/bin/ctest $(INSTALL)/README $(INSTALL)/LICENSE
+	echo "Cleaning for distribution"
+	rm -rf $(INSTALL)/share $(INSTALL)/include $(INSTALL)/man $(INSTALL)/lib/*.a $(INSTALL)/lib/pkgconfig $(INSTALL)/doc $(INSTALL)/share/cmake* $(INSTALL)/bin/ctest $(INSTALL)/README $(INSTALL)/LICENSE
+	for file in Magick++-config Magick-config MagickCore-config MagickWand-config Wand-config animate ccmake cmake comp_err compare composite config_data conjure convert corelist cpack cpan crc32 ctest dateparse dbilogstrip dbiprof dbiproxy display enc2xs encguess findrule flamegraph.pl h2ph h2xs identify import instmodsh json_pp libnetcfg lwp-download lwp-dump lwp-mirror lwp-request lz4_decompress mason.pl mogrify montage moose-outdated my_print_defaults mysql mysql_config mysql_config_editor mysql_secure_installation mysql_ssl_rsa_setup mysqladmin mysqlbinlog mysqlcheck mysqldump mysqlimport mysqlpump mysqlshow mysqlslap mysqltest nytprofcalls nytprofcg nytprofcsv nytprofhtml nytprofmerge nytprofpf open_aws_console package-stash-conflicts paws paws_make_testcase perl5.26.3 perlbug perlcritic perldoc perlivp perlthanks perltidy perror piconv pl2pm pm_which pod2html pod2man pod2text pod2usage podchecker podselect podspell prove ptar ptardiff ptargrep s3cl scandeps.pl shasum splain stream test-yaml use-devel-checklib xsubpp zipdetails zlib_decompress; do \
+		rm $(INSTALL)/bin/$$file ; \
+	done
+	cp bootstrap $(INSTALL)
+	which zip
+	zip --help
 	touch $@
 
 $(PERL): 3rd/perl-$(PERLVER).tar.bz2
