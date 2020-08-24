@@ -19,6 +19,7 @@ e2serverless.zip: $(PERL) magick.build deps.build
 	cp bootstrap $(INSTALL)
 	cp handler.pl $(INSTALL)
 	chmod +x bootstrap handler.pl
+	find $(INSTALL) -name "libperl.a" -type f -exec rm -f {} \;
 	cd $(INSTALL) && zip ../e2serverless.zip -r -y -9 * && cd ..
 	touch $@
 
