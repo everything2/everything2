@@ -17,11 +17,13 @@ e2serverless.zip: $(PERL) magick.build deps.build
 		rm -f $(INSTALL)/bin/$$file ; \
 	done
 	cp bootstrap $(INSTALL)
+	cp handler.pl $(INSTALL)
 	cd $(INSTALL) && zip ../e2serverless.zip -r -y -9 * && cd ..
 	touch $@
 
 codepipeline.build: e2serverless.zip
 	aws s3 cp e2serverless.zip s3://perllambdabase.everything2.com
+	aws lambda update-function-code --function-name=perl-lambda-base --s3-bucket=perllambdabase.everything2.com --s3-key=e2serverless.zip
 	touch $@
 
 $(PERL): 3rd/perl-$(PERLVER).tar.bz2
