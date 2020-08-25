@@ -13,6 +13,7 @@ handler_name="$(echo $_HANDLER | cut -d. -f2)"
 while true
 do
   HEADERS="$(mktemp)"
+  find /opt
   [ ! -e /tmp/bin/perl ] && unzip -d /tmp perlbase.zip
 
   # Get an event
