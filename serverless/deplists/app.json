@@ -751,28 +751,12 @@
     "module": "Net::Amazon::S3"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Email-Simple-2.216.tar.gz",
-    "module": "Email::Simple"
-  },
-  {
-    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Email-Abstract-3.008.tar.gz",
-    "module": "Email::Abstract"
-  },
-  {
     "file": "https://cpan.metacpan.org/authors/id/H/HA/HAARG/Moo-2.004000.tar.gz",
     "module": "Moo"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/M/MA/MATEU/MooX-Types-MooseLike-0.29.tar.gz",
-    "module": "MooX::Types::MooseLike"
-  },
-  {
     "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Throwable-0.200013.tar.gz",
     "module": "Throwable"
-  },
-  {
-    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Email-Sender-1.300034.tar.gz",
-    "module": "Email::Sender"
   },
   {
     "file": "https://cpan.metacpan.org/authors/id/A/AB/ABH/Mozilla-CA-20200520.tar.gz",
@@ -785,10 +769,6 @@
   {
     "file": "https://cpan.metacpan.org/authors/id/S/SU/SULLR/IO-Socket-SSL-2.068.tar.gz",
     "module": "IO::Socket::SSL"
-  },
-  {
-    "file": "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Net-SMTP-SSL-1.04.tar.gz",
-    "module": "Net::SMTP::SSL"
   },
   {
     "file": "https://cpan.metacpan.org/authors/id/G/GB/GBARR/Authen-SASL-2.16.tar.gz",
