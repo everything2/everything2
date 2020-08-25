@@ -11,11 +11,9 @@ lambda_script_name="$(echo $_HANDLER | cut -d. -f1)"
 handler_name="$(echo $_HANDLER | cut -d. -f2)"
 # Processing
 while true
-
-[ ! -e /tmp/bin/perl ] && unzip -d /tmp perlbase.zip
-
 do
   HEADERS="$(mktemp)"
+  [ ! -e /tmp/bin/perl ] && unzip -d /tmp perlbase.zip
 
   # Get an event
   EVENT_DATA=$(curl -sS -LD "$HEADERS" -X GET "http://${AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime/invocation/next")
