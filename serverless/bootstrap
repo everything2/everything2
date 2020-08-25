@@ -27,7 +27,7 @@ do
     else
       echo "Extracting layer default '/opt/$ZIP'"
       unzip -d /tmp /opt/$ZIP
-    end
+    fi
   fi
 
   # Get an event
