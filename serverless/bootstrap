@@ -9,12 +9,26 @@ set -euo pipefail
 lambda_script_name="$(echo $_HANDLER | cut -d. -f1)"
 # The handler method/function name
 handler_name="$(echo $_HANDLER | cut -d. -f2)"
+
+# E2 dependencies tarball
+ZIP="perlbase.zip"
+
 # Processing
 while true
 do
   HEADERS="$(mktemp)"
-  find /opt
-  [ ! -e /tmp/bin/perl ] && unzip -d /tmp perlbase.zip
+
+  if [ ! -e /tmp/bin/perl ]
+  then
+    if [ -e "$LAMBDA_TASK_ROOT/$ZIP" ]
+    then
+      echo "Extracting '$LAMBDA_TASK_ROOT/$ZIP'"
+      unzip -d /tmp $LAMBDA_TASK_ROOT/$ZIP
+    else
+      echo "Extracting layer default '/opt/$ZIP'"
+      unzip -d /tmp /opt/$ZIP
+    end
+  fi
 
   # Get an event
   EVENT_DATA=$(curl -sS -LD "$HEADERS" -X GET "http://${AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime/invocation/next")
