@@ -26,6 +26,7 @@ codepipeline.build: e2serverless.zip
 	aws s3 cp e2serverless.zip s3://perllambdabase.everything2.com
 	aws lambda update-function-code --function-name=perl-lambda-base --s3-bucket=perllambdabase.everything2.com --s3-key=e2serverless.zip
 	aws lambda publish-layer-version --content=S3Bucket=perllambdabase.everything2.com,S3Key=e2serverless.zip --layer-name=e2-perl-layer --description="Perl layer for E2" --compatible-runtimes provided
+	aws lambda invoke --function-name=cicd-codebuild-perl-layer-publisher ./perl-publisher.log
 	touch $@
 
 $(PERL): 3rd/perl-$(PERLVER).tar.bz2
