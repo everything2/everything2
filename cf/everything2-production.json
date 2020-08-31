@@ -1,0 +1,1883 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "E2 production resources",
+  "Mappings" : {
+    "RegionMap" : {
+      "us-east-1" : { "S3hostedzoneID" : "Z3AQBSTGFYJSTF", "websiteendpoint" : "s3-website-us-east-1.amazonaws.com" },
+      "us-west-1" : { "S3hostedzoneID" : "Z2F56UZL2M1ACD", "websiteendpoint" : "s3-website-us-west-1.amazonaws.com" },
+      "us-west-2" : { "S3hostedzoneID" : "Z3BJ6K6RIION7M", "websiteendpoint" : "s3-website-us-west-2.amazonaws.com" },
+      "eu-west-1" : { "S3hostedzoneID" : "Z1BKCTXD74EZPE", "websiteendpoint" : "s3-website-eu-west-1.amazonaws.com" },
+      "ap-southeast-1" : { "S3hostedzoneID" : "Z3O0J2DXBE1FTB", "websiteendpoint" : "s3-website-ap-southeast-1.amazonaws.com" },
+      "ap-southeast-2" : { "S3hostedzoneID" : "Z1WCIGYICN2BYD", "websiteendpoint" : "s3-website-ap-southeast-2.amazonaws.com" },
+      "ap-northeast-1" : { "S3hostedzoneID" : "Z2M4EHUR26P7ZW", "websiteendpoint" : "s3-website-ap-northeast-1.amazonaws.com" },
+      "sa-east-1" : { "S3hostedzoneID" : "Z31GFT0UA1I2HV", "websiteendpoint" : "s3-website-sa-east-1.amazonaws.com" }
+    },
+    "SESIdentity": {
+      "us-west-2": { "arn": "arn:aws:ses:us-west-2:254865750963:identity/accounthelp@everything2.com" }
+    }
+  },
+  "Resources": {
+    "AssetsS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "assets.everything2.com",
+        "AccessControl": "PublicRead"
+      }
+    },
+    "CFBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "cloudformation.everything2.com",
+        "AccessControl": "PublicRead"
+      }
+    },
+    "OutageBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "outage.everything2.com"
+      }
+    },
+    "NodeBackupBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "nodebackup.everything2.com"
+      }
+    },
+    "StaticAssetBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "static-uswest2.everything2.com"
+      }
+    },
+    "PipelineConfigBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "pipelineconfig.everything2.com"
+      }
+    },
+    "JavaChatterboxBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "javachatterbox.everything2.com"
+      }
+    },
+    "LambdaSourceBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "lambdasource.everything2.com"
+      }
+    },
+    "HomenodeImagesS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "hnimagew.everything2.com",
+        "AccessControl": "PublicRead"
+      }
+    },
+    "BackupS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "backupwest.everything2.com"
+      }
+    },
+    "PrivateStorageS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "e2configprivate.everything2.com"
+      }
+    },
+    "GlacierS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "glacierstorage.everything2.com"
+      }
+    },
+    "SitemapS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "sitemap.everything2.com",
+        "AccessControl": "PublicRead"
+      }
+    },
+    "JSCSSBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "jscssw.everything2.com",
+        "AccessControl": "PublicRead"
+      }
+    },
+    "E2AppS3UploadOnlyPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows E2 machines to upload to certain buckets",
+        "ManagedPolicyName": "E2AppS3UploadOnlyPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "s3:PutObject",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "HomenodeImagesS3Bucket", "Arn"] }, "/*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "s3:PutObject",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "JSCSSBucket", "Arn"] }, "/*"]]}
+          }]
+        }
+      }
+    },
+    "E2AppRDSAddOnly": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows E2 machines to enable ingress to RDS",
+        "ManagedPolicyName": "E2AppRDSAddOnly",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "rds:AuthorizeDBSecurityGroupIngress",
+            "Resource": "*"
+          }]
+        }
+      }
+    },
+    "E2AppOpsworksRegistrationPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows E2 machines to register themselves in Opsworks",
+        "ManagedPolicyName": "E2AppOpsworksRegistrationPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": ["opsworks:AssignInstance","opsworks:DescribeInstances","opsworks:DescribeStacks","opsworks:DescribeStackProvisioningParameters","opsworks:RegisterInstance"],
+            "Resource": "*"
+          }]
+        }
+      }
+    },
+    "E2DotComR53Zone": {
+      "Type": "AWS::Route53::HostedZone",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Name": "everything2.com"
+      }
+    },
+    "E2DotComJSCSSWR53RR": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "jscssw.everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "AliasTarget": {
+          "HostedZoneId": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "S3hostedzoneID"]},
+          "DNSName": {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "websiteendpoint"]}
+        },
+        "Type": "A"
+      }
+    },
+    "AppVPC": {
+      "Type": "AWS::EC2::VPC",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16"
+      }
+    },
+    "AppVPCIGW": {
+      "Type": "AWS::EC2::InternetGateway",
+      "DeletionPolicy": "Retain"
+    },
+    "AppVPCIGWAttach": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "InternetGatewayId": { "Ref": "AppVPCIGW" },
+        "VpcId": {"Ref": "AppVPC"}
+      }
+    },
+    "ELBFrontendSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "GroupDescription": "E2 App Frontend Security Group",
+        "GroupName": "E2-App-Frontend-Security-Group",
+        "VpcId": {"Ref": "AppVPC"},
+        "SecurityGroupIngress": [
+          {
+             "FromPort": "80",
+             "ToPort": "80",
+             "CidrIp": "0.0.0.0/0",
+             "IpProtocol": "tcp"
+          },
+          {
+              "FromPort": "443",
+              "ToPort": "443",
+              "CidrIp": "0.0.0.0/0",
+              "IpProtocol": "tcp"
+          }
+        ]
+      }
+    },
+    "AppVPCSubnet1": {
+      "Type": "AWS::EC2::Subnet",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "VpcId": {"Ref": "AppVPC"},
+        "MapPublicIpOnLaunch": true,
+        "CidrBlock": "10.0.1.0/24",
+        "AvailabilityZone": "us-west-2a"
+      }
+    },
+    "AppVPCSubnet2": {
+      "Type": "AWS::EC2::Subnet",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "VpcId": {"Ref": "AppVPC"},
+        "MapPublicIpOnLaunch": true,
+        "CidrBlock": "10.0.2.0/24",
+        "AvailabilityZone": "us-west-2b"
+      }
+    },
+    "AppVPCSubnet3": {
+      "Type": "AWS::EC2::Subnet",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "VpcId": {"Ref": "AppVPC"},
+        "MapPublicIpOnLaunch": false,
+        "CidrBlock": "10.0.3.0/24",
+        "AvailabilityZone": "us-west-2a"
+      }
+    },
+    "AppVPCSubnet4": {
+      "Type": "AWS::EC2::Subnet",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "VpcId": {"Ref": "AppVPC"},
+        "MapPublicIpOnLaunch": false,
+        "CidrBlock": "10.0.4.0/24",
+        "AvailabilityZone": "us-west-2b"
+      }
+    },
+    "E2FrontendELB": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "Name": "E2-App-Frontend-ELB-2",
+        "Subnets": [{"Ref": "AppVPCSubnet1"}, {"Ref": "AppVPCSubnet2"}],
+        "SecurityGroups": [{"Ref": "ELBFrontendSecurityGroup"}]
+      }
+    },
+    "E2FrontendELBTargetGroup": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "Name": "E2-App-HTTPS-TG",
+        "VpcId": {"Ref": "AppVPC"},
+        "Protocol": "HTTPS",
+        "Port": "443",
+        "HealthCheckEnabled": true,
+        "HealthCheckPort": "443",
+        "HealthCheckProtocol": "HTTPS",
+        "Matcher": {
+          "HttpCode": "200"
+        }
+      }
+    },
+    "E2ELBCertificate": {
+      "Type": "AWS::CertificateManager::Certificate",
+      "Properties": {
+        "DomainName": "everything2.com",
+        "ValidationMethod": "DNS",
+        "SubjectAlternativeNames": ["everything2.net","everything2.org","*.everything2.net","*.everything2.org","*.everything2.com"]
+      }
+    },
+    "ELBAppHTTPSListener": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {"Ref": "E2FrontendELBTargetGroup"},
+            "Type": "forward"
+          }
+        ],
+        "Certificates": [{"CertificateArn": {"Ref": "E2ELBCertificate"}}],
+        "LoadBalancerArn": {"Ref": "E2FrontendELB"},
+        "Port": "443",
+        "Protocol": "HTTPS",
+        "SslPolicy": "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
+      }
+    },
+    "ELBAppHTTPListener": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "Type": "redirect",
+            "RedirectConfig": {
+              "Protocol": "HTTPS",
+              "Port": "443",
+              "Host": "#{host}",
+              "Path": "/#{path}",
+              "Query": "#{query}",
+              "StatusCode": "HTTP_301"
+            }
+          }
+        ],
+        "LoadBalancerArn": {"Ref": "E2FrontendELB"},
+        "Port": "80",
+        "Protocol": "HTTP"
+      }
+    },
+    "E2AppELBAddPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows E2 machines to upload to the homenode bucket",
+        "ManagedPolicyName": "E2AppELBAddOnly",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "elasticloadbalancing:RegisterTargets",
+            "Resource": "*"
+          },
+          {
+            "Effect": "Allow",
+            "Action": "elasticloadbalancing:DescribeLoadBalancers",
+            "Resource": "*"
+          },
+          {
+            "Effect": "Allow",
+            "Action": "elasticloadbalancing:DescribeTags",
+            "Resource": "*"
+          },
+          {
+            "Effect": "Allow",
+            "Action": "elasticloadbalancing:DescribeTargetGroups",
+            "Resource": "*"
+          },
+          {
+            "Effect": "Allow",
+            "Action": "elasticloadbalancing:DecribeListeners",
+            "Resource": "*"
+          }]
+        }
+      }
+    },
+    "E2AppMailerPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows the app server to send email from accounthelp@everything2.com",
+        "ManagedPolicyName": "E2AppMailerPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "ses:SendEmail",
+            "Resource": {"Fn::FindInMap" : [ "SESIdentity", { "Ref" : "AWS::Region" }, "arn"]}
+          }]
+        }
+      }
+    },
+    "E2AppServerIAMRole": {
+      "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+           "Statement": {
+             "Effect": "Allow",
+             "Principal": {"Service": "ec2.amazonaws.com"},
+             "Action": "sts:AssumeRole"
+           }
+        },
+        "Description": "Everything2 Application Web Server",
+        "ManagedPolicyArns": [
+          {"Ref": "E2AppELBAddPolicy"},
+          {"Ref": "E2AppS3UploadOnlyPolicy"},
+          {"Ref": "E2AppRDSAddOnly"},
+          {"Ref": "E2AppHelperBucketsWritePolicy"},
+          {"Ref": "E2AppMailerPolicy"},
+          {"Ref": "E2AppServerSecretsAccessPolicy"},
+          {"Ref": "E2AppServerSNSPolicy"},
+          {"Ref": "E2MasterPasswordReadPolicy"},
+          {"Ref": "E2AppOpsworksRegistrationPolicy"}
+        ],
+        "Path": "/",
+        "RoleName": "E2-App-Server"
+      }
+    },
+    "SecretsS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "secrets.everything2.com"
+      }
+    },
+    "CookbooksBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "cookbooks.everything2.com"
+      }
+    },
+    "E2AppWebheadSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "GroupDescription": "E2 App Webhead Security Group",
+        "GroupName": "E2-App-Webhead-Security-Group",
+        "VpcId": {"Ref": "AppVPC"},
+        "SecurityGroupIngress": [
+          {
+            "FromPort": "443",
+            "ToPort": "443",
+            "SourceSecurityGroupId": { "Fn::GetAtt": [ "ELBFrontendSecurityGroup", "GroupId"] },
+            "IpProtocol": "tcp"
+          }
+        ]
+      }
+    },
+    "E2AppBastionSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "GroupDescription": "E2 App Bastion Security Group",
+        "GroupName": "E2-App-Bastion-Security-Group",
+        "VpcId": {"Ref": "AppVPC"},
+        "SecurityGroupIngress": [
+          {
+            "FromPort": "22",
+            "ToPort": "22",
+            "IpProtocol": "tcp",
+            "CidrIp": "98.118.127.51/32",
+            "Description": "Maynard"
+          }
+        ]
+      }
+    },
+    "OpsworksServiceRole": {
+      "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+           "Statement": {
+             "Effect": "Allow",
+             "Principal": {"Service": "opsworks.amazonaws.com"},
+             "Action": "sts:AssumeRole"
+           }
+        },
+        "Description": "Everything2 OpsWorks Service Delegation",
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSOpsWorksRole",
+          "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
+          "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess"
+        ],
+        "Path": "/",
+        "RoleName": "E2-OpsWorks-Service-Role-2"
+      }
+    },
+    "E2AppHelperBucketsWritePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows E2 machines to upload to the various helper buckets",
+        "ManagedPolicyName": "E2AppHelperBucketsWritePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": ["s3:PutObject","s3:DeleteObject"],
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SitemapS3Bucket", "Arn"] }, "/*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": ["s3:PutObject","s3:DeleteObject"],
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "BackupS3Bucket", "Arn"] }, "/*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": ["s3:PutObject","s3:DeleteObject","s3:GetObject"],
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "NodeBackupBucket", "Arn"] }, "/*"]]}
+          }]
+        }
+      }
+    },
+    "DatabaseBackupSNSTopic": {
+      "Type": "AWS::SNS::Topic",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "DisplayName": "Database backup complete",
+        "TopicName": "database-backup-complete"
+      }
+    },
+    "E2AppServerSecretsAccessPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows app worker to read the appropriate secrets",
+        "ManagedPolicyName": "E2AppServerSecretsAccessPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
+              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SecretsS3Bucket", "Arn"] }, "/database_password_secret"]]}
+            },
+            {
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
+              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SecretsS3Bucket", "Arn"] }, "/recaptcha_v3_secret"]]}
+            },
+            {
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
+              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SecretsS3Bucket", "Arn"] }, "/infected_ips_secret"]]}
+            },
+            {
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
+              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SecretsS3Bucket", "Arn"] }, "/banned_user_agents_secret"]]}
+            },
+            {
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
+              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SecretsS3Bucket", "Arn"] }, "/banned_ips_secret"]]}
+            },
+            {
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
+              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SecretsS3Bucket", "Arn"] }, "/banned_ipblocks_secret"]]}
+            }
+          ]
+        }
+      }
+    },
+    "E2AppServerSNSPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows E2 machines to list all SNS topics and signal appropriate ones",
+        "ManagedPolicyName": "E2AppServerSNSPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "sns:ListTopics",
+            "Resource": "*"
+          },
+          {
+            "Effect": "Allow",
+            "Action": "sns:Publish",
+            "Resource": { "Ref": "DatabaseBackupSNSTopic"}
+          }]
+        }
+      }
+    },
+    "EverythingDBSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupName": "e2-app-db-subnet-group-2",
+        "DBSubnetGroupDescription": "E2 VPC RDS DB Subnet Group",
+        "SubnetIds": [{"Ref": "AppVPCSubnet3"}, {"Ref": "AppVPCSubnet4"}]
+      }
+    },
+    "EverythingDB": {
+      "Type": "AWS::RDS::DBInstance",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AllocatedStorage": "100",
+        "AvailabilityZone": {"Fn::Join": ["", [{"Ref": "AWS::Region"},"a"]]},
+        "BackupRetentionPeriod": 7,
+        "DBInstanceClass": "db.t3.medium",
+        "DBInstanceIdentifier": "everything2vpc",
+        "Engine": "mysql",
+        "EngineVersion": "5.5.61",
+        "MultiAZ": false,
+        "CACertificateIdentifier": "rds-ca-2019",
+        "DeletionProtection": true,
+        "DBSubnetGroupName": {"Ref": "EverythingDBSubnetGroup"},
+        "OptionGroupName": "default:mysql-5-5",
+        "StorageType": "gp2",
+        "VPCSecurityGroups": [{"Fn::GetAtt": ["AppVPC","DefaultSecurityGroup"]}],
+        "DBParameterGroupName": "mysql55allowprocedures",
+        "MasterUsername": "everyuser",
+        "MasterUserPassword": {"Fn::Join": ["", ["{{resolve:secretsmanager:", {"Ref": "E2DBMasterPassword"}, "::password}}"]]}
+      }
+    },
+    "E2DBMasterPassword": {
+      "Type": "AWS::SecretsManager::Secret",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Username and password for the E2 database",
+        "Name": "E2DBMasterPassword",
+        "GenerateSecretString": {
+          "SecretStringTemplate": "{\"username\": \"everyuser\"}",
+          "GenerateStringKey": "password",
+          "PasswordLength": 16,
+          "ExcludeCharacters": "\"@/\\"
+        }
+      }
+    },
+    "E2MasterPasswordAttachment": {
+      "Type" : "AWS::SecretsManager::SecretTargetAttachment",
+      "Properties": {
+        "SecretId": {"Ref": "E2DBMasterPassword" },
+        "TargetId": {"Ref": "EverythingDB"},
+        "TargetType": "AWS::RDS::DBInstance"
+      }
+    },
+    "E2MasterPasswordReadPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows E2 machines to access the master database secret",
+        "ManagedPolicyName": "E2MasterPasswordReadPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "secretsmanager:GetSecretValue",
+            "Resource": {"Fn::Join": ["",["arn:",{"Ref": "AWS::Partition"},":secretsmanager:",{"Ref": "AWS::Region"},":",{"Ref": "AWS::AccountId"},":secret:",{"Ref": "E2DBMasterPassword"}]]}
+          }]
+        }
+      }
+    },
+    "E2AppInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "InstanceProfileName": "E2AppInstanceProfile",
+        "Roles": [{"Ref": "E2AppServerIAMRole"}]
+      }
+    },
+    "E2ApplicationStack": {
+      "Type": "AWS::OpsWorks::Stack",
+      "Properties": {
+        "Name": "E2 Application Stack - CF",
+        "VpcId": {"Ref": "AppVPC"},
+        "DefaultSubnetId": {"Ref": "AppVPCSubnet1"},
+        "DefaultOs": "Ubuntu 18.04 LTS",
+        "DefaultAvailabilityZone": {"Fn::GetAtt": ["AppVPCSubnet1", "AvailabilityZone"]},
+        "DefaultInstanceProfileArn": { "Fn::GetAtt": ["E2AppInstanceProfile","Arn"]},
+        "ServiceRoleArn": { "Fn::GetAtt": [ "OpsworksServiceRole", "Arn"]},
+        "ConfigurationManager": {
+          "Name": "Chef",
+          "Version": "12"
+        },
+        "UseCustomCookbooks": true,
+        "CustomCookbooksSource": {
+          "Type": "git",
+          "Url": "https://github.com/everything2/cookbooks.git"
+        },
+        "CustomJson": {
+          "e2engine": {
+            "google_ads_badnodes": [
+              20453,
+              456144,
+              806191,
+              1361996,
+              581001,
+              592113,
+              864733,
+              572200,
+              701409,
+              668965,
+              1268916,
+              1935477,
+              331791,
+              1143670,
+              109,
+              1322899,
+              587248,
+              896688,
+              952197,
+              785448,
+              952197,
+              785448,
+              2152628,
+              1083922,
+              642704,
+              1921577,
+              1330152,
+              1369958,
+              2003596,
+              29906,
+              149007,
+              1332646,
+              1330152,
+              59705,
+              903265,
+              27425,
+              601565,
+              1076632,
+              1407002,
+              728828
+            ],
+            "google_ads_badwords": [
+              "pussy",
+              "fleshlight",
+              "thrush",
+              "hentai",
+              "heroin",
+              "kike",
+              "vibrator",
+              "boob",
+              "breast",
+              "butt",
+              "ass",
+              "lesbian",
+              "cock",
+              "dick",
+              "penis",
+              "sex",
+              "oral",
+              "anal",
+              "drug",
+              "pot",
+              "weed",
+              "crack",
+              "cocaine",
+              "fuck",
+              "wank",
+              "whore",
+              "vagina",
+              "vaginal",
+              "vag",
+              "cunt",
+              "tits",
+              "titty",
+              "twat",
+              "shit",
+              "slut",
+              "snatch",
+              "queef",
+              "queer",
+              "poon",
+              "prick",
+              "puss",
+              "orgasm",
+              "nigg",
+              "nuts",
+              "muff",
+              "motherfuck",
+              "jizz",
+              "hell",
+              "homo",
+              "handjob",
+              "fag",
+              "dildo",
+              "dick",
+              "clit",
+              "cum",
+              "bitch",
+              "rape",
+              "ejaculate",
+              "bsdm",
+              "fisting",
+              "balling",
+              "pornography",
+              "blowjob",
+              "masturbation",
+              "fetish",
+              "suicide",
+              "cunnilingus"
+            ],
+            "s3": {
+              "sitemap": {
+                "bucket": "sitemap.everything2.com",
+                "use_iam_role": 1
+              },
+              "homenodeimages": {
+                "bucket": "hnimagew.everything2.com",
+                "use_iam_role": 1
+              },
+              "jscss": {
+                "bucket": "jscssw.everything2.com",
+                "use_iam_role": 1
+              },
+              "backup": {
+                "bucket": "backupwest.everything2.com",
+                "use_iam_role": 1
+              },
+              "nodebackup": {
+                "bucket": "nodebackup.everything2.com",
+                "use_iam_role": 1
+              }
+            },
+            "nodecache_size": 600,
+            "everything_dbserv": "everything2vpc.ciuh20jrlbkm.us-west-2.rds.amazonaws.com",
+            "maintenance_mode": 0,
+            "canonical_web_server": "everything2.com",
+            "environment": "production",
+            "use_local_javascript": 0,
+            "s3host": "s3-us-west-2.amazonaws.com",
+            "iam_app_role": "E2-App-Server"
+          }
+        }
+      }
+    },
+    "E2BastionLayer": {
+      "Type": "AWS::OpsWorks::Layer",
+      "Properties": {
+        "StackId": {"Ref": "E2ApplicationStack"},
+        "Type": "custom",
+        "Name": "E2 bastion",
+        "Shortname": "e2bastion",
+        "AutoAssignPublicIps": true,
+        "EnableAutoHealing": false,
+        "AutoAssignElasticIps": false,
+        "CustomSecurityGroupIds": [{"Ref": "E2AppBastionSecurityGroup"}],
+        "CustomRecipes": {
+          "Deploy": ["e2engine","e2cron"]
+        }
+      }
+    },
+    "E2WebLayer": {
+      "Type": "AWS::OpsWorks::Layer",
+      "Properties": {
+        "StackId": {"Ref": "E2ApplicationStack"},
+        "Type": "custom",
+        "Name": "E2 webhead",
+        "Shortname": "e2web",
+        "AutoAssignPublicIps": true,
+        "EnableAutoHealing": true,
+        "AutoAssignElasticIps": false,
+        "CustomSecurityGroupIds": [{"Ref": "E2AppBastionSecurityGroup"}, {"Ref": "E2AppWebheadSecurityGroup"}],
+        "CustomRecipes": {
+          "Deploy": ["e2engine","e2web"]
+        }
+      }
+    },
+    "OpsworksEventsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/events/opsworks",
+        "RetentionInDays": 3
+      }
+    },
+    "OpsworksCloudwatchLogging": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "Subscribing to Opsworks events logs",
+        "Name": "opsworkscloudwatchlogging",
+        "EventPattern": {
+          "source": ["aws.opsworks"]
+        },
+        "Targets": [{
+          "Arn": {"Fn::Sub": ["arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LogGroup}",{"LogGroup": {"Ref": "OpsworksEventsLogGroup"}}]},
+          "Id": "Id1844360018780"
+        }]
+      }
+    },
+    "AppAutoScalingSNSTopic": {
+      "Type": "AWS::SNS::Topic",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "DisplayName": "Application Auto Scaling Events",
+        "TopicName": "e2app-autoscale-events"
+      }
+    },
+    "E2OpsworksLaunchTemplate": {
+      "Type": "AWS::EC2::LaunchTemplate",
+      "Properties": {
+        "LaunchTemplateName": "E2OpsworksLaunchTemplate",
+        "LaunchTemplateData": {
+          "InstanceType": "t3a.medium",
+          "KeyName": "jaybonci_ec2_uswest2_20120829",
+          "IamInstanceProfile": {
+            "Name": {"Ref": "E2AppInstanceProfile"}
+          },
+          "SecurityGroupIds": [{"Ref": "E2AppBastionSecurityGroup"}, {"Ref": "E2AppWebheadSecurityGroup"}],
+          "ImageId": "ami-0bea499d92a37a022",
+          "EbsOptimized": true,
+          "Placement": {
+            "AvailabilityZone": {"Fn::GetAtt": ["AppVPCSubnet1", "AvailabilityZone"]}
+          },
+          "UserData": {"Fn::Base64": {"Fn::Join": ["\n",
+            ["#!/bin/bash",
+              "sed -i'' -e 's/.*requiretty.*//' /etc/sudoers",
+              "apt-get update",
+              "apt-get install -y python-pip",
+              "pip install --upgrade awscli",
+              {"Fn::Sub": ["INSTANCE_ID=$(/usr/local/bin/aws opsworks register --use-instance-profile --infrastructure-class ec2 --region us-east-1 --stack-id ${Stack} --override-hostname e2web-$(hostname -I | cut -d. -f4) --local 2>&1 |grep -o 'Instance ID: .*' |cut -d' ' -f3)", {"Stack": {"Ref": "E2ApplicationStack"}}]},
+              "/usr/local/bin/aws opsworks wait instance-registered --region us-east-1 --instance-id $INSTANCE_ID",
+              {"Fn::Sub": ["/usr/local/bin/aws opsworks assign-instance --region us-east-1 --instance-id $INSTANCE_ID --layer-ids ${Layer}", {"Layer": {"Ref": "E2WebLayer"}}]}]]}
+          }
+        }
+      }
+    },
+    "E2AppOpsworksScalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "DependsOn": ["AppVPCIGWAttach"],
+      "Properties": {
+        "AutoScalingGroupName": "E2-App-Opsworks-Scaling-Group",
+        "AvailabilityZones": [{"Fn::GetAtt": ["AppVPCSubnet1", "AvailabilityZone"]}],
+        "MinSize": 1,
+        "MaxSize": 3,
+        "Cooldown": 1200,
+        "LaunchTemplate": {
+          "LaunchTemplateId": {"Ref": "E2OpsworksLaunchTemplate"},
+          "Version": {"Fn::GetAtt": ["E2OpsworksLaunchTemplate","LatestVersionNumber"]}
+        },
+        "TargetGroupARNs": [{"Ref": "E2FrontendELBTargetGroup"}],
+        "TerminationPolicies": ["OldestInstance"],
+        "NotificationConfigurations": [
+          {
+            "NotificationTypes": [
+              "autoscaling:EC2_INSTANCE_LAUNCH",
+              "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
+              "autoscaling:EC2_INSTANCE_TERMINATE",
+              "autoscaling:EC2_INSTANCE_TERMINATE_ERROR",
+              "autoscaling:TEST_NOTIFICATION"
+            ],
+            "TopicARN": {"Ref": "AppAutoScalingSNSTopic"}
+          },
+          {
+            "NotificationTypes": [
+              "autoscaling:EC2_INSTANCE_TERMINATE"
+            ],
+            "TopicARN": {"Ref": "AutoScalingTerminationSNSTopic"}
+          }
+        ],
+        "VPCZoneIdentifier": [{"Ref": "AppVPCSubnet1"}]
+      }
+    },
+    "E2OpsWorksLambdaDeregistrationPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows E2 lambda job to deregister machines when they are scaled down",
+        "ManagedPolicyName": "E2OpsWorksLambdaDeregistrationPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": ["ec2:DescribeInstances","opsworks:DescribeInstances","opsworks:DeregisterInstance"],
+            "Resource": ["*"]
+          },
+          {
+            "Effect": "Allow",
+            "Action": ["logs:CreateLogGroup","logs:CreateLogStream","logs:PutLogEvents"],
+            "Resource": "arn:aws:logs:*:*:*"
+          }]
+        }
+      }
+    },
+    "E2PreprodRR": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "preprod.everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "AliasTarget": {
+          "DNSName": {"Fn::GetAtt": ["E2FrontendELB", "DNSName"]},
+          "HostedZoneId": {"Fn::GetAtt": ["E2FrontendELB", "CanonicalHostedZoneID"]},
+          "EvaluateTargetHealth": false
+        },
+        "Type": "A"
+      }
+    },
+    "DeregistrationLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "lambda.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Description": "Auto Scaling termination deregistration Lambda Role",
+        "ManagedPolicyArns": [
+            {"Ref": "E2OpsWorksLambdaDeregistrationPolicy"},
+        ],
+        "Path": "/",
+        "RoleName": "Deregistration-Lambda-Role"
+      }
+    },
+    "OpsWorksDeregistrationLambda": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "lambdasource.everything2.com",
+          "S3Key": "opsworks-deregistration.zip"
+        },
+        "FunctionName": "opsworks-deregistration",
+        "Role": {"Fn::GetAtt" : ["DeregistrationLambdaRole", "Arn"]},
+        "Runtime": "ruby2.7",
+        "Timeout": "30",
+        "Handler": "handler.lambda_handler"
+      }
+    },
+    "OpsWorksDeregistrationLambdaLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "OpsWorksDeregistrationLambda"}]]},
+        "RetentionInDays": 3
+      }
+    },
+    "AutoScalingTerminationSNSTopic": {
+      "Type": "AWS::SNS::Topic",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "DisplayName": "Termination Notification for instances",
+        "TopicName": "autoscaling-instance-termination",
+        "Subscription": [
+          {
+            "Endpoint": {"Fn::GetAtt": ["OpsWorksDeregistrationLambda","Arn"]},
+            "Protocol": "lambda"
+          }
+        ]
+      },
+      "DependsOn": ["OpsWorksDeregistrationLambda"]
+    },
+    "OpsWorksDeregistrationLambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName" : {"Ref": "OpsWorksDeregistrationLambda"},
+        "Principal": "sns.amazonaws.com",
+        "Action": "lambda:InvokeFunction",
+        "SourceArn" : {"Ref" : "AutoScalingTerminationSNSTopic"}
+      }
+    },
+    "OpsworksReaperLambdaPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows E2 lambda job to discover and kill machines that are in a bad OpsWorks state",
+        "ManagedPolicyName": "OpsworksReaperLambdaPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": ["ec2:DescribeInstances","opsworks:DescribeStacks","opsworks:DescribeInstances","opsworks:DeregisterInstance", "ec2:TerminateInstances"],
+            "Resource": ["*"]
+          },
+          {
+            "Effect": "Allow",
+            "Action": ["logs:CreateLogGroup","logs:CreateLogStream","logs:PutLogEvents"],
+            "Resource": "arn:aws:logs:*:*:*"
+          }]
+        }
+      }
+    },
+    "OpsWorksReaperLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "lambda.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Description": "OpsWorks Reaper Lambda Role",
+        "ManagedPolicyArns": [
+            {"Ref": "OpsworksReaperLambdaPolicy"},
+        ],
+        "Path": "/",
+        "RoleName": "OpsWorks-Reaper-Lambda-Role"
+      }
+    },
+    "OpsworksReaperEventsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/opsworks-reaper",
+        "RetentionInDays": 3
+      }
+    },
+    "OpsWorksReaperLambda": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "lambdasource.everything2.com",
+          "S3Key": "opsworks-reaper.zip"
+        },
+        "FunctionName": "opsworks-reaper",
+        "Role": {"Fn::GetAtt" : ["OpsWorksReaperLambdaRole", "Arn"]},
+        "Runtime": "ruby2.7",
+        "Timeout": "30",
+        "Handler": "handler.lambda_handler"
+      }
+    },
+    "OpsWorksReaperCronRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "Cron rule to call opsworks-reaper lambda",
+        "Name": "opsworks-reaper-lambda-cron",
+        "State": "ENABLED",
+        "ScheduleExpression": "cron(0/20 * * * ? *)",
+        "Targets": [{
+          "Id": "opsworks-reaper-lambda-arn",
+          "Arn": {"Fn::GetAtt" : ["OpsWorksReaperLambda", "Arn"]}
+        }]
+      }
+    },
+    "OpsWorksReaperLambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName" : {"Ref": "OpsWorksReaperLambda"},
+        "Principal": "events.amazonaws.com",
+        "Action": "lambda:InvokeFunction",
+        "SourceArn" : {"Fn::GetAtt" : ["OpsWorksReaperCronRule", "Arn"]}
+      }
+    },
+    "PerlLambdaBaseBuildSNSTopic": {
+      "Type": "AWS::SNS::Topic",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "DisplayName": "Perl Lambda base build complete",
+        "TopicName": "perl-lambda-base-build-complete"
+      }
+    },
+    "PerlLambdaBaseBuildRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "Subscribing to perl lambda base build",
+        "Name": "perllambdabuildrule",
+        "EventPattern": {
+          "source": ["aws.codebuild"],
+          "detail-type": ["CodeBuild Build State Change"],
+          "detail": {
+            "build-status": [
+              "SUCCEEDED",
+              "FAILED"
+            ],
+            "project-name": [{"Ref": "PerlLambdaCodeBuildProject"}]
+          }
+        },
+        "Targets": [{
+          "Arn": {"Ref": "PerlLambdaBaseBuildSNSTopic"},
+          "Id": "perl-lambda-codebuild-to-sns"
+        }]
+      }
+    },
+    "PerlLambdaBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "perllambdabase.everything2.com"
+      }
+    },
+    "PerlLambdaBucketWritePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows E2 processes to upload to the perl lambda base bucket",
+        "ManagedPolicyName": "PerlLambdaBucketWritePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": ["s3:PutObject","s3:GetObject"],
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "PerlLambdaBucket", "Arn"] }, "/*"]]}
+          }]
+        }
+      }
+    },
+    "ZipsBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "githubzips.everything2.com"
+      }
+    },
+    "ZipsBucketWritePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows E2 processes to upload to the zips bucket",
+        "ManagedPolicyName": "ZipsBucketWritePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "s3:PutObject",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "ZipsBucket", "Arn"] }, "/*"]]}
+          }]
+        }
+      }
+    },
+    "ZipsBucketReadPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows E2 process to read from the zips bucket",
+        "ManagedPolicyName": "ZipsBucketReadPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "s3:GetObject",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "ZipsBucket", "Arn"] }, "/*"]]}
+          }]
+        }
+      }
+    },
+    "ZipsLambdaInvokerPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows the webhooks receiver lambda to call the github pull handler",
+        "ManagedPolicyName": "ZipsLambdaInvokerPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "lambda:InvokeFunction",
+            "Resource": {"Fn::GetAtt" : ["LambdaZipsPuller", "Arn"]}
+          }]
+        }
+      }
+    },
+    "ReadGithubSecretPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows worker to read the current Github Webhook secret",
+        "ManagedPolicyName": "ReadGithubSecretPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
+              "Resource": {"Fn::Join" : ["",[{"Fn::GetAtt": ["SecretsS3Bucket", "Arn"]}, "/github_webhook_secret"]]}
+            }
+          ]
+        }
+      }
+    },
+    "InvokeWebhookReceiverPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows worker to invoke the webhooks receiver function",
+        "ManagedPolicyName": "InvokeWebhookReceiverPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "lambda:InvokeFunction",
+              "Resource": {"Fn::GetAtt" : ["LambdaWebhookReceiver", "Arn"]}
+            }
+          ]
+        }
+      }
+    },
+    "WebhooksAPIGatewayRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "apigateway.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Description": "CI/CD webhook receiver for build pipeline",
+        "ManagedPolicyArns": [
+            {"Ref": "InvokeWebhookReceiverPolicy"}
+        ],
+        "Path": "/",
+        "RoleName": "Webhooks-APIGateway-Role"
+      }
+    },
+    "LambdaZipsWriterRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+           "Statement": {
+             "Effect": "Allow",
+             "Principal": {"Service": "lambda.amazonaws.com"},
+             "Action": "sts:AssumeRole"
+           }
+        },
+        "Description": "CI/CD zips creater for build pipeline",
+        "ManagedPolicyArns": [
+          {"Ref": "ZipsBucketWritePolicy"},
+          {"Ref": "InvokeEverything2ZipfileProcessorPolicy"},
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        ],
+        "Path": "/",
+        "RoleName": "CICD-Zips-Role"
+      }
+    },
+    "LambdaWebhookReceiverRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+           "Statement": {
+             "Effect": "Allow",
+             "Principal": {"Service": "lambda.amazonaws.com"},
+             "Action": "sts:AssumeRole"
+           }
+        },
+        "Description": "CI/CD zips creater for build pipeline",
+        "ManagedPolicyArns": [
+          {"Ref": "ZipsLambdaInvokerPolicy"},
+          {"Ref": "ReadGithubSecretPolicy"},
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        ],
+        "Path": "/",
+        "RoleName": "Webhook-Receiver-Role"
+      }
+    },
+    "LambdaZipsPuller": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "lambdasource.everything2.com",
+          "S3Key": "cicd-zips-puller.zip"
+        },
+        "FunctionName": "cicd-zips-puller",
+        "Role": {"Fn::GetAtt" : ["LambdaZipsWriterRole", "Arn"]},
+        "Runtime": "ruby2.7",
+        "Timeout": "30",
+        "Handler": "handler.lambda_handler"
+      }
+    },
+    "LambdaWebhookReceiverPermission":
+    {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {"Fn::GetAtt": ["LambdaWebhookReceiver","Arn"]},
+        "Principal": "apigateway.amazonaws.com",
+        "Action": "lambda:InvokeFunction",
+        "SourceArn": { "Fn::Join": [ "", ["arn:aws:execute-api:", { "Ref": "AWS::Region" }, ":",{ "Ref": "AWS::AccountId" }, ":",{ "Ref": "WebhooksAPIGateway" },"/*/*/newpush"] ] }
+      }
+    },
+    "WebhooksAPIGateway": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "FailOnWarnings": true,
+        "Body": {
+          "openapi": "3.0.3",
+          "info": {
+            "title": "E2 CICD Webhooks API",
+            "description": "This is the Webhooks frontend for GitHub integration into E2 deployment",
+            "contact": {
+              "name": "Account Help",
+              "email": "accounthelp@everything2.com"
+            },
+            "version": "1.0.1"
+          },
+          "servers": [
+          {
+            "url": "https://webhooks.everything2.com",
+            "description": "Production server"
+          }],
+          "paths": {
+            "/newpush": {
+              "post": {
+                "description": "Accepts a webhook from GitHub",
+                "responses": {
+                  "200": {
+                    "description": "Acceptance of request"
+                  }
+                },
+                "x-amazon-apigateway-integration": {
+                  "credentials": {"Fn::GetAtt" : ["WebhooksAPIGatewayRole", "Arn"]},
+                  "type": "AWS_PROXY",
+                  "httpMethod": "POST",
+                  "uri": {"Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaWebhookReceiver.Arn}/invocations"},
+                  "payloadFormatVersion": "1.0"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "WebhooksAPIGatewayCertificate": {
+      "Type": "AWS::CertificateManager::Certificate",
+      "Properties": {
+        "DomainName": "webhooks.everything2.com",
+        "ValidationMethod": "DNS"
+      }
+    },
+    "WebhooksAPIGatewayDomain": {
+      "Type": "AWS::ApiGatewayV2::DomainName",
+      "Properties": {
+        "DomainName": "webhooks.everything2.com",
+        "DomainNameConfigurations": [
+          {
+            "CertificateArn": {"Ref": "WebhooksAPIGatewayCertificate"},
+            "CertificateName": "webhooks.everything2.com",
+            "EndpointType": "REGIONAL"
+          }
+        ]
+      }
+    },
+    "WebhooksAPIBasePath": {
+      "Type": "AWS::ApiGatewayV2::ApiMapping",
+      "Properties": {
+        "DomainName": {"Ref": "WebhooksAPIGatewayDomain"},
+        "ApiId": {"Ref": "WebhooksAPIGateway"},
+        "Stage": {"Ref": "WebhooksAPIProduction"},
+        "ApiMappingKey": ""
+      }
+    },
+     "WebhooksAPIGatewayRR": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "webhooks.everything2.com",
+        "HostedZoneName": "everything2.com.",
+        "AliasTarget": {
+          "DNSName": {"Fn::GetAtt": ["WebhooksAPIGatewayDomain", "RegionalDomainName"]},
+          "HostedZoneId": {"Fn::GetAtt": ["WebhooksAPIGatewayDomain", "RegionalHostedZoneId"]},
+          "EvaluateTargetHealth": false
+        },
+        "Type": "A"
+      }
+    },
+    "LambdaWebhookReceiver": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "lambdasource.everything2.com",
+          "S3Key": "webhooks-receiver.zip"
+        },
+        "FunctionName": "webhooks-receiver",
+        "Role": {"Fn::GetAtt" : ["LambdaWebhookReceiverRole", "Arn"]},
+        "Runtime": "ruby2.7",
+        "Timeout": "30",
+        "Handler": "handler.lambda_handler"
+      }
+    },
+    "WebhooksAPILogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "LambdaWebhookReceiver"}]]},
+        "RetentionInDays": 3
+      }
+    },
+    "WebhooksAPIGatewayLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/apigateway/webhooks-production",
+        "RetentionInDays": 3
+      }
+    },
+    "CICDLambdaLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "LambdaZipsPuller"}]]},
+        "RetentionInDays": 3
+      }
+    },
+    "Everything2ZipfileProcessorGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "Everything2ZipfileProcessorLambda"}]]},
+        "RetentionInDays": 3
+      }
+    },
+    "WebhooksAPIProduction": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "Description": "Production Stage",
+        "StageName": "production",
+        "ApiId": {"Ref": "WebhooksAPIGateway"},
+        "AutoDeploy": true,
+        "AccessLogSettings": {
+          "DestinationArn": {"Fn::GetAtt": ["WebhooksAPIGatewayLogGroup","Arn"]},
+          "Format": "{\"requestId\":\"$context.requestId\", \"domain\": \"$context.domainName\", \"ip\": \"$context.identity.sourceIp\", \"requestTime\":\"$context.requestTime\", \"routeKey\":\"$context.routeKey\", \"status\":\"$context.status\", \"error\":\"$context.error.message\", \"int_error\":\"$context.integrationErrorMessage\"}"
+        }
+      }
+    },
+    "WebhooksAPIGatewayDeployment": {
+      "Type" : "AWS::ApiGatewayV2::Deployment",
+      "Properties" : {
+        "Description" : "Production Deployment",
+        "ApiId" : {"Ref": "WebhooksAPIGateway"},
+        "StageName" : {"Ref": "WebhooksAPIProduction"}
+      }
+    },
+    "WebhookReceivedSNSTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "DisplayName": "Github Webhook Received",
+        "TopicName": "webhook-received"
+      }
+    },
+    "PerlLambdaCodeBuildLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/codebuild/perllambda",
+        "RetentionInDays": 3
+      }
+    },
+    "PerlLambdaCodeBuildLogWritePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows E2 processes to write to the perl lambda builder log group",
+        "ManagedPolicyName": "PerlLambdaCodeBuildLogWritePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "logs:PutLogEvents",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "PerlLambdaCodeBuildLogGroup", "Arn"] }, ":*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "logs:CreateLogStream",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "PerlLambdaCodeBuildLogGroup", "Arn"] }, ":*"]]}
+          }]
+        }
+      }
+    },
+    "PerlLambdaCodeUpdatePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows codebuild to update lamda code once built",
+        "ManagedPolicyName": "PerlLambdaCodeUpdatePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "lambda:UpdateFunctionCode",
+            "Resource": {"Fn::GetAtt": ["PerlBaseLambdaFunction", "Arn"]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "lambda:PublishLayerVersion",
+            "Resource": {"Fn::Join": ["",["arn:aws:lambda:",{"Ref": "AWS::Region"},":",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer"]]}
+          }]
+        }
+      }
+    },
+    "PerlLambdaCodeBuildRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "codebuild.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Description": "Perl lambda base CodeBuild role",
+        "ManagedPolicyArns": [
+            {"Ref": "PerlLambdaBucketWritePolicy"},
+            {"Ref": "ZipsBucketReadPolicy"},
+            {"Ref": "PerlLambdaCodeBuildLogWritePolicy"},
+            {"Ref": "PerlLambdaCodeUpdatePolicy"},
+            {"Ref": "CodeBuildInvokeLambdaLayerUpdaterPolicy"}
+        ],
+        "Path": "/",
+        "RoleName": "PerlLambda-CodeBuild-Role"
+      }
+    },
+    "PerlLambdaCodeBuildProject": {
+      "Type": "AWS::CodeBuild::Project",
+      "Properties": {
+        "Artifacts": {
+          "Type": "NO_ARTIFACTS"
+        },
+        "LogsConfig": {
+          "CloudWatchLogs": {
+            "Status": "ENABLED",
+            "GroupName": {"Ref": "PerlLambdaCodeBuildLogGroup"}
+          }
+        },
+        "ServiceRole": {"Ref": "PerlLambdaCodeBuildRole"},
+        "Source": {
+          "Type": "S3",
+          "BuildSpec": "serverless/buildspec.yml",
+          "Location": {"Fn::Join" : ["/",[{ "Ref": "ZipsBucket"}, "everything2.zip"]]}
+        },
+        "TimeoutInMinutes": 90,
+        "Environment": {
+          "ComputeType": "BUILD_GENERAL1_SMALL",
+          "Image": "aws/codebuild/amazonlinux2-x86_64-standard:3.0",
+          "Type": "LINUX_CONTAINER"
+        }
+      }
+    },
+    "CookbooksBucketWritePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows E2 processes to write to cookbooks bucket",
+        "ManagedPolicyName": "CookbooksBucketWritePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+            "Resource": {"Fn::Join" : ["",[{"Fn::GetAtt": ["CookbooksBucket", "Arn"]}, "/*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": ["s3:ListBucket"],
+            "Resource": {"Fn::GetAtt": ["CookbooksBucket", "Arn"]}
+          }]
+        }
+      }
+    },
+    "Everything2ZipfileProcessorRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "lambda.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Description": "Everything2 Zipfile Processor Lambda Role",
+        "ManagedPolicyArns": [
+            {"Ref": "ZipsBucketReadPolicy"},
+            {"Ref": "CookbooksBucketWritePolicy"},
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        ],
+        "Path": "/",
+        "RoleName": "Everything2-Zipfile-Processor-Role"
+      }
+    },
+    "Everything2ZipfileProcessorLambda": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "lambdasource.everything2.com",
+          "S3Key": "everything2-zipfile-processor.zip"
+        },
+        "FunctionName": "everything2-zipfile-processor",
+        "Role": {"Fn::GetAtt" : ["Everything2ZipfileProcessorRole", "Arn"]},
+        "Runtime": "ruby2.7",
+        "Timeout": "30",
+        "Handler": "handler.lambda_handler"
+      }
+    },
+    "InvokeEverything2ZipfileProcessorPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows the zipfile handler lambda to call the everything2 specific jobs",
+        "ManagedPolicyName": "InvokeEverything2ZipfileProcessorPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "lambda:InvokeFunction",
+            "Resource": {"Fn::GetAtt" : ["Everything2ZipfileProcessorLambda", "Arn"]}
+          }]
+        }
+      }
+    },
+    "PerlBaseLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "lambda.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Description": "BasicLambdaRole",
+        "ManagedPolicyArns": [
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        ],
+        "Path": "/",
+        "RoleName": "Perl-Base-Lambda-Role"
+      }
+    },
+    "CloudWatchSNSPolicy": {
+      "Type": "AWS::SNS::TopicPolicy",
+      "Properties": {
+        "Topics": [
+          {"Ref": "AppAutoScalingSNSTopic"},
+          {"Ref": "AutoScalingTerminationSNSTopic"},
+          {"Ref": "PerlLambdaBaseBuildSNSTopic"}
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Sid" : "CloudWatchEventsPublishAllow",
+            "Effect" : "Allow",
+            "Resource" : "*",
+            "Action" : "sns:Publish",
+            "Principal" : {
+              "Service" : "events.amazonaws.com"
+            }
+          }]
+        }
+      }
+    },
+    "PerlBaseLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "perllambdabase.everything2.com",
+          "S3Key": "e2serverless.zip"
+        },
+        "FunctionName": "perl-lambda-base",
+        "Role": {"Fn::GetAtt" : ["PerlBaseLambdaRole", "Arn"]},
+        "Runtime": "provided",
+        "Timeout": "30",
+        "Handler": "handler.lambda_handler"
+      }
+    },
+    "PerlLambdaLayer": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "CompatibleRuntimes": ["provided"],
+        "Content": {
+          "S3Bucket": "perllambdabase.everything2.com",
+          "S3Key": "e2serverless.zip"
+        },
+        "LayerName": "e2-perl-layer",
+        "Description": "Perl layer for E2"
+      }
+    },
+    "CICDLambdaUpdaterPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows the lambda processor to update the code of lambda funcions, both ruby and perl",
+        "ManagedPolicyName": "CICDLambdaUpdaterPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "lambda:ListFunctions",
+            "Resource": "*"
+          }]
+        }
+      }
+    },
+    "CICDPerlBaseVersionUpdaterPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows a lambda processor to update the perl layer version across all of the lambda functions",
+        "ManagedPolicyName": "CICDPerlBaseUpdaterPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": ["lambda:ListFunctions","lambda:UpdateFunctionConfiguration","lambda:ListLayerVersions","lambda:GetLayerVersion", "lambda:DeleteLayerVersion"],
+            "Resource": "*"
+          },
+          {
+            "Effect": "Allow",
+            "Action": "lambda:ListLayerVersions",
+            "Resource": {"Fn::Join": ["",["arn:aws:lambda:",{"Ref": "AWS::Region"},":",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "lambda:DeleteLayerVersion",
+            "Resource": {"Fn::Join": ["",["arn:aws:lambda:",{"Ref": "AWS::Region"},":",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:*"]]}
+          }]
+        }
+      }
+    },
+    "CICDPerlBaseVersionUpdaterLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+           "Statement": {
+             "Effect": "Allow",
+             "Principal": {"Service": "lambda.amazonaws.com"},
+             "Action": "sts:AssumeRole"
+           }
+        },
+        "Description": "CI/CD zips creater for build pipeline",
+        "ManagedPolicyArns": [
+          {"Ref": "CICDPerlBaseVersionUpdaterPolicy"},
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+        ],
+        "Path": "/",
+        "RoleName": "CICD-Perl-Base-Version-Updater-Role"
+      }
+    },
+    "CICDCodeBuildPerlBaseVersionUpdaterLambda": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "lambdasource.everything2.com",
+          "S3Key": "cicd-codebuild-perl-layer-publisher.zip"
+        },
+        "FunctionName": "cicd-codebuild-perl-layer-publisher",
+        "Role": {"Fn::GetAtt" : ["CICDPerlBaseVersionUpdaterLambdaRole", "Arn"]},
+        "Runtime": "ruby2.7",
+        "Timeout": "30",
+        "Handler": "handler.lambda_handler"
+      }
+    },
+    "CodeBuildInvokeLambdaLayerUpdaterPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows a lambda processor to update the perl layer version across all of the lambda functions",
+        "ManagedPolicyName": "CodeBuildInvokeLambdaLayerUpdaterPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": ["lambda:InvokeFunction"],
+            "Resource": {"Fn::GetAtt": ["CICDCodeBuildPerlBaseVersionUpdaterLambda", "Arn"]}
+          }]
+        }
+      }
+    },
+    "PerlBaseLayerUpdaterLambdaLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "CICDCodeBuildPerlBaseVersionUpdaterLambda"}]]},
+        "RetentionInDays": 3
+      }
+    },
+    "PerlBaseTestLambdaLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "PerlBaseLambdaFunction"}]]},
+        "RetentionInDays": 3
+      }
+    }
+  }
+}
