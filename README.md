@@ -1,7 +1,5 @@
 # Developing inside of ecore
 
-** Note: It is important that you clone the repository with --recursive so that you get the submodules, otherwise you will not be able to instantiate a vagrant VM**
-
 ## Structure of the repository:
 
  * [cf](https://github.com/everything2/everything2/tree/master/cf) - CloudFormation templates
