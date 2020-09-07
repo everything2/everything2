@@ -103,8 +103,20 @@ def wait_on_in_progress(client, stack_name)
   end
 end
 
+def cf_dir
+  "#{File.expand_path(File.dirname(__FILE__))}/../cf"
+end
+
+def stack_filename
+  "#{@stack_name}.json"
+end
+
+def template_file
+  "#{cf_dir}/#{stack_filename}"
+end
+
 def template_body
-  File.open("#{@stack_name}.json").read
+  File.open(template_file).read
 end
 
 def template_items
@@ -333,13 +345,9 @@ def update_termination_protection(state)
   puts "Stack protection set to #{state}"
 end
 
-def stack_filename
-  "#{@stack_name}.json"
-end
-
 def upload_stack_to_s3
   puts "Uploading #{stack_filename} to #{@cfbucket}"
-  File.open(stack_filename) do |f|
+  File.open(template_file) do |f|
     @s3client.put_object(body: f, bucket: @cfbucket, key: stack_filename)
   end
 end
@@ -347,7 +355,7 @@ end
 def incremental_update
   change_set_name = "Update-#{Time.now.to_i}"
   puts 'Setting stack policy'
-  @cfclient.set_stack_policy(stack_name: @stack_name, stack_policy_body: File.open('stack_policy.json').read)
+  @cfclient.set_stack_policy(stack_name: @stack_name, stack_policy_body: File.open("#{cf_dir}/stack-policy.json").read)
 
   puts 'Updating stack'
 
