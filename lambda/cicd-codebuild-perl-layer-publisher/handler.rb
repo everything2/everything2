@@ -18,7 +18,7 @@ def lambda_handler(args)
   layer_versions = lambda_client.list_layer_versions(layer_name: perl_layer).layer_versions
 
   if layer_versions.empty?
-    puts "Internal failure: could not find any layer versions"
+    puts "Internal failure: could not find any layer versions\n"
   end
 
   highest_version = 0
@@ -33,33 +33,29 @@ def lambda_handler(args)
   lambda_client.list_functions.functions.each do |func|
     next if func.layers.nil?
 
-    if func.layers.count > 1
-      puts "Unexpected layer structure in function: '#{func.layer_name}'"
-      exit
-    end
-
-    unless func.layers[0].arn.match("#{perl_layer}")
-      puts "Function #{func.function_name} does not appear to contain the perl layer, skipping"
-      next 
-    end
-
-    if matches = func.layers[0].arn.match(/:(\d+)$/)
-      this_version = matches[1]
-
-      if this_version.to_i < highest_version.to_i
-        puts "Function #{func.function_name} has perl layer version: #{this_version}, current best: #{highest_version}, updating"
-        lambda_client.update_function_configuration(function_name: func.function_name, layers: [highest_version_arn])
+    layers_list = []
+    func.layers.each do |layer|
+      if matches = layer.arn.match(/#{perl_layer}:(\d+)$/)
+        puts "Function #{func.function_arn} contains the perl layer\n"
+        layers_list.push highest_version_arn
+      else
+        layers_list.push layer.arn
       end
+    end
+
+    if !layers_list.empty?
+      puts "Updating function with new layers\n"
+      lambda_client.update_function_configuration(function_name: func.function_name, layers: layers_list)
     end
   end
 
   layer_versions.each do |layer|
     if layer.version.to_i < highest_version.to_i
       if matches = layer.layer_version_arn.match(/:([^\:]+):\d+$/)
-        puts "Deleting layer: #{matches[1]}, version: #{layer.version}"
+        puts "Deleting layer: #{matches[1]}, version: #{layer.version}\n"
         lambda_client.delete_layer_version(layer_name: matches[1], version_number: layer.version)
       else
-        puts "Could not determine layer name from arn"
+        puts "Could not determine layer name from arn\n"
         exit
       end
     end
