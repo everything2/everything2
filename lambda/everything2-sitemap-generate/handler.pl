@@ -1,13 +1,6 @@
 #!/usr/bin/env perl
 
-BEGIN {
-  print `nm -g /lib64/libm.so.6`;
-  print `ls -al /lib64`;
-}
-
-use lib qw(/opt/lib);
-use POSIX;
-#use Everything;
+use Everything;
 use JSON;
 
 sub http_response
