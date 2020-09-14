@@ -12,7 +12,7 @@ CMAKE=$(INSTALL)/bin/cmake
 
 P7ZIPCOPYFILE=
 
-ifeq ($(shell /usr/bin/sw_vers),"")
+ifeq ($(shell /usr/bin/sw_vers 2>/dev/null),)
   P7ZIPCOPYFILE=linux_any_cpu
 else
   P7ZIPCOPYFILE=macosx_llvm_64bits
