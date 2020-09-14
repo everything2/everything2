@@ -5,7 +5,7 @@ require 'aws-sdk-lambda'
 lambda_client = Aws::Lambda::Client.new(region: 'us-west-2')
 
 pp lambda_client.publish_layer_version(
-  compatible_runtimes: ['provided'],
+  compatible_runtimes: ['provided.al2'],
   content: {
     s3_bucket: 'perllambdabase.everything2.com',
     s3_key: 'e2serverless.zip'
