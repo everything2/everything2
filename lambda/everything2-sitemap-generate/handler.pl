@@ -1,12 +1,13 @@
 #!/usr/bin/env perl
 
+BEGIN {
+  $ENV{LD_LIBRARY_PATH}.=":/tmp/lib";
+  print "$ENV{LD_LIBRARY_PATH}\n";
+}
+
 use strict;
 #use Everything;
 #use JSON;
-
-BEGIN {
-  print `ls -1 /lib64/libxml*`;
-}
 
 sub http_response
 {
