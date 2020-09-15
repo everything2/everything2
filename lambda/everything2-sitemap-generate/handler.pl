@@ -1,12 +1,7 @@
 #!/usr/bin/env perl
 
-BEGIN {
-  $ENV{LD_LIBRARY_PATH}.=":/tmp/lib";
-  print "$ENV{LD_LIBRARY_PATH}\n";
-}
-
 use strict;
-#use Everything;
+use Everything;
 #use JSON;
 
 sub http_response
