@@ -1,12 +1,17 @@
 #!/usr/bin/env perl
 
-use Everything;
-use JSON;
+use strict;
+#use Everything;
+#use JSON;
+
+BEGIN {
+  print `ls -1 /lib64/libxml*`;
+}
 
 sub http_response
 {
   my ($code, $message) = @_;
-  JSON->new->encode({
+  return JSON->new->encode({
     "statusCode" => $code,
     "headers" => {"Content-Type" => "application/json"},
     "body" => {"message" => $message}});
@@ -15,9 +20,8 @@ sub http_response
 sub lambda_handler
 {
   my ($event) = @_;
-
   print "Lambda test!\n";
-  http_response(200, "OK");
+  return http_response(200, "OK");
 }
 
 1;
