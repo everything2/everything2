@@ -5,6 +5,7 @@ MYSQLVER=8.0.20
 BOOSTVER=1_70_0
 CPANMVER=1.7044
 P7ZIPVER=16.02
+LIBXMLVER=2.9.10
 
 INSTALL=$(shell pwd)/install
 PERL=$(INSTALL)/bin/perl
@@ -61,11 +62,19 @@ boost.unzip: 3rd/boost_$(BOOSTVER).tar.gz
 	mkdir -p 3rd && cd 3rd && wget https://dl.bintray.com/boostorg/release/1.70.0/source/boost_$(BOOSTVER).tar.gz
 	touch $@
 
+libxml2.build: 3rd/libxml2-$(LIBXMLVER).tar.gz
+	mkdir -p build && cd build && tar zxvf ../3rd/libxml2-$(LIBXMLVER).tar.gz && cd libxml2-$(LIBXMLVER) && ./configure --prefix=$(INSTALL) --without-python && make && make install
+	touch $@
+
+3rd/libxml2-$(LIBXMLVER).tar.gz:
+	mkdir -p 3rd && cd 3rd && wget ftp://xmlsoft.org/libxml2/libxml2-$(LIBXMLVER).tar.gz
+	touch $@
+
 magick.build: 3rd/ImageMagick-$(MAGICKVER).tar.gz $(PERL)
 	mkdir -p build && cd build && tar xzvf ../3rd/ImageMagick-$(MAGICKVER).tar.gz && cd ImageMagick-$(MAGICKVER) && ./configure --prefix=$(INSTALL) --with-perl=$(PERL) && make && make install && $(PERL) -MImage::Magick -le 'print Image::Magick->QuantumDepth'
 	touch $@
 
-deps.build: $(PERL) mysql.build
+deps.build: $(PERL) mysql.build libxml2.build
 	PATH=$(INSTALL)/bin/:$(PATH) $(PERL) ../tools/createdeps.pl --depfile=$(shell pwd)/deplists/app.json --dldir=$(shell pwd)/3rd --installdir=$(shell pwd)/install --builddir=$(shell pwd)/build && touch $@
 
 p7zip.build: 3rd/p7zip_$(P7ZIPVER)_src_all.tar.bz2
@@ -109,7 +118,7 @@ perlmodclean:
 	rm -rf install/lib/perl5 deps.build $(PERL)
 
 clean:
-	rm -rf build/* install/* *.build nytprof.* *.log inc *.unzip *.zip
+	rm -rf build/* install/* *.build nytprof.* *.log inc *.unzip *.zip 7za
 
 distclean: clean
 	rm -rf 3rd/*
