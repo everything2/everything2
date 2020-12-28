@@ -34,7 +34,6 @@ to_install = [
     'libarchive-zip-perl',
     'libcgi-pm-perl',
     'libcache-perl',
-    'libcache-memcached-perl',
     'libdbi-perl',
     'libdate-calc-perl',
     'libdatetime-perl',

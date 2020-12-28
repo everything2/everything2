@@ -45,7 +45,6 @@ use warnings;
 use Everything;
 use Everything::CacheQueue;
 use Everything::NodeBase;
-use Everything::Memcache;
 
 ## no critic (ProhibitAutomaticExportation)
 
@@ -109,10 +108,6 @@ sub new
 	$this->{paramcache} = {};
 
 	$this->{pagecache} = {};
-	
-	if ($Everything::CONF->memcache) { 
-        	$this->{memcache} = new Everything::Memcache($Everything::CONF->memcache, $nodeBase);
-    	}
 	
 	return $this;
 }
@@ -224,12 +219,6 @@ sub getCachedNodeByName
 			return;
 		}
 		return $NODE if($this->isSameVersion($NODE));
-	}  elsif ($this->{memcache}) {
-	       $NODE = $this->{memcache}->getNodeByNameType($title, $typename);
-	       	if ($NODE) {
-			$this->cacheNodeFromMemcache($NODE);
-       			return $NODE if $this->isSameVersion($NODE);
-       		}
 	}
 	return;
 }
@@ -260,12 +249,6 @@ sub getCachedNodeById
 		$NODE = $this->{nodeQueue}->getItem($data);
 
 		return $NODE if($this->isSameVersion($NODE));
-	} elsif ($this->{memcache}) {
-       		$NODE = $this->{memcache}->getNode($id);
-	       	if ($NODE) {
-			$this->cacheNodeFromMemcache($NODE);
-       			return $NODE if $this->isSameVersion($NODE);
-       		}
 	}
 	return;
 }
@@ -313,45 +296,6 @@ sub cacheNode
 
 	return 1;
 }
-
-#have to handle things a bit differently when it's coming from the L2 cache
-sub cacheNodeFromMemcache {
-	my ($this, $NODE) = @_;
-	my ($type, $title) = ($$NODE{type}{title}, $$NODE{title});
-	my $data;
-
-	# Add the NODE to the queue.  This puts the newly cached node at the
-	# end of the queue.
-	$data = $this->{nodeQueue}->queueItem($NODE, 0);
-
-	# Store hash keys for its "name" and numeric Id, and set the version.
-	$this->{typeCache}{$type}{$title} = $data;
-	$this->{idCache}{$$NODE{node_id}} = $data;
-	$this->{version}{$$NODE{node_id}} = $$NODE{_memcached_version};
-
-	$this->purgeCache();
-
-	return 1;
-
-}
-
-
-
- #############################################################################
- # Sub
- #     memcacheNode
- #
- # Purpose
- #     Given a node, put it in memcached
- #
- # Parameters
- #     $NODE - the node hashref to put in the cache
- #
- sub memcacheNode {
-   my ($this, $node) = @_;
-   return 0 unless $this->{memcache};
-   return $this->{memcache}->setNode($node);
- }
 
 #############################################################################
 #	Sub

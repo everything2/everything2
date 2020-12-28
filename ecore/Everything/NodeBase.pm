@@ -479,7 +479,6 @@ sub getNode
 		my $perm = 0;
 		$perm = 1 if exists $Everything::CONF->permanent_cache->{$$NODE{type}{title}};
 		$this->{cache}->cacheNode($NODE, $perm);
-		$this->{cache}->memcacheNode($NODE);
 	}
 
 	return $NODE;
@@ -565,7 +564,6 @@ sub getNodeById
 		$perm = 1 if exists $Everything::CONF->permanent_cache->{$$NODE{type}{title}};
 	
 		$this->{cache}->cacheNode($NODE, $perm);
-		$this->{cache}->memcacheNode($NODE);
 	}
 
 	return $NODE;
@@ -1097,7 +1095,6 @@ SQLEND
 		# version will be the same as the node in the db.
 		$this->{cache}->incrementGlobalVersion($NODE);
 		$this->{cache}->cacheNode($NODE) if(defined $this->{cache});
-		$this->{cache}->memcacheNode($NODE);
 
 	}
 	$ORIGINAL_NODE = undef;
