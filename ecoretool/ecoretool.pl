@@ -5,7 +5,7 @@ use File::Basename;
 BEGIN
 {
 	my $basedir = dirname(__FILE__);
-	unshift @INC, "$basedir/lib","$basedir/../ecore","lib";
+	unshift @INC, "$basedir/lib","$basedir/../ecore","lib","/var/libraries/lib/perl5";
 }
 package ecoretool;
 use Getopt::Long;
