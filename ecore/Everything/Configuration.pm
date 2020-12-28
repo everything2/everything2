@@ -40,9 +40,6 @@ has 's3' => (isa => 'HashRef', is => 'ro', default => sub { {} });
 
 has 'static_nodetypes' => (isa => 'Bool', is => 'ro', default => 1);
 
-# Unsure of what the suboptions here are; we don't currently use the memcache code in production
-has 'memcache' => (isa => 'HashRef', is => 'ro', default => sub { {} });
-
 has 'clean_search_words_aggressively' => (isa => 'Bool', is => 'ro', default => 1);
 
 has 'search_row_limit' => (isa => 'Int', is => 'ro', default => 200);

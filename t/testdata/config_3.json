@@ -44,9 +44,6 @@
     }
   },
   "static_nodetypes": 0,
-  "memcache": {
-    "somevalue": "here"
-  },
   "clean_search_words_aggressively": 0,
   "search_row_limit": 321,
   "logdirectory": "anotherlogdirectory",

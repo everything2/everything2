@@ -44,8 +44,6 @@
     }
   },
   "static_nodetypes": 1,
-  "memcache": {
-  },
   "clean_search_words_aggressively": 1,
   "search_row_limit": 200,
   "logdirectory": "/var/log/everything",
