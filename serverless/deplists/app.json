@@ -174,10 +174,6 @@
     "module": "String::CRC32"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/D/DO/DORMANDO/Cache-Memcached-1.30.tar.gz",
-    "module": "Cache::Memcached"
-  },
-  {
     "file": "https://cpan.metacpan.org/authors/id/T/TI/TIMB/DBI-1.643.tar.gz",
     "module": "DBI"
   },
