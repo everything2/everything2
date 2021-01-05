@@ -3,6 +3,7 @@
 use strict;
 use JSON::PP;
 use Getopt::Long;
+use Config;
 
 my $depfile;
 my $installdir;
@@ -76,8 +77,17 @@ sub test_module
 
 foreach my $dep (@$dependencies)
 {
+  if($dep->{skip})
+  {
+    next;
+  }
+
   print "Building '$dep->{module}'\n";
-  if(test_module($dep->{module}) and !$dep->{skiptest})
+
+  if($dep->{removecore})
+  {
+    print "Cannot do initial test for '$dep->{module}' as we have to remove the core first\n";
+  }elsif(test_module($dep->{module}) and !$dep->{skiptest})
   {
     print "Module '$dep->{module}' already working, skipping\n\n";
     next;
@@ -92,8 +102,12 @@ foreach my $dep (@$dependencies)
 
   if($dep->{removecore})
   {
-    print "Removing core modules: $$dep{module}.pm";
-    print `find $installdir -name '$$dep{module}.pm' -type f -exec rm -f {} \\;`;
+    print "Removing core modules: $$dep{module}.pm\n";
+    my $modpath = $$dep{module};
+    $modpath =~ s/::/\//g;
+    my $command = "find $installdir/lib/perl5 -path '*/$modpath.pm' -type f -exec rm -f {} \\; 2>&1";
+    print "Running command: '$command'\n";
+    print `$command`;
   }
 
   if(-e "$dldir/$destfile")
