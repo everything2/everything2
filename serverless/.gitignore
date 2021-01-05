@@ -1,4 +1,5 @@
 *.build
+*.output
 *.out
 *.unzip
 *.zip
