@@ -6,13 +6,15 @@ use JSON;
 use namespace::autoclean;
 
 has 'configfile' => (isa => 'Maybe[Str]', is => 'ro');
-has 'configdir' => (isa => 'Str', is => 'ro' => default => '/etc/everything');
-has 'site_url' => (isa => 'Str', is => 'ro', required => 1);
-has 'guest_user' => (isa => 'Int', is => 'ro', required => 1);
+has 'configdir' => (isa => 'Str', is => 'ro', default => '/etc/everything');
+has 'site_url' => (isa => 'Str', is => 'ro', required => 1, default => 'https://everything2.com');
+has 'guest_user' => (isa => 'Int', is => 'ro', required => 1, default => '779713');
 has 'basedir' => (isa => 'Str', is => 'ro', default => '/var/everything');
 
 has 'infected_ips' => (isa => 'ArrayRef', is => 'ro', builder => '_build_infected', lazy => 1);
-has 'default_style' => (isa => 'Str', is => 'ro', required => 1);
+has 'default_style' => (isa => 'Str', is => 'ro', default => 'Kernel Blue');
+
+has 'gitrepo' => (isa => 'Str', is => 'ro', default => 'git://github.com/everything2/everything2.git');
 
 # Database options
 #
@@ -27,10 +29,10 @@ has 'cookiepass' => (isa => 'Str', is => 'ro', default => 'userpass');
 
 has 'canonical_web_server' => (isa => 'Str', is => 'ro', default => 'localhost');
 
-has 'homenode_image_host' => (isa => 'Str', is => 'ro', default => 'localhost');
+has 'homenode_image_host' => (isa => 'Str', is => 'ro', default => 'hnimagew.everything2.com');
 
 # SMTP options
-has 'mail_from' => (isa => 'Str', is => 'ro', default => 'root@localhost');
+has 'mail_from' => (isa => 'Str', is => 'ro', default => 'accounthelp@everything2.com');
 
 has 'nodecache_size' => (isa => 'Int', is => 'ro', default => 200);
 
@@ -55,8 +57,8 @@ has 'permanent_cache' => (isa => 'HashRef', is => 'ro', default => sub { {} });
 
 has 'nosearch_words' => (isa => 'HashRef', is => 'ro', default => sub { {} });
 
-has 'create_room_level' => (isa => 'Int', is => 'ro', default => 1);
-has 'stylesheet_fix_level' => (isa => 'Int', is => 'ro', default => 0);
+has 'create_room_level' => (isa => 'Int', is => 'ro', default => 5);
+has 'stylesheet_fix_level' => (isa => 'Int', is => 'ro', default => 2);
 has 'maintenance_mode' => (isa => 'Bool', is => 'ro', default => 0);
 has 'writeuplowrepthreshold' => (isa => 'Int', is => 'ro', default => '-8');
 has 'google_ads_badnodes' => (isa => 'ArrayRef', is => 'ro', default => sub { [] });
@@ -64,16 +66,16 @@ has 'google_ads_badwords' => (isa => 'ArrayRef', is => 'ro', default => sub { []
 
 has 'use_controllers' => (isa => 'Bool', is => 'ro', default => 0);
 
-has 's3host' => (isa => 'Str', is => 'ro', default => '');
+has 's3host' => (isa => 'Str', is => 'ro', default => 's3-us-west-2.amazonaws.com');
 
 has 'iam_app_role' => (isa => 'Str', is => 'ro', default => '');
 
 has 'recaptcha_v3_secret_key' => (isa => 'Str', is => 'ro', builder => '_build_recaptcha', lazy => 1);
 has 'recaptcha_v3_public_key' => (isa => 'Str', is => 'ro', default => '');
 
-has 'login_location' => (isa => 'Str', is => 'ro'); 
+has 'login_location' => (isa => 'Str', is => 'ro', default => '/node/superdoc/login');
 
-has 'blacklist_interval' => (isa => 'Str', is => 'ro');
+has 'blacklist_interval' => (isa => 'Str', is => 'ro', default => '3 MONTH');
 
 
 around BUILDARGS => sub
