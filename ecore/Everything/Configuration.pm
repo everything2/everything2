@@ -14,8 +14,6 @@ has 'basedir' => (isa => 'Str', is => 'ro', default => '/var/everything');
 has 'infected_ips' => (isa => 'ArrayRef', is => 'ro', builder => '_build_infected', lazy => 1);
 has 'default_style' => (isa => 'Str', is => 'ro', default => 'Kernel Blue');
 
-has 'gitrepo' => (isa => 'Str', is => 'ro', default => 'git://github.com/everything2/everything2.git');
-
 # Database options
 #
 # TODO: Rename this to be something that makes it clear that it is the database user
