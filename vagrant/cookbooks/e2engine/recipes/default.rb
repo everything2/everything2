@@ -90,8 +90,7 @@ end
 Chef::Log.info("Primary runlist: #{node.primary_runlist}")
 
 git everythingdir do
-  repository node["e2engine"]["gitrepo"]
-  enable_submodules true
+  repository 'git://github.com/everything2/everything2.git'
   action :sync
   if is_webhead?
     notifies :restart, "service[apache2]", :delayed
