@@ -866,7 +866,7 @@
         "Name": "E2 webhead",
         "Shortname": "e2web",
         "AutoAssignPublicIps": true,
-        "EnableAutoHealing": true,
+        "EnableAutoHealing": false,
         "AutoAssignElasticIps": false,
         "CustomSecurityGroupIds": [{"Ref": "E2AppBastionSecurityGroup"}, {"Ref": "E2AppWebheadSecurityGroup"}],
         "CustomRecipes": {
@@ -941,6 +941,9 @@
         "MinSize": 1,
         "MaxSize": 3,
         "Cooldown": 1200,
+        "HealthCheckGracePeriod": 1200,
+	"DesiredCapacity": 1,
+        "HealthCheckType": "ELB",
         "LaunchTemplate": {
           "LaunchTemplateId": {"Ref": "E2OpsworksLaunchTemplate"},
           "Version": {"Fn::GetAtt": ["E2OpsworksLaunchTemplate","LatestVersionNumber"]}
@@ -1013,11 +1016,11 @@
             "Effect": "Allow",
             "Principal": {"Service": "lambda.amazonaws.com"},
             "Action": "sts:AssumeRole"
-          }
+
         },
         "Description": "Auto Scaling termination deregistration Lambda Role",
         "ManagedPolicyArns": [
-            {"Ref": "E2OpsWorksLambdaDeregistrationPolicy"},
+            {"Ref": "E2OpsWorksLambdaDeregistrationPolicy"}
         ],
         "Path": "/",
         "RoleName": "Deregistration-Lambda-Role"
@@ -1104,7 +1107,7 @@
         },
         "Description": "OpsWorks Reaper Lambda Role",
         "ManagedPolicyArns": [
-            {"Ref": "OpsworksReaperLambdaPolicy"},
+            {"Ref": "OpsworksReaperLambdaPolicy"}
         ],
         "Path": "/",
         "RoleName": "OpsWorks-Reaper-Lambda-Role"
