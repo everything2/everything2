@@ -297,7 +297,13 @@
         "HealthCheckProtocol": "HTTPS",
         "Matcher": {
           "HttpCode": "200"
-        }
+        },
+        "TargetGroupAttributes": [
+          {
+            "Key": "deregistration_delay.timeout_seconds",
+            "Value": "10"
+          }
+        ]
       }
     },
     "E2ELBCertificate": {
@@ -1016,7 +1022,7 @@
             "Effect": "Allow",
             "Principal": {"Service": "lambda.amazonaws.com"},
             "Action": "sts:AssumeRole"
-
+          }
         },
         "Description": "Auto Scaling termination deregistration Lambda Role",
         "ManagedPolicyArns": [
