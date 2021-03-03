@@ -75,6 +75,7 @@ has 'login_location' => (isa => 'Str', is => 'ro', default => '/node/superdoc/lo
 
 has 'blacklist_interval' => (isa => 'Str', is => 'ro', default => '3 MONTH');
 
+has 'site_description' => (isa => 'Str', is => 'ro', default => 'Everything2 is a collection of user-submitted writings about more or less everything');
 
 around BUILDARGS => sub
 {

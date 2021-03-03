@@ -37,7 +37,7 @@ $url .= "/" unless $url =~ /\/$/;
 $doc .= $XMLGEN->channel(
 	"\n\t".genTag("title", $Everything::CONF->system->{site_name}) .
 	"\t".genTag("link", $url) .
-	"\t".genTag("description", $Everything::CONF->system->{site_description})
+	"\t".genTag("description", $Everything::CONF->site_description)
 	)."\n";
 
 foreach (@types) {
