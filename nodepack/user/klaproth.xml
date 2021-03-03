@@ -48,7 +48,7 @@ You are here to listen.&lt;/p&gt;
   </vars>
   <vars>
     <key>coolsspent</key>
-    <value>&lt;a href=&quot;/node/superdoc/Cool+Archive?useraction=cooled&amp;amp;cooluser=Klaproth&quot;&gt;1&lt;/a&gt;</value>
+    <value>&lt;a href=&quot;/node/superdoc/Cool+Archive?cooluser=Klaproth&amp;amp;useraction=cooled&quot;&gt;1&lt;/a&gt;</value>
   </vars>
   <vars>
     <key>easter_eggs</key>

@@ -37,7 +37,7 @@ sub display
     push @users, $N;
   }
 
-  $str.=$XG->INFO({site => $self->CONF->site_url, sitename => $self->CONF->system->{site_name},  servertime => scalar(localtime(time))}, 'Rendered by the Other Users XML Ticker');
+  $str.=$XG->INFO({site => $self->CONF->site_url, sitename => $self->CONF->site_name,  servertime => scalar(localtime(time))}, 'Rendered by the Other Users XML Ticker');
 
   my %rooms;
   $rooms{0} = 'outside';
