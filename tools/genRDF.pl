@@ -35,7 +35,7 @@ my $url = $Everything::CONF->{site_url};
 $url .= "/" unless $url =~ /\/$/;
 
 $doc .= $XMLGEN->channel(
-	"\n\t".genTag("title", $Everything::CONF->system->{site_name}) .
+	"\n\t".genTag("title", $Everything::CONF->site_name) .
 	"\t".genTag("link", $url) .
 	"\t".genTag("description", $Everything::CONF->site_description)
 	)."\n";

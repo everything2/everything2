@@ -1,6 +1,7 @@
 <node>
-  <contentversion>1</contentversion>
-  <doctext>@import url(https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css);
+  <contentversion>5</contentversion>
+  <doctext>/* version bump test 3 */
+@import url(https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css);
 
 body {
 	margin: 0;
@@ -13,7 +14,7 @@ body {
 #wrapper:after {
 	content: &quot;&quot;;
 	display: table;
-}
+} 
 #wrapper:after {
 	clear: both;
 }
