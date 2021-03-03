@@ -22,7 +22,6 @@ default["e2engine"]["s3"]["jscss"]["bucket"] = ""
 default["e2engine"]["s3"]["jscss"]["secret_access_key"] = ""
 default["e2engine"]["s3"]["jscss"]["access_key_id"] = ""
 default["e2engine"]["system"] = {}
-default["e2engine"]["system"]["site_name"] = 'Everything2'
 default["e2engine"]["system"]["create_new_user"] = 2072173
 default["e2engine"]["system"]["default_guest_node"] = 2030780
 default["e2engine"]["system"]["default_node"] = 124
