@@ -49,7 +49,6 @@
   "logdirectory": "/var/log/everything",
   "system": {
     "site_url": "http://everything2.com",
-    "site_description": "Everything2 is a collection of user-submitted writings about more or less everything",
     "site_name": "Everything2",
     "create_new_user": 2072173,
     "default_guest_node": 2030780,
