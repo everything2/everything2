@@ -1982,7 +1982,7 @@ sub e2createnewnode
     .' you could create a "'
     .$query -> escapeHTML($title)
     ."\" node. If you don't already have an account, you can "
-    . linkNode($Everything::CONF->system->{create_new_user}, ' register here')
+    . linkNode($Everything::CONF->create_new_user, ' register here')
     .'.' if $APP->isGuest($USER);
 
   my $n = getNode($title, 'e2node');
@@ -4773,7 +4773,7 @@ sub minilogin
       , -tabindex => 4
     )."<br />".
     linkNodeTitle("Reset password[superdoc]|Lost password")."
-    <p><strong>".linkNode($Everything::CONF->system->{create_new_user},'Sign up')."</strong></p>\n" .
+    <p><strong>".linkNode($Everything::CONF->create_new_user,'Sign up')."</strong></p>\n" .
     $query->end_form;
 }
 
@@ -5591,7 +5591,7 @@ sub showchatter
   my $jsoncount = undef; $jsoncount = 1 if shift;
   my $nochat = "";
 
-  $nochat = 'If you '.linkNode($Everything::CONF->system->{create_new_user},
+  $nochat = 'If you '.linkNode($Everything::CONF->create_new_user,
     'register',{lastnode_id=>0}).', you can talk here.' if $APP->isGuest($USER);
 
   ### Check to see if they're suspended for having an unverified email address

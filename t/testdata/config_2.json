@@ -48,9 +48,6 @@
   "search_row_limit": 200,
   "logdirectory": "/var/log/everything",
   "system": {
-    "site_url": "http://everything2.com",
-    "site_name": "Everything2",
-    "create_new_user": 2072173,
     "default_guest_node": 2030780,
     "default_node": 124,
     "default_nodeletgroup": 837990,
