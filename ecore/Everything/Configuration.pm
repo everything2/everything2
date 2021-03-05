@@ -79,6 +79,8 @@ has 'site_description' => (isa => 'Str', is => 'ro', default => 'Everything2 is 
 
 has 'site_name' => (isa => 'Str', 'is' => 'ro', default => 'Everything2');
 has 'create_new_user' => (isa => 'Str', 'is' => 'ro', default => '2072173');
+has 'default_guest_node' => (isa => 'Str', 'is' => 'ro', default => '2030780');
+
 
 around BUILDARGS => sub
 {

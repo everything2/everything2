@@ -48,7 +48,6 @@
   "search_row_limit": 321,
   "logdirectory": "anotherlogdirectory",
   "system": {
-    "default_guest_node": 2030780,
     "default_node": 124,
     "default_nodeletgroup": 837990,
     "default_theme": 1854183,
