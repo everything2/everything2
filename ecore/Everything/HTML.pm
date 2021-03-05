@@ -1112,7 +1112,7 @@ sub handleUserRequest{
   my $defaultNode = $Everything::CONF->system->{default_node};
 
   if ( $APP->isGuest($USER) ){
-    $defaultNode = $Everything::CONF->system->{default_guest_node};
+    $defaultNode = $Everything::CONF->default_guest_node;
   }
 
   if ($query->param('node')) {
