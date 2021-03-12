@@ -49,7 +49,6 @@
   "logdirectory": "/var/log/everything",
   "system": {
     "default_node": 124,
-    "default_nodeletgroup": 837990,
     "default_theme": 1854183,
     "default_duplicates_node": 382987,
     "not_found_node": 668164,
