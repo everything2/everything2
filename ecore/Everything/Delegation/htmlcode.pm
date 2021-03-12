@@ -1097,7 +1097,7 @@ sub nodelet_meta_container
 
   unless ( $$VARS{nodelets} ) {
     #push default nodelets on
-    my ($DEFAULT) = $DB->getNodeById( $Everything::CONF->system->{default_nodeletgroup} );
+    my ($DEFAULT) = $DB->getNodeById( $Everything::CONF->default_nodeletgroup );
     $$VARS{nodelets} = join ',', @{ $$DEFAULT{group} } ;
   }
 

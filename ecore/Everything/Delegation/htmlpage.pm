@@ -4538,7 +4538,7 @@ sub node_listnodelets_page
 
   unless ( $$VARS{nodelets} )
   {
-    my ($DEFAULT) = $DB->getNodeById($Everything::CONF->system->{default_nodeletgroup});
+    my ($DEFAULT) = $DB->getNodeById($Everything::CONF->default_nodeletgroup);
     $$VARS{nodelets} = join ',', @{ $$DEFAULT{group} } ;
   }
 
