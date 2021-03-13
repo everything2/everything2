@@ -1666,7 +1666,7 @@ sub softlink
   }
 
   my %unlinkables = ();
-  foreach( values %{$Everything::CONF->system->{maintenance_nodes}} ) {
+  foreach( @{$Everything::CONF->maintenance_nodes} ) {
     $unlinkables{$_} = 1;
   }
   return "" if $unlinkables{ $$N{node_id} };
@@ -5001,7 +5001,7 @@ sub writeupssincelastyear
   my $notIn = " AND node.node_id NOT IN (";
   my $firstIn = 1;
 
-  foreach (values %{$Everything::CONF->system->{maintenance_nodes}} )
+  foreach (@{$Everything::CONF->maintenance_nodes} )
   {
     # Look for numbers, and presume all numbers are node IDs
     next unless /^\d+$/;
