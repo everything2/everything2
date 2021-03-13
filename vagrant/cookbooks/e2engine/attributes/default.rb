@@ -23,7 +23,6 @@ default["e2engine"]["s3"]["jscss"]["secret_access_key"] = ""
 default["e2engine"]["s3"]["jscss"]["access_key_id"] = ""
 default["e2engine"]["system"] = {}
 default["e2engine"]["system"]["default_node"] = 124
-default["e2engine"]["system"]["default_nodeletgroup"] = 837990
 default["e2engine"]["system"]["default_theme"] = 1854183
 default["e2engine"]["system"]["default_duplicates_node"] = 382987
 default["e2engine"]["system"]["not_found_node"] = 668164
