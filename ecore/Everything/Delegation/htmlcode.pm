@@ -11062,7 +11062,7 @@ sub epicenterZen
   return "<div id='epicenter_zen'><span id='epicenter_zen_info'>
     ".linkNode($USER,0,{lastnode_id=>0})."
     | ".linkNode($NODE, 'Log Out', {op=>'logout'})."
-    | ".linkNode($Everything::CONF->system->{user_settings}, 'Preferences',{lastnode_id=>0})."
+    | ".linkNode($Everything::CONF->user_settings, 'Preferences',{lastnode_id=>0})."
     | ".linkNode(getNode('Drafts','superdoc'))."
     | ".linkNode(getNode('Everything2 Help','e2node'), 'Help')."
     | ".htmlcode('randomnode','Random')."
