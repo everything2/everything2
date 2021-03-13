@@ -1,40 +1,38 @@
 <node>
   <doctext>[%
+  return '&lt;p&gt;You must be logged in to be suprised.&lt;/p&gt;' if($APP-&gt;isGuest($USER));
+  #my $isHalloween = htmlcode('isSpecialDate','halloween');
 
-return '&lt;p&gt;You must be logged in to be suprised.&lt;/p&gt;' if( $APP-&gt;isGuest($USER) );
+  my $isHalloween = 0;
+  my $costumeCost = 5;
 
-#my $isHalloween = htmlcode('isSpecialDate','halloween');
+  my ($str, $resultStr) = (&quot;&quot;,&quot;&quot;);
 
-my $isHalloween = 0;
+  my $spinCost = 5;
 
-my $costumeCost = 5;
+  if ($isHalloween) {
+    $spinCost = 0;
+  } else {
 
-my ($str, $resultStr);
+    #if ($$USER{GP} &lt; $spinCost) {
+    # return &quot;&lt;p&gt;Sorry, you don't have enough GP to spin the wheel.&lt;/p&gt;&quot;;
+    #}
+    return &quot;&lt;p&gt;Your vow of poverty does not allow you to gamble. You need to [User Settings|opt in to] the GP System in order to spin the wheel.&lt;/p&gt;&quot; if ($$VARS{GPoptout});
 
-my $spinCost = 5;
+    if ($$USER{GP} &lt; $spinCost) {
+      #if ($$USER{GP} &lt; -10) {
+      return &quot;&lt;p&gt;You approach the Wheel but two large gentlemen with shaved heads and tattoos saying \&quot;MOM\&quot; stop you. One of them twists your head to face the wall while the other points to a sign on said wall that says \&quot;shirt and shoes required\&quot;. You know that they'd let you play naked if you flashed them some GP but then if you had that much GP you wouldn't be barefoot and shirtless, would you now?  As the large gentleman twists your head toward the door, you spot the oversized sign that says &lt;strong&gt;&lt;font color=\&quot;#FF0000\&quot;&gt;Minimum Wager 5 GP&lt;/font&gt;&lt;/strong&gt;.&lt;/p&gt;&lt;p&gt;Come back when you have GP to burn and a shirt on your back.&lt;/p&gt;&quot;;
+    }
 
-if ($isHalloween) {
-$spinCost = 0;
-} else {
+  }
 
-#if ($$USER{GP} &lt; $spinCost) {
-# return &quot;&lt;p&gt;Sorry, you don't have enough GP to spin the wheel.&lt;/p&gt;&quot;;
-#}
-return &quot;&lt;p&gt;Your vow of poverty does not allow you to gamble. You need to [User Settings|opt in to] the GP System in order to spin the wheel.&lt;/p&gt;&quot; if ($$VARS{GPoptout});
+  if ($query-&gt;param(&quot;spinthewheel&quot;)) {
+    $$VARS{spin_wheel} += 1;
+    $$USER{GP} += (-1*$spinCost);
+    my $rnd = int(rand(10000));
+    $resultStr= &quot;&lt;p&gt;The Wheel of Surprise awards you ...&quot;;
 
-if ($$USER{GP} &lt; $spinCost) {
-#if ($$USER{GP} &lt; -10) {
-return &quot;&lt;p&gt;You approach the Wheel but two large gentlemen with shaved heads and tattoos saying \&quot;MOM\&quot; stop you. One of them twists your head to face the wall while the other points to a sign on said wall that says \&quot;shirt and shoes required\&quot;. You know that they'd let you play naked if you flashed them some GP but then if you had that much GP you wouldn't be barefoot and shirtless, would you now?  As the large gentleman twists your head toward the door, you spot the oversized sign that says &lt;strong&gt;&lt;font color=\&quot;#FF0000\&quot;&gt;Minimum Wager 5 GP&lt;/font&gt;&lt;/strong&gt;.&lt;/p&gt;&lt;p&gt;Come back when you have GP to burn and a shirt on your back.&lt;/p&gt;&quot;;
-}
-
-}
-
-if ($query-&gt;param(&quot;spinthewheel&quot;)) {
-	$$VARS{spin_wheel} += 1;
-	$$USER{GP} += (-1*$spinCost);
-	my $rnd = int(rand(10000));
-	$resultStr= &quot;&lt;p&gt;The Wheel of Surprise awards you ...&quot;;
-if ($isHalloween) {
+    if ($isHalloween) {
 	if ($rnd&lt;450) {
                  $resultStr .= &quot; &lt;b&gt;a brick!&lt;/b&gt; You also feel a hand in your pocket as a spooky voice asks if you have a banana. You tell it that [Yes! We have no bananas!|you do not have a banana] and, no, you would not be glad to see the hand's owner, even if it were not pitch dark. The hand creeps back out of your pocket and disappears into the darkness.&quot;;
 	}
@@ -181,11 +179,13 @@ if (!$isHalloween) {
 	}
 	elsif ($rnd&lt;4999) {
 		$resultStr .= &quot;&lt;b&gt;a C!&lt;/b&gt; Coolness!&quot;;
+                $$VARS{cools} ||= 0;
 		$$VARS{cools} += 1;
 		setVars($USER,$VARS);
 	}
 	elsif ($rnd==4999) {
 		$resultStr .= &quot;&lt;b&gt;5 C!s&lt;/b&gt; Hurry up and spend 'em while you got 'em!&quot;;
+                $$VARS{cools} ||= 0;
 		$$VARS{cools} += 5;
 		setVars($USER,$VARS);
 	}
