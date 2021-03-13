@@ -886,7 +886,7 @@ sub gotoNode
 	unless ($NODE) { $NODE = getNodeById($Everything::CONF->not_found_node); }
 	
 	unless (canReadNode($user_id, $NODE)) {
-		$NODE = getNodeById($Everything::CONF->system->{permission_denied});
+		$NODE = getNodeById($Everything::CONF->permission_denied);
 	}
 
         if($NODE->{type}->{title} eq "draft" && !$APP->canSeeDraft($user_id, $NODE))
@@ -1017,7 +1017,7 @@ sub gotoNode
 	# make sure editing user is allowed to edit
 	if ($displaytype and $displaytype eq "edit") {
 		unless (canUpdateNode ($USER, $NODE)) {
-			$NODE = getNodeById($Everything::CONF->system->{permission_denied});
+			$NODE = getNodeById($Everything::CONF->permission_denied);
 			$query->param('displaytype', 'display');
 		}
 	}
@@ -1172,7 +1172,7 @@ sub handleUserRequest{
       nodeName($nodename, $user_id);
     }
     else {
-      gotoNode($Everything::CONF->system->{permission_denied}, $user_id);
+      gotoNode($Everything::CONF->permission_denied, $user_id);
     }
   }
   elsif ($node_id = $query->param('node_id')) {
@@ -1272,7 +1272,7 @@ sub opNew
 	} 
 	else
 	{
-		$query->param("node_id", $Everything::CONF->system->{permission_denied});
+		$query->param("node_id", $Everything::CONF->permission_denied);
 	}
 
 	return;

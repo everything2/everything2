@@ -48,7 +48,6 @@
   "search_row_limit": 321,
   "logdirectory": "anotherlogdirectory",
   "system": {
-    "permission_denied": 104,
     "user_settings": 108,
     "generalparent_container": 166948,
     "guest_link": 2014296,
