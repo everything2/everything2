@@ -545,7 +545,7 @@ sub nodeName
 	
 		if($search_group && @$search_group > 0)
 		{
-			$NODE = getNodeById($Everything::CONF->system->{search_results});
+			$NODE = getNodeById($Everything::CONF->search_results);
 			$$NODE{group} = $search_group;
 		}
 		else
@@ -879,7 +879,7 @@ sub gotoNode
 		$NODE = getNodeById($node_id, 'force');
 	}
 	else {
-		$NODE = getNodeById($Everything::CONF->system->{search_results});
+		$NODE = getNodeById($Everything::CONF->search_results);
 		$$NODE{group} = $node_id;
 	}
 
