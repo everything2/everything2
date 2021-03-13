@@ -954,7 +954,7 @@ sub gotoNode
 
 	# Create softlinks -- a linktype of 0 is the default
 	my $linktype = 0;
-	$linktype = getNodeById($Everything::CONF->system->{guest_link})
+	$linktype = getNodeById($Everything::CONF->guest_link)
 		if $APP->isGuest($USER);
 
 	my $lastnode = $query->param('lastnode_id');

@@ -48,8 +48,6 @@
   "search_row_limit": 321,
   "logdirectory": "anotherlogdirectory",
   "system": {
-    "guest_link": 2014296,
-    "nodelet_container": 1854181,
     "maintenance_nodes": {
       "broken_nodes": 379710,
       "e2_bugs": 364471,
