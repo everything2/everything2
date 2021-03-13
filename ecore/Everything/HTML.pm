@@ -1109,7 +1109,7 @@ sub handleUserRequest{
   my $handled = 0;
   my $noRemoveSpaces = 0;
 
-  my $defaultNode = $Everything::CONF->system->{default_node};
+  my $defaultNode = $Everything::CONF->default_node;
 
   if ( $APP->isGuest($USER) ){
     $defaultNode = $Everything::CONF->default_guest_node;

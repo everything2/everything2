@@ -4741,7 +4741,7 @@ sub minilogin
   $query->delete('passwd');
 
   my $goto = getId($NODE);
-  $goto = $Everything::CONF->system->{default_node} if $goto == $Everything::CONF->default_guest_node;
+  $goto = $Everything::CONF->default_node if $goto == $Everything::CONF->default_guest_node;
   return $query->start_form(-method => "POST", -action => $query->script_name, -name => "loginform", -id => "loginform") .
     $query->hidden("node_id", $goto) . "\n" .
     $query->hidden("lastnode_id") . "\n" .
