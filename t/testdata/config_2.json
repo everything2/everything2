@@ -48,7 +48,6 @@
   "search_row_limit": 200,
   "logdirectory": "/var/log/everything",
   "system": {
-    "guest_link": 2014296,
     "nodelet_container": 1854181,
     "maintenance_nodes": {
       "broken_nodes": 379710,

@@ -87,6 +87,7 @@ has 'not_found_node' => (isa => 'Int', is => 'ro', default => '668164');
 has 'search_results' => (isa => 'Int', is => 'ro', default => '1140332');
 has 'permission_denied' => (isa => 'Int', is => 'ro', default => '104');
 has 'user_settings' => (isa => 'Int', is => 'ro', default => '108');
+has 'guest_link' => (isa => 'Int', is => 'ro', default => '2014296');
 
 around BUILDARGS => sub
 {
