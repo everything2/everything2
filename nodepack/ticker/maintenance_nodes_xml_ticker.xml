@@ -3,11 +3,9 @@
   my $str;
   $str.=&quot;&lt;maintenance&gt;\n&quot;;
 
-  foreach (keys %{$Everything::CONF-&gt;system-&gt;{maintenance_nodes}})
+  foreach my $n (@{$Everything::CONF-&gt;maintenance_nodes})
   {
-    my $n = $_;
-    $n =~ s/\_/ /g;
-    my $node = getNode($n, &quot;e2node&quot;);
+    my $node = getNodeById($n);
     $str.=&quot;&lt;e2link node_id=\&quot;$$node{node_id}\&quot;&gt;$$node{title}&lt;/e2link&gt;\n&quot;;
   }
 
