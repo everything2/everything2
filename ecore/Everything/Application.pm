@@ -1544,7 +1544,7 @@ sub isMaintenanceNode
 	return unless $node and $node->{node_id};
 	return unless $node->{type}->{title} eq "e2node" or $node->{type}->{title} eq "writeup";
 
-	my $maintenance_nodes = [values %{$this->{conf}->system->{maintenance_nodes}}];
+	my $maintenance_nodes = [@{$this->{conf}->maintenance_nodes}];
 
 	if($node->{type}->{title} eq "writeup")
 	{
@@ -1570,7 +1570,7 @@ sub getMaintenanceNodesForUser
 	}
 
 	my $maint_nodes = undef;
-	foreach my $val (values %{$this->{conf}->system->{maintenance_nodes}} )
+	foreach my $val (@{$this->{conf}->maintenance_nodes})
 	{
 		my $node = $this->{db}->getNodeById($val);
 		next unless $$node{'group'};
