@@ -594,7 +594,7 @@ sub nodeName
 		}
 
 		#we found multiple nodes with that name.  ick
-		$NODE = getNodeById( $Everything::CONF->system->{default_duplicates_node} );
+		$NODE = getNodeById( $Everything::CONF->default_duplicates_node );
 		
 		$$NODE{group} = \@canread;
 		return displayPage($NODE, $user_id);

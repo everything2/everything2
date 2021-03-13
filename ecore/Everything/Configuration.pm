@@ -82,7 +82,7 @@ has 'create_new_user' => (isa => 'Int', 'is' => 'ro', default => '2072173');
 has 'default_guest_node' => (isa => 'Int', 'is' => 'ro', default => '2030780');
 has 'default_nodeletgroup' => (isa => 'Int', 'is' => 'ro', default => '837990');
 has 'default_node' => (isa => 'Int', is => 'ro', default => '124');
-
+has 'default_duplicates_node' => (isa => 'Int', is => 'ro', default => '382987');
 
 around BUILDARGS => sub
 {
