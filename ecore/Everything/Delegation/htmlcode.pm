@@ -8949,7 +8949,7 @@ sub formxml_superdoc
 
   #patch from fuzzie.. sorta
   #applied so that you can choose not to get the findings doc.
-  return "" if (($query->param("no_superdocs") == 1) || ($query->param("no_findings") == 1 && $$NODE{node_id} == $Everything::CONF->system->{search_results} ));
+  return "" if (($query->param("no_superdocs") == 1) || ($query->param("no_findings") == 1 && $$NODE{node_id} == $Everything::CONF->search_results));
 
   my $grp = $$NODE{group};
   my $str = "";
@@ -13368,7 +13368,7 @@ sub display_draft
     $displaylike = getType(
       getNodeWhere({pagetype_nodetype => 117, displaytype => $displaytype}, 'htmlpage') ?'writeup' : 'document');
   } else {
-    $NODE = $Everything::HTML::GNODE = getNodeById($Everything::CONF->system->{search_results});
+    $NODE = $Everything::HTML::GNODE = getNodeById($Everything::CONF->search_results);
     $displaylike = getType($$NODE{type_nodetype});
   }
 

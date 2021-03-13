@@ -84,6 +84,7 @@ has 'default_nodeletgroup' => (isa => 'Int', 'is' => 'ro', default => '837990');
 has 'default_node' => (isa => 'Int', is => 'ro', default => '124');
 has 'default_duplicates_node' => (isa => 'Int', is => 'ro', default => '382987');
 has 'not_found_node' => (isa => 'Int', is => 'ro', default => '668164');
+has 'search_results' => (isa => 'Int', is => 'ro', default => '1140332');
 
 around BUILDARGS => sub
 {
