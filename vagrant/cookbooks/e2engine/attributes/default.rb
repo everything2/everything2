@@ -22,7 +22,6 @@ default["e2engine"]["s3"]["jscss"]["bucket"] = ""
 default["e2engine"]["s3"]["jscss"]["secret_access_key"] = ""
 default["e2engine"]["s3"]["jscss"]["access_key_id"] = ""
 default["e2engine"]["system"] = {}
-default["e2engine"]["system"]["not_found_node"] = 668164
 default["e2engine"]["system"]["search_results"] = 1140332
 default["e2engine"]["system"]["permission_denied"] = 104
 default["e2engine"]["system"]["user_settings"] = 108
