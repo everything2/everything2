@@ -550,7 +550,7 @@ sub nodeName
 		}
 		else
 		{
-			$NODE = getNodeById($Everything::CONF->system->{not_found_node});
+			$NODE = getNodeById($Everything::CONF->not_found_node);
 		}
 
 		return displayPage ($NODE, $user_id);
@@ -575,7 +575,7 @@ sub nodeName
 			push @canread, $_;
 		}
 
-		return gotoNode($Everything::CONF->system->{not_found_node}, $user_id, 1) unless @canread;
+		return gotoNode($Everything::CONF->not_found_node, $user_id, 1) unless @canread;
 		return gotoNode($canread[0], $user_id, 1) if @canread == 1;
 
 		# Allow a node_forward to bypass an e2node if we're clicking through from
@@ -883,7 +883,7 @@ sub gotoNode
 		$$NODE{group} = $node_id;
 	}
 
-	unless ($NODE) { $NODE = getNodeById($Everything::CONF->system->{not_found_node}); }	
+	unless ($NODE) { $NODE = getNodeById($Everything::CONF->not_found_node); }
 	
 	unless (canReadNode($user_id, $NODE)) {
 		$NODE = getNodeById($Everything::CONF->system->{permission_denied});
@@ -892,7 +892,7 @@ sub gotoNode
         if($NODE->{type}->{title} eq "draft" && !$APP->canSeeDraft($user_id, $NODE))
         {
                 # if you can't see a draft, you don't need/want to know it's there
-                $NODE = getNodeById($Everything::CONF->system->{not_found_node});
+                $NODE = getNodeById($Everything::CONF->not_found_node);
         }
 	#these are contingencies various things that could go wrong
 

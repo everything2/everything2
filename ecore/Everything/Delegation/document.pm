@@ -2440,7 +2440,7 @@ sub duplicates_found_
 
   unless ($list)
   {
-    $NODE = $Everything::HTML::GNODE = getNodeById($Everything::CONF->system->{not_found_node});
+    $NODE = $Everything::HTML::GNODE = getNodeById($Everything::CONF->not_found_node);
     return parseCode($$NODE{doctext});
   }elsif($ONE){
     $Everything::HTML::HEADER_PARAMS{-status} = 303;

@@ -48,7 +48,6 @@
   "search_row_limit": 200,
   "logdirectory": "/var/log/everything",
   "system": {
-    "not_found_node": 668164,
     "search_results": 1140332,
     "permission_denied": 104,
     "user_settings": 108,
