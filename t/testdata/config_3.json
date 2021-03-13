@@ -48,8 +48,6 @@
   "search_row_limit": 321,
   "logdirectory": "anotherlogdirectory",
   "system": {
-    "default_node": 124,
-    "default_duplicates_node": 382987,
     "not_found_node": 668164,
     "search_results": 1140332,
     "permission_denied": 104,

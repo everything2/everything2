@@ -38,7 +38,7 @@ sub output
   $headers->{charset} ||= "utf-8";
   $headers->{type} ||= "text/html";
   
-  if($self->CONF->{environment} eq "development")
+  if($self->CONF->environment eq "development")
   {
     $headers->{'-Access-Control-Allow-Origin'} = '*';
   }
