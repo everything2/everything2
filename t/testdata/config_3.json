@@ -48,7 +48,6 @@
   "search_row_limit": 321,
   "logdirectory": "anotherlogdirectory",
   "system": {
-    "generalparent_container": 166948,
     "guest_link": 2014296,
     "nodelet_container": 1854181,
     "maintenance_nodes": {

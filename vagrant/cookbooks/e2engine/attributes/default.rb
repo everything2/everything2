@@ -22,7 +22,6 @@ default["e2engine"]["s3"]["jscss"]["bucket"] = ""
 default["e2engine"]["s3"]["jscss"]["secret_access_key"] = ""
 default["e2engine"]["s3"]["jscss"]["access_key_id"] = ""
 default["e2engine"]["system"] = {}
-default["e2engine"]["system"]["generalparent_container"] = 166948
 default["e2engine"]["system"]["guest_link"] = 2014296
 default["e2engine"]["system"]["maintenance_nodes"] = {}
 default["e2engine"]["system"]["maintenance_nodes"]["broken_nodes"] = 379710
