@@ -124,7 +124,6 @@ nosearch_words_hash = {}
 nosearch_words.each { |x| nosearch_words_hash[x] = 1 }
 
 everything_conf_variables = node["e2engine"].dup
-everything_conf_variables["basedir"] = everythingdir
 everything_conf_variables["permanent_cache"] = {
   "usergroup" => 1,
   "container" => 1,
