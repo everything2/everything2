@@ -4,4 +4,3 @@ default["e2engine"]["environment"] = "development"
 default["e2engine"]["use_local_javascript"] = 1;
 default["e2engine"]["google_ads_badwords"] = ["fuckfuck"]
 default["e2engine"]["google_ads_badnodes"] = ["123456"]
-default["e2engine"]["recaptcha_v3_public_key"] = "6LcnVKsUAAAAAEeEGV28mfD3lt_XVpFUkOzifWGo"
