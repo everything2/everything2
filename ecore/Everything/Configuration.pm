@@ -1,6 +1,7 @@
 package Everything::Configuration;
 
 use Moose;
+use Everything::S3::BucketConfig;
 use Carp qw(croak);
 use JSON;
 use namespace::autoclean;
@@ -36,7 +37,12 @@ has 'nodecache_size' => (isa => 'Int', is => 'ro', default => 200);
 
 has 'environment' => (isa => 'Str', is => 'ro', default => 'development');
 
-has 's3' => (isa => 'HashRef', is => 'ro', default => sub { {} });
+has 's3' => (isa => 'HashRef', is => 'ro', default => sub { {
+  "homenodeimages" => Everything::S3::BucketConfig->new("bucket" => "hnimagew.everything2.com"),
+  "nodebackup" => Everything::S3::BucketConfig->new("bucket" => "nodebackup.everything2.com"),
+  "backup" => Everything::S3::BucketConfig->new("bucket" => "backupwest.everything2.com"),
+  "sitemap" => Everything::S3::BucketConfig->new("bucket" => "sitemap.everything2.com"),
+  "jscss" => Everything::S3::BucketConfig->new("bucket" => "jscssw.everything2.com") }});
 
 has 'static_nodetypes' => (isa => 'Bool', is => 'ro', default => 1);
 
@@ -119,6 +125,7 @@ around BUILDARGS => sub
     $configfile = $args->{configfile};
   }
 
+
   if($configfile)
   {
     my ($json_handle, $json_data);
@@ -133,9 +140,11 @@ around BUILDARGS => sub
     close $json_handle;
     $config = JSON::from_json($json_data);
     $config->{configfile} = $configfile;
-
   }
-  
+
+  # Temporary workaround until keys work correctly
+  delete $config->{s3};
+
   # If alternate keys, overwrite config file keys
   foreach my $arg (keys %$args)
   {
