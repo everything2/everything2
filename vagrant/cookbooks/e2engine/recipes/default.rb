@@ -14,7 +14,6 @@ Chef::Resource::Git.send(:include, E2)
 Chef::Resource::Bash.send(:include, E2)
 Chef::Resource::File.send(:include, E2)
 
-
 everythingdir = "/var/everything"
 
 # Minor copy and paste from e2cron
@@ -119,14 +118,7 @@ bash "Clear Mason2 cache" do
   end
 end
 
-nosearch_words = ['a','an','and','are','at','definition','everything','for','if','in','is','it','my','new','node','not','of','on','that','the','thing','this','to','we','what','why','with','writeup','you','your']
-nosearch_words_hash = {}
-nosearch_words.each { |x| nosearch_words_hash[x] = 1 }
-
 everything_conf_variables = node["e2engine"].dup
-
-everything_conf_variables["nosearch_words"] = nosearch_words_hash
-
 
 ['libraries','dlcache','buildcache'].each do |dir|
   directory "/var/#{dir}" do
