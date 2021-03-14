@@ -119,7 +119,7 @@ has 's3host' => (isa => 'Str', is => 'ro', default => 's3-us-west-2.amazonaws.co
 has 'iam_app_role' => (isa => 'Str', is => 'ro', default => '');
 
 has 'recaptcha_v3_secret_key' => (isa => 'Str', is => 'ro', builder => '_build_recaptcha', lazy => 1);
-has 'recaptcha_v3_public_key' => (isa => 'Str', is => 'ro', default => '');
+has 'recaptcha_v3_public_key' => (isa => 'Str', is => 'ro', default => '6LcnVKsUAAAAAEeEGV28mfD3lt_XVpFUkOzifWGo');
 
 has 'login_location' => (isa => 'Str', is => 'ro', default => '/node/superdoc/login');
 
