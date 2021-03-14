@@ -218,9 +218,37 @@ around BUILDARGS => sub
   my $args;
   my $config = {}; 
 
+  my $override = "/etc/everything/override_configuration";
+  my $environment = "production";
   if(@_ == 0)
   {
-    $configfile = '/etc/everything/everything.conf.json';
+    my $currentdir = "";
+    foreach my $dir(@INC)
+    {
+      if(-e "$dir/Everything.pm")
+      {
+        $currentdir = $dir;
+	last;
+      }
+    }
+
+    if(-e $override)
+    {
+      my $fh;
+      if(open $fh,'<',$override)
+      {
+        local $/ = undef;
+	my $override_data = <$fh>;
+	chomp $override_data;
+	close $fh;
+
+	$environment = $override_data;
+      }else{
+        croak("Could not open override file: '$override': $!");
+      }
+    }
+
+  $configfile = "$currentdir/../etc/$environment.json";
   }elsif((@_ == 1) and (!(ref $_[0])))
   {
     # If there is one arg, assume it is the configfile
@@ -253,6 +281,9 @@ around BUILDARGS => sub
     $config = JSON::from_json($json_data);
     $config->{configfile} = $configfile;
   }
+
+  # Stash the environment in
+  $config->{environment} = $environment;
 
   # Temporary workaround until keys work correctly
   delete $config->{s3};

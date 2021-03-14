@@ -78,7 +78,7 @@ sub BEGIN
               commonLogLine
             );
 
-	$CONF = Everything::Configuration->new("/etc/everything/everything.conf.json");
+	$CONF = Everything::Configuration->new;
 	$MASON = Mason->new(
 		data_dir => "/var/mason",
 		comp_root => "/var/everything/templates",
