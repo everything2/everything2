@@ -192,6 +192,25 @@ else
   Chef::Log.info('Not in production, not doing secret seeding')
 end
 
+override_config_file = '/etc/everything/override_configuration'
+if !node['override_configuration'].nil?
+  Chef::Log.info("Using override configuration: #{node['override_configuration']}")
+  file override_config_file do
+    owner 'www-data'
+    group 'www-data'
+    content node['override_configuration']
+    mode '0755'
+    if is_webhead?
+      notifies :restart, "service[apache2]", :delayed
+    end
+  end
+else
+  Chef::Log.info("No override configuration, skipping")
+  file override_config_file do
+    action "delete"
+  end
+end
+
 if node['e2engine']['environment'].eql? 'production'
   Chef::Log.info('In production, doing instance registrations')
   Chef::Log.info('Setting up ingress to production DB')
