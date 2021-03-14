@@ -16,7 +16,6 @@ has 'infected_ips' => (isa => 'ArrayRef', is => 'ro', builder => '_build_infecte
 has 'default_style' => (isa => 'Str', is => 'ro', default => 'Kernel Blue');
 
 # Database options
-#
 # TODO: Rename this to be something that makes it clear that it is the database user
 has 'everyuser' => (isa => 'Str', is => 'ro', default => 'everyuser');
 # TODO: Rename this to be something that makes it clear that it is the database password
@@ -57,7 +56,21 @@ has 'use_local_javascript' => (isa => 'Bool', is => 'ro', default => '0');
 # TODO: Get rid of this
 has 'system' => (isa => 'HashRef', is => 'ro', default => sub { {} });
 
-has 'permanent_cache' => (isa => 'HashRef', is => 'ro', default => sub { {} });
+has 'permanent_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
+  "usergroup" => 1,
+  "container" => 1,
+  "htmlcode" => 1,
+  "maintenance" => 1,
+  "setting" => 1,
+  "fullpage" => 1,
+  "nodetype" => 1,
+  "writeuptype" => 1,
+  "linktype" => 1,
+  "sustype" => 1,
+  "nodelet" => 1,
+  "datastash" => 1,
+  "theme" => 1
+} });
 
 has 'nosearch_words' => (isa => 'HashRef', is => 'ro', default => sub { {} });
 
