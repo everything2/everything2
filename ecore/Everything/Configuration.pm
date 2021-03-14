@@ -72,7 +72,38 @@ has 'permanent_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
   "theme" => 1
 } });
 
-has 'nosearch_words' => (isa => 'HashRef', is => 'ro', default => sub { {} });
+has 'nosearch_words' => (isa => 'HashRef', is => 'ro', default => sub { {
+  "a" => 1,
+  "an" => 1,
+  "and" => 1,
+  "are" => 1,
+  "at" => 1,
+  "definition" => 1,
+  "everything" => 1,
+  "for" => 1,
+  "if" => 1,
+  "in" => 1,
+  "is" => 1,
+  "it" => 1,
+  "my" => 1,
+  "new" => 1,
+  "node" => 1,
+  "not" => 1,
+  "of" => 1,
+  "on" => 1,
+  "that" => 1,
+  "the" => 1,
+  "thing" => 1,
+  "this" => 1,
+  "to" => 1,
+  "we" => 1,
+  "what" => 1,
+  "why" => 1,
+  "with" => 1,
+  "writeup" => 1,
+  "you" => 1,
+  "your" => 1
+} });
 
 has 'create_room_level' => (isa => 'Int', is => 'ro', default => 5);
 has 'stylesheet_fix_level' => (isa => 'Int', is => 'ro', default => 2);
