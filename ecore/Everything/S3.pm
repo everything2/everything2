@@ -16,21 +16,21 @@ sub new
 	{
 		foreach my $value (qw/bucket access_key_id secret_access_key use_iam_role/)
 		{
-			if(exists($Everything::CONF->s3->{$s3type}->{$value}))
+			if(defined($Everything::CONF->s3->{$s3type}->$value))
 			{
-				$this->{$value} = $Everything::CONF->s3->{$s3type}->{$value};
+				$this->{$value} = $Everything::CONF->s3->{$s3type}->$value;
 			}
 		}
 	}else{
 		return;
 	}
 
-	my $s3host = $Everything::CONF->s3->{$s3type}->{host} || $Everything::CONF->s3host || 's3.amazonaws.com';
+	my $s3host = $Everything::CONF->s3->{$s3type}->host || $Everything::CONF->s3host || 's3.amazonaws.com';
 	if($this->{use_iam_role})
 	{
 		$this->{s3} = Net::Amazon::S3->new(
 		{
-			use_iam_role => 1,	
+			use_iam_role => 1,
 			retry => 1,
 			host => $s3host
 		});
