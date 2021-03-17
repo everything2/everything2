@@ -2,7 +2,6 @@
 
 use strict;
 use Everything;
-#use JSON;
 
 sub http_response
 {
