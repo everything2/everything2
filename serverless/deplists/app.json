@@ -993,6 +993,11 @@
     "dependson": ["Test::Class::Most","Test::LongString"]
   },
   {
+    "file": "https://cpan.metacpan.org/authors/id/J/JS/JSWARTZ/Mason-Plugin-HTMLFilters-0.03.tar.gz",
+    "module": "Mason::Plugin::HTMLFilters",
+    "dependson": ["Mason"]
+  },
+  {
     "file": "https://cpan.metacpan.org/authors/id/L/LZ/LZE/Apache-DB-0.18.tar.gz",
     "module": "Apache::DB"
   },
