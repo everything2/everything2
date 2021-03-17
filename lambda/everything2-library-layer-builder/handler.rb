@@ -41,7 +41,7 @@ def lambda_handler(args)
   Archive::Zip.extract(disk_zipfile, "#{expandir}/.")
 
   puts "Creating new file\n"
-  Archive::Zip.archive(new_filename, "/tmp/expand/ecore/.", :path_prefix => 'lib/')
+  Archive::Zip.archive(new_filename, "/tmp/expand/.", :path_prefix => 'everything2/')
 
   puts "Uploading library layer zip\n"
   s3client.put_object(bucket: 'e2liblambdabase.everything2.com', key: filepart, body: File.open(new_filename).read)
