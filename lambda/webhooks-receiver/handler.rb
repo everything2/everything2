@@ -84,6 +84,7 @@ def lambda_handler(args)
 
   puts "Evaluating ref: #{body['ref']}"
   unless(body['ref'].eql? "refs/heads/master")
+    puts "Non-master commit ('#{body['ref']}'), skipping"
     return http_response(200, "Non-master commit, skipping")
   end
 
