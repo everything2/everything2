@@ -1695,7 +1695,8 @@
         "FunctionName": "everything2-zipfile-processor",
         "Role": {"Fn::GetAtt" : ["Everything2ZipfileProcessorRole", "Arn"]},
         "Runtime": "ruby2.7",
-        "Timeout": "30",
+        "MemorySize": 1024,
+        "Timeout": "600",
         "Handler": "handler.lambda_handler"
       }
     },
@@ -1920,7 +1921,8 @@
         "FunctionName": "everything2-library-layer-builder",
         "Role": {"Fn::GetAtt" : ["CICDE2LibraryLayerBuilderLambdaRole", "Arn"]},
         "Runtime": "ruby2.7",
-        "Timeout": "30",
+        "MemorySize": 1024,
+        "Timeout": "600",
         "Handler": "handler.lambda_handler"
       }
     },
