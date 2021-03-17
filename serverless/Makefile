@@ -10,7 +10,6 @@ LIBXMLVER=2.9.10
 INSTALL=$(shell pwd)/install
 PERL=$(INSTALL)/bin/perl
 CMAKE=$(INSTALL)/bin/cmake
-P1CACHE=$(shell pwd)/cache/phase1.zip
 BOOSTUNZIP=$(shell pwd)/build/boost_1_70_0/README.md
 
 
@@ -43,36 +42,23 @@ codepipeline.build: e2serverless.zip
 	touch $@
 
 $(PERL): 3rd/perl-$(PERLVER).tar.bz2
-ifneq ("","$(wildcard $(P1CACHE))")
-	cd $(INSTALL) && unzip -n $(P1CACHE) && cd ..
-else
-	echo "Could not find cache: $(P1CACHE)"
-	mkdir -p build && cd build && tar xjvf ../3rd/perl-$(PERLVER).tar.bz2
-	cd build/perl-$(PERLVER)/ && ./Configure -d -e -Dotherlibdirs=.../../lib/perl5 -Dman1dir=none -Dman3dir=none -Dinstallprefix=/ -Duserelocatableinc -Dusethreads -Dprefix=/ && make && make install DESTDIR=$(INSTALL)
+	mkdir -p build && cd build && tar xjf ../3rd/perl-$(PERLVER).tar.bz2
+	cd build/perl-$(PERLVER)/ && ./Configure -d -e -Dprefix=/ -Dman1dir=none -Dman3dir=none -Duserelocatableinc -Dotherlibdirs=.../../lib/perl5 -Dusethreads && make && make install DESTDIR=$(INSTALL)
 	rm $(INSTALL)/*.0
 	rm -rf $(INSTALL)/lib/perl5/$(PERLVER)/Test*
-endif
 	touch $@
 
 
 mysql.build: $(CMAKE) 3rd/mysql-boost-$(MYSQLVER).tar.gz $(BOOSTUNZIP)
-ifneq ("","$(wildcard $(P1CACHE))")
-	cd $(INSTALL) && unzip -n $(P1CACHE) && cd ..
-else
 	mkdir -p build && cd build && tar xzf ../3rd/mysql-boost-$(MYSQLVER).tar.gz && cd mysql-$(MYSQLVER) && $(CMAKE) -DDOWNLOAD_BOOST_TIMEOUT=6000 -DWITHOUT_SERVER=1 -DFORCE_INSOURCE_BUILD=1 -DCMAKE_INSTALL_PREFIX=$(INSTALL) -DLOCAL_BOOST_DIR=../boost_$(BOOSTVER) ../mysql-$(MYSQLVER) && make && make install
 	touch $@
-endif
 
 $(CMAKE): 3rd/cmake-$(CMAKEVER).tar.gz
-ifneq ("","$(wildcard $(P1CACHE))")
-	cd $(INSTALL) && unzip -n $(P1CACHE) & cd ..
-else
 	mkdir -p build && cd build && tar xzf ../3rd/cmake-$(CMAKEVER).tar.gz && cd cmake-$(CMAKEVER) && ./configure --prefix=$(INSTALL) && make && make install
 	touch $@
-endif
 
 $(BOOSTUNZIP): 3rd/boost_$(BOOSTVER).tar.gz
-	mkdir -p build && cd build && tar zxvf ../3rd/boost_$(BOOSTVER).tar.gz
+	mkdir -p build && cd build && tar zxf ../3rd/boost_$(BOOSTVER).tar.gz
 	touch $@
 
 3rd/boost_$(BOOSTVER).tar.gz:
@@ -80,7 +66,7 @@ $(BOOSTUNZIP): 3rd/boost_$(BOOSTVER).tar.gz
 	touch $@
 
 libxml2.build: 3rd/libxml2-$(LIBXMLVER).tar.gz
-	mkdir -p build && cd build && tar zxvf ../3rd/libxml2-$(LIBXMLVER).tar.gz && cd libxml2-$(LIBXMLVER) && ./configure --prefix=$(INSTALL) --without-python && make && make install
+	mkdir -p build && cd build && tar zxf ../3rd/libxml2-$(LIBXMLVER).tar.gz && cd libxml2-$(LIBXMLVER) && ./configure --prefix=$(INSTALL) --without-python && make && make install
 	touch $@
 
 3rd/libxml2-$(LIBXMLVER).tar.gz:
@@ -91,13 +77,7 @@ magick.build: 3rd/ImageMagick-$(MAGICKVER).tar.gz $(PERL)
 	mkdir -p build && cd build && tar xzf ../3rd/ImageMagick-$(MAGICKVER).tar.gz && cd ImageMagick-$(MAGICKVER) && ./configure --prefix=$(INSTALL) --with-perl=$(PERL) && make && make install && $(PERL) -MImage::Magick -le 'print Image::Magick->QuantumDepth'
 	touch $@
 
-$(P1CACHE): $(PERL) mysql.build libxml2.build magick.build
-	cd $(INSTALL) && zip ../cache/phase1.zip -r -y -9 * && cd ..
-	touch $@
-
-deps.build: $(P1CACHE)
-	rm -rf $(INSTALL)/*
-	cd $(INSTALL) && unzip -n ../cache/phase1.zip && cd ..
+deps.build: $(PERL) mysql.build libxml2.build magick.build
 	PATH=$(INSTALL)/bin/:$(PATH) $(PERL) ../tools/createdeps.pl --depfile=$(shell pwd)/deplists/app.json --dldir=$(shell pwd)/3rd --installdir=$(shell pwd)/install --builddir=$(shell pwd)/build && touch $@
 
 p7zip.build: 3rd/p7zip_$(P7ZIPVER)_src_all.tar.bz2
@@ -106,7 +86,7 @@ p7zip.build: 3rd/p7zip_$(P7ZIPVER)_src_all.tar.bz2
 	touch $@
 
 3rd/p7zip_$(P7ZIPVER)_src_all.tar.bz2:
-	mkdir -p 3rd && cd 3rd && wget https://gigenet.dl.sourceforge.net/project/p7zip/p7zip/16.02/p7zip_16.02_src_all.tar.bz2
+	mkdir -p 3rd && cd 3rd && wget https://iweb.dl.sourceforge.net/project/p7zip/p7zip/16.02/p7zip_16.02_src_all.tar.bz2
 	touch $@
 
 3rd/perl-$(PERLVER).tar.bz2:
@@ -126,13 +106,10 @@ p7zip.build: 3rd/p7zip_$(P7ZIPVER)_src_all.tar.bz2
 	touch $@
 
 lightclean:
-	rm -rf install/* *.build nytprof.* *.log inc *.unzip *.zip
+	rm -rf install/* *.build nytprof.* *.log inc *.unzip *.zip build.output
 
 clean: lightclean
 	rm -rf build/* 7za
-
-cacheclean: clean
-	rm -rf cache/*
 
 distclean: clean
 	rm -rf 3rd/*
