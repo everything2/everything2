@@ -1984,6 +1984,7 @@
         ],
         "Runtime": "provided.al2",
         "Timeout": "30",
+        "MemorySize": 512,
         "Handler": "handler.lambda_handler"
       }
     },
