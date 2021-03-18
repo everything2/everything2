@@ -77,7 +77,7 @@ libxml2.build: 3rd/libxml2-$(LIBXMLVER).tar.gz
 	touch $@
 
 magick.build: 3rd/ImageMagick-$(MAGICKVER).tar.gz $(PERL) jpeg.build png.build
-	mkdir -p build && cd build && tar xzf ../3rd/ImageMagick-$(MAGICKVER).tar.gz && cd ImageMagick-$(MAGICKVER) && ./configure --prefix=$(INSTALL) --with-perl=$(PERL) && make && make install && $(PERL) -MImage::Magick -le 'print Image::Magick->QuantumDepth'
+	mkdir -p build && cd build && tar xzf ../3rd/ImageMagick-$(MAGICKVER).tar.gz && cd ImageMagick-$(MAGICKVER) && ./configure --prefix=$(INSTALL) --with-perl=$(PERL) --without-fontconfig --without-freetype && make && make install && $(PERL) -MImage::Magick -le 'print Image::Magick->QuantumDepth'
 	touch $@
 
 deps.build: $(PERL) mysql.build libxml2.build magick.build
