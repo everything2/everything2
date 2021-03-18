@@ -8,6 +8,7 @@ P7ZIPVER=16.02
 LIBXMLVER=2.9.10
 LIBJPEGVER=1.5.3
 NASMVER=2.15.05
+PNGVER=1.5.30
 
 INSTALL=$(shell pwd)/install
 PERL=$(INSTALL)/bin/perl
@@ -75,7 +76,7 @@ libxml2.build: 3rd/libxml2-$(LIBXMLVER).tar.gz
 	mkdir -p 3rd && cd 3rd && wget ftp://xmlsoft.org/libxml2/libxml2-$(LIBXMLVER).tar.gz
 	touch $@
 
-magick.build: 3rd/ImageMagick-$(MAGICKVER).tar.gz $(PERL) jpeg.build
+magick.build: 3rd/ImageMagick-$(MAGICKVER).tar.gz $(PERL) jpeg.build png.build
 	mkdir -p build && cd build && tar xzf ../3rd/ImageMagick-$(MAGICKVER).tar.gz && cd ImageMagick-$(MAGICKVER) && ./configure --prefix=$(INSTALL) --with-perl=$(PERL) && make && make install && $(PERL) -MImage::Magick -le 'print Image::Magick->QuantumDepth'
 	touch $@
 
@@ -84,6 +85,10 @@ deps.build: $(PERL) mysql.build libxml2.build magick.build
 
 jpeg.build: 3rd/libjpeg-turbo-$(LIBJPEGVER).tar.gz nasm.build
 	mkdir -p build && cd build && tar xzf ../3rd/libjpeg-turbo-$(LIBJPEGVER).tar.gz && cd libjpeg-turbo-$(LIBJPEGVER) && PATH=$(PATH):$(INSTALL)/bin ./configure --prefix=$(INSTALL) && PATH=$(PATH):$(INSTALL)/bin make && make install
+	touch $@
+
+png.build: 3rd/libpng-$(PNGVER).tar.gz
+	mkdir -p build && cd build && tar xzf ../3rd/libpng-$(PNGVER).tar.gz && cd libpng-$(PNGVER) && ./configure --prefix=$(INSTALL) && make && make install
 	touch $@
 
 p7zip.build: 3rd/p7zip_$(P7ZIPVER)_src_all.tar.bz2
@@ -115,8 +120,13 @@ nasm.build: 3rd/nasm-$(NASMVER).tar.gz
 	mkdir -p 3rd && cd 3rd && wget https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-$(MYSQLVER).tar.gz
 	touch $@
 
+# PNG and JPEG aren't linking against those versions in build, but they are using the ABI for the right versions for AL2
 3rd/libjpeg-turbo-$(LIBJPEGVER).tar.gz:
 	mkdir -p 3rd && cd 3rd && wget https://versaweb.dl.sourceforge.net/project/libjpeg-turbo/$(LIBJPEGVER)/libjpeg-turbo-$(LIBJPEGVER).tar.gz
+	touch $@
+
+3rd/libpng-$(PNGVER).tar.gz:
+	mkdir -p 3rd && cd 3rd && wget https://managedway.dl.sourceforge.net/project/libpng/libpng15/$(PNGVER)/libpng-$(PNGVER).tar.gz
 	touch $@
 
 3rd/nasm-$(NASMVER).tar.gz:
