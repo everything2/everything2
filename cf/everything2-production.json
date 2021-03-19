@@ -1983,7 +1983,7 @@
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:11"]]}
         ],
         "Runtime": "provided.al2",
-        "Timeout": "30",
+        "Timeout": "900",
         "MemorySize": 512,
         "Handler": "handler.lambda_handler"
       }

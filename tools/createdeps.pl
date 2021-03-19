@@ -99,6 +99,7 @@ foreach my $dep (@$dependencies)
   $inc = "INC=\"$inc\"" if $inc ne "";
 
   my $extra = $dep->{extra} || "";
+  $extra =~ s/\$installdir/$installdir/g;
 
   if($dep->{removecore})
   {
