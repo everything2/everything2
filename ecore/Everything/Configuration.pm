@@ -3,6 +3,8 @@ package Everything::Configuration;
 use Moose;
 use Everything::S3::BucketConfig;
 use Carp qw(croak);
+use Paws;
+use LWP::UserAgent;
 use JSON;
 use namespace::autoclean;
 
@@ -300,7 +302,21 @@ around BUILDARGS => sub
 sub _build_everypass
 {
   my ($self) = @_;
-  return $self->_filesystem_default('database_password_secret', '');
+
+  my $pass = $self->_filesystem_default('database_password_secret', '');
+  if($pass eq '' and $self->environment eq 'production')
+  {
+    my $service = Paws->service('SecretsManager', region => $self->current_region);
+    foreach my $secret(@{$service->ListSecrets->SecretList})
+    {
+      if($secret->Name eq "E2DBMasterPassword")
+      {
+        my $secret = from_json($service->GetSecretValue(SecretId => $secret->ARN)->SecretString);
+        $pass = $secret->{password};
+      }
+    }
+  }
+  return $pass;
 }
 
 sub _build_recaptcha
@@ -347,6 +363,24 @@ sub _filesystem_default
   }
   chomp($default);
   return $default
+}
+
+# TODO: Make this a mixin
+sub current_region
+{
+  my ($self) = @_;
+
+  my $ua = LWP::UserAgent->new(timeout => 2);
+  my $resp = $ua->get('http://169.254.169.254/latest/meta-data/placement/availability-zone');
+  my $region;
+  if($resp->is_success)
+  {
+    my $az = $resp->decoded_content;
+    $az =~ s/[a-z]$//g;
+    $region = $az;
+  }
+
+  return $region;
 }
 
 __PACKAGE__->meta->make_immutable;
