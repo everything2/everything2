@@ -669,7 +669,12 @@
           {
             "Effect": "Allow",
             "Action": "secretsmanager:GetSecretValue",
-            "Resource": {"Fn::Join": ["",["arn:",{"Ref": "AWS::Partition"},":secretsmanager:",{"Ref": "AWS::Region"},":",{"Ref": "AWS::AccountId"},":secret:",{"Ref": "E2DBMasterPassword"}]]}
+            "Resource": {"Ref": "E2DBMasterPassword"} 
+          },
+          {
+            "Effect": "Allow",
+            "Action": "secretsmanager:ListSecrets",
+            "Resource": "*"
           }]
         }
       }
