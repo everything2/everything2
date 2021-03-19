@@ -1969,6 +1969,75 @@
         "Description": "Application Library layer for E2"
       }
     },
+    "VPCLambdaCreateInterfacePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows Lambda to create network interfaces",
+        "ManagedPolicyName": "VPCLambdaCreateInterfacePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Resource": "*",
+              "Action": [
+                "ec2:DescribeInstances",
+                "ec2:CreateNetworkInterface",
+                "ec2:DeleteNetworkInterface",
+                "ec2:AttachNetworkInterface",
+                "ec2:DescribeNetworkInterfaces",
+                "autoscaling:CompleteLifecycleAction"]
+           }
+         ]
+        }
+      }
+    },
+    "SitemapBucketWritePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Allows entites to write to the sitemaps bucket",
+        "ManagedPolicyName": "SitemapBucketWritePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": ["s3:PutObject","s3:DeleteObject"],
+              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SitemapS3Bucket", "Arn"] }, "/*"]]}
+            }
+          ]
+        }
+      }
+    },
+    "SitemapGeneratorLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "lambda.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Description": "Sitemap Generator Lambda Role",
+        "ManagedPolicyArns": [
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+            {"Ref": "VPCLambdaCreateInterfacePolicy"},
+            {"Ref": "SitemapBucketWritePolicy"}
+        ],
+        "Path": "/",
+        "RoleName": "Sitemap-Generator-Lambda-Role"
+      }
+    },
+    "LambdaSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "E2 Lambda Security Group",
+        "GroupName": "E2-Lambda-Security-Group",
+        "VpcId": {"Ref": "AppVPC"}
+      }
+    },
     "Everything2SitemapGenerateFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -1977,7 +2046,7 @@
           "S3Key": "everything2-sitemap-generate.zip"
         },
         "FunctionName": "everything2-sitemap-generate",
-        "Role": {"Fn::GetAtt" : ["DeregistrationLambdaRole", "Arn"]},
+        "Role": {"Fn::GetAtt" : ["SitemapGeneratorLambdaRole", "Arn"]},
         "Layers": [
           {"Ref": "E2LibLambdaLayer"},
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:11"]]}
@@ -1985,7 +2054,11 @@
         "Runtime": "provided.al2",
         "Timeout": "900",
         "MemorySize": 512,
-        "Handler": "handler.lambda_handler"
+        "Handler": "handler.lambda_handler",
+        "VpcConfig": {
+          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
+          "SubnetIds": [{"Ref": "AppVPCSubnet1"}]
+        }
       }
     },
     "E2SitemapLambdaLogGroup": {
