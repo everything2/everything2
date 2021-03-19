@@ -23,6 +23,8 @@ def lambda_handler(args)
   bucket = 'githubzips.everything2.com'
   zipfile = 'everything2.zip'
 
+  targetbucket = 'e2liblambdabase.everything2.com'
+
   puts "Using bucket: #{bucket}\n"
   puts "Fetching zip file from #{bucket}/#{zipfile} to /tmp\n"
   disk_zipfile = "/tmp/#{zipfile}"
@@ -44,6 +46,9 @@ def lambda_handler(args)
   Archive::Zip.archive(new_filename, "/tmp/expand/.", :path_prefix => 'everything2/')
 
   puts "Uploading library layer zip\n"
-  s3client.put_object(bucket: 'e2liblambdabase.everything2.com', key: filepart, body: File.open(new_filename).read)
+  s3client.put_object(bucket: targetbucket, key: filepart, body: File.open(new_filename).read)
+
+  puts "Registering new library version\n"
+  lambdaclient.publish_layer_version(compatible_runtimes: ["provided.al2"], content: {"s3_bucket": targetbucket, "s3_key": filepart}, description: "Everything2 library layer for AWS Lambda", layer_name: 'e2-library-layer')
 
 end
