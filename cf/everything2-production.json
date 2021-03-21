@@ -1491,11 +1491,6 @@
           "Statement": [
           {
             "Effect": "Allow",
-            "Action": "lambda:UpdateFunctionCode",
-            "Resource": {"Fn::GetAtt": ["PerlBaseLambdaFunction", "Arn"]}
-          },
-          {
-            "Effect": "Allow",
             "Action": "lambda:PublishLayerVersion",
             "Resource": {"Fn::Join": ["",["arn:aws:lambda:",{"Ref": "AWS::Region"},":",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer"]]}
           }]
@@ -1630,26 +1625,6 @@
         }
       }
     },
-    "PerlBaseLambdaRole": {
-      "Type": "AWS::IAM::Role",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": {
-            "Effect": "Allow",
-            "Principal": {"Service": "lambda.amazonaws.com"},
-            "Action": "sts:AssumeRole"
-          }
-        },
-        "Description": "BasicLambdaRole",
-        "ManagedPolicyArns": [
-            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-        ],
-        "Path": "/",
-        "RoleName": "Perl-Base-Lambda-Role"
-      }
-    },
     "CloudWatchSNSPolicy": {
       "Type": "AWS::SNS::TopicPolicy",
       "Properties": {
@@ -1670,21 +1645,6 @@
             }
           }]
         }
-      }
-    },
-    "PerlBaseLambdaFunction": {
-      "Type": "AWS::Lambda::Function",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Code": {
-          "S3Bucket": "perllambdabase.everything2.com",
-          "S3Key": "e2serverless.zip"
-        },
-        "FunctionName": "perl-lambda-base",
-        "Role": {"Fn::GetAtt" : ["PerlBaseLambdaRole", "Arn"]},
-        "Runtime": "provided.al2",
-        "Timeout": "30",
-        "Handler": "handler.lambda_handler"
       }
     },
     "PerlLambdaLayer": {
@@ -1802,14 +1762,6 @@
       "DeletionPolicy": "Retain",
       "Properties": {
         "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "CICDCodeBuildPerlBaseVersionUpdaterLambda"}]]},
-        "RetentionInDays": 3
-      }
-    },
-    "PerlBaseTestLambdaLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "PerlBaseLambdaFunction"}]]},
         "RetentionInDays": 3
       }
     },
@@ -2017,6 +1969,13 @@
       "Properties": {
         "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "Everything2SitemapGenerateFunction"}]]},
         "RetentionInDays": 3
+      }
+    },
+    "E2SitmapDispatcherBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "sitemapdispatch.everything2.com"
       }
     }
   }
