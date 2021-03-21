@@ -9,145 +9,36 @@ use Everything::S3;
 
 use XML::Generator;
 
+use JSON;
+
 initEverything 'everything';
 my $xg = XML::Generator->new(':pretty');
-my $tmpdir = "/tmp/sitemaps_$$";
-`mkdir $tmpdir`;
-
-my $sitemapnum = 0;
-my $sitemapfiles;
-
-my $urls = 0;
-my $e2 = "https://everything2.com";
-my $sitemaphandle;
 
 $DB->{cache}->setCacheSize(50);
-
+my $s3 = Everything::S3->new("sitemap");
 print commonLogLine("Starting up");
 
-open_sitemapfile();
-foreach my $includetype(qw(e2node writeup user))
+my $current_batch = 1;
+print commonLogLine("Fetching batches");
+my $batches = $APP->sitemap_batches;
+
+foreach my $batch(@$batches)
 {
-	my $csr = $DB->sqlSelectMany($includetype."_id",$includetype);
-	while(my $row = $csr->fetchrow_hashref())
-	{
-		my $N = getNodeById($row->{$includetype."_id"});
-		next unless $N;
-		$urls++;
-
-		my $edittime;
-		if($N->{type}{title} eq "writeup")
-		{
-			$edittime = writeup_edittime($N);
-		}elsif($N->{type}{title} eq "e2node")
-		{
-			my $edittimes;
-			next unless defined $N->{group};
-			next if scalar(@{$N->{group}}) == 0;
-			foreach my $writeupnode(@{$N->{group}})
-			{
-				my $thisnode = getNode($writeupnode);
-				next unless $thisnode;
-				push @$edittimes, writeup_edittime($thisnode);
-				undef $thisnode;
-			}
-			next unless $edittimes;
-
-			$edittimes = [sort {$b cmp $a} @$edittimes];
-			$edittime = $edittimes->[0];
-			undef $edittimes;
-		}elsif($N->{type}{title} eq "user")
-		{
-			$edittime = $N->{lasttime};
-			if($edittime =~ /0000-00-00/)
-			{
-				# User never logged in
-				next;
-			}
-		}
-
-		next unless $edittime;
-		add_node_to_sitemap($N, $edittime);
-
-		if($urls >= 50000)
-		{
-			$urls = 0;
-			close_sitemapfile();
-			$sitemapnum++;
-			open_sitemapfile();
-		}
-
-		undef $N;
-	}
+  print commonLogLine("Starting batch: $current_batch");
+  sitemap_file_create($batch, $current_batch);
+  $current_batch++;
 }
 
-close_sitemapfile();
-sleep(3);
-`gzip -f /$tmpdir/*.xml`;
-
-print commonLogLine("Writing to index");
-my $indexfile;
-open $indexfile, ">/$tmpdir/index.xml";
-print $indexfile '<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
-foreach my $sitemapfile (@$sitemapfiles)
+sub sitemap_file_create
 {
-	my $thistime = [localtime()];
-	my $thistimestring = ($thistime->[5]+1900)."-".sprintf('%02d',$thistime->[4]+1)."-".sprintf('%02d',$thistime->[3]);
-	print $indexfile $xg->sitemap($xg->loc("$e2/sitemap/$sitemapfile"), $xg->lastmod($thistimestring))."\n";
+  my ($batch, $batch_number) = @_;
+  
+  my $sitemap_file = $APP->sitemap_batch_xml($batch);
+
+  print commonLogLine("Uploading batch: $batch_number");
+  $s3->upload_data("$batch_number.xml", $sitemap_file, {"content_type" => "application/xml"});
+  print commonLogLine("Finishing batch: $batch_number");
 }
 
-print $indexfile '</sitemapindex>';
-close $indexfile;
-
-my $s3 = Everything::S3->new("sitemap");
-
-foreach my $sitemapfile(@$sitemapfiles,"index.xml")
-{
-	if($s3->upload_file($sitemapfile, "$tmpdir/$sitemapfile"))
-	{
-		print commonLogLine("Upload of '$sitemapfile' succeeded");
-	}else{
-		print commonLogLine("Upload of '$sitemapfile' failed");
-	}
-}
-
-sub close_sitemapfile
-{
-	print $sitemaphandle '</urlset>';
-	close $sitemaphandle;
-}
-
-sub open_sitemapfile
-{
-	print commonLogLine("Writing to $sitemapnum.xml");
-	open $sitemaphandle, ">/$tmpdir/$sitemapnum.xml";
-	print $sitemaphandle '<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
-	push @$sitemapfiles, "$sitemapnum.xml.gz";
-}
-
-sub add_node_to_sitemap
-{
-	my ($N, $edittime) = @_;
-
-	$edittime =~ s/ .+//g;	
-	print $sitemaphandle $xg->url(
-		$xg->loc("$e2".$APP->urlGenNoParams( $N , 'noQuotes' )),
-		defined($edittime)?($xg->lastmod($edittime)):(undef),
-	)."\n";
-}
-
-sub writeup_edittime
-{
-	my ($N) = @_;
-
-	my $edittime = $N->{edittime};
-	if($edittime =~ /0000-00-00/)
-	{
-		$edittime = $N->{createtime};
-	}
-	return $edittime;
-}
-
-`rm -rf $tmpdir`;
+print commonLogLine("Creating indexes for ".scalar(@$batches)." batches");
+$s3->upload_data("index.xml", $APP->sitemap_index(scalar(@$batches)), {"content_type" => "application/xml"});

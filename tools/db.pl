@@ -14,7 +14,7 @@ foreach my $secret(@{$service->ListSecrets->SecretList})
   {
     my $secret = from_json($service->GetSecretValue(SecretId => $secret->ARN)->SecretString);
     #print Data::Dumper->Dump([$secret]);
-    exec("mysql --user=\"$secret->{username}\" --password=\"$secret->{password}\" --host=\"$secret->{host}\"");
+    exec("mysql --user=\"$secret->{username}\" --password=\"$secret->{password}\" --host=\"$secret->{host}\" everything");
   }
 }
 

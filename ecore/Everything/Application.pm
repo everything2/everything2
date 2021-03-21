@@ -24,6 +24,9 @@ use Devel::Caller qw(caller_args);
 # For add_notification
 use JSON;
 
+# For sitemap_batch_xml
+use XML::Generator;
+
 use vars qw($PARAMS $PARAMSBYTYPE);
 BEGIN {
 	$PARAMS = 
@@ -4448,5 +4451,118 @@ sub sns_notify
   return unless defined $matching_topic_arn;
   return $sns->Publish(Message => $message, Subject => $subject, TopicArn => $matching_topic_arn);
 }
+
+sub sitemap_batches
+{
+  my ($this) = @_;
+
+  # All non-empty e2nodes, users who have logged in, and all writeups
+  my $csr = $this->{db}->{dbh}->prepare("select node_id from (select e2node_id as node_id from (select e.e2node_id,count(*) as nodecnt from e2node e left join nodegroup n on e.e2node_id=n.nodegroup_id group by node_id) a where nodecnt > 0 UNION DISTINCT select w.writeup_id as node_id from writeup w UNION DISTINCT select u.user_id as node_id from user u where u.lasttime > 0) z order by node_id ASC");
+
+  my $batches = [];
+  my $batch;
+  my $batch_size = 50000;
+
+  $csr->execute;
+  while(my $row = $csr->fetchrow_arrayref)
+  {
+    push @$batch, $row->[0];
+    if(scalar(@$batch) == $batch_size)
+    {
+      push @$batches, $batch;
+      $batch = [];
+    }
+  }
+
+  return $batches;
+}
+
+sub sitemap_batch_xml
+{
+  my ($this, $batch) = @_;
+
+  my $xg = XML::Generator->new(':pretty');
+  my $sitemap_file = qq|<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">|;
+
+  foreach my $node_id (@$batch)
+  {
+    my $N = $this->{db}->getNodeById($node_id);
+    my $edittime;
+    next unless defined $N->{type}{title};
+
+    if($N->{type}{title} eq "writeup")
+    {
+      $edittime = $this->writeup_edittime($N);
+    }elsif($N->{type}{title} eq "e2node"){
+      my $edittimes = [];
+      next unless defined $N->{group};
+      next if scalar(@{$N->{group}}) == 0;
+      foreach my $writeupnode(@{$N->{group}})
+      {
+        my $thisnode = $this->{db}->getNodeById($writeupnode);
+        next unless $thisnode;
+        push @$edittimes, $this->writeup_edittime($thisnode);
+        undef $thisnode;
+      }
+
+      next unless $edittimes;
+
+      $edittimes = [sort {$b cmp $a} @$edittimes];
+      $edittime = $edittimes->[0];
+      undef $edittimes;
+    }elsif($N->{type}{title} eq "user"){
+      $edittime = $N->{lasttime};
+      if($edittime =~ /0000-00-00/)
+      {
+        # User never logged in
+        next;
+      }
+    }
+
+    next unless $edittime;
+    # Drop time portion
+    $edittime =~ s/ .*//g;
+    $sitemap_file .= $xg->url(
+      $xg->loc($this->{conf}->site_url.$this->urlGenNoParams( $N , 'noQuotes' )),
+      defined($edittime)?($xg->lastmod($edittime)):(undef))."\n";
+  }
+
+  $sitemap_file .= "</urlset>";
+  return $sitemap_file
+}
+
+sub sitemap_index
+{
+  my ($this, $indexes) = @_;
+
+  my $xg = XML::Generator->new(':pretty');
+  my $indexfile = qq|<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">|;
+
+  foreach my $index (1..$indexes)
+  {
+    my $thistime = [localtime()];
+    my $thistimestring = ($thistime->[5]+1900)."-".sprintf('%02d',$thistime->[4]+1)."-".sprintf('%02d',$thistime->[3]);
+    $indexfile.=$xg->sitemap($xg->loc($this->{conf}->site_url."/sitemap/".($index).".xml"), $xg->lastmod($thistimestring))."\n";
+  }
+
+  $indexfile .= "</sitemapindex>";
+
+  return $indexfile;
+}
+
+sub writeup_edittime
+{
+  my ($this, $N) = @_;
+
+  my $edittime = $N->{edittime};
+  if($edittime =~ /0000-00-00/)
+  {
+    $edittime = $N->{createtime};
+  }
+  return $edittime;
+}
+
 
 1;
