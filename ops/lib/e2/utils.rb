@@ -39,10 +39,6 @@ class E2
       deployment_ids
     end
 
-    def update_opsworks_json
-      @e2.update_opsworks_stack_json
-    end
-
     def deployment_status(deployment_id)
       @aws.opsworks.describe_deployments(deployment_ids: [deployment_id]).deployments[0]
     end
