@@ -43,6 +43,7 @@ has 's3' => (isa => 'HashRef', is => 'ro', default => sub { {
   "nodebackup" => Everything::S3::BucketConfig->new("bucket" => "nodebackup.everything2.com"),
   "backup" => Everything::S3::BucketConfig->new("bucket" => "backupwest.everything2.com"),
   "sitemap" => Everything::S3::BucketConfig->new("bucket" => "sitemap.everything2.com"),
+  "sitemapdispatch" => Everything::S3::BucketConfig->new("bucket" => "sitemapdispatch.everything2.com"),
   "jscss" => Everything::S3::BucketConfig->new("bucket" => "jscssw.everything2.com") }});
 
 has 'static_nodetypes' => (isa => 'Bool', is => 'ro', default => 1);
@@ -54,9 +55,6 @@ has 'search_row_limit' => (isa => 'Int', is => 'ro', default => 200);
 has 'logdirectory' => (isa => 'Str', is => 'ro', default => '/var/log/everything');
 
 has 'use_local_javascript' => (isa => 'Bool', is => 'ro', default => '0');
-
-# TODO: Get rid of this
-has 'system' => (isa => 'HashRef', is => 'ro', default => sub { {} });
 
 has 'permanent_cache' => (isa => 'HashRef', is => 'ro', default => sub { {
   "usergroup" => 1,

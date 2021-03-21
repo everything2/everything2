@@ -16,49 +16,10 @@
   "mail_from": "accounthelp@everything2.com",
   "environment": "development",
   "nodecache_size": 200,
-  "s3": {
-    "homenodeimages": {
-      "bucket": "",
-      "secret_access_key": "",
-      "access_key_id": ""
-    },
-    "nodebackup": {
-      "bucket": "",
-      "secret_access_key": "",
-      "access_key_id": ""
-    },
-    "backup": {
-      "bucket": "",
-      "secret_access_key": "",
-      "access_key_id": ""
-    },
-    "sitemap": {
-      "bucket": "",
-      "secret_access_key": "",
-      "access_key_id": ""
-    },
-    "jscss": {
-      "bucket": "",
-      "secret_access_key": "",
-      "access_key_id": ""
-    }
-  },
   "static_nodetypes": 1,
   "clean_search_words_aggressively": 1,
   "search_row_limit": 200,
   "logdirectory": "/var/log/everything",
-  "system": {
-    "nodelet_container": 1854181,
-    "maintenance_nodes": {
-      "broken_nodes": 379710,
-      "e2_bugs": 364471,
-      "nodeshells_marked_for_destruction": 596824,
-      "e2_nuke_request": 171917,
-      "suggestions_for_e2": 368049,
-      "edit_these_e2_titles": 174079,
-      "e2_title_edit_siding_and_repair_yard": 1428471
-    }
-  },
   "permanent_cache": {
     "usergroup": 1,
     "container": 1,
