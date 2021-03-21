@@ -185,6 +185,7 @@
     },
     "E2DotComJSCSSWR53RR": {
       "Type": "AWS::Route53::RecordSet",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Name": "jscssw.everything2.com",
         "HostedZoneName": "everything2.com.",
@@ -279,6 +280,7 @@
     },
     "E2FrontendELB": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Name": "E2-App-Frontend-ELB-2",
         "Subnets": [{"Ref": "AppVPCSubnet1"}, {"Ref": "AppVPCSubnet2"}],
@@ -287,6 +289,7 @@
     },
     "E2FrontendELBTargetGroup": {
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Name": "E2-App-HTTPS-TG",
         "VpcId": {"Ref": "AppVPC"},
@@ -308,6 +311,7 @@
     },
     "E2ELBCertificate": {
       "Type": "AWS::CertificateManager::Certificate",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "DomainName": "everything2.com",
         "ValidationMethod": "DNS",
@@ -316,6 +320,7 @@
     },
     "ELBAppHTTPSListener": {
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "DefaultActions": [
           {
@@ -332,6 +337,7 @@
     },
     "ELBAppHTTPListener": {
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "DefaultActions": [
           {
@@ -606,6 +612,7 @@
     },
     "EverythingDBSubnetGroup": {
       "Type": "AWS::RDS::DBSubnetGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "DBSubnetGroupName": "e2-app-db-subnet-group-2",
         "DBSubnetGroupDescription": "E2 VPC RDS DB Subnet Group",
@@ -651,6 +658,7 @@
     },
     "E2MasterPasswordAttachment": {
       "Type" : "AWS::SecretsManager::SecretTargetAttachment",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "SecretId": {"Ref": "E2DBMasterPassword" },
         "TargetId": {"Ref": "EverythingDB"},
@@ -689,6 +697,7 @@
     },
     "E2ApplicationStack": {
       "Type": "AWS::OpsWorks::Stack",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Name": "E2 Application Stack - CF",
         "VpcId": {"Ref": "AppVPC"},
@@ -705,156 +714,12 @@
         "CustomCookbooksSource": {
           "Type": "git",
           "Url": "https://github.com/everything2/cookbooks.git"
-        },
-        "CustomJson": {
-          "e2engine": {
-            "google_ads_badnodes": [
-              20453,
-              456144,
-              806191,
-              1361996,
-              581001,
-              592113,
-              864733,
-              572200,
-              701409,
-              668965,
-              1268916,
-              1935477,
-              331791,
-              1143670,
-              109,
-              1322899,
-              587248,
-              896688,
-              952197,
-              785448,
-              952197,
-              785448,
-              2152628,
-              1083922,
-              642704,
-              1921577,
-              1330152,
-              1369958,
-              2003596,
-              29906,
-              149007,
-              1332646,
-              1330152,
-              59705,
-              903265,
-              27425,
-              601565,
-              1076632,
-              1407002,
-              728828
-            ],
-            "google_ads_badwords": [
-              "pussy",
-              "fleshlight",
-              "thrush",
-              "hentai",
-              "heroin",
-              "kike",
-              "vibrator",
-              "boob",
-              "breast",
-              "butt",
-              "ass",
-              "lesbian",
-              "cock",
-              "dick",
-              "penis",
-              "sex",
-              "oral",
-              "anal",
-              "drug",
-              "pot",
-              "weed",
-              "crack",
-              "cocaine",
-              "fuck",
-              "wank",
-              "whore",
-              "vagina",
-              "vaginal",
-              "vag",
-              "cunt",
-              "tits",
-              "titty",
-              "twat",
-              "shit",
-              "slut",
-              "snatch",
-              "queef",
-              "queer",
-              "poon",
-              "prick",
-              "puss",
-              "orgasm",
-              "nigg",
-              "nuts",
-              "muff",
-              "motherfuck",
-              "jizz",
-              "hell",
-              "homo",
-              "handjob",
-              "fag",
-              "dildo",
-              "dick",
-              "clit",
-              "cum",
-              "bitch",
-              "rape",
-              "ejaculate",
-              "bsdm",
-              "fisting",
-              "balling",
-              "pornography",
-              "blowjob",
-              "masturbation",
-              "fetish",
-              "suicide",
-              "cunnilingus"
-            ],
-            "s3": {
-              "sitemap": {
-                "bucket": "sitemap.everything2.com",
-                "use_iam_role": 1
-              },
-              "homenodeimages": {
-                "bucket": "hnimagew.everything2.com",
-                "use_iam_role": 1
-              },
-              "jscss": {
-                "bucket": "jscssw.everything2.com",
-                "use_iam_role": 1
-              },
-              "backup": {
-                "bucket": "backupwest.everything2.com",
-                "use_iam_role": 1
-              },
-              "nodebackup": {
-                "bucket": "nodebackup.everything2.com",
-                "use_iam_role": 1
-              }
-            },
-            "nodecache_size": 600,
-            "everything_dbserv": "everything2vpc.ciuh20jrlbkm.us-west-2.rds.amazonaws.com",
-            "maintenance_mode": 0,
-            "canonical_web_server": "everything2.com",
-            "environment": "production",
-            "use_local_javascript": 0,
-            "s3host": "s3-us-west-2.amazonaws.com",
-            "iam_app_role": "E2-App-Server"
-          }
         }
       }
     },
     "E2BastionLayer": {
       "Type": "AWS::OpsWorks::Layer",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "StackId": {"Ref": "E2ApplicationStack"},
         "Type": "custom",
@@ -871,6 +736,7 @@
     },
     "E2WebLayer": {
       "Type": "AWS::OpsWorks::Layer",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "StackId": {"Ref": "E2ApplicationStack"},
         "Type": "custom",
@@ -887,6 +753,7 @@
     },
     "OpsworksEventsLogGroup": {
       "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "LogGroupName": "/aws/events/opsworks",
         "RetentionInDays": 3
@@ -894,6 +761,7 @@
     },
     "OpsworksCloudwatchLogging": {
       "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Subscribing to Opsworks events logs",
         "Name": "opsworkscloudwatchlogging",
@@ -916,6 +784,7 @@
     },
     "E2OpsworksLaunchTemplate": {
       "Type": "AWS::EC2::LaunchTemplate",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "LaunchTemplateName": "E2OpsworksLaunchTemplate",
         "LaunchTemplateData": {
@@ -945,15 +814,16 @@
     },
     "E2AppOpsworksScalingGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "DeletionPolicy": "Retain",
       "DependsOn": ["AppVPCIGWAttach"],
       "Properties": {
         "AutoScalingGroupName": "E2-App-Opsworks-Scaling-Group",
         "AvailabilityZones": [{"Fn::GetAtt": ["AppVPCSubnet1", "AvailabilityZone"]}],
-        "MinSize": 1,
-        "MaxSize": 3,
+        "MinSize": 0,
+        "MaxSize": 0,
         "Cooldown": 1200,
         "HealthCheckGracePeriod": 1200,
-	"DesiredCapacity": 1,
+	"DesiredCapacity": 0,
         "HealthCheckType": "ELB",
         "LaunchTemplate": {
           "LaunchTemplateId": {"Ref": "E2OpsworksLaunchTemplate"},
@@ -1006,6 +876,7 @@
     },
     "E2PreprodRR": {
       "Type": "AWS::Route53::RecordSet",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Name": "preprod.everything2.com",
         "HostedZoneName": "everything2.com.",
@@ -1039,6 +910,7 @@
     },
     "OpsWorksDeregistrationLambda": {
       "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Code": {
           "S3Bucket": "lambdasource.everything2.com",
@@ -1053,6 +925,7 @@
     },
     "OpsWorksDeregistrationLambdaLogGroup": {
       "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "OpsWorksDeregistrationLambda"}]]},
         "RetentionInDays": 3
@@ -1075,6 +948,7 @@
     },
     "OpsWorksDeregistrationLambdaPermission": {
       "Type": "AWS::Lambda::Permission",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName" : {"Ref": "OpsWorksDeregistrationLambda"},
         "Principal": "sns.amazonaws.com",
@@ -1133,6 +1007,7 @@
     },
     "OpsWorksReaperLambda": {
       "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Code": {
           "S3Bucket": "lambdasource.everything2.com",
@@ -1147,6 +1022,7 @@
     },
     "OpsWorksReaperCronRule": {
       "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Cron rule to call opsworks-reaper lambda",
         "Name": "opsworks-reaper-lambda-cron",
@@ -1160,6 +1036,7 @@
     },
     "OpsWorksReaperLambdaPermission": {
       "Type": "AWS::Lambda::Permission",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName" : {"Ref": "OpsWorksReaperLambda"},
         "Principal": "events.amazonaws.com",
@@ -1177,6 +1054,7 @@
     },
     "PerlLambdaBaseBuildRule": {
       "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Subscribing to perl lambda base build",
         "Name": "perllambdabuildrule",
@@ -1206,6 +1084,7 @@
     },
     "PerlLambdaBucketWritePolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows E2 processes to upload to the perl lambda base bucket",
         "ManagedPolicyName": "PerlLambdaBucketWritePolicy",
@@ -1229,6 +1108,7 @@
     },
     "ZipsBucketWritePolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows E2 processes to upload to the zips bucket",
         "ManagedPolicyName": "ZipsBucketWritePolicy",
@@ -1245,6 +1125,7 @@
     },
     "ZipsBucketReadPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows E2 process to read from the zips bucket",
         "ManagedPolicyName": "ZipsBucketReadPolicy",
@@ -1261,6 +1142,7 @@
     },
     "ZipsLambdaInvokerPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows the webhooks receiver lambda to call the github pull handler",
         "ManagedPolicyName": "ZipsLambdaInvokerPolicy",
@@ -1277,6 +1159,7 @@
     },
     "ReadGithubSecretPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows worker to read the current Github Webhook secret",
         "ManagedPolicyName": "ReadGithubSecretPolicy",
@@ -1294,6 +1177,7 @@
     },
     "InvokeWebhookReceiverPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows worker to invoke the webhooks receiver function",
         "ManagedPolicyName": "InvokeWebhookReceiverPolicy",
@@ -1311,6 +1195,7 @@
     },
     "WebhooksAPIGatewayRole": {
       "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
@@ -1330,6 +1215,7 @@
     },
     "LambdaZipsWriterRole": {
       "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
@@ -1351,6 +1237,7 @@
     },
     "LambdaWebhookReceiverRole": {
       "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
@@ -1372,6 +1259,7 @@
     },
     "LambdaZipsPuller": {
       "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Code": {
           "S3Bucket": "lambdasource.everything2.com",
@@ -1385,9 +1273,9 @@
         "Handler": "handler.lambda_handler"
       }
     },
-    "LambdaWebhookReceiverPermission":
-    {
+    "LambdaWebhookReceiverPermission": {
       "Type": "AWS::Lambda::Permission",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {"Fn::GetAtt": ["LambdaWebhookReceiver","Arn"]},
         "Principal": "apigateway.amazonaws.com",
@@ -1397,6 +1285,7 @@
     },
     "WebhooksAPIGateway": {
       "Type": "AWS::ApiGatewayV2::Api",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "FailOnWarnings": true,
         "Body": {
@@ -1439,6 +1328,7 @@
     },
     "WebhooksAPIGatewayCertificate": {
       "Type": "AWS::CertificateManager::Certificate",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "DomainName": "webhooks.everything2.com",
         "ValidationMethod": "DNS"
@@ -1446,6 +1336,7 @@
     },
     "WebhooksAPIGatewayDomain": {
       "Type": "AWS::ApiGatewayV2::DomainName",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "DomainName": "webhooks.everything2.com",
         "DomainNameConfigurations": [
@@ -1459,6 +1350,7 @@
     },
     "WebhooksAPIBasePath": {
       "Type": "AWS::ApiGatewayV2::ApiMapping",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "DomainName": {"Ref": "WebhooksAPIGatewayDomain"},
         "ApiId": {"Ref": "WebhooksAPIGateway"},
@@ -1468,6 +1360,7 @@
     },
      "WebhooksAPIGatewayRR": {
       "Type": "AWS::Route53::RecordSet",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Name": "webhooks.everything2.com",
         "HostedZoneName": "everything2.com.",
@@ -1481,6 +1374,7 @@
     },
     "LambdaWebhookReceiver": {
       "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Code": {
           "S3Bucket": "lambdasource.everything2.com",
@@ -1495,6 +1389,7 @@
     },
     "WebhooksAPILogGroup": {
       "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "LambdaWebhookReceiver"}]]},
         "RetentionInDays": 3
@@ -1502,6 +1397,7 @@
     },
     "WebhooksAPIGatewayLogGroup": {
       "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "LogGroupName": "/aws/apigateway/webhooks-production",
         "RetentionInDays": 3
@@ -1509,6 +1405,7 @@
     },
     "CICDLambdaLogGroup": {
       "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "LambdaZipsPuller"}]]},
         "RetentionInDays": 3
@@ -1516,6 +1413,7 @@
     },
     "Everything2ZipfileProcessorGroup": {
       "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "Everything2ZipfileProcessorLambda"}]]},
         "RetentionInDays": 3
@@ -1523,6 +1421,7 @@
     },
     "WebhooksAPIProduction": {
       "Type": "AWS::ApiGatewayV2::Stage",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Production Stage",
         "StageName": "production",
@@ -1536,6 +1435,7 @@
     },
     "WebhooksAPIGatewayDeployment": {
       "Type" : "AWS::ApiGatewayV2::Deployment",
+      "DeletionPolicy": "Retain",
       "Properties" : {
         "Description" : "Production Deployment",
         "ApiId" : {"Ref": "WebhooksAPIGateway"},
@@ -1544,6 +1444,7 @@
     },
     "WebhookReceivedSNSTopic": {
       "Type": "AWS::SNS::Topic",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "DisplayName": "Github Webhook Received",
         "TopicName": "webhook-received"
@@ -1551,6 +1452,7 @@
     },
     "PerlLambdaCodeBuildLogGroup": {
       "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "LogGroupName": "/aws/codebuild/perllambda",
         "RetentionInDays": 3
@@ -1558,6 +1460,7 @@
     },
     "PerlLambdaCodeBuildLogWritePolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows E2 processes to write to the perl lambda builder log group",
         "ManagedPolicyName": "PerlLambdaCodeBuildLogWritePolicy",
@@ -1601,6 +1504,7 @@
     },
     "PerlLambdaCodeBuildRole": {
       "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
@@ -1624,6 +1528,7 @@
     },
     "PerlLambdaCodeBuildProject": {
       "Type": "AWS::CodeBuild::Project",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Artifacts": {
           "Type": "NO_ARTIFACTS"
@@ -1650,6 +1555,7 @@
     },
     "CookbooksBucketWritePolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows E2 processes to write to cookbooks bucket",
         "ManagedPolicyName": "CookbooksBucketWritePolicy",
@@ -1671,6 +1577,7 @@
     },
     "Everything2ZipfileProcessorRole": {
       "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
@@ -1692,6 +1599,7 @@
     },
     "Everything2ZipfileProcessorLambda": {
       "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Code": {
           "S3Bucket": "lambdasource.everything2.com",
@@ -1707,6 +1615,7 @@
     },
     "InvokeEverything2ZipfileProcessorPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows the zipfile handler lambda to call the everything2 specific jobs",
         "ManagedPolicyName": "InvokeEverything2ZipfileProcessorPolicy",
@@ -1765,6 +1674,7 @@
     },
     "PerlBaseLambdaFunction": {
       "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Code": {
           "S3Bucket": "perllambdabase.everything2.com",
@@ -1779,6 +1689,7 @@
     },
     "PerlLambdaLayer": {
       "Type": "AWS::Lambda::LayerVersion",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "CompatibleRuntimes": ["provided.al2"],
         "Content": {
@@ -1791,6 +1702,7 @@
     },
     "CICDLambdaUpdaterPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows the lambda processor to update the code of lambda funcions, both ruby and perl",
         "ManagedPolicyName": "CICDLambdaUpdaterPolicy",
@@ -1807,6 +1719,7 @@
     },
     "CICDPerlBaseVersionUpdaterPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows a lambda processor to update the perl layer version across all of the lambda functions",
         "ManagedPolicyName": "CICDPerlBaseUpdaterPolicy",
@@ -1833,6 +1746,7 @@
     },
     "CICDPerlBaseVersionUpdaterLambdaRole": {
       "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
@@ -1853,6 +1767,7 @@
     },
     "CICDCodeBuildPerlBaseVersionUpdaterLambda": {
       "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Code": {
           "S3Bucket": "lambdasource.everything2.com",
@@ -1867,6 +1782,7 @@
     },
     "CodeBuildInvokeLambdaLayerUpdaterPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows a lambda processor to update the perl layer version across all of the lambda functions",
         "ManagedPolicyName": "CodeBuildInvokeLambdaLayerUpdaterPolicy",
@@ -1883,6 +1799,7 @@
     },
     "PerlBaseLayerUpdaterLambdaLogGroup": {
       "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "CICDCodeBuildPerlBaseVersionUpdaterLambda"}]]},
         "RetentionInDays": 3
@@ -1890,6 +1807,7 @@
     },
     "PerlBaseTestLambdaLogGroup": {
       "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "PerlBaseLambdaFunction"}]]},
         "RetentionInDays": 3
@@ -1897,6 +1815,7 @@
     },
     "EverythingLibraryLayerPublishVersionPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows a lambda processor to update the everything library layer",
         "ManagedPolicyName": "EverythingLibraryLayerPublishVersionPolicy",
@@ -1913,6 +1832,7 @@
     },
     "CICDE2LibraryLayerBuilderLambdaRole": {
       "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
@@ -1935,6 +1855,7 @@
     },
     "CICDE2LibraryLayerBuilderLambda": {
       "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Code": {
           "S3Bucket": "lambdasource.everything2.com",
@@ -1950,6 +1871,7 @@
     },
     "CICDE2LibraryLayerBuilderLambdaLogGroup": {
       "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "CICDE2LibraryLayerBuilderLambda"}]]},
         "RetentionInDays": 3
@@ -1981,6 +1903,7 @@
     },
     "E2LibLambdaLayer": {
       "Type": "AWS::Lambda::LayerVersion",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "CompatibleRuntimes": ["provided.al2"],
         "Content": {
@@ -1993,6 +1916,7 @@
     },
     "VPCLambdaCreateInterfacePolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows Lambda to create network interfaces",
         "ManagedPolicyName": "VPCLambdaCreateInterfacePolicy",
@@ -2016,6 +1940,7 @@
     },
     "SitemapBucketWritePolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows entites to write to the sitemaps bucket",
         "ManagedPolicyName": "SitemapBucketWritePolicy",
@@ -2033,6 +1958,7 @@
     },
     "SitemapGeneratorLambdaRole": {
       "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
@@ -2054,6 +1980,7 @@
     },
     "LambdaSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "GroupDescription": "E2 Lambda Security Group",
         "GroupName": "E2-Lambda-Security-Group",
@@ -2062,6 +1989,7 @@
     },
     "Everything2SitemapGenerateFunction": {
       "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "Code": {
           "S3Bucket": "lambdasource.everything2.com",
@@ -2085,6 +2013,7 @@
     },
     "E2SitemapLambdaLogGroup": {
       "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
       "Properties": {
         "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "Everything2SitemapGenerateFunction"}]]},
         "RetentionInDays": 3
