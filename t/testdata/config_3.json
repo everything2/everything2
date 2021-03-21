@@ -16,48 +16,10 @@
   "mail_from": "anothermailfrom",
   "environment": "anotherenvironment",
   "nodecache_size": 123,
-  "s3": {
-    "homenodeimages": {
-      "bucket": "s3.homenodeimages.bucket",
-      "secret_access_key": "s3.homenodeimages.secret_access_key",
-      "access_key_id": "s3.homenodeimages.access_key_id"
-    },
-    "nodebackup": {
-      "bucket": "s3.nodebackup.bucket",
-      "secret_access_key": "s3.nodebackup.secret_access_key",
-      "access_key_id": "s3.nodebackup.access_key_id"
-    },
-    "backup": {
-      "bucket": "s3.backup.bucket",
-      "secret_access_key": "s3.backup.secret_access_key",
-      "access_key_id": "s3.backup.access_key_id"
-    },
-    "sitemap": {
-      "bucket": "s3.sitemap.bucket",
-      "secret_access_key": "s3.sitemap.secret_access_key",
-      "access_key_id": "s3.sitemap.access_key_id"
-    },
-    "jscss": {
-      "bucket": "s3.jscss.bucket",
-      "secret_access_key": "s3.jscss.secret_access_key",
-      "access_key_id": "s3.jscss.access_key_id"
-    }
-  },
   "static_nodetypes": 0,
   "clean_search_words_aggressively": 0,
   "search_row_limit": 321,
   "logdirectory": "anotherlogdirectory",
-  "system": {
-    "maintenance_nodes": {
-      "broken_nodes": 379710,
-      "e2_bugs": 364471,
-      "nodeshells_marked_for_destruction": 596824,
-      "e2_nuke_request": 171917,
-      "suggestions_for_e2": 368049,
-      "edit_these_e2_titles": 174079,
-      "e2_title_edit_siding_and_repair_yard": 1428471
-    }
-  },
   "permanent_cache": {
     "usergroup": 1,
     "container": 1,
