@@ -8,10 +8,6 @@ require 'getoptlong'
 
 e2util = E2::Utils.new
 
-
-puts "Updating OpsWorks JSON"
-e2util.update_opsworks_json
-
 ["update_cookbooks", "deploy"].each do |sym|
   puts "Runnng #{sym}"
 

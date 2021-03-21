@@ -34,14 +34,6 @@ class E2
       nil
     end
 
-    def secret_json
-      if File.exists?('secret.json')
-        return File.open('secret.json').read
-      else
-        return {}
-      end
-    end
-
     def vpc_get_security_group(group_name)
       @aws.ec2.describe_security_groups.security_groups.each do |group|
         return group if group['vpc_id'].eql? vpc['vpc_id'] and group['group_name'].eql? group_name
@@ -190,7 +182,6 @@ class E2
         service_role_arn: iam_service_role['arn'],
         configuration_manager: {name: "Chef", version: "12"},
         use_custom_cookbooks: true,
-        custom_json: secret_json,
         custom_cookbooks_source: {
           type: "git",
           url: "https://github.com/everything2/cookbooks.git",
@@ -921,10 +912,6 @@ class E2
           tags: [app_tag]
         )
       end
-    end
-
-    def update_opsworks_stack_json
-      @aws.opsworks.update_stack(stack_id: opsworks_stack['stack_id'], custom_json: secret_json)
     end
 
   end
