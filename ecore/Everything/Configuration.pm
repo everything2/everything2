@@ -184,7 +184,7 @@ has 'use_controllers' => (isa => 'Bool', is => 'ro', default => 0);
 
 has 's3host' => (isa => 'Str', is => 'ro', default => 's3-us-west-2.amazonaws.com');
 
-has 'iam_app_role' => (isa => 'Str', is => 'ro', default => '');
+has 'iam_app_role' => (isa => 'Str', is => 'ro', default => 'E2-App-Server');
 
 has 'recaptcha_v3_secret_key' => (isa => 'Str', is => 'ro', builder => '_build_recaptcha', lazy => 1);
 has 'recaptcha_v3_public_key' => (isa => 'Str', is => 'ro', default => '6LcnVKsUAAAAAEeEGV28mfD3lt_XVpFUkOzifWGo');
