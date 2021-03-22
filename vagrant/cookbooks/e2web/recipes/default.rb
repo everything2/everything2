@@ -18,7 +18,7 @@ to_install.each do |p|
   package p
 end
 
-if node['e2engine']['environment'].eql? 'production'
+unless node['override_configuration'].eql? 'development'
   ['banned_user_agents_secret','banned_ips_secret','banned_ipblocks_secret'].each do |secret|
     Chef::Log.info("Seeding web secret: #{secret}")
     bash "Seeding secret: #{secret}" do
@@ -127,7 +127,7 @@ cron 'log_deliver_to_s3.pl' do
   command "/var/everything/tools/log_deliver_to_s3.pl 2>&1 >> #{logdir}/e2cron.log_deliver_to_s3.#{datelog}"
 end
 
-unless node['e2engine']['environment'].eql? 'production'
+unless node['override_configuration'].eql? 'development'
   template "/lib/systemd/system/apache2.service" do
     owner "root"
     group "root"
@@ -149,7 +149,7 @@ service 'apache2' do
   supports :status => true, :restart => true, :reload => true, :stop => true
 end
 
-if node['e2engine']['environment'].eql? 'production'
+unless node['override_configuration'].eql? 'development'
   Chef::Log.info('In production, doing instance registrations')
   bash "AWS: Register instance with application load balancer" do
     code "/var/everything/tools/aws_registration.rb --elb"

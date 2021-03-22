@@ -118,8 +118,6 @@ bash "Clear Mason2 cache" do
   end
 end
 
-everything_conf_variables = node["e2engine"].dup
-
 ['libraries','dlcache','buildcache'].each do |dir|
   directory "/var/#{dir}" do
     owner "www-data"
@@ -144,17 +142,7 @@ end
   end
 end
 
-file '/etc/everything/everything.conf.json' do
-  owner "www-data"
-  group "www-data"
-  content JSON.pretty_generate(everything_conf_variables)
-  mode "0755"
-  if is_webhead?
-    notifies :restart, "service[apache2]", :delayed 
-  end
-end
-
-if node['e2engine']['environment'].eql? 'production'
+unless node['override_configuration'].eql? 'development'
   ['database_password_secret','recaptcha_v3_secret','infected_ips_secret'].each do |secret|
     Chef::Log.info("Seeding secret: #{secret}")
     bash "Seeding secret: #{secret}" do
@@ -188,7 +176,7 @@ else
   end
 end
 
-if node['e2engine']['environment'].eql? 'production'
+unless node['override_configuration'].eql? 'development'
   Chef::Log.info('In production, doing instance registrations')
   Chef::Log.info('Setting up ingress to production DB')
 

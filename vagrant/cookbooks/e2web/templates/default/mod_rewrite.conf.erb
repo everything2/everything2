@@ -1,7 +1,7 @@
 
 RewriteEngine On
 
-<% if node["e2engine"]["environment"] != "development" %>
+<% if node["override_configuration"].nil? %>
 RewriteCond %{HTTP:X-Forwarded-Proto} =http
 RewriteRule (.*)                           https://%{HTTP_HOST}/$1 [R=301,L]
 <% end %>
