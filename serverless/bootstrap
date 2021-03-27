@@ -21,9 +21,10 @@ do
   if [ ! -e /tmp/bin/perl ]
   then
     echo "Extracting layer default '/opt/$ZIP'"
-    /opt/7za x -y -o/tmp /opt/$ZIP
+    /opt/7za x -bb1 -y -o/tmp /opt/$ZIP
   fi
 
+  echo "Extraction done, running perl handler"
   # Get an event
   EVENT_DATA=$(curl -sS -LD "$HEADERS" -X GET "http://${AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime/invocation/next")
   ESCAPED_EVENT_DATA=$(printf "%q" "$EVENT_DATA")
