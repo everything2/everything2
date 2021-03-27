@@ -1883,6 +1883,7 @@
                 "ec2:CreateNetworkInterface",
                 "ec2:DeleteNetworkInterface",
                 "ec2:AttachNetworkInterface",
+                "ec2:DetachNetworkInterface",
                 "ec2:DescribeNetworkInterfaces",
                 "autoscaling:CompleteLifecycleAction"]
            }
@@ -1908,7 +1909,43 @@
         }
       }
     },
-    "SitemapGeneratorLambdaRole": {
+    "SitemapBatcherBucketWritePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows the ability to write to the batcher bucket",
+        "ManagedPolicyName": "SitemapBatcherBucketWritePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": ["s3:PutObject"],
+              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "E2SitmapDispatcherBucket", "Arn"] }, "/*"]]}
+            }
+          ]
+        }
+      }
+    },
+    "SitemapBatcherBucketProcessorPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows the ability to process items from the batcher bucket",
+        "ManagedPolicyName": "SitemapBatcherBucketProcessorPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": ["s3:GetObject","s3:DeleteObject"],
+              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "E2SitmapDispatcherBucket", "Arn"] }, "/*"]]}
+            }
+          ]
+        }
+      }
+    },
+    "SitemapBatchDispatcherLambdaRole": {
       "Type": "AWS::IAM::Role",
       "DeletionPolicy": "Retain",
       "Properties": {
@@ -1920,14 +1957,37 @@
             "Action": "sts:AssumeRole"
           }
         },
-        "Description": "Sitemap Generator Lambda Role",
+        "Description": "Sitemap Batch Dispatcher Lambda Role",
         "ManagedPolicyArns": [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
             {"Ref": "VPCLambdaCreateInterfacePolicy"},
-            {"Ref": "SitemapBucketWritePolicy"}
+            {"Ref": "SitemapBatcherBucketWritePolicy"},
+            {"Ref": "SitemapProcessorInvokerPolicy"}
         ],
         "Path": "/",
-        "RoleName": "Sitemap-Generator-Lambda-Role"
+        "RoleName": "Sitemap-Batch-Dispatcher-Lambda-Role"
+      }
+    },
+    "SitemapBatchProcessorLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "lambda.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Description": "Sitemap Batch Processor Lambda Role",
+        "ManagedPolicyArns": [
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+            {"Ref": "VPCLambdaCreateInterfacePolicy"},
+            {"Ref": "SitemapBatcherBucketProcessorPolicy"}
+        ],
+        "Path": "/",
+        "RoleName": "Sitemap-Batch-Processor-Lambda-Role"
       }
     },
     "LambdaSecurityGroup": {
@@ -1939,22 +1999,62 @@
         "VpcId": {"Ref": "AppVPC"}
       }
     },
-    "Everything2SitemapGenerateFunction": {
+    "SitemapProcessorInvokerPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows the dispatcher the ability to invoke the processors",
+        "ManagedPolicyName": "SitemapProcessorInvokerPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "lambda:InvokeFunction",
+            "Resource": {"Fn::GetAtt" : ["SitemapBatchProcessorFunction", "Arn"]}
+          }]
+        }
+      }
+    },
+    "SitemapBatchDispatcherFunction": {
       "Type": "AWS::Lambda::Function",
       "DeletionPolicy": "Retain",
       "Properties": {
         "Code": {
           "S3Bucket": "lambdasource.everything2.com",
-          "S3Key": "everything2-sitemap-generate.zip"
+          "S3Key": "sitemap-batch-dispatcher.zip"
         },
-        "FunctionName": "everything2-sitemap-generate",
-        "Role": {"Fn::GetAtt" : ["SitemapGeneratorLambdaRole", "Arn"]},
+        "FunctionName": "sitemap-batch-dispatcher",
+        "Role": {"Fn::GetAtt" : ["SitemapBatchDispatcherLambdaRole", "Arn"]},
         "Layers": [
-          {"Ref": "E2LibLambdaLayer"},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:11"]]}
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:6"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:33"]]}
         ],
         "Runtime": "provided.al2",
         "Timeout": "900",
+        "MemorySize": 1024,
+        "Handler": "handler.lambda_handler",
+        "VpcConfig": {
+          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
+          "SubnetIds": [{"Ref": "AppVPCSubnet1"}]
+        }
+      }
+    },
+    "SitemapBatchProcessorFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "lambdasource.everything2.com",
+          "S3Key": "sitemap-batch-processor.zip"
+        },
+        "FunctionName": "sitemap-batch-processor",
+        "Role": {"Fn::GetAtt" : ["SitemapBatchProcessorLambdaRole", "Arn"]},
+        "Layers": [
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:6"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:33"]]}
+        ],
+        "Runtime": "provided.al2",
+        "Timeout": "600",
         "MemorySize": 512,
         "Handler": "handler.lambda_handler",
         "VpcConfig": {
@@ -1963,11 +2063,19 @@
         }
       }
     },
-    "E2SitemapLambdaLogGroup": {
+    "SitemapBatchDispatcherLambdaLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "DeletionPolicy": "Retain",
       "Properties": {
-        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "Everything2SitemapGenerateFunction"}]]},
+        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "SitemapBatchDispatcherFunction"}]]},
+        "RetentionInDays": 3
+      }
+    },
+    "SitemapBatchProcessorLambdaLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "SitemapBatchProcessorFunction"}]]},
         "RetentionInDays": 3
       }
     },

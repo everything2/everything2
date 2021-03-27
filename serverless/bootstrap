@@ -20,14 +20,8 @@ do
 
   if [ ! -e /tmp/bin/perl ]
   then
-    if [ -e "$LAMBDA_TASK_ROOT/$ZIP" ]
-    then
-      echo "Extracting '$LAMBDA_TASK_ROOT/$ZIP'"
-      $LAMBDA_TASK_ROOT/7za x -o/tmp $LAMBDA_TASK_ROOT/$ZIP
-    else
-      echo "Extracting layer default '/opt/$ZIP'"
-      /opt/7za x -o/tmp /opt/$ZIP
-    fi
+    echo "Extracting layer default '/opt/$ZIP'"
+    /opt/7za x -y -o/tmp /opt/$ZIP
   fi
 
   # Get an event
