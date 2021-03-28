@@ -382,5 +382,11 @@ sub current_region
   return $region;
 }
 
+sub is_production
+{
+  my ($self) = @_;
+  return $self->environment eq 'production';
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

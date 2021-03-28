@@ -625,6 +625,9 @@ sub initEverything
 	$DB->{cache}->clearSessionCache;
 	$DB->closeTransaction();
 	$APP ||= Everything::Application->new($DB, $CONF);
+
+	$SIG{__WARN__} = sub { my $warning = shift; $APP->global_warn_handler($warning); };
+	$SIG{__DIE__} = sub { $APP->global_die_handler("Caught DIE handler"); };
 	return;
 }
 
