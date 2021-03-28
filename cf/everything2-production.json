@@ -433,10 +433,28 @@
           {"Ref": "E2AppServerSecretsAccessPolicy"},
           {"Ref": "E2AppServerSNSPolicy"},
           {"Ref": "E2MasterPasswordReadPolicy"},
-          {"Ref": "E2AppOpsworksRegistrationPolicy"}
+          {"Ref": "E2AppOpsworksRegistrationPolicy"},
+          {"Ref": "CloudWatchEventsWritePolicy"}
         ],
         "Path": "/",
         "RoleName": "E2-App-Server"
+      }
+    },
+    "CloudWatchEventsWritePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows the app components to write to the events buses",
+        "ManagedPolicyName": "CloudWatchEventsWritePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "events:PutEvents",
+            "Resource": "*"
+          }]
+        }
       }
     },
     "SecretsS3Bucket": {
@@ -761,7 +779,6 @@
     },
     "OpsworksCloudwatchLogging": {
       "Type": "AWS::Events::Rule",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Subscribing to Opsworks events logs",
         "Name": "opsworkscloudwatchlogging",
@@ -1962,7 +1979,8 @@
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
             {"Ref": "VPCLambdaCreateInterfacePolicy"},
             {"Ref": "SitemapBatcherBucketWritePolicy"},
-            {"Ref": "SitemapProcessorInvokerPolicy"}
+            {"Ref": "SitemapProcessorInvokerPolicy"},
+            {"Ref": "E2MasterPasswordReadPolicy"}
         ],
         "Path": "/",
         "RoleName": "Sitemap-Batch-Dispatcher-Lambda-Role"
@@ -2084,6 +2102,44 @@
       "DeletionPolicy": "Retain",
       "Properties": {
         "BucketName": "sitemapdispatch.everything2.com"
+      }
+    },
+    "AppErrorsEventBus": {
+      "Type": "AWS::Events::EventBus",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Name": "com.everything2.errors"
+      }
+    },
+    "AppErrorsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/events/e2-app-errors",
+        "RetentionInDays": 3
+      }
+    },
+    "ApplicationErrorLoggingRule": {
+      "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Subscribing to E2 app errors",
+        "Name": "e2-app-errors-rule",
+        "EventBusName": {"Fn::GetAtt": ["AppErrorsEventBus", "Name"]},
+        "EventPattern": {"source": ["e2.webapp"], "detail-type": ["E2 Application Error"]},
+        "Targets": [{
+          "Arn": {"Fn::GetAtt": ["AppErrorsLogGroup","Arn"]},
+          "Id": "Id1844360018781"
+        }]
+      }
+    },
+    "ApplicationEventsArchive": {
+      "Type": "AWS::Events::Archive",
+      "Properties": {
+        "ArchiveName": "e2-app-errors-archive",
+        "Description": "Archiving app errors",
+        "RetentionDays": 3,
+        "SourceArn": {"Fn::GetAtt": ["AppErrorsEventBus", "Arn"]}
       }
     }
   }
