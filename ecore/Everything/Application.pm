@@ -4564,5 +4564,35 @@ sub writeup_edittime
   return $edittime;
 }
 
+sub global_warn_handler
+{
+  my ($this, $warning) = @_;
+  $this->send_cloudwatch_event("warning", $warning || "");
+}
+
+sub global_die_handler
+{
+  my ($this, $error) = @_;
+  $this->send_cloudwatch_event("error", $error || "");
+}
+
+sub send_cloudwatch_event
+{
+  my ($this, $eventtype, $eventdetail) = @_;
+
+  if($this->{conf}->is_production)
+  {
+    my $events = Paws->service('CloudWatchEvents', "region" => $this->{conf}->current_region);
+
+    my $resp = $events->PutEvents(Entries => [{
+      EventBusName => 'com.everything2.errors',
+      Detail => JSON->new->utf8->encode({"type" => $eventtype, "message" => $eventdetail, "callstack" => [$this->getCallStack]}),
+      Source => "e2.webapp",
+      DetailType => 'E2 Application Error'
+    }]);
+    return $resp;
+  }
+}
+
 
 1;
