@@ -11832,7 +11832,7 @@ sub editwriteup
 
   $str .= qq'<textarea name="${type}_doctext" id="writeup_doctext" '.htmlcode('customtextarea', '1').' class="formattable">'.$APP->encodeHTML($$N{doctext}).'</textarea>'.$message;
 
-  my $setType = undef; $setType = "\n<p>".htmlcode('setwriteuptype', $$N{wrtype_writeuptype})."</p>" if $type eq 'writeup' && !$APP->isMaintenanceNode($N);
+  my $setType = ""; $setType = "\n<p>".htmlcode('setwriteuptype', $$N{wrtype_writeuptype})."</p>" if $type eq 'writeup' && !$APP->isMaintenanceNode($N);
 
   unless ($new)
   {
