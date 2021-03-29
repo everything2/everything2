@@ -4401,7 +4401,7 @@ sub everything_user_search
           # $settings - hash ref of override values
 
           my($text, $settings) = @_;
-          delete $$settings{page} unless $$settings{page} > 1;
+          delete $$settings{page} unless (defined($$settings{page}) and $$settings{page} > 1);
 
           return "<strong>$text</strong>"
           unless scalar map {$$settings{$_} ne $params{$_} ? 1 : ()} keys %$settings;
