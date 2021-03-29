@@ -518,7 +518,7 @@ sub nodeName
 	my $matchall = $query->param("match_all");
 	my $soundex = $query->param("soundex");
 
-	my @types = $query->param("type");
+	my @types = $query->multi_param("type");
 	foreach(@types) {
 		$_ = getId($DB->getType($_));
 	}
