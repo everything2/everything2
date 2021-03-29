@@ -14183,13 +14183,14 @@ sub show_paged_content
   my $APP = shift;
 
   my ($select, $from, $where, $orderby, $instructions, %functions) = @_;
-  my %parameters = $query -> Vars();
+  my %parameters = $query->Vars();
 
   $orderby =~ s/\s*\bLIMIT\s+(\d+)\s*$//si;
 
   $parameters{perpage} ||= $1 || 50;
   $parameters{perpage} = int $parameters{perpage}; #SQueaL safely
-  my $page = int(abs(delete $parameters{page})) || 1;
+  my $page = 1; # default
+  $page = int(abs(delete $parameters{page})) if(defined($parameters{page}));
 
   my ($offset, $crs, $rowCount, $pageCount) = (undef,undef,undef,undef);
 
