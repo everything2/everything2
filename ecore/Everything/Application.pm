@@ -3606,6 +3606,7 @@ sub linkNodeTitle {
       $nodename =~ s/>/\&gt\;/g;
     }
     $tip = $nodename;
+    $tip = "" unless defined($nodename);
     $tip =~ s/"/''/g;
 
     $linktitle = $tip;
