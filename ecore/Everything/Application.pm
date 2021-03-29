@@ -3613,6 +3613,7 @@ sub linkNodeTitle {
     $href = "/title/" .$this->rewriteCleanEscape($nodename);
   }
 
+  $title = "" if not defined($title);
   $this->{db}->getRef($lastnode);
   my $lastnodeQuery = "";
   $lastnodeQuery = "?lastnode_id=$$lastnode{node_id}" if $lastnode && UNIVERSAL::isa($lastnode,'HASH');
