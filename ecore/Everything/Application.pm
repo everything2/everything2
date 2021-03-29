@@ -4583,10 +4583,21 @@ sub send_cloudwatch_event
   if($this->{conf}->is_production)
   {
     my $events = Paws->service('CloudWatchEvents', "region" => $this->{conf}->current_region);
+    my $detail = {"type" => $eventtype, "message" => $eventdetail, "callstack" => [$this->getCallStack]};
+    if(defined($Everything::HTML::USER))
+    {
+      $detail->{user} = $Everything::HTML::USER->{title};
+    }
+
+    if(defined($Everything::HTML::REQUEST))
+    {
+      $detail->{url} = $Everything::HTML::REQUEST->url;
+      $detail->{request_method} = $Everything::HTML::REQUEST->request_method;
+    }
 
     my $resp = $events->PutEvents(Entries => [{
       EventBusName => 'com.everything2.errors',
-      Detail => JSON->new->utf8->encode({"type" => $eventtype, "message" => $eventdetail, "callstack" => [$this->getCallStack]}),
+      Detail => JSON->new->utf8->encode($detail),
       Source => "e2.webapp",
       DetailType => 'E2 Application Error'
     }]);
