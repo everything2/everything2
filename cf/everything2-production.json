@@ -642,22 +642,65 @@
       "DeletionPolicy": "Retain",
       "Properties": {
         "AllocatedStorage": "100",
+        "AllowMajorVersionUpgrade": true,
         "AvailabilityZone": {"Fn::Join": ["", [{"Ref": "AWS::Region"},"a"]]},
         "BackupRetentionPeriod": 7,
         "DBInstanceClass": "db.t3.medium",
         "DBInstanceIdentifier": "everything2vpc",
         "Engine": "mysql",
-        "EngineVersion": "5.5.61",
+        "EngineVersion": "5.7.33",
         "MultiAZ": false,
         "CACertificateIdentifier": "rds-ca-2019",
         "DeletionProtection": true,
         "DBSubnetGroupName": {"Ref": "EverythingDBSubnetGroup"},
-        "OptionGroupName": "default:mysql-5-5",
+        "OptionGroupName": {"Ref": "DB57OptionGroup"},
         "StorageType": "gp2",
         "VPCSecurityGroups": [{"Fn::GetAtt": ["AppVPC","DefaultSecurityGroup"]}],
-        "DBParameterGroupName": "mysql55allowprocedures",
+        "DBParameterGroupName": {"Ref": "EverythingDB57Parameters"},
         "MasterUsername": "everyuser",
         "MasterUserPassword": {"Fn::Join": ["", ["{{resolve:secretsmanager:", {"Ref": "E2DBMasterPassword"}, "::password}}"]]}
+      }
+    },
+    "EverythingDB56Parameters": {
+      "Type": "AWS::RDS::DBParameterGroup",
+      "Properties": {
+        "Description": "Enables stored procedures for E2 on mysql 5.6",
+        "Family": "mysql5.6",
+        "Parameters": {
+          "innodb_flush_log_at_trx_commit": 1,
+          "log_bin_trust_function_creators": 1,
+          "long_query_time": 3
+        }
+      }
+    },
+    "EverythingDB57Parameters": {
+      "Type": "AWS::RDS::DBParameterGroup",
+      "Properties": {
+        "Description": "Enables stored procedures for E2 on mysql 5.7",
+        "Family": "mysql5.7",
+        "Parameters": {
+          "innodb_flush_log_at_trx_commit": 1,
+          "log_bin_trust_function_creators": 1,
+          "long_query_time": 3
+        }
+      }
+    },
+    "DB56OptionGroup": {
+      "Type": "AWS::RDS::OptionGroup",
+      "Properties": {
+        "EngineName": "mysql",
+        "MajorEngineVersion": "5.6",
+        "OptionGroupDescription": "mysql-5.6 default option group",
+        "OptionConfigurations": []
+      }
+    },
+    "DB57OptionGroup": {
+      "Type": "AWS::RDS::OptionGroup",
+      "Properties": {
+        "EngineName": "mysql",
+        "MajorEngineVersion": "5.7",
+        "OptionGroupDescription": "mysql-5.7 default option group",
+        "OptionConfigurations": []
       }
     },
     "E2DBMasterPassword": {
