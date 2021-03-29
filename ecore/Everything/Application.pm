@@ -3097,6 +3097,7 @@ sub rewriteCleanEscape {
   $string = CGI::escape(CGI::escape($string));
   # Make spaces more readable
   # But not for spaces at the start/end or next to other spaces
+  $string = "" if not defined($string);
   $string =~ s/(?<!^)(?<!\%2520)\%2520(?!$)(?!\%2520)/\+/gs;
   return $string;
 }
