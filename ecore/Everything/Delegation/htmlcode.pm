@@ -6189,7 +6189,7 @@ sub nodeletsection
     $s .= $plusMinus.$closeLink.$altTitle;
   }
 
-  my $content = undef;
+  my $content = "";
   if($showContent)
   {
     $content = htmlcode($sectionId);
