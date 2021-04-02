@@ -3327,7 +3327,7 @@ sub setwriteuptype
 
   unless ($type){
     # no old type: new writeup/draft for publication
-    my $checked = undef;
+    my $checked = "";
 
     $title ||= $$NODE{title};
     return $query -> hidden('writeup_notnew', 1).'Writeup type: thing; don\'t show in New Writeups nodelet' if $APP->isMaintenanceNode($NODE);
@@ -3342,8 +3342,8 @@ sub setwriteuptype
     }
 
     $checked = ' checked="checked"' if($checked or ref($N) and 
-      ($$N{reputation} or $DB -> sqlSelect('vote_id', 'vote', "vote_id=$$N{node_id}")
-      or $DB -> sqlSelect(
+      ($$N{reputation} or $DB->sqlSelect('vote_id', 'vote', "vote_id=$$N{node_id}")
+      or $DB->sqlSelect(
         'LEFT(notetext, 25)'
         , 'nodenote'
         , "nodenote_nodeid=$$N{node_id} AND noter_user = 0"
