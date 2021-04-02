@@ -2255,7 +2255,7 @@ sub drafts
     $title = 'Your drafts';
     $cs = '<th>Collaborators';
     $collaborators = sub{
-      qq'<td class="collaborators">$_[0]->{collaborators}</td>';
+      qq'<td class="collaborators">'.(defined($_[0]->{collaborators})?($_[0]->{collaborators}):('')).'</td>';
     };
 
     $showit[-1] = 'ORDER BY publication_status='
