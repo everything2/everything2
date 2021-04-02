@@ -11247,6 +11247,8 @@ sub messageBox
     $str .= "<br />\n";
   }
 
+  $messageID = "" if not defined($messageID);
+
   $str = "<div class='messageBox' id='replyto$messageID'><span id='sent$messageID'></span>" . $str . htmlcode('openform');
   if ($showCC)
   {
