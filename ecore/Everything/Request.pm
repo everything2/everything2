@@ -230,6 +230,24 @@ sub make_login_cookie
   return $self->cookie(-name => $self->CONF->cookiepass, -value => $user->title."|".$user->passwd, -expires => $expires);
 }
 
+sub truncated_params
+{
+  my ($self) = @_;
+
+  my @params = $self->cgi->multi_param;
+
+  my $outparams = {};
+
+  foreach my $item (@params)
+  {
+    my $value = $self->cgi->param($item);
+    $value = "" if not defined($value);
+    $outparams->{$item} = substr($value,0,1024);
+  }
+
+  return $outparams;
+}
+
 sub can_gzip
 {
   my ($self) = @_;

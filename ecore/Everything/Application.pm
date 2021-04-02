@@ -4598,6 +4598,7 @@ sub send_cloudwatch_event
     {
       $detail->{url} = $Everything::HTML::REQUEST->url;
       $detail->{request_method} = $Everything::HTML::REQUEST->request_method;
+      $detail->{params} = $Everything::HTML::REQUEST->truncated_params;
     }
 
     my $resp = $events->PutEvents(Entries => [{
