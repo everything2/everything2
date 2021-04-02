@@ -1480,6 +1480,8 @@ sub cool_archive
   my $isEDev = $APP->isDeveloper($USER);
   my $isDevServer = 0;
   my $orderby = $query->param('orderby');
+  $orderby = "" if not defined($orderby);
+
   my $useraction = $query->param('useraction');
   $useraction ||= '';
 
