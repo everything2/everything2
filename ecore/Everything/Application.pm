@@ -3541,6 +3541,7 @@ sub linkNodeTitle {
   $isNode = 1;
 
   #A direct link draws near! Command?
+  $nodename = "" if not defined($nodename);
   if($nodename =~ /\[/){ # usually no anchor: check *if* before seeing *what* for performance
     my $anchor ;
     ($tip,$anchor) = split /\s*[[\]]/, $nodename;
