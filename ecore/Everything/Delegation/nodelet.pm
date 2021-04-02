@@ -50,7 +50,7 @@ sub epicenter
   $str .= htmlcode("borgcheck") || "";
 
   return $str if $APP->isGuest($USER);
-  my ($loginStr, $votesLeftStr, $expStr, $serverTimeStr);
+  my ($loginStr, $votesLeftStr, $expStr, $serverTimeStr) = ("","","","");
 
   #####LOGIN STRING
 
