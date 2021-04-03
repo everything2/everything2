@@ -88,7 +88,7 @@
   </vars>
   <vars>
     <key>Tem42</key>
-    <value>50</value>
+    <value>100</value>
   </vars>
   <vars>
     <key>The Custodian</key>
@@ -112,7 +112,7 @@
   </vars>
   <vars>
     <key>andycyca</key>
-    <value>15</value>
+    <value>20</value>
   </vars>
   <vars>
     <key>avalyn</key>
@@ -151,6 +151,10 @@
     <value>50</value>
   </vars>
   <vars>
+    <key>jaybonci</key>
+    <value>1</value>
+  </vars>
+  <vars>
     <key>jessicaj</key>
     <value>501</value>
   </vars>
@@ -173,6 +177,10 @@
   <vars>
     <key>misterfuffie</key>
     <value>25</value>
+  </vars>
+  <vars>
+    <key>npecom</key>
+    <value>50</value>
   </vars>
   <vars>
     <key>randombit</key>

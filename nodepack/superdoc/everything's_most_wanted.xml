@@ -65,6 +65,8 @@ if ($query-&gt;param(&quot;yankify&quot;)) {
 
 }
 
+$VARS-&gt;{Bounty} = 0 unless($VARS-&gt;{Bounty});
+
 if ($$VARS{Bounty} == 1) {
 
 my $citation;
@@ -224,9 +226,9 @@ if ($query-&gt;param(&quot;Remove&quot;)) {
 
 if ($query-&gt;param(&quot;postBounty&quot;)) {
 
-	my $bounty = encodeHTML($query-&gt;param(&quot;bounty&quot;));
-	my $comment = encodeHTML($query-&gt;param(&quot;comment&quot;));
-	my $outlawed = encodeHTML($query-&gt;param(&quot;outlaw&quot;));
+	my $bounty = encodeHTML(scalar($query-&gt;param(&quot;bounty&quot;)));
+	my $comment = encodeHTML(scalar($query-&gt;param(&quot;comment&quot;)));
+	my $outlawed = encodeHTML(scalar($query-&gt;param(&quot;outlaw&quot;)));
 	my $isNode = getNode($outlawed, 'e2node');
 
 	if ($bounty eq &quot;&quot;) {
@@ -244,16 +246,19 @@ if ($query-&gt;param(&quot;postBounty&quot;)) {
 
 	$APP-&gt;adjustGP($USER, -$bounty);
 
+
 	my $bountyNum;
-	my $ordernode = getNode('bouunty order', 'setting');
+	my $ordernode = getNode('bounty order', 'setting');
 	my $maxnode = getNode('bounty number', 'setting');
 	my $BNT = getVars($ordernode);
 	my $MAX = getVars($maxnode);
+
 	$bountyNum = ($$MAX{1} + 1);
 	$$MAX{1} ++;
 	$$BNT{$bountyNum} = $sheriff;
 	setVars($ordernode, $BNT);
 	setVars($maxnode, $MAX);
+
 
 	$$VARS{Bounty} = 1;
 	$$VARS{BountyNumber} = $bountyNum;
