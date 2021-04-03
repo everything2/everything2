@@ -3323,7 +3323,7 @@ sub setwriteuptype
     $type = $N;
   }
 
-  my $hidebox = undef;
+  my $hidebox = '';
 
   unless ($type){
     # no old type: new writeup/draft for publication
