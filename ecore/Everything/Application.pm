@@ -3528,9 +3528,11 @@ sub linkNode {
 sub linkNodeTitle {
   my ($this, $nodename, $lastnode, $escapeTags) = @_;
   my ($title, $linktitle, $linkAnchor, $href) = ('', '', '', '/');
-  $nodename ||= "";
+  $nodename = "" if not defined($nodename);
   ($nodename, $title) = split /\s*[|\]]+/, $nodename;
-  $title ||= "";
+  $title = "" if not defined($title);
+
+  $nodename = "" if not defined($nodename);
   $title = $nodename if $title =~ m/^\s*$/;
   $nodename =~ s/\s+/ /gs;
 
