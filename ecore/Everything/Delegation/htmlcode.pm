@@ -12924,6 +12924,8 @@ sub weblogform
   getRef $N ;
   $N ||= $NODE ;
 
+
+  $inwriteupform ||= 0;
   my $options = '' ;
   my $notification = "";
 
