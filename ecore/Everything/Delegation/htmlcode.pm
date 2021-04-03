@@ -6641,7 +6641,7 @@ sub writeupcools
     and ($$N{author_user} != $$USER{user_id})
     and not $DB->sqlSelect( '*', 'coolwriteups', "coolwriteups_id=$$N{node_id} and cooledby_user=$$USER{node_id}" ) )
   {
-    my $author = undef; $author = getNodeById( $$N{ author_user } ) unless($$VARS{anonymousvote} == 1);
+    my $author = undef; $author = getNodeById( $$N{ author_user } ) unless(defined($$VARS{anonymousvote}) and $$VARS{anonymousvote} == 1);
     if ($author)
     {
       $author = $author -> {title};
