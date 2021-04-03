@@ -160,11 +160,10 @@ unless ($totalmsgs
 	$str .= $colHeading if $lastmsg - $firstmsg &gt; 10;
 	$str .= '&lt;/table&gt;' if $totalmsgs;
 
-	$totalmsgs ||= 'no';
 	$showFilters =~ s/messages/message/ if $totalmsgs == 1;
 	$showFilters = ($authoruser == $$USER{node_id} ? 'You have '
 			: linkNode($authoruser).' has ')
-		.$totalmsgs
+		.(($totalmsgs == 0)?(&quot;no&quot;):$totalmsgs)
 		.$showFilters
 		.' sent messages';
 	$showFilters .= &quot;. ($grandtotal all together)&quot; if $totalmsgs != $grandtotal;

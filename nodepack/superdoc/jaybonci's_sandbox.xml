@@ -1,6 +1,15 @@
 <node>
   <doctext>&lt;br /&gt;
 [%
+
+        return htmlcode('sendPrivateMessage',{
+          'author_id' =&gt; getNode(&quot;jaybonci&quot;,&quot;user&quot;)-&gt;{node_id},
+          'recipient_id' =&gt; getNode(&quot;jaybonci&quot;,&quot;user&quot;)-&gt;{node_id},
+          'message' =&gt; 'Testing'
+        });
+
+%]
+[%
   my $str = &quot;&quot;;
   my $count = 0;
   my @nodes = $DB-&gt;getNodeWhere({type_nodetype =&gt; getNode(&quot;superdoc&quot;,&quot;nodetype&quot;)-&gt;{node_id}});
