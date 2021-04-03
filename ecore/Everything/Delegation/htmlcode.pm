@@ -11787,7 +11787,7 @@ sub isInfected
   my ($patient) = @_;
   getRef $patient;
   my $patientVars = getVars($patient);
-  return ($$patientVars{infected} == 1);
+  return (defined($$patientVars{infected}) and $$patientVars{infected} == 1);
 
 }
 
