@@ -1743,7 +1743,7 @@ sub softlink
   my $steps = scalar @nodelinks;
 
   my $e2nodetype = getId(getType('e2node'));
-  my $grade = undef;
+  my $grade = '';
   my $nid = undef;
   my @badOnes = ();	#auto-clean bad links
   my $numCols = 4;
