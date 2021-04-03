@@ -1223,9 +1223,15 @@ sub opNuke
 
 sub opLogin
 {
-        $USER = $REQUEST->login("username" => $query->param("user"), "pass" => $query->param("passwd"))->NODEDATA;
-        $VARS = $REQUEST->user->VARS;
-	return; 
+  my $user = $query->param("user");
+  $user = "" if not defined($user);
+
+  my $pass = $query->param("passwd");
+  $pass = "" if not defined($pass);
+
+  $USER = $REQUEST->login("username" => $user, "pass" => $pass)->NODEDATA;
+  $VARS = $REQUEST->user->VARS;
+  return;
 }
 
 #############################################################################
