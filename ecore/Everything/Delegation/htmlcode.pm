@@ -11225,7 +11225,7 @@ sub messageBox
     my $ccMe = (defined $query->param('cc'.$qp)) && ($query->param('cc'.$qp) eq '1') ? 1 : 0;
 
     my $recipient=$userID;
-    if ((defined $query->param("ug$usergroupID")) && (length($query->param("ug$usergroupID"))) )
+    if (defined($usergroupID) && (defined $query->param("ug$usergroupID")) && (length($query->param("ug$usergroupID"))) )
     {
         $recipient=$usergroupID;
     }
