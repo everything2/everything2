@@ -121,8 +121,14 @@ sub display
   };
 
   my $username = $REQUEST->param($names{'username'});
+  $username = '' if not defined($username);
+
   my $email = $REQUEST->param($names{'email'});
+  $email = '' if not defined($email);
+
   my $pass = $REQUEST->param($names{'pass'});
+  $pass = '' if not defined($pass);
+
 
   my $recaptcha_token = $REQUEST->param('recaptcha_token');
   my $recaptcha_response = undef;
