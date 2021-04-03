@@ -14287,6 +14287,7 @@ sub show_paged_content
     $navigation[$pageCount] .= &$link($pageCount, 'last&#xBB;&#xBB;')
     unless $page > $pageCount - 2;
 
+    @navigation = map {defined($_)?($_):('')} @navigation;
     $navigation ='<p class="pagination">Pages: '
       .join('', @navigation)
       ."</p>$navigation";
