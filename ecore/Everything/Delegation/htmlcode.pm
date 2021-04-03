@@ -1020,6 +1020,8 @@ sub parsetime
 
   my ($date, $time) = split / /,$$NODE{$field};
 
+  return '<i>never</i>' unless defined($date) and defined($time);
+
   my ($hrs, $min, $sec) = split /:/, $time;
   my ($yy, $mm, $dd) = split /-/, $date;
 
