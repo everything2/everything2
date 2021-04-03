@@ -7885,6 +7885,8 @@ sub sendPrivateMessage
 
   local *getCached = sub {
     my ($ident,$isNumeric) = (@_[0,1]);
+
+    $isNumeric ||= 0;
     $APP->devLog("sendPrivateMessage: getCached params: $ident,$isNumeric");
     return unless defined($ident) && length($ident);
 
