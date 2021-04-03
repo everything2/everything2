@@ -1023,7 +1023,7 @@ sub parsetime
   my ($hrs, $min, $sec) = split /:/, $time;
   my ($yy, $mm, $dd) = split /-/, $date;
 
-  return '<i>never</i>' unless (int($yy) and int($mm) and int($dd));
+  return '<i>never</i>' unless (defined($yy) and int($yy) and defined($mm) and int($mm) and defined($dd) and int($dd));
 
   my $epoch_secs=timelocal( $sec, $min, $hrs, $dd, $mm-1, $yy);
   my $nicedate =localtime ($epoch_secs);
