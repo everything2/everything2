@@ -11679,6 +11679,12 @@ sub confirmop
   my $author = undef; $author = getNode( $$node{ author_user } ) if $node ;
   $author = $$author{ title } if $author ;
 
+  my $polehash_seed = $query -> param('polehash_seed');
+  my $author_to_remove = $query->param('author');
+  $author_to_remove = $APP->encodeHTML($author_to_remove);
+
+  my $confirmop = $query->param('confirmop');
+
   my %opcodes = (
     cool => "cool $author"."'s writeup" ,
     uncoolme => 'uncool this node',
@@ -11687,10 +11693,10 @@ sub confirmop
     cure_infection => "remove ${author}'s infection",
     nuke => "delete this $$NODE{type}{title}",
     nukedraft => "delete this draft",
-    remove => !$query -> param('polehash_seed') ? "return this/these writeups to draft status"
-	: 'smite '.$APP -> encodeHTML($query -> param('author')).' for a vile spammer'
+    remove => !$polehash_seed ? "return this/these writeups to draft status"
+	: "smite $author_to_remove for a vile spammer"
     , leavegroup => 'leave this usergroup'
-    , usernames => 'detonate ' . $query -> escapeHTML ($query -> param('confirmop'))
+    , usernames => 'detonate ' . $query->escapeHTML($confirmop)
   );
 
   my $str = '<fieldset><legend>Confirm</legend>
