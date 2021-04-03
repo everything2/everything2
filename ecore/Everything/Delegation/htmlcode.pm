@@ -11585,7 +11585,7 @@ sub canseewriteup
   my ($N) = @_ ;
   $N ||= $NODE ;
 
-  my $isTarget = undef; $isTarget = delete $PAGELOAD->{notshown}->{targetauthor} if defined $PAGELOAD->{notshown} and $PAGELOAD->{notshown}->{targetauthor} == $$N{author_user};
+  my $isTarget = undef; $isTarget = delete $PAGELOAD->{notshown}->{targetauthor} if defined($PAGELOAD->{notshown}) and defined($PAGELOAD->{notshown}->{targetauthor}) and $PAGELOAD->{notshown}->{targetauthor} == $$N{author_user};
 
   if ($$N{author_user} == $$USER{user_id}){
     $PAGELOAD->{my_writeup} ||= $N if $$NODE{type}{title} eq 'e2node'; # used by [addwriteup]
