@@ -11158,7 +11158,10 @@ sub verifyRequest
 
   # checks that the form was a real e2 one
   my ($prefix) = @_;
-  my $test = md5_hex($$USER{passwd} . ' ' . $$USER{email} . $query->param($prefix . '_seed'));
+
+  my $seed = $query->param($prefix . '_seed');
+  $seed = '' if not defined($seed);
+  my $test = md5_hex($$USER{passwd} . ' ' . $$USER{email} . $seed);
   return (defined($query->param($prefix . '_nonce')) and $test eq $query->param($prefix . '_nonce')) ? 1 : 0;
 }
 
