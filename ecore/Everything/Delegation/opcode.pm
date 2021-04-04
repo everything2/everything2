@@ -428,6 +428,8 @@ sub message
   my $sushash = $DB->sqlSelectHashref("suspension_sustype", "suspension","suspension_user=$$USER{node_id} and suspension_sustype='1948205'"); # Check for unverified email
   return if ($$sushash{suspension_sustype}&& $for_user==0);
 
+  $message = '' if not defined $message;
+
   $message =~ s/^\s+|\s+$//g;
   return if $message eq '';
 
