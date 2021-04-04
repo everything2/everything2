@@ -3314,6 +3314,8 @@ sub buildTable
 	return '<i>no data</i>' unless $data;
 	
 	$tablealign = "" if not defined($tablealign);
+	$datavalign = "" if not defined($datavalign);
+
 	my $borderColor = undef; 
 	my $width = ($options=~/fullwidth/) ? 'width="100%"' : '';
 	my $tablealignment = ($tablealign eq 'left' || $tablealign eq 'center' || $tablealign eq 'right')
