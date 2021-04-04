@@ -4359,7 +4359,9 @@ sub everything_user_search
         delete $params{page} unless $params{page} > 1;
         $params{usersearch} = $$user{title}; # clean/right case for links
         $params{orderby} ||= 'writeup.publishtime DESC';
-        $params{filterhidden} = (0,1,2)[int $params{filterhidden}] if $rep;
+
+	$params{filterhidden} = 0 if not defined($params{filterhidden});
+	$params{filterhidden} = (0,1,2)[int $params{filterhidden}] if $rep;
 
         # set up query
         my $edSelect = '';
