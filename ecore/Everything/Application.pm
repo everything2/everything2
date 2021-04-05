@@ -1368,7 +1368,7 @@ sub node2mail {
 
 	my $from = $this->{conf}->mail_from;
 	
-	my $email = Paws->service('SES', region => $this->current_region);
+	my $email = Paws->service('SES', region => $this->{conf}->current_region);
 
 	my $response = $email->SendEmail(
 		'Destination' => {
@@ -4425,28 +4425,11 @@ sub previous_years_nodes
   return {"count" => $cnt, "nodes" => $nodes};
 }
 
-sub current_region
-{
-  my ($this) = @_;
-
-  my $ua = LWP::UserAgent->new(timeout => 2);
-  my $resp = $ua->get('http://169.254.169.254/latest/meta-data/placement/availability-zone');
-  my $region;
-  if($resp->is_success)
-  {
-    my $az = $resp->decoded_content;
-    $az =~ s/[a-z]$//g;
-    $region = $az;
-  }
-
-  return $region;
-}
-
 sub sns_notify
 {
   my ($this, $topicname, $subject, $message) = @_;
 
-  my $sns = Paws->service('SNS', 'region' => $this->current_region);
+  my $sns = Paws->service('SNS', 'region' => $this->{conf}->current_region);
 
   my $matching_topic_arn;
   foreach my $topic(@{$sns->ListTopics->Topics})
