@@ -200,7 +200,9 @@
       "Type": "AWS::EC2::VPC",
       "DeletionPolicy": "Retain",
       "Properties": {
-        "CidrBlock": "10.0.0.0/16"
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true
       }
     },
     "AppVPCIGW": {
@@ -234,6 +236,91 @@
               "ToPort": "443",
               "CidrIp": "0.0.0.0/0",
               "IpProtocol": "tcp"
+          }
+        ]
+      }
+    },
+    "VPCEndpointSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "GroupDescription": "VPC Service Endpoint Security Group",
+        "GroupName": "VPC-Service-Endpoint-Security-Group",
+        "VpcId": {"Ref": "AppVPC"},
+        "SecurityGroupIngress": [
+          {
+              "FromPort": "443",
+              "ToPort": "443",
+              "SourceSecurityGroupId": { "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] },
+              "IpProtocol": "tcp"
+          },
+          {
+              "FromPort": "443",
+              "ToPort": "443",
+              "SourceSecurityGroupId": { "Fn::GetAtt": ["E2AppWebheadSecurityGroup", "GroupId"] },
+              "IpProtocol": "tcp"
+          },
+          {
+              "FromPort": "443",
+              "ToPort": "443",
+              "CidrIp": "10.0.0.0/8",
+              "IpProtocol": "tcp"
+          }
+        ]
+      }
+    },
+    "SecretsVPCEndpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "PrivateDnsEnabled": true,
+        "VpcId": {"Ref": "AppVPC"},
+        "VpcEndpointType": "Interface",
+        "SubnetIds": [{"Ref": "AppVPCSubnet3"}, {"Ref": "AppVPCSubnet4"}],
+        "SecurityGroupIds": [{"Ref": "VPCEndpointSecurityGroup"}],
+        "ServiceName": "com.amazonaws.us-west-2.secretsmanager"
+      }
+    },
+    "S3VPCEndpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "PrivateDnsEnabled": true,
+        "VpcId": {"Ref": "AppVPC"},
+        "VpcEndpointType": "Interface",
+        "SubnetIds": [{"Ref": "AppVPCSubnet3"}, {"Ref": "AppVPCSubnet4"}],
+        "SecurityGroupIds": [{"Ref": "VPCEndpointSecurityGroup"}],
+        "ServiceName": "com.amazonaws.us-west-2.s3"
+      }
+    },
+    "S3VPCEndpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "VpcId": {"Ref": "AppVPC"},
+        "VpcEndpointType": "Gateway",
+        "ServiceName": "com.amazonaws.us-west-2.s3"
+      }
+    },
+    "MainDBSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "GroupDescription": "Main Database Security Group",
+        "GroupName": "DB-Ingress-Security-Group",
+        "VpcId": {"Ref": "AppVPC"},
+        "SecurityGroupIngress": [
+          {
+             "FromPort": "3306",
+             "ToPort": "3306",
+             "SourceSecurityGroupId": { "Fn::GetAtt": [ "ELBFrontendSecurityGroup", "GroupId"] },
+             "IpProtocol": "tcp"
+          },
+          {
+            "FromPort": "3306",
+            "ToPort": "3306",
+            "SourceSecurityGroupId": {"Fn::GetAtt": ["LambdaSecurityGroup", "GroupId"]},
+            "IpProtocol": "tcp"
           }
         ]
       }
@@ -655,7 +742,7 @@
         "DBSubnetGroupName": {"Ref": "EverythingDBSubnetGroup"},
         "OptionGroupName": {"Ref": "DB57OptionGroup"},
         "StorageType": "gp2",
-        "VPCSecurityGroups": [{"Fn::GetAtt": ["AppVPC","DefaultSecurityGroup"]}],
+        "VPCSecurityGroups": [{"Fn::GetAtt": ["AppVPC","DefaultSecurityGroup"]}, {"Ref": "MainDBSecurityGroup"}],
         "DBParameterGroupName": {"Ref": "EverythingDB57Parameters"},
         "MasterUsername": "everyuser",
         "MasterUserPassword": {"Fn::Join": ["", ["{{resolve:secretsmanager:", {"Ref": "E2DBMasterPassword"}, "::password}}"]]}
@@ -1937,7 +2024,11 @@
                 "ec2:AttachNetworkInterface",
                 "ec2:DetachNetworkInterface",
                 "ec2:DescribeNetworkInterfaces",
-                "autoscaling:CompleteLifecycleAction"]
+                "autoscaling:CompleteLifecycleAction",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeVpcs"
+              ]
            }
          ]
         }
@@ -2037,7 +2128,8 @@
         "ManagedPolicyArns": [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
             {"Ref": "VPCLambdaCreateInterfacePolicy"},
-            {"Ref": "SitemapBatcherBucketProcessorPolicy"}
+            {"Ref": "SitemapBatcherBucketProcessorPolicy"},
+            {"Ref": "E2MasterPasswordReadPolicy"}
         ],
         "Path": "/",
         "RoleName": "Sitemap-Batch-Processor-Lambda-Role"
@@ -2084,12 +2176,12 @@
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:33"]]}
         ],
         "Runtime": "provided.al2",
-        "Timeout": "900",
+        "Timeout": "400",
         "MemorySize": 1024,
         "Handler": "handler.lambda_handler",
         "VpcConfig": {
           "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
-          "SubnetIds": [{"Ref": "AppVPCSubnet1"}]
+          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
         }
       }
     },
