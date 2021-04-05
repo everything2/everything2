@@ -46,6 +46,8 @@ has 's3' => (isa => 'HashRef', is => 'ro', default => sub { {
   "sitemapdispatch" => Everything::S3::BucketConfig->new("bucket" => "sitemapdispatch.everything2.com"),
   "jscss" => Everything::S3::BucketConfig->new("bucket" => "jscssw.everything2.com") }});
 
+has 'current_region' => (isa => 'Maybe[Str]', is => 'ro', builder => '_build_current_region', lazy => 1);
+
 has 'static_nodetypes' => (isa => 'Bool', is => 'ro', default => 1);
 
 has 'clean_search_words_aggressively' => (isa => 'Bool', is => 'ro', default => 1);
@@ -364,7 +366,7 @@ sub _filesystem_default
 }
 
 # TODO: Make this a mixin
-sub current_region
+sub _build_current_region
 {
   my ($self) = @_;
 
