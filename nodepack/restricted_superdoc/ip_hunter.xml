@@ -38,7 +38,7 @@ $resultLimit = 'LIMIT '.$resultLimit;
 
 if($query-&gt;param('hunt_ip'))
 {
-	my $ip = $APP-&gt;encodeHTML($query-&gt;param('hunt_ip'));
+	my $ip = $APP-&gt;encodeHTML(scalar($query-&gt;param('hunt_ip')));
 	$str .= &quot;The IP ($ip) &lt;small&gt;(&quot;
 		. htmlcode('ip lookup tools', $ip)
 		. &quot;)&lt;/small&gt; has been here and logged on as:&quot;
