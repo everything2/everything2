@@ -570,11 +570,6 @@
     "module": "Path::Class"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/D/DO/DOY/Data-Stream-Bulk-0.11.tar.gz",
-    "module": "Data::Stream::Bulk",
-    "dependson": ["Path::Class"]
-  },
-  {
     "file": "https://cpan.metacpan.org/authors/id/C/CK/CKRAS/DateTime-Format-HTTP-0.42.tar.gz",
     "module": "DateTime::Format::HTTP"
   },
@@ -825,10 +820,6 @@
   {
     "file": "https://cpan.metacpan.org/authors/id/K/KI/KITANO/Test-LoadAllModules-0.022.tar.gz",
     "module": "Test::LoadAllModules"
-  },
-  {
-    "file": "https://cpan.metacpan.org/authors/id/L/LL/LLAP/Net-Amazon-S3-0.89.tar.gz",
-    "module": "Net::Amazon::S3"
   },
   {
     "file": "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Class-Method-Modifiers-2.13.tar.gz",
