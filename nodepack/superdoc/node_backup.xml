@@ -1,28 +1,18 @@
 <node>
   <doctext>[%
-use Net::Amazon::S3;
-
-# Assume writeup-backups/ exists in the www/ directory:
-my $aws_access_key_id = $Everything::CONF-&gt;s3-&gt;{nodebackup}-&gt;{access_key_id};
-my $aws_secret_access_key = $Everything::CONF-&gt;s3-&gt;{nodebackup}-&gt;{secret_access_key};
-
-my $s3host = $Everything::CONF-&gt;s3-&gt;{nodebackup}-&gt;{host} || $Everything::CONF-&gt;s3host || 's3.amazonaws.com';
-
-my $s3 = Net::Amazon::S3-&gt;new(
-      {   aws_access_key_id     =&gt; $aws_access_key_id,
-          aws_secret_access_key =&gt; $aws_secret_access_key,
-          retry                 =&gt; 1,
-          host                  =&gt; $s3host,
-      }
-);
-my $bucket = $s3-&gt;bucket($Everything::CONF-&gt;s3-&gt;{nodebackup}-&gt;{bucket});
-
-my $directory = 'writeup-backups/';
 
 return &quot;&lt;p&gt;If you logged in, you'd be able to create a backup of your &quot;
 	.&quot;writeups here.&lt;/p&gt;&quot; if $APP-&gt;isGuest($USER);
 
-my $str;
+use Everything::S3;
+use Archive::Zip; # This will itself require Compress::Zlib.
+use IO::String;
+
+my $zipbuffer;
+my $iozipbuffer = IO::String-&gt;new($zipbuffer);
+my $s3 = Everything::S3-&gt;new(&quot;nodebackup&quot;);
+
+my $str = &quot;&quot;;
 
 $str .= &quot;&lt;p&gt;Welcome to the node backup utility. Here you can
 	download all of your writeups and/or drafts in a handy zipfile.&lt;/p&gt;\n&quot;;
@@ -48,8 +38,6 @@ $str .= htmlcode('openform',&quot;backup&quot;)
 
 
 return $str unless $query -&gt; param(&quot;sexisgood&quot;);
-
-use Archive::Zip; # This will itself require Compress::Zlib.
 
 my $e2parse = $query-&gt;param(&quot;e2parse&quot;);
 my $targetNoder;
@@ -131,9 +119,9 @@ my $format = ('text', 'html', 'text-html')[$e2parse-1];
 my $obfuscateUrl = int(rand(8999999)) + 1000000;
 my $outputfilename = &quot;$cleanUser.$format.$obfuscateUrl.$year-$month-$day.zip&quot;;
 
-
-$zip -&gt; writeToFileNamed(&quot;/tmp/$outputfilename&quot;);
-$bucket-&gt;add_key_filename($outputfilename, &quot;/tmp/$outputfilename&quot;, {content_type =&gt; &quot;application/octet-stream&quot;});
+$zip-&gt;writeToFileHandle($iozipbuffer);
+close($iozipbuffer);
+$s3-&gt;upload_data($outputfilename, $zipbuffer, {content_type =&gt; &quot;application/zip&quot;});
 
 my $url = &quot;https://s3-us-west-2.amazonaws.com/nodebackup.everything2.com/$outputfilename&quot;;
 
