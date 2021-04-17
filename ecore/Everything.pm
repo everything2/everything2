@@ -94,6 +94,7 @@ sub BEGIN
 		die $FACTORY->{lc($plugin)}->error_string if $FACTORY->{lc($plugin)}->error_string;
 	}
 
+	$ENV{'PAWS_SILENCE_UNSTABLE_WARNINGS'} = 1;
 }
 
 use vars qw($DB);
