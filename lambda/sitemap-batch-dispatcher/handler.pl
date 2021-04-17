@@ -4,7 +4,6 @@ use strict;
 use lib qw(/var/libraries/lib/perl5);
 use lib qw(/var/everything/ecore);
 use Everything;
-use Net::Amazon::S3;
 use Everything::S3;
 use Data::Dumper;
 use JSON;
@@ -25,18 +24,6 @@ sub lambda_handler
 
   print "Initializing Everything Engine\n";
   initEverything 'everything';
-
-  my $nets3 =   Net::Amazon::S3->new(
-                {
-                        use_iam_role => 1,
-                        retry => 1,
-                        host => 's3-us-west-2.amazonaws.com'
-                });
-
-
-  print "Starting up sitemap dispatcher\n";
-  print "Net::S3: ".Data::Dumper->Dump([$nets3])."\n";
-  print "Conf: ".Data::Dumper->Dump([$Everything::CONF->s3])."\n";
   my $s3 = Everything::S3->new("sitemapdispatch");
   return http_response(200, "OK");
 
