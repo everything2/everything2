@@ -51,8 +51,6 @@ to_install = [
     'libdevel-caller-perl',
     'libdbd-mysql-perl',
     'git',
-    'libnet-amazon-s3-perl',
-    'libemail-sender-perl',
     'libnet-smtp-ssl-perl',
     'libauthen-sasl-perl',
     'libxml-rss-perl',
