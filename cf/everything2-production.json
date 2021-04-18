@@ -281,7 +281,7 @@
         "ServiceName": "com.amazonaws.us-west-2.secretsmanager"
       }
     },
-    "S3VPCEndpoint": {
+    "LambdaVPCEndpoint": {
       "Type": "AWS::EC2::VPCEndpoint",
       "DeletionPolicy": "Retain",
       "Properties": {
@@ -290,7 +290,19 @@
         "VpcEndpointType": "Interface",
         "SubnetIds": [{"Ref": "AppVPCSubnet3"}, {"Ref": "AppVPCSubnet4"}],
         "SecurityGroupIds": [{"Ref": "VPCEndpointSecurityGroup"}],
-        "ServiceName": "com.amazonaws.us-west-2.s3"
+        "ServiceName": "com.amazonaws.us-west-2.lambda"
+      }
+    },
+    "CloudWatchLogsVPCEndpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "PrivateDnsEnabled": true,
+        "VpcId": {"Ref": "AppVPC"},
+        "VpcEndpointType": "Interface",
+        "SubnetIds": [{"Ref": "AppVPCSubnet3"}, {"Ref": "AppVPCSubnet4"}],
+        "SecurityGroupIds": [{"Ref": "VPCEndpointSecurityGroup"}],
+        "ServiceName": "com.amazonaws.us-west-2.logs"
       }
     },
     "S3VPCEndpoint": {
@@ -299,7 +311,8 @@
       "Properties": {
         "VpcId": {"Ref": "AppVPC"},
         "VpcEndpointType": "Gateway",
-        "ServiceName": "com.amazonaws.us-west-2.s3"
+        "ServiceName": "com.amazonaws.us-west-2.s3",
+        "RouteTableIds": [{"Ref": "AppVPCRouteTable"}]
       }
     },
     "MainDBSecurityGroup": {
@@ -2106,7 +2119,9 @@
             {"Ref": "VPCLambdaCreateInterfacePolicy"},
             {"Ref": "SitemapBatcherBucketWritePolicy"},
             {"Ref": "SitemapProcessorInvokerPolicy"},
-            {"Ref": "E2MasterPasswordReadPolicy"}
+            {"Ref": "E2MasterPasswordReadPolicy"},
+            {"Ref": "SitemapLambdaQueueSend"},
+            "arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy"
         ],
         "Path": "/",
         "RoleName": "Sitemap-Batch-Dispatcher-Lambda-Role"
@@ -2129,7 +2144,9 @@
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
             {"Ref": "VPCLambdaCreateInterfacePolicy"},
             {"Ref": "SitemapBatcherBucketProcessorPolicy"},
-            {"Ref": "E2MasterPasswordReadPolicy"}
+            {"Ref": "E2MasterPasswordReadPolicy"},
+            {"Ref": "SitemapLambdaQueueSend"},
+            "arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy"
         ],
         "Path": "/",
         "RoleName": "Sitemap-Batch-Processor-Lambda-Role"
@@ -2195,12 +2212,13 @@
         "FunctionName": "sitemap-batch-processor",
         "Role": {"Fn::GetAtt" : ["SitemapBatchProcessorLambdaRole", "Arn"]},
         "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:6"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:33"]]}
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:11"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:38"]]},
+          "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:14"
         ],
         "Runtime": "provided.al2",
         "Timeout": "600",
-        "MemorySize": 512,
+        "MemorySize": 1024,
         "Handler": "handler.lambda_handler",
         "VpcConfig": {
           "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
@@ -2246,6 +2264,14 @@
         "RetentionInDays": 3
       }
     },
+    "AppUninitializedLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/events/e2-uninitialized-errors",
+        "RetentionInDays": 3
+      }
+    },
     "ApplicationErrorLoggingRule": {
       "Type": "AWS::Events::Rule",
       "DeletionPolicy": "Retain",
@@ -2267,6 +2293,65 @@
         "Description": "Archiving app errors",
         "RetentionDays": 3,
         "SourceArn": {"Fn::GetAtt": ["AppErrorsEventBus", "Arn"]}
+      }
+    },
+    "AppVPCRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {"Ref": "AppVPC"}
+      }
+    },
+    "AppVPCS3SubnetAssociation3": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {"Ref": "AppVPCRouteTable"},
+        "SubnetId": {"Ref": "AppVPCSubnet3"}
+      }
+    },
+    "AppVPCS3SubnetAssociation4": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {"Ref": "AppVPCRouteTable"},
+        "SubnetId": {"Ref": "AppVPCSubnet4"}
+      }
+    },
+    "LambdaDeliveryQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "MessageRetentionPeriod": 600
+      }
+    },
+    "SitemapLambdaAsyncConfig": {
+      "Type": "AWS::Lambda::EventInvokeConfig",
+      "Properties": {
+        "DestinationConfig": {
+          "OnFailure": {
+            "Destination": {"Fn::GetAtt": ["LambdaDeliveryQueue","Arn"]}
+          },
+          "OnSuccess": {
+            "Destination": {"Fn::GetAtt": ["LambdaDeliveryQueue","Arn"]}
+          }
+        },
+        "MaximumRetryAttempts": 1,
+        "FunctionName": {"Ref": "SitemapBatchProcessorFunction"},
+        "Qualifier": "$LATEST"
+      }
+    },
+    "SitemapLambdaQueueSend": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows Lambda to send queue messages",
+        "ManagedPolicyName": "SitemapLambdaQueueSend",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "sqs:SendMessage",
+            "Resource": {"Fn::GetAtt": ["LambdaDeliveryQueue","Arn"]}
+          }]
+        }
       }
     }
   }

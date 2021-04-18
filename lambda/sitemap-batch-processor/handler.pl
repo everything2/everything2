@@ -5,7 +5,7 @@ use lib qw(/var/libraries/lib/perl5);
 use lib qw(/var/everything/ecore);
 use Everything;
 use Everything::S3;
-use XML::Generator;
+use Data::Dumper;
 
 initEverything 'everything';
 my $xg = XML::Generator->new(':pretty');
@@ -23,6 +23,7 @@ sub lambda_handler
 {
   my ($event) = @_;
 
-  print "Starting up\n";
+  print "Hello\n";
+  print Data::Dumper->Dump([$event])."\n";
   return http_response(200, "OK");
 }
