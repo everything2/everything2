@@ -3,12 +3,8 @@
 use strict;
 use lib qw(/var/libraries/lib/perl5);
 use lib qw(/var/everything/ecore);
-use Everything;
-use Everything::S3;
 use Data::Dumper;
-
-initEverything 'everything';
-my $xg = XML::Generator->new(':pretty');
+use JSON;
 
 sub http_response
 {
@@ -23,7 +19,8 @@ sub lambda_handler
 {
   my ($event) = @_;
 
-  print "Hello\n";
-  print Data::Dumper->Dump([$event])."\n";
-  return http_response(200, "OK");
+  print "Testing\n";
+  http_response(200, "OK");
 }
+
+1;
