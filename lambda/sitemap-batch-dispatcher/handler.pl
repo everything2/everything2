@@ -28,8 +28,7 @@ sub lambda_handler
   my $s3 = Everything::S3->new("sitemapdispatch");
 
   my $current_batch = 1;
-#  my $batches = $APP->sitemap_batches;
-  my $batches = [['459692'],['2177337']];
+  my $batches = $APP->sitemap_batches;
   foreach my $batch(@$batches)
   {
     print "Uploading batch: $current_batch.json\n";

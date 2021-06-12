@@ -9,6 +9,8 @@ require 'aws-sdk-lambda'
 require 'archive/zip'
 require 'json'
 
+deployonly = ARGV[0]
+
 @s3client = Aws::S3::Client.new(region: 'us-west-2') 
 @lambdaclient = Aws::Lambda::Client.new(region: 'us-west-2')
 
@@ -29,6 +31,10 @@ end
 Dir.children("#{@lambdadir}").each do |entry|
 
   if File.directory?("#{@lambdadir}/#{entry}")
+    if !deployonly.nil? and !entry.eql? deployonly
+      next
+    end
+
     next if entry.match(/^\./)
     filename = "#{entry}.zip"
     output = "#{@builddir}/#{filename}"
