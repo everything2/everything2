@@ -281,6 +281,18 @@
         "ServiceName": "com.amazonaws.us-west-2.secretsmanager"
       }
     },
+    "EventsVPCEndpoint": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "PrivateDnsEnabled": true,
+        "VpcId": {"Ref": "AppVPC"},
+        "VpcEndpointType": "Interface",
+        "SubnetIds": [{"Ref": "AppVPCSubnet3"}, {"Ref": "AppVPCSubnet4"}],
+        "SecurityGroupIds": [{"Ref": "VPCEndpointSecurityGroup"}],
+        "ServiceName": "com.amazonaws.us-west-2.events"
+      }
+    },
     "LambdaVPCEndpoint": {
       "Type": "AWS::EC2::VPCEndpoint",
       "DeletionPolicy": "Retain",
@@ -2121,7 +2133,7 @@
             {"Ref": "SitemapProcessorInvokerPolicy"},
             {"Ref": "E2MasterPasswordReadPolicy"},
             {"Ref": "SitemapLambdaQueueSend"},
-            "arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy"
+            {"Ref": "CloudWatchEventsWritePolicy"}
         ],
         "Path": "/",
         "RoleName": "Sitemap-Batch-Dispatcher-Lambda-Role"
@@ -2146,7 +2158,8 @@
             {"Ref": "SitemapBatcherBucketProcessorPolicy"},
             {"Ref": "E2MasterPasswordReadPolicy"},
             {"Ref": "SitemapLambdaQueueSend"},
-            "arn:aws:iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy"
+            {"Ref": "CloudWatchEventsWritePolicy"},
+            {"Ref": "SitemapBucketWritePolicy"}
         ],
         "Path": "/",
         "RoleName": "Sitemap-Batch-Processor-Lambda-Role"
@@ -2189,8 +2202,8 @@
         "FunctionName": "sitemap-batch-dispatcher",
         "Role": {"Fn::GetAtt" : ["SitemapBatchDispatcherLambdaRole", "Arn"]},
         "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:6"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:33"]]}
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:11"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:42"]]}
         ],
         "Runtime": "provided.al2",
         "Timeout": "400",
@@ -2213,8 +2226,7 @@
         "Role": {"Fn::GetAtt" : ["SitemapBatchProcessorLambdaRole", "Arn"]},
         "Layers": [
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:11"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:38"]]},
-          "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:14"
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:42"]]}
         ],
         "Runtime": "provided.al2",
         "Timeout": "600",
@@ -2222,7 +2234,7 @@
         "Handler": "handler.lambda_handler",
         "VpcConfig": {
           "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
-          "SubnetIds": [{"Ref": "AppVPCSubnet1"}]
+          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
         }
       }
     },
