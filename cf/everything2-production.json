@@ -2365,6 +2365,30 @@
           }]
         }
       }
+    },
+    "SitemapDispatcherCronRule": {
+      "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Cron rule to call sitemap dispatcher lambda",
+        "Name": "sitemap-dispatcher-lambda-cron",
+        "State": "ENABLED",
+        "ScheduleExpression": "cron(0 0 * * ? *)",
+        "Targets": [{
+          "Id": "sitemap-dispatcher-lambda-arn",
+          "Arn": {"Fn::GetAtt" : ["SitemapBatchDispatcherFunction", "Arn"]}
+        }]
+      }
+    },
+    "SitemapDispatcherLambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName" : {"Ref": "SitemapBatchDispatcherFunction"},
+        "Principal": "events.amazonaws.com",
+        "Action": "lambda:InvokeFunction",
+        "SourceArn" : {"Fn::GetAtt" : ["SitemapDispatcherCronRule", "Arn"]}
+      }
     }
   }
 }
