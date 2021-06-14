@@ -28,13 +28,13 @@ do
   # Get an event
   EVENT_DATA=$(curl -s -LD "$HEADERS" -X GET "http://${AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime/invocation/next")
   ESCAPED_EVENT_DATA=$(printf "%q" "$EVENT_DATA")
-  echo "Got event data: $ESCAPED_EVENT_DATA"
+  # echo "Got event data: $ESCAPED_EVENT_DATA"
   OURENV=$(env)
-  echo "Got environment: $OURENV"
-  echo "Got headers: $HEADERS"
+  # echo "Got environment: $OURENV"
+  # echo "Got headers: $HEADERS"
   REQUEST_ID=$(grep -Fi Lambda-Runtime-Aws-Request-Id "$HEADERS" | tr -d '[:space:]' | cut -d: -f2)
   OUTPUT=$(LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/lib /tmp/bin/perl -I/opt/everything2/ecore -MJSON -e "require \"$LAMBDA_TASK_ROOT/$lambda_script_name.pl\"; print $handler_name(decode_json(\"$ESCAPED_EVENT_DATA\"))")
 
-  echo "Posting output: $OUTPUT"
+  # echo "Posting output: $OUTPUT"
   curl -X POST "http://${AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime/invocation/$REQUEST_ID/response"  -d "$OUTPUT"
 done
