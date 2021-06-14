@@ -29,12 +29,6 @@ cron 'database_backup_to_s3.pl' do
   command "/var/everything/tools/database_backup_to_s3.pl 2>&1 >> #{logdir}/e2cron.database_backup_to_s3.#{datelog}" 
 end
 
-cron 'refreshRoom.pl' do
-  user "root"
-  minute "0-59/5"
-  command "/var/everything/tools/refreshRoom.pl 2>&1 >> #{logdir}/e2cron.refreshRoom.#{datelog}"
-end
-
 cron 'cleanCbox.pl' do
   user "root"
   minute "50"
