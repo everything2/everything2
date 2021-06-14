@@ -64,7 +64,7 @@ $(BOOSTUNZIP): 3rd/boost_$(BOOSTVER).tar.gz
 	touch $@
 
 3rd/boost_$(BOOSTVER).tar.gz:
-	mkdir -p 3rd && cd 3rd && wget https://dl.bintray.com/boostorg/release/1.70.0/source/boost_$(BOOSTVER).tar.gz
+	mkdir -p 3rd && cd 3rd && wget https://boostorg.jfrog.io/artifactory/main/release/1.70.0/source/boost_1_70_0.tar.gz
 	touch $@
 
 libxml2.build: 3rd/libxml2-$(LIBXMLVER).tar.gz
