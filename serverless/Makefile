@@ -1,5 +1,5 @@
 PERLVER=5.26.3
-MAGICKVER=6.9.11-62
+MAGICKVER=6.9.12-15
 CMAKEVER=3.18.0-rc2
 MYSQLVER=8.0.20
 BOOSTVER=1_70_0
@@ -108,7 +108,7 @@ nasm.build: 3rd/nasm-$(NASMVER).tar.gz
 	touch $@
 
 3rd/ImageMagick-$(MAGICKVER).tar.gz:
-	mkdir -p 3rd && cd 3rd && wget https://imagemagick.org/download/releases/ImageMagick-$(MAGICKVER).tar.gz
+	mkdir -p 3rd && cd 3rd && wget https://download.imagemagick.org/ImageMagick/download/ImageMagick-$(MAGICKVER).tar.gz
 	touch $@
 
 3rd/cmake-$(CMAKEVER).tar.gz:
