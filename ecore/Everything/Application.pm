@@ -2140,6 +2140,56 @@ sub changeRoom {
   return $this->insertIntoRoom($ROOM, $user);
 }
 
+sub inRoomUsers {
+  my ($this) = @_;
+
+  my $csr=$this->{db}->sqlSelectMany("*", 'room');
+
+  my $ROOM = {};
+  while (my $MEMBER = $csr->fetchrow_hashref) {
+     $ROOM->{$$MEMBER{room_id}}{$$MEMBER{member_user}} = $MEMBER;
+  }
+  $csr->finish;
+
+  return $ROOM;
+}
+
+sub refreshRoomUsers {
+  my ($this) = @_;
+
+  my $ROOM = $this->inRoomUsers;
+  my $actions = [];
+  my $csr = $this->{db}->sqlSelectMany("user_id", "user", "lasttime > TIMESTAMPADD(SECOND, -".$Everything::CONF->logged_in_threshold.", NOW())");
+  $csr->execute;
+
+  while (my ($U) = $csr->fetchrow) {
+    $U = $this->{db}->getNodeById($U);
+    my $V = Everything::getVars($U);
+    my $room_id = $$U{in_room};
+    my $user_id = $$U{user_id};
+
+    if (exists ($ROOM->{$room_id}{$user_id})) {
+      #the user is still in the room
+      delete $ROOM->{$room_id}{$user_id};
+    } else {
+      #the user needs to be inserted into the room table
+      $this->insertIntoRoom($room_id, $U, $V);
+      push(@$actions, {"action" => "entrance", "room" => $room_id, "user" => $U->{node_id}})
+    }
+  }
+  $csr->finish;
+
+  #remove everyone who's left a room
+  foreach my $room_id (keys %$ROOM) {
+    foreach (keys %{ $ROOM->{$room_id}}) {
+      $this->{db}->sqlDelete("room", "room_id=$room_id and member_user=$_");
+
+      push(@$actions, {"action" => "departure", "room" => $room_id, "user" => $_})
+    }
+  }
+  return $actions;
+}
+
 sub logUserIp {
   my ($this, $user, $vars) = @_;
   return if $this->isGuest($user);
