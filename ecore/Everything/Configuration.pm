@@ -209,9 +209,10 @@ has 'permission_denied' => (isa => 'Int', is => 'ro', default => '104');
 has 'user_settings' => (isa => 'Int', is => 'ro', default => '108');
 has 'guest_link' => (isa => 'Int', is => 'ro', default => '2014296');
 
-has 'maintenance_nodes' => (isa => 'ArrayRef[Int]', 'is' => 'ro', default => sub {[379710,364471,596824,171917,368049,174079,1428471]});
+has 'maintenance_nodes' => (isa => 'ArrayRef[Int]', is => 'ro', default => sub {[379710,364471,596824,171917,368049,174079,1428471]});
 
-has 'logged_in_threshold' => (isa => 'Int', 'is' => 'ro', default => 240);
+has 'logged_in_threshold' => (isa => 'Int', is => 'ro', default => 240);
+has 'chatterbox_cleanup_threshold' => (isa => 'Int', is => 'ro', default => 500);
 
 around BUILDARGS => sub
 {

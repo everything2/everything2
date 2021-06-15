@@ -2159,7 +2159,7 @@ sub refreshRoomUsers {
 
   my $ROOM = $this->inRoomUsers;
   my $actions = [];
-  my $csr = $this->{db}->sqlSelectMany("user_id", "user", "lasttime > TIMESTAMPADD(SECOND, -".$Everything::CONF->logged_in_threshold.", NOW())");
+  my $csr = $this->{db}->sqlSelectMany("user_id", "user", "lasttime > TIMESTAMPADD(SECOND, -".$this->{conf}->logged_in_threshold.", NOW())");
   $csr->execute;
 
   while (my ($U) = $csr->fetchrow) {
@@ -4648,5 +4648,27 @@ sub send_cloudwatch_event
   }
 }
 
+sub chatterbox_cleanup
+{
+  my ($this) = @_;
+
+  my $expireInSeconds = $this->{conf}->chatterbox_cleanup_threshold;
+
+  my $messageSaveSQL = qq|
+    INSERT INTO publicmessages
+    (message_id, msgtext, tstamp, author_user)
+    SELECT message_id, msgtext, tstamp, author_user
+      FROM message
+      WHERE TIMESTAMPADD(SECOND, -$expireInSeconds, NOW()) > tstamp
+        AND for_user = 0
+      ORDER BY tstamp ASC
+    ON DUPLICATE KEY UPDATE
+      publicmessages.tstamp = message.tstamp|;
+
+  $this->{db}->{dbh}->do($messageSaveSQL);
+
+  return $this->{db}->sqlDelete("message", "for_user=0 AND TIMESTAMPADD(SECOND, -$expireInSeconds, NOW()) > tstamp");
+
+}
 
 1;
