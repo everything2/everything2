@@ -23,12 +23,6 @@ cron 'log_deliver_to_s3.pl' do
   command "/var/everything/tools/log_deliver_to_s3.pl 2>&1 >> #{logdir}/e2cron.log_deliver_to_s3.#{datelog}"
 end
 
-cron 'cleanCbox.pl' do
-  user "root"
-  minute "50"
-  command "/var/everything/tools/cleanCbox.pl 2>&1 >> #{logdir}/e2cron.cleanCbox.#{datelog}"
-end
-
 cron 'newstats.pl' do
   user "root"
   minute "10"
