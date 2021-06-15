@@ -2468,6 +2468,62 @@
         "Action": "lambda:InvokeFunction",
         "SourceArn" : {"Fn::GetAtt" : ["RefreshRoomsCronRule", "Arn"]}
       }
+    },
+    "ChatterboxCleanupFunction": {
+      "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "lambdasource.everything2.com",
+          "S3Key": "chatterbox-cleanup.zip"
+        },
+        "FunctionName": "chatterbox-cleanup",
+        "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
+        "Layers": [
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:12"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
+        ],
+        "Runtime": "provided.al2",
+        "Timeout": "400",
+        "MemorySize": 1024,
+        "Handler": "handler.lambda_handler",
+        "VpcConfig": {
+          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
+          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
+        }
+      }
+    },
+    "ChatterboxCleanupLambdaLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "ChatterboxCleanupFunction"}]]},
+        "RetentionInDays": 3
+      }
+    },
+    "ChatterboxCleanupCronRule": {
+      "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Cron rule to call refresh rooms",
+        "Name": "chatterbox-cleanup-lambda-cron",
+        "State": "ENABLED",
+        "ScheduleExpression": "cron(50 * * * ? *)",
+        "Targets": [{
+          "Id": "chatterbox-cleanup-lambda-arn",
+          "Arn": {"Fn::GetAtt" : ["ChatterboxCleanupFunction", "Arn"]}
+        }]
+      }
+    },
+    "ChatterboxCleanupLambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName" : {"Ref": "ChatterboxCleanupFunction"},
+        "Principal": "events.amazonaws.com",
+        "Action": "lambda:InvokeFunction",
+        "SourceArn" : {"Fn::GetAtt" : ["ChatterboxCleanupCronRule", "Arn"]}
+      }
     }
   }
 }
