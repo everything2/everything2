@@ -4671,4 +4671,81 @@ sub chatterbox_cleanup
 
 }
 
+sub level_factor_recalculate
+{
+  my ($this) = @_;
+
+  my $hrstats = $this->{db}->getNode("hrstats", "setting");
+  my $hrv = Everything::getVars($hrstats);
+  $$hrv{mean} =sprintf("%.4f", $this->{db}->sqlSelect("AVG(merit)", "user", "numwriteups>=25"));
+  $$hrv{stddev} = sprintf("%.4f",$this->{db}->sqlSelect("STD(merit)","user", "numwriteups>=25"));
+  Everything::setVars($hrstats, $hrv);
+  $this->{db}->updateNode($hrstats, -1);
+}
+
+sub global_iqm_recalculate
+{
+  my ($this) = @_;
+  my $csr = $this->{db}->sqlSelectMany("node_id, reputation, author_user", "node", "type_nodetype=".$this->{db}->getId($this->{db}->getType('writeup')));
+  my $root = $this->{db}->getNode("root","user");
+
+  my $reps = undef;
+  my $totalwus = $this->{db}->sqlSelect("count(*)", "node", "type_nodetype=".$this->{db}->getId($this->{db}->getType('writeup')));
+  my $totalusrs = $this->{db}->sqlSelect("count(*)", "node", "type_nodetype=".$this->{db}->getId($this->{db}->getType('user')));
+
+  while(my $row = $csr->fetchrow_hashref())
+  {
+    $$reps{$$row{author_user}}{$$row{reputation}} ||= 0;
+    $$reps{$$row{author_user}}{$$row{reputation}}++;
+  }
+
+  foreach(keys %$reps)
+  {
+    my $uid = $this->{db}->getNodeById($_);
+    next unless $uid;
+    my $temp = $$reps{$$uid{user_id}};
+    my %rephash = %$temp;
+    my $count = 0;
+    $count+= $rephash{$_} foreach(keys %rephash);
+
+    my @replist = sort {$a <=> $b} keys(%rephash);
+
+    my $reptally = 0;
+    my $ncount = 0;
+    my $cursor = 0;
+    #  $skip is the number of nodes (may be fractional) in a quartile.
+    my $skip = $count / 4;
+
+    foreach (@replist) {
+      if ($cursor >= $skip && $cursor + $rephash{$_} + $skip <= $count) {
+        $reptally += $_ * $rephash{$_};
+        $ncount += $rephash{$_};
+        $cursor += $rephash{$_};
+      } elsif ($cursor < $skip) {
+        if ($cursor + $rephash{$_} < $skip) {
+          $cursor += $rephash{$_};
+        } else {
+          $reptally += $_ * ($rephash{$_} - ($skip - $cursor));
+          $ncount += $rephash{$_} - ($skip - $cursor);
+          $cursor += $rephash{$_};
+        }
+      } elsif ($cursor + $skip < $count) {
+        $reptally += $_ * ($count - ($cursor + $skip));
+        $ncount += $count - ($cursor + $skip);
+        $cursor += $rephash{$_};
+      }
+    }
+
+    my $IQM = $reptally / $ncount;
+
+    $this->{db}->sqlDelete("newstats", "newstats_id=$$uid{user_id}");
+    $this->{db}->sqlInsert("newstats", {'newstats_id' => $$uid{user_id}, 'newstats_iqm' => $IQM});
+
+    $$uid{merit} = $IQM;
+    $this->{db}->updateNode($uid, -1);
+  }
+
+  $this->level_factor_recalculate;
+}
+
 1;

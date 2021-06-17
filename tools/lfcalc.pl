@@ -1,15 +1,9 @@
 #!/usr/bin/perl -w
 
 use strict;
-use lib "/var/everything/ecore";
+use lib qw(/var/libraries/lib/perl5);
+use lib qw(/var/everything/ecore);
 use Everything;
-use Everything::HTML;
 initEverything 'everything';
 
-
-my $hrstats = getNode("hrstats", "setting");
-my $hrv = getVars($hrstats);
-$$hrv{mean} =sprintf("%.4f", $DB->sqlSelect("AVG(merit)", "user", "numwriteups>=25"));
-$$hrv{stddev} = sprintf("%.4f",$DB->sqlSelect("STD(merit)","user", "numwriteups>=25"));
-setVars($hrstats, $hrv);
-updateNode($hrstats, -1);
+$APP->level_factor_recalculate;

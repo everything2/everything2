@@ -18,6 +18,7 @@ if($ARGV[0])
   foreach my $file(`find /var/everything/ecore -type f`)
   {
     chomp $file;
+    print "Evaluating: ".$file."\n";
     critique_file($file);
   }
 }
