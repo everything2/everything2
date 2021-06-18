@@ -23,13 +23,6 @@ cron 'log_deliver_to_s3.pl' do
   command "/var/everything/tools/log_deliver_to_s3.pl 2>&1 >> #{logdir}/e2cron.log_deliver_to_s3.#{datelog}"
 end
 
-cron 'expirerooms.pl' do
-  user "root"
-  minute "30"
-  hour "6"
-  command "/var/everything/tools/expirerooms.pl 2>&1 >> #{logdir}/e2cron.expirerooms.#{datelog}"
-end
-
 cron 'reaper.pl' do
   user "root"
   minute "50"
