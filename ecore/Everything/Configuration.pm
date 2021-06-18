@@ -197,10 +197,10 @@ has 'blacklist_interval' => (isa => 'Str', is => 'ro', default => '3 MONTH');
 
 has 'site_description' => (isa => 'Str', is => 'ro', default => 'Everything2 is a collection of user-submitted writings about more or less everything');
 
-has 'site_name' => (isa => 'Str', 'is' => 'ro', default => 'Everything2');
-has 'create_new_user' => (isa => 'Int', 'is' => 'ro', default => '2072173');
-has 'default_guest_node' => (isa => 'Int', 'is' => 'ro', default => '2030780');
-has 'default_nodeletgroup' => (isa => 'Int', 'is' => 'ro', default => '837990');
+has 'site_name' => (isa => 'Str', is => 'ro', default => 'Everything2');
+has 'create_new_user' => (isa => 'Int', is => 'ro', default => '2072173');
+has 'default_guest_node' => (isa => 'Int', is => 'ro', default => '2030780');
+has 'default_nodeletgroup' => (isa => 'Int', is => 'ro', default => '837990');
 has 'default_node' => (isa => 'Int', is => 'ro', default => '124');
 has 'default_duplicates_node' => (isa => 'Int', is => 'ro', default => '382987');
 has 'not_found_node' => (isa => 'Int', is => 'ro', default => '668164');
@@ -213,6 +213,10 @@ has 'maintenance_nodes' => (isa => 'ArrayRef[Int]', is => 'ro', default => sub {
 
 has 'logged_in_threshold' => (isa => 'Int', is => 'ro', default => 240);
 has 'chatterbox_cleanup_threshold' => (isa => 'Int', is => 'ro', default => 500);
+has 'room_cleanup_threshold' => (isa => 'Int', is => 'ro', default => 60*60*24*90);
+
+has 'always_keep_rooms' => (isa => 'ArrayRef[Str]', is => 'ro', default => sub {["Valhalla", "Political Asylum", "M-Noder Washroom", "Noders Nursery", "Debriefing Room"]});
+
 
 around BUILDARGS => sub
 {
