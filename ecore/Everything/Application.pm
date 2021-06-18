@@ -4748,4 +4748,21 @@ sub global_iqm_recalculate
   $this->level_factor_recalculate;
 }
 
+sub clean_old_rooms
+{
+  my ($this) = @_;
+
+  my $csr = $this->{db}->sqlSelectMany("roomdata_id", "roomdata", "UNIX_TIMESTAMP(lastused_date) <= ".(time()-$this->{conf}->room_cleanup_threshold));
+  my %exceptions = map { $this->{db}->getNode($_, "room")->{node_id} => 1} @{$this->{conf}->always_keep_rooms};
+
+  while(my $row = $csr->fetchrow_hashref)
+  {
+    my $N = $this->{db}->getNodeById($row->{roomdata_id});
+    next unless $N;
+    next if $exceptions{$N->{node_id}};
+
+    $this->{db}->nukeNode($N, -1);
+  }
+}
+
 1;

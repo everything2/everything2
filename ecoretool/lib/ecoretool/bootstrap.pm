@@ -120,7 +120,16 @@ sub main
 	initEverything($$options{database});
 
 	opendir $dirhandle,$basedir;
-	foreach my $nodetype(readdir($dirhandle))
+
+        my $nodetypes = [readdir($dirhandle)];
+
+	#fix some ordering issues when publication_status is blank on cold standup
+	foreach my $exception ("publication_status","maintenance")
+	{
+          $nodetypes = [$exception, grep(!/^$exception/, @$nodetypes)];
+        }
+
+	foreach my $nodetype(@$nodetypes)
 	{
 		next unless -d "$basedir/$nodetype";
 
