@@ -2524,6 +2524,62 @@
         "Action": "lambda:InvokeFunction",
         "SourceArn" : {"Fn::GetAtt" : ["ChatterboxCleanupCronRule", "Arn"]}
       }
+    },
+    "IQMRecalculateFunction": {
+      "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "lambdasource.everything2.com",
+          "S3Key": "iqm-recalculate.zip"
+        },
+        "FunctionName": "iqm-recalculate",
+        "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
+        "Layers": [
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:15"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
+        ],
+        "Runtime": "provided.al2",
+        "Timeout": "400",
+        "MemorySize": 1024,
+        "Handler": "handler.lambda_handler",
+        "VpcConfig": {
+          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
+          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
+        }
+      }
+    },
+    "IQMRecalculateLambdaLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "IQMRecalculateFunction"}]]},
+        "RetentionInDays": 3
+      }
+    },
+    "IQMRecalculateCronRule": {
+      "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Cron rule to call refresh rooms",
+        "Name": "iqm-recalculate-lambda-cron",
+        "State": "ENABLED",
+        "ScheduleExpression": "cron(10 6 * * ? *)",
+        "Targets": [{
+          "Id": "iqm-recalculate-lambda-arn",
+          "Arn": {"Fn::GetAtt" : ["IQMRecalculateFunction", "Arn"]}
+        }]
+      }
+    },
+    "IQMRecalculateLambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName" : {"Ref": "IQMRecalculateFunction"},
+        "Principal": "events.amazonaws.com",
+        "Action": "lambda:InvokeFunction",
+        "SourceArn" : {"Fn::GetAtt" : ["IQMRecalculateCronRule", "Arn"]}
+      }
     }
   }
 }
