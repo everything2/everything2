@@ -56,7 +56,7 @@
   </vars>
   <vars>
     <key>cookie</key>
-    <value>gives ~ a triple-decker Oreo</value>
+    <value>gives ~ a sugar cookie with extra sprinkles</value>
   </vars>
   <vars>
     <key>cthulhu</key>
@@ -80,7 +80,7 @@
   </vars>
   <vars>
     <key>drink</key>
-    <value>buys ~ a round</value>
+    <value>buys ~ a drink</value>
   </vars>
   <vars>
     <key>egg</key>
@@ -184,15 +184,15 @@
   </vars>
   <vars>
     <key>pie</key>
-    <value>hands ~ a slice of pumpkin pie</value>
+    <value>smacks ~ in the face with a Boston cream pie</value>
   </vars>
   <vars>
     <key>pizza</key>
-    <value>serves a pizza to</value>
+    <value>serves a piping hot pizza to</value>
   </vars>
   <vars>
     <key>poo</key>
-    <value>flings poop at</value>
+    <value>flings so much poop at</value>
   </vars>
   <vars>
     <key>random</key>
@@ -200,7 +200,7 @@
   </vars>
   <vars>
     <key>rubberchicken</key>
-    <value>his ~ with a rubber chicken</value>
+    <value>hits ~ with a rubber chicken</value>
   </vars>
   <vars>
     <key>smite</key>
@@ -216,7 +216,7 @@
   </vars>
   <vars>
     <key>sushi</key>
-    <value>makes ~ a geta of vegan sushi</value>
+    <value>makes ~ a geta of sushi</value>
   </vars>
   <vars>
     <key>tea</key>
