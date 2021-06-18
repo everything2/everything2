@@ -2580,6 +2580,62 @@
         "Action": "lambda:InvokeFunction",
         "SourceArn" : {"Fn::GetAtt" : ["IQMRecalculateCronRule", "Arn"]}
       }
+    },
+    "CleanupOldRoomsFunction": {
+      "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "lambdasource.everything2.com",
+          "S3Key": "cleanup-old-rooms.zip"
+        },
+        "FunctionName": "cleanup-old-rooms",
+        "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
+        "Layers": [
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:16"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
+        ],
+        "Runtime": "provided.al2",
+        "Timeout": "400",
+        "MemorySize": 1024,
+        "Handler": "handler.lambda_handler",
+        "VpcConfig": {
+          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
+          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
+        }
+      }
+    },
+    "CleanupOldRoomsLambdaLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "CleanupOldRoomsFunction"}]]},
+        "RetentionInDays": 3
+      }
+    },
+    "CleanupOldRoomsCronRule": {
+      "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Cron rule to call cleanup old rooms",
+        "Name": "cleanup-old-rooms-cron",
+        "State": "ENABLED",
+        "ScheduleExpression": "cron(30 6 * * ? *)",
+        "Targets": [{
+          "Id": "cleanup-old-rooms-arn",
+          "Arn": {"Fn::GetAtt" : ["CleanupOldRoomsFunction", "Arn"]}
+        }]
+      }
+    },
+    "CleanupOldRoomsLambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName" : {"Ref": "CleanupOldRoomsFunction"},
+        "Principal": "events.amazonaws.com",
+        "Action": "lambda:InvokeFunction",
+        "SourceArn" : {"Fn::GetAtt" : ["CleanupOldRoomsCronRule", "Arn"]}
+      }
     }
   }
 }
