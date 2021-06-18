@@ -158,8 +158,8 @@ sub _skippable_types
 		"recording" => [],
 		"registry" => [],
 
-		# Noders Nursery, M-Noder Washroom, Political Asylum, Valhalla
-		"room" => [553146,553133,553129,545263],
+		# Noders Nursery, M-Noder Washroom, Political Asylum, Valhalla, Debriefing Room
+		"room" => [553146,553133,553129,545263,1973457],
 	};
 }
 
