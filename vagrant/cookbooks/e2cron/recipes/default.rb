@@ -18,29 +18,3 @@ directory logdir do
   action :create
 end
 
-cron 'log_deliver_to_s3.pl' do
-  minute '5'
-  command "/var/everything/tools/log_deliver_to_s3.pl 2>&1 >> #{logdir}/e2cron.log_deliver_to_s3.#{datelog}"
-end
-
-cron 'data_generator_heartbeat.pl' do
-  user "root"
-  command "/var/everything/tools/data_generator_heartbeat.pl 2>&1 >> #{logdir}/data_generator_heartbeat.reaper.#{datelog}"
-end
-
-cron 'data_generator_heartbeat lenghty' do
-  user "root"
-  command "/var/everything/tools/data_generator_heartbeat.pl --lengthy 2>&1 >> #{logdir}/data_generator_lengthy.reaper.#{datelog}"
-  minute 15
-end
-
-# We need this on the bastion. Place a 1g swapfile in the root dir
-#
-bash 'createswap' do
-  creates "/swapfile"
-  code "
-    dd if=/dev/zero of=/swapfile bs=1024 count=1M
-    mkswap /swapfile
-    swapon /swapfile
-  "
-end
