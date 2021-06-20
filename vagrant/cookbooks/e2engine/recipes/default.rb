@@ -15,8 +15,6 @@ Chef::Resource::Bash.send(:include, E2)
 Chef::Resource::File.send(:include, E2)
 
 everythingdir = "/var/everything"
-
-# Minor copy and paste from e2cron
 logdir = "/var/log/everything"
 datelog = "`date +\\%Y\\%m\\%d\\%H`.log"
 
