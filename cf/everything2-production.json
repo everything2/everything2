@@ -2773,7 +2773,7 @@
         "Description": "Cron rule to call writeup reaper",
         "Name": "datastash-processor-cron",
         "State": "ENABLED",
-        "ScheduleExpression": "cron(50 6 * * ? *)",
+        "ScheduleExpression": "cron(* * * * ? *)",
         "Targets": [{
           "Id": "datastash-processor-arn",
           "Arn": {"Fn::GetAtt" : ["DatastashProcessorFunction", "Arn"]}
