@@ -110,7 +110,6 @@ file '/etc/logrotate.d/apache2' do
   notifies :restart, "service[apache2]", :delayed
 end
 
-# Also in e2cron, e2web
 logdir = "/var/log/everything"
 datelog = "`date +\\%Y\\%m\\%d\\%H`.log"
 

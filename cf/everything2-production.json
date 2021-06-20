@@ -882,23 +882,6 @@
         }
       }
     },
-    "E2BastionLayer": {
-      "Type": "AWS::OpsWorks::Layer",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "StackId": {"Ref": "E2ApplicationStack"},
-        "Type": "custom",
-        "Name": "E2 bastion",
-        "Shortname": "e2bastion",
-        "AutoAssignPublicIps": true,
-        "EnableAutoHealing": false,
-        "AutoAssignElasticIps": false,
-        "CustomSecurityGroupIds": [{"Ref": "E2AppBastionSecurityGroup"}],
-        "CustomRecipes": {
-          "Deploy": ["e2engine","e2cron"]
-        }
-      }
-    },
     "E2WebLayer": {
       "Type": "AWS::OpsWorks::Layer",
       "DeletionPolicy": "Retain",
@@ -2602,7 +2585,7 @@
       "Type": "AWS::Events::Rule",
       "DeletionPolicy": "Retain",
       "Properties": {
-        "Description": "Cron rule to call refresh rooms",
+        "Description": "Cron rule to call IQM refresh",
         "Name": "iqm-recalculate-lambda-cron",
         "State": "ENABLED",
         "ScheduleExpression": "cron(10 6 * * ? *)",
