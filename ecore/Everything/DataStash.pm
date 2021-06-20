@@ -33,10 +33,16 @@ sub stash_name
   return $name;
 }
 
+sub update_needed
+{
+  my ($this) = @_;
+  return time() - $this->stash_last_updated > $this->interval;
+}
+
 sub generate_if_needed
 {
   my ($this, $force) = @_;
-  if($force or time() - $this->stash_last_updated > $this->interval)
+  if($force or $this->update_needed)
   {
     $this->generate();
     $this->stash_set_updated();
