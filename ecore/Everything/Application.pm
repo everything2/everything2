@@ -4765,4 +4765,26 @@ sub clean_old_rooms
   }
 }
 
+sub process_reaper_targets
+{
+  my ($this) = @_;
+
+  my $ROW = $this->{db}->getNode('node row','superdoc');
+  my $csr = $this->{db}->sqlSelectMany("*",'weblog', "weblog_id=".$this->{db}->getId($ROW)." and removedby_user=0");
+
+  my $actions = [];
+
+  while (my $LOG = $csr->fetchrow_hashref) {
+    my $U = $this->{db}->getNode($$LOG{linkedby_user});
+    my $N = $this->{db}->getNode($$LOG{to_node});
+    next unless $N;
+    $this->{db}->nukeNode($N, -1);
+    $this->{db}->sqlUpdate("tomb", { killa_user => $$U{node_id} }, "node_id=$$N{node_id}");
+    push(@$actions, {killer => $U->{node_id}, node => $N->{node_id}});
+  }
+
+  $this->{db}->sqlDelete("weblog", "weblog_id=".$this->{db}->getId($ROW)." and UNIX_TIMESTAMP(now())-UNIX_TIMESTAMP(linkedtime) > 24*360"); 
+  return $actions;
+}
+
 1;
