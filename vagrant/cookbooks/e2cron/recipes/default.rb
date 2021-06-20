@@ -23,13 +23,6 @@ cron 'log_deliver_to_s3.pl' do
   command "/var/everything/tools/log_deliver_to_s3.pl 2>&1 >> #{logdir}/e2cron.log_deliver_to_s3.#{datelog}"
 end
 
-cron 'reaper.pl' do
-  user "root"
-  minute "50"
-  hour "6"
-  command "/var/everything/tools/reaper.pl 2>&1 >> #{logdir}/e2cron.reaper.#{datelog}"
-end
-
 cron 'data_generator_heartbeat.pl' do
   user "root"
   command "/var/everything/tools/data_generator_heartbeat.pl 2>&1 >> #{logdir}/data_generator_heartbeat.reaper.#{datelog}"

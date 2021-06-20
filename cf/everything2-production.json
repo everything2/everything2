@@ -2202,8 +2202,8 @@
         "FunctionName": "sitemap-batch-dispatcher",
         "Role": {"Fn::GetAtt" : ["SitemapBatchDispatcherLambdaRole", "Arn"]},
         "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:11"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:42"]]}
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:17"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
         ],
         "Runtime": "provided.al2",
         "Timeout": "400",
@@ -2225,8 +2225,8 @@
         "FunctionName": "sitemap-batch-processor",
         "Role": {"Fn::GetAtt" : ["SitemapBatchProcessorLambdaRole", "Arn"]},
         "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:11"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:42"]]}
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:17"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
         ],
         "Runtime": "provided.al2",
         "Timeout": "600",
@@ -2424,8 +2424,8 @@
         "FunctionName": "refresh-rooms",
         "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
         "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:12"]]},
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:42"]]}
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:17"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
         ],
         "Runtime": "provided.al2",
         "Timeout": "400",
@@ -2480,7 +2480,7 @@
         "FunctionName": "chatterbox-cleanup",
         "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
         "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:12"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:17"]]},
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
         ],
         "Runtime": "provided.al2",
@@ -2536,7 +2536,7 @@
         "FunctionName": "iqm-recalculate",
         "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
         "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:15"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:17"]]},
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
         ],
         "Runtime": "provided.al2",
@@ -2592,7 +2592,7 @@
         "FunctionName": "cleanup-old-rooms",
         "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
         "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:16"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:17"]]},
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
         ],
         "Runtime": "provided.al2",
@@ -2635,6 +2635,62 @@
         "Principal": "events.amazonaws.com",
         "Action": "lambda:InvokeFunction",
         "SourceArn" : {"Fn::GetAtt" : ["CleanupOldRoomsCronRule", "Arn"]}
+      }
+    },
+    "WriteupReaperFunction": {
+      "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "lambdasource.everything2.com",
+          "S3Key": "writeup-reaper.zip"
+        },
+        "FunctionName": "writeup-reaper",
+        "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
+        "Layers": [
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:17"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
+        ],
+        "Runtime": "provided.al2",
+        "Timeout": "400",
+        "MemorySize": 1024,
+        "Handler": "handler.lambda_handler",
+        "VpcConfig": {
+          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
+          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
+        }
+      }
+    },
+    "WriteupReaperLambdaLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "WriteupReaperFunction"}]]},
+        "RetentionInDays": 3
+      }
+    },
+    "WriteupReaperCronRule": {
+      "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Cron rule to call writeup reaper",
+        "Name": "writeup-reaper-cron",
+        "State": "ENABLED",
+        "ScheduleExpression": "cron(50 6 * * ? *)",
+        "Targets": [{
+          "Id": "writeup-reaper-arn",
+          "Arn": {"Fn::GetAtt" : ["WriteupReaperFunction", "Arn"]}
+        }]
+      }
+    },
+    "WriteupReaperLambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName" : {"Ref": "WriteupReaperFunction"},
+        "Principal": "events.amazonaws.com",
+        "Action": "lambda:InvokeFunction",
+        "SourceArn" : {"Fn::GetAtt" : ["WriteupReaperCronRule", "Arn"]}
       }
     }
   }
