@@ -2202,7 +2202,7 @@
         "FunctionName": "sitemap-batch-dispatcher",
         "Role": {"Fn::GetAtt" : ["SitemapBatchDispatcherLambdaRole", "Arn"]},
         "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:17"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
         ],
         "Runtime": "provided.al2",
@@ -2225,7 +2225,7 @@
         "FunctionName": "sitemap-batch-processor",
         "Role": {"Fn::GetAtt" : ["SitemapBatchProcessorLambdaRole", "Arn"]},
         "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:17"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
         ],
         "Runtime": "provided.al2",
@@ -2413,6 +2413,47 @@
         "RoleName": "Database-Only-Lambda-Role"
       }
     },
+    "DatastashLengthyProcessorInvokerPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows the datastash processor to invoke a lengthy function if needed",
+        "ManagedPolicyName": "DatastashLengthyProcessorInvokerPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "lambda:InvokeFunction",
+            "Resource": {"Fn::GetAtt" : ["DatastashLengthyProcessorFunction", "Arn"]}
+          }]
+        }
+      }
+    },
+    "DatastashProcessorLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "lambda.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Description": "Role for Lambdas that only interact with the database",
+        "ManagedPolicyArns": [
+            "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+            {"Ref": "VPCLambdaCreateInterfacePolicy"},
+            {"Ref": "E2MasterPasswordReadPolicy"},
+            {"Ref": "CloudWatchEventsWritePolicy"},
+            {"Ref": "DatastashLengthyProcessorInvokerPolicy"}
+        ],
+        "Path": "/",
+        "RoleName": "Datastash-Processor-Lambda-Role"
+      }
+    },
     "RefreshRoomsFunction": {
       "Type": "AWS::Lambda::Function",
       "DeletionPolicy": "Retain",
@@ -2424,7 +2465,7 @@
         "FunctionName": "refresh-rooms",
         "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
         "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:17"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
         ],
         "Runtime": "provided.al2",
@@ -2480,7 +2521,7 @@
         "FunctionName": "chatterbox-cleanup",
         "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
         "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:17"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
         ],
         "Runtime": "provided.al2",
@@ -2536,7 +2577,7 @@
         "FunctionName": "iqm-recalculate",
         "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
         "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:17"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
         ],
         "Runtime": "provided.al2",
@@ -2592,7 +2633,7 @@
         "FunctionName": "cleanup-old-rooms",
         "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
         "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:17"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
         ],
         "Runtime": "provided.al2",
@@ -2648,7 +2689,7 @@
         "FunctionName": "writeup-reaper",
         "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
         "Layers": [
-          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:17"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
           {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
         ],
         "Runtime": "provided.al2",
@@ -2691,6 +2732,94 @@
         "Principal": "events.amazonaws.com",
         "Action": "lambda:InvokeFunction",
         "SourceArn" : {"Fn::GetAtt" : ["WriteupReaperCronRule", "Arn"]}
+      }
+    },
+    "DatastashProcessorFunction": {
+      "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "lambdasource.everything2.com",
+          "S3Key": "datastash-processor.zip"
+        },
+        "FunctionName": "datastash-processor",
+        "Role": {"Fn::GetAtt" : ["DatastashProcessorLambdaRole", "Arn"]},
+        "Layers": [
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
+        ],
+        "Runtime": "provided.al2",
+        "Timeout": "400",
+        "MemorySize": 1024,
+        "Handler": "handler.lambda_handler",
+        "VpcConfig": {
+          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
+          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
+        }
+      }
+    },
+    "DatastashProcessorLambdaLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "DatastashProcessorFunction"}]]},
+        "RetentionInDays": 3
+      }
+    },
+    "DatastashProcessorCronRule": {
+      "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Cron rule to call writeup reaper",
+        "Name": "datastash-processor-cron",
+        "State": "ENABLED",
+        "ScheduleExpression": "cron(50 6 * * ? *)",
+        "Targets": [{
+          "Id": "datastash-processor-arn",
+          "Arn": {"Fn::GetAtt" : ["DatastashProcessorFunction", "Arn"]}
+        }]
+      }
+    },
+    "DatastashProcessorLambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName" : {"Ref": "DatastashProcessorFunction"},
+        "Principal": "events.amazonaws.com",
+        "Action": "lambda:InvokeFunction",
+        "SourceArn" : {"Fn::GetAtt" : ["DatastashProcessorCronRule", "Arn"]}
+      }
+    },
+    "DatastashLengthyProcessorFunction": {
+      "Type": "AWS::Lambda::Function",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "lambdasource.everything2.com",
+          "S3Key": "datastash-lengthy-processor.zip"
+        },
+        "FunctionName": "datastash-lengthy-processor",
+        "Role": {"Fn::GetAtt" : ["DatabaseOnlyLambdaRole", "Arn"]},
+        "Layers": [
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-library-layer:18"]]},
+          {"Fn::Join": ["",["arn:aws:lambda:us-west-2:",{"Ref": "AWS::AccountId"},":layer:e2-perl-layer:43"]]}
+        ],
+        "Runtime": "provided.al2",
+        "Timeout": "400",
+        "MemorySize": 1024,
+        "Handler": "handler.lambda_handler",
+        "VpcConfig": {
+          "SecurityGroupIds": [{ "Fn::GetAtt": [ "LambdaSecurityGroup", "GroupId"] }],
+          "SubnetIds": [{"Ref": "AppVPCSubnet3"}]
+        }
+      }
+    },
+    "DatastashLengthyProcessorLambdaLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": {"Fn::Join": ["", ["/aws/lambda/", {"Ref": "DatastashLengthyProcessorFunction"}]]},
+        "RetentionInDays": 3
       }
     }
   }
