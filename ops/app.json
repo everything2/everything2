@@ -33,8 +33,7 @@
   "frontend_elb_security_group": "E2-App-Frontend-Security-Group",
   "webhead_security_group": "E2-App-Webhead-Security-Group",
   "bastion_security_group": "E2-App-Bastion-Security-Group",
-  "bastion_recipes": ["e2engine","e2cron"],
-  "webhead_recipes": ["e2engine","e2web"],
+  "webhead_recipes": ["e2engine"],
   "rds_db_subnet_group_name": "E2-App-DB-Subnet-Group",
   "homenodeimage_s3_bucket": "hnimagew.everything2.com"
 }
