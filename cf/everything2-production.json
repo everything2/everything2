@@ -895,7 +895,7 @@
         "AutoAssignElasticIps": false,
         "CustomSecurityGroupIds": [{"Ref": "E2AppBastionSecurityGroup"}, {"Ref": "E2AppWebheadSecurityGroup"}],
         "CustomRecipes": {
-          "Deploy": ["e2engine","e2web"]
+          "Deploy": ["e2engine"]
         }
       }
     },
