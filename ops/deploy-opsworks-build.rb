@@ -3,8 +3,6 @@
 $LOAD_PATH.unshift('lib')
 require 'aws-sdk'
 require 'e2/utils'
-require 'getoptlong'
-
 
 e2util = E2::Utils.new
 
