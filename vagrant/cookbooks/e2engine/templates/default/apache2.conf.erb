@@ -21,7 +21,7 @@ Group ${APACHE_RUN_GROUP}
 
 ##### LOGGING #####
 # CENTRAL ERROR LOG
-ErrorLog ${APACHE_LOG_DIR}/error.log
+ErrorLog "|/usr/bin/rotatelogs -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600"
 # DEFAULT LOG LEVEL
 LogLevel warn
 # FILTER OUT THESE LOGS IN APACHE
@@ -31,12 +31,8 @@ SetEnvIf Remote_Addr "127\.0\.0\.1" dontlog
 SetEnvIf Request_URI "^/server_live\.html$" dontlog
 SetEnvIf Request_URI "favicon.ico$" dontlog
 SetEnvIf Request_URI "^/robots\.txt$" dontlog
-# E2 IS BEHING PROXY SO %h WAS CHANGED TO %{X-Forwarded-For}i
-LogFormat "%v:%p %{X-Forwarded-For}i %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" vhost_combined
+
 LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" combined
-LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %O" common
-LogFormat "%{Referer}i -> %U" referer
-LogFormat "%{User-agent}i" agent
 
 ##### E2 CUSTOM SETTINGS #####
 UseCanonicalName On

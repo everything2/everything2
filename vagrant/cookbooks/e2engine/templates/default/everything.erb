@@ -97,14 +97,6 @@ coreconfig+="
                 deny from env=denyip
         </Directory>
 
-	ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
-	<Directory \"/usr/lib/cgi-bin\">
-		AllowOverride None
-		Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
-		Order allow,deny
-		Allow from all
-	</Directory>
-
 	# NORMAL LOGS
 	ErrorLog \"|#{rotatelogs} -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600\"
 	# Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
