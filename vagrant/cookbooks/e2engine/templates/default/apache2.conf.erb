@@ -21,6 +21,7 @@ Group ${APACHE_RUN_GROUP}
 
 ##### LOGGING #####
 # CENTRAL ERROR LOG
+ErrorLogFormat "{\"time\":\"%{%usec_frac}t\", \"function\" : \"[%-m:%l]\", \"process\" : \"[pid%P]\" ,\"message\" : \"%M\"}"
 ErrorLog "|/usr/bin/rotatelogs -f /var/log/apache2/e2.error.%Y%m%d%H.log 3600"
 # DEFAULT LOG LEVEL
 LogLevel warn
@@ -32,7 +33,7 @@ SetEnvIf Request_URI "^/server_live\.html$" dontlog
 SetEnvIf Request_URI "favicon.ico$" dontlog
 SetEnvIf Request_URI "^/robots\.txt$" dontlog
 
-LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" combined
+LogFormat "{\"time\":\"%{%Y-%m-%d}tT%{%T}t.%{msec_frac}tZ\",\"process\":\"%D\",\"filename\":\"%f\",\"remoteIP\":\"%{X-Forwarded-For}i\",\"host\":\"%V\",\"request\":\"%U\",\"query\":\"%q\",\"method\":\"%m\",\"status\":\"%>s\",\"userAgent\":\"%{User-agent}i\",\"referer\":\"%{Referer}i\"}" cloudwatch
 
 ##### E2 CUSTOM SETTINGS #####
 UseCanonicalName On
