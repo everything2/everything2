@@ -102,7 +102,7 @@ coreconfig+="
 	# Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
 	LogLevel warn
 
-	CustomLog \"|#{rotatelogs} -f /var/log/apache2/e2.access.%Y%m%d%H.log 3600\" combined env=!dontlog
+	CustomLog \"|#{rotatelogs} -f /var/log/apache2/e2.access.%Y%m%d%H.log 3600\" cloudwatch env=!dontlog
 	ServerSignature On"
 
 %>
