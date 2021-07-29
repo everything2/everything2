@@ -75,7 +75,9 @@ to_install = [
     'ruby',
     'ruby-dev',
     'ruby-bundler',
-    'build-essential'
+    'build-essential',
+# Needed for serverless build testing
+    'openssl-dev'
 ]
 
 to_install.each do |p|

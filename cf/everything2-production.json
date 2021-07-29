@@ -542,11 +542,11 @@
           {"Ref": "E2AppRDSAddOnly"},
           {"Ref": "E2AppHelperBucketsWritePolicy"},
           {"Ref": "E2AppMailerPolicy"},
-          {"Ref": "E2AppServerSecretsAccessPolicy"},
+          {"Ref": "E2AppSecretsAccessPolicy"},
           {"Ref": "E2AppServerSNSPolicy"},
-          {"Ref": "E2MasterPasswordReadPolicy"},
           {"Ref": "E2AppOpsworksRegistrationPolicy"},
-          {"Ref": "CloudWatchEventsWritePolicy"}
+          {"Ref": "CloudWatchEventsWritePolicy"},
+          "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
         ],
         "Path": "/",
         "RoleName": "E2-App-Server"
@@ -652,11 +652,6 @@
           {
             "Effect": "Allow",
             "Action": ["s3:PutObject","s3:DeleteObject"],
-            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SitemapS3Bucket", "Arn"] }, "/*"]]}
-          },
-          {
-            "Effect": "Allow",
-            "Action": ["s3:PutObject","s3:DeleteObject"],
             "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "BackupS3Bucket", "Arn"] }, "/*"]]}
           },
           {
@@ -675,20 +670,15 @@
         "TopicName": "database-backup-complete"
       }
     },
-    "E2AppServerSecretsAccessPolicy": {
+    "E2AppSecretsAccessPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
       "DeletionPolicy": "Retain",
       "Properties": {
         "Description": "Allows app worker to read the appropriate secrets",
-        "ManagedPolicyName": "E2AppServerSecretsAccessPolicy",
+        "ManagedPolicyName": "E2AppSecretsAccessPolicy",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
-            {
-              "Effect": "Allow",
-              "Action": "s3:GetObject",
-              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SecretsS3Bucket", "Arn"] }, "/database_password_secret"]]}
-            },
             {
               "Effect": "Allow",
               "Action": "s3:GetObject",
@@ -713,6 +703,16 @@
               "Effect": "Allow",
               "Action": "s3:GetObject",
               "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SecretsS3Bucket", "Arn"] }, "/banned_ipblocks_secret"]]}
+            },
+            {
+              "Effect": "Allow",
+              "Action": "secretsmanager:GetSecretValue",
+              "Resource": {"Ref": "E2DBMasterPassword"}
+            },
+            {
+              "Effect": "Allow",
+              "Action": "secretsmanager:ListSecrets",
+              "Resource": "*"
             }
           ]
         }
@@ -828,28 +828,6 @@
         "SecretId": {"Ref": "E2DBMasterPassword" },
         "TargetId": {"Ref": "EverythingDB"},
         "TargetType": "AWS::RDS::DBInstance"
-      }
-    },
-    "E2MasterPasswordReadPolicy": {
-      "Type": "AWS::IAM::ManagedPolicy",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Allows E2 machines to access the master database secret",
-        "ManagedPolicyName": "E2MasterPasswordReadPolicy",
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-          {
-            "Effect": "Allow",
-            "Action": "secretsmanager:GetSecretValue",
-            "Resource": {"Ref": "E2DBMasterPassword"} 
-          },
-          {
-            "Effect": "Allow",
-            "Action": "secretsmanager:ListSecrets",
-            "Resource": "*"
-          }]
-        }
       }
     },
     "E2AppInstanceProfile": {
@@ -2114,7 +2092,7 @@
             {"Ref": "VPCLambdaCreateInterfacePolicy"},
             {"Ref": "SitemapBatcherBucketWritePolicy"},
             {"Ref": "SitemapProcessorInvokerPolicy"},
-            {"Ref": "E2MasterPasswordReadPolicy"},
+            {"Ref": "E2AppSecretsAccessPolicy"},
             {"Ref": "SitemapLambdaQueueSend"},
             {"Ref": "CloudWatchEventsWritePolicy"}
         ],
@@ -2139,7 +2117,7 @@
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
             {"Ref": "VPCLambdaCreateInterfacePolicy"},
             {"Ref": "SitemapBatcherBucketProcessorPolicy"},
-            {"Ref": "E2MasterPasswordReadPolicy"},
+            {"Ref": "E2AppSecretsAccessPolicy"},
             {"Ref": "SitemapLambdaQueueSend"},
             {"Ref": "CloudWatchEventsWritePolicy"},
             {"Ref": "SitemapBucketWritePolicy"}
@@ -2389,7 +2367,7 @@
         "ManagedPolicyArns": [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
             {"Ref": "VPCLambdaCreateInterfacePolicy"},
-            {"Ref": "E2MasterPasswordReadPolicy"},
+            {"Ref": "E2AppSecretsAccessPolicy"},
             {"Ref": "CloudWatchEventsWritePolicy"}
         ],
         "Path": "/",
@@ -2429,7 +2407,7 @@
         "ManagedPolicyArns": [
             "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
             {"Ref": "VPCLambdaCreateInterfacePolicy"},
-            {"Ref": "E2MasterPasswordReadPolicy"},
+            {"Ref": "E2AppSecretsAccessPolicy"},
             {"Ref": "CloudWatchEventsWritePolicy"},
             {"Ref": "DatastashLengthyProcessorInvokerPolicy"}
         ],
