@@ -558,7 +558,7 @@
           "Statement": [
           {
             "Effect": "Allow",
-            "Action": "ssm:GetParameter",
+            "Action": "ssm:PutParameter",
             "Resource": "arn:aws:ssm:*:*:parameter/AmazonCloudWatch-*"
           }]
         }
