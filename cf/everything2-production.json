@@ -120,28 +120,6 @@
         "AccessControl": "PublicRead"
       }
     },
-    "E2AppS3UploadOnlyPolicy": {
-      "Type": "AWS::IAM::ManagedPolicy",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "Description": "Allows E2 machines to upload to certain buckets",
-        "ManagedPolicyName": "E2AppS3UploadOnlyPolicy",
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-          {
-            "Effect": "Allow",
-            "Action": "s3:PutObject",
-            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "HomenodeImagesS3Bucket", "Arn"] }, "/*"]]}
-          },
-          {
-            "Effect": "Allow",
-            "Action": "s3:PutObject",
-            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "JSCSSBucket", "Arn"] }, "/*"]]}
-          }]
-        }
-      }
-    },
     "E2AppRDSAddOnly": {
       "Type": "AWS::IAM::ManagedPolicy",
       "DeletionPolicy": "Retain",
@@ -538,14 +516,14 @@
         "Description": "Everything2 Application Web Server",
         "ManagedPolicyArns": [
           {"Ref": "E2AppELBAddPolicy"},
-          {"Ref": "E2AppS3UploadOnlyPolicy"},
           {"Ref": "E2AppRDSAddOnly"},
-          {"Ref": "E2AppHelperBucketsWritePolicy"},
+          {"Ref": "E2AppS3Policy"},
           {"Ref": "E2AppMailerPolicy"},
           {"Ref": "E2AppSecretsAccessPolicy"},
           {"Ref": "E2AppServerSNSPolicy"},
           {"Ref": "E2AppOpsworksRegistrationPolicy"},
           {"Ref": "CloudWatchEventsWritePolicy"},
+          {"Ref": "SSMPutParameterPolicy"},
           "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
         ],
         "Path": "/",
@@ -565,6 +543,23 @@
             "Effect": "Allow",
             "Action": "events:PutEvents",
             "Resource": "*"
+          }]
+        }
+      }
+    },
+    "SSMPutParameterPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows the app components to write to SSM parameters",
+        "ManagedPolicyName": "SSMPutParameterPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "ssm:GetParameter",
+            "Resource": "arn:aws:ssm:*:*:parameter/AmazonCloudWatch-*"
           }]
         }
       }
@@ -640,12 +635,12 @@
         "RoleName": "E2-OpsWorks-Service-Role-2"
       }
     },
-    "E2AppHelperBucketsWritePolicy": {
+    "E2AppS3Policy": {
       "Type": "AWS::IAM::ManagedPolicy",
       "DeletionPolicy": "Retain",
       "Properties": {
-        "Description": "Allows E2 machines to upload to the various helper buckets",
-        "ManagedPolicyName": "E2AppHelperBucketsWritePolicy",
+        "Description": "Allows E2 machines to interact with various S3 buckets",
+        "ManagedPolicyName": "E2AppS3Policy",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -658,6 +653,16 @@
             "Effect": "Allow",
             "Action": ["s3:PutObject","s3:DeleteObject","s3:GetObject"],
             "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "NodeBackupBucket", "Arn"] }, "/*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "s3:PutObject",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "HomenodeImagesS3Bucket", "Arn"] }, "/*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "s3:PutObject",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "JSCSSBucket", "Arn"] }, "/*"]]}
           }]
         }
       }
