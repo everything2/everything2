@@ -298,6 +298,11 @@ directory logdir do
   notifies :restart, "service[apache2]", :delayed
 end
 
+bash 'Install Cloudwatch Agent' do
+  user 'root'
+  code '/var/everything/tools/cloudwatch-agent-installer.rb'
+end
+
 cron 'log_deliver_to_s3.pl' do
   minute '5'
   command "/var/everything/tools/log_deliver_to_s3.pl 2>&1 >> #{logdir}/e2cron.log_deliver_to_s3.#{datelog}"
