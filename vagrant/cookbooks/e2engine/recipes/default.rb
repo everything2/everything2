@@ -141,7 +141,7 @@ end
 end
 
 unless node['override_configuration'].eql? 'development'
-  ['database_password_secret','recaptcha_v3_secret','infected_ips_secret'].each do |secret|
+  ['recaptcha_v3_secret','infected_ips_secret'].each do |secret|
     Chef::Log.info("Seeding secret: #{secret}")
     bash "Seeding secret: #{secret}" do
       code "/var/everything/tools/fetch_secret.rb --secret=#{secret}"
