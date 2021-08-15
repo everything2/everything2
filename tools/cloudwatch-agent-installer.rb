@@ -39,13 +39,8 @@ else
   `dpkg -i #{full_debname}`
 end
 
-config_location = '/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.d/config.json'
-puts "Installing configuration file"
-`cp #{agent_config} #{config_location}`
-`rm /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.d/default.tmp`
-
 puts "Restarting agent"
 agent_ctl = '/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl'
-`#{agent_ctl} -a stop`
-`#{agent_ctl} -a remove-config -c default:`
-`#{agent_ctl} -a append-config -c #{config_location} -s`
+puts `#{agent_ctl} -a stop`
+puts `#{agent_ctl} -a append-config -c file:#{agent_config}`
+puts `#{agent_ctl} -a start`
