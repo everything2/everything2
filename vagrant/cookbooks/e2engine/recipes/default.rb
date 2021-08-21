@@ -77,7 +77,9 @@ to_install = [
     'ruby-bundler',
     'build-essential',
 # Needed for serverless build testing
-    'libssl1.0-dev'
+    'libssl1.0-dev',
+# Needed for Cloudwatch agent
+    'collectd'
 ]
 
 to_install.each do |p|
