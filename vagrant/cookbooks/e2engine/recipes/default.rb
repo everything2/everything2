@@ -79,7 +79,9 @@ to_install = [
 # Needed for serverless build testing
     'libssl1.0-dev',
 # Needed for Cloudwatch agent
-    'collectd'
+    'collectd',
+# Needed for minification testing
+    'nodejs'
 ]
 
 to_install.each do |p|
