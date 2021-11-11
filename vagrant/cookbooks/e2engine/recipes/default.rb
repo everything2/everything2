@@ -80,6 +80,7 @@ to_install = [
     'libssl1.0-dev',
     'libncurses5-dev',
     'zlib1g-dev',
+    'pkg-config',
 # Needed for Cloudwatch agent
     'collectd',
 # Needed for minification testing
