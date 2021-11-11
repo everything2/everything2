@@ -79,6 +79,7 @@ to_install = [
 # Needed for serverless build testing
     'libssl1.0-dev',
     'libncurses5-dev',
+    'zlib1g-dev',
 # Needed for Cloudwatch agent
     'collectd',
 # Needed for minification testing
