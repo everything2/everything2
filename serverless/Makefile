@@ -9,6 +9,7 @@ LIBXMLVER=2.9.10
 LIBJPEGVER=1.5.3
 NASMVER=2.15.05
 PNGVER=1.5.30
+EXPATVER=2.4.1
 
 INSTALL=$(shell pwd)/install
 PERL=$(INSTALL)/bin/perl
@@ -51,6 +52,10 @@ $(PERL): 3rd/perl-$(PERLVER).tar.bz2
 	touch $@
 
 
+expat.build: 3rd/expat-$(EXPATVER).tar.bz2
+	mkdir -p build && cd build && tar xjf ../3rd/expat-$(EXPATVER).tar.bz2 && cd expat-$(EXPATVER) && ./configure --prefix=$(INSTALL) && make && make install
+	touch $@
+
 mysql.build: $(CMAKE) 3rd/mysql-boost-$(MYSQLVER).tar.gz $(BOOSTUNZIP)
 	mkdir -p build && cd build && tar xzf ../3rd/mysql-boost-$(MYSQLVER).tar.gz && cd mysql-$(MYSQLVER) && $(CMAKE) -DDOWNLOAD_BOOST_TIMEOUT=6000 -DWITHOUT_SERVER=1 -DFORCE_INSOURCE_BUILD=1 -DCMAKE_INSTALL_PREFIX=$(INSTALL) -DLOCAL_BOOST_DIR=../boost_$(BOOSTVER) ../mysql-$(MYSQLVER) && make && make install
 	touch $@
@@ -79,7 +84,7 @@ magick.build: 3rd/ImageMagick-$(MAGICKVER).tar.gz $(PERL) jpeg.build png.build
 	mkdir -p build && cd build && tar xzf ../3rd/ImageMagick-$(MAGICKVER).tar.gz && cd ImageMagick-$(MAGICKVER) && ./configure --prefix=$(INSTALL) --with-perl=$(PERL) --with-x=no --enable-openmp=no --without-pango --without-webp --without-fontconfig --without-freetype && make && make install && $(PERL) -MImage::Magick -le 'print Image::Magick->QuantumDepth'
 	touch $@
 
-deps.build: $(PERL) mysql.build libxml2.build magick.build
+deps.build: $(PERL) mysql.build libxml2.build magick.build expat.build
 	PATH=$(INSTALL)/bin/:$(PATH) $(PERL) ../tools/createdeps.pl --depfile=$(shell pwd)/deplists/app.json --dldir=$(shell pwd)/3rd --installdir=$(shell pwd)/install --builddir=$(shell pwd)/build && touch $@
 
 jpeg.build: 3rd/libjpeg-turbo-$(LIBJPEGVER).tar.gz nasm.build
@@ -97,6 +102,10 @@ p7zip.build: 3rd/p7zip_$(P7ZIPVER)_src_all.tar.bz2
 
 nasm.build: 3rd/nasm-$(NASMVER).tar.gz
 	mkdir -p build && cd build && tar xzf ../3rd/nasm-$(NASMVER).tar.gz && cd nasm-$(NASMVER) && ./configure --prefix=$(INSTALL) && make && make install
+	touch $@
+
+3rd/expat-$(EXPATVER).tar.bz2:
+	mkdir -p 3rd && cd 3rd && wget https://github.com/libexpat/libexpat/releases/download/R_$(shell echo $(EXPATVER) | sed -e 's/\./_/g')/expat-$(EXPATVER).tar.bz2
 	touch $@
 
 3rd/p7zip_$(P7ZIPVER)_src_all.tar.bz2:
@@ -133,7 +142,7 @@ nasm.build: 3rd/nasm-$(NASMVER).tar.gz
 	touch $@
 
 lightclean:
-	rm -rf install/* *.build nytprof.* *.log inc *.unzip *.zip build.output
+	rm -rf install/* *.build nytprof.* *.log inc *.unzip *.zip build.output inc lib
 
 clean: lightclean
 	rm -rf build/* 7za
