@@ -78,6 +78,7 @@ to_install = [
     'build-essential',
 # Needed for serverless build testing
     'libssl1.0-dev',
+    'libncurses5-dev',
 # Needed for Cloudwatch agent
     'collectd',
 # Needed for minification testing
