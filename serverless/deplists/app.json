@@ -438,7 +438,8 @@
   },
   {
     "file": "https://cpan.metacpan.org/authors/id/T/TO/TODDR/XML-Parser-2.46.tar.gz",
-    "module": "XML::Parser"
+    "module": "XML::Parser",
+    "extra": "EXPATLIBPATH=$installdir/lib EXPATINCPATH=$installdir/include"
   },
   {
     "file": "https://cpan.metacpan.org/authors/id/B/BJ/BJOERN/XML-SAX-Expat-0.51.tar.gz",
