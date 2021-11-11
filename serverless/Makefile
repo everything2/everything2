@@ -125,7 +125,7 @@ nasm.build: 3rd/nasm-$(NASMVER).tar.gz
 	touch $@
 
 3rd/libpng-$(PNGVER).tar.gz:
-	mkdir -p 3rd && cd 3rd && wget https://managedway.dl.sourceforge.net/project/libpng/libpng15/$(PNGVER)/libpng-$(PNGVER).tar.gz
+	mkdir -p 3rd && cd 3rd && wget https://cfhcable.dl.sourceforge.net/project/libpng/libpng15/$(PNGVER)/libpng-$(PNGVER).tar.gz
 	touch $@
 
 3rd/nasm-$(NASMVER).tar.gz:
