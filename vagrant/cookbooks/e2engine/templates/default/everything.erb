@@ -108,10 +108,12 @@ coreconfig+="
 %>
 PerlSwitches -I/var/everything/ecore -I/var/libraries/lib/perl5
 ServerName everything2.com
+Listen 80
 <VirtualHost *:80>
 <%=coreconfig %>
 </VirtualHost>
 <IfModule mod_ssl.c>
+Listen 443
 <VirtualHost _default_:443>
 	SSLEngine on
 	SSLCertificateFile    /etc/apache2/e2.cert

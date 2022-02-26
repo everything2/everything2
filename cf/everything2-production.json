@@ -112,6 +112,13 @@
         "AccessControl": "PublicRead"
       }
     },
+    "SitemapS3BucketNamespaced": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {"Fn::Join" : ["-",["sitemap.everything2.com", {"Fn::Select": [4,{"Fn::Split": ["-", {"Fn::Select": [2,{"Fn::Split": ["/",{"Ref": "AWS::StackId"}]}]}]}]}]]},
+        "AccessControl": "PublicRead"
+      }
+    },
     "JSCSSBucket": {
       "Type": "AWS::S3::Bucket",
       "DeletionPolicy": "Retain",
