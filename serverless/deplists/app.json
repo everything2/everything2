@@ -1044,6 +1044,14 @@
     "module": "Config::INI"
   },
   {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/DateTime-Format-Builder-0.83.tar.gz",
+    "module": "DateTime::Format::Builder"
+  },
+  {
+    "file": "https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/DateTime-Format-ISO8601-0.16.tar.gz",
+    "module": "DateTime::Format::ISO8601"
+  },
+  {
     "file": "https://cpan.metacpan.org/authors/id/J/JL/JLMARTIN/Paws-0.42.tar.gz",
     "module": "Paws"
   }
