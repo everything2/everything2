@@ -289,6 +289,11 @@ bash "Generate self-signed certs" do
   code "/var/everything/tools/generate-self-signed-cert.rb"
 end
 
+bash "Clean old apache2 elements" do
+  code "rm -rf /etc/apache2/sites-available /etc/apache2/sites-enabled /etc/apache2/ports.conf"
+  user "root"
+end
+
 file '/etc/logrotate.d/apache2' do
   action "delete"
   notifies :restart, "service[apache2]", :delayed
