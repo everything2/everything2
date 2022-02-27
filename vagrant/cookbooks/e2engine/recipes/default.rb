@@ -84,7 +84,11 @@ to_install = [
 # Needed for Cloudwatch agent
     'collectd',
 # Needed for minification testing
-    'nodejs'
+    'nodejs',
+# The basics
+    'apache2',
+    'libapache2-mod-perl2',
+    'build-essential'
 ]
 
 to_install.each do |p|
@@ -190,16 +194,6 @@ unless node['override_configuration'].eql? 'development'
   end
 else
   Chef::Log.info('Not in production, not doing instance registrations')
-end
-
-to_install = [
-    'apache2',
-    'libapache2-mod-perl2',
-    'build-essential'
-]
-
-to_install.each do |p|
-  package p
 end
 
 unless node['override_configuration'].eql? 'development'
@@ -313,6 +307,11 @@ end
 bash 'Install Cloudwatch Agent' do
   user 'root'
   code '/var/everything/tools/cloudwatch-agent-installer.rb'
+end
+
+bash 'Make 4g of swap' do
+  user 'root'
+  code '/var/everything/tools/mkswap.sh'
 end
 
 cron 'log_deliver_to_s3.pl' do
