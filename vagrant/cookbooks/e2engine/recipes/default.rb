@@ -185,16 +185,16 @@ else
   end
 end
 
-unless node['override_configuration'].eql? 'development'
-  Chef::Log.info('In production, doing instance registrations')
-  Chef::Log.info('Setting up ingress to production DB')
-
-  bash "AWS: Register instance with db security group" do
-    code "/var/everything/tools/aws_registration.rb --db"
-  end
-else
-  Chef::Log.info('Not in production, not doing instance registrations')
-end
+#unless node['override_configuration'].eql? 'development'
+#  Chef::Log.info('In production, doing instance registrations')
+#  Chef::Log.info('Setting up ingress to production DB')
+#
+#  bash "AWS: Register instance with db security group" do
+#    code "/var/everything/tools/aws_registration.rb --db"
+#  end
+#else
+#  Chef::Log.info('Not in production, not doing instance registrations')
+#end
 
 unless node['override_configuration'].eql? 'development'
   ['banned_user_agents_secret','banned_ips_secret','banned_ipblocks_secret'].each do |secret|
