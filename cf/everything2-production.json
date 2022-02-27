@@ -965,11 +965,11 @@
       "Properties": {
         "AutoScalingGroupName": "E2-App-Opsworks-Scaling-Group",
         "AvailabilityZones": [{"Fn::GetAtt": ["AppVPCSubnet1", "AvailabilityZone"]}],
-        "MinSize": 0,
-        "MaxSize": 0,
+        "MinSize": 1,
+        "MaxSize": 2,
         "Cooldown": 1200,
         "HealthCheckGracePeriod": 1200,
-	"DesiredCapacity": 0,
+	"DesiredCapacity": 1,
         "HealthCheckType": "ELB",
         "LaunchTemplate": {
           "LaunchTemplateId": {"Ref": "E2OpsworksLaunchTemplate"},
