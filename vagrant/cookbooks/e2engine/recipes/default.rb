@@ -229,15 +229,6 @@ load_modules.each do |apache_mod|
   end
 end
 
-directory "/etc/apache2/conf.d/" do
-  owner "www-data"
-  group "root"
-  mode 0755
-  action :create
-end
-
-confdir = '/etc/apache2/conf.d'
-
 template "/etc/apache2/everything.conf" do
   owner "root"
   group "root"
@@ -266,12 +257,6 @@ template '/etc/apache2/apache2.conf' do
   variables(node["e2engine"])
 end
 
-
-file "#{confdir}/everything" do
-  action "delete"
-  notifies :restart, "service[apache2]", :delayed
-end
-
 bash "Generate self-signed certs" do
   cwd "/tmp"
   user "root"
@@ -279,7 +264,7 @@ bash "Generate self-signed certs" do
 end
 
 bash "Clean old apache2 elements" do
-  code "rm -rf /etc/apache2/sites-available /etc/apache2/sites-enabled /etc/apache2/ports.conf"
+  code "rm -rf /etc/apache2/sites-available /etc/apache2/sites-enabled /etc/apache2/ports.conf /etc/apache2/conf.d /etc/apache2/conf-enabled /etc/apache2/conf-available"
   user "root"
 end
 
