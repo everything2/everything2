@@ -267,14 +267,9 @@ template '/etc/apache2/apache2.conf' do
 end
 
 
-template "#{confdir}/ssl.conf" do
-  owner "root"
-  group "root"
-  mode "0755"
-  action "create"
-  source 'ssl.conf.erb'
+file "#{confdir}/ssl.conf" do
+  action "delete"
   notifies :restart, "service[apache2]", :delayed
-  variables(node["e2engine"])
 end
 
 bash "Generate self-signed certs" do
