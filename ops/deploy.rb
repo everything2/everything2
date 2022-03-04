@@ -8,11 +8,12 @@ commands = [{description: "update_cookbooks",command: {name: 'update_custom_cook
             {description: "execute_recipes", command: {name: 'execute_recipes', args: {recipes: ['e2engine']}}}]
 
 commands.each do |cmd|
-  pp cmd
   opsworks_client.describe_stacks.stacks.each do |stack|
     deployments = []
     opsworks_client.describe_instances(stack_id: stack.stack_id).instances.each do |i|
       deployments.push opsworks_client.create_deployment(stack_id: stack.stack_id, instance_ids: [i.instance_id], command: cmd[:command]).deployment_id
+      # Stagger by 8s
+      sleep 8
     end
 
     deployments.each_with_index do |val, index|

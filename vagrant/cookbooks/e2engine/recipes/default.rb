@@ -238,7 +238,7 @@ end
 
 confdir = '/etc/apache2/conf.d'
 
-template "#{confdir}/everything" do
+template "/etc/apache2/everything.conf" do
   owner "root"
   group "root"
   mode "0755"
@@ -267,7 +267,7 @@ template '/etc/apache2/apache2.conf' do
 end
 
 
-file "#{confdir}/ssl.conf" do
+file "#{confdir}/everything" do
   action "delete"
   notifies :restart, "service[apache2]", :delayed
 end
