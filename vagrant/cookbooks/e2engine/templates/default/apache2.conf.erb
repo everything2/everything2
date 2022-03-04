@@ -55,3 +55,24 @@ Include mods-enabled/*.conf
 
 # Include generic snippets of statements
 Include conf.d/
+
+<IfModule mod_ssl.c>
+SSLRandomSeed startup builtin
+SSLRandomSeed startup file:/dev/urandom 512
+SSLRandomSeed connect builtin
+SSLRandomSeed connect file:/dev/urandom 512
+
+AddType application/x-x509-ca-cert .crt
+AddType application/x-pkcs7-crl    .crl
+
+SSLPassPhraseDialog  builtin
+
+SSLSessionCache        shmcb:${APACHE_RUN_DIR}/ssl_scache(512000)
+SSLSessionCacheTimeout  300
+
+SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5:!RC4
+
+# enable only TLSv1
+SSLProtocol all -SSLv2 -SSLv3
+
+</IfModule>
