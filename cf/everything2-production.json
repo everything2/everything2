@@ -969,7 +969,7 @@
         "MaxSize": 2,
         "Cooldown": 1200,
         "HealthCheckGracePeriod": 1200,
-	"DesiredCapacity": 1,
+	"DesiredCapacity": 2,
         "HealthCheckType": "ELB",
         "LaunchTemplate": {
           "LaunchTemplateId": {"Ref": "E2OpsworksLaunchTemplate"},
