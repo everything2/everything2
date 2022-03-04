@@ -19,18 +19,26 @@ def lambda_handler(args)
   opsworks_client.describe_stacks.stacks.each do |stack|
     puts "Investigating stack_id: #{stack.stack_id}\n"
     opsworks_client.describe_instances(stack_id: stack.stack_id).instances.each do |instance|
-      pp instance 
-
       if instance.status.eql? 'start_failed'
         puts "Instance #{instance.ec2_instance_id} failed\n"
         begin
           ec2_client.describe_instances(instance_ids: [instance.ec2_instance_id]).reservations[0].instances.each do |ec2_instance|
-            pp ec2_client.terminate_instance(instance_ids: [instance.ec2_instance_id])
+            puts "Terminating instance: #{instance.ec2_instance_id}"
+            ec2_client.terminate_instance(instance_ids: [instance.ec2_instance_id])
           end
         rescue Aws::EC2::Errors::InvalidInstanceIDNotFound
           puts "Instance #{instance.ec2_instance_id} not found"
         end
-        pp opsworks_client.deregister_instance(instance_id: instance.instance_id)
+        puts "Deregistering instance: #{instance.instance_id}"
+        opsworks_client.deregister_instance(instance_id: instance.instance_id)
+      end
+
+      resp = ec2_client.describe_instances(instance_ids: [instance.ec2_instance_id])
+      if resp.reservations.empty?
+        puts "Instance doesn't exist, deregistering: #{instance.ec2_instance_id}"
+        opsworks_client.deregister_instance(instance_id: instance.instance_id)
+      else
+        puts "Instance does exist: #{instance.ec2_instance_id} (#{resp.reservations[0].instances[0].state})"
       end
     end
   end
