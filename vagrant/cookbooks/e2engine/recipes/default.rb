@@ -185,17 +185,6 @@ else
   end
 end
 
-#unless node['override_configuration'].eql? 'development'
-#  Chef::Log.info('In production, doing instance registrations')
-#  Chef::Log.info('Setting up ingress to production DB')
-#
-#  bash "AWS: Register instance with db security group" do
-#    code "/var/everything/tools/aws_registration.rb --db"
-#  end
-#else
-#  Chef::Log.info('Not in production, not doing instance registrations')
-#end
-
 unless node['override_configuration'].eql? 'development'
   ['banned_user_agents_secret','banned_ips_secret','banned_ipblocks_secret'].each do |secret|
     Chef::Log.info("Seeding web secret: #{secret}")
@@ -264,7 +253,7 @@ bash "Generate self-signed certs" do
 end
 
 bash "Clean old apache2 elements" do
-  code "rm -rf /etc/apache2/sites-available /etc/apache2/sites-enabled /etc/apache2/ports.conf /etc/apache2/conf.d /etc/apache2/conf-enabled /etc/apache2/conf-available"
+  code "rm -rf /etc/apache2/sites-available /etc/apache2/sites-enabled /etc/apache2/ports.conf /etc/apache2/conf.d /etc/apache2/conf-enabled /etc/apache2/conf-available /etc/apache2/mod_rewrite.conf"
   user "root"
 end
 

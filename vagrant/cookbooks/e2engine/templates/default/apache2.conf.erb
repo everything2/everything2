@@ -6,15 +6,6 @@ KeepAlive On
 MaxKeepAliveRequests 100
 KeepAliveTimeout 15
 
-# E2 USE PREFORK SO THIS IS THE APPLICABLE SECTION
-<IfModule mpm_prefork_module>
-	StartServers         <%= @startservers %>
-	MinSpareServers      <%= @minspareservers %>
-	MaxSpareServers      <%= @maxspareservers %>
-	MaxClients           <%= @maxclients %>
-	MaxRequestsPerChild  4000 
-</IfModule>
-
 # These need to be set in /etc/apache2/envvars
 User ${APACHE_RUN_USER}
 Group ${APACHE_RUN_GROUP}
@@ -55,6 +46,37 @@ AccessFileName .htaccess
 # Include module configuration:
 Include mods-enabled/*.load
 Include mods-enabled/*.conf
+
+<% if node["override_configuration"].eql? "development" %>
+  Define E2_DEVELOPMENT
+  UnDefine E2_PRODUCTION
+<% else %>
+  Undefine E2_DEVELOPMENT
+  Define E2_PRODUCTION
+<% end %>
+
+<IfDefine E2_DEVELOPMENT>
+  Define E2StartServers 1
+  Define E2MinSpareServers 1
+  Define E2MaxSpareServers 1
+  Define E2MaxClients 1
+</IfDefine>
+
+<IfDefine E2_PRODUCTION>
+  Define E2StartServers 20
+  Define E2MinSpareServers 10
+  Define E2MaxSpareServers 10
+  Define E2MaxClients 200
+</IfDefine>
+
+<IfModule mpm_prefork_module>
+  StartServers         ${E2StartServers}
+  MinSpareServers      ${E2MinSpareServers}
+  MaxSpareServers      ${E2MaxSpareServers}
+  MaxClients           ${E2MaxClients}
+  MaxRequestsPerChild  4000
+</IfModule>
+
 
 PerlSwitches -I/var/everything/ecore -I/var/libraries/lib/perl5
 ServerName everything2.com
