@@ -23,6 +23,8 @@ has 'everyuser' => (isa => 'Str', is => 'ro', default => 'everyuser');
 # TODO: Rename this to be something that makes it clear that it is the database password
 has 'everypass' => (isa => 'Str', is => 'ro', builder => '_build_everypass', lazy => 1);
 has 'everything_dbserv' => (isa => 'Str', is => 'ro', default => 'localhost');
+has 'everything_dbport' => (isa => 'Int', is => 'ro', default => 3306);
+
 has 'database' => (isa => 'Str', is => 'ro', default => 'everything');
 
 has 'cookiepass' => (isa => 'Str', is => 'ro', default => 'userpass');

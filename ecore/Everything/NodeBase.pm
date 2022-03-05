@@ -92,7 +92,7 @@ sub new
 
         my $dbname = $Everything::CONF->database;
 	# A connection to this database does not exist.  Create one.
-	my ($user,$pass, $dbserv) = ($Everything::CONF->everyuser, $Everything::CONF->everypass, $Everything::CONF->everything_dbserv);
+	my ($user,$pass, $dbserv, $dbport) = ($Everything::CONF->everyuser, $Everything::CONF->everypass, $Everything::CONF->everything_dbserv, $Everything::CONF->everything_dbport);
 	my $dbh_props = {AutoCommit => 1};
 
 	if($Everything::CONF->environment eq "development")
@@ -100,7 +100,7 @@ sub new
 		$dbh_props->{RaiseError} = 1;
 	}
 
-	my $dbh = DBI->connect("DBI:mysql:$dbname:$dbserv;mysql_enable_utf8=1", $user, $pass, $dbh_props);
+	my $dbh = DBI->connect("DBI:mysql:database=$dbname;host=$dbserv;port=$dbport;mysql_enable_utf8=1", $user, $pass, $dbh_props);
 	$this->{dbh} = $dbh;
 
 	$this->{cache} = new Everything::NodeCache($this); 
