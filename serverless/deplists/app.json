@@ -1052,6 +1052,10 @@
     "module": "DateTime::Format::ISO8601"
   },
   {
+    "file": "https://cpan.metacpan.org/authors/id/R/RE/REHSACK/File-HomeDir-1.006.tar.gz",
+    "module": "File::HomeDir"
+  },
+  {
     "file": "https://cpan.metacpan.org/authors/id/J/JL/JLMARTIN/Paws-0.42.tar.gz",
     "module": "Paws"
   }
