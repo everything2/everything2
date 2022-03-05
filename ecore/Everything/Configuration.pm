@@ -248,7 +248,6 @@ around BUILDARGS => sub
       {
         local $/ = undef;
 	my $override_data = <$fh>;
-	chomp $override_data;
 	close $fh;
 
 	$environment = $override_data;
@@ -257,6 +256,7 @@ around BUILDARGS => sub
       }
     }
 
+  chomp $environment;
   $configfile = "$currentdir/../etc/$environment.json";
   }elsif((@_ == 1) and (!(ref $_[0])))
   {
