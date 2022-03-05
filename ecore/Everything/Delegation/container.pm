@@ -111,7 +111,7 @@ sub zen_stdcontainer
     #superdocs and variants further identified by title
     my $id = ( $$NODE{ node_id } != 124 ? lc( $$NODE{ 'title' } ) : 'frontpage' ) ;
     $id =~ s/\W//g ;
-    $str.'" id="'.$id ;
+    $str.='" id="'.$id ;
   }
   $str .= qq|" itemscope itemtype="http://schema.org/WebPage">|;
 
