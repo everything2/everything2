@@ -81,7 +81,44 @@ coreconfig+="
 
 		deny from env=denyip
 
-		Include /etc/apache2/mod_rewrite.conf
+		RewriteEngine On
+
+		RewriteCond %{HTTP:X-Forwarded-Proto} =http
+		RewriteRule (.*)                           https://%{HTTP_HOST}/$1 [R=301,L]
+
+		RewriteRule ^node/(\d+)/(\w+)/?$           index.pl?node_id=$1&displaytype=$2  [QSA]
+		RewriteRule ^node/(\d+)([^&]*)/?$          index.pl?node_id=$1$2               [QSA]
+		RewriteRule ^e2node/(.+)                   /title/$1                           [R]
+		RewriteRule ^node/([^\d][^/]*)$            /title/$1                           [R]
+
+		RewriteRule ^node/([^\W\/]+)/([^&]+).*/?$  index.pl?node=$2&type=$1            [QSA]
+		RewriteRule ^title/([^&]+).*/?$            index.pl?node=$1                    [QSA]
+
+		RewriteRule ^user/([^&]+)/writeups/([^&]+).*/?$   index.pl?node=$2&type=writeup&author=$1      [QSA]
+
+		#Ugh, this rule needs to be made prettier
+		RewriteRule ^user/([^&]+)/writeups/?$      index.pl?node=everything+user+search&type=superdoc&usersearch=$1&orderby=node.createtime+DESC   [QSA]
+		RewriteRule ^user/([^&]+).*/?$             index.pl?node=$1&type=user          [QSA]
+
+		RewriteRule ^favicon.ico$		   http://static.everything2.com/favicon.ico [P]
+
+		RewriteCond %{HTTP_HOST}                   ^m\.everything2.+  [NC]
+		RewriteCond %{QUERY_STRING}                ^$
+		RewriteRule ^/?$                           /index.pl?node=Welcome+to+Everything
+
+		# Add short URL redirection$
+		RewriteRule ^/?s/([^/]+)$                  index.pl?type=superdoc&node=Short+URL+Lookup&short_string=$1
+
+		# Redirect weird recurring RDF request to somewhere useful
+		RewriteRule ^/?heaedlines.rdf$             index.pl?type=ticker&node=New+Writeups+Atom+Feed
+
+		RewriteCond %{REQUEST_FILENAME}            !-f
+		RewriteRule ^/?stylesheet/([^_]+)_v[0-9]+(_autofix)?\.css      /stylesheet/$1$2.css  [R=307]
+
+		RewriteRule ^/?sitemap/(.+)$		   http://sitemap.everything2.com/$1 [P]
+
+		RewriteRule ^/?javachat/(.+)$		   http://javachatterbox.everything2.com/$1 [P]
+
 		AddOutputFilterByType DEFLATE text/javascript text/html text/xml text/css application/x-javascript
 	</Directory>
 
