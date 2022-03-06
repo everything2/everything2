@@ -261,8 +261,9 @@ around BUILDARGS => sub
   chomp $environment;
 
   my $variance = '';
-  if($environment eq 'development' and $ENV{'E2DOCKER'} eq 'development')
+  if(defined($ENV{'E2DOCKER'}) and $ENV{'E2DOCKER'} eq 'development')
   {
+    $environment = "development";
     $variance = '-docker';
   }
   $configfile = "$currentdir/../etc/$environment$variance.json";
