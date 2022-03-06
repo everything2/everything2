@@ -153,7 +153,7 @@ foreach my $dep (@$dependencies)
   if(-e "$builddir/$untardir/Makefile.PL")
   {
     print "Using MakeMaker for '$dep->{module}'\n";
-    $command = "cd $builddir/$untardir/ && $dyld PERL_MM_USE_DEFAULT=1 NO_NETWORK_TESTING=1 $^X $includedir Makefile.PL $mm_installargs $inc $extra && make && make install $mm_destdircmd";
+    $command = "cd $builddir/$untardir/ && $dyld PERL_MM_USE_DEFAULT=1 NO_NETWORK_TESTING=1 $^X $includedir Makefile.PL $mm_installargs $inc $extra && PERL5LIB=$installdir/lib/perl5 make && PERL5LIB=$installdir/lib/perl5 make install $mm_destdircmd";
   }elsif(-e "$builddir/$untardir/Build.PL")
   {
     print "Using Module::Build for '$dep->{module}'\n";
