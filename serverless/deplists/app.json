@@ -1,12 +1,12 @@
 [
   {
+    "file": "https://cpan.metacpan.org/authors/id/A/AT/ATOOMIC/B-COW-0.004.tar.gz",
+    "module": "B::COW"
+  },
+  {
     "file": "https://cpan.metacpan.org/authors/id/E/EX/EXODIST/Test-Simple-1.302175.tar.gz",
     "module": "Test::Simple",
     "skiptest": 1
-  },
-  {
-    "file": "https://cpan.metacpan.org/authors/id/A/AT/ATOOMIC/B-COW-0.004.tar.gz",
-    "module": "B::COW"
   },
   {
     "file": "https://cpan.metacpan.org/authors/id/A/AT/ATOOMIC/Clone-0.45.tar.gz",
