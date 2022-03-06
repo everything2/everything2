@@ -1031,7 +1031,7 @@ sub updateNode
 		foreach my $ordinal (keys %{$fieldHash->{$table}})
 		{
 
-			my $field = $fieldHash->{$table}->{$ordinal}->{column_name};
+			my $field = $fieldHash->{$table}->{$ordinal}->{COLUMN_NAME};
 
 			# we don't want to chance mucking with the primary key
 			next if $field eq $table . '_id';
@@ -1513,16 +1513,16 @@ sub getFieldsHash
 			my $paramList = ' (?' . (', ?' x (-1 + scalar @$table)) . ') ';
 			my $sqlQuery = <<SQLEND;
 
-SELECT table_name, ordinal_position, column_name
+SELECT TABLE_NAME, ORDINAL_POSITION, COLUMN_NAME
 	FROM INFORMATION_SCHEMA.COLUMNS
-	WHERE table_name IN
+	WHERE TABLE_NAME IN
 		$paramList
 		AND table_schema = ?
 SQLEND
 
 			return $this->{dbh}->selectall_hashref(
 			  $sqlQuery
-			  , [ 'table_name', 'ordinal_position' ]
+			  , [ 'TABLE_NAME', 'ORDINAL_POSITION' ]
 			  , {}, (@$table, $this->{dbname})
 			  );
 
