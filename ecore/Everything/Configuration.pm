@@ -259,7 +259,13 @@ around BUILDARGS => sub
     }
 
   chomp $environment;
-  $configfile = "$currentdir/../etc/$environment.json";
+
+  my $variance = '';
+  if($environment eq 'development' and $ENV{'E2DOCKER'} eq 'development')
+  {
+    $variance = '-docker';
+  }
+  $configfile = "$currentdir/../etc/$environment$variance.json";
   }elsif((@_ == 1) and (!(ref $_[0])))
   {
     # If there is one arg, assume it is the configfile
