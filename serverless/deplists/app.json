@@ -806,7 +806,7 @@
     "module": "FFI::CheckLib"
   },
   {
-    "file": "https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/Alien-Build-2.26.tar.gz",
+    "file": "https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/Alien-Build-2.46.tar.gz",
     "module": "Alien::Base::Wrapper",
     "dependson": ["FFI::CheckLib"]
   },
