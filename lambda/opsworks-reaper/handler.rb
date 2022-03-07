@@ -39,6 +39,10 @@ def lambda_handler(args)
         opsworks_client.deregister_instance(instance_id: instance.instance_id)
       else
         puts "Instance does exist: #{instance.ec2_instance_id} (#{resp.reservations[0].instances[0].state})"
+        if(resp.reservations[0].instances[0].state.name.eql? 'terminated')
+          puts "Reaping terminated instance: #{instance.ec2_instance_id}"
+          opsworks_client.deregister_instance(instance_id: instance.instance_id)
+        end
       end
     end
   end
