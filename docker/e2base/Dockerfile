@@ -6,7 +6,7 @@ ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN cd /var && git clone https://github.com/everything2/everything2.git everything
 
-RUN mkdir -p /etc/everything /var/mason
+RUN mkdir -p /etc/everything /var/mason /var/log/everything
 RUN chown root:root /etc/everything
 RUN chown www-data:www-data /var/mason
 RUN chmod 0755 /var/mason
