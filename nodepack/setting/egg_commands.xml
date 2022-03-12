@@ -36,7 +36,7 @@
   </vars>
   <vars>
     <key>cake</key>
-    <value>cuts ~ a slice of cake</value>
+    <value>cuts ~ a slice of fruitcake</value>
   </vars>
   <vars>
     <key>candle</key>
@@ -56,7 +56,7 @@
   </vars>
   <vars>
     <key>cookie</key>
-    <value>gives ~ a sugar cookie with extra sprinkles</value>
+    <value>gives ~ a gingerbread cookie</value>
   </vars>
   <vars>
     <key>cthulhu</key>
@@ -85,6 +85,14 @@
   <vars>
     <key>egg</key>
     <value>eggs</value>
+  </vars>
+  <vars>
+    <key>eggnog</key>
+    <value>pours a mug of eggnog for </value>
+  </vars>
+  <vars>
+    <key>firework</key>
+    <value>sets off fireworks for ~</value>
   </vars>
   <vars>
     <key>fistbump</key>
@@ -137,6 +145,10 @@
   <vars>
     <key>internet</key>
     <value>awards ~ five internet points</value>
+  </vars>
+  <vars>
+    <key>library</key>
+    <value>reminds ~ that this was told before, in a book from THE LIBRARY, but the rest of the pages were blank. Whether this is a sign of the end of times, a forgetful authorial force, a non-omnipotent god or coincidence is not for us to know&#226;&#128;&#166;</value>
   </vars>
   <vars>
     <key>like</key>
@@ -203,6 +215,10 @@
     <value>hits ~ with a rubber chicken</value>
   </vars>
   <vars>
+    <key>santa</key>
+    <value>showers ~ with gifts</value>
+  </vars>
+  <vars>
     <key>smite</key>
     <value>smites</value>
   </vars>
@@ -221,6 +237,10 @@
   <vars>
     <key>tea</key>
     <value>makes ~ a nice cup of tea</value>
+  </vars>
+  <vars>
+    <key>test</key>
+    <value>T&#204;&#184;&#204;&#149;&#204;&#159;E&#204;&#180;&#204;&#140;&#204;&#166;S&#204;&#182;&#204;&#137;&#205;&#154;T&#204;&#184;&#205;&#134;&#204;&#170;S&#204;&#181;&#204;&#141;&#204;&#161; &#204;&#181;&#204;&#128;&#204;&#177;A&#204;&#181;&#205;&#145;&#204;&#173; &#204;&#182;&#205;&#132;&#204;&#177;N&#204;&#181;&#205;&#157;&#204;&#174;E&#204;&#181;&#204;&#131;&#204;&#188;W&#204;&#183;&#204;&#128;&#204;&#188; &#204;&#180;&#204;&#149;&#204;&#152;F&#204;&#181;&#205;&#146;&#205;&#133;E&#204;&#181;&#205;&#157;&#204;&#170;A&#204;&#182;&#205;&#146;&#204;&#171;T&#204;&#181;&#205;&#128;&#204;&#172;U&#204;&#180;&#204;&#131;&#204;&#159;R&#204;&#180;&#204;&#189;&#205;&#135;E&#204;&#182;&#205;&#146;&#204;&#158; O&#204;&#183;&#205;&#138;&#204;&#172;N&#204;&#183;&#204;&#138;&#204;&#159; &#204;&#180;&#205;&#139;&#205;&#142; ~!&#204;&#181;&#205;&#131;&#204;&#150;!&#204;&#180;&#204;&#147;&#204;&#152;!&#204;&#180;&#204;&#139;&#204;&#186;</value>
   </vars>
   <vars>
     <key>tomato</key>

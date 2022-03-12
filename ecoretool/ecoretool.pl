@@ -1,6 +1,8 @@
 #!/usr/bin/perl -w
 
 use strict;
+use lib qw(/var/libraries/lib/perl5);
+
 use File::Basename;
 BEGIN
 {
