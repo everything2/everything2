@@ -2470,8 +2470,8 @@ sub insertIntoNodegroup
 	my $insertref;
 	my $TYPE;
 	my $groupTable;
-	my $rank;	
-
+	my $nodegroup_rank;
+	my $nodegroup_rank_column = $this->nodegroupRankColumn;
 
 	return unless($this->canUpdateNode ($USER, $NODE)); 
 	
@@ -2537,14 +2537,14 @@ sub insertIntoNodegroup
 			$orderby = 0;  # start it off
 		}
 		
-		$rank = $this->sqlSelect('MAX(rank)', $groupTable, 
+		$nodegroup_rank = $this->sqlSelect("MAX($nodegroup_rank_column)", $groupTable, 
 			$groupTable . "_id=$$NODE{node_id}");
 
 		# If rank exists, increment it.  Otherwise, start it off at zero.
-		$rank = ((defined $rank) ? $rank+1 : 0);
+		$nodegroup_rank = ((defined $nodegroup_rank) ? $nodegroup_rank+1 : 0);
 
 		$this->sqlInsert($groupTable, { $groupTable . "_id" => $$NODE{node_id}, 
-			rank => $rank, node_id => $$INSERT{node_id},
+			$nodegroup_rank_column => $nodegroup_rank, node_id => $$INSERT{node_id},
 			orderby => $orderby});
 
 		# if we have more than one, we need to clear this so the other
@@ -2862,6 +2862,16 @@ sub existsInGroupCache {
 	return $this->{cache}->existsInGroupCache(@_);
 }
 
+sub nodegroupRankColumn {
+  my $this = shift;
+  my $matches = $this->sqlSelect("count(*)","INFORMATION_SCHEMA.COLUMNS","TABLE_NAME='nodegroup' AND COLUMN_NAME='rank'");
+
+  if($matches == 1)
+  {
+    return "rank";
+  }
+  return "nodegroup_rank";
+}
 
 #############################################################################
 #	End of Package
