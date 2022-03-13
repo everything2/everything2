@@ -2,8 +2,8 @@
   <doctext>[%
 my $str = &quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;\n&quot;;
 
-my $searchuser;
-$searchuser = getNode($query-&gt;param(&quot;searchuser&quot;), &quot;user&quot;) if $query-&gt;param(&quot;searchuser&quot;);
+my $searchuser = $query-&gt;param(&quot;searchuser&quot;);
+$searchuser = getNode($searchuser, &quot;user&quot;) if defined($searchuser);
 $searchuser ||= $USER;
 my $startat = $query-&gt;param(&quot;startat&quot;);
 $startat ||= &quot;0&quot;;
