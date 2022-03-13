@@ -2836,10 +2836,10 @@
         "RetentionInDays": 3
       }
     },
-    "ApplicationECRRegistry": {
+    "E2LibECRRegistry": {
       "Type": "AWS::ECR::Repository",
       "Properties": {
-        "RepositoryName": "everything2" 
+        "RepositoryName": "everything2/e2lib" 
       }
     },
     "CodeBuildUpdateApplicationECRRegistry": {
@@ -2861,7 +2861,7 @@
               "ecr:PutImage",
               "ecr:UploadLayerPart"
             ],
-            "Resource": {"Fn::GetAtt" : ["ApplicationECRRegistry", "Arn"]}
+            "Resource": "*"
           }]
         }
       }
@@ -2880,7 +2880,9 @@
         },
         "Description": "Docker builder CodeBuild role",
         "ManagedPolicyArns": [
-            {"Ref": "CodeBuildUpdateApplicationECRRegistry"}
+            {"Ref": "CodeBuildUpdateApplicationECRRegistry"},
+            {"Ref": "DockerCodeBuildLogWritePolicy"},
+            {"Ref": "ZipsBucketReadPolicy"}
         ],
         "Path": "/",
         "RoleName": "Docker-Builder-CodeBuild-Role"
@@ -2892,6 +2894,12 @@
       "Properties": {
         "Artifacts": {
           "Type": "NO_ARTIFACTS"
+        },
+        "LogsConfig": {
+          "CloudWatchLogs": {
+            "Status": "ENABLED",
+            "GroupName": {"Ref": "DockerCodeBuildLogGroup"}
+          }
         },
         "Name": "E2-Application-Builder",
         "ServiceRole": {"Ref": "ApplicationDockerCodeBuildRole"},
@@ -2915,15 +2923,41 @@
               "Value": {"Ref": "AWS::AccountId"}
             },
             {
-              "Name": "IMAGE_REPO_NAME",
-              "Value": {"Ref": "ApplicationECRRegistry"} 
-            },
-            {
               "Name": "IMAGE_TAG",
               "Value": "latest"
             }
           ],
           "PrivilegedMode": true
+        }
+      }
+    },
+    "DockerCodeBuildLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "LogGroupName": "/aws/codebuild/dockerbuild",
+        "RetentionInDays": 3
+      }
+    },
+    "DockerCodeBuildLogWritePolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows CodeBuild to write to the log group",
+        "ManagedPolicyName": "DockerCodeBuildLogWritePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": "logs:PutLogEvents",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "DockerCodeBuildLogGroup", "Arn"] }, ":*"]]}
+          },
+          {
+            "Effect": "Allow",
+            "Action": "logs:CreateLogStream",
+            "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "DockerCodeBuildLogGroup", "Arn"] }, ":*"]]}
+          }]
         }
       }
     }
