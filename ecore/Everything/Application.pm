@@ -4436,7 +4436,7 @@ sub create_user
   # log ip addresses
   foreach my $ip ($this->getIp())
   {
-    $this->{db}->sqlInsert("iplog", {iplog_user => $$user{user_id}, iplog_ipaddy => $_});
+    $this->{db}->sqlInsert("iplog", {iplog_user => $$user{user_id}, iplog_ipaddy => $ip});
   }
 
   return $user;

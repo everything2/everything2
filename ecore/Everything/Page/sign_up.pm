@@ -82,7 +82,7 @@ sub display
   my $query = $REQUEST->cgi;
 
   my $use_recaptcha = 0;
-  if($self->CONF->environment eq "production" or $ENV{HTTP_HOST} =~ /^development\.everything2\.com:?\d?/)
+  if($self->CONF->is_production or $ENV{HTTP_HOST} =~ /^development\.everything2\.com:?\d?/)
   {
     $use_recaptcha = 1;
   }
@@ -238,16 +238,19 @@ sub display
   $self->security_log('Created user '.$self->APP->linkNode($new_user));
 
   # send activation email
-  my $mail = $self->APP->node_by_name('Welcome to Everything2', 'mail')->NODEDATA;
+  if($self->CONF->is_production)
+  {
+    my $mail = $self->APP->node_by_name('Welcome to Everything2', 'mail')->NODEDATA;
 
-  my $params = $self->APP->getTokenLinkParameters($new_user, $pass, 'activate', time() + $self->valid_for_days * 86400);
-  my $link = $self->APP->urlGen($params, 'no quotes', $self->APP->node_by_name('Confirm password', 'superdoc')->NODEDATA);
+    my $params = $self->APP->getTokenLinkParameters($new_user, $pass, 'activate', time() + $self->valid_for_days * 86400);
+    my $link = $self->APP->urlGen($params, 'no quotes', $self->APP->node_by_name('Confirm password', 'superdoc')->NODEDATA);
 
-  $mail->{doctext} =~ s/«name»/$username/;
-  $mail->{doctext} =~ s/«link»/$link/g;
-  $mail->{doctext} =~ s/«servername»/$ENV{SERVER_NAME}/g;
+    $mail->{doctext} =~ s/«name»/$username/;
+    $mail->{doctext} =~ s/«link»/$link/g;
+    $mail->{doctext} =~ s/«servername»/$ENV{SERVER_NAME}/g;
 
-  $self->APP->node2mail($email, $mail, 1);
+    $self->APP->node2mail($email, $mail, 1);
+  }
 
   $self->APP->set_spam_threshold($new_user, $recaptcha_response->{score});
   return {"success" => 1, "username" => $username, "linkvalid" => $self->valid_for_days};
