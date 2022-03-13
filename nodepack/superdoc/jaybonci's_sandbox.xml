@@ -1,14 +1,8 @@
 <node>
-  <doctext>&lt;br /&gt;
-[%
-
-        return htmlcode('sendPrivateMessage',{
-          'author_id' =&gt; getNode(&quot;jaybonci&quot;,&quot;user&quot;)-&gt;{node_id},
-          'recipient_id' =&gt; getNode(&quot;jaybonci&quot;,&quot;user&quot;)-&gt;{node_id},
-          'message' =&gt; 'Testing'
-        });
-
+  <doctext>[%
+  return $ENV{HTTP_X_FORWARDED_FOR};
 %]
+
 [%
   my $str = &quot;&quot;;
   my $count = 0;
