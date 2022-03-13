@@ -4638,8 +4638,11 @@ sub send_cloudwatch_event
       $detail->{params} = $Everything::HTML::REQUEST->truncated_params;
     }
 
+    my $eventbus = 'com.everything2.errors';
+    $eventbus = 'com.everything2.uninitialized' if $detail->{message} =~ /^Use of uninitialized value/;
+
     my $resp = $events->PutEvents(Entries => [{
-      EventBusName => 'com.everything2.errors',
+      EventBusName => $eventbus,
       Detail => JSON->new->utf8->encode($detail),
       Source => "e2.webapp",
       DetailType => 'E2 Application Error'
