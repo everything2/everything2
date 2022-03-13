@@ -2250,6 +2250,37 @@
         "Name": "com.everything2.errors"
       }
     },
+    "AppUninitializedValuesEventBus": {
+      "Type": "AWS::Events::EventBus",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Name": "com.everything2.uninitialized"
+      }
+    },
+    "ApplicationUninitializedValuesArchive": {
+      "Type": "AWS::Events::Archive",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "ArchiveName": "e2-app-uninitialized-archive",
+        "Description": "Archiving app uninits",
+        "RetentionDays": 3,
+        "SourceArn": {"Fn::GetAtt": ["AppUninitializedValuesEventBus", "Arn"]}
+      }
+    },
+    "ApplicationUninitializedValueLoggingRule": {
+      "Type": "AWS::Events::Rule",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Subscribing to E2 app uninitialized values",
+        "Name": "e2-app-uninitialized-values-rule",
+        "EventBusName": {"Fn::GetAtt": ["AppUninitializedValuesEventBus", "Name"]},
+        "EventPattern": {"source": ["e2.webapp"], "detail-type": ["E2 Application Error"]},
+        "Targets": [{
+          "Arn": {"Fn::GetAtt": ["AppUninitializedLogGroup","Arn"]},
+          "Id": "app-uninitialized-values-rule"
+        }]
+      }
+    },
     "AppErrorsLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "DeletionPolicy": "Retain",
