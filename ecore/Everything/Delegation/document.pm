@@ -1515,7 +1515,7 @@ sub cool_archive
 
   $str.=htmlcode('closeform');
 
-  my $user = $APP->htmlScreen($query->param('cooluser'));
+  my $user = $APP->htmlScreen(scalar $query->param('cooluser'));
 
   # Select 51 rows so that we know, if 51 come back, we can provide a "next" link
   #  even though we always display 50 at most
