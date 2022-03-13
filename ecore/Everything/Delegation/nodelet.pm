@@ -807,7 +807,8 @@ sub everything_developer
   {
     $str .= 'node_id='.getId($NODE). ' (' . $$NODE{type}{title} . ') <small>' . $$NODE{createtime} . ' ('.htmlcode('timesince',$$NODE{createtime}.',1')." old)</small><br />\n";
 
-    $str .='<font size="1">using: '.linkNode(getPage($NODE, $query->param('displaytype'))).'</font><br /><br />';
+    my $displaytype = $query->param('displaytype');
+    $str .='<font size="1">using: '.linkNode(getPage($NODE, $displaytype)).'</font><br /><br />';
     $str .= '<a href='.urlGen({node=>'edev',type=>'usergroup'}).'>edev usergroup</a>'.
     '<br />'.
     htmlcode('nodeletsection','edn,cgiparam').
