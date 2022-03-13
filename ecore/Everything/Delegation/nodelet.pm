@@ -70,8 +70,8 @@ sub epicenter
 
   my @thingys = ();
 
-  my $c = (int $$VARS{cools}) || 0;
-  my $v = (int $$USER{votesleft}) || 0;
+  my $c = int ($$VARS{cools} || 0);
+  my $v = int ($$USER{votesleft} || 0);
   if($v !~ /^\d+$/) { $v = 0; }
   if ($c || $v)
   {
