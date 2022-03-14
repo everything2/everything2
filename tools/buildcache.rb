@@ -39,9 +39,14 @@ def fetch_checksum_cache
     JSON.parse(File.open(checksum_base+'/'+last_build_file).read)
   else
     s3client = Aws::S3::Client.new(region: @aws_region)
-    body = s3client.get_object(bucket: @buildcache_bucket, key: item['key'])
-
-    body.body.read
+    puts "Getting buildcache from #{@buildcache_bucket}/#{last_build_file}"
+    begin
+      body = s3client.get_object(bucket: @buildcache_bucket, key: last_build_file)
+      body.body.read
+    rescue Aws::S3::Errors::NoSuchKey
+      puts "No existing buildcache found"
+      {}
+    end
   end
 end
 
