@@ -1,7 +1,7 @@
 package Everything;
 
 #############################################################################
-#	Everything perl module.  
+#	Everything perl module.
 #	Copyright 1999 Everything Development
 #	http://www.everydevel.com
 #

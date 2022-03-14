@@ -2839,7 +2839,19 @@
     "E2LibECRRegistry": {
       "Type": "AWS::ECR::Repository",
       "Properties": {
-        "RepositoryName": "everything2/e2lib" 
+        "RepositoryName": "everything2/e2lib"
+      }
+    },
+    "E2BaseECRRegistry": {
+      "Type": "AWS::ECR::Repository",
+      "Properties": {
+        "RepositoryName": "everything2/e2base"
+      }
+    },
+    "E2AppECRRegistry": {
+      "Type": "AWS::ECR::Repository",
+      "Properties": {
+        "RepositoryName": "everything2/e2app"
       }
     },
     "CodeBuildUpdateApplicationECRRegistry": {
@@ -2882,7 +2894,8 @@
         "ManagedPolicyArns": [
             {"Ref": "CodeBuildUpdateApplicationECRRegistry"},
             {"Ref": "DockerCodeBuildLogWritePolicy"},
-            {"Ref": "ZipsBucketReadPolicy"}
+            {"Ref": "ZipsBucketReadPolicy"},
+            {"Ref": "BuildcacheAccessPolicy"}
         ],
         "Path": "/",
         "RoleName": "Docker-Builder-CodeBuild-Role"
@@ -2925,6 +2938,10 @@
             {
               "Name": "IMAGE_TAG",
               "Value": "latest"
+            },
+            {
+              "Name": "BUILDCACHE_BUCKET",
+              "Value": {"Ref": "BuildcacheBucket"}
             }
           ],
           "PrivilegedMode": true
@@ -2958,6 +2975,31 @@
             "Action": "logs:CreateLogStream",
             "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "DockerCodeBuildLogGroup", "Arn"] }, ":*"]]}
           }]
+        }
+      }
+    },
+    "BuildcacheBucket": {
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketName": "buildcache.everything2.com"
+      }
+    },
+    "BuildcacheAccessPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Ability to access the buildcache bucket",
+        "ManagedPolicyName": "BuildcacheAccessPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": ["s3:GetObject","s3:DeleteObject","s3:PutObject"],
+              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "BuildcacheBucket", "Arn"] }, "/*"]]}
+            }
+          ]
         }
       }
     }
