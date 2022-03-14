@@ -7,6 +7,7 @@ phases:
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       - aws s3 cp s3://$BUILDCACHE_BUCKET/buildcache.rb tools/
       - chmod +x tools/buildcache.rb
+      - gem install aws-sdk-s3
       - tools/buildcache.rb --region $AWS_REGION --bucket $BUILDCACHE_BUCKET
   build:
     commands:
