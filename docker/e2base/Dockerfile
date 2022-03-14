@@ -13,4 +13,3 @@ RUN chmod 0755 /var/mason
 
 RUN gem install aws-sdk-rds aws-sdk-elasticloadbalancingv2 aws-sdk-iam aws-sdk-secretsmanager aws-sdk-ses aws-sdk-opsworks aws-sdk-ec2 aws-sdk-lambda
 
-# RUN perl /var/everything/tools/createdeps.pl --depfile=/var/everything/serverless/deplists/app.json --installdir=/var/libraries --skipverify=Alien::Libxml --builddir=/var/buildcache --dldir=/var/dlcache --skipverify=Alien::Libxml2
