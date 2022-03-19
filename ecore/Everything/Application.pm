@@ -2940,7 +2940,7 @@ sub cleanupHTML {
     # source HTML, eg. for Cream of the Cool.
     $text = "" if not defined($text);
     $text =~ s/<[^>]*$//;
-    $text =~ s/<!--(?:[^-]|-[^-]|--[^>])*$//g;
+    $text =~ s/<!--(?:[^-]|-[^-]|--[^>])*$//gsm;
  
     # Scan tags by recognising text starting with '<'. Experiments with
     # Firefox show that malformed opening tags (missing the closing '>')
