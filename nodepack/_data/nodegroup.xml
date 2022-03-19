@@ -318,30 +318,6 @@
     <orderby>0</orderby>
   </group>
   <group>
-    <node_id>176726</node_id>
-    <nodegroup_id>1159973</nodegroup_id>
-    <nodegroup_rank>87</nodegroup_rank>
-    <orderby>87</orderby>
-  </group>
-  <group>
-    <node_id>373113</node_id>
-    <nodegroup_id>1159973</nodegroup_id>
-    <nodegroup_rank>98</nodegroup_rank>
-    <orderby>98</orderby>
-  </group>
-  <group>
-    <node_id>839239</node_id>
-    <nodegroup_id>1159973</nodegroup_id>
-    <nodegroup_rank>99</nodegroup_rank>
-    <orderby>99</orderby>
-  </group>
-  <group>
-    <node_id>952215</node_id>
-    <nodegroup_id>1159973</nodegroup_id>
-    <nodegroup_rank>100</nodegroup_rank>
-    <orderby>100</orderby>
-  </group>
-  <group>
     <node_id>113</node_id>
     <nodegroup_id>1175790</nodegroup_id>
     <nodegroup_rank>16</nodegroup_rank>
