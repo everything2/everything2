@@ -1259,7 +1259,7 @@ sub opNew
 	my $type = $query->param('type');
 	my $TYPE = getType($type);
 	my $removeSpaces = 1;
-	my $nodename = $APP->cleanNodeName($query->param('node'), $removeSpaces);
+	my $nodename = $APP->cleanNodeName(scalar($query->param('node')), $removeSpaces);
 
 	if (canCreateNode($user_id, $DB->getType($type)) and not $APP->isGuest($USER))
 	{
