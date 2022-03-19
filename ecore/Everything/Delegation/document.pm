@@ -4820,4 +4820,117 @@ sub everything_s_best_writeups
   return $str;
 }
 
+sub page_of_cool
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my @grp = (@{getNode("gods","usergroup")->{group} || []},@{getNode("Content Editors","usergroup")->{group} || []}, @{getNode("exeds","nodegroup")->{group} || []});
+  my $except = {};
+
+  foreach my $except_user("Cool Man Eddie","EDB","Webster 1913","Klaproth","PadLock")
+  {
+    my $user = $DB->getNode($except_user, "user");
+    if($user)
+    {
+      $except->{$user->{node_id}} = 1
+    }
+  }
+  @grp = sort {lc(getNodeById($a)->{title}) cmp lc(getNodeById($b)->{title})} @grp;
+  my $first_block = "Browse through the latest editor selections below, or choose a specific editor (or former editor) to see what they've endorsed:";
+
+  $first_block.=htmlcode("openform");
+  $first_block.="<select name=\"editor\">";
+  foreach(@grp){
+    $first_block.="<option value=\"$_\"".(($query->param("editor")."" eq "$_")?(" SELECTED "):("")).">".getNodeById($_)->{title}."</option>" unless($except->{$_}) || not getNodeById($_)->{type}->{title} eq "user";
+    $except->{$_} = 1;
+  }
+
+  $first_block.="</select><input type=\"submit\" value=\"Show Endorsements\"></form>";
+
+  my $ed = $query->param("editor");
+  $ed =~ s/[^\d]//g;
+
+  if($ed && getNodeById($ed)->{type}->{title} eq "user")
+  {
+    my $csr = $DB->sqlSelectMany("node_id", "links left join node on links.from_node=node_id", "linktype=".getId(getNode("coollink", "linktype"))." and to_node='$ed' order by title");
+
+    my $innerstr;
+    my $count = 0;
+    while(my $row = $csr->fetchrow_hashref)
+    {
+      $count++;
+      my $n = getNodeById($$row{node_id});
+      $$n{group} ||= [];
+      my $num = scalar(@{$$n{group}});
+      $innerstr.="<li>".linkNode($n).
+        (($$n{type}{title} eq "e2node")?
+        (" - $num writeup".(($num == 0 || $num > 1)?("s"):(""))):
+        (" - ($$n{type}{title})"))."</li>";
+    }
+
+    $first_block.=linkNode(getNodeById($ed))." has endorsed $count nodes<br><ul>$innerstr</ul>";
+
+  }
+
+  my $second_block = qq|<table width="100%" cellpadding="2" cellspacing="0" border="0"><tr align="left"><th>Title</th><th>Cooled by</th></tr>|;
+
+  my $COOLNODES = getNode 'coolnodes', 'nodegroup';
+  my $COOLLINKS = getNode 'coollink', 'linktype';
+  my $cn = $$COOLNODES{group};
+  my $clink = getId $COOLLINKS;
+
+  my $return = '';
+  my $increment = 50;
+  my $next = $query->param('next');
+  $next ||= 0;
+
+  my $count = 0;
+
+
+  foreach (reverse @$cn) {
+    $count++;
+    next if $count < $next;
+    last if $count > $next+$increment;
+    my $csr = $DB->{dbh}->prepare("select * from links where from_node=".getId($_)." and linktype=$clink");
+    my $str .= '<tr class="';
+    $str .= ( int($count) & 1 ) ? 'oddrow' : 'evenrow';
+    $str .= '">';
+    $csr->execute;
+    my $link = $csr->fetchrow_hashref;
+    $csr->finish;
+    $str.= '<td>'.linkNode($_).'</td>';
+    if ($link) {
+      $str.='<td>'.linkNode($$link{to_node}).'</td>';
+    } else {
+      $str.='<td>&nbsp;</td>';
+    }
+    $str.="</tr>\n";
+    $second_block .= $str;
+  }
+  my $next_elements ='<tr><td>';
+
+  if ($next > 0) {
+    $next_elements.=linkNode($NODE, "prev $increment", {next => $next-$increment});
+  } else {
+    $next_elements.='&nbsp;';
+  }
+  $next_elements.='</td><td>';
+
+  if ($next+$increment < @$cn) {
+    $next_elements.=linkNode($NODE, "next $increment", {next => $next+$increment});
+  } else {
+    $next_elements.='&nbsp;';
+  }
+
+  $second_block.=$next_elements.'</td></tr></table>';
+
+  return $first_block.$second_block;
+}
+
 1;
