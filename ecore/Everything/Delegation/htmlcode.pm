@@ -11842,7 +11842,7 @@ sub editwriteup
       .linkNode((getNodeWhere({title => $query -> param('draft_title'),
         author_user => $$N{author_user}}, 'draft'))[0] ||
       getNode($query -> param('draft_title'), 'e2node')).'.</small>'
-	if $query->param('draft_title') && $APP->cleanNodeName(scalar $query->param('draft_title')) ne $$N{title};
+	if(scalar($query->param('draft_title')) && $APP->cleanNodeName(scalar $query->param('draft_title')) ne $$N{title});
   }
 
   $str .= qq'<textarea name="${type}_doctext" id="writeup_doctext" '.htmlcode('customtextarea', '1').' class="formattable">'.$APP->encodeHTML($$N{doctext}).'</textarea>'.$message;
