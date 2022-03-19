@@ -2863,14 +2863,7 @@ sub existsInGroupCache {
 }
 
 sub nodegroupRankColumn {
-  my $this = shift;
-  my $matches = $this->sqlSelect("count(*)","INFORMATION_SCHEMA.COLUMNS","TABLE_NAME='nodegroup' AND COLUMN_NAME='rank'");
-
-  if($matches == 1)
-  {
-    return "rank";
-  }
-  return "nodegroup_rank";
+  "nodegroup_rank"
 }
 
 #############################################################################
