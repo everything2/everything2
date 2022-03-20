@@ -15,22 +15,25 @@ phases:
         if [ -e .buildspec/docker_e2lib.build ] ; then
           cd docker/e2lib && docker build -t everything2/e2lib:$IMAGE_TAG . ;
           docker tag everything2/e2lib:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2lib:$IMAGE_TAG ;
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2lib:$IMAGE_TAG ;
           cd ../.. ;
         fi
       - |
         if [ -e .buildspec/docker_e2base.build ] ; then
           cd docker/e2base && docker build -t everything2/e2base:$IMAGE_TAG . ;
           docker tag everything2/e2base:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2base:$IMAGE_TAG ;
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2base:$IMAGE_TAG ;
           cd ../.. ;
         fi
       - |
         if [ -e .buildspec/docker_e2app.build ] ; then
           cd docker/e2app && docker build -t everything2/e2app:$IMAGE_TAG . ;
           docker tag everything2/e2app:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2app:$IMAGE_TAG ;
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2app:$IMAGE_TAG ;
           cd ../.. ;
         fi
+      - tools/buildcache.rb --region $AWS_REGION --bucket $BUILDCACHE_BUCKET --update
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/everything2/e2lib:$IMAGE_TAG
