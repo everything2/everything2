@@ -36,7 +36,12 @@ build_elements = [
 
 def fetch_checksum_cache
   if @aws_region.nil?
-    JSON.parse(File.open(checksum_base+'/'+last_build_file).read)
+    target_file = checksum_base+'/'+last_build_file
+    if File.exists? target_file
+      JSON.parse(File.open(checksum_base+'/'+last_build_file).read)
+    else
+      {}
+    end
   else
     s3client = Aws::S3::Client.new(region: @aws_region)
     puts "Getting buildcache from #{@buildcache_bucket}/#{last_build_file}"
@@ -104,6 +109,9 @@ end
 if !@cache_update.nil?
   if(@aws_region.nil?)
     File.write(checksum_base + '/' + last_build_file,JSON.pretty_generate(checksum_location('')))
+  else
+    s3client = Aws::S3::Client.new(region: @aws_region)
+    s3client.put_object(body: JSON.pretty_generate(checksum_location('')), key: last_build_file, bucket: @buildcache_bucket)
   end
 else
   latest_checksums = fetch_checksum_cache 
