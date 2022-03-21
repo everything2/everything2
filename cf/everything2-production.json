@@ -2895,7 +2895,8 @@
             {"Ref": "CodeBuildUpdateApplicationECRRegistry"},
             {"Ref": "DockerCodeBuildLogWritePolicy"},
             {"Ref": "ZipsBucketReadPolicy"},
-            {"Ref": "BuildcacheAccessPolicy"}
+            {"Ref": "BuildcacheAccessPolicy"},
+            {"Ref": "DockerHubSecretsAccessPolicy"}
         ],
         "Path": "/",
         "RoleName": "Docker-Builder-CodeBuild-Role"
@@ -2942,6 +2943,10 @@
             {
               "Name": "BUILDCACHE_BUCKET",
               "Value": {"Ref": "BuildcacheBucket"}
+            },
+            {
+              "Name": "SECRETS_BUCKET",
+              "Value": {"Ref": "SecretsS3Bucket"} 
             }
           ],
           "PrivilegedMode": true
@@ -2975,6 +2980,24 @@
             "Action": "logs:CreateLogStream",
             "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "DockerCodeBuildLogGroup", "Arn"] }, ":*"]]}
           }]
+        }
+      }
+    },
+    "DockerHubSecretsAccessPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "Description": "Allows CodeBuild worker to read the Docker Hub secrets so it can fetch the Ubuntu secret",
+        "ManagedPolicyName": "DockerHubSecretsAccessPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "s3:GetObject",
+              "Resource": {"Fn::Join" : ["",[{ "Fn::GetAtt": [ "SecretsS3Bucket", "Arn"] }, "/docker_hub_password"]]}
+            }
+          ]
         }
       }
     },
