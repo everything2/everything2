@@ -8,6 +8,7 @@ phases:
       - gem install aws-sdk-s3
       - chmod +x tools/buildcache.rb
       - tools/buildcache.rb --region $AWS_REGION --bucket $BUILDCACHE_BUCKET
+      - ls -al .buildcache
   build:
     commands:
       - echo Build started on `date` in `pwd`
