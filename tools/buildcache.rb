@@ -47,7 +47,7 @@ def fetch_checksum_cache
     puts "Getting buildcache from #{@buildcache_bucket}/#{last_build_file}"
     begin
       body = s3client.get_object(bucket: @buildcache_bucket, key: last_build_file)
-      body.body.read
+      JSON.parse(body.body.read)
     rescue Aws::S3::Errors::NoSuchKey
       puts "No existing buildcache found"
       {}
@@ -138,7 +138,9 @@ else
     end
 
     if needs_rebuild
-      FileUtils.touch(checksum_base + '/.buildcache/'+build[:rule])
+      to_touch = checksum_base + '/.buildcache/'+build[:rule]
+      puts "Touching '#{to_touch}'"
+      FileUtils.touch(to_touch)
     end  
   end
 end
