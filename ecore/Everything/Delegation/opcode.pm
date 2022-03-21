@@ -1209,7 +1209,7 @@ sub cool
 
   # single-writeup C!
 
-  my ($cid) = $query->param('cool_id');
+  my $cid = $query->param('cool_id');
   my $uid = getId($USER);
 
   my $COOL = getNodeById($cid);
