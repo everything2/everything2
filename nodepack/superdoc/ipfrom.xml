@@ -1,5 +1,5 @@
 <node>
-  <doctext>Looks like you're coming from &lt;strong&gt;[% return $APP-&gt;getIp() %]&lt;/strong&gt;&lt;br&gt;&lt;br&gt; Hope that helps.</doctext>
+  <doctext></doctext>
   <node_id>1429847</node_id>
   <title>ipfrom</title>
   <type_nodetype>14</type_nodetype>
