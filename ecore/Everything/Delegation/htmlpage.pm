@@ -68,7 +68,7 @@ sub container_display_page
 
   if($NODE->{parent_container})
   {
-    $str .= linkNode ($$NODE{parent_container}) if $$NODE{parent_container};
+    $str .= linkNode($$NODE{parent_container}) if $$NODE{parent_container};
   }else{
     $str .= "<i>none</i>"; 
   }
