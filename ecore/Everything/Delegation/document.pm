@@ -4933,4 +4933,86 @@ sub page_of_cool
   return $first_block.$second_block;
 }
 
+sub news_archives
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  my $isGod = $APP->isAdmin( $USER );
+  my $isEd = $APP->isEditor( $USER );
+  my $webloggables = getVars(getNode("webloggables", "setting"));
+  my $view_weblog = $query->param('view_weblog');
+  my $skipped = 0;
+  my @labels = ();
+
+  foreach my $node_id (sort { lc($$webloggables{$a}) cmp lc($$webloggables{$b}) } keys(%$webloggables)){
+    my $title =  $$webloggables{$node_id};
+    my $wclause = "weblog_id='$node_id' AND removedby_user=''";
+    my $count = $DB->sqlSelect('count(*)','weblog',"$wclause");
+    my $link = linkNode($NODE,$title,{'view_weblog'=>"$node_id"});
+    $link = "<b>$link</b>" if $node_id == $view_weblog;
+    push @labels, "$link<br /><font size='1'>($count node".
+    ($count==1?'':'s').')</font>';
+  }
+
+  my $text = "";
+  if (!$view_weblog) {
+    $text = "<table border='1' width='100%' cellpadding='3'>";
+
+    my $labelcount=0;
+    foreach (@labels) {
+      if ($labelcount % 8 ==0) {$text.="<tr>";}
+      $text .= "<td align='center'>".$_."</td>";
+      if ($labelcount % 8 == 7) {$text.="</tr>";}
+      $labelcount++;
+    }
+
+    $text.="</table>";
+
+    return $text;
+  }
+
+  return $text if (($view_weblog == 114)||($view_weblog==923653))&&(!($isEd));
+
+  if($isGod && (my $unlink_node = $query->param('unlink_node'))){
+    $unlink_node =~ s/\D//g;
+    $DB->sqlUpdate('weblog',{'removedby_user'=>$$USER{user_id}},
+       "weblog_id='$view_weblog' AND to_node='$unlink_node'");
+  }
+
+  $text .= '<p align="center"><font size="3">Viewing news items for <b>'.
+           linkNode(getNode($view_weblog)).'</b></font> - <small>[News Archives|back to archive menu]</small></p>';
+
+  $text .= "<table border='1' width='100%' cellpadding='3'>".
+         "<tr><th>Node</th><th>Time</th><th>Linker</th>".
+         ($isGod?'<th>Unlink?</th>':'').'</tr>';
+  my $wclause = "weblog_id='$view_weblog' AND removedby_user=''";
+  my $csr = $DB->sqlSelectMany('*','weblog',$wclause,'order by tstamp desc');
+  while(my $ref = $csr->fetchrow_hashref()){
+    my $N = getNode($$ref{to_node});
+    $skipped++ unless $N;
+    next unless $N;
+    my $link = linkNode($N);
+    my $time = htmlcode('parsetimestamp',"$$ref{tstamp},128");
+    my $linker = getNode($$ref{linkedby_user});
+    $linker = $linker?linkNode($linker):'<i>unknown</i>';
+    my $unlink = linkNode($NODE,'unlink?',
+      {'unlink_node'=>$$ref{to_node},'view_weblog'=>$view_weblog});
+    $text .= "<tr><td>$link</td><td><small>$time</small></td><td>$linker</td>".
+             ($isGod?"<td>$unlink</td>":'').'</tr>';
+  }
+  $text .= "</table>";
+
+  $text .= "<br /><table border='1' width='100%' cellpadding='3'>".
+         "<tr><th>$skipped deleted node".($skipped==1?' was':'s were').
+         ' skipped</th></tr></table>' if $skipped;
+
+  return $text;
+}
+
 1;
