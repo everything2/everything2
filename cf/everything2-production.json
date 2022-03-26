@@ -3030,7 +3030,21 @@
           ]
         }
       }
+    },
+    "ECSServiceLinkedRole": {
+      "Type": "AWS::IAM::ServiceLinkedRole",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AWSServiceName": "ecs.amazonaws.com",
+        "Description": "Role to enable Amazon ECS to manage your cluster."
+      }
+    },
+    "ECSAppCluster": {
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+        "CapacityProviders": ["FARGATE"],
+        "ClusterName": "E2-App-ECS-Cluster" 
+      }
     }
-
   }
 }
