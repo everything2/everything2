@@ -414,15 +414,17 @@ sub checkToken
 {
 	my ($this, $user, $query) = @_;
 
-	my $action = $query -> param('action');
-	my $expiry = $query -> param('expiry');
+	my $action = $query->param('action');
+	my $expiry = $query->param('expiry');
+	my $passwd = $query->param('passwd');
+	my $token = $query->param('token');
 
 	return if ($expiry && time() > $expiry)
 		or ($action ne 'activate' && $action ne 'reset')
-		or $this->getToken($user, $query -> param('passwd')
-			, $action, $expiry) ne $query -> param('token');
+		or $this->getToken($user, $passwd
+			, $action, $expiry) ne $token;
 
-	$this -> updatePassword($user, $query -> param('passwd'));
+	$this->updatePassword($user, $passwd);
 	return $this->securityLog($this->{db}->getNode($action eq 'activate' ? 'Sign up' : 'Reset password', 'superdoc')
 		, $user, "$$user{title} account $action");
 
