@@ -20,7 +20,7 @@ htmlcode('openform',-id=&gt;'pagebody');
 return if $APP-&gt;isGuest($USER);
 
 if($query-&gt;param('chosenstyle')) {
-	my $style = getNodeById($query-&gt;param('chosenstyle'));
+	my $style = getNodeById(scalar $query-&gt;param('chosenstyle'));
 	my $style_type = $$style{type}{title} if $style;
 	if ($style_type eq 'stylesheet' or $query-&gt;param('chosenstyle') eq 'default' ){
 		delete $$VARS{userstyle} ;
