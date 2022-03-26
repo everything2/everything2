@@ -5015,4 +5015,17 @@ sub news_archives
   return $text;
 }
 
+sub ipfrom
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return qq|Looks like you're coming from <strong>|.$APP->getIp().qq|</strong><br><br> Hope that helps.|;
+}
+
 1;
