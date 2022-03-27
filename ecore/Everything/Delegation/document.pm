@@ -4828,4 +4828,83 @@ sub ipfrom
   return qq|Looks like you're coming from <strong>|.$APP->getIp().qq|</strong><br><br> Hope that helps.|;
 }
 
+sub your_ignore_list
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+  return if $APP->isGuest($USER);
+
+  my $str = "";
+  my $userId=$$USER{node_id};
+
+  if ($APP->isEditor($USER) || $APP->isChanop($USER) )
+  {
+    $str.=htmlcode("openform")."<p>Check on user: ";
+    $str.=$query->textfield(-name => "username",
+      -default => "",
+      -size => 40,
+      -maxlength => 80);
+    $str.=htmlcode("closeform")."</p>";
+    if ($query->param('username')) {
+      if(my $for_user = getNode(scalar($query->param('username')),'user'))
+      {
+        $userId=$for_user->{user_id};
+      }else{
+        $str .= "<em>User does not exist</em>";
+      }
+    }
+  }
+
+  $str.=(scalar $query->param('username')) ? ("<p>".linkNode($userId)." is ignoring") : ("<p>You are ignoring");
+
+  my $csr = $DB->sqlSelectMany('ignore_node', 'messageignore', 'messageignore_id='.$userId);
+
+  my @ignored = ();
+  while(my $luser = $csr->fetchrow_hashref) {
+    my $user = getNodeById($$luser{ignore_node});
+    push @ignored, $$luser{ignore_node};
+  }
+
+  if ((scalar @ignored) == 0) {
+    $str.=' no one.</p>';
+  } else {
+    $str.=':</p><ol>';
+    $str.= join "\n", map { '<li>'.linkNode($_).'</li>'; } @ignored;
+    $str.='</ol>';
+  }
+
+  $str.=scalar($query->param('username')) ?
+    ("<p>".linkNode($userId)." is being ignored by") :
+    ( scalar(@ignored) ? '<p><small>You can ignore people more thoroughly at the '.linkNodeTitle( 'Pit of Abomination' ).
+    '.</small></p>' : '' ).
+    "<p>You are being ignored by";
+
+  $csr = $DB->sqlSelectMany('messageignore_id', 'messageignore', 'ignore_node='.$userId);
+
+  my @ignoring = ();
+  while(my $luser = $csr->fetchrow_hashref) {
+    my $user = getNodeById($$luser{messageignore_id});
+    push @ignoring, $$luser{messageignore_id};
+  }
+
+  if ((scalar @ignoring) == 0)
+  {
+    $str.=' no one.</p>';
+  } else {
+    $str.=':</p><ol>';
+    $str.= join "\n", map { '<li>'.linkNode($_).'</li>'; } @ignoring;
+    $str.='</ol>';
+  }
+
+  $str .= qq|<p align="right"><small>Bugs go to [alex[user]] and/or [Oolong[user]].</small></p>|;
+  return $str;
+
+}
+
 1;
