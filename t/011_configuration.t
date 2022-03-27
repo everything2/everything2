@@ -49,7 +49,6 @@ ok($CONF->site_url eq "http://everything3.com");
 ok($CONF = Everything::Configuration->new("testdata/config_2.json"));
 
 ok($CONF->configfile eq "testdata/config_2.json");
-ok($CONF->basedir eq "/var/everything");
 ok($CONF->guest_user == 779713);
 ok($CONF->site_url eq "http://everything2.com");
 ok(cmp_deeply($CONF->infected_ips,["10.10.10.10"])); 
@@ -85,7 +84,6 @@ ok(ref $CONF->google_ads_badwords eq "ARRAY");
 
 # Check for all non-default values
 ok($CONF = Everything::Configuration->new("testdata/config_3.json"));
-ok($CONF->basedir eq "basedir_value");
 ok($CONF->guest_user == 123456);
 ok($CONF->site_url eq "site_url");
 ok(cmp_deeply($CONF->infected_ips,["1.2.3.4"]));
