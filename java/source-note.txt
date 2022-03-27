@@ -1,0 +1,1 @@
+ Java chatterbox client page at http://sourceforge.net/projects/jchatter/ 
