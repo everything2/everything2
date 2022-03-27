@@ -1,5 +1,4 @@
 {
-  "basedir": "/var/everything",
   "guest_user": 779713,
   "site_url": "http://everything2.com",
   "infected_ips": [

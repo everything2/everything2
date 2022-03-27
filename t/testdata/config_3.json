@@ -1,5 +1,4 @@
 {
-  "basedir": "basedir_value",
   "guest_user": 123456,
   "site_url": "site_url",
   "infected_ips": [

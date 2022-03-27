@@ -12,7 +12,6 @@ has 'configfile' => (isa => 'Maybe[Str]', is => 'ro');
 has 'configdir' => (isa => 'Str', is => 'ro', default => '/etc/everything');
 has 'site_url' => (isa => 'Str', is => 'ro', required => 1, default => 'https://everything2.com');
 has 'guest_user' => (isa => 'Int', is => 'ro', required => 1, default => '779713');
-has 'basedir' => (isa => 'Str', is => 'ro', default => '/var/everything');
 
 has 'infected_ips' => (isa => 'ArrayRef', is => 'ro', builder => '_build_infected', lazy => 1);
 has 'default_style' => (isa => 'Str', is => 'ro', default => 'Kernel Blue');
