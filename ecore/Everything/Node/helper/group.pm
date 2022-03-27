@@ -2,6 +2,8 @@ package Everything::Node::helper::group;
 
 use Moose::Role;
 
+has 'is_group' => (is => 'ro', default => 1);
+has 'flatgroup' => (is => 'ro', lazy => 1, builder => '_build_flatgroup');
 has 'group' => (is => 'rw', lazy => 1, builder => '_build_group');
 
 sub _build_group
@@ -15,6 +17,38 @@ sub _build_group
   }
 
   return $group;
+}
+
+sub _build_flatgroup
+{
+  my ($self) = @_;
+
+  my $seen = {};
+  my $group = [];
+
+  return $self->_flatten($self->group, {});
+}
+
+sub _flatten
+{
+  my ($self, $group, $seen) = @_;
+
+  my $output = [];
+
+  foreach my $n (@$group)
+  {
+    next if $seen->{$n->id};
+    $seen->{$n->id} = 1;
+
+    if($n->is_group)
+    {
+      push(@$output, @{$self->_flatten($n->group, $seen)});
+    }else{
+      push(@$output, $n);
+    }
+  }
+
+  return $output;
 }
 
 sub group_remove
