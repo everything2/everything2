@@ -61,13 +61,6 @@
         "BucketName": "pipelineconfig.everything2.com"
       }
     },
-    "JavaChatterboxBucket": {
-      "Type": "AWS::S3::Bucket",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "BucketName": "javachatterbox.everything2.com"
-      }
-    },
     "LambdaSourceBucket": {
       "Type": "AWS::S3::Bucket",
       "DeletionPolicy": "Retain",
