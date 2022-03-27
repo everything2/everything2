@@ -12,6 +12,8 @@ with 'Everything::Globals';
 
 has 'NODEDATA' => (isa => "HashRef", required => 1, is => "rw");
 has 'author' => (is => "ro", lazy => 1, builder => "_build_author");
+has 'is_group' => (is => "ro", default => 0);
+
 
 sub id
 {
