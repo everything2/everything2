@@ -3985,7 +3985,7 @@ sub choose_theme_view_page
   my $currentStyle = $$VARS{userstyle} || $defaultStyle;
 
   my $theme = $query -> param('theme');
-  my $themenode = getNode($theme);
+  my $themenode = getNodeById($theme);
   $theme = "" if($theme and (!$themenode || $themenode->{ type }{ title } ne 'stylesheet'));
   $theme ||= getNodeById($currentStyle);
 
@@ -4013,7 +4013,7 @@ sub choose_theme_view_page
     }
   }
 
-  return $str if $query -> param('usetheme') or $query -> param('cancel');
+  return $str if $query->param('usetheme') or $query->param('cancel');
 
   # replace current theme with theme to test
   my $themeLink = htmlcode('linkStylesheet', $theme, 'serve');
@@ -4069,8 +4069,14 @@ sub choose_theme_view_page
       $widget .= '</option>' ;
     }
 
+    my $testtheme = getNodeById($theme);
+    my $banner = "Test a theme:";
+    if(defined($theme) and $theme->{type}->{title} eq "stylesheet")
+    {
+      $banner = "Test theme: <em>$theme->{title}</em>";
+    }
     $widget = htmlcode( 'openform' , 'widget' ).
-      '<h3 id="widgetheading">Test theme: <em>'.getNodeById( $theme ) -> { title }.'</em></h3><div>
+      '<h3 id="widgetheading">'.$banner.'</h3><div>
 	<label>Choose a theme:<select name="theme">'.$widget.'</select></label>
 	<input type="submit" name="usetheme" value="Use this theme">
 	<input type="submit" name="cancel" value="Cancel">
