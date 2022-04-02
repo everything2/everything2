@@ -201,6 +201,12 @@ sub passwd
   return $self->NODEDATA->{passwd};
 }
 
+sub sanctity
+{
+  my ($self) = @_;
+  return $self->NODEDATA->{sanctity};
+}
+
 sub style
 {
   my ($self) = @_;

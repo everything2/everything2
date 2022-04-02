@@ -4419,7 +4419,7 @@ sub uploaduserimage
   my ($field) = @_;
 
   return if $APP->isSuspended($NODE,"homenodepic");
-
+  return "Not in production" unless $Everything::CONF->environment eq "production";
   my $s3 = Everything::S3->new('homenodeimages');
   return "Could not generate S3 object" unless $s3;
 

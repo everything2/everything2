@@ -4951,41 +4951,4 @@ sub everything_s_obscure_writeups
   return $str;
 }
 
-sub silver_trinkets
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = qq|<br><br><br><p align=center><font size=4>|;
-
-  ### This measures the number of times a user has been sanctified by another user. It does not measure how many times other users have given them votes or eggs, or how many times they have been egged by another user. -m
-
-  if($APP->isGuest($USER))
-  {
-    $str .= "Nobody knows how blessed you are, since you're hiding. Try logging in." if $APP->isGuest($USER);
-  }elsif($USER->{sanctity} <= 0) {
-    $str .= "<em>You are not feeling very special right now.</em>";
-  }else {
-    $str .= qq|You feel validated -- every day, your fellow users look upon you and approve -- you have collected $$USER{sanctity} of their |.linkNodeTitle('sanctify|Silver Trinkets');
-  }
-  $str .= qq|</font><br><br><br></p>|;
-
-  if(isGod($USER))
-  {
-    my $u = $query->param('gtuser') || 0;
-    $u = getNode($u, 'user') if $u;
-    my $k;
-    $k = $u ? $$u{sanctity} : 0;
-    $str .= htmlcode('openform') . 'other user: ' . $query->textfield('gtuser') . $query->submit('SubMitt') . $query->end_form() . '<br />';
-    $str .= $u ? (linkNode($u) . '\'s sanctity: ' . $k) : 'no other user given';
-  }
-
-  return $str;
-}
-
 1;
