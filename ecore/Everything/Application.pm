@@ -1967,7 +1967,7 @@ sub getIp
 	my $remote = $ENV{REMOTE_ADDR} || "";
 
 	my @addrs =
-		grep { $this->isIpRoutable($_) } # ignore our Pound server
+		grep { ($this->{conf}->environment eq "production")?($this->isIpRoutable($_)):(1) }
 		grep { /\S/ }
 		split /\s*,\s*/,
 		",$forwd,$remote";
