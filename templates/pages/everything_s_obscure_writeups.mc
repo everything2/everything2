@@ -21,7 +21,7 @@ sub wit
 <em>No nodes!</em>
 % } else {
 %   foreach my $n (@{$.nodes}) {
-<li><& '/helpers/linknode.mi', node => $n &></li>
+<li><& 'linknode', node => $n &></li>
 %   }
 % }
 </ol>

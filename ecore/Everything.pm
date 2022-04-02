@@ -82,6 +82,7 @@ sub BEGIN
 	$MASON = Mason->new(
 		data_dir => "/var/mason",
 		comp_root => "/var/everything/templates",
+		base_request_class => 'Everything::Mason::Request',
 		static_source => ($CONF->environment eq "production"),
 		allow_globals => [qw($REQUEST)],
 		plugins => ['HTMLFilters','Everything']);

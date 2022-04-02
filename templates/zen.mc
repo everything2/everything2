@@ -70,45 +70,45 @@ sub _build_pagetitle
 
 </head>
 <body class="<% $.body_class %>" itemscope itemtype="http://schema.org/WebPage">
-<& 'helpers/googleads.mi', no_ads => $.no_ads &>
+<& 'googleads', no_ads => $.no_ads &>
 <div id='header'>
- <& 'helpers/searchform.mi', script_name => $.script_name, lastnode => $.lastnode &>
+ <& 'searchform', script_name => $.script_name, lastnode => $.lastnode &>
  <div id='e2logo'><a href="/">Everything<span id="e2logo2">2</span></a></div>
 </div>
 <div id='wrapper'>
-<& 'helpers/guest_nodeshell_banner.mi', show => $.show_guest_nodeshell_banner &>
+<& 'guest_nodeshell_banner', show => $.show_guest_nodeshell_banner &>
  <div id='mainbody' itemprop="mainContentOfPage"><!-- google_ad_section_start -->
   <div id="pageheader">
    <h1 class="nodetitle"><% $.node->title %></h1>
 % if (!$REQUEST->user->is_guest) {
      <ul class="topic actions">
 %   if ($.node->can_be_bookmarked) {
-<& 'helpers/bookmark.mi', friendly_pagetype => $.friendly_pagetype, node => $.node, bookmarktext => "Add to bookmarks" &>
+<& 'bookmark', friendly_pagetype => $.friendly_pagetype, node => $.node, bookmarktext => "Add to bookmarks" &>
 %   }
 %   if ($.node->can_be_categoried) {
-<& 'helpers/category.mi', friendly_pagetype => $.friendly_pagetype, node => $.node &>
+<& 'category', friendly_pagetype => $.friendly_pagetype, node => $.node &>
 %   }
 %   if ($.node->can_be_weblogged and $REQUEST->user->can_weblog) {
-<& 'helpers/weblog.mi', friendly_pagetype => $.friendly_pagetype, node => $.node &>
+<& 'weblog', friendly_pagetype => $.friendly_pagetype, node => $.node &>
 %   }
      </ul>
 % }
-   <& 'helpers/ed_cooled.mi' , node => $.node &>
+   <& 'ed_cooled' , node => $.node &>
   </div>
 
   <% inner() %>
   <!-- google_ad_section_end -->
  </div>
  <div id='sidebar'>
-  <& '/helpers/nodelets.mi', nodelets => $.nodelets, nodeletorder => $.nodeletorder &>
+  <& 'nodelets', nodelets => $.nodelets, nodeletorder => $.nodeletorder &>
   <!-- nodelets -->
  </div> 
 </div>
 <div id='footer'>
 Everything2 &trade; is brought to you by Everything2 Media, LLC. All content copyright &#169; original author unless stated otherwise.
 </div>
-<& 'helpers/static_javascript.mi', nodeinfojson => $.nodeinfojson, default_javascript => $.default_javascript &>
-<& 'helpers/googleanalytics.mi' &>
+<& 'static_javascript', nodeinfojson => $.nodeinfojson, default_javascript => $.default_javascript &>
+<& 'googleanalytics' &>
 </body>
 </html>
 </%augment>

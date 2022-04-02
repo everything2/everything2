@@ -37,34 +37,34 @@ sub _build_voteschingsleft
 }
 </%class>
 <ul>
-<li><& '/helpers/linknode.mi', node => $.node, title => "Log Out", params => {"op" => "logout"} &></li>
-<li title="User Settings"><& '/helpers/linknodetitle.mi', node => "Settings", params => {"lastnode_id" => 0} &></li> 
-<li title="Your profile"><& '/helpers/linknode.mi', node => $REQUEST->user &> <& '/helpers/linknode.mi', node => $REQUEST->user, title => '(edit)', params => {"displaytype" => "edit"} &></li>
-<li title="Draft, format, and organize your works in progress"><& '/helpers/linknodetitle.mi', node => "Drafts", type => "superdoc" &></li>
-<li title="Learn what all those numbers mean"><& '/helpers/linknodetitle.mi', node => "The Everything2 Voting/Experience System", type => "superdoc", title => 'Voting/XP System' &></li>
-<li title="View a randomly selected node"><& '/helpers/randomnode.mi' &></li>
+<li><& 'linknode', node => $.node, title => "Log Out", params => {"op" => "logout"} &></li>
+<li title="User Settings"><& 'linknodetitle', node => "Settings", params => {"lastnode_id" => 0} &></li> 
+<li title="Your profile"><& 'linknode', node => $REQUEST->user &> <& 'linknode', node => $REQUEST->user, title => '(edit)', params => {"displaytype" => "edit"} &></li>
+<li title="Draft, format, and organize your works in progress"><& 'linknodetitle', node => "Drafts", type => "superdoc" &></li>
+<li title="Learn what all those numbers mean"><& 'linknodetitle', node => "The Everything2 Voting/Experience System", type => "superdoc", title => 'Voting/XP System' &></li>
+<li title="View a randomly selected node"><& 'randomnode' &></li>
 <li title="Need help?">
 % if($REQUEST->user->level > 2)
 % {
-<& '/helpers/linknodetitle.mi', node => "Everything2 Help", title => 'Help' &>
+<& 'linknodetitle', node => "Everything2 Help", title => 'Help' &>
 % } else {
-<& '/helpers/linknodetitle.mi', node => "Everything2 Quick Start", title => 'Help' &>
+<& 'linknodetitle', node => "Everything2 Quick Start", title => 'Help' &>
 % }
 </li>
 </ul>
 <% $.voteschingsleft %>
 % if($.newxp > 0) {
 <p id="experience">
-You <& '/helpers/linknodetitle.mi', node => "node tracker", type => "superdoc", title => "gained" &>
+You <& 'linknodetitle', node => "node tracker", type => "superdoc", title => "gained" &>
 <strong><% $.newxp %></strong> experience point<% ($.newxp > 1)?('s'):('') %></strong>
 %   if($.xp_to_level > 0) {
-<br />You need <strong><% $.xp_to_level %></strong> more XP to earn <& '/helpers/linknodetitle.mi', "node" => "The Everything2 Voting/Experience System", type => "superdoc", title => "level" &><% $REQUEST->user->level+1 %>
+<br />You need <strong><% $.xp_to_level %></strong> more XP to earn <& 'linknodetitle', "node" => "The Everything2 Voting/Experience System", type => "superdoc", title => "level" &><% $REQUEST->user->level+1 %>
 %   }
 %   if($.writeups_to_level > 0) {
 %     if($.writeups_to_level > 1) {
-<br />You need <strong><% $.writeups_to_level %></strong> more writeups to earn <& '/helpers/linknodetitle.mi', "node" => "The Everything2 Voting/Experience System", "type" => "superdoc", "title" => "level" &><% $REQUEST->user->level+1 %>
+<br />You need <strong><% $.writeups_to_level %></strong> more writeups to earn <& 'linknodetitle', "node" => "The Everything2 Voting/Experience System", "type" => "superdoc", "title" => "level" &><% $REQUEST->user->level+1 %>
 %     } else {
-<br />To reach <& '/helpers/linknodetitle.mi', "node" => "The Everything2 Voting/Experience System", "type" => "superdoc", "title" => "level" &><% $REQUEST->user->level + 1 %>, you only need one more writeup!
+<br />To reach <& 'linknodetitle', "node" => "The Everything2 Voting/Experience System", "type" => "superdoc", "title" => "level" &><% $REQUEST->user->level + 1 %>, you only need one more writeup!
 %     }
 %   }
 </p>
@@ -73,12 +73,12 @@ You <& '/helpers/linknodetitle.mi', node => "node tracker", type => "superdoc", 
 <p id="gp">Yay! you gained <% $.newgp %></p>
 % }
 <p id="servertime">
-server time<br /><& '/helpers/displaytime.mi' &><br />
+server time<br /><& 'displaytime' &><br />
 % if($.localtimeset)
 % {
-<& '/helpers/displaytime.mi', "display_12h" => $.localtime_12h, "tzadjust" => $.localtime_tzadjust, "dst" => $.localtime_dst &> 
+<& 'displaytime', "display_12h" => $.localtime_12h, "tzadjust" => $.localtime_tzadjust, "dst" => $.localtime_dst &> 
 % } else {
-<& '/helpers/linknodetitle.mi', 'node' => 'Advanced Settings', 'type' => 'superdoc', 'title' => '(set your time)' &>
+<& 'linknodetitle', 'node' => 'Advanced Settings', 'type' => 'superdoc', 'title' => '(set your time)' &>
 % }
 
 </p>

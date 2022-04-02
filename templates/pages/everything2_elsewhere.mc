@@ -9,11 +9,8 @@
 <li><a href="https://www.facebook.com/Everything2com/">Facebook group</a></li>
 <li><a href="http://www.segnbora.com/e2web.html">Web Pages of Everythingians</a></li>
 </ul>
-% $.Capture(\my $content) {{
-<& '/helpers/linknodetitle.mi', node => 'Community Directory', type => 'document' &>
-% }}
-<p>You might also like to see the <% $content | Trim %>.</p>
+<p>You might also like to see the <& 'linknodetitle', node => 'Community Directory', type => 'document' &>.</p>
 % unless($REQUEST->user->is_guest) {
-<p>Complaints? Suggestions? Tell <& '/helpers/linknode.mi', node => $.maintainer &> about it.
-<& '/helpers/messagebox.mi', to => $.maintainer, node => $.node &>
+<p>Complaints? Suggestions? Tell <& 'linknode', node => $.maintainer &> about it.
+<& 'messagebox', to => $.maintainer, node => $.node &>
 % }

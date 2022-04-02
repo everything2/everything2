@@ -1,4 +1,4 @@
-package Everything::Page::silver_trinkets;
+package Everything::Page::your_ignore_list;
 
 use Moose;
 extends 'Everything::Page';
@@ -12,7 +12,7 @@ sub display
   my $for_user = undef;
   my $error = undef;
 
-  if($REQUEST->user->is_admin)
+  if($REQUEST->user->is_admin || $REQUEST->user->is_chanop)
   {
     my $form_result = $self->validate_username($REQUEST);
     $for_user = $form_result->{result};
@@ -20,7 +20,12 @@ sub display
     $error = $form_result->{message} if not defined $error;
   }
 
-  return { for_user => $for_user, error => $error }
+  if(not defined $for_user)
+  {
+    $for_user = $REQUEST->user
+  }
+  
+  return { for_user => $for_user, error => $error };
 }
 
 __PACKAGE__->meta->make_immutable;

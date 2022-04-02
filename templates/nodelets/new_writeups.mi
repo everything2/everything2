@@ -3,7 +3,7 @@
   has 'num_newwus' => (isa => 'Int', default => 15, lazy => 1);
   has 'newwriteups' => (isa => 'ArrayRef');
 </%class>
-<& '/helpers/openform.mi', node => $.node &> 
+<& 'openform', node => $.node &> 
 <input type="hidden" name="op" value="changewucount">
 <select name="amount" class="ajax newwriteups:updateNodelet?op=/&nw_nojunk=/&amount=/:New+Writeups">
 % foreach my $num (@{$.show_writeups}) {
@@ -27,9 +27,9 @@ No junk
 % } elsif($writeup->parent->is_null) {
 (broken parent)
 % } else {
-<& '/helpers/linknode.mi', node => $writeup->parent, class => "title", anchor => $writeup->author->uri_safe_title &>
-<span class="type">(<% $m->scomp('/helpers/linknode.mi', node => $writeup , title => $writeup->writeuptype) | Trim %>)</span>
-<cite>by <& '/helpers/linknode.mi', node => $writeup->author, class=> "author" &></cite>
+<& 'linknode', node => $writeup->parent, class => "title", anchor => $writeup->author->uri_safe_title &>
+<span class="type">(<& 'linknode', node => $writeup , title => $writeup->writeuptype &>)</span>
+<cite>by <& 'linknode', node => $writeup->author, class=> "author" &></cite>
 %   if($REQUEST->user->is_editor) {
 <span class="admin">
 <span class="hide">
@@ -43,7 +43,7 @@ No junk
 %       $innertitle = "unhide this writeup";
 %       $extra = "H: ";
 %     }
-(<% $extra %><% $m->scomp('/helpers/linknode.mi', node => $.node, params => {"op" => $opcode, "hidewriteup" => $writeup->node_id}, "title" => $hidden, "class" => "ajax newwriteups:updateNodelet:New+Writeups", "innertitle" => $innertitle) | Trim %>)
+(<% $extra %><& 'linknode', node => $.node, params => {"op" => $opcode, "hidewriteup" => $writeup->node_id}, "title" => $hidden, "class" => "ajax newwriteups:updateNodelet:New+Writeups", "innertitle" => $innertitle &>)
 %   }
 </span>
 </span>
@@ -51,4 +51,4 @@ No junk
 </li>
 % }
 </ul>
-<div class="nodeletfoot morelink">(<% $m->scomp('/helpers/linknodetitle.mi', node => "Writeups by Type", type => "superdoc", title => "more") | Trim %>)</div>
+<div class="nodeletfoot morelink">(<& 'linknodetitle', node => "Writeups by Type", type => "superdoc", title => "more" &>)</div>
