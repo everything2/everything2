@@ -4894,48 +4894,4 @@ sub your_ignore_list
 
 }
 
-sub everything_s_obscure_writeups
-{
-  my $DB = shift;
-  my $query = shift;
-  my $NODE = shift;
-  my $USER = shift;
-  my $VARS = shift;
-  my $PAGELOAD = shift;
-  my $APP = shift;
-
-  my $str = "";
-  my @wit = (
-    "The most neglected writeups on Everything:",
-    "Adopt a writeup today:",
-    "Won't you help a vote deprived writeup?",
-    "Straight from no-man's land:");
-
-  $str .= $wit[int(rand(@wit))];
-  $str .= qq|<br><ol>|;
-
-  my $definition = $DB->getNode("definition","writeuptype");
-  my $webby = getNode("Webster 1913","user");
-  my $csr = $DB->sqlSelectMany("*", "node left join writeup on node_id=writeup_id","type_nodetype=".getType("writeup")->{node_id}." and reputation=0 and author_user != $webby->{node_id} and wrtype_writeuptype != $definition->{node_id} order by rand() limit 5");
-
-  my $nodes = 0;
-  while(my $row = $csr->fetchrow_hashref)
-  {
-    $nodes++;
-    if(my $node = $DB->getNodeById($row->{node_id}))
-    {
-      $str .= "<li>".linkNode($node, undef, {lastnode_id => 0})."</li>";
-    }else{
-      $str .= "$row->{node_id}<br/>";
-    }
-  }
-
-  if($nodes == 0) {
-    $str.= "No nodes!";
-  }
-
-  $str .= "</ol>";
-  return $str;
-}
-
 1;
