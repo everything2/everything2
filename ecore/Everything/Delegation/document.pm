@@ -41,6 +41,9 @@ BEGIN {
 # Used by e2_sperm_counter
 use POSIX qw(ceil);
 
+# Used by your_gravatar
+use Digest::MD5;
+
 sub admin_settings
 {
   my $DB = shift;
@@ -4892,6 +4895,30 @@ sub your_ignore_list
   $str .= qq|<p align="right"><small>Bugs go to [alex[user]] and/or [Oolong[user]].</small></p>|;
   return $str;
 
+}
+
+sub your_gravatar
+{
+  my $DB = shift;
+  my $query = shift;
+  my $NODE = shift;
+  my $USER = shift;
+  my $VARS = shift;
+  my $PAGELOAD = shift;
+  my $APP = shift;
+
+
+  my $str = qq|<h3>Your Gravatar</h3><p>The following shows your gravatar in several different sizes. If you haven't actually uploaded an avatar to gravatar.com, they have the option of generating a dynamic avatar based on your email address (don't worry, we hash it first). These dynamic avatars can be generated on one of four 4 styles: default, identicon, monsterid, or wavatar.</p><p><small>If you have an account at gravatar.com, but your avatar isn't showing up correctly below, be sure you are using the same email address on E2 that you registered with on gravatar. You can change your email address from your homenode.</small></p>| ;
+  my $hash = Digest::MD5::md5_hex($$USER{email});
+  for(my $size = 16; $size <= 128; $size*=2){
+    $str .= '<p style="text-align:center"><b>'.$size.' pixels</b><br />
+      <img src="http://www.gravatar.com/avatar/'.$hash.'?s='.$size.'" />
+      <img src="http://www.gravatar.com/avatar/'.$hash.'?d=identicon&s='.$size.'" />
+      <img src="http://www.gravatar.com/avatar/'.$hash.'?d=monsterid&s='.$size.'" />
+      <img src="http://www.gravatar.com/avatar/'.$hash.'?d=wavatar&s='.$size.'" />
+      </p>';
+  }
+  return $str;
 }
 
 1;
