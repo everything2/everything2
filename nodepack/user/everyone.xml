@@ -73,11 +73,11 @@
   </vars>
   <vars>
     <key>numwriteups</key>
-    <value>2995</value>
+    <value>3000</value>
   </vars>
   <vars>
     <key>nwriteups</key>
-    <value>2995 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
+    <value>2998 - &lt;a href=&quot;/user/everyone/writeups&quot;&gt;View everyone's writeups&lt;/a&gt;  &lt;small&gt;(&lt;a href=&quot;/node/ticker/New+Writeups+Atom+Feed?foruser=everyone&quot;&gt;feed&lt;/a&gt;)&lt;/small&gt;</value>
   </vars>
   <vars>
     <key>preference_last_update_time</key>
