@@ -4792,4 +4792,24 @@ sub process_reaper_targets
   return $actions;
 }
 
+sub obscure_writeups
+{
+  my ($this) = @_;
+
+  my $definition = $this->{db}->getNode("definition","writeuptype");
+  my $webby = $this->{db}->getNode("Webster 1913","user");
+  my $csr = $this->{db}->sqlSelectMany("*", "node left join writeup on node_id=writeup_id","type_nodetype=".$this->{db}->getType("writeup")->{node_id}." and reputation=0 and author_user != $webby->{node_id} and wrtype_writeuptype != $definition->{node_id} order by rand() limit 5");
+
+  my $nodes = [];
+  while(my $row = $csr->fetchrow_hashref)
+  {
+    if(my $node = $this->node_by_id($row->{node_id}))
+    {
+      push @$nodes, $node
+    }
+  }
+
+  return $nodes;
+}
+
 1;
