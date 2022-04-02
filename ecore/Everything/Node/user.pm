@@ -556,6 +556,30 @@ sub can_weblog
   return;
 }
 
+sub gravatar_img_url
+{
+  my ($self, $type, $size) = @_;
+
+  my $base_url = "http://www.gravatar.com/avatar/";
+  my $hash = Digest::MD5::md5_hex($self->email);
+
+  if(not defined $type)
+  {
+    $type = '';
+  }else{
+    $type = "d=$type&";
+  }
+
+  if(not defined $size)
+  {
+    $size = 16;
+  }
+
+  $size = "s=$size";
+
+  return $base_url.$hash.'?'.$type.$size;
+}
+
 sub karma
 {
   my ($self) = @_;
