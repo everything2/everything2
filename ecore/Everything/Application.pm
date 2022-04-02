@@ -4308,7 +4308,7 @@ sub newnodes
   my ($this, $count, $include_hidden) = @_;
 
   my $notnew = "";
-  $notnew = "and notnew=0" unless $include_hidden;
+  $notnew = "notnew=0" unless $include_hidden;
   my $csr = $this->{db}->sqlSelectMany("writeup_id","writeup",$notnew,"ORDER BY publishtime DESC LIMIT $count");
 
   my $nodes = [];
