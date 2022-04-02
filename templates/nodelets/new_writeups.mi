@@ -20,8 +20,8 @@ No junk
 <input type="hidden" name="ajaxTrigger" value="1" class="ajax newwriteups:updateNodelet:New+Writeups">
 </form>
 <ul class="infolist">
-<li class="contentinfo">
 % foreach my $writeup (@{$.newwriteups}) {
+<li class="contentinfo">
 % if($writeup->is_null) {
 (broken node)
 % } elsif($writeup->parent->is_null) {
